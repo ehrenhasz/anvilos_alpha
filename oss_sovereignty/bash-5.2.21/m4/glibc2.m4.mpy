@@ -1,0 +1,9 @@
+{
+  "module_name": "glibc2.m4",
+  "hash_id": "2793d3e96a5bc0b356579edfab821a012850575fb26e319c86176c04c1605da3",
+  "original_prompt": "Ingested from bash-5.2.21/m4/glibc2.m4",
+  "human_readable_source": "# glibc2.m4 serial 3\ndnl Copyright (C) 2000-2002, 2004, 2008, 2010-2019 Free Software Foundation,\ndnl Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n# Test for the GNU C Library, version 2.0 or newer.\n# From Bruno Haible.\n\nAC_DEFUN([gt_GLIBC2],\n  [\n    AC_CACHE_CHECK([whether we are using the GNU C Library 2 or newer],\n      [ac_cv_gnu_library_2],\n      [AC_EGREP_CPP([Lucky GNU user],\n        [\n#include <features.h>\n#ifdef __GNU_LIBRARY__\n #if (__GLIBC__ >= 2) && !defined __UCLIBC__\n  Lucky GNU user\n #endif\n#endif\n        ],\n        [ac_cv_gnu_library_2=yes],\n        [ac_cv_gnu_library_2=no])\n      ]\n    )\n    AC_SUBST([GLIBC2])\n    GLIBC2=\"$ac_cv_gnu_library_2\"\n  ]\n)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

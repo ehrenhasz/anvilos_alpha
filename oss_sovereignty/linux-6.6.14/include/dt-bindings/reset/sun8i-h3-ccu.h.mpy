@@ -1,0 +1,9 @@
+{
+  "module_name": "sun8i-h3-ccu.h",
+  "hash_id": "d318d8f117ec0ad0b10d603eb4c45e61438768942351923410793e3cb589bb80",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/sun8i-h3-ccu.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_RST_SUN8I_H3_H_\n#define _DT_BINDINGS_RST_SUN8I_H3_H_\n\n#define RST_USB_PHY0\t\t0\n#define RST_USB_PHY1\t\t1\n#define RST_USB_PHY2\t\t2\n#define RST_USB_PHY3\t\t3\n\n#define RST_MBUS\t\t4\n\n#define RST_BUS_CE\t\t5\n#define RST_BUS_DMA\t\t6\n#define RST_BUS_MMC0\t\t7\n#define RST_BUS_MMC1\t\t8\n#define RST_BUS_MMC2\t\t9\n#define RST_BUS_NAND\t\t10\n#define RST_BUS_DRAM\t\t11\n#define RST_BUS_EMAC\t\t12\n#define RST_BUS_TS\t\t13\n#define RST_BUS_HSTIMER\t\t14\n#define RST_BUS_SPI0\t\t15\n#define RST_BUS_SPI1\t\t16\n#define RST_BUS_OTG\t\t17\n#define RST_BUS_EHCI0\t\t18\n#define RST_BUS_EHCI1\t\t19\n#define RST_BUS_EHCI2\t\t20\n#define RST_BUS_EHCI3\t\t21\n#define RST_BUS_OHCI0\t\t22\n#define RST_BUS_OHCI1\t\t23\n#define RST_BUS_OHCI2\t\t24\n#define RST_BUS_OHCI3\t\t25\n#define RST_BUS_VE\t\t26\n#define RST_BUS_TCON0\t\t27\n#define RST_BUS_TCON1\t\t28\n#define RST_BUS_DEINTERLACE\t29\n#define RST_BUS_CSI\t\t30\n#define RST_BUS_TVE\t\t31\n#define RST_BUS_HDMI0\t\t32\n#define RST_BUS_HDMI1\t\t33\n#define RST_BUS_DE\t\t34\n#define RST_BUS_GPU\t\t35\n#define RST_BUS_MSGBOX\t\t36\n#define RST_BUS_SPINLOCK\t37\n#define RST_BUS_DBG\t\t38\n#define RST_BUS_EPHY\t\t39\n#define RST_BUS_CODEC\t\t40\n#define RST_BUS_SPDIF\t\t41\n#define RST_BUS_THS\t\t42\n#define RST_BUS_I2S0\t\t43\n#define RST_BUS_I2S1\t\t44\n#define RST_BUS_I2S2\t\t45\n#define RST_BUS_I2C0\t\t46\n#define RST_BUS_I2C1\t\t47\n#define RST_BUS_I2C2\t\t48\n#define RST_BUS_UART0\t\t49\n#define RST_BUS_UART1\t\t50\n#define RST_BUS_UART2\t\t51\n#define RST_BUS_UART3\t\t52\n#define RST_BUS_SCR0\t\t53\n\n \n#define RST_BUS_SCR1\t\t54\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

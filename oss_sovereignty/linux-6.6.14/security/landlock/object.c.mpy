@@ -1,0 +1,9 @@
+{
+  "module_name": "object.c",
+  "hash_id": "e28d3e88c18ab2968fa9ffdf9ce987f91b1326e74396282582bff389851a8fea",
+  "original_prompt": "Ingested from linux-6.6.14/security/landlock/object.c",
+  "human_readable_source": "\n \n\n#include <linux/bug.h>\n#include <linux/compiler_types.h>\n#include <linux/err.h>\n#include <linux/kernel.h>\n#include <linux/rcupdate.h>\n#include <linux/refcount.h>\n#include <linux/slab.h>\n#include <linux/spinlock.h>\n\n#include \"object.h\"\n\nstruct landlock_object *\nlandlock_create_object(const struct landlock_object_underops *const underops,\n\t\t       void *const underobj)\n{\n\tstruct landlock_object *new_object;\n\n\tif (WARN_ON_ONCE(!underops || !underobj))\n\t\treturn ERR_PTR(-ENOENT);\n\tnew_object = kzalloc(sizeof(*new_object), GFP_KERNEL_ACCOUNT);\n\tif (!new_object)\n\t\treturn ERR_PTR(-ENOMEM);\n\trefcount_set(&new_object->usage, 1);\n\tspin_lock_init(&new_object->lock);\n\tnew_object->underops = underops;\n\tnew_object->underobj = underobj;\n\treturn new_object;\n}\n\n \nvoid landlock_put_object(struct landlock_object *const object)\n{\n\t \n\tmight_sleep();\n\tif (!object)\n\t\treturn;\n\n\t \n\tif (refcount_dec_and_lock(&object->usage, &object->lock)) {\n\t\t__acquire(&object->lock);\n\t\t \n\t\tobject->underops->release(object);\n\t\tkfree_rcu(object, rcu_free);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

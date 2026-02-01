@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3c4b678dba7d3a6b1b20e6a13dc25d078bb7263d392dcaf7854a6d39070143cb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/swsmu/smu13/Makefile",
+  "human_readable_source": "#\n# Copyright 2020 Advanced Micro Devices, Inc.\n#\n# Permission is hereby granted, free of charge, to any person obtaining a\n# copy of this software and associated documentation files (the \"Software\"),\n# to deal in the Software without restriction, including without limitation\n# the rights to use, copy, modify, merge, publish, distribute, sublicense,\n# and/or sell copies of the Software, and to permit persons to whom the\n# Software is furnished to do so, subject to the following conditions:\n#\n# The above copyright notice and this permission notice shall be included in\n# all copies or substantial portions of the Software.\n#\n# THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL\n# THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR\n# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,\n# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR\n# OTHER DEALINGS IN THE SOFTWARE.\n#\n#\n# Makefile for the 'smu manager' sub-component of powerplay.\n# It provides the smu management services for the driver.\n\nSMU13_MGR = smu_v13_0.o aldebaran_ppt.o yellow_carp_ppt.o smu_v13_0_0_ppt.o smu_v13_0_4_ppt.o \\\n\t    smu_v13_0_5_ppt.o smu_v13_0_7_ppt.o smu_v13_0_6_ppt.o\n\nAMD_SWSMU_SMU13MGR = $(addprefix $(AMD_SWSMU_PATH)/smu13/,$(SMU13_MGR))\n\nAMD_POWERPLAY_FILES += $(AMD_SWSMU_SMU13MGR)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

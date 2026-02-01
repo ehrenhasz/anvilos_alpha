@@ -1,0 +1,9 @@
+{
+  "module_name": "chip.h",
+  "hash_id": "714aa4624da448611ae5e9f190d46281e50a5628822593abce98225f2802bc67",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/6fire/chip.h",
+  "human_readable_source": " \n \n#ifndef USB6FIRE_CHIP_H\n#define USB6FIRE_CHIP_H\n\n#include \"common.h\"\n\nstruct sfire_chip {\n\tstruct usb_device *dev;\n\tstruct snd_card *card;\n\tint intf_count;  \n\tint regidx;  \n\tbool shutdown;\n\n\tstruct midi_runtime *midi;\n\tstruct pcm_runtime *pcm;\n\tstruct control_runtime *control;\n\tstruct comm_runtime *comm;\n};\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

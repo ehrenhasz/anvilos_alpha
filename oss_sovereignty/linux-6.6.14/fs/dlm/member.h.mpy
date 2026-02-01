@@ -1,0 +1,9 @@
+{
+  "module_name": "member.h",
+  "hash_id": "74f6462c3d492836ec092939eb6202796c7835b4c6f9a6b4b8d2350a075d0989",
+  "original_prompt": "Ingested from linux-6.6.14/fs/dlm/member.h",
+  "human_readable_source": " \n \n\n#ifndef __MEMBER_DOT_H__\n#define __MEMBER_DOT_H__\n\nint dlm_ls_stop(struct dlm_ls *ls);\nint dlm_ls_start(struct dlm_ls *ls);\nvoid dlm_clear_members(struct dlm_ls *ls);\nvoid dlm_clear_members_gone(struct dlm_ls *ls);\nint dlm_recover_members(struct dlm_ls *ls, struct dlm_recover *rv,int *neg_out);\nint dlm_is_removed(struct dlm_ls *ls, int nodeid);\nint dlm_is_member(struct dlm_ls *ls, int nodeid);\nint dlm_slots_version(const struct dlm_header *h);\nvoid dlm_slot_save(struct dlm_ls *ls, struct dlm_rcom *rc,\n\t\t   struct dlm_member *memb);\nvoid dlm_slots_copy_out(struct dlm_ls *ls, struct dlm_rcom *rc);\nint dlm_slots_copy_in(struct dlm_ls *ls);\nint dlm_slots_assign(struct dlm_ls *ls, int *num_slots, int *slots_size,\n\t\t     struct dlm_slot **slots_out, uint32_t *gen_out);\nvoid dlm_lsop_recover_done(struct dlm_ls *ls);\n\n#endif                           \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

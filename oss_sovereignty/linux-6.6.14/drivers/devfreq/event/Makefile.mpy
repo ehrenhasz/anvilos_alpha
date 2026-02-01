@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "49250cf62b6945d5f3d303e49c44ad5c69e53698cd9c98da4d69afc822585a05",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/devfreq/event/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Exynos DEVFREQ Event Drivers\n\nobj-$(CONFIG_DEVFREQ_EVENT_EXYNOS_NOCP) += exynos-nocp.o\nobj-$(CONFIG_DEVFREQ_EVENT_EXYNOS_PPMU) += exynos-ppmu.o\nobj-$(CONFIG_DEVFREQ_EVENT_ROCKCHIP_DFI) += rockchip-dfi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "efuse.h",
+  "hash_id": "5d8d6fdaa67ce26234a7fd388f8929cf3976f6262dc54fd8c865a26845778d70",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw89/efuse.h",
+  "human_readable_source": " \n \n\n#ifndef __RTW89_EFUSE_H__\n#define __RTW89_EFUSE_H__\n\n#include \"core.h\"\n\nint rtw89_parse_efuse_map(struct rtw89_dev *rtwdev);\nint rtw89_parse_phycap_map(struct rtw89_dev *rtwdev);\nint rtw89_read_efuse_ver(struct rtw89_dev *rtwdev, u8 *efv);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

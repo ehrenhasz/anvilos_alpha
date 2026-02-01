@@ -1,0 +1,9 @@
+{
+  "module_name": "bman_test.c",
+  "hash_id": "cd70902eaf1d91733760e5a25f0a3b9842d4828201c813dd7bbb71a04640c6f9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/fsl/qbman/bman_test.c",
+  "human_readable_source": " \n\n#include \"bman_test.h\"\n\nMODULE_AUTHOR(\"Geoff Thorpe\");\nMODULE_LICENSE(\"Dual BSD/GPL\");\nMODULE_DESCRIPTION(\"BMan testing\");\n\nstatic int test_init(void)\n{\n#ifdef CONFIG_FSL_BMAN_TEST_API\n\tint loop = 1;\n\n\twhile (loop--)\n\t\tbman_test_api();\n#endif\n\treturn 0;\n}\n\nstatic void test_exit(void)\n{\n}\n\nmodule_init(test_init);\nmodule_exit(test_exit);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

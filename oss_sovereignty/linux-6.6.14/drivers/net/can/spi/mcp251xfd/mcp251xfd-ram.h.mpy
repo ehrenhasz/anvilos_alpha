@@ -1,0 +1,9 @@
+{
+  "module_name": "mcp251xfd-ram.h",
+  "hash_id": "daca2c9d87484617680341f984c70ed98af16d75d78f1d163029ffbdda70011a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/spi/mcp251xfd/mcp251xfd-ram.h",
+  "human_readable_source": " \n\n#ifndef _MCP251XFD_RAM_H\n#define _MCP251XFD_RAM_H\n\n#include <linux/ethtool.h>\n\n#define CAN_RAM_NUM_MAX (-1)\n\nenum can_ram_mode {\n\tCAN_RAM_MODE_CAN,\n\tCAN_RAM_MODE_CANFD,\n\t__CAN_RAM_MODE_MAX\n};\n\nstruct can_ram_obj_config {\n\tu8 size[__CAN_RAM_MODE_MAX];\n\n\tu8 def[__CAN_RAM_MODE_MAX];\n\tu8 min;\n\tu8 max;\n\n\tu8 fifo_num;\n\tu8 fifo_depth_min;\n\tu8 fifo_depth_coalesce_min;\n};\n\nstruct can_ram_config {\n\tconst struct can_ram_obj_config rx;\n\tconst struct can_ram_obj_config tx;\n\n\tu16 size;\n\tu8 fifo_depth;\n};\n\nstruct can_ram_layout {\n\tu8 default_rx;\n\tu8 default_tx;\n\n\tu8 max_rx;\n\tu8 max_tx;\n\n\tu8 cur_rx;\n\tu8 cur_tx;\n\n\tu8 rx_coalesce;\n\tu8 tx_coalesce;\n};\n\nvoid can_ram_get_layout(struct can_ram_layout *layout,\n\t\t\tconst struct can_ram_config *config,\n\t\t\tconst struct ethtool_ringparam *ring,\n\t\t\tconst struct ethtool_coalesce *ec,\n\t\t\tconst bool fd_mode);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

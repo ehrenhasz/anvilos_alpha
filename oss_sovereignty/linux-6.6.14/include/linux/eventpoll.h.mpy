@@ -1,0 +1,9 @@
+{
+  "module_name": "eventpoll.h",
+  "hash_id": "41979218877209a724b9ea1daa41fd0c4976116c40693e35969e1332eab352f6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/eventpoll.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_EVENTPOLL_H\n#define _LINUX_EVENTPOLL_H\n\n#include <uapi/linux/eventpoll.h>\n#include <uapi/linux/kcmp.h>\n\n\n \nstruct file;\n\n\n#ifdef CONFIG_EPOLL\n\n#ifdef CONFIG_KCMP\nstruct file *get_epoll_tfile_raw_ptr(struct file *file, int tfd, unsigned long toff);\n#endif\n\n \nvoid eventpoll_release_file(struct file *file);\n\n \nstatic inline void eventpoll_release(struct file *file)\n{\n\n\t \n\tif (likely(!file->f_ep))\n\t\treturn;\n\n\t \n\teventpoll_release_file(file);\n}\n\nint do_epoll_ctl(int epfd, int op, int fd, struct epoll_event *epds,\n\t\t bool nonblock);\n\n \nstatic inline int ep_op_has_event(int op)\n{\n\treturn op != EPOLL_CTL_DEL;\n}\n\n#else\n\nstatic inline void eventpoll_release(struct file *file) {}\n\n#endif\n\n#if defined(CONFIG_ARM) && defined(CONFIG_OABI_COMPAT)\n \nextern struct epoll_event __user *\nepoll_put_uevent(__poll_t revents, __u64 data,\n\t\t struct epoll_event __user *uevent);\n#else\nstatic inline struct epoll_event __user *\nepoll_put_uevent(__poll_t revents, __u64 data,\n\t\t struct epoll_event __user *uevent)\n{\n\tif (__put_user(revents, &uevent->events) ||\n\t    __put_user(data, &uevent->data))\n\t\treturn NULL;\n\n\treturn uevent+1;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

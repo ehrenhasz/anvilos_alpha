@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4dbcaa8d93a4b919396abe36a8757b4080dd9ea45f8c7f921b390ee35c3f572c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/stm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# SAI\nsnd-soc-stm32-sai-sub-objs := stm32_sai_sub.o\nobj-$(CONFIG_SND_SOC_STM32_SAI) += snd-soc-stm32-sai-sub.o\n\nsnd-soc-stm32-sai-objs := stm32_sai.o\nobj-$(CONFIG_SND_SOC_STM32_SAI) += snd-soc-stm32-sai.o\n\n# I2S\nsnd-soc-stm32-i2s-objs := stm32_i2s.o\nobj-$(CONFIG_SND_SOC_STM32_I2S) += snd-soc-stm32-i2s.o\n\n# SPDIFRX\nsnd-soc-stm32-spdifrx-objs := stm32_spdifrx.o\nobj-$(CONFIG_SND_SOC_STM32_SPDIFRX) += snd-soc-stm32-spdifrx.o\n\n#DFSDM\nobj-$(CONFIG_SND_SOC_STM32_DFSDM) += stm32_adfsdm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

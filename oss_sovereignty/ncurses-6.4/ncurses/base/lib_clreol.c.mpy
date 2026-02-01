@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_clreol.c",
+  "hash_id": "f16f86bdb13c0debb1088686ab98f30884713709658496577dcea62659769998",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_clreol.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_clreol.c,v 1.24 2021/10/23 19:06:01 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwclrtoeol(WINDOW *win)\n{\n    int code = ERR;\n\n    T((T_CALLED(\"wclrtoeol(%p)\"), (void *) win));\n\n    if (win) {\n\tNCURSES_CH_T blank;\n\tNCURSES_CH_T *ptr, *end;\n\tstruct ldat *line;\n\tNCURSES_SIZE_T y = win->_cury;\n\tNCURSES_SIZE_T x = win->_curx;\n\n\t \n\tif (IS_WRAPPED(win) != 0\n\t    && y < win->_maxy) {\n\t    win->_flags &= ~_WRAPPED;\n\t}\n\n\t \n\tif (IS_WRAPPED(win)\n\t    || y > win->_maxy\n\t    || x > win->_maxx)\n\t    returnCode(ERR);\n\n\tblank = win->_nc_bkgd;\n\tline = &win->_line[y];\n\tCHANGED_TO_EOL(line, x, win->_maxx);\n\n\tptr = &(line->text[x]);\n\tend = &(line->text[win->_maxx]);\n\n\twhile (ptr <= end)\n\t    *ptr++ = blank;\n\n\t_nc_synchook(win);\n\tcode = OK;\n    }\n    returnCode(code);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

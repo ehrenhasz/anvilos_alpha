@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f7bbff86b2cbf5f49874ce9162748b2a43851398f43f1cfcd95a40d0f4a59c72",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bus/mhi/Makefile",
+  "human_readable_source": "# Host MHI stack\nobj-$(CONFIG_MHI_BUS) += host/\n\n# Endpoint MHI stack\nobj-$(CONFIG_MHI_BUS_EP) += ep/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

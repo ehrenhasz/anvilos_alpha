@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_service_interface.h",
+  "hash_id": "55f9b75c3db0f90b08a9a9fd2a2e0c99024d57d27a24f6f796f3473e179ade68",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/include/irq_service_interface.h",
+  "human_readable_source": " \n\n#ifndef __DAL_IRQ_SERVICE_INTERFACE_H__\n#define __DAL_IRQ_SERVICE_INTERFACE_H__\n\nstruct irq_service_init_data {\n\tstruct dc_context *ctx;\n};\n\nstruct irq_service;\n\nvoid dal_irq_service_destroy(struct irq_service **irq_service);\n\nbool dal_irq_service_set(\n\tstruct irq_service *irq_service,\n\tenum dc_irq_source source,\n\tbool enable);\n\nbool dal_irq_service_ack(\n\tstruct irq_service *irq_service,\n\tenum dc_irq_source source);\n\nenum dc_irq_source dal_irq_service_to_irq_source(\n\t\tstruct irq_service *irq_service,\n\t\tuint32_t src_id,\n\t\tuint32_t ext_id);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

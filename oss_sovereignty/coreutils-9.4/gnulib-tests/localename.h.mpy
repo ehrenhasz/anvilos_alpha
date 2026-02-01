@@ -1,0 +1,9 @@
+{
+  "module_name": "localename.h",
+  "hash_id": "58e0c70f1e7a0a67ed9d5d9029907f4e25e1c1e2eade9f7153412630558021da",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/localename.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n\n \nextern const char * gl_locale_name (int category, const char *categoryname);\n\n \nextern const char * gl_locale_name_thread (int category, const char *categoryname);\n\n \nextern const char * gl_locale_name_posix (int category, const char *categoryname);\n\n \nextern const char * gl_locale_name_environ (int category, const char *categoryname);\n\n \nextern const char * gl_locale_name_default (void)\n#if !(HAVE_CFPREFERENCESCOPYAPPVALUE || defined _WIN32 || defined __CYGWIN__)\n  _GL_ATTRIBUTE_CONST\n#endif\n  ;\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

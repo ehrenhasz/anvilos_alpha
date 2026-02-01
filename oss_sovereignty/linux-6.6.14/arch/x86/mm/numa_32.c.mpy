@@ -1,0 +1,9 @@
+{
+  "module_name": "numa_32.c",
+  "hash_id": "cac6d5e9a11319b776789c4bd15abcdca5426390a63be44c6749060d0642e7ae",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/mm/numa_32.c",
+  "human_readable_source": " \n\n#include <linux/memblock.h>\n#include <linux/init.h>\n\n#include \"numa_internal.h\"\n\nextern unsigned long highend_pfn, highstart_pfn;\n\nvoid __init initmem_init(void)\n{\n\tx86_numa_init();\n\n#ifdef CONFIG_HIGHMEM\n\thighstart_pfn = highend_pfn = max_pfn;\n\tif (max_pfn > max_low_pfn)\n\t\thighstart_pfn = max_low_pfn;\n\tprintk(KERN_NOTICE \"%ldMB HIGHMEM available.\\n\",\n\t       pages_to_mb(highend_pfn - highstart_pfn));\n\thigh_memory = (void *) __va(highstart_pfn * PAGE_SIZE - 1) + 1;\n#else\n\thigh_memory = (void *) __va(max_low_pfn * PAGE_SIZE - 1) + 1;\n#endif\n\tprintk(KERN_NOTICE \"%ldMB LOWMEM available.\\n\",\n\t\t\tpages_to_mb(max_low_pfn));\n\tprintk(KERN_DEBUG \"max_low_pfn = %lx, highstart_pfn = %lx\\n\",\n\t\t\tmax_low_pfn, highstart_pfn);\n\n\tprintk(KERN_DEBUG \"Low memory ends at vaddr %08lx\\n\",\n\t\t\t(ulong) pfn_to_kaddr(max_low_pfn));\n\n\tprintk(KERN_DEBUG \"High memory starts at vaddr %08lx\\n\",\n\t\t\t(ulong) pfn_to_kaddr(highstart_pfn));\n\n\t__vmalloc_start_set = true;\n\tsetup_bootmem_allocator();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bitarray.h",
+  "hash_id": "7b37009216c4027505e55cf6278aeeec197d103b6ab554f314b092df5cedd67e",
+  "original_prompt": "Ingested from linux-6.6.14/net/batman-adv/bitarray.h",
+  "human_readable_source": " \n \n\n#ifndef _NET_BATMAN_ADV_BITARRAY_H_\n#define _NET_BATMAN_ADV_BITARRAY_H_\n\n#include \"main.h\"\n\n#include <linux/bitops.h>\n#include <linux/compiler.h>\n#include <linux/stddef.h>\n#include <linux/types.h>\n\n \nstatic inline bool batadv_test_bit(const unsigned long *seq_bits,\n\t\t\t\t   u32 last_seqno, u32 curr_seqno)\n{\n\ts32 diff;\n\n\tdiff = last_seqno - curr_seqno;\n\tif (diff < 0 || diff >= BATADV_TQ_LOCAL_WINDOW_SIZE)\n\t\treturn false;\n\treturn test_bit(diff, seq_bits) != 0;\n}\n\n \nstatic inline void batadv_set_bit(unsigned long *seq_bits, s32 n)\n{\n\t \n\tif (n < 0 || n >= BATADV_TQ_LOCAL_WINDOW_SIZE)\n\t\treturn;\n\n\tset_bit(n, seq_bits);  \n}\n\nbool batadv_bit_get_packet(void *priv, unsigned long *seq_bits,\n\t\t\t   s32 seq_num_diff, int set_mark);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

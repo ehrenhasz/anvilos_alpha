@@ -1,0 +1,9 @@
+{
+  "module_name": "i915-whl-skips.txt",
+  "hash_id": "61829332b84a3c7e58dc5c47146e532ed581ad8e719fcd7e839b998ee57c4be6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/i915-whl-skips.txt",
+  "human_readable_source": "# This is generating kernel oops with divide error\nkms_plane_scaling@invalid-parameters",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

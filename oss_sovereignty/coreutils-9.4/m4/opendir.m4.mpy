@@ -1,0 +1,9 @@
+{
+  "module_name": "opendir.m4",
+  "hash_id": "31005da454b41c542cd02682a4e071e20a094b2f7b20b092e75f47b885dbe9d9",
+  "original_prompt": "Ingested from coreutils-9.4/m4/opendir.m4",
+  "human_readable_source": "# opendir.m4 serial 6\ndnl Copyright (C) 2011-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_OPENDIR],\n[\n  AC_REQUIRE([gl_DIRENT_H_DEFAULTS])\n  AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles\n\n  AC_CHECK_FUNCS([opendir])\n  if test $ac_cv_func_opendir = no; then\n    HAVE_OPENDIR=0\n  else\n    dnl Replace opendir() on native Windows, to support fdopendir().\n    AC_REQUIRE([gl_DIRENT_DIR])\n    if test $DIR_HAS_FD_MEMBER = 0; then\n      REPLACE_OPENDIR=1\n    fi\n    dnl Replace opendir() on OS/2 kLIBC to support dirfd() function replaced\n    dnl by gnulib.\n    case $host_os in\n      os2*) REPLACE_OPENDIR=1 ;;\n    esac\n    dnl Replace opendir() for supporting the gnulib-defined fchdir() function,\n    dnl to keep fchdir's bookkeeping up-to-date.\n    m4_ifdef([gl_FUNC_FCHDIR], [\n      gl_TEST_FCHDIR\n      if test $HAVE_FCHDIR = 0; then\n        REPLACE_OPENDIR=1\n      fi\n    ])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

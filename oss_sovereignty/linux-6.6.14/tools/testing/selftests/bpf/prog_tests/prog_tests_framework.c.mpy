@@ -1,0 +1,9 @@
+{
+  "module_name": "prog_tests_framework.c",
+  "hash_id": "b662186f02d79ac99fd9232ce8b38bd12f4bac0b794ee7933a89e854a5d8ea7d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/prog_tests_framework.c",
+  "human_readable_source": "\n\n#include \"test_progs.h\"\n#include \"testing_helpers.h\"\n\nstatic void clear_test_state(struct test_state *state)\n{\n\tstate->error_cnt = 0;\n\tstate->sub_succ_cnt = 0;\n\tstate->skip_cnt = 0;\n}\n\nvoid test_prog_tests_framework(void)\n{\n\tstruct test_state *state = env.test_state;\n\n\t \n\n\t \n\tif (test__start_subtest(\"test_good_subtest\"))\n\t\ttest__end_subtest();\n\tif (!ASSERT_EQ(state->skip_cnt, 0, \"skip_cnt_check\"))\n\t\treturn;\n\tif (!ASSERT_EQ(state->error_cnt, 0, \"error_cnt_check\"))\n\t\treturn;\n\tif (!ASSERT_EQ(state->subtest_num, 1, \"subtest_num_check\"))\n\t\treturn;\n\tclear_test_state(state);\n\n\tif (test__start_subtest(\"test_skip_subtest\")) {\n\t\ttest__skip();\n\t\ttest__end_subtest();\n\t}\n\tif (test__start_subtest(\"test_skip_subtest\")) {\n\t\ttest__skip();\n\t\ttest__end_subtest();\n\t}\n\tif (!ASSERT_EQ(state->skip_cnt, 2, \"skip_cnt_check\"))\n\t\treturn;\n\tif (!ASSERT_EQ(state->subtest_num, 3, \"subtest_num_check\"))\n\t\treturn;\n\tclear_test_state(state);\n\n\tif (test__start_subtest(\"test_fail_subtest\")) {\n\t\ttest__fail();\n\t\ttest__end_subtest();\n\t}\n\tif (!ASSERT_EQ(state->error_cnt, 1, \"error_cnt_check\"))\n\t\treturn;\n\tif (!ASSERT_EQ(state->subtest_num, 4, \"subtest_num_check\"))\n\t\treturn;\n\tclear_test_state(state);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

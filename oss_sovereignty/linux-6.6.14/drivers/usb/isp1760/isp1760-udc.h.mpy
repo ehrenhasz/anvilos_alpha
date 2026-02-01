@@ -1,0 +1,9 @@
+{
+  "module_name": "isp1760-udc.h",
+  "hash_id": "791a6ec8f21617a6b56aef8f1be308e09ac07b380f7f421040c3af0ace1e6605",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/isp1760/isp1760-udc.h",
+  "human_readable_source": " \n \n\n#ifndef _ISP1760_UDC_H_\n#define _ISP1760_UDC_H_\n\n#include <linux/ioport.h>\n#include <linux/list.h>\n#include <linux/spinlock.h>\n#include <linux/timer.h>\n#include <linux/usb/gadget.h>\n\n#include \"isp1760-regs.h\"\n\nstruct isp1760_device;\nstruct isp1760_udc;\n\nenum isp1760_ctrl_state {\n\tISP1760_CTRL_SETUP,\t\t \n\tISP1760_CTRL_DATA_IN,\t\t \n\tISP1760_CTRL_DATA_OUT,\t\t \n\tISP1760_CTRL_STATUS,\t\t \n};\n\nstruct isp1760_ep {\n\tstruct isp1760_udc *udc;\n\tstruct usb_ep ep;\n\n\tstruct list_head queue;\n\n\tunsigned int addr;\n\tunsigned int maxpacket;\n\tchar name[7];\n\n\tconst struct usb_endpoint_descriptor *desc;\n\n\tbool rx_pending;\n\tbool halted;\n\tbool wedged;\n};\n\n \nstruct isp1760_udc {\n\tstruct isp1760_device *isp;\n\n\tint irq;\n\tchar *irqname;\n\n\tstruct regmap *regs;\n\tstruct regmap_field *fields[DC_FIELD_MAX];\n\n\tstruct usb_gadget_driver *driver;\n\tstruct usb_gadget gadget;\n\n\tspinlock_t lock;\n\tstruct timer_list vbus_timer;\n\n\tstruct isp1760_ep ep[15];\n\n\tenum isp1760_ctrl_state ep0_state;\n\tu8 ep0_dir;\n\tu16 ep0_length;\n\n\tbool connected;\n\tbool is_isp1763;\n\n\tunsigned int devstatus;\n};\n\n#ifdef CONFIG_USB_ISP1761_UDC\nint isp1760_udc_register(struct isp1760_device *isp, int irq,\n\t\t\t unsigned long irqflags);\nvoid isp1760_udc_unregister(struct isp1760_device *isp);\n#else\nstatic inline int isp1760_udc_register(struct isp1760_device *isp, int irq,\n\t\t\t\t       unsigned long irqflags)\n{\n\treturn 0;\n}\n\nstatic inline void isp1760_udc_unregister(struct isp1760_device *isp)\n{\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

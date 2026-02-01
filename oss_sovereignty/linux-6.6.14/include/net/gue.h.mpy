@@ -1,0 +1,9 @@
+{
+  "module_name": "gue.h",
+  "hash_id": "d927ab8438f94fa82a72dfdff14c4c9d86de4278f8edc67765d9fae452febcb1",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/gue.h",
+  "human_readable_source": " \n#ifndef __NET_GUE_H\n#define __NET_GUE_H\n\n \n\n#include <asm/byteorder.h>\n#include <linux/types.h>\n\nstruct guehdr {\n\tunion {\n\t\tstruct {\n#if defined(__LITTLE_ENDIAN_BITFIELD)\n\t\t\t__u8\thlen:5,\n\t\t\t\tcontrol:1,\n\t\t\t\tversion:2;\n#elif defined (__BIG_ENDIAN_BITFIELD)\n\t\t\t__u8\tversion:2,\n\t\t\t\tcontrol:1,\n\t\t\t\thlen:5;\n#else\n#error  \"Please fix <asm/byteorder.h>\"\n#endif\n\t\t\t__u8\tproto_ctype;\n\t\t\t__be16\tflags;\n\t\t};\n\t\t__be32\tword;\n\t};\n};\n\n \n\n#define GUE_FLAG_PRIV\thtons(1<<0)\t \n#define GUE_LEN_PRIV\t4\n\n#define GUE_FLAGS_ALL\t(GUE_FLAG_PRIV)\n\n \n\n#define GUE_PFLAG_REMCSUM\thtonl(1U << 31)\n#define GUE_PLEN_REMCSUM\t4\n\n#define GUE_PFLAGS_ALL\t(GUE_PFLAG_REMCSUM)\n\n \nstatic inline size_t guehdr_flags_len(__be16 flags)\n{\n\treturn ((flags & GUE_FLAG_PRIV) ? GUE_LEN_PRIV : 0);\n}\n\nstatic inline size_t guehdr_priv_flags_len(__be32 flags)\n{\n\treturn 0;\n}\n\n \nstatic inline int validate_gue_flags(struct guehdr *guehdr, size_t optlen)\n{\n\t__be16 flags = guehdr->flags;\n\tsize_t len;\n\n\tif (flags & ~GUE_FLAGS_ALL)\n\t\treturn 1;\n\n\tlen = guehdr_flags_len(flags);\n\tif (len > optlen)\n\t\treturn 1;\n\n\tif (flags & GUE_FLAG_PRIV) {\n\t\t \n\t\t__be32 pflags = *(__be32 *)((void *)&guehdr[1] +\n\t\t\t\t\t    len - GUE_LEN_PRIV);\n\n\t\tif (pflags & ~GUE_PFLAGS_ALL)\n\t\t\treturn 1;\n\n\t\tlen += guehdr_priv_flags_len(pflags);\n\t\tif (len > optlen)\n\t\t\treturn 1;\n\t}\n\n\treturn 0;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

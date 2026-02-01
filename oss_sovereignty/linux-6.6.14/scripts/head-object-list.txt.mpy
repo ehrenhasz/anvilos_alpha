@@ -1,0 +1,9 @@
+{
+  "module_name": "head-object-list.txt",
+  "hash_id": "f9367e3b88ba11de568054ecd5f88450f46a6ea3892c9a0f0abb6a32fc811700",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/head-object-list.txt",
+  "human_readable_source": "# Head objects\n#\n# The objects listed here are placed at the head of vmlinux. A typical use-case\n# is an object that contains the entry point. This is kept for compatibility\n# with head-y, which Kbuild used to support.\n#\n# A counter approach is to control the section placement by the linker script.\n# The code marked as __HEAD goes into the \".head.text\" section, which is placed\n# before the normal \".text\" section.\n#\n# If you can achieve the correct code ordering by linker script, please delete\n# the entry from this file.\n#\narch/alpha/kernel/head.o\narch/arc/kernel/head.o\narch/arm/kernel/head-nommu.o\narch/arm/kernel/head.o\narch/csky/kernel/head.o\narch/hexagon/kernel/head.o\narch/ia64/kernel/head.o\narch/loongarch/kernel/head.o\narch/m68k/68000/head.o\narch/m68k/coldfire/head.o\narch/m68k/kernel/head.o\narch/m68k/kernel/sun3-head.o\narch/microblaze/kernel/head.o\narch/mips/kernel/head.o\narch/nios2/kernel/head.o\narch/openrisc/kernel/head.o\narch/parisc/kernel/head.o\narch/powerpc/kernel/head_40x.o\narch/powerpc/kernel/head_44x.o\narch/powerpc/kernel/head_64.o\narch/powerpc/kernel/head_8xx.o\narch/powerpc/kernel/head_85xx.o\narch/powerpc/kernel/head_book3s_32.o\narch/powerpc/kernel/prom_entry_64.o\narch/powerpc/kernel/fpu.o\narch/powerpc/kernel/vector.o\narch/powerpc/kernel/prom_init.o\narch/s390/kernel/head64.o\narch/sh/kernel/head_32.o\narch/sparc/kernel/head_32.o\narch/sparc/kernel/head_64.o\narch/xtensa/kernel/head.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

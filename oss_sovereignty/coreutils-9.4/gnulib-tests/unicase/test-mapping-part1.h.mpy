@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mapping-part1.h",
+  "hash_id": "c627d4ede42d4066cfb7ab0d0e8952cd2319819b9cc5a42b1ff5f219ab0039ae",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/unicase/test-mapping-part1.h",
+  "human_readable_source": " \ntypedef struct { ucs4_t ch; ucs4_t value; } pair_t;\n\n \nstatic const pair_t mapping[] =\n  {\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

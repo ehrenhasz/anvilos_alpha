@@ -1,0 +1,9 @@
+{
+  "module_name": "test_iptunnel_common.h",
+  "hash_id": "81ef6b1f59dbe5dee9decead2ce2d1b76c64c19f1ec1f385eacfa2a6ad152819",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/test_iptunnel_common.h",
+  "human_readable_source": " \n \n#ifndef _TEST_IPTNL_COMMON_H\n#define _TEST_IPTNL_COMMON_H\n\n#include <linux/types.h>\n\n#define MAX_IPTNL_ENTRIES 256U\n\nstruct vip {\n\tunion {\n\t\t__u32 v6[4];\n\t\t__u32 v4;\n\t} daddr;\n\t__u16 dport;\n\t__u16 family;\n\t__u8 protocol;\n};\n\nstruct iptnl_info {\n\tunion {\n\t\t__u32 v6[4];\n\t\t__u32 v4;\n\t} saddr;\n\tunion {\n\t\t__u32 v6[4];\n\t\t__u32 v4;\n\t} daddr;\n\t__u16 family;\n\t__u8 dmac[6];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

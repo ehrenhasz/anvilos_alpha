@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fnmatch-h.c",
+  "hash_id": "22b84e1f24a1e00be191d3a8ed09a5da08bfdce039f0628335ada216418e6714",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fnmatch-h.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <fnmatch.h>\n\n \nint ret = FNM_NOMATCH;\nint options[] = { FNM_PATHNAME, FNM_PERIOD, FNM_NOESCAPE };\n\nint\nmain (void)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

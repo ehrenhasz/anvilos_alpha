@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "411ad930e3a44a32ea5df2febbebc750260a5571885679f1e440df22532eb6f7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/acp/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\nmenu \"ACP (Audio CoProcessor) Configuration\"\n\tdepends on DRM_AMDGPU\n\nconfig DRM_AMD_ACP\n\tbool \"Enable AMD Audio CoProcessor IP support\"\n\tdepends on DRM_AMDGPU\n\tselect MFD_CORE\n\tselect PM_GENERIC_DOMAINS if PM\n\thelp\n\tChoose this option to enable ACP IP support for AMD SOCs.\n\tThis adds the ACP (Audio CoProcessor) IP driver and wires\n\tit up into the amdgpu driver.  The ACP block provides the DMA\n\tengine for the i2s-based ALSA driver. It is required for audio\n\ton APUs which utilize an i2s codec.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

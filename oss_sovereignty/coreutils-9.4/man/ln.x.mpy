@@ -1,0 +1,9 @@
+{
+  "module_name": "ln.x",
+  "hash_id": "193d826d0b8249bf7595e3a5af8384aa4934470fe335eb5fbe37a5a87567240e",
+  "original_prompt": "Ingested from coreutils-9.4/man/ln.x",
+  "human_readable_source": "[NAME]\nln \\- make links between files\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nlink(2), symlink(2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

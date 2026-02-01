@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_clock_gating.h",
+  "hash_id": "9c3f442afac50aa17c7e1e5c184f2b515eae01b6c859006ebdc9bff646e72677",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/intel_clock_gating.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_CLOCK_GATING_H__\n#define __INTEL_CLOCK_GATING_H__\n\nstruct drm_i915_private;\n\nvoid intel_clock_gating_init(struct drm_i915_private *i915);\nvoid intel_clock_gating_hooks_init(struct drm_i915_private *i915);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

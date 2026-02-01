@@ -1,0 +1,9 @@
+{
+  "module_name": "perfbuf_bench.c",
+  "hash_id": "625fdee461a7239a8a79846964e151e962313de590808861af5d937170dbd786",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/perfbuf_bench.c",
+  "human_readable_source": "\n\n\n#include <linux/bpf.h>\n#include <stdint.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);\n\t__uint(value_size, sizeof(int));\n\t__uint(key_size, sizeof(int));\n} perfbuf SEC(\".maps\");\n\nconst volatile int batch_cnt = 0;\n\nlong sample_val = 42;\nlong dropped __attribute__((aligned(128))) = 0;\n\nSEC(\"fentry/\" SYS_PREFIX \"sys_getpgid\")\nint bench_perfbuf(void *ctx)\n{\n\tint i;\n\n\tfor (i = 0; i < batch_cnt; i++) {\n\t\tif (bpf_perf_event_output(ctx, &perfbuf, BPF_F_CURRENT_CPU,\n\t\t\t\t\t  &sample_val, sizeof(sample_val)))\n\t\t\t__sync_add_and_fetch(&dropped, 1);\n\t}\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

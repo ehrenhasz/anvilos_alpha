@@ -1,0 +1,9 @@
+{
+  "module_name": "link_dp_training_auxless.c",
+  "hash_id": "25ee8b3d452c72b28f03aac575ed09118dd8409733ffc5c113d2c0639b793cf5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/protocols/link_dp_training_auxless.c",
+  "human_readable_source": " \n\n \n#include \"link_dp_training_auxless.h\"\n#include \"link_dp_phy.h\"\n#define DC_LOGGER \\\n\tlink->ctx->logger\nbool dp_perform_link_training_skip_aux(\n\tstruct dc_link *link,\n\tconst struct link_resource *link_res,\n\tconst struct dc_link_settings *link_setting)\n{\n\tstruct link_training_settings lt_settings = {0};\n\n\tdp_decide_training_settings(\n\t\t\tlink,\n\t\t\tlink_setting,\n\t\t\t&lt_settings);\n\toverride_training_settings(\n\t\t\tlink,\n\t\t\t&link->preferred_training_settings,\n\t\t\t&lt_settings);\n\n\t \n\n\t \n\tdp_set_hw_training_pattern(link, link_res, lt_settings.pattern_for_cr, DPRX);\n\n\t \n\tdp_set_hw_lane_settings(link, link_res, &lt_settings, DPRX);\n\n\t \n\tdp_wait_for_training_aux_rd_interval(link, lt_settings.cr_pattern_time);\n\n\t \n\n\t \n\tdp_set_hw_training_pattern(link, link_res, lt_settings.pattern_for_eq, DPRX);\n\n\t \n\tdp_set_hw_lane_settings(link, link_res, &lt_settings, DPRX);\n\n\t \n\tdp_wait_for_training_aux_rd_interval(link, lt_settings.eq_pattern_time);\n\n\t \n\n\t \n\tdp_set_hw_test_pattern(link, link_res, DP_TEST_PATTERN_VIDEO_MODE, NULL, 0);\n\n\tdp_log_training_result(link, &lt_settings, LINK_TRAINING_SUCCESS);\n\n\treturn true;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "maxinefb.h",
+  "hash_id": "a6efda5e42bb4e4c3747cb805049d014b95d8ec094e4ff60612fd46b1f028c86",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/maxinefb.h",
+  "human_readable_source": " \n\n#include <asm/addrspace.h>\n\n \n#define MAXINEFB_IMS332_ADDRESS\t\tKSEG1ADDR(0x1c140000)\n\n \n#define DS5000_xx_ONBOARD_FBMEM_START\tKSEG1ADDR(0x0a000000)\n\n \n\n#define IMS332_REG_CURSOR_RAM           0x200\t \n\n \n#define IMS332_REG_COLOR_PALETTE        0x100\t \n#define IMS332_REG_CURSOR_COLOR_PALETTE\t0x0a1\t \n\t\t\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

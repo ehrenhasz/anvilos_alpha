@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5d4cb4f208fb8b56d119eb3120264406b9bc58114d30ac84477d5dd7ac657e7b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/afs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig AFS_FS\n\ttristate \"Andrew File System support (AFS)\"\n\tdepends on INET\n\tselect AF_RXRPC\n\tselect DNS_RESOLVER\n\tselect NETFS_SUPPORT\n\thelp\n\t  If you say Y here, you will get an experimental Andrew File System\n\t  driver. It currently only supports unsecured read-only AFS access.\n\n\t  See <file:Documentation/filesystems/afs.rst> for more information.\n\n\t  If unsure, say N.\n\nconfig AFS_DEBUG\n\tbool \"AFS dynamic debugging\"\n\tdepends on AFS_FS\n\thelp\n\t  Say Y here to make runtime controllable debugging messages appear.\n\n\t  See <file:Documentation/filesystems/afs.rst> for more information.\n\n\t  If unsure, say N.\n\nconfig AFS_FSCACHE\n\tbool \"Provide AFS client caching support\"\n\tdepends on AFS_FS=m && FSCACHE || AFS_FS=y && FSCACHE=y\n\thelp\n\t  Say Y here if you want AFS data to be cached locally on disk through\n\t  the generic filesystem cache manager\n\nconfig AFS_DEBUG_CURSOR\n\tbool \"AFS server cursor debugging\"\n\tdepends on AFS_FS\n\thelp\n\t  Say Y here to cause the contents of a server cursor to be dumped to\n\t  the dmesg log if the server rotation algorithm fails to successfully\n\t  contact a server.\n\n\t  See <file:Documentation/filesystems/afs.rst> for more information.\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

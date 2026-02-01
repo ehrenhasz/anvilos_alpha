@@ -1,0 +1,9 @@
+{
+  "module_name": "nvpair_alloc_fixed.c",
+  "hash_id": "b8f4a95a6c23ba0fc4615766875be54371f3d141ca320377d69159965dc11f25",
+  "original_prompt": "Ingested from zfs-2.2.2/module/nvpair/nvpair_alloc_fixed.c",
+  "human_readable_source": " \n\n \n\n#include <sys/isa_defs.h>\n#include <sys/nvpair.h>\n#include <sys/sysmacros.h>\n\n \n\n \ntypedef struct nvbuf {\n\tuintptr_t\tnvb_buf;\t \n\tuintptr_t \tnvb_lim;\t \n\tuintptr_t\tnvb_cur;\t \n} nvbuf_t;\n\n \nstatic int\nnv_fixed_init(nv_alloc_t *nva, va_list valist)\n{\n\tuintptr_t base = va_arg(valist, uintptr_t);\n\tuintptr_t lim = base + va_arg(valist, size_t);\n\tnvbuf_t *nvb = (nvbuf_t *)P2ROUNDUP(base, sizeof (uintptr_t));\n\n\tif (base == 0 || (uintptr_t)&nvb[1] > lim)\n\t\treturn (EINVAL);\n\n\tnvb->nvb_buf = (uintptr_t)&nvb[0];\n\tnvb->nvb_cur = (uintptr_t)&nvb[1];\n\tnvb->nvb_lim = lim;\n\tnva->nva_arg = nvb;\n\n\treturn (0);\n}\n\nstatic void *\nnv_fixed_alloc(nv_alloc_t *nva, size_t size)\n{\n\tnvbuf_t *nvb = nva->nva_arg;\n\tuintptr_t new = nvb->nvb_cur;\n\n\tif (size == 0 || new + size > nvb->nvb_lim)\n\t\treturn (NULL);\n\n\tnvb->nvb_cur = P2ROUNDUP(new + size, sizeof (uintptr_t));\n\n\treturn ((void *)new);\n}\n\nstatic void\nnv_fixed_free(nv_alloc_t *nva, void *buf, size_t size)\n{\n\t \n\t(void) nva, (void) buf, (void) size;\n}\n\nstatic void\nnv_fixed_reset(nv_alloc_t *nva)\n{\n\tnvbuf_t *nvb = nva->nva_arg;\n\n\tnvb->nvb_cur = (uintptr_t)&nvb[1];\n}\n\nstatic const nv_alloc_ops_t nv_fixed_ops_def = {\n\t.nv_ao_init = nv_fixed_init,\n\t.nv_ao_fini = NULL,\n\t.nv_ao_alloc = nv_fixed_alloc,\n\t.nv_ao_free = nv_fixed_free,\n\t.nv_ao_reset = nv_fixed_reset\n};\n\nconst nv_alloc_ops_t *const nv_fixed_ops = &nv_fixed_ops_def;\n\n#if defined(_KERNEL)\nEXPORT_SYMBOL(nv_fixed_ops);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

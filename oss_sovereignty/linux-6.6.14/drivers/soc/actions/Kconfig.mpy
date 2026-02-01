@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9c53ab962204dec36941ba558c8d165bd96515a1a4378932d1f2ff548b8f4729",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/actions/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nif ARCH_ACTIONS || COMPILE_TEST\n\nconfig OWL_PM_DOMAINS_HELPER\n\tbool\n\nconfig OWL_PM_DOMAINS\n\tbool \"Actions Semi SPS power domains\"\n\tdepends on PM\n\tselect OWL_PM_DOMAINS_HELPER\n\tselect PM_GENERIC_DOMAINS\n\thelp\n\t  Say 'y' here to enable support for Smart Power System (SPS)\n\t  power-gating on Actions Semiconductor S500, S700 and S900 SoCs.\n\t  If unsure, say 'n'.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

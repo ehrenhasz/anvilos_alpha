@@ -1,0 +1,9 @@
+{
+  "module_name": "mbschr.c",
+  "hash_id": "c6bd9284544dbcaef26edf863e94802a1c7f2a5ebdcc9abe10fff6da1eed1859",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/mbschr.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#ifdef HAVE_STDLIB_H\n#  include <stdlib.h>\n#endif\n\n#include \"bashansi.h\"\n#include \"shmbutil.h\"\n\nextern int locale_mb_cur_max;\nextern int locale_utf8locale;\n\n#undef mbschr\n\nextern char *utf8_mbschr (const char *, int);\t \n\n \n\nchar *\n#if defined (PROTOTYPES)\nmbschr (const char *s, int c)\n#else\nmbschr (s, c)\n     const char *s;\n     int c;\n#endif\n{\n#if HANDLE_MULTIBYTE\n  char *pos;\n  mbstate_t state;\n  size_t strlength, mblength;\n\n  if (locale_utf8locale && c < 0x80)\n    return (utf8_mbschr (s, c));\t\t \n\n   \n  if ((unsigned char)c >= '0' && locale_mb_cur_max > 1)\n    {\n      pos = (char *)s;\n      memset (&state, '\\0', sizeof(mbstate_t));\n      strlength = strlen (s);\n\n      while (strlength > 0)\n\t{\n\t  if (is_basic (*pos))\n\t    mblength = 1;\n\t  else\n\t    {\n\t      mblength = mbrlen (pos, strlength, &state);\n\t      if (mblength == (size_t)-2 || mblength == (size_t)-1 || mblength == (size_t)0)\n\t        mblength = 1;\n\t    }\n\n\t  if (mblength == 1 && c == (unsigned char)*pos)\n\t    return pos;\n\n\t  strlength -= mblength;\n\t  pos += mblength;\n\t}\n\n      return ((char *)NULL);\n    }\n  else\n#endif\n  return (strchr (s, c));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

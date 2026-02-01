@@ -1,0 +1,9 @@
+{
+  "module_name": "nhc_ipv6.c",
+  "hash_id": "5641c1dd4104576df3d0a248f153efb1c16eb60ace18c28829afd4e5e5b30fec",
+  "original_prompt": "Ingested from linux-6.6.14/net/6lowpan/nhc_ipv6.c",
+  "human_readable_source": "\n \n\n#include \"nhc.h\"\n\n#define LOWPAN_NHC_IPV6_ID_0\t0xee\n#define LOWPAN_NHC_IPV6_MASK_0\t0xfe\n\nLOWPAN_NHC(nhc_ipv6, \"RFC6282 IPv6\", NEXTHDR_IPV6, 0, LOWPAN_NHC_IPV6_ID_0,\n\t   LOWPAN_NHC_IPV6_MASK_0, NULL, NULL);\n\nmodule_lowpan_nhc(nhc_ipv6);\nMODULE_DESCRIPTION(\"6LoWPAN next header RFC6282 IPv6 compression\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

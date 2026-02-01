@@ -1,0 +1,9 @@
+{
+  "module_name": "cm_msgs.h",
+  "hash_id": "ed2eb200e8c8bb4f148295afefaa4719d6ca973fba6896f81cfc1c50f5dcb345",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/core/cm_msgs.h",
+  "human_readable_source": " \n \n#ifndef CM_MSGS_H\n#define CM_MSGS_H\n\n#include <rdma/ibta_vol1_c12.h>\n#include <rdma/ib_mad.h>\n#include <rdma/ib_cm.h>\n\n \n\n#define IB_CM_CLASS_VERSION\t2  \n\nstatic inline enum ib_qp_type cm_req_get_qp_type(struct cm_req_msg *req_msg)\n{\n\tu8 transport_type = IBA_GET(CM_REQ_TRANSPORT_SERVICE_TYPE, req_msg);\n\tswitch (transport_type) {\n\tcase 0: return IB_QPT_RC;\n\tcase 1: return IB_QPT_UC;\n\tcase 3:\n\t\tswitch (IBA_GET(CM_REQ_EXTENDED_TRANSPORT_TYPE, req_msg)) {\n\t\tcase 1: return IB_QPT_XRC_TGT;\n\t\tdefault: return 0;\n\t\t}\n\tdefault: return 0;\n\t}\n}\n\nstatic inline void cm_req_set_qp_type(struct cm_req_msg *req_msg,\n\t\t\t\t      enum ib_qp_type qp_type)\n{\n\tswitch (qp_type) {\n\tcase IB_QPT_UC:\n\t\tIBA_SET(CM_REQ_TRANSPORT_SERVICE_TYPE, req_msg, 1);\n\t\tbreak;\n\tcase IB_QPT_XRC_INI:\n\t\tIBA_SET(CM_REQ_TRANSPORT_SERVICE_TYPE, req_msg, 3);\n\t\tIBA_SET(CM_REQ_EXTENDED_TRANSPORT_TYPE, req_msg, 1);\n\t\tbreak;\n\tdefault:\n\t\tIBA_SET(CM_REQ_TRANSPORT_SERVICE_TYPE, req_msg, 0);\n\t}\n}\n\n \nenum cm_msg_response {\n\tCM_MSG_RESPONSE_REQ = 0x0,\n\tCM_MSG_RESPONSE_REP = 0x1,\n\tCM_MSG_RESPONSE_OTHER = 0x2\n};\n\nstatic inline __be32 cm_rep_get_qpn(struct cm_rep_msg *rep_msg, enum ib_qp_type qp_type)\n{\n\treturn (qp_type == IB_QPT_XRC_INI) ?\n\t\t       cpu_to_be32(IBA_GET(CM_REP_LOCAL_EE_CONTEXT_NUMBER,\n\t\t\t\t\t   rep_msg)) :\n\t\t       cpu_to_be32(IBA_GET(CM_REP_LOCAL_QPN, rep_msg));\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

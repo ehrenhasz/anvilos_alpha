@@ -1,0 +1,9 @@
+{
+  "module_name": "handshake.h",
+  "hash_id": "919632ef9915512a56dc4ec5914f53febd5ea1554abd16407e7b48d02d76cab8",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/handshake.h",
+  "human_readable_source": " \n \n\n#ifndef _NET_HANDSHAKE_H\n#define _NET_HANDSHAKE_H\n\nenum {\n\tTLS_NO_KEYRING = 0,\n\tTLS_NO_PEERID = 0,\n\tTLS_NO_CERT = 0,\n\tTLS_NO_PRIVKEY = 0,\n};\n\ntypedef void\t(*tls_done_func_t)(void *data, int status,\n\t\t\t\t   key_serial_t peerid);\n\nstruct tls_handshake_args {\n\tstruct socket\t\t*ta_sock;\n\ttls_done_func_t\t\tta_done;\n\tvoid\t\t\t*ta_data;\n\tconst char\t\t*ta_peername;\n\tunsigned int\t\tta_timeout_ms;\n\tkey_serial_t\t\tta_keyring;\n\tkey_serial_t\t\tta_my_cert;\n\tkey_serial_t\t\tta_my_privkey;\n\tunsigned int\t\tta_num_peerids;\n\tkey_serial_t\t\tta_my_peerids[5];\n};\n\nint tls_client_hello_anon(const struct tls_handshake_args *args, gfp_t flags);\nint tls_client_hello_x509(const struct tls_handshake_args *args, gfp_t flags);\nint tls_client_hello_psk(const struct tls_handshake_args *args, gfp_t flags);\nint tls_server_hello_x509(const struct tls_handshake_args *args, gfp_t flags);\nint tls_server_hello_psk(const struct tls_handshake_args *args, gfp_t flags);\n\nbool tls_handshake_cancel(struct sock *sk);\nvoid tls_handshake_close(struct socket *sock);\n\nu8 tls_get_record_type(const struct sock *sk, const struct cmsghdr *msg);\nvoid tls_alert_recv(const struct sock *sk, const struct msghdr *msg,\n\t\t    u8 *level, u8 *description);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "keymaps.h",
+  "hash_id": "e038fb7847d9ebe0d0acbbbe9d4c977e363cc9046148fccc77f0d180191140b8",
+  "original_prompt": "Ingested from bash-5.2.21/lib/readline/keymaps.h",
+  "human_readable_source": " \n\n \n\n#ifndef _KEYMAPS_H_\n#define _KEYMAPS_H_\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n#if defined (READLINE_LIBRARY)\n#  include \"rlstdc.h\"\n#  include \"chardefs.h\"\n#  include \"rltypedefs.h\"\n#else\n#  include <readline/rlstdc.h>\n#  include <readline/chardefs.h>\n#  include <readline/rltypedefs.h>\n#endif\n\n \ntypedef struct _keymap_entry {\n  char type;\n  rl_command_func_t *function;\n} KEYMAP_ENTRY;\n\n \n#define KEYMAP_SIZE 257\n#define ANYOTHERKEY KEYMAP_SIZE-1\n\ntypedef KEYMAP_ENTRY KEYMAP_ENTRY_ARRAY[KEYMAP_SIZE];\ntypedef KEYMAP_ENTRY *Keymap;\n\n \n#define ISFUNC 0\n#define ISKMAP 1\n#define ISMACR 2\n\nextern KEYMAP_ENTRY_ARRAY emacs_standard_keymap, emacs_meta_keymap, emacs_ctlx_keymap;\nextern KEYMAP_ENTRY_ARRAY vi_insertion_keymap, vi_movement_keymap;\n\n \nextern Keymap rl_make_bare_keymap (void);\n\n \nextern Keymap rl_copy_keymap (Keymap);\n\n \nextern Keymap rl_make_keymap (void);\n\n \nextern void rl_discard_keymap (Keymap);\n\n \n\n \nextern Keymap rl_get_keymap_by_name (const char *);\n\n \nextern Keymap rl_get_keymap (void);\n\n \nextern void rl_set_keymap (Keymap);\n\n \nextern int rl_set_keymap_name (const char *, Keymap);\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

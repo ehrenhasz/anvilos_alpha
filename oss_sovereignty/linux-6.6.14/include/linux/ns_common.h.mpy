@@ -1,0 +1,9 @@
+{
+  "module_name": "ns_common.h",
+  "hash_id": "023235cce6dd77b7c9ad288e5e5c4ab791c139fafcc90d1e65e1617fd07bde5e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ns_common.h",
+  "human_readable_source": " \n#ifndef _LINUX_NS_COMMON_H\n#define _LINUX_NS_COMMON_H\n\n#include <linux/refcount.h>\n\nstruct proc_ns_operations;\n\nstruct ns_common {\n\tatomic_long_t stashed;\n\tconst struct proc_ns_operations *ops;\n\tunsigned int inum;\n\trefcount_t count;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "__ffz.h",
+  "hash_id": "c994a11f94e61690324c34a0e919215b90ade5d735aa649a93e6a26154e1e09e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/asm-generic/bitops/__ffz.h",
+  "human_readable_source": "#ifndef _ASM_GENERIC_BITOPS_FFZ_H_\n#define _ASM_GENERIC_BITOPS_FFZ_H_\n\n \n#define ffz(x)  __ffs(~(x))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

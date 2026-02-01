@@ -1,0 +1,9 @@
+{
+  "module_name": "ia32.h",
+  "hash_id": "6d41c1cc889629ac92ce9dbcdfd8d56625dcf9a437ec01d4350c929bbad27b0a",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/ia32.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_IA32_H\n#define _ASM_X86_IA32_H\n\n\n#ifdef CONFIG_IA32_EMULATION\n\n#include <linux/compat.h>\n\n \n\n#include <uapi/asm/sigcontext.h>\n\n \n\nstruct ucontext_ia32 {\n\tunsigned int\t  uc_flags;\n\tunsigned int \t  uc_link;\n\tcompat_stack_t\t  uc_stack;\n\tstruct sigcontext_32 uc_mcontext;\n\tcompat_sigset_t\t  uc_sigmask;\t \n};\n\n \nstruct stat64 {\n\tunsigned long long\tst_dev;\n\tunsigned char\t\t__pad0[4];\n\n#define STAT64_HAS_BROKEN_ST_INO\t1\n\tunsigned int\t\t__st_ino;\n\n\tunsigned int\t\tst_mode;\n\tunsigned int\t\tst_nlink;\n\n\tunsigned int\t\tst_uid;\n\tunsigned int\t\tst_gid;\n\n\tunsigned long long\tst_rdev;\n\tunsigned char\t\t__pad3[4];\n\n\tlong long\t\tst_size;\n\tunsigned int\t\tst_blksize;\n\n\tlong long\t\tst_blocks; \n\n\tunsigned \t\tst_atime;\n\tunsigned \t\tst_atime_nsec;\n\tunsigned \t\tst_mtime;\n\tunsigned \t\tst_mtime_nsec;\n\tunsigned \t\tst_ctime;\n\tunsigned \t\tst_ctime_nsec;\n\n\tunsigned long long\tst_ino;\n} __attribute__((packed));\n\n#define IA32_STACK_TOP IA32_PAGE_OFFSET\n\n#ifdef __KERNEL__\nstruct linux_binprm;\nextern int ia32_setup_arg_pages(struct linux_binprm *bprm,\n\t\t\t\tunsigned long stack_top, int exec_stack);\nstruct mm_struct;\nextern void ia32_pick_mmap_layout(struct mm_struct *mm);\n\n#endif\n\nextern bool __ia32_enabled;\n\nstatic inline bool ia32_enabled(void)\n{\n\treturn __ia32_enabled;\n}\n\nstatic inline void ia32_disable(void)\n{\n\t__ia32_enabled = false;\n}\n\n#else  \n\nstatic inline bool ia32_enabled(void)\n{\n\treturn IS_ENABLED(CONFIG_X86_32);\n}\n\nstatic inline void ia32_disable(void) {}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

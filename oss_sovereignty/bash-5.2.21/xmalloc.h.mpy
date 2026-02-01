@@ -1,0 +1,9 @@
+{
+  "module_name": "xmalloc.h",
+  "hash_id": "3da772b1a0c782b075ee92ea87fae1cbed2f4f582c97621d7fbf233784046a51",
+  "original_prompt": "Ingested from bash-5.2.21/xmalloc.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_XMALLOC_H_)\n#define _XMALLOC_H_\n\n#include \"stdc.h\"\n#include \"bashansi.h\"\n\n \n#ifndef PTR_T\n\n#if defined (__STDC__)\n#  define PTR_T\tvoid *\n#else\n#  define PTR_T char *\n#endif\n\n#endif  \n\n \nextern PTR_T xmalloc PARAMS((size_t));\nextern PTR_T xrealloc PARAMS((void *, size_t));\nextern void xfree PARAMS((void *));\n\n#if defined(USING_BASH_MALLOC) && !defined (DISABLE_MALLOC_WRAPPERS)\nextern PTR_T sh_xmalloc PARAMS((size_t, const char *, int));\nextern PTR_T sh_xrealloc PARAMS((void *, size_t, const char *, int));\nextern void sh_xfree PARAMS((void *, const char *, int));\n\n#define xmalloc(x)\tsh_xmalloc((x), __FILE__, __LINE__)\n#define xrealloc(x, n)\tsh_xrealloc((x), (n), __FILE__, __LINE__)\n#define xfree(x)\tsh_xfree((x), __FILE__, __LINE__)\n\n#ifdef free\n#undef free\n#endif\n#define free(x)\t\tsh_xfree((x), __FILE__, __LINE__)\n\nextern PTR_T sh_malloc PARAMS((size_t, const char *, int));\n\n#ifdef malloc\n#undef malloc\n#endif\n#define malloc(x)\tsh_malloc((x), __FILE__, __LINE__)\n\n#endif\t \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

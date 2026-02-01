@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_powersave_regdef.h",
+  "hash_id": "0798c9b84bc56640fa792714bc46697619cc0b543656ec557361d0ee83c65a5d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_powersave_regdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_POWERSAVE_REGDEF_H__\n#define __RTL8712_POWERSAVE_REGDEF_H__\n\n#define WOWCTRL\t\t\t\t(RTL8712_POWERSAVE_ + 0x00)\n#define PSSTATUS\t\t\t(RTL8712_POWERSAVE_ + 0x01)\n#define PSSWITCH\t\t\t(RTL8712_POWERSAVE_ + 0x02)\n#define MIMOPS_WAITPERIOD\t\t(RTL8712_POWERSAVE_ + 0x03)\n#define LPNAV_CTRL\t\t\t(RTL8712_POWERSAVE_ + 0x04)\n#define WFM0\t\t\t\t(RTL8712_POWERSAVE_ + 0x10)\n#define WFM1\t\t\t\t(RTL8712_POWERSAVE_ + 0x20)\n#define WFM2\t\t\t\t(RTL8712_POWERSAVE_ + 0x30)\n#define WFM3\t\t\t\t(RTL8712_POWERSAVE_ + 0x40)\n#define WFM4\t\t\t\t(RTL8712_POWERSAVE_ + 0x50)\n#define WFM5\t\t\t\t(RTL8712_POWERSAVE_ + 0x60)\n#define WFCRC\t\t\t\t(RTL8712_POWERSAVE_ + 0x70)\n#define RPWM\t\t\t\t(RTL8712_POWERSAVE_ + 0x7C)\n#define CPWM\t\t\t\t(RTL8712_POWERSAVE_ + 0x7D)\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

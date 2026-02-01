@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-khamsin.c",
+  "hash_id": "b07bd7605202e7bfc7fb2e124b6f3a6b2254fdea4acc1d34c1d4a299c085cdb8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-khamsin.c",
+  "human_readable_source": "\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n\nstatic struct rc_map_table khamsin[] = {\n\t{ 0x70702, KEY_POWER},\n\n\t{ 0x70701, KEY_VIDEO}, \n\n\t{ 0x7076c, KEY_RED},\n\t{ 0x70714, KEY_GREEN},\n\t{ 0x70715, KEY_YELLOW},\n\t{ 0x70716, KEY_BLUE},\n\n\t{ 0x7071a, KEY_MENU},\n\t{ 0x7074f, KEY_EPG},\n\n\t{ 0x70760, KEY_UP },\n\t{ 0x70761, KEY_DOWN },\n\t{ 0x70765, KEY_LEFT },\n\t{ 0x70762, KEY_RIGHT },\n\t{ 0x70768, KEY_ENTER },\n\n\t{ 0x7072d, KEY_ESC }, \n\n\t{ 0x70707, KEY_VOLUMEUP },\n\t{ 0x7070b, KEY_VOLUMEDOWN },\n\t{ 0x7070f, KEY_MUTE },\n\t{ 0x70712, KEY_CHANNELUP },\n\t{ 0x70710, KEY_CHANNELDOWN },\n\n\t{ 0x70704, KEY_1 },\n\t{ 0x70705, KEY_2 },\n\t{ 0x70706, KEY_3 },\n\t{ 0x70708, KEY_4 },\n\t{ 0x70709, KEY_5 },\n\t{ 0x7070a, KEY_6 },\n\t{ 0x7070c, KEY_7 },\n\t{ 0x7070d, KEY_8 },\n\t{ 0x7070e, KEY_9 },\n\t{ 0x70711, KEY_0 },\n};\n\nstatic struct rc_map_list khamsin_map = {\n\t.map = {\n\t\t.scan     = khamsin,\n\t\t.size     = ARRAY_SIZE(khamsin),\n\t\t.rc_proto = RC_PROTO_NECX,\n\t\t.name     = RC_MAP_KHAMSIN,\n\t}\n};\n\nstatic int __init init_rc_map_khamsin(void)\n{\n\treturn rc_map_register(&khamsin_map);\n}\n\nstatic void __exit exit_rc_map_khamsin(void)\n{\n\trc_map_unregister(&khamsin_map);\n}\n\nmodule_init(init_rc_map_khamsin)\nmodule_exit(exit_rc_map_khamsin)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Christian Hewitt <christianshewitt@gmail.com>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

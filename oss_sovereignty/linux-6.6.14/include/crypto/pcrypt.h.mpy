@@ -1,0 +1,9 @@
+{
+  "module_name": "pcrypt.h",
+  "hash_id": "d0170649a233511d2c901b5eeeba6924cf726e9f325ee99023641dce7d779124",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/pcrypt.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYPTO_PCRYPT_H\n#define _CRYPTO_PCRYPT_H\n\n#include <linux/container_of.h>\n#include <linux/crypto.h>\n#include <linux/padata.h>\n\nstruct pcrypt_request {\n\tstruct padata_priv\tpadata;\n\tvoid\t\t\t*data;\n\tvoid\t\t\t*__ctx[] CRYPTO_MINALIGN_ATTR;\n};\n\nstatic inline void *pcrypt_request_ctx(struct pcrypt_request *req)\n{\n\treturn req->__ctx;\n}\n\nstatic inline\nstruct padata_priv *pcrypt_request_padata(struct pcrypt_request *req)\n{\n\treturn &req->padata;\n}\n\nstatic inline\nstruct pcrypt_request *pcrypt_padata_request(struct padata_priv *padata)\n{\n\treturn container_of(padata, struct pcrypt_request, padata);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

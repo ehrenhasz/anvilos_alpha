@@ -1,0 +1,9 @@
+{
+  "module_name": "dmub_outbox.c",
+  "hash_id": "e95265e387049ab6ec6a728a7bdc6f9e90b846a9e9bbbd6f579c91f26a68730e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce/dmub_outbox.c",
+  "human_readable_source": " \n\n#include \"dc.h\"\n#include \"dc_dmub_srv.h\"\n#include \"dmub_outbox.h\"\n#include \"dmub/inc/dmub_cmd.h\"\n\n \nvoid dmub_enable_outbox_notification(struct dc_dmub_srv *dmub_srv)\n{\n\tunion dmub_rb_cmd cmd;\n\n\tmemset(&cmd, 0x0, sizeof(cmd));\n\tcmd.outbox1_enable.header.type = DMUB_CMD__OUTBOX1_ENABLE;\n\tcmd.outbox1_enable.header.sub_type = 0;\n\tcmd.outbox1_enable.header.payload_bytes =\n\t\tsizeof(cmd.outbox1_enable) -\n\t\tsizeof(cmd.outbox1_enable.header);\n\tcmd.outbox1_enable.enable = true;\n\n\tdm_execute_dmub_cmd(dmub_srv->ctx, &cmd, DM_DMUB_WAIT_TYPE_WAIT);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-c32rtomb-w32-7.sh",
+  "hash_id": "86275f30b0fea397eb25f73b5846f7982a15e78a2c5269a293b0bab1ee9d234e",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-c32rtomb-w32-7.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a CP936 locale.\n${CHECKER} ./test-c32rtomb-w32${EXEEXT} Chinese_China 936\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

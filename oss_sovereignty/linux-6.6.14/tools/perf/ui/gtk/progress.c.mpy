@@ -1,0 +1,9 @@
+{
+  "module_name": "progress.c",
+  "hash_id": "081b404a78a9f9945b0c02925f3928904e4da223c157eaae0b146796db0c3a36",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/gtk/progress.c",
+  "human_readable_source": "\n#include <inttypes.h>\n\n#include \"gtk.h\"\n#include \"../progress.h\"\n\nstatic GtkWidget *dialog;\nstatic GtkWidget *progress;\n\nstatic void gtk_ui_progress__update(struct ui_progress *p)\n{\n\tdouble fraction = p->total ? 1.0 * p->curr / p->total : 0.0;\n\tchar buf[1024];\n\n\tif (dialog == NULL) {\n\t\tGtkWidget *vbox = gtk_vbox_new(TRUE, 5);\n\t\tGtkWidget *label = gtk_label_new(p->title);\n\n\t\tdialog = gtk_window_new(GTK_WINDOW_TOPLEVEL);\n\t\tprogress = gtk_progress_bar_new();\n\n\t\tgtk_box_pack_start(GTK_BOX(vbox), label, TRUE, FALSE, 3);\n\t\tgtk_box_pack_start(GTK_BOX(vbox), progress, TRUE, TRUE, 3);\n\n\t\tgtk_container_add(GTK_CONTAINER(dialog), vbox);\n\n\t\tgtk_window_set_title(GTK_WINDOW(dialog), \"perf\");\n\t\tgtk_window_resize(GTK_WINDOW(dialog), 300, 80);\n\t\tgtk_window_set_position(GTK_WINDOW(dialog), GTK_WIN_POS_CENTER);\n\n\t\tgtk_widget_show_all(dialog);\n\t}\n\n\tgtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(progress), fraction);\n\tsnprintf(buf, sizeof(buf), \"%\"PRIu64\" / %\"PRIu64, p->curr, p->total);\n\tgtk_progress_bar_set_text(GTK_PROGRESS_BAR(progress), buf);\n\n\t \n\twhile (gtk_events_pending())\n\t\tgtk_main_iteration();\n}\n\nstatic void gtk_ui_progress__finish(void)\n{\n\t \n\tgtk_widget_destroy(dialog);\n\n\tdialog = NULL;\n}\n\nstatic struct ui_progress_ops gtk_ui_progress__ops = {\n\t.update\t\t= gtk_ui_progress__update,\n\t.finish\t\t= gtk_ui_progress__finish,\n};\n\nvoid gtk_ui_progress__init(void)\n{\n\tui_progress__ops = &gtk_ui_progress__ops;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

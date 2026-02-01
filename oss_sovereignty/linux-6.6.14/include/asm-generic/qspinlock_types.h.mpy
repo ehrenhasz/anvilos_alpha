@@ -1,0 +1,9 @@
+{
+  "module_name": "qspinlock_types.h",
+  "hash_id": "2242640009cf418c8b8c41e89477a2e68646a04131bda871084e370dcca19526",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/qspinlock_types.h",
+  "human_readable_source": " \n \n#ifndef __ASM_GENERIC_QSPINLOCK_TYPES_H\n#define __ASM_GENERIC_QSPINLOCK_TYPES_H\n\n#include <linux/types.h>\n\ntypedef struct qspinlock {\n\tunion {\n\t\tatomic_t val;\n\n\t\t \n#ifdef __LITTLE_ENDIAN\n\t\tstruct {\n\t\t\tu8\tlocked;\n\t\t\tu8\tpending;\n\t\t};\n\t\tstruct {\n\t\t\tu16\tlocked_pending;\n\t\t\tu16\ttail;\n\t\t};\n#else\n\t\tstruct {\n\t\t\tu16\ttail;\n\t\t\tu16\tlocked_pending;\n\t\t};\n\t\tstruct {\n\t\t\tu8\treserved[2];\n\t\t\tu8\tpending;\n\t\t\tu8\tlocked;\n\t\t};\n#endif\n\t};\n} arch_spinlock_t;\n\n \n#define\t__ARCH_SPIN_LOCK_UNLOCKED\t{ { .val = ATOMIC_INIT(0) } }\n\n \n#define\t_Q_SET_MASK(type)\t(((1U << _Q_ ## type ## _BITS) - 1)\\\n\t\t\t\t      << _Q_ ## type ## _OFFSET)\n#define _Q_LOCKED_OFFSET\t0\n#define _Q_LOCKED_BITS\t\t8\n#define _Q_LOCKED_MASK\t\t_Q_SET_MASK(LOCKED)\n\n#define _Q_PENDING_OFFSET\t(_Q_LOCKED_OFFSET + _Q_LOCKED_BITS)\n#if CONFIG_NR_CPUS < (1U << 14)\n#define _Q_PENDING_BITS\t\t8\n#else\n#define _Q_PENDING_BITS\t\t1\n#endif\n#define _Q_PENDING_MASK\t\t_Q_SET_MASK(PENDING)\n\n#define _Q_TAIL_IDX_OFFSET\t(_Q_PENDING_OFFSET + _Q_PENDING_BITS)\n#define _Q_TAIL_IDX_BITS\t2\n#define _Q_TAIL_IDX_MASK\t_Q_SET_MASK(TAIL_IDX)\n\n#define _Q_TAIL_CPU_OFFSET\t(_Q_TAIL_IDX_OFFSET + _Q_TAIL_IDX_BITS)\n#define _Q_TAIL_CPU_BITS\t(32 - _Q_TAIL_CPU_OFFSET)\n#define _Q_TAIL_CPU_MASK\t_Q_SET_MASK(TAIL_CPU)\n\n#define _Q_TAIL_OFFSET\t\t_Q_TAIL_IDX_OFFSET\n#define _Q_TAIL_MASK\t\t(_Q_TAIL_IDX_MASK | _Q_TAIL_CPU_MASK)\n\n#define _Q_LOCKED_VAL\t\t(1U << _Q_LOCKED_OFFSET)\n#define _Q_PENDING_VAL\t\t(1U << _Q_PENDING_OFFSET)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objgenerator.c.compress",
+  "hash_id": "ada13048c8a884995d1427d7174c91ab225270171683cae3ba7cc2aa43d3a1e6",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__objgenerator.c.compress",
+  "human_readable_source": "generator already executing\ncan't send non-None value to a just-started generator\ngenerator raised StopIteration\ngenerator ignored GeneratorExit\ngenerator already executing\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

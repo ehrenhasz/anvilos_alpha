@@ -1,0 +1,9 @@
+{
+  "module_name": "internal.h",
+  "hash_id": "40a15c3070ca1a23141112420f5c5b86d254d0945b4e3d7f7e10b3171af1fa7b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/mei/internal.h",
+  "human_readable_source": "\n \n\n#ifndef __IWLMEI_INTERNAL_H_\n#define __IWLMEI_INTERNAL_H_\n\n#include <uapi/linux/if_ether.h>\n#include <linux/netdevice.h>\n\n#include \"sap.h\"\n\nrx_handler_result_t iwl_mei_rx_filter(struct sk_buff *skb,\n\t\t\t\t      const struct iwl_sap_oob_filters *filters,\n\t\t\t\t      bool *pass_to_csme);\n\nvoid iwl_mei_add_data_to_ring(struct sk_buff *skb, bool cb_tx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

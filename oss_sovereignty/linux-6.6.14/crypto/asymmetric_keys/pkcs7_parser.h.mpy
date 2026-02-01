@@ -1,0 +1,9 @@
+{
+  "module_name": "pkcs7_parser.h",
+  "hash_id": "d059e6dcfa20d6f445fc1b18f318db974bf4a9f1c55b662673e531168ebf76b9",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/asymmetric_keys/pkcs7_parser.h",
+  "human_readable_source": " \n \n\n#include <linux/oid_registry.h>\n#include <crypto/pkcs7.h>\n#include \"x509_parser.h\"\n\n#define kenter(FMT, ...) \\\n\tpr_devel(\"==> %s(\"FMT\")\\n\", __func__, ##__VA_ARGS__)\n#define kleave(FMT, ...) \\\n\tpr_devel(\"<== %s()\"FMT\"\\n\", __func__, ##__VA_ARGS__)\n\nstruct pkcs7_signed_info {\n\tstruct pkcs7_signed_info *next;\n\tstruct x509_certificate *signer;  \n\tunsigned\tindex;\n\tbool\t\tunsupported_crypto;\t \n\tbool\t\tblacklisted;\n\n\t \n\tconst void\t*msgdigest;\n\tunsigned\tmsgdigest_len;\n\n\t \n\tunsigned\tauthattrs_len;\n\tconst void\t*authattrs;\n\tunsigned long\taa_set;\n#define\tsinfo_has_content_type\t\t0\n#define\tsinfo_has_signing_time\t\t1\n#define\tsinfo_has_message_digest\t2\n#define sinfo_has_smime_caps\t\t3\n#define\tsinfo_has_ms_opus_info\t\t4\n#define\tsinfo_has_ms_statement_type\t5\n\ttime64_t\tsigning_time;\n\n\t \n\tstruct public_key_signature *sig;\n};\n\nstruct pkcs7_message {\n\tstruct x509_certificate *certs;\t \n\tstruct x509_certificate *crl;\t \n\tstruct pkcs7_signed_info *signed_infos;\n\tu8\t\tversion;\t \n\tbool\t\thave_authattrs;\t \n\n\t \n\tenum OID\tdata_type;\t \n\tsize_t\t\tdata_len;\t \n\tsize_t\t\tdata_hdrlen;\t \n\tconst void\t*data;\t\t \n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

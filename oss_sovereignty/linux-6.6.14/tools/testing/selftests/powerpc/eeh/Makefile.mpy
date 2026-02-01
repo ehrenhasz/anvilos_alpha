@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "33049e6b02f5b4b13eff5acbf5c28f949dce714d44a5517fb92dbea952f933b0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/eeh/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nnoarg:\n\t$(MAKE) -C ../\n\nTEST_PROGS := eeh-basic.sh\nTEST_FILES := eeh-functions.sh settings\n\ntop_srcdir = ../../../../..\ninclude ../../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

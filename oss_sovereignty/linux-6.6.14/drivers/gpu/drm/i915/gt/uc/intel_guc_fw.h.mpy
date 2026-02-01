@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_guc_fw.h",
+  "hash_id": "37fdb72eacdfc368d971e534256e9196cfe171e90f84b4b64d8f7aa862cc024a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/uc/intel_guc_fw.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_GUC_FW_H_\n#define _INTEL_GUC_FW_H_\n\nstruct intel_guc;\n\nint intel_guc_fw_upload(struct intel_guc *guc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

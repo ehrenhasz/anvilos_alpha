@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-super-userns.m4",
+  "hash_id": "d4119889ce8559ef746c17b871e49e310c8d4e17ae5ef8e62e4310f82f40ca00",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-super-userns.m4",
+  "human_readable_source": "dnl #\ndnl # 4.8 API change\ndnl # struct user_namespace was added to struct super_block as\ndnl # super->s_user_ns member\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_SUPER_USER_NS], [\n\tZFS_LINUX_TEST_SRC([super_user_ns], [\n\t\t#include <linux/fs.h>\n\t\t#include <linux/user_namespace.h>\n\t], [\n\t\tstruct super_block super;\n\t\tsuper.s_user_ns = (struct user_namespace *)NULL;\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_SUPER_USER_NS], [\n\tAC_MSG_CHECKING([whether super_block->s_user_ns exists])\n\tZFS_LINUX_TEST_RESULT([super_user_ns], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_SUPER_USER_NS, 1,\n\t\t    [super_block->s_user_ns exists])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pkt_md_access.c",
+  "hash_id": "3ed774c56ed851897bb2765f13265154b3a1fd49699f9f0ee230fab9680e86de",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/pkt_md_access.c",
+  "human_readable_source": "\n#include <test_progs.h>\n#include <network_helpers.h>\n\nvoid test_pkt_md_access(void)\n{\n\tconst char *file = \"./test_pkt_md_access.bpf.o\";\n\tstruct bpf_object *obj;\n\tint err, prog_fd;\n\tLIBBPF_OPTS(bpf_test_run_opts, topts,\n\t\t.data_in = &pkt_v4,\n\t\t.data_size_in = sizeof(pkt_v4),\n\t\t.repeat = 10,\n\t);\n\n\terr = bpf_prog_test_load(file, BPF_PROG_TYPE_SCHED_CLS, &obj, &prog_fd);\n\tif (CHECK_FAIL(err))\n\t\treturn;\n\n\terr = bpf_prog_test_run_opts(prog_fd, &topts);\n\tASSERT_OK(err, \"test_run_opts err\");\n\tASSERT_OK(topts.retval, \"test_run_opts retval\");\n\n\tbpf_object__close(obj);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

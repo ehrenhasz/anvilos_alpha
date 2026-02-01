@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype_alnum.c",
+  "hash_id": "17e95d373f023105e837503c59ce2e0c2a52f835dc471ef23837d0745fa194d5",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unictype/ctype_alnum.c",
+  "human_readable_source": " \n#include \"unictype.h\"\n\n#include \"bitmap.h\"\n\n \n#include \"ctype_alnum.h\"\n\nbool\nuc_is_alnum (ucs4_t uc)\n{\n  return bitmap_lookup (&u_is_alnum, uc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

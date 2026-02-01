@@ -1,0 +1,9 @@
+{
+  "module_name": "scsi_netlink.h",
+  "hash_id": "814813ede779287fd43eeaed957091c01bf9b8194658ad4efd705029447d2855",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/scsi/scsi_netlink.h",
+  "human_readable_source": " \n \n#ifndef SCSI_NETLINK_H\n#define SCSI_NETLINK_H\n\n#include <linux/netlink.h>\n#include <linux/types.h>\n\n \n\n \n#define SCSI_TRANSPORT_MSG\t\tNLMSG_MIN_TYPE + 1\n\n \n\t \n#define SCSI_NL_GRP_FC_EVENTS\t\t(1<<2)\t\t \n#define SCSI_NL_GRP_CNT\t\t\t3\n\n\n \nstruct scsi_nl_hdr {\n\t__u8 version;\n\t__u8 transport;\n\t__u16 magic;\n\t__u16 msgtype;\n\t__u16 msglen;\n} __attribute__((aligned(sizeof(__u64))));\n\n \n#define SCSI_NL_VERSION\t\t\t\t1\n\n \n#define SCSI_NL_MAGIC\t\t\t\t0xA1B2\n\n \n#define SCSI_NL_TRANSPORT\t\t\t0\n#define SCSI_NL_TRANSPORT_FC\t\t\t1\n#define SCSI_NL_MAX_TRANSPORTS\t\t\t2\n\n \n\n \n\t \n#define SCSI_NL_SHOST_VENDOR\t\t\t0x0001\n\t \n \n\n\n \n\n \n#define SCSI_NL_MSGALIGN(len)\t\t(((len) + 7) & ~7)\n\n\n \nstruct scsi_nl_host_vendor_msg {\n\tstruct scsi_nl_hdr snlh;\t\t \n\t__u64 vendor_id;\n\t__u16 host_no;\n\t__u16 vmsg_datalen;\n} __attribute__((aligned(sizeof(__u64))));\n\n\n \n#define SCSI_NL_VID_TYPE_SHIFT\t\t56\n#define SCSI_NL_VID_TYPE_MASK\t\t((__u64)0xFF << SCSI_NL_VID_TYPE_SHIFT)\n#define SCSI_NL_VID_TYPE_PCI\t\t((__u64)0x01 << SCSI_NL_VID_TYPE_SHIFT)\n#define SCSI_NL_VID_ID_MASK\t\t(~ SCSI_NL_VID_TYPE_MASK)\n\n\n#define INIT_SCSI_NL_HDR(hdr, t, mtype, mlen)\t\t\t\\\n\t{\t\t\t\t\t\t\t\\\n\t(hdr)->version = SCSI_NL_VERSION;\t\t\t\\\n\t(hdr)->transport = t;\t\t\t\t\t\\\n\t(hdr)->magic = SCSI_NL_MAGIC;\t\t\t\t\\\n\t(hdr)->msgtype = mtype;\t\t\t\t\t\\\n\t(hdr)->msglen = mlen;\t\t\t\t\t\\\n\t}\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

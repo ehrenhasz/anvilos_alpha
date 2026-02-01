@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7aad05089efe1c0ee8ab61fa95e23b91ed4648fb91d4721db5bf97edb96e1903",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/tablet/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the tablet drivers\n#\n\n\nobj-$(CONFIG_TABLET_USB_ACECAD)\t+= acecad.o\nobj-$(CONFIG_TABLET_USB_AIPTEK)\t+= aiptek.o\nobj-$(CONFIG_TABLET_USB_HANWANG) += hanwang.o\nobj-$(CONFIG_TABLET_USB_KBTAB)\t+= kbtab.o\nobj-$(CONFIG_TABLET_USB_PEGASUS) += pegasus_notetaker.o\nobj-$(CONFIG_TABLET_SERIAL_WACOM4) += wacom_serial4.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

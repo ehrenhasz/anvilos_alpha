@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1649c17e2f5f494154ce185f2df0696606d0541241be764eb92fe7e04868b481",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/wcn36xx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: ISC\nobj-$(CONFIG_WCN36XX) := wcn36xx.o\nwcn36xx-y +=   main.o \\\n               dxe.o \\\n               txrx.o \\\n               smd.o \\\n               pmc.o \\\n               debug.o \\\n               firmware.o\n\nwcn36xx-$(CONFIG_NL80211_TESTMODE) += testmode.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

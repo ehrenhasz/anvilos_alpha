@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn303_hwseq.c",
+  "hash_id": "6006dbe78e19ee9adbd5010a21e01d335c065460b508684c96f15dfffc6c1334",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn303/dcn303_hwseq.c",
+  "human_readable_source": "\n \n\n#include \"dcn303_hwseq.h\"\n\n#include \"dce/dce_hwseq.h\"\n\n#include \"reg_helper.h\"\n#include \"dc.h\"\n\n#define DC_LOGGER_INIT(logger)\n\n#define CTX \\\n\thws->ctx\n#define REG(reg)\\\n\thws->regs->reg\n\n#undef FN\n#define FN(reg_name, field_name) \\\n\thws->shifts->field_name, hws->masks->field_name\n\n\nvoid dcn303_dpp_pg_control(struct dce_hwseq *hws, unsigned int dpp_inst, bool power_on)\n{\n\t \n}\n\nvoid dcn303_hubp_pg_control(struct dce_hwseq *hws, unsigned int hubp_inst, bool power_on)\n{\n\t \n}\n\nvoid dcn303_dsc_pg_control(struct dce_hwseq *hws, unsigned int dsc_inst, bool power_on)\n{\n\t \n}\n\nvoid dcn303_enable_power_gating_plane(struct dce_hwseq *hws, bool enable)\n{\n\t \n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ce4348b8f4cce882fc5746069b3b1b1c882e7db95166bb8a34e84d81b86b8fb8",
+  "original_prompt": "Ingested from linux-6.6.14/fs/befs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the linux BeOS filesystem routines.\n#\n \nobj-$(CONFIG_BEFS_FS) += befs.o\nccflags-$(CONFIG_BEFS_DEBUG)    += -DDEBUG\nbefs-objs := datastream.o btree.o super.o inode.o debug.o io.o linuxvfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

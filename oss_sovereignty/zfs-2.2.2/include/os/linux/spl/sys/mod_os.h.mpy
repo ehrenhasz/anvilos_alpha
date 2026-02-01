@@ -1,0 +1,9 @@
+{
+  "module_name": "mod_os.h",
+  "hash_id": "90b6f1e3823a8fb81bd82031055701792c65cd55dba5698efc16fc8550d9ac16",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/mod_os.h",
+  "human_readable_source": " \n#ifndef _SPL_MOD_H\n#define\t_SPL_MOD_H\n#include <linux/mod_compat.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

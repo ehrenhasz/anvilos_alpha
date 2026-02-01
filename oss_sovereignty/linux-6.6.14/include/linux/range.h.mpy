@@ -1,0 +1,9 @@
+{
+  "module_name": "range.h",
+  "hash_id": "4d3f69c05094b74069652d3e6fcedbb6c209860294c7e8d804ba8e37a9ca485e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/range.h",
+  "human_readable_source": " \n#ifndef _LINUX_RANGE_H\n#define _LINUX_RANGE_H\n#include <linux/types.h>\n\nstruct range {\n\tu64   start;\n\tu64   end;\n};\n\nstatic inline u64 range_len(const struct range *range)\n{\n\treturn range->end - range->start + 1;\n}\n\nstatic inline bool range_contains(struct range *r1, struct range *r2)\n{\n\treturn r1->start <= r2->start && r1->end >= r2->end;\n}\n\nint add_range(struct range *range, int az, int nr_range,\n\t\tu64 start, u64 end);\n\n\nint add_range_with_merge(struct range *range, int az, int nr_range,\n\t\t\t\tu64 start, u64 end);\n\nvoid subtract_range(struct range *range, int az, u64 start, u64 end);\n\nint clean_sort_range(struct range *range, int az);\n\nvoid sort_range(struct range *range, int nr_range);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

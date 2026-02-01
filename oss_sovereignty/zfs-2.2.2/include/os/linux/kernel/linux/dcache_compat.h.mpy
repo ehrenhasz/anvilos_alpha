@@ -1,0 +1,9 @@
+{
+  "module_name": "dcache_compat.h",
+  "hash_id": "f91c2888534822ae605a0fa48875b676cf1b8970b1bd5c88f87fa7b508687506",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/kernel/linux/dcache_compat.h",
+  "human_readable_source": " \n\n \n\n#ifndef _ZFS_DCACHE_H\n#define\t_ZFS_DCACHE_H\n\n#include <linux/dcache.h>\n\n#define\tdname(dentry)\t((char *)((dentry)->d_name.name))\n#define\tdlen(dentry)\t((int)((dentry)->d_name.len))\n\n#ifndef HAVE_D_MAKE_ROOT\n#define\td_make_root(inode)\td_alloc_root(inode)\n#endif  \n\n#ifdef HAVE_DENTRY_D_U_ALIASES\n#define\td_alias\t\t\td_u.d_alias\n#endif\n\n \n#if defined __powerpc__ && defined HAVE_FLUSH_DCACHE_PAGE_GPL_ONLY\n#include <linux/simd_powerpc.h>\n#define\tflush_dcache_page(page)\tdo {\t\t\t\t\t\\\n\t\tif (!cpu_has_feature(CPU_FTR_COHERENT_ICACHE) &&\t\\\n\t\t    test_bit(PG_dcache_clean, &(page)->flags))\t\t\\\n\t\t\tclear_bit(PG_dcache_clean, &(page)->flags);\t\\\n\t} while (0)\n#endif\n\n \ntypedef const struct dentry_operations\tdentry_operations_t;\n\n \nstatic inline void\nd_clear_d_op(struct dentry *dentry)\n{\n\tdentry->d_op = NULL;\n\tdentry->d_flags &= ~(\n\t    DCACHE_OP_HASH | DCACHE_OP_COMPARE |\n\t    DCACHE_OP_REVALIDATE | DCACHE_OP_DELETE);\n}\n\n \nstatic inline void\nzpl_d_drop_aliases(struct inode *inode)\n{\n\tstruct dentry *dentry;\n\tspin_lock(&inode->i_lock);\n\thlist_for_each_entry(dentry, &inode->i_dentry, d_alias) {\n\t\tif (!IS_ROOT(dentry) && !d_mountpoint(dentry) &&\n\t\t    (dentry->d_inode == inode)) {\n\t\t\td_drop(dentry);\n\t\t}\n\t}\n\tspin_unlock(&inode->i_lock);\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "zfcp_diag.h",
+  "hash_id": "a363ed4f4418047177a70dfc65a3e25c3c0af230d56530097a5e60b7b8a66e0d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/scsi/zfcp_diag.h",
+  "human_readable_source": " \n \n\n#ifndef ZFCP_DIAG_H\n#define ZFCP_DIAG_H\n\n#include <linux/spinlock.h>\n\n#include \"zfcp_fsf.h\"\n#include \"zfcp_def.h\"\n\n \nstruct zfcp_diag_header {\n\tspinlock_t\taccess_lock;\n\n\t \n\tu64\t\tupdating\t:1;\n\tu64\t\tincomplete\t:1;\n\n\tunsigned long\ttimestamp;\n\n\tvoid\t\t*buffer;\n\tsize_t\t\tbuffer_size;\n};\n\n \nstruct zfcp_diag_adapter {\n\tunsigned long\tmax_age;\n\n\tstruct zfcp_diag_adapter_port_data {\n\t\tstruct zfcp_diag_header\t\theader;\n\t\tstruct fsf_qtcb_bottom_port\tdata;\n\t} port_data;\n\tstruct zfcp_diag_adapter_config_data {\n\t\tstruct zfcp_diag_header\t\theader;\n\t\tstruct fsf_qtcb_bottom_config\tdata;\n\t} config_data;\n};\n\nint zfcp_diag_adapter_setup(struct zfcp_adapter *const adapter);\nvoid zfcp_diag_adapter_free(struct zfcp_adapter *const adapter);\n\nvoid zfcp_diag_update_xdata(struct zfcp_diag_header *const hdr,\n\t\t\t    const void *const data, const bool incomplete);\n\n \ntypedef int (*zfcp_diag_update_buffer_func)(struct zfcp_adapter *const adapter);\n\nint zfcp_diag_update_config_data_buffer(struct zfcp_adapter *const adapter);\nint zfcp_diag_update_port_data_buffer(struct zfcp_adapter *const adapter);\nint zfcp_diag_update_buffer_limited(struct zfcp_adapter *const adapter,\n\t\t\t\t    struct zfcp_diag_header *const hdr,\n\t\t\t\t    zfcp_diag_update_buffer_func buffer_update);\n\n \nstatic inline bool\nzfcp_diag_support_sfp(const struct zfcp_adapter *const adapter)\n{\n\treturn !!(adapter->adapter_features & FSF_FEATURE_REPORT_SFP_DATA);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

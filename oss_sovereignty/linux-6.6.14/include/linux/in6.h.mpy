@@ -1,0 +1,9 @@
+{
+  "module_name": "in6.h",
+  "hash_id": "8f909024edb1734a70bec3511db1afec0f5804f6df6ecb54f96d4e85f0433cd5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/in6.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_IN6_H\n#define _LINUX_IN6_H\n\n#include <uapi/linux/in6.h>\n\n \nextern const struct in6_addr in6addr_any;\n#define IN6ADDR_ANY_INIT { { { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } } }\nextern const struct in6_addr in6addr_loopback;\n#define IN6ADDR_LOOPBACK_INIT { { { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 } } }\nextern const struct in6_addr in6addr_linklocal_allnodes;\n#define IN6ADDR_LINKLOCAL_ALLNODES_INIT\t\\\n\t\t{ { { 0xff,2,0,0,0,0,0,0,0,0,0,0,0,0,0,1 } } }\nextern const struct in6_addr in6addr_linklocal_allrouters;\n#define IN6ADDR_LINKLOCAL_ALLROUTERS_INIT \\\n\t\t{ { { 0xff,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2 } } }\nextern const struct in6_addr in6addr_interfacelocal_allnodes;\n#define IN6ADDR_INTERFACELOCAL_ALLNODES_INIT \\\n\t\t{ { { 0xff,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1 } } }\nextern const struct in6_addr in6addr_interfacelocal_allrouters;\n#define IN6ADDR_INTERFACELOCAL_ALLROUTERS_INIT \\\n\t\t{ { { 0xff,1,0,0,0,0,0,0,0,0,0,0,0,0,0,2 } } }\nextern const struct in6_addr in6addr_sitelocal_allrouters;\n#define IN6ADDR_SITELOCAL_ALLROUTERS_INIT \\\n\t\t{ { { 0xff,5,0,0,0,0,0,0,0,0,0,0,0,0,0,2 } } }\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

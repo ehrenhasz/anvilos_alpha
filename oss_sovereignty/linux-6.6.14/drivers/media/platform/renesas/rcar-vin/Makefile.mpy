@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6e9bf93abb61c95b057ce688e368968ae775c3c70364f195697b21108ce5cc1f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/renesas/rcar-vin/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nrcar-vin-objs = rcar-core.o rcar-dma.o rcar-v4l2.o\n\nobj-$(CONFIG_VIDEO_RCAR_CSI2) += rcar-csi2.o\nobj-$(CONFIG_VIDEO_RCAR_VIN) += rcar-vin.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

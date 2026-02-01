@@ -1,0 +1,9 @@
+{
+  "module_name": "test_global_func7.c",
+  "hash_id": "cab6253a5f268075a99638a4a9cb78d23ba6a44fcfb6febafb8d79c9839af382",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_global_func7.c",
+  "human_readable_source": "\n \n#include <stddef.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\n__attribute__ ((noinline))\nvoid foo(struct __sk_buff *skb)\n{\n\tskb->tc_index = 0;\n}\n\nSEC(\"tc\")\n__failure __msg(\"foo() doesn't return scalar\")\nint global_func7(struct __sk_buff *skb)\n{\n\tfoo(skb);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

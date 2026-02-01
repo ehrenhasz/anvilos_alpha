@@ -1,0 +1,9 @@
+{
+  "module_name": "hpios.c",
+  "hash_id": "fba5c7d5b68b0ca9b683802ad23ff7efbc8d681e48ba2724f22c19167755b34c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/asihpi/hpios.c",
+  "human_readable_source": "\n \n#define SOURCEFILE_NAME \"hpios.c\"\n#include \"hpi_internal.h\"\n#include \"hpidebug.h\"\n#include <linux/delay.h>\n#include <linux/sched.h>\n\nvoid hpios_delay_micro_seconds(u32 num_micro_sec)\n{\n\tif ((usecs_to_jiffies(num_micro_sec) > 1) && !in_interrupt()) {\n\t\t \n\t\tschedule_timeout_uninterruptible(usecs_to_jiffies\n\t\t\t(num_micro_sec));\n\t} else if (num_micro_sec <= 2000)\n\t\tudelay(num_micro_sec);\n\telse\n\t\tmdelay(num_micro_sec / 1000);\n\n}\n\n \nu16 hpios_locked_mem_alloc(struct consistent_dma_area *p_mem_area, u32 size,\n\tstruct pci_dev *pdev)\n{\n\t \n\tp_mem_area->vaddr =\n\t\tdma_alloc_coherent(&pdev->dev, size, &p_mem_area->dma_handle,\n\t\tGFP_KERNEL);\n\n\tif (p_mem_area->vaddr) {\n\t\tHPI_DEBUG_LOG(DEBUG, \"allocated %d bytes, dma 0x%x vma %p\\n\",\n\t\t\tsize, (unsigned int)p_mem_area->dma_handle,\n\t\t\tp_mem_area->vaddr);\n\t\tp_mem_area->pdev = &pdev->dev;\n\t\tp_mem_area->size = size;\n\t\treturn 0;\n\t} else {\n\t\tHPI_DEBUG_LOG(WARNING,\n\t\t\t\"failed to allocate %d bytes locked memory\\n\", size);\n\t\tp_mem_area->size = 0;\n\t\treturn 1;\n\t}\n}\n\nu16 hpios_locked_mem_free(struct consistent_dma_area *p_mem_area)\n{\n\tif (p_mem_area->size) {\n\t\tdma_free_coherent(p_mem_area->pdev, p_mem_area->size,\n\t\t\tp_mem_area->vaddr, p_mem_area->dma_handle);\n\t\tHPI_DEBUG_LOG(DEBUG, \"freed %lu bytes, dma 0x%x vma %p\\n\",\n\t\t\t(unsigned long)p_mem_area->size,\n\t\t\t(unsigned int)p_mem_area->dma_handle,\n\t\t\tp_mem_area->vaddr);\n\t\tp_mem_area->size = 0;\n\t\treturn 0;\n\t} else {\n\t\treturn 1;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

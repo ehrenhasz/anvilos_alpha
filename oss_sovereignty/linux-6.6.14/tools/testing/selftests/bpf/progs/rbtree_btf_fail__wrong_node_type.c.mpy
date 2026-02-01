@@ -1,0 +1,9 @@
+{
+  "module_name": "rbtree_btf_fail__wrong_node_type.c",
+  "hash_id": "b7df7f2442161d4d65fa81d63cb6ad65b3fa22da02c48d6e210952ceea7de217",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/rbtree_btf_fail__wrong_node_type.c",
+  "human_readable_source": "\n \n\n#include <vmlinux.h>\n#include <bpf/bpf_tracing.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_core_read.h>\n#include \"bpf_experimental.h\"\n\n \nstruct node_data {\n\tint key;\n\tint data;\n\tstruct bpf_list_node node;\n};\n\n#define private(name) SEC(\".data.\" #name) __hidden __attribute__((aligned(8)))\nprivate(A) struct bpf_spin_lock glock;\nprivate(A) struct bpf_rb_root groot __contains(node_data, node);\n\nSEC(\"tc\")\nlong rbtree_api_add__wrong_node_type(void *ctx)\n{\n\tstruct node_data *n;\n\n\tn = bpf_obj_new(typeof(*n));\n\tif (!n)\n\t\treturn 1;\n\n\tbpf_spin_lock(&glock);\n\tbpf_rbtree_first(&groot);\n\tbpf_spin_unlock(&glock);\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

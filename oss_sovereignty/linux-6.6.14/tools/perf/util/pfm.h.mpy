@@ -1,0 +1,9 @@
+{
+  "module_name": "pfm.h",
+  "hash_id": "0277fb7531adb6e26b55345d467f74edf823610ef2496ed98d75e5ac33512984",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/pfm.h",
+  "human_readable_source": " \n \n#ifndef __PERF_PFM_H\n#define __PERF_PFM_H\n\n#include \"print-events.h\"\n#include <subcmd/parse-options.h>\n\n#ifdef HAVE_LIBPFM\nint parse_libpfm_events_option(const struct option *opt, const char *str,\n\t\t\tint unset);\n\nvoid print_libpfm_events(const struct print_callbacks *print_cb, void *print_state);\n\n#else\n#include <linux/compiler.h>\n\nstatic inline int parse_libpfm_events_option(\n\tconst struct option *opt __maybe_unused,\n\tconst char *str __maybe_unused,\n\tint unset __maybe_unused)\n{\n\treturn 0;\n}\n\nstatic inline void print_libpfm_events(const struct print_callbacks *print_cb __maybe_unused,\n\t\t\t\t       void *print_state __maybe_unused)\n{\n}\n\n#endif\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

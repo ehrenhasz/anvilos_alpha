@@ -1,0 +1,9 @@
+{
+  "module_name": "upt1_defs.h",
+  "hash_id": "213cfcbcc28fce572c22ba24c92f65d245096dcc03193bae9d0338782c6fee72",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/vmxnet3/upt1_defs.h",
+  "human_readable_source": " \n\n#ifndef _UPT1_DEFS_H\n#define _UPT1_DEFS_H\n\nstruct UPT1_TxStats {\n\tu64\t\t\tTSOPktsTxOK;   \n\tu64\t\t\tTSOBytesTxOK;\n\tu64\t\t\tucastPktsTxOK;\n\tu64\t\t\tucastBytesTxOK;\n\tu64\t\t\tmcastPktsTxOK;\n\tu64\t\t\tmcastBytesTxOK;\n\tu64\t\t\tbcastPktsTxOK;\n\tu64\t\t\tbcastBytesTxOK;\n\tu64\t\t\tpktsTxError;\n\tu64\t\t\tpktsTxDiscard;\n};\n\nstruct UPT1_RxStats {\n\tu64\t\t\tLROPktsRxOK;     \n\tu64\t\t\tLROBytesRxOK;    \n\t \n\tu64\t\t\tucastPktsRxOK;\n\tu64\t\t\tucastBytesRxOK;\n\tu64\t\t\tmcastPktsRxOK;\n\tu64\t\t\tmcastBytesRxOK;\n\tu64\t\t\tbcastPktsRxOK;\n\tu64\t\t\tbcastBytesRxOK;\n\tu64\t\t\tpktsRxOutOfBuf;\n\tu64\t\t\tpktsRxError;\n};\n\n \nenum {\n\tUPT1_IML_NONE\t\t= 0,  \n\tUPT1_IML_HIGHEST\t= 7,  \n\tUPT1_IML_ADAPTIVE\t= 8,  \n};\n \nenum {\n\tUPT1_RSS_HASH_TYPE_NONE      = 0x0,\n\tUPT1_RSS_HASH_TYPE_IPV4      = 0x01,\n\tUPT1_RSS_HASH_TYPE_TCP_IPV4  = 0x02,\n\tUPT1_RSS_HASH_TYPE_IPV6      = 0x04,\n\tUPT1_RSS_HASH_TYPE_TCP_IPV6  = 0x08,\n};\n\nenum {\n\tUPT1_RSS_HASH_FUNC_NONE      = 0x0,\n\tUPT1_RSS_HASH_FUNC_TOEPLITZ  = 0x01,\n};\n\n#define UPT1_RSS_MAX_KEY_SIZE        40\n#define UPT1_RSS_MAX_IND_TABLE_SIZE  128\n\nstruct UPT1_RSSConf {\n\tu16\t\t\thashType;\n\tu16\t\t\thashFunc;\n\tu16\t\t\thashKeySize;\n\tu16\t\t\tindTableSize;\n\tu8\t\t\thashKey[UPT1_RSS_MAX_KEY_SIZE];\n\tu8\t\t\tindTable[UPT1_RSS_MAX_IND_TABLE_SIZE];\n};\n\n \nenum {\n\tUPT1_F_RXCSUM\t\t= cpu_to_le64(0x0001),    \n\tUPT1_F_RSS\t\t= cpu_to_le64(0x0002),\n\tUPT1_F_RXVLAN\t\t= cpu_to_le64(0x0004),    \n\tUPT1_F_LRO\t\t= cpu_to_le64(0x0008),\n\tUPT1_F_RXINNEROFLD      = cpu_to_le64(0x00010),   \n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

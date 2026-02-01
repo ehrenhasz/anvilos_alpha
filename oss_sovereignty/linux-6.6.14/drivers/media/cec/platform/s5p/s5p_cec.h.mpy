@@ -1,0 +1,9 @@
+{
+  "module_name": "s5p_cec.h",
+  "hash_id": "a692b48f2bdf66b9011b5ec6b54350feb927f07a21f930c199dd28df5987dc34",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/cec/platform/s5p/s5p_cec.h",
+  "human_readable_source": " \n \n\n#ifndef _S5P_CEC_H_\n#define _S5P_CEC_H_ __FILE__\n\n#include <linux/clk.h>\n#include <linux/interrupt.h>\n#include <linux/kernel.h>\n#include <linux/mfd/syscon.h>\n#include <linux/module.h>\n#include <linux/of.h>\n#include <linux/platform_device.h>\n#include <linux/pm_runtime.h>\n#include <linux/timer.h>\n#include <linux/workqueue.h>\n#include <media/cec.h>\n\n#include \"exynos_hdmi_cec.h\"\n#include \"regs-cec.h\"\n#include \"s5p_cec.h\"\n\n#define CEC_NAME\t\"s5p-cec\"\n\n#define CEC_STATUS_TX_RUNNING\t\t(1 << 0)\n#define CEC_STATUS_TX_TRANSFERRING\t(1 << 1)\n#define CEC_STATUS_TX_DONE\t\t(1 << 2)\n#define CEC_STATUS_TX_ERROR\t\t(1 << 3)\n#define CEC_STATUS_TX_NACK\t\t(1 << 4)\n#define CEC_STATUS_TX_BYTES\t\t(0xFF << 8)\n#define CEC_STATUS_RX_RUNNING\t\t(1 << 16)\n#define CEC_STATUS_RX_RECEIVING\t\t(1 << 17)\n#define CEC_STATUS_RX_DONE\t\t(1 << 18)\n#define CEC_STATUS_RX_ERROR\t\t(1 << 19)\n#define CEC_STATUS_RX_BCAST\t\t(1 << 20)\n#define CEC_STATUS_RX_BYTES\t\t(0xFF << 24)\n\n#define CEC_WORKER_TX_DONE\t\t(1 << 0)\n#define CEC_WORKER_RX_MSG\t\t(1 << 1)\n\n \n#define CEC_RX_BUFF_SIZE\t\t16\n \n#define CEC_TX_BUFF_SIZE\t\t16\n\nenum cec_state {\n\tSTATE_IDLE,\n\tSTATE_BUSY,\n\tSTATE_DONE,\n\tSTATE_NACK,\n\tSTATE_ERROR\n};\n\nstruct cec_notifier;\n\nstruct s5p_cec_dev {\n\tstruct cec_adapter\t*adap;\n\tstruct clk\t\t*clk;\n\tstruct device\t\t*dev;\n\tstruct mutex\t\tlock;\n\tstruct regmap           *pmu;\n\tstruct cec_notifier\t*notifier;\n\tint\t\t\tirq;\n\tvoid __iomem\t\t*reg;\n\n\tenum cec_state\t\trx;\n\tenum cec_state\t\ttx;\n\tstruct cec_msg\t\tmsg;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-dynarray.c",
+  "hash_id": "935dcfcf76599ad83fd49913c432283c65f469052248390e1faab7367bf3ae02",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-dynarray.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#define DYNARRAY_STRUCT int_sequence\n#define DYNARRAY_ELEMENT int\n#define DYNARRAY_PREFIX intseq_\n#include \"dynarray.h\"\n\n#include \"macros.h\"\n\n#define N 100000\n\nstatic int\nvalue_at (long long int i)\n{\n  return (i % 13) + ((i * i) % 251);\n}\n\nint\nmain ()\n{\n  struct int_sequence s;\n  int i;\n\n  intseq_init (&s);\n  for (i = 0; i < N; i++)\n    intseq_add (&s, value_at (i));\n  for (i = N - 1; i >= N / 2; i--)\n    {\n      ASSERT (* intseq_at (&s, i) == value_at (i));\n      intseq_remove_last (&s);\n    }\n  intseq_free (&s);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

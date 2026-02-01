@@ -1,0 +1,9 @@
+{
+  "module_name": "tm_gmtoff.m4",
+  "hash_id": "7281a8c6d5b7882a05a189c957d19c67b23ad2db1c464edd0e5ca0879ea63906",
+  "original_prompt": "Ingested from coreutils-9.4/m4/tm_gmtoff.m4",
+  "human_readable_source": "# tm_gmtoff.m4 serial 3\ndnl Copyright (C) 2002, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_TM_GMTOFF],\n[\n AC_CHECK_MEMBER([struct tm.tm_gmtoff],\n                 [AC_DEFINE([HAVE_TM_GMTOFF], [1],\n                            [Define if struct tm has the tm_gmtoff member.])],\n                 ,\n                 [#include <time.h>])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "zip_inflate.h",
+  "hash_id": "e7162301a4af442b5a83944aa52b75c03e7cf51f60f52c47baad086f6f1b48df",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/cavium/zip/zip_inflate.h",
+  "human_readable_source": " \n\n#ifndef __ZIP_INFLATE_H__\n#define __ZIP_INFLATE_H__\n\n \nint zip_inflate(struct zip_operation *zip_ops, struct zip_state *s,\n\t\tstruct zip_device *zip_dev);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

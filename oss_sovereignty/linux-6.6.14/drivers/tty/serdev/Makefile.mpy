@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "082b3a0d222086f63c44c3ca7713a02a7f33af1037f514aa073052f338d6b393",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/serdev/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nserdev-objs := core.o\n\nobj-$(CONFIG_SERIAL_DEV_BUS) += serdev.o\n\nobj-$(CONFIG_SERIAL_DEV_CTRL_TTYPORT) += serdev-ttyport.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

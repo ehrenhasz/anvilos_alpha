@@ -1,0 +1,9 @@
+{
+  "module_name": "io.c",
+  "hash_id": "e526c438a71e05e3510542c8dc1e6c51ef2ec75816acc2db03753188c9ad341d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/befs/io.c",
+  "human_readable_source": "\n \n\n#include <linux/buffer_head.h>\n\n#include \"befs.h\"\n#include \"io.h\"\n\n \n\nstruct buffer_head *\nbefs_bread_iaddr(struct super_block *sb, befs_inode_addr iaddr)\n{\n\tstruct buffer_head *bh;\n\tbefs_blocknr_t block;\n\tstruct befs_sb_info *befs_sb = BEFS_SB(sb);\n\n\tbefs_debug(sb, \"---> Enter %s \"\n\t\t   \"[%u, %hu, %hu]\", __func__, iaddr.allocation_group,\n\t\t   iaddr.start, iaddr.len);\n\n\tif (iaddr.allocation_group > befs_sb->num_ags) {\n\t\tbefs_error(sb, \"BEFS: Invalid allocation group %u, max is %u\",\n\t\t\t   iaddr.allocation_group, befs_sb->num_ags);\n\t\tgoto error;\n\t}\n\n\tblock = iaddr2blockno(sb, &iaddr);\n\n\tbefs_debug(sb, \"%s: offset = %lu\", __func__, (unsigned long)block);\n\n\tbh = sb_bread(sb, block);\n\n\tif (bh == NULL) {\n\t\tbefs_error(sb, \"Failed to read block %lu\",\n\t\t\t   (unsigned long)block);\n\t\tgoto error;\n\t}\n\n\tbefs_debug(sb, \"<--- %s\", __func__);\n\treturn bh;\n\nerror:\n\tbefs_debug(sb, \"<--- %s ERROR\", __func__);\n\treturn NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "inotify.h",
+  "hash_id": "8485b38bf74d79e593a1b396129b7aa4a17e581d53275c030486c6a279d9551c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/inotify.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_INOTIFY_H\n#define _LINUX_INOTIFY_H\n\n#include <uapi/linux/inotify.h>\n\n#define ALL_INOTIFY_BITS (IN_ACCESS | IN_MODIFY | IN_ATTRIB | IN_CLOSE_WRITE | \\\n\t\t\t  IN_CLOSE_NOWRITE | IN_OPEN | IN_MOVED_FROM | \\\n\t\t\t  IN_MOVED_TO | IN_CREATE | IN_DELETE | \\\n\t\t\t  IN_DELETE_SELF | IN_MOVE_SELF | IN_UNMOUNT | \\\n\t\t\t  IN_Q_OVERFLOW | IN_IGNORED | IN_ONLYDIR | \\\n\t\t\t  IN_DONT_FOLLOW | IN_EXCL_UNLINK | IN_MASK_ADD | \\\n\t\t\t  IN_MASK_CREATE | IN_ISDIR | IN_ONESHOT)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

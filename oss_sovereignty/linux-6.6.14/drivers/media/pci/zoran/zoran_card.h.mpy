@@ -1,0 +1,9 @@
+{
+  "module_name": "zoran_card.h",
+  "hash_id": "b02839e7884fb2c90b7532e454e538cb9667ecfe7902f7e8f3ee0fe333067c97",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/zoran/zoran_card.h",
+  "human_readable_source": " \n \n\n#ifndef __ZORAN_CARD_H__\n#define __ZORAN_CARD_H__\n\nextern int zr36067_debug;\n\n \n#define BUZ_MAX 4\n\nextern const struct video_device zoran_template;\n\nint zoran_check_jpg_settings(struct zoran *zr,\n\t\t\t     struct zoran_jpg_settings *settings, int try);\nvoid zoran_open_init_params(struct zoran *zr);\nvoid zoran_vdev_release(struct video_device *vdev);\n\nvoid zr36016_write(struct videocodec *codec, u16 reg, u32 val);\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

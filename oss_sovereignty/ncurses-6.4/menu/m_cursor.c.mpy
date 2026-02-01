@@ -1,0 +1,9 @@
+{
+  "module_name": "m_cursor.c",
+  "hash_id": "e2875b4d18cf02417018c64a2bf17e07b17f43915c5fe8dee76614ea20c0ac3e",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_cursor.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_cursor.c,v 1.26 2021/03/27 23:46:29 tom Exp $\")\n\n \nMENU_EXPORT(int)\n_nc_menu_cursor_pos(const MENU *menu, const ITEM *item, int *pY, int *pX)\n{\n  if (!menu || !pX || !pY)\n    return (E_BAD_ARGUMENT);\n  else\n    {\n      if ((ITEM *)0 == item)\n\titem = menu->curitem;\n      assert(item != (ITEM *)0);\n\n      if (!(menu->status & _POSTED))\n\treturn (E_NOT_POSTED);\n\n      *pX = item->x * (menu->spc_cols + menu->itemlen);\n      *pY = (item->y - menu->toprow) * menu->spc_rows;\n    }\n  return (E_OK);\n}\n\n \nMENU_EXPORT(int)\npos_menu_cursor(const MENU *menu)\n{\n  int x = 0, y = 0;\n  int err = _nc_menu_cursor_pos(menu, (ITEM *)0, &y, &x);\n\n  T((T_CALLED(\"pos_menu_cursor(%p)\"), (const void *)menu));\n\n  if (E_OK == err)\n    {\n      WINDOW *win = Get_Menu_UserWin(menu);\n      WINDOW *sub = menu->usersub ? menu->usersub : win;\n\n      assert(win && sub);\n\n      if ((menu->opt & O_SHOWMATCH) && (menu->pindex > 0))\n\tx += (menu->pindex + menu->marklen - 1);\n\n      wmove(sub, y, x);\n\n      if (win != sub)\n\t{\n\t  wcursyncup(sub);\n\t  wsyncup(sub);\n\t  untouchwin(sub);\n\t}\n    }\n  RETURN(err);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

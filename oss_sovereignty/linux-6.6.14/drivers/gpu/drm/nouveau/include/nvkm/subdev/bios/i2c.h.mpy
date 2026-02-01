@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c.h",
+  "hash_id": "11587085e5be021d304d9e4c36a0ae6fa38b0f6d66c66c55f6aba956affe248d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/i2c.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_I2C_H__\n#define __NVBIOS_I2C_H__\nenum dcb_i2c_type {\n\t \n\tDCB_I2C_NV04_BIT = 0x00,\n\tDCB_I2C_NV4E_BIT = 0x04,\n\tDCB_I2C_NVIO_BIT = 0x05,\n\tDCB_I2C_NVIO_AUX = 0x06,\n\t \n\tDCB_I2C_PMGR     = 0x80,\n\tDCB_I2C_UNUSED   = 0xff\n};\n\nstruct dcb_i2c_entry {\n\tenum dcb_i2c_type type;\n\tu8 drive;\n\tu8 sense;\n\tu8 share;\n\tu8 auxch;\n};\n\nu16 dcb_i2c_table(struct nvkm_bios *, u8 *ver, u8 *hdr, u8 *cnt, u8 *len);\nu16 dcb_i2c_entry(struct nvkm_bios *, u8 index, u8 *ver, u8 *len);\nint dcb_i2c_parse(struct nvkm_bios *, u8 index, struct dcb_i2c_entry *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

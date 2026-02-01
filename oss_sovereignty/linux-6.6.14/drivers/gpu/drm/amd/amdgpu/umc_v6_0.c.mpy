@@ -1,0 +1,9 @@
+{
+  "module_name": "umc_v6_0.c",
+  "hash_id": "bf6d3800721f95e3d4ef840fc185784817f0738fdb98d0385f0b0949b3e3f0c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/umc_v6_0.c",
+  "human_readable_source": " \n#include \"umc_v6_0.h\"\n#include \"amdgpu.h\"\n\nstatic void umc_v6_0_init_registers(struct amdgpu_device *adev)\n{\n\tunsigned i,j;\n\n\tfor (i = 0; i < 4; i++)\n\t\tfor (j = 0; j < 4; j++)\n\t\t\tWREG32((i*0x100000 + 0x5010c + j*0x2000)/4, 0x1002);\n}\n\nconst struct amdgpu_umc_funcs umc_v6_0_funcs = {\n\t.init_registers = umc_v6_0_init_registers,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

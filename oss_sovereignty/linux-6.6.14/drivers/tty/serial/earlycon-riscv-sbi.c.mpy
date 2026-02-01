@@ -1,0 +1,9 @@
+{
+  "module_name": "earlycon-riscv-sbi.c",
+  "hash_id": "1d43e7d3cda188a60047e484511282aa6f9feee49ae2b22d4df546b42b7eab9a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/serial/earlycon-riscv-sbi.c",
+  "human_readable_source": "\n \n#include <linux/kernel.h>\n#include <linux/console.h>\n#include <linux/init.h>\n#include <linux/serial_core.h>\n#include <asm/sbi.h>\n\nstatic void sbi_putc(struct uart_port *port, unsigned char c)\n{\n\tsbi_console_putchar(c);\n}\n\nstatic void sbi_console_write(struct console *con,\n\t\t\t      const char *s, unsigned n)\n{\n\tstruct earlycon_device *dev = con->data;\n\tuart_console_write(&dev->port, s, n, sbi_putc);\n}\n\nstatic int __init early_sbi_setup(struct earlycon_device *device,\n\t\t\t\t  const char *opt)\n{\n\tdevice->con->write = sbi_console_write;\n\treturn 0;\n}\nEARLYCON_DECLARE(sbi, early_sbi_setup);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

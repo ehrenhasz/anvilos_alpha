@@ -1,0 +1,9 @@
+{
+  "module_name": "ptrace_32.h",
+  "hash_id": "79f60d1f287b61366a2af5794d556c2821c173f0bf0bc9554f3334a2d530034c",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/shared/sysdep/ptrace_32.h",
+  "human_readable_source": " \n\n#ifndef __SYSDEP_I386_PTRACE_H\n#define __SYSDEP_I386_PTRACE_H\n\n#define MAX_FP_NR HOST_FPX_SIZE\n\nvoid set_using_sysemu(int value);\nint get_using_sysemu(void);\nextern int sysemu_supported;\n\n#define UPT_SYSCALL_ARG1(r) UPT_BX(r)\n#define UPT_SYSCALL_ARG2(r) UPT_CX(r)\n#define UPT_SYSCALL_ARG3(r) UPT_DX(r)\n#define UPT_SYSCALL_ARG4(r) UPT_SI(r)\n#define UPT_SYSCALL_ARG5(r) UPT_DI(r)\n#define UPT_SYSCALL_ARG6(r) UPT_BP(r)\n\nextern void arch_init_registers(int pid);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

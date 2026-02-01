@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "721cc3f97f92124eaf963d03c86f070cd84ef76770cfdefe4978e353b4f362c8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/timens/config",
+  "human_readable_source": "CONFIG_TIME_NS=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

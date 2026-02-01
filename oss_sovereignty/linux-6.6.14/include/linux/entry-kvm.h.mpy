@@ -1,0 +1,9 @@
+{
+  "module_name": "entry-kvm.h",
+  "hash_id": "f1989f05dd026a700437bdd4a5cfd8c80b3917e28da303f9c2bc7797a19fee61",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/entry-kvm.h",
+  "human_readable_source": " \n#ifndef __LINUX_ENTRYKVM_H\n#define __LINUX_ENTRYKVM_H\n\n#include <linux/static_call_types.h>\n#include <linux/resume_user_mode.h>\n#include <linux/syscalls.h>\n#include <linux/seccomp.h>\n#include <linux/sched.h>\n#include <linux/tick.h>\n\n \n#ifdef CONFIG_KVM_XFER_TO_GUEST_WORK\n\n#ifndef ARCH_XFER_TO_GUEST_MODE_WORK\n# define ARCH_XFER_TO_GUEST_MODE_WORK\t(0)\n#endif\n\n#define XFER_TO_GUEST_MODE_WORK\t\t\t\t\t\t\\\n\t(_TIF_NEED_RESCHED | _TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL |\t\\\n\t _TIF_NOTIFY_RESUME | ARCH_XFER_TO_GUEST_MODE_WORK)\n\nstruct kvm_vcpu;\n\n \nstatic inline int arch_xfer_to_guest_mode_handle_work(struct kvm_vcpu *vcpu,\n\t\t\t\t\t\t      unsigned long ti_work);\n\n#ifndef arch_xfer_to_guest_mode_work\nstatic inline int arch_xfer_to_guest_mode_handle_work(struct kvm_vcpu *vcpu,\n\t\t\t\t\t\t      unsigned long ti_work)\n{\n\treturn 0;\n}\n#endif\n\n \nint xfer_to_guest_mode_handle_work(struct kvm_vcpu *vcpu);\n\n \nstatic inline void xfer_to_guest_mode_prepare(void)\n{\n\tlockdep_assert_irqs_disabled();\n\ttick_nohz_user_enter_prepare();\n}\n\n \nstatic inline bool __xfer_to_guest_mode_work_pending(void)\n{\n\tunsigned long ti_work = read_thread_flags();\n\n\treturn !!(ti_work & XFER_TO_GUEST_MODE_WORK);\n}\n\n \nstatic inline bool xfer_to_guest_mode_work_pending(void)\n{\n\tlockdep_assert_irqs_disabled();\n\treturn __xfer_to_guest_mode_work_pending();\n}\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_raa.host.h",
+  "hash_id": "9109e630e981e7beceee4f4246f1d0527bec874dc8f844662c5d85e468248434",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/raw_aa_binning/raw_aa_binning_1.0/ia_css_raa.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_RAA_HOST_H\n#define __IA_CSS_RAA_HOST_H\n\n#include \"aa/aa_2/ia_css_aa2_types.h\"\n#include \"aa/aa_2/ia_css_aa2_param.h\"\n\nvoid\nia_css_raa_encode(\n    struct sh_css_isp_aa_params *to,\n    const struct ia_css_aa_config *from,\n    unsigned int size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "regs-mfc-v7.h",
+  "hash_id": "a8281bc9716678c0a14ab98f10854a12ef4b48592a245c36b871720438c7b296",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/s5p-mfc/regs-mfc-v7.h",
+  "human_readable_source": " \n \n\n#ifndef _REGS_MFC_V7_H\n#define _REGS_MFC_V7_H\n\n#include \"regs-mfc-v6.h\"\n\n \n#define S5P_FIMV_CODEC_VP8_ENC_V7\t25\n\n \n#define S5P_FIMV_E_SOURCE_FIRST_ADDR_V7\t\t\t0xf9e0\n#define S5P_FIMV_E_SOURCE_SECOND_ADDR_V7\t\t0xf9e4\n#define S5P_FIMV_E_SOURCE_THIRD_ADDR_V7\t\t\t0xf9e8\n#define S5P_FIMV_E_SOURCE_FIRST_STRIDE_V7\t\t0xf9ec\n#define S5P_FIMV_E_SOURCE_SECOND_STRIDE_V7\t\t0xf9f0\n#define S5P_FIMV_E_SOURCE_THIRD_STRIDE_V7\t\t0xf9f4\n\n#define S5P_FIMV_E_ENCODED_SOURCE_FIRST_ADDR_V7\t\t0xfa70\n#define S5P_FIMV_E_ENCODED_SOURCE_SECOND_ADDR_V7\t0xfa74\n\n#define S5P_FIMV_E_VP8_OPTIONS_V7\t\t\t0xfdb0\n#define S5P_FIMV_E_VP8_FILTER_OPTIONS_V7\t\t0xfdb4\n#define S5P_FIMV_E_VP8_GOLDEN_FRAME_OPTION_V7\t\t0xfdb8\n#define S5P_FIMV_E_VP8_NUM_T_LAYER_V7\t\t\t0xfdc4\n\n \n#define MAX_FW_SIZE_V7\t\t\t(SZ_512K)\t \n#define MAX_CPB_SIZE_V7\t\t\t(3 * SZ_1M)\t \n#define MFC_VERSION_V7\t\t\t0x72\n#define MFC_NUM_PORTS_V7\t\t1\n\n#define MFC_LUMA_PAD_BYTES_V7\t\t256\n#define MFC_CHROMA_PAD_BYTES_V7\t\t128\n\n \n#define MFC_CTX_BUF_SIZE_V7\t\t(30 * SZ_1K)\t \n#define MFC_H264_DEC_CTX_BUF_SIZE_V7\t(2 * SZ_1M)\t \n#define MFC_OTHER_DEC_CTX_BUF_SIZE_V7\t(20 * SZ_1K)\t \n#define MFC_H264_ENC_CTX_BUF_SIZE_V7\t(100 * SZ_1K)\t \n#define MFC_OTHER_ENC_CTX_BUF_SIZE_V7\t(10 * SZ_1K)\t \n\n \n#define S5P_FIMV_SCRATCH_BUF_SIZE_MPEG4_DEC_V7(w, h) \\\n\t\t\t(SZ_1M + ((w) * 144) + (8192 * (h)) + 49216)\n\n#define S5P_FIMV_SCRATCH_BUF_SIZE_VP8_ENC_V7(w, h) \\\n\t\t\t(((w) * 48) + 8192 + ((((w) + 1) / 2) * 128) + 144 + \\\n\t\t\t((((((w) * 16) * ((h) * 16)) * 3) / 2) * 4))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

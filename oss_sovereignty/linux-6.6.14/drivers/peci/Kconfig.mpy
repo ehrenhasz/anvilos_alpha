@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "61270ceeebd832659fb44530a597519b2d53fbc48350273cb34b2e0df43768bf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/peci/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nmenuconfig PECI\n\ttristate \"PECI support\"\n\thelp\n\t  The Platform Environment Control Interface (PECI) is an interface\n\t  that provides a communication channel to Intel processors and\n\t  chipset components from external monitoring or control devices.\n\n\t  If you are building a Baseboard Management Controller (BMC) kernel\n\t  for Intel platform say Y here and also to the specific driver for\n\t  your adapter(s) below. If unsure say N.\n\n\t  This support is also available as a module. If so, the module\n\t  will be called peci.\n\nif PECI\n\nconfig PECI_CPU\n\ttristate \"PECI CPU\"\n\tselect AUXILIARY_BUS\n\thelp\n\t  This option enables peci-cpu driver for Intel processors. It is\n\t  responsible for creating auxiliary devices that can subsequently\n\t  be used by other drivers in order to perform various\n\t  functionalities such as e.g. temperature monitoring.\n\n\t  Additional drivers must be enabled in order to use the functionality\n\t  of the device.\n\n\t  This driver can also be built as a module. If so, the module\n\t  will be called peci-cpu.\n\nsource \"drivers/peci/controller/Kconfig\"\n\nendif # PECI\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

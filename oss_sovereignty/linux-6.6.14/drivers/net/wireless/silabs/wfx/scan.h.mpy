@@ -1,0 +1,9 @@
+{
+  "module_name": "scan.h",
+  "hash_id": "75b2afc82382bc70d47d7c4a2d32069098cd268187e10239eb1a3e443f2d201f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/silabs/wfx/scan.h",
+  "human_readable_source": " \n \n#ifndef WFX_SCAN_H\n#define WFX_SCAN_H\n\n#include <net/mac80211.h>\n\nstruct wfx_dev;\nstruct wfx_vif;\n\nvoid wfx_hw_scan_work(struct work_struct *work);\nint wfx_hw_scan(struct ieee80211_hw *hw, struct ieee80211_vif *vif,\n\t\tstruct ieee80211_scan_request *req);\nvoid wfx_cancel_hw_scan(struct ieee80211_hw *hw, struct ieee80211_vif *vif);\nvoid wfx_scan_complete(struct wfx_vif *wvif, int nb_chan_done);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

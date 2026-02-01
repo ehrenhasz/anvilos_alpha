@@ -1,0 +1,9 @@
+{
+  "module_name": "wmt_ge_rops.h",
+  "hash_id": "e5d4e30dc31c6df58df3e56a9e03839b60d36595f48159c78d8b2cd131ce4858",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/wmt_ge_rops.h",
+  "human_readable_source": " \n#ifdef CONFIG_FB_WMT_GE_ROPS\n\nextern void wmt_ge_fillrect(struct fb_info *info,\n\t\t\t    const struct fb_fillrect *rect);\nextern void wmt_ge_copyarea(struct fb_info *info,\n\t\t\t    const struct fb_copyarea *area);\nextern int wmt_ge_sync(struct fb_info *info);\n\n#else\n\nstatic inline int wmt_ge_sync(struct fb_info *p)\n{\n\treturn 0;\n}\n\nstatic inline void wmt_ge_fillrect(struct fb_info *p,\n\t\t\t\t    const struct fb_fillrect *rect)\n{\n\tsys_fillrect(p, rect);\n}\n\nstatic inline void wmt_ge_copyarea(struct fb_info *p,\n\t\t\t\t     const struct fb_copyarea *area)\n{\n\tsys_copyarea(p, area);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

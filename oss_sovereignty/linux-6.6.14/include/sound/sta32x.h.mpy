@@ -1,0 +1,9 @@
+{
+  "module_name": "sta32x.h",
+  "hash_id": "6f2032401c99a9fca29497bbee538446c6032d2fcb1cda490155a215281ca138",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/sta32x.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_SND__STA32X_H\n#define __LINUX_SND__STA32X_H\n\n#define STA32X_OCFG_2CH\t\t0\n#define STA32X_OCFG_2_1CH\t1\n#define STA32X_OCFG_1CH\t\t3\n\n#define STA32X_OM_CH1\t\t0\n#define STA32X_OM_CH2\t\t1\n#define STA32X_OM_CH3\t\t2\n\n#define STA32X_THERMAL_ADJUSTMENT_ENABLE\t1\n#define STA32X_THERMAL_RECOVERY_ENABLE\t\t2\n\nstruct sta32x_platform_data {\n\tu8 output_conf;\n\tu8 ch1_output_mapping;\n\tu8 ch2_output_mapping;\n\tu8 ch3_output_mapping;\n\tint needs_esd_watchdog;\n\tu8 drop_compensation_ns;\n\tunsigned int thermal_warning_recovery:1;\n\tunsigned int thermal_warning_adjustment:1;\n\tunsigned int fault_detect_recovery:1;\n\tunsigned int max_power_use_mpcc:1;\n\tunsigned int max_power_correction:1;\n\tunsigned int am_reduction_mode:1;\n\tunsigned int odd_pwm_speed_mode:1;\n\tunsigned int invalid_input_detect_mute:1;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

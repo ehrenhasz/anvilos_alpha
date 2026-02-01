@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4c8cf6674ab11907f233701d430fa8b0e5330f718457de3c45e778a90ea13e26",
+  "original_prompt": "Ingested from linux-6.6.14/fs/autofs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig AUTOFS_FS\n\ttristate \"Kernel automounter support (supports v3, v4 and v5)\"\n\thelp\n\t   The automounter is a tool to automatically mount remote file systems\n\t   on demand. This implementation is partially kernel-based to reduce\n\t   overhead in the already-mounted case; this is unlike the BSD\n\t   automounter (amd), which is a pure user space daemon.\n\n\t   To use the automounter you need the user-space tools from\n\t   <https://www.kernel.org/pub/linux/daemons/autofs/>; you also want\n\t   to answer Y to \"NFS file system support\", below.\n\n\t   To compile this support as a module, choose M here: the module will be\n\t   called autofs.\n\n\t   If you are not a part of a fairly large, distributed network or\n\t   don't have a laptop which needs to dynamically reconfigure to the\n\t   local network, you probably do not need an automounter, and can say\n\t   N here.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

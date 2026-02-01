@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ddd87cafe6e89488a75a66088ac213fb9f66e7ee849e906b81f84e759c161fed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/mediatek/Kconfig",
+  "human_readable_source": "config MTK_THERMAL\n\ttristate \"MediaTek thermal drivers\"\n\tdepends on THERMAL_OF\n\thelp\n\t  This is the option for MediaTek thermal software solutions.\n\t  Please enable corresponding options to get temperature\n\t  information from thermal sensors or turn on throttle\n\t  mechaisms for thermal mitigation.\n\nif MTK_THERMAL\n\nconfig MTK_SOC_THERMAL\n\ttristate \"AUXADC temperature sensor driver for MediaTek SoCs\"\n\tdepends on HAS_IOMEM\n\thelp\n\t  Enable this option if you want to get SoC temperature\n\t  information for MediaTek platforms.\n\t  This driver configures thermal controllers to collect\n\t  temperature via AUXADC interface.\n\nconfig MTK_LVTS_THERMAL\n        tristate \"LVTS Thermal Driver for MediaTek SoCs\"\n        depends on HAS_IOMEM\n        help\n          Enable this option if you want to get SoC temperature\n          information for supported MediaTek platforms.\n          This driver configures LVTS (Low Voltage Thermal Sensor)\n          thermal controllers to collect temperatures via ASIF\n          (Analog Serial Interface).\n\nconfig MTK_LVTS_THERMAL_DEBUGFS\n       bool \"LVTS thermal debugfs\"\n       depends on MTK_LVTS_THERMAL && DEBUG_FS\n       help\n         Enable this option to debug the internals of the device driver.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

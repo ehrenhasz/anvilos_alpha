@@ -1,0 +1,9 @@
+{
+  "module_name": "as102_drv.h",
+  "hash_id": "4fa16808876385b5ecc95a698b28eff77f024e382adc72b88489de890547d264",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/as102/as102_drv.h",
+  "human_readable_source": " \n \n\n#ifndef _AS102_DRV_H\n#define _AS102_DRV_H\n#include <linux/usb.h>\n#include <media/dvb_demux.h>\n#include <media/dvb_frontend.h>\n#include <media/dmxdev.h>\n#include \"as10x_handle.h\"\n#include \"as10x_cmd.h\"\n#include \"as102_usb_drv.h\"\n\n#define DRIVER_FULL_NAME \"Abilis Systems as10x usb driver\"\n#define DRIVER_NAME \"as10x_usb\"\n\n#define debug\tas102_debug\nextern struct usb_driver as102_usb_driver;\nextern int elna_enable;\n\n#define AS102_DEVICE_MAJOR\t192\n\n#define AS102_USB_BUF_SIZE\t512\n#define MAX_STREAM_URB\t\t32\n\nstruct as10x_bus_adapter_t {\n\tstruct usb_device *usb_dev;\n\t \n\tstruct mutex lock;\n\t \n\tunion as10x_bus_token_t {\n\t\t \n\t\tstruct as10x_usb_token_cmd_t usb;\n\t} token;\n\n\t \n\tuint16_t cmd_xid;\n\n\t \n\tstruct as10x_cmd_t *cmd, *rsp;\n\n\t \n\tconst struct as102_priv_ops_t *ops;\n};\n\nstruct as102_dev_t {\n\tconst char *name;\n\tstruct as10x_bus_adapter_t bus_adap;\n\tstruct list_head device_entry;\n\tstruct kref kref;\n\tuint8_t elna_cfg;\n\n\tstruct dvb_adapter dvb_adap;\n\tstruct dvb_frontend *dvb_fe;\n\tstruct dvb_demux dvb_dmx;\n\tstruct dmxdev dvb_dmxdev;\n\n\t \n\tstruct timer_list timer_handle;\n\n\tstruct mutex sem;\n\tdma_addr_t dma_addr;\n\tvoid *stream;\n\tint streaming;\n\tstruct urb *stream_urb[MAX_STREAM_URB];\n};\n\nint as102_dvb_register(struct as102_dev_t *dev);\nvoid as102_dvb_unregister(struct as102_dev_t *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

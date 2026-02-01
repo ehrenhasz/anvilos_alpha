@@ -1,0 +1,9 @@
+{
+  "module_name": "goya_fw_if.h",
+  "hash_id": "741db6d792e88c8628b78bbf322d9186bb4a62d931759c74210b00a393e22c7a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/goya/goya_fw_if.h",
+  "human_readable_source": " \n\n#ifndef GOYA_FW_IF_H\n#define GOYA_FW_IF_H\n\n#define GOYA_EVENT_QUEUE_MSIX_IDX\t5\n\n#define CPU_BOOT_ADDR\t\t0x7FF8040000ull\n\n#define UBOOT_FW_OFFSET\t\t0x100000\t\t \n#define LINUX_FW_OFFSET\t\t0x800000\t\t \n\n#define GOYA_PLL_FREQ_LOW\t\t50000000  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

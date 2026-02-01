@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "adfa7679239bd980dfbb5d5f5371926f8efb81eb25a5cdefe152da8490dafbcd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/bonding/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Makefile for net selftests\n\nTEST_PROGS := \\\n\tbond-arp-interval-causes-panic.sh \\\n\tbond-break-lacpdu-tx.sh \\\n\tbond-lladdr-target.sh \\\n\tdev_addr_lists.sh \\\n\tmode-1-recovery-updelay.sh \\\n\tmode-2-recovery-updelay.sh \\\n\tbond_options.sh \\\n\tbond-eth-type-change.sh \\\n\tbond_macvlan.sh\n\nTEST_FILES := \\\n\tlag_lib.sh \\\n\tbond_topo_2d1c.sh \\\n\tbond_topo_3d1c.sh \\\n\tnet_forwarding_lib.sh\n\ninclude ../../../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

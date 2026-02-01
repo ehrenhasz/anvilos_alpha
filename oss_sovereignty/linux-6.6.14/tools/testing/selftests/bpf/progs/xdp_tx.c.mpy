@@ -1,0 +1,9 @@
+{
+  "module_name": "xdp_tx.c",
+  "hash_id": "cc907efd50acb56a418745b1e5b46e9acca6e8c47adb682bd454198b7f958396",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/xdp_tx.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nSEC(\"xdp\")\nint xdp_tx(struct xdp_md *xdp)\n{\n\treturn XDP_TX;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "82102faa6372e35e0f1bb06fec85e4036aebbd8a772765be6622f468aa66559d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ceph/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for CEPH filesystem.\n#\n\nobj-$(CONFIG_CEPH_FS) += ceph.o\n\nceph-y := super.o inode.o dir.o file.o locks.o addr.o ioctl.o \\\n\texport.o caps.o snap.o xattr.o quota.o io.o \\\n\tmds_client.o mdsmap.o strings.o ceph_frag.o \\\n\tdebugfs.o util.o metric.o\n\nceph-$(CONFIG_CEPH_FSCACHE) += cache.o\nceph-$(CONFIG_CEPH_FS_POSIX_ACL) += acl.o\nceph-$(CONFIG_FS_ENCRYPTION) += crypto.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

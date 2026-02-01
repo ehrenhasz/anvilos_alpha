@@ -1,0 +1,9 @@
+{
+  "module_name": "hal_pg.h",
+  "hash_id": "2d5311b4342b93b54ba2183a11fc3bb1943a212a8185d417035ae94d8ac1cf4e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/hal_pg.h",
+  "human_readable_source": " \n \n\n#ifndef __HAL_PG_H__\n#define __HAL_PG_H__\n\n#define\tMAX_RF_PATH\t\t\t\t4\n \n#define MAX_TX_COUNT\t\t\t\t4\n\n \n \n \n#define TX_PWR_BY_RATE_NUM_RATE\t\t\t84\n#define MAX_RF_PATH_NUM\t\t\t\t2\n#define\tMAX_CHNL_GROUP_24G\t\t\t6\n#define EEPROM_DEFAULT_BOARD_OPTION\t\t0x00\n\n \n \n#define\tEEPROM_TX_PWR_INX_8723B\t\t\t0x10\n \n#define EEPROM_DEFAULT_24G_INDEX\t\t0x2D\n#define EEPROM_DEFAULT_24G_HT20_DIFF\t\t0X02\n#define EEPROM_DEFAULT_24G_OFDM_DIFF\t\t0X04\n#define\tEEPROM_Default_ThermalMeter_8723B\t0x18\n#define EEPROM_Default_CrystalCap_8723B\t\t0x20\n\n#define\tEEPROM_ChannelPlan_8723B\t\t0xB8\n#define\tEEPROM_XTAL_8723B\t\t\t0xB9\n#define\tEEPROM_THERMAL_METER_8723B\t\t0xBA\n\n#define\tEEPROM_RF_BOARD_OPTION_8723B\t\t0xC1\n#define\tEEPROM_RF_BT_SETTING_8723B\t\t0xC3\n#define\tEEPROM_VERSION_8723B\t\t\t0xC4\n#define\tEEPROM_CustomID_8723B\t\t\t0xC5\n#define EEPROM_DEFAULT_DIFF\t\t\t0XFE\n\n \n#define\tEEPROM_MAC_ADDR_8723BS\t\t\t0x11A\n#define EEPROM_Voltage_ADDR_8723B\t\t0x8\n#define RTL_EEPROM_ID\t\t\t\t0x8129\n\nstruct TxPowerInfo24G {\n\tu8 IndexCCK_Base[MAX_RF_PATH][MAX_CHNL_GROUP_24G];\n\tu8 IndexBW40_Base[MAX_RF_PATH][MAX_CHNL_GROUP_24G];\n\t \n\ts8 CCK_Diff[MAX_RF_PATH][MAX_TX_COUNT];\n\ts8 OFDM_Diff[MAX_RF_PATH][MAX_TX_COUNT];\n\ts8 BW20_Diff[MAX_RF_PATH][MAX_TX_COUNT];\n\ts8 BW40_Diff[MAX_RF_PATH][MAX_TX_COUNT];\n};\n\nenum {\n\tAnt_x2\t= 0,\n\tAnt_x1\t= 1\n};\n\nenum {\n\tBT_RTL8723B = 8,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

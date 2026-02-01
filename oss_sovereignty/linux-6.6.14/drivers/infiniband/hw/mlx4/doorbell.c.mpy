@@ -1,0 +1,9 @@
+{
+  "module_name": "doorbell.c",
+  "hash_id": "9f5bc229cc35faef339319b897a0a0280c41978d5dd4a58e071672a050e2032a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/mlx4/doorbell.c",
+  "human_readable_source": " \n\n#include <linux/slab.h>\n#include <rdma/uverbs_ioctl.h>\n\n#include \"mlx4_ib.h\"\n\nstruct mlx4_ib_user_db_page {\n\tstruct list_head\tlist;\n\tstruct ib_umem\t       *umem;\n\tunsigned long\t\tuser_virt;\n\tint\t\t\trefcnt;\n};\n\nint mlx4_ib_db_map_user(struct ib_udata *udata, unsigned long virt,\n\t\t\tstruct mlx4_db *db)\n{\n\tstruct mlx4_ib_user_db_page *page;\n\tint err = 0;\n\tstruct mlx4_ib_ucontext *context = rdma_udata_to_drv_context(\n\t\tudata, struct mlx4_ib_ucontext, ibucontext);\n\n\tmutex_lock(&context->db_page_mutex);\n\n\tlist_for_each_entry(page, &context->db_page_list, list)\n\t\tif (page->user_virt == (virt & PAGE_MASK))\n\t\t\tgoto found;\n\n\tpage = kmalloc(sizeof *page, GFP_KERNEL);\n\tif (!page) {\n\t\terr = -ENOMEM;\n\t\tgoto out;\n\t}\n\n\tpage->user_virt = (virt & PAGE_MASK);\n\tpage->refcnt    = 0;\n\tpage->umem = ib_umem_get(context->ibucontext.device, virt & PAGE_MASK,\n\t\t\t\t PAGE_SIZE, 0);\n\tif (IS_ERR(page->umem)) {\n\t\terr = PTR_ERR(page->umem);\n\t\tkfree(page);\n\t\tgoto out;\n\t}\n\n\tlist_add(&page->list, &context->db_page_list);\n\nfound:\n\tdb->dma = sg_dma_address(page->umem->sgt_append.sgt.sgl) +\n\t\t  (virt & ~PAGE_MASK);\n\tdb->u.user_page = page;\n\t++page->refcnt;\n\nout:\n\tmutex_unlock(&context->db_page_mutex);\n\n\treturn err;\n}\n\nvoid mlx4_ib_db_unmap_user(struct mlx4_ib_ucontext *context, struct mlx4_db *db)\n{\n\tmutex_lock(&context->db_page_mutex);\n\n\tif (!--db->u.user_page->refcnt) {\n\t\tlist_del(&db->u.user_page->list);\n\t\tib_umem_release(db->u.user_page->umem);\n\t\tkfree(db->u.user_page);\n\t}\n\n\tmutex_unlock(&context->db_page_mutex);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

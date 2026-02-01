@@ -1,0 +1,9 @@
+{
+  "module_name": "xen_drm_front_evtchnl.h",
+  "hash_id": "3f09a6b0e01102d3ed32dd83e13865ae701e6268a9d1c1b1f10c5bea4ebbf3f4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/xen/xen_drm_front_evtchnl.h",
+  "human_readable_source": " \n\n \n\n#ifndef __XEN_DRM_FRONT_EVTCHNL_H_\n#define __XEN_DRM_FRONT_EVTCHNL_H_\n\n#include <linux/completion.h>\n#include <linux/types.h>\n\n#include <xen/interface/io/ring.h>\n#include <xen/interface/io/displif.h>\n\n \n#define GENERIC_OP_EVT_CHNL\t0\n\nenum xen_drm_front_evtchnl_state {\n\tEVTCHNL_STATE_DISCONNECTED,\n\tEVTCHNL_STATE_CONNECTED,\n};\n\nenum xen_drm_front_evtchnl_type {\n\tEVTCHNL_TYPE_REQ,\n\tEVTCHNL_TYPE_EVT,\n};\n\nstruct xen_drm_front_drm_info;\n\nstruct xen_drm_front_evtchnl {\n\tstruct xen_drm_front_info *front_info;\n\tint gref;\n\tint port;\n\tint irq;\n\tint index;\n\tenum xen_drm_front_evtchnl_state state;\n\tenum xen_drm_front_evtchnl_type type;\n\t \n\tu16 evt_id;\n\t \n\tu16 evt_next_id;\n\tunion {\n\t\tstruct {\n\t\t\tstruct xen_displif_front_ring ring;\n\t\t\tstruct completion completion;\n\t\t\t \n\t\t\tint resp_status;\n\t\t\t \n\t\t\tstruct mutex req_io_lock;\n\t\t} req;\n\t\tstruct {\n\t\t\tstruct xendispl_event_page *page;\n\t\t} evt;\n\t} u;\n};\n\nstruct xen_drm_front_evtchnl_pair {\n\tstruct xen_drm_front_evtchnl req;\n\tstruct xen_drm_front_evtchnl evt;\n};\n\nint xen_drm_front_evtchnl_create_all(struct xen_drm_front_info *front_info);\n\nint xen_drm_front_evtchnl_publish_all(struct xen_drm_front_info *front_info);\n\nvoid xen_drm_front_evtchnl_flush(struct xen_drm_front_evtchnl *evtchnl);\n\nvoid xen_drm_front_evtchnl_set_state(struct xen_drm_front_info *front_info,\n\t\t\t\t     enum xen_drm_front_evtchnl_state state);\n\nvoid xen_drm_front_evtchnl_free_all(struct xen_drm_front_info *front_info);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

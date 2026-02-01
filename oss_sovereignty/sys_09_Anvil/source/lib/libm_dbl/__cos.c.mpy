@@ -1,0 +1,9 @@
+{
+  "module_name": "__cos.c",
+  "hash_id": "71a383b12610faca929016de9c6c6a13ce00a30bb806ad1492a3085b7ddaa26f",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/__cos.c",
+  "human_readable_source": " \n \n \n\n#include \"libm.h\"\n\nstatic const double\nC1  =  4.16666666666666019037e-02,  \nC2  = -1.38888888888741095749e-03,  \nC3  =  2.48015872894767294178e-05,  \nC4  = -2.75573143513906633035e-07,  \nC5  =  2.08757232129817482790e-09,  \nC6  = -1.13596475577881948265e-11;  \n\ndouble __cos(double x, double y)\n{\n\tdouble_t hz,z,r,w;\n\n\tz  = x*x;\n\tw  = z*z;\n\tr  = z*(C1+z*(C2+z*C3)) + w*w*(C4+z*(C5+z*C6));\n\thz = 0.5*z;\n\tw  = 1.0-hz;\n\treturn w + (((1.0-w)-hz) + (z*r-x*y));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "5d35ecdeebe41889d3f7aa24040b0f3fa1cd2624e287d77ab281604d67296684",
+  "original_prompt": "Ingested from linux-6.6.14/samples/watchdog/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/watchdog-simple\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

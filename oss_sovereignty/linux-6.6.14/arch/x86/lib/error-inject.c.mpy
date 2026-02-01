@@ -1,0 +1,9 @@
+{
+  "module_name": "error-inject.c",
+  "hash_id": "591ccecea4b63727c74da429a5b61b839eeed2a2bf554154c25552d1b6199fbe",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/lib/error-inject.c",
+  "human_readable_source": "\n\n#include <linux/linkage.h>\n#include <linux/error-injection.h>\n#include <linux/kprobes.h>\n#include <linux/objtool.h>\n\nasmlinkage void just_return_func(void);\n\nasm(\n\t\".text\\n\"\n\t\".type just_return_func, @function\\n\"\n\t\".globl just_return_func\\n\"\n\tASM_FUNC_ALIGN\n\t\"just_return_func:\\n\"\n\t\tANNOTATE_NOENDBR\n\t\tASM_RET\n\t\".size just_return_func, .-just_return_func\\n\"\n);\n\nvoid override_function_with_return(struct pt_regs *regs)\n{\n\tregs->ip = (unsigned long)&just_return_func;\n}\nNOKPROBE_SYMBOL(override_function_with_return);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

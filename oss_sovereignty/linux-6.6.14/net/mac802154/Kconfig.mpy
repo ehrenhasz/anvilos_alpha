@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "67655b7d631e5d5008fb8c777744949ee6c23e4cd9e915285779bfecaea811dc",
+  "original_prompt": "Ingested from linux-6.6.14/net/mac802154/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig MAC802154\n\ttristate \"Generic IEEE 802.15.4 Soft Networking Stack (mac802154)\"\n\tdepends on IEEE802154\n\tselect CRC_CCITT\n\tselect CRYPTO\n\tselect CRYPTO_AUTHENC\n\tselect CRYPTO_CCM\n\tselect CRYPTO_CTR\n\tselect CRYPTO_AES\n\thelp\n\t  This option enables the hardware independent IEEE 802.15.4\n\t  networking stack for SoftMAC devices (the ones implementing\n\t  only PHY level of IEEE 802.15.4 standard).\n\n\t  Note: this implementation is neither certified, nor feature\n\t  complete! Compatibility with other implementations hasn't\n\t  been tested yet!\n\n\t  If you plan to use HardMAC IEEE 802.15.4 devices, you can\n\t  say N here. Alternatively you can say M to compile it as\n\t  module.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

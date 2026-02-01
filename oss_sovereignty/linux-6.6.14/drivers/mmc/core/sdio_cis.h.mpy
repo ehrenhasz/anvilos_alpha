@@ -1,0 +1,9 @@
+{
+  "module_name": "sdio_cis.h",
+  "hash_id": "29cda34407176d0b3c8d77b17b54ff8c2fe2721c2a35885621ed894e403fedb2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/core/sdio_cis.h",
+  "human_readable_source": " \n \n\n#ifndef _MMC_SDIO_CIS_H\n#define _MMC_SDIO_CIS_H\n\nstruct mmc_card;\nstruct sdio_func;\n\nint sdio_read_common_cis(struct mmc_card *card);\nvoid sdio_free_common_cis(struct mmc_card *card);\n\nint sdio_read_func_cis(struct sdio_func *func);\nvoid sdio_free_func_cis(struct sdio_func *func);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

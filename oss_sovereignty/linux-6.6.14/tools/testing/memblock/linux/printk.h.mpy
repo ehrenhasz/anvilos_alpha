@@ -1,0 +1,9 @@
+{
+  "module_name": "printk.h",
+  "hash_id": "efd9a30f692a83c02bbb912649c56df2fb13890593b74d9b7b642e5ef2ce0515",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/memblock/linux/printk.h",
+  "human_readable_source": " \n#ifndef _PRINTK_H\n#define _PRINTK_H\n\n#include <stdio.h>\n#include <asm/bug.h>\n\n \n#pragma GCC diagnostic push\n#pragma GCC diagnostic ignored \"-Wformat\"\n#define printk printf\n#pragma GCC diagnostic push\n\n#define pr_info printk\n#define pr_debug printk\n#define pr_cont printk\n#define pr_err printk\n#define pr_warn printk\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

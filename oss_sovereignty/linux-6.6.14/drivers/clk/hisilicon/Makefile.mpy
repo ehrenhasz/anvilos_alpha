@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8c610a0355fb34fdd11e8af3f403cbd61538095ca0f69f07a861271a23e2e122",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/hisilicon/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Hisilicon Clock specific Makefile\n#\n\nobj-y\t+= clk.o clkgate-separated.o clkdivider-hi6220.o clk-hisi-phase.o\n\nobj-$(CONFIG_ARCH_HI3xxx)\t+= clk-hi3620.o\nobj-$(CONFIG_ARCH_HIP04)\t+= clk-hip04.o\nobj-$(CONFIG_ARCH_HIX5HD2)\t+= clk-hix5hd2.o\nobj-$(CONFIG_COMMON_CLK_HI3516CV300)\t+= crg-hi3516cv300.o\nobj-$(CONFIG_COMMON_CLK_HI3519)\t+= clk-hi3519.o\nobj-$(CONFIG_COMMON_CLK_HI3559A)\t+= clk-hi3559a.o\nobj-$(CONFIG_COMMON_CLK_HI3660) += clk-hi3660.o\nobj-$(CONFIG_COMMON_CLK_HI3670) += clk-hi3670.o\nobj-$(CONFIG_COMMON_CLK_HI3798CV200)\t+= crg-hi3798cv200.o\nobj-$(CONFIG_COMMON_CLK_HI6220)\t+= clk-hi6220.o\nobj-$(CONFIG_RESET_HISI)\t+= reset.o\nobj-$(CONFIG_STUB_CLK_HI6220)\t+= clk-hi6220-stub.o\nobj-$(CONFIG_STUB_CLK_HI3660)\t+= clk-hi3660-stub.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

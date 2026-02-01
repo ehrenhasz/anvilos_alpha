@@ -1,0 +1,9 @@
+{
+  "module_name": "rockchip,vop2.h",
+  "hash_id": "fbc1ac8d7bde71ade5fb58d31fe4e626d502864d0b194c8743830b369c6a5ab8",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/soc/rockchip,vop2.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_ROCKCHIP_VOP2_H\n#define __DT_BINDINGS_ROCKCHIP_VOP2_H\n\n#define ROCKCHIP_VOP2_EP_RGB0\t1\n#define ROCKCHIP_VOP2_EP_HDMI0\t2\n#define ROCKCHIP_VOP2_EP_EDP0\t3\n#define ROCKCHIP_VOP2_EP_MIPI0\t4\n#define ROCKCHIP_VOP2_EP_LVDS0\t5\n#define ROCKCHIP_VOP2_EP_MIPI1\t6\n#define ROCKCHIP_VOP2_EP_LVDS1\t7\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

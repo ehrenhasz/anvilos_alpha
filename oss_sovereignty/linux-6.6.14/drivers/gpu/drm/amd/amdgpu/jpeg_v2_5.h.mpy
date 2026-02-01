@@ -1,0 +1,9 @@
+{
+  "module_name": "jpeg_v2_5.h",
+  "hash_id": "e8055821c2eb4ed397fa9f2c7525bfc5f0e0f4ca60e15e6fbdcf17bf90481e66",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/jpeg_v2_5.h",
+  "human_readable_source": " \n\n#ifndef __JPEG_V2_5_H__\n#define __JPEG_V2_5_H__\n\nenum amdgpu_jpeg_v2_6_sub_block {\n\tAMDGPU_JPEG_V2_6_JPEG0 = 0,\n\tAMDGPU_JPEG_V2_6_JPEG1,\n\n\tAMDGPU_JPEG_V2_6_MAX_SUB_BLOCK,\n};\n\nextern const struct amdgpu_ip_block_version jpeg_v2_5_ip_block;\nextern const struct amdgpu_ip_block_version jpeg_v2_6_ip_block;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

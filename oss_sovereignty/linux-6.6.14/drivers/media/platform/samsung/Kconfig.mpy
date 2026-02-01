@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "bffc4e246adbde68116817c831d41dd570758f2ba252de606f5efee94ea8a6aa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\ncomment \"Samsung media platform drivers\"\n\nsource \"drivers/media/platform/samsung/exynos-gsc/Kconfig\"\nsource \"drivers/media/platform/samsung/exynos4-is/Kconfig\"\nsource \"drivers/media/platform/samsung/s3c-camif/Kconfig\"\nsource \"drivers/media/platform/samsung/s5p-g2d/Kconfig\"\nsource \"drivers/media/platform/samsung/s5p-jpeg/Kconfig\"\nsource \"drivers/media/platform/samsung/s5p-mfc/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

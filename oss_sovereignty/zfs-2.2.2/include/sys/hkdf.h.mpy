@@ -1,0 +1,9 @@
+{
+  "module_name": "hkdf.h",
+  "hash_id": "73d24605fd1189721b4ab6b10ebf17b9f317bba52969c203f998ab1551be1876",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/hkdf.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_SYS_HKDF_H_\n#define\t_SYS_HKDF_H_\n\n#include <sys/types.h>\n\nint hkdf_sha512(uint8_t *key_material, uint_t km_len, uint8_t *salt,\n    uint_t salt_len, uint8_t *info, uint_t info_len, uint8_t *output_key,\n    uint_t out_len);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

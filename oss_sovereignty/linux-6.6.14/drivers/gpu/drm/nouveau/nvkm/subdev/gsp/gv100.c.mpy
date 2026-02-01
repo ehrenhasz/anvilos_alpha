@@ -1,0 +1,9 @@
+{
+  "module_name": "gv100.c",
+  "hash_id": "97ea3df8e9ac3bf366f043e17d9aab756f20f4fd0b91684462de0d44af452df5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/gsp/gv100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic const struct nvkm_falcon_func\ngv100_gsp_flcn = {\n\t.disable = gm200_flcn_disable,\n\t.enable = gm200_flcn_enable,\n\t.reset_eng = gp102_flcn_reset_eng,\n\t.reset_wait_mem_scrubbing = gm200_flcn_reset_wait_mem_scrubbing,\n\t.bind_inst = gm200_flcn_bind_inst,\n\t.bind_stat = gm200_flcn_bind_stat,\n\t.bind_intr = true,\n\t.imem_pio = &gm200_flcn_imem_pio,\n\t.dmem_pio = &gm200_flcn_dmem_pio,\n};\n\nstatic const struct nvkm_gsp_func\ngv100_gsp = {\n\t.flcn = &gv100_gsp_flcn,\n};\n\nstatic int\ngv100_gsp_nofw(struct nvkm_gsp *gsp, int ver, const struct nvkm_gsp_fwif *fwif)\n{\n\treturn 0;\n}\n\nstatic struct nvkm_gsp_fwif\ngv100_gsps[] = {\n\t{ -1, gv100_gsp_nofw, &gv100_gsp },\n\t{}\n};\n\nint\ngv100_gsp_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_gsp **pgsp)\n{\n\treturn nvkm_gsp_new_(gv100_gsps, device, type, inst, pgsp);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

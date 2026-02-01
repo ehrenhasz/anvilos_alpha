@@ -1,0 +1,9 @@
+{
+  "module_name": "c32isalpha.c",
+  "hash_id": "cf1da618557596e0bfe81fe4f2e232e58ef91bb4c94da46eb1870a40f6c2a0c1",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c32isalpha.c",
+  "human_readable_source": " \n#include <uchar.h>\n\n#define FUNC c32isalpha\n#define WCHAR_FUNC iswalpha\n#define UCS_FUNC uc_is_alpha\n#include \"c32is-impl.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

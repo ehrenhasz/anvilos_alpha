@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "83c4b8e1fa292ec377679bbd51bf61f80dd92369c7090b5aa5fe0c325c4eba2c",
+  "original_prompt": "Ingested from linux-6.6.14/net/dsa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n# the stubs are built-in whenever DSA is built-in or module\nifdef CONFIG_NET_DSA\nobj-y := stubs.o\nendif\n\n# the core\nobj-$(CONFIG_NET_DSA) += dsa_core.o\ndsa_core-y += \\\n\tdevlink.o \\\n\tdsa.o \\\n\tmaster.o \\\n\tnetlink.o \\\n\tport.o \\\n\tslave.o \\\n\tswitch.o \\\n\ttag.o \\\n\ttag_8021q.o \\\n\ttrace.o\n\n# tagging formats\nobj-$(CONFIG_NET_DSA_TAG_AR9331) += tag_ar9331.o\nobj-$(CONFIG_NET_DSA_TAG_BRCM_COMMON) += tag_brcm.o\nobj-$(CONFIG_NET_DSA_TAG_DSA_COMMON) += tag_dsa.o\nobj-$(CONFIG_NET_DSA_TAG_GSWIP) += tag_gswip.o\nobj-$(CONFIG_NET_DSA_TAG_HELLCREEK) += tag_hellcreek.o\nobj-$(CONFIG_NET_DSA_TAG_KSZ) += tag_ksz.o\nobj-$(CONFIG_NET_DSA_TAG_LAN9303) += tag_lan9303.o\nobj-$(CONFIG_NET_DSA_TAG_MTK) += tag_mtk.o\nobj-$(CONFIG_NET_DSA_TAG_NONE) += tag_none.o\nobj-$(CONFIG_NET_DSA_TAG_OCELOT) += tag_ocelot.o\nobj-$(CONFIG_NET_DSA_TAG_OCELOT_8021Q) += tag_ocelot_8021q.o\nobj-$(CONFIG_NET_DSA_TAG_QCA) += tag_qca.o\nobj-$(CONFIG_NET_DSA_TAG_RTL4_A) += tag_rtl4_a.o\nobj-$(CONFIG_NET_DSA_TAG_RTL8_4) += tag_rtl8_4.o\nobj-$(CONFIG_NET_DSA_TAG_RZN1_A5PSW) += tag_rzn1_a5psw.o\nobj-$(CONFIG_NET_DSA_TAG_SJA1105) += tag_sja1105.o\nobj-$(CONFIG_NET_DSA_TAG_TRAILER) += tag_trailer.o\nobj-$(CONFIG_NET_DSA_TAG_XRS700X) += tag_xrs700x.o\n\n# for tracing framework to find trace.h\nCFLAGS_trace.o := -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

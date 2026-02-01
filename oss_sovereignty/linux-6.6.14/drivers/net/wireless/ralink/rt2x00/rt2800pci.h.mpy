@@ -1,0 +1,9 @@
+{
+  "module_name": "rt2800pci.h",
+  "hash_id": "383d5e796e7bf2e22c895237f87b0f686d66cfd968d2b82887399488c866f0eb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ralink/rt2x00/rt2800pci.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef RT2800PCI_H\n#define RT2800PCI_H\n\n \n#define FIRMWARE_RT2860\t\t\t\"rt2860.bin\"\n#define FIRMWARE_RT3290\t\t\t\"rt3290.bin\"\n#define FIRMWARE_IMAGE_BASE\t\t0x2000\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

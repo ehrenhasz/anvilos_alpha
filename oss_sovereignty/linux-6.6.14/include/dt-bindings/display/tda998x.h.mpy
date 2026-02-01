@@ -1,0 +1,9 @@
+{
+  "module_name": "tda998x.h",
+  "hash_id": "ef998ef0dc1f94296df1a7fca37ce39922565e4f91ef8b702ae75725604cce5c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/display/tda998x.h",
+  "human_readable_source": " \n#ifndef _DT_BINDINGS_TDA998X_H\n#define _DT_BINDINGS_TDA998X_H\n\n#define TDA998x_SPDIF\t1\n#define TDA998x_I2S\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

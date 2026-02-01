@@ -1,0 +1,9 @@
+{
+  "module_name": "net_dropmonitor-record",
+  "hash_id": "5d8edb679bb47c086fffb3f79d796a90338b760d32a4714f8c6fa2bbac4a05be",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/net_dropmonitor-record",
+  "human_readable_source": "#!/bin/bash\nperf record -e skb:kfree_skb $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

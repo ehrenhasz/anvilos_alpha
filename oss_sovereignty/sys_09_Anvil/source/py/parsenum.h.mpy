@@ -1,0 +1,9 @@
+{
+  "module_name": "parsenum.h",
+  "hash_id": "1c72f6294dbdf93f486fb60a89b4196e9eb7faea7c3eb25b730566b97a05c493",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/parsenum.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_PARSENUM_H\n#define MICROPY_INCLUDED_PY_PARSENUM_H\n\n#include \"py/mpconfig.h\"\n#include \"py/lexer.h\"\n#include \"py/obj.h\"\n\n\n\nmp_obj_t mp_parse_num_integer(const char *restrict str, size_t len, int base, mp_lexer_t *lex);\n\n#if MICROPY_PY_BUILTINS_COMPLEX\nmp_obj_t mp_parse_num_decimal(const char *str, size_t len, bool allow_imag, bool force_complex, mp_lexer_t *lex);\n\nstatic inline mp_obj_t mp_parse_num_float(const char *str, size_t len, bool allow_imag, mp_lexer_t *lex) {\n    return mp_parse_num_decimal(str, len, allow_imag, false, lex);\n}\n\nstatic inline mp_obj_t mp_parse_num_complex(const char *str, size_t len, mp_lexer_t *lex) {\n    return mp_parse_num_decimal(str, len, true, true, lex);\n}\n#else\nmp_obj_t mp_parse_num_float(const char *str, size_t len, bool allow_imag, mp_lexer_t *lex);\n#endif\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

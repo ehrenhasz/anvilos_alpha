@@ -1,0 +1,9 @@
+{
+  "module_name": "video_s3c.h",
+  "hash_id": "2a75e24ddc0a50ce35c311f6673c6ddd478ddade96995227e9eb934580350452",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/video_s3c.h",
+  "human_readable_source": " \n#ifndef __PLATFORM_DATA_VIDEO_S3C\n#define __PLATFORM_DATA_VIDEO_S3C\n\n \n#define S3C_FB_MAX_WIN\t(5)\n\n \nstruct s3c_fb_pd_win {\n\tunsigned short\t\tdefault_bpp;\n\tunsigned short\t\tmax_bpp;\n\tunsigned short\t\txres;\n\tunsigned short\t\tyres;\n\tunsigned short\t\tvirtual_x;\n\tunsigned short\t\tvirtual_y;\n};\n\n \nstruct s3c_fb_platdata {\n\tvoid\t(*setup_gpio)(void);\n\n\tstruct s3c_fb_pd_win\t*win[S3C_FB_MAX_WIN];\n\tstruct fb_videomode     *vtiming;\n\n\tu32\t\t\t vidcon0;\n\tu32\t\t\t vidcon1;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

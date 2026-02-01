@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sys_wait.c",
+  "hash_id": "e67e1ac50d07887c479dc923dc76bb490bd9af87420cdf270c249fe701f4a053",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sys_wait.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/wait.h>\n\n \nstatic pid_t a;\n\n#include \"test-sys_wait.h\"\n\nint\nmain (void)\n{\n  if (test_sys_wait_macros ())\n    return 1;\n\n#if 0\n  switch (WCONTINUED)\n    {\n   \n    case WCONTINUED:\n    case WEXITED:\n    case WNOWAIT:\n    case WSTOPPED:\n      break;\n    }\n#endif\n\n  return a ? 1 : 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

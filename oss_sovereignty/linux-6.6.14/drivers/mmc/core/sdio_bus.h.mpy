@@ -1,0 +1,9 @@
+{
+  "module_name": "sdio_bus.h",
+  "hash_id": "34dfb77db9dccf50b12cadebcd7a3ebf447b2bf4f9a1b79f74264cd65e49d55b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/core/sdio_bus.h",
+  "human_readable_source": " \n \n#ifndef _MMC_CORE_SDIO_BUS_H\n#define _MMC_CORE_SDIO_BUS_H\n\nstruct mmc_card;\nstruct sdio_func;\n\nstruct sdio_func *sdio_alloc_func(struct mmc_card *card);\nint sdio_add_func(struct sdio_func *func);\nvoid sdio_remove_func(struct sdio_func *func);\n\nint sdio_register_bus(void);\nvoid sdio_unregister_bus(void);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

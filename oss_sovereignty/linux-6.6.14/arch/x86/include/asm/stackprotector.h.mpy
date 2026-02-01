@@ -1,0 +1,9 @@
+{
+  "module_name": "stackprotector.h",
+  "hash_id": "2a28e3fe830d0af3dfb87f35654b95d195635c7ac18d4ef6febef4f72494439c",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/stackprotector.h",
+  "human_readable_source": " \n \n\n#ifndef _ASM_STACKPROTECTOR_H\n#define _ASM_STACKPROTECTOR_H 1\n\n#ifdef CONFIG_STACKPROTECTOR\n\n#include <asm/tsc.h>\n#include <asm/processor.h>\n#include <asm/percpu.h>\n#include <asm/desc.h>\n\n#include <linux/sched.h>\n\n \nstatic __always_inline void boot_init_stack_canary(void)\n{\n\tunsigned long canary = get_random_canary();\n\n#ifdef CONFIG_X86_64\n\tBUILD_BUG_ON(offsetof(struct fixed_percpu_data, stack_canary) != 40);\n#endif\n\n\tcurrent->stack_canary = canary;\n#ifdef CONFIG_X86_64\n\tthis_cpu_write(fixed_percpu_data.stack_canary, canary);\n#else\n\tthis_cpu_write(__stack_chk_guard, canary);\n#endif\n}\n\nstatic inline void cpu_init_stack_canary(int cpu, struct task_struct *idle)\n{\n#ifdef CONFIG_X86_64\n\tper_cpu(fixed_percpu_data.stack_canary, cpu) = idle->stack_canary;\n#else\n\tper_cpu(__stack_chk_guard, cpu) = idle->stack_canary;\n#endif\n}\n\n#else\t \n\n \n\nstatic inline void cpu_init_stack_canary(int cpu, struct task_struct *idle)\n{ }\n\n#endif\t \n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

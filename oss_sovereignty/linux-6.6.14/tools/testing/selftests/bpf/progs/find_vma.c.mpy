@@ -1,0 +1,9 @@
+{
+  "module_name": "find_vma.c",
+  "hash_id": "a1d7d69dfac0f0da3c35703fc2cfcf4f34b91b2208d4ebd800a3af893d07c153",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/find_vma.c",
+  "human_readable_source": "\n \n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct callback_ctx {\n\tint dummy;\n};\n\n#define VM_EXEC\t\t0x00000004\n#define DNAME_INLINE_LEN 32\n\npid_t target_pid = 0;\nchar d_iname[DNAME_INLINE_LEN] = {0};\n__u32 found_vm_exec = 0;\n__u64 addr = 0;\nint find_zero_ret = -1;\nint find_addr_ret = -1;\n\nstatic long check_vma(struct task_struct *task, struct vm_area_struct *vma,\n\t\t      struct callback_ctx *data)\n{\n\tif (vma->vm_file)\n\t\tbpf_probe_read_kernel_str(d_iname, DNAME_INLINE_LEN - 1,\n\t\t\t\t\t  vma->vm_file->f_path.dentry->d_iname);\n\n\t \n\tif (vma->vm_flags & VM_EXEC)\n\t\tfound_vm_exec = 1;\n\n\treturn 0;\n}\n\nSEC(\"raw_tp/sys_enter\")\nint handle_getpid(void)\n{\n\tstruct task_struct *task = bpf_get_current_task_btf();\n\tstruct callback_ctx data = {};\n\n\tif (task->pid != target_pid)\n\t\treturn 0;\n\n\tfind_addr_ret = bpf_find_vma(task, addr, check_vma, &data, 0);\n\n\t \n\tfind_zero_ret = bpf_find_vma(task, 0, check_vma, &data, 0);\n\treturn 0;\n}\n\nSEC(\"perf_event\")\nint handle_pe(void)\n{\n\tstruct task_struct *task = bpf_get_current_task_btf();\n\tstruct callback_ctx data = {};\n\n\tif (task->pid != target_pid)\n\t\treturn 0;\n\n\tfind_addr_ret = bpf_find_vma(task, addr, check_vma, &data, 0);\n\n\t \n\tfind_zero_ret = bpf_find_vma(task, 0, check_vma, &data, 0);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

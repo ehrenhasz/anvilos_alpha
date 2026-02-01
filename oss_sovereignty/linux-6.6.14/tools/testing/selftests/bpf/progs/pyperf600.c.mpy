@@ -1,0 +1,9 @@
+{
+  "module_name": "pyperf600.c",
+  "hash_id": "9970830e28ea0196876f08cf663cc78094e3c06e095eb0ce68204cd1f72845c7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/pyperf600.c",
+  "human_readable_source": "\n\n#define STACK_MAX_LEN 600\n \n#define UNROLL_COUNT 150\n#include \"pyperf.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

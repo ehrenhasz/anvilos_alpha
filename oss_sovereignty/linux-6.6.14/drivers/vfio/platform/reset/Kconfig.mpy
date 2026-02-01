@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3ca926aa9ae8e7cdd62786ce4534c41954e3f173d0a2ce678c7328f22105e107",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/platform/reset/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nif VFIO_PLATFORM\nconfig VFIO_PLATFORM_CALXEDAXGMAC_RESET\n\ttristate \"VFIO support for calxeda xgmac reset\"\n\thelp\n\t  Enables the VFIO platform driver to handle reset for Calxeda xgmac\n\n\t  If you don't know what to do here, say N.\n\nconfig VFIO_PLATFORM_AMDXGBE_RESET\n\ttristate \"VFIO support for AMD XGBE reset\"\n\thelp\n\t  Enables the VFIO platform driver to handle reset for AMD XGBE\n\n\t  If you don't know what to do here, say N.\n\nconfig VFIO_PLATFORM_BCMFLEXRM_RESET\n\ttristate \"VFIO support for Broadcom FlexRM reset\"\n\tdepends on ARCH_BCM_IPROC || COMPILE_TEST\n\tdefault ARCH_BCM_IPROC\n\thelp\n\t  Enables the VFIO platform driver to handle reset for Broadcom FlexRM\n\n\t  If you don't know what to do here, say N.\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

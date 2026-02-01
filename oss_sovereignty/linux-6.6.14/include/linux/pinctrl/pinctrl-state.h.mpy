@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-state.h",
+  "hash_id": "0ddb29aaab6b2b3a442fcf994a22bf096d460ea6687c72299385328f85a22280",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pinctrl/pinctrl-state.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_PINCTRL_PINCTRL_STATE_H\n#define __LINUX_PINCTRL_PINCTRL_STATE_H\n\n \n#define PINCTRL_STATE_DEFAULT \"default\"\n#define PINCTRL_STATE_INIT \"init\"\n#define PINCTRL_STATE_IDLE \"idle\"\n#define PINCTRL_STATE_SLEEP \"sleep\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

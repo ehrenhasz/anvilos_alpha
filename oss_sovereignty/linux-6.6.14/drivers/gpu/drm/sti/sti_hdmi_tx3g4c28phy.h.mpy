@@ -1,0 +1,9 @@
+{
+  "module_name": "sti_hdmi_tx3g4c28phy.h",
+  "hash_id": "34f8ba21fe799a2caa720639b28545641f34c6492aa468d95c21aea31fc27c05",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sti/sti_hdmi_tx3g4c28phy.h",
+  "human_readable_source": " \n \n\n#ifndef _STI_HDMI_TX3G4C28PHY_H_\n#define _STI_HDMI_TX3G4C28PHY_H_\n\n#include \"sti_hdmi.h\"\n\nextern struct hdmi_phy_ops tx3g4c28phy_ops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

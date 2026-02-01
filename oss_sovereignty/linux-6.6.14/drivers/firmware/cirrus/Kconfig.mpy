@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ae7ec9299dae40ec79047275f8d90c37449539a56df8def159ff32345a44d470",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/cirrus/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig FW_CS_DSP\n\ttristate\n\tdefault n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

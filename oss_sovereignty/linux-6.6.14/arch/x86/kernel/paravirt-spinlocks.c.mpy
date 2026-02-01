@@ -1,0 +1,9 @@
+{
+  "module_name": "paravirt-spinlocks.c",
+  "hash_id": "9a0eb1cad1723e3247f4d2b8d51dbe447b93a9a6c22b5dce7a0b3b66ba4cd2bd",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/paravirt-spinlocks.c",
+  "human_readable_source": "\n \n#include <linux/spinlock.h>\n#include <linux/export.h>\n#include <linux/jump_label.h>\n\n#include <asm/paravirt.h>\n\n__visible void __native_queued_spin_unlock(struct qspinlock *lock)\n{\n\tnative_queued_spin_unlock(lock);\n}\nPV_CALLEE_SAVE_REGS_THUNK(__native_queued_spin_unlock);\n\nbool pv_is_native_spin_unlock(void)\n{\n\treturn pv_ops.lock.queued_spin_unlock.func ==\n\t\t__raw_callee_save___native_queued_spin_unlock;\n}\n\n__visible bool __native_vcpu_is_preempted(long cpu)\n{\n\treturn false;\n}\nPV_CALLEE_SAVE_REGS_THUNK(__native_vcpu_is_preempted);\n\nbool pv_is_native_vcpu_is_preempted(void)\n{\n\treturn pv_ops.lock.vcpu_is_preempted.func ==\n\t\t__raw_callee_save___native_vcpu_is_preempted;\n}\n\nvoid __init paravirt_set_cap(void)\n{\n\tif (!pv_is_native_spin_unlock())\n\t\tsetup_force_cpu_cap(X86_FEATURE_PVUNLOCK);\n\n\tif (!pv_is_native_vcpu_is_preempted())\n\t\tsetup_force_cpu_cap(X86_FEATURE_VCPUPREEMPT);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

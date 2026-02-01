@@ -1,0 +1,9 @@
+{
+  "module_name": "cxllib.h",
+  "hash_id": "eb71ac1cd639f94248c64b4ac9633c35207150a72bbac0075cb32709047943fb",
+  "original_prompt": "Ingested from linux-6.6.14/include/misc/cxllib.h",
+  "human_readable_source": " \n \n\n#ifndef _MISC_CXLLIB_H\n#define _MISC_CXLLIB_H\n\n#include <linux/pci.h>\n#include <asm/reg.h>\n\n \n\n \nbool cxllib_slot_is_supported(struct pci_dev *dev, unsigned long flags);\n\n\n \n#define CXL_XSL_CONFIG_VERSION1\t\t1\nstruct cxllib_xsl_config {\n\tu32\tversion;      \n\tu32\tlog_bar_size; \n\tu64\tbar_addr;     \n\tu64\tdsnctl;       \n\tu64\tdra;          \n};\n\nint cxllib_get_xsl_config(struct pci_dev *dev, struct cxllib_xsl_config *cfg);\n\n\n \nenum cxllib_mode {\n\tCXL_MODE_CXL,\n\tCXL_MODE_PCI,\n};\n\n#define CXL_MODE_NO_DMA       0\n#define CXL_MODE_DMA_TVT0     1\n#define CXL_MODE_DMA_TVT1     2\n\nint cxllib_switch_phb_mode(struct pci_dev *dev, enum cxllib_mode mode,\n\t\t\tunsigned long flags);\n\n\n \nint cxllib_set_device_dma(struct pci_dev *dev, unsigned long flags);\n\n\n \nstruct cxllib_pe_attributes {\n\tu64 sr;\n\tu32 lpid;\n\tu32 tid;\n\tu32 pid;\n};\n#define CXL_TRANSLATED_MODE 0\n#define CXL_REAL_MODE 1\n\nint cxllib_get_PE_attributes(struct task_struct *task,\n\t     unsigned long translation_mode, struct cxllib_pe_attributes *attr);\n\n\n \nint cxllib_handle_fault(struct mm_struct *mm, u64 addr, u64 size, u64 flags);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

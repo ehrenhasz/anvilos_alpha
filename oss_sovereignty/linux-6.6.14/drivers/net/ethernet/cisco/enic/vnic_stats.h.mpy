@@ -1,0 +1,9 @@
+{
+  "module_name": "vnic_stats.h",
+  "hash_id": "5ab02a73a0a761bcda0f321d8cb26b28f20543050612b2bb08844f8d6b6d3fee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cisco/enic/vnic_stats.h",
+  "human_readable_source": " \n \n\n#ifndef _VNIC_STATS_H_\n#define _VNIC_STATS_H_\n\n \nstruct vnic_tx_stats {\n\tu64 tx_frames_ok;\n\tu64 tx_unicast_frames_ok;\n\tu64 tx_multicast_frames_ok;\n\tu64 tx_broadcast_frames_ok;\n\tu64 tx_bytes_ok;\n\tu64 tx_unicast_bytes_ok;\n\tu64 tx_multicast_bytes_ok;\n\tu64 tx_broadcast_bytes_ok;\n\tu64 tx_drops;\n\tu64 tx_errors;\n\tu64 tx_tso;\n\tu64 rsvd[16];\n};\n\n \nstruct vnic_rx_stats {\n\tu64 rx_frames_ok;\n\tu64 rx_frames_total;\n\tu64 rx_unicast_frames_ok;\n\tu64 rx_multicast_frames_ok;\n\tu64 rx_broadcast_frames_ok;\n\tu64 rx_bytes_ok;\n\tu64 rx_unicast_bytes_ok;\n\tu64 rx_multicast_bytes_ok;\n\tu64 rx_broadcast_bytes_ok;\n\tu64 rx_drop;\n\tu64 rx_no_bufs;\n\tu64 rx_errors;\n\tu64 rx_rss;\n\tu64 rx_crc_errors;\n\tu64 rx_frames_64;\n\tu64 rx_frames_127;\n\tu64 rx_frames_255;\n\tu64 rx_frames_511;\n\tu64 rx_frames_1023;\n\tu64 rx_frames_1518;\n\tu64 rx_frames_to_max;\n\tu64 rsvd[16];\n};\n\n \nstruct vnic_gen_stats {\n\tu64 dma_map_error;\n};\n\nstruct vnic_stats {\n\tstruct vnic_tx_stats tx;\n\tstruct vnic_rx_stats rx;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

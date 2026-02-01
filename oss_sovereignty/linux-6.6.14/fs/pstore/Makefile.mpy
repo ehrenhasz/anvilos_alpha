@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5dfcc1e07f1e8fcffb6ef517f6efc1b335a563f6108fd94991e42824d72e6224",
+  "original_prompt": "Ingested from linux-6.6.14/fs/pstore/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the linux pstorefs routines.\n#\n\nobj-$(CONFIG_PSTORE) += pstore.o\n\npstore-objs += inode.o platform.o\npstore-$(CONFIG_PSTORE_FTRACE)\t+= ftrace.o\n\npstore-$(CONFIG_PSTORE_PMSG)\t+= pmsg.o\n\nramoops-objs += ram.o ram_core.o\nobj-$(CONFIG_PSTORE_RAM)\t+= ramoops.o\n\npstore_zone-objs += zone.o\nobj-$(CONFIG_PSTORE_ZONE)\t+= pstore_zone.o\n\npstore_blk-objs += blk.o\nobj-$(CONFIG_PSTORE_BLK)\t+= pstore_blk.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

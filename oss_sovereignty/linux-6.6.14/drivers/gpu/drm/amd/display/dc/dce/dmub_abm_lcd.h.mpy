@@ -1,0 +1,9 @@
+{
+  "module_name": "dmub_abm_lcd.h",
+  "hash_id": "1cf73637309ab040a41d8d247f4b3f474af5644d441601d303976b55bc014401",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce/dmub_abm_lcd.h",
+  "human_readable_source": " \n\n#ifndef __DMUB_ABM_LCD_H__\n#define __DMUB_ABM_LCD_H__\n\n#include \"abm.h\"\n\nstruct abm_save_restore;\n\nvoid dmub_abm_init(struct abm *abm, uint32_t backlight);\nbool dmub_abm_set_level(struct abm *abm, uint32_t level, uint8_t panel_mask);\nunsigned int dmub_abm_get_current_backlight(struct abm *abm);\nunsigned int dmub_abm_get_target_backlight(struct abm *abm);\nvoid dmub_abm_init_config(struct abm *abm,\n\tconst char *src,\n\tunsigned int bytes,\n\tunsigned int inst);\n\nbool dmub_abm_set_pause(struct abm *abm, bool pause, unsigned int panel_inst, unsigned int stream_inst);\nbool dmub_abm_save_restore(\n\t\tstruct dc_context *dc,\n\t\tunsigned int panel_inst,\n\t\tstruct abm_save_restore *pData);\nbool dmub_abm_set_pipe(struct abm *abm, uint32_t otg_inst, uint32_t option, uint32_t panel_inst, uint32_t pwrseq_inst);\nbool dmub_abm_set_backlight_level(struct abm *abm,\n\t\tunsigned int backlight_pwm_u16_16,\n\t\tunsigned int frame_ramp,\n\t\tunsigned int panel_inst);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

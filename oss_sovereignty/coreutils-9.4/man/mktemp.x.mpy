@@ -1,0 +1,9 @@
+{
+  "module_name": "mktemp.x",
+  "hash_id": "ebd1dab4475872ad26e7922fcb6c6a183c70f5f955d29efc315eecb0191e5349",
+  "original_prompt": "Ingested from coreutils-9.4/man/mktemp.x",
+  "human_readable_source": "[NAME]\nmktemp \\- create a temporary file or directory\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nmkstemp(3), mkdtemp(3), mktemp(3)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

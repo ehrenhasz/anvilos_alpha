@@ -1,0 +1,9 @@
+{
+  "module_name": "prmt.h",
+  "hash_id": "ace19d0d8187528b703283870685f9eda60545715e20a1458384c790433532b7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/prmt.h",
+  "human_readable_source": " \n\n#ifdef CONFIG_ACPI_PRMT\nvoid init_prmt(void);\n#else\nstatic inline void init_prmt(void) { }\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

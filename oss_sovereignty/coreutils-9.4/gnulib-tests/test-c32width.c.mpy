@@ -1,0 +1,9 @@
+{
+  "module_name": "test-c32width.c",
+  "hash_id": "3e482ebc9879ddbb6e881ca56c40a0536b4ec8c781fc4543cbca880080d363f6",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-c32width.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <uchar.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (c32width, int, (char32_t));\n\n#include <locale.h>\n#include <string.h>\n\n#include \"c-ctype.h\"\n#include \"localcharset.h\"\n#include \"macros.h\"\n\nint\nmain ()\n{\n  char32_t wc;\n\n#if !GNULIB_WCHAR_SINGLE_LOCALE\n# ifdef C_CTYPE_ASCII\n   \n  for (wc = 0x20; wc < 0x7F; wc++)\n    ASSERT (c32width (wc) == 1);\n# endif\n#endif\n\n   \n  if (setlocale (LC_ALL, \"fr_FR.UTF-8\") != NULL\n       \n      && strcmp (locale_charset (), \"UTF-8\") == 0)\n    {\n       \n      for (wc = 0x20; wc < 0x7F; wc++)\n        ASSERT (c32width (wc) == 1);\n\n       \n      ASSERT (c32width (0x0301) == 0);\n      ASSERT (c32width (0x05B0) == 0);\n\n       \n      ASSERT (c32width (0x200E) <= 0);\n      ASSERT (c32width (0x2060) <= 0);\n      ASSERT (c32width (0xE0001) <= 0);\n      ASSERT (c32width (0xE0044) <= 0);\n\n       \n       \n      ASSERT (c32width (0x200B) <= 0);\n      ASSERT (c32width (0xFEFF) <= 0);\n\n       \n      ASSERT (c32width (0x2202) == 1);\n\n       \n      ASSERT (c32width (0x3000) == 2);\n      ASSERT (c32width (0xB250) == 2);\n      ASSERT (c32width (0xFF1A) == 2);\n      #if !(defined __FreeBSD__ && __FreeBSD__ < 13 && !defined __GLIBC__)\n      ASSERT (c32width (0x20369) == 2);\n      ASSERT (c32width (0x2F876) == 2);\n      #endif\n    }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

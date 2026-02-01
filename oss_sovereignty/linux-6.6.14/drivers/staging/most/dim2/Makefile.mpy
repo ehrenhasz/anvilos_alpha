@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fa8b42bb8c16e6d6b900a992ea22fe58324ef302d4dcd0f6c376f05e22072791",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/most/dim2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_MOST_DIM2) += most_dim2.o\n\nmost_dim2-objs := dim2.o hal.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

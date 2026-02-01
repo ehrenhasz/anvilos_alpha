@@ -1,0 +1,9 @@
+{
+  "module_name": "last.c",
+  "hash_id": "dc8f7fdaea18879093cd41b173ddea8ba505a096702f15420e9b7ead57d26a1b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/last.c",
+  "human_readable_source": "\n \n\n#include <linux/init.h>\n#include <sound/core.h>\n\nstatic int __init alsa_sound_last_init(void)\n{\n\tstruct snd_card *card;\n\tint idx, ok = 0;\n\t\n\tprintk(KERN_INFO \"ALSA device list:\\n\");\n\tfor (idx = 0; idx < SNDRV_CARDS; idx++) {\n\t\tcard = snd_card_ref(idx);\n\t\tif (card) {\n\t\t\tprintk(KERN_INFO \"  #%i: %s\\n\", idx, card->longname);\n\t\t\tsnd_card_unref(card);\n\t\t\tok++;\n\t\t}\n\t}\n\tif (ok == 0)\n\t\tprintk(KERN_INFO \"  No soundcards found.\\n\");\n\treturn 0;\n}\n\nlate_initcall_sync(alsa_sound_last_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

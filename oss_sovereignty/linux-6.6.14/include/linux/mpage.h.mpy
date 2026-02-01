@@ -1,0 +1,9 @@
+{
+  "module_name": "mpage.h",
+  "hash_id": "20908cc067c222010517a2272eb6d834f6aceb011ef73329c62955a4c0152b0a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mpage.h",
+  "human_readable_source": " \n \n\n \n#ifdef CONFIG_BLOCK\n\nstruct writeback_control;\nstruct readahead_control;\n\nvoid mpage_readahead(struct readahead_control *, get_block_t get_block);\nint mpage_read_folio(struct folio *folio, get_block_t get_block);\nint mpage_writepages(struct address_space *mapping,\n\t\tstruct writeback_control *wbc, get_block_t get_block);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

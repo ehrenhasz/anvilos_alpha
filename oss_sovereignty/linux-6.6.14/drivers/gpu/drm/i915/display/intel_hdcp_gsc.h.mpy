@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_hdcp_gsc.h",
+  "hash_id": "0e9edaf39fa5a318781af0b32b6314a9ac7a45e154db9535c8ee7f3d81b5e4c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_hdcp_gsc.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_HDCP_GSC_H__\n#define __INTEL_HDCP_GSC_H__\n\n#include <linux/err.h>\n#include <linux/types.h>\n\nstruct drm_i915_private;\n\nstruct intel_hdcp_gsc_message {\n\tstruct i915_vma *vma;\n\tvoid *hdcp_cmd_in;\n\tvoid *hdcp_cmd_out;\n};\n\nbool intel_hdcp_gsc_cs_required(struct drm_i915_private *i915);\nssize_t intel_hdcp_gsc_msg_send(struct drm_i915_private *i915, u8 *msg_in,\n\t\t\t\tsize_t msg_in_len, u8 *msg_out,\n\t\t\t\tsize_t msg_out_len);\nint intel_hdcp_gsc_init(struct drm_i915_private *i915);\nvoid intel_hdcp_gsc_fini(struct drm_i915_private *i915);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

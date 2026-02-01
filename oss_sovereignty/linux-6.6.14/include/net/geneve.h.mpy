@@ -1,0 +1,9 @@
+{
+  "module_name": "geneve.h",
+  "hash_id": "a2471cc972b4a490f9b8bc75454636d5999d7c9cd873ab1479efb50fa3405368",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/geneve.h",
+  "human_readable_source": " \n#ifndef __NET_GENEVE_H\n#define __NET_GENEVE_H  1\n\n#include <net/udp_tunnel.h>\n\n#define GENEVE_UDP_PORT\t\t6081\n\n \n\nstruct geneve_opt {\n\t__be16\topt_class;\n\tu8\ttype;\n#ifdef __LITTLE_ENDIAN_BITFIELD\n\tu8\tlength:5;\n\tu8\tr3:1;\n\tu8\tr2:1;\n\tu8\tr1:1;\n#else\n\tu8\tr1:1;\n\tu8\tr2:1;\n\tu8\tr3:1;\n\tu8\tlength:5;\n#endif\n\tu8\topt_data[];\n};\n\n#define GENEVE_CRIT_OPT_TYPE (1 << 7)\n\nstruct genevehdr {\n#ifdef __LITTLE_ENDIAN_BITFIELD\n\tu8 opt_len:6;\n\tu8 ver:2;\n\tu8 rsvd1:6;\n\tu8 critical:1;\n\tu8 oam:1;\n#else\n\tu8 ver:2;\n\tu8 opt_len:6;\n\tu8 oam:1;\n\tu8 critical:1;\n\tu8 rsvd1:6;\n#endif\n\t__be16 proto_type;\n\tu8 vni[3];\n\tu8 rsvd2;\n\tu8 options[];\n};\n\nstatic inline bool netif_is_geneve(const struct net_device *dev)\n{\n\treturn dev->rtnl_link_ops &&\n\t       !strcmp(dev->rtnl_link_ops->kind, \"geneve\");\n}\n\n#ifdef CONFIG_INET\nstruct net_device *geneve_dev_create_fb(struct net *net, const char *name,\n\t\t\t\t\tu8 name_assign_type, u16 dst_port);\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

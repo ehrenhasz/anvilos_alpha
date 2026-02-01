@@ -1,0 +1,9 @@
+{
+  "module_name": "core.h",
+  "hash_id": "2e3e42d5daa64615ab38d265bc47515e6d25abc33b2ed20f7248e2b1127885ef",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/mt6323/core.h",
+  "human_readable_source": " \n \n\n#ifndef __MFD_MT6323_CORE_H__\n#define __MFD_MT6323_CORE_H__\n\nenum MT6323_IRQ_STATUS_numbers {\n\tMT6323_IRQ_STATUS_SPKL_AB = 0,\n\tMT6323_IRQ_STATUS_SPKL,\n\tMT6323_IRQ_STATUS_BAT_L,\n\tMT6323_IRQ_STATUS_BAT_H,\n\tMT6323_IRQ_STATUS_WATCHDOG,\n\tMT6323_IRQ_STATUS_PWRKEY,\n\tMT6323_IRQ_STATUS_THR_L,\n\tMT6323_IRQ_STATUS_THR_H,\n\tMT6323_IRQ_STATUS_VBATON_UNDET,\n\tMT6323_IRQ_STATUS_BVALID_DET,\n\tMT6323_IRQ_STATUS_CHRDET,\n\tMT6323_IRQ_STATUS_OV,\n\tMT6323_IRQ_STATUS_LDO = 16,\n\tMT6323_IRQ_STATUS_FCHRKEY,\n\tMT6323_IRQ_STATUS_ACCDET,\n\tMT6323_IRQ_STATUS_AUDIO,\n\tMT6323_IRQ_STATUS_RTC,\n\tMT6323_IRQ_STATUS_VPROC,\n\tMT6323_IRQ_STATUS_VSYS,\n\tMT6323_IRQ_STATUS_VPA,\n\tMT6323_IRQ_STATUS_NR,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

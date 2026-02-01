@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3335697b34bbc3e6085020fcc29ceee336741265d8620f555688a272a9b7ea94",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/amd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the AMD network device drivers.\n#\n\nobj-$(CONFIG_A2065) += a2065.o\nobj-$(CONFIG_AMD8111_ETH) += amd8111e.o\nobj-$(CONFIG_ARIADNE) += ariadne.o\nobj-$(CONFIG_ATARILANCE) += atarilance.o\nobj-$(CONFIG_DECLANCE) += declance.o\nobj-$(CONFIG_HPLANCE) += hplance.o 7990.o\nobj-$(CONFIG_LANCE) += lance.o\nobj-$(CONFIG_MIPS_AU1X00_ENET) += au1000_eth.o\nobj-$(CONFIG_MVME147_NET) += mvme147.o 7990.o\nobj-$(CONFIG_PCMCIA_NMCLAN) += nmclan_cs.o\nobj-$(CONFIG_PCNET32) += pcnet32.o\nobj-$(CONFIG_SUN3LANCE) += sun3lance.o\nobj-$(CONFIG_SUNLANCE) += sunlance.o\nobj-$(CONFIG_AMD_XGBE) += xgbe/\nobj-$(CONFIG_PDS_CORE) += pds_core/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

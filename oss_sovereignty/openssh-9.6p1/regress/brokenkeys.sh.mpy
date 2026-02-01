@@ -1,0 +1,9 @@
+{
+  "module_name": "brokenkeys.sh",
+  "hash_id": "0cbd26769200dccca927fb615ee14f51650d012d7cb2bb225646b207464d72c7",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/brokenkeys.sh",
+  "human_readable_source": "#\t$OpenBSD: brokenkeys.sh,v 1.2 2017/04/30 23:34:55 djm Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"broken keys\"\n\nKEYS=\"$OBJ/authorized_keys_${USER}\"\n\nstart_sshd\n\nmv ${KEYS} ${KEYS}.bak\n\n# Truncated key\necho \"ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAIEABTM= bad key\" > $KEYS\ncat ${KEYS}.bak >> ${KEYS}\ncat $OBJ/$t.pub >> $OBJ/authorized_keys_$USER\n\n${SSH} -F $OBJ/ssh_config somehost true\nif [ $? -ne 0 ]; then\n\tfail \"ssh connect with failed\"\nfi\n\nmv ${KEYS}.bak ${KEYS}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

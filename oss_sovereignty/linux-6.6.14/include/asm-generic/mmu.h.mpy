@@ -1,0 +1,9 @@
+{
+  "module_name": "mmu.h",
+  "hash_id": "26a077c0e4daa214bf427baf51399bcbac3492da4c2fdd9128e46d3a3179cf99",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/mmu.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_MMU_H\n#define __ASM_GENERIC_MMU_H\n\n \n#ifndef __ASSEMBLY__\ntypedef struct {\n\tunsigned long\t\tend_brk;\n\n#ifdef CONFIG_BINFMT_ELF_FDPIC\n\tunsigned long\t\texec_fdpic_loadmap;\n\tunsigned long\t\tinterp_fdpic_loadmap;\n#endif\n} mm_context_t;\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

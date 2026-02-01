@@ -1,0 +1,9 @@
+{
+  "module_name": "getenv_num.c",
+  "hash_id": "62aa94d0d895b99c0512cda967d1d2f52bba965ac3b1db1a3290fa022e233e91",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/tinfo/getenv_num.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: getenv_num.c,v 1.8 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\n_nc_getenv_num(const char *name)\n{\n    char *dst = 0;\n    char *src = getenv(name);\n    long value;\n\n    if ((src == 0)\n\t|| (value = strtol(src, &dst, 0)) < 0\n\t|| (dst == src)\n\t|| (*dst != '\\0')\n\t|| (int) value < value)\n\tvalue = -1;\n\n    return (int) value;\n}\n\nNCURSES_EXPORT(void)\n_nc_setenv_num(const char *name, int value)\n{\n    if (name != 0 && value >= 0) {\n\tchar buffer[128];\n#if HAVE_SETENV\n\t_nc_SPRINTF(buffer, _nc_SLIMIT(sizeof(buffer)) \"%d\", value);\n\tsetenv(name, buffer, 1);\n#elif HAVE_PUTENV\n\tchar *s;\n\t_nc_SPRINTF(buffer, _nc_SLIMIT(sizeof(buffer)) \"%s=%d\", name, value);\n\tif ((s = strdup(buffer)) != 0)\n\t    putenv(s);\n#else\n#error expected setenv/putenv functions\n#endif\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

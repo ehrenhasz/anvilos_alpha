@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3f17aef5d00f85ff89e861525972a39dc90ce66f7f5d710d1e215995dcae08b5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/goya/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nHL_GOYA_FILES :=  goya/goya.o goya/goya_security.o goya/goya_hwmgr.o \\\n\tgoya/goya_coresight.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

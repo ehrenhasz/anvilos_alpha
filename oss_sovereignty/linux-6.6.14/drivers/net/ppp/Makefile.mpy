@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d7e78a8b0ba93b61c72ed20533c4e035fa262c5c8f2693d7c25ed38dae42adb0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ppp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux PPP network device drivers.\n#\n\nobj-$(CONFIG_PPP) += ppp_generic.o\nobj-$(CONFIG_PPP_ASYNC) += ppp_async.o\nobj-$(CONFIG_PPP_BSDCOMP) += bsd_comp.o\nobj-$(CONFIG_PPP_DEFLATE) += ppp_deflate.o\nobj-$(CONFIG_PPP_MPPE) += ppp_mppe.o\nobj-$(CONFIG_PPP_SYNC_TTY) += ppp_synctty.o\nobj-$(CONFIG_PPPOE) += pppox.o pppoe.o\nobj-$(CONFIG_PPPOL2TP) += pppox.o\nobj-$(CONFIG_PPTP) += pppox.o pptp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

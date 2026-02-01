@@ -1,0 +1,9 @@
+{
+  "module_name": "test-file-has-acl-2.sh",
+  "hash_id": "955fed4a1789fec0704fa0d9fa795552e1cfee544080f516a6bb99af0de734c7",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-file-has-acl-2.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test file-has-acl on the file system of the build directory, which may be\n# a local file system or NFS mounted.\n\n. \"${srcdir=.}/init.sh\"; path_prepend_ .\n\nTMPDIR=`pwd`\nexport TMPDIR\n\n$BOURNE_SHELL \"${srcdir}/test-file-has-acl.sh\"\n\nExit $?\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

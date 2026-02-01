@@ -1,0 +1,9 @@
+{
+  "module_name": "flexmember.h",
+  "hash_id": "441b7a21158c1ba697a95e1d9d1a7872be70414fea10cf25f08e4498e62bf24f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/flexmember.h",
+  "human_readable_source": " \n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stddef.h>\n\n \n\n#if !defined __STDC_VERSION__ || __STDC_VERSION__ < 201112\n# define FLEXALIGNOF(type) (sizeof (type) & ~ (sizeof (type) - 1))\n#else\n# define FLEXALIGNOF(type) _Alignof (type)\n#endif\n\n \n\n#define FLEXSIZEOF(type, member, n) \\\n   ((offsetof (type, member) + FLEXALIGNOF (type) - 1 + (n)) \\\n    & ~ (FLEXALIGNOF (type) - 1))\n\n \n#define FLEXNSIZEOF(type, member, n) \\\n  FLEXSIZEOF (type, member, (n) * sizeof (((type *) 0)->member[0]))\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "veth.h",
+  "hash_id": "3fadf99c4d1d800a104268fe6511a2564fa6185aa547f97de721250f158a5250",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/veth.h",
+  "human_readable_source": " \n#ifndef __NET_VETH_H_\n#define __NET_VETH_H_\n\nenum {\n\tVETH_INFO_UNSPEC,\n\tVETH_INFO_PEER,\n\n\t__VETH_INFO_MAX\n#define VETH_INFO_MAX\t(__VETH_INFO_MAX - 1)\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

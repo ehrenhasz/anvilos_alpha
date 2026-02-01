@@ -1,0 +1,9 @@
+{
+  "module_name": "ext2-atomic.h",
+  "hash_id": "b985014791e3658a9ad72117ce686302fcff52df77792b66136549816174d628",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/bitops/ext2-atomic.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_BITOPS_EXT2_ATOMIC_H_\n#define _ASM_GENERIC_BITOPS_EXT2_ATOMIC_H_\n\n \n\n#define ext2_set_bit_atomic(lock, nr, addr)\t\t\\\n\t({\t\t\t\t\t\t\\\n\t\tint ret;\t\t\t\t\\\n\t\tspin_lock(lock);\t\t\t\\\n\t\tret = __test_and_set_bit_le(nr, addr);\t\\\n\t\tspin_unlock(lock);\t\t\t\\\n\t\tret;\t\t\t\t\t\\\n\t})\n\n#define ext2_clear_bit_atomic(lock, nr, addr)\t\t\\\n\t({\t\t\t\t\t\t\\\n\t\tint ret;\t\t\t\t\\\n\t\tspin_lock(lock);\t\t\t\\\n\t\tret = __test_and_clear_bit_le(nr, addr);\t\\\n\t\tspin_unlock(lock);\t\t\t\\\n\t\tret;\t\t\t\t\t\\\n\t})\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

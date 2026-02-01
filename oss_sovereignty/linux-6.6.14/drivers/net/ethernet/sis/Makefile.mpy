@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6f8c958f94b500477989c21db017d4a6286327f1d2f23a3d699777c54e7fda0b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sis/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for Silicon Integrated Systems (SiS) network device drivers.\n#\n\nobj-$(CONFIG_SIS190) += sis190.o\nobj-$(CONFIG_SIS900) += sis900.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

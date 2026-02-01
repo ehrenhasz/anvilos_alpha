@@ -1,0 +1,9 @@
+{
+  "module_name": "event.c",
+  "hash_id": "3ebe1d9051786e6dca895fb23da030f172388fde766cc0fb0d991fee6ebed227",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvif/event.c",
+  "human_readable_source": " \n#include <nvif/event.h>\n#include <nvif/printf.h>\n\n#include <nvif/class.h>\n#include <nvif/if000e.h>\n\nint\nnvif_event_block(struct nvif_event *event)\n{\n\tif (nvif_event_constructed(event)) {\n\t\tint ret = nvif_mthd(&event->object, NVIF_EVENT_V0_BLOCK, NULL, 0);\n\t\tNVIF_ERRON(ret, &event->object, \"[BLOCK]\");\n\t\treturn ret;\n\t}\n\treturn 0;\n}\n\nint\nnvif_event_allow(struct nvif_event *event)\n{\n\tif (nvif_event_constructed(event)) {\n\t\tint ret = nvif_mthd(&event->object, NVIF_EVENT_V0_ALLOW, NULL, 0);\n\t\tNVIF_ERRON(ret, &event->object, \"[ALLOW]\");\n\t\treturn ret;\n\t}\n\treturn 0;\n}\n\nvoid\nnvif_event_dtor(struct nvif_event *event)\n{\n\tnvif_object_dtor(&event->object);\n}\n\nint\nnvif_event_ctor_(struct nvif_object *parent, const char *name, u32 handle, nvif_event_func func,\n\t\t bool wait, struct nvif_event_v0 *args, u32 argc, bool warn,\n\t\t struct nvif_event *event)\n{\n\tstruct nvif_event_v0 _args;\n\tint ret;\n\n\tif (!args) {\n\t\targs = &_args;\n\t\targc = sizeof(_args);\n\t}\n\n\targs->version = 0;\n\targs->wait = wait;\n\n\tret = nvif_object_ctor(parent, name ?: \"nvifEvent\", handle,\n\t\t\t       NVIF_CLASS_EVENT, args, argc, &event->object);\n\tNVIF_ERRON(ret && warn, parent, \"[NEW EVENT wait:%d size:%zd]\",\n\t\t   args->wait, argc - sizeof(*args));\n\tif (ret)\n\t\treturn ret;\n\n\tevent->func = func;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

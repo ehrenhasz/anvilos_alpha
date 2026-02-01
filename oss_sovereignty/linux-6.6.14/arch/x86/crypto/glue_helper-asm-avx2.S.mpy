@@ -1,0 +1,9 @@
+{
+  "module_name": "glue_helper-asm-avx2.S",
+  "hash_id": "47a385b67645c481bfcbd351673408fe12b34ee417a60ebbbc7d4b9af6f8b9b3",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/crypto/glue_helper-asm-avx2.S",
+  "human_readable_source": " \n \n\n#define load_16way(src, x0, x1, x2, x3, x4, x5, x6, x7) \\\n\tvmovdqu (0*32)(src), x0; \\\n\tvmovdqu (1*32)(src), x1; \\\n\tvmovdqu (2*32)(src), x2; \\\n\tvmovdqu (3*32)(src), x3; \\\n\tvmovdqu (4*32)(src), x4; \\\n\tvmovdqu (5*32)(src), x5; \\\n\tvmovdqu (6*32)(src), x6; \\\n\tvmovdqu (7*32)(src), x7;\n\n#define store_16way(dst, x0, x1, x2, x3, x4, x5, x6, x7) \\\n\tvmovdqu x0, (0*32)(dst); \\\n\tvmovdqu x1, (1*32)(dst); \\\n\tvmovdqu x2, (2*32)(dst); \\\n\tvmovdqu x3, (3*32)(dst); \\\n\tvmovdqu x4, (4*32)(dst); \\\n\tvmovdqu x5, (5*32)(dst); \\\n\tvmovdqu x6, (6*32)(dst); \\\n\tvmovdqu x7, (7*32)(dst);\n\n#define store_cbc_16way(src, dst, x0, x1, x2, x3, x4, x5, x6, x7, t0) \\\n\tvpxor t0, t0, t0; \\\n\tvinserti128 $1, (src), t0, t0; \\\n\tvpxor t0, x0, x0; \\\n\tvpxor (0*32+16)(src), x1, x1; \\\n\tvpxor (1*32+16)(src), x2, x2; \\\n\tvpxor (2*32+16)(src), x3, x3; \\\n\tvpxor (3*32+16)(src), x4, x4; \\\n\tvpxor (4*32+16)(src), x5, x5; \\\n\tvpxor (5*32+16)(src), x6, x6; \\\n\tvpxor (6*32+16)(src), x7, x7; \\\n\tstore_16way(dst, x0, x1, x2, x3, x4, x5, x6, x7);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

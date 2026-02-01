@@ -1,0 +1,9 @@
+{
+  "module_name": "xdectoumax.c",
+  "hash_id": "5a8b05ba74345df7079a9bdb6737ac359eba5cfcd43936df514a5596a085720b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xdectoumax.c",
+  "human_readable_source": "#define __xdectoint xdectoumax\n#define __xnumtoint xnumtoumax\n#define __xdectoint_t uintmax_t\n#define __xstrtol xstrtoumax\n#define __xdectoint_signed 0\n#include \"xdectoint.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

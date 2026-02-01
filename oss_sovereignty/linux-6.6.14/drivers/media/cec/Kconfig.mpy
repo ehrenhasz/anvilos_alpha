@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ac705161423fdc43e2df631f1d6d67d16a67ed41c64b363e0e917a4fec6b360a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/cec/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CEC_CORE\n\ttristate\n\nconfig CEC_NOTIFIER\n\tbool\n\nconfig CEC_PIN\n\tbool\n\nmenu \"CEC support\"\n\nconfig MEDIA_CEC_RC\n\tbool \"HDMI CEC RC integration\"\n\tdepends on CEC_CORE && RC_CORE\n\tdepends on CEC_CORE=m || RC_CORE=y\n\thelp\n\t  Pass on CEC remote control messages to the RC framework.\n\nconfig CEC_PIN_ERROR_INJ\n\tbool \"Enable CEC error injection support\"\n\tdepends on CEC_PIN && DEBUG_FS\n\thelp\n\t  This option enables CEC error injection using debugfs.\n\nmenuconfig MEDIA_CEC_SUPPORT\n\tbool\n\tprompt \"HDMI CEC drivers\"\n\tdefault y if MEDIA_SUPPORT && !MEDIA_SUPPORT_FILTER\n\thelp\n\t  Enable support for HDMI CEC (Consumer Electronics Control),\n\t  which is an optional HDMI feature.\n\n\t  Say Y when you have an HDMI receiver, transmitter or a USB CEC\n\t  adapter that supports HDMI CEC.\n\nif MEDIA_CEC_SUPPORT\nsource \"drivers/media/cec/i2c/Kconfig\"\nsource \"drivers/media/cec/platform/Kconfig\"\nsource \"drivers/media/cec/usb/Kconfig\"\nendif\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

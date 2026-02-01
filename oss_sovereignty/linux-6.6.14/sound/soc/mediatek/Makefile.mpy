@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e27b899c53950ae293ee9c95ff2c6463b19fb64c1a9cb406ded5305f2d258f4f",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_SND_SOC_MEDIATEK) += common/\nobj-$(CONFIG_SND_SOC_MT2701) += mt2701/\nobj-$(CONFIG_SND_SOC_MT6797) += mt6797/\nobj-$(CONFIG_SND_SOC_MT7986) += mt7986/\nobj-$(CONFIG_SND_SOC_MT8173) += mt8173/\nobj-$(CONFIG_SND_SOC_MT8183) += mt8183/\nobj-$(CONFIG_SND_SOC_MT8186) += mt8186/\nobj-$(CONFIG_SND_SOC_MT8188) += mt8188/\nobj-$(CONFIG_SND_SOC_MT8192) += mt8192/\nobj-$(CONFIG_SND_SOC_MT8195) += mt8195/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

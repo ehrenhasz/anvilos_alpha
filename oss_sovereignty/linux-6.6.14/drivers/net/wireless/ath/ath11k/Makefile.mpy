@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5ae80999ab92a3ea916d87d07e7b25a3fd11efa1237cb723e00d9c3684a6bff2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath11k/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: BSD-3-Clause-Clear\nobj-$(CONFIG_ATH11K) += ath11k.o\nath11k-y += core.o \\\n\t    hal.o \\\n\t    hal_tx.o \\\n\t    hal_rx.o \\\n\t    wmi.o \\\n\t    mac.o \\\n\t    reg.o \\\n\t    htc.o \\\n\t    qmi.o \\\n\t    dp.o  \\\n\t    dp_tx.o \\\n\t    dp_rx.o \\\n\t    debug.o \\\n\t    ce.o \\\n\t    peer.o \\\n\t    dbring.o \\\n\t    hw.o \\\n\t    pcic.o\n\nath11k-$(CONFIG_ATH11K_DEBUGFS) += debugfs.o debugfs_htt_stats.o debugfs_sta.o\nath11k-$(CONFIG_NL80211_TESTMODE) += testmode.o\nath11k-$(CONFIG_ATH11K_TRACING) += trace.o\nath11k-$(CONFIG_THERMAL) += thermal.o\nath11k-$(CONFIG_ATH11K_SPECTRAL) += spectral.o\nath11k-$(CONFIG_PM) += wow.o\n\nobj-$(CONFIG_ATH11K_AHB) += ath11k_ahb.o\nath11k_ahb-y += ahb.o\n\nobj-$(CONFIG_ATH11K_PCI) += ath11k_pci.o\nath11k_pci-y += mhi.o pci.o\n\n# for tracing framework to find trace.h\nCFLAGS_trace.o := -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

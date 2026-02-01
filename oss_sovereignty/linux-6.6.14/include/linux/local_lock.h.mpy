@@ -1,0 +1,9 @@
+{
+  "module_name": "local_lock.h",
+  "hash_id": "2e864f32d8b8ed4c7b9bac3502573db0bf15dc2be08d1731e77322762d634196",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/local_lock.h",
+  "human_readable_source": " \n#ifndef _LINUX_LOCAL_LOCK_H\n#define _LINUX_LOCAL_LOCK_H\n\n#include <linux/local_lock_internal.h>\n\n \n#define local_lock_init(lock)\t\t__local_lock_init(lock)\n\n \n#define local_lock(lock)\t\t__local_lock(lock)\n\n \n#define local_lock_irq(lock)\t\t__local_lock_irq(lock)\n\n \n#define local_lock_irqsave(lock, flags)\t\t\t\t\\\n\t__local_lock_irqsave(lock, flags)\n\n \n#define local_unlock(lock)\t\t__local_unlock(lock)\n\n \n#define local_unlock_irq(lock)\t\t__local_unlock_irq(lock)\n\n \n#define local_unlock_irqrestore(lock, flags)\t\t\t\\\n\t__local_unlock_irqrestore(lock, flags)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

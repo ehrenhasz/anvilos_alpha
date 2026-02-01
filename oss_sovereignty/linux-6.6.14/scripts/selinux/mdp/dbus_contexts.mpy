@@ -1,0 +1,9 @@
+{
+  "module_name": "dbus_contexts",
+  "hash_id": "33115c8ae83b6d571d45099e1758b571209e2808eed26389ffc50c1d5409cb37",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/selinux/mdp/dbus_contexts",
+  "human_readable_source": "<!DOCTYPE busconfig PUBLIC \"-//freedesktop//DTD D-BUS Bus Configuration 1.0//EN\"\n \"http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd\">\n<busconfig>\n  <selinux>\n  </selinux>\n</busconfig>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

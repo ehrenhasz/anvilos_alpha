@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fseeko2.sh",
+  "hash_id": "9e4b63edb0d43e4b4068749df70afeffb3940948a2fe537701fd2d9624cc9948",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fseeko2.sh",
+  "human_readable_source": "#!/bin/sh\n\nexec ${CHECKER} ./test-fseeko${EXEEXT} 1 2 < \"$srcdir/test-fseeko2.sh\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

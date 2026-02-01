@@ -1,0 +1,9 @@
+{
+  "module_name": "dpu_plane.h",
+  "hash_id": "794b756b2a0ffd2e72e24f514d9660c612d954cbb8af472a6ea57f58adcd83d1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.h",
+  "human_readable_source": " \n \n\n#ifndef _DPU_PLANE_H_\n#define _DPU_PLANE_H_\n\n#include <drm/drm_crtc.h>\n\n#include \"dpu_kms.h\"\n#include \"dpu_hw_mdss.h\"\n#include \"dpu_hw_sspp.h\"\n\n \nstruct dpu_plane_state {\n\tstruct drm_plane_state base;\n\tstruct msm_gem_address_space *aspace;\n\tstruct dpu_sw_pipe pipe;\n\tstruct dpu_sw_pipe r_pipe;\n\tstruct dpu_sw_pipe_cfg pipe_cfg;\n\tstruct dpu_sw_pipe_cfg r_pipe_cfg;\n\tenum dpu_stage stage;\n\tbool needs_qos_remap;\n\tbool pending;\n\n\tu64 plane_fetch_bw;\n\tu64 plane_clk;\n\n\tbool needs_dirtyfb;\n\tunsigned int rotation;\n};\n\n#define to_dpu_plane_state(x) \\\n\tcontainer_of(x, struct dpu_plane_state, base)\n\n \nvoid dpu_plane_flush(struct drm_plane *plane);\n\n \nvoid dpu_plane_set_error(struct drm_plane *plane, bool error);\n\n \nstruct drm_plane *dpu_plane_init(struct drm_device *dev,\n\t\tuint32_t pipe, enum drm_plane_type type,\n\t\tunsigned long possible_crtcs);\n\n \nint dpu_plane_color_fill(struct drm_plane *plane,\n\t\tuint32_t color, uint32_t alpha);\n\n#ifdef CONFIG_DEBUG_FS\nvoid dpu_plane_danger_signal_ctrl(struct drm_plane *plane, bool enable);\n#else\nstatic inline void dpu_plane_danger_signal_ctrl(struct drm_plane *plane, bool enable) {}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

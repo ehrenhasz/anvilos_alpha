@@ -1,0 +1,9 @@
+{
+  "module_name": "act_stats.h",
+  "hash_id": "f77b2908887514298358393b32abc1537c1bc0b321f4d88391766cc553c7fd5c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act_stats.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_EN_ACT_STATS_H__\n#define __MLX5_EN_ACT_STATS_H__\n\n#include <net/flow_offload.h>\n#include \"en/tc_priv.h\"\n\nstruct mlx5e_tc_act_stats_handle;\n\nstruct mlx5e_tc_act_stats_handle *mlx5e_tc_act_stats_create(void);\nvoid mlx5e_tc_act_stats_free(struct mlx5e_tc_act_stats_handle *handle);\n\nint\nmlx5e_tc_act_stats_add_flow(struct mlx5e_tc_act_stats_handle *handle,\n\t\t\t    struct mlx5e_tc_flow *flow);\n\nvoid\nmlx5e_tc_act_stats_del_flow(struct mlx5e_tc_act_stats_handle *handle,\n\t\t\t    struct mlx5e_tc_flow *flow);\n\nint\nmlx5e_tc_act_stats_fill_stats(struct mlx5e_tc_act_stats_handle *handle,\n\t\t\t      struct flow_offload_action *fl_act);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

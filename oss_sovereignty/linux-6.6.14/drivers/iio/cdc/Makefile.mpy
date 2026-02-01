@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ae68e1382ed860b21d62bffe5bb190f0cb4c26d9c5f4255631835a6e4ad01bcd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/cdc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for industrial I/O capacitance to digital converter (CDC) drivers\n#\n\nobj-$(CONFIG_AD7150) += ad7150.o\nobj-$(CONFIG_AD7746) += ad7746.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

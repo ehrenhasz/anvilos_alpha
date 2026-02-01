@@ -1,0 +1,9 @@
+{
+  "module_name": "charger.h",
+  "hash_id": "b78a881ec052091f56ef6e0cacb6ad07c02ae254cff4de4da1454fdb15521840",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/usb/charger.h",
+  "human_readable_source": " \n\n#ifndef _UAPI__LINUX_USB_CHARGER_H\n#define _UAPI__LINUX_USB_CHARGER_H\n\n \nenum usb_charger_type {\n\tUNKNOWN_TYPE = 0,\n\tSDP_TYPE = 1,\n\tDCP_TYPE = 2,\n\tCDP_TYPE = 3,\n\tACA_TYPE = 4,\n};\n\n \nenum usb_charger_state {\n\tUSB_CHARGER_DEFAULT = 0,\n\tUSB_CHARGER_PRESENT = 1,\n\tUSB_CHARGER_ABSENT = 2,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

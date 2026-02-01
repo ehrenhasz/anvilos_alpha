@@ -1,0 +1,9 @@
+{
+  "module_name": "vfio_ccw_trace.c",
+  "hash_id": "d9b88c18c9a5ada8cfdef738e2416fb3286ca1b433c78c4ac39b6ae9ef94b134",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/cio/vfio_ccw_trace.c",
+  "human_readable_source": "\n \n\n#define CREATE_TRACE_POINTS\n#include \"vfio_ccw_trace.h\"\n\nEXPORT_TRACEPOINT_SYMBOL(vfio_ccw_chp_event);\nEXPORT_TRACEPOINT_SYMBOL(vfio_ccw_fsm_async_request);\nEXPORT_TRACEPOINT_SYMBOL(vfio_ccw_fsm_event);\nEXPORT_TRACEPOINT_SYMBOL(vfio_ccw_fsm_io_request);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

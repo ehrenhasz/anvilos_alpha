@@ -1,0 +1,9 @@
+{
+  "module_name": "netfilter_arp.h",
+  "hash_id": "8426cfb0b0699a5bba3b635b0165bfa42be98586d67f48a1962adfcf68d37dbf",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_arp.h",
+  "human_readable_source": " \n#ifndef __LINUX_ARP_NETFILTER_H\n#define __LINUX_ARP_NETFILTER_H\n\n \n\n#include <linux/netfilter.h>\n\n \n#define NF_ARP\t\t0\n\n \n#define NF_ARP_IN\t0\n#define NF_ARP_OUT\t1\n#define NF_ARP_FORWARD\t2\n\n#ifndef __KERNEL__\n#define NF_ARP_NUMHOOKS\t3\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

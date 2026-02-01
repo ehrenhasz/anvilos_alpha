@@ -1,0 +1,9 @@
+{
+  "module_name": "gf100.h",
+  "hash_id": "8c83067873958846025869aeeebc5aae3deb87c9dd3c509d000da22c63516457",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bar/gf100.h",
+  "human_readable_source": " \n#ifndef __GF100_BAR_H__\n#define __GF100_BAR_H__\n#define gf100_bar(p) container_of((p), struct gf100_bar, base)\n#include \"priv.h\"\n\nstruct gf100_barN {\n\tstruct nvkm_memory *inst;\n\tstruct nvkm_vmm *vmm;\n};\n\nstruct gf100_bar {\n\tstruct nvkm_bar base;\n\tbool bar2_halve;\n\tstruct gf100_barN bar[2];\n};\n\nint gf100_bar_new_(const struct nvkm_bar_func *, struct nvkm_device *, enum nvkm_subdev_type,\n\t\t   int, struct nvkm_bar **);\nvoid *gf100_bar_dtor(struct nvkm_bar *);\nint gf100_bar_oneinit(struct nvkm_bar *);\nvoid gf100_bar_bar1_init(struct nvkm_bar *);\nvoid gf100_bar_bar1_wait(struct nvkm_bar *);\nstruct nvkm_vmm *gf100_bar_bar1_vmm(struct nvkm_bar *);\nvoid gf100_bar_bar2_init(struct nvkm_bar *);\nstruct nvkm_vmm *gf100_bar_bar2_vmm(struct nvkm_bar *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

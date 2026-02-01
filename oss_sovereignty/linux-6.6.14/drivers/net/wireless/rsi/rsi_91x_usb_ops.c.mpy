@@ -1,0 +1,9 @@
+{
+  "module_name": "rsi_91x_usb_ops.c",
+  "hash_id": "a8e52966c467780ccfa164c2d3769abf978d04b72e84182f589fb42d3a026204",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/rsi/rsi_91x_usb_ops.c",
+  "human_readable_source": " \n\n#include <linux/firmware.h>\n#include \"rsi_usb.h\"\n\n \nvoid rsi_usb_rx_thread(struct rsi_common *common)\n{\n\tstruct rsi_hw *adapter = common->priv;\n\tstruct rsi_91x_usbdev *dev = adapter->rsi_dev;\n\tint status;\n\tstruct sk_buff *skb;\n\n\tdo {\n\t\trsi_wait_event(&dev->rx_thread.event, EVENT_WAIT_FOREVER);\n\t\trsi_reset_event(&dev->rx_thread.event);\n\n\t\twhile (true) {\n\t\t\tif (atomic_read(&dev->rx_thread.thread_done))\n\t\t\t\tgoto out;\n\n\t\t\tskb = skb_dequeue(&dev->rx_q);\n\t\t\tif (!skb)\n\t\t\t\tbreak;\n\t\t\tstatus = rsi_read_pkt(common, skb->data, 0);\n\t\t\tif (status) {\n\t\t\t\trsi_dbg(ERR_ZONE, \"%s: Failed To read data\",\n\t\t\t\t\t__func__);\n\t\t\t\tbreak;\n\t\t\t}\n\t\t\tdev_kfree_skb(skb);\n\t\t}\n\t} while (1);\n\nout:\n\trsi_dbg(INFO_ZONE, \"%s: Terminated thread\\n\", __func__);\n\tskb_queue_purge(&dev->rx_q);\n\tkthread_complete_and_exit(&dev->rx_thread.completion, 0);\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

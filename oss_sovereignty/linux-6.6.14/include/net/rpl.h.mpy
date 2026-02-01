@@ -1,0 +1,9 @@
+{
+  "module_name": "rpl.h",
+  "hash_id": "f69d07cccb77a8d4652ac6351b82df15ee62f3a1e55b9280021325c8b69b2ce7",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/rpl.h",
+  "human_readable_source": " \n \n\n#ifndef _NET_RPL_H\n#define _NET_RPL_H\n\n#include <linux/rpl.h>\n\n#if IS_ENABLED(CONFIG_IPV6_RPL_LWTUNNEL)\nextern int rpl_init(void);\nextern void rpl_exit(void);\n#else\nstatic inline int rpl_init(void)\n{\n\treturn 0;\n}\n\nstatic inline void rpl_exit(void) {}\n#endif\n\nvoid ipv6_rpl_srh_decompress(struct ipv6_rpl_sr_hdr *outhdr,\n\t\t\t     const struct ipv6_rpl_sr_hdr *inhdr,\n\t\t\t     const struct in6_addr *daddr, unsigned char n);\n\nvoid ipv6_rpl_srh_compress(struct ipv6_rpl_sr_hdr *outhdr,\n\t\t\t   const struct ipv6_rpl_sr_hdr *inhdr,\n\t\t\t   const struct in6_addr *daddr, unsigned char n);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

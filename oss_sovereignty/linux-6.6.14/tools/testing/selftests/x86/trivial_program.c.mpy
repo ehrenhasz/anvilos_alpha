@@ -1,0 +1,9 @@
+{
+  "module_name": "trivial_program.c",
+  "hash_id": "29a4bdf7cd827670555cacace4fd96f3c89bd346cb03fe0bff07c79ab403d895",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/x86/trivial_program.c",
+  "human_readable_source": " \n\n#include <stdio.h>\n\nint\nmain(void)\n{\n\tputs(\"\");\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

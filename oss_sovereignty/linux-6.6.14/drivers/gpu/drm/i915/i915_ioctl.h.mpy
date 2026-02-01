@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_ioctl.h",
+  "hash_id": "0c668bf6b545b7bc1651fa06268420244701f09ace8897337124a261a0d33d3e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_ioctl.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_IOCTL_H__\n#define __I915_IOCTL_H__\n\nstruct drm_device;\nstruct drm_file;\n\nint i915_reg_read_ioctl(struct drm_device *dev, void *data, struct drm_file *file);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cifs_spnego_negtokeninit.asn1",
+  "hash_id": "acb5161e600437bdeebcc3a3dea9f02580d1a4d4f9847fa5de0766ec0cd17c9d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/client/cifs_spnego_negtokeninit.asn1",
+  "human_readable_source": "GSSAPI ::=\n\t[APPLICATION 0] IMPLICIT SEQUENCE {\n\t\tthisMech\n\t\t\tOBJECT IDENTIFIER ({cifs_gssapi_this_mech}),\n\t\tnegotiationToken\n\t\t\tNegotiationToken\n\t}\n\nMechType ::= OBJECT IDENTIFIER ({cifs_neg_token_init_mech_type})\n\nMechTypeList ::= SEQUENCE OF MechType\n\nNegHints ::= SEQUENCE {\n\thintName\n\t\t[0] GeneralString OPTIONAL,\n\thintAddress\n\t\t[1] OCTET STRING OPTIONAL\n\t}\n\nNegTokenInit2 ::=\n\tSEQUENCE {\n\t\tmechTypes\n\t\t\t[0] MechTypeList OPTIONAL,\n\t\treqFlags\n\t\t\t[1] BIT STRING OPTIONAL,\n\t\tmechToken\n\t\t\t[2] OCTET STRING OPTIONAL,\n\t\tnegHints\n\t\t\t[3] NegHints OPTIONAL,\n\t\tmechListMIC\n\t\t\t[3] OCTET STRING OPTIONAL\n\t}\n\nNegotiationToken ::=\n\tCHOICE {\n\t\tnegTokenInit\n\t\t\t[0] NegTokenInit2,\n\t\tnegTokenTarg\n\t\t\t[1] ANY\n\t}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

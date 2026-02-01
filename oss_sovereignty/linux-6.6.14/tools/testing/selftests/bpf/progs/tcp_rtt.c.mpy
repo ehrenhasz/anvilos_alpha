@@ -1,0 +1,9 @@
+{
+  "module_name": "tcp_rtt.c",
+  "hash_id": "5ce2281510d4791e13a099a1b8ff1fc8ca2a1a77e6ae449c1b68d5848448d8d7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/tcp_rtt.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct tcp_rtt_storage {\n\t__u32 invoked;\n\t__u32 dsack_dups;\n\t__u32 delivered;\n\t__u32 delivered_ce;\n\t__u32 icsk_retransmits;\n};\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SK_STORAGE);\n\t__uint(map_flags, BPF_F_NO_PREALLOC);\n\t__type(key, int);\n\t__type(value, struct tcp_rtt_storage);\n} socket_storage_map SEC(\".maps\");\n\nSEC(\"sockops\")\nint _sockops(struct bpf_sock_ops *ctx)\n{\n\tstruct tcp_rtt_storage *storage;\n\tstruct bpf_tcp_sock *tcp_sk;\n\tint op = (int) ctx->op;\n\tstruct bpf_sock *sk;\n\n\tsk = ctx->sk;\n\tif (!sk)\n\t\treturn 1;\n\n\tstorage = bpf_sk_storage_get(&socket_storage_map, sk, 0,\n\t\t\t\t     BPF_SK_STORAGE_GET_F_CREATE);\n\tif (!storage)\n\t\treturn 1;\n\n\tif (op == BPF_SOCK_OPS_TCP_CONNECT_CB) {\n\t\tbpf_sock_ops_cb_flags_set(ctx, BPF_SOCK_OPS_RTT_CB_FLAG);\n\t\treturn 1;\n\t}\n\n\tif (op != BPF_SOCK_OPS_RTT_CB)\n\t\treturn 1;\n\n\ttcp_sk = bpf_tcp_sock(sk);\n\tif (!tcp_sk)\n\t\treturn 1;\n\n\tstorage->invoked++;\n\n\tstorage->dsack_dups = tcp_sk->dsack_dups;\n\tstorage->delivered = tcp_sk->delivered;\n\tstorage->delivered_ce = tcp_sk->delivered_ce;\n\tstorage->icsk_retransmits = tcp_sk->icsk_retransmits;\n\n\treturn 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_dma_buf.c",
+  "hash_id": "82a2dc26158b710394cc809ea2cce095fb882d326e3ab70aa6299ab2b7839aa1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/virtio/virtio_dma_buf.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/virtio_dma_buf.h>\n\n \nstruct dma_buf *virtio_dma_buf_export\n\t(const struct dma_buf_export_info *exp_info)\n{\n\tconst struct virtio_dma_buf_ops *virtio_ops =\n\t\tcontainer_of(exp_info->ops,\n\t\t\t     const struct virtio_dma_buf_ops, ops);\n\n\tif (!exp_info->ops ||\n\t    exp_info->ops->attach != &virtio_dma_buf_attach ||\n\t    !virtio_ops->get_uuid) {\n\t\treturn ERR_PTR(-EINVAL);\n\t}\n\n\treturn dma_buf_export(exp_info);\n}\nEXPORT_SYMBOL(virtio_dma_buf_export);\n\n \nint virtio_dma_buf_attach(struct dma_buf *dma_buf,\n\t\t\t  struct dma_buf_attachment *attach)\n{\n\tint ret;\n\tconst struct virtio_dma_buf_ops *ops =\n\t\tcontainer_of(dma_buf->ops,\n\t\t\t     const struct virtio_dma_buf_ops, ops);\n\n\tif (ops->device_attach) {\n\t\tret = ops->device_attach(dma_buf, attach);\n\t\tif (ret)\n\t\t\treturn ret;\n\t}\n\treturn 0;\n}\nEXPORT_SYMBOL(virtio_dma_buf_attach);\n\n \nbool is_virtio_dma_buf(struct dma_buf *dma_buf)\n{\n\treturn dma_buf->ops->attach == &virtio_dma_buf_attach;\n}\nEXPORT_SYMBOL(is_virtio_dma_buf);\n\n \nint virtio_dma_buf_get_uuid(struct dma_buf *dma_buf,\n\t\t\t    uuid_t *uuid)\n{\n\tconst struct virtio_dma_buf_ops *ops =\n\t\tcontainer_of(dma_buf->ops,\n\t\t\t     const struct virtio_dma_buf_ops, ops);\n\n\tif (!is_virtio_dma_buf(dma_buf))\n\t\treturn -EINVAL;\n\n\treturn ops->get_uuid(dma_buf, uuid);\n}\nEXPORT_SYMBOL(virtio_dma_buf_get_uuid);\n\nMODULE_LICENSE(\"GPL\");\nMODULE_IMPORT_NS(DMA_BUF);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

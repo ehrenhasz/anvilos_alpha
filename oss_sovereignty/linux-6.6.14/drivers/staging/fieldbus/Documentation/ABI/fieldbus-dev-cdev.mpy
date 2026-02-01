@@ -1,0 +1,9 @@
+{
+  "module_name": "fieldbus-dev-cdev",
+  "hash_id": "400dbf6248eb51a2e63ccfef8704f68b7ff733ba5186e9f2ac9970e7594c9dd7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/fieldbus/Documentation/ABI/fieldbus-dev-cdev",
+  "human_readable_source": "What:\t\t/dev/fieldbus_devX\nDate:\t\tDecember 2018\nKernelVersion:\t5.1 (staging)\nContact:\tSven Van Asbroeck <TheSven73@gmail.com>\nDescription:\n\t\tThe cdev interface to drivers for Fieldbus Device Memory\n\t\t\t(aka. Process Memory).\n\n\t\tThe following file operations are supported:\n\n\t\topen(2)\n\t\tCreate an I/O context associated with the file descriptor.\n\n\t\tread(2)\n\t\tRead from Process Memory's \"read area\".\n\t\tClears POLLERR | POLLPRI from the file descriptor.\n\n\t\twrite(2)\n\t\tWrite to Process Memory's \"write area\".\n\n\t\tpoll(2), select(2), epoll_wait(2) etc.\n\t\tWhen a \"Process Memory Read Area Changed\" event occurs,\n\t\tPOLLERR | POLLPRI will be set on the file descriptor.\n\t\tNote that POLLIN | POLLOUT events are always set, because the\n\t\tprocess memory area is always readable and writable.\n\n\t\tclose(2)\n\t\tFree up the I/O context that was associated\n\t\twith the file descriptor.\n\nUsers:\t\tTBD\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

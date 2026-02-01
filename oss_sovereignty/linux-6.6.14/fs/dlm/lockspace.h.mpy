@@ -1,0 +1,9 @@
+{
+  "module_name": "lockspace.h",
+  "hash_id": "e0cc4498e576c128c94a3e397b42c297e0a1030f4df089cb5e5615a3552d17ef",
+  "original_prompt": "Ingested from linux-6.6.14/fs/dlm/lockspace.h",
+  "human_readable_source": " \n \n\n#ifndef __LOCKSPACE_DOT_H__\n#define __LOCKSPACE_DOT_H__\n\n \n#define DLM_LSFL_FS\t0x00000004\n\nint dlm_lockspace_init(void);\nvoid dlm_lockspace_exit(void);\nstruct dlm_ls *dlm_find_lockspace_global(uint32_t id);\nstruct dlm_ls *dlm_find_lockspace_local(void *id);\nstruct dlm_ls *dlm_find_lockspace_device(int minor);\nvoid dlm_put_lockspace(struct dlm_ls *ls);\nvoid dlm_stop_lockspaces(void);\nint dlm_new_user_lockspace(const char *name, const char *cluster,\n\t\t\t   uint32_t flags, int lvblen,\n\t\t\t   const struct dlm_lockspace_ops *ops,\n\t\t\t   void *ops_arg, int *ops_result,\n\t\t\t   dlm_lockspace_t **lockspace);\n\n#endif\t\t\t\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

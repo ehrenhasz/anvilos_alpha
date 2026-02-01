@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,lcc-ipq806x.h",
+  "hash_id": "1a1e4e6295e7ce85dbf085009effbeeeecb668844d560f6fc5f6a24b617b5b21",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,lcc-ipq806x.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_LCC_IPQ806X_H\n#define _DT_BINDINGS_CLK_LCC_IPQ806X_H\n\n#define PLL4\t\t\t\t0\n#define MI2S_OSR_SRC\t\t\t1\n#define MI2S_OSR_CLK\t\t\t2\n#define MI2S_DIV_CLK\t\t\t3\n#define MI2S_BIT_DIV_CLK\t\t4\n#define MI2S_BIT_CLK\t\t\t5\n#define PCM_SRC\t\t\t\t6\n#define PCM_CLK_OUT\t\t\t7\n#define PCM_CLK\t\t\t\t8\n#define SPDIF_SRC\t\t\t9\n#define SPDIF_CLK\t\t\t10\n#define AHBIX_CLK\t\t\t11\n\n#define LCC_PCM_RESET\t\t\t0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

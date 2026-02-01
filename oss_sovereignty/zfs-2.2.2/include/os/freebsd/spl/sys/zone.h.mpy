@@ -1,0 +1,9 @@
+{
+  "module_name": "zone.h",
+  "hash_id": "ab93917e287fd81735363f845f5c88e2ec86107417c22ab475058018b4e99e21",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/zone.h",
+  "human_readable_source": " \n\n#ifndef _OPENSOLARIS_SYS_ZONE_H_\n#define\t_OPENSOLARIS_SYS_ZONE_H_\n\n#include <sys/jail.h>\n\n \n\n#define\tGLOBAL_ZONEID\t0\n\n \n#define\tINGLOBALZONE(proc)\t(!jailed((proc)->p_ucred))\n\n \nextern int zone_dataset_attach(struct ucred *, const char *, int);\n\n \nextern int zone_dataset_detach(struct ucred *, const char *, int);\n\n \nextern int zone_dataset_visible(const char *, int *);\n\n \nextern uint32_t zone_get_hostid(void *);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

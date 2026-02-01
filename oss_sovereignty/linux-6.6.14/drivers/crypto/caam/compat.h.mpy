@@ -1,0 +1,9 @@
+{
+  "module_name": "compat.h",
+  "hash_id": "72310ac64d0f9206ce09ffcb1bd4e4473ae4f9e842e95daeef3f2ed04ccb4649",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/caam/compat.h",
+  "human_readable_source": " \n \n\n#ifndef CAAM_COMPAT_H\n#define CAAM_COMPAT_H\n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/mod_devicetable.h>\n#include <linux/device.h>\n#include <linux/interrupt.h>\n#include <linux/crypto.h>\n#include <linux/hash.h>\n#include <linux/hw_random.h>\n#include <linux/of_platform.h>\n#include <linux/dma-mapping.h>\n#include <linux/io.h>\n#include <linux/iommu.h>\n#include <linux/spinlock.h>\n#include <linux/rtnetlink.h>\n#include <linux/in.h>\n#include <linux/slab.h>\n#include <linux/types.h>\n#include <linux/debugfs.h>\n#include <linux/circ_buf.h>\n#include <linux/clk.h>\n#include <net/xfrm.h>\n\n#include <crypto/algapi.h>\n#include <crypto/null.h>\n#include <crypto/aes.h>\n#include <crypto/ctr.h>\n#include <crypto/internal/des.h>\n#include <crypto/gcm.h>\n#include <crypto/sha1.h>\n#include <crypto/sha2.h>\n#include <crypto/md5.h>\n#include <crypto/chacha.h>\n#include <crypto/poly1305.h>\n#include <crypto/internal/aead.h>\n#include <crypto/authenc.h>\n#include <crypto/akcipher.h>\n#include <crypto/scatterwalk.h>\n#include <crypto/skcipher.h>\n#include <crypto/internal/skcipher.h>\n#include <crypto/internal/hash.h>\n#include <crypto/internal/rsa.h>\n#include <crypto/internal/akcipher.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

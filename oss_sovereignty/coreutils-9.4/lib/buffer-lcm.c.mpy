@@ -1,0 +1,9 @@
+{
+  "module_name": "buffer-lcm.c",
+  "hash_id": "74482e0df815a523fc3ffa639a387514a908980b617f46a1f81d59abe890f77c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/buffer-lcm.c",
+  "human_readable_source": " \n\n#include <config.h>\n#include \"buffer-lcm.h\"\n\n \n\nsize_t\nbuffer_lcm (size_t a, size_t b, size_t lcm_max)\n{\n  size_t size;\n\n   \n  if (!a)\n    size = b ? b : 8 * 1024;\n  else\n    {\n      if (b)\n        {\n           \n\n          size_t lcm, m, n, q, r;\n\n           \n          for (m = a, n = b;  (r = m % n) != 0;  m = n, n = r)\n            continue;\n\n           \n          q = a / n;\n          lcm = q * b;\n          if (lcm <= lcm_max && lcm / b == q)\n            return lcm;\n        }\n\n      size = a;\n    }\n\n  return size <= lcm_max ? size : lcm_max;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

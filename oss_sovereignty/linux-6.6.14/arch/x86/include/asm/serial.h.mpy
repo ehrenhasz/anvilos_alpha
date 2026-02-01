@@ -1,0 +1,9 @@
+{
+  "module_name": "serial.h",
+  "hash_id": "179b0aed88dc87b0eb3ef665db182ba2d793e66e40a2d36773677e36c603eaaf",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/serial.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SERIAL_H\n#define _ASM_X86_SERIAL_H\n\n \n#define BASE_BAUD (1843200/16)\n\n \n#ifdef CONFIG_SERIAL_8250_DETECT_IRQ\n# define STD_COMX_FLAGS\t(UPF_BOOT_AUTOCONF |\tUPF_SKIP_TEST\t| UPF_AUTO_IRQ)\n# define STD_COM4_FLAGS\t(UPF_BOOT_AUTOCONF |\t0\t\t| UPF_AUTO_IRQ)\n#else\n# define STD_COMX_FLAGS\t(UPF_BOOT_AUTOCONF |\tUPF_SKIP_TEST\t| 0\t\t)\n# define STD_COM4_FLAGS\t(UPF_BOOT_AUTOCONF |\t0\t\t| 0\t\t)\n#endif\n\n#define SERIAL_PORT_DFNS\t\t\t\t\t\t\t\t\\\n\t \t\\\n\t{ .uart = 0,\tBASE_BAUD,\t0x3F8,\t4,\tSTD_COMX_FLAGS\t},  \t\\\n\t{ .uart = 0,\tBASE_BAUD,\t0x2F8,\t3,\tSTD_COMX_FLAGS\t},  \t\\\n\t{ .uart = 0,\tBASE_BAUD,\t0x3E8,\t4,\tSTD_COMX_FLAGS\t},  \t\\\n\t{ .uart = 0,\tBASE_BAUD,\t0x2E8,\t3,\tSTD_COM4_FLAGS\t},  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

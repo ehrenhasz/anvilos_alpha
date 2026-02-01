@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e190bf7d87d21ab6901646f3dbe1d2bc3908c03669c36ea7287476d9890ff69d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/omap2/omapfb/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig OMAP2_VRFB\n\tbool\n\nmenuconfig FB_OMAP2\n\ttristate \"OMAP2+ frame buffer support\"\n\tdepends on FB\n\tdepends on FB_DEVICE\n\tdepends on DRM_OMAP = n\n\tdepends on GPIOLIB\n\tselect FB_OMAP2_DSS\n\tselect OMAP2_VRFB if ARCH_OMAP2 || ARCH_OMAP3\n\tselect FB_CFB_FILLRECT\n\tselect FB_CFB_COPYAREA\n\tselect FB_CFB_IMAGEBLIT\n\thelp\n\t  Frame buffer driver for OMAP2+ based boards.\n\nif FB_OMAP2\n\nconfig FB_OMAP2_DEBUG_SUPPORT\n\tbool \"Debug support for OMAP2+ FB\"\n\tdefault y\n\tdepends on FB_OMAP2\n\thelp\n\t  Support for debug output. You have to enable the actual printing\n\t  with 'debug' module parameter.\n\nconfig FB_OMAP2_NUM_FBS\n\tint \"Number of framebuffers\"\n\trange 1 10\n\tdefault 3\n\tdepends on FB_OMAP2\n\thelp\n\t  Select the number of framebuffers created. OMAP2/3 has 3 overlays\n\t  so normally this would be 3.\n\nsource \"drivers/video/fbdev/omap2/omapfb/dss/Kconfig\"\nsource \"drivers/video/fbdev/omap2/omapfb/displays/Kconfig\"\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

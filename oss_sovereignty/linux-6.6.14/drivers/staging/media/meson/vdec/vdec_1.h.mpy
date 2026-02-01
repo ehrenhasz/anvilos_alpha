@@ -1,0 +1,9 @@
+{
+  "module_name": "vdec_1.h",
+  "hash_id": "183582978ca0a75ca472752729e2f81cdc1c153613d2c6a900e5e6cd0f23327c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/meson/vdec/vdec_1.h",
+  "human_readable_source": " \n \n\n#ifndef __MESON_VDEC_VDEC_1_H_\n#define __MESON_VDEC_VDEC_1_H_\n\n#include \"vdec.h\"\n\nextern struct amvdec_ops vdec_1_ops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

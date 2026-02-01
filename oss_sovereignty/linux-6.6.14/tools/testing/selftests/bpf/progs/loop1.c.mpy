@@ -1,0 +1,9 @@
+{
+  "module_name": "loop1.c",
+  "hash_id": "04f0b9e51cbc70ba9895323ff603c60848212068e761d6b8629b7104fe386bda",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/loop1.c",
+  "human_readable_source": "\n\n#include <linux/sched.h>\n#include <linux/ptrace.h>\n#include <stdint.h>\n#include <stddef.h>\n#include <stdbool.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"raw_tracepoint/kfree_skb\")\nint nested_loops(volatile struct pt_regs* ctx)\n{\n\tint i, j, sum = 0, m;\n\n\tfor (j = 0; j < 300; j++)\n\t\tfor (i = 0; i < j; i++) {\n\t\t\tif (j & 1)\n\t\t\t\tm = PT_REGS_RC(ctx);\n\t\t\telse\n\t\t\t\tm = j;\n\t\t\tsum += i * m;\n\t\t}\n\n\treturn sum;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "twl-core.h",
+  "hash_id": "e8e4113b6dce8e826d85aa906c297b4bf3f18121a4f87bfdc914a2ba2fe3ed91",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/twl-core.h",
+  "human_readable_source": " \n#ifndef __TWL_CORE_H__\n#define __TWL_CORE_H__\n\nextern int twl6030_init_irq(struct device *dev, int irq_num);\nextern void twl6030_exit_irq(void);\nextern int twl4030_init_irq(struct device *dev, int irq_num);\nextern void twl4030_exit_irq(void);\nextern int twl4030_init_chip_irq(const char *chip);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

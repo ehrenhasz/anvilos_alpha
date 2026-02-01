@@ -1,0 +1,9 @@
+{
+  "module_name": "perf-archive.sh",
+  "hash_id": "16a1a025b2e4dd6b6ba4b04445e83d59b85f74c7b5487b27cebb9b7a96ad5846",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/perf-archive.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n# perf archive\n# Arnaldo Carvalho de Melo <acme@redhat.com>\n\nPERF_DATA=perf.data\nif [ $# -ne 0 ] ; then\n\tPERF_DATA=$1\nfi\n\n#\n# PERF_BUILDID_DIR environment variable set by perf\n# path to buildid directory, default to $HOME/.debug\n#\nif [ -z $PERF_BUILDID_DIR ]; then\n\tPERF_BUILDID_DIR=~/.debug/\nelse\n        # append / to make substitutions work\n        PERF_BUILDID_DIR=$PERF_BUILDID_DIR/\nfi\n\nBUILDIDS=$(mktemp /tmp/perf-archive-buildids.XXXXXX)\n\nperf buildid-list -i $PERF_DATA --with-hits | grep -v \"^ \" > $BUILDIDS\nif [ ! -s $BUILDIDS ] ; then\n\techo \"perf archive: no build-ids found\"\n\trm $BUILDIDS || true\n\texit 1\nfi\n\nMANIFEST=$(mktemp /tmp/perf-archive-manifest.XXXXXX)\nPERF_BUILDID_LINKDIR=$(readlink -f $PERF_BUILDID_DIR)/\n\ncut -d ' ' -f 1 $BUILDIDS | \\\nwhile read build_id ; do\n\tlinkname=$PERF_BUILDID_DIR.build-id/${build_id:0:2}/${build_id:2}\n\tfilename=$(readlink -f $linkname)\n\techo ${linkname#$PERF_BUILDID_DIR} >> $MANIFEST\n\techo ${filename#$PERF_BUILDID_LINKDIR} >> $MANIFEST\ndone\n\ntar cjf $PERF_DATA.tar.bz2 -C $PERF_BUILDID_DIR -T $MANIFEST\nrm $MANIFEST $BUILDIDS || true\necho -e \"Now please run:\\n\"\necho -e \"$ tar xvf $PERF_DATA.tar.bz2 -C ~/.debug\\n\"\necho \"wherever you need to run 'perf report' on.\"\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test_skb_cgroup_id_kern.c",
+  "hash_id": "90f53c1345f81de2d5ad6e39ced2aa608f2288cc48654f0181826f36251da1b9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_skb_cgroup_id_kern.c",
+  "human_readable_source": "\n\n\n#include <linux/bpf.h>\n#include <linux/pkt_cls.h>\n\n#include <string.h>\n\n#include <bpf/bpf_helpers.h>\n\n#define NUM_CGROUP_LEVELS\t4\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__type(key, __u32);\n\t__type(value, __u64);\n\t__uint(max_entries, NUM_CGROUP_LEVELS);\n} cgroup_ids SEC(\".maps\");\n\nstatic __always_inline void log_nth_level(struct __sk_buff *skb, __u32 level)\n{\n\t__u64 id;\n\n\t \n\tid = bpf_skb_ancestor_cgroup_id(skb, level);\n\tbpf_map_update_elem(&cgroup_ids, &level, &id, 0);\n}\n\nSEC(\"cgroup_id_logger\")\nint log_cgroup_id(struct __sk_buff *skb)\n{\n\t \n\tlog_nth_level(skb, 0);\n\tlog_nth_level(skb, 1);\n\tlog_nth_level(skb, 2);\n\tlog_nth_level(skb, 3);\n\n\treturn TC_ACT_OK;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xmss_commons.h",
+  "hash_id": "ab2e2ccf28b34b1f5dbddafbee0efc2aa635f8f50951c0cd88cd436d72898a23",
+  "original_prompt": "Ingested from openssh-9.6p1/xmss_commons.h",
+  "human_readable_source": "#ifdef WITH_XMSS\n \n \n#ifndef XMSS_COMMONS_H\n#define XMSS_COMMONS_H\n\n#include <stdlib.h>\n#ifdef HAVE_STDINT_H\n#include <stdint.h>\n#endif\n#endif\nvoid to_byte(unsigned char *output, unsigned long long in, uint32_t bytes);\n#if 0\nvoid hexdump(const unsigned char *a, size_t len);\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

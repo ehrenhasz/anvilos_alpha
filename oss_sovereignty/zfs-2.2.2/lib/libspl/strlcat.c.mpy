@@ -1,0 +1,9 @@
+{
+  "module_name": "strlcat.c",
+  "hash_id": "c7da93dee61a765a7d5a50f9820497e270cce822dfb20d26911643a879bb4de5",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/strlcat.c",
+  "human_readable_source": " \n\n \n#ifndef HAVE_STRLCAT\n\n#include <string.h>\n#include <sys/types.h>\n\n \n\nsize_t\nstrlcat(char *dst, const char *src, size_t dstsize)\n{\n\tchar *df = dst;\n\tsize_t left = dstsize;\n\tsize_t l1;\n\tsize_t l2 = strlen(src);\n\tsize_t copied;\n\n\twhile (left-- != 0 && *df != '\\0')\n\t\tdf++;\n\tl1 = df - dst;\n\tif (dstsize == l1)\n\t\treturn (l1 + l2);\n\n\tcopied = l1 + l2 >= dstsize ? dstsize - l1 - 1 : l2;\n\t(void) memcpy(dst + l1, src, copied);\n\tdst[l1+copied] = '\\0';\n\n\treturn (l1 + l2);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

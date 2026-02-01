@@ -1,0 +1,9 @@
+{
+  "module_name": "cedrus_hw.h",
+  "hash_id": "bc5796278074a50b1480c5934e56978ae7a4eeaa8e1641d5fbe63ac57ba835ce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/sunxi/cedrus/cedrus_hw.h",
+  "human_readable_source": " \n \n\n#ifndef _CEDRUS_HW_H_\n#define _CEDRUS_HW_H_\n\nint cedrus_engine_enable(struct cedrus_ctx *ctx);\nvoid cedrus_engine_disable(struct cedrus_dev *dev);\n\nvoid cedrus_dst_format_set(struct cedrus_dev *dev,\n\t\t\t   struct v4l2_pix_format *fmt);\n\nint cedrus_hw_suspend(struct device *device);\nint cedrus_hw_resume(struct device *device);\n\nint cedrus_hw_probe(struct cedrus_dev *dev);\nvoid cedrus_hw_remove(struct cedrus_dev *dev);\n\nvoid cedrus_watchdog(struct work_struct *work);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

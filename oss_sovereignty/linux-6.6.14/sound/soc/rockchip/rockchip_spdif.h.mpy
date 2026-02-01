@@ -1,0 +1,9 @@
+{
+  "module_name": "rockchip_spdif.h",
+  "hash_id": "e326181aaaf3cbd211db0fd7c58052fa13b6c9d70f08e2fd25192610b207c27b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/rockchip/rockchip_spdif.h",
+  "human_readable_source": " \n \n\n#ifndef _ROCKCHIP_SPDIF_H\n#define _ROCKCHIP_SPDIF_H\n\n \n#define SPDIF_CFGR_CLK_DIV_SHIFT\t(16)\n#define SPDIF_CFGR_CLK_DIV_MASK\t\t(0xff << SPDIF_CFGR_CLK_DIV_SHIFT)\n#define SPDIF_CFGR_CLK_DIV(x)\t\t(x << SPDIF_CFGR_CLK_DIV_SHIFT)\n\n#define SPDIF_CFGR_HALFWORD_SHIFT\t2\n#define SPDIF_CFGR_HALFWORD_DISABLE\t(0 << SPDIF_CFGR_HALFWORD_SHIFT)\n#define SPDIF_CFGR_HALFWORD_ENABLE\t(1 << SPDIF_CFGR_HALFWORD_SHIFT)\n\n#define SPDIF_CFGR_VDW_SHIFT\t0\n#define SPDIF_CFGR_VDW(x)\t(x << SPDIF_CFGR_VDW_SHIFT)\n#define SDPIF_CFGR_VDW_MASK\t(0xf << SPDIF_CFGR_VDW_SHIFT)\n\n#define SPDIF_CFGR_VDW_16\tSPDIF_CFGR_VDW(0x0)\n#define SPDIF_CFGR_VDW_20\tSPDIF_CFGR_VDW(0x1)\n#define SPDIF_CFGR_VDW_24\tSPDIF_CFGR_VDW(0x2)\n\n \n#define SPDIF_DMACR_TDE_SHIFT\t5\n#define SPDIF_DMACR_TDE_DISABLE\t(0 << SPDIF_DMACR_TDE_SHIFT)\n#define SPDIF_DMACR_TDE_ENABLE\t(1 << SPDIF_DMACR_TDE_SHIFT)\n\n#define SPDIF_DMACR_TDL_SHIFT\t0\n#define SPDIF_DMACR_TDL(x)\t((x) << SPDIF_DMACR_TDL_SHIFT)\n#define SPDIF_DMACR_TDL_MASK\t(0x1f << SPDIF_DMACR_TDL_SHIFT)\n\n \n#define SPDIF_XFER_TXS_SHIFT\t0\n#define SPDIF_XFER_TXS_STOP\t(0 << SPDIF_XFER_TXS_SHIFT)\n#define SPDIF_XFER_TXS_START\t(1 << SPDIF_XFER_TXS_SHIFT)\n\n#define SPDIF_CFGR\t(0x0000)\n#define SPDIF_SDBLR\t(0x0004)\n#define SPDIF_DMACR\t(0x0008)\n#define SPDIF_INTCR\t(0x000c)\n#define SPDIF_INTSR\t(0x0010)\n#define SPDIF_XFER\t(0x0018)\n#define SPDIF_SMPDR\t(0x0020)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

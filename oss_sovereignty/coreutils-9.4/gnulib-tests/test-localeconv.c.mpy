@@ -1,0 +1,9 @@
+{
+  "module_name": "test-localeconv.c",
+  "hash_id": "a24417b98c8ed2babbc0ef9a9d1974429d8f8c0853bbf9b4f7cd27ba18c84b16",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-localeconv.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <locale.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (localeconv, struct lconv *, (void));\n\n#include <limits.h>\n#include <string.h>\n\n#include \"macros.h\"\n\nint\nmain ()\n{\n   \n  {\n    struct lconv *l = localeconv ();\n\n    ASSERT (STREQ (l->decimal_point, \".\"));\n    ASSERT (STREQ (l->thousands_sep, \"\"));\n#if !((defined __FreeBSD__ || defined __DragonFly__) || defined __sun || defined __CYGWIN__)\n    ASSERT (STREQ (l->grouping, \"\"));\n#endif\n\n    ASSERT (STREQ (l->mon_decimal_point, \"\"));\n    ASSERT (STREQ (l->mon_thousands_sep, \"\"));\n#if !((defined __FreeBSD__ || defined __DragonFly__) || defined __sun || defined __CYGWIN__)\n    ASSERT (STREQ (l->mon_grouping, \"\"));\n#endif\n    ASSERT (STREQ (l->positive_sign, \"\"));\n    ASSERT (STREQ (l->negative_sign, \"\"));\n\n    ASSERT (STREQ (l->currency_symbol, \"\"));\n    ASSERT (l->frac_digits == CHAR_MAX);\n    ASSERT (l->p_cs_precedes == CHAR_MAX);\n    ASSERT (l->p_sign_posn == CHAR_MAX);\n    ASSERT (l->p_sep_by_space == CHAR_MAX);\n    ASSERT (l->n_cs_precedes == CHAR_MAX);\n    ASSERT (l->n_sign_posn == CHAR_MAX);\n    ASSERT (l->n_sep_by_space == CHAR_MAX);\n\n    ASSERT (STREQ (l->int_curr_symbol, \"\"));\n    ASSERT (l->int_frac_digits == CHAR_MAX);\n    ASSERT (l->int_p_cs_precedes == CHAR_MAX);\n    ASSERT (l->int_p_sign_posn == CHAR_MAX);\n    ASSERT (l->int_p_sep_by_space == CHAR_MAX);\n    ASSERT (l->int_n_cs_precedes == CHAR_MAX);\n    ASSERT (l->int_n_sign_posn == CHAR_MAX);\n    ASSERT (l->int_n_sep_by_space == CHAR_MAX);\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

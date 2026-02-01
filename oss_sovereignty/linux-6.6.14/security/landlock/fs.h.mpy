@@ -1,0 +1,9 @@
+{
+  "module_name": "fs.h",
+  "hash_id": "cc5366c26b2e1dd394ebee4308012740e3c2d0607434c3ea2083552adc1966d0",
+  "original_prompt": "Ingested from linux-6.6.14/security/landlock/fs.h",
+  "human_readable_source": " \n \n\n#ifndef _SECURITY_LANDLOCK_FS_H\n#define _SECURITY_LANDLOCK_FS_H\n\n#include <linux/fs.h>\n#include <linux/init.h>\n#include <linux/rcupdate.h>\n\n#include \"ruleset.h\"\n#include \"setup.h\"\n\n \nstruct landlock_inode_security {\n\t \n\tstruct landlock_object __rcu *object;\n};\n\n \nstruct landlock_file_security {\n\t \n\taccess_mask_t allowed_access;\n};\n\n \nstruct landlock_superblock_security {\n\t \n\tatomic_long_t inode_refs;\n};\n\nstatic inline struct landlock_file_security *\nlandlock_file(const struct file *const file)\n{\n\treturn file->f_security + landlock_blob_sizes.lbs_file;\n}\n\nstatic inline struct landlock_inode_security *\nlandlock_inode(const struct inode *const inode)\n{\n\treturn inode->i_security + landlock_blob_sizes.lbs_inode;\n}\n\nstatic inline struct landlock_superblock_security *\nlandlock_superblock(const struct super_block *const superblock)\n{\n\treturn superblock->s_security + landlock_blob_sizes.lbs_superblock;\n}\n\n__init void landlock_add_fs_hooks(void);\n\nint landlock_append_fs_rule(struct landlock_ruleset *const ruleset,\n\t\t\t    const struct path *const path,\n\t\t\t    access_mask_t access_hierarchy);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

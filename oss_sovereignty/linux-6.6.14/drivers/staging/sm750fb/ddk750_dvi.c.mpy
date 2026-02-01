@@ -1,0 +1,9 @@
+{
+  "module_name": "ddk750_dvi.c",
+  "hash_id": "020b9cc99a2efac76f9753c8a72967961d3974918835f82bdc45123a015b1de3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/sm750fb/ddk750_dvi.c",
+  "human_readable_source": "\n#define USE_DVICHIP\n#ifdef USE_DVICHIP\n#include \"ddk750_chip.h\"\n#include \"ddk750_reg.h\"\n#include \"ddk750_dvi.h\"\n#include \"ddk750_sii164.h\"\n\n \nstatic struct dvi_ctrl_device dcft_supported_dvi_controller[] = {\n#ifdef DVI_CTRL_SII164\n\t{\n\t\t.init = sii164_init_chip,\n\t\t.get_vendor_id = sii164_get_vendor_id,\n\t\t.get_device_id = sii164GetDeviceID,\n#ifdef SII164_FULL_FUNCTIONS\n\t\t.reset_chip = sii164ResetChip,\n\t\t.get_chip_string = sii164GetChipString,\n\t\t.set_power = sii164SetPower,\n\t\t.enable_hot_plug_detection = sii164EnableHotPlugDetection,\n\t\t.is_connected = sii164IsConnected,\n\t\t.check_interrupt = sii164CheckInterrupt,\n\t\t.clear_interrupt = sii164ClearInterrupt,\n#endif\n\t},\n#endif\n};\n\nint dvi_init(unsigned char edge_select,\n\t     unsigned char bus_select,\n\t     unsigned char dual_edge_clk_select,\n\t     unsigned char hsync_enable,\n\t     unsigned char vsync_enable,\n\t     unsigned char deskew_enable,\n\t     unsigned char deskew_setting,\n\t     unsigned char continuous_sync_enable,\n\t     unsigned char pll_filter_enable,\n\t     unsigned char pll_filter_value)\n{\n\tstruct dvi_ctrl_device *current_dvi_ctrl;\n\n\tcurrent_dvi_ctrl = dcft_supported_dvi_controller;\n\tif (current_dvi_ctrl->init) {\n\t\treturn current_dvi_ctrl->init(edge_select,\n\t\t\t\t\t      bus_select,\n\t\t\t\t\t      dual_edge_clk_select,\n\t\t\t\t\t      hsync_enable,\n\t\t\t\t\t      vsync_enable,\n\t\t\t\t\t      deskew_enable,\n\t\t\t\t\t      deskew_setting,\n\t\t\t\t\t      continuous_sync_enable,\n\t\t\t\t\t      pll_filter_enable,\n\t\t\t\t\t      pll_filter_value);\n\t}\n\treturn -1;  \n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

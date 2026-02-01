@@ -1,0 +1,9 @@
+{
+  "module_name": "libspl_impl.h",
+  "hash_id": "f1338f0f83e2748a77c85f43c2c684b32b18e8fee3a29234cd79e391d1853b40",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/libspl_impl.h",
+  "human_readable_source": " \n\n\nextern ssize_t getexecname_impl(char *execname);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

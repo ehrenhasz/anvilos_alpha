@@ -1,0 +1,9 @@
+{
+  "module_name": "memnv04.c",
+  "hash_id": "259cb4bd31ec577e1b452abf517b50e721d38b9565926b3bedcb01c4ef51ba9c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/memnv04.c",
+  "human_readable_source": " \n#include \"mem.h\"\n\n#include <core/memory.h>\n#include <subdev/fb.h>\n\n#include <nvif/if000b.h>\n#include <nvif/unpack.h>\n\nint\nnv04_mem_map(struct nvkm_mmu *mmu, struct nvkm_memory *memory, void *argv,\n\t     u32 argc, u64 *paddr, u64 *psize, struct nvkm_vma **pvma)\n{\n\tunion {\n\t\tstruct nv04_mem_map_vn vn;\n\t} *args = argv;\n\tstruct nvkm_device *device = mmu->subdev.device;\n\tconst u64 addr = nvkm_memory_addr(memory);\n\tint ret = -ENOSYS;\n\n\tif ((ret = nvif_unvers(ret, &argv, &argc, args->vn)))\n\t\treturn ret;\n\n\t*paddr = device->func->resource_addr(device, 1) + addr;\n\t*psize = nvkm_memory_size(memory);\n\t*pvma = ERR_PTR(-ENODEV);\n\treturn 0;\n}\n\nint\nnv04_mem_new(struct nvkm_mmu *mmu, int type, u8 page, u64 size,\n\t     void *argv, u32 argc, struct nvkm_memory **pmemory)\n{\n\tunion {\n\t\tstruct nv04_mem_vn vn;\n\t} *args = argv;\n\tint ret = -ENOSYS;\n\n\tif ((ret = nvif_unvers(ret, &argv, &argc, args->vn)))\n\t\treturn ret;\n\n\tif (mmu->type[type].type & NVKM_MEM_MAPPABLE)\n\t\ttype = NVKM_RAM_MM_NORMAL;\n\telse\n\t\ttype = NVKM_RAM_MM_NOMAP;\n\n\treturn nvkm_ram_get(mmu->subdev.device, type, 0x01, page,\n\t\t\t    size, true, false, pmemory);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

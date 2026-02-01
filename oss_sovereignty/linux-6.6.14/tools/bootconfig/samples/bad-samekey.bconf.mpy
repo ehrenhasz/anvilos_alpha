@@ -1,0 +1,9 @@
+{
+  "module_name": "bad-samekey.bconf",
+  "hash_id": "49aa9fa4bb9382c03f41f9927af393c8b13201426eebb41904307117efe57d32",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bootconfig/samples/bad-samekey.bconf",
+  "human_readable_source": "# Same key value is not allowed\nkey {\n\tfoo = value\n\tbar = value2\n}\nkey.foo = value\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

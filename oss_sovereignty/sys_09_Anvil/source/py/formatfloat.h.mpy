@@ -1,0 +1,9 @@
+{
+  "module_name": "formatfloat.h",
+  "hash_id": "f22db37b4752799aba0c2df386159b973534af088f18f1e4254e7829ece619d3",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/formatfloat.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_FORMATFLOAT_H\n#define MICROPY_INCLUDED_PY_FORMATFLOAT_H\n\n#include \"py/mpconfig.h\"\n\n#if MICROPY_PY_BUILTINS_FLOAT\nint mp_format_float(mp_float_t f, char *buf, size_t bufSize, char fmt, int prec, char sign);\n#endif\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

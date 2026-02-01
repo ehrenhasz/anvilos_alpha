@@ -1,0 +1,9 @@
+{
+  "module_name": "netns.h",
+  "hash_id": "772aa697da179bc65a6eb7cbd09ab2f34a24bf98c861e4cd48b2aa584edcac87",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfs/netns.h",
+  "human_readable_source": " \n \n\n#ifndef __NFS_NETNS_H__\n#define __NFS_NETNS_H__\n\n#include <linux/nfs4.h>\n#include <net/net_namespace.h>\n#include <net/netns/generic.h>\n\nstruct bl_dev_msg {\n\tint32_t status;\n\tuint32_t major, minor;\n};\n\nstruct nfs_netns_client;\n\nstruct nfs_net {\n\tstruct cache_detail *nfs_dns_resolve;\n\tstruct rpc_pipe *bl_device_pipe;\n\tstruct bl_dev_msg bl_mount_reply;\n\twait_queue_head_t bl_wq;\n\tstruct mutex bl_mutex;\n\tstruct list_head nfs_client_list;\n\tstruct list_head nfs_volume_list;\n#if IS_ENABLED(CONFIG_NFS_V4)\n\tstruct idr cb_ident_idr;  \n\tunsigned short nfs_callback_tcpport;\n\tunsigned short nfs_callback_tcpport6;\n\tint cb_users[NFS4_MAX_MINOR_VERSION + 1];\n#endif\n\tstruct nfs_netns_client *nfs_client;\n\tspinlock_t nfs_client_lock;\n\tktime_t boot_time;\n#ifdef CONFIG_PROC_FS\n\tstruct proc_dir_entry *proc_nfsfs;\n#endif\n};\n\nextern unsigned int nfs_net_id;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

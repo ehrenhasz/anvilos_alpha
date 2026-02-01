@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_vline_set.c",
+  "hash_id": "f9cf36eb161316a88b9d2836a72e20322db0bfe71a23fa32af58ef0b09224088",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/widechar/lib_vline_set.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_vline_set.c,v 1.6 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwvline_set(WINDOW *win, const cchar_t *ch, int n)\n{\n    int code = ERR;\n\n    T((T_CALLED(\"wvline(%p,%s,%d)\"), (void *) win, _tracecchar_t(ch), n));\n\n    if (win) {\n\tNCURSES_CH_T wch;\n\tint row = win->_cury;\n\tint col = win->_curx;\n\tint end = row + n - 1;\n\n\tif (end > win->_maxy)\n\t    end = win->_maxy;\n\n\tif (ch == 0)\n\t    wch = *WACS_VLINE;\n\telse\n\t    wch = *ch;\n\twch = _nc_render(win, wch);\n\n\twhile (end >= row) {\n\t    struct ldat *line = &(win->_line[end]);\n\t    line->text[col] = wch;\n\t    CHANGED_CELL(line, col);\n\t    end--;\n\t}\n\n\t_nc_synchook(win);\n\tcode = OK;\n    }\n    returnCode(code);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e01d81f8834a848c29b22ac66cdf2fd1b99926ede3a8726f9e634519df741c7f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/ipu-v3/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig IMX_IPUV3_CORE\n\ttristate \"IPUv3 core support\"\n\tdepends on SOC_IMX5 || SOC_IMX6Q || COMPILE_TEST\n\tdepends on DRM || !DRM # if DRM=m, this can't be 'y'\n\tselect BITREVERSE\n\tselect GENERIC_ALLOCATOR if DRM\n\tselect GENERIC_IRQ_CHIP\n\thelp\n\t  Choose this if you have a i.MX5/6 system and want to use the Image\n\t  Processing Unit. This option only enables IPU base support.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

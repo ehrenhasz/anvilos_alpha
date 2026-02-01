@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_iter_test_kern5.c",
+  "hash_id": "29fe8cf8ba8cb4e61670b642eedf42503e20abce5743304d8e769d95227097cf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_iter_test_kern5.c",
+  "human_readable_source": "\n \n#include \"bpf_iter.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct key_t {\n\tint a;\n\tint b;\n\tint c;\n};\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__uint(max_entries, 3);\n\t__type(key, struct key_t);\n\t__type(value, __u64);\n} hashmap1 SEC(\".maps\");\n\n__u32 key_sum = 0;\n\nSEC(\"iter/bpf_map_elem\")\nint dump_bpf_hash_map(struct bpf_iter__bpf_map_elem *ctx)\n{\n\tvoid *key = ctx->key;\n\n\tif (key == (void *)0)\n\t\treturn 0;\n\n\t \n\tkey_sum += *(__u32 *)(key + sizeof(struct key_t));\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

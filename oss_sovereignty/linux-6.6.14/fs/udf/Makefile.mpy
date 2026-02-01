@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8f31e0b19a035a747d7b534f232c0b59a494309184e6f96eb70b3a0e14e43b48",
+  "original_prompt": "Ingested from linux-6.6.14/fs/udf/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the linux udf-filesystem routines.\n#\n\nobj-$(CONFIG_UDF_FS) += udf.o\n\nudf-objs     := balloc.o dir.o file.o ialloc.o inode.o lowlevel.o namei.o \\\n\t\tpartition.o super.o truncate.o symlink.o \\\n\t\tdirectory.o misc.o udftime.o unicode.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

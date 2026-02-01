@@ -1,0 +1,9 @@
+{
+  "module_name": "acl-errno-valid.c",
+  "hash_id": "3168af9f0d00227389b957fa9b374931e67ee2b8efc75f20cf75350a976b7354",
+  "original_prompt": "Ingested from coreutils-9.4/lib/acl-errno-valid.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <acl.h>\n\n#include <errno.h>\n\n \nbool\nacl_errno_valid (int errnum)\n{\n   \n  switch (errnum)\n    {\n    case EBUSY: return false;\n    case EINVAL: return false;\n#if defined __APPLE__ && defined __MACH__\n    case ENOENT: return false;\n#endif\n    case ENOSYS: return false;\n\n#if defined ENOTSUP && ENOTSUP != EOPNOTSUPP\n# if ENOTSUP != ENOSYS  \n    case ENOTSUP: return false;\n# endif\n#endif\n\n    case EOPNOTSUPP: return false;\n    default: return true;\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

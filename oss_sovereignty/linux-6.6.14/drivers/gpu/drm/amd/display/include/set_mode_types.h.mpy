@@ -1,0 +1,9 @@
+{
+  "module_name": "set_mode_types.h",
+  "hash_id": "2f074ce7f5cf912d1d71b89e02f6539235542debbc0bf7a9d1bb47b7b9358a5e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/include/set_mode_types.h",
+  "human_readable_source": " \n\n#ifndef __DAL_SET_MODE_TYPES_H__\n#define __DAL_SET_MODE_TYPES_H__\n\n#include \"dc_types.h\"\n#include <linux/hdmi.h>\n\n \nenum info_frame_flag {\n\tINFO_PACKET_PACKET_INVALID = 0,\n\tINFO_PACKET_PACKET_VALID = 1,\n\tINFO_PACKET_PACKET_RESET = 2,\n\tINFO_PACKET_PACKET_UPDATE_SCAN_TYPE = 8\n};\n\nstruct hdmi_info_frame_header {\n\tuint8_t info_frame_type;\n\tuint8_t version;\n\tuint8_t length;\n};\n\n#pragma pack(push)\n#pragma pack(1)\n\nstruct info_packet_raw_data {\n\tuint8_t hb0;\n\tuint8_t hb1;\n\tuint8_t hb2;\n\tuint8_t sb[28];  \n};\n\nunion hdmi_info_packet {\n\tstruct avi_info_frame {\n\t\tstruct hdmi_info_frame_header header;\n\n\t\tuint8_t CHECK_SUM:8;\n\n\t\tuint8_t S0_S1:2;\n\t\tuint8_t B0_B1:2;\n\t\tuint8_t A0:1;\n\t\tuint8_t Y0_Y1_Y2:3;\n\n\t\tuint8_t R0_R3:4;\n\t\tuint8_t M0_M1:2;\n\t\tuint8_t C0_C1:2;\n\n\t\tuint8_t SC0_SC1:2;\n\t\tuint8_t Q0_Q1:2;\n\t\tuint8_t EC0_EC2:3;\n\t\tuint8_t ITC:1;\n\n\t\tuint8_t VIC0_VIC7:8;\n\n\t\tuint8_t PR0_PR3:4;\n\t\tuint8_t CN0_CN1:2;\n\t\tuint8_t YQ0_YQ1:2;\n\n\t\tuint16_t bar_top;\n\t\tuint16_t bar_bottom;\n\t\tuint16_t bar_left;\n\t\tuint16_t bar_right;\n\n\t\tuint8_t FR0_FR3:4;\n\t\tuint8_t ACE0_ACE3:4;\n\n\t\tuint8_t RID0_RID5:6;\n\t\tuint8_t FR4:1;\n\t\tuint8_t F157:1;\n\n\t\tuint8_t reserved[12];\n\t} bits;\n\n\tstruct info_packet_raw_data packet_raw_data;\n};\n\n#pragma pack(pop)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

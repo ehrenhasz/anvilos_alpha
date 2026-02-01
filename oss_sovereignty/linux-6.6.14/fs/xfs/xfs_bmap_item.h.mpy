@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_bmap_item.h",
+  "hash_id": "b22b1e413894fd4f0f96d37b2c445aba074fb716f088a4248b919466647d1c13",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_bmap_item.h",
+  "human_readable_source": "\n \n#ifndef\t__XFS_BMAP_ITEM_H__\n#define\t__XFS_BMAP_ITEM_H__\n\n \n\n \n\nstruct xfs_mount;\nstruct kmem_cache;\n\n \n#define\tXFS_BUI_MAX_FAST_EXTENTS\t1\n\n \nstruct xfs_bui_log_item {\n\tstruct xfs_log_item\t\tbui_item;\n\tatomic_t\t\t\tbui_refcount;\n\tatomic_t\t\t\tbui_next_extent;\n\tstruct xfs_bui_log_format\tbui_format;\n};\n\nstatic inline size_t\nxfs_bui_log_item_sizeof(\n\tunsigned int\t\tnr)\n{\n\treturn offsetof(struct xfs_bui_log_item, bui_format) +\n\t\t\txfs_bui_log_format_sizeof(nr);\n}\n\n \nstruct xfs_bud_log_item {\n\tstruct xfs_log_item\t\tbud_item;\n\tstruct xfs_bui_log_item\t\t*bud_buip;\n\tstruct xfs_bud_log_format\tbud_format;\n};\n\nextern struct kmem_cache\t*xfs_bui_cache;\nextern struct kmem_cache\t*xfs_bud_cache;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

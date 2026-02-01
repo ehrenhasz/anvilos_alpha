@@ -1,0 +1,9 @@
+{
+  "module_name": "wm8731-i2c.c",
+  "hash_id": "517a2a9bc417d2dbb2282d1407b5c58a34947012de2f02b07f266d4ee8655be1",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/wm8731-i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/i2c.h>\n#include <linux/module.h>\n#include <linux/of_device.h>\n\n#include \"wm8731.h\"\n\n\nstatic const struct of_device_id wm8731_of_match[] = {\n\t{ .compatible = \"wlf,wm8731\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, wm8731_of_match);\n\nstatic int wm8731_i2c_probe(struct i2c_client *i2c)\n{\n\tstruct wm8731_priv *wm8731;\n\tint ret;\n\n\twm8731 = devm_kzalloc(&i2c->dev, sizeof(struct wm8731_priv),\n\t\t\t      GFP_KERNEL);\n\tif (wm8731 == NULL)\n\t\treturn -ENOMEM;\n\n\ti2c_set_clientdata(i2c, wm8731);\n\n\twm8731->regmap = devm_regmap_init_i2c(i2c, &wm8731_regmap);\n\tif (IS_ERR(wm8731->regmap)) {\n\t\tret = PTR_ERR(wm8731->regmap);\n\t\tdev_err(&i2c->dev, \"Failed to allocate register map: %d\\n\",\n\t\t\tret);\n\t\treturn ret;\n\t}\n\n\treturn wm8731_init(&i2c->dev, wm8731);\n}\n\nstatic const struct i2c_device_id wm8731_i2c_id[] = {\n\t{ \"wm8731\", 0 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, wm8731_i2c_id);\n\nstatic struct i2c_driver wm8731_i2c_driver = {\n\t.driver = {\n\t\t.name = \"wm8731\",\n\t\t.of_match_table = wm8731_of_match,\n\t},\n\t.probe = wm8731_i2c_probe,\n\t.id_table = wm8731_i2c_id,\n};\n\nmodule_i2c_driver(wm8731_i2c_driver);\n\nMODULE_DESCRIPTION(\"ASoC WM8731 driver - I2C\");\nMODULE_AUTHOR(\"Richard Purdie\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

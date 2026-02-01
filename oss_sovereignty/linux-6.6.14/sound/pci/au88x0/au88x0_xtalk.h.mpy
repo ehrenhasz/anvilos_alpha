@@ -1,0 +1,9 @@
+{
+  "module_name": "au88x0_xtalk.h",
+  "hash_id": "b8f88faf7f5ccb87cb743ae0bcbdb4eeafceeb9d3bb8db425da19c4351ce8651",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/au88x0/au88x0_xtalk.h",
+  "human_readable_source": " \n \n\n \n\n \n\n#ifndef _AU88X0_CXTALK_H\n#define _AU88X0_CXTALK_H\n\n#include \"au88x0.h\"\n\n#define XTDLINE_SZ 32\n#define XTGAINS_SZ 10\n#define XTINST_SZ 4\n\n#define XT_HEADPHONE\t1\n#define XT_SPEAKER0\t\t2\n#define XT_SPEAKER1\t\t3\n#define XT_DIAMOND\t\t4\n\ntypedef u32 xtalk_dline_t[XTDLINE_SZ];\ntypedef u16 xtalk_gains_t[XTGAINS_SZ];\ntypedef u16 xtalk_instate_t[XTINST_SZ];\ntypedef u16 xtalk_coefs_t[5][5];\ntypedef u16 xtalk_state_t[5][4];\n\nstatic void vortex_XtalkHw_SetGains(vortex_t * vortex,\n\t\t\t\t    xtalk_gains_t const gains);\nstatic void vortex_XtalkHw_SetGainsAllChan(vortex_t * vortex);\nstatic void vortex_XtalkHw_SetSampleRate(vortex_t * vortex, u32 sr);\nstatic void vortex_XtalkHw_ProgramPipe(vortex_t * vortex);\nstatic void vortex_XtalkHw_ProgramPipe(vortex_t * vortex);\nstatic void vortex_XtalkHw_ProgramXtalkWide(vortex_t * vortex);\nstatic void vortex_XtalkHw_ProgramXtalkNarrow(vortex_t * vortex);\nstatic void vortex_XtalkHw_ProgramDiamondXtalk(vortex_t * vortex);\nstatic void vortex_XtalkHw_Enable(vortex_t * vortex);\nstatic void vortex_XtalkHw_Disable(vortex_t * vortex);\nstatic void vortex_XtalkHw_init(vortex_t * vortex);\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

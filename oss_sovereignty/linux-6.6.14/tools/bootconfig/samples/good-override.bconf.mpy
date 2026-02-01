@@ -1,0 +1,9 @@
+{
+  "module_name": "good-override.bconf",
+  "hash_id": "96051c0f2968a685cf23955a6349d78386e1ffbf260235777601950fc5a71f34",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bootconfig/samples/good-override.bconf",
+  "human_readable_source": "# Override the value\nkey.word = 1,2,4\nkey.word := 2,3\n\n# No pre-defined key\nkey.new.word := \"new\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

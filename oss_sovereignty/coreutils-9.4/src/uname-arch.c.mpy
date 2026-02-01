@@ -1,0 +1,9 @@
+{
+  "module_name": "uname-arch.c",
+  "hash_id": "dccf10cf130d4aacbe2ef85b3fe9224d8d34cfaf9bec2538227dc3420c38c765",
+  "original_prompt": "Ingested from coreutils-9.4/src/uname-arch.c",
+  "human_readable_source": "#include \"uname.h\"\nint uname_mode = UNAME_ARCH;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

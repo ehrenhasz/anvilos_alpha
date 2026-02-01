@@ -1,0 +1,9 @@
+{
+  "module_name": "cx231xx-vbi.h",
+  "hash_id": "f8305fca748e82905d4d7da424983a20462dc231920b4e5e673fc028b1774e47",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/cx231xx/cx231xx-vbi.h",
+  "human_readable_source": " \n \n\n#ifndef _CX231XX_VBI_H\n#define _CX231XX_VBI_H\n\nextern struct vb2_ops cx231xx_vbi_qops;\n\n#define   NTSC_VBI_START_LINE 10\t \n#define   NTSC_VBI_END_LINE   21\n#define   NTSC_VBI_LINES\t  (NTSC_VBI_END_LINE-NTSC_VBI_START_LINE+1)\n\n#define   PAL_VBI_START_LINE  6\n#define   PAL_VBI_END_LINE    23\n#define   PAL_VBI_LINES       (PAL_VBI_END_LINE-PAL_VBI_START_LINE+1)\n\n#define   VBI_STRIDE            1440\n#define   VBI_SAMPLES_PER_LINE  1440\n\n#define   CX231XX_NUM_VBI_PACKETS       4\n#define   CX231XX_NUM_VBI_BUFS          5\n\n \nint cx231xx_init_vbi_isoc(struct cx231xx *dev, int max_packets,\n\t\t\t  int num_bufs, int max_pkt_size,\n\t\t\t  int (*bulk_copy) (struct cx231xx *dev,\n\t\t\t\t\t    struct urb *urb));\n\nvoid cx231xx_uninit_vbi_isoc(struct cx231xx *dev);\n\n \nu32 cx231xx_get_vbi_line(struct cx231xx *dev, struct cx231xx_dmaqueue *dma_q,\n\t\t\t u8 sav_eav, u8 *p_buffer, u32 buffer_size);\n\nu32 cx231xx_copy_vbi_line(struct cx231xx *dev, struct cx231xx_dmaqueue *dma_q,\n\t\t\t  u8 *p_line, u32 length, int field_number);\n\nvoid cx231xx_reset_vbi_buffer(struct cx231xx *dev,\n\t\t\t      struct cx231xx_dmaqueue *dma_q);\n\nint cx231xx_do_vbi_copy(struct cx231xx *dev, struct cx231xx_dmaqueue *dma_q,\n\t\t\tu8 *p_buffer, u32 bytes_to_copy);\n\nu8 cx231xx_is_vbi_buffer_done(struct cx231xx *dev,\n\t\t\t      struct cx231xx_dmaqueue *dma_q);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

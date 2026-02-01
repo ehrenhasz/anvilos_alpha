@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "95851d492265c7ce209420d85eecc50b934b79546751f62676b11bfb2604c592",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qlogic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the QLogic network device drivers.\n#\n\nobj-$(CONFIG_QLA3XXX) += qla3xxx.o\nobj-$(CONFIG_QLCNIC) += qlcnic/\nobj-$(CONFIG_NETXEN_NIC) += netxen/\nobj-$(CONFIG_QED) += qed/\nobj-$(CONFIG_QEDE)+= qede/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

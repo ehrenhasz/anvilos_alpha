@@ -1,0 +1,9 @@
+{
+  "module_name": "mmp.h",
+  "hash_id": "c5c40218cd0afc3e057477400a5510f3276c88ba9cf8275e1cdd8c6a249c790e",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/mmp.h",
+  "human_readable_source": " \n \n\n#ifndef _SYS_MMP_H\n#define\t_SYS_MMP_H\n\n#include <sys/spa.h>\n#include <sys/zfs_context.h>\n#include <sys/uberblock_impl.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n#define\tMMP_MIN_INTERVAL\t\t100\t \n#define\tMMP_DEFAULT_INTERVAL\t\t1000\t \n#define\tMMP_DEFAULT_IMPORT_INTERVALS\t20\n#define\tMMP_DEFAULT_FAIL_INTERVALS\t10\n#define\tMMP_MIN_FAIL_INTERVALS\t\t2\t \n#define\tMMP_IMPORT_SAFETY_FACTOR\t200\t \n#define\tMMP_INTERVAL_OK(interval)\tMAX(interval, MMP_MIN_INTERVAL)\n#define\tMMP_FAIL_INTVS_OK(fails)\t(fails == 0 ? 0 : MAX(fails, \\\n\t\t\t\t\t    MMP_MIN_FAIL_INTERVALS))\n\ntypedef struct mmp_thread {\n\tkmutex_t\tmmp_thread_lock;  \n\tkcondvar_t\tmmp_thread_cv;\n\tkthread_t\t*mmp_thread;\n\tuint8_t\t\tmmp_thread_exiting;\n\tkmutex_t\tmmp_io_lock;\t \n\thrtime_t\tmmp_last_write;\t \n\tuint64_t\tmmp_delay;\t \n\tuberblock_t\tmmp_ub;\t\t \n\tzio_t\t\t*mmp_zio_root;\t \n\tuint64_t\tmmp_kstat_id;\t \n\tint\t\tmmp_skip_error;  \n\tvdev_t\t\t*mmp_last_leaf;\t \n\tuint64_t\tmmp_leaf_last_gen;\t \n\tuint32_t\tmmp_seq;\t \n} mmp_thread_t;\n\n\nextern void mmp_init(struct spa *spa);\nextern void mmp_fini(struct spa *spa);\nextern void mmp_thread_start(struct spa *spa);\nextern void mmp_thread_stop(struct spa *spa);\nextern void mmp_update_uberblock(struct spa *spa, struct uberblock *ub);\nextern void mmp_signal_all_threads(void);\n\n \nextern int param_set_multihost_interval(ZFS_MODULE_PARAM_ARGS);\nextern uint64_t zfs_multihost_interval;\nextern uint_t zfs_multihost_fail_intervals;\nextern uint_t zfs_multihost_import_intervals;\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "wcswidth-impl.h",
+  "hash_id": "84cb82eb25660418630f47b8418da63614a74599e210b8cdf2650ca331f2639e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/wcswidth-impl.h",
+  "human_readable_source": " \n  for (; n > 0; s++, n--)\n    {\n      UNIT c = *s;\n      if (c == (UNIT)'\\0')\n        break;\n      {\n        int width = CHARACTER_WIDTH (c);\n        if (width < 0)\n          goto found_nonprinting;\n      }\n     overflow: ;\n    }\n  return INT_MAX;\n\n found_nonprinting:\n  return -1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_ds.h",
+  "hash_id": "10f2627327859884bac5da56b3eea2eb49672f298e2a45c1f8486d2caa1a21cf",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/intel_ds.h",
+  "human_readable_source": "#ifndef _ASM_INTEL_DS_H\n#define _ASM_INTEL_DS_H\n\n#include <linux/percpu-defs.h>\n\n#define BTS_BUFFER_SIZE\t\t(PAGE_SIZE << 4)\n#define PEBS_BUFFER_SIZE\t(PAGE_SIZE << 4)\n\n \n#define MAX_PEBS_EVENTS_FMT4\t8\n#define MAX_PEBS_EVENTS\t\t32\n#define MAX_FIXED_PEBS_EVENTS\t16\n\n \nstruct debug_store {\n\tu64\tbts_buffer_base;\n\tu64\tbts_index;\n\tu64\tbts_absolute_maximum;\n\tu64\tbts_interrupt_threshold;\n\tu64\tpebs_buffer_base;\n\tu64\tpebs_index;\n\tu64\tpebs_absolute_maximum;\n\tu64\tpebs_interrupt_threshold;\n\tu64\tpebs_event_reset[MAX_PEBS_EVENTS + MAX_FIXED_PEBS_EVENTS];\n} __aligned(PAGE_SIZE);\n\nDECLARE_PER_CPU_PAGE_ALIGNED(struct debug_store, cpu_debug_store);\n\nstruct debug_store_buffers {\n\tchar\tbts_buffer[BTS_BUFFER_SIZE];\n\tchar\tpebs_buffer[PEBS_BUFFER_SIZE];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

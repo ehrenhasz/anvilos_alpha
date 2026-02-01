@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_em_nbyte.h",
+  "hash_id": "75397f0fe09eb35a58a966f621fb713bc896192079c0953838844b8ec0fdd18b",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_ematch/tc_em_nbyte.h",
+  "human_readable_source": " \n#ifndef __LINUX_TC_EM_NBYTE_H\n#define __LINUX_TC_EM_NBYTE_H\n\n#include <linux/types.h>\n#include <linux/pkt_cls.h>\n\nstruct tcf_em_nbyte {\n\t__u16\t\toff;\n\t__u16\t\tlen:12;\n\t__u8\t\tlayer:4;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

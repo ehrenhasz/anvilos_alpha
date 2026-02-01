@@ -1,0 +1,9 @@
+{
+  "module_name": "test-setns.c",
+  "hash_id": "cac34c8a1d06fce160b7ae6972bebb3f62c34fa78611e589c86966ad7bdb90fe",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-setns.c",
+  "human_readable_source": "\n#define _GNU_SOURCE\n#include <sched.h>\n\nint main(void)\n{\n\treturn setns(0, 0);\n}\n#undef _GNU_SOURCE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

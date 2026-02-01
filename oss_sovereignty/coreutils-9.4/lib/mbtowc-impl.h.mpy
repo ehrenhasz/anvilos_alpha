@@ -1,0 +1,9 @@
+{
+  "module_name": "mbtowc-impl.h",
+  "hash_id": "24ab3c514fb60f3bc5e6cf0ddcf215006c0a6987d97b46916e6ddcb3c1e581b2",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mbtowc-impl.h",
+  "human_readable_source": " \n\nint\nmbtowc (wchar_t *pwc, const char *s, size_t n)\n{\n  if (s == NULL)\n    return 0;\n  else\n    {\n      mbstate_t state;\n      wchar_t wc;\n      size_t result;\n\n      mbszero (&state);\n      result = mbrtowc (&wc, s, n, &state);\n      if (result == (size_t)-1 || result == (size_t)-2)\n        {\n          errno = EILSEQ;\n          return -1;\n        }\n      if (pwc != NULL)\n        *pwc = wc;\n      return (wc == 0 ? 0 : result);\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

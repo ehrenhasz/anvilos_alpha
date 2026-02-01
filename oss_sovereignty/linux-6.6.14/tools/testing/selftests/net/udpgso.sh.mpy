@@ -1,0 +1,9 @@
+{
+  "module_name": "udpgso.sh",
+  "hash_id": "4f216f7a6563ad7201389e996b07e5bd4704b6863253dfb8a3b4463297ca2409",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/udpgso.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n#\n# Run a series of udpgso regression tests\n\necho \"ipv4 cmsg\"\n./in_netns.sh ./udpgso -4 -C\n\necho \"ipv4 setsockopt\"\n./in_netns.sh ./udpgso -4 -C -s\n\necho \"ipv6 cmsg\"\n./in_netns.sh ./udpgso -6 -C\n\necho \"ipv6 setsockopt\"\n./in_netns.sh ./udpgso -6 -C -s\n\necho \"ipv4 connected\"\n./in_netns.sh ./udpgso -4 -c\n\n# blocked on 2nd loopback address\n# echo \"ipv6 connected\"\n# ./in_netns.sh ./udpgso -6 -c\n\necho \"ipv4 msg_more\"\n./in_netns.sh ./udpgso -4 -C -m\n\necho \"ipv6 msg_more\"\n./in_netns.sh ./udpgso -6 -C -m\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

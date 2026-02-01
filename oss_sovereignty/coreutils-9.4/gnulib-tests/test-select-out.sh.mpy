@@ -1,0 +1,9 @@
+{
+  "module_name": "test-select-out.sh",
+  "hash_id": "2b48f01bd2151177637ec975a4643fe820c78f6d0e34ac9dd16485f724374f11",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-select-out.sh",
+  "human_readable_source": "#!/bin/sh\n# Test select() on file descriptors opened for writing.\n\ntmpfiles=\"\"\ntrap 'rm -fr $tmpfiles' HUP INT QUIT TERM\n\ntmpfiles=\"$tmpfiles t-select-out.out t-select-out.tmp\"\n\n# Regular files.\n\nrm -f t-select-out.tmp\n${CHECKER} ./test-select-fd${EXEEXT} w 1 t-select-out.tmp > t-select-out.out\ntest `cat t-select-out.tmp` = \"1\" || exit 1\n\n# Pipes.\n\nif false; then # This test fails on some platforms.\n  rm -f t-select-out.tmp\n  ( { echo abc; ${CHECKER} ./test-select-fd${EXEEXT} w 1 t-select-out.tmp; } | { sleep 1; cat; } ) > /dev/null\n  test `cat t-select-out.tmp` = \"0\" || exit 1\nfi\n\nrm -f t-select-out.tmp\n( { sleep 1; echo abc; ${CHECKER} ./test-select-fd${EXEEXT} w 1 t-select-out.tmp; } | cat) > /dev/null\ntest `cat t-select-out.tmp` = \"1\" || exit 1\n\n# Special files.\n\nrm -f t-select-out.tmp\n${CHECKER} ./test-select-fd${EXEEXT} w 1 t-select-out.tmp > /dev/null\ntest `cat t-select-out.tmp` = \"1\" || exit 1\n\nrm -fr $tmpfiles\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

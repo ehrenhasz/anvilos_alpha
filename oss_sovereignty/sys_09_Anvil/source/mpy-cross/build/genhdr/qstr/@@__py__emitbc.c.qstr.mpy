@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__emitbc.c.qstr",
+  "hash_id": "7235e1fa644cadcee607381d11ffe93a7815b12686352b56e3f4e8d573ee4b39",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__emitbc.c.qstr",
+  "human_readable_source": "Q(_star_)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

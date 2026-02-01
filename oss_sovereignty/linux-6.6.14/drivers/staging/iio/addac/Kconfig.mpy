@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9680469e795e569216277ff4d9d1f2b088f2a6cced1fedd74e3d084a14af6149",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/iio/addac/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# ADDAC drivers\n#\nmenu \"Analog digital bi-direction converters\"\n\nconfig ADT7316\n\ttristate \"Analog Devices ADT7316/7/8 ADT7516/7/9 temperature sensor, ADC and DAC driver\"\n\tdepends on GPIOLIB || COMPILE_TEST\n\thelp\n\t  Say yes here to build support for Analog Devices ADT7316, ADT7317, ADT7318\n\t  and ADT7516, ADT7517, ADT7519 temperature sensors, ADC and DAC.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called adt7316.\n\nconfig ADT7316_SPI\n\ttristate \"support SPI bus connection\"\n\tdepends on SPI && ADT7316\n\tdefault y\n\thelp\n\t  Say yes here to build SPI bus support for Analog Devices ADT7316/7/8\n\t  and ADT7516/7/9.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called adt7316_spi.\n\nconfig ADT7316_I2C\n\ttristate \"support I2C bus connection\"\n\tdepends on I2C && ADT7316\n\thelp\n\t  Say yes here to build I2C bus support for Analog Devices ADT7316/7/8\n\t  and ADT7516/7/9.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called adt7316_i2c.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

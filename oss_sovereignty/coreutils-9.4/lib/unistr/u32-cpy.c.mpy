@@ -1,0 +1,9 @@
+{
+  "module_name": "u32-cpy.c",
+  "hash_id": "b0c6daba0a22e461a0bb1c01a21f81f685db11bf9e41686cf9e0cac254be2b27",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unistr/u32-cpy.c",
+  "human_readable_source": " \n#include \"unistr.h\"\n\n#define FUNC u32_cpy\n#define UNIT uint32_t\n#include \"u-cpy.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

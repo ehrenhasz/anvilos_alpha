@@ -1,0 +1,9 @@
+{
+  "module_name": "super.h",
+  "hash_id": "fc3208a26438b8caef004c61ca3c2c1bdb1d106e350fdb74d11ce9ca9c324fe7",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/super.h",
+  "human_readable_source": " \n\n#ifndef BTRFS_SUPER_H\n#define BTRFS_SUPER_H\n\nint btrfs_parse_options(struct btrfs_fs_info *info, char *options,\n\t\t\tunsigned long new_flags);\nint btrfs_sync_fs(struct super_block *sb, int wait);\nchar *btrfs_get_subvol_name_from_objectid(struct btrfs_fs_info *fs_info,\n\t\t\t\t\t  u64 subvol_objectid);\n\nstatic inline struct btrfs_fs_info *btrfs_sb(struct super_block *sb)\n{\n\treturn sb->s_fs_info;\n}\n\nstatic inline void btrfs_set_sb_rdonly(struct super_block *sb)\n{\n\tsb->s_flags |= SB_RDONLY;\n\tset_bit(BTRFS_FS_STATE_RO, &btrfs_sb(sb)->fs_state);\n}\n\nstatic inline void btrfs_clear_sb_rdonly(struct super_block *sb)\n{\n\tsb->s_flags &= ~SB_RDONLY;\n\tclear_bit(BTRFS_FS_STATE_RO, &btrfs_sb(sb)->fs_state);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

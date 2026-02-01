@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "19f92bc0ba7770240532127e48b0e0a362e466ae81dc676d3b87725c3f772df3",
+  "original_prompt": "Ingested from linux-6.6.14/fs/notify/inotify/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_INOTIFY_USER)\t+= inotify_fsnotify.o inotify_user.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

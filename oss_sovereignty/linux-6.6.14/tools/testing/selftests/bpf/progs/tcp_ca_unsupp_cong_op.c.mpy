@@ -1,0 +1,9 @@
+{
+  "module_name": "tcp_ca_unsupp_cong_op.c",
+  "hash_id": "6e1d4d0cae1c0b2144583125ac9b545b73b687624d3c4ea50fbc7cc9f01f0cf4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/tcp_ca_unsupp_cong_op.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"struct_ops/unsupp_cong_op_get_info\")\nsize_t BPF_PROG(unsupp_cong_op_get_info, struct sock *sk, u32 ext, int *attr,\n\t\tunion tcp_cc_info *info)\n{\n\treturn 0;\n}\n\nSEC(\".struct_ops\")\nstruct tcp_congestion_ops unsupp_cong_op = {\n\t.get_info = (void *)unsupp_cong_op_get_info,\n\t.name = \"bpf_unsupp_op\",\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio.h",
+  "hash_id": "a8ee170680d70f1591f94d476c008791710f777c9855e7a2f325d77350772978",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/gpio.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_GPIO_H__\n#define __NVBIOS_GPIO_H__\nenum dcb_gpio_func_name {\n\tDCB_GPIO_PANEL_POWER = 0x01,\n\tDCB_GPIO_FAN = 0x09,\n\tDCB_GPIO_TVDAC0 = 0x0c,\n\tDCB_GPIO_THERM_EXT_POWER_EVENT = 0x10,\n\tDCB_GPIO_TVDAC1 = 0x2d,\n\tDCB_GPIO_FAN_SENSE = 0x3d,\n\tDCB_GPIO_POWER_ALERT = 0x4c,\n\tDCB_GPIO_EXT_POWER_LOW = 0x79,\n\tDCB_GPIO_LOGO_LED_PWM = 0x84,\n\tDCB_GPIO_UNUSED = 0xff,\n\tDCB_GPIO_VID0 = 0x04,\n\tDCB_GPIO_VID1 = 0x05,\n\tDCB_GPIO_VID2 = 0x06,\n\tDCB_GPIO_VID3 = 0x1a,\n\tDCB_GPIO_VID4 = 0x73,\n\tDCB_GPIO_VID5 = 0x74,\n\tDCB_GPIO_VID6 = 0x75,\n\tDCB_GPIO_VID7 = 0x76,\n\tDCB_GPIO_VID_PWM = 0x81,\n};\n\n#define DCB_GPIO_LOG_DIR     0x02\n#define DCB_GPIO_LOG_DIR_OUT 0x00\n#define DCB_GPIO_LOG_DIR_IN  0x02\n#define DCB_GPIO_LOG_VAL     0x01\n#define DCB_GPIO_LOG_VAL_LO  0x00\n#define DCB_GPIO_LOG_VAL_HI  0x01\n\nstruct dcb_gpio_func {\n\tu8 func;\n\tu8 line;\n\tu8 log[2];\n\n\t \n\tu8 param;\n};\n\nu16 dcb_gpio_table(struct nvkm_bios *, u8 *ver, u8 *hdr, u8 *cnt, u8 *len);\nu16 dcb_gpio_entry(struct nvkm_bios *, int idx, int ent, u8 *ver, u8 *len);\nu16 dcb_gpio_parse(struct nvkm_bios *, int idx, int ent, u8 *ver, u8 *len,\n\t\t   struct dcb_gpio_func *);\nu16 dcb_gpio_match(struct nvkm_bios *, int idx, u8 func, u8 line,\n\t\t   u8 *ver, u8 *len, struct dcb_gpio_func *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

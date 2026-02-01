@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_module.h",
+  "hash_id": "6bfd7da9facc3d4b7413f9c9a579cbe2c71549c3a35983320d14263ab27d2a32",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_module.h",
+  "human_readable_source": " \n\n#ifndef DRM_MODULE_H\n#define DRM_MODULE_H\n\n#include <linux/pci.h>\n#include <linux/platform_device.h>\n\n#include <drm/drm_drv.h>\n\n \n\n \n\nstatic inline int __init drm_pci_register_driver(struct pci_driver *pci_drv)\n{\n\tif (drm_firmware_drivers_only())\n\t\treturn -ENODEV;\n\n\treturn pci_register_driver(pci_drv);\n}\n\n \n#define drm_module_pci_driver(__pci_drv) \\\n\tmodule_driver(__pci_drv, drm_pci_register_driver, pci_unregister_driver)\n\nstatic inline int __init\ndrm_pci_register_driver_if_modeset(struct pci_driver *pci_drv, int modeset)\n{\n\tif (drm_firmware_drivers_only() && modeset == -1)\n\t\treturn -ENODEV;\n\tif (modeset == 0)\n\t\treturn -ENODEV;\n\n\treturn pci_register_driver(pci_drv);\n}\n\nstatic inline void __exit\ndrm_pci_unregister_driver_if_modeset(struct pci_driver *pci_drv, int modeset)\n{\n\tpci_unregister_driver(pci_drv);\n}\n\n \n#define drm_module_pci_driver_if_modeset(__pci_drv, __modeset) \\\n\tmodule_driver(__pci_drv, drm_pci_register_driver_if_modeset, \\\n\t\t      drm_pci_unregister_driver_if_modeset, __modeset)\n\n \n\nstatic inline int __init\ndrm_platform_driver_register(struct platform_driver *platform_drv)\n{\n\tif (drm_firmware_drivers_only())\n\t\treturn -ENODEV;\n\n\treturn platform_driver_register(platform_drv);\n}\n\n \n#define drm_module_platform_driver(__platform_drv) \\\n\tmodule_driver(__platform_drv, drm_platform_driver_register, \\\n\t\t      platform_driver_unregister)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

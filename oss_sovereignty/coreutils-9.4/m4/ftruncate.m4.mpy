@@ -1,0 +1,9 @@
+{
+  "module_name": "ftruncate.m4",
+  "hash_id": "ef18f6aeafa3a7e23c73ff399f5a5cf0961909b9e08008b3ad25221d303fe868",
+  "original_prompt": "Ingested from coreutils-9.4/m4/ftruncate.m4",
+  "human_readable_source": "# serial 24\n\n# See if we need to emulate a missing ftruncate function using _chsize.\n\n# Copyright (C) 2000-2001, 2003-2007, 2009-2023 Free Software Foundation, Inc.\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_FTRUNCATE],\n[\n  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])\n  gl_CHECK_FUNCS_ANDROID([ftruncate], [[#include <unistd.h>]])\n  if test $ac_cv_func_ftruncate = yes; then\n    m4_ifdef([gl_LARGEFILE], [\n      AC_REQUIRE([AC_CANONICAL_HOST])\n      case \"$host_os\" in\n        mingw* | windows*)\n          dnl Native Windows, and Large File Support is requested.\n          dnl The MSVCRT _chsize() function only accepts a 32-bit file size,\n          dnl and the mingw64 ftruncate64() function is unreliable (it may\n          dnl delete the file, see\n          dnl <https://web.archive.org/web/20160425005423/http://mingw-w64.sourcearchive.com/documentation/2.0-1/ftruncate64_8c_source.html>).\n          dnl Use gnulib's ftruncate() implementation instead.\n          REPLACE_FTRUNCATE=1\n          ;;\n      esac\n    ], [\n      :\n    ])\n  else\n    HAVE_FTRUNCATE=0\n    case \"$gl_cv_onwards_func_ftruncate\" in\n      future*) REPLACE_FTRUNCATE=1 ;;\n    esac\n  fi\n])\n\n# Prerequisites of lib/ftruncate.c.\nAC_DEFUN([gl_PREREQ_FTRUNCATE],\n[\n  AC_CHECK_FUNCS([_chsize])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

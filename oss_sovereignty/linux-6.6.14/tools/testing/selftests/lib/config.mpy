@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "c08166be792840aeaaeca5bfe56740c48283f5bee4702cdda95e593c4cef3fc7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/lib/config",
+  "human_readable_source": "CONFIG_TEST_PRINTF=m\nCONFIG_TEST_SCANF=m\nCONFIG_TEST_BITMAP=m\nCONFIG_PRIME_NUMBERS=m\nCONFIG_TEST_STRSCPY=m\nCONFIG_TEST_BITOPS=m\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

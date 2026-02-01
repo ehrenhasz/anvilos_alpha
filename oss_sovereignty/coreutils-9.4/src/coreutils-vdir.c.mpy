@@ -1,0 +1,9 @@
+{
+  "module_name": "coreutils-vdir.c",
+  "hash_id": "cb438830e7f84e1a266b70ab2e3a36e481f13eea977206b9c3fe55f0455818ae",
+  "original_prompt": "Ingested from coreutils-9.4/src/coreutils-vdir.c",
+  "human_readable_source": " \n\n#include <config.h>\n#include \"system.h\"\n\n#include \"ls.h\"\n \nint single_binary_main_ls (int argc, char **argv);\nint single_binary_main_vdir (int argc, char **argv);\n\nint\nsingle_binary_main_vdir (int argc, char **argv)\n{\n  ls_mode = LS_LONG_FORMAT;\n  return single_binary_main_ls (argc, argv);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

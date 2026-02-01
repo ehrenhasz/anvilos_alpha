@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "54c6e28013e7767dbac32b2b384a0c86f4b8006f7fabd6e90df3c22bf5e6c890",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/xen/events/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y += events.o\n\nevents-y += events_base.o\nevents-y += events_2l.o\nevents-y += events_fifo.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

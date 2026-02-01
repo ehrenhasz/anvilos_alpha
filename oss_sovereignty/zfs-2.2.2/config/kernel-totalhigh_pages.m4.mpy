@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-totalhigh_pages.m4",
+  "hash_id": "841df15aab1c4a84dbf34b1ad9a037d30ac622e93fd46eb0e3ef76a818c2662a",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-totalhigh_pages.m4",
+  "human_readable_source": "dnl #\ndnl # 5.0 API change\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_TOTALHIGH_PAGES], [\n\tZFS_LINUX_TEST_SRC([totalhigh_pages], [\n\t\t#include <linux/highmem.h>\n\t],[\n\t\tunsigned long pages __attribute__ ((unused));\n\t\tpages = totalhigh_pages();\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_TOTALHIGH_PAGES], [\n\tAC_MSG_CHECKING([whether totalhigh_pages() exists])\n\tZFS_LINUX_TEST_RESULT([totalhigh_pages], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_TOTALHIGH_PAGES, 1, [totalhigh_pages() exists])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

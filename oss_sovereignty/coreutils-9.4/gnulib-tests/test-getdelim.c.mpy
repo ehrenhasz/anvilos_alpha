@@ -1,0 +1,9 @@
+{
+  "module_name": "test-getdelim.c",
+  "hash_id": "10913f1d07967f9ce74500dc9a3d57c55f124e4c38513891cbda4b9c8e6662a1",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-getdelim.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdio.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (getdelim, ssize_t, (char **, size_t *, int, FILE *));\n\n#include <stdlib.h>\n#include <string.h>\n\n#include \"macros.h\"\n\nint\nmain (void)\n{\n  FILE *f;\n  char *line;\n  size_t len;\n  ssize_t result;\n\n   \n  f = fopen (\"test-getdelim.txt\", \"wb\");\n  if (!f || fwrite (\"anAnbcnd\\0f\", 1, 10, f) != 10 || fclose (f) != 0)\n    {\n      fputs (\"Failed to create sample file.\\n\", stderr);\n      remove (\"test-getdelim.txt\");\n      return 1;\n    }\n  f = fopen (\"test-getdelim.txt\", \"rb\");\n  if (!f)\n    {\n      fputs (\"Failed to reopen sample file.\\n\", stderr);\n      remove (\"test-getdelim.txt\");\n      return 1;\n    }\n\n   \n  line = NULL;\n  len = 0;\n  result = getdelim (&line, &len, 'n', f);\n  ASSERT (result == 2);\n  ASSERT (strcmp (line, \"an\") == 0);\n  ASSERT (2 < len);\n  free (line);\n\n   \n  line = NULL;\n  len = (size_t)(~0) / 4;\n  result = getdelim (&line, &len, 'n', f);\n  ASSERT (result == 2);\n  ASSERT (strcmp (line, \"An\") == 0);\n  ASSERT (2 < len);\n  free (line);\n\n   \n  line = malloc (1);\n  len = 1;\n  result = getdelim (&line, &len, 'n', f);\n  ASSERT (result == 3);\n  ASSERT (strcmp (line, \"bcn\") == 0);\n  ASSERT (3 < len);\n\n   \n  result = getdelim (&line, &len, 'n', f);\n  ASSERT (result == 3);\n  ASSERT (memcmp (line, \"d\\0f\", 4) == 0);\n  ASSERT (3 < len);\n\n  result = getdelim (&line, &len, 'n', f);\n  ASSERT (result == -1);\n\n  free (line);\n  fclose (f);\n  remove (\"test-getdelim.txt\");\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

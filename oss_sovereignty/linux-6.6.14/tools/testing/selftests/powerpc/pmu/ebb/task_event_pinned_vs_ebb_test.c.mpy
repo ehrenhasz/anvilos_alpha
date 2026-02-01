@@ -1,0 +1,9 @@
+{
+  "module_name": "task_event_pinned_vs_ebb_test.c",
+  "hash_id": "d1b3c7603e1d89cbdeea482440e1f3debe2b1ded36ee1aa0b7447736bfb39e87",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/ebb/task_event_pinned_vs_ebb_test.c",
+  "human_readable_source": "\n \n\n#include <signal.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <stdbool.h>\n#include <sys/types.h>\n#include <sys/wait.h>\n#include <unistd.h>\n\n#include \"ebb.h\"\n\n\n \n\nstatic int setup_child_event(struct event *event, pid_t child_pid)\n{\n\tevent_init_named(event, 0x400FA, \"PM_RUN_INST_CMPL\");\n\n\tevent->attr.pinned = 1;\n\n\tevent->attr.exclude_kernel = 1;\n\tevent->attr.exclude_hv = 1;\n\tevent->attr.exclude_idle = 1;\n\n\tFAIL_IF(event_open_with_pid(event, child_pid));\n\tFAIL_IF(event_enable(event));\n\n\treturn 0;\n}\n\nint task_event_pinned_vs_ebb(void)\n{\n\tunion pipe read_pipe, write_pipe;\n\tstruct event event;\n\tpid_t pid;\n\tint rc;\n\n\tSKIP_IF(!ebb_is_supported());\n\n\tFAIL_IF(pipe(read_pipe.fds) == -1);\n\tFAIL_IF(pipe(write_pipe.fds) == -1);\n\n\tpid = fork();\n\tif (pid == 0) {\n\t\t \n\t\texit(ebb_child(write_pipe, read_pipe));\n\t}\n\n\t \n\trc = setup_child_event(&event, pid);\n\tif (rc) {\n\t\tkill_child_and_wait(pid);\n\t\treturn rc;\n\t}\n\n\t \n\tif (sync_with_child(read_pipe, write_pipe))\n\t\t \n\t\tgoto wait;\n\n\t \n\tFAIL_IF(sync_with_child(read_pipe, write_pipe));\n\nwait:\n\t \n\tFAIL_IF(wait_for_child(pid) != 2);\n\tFAIL_IF(event_disable(&event));\n\tFAIL_IF(event_read(&event));\n\n\tevent_report(&event);\n\n\tFAIL_IF(event.result.value == 0);\n\t \n\tFAIL_IF(event.result.enabled == 0);\n\tFAIL_IF(event.result.running == 0);\n\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(task_event_pinned_vs_ebb, \"task_event_pinned_vs_ebb\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

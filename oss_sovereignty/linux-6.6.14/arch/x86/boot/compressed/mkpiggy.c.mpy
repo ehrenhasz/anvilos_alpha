@@ -1,0 +1,9 @@
+{
+  "module_name": "mkpiggy.c",
+  "hash_id": "86b7894fbb9199f139d3897a1b32082ec79f463fc11ca12b270d91a5aab1d9dc",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/compressed/mkpiggy.c",
+  "human_readable_source": "\n \n\n#include <stdlib.h>\n#include <stdio.h>\n#include <string.h>\n#include <inttypes.h>\n#include <tools/le_byteshift.h>\n\nint main(int argc, char *argv[])\n{\n\tuint32_t olen;\n\tlong ilen;\n\tFILE *f = NULL;\n\tint retval = 1;\n\n\tif (argc < 2) {\n\t\tfprintf(stderr, \"Usage: %s compressed_file\\n\", argv[0]);\n\t\tgoto bail;\n\t}\n\n\t \n\n\tf = fopen(argv[1], \"r\");\n\tif (!f) {\n\t\tperror(argv[1]);\n\t\tgoto bail;\n\t}\n\n\n\tif (fseek(f, -4L, SEEK_END)) {\n\t\tperror(argv[1]);\n\t}\n\n\tif (fread(&olen, sizeof(olen), 1, f) != 1) {\n\t\tperror(argv[1]);\n\t\tgoto bail;\n\t}\n\n\tilen = ftell(f);\n\tolen = get_unaligned_le32(&olen);\n\n\tprintf(\".section \\\".rodata..compressed\\\",\\\"a\\\",@progbits\\n\");\n\tprintf(\".globl z_input_len\\n\");\n\tprintf(\"z_input_len = %lu\\n\", ilen);\n\tprintf(\".globl z_output_len\\n\");\n\tprintf(\"z_output_len = %lu\\n\", (unsigned long)olen);\n\n\tprintf(\".globl input_data, input_data_end\\n\");\n\tprintf(\"input_data:\\n\");\n\tprintf(\".incbin \\\"%s\\\"\\n\", argv[1]);\n\tprintf(\"input_data_end:\\n\");\n\n\tprintf(\".section \\\".rodata\\\",\\\"a\\\",@progbits\\n\");\n\tprintf(\".globl input_len\\n\");\n\tprintf(\"input_len:\\n\\t.long %lu\\n\", ilen);\n\tprintf(\".globl output_len\\n\");\n\tprintf(\"output_len:\\n\\t.long %lu\\n\", (unsigned long)olen);\n\n\tretval = 0;\nbail:\n\tif (f)\n\t\tfclose(f);\n\treturn retval;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

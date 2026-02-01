@@ -1,0 +1,9 @@
+{
+  "module_name": "pm8001_ctl.h",
+  "hash_id": "a696f548733846046d4dfef84fa9ed42bac429a12678439fb5b10b65c1c1f3a5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/pm8001/pm8001_ctl.h",
+  "human_readable_source": "  \n\n#ifndef PM8001_CTL_H_INCLUDED\n#define PM8001_CTL_H_INCLUDED\n\n#define IOCTL_BUF_SIZE\t\t4096\n#define HEADER_LEN\t\t\t28\n#define SIZE_OFFSET\t\t\t16\n\n#define BIOSOFFSET\t\t\t56\n#define BIOS_OFFSET_LIMIT\t\t61\n\n#define FLASH_OK                        0x000000\n#define FAIL_OPEN_BIOS_FILE             0x000100\n#define FAIL_FILE_SIZE                  0x000a00\n#define FAIL_PARAMETERS                 0x000b00\n#define FAIL_OUT_MEMORY                 0x000c00\n#define FLASH_IN_PROGRESS               0x001000\n\n#define IB_OB_READ_TIMES                256\n#define SYSFS_OFFSET                    1024\n#define PM80XX_IB_OB_QUEUE_SIZE         (32 * 1024)\n#define PM8001_IB_OB_QUEUE_SIZE         (16 * 1024)\n\nstatic inline u32 pm8001_ctl_aap1_memmap(u8 *ptr, int idx, int off)\n{\n\treturn *(u32 *)(ptr + idx * 32 + off);\n}\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

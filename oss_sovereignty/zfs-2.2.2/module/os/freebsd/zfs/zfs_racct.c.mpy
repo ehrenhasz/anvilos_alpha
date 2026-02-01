@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_racct.c",
+  "hash_id": "48875523ce282f670806105806d2dad26be2009697947c6dd7618fd7238eee25",
+  "original_prompt": "Ingested from zfs-2.2.2/module/os/freebsd/zfs/zfs_racct.c",
+  "human_readable_source": " \n\n#include <sys/zfs_racct.h>\n#include <sys/racct.h>\n\nvoid\nzfs_racct_read(uint64_t size, uint64_t iops)\n{\n\tcurthread->td_ru.ru_inblock += iops;\n#ifdef RACCT\n\tif (racct_enable) {\n\t\tPROC_LOCK(curproc);\n\t\tracct_add_force(curproc, RACCT_READBPS, size);\n\t\tracct_add_force(curproc, RACCT_READIOPS, iops);\n\t\tPROC_UNLOCK(curproc);\n\t}\n#else\n\t(void) size;\n#endif  \n}\n\nvoid\nzfs_racct_write(uint64_t size, uint64_t iops)\n{\n\tcurthread->td_ru.ru_oublock += iops;\n#ifdef RACCT\n\tif (racct_enable) {\n\t\tPROC_LOCK(curproc);\n\t\tracct_add_force(curproc, RACCT_WRITEBPS, size);\n\t\tracct_add_force(curproc, RACCT_WRITEIOPS, iops);\n\t\tPROC_UNLOCK(curproc);\n\t}\n#else\n\t(void) size;\n#endif  \n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

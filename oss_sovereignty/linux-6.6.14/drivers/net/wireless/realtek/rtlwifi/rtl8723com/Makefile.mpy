@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "470f6a87351dd422005d76e72800dbbde607e4ccfdec5947546b8cf1310c8553",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8723com/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nrtl8723-common-objs :=\t\t\\\n\t\tmain.o\t\t\\\n\t\tdm_common.o\t\\\n\t\tfw_common.o\t\\\n\t\tphy_common.o\n\nobj-$(CONFIG_RTL8723_COMMON) += rtl8723-common.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

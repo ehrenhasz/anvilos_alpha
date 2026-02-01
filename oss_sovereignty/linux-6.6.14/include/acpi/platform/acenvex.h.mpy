@@ -1,0 +1,9 @@
+{
+  "module_name": "acenvex.h",
+  "hash_id": "a82e75bddce59e9fe0f59c6dbca9c3f6f725b9b8d0d2433872d16ce4625f7c84",
+  "original_prompt": "Ingested from linux-6.6.14/include/acpi/platform/acenvex.h",
+  "human_readable_source": " \n \n\n#ifndef __ACENVEX_H__\n#define __ACENVEX_H__\n\n \n\n \n\n#if defined(_LINUX) || defined(__linux__)\n#include <acpi/platform/aclinuxex.h>\n\n#elif defined(__DragonFly__)\n#include \"acdragonflyex.h\"\n\n \n#elif defined(_AED_EFI) || defined(_GNU_EFI) || defined(_EDK2_EFI)\n#include \"acefiex.h\"\n\n#endif\n\n#if defined(__GNUC__)\n#include \"acgccex.h\"\n\n#elif defined(_MSC_VER)\n#include \"acmsvcex.h\"\n\n#endif\n\n \n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

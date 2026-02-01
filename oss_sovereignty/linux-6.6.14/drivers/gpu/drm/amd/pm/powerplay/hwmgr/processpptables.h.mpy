@@ -1,0 +1,9 @@
+{
+  "module_name": "processpptables.h",
+  "hash_id": "628739c9da33b82ba76b8bb64cacfc8a87c502a27d6dc222a3da8e51479d9388",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/processpptables.h",
+  "human_readable_source": " \n\n#ifndef PROCESSPPTABLES_H\n#define PROCESSPPTABLES_H\n\nstruct pp_hwmgr;\nstruct pp_power_state;\nstruct pp_hw_power_state;\n\nextern const struct pp_table_func pptable_funcs;\n\ntypedef int (*pp_tables_hw_clock_info_callback)(struct pp_hwmgr *hwmgr,\n\t\t\t\t\t\tstruct pp_hw_power_state *hw_ps,\n\t\t\t\t\t\tunsigned int index,\n\t\t\t\t\t\tconst void *clock_info);\n\nint pp_tables_get_num_of_entries(struct pp_hwmgr *hwmgr,\n\t\t\t\t unsigned long *num_of_entries);\n\nint pp_tables_get_entry(struct pp_hwmgr *hwmgr,\n\t\t\tunsigned long entry_index,\n\t\t\tstruct pp_power_state *ps,\n\t\t\tpp_tables_hw_clock_info_callback func);\n\nint pp_tables_get_response_times(struct pp_hwmgr *hwmgr,\n\t\t\t\t uint32_t *vol_rep_time, uint32_t *bb_rep_time);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

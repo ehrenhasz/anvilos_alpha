@@ -1,0 +1,9 @@
+{
+  "module_name": "vbox_ttm.c",
+  "hash_id": "d65e335b6965fb403636bb56f5103c8970361eeb9f3bd912daef90facd36db7c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/vboxvideo/vbox_ttm.c",
+  "human_readable_source": "\n \n#include <linux/pci.h>\n#include <drm/drm_file.h>\n#include \"vbox_drv.h\"\n\nint vbox_mm_init(struct vbox_private *vbox)\n{\n\tint ret;\n\tresource_size_t base, size;\n\tstruct drm_device *dev = &vbox->ddev;\n\tstruct pci_dev *pdev = to_pci_dev(dev->dev);\n\n\tbase = pci_resource_start(pdev, 0);\n\tsize = pci_resource_len(pdev, 0);\n\n\t \n\tdevm_arch_phys_wc_add(&pdev->dev, base, size);\n\n\tret = drmm_vram_helper_init(dev, base, vbox->available_vram_size);\n\tif (ret) {\n\t\tDRM_ERROR(\"Error initializing VRAM MM; %d\\n\", ret);\n\t\treturn ret;\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

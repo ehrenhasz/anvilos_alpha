@@ -1,0 +1,9 @@
+{
+  "module_name": "spa_log_spacemap.h",
+  "hash_id": "dc5f7f877d148741eaae9c014ae4fb6b50707f8541cf15635c5a7984d88ed516",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/spa_log_spacemap.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SYS_SPA_LOG_SPACEMAP_H\n#define\t_SYS_SPA_LOG_SPACEMAP_H\n\n#include <sys/avl.h>\n\ntypedef struct log_summary_entry {\n\tuint64_t lse_start;\t \n\tuint64_t lse_end;\t \n\tuint64_t lse_txgcount;\t \n\tuint64_t lse_mscount;\t \n\tuint64_t lse_msdcount;\t \n\tuint64_t lse_blkcount;\t \n\tlist_node_t lse_node;\n} log_summary_entry_t;\n\ntypedef struct spa_unflushed_stats  {\n\t \n\tuint64_t sus_memused;\t \n\n\t \n\tuint64_t sus_blocklimit;\t \n\tuint64_t sus_nblocks;\t \n} spa_unflushed_stats_t;\n\ntypedef struct spa_log_sm {\n\tuint64_t sls_sm_obj;\t \n\tuint64_t sls_txg;\t \n\tuint64_t sls_nblocks;\t \n\tuint64_t sls_mscount;\t \n\tavl_node_t sls_node;\t \n\tspace_map_t *sls_sm;\t \n} spa_log_sm_t;\n\nint spa_ld_log_spacemaps(spa_t *);\n\nvoid spa_generate_syncing_log_sm(spa_t *, dmu_tx_t *);\nvoid spa_flush_metaslabs(spa_t *, dmu_tx_t *);\nvoid spa_sync_close_syncing_log_sm(spa_t *);\n\nvoid spa_cleanup_old_sm_logs(spa_t *, dmu_tx_t *);\n\nuint64_t spa_log_sm_blocklimit(spa_t *);\nvoid spa_log_sm_set_blocklimit(spa_t *);\nuint64_t spa_log_sm_nblocks(spa_t *);\nuint64_t spa_log_sm_memused(spa_t *);\n\nvoid spa_log_sm_decrement_mscount(spa_t *, uint64_t);\nvoid spa_log_sm_increment_current_mscount(spa_t *);\n\nvoid spa_log_summary_add_flushed_metaslab(spa_t *, boolean_t);\nvoid spa_log_summary_dirty_flushed_metaslab(spa_t *, uint64_t);\nvoid spa_log_summary_decrement_mscount(spa_t *, uint64_t, boolean_t);\nvoid spa_log_summary_decrement_blkcount(spa_t *, uint64_t);\n\nboolean_t spa_flush_all_logs_requested(spa_t *);\n\nextern int zfs_keep_log_spacemaps_at_export;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

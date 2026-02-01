@@ -1,0 +1,9 @@
+{
+  "module_name": "crash_core_64.c",
+  "hash_id": "6e75fbb4fa2ad2441191265d57a2069d86157c62617ceacf3a7b9a4fad617037",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/crash_core_64.c",
+  "human_readable_source": "\n\n#include <linux/crash_core.h>\n#include <linux/pgtable.h>\n\n#include <asm/setup.h>\n\nvoid arch_crash_save_vmcoreinfo(void)\n{\n\tu64 sme_mask = sme_me_mask;\n\n\tVMCOREINFO_NUMBER(phys_base);\n\tVMCOREINFO_SYMBOL(init_top_pgt);\n\tvmcoreinfo_append_str(\"NUMBER(pgtable_l5_enabled)=%d\\n\",\n\t\t\t      pgtable_l5_enabled());\n\n#ifdef CONFIG_NUMA\n\tVMCOREINFO_SYMBOL(node_data);\n\tVMCOREINFO_LENGTH(node_data, MAX_NUMNODES);\n#endif\n\tvmcoreinfo_append_str(\"KERNELOFFSET=%lx\\n\", kaslr_offset());\n\tVMCOREINFO_NUMBER(KERNEL_IMAGE_SIZE);\n\tVMCOREINFO_NUMBER(sme_mask);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

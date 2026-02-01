@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__modarray.c.qstr",
+  "hash_id": "d7253afa5bef5a9845443e79b7617464286c4031cfd0d6abd25198d226a5eed6",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__modarray.c.qstr",
+  "human_readable_source": "Q(__name__)\nQ(array)\nQ(array)\nQ(array)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

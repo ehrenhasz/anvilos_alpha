@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "e26fcab5032bd430cc4932952757dcc7de60f37b2a4507984ecfb373d60fd107",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/clk/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_CLK_PRIV_H__\n#define __NVKM_CLK_PRIV_H__\n#define nvkm_clk(p) container_of((p), struct nvkm_clk, subdev)\n#include <subdev/clk.h>\n\nstruct nvkm_clk_func {\n\tint (*init)(struct nvkm_clk *);\n\tvoid (*fini)(struct nvkm_clk *);\n\tint (*read)(struct nvkm_clk *, enum nv_clk_src);\n\tint (*calc)(struct nvkm_clk *, struct nvkm_cstate *);\n\tint (*prog)(struct nvkm_clk *);\n\tvoid (*tidy)(struct nvkm_clk *);\n\tstruct nvkm_pstate *pstates;\n\tint nr_pstates;\n\tstruct nvkm_domain domains[];\n};\n\nint nvkm_clk_ctor(const struct nvkm_clk_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t  bool allow_reclock, struct nvkm_clk *);\nint nvkm_clk_new_(const struct nvkm_clk_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t  bool allow_reclock, struct nvkm_clk **);\n\nint nv04_clk_pll_calc(struct nvkm_clk *, struct nvbios_pll *, int clk,\n\t\t      struct nvkm_pll_vals *);\nint nv04_clk_pll_prog(struct nvkm_clk *, u32 reg1, struct nvkm_pll_vals *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

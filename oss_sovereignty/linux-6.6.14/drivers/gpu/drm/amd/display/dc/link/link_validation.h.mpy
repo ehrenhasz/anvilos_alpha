@@ -1,0 +1,9 @@
+{
+  "module_name": "link_validation.h",
+  "hash_id": "cbf6efe89f471aa1348721204ddc9a5fd8e449b4debb2e3f85996420e2df9601",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/link_validation.h",
+  "human_readable_source": " \n#ifndef __LINK_VALIDATION_H__\n#define __LINK_VALIDATION_H__\n#include \"link.h\"\nenum dc_status link_validate_mode_timing(\n\t\tconst struct dc_stream_state *stream,\n\t\tstruct dc_link *link,\n\t\tconst struct dc_crtc_timing *timing);\nbool link_validate_dpia_bandwidth(\n\t\tconst struct dc_stream_state *stream,\n\t\tconst unsigned int num_streams);\nuint32_t dp_link_bandwidth_kbps(\n\tconst struct dc_link *link,\n\tconst struct dc_link_settings *link_settings);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

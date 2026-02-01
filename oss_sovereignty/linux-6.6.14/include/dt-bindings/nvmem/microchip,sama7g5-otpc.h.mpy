@@ -1,0 +1,9 @@
+{
+  "module_name": "microchip,sama7g5-otpc.h",
+  "hash_id": "5a2ddc69a197a852a882c4daee90564922de313d39c7ab96a52d38b4ea0e1dcf",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/nvmem/microchip,sama7g5-otpc.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_NVMEM_MICROCHIP_OTPC_H\n#define _DT_BINDINGS_NVMEM_MICROCHIP_OTPC_H\n\n \n#define OTP_PKT(id)\t\t\t((id) * 4)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

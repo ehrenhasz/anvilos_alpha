@@ -1,0 +1,9 @@
+{
+  "module_name": "softtimer.h",
+  "hash_id": "c0480209d9b2098d2fac9d353035faf7c3000a0d08d15cd7d256da81229177ee",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/runtime/softtimer.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_SHARED_RUNTIME_SOFTTIMER_H\n#define MICROPY_INCLUDED_SHARED_RUNTIME_SOFTTIMER_H\n\n#include \"py/pairheap.h\"\n\n#define SOFT_TIMER_FLAG_PY_CALLBACK (1)\n#define SOFT_TIMER_FLAG_GC_ALLOCATED (2)\n\n#define SOFT_TIMER_MODE_ONE_SHOT (1)\n#define SOFT_TIMER_MODE_PERIODIC (2)\n\ntypedef struct _soft_timer_entry_t {\n    mp_pairheap_t pairheap;\n    uint16_t flags;\n    uint16_t mode;\n    uint32_t expiry_ms;\n    uint32_t delta_ms; \n    union {\n        void (*c_callback)(struct _soft_timer_entry_t *);\n        mp_obj_t py_callback;\n    };\n} soft_timer_entry_t;\n\nextern volatile uint32_t soft_timer_next;\n\nstatic inline int32_t soft_timer_ticks_diff(uint32_t t1, uint32_t t0) {\n    \n    \n    \n    return t1 - t0;\n}\n\nvoid soft_timer_deinit(void);\nvoid soft_timer_handler(void);\nvoid soft_timer_gc_mark_all(void);\n\nvoid soft_timer_static_init(soft_timer_entry_t *entry, uint16_t mode, uint32_t delta_ms, void (*cb)(soft_timer_entry_t *));\nvoid soft_timer_insert(soft_timer_entry_t *entry, uint32_t initial_delta_ms);\nvoid soft_timer_remove(soft_timer_entry_t *entry);\n\n\n\nstatic inline void soft_timer_reinsert(soft_timer_entry_t *entry, uint32_t initial_delta_ms) {\n    soft_timer_remove(entry);\n    soft_timer_insert(entry, initial_delta_ms);\n}\n\n#if !defined(MICROPY_SOFT_TIMER_TICKS_MS)\n\n\n\n\n\n\n\n\nuint32_t soft_timer_get_ms(void);\nvoid soft_timer_schedule_at_ms(uint32_t ticks_ms);\n#endif\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

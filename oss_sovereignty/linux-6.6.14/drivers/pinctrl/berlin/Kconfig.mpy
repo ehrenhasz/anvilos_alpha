@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7bb7d7c079dc0fbf7f4a762d0fdd09eeab78ef209195dc1141b75075905f12b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/berlin/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nif (ARCH_BERLIN || COMPILE_TEST)\n\nconfig PINCTRL_BERLIN\n\tbool\n\tselect PINMUX\n\tselect REGMAP_MMIO\n\nconfig PINCTRL_AS370\n\tbool \"Synaptics as370 pin controller driver\"\n\tdepends on OF\n\tselect PINCTRL_BERLIN\n\nconfig PINCTRL_BERLIN_BG2\n\tdef_bool MACH_BERLIN_BG2\n\tdepends on OF\n\tselect PINCTRL_BERLIN\n\nconfig PINCTRL_BERLIN_BG2CD\n\tdef_bool MACH_BERLIN_BG2CD\n\tdepends on OF\n\tselect PINCTRL_BERLIN\n\nconfig PINCTRL_BERLIN_BG2Q\n\tdef_bool MACH_BERLIN_BG2Q\n\tdepends on OF\n\tselect PINCTRL_BERLIN\n\nconfig PINCTRL_BERLIN_BG4CT\n\tbool \"Marvell berlin4ct pin controller driver\"\n\tdepends on OF\n\tselect PINCTRL_BERLIN\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

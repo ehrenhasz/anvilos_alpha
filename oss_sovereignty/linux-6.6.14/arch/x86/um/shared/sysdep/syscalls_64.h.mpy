@@ -1,0 +1,9 @@
+{
+  "module_name": "syscalls_64.h",
+  "hash_id": "6f21ffc2cce9143abb7ec71bae387e5ba968d04fee010bef1d98f6e1c112e779",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/shared/sysdep/syscalls_64.h",
+  "human_readable_source": " \n\n#ifndef __SYSDEP_X86_64_SYSCALLS_H__\n#define __SYSDEP_X86_64_SYSCALLS_H__\n\n#include <linux/msg.h>\n#include <linux/shm.h>\n\ntypedef long syscall_handler_t(long, long, long, long, long, long);\n\nextern syscall_handler_t *sys_call_table[];\n\n#define EXECUTE_SYSCALL(syscall, regs) \\\n\t(((*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \\\n\t\t \t\t      UPT_SYSCALL_ARG2(&regs->regs), \\\n\t\t\t\t      UPT_SYSCALL_ARG3(&regs->regs), \\\n\t\t\t\t      UPT_SYSCALL_ARG4(&regs->regs), \\\n\t\t\t\t      UPT_SYSCALL_ARG5(&regs->regs), \\\n\t\t\t\t      UPT_SYSCALL_ARG6(&regs->regs)))\n\nextern syscall_handler_t sys_modify_ldt;\nextern syscall_handler_t sys_arch_prctl;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

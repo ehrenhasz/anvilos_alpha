@@ -1,0 +1,9 @@
+{
+  "module_name": "write-any-file.c",
+  "hash_id": "df3830f0030b016d420d1b439e40ca575a683da70dbd9c4dd2bf6f52b407452b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/write-any-file.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"write-any-file.h\"\n#include \"priv-set.h\"\n#include \"root-uid.h\"\n\n#include <unistd.h>\n\n \n\nbool\ncan_write_any_file (void)\n{\n  static bool initialized;\n  static bool can_write;\n\n  if (! initialized)\n    {\n      bool can = false;\n#if defined PRIV_FILE_DAC_WRITE\n      can = (priv_set_ismember (PRIV_FILE_DAC_WRITE) == 1);\n#else\n       \n      can = (geteuid () == ROOT_UID);\n#endif\n      can_write = can;\n      initialized = true;\n    }\n\n  return can_write;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

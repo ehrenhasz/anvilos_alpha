@@ -1,0 +1,9 @@
+{
+  "module_name": "lag.h",
+  "hash_id": "95359cb75ad5ea4015a73128cb4b4fd43f18975fc754c5ba9e1563e84038d9d3",
+  "original_prompt": "Ingested from linux-6.6.14/include/rdma/lag.h",
+  "human_readable_source": " \n \n\n#ifndef _RDMA_LAG_H_\n#define _RDMA_LAG_H_\n\n#include <net/lag.h>\n\nstruct ib_device;\nstruct rdma_ah_attr;\n\nenum rdma_lag_flags {\n\tRDMA_LAG_FLAGS_HASH_ALL_SLAVES = 1 << 0\n};\n\nvoid rdma_lag_put_ah_roce_slave(struct net_device *xmit_slave);\nstruct net_device *rdma_lag_get_ah_roce_slave(struct ib_device *device,\n\t\t\t\t\t      struct rdma_ah_attr *ah_attr,\n\t\t\t\t\t      gfp_t flags);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

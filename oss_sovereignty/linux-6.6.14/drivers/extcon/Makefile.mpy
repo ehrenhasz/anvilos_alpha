@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e009ded43dd509f260364c9d000e7de1cd7c0dbb5f287493b28e18e65a8de7c9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/extcon/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n# Makefile for external connector class (extcon) devices\n#\n\nobj-$(CONFIG_EXTCON)\t\t+= extcon-core.o\nextcon-core-objs\t\t+= extcon.o devres.o\nobj-$(CONFIG_EXTCON_ADC_JACK)\t+= extcon-adc-jack.o\nobj-$(CONFIG_EXTCON_AXP288)\t+= extcon-axp288.o\nobj-$(CONFIG_EXTCON_FSA9480)\t+= extcon-fsa9480.o\nobj-$(CONFIG_EXTCON_GPIO)\t+= extcon-gpio.o\nobj-$(CONFIG_EXTCON_INTEL_INT3496) += extcon-intel-int3496.o\nobj-$(CONFIG_EXTCON_INTEL_CHT_WC) += extcon-intel-cht-wc.o\nobj-$(CONFIG_EXTCON_INTEL_MRFLD) += extcon-intel-mrfld.o\nobj-$(CONFIG_EXTCON_MAX14577)\t+= extcon-max14577.o\nobj-$(CONFIG_EXTCON_MAX3355)\t+= extcon-max3355.o\nobj-$(CONFIG_EXTCON_MAX77693)\t+= extcon-max77693.o\nobj-$(CONFIG_EXTCON_MAX77843)\t+= extcon-max77843.o\nobj-$(CONFIG_EXTCON_MAX8997)\t+= extcon-max8997.o\nobj-$(CONFIG_EXTCON_PALMAS)\t+= extcon-palmas.o\nobj-$(CONFIG_EXTCON_PTN5150)\t+= extcon-ptn5150.o\nobj-$(CONFIG_EXTCON_QCOM_SPMI_MISC) += extcon-qcom-spmi-misc.o\nobj-$(CONFIG_EXTCON_RT8973A)\t+= extcon-rt8973a.o\nobj-$(CONFIG_EXTCON_SM5502)\t+= extcon-sm5502.o\nobj-$(CONFIG_EXTCON_USB_GPIO)\t+= extcon-usb-gpio.o\nobj-$(CONFIG_EXTCON_USBC_CROS_EC) += extcon-usbc-cros-ec.o\nobj-$(CONFIG_EXTCON_USBC_TUSB320) += extcon-usbc-tusb320.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

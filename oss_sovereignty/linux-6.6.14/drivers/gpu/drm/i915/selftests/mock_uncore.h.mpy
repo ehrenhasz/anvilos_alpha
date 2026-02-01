@@ -1,0 +1,9 @@
+{
+  "module_name": "mock_uncore.h",
+  "hash_id": "080df59560ab6a366a5773b890ced8afe9c775dbc20f4a607125591579d87c4e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/mock_uncore.h",
+  "human_readable_source": " \n\n#ifndef __MOCK_UNCORE_H\n#define __MOCK_UNCORE_H\n\nstruct drm_i915_private;\nstruct intel_uncore;\n\nvoid mock_uncore_init(struct intel_uncore *uncore,\n\t\t      struct drm_i915_private *i915);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1243e7c7345358616ba3395ad3f66550f31b9704a46ff022eb7bda9ac15ebf17",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/i2c/cx25840/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ncx25840-objs    := cx25840-core.o cx25840-audio.o cx25840-firmware.o \\\n\t\t   cx25840-vbi.o cx25840-ir.o\n\nobj-$(CONFIG_VIDEO_CX25840) += cx25840.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "iso.h",
+  "hash_id": "62bcb1cdbd3cffde308caef483639dc701faf153a54f660c8b7943f0328deb5f",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/bluetooth/iso.h",
+  "human_readable_source": " \n \n\n#ifndef __ISO_H\n#define __ISO_H\n\n \n#define ISO_DEFAULT_MTU\t\t251\n#define ISO_MAX_NUM_BIS\t\t0x1f\n\n \nstruct sockaddr_iso_bc {\n\tbdaddr_t\tbc_bdaddr;\n\t__u8\t\tbc_bdaddr_type;\n\t__u8\t\tbc_sid;\n\t__u8\t\tbc_num_bis;\n\t__u8\t\tbc_bis[ISO_MAX_NUM_BIS];\n};\n\n \nstruct sockaddr_iso {\n\tsa_family_t\tiso_family;\n\tbdaddr_t\tiso_bdaddr;\n\t__u8\t\tiso_bdaddr_type;\n\tstruct sockaddr_iso_bc iso_bc[];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

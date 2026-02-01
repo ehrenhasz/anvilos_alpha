@@ -1,0 +1,9 @@
+{
+  "module_name": "fdp.h",
+  "hash_id": "26f1cae62a491821e2cd6859e2fdaedc4204aebcbb26f55ed1353223224ee356",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/fdp/fdp.h",
+  "human_readable_source": " \n \n\n#ifndef __LOCAL_FDP_H_\n#define __LOCAL_FDP_H_\n\n#include <net/nfc/nci_core.h>\n#include <linux/gpio/consumer.h>\n\nstruct fdp_i2c_phy {\n\tstruct i2c_client *i2c_dev;\n\tstruct gpio_desc *power_gpio;\n\tstruct nci_dev *ndev;\n\n\t \n\tint hard_fault;\n\tuint16_t next_read_size;\n};\n\nint fdp_nci_probe(struct fdp_i2c_phy *phy, const struct nfc_phy_ops *phy_ops,\n\t\t  struct nci_dev **ndev, int tx_headroom, int tx_tailroom,\n\t\t  u8 clock_type, u32 clock_freq, const u8 *fw_vsc_cfg);\nvoid fdp_nci_remove(struct nci_dev *ndev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

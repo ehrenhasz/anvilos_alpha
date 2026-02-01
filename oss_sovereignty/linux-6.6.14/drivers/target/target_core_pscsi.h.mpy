@@ -1,0 +1,9 @@
+{
+  "module_name": "target_core_pscsi.h",
+  "hash_id": "b304efbe4979eb4c9095a313212f10fab91a20124be6afdd4f413202f098dbc5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/target_core_pscsi.h",
+  "human_readable_source": " \n#ifndef TARGET_CORE_PSCSI_H\n#define TARGET_CORE_PSCSI_H\n\n#define PSCSI_VERSION\t\t\"v4.0\"\n\n \n#ifndef INQUIRY_DATA_SIZE\n#define INQUIRY_DATA_SIZE\t0x24\n#endif\n\n \n#define PSCSI_DEFAULT_QUEUEDEPTH\t1\n\n#define PS_RETRY\t\t5\n#define PS_TIMEOUT_DISK\t\t(15*HZ)\n#define PS_TIMEOUT_OTHER\t(500*HZ)\n\n#include <linux/cache.h>              \n#include <target/target_core_base.h>  \n\nstruct block_device;\nstruct scsi_device;\nstruct Scsi_Host;\n\n#define PDF_HAS_CHANNEL_ID\t0x01\n#define PDF_HAS_TARGET_ID\t0x02\n#define PDF_HAS_LUN_ID\t\t0x04\n#define PDF_HAS_VPD_UNIT_SERIAL 0x08\n#define PDF_HAS_VPD_DEV_IDENT\t0x10\n#define PDF_HAS_VIRT_HOST_ID\t0x20\n\nstruct pscsi_dev_virt {\n\tstruct se_device dev;\n\tint\tpdv_flags;\n\tint\tpdv_host_id;\n\tint\tpdv_channel_id;\n\tint\tpdv_target_id;\n\tint\tpdv_lun_id;\n\tstruct block_device *pdv_bd;\n\tstruct scsi_device *pdv_sd;\n\tstruct Scsi_Host *pdv_lld_host;\n} ____cacheline_aligned;\n\ntypedef enum phv_modes {\n\tPHV_VIRTUAL_HOST_ID,\n\tPHV_LLD_SCSI_HOST_NO\n} phv_modes_t;\n\nstruct pscsi_hba_virt {\n\tint\t\t\tphv_host_id;\n\tphv_modes_t\t\tphv_mode;\n\tstruct Scsi_Host\t*phv_lld_host;\n} ____cacheline_aligned;\n\n#endif    \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

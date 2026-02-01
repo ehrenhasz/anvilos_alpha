@@ -1,0 +1,9 @@
+{
+  "module_name": "dkms.postbuild",
+  "hash_id": "e41bffa77c8ba102d44f5157624ed6ee0a82e079727438f9801812eb85a8ea94",
+  "original_prompt": "Ingested from zfs-2.2.2/scripts/dkms.postbuild",
+  "human_readable_source": "#!/bin/sh\n\nPROG=$0\n\nwhile getopts \"a:k:n:t:v:\" opt; do\n\tcase $opt in\n\t\ta) arch=$OPTARG    ;;\n\t\tk) kver=$OPTARG    ;;\n\t\tn) pkgname=$OPTARG ;;\n\t\tt) tree=$OPTARG    ;;\n\t\tv) pkgver=$OPTARG  ;;\n\t\t*) err=1           ;;\n\tesac\ndone\n\nif [ -z \"${arch}\" ] || [ -z \"${kver}\" ] || [ -z \"${pkgname}\" ] || \\\n    [ -z \"${tree}\" ] || [ -z \"${pkgver}\" ] || [ -n \"${err}\" ]; then\n\techo \"Usage: $PROG -a <arch> -k <kver> -n <pkgname>\" \\\n\t    \"-t <tree> -v <pkgver>\"\n\texit 1\nfi\n\nexec cp \"${tree}/${pkgname}/${pkgver}/build/zfs_config.h\"     \\\n   \"${tree}/${pkgname}/${pkgver}/build/module/Module.symvers\" \\\n   \"${tree}/${pkgname}/${pkgver}/${kver}/${arch}/\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

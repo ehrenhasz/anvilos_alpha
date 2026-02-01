@@ -1,0 +1,9 @@
+{
+  "module_name": "ynl-regen.sh",
+  "hash_id": "26b22952c4280f71373f8f67cd4621487c3962b3a1656456672efc56d2ec2380",
+  "original_prompt": "Ingested from linux-6.6.14/tools/net/ynl/ynl-regen.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause\n\nTOOL=$(dirname $(realpath $0))/ynl-gen-c.py\n\nforce=\nsearch=\n\nwhile [ ! -z \"$1\" ]; do\n  case \"$1\" in\n    -f ) force=yes; shift ;;\n    -p ) search=$2; shift 2 ;;\n    * )  echo \"Unrecognized option '$1'\"; exit 1 ;;\n  esac\ndone\n\nKDIR=$(dirname $(dirname $(dirname $(dirname $(realpath $0)))))\npushd ${search:-$KDIR} >>/dev/null\n\nfiles=$(git grep --files-with-matches '^/\\* YNL-GEN \\(kernel\\|uapi\\|user\\)')\nfor f in $files; do\n    # params:     0       1      2     3\n    #         $YAML YNL-GEN kernel $mode\n    params=( $(git grep -B1 -h '/\\* YNL-GEN' $f | sed 's@/\\*\\(.*\\)\\*/@\\1@') )\n    args=$(sed -n 's@/\\* YNL-ARG \\(.*\\) \\*/@\\1@p' $f)\n\n    if [ $f -nt ${params[0]} -a -z \"$force\" ]; then\n\techo -e \"\\tSKIP $f\"\n\tcontinue\n    fi\n\n    echo -e \"\\tGEN ${params[2]}\\t$f\"\n    $TOOL --mode ${params[2]} --${params[3]} --spec $KDIR/${params[0]} \\\n\t  $args -o $f\ndone\n\npopd >>/dev/null\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

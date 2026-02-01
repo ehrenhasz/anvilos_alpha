@@ -1,0 +1,9 @@
+{
+  "module_name": "gup_test.h",
+  "hash_id": "c85e515763a9a79820304b08acb3ca2272a054e4a076a7054e839fb81cdaa42c",
+  "original_prompt": "Ingested from linux-6.6.14/mm/gup_test.h",
+  "human_readable_source": " \n#ifndef __GUP_TEST_H\n#define __GUP_TEST_H\n\n#include <linux/types.h>\n\n#define GUP_FAST_BENCHMARK\t_IOWR('g', 1, struct gup_test)\n#define PIN_FAST_BENCHMARK\t_IOWR('g', 2, struct gup_test)\n#define PIN_LONGTERM_BENCHMARK\t_IOWR('g', 3, struct gup_test)\n#define GUP_BASIC_TEST\t\t_IOWR('g', 4, struct gup_test)\n#define PIN_BASIC_TEST\t\t_IOWR('g', 5, struct gup_test)\n#define DUMP_USER_PAGES_TEST\t_IOWR('g', 6, struct gup_test)\n#define PIN_LONGTERM_TEST_START\t_IOW('g', 7, struct pin_longterm_test)\n#define PIN_LONGTERM_TEST_STOP\t_IO('g', 8)\n#define PIN_LONGTERM_TEST_READ\t_IOW('g', 9, __u64)\n\n#define GUP_TEST_MAX_PAGES_TO_DUMP\t\t8\n\n#define GUP_TEST_FLAG_DUMP_PAGES_USE_PIN\t0x1\n\nstruct gup_test {\n\t__u64 get_delta_usec;\n\t__u64 put_delta_usec;\n\t__u64 addr;\n\t__u64 size;\n\t__u32 nr_pages_per_call;\n\t__u32 gup_flags;\n\t__u32 test_flags;\n\t \n\t__u32 which_pages[GUP_TEST_MAX_PAGES_TO_DUMP];\n};\n\n#define PIN_LONGTERM_TEST_FLAG_USE_WRITE\t1\n#define PIN_LONGTERM_TEST_FLAG_USE_FAST\t\t2\n\nstruct pin_longterm_test {\n\t__u64 addr;\n\t__u64 size;\n\t__u32 flags;\n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

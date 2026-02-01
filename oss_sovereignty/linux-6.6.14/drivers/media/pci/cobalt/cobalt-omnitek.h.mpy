@@ -1,0 +1,9 @@
+{
+  "module_name": "cobalt-omnitek.h",
+  "hash_id": "e9acbfcb19f0553a211f7b0b1e8dab566db72e628cc9cc182b3f0384b213d014",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cobalt/cobalt-omnitek.h",
+  "human_readable_source": " \n \n\n#ifndef COBALT_OMNITEK_H\n#define COBALT_OMNITEK_H\n\n#include <linux/scatterlist.h>\n#include \"cobalt-driver.h\"\n\nstruct sg_dma_descriptor {\n\tu32 pci_l;\n\tu32 pci_h;\n\n\tu32 local;\n\tu32 reserved0;\n\n\tu32 next_l;\n\tu32 next_h;\n\n\tu32 bytes;\n\tu32 reserved1;\n};\n\nint omni_sg_dma_init(struct cobalt *cobalt);\nvoid omni_sg_dma_abort_channel(struct cobalt_stream *s);\nvoid omni_sg_dma_start(struct cobalt_stream *s, struct sg_dma_desc_info *desc);\nbool is_dma_done(struct cobalt_stream *s);\n\nint descriptor_list_create(struct cobalt *cobalt,\n\tstruct scatterlist *scatter_list, bool to_pci, unsigned sglen,\n\tunsigned size, unsigned width, unsigned stride,\n\tstruct sg_dma_desc_info *desc);\n\nvoid descriptor_list_chain(struct sg_dma_desc_info *this,\n\t\t\t   struct sg_dma_desc_info *next);\nvoid descriptor_list_loopback(struct sg_dma_desc_info *desc);\nvoid descriptor_list_end_of_chain(struct sg_dma_desc_info *desc);\n\nvoid *descriptor_list_allocate(struct sg_dma_desc_info *desc, size_t bytes);\nvoid descriptor_list_free(struct sg_dma_desc_info *desc);\n\nvoid descriptor_list_interrupt_enable(struct sg_dma_desc_info *desc);\nvoid descriptor_list_interrupt_disable(struct sg_dma_desc_info *desc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

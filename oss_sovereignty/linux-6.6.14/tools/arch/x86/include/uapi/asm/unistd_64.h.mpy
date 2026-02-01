@@ -1,0 +1,9 @@
+{
+  "module_name": "unistd_64.h",
+  "hash_id": "9a692336022b3e06d0239bdd77b61479363cf81bb2280906319cf78cf79fb41f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/x86/include/uapi/asm/unistd_64.h",
+  "human_readable_source": " \n#ifndef __NR_fork\n#define __NR_fork 57\n#endif\n#ifndef __NR_execve\n#define __NR_execve 59\n#endif\n#ifndef __NR_getppid\n#define __NR_getppid 110\n#endif\n#ifndef __NR_getpgid\n#define __NR_getpgid 121\n#endif\n#ifndef __NR_gettid\n#define __NR_gettid 186\n#endif\n#ifndef __NR_futex\n#define __NR_futex 202\n#endif\n#ifndef __NR_perf_event_open\n#define __NR_perf_event_open 298\n#endif\n#ifndef __NR_setns\n#define __NR_setns 308\n#endif\n#ifndef __NR_getcpu\n#define __NR_getcpu 309\n#endif\n#ifndef __NR_seccomp\n#define __NR_seccomp 317\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

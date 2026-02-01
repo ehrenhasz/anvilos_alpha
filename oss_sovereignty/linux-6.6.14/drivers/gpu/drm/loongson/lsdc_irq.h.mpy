@@ -1,0 +1,9 @@
+{
+  "module_name": "lsdc_irq.h",
+  "hash_id": "645c2c63beb8bf7076b08d299ccaa969a94b79edce3a090df771eb17870c42b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/loongson/lsdc_irq.h",
+  "human_readable_source": " \n \n\n#ifndef __LSDC_IRQ_H__\n#define __LSDC_IRQ_H__\n\n#include <linux/irqreturn.h>\n\n#include \"lsdc_drv.h\"\n\nirqreturn_t ls7a1000_dc_irq_handler(int irq, void *arg);\nirqreturn_t ls7a2000_dc_irq_handler(int irq, void *arg);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

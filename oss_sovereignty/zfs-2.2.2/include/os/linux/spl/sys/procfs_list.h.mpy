@@ -1,0 +1,9 @@
+{
+  "module_name": "procfs_list.h",
+  "hash_id": "3d91f719fc9880e5d51260d31391ebb910ed9f8311d7638b56db2e3396a3d30f",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/procfs_list.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SPL_PROCFS_LIST_H\n#define\t_SPL_PROCFS_LIST_H\n\n#include <sys/kstat.h>\n#include <sys/mutex.h>\n#include <linux/proc_fs.h>\n#include <linux/seq_file.h>\n\ntypedef struct procfs_list procfs_list_t;\nstruct procfs_list {\n\t \n\tvoid\t\t*pl_private;\n\n\t \n\tkmutex_t\tpl_lock;\n\tlist_t\t\tpl_list;\n\n\t \n\tuint64_t\tpl_next_id;\n\tint\t\t(*pl_show)(struct seq_file *f, void *p);\n\tint\t\t(*pl_show_header)(struct seq_file *f);\n\tint\t\t(*pl_clear)(procfs_list_t *procfs_list);\n\tsize_t\t\tpl_node_offset;\n\tkstat_proc_entry_t\tpl_kstat_entry;\n};\n\ntypedef struct procfs_list_node {\n\tlist_node_t\tpln_link;\n\tuint64_t\tpln_id;\n} procfs_list_node_t;\n\nvoid procfs_list_install(const char *module,\n    const char *submodule,\n    const char *name,\n    mode_t mode,\n    procfs_list_t *procfs_list,\n    int (*show)(struct seq_file *f, void *p),\n    int (*show_header)(struct seq_file *f),\n    int (*clear)(procfs_list_t *procfs_list),\n    size_t procfs_list_node_off);\nvoid procfs_list_uninstall(procfs_list_t *procfs_list);\nvoid procfs_list_destroy(procfs_list_t *procfs_list);\n\nvoid procfs_list_add(procfs_list_t *procfs_list, void *p);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vmpressure.h",
+  "hash_id": "19ae4f08e1a2034aa33e8a8beb12b11c1540cdfc12b8ca7131c2f5e0f139063b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/vmpressure.h",
+  "human_readable_source": " \n#ifndef __LINUX_VMPRESSURE_H\n#define __LINUX_VMPRESSURE_H\n\n#include <linux/mutex.h>\n#include <linux/list.h>\n#include <linux/workqueue.h>\n#include <linux/gfp.h>\n#include <linux/types.h>\n#include <linux/cgroup.h>\n#include <linux/eventfd.h>\n\nstruct vmpressure {\n\tunsigned long scanned;\n\tunsigned long reclaimed;\n\n\tunsigned long tree_scanned;\n\tunsigned long tree_reclaimed;\n\t \n\tspinlock_t sr_lock;\n\n\t \n\tstruct list_head events;\n\t \n\tstruct mutex events_lock;\n\n\tstruct work_struct work;\n};\n\nstruct mem_cgroup;\n\n#ifdef CONFIG_MEMCG\nextern void vmpressure(gfp_t gfp, struct mem_cgroup *memcg, bool tree,\n\t\t       unsigned long scanned, unsigned long reclaimed);\nextern void vmpressure_prio(gfp_t gfp, struct mem_cgroup *memcg, int prio);\n\nextern void vmpressure_init(struct vmpressure *vmpr);\nextern void vmpressure_cleanup(struct vmpressure *vmpr);\nextern struct vmpressure *memcg_to_vmpressure(struct mem_cgroup *memcg);\nextern struct mem_cgroup *vmpressure_to_memcg(struct vmpressure *vmpr);\nextern int vmpressure_register_event(struct mem_cgroup *memcg,\n\t\t\t\t     struct eventfd_ctx *eventfd,\n\t\t\t\t     const char *args);\nextern void vmpressure_unregister_event(struct mem_cgroup *memcg,\n\t\t\t\t\tstruct eventfd_ctx *eventfd);\n#else\nstatic inline void vmpressure(gfp_t gfp, struct mem_cgroup *memcg, bool tree,\n\t\t\t      unsigned long scanned, unsigned long reclaimed) {}\nstatic inline void vmpressure_prio(gfp_t gfp, struct mem_cgroup *memcg,\n\t\t\t\t   int prio) {}\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

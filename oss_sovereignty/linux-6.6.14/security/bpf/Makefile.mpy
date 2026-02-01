@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ef1e112647319c33457e1e10275edac62d3e702c530d95a3f274111bffaddaca",
+  "original_prompt": "Ingested from linux-6.6.14/security/bpf/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Copyright (C) 2020 Google LLC.\n\nobj-$(CONFIG_BPF_LSM) := hooks.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

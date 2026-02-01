@@ -1,0 +1,9 @@
+{
+  "module_name": "c32ispunct.c",
+  "hash_id": "324ecc97b820107467096ea4c593bd400b36a9afe9d115d65ac4f147b03f81cc",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c32ispunct.c",
+  "human_readable_source": " \n#include <uchar.h>\n\n#define FUNC c32ispunct\n#define WCHAR_FUNC iswpunct\n#define UCS_FUNC uc_is_punct\n#include \"c32is-impl.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e9776808cf61b6e9991f5190e1b1ec29730af46e489a2250c07b50dd09fc73c3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/renesas/shmobile/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nshmob-drm-y := shmob_drm_backlight.o \\\n\t       shmob_drm_crtc.o \\\n\t       shmob_drm_drv.o \\\n\t       shmob_drm_kms.o \\\n\t       shmob_drm_plane.o\n\nobj-$(CONFIG_DRM_SHMOBILE)\t+= shmob-drm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_mdp_regs.h",
+  "hash_id": "f631795a23607f6a3a15c90d24d9ac96acb7693cfc610a2ceb7c803450a12759",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/mdp/mtk_mdp_regs.h",
+  "human_readable_source": " \n \n\n#ifndef __MTK_MDP_REGS_H__\n#define __MTK_MDP_REGS_H__\n\n\nvoid mtk_mdp_hw_set_input_addr(struct mtk_mdp_ctx *ctx,\n\t\t\t       struct mtk_mdp_addr *addr);\nvoid mtk_mdp_hw_set_output_addr(struct mtk_mdp_ctx *ctx,\n\t\t\t\tstruct mtk_mdp_addr *addr);\nvoid mtk_mdp_hw_set_in_size(struct mtk_mdp_ctx *ctx);\nvoid mtk_mdp_hw_set_in_image_format(struct mtk_mdp_ctx *ctx);\nvoid mtk_mdp_hw_set_out_size(struct mtk_mdp_ctx *ctx);\nvoid mtk_mdp_hw_set_out_image_format(struct mtk_mdp_ctx *ctx);\nvoid mtk_mdp_hw_set_rotation(struct mtk_mdp_ctx *ctx);\nvoid mtk_mdp_hw_set_global_alpha(struct mtk_mdp_ctx *ctx);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

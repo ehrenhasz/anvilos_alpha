@@ -1,0 +1,9 @@
+{
+  "module_name": "stackctrl.h",
+  "hash_id": "f5f0686d44657f25de70103f740da6630b667f3bd8f7538216a0230839bbc821",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/stackctrl.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_STACKCTRL_H\n#define MICROPY_INCLUDED_PY_STACKCTRL_H\n\n#include \"py/mpconfig.h\"\n\nvoid mp_stack_ctrl_init(void);\nvoid mp_stack_set_top(void *top);\nmp_uint_t mp_stack_usage(void);\n\n#if MICROPY_STACK_CHECK\n\nvoid mp_stack_set_limit(mp_uint_t limit);\nvoid mp_stack_check(void);\n#define MP_STACK_CHECK() mp_stack_check()\n\n#else\n\n#define mp_stack_set_limit(limit) (void)(limit)\n#define MP_STACK_CHECK()\n\n#endif\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

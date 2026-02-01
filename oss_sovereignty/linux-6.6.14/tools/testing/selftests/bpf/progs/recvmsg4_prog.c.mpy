@@ -1,0 +1,9 @@
+{
+  "module_name": "recvmsg4_prog.c",
+  "hash_id": "7f6678aafbe3cef486e595b261e0f5b475c78e9dc11569315edcd6cfbc1e7ba1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/recvmsg4_prog.c",
+  "human_readable_source": "\n\n#include <linux/stddef.h>\n#include <linux/bpf.h>\n#include <linux/in.h>\n#include <sys/socket.h>\n\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n\n#include <bpf_sockopt_helpers.h>\n\n#define SERV4_IP\t\t0xc0a801feU  \n#define SERV4_PORT\t\t4040\n\nSEC(\"cgroup/recvmsg4\")\nint recvmsg4_prog(struct bpf_sock_addr *ctx)\n{\n\tstruct bpf_sock *sk;\n\n\tsk = ctx->sk;\n\tif (!sk)\n\t\treturn 1;\n\n\tif (sk->family != AF_INET)\n\t\treturn 1;\n\n\tif (ctx->type != SOCK_STREAM && ctx->type != SOCK_DGRAM)\n\t\treturn 1;\n\n\tif (!get_set_sk_priority(ctx))\n\t\treturn 1;\n\n\tctx->user_ip4 = bpf_htonl(SERV4_IP);\n\tctx->user_port = bpf_htons(SERV4_PORT);\n\n\treturn 1;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "cd83e0b5d7d180e4c8ad1378a795d26452626b0f6fc1b50d5eabf9bebd7a9655",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/mei/pxp/Kconfig",
+  "human_readable_source": "\n# SPDX-License-Identifier: GPL-2.0\n# Copyright (c) 2020, Intel Corporation. All rights reserved.\n#\nconfig INTEL_MEI_PXP\n\ttristate \"Intel PXP services of ME Interface\"\n\tselect INTEL_MEI_ME\n\tdepends on DRM_I915\n\thelp\n\t  MEI Support for PXP Services on Intel platforms.\n\n\t  Enables the ME FW services required for PXP support through\n\t  I915 display driver of Intel.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

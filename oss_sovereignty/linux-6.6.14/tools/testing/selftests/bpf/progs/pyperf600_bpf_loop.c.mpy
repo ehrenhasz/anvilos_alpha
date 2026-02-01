@@ -1,0 +1,9 @@
+{
+  "module_name": "pyperf600_bpf_loop.c",
+  "hash_id": "be77a3a14b4b2e04662bd21198fa0468b3fbfc93e0005ed3649029c90c6d3f13",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/pyperf600_bpf_loop.c",
+  "human_readable_source": "\n \n\n#define STACK_MAX_LEN 600\n#define USE_BPF_LOOP\n#include \"pyperf.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

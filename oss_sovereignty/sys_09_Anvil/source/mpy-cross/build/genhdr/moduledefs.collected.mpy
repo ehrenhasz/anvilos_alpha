@@ -1,0 +1,9 @@
+{
+  "module_name": "moduledefs.collected",
+  "hash_id": "68fa34242f41e13a38ae36f0bce1697fb6a1d634eff07c16f61b661304daa72a",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/moduledefs.collected",
+  "human_readable_source": "MP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_struct, mp_module_struct);\n\nMP_REGISTER_MODULE(MP_QSTR___main__, mp_module___main__);\n\nMP_REGISTER_MODULE(MP_QSTR_builtins, mp_module_builtins);\n\nMP_REGISTER_MODULE(MP_QSTR_micropython, mp_module_micropython);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

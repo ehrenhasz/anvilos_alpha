@@ -1,0 +1,9 @@
+{
+  "module_name": "inode.h",
+  "hash_id": "4eaeeb8cb0de82f10ad19081c806e8fb008b7c807b5932bebcd715fb4ed03555",
+  "original_prompt": "Ingested from linux-6.6.14/fs/befs/inode.h",
+  "human_readable_source": " \n\nint befs_check_inode(struct super_block *sb, befs_inode *raw_inode,\n\t\t     befs_blocknr_t inode);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

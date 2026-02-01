@@ -1,0 +1,9 @@
+{
+  "module_name": "nfsacl.h",
+  "hash_id": "c863e1a435f4b45de584f5a7597e84884961e540287b79c148add8f5c8ef99a9",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/nfsacl.h",
+  "human_readable_source": " \n \n#ifndef _UAPI__LINUX_NFSACL_H\n#define _UAPI__LINUX_NFSACL_H\n\n#define NFS_ACL_PROGRAM\t100227\n\n#define ACLPROC2_NULL\t\t0\n#define ACLPROC2_GETACL\t\t1\n#define ACLPROC2_SETACL\t\t2\n#define ACLPROC2_GETATTR\t3\n#define ACLPROC2_ACCESS\t\t4\n\n#define ACLPROC3_NULL\t\t0\n#define ACLPROC3_GETACL\t\t1\n#define ACLPROC3_SETACL\t\t2\n\n\n \n#define NFS_ACL\t\t\t0x0001\n#define NFS_ACLCNT\t\t0x0002\n#define NFS_DFACL\t\t0x0004\n#define NFS_DFACLCNT\t\t0x0008\n#define NFS_ACL_MASK\t\t0x000f\n\n \n#define NFS_ACL_DEFAULT\t\t0x1000\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "close-stream.h",
+  "hash_id": "3ba8247822bf3e33352f037795caa4ef5e39f0f73cb1f3ada66b80e824baaa72",
+  "original_prompt": "Ingested from coreutils-9.4/lib/close-stream.h",
+  "human_readable_source": "/* Close a stream, with nicer error checking than fclose's.\n\n   Copyright (C) 2006-2023 Free Software Foundation, Inc.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published\n   by the Free Software Foundation, either version 3 of the License,\n   or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with this program.  If not, see <https:\n\n#include <stdio.h>\n\nint close_stream (FILE *stream);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

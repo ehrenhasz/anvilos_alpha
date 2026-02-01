@@ -1,0 +1,9 @@
+{
+  "module_name": "percpu_freelist.h",
+  "hash_id": "f47e2218e865ba8183d3afc1f8e80871b66b09d4337997c0081b40e3bdeb558f",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/bpf/percpu_freelist.h",
+  "human_readable_source": " \n \n#ifndef __PERCPU_FREELIST_H__\n#define __PERCPU_FREELIST_H__\n#include <linux/spinlock.h>\n#include <linux/percpu.h>\n\nstruct pcpu_freelist_head {\n\tstruct pcpu_freelist_node *first;\n\traw_spinlock_t lock;\n};\n\nstruct pcpu_freelist {\n\tstruct pcpu_freelist_head __percpu *freelist;\n\tstruct pcpu_freelist_head extralist;\n};\n\nstruct pcpu_freelist_node {\n\tstruct pcpu_freelist_node *next;\n};\n\n \nvoid pcpu_freelist_push(struct pcpu_freelist *, struct pcpu_freelist_node *);\nstruct pcpu_freelist_node *pcpu_freelist_pop(struct pcpu_freelist *);\n \nvoid __pcpu_freelist_push(struct pcpu_freelist *, struct pcpu_freelist_node *);\nstruct pcpu_freelist_node *__pcpu_freelist_pop(struct pcpu_freelist *);\nvoid pcpu_freelist_populate(struct pcpu_freelist *s, void *buf, u32 elem_size,\n\t\t\t    u32 nr_elems);\nint pcpu_freelist_init(struct pcpu_freelist *);\nvoid pcpu_freelist_destroy(struct pcpu_freelist *s);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

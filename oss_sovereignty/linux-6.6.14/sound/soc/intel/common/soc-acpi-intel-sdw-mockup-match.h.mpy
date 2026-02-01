@@ -1,0 +1,9 @@
+{
+  "module_name": "soc-acpi-intel-sdw-mockup-match.h",
+  "hash_id": "8f8f2c0be24f922a26b2554f4eeda3230580bd3bcb2dffb8990b473a41173f19",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/common/soc-acpi-intel-sdw-mockup-match.h",
+  "human_readable_source": " \n \n\n#ifndef _SND_SOC_ACPI_INTEL_SDW_MOCKUP_MATCH\n#define _SND_SOC_ACPI_INTEL_SDW_MOCKUP_MATCH\n\nextern const struct snd_soc_acpi_link_adr sdw_mockup_headset_1amp_mic[];\nextern const struct snd_soc_acpi_link_adr sdw_mockup_headset_2amps_mic[];\nextern const struct snd_soc_acpi_link_adr sdw_mockup_mic_headset_1amp[];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "wctype.m4",
+  "hash_id": "3be1fae183207ed2476f47de1c7f6ad7819ebb838cb294af9dc651d653401648",
+  "original_prompt": "Ingested from coreutils-9.4/m4/wctype.m4",
+  "human_readable_source": "# wctype.m4 serial 5\ndnl Copyright (C) 2011-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN_ONCE([gl_FUNC_WCTYPE],\n[\n  AC_REQUIRE([gl_WCTYPE_H_DEFAULTS])\n  AC_REQUIRE([gl_WCTYPE_H])\n  AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles\n  HAVE_WCTYPE=$HAVE_WCTYPE_T\n  if test $HAVE_WCTYPE = 1; then\n    AC_CACHE_CHECK([whether wctype supports the \"blank\" character class],\n      [gl_cv_func_wctype_works],\n      [AC_RUN_IFELSE(\n         [AC_LANG_SOURCE([[\n            #include <wchar.h>\n            #include <wctype.h>\n            int main ()\n            {\n              /* This test fails on mingw.  */\n              if (wctype (\"blank\") == (wctype_t)0)\n                return 1;\n              /* This test fails on MSVC 14.  */\n              if ((! iswctype ('\\t', wctype (\"blank\"))) != (! iswblank ('\\t')))\n                return 2;\n              return 0;\n            }\n         ]])],\n         [gl_cv_func_wctype_works=yes], [gl_cv_func_wctype_works=no],\n         [case \"$host_os\" in\n                               # Guess no on native Windows.\n            mingw* | windows*) gl_cv_func_wctype_works=\"guessing no\" ;;\n                               # Guess yes otherwise.\n            *)                 gl_cv_func_wctype_works=\"guessing yes\" ;;\n          esac\n         ])\n      ])\n    case \"$gl_cv_func_wctype_works\" in\n      *yes) ;;\n      *) REPLACE_WCTYPE=1 ;;\n    esac\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

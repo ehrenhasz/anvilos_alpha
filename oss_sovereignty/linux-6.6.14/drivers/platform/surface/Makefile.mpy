@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d63ede309119a0adf2db0b1e532425907c0a91ce6fc7fd0c8a6b3bc741981b13",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/surface/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for linux/drivers/platform/surface\n# Microsoft Surface Platform-Specific Drivers\n#\n\nobj-$(CONFIG_SURFACE3_WMI)\t\t+= surface3-wmi.o\nobj-$(CONFIG_SURFACE_3_POWER_OPREGION)\t+= surface3_power.o\nobj-$(CONFIG_SURFACE_ACPI_NOTIFY)\t+= surface_acpi_notify.o\nobj-$(CONFIG_SURFACE_AGGREGATOR)\t+= aggregator/\nobj-$(CONFIG_SURFACE_AGGREGATOR_CDEV)\t+= surface_aggregator_cdev.o\nobj-$(CONFIG_SURFACE_AGGREGATOR_HUB)\t+= surface_aggregator_hub.o\nobj-$(CONFIG_SURFACE_AGGREGATOR_REGISTRY) += surface_aggregator_registry.o\nobj-$(CONFIG_SURFACE_AGGREGATOR_TABLET_SWITCH) += surface_aggregator_tabletsw.o\nobj-$(CONFIG_SURFACE_DTX)\t\t+= surface_dtx.o\nobj-$(CONFIG_SURFACE_GPE)\t\t+= surface_gpe.o\nobj-$(CONFIG_SURFACE_HOTPLUG)\t\t+= surface_hotplug.o\nobj-$(CONFIG_SURFACE_PLATFORM_PROFILE)\t+= surface_platform_profile.o\nobj-$(CONFIG_SURFACE_PRO3_BUTTON)\t+= surfacepro3_button.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

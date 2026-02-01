@@ -1,0 +1,9 @@
+{
+  "module_name": "m_pad.c",
+  "hash_id": "29071d880f449e6c7dfb11399b730da38a211c88b48d385bbf0e434a44307009",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_pad.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_pad.c,v 1.17 2021/06/17 21:20:30 tom Exp $\")\n\n \n#define Refresh_Menu(menu) \\\n   if ( (menu) && ((menu)->status & _POSTED) )\\\n   {\\\n      _nc_Draw_Menu( menu );\\\n      _nc_Show_Menu( menu ); \\\n   }\n\n \nMENU_EXPORT(int)\nset_menu_pad(MENU *menu, int pad)\n{\n  bool do_refresh = (menu != (MENU *)0);\n\n  T((T_CALLED(\"set_menu_pad(%p,%d)\"), (void *)menu, pad));\n\n  if (!isprint(UChar(pad)))\n    RETURN(E_BAD_ARGUMENT);\n\n  Normalize_Menu(menu);\n  menu->pad = (unsigned char)pad;\n\n  if (do_refresh)\n    Refresh_Menu(menu);\n\n  RETURN(E_OK);\n}\n\n \nMENU_EXPORT(int)\nmenu_pad(const MENU *menu)\n{\n  T((T_CALLED(\"menu_pad(%p)\"), (const void *)menu));\n  returnCode(Normalize_Menu(menu)->pad);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

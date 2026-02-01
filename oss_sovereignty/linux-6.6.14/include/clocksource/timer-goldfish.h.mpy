@@ -1,0 +1,9 @@
+{
+  "module_name": "timer-goldfish.h",
+  "hash_id": "965f930d0333079b479617e53f429c67d573328b5d59d4f11b36bc642149369f",
+  "original_prompt": "Ingested from linux-6.6.14/include/clocksource/timer-goldfish.h",
+  "human_readable_source": " \n \n\n#ifndef _CLOCKSOURCE_TIMER_GOLDFISH_H\n#define _CLOCKSOURCE_TIMER_GOLDFISH_H\n\n \n#define TIMER_TIME_LOW\t\t0x00\n#define TIMER_TIME_HIGH\t\t0x04\n#define TIMER_ALARM_LOW\t\t0x08\n#define TIMER_ALARM_HIGH\t0x0c\n#define TIMER_IRQ_ENABLED\t0x10\n#define TIMER_CLEAR_ALARM\t0x14\n#define TIMER_ALARM_STATUS\t0x18\n#define TIMER_CLEAR_INTERRUPT\t0x1c\n\nextern int goldfish_timer_init(int irq, void __iomem *base);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

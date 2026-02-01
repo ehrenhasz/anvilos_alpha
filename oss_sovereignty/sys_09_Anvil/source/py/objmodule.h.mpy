@@ -1,0 +1,9 @@
+{
+  "module_name": "objmodule.h",
+  "hash_id": "2a25059f5f5bd4eca03dff2512d1e3963329f7cdffcdc1a101b5da8f3d7b5dd2",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/objmodule.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_OBJMODULE_H\n#define MICROPY_INCLUDED_PY_OBJMODULE_H\n\n#include \"py/obj.h\"\n\n#ifndef NO_QSTR\n\n\n#include \"genhdr/moduledefs.h\"\n#endif\n\nextern const mp_map_t mp_builtin_module_map;\nextern const mp_map_t mp_builtin_extensible_module_map;\n\nmp_obj_t mp_module_get_builtin(qstr module_name, bool extensible);\n\nvoid mp_module_generic_attr(qstr attr, mp_obj_t *dest, const uint16_t *keys, mp_obj_t *values);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "basic_test.c",
+  "hash_id": "c4dec75aaa615487574c4c40aca63cf91d9f01b7746d298513f78d65b0f3d1dd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rseq/basic_test.c",
+  "human_readable_source": "\n \n\n#define _GNU_SOURCE\n#include <assert.h>\n#include <sched.h>\n#include <signal.h>\n#include <stdio.h>\n#include <string.h>\n#include <sys/time.h>\n\n#include \"rseq.h\"\n\nvoid test_cpu_pointer(void)\n{\n\tcpu_set_t affinity, test_affinity;\n\tint i;\n\n\tsched_getaffinity(0, sizeof(affinity), &affinity);\n\tCPU_ZERO(&test_affinity);\n\tfor (i = 0; i < CPU_SETSIZE; i++) {\n\t\tif (CPU_ISSET(i, &affinity)) {\n\t\t\tint node;\n\n\t\t\tCPU_SET(i, &test_affinity);\n\t\t\tsched_setaffinity(0, sizeof(test_affinity),\n\t\t\t\t\t&test_affinity);\n\t\t\tassert(sched_getcpu() == i);\n\t\t\tassert(rseq_current_cpu() == i);\n\t\t\tassert(rseq_current_cpu_raw() == i);\n\t\t\tassert(rseq_cpu_start() == i);\n\t\t\tnode = rseq_fallback_current_node();\n\t\t\tassert(rseq_current_node_id() == node);\n\t\t\tCPU_CLR(i, &test_affinity);\n\t\t}\n\t}\n\tsched_setaffinity(0, sizeof(affinity), &affinity);\n}\n\nint main(int argc, char **argv)\n{\n\tif (rseq_register_current_thread()) {\n\t\tfprintf(stderr, \"Error: rseq_register_current_thread(...) failed(%d): %s\\n\",\n\t\t\terrno, strerror(errno));\n\t\tgoto init_thread_error;\n\t}\n\tprintf(\"testing current cpu\\n\");\n\ttest_cpu_pointer();\n\tif (rseq_unregister_current_thread()) {\n\t\tfprintf(stderr, \"Error: rseq_unregister_current_thread(...) failed(%d): %s\\n\",\n\t\t\terrno, strerror(errno));\n\t\tgoto init_thread_error;\n\t}\n\treturn 0;\n\ninit_thread_error:\n\treturn -1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

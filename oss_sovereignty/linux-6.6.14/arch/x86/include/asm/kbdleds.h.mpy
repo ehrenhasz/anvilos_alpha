@@ -1,0 +1,9 @@
+{
+  "module_name": "kbdleds.h",
+  "hash_id": "babdbd520f312826bee787e6bb3422e8d851bd26cf3ceee06ea9f2868df371dd",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/kbdleds.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_KBDLEDS_H\n#define _ASM_X86_KBDLEDS_H\n\n \n\n#include <asm/setup.h>\n\nstatic inline int kbd_defleds(void)\n{\n\treturn boot_params.kbd_status & 0x20 ? (1 << VC_NUMLOCK) : 0;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

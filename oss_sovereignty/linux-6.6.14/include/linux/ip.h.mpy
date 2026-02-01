@@ -1,0 +1,9 @@
+{
+  "module_name": "ip.h",
+  "hash_id": "959fdf7bf16995005f30d04146dcd72f4b12f1b33bc31d04b93c3175b52e96ee",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ip.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_IP_H\n#define _LINUX_IP_H\n\n#include <linux/skbuff.h>\n#include <uapi/linux/ip.h>\n\nstatic inline struct iphdr *ip_hdr(const struct sk_buff *skb)\n{\n\treturn (struct iphdr *)skb_network_header(skb);\n}\n\nstatic inline struct iphdr *inner_ip_hdr(const struct sk_buff *skb)\n{\n\treturn (struct iphdr *)skb_inner_network_header(skb);\n}\n\nstatic inline struct iphdr *ipip_hdr(const struct sk_buff *skb)\n{\n\treturn (struct iphdr *)skb_transport_header(skb);\n}\n\nstatic inline unsigned int ip_transport_len(const struct sk_buff *skb)\n{\n\treturn ntohs(ip_hdr(skb)->tot_len) - skb_network_header_len(skb);\n}\n\nstatic inline unsigned int iph_totlen(const struct sk_buff *skb, const struct iphdr *iph)\n{\n\tu32 len = ntohs(iph->tot_len);\n\n\treturn (len || !skb_is_gso(skb) || !skb_is_gso_tcp(skb)) ?\n\t       len : skb->len - skb_network_offset(skb);\n}\n\nstatic inline unsigned int skb_ip_totlen(const struct sk_buff *skb)\n{\n\treturn iph_totlen(skb, ip_hdr(skb));\n}\n\n \n#define IP_MAX_MTU\t0xFFFFU\n\nstatic inline void iph_set_totlen(struct iphdr *iph, unsigned int len)\n{\n\tiph->tot_len = len <= IP_MAX_MTU ? htons(len) : 0;\n}\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

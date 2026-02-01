@@ -1,0 +1,9 @@
+{
+  "module_name": "sa2400.h",
+  "hash_id": "88d4f23ef871f61dec70539b76c4356b62416bcc7c15d831073a455c84e7d9f0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtl818x/rtl8180/sa2400.h",
+  "human_readable_source": " \n#ifndef RTL8180_SA2400_H\n#define RTL8180_SA2400_H\n\n \n\n#define SA2400_ANTENNA 0x91\n#define SA2400_DIG_ANAPARAM_PWR1_ON 0x8\n#define SA2400_ANA_ANAPARAM_PWR1_ON 0x28\n#define SA2400_ANAPARAM_PWR0_ON 0x3\n\n \n#define SA2400_MAX_SENS 85\n\n#define SA2400_REG4_FIRDAC_SHIFT 7\n\nextern const struct rtl818x_rf_ops sa2400_rf_ops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

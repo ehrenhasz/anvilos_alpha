@@ -1,0 +1,9 @@
+{
+  "module_name": "rcuref.c",
+  "hash_id": "c99d4a2a06d638247ce3c044b88cd15f6f9eb89366faf11c80aae30ab7ac142b",
+  "original_prompt": "Ingested from linux-6.6.14/lib/rcuref.c",
+  "human_readable_source": "\n\n \n\n#include <linux/export.h>\n#include <linux/rcuref.h>\n\n \nbool rcuref_get_slowpath(rcuref_t *ref)\n{\n\tunsigned int cnt = atomic_read(&ref->refcnt);\n\n\t \n\tif (cnt >= RCUREF_RELEASED) {\n\t\tatomic_set(&ref->refcnt, RCUREF_DEAD);\n\t\treturn false;\n\t}\n\n\t \n\tif (WARN_ONCE(cnt > RCUREF_MAXREF, \"rcuref saturated - leaking memory\"))\n\t\tatomic_set(&ref->refcnt, RCUREF_SATURATED);\n\treturn true;\n}\nEXPORT_SYMBOL_GPL(rcuref_get_slowpath);\n\n \nbool rcuref_put_slowpath(rcuref_t *ref)\n{\n\tunsigned int cnt = atomic_read(&ref->refcnt);\n\n\t \n\tif (likely(cnt == RCUREF_NOREF)) {\n\t\t \n\t\tif (atomic_cmpxchg_release(&ref->refcnt, RCUREF_NOREF, RCUREF_DEAD) != RCUREF_NOREF)\n\t\t\treturn false;\n\n\t\t \n\t\tsmp_acquire__after_ctrl_dep();\n\t\treturn true;\n\t}\n\n\t \n\tif (WARN_ONCE(cnt >= RCUREF_RELEASED, \"rcuref - imbalanced put()\")) {\n\t\tatomic_set(&ref->refcnt, RCUREF_DEAD);\n\t\treturn false;\n\t}\n\n\t \n\tif (cnt > RCUREF_MAXREF)\n\t\tatomic_set(&ref->refcnt, RCUREF_SATURATED);\n\treturn false;\n}\nEXPORT_SYMBOL_GPL(rcuref_put_slowpath);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

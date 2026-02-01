@@ -1,0 +1,9 @@
+{
+  "module_name": "objtool.h",
+  "hash_id": "d5f99bd1b0f83ed321cf6d35354d387b6927ce04164271c4a394ca6b7005edd8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/objtool/include/objtool/objtool.h",
+  "human_readable_source": " \n \n\n#ifndef _OBJTOOL_H\n#define _OBJTOOL_H\n\n#include <stdbool.h>\n#include <linux/list.h>\n#include <linux/hashtable.h>\n\n#include <objtool/elf.h>\n\n#define __weak __attribute__((weak))\n\nstruct pv_state {\n\tbool clean;\n\tstruct list_head targets;\n};\n\nstruct objtool_file {\n\tstruct elf *elf;\n\tDECLARE_HASHTABLE(insn_hash, 20);\n\tstruct list_head retpoline_call_list;\n\tstruct list_head return_thunk_list;\n\tstruct list_head static_call_list;\n\tstruct list_head mcount_loc_list;\n\tstruct list_head endbr_list;\n\tstruct list_head call_list;\n\tbool ignore_unreachables, hints, rodata;\n\n\tunsigned int nr_endbr;\n\tunsigned int nr_endbr_int;\n\n\tunsigned long jl_short, jl_long;\n\tunsigned long jl_nop_short, jl_nop_long;\n\n\tstruct pv_state *pv_ops;\n};\n\nstruct objtool_file *objtool_open_read(const char *_objname);\n\nvoid objtool_pv_add(struct objtool_file *file, int idx, struct symbol *func);\n\nint check(struct objtool_file *file);\nint orc_dump(const char *objname);\nint orc_create(struct objtool_file *file);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "unxz.h",
+  "hash_id": "1730003f1acb4769b17465d50d1c5b6f7bac945af1a678cc1c22160f75fc8a0d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/decompress/unxz.h",
+  "human_readable_source": " \n\n#ifndef DECOMPRESS_UNXZ_H\n#define DECOMPRESS_UNXZ_H\n\nint unxz(unsigned char *in, long in_size,\n\t long (*fill)(void *dest, unsigned long size),\n\t long (*flush)(void *src, unsigned long size),\n\t unsigned char *out, long *in_used,\n\t void (*error)(char *x));\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

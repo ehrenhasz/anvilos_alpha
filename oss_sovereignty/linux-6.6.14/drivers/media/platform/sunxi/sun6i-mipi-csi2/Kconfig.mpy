@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "166fe2d2d0b627f19f841d66893f3df26406ba3fe02e6a246a193ab989d5ae3a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/sunxi/sun6i-mipi-csi2/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_SUN6I_MIPI_CSI2\n\ttristate \"Allwinner A31 MIPI CSI-2 Controller Driver\"\n\tdepends on V4L_PLATFORM_DRIVERS && VIDEO_DEV\n\tdepends on ARCH_SUNXI || COMPILE_TEST\n\tdepends on PM && COMMON_CLK && RESET_CONTROLLER\n\tdepends on PHY_SUN6I_MIPI_DPHY\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect V4L2_FWNODE\n\tselect GENERIC_PHY_MIPI_DPHY\n\tselect REGMAP_MMIO\n\thelp\n\t   Support for the Allwinner A31 MIPI CSI-2 controller, also found on\n\t   other platforms such as the V3/V3s.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

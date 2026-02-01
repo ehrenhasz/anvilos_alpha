@@ -1,0 +1,9 @@
+{
+  "module_name": "stdint.h",
+  "hash_id": "d3bbcab2c94222d9ef368bd6e04e2f0f14d6f66a47a5a50958ff5e05574fdd0c",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/include/stdint.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_ZSTD_STDINT_H\n#define\t_ZSTD_STDINT_H\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n#ifdef _KERNEL\n\n#if defined(__FreeBSD__)\n#include <sys/stdint.h>\n#elif defined(__linux__)\n#include <linux/types.h>\n#else\n#error \"Unsupported platform\"\n#endif\n\n#else  \n#include_next <stdint.h>\n#endif  \n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

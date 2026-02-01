@@ -1,0 +1,9 @@
+{
+  "module_name": "vxcan.h",
+  "hash_id": "442892f6358a441f1c9b81808adb364328b661afd61e84dd8e654d9d1f85fa4d",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/can/vxcan.h",
+  "human_readable_source": " \n#ifndef _UAPI_CAN_VXCAN_H\n#define _UAPI_CAN_VXCAN_H\n\nenum {\n\tVXCAN_INFO_UNSPEC,\n\tVXCAN_INFO_PEER,\n\n\t__VXCAN_INFO_MAX\n#define VXCAN_INFO_MAX\t(__VXCAN_INFO_MAX - 1)\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

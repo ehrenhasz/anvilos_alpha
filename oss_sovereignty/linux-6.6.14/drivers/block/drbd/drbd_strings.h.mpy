@@ -1,0 +1,9 @@
+{
+  "module_name": "drbd_strings.h",
+  "hash_id": "269fee3ddde769de4d7af3046812b8f55346dd7e12951319773ebb62d81a3e68",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/block/drbd/drbd_strings.h",
+  "human_readable_source": " \n#ifndef __DRBD_STRINGS_H\n#define __DRBD_STRINGS_H\n\nextern const char *drbd_conn_str(enum drbd_conns);\nextern const char *drbd_role_str(enum drbd_role);\nextern const char *drbd_disk_str(enum drbd_disk_state);\nextern const char *drbd_set_st_err_str(enum drbd_state_rv);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

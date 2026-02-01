@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5a48b43575dd61081ff2d38eb39b08dcfe5a41dc81d05c11e65c096cc6eb1c10",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/cgroup/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y := cgroup.o rstat.o namespace.o cgroup-v1.o freezer.o\n\nobj-$(CONFIG_CGROUP_FREEZER) += legacy_freezer.o\nobj-$(CONFIG_CGROUP_PIDS) += pids.o\nobj-$(CONFIG_CGROUP_RDMA) += rdma.o\nobj-$(CONFIG_CPUSETS) += cpuset.o\nobj-$(CONFIG_CGROUP_MISC) += misc.o\nobj-$(CONFIG_CGROUP_DEBUG) += debug.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

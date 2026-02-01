@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "865ae56e8dab94f716a612090a3d9318bbc40a76da89ae60f45df60fc3e7d3ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ttm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the drm device driver.  This driver provides support for the\n\nttm-y := ttm_tt.o ttm_bo.o ttm_bo_util.o ttm_bo_vm.o ttm_module.o \\\n\tttm_execbuf_util.o ttm_range_manager.o ttm_resource.o ttm_pool.o \\\n\tttm_device.o ttm_sys_manager.o\nttm-$(CONFIG_AGP) += ttm_agp_backend.o\n\nobj-$(CONFIG_DRM_TTM) += ttm.o\nobj-$(CONFIG_DRM_TTM_KUNIT_TEST) += tests/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

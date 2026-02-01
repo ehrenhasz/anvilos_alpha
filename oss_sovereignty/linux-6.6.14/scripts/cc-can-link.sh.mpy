@@ -1,0 +1,9 @@
+{
+  "module_name": "cc-can-link.sh",
+  "hash_id": "f7adbb3ca747604e365f268ec5acddf877d2e599193f03f6d8ebb550f7d0330d",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/cc-can-link.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\ncat << \"END\" | $@ -x c - -o /dev/null >/dev/null 2>&1\n#include <stdio.h>\nint main(void)\n{\n\tprintf(\"\");\n\treturn 0;\n}\nEND\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

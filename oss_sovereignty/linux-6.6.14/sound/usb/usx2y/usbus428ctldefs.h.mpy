@@ -1,0 +1,9 @@
+{
+  "module_name": "usbus428ctldefs.h",
+  "hash_id": "6b558f8e04969d9f345b1166a43f15f9a27e1cff65ac4b36a8f26fc65ae011a1",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/usx2y/usbus428ctldefs.h",
+  "human_readable_source": " \n \n\nenum E_IN84 {\n\tE_FADER_0 = 0,\n\tE_FADER_1,\n\tE_FADER_2,\n\tE_FADER_3,\n\tE_FADER_4,\n\tE_FADER_5,\n\tE_FADER_6,\n\tE_FADER_7,\n\tE_FADER_M,\n\tE_TRANSPORT,\n\tE_MODIFIER = 10,\n\tE_FILTER_SELECT,\n\tE_SELECT,\n\tE_MUTE,\n\n\tE_SWITCH   = 15,\n\tE_WHEEL_GAIN,\n\tE_WHEEL_FREQ,\n\tE_WHEEL_Q,\n\tE_WHEEL_PAN,\n\tE_WHEEL    = 20\n};\n\n#define T_RECORD   1\n#define T_PLAY     2\n#define T_STOP     4\n#define T_F_FWD    8\n#define T_REW   0x10\n#define T_SOLO  0x20\n#define T_REC   0x40\n#define T_NULL  0x80\n\n\nstruct us428_ctls {\n\tunsigned char\tfader[9];\n\tunsigned char\ttransport;\n\tunsigned char\tmodifier;\n\tunsigned char\tfilters_elect;\n\tunsigned char\tselect;\n\tunsigned char\tmute;\n\tunsigned char\tunknown;\n\tunsigned char\twswitch;\n\tunsigned char\twheel[5];\n};\n\nstruct us428_set_byte {\n\tunsigned char offset,\n\t\tvalue;\n};\n\nenum {\n\tELT_VOLUME = 0,\n\tELT_LIGHT\n};\n\nstruct usx2y_volume {\n\tunsigned char channel,\n\t\tlh,\n\t\tll,\n\t\trh,\n\t\trl;\n};\n\nstruct us428_lights {\n\tstruct us428_set_byte light[7];\n};\n\nstruct us428_p4out {\n\tchar type;\n\tunion {\n\t\tstruct usx2y_volume vol;\n\t\tstruct us428_lights lights;\n\t} val;\n};\n\n#define N_US428_CTL_BUFS 16\n#define N_US428_P4OUT_BUFS 16\nstruct us428ctls_sharedmem {\n\tstruct us428_ctls\tctl_snapshot[N_US428_CTL_BUFS];\n\tint\t\t\tctl_snapshot_differs_at[N_US428_CTL_BUFS];\n\tint\t\t\tctl_snapshot_last, ctl_snapshot_red;\n\tstruct us428_p4out\tp4out[N_US428_P4OUT_BUFS];\n\tint\t\t\tp4out_last, p4out_sent;\n};\n\n#define US428_SHAREDMEM_PAGES\tPAGE_ALIGN(sizeof(struct us428ctls_sharedmem))\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

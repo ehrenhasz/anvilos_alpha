@@ -1,0 +1,9 @@
+{
+  "module_name": "config-top.h",
+  "hash_id": "acb10925bf68dc7cb6e415114d84239030a3d009306870a0ffbe8505f9248f1b",
+  "original_prompt": "Ingested from bash-5.2.21/config-top.h",
+  "human_readable_source": " \n\n \n\n \n#define CONTINUE_AFTER_KILL_ERROR\n\n \n#define BREAK_COMPLAINS\n\n \n#define CD_COMPLAINS\n\n \n#define BUFFERED_INPUT\n\n \n#define ONESHOT\n\n \n#define V9_ECHO\n\n \n#define DONT_REPORT_SIGPIPE\n\n \n#define DONT_REPORT_SIGTERM\n\n \n \n\n \n#ifndef DEFAULT_PATH_VALUE\n#define DEFAULT_PATH_VALUE \\\n  \"/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:.\"\n#endif\n\n \n \n\n \n#ifndef STANDARD_UTILS_PATH\n#define STANDARD_UTILS_PATH \\\n  \"/bin:/usr/bin:/sbin:/usr/sbin:/etc:/usr/etc\"\n#endif\n\n \n#ifndef DEFAULT_LOADABLE_BUILTINS_PATH\n#define DEFAULT_LOADABLE_BUILTINS_PATH \\\n  \"/usr/local/lib/bash:/usr/lib/bash:/opt/local/lib/bash:/usr/pkg/lib/bash:/opt/pkg/lib/bash:.\"\n#endif\n\n \n#define PPROMPT \"\\\\s-\\\\v\\\\$ \"\n#define SPROMPT \"> \"\n\n \n#define KSH_COMPATIBLE_SELECT\n\n \n#define DEFAULT_BASHRC \"~/.bashrc\"\n\n \n \n\n \n \n\n \n \n\n \n \n\n \n \n#define CASEMOD_TOGGLECASE\n#define CASEMOD_CAPCASE\n\n \n \n\n \n \n#if defined (SYSLOG_HISTORY)\n#  define SYSLOG_FACILITY LOG_USER\n#  define SYSLOG_LEVEL LOG_INFO\n#  define OPENLOG_OPTS LOG_PID\n#endif\n\n \n#if defined (SYSLOG_HISTORY)\n \n#endif\n\n \n \n\n \n#ifndef MULTIPLE_COPROCS\n#  define MULTIPLE_COPROCS 0\n#endif\n\n \n#define CHECKWINSIZE_DEFAULT\t1\n\n \n#define OPTIMIZE_SEQUENTIAL_ARRAY_ASSIGNMENT\t1\n\n \n \n\n \n \n\n \n#define CHECKHASH_DEFAULT 0\n\n \n#define EVALNEST_MAX 0\n\n \n#define SOURCENEST_MAX 0\n\n \n#define USE_MKTEMP\n#define USE_MKSTEMP\n#define USE_MKDTEMP\n\n \n#define OLDPWD_CHECK_DIRECTORY 1\n\n \n \n\n \n#define HISTEXPAND_DEFAULT\t1\n\n \n#define ASSOC_KVPAIR_ASSIGNMENT 1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

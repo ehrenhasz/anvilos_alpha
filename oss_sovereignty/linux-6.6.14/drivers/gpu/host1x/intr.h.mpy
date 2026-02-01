@@ -1,0 +1,9 @@
+{
+  "module_name": "intr.h",
+  "hash_id": "97c7436d115d99e073a9370ac7005469f66d8f05513022d0aeb4f8cc40438bd2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/intr.h",
+  "human_readable_source": " \n \n\n#ifndef __HOST1X_INTR_H\n#define __HOST1X_INTR_H\n\nstruct host1x;\nstruct host1x_syncpt_fence;\n\n \nint host1x_intr_init(struct host1x *host);\n\n \nvoid host1x_intr_deinit(struct host1x *host);\n\n \nvoid host1x_intr_start(struct host1x *host);\n\n \nvoid host1x_intr_stop(struct host1x *host);\n\nvoid host1x_intr_handle_interrupt(struct host1x *host, unsigned int id);\n\nvoid host1x_intr_add_fence_locked(struct host1x *host, struct host1x_syncpt_fence *fence);\n\nbool host1x_intr_remove_fence(struct host1x *host, struct host1x_syncpt_fence *fence);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

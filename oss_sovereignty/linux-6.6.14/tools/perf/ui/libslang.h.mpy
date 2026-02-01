@@ -1,0 +1,9 @@
+{
+  "module_name": "libslang.h",
+  "hash_id": "d3a06bca312bdc389a464456a2891b681ae64246a03a3dd72e77249048c04a1d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/libslang.h",
+  "human_readable_source": " \n#ifndef _PERF_UI_SLANG_H_\n#define _PERF_UI_SLANG_H_ 1\n \n#include <features.h>\n#ifndef HAVE_LONG_LONG\n#define HAVE_LONG_LONG __GLIBC_HAVE_LONG_LONG\n#endif\n\n \n#define ENABLE_SLFUTURE_CONST 1\n#define ENABLE_SLFUTURE_VOID 1\n\n#ifdef HAVE_SLANG_INCLUDE_SUBDIR\n#include <slang/slang.h>\n#else\n#include <slang.h>\n#endif\n\n#define SL_KEY_UNTAB 0x1000\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

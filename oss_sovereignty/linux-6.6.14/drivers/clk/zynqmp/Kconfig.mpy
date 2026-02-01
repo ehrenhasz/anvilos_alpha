@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "eeb5d34081f141d134729b72e71f1572c35335a9bd8d55c79b9e0f42d6885b01",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/zynqmp/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig COMMON_CLK_ZYNQMP\n\tbool \"Support for Xilinx ZynqMP Ultrascale+ clock controllers\"\n\tdepends on ZYNQMP_FIRMWARE || COMPILE_TEST\n\tdefault ZYNQMP_FIRMWARE\n\thelp\n\t  Support for the Zynqmp Ultrascale clock controller.\n\t  It has a dependency on the PMU firmware.\n\t  Say Y if you want to include clock support.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

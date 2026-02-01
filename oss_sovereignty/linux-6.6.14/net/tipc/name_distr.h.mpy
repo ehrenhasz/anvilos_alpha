@@ -1,0 +1,9 @@
+{
+  "module_name": "name_distr.h",
+  "hash_id": "130018b257707733672443881f05820a7870725975a848d23d5e3bd5c2c533c7",
+  "original_prompt": "Ingested from linux-6.6.14/net/tipc/name_distr.h",
+  "human_readable_source": " \n\n#ifndef _TIPC_NAME_DISTR_H\n#define _TIPC_NAME_DISTR_H\n\n#include \"name_table.h\"\n\n#define ITEM_SIZE sizeof(struct distr_item)\n\n \nstruct distr_item {\n\t__be32 type;\n\t__be32 lower;\n\t__be32 upper;\n\t__be32 port;\n\t__be32 key;\n};\n\nstruct sk_buff *tipc_named_publish(struct net *net, struct publication *publ);\nstruct sk_buff *tipc_named_withdraw(struct net *net, struct publication *publ);\nvoid tipc_named_node_up(struct net *net, u32 dnode, u16 capabilities);\nvoid tipc_named_rcv(struct net *net, struct sk_buff_head *namedq,\n\t\t    u16 *rcv_nxt, bool *open);\nvoid tipc_named_reinit(struct net *net);\nvoid tipc_publ_notify(struct net *net, struct list_head *nsub_list,\n\t\t      u32 addr, u16 capabilities);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

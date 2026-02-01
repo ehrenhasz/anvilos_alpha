@@ -1,0 +1,9 @@
+{
+  "module_name": "vidtv_pes.h",
+  "hash_id": "25315cdafe37dc99e639cf9cfef014d813bc9f0e18b7be5a2846a254cdc7b063",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vidtv/vidtv_pes.h",
+  "human_readable_source": " \n \n\n#ifndef VIDTV_PES_H\n#define VIDTV_PES_H\n\n#include <linux/types.h>\n\n#include \"vidtv_common.h\"\n\n#define PES_MAX_LEN 65536  \n#define PES_START_CODE_PREFIX 0x001  \n\n \nstruct vidtv_pes_optional_pts {\n\tu8 pts1;\n\t__be16 pts2;\n\t__be16 pts3;\n} __packed;\n\n \nstruct vidtv_pes_optional_pts_dts {\n\tu8 pts1;\n\t__be16 pts2;\n\t__be16 pts3;\n\n\tu8 dts1;\n\t__be16 dts2;\n\t__be16 dts3;\n} __packed;\n\n \nstruct vidtv_pes_optional {\n\t \n\t__be16 bitfield;\n\tu8 length;\n} __packed;\n\n \nstruct vidtv_mpeg_pes {\n\t__be32 bitfield;  \n\t \n\t__be16 length;\n\tstruct vidtv_pes_optional optional[];\n} __packed;\n\n \nstruct pes_header_write_args {\n\tvoid *dest_buf;\n\tu32 dest_offset;\n\tu32 dest_buf_sz;\n\tu32 encoder_id;\n\n\tbool send_pts;\n\tu64 pts;\n\n\tbool send_dts;\n\tu64 dts;\n\n\tu16 stream_id;\n\t \n\tu32 n_pes_h_s_bytes;\n\tu32 access_unit_len;\n};\n\n \nstruct pes_ts_header_write_args {\n\tvoid *dest_buf;\n\tu32 dest_offset;\n\tu32 dest_buf_sz;\n\tu16 pid;\n\tu8 *continuity_counter;\n\tbool wrote_pes_header;\n\tu32 n_stuffing_bytes;\n\tu64 pcr;\n};\n\n \nstruct pes_write_args {\n\tvoid *dest_buf;\n\tvoid *from;\n\tu32 access_unit_len;\n\n\tu32 dest_offset;\n\tu32 dest_buf_sz;\n\tu16 pid;\n\n\tu32 encoder_id;\n\n\tu8 *continuity_counter;\n\n\tu16 stream_id;\n\n\tbool send_pts;\n\tu64 pts;\n\n\tbool send_dts;\n\tu64 dts;\n\n\tu32 n_pes_h_s_bytes;\n\tu64 pcr;\n};\n\n \nu32 vidtv_pes_write_into(struct pes_write_args *args);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

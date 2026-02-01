@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bc37f3fd5374965f243d104d9eab3f752764ce8464ffe5e25e89d0a04fae437b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\nall:\n\t( cd ../../../..; tools/testing/selftests/rcutorture/bin/kvm.sh --duration 10 --configs TREE01 )\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

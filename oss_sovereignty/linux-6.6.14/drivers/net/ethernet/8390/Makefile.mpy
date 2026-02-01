@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "dc5601ef698f703c07a0c0af70c3795d1c879af2cdcfb71960be577eab0f6db2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/8390/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the 8390 network device drivers.\n#\n\nobj-$(CONFIG_MAC8390) += mac8390.o\nobj-$(CONFIG_APNE) += apne.o 8390.o\nobj-$(CONFIG_ARM_ETHERH) += etherh.o\nobj-$(CONFIG_AX88796) += ax88796.o\nobj-$(CONFIG_HYDRA) += hydra.o\nobj-$(CONFIG_MCF8390) += mcf8390.o\nobj-$(CONFIG_NE2000) += ne.o 8390p.o\nobj-$(CONFIG_NE2K_PCI) += ne2k-pci.o 8390.o\nobj-$(CONFIG_PCMCIA_AXNET) += axnet_cs.o 8390.o\nobj-$(CONFIG_PCMCIA_PCNET) += pcnet_cs.o 8390.o\nobj-$(CONFIG_STNIC) += stnic.o 8390.o\nobj-$(CONFIG_ULTRA) += smc-ultra.o 8390.o\nobj-$(CONFIG_WD80x3) += wd.o 8390.o\nobj-$(CONFIG_XSURF100) += xsurf100.o\nobj-$(CONFIG_ZORRO8390) += zorro8390.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

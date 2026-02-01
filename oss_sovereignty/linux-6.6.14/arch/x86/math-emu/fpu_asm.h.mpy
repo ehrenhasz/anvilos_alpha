@@ -1,0 +1,9 @@
+{
+  "module_name": "fpu_asm.h",
+  "hash_id": "6e99769cf98d08dcb33d7353d5db8298787c49e0e7c8f0d72786652ac37b63d6",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/math-emu/fpu_asm.h",
+  "human_readable_source": " \n \n\n#ifndef _FPU_ASM_H_\n#define _FPU_ASM_H_\n\n#include <linux/linkage.h>\n\n#define\tEXCEPTION\tFPU_exception\n\n#define PARAM1\t8(%ebp)\n#define\tPARAM2\t12(%ebp)\n#define\tPARAM3\t16(%ebp)\n#define\tPARAM4\t20(%ebp)\n#define\tPARAM5\t24(%ebp)\n#define\tPARAM6\t28(%ebp)\n#define\tPARAM7\t32(%ebp)\n\n#define SIGL_OFFSET 0\n#define\tEXP(x)\t8(x)\n#define SIG(x)\tSIGL_OFFSET##(x)\n#define\tSIGL(x)\tSIGL_OFFSET##(x)\n#define\tSIGH(x)\t4(x)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

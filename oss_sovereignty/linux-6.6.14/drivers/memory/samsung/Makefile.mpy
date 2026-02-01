@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "54c5411a8397875f884e406eb8bc84dae45503c0f12d0e9517acd17d37398fed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/memory/samsung/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_EXYNOS5422_DMC)\t+= exynos5422-dmc.o\nobj-$(CONFIG_EXYNOS_SROM)\t+= exynos-srom.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

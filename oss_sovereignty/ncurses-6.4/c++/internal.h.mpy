@@ -1,0 +1,9 @@
+{
+  "module_name": "internal.h",
+  "hash_id": "2c1c3273b06df8b97c2410dac99bef4cb45698d40693b3f55d20a4c88afd12af",
+  "original_prompt": "Ingested from ncurses-6.4/c++/internal.h",
+  "human_readable_source": "\n \n\n \n\n\n\n#ifndef NCURSES_CPLUS_INTERNAL_H\n#define NCURSES_CPLUS_INTERNAL_H 1\n\n#include <ncurses_cfg.h>\n\n#if USE_RCS_IDS\n#define MODULE_ID(id) static const char Ident[] = id;\n#else\n#define MODULE_ID(id)\t\t \n#endif\n\n#if (defined(_WIN32) || defined(_WIN64))\n#if defined(EXP_WIN32_DRIVER)\n#include <nc_win32.h>\n#else\n#include <nc_mingw.h>\n#endif\n#undef KEY_EVENT\n#endif\n\n#ifndef _QNX_SOURCE\n#include <stdlib.h>\n#include <string.h>\n#endif\n\n#ifndef CTRL\n#define CTRL(x) ((x) & 0x1f)\n#endif\n\n#ifndef NULL\n#define NULL 0\n#endif\n\n#include <nc_string.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

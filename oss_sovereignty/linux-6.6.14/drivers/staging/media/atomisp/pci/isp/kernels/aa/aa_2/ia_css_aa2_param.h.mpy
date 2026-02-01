@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_aa2_param.h",
+  "hash_id": "2980c2ffa326f7c6f21a75ea8efa635437193b8dfa5e49f165413b8c0a58c843",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/aa/aa_2/ia_css_aa2_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_AA_PARAM_H\n#define __IA_CSS_AA_PARAM_H\n\n#include \"type_support.h\"\n\nstruct sh_css_isp_aa_params {\n\ts32 strength;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

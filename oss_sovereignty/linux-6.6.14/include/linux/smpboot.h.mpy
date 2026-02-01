@@ -1,0 +1,9 @@
+{
+  "module_name": "smpboot.h",
+  "hash_id": "0d5a896ec79c82aa6456844967ef4004178eb778752025403307fd0e0c49071b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/smpboot.h",
+  "human_readable_source": " \n#ifndef _LINUX_SMPBOOT_H\n#define _LINUX_SMPBOOT_H\n\n#include <linux/types.h>\n\nstruct task_struct;\n \nstruct smpboot_thread_data;\n\n \nstruct smp_hotplug_thread {\n\tstruct task_struct\t\t* __percpu *store;\n\tstruct list_head\t\tlist;\n\tint\t\t\t\t(*thread_should_run)(unsigned int cpu);\n\tvoid\t\t\t\t(*thread_fn)(unsigned int cpu);\n\tvoid\t\t\t\t(*create)(unsigned int cpu);\n\tvoid\t\t\t\t(*setup)(unsigned int cpu);\n\tvoid\t\t\t\t(*cleanup)(unsigned int cpu, bool online);\n\tvoid\t\t\t\t(*park)(unsigned int cpu);\n\tvoid\t\t\t\t(*unpark)(unsigned int cpu);\n\tbool\t\t\t\tselfparking;\n\tconst char\t\t\t*thread_comm;\n};\n\nint smpboot_register_percpu_thread(struct smp_hotplug_thread *plug_thread);\n\nvoid smpboot_unregister_percpu_thread(struct smp_hotplug_thread *plug_thread);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

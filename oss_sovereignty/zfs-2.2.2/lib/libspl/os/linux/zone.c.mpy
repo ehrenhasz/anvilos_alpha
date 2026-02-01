@@ -1,0 +1,9 @@
+{
+  "module_name": "zone.c",
+  "hash_id": "8ab3cfc93c05928e64bbe4cf2ffeaa50ee3c61f50d36e9a5e38250e1caca56e0",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/os/linux/zone.c",
+  "human_readable_source": " \n \n\n#include <unistd.h>\n#include <stdio.h>\n#include <errno.h>\n#include <stdlib.h>\n#include <limits.h>\n#include <string.h>\n\n#include <zone.h>\n\nzoneid_t\ngetzoneid(void)\n{\n\tchar path[PATH_MAX];\n\tchar buf[128] = { '\\0' };\n\tchar *cp;\n\n\tint c = snprintf(path, sizeof (path), \"/proc/self/ns/user\");\n\t \n\tif (c < 0 || c >= sizeof (path))\n\t\treturn (0);\n\n\tssize_t r = readlink(path, buf, sizeof (buf) - 1);\n\tif (r < 0)\n\t\treturn (0);\n\n\tcp = strchr(buf, '[');\n\tif (cp == NULL)\n\t\treturn (0);\n\tcp++;\n\n\tunsigned long n = strtoul(cp, NULL, 10);\n\tif (n == ULONG_MAX && errno == ERANGE)\n\t\treturn (0);\n\tzoneid_t z = (zoneid_t)n;\n\n\treturn (z);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

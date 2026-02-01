@@ -1,0 +1,9 @@
+{
+  "module_name": "link_dp_training_auxless.h",
+  "hash_id": "8eaa5bdb886b890f3c8e27ac64a3c78fdfa616002600817c7c7d0ee4030d5fa2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/protocols/link_dp_training_auxless.h",
+  "human_readable_source": " \n\n\n#ifndef __DC_LINK_DP_TRAINING_AUXLESS_H__\n#define __DC_LINK_DP_TRAINING_AUXLESS_H__\n#include \"link_dp_training.h\"\n\nbool dp_perform_link_training_skip_aux(\n\tstruct dc_link *link,\n\tconst struct link_resource *link_res,\n\tconst struct dc_link_settings *link_setting);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

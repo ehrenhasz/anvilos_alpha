@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl_ps.h",
+  "hash_id": "1e0b553e6200ea8298dcea4c69c5471340ee5d28e3fbcdca72767402496c563d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192e/rtl8192e/rtl_ps.h",
+  "human_readable_source": " \n \n#ifndef _RTL_PS_H\n#define _RTL_PS_H\n\n#include <linux/types.h>\n\nstruct net_device;\n\n#define RT_CHECK_FOR_HANG_PERIOD 2\n\nvoid rtl92e_hw_wakeup(struct net_device *dev);\nvoid rtl92e_enter_sleep(struct net_device *dev, u64 time);\nvoid rtl92e_rtllib_ips_leave_wq(struct net_device *dev);\nvoid rtl92e_rtllib_ips_leave(struct net_device *dev);\nvoid rtl92e_ips_leave_wq(void *data);\n\nvoid rtl92e_ips_enter(struct net_device *dev);\nvoid rtl92e_ips_leave(struct net_device *dev);\n\nvoid rtl92e_leisure_ps_enter(struct net_device *dev);\nvoid rtl92e_leisure_ps_leave(struct net_device *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

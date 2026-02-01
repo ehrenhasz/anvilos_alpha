@@ -1,0 +1,9 @@
+{
+  "module_name": "bitsperlong.h",
+  "hash_id": "c909974388ced1f565b7bf1384bd0d9316118340910592213f0b33b635297537",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/uapi/asm-generic/bitsperlong.h",
+  "human_readable_source": " \n#ifndef _UAPI__ASM_GENERIC_BITS_PER_LONG\n#define _UAPI__ASM_GENERIC_BITS_PER_LONG\n\n#ifndef __BITS_PER_LONG\n \n#if defined(__CHAR_BIT__) && defined(__SIZEOF_LONG__)\n#define __BITS_PER_LONG (__CHAR_BIT__ * __SIZEOF_LONG__)\n#else\n \n#define __BITS_PER_LONG 32\n#endif\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_gpu-none-skips.txt",
+  "hash_id": "8abc82e0eb79f7be8f4bbf73e3628a6b3553b70c38236c874d66b3bf2b8cbe4e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/virtio_gpu-none-skips.txt",
+  "human_readable_source": "# Hits a \"refcount_t: underflow; use-after-free\" in virtio_gpu_fence_event_process\n# When run in a particular order with other tests\nkms_cursor_legacy.*\n\n# Job just hangs without any output\nkms_flip@flip-vs-suspend.*",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

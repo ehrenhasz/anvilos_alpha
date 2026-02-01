@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-dev.h",
+  "hash_id": "796a3c81ff75f6920da69c98cae77a5ef08a020d337708a19c8a949489c37518",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/i2c-dev.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_I2C_DEV_H\n#define _UAPI_LINUX_I2C_DEV_H\n\n#include <linux/types.h>\n#include <linux/compiler.h>\n\n \n#define I2C_RETRIES\t0x0701\t \n#define I2C_TIMEOUT\t0x0702\t \n\n \n#define I2C_SLAVE\t0x0703\t \n#define I2C_SLAVE_FORCE\t0x0706\t \n#define I2C_TENBIT\t0x0704\t \n\n#define I2C_FUNCS\t0x0705\t \n\n#define I2C_RDWR\t0x0707\t \n\n#define I2C_PEC\t\t0x0708\t \n#define I2C_SMBUS\t0x0720\t \n\n\n \nstruct i2c_smbus_ioctl_data {\n\t__u8 read_write;\n\t__u8 command;\n\t__u32 size;\n\tunion i2c_smbus_data __user *data;\n};\n\n \nstruct i2c_rdwr_ioctl_data {\n\tstruct i2c_msg __user *msgs;\t \n\t__u32 nmsgs;\t\t\t \n};\n\n#define  I2C_RDWR_IOCTL_MAX_MSGS\t42\n \n#define  I2C_RDRW_IOCTL_MAX_MSGS\tI2C_RDWR_IOCTL_MAX_MSGS\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

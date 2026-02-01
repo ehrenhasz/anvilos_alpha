@@ -1,0 +1,9 @@
+{
+  "module_name": "cyttsp4.h",
+  "hash_id": "71cd2d0adc3659e3460741401dfe541a07c62b03cfc7d4069a4401fcd74e8d25",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/cyttsp4.h",
+  "human_readable_source": " \n \n#ifndef _CYTTSP4_H_\n#define _CYTTSP4_H_\n\n#define CYTTSP4_MT_NAME \"cyttsp4_mt\"\n#define CYTTSP4_I2C_NAME \"cyttsp4_i2c_adapter\"\n#define CYTTSP4_SPI_NAME \"cyttsp4_spi_adapter\"\n\n#define CY_TOUCH_SETTINGS_MAX 32\n\nstruct touch_framework {\n\tconst uint16_t  *abs;\n\tuint8_t         size;\n\tuint8_t         enable_vkeys;\n} __packed;\n\nstruct cyttsp4_mt_platform_data {\n\tstruct touch_framework *frmwrk;\n\tunsigned short flags;\n\tchar const *inp_dev_name;\n};\n\nstruct touch_settings {\n\tconst uint8_t *data;\n\tuint32_t size;\n\tuint8_t tag;\n} __packed;\n\nstruct cyttsp4_core_platform_data {\n\tint irq_gpio;\n\tint rst_gpio;\n\tint level_irq_udelay;\n\tint (*xres)(struct cyttsp4_core_platform_data *pdata,\n\t\tstruct device *dev);\n\tint (*init)(struct cyttsp4_core_platform_data *pdata,\n\t\tint on, struct device *dev);\n\tint (*power)(struct cyttsp4_core_platform_data *pdata,\n\t\tint on, struct device *dev, atomic_t *ignore_irq);\n\tint (*irq_stat)(struct cyttsp4_core_platform_data *pdata,\n\t\tstruct device *dev);\n\tstruct touch_settings *sett[CY_TOUCH_SETTINGS_MAX];\n};\n\nstruct cyttsp4_platform_data {\n\tstruct cyttsp4_core_platform_data *core_pdata;\n\tstruct cyttsp4_mt_platform_data *mt_pdata;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

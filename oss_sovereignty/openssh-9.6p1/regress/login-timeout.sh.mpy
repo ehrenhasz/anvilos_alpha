@@ -1,0 +1,9 @@
+{
+  "module_name": "login-timeout.sh",
+  "hash_id": "2d232a751773461d4d3f066c2073b7cd4af757366fa03aa745602f1af6b41201",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/login-timeout.sh",
+  "human_readable_source": "#\t$OpenBSD: login-timeout.sh,v 1.10 2021/09/30 05:20:08 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"connect after login grace timeout\"\n\ntrace \"test login grace time\"\ncp $OBJ/sshd_config $OBJ/sshd_config.orig\ngrep -vi LoginGraceTime $OBJ/sshd_config.orig > $OBJ/sshd_config\necho \"LoginGraceTime 10s\" >> $OBJ/sshd_config\necho \"MaxStartups 1\" >> $OBJ/sshd_config\nstart_sshd\n\n(echo SSH-2.0-fake; sleep 60) | telnet 127.0.0.1 ${PORT} >/dev/null 2>&1 &\nsleep 15\n${SSH} -F $OBJ/ssh_config somehost true\nif [ $? -ne 0 ]; then\n\tfail \"ssh connect after login grace timeout failed\"\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

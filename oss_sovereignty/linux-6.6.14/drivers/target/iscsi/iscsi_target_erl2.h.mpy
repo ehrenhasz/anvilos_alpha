@@ -1,0 +1,9 @@
+{
+  "module_name": "iscsi_target_erl2.h",
+  "hash_id": "df97f05d33ee34edaa2d397a62786bccea3a8cb4a70eb1f5dd12f5e1ff07a6ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/iscsi/iscsi_target_erl2.h",
+  "human_readable_source": " \n#ifndef ISCSI_TARGET_ERL2_H\n#define ISCSI_TARGET_ERL2_H\n\n#include <linux/types.h>\n\nstruct iscsit_cmd;\nstruct iscsit_conn;\nstruct iscsi_conn_recovery;\nstruct iscsit_session;\n\nextern void iscsit_create_conn_recovery_datain_values(struct iscsit_cmd *, __be32);\nextern void iscsit_create_conn_recovery_dataout_values(struct iscsit_cmd *);\nextern struct iscsi_conn_recovery *iscsit_get_inactive_connection_recovery_entry(\n\t\t\tstruct iscsit_session *, u16);\nextern void iscsit_free_connection_recovery_entries(struct iscsit_session *);\nextern int iscsit_remove_active_connection_recovery_entry(\n\t\t\tstruct iscsi_conn_recovery *, struct iscsit_session *);\nextern int iscsit_remove_cmd_from_connection_recovery(struct iscsit_cmd *,\n\t\t\tstruct iscsit_session *);\nextern void iscsit_discard_cr_cmds_by_expstatsn(struct iscsi_conn_recovery *, u32);\nextern int iscsit_discard_unacknowledged_ooo_cmdsns_for_conn(struct iscsit_conn *);\nextern int iscsit_prepare_cmds_for_reallegiance(struct iscsit_conn *);\nextern int iscsit_connection_recovery_transport_reset(struct iscsit_conn *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

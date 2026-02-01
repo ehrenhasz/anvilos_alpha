@@ -1,0 +1,9 @@
+{
+  "module_name": "ipu3-css-pool.h",
+  "hash_id": "d2e8896382880cd833c5194653de048ff7ffea8ec2ecfa3db2b1703c00f7ca65",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/ipu3/ipu3-css-pool.h",
+  "human_readable_source": " \n \n\n#ifndef __IPU3_UTIL_H\n#define __IPU3_UTIL_H\n\nstruct device;\nstruct imgu_device;\n\n#define IPU3_CSS_POOL_SIZE\t\t4\n\n \nstruct imgu_css_map {\n\tsize_t size;\n\tvoid *vaddr;\n\tdma_addr_t daddr;\n\tstruct page **pages;\n};\n\n \nstruct imgu_css_pool {\n\tstruct {\n\t\tstruct imgu_css_map param;\n\t\tbool valid;\n\t} entry[IPU3_CSS_POOL_SIZE];\n\tu32 last;\n};\n\nint imgu_css_dma_buffer_resize(struct imgu_device *imgu,\n\t\t\t       struct imgu_css_map *map, size_t size);\nvoid imgu_css_pool_cleanup(struct imgu_device *imgu,\n\t\t\t   struct imgu_css_pool *pool);\nint imgu_css_pool_init(struct imgu_device *imgu, struct imgu_css_pool *pool,\n\t\t       size_t size);\nvoid imgu_css_pool_get(struct imgu_css_pool *pool);\nvoid imgu_css_pool_put(struct imgu_css_pool *pool);\nconst struct imgu_css_map *imgu_css_pool_last(struct imgu_css_pool *pool,\n\t\t\t\t\t      u32 last);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

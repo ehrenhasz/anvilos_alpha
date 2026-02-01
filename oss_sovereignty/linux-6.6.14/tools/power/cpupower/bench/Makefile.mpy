@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fa3e1f3a9bc83ec3e56fdf4d164020792ccf9cc7ff62544e6b499095e5e984cc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/bench/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nOUTPUT := ./\nifeq (\"$(origin O)\", \"command line\")\nifneq ($(O),)\n\tOUTPUT := $(O)/\nendif\nendif\n\nifeq ($(strip $(STATIC)),true)\nLIBS = -L../ -L$(OUTPUT) -lm\nOBJS = $(OUTPUT)main.o $(OUTPUT)parse.o $(OUTPUT)system.o $(OUTPUT)benchmark.o \\\n       $(OUTPUT)../lib/cpufreq.o $(OUTPUT)../lib/cpupower.o\nelse\nLIBS = -L../ -L$(OUTPUT) -lm -lcpupower\nOBJS = $(OUTPUT)main.o $(OUTPUT)parse.o $(OUTPUT)system.o $(OUTPUT)benchmark.o\nendif\n\nCFLAGS += -D_GNU_SOURCE -I../lib -DDEFAULT_CONFIG_FILE=\\\"$(confdir)/cpufreq-bench.conf\\\"\n\n$(OUTPUT)%.o : %.c\n\t$(ECHO) \"  CC      \" $@\n\t$(QUIET) $(CC) -c $(CFLAGS) $< -o $@\n\n$(OUTPUT)cpufreq-bench: $(OBJS)\n\t$(ECHO) \"  CC      \" $@\n\t$(QUIET) $(CC) -o $@ $(CFLAGS) $(LDFLAGS) $(OBJS) $(LIBS)\n\nall: $(OUTPUT)cpufreq-bench\n\ninstall: $(OUTPUT)cpufreq-bench\n\tmkdir -p $(DESTDIR)/$(sbindir)\n\tmkdir -p $(DESTDIR)/$(bindir)\n\tmkdir -p $(DESTDIR)/$(docdir)\n\tmkdir -p $(DESTDIR)/$(confdir)\n\tinstall -m 755 $(OUTPUT)cpufreq-bench $(DESTDIR)/$(sbindir)/cpufreq-bench\n\tinstall -m 755 cpufreq-bench_plot.sh $(DESTDIR)/$(bindir)/cpufreq-bench_plot.sh\n\tinstall -m 644 README-BENCH $(DESTDIR)/$(docdir)/README-BENCH\n\tinstall -m 755 cpufreq-bench_script.sh $(DESTDIR)/$(docdir)/cpufreq-bench_script.sh\n\tinstall -m 644 example.cfg $(DESTDIR)/$(confdir)/cpufreq-bench.conf\n\nclean:\n\trm -f $(OUTPUT)*.o\n\trm -f $(OUTPUT)cpufreq-bench\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "076a8925a54389d8adc5d3d063f3082b1fa4c11b2f415f32b66e744130d80591",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/cxgbi/cxgb3i/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SCSI_CXGB3_ISCSI\n\ttristate \"Chelsio T3 iSCSI support\"\n\tdepends on PCI && INET && (IPV6 || IPV6=n)\n\tselect NETDEVICES\n\tselect ETHERNET\n\tselect NET_VENDOR_CHELSIO\n\tselect CHELSIO_T3\n\tselect CHELSIO_LIB\n\tselect SCSI_ISCSI_ATTRS\n\thelp\n\t  This driver supports iSCSI offload for the Chelsio T3 devices.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

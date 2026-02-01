@@ -1,0 +1,9 @@
+{
+  "module_name": "w1-gpio.h",
+  "hash_id": "66e831553b272d2c73e5fac3814bead23148a8a806bf91d8f90a12f0ad3f3432",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/w1-gpio.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_W1_GPIO_H\n#define _LINUX_W1_GPIO_H\n\nstruct gpio_desc;\n\n \nstruct w1_gpio_platform_data {\n\tstruct gpio_desc *gpiod;\n\tstruct gpio_desc *pullup_gpiod;\n\tvoid (*enable_external_pullup)(int enable);\n\tunsigned int pullup_duration;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

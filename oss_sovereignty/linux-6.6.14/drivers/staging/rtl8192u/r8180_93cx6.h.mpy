@@ -1,0 +1,9 @@
+{
+  "module_name": "r8180_93cx6.h",
+  "hash_id": "a3e42a6e8f671e2a78010d2c0f49d0edfb2386030513ec33122fdd8c50d5d428",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192u/r8180_93cx6.h",
+  "human_readable_source": " \n \n\n \n \n\n#include \"r8192U.h\"\n#include \"r8192U_hw.h\"\n\n#define EPROM_DELAY 10\n\nint eprom_read(struct net_device *dev, u32 addr);  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

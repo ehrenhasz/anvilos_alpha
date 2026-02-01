@@ -1,0 +1,9 @@
+{
+  "module_name": "xmalloc.h",
+  "hash_id": "fc87b479ea82fd1545a9214ed8f3d2f7ebf4716ffa09b4b2a59580d14816e3f2",
+  "original_prompt": "Ingested from readline-8.2/xmalloc.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_XMALLOC_H_)\n#define _XMALLOC_H_\n\n#if defined (READLINE_LIBRARY)\n#  include \"rlstdc.h\"\n#else\n#  include <readline/rlstdc.h>\n#endif\n\n#ifndef PTR_T\n\n#ifdef __STDC__\n#  define PTR_T\tvoid *\n#else\n#  define PTR_T\tchar *\n#endif\n\n#endif  \n\nextern PTR_T xmalloc (size_t);\nextern PTR_T xrealloc (void *, size_t);\nextern void xfree (void *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

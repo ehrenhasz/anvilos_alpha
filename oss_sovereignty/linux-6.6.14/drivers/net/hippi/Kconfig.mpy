@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ec5b32de0834b906c01fd644a0039234175e9bfb13a607ca39d1bffa31dc5e84",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/hippi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# HIPPI network device configuration\n#\n\nconfig HIPPI\n\tbool \"HIPPI driver support\"\n\tdepends on INET && PCI\n\thelp\n\t  HIgh Performance Parallel Interface (HIPPI) is a 800Mbit/sec and\n\t  1600Mbit/sec dual-simplex switched or point-to-point network. HIPPI\n\t  can run over copper (25m) or fiber (300m on multi-mode or 10km on\n\t  single-mode). HIPPI networks are commonly used for clusters and to\n\t  connect to super computers. If you are connected to a HIPPI network\n\t  and have a HIPPI network card in your computer that you want to use\n\t  under Linux, say Y here (you must also remember to enable the driver\n\t  for your HIPPI card below). Most people will say N here.\n\nif HIPPI\n\nconfig ROADRUNNER\n\ttristate \"Essential RoadRunner HIPPI PCI adapter support\"\n\tdepends on PCI\n\thelp\n\t  Say Y here if this is your PCI HIPPI network card.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called rrunner.  If unsure, say N.\n\nconfig ROADRUNNER_LARGE_RINGS\n\tbool \"Use large TX/RX rings\"\n\tdepends on ROADRUNNER\n\thelp\n\t  If you say Y here, the RoadRunner driver will preallocate up to 2 MB\n\t  of additional memory to allow for fastest operation, both for\n\t  transmitting and receiving. This memory cannot be used by any other\n\t  kernel code or by user space programs. Say Y here only if you have\n\t  the memory.\n\nendif # HIPPI\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

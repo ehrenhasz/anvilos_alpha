@@ -1,0 +1,9 @@
+{
+  "module_name": "cx18-gpio.h",
+  "hash_id": "bf3fdbfa6cd8d8af30f4d33f2b8fb534969f2e5b0967884928fd94e3731875a0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx18/cx18-gpio.h",
+  "human_readable_source": " \n \n\nvoid cx18_gpio_init(struct cx18 *cx);\nint cx18_gpio_register(struct cx18 *cx, u32 hw);\n\nenum cx18_gpio_reset_type {\n\tCX18_GPIO_RESET_I2C     = 0,\n\tCX18_GPIO_RESET_Z8F0811 = 1,\n\tCX18_GPIO_RESET_XC2028  = 2,\n};\n\nvoid cx18_reset_ir_gpio(void *data);\nint cx18_reset_tuner_gpio(void *dev, int component, int cmd, int value);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

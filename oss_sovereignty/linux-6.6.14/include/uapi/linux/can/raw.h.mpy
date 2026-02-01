@@ -1,0 +1,9 @@
+{
+  "module_name": "raw.h",
+  "hash_id": "ae789515ff84b956d4ece218dfabf12714cb55e1979af9a3869a2855ecd28bef",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/can/raw.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_CAN_RAW_H\n#define _UAPI_CAN_RAW_H\n\n#include <linux/can.h>\n\n#define SOL_CAN_RAW (SOL_CAN_BASE + CAN_RAW)\n#define CAN_RAW_FILTER_MAX 512  \n\nenum {\n\tSCM_CAN_RAW_ERRQUEUE = 1,\n};\n\n \n\nenum {\n\tCAN_RAW_FILTER = 1,\t \n\tCAN_RAW_ERR_FILTER,\t \n\tCAN_RAW_LOOPBACK,\t \n\tCAN_RAW_RECV_OWN_MSGS,\t \n\tCAN_RAW_FD_FRAMES,\t \n\tCAN_RAW_JOIN_FILTERS,\t \n\tCAN_RAW_XL_FRAMES,\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

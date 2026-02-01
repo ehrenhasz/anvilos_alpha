@@ -1,0 +1,9 @@
+{
+  "module_name": "ni_route_values.h",
+  "hash_id": "1c64def64bf9af99bb6a0af7f78083f8bad7314b74fb22ae97d0db27634330ef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/ni_routing/ni_route_values.h",
+  "human_readable_source": " \n \n\n#ifndef _COMEDI_DRIVERS_NI_ROUTINT_NI_ROUTE_VALUES_H\n#define _COMEDI_DRIVERS_NI_ROUTINT_NI_ROUTE_VALUES_H\n\n#include <linux/comedi.h>\n#include <linux/types.h>\n\n \n\n#define B(x)\t((x) - NI_NAMES_BASE)\n\n \n#define V(x)\t(((x) & 0x7f) | 0x80)\n\n#ifndef NI_ROUTE_VALUE_EXTERNAL_CONVERSION\n\t \n\t#define I(x)\tV(x)\n\t \n\t#define U(x)\t0x0\n\n\ttypedef u8 register_type;\n#else\n\t \n\t#define I(x)\t(((x) & 0x7f) | 0x100)\n\t \n\t#define U(x)\t(((x) & 0x7f) | 0x200)\n\n\t \n\t#define MARKED_V(x)\t(((x) & 0x80) != 0)\n\t \n\t#define MARKED_I(x)\t(((x) & 0x100) != 0)\n\t \n\t#define MARKED_U(x)\t(((x) & 0x200) != 0)\n\n\t \n\ttypedef u16 register_type;\n#endif\n\n \n#define UNMARK(x)\t((x) & 0x7f)\n\n \n#define Gi_SRC(val, subsel)\t((val) | ((subsel) << 6))\n\n \nstruct family_route_values {\n\tconst char *family;\n\tconst register_type register_values[NI_NUM_NAMES][NI_NUM_NAMES];\n\n};\n\nextern const struct family_route_values *const ni_all_route_values[];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

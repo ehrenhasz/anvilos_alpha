@@ -1,0 +1,9 @@
+{
+  "module_name": "altera-lpt.c",
+  "hash_id": "de10d2cf7a0af2d2ae34259a4d39fad68ab8dba563bec8c9fbd3990f7519b313",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/altera-stapl/altera-lpt.c",
+  "human_readable_source": "\n \n\n#include <linux/io.h>\n#include <linux/kernel.h>\n#include \"altera-exprt.h\"\n\nstatic int lpt_hardware_initialized;\n\nstatic void byteblaster_write(int port, int data)\n{\n\toutb((u8)data, (u16)(port + 0x378));\n};\n\nstatic int byteblaster_read(int port)\n{\n\tint data = 0;\n\tdata = inb((u16)(port + 0x378));\n\treturn data & 0xff;\n};\n\nint netup_jtag_io_lpt(void *device, int tms, int tdi, int read_tdo)\n{\n\tint data = 0;\n\tint tdo = 0;\n\tint initial_lpt_ctrl = 0;\n\n\tif (!lpt_hardware_initialized) {\n\t\tinitial_lpt_ctrl = byteblaster_read(2);\n\t\tbyteblaster_write(2, (initial_lpt_ctrl | 0x02) & 0xdf);\n\t\tlpt_hardware_initialized = 1;\n\t}\n\n\tdata = ((tdi ? 0x40 : 0) | (tms ? 0x02 : 0));\n\n\tbyteblaster_write(0, data);\n\n\tif (read_tdo) {\n\t\ttdo = byteblaster_read(1);\n\t\ttdo = ((tdo & 0x80) ? 0 : 1);\n\t}\n\n\tbyteblaster_write(0, data | 0x01);\n\n\tbyteblaster_write(0, data);\n\n\treturn tdo;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

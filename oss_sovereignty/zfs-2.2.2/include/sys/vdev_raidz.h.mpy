@@ -1,0 +1,9 @@
+{
+  "module_name": "vdev_raidz.h",
+  "hash_id": "6608c477d3734a44b380ac34662c6a1180fe0f0710f10c35fd9470fdf1fe73d1",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/vdev_raidz.h",
+  "human_readable_source": " \n \n\n#ifndef _SYS_VDEV_RAIDZ_H\n#define\t_SYS_VDEV_RAIDZ_H\n\n#include <sys/types.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\nstruct zio;\nstruct raidz_col;\nstruct raidz_row;\nstruct raidz_map;\n#if !defined(_KERNEL)\nstruct kernel_param {};\n#endif\n\n \nstruct raidz_map *vdev_raidz_map_alloc(struct zio *, uint64_t, uint64_t,\n    uint64_t);\nvoid vdev_raidz_map_free(struct raidz_map *);\nvoid vdev_raidz_generate_parity_row(struct raidz_map *, struct raidz_row *);\nvoid vdev_raidz_generate_parity(struct raidz_map *);\nvoid vdev_raidz_reconstruct(struct raidz_map *, const int *, int);\nvoid vdev_raidz_child_done(zio_t *);\nvoid vdev_raidz_io_done(zio_t *);\nvoid vdev_raidz_checksum_error(zio_t *, struct raidz_col *, abd_t *);\n\nextern const zio_vsd_ops_t vdev_raidz_vsd_ops;\n\n \nvoid vdev_raidz_math_init(void);\nvoid vdev_raidz_math_fini(void);\nconst struct raidz_impl_ops *vdev_raidz_math_get_ops(void);\nint vdev_raidz_math_generate(struct raidz_map *, struct raidz_row *);\nint vdev_raidz_math_reconstruct(struct raidz_map *, struct raidz_row *,\n    const int *, const int *, const int);\nint vdev_raidz_impl_set(const char *);\n\ntypedef struct vdev_raidz {\n\tint vd_logical_width;\n\tint vd_nparity;\n} vdev_raidz_t;\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

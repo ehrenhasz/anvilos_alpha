@@ -1,0 +1,9 @@
+{
+  "module_name": "emu8000_local.h",
+  "hash_id": "a547a8d11a84a71ecac44b28cc23606d6f367c2642011b3756585b0e2b89b332",
+  "original_prompt": "Ingested from linux-6.6.14/sound/isa/sb/emu8000_local.h",
+  "human_readable_source": " \n#ifndef __EMU8000_LOCAL_H\n#define __EMU8000_LOCAL_H\n \n\n#include <linux/wait.h>\n#include <linux/sched.h>\n#include <linux/slab.h>\n#include <sound/core.h>\n#include <sound/emu8000.h>\n#include <sound/emu8000_reg.h>\n\n \nint snd_emu8000_sample_new(struct snd_emux *rec, struct snd_sf_sample *sp,\n\t\t\t   struct snd_util_memhdr *hdr,\n\t\t\t   const void __user *data, long count);\nint snd_emu8000_sample_free(struct snd_emux *rec, struct snd_sf_sample *sp,\n\t\t\t    struct snd_util_memhdr *hdr);\nvoid snd_emu8000_sample_reset(struct snd_emux *rec);\n\n \nvoid snd_emu8000_ops_setup(struct snd_emu8000 *emu);\n\n \nint snd_emu8000_pcm_new(struct snd_card *card, struct snd_emu8000 *emu, int index);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

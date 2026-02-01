@@ -1,0 +1,9 @@
+{
+  "module_name": "vmmgp10b.c",
+  "hash_id": "a354fc8546def5cc905656b4e18bf2986269b44d6cda4c5791c5e34ff83346e5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/vmmgp10b.c",
+  "human_readable_source": " \n#include \"vmm.h\"\n\nstatic const struct nvkm_vmm_func\ngp10b_vmm = {\n\t.join = gp100_vmm_join,\n\t.part = gf100_vmm_part,\n\t.aper = gk20a_vmm_aper,\n\t.valid = gp100_vmm_valid,\n\t.flush = gp100_vmm_flush,\n\t.mthd = gp100_vmm_mthd,\n\t.invalidate_pdb = gp100_vmm_invalidate_pdb,\n\t.page = {\n\t\t{ 47, &gp100_vmm_desc_16[4], NVKM_VMM_PAGE_Sxxx },\n\t\t{ 38, &gp100_vmm_desc_16[3], NVKM_VMM_PAGE_Sxxx },\n\t\t{ 29, &gp100_vmm_desc_16[2], NVKM_VMM_PAGE_Sxxx },\n\t\t{ 21, &gp100_vmm_desc_16[1], NVKM_VMM_PAGE_SxHC },\n\t\t{ 16, &gp100_vmm_desc_16[0], NVKM_VMM_PAGE_SxHC },\n\t\t{ 12, &gp100_vmm_desc_12[0], NVKM_VMM_PAGE_SxHx },\n\t\t{}\n\t}\n};\n\nint\ngp10b_vmm_new(struct nvkm_mmu *mmu, bool managed, u64 addr, u64 size,\n\t      void *argv, u32 argc, struct lock_class_key *key,\n\t      const char *name, struct nvkm_vmm **pvmm)\n{\n\treturn gp100_vmm_new_(&gp10b_vmm, mmu, managed, addr, size,\n\t\t\t      argv, argc, key, name, pvmm);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

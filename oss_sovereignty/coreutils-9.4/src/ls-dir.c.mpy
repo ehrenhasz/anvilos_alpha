@@ -1,0 +1,9 @@
+{
+  "module_name": "ls-dir.c",
+  "hash_id": "0f498a12e4400f12809b9fd4e9c8f5e33637569ae2c4c41e49a4afc9769b870c",
+  "original_prompt": "Ingested from coreutils-9.4/src/ls-dir.c",
+  "human_readable_source": "#include \"ls.h\"\nint ls_mode = LS_MULTI_COL;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

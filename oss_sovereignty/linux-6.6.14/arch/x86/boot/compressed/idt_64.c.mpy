@@ -1,0 +1,9 @@
+{
+  "module_name": "idt_64.c",
+  "hash_id": "79f525a0de050b1ee18c7f5c3710738cb34df4c403441db7b13ac5f3cef1a3bf",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/compressed/idt_64.c",
+  "human_readable_source": "\n#include <asm/trap_pf.h>\n#include <asm/segment.h>\n#include <asm/trapnr.h>\n#include \"misc.h\"\n\nstatic void set_idt_entry(int vector, void (*handler)(void))\n{\n\tunsigned long address = (unsigned long)handler;\n\tgate_desc entry;\n\n\tmemset(&entry, 0, sizeof(entry));\n\n\tentry.offset_low    = (u16)(address & 0xffff);\n\tentry.segment       = __KERNEL_CS;\n\tentry.bits.type     = GATE_TRAP;\n\tentry.bits.p        = 1;\n\tentry.offset_middle = (u16)((address >> 16) & 0xffff);\n\tentry.offset_high   = (u32)(address >> 32);\n\n\tmemcpy(&boot_idt[vector], &entry, sizeof(entry));\n}\n\n \nstatic void load_boot_idt(const struct desc_ptr *dtr)\n{\n\tasm volatile(\"lidt %0\"::\"m\" (*dtr));\n}\n\n \nvoid load_stage1_idt(void)\n{\n\tboot_idt_desc.address = (unsigned long)boot_idt;\n\n\n\tif (IS_ENABLED(CONFIG_AMD_MEM_ENCRYPT))\n\t\tset_idt_entry(X86_TRAP_VC, boot_stage1_vc);\n\n\tload_boot_idt(&boot_idt_desc);\n}\n\n \nvoid load_stage2_idt(void)\n{\n\tboot_idt_desc.address = (unsigned long)boot_idt;\n\n\tset_idt_entry(X86_TRAP_PF, boot_page_fault);\n\n#ifdef CONFIG_AMD_MEM_ENCRYPT\n\t \n\tif (sev_status & BIT(1))\n\t\tset_idt_entry(X86_TRAP_VC, boot_stage2_vc);\n\telse\n\t\tset_idt_entry(X86_TRAP_VC, NULL);\n#endif\n\n\tload_boot_idt(&boot_idt_desc);\n}\n\nvoid cleanup_exception_handling(void)\n{\n\t \n\tsev_es_shutdown_ghcb();\n\n\t \n\tboot_idt_desc.size    = 0;\n\tboot_idt_desc.address = 0;\n\tload_boot_idt(&boot_idt_desc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

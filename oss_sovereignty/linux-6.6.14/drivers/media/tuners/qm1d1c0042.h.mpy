@@ -1,0 +1,9 @@
+{
+  "module_name": "qm1d1c0042.h",
+  "hash_id": "ce17e62e3f751be3613d58e6f0e9de0dff7c75925ba6a475697e91a59e8125f7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/qm1d1c0042.h",
+  "human_readable_source": " \n \n\n#ifndef QM1D1C0042_H\n#define QM1D1C0042_H\n\n#include <media/dvb_frontend.h>\n\n\nstruct qm1d1c0042_config {\n\tstruct dvb_frontend *fe;\n\n\tu32  xtal_freq;       \n\tbool lpf;           \n\tbool fast_srch;     \n\tu32  lpf_wait;          \n\tu32  fast_srch_wait;    \n\tu32  normal_srch_wait;  \n};\n \n#define QM1D1C0042_CFG_XTAL_DFLT 0\n#define QM1D1C0042_CFG_WAIT_DFLT 0\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

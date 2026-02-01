@@ -1,0 +1,9 @@
+{
+  "module_name": "hotplug.h",
+  "hash_id": "543ea3becd92edfdfe855f1168f982118fc68a91e93583f1e298a3c8a69457e5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/hotplug.h",
+  "human_readable_source": " \n#ifndef _LINUX_SCHED_HOTPLUG_H\n#define _LINUX_SCHED_HOTPLUG_H\n\n \n\nextern int sched_cpu_starting(unsigned int cpu);\nextern int sched_cpu_activate(unsigned int cpu);\nextern int sched_cpu_deactivate(unsigned int cpu);\n\n#ifdef CONFIG_HOTPLUG_CPU\nextern int sched_cpu_wait_empty(unsigned int cpu);\nextern int sched_cpu_dying(unsigned int cpu);\n#else\n# define sched_cpu_wait_empty\tNULL\n# define sched_cpu_dying\tNULL\n#endif\n\n#ifdef CONFIG_HOTPLUG_CPU\nextern void idle_task_exit(void);\n#else\nstatic inline void idle_task_exit(void) {}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

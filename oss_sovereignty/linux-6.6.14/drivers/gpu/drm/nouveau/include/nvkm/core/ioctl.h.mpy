@@ -1,0 +1,9 @@
+{
+  "module_name": "ioctl.h",
+  "hash_id": "aa3535fd2394ad747239710ccf4c0bc801e4f7338024db2e092dd3fb694be288",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/core/ioctl.h",
+  "human_readable_source": " \n#ifndef __NVKM_IOCTL_H__\n#define __NVKM_IOCTL_H__\n#include <core/os.h>\nstruct nvkm_client;\n\nint nvkm_ioctl(struct nvkm_client *, void *, u32, void **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

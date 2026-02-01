@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e46e876e9aac7e5d90e46770359fa2cd025da1960a7da4690937e145b413ee42",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wwan/t7xx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nobj-${CONFIG_MTK_T7XX} := mtk_t7xx.o\nmtk_t7xx-y:=\tt7xx_pci.o \\\n\t\tt7xx_pcie_mac.o \\\n\t\tt7xx_mhccif.o \\\n\t\tt7xx_state_monitor.o  \\\n\t\tt7xx_modem_ops.o \\\n\t\tt7xx_cldma.o \\\n\t\tt7xx_hif_cldma.o  \\\n\t\tt7xx_port_proxy.o  \\\n\t\tt7xx_port_ctrl_msg.o \\\n\t\tt7xx_port_wwan.o \\\n\t\tt7xx_hif_dpmaif.o  \\\n\t\tt7xx_hif_dpmaif_tx.o \\\n\t\tt7xx_hif_dpmaif_rx.o  \\\n\t\tt7xx_dpmaif.o \\\n\t\tt7xx_netdev.o\n\nmtk_t7xx-$(CONFIG_WWAN_DEBUGFS) += \\\n\t\tt7xx_port_trace.o \\\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "af246f08ed65b9dfbf3d9304acc688e56d24d043e7c273398308221327d101e1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/bmi160/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for Bosch BMI160 IMU\n#\nobj-$(CONFIG_BMI160) += bmi160_core.o\nobj-$(CONFIG_BMI160_I2C) += bmi160_i2c.o\nobj-$(CONFIG_BMI160_SPI) += bmi160_spi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

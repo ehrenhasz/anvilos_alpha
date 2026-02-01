@@ -1,0 +1,9 @@
+{
+  "module_name": "blk-cgroup.h",
+  "hash_id": "2542a0a0bd23cdb84df45276b15c4c87d8c470077e848ac63b2061c00c5fc09c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/blk-cgroup.h",
+  "human_readable_source": " \n#ifndef _BLK_CGROUP_H\n#define _BLK_CGROUP_H\n \n\n#include <linux/types.h>\n\nstruct bio;\nstruct cgroup_subsys_state;\nstruct gendisk;\n\n#define FC_APPID_LEN              129\n\n#ifdef CONFIG_BLK_CGROUP\nextern struct cgroup_subsys_state * const blkcg_root_css;\n\nvoid blkcg_schedule_throttle(struct gendisk *disk, bool use_memdelay);\nvoid blkcg_maybe_throttle_current(void);\nbool blk_cgroup_congested(void);\nvoid blkcg_pin_online(struct cgroup_subsys_state *blkcg_css);\nvoid blkcg_unpin_online(struct cgroup_subsys_state *blkcg_css);\nstruct list_head *blkcg_get_cgwb_list(struct cgroup_subsys_state *css);\nstruct cgroup_subsys_state *bio_blkcg_css(struct bio *bio);\n\n#else\t \n\n#define blkcg_root_css\t((struct cgroup_subsys_state *)ERR_PTR(-EINVAL))\n\nstatic inline void blkcg_maybe_throttle_current(void) { }\nstatic inline bool blk_cgroup_congested(void) { return false; }\nstatic inline struct cgroup_subsys_state *bio_blkcg_css(struct bio *bio)\n{\n\treturn NULL;\n}\n#endif\t \n\nint blkcg_set_fc_appid(char *app_id, u64 cgrp_id, size_t app_id_len);\nchar *blkcg_get_fc_appid(struct bio *bio);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

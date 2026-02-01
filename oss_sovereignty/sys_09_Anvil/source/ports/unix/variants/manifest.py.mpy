@@ -1,0 +1,9 @@
+{
+  "module_name": "manifest.py",
+  "hash_id": "d4f9fd6fef1b5c0d8ede6bd6cfe20b56bccfec13333532caca0e18dbf5b2f23b",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/manifest.py",
+  "human_readable_source": "add_library(\"unix-ffi\", \"$(MPY_LIB_DIR)/unix-ffi\")\nrequire(\"mip-cmdline\")\nrequire(\"ssl\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

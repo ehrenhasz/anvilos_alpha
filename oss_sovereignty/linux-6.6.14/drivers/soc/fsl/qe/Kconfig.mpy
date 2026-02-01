@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "27a445370be1a15c073865c536748b24c8e920eac396404f7258c7244ae4ad57",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/fsl/qe/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# QE Communication options\n#\n\nconfig QUICC_ENGINE\n\tbool \"QUICC Engine (QE) framework support\"\n\tdepends on OF && HAS_IOMEM\n\tdepends on PPC || ARM || ARM64 || COMPILE_TEST\n\tselect GENERIC_ALLOCATOR\n\tselect CRC32\n\thelp\n\t  The QUICC Engine (QE) is a new generation of communications\n\t  coprocessors on Freescale embedded CPUs (akin to CPM in older chips).\n\t  Selecting this option means that you wish to build a kernel\n\t  for a machine with a QE coprocessor.\n\nconfig UCC_SLOW\n\tbool\n\tdefault y if SERIAL_QE\n\thelp\n\t  This option provides qe_lib support to UCC slow\n\t  protocols: UART, BISYNC, QMC\n\nconfig UCC_FAST\n\tbool\n\tdefault y if UCC_GETH || QE_TDM\n\thelp\n\t  This option provides qe_lib support to UCC fast\n\t  protocols: HDLC, Ethernet, ATM, transparent\n\nconfig UCC\n\tbool\n\tdefault y if UCC_FAST || UCC_SLOW\n\nconfig CPM_TSA\n\ttristate \"CPM TSA support\"\n\tdepends on OF && HAS_IOMEM\n\tdepends on CPM1 || (CPM && COMPILE_TEST)\n\thelp\n\t  Freescale CPM Time Slot Assigner (TSA)\n\t  controller.\n\n\t  This option enables support for this\n\t  controller\n\nconfig CPM_QMC\n\ttristate \"CPM QMC support\"\n\tdepends on OF && HAS_IOMEM\n\tdepends on CPM1 || (FSL_SOC && CPM && COMPILE_TEST)\n\tdepends on CPM_TSA\n\thelp\n\t  Freescale CPM QUICC Multichannel Controller\n\t  (QMC)\n\n\t  This option enables support for this\n\t  controller\n\nconfig QE_TDM\n\tbool\n\tdefault y if FSL_UCC_HDLC\n\nconfig QE_USB\n\tbool\n\tdepends on QUICC_ENGINE\n\tdefault y if USB_FSL_QE\n\thelp\n\t  QE USB Controller support\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

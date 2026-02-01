@@ -1,0 +1,9 @@
+{
+  "module_name": "dce120_resource.h",
+  "hash_id": "4465af5c1bfbba2face3a4ec7b75917cde16ad79dbaf29cf797d91bded067aab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce120/dce120_resource.h",
+  "human_readable_source": " \n\n#ifndef __DC_RESOURCE_DCE120_H__\n#define __DC_RESOURCE_DCE120_H__\n\n#include \"core_types.h\"\n\nstruct dc;\nstruct resource_pool;\n\nstruct resource_pool *dce120_create_resource_pool(\n\tuint8_t num_virtual_links,\n\tstruct dc *dc);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ef100_tx.h",
+  "hash_id": "976e3ae817afd6f68e7583d88477888aee9aa30c180c657dd34fb1dbc5d00e0e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/ef100_tx.h",
+  "human_readable_source": " \n \n\n#ifndef EFX_EF100_TX_H\n#define EFX_EF100_TX_H\n\n#include \"net_driver.h\"\n#include \"ef100_rep.h\"\n\nint ef100_tx_probe(struct efx_tx_queue *tx_queue);\nvoid ef100_tx_init(struct efx_tx_queue *tx_queue);\nvoid ef100_tx_write(struct efx_tx_queue *tx_queue);\nunsigned int ef100_tx_max_skb_descs(struct efx_nic *efx);\n\nint ef100_ev_tx(struct efx_channel *channel, const efx_qword_t *p_event);\n\nnetdev_tx_t ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb);\nint __ef100_enqueue_skb(struct efx_tx_queue *tx_queue, struct sk_buff *skb,\n\t\t\tstruct efx_rep *efv);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

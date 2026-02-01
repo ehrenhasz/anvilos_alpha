@@ -1,0 +1,9 @@
+{
+  "module_name": "gcm_impl.h",
+  "hash_id": "502ac515a7263b1b064ab3f59aafdf0c6cba570e667fef7a3ea378c28f80ddbb",
+  "original_prompt": "Ingested from zfs-2.2.2/module/icp/include/modes/gcm_impl.h",
+  "human_readable_source": " \n \n\n#ifndef\t_GCM_IMPL_H\n#define\t_GCM_IMPL_H\n\n \n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n#include <sys/zfs_context.h>\n#include <sys/crypto/common.h>\n\n \ntypedef void\t\t(*gcm_mul_f)(uint64_t *, uint64_t *, uint64_t *);\ntypedef boolean_t\t(*gcm_will_work_f)(void);\n\n#define\tGCM_IMPL_NAME_MAX (16)\n\ntypedef struct gcm_impl_ops {\n\tgcm_mul_f mul;\n\tgcm_will_work_f is_supported;\n\tchar name[GCM_IMPL_NAME_MAX];\n} gcm_impl_ops_t;\n\nextern const gcm_impl_ops_t gcm_generic_impl;\n#if defined(__x86_64) && defined(HAVE_PCLMULQDQ)\nextern const gcm_impl_ops_t gcm_pclmulqdq_impl;\n#endif\n\n \nvoid gcm_impl_init(void);\n\n \nconst struct gcm_impl_ops *gcm_impl_get_ops(void);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

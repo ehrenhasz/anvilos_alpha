@@ -1,0 +1,9 @@
+{
+  "module_name": "imx8ulp-pcc-reset.h",
+  "hash_id": "cdbec455071ee4dcc1a6569579a5c4f0bede45f3e30292952c597d4dc1c79d4b",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/imx8ulp-pcc-reset.h",
+  "human_readable_source": " \n \n\n#ifndef DT_BINDING_PCC_RESET_IMX8ULP_H\n#define DT_BINDING_PCC_RESET_IMX8ULP_H\n\n \n#define PCC3_WDOG3_SWRST\t0\n#define PCC3_WDOG4_SWRST\t1\n#define PCC3_LPIT1_SWRST\t2\n#define PCC3_TPM4_SWRST\t\t3\n#define PCC3_TPM5_SWRST\t\t4\n#define PCC3_FLEXIO1_SWRST\t5\n#define PCC3_I3C2_SWRST\t\t6\n#define PCC3_LPI2C4_SWRST\t7\n#define PCC3_LPI2C5_SWRST\t8\n#define PCC3_LPUART4_SWRST\t9\n#define PCC3_LPUART5_SWRST\t10\n#define PCC3_LPSPI4_SWRST\t11\n#define PCC3_LPSPI5_SWRST\t12\n\n \n#define PCC4_FLEXSPI2_SWRST\t0\n#define PCC4_TPM6_SWRST\t\t1\n#define PCC4_TPM7_SWRST\t\t2\n#define PCC4_LPI2C6_SWRST\t3\n#define PCC4_LPI2C7_SWRST\t4\n#define PCC4_LPUART6_SWRST\t5\n#define PCC4_LPUART7_SWRST\t6\n#define PCC4_SAI4_SWRST\t\t7\n#define PCC4_SAI5_SWRST\t\t8\n#define PCC4_USDHC0_SWRST\t9\n#define PCC4_USDHC1_SWRST\t10\n#define PCC4_USDHC2_SWRST\t11\n#define PCC4_USB0_SWRST\t\t12\n#define PCC4_USB0_PHY_SWRST\t13\n#define PCC4_USB1_SWRST\t\t14\n#define PCC4_USB1_PHY_SWRST\t15\n#define PCC4_ENET_SWRST\t\t16\n\n \n#define PCC5_TPM8_SWRST\t\t0\n#define PCC5_SAI6_SWRST\t\t1\n#define PCC5_SAI7_SWRST\t\t2\n#define PCC5_SPDIF_SWRST\t3\n#define PCC5_ISI_SWRST\t\t4\n#define PCC5_CSI_REGS_SWRST\t5\n#define PCC5_CSI_SWRST\t\t6\n#define PCC5_DSI_SWRST\t\t7\n#define PCC5_WDOG5_SWRST\t8\n#define PCC5_EPDC_SWRST\t\t9\n#define PCC5_PXP_SWRST\t\t10\n#define PCC5_GPU2D_SWRST\t11\n#define PCC5_GPU3D_SWRST\t12\n#define PCC5_DC_NANO_SWRST\t13\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

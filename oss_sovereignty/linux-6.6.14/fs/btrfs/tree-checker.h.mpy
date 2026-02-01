@@ -1,0 +1,9 @@
+{
+  "module_name": "tree-checker.h",
+  "hash_id": "abe422a797c183a99978ee513c5321f9fa66320dc55b2ae26b48f9f60b64e288",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/tree-checker.h",
+  "human_readable_source": " \n \n\n#ifndef BTRFS_TREE_CHECKER_H\n#define BTRFS_TREE_CHECKER_H\n\n#include <uapi/linux/btrfs_tree.h>\n\nstruct extent_buffer;\nstruct btrfs_chunk;\n\n \nstruct btrfs_tree_parent_check {\n\t \n\tu64 owner_root;\n\n\t \n\tu64 transid;\n\n\t \n\tstruct btrfs_key first_key;\n\tbool has_first_key;\n\n\t \n\tu8 level;\n};\n\nenum btrfs_tree_block_status {\n\tBTRFS_TREE_BLOCK_CLEAN,\n\tBTRFS_TREE_BLOCK_INVALID_NRITEMS,\n\tBTRFS_TREE_BLOCK_INVALID_PARENT_KEY,\n\tBTRFS_TREE_BLOCK_BAD_KEY_ORDER,\n\tBTRFS_TREE_BLOCK_INVALID_LEVEL,\n\tBTRFS_TREE_BLOCK_INVALID_FREE_SPACE,\n\tBTRFS_TREE_BLOCK_INVALID_OFFSETS,\n\tBTRFS_TREE_BLOCK_INVALID_BLOCKPTR,\n\tBTRFS_TREE_BLOCK_INVALID_ITEM,\n\tBTRFS_TREE_BLOCK_INVALID_OWNER,\n};\n\n \nenum btrfs_tree_block_status __btrfs_check_leaf(struct extent_buffer *leaf);\nenum btrfs_tree_block_status __btrfs_check_node(struct extent_buffer *node);\n\nint btrfs_check_leaf(struct extent_buffer *leaf);\nint btrfs_check_node(struct extent_buffer *node);\n\nint btrfs_check_chunk_valid(struct extent_buffer *leaf,\n\t\t\t    struct btrfs_chunk *chunk, u64 logical);\nint btrfs_check_eb_owner(const struct extent_buffer *eb, u64 root_owner);\nint btrfs_verify_level_key(struct extent_buffer *eb, int level,\n\t\t\t   struct btrfs_key *first_key, u64 parent_transid);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ipa_version.h",
+  "hash_id": "8e0ef459e674e4a7ed9831919e6c615bd9cbbca23444ff548e8bcecef08192b7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ipa/ipa_version.h",
+  "human_readable_source": " \n\n \n#ifndef _IPA_VERSION_H_\n#define _IPA_VERSION_H_\n\n \nenum ipa_version {\n\tIPA_VERSION_3_0,\n\tIPA_VERSION_3_1,\n\tIPA_VERSION_3_5,\n\tIPA_VERSION_3_5_1,\n\tIPA_VERSION_4_0,\n\tIPA_VERSION_4_1,\n\tIPA_VERSION_4_2,\n\tIPA_VERSION_4_5,\n\tIPA_VERSION_4_7,\n\tIPA_VERSION_4_9,\n\tIPA_VERSION_4_11,\n\tIPA_VERSION_5_0,\n\tIPA_VERSION_5_1,\n\tIPA_VERSION_5_5,\n\tIPA_VERSION_COUNT,\t\t\t \n};\n\nstatic inline bool ipa_version_supported(enum ipa_version version)\n{\n\tswitch (version) {\n\tcase IPA_VERSION_3_1:\n\tcase IPA_VERSION_3_5_1:\n\tcase IPA_VERSION_4_2:\n\tcase IPA_VERSION_4_5:\n\tcase IPA_VERSION_4_7:\n\tcase IPA_VERSION_4_9:\n\tcase IPA_VERSION_4_11:\n\tcase IPA_VERSION_5_0:\n\t\treturn true;\n\tdefault:\n\t\treturn false;\n\t}\n}\n\n \nenum gsi_ee_id {\n\tGSI_EE_AP\t\t= 0x0,\n\tGSI_EE_MODEM\t\t= 0x1,\n\tGSI_EE_UC\t\t= 0x2,\n\tGSI_EE_TZ\t\t= 0x3,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

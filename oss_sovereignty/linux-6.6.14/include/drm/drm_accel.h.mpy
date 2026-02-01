@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_accel.h",
+  "hash_id": "a1943913bffdb179333aa057b8b0690f745222ba86eb801e66536e711cc3db36",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_accel.h",
+  "human_readable_source": " \n\n#ifndef DRM_ACCEL_H_\n#define DRM_ACCEL_H_\n\n#include <drm/drm_file.h>\n\n#define ACCEL_MAJOR\t\t261\n#define ACCEL_MAX_MINORS\t256\n\n \n#define DRM_ACCEL_FOPS \\\n\t.open\t\t= accel_open,\\\n\t.release\t= drm_release,\\\n\t.unlocked_ioctl\t= drm_ioctl,\\\n\t.compat_ioctl\t= drm_compat_ioctl,\\\n\t.poll\t\t= drm_poll,\\\n\t.read\t\t= drm_read,\\\n\t.llseek\t\t= noop_llseek, \\\n\t.mmap\t\t= drm_gem_mmap\n\n \n#define DEFINE_DRM_ACCEL_FOPS(name) \\\n\tstatic const struct file_operations name = {\\\n\t\t.owner\t\t= THIS_MODULE,\\\n\t\tDRM_ACCEL_FOPS,\\\n\t}\n\n#if IS_ENABLED(CONFIG_DRM_ACCEL)\n\nvoid accel_core_exit(void);\nint accel_core_init(void);\nvoid accel_minor_remove(int index);\nint accel_minor_alloc(void);\nvoid accel_minor_replace(struct drm_minor *minor, int index);\nvoid accel_set_device_instance_params(struct device *kdev, int index);\nint accel_open(struct inode *inode, struct file *filp);\nvoid accel_debugfs_init(struct drm_minor *minor, int minor_id);\n\n#else\n\nstatic inline void accel_core_exit(void)\n{\n}\n\nstatic inline int __init accel_core_init(void)\n{\n\t \n\treturn 0;\n}\n\nstatic inline void accel_minor_remove(int index)\n{\n}\n\nstatic inline int accel_minor_alloc(void)\n{\n\treturn -EOPNOTSUPP;\n}\n\nstatic inline void accel_minor_replace(struct drm_minor *minor, int index)\n{\n}\n\nstatic inline void accel_set_device_instance_params(struct device *kdev, int index)\n{\n}\n\nstatic inline void accel_debugfs_init(struct drm_minor *minor, int minor_id)\n{\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

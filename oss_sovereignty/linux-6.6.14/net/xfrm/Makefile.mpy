@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "52da923d2352aea21580a8890cffd4fdc2be0162069a35d4801ea6be8da4be12",
+  "original_prompt": "Ingested from linux-6.6.14/net/xfrm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the XFRM subsystem.\n#\n\nxfrm_interface-$(CONFIG_XFRM_INTERFACE) += xfrm_interface_core.o\n\nifeq ($(CONFIG_XFRM_INTERFACE),m)\nxfrm_interface-$(CONFIG_DEBUG_INFO_BTF_MODULES) += xfrm_interface_bpf.o\nelse ifeq ($(CONFIG_XFRM_INTERFACE),y)\nxfrm_interface-$(CONFIG_DEBUG_INFO_BTF) += xfrm_interface_bpf.o\nendif\n\nobj-$(CONFIG_XFRM) := xfrm_policy.o xfrm_state.o xfrm_hash.o \\\n\t\t      xfrm_input.o xfrm_output.o \\\n\t\t      xfrm_sysctl.o xfrm_replay.o xfrm_device.o\nobj-$(CONFIG_XFRM_STATISTICS) += xfrm_proc.o\nobj-$(CONFIG_XFRM_ALGO) += xfrm_algo.o\nobj-$(CONFIG_XFRM_USER) += xfrm_user.o\nobj-$(CONFIG_XFRM_USER_COMPAT) += xfrm_compat.o\nobj-$(CONFIG_XFRM_IPCOMP) += xfrm_ipcomp.o\nobj-$(CONFIG_XFRM_INTERFACE) += xfrm_interface.o\nobj-$(CONFIG_XFRM_ESPINTCP) += espintcp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

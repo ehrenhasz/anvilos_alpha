@@ -1,0 +1,9 @@
+{
+  "module_name": "adi,ad5592r.h",
+  "hash_id": "4179f8cd8283105bcaf8b48f108d6698d28ec889253c807d64695f42a6cec3c3",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/iio/adi,ad5592r.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_ADI_AD5592R_H\n#define _DT_BINDINGS_ADI_AD5592R_H\n\n#define CH_MODE_UNUSED\t\t\t0\n#define CH_MODE_ADC\t\t\t1\n#define CH_MODE_DAC\t\t\t2\n#define CH_MODE_DAC_AND_ADC\t\t3\n#define CH_MODE_GPIO\t\t\t8\n\n#define CH_OFFSTATE_PULLDOWN\t\t0\n#define CH_OFFSTATE_OUT_LOW\t\t1\n#define CH_OFFSTATE_OUT_HIGH\t\t2\n#define CH_OFFSTATE_OUT_TRISTATE\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

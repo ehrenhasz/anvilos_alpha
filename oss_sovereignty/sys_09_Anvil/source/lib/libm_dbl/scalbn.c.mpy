@@ -1,0 +1,9 @@
+{
+  "module_name": "scalbn.c",
+  "hash_id": "cc2c1dc893c93ff569ae6953ed09cfa8549e5a75d693d95c544489cb40ec95e7",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/scalbn.c",
+  "human_readable_source": "#include <math.h>\n#include <stdint.h>\n\ndouble scalbn(double x, int n)\n{\n\tunion {double f; uint64_t i;} u;\n\tdouble_t y = x;\n\n\tif (n > 1023) {\n\t\ty *= 0x1p1023;\n\t\tn -= 1023;\n\t\tif (n > 1023) {\n\t\t\ty *= 0x1p1023;\n\t\t\tn -= 1023;\n\t\t\tif (n > 1023)\n\t\t\t\tn = 1023;\n\t\t}\n\t} else if (n < -1022) {\n\t\t \n\t\ty *= 0x1p-1022 * 0x1p53;\n\t\tn += 1022 - 53;\n\t\tif (n < -1022) {\n\t\t\ty *= 0x1p-1022 * 0x1p53;\n\t\t\tn += 1022 - 53;\n\t\t\tif (n < -1022)\n\t\t\t\tn = -1022;\n\t\t}\n\t}\n\tu.i = (uint64_t)(0x3ff+n)<<52;\n\tx = y * u.f;\n\treturn x;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

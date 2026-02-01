@@ -1,0 +1,9 @@
+{
+  "module_name": "ux500_msp_dai.h",
+  "hash_id": "9a2e82c79c04c0bd2759b2549116c1b1038c12521b132048a23c31c7284c06e8",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/ux500/ux500_msp_dai.h",
+  "human_readable_source": " \n \n\n#ifndef UX500_msp_dai_H\n#define UX500_msp_dai_H\n\n#include <linux/types.h>\n#include <linux/spinlock.h>\n\n#include \"ux500_msp_i2s.h\"\n\n#define UX500_NBR_OF_DAI\t4\n\n#define UX500_I2S_RATES (SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000 |\t\\\n\t\t\tSNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_48000)\n\n#define UX500_I2S_FORMATS (SNDRV_PCM_FMTBIT_S16_LE)\n\n#define FRAME_PER_SINGLE_SLOT_8_KHZ\t\t31\n#define FRAME_PER_SINGLE_SLOT_16_KHZ\t124\n#define FRAME_PER_SINGLE_SLOT_44_1_KHZ\t63\n#define FRAME_PER_SINGLE_SLOT_48_KHZ\t49\n#define FRAME_PER_2_SLOTS\t\t\t\t31\n#define FRAME_PER_8_SLOTS\t\t\t\t138\n#define FRAME_PER_16_SLOTS\t\t\t\t277\n\n#define UX500_MSP_INTERNAL_CLOCK_FREQ  40000000\n#define UX500_MSP1_INTERNAL_CLOCK_FREQ UX500_MSP_INTERNAL_CLOCK_FREQ\n\n#define UX500_MSP_MIN_CHANNELS\t\t1\n#define UX500_MSP_MAX_CHANNELS\t\t8\n\n#define PLAYBACK_CONFIGURED\t\t1\n#define CAPTURE_CONFIGURED\t\t2\n\nenum ux500_msp_clock_id {\n\tUX500_MSP_MASTER_CLOCK,\n};\n\nstruct ux500_msp_i2s_drvdata {\n\tstruct ux500_msp *msp;\n\tstruct regulator *reg_vape;\n\tunsigned int fmt;\n\tunsigned int tx_mask;\n\tunsigned int rx_mask;\n\tint slots;\n\tint slot_width;\n\n\t \n\tunsigned int master_clk;\n\tstruct clk *clk;\n\tstruct clk *pclk;\n\n\t \n\tint vape_opp_constraint;\n};\n\nint ux500_msp_dai_set_data_delay(struct snd_soc_dai *dai, int delay);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

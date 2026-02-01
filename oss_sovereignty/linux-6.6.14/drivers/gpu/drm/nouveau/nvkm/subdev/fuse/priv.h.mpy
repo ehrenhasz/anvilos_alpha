@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "abab69b4e297490700842ddb0803122b55049b771f5af8c2bf22236e42e2d6ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fuse/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_FUSE_PRIV_H__\n#define __NVKM_FUSE_PRIV_H__\n#define nvkm_fuse(p) container_of((p), struct nvkm_fuse, subdev)\n#include <subdev/fuse.h>\n\nstruct nvkm_fuse_func {\n\tu32 (*read)(struct nvkm_fuse *, u32 addr);\n};\n\nint nvkm_fuse_new_(const struct nvkm_fuse_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t   struct nvkm_fuse **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

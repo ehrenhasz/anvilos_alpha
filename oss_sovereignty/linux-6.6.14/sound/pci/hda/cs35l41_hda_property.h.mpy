@@ -1,0 +1,9 @@
+{
+  "module_name": "cs35l41_hda_property.h",
+  "hash_id": "fab2ce5660e420539db9d1e26afefc98a160698ddadda27f73230483e1177fb3",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/hda/cs35l41_hda_property.h",
+  "human_readable_source": " \n\n#ifndef CS35L41_HDA_PROP_H\n#define CS35L41_HDA_PROP_H\n\n#include <linux/device.h>\n#include \"cs35l41_hda.h\"\n\nint cs35l41_add_dsd_properties(struct cs35l41_hda *cs35l41, struct device *physdev, int id,\n\t\t\t       const char *hid);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

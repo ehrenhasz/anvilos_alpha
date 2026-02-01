@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gem_ww.h",
+  "hash_id": "a7ae3da29bcea7d7c1071fa7b42b43a2f2c3546cecb6424e0b275bd40780d028",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_gem_ww.h",
+  "human_readable_source": " \n \n#ifndef __I915_GEM_WW_H__\n#define __I915_GEM_WW_H__\n\n#include <drm/drm_drv.h>\n\nstruct i915_gem_ww_ctx {\n\tstruct ww_acquire_ctx ctx;\n\tstruct list_head obj_list;\n\tstruct drm_i915_gem_object *contended;\n\tbool intr;\n};\n\nvoid i915_gem_ww_ctx_init(struct i915_gem_ww_ctx *ctx, bool intr);\nvoid i915_gem_ww_ctx_fini(struct i915_gem_ww_ctx *ctx);\nint __must_check i915_gem_ww_ctx_backoff(struct i915_gem_ww_ctx *ctx);\nvoid i915_gem_ww_unlock_single(struct drm_i915_gem_object *obj);\n\n \nstatic inline int __i915_gem_ww_fini(struct i915_gem_ww_ctx *ww, int err)\n{\n\tif (err == -EDEADLK) {\n\t\terr = i915_gem_ww_ctx_backoff(ww);\n\t\tif (!err)\n\t\t\terr = -EDEADLK;\n\t}\n\n\tif (err != -EDEADLK)\n\t\ti915_gem_ww_ctx_fini(ww);\n\n\treturn err;\n}\n\n#define for_i915_gem_ww(_ww, _err, _intr)\t\t\t  \\\n\tfor (i915_gem_ww_ctx_init(_ww, _intr), (_err) = -EDEADLK; \\\n\t     (_err) == -EDEADLK;\t\t\t\t  \\\n\t     (_err) = __i915_gem_ww_fini(_ww, _err))\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

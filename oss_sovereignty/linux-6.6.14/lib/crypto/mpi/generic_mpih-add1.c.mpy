@@ -1,0 +1,9 @@
+{
+  "module_name": "generic_mpih-add1.c",
+  "hash_id": "b06d089c10d54403d002afe1345277c8c04b8c31ba1c30ec35465e4fa8985954",
+  "original_prompt": "Ingested from linux-6.6.14/lib/crypto/mpi/generic_mpih-add1.c",
+  "human_readable_source": "\n \n\n#include \"mpi-internal.h\"\n#include \"longlong.h\"\n\nmpi_limb_t\nmpihelp_add_n(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr,\n\t      mpi_ptr_t s2_ptr, mpi_size_t size)\n{\n\tmpi_limb_t x, y, cy;\n\tmpi_size_t j;\n\n\t \n\tj = -size;\n\n\t \n\ts1_ptr -= j;\n\ts2_ptr -= j;\n\tres_ptr -= j;\n\n\tcy = 0;\n\tdo {\n\t\ty = s2_ptr[j];\n\t\tx = s1_ptr[j];\n\t\ty += cy;\t \n\t\tcy = y < cy;\t \n\t\ty += x;\t\t \n\t\tcy += y < x;\t \n\t\tres_ptr[j] = y;\n\t} while (++j);\n\n\treturn cy;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

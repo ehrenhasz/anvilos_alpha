@@ -1,0 +1,9 @@
+{
+  "module_name": "vermagic.h",
+  "hash_id": "b92a4840a7be681b2d98a10cdcb5ad3b87b46bc15972db370b26c549537151e8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/vermagic.h",
+  "human_readable_source": " \n#ifndef _LINUX_VERMAGIC_H\n#define _LINUX_VERMAGIC_H\n\n#ifndef INCLUDE_VERMAGIC\n#error \"This header can be included from kernel/module.c or *.mod.c only\"\n#endif\n\n#include <generated/utsrelease.h>\n#include <asm/vermagic.h>\n\n \n#ifdef CONFIG_SMP\n#define MODULE_VERMAGIC_SMP \"SMP \"\n#else\n#define MODULE_VERMAGIC_SMP \"\"\n#endif\n#ifdef CONFIG_PREEMPT_BUILD\n#define MODULE_VERMAGIC_PREEMPT \"preempt \"\n#elif defined(CONFIG_PREEMPT_RT)\n#define MODULE_VERMAGIC_PREEMPT \"preempt_rt \"\n#else\n#define MODULE_VERMAGIC_PREEMPT \"\"\n#endif\n#ifdef CONFIG_MODULE_UNLOAD\n#define MODULE_VERMAGIC_MODULE_UNLOAD \"mod_unload \"\n#else\n#define MODULE_VERMAGIC_MODULE_UNLOAD \"\"\n#endif\n#ifdef CONFIG_MODVERSIONS\n#define MODULE_VERMAGIC_MODVERSIONS \"modversions \"\n#else\n#define MODULE_VERMAGIC_MODVERSIONS \"\"\n#endif\n#ifdef RANDSTRUCT\n#include <generated/randstruct_hash.h>\n#define MODULE_RANDSTRUCT \"RANDSTRUCT_\" RANDSTRUCT_HASHED_SEED\n#else\n#define MODULE_RANDSTRUCT\n#endif\n\n#define VERMAGIC_STRING \t\t\t\t\t\t\\\n\tUTS_RELEASE \" \"\t\t\t\t\t\t\t\\\n\tMODULE_VERMAGIC_SMP MODULE_VERMAGIC_PREEMPT \t\t\t\\\n\tMODULE_VERMAGIC_MODULE_UNLOAD MODULE_VERMAGIC_MODVERSIONS\t\\\n\tMODULE_ARCH_VERMAGIC\t\t\t\t\t\t\\\n\tMODULE_RANDSTRUCT\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

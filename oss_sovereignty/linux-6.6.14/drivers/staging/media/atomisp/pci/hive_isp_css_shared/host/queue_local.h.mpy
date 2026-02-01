@@ -1,0 +1,9 @@
+{
+  "module_name": "queue_local.h",
+  "hash_id": "47cb6973f02e38859d7ca7b537f25115efc0ab7dd9c83b90edc8de056e1ffb61",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_shared/host/queue_local.h",
+  "human_readable_source": " \n \n\n#ifndef __QUEUE_LOCAL_H_INCLUDED__\n#define __QUEUE_LOCAL_H_INCLUDED__\n\n#include \"queue_global.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

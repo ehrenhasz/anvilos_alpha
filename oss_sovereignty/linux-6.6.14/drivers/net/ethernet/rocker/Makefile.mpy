@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1df9e6e500c653dca8f85d9a34e2db2f50af129fcb244a0b92e28dc29e92bfd0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/rocker/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Rocker network device drivers.\n#\n\nobj-$(CONFIG_ROCKER) += rocker.o\nrocker-y := rocker_main.o rocker_tlv.o rocker_ofdpa.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

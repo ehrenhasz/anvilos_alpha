@@ -1,0 +1,9 @@
+{
+  "module_name": "btowc.c",
+  "hash_id": "4c9234b4a38fec0b0457399c424d9a0c6942a4a4e9bbbbee3e1d34116432e546",
+  "original_prompt": "Ingested from coreutils-9.4/lib/btowc.c",
+  "human_readable_source": " \n#include <wchar.h>\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\nwint_t\nbtowc (int c)\n{\n  if (c != EOF)\n    {\n      char buf[1];\n      wchar_t wc;\n\n      buf[0] = c;\n#if HAVE_MBRTOWC\n      mbstate_t state;\n      mbszero (&state);\n      size_t ret = mbrtowc (&wc, buf, 1, &state);\n      if (!(ret == (size_t)(-1) || ret == (size_t)(-2)))\n#else\n      if (mbtowc (&wc, buf, 1) >= 0)\n#endif\n        return wc;\n    }\n  return WEOF;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

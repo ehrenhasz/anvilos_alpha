@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "5cdc1cc86f3074e085a53deb861a44cd8161873296687693448ae8c639afff07",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/proc/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/fd-001-lookup\n/fd-002-posix-eq\n/fd-003-kthread\n/proc-fsconfig-hidepid\n/proc-loadavg-001\n/proc-multiple-procfs\n/proc-empty-vm\n/proc-pid-vm\n/proc-self-map-files-001\n/proc-self-map-files-002\n/proc-self-syscall\n/proc-self-wchan\n/proc-subset-pid\n/proc-tid0\n/proc-uptime-001\n/proc-uptime-002\n/read\n/self\n/setns-dcache\n/setns-sysvipc\n/thread-self\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

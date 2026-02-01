@@ -1,0 +1,9 @@
+{
+  "module_name": "r8a7792-sysc.h",
+  "hash_id": "626e9d169e0b710ce2e4d904424bd68743ae6441152225eaed7215376b720c4f",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/r8a7792-sysc.h",
+  "human_readable_source": " \n \n#ifndef __DT_BINDINGS_POWER_R8A7792_SYSC_H__\n#define __DT_BINDINGS_POWER_R8A7792_SYSC_H__\n\n \n\n#define R8A7792_PD_CA15_CPU0\t\t0\n#define R8A7792_PD_CA15_CPU1\t\t1\n#define R8A7792_PD_CA15_SCU\t\t12\n#define R8A7792_PD_SGX\t\t\t20\n#define R8A7792_PD_IMP\t\t\t24\n\n \n#define R8A7792_PD_ALWAYS_ON\t\t32\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

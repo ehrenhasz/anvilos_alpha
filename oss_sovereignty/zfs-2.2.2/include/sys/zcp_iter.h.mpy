@@ -1,0 +1,9 @@
+{
+  "module_name": "zcp_iter.h",
+  "hash_id": "2f5c2fe176403ce6c4e14ffb3335a7052b054577f9e8c2a88a2e91b6ba5985d0",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zcp_iter.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SYS_ZCP_LIST_H\n#define\t_SYS_ZCP_LIST_H\n\n#include <sys/lua/lua.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\nvoid zcp_load_list_funcs(lua_State *);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

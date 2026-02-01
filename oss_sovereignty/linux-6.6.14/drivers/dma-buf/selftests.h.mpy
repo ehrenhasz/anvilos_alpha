@@ -1,0 +1,9 @@
+{
+  "module_name": "selftests.h",
+  "hash_id": "22bbc3a5496bdcbdd78d878a8ece95c3b3421046eae1b6bd6a4c5e563323790a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma-buf/selftests.h",
+  "human_readable_source": " \n \nselftest(sanitycheck, __sanitycheck__)  \nselftest(dma_fence, dma_fence)\nselftest(dma_fence_chain, dma_fence_chain)\nselftest(dma_fence_unwrap, dma_fence_unwrap)\nselftest(dma_resv, dma_resv)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

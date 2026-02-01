@@ -1,0 +1,9 @@
+{
+  "module_name": "8250_fourport.c",
+  "hash_id": "6818270237d010564cde461f362ce8849830462c56b8db5d5439891d7979c074",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/serial/8250/8250_fourport.c",
+  "human_readable_source": "\n \n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/serial_8250.h>\n\n#include \"8250.h\"\n\n#define SERIAL8250_FOURPORT(_base, _irq) \\\n\tSERIAL8250_PORT_FLAGS(_base, _irq, UPF_FOURPORT)\n\nstatic struct plat_serial8250_port fourport_data[] = {\n\tSERIAL8250_FOURPORT(0x1a0, 9),\n\tSERIAL8250_FOURPORT(0x1a8, 9),\n\tSERIAL8250_FOURPORT(0x1b0, 9),\n\tSERIAL8250_FOURPORT(0x1b8, 9),\n\tSERIAL8250_FOURPORT(0x2a0, 5),\n\tSERIAL8250_FOURPORT(0x2a8, 5),\n\tSERIAL8250_FOURPORT(0x2b0, 5),\n\tSERIAL8250_FOURPORT(0x2b8, 5),\n\t{ },\n};\n\nstatic struct platform_device fourport_device = {\n\t.name\t\t\t= \"serial8250\",\n\t.id\t\t\t= PLAT8250_DEV_FOURPORT,\n\t.dev\t\t\t= {\n\t\t.platform_data\t= fourport_data,\n\t},\n};\n\nstatic int __init fourport_init(void)\n{\n\treturn platform_device_register(&fourport_device);\n}\n\nmodule_init(fourport_init);\n\nMODULE_AUTHOR(\"Russell King\");\nMODULE_DESCRIPTION(\"8250 serial probe module for AST Fourport cards\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

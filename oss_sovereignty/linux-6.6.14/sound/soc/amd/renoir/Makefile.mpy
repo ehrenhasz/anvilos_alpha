@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cd348cd9f90bb672121183d9516a07735c93e0f2ec783c272e478bee2445a969",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/amd/renoir/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n# Renoir platform Support\nsnd-rn-pci-acp3x-objs\t:= rn-pci-acp3x.o\nsnd-acp3x-pdm-dma-objs\t:= acp3x-pdm-dma.o\nsnd-acp3x-rn-objs\t:= acp3x-rn.o\nobj-$(CONFIG_SND_SOC_AMD_RENOIR)\t+= snd-rn-pci-acp3x.o\nobj-$(CONFIG_SND_SOC_AMD_RENOIR)\t+= snd-acp3x-pdm-dma.o\nobj-$(CONFIG_SND_SOC_AMD_RENOIR_MACH)\t+= snd-acp3x-rn.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

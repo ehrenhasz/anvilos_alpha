@@ -1,0 +1,9 @@
+{
+  "module_name": "fs_struct.h",
+  "hash_id": "138ac3545ab06416f067bb9d361166cfde8a78d6b3f062d7b0cae3c266287cd2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fs_struct.h",
+  "human_readable_source": " \n#ifndef _LINUX_FS_STRUCT_H\n#define _LINUX_FS_STRUCT_H\n\n#include <linux/path.h>\n#include <linux/spinlock.h>\n#include <linux/seqlock.h>\n\nstruct fs_struct {\n\tint users;\n\tspinlock_t lock;\n\tseqcount_spinlock_t seq;\n\tint umask;\n\tint in_exec;\n\tstruct path root, pwd;\n} __randomize_layout;\n\nextern struct kmem_cache *fs_cachep;\n\nextern void exit_fs(struct task_struct *);\nextern void set_fs_root(struct fs_struct *, const struct path *);\nextern void set_fs_pwd(struct fs_struct *, const struct path *);\nextern struct fs_struct *copy_fs_struct(struct fs_struct *);\nextern void free_fs_struct(struct fs_struct *);\nextern int unshare_fs_struct(void);\n\nstatic inline void get_fs_root(struct fs_struct *fs, struct path *root)\n{\n\tspin_lock(&fs->lock);\n\t*root = fs->root;\n\tpath_get(root);\n\tspin_unlock(&fs->lock);\n}\n\nstatic inline void get_fs_pwd(struct fs_struct *fs, struct path *pwd)\n{\n\tspin_lock(&fs->lock);\n\t*pwd = fs->pwd;\n\tpath_get(pwd);\n\tspin_unlock(&fs->lock);\n}\n\nextern bool current_chrooted(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

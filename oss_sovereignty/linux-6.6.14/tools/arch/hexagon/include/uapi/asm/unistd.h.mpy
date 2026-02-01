@@ -1,0 +1,9 @@
+{
+  "module_name": "unistd.h",
+  "hash_id": "896376fca655076b5f491b7d7f233932857d05974bf5fdd3303a9d40a4034cfc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/hexagon/include/uapi/asm/unistd.h",
+  "human_readable_source": " \n \n\n \n\n#define sys_mmap2 sys_mmap_pgoff\n#define __ARCH_WANT_RENAMEAT\n#define __ARCH_WANT_STAT64\n#define __ARCH_WANT_SET_GET_RLIMIT\n#define __ARCH_WANT_SYS_EXECVE\n#define __ARCH_WANT_SYS_CLONE\n#define __ARCH_WANT_SYS_VFORK\n#define __ARCH_WANT_SYS_FORK\n#define __ARCH_WANT_TIME32_SYSCALLS\n\n#include <asm-generic/unistd.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_breadcrumbs.h",
+  "hash_id": "cd391cb8ecd8324460d362d7d8a5307d879c663b521390ce291f0e676f59342f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_breadcrumbs.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_BREADCRUMBS__\n#define __INTEL_BREADCRUMBS__\n\n#include <linux/atomic.h>\n#include <linux/irq_work.h>\n\n#include \"intel_breadcrumbs_types.h\"\n\nstruct drm_printer;\nstruct i915_request;\nstruct intel_breadcrumbs;\n\nstruct intel_breadcrumbs *\nintel_breadcrumbs_create(struct intel_engine_cs *irq_engine);\nvoid intel_breadcrumbs_free(struct kref *kref);\n\nvoid intel_breadcrumbs_reset(struct intel_breadcrumbs *b);\nvoid __intel_breadcrumbs_park(struct intel_breadcrumbs *b);\n\nstatic inline void intel_breadcrumbs_unpark(struct intel_breadcrumbs *b)\n{\n\tatomic_inc(&b->active);\n}\n\nstatic inline void intel_breadcrumbs_park(struct intel_breadcrumbs *b)\n{\n\tif (atomic_dec_and_test(&b->active))\n\t\t__intel_breadcrumbs_park(b);\n}\n\nstatic inline void\nintel_engine_signal_breadcrumbs(struct intel_engine_cs *engine)\n{\n\tirq_work_queue(&engine->breadcrumbs->irq_work);\n}\n\nvoid intel_engine_print_breadcrumbs(struct intel_engine_cs *engine,\n\t\t\t\t    struct drm_printer *p);\n\nbool i915_request_enable_breadcrumb(struct i915_request *request);\nvoid i915_request_cancel_breadcrumb(struct i915_request *request);\n\nvoid intel_context_remove_breadcrumbs(struct intel_context *ce,\n\t\t\t\t      struct intel_breadcrumbs *b);\n\nstatic inline struct intel_breadcrumbs *\nintel_breadcrumbs_get(struct intel_breadcrumbs *b)\n{\n\tkref_get(&b->ref);\n\treturn b;\n}\n\nstatic inline void intel_breadcrumbs_put(struct intel_breadcrumbs *b)\n{\n\tkref_put(&b->ref, intel_breadcrumbs_free);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

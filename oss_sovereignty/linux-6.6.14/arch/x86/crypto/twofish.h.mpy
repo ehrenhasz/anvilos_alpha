@@ -1,0 +1,9 @@
+{
+  "module_name": "twofish.h",
+  "hash_id": "e7e96eb157f16f3737bffc88c249af433aebf4ecaa781ab392eeb41ef6b2ce74",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/crypto/twofish.h",
+  "human_readable_source": " \n#ifndef ASM_X86_TWOFISH_H\n#define ASM_X86_TWOFISH_H\n\n#include <linux/crypto.h>\n#include <crypto/twofish.h>\n#include <crypto/b128ops.h>\n\n \nasmlinkage void twofish_enc_blk(const void *ctx, u8 *dst, const u8 *src);\nasmlinkage void twofish_dec_blk(const void *ctx, u8 *dst, const u8 *src);\n\n \nasmlinkage void __twofish_enc_blk_3way(const void *ctx, u8 *dst, const u8 *src,\n\t\t\t\t       bool xor);\nasmlinkage void twofish_dec_blk_3way(const void *ctx, u8 *dst, const u8 *src);\n\n \nextern void twofish_dec_blk_cbc_3way(const void *ctx, u8 *dst, const u8 *src);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

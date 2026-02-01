@@ -1,0 +1,9 @@
+{
+  "module_name": "iscsi_target_nodeattrib.h",
+  "hash_id": "d47320f002414b6bed17e4f906bb6bc255125678cc6b4a2240be7235bc08de07",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/iscsi/iscsi_target_nodeattrib.h",
+  "human_readable_source": " \n#ifndef ISCSI_TARGET_NODEATTRIB_H\n#define ISCSI_TARGET_NODEATTRIB_H\n\n#include <linux/types.h>\n\nstruct iscsi_node_acl;\nstruct iscsi_portal_group;\n\nextern void iscsit_set_default_node_attribues(struct iscsi_node_acl *,\n\t\t\t\t\t      struct iscsi_portal_group *);\nextern int iscsit_na_dataout_timeout(struct iscsi_node_acl *, u32);\nextern int iscsit_na_dataout_timeout_retries(struct iscsi_node_acl *, u32);\nextern int iscsit_na_nopin_timeout(struct iscsi_node_acl *, u32);\nextern int iscsit_na_nopin_response_timeout(struct iscsi_node_acl *, u32);\nextern int iscsit_na_random_datain_pdu_offsets(struct iscsi_node_acl *, u32);\nextern int iscsit_na_random_datain_seq_offsets(struct iscsi_node_acl *, u32);\nextern int iscsit_na_random_r2t_offsets(struct iscsi_node_acl *, u32);\nextern int iscsit_na_default_erl(struct iscsi_node_acl *, u32);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

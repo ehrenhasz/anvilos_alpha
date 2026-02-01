@@ -1,0 +1,9 @@
+{
+  "module_name": "adau-utils.h",
+  "hash_id": "8be5d47052a60353cf947253c00fe29d19eeacc7251255004cc398b816f79c87",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/adau-utils.h",
+  "human_readable_source": " \n#ifndef SOUND_SOC_CODECS_ADAU_PLL_H\n#define SOUND_SOC_CODECS_ADAU_PLL_H\n\nint adau_calc_pll_cfg(unsigned int freq_in, unsigned int freq_out,\n\tuint8_t regs[5]);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

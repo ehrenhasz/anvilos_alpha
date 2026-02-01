@@ -1,0 +1,9 @@
+{
+  "module_name": "symlink.h",
+  "hash_id": "d61e07b213831ae85aeadedae88e7a986f8d790694737c410debf587878cb7bb",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/symlink.h",
+  "human_readable_source": " \n \n\n#ifndef OCFS2_SYMLINK_H\n#define OCFS2_SYMLINK_H\n\nextern const struct inode_operations ocfs2_symlink_inode_operations;\nextern const struct address_space_operations ocfs2_fast_symlink_aops;\n\n \nstatic inline int ocfs2_inode_is_fast_symlink(struct inode *inode)\n{\n\treturn (S_ISLNK(inode->i_mode) &&\n\t\tinode->i_blocks == 0);\n}\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

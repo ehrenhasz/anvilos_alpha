@@ -1,0 +1,9 @@
+{
+  "module_name": "atmel.h",
+  "hash_id": "a93fe6a36f054915180ae7ff077e7cea6d957d4dbc0ea09fef8fcceec4a2fb55",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/atmel.h",
+  "human_readable_source": " \n \n\n#ifndef __ATMEL_H__\n#define __ATMEL_H__\n\n \n#ifdef CONFIG_ATMEL_PM\nextern int at91_suspend_entering_slow_clock(void);\n#else\nstatic inline int at91_suspend_entering_slow_clock(void)\n{\n\treturn 0;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

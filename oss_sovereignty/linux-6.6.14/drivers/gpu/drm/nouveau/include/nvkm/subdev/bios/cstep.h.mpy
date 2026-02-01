@@ -1,0 +1,9 @@
+{
+  "module_name": "cstep.h",
+  "hash_id": "f46dfc9e037f5f7a2d4c7a1380465a6f853722fbf81fb885d0442f04e7ca7980",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/cstep.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_CSTEP_H__\n#define __NVBIOS_CSTEP_H__\nu32 nvbios_cstepTe(struct nvkm_bios *,\n\t\t   u8 *ver, u8 *hdr, u8 *cnt, u8 *len, u8 *xnr, u8 *xsz);\n\nstruct nvbios_cstepE {\n\tu8  pstate;\n\tu8  index;\n};\n\nu32 nvbios_cstepEe(struct nvkm_bios *, int idx, u8 *ver, u8 *hdr);\nu32 nvbios_cstepEp(struct nvkm_bios *, int idx, u8 *ver, u8 *hdr,\n\t\t   struct nvbios_cstepE *);\nu32 nvbios_cstepEm(struct nvkm_bios *, u8 pstate, u8 *ver, u8 *hdr,\n\t\t   struct nvbios_cstepE *);\n\nstruct nvbios_cstepX {\n\tu32 freq;\n\tu8  unkn[2];\n\tu8  voltage;\n};\n\nu32 nvbios_cstepXe(struct nvkm_bios *, int idx, u8 *ver, u8 *hdr);\nu32 nvbios_cstepXp(struct nvkm_bios *, int idx, u8 *ver, u8 *hdr,\n\t\t   struct nvbios_cstepX *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

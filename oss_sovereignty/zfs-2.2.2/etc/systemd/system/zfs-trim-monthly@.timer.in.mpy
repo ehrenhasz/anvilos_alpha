@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs-trim-monthly@.timer.in",
+  "hash_id": "df62725c85abdd3c54226b49f8737cb7ca8c52d10bd6de61d29d5f0cb4a7ccef",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/systemd/system/zfs-trim-monthly@.timer.in",
+  "human_readable_source": "[Unit]\nDescription=Monthly zpool trim timer for %i\nDocumentation=man:zpool-trim(8)\n\n[Timer]\nOnCalendar=monthly\nPersistent=true\nRandomizedDelaySec=1h\nUnit=zfs-trim@%i.service\n\n[Install]\nWantedBy=timers.target\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

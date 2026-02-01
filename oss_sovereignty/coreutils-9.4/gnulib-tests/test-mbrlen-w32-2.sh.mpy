@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrlen-w32-2.sh",
+  "hash_id": "c48d72330faef7802c8ce66e9f16ff97ae73ec71a0a5adf83ab6fc1226b9ea9c",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrlen-w32-2.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a CP1252 locale.\n${CHECKER} ./test-mbrlen-w32${EXEEXT} French_France 1252\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

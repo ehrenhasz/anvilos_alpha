@@ -1,0 +1,9 @@
+{
+  "module_name": "vmid.h",
+  "hash_id": "c3b4b62a5e378d413702ef3904cd75495dcddb493434ddc4b302805d09602699",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/inc/hw/vmid.h",
+  "human_readable_source": " \n\n#ifndef DAL_DC_INC_HW_VMID_H_\n#define DAL_DC_INC_HW_VMID_H_\n\n#include \"core_types.h\"\n#include \"dchubbub.h\"\n\nstruct dcn_vmid_registers {\n\tuint32_t CNTL;\n\tuint32_t PAGE_TABLE_BASE_ADDR_HI32;\n\tuint32_t PAGE_TABLE_BASE_ADDR_LO32;\n\tuint32_t PAGE_TABLE_START_ADDR_HI32;\n\tuint32_t PAGE_TABLE_START_ADDR_LO32;\n\tuint32_t PAGE_TABLE_END_ADDR_HI32;\n\tuint32_t PAGE_TABLE_END_ADDR_LO32;\n};\n\nstruct dcn_vmid_page_table_config {\n\tuint64_t\tpage_table_start_addr;\n\tuint64_t\tpage_table_end_addr;\n\tenum dcn_hubbub_page_table_depth\tdepth;\n\tenum dcn_hubbub_page_table_block_size\tblock_size;\n\tuint64_t\tpage_table_base_addr;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

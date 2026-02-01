@@ -1,0 +1,9 @@
+{
+  "module_name": "xmalloc.c",
+  "hash_id": "72bfe41d0c598409b1f6ba3f7ee9653b21016d3ef3ca216e032ce43f9971da54",
+  "original_prompt": "Ingested from readline-8.2/xmalloc.c",
+  "human_readable_source": " \n\n \n\n#define READLINE_LIBRARY\n\n#if defined (HAVE_CONFIG_H)\n#include <config.h>\n#endif\n\n#include <stdio.h>\n\n#if defined (HAVE_STDLIB_H)\n#  include <stdlib.h>\n#else\n#  include \"ansi_stdlib.h\"\n#endif  \n\n#include \"xmalloc.h\"\n\n \n \n \n \n \n\nstatic void\nmemory_error_and_abort (char *fname)\n{\n  fprintf (stderr, \"%s: out of virtual memory\\n\", fname);\n  exit (2);\n}\n\n \nPTR_T\nxmalloc (size_t bytes)\n{\n  PTR_T temp;\n\n  temp = malloc (bytes);\n  if (temp == 0)\n    memory_error_and_abort (\"xmalloc\");\n  return (temp);\n}\n\nPTR_T\nxrealloc (PTR_T pointer, size_t bytes)\n{\n  PTR_T temp;\n\n  temp = pointer ? realloc (pointer, bytes) : malloc (bytes);\n\n  if (temp == 0)\n    memory_error_and_abort (\"xrealloc\");\n  return (temp);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

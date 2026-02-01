@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_labels.h",
+  "hash_id": "5a5c3ac7f21aa564039a739ffbbdc1e82eea2944d848385c3449793995c1bcb6",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nf_conntrack_labels.h",
+  "human_readable_source": " \n\n#ifndef _NF_CONNTRACK_LABELS_H\n#define _NF_CONNTRACK_LABELS_H\n\n#include <linux/netfilter/nf_conntrack_common.h>\n#include <linux/netfilter/nf_conntrack_tuple_common.h>\n#include <linux/types.h>\n#include <net/net_namespace.h>\n#include <net/netfilter/nf_conntrack.h>\n#include <net/netfilter/nf_conntrack_extend.h>\n#include <uapi/linux/netfilter/xt_connlabel.h>\n\n#define NF_CT_LABELS_MAX_SIZE ((XT_CONNLABEL_MAXBIT + 1) / BITS_PER_BYTE)\n\nstruct nf_conn_labels {\n\tunsigned long bits[NF_CT_LABELS_MAX_SIZE / sizeof(long)];\n};\n\n \nstatic inline struct nf_conn_labels *nf_ct_labels_find(const struct nf_conn *ct)\n{\n#ifdef CONFIG_NF_CONNTRACK_LABELS\n\tstruct nf_ct_ext *ext = ct->ext;\n\n\tif (!ext || !__nf_ct_ext_exist(ext, NF_CT_EXT_LABELS))\n\t\treturn NULL;\n\n\treturn (void *)ct->ext + ct->ext->offset[NF_CT_EXT_LABELS];\n#else\n\treturn NULL;\n#endif\n}\n\nstatic inline struct nf_conn_labels *nf_ct_labels_ext_add(struct nf_conn *ct)\n{\n#ifdef CONFIG_NF_CONNTRACK_LABELS\n\tstruct net *net = nf_ct_net(ct);\n\n\tif (net->ct.labels_used == 0)\n\t\treturn NULL;\n\n\treturn nf_ct_ext_add(ct, NF_CT_EXT_LABELS, GFP_ATOMIC);\n#else\n\treturn NULL;\n#endif\n}\n\nint nf_connlabels_replace(struct nf_conn *ct,\n\t\t\t  const u32 *data, const u32 *mask, unsigned int words);\n\n#ifdef CONFIG_NF_CONNTRACK_LABELS\nint nf_connlabels_get(struct net *net, unsigned int bit);\nvoid nf_connlabels_put(struct net *net);\n#else\nstatic inline int nf_connlabels_get(struct net *net, unsigned int bit) { return 0; }\nstatic inline void nf_connlabels_put(struct net *net) {}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

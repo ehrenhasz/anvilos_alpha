@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1dd665c917521417f4d14c4cb6143274442078c751827994fa83457059db83c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/power/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_POWER_RESET)\t+= reset/\nobj-$(CONFIG_POWER_SUPPLY)\t+= supply/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

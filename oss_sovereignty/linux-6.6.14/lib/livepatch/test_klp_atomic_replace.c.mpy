@@ -1,0 +1,9 @@
+{
+  "module_name": "test_klp_atomic_replace.c",
+  "hash_id": "fc678836bb69bcea3853f0fc3b69d0169563faec319654e33b40c8dcd3021576",
+  "original_prompt": "Ingested from linux-6.6.14/lib/livepatch/test_klp_atomic_replace.c",
+  "human_readable_source": "\n\n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <linux/module.h>\n#include <linux/kernel.h>\n#include <linux/livepatch.h>\n\nstatic int replace;\nmodule_param(replace, int, 0644);\nMODULE_PARM_DESC(replace, \"replace (default=0)\");\n\n#include <linux/seq_file.h>\nstatic int livepatch_meminfo_proc_show(struct seq_file *m, void *v)\n{\n\tseq_printf(m, \"%s: %s\\n\", THIS_MODULE->name,\n\t\t   \"this has been live patched\");\n\treturn 0;\n}\n\nstatic struct klp_func funcs[] = {\n\t{\n\t\t.old_name = \"meminfo_proc_show\",\n\t\t.new_func = livepatch_meminfo_proc_show,\n\t}, {}\n};\n\nstatic struct klp_object objs[] = {\n\t{\n\t\t \n\t\t.funcs = funcs,\n\t}, {}\n};\n\nstatic struct klp_patch patch = {\n\t.mod = THIS_MODULE,\n\t.objs = objs,\n\t \n};\n\nstatic int test_klp_atomic_replace_init(void)\n{\n\tpatch.replace = replace;\n\treturn klp_enable_patch(&patch);\n}\n\nstatic void test_klp_atomic_replace_exit(void)\n{\n}\n\nmodule_init(test_klp_atomic_replace_init);\nmodule_exit(test_klp_atomic_replace_exit);\nMODULE_LICENSE(\"GPL\");\nMODULE_INFO(livepatch, \"Y\");\nMODULE_AUTHOR(\"Joe Lawrence <joe.lawrence@redhat.com>\");\nMODULE_DESCRIPTION(\"Livepatch test: atomic replace\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

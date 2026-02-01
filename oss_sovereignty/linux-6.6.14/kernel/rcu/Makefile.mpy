@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b3ef5cf5f71e6e0c4a2768e754eb5e514d908e7e89a6c82cc60ddaf9464d9f16",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/rcu/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Any varying coverage in these files is non-deterministic\n# and is generally not a function of system call inputs.\nKCOV_INSTRUMENT := n\n\nifeq ($(CONFIG_KCSAN),y)\nKBUILD_CFLAGS += -g -fno-omit-frame-pointer\nendif\n\nobj-y += update.o sync.o\nobj-$(CONFIG_TREE_SRCU) += srcutree.o\nobj-$(CONFIG_TINY_SRCU) += srcutiny.o\nobj-$(CONFIG_RCU_TORTURE_TEST) += rcutorture.o\nobj-$(CONFIG_RCU_SCALE_TEST) += rcuscale.o\nobj-$(CONFIG_RCU_REF_SCALE_TEST) += refscale.o\nobj-$(CONFIG_TREE_RCU) += tree.o\nobj-$(CONFIG_TINY_RCU) += tiny.o\nobj-$(CONFIG_RCU_NEED_SEGCBLIST) += rcu_segcblist.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

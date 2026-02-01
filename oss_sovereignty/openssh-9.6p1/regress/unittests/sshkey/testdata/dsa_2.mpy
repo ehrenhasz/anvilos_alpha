@@ -1,0 +1,9 @@
+{
+  "module_name": "dsa_2",
+  "hash_id": "cdab619548148817985fceebbaaae982c4b20136145314ae24e17785a1ee7f52",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshkey/testdata/dsa_2",
+  "human_readable_source": "-----BEGIN DSA PRIVATE KEY-----\nMIIBvQIBAAKBgQCbyPXNdHeLsjpobPVCMkfagBkt15Zsltqf/PGNP1y1cuz7rsTX\nZekQwUkSTNm5coqXe+ZOw2O4tjobJDd60I1/VPgaB0NYlQR9Hn87M284WD4f6VY+\naunHmP134a8ybG5G4NqVNF3ihvxAR2pVITqb7kE46r2uYZNcNlHI8voRCwIVAMcP\nbwqFNsQbH5pJyZW30wj4KVZ3AoGBAIK98BVeKQVf8qDFqx9ovMuNgVSxpd+N0Yta\n5ZEy1OI2ziu5RhjueIM2K7Gq2Mnp38ob1AM53BUxqlcBJaHEDa6rj6yvuMgW9oCJ\ndImBM8sIFxfBbXNbpJiMaDwa6WyT84OkpDE6uuAepTMnWOUWkUVkAiyokHDUGXkG\nGyoQblbXAoGBAIsf7TaZ804sUWwRV0wI8DYx+hxD5QdrfYPYMtL2fHn3lICimGt0\nFTtUZ25jKg0E0DMBPdET6ZEHB3ZZkR8hFoUzZhdnyJMu3UjVtgaV88Ue3PrXxchk\n0W2jHPaAgQU3JIWzo8HFIFqvC/HEL+EyW3rBTY2uXM3XGI+YcWSA4ZrZAhUAsY2f\nbDFNzgZ4DaZ9wLRzTgOswPU=\n-----END DSA PRIVATE KEY-----\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

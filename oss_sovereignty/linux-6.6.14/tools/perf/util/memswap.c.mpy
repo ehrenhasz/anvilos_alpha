@@ -1,0 +1,9 @@
+{
+  "module_name": "memswap.c",
+  "hash_id": "8f03c5cf060d5de72495a63884a7149868f55380c74f3aa75b345fc86a2f8bbe",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/memswap.c",
+  "human_readable_source": "\n#include <byteswap.h>\n#include \"memswap.h\"\n#include <linux/types.h>\n\nvoid mem_bswap_32(void *src, int byte_size)\n{\n\tu32 *m = src;\n\twhile (byte_size > 0) {\n\t\t*m = bswap_32(*m);\n\t\tbyte_size -= sizeof(u32);\n\t\t++m;\n\t}\n}\n\nvoid mem_bswap_64(void *src, int byte_size)\n{\n\tu64 *m = src;\n\n\twhile (byte_size > 0) {\n\t\t*m = bswap_64(*m);\n\t\tbyte_size -= sizeof(u64);\n\t\t++m;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

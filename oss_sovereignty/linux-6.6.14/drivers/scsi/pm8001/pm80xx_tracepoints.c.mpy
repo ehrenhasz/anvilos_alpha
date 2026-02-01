@@ -1,0 +1,9 @@
+{
+  "module_name": "pm80xx_tracepoints.c",
+  "hash_id": "0893e2c9654d623529d4547eadb9d0ff37a15653672a8b33e8c978677b1f9f33",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/pm8001/pm80xx_tracepoints.c",
+  "human_readable_source": "\n \n\n#define CREATE_TRACE_POINTS\n#include \"pm80xx_tracepoints.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

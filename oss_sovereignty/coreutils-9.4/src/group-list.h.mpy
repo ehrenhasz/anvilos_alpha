@@ -1,0 +1,9 @@
+{
+  "module_name": "group-list.h",
+  "hash_id": "1c49bf6e8a787574b0298a97cba3b842c1815b2bec89c3599219b57515fb38e7",
+  "original_prompt": "Ingested from coreutils-9.4/src/group-list.h",
+  "human_readable_source": "/* group-list.h -- prototypes shared by id and groups.\n\n   Copyright (C) 2008-2023 Free Software Foundation, Inc.\n\n   This program is free software: you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published by\n   the Free Software Foundation, either version 3 of the License, or\n   (at your option) any later version.\n\n   This program is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with this program.  If not, see <https:\n\nbool print_group (gid_t, bool);\nbool print_group_list (char const *, uid_t, gid_t, gid_t, bool, char);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

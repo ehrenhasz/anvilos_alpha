@@ -1,0 +1,9 @@
+{
+  "module_name": "lcd_palmte.c",
+  "hash_id": "bdb0c0cc6858b0a18e2716b50bb403f14c05dc43e6a0bd0306ca852e800d172c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/omap/lcd_palmte.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/platform_device.h>\n#include <linux/io.h>\n\n#include \"omapfb.h\"\n\nstatic struct lcd_panel palmte_panel = {\n\t.name\t\t= \"palmte\",\n\t.config\t\t= OMAP_LCDC_PANEL_TFT | OMAP_LCDC_INV_VSYNC |\n\t\t\t  OMAP_LCDC_INV_HSYNC | OMAP_LCDC_HSVS_RISING_EDGE |\n\t\t\t  OMAP_LCDC_HSVS_OPPOSITE,\n\n\t.data_lines\t= 16,\n\t.bpp\t\t= 8,\n\t.pixel_clock\t= 12000,\n\t.x_res\t\t= 320,\n\t.y_res\t\t= 320,\n\t.hsw\t\t= 4,\n\t.hfp\t\t= 8,\n\t.hbp\t\t= 28,\n\t.vsw\t\t= 1,\n\t.vfp\t\t= 8,\n\t.vbp\t\t= 7,\n\t.pcd\t\t= 0,\n};\n\nstatic int palmte_panel_probe(struct platform_device *pdev)\n{\n\tomapfb_register_panel(&palmte_panel);\n\treturn 0;\n}\n\nstatic struct platform_driver palmte_panel_driver = {\n\t.probe\t\t= palmte_panel_probe,\n\t.driver\t\t= {\n\t\t.name\t= \"lcd_palmte\",\n\t},\n};\n\nmodule_platform_driver(palmte_panel_driver);\n\nMODULE_AUTHOR(\"Romain Goyet <r.goyet@gmail.com>, Laurent Gonzalez <palmte.linux@free.fr>\");\nMODULE_DESCRIPTION(\"LCD panel support for the Palm Tungsten E\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "localcharset.h",
+  "hash_id": "294adc06fc58883e532288094acbc7181f08a8fe2dc96dde0ed4e2614e62a0c1",
+  "original_prompt": "Ingested from coreutils-9.4/lib/localcharset.h",
+  "human_readable_source": " \n\n#ifndef _LOCALCHARSET_H\n#define _LOCALCHARSET_H\n\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n\n \nextern const char * locale_charset (void);\n\n \n\n\n#ifdef __cplusplus\n}\n#endif\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

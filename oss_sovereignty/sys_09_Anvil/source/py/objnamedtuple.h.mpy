@@ -1,0 +1,9 @@
+{
+  "module_name": "objnamedtuple.h",
+  "hash_id": "d1c3288668f4f4d70a5fa020bda9dc18a66b594fa5c2ccf201589ce98bb9263f",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/objnamedtuple.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_OBJNAMEDTUPLE_H\n#define MICROPY_INCLUDED_PY_OBJNAMEDTUPLE_H\n\n#include \"py/objtuple.h\"\n\ntypedef struct _mp_obj_namedtuple_type_t {\n    \n    mp_obj_empty_type_t base;\n    void *slots[8];\n    size_t n_fields;\n    qstr fields[];\n} mp_obj_namedtuple_type_t;\n\ntypedef struct _mp_obj_namedtuple_t {\n    mp_obj_tuple_t tuple;\n} mp_obj_namedtuple_t;\n\nsize_t mp_obj_namedtuple_find_field(const mp_obj_namedtuple_type_t *type, qstr name);\nmp_obj_namedtuple_type_t *mp_obj_new_namedtuple_base(size_t n_fields, mp_obj_t *fields);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

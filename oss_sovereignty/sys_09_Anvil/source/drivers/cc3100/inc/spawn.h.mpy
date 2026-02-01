@@ -1,0 +1,9 @@
+{
+  "module_name": "spawn.h",
+  "hash_id": "8e8a8439d2889936f6a178a59e0e362a5f6336cfb625a374ce474b67c477510a",
+  "original_prompt": "Ingested from sys_09_Anvil/source/drivers/cc3100/inc/spawn.h",
+  "human_readable_source": " \n\n#ifndef __NONOS_H__\n#define\t__NONOS_H__\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n\n#if (defined (SL_PLATFORM_MULTI_THREADED)) && (!defined (SL_PLATFORM_EXTERNAL_SPAWN))\n\nextern void _SlInternalSpawnTaskEntry();\nextern _i16 _SlInternalSpawn(_SlSpawnEntryFunc_t pEntry , void* pValue , _u32 flags);\n\n#undef sl_Spawn\n#define sl_Spawn(pEntry,pValue,flags)               _SlInternalSpawn(pEntry,pValue,flags)\n\n#undef _SlTaskEntry\n#define _SlTaskEntry                                _SlInternalSpawnTaskEntry\n\n\n#endif\n\n#ifdef  __cplusplus\n}\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

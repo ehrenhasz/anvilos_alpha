@@ -1,0 +1,9 @@
+{
+  "module_name": "Context.pm",
+  "hash_id": "b80504391541c7667e962889837cba72961175c022ccd21fb97f74ac5f568fe9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/perl/Perf-Trace-Util/lib/Perf/Trace/Context.pm",
+  "human_readable_source": "package Perf::Trace::Context;\n\nuse 5.010000;\nuse strict;\nuse warnings;\n\nrequire Exporter;\n\nour @ISA = qw(Exporter);\n\nour %EXPORT_TAGS = ( 'all' => [ qw(\n) ] );\n\nour @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );\n\nour @EXPORT = qw(\n\tcommon_pc common_flags common_lock_depth\n);\n\nour $VERSION = '0.01';\n\nrequire XSLoader;\nXSLoader::load('Perf::Trace::Context', $VERSION);\n\n1;\n__END__\n=head1 NAME\n\nPerf::Trace::Context - Perl extension for accessing functions in perf.\n\n=head1 SYNOPSIS\n\n  use Perf::Trace::Context;\n\n=head1 SEE ALSO\n\nPerf (script) documentation\n\n=head1 AUTHOR\n\nTom Zanussi, E<lt>tzanussi@gmail.com<gt>\n\n=head1 COPYRIGHT AND LICENSE\n\nCopyright (C) 2009 by Tom Zanussi\n\nThis library is free software; you can redistribute it and/or modify\nit under the same terms as Perl itself, either Perl version 5.10.0 or,\nat your option, any later version of Perl 5 you may have available.\n\nAlternatively, this software may be distributed under the terms of the\nGNU General Public License (\"GPL\") version 2 as published by the Free\nSoftware Foundation.\n\n=cut\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fb84b6c2653a65ed9cfe3f15921e85e589fe8853abca7b8a8eb8afa8ff67bda1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/chemical/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for IIO chemical sensors\n#\n\n# When adding new entries keep the list in alphabetical order\nobj-$(CONFIG_ATLAS_PH_SENSOR)\t+= atlas-sensor.o\nobj-$(CONFIG_ATLAS_EZO_SENSOR)\t+= atlas-ezo-sensor.o\nobj-$(CONFIG_BME680) += bme680_core.o\nobj-$(CONFIG_BME680_I2C) += bme680_i2c.o\nobj-$(CONFIG_BME680_SPI) += bme680_spi.o\nobj-$(CONFIG_CCS811)\t\t+= ccs811.o\nobj-$(CONFIG_IAQCORE)\t\t+= ams-iaq-core.o\nobj-$(CONFIG_PMS7003) += pms7003.o\nobj-$(CONFIG_SCD30_CORE) += scd30_core.o\nobj-$(CONFIG_SCD30_I2C) += scd30_i2c.o\nobj-$(CONFIG_SCD30_SERIAL) += scd30_serial.o\nobj-$(CONFIG_SCD4X) += scd4x.o\nobj-$(CONFIG_SENSEAIR_SUNRISE_CO2) += sunrise_co2.o\nobj-$(CONFIG_SENSIRION_SGP30)\t+= sgp30.o\nobj-$(CONFIG_SENSIRION_SGP40)\t+= sgp40.o\nobj-$(CONFIG_SPS30) += sps30.o\nobj-$(CONFIG_SPS30_I2C) += sps30_i2c.o\nobj-$(CONFIG_SPS30_SERIAL) += sps30_serial.o\nobj-$(CONFIG_VZ89X)\t\t+= vz89x.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

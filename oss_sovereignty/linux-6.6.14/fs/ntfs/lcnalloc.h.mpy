@@ -1,0 +1,9 @@
+{
+  "module_name": "lcnalloc.h",
+  "hash_id": "fc8425fd53fa5c4ea5a8854087b786a642eb87f0b18cbacbbf83cd298c4043da",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ntfs/lcnalloc.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_NTFS_LCNALLOC_H\n#define _LINUX_NTFS_LCNALLOC_H\n\n#ifdef NTFS_RW\n\n#include <linux/fs.h>\n\n#include \"attrib.h\"\n#include \"types.h\"\n#include \"inode.h\"\n#include \"runlist.h\"\n#include \"volume.h\"\n\ntypedef enum {\n\tFIRST_ZONE\t= 0,\t \n\tMFT_ZONE\t= 0,\t \n\tDATA_ZONE\t= 1,\t \n\tLAST_ZONE\t= 1,\t \n} NTFS_CLUSTER_ALLOCATION_ZONES;\n\nextern runlist_element *ntfs_cluster_alloc(ntfs_volume *vol,\n\t\tconst VCN start_vcn, const s64 count, const LCN start_lcn,\n\t\tconst NTFS_CLUSTER_ALLOCATION_ZONES zone,\n\t\tconst bool is_extension);\n\nextern s64 __ntfs_cluster_free(ntfs_inode *ni, const VCN start_vcn,\n\t\ts64 count, ntfs_attr_search_ctx *ctx, const bool is_rollback);\n\n \nstatic inline s64 ntfs_cluster_free(ntfs_inode *ni, const VCN start_vcn,\n\t\ts64 count, ntfs_attr_search_ctx *ctx)\n{\n\treturn __ntfs_cluster_free(ni, start_vcn, count, ctx, false);\n}\n\nextern int ntfs_cluster_free_from_rl_nolock(ntfs_volume *vol,\n\t\tconst runlist_element *rl);\n\n \nstatic inline int ntfs_cluster_free_from_rl(ntfs_volume *vol,\n\t\tconst runlist_element *rl)\n{\n\tint ret;\n\n\tdown_write(&vol->lcnbmp_lock);\n\tret = ntfs_cluster_free_from_rl_nolock(vol, rl);\n\tup_write(&vol->lcnbmp_lock);\n\treturn ret;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

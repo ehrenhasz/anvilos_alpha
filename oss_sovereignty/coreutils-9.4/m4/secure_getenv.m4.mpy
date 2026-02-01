@@ -1,0 +1,9 @@
+{
+  "module_name": "secure_getenv.m4",
+  "hash_id": "754738adf0ae10b2f257303b24c6fb0db26fc39d5ff4647c89ecdfc8b41d4223",
+  "original_prompt": "Ingested from coreutils-9.4/m4/secure_getenv.m4",
+  "human_readable_source": "# secure_getenv.m4 serial 2\ndnl Copyright 2013-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_SECURE_GETENV],\n[\n  dnl Persuade glibc <stdlib.h> to declare secure_getenv().\n  AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])\n\n  AC_REQUIRE([gl_STDLIB_H_DEFAULTS])\n  AC_CHECK_FUNCS_ONCE([secure_getenv])\n  if test $ac_cv_func_secure_getenv = no; then\n    HAVE_SECURE_GETENV=0\n  fi\n])\n\n# Prerequisites of lib/secure_getenv.c.\nAC_DEFUN([gl_PREREQ_SECURE_GETENV], [\n  AC_CHECK_FUNCS([__secure_getenv])\n  if test $ac_cv_func___secure_getenv = no; then\n    gl_CHECK_FUNCS_ANDROID([issetugid], [[#include <unistd.h>]])\n  fi\n  AC_CHECK_FUNCS_ONCE([getuid geteuid getgid getegid])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-realloc-gnu.c",
+  "hash_id": "5ab4b7d54cfc49331a0f2862177767a3691bf40404f2cc847b93bcf1eef4a8dc",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-realloc-gnu.c",
+  "human_readable_source": " \n#include <stdlib.h>\n\n#include <errno.h>\n#include <stdint.h>\n\n#include \"macros.h\"\n\nint\nmain (int argc, char **argv)\n{\n   \n  void *volatile p = realloc (NULL, 0);\n  ASSERT (p != NULL);\n\n   \n  if (PTRDIFF_MAX < SIZE_MAX)\n    {\n      size_t one = argc != 12345;\n      p = realloc (p, PTRDIFF_MAX + one);\n      ASSERT (p == NULL);\n      /* Avoid a test failure due to glibc bug\n         <https:\n      if (!getenv (\"MALLOC_CHECK_\"))\n        ASSERT (errno == ENOMEM);\n    }\n\n  free (p);\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

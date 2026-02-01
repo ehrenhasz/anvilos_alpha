@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio_keys.h",
+  "hash_id": "a9208b7ef501539a4779493384db6b02a03ec935fb276ec1a0f45ad51821a261",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/gpio_keys.h",
+  "human_readable_source": " \n#ifndef _GPIO_KEYS_H\n#define _GPIO_KEYS_H\n\n#include <linux/types.h>\n\nstruct device;\n\n \nstruct gpio_keys_button {\n\tunsigned int code;\n\tint gpio;\n\tint active_low;\n\tconst char *desc;\n\tunsigned int type;\n\tint wakeup;\n\tint wakeup_event_action;\n\tint debounce_interval;\n\tbool can_disable;\n\tint value;\n\tunsigned int irq;\n};\n\n \nstruct gpio_keys_platform_data {\n\tconst struct gpio_keys_button *buttons;\n\tint nbuttons;\n\tunsigned int poll_interval;\n\tunsigned int rep:1;\n\tint (*enable)(struct device *dev);\n\tvoid (*disable)(struct device *dev);\n\tconst char *name;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

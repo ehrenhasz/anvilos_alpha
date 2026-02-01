@@ -1,0 +1,9 @@
+{
+  "module_name": "tag_xrs700x.c",
+  "hash_id": "38154ce3ca5ca7faae64c63e4f64517c28594863e62415d284a61058cc016ac4",
+  "original_prompt": "Ingested from linux-6.6.14/net/dsa/tag_xrs700x.c",
+  "human_readable_source": "\n \n\n#include <linux/bitops.h>\n\n#include \"tag.h\"\n\n#define XRS700X_NAME \"xrs700x\"\n\nstatic struct sk_buff *xrs700x_xmit(struct sk_buff *skb, struct net_device *dev)\n{\n\tstruct dsa_port *partner, *dp = dsa_slave_to_port(dev);\n\tu8 *trailer;\n\n\ttrailer = skb_put(skb, 1);\n\ttrailer[0] = BIT(dp->index);\n\n\tif (dp->hsr_dev)\n\t\tdsa_hsr_foreach_port(partner, dp->ds, dp->hsr_dev)\n\t\t\tif (partner != dp)\n\t\t\t\ttrailer[0] |= BIT(partner->index);\n\n\treturn skb;\n}\n\nstatic struct sk_buff *xrs700x_rcv(struct sk_buff *skb, struct net_device *dev)\n{\n\tint source_port;\n\tu8 *trailer;\n\n\ttrailer = skb_tail_pointer(skb) - 1;\n\n\tsource_port = ffs((int)trailer[0]) - 1;\n\n\tif (source_port < 0)\n\t\treturn NULL;\n\n\tskb->dev = dsa_master_find_slave(dev, 0, source_port);\n\tif (!skb->dev)\n\t\treturn NULL;\n\n\tif (pskb_trim_rcsum(skb, skb->len - 1))\n\t\treturn NULL;\n\n\t \n\tdsa_default_offload_fwd_mark(skb);\n\n\treturn skb;\n}\n\nstatic const struct dsa_device_ops xrs700x_netdev_ops = {\n\t.name\t= XRS700X_NAME,\n\t.proto\t= DSA_TAG_PROTO_XRS700X,\n\t.xmit\t= xrs700x_xmit,\n\t.rcv\t= xrs700x_rcv,\n\t.needed_tailroom = 1,\n};\n\nMODULE_LICENSE(\"GPL\");\nMODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_XRS700X, XRS700X_NAME);\n\nmodule_dsa_tag_driver(xrs700x_netdev_ops);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

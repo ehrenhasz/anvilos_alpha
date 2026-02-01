@@ -1,0 +1,9 @@
+{
+  "module_name": "timestamp.c",
+  "hash_id": "3dfc39e7fe67756aa6bfbae105e53a0d5916ea6e23ac3095048ce93c9326dc44",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/timestamp.c",
+  "human_readable_source": " \n \n\n#include <stdio.h>\n#include <time.h>\n#include <langinfo.h>\n#include \"statcommon.h\"\n\n#ifndef _DATE_FMT\n#ifdef D_T_FMT\n#define\t_DATE_FMT D_T_FMT\n#else  \n#define\t_DATE_FMT \"%+\"\n#endif  \n#endif  \n\n \nvoid\nprint_timestamp(uint_t timestamp_fmt)\n{\n\ttime_t t = time(NULL);\n\tstatic const char *fmt = NULL;\n\n\t \n\tif (fmt == NULL)\n\t\tfmt = nl_langinfo(_DATE_FMT);\n\n\tif (timestamp_fmt == UDATE) {\n\t\t(void) printf(\"%lld\\n\", (longlong_t)t);\n\t} else if (timestamp_fmt == DDATE) {\n\t\tchar dstr[64];\n\t\tstruct tm tm;\n\t\tint len;\n\n\t\tlen = strftime(dstr, sizeof (dstr), fmt, localtime_r(&t, &tm));\n\t\tif (len > 0)\n\t\t\t(void) printf(\"%s\\n\", dstr);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

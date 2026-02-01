@@ -1,0 +1,9 @@
+{
+  "module_name": "cpu_cooling.h",
+  "hash_id": "0948fdad0b41eb45cfe0b64074d8ee24788ef7c252b3162cadd3eefc2d926347",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cpu_cooling.h",
+  "human_readable_source": " \n \n\n#ifndef __CPU_COOLING_H__\n#define __CPU_COOLING_H__\n\n#include <linux/of.h>\n#include <linux/thermal.h>\n#include <linux/cpumask.h>\n\nstruct cpufreq_policy;\n\n#ifdef CONFIG_CPU_FREQ_THERMAL\n \nstruct thermal_cooling_device *\ncpufreq_cooling_register(struct cpufreq_policy *policy);\n\n \nvoid cpufreq_cooling_unregister(struct thermal_cooling_device *cdev);\n\n \nstruct thermal_cooling_device *\nof_cpufreq_cooling_register(struct cpufreq_policy *policy);\n\n#else  \nstatic inline struct thermal_cooling_device *\ncpufreq_cooling_register(struct cpufreq_policy *policy)\n{\n\treturn ERR_PTR(-ENOSYS);\n}\n\nstatic inline\nvoid cpufreq_cooling_unregister(struct thermal_cooling_device *cdev)\n{\n\treturn;\n}\n\nstatic inline struct thermal_cooling_device *\nof_cpufreq_cooling_register(struct cpufreq_policy *policy)\n{\n\treturn NULL;\n}\n#endif  \n\nstruct cpuidle_driver;\n\n#ifdef CONFIG_CPU_IDLE_THERMAL\nvoid cpuidle_cooling_register(struct cpuidle_driver *drv);\n#else  \nstatic inline void cpuidle_cooling_register(struct cpuidle_driver *drv)\n{\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

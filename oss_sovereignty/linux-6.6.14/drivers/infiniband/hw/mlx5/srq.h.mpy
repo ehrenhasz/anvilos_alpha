@@ -1,0 +1,9 @@
+{
+  "module_name": "srq.h",
+  "hash_id": "abc78a5b8447d214830c89768bfe6d7d23e415fee916ed499222e23caba4b5f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/mlx5/srq.h",
+  "human_readable_source": " \n \n\n#ifndef MLX5_IB_SRQ_H\n#define MLX5_IB_SRQ_H\n\nenum {\n\tMLX5_SRQ_FLAG_ERR    = (1 << 0),\n\tMLX5_SRQ_FLAG_WQ_SIG = (1 << 1),\n\tMLX5_SRQ_FLAG_RNDV   = (1 << 2),\n};\n\nstruct mlx5_srq_attr {\n\tu32 type;\n\tu32 flags;\n\tu32 log_size;\n\tu32 wqe_shift;\n\tu32 log_page_size;\n\tu32 wqe_cnt;\n\tu32 srqn;\n\tu32 xrcd;\n\tu32 page_offset;\n\tu32 cqn;\n\tu32 pd;\n\tu32 lwm;\n\tu32 user_index;\n\tu64 db_record;\n\t__be64 *pas;\n\tstruct ib_umem *umem;\n\tu32 tm_log_list_size;\n\tu32 tm_next_tag;\n\tu32 tm_hw_phase_cnt;\n\tu32 tm_sw_phase_cnt;\n\tu16 uid;\n};\n\nstruct mlx5_ib_dev;\n\nstruct mlx5_core_srq {\n\tstruct mlx5_core_rsc_common common;  \n\tu32 srqn;\n\tint max;\n\tsize_t max_gs;\n\tsize_t max_avail_gather;\n\tint wqe_shift;\n\tvoid (*event)(struct mlx5_core_srq *srq, enum mlx5_event e);\n\n\tu16 uid;\n};\n\nstruct mlx5_srq_table {\n\tstruct notifier_block nb;\n\tstruct xarray array;\n};\n\nint mlx5_cmd_create_srq(struct mlx5_ib_dev *dev, struct mlx5_core_srq *srq,\n\t\t\tstruct mlx5_srq_attr *in);\nint mlx5_cmd_destroy_srq(struct mlx5_ib_dev *dev, struct mlx5_core_srq *srq);\nint mlx5_cmd_query_srq(struct mlx5_ib_dev *dev, struct mlx5_core_srq *srq,\n\t\t       struct mlx5_srq_attr *out);\nint mlx5_cmd_arm_srq(struct mlx5_ib_dev *dev, struct mlx5_core_srq *srq,\n\t\t     u16 lwm, int is_srq);\nstruct mlx5_core_srq *mlx5_cmd_get_srq(struct mlx5_ib_dev *dev, u32 srqn);\n\nint mlx5_init_srq_table(struct mlx5_ib_dev *dev);\nvoid mlx5_cleanup_srq_table(struct mlx5_ib_dev *dev);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

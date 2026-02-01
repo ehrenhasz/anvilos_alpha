@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "394cbcae3e3c2cedea33529eede87f3f0670635b269fb0ecd234fce2a84a3c26",
+  "original_prompt": "Ingested from linux-6.6.14/net/bluetooth/hidp/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig BT_HIDP\n\ttristate \"HIDP protocol support\"\n\tdepends on BT_BREDR && INPUT && HID_SUPPORT\n\tselect HID\n\thelp\n\t  HIDP (Human Interface Device Protocol) is a transport layer\n\t  for HID reports.  HIDP is required for the Bluetooth Human\n\t  Interface Device Profile.\n\n\t  Say Y here to compile HIDP support into the kernel or say M to\n\t  compile it as module (hidp).\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

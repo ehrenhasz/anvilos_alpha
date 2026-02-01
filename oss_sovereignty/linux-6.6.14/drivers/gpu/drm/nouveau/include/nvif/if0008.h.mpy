@@ -1,0 +1,9 @@
+{
+  "module_name": "if0008.h",
+  "hash_id": "4b8b857fbc52e44e6214354397a5eb00fd26531267630d60083dd5f9c98fd22b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/if0008.h",
+  "human_readable_source": "#ifndef __NVIF_IF0008_H__\n#define __NVIF_IF0008_H__\nstruct nvif_mmu_v0 {\n\t__u8  version;\n\t__u8  dmabits;\n\t__u8  heap_nr;\n\t__u8  type_nr;\n\t__u16 kind_nr;\n};\n\n#define NVIF_MMU_V0_HEAP                                                   0x00\n#define NVIF_MMU_V0_TYPE                                                   0x01\n#define NVIF_MMU_V0_KIND                                                   0x02\n\nstruct nvif_mmu_heap_v0 {\n\t__u8  version;\n\t__u8  index;\n\t__u8  pad02[6];\n\t__u64 size;\n};\n\nstruct nvif_mmu_type_v0 {\n\t__u8  version;\n\t__u8  index;\n\t__u8  heap;\n\t__u8  vram;\n\t__u8  host;\n\t__u8  comp;\n\t__u8  disp;\n\t__u8  kind;\n\t__u8  mappable;\n\t__u8  coherent;\n\t__u8  uncached;\n};\n\nstruct nvif_mmu_kind_v0 {\n\t__u8  version;\n\t__u8  kind_inv;\n\t__u16 count;\n\t__u8  data[];\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

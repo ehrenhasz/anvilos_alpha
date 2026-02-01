@@ -1,0 +1,9 @@
+{
+  "module_name": "nx-gzip-test.sh",
+  "hash_id": "fb889d2d44ee67c257a396e4369d9713163182d67e12f67a82aac9a1a14d9ba5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/nx-gzip/nx-gzip-test.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0-or-later\n\nif [[ ! -w /dev/crypto/nx-gzip ]]; then\n\techo \"Can't access /dev/crypto/nx-gzip, skipping\"\n\techo \"skip: $0\"\n\texit 4\nfi\n\nset -e\n\nfunction cleanup\n{\n\trm -f nx-tempfile*\n}\n\ntrap cleanup EXIT\n\nfunction test_sizes\n{\n\tlocal n=$1\n\tlocal fname=\"nx-tempfile.$n\"\n\n\tfor size in 4K 64K 1M 64M\n\tdo\n\t\techo \"Testing $size ($n) ...\"\n\t\tdd if=/dev/urandom of=$fname bs=$size count=1\n\t\t./gzfht_test $fname\n\t\t./gunz_test ${fname}.nx.gz\n\tdone\n}\n\necho \"Doing basic test of different sizes ...\"\ntest_sizes 0\n\necho \"Running tests in parallel ...\"\nfor i in {1..16}\ndo\n\ttest_sizes $i &\ndone\n\nwait\n\necho \"OK\"\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

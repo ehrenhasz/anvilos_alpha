@@ -1,0 +1,9 @@
+{
+  "module_name": "setjmp_x86_64.S",
+  "hash_id": "00c6805b10509e008af981167f8e62e004aebf9f9ca46e16c3077663f1648323",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/setjmp/setjmp_x86_64.S",
+  "human_readable_source": " \n\n \n\n#if defined(_KERNEL) && defined(__linux__)\n#include <linux/linkage.h>\n#endif\n\n \n#ifdef __x86_64__\n\n#define _ASM\n#include <sys/asm_linkage.h>\n\nENTRY_ALIGN(setjmp, 8)\n\tmovq\t%rsp, 0(%rdi)\n\tmovq\t%rbp, 8(%rdi)\n\tmovq\t%rbx, 16(%rdi)\n\tmovq\t%r12, 24(%rdi)\n\tmovq\t%r13, 32(%rdi)\n\tmovq\t%r14, 40(%rdi)\n\tmovq\t%r15, 48(%rdi)\n\tmovq\t0(%rsp), %rdx\t\t \n\tmovq\t%rdx, 56(%rdi)\t\t \n\txorl\t%eax, %eax\t\t \n\tRET\n\tSET_SIZE(setjmp)\n\nENTRY_ALIGN(longjmp, 8)\n\tmovq\t0(%rdi), %rsp\n\tmovq\t8(%rdi), %rbp\n\tmovq\t16(%rdi), %rbx\n\tmovq\t24(%rdi), %r12\n\tmovq\t32(%rdi), %r13\n\tmovq\t40(%rdi), %r14\n\tmovq\t48(%rdi), %r15\n\tmovq\t56(%rdi), %rdx\t\t \n\tmovq\t%rdx, 0(%rsp)\n\txorl\t%eax, %eax\n\tincl\t%eax\t\t\t \n\tRET\n\tSET_SIZE(longjmp)\n\n#ifdef __ELF__\n.section .note.GNU-stack,\"\",%progbits\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

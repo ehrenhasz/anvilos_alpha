@@ -1,0 +1,9 @@
+{
+  "module_name": "xtensa.h",
+  "hash_id": "2c4d43d130cfed1879c17e99fa9d855e9d6aa36734f470ca0851e09e374fd235",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/engine/xtensa.h",
+  "human_readable_source": " \n#ifndef __NVKM_XTENSA_H__\n#define __NVKM_XTENSA_H__\n#define nvkm_xtensa(p) container_of((p), struct nvkm_xtensa, engine)\n#include <core/engine.h>\n\nstruct nvkm_xtensa {\n\tconst struct nvkm_xtensa_func *func;\n\tu32 addr;\n\tstruct nvkm_engine engine;\n\n\tstruct nvkm_memory *gpu_fw;\n};\n\nint nvkm_xtensa_new_(const struct nvkm_xtensa_func *, struct nvkm_device *,\n\t\t     enum nvkm_subdev_type, int, bool enable, u32 addr, struct nvkm_engine **);\n\nstruct nvkm_xtensa_func {\n\tu32 fifo_val;\n\tu32 unkd28;\n\tstruct nvkm_sclass sclass[];\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

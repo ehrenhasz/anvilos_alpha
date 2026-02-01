@@ -1,0 +1,9 @@
+{
+  "module_name": "t7xx_netdev.h",
+  "hash_id": "adc88bb30db7a606a10d99705ade5b5d66772661de4ea59387a1c9b33513d2f0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wwan/t7xx/t7xx_netdev.h",
+  "human_readable_source": " \n\n#ifndef __T7XX_NETDEV_H__\n#define __T7XX_NETDEV_H__\n\n#include <linux/bits.h>\n#include <linux/netdevice.h>\n#include <linux/types.h>\n\n#include \"t7xx_hif_dpmaif.h\"\n#include \"t7xx_pci.h\"\n#include \"t7xx_state_monitor.h\"\n\n#define RXQ_NUM\t\t\t\tDPMAIF_RXQ_NUM\n#define NIC_DEV_MAX\t\t\t21\n#define NIC_DEV_DEFAULT\t\t\t2\n\n#define CCMNI_NETDEV_WDT_TO\t\t(1 * HZ)\n#define CCMNI_MTU_MAX\t\t\t3000\n#define NIC_NAPI_POLL_BUDGET\t\t128\n\nstruct t7xx_ccmni {\n\tu8\t\t\t\tindex;\n\tatomic_t\t\t\tusage;\n\tstruct net_device\t\t*dev;\n\tstruct t7xx_ccmni_ctrl\t\t*ctlb;\n};\n\nstruct t7xx_ccmni_ctrl {\n\tstruct t7xx_pci_dev\t\t*t7xx_dev;\n\tstruct dpmaif_ctrl\t\t*hif_ctrl;\n\tstruct t7xx_ccmni\t\t*ccmni_inst[NIC_DEV_MAX];\n\tstruct dpmaif_callbacks\t\tcallbacks;\n\tunsigned int\t\t\tnic_dev_num;\n\tunsigned int\t\t\tmd_sta;\n\tstruct t7xx_fsm_notifier\tmd_status_notify;\n\tbool\t\t\t\twwan_is_registered;\n\tstruct net_device\t\tdummy_dev;\n\tstruct napi_struct\t\t*napi[RXQ_NUM];\n\tatomic_t\t\t\tnapi_usr_refcnt;\n\tbool\t\t\t\tis_napi_en;\n};\n\nint t7xx_ccmni_init(struct t7xx_pci_dev *t7xx_dev);\nvoid t7xx_ccmni_exit(struct t7xx_pci_dev *t7xx_dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "user-makedev.m4",
+  "hash_id": "13c9f2f7f473f7109b080fbbd05bfc485947019296d1ea26f318e0167c9fed89",
+  "original_prompt": "Ingested from zfs-2.2.2/config/user-makedev.m4",
+  "human_readable_source": "dnl #\ndnl # glibc 2.25\ndnl #\nAC_DEFUN([ZFS_AC_CONFIG_USER_MAKEDEV_IN_SYSMACROS], [\n\tAC_MSG_CHECKING([makedev() is declared in sys/sysmacros.h])\n\tAC_COMPILE_IFELSE([AC_LANG_PROGRAM([[\n\t\t#include <sys/sysmacros.h>\n\t]], [[\n\t\tint k;\n\t\tk = makedev(0,0);\n\t]])],[\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_MAKEDEV_IN_SYSMACROS, 1,\n\t\t    [makedev() is declared in sys/sysmacros.h])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n\ndnl #\ndnl # glibc X < Y < 2.25\ndnl #\nAC_DEFUN([ZFS_AC_CONFIG_USER_MAKEDEV_IN_MKDEV], [\n\tAC_MSG_CHECKING([makedev() is declared in sys/mkdev.h])\n\tAC_COMPILE_IFELSE([AC_LANG_PROGRAM([[\n\t\t#include <sys/mkdev.h>\n\t]], [[\n\t\tint k;\n\t\tk = makedev(0,0);\n\t]])],[\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_MAKEDEV_IN_MKDEV, 1,\n\t\t    [makedev() is declared in sys/mkdev.h])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

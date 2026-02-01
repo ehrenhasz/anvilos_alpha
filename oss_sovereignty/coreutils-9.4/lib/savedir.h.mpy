@@ -1,0 +1,9 @@
+{
+  "module_name": "savedir.h",
+  "hash_id": "cc858e171f6739ec07cedcf64de1e5a025b54144e4394f6572b143a79c438aa2",
+  "original_prompt": "Ingested from coreutils-9.4/lib/savedir.h",
+  "human_readable_source": " \n\n#ifndef _GL_SAVEDIR_H\n#define _GL_SAVEDIR_H\n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <dirent.h>\n#include <stdlib.h>\n\nenum savedir_option\n  {\n    SAVEDIR_SORT_NONE,\n    SAVEDIR_SORT_NAME,\n#if D_INO_IN_DIRENT\n    SAVEDIR_SORT_INODE,\n    SAVEDIR_SORT_FASTREAD = SAVEDIR_SORT_INODE\n#else\n    SAVEDIR_SORT_FASTREAD = SAVEDIR_SORT_NONE\n#endif\n  };\n\nchar *streamsavedir (DIR *, enum savedir_option)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\nchar *savedir (char const *, enum savedir_option)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrlen-5.sh",
+  "hash_id": "d0ebf4231603b9de8f7ea77010764516da95a756e656e5893b04d6b4d9e1a776",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrlen-5.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test whether a specific GB18030 locale is installed.\n: \"${LOCALE_ZH_CN=zh_CN.GB18030}\"\nif test $LOCALE_ZH_CN = none; then\n  if test -f /usr/bin/localedef; then\n    echo \"Skipping test: no transitional chinese locale is installed\"\n  else\n    echo \"Skipping test: no transitional chinese locale is supported\"\n  fi\n  exit 77\nfi\n\nLC_ALL=$LOCALE_ZH_CN \\\n${CHECKER} ./test-mbrlen${EXEEXT} 5\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

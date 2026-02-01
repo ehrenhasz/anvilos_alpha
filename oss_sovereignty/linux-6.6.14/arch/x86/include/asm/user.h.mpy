@@ -1,0 +1,9 @@
+{
+  "module_name": "user.h",
+  "hash_id": "534b0d69d57937811a4751e76bcca546cb0f208889d3be9ba4ed41ec9a23d987",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/user.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_USER_H\n#define _ASM_X86_USER_H\n\n#ifdef CONFIG_X86_32\n# include <asm/user_32.h>\n#else\n# include <asm/user_64.h>\n#endif\n\n#include <asm/types.h>\n\nstruct user_ymmh_regs {\n\t \n\t__u32 ymmh_space[64];\n};\n\nstruct user_xstate_header {\n\t__u64 xfeatures;\n\t__u64 reserved1[2];\n\t__u64 reserved2[5];\n};\n\n \n#define USER_XSTATE_FX_SW_WORDS 6\n#define USER_XSTATE_XCR0_WORD\t0\n\nstruct user_xstateregs {\n\tstruct {\n\t\t__u64 fpx_space[58];\n\t\t__u64 xstate_fx_sw[USER_XSTATE_FX_SW_WORDS];\n\t} i387;\n\tstruct user_xstate_header header;\n\tstruct user_ymmh_regs ymmh;\n\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sound.h",
+  "hash_id": "e95a2a41f1137c43d6d2a2d6dfbbb5f09fa0d73915e7232d816d7f63b2770df3",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/sound.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_SOUND_H\n#define _UAPI_LINUX_SOUND_H\n\n \n\n#include <linux/fs.h>\n\n#define SND_DEV_CTL\t\t0\t \n#define SND_DEV_SEQ\t\t1\t \n#define SND_DEV_MIDIN\t\t2\t \n#define SND_DEV_DSP\t\t3\t \n#define SND_DEV_AUDIO\t\t4\t \n#define SND_DEV_DSP16\t\t5\t \n \t \n#define SND_DEV_UNUSED\t\t6\n#define SND_DEV_AWFM\t\t7\t \n#define SND_DEV_SEQ2\t\t8\t \n \t \n \n#define SND_DEV_SYNTH\t\t9\t \n#define SND_DEV_DMFM\t\t10\t \n#define SND_DEV_UNKNOWN11\t11\n#define SND_DEV_ADSP\t\t12\t \n#define SND_DEV_AMIDI\t\t13\t \n#define SND_DEV_ADMMIDI\t\t14\t \n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

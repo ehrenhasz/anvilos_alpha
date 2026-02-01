@@ -1,0 +1,9 @@
+{
+  "module_name": "vfio_ccw_cp.h",
+  "hash_id": "6eba15f7eafc4a8fb3bcc995d2dc3cd6fe370f980b586d6113d16df80f029f07",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/cio/vfio_ccw_cp.h",
+  "human_readable_source": " \n \n\n#ifndef _VFIO_CCW_CP_H_\n#define _VFIO_CCW_CP_H_\n\n#include <asm/cio.h>\n#include <asm/scsw.h>\n\n#include \"orb.h\"\n#include \"vfio_ccw_trace.h\"\n\n \n#define CCWCHAIN_LEN_MAX\t256\n\n \nstruct channel_program {\n\tstruct list_head ccwchain_list;\n\tunion orb orb;\n\tbool initialized;\n\tstruct ccw1 *guest_cp;\n};\n\nint cp_init(struct channel_program *cp, union orb *orb);\nvoid cp_free(struct channel_program *cp);\nint cp_prefetch(struct channel_program *cp);\nunion orb *cp_get_orb(struct channel_program *cp, struct subchannel *sch);\nvoid cp_update_scsw(struct channel_program *cp, union scsw *scsw);\nbool cp_iova_pinned(struct channel_program *cp, u64 iova, u64 length);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

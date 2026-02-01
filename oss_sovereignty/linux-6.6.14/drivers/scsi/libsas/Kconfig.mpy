@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "98b6736d5221af6eed4ebd2fbc6296a6e0fe25f1323bfd7791ef74fb08c24670",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/libsas/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Kernel configuration file for the SAS Class\n#\n# Copyright (C) 2005 Adaptec, Inc.  All rights reserved.\n# Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>\n#\n\nconfig SCSI_SAS_LIBSAS\n\ttristate \"SAS Domain Transport Attributes\"\n\tdepends on SCSI\n\tselect SCSI_SAS_ATTRS\n\thelp\n\t  This provides transport specific helpers for SAS drivers which\n\t  use the domain device construct (like the aic94xxx).\n\nconfig SCSI_SAS_ATA\n\tbool \"ATA support for libsas (requires libata)\"\n\tdepends on SCSI_SAS_LIBSAS\n\tdepends on ATA = y || ATA = SCSI_SAS_LIBSAS\n\tselect SATA_HOST\n\thelp\n\t\tBuilds in ATA support into libsas.  Will necessitate\n\t\tthe loading of libata along with libsas.\n\nconfig SCSI_SAS_HOST_SMP\n\tbool \"Support for SMP interpretation for SAS hosts\"\n\tdefault y\n\tdepends on SCSI_SAS_LIBSAS\n\thelp\n\t\tAllows sas hosts to receive SMP frames.  Selecting this\n\t\toption builds an SMP interpreter into libsas.  Say\n\t\tN here if you want to save the few kb this consumes.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

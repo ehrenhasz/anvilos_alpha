@@ -1,0 +1,9 @@
+{
+  "module_name": "soc.h",
+  "hash_id": "bcbb1a939a060c2029fc90b840cdc0bf235fddf383a1e15d874915f306031361",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/include/soc.h",
+  "human_readable_source": "\n \n\n#ifndef\t_BRCM_SOC_H\n#define\t_BRCM_SOC_H\n\n#define SI_ENUM_BASE_DEFAULT\t0x18000000\n\n \n#define\tSICF_BIST_EN\t\t0x8000\n#define\tSICF_PME_EN\t\t0x4000\n#define\tSICF_CORE_BITS\t\t0x3ffc\n#define\tSICF_FGC\t\t0x0002\n#define\tSICF_CLOCK_EN\t\t0x0001\n\n \n#define\tSISF_BIST_DONE\t\t0x8000\n#define\tSISF_BIST_ERROR\t\t0x4000\n#define\tSISF_GATED_CLK\t\t0x2000\n#define\tSISF_DMA64\t\t0x1000\n#define\tSISF_CORE_BITS\t\t0x0fff\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

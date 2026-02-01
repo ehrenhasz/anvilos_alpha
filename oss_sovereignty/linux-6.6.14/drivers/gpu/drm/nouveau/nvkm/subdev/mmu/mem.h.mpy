@@ -1,0 +1,9 @@
+{
+  "module_name": "mem.h",
+  "hash_id": "2c223524bd1c7740ef0d522bbf1dfbdc1fb4be45cf6f5c313cde984c8af4f667",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/mem.h",
+  "human_readable_source": "#ifndef __NVKM_MEM_H__\n#define __NVKM_MEM_H__\n#include \"priv.h\"\n\nint nvkm_mem_new_type(struct nvkm_mmu *, int type, u8 page, u64 size,\n\t\t      void *argv, u32 argc, struct nvkm_memory **);\nint nvkm_mem_map_host(struct nvkm_memory *, void **pmap);\n\nint nv04_mem_new(struct nvkm_mmu *, int, u8, u64, void *, u32,\n\t\t struct nvkm_memory **);\nint nv04_mem_map(struct nvkm_mmu *, struct nvkm_memory *, void *, u32,\n\t\t u64 *, u64 *, struct nvkm_vma **);\n\nint nv50_mem_new(struct nvkm_mmu *, int, u8, u64, void *, u32,\n\t\t struct nvkm_memory **);\nint nv50_mem_map(struct nvkm_mmu *, struct nvkm_memory *, void *, u32,\n\t\t u64 *, u64 *, struct nvkm_vma **);\n\nint gf100_mem_new(struct nvkm_mmu *, int, u8, u64, void *, u32,\n\t\t  struct nvkm_memory **);\nint gf100_mem_map(struct nvkm_mmu *, struct nvkm_memory *, void *, u32,\n\t\t  u64 *, u64 *, struct nvkm_vma **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

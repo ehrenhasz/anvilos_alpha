@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sleep.c",
+  "hash_id": "3704750f43e1be781810657be63ef254621d52583d624b06de63a0418e45cd48",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sleep.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <unistd.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (sleep, unsigned int, (unsigned int));\n\n#include <signal.h>\n\n#include \"macros.h\"\n\n#if HAVE_DECL_ALARM\nstatic void\nhandle_alarm (int sig)\n{\n  if (sig != SIGALRM)\n    _exit (1);\n}\n#endif\n\nint\nmain (void)\n{\n  ASSERT (sleep (1) <= 1);\n\n  ASSERT (sleep (0) == 0);\n\n#if HAVE_DECL_ALARM\n  {\n    const unsigned int pentecost = 50 * 24 * 60 * 60;  \n    unsigned int remaining;\n    signal (SIGALRM, handle_alarm);\n    alarm (1);\n    remaining = sleep (pentecost);\n    ASSERT (pentecost - 10 < remaining && remaining <= pentecost);\n  }\n#endif\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

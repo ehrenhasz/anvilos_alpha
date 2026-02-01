@@ -1,0 +1,9 @@
+{
+  "module_name": "openat-safer.c",
+  "hash_id": "69008a24371c2b74756522afcbcd7080eed347c2048e0c83410a27cd411afee8",
+  "original_prompt": "Ingested from coreutils-9.4/lib/openat-safer.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"fcntl-safer.h\"\n\n#include <fcntl.h>\n#include <stdarg.h>\n#include \"unistd-safer.h\"\n\nint\nopenat_safer (int fd, char const *file, int flags, ...)\n{\n  mode_t mode = 0;\n\n  if (flags & O_CREAT)\n    {\n      va_list ap;\n      va_start (ap, flags);\n\n       \n      mode = va_arg (ap, PROMOTED_MODE_T);\n\n      va_end (ap);\n    }\n\n  return fd_safer (openat (fd, file, flags, mode));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

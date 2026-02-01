@@ -1,0 +1,9 @@
+{
+  "module_name": "fimc-is-sensor.c",
+  "hash_id": "16d0d7d0f586431317f40f380ded353631ffc1a87ee263a7fceab202dbc1b4e6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/exynos4-is/fimc-is-sensor.c",
+  "human_readable_source": "\n \n\n#include \"fimc-is-sensor.h\"\n\nstatic const struct sensor_drv_data s5k6a3_drvdata = {\n\t.id\t\t= FIMC_IS_SENSOR_ID_S5K6A3,\n\t.open_timeout\t= S5K6A3_OPEN_TIMEOUT,\n};\n\nstatic const struct of_device_id fimc_is_sensor_of_ids[] = {\n\t{\n\t\t.compatible\t= \"samsung,s5k6a3\",\n\t\t.data\t\t= &s5k6a3_drvdata,\n\t},\n\t{  }\n};\n\nconst struct sensor_drv_data *fimc_is_sensor_get_drvdata(\n\t\t\tstruct device_node *node)\n{\n\tconst struct of_device_id *of_id;\n\n\tof_id = of_match_node(fimc_is_sensor_of_ids, node);\n\treturn of_id ? of_id->data : NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

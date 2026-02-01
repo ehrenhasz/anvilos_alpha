@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_virtchnl_allowlist.h",
+  "hash_id": "c30f9158b43780085550c9687ba57a82582c185f8258ba91fdd73c032ca7f9f0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_virtchnl_allowlist.h",
+  "human_readable_source": " \n \n\n#ifndef _ICE_VIRTCHNL_ALLOWLIST_H_\n#define _ICE_VIRTCHNL_ALLOWLIST_H_\n#include \"ice.h\"\n\nbool ice_vc_is_opcode_allowed(struct ice_vf *vf, u32 opcode);\n\nvoid ice_vc_set_default_allowlist(struct ice_vf *vf);\nvoid ice_vc_set_working_allowlist(struct ice_vf *vf);\nvoid ice_vc_set_caps_allowlist(struct ice_vf *vf);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

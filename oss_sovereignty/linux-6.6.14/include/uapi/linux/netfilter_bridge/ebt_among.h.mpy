@@ -1,0 +1,9 @@
+{
+  "module_name": "ebt_among.h",
+  "hash_id": "f7986931bf941c2042860ba787693f9f9ccb09e2303ff6ce35e60f8e82cb28f5",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_bridge/ebt_among.h",
+  "human_readable_source": " \n#ifndef __LINUX_BRIDGE_EBT_AMONG_H\n#define __LINUX_BRIDGE_EBT_AMONG_H\n\n#include <linux/types.h>\n\n#define EBT_AMONG_DST 0x01\n#define EBT_AMONG_SRC 0x02\n\n \n\nstruct ebt_mac_wormhash_tuple {\n\t__u32 cmp[2];\n\t__be32 ip;\n};\n\nstruct ebt_mac_wormhash {\n\tint table[257];\n\tint poolsize;\n\tstruct ebt_mac_wormhash_tuple pool[];\n};\n\n#define ebt_mac_wormhash_size(x) ((x) ? sizeof(struct ebt_mac_wormhash) \\\n\t\t+ (x)->poolsize * sizeof(struct ebt_mac_wormhash_tuple) : 0)\n\nstruct ebt_among_info {\n\tint wh_dst_ofs;\n\tint wh_src_ofs;\n\tint bitmask;\n};\n\n#define EBT_AMONG_DST_NEG 0x1\n#define EBT_AMONG_SRC_NEG 0x2\n\n#define ebt_among_wh_dst(x) ((x)->wh_dst_ofs ? \\\n\t(struct ebt_mac_wormhash*)((char*)(x) + (x)->wh_dst_ofs) : NULL)\n#define ebt_among_wh_src(x) ((x)->wh_src_ofs ? \\\n\t(struct ebt_mac_wormhash*)((char*)(x) + (x)->wh_src_ofs) : NULL)\n\n#define EBT_AMONG_MATCH \"among\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

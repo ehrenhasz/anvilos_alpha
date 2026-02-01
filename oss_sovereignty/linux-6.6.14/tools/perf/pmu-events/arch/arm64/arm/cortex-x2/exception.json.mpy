@@ -1,0 +1,9 @@
+{
+  "module_name": "exception.json",
+  "hash_id": "ecd02e18980b503765f873dbc617fb48a6f072bf6868f7d64d60e5d14ddb62bf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-x2/exception.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"EXC_TAKEN\"\n    },\n    {\n        \"ArchStdEvent\": \"MEMORY_ERROR\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_UNDEF\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_SVC\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_PABORT\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_DABORT\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_IRQ\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_FIQ\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_SMC\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_HVC\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_TRAP_PABORT\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_TRAP_DABORT\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_TRAP_OTHER\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_TRAP_IRQ\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_TRAP_FIQ\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

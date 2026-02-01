@@ -1,0 +1,9 @@
+{
+  "module_name": "ocfs2_nodemanager.h",
+  "hash_id": "73d3adb578e192efbb51788e520cf7262d36d509c03062fcee79b65f307d27e7",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/cluster/ocfs2_nodemanager.h",
+  "human_readable_source": " \n \n\n#ifndef _OCFS2_NODEMANAGER_H\n#define _OCFS2_NODEMANAGER_H\n\n#define O2NM_API_VERSION\t5\n\n#define O2NM_MAX_NODES\t\t255\n#define O2NM_INVALID_NODE_NUM\t255\n\n \n#define O2NM_MAX_NAME_LEN        64    \n\n \n#define O2NM_MAX_REGIONS\t32\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

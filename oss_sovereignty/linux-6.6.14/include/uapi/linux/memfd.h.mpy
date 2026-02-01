@@ -1,0 +1,9 @@
+{
+  "module_name": "memfd.h",
+  "hash_id": "dd8b2a1288fc79c68d17d7570726dc1be12f8951fc591139ef76f16da743e3ae",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/memfd.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_MEMFD_H\n#define _UAPI_LINUX_MEMFD_H\n\n#include <asm-generic/hugetlb_encode.h>\n\n \n#define MFD_CLOEXEC\t\t0x0001U\n#define MFD_ALLOW_SEALING\t0x0002U\n#define MFD_HUGETLB\t\t0x0004U\n \n#define MFD_NOEXEC_SEAL\t\t0x0008U\n \n#define MFD_EXEC\t\t0x0010U\n\n \n#define MFD_HUGE_SHIFT\tHUGETLB_FLAG_ENCODE_SHIFT\n#define MFD_HUGE_MASK\tHUGETLB_FLAG_ENCODE_MASK\n\n#define MFD_HUGE_64KB\tHUGETLB_FLAG_ENCODE_64KB\n#define MFD_HUGE_512KB\tHUGETLB_FLAG_ENCODE_512KB\n#define MFD_HUGE_1MB\tHUGETLB_FLAG_ENCODE_1MB\n#define MFD_HUGE_2MB\tHUGETLB_FLAG_ENCODE_2MB\n#define MFD_HUGE_8MB\tHUGETLB_FLAG_ENCODE_8MB\n#define MFD_HUGE_16MB\tHUGETLB_FLAG_ENCODE_16MB\n#define MFD_HUGE_32MB\tHUGETLB_FLAG_ENCODE_32MB\n#define MFD_HUGE_256MB\tHUGETLB_FLAG_ENCODE_256MB\n#define MFD_HUGE_512MB\tHUGETLB_FLAG_ENCODE_512MB\n#define MFD_HUGE_1GB\tHUGETLB_FLAG_ENCODE_1GB\n#define MFD_HUGE_2GB\tHUGETLB_FLAG_ENCODE_2GB\n#define MFD_HUGE_16GB\tHUGETLB_FLAG_ENCODE_16GB\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

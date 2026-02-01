@@ -1,0 +1,9 @@
+{
+  "module_name": "sysrq_64.c",
+  "hash_id": "51e5b2df48854689da3785b5ebbb77f215eb803ef1f84e5a18ab8808b6707841",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/sysrq_64.c",
+  "human_readable_source": " \n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/sched.h>\n#include <linux/sched/debug.h>\n#include <linux/utsname.h>\n#include <asm/current.h>\n#include <asm/ptrace.h>\n#include <asm/sysrq.h>\n\nvoid show_regs(struct pt_regs *regs)\n{\n\tprintk(\"\\n\");\n\tprint_modules();\n\tprintk(KERN_INFO \"Pid: %d, comm: %.20s %s %s\\n\", task_pid_nr(current),\n\t\tcurrent->comm, print_tainted(), init_utsname()->release);\n\tprintk(KERN_INFO \"RIP: %04lx:%pS\\n\", PT_REGS_CS(regs) & 0xffff,\n\t       (void *)PT_REGS_IP(regs));\n\tprintk(KERN_INFO \"RSP: %016lx  EFLAGS: %08lx\\n\", PT_REGS_SP(regs),\n\t       PT_REGS_EFLAGS(regs));\n\tprintk(KERN_INFO \"RAX: %016lx RBX: %016lx RCX: %016lx\\n\",\n\t       PT_REGS_AX(regs), PT_REGS_BX(regs), PT_REGS_CX(regs));\n\tprintk(KERN_INFO \"RDX: %016lx RSI: %016lx RDI: %016lx\\n\",\n\t       PT_REGS_DX(regs), PT_REGS_SI(regs), PT_REGS_DI(regs));\n\tprintk(KERN_INFO \"RBP: %016lx R08: %016lx R09: %016lx\\n\",\n\t       PT_REGS_BP(regs), PT_REGS_R8(regs), PT_REGS_R9(regs));\n\tprintk(KERN_INFO \"R10: %016lx R11: %016lx R12: %016lx\\n\",\n\t       PT_REGS_R10(regs), PT_REGS_R11(regs), PT_REGS_R12(regs));\n\tprintk(KERN_INFO \"R13: %016lx R14: %016lx R15: %016lx\\n\",\n\t       PT_REGS_R13(regs), PT_REGS_R14(regs), PT_REGS_R15(regs));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

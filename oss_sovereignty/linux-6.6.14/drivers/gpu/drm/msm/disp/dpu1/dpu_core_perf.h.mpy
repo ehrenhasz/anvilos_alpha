@@ -1,0 +1,9 @@
+{
+  "module_name": "dpu_core_perf.h",
+  "hash_id": "f06153edad682cf9af1cc0e7210d4241af982b49679e7c9597ca1cc363009a04",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/disp/dpu1/dpu_core_perf.h",
+  "human_readable_source": " \n \n\n#ifndef _DPU_CORE_PERF_H_\n#define _DPU_CORE_PERF_H_\n\n#include <linux/types.h>\n#include <linux/dcache.h>\n#include <linux/mutex.h>\n#include <drm/drm_crtc.h>\n\n#include \"dpu_hw_catalog.h\"\n\n \nstruct dpu_core_perf_params {\n\tu64 max_per_pipe_ib;\n\tu64 bw_ctl;\n\tu64 core_clk_rate;\n};\n\n \nstruct dpu_core_perf_tune {\n\tu32 mode;\n};\n\n \nstruct dpu_core_perf {\n\tconst struct dpu_perf_cfg *perf_cfg;\n\tu64 core_clk_rate;\n\tu64 max_core_clk_rate;\n\tstruct dpu_core_perf_tune perf_tune;\n\tu32 enable_bw_release;\n\tu64 fix_core_clk_rate;\n\tu64 fix_core_ib_vote;\n\tu64 fix_core_ab_vote;\n};\n\n \nint dpu_core_perf_crtc_check(struct drm_crtc *crtc,\n\t\tstruct drm_crtc_state *state);\n\n \nint dpu_core_perf_crtc_update(struct drm_crtc *crtc,\n\t\t\t      int params_changed);\n\n \nvoid dpu_core_perf_crtc_release_bw(struct drm_crtc *crtc);\n\n \nint dpu_core_perf_init(struct dpu_core_perf *perf,\n\t\tconst struct dpu_perf_cfg *perf_cfg,\n\t\tunsigned long max_core_clk_rate);\n\nstruct dpu_kms;\n\n \nint dpu_core_perf_debugfs_init(struct dpu_kms *dpu_kms, struct dentry *parent);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

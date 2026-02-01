@@ -1,0 +1,9 @@
+{
+  "module_name": "timekeeping_debug.c",
+  "hash_id": "c7e60eb9953fad63941640d17f5cbc890ba6d3a8556c77c6f71814ae64f4f377",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/time/timekeeping_debug.c",
+  "human_readable_source": "\n \n\n#include <linux/debugfs.h>\n#include <linux/err.h>\n#include <linux/init.h>\n#include <linux/kernel.h>\n#include <linux/seq_file.h>\n#include <linux/suspend.h>\n#include <linux/time.h>\n\n#include \"timekeeping_internal.h\"\n\n#define NUM_BINS 32\n\nstatic unsigned int sleep_time_bin[NUM_BINS] = {0};\n\nstatic int tk_debug_sleep_time_show(struct seq_file *s, void *data)\n{\n\tunsigned int bin;\n\tseq_puts(s, \"      time (secs)        count\\n\");\n\tseq_puts(s, \"------------------------------\\n\");\n\tfor (bin = 0; bin < 32; bin++) {\n\t\tif (sleep_time_bin[bin] == 0)\n\t\t\tcontinue;\n\t\tseq_printf(s, \"%10u - %-10u %4u\\n\",\n\t\t\tbin ? 1 << (bin - 1) : 0, 1 << bin,\n\t\t\t\tsleep_time_bin[bin]);\n\t}\n\treturn 0;\n}\nDEFINE_SHOW_ATTRIBUTE(tk_debug_sleep_time);\n\nstatic int __init tk_debug_sleep_time_init(void)\n{\n\tdebugfs_create_file(\"sleep_time\", 0444, NULL, NULL,\n\t\t\t    &tk_debug_sleep_time_fops);\n\treturn 0;\n}\nlate_initcall(tk_debug_sleep_time_init);\n\nvoid tk_debug_account_sleep_time(const struct timespec64 *t)\n{\n\t \n\tint bin = min(fls(t->tv_sec), NUM_BINS-1);\n\n\tsleep_time_bin[bin]++;\n\tpm_deferred_pr_dbg(\"Timekeeping suspended for %lld.%03lu seconds\\n\",\n\t\t\t   (s64)t->tv_sec, t->tv_nsec / NSEC_PER_MSEC);\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

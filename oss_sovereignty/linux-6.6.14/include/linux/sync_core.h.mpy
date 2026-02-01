@@ -1,0 +1,9 @@
+{
+  "module_name": "sync_core.h",
+  "hash_id": "933cb87a459c66ae65687e91374b908005ccbf48ba3f75bbc8d6bf05e3386dfd",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sync_core.h",
+  "human_readable_source": " \n#ifndef _LINUX_SYNC_CORE_H\n#define _LINUX_SYNC_CORE_H\n\n#ifdef CONFIG_ARCH_HAS_SYNC_CORE_BEFORE_USERMODE\n#include <asm/sync_core.h>\n#else\n \nstatic inline void sync_core_before_usermode(void)\n{\n}\n#endif\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

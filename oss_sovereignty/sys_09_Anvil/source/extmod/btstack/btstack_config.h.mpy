@@ -1,0 +1,9 @@
+{
+  "module_name": "btstack_config.h",
+  "hash_id": "b802c61238da01874151048626be9bc2113d42f6d5b01429b8f0716ec2856236",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/btstack/btstack_config.h",
+  "human_readable_source": "#ifndef MICROPY_INCLUDED_EXTMOD_BTSTACK_BTSTACK_CONFIG_H\n#define MICROPY_INCLUDED_EXTMOD_BTSTACK_BTSTACK_CONFIG_H\n\n#include MICROPY_BLUETOOTH_BTSTACK_CONFIG_FILE\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

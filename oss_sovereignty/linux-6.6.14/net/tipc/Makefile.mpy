@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7847e38b0032e7e75263f96e41e6ae1edb91c2a9717fbe3a2a6880b8bc3d3c56",
+  "original_prompt": "Ingested from linux-6.6.14/net/tipc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux TIPC layer\n#\n\nobj-$(CONFIG_TIPC) := tipc.o\n\ntipc-y\t+= addr.o bcast.o bearer.o \\\n\t   core.o link.o discover.o msg.o  \\\n\t   name_distr.o  subscr.o monitor.o name_table.o net.o  \\\n\t   netlink.o netlink_compat.o node.o socket.o eth_media.o \\\n\t   topsrv.o group.o trace.o\n\nCFLAGS_trace.o += -I$(src)\n\ntipc-$(CONFIG_TIPC_MEDIA_UDP)\t+= udp_media.o\ntipc-$(CONFIG_TIPC_MEDIA_IB)\t+= ib_media.o\ntipc-$(CONFIG_SYSCTL)\t\t+= sysctl.o\ntipc-$(CONFIG_TIPC_CRYPTO)\t+= crypto.o\n\n\nobj-$(CONFIG_TIPC_DIAG)\t+= diag.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

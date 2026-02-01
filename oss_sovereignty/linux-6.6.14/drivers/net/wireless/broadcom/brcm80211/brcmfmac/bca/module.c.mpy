@@ -1,0 +1,9 @@
+{
+  "module_name": "module.c",
+  "hash_id": "7fd7400727c3949f11f984ffa98e4f22c52c7ef530ce40133ae1528e03a61a28",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bca/module.c",
+  "human_readable_source": "\n \n#include <linux/module.h>\n#include <bus.h>\n#include <core.h>\n#include <fwvid.h>\n\n#include \"vops.h\"\n\nstatic int __init brcmf_bca_init(void)\n{\n\treturn brcmf_fwvid_register_vendor(BRCMF_FWVENDOR_BCA, THIS_MODULE,\n\t\t\t\t\t   &brcmf_bca_ops);\n}\n\nstatic void __exit brcmf_bca_exit(void)\n{\n\tbrcmf_fwvid_unregister_vendor(BRCMF_FWVENDOR_BCA, THIS_MODULE);\n}\n\nMODULE_LICENSE(\"Dual BSD/GPL\");\nMODULE_IMPORT_NS(BRCMFMAC);\n\nmodule_init(brcmf_bca_init);\nmodule_exit(brcmf_bca_exit);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "renesas-ceu.h",
+  "hash_id": "2b9bfa32d48f6530ed21c758b3a20041e2445aedff2a53f9cd58aae507869226",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/drv-intf/renesas-ceu.h",
+  "human_readable_source": "\n \n\n#ifndef __MEDIA_DRV_INTF_RENESAS_CEU_H__\n#define __MEDIA_DRV_INTF_RENESAS_CEU_H__\n\n#define CEU_MAX_SUBDEVS\t\t2\n\nstruct ceu_async_subdev {\n\tunsigned long flags;\n\tunsigned char bus_width;\n\tunsigned char bus_shift;\n\tunsigned int i2c_adapter_id;\n\tunsigned int i2c_address;\n};\n\nstruct ceu_platform_data {\n\tunsigned int num_subdevs;\n\tstruct ceu_async_subdev subdevs[CEU_MAX_SUBDEVS];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

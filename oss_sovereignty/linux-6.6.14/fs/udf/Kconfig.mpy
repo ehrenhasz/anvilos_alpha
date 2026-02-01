@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "85679f64ee09a5e32eda84a3462bb1fda3418c2db36d92e5a1f8f2f17deb4d9b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/udf/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig UDF_FS\n\ttristate \"UDF file system support\"\n\tselect BUFFER_HEAD\n\tselect CRC_ITU_T\n\tselect NLS\n\tselect LEGACY_DIRECT_IO\n\thelp\n\t  This is a file system used on some CD-ROMs and DVDs. Since the\n\t  file system is supported by multiple operating systems and is more\n\t  compatible with standard unix file systems, it is also suitable for\n\t  removable USB disks. Say Y if you intend to mount DVD discs or CDRW's\n\t  written in packet mode, or if you want to use UDF for removable USB\n\t  disks. Please read <file:Documentation/filesystems/udf.rst>.\n\n\t  To compile this file system support as a module, choose M here: the\n\t  module will be called udf.\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

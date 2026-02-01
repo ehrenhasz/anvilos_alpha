@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_sample.h",
+  "hash_id": "1e06903cbc79fd8073227cac8ba7eb8a5e0aaf3c3b175ae51654fe69bf33f059",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_act/tc_sample.h",
+  "human_readable_source": " \n#ifndef __LINUX_TC_SAMPLE_H\n#define __LINUX_TC_SAMPLE_H\n\n#include <linux/types.h>\n#include <linux/pkt_cls.h>\n#include <linux/if_ether.h>\n\nstruct tc_sample {\n\ttc_gen;\n};\n\nenum {\n\tTCA_SAMPLE_UNSPEC,\n\tTCA_SAMPLE_TM,\n\tTCA_SAMPLE_PARMS,\n\tTCA_SAMPLE_RATE,\n\tTCA_SAMPLE_TRUNC_SIZE,\n\tTCA_SAMPLE_PSAMPLE_GROUP,\n\tTCA_SAMPLE_PAD,\n\t__TCA_SAMPLE_MAX\n};\n#define TCA_SAMPLE_MAX (__TCA_SAMPLE_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

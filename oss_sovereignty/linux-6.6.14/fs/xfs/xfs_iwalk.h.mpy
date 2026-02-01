@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_iwalk.h",
+  "hash_id": "5ffb2cad4b5561ff3aa9847ea7322b496b41f7e4aa39f6de21bccdd63d281705",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_iwalk.h",
+  "human_readable_source": " \n \n#ifndef __XFS_IWALK_H__\n#define __XFS_IWALK_H__\n\n \n\n \ntypedef int (*xfs_iwalk_fn)(struct xfs_mount *mp, struct xfs_trans *tp,\n\t\t\t    xfs_ino_t ino, void *data);\n\nint xfs_iwalk(struct xfs_mount *mp, struct xfs_trans *tp, xfs_ino_t startino,\n\t\tunsigned int flags, xfs_iwalk_fn iwalk_fn,\n\t\tunsigned int inode_records, void *data);\nint xfs_iwalk_threaded(struct xfs_mount *mp, xfs_ino_t startino,\n\t\tunsigned int flags, xfs_iwalk_fn iwalk_fn,\n\t\tunsigned int inode_records, bool poll, void *data);\n\n \n#define XFS_IWALK_SAME_AG\t(1U << 0)\n\n#define XFS_IWALK_FLAGS_ALL\t(XFS_IWALK_SAME_AG)\n\n \ntypedef int (*xfs_inobt_walk_fn)(struct xfs_mount *mp, struct xfs_trans *tp,\n\t\t\t\t xfs_agnumber_t agno,\n\t\t\t\t const struct xfs_inobt_rec_incore *irec,\n\t\t\t\t void *data);\n\nint xfs_inobt_walk(struct xfs_mount *mp, struct xfs_trans *tp,\n\t\txfs_ino_t startino, unsigned int flags,\n\t\txfs_inobt_walk_fn inobt_walk_fn, unsigned int inobt_records,\n\t\tvoid *data);\n\n \n#define XFS_INOBT_WALK_SAME_AG\t(XFS_IWALK_SAME_AG)\n\n#define XFS_INOBT_WALK_FLAGS_ALL (XFS_INOBT_WALK_SAME_AG)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

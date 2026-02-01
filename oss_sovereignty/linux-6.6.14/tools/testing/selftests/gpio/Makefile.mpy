@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fdb14de7627d5177c959aeaeb29ddf241f9eed96ba4795608b7d162a894f8b5a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/gpio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nTEST_PROGS := gpio-mockup.sh gpio-sim.sh\nTEST_FILES := gpio-mockup-sysfs.sh\nTEST_GEN_PROGS_EXTENDED := gpio-mockup-cdev gpio-chip-info gpio-line-name\nCFLAGS += -O2 -g -Wall $(KHDR_INCLUDES)\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "g_uvc.h",
+  "hash_id": "a7f61cdf5a7df047612c15a9d4c304159e2782be222d9cf0becf5e5a2d6b0e3c",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/usb/g_uvc.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_USB_G_UVC_H\n#define __LINUX_USB_G_UVC_H\n\n#include <linux/ioctl.h>\n#include <linux/types.h>\n#include <linux/usb/ch9.h>\n\n#define UVC_EVENT_FIRST\t\t\t(V4L2_EVENT_PRIVATE_START + 0)\n#define UVC_EVENT_CONNECT\t\t(V4L2_EVENT_PRIVATE_START + 0)\n#define UVC_EVENT_DISCONNECT\t\t(V4L2_EVENT_PRIVATE_START + 1)\n#define UVC_EVENT_STREAMON\t\t(V4L2_EVENT_PRIVATE_START + 2)\n#define UVC_EVENT_STREAMOFF\t\t(V4L2_EVENT_PRIVATE_START + 3)\n#define UVC_EVENT_SETUP\t\t\t(V4L2_EVENT_PRIVATE_START + 4)\n#define UVC_EVENT_DATA\t\t\t(V4L2_EVENT_PRIVATE_START + 5)\n#define UVC_EVENT_LAST\t\t\t(V4L2_EVENT_PRIVATE_START + 5)\n\n#define UVC_STRING_CONTROL_IDX\t\t\t0\n#define UVC_STRING_STREAMING_IDX\t\t1\n\nstruct uvc_request_data {\n\t__s32 length;\n\t__u8 data[60];\n};\n\nstruct uvc_event {\n\tunion {\n\t\tenum usb_device_speed speed;\n\t\tstruct usb_ctrlrequest req;\n\t\tstruct uvc_request_data data;\n\t};\n};\n\n#define UVCIOC_SEND_RESPONSE\t\t_IOW('U', 1, struct uvc_request_data)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

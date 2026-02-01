@@ -1,0 +1,9 @@
+{
+  "module_name": "branch.json",
+  "hash_id": "ebd46c1b2f80a781244a9eca16476ebfdd0fcb4f6e1d36acf127e5c93919a3f6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/ampere/ampereone/branch.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"BR_IMMED_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"BR_RETURN_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"BR_INDIRECT_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"BR_MIS_PRED\"\n    },\n    {\n        \"ArchStdEvent\": \"BR_PRED\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

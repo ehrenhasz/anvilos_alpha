@@ -1,0 +1,9 @@
+{
+  "module_name": "rt2x00dump.h",
+  "hash_id": "610d2ac60f762a8adec87a8644fc8493218b69c5651891958423a210190a56fa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ralink/rt2x00/rt2x00dump.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef RT2X00DUMP_H\n#define RT2X00DUMP_H\n\n \n\n \nenum rt2x00_dump_type {\n\tDUMP_FRAME_RXDONE = 1,\n\tDUMP_FRAME_TX = 2,\n\tDUMP_FRAME_TXDONE = 3,\n\tDUMP_FRAME_BEACON = 4,\n};\n\n \nstruct rt2x00dump_hdr {\n\t__le32 version;\n#define DUMP_HEADER_VERSION\t3\n\n\t__le32 header_length;\n\t__le32 desc_length;\n\t__le32 data_length;\n\n\t__le16 chip_rt;\n\t__le16 chip_rf;\n\t__le16 chip_rev;\n\n\t__le16 type;\n\t__u8 queue_index;\n\t__u8 entry_index;\n\n\t__le32 timestamp_sec;\n\t__le32 timestamp_usec;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

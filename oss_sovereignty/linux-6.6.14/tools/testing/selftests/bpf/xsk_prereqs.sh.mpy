@@ -1,0 +1,9 @@
+{
+  "module_name": "xsk_prereqs.sh",
+  "hash_id": "849708545855f382519eb8ea894ce1c75a1b87ea7504f16fc4c117e199864ee7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/xsk_prereqs.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n# Copyright(c) 2020 Intel Corporation.\n\nksft_pass=0\nksft_fail=1\nksft_xfail=2\nksft_xpass=3\nksft_skip=4\n\nXSKOBJ=xskxceiver\n\nvalidate_root_exec()\n{\n\tmsg=\"skip all tests:\"\n\tif [ $UID != 0 ]; then\n\t\techo $msg must be run as root >&2\n\t\ttest_exit $ksft_fail\n\telse\n\t\treturn $ksft_pass\n\tfi\n}\n\nvalidate_veth_support()\n{\n\tmsg=\"skip all tests:\"\n\tif [ $(ip link add $1 type veth 2>/dev/null; echo $?;) != 0 ]; then\n\t\techo $msg veth kernel support not available >&2\n\t\ttest_exit $ksft_skip\n\telse\n\t\tip link del $1\n\t\treturn $ksft_pass\n\tfi\n}\n\ntest_status()\n{\n\tstatusval=$1\n\tif [ $statusval -eq $ksft_fail ]; then\n\t\techo \"$2: [ FAIL ]\"\n\telif [ $statusval -eq $ksft_skip ]; then\n\t\techo \"$2: [ SKIPPED ]\"\n\telif [ $statusval -eq $ksft_pass ]; then\n\t\techo \"$2: [ PASS ]\"\n\tfi\n}\n\ntest_exit()\n{\n\tif [ $1 -ne 0 ]; then\n\t\ttest_status $1 $(basename $0)\n\tfi\n\texit 1\n}\n\ncleanup_iface()\n{\n\tip link set $1 mtu $2\n\tip link set $1 xdp off\n\tip link set $1 xdpgeneric off\n}\n\nclear_configs()\n{\n\t[ $(ip link show $1 &>/dev/null; echo $?;) == 0 ] &&\n\t\t{ ip link del $1; }\n}\n\ncleanup_exit()\n{\n\tclear_configs $1 $2\n}\n\nvalidate_ip_utility()\n{\n\t[ ! $(type -P ip) ] && { echo \"'ip' not found. Skipping tests.\"; test_exit $ksft_skip; }\n}\n\nexec_xskxceiver()\n{\n        if [[ $busy_poll -eq 1 ]]; then\n\t        ARGS+=\"-b \"\n\tfi\n\n\t./${XSKOBJ} -i ${VETH0} -i ${VETH1} ${ARGS}\n\n\tretval=$?\n\ttest_status $retval \"${TEST_NAME}\"\n\tstatusList+=($retval)\n\tnameList+=(${TEST_NAME})\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "a.rs",
+  "hash_id": "f20d334d6bb315100986512292b281e79ec72169696b8173427d5db515ad95f4",
+  "original_prompt": "Ingested from linux-6.6.14/samples/rust/hostprogs/a.rs",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n\n//! Rust single host program sample: module `a`.\n\npub(crate) fn f(x: i32) {\n    println!(\"The number is {}.\", x);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "abb7a51c83f42053e10f57885e6affec06c6e5091ee4fe0dc1e704c9d29ea2ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/sunxi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Core\nobj-y\t\t\t\t\t+= pinctrl-sunxi.o\n\n# SoC Drivers\nobj-$(CONFIG_PINCTRL_SUNIV_F1C100S)\t+= pinctrl-suniv-f1c100s.o\nobj-$(CONFIG_PINCTRL_SUN4I_A10)\t\t+= pinctrl-sun4i-a10.o\nobj-$(CONFIG_PINCTRL_SUN5I)\t\t+= pinctrl-sun5i.o\nobj-$(CONFIG_PINCTRL_SUN6I_A31)\t\t+= pinctrl-sun6i-a31.o\nobj-$(CONFIG_PINCTRL_SUN6I_A31_R)\t+= pinctrl-sun6i-a31-r.o\nobj-$(CONFIG_PINCTRL_SUN8I_A23)\t\t+= pinctrl-sun8i-a23.o\nobj-$(CONFIG_PINCTRL_SUN8I_A23_R)\t+= pinctrl-sun8i-a23-r.o\nobj-$(CONFIG_PINCTRL_SUN8I_A33)\t\t+= pinctrl-sun8i-a33.o\nobj-$(CONFIG_PINCTRL_SUN50I_A64)\t+= pinctrl-sun50i-a64.o\nobj-$(CONFIG_PINCTRL_SUN50I_A64_R)\t+= pinctrl-sun50i-a64-r.o\nobj-$(CONFIG_PINCTRL_SUN50I_A100)\t+= pinctrl-sun50i-a100.o\nobj-$(CONFIG_PINCTRL_SUN50I_A100_R)\t+= pinctrl-sun50i-a100-r.o\nobj-$(CONFIG_PINCTRL_SUN8I_A83T)\t+= pinctrl-sun8i-a83t.o\nobj-$(CONFIG_PINCTRL_SUN8I_A83T_R)\t+= pinctrl-sun8i-a83t-r.o\nobj-$(CONFIG_PINCTRL_SUN8I_H3)\t\t+= pinctrl-sun8i-h3.o\nobj-$(CONFIG_PINCTRL_SUN8I_H3_R)\t+= pinctrl-sun8i-h3-r.o\nobj-$(CONFIG_PINCTRL_SUN8I_V3S)\t\t+= pinctrl-sun8i-v3s.o\nobj-$(CONFIG_PINCTRL_SUN20I_D1)\t\t+= pinctrl-sun20i-d1.o\nobj-$(CONFIG_PINCTRL_SUN50I_H5)\t\t+= pinctrl-sun50i-h5.o\nobj-$(CONFIG_PINCTRL_SUN50I_H6)\t\t+= pinctrl-sun50i-h6.o\nobj-$(CONFIG_PINCTRL_SUN50I_H6_R)\t+= pinctrl-sun50i-h6-r.o\nobj-$(CONFIG_PINCTRL_SUN50I_H616)\t+= pinctrl-sun50i-h616.o\nobj-$(CONFIG_PINCTRL_SUN50I_H616_R)\t+= pinctrl-sun50i-h616-r.o\nobj-$(CONFIG_PINCTRL_SUN9I_A80)\t\t+= pinctrl-sun9i-a80.o\nobj-$(CONFIG_PINCTRL_SUN9I_A80_R)\t+= pinctrl-sun9i-a80-r.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

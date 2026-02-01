@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-mux.h",
+  "hash_id": "f06b91964df0220068916e6aaac2320bdaf30d2592d2a0113343f0d83f1a18ff",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/i2c-mux.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_I2C_MUX_H\n#define _LINUX_I2C_MUX_H\n\n#ifdef __KERNEL__\n\n#include <linux/bitops.h>\n\nstruct i2c_mux_core {\n\tstruct i2c_adapter *parent;\n\tstruct device *dev;\n\tunsigned int mux_locked:1;\n\tunsigned int arbitrator:1;\n\tunsigned int gate:1;\n\n\tvoid *priv;\n\n\tint (*select)(struct i2c_mux_core *, u32 chan_id);\n\tint (*deselect)(struct i2c_mux_core *, u32 chan_id);\n\n\tint num_adapters;\n\tint max_adapters;\n\tstruct i2c_adapter *adapter[];\n};\n\nstruct i2c_mux_core *i2c_mux_alloc(struct i2c_adapter *parent,\n\t\t\t\t   struct device *dev, int max_adapters,\n\t\t\t\t   int sizeof_priv, u32 flags,\n\t\t\t\t   int (*select)(struct i2c_mux_core *, u32),\n\t\t\t\t   int (*deselect)(struct i2c_mux_core *, u32));\n\n \n#define I2C_MUX_LOCKED     BIT(0)\n#define I2C_MUX_ARBITRATOR BIT(1)\n#define I2C_MUX_GATE       BIT(2)\n\nstatic inline void *i2c_mux_priv(struct i2c_mux_core *muxc)\n{\n\treturn muxc->priv;\n}\n\nstruct i2c_adapter *i2c_root_adapter(struct device *dev);\n\n \nint i2c_mux_add_adapter(struct i2c_mux_core *muxc,\n\t\t\tu32 force_nr, u32 chan_id,\n\t\t\tunsigned int class);\n\nvoid i2c_mux_del_adapters(struct i2c_mux_core *muxc);\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

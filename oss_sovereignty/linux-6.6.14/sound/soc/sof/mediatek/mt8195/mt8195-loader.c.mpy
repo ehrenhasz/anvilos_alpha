@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8195-loader.c",
+  "hash_id": "214fb2a0a5bb351a91797cd481a596e1445eed92600d340d71487926b6d0759b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/mediatek/mt8195/mt8195-loader.c",
+  "human_readable_source": "\n\n\n\n\n\n\n\n#include <sound/sof.h>\n#include \"mt8195.h\"\n#include \"../../ops.h\"\n\nvoid sof_hifixdsp_boot_sequence(struct snd_sof_dev *sdev, u32 boot_addr)\n{\n\t \n\tsnd_sof_dsp_write(sdev, DSP_REG_BAR, DSP_ALTRESETVEC, boot_addr);\n\n\t \n\tsnd_sof_dsp_update_bits(sdev, DSP_REG_BAR, DSP_RESET_SW,\n\t\t\t\tADSP_RUNSTALL, ADSP_RUNSTALL);\n\n\t \n\tsnd_sof_dsp_update_bits(sdev, DSP_REG_BAR, DSP_RESET_SW,\n\t\t\t\tSTATVECTOR_SEL, STATVECTOR_SEL);\n\n\t \n\t \n\tsnd_sof_dsp_update_bits(sdev, DSP_REG_BAR, DSP_RESET_SW,\n\t\t\t\tADSP_BRESET_SW | ADSP_DRESET_SW,\n\t\t\t\tADSP_BRESET_SW | ADSP_DRESET_SW);\n\n\t \n\tudelay(1);\n\n\t \n\tsnd_sof_dsp_update_bits(sdev, DSP_REG_BAR, DSP_RESET_SW,\n\t\t\t\tADSP_BRESET_SW | ADSP_DRESET_SW,\n\t\t\t\t0);\n\n\t \n\tsnd_sof_dsp_update_bits(sdev, DSP_REG_BAR, DSP_PDEBUGBUS0,\n\t\t\t\tPDEBUG_ENABLE,\n\t\t\t\tPDEBUG_ENABLE);\n\n\t \n\tsnd_sof_dsp_update_bits(sdev, DSP_REG_BAR, DSP_RESET_SW,\n\t\t\t\tADSP_RUNSTALL, 0);\n}\n\nvoid sof_hifixdsp_shutdown(struct snd_sof_dev *sdev)\n{\n\t \n\tsnd_sof_dsp_update_bits(sdev, DSP_REG_BAR, DSP_RESET_SW,\n\t\t\t\tADSP_RUNSTALL, ADSP_RUNSTALL);\n\n\t \n\tsnd_sof_dsp_update_bits(sdev, DSP_REG_BAR, DSP_RESET_SW,\n\t\t\t\tADSP_BRESET_SW | ADSP_DRESET_SW,\n\t\t\t\tADSP_BRESET_SW | ADSP_DRESET_SW);\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

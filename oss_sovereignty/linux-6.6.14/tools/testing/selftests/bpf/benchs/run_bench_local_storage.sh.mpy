@@ -1,0 +1,9 @@
+{
+  "module_name": "run_bench_local_storage.sh",
+  "hash_id": "7806ae5168cd4d442643ba819b43a18a924fa9047a40fded650ca916008e818b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/benchs/run_bench_local_storage.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nsource ./benchs/run_common.sh\n\nset -eufo pipefail\n\nheader \"Hashmap Control\"\nfor i in 10 1000 10000 100000 4194304; do\nsubtitle \"num keys: $i\"\n\tsummarize_local_storage \"hashmap (control) sequential    get: \"\\\n\t\t\"$(./bench --nr_maps 1 --hashmap_nr_keys_used=$i local-storage-cache-hashmap-control)\"\n\tprintf \"\\n\"\ndone\n\nheader \"Local Storage\"\nfor i in 1 10 16 17 24 32 100 1000; do\nsubtitle \"num_maps: $i\"\n\tsummarize_local_storage \"local_storage cache sequential  get: \"\\\n\t\t\"$(./bench --nr_maps $i local-storage-cache-seq-get)\"\n\tsummarize_local_storage \"local_storage cache interleaved get: \"\\\n\t\t\"$(./bench --nr_maps $i local-storage-cache-int-get)\"\n\tprintf \"\\n\"\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

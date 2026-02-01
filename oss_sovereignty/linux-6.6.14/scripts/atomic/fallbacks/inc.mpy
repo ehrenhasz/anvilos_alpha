@@ -1,0 +1,9 @@
+{
+  "module_name": "inc",
+  "hash_id": "0ae9abe16764ddcee554a252502da3dc3eef2ea29257f4970b93c6012c5e9950",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/fallbacks/inc",
+  "human_readable_source": "cat <<EOF\n\t${retstmt}raw_${atomic}_${pfx}add${sfx}${order}(1, v);\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

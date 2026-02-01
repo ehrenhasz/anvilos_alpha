@@ -1,0 +1,9 @@
+{
+  "module_name": "task_local_storage_helpers.h",
+  "hash_id": "b0dd8a15c446762554235629f10b1c448b03740807de8d6801ef218786d35766",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/task_local_storage_helpers.h",
+  "human_readable_source": " \n#ifndef __TASK_LOCAL_STORAGE_HELPER_H\n#define __TASK_LOCAL_STORAGE_HELPER_H\n\n#include <unistd.h>\n#include <sys/syscall.h>\n#include <sys/types.h>\n\n#ifndef __NR_pidfd_open\n#ifdef __alpha__\n#define __NR_pidfd_open 544\n#else\n#define __NR_pidfd_open 434\n#endif\n#endif\n\nstatic inline int sys_pidfd_open(pid_t pid, unsigned int flags)\n{\n\treturn syscall(__NR_pidfd_open, pid, flags);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

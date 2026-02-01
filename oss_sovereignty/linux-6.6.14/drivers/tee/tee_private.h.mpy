@@ -1,0 +1,9 @@
+{
+  "module_name": "tee_private.h",
+  "hash_id": "6d1527d3a20829619b1bac2d4b34eefcb544a99d660dfb97c581184385c2eb2e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tee/tee_private.h",
+  "human_readable_source": " \n \n#ifndef TEE_PRIVATE_H\n#define TEE_PRIVATE_H\n\n#include <linux/cdev.h>\n#include <linux/completion.h>\n#include <linux/device.h>\n#include <linux/kref.h>\n#include <linux/mutex.h>\n#include <linux/types.h>\n\n#define TEE_DEVICE_FLAG_REGISTERED\t0x1\n#define TEE_MAX_DEV_NAME_LEN\t\t32\n\n \nstruct tee_device {\n\tchar name[TEE_MAX_DEV_NAME_LEN];\n\tconst struct tee_desc *desc;\n\tint id;\n\tunsigned int flags;\n\n\tstruct device dev;\n\tstruct cdev cdev;\n\n\tsize_t num_users;\n\tstruct completion c_no_users;\n\tstruct mutex mutex;\t \n\n\tstruct idr idr;\n\tstruct tee_shm_pool *pool;\n};\n\nint tee_shm_get_fd(struct tee_shm *shm);\n\nbool tee_device_get(struct tee_device *teedev);\nvoid tee_device_put(struct tee_device *teedev);\n\nvoid teedev_ctx_get(struct tee_context *ctx);\nvoid teedev_ctx_put(struct tee_context *ctx);\n\nstruct tee_shm *tee_shm_alloc_user_buf(struct tee_context *ctx, size_t size);\nstruct tee_shm *tee_shm_register_user_buf(struct tee_context *ctx,\n\t\t\t\t\t  unsigned long addr, size_t length);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-page-flags.h",
+  "hash_id": "38fd7ee7d0e46b113381f2caae3cf0dc030f21448d2be93f0856825572060910",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/kernel-page-flags.h",
+  "human_readable_source": " \n#ifndef _UAPILINUX_KERNEL_PAGE_FLAGS_H\n#define _UAPILINUX_KERNEL_PAGE_FLAGS_H\n\n \n\n#define KPF_LOCKED\t\t0\n#define KPF_ERROR\t\t1\n#define KPF_REFERENCED\t\t2\n#define KPF_UPTODATE\t\t3\n#define KPF_DIRTY\t\t4\n#define KPF_LRU\t\t\t5\n#define KPF_ACTIVE\t\t6\n#define KPF_SLAB\t\t7\n#define KPF_WRITEBACK\t\t8\n#define KPF_RECLAIM\t\t9\n#define KPF_BUDDY\t\t10\n\n \n#define KPF_MMAP\t\t11\n#define KPF_ANON\t\t12\n#define KPF_SWAPCACHE\t\t13\n#define KPF_SWAPBACKED\t\t14\n#define KPF_COMPOUND_HEAD\t15\n#define KPF_COMPOUND_TAIL\t16\n#define KPF_HUGE\t\t17\n#define KPF_UNEVICTABLE\t\t18\n#define KPF_HWPOISON\t\t19\n#define KPF_NOPAGE\t\t20\n\n#define KPF_KSM\t\t\t21\n#define KPF_THP\t\t\t22\n#define KPF_OFFLINE\t\t23\n#define KPF_ZERO_PAGE\t\t24\n#define KPF_IDLE\t\t25\n#define KPF_PGTABLE\t\t26\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

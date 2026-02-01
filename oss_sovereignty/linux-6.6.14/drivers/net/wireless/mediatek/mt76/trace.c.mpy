@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "3d94dc001f81100ee7c176d285b37a30fc2f142d9c2976ef8c25534a03f9b5b8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/trace.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n\n#ifndef __CHECKER__\n#define CREATE_TRACE_POINTS\n#include \"trace.h\"\n\nEXPORT_TRACEPOINT_SYMBOL_GPL(mac_txdone);\nEXPORT_TRACEPOINT_SYMBOL_GPL(dev_irq);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

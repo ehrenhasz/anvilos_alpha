@@ -1,0 +1,9 @@
+{
+  "module_name": "kasan-enabled.h",
+  "hash_id": "63c529f1c56b2cd1258c9ceeb6f9e74b6f86997da2e0336a782f09aa1eaa1773",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kasan-enabled.h",
+  "human_readable_source": " \n#ifndef _LINUX_KASAN_ENABLED_H\n#define _LINUX_KASAN_ENABLED_H\n\n#include <linux/static_key.h>\n\n#ifdef CONFIG_KASAN_HW_TAGS\n\nDECLARE_STATIC_KEY_FALSE(kasan_flag_enabled);\n\nstatic __always_inline bool kasan_enabled(void)\n{\n\treturn static_branch_likely(&kasan_flag_enabled);\n}\n\nstatic inline bool kasan_hw_tags_enabled(void)\n{\n\treturn kasan_enabled();\n}\n\n#else  \n\nstatic inline bool kasan_enabled(void)\n{\n\treturn IS_ENABLED(CONFIG_KASAN);\n}\n\nstatic inline bool kasan_hw_tags_enabled(void)\n{\n\treturn false;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

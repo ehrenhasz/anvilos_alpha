@@ -1,0 +1,9 @@
+{
+  "module_name": "hts221_spi.c",
+  "hash_id": "63e9911ab6e4097131c5923bdc71b6a3ee0fe511f5686c6bcb687ef4e32a13c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/humidity/hts221_spi.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/spi/spi.h>\n#include <linux/slab.h>\n#include <linux/regmap.h>\n\n#include \"hts221.h\"\n\n#define HTS221_SPI_READ\t\t\tBIT(7)\n#define HTS221_SPI_AUTO_INCREMENT\tBIT(6)\n\nstatic const struct regmap_config hts221_spi_regmap_config = {\n\t.reg_bits = 8,\n\t.val_bits = 8,\n\t.write_flag_mask = HTS221_SPI_AUTO_INCREMENT,\n\t.read_flag_mask = HTS221_SPI_READ | HTS221_SPI_AUTO_INCREMENT,\n};\n\nstatic int hts221_spi_probe(struct spi_device *spi)\n{\n\tstruct regmap *regmap;\n\n\tregmap = devm_regmap_init_spi(spi, &hts221_spi_regmap_config);\n\tif (IS_ERR(regmap)) {\n\t\tdev_err(&spi->dev, \"Failed to register spi regmap %ld\\n\",\n\t\t\tPTR_ERR(regmap));\n\t\treturn PTR_ERR(regmap);\n\t}\n\n\treturn hts221_probe(&spi->dev, spi->irq,\n\t\t\t    spi->modalias, regmap);\n}\n\nstatic const struct of_device_id hts221_spi_of_match[] = {\n\t{ .compatible = \"st,hts221\", },\n\t{},\n};\nMODULE_DEVICE_TABLE(of, hts221_spi_of_match);\n\nstatic const struct spi_device_id hts221_spi_id_table[] = {\n\t{ HTS221_DEV_NAME },\n\t{},\n};\nMODULE_DEVICE_TABLE(spi, hts221_spi_id_table);\n\nstatic struct spi_driver hts221_driver = {\n\t.driver = {\n\t\t.name = \"hts221_spi\",\n\t\t.pm = pm_sleep_ptr(&hts221_pm_ops),\n\t\t.of_match_table = hts221_spi_of_match,\n\t},\n\t.probe = hts221_spi_probe,\n\t.id_table = hts221_spi_id_table,\n};\nmodule_spi_driver(hts221_driver);\n\nMODULE_AUTHOR(\"Lorenzo Bianconi <lorenzo.bianconi@st.com>\");\nMODULE_DESCRIPTION(\"STMicroelectronics hts221 spi driver\");\nMODULE_LICENSE(\"GPL v2\");\nMODULE_IMPORT_NS(IIO_HTS221);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

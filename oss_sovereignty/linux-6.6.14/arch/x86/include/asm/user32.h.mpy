@@ -1,0 +1,9 @@
+{
+  "module_name": "user32.h",
+  "hash_id": "a7b7a1b8c277752c4fab77c16ba73a232b2b1c95d0a9cc99a2d094dbbb3a9c1e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/user32.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_USER32_H\n#define _ASM_X86_USER32_H\n\n \n\nstruct user_i387_ia32_struct {\n\tu32\tcwd;\n\tu32\tswd;\n\tu32\ttwd;\n\tu32\tfip;\n\tu32\tfcs;\n\tu32\tfoo;\n\tu32\tfos;\n\tu32\tst_space[20];    \n};\n\n \nstruct user32_fxsr_struct {\n\tunsigned short\tcwd;\n\tunsigned short\tswd;\n\tunsigned short\ttwd;\t \n\tunsigned short\tfop;\n\tint\tfip;\n\tint\tfcs;\n\tint\tfoo;\n\tint\tfos;\n\tint\tmxcsr;\n\tint\treserved;\n\tint\tst_space[32];\t \n\tint\txmm_space[32];\t \n\tint\tpadding[56];\n};\n\nstruct user_regs_struct32 {\n\t__u32 ebx, ecx, edx, esi, edi, ebp, eax;\n\tunsigned short ds, __ds, es, __es;\n\tunsigned short fs, __fs, gs, __gs;\n\t__u32 orig_eax, eip;\n\tunsigned short cs, __cs;\n\t__u32 eflags, esp;\n\tunsigned short ss, __ss;\n};\n\nstruct user32 {\n  struct user_regs_struct32 regs;  \n  int u_fpvalid;\t\t \n\t\t\t\t \n  struct user_i387_ia32_struct i387;\t \n \n  __u32 u_tsize;\t \n  __u32 u_dsize;\t \n  __u32 u_ssize;\t \n  __u32 start_code;      \n  __u32 start_stack;\t \n  __u32 signal;     \t\t \n  int reserved;\t\t\t \n  __u32 u_ar0;\t \n\t\t\t\t \n  __u32 u_fpstate;\t \n  __u32 magic;\t\t \n  char u_comm[32];\t\t \n  int u_debugreg[8];\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

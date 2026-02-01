@@ -1,0 +1,9 @@
+{
+  "module_name": "ppc-opcode.h",
+  "hash_id": "b399d97a055d99d99c6c6f896e28ff5bcae4b5c74f5f44cccb8e35cc681f6438",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/stringloops/asm/ppc-opcode.h",
+  "human_readable_source": " \n \n#ifndef _ASM_POWERPC_PPC_OPCODE_H\n#define _ASM_POWERPC_PPC_OPCODE_H\n\n\n#  define stringify_in_c(...)\t__VA_ARGS__\n#  define ASM_CONST(x)\t\tx\n\n\n#define PPC_INST_VCMPEQUD_RC\t\t0x100000c7\n#define PPC_INST_VCMPEQUB_RC\t\t0x10000006\n\n#define __PPC_RC21     (0x1 << 10)\n\n \n#define ___PPC_RA(a)\t(((a) & 0x1f) << 16)\n#define ___PPC_RB(b)\t(((b) & 0x1f) << 11)\n#define ___PPC_RS(s)\t(((s) & 0x1f) << 21)\n#define ___PPC_RT(t)\t___PPC_RS(t)\n\n#define VCMPEQUD_RC(vrt, vra, vrb)\tstringify_in_c(.long PPC_INST_VCMPEQUD_RC | \\\n\t\t\t      ___PPC_RT(vrt) | ___PPC_RA(vra) | \\\n\t\t\t      ___PPC_RB(vrb) | __PPC_RC21)\n\n#define VCMPEQUB_RC(vrt, vra, vrb)\tstringify_in_c(.long PPC_INST_VCMPEQUB_RC | \\\n\t\t\t      ___PPC_RT(vrt) | ___PPC_RA(vra) | \\\n\t\t\t      ___PPC_RB(vrb) | __PPC_RC21)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

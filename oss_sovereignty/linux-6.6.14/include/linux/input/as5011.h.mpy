@@ -1,0 +1,9 @@
+{
+  "module_name": "as5011.h",
+  "hash_id": "ed44d1554ea952d38461028b41ce8baa79a3659c366bbbb75d541834182cd85e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/input/as5011.h",
+  "human_readable_source": " \n#ifndef _AS5011_H\n#define _AS5011_H\n\n \n\nstruct as5011_platform_data {\n\tunsigned int button_gpio;\n\tunsigned int axis_irq;  \n\tunsigned long axis_irqflags;\n\tchar xp, xn;  \n\tchar yp, yn;  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "orc_hash.sh",
+  "hash_id": "80c580dea8ebfb56fc34aa1adf30fdeee98b1149958f53c6651b1d801be414ff",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/orc_hash.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-or-later\n# Copyright (c) Meta Platforms, Inc. and affiliates.\n\nset -e\n\nprintf '%s' '#define ORC_HASH '\n\nawk '\n/^#define ORC_(REG|TYPE)_/ { print }\n/^struct orc_entry {$/ { p=1 }\np { print }\n/^}/ { p=0 }' |\n\tsha1sum |\n\tcut -d \" \" -f 1 |\n\tsed 's/\\([0-9a-f]\\{2\\}\\)/0x\\1,/g'\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

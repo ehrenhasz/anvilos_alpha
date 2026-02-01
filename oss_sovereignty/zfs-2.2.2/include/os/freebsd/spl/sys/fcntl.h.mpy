@@ -1,0 +1,9 @@
+{
+  "module_name": "fcntl.h",
+  "hash_id": "51b4fe8036a4ffb05a90f9ab494df133fd9bac9ff3100f137d2b6a876f4f916c",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/fcntl.h",
+  "human_readable_source": " \n\n#ifndef _SPL_SYS_FCNTL_H_\n#define\t_SPL_SYS_FCNTL_H_\n\n#include_next <sys/fcntl.h>\n\n#define\tO_LARGEFILE\t0\n#define\tO_RSYNC\t\t0\n\n#ifndef O_DSYNC\n#define\tO_DSYNC\t\t0\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

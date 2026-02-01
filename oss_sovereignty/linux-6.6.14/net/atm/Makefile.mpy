@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f050e98f22f61708f1425ee22f3a65ef05ed25b4b8790cd2051675afdb4c50eb",
+  "original_prompt": "Ingested from linux-6.6.14/net/atm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the ATM Protocol Families.\n#\n\natm-y\t\t:= addr.o pvc.o signaling.o svc.o ioctl.o common.o atm_misc.o raw.o resources.o atm_sysfs.o\nmpoa-objs\t:= mpc.o mpoa_caches.o mpoa_proc.o\n\nobj-$(CONFIG_ATM) += atm.o\nobj-$(CONFIG_ATM_CLIP) += clip.o\nobj-$(CONFIG_ATM_BR2684) += br2684.o\natm-$(CONFIG_PROC_FS) += proc.o\n\nobj-$(CONFIG_ATM_LANE) += lec.o\nobj-$(CONFIG_ATM_MPOA) += mpoa.o\nobj-$(CONFIG_PPPOATM) += pppoatm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

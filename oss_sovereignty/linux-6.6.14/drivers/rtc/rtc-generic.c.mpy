@@ -1,0 +1,9 @@
+{
+  "module_name": "rtc-generic.c",
+  "hash_id": "d57b6a94670713b15e84043b757854c9b3332440325e2215d518ef5b10804b58",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/rtc/rtc-generic.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/time.h>\n#include <linux/platform_device.h>\n#include <linux/rtc.h>\n\nstatic int __init generic_rtc_probe(struct platform_device *dev)\n{\n\tstruct rtc_device *rtc;\n\tconst struct rtc_class_ops *ops = dev_get_platdata(&dev->dev);\n\n\trtc = devm_rtc_device_register(&dev->dev, \"rtc-generic\",\n\t\t\t\t\tops, THIS_MODULE);\n\tif (IS_ERR(rtc))\n\t\treturn PTR_ERR(rtc);\n\n\tplatform_set_drvdata(dev, rtc);\n\n\treturn 0;\n}\n\nstatic struct platform_driver generic_rtc_driver = {\n\t.driver = {\n\t\t.name = \"rtc-generic\",\n\t},\n};\n\nmodule_platform_driver_probe(generic_rtc_driver, generic_rtc_probe);\n\nMODULE_AUTHOR(\"Kyle McMartin <kyle@mcmartin.ca>\");\nMODULE_LICENSE(\"GPL\");\nMODULE_DESCRIPTION(\"Generic RTC driver\");\nMODULE_ALIAS(\"platform:rtc-generic\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

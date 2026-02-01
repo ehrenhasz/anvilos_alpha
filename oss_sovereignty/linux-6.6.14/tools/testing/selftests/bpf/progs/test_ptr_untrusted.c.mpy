@@ -1,0 +1,9 @@
+{
+  "module_name": "test_ptr_untrusted.c",
+  "hash_id": "800874913e92b0916c656fa764d3bc497c7b7069dcc4ce314430013b6be8c781",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_ptr_untrusted.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_tracing.h>\n\nchar tp_name[128];\n\nSEC(\"lsm/bpf\")\nint BPF_PROG(lsm_run, int cmd, union bpf_attr *attr, unsigned int size)\n{\n\tswitch (cmd) {\n\tcase BPF_RAW_TRACEPOINT_OPEN:\n\t\tbpf_probe_read_user_str(tp_name, sizeof(tp_name) - 1,\n\t\t\t\t\t(void *)attr->raw_tracepoint.name);\n\t\tbreak;\n\tdefault:\n\t\tbreak;\n\t}\n\treturn 0;\n}\n\nSEC(\"raw_tracepoint\")\nint BPF_PROG(raw_tp_run)\n{\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

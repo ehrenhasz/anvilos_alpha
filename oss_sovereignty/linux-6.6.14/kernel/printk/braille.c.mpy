@@ -1,0 +1,9 @@
+{
+  "module_name": "braille.c",
+  "hash_id": "b41554fc0836ef879aab0477ba4fa33755e083b6982cb90436a4cca2befbe90a",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/printk/braille.c",
+  "human_readable_source": "\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <linux/kernel.h>\n#include <linux/console.h>\n#include <linux/errno.h>\n#include <linux/string.h>\n\n#include \"console_cmdline.h\"\n#include \"braille.h\"\n\nint _braille_console_setup(char **str, char **brl_options)\n{\n\tsize_t len;\n\n\tlen = str_has_prefix(*str, \"brl,\");\n\tif (len) {\n\t\t*brl_options = \"\";\n\t\t*str += len;\n\t\treturn 0;\n\t}\n\n\tlen = str_has_prefix(*str, \"brl=\");\n\tif (len) {\n\t\t*brl_options = *str + len;\n\t\t*str = strchr(*brl_options, ',');\n\t\tif (!*str) {\n\t\t\tpr_err(\"need port name after brl=\\n\");\n\t\t\treturn -EINVAL;\n\t\t}\n\t\t*((*str)++) = 0;\n\t}\n\n\treturn 0;\n}\n\nint\n_braille_register_console(struct console *console, struct console_cmdline *c)\n{\n\tint rtn = 0;\n\n\tif (c->brl_options) {\n\t\tconsole->flags |= CON_BRL;\n\t\trtn = braille_register_console(console, c->index, c->options,\n\t\t\t\t\t       c->brl_options);\n\t}\n\n\treturn rtn;\n}\n\nint\n_braille_unregister_console(struct console *console)\n{\n\tif (console->flags & CON_BRL)\n\t\treturn braille_unregister_console(console);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

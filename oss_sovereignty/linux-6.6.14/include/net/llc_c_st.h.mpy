@@ -1,0 +1,9 @@
+{
+  "module_name": "llc_c_st.h",
+  "hash_id": "3c67904f87e6ddba800f6dc01edc5dd81e435f0337c232cbe5163aac6c1874f8",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/llc_c_st.h",
+  "human_readable_source": "#ifndef LLC_C_ST_H\n#define LLC_C_ST_H\n \n\n#include <net/llc_c_ac.h>\n#include <net/llc_c_ev.h>\n\n \n \n#define LLC_CONN_OUT_OF_SVC\t\t 0\t \n \n#define LLC_CONN_STATE_ADM\t\t 1\t \n#define LLC_CONN_STATE_SETUP\t\t 2\t \n#define LLC_CONN_STATE_NORMAL\t\t 3\t \n#define LLC_CONN_STATE_BUSY\t\t 4\t \n#define LLC_CONN_STATE_REJ\t\t 5\t \n#define LLC_CONN_STATE_AWAIT\t\t 6\t \n#define LLC_CONN_STATE_AWAIT_BUSY\t 7\t \n#define LLC_CONN_STATE_AWAIT_REJ\t 8\t \n#define LLC_CONN_STATE_D_CONN\t\t 9\t \n#define LLC_CONN_STATE_RESET\t\t10\t \n#define LLC_CONN_STATE_ERROR\t\t11\t \n#define LLC_CONN_STATE_TEMP\t\t12\t \n\n#define NBR_CONN_STATES\t\t\t12\t \n#define NO_STATE_CHANGE\t\t\t100\n\n \nstruct llc_conn_state_trans {\n\tllc_conn_ev_t\t   ev;\n\tu8\t\t   next_state;\n\tconst llc_conn_ev_qfyr_t *ev_qualifiers;\n\tconst llc_conn_action_t  *ev_actions;\n};\n\nstruct llc_conn_state {\n\tu8\t\t\t    current_state;\n\tstruct llc_conn_state_trans **transitions;\n};\n\nextern struct llc_conn_state llc_conn_state_table[];\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

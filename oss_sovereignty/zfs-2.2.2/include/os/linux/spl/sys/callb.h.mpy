@@ -1,0 +1,9 @@
+{
+  "module_name": "callb.h",
+  "hash_id": "5ebd6fb3be58dd4e4c545625b8d41da1e3accf2b47dcde1010804914358983b7",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/callb.h",
+  "human_readable_source": " \n\n#ifndef _SPL_CALLB_H\n#define\t_SPL_CALLB_H\n\n#include <linux/module.h>\n#include <sys/mutex.h>\n\n#define\tCALLB_CPR_ASSERT(cp)\t\tASSERT(MUTEX_HELD((cp)->cc_lockp));\n\ntypedef struct callb_cpr {\n\tkmutex_t\t*cc_lockp;\n} callb_cpr_t;\n\n#define\tCALLB_CPR_INIT(cp, lockp, func, name)   {               \\\n\t(cp)->cc_lockp = lockp;                                 \\\n}\n\n#define\tCALLB_CPR_SAFE_BEGIN(cp) {                              \\\n\tCALLB_CPR_ASSERT(cp);\t\t\t\t\t\\\n}\n\n#define\tCALLB_CPR_SAFE_END(cp, lockp) {                         \\\n\tCALLB_CPR_ASSERT(cp);\t\t\t\t\t\\\n}\n\n#define\tCALLB_CPR_EXIT(cp) {                                    \\\n\tASSERT(MUTEX_HELD((cp)->cc_lockp));                     \\\n\tmutex_exit((cp)->cc_lockp);                             \\\n}\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

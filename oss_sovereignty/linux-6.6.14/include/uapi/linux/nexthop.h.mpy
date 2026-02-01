@@ -1,0 +1,9 @@
+{
+  "module_name": "nexthop.h",
+  "hash_id": "1b4014a34cb8e63c46b27eddad7ae523c5b3346227578f69e37c7d2ce068c299",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/nexthop.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_NEXTHOP_H\n#define _UAPI_LINUX_NEXTHOP_H\n\n#include <linux/types.h>\n\nstruct nhmsg {\n\tunsigned char\tnh_family;\n\tunsigned char\tnh_scope;      \n\tunsigned char\tnh_protocol;   \n\tunsigned char\tresvd;\n\tunsigned int\tnh_flags;      \n};\n\n \nstruct nexthop_grp {\n\t__u32\tid;\t   \n\t__u8\tweight;    \n\t__u8\tresvd1;\n\t__u16\tresvd2;\n};\n\nenum {\n\tNEXTHOP_GRP_TYPE_MPATH,   \n\tNEXTHOP_GRP_TYPE_RES,     \n\t__NEXTHOP_GRP_TYPE_MAX,\n};\n\n#define NEXTHOP_GRP_TYPE_MAX (__NEXTHOP_GRP_TYPE_MAX - 1)\n\nenum {\n\tNHA_UNSPEC,\n\tNHA_ID,\t\t \n\n\tNHA_GROUP,\t \n\tNHA_GROUP_TYPE,\t \n\t \n\n\tNHA_BLACKHOLE,\t \n\t \n\n\tNHA_OIF,\t \n\tNHA_GATEWAY,\t \n\tNHA_ENCAP_TYPE,  \n\tNHA_ENCAP,\t \n\n\t \n\tNHA_GROUPS,\t \n\tNHA_MASTER,\t \n\n\tNHA_FDB,\t \n\t \n\n\t \n\tNHA_RES_GROUP,\n\t \n\tNHA_RES_BUCKET,\n\n\t__NHA_MAX,\n};\n\n#define NHA_MAX\t(__NHA_MAX - 1)\n\nenum {\n\tNHA_RES_GROUP_UNSPEC,\n\t \n\tNHA_RES_GROUP_PAD = NHA_RES_GROUP_UNSPEC,\n\n\t \n\tNHA_RES_GROUP_BUCKETS,\n\t \n\tNHA_RES_GROUP_IDLE_TIMER,\n\t \n\tNHA_RES_GROUP_UNBALANCED_TIMER,\n\t \n\tNHA_RES_GROUP_UNBALANCED_TIME,\n\n\t__NHA_RES_GROUP_MAX,\n};\n\n#define NHA_RES_GROUP_MAX\t(__NHA_RES_GROUP_MAX - 1)\n\nenum {\n\tNHA_RES_BUCKET_UNSPEC,\n\t \n\tNHA_RES_BUCKET_PAD = NHA_RES_BUCKET_UNSPEC,\n\n\t \n\tNHA_RES_BUCKET_INDEX,\n\t \n\tNHA_RES_BUCKET_IDLE_TIME,\n\t \n\tNHA_RES_BUCKET_NH_ID,\n\n\t__NHA_RES_BUCKET_MAX,\n};\n\n#define NHA_RES_BUCKET_MAX\t(__NHA_RES_BUCKET_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

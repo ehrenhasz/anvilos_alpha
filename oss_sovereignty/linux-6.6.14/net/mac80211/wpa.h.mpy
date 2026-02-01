@@ -1,0 +1,9 @@
+{
+  "module_name": "wpa.h",
+  "hash_id": "e81875f856fbd65777e49ac22746ee0c8e2303d6d4d9d64bb94952e144fac446",
+  "original_prompt": "Ingested from linux-6.6.14/net/mac80211/wpa.h",
+  "human_readable_source": " \n \n\n#ifndef WPA_H\n#define WPA_H\n\n#include <linux/skbuff.h>\n#include <linux/types.h>\n#include \"ieee80211_i.h\"\n\nieee80211_tx_result\nieee80211_tx_h_michael_mic_add(struct ieee80211_tx_data *tx);\nieee80211_rx_result\nieee80211_rx_h_michael_mic_verify(struct ieee80211_rx_data *rx);\n\nieee80211_tx_result\nieee80211_crypto_tkip_encrypt(struct ieee80211_tx_data *tx);\nieee80211_rx_result\nieee80211_crypto_tkip_decrypt(struct ieee80211_rx_data *rx);\n\nieee80211_tx_result\nieee80211_crypto_ccmp_encrypt(struct ieee80211_tx_data *tx,\n\t\t\t      unsigned int mic_len);\nieee80211_rx_result\nieee80211_crypto_ccmp_decrypt(struct ieee80211_rx_data *rx,\n\t\t\t      unsigned int mic_len);\n\nieee80211_tx_result\nieee80211_crypto_aes_cmac_encrypt(struct ieee80211_tx_data *tx);\nieee80211_tx_result\nieee80211_crypto_aes_cmac_256_encrypt(struct ieee80211_tx_data *tx);\nieee80211_rx_result\nieee80211_crypto_aes_cmac_decrypt(struct ieee80211_rx_data *rx);\nieee80211_rx_result\nieee80211_crypto_aes_cmac_256_decrypt(struct ieee80211_rx_data *rx);\nieee80211_tx_result\nieee80211_crypto_aes_gmac_encrypt(struct ieee80211_tx_data *tx);\nieee80211_rx_result\nieee80211_crypto_aes_gmac_decrypt(struct ieee80211_rx_data *rx);\n\nieee80211_tx_result\nieee80211_crypto_gcmp_encrypt(struct ieee80211_tx_data *tx);\nieee80211_rx_result\nieee80211_crypto_gcmp_decrypt(struct ieee80211_rx_data *rx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

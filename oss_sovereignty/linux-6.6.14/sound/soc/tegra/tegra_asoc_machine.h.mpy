@@ -1,0 +1,9 @@
+{
+  "module_name": "tegra_asoc_machine.h",
+  "hash_id": "74210a84a0279a0573546bf9ed04011d2e124e4f5d30089c101c4c06e39722b8",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/tegra/tegra_asoc_machine.h",
+  "human_readable_source": " \n\n#ifndef __TEGRA_ASOC_MACHINE_H__\n#define __TEGRA_ASOC_MACHINE_H__\n\nstruct clk;\nstruct gpio_desc;\nstruct snd_soc_card;\nstruct snd_soc_jack;\nstruct platform_device;\nstruct snd_soc_jack_gpio;\nstruct snd_soc_pcm_runtime;\n\nstruct tegra_asoc_data {\n\tunsigned int (*mclk_rate)(unsigned int srate);\n\tconst char *codec_dev_name;\n\tconst char *hp_jack_name;\n\tstruct snd_soc_card *card;\n\tunsigned int mclk_id;\n\tbool hp_jack_gpio_active_low;\n\tbool add_common_dapm_widgets;\n\tbool add_common_controls;\n\tbool add_common_snd_ops;\n\tbool add_headset_jack;\n\tbool add_mic_jack;\n\tbool add_hp_jack;\n\tbool set_ac97;\n};\n\nstruct tegra_machine {\n\tstruct clk *clk_pll_a_out0;\n\tstruct clk *clk_pll_a;\n\tstruct clk *clk_cdev1;\n\tunsigned int set_baseclock;\n\tunsigned int set_mclk;\n\tconst struct tegra_asoc_data *asoc;\n\tstruct gpio_desc *gpiod_ext_mic_en;\n\tstruct gpio_desc *gpiod_int_mic_en;\n\tstruct gpio_desc *gpiod_spkr_en;\n\tstruct gpio_desc *gpiod_mic_det;\n\tstruct gpio_desc *gpiod_ear_sel;\n\tstruct gpio_desc *gpiod_hp_mute;\n\tstruct gpio_desc *gpiod_hp_det;\n\tstruct snd_soc_jack *mic_jack;\n\tstruct snd_soc_jack_gpio *hp_jack_gpio;\n};\n\nint tegra_asoc_machine_probe(struct platform_device *pdev);\nint tegra_asoc_machine_init(struct snd_soc_pcm_runtime *rtd);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

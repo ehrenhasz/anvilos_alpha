@@ -1,0 +1,9 @@
+{
+  "module_name": "psb_device.h",
+  "hash_id": "d28e5df0aab374cf6598984e20a88793e5e9f1fee5a35ca64034c42ae728ca69",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/gma500/psb_device.h",
+  "human_readable_source": " \n \n\n#ifndef _PSB_DEVICE_H_\n#define _PSB_DEVICE_H_\n\nextern const struct gma_clock_funcs psb_clock_funcs;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

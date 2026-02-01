@@ -1,0 +1,9 @@
+{
+  "module_name": "dynarray_resize_clear.c",
+  "hash_id": "7c1502c554e684490bf43bdd4ac2a8356b834dd897fa64308e362ecde449fbab",
+  "original_prompt": "Ingested from coreutils-9.4/lib/malloc/dynarray_resize_clear.c",
+  "human_readable_source": " \n  char *array = list->array;\n  memset (array + (old_size * element_size), 0,\n          (size - old_size) * element_size);\n  return true;\n}\nlibc_hidden_def (__libc_dynarray_resize_clear)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

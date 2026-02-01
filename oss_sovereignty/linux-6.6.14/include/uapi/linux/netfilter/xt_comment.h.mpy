@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_comment.h",
+  "hash_id": "6142e122ddc05a1195ed1b89cacc918b1594efac65976d72093b2ab9dc345fe8",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_comment.h",
+  "human_readable_source": " \n#ifndef _XT_COMMENT_H\n#define _XT_COMMENT_H\n\n#define XT_MAX_COMMENT_LEN 256\n\nstruct xt_comment_info {\n\tchar comment[XT_MAX_COMMENT_LEN];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

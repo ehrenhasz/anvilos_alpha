@@ -1,0 +1,9 @@
+{
+  "module_name": "cm_trace.c",
+  "hash_id": "6e35fe0110994ad89f0b2454c68cc98c210a244048e80c28b21a4a1ba0f2422f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/core/cm_trace.c",
+  "human_readable_source": "\n \n\n#include <rdma/rdma_cm.h>\n#include \"cma_priv.h\"\n\n#define CREATE_TRACE_POINTS\n\n#include \"cm_trace.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

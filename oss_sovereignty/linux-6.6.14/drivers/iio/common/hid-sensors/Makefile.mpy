@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "419bfd86945124753379d9826b8bcab6cc183da2c3b895ec584be9adac15e011",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/common/hid-sensors/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Hid sensor common modules.\n#\n\nobj-$(CONFIG_HID_SENSOR_IIO_COMMON) += hid-sensor-iio-common.o\nobj-$(CONFIG_HID_SENSOR_IIO_TRIGGER) += hid-sensor-trigger.o\nhid-sensor-iio-common-y := hid-sensor-attributes.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

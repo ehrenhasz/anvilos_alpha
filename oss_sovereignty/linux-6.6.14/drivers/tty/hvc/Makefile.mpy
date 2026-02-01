@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "68d87393d606691f3f269385b0b2e3a50bd56fb8fc1743d29ec8f548e0ef9b26",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/hvc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_HVC_CONSOLE)\t+= hvc_vio.o hvsi_lib.o\nobj-$(CONFIG_HVC_OPAL)\t\t+= hvc_opal.o hvsi_lib.o\nobj-$(CONFIG_HVC_OLD_HVSI)\t+= hvsi.o\nobj-$(CONFIG_HVC_RTAS)\t\t+= hvc_rtas.o\nobj-$(CONFIG_HVC_DCC)\t\t+= hvc_dcc.o\nobj-$(CONFIG_HVC_DRIVER)\t+= hvc_console.o\nobj-$(CONFIG_HVC_IRQ)\t\t+= hvc_irq.o\nobj-$(CONFIG_HVC_XEN)\t\t+= hvc_xen.o\nobj-$(CONFIG_HVC_IUCV)\t\t+= hvc_iucv.o\nobj-$(CONFIG_HVC_UDBG)\t\t+= hvc_udbg.o\nobj-$(CONFIG_HVC_RISCV_SBI)\t+= hvc_riscv_sbi.o\nobj-$(CONFIG_HVCS)\t\t+= hvcs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b904a9fd90a470af8c38efe594415f4d7cb4afc772fb04a39f39fe093746355c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/marvell/mwifiex/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig MWIFIEX\n\ttristate \"Marvell WiFi-Ex Driver\"\n\tdepends on CFG80211\n\thelp\n\t  This adds support for wireless adapters based on Marvell\n\t  802.11n/ac chipsets.\n\n\t  If you choose to build it as a module, it will be called\n\t  mwifiex.\n\nconfig MWIFIEX_SDIO\n\ttristate \"Marvell WiFi-Ex Driver for SD8786/SD8787/SD8797/SD8887/SD8897/SD8977/SD8978/SD8987/SD8997\"\n\tdepends on MWIFIEX && MMC\n\tselect FW_LOADER\n\tselect WANT_DEV_COREDUMP\n\thelp\n\t  This adds support for wireless adapters based on Marvell\n\t  8786/8787/8797/8887/8897/8977/8978/8987/8997 chipsets with\n\t  SDIO interface. SD8978 is also known as NXP IW416.\n\n\t  If you choose to build it as a module, it will be called\n\t  mwifiex_sdio.\n\nconfig MWIFIEX_PCIE\n\ttristate \"Marvell WiFi-Ex Driver for PCIE 8766/8897/8997\"\n\tdepends on MWIFIEX && PCI\n\tselect FW_LOADER\n\tselect WANT_DEV_COREDUMP\n\thelp\n\t  This adds support for wireless adapters based on Marvell\n\t  8766/8897/8997 chipsets with PCIe interface.\n\n\t  If you choose to build it as a module, it will be called\n\t  mwifiex_pcie.\n\nconfig MWIFIEX_USB\n\ttristate \"Marvell WiFi-Ex Driver for USB8766/8797/8997\"\n\tdepends on MWIFIEX && USB\n\tselect FW_LOADER\n\thelp\n\t  This adds support for wireless adapters based on Marvell\n\t  8797/8997 chipset with USB interface.\n\n\t  If you choose to build it as a module, it will be called\n\t  mwifiex_usb.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

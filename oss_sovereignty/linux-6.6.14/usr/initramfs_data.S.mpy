@@ -1,0 +1,9 @@
+{
+  "module_name": "initramfs_data.S",
+  "hash_id": "38e83b9079adba43c57570ada9f8bb9d430434ab2eec76d157ff993da52e8c57",
+  "original_prompt": "Ingested from linux-6.6.14/usr/initramfs_data.S",
+  "human_readable_source": " \n \n\n.section .init.ramfs,\"a\"\n__irf_start:\n.incbin \"usr/initramfs_inc_data\"\n__irf_end:\n.section .init.ramfs.info,\"a\"\n.globl __initramfs_size\n__initramfs_size:\n#ifdef CONFIG_64BIT\n\t.quad __irf_end - __irf_start\n#else\n\t.long __irf_end - __irf_start\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

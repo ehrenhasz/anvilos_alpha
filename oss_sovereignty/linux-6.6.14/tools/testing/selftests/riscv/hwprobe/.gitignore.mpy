@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "32320fad73bfbdc77151839896898d328e19fd126c49956e23c8d371675715ad",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/riscv/hwprobe/.gitignore",
+  "human_readable_source": "hwprobe\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

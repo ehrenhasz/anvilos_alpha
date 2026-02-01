@@ -1,0 +1,9 @@
+{
+  "module_name": "act8865.h",
+  "hash_id": "682c3bfc977a50aecedbab4e6d92a9375970632d6f2b093c011ce5febc39a322",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/act8865.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_REGULATOR_ACT8865_H\n#define __LINUX_REGULATOR_ACT8865_H\n\n#include <linux/regulator/machine.h>\n\nenum {\n\tACT8600_ID_DCDC1,\n\tACT8600_ID_DCDC2,\n\tACT8600_ID_DCDC3,\n\tACT8600_ID_SUDCDC4,\n\tACT8600_ID_LDO5,\n\tACT8600_ID_LDO6,\n\tACT8600_ID_LDO7,\n\tACT8600_ID_LDO8,\n\tACT8600_ID_LDO9,\n\tACT8600_ID_LDO10,\n};\n\nenum {\n\tACT8865_ID_DCDC1,\n\tACT8865_ID_DCDC2,\n\tACT8865_ID_DCDC3,\n\tACT8865_ID_LDO1,\n\tACT8865_ID_LDO2,\n\tACT8865_ID_LDO3,\n\tACT8865_ID_LDO4,\n\tACT8865_REG_NUM,\n};\n\nenum {\n\tACT8846_ID_REG1,\n\tACT8846_ID_REG2,\n\tACT8846_ID_REG3,\n\tACT8846_ID_REG4,\n\tACT8846_ID_REG5,\n\tACT8846_ID_REG6,\n\tACT8846_ID_REG7,\n\tACT8846_ID_REG8,\n\tACT8846_ID_REG9,\n\tACT8846_ID_REG10,\n\tACT8846_ID_REG11,\n\tACT8846_ID_REG12,\n\tACT8846_REG_NUM,\n};\n\nenum {\n\tACT8600,\n\tACT8865,\n\tACT8846,\n};\n\n \nstruct act8865_regulator_data {\n\tint id;\n\tconst char *name;\n\tstruct regulator_init_data *init_data;\n\tstruct device_node *of_node;\n};\n\n \nstruct act8865_platform_data {\n\tint num_regulators;\n\tstruct act8865_regulator_data *regulators;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

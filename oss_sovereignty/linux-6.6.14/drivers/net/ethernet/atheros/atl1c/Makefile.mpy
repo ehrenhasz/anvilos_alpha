@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "99c33337084a1f1c7064f16a469fd6d24d3fa8c480d19a33e3d26c639c5d9994",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/atheros/atl1c/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_ATL1C) += atl1c.o\natl1c-objs := atl1c_main.o atl1c_hw.o atl1c_ethtool.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "libzfs.pc.in",
+  "hash_id": "18d4d31ff991fcf9173b4d7c07d988777c68107dc993173a6e901c22a29630fa",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libzfs/libzfs.pc.in",
+  "human_readable_source": "prefix=@prefix@\nexec_prefix=@exec_prefix@\nlibdir=@libdir@\nincludedir=@includedir@\n\nName: libzfs\nDescription: LibZFS library\nVersion: @VERSION@\nURL: https://github.com/openzfs/zfs\nRequires: libzfs_core\nRequires.private: @LIBCRYPTO_PC@ @ZLIB_PC@\nCflags: -I${includedir}/libzfs -I${includedir}/libspl\nLibs: -L${libdir} -lzfs -lnvpair\nLibs.private: -luutil -lm -pthread\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

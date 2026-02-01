@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm47xx_sprom.h",
+  "hash_id": "2458eeb16a0ba9619bfb555bab6903f14c8e91e07a3b2a23aa399b4954c416e2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bcm47xx_sprom.h",
+  "human_readable_source": " \n \n\n#ifndef __BCM47XX_SPROM_H\n#define __BCM47XX_SPROM_H\n\n#include <linux/types.h>\n#include <linux/kernel.h>\n#include <linux/vmalloc.h>\n\nstruct ssb_sprom;\n\n#ifdef CONFIG_BCM47XX_SPROM\nvoid bcm47xx_fill_sprom(struct ssb_sprom *sprom, const char *prefix,\n\t\t\tbool fallback);\nint bcm47xx_sprom_register_fallbacks(void);\n#else\nstatic inline void bcm47xx_fill_sprom(struct ssb_sprom *sprom,\n\t\t\t\t      const char *prefix,\n\t\t\t\t      bool fallback)\n{\n}\n\nstatic inline int bcm47xx_sprom_register_fallbacks(void)\n{\n\treturn -ENOTSUPP;\n};\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

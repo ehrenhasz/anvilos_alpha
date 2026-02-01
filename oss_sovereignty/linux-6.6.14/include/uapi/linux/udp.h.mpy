@@ -1,0 +1,9 @@
+{
+  "module_name": "udp.h",
+  "hash_id": "c8e5d907360fbbeea03767a51c41c36c1c7cf89e0d87fd390625512bdf120e27",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/udp.h",
+  "human_readable_source": " \n \n#ifndef _UAPI_LINUX_UDP_H\n#define _UAPI_LINUX_UDP_H\n\n#include <linux/types.h>\n\nstruct udphdr {\n\t__be16\tsource;\n\t__be16\tdest;\n\t__be16\tlen;\n\t__sum16\tcheck;\n};\n\n \n#define UDP_CORK\t1\t \n#define UDP_ENCAP\t100\t \n#define UDP_NO_CHECK6_TX 101\t \n#define UDP_NO_CHECK6_RX 102\t \n#define UDP_SEGMENT\t103\t \n#define UDP_GRO\t\t104\t \n\n \n#define UDP_ENCAP_ESPINUDP_NON_IKE\t1  \n#define UDP_ENCAP_ESPINUDP\t2  \n#define UDP_ENCAP_L2TPINUDP\t3  \n#define UDP_ENCAP_GTP0\t\t4  \n#define UDP_ENCAP_GTP1U\t\t5  \n#define UDP_ENCAP_RXRPC\t\t6\n#define TCP_ENCAP_ESPINTCP\t7  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

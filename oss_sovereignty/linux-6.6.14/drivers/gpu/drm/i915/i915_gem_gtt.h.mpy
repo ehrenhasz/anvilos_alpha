@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gem_gtt.h",
+  "hash_id": "d29e99a76b0979a3e3a0f4064566c2cda92c618eb53e2768e199f4dc08e93fdf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_gem_gtt.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_GEM_GTT_H__\n#define __I915_GEM_GTT_H__\n\n#include <linux/io-mapping.h>\n#include <linux/types.h>\n\n#include <drm/drm_mm.h>\n\n#include \"gt/intel_gtt.h\"\n#include \"i915_scatterlist.h\"\n\nstruct drm_i915_gem_object;\nstruct i915_address_space;\nstruct i915_gem_ww_ctx;\n\n#define I915_COLOR_UNEVICTABLE (-1)  \n\nint __must_check i915_gem_gtt_prepare_pages(struct drm_i915_gem_object *obj,\n\t\t\t\t\t    struct sg_table *pages);\nvoid i915_gem_gtt_finish_pages(struct drm_i915_gem_object *obj,\n\t\t\t       struct sg_table *pages);\n\nint i915_gem_gtt_reserve(struct i915_address_space *vm,\n\t\t\t struct i915_gem_ww_ctx *ww,\n\t\t\t struct drm_mm_node *node,\n\t\t\t u64 size, u64 offset, unsigned long color,\n\t\t\t unsigned int flags);\n\nint i915_gem_gtt_insert(struct i915_address_space *vm,\n\t\t\tstruct i915_gem_ww_ctx *ww,\n\t\t\tstruct drm_mm_node *node,\n\t\t\tu64 size, u64 alignment, unsigned long color,\n\t\t\tu64 start, u64 end, unsigned int flags);\n\n \n#define PIN_NOEVICT\t\tBIT_ULL(0)\n#define PIN_NOSEARCH\t\tBIT_ULL(1)\n#define PIN_NONBLOCK\t\tBIT_ULL(2)\n#define PIN_MAPPABLE\t\tBIT_ULL(3)\n#define PIN_ZONE_4G\t\tBIT_ULL(4)\n#define PIN_HIGH\t\tBIT_ULL(5)\n#define PIN_OFFSET_BIAS\t\tBIT_ULL(6)\n#define PIN_OFFSET_FIXED\tBIT_ULL(7)\n#define PIN_OFFSET_GUARD\tBIT_ULL(8)\n#define PIN_VALIDATE\t\tBIT_ULL(9)  \n\n#define PIN_GLOBAL\t\tBIT_ULL(10)  \n#define PIN_USER\t\tBIT_ULL(11)  \n\n#define PIN_OFFSET_MASK\t\tI915_GTT_PAGE_MASK\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

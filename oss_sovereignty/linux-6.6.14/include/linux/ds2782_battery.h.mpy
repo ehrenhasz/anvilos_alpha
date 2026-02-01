@@ -1,0 +1,9 @@
+{
+  "module_name": "ds2782_battery.h",
+  "hash_id": "742181900b7af0b23e2a524718b7f714f94fb1255290ffcd5b0b12782e818b34",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ds2782_battery.h",
+  "human_readable_source": " \n#ifndef __LINUX_DS2782_BATTERY_H\n#define __LINUX_DS2782_BATTERY_H\n\nstruct ds278x_platform_data {\n\tint rsns;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

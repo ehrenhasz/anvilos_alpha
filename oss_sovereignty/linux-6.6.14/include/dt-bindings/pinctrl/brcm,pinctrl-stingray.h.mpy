@@ -1,0 +1,9 @@
+{
+  "module_name": "brcm,pinctrl-stingray.h",
+  "hash_id": "1aad93e1a9d2de169018fc04ccae6798263b25933c6150cb508ab4a40c5fb182",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/brcm,pinctrl-stingray.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_PINCTRL_BRCM_STINGRAY_H__\n#define __DT_BINDINGS_PINCTRL_BRCM_STINGRAY_H__\n\n \n#define MODE_NITRO\t\t\t\t0\n#define MODE_NAND\t\t\t\t1\n#define MODE_PNOR\t\t\t\t2\n#define MODE_GPIO\t\t\t\t3\n\n \n#define PAD_SLEW_RATE_ENA\t\t\t(1 << 0)\n#define PAD_SLEW_RATE_ENA_MASK\t\t\t(1 << 0)\n\n#define PAD_DRIVE_STRENGTH_2_MA\t\t\t(0 << 1)\n#define PAD_DRIVE_STRENGTH_4_MA\t\t\t(1 << 1)\n#define PAD_DRIVE_STRENGTH_6_MA\t\t\t(2 << 1)\n#define PAD_DRIVE_STRENGTH_8_MA\t\t\t(3 << 1)\n#define PAD_DRIVE_STRENGTH_10_MA\t\t(4 << 1)\n#define PAD_DRIVE_STRENGTH_12_MA\t\t(5 << 1)\n#define PAD_DRIVE_STRENGTH_14_MA\t\t(6 << 1)\n#define PAD_DRIVE_STRENGTH_16_MA\t\t(7 << 1)\n#define PAD_DRIVE_STRENGTH_MASK\t\t\t(7 << 1)\n\n#define PAD_PULL_UP_ENA\t\t\t\t(1 << 4)\n#define PAD_PULL_UP_ENA_MASK\t\t\t(1 << 4)\n\n#define PAD_PULL_DOWN_ENA\t\t\t(1 << 5)\n#define PAD_PULL_DOWN_ENA_MASK\t\t\t(1 << 5)\n\n#define PAD_INPUT_PATH_DIS\t\t\t(1 << 6)\n#define PAD_INPUT_PATH_DIS_MASK\t\t\t(1 << 6)\n\n#define PAD_HYSTERESIS_ENA\t\t\t(1 << 7)\n#define PAD_HYSTERESIS_ENA_MASK\t\t\t(1 << 7)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

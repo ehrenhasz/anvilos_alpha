@@ -1,0 +1,9 @@
+{
+  "module_name": "link_fpga.h",
+  "hash_id": "612a2b3622eaae96b57e886fd41d409a3c98878fd49e160ef9b03046cfcf0668",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/accessories/link_fpga.h",
+  "human_readable_source": " \n#ifndef __LINK_FPGA_H__\n#define __LINK_FPGA_H__\n#include \"link.h\"\nvoid dp_fpga_hpo_enable_link_and_stream(struct dc_state *state,\n\t\tstruct pipe_ctx *pipe_ctx);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

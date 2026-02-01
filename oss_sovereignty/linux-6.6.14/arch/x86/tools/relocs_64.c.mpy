@@ -1,0 +1,9 @@
+{
+  "module_name": "relocs_64.c",
+  "hash_id": "213eb5cff13a5e0a836068b28a54c3862e35e965d87fe7f377f65f5d37b51044",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/tools/relocs_64.c",
+  "human_readable_source": "\n#include \"relocs.h\"\n\n#define ELF_BITS 64\n\n#define ELF_MACHINE             EM_X86_64\n#define ELF_MACHINE_NAME        \"x86_64\"\n#define SHT_REL_TYPE            SHT_RELA\n#define Elf_Rel                 Elf64_Rela\n\n#define ELF_CLASS               ELFCLASS64\n#define ELF_R_SYM(val)          ELF64_R_SYM(val)\n#define ELF_R_TYPE(val)         ELF64_R_TYPE(val)\n#define ELF_ST_TYPE(o)          ELF64_ST_TYPE(o)\n#define ELF_ST_BIND(o)          ELF64_ST_BIND(o)\n#define ELF_ST_VISIBILITY(o)    ELF64_ST_VISIBILITY(o)\n\n#include \"relocs.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

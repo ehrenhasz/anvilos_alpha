@@ -1,0 +1,9 @@
+{
+  "module_name": "selftest.h",
+  "hash_id": "c7154b18b974787bd347e90cf8dafa5b90960cfb5baaa2f204f7babe7e79660c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma-buf/selftest.h",
+  "human_readable_source": "\n\n \n\n#ifndef __SELFTEST_H__\n#define __SELFTEST_H__\n\n#include <linux/compiler.h>\n\n#define selftest(name, func) int func(void);\n#include \"selftests.h\"\n#undef selftest\n\nstruct subtest {\n\tint (*func)(void *data);\n\tconst char *name;\n};\n\nint __subtests(const char *caller,\n\t       const struct subtest *st,\n\t       int count,\n\t       void *data);\n#define subtests(T, data) \\\n\t__subtests(__func__, T, ARRAY_SIZE(T), data)\n\n#define SUBTEST(x) { x, #x }\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

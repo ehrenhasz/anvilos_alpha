@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "d6aa91c75e2b45438788723dee0508ec99fbfe043894c153d710edfad2880eb2",
+  "original_prompt": "Ingested from linux-6.6.14/samples/timers/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/hpet_example\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

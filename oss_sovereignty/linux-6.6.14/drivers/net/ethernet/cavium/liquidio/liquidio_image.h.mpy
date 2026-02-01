@@ -1,0 +1,9 @@
+{
+  "module_name": "liquidio_image.h",
+  "hash_id": "97eb102295002de782f86c9faf421e723784e304d1e8c24dc64c9248f1256278",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cavium/liquidio/liquidio_image.h",
+  "human_readable_source": " \n#ifndef _LIQUIDIO_IMAGE_H_\n#define _LIQUIDIO_IMAGE_H_\n\n#define LIO_MAX_FW_TYPE_LEN     (8)\n#define LIO_MAX_FW_FILENAME_LEN (256)\n#define LIO_FW_DIR              \"liquidio/\"\n#define LIO_FW_BASE_NAME        \"lio_\"\n#define LIO_FW_NAME_SUFFIX      \".bin\"\n#define LIO_FW_NAME_TYPE_NIC    \"nic\"\n#define LIO_FW_NAME_TYPE_AUTO   \"auto\"\n#define LIO_FW_NAME_TYPE_NONE   \"none\"\n#define LIO_MAX_FIRMWARE_VERSION_LEN 16\n\n#define LIO_MAX_BOOTCMD_LEN 1024\n#define LIO_MAX_IMAGES 16\n#define LIO_NIC_MAGIC 0x434E4943      \nstruct octeon_firmware_desc {\n\t__be64 addr;\n\t__be32 len;\n\t__be32 crc32;          \n};\n\n \nstruct octeon_firmware_file_header {\n\t__be32 magic;\n\tchar version[LIO_MAX_FIRMWARE_VERSION_LEN];\n\tchar bootcmd[LIO_MAX_BOOTCMD_LEN];\n\t__be32 num_images;\n\tstruct octeon_firmware_desc desc[LIO_MAX_IMAGES];\n\t__be32 pad;\n\t__be32 crc32;          \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

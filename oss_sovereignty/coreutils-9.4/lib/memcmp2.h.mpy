@@ -1,0 +1,9 @@
+{
+  "module_name": "memcmp2.h",
+  "hash_id": "af596e3a0d4853656dd8ffc93c50a8c5f8c3fbe3813f29311fef90f331d53d42",
+  "original_prompt": "Ingested from coreutils-9.4/lib/memcmp2.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stddef.h>\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n\n \nextern int memcmp2 (const char *s1, size_t n1, const char *s2, size_t n2)\n  _GL_ATTRIBUTE_PURE;\n\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

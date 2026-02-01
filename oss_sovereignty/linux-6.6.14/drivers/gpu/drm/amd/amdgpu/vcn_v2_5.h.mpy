@@ -1,0 +1,9 @@
+{
+  "module_name": "vcn_v2_5.h",
+  "hash_id": "54ff97863911ff11711a446e1d97a1c8d9717551c76c3aae1e4900278e2100ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/vcn_v2_5.h",
+  "human_readable_source": " \n\n#ifndef __VCN_V2_5_H__\n#define __VCN_V2_5_H__\n\nenum amdgpu_vcn_v2_6_sub_block {\n\tAMDGPU_VCN_V2_6_VCPU_VCODEC = 0,\n\n\tAMDGPU_VCN_V2_6_MAX_SUB_BLOCK,\n};\n\nextern const struct amdgpu_ip_block_version vcn_v2_5_ip_block;\nextern const struct amdgpu_ip_block_version vcn_v2_6_ip_block;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

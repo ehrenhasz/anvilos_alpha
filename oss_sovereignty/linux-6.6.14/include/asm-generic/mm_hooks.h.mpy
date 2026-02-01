@@ -1,0 +1,9 @@
+{
+  "module_name": "mm_hooks.h",
+  "hash_id": "981c39a785a105d7f780f362c5fb1e29f3c33bc45468a8069b7eae7b6db6d162",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/mm_hooks.h",
+  "human_readable_source": " \n \n#ifndef _ASM_GENERIC_MM_HOOKS_H\n#define _ASM_GENERIC_MM_HOOKS_H\n\nstatic inline int arch_dup_mmap(struct mm_struct *oldmm,\n\t\t\t\tstruct mm_struct *mm)\n{\n\treturn 0;\n}\n\nstatic inline void arch_exit_mmap(struct mm_struct *mm)\n{\n}\n\nstatic inline void arch_unmap(struct mm_struct *mm,\n\t\t\tunsigned long start, unsigned long end)\n{\n}\n\nstatic inline bool arch_vma_access_permitted(struct vm_area_struct *vma,\n\t\tbool write, bool execute, bool foreign)\n{\n\t \n\treturn true;\n}\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

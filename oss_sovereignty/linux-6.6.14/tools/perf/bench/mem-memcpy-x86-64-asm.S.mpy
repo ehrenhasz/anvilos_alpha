@@ -1,0 +1,9 @@
+{
+  "module_name": "mem-memcpy-x86-64-asm.S",
+  "hash_id": "15cc1452982aeb611d3a405174e372fca52465d801936715740f0398e0be635b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/bench/mem-memcpy-x86-64-asm.S",
+  "human_readable_source": " \n\n \n\n \n#define SYM_FUNC_START_LOCAL(name)                      \\\n        SYM_START(name, SYM_L_GLOBAL, SYM_A_ALIGN)\n#define memcpy MEMCPY  \n#define altinstr_replacement text\n#define globl p2align 4; .globl\n#define _ASM_EXTABLE_FAULT(x, y)\n#define _ASM_EXTABLE(x, y)\n\n#include \"../../arch/x86/lib/memcpy_64.S\"\n \n.section .note.GNU-stack,\"\",@progbits\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

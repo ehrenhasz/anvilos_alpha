@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_edcasetting_regdef.h",
+  "hash_id": "a1b5f158c3436caec683416709f365b354e4d929564eeb5cd01758d8462b773a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_edcasetting_regdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_EDCASETTING_REGDEF_H__\n#define __RTL8712_EDCASETTING_REGDEF_H__\n\n#define EDCA_VO_PARAM\t\t(RTL8712_EDCASETTING_ + 0x00)\n#define EDCA_VI_PARAM\t\t(RTL8712_EDCASETTING_ + 0x04)\n#define EDCA_BE_PARAM\t\t(RTL8712_EDCASETTING_ + 0x08)\n#define EDCA_BK_PARAM\t\t(RTL8712_EDCASETTING_ + 0x0C)\n#define BCNTCFG\t\t\t(RTL8712_EDCASETTING_ + 0x10)\n#define CWRR\t\t\t(RTL8712_EDCASETTING_ + 0x12)\n#define ACMAVG\t\t\t(RTL8712_EDCASETTING_ + 0x16)\n#define ACMHWCTRL\t\t(RTL8712_EDCASETTING_ + 0x17)\n#define VO_ADMTIME\t\t(RTL8712_EDCASETTING_ + 0x18)\n#define VI_ADMTIME\t\t(RTL8712_EDCASETTING_ + 0x1C)\n#define BE_ADMTIME\t\t(RTL8712_EDCASETTING_ + 0x20)\n#define RL\t\t\t(RTL8712_EDCASETTING_ + 0x24)\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "reset-syscfg.h",
+  "hash_id": "fbb435dd7ffe8ebcde4f8cacb2ecaf762574aa6253cffca29a237bdf57c474cc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/reset/sti/reset-syscfg.h",
+  "human_readable_source": " \n \n#ifndef __STI_RESET_SYSCFG_H\n#define __STI_RESET_SYSCFG_H\n\n#include <linux/device.h>\n#include <linux/regmap.h>\n#include <linux/reset-controller.h>\n\n \nstruct syscfg_reset_channel_data {\n\tconst char *compatible;\n\tstruct reg_field reset;\n\tstruct reg_field ack;\n};\n\n#define _SYSCFG_RST_CH(_c, _rr, _rb, _ar, _ab)\t\t\\\n\t{ .compatible\t= _c,\t\t\t\t\\\n\t  .reset\t= REG_FIELD(_rr, _rb, _rb),\t\\\n\t  .ack\t\t= REG_FIELD(_ar, _ab, _ab), }\n\n#define _SYSCFG_RST_CH_NO_ACK(_c, _rr, _rb)\t\t\\\n\t{ .compatible\t= _c,\t\t\t\\\n\t  .reset\t= REG_FIELD(_rr, _rb, _rb), }\n\n \nstruct syscfg_reset_controller_data {\n\tbool wait_for_ack;\n\tbool active_low;\n\tint nr_channels;\n\tconst struct syscfg_reset_channel_data *channels;\n};\n\n \nint syscfg_reset_probe(struct platform_device *pdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

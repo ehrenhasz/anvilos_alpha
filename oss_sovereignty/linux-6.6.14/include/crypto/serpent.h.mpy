@@ -1,0 +1,9 @@
+{
+  "module_name": "serpent.h",
+  "hash_id": "04df1664c33818c8277df904d512cf0a5cb6ce2704ebabd3abec2499b0d37bd9",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/serpent.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYPTO_SERPENT_H\n#define _CRYPTO_SERPENT_H\n\n#include <linux/types.h>\n#include <linux/crypto.h>\n\n#define SERPENT_MIN_KEY_SIZE\t\t  0\n#define SERPENT_MAX_KEY_SIZE\t\t 32\n#define SERPENT_EXPKEY_WORDS\t\t132\n#define SERPENT_BLOCK_SIZE\t\t 16\n\nstruct serpent_ctx {\n\tu32 expkey[SERPENT_EXPKEY_WORDS];\n};\n\nint __serpent_setkey(struct serpent_ctx *ctx, const u8 *key,\n\t\t     unsigned int keylen);\nint serpent_setkey(struct crypto_tfm *tfm, const u8 *key, unsigned int keylen);\n\nvoid __serpent_encrypt(const void *ctx, u8 *dst, const u8 *src);\nvoid __serpent_decrypt(const void *ctx, u8 *dst, const u8 *src);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

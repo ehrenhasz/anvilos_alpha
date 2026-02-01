@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5cdef474a17454c1e8507755c0196ddbb1ff25b244d0c6fb441befb1696ea2ae",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/tw5864/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_TW5864\n\ttristate \"Techwell TW5864 video/audio grabber and encoder\"\n\tdepends on VIDEO_DEV && PCI\n\tselect VIDEOBUF2_DMA_CONTIG\n\thelp\n\t  Support for boards based on Techwell TW5864 chip which provides\n\t  multichannel video & audio grabbing and encoding (H.264, MJPEG,\n\t  ADPCM G.726).\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called tw5864.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "exp_rcv.c",
+  "hash_id": "d79fca8ab99b00e2e5168dae90a874758936b354f9e92d893adbacd447388804",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/exp_rcv.c",
+  "human_readable_source": "\n \n\n#include \"exp_rcv.h\"\n#include \"trace.h\"\n\n \nstatic void hfi1_exp_tid_set_init(struct exp_tid_set *set)\n{\n\tINIT_LIST_HEAD(&set->list);\n\tset->count = 0;\n}\n\n \nvoid hfi1_exp_tid_group_init(struct hfi1_ctxtdata *rcd)\n{\n\thfi1_exp_tid_set_init(&rcd->tid_group_list);\n\thfi1_exp_tid_set_init(&rcd->tid_used_list);\n\thfi1_exp_tid_set_init(&rcd->tid_full_list);\n}\n\n \nint hfi1_alloc_ctxt_rcv_groups(struct hfi1_ctxtdata *rcd)\n{\n\tstruct hfi1_devdata *dd = rcd->dd;\n\tu32 tidbase;\n\tstruct tid_group *grp;\n\tint i;\n\tu32 ngroups;\n\n\tngroups = rcd->expected_count / dd->rcv_entries.group_size;\n\trcd->groups =\n\t\tkcalloc_node(ngroups, sizeof(*rcd->groups),\n\t\t\t     GFP_KERNEL, rcd->numa_id);\n\tif (!rcd->groups)\n\t\treturn -ENOMEM;\n\ttidbase = rcd->expected_base;\n\tfor (i = 0; i < ngroups; i++) {\n\t\tgrp = &rcd->groups[i];\n\t\tgrp->size = dd->rcv_entries.group_size;\n\t\tgrp->base = tidbase;\n\t\ttid_group_add_tail(grp, &rcd->tid_group_list);\n\t\ttidbase += dd->rcv_entries.group_size;\n\t}\n\n\treturn 0;\n}\n\n \nvoid hfi1_free_ctxt_rcv_groups(struct hfi1_ctxtdata *rcd)\n{\n\tkfree(rcd->groups);\n\trcd->groups = NULL;\n\thfi1_exp_tid_group_init(rcd);\n\n\thfi1_clear_tids(rcd);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

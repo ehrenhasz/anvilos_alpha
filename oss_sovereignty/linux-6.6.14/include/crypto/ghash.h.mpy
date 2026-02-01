@@ -1,0 +1,9 @@
+{
+  "module_name": "ghash.h",
+  "hash_id": "e75a06991709128d7598a39db69aa49a551c32384387bdfcfcd4a08ce00a4425",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/ghash.h",
+  "human_readable_source": " \n \n\n#ifndef __CRYPTO_GHASH_H__\n#define __CRYPTO_GHASH_H__\n\n#include <linux/types.h>\n#include <crypto/gf128mul.h>\n\n#define GHASH_BLOCK_SIZE\t16\n#define GHASH_DIGEST_SIZE\t16\n\nstruct ghash_ctx {\n\tstruct gf128mul_4k *gf128;\n};\n\nstruct ghash_desc_ctx {\n\tu8 buffer[GHASH_BLOCK_SIZE];\n\tu32 bytes;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "getrusage.m4",
+  "hash_id": "51532ee98aa5d87ac5fba18b2f484db2fc42484ef2227feb4f4f42b9bdc355aa",
+  "original_prompt": "Ingested from coreutils-9.4/m4/getrusage.m4",
+  "human_readable_source": "# getrusage.m4 serial 1\ndnl Copyright (C) 2012-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_GETRUSAGE],\n[\n  AC_REQUIRE([gl_SYS_RESOURCE_H_DEFAULTS])\n  AC_CHECK_FUNCS_ONCE([getrusage])\n  if test $ac_cv_func_getrusage = no; then\n    HAVE_GETRUSAGE=0\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

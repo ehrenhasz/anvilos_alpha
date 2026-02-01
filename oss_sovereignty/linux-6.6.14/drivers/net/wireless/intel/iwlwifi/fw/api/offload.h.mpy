@@ -1,0 +1,9 @@
+{
+  "module_name": "offload.h",
+  "hash_id": "ae407c15e7f4e1676fcf33e3d937b780359d0ba7ec9bb0060ec26fc38541b9b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/fw/api/offload.h",
+  "human_readable_source": " \n \n#ifndef __iwl_fw_api_offload_h__\n#define __iwl_fw_api_offload_h__\n\n \nenum iwl_prot_offload_subcmd_ids {\n\t \n\tWOWLAN_WAKE_PKT_NOTIFICATION = 0xFC,\n\n\t \n\tWOWLAN_INFO_NOTIFICATION = 0xFD,\n\n\t \n\tD3_END_NOTIFICATION = 0xFE,\n\n\t \n\tSTORED_BEACON_NTF = 0xFF,\n};\n\n#define MAX_STORED_BEACON_SIZE 600\n\n \nstruct iwl_stored_beacon_notif_common {\n\t__le32 system_time;\n\t__le64 tsf;\n\t__le32 beacon_timestamp;\n\t__le16 band;\n\t__le16 channel;\n\t__le32 rates;\n\t__le32 byte_count;\n} __packed;\n\n \nstruct iwl_stored_beacon_notif_v2 {\n\tstruct iwl_stored_beacon_notif_common common;\n\tu8 data[MAX_STORED_BEACON_SIZE];\n} __packed;  \n\n \nstruct iwl_stored_beacon_notif_v3 {\n\tstruct iwl_stored_beacon_notif_common common;\n\tu8 sta_id;\n\tu8 reserved[3];\n\tu8 data[MAX_STORED_BEACON_SIZE];\n} __packed;  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "b128ops.h",
+  "hash_id": "90add9c5cd859c516d337e16f78f99f98f5cafab4a63fd3d2ffe8ff280bbd19c",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/b128ops.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYPTO_B128OPS_H\n#define _CRYPTO_B128OPS_H\n\n#include <linux/types.h>\n\ntypedef struct {\n\t__be64 a, b;\n} be128;\n\ntypedef struct {\n\t__le64 b, a;\n} le128;\n\nstatic inline void be128_xor(be128 *r, const be128 *p, const be128 *q)\n{\n\tr->a = p->a ^ q->a;\n\tr->b = p->b ^ q->b;\n}\n\nstatic inline void le128_xor(le128 *r, const le128 *p, const le128 *q)\n{\n\tr->a = p->a ^ q->a;\n\tr->b = p->b ^ q->b;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

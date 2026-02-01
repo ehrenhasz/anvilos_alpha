@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-deps",
+  "hash_id": "b7952c29493a40385237347f09c489b9eab25c1113e6e5a2071e0351534cdbc7",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/zpool.d/dm-deps",
+  "human_readable_source": "#!/bin/sh\n#\n# Show device mapper dependent / underlying devices.  This is useful for\n# looking up the /dev/sd* devices associated with a dm or multipath device. \n#\n\nif [ \"$1\" = \"-h\" ] ; then\n\techo \"Show device mapper dependent (underlying) devices.\"\n\texit\nfi\n\n# shellcheck disable=SC2154\ndev=\"$VDEV_PATH\"\n\n# If the VDEV path is a symlink, resolve it to a real device\nif [ -L \"$dev\" ] ; then\n\tdev=$(readlink \"$dev\")\nfi\n\ndev=\"${dev##*/}\"\nval=\"\"\nif [ -d \"/sys/class/block/$dev/slaves\" ] ; then\n\t# ls -C: output in columns, no newlines, two spaces (change to one)\n\t# shellcheck disable=SC2012\n\tval=$(ls -C \"/sys/class/block/$dev/slaves\" | tr -s '[:space:]' ' ')\nfi\n\necho \"dm-deps=$val\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_in_wch.c",
+  "hash_id": "755def712ead7c14a3327fb1120a09c7fab499549452438fef48e0abdbc2d148",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/widechar/lib_in_wch.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_in_wch.c,v 1.7 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwin_wch(WINDOW *win, cchar_t *wcval)\n{\n    int code = OK;\n\n    TR(TRACE_CCALLS, (T_CALLED(\"win_wch(%p,%p)\"), (void *) win, (void *) wcval));\n\n    if (win != 0\n\t&& wcval != 0) {\n\tint row, col;\n\n\tgetyx(win, row, col);\n\n\t*wcval = win->_line[row].text[col];\n\tTR(TRACE_CCALLS, (\"data %s\", _tracecchar_t(wcval)));\n    } else {\n\tcode = ERR;\n    }\n    TR(TRACE_CCALLS, (T_RETURN(\"%d\"), code));\n    return (code);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

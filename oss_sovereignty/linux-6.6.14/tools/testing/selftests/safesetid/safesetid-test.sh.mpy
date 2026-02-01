@@ -1,0 +1,9 @@
+{
+  "module_name": "safesetid-test.sh",
+  "hash_id": "de487859919ed25aac74cbc6c4aa4e85d448db0de9d87412965e500b2458c788",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/safesetid/safesetid-test.sh",
+  "human_readable_source": "#!/bin/bash\n\nTCID=\"safesetid-test.sh\"\nerrcode=0\n\n# Kselftest framework requirement - SKIP code is 4.\nksft_skip=4\n\ncheck_root()\n{\n\tuid=$(id -u)\n\tif [ $uid -ne 0 ]; then\n\t\techo $TCID: must be run as root >&2\n\t\texit $ksft_skip\n\tfi\n}\n\nmain_function()\n{\n  check_root\n  ./safesetid-test\n}\n\nmain_function\necho \"$TCID: done\"\nexit $errcode\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

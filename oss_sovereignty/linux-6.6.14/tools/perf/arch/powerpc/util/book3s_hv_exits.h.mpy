@@ -1,0 +1,9 @@
+{
+  "module_name": "book3s_hv_exits.h",
+  "hash_id": "6c88ba2e3b3be30fb8defc3d8a3b9466ee46aa21624b68803e61760fa57c6ccc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/powerpc/util/book3s_hv_exits.h",
+  "human_readable_source": " \n#ifndef ARCH_PERF_BOOK3S_HV_EXITS_H\n#define ARCH_PERF_BOOK3S_HV_EXITS_H\n\n \n\n#define kvm_trace_symbol_exit \\\n\t{0x0,\t\"RETURN_TO_HOST\"}, \\\n\t{0x100, \"SYSTEM_RESET\"}, \\\n\t{0x200, \"MACHINE_CHECK\"}, \\\n\t{0x300, \"DATA_STORAGE\"}, \\\n\t{0x380, \"DATA_SEGMENT\"}, \\\n\t{0x400, \"INST_STORAGE\"}, \\\n\t{0x480, \"INST_SEGMENT\"}, \\\n\t{0x500, \"EXTERNAL\"}, \\\n\t{0x502, \"EXTERNAL_HV\"}, \\\n\t{0x600, \"ALIGNMENT\"}, \\\n\t{0x700, \"PROGRAM\"}, \\\n\t{0x800, \"FP_UNAVAIL\"}, \\\n\t{0x900, \"DECREMENTER\"}, \\\n\t{0x980, \"HV_DECREMENTER\"}, \\\n\t{0xc00, \"SYSCALL\"}, \\\n\t{0xd00, \"TRACE\"}, \\\n\t{0xe00, \"H_DATA_STORAGE\"}, \\\n\t{0xe20, \"H_INST_STORAGE\"}, \\\n\t{0xe40, \"H_EMUL_ASSIST\"}, \\\n\t{0xf00, \"PERFMON\"}, \\\n\t{0xf20, \"ALTIVEC\"}, \\\n\t{0xf40, \"VSX\"}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfs.h",
+  "hash_id": "99cd8a4c52b13fa3401b46e84a1fb9d5ac536486f84f61f4b748c158be96b97a",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/sysfs.h",
+  "human_readable_source": " \n\n#ifndef BTRFS_SYSFS_H\n#define BTRFS_SYSFS_H\n\n#include <linux/kobject.h>\n\nenum btrfs_feature_set {\n\tFEAT_COMPAT,\n\tFEAT_COMPAT_RO,\n\tFEAT_INCOMPAT,\n\tFEAT_MAX\n};\n\nchar *btrfs_printable_features(enum btrfs_feature_set set, u64 flags);\nconst char *btrfs_feature_set_name(enum btrfs_feature_set set);\nint btrfs_sysfs_add_device(struct btrfs_device *device);\nvoid btrfs_sysfs_remove_device(struct btrfs_device *device);\nint btrfs_sysfs_add_fsid(struct btrfs_fs_devices *fs_devs);\nvoid btrfs_sysfs_remove_fsid(struct btrfs_fs_devices *fs_devs);\nvoid btrfs_sysfs_update_sprout_fsid(struct btrfs_fs_devices *fs_devices);\nvoid btrfs_sysfs_feature_update(struct btrfs_fs_info *fs_info);\nvoid btrfs_kobject_uevent(struct block_device *bdev, enum kobject_action action);\n\nint __init btrfs_init_sysfs(void);\nvoid __cold btrfs_exit_sysfs(void);\nint btrfs_sysfs_add_mounted(struct btrfs_fs_info *fs_info);\nvoid btrfs_sysfs_remove_mounted(struct btrfs_fs_info *fs_info);\nvoid btrfs_sysfs_add_block_group_type(struct btrfs_block_group *cache);\nint btrfs_sysfs_add_space_info_type(struct btrfs_fs_info *fs_info,\n\t\t\t\t    struct btrfs_space_info *space_info);\nvoid btrfs_sysfs_remove_space_info(struct btrfs_space_info *space_info);\nvoid btrfs_sysfs_update_devid(struct btrfs_device *device);\n\nint btrfs_sysfs_add_one_qgroup(struct btrfs_fs_info *fs_info,\n\t\t\t\tstruct btrfs_qgroup *qgroup);\nvoid btrfs_sysfs_del_qgroups(struct btrfs_fs_info *fs_info);\nint btrfs_sysfs_add_qgroups(struct btrfs_fs_info *fs_info);\nvoid btrfs_sysfs_del_one_qgroup(struct btrfs_fs_info *fs_info,\n\t\t\t\tstruct btrfs_qgroup *qgroup);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "elm.h",
+  "hash_id": "b1439e09ded0dfca0590b4b3226991fa89885317f88f492dd57af12737018b68",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/elm.h",
+  "human_readable_source": " \n \n\n#ifndef __ELM_H\n#define __ELM_H\n\nenum bch_ecc {\n\tBCH4_ECC = 0,\n\tBCH8_ECC,\n\tBCH16_ECC,\n};\n\n \n#define ERROR_VECTOR_MAX\t\t8\n\n \nstruct elm_errorvec {\n\tbool error_reported;\n\tbool error_uncorrectable;\n\tint error_count;\n\tint error_loc[16];\n};\n\n#if IS_ENABLED(CONFIG_MTD_NAND_OMAP_BCH)\nvoid elm_decode_bch_error_page(struct device *dev, u8 *ecc_calc,\n\t\tstruct elm_errorvec *err_vec);\nint elm_config(struct device *dev, enum bch_ecc bch_type,\n\tint ecc_steps, int ecc_step_size, int ecc_syndrome_size);\n#else\nstatic inline void\nelm_decode_bch_error_page(struct device *dev, u8 *ecc_calc,\n\t\t\t  struct elm_errorvec *err_vec)\n{\n}\n\nstatic inline int elm_config(struct device *dev, enum bch_ecc bch_type,\n\t\t\t     int ecc_steps, int ecc_step_size,\n\t\t\t     int ecc_syndrome_size)\n{\n\treturn -ENOSYS;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

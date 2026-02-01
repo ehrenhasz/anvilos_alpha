@@ -1,0 +1,9 @@
+{
+  "module_name": "rcuwait_api.h",
+  "hash_id": "ec8de9ffa80e4c9e5c3b1e44e5daa11c67bea133d0e5d062e00f3ebb7601ecc3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rcuwait_api.h",
+  "human_readable_source": "#include <linux/rcuwait.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_atomic_uapi.h",
+  "hash_id": "fbfe0fa2720fd8b69dae5dfc02396b61daabefe8a7c2b29d5d9da7b80a19cb42",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_atomic_uapi.h",
+  "human_readable_source": " \n\n#ifndef DRM_ATOMIC_UAPI_H_\n#define DRM_ATOMIC_UAPI_H_\n\nstruct drm_crtc_state;\nstruct drm_display_mode;\nstruct drm_property_blob;\nstruct drm_plane_state;\nstruct drm_crtc;\nstruct drm_connector_state;\nstruct dma_fence;\nstruct drm_framebuffer;\n\nint __must_check\ndrm_atomic_set_mode_for_crtc(struct drm_crtc_state *state,\n\t\t\t     const struct drm_display_mode *mode);\nint __must_check\ndrm_atomic_set_mode_prop_for_crtc(struct drm_crtc_state *state,\n\t\t\t\t  struct drm_property_blob *blob);\nint __must_check\ndrm_atomic_set_crtc_for_plane(struct drm_plane_state *plane_state,\n\t\t\t      struct drm_crtc *crtc);\nvoid drm_atomic_set_fb_for_plane(struct drm_plane_state *plane_state,\n\t\t\t\t struct drm_framebuffer *fb);\nint __must_check\ndrm_atomic_set_crtc_for_connector(struct drm_connector_state *conn_state,\n\t\t\t\t  struct drm_crtc *crtc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

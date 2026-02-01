@@ -1,0 +1,9 @@
+{
+  "module_name": "linux_logo.h",
+  "hash_id": "9e44b0884c520a3e65709c1363bff1f94ab78f3ad5ef3d0a910b05778e523ca1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/linux_logo.h",
+  "human_readable_source": " \n#ifndef _LINUX_LINUX_LOGO_H\n#define _LINUX_LINUX_LOGO_H\n\n \n\n#include <linux/init.h>\n\n\n#define LINUX_LOGO_MONO\t\t1\t \n#define LINUX_LOGO_VGA16\t2\t \n#define LINUX_LOGO_CLUT224\t3\t \n#define LINUX_LOGO_GRAY256\t4\t \n\n\nstruct linux_logo {\n\tint type;\t\t\t \n\tunsigned int width;\n\tunsigned int height;\n\tunsigned int clutsize;\t\t \n\tconst unsigned char *clut;\t \n\tconst unsigned char *data;\n};\n\nextern const struct linux_logo logo_linux_mono;\nextern const struct linux_logo logo_linux_vga16;\nextern const struct linux_logo logo_linux_clut224;\nextern const struct linux_logo logo_dec_clut224;\nextern const struct linux_logo logo_mac_clut224;\nextern const struct linux_logo logo_parisc_clut224;\nextern const struct linux_logo logo_sgi_clut224;\nextern const struct linux_logo logo_sun_clut224;\nextern const struct linux_logo logo_superh_mono;\nextern const struct linux_logo logo_superh_vga16;\nextern const struct linux_logo logo_superh_clut224;\nextern const struct linux_logo logo_spe_clut224;\n\nextern const struct linux_logo *fb_find_logo(int depth);\n#ifdef CONFIG_FB_LOGO_EXTRA\nextern void fb_append_extra_logo(const struct linux_logo *logo,\n\t\t\t\t unsigned int n);\n#else\nstatic inline void fb_append_extra_logo(const struct linux_logo *logo,\n\t\t\t\t\tunsigned int n)\n{}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sun9i-a80-de.h",
+  "hash_id": "24a1ec8cd3f286ebed5431fe8aab496743d25c75c71dc34aa6039439221d0401",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/sun9i-a80-de.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_CLOCK_SUN9I_A80_DE_H_\n#define _DT_BINDINGS_CLOCK_SUN9I_A80_DE_H_\n\n#define CLK_FE0\t\t\t0\n#define CLK_FE1\t\t\t1\n#define CLK_FE2\t\t\t2\n#define CLK_IEP_DEU0\t\t3\n#define CLK_IEP_DEU1\t\t4\n#define CLK_BE0\t\t\t5\n#define CLK_BE1\t\t\t6\n#define CLK_BE2\t\t\t7\n#define CLK_IEP_DRC0\t\t8\n#define CLK_IEP_DRC1\t\t9\n#define CLK_MERGE\t\t10\n\n#define CLK_DRAM_FE0\t\t11\n#define CLK_DRAM_FE1\t\t12\n#define CLK_DRAM_FE2\t\t13\n#define CLK_DRAM_DEU0\t\t14\n#define CLK_DRAM_DEU1\t\t15\n#define CLK_DRAM_BE0\t\t16\n#define CLK_DRAM_BE1\t\t17\n#define CLK_DRAM_BE2\t\t18\n#define CLK_DRAM_DRC0\t\t19\n#define CLK_DRAM_DRC1\t\t20\n\n#define CLK_BUS_FE0\t\t21\n#define CLK_BUS_FE1\t\t22\n#define CLK_BUS_FE2\t\t23\n#define CLK_BUS_DEU0\t\t24\n#define CLK_BUS_DEU1\t\t25\n#define CLK_BUS_BE0\t\t26\n#define CLK_BUS_BE1\t\t27\n#define CLK_BUS_BE2\t\t28\n#define CLK_BUS_DRC0\t\t29\n#define CLK_BUS_DRC1\t\t30\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

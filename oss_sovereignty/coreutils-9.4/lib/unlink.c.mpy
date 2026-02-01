@@ -1,0 +1,9 @@
+{
+  "module_name": "unlink.c",
+  "hash_id": "550e5513db9971d20b41894272797595d131e15bfc6cc5f23a852a4712982428",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unlink.c",
+  "human_readable_source": " \n\nint\nrpl_unlink (char const *name)\n{\n   \n  size_t len = strlen (name);\n  int result = 0;\n  if (len && ISSLASH (name[len - 1]))\n    {\n       \n      struct stat st;\n      result = lstat (name, &st);\n      if (result == 0 || errno == EOVERFLOW)\n        {\n           \n          char *short_name = malloc (len);\n          if (!short_name)\n            return -1;\n          memcpy (short_name, name, len);\n          while (len && ISSLASH (short_name[len - 1]))\n            short_name[--len] = '\\0';\n          if (len && (lstat (short_name, &st) || S_ISLNK (st.st_mode)))\n            {\n              free (short_name);\n              errno = EPERM;\n              return -1;\n            }\n          free (short_name);\n          result = 0;\n        }\n    }\n  if (!result)\n    {\n#if UNLINK_PARENT_BUG\n      if (len >= 2 && name[len - 1] == '.' && name[len - 2] == '.'\n          && (len == 2 || ISSLASH (name[len - 3])))\n        {\n          errno = EISDIR;  \n          return -1;\n        }\n#endif\n      result = unlink (name);\n    }\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

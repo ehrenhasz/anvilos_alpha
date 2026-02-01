@@ -1,0 +1,9 @@
+{
+  "module_name": "cvb.h",
+  "hash_id": "6a8d27cc68aa7937ec1b72ecd6e718c9b6eec89a88be1ba0402dac0b94346e7e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/tegra/cvb.h",
+  "human_readable_source": " \n \n\n#ifndef __DRIVERS_CLK_TEGRA_CVB_H\n#define __DRIVERS_CLK_TEGRA_CVB_H\n\n#include <linux/types.h>\n\nstruct device;\n\n#define MAX_DVFS_FREQS\t40\n\nstruct rail_alignment {\n\tint offset_uv;\n\tint step_uv;\n};\n\nstruct cvb_coefficients {\n\tint c0;\n\tint c1;\n\tint c2;\n};\n\nstruct cvb_table_freq_entry {\n\tunsigned long freq;\n\tstruct cvb_coefficients coefficients;\n};\n\nstruct cvb_cpu_dfll_data {\n\tu32 tune0_low;\n\tu32 tune0_high;\n\tu32 tune1;\n\tunsigned int tune_high_min_millivolts;\n};\n\nstruct cvb_table {\n\tint speedo_id;\n\tint process_id;\n\n\tint min_millivolts;\n\tint max_millivolts;\n\n\tint speedo_scale;\n\tint voltage_scale;\n\tstruct cvb_table_freq_entry entries[MAX_DVFS_FREQS];\n\tstruct cvb_cpu_dfll_data cpu_dfll_data;\n};\n\nconst struct cvb_table *\ntegra_cvb_add_opp_table(struct device *dev, const struct cvb_table *cvb_tables,\n\t\t\tsize_t count, struct rail_alignment *align,\n\t\t\tint process_id, int speedo_id, int speedo_value,\n\t\t\tunsigned long max_freq);\nvoid tegra_cvb_remove_opp_table(struct device *dev,\n\t\t\t\tconst struct cvb_table *table,\n\t\t\t\tunsigned long max_freq);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

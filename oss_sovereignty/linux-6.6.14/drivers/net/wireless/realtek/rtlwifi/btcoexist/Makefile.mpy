@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "54b6889132576ff2ab9fa39f2cecb68be571c363b6d46842b1920e59add1c740",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/btcoexist/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nbtcoexist-objs :=\thalbtc8192e2ant.o\t\\\n\t\t\thalbtc8723b1ant.o\t\\\n\t\t\thalbtc8723b2ant.o\t\\\n\t\t\thalbtc8821a1ant.o\t\\\n\t\t\thalbtc8821a2ant.o\t\\\n\t\t\thalbtcoutsrc.o\t\t\\\n\t\t\trtl_btc.o\n\nobj-$(CONFIG_RTLBTCOEXIST) += btcoexist.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

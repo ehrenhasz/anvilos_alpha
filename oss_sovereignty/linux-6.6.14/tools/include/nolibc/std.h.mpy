@@ -1,0 +1,9 @@
+{
+  "module_name": "std.h",
+  "hash_id": "fc97c7d6dc9a962706f8675413f0656ddd71d95c3b03ca25d168ab0278013c50",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/nolibc/std.h",
+  "human_readable_source": " \n \n\n#ifndef _NOLIBC_STD_H\n#define _NOLIBC_STD_H\n\n \n\n \n#ifndef NULL\n#define NULL ((void *)0)\n#endif\n\n#include \"stdint.h\"\n\n \ntypedef unsigned int          dev_t;\ntypedef unsigned long         ino_t;\ntypedef unsigned int         mode_t;\ntypedef   signed int          pid_t;\ntypedef unsigned int          uid_t;\ntypedef unsigned int          gid_t;\ntypedef unsigned long       nlink_t;\ntypedef   signed long         off_t;\ntypedef   signed long     blksize_t;\ntypedef   signed long      blkcnt_t;\ntypedef   signed long        time_t;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "orangefs-debugfs.h",
+  "hash_id": "4b6e7957b0dc46d281e4ac635038455fa95ae9e791a39956c09cd593e596740a",
+  "original_prompt": "Ingested from linux-6.6.14/fs/orangefs/orangefs-debugfs.h",
+  "human_readable_source": " \nvoid orangefs_debugfs_init(int);\nvoid orangefs_debugfs_cleanup(void);\nint orangefs_prepare_debugfs_help_string(int);\nint orangefs_debugfs_new_client_mask(void __user *);\nint orangefs_debugfs_new_client_string(void __user *);\nint orangefs_debugfs_new_debug(void __user *);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

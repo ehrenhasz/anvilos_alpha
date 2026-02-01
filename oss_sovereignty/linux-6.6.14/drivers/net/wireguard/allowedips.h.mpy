@@ -1,0 +1,9 @@
+{
+  "module_name": "allowedips.h",
+  "hash_id": "8a0b4d89e1f501990d27577c003cffdf422650d13348942abdadb6492731c3c3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireguard/allowedips.h",
+  "human_readable_source": " \n \n\n#ifndef _WG_ALLOWEDIPS_H\n#define _WG_ALLOWEDIPS_H\n\n#include <linux/mutex.h>\n#include <linux/ip.h>\n#include <linux/ipv6.h>\n\nstruct wg_peer;\n\nstruct allowedips_node {\n\tstruct wg_peer __rcu *peer;\n\tstruct allowedips_node __rcu *bit[2];\n\tu8 cidr, bit_at_a, bit_at_b, bitlen;\n\tu8 bits[16] __aligned(__alignof(u64));\n\n\t \n\tunsigned long parent_bit_packed;\n\tunion {\n\t\tstruct list_head peer_list;\n\t\tstruct rcu_head rcu;\n\t};\n};\n\nstruct allowedips {\n\tstruct allowedips_node __rcu *root4;\n\tstruct allowedips_node __rcu *root6;\n\tu64 seq;\n} __aligned(4);  \n\nvoid wg_allowedips_init(struct allowedips *table);\nvoid wg_allowedips_free(struct allowedips *table, struct mutex *mutex);\nint wg_allowedips_insert_v4(struct allowedips *table, const struct in_addr *ip,\n\t\t\t    u8 cidr, struct wg_peer *peer, struct mutex *lock);\nint wg_allowedips_insert_v6(struct allowedips *table, const struct in6_addr *ip,\n\t\t\t    u8 cidr, struct wg_peer *peer, struct mutex *lock);\nvoid wg_allowedips_remove_by_peer(struct allowedips *table,\n\t\t\t\t  struct wg_peer *peer, struct mutex *lock);\n \nint wg_allowedips_read_node(struct allowedips_node *node, u8 ip[16], u8 *cidr);\n\n \nstruct wg_peer *wg_allowedips_lookup_dst(struct allowedips *table,\n\t\t\t\t\t struct sk_buff *skb);\nstruct wg_peer *wg_allowedips_lookup_src(struct allowedips *table,\n\t\t\t\t\t struct sk_buff *skb);\n\n#ifdef DEBUG\nbool wg_allowedips_selftest(void);\n#endif\n\nint wg_allowedips_slab_init(void);\nvoid wg_allowedips_slab_uninit(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "option_ms.h",
+  "hash_id": "d73053d58eb6120a4ece6bee594b38494d5b00976efea539175faff407ff1533",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/storage/option_ms.h",
+  "human_readable_source": " \n#ifndef _OPTION_MS_H_\n#define _OPTION_MS_H_\nextern int option_ms_init(struct us_data *us);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

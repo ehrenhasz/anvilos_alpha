@@ -1,0 +1,9 @@
+{
+  "module_name": "hci_mon.h",
+  "hash_id": "133a97fcc18a1da4a43fab9d51e2a09dbb0709ddaebb08bebafbff8062a88470",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/bluetooth/hci_mon.h",
+  "human_readable_source": " \n\n#ifndef __HCI_MON_H\n#define __HCI_MON_H\n\nstruct hci_mon_hdr {\n\t__le16\topcode;\n\t__le16\tindex;\n\t__le16\tlen;\n} __packed;\n#define HCI_MON_HDR_SIZE 6\n\n#define HCI_MON_NEW_INDEX\t0\n#define HCI_MON_DEL_INDEX\t1\n#define HCI_MON_COMMAND_PKT\t2\n#define HCI_MON_EVENT_PKT\t3\n#define HCI_MON_ACL_TX_PKT\t4\n#define HCI_MON_ACL_RX_PKT\t5\n#define HCI_MON_SCO_TX_PKT\t6\n#define HCI_MON_SCO_RX_PKT\t7\n#define HCI_MON_OPEN_INDEX\t8\n#define HCI_MON_CLOSE_INDEX\t9\n#define HCI_MON_INDEX_INFO\t10\n#define HCI_MON_VENDOR_DIAG\t11\n#define HCI_MON_SYSTEM_NOTE\t12\n#define HCI_MON_USER_LOGGING\t13\n#define HCI_MON_CTRL_OPEN\t14\n#define HCI_MON_CTRL_CLOSE\t15\n#define HCI_MON_CTRL_COMMAND\t16\n#define HCI_MON_CTRL_EVENT\t17\n#define HCI_MON_ISO_TX_PKT\t18\n#define HCI_MON_ISO_RX_PKT\t19\n\nstruct hci_mon_new_index {\n\t__u8\t\ttype;\n\t__u8\t\tbus;\n\tbdaddr_t\tbdaddr;\n\tchar\t\tname[8] __nonstring;\n} __packed;\n#define HCI_MON_NEW_INDEX_SIZE 16\n\nstruct hci_mon_index_info {\n\tbdaddr_t\tbdaddr;\n\t__le16\t\tmanufacturer;\n} __packed;\n#define HCI_MON_INDEX_INFO_SIZE 8\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

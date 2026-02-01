@@ -1,0 +1,9 @@
+{
+  "module_name": "dlm.h",
+  "hash_id": "ea1e6a836056f9a9298711b6adf9bbff17de41f4a2dd267a60f0aa4f1ec01deb",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dlm.h",
+  "human_readable_source": " \n \n#ifndef __DLM_DOT_H__\n#define __DLM_DOT_H__\n\n#include <uapi/linux/dlm.h>\n\n\nstruct dlm_slot {\n\tint nodeid;  \n\tint slot;    \n};\n\n \n\nstruct dlm_lockspace_ops {\n\tvoid (*recover_prep) (void *ops_arg);\n\tvoid (*recover_slot) (void *ops_arg, struct dlm_slot *slot);\n\tvoid (*recover_done) (void *ops_arg, struct dlm_slot *slots,\n\t\t\t      int num_slots, int our_slot, uint32_t generation);\n};\n\n \n\nint dlm_new_lockspace(const char *name, const char *cluster,\n\t\t      uint32_t flags, int lvblen,\n\t\t      const struct dlm_lockspace_ops *ops, void *ops_arg,\n\t\t      int *ops_result, dlm_lockspace_t **lockspace);\n\n \n\nint dlm_release_lockspace(dlm_lockspace_t *lockspace, int force);\n\n \n\nint dlm_lock(dlm_lockspace_t *lockspace,\n\t     int mode,\n\t     struct dlm_lksb *lksb,\n\t     uint32_t flags,\n\t     const void *name,\n\t     unsigned int namelen,\n\t     uint32_t parent_lkid,\n\t     void (*lockast) (void *astarg),\n\t     void *astarg,\n\t     void (*bast) (void *astarg, int mode));\n\n \n\nint dlm_unlock(dlm_lockspace_t *lockspace,\n\t       uint32_t lkid,\n\t       uint32_t flags,\n\t       struct dlm_lksb *lksb,\n\t       void *astarg);\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

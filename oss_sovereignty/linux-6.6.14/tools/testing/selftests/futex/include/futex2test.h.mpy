@@ -1,0 +1,9 @@
+{
+  "module_name": "futex2test.h",
+  "hash_id": "b7fc88c787a52a65dc64b21d8fb0c54fc226b26eff120f94f30900b75ca515d3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/futex/include/futex2test.h",
+  "human_readable_source": " \n \n#include <stdint.h>\n\n#define u64_to_ptr(x) ((void *)(uintptr_t)(x))\n\n \nstatic inline int futex_waitv(volatile struct futex_waitv *waiters, unsigned long nr_waiters,\n\t\t\t      unsigned long flags, struct timespec *timo, clockid_t clockid)\n{\n\treturn syscall(__NR_futex_waitv, waiters, nr_waiters, flags, timo, clockid);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

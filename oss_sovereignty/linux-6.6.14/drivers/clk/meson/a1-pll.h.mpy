@@ -1,0 +1,9 @@
+{
+  "module_name": "a1-pll.h",
+  "hash_id": "cbebdeeb7f3997c7dfb06c0029a60bd5149a3e6e186ebe7d77db0f3faef703fb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/meson/a1-pll.h",
+  "human_readable_source": " \n \n\n#ifndef __A1_PLL_H\n#define __A1_PLL_H\n\n#include \"clk-pll.h\"\n\n \n#define ANACTRL_FIXPLL_CTRL0\t0x0\n#define ANACTRL_FIXPLL_CTRL1\t0x4\n#define ANACTRL_FIXPLL_STS\t0x14\n#define ANACTRL_HIFIPLL_CTRL0\t0xc0\n#define ANACTRL_HIFIPLL_CTRL1\t0xc4\n#define ANACTRL_HIFIPLL_CTRL2\t0xc8\n#define ANACTRL_HIFIPLL_CTRL3\t0xcc\n#define ANACTRL_HIFIPLL_CTRL4\t0xd0\n#define ANACTRL_HIFIPLL_STS\t0xd4\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

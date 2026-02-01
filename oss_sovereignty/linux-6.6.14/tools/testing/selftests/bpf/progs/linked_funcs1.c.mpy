@@ -1,0 +1,9 @@
+{
+  "module_name": "linked_funcs1.c",
+  "hash_id": "5f043e878f2541148cfe4f438f74254e64e9c8fd39add94ebfed72e4bd556cbd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/linked_funcs1.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n#include <bpf/bpf_core_read.h>\n#include \"bpf_misc.h\"\n\n \nconst volatile int my_tid __weak;\nlong syscall_id __weak;\n\nint output_val1;\nint output_ctx1;\nint output_weak1;\n\n \nstatic __noinline int subprog(int x)\n{\n\t \n\treturn x * 1;\n}\n\n \nint set_output_val1(int x)\n{\n\toutput_val1 = x + subprog(x);\n\treturn x;\n}\n\n \nvoid set_output_ctx1(__u64 *ctx)\n{\n\toutput_ctx1 = ctx[1];  \n}\n\n \n__weak int set_output_weak(int x)\n{\n\tstatic volatile int whatever;\n\n\t \n\twhatever = bpf_core_type_size(struct task_struct);\n\t__sink(whatever);\n\n\toutput_weak1 = x;\n\treturn x;\n}\n\nextern int set_output_val2(int x);\n\n \n__hidden extern void set_output_ctx2(__u64 *ctx);\n\nSEC(\"?raw_tp/sys_enter\")\nint BPF_PROG(handler1, struct pt_regs *regs, long id)\n{\n\tstatic volatile int whatever;\n\n\tif (my_tid != (u32)bpf_get_current_pid_tgid() || id != syscall_id)\n\t\treturn 0;\n\n\t \n\twhatever = bpf_core_type_size(struct task_struct);\n\t__sink(whatever);\n\n\tset_output_val2(1000);\n\tset_output_ctx2(ctx);  \n\n\t \n\tset_output_weak(42);\n\n\treturn 0;\n}\n\nchar LICENSE[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

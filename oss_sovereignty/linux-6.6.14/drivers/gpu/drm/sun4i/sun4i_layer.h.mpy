@@ -1,0 +1,9 @@
+{
+  "module_name": "sun4i_layer.h",
+  "hash_id": "9cd6437efa64652133ee89465c075c1c9655fd859ee56c1c47d67fe2522e3ea4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sun4i/sun4i_layer.h",
+  "human_readable_source": " \n \n\n#ifndef _SUN4I_LAYER_H_\n#define _SUN4I_LAYER_H_\n\nstruct sunxi_engine;\n\nstruct sun4i_layer {\n\tstruct drm_plane\tplane;\n\tstruct sun4i_drv\t*drv;\n\tstruct sun4i_backend\t*backend;\n\tint\t\t\tid;\n};\n\nstruct sun4i_layer_state {\n\tstruct drm_plane_state\tstate;\n\tunsigned int\t\tpipe;\n\tbool\t\t\tuses_frontend;\n};\n\nstatic inline struct sun4i_layer *\nplane_to_sun4i_layer(struct drm_plane *plane)\n{\n\treturn container_of(plane, struct sun4i_layer, plane);\n}\n\nstatic inline struct sun4i_layer_state *\nstate_to_sun4i_layer_state(struct drm_plane_state *state)\n{\n\treturn container_of(state, struct sun4i_layer_state, state);\n}\n\nstruct drm_plane **sun4i_layers_init(struct drm_device *drm,\n\t\t\t\t     struct sunxi_engine *engine);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rockchip_drm_fb.h",
+  "hash_id": "f741d5d38854a49ae6cf81056e24b426add0bdced2a3c0772c550a0e79b9dbe9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/rockchip/rockchip_drm_fb.h",
+  "human_readable_source": " \n \n\n#ifndef _ROCKCHIP_DRM_FB_H\n#define _ROCKCHIP_DRM_FB_H\n\nvoid rockchip_drm_mode_config_init(struct drm_device *dev);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

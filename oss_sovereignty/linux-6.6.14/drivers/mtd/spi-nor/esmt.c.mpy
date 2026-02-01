@@ -1,0 +1,9 @@
+{
+  "module_name": "esmt.c",
+  "hash_id": "db75b28fd34e666733983b9f74a0ee6b385d669dc8c8da45e6c2e2f2741f5f42",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/spi-nor/esmt.c",
+  "human_readable_source": "\n \n\n#include <linux/mtd/spi-nor.h>\n\n#include \"core.h\"\n\nstatic const struct flash_info esmt_nor_parts[] = {\n\t \n\t{ \"f25l32pa\", INFO(0x8c2016, 0, 64 * 1024, 64)\n\t\tFLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE)\n\t\tNO_SFDP_FLAGS(SECT_4K) },\n\t{ \"f25l32qa-2s\", INFO(0x8c4116, 0, 64 * 1024, 64)\n\t\tFLAGS(SPI_NOR_HAS_LOCK)\n\t\tNO_SFDP_FLAGS(SECT_4K) },\n\t{ \"f25l64qa\", INFO(0x8c4117, 0, 64 * 1024, 128)\n\t\tFLAGS(SPI_NOR_HAS_LOCK)\n\t\tNO_SFDP_FLAGS(SECT_4K) },\n};\n\nconst struct spi_nor_manufacturer spi_nor_esmt = {\n\t.name = \"esmt\",\n\t.parts = esmt_nor_parts,\n\t.nparts = ARRAY_SIZE(esmt_nor_parts),\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

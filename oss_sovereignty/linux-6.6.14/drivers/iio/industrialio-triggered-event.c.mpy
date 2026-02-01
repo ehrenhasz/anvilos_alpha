@@ -1,0 +1,9 @@
+{
+  "module_name": "industrialio-triggered-event.c",
+  "hash_id": "339bafee7b29ada407b5a2d9c7e2c5cd8460623b3dc69d7be682c05928dea509",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/industrialio-triggered-event.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/export.h>\n#include <linux/module.h>\n#include <linux/iio/iio.h>\n#include <linux/iio/triggered_event.h>\n#include <linux/iio/trigger_consumer.h>\n\n \nint iio_triggered_event_setup(struct iio_dev *indio_dev,\n\t\t\t      irqreturn_t (*h)(int irq, void *p),\n\t\t\t      irqreturn_t (*thread)(int irq, void *p))\n{\n\tindio_dev->pollfunc_event = iio_alloc_pollfunc(h,\n\t\t\t\t\t\t       thread,\n\t\t\t\t\t\t       IRQF_ONESHOT,\n\t\t\t\t\t\t       indio_dev,\n\t\t\t\t\t\t       \"%s_consumer%d\",\n\t\t\t\t\t\t       indio_dev->name,\n\t\t\t\t\t\t       iio_device_id(indio_dev));\n\tif (indio_dev->pollfunc_event == NULL)\n\t\treturn -ENOMEM;\n\n\t \n\tindio_dev->modes |= INDIO_EVENT_TRIGGERED;\n\n\treturn 0;\n}\nEXPORT_SYMBOL(iio_triggered_event_setup);\n\n \nvoid iio_triggered_event_cleanup(struct iio_dev *indio_dev)\n{\n\tindio_dev->modes &= ~INDIO_EVENT_TRIGGERED;\n\tiio_dealloc_pollfunc(indio_dev->pollfunc_event);\n}\nEXPORT_SYMBOL(iio_triggered_event_cleanup);\n\nMODULE_AUTHOR(\"Vladimir Barinov\");\nMODULE_DESCRIPTION(\"IIO helper functions for setting up triggered events\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

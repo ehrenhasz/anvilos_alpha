@@ -1,0 +1,9 @@
+{
+  "module_name": "master.h",
+  "hash_id": "0f4990426ef762efa60ab43e359e6f174487e42989d6d0efc31693c543b68524",
+  "original_prompt": "Ingested from linux-6.6.14/net/dsa/master.h",
+  "human_readable_source": " \n\n#ifndef __DSA_MASTER_H\n#define __DSA_MASTER_H\n\nstruct dsa_port;\nstruct net_device;\nstruct netdev_lag_upper_info;\nstruct netlink_ext_ack;\n\nint dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp);\nvoid dsa_master_teardown(struct net_device *dev);\nint dsa_master_lag_setup(struct net_device *lag_dev, struct dsa_port *cpu_dp,\n\t\t\t struct netdev_lag_upper_info *uinfo,\n\t\t\t struct netlink_ext_ack *extack);\nvoid dsa_master_lag_teardown(struct net_device *lag_dev,\n\t\t\t     struct dsa_port *cpu_dp);\nint __dsa_master_hwtstamp_validate(struct net_device *dev,\n\t\t\t\t   const struct kernel_hwtstamp_config *config,\n\t\t\t\t   struct netlink_ext_ack *extack);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

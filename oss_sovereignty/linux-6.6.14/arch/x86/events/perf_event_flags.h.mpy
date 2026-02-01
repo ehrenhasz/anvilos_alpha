@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_event_flags.h",
+  "hash_id": "ba9ca0cf53f1b6accdab1a95732b14e401a688d0c378f08697114c0670449c75",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/events/perf_event_flags.h",
+  "human_readable_source": "\n \nPERF_ARCH(PEBS_LDLAT,\t\t0x00001)  \nPERF_ARCH(PEBS_ST,\t\t0x00002)  \nPERF_ARCH(PEBS_ST_HSW,\t\t0x00004)  \nPERF_ARCH(PEBS_LD_HSW,\t\t0x00008)  \nPERF_ARCH(PEBS_NA_HSW,\t\t0x00010)  \nPERF_ARCH(EXCL,\t\t\t0x00020)  \nPERF_ARCH(DYNAMIC,\t\t0x00040)  \n\t\t\t \nPERF_ARCH(EXCL_ACCT,\t\t0x00100)  \nPERF_ARCH(AUTO_RELOAD,\t\t0x00200)  \nPERF_ARCH(LARGE_PEBS,\t\t0x00400)  \nPERF_ARCH(PEBS_VIA_PT,\t\t0x00800)  \nPERF_ARCH(PAIR,\t\t\t0x01000)  \nPERF_ARCH(LBR_SELECT,\t\t0x02000)  \nPERF_ARCH(TOPDOWN,\t\t0x04000)  \nPERF_ARCH(PEBS_STLAT,\t\t0x08000)  \nPERF_ARCH(AMD_BRS,\t\t0x10000)  \nPERF_ARCH(PEBS_LAT_HYBRID,\t0x20000)  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

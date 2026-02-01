@@ -1,0 +1,9 @@
+{
+  "module_name": "ucall.c",
+  "hash_id": "19ade48eaed97445ca6d4d17bab7fb08625bf9200b456145a94c9d51792e1ed9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/lib/x86_64/ucall.c",
+  "human_readable_source": "\n \n#include \"kvm_util.h\"\n\n#define UCALL_PIO_PORT ((uint16_t)0x1000)\n\nvoid ucall_arch_do_ucall(vm_vaddr_t uc)\n{\n\t \n#define HORRIFIC_L2_UCALL_CLOBBER_HACK\t\\\n\t\"rcx\", \"rsi\", \"r8\", \"r9\", \"r10\", \"r11\"\n\n\tasm volatile(\"push %%rbp\\n\\t\"\n\t\t     \"push %%r15\\n\\t\"\n\t\t     \"push %%r14\\n\\t\"\n\t\t     \"push %%r13\\n\\t\"\n\t\t     \"push %%r12\\n\\t\"\n\t\t     \"push %%rbx\\n\\t\"\n\t\t     \"push %%rdx\\n\\t\"\n\t\t     \"push %%rdi\\n\\t\"\n\t\t     \"in %[port], %%al\\n\\t\"\n\t\t     \"pop %%rdi\\n\\t\"\n\t\t     \"pop %%rdx\\n\\t\"\n\t\t     \"pop %%rbx\\n\\t\"\n\t\t     \"pop %%r12\\n\\t\"\n\t\t     \"pop %%r13\\n\\t\"\n\t\t     \"pop %%r14\\n\\t\"\n\t\t     \"pop %%r15\\n\\t\"\n\t\t     \"pop %%rbp\\n\\t\"\n\t\t: : [port] \"d\" (UCALL_PIO_PORT), \"D\" (uc) : \"rax\", \"memory\",\n\t\t     HORRIFIC_L2_UCALL_CLOBBER_HACK);\n}\n\nvoid *ucall_arch_get_ucall(struct kvm_vcpu *vcpu)\n{\n\tstruct kvm_run *run = vcpu->run;\n\n\tif (run->exit_reason == KVM_EXIT_IO && run->io.port == UCALL_PIO_PORT) {\n\t\tstruct kvm_regs regs;\n\n\t\tvcpu_regs_get(vcpu, &regs);\n\t\treturn (void *)regs.rdi;\n\t}\n\treturn NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "160dfcb77f743a8679a53327d0e23460d45435daff6620b7ce2b58ccd39309ab",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/Makefile",
+  "human_readable_source": "include ../py/mkenv.mk\n\n# define main target\nPROG = mpy-cross\n\n# qstr definitions (must come before including py.mk)\nQSTR_DEFS = qstrdefsport.h\n\n# OS name, for simple autoconfig\nUNAME_S := $(shell uname -s)\n\n# include py core make definitions\ninclude $(TOP)/py/py.mk\n\nINC += -I.\nINC += -I$(BUILD)\nINC += -I$(TOP)\n\n# compiler settings\nCWARN = -Wall\nCWARN += -Wextra -Wno-unused-parameter -Wpointer-arith\nCFLAGS += $(INC) $(CWARN) -std=gnu99 $(COPT) $(CFLAGS_EXTRA)\nCFLAGS += -fdata-sections -ffunction-sections -fno-asynchronous-unwind-tables\n\n# Debugging/Optimization\nifdef DEBUG\nCFLAGS += -g\nCOPT = -O0\nelse\nCOPT = -Os #-DNDEBUG\nendif\n\n# On OSX, 'gcc' is a symlink to clang unless a real gcc is installed.\n# The unix port of MicroPython on OSX must be compiled with clang,\n# while cross-compile ports require gcc, so we test here for OSX and\n# if necessary override the value of 'CC' set in py/mkenv.mk\nifeq ($(UNAME_S),Darwin)\nCC = clang\n# Use clang syntax for map file\nLDFLAGS_ARCH = -Wl,-map,$@.map -Wl,-dead_strip\nelse\n# Use gcc syntax for map file\nLDFLAGS_ARCH = -Wl,-Map=$@.map,--cref -Wl,--gc-sections\nendif\nLDFLAGS += $(LDFLAGS_MOD) $(LDFLAGS_ARCH) -lm $(LDFLAGS_EXTRA)\n\n# source files\nSRC_C = \\\n\tmain.c \\\n\tgccollect.c \\\n\tshared/runtime/gchelper_generic.c \\\n\n# Add fmode when compiling with mingw gcc\nCOMPILER_TARGET := $(shell $(CC) -dumpmachine)\nifneq (,$(findstring mingw,$(COMPILER_TARGET)))\n\tSRC_C += ports/windows/fmode.c\nendif\n\nOBJ = $(PY_CORE_O)\nOBJ += $(addprefix $(BUILD)/, $(SRC_C:.c=.o))\n\ninclude $(TOP)/py/mkrules.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

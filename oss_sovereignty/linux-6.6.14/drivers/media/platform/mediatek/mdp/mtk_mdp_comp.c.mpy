@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_mdp_comp.c",
+  "hash_id": "eea6d8ef07564c84eb140b4e87486865c1027f9869f9728483c5914f1e49a154",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/mdp/mtk_mdp_comp.c",
+  "human_readable_source": "\n \n\n#include <linux/clk.h>\n#include <linux/device.h>\n#include <linux/of.h>\n\n#include \"mtk_mdp_comp.h\"\n\n\nvoid mtk_mdp_comp_clock_on(struct device *dev, struct mtk_mdp_comp *comp)\n{\n\tint i, err;\n\n\tfor (i = 0; i < ARRAY_SIZE(comp->clk); i++) {\n\t\tif (IS_ERR(comp->clk[i]))\n\t\t\tcontinue;\n\t\terr = clk_prepare_enable(comp->clk[i]);\n\t\tif (err)\n\t\t\tdev_err(dev,\n\t\t\t\"failed to enable clock, err %d. type:%d i:%d\\n\",\n\t\t\t\terr, comp->type, i);\n\t}\n}\n\nvoid mtk_mdp_comp_clock_off(struct device *dev, struct mtk_mdp_comp *comp)\n{\n\tint i;\n\n\tfor (i = 0; i < ARRAY_SIZE(comp->clk); i++) {\n\t\tif (IS_ERR(comp->clk[i]))\n\t\t\tcontinue;\n\t\tclk_disable_unprepare(comp->clk[i]);\n\t}\n}\n\nint mtk_mdp_comp_init(struct device *dev, struct device_node *node,\n\t\t      struct mtk_mdp_comp *comp,\n\t\t      enum mtk_mdp_comp_type comp_type)\n{\n\tint ret;\n\tint i;\n\n\tcomp->dev_node = of_node_get(node);\n\tcomp->type = comp_type;\n\n\tfor (i = 0; i < ARRAY_SIZE(comp->clk); i++) {\n\t\tcomp->clk[i] = of_clk_get(node, i);\n\t\tif (IS_ERR(comp->clk[i])) {\n\t\t\tret = dev_err_probe(dev, PTR_ERR(comp->clk[i]),\n\t\t\t\t\t    \"Failed to get clock\\n\");\n\t\t\tgoto put_dev;\n\t\t}\n\n\t\t \n\t\tif (comp->type != MTK_MDP_RDMA)\n\t\t\tbreak;\n\t}\n\n\treturn 0;\n\nput_dev:\n\tof_node_put(comp->dev_node);\n\n\treturn ret;\n}\n\nvoid mtk_mdp_comp_deinit(struct device *dev, struct mtk_mdp_comp *comp)\n{\n\tof_node_put(comp->dev_node);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4c4d86997ce02e8176e833445ce4338c4e692ac9446888bcedcd3a8beb1c5d57",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/surface-hid/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n#\n# Makefile - Surface System Aggregator Module (SSAM) HID transport driver.\n#\nobj-$(CONFIG_SURFACE_HID_CORE)\t+= surface_hid_core.o\nobj-$(CONFIG_SURFACE_HID)\t+= surface_hid.o\nobj-$(CONFIG_SURFACE_KBD)\t+= surface_kbd.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

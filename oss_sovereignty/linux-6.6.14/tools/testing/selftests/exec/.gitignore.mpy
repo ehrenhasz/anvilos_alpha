@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "a546070b51a20f3c9da7c62fef615ef18d8e4aa6f57585827bbdf7e748e2ed69",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/exec/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsubdir*\nscript*\nexecveat\nexecveat.symlink\nexecveat.moved\nexecveat.path.ephemeral\nexecveat.ephemeral\nexecveat.denatured\nnon-regular\nnull-argv\n/load_address_*\n/recursion-depth\nxxxxxxxx*\npipe\nS_I*.test\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

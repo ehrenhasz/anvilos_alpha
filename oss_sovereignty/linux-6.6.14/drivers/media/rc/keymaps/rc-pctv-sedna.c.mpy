@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-pctv-sedna.c",
+  "hash_id": "9f95e7a9dea488291f4f4f8dbe29d0a084141c1cc5884dd3bd8810c74771d8c3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-pctv-sedna.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n\nstatic struct rc_map_table pctv_sedna[] = {\n\t{ 0x00, KEY_NUMERIC_0 },\n\t{ 0x01, KEY_NUMERIC_1 },\n\t{ 0x02, KEY_NUMERIC_2 },\n\t{ 0x03, KEY_NUMERIC_3 },\n\t{ 0x04, KEY_NUMERIC_4 },\n\t{ 0x05, KEY_NUMERIC_5 },\n\t{ 0x06, KEY_NUMERIC_6 },\n\t{ 0x07, KEY_NUMERIC_7 },\n\t{ 0x08, KEY_NUMERIC_8 },\n\t{ 0x09, KEY_NUMERIC_9 },\n\n\t{ 0x0a, KEY_AGAIN },\t \n\t{ 0x0b, KEY_CHANNELUP },\n\t{ 0x0c, KEY_VOLUMEUP },\n\t{ 0x0d, KEY_MODE },\t \n\t{ 0x0e, KEY_STOP },\n\t{ 0x0f, KEY_PREVIOUSSONG },\n\t{ 0x10, KEY_ZOOM },\n\t{ 0x11, KEY_VIDEO },\t \n\t{ 0x12, KEY_POWER },\n\t{ 0x13, KEY_MUTE },\n\t{ 0x15, KEY_CHANNELDOWN },\n\t{ 0x18, KEY_VOLUMEDOWN },\n\t{ 0x19, KEY_CAMERA },\t \n\t{ 0x1a, KEY_NEXTSONG },\n\t{ 0x1b, KEY_TIME },\t \n\t{ 0x1c, KEY_RADIO },\t \n\t{ 0x1d, KEY_RECORD },\n\t{ 0x1e, KEY_PAUSE },\n\t \n\t{ 0x14, KEY_INFO },\t \n\t{ 0x16, KEY_OK },\t \n\t{ 0x17, KEY_DIGITS },\t \n\t{ 0x1f, KEY_PLAY },\t \n};\n\nstatic struct rc_map_list pctv_sedna_map = {\n\t.map = {\n\t\t.scan     = pctv_sedna,\n\t\t.size     = ARRAY_SIZE(pctv_sedna),\n\t\t.rc_proto = RC_PROTO_UNKNOWN,\t \n\t\t.name     = RC_MAP_PCTV_SEDNA,\n\t}\n};\n\nstatic int __init init_rc_map_pctv_sedna(void)\n{\n\treturn rc_map_register(&pctv_sedna_map);\n}\n\nstatic void __exit exit_rc_map_pctv_sedna(void)\n{\n\trc_map_unregister(&pctv_sedna_map);\n}\n\nmodule_init(init_rc_map_pctv_sedna)\nmodule_exit(exit_rc_map_pctv_sedna)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Mauro Carvalho Chehab\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

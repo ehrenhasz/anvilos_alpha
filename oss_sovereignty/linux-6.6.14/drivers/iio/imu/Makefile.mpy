@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c0f864053d2c27f93de5a02699f19de0d3ae42f130d5564949be0e8b9f8a9efe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Inertial Measurement Units\n#\n\n# When adding new entries keep the list in alphabetical order\nobj-$(CONFIG_ADIS16400) += adis16400.o\nobj-$(CONFIG_ADIS16460) += adis16460.o\nobj-$(CONFIG_ADIS16475) += adis16475.o\nobj-$(CONFIG_ADIS16480) += adis16480.o\n\nadis_lib-y += adis.o\nadis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) += adis_trigger.o\nadis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) += adis_buffer.o\nobj-$(CONFIG_IIO_ADIS_LIB) += adis_lib.o\n\nobj-y += bmi160/\nobj-y += bno055/\n\nobj-$(CONFIG_FXOS8700) += fxos8700_core.o\nobj-$(CONFIG_FXOS8700_I2C) += fxos8700_i2c.o\nobj-$(CONFIG_FXOS8700_SPI) += fxos8700_spi.o\n\nobj-y += inv_icm42600/\nobj-y += inv_mpu6050/\n\nobj-$(CONFIG_KMX61) += kmx61.o\n\nobj-y += st_lsm6dsx/\nobj-y += st_lsm9ds0/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

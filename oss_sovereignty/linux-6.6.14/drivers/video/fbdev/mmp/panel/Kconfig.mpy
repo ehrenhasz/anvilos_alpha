@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4cc9ed725c31a2c1c476df6d41d34733b27f85a83f345b65e6e7320c324681ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/mmp/panel/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig MMP_PANEL_TPOHVGA\n\tbool \"tpohvga panel TJ032MD01BW support\"\n\tdepends on SPI_MASTER\n\thelp\n\t\ttpohvga panel support\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

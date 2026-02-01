@@ -1,0 +1,9 @@
+{
+  "module_name": "rtkit-internal.h",
+  "hash_id": "d2446d3ba9817990791e23be4ecad1af4f4fa6c9ff9a98ecfd38c28347ca2e4a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/apple/rtkit-internal.h",
+  "human_readable_source": " \n \n\n#ifndef _APPLE_RTKIT_INTERAL_H\n#define _APPLE_RTKIT_INTERAL_H\n\n#include <linux/apple-mailbox.h>\n#include <linux/bitfield.h>\n#include <linux/bitmap.h>\n#include <linux/completion.h>\n#include <linux/dma-mapping.h>\n#include <linux/io.h>\n#include <linux/kernel.h>\n#include <linux/mailbox_client.h>\n#include <linux/module.h>\n#include <linux/slab.h>\n#include <linux/soc/apple/rtkit.h>\n#include <linux/workqueue.h>\n\n#define APPLE_RTKIT_APP_ENDPOINT_START 0x20\n#define APPLE_RTKIT_MAX_ENDPOINTS 0x100\n\nstruct apple_rtkit {\n\tvoid *cookie;\n\tconst struct apple_rtkit_ops *ops;\n\tstruct device *dev;\n\n\tconst char *mbox_name;\n\tint mbox_idx;\n\tstruct mbox_client mbox_cl;\n\tstruct mbox_chan *mbox_chan;\n\n\tstruct completion epmap_completion;\n\tstruct completion iop_pwr_ack_completion;\n\tstruct completion ap_pwr_ack_completion;\n\n\tint boot_result;\n\tint version;\n\n\tunsigned int iop_power_state;\n\tunsigned int ap_power_state;\n\tbool crashed;\n\n\tDECLARE_BITMAP(endpoints, APPLE_RTKIT_MAX_ENDPOINTS);\n\n\tstruct apple_rtkit_shmem ioreport_buffer;\n\tstruct apple_rtkit_shmem crashlog_buffer;\n\n\tstruct apple_rtkit_shmem syslog_buffer;\n\tchar *syslog_msg_buffer;\n\tsize_t syslog_n_entries;\n\tsize_t syslog_msg_size;\n\n\tstruct workqueue_struct *wq;\n};\n\nvoid apple_rtkit_crashlog_dump(struct apple_rtkit *rtk, u8 *bfr, size_t size);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

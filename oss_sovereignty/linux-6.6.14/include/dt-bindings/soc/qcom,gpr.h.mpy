@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,gpr.h",
+  "hash_id": "83b1810443a95392297d7ae7e450a999536ace4f1872d5f6b3d9b4a2b673fa20",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/soc/qcom,gpr.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_QCOM_GPR_H\n#define __DT_BINDINGS_QCOM_GPR_H\n\n \n\n#define GPR_DOMAIN_ID_MODEM\t1\n#define GPR_DOMAIN_ID_ADSP\t2\n#define GPR_DOMAIN_ID_APPS\t3\n\n \n\n#define GPR_APM_MODULE_IID\t\t1\n#define GPR_PRM_MODULE_IID\t\t2\n#define GPR_AMDB_MODULE_IID\t\t3\n#define GPR_VCPM_MODULE_IID\t\t4\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "autoattach.c",
+  "hash_id": "e9cb72aad715711c55cb4029a60f7d950cb845bba03a17ddfbf086431cb972d2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/autoattach.c",
+  "human_readable_source": "\n \n\n#include <test_progs.h>\n#include \"test_autoattach.skel.h\"\n\nvoid test_autoattach(void)\n{\n\tstruct test_autoattach *skel;\n\n\tskel = test_autoattach__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"skel_open_and_load\"))\n\t\tgoto cleanup;\n\n\t \n\tbpf_program__set_autoattach(skel->progs.prog2, false);\n\tASSERT_TRUE(bpf_program__autoattach(skel->progs.prog1), \"autoattach_prog1\");\n\tASSERT_FALSE(bpf_program__autoattach(skel->progs.prog2), \"autoattach_prog2\");\n\tif (!ASSERT_OK(test_autoattach__attach(skel), \"skel_attach\"))\n\t\tgoto cleanup;\n\n\tusleep(1);\n\n\tASSERT_TRUE(skel->bss->prog1_called, \"attached_prog1\");\n\tASSERT_FALSE(skel->bss->prog2_called, \"attached_prog2\");\n\ncleanup:\n\ttest_autoattach__destroy(skel);\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

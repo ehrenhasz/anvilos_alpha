@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__modmicropython.c.qstr",
+  "hash_id": "d48ee40819eee5d2008668bde3594324cb2d818581a19c6d9f5c4ec859ca0619",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__modmicropython.c.qstr",
+  "human_readable_source": "Q(__name__)\nQ(micropython)\nQ(const)\nQ(heap_lock)\nQ(heap_unlock)\nQ(kbd_intr)\nQ(micropython)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

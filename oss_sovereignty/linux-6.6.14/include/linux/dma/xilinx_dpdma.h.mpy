@@ -1,0 +1,9 @@
+{
+  "module_name": "xilinx_dpdma.h",
+  "hash_id": "f1fc4833541a7f8a23c04a6fc1b8888e9ad1bd68ae6e5cc0a3e39fc29469a13f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dma/xilinx_dpdma.h",
+  "human_readable_source": " \n#ifndef __LINUX_DMA_XILINX_DPDMA_H\n#define __LINUX_DMA_XILINX_DPDMA_H\n\n#include <linux/types.h>\n\nstruct xilinx_dpdma_peripheral_config {\n\tbool video_group;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

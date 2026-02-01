@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_sw_fence.h",
+  "hash_id": "d44287537b566f8b12ad8de693e7e80e28b8e27d0746c59ed2310f526ffc29de",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/lib_sw_fence.h",
+  "human_readable_source": " \n \n\n#ifndef _LIB_SW_FENCE_H_\n#define _LIB_SW_FENCE_H_\n\n#include <linux/timer.h>\n\n#include \"../i915_sw_fence.h\"\n\n#ifdef CONFIG_LOCKDEP\n#define onstack_fence_init(fence)\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\\\n\tstatic struct lock_class_key __key;\t\t\t\\\n\t\t\t\t\t\t\t\t\\\n\t__onstack_fence_init((fence), #fence, &__key);\t\\\n} while (0)\n#else\n#define onstack_fence_init(fence)\t\t\t\t\\\n\t__onstack_fence_init((fence), NULL, NULL)\n#endif\n\nvoid __onstack_fence_init(struct i915_sw_fence *fence,\n\t\t\t  const char *name,\n\t\t\t  struct lock_class_key *key);\nvoid onstack_fence_fini(struct i915_sw_fence *fence);\n\nstruct timed_fence {\n\tstruct i915_sw_fence fence;\n\tstruct timer_list timer;\n};\n\nvoid timed_fence_init(struct timed_fence *tf, unsigned long expires);\nvoid timed_fence_fini(struct timed_fence *tf);\n\nstruct i915_sw_fence *heap_fence_create(gfp_t gfp);\nvoid heap_fence_put(struct i915_sw_fence *fence);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

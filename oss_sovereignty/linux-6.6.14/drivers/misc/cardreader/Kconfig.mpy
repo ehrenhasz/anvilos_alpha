@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8fda1ce4b5556d6fe5ba71d8ad39c6dd6a5ac022605caf7244709d6bb333a31d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/cardreader/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig MISC_ALCOR_PCI\n\ttristate \"Alcor Micro/Alcor Link PCI-E card reader\"\n\tdepends on PCI\n\tselect MFD_CORE\n\thelp\n\t  This supports for Alcor Micro PCI-Express card reader including au6601,\n\t  au6621.\n\t  Alcor Micro card readers support access to many types of memory cards,\n\t  such as Memory Stick, Memory Stick Pro, Secure Digital and\n\t  MultiMediaCard.\n\nconfig MISC_RTSX_PCI\n\ttristate \"Realtek PCI-E card reader\"\n\tdepends on PCI\n\tselect MFD_CORE\n\thelp\n\t  This supports for Realtek PCI-Express card reader including rts5209,\n\t  rts5227, rts522A, rts5229, rts5249, rts524A, rts525A, rtl8411, rts5260.\n\t  Realtek card readers support access to many types of memory cards,\n\t  such as Memory Stick, Memory Stick Pro, Secure Digital and\n\t  MultiMediaCard.\n\nconfig MISC_RTSX_USB\n\ttristate \"Realtek USB card reader\"\n\tdepends on USB\n\tselect MFD_CORE\n\thelp\n\t  Select this option to get support for Realtek USB 2.0 card readers\n\t  including RTS5129, RTS5139, RTS5179 and RTS5170.\n\t  Realtek card reader supports access to many types of memory cards,\n\t  such as Memory Stick Pro, Secure Digital and MultiMediaCard.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "values.h",
+  "hash_id": "9a1271c81fdeb6214a323f0b0af05c7e44d20e911d796ab75c38a91b0f8edd0a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/values.h",
+  "human_readable_source": " \n#ifndef __PERF_VALUES_H\n#define __PERF_VALUES_H\n\n#include <linux/types.h>\n\nstruct perf_read_values {\n\tint threads;\n\tint threads_max;\n\tu32 *pid, *tid;\n\tint counters;\n\tint counters_max;\n\tu64 *counterrawid;\n\tchar **countername;\n\tu64 **value;\n};\n\nint perf_read_values_init(struct perf_read_values *values);\nvoid perf_read_values_destroy(struct perf_read_values *values);\n\nint perf_read_values_add_value(struct perf_read_values *values,\n\t\t\t\tu32 pid, u32 tid,\n\t\t\t\tu64 rawid, const char *name, u64 value);\n\nvoid perf_read_values_display(FILE *fp, struct perf_read_values *values,\n\t\t\t      int raw);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

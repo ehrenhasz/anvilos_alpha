@@ -1,0 +1,9 @@
+{
+  "module_name": "vmcore.h",
+  "hash_id": "ffdd538d4953b02c80bbafce44b894a424bd9074255797efcae9c1a7369ca202",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/vmcore.h",
+  "human_readable_source": " \n#ifndef _UAPI_VMCORE_H\n#define _UAPI_VMCORE_H\n\n#include <linux/types.h>\n\n#define VMCOREDD_NOTE_NAME \"LINUX\"\n#define VMCOREDD_MAX_NAME_BYTES 44\n\nstruct vmcoredd_header {\n\t__u32 n_namesz;  \n\t__u32 n_descsz;  \n\t__u32 n_type;    \n\t__u8 name[8];    \n\t__u8 dump_name[VMCOREDD_MAX_NAME_BYTES];  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

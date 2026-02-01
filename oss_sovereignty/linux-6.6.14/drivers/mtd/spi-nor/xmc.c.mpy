@@ -1,0 +1,9 @@
+{
+  "module_name": "xmc.c",
+  "hash_id": "490535c26c6793701ae00c72c79d46f8d476649f66663de823ec4c4d31196768",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/spi-nor/xmc.c",
+  "human_readable_source": "\n \n\n#include <linux/mtd/spi-nor.h>\n\n#include \"core.h\"\n\nstatic const struct flash_info xmc_nor_parts[] = {\n\t \n\t{ \"XM25QH64A\", INFO(0x207017, 0, 64 * 1024, 128)\n\t\tNO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |\n\t\t\t      SPI_NOR_QUAD_READ) },\n\t{ \"XM25QH128A\", INFO(0x207018, 0, 64 * 1024, 256)\n\t\tNO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |\n\t\t\t      SPI_NOR_QUAD_READ) },\n};\n\nconst struct spi_nor_manufacturer spi_nor_xmc = {\n\t.name = \"xmc\",\n\t.parts = xmc_nor_parts,\n\t.nparts = ARRAY_SIZE(xmc_nor_parts),\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

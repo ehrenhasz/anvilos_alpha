@@ -1,0 +1,9 @@
+{
+  "module_name": "mmcr2_fcs_fch_test.c",
+  "hash_id": "d7950d8841e5b424e4380b60554216877e0caefcacab834290df3b958baa765b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/sampling_tests/mmcr2_fcs_fch_test.c",
+  "human_readable_source": "\n \n\n#include <signal.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/types.h>\n\n#include \"../event.h\"\n#include \"misc.h\"\n#include \"utils.h\"\n\nextern void thirty_two_instruction_loop(int loops);\n\nstatic bool is_hv;\n\nstatic void sig_usr2_handler(int signum, siginfo_t *info, void *data)\n{\n\tucontext_t *uctx = data;\n\n\tis_hv = !!(uctx->uc_mcontext.gp_regs[PT_MSR] & MSR_HV);\n}\n\n \nstatic int mmcr2_fcs_fch(void)\n{\n\tstruct sigaction sigact = {\n\t\t.sa_sigaction = sig_usr2_handler,\n\t\t.sa_flags = SA_SIGINFO\n\t};\n\tstruct event event;\n\tu64 *intr_regs;\n\n\tFAIL_IF(sigaction(SIGUSR2, &sigact, NULL));\n\tFAIL_IF(kill(getpid(), SIGUSR2));\n\n\t \n\tSKIP_IF(check_pvr_for_sampling_tests());\n\n\t \n\tevent_init_sampling(&event, 0x1001e);\n\tevent.attr.sample_regs_intr = platform_extended_mask;\n\tevent.attr.exclude_kernel = 1;\n\tFAIL_IF(event_open(&event));\n\tevent.mmap_buffer = event_sample_buf_mmap(event.fd, 1);\n\n\tFAIL_IF(event_enable(&event));\n\n\t \n\tthirty_two_instruction_loop(10000);\n\n\tFAIL_IF(event_disable(&event));\n\n\t \n\tFAIL_IF(!collect_samples(event.mmap_buffer));\n\n\tintr_regs = get_intr_regs(&event, event.mmap_buffer);\n\n\t \n\tFAIL_IF(!intr_regs);\n\n\t \n\tif (is_hv)\n\t\tFAIL_IF(event.attr.exclude_kernel !=\n\t\t\tget_mmcr2_fch(get_reg_value(intr_regs, \"MMCR2\"), 1));\n\telse\n\t\tFAIL_IF(event.attr.exclude_kernel !=\n\t\t\tget_mmcr2_fcs(get_reg_value(intr_regs, \"MMCR2\"), 1));\n\n\tevent_close(&event);\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(mmcr2_fcs_fch, \"mmcr2_fcs_fch\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

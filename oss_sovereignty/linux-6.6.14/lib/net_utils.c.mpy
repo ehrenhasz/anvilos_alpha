@@ -1,0 +1,9 @@
+{
+  "module_name": "net_utils.c",
+  "hash_id": "4a80112b395fc722d45f50a338218157bc0a54c81ddffd61dcedff09a18a41f4",
+  "original_prompt": "Ingested from linux-6.6.14/lib/net_utils.c",
+  "human_readable_source": "\n#include <linux/string.h>\n#include <linux/if_ether.h>\n#include <linux/ctype.h>\n#include <linux/export.h>\n#include <linux/hex.h>\n\nbool mac_pton(const char *s, u8 *mac)\n{\n\tsize_t maxlen = 3 * ETH_ALEN - 1;\n\tint i;\n\n\t \n\tif (strnlen(s, maxlen) < maxlen)\n\t\treturn false;\n\n\t \n\tfor (i = 0; i < ETH_ALEN; i++) {\n\t\tif (!isxdigit(s[i * 3]) || !isxdigit(s[i * 3 + 1]))\n\t\t\treturn false;\n\t\tif (i != ETH_ALEN - 1 && s[i * 3 + 2] != ':')\n\t\t\treturn false;\n\t}\n\tfor (i = 0; i < ETH_ALEN; i++) {\n\t\tmac[i] = (hex_to_bin(s[i * 3]) << 4) | hex_to_bin(s[i * 3 + 1]);\n\t}\n\treturn true;\n}\nEXPORT_SYMBOL(mac_pton);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

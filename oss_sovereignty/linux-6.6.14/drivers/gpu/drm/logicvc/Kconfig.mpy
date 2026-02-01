@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b618ef7fd7bd7889b708b83338369d422ecd80a29b7ab32dd9285ae237ffe364",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/logicvc/Kconfig",
+  "human_readable_source": "config DRM_LOGICVC\n\ttristate \"LogiCVC DRM\"\n\tdepends on DRM\n\tdepends on OF || COMPILE_TEST\n\tselect DRM_KMS_HELPER\n\tselect DRM_KMS_DMA_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect REGMAP\n\tselect REGMAP_MMIO\n\thelp\n\t  DRM display driver for the logiCVC programmable logic block from Xylon\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

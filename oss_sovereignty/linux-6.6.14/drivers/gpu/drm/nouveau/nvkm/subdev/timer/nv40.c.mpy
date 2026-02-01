@@ -1,0 +1,9 @@
+{
+  "module_name": "nv40.c",
+  "hash_id": "972eb7bd2383777ec74e38f39f2b7b82e0d6d8f85096900793106f24f052a9e5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/timer/nv40.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"regsnv04.h\"\n\nstatic void\nnv40_timer_init(struct nvkm_timer *tmr)\n{\n\tstruct nvkm_subdev *subdev = &tmr->subdev;\n\tstruct nvkm_device *device = subdev->device;\n\tu32 f = 0;  \n\tu32 n, d;\n\n\t \n\td = 1000000 / 32;\n\tn = f;\n\n\tif (!f) {\n\t\tn = nvkm_rd32(device, NV04_PTIMER_NUMERATOR);\n\t\td = nvkm_rd32(device, NV04_PTIMER_DENOMINATOR);\n\t\tif (!n || !d) {\n\t\t\tn = 1;\n\t\t\td = 1;\n\t\t}\n\t\tnvkm_warn(subdev, \"unknown input clock freq\\n\");\n\t}\n\n\t \n\twhile (((n % 5) == 0) && ((d % 5) == 0)) {\n\t\tn /= 5;\n\t\td /= 5;\n\t}\n\n\twhile (((n % 2) == 0) && ((d % 2) == 0)) {\n\t\tn /= 2;\n\t\td /= 2;\n\t}\n\n\twhile (n > 0xffff || d > 0xffff) {\n\t\tn >>= 1;\n\t\td >>= 1;\n\t}\n\n\tnvkm_debug(subdev, \"input frequency : %dHz\\n\", f);\n\tnvkm_debug(subdev, \"numerator       : %08x\\n\", n);\n\tnvkm_debug(subdev, \"denominator     : %08x\\n\", d);\n\tnvkm_debug(subdev, \"timer frequency : %dHz\\n\", f * d / n);\n\n\tnvkm_wr32(device, NV04_PTIMER_NUMERATOR, n);\n\tnvkm_wr32(device, NV04_PTIMER_DENOMINATOR, d);\n}\n\nstatic const struct nvkm_timer_func\nnv40_timer = {\n\t.init = nv40_timer_init,\n\t.intr = nv04_timer_intr,\n\t.read = nv04_timer_read,\n\t.time = nv04_timer_time,\n\t.alarm_init = nv04_timer_alarm_init,\n\t.alarm_fini = nv04_timer_alarm_fini,\n};\n\nint\nnv40_timer_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t       struct nvkm_timer **ptmr)\n{\n\treturn nvkm_timer_new_(&nv40_timer, device, type, inst, ptmr);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_conntrack.h",
+  "hash_id": "145a419a2304f080706ed705f89d1b52a57e5c71de613f01994369fd85f2c8ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/tc_conntrack.h",
+  "human_readable_source": " \n \n\n#ifndef EFX_TC_CONNTRACK_H\n#define EFX_TC_CONNTRACK_H\n#include \"net_driver.h\"\n\n#if IS_ENABLED(CONFIG_SFC_SRIOV)\n#include <linux/refcount.h>\n#include <net/netfilter/nf_flow_table.h>\n\nstruct efx_tc_ct_zone {\n\tu16 zone;\n\tstruct rhash_head linkage;\n\trefcount_t ref;\n\tstruct nf_flowtable *nf_ft;\n\tstruct efx_nic *efx;\n\tstruct mutex mutex;  \n\tstruct list_head cts;  \n};\n\n \nint efx_tc_init_conntrack(struct efx_nic *efx);\nvoid efx_tc_destroy_conntrack(struct efx_nic *efx);\nvoid efx_tc_fini_conntrack(struct efx_nic *efx);\n\nstruct efx_tc_ct_zone *efx_tc_ct_register_zone(struct efx_nic *efx, u16 zone,\n\t\t\t\t\t       struct nf_flowtable *ct_ft);\nvoid efx_tc_ct_unregister_zone(struct efx_nic *efx,\n\t\t\t       struct efx_tc_ct_zone *ct_zone);\n\nstruct efx_tc_ct_entry {\n\tunsigned long cookie;\n\tstruct rhash_head linkage;\n\t__be16 eth_proto;\n\tu8 ip_proto;\n\tbool dnat;\n\t__be32 src_ip, dst_ip, nat_ip;\n\tstruct in6_addr src_ip6, dst_ip6;\n\t__be16 l4_sport, l4_dport, l4_natport;  \n\tstruct efx_tc_ct_zone *zone;\n\tu32 mark;\n\tstruct efx_tc_counter *cnt;\n\tstruct list_head list;  \n};\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

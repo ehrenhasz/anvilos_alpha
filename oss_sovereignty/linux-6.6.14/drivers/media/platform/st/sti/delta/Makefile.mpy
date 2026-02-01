@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "89a9c71f18c9a93d6be22fe78aa59d4fa3fb2e01da99bccda78c5c5beb4b26f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/delta/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_VIDEO_STI_DELTA_DRIVER) += st-delta.o\nst-delta-y := delta-v4l2.o delta-mem.o delta-ipc.o delta-debug.o\n\n# MJPEG support\nst-delta-$(CONFIG_VIDEO_STI_DELTA_MJPEG) += delta-mjpeg-hdr.o\nst-delta-$(CONFIG_VIDEO_STI_DELTA_MJPEG) += delta-mjpeg-dec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

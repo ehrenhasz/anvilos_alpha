@@ -1,0 +1,9 @@
+{
+  "module_name": "cgrp_ls_negative.c",
+  "hash_id": "34666af184f3a655dac24ed79ad5a3a824a02434fe5d5968d56328dc832a703d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/cgrp_ls_negative.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_CGRP_STORAGE);\n\t__uint(map_flags, BPF_F_NO_PREALLOC);\n\t__type(key, int);\n\t__type(value, long);\n} map_a SEC(\".maps\");\n\nSEC(\"tp_btf/sys_enter\")\nint BPF_PROG(on_enter, struct pt_regs *regs, long id)\n{\n\tstruct task_struct *task;\n\n\ttask = bpf_get_current_task_btf();\n\t(void)bpf_cgrp_storage_get(&map_a, (struct cgroup *)task, 0,\n\t\t\t\t   BPF_LOCAL_STORAGE_GET_F_CREATE);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

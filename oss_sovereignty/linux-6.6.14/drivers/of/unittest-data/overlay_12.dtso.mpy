@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_12.dtso",
+  "hash_id": "17735ed641491e164f63f88e70f74b538187d9f3655e5aaf3e005cbc4ec25920",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_12.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n/* overlay_12 - enable using absolute target path (i2c) */\n\n&{/testcase-data/overlay-node/test-bus/i2c-test-bus/test-unittest12} {\n\tstatus = \"okay\";\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

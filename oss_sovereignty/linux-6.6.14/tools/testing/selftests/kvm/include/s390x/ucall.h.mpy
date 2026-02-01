@@ -1,0 +1,9 @@
+{
+  "module_name": "ucall.h",
+  "hash_id": "7d3505dd2c11805b0f09711feb438b40bd629d9005b5a88982a32a9053e5f3f6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/include/s390x/ucall.h",
+  "human_readable_source": " \n#ifndef SELFTEST_KVM_UCALL_H\n#define SELFTEST_KVM_UCALL_H\n\n#include \"kvm_util_base.h\"\n\n#define UCALL_EXIT_REASON       KVM_EXIT_S390_SIEIC\n\nstatic inline void ucall_arch_init(struct kvm_vm *vm, vm_paddr_t mmio_gpa)\n{\n}\n\nstatic inline void ucall_arch_do_ucall(vm_vaddr_t uc)\n{\n\t \n\tasm volatile (\"diag 0,%0,0x501\" : : \"a\"(uc) : \"memory\");\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

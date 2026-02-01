@@ -1,0 +1,9 @@
+{
+  "module_name": "generic.h",
+  "hash_id": "ef1f40dcc1bcdd247ec7052c71402983da95020d573e3e1a6a59999506d17fe8",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netns/generic.h",
+  "human_readable_source": " \n \n\n#ifndef __NET_GENERIC_H__\n#define __NET_GENERIC_H__\n\n#include <linux/bug.h>\n#include <linux/rcupdate.h>\n#include <net/net_namespace.h>\n\n \n\nstruct net_generic {\n\tunion {\n\t\tstruct {\n\t\t\tunsigned int len;\n\t\t\tstruct rcu_head rcu;\n\t\t} s;\n\n\t\tDECLARE_FLEX_ARRAY(void *, ptr);\n\t};\n};\n\nstatic inline void *net_generic(const struct net *net, unsigned int id)\n{\n\tstruct net_generic *ng;\n\tvoid *ptr;\n\n\trcu_read_lock();\n\tng = rcu_dereference(net->gen);\n\tptr = ng->ptr[id];\n\trcu_read_unlock();\n\n\treturn ptr;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

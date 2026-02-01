@@ -1,0 +1,9 @@
+{
+  "module_name": "svga_escape.h",
+  "hash_id": "c199756e48f974d371e6b766b7e32acd14b3be5346493fb71f3a454cf709a654",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/vmwgfx/device_include/svga_escape.h",
+  "human_readable_source": " \n \n\n \n\n\n\n#ifndef _SVGA_ESCAPE_H_\n#define _SVGA_ESCAPE_H_\n\n#define SVGA_ESCAPE_NSID_VMWARE 0x00000000\n#define SVGA_ESCAPE_NSID_DEVEL 0xFFFFFFFF\n\n#define SVGA_ESCAPE_VMWARE_MAJOR_MASK 0xFFFF0000\n\n#define SVGA_ESCAPE_VMWARE_HINT 0x00030000\n#define SVGA_ESCAPE_VMWARE_HINT_FULLSCREEN 0x00030001\n\n#pragma pack(push, 1)\ntypedef struct {\n\tuint32 command;\n\tuint32 fullscreen;\n\tstruct {\n\t\tint32 x, y;\n\t} monitorPosition;\n} SVGAEscapeHintFullscreen;\n#pragma pack(pop)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

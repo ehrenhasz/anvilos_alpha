@@ -1,0 +1,9 @@
+{
+  "module_name": "flock.c",
+  "hash_id": "1e1404d2be394fe85573c2dc617de34df054748e1be31774f4ed1e8f81fc2599",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/flock.c",
+  "human_readable_source": "\n\n#include \"trace/beauty/beauty.h\"\n#include <linux/kernel.h>\n#include <uapi/linux/fcntl.h>\n\n#ifndef LOCK_MAND\n#define LOCK_MAND\t 32\n#endif\n\n#ifndef LOCK_READ\n#define LOCK_READ\t 64\n#endif\n\n#ifndef LOCK_WRITE\n#define LOCK_WRITE\t128\n#endif\n\n#ifndef LOCK_RW\n#define LOCK_RW\t\t192\n#endif\n\nsize_t syscall_arg__scnprintf_flock(char *bf, size_t size, struct syscall_arg *arg)\n{\n\tbool show_prefix = arg->show_string_prefix;\n\tconst char *prefix = \"LOCK_\";\n\tint printed = 0, op = arg->val;\n\n\tif (op == 0)\n\t\treturn scnprintf(bf, size, \"NONE\");\n#define\tP_CMD(cmd) \\\n\tif ((op & LOCK_##cmd) == LOCK_##cmd) { \\\n\t\tprinted += scnprintf(bf + printed, size - printed, \"%s%s%s\", printed ? \"|\" : \"\", show_prefix ? prefix : \"\", #cmd); \\\n\t\top &= ~LOCK_##cmd; \\\n\t}\n\n\tP_CMD(SH);\n\tP_CMD(EX);\n\tP_CMD(NB);\n\tP_CMD(UN);\n\tP_CMD(MAND);\n\tP_CMD(RW);\n\tP_CMD(READ);\n\tP_CMD(WRITE);\n#undef P_OP\n\n\tif (op)\n\t\tprinted += scnprintf(bf + printed, size - printed, \"%s%#x\", printed ? \"|\" : \"\", op);\n\n\treturn printed;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

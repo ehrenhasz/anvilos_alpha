@@ -1,0 +1,9 @@
+{
+  "module_name": "u_hid.h",
+  "hash_id": "56c13a5213cf83e578a625585ba729916e7897e219c576170282b890deb08614",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/function/u_hid.h",
+  "human_readable_source": " \n \n\n#ifndef U_HID_H\n#define U_HID_H\n\n#include <linux/usb/composite.h>\n\nstruct f_hid_opts {\n\tstruct usb_function_instance\tfunc_inst;\n\tint\t\t\t\tminor;\n\tunsigned char\t\t\tsubclass;\n\tunsigned char\t\t\tprotocol;\n\tunsigned char\t\t\tno_out_endpoint;\n\tunsigned short\t\t\treport_length;\n\tunsigned short\t\t\treport_desc_length;\n\tunsigned char\t\t\t*report_desc;\n\tbool\t\t\t\treport_desc_alloc;\n\n\t \n\tstruct mutex\t\t\tlock;\n\tint\t\t\t\trefcnt;\n};\n\nint ghid_setup(struct usb_gadget *g, int count);\nvoid ghid_cleanup(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

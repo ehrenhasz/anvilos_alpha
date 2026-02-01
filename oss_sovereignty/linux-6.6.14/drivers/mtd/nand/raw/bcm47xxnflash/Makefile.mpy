@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8d875706cfd1abe972e9fb0ac6ef95854299562a86c94932a47ad73770a09f36",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/nand/raw/bcm47xxnflash/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nbcm47xxnflash-y\t\t\t\t+= main.o\nbcm47xxnflash-y\t\t\t\t+= ops_bcm4706.o\n\nobj-$(CONFIG_MTD_NAND_BCM47XXNFLASH)\t+= bcm47xxnflash.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

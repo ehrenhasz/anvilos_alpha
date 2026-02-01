@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "66600239c6669bb34df506eb2e23d9aff96a041b666cd44fb75119c62dcccc32",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libavl/Makefile.am",
+  "human_readable_source": "libavl_la_CFLAGS  = $(AM_CFLAGS) $(KERNEL_CFLAGS) $(LIBRARY_CFLAGS)\nlibavl_la_CFLAGS += -fvisibility=hidden\n\nnoinst_LTLIBRARIES += libavl.la\n\nnodist_libavl_la_SOURCES = \\\n\tmodule/avl/avl.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

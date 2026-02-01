@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_hti_regs.h",
+  "hash_id": "26b499784fc1aa9fb406d2d94ff2b279ded44a26154a81cbf6e073c59d74d0cc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_hti_regs.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_HTI_REGS_H__\n#define __INTEL_HTI_REGS_H__\n\n#include \"i915_reg_defs.h\"\n\n#define HDPORT_STATE\t\t\t_MMIO(0x45050)\n#define   HDPORT_DPLL_USED_MASK\t\tREG_GENMASK(15, 12)\n#define   HDPORT_DDI_USED(phy)\t\tREG_BIT(2 * (phy) + 1)\n#define   HDPORT_ENABLED\t\tREG_BIT(0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

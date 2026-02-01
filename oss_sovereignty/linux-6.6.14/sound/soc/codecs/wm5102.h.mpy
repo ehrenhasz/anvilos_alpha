@@ -1,0 +1,9 @@
+{
+  "module_name": "wm5102.h",
+  "hash_id": "63ce0f7bf53bdd9bf87cd7a6d5dafe1b8979460e695cab2d44f55a93d020a4ca",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/wm5102.h",
+  "human_readable_source": " \n \n\n#ifndef _WM5102_H\n#define _WM5102_H\n\n#include \"arizona.h\"\n\n#define WM5102_FLL1        1\n#define WM5102_FLL2        2\n#define WM5102_FLL1_REFCLK 3\n#define WM5102_FLL2_REFCLK 4\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

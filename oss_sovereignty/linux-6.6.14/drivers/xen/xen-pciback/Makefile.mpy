@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a27f7b5964550f78198c55315f904cf790ff023d67c75ef5e3e46ea097b2e722",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/xen/xen-pciback/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n# N.B. The below cannot be expressed with a single line using\n# CONFIG_XEN_PCI_STUB as it always remains in \"y\" state,\n# thus preventing the driver to be built as a module.\n# Please note, that CONFIG_XEN_PCIDEV_BACKEND and\n# CONFIG_XEN_PCIDEV_STUB are mutually exclusive.\nobj-$(CONFIG_XEN_PCIDEV_BACKEND) += xen-pciback.o\nobj-$(CONFIG_XEN_PCIDEV_STUB) += xen-pciback.o\n\nxen-pciback-y := pci_stub.o pciback_ops.o xenbus.o\nxen-pciback-y += conf_space.o conf_space_header.o \\\n\t\t conf_space_capability.o \\\n\t\t conf_space_quirks.o vpci.o \\\n\t\t passthrough.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

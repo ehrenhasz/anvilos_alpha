@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "12dcaf6b244f6559db8fc85074cf75777d63bb9f1da6872ac39f0713db4033e0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/agere/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Agere ET-131x ethernet driver\n#\n\nobj-$(CONFIG_ET131X) += et131x.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

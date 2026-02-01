@@ -1,0 +1,9 @@
+{
+  "module_name": "s3c-pm.h",
+  "hash_id": "5ce4a40995c1c74ec4a977e24ce3a93b954bd08428f1a896538c32ceafa3297e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/samsung/s3c-pm.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SOC_SAMSUNG_S3C_PM_H\n#define __LINUX_SOC_SAMSUNG_S3C_PM_H __FILE__\n\n#include <linux/types.h>\n\n \n\n#define S3C_PMDBG(fmt...) pr_debug(fmt)\n\nstatic inline void s3c_pm_save_uarts(bool is_s3c24xx) { }\nstatic inline void s3c_pm_restore_uarts(bool is_s3c24xx) { }\n\n \n\n#ifdef CONFIG_SAMSUNG_PM_CHECK\nextern void s3c_pm_check_prepare(void);\nextern void s3c_pm_check_restore(void);\nextern void s3c_pm_check_cleanup(void);\nextern void s3c_pm_check_store(void);\n#else\n#define s3c_pm_check_prepare() do { } while (0)\n#define s3c_pm_check_restore() do { } while (0)\n#define s3c_pm_check_cleanup() do { } while (0)\n#define s3c_pm_check_store()   do { } while (0)\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

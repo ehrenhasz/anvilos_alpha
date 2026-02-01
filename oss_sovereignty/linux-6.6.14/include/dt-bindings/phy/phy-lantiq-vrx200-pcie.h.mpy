@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-lantiq-vrx200-pcie.h",
+  "hash_id": "44149f3aed54f1d0bfc119e85ab2b715538e7ea0f2074d1e1dbe03d6f6d8e3a8",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/phy/phy-lantiq-vrx200-pcie.h",
+  "human_readable_source": " \n \n\n#define LANTIQ_PCIE_PHY_MODE_25MHZ\t\t0\n#define LANTIQ_PCIE_PHY_MODE_25MHZ_SSC\t\t1\n#define LANTIQ_PCIE_PHY_MODE_36MHZ\t\t2\n#define LANTIQ_PCIE_PHY_MODE_36MHZ_SSC\t\t3\n#define LANTIQ_PCIE_PHY_MODE_100MHZ\t\t4\n#define LANTIQ_PCIE_PHY_MODE_100MHZ_SSC\t\t5\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

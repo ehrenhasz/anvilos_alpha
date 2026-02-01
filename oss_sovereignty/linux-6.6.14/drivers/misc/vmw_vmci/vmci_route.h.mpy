@@ -1,0 +1,9 @@
+{
+  "module_name": "vmci_route.h",
+  "hash_id": "92c80988c9c1ec4aec1245be67a167da163bff8b6c1417f09e67e44e608a7bcf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/vmw_vmci/vmci_route.h",
+  "human_readable_source": " \n \n\n#ifndef _VMCI_ROUTE_H_\n#define _VMCI_ROUTE_H_\n\n#include <linux/vmw_vmci_defs.h>\n\nenum vmci_route {\n\tVMCI_ROUTE_NONE,\n\tVMCI_ROUTE_AS_HOST,\n\tVMCI_ROUTE_AS_GUEST,\n};\n\nint vmci_route(struct vmci_handle *src, const struct vmci_handle *dst,\n\t       bool from_guest, enum vmci_route *route);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

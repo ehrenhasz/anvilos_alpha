@@ -1,0 +1,9 @@
+{
+  "module_name": "g98.c",
+  "hash_id": "d697d486a03cc8b8c4ea1f73cfc6c41d7149433ef9546af81c2b513d8e488b1e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/fifo/g98.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"chan.h\"\n#include \"runl.h\"\n\n#include <nvif/class.h>\n\nstatic int\ng98_fifo_runl_ctor(struct nvkm_fifo *fifo)\n{\n\tstruct nvkm_runl *runl;\n\n\trunl = nvkm_runl_new(fifo, 0, 0, 0);\n\tif (IS_ERR(runl))\n\t\treturn PTR_ERR(runl);\n\n\tnvkm_runl_add(runl, 0, fifo->func->engn_sw, NVKM_ENGINE_SW, 0);\n\tnvkm_runl_add(runl, 0, fifo->func->engn_sw, NVKM_ENGINE_DMAOBJ, 0);\n\tnvkm_runl_add(runl, 1, fifo->func->engn, NVKM_ENGINE_GR, 0);\n\tnvkm_runl_add(runl, 2, fifo->func->engn, NVKM_ENGINE_MSPPP, 0);\n\tnvkm_runl_add(runl, 3, fifo->func->engn, NVKM_ENGINE_CE, 0);\n\tnvkm_runl_add(runl, 4, fifo->func->engn, NVKM_ENGINE_MSPDEC, 0);\n\tnvkm_runl_add(runl, 5, fifo->func->engn, NVKM_ENGINE_SEC, 0);\n\tnvkm_runl_add(runl, 6, fifo->func->engn, NVKM_ENGINE_MSVLD, 0);\n\treturn 0;\n}\n\nstatic const struct nvkm_fifo_func\ng98_fifo = {\n\t.chid_nr = nv50_fifo_chid_nr,\n\t.chid_ctor = nv50_fifo_chid_ctor,\n\t.runl_ctor = g98_fifo_runl_ctor,\n\t.init = nv50_fifo_init,\n\t.intr = nv04_fifo_intr,\n\t.pause = nv04_fifo_pause,\n\t.start = nv04_fifo_start,\n\t.nonstall = &g84_fifo_nonstall,\n\t.runl = &nv50_runl,\n\t.engn = &g84_engn,\n\t.engn_sw = &nv50_engn_sw,\n\t.cgrp = {{                          }, &nv04_cgrp },\n\t.chan = {{ 0, 0, G82_CHANNEL_GPFIFO }, &g84_chan },\n};\n\nint\ng98_fifo_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t       struct nvkm_fifo **pfifo)\n{\n\treturn nvkm_fifo_new_(&g98_fifo, device, type, inst, pfifo);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

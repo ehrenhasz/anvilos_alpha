@@ -1,0 +1,9 @@
+{
+  "module_name": "cxd2880.h",
+  "hash_id": "6734c5fdc18f8c7c3cc84ea47f5ead58c1f8cacd2a627efda77ca1f9818fe876",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cxd2880/cxd2880.h",
+  "human_readable_source": " \n \n\n#ifndef CXD2880_H\n#define CXD2880_H\n\nstruct cxd2880_config {\n\tstruct spi_device *spi;\n\tstruct mutex *spi_mutex;  \n};\n\n#if IS_REACHABLE(CONFIG_DVB_CXD2880)\nextern struct dvb_frontend *cxd2880_attach(struct dvb_frontend *fe,\n\t\t\t\t\tstruct cxd2880_config *cfg);\n#else\nstatic inline struct dvb_frontend *cxd2880_attach(struct dvb_frontend *fe,\n\t\t\t\t\tstruct cxd2880_config *cfg)\n{\n\tpr_warn(\"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

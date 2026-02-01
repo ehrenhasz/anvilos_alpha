@@ -1,0 +1,9 @@
+{
+  "module_name": "rfc1002pdu.h",
+  "hash_id": "da934f67fffe1064a27e553bb40f0389857f4f0efdc0523928282681a3982c8b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/client/rfc1002pdu.h",
+  "human_readable_source": " \n \n\n \n\n\t \n#define RFC1002_SESSION_MESSAGE 0x00\n#define RFC1002_SESSION_REQUEST  0x81\n#define RFC1002_POSITIVE_SESSION_RESPONSE 0x82\n#define RFC1002_NEGATIVE_SESSION_RESPONSE 0x83\n#define RFC1002_RETARGET_SESSION_RESPONSE 0x84\n#define RFC1002_SESSION_KEEP_ALIVE 0x85\n\n\t \n#define RFC1002_LENGTH_EXTEND 0x80  \n\nstruct rfc1002_session_packet {\n\t__u8\ttype;\n\t__u8\tflags;\n\t__u16\tlength;\n\tunion {\n\t\tstruct {\n\t\t\t__u8 called_len;\n\t\t\t__u8 called_name[32];\n\t\t\t__u8 scope1;  \n\t\t\t__u8 calling_len;\n\t\t\t__u8 calling_name[32];\n\t\t\t__u8 scope2;  \n\t\t} __attribute__((packed)) session_req;\n\t\tstruct {\n\t\t\t__u32 retarget_ip_addr;\n\t\t\t__u16 port;\n\t\t} __attribute__((packed)) retarget_resp;\n\t\t__u8 neg_ses_resp_error_code;\n\t\t \n\t} __attribute__((packed)) trailer;\n} __attribute__((packed));\n\n \n#define RFC1002_NOT_LISTENING_CALLED  0x80  \n#define RFC1002_NOT_LISTENING_CALLING 0x81  \n#define RFC1002_NOT_PRESENT           0x82  \n#define RFC1002_INSUFFICIENT_RESOURCE 0x83\n#define RFC1002_UNSPECIFIED_ERROR     0x8F\n\n \n\n#define DEFAULT_CIFS_CALLED_NAME  \"*SMBSERVER      \"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

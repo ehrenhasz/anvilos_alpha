@@ -1,0 +1,9 @@
+{
+  "module_name": "quit.h",
+  "hash_id": "de9be2b0fd1d63cce0354f14b681d2309d686abf9252d4f00122e264d34f1fdc",
+  "original_prompt": "Ingested from bash-5.2.21/quit.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_QUIT_H_)\n#define _QUIT_H_\n\n#include \"sig.h\"\t \n\n \nextern volatile sig_atomic_t interrupt_state;\nextern volatile sig_atomic_t terminating_signal;\n\n \n#define QUIT \\\n  do { \\\n    if (terminating_signal) termsig_handler (terminating_signal); \\\n    if (interrupt_state) throw_to_top_level (); \\\n  } while (0)\n\n#define SETINTERRUPT interrupt_state = 1\n#define CLRINTERRUPT interrupt_state = 0\n\n#define ADDINTERRUPT interrupt_state++\n#define DELINTERRUPT interrupt_state--\n\n#define ISINTERRUPT interrupt_state != 0\n\n \n\n#define CHECK_TERMSIG \\\n  do { \\\n    if (terminating_signal) termsig_handler (terminating_signal); \\\n  } while (0)\n\n#define LASTSIG() \\\n  (terminating_signal ? terminating_signal : (interrupt_state ? SIGINT : 0))\n\n#define CHECK_WAIT_INTR \\\n  do { \\\n    if (wait_intr_flag && wait_signal_received && this_shell_builtin && (this_shell_builtin == wait_builtin)) \\\n      sh_longjmp (wait_intr_buf, 1); \\\n  } while (0)\n\n#define RESET_SIGTERM \\\n  do { \\\n    sigterm_received = 0; \\\n  } while (0)\n\n#define CHECK_SIGTERM \\\n  do { \\\n    if (sigterm_received) termsig_handler (SIGTERM); \\\n  } while (0)\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

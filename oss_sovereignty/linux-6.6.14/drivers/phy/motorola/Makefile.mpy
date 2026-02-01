@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "122c500cfbca2080cc96755ea987fd6fd9138e7345f64e17220bba44d8cd1d18",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/motorola/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the phy drivers.\n#\n\nobj-$(CONFIG_PHY_CPCAP_USB)\t\t+= phy-cpcap-usb.o\nobj-$(CONFIG_PHY_MAPPHONE_MDM6600)\t+= phy-mapphone-mdm6600.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

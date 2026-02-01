@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "253f1792d53af4f5888598ab303356f4041b995f13be121a608815763e1c1be7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cache/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nmenu \"Cache Drivers\"\n\nconfig AX45MP_L2_CACHE\n\tbool \"Andes Technology AX45MP L2 Cache controller\"\n\tdepends on RISCV\n\tselect RISCV_NONSTANDARD_CACHE_OPS\n\thelp\n\t  Support for the L2 cache controller on Andes Technology AX45MP platforms.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

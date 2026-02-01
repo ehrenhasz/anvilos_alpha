@@ -1,0 +1,9 @@
+{
+  "module_name": "test_perf_branches.c",
+  "hash_id": "4bf8708ff7dccd55f7fa19298997af15d1a8f85b6c16cb7b9d1182f440fe1aca",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_perf_branches.c",
+  "human_readable_source": "\n\n\n#include <stddef.h>\n#include <linux/ptrace.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nint valid = 0;\nint required_size_out = 0;\nint written_stack_out = 0;\nint written_global_out = 0;\n\nstruct {\n\t__u64 _a;\n\t__u64 _b;\n\t__u64 _c;\n} fpbe[30] = {0};\n\nSEC(\"perf_event\")\nint perf_branches(void *ctx)\n{\n\t__u64 entries[4 * 3] = {0};\n\tint required_size, written_stack, written_global;\n\n\t \n\twritten_stack = bpf_read_branch_records(ctx, entries, sizeof(entries), 0);\n\t \n\tif (!written_stack)\n\t\treturn 1;\n\n\t \n\trequired_size = bpf_read_branch_records(ctx, NULL, 0,\n\t\t\t\t\t\tBPF_F_GET_BRANCH_RECORDS_SIZE);\n\n\twritten_global = bpf_read_branch_records(ctx, fpbe, sizeof(fpbe), 0);\n\t \n\tif (!written_global)\n\t\treturn 1;\n\n\trequired_size_out = required_size;\n\twritten_stack_out = written_stack;\n\twritten_global_out = written_global;\n\tvalid = 1;\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_sw_fence_work.h",
+  "hash_id": "0c00470a07e935e7348211dd19923e7c2a6450fc5a9a7c8a29e79b125d82a0d7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_sw_fence_work.h",
+  "human_readable_source": " \n\n \n\n#ifndef I915_SW_FENCE_WORK_H\n#define I915_SW_FENCE_WORK_H\n\n#include <linux/dma-fence.h>\n#include <linux/spinlock.h>\n#include <linux/workqueue.h>\n\n#include \"i915_sw_fence.h\"\n\nstruct dma_fence_work;\n\nstruct dma_fence_work_ops {\n\tconst char *name;\n\tvoid (*work)(struct dma_fence_work *f);\n\tvoid (*release)(struct dma_fence_work *f);\n};\n\nstruct dma_fence_work {\n\tstruct dma_fence dma;\n\tspinlock_t lock;\n\n\tstruct i915_sw_fence chain;\n\tstruct i915_sw_dma_fence_cb cb;\n\n\tstruct work_struct work;\n\tconst struct dma_fence_work_ops *ops;\n};\n\nenum {\n\tDMA_FENCE_WORK_IMM = DMA_FENCE_FLAG_USER_BITS,\n};\n\nvoid dma_fence_work_init(struct dma_fence_work *f,\n\t\t\t const struct dma_fence_work_ops *ops);\nint dma_fence_work_chain(struct dma_fence_work *f, struct dma_fence *signal);\n\nstatic inline void dma_fence_work_commit(struct dma_fence_work *f)\n{\n\ti915_sw_fence_commit(&f->chain);\n}\n\n \nstatic inline void dma_fence_work_commit_imm(struct dma_fence_work *f)\n{\n\tif (atomic_read(&f->chain.pending) <= 1)\n\t\t__set_bit(DMA_FENCE_WORK_IMM, &f->dma.flags);\n\n\tdma_fence_work_commit(f);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-space-map-disk.h",
+  "hash_id": "e53db7bc2f33396b63c44e68cd5887b418f182b438c0203db5dd3f5eb33f01b0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/persistent-data/dm-space-map-disk.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_DM_SPACE_MAP_DISK_H\n#define _LINUX_DM_SPACE_MAP_DISK_H\n\n#include \"dm-block-manager.h\"\n\nstruct dm_space_map;\nstruct dm_transaction_manager;\n\n \nstruct dm_space_map *dm_sm_disk_create(struct dm_transaction_manager *tm,\n\t\t\t\t       dm_block_t nr_blocks);\n\nstruct dm_space_map *dm_sm_disk_open(struct dm_transaction_manager *tm,\n\t\t\t\t     void *root, size_t len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

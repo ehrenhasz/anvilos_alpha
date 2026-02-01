@@ -1,0 +1,9 @@
+{
+  "module_name": "zstd-in.c",
+  "hash_id": "07e1f6d10efe2022cb2ce715c2476680408666a3f211868beae3d1fbe21f2862",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/zstd-in.c",
+  "human_readable_source": " \n\n \n\n#define\tMEM_MODULE\n#define\tXXH_NAMESPACE ZSTD_\n#define\tXXH_PRIVATE_API\n#define\tXXH_INLINE_ALL\n#define\tZSTD_LEGACY_SUPPORT 0\n#define\tZSTD_LIB_DICTBUILDER 0\n#define\tZSTD_LIB_DEPRECATED 0\n#define\tZSTD_NOBENCH\n\n#include \"common/debug.c\"\n#include \"common/entropy_common.c\"\n#include \"common/error_private.c\"\n#include \"common/fse_decompress.c\"\n#include \"common/pool.c\"\n#include \"common/zstd_common.c\"\n\n#include \"compress/fse_compress.c\"\n#include \"compress/hist.c\"\n#include \"compress/huf_compress.c\"\n#include \"compress/zstd_compress_literals.c\"\n#include \"compress/zstd_compress_sequences.c\"\n#include \"compress/zstd_compress_superblock.c\"\n#include \"compress/zstd_compress.c\"\n#include \"compress/zstd_double_fast.c\"\n#include \"compress/zstd_fast.c\"\n#include \"compress/zstd_lazy.c\"\n#include \"compress/zstd_ldm.c\"\n#include \"compress/zstd_opt.c\"\n\n#include \"decompress/huf_decompress.c\"\n#include \"decompress/zstd_ddict.c\"\n#include \"decompress/zstd_decompress.c\"\n#include \"decompress/zstd_decompress_block.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

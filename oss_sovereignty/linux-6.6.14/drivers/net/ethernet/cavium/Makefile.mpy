@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "09f8d2ebe4c912fc1723d17930a597e610a0493b77a059ca792a8a75c8f026ff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cavium/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Cavium ethernet device drivers.\n#\nobj-$(CONFIG_NET_VENDOR_CAVIUM) += common/\nobj-$(CONFIG_NET_VENDOR_CAVIUM) += thunder/\nobj-$(CONFIG_NET_VENDOR_CAVIUM) += liquidio/\nobj-$(CONFIG_NET_VENDOR_CAVIUM) += octeon/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "radio-tea5777.h",
+  "hash_id": "c47837a638e45b8d29b28a136bd44adeb387369d006a43366279ce66ebe6f5ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/radio/radio-tea5777.h",
+  "human_readable_source": " \n#ifndef __RADIO_TEA5777_H\n#define __RADIO_TEA5777_H\n\n \n\n#include <linux/videodev2.h>\n#include <media/v4l2-ctrls.h>\n#include <media/v4l2-dev.h>\n#include <media/v4l2-device.h>\n\n#define TEA575X_FMIF\t10700\n#define TEA575X_AMIF\t  450\n\nstruct radio_tea5777;\n\nstruct radio_tea5777_ops {\n\t \n\tint (*write_reg)(struct radio_tea5777 *tea, u64 val);\n\t \n\tint (*read_reg)(struct radio_tea5777 *tea, u32 *val);\n};\n\nstruct radio_tea5777 {\n\tstruct v4l2_device *v4l2_dev;\n\tstruct v4l2_file_operations fops;\n\tstruct video_device vd;\t\t \n\tbool has_am;\t\t\t \n\tbool write_before_read;\t\t \n\tbool needs_write;\t\t \n\tu32 band;\t\t\t \n\tu32 freq;\t\t\t \n\tu32 audmode;\t\t\t \n\tu32 seek_rangelow;\t\t \n\tu32 seek_rangehigh;\n\tu32 read_reg;\n\tu64 write_reg;\n\tstruct mutex mutex;\n\tconst struct radio_tea5777_ops *ops;\n\tvoid *private_data;\n\tu8 card[32];\n\tu8 bus_info[32];\n\tstruct v4l2_ctrl_handler ctrl_handler;\n};\n\nint radio_tea5777_init(struct radio_tea5777 *tea, struct module *owner);\nvoid radio_tea5777_exit(struct radio_tea5777 *tea);\nint radio_tea5777_set_freq(struct radio_tea5777 *tea);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

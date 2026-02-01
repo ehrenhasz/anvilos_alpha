@@ -1,0 +1,9 @@
+{
+  "module_name": "test-glibc.c",
+  "hash_id": "451f90c3999b310a8929f353ac077d688b93c3f7eae7181a38b22383dea16702",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-glibc.c",
+  "human_readable_source": "\n#include <stdlib.h>\n\n#if !defined(__UCLIBC__)\n#include <gnu/libc-version.h>\n#else\n#define XSTR(s) STR(s)\n#define STR(s) #s\n#endif\n\nint main(void)\n{\n#if !defined(__UCLIBC__)\n\tconst char *version = gnu_get_libc_version();\n#else\n\tconst char *version = XSTR(__GLIBC__) \".\" XSTR(__GLIBC_MINOR__);\n#endif\n\n\treturn (long)version;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

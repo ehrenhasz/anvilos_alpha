@@ -1,0 +1,9 @@
+{
+  "module_name": "nv04.c",
+  "hash_id": "663354e1f24bc504abbfe5289c42e13c2b1baae06264dec5041904e840ea0325",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/nv04.c",
+  "human_readable_source": " \n#include \"mem.h\"\n#include \"vmm.h\"\n\n#include <nvif/class.h>\n\nconst struct nvkm_mmu_func\nnv04_mmu = {\n\t.dma_bits = 32,\n\t.mmu = {{ -1, -1, NVIF_CLASS_MMU_NV04}},\n\t.mem = {{ -1, -1, NVIF_CLASS_MEM_NV04}, nv04_mem_new, nv04_mem_map },\n\t.vmm = {{ -1, -1, NVIF_CLASS_VMM_NV04}, nv04_vmm_new, true },\n};\n\nint\nnv04_mmu_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t     struct nvkm_mmu **pmmu)\n{\n\treturn nvkm_mmu_new_(&nv04_mmu, device, type, inst, pmmu);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

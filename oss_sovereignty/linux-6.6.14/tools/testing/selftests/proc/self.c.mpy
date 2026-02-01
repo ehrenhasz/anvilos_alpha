@@ -1,0 +1,9 @@
+{
+  "module_name": "self.c",
+  "hash_id": "eb559ad8756444d043054cd28fcd30c113e2a521f01ef8e2bb45caed2e29807e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/proc/self.c",
+  "human_readable_source": " \n\n#undef NDEBUG\n#include <assert.h>\n#include <stdio.h>\n#include <unistd.h>\n\n#include \"proc.h\"\n\nint main(void)\n{\n\tchar buf1[64], buf2[64];\n\tpid_t pid;\n\tssize_t rv;\n\n\tpid = sys_getpid();\n\tsnprintf(buf1, sizeof(buf1), \"%u\", pid);\n\n\trv = readlink(\"/proc/self\", buf2, sizeof(buf2));\n\tassert(rv == strlen(buf1));\n\tbuf2[rv] = '\\0';\n\tassert(streq(buf1, buf2));\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

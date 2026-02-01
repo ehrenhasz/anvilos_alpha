@@ -1,0 +1,9 @@
+{
+  "module_name": "of-reconfig-notifier-error-inject.c",
+  "hash_id": "09a16e410644dd2fa053be17cd869aabd81a7a8ca0d3c56f45b87a88ef2e135d",
+  "original_prompt": "Ingested from linux-6.6.14/lib/of-reconfig-notifier-error-inject.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/of.h>\n\n#include \"notifier-error-inject.h\"\n\nstatic int priority;\nmodule_param(priority, int, 0);\nMODULE_PARM_DESC(priority, \"specify OF reconfig notifier priority\");\n\nstatic struct notifier_err_inject reconfig_err_inject = {\n\t.actions = {\n\t\t{ NOTIFIER_ERR_INJECT_ACTION(OF_RECONFIG_ATTACH_NODE) },\n\t\t{ NOTIFIER_ERR_INJECT_ACTION(OF_RECONFIG_DETACH_NODE) },\n\t\t{ NOTIFIER_ERR_INJECT_ACTION(OF_RECONFIG_ADD_PROPERTY) },\n\t\t{ NOTIFIER_ERR_INJECT_ACTION(OF_RECONFIG_REMOVE_PROPERTY) },\n\t\t{ NOTIFIER_ERR_INJECT_ACTION(OF_RECONFIG_UPDATE_PROPERTY) },\n\t\t{}\n\t}\n};\n\nstatic struct dentry *dir;\n\nstatic int err_inject_init(void)\n{\n\tint err;\n\n\tdir = notifier_err_inject_init(\"OF-reconfig\",\n\t\tnotifier_err_inject_dir, &reconfig_err_inject, priority);\n\tif (IS_ERR(dir))\n\t\treturn PTR_ERR(dir);\n\n\terr = of_reconfig_notifier_register(&reconfig_err_inject.nb);\n\tif (err)\n\t\tdebugfs_remove_recursive(dir);\n\n\treturn err;\n}\n\nstatic void err_inject_exit(void)\n{\n\tof_reconfig_notifier_unregister(&reconfig_err_inject.nb);\n\tdebugfs_remove_recursive(dir);\n}\n\nmodule_init(err_inject_init);\nmodule_exit(err_inject_exit);\n\nMODULE_DESCRIPTION(\"OF reconfig notifier error injection module\");\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Akinobu Mita <akinobu.mita@gmail.com>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

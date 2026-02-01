@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ba97ca3504f382b32f40bd34f6fb44af669221e01c3fd1ea52e384685541c6c2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/broadcom/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_PHY_BCM63XX_USBH)\t\t+= phy-bcm63xx-usbh.o\nobj-$(CONFIG_PHY_CYGNUS_PCIE)\t\t+= phy-bcm-cygnus-pcie.o\nobj-$(CONFIG_BCM_KONA_USB2_PHY)\t\t+= phy-bcm-kona-usb2.o\nobj-$(CONFIG_PHY_BCM_NS_USB2)\t\t+= phy-bcm-ns-usb2.o\nobj-$(CONFIG_PHY_BCM_NS_USB3)\t\t+= phy-bcm-ns-usb3.o\nobj-$(CONFIG_PHY_NS2_PCIE)\t\t+= phy-bcm-ns2-pcie.o\nobj-$(CONFIG_PHY_NS2_USB_DRD)\t\t+= phy-bcm-ns2-usbdrd.o\nobj-$(CONFIG_PHY_BRCM_SATA)\t\t+= phy-brcm-sata.o\nobj-$(CONFIG_PHY_BRCM_USB)\t\t+= phy-brcm-usb-dvr.o\n\nphy-brcm-usb-dvr-objs := phy-brcm-usb.o phy-brcm-usb-init.o phy-brcm-usb-init-synopsys.o\n\nobj-$(CONFIG_PHY_BCM_SR_PCIE)\t\t+= phy-bcm-sr-pcie.o\nobj-$(CONFIG_PHY_BCM_SR_USB)\t\t+= phy-bcm-sr-usb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

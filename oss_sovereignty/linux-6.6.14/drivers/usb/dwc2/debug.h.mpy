@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "94ed92e0ea44f57a821e5e0e2c607fc786b7dd6934aee9a890fb658aed022771",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/dwc2/debug.h",
+  "human_readable_source": " \n \n\n#include \"core.h\"\n\n#ifdef CONFIG_DEBUG_FS\nint dwc2_debugfs_init(struct dwc2_hsotg *hsotg);\nvoid dwc2_debugfs_exit(struct dwc2_hsotg *hsotg);\n#else\nstatic inline int dwc2_debugfs_init(struct dwc2_hsotg *hsotg)\n{  return 0;  }\nstatic inline void dwc2_debugfs_exit(struct dwc2_hsotg *hsotg)\n{  }\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "configfs.h",
+  "hash_id": "9c68170d91358f85a2f85d4b425e87ebb1f559298000d21cce1d7acc044cfc85",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/configfs.h",
+  "human_readable_source": " \n#ifndef USB__GADGET__CONFIGFS__H\n#define USB__GADGET__CONFIGFS__H\n\n#include <linux/configfs.h>\n\nvoid unregister_gadget_item(struct config_item *item);\n\nstruct config_group *usb_os_desc_prepare_interf_dir(\n\t\tstruct config_group *parent,\n\t\tint n_interf,\n\t\tstruct usb_os_desc **desc,\n\t\tchar **names,\n\t\tstruct module *owner);\n\nstatic inline struct usb_os_desc *to_usb_os_desc(struct config_item *item)\n{\n\treturn container_of(to_config_group(item), struct usb_os_desc, group);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

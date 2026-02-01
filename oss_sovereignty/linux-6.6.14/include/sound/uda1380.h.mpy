@@ -1,0 +1,9 @@
+{
+  "module_name": "uda1380.h",
+  "hash_id": "1f3144e6d035fd9901cdf94dcba3dc377eac6f242098559744b8e8ce91e5538b",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/uda1380.h",
+  "human_readable_source": " \n \n\n#ifndef __UDA1380_H\n#define __UDA1380_H\n\nstruct uda1380_platform_data {\n\tint gpio_power;\n\tint gpio_reset;\n\tint dac_clk;\n#define UDA1380_DAC_CLK_SYSCLK 0\n#define UDA1380_DAC_CLK_WSPLL  1\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

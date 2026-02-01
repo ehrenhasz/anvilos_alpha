@@ -1,0 +1,9 @@
+{
+  "module_name": "iccsense.h",
+  "hash_id": "6bad3677a38c6811993dbaebb8f0305068f3405f0a112185b3963c9933ad38ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/iccsense.h",
+  "human_readable_source": " \n#ifndef __NVKM_ICCSENSE_H__\n#define __NVKM_ICCSENSE_H__\n\n#include <core/subdev.h>\n\nstruct nvkm_iccsense {\n\tstruct nvkm_subdev subdev;\n\tbool data_valid;\n\tstruct list_head sensors;\n\tstruct list_head rails;\n\n\tu32 power_w_max;\n\tu32 power_w_crit;\n};\n\nint gf100_iccsense_new(struct nvkm_device *, enum nvkm_subdev_type, int, struct nvkm_iccsense **);\nint nvkm_iccsense_read_all(struct nvkm_iccsense *iccsense);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "privkey_fuzz.cc",
+  "hash_id": "00d986cca6233221a090f5c8d12172ba5bb8eb234f2969c97993a72943f95e87",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/misc/fuzz-harness/privkey_fuzz.cc",
+  "human_readable_source": "#include <stddef.h>\n#include <stdio.h>\n#include <stdint.h>\n\nextern \"C\" {\n\n#include \"sshkey.h\"\n#include \"sshbuf.h\"\n\nint LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)\n{\n\tstruct sshkey *k = NULL;\n\tstruct sshbuf *b = sshbuf_from(data, size);\n\tint r = sshkey_private_deserialize(b, &k);\n\tif (r == 0) sshkey_free(k);\n\tsshbuf_free(b);\n\treturn 0;\n}\n\n} \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

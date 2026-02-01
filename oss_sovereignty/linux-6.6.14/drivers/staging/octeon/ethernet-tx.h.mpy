@@ -1,0 +1,9 @@
+{
+  "module_name": "ethernet-tx.h",
+  "hash_id": "3cc3e64fda880c2bceced8e957283bf6c9eaa8a2eda2d940c59fdf955311f1a1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/octeon/ethernet-tx.h",
+  "human_readable_source": " \n \n\nnetdev_tx_t cvm_oct_xmit(struct sk_buff *skb, struct net_device *dev);\nnetdev_tx_t cvm_oct_xmit_pow(struct sk_buff *skb, struct net_device *dev);\nint cvm_oct_transmit_qos(struct net_device *dev, void *work_queue_entry,\n\t\t\t int do_free, int qos);\nvoid cvm_oct_tx_initialize(void);\nvoid cvm_oct_tx_shutdown(void);\nvoid cvm_oct_tx_shutdown_dev(struct net_device *dev);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

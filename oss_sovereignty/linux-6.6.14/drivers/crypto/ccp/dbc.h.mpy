@@ -1,0 +1,9 @@
+{
+  "module_name": "dbc.h",
+  "hash_id": "6134003e8d0b2e0c3c2f3a41c5b2019dce85ca2de7b915ce34ef7e10945dd2a6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/ccp/dbc.h",
+  "human_readable_source": " \n \n\n#ifndef __DBC_H__\n#define __DBC_H__\n\n#include <uapi/linux/psp-dbc.h>\n\n#include <linux/device.h>\n#include <linux/miscdevice.h>\n#include <linux/psp-platform-access.h>\n\n#include \"psp-dev.h\"\n\nstruct psp_dbc_device {\n\tstruct device *dev;\n\n\tunion dbc_buffer *mbox;\n\n\tstruct mutex ioctl_mutex;\n\n\tstruct miscdevice char_dev;\n};\n\nstruct dbc_nonce {\n\tstruct psp_req_buffer_hdr\theader;\n\tstruct dbc_user_nonce\t\tuser;\n} __packed;\n\nstruct dbc_set_uid {\n\tstruct psp_req_buffer_hdr\theader;\n\tstruct dbc_user_setuid\t\tuser;\n} __packed;\n\nstruct dbc_param {\n\tstruct psp_req_buffer_hdr\theader;\n\tstruct dbc_user_param\t\tuser;\n} __packed;\n\nunion dbc_buffer {\n\tstruct psp_request\t\treq;\n\tstruct dbc_nonce\t\tdbc_nonce;\n\tstruct dbc_set_uid\t\tdbc_set_uid;\n\tstruct dbc_param\t\tdbc_param;\n};\n\nvoid dbc_dev_destroy(struct psp_device *psp);\nint dbc_dev_init(struct psp_device *psp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

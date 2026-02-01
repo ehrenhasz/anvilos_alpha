@@ -1,0 +1,9 @@
+{
+  "module_name": "smem_state.h",
+  "hash_id": "db20d54a2936e5db8f4fef799ab89a75f7d895dbbdd14fe77a33acf57e48b7bc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/qcom/smem_state.h",
+  "human_readable_source": " \n#ifndef __QCOM_SMEM_STATE__\n#define __QCOM_SMEM_STATE__\n\n#include <linux/err.h>\n\nstruct device_node;\nstruct qcom_smem_state;\n\nstruct qcom_smem_state_ops {\n\tint (*update_bits)(void *, u32, u32);\n};\n\n#ifdef CONFIG_QCOM_SMEM_STATE\n\nstruct qcom_smem_state *qcom_smem_state_get(struct device *dev, const char *con_id, unsigned *bit);\nstruct qcom_smem_state *devm_qcom_smem_state_get(struct device *dev, const char *con_id, unsigned *bit);\nvoid qcom_smem_state_put(struct qcom_smem_state *);\n\nint qcom_smem_state_update_bits(struct qcom_smem_state *state, u32 mask, u32 value);\n\nstruct qcom_smem_state *qcom_smem_state_register(struct device_node *of_node, const struct qcom_smem_state_ops *ops, void *data);\nvoid qcom_smem_state_unregister(struct qcom_smem_state *state);\n\n#else\n\nstatic inline struct qcom_smem_state *qcom_smem_state_get(struct device *dev,\n\tconst char *con_id, unsigned *bit)\n{\n\treturn ERR_PTR(-EINVAL);\n}\n\nstatic inline struct qcom_smem_state *devm_qcom_smem_state_get(struct device *dev,\n\t\t\t\t\t\t\t       const char *con_id,\n\t\t\t\t\t\t\t       unsigned *bit)\n{\n\treturn ERR_PTR(-EINVAL);\n}\n\nstatic inline void qcom_smem_state_put(struct qcom_smem_state *state)\n{\n}\n\nstatic inline int qcom_smem_state_update_bits(struct qcom_smem_state *state,\n\tu32 mask, u32 value)\n{\n\treturn -EINVAL;\n}\n\nstatic inline struct qcom_smem_state *qcom_smem_state_register(struct device_node *of_node,\n\tconst struct qcom_smem_state_ops *ops, void *data)\n{\n\treturn ERR_PTR(-EINVAL);\n}\n\nstatic inline void qcom_smem_state_unregister(struct qcom_smem_state *state)\n{\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

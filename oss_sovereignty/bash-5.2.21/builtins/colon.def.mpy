@@ -1,0 +1,9 @@
+{
+  "module_name": "colon.def",
+  "hash_id": "e51ea99fe4c7a889b4167276e0eb447dca64b98af6395075a537a13bb00195fc",
+  "original_prompt": "Ingested from bash-5.2.21/builtins/colon.def",
+  "human_readable_source": "This file is colon.def, from which is created colon.c.\nIt implements the builtin \":\" in Bash.\n\nCopyright (C) 1987-2019 Free Software Foundation, Inc.\n\nThis file is part of GNU Bash, the Bourne Again SHell.\n\nBash is free software: you can redistribute it and/or modify\nit under the terms of the GNU General Public License as published by\nthe Free Software Foundation, either version 3 of the License, or\n(at your option) any later version.\n\nBash is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with Bash.  If not, see <http://www.gnu.org/licenses/>.\n\n$PRODUCES colon.c\n\n$BUILTIN :\n$DOCNAME colon\n$FUNCTION colon_builtin\n$SHORT_DOC :\nNull command.\n\nNo effect; the command does nothing.\n\nExit Status:\nAlways succeeds.\n$END\n\n$BUILTIN true\n$FUNCTION colon_builtin\n$SHORT_DOC true\nReturn a successful result.\n\nExit Status:\nAlways succeeds.\n$END\n\n$BUILTIN false\n$FUNCTION false_builtin\n$SHORT_DOC false\nReturn an unsuccessful result.\n\nExit Status:\nAlways fails.\n$END\n\n#include <config.h>\n\n#if defined (HAVE_UNISTD_H)\n#  include <unistd.h>\n#endif\n\n#include \"../bashansi.h\"\n#include \"../shell.h\"\n\n/* Return a successful result. */\nint\ncolon_builtin (ignore)\n     WORD_LIST *ignore;\n{\n  return (0);\n}\n\n/* Return an unsuccessful result. */\nint\nfalse_builtin (ignore)\n     WORD_LIST *ignore;\n{\n  return (1);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

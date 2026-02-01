@@ -1,0 +1,9 @@
+{
+  "module_name": "bench-sha224.c",
+  "hash_id": "54b9e0eb20d1bb0dcac7ce326ebb76a889b4737784318bafe6573bd7f1ab4324",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/bench-sha224.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"sha256.h\"\n\n#define FUNC sha224_buffer\n#include \"bench-digest.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

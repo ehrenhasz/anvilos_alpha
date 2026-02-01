@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1633cd0eb7fa6a2c82544edde2afdc3baef6789067364a41544fa59ac4069341",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/sh/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# DMA engine configuration for sh\n#\n\nconfig RENESAS_DMA\n\tbool\n\tselect DMA_ENGINE\n\n#\n# DMA Engine Helpers\n#\n\nconfig SH_DMAE_BASE\n\tbool \"Renesas SuperH DMA Engine support\"\n\tdepends on SUPERH || COMPILE_TEST\n\tdepends on !SUPERH || SH_DMA\n\tdepends on !SH_DMA_API\n\tdefault y\n\tselect RENESAS_DMA\n\thelp\n\t  Enable support for the Renesas SuperH DMA controllers.\n\n#\n# DMA Controllers\n#\n\nconfig SH_DMAE\n\ttristate \"Renesas SuperH DMAC support\"\n\tdepends on SH_DMAE_BASE\n\thelp\n\t  Enable support for the Renesas SuperH DMA controllers.\n\nconfig RCAR_DMAC\n\ttristate \"Renesas R-Car Gen{2,3} and RZ/G{1,2} DMA Controller\"\n\tdepends on ARCH_RENESAS || COMPILE_TEST\n\tselect RENESAS_DMA\n\thelp\n\t  This driver supports the general purpose DMA controller found in the\n\t  Renesas R-Car Gen{2,3} and RZ/G{1,2} SoCs.\n\nconfig RENESAS_USB_DMAC\n\ttristate \"Renesas USB-DMA Controller\"\n\tdepends on ARCH_RENESAS || COMPILE_TEST\n\tselect RENESAS_DMA\n\tselect DMA_VIRTUAL_CHANNELS\n\thelp\n\t  This driver supports the USB-DMA controller found in the Renesas\n\t  SoCs.\n\nconfig RZ_DMAC\n\ttristate \"Renesas RZ/{G2L,V2L} DMA Controller\"\n\tdepends on ARCH_RZG2L || COMPILE_TEST\n\tselect RENESAS_DMA\n\tselect DMA_VIRTUAL_CHANNELS\n\thelp\n\t  This driver supports the general purpose DMA controller found in the\n\t  Renesas RZ/{G2L,V2L} SoC variants.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

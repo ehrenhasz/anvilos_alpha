@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_drain.h",
+  "hash_id": "eba31678d322ab649546ec1cf7755e4f840f6822fdac8468d4de8517653133b8",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_drain.h",
+  "human_readable_source": "\n \n#ifndef XFS_DRAIN_H_\n#define XFS_DRAIN_H_\n\nstruct xfs_perag;\n\n#ifdef CONFIG_XFS_DRAIN_INTENTS\n \nstruct xfs_defer_drain {\n\t \n\tatomic_t\t\tdr_count;\n\n\t \n\tstruct wait_queue_head\tdr_waiters;\n};\n\nvoid xfs_defer_drain_init(struct xfs_defer_drain *dr);\nvoid xfs_defer_drain_free(struct xfs_defer_drain *dr);\n\nvoid xfs_drain_wait_disable(void);\nvoid xfs_drain_wait_enable(void);\n\n \nstruct xfs_perag *xfs_perag_intent_get(struct xfs_mount *mp,\n\t\txfs_agnumber_t agno);\nvoid xfs_perag_intent_put(struct xfs_perag *pag);\n\nvoid xfs_perag_intent_hold(struct xfs_perag *pag);\nvoid xfs_perag_intent_rele(struct xfs_perag *pag);\n\nint xfs_perag_intent_drain(struct xfs_perag *pag);\nbool xfs_perag_intent_busy(struct xfs_perag *pag);\n#else\nstruct xfs_defer_drain {   };\n\n#define xfs_defer_drain_free(dr)\t\t((void)0)\n#define xfs_defer_drain_init(dr)\t\t((void)0)\n\n#define xfs_perag_intent_get(mp, agno)\t\txfs_perag_get((mp), (agno))\n#define xfs_perag_intent_put(pag)\t\txfs_perag_put(pag)\n\nstatic inline void xfs_perag_intent_hold(struct xfs_perag *pag) { }\nstatic inline void xfs_perag_intent_rele(struct xfs_perag *pag) { }\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

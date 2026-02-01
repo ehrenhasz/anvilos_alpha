@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "69b6ff38db6fd7827986cdbcacc93bbd311b474fec63e01162c7a3900a9e3d7a",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/jz4740/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SND_JZ4740_SOC_I2S\n\ttristate \"SoC Audio (I2S protocol) for Ingenic JZ4740 SoC\"\n\tdepends on MIPS || COMPILE_TEST\n\tdepends on HAS_IOMEM\n\tselect REGMAP_MMIO\n\tselect SND_SOC_GENERIC_DMAENGINE_PCM\n\thelp\n\t  Say Y if you want to use I2S protocol and I2S codec on Ingenic JZ4740\n\t  based boards.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

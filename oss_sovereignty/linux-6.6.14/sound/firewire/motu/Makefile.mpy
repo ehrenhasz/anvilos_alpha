@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2c420cbba44d3fc07988bfbd9a11dc8370ce697fdba7963735d6291922809c9b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/motu/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCFLAGS_amdtp-motu.o\t:= -I$(src)\n\nsnd-firewire-motu-objs := motu.o amdtp-motu.o motu-transaction.o motu-stream.o \\\n\t\t\t  motu-proc.o motu-pcm.o motu-midi.o motu-hwdep.o \\\n\t\t\t  motu-protocol-v2.o motu-protocol-v3.o \\\n\t\t\t  motu-protocol-v1.o motu-register-dsp-message-parser.o \\\n\t\t\t  motu-command-dsp-message-parser.o\nobj-$(CONFIG_SND_FIREWIRE_MOTU) += snd-firewire-motu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

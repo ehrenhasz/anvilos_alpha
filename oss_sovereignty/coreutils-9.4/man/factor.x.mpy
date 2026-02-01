@@ -1,0 +1,9 @@
+{
+  "module_name": "factor.x",
+  "hash_id": "e2e847059fbfae7900863be58b62f89baa81810422b5a91459b35bf14ba44243",
+  "original_prompt": "Ingested from coreutils-9.4/man/factor.x",
+  "human_readable_source": "[NAME]\nfactor \\- factor numbers\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-unlinkat.c",
+  "hash_id": "0da1d8d21ecae0f6d48ad6d97455b9daa22fedd6e3cde481f78cf1c6a6c39e93",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-unlinkat.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <unistd.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (unlinkat, int, (int, char const *, int));\n\n#include <fcntl.h>\n#include <errno.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/stat.h>\n\n#include \"unlinkdir.h\"\n#include \"ignore-value.h\"\n#include \"macros.h\"\n\n#define BASE \"test-unlinkat.t\"\n\n#include \"test-rmdir.h\"\n#include \"test-unlink.h\"\n\nstatic int dfd = AT_FDCWD;\n\n \nstatic int\nrmdirat (char const *name)\n{\n  return unlinkat (dfd, name, AT_REMOVEDIR);\n}\n\n \nstatic int\nunlinker (char const *name)\n{\n  return unlinkat (dfd, name, 0);\n}\n\nint\nmain (_GL_UNUSED int argc, char *argv[])\n{\n   \n  int result1;\n  int result2;\n\n   \n  ignore_value (system (\"rm -rf \" BASE \"*\"));\n\n   \n  {\n    errno = 0;\n    ASSERT (unlinkat (-1, \"foo\", 0) == -1);\n    ASSERT (errno == EBADF);\n  }\n  {\n    close (99);\n    errno = 0;\n    ASSERT (unlinkat (99, \"foo\", 0) == -1);\n    ASSERT (errno == EBADF);\n  }\n\n  result1 = test_rmdir_func (rmdirat, false);\n  result2 = test_unlink_func (unlinker, false);\n  ASSERT (result1 == result2);\n  dfd = open (\".\", O_RDONLY);\n  ASSERT (0 <= dfd);\n  result2 = test_rmdir_func (rmdirat, false);\n  ASSERT (result1 == result2);\n  result2 = test_unlink_func (unlinker, false);\n  ASSERT (result1 == result2);\n  ASSERT (close (dfd) == 0);\n  if (result1 == 77)\n    fputs (\"skipping test: symlinks not supported on this file system\\n\",\n           stderr);\n  return result1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

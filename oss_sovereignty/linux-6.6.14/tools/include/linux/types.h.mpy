@@ -1,0 +1,9 @@
+{
+  "module_name": "types.h",
+  "hash_id": "c63c58fc4cbc6d05d4eba98e8a0905abafce3ceb6c85b4d741249de8d2d2f304",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/types.h",
+  "human_readable_source": " \n#ifndef _TOOLS_LINUX_TYPES_H_\n#define _TOOLS_LINUX_TYPES_H_\n\n#include <stdbool.h>\n#include <stddef.h>\n#include <stdint.h>\n\n#ifndef __SANE_USERSPACE_TYPES__\n#define __SANE_USERSPACE_TYPES__\t \n#endif\n\n#include <asm/types.h>\n#include <asm/posix_types.h>\n\nstruct page;\nstruct kmem_cache;\n\ntypedef enum {\n\tGFP_KERNEL,\n\tGFP_ATOMIC,\n\t__GFP_HIGHMEM,\n\t__GFP_HIGH\n} gfp_t;\n\n \ntypedef uint64_t u64;\ntypedef int64_t s64;\n\ntypedef __u32 u32;\ntypedef __s32 s32;\n\ntypedef __u16 u16;\ntypedef __s16 s16;\n\ntypedef __u8  u8;\ntypedef __s8  s8;\n\n#ifdef __CHECKER__\n#define __bitwise\t__attribute__((bitwise))\n#else\n#define __bitwise\n#endif\n\n#define __force\n \n#ifndef __user\n#define __user\n#endif\n#define __must_check\n#define __cold\n\ntypedef __u16 __bitwise __le16;\ntypedef __u16 __bitwise __be16;\ntypedef __u32 __bitwise __le32;\ntypedef __u32 __bitwise __be32;\ntypedef __u64 __bitwise __le64;\ntypedef __u64 __bitwise __be64;\n\ntypedef __u16 __bitwise __sum16;\ntypedef __u32 __bitwise __wsum;\n\n#ifdef CONFIG_PHYS_ADDR_T_64BIT\ntypedef u64 phys_addr_t;\n#else\ntypedef u32 phys_addr_t;\n#endif\n\ntypedef struct {\n\tint counter;\n} atomic_t;\n\ntypedef struct {\n\tlong counter;\n} atomic_long_t;\n\n#ifndef __aligned_u64\n# define __aligned_u64 __u64 __attribute__((aligned(8)))\n#endif\n\nstruct list_head {\n\tstruct list_head *next, *prev;\n};\n\nstruct hlist_head {\n\tstruct hlist_node *first;\n};\n\nstruct hlist_node {\n\tstruct hlist_node *next, **pprev;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

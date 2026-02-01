@@ -1,0 +1,9 @@
+{
+  "module_name": "sysrq.h",
+  "hash_id": "9fd4d09c65adc08a63b042e42115a6a9be1364da922ea342a2f4db6d234d741e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sysrq.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_SYSRQ_H\n#define _LINUX_SYSRQ_H\n\n#include <linux/errno.h>\n#include <linux/types.h>\n\n \n \n#define SYSRQ_ENABLE_LOG\t0x0002\n#define SYSRQ_ENABLE_KEYBOARD\t0x0004\n#define SYSRQ_ENABLE_DUMP\t0x0008\n#define SYSRQ_ENABLE_SYNC\t0x0010\n#define SYSRQ_ENABLE_REMOUNT\t0x0020\n#define SYSRQ_ENABLE_SIGNAL\t0x0040\n#define SYSRQ_ENABLE_BOOT\t0x0080\n#define SYSRQ_ENABLE_RTNICE\t0x0100\n\nstruct sysrq_key_op {\n\tvoid (* const handler)(u8);\n\tconst char * const help_msg;\n\tconst char * const action_msg;\n\tconst int enable_mask;\n};\n\n#ifdef CONFIG_MAGIC_SYSRQ\n\n \n\nvoid handle_sysrq(u8 key);\nvoid __handle_sysrq(u8 key, bool check_mask);\nint register_sysrq_key(u8 key, const struct sysrq_key_op *op);\nint unregister_sysrq_key(u8 key, const struct sysrq_key_op *op);\nextern const struct sysrq_key_op *__sysrq_reboot_op;\n\nint sysrq_toggle_support(int enable_mask);\nint sysrq_mask(void);\n\n#else\n\nstatic inline void handle_sysrq(u8 key)\n{\n}\n\nstatic inline void __handle_sysrq(u8 key, bool check_mask)\n{\n}\n\nstatic inline int register_sysrq_key(u8 key, const struct sysrq_key_op *op)\n{\n\treturn -EINVAL;\n}\n\nstatic inline int unregister_sysrq_key(u8 key, const struct sysrq_key_op *op)\n{\n\treturn -EINVAL;\n}\n\nstatic inline int sysrq_mask(void)\n{\n\t \n\treturn 0;\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c129e4302d8db675a3cf8d04995033544490125719b1f7e0763a9bafa2dacc71",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/intel_pstate/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCFLAGS := $(CFLAGS) -Wall -D_GNU_SOURCE\nLDLIBS += -lm\n\nARCH ?= $(shell uname -m 2>/dev/null || echo not)\nARCH_PROCESSED := $(shell echo $(ARCH) | sed -e s/i.86/x86/ -e s/x86_64/x86/)\n\nifeq (x86,$(ARCH_PROCESSED))\nTEST_GEN_FILES := msr aperf\nendif\n\nTEST_PROGS := run.sh\n\ninclude ../lib.mk\n\n$(TEST_GEN_FILES): $(HEADERS)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

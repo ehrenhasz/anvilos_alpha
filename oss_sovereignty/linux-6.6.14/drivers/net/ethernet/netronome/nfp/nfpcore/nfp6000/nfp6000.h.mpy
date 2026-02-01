@@ -1,0 +1,9 @@
+{
+  "module_name": "nfp6000.h",
+  "hash_id": "89ba847fb0c1e6be040c13c848643af657b03eb8f4a4b03f5547a3c710f4cc34",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000/nfp6000.h",
+  "human_readable_source": " \n \n\n#ifndef NFP6000_NFP6000_H\n#define NFP6000_NFP6000_H\n\n#include <linux/errno.h>\n#include <linux/types.h>\n\n \n#define NFP_CPP_TARGET_INVALID          0\n#define NFP_CPP_TARGET_NBI              1\n#define NFP_CPP_TARGET_QDR              2\n#define NFP_CPP_TARGET_ILA              6\n#define NFP_CPP_TARGET_MU               7\n#define NFP_CPP_TARGET_PCIE             9\n#define NFP_CPP_TARGET_ARM              10\n#define NFP_CPP_TARGET_CRYPTO           12\n#define NFP_CPP_TARGET_ISLAND_XPB       14       \n#define NFP_CPP_TARGET_ISLAND_CAP       14       \n#define NFP_CPP_TARGET_CT_XPB           14\n#define NFP_CPP_TARGET_LOCAL_SCRATCH    15\n#define NFP_CPP_TARGET_CLS              NFP_CPP_TARGET_LOCAL_SCRATCH\n\n#define NFP_ISL_EMEM0\t\t\t24\n\n#define NFP_MU_ADDR_ACCESS_TYPE_MASK\t3ULL\n#define NFP_MU_ADDR_ACCESS_TYPE_DIRECT\t2ULL\n\n#define PUSHPULL(_pull, _push)\t\t((_pull) << 4 | (_push) << 0)\n#define PUSH_WIDTH(_pushpull)\t\tpushpull_width((_pushpull) >> 0)\n#define PULL_WIDTH(_pushpull)\t\tpushpull_width((_pushpull) >> 4)\n\nstatic inline int pushpull_width(int pp)\n{\n\tpp &= 0xf;\n\n\tif (pp == 0)\n\t\treturn -EINVAL;\n\treturn 2 << pp;\n}\n\nstatic inline int nfp_cppat_mu_locality_lsb(int mode, bool addr40)\n{\n\tswitch (mode) {\n\tcase 0 ... 3:\n\t\treturn addr40 ? 38 : 30;\n\tdefault:\n\t\treturn -EINVAL;\n\t}\n}\n\nint nfp_target_pushpull(u32 cpp_id, u64 address);\nint nfp_target_cpp(u32 cpp_island_id, u64 cpp_island_address,\n\t\t   u32 *cpp_target_id, u64 *cpp_target_address,\n\t\t   const u32 *imb_table);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

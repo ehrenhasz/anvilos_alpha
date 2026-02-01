@@ -1,0 +1,9 @@
+{
+  "module_name": "kryo-l2-accessors.c",
+  "hash_id": "517e9cc2af5d091a8a0f4915a900bece3e0f6202c98f3fcdcf281d6960e9462e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/qcom/kryo-l2-accessors.c",
+  "human_readable_source": "\n \n\n#include <linux/spinlock.h>\n#include <asm/barrier.h>\n#include <asm/sysreg.h>\n#include <soc/qcom/kryo-l2-accessors.h>\n\n#define L2CPUSRSELR_EL1         sys_reg(3, 3, 15, 0, 6)\n#define L2CPUSRDR_EL1           sys_reg(3, 3, 15, 0, 7)\n\nstatic DEFINE_RAW_SPINLOCK(l2_access_lock);\n\n \nvoid kryo_l2_set_indirect_reg(u64 reg, u64 val)\n{\n\tunsigned long flags;\n\n\traw_spin_lock_irqsave(&l2_access_lock, flags);\n\twrite_sysreg_s(reg, L2CPUSRSELR_EL1);\n\tisb();\n\twrite_sysreg_s(val, L2CPUSRDR_EL1);\n\tisb();\n\traw_spin_unlock_irqrestore(&l2_access_lock, flags);\n}\nEXPORT_SYMBOL(kryo_l2_set_indirect_reg);\n\n \nu64 kryo_l2_get_indirect_reg(u64 reg)\n{\n\tu64 val;\n\tunsigned long flags;\n\n\traw_spin_lock_irqsave(&l2_access_lock, flags);\n\twrite_sysreg_s(reg, L2CPUSRSELR_EL1);\n\tisb();\n\tval = read_sysreg_s(L2CPUSRDR_EL1);\n\traw_spin_unlock_irqrestore(&l2_access_lock, flags);\n\n\treturn val;\n}\nEXPORT_SYMBOL(kryo_l2_get_indirect_reg);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

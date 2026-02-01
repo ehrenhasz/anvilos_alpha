@@ -1,0 +1,9 @@
+{
+  "module_name": "r8a7744-sysc.h",
+  "hash_id": "a67f6e011efb351c58bffd6fcb8090acd4a515170299c97d9acced62ff372358",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/r8a7744-sysc.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_POWER_R8A7744_SYSC_H__\n#define __DT_BINDINGS_POWER_R8A7744_SYSC_H__\n\n \n\n#define R8A7744_PD_CA15_CPU0\t\t 0\n#define R8A7744_PD_CA15_CPU1\t\t 1\n#define R8A7744_PD_CA15_SCU\t\t12\n#define R8A7744_PD_SGX\t\t\t20\n\n \n#define R8A7744_PD_ALWAYS_ON\t\t32\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

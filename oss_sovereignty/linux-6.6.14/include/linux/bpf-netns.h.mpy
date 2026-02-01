@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf-netns.h",
+  "hash_id": "38036e07c7310befd382b1907f1b9ff826197aff98c48d10da04748dffd1d432",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bpf-netns.h",
+  "human_readable_source": " \n#ifndef _BPF_NETNS_H\n#define _BPF_NETNS_H\n\n#include <linux/mutex.h>\n#include <net/netns/bpf.h>\n#include <uapi/linux/bpf.h>\n\nstatic inline enum netns_bpf_attach_type\nto_netns_bpf_attach_type(enum bpf_attach_type attach_type)\n{\n\tswitch (attach_type) {\n\tcase BPF_FLOW_DISSECTOR:\n\t\treturn NETNS_BPF_FLOW_DISSECTOR;\n\tcase BPF_SK_LOOKUP:\n\t\treturn NETNS_BPF_SK_LOOKUP;\n\tdefault:\n\t\treturn NETNS_BPF_INVALID;\n\t}\n}\n\n \nextern struct mutex netns_bpf_mutex;\n\nunion bpf_attr;\nstruct bpf_prog;\n\n#ifdef CONFIG_NET\nint netns_bpf_prog_query(const union bpf_attr *attr,\n\t\t\t union bpf_attr __user *uattr);\nint netns_bpf_prog_attach(const union bpf_attr *attr,\n\t\t\t  struct bpf_prog *prog);\nint netns_bpf_prog_detach(const union bpf_attr *attr, enum bpf_prog_type ptype);\nint netns_bpf_link_create(const union bpf_attr *attr,\n\t\t\t  struct bpf_prog *prog);\n#else\nstatic inline int netns_bpf_prog_query(const union bpf_attr *attr,\n\t\t\t\t       union bpf_attr __user *uattr)\n{\n\treturn -EOPNOTSUPP;\n}\n\nstatic inline int netns_bpf_prog_attach(const union bpf_attr *attr,\n\t\t\t\t\tstruct bpf_prog *prog)\n{\n\treturn -EOPNOTSUPP;\n}\n\nstatic inline int netns_bpf_prog_detach(const union bpf_attr *attr,\n\t\t\t\t\tenum bpf_prog_type ptype)\n{\n\treturn -EOPNOTSUPP;\n}\n\nstatic inline int netns_bpf_link_create(const union bpf_attr *attr,\n\t\t\t\t\tstruct bpf_prog *prog)\n{\n\treturn -EOPNOTSUPP;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

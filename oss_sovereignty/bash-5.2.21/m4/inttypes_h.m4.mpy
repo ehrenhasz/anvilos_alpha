@@ -1,0 +1,9 @@
+{
+  "module_name": "inttypes_h.m4",
+  "hash_id": "8628cb60df0fd9726eaaad5baca259c1b3b783c0a45ccae4b8b9786d31fe4397",
+  "original_prompt": "Ingested from bash-5.2.21/m4/inttypes_h.m4",
+  "human_readable_source": "# inttypes_h.m4 serial 10\ndnl Copyright (C) 1997-2004, 2006, 2008-2019 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl From Paul Eggert.\n\n# Define HAVE_INTTYPES_H_WITH_UINTMAX if <inttypes.h> exists,\n# doesn't clash with <sys/types.h>, and declares uintmax_t.\n\nAC_DEFUN([gl_AC_HEADER_INTTYPES_H],\n[\n  AC_CACHE_CHECK([for inttypes.h], [gl_cv_header_inttypes_h],\n    [AC_COMPILE_IFELSE(\n       [AC_LANG_PROGRAM(\n          [[\n#include <sys/types.h>\n#include <inttypes.h>\n          ]],\n          [[uintmax_t i = (uintmax_t) -1; return !i;]])],\n       [gl_cv_header_inttypes_h=yes],\n       [gl_cv_header_inttypes_h=no])])\n  if test $gl_cv_header_inttypes_h = yes; then\n    AC_DEFINE_UNQUOTED([HAVE_INTTYPES_H_WITH_UINTMAX], [1],\n      [Define if <inttypes.h> exists, doesn't clash with <sys/types.h>,\n       and declares uintmax_t. ])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

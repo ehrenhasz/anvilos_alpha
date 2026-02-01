@@ -1,0 +1,9 @@
+{
+  "module_name": "memory-notifier-error-inject.c",
+  "hash_id": "0f60a3b542cc1a12ffe6ff2b1936a760e7f452e586d31415dc2a7c8cac2b2769",
+  "original_prompt": "Ingested from linux-6.6.14/lib/memory-notifier-error-inject.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/memory.h>\n\n#include \"notifier-error-inject.h\"\n\nstatic int priority;\nmodule_param(priority, int, 0);\nMODULE_PARM_DESC(priority, \"specify memory notifier priority\");\n\nstatic struct notifier_err_inject memory_notifier_err_inject = {\n\t.actions = {\n\t\t{ NOTIFIER_ERR_INJECT_ACTION(MEM_GOING_ONLINE) },\n\t\t{ NOTIFIER_ERR_INJECT_ACTION(MEM_GOING_OFFLINE) },\n\t\t{}\n\t}\n};\n\nstatic struct dentry *dir;\n\nstatic int err_inject_init(void)\n{\n\tint err;\n\n\tdir = notifier_err_inject_init(\"memory\", notifier_err_inject_dir,\n\t\t\t\t\t&memory_notifier_err_inject, priority);\n\tif (IS_ERR(dir))\n\t\treturn PTR_ERR(dir);\n\n\terr = register_memory_notifier(&memory_notifier_err_inject.nb);\n\tif (err)\n\t\tdebugfs_remove_recursive(dir);\n\n\treturn err;\n}\n\nstatic void err_inject_exit(void)\n{\n\tunregister_memory_notifier(&memory_notifier_err_inject.nb);\n\tdebugfs_remove_recursive(dir);\n}\n\nmodule_init(err_inject_init);\nmodule_exit(err_inject_exit);\n\nMODULE_DESCRIPTION(\"memory notifier error injection module\");\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Akinobu Mita <akinobu.mita@gmail.com>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

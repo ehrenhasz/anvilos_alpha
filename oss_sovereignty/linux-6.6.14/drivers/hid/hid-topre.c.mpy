@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-topre.c",
+  "hash_id": "50d4123d7efd9bb531f68c2b3a705a83981524baa101f041213e5dc3af1fce18",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-topre.c",
+  "human_readable_source": "\n \n\n#include <linux/hid.h>\n#include <linux/module.h>\n\n#include \"hid-ids.h\"\n\nMODULE_AUTHOR(\"Harry Stern <harry@harrystern.net>\");\nMODULE_DESCRIPTION(\"REALFORCE R2 Keyboard driver\");\nMODULE_LICENSE(\"GPL\");\n\n \nstatic __u8 *topre_report_fixup(struct hid_device *hdev, __u8 *rdesc,\n\t\t\t\t unsigned int *rsize)\n{\n\tif (*rsize >= 119 && rdesc[69] == 0x29 && rdesc[70] == 0xe7 &&\n\t\t\t\t\t\t rdesc[71] == 0x81 && rdesc[72] == 0x00) {\n\t\thid_info(hdev,\n\t\t\t\"fixing up Topre REALFORCE keyboard report descriptor\\n\");\n\t\trdesc[72] = 0x02;\n\t}\n\treturn rdesc;\n}\n\nstatic const struct hid_device_id topre_id_table[] = {\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_TOPRE,\n\t\t\t USB_DEVICE_ID_TOPRE_REALFORCE_R2_108) },\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_TOPRE,\n\t\t\t USB_DEVICE_ID_TOPRE_REALFORCE_R2_87) },\n\t{ }\n};\nMODULE_DEVICE_TABLE(hid, topre_id_table);\n\nstatic struct hid_driver topre_driver = {\n\t.name\t\t\t= \"topre\",\n\t.id_table\t\t= topre_id_table,\n\t.report_fixup\t\t= topre_report_fixup,\n};\n\nmodule_hid_driver(topre_driver);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

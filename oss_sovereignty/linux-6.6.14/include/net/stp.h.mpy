@@ -1,0 +1,9 @@
+{
+  "module_name": "stp.h",
+  "hash_id": "781ded89fe285db50946f7078cec2fb92effd89b9a185802e9bebdd5674b8668",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/stp.h",
+  "human_readable_source": " \n#ifndef _NET_STP_H\n#define _NET_STP_H\n\n#include <linux/if_ether.h>\n\nstruct stp_proto {\n\tunsigned char\tgroup_address[ETH_ALEN];\n\tvoid\t\t(*rcv)(const struct stp_proto *, struct sk_buff *,\n\t\t\t       struct net_device *);\n\tvoid\t\t*data;\n};\n\nint stp_proto_register(const struct stp_proto *proto);\nvoid stp_proto_unregister(const struct stp_proto *proto);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

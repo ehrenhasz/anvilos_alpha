@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2ca8053650d5a3077493b65e5ce9c594d6340e4021f5b75939d56799415836ae",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig R8712U\n\ttristate \"RealTek RTL8712U (RTL8192SU) Wireless LAN NIC driver\"\n\tdepends on WLAN && USB && CFG80211\n\tselect WIRELESS_EXT\n\tselect WEXT_PRIV\n\tselect FW_LOADER\n\thelp\n\t    This option adds the Realtek RTL8712 USB device such as the\n\t    D-Link DWA-130.\n\n\t    If built as a module, it will be called r8712u.\n\nconfig R8712_TX_AGGR\n\tbool \"Realtek RTL8712U Transmit Aggregation code\"\n\tdepends on R8712U && BROKEN\n\thelp\n\t    This option provides transmit aggregation for the Realtek\n\t    RTL8712 USB device.\n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_debug_internal.h",
+  "hash_id": "6e551dd0ccc2de0c04ec7044dce43b700ed4696a6ecaa55b297ef7a0004667a4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/debug/interface/ia_css_debug_internal.h",
+  "human_readable_source": " \n \n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

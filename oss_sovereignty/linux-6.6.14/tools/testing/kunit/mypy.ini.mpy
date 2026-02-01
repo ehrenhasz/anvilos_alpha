@@ -1,0 +1,9 @@
+{
+  "module_name": "mypy.ini",
+  "hash_id": "0091ae5118e1414eddf24afc73b5114daaca09e676fcbdca06874b2695be7d4d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/mypy.ini",
+  "human_readable_source": "[mypy]\nstrict = True\n\n# E.g. we can't write subprocess.Popen[str] until Python 3.9+.\n# But kunit.py tries to support Python 3.7+, so let's disable it.\ndisable_error_code = type-arg\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

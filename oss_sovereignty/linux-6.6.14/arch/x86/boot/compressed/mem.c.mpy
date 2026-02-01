@@ -1,0 +1,9 @@
+{
+  "module_name": "mem.c",
+  "hash_id": "251e4c451bab4713bee07801a437565367c93f82d00265d51eeedd2886ab32e2",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/compressed/mem.c",
+  "human_readable_source": "\n\n#include \"error.h\"\n#include \"misc.h\"\n#include \"tdx.h\"\n#include \"sev.h\"\n#include <asm/shared/tdx.h>\n\n \nstatic bool early_is_tdx_guest(void)\n{\n\tstatic bool once;\n\tstatic bool is_tdx;\n\n\tif (!IS_ENABLED(CONFIG_INTEL_TDX_GUEST))\n\t\treturn false;\n\n\tif (!once) {\n\t\tu32 eax, sig[3];\n\n\t\tcpuid_count(TDX_CPUID_LEAF_ID, 0, &eax,\n\t\t\t    &sig[0], &sig[2],  &sig[1]);\n\t\tis_tdx = !memcmp(TDX_IDENT, sig, sizeof(sig));\n\t\tonce = true;\n\t}\n\n\treturn is_tdx;\n}\n\nvoid arch_accept_memory(phys_addr_t start, phys_addr_t end)\n{\n\t \n\tif (early_is_tdx_guest()) {\n\t\tif (!tdx_accept_memory(start, end))\n\t\t\tpanic(\"TDX: Failed to accept memory\\n\");\n\t} else if (sev_snp_enabled()) {\n\t\tsnp_accept_memory(start, end);\n\t} else {\n\t\terror(\"Cannot accept memory: unknown platform\\n\");\n\t}\n}\n\nbool init_unaccepted_memory(void)\n{\n\tguid_t guid = LINUX_EFI_UNACCEPTED_MEM_TABLE_GUID;\n\tstruct efi_unaccepted_memory *table;\n\tunsigned long cfg_table_pa;\n\tunsigned int cfg_table_len;\n\tenum efi_type et;\n\tint ret;\n\n\tet = efi_get_type(boot_params);\n\tif (et == EFI_TYPE_NONE)\n\t\treturn false;\n\n\tret = efi_get_conf_table(boot_params, &cfg_table_pa, &cfg_table_len);\n\tif (ret) {\n\t\twarn(\"EFI config table not found.\");\n\t\treturn false;\n\t}\n\n\ttable = (void *)efi_find_vendor_table(boot_params, cfg_table_pa,\n\t\t\t\t\t      cfg_table_len, guid);\n\tif (!table)\n\t\treturn false;\n\n\tif (table->version != 1)\n\t\terror(\"Unknown version of unaccepted memory table\\n\");\n\n\t \n\tunaccepted_table = table;\n\n\treturn true;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

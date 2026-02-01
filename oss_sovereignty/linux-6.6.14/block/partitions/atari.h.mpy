@@ -1,0 +1,9 @@
+{
+  "module_name": "atari.h",
+  "hash_id": "6b269caac3658b5c4a08a3fe11d9bcc81617a18fc7c3eefb6b7117fc8c77b077",
+  "original_prompt": "Ingested from linux-6.6.14/block/partitions/atari.h",
+  "human_readable_source": " \n \n\n#include <linux/compiler.h>\n\nstruct partition_info\n{\n  u8 flg;\t\t\t \n  char id[3];\t\t\t \n  __be32 st;\t\t\t \n  __be32 siz;\t\t\t \n};\n\nstruct rootsector\n{\n  char unused[0x156];\t\t \n  struct partition_info icdpart[8];\t \n  char unused2[0xc];\n  u32 hd_siz;\t\t\t \n  struct partition_info part[4];\n  u32 bsl_st;\t\t\t \n  u32 bsl_cnt;\t\t\t \n  u16 checksum;\t\t\t \n} __packed;\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

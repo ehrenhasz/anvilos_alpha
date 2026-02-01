@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_mirred.h",
+  "hash_id": "c2b9ef45a8416be1ab160b96ad9000d5bcf942aa859a224b13971b21154ffa1a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_act/tc_mirred.h",
+  "human_readable_source": " \n#ifndef __LINUX_TC_MIR_H\n#define __LINUX_TC_MIR_H\n\n#include <linux/types.h>\n#include <linux/pkt_cls.h>\n\n#define TCA_EGRESS_REDIR 1   \n#define TCA_EGRESS_MIRROR 2  \n#define TCA_INGRESS_REDIR 3   \n#define TCA_INGRESS_MIRROR 4  \n\nstruct tc_mirred {\n\ttc_gen;\n\tint                     eaction;    \n\t__u32                   ifindex;   \n};\n\nenum {\n\tTCA_MIRRED_UNSPEC,\n\tTCA_MIRRED_TM,\n\tTCA_MIRRED_PARMS,\n\tTCA_MIRRED_PAD,\n\t__TCA_MIRRED_MAX\n};\n#define TCA_MIRRED_MAX (__TCA_MIRRED_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

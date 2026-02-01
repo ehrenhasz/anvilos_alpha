@@ -1,0 +1,9 @@
+{
+  "module_name": "clear.c",
+  "hash_id": "6ef4c20d4fb65b34467221724757509827f58ee8f82c3686a172708c6f961f6d",
+  "original_prompt": "Ingested from ncurses-6.4/progs/clear.c",
+  "human_readable_source": " \n\n \n\n \n\n#define USE_LIBTINFO\n#include <clear_cmd.h>\n#include <tty_settings.h>\n\nMODULE_ID(\"$Id: clear.c,v 1.24 2021/03/20 18:23:14 tom Exp $\")\n\nconst char *_nc_progname = \"clear\";\n\nstatic GCC_NORETURN void\nusage(void)\n{\n#define KEEP(s) s \"\\n\"\n    static const char msg[] =\n    {\n\tKEEP(\"\")\n\tKEEP(\"Options:\")\n\tKEEP(\"  -T TERM     use this instead of $TERM\")\n\tKEEP(\"  -V          print curses-version\")\n\tKEEP(\"  -x          do not try to clear scrollback\")\n    };\n#undef KEEP\n    (void) fprintf(stderr, \"Usage: %s [options]\\n\", _nc_progname);\n    fputs(msg, stderr);\n    ExitProgram(EXIT_FAILURE);\n}\n\nint\nmain(\n\tint argc GCC_UNUSED,\n\tchar *argv[]GCC_UNUSED)\n{\n    TTY tty_settings;\n    int fd;\n    int c;\n    char *term;\n    bool opt_x = FALSE;\t\t \n\n    _nc_progname = _nc_rootname(argv[0]);\n    term = getenv(\"TERM\");\n\n    while ((c = getopt(argc, argv, \"T:Vx\")) != -1) {\n\tswitch (c) {\n\tcase 'T':\n\t    use_env(FALSE);\n\t    use_tioctl(TRUE);\n\t    term = optarg;\n\t    break;\n\tcase 'V':\n\t    puts(curses_version());\n\t    ExitProgram(EXIT_SUCCESS);\n\tcase 'x':\t\t \n\t    opt_x = TRUE;\n\t    break;\n\tdefault:\n\t    usage();\n\t     \n\t}\n    }\n    if (optind < argc)\n\tusage();\n\n    fd = save_tty_settings(&tty_settings, FALSE);\n\n    setupterm(term, fd, (int *) 0);\n\n    ExitProgram((clear_cmd(opt_x) == ERR)\n\t\t? EXIT_FAILURE\n\t\t: EXIT_SUCCESS);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

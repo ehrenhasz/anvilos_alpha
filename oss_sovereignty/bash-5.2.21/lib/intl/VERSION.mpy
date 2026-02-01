@@ -1,0 +1,9 @@
+{
+  "module_name": "VERSION",
+  "hash_id": "85f1e5f18314ea60beae701495acee3514165a39e6699ba2523d57226e411df8",
+  "original_prompt": "Ingested from bash-5.2.21/lib/intl/VERSION",
+  "human_readable_source": "GNU gettext library from gettext-0.12.1\n\nThis is here only in the case the system doesn't provide it\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

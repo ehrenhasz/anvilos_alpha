@@ -1,0 +1,9 @@
+{
+  "module_name": "videomode.c",
+  "hash_id": "76acc85dfbbeaf5e8239bd399b7e6313719b2a9de0a94f9ab2dcd0307c4797dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/videomode.c",
+  "human_readable_source": "\n \n\n#include <linux/errno.h>\n#include <linux/export.h>\n#include <video/display_timing.h>\n#include <video/videomode.h>\n\nvoid videomode_from_timing(const struct display_timing *dt,\n\t\t\t  struct videomode *vm)\n{\n\tvm->pixelclock = dt->pixelclock.typ;\n\tvm->hactive = dt->hactive.typ;\n\tvm->hfront_porch = dt->hfront_porch.typ;\n\tvm->hback_porch = dt->hback_porch.typ;\n\tvm->hsync_len = dt->hsync_len.typ;\n\n\tvm->vactive = dt->vactive.typ;\n\tvm->vfront_porch = dt->vfront_porch.typ;\n\tvm->vback_porch = dt->vback_porch.typ;\n\tvm->vsync_len = dt->vsync_len.typ;\n\n\tvm->flags = dt->flags;\n}\nEXPORT_SYMBOL_GPL(videomode_from_timing);\n\nint videomode_from_timings(const struct display_timings *disp,\n\t\t\t  struct videomode *vm, unsigned int index)\n{\n\tstruct display_timing *dt;\n\n\tdt = display_timings_get(disp, index);\n\tif (!dt)\n\t\treturn -EINVAL;\n\n\tvideomode_from_timing(dt, vm);\n\n\treturn 0;\n}\nEXPORT_SYMBOL_GPL(videomode_from_timings);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

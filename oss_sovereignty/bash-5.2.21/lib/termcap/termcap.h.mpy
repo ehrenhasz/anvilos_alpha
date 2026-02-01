@@ -1,0 +1,9 @@
+{
+  "module_name": "termcap.h",
+  "hash_id": "9bd58ca47568c653c0b8f96047bcde099bd4bd48964c76a919eab47180efb4b2",
+  "original_prompt": "Ingested from bash-5.2.21/lib/termcap/termcap.h",
+  "human_readable_source": " \n\n \n\n#ifndef _TERMCAP_H\n#define _TERMCAP_H 1\n\n#if __STDC__\n\nextern int tgetent (char *buffer, const char *termtype);\n\nextern int tgetnum (const char *name);\nextern int tgetflag (const char *name);\nextern char *tgetstr (const char *name, char **area);\n\nextern char PC;\nextern short ospeed;\nextern int tputs (const char *string, int nlines, int (*outfun) (int));\n\nextern char *tparam (const char *ctlstring, char *buffer, int size, ...);\n\nextern char *UP;\nextern char *BC;\n\nextern char *tgoto (const char *cstring, int hpos, int vpos);\n\n#else  \n\nextern int tgetent ();\n\nextern int tgetnum ();\nextern int tgetflag ();\nextern char *tgetstr ();\n\nextern char PC;\nextern short ospeed;\n\nextern void tputs ();\n\nextern char *tparam ();\n\nextern char *UP;\nextern char *BC;\n\nextern char *tgoto ();\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

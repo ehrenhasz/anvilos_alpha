@@ -1,0 +1,9 @@
+{
+  "module_name": "core.h",
+  "hash_id": "a63f3d98c8e24872a2195f029109c9062672d8538281f07ca84db93c09301bff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/qce/core.h",
+  "human_readable_source": " \n \n\n#ifndef _CORE_H_\n#define _CORE_H_\n\n#include \"dma.h\"\n\n \nstruct qce_device {\n\tstruct crypto_queue queue;\n\tspinlock_t lock;\n\tstruct tasklet_struct done_tasklet;\n\tstruct crypto_async_request *req;\n\tint result;\n\tvoid __iomem *base;\n\tstruct device *dev;\n\tstruct clk *core, *iface, *bus;\n\tstruct icc_path *mem_path;\n\tstruct qce_dma_data dma;\n\tint burst_size;\n\tunsigned int pipe_pair_id;\n\tint (*async_req_enqueue)(struct qce_device *qce,\n\t\t\t\t struct crypto_async_request *req);\n\tvoid (*async_req_done)(struct qce_device *qce, int ret);\n};\n\n \nstruct qce_algo_ops {\n\tu32 type;\n\tint (*register_algs)(struct qce_device *qce);\n\tvoid (*unregister_algs)(struct qce_device *qce);\n\tint (*async_req_handle)(struct crypto_async_request *async_req);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

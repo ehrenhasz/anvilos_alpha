@@ -1,0 +1,9 @@
+{
+  "module_name": "arm64-frame-pointer-unwind-support.h",
+  "hash_id": "c690d5660333c7c3bd53a973a66dd966205d05e4dd3d69f87f5c0c06ade797ec",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/arm64-frame-pointer-unwind-support.h",
+  "human_readable_source": " \n#ifndef __PERF_ARM_FRAME_POINTER_UNWIND_SUPPORT_H\n#define __PERF_ARM_FRAME_POINTER_UNWIND_SUPPORT_H\n\n#include <linux/types.h>\n\nstruct perf_sample;\nstruct thread;\n\nu64 get_leaf_frame_caller_aarch64(struct perf_sample *sample, struct thread *thread, int user_idx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

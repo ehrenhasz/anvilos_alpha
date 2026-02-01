@@ -1,0 +1,9 @@
+{
+  "module_name": "vic.h",
+  "hash_id": "01b22cf7f1c76433a512f1e3323b5f8dc9172baffad95ac77f37b8f308bf6d2e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tegra/vic.h",
+  "human_readable_source": " \n \n\n#ifndef TEGRA_VIC_H\n#define TEGRA_VIC_H\n\n \n\n#define VIC_SET_FCE_UCODE_SIZE\t\t\t0x0000071C\n#define VIC_SET_FCE_UCODE_OFFSET\t\t0x0000072C\n\n \n\n#define VIC_THI_STREAMID0\t0x00000030\n#define VIC_THI_STREAMID1\t0x00000034\n\n#define NV_PVIC_MISC_PRI_VIC_CG\t\t\t0x000016d0\n#define CG_IDLE_CG_DLY_CNT(val)\t\t\t((val & 0x3f) << 0)\n#define CG_IDLE_CG_EN\t\t\t\t(1 << 6)\n#define CG_WAKEUP_DLY_CNT(val)\t\t\t((val & 0xf) << 16)\n\n#define VIC_TFBIF_TRANSCFG\t0x00002044\n#define  TRANSCFG_ATT(i, v)\t(((v) & 0x3) << (i * 4))\n#define  TRANSCFG_SID_HW\t0\n#define  TRANSCFG_SID_PHY\t1\n#define  TRANSCFG_SID_FALCON\t2\n\n \n\n#define VIC_UCODE_FCE_HEADER_OFFSET\t\t(6*4)\n#define VIC_UCODE_FCE_DATA_OFFSET\t\t(7*4)\n#define FCE_UCODE_SIZE_OFFSET\t\t\t(2*4)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

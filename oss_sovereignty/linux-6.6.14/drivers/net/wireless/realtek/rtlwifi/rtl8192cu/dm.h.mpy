@@ -1,0 +1,9 @@
+{
+  "module_name": "dm.h",
+  "hash_id": "42dfb7f68c15e8256fca9e31c5f8db6dfb063c85509bf23abfe1f1157168618e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/dm.h",
+  "human_readable_source": " \n \n\n#include \"../rtl8192ce/dm.h\"\n\nvoid rtl92cu_dm_dynamic_txpower(struct ieee80211_hw *hw);\nvoid dm_savepowerindex(struct ieee80211_hw *hw);\nvoid dm_writepowerindex(struct ieee80211_hw *hw, u8 value);\nvoid dm_restorepowerindex(struct ieee80211_hw *hw);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

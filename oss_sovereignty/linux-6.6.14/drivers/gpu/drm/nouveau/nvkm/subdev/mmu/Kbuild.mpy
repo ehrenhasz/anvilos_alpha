@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "cc302a05e2b099e89194b391cea20a8b9cda38d76c2e3b9a81a7f174a897d13c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\nnvkm-y += nvkm/subdev/mmu/base.o\nnvkm-y += nvkm/subdev/mmu/nv04.o\nnvkm-y += nvkm/subdev/mmu/nv41.o\nnvkm-y += nvkm/subdev/mmu/nv44.o\nnvkm-y += nvkm/subdev/mmu/nv50.o\nnvkm-y += nvkm/subdev/mmu/g84.o\nnvkm-y += nvkm/subdev/mmu/mcp77.o\nnvkm-y += nvkm/subdev/mmu/gf100.o\nnvkm-y += nvkm/subdev/mmu/gk104.o\nnvkm-y += nvkm/subdev/mmu/gk20a.o\nnvkm-y += nvkm/subdev/mmu/gm200.o\nnvkm-y += nvkm/subdev/mmu/gm20b.o\nnvkm-y += nvkm/subdev/mmu/gp100.o\nnvkm-y += nvkm/subdev/mmu/gp10b.o\nnvkm-y += nvkm/subdev/mmu/gv100.o\nnvkm-y += nvkm/subdev/mmu/tu102.o\n\nnvkm-y += nvkm/subdev/mmu/mem.o\nnvkm-y += nvkm/subdev/mmu/memnv04.o\nnvkm-y += nvkm/subdev/mmu/memnv50.o\nnvkm-y += nvkm/subdev/mmu/memgf100.o\n\nnvkm-y += nvkm/subdev/mmu/vmm.o\nnvkm-y += nvkm/subdev/mmu/vmmnv04.o\nnvkm-y += nvkm/subdev/mmu/vmmnv41.o\nnvkm-y += nvkm/subdev/mmu/vmmnv44.o\nnvkm-y += nvkm/subdev/mmu/vmmnv50.o\nnvkm-y += nvkm/subdev/mmu/vmmmcp77.o\nnvkm-y += nvkm/subdev/mmu/vmmgf100.o\nnvkm-y += nvkm/subdev/mmu/vmmgk104.o\nnvkm-y += nvkm/subdev/mmu/vmmgk20a.o\nnvkm-y += nvkm/subdev/mmu/vmmgm200.o\nnvkm-y += nvkm/subdev/mmu/vmmgm20b.o\nnvkm-y += nvkm/subdev/mmu/vmmgp100.o\nnvkm-y += nvkm/subdev/mmu/vmmgp10b.o\nnvkm-y += nvkm/subdev/mmu/vmmgv100.o\nnvkm-y += nvkm/subdev/mmu/vmmtu102.o\n\nnvkm-y += nvkm/subdev/mmu/umem.o\nnvkm-y += nvkm/subdev/mmu/ummu.o\nnvkm-y += nvkm/subdev/mmu/uvmm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

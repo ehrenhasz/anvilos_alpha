@@ -1,0 +1,9 @@
+{
+  "module_name": "cpuid.h",
+  "hash_id": "268e95231acf60138f8c15c9a9e9663168670ddf24cb061c55f31736b2205aa3",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/xen/cpuid.h",
+  "human_readable_source": " \n\n#ifndef __XEN_PUBLIC_ARCH_X86_CPUID_H__\n#define __XEN_PUBLIC_ARCH_X86_CPUID_H__\n\n \n\n#define XEN_CPUID_FIRST_LEAF 0x40000000\n#define XEN_CPUID_LEAF(i)    (XEN_CPUID_FIRST_LEAF + (i))\n\n \n#define XEN_CPUID_SIGNATURE_EBX 0x566e6558  \n#define XEN_CPUID_SIGNATURE_ECX 0x65584d4d  \n#define XEN_CPUID_SIGNATURE_EDX 0x4d4d566e  \n\n \n\n \n\n \n#define _XEN_CPUID_FEAT1_MMU_PT_UPDATE_PRESERVE_AD 0\n#define XEN_CPUID_FEAT1_MMU_PT_UPDATE_PRESERVE_AD  (1u<<0)\n\n \n\n#define XEN_CPUID_TSC_EMULATED               (1u << 0)\n#define XEN_CPUID_HOST_TSC_RELIABLE          (1u << 1)\n#define XEN_CPUID_RDTSCP_INSTR_AVAIL         (1u << 2)\n\n#define XEN_CPUID_TSC_MODE_DEFAULT           (0)\n#define XEN_CPUID_TSC_MODE_ALWAYS_EMULATE    (1u)\n#define XEN_CPUID_TSC_MODE_NEVER_EMULATE     (2u)\n#define XEN_CPUID_TSC_MODE_PVRDTSCP          (3u)\n\n \n#define XEN_HVM_CPUID_APIC_ACCESS_VIRT (1u << 0)  \n#define XEN_HVM_CPUID_X2APIC_VIRT      (1u << 1)  \n \n#define XEN_HVM_CPUID_IOMMU_MAPPINGS   (1u << 2)\n#define XEN_HVM_CPUID_VCPU_ID_PRESENT  (1u << 3)  \n#define XEN_HVM_CPUID_DOMID_PRESENT    (1u << 4)  \n \n#define XEN_HVM_CPUID_EXT_DEST_ID      (1u << 5)\n \n#define XEN_HVM_CPUID_UPCALL_VECTOR    (1u << 6)\n\n \n\n \n#define XEN_CPUID_MACHINE_ADDRESS_WIDTH_MASK (0xffu << 0)\n\n#define XEN_CPUID_MAX_NUM_LEAVES 5\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-close.c",
+  "hash_id": "ed58dc561e086298ccab9e3886852d811d3e4e86fb20a0f4975a7ce0d0e378b6",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-close.c",
+  "human_readable_source": " \n  {\n    errno = 0;\n    ASSERT (close (-1) == -1);\n    ASSERT (errno == EBADF);\n  }\n  {\n    close (99);\n    errno = 0;\n    ASSERT (close (99) == -1);\n    ASSERT (errno == EBADF);\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

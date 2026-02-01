@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0cc4c72e16d882abdf6c619533d56cca0f286aceb7d85bb0a5c2e3e8a9b3bd10",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/sbus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the linux kernel.\n#\n\nobj-$(CONFIG_SBUSCHAR) += char/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

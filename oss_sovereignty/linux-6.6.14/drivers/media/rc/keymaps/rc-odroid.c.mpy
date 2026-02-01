@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-odroid.c",
+  "hash_id": "8f8b74d70d6a4ad9590a4c313ba0d3ea5b59829f6c34639a4b580fe4c6016c23",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-odroid.c",
+  "human_readable_source": "\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n\n\n\n\nstatic struct rc_map_table odroid[] = {\n\t{ 0xb2dc, KEY_POWER },\n\n\t{ 0xb288, KEY_MUTE },\n\t{ 0xb282, KEY_HOME },\n\n\t{ 0xb2ca, KEY_UP },\n\t{ 0xb299, KEY_LEFT },\n\t{ 0xb2ce, KEY_OK },\n\t{ 0xb2c1, KEY_RIGHT },\n\t{ 0xb2d2, KEY_DOWN },\n\n\t{ 0xb2c5, KEY_MENU },\n\t{ 0xb29a, KEY_BACK },\n\n\t{ 0xb281, KEY_VOLUMEDOWN },\n\t{ 0xb280, KEY_VOLUMEUP },\n};\n\nstatic struct rc_map_list odroid_map = {\n\t.map = {\n\t\t.scan     = odroid,\n\t\t.size     = ARRAY_SIZE(odroid),\n\t\t.rc_proto = RC_PROTO_NEC,\n\t\t.name     = RC_MAP_ODROID,\n\t}\n};\n\nstatic int __init init_rc_map_odroid(void)\n{\n\treturn rc_map_register(&odroid_map);\n}\n\nstatic void __exit exit_rc_map_odroid(void)\n{\n\trc_map_unregister(&odroid_map);\n}\n\nmodule_init(init_rc_map_odroid)\nmodule_exit(exit_rc_map_odroid)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Christian Hewitt <christianshewitt@gmail.com\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

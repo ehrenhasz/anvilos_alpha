@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objattrtuple.c.qstr",
+  "hash_id": "48d5e2144e8d429419221e9536cda7b025371b7c1acf01fa757fd7c7e35c5ea2",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objattrtuple.c.qstr",
+  "human_readable_source": "Q(tuple)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

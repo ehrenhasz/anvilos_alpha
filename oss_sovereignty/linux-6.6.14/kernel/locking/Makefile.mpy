@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ecc28db6a0e5867a8103272ebeb6817de1ca474d4d86f06405456d641d5b0007",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/locking/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Any varying coverage in these files is non-deterministic\n# and is generally not a function of system call inputs.\nKCOV_INSTRUMENT\t\t:= n\n\nobj-y += mutex.o semaphore.o rwsem.o percpu-rwsem.o\n\n# Avoid recursion lockdep -> sanitizer -> ... -> lockdep.\nKCSAN_SANITIZE_lockdep.o := n\n\nifdef CONFIG_FUNCTION_TRACER\nCFLAGS_REMOVE_lockdep.o = $(CC_FLAGS_FTRACE)\nCFLAGS_REMOVE_lockdep_proc.o = $(CC_FLAGS_FTRACE)\nCFLAGS_REMOVE_mutex-debug.o = $(CC_FLAGS_FTRACE)\nendif\n\nobj-$(CONFIG_DEBUG_IRQFLAGS) += irqflag-debug.o\nobj-$(CONFIG_DEBUG_MUTEXES) += mutex-debug.o\nobj-$(CONFIG_LOCKDEP) += lockdep.o\nifeq ($(CONFIG_PROC_FS),y)\nobj-$(CONFIG_LOCKDEP) += lockdep_proc.o\nendif\nobj-$(CONFIG_SMP) += spinlock.o\nobj-$(CONFIG_LOCK_SPIN_ON_OWNER) += osq_lock.o\nobj-$(CONFIG_PROVE_LOCKING) += spinlock.o\nobj-$(CONFIG_QUEUED_SPINLOCKS) += qspinlock.o\nobj-$(CONFIG_RT_MUTEXES) += rtmutex_api.o\nobj-$(CONFIG_PREEMPT_RT) += spinlock_rt.o ww_rt_mutex.o\nobj-$(CONFIG_DEBUG_SPINLOCK) += spinlock.o\nobj-$(CONFIG_DEBUG_SPINLOCK) += spinlock_debug.o\nobj-$(CONFIG_QUEUED_RWLOCKS) += qrwlock.o\nobj-$(CONFIG_LOCK_TORTURE_TEST) += locktorture.o\nobj-$(CONFIG_WW_MUTEX_SELFTEST) += test-ww_mutex.o\nobj-$(CONFIG_LOCK_EVENT_COUNTS) += lock_events.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

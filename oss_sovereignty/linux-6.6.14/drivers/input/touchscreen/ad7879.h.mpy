@@ -1,0 +1,9 @@
+{
+  "module_name": "ad7879.h",
+  "hash_id": "91345afe16e0443e725d91e49ef63e127d3f5cd51a118128635f166552936c97",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/touchscreen/ad7879.h",
+  "human_readable_source": " \n \n\n#ifndef _AD7879_H_\n#define _AD7879_H_\n\n#include <linux/types.h>\n\nstruct device;\nstruct regmap;\n\nextern const struct dev_pm_ops ad7879_pm_ops;\n\nint ad7879_probe(struct device *dev, struct regmap *regmap,\n\t\t int irq, u16 bustype, u8 devid);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

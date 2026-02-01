@@ -1,0 +1,9 @@
+{
+  "module_name": "tlv.h",
+  "hash_id": "f4ade9eea22d4c0d1e1c734fc47f52506980b3f45ed4134601bdad75619dd426",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/tlv.h",
+  "human_readable_source": " \n#ifndef __SOUND_TLV_H\n#define __SOUND_TLV_H\n\n \n\n#include <uapi/sound/tlv.h>\n\n \n#define TLV_ITEM\t\t\tSNDRV_CTL_TLVD_ITEM\n#define TLV_LENGTH\t\t\tSNDRV_CTL_TLVD_LENGTH\n\n#define TLV_CONTAINER_ITEM\t\tSNDRV_CTL_TLVD_CONTAINER_ITEM\n#define DECLARE_TLV_CONTAINER\t\tSNDRV_CTL_TLVD_DECLARE_CONTAINER\n\n#define TLV_DB_SCALE_MASK\t\tSNDRV_CTL_TLVD_DB_SCALE_MASK\n#define TLV_DB_SCALE_MUTE\t\tSNDRV_CTL_TLVD_DB_SCALE_MUTE\n#define TLV_DB_SCALE_ITEM\t\tSNDRV_CTL_TLVD_DB_SCALE_ITEM\n#define DECLARE_TLV_DB_SCALE\t\tSNDRV_CTL_TLVD_DECLARE_DB_SCALE\n\n#define TLV_DB_MINMAX_ITEM\t\tSNDRV_CTL_TLVD_DB_MINMAX_ITEM\n#define TLV_DB_MINMAX_MUTE_ITEM\t\tSNDRV_CTL_TLVD_DB_MINMAX_MUTE_ITEM\n#define DECLARE_TLV_DB_MINMAX\t\tSNDRV_CTL_TLVD_DECLARE_DB_MINMAX\n#define DECLARE_TLV_DB_MINMAX_MUTE\tSNDRV_CTL_TLVD_DECLARE_DB_MINMAX_MUTE\n\n#define TLV_DB_LINEAR_ITEM\t\tSNDRV_CTL_TLVD_DB_LINEAR_ITEM\n#define DECLARE_TLV_DB_LINEAR\t\tSNDRV_CTL_TLVD_DECLARE_DB_LINEAR\n\n#define TLV_DB_RANGE_ITEM\t\tSNDRV_CTL_TLVD_DB_RANGE_ITEM\n#define DECLARE_TLV_DB_RANGE\t\tSNDRV_CTL_TLVD_DECLARE_DB_RANGE\n\n#define TLV_DB_GAIN_MUTE\t\tSNDRV_CTL_TLVD_DB_GAIN_MUTE\n\n \n#define TLV_DB_RANGE_HEAD(num) \\\n\tSNDRV_CTL_TLVT_DB_RANGE, 6 * (num) * sizeof(unsigned int)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

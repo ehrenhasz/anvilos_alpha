@@ -1,0 +1,9 @@
+{
+  "module_name": "events_stats.h",
+  "hash_id": "4e7dfc03f232dd54d379d24dff825128638574a8176dc5a67a774897660bb4d0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/events_stats.h",
+  "human_readable_source": " \n#ifndef __PERF_EVENTS_STATS_\n#define __PERF_EVENTS_STATS_\n\n#include <stdio.h>\n#include <perf/event.h>\n#include <linux/types.h>\n#include \"auxtrace.h\"\n\n \nstruct events_stats {\n\tu64 total_lost;\n\tu64 total_lost_samples;\n\tu64 total_aux_lost;\n\tu64 total_aux_partial;\n\tu64 total_aux_collision;\n\tu64 total_invalid_chains;\n\tu32 nr_events[PERF_RECORD_HEADER_MAX];\n\tu32 nr_lost_warned;\n\tu32 nr_unknown_events;\n\tu32 nr_invalid_chains;\n\tu32 nr_unknown_id;\n\tu32 nr_unprocessable_samples;\n\tu32 nr_auxtrace_errors[PERF_AUXTRACE_ERROR_MAX];\n\tu32 nr_proc_map_timeout;\n};\n\nstruct hists_stats {\n\tu64 total_period;\n\tu64 total_non_filtered_period;\n\tu32 nr_samples;\n\tu32 nr_non_filtered_samples;\n\tu32 nr_lost_samples;\n};\n\nvoid events_stats__inc(struct events_stats *stats, u32 type);\n\nsize_t events_stats__fprintf(struct events_stats *stats, FILE *fp,\n\t\t\t     bool skip_empty);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

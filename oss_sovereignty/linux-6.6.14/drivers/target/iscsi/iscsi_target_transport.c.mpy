@@ -1,0 +1,9 @@
+{
+  "module_name": "iscsi_target_transport.c",
+  "hash_id": "489ddcd86d16ac5072329a12e7c0293e8155f7ff7b47c70e080cea12268657b6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/iscsi/iscsi_target_transport.c",
+  "human_readable_source": "\n#include <linux/spinlock.h>\n#include <linux/list.h>\n#include <linux/module.h>\n#include <target/iscsi/iscsi_transport.h>\n\nstatic LIST_HEAD(g_transport_list);\nstatic DEFINE_MUTEX(transport_mutex);\n\nstruct iscsit_transport *iscsit_get_transport(int type)\n{\n\tstruct iscsit_transport *t;\n\n\tmutex_lock(&transport_mutex);\n\tlist_for_each_entry(t, &g_transport_list, t_node) {\n\t\tif (t->transport_type == type) {\n\t\t\tif (t->owner && !try_module_get(t->owner)) {\n\t\t\t\tt = NULL;\n\t\t\t}\n\t\t\tmutex_unlock(&transport_mutex);\n\t\t\treturn t;\n\t\t}\n\t}\n\tmutex_unlock(&transport_mutex);\n\n\treturn NULL;\n}\n\nvoid iscsit_put_transport(struct iscsit_transport *t)\n{\n\tmodule_put(t->owner);\n}\n\nvoid iscsit_register_transport(struct iscsit_transport *t)\n{\n\tINIT_LIST_HEAD(&t->t_node);\n\n\tmutex_lock(&transport_mutex);\n\tlist_add_tail(&t->t_node, &g_transport_list);\n\tmutex_unlock(&transport_mutex);\n\n\tpr_debug(\"Registered iSCSI transport: %s\\n\", t->name);\n}\nEXPORT_SYMBOL(iscsit_register_transport);\n\nvoid iscsit_unregister_transport(struct iscsit_transport *t)\n{\n\tmutex_lock(&transport_mutex);\n\tlist_del(&t->t_node);\n\tmutex_unlock(&transport_mutex);\n\n\tpr_debug(\"Unregistered iSCSI transport: %s\\n\", t->name);\n}\nEXPORT_SYMBOL(iscsit_unregister_transport);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

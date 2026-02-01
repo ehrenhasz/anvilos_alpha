@@ -1,0 +1,9 @@
+{
+  "module_name": "main.c",
+  "hash_id": "58d11d27e8dec67939783e4a1ed8cce6a2dc076a41d53f313727ca5672a02f81",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/base/firmware_loader/builtin/main.c",
+  "human_readable_source": "\n \n\n#include <linux/firmware.h>\n#include \"../firmware.h\"\n\n \n#ifdef CONFIG_FW_LOADER\n\nstruct builtin_fw {\n\tchar *name;\n\tvoid *data;\n\tunsigned long size;\n};\n\nextern struct builtin_fw __start_builtin_fw[];\nextern struct builtin_fw __end_builtin_fw[];\n\nstatic bool fw_copy_to_prealloc_buf(struct firmware *fw,\n\t\t\t\t    void *buf, size_t size)\n{\n\tif (!buf)\n\t\treturn true;\n\tif (size < fw->size)\n\t\treturn false;\n\tmemcpy(buf, fw->data, fw->size);\n\treturn true;\n}\n\n \nbool firmware_request_builtin(struct firmware *fw, const char *name)\n{\n\tstruct builtin_fw *b_fw;\n\n\tif (!fw)\n\t\treturn false;\n\n\tfor (b_fw = __start_builtin_fw; b_fw != __end_builtin_fw; b_fw++) {\n\t\tif (strcmp(name, b_fw->name) == 0) {\n\t\t\tfw->size = b_fw->size;\n\t\t\tfw->data = b_fw->data;\n\t\t\treturn true;\n\t\t}\n\t}\n\n\treturn false;\n}\nEXPORT_SYMBOL_NS_GPL(firmware_request_builtin, TEST_FIRMWARE);\n\n \nbool firmware_request_builtin_buf(struct firmware *fw, const char *name,\n\t\t\t\t  void *buf, size_t size)\n{\n\tif (!firmware_request_builtin(fw, name))\n\t\treturn false;\n\n\treturn fw_copy_to_prealloc_buf(fw, buf, size);\n}\n\nbool firmware_is_builtin(const struct firmware *fw)\n{\n\tstruct builtin_fw *b_fw;\n\n\tfor (b_fw = __start_builtin_fw; b_fw != __end_builtin_fw; b_fw++)\n\t\tif (fw->data == b_fw->data)\n\t\t\treturn true;\n\n\treturn false;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

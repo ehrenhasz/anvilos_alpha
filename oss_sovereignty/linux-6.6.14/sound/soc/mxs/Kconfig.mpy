@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4d79e03c684933ad53e91a17023d3116c9eca1348bbd2b5e0d80c7c80a29ac49",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mxs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig SND_MXS_SOC\n\ttristate \"SoC Audio for Freescale MXS CPUs\"\n\tdepends on ARCH_MXS || COMPILE_TEST\n\tdepends on COMMON_CLK\n\tselect SND_SOC_GENERIC_DMAENGINE_PCM\n\thelp\n\t  Say Y or M if you want to add support for codecs attached to\n\t  the MXS SAIF interface.\n\n\nif SND_MXS_SOC\n\nconfig SND_SOC_MXS_SGTL5000\n\ttristate \"SoC Audio support for MXS boards with sgtl5000\"\n\tdepends on I2C\n\tselect SND_SOC_SGTL5000\n\thelp\n\t  Say Y if you want to add support for SoC audio on an MXS board with\n\t  a sgtl5000 codec.\n\nendif\t# SND_MXS_SOC\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

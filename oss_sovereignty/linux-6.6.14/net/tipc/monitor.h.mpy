@@ -1,0 +1,9 @@
+{
+  "module_name": "monitor.h",
+  "hash_id": "175fa40c61375c3fa5d5d54a83673af035ef99e0a1ef75f0c4250e5a68f06213",
+  "original_prompt": "Ingested from linux-6.6.14/net/tipc/monitor.h",
+  "human_readable_source": " \n\n#ifndef _TIPC_MONITOR_H\n#define _TIPC_MONITOR_H\n\n#include \"netlink.h\"\n\n \nstruct tipc_mon_state {\n\tu16 list_gen;\n\tu16 peer_gen;\n\tu16 acked_gen;\n\tbool monitoring :1;\n\tbool probing    :1;\n\tbool reset      :1;\n\tbool synched    :1;\n};\n\nint tipc_mon_create(struct net *net, int bearer_id);\nvoid tipc_mon_delete(struct net *net, int bearer_id);\n\nvoid tipc_mon_peer_up(struct net *net, u32 addr, int bearer_id);\nvoid tipc_mon_peer_down(struct net *net, u32 addr, int bearer_id);\nvoid tipc_mon_prep(struct net *net, void *data, int *dlen,\n\t\t   struct tipc_mon_state *state, int bearer_id);\nvoid tipc_mon_rcv(struct net *net, void *data, u16 dlen, u32 addr,\n\t\t  struct tipc_mon_state *state, int bearer_id);\nvoid tipc_mon_get_state(struct net *net, u32 addr,\n\t\t\tstruct tipc_mon_state *state,\n\t\t\tint bearer_id);\nvoid tipc_mon_remove_peer(struct net *net, u32 addr, int bearer_id);\n\nint tipc_nl_monitor_set_threshold(struct net *net, u32 cluster_size);\nint tipc_nl_monitor_get_threshold(struct net *net);\nint __tipc_nl_add_monitor(struct net *net, struct tipc_nl_msg *msg,\n\t\t\t  u32 bearer_id);\nint tipc_nl_add_monitor_peer(struct net *net, struct tipc_nl_msg *msg,\n\t\t\t     u32 bearer_id, u32 *prev_node);\nvoid tipc_mon_reinit_self(struct net *net);\n\nextern const int tipc_max_domain_size;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

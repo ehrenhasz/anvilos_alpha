@@ -1,0 +1,9 @@
+{
+  "module_name": "sdma_txreq.h",
+  "hash_id": "f3ab521b1aa2df9fca931eb13200ef8d2579336ac17741bfada4fcd1c3e52b94",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/sdma_txreq.h",
+  "human_readable_source": " \n \n\n#ifndef HFI1_SDMA_TXREQ_H\n#define HFI1_SDMA_TXREQ_H\n\n \n#define NUM_DESC 6\n\n \nstruct sdma_desc {\n\t \n\tu64 qw[2];\n\tvoid *pinning_ctx;\n\t \n\tvoid (*ctx_put)(void *ctx);\n};\n\n \n\n#define SDMA_TXREQ_S_OK        0\n#define SDMA_TXREQ_S_SENDERROR 1\n#define SDMA_TXREQ_S_ABORTED   2\n#define SDMA_TXREQ_S_SHUTDOWN  3\n\n \n#define SDMA_TXREQ_F_URGENT       0x0001\n#define SDMA_TXREQ_F_AHG_COPY     0x0002\n#define SDMA_TXREQ_F_USE_AHG      0x0004\n#define SDMA_TXREQ_F_VIP          0x0010\n\nstruct sdma_txreq;\ntypedef void (*callback_t)(struct sdma_txreq *, int);\n\nstruct iowait;\nstruct sdma_txreq {\n\tstruct list_head list;\n\t \n\tstruct sdma_desc *descp;\n\t \n\tvoid *coalesce_buf;\n\t \n\tstruct iowait *wait;\n\t \n\tcallback_t                  complete;\n#ifdef CONFIG_HFI1_DEBUG_SDMA_ORDER\n\tu64 sn;\n#endif\n\t \n\tu16                         packet_len;\n\t \n\tu16                         tlen;\n\t \n\tu16                         num_desc;\n\t \n\tu16                         desc_limit;\n\t \n\tu16                         next_descq_idx;\n\t \n\tu16 coalesce_idx;\n\t \n\tu16                         flags;\n\t \n\tstruct sdma_desc descs[NUM_DESC];\n};\n\nstatic inline int sdma_txreq_built(struct sdma_txreq *tx)\n{\n\treturn tx->num_desc;\n}\n\n#endif                           \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

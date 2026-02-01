@@ -1,0 +1,9 @@
+{
+  "module_name": "mt6797-afe-common.h",
+  "hash_id": "3a93ad1c0f8de75931f4ddb2c218da549bed6c8673a273194c99b8da6bfb237f",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/mt6797/mt6797-afe-common.h",
+  "human_readable_source": " \n \n\n#ifndef _MT_6797_AFE_COMMON_H_\n#define _MT_6797_AFE_COMMON_H_\n\n#include <sound/soc.h>\n#include <linux/list.h>\n#include <linux/regmap.h>\n#include \"../common/mtk-base-afe.h\"\n\nenum {\n\tMT6797_MEMIF_DL1,\n\tMT6797_MEMIF_DL2,\n\tMT6797_MEMIF_DL3,\n\tMT6797_MEMIF_VUL,\n\tMT6797_MEMIF_AWB,\n\tMT6797_MEMIF_VUL12,\n\tMT6797_MEMIF_DAI,\n\tMT6797_MEMIF_MOD_DAI,\n\tMT6797_MEMIF_NUM,\n\tMT6797_DAI_ADDA = MT6797_MEMIF_NUM,\n\tMT6797_DAI_PCM_1,\n\tMT6797_DAI_PCM_2,\n\tMT6797_DAI_HOSTLESS_LPBK,\n\tMT6797_DAI_HOSTLESS_SPEECH,\n\tMT6797_DAI_NUM,\n};\n\nenum {\n\tMT6797_IRQ_1,\n\tMT6797_IRQ_2,\n\tMT6797_IRQ_3,\n\tMT6797_IRQ_4,\n\tMT6797_IRQ_7,\n\tMT6797_IRQ_NUM,\n};\n\nstruct clk;\n\nstruct mt6797_afe_private {\n\tstruct clk **clk;\n};\n\nunsigned int mt6797_general_rate_transform(struct device *dev,\n\t\t\t\t\t   unsigned int rate);\nunsigned int mt6797_rate_transform(struct device *dev,\n\t\t\t\t   unsigned int rate, int aud_blk);\n\n \nint mt6797_dai_adda_register(struct mtk_base_afe *afe);\nint mt6797_dai_pcm_register(struct mtk_base_afe *afe);\nint mt6797_dai_hostless_register(struct mtk_base_afe *afe);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

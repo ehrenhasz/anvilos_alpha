@@ -1,0 +1,9 @@
+{
+  "module_name": "dfs_debug.h",
+  "hash_id": "1c9055fd3cb16c89e82c22236825a51848f31cee26bc9ec4b2f76359b116c1fd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath9k/dfs_debug.h",
+  "human_readable_source": " \n\n\n#ifndef ATH9K_DFS_DEBUG_H\n#define ATH9K_DFS_DEBUG_H\n\n#include \"hw.h\"\n\nstruct ath_softc;\n\n \nstruct ath_dfs_stats {\n\t \n\tu32 pulses_total;\n\tu32 pulses_no_dfs;\n\tu32 pulses_detected;\n\tu32 datalen_discards;\n\tu32 rssi_discards;\n\tu32 bwinfo_discards;\n\tu32 pri_phy_errors;\n\tu32 ext_phy_errors;\n\tu32 dc_phy_errors;\n\t \n\tu32 pulses_processed;\n\tu32 radar_detected;\n};\n\n#if defined(CONFIG_ATH9K_DFS_DEBUGFS)\n\n#define DFS_STAT_INC(sc, c) (sc->debug.stats.dfs_stats.c++)\nvoid ath9k_dfs_init_debug(struct ath_softc *sc);\n\nextern struct ath_dfs_pool_stats global_dfs_pool_stats;\n\n#else\n\n#define DFS_STAT_INC(sc, c) do { } while (0)\nstatic inline void ath9k_dfs_init_debug(struct ath_softc *sc) { }\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

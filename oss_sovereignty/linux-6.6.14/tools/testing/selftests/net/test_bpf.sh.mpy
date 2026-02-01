@@ -1,0 +1,9 @@
+{
+  "module_name": "test_bpf.sh",
+  "hash_id": "6ff0e60f774cfa17f68a4df0c5a86b6c30e2793991278e7c092f8716d540c0ad",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/test_bpf.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# Runs bpf test using test_bpf kernel module\n\nif /sbin/modprobe -q test_bpf ; then\n\t/sbin/modprobe -q -r test_bpf;\n\techo \"test_bpf: ok\";\nelse\n\techo \"test_bpf: [FAIL]\";\n\texit 1;\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

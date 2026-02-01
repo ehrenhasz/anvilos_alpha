@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-qcom-qmp-qserdes-ln-shrd-v6.h",
+  "hash_id": "29fe1cdbe88f4dafaf9405332e751995ee2fda508cf2b576e660f8829ec78782",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/qualcomm/phy-qcom-qmp-qserdes-ln-shrd-v6.h",
+  "human_readable_source": " \n \n\n#ifndef QCOM_PHY_QMP_QSERDES_LN_SHRD_V6_H_\n#define QCOM_PHY_QMP_QSERDES_LN_SHRD_V6_H_\n\n#define QSERDES_V6_LN_SHRD_RXCLK_DIV2_CTRL\t\t\t0xa0\n#define QSERDES_V6_LN_SHRD_RX_Q_EN_RATES\t\t\t0xb0\n#define QSERDES_V6_LN_SHRD_DFE_DAC_ENABLE1\t\t\t0xb4\n#define QSERDES_V6_LN_SHRD_TX_ADAPT_POST_THRESH1\t\t0xc4\n#define QSERDES_V6_LN_SHRD_TX_ADAPT_POST_THRESH2\t\t0xc8\n#define QSERDES_V6_LN_SHRD_RX_MODE_RATE_0_1_B0\t\t\t0xd4\n#define QSERDES_V6_LN_SHRD_RX_MODE_RATE_0_1_B1\t\t\t0xd8\n#define QSERDES_V6_LN_SHRD_RX_MODE_RATE_0_1_B2\t\t\t0xdc\n#define QSERDES_V6_LN_SHRD_RX_MODE_RATE_0_1_B3\t\t\t0xe0\n#define QSERDES_V6_LN_SHRD_RX_MODE_RATE_0_1_B4\t\t\t0xe4\n#define QSERDES_V6_LN_SHRD_RX_MODE_RATE_0_1_B5\t\t\t0xe8\n#define QSERDES_V6_LN_SHRD_RX_MODE_RATE_0_1_B6\t\t\t0xec\n#define QSERDES_V6_LN_SHRD_RX_MARG_COARSE_THRESH1_RATE210\t0xf0\n#define QSERDES_V6_LN_SHRD_RX_MARG_COARSE_THRESH1_RATE3\t\t0xf4\n#define QSERDES_V6_LN_SHRD_RX_MARG_COARSE_THRESH2_RATE210\t0xf8\n#define QSERDES_V6_LN_SHRD_RX_MARG_COARSE_THRESH2_RATE3\t\t0xfc\n#define QSERDES_V6_LN_SHRD_RX_MARG_COARSE_THRESH3_RATE210\t0x100\n#define QSERDES_V6_LN_SHRD_RX_MARG_COARSE_THRESH3_RATE3\t\t0x104\n#define QSERDES_V6_LN_SHRD_RX_MARG_COARSE_THRESH4_RATE3\t\t0x10c\n#define QSERDES_V6_LN_SHRD_RX_MARG_COARSE_THRESH5_RATE3\t\t0x114\n#define QSERDES_V6_LN_SHRD_RX_MARG_COARSE_THRESH6_RATE3\t\t0x11c\n#define QSERDES_V6_LN_SHRD_RX_SUMMER_CAL_SPD_MODE\t\t0x128\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "strcasecmp.c",
+  "hash_id": "8fbdd5d1ed63c58783aa97b2916e15b4a89c1c70211f2b3e02d6ecf2e9190f24",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/strcasecmp.c",
+  "human_readable_source": " \n\n \n   \n#include <config.h>\n\n#if !defined (HAVE_STRCASECMP)\n\n#include <stdc.h>\n#include <bashansi.h>\n#include <chartypes.h>\n\n \nint\nstrncasecmp (string1, string2, count)\n     const char *string1;\n     const char *string2;\n     size_t count;\n{\n  register const char *s1;\n  register const char *s2;\n  register int r;\n\n  if (count <= 0 || (string1 == string2))\n    return 0;\n\n  s1 = string1;\n  s2 = string2;\n  do\n    {\n      if ((r = TOLOWER ((unsigned char) *s1) - TOLOWER ((unsigned char) *s2)) != 0)\n\treturn r;\n      if (*s1++ == '\\0')\n\tbreak;\n      s2++;\n    }\n  while (--count != 0);\n\n  return (0);\n}\n\n \nint\nstrcasecmp (string1, string2)\n     const char *string1;\n     const char *string2;\n{\n  register const char *s1;\n  register const char *s2;\n  register int r;\n\n  s1 = string1;\n  s2 = string2;\n\n  if (s1 == s2)\n    return (0);\n\n  while ((r = TOLOWER ((unsigned char)*s1) - TOLOWER ((unsigned char)*s2)) == 0)\n    {\n      if (*s1++ == '\\0')\n\treturn 0;\n      s2++;\n    }\n\n  return (r);\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

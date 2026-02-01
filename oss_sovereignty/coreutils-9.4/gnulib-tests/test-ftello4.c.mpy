@@ -1,0 +1,9 @@
+{
+  "module_name": "test-ftello4.c",
+  "hash_id": "438fea0084e95d4a8f7d5a5975eeeb3faa5d7458da1b0f8312920911e04f07b6",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-ftello4.c",
+  "human_readable_source": " \n  {\n    FILE *fp = fopen (filename, \"r\");\n    ASSERT (fp != NULL);\n    #if !defined __ANDROID__  \n    setvbuf (fp, NULL, _IONBF, 0);\n    ASSERT (close (fileno (fp)) == 0);\n    errno = 0;\n    ASSERT (ftello (fp) == (off_t)-1);\n    ASSERT (errno == EBADF);\n    #endif\n    fclose (fp);\n  }\n\n   \n  {\n    FILE *fp = fdopen (-1, \"w\");\n    if (fp != NULL)\n      {\n        errno = 0;\n        ASSERT (ftello (fp) == (off_t)-1);\n        ASSERT (errno == EBADF);\n        fclose (fp);\n      }\n  }\n  {\n    FILE *fp;\n    close (99);\n    fp = fdopen (99, \"w\");\n    if (fp != NULL)\n      {\n        errno = 0;\n        ASSERT (ftello (fp) == (off_t)-1);\n        ASSERT (errno == EBADF);\n        fclose (fp);\n      }\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

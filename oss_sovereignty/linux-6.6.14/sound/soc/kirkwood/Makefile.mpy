@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c129a275e99ca83b857ab91e444dfc648ebfe0082a4e00533952832a056b00c5",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/kirkwood/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-soc-kirkwood-objs := kirkwood-dma.o kirkwood-i2s.o\n\nobj-$(CONFIG_SND_KIRKWOOD_SOC) += snd-soc-kirkwood.o\n\nsnd-soc-armada-370-db-objs := armada-370-db.o\n\nobj-$(CONFIG_SND_KIRKWOOD_SOC_ARMADA370_DB) += snd-soc-armada-370-db.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

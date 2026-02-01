@@ -1,0 +1,9 @@
+{
+  "module_name": "mscc_serdes.h",
+  "hash_id": "93515dc969a0ed1b74dac18aedb175dec2ed3bcdc02c2edade8e64cd96da03bb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/phy/mscc/mscc_serdes.h",
+  "human_readable_source": " \n \n\n#ifndef _MSCC_SERDES_PHY_H_\n#define _MSCC_SERDES_PHY_H_\n\n#define PHY_S6G_PLL5G_CFG2_GAIN_MASK      GENMASK(9, 5)\n#define PHY_S6G_PLL5G_CFG2_ENA_GAIN       1\n\n#define PHY_S6G_DES_PHY_CTRL_POS\t  13\n#define PHY_S6G_DES_MBTR_CTRL_POS\t  10\n#define PHY_S6G_DES_CPMD_SEL_POS\t  8\n#define PHY_S6G_DES_BW_HYST_POS\t\t  5\n#define PHY_S6G_DES_BW_ANA_POS\t\t  1\n#define PHY_S6G_DES_CFG\t\t\t  0x21\n#define PHY_S6G_IB_CFG0\t\t\t  0x22\n#define PHY_S6G_IB_CFG1\t\t\t  0x23\n#define PHY_S6G_IB_CFG2\t\t\t  0x24\n#define PHY_S6G_IB_CFG3\t\t\t  0x25\n#define PHY_S6G_IB_CFG4\t\t\t  0x26\n#define PHY_S6G_GP_CFG\t\t\t  0x2E\n#define PHY_S6G_DFT_CFG0\t\t  0x35\n#define PHY_S6G_IB_DFT_CFG2\t\t  0x37\n\nint vsc85xx_sd6g_config_v2(struct phy_device *phydev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

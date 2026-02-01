@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_fw_counters.h",
+  "hash_id": "f5d4a759e1facd504643437265d8ce3f84abfec46ac7afae3d327b594bc5f01d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/adf_fw_counters.h",
+  "human_readable_source": " \n \n#ifndef ADF_FW_COUNTERS_H\n#define ADF_FW_COUNTERS_H\n\nstruct adf_accel_dev;\n\nvoid adf_fw_counters_dbgfs_add(struct adf_accel_dev *accel_dev);\nvoid adf_fw_counters_dbgfs_rm(struct adf_accel_dev *accel_dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

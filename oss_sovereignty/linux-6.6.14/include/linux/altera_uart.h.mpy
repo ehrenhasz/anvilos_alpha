@@ -1,0 +1,9 @@
+{
+  "module_name": "altera_uart.h",
+  "hash_id": "eb9d71c39334aa3b774ce223cb2b0020418b958e5b23169fc9bd4755f5d7b05e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/altera_uart.h",
+  "human_readable_source": " \n \n\n#ifndef\t__ALTUART_H\n#define\t__ALTUART_H\n\nstruct altera_uart_platform_uart {\n\tunsigned long mapbase;\t \n\tunsigned int irq;\t \n\tunsigned int uartclk;\t \n\tunsigned int bus_shift;\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

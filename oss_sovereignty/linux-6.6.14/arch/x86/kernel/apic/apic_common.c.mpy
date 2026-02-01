@@ -1,0 +1,9 @@
+{
+  "module_name": "apic_common.c",
+  "hash_id": "026b55d23c79867bfde135931d6239ad00337a88bf37b1fc385b258e78a9d1b6",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/apic/apic_common.c",
+  "human_readable_source": " \n#include <linux/irq.h>\n#include <asm/apic.h>\n\n#include \"local.h\"\n\nu32 apic_default_calc_apicid(unsigned int cpu)\n{\n\treturn per_cpu(x86_cpu_to_apicid, cpu);\n}\n\nu32 apic_flat_calc_apicid(unsigned int cpu)\n{\n\treturn 1U << cpu;\n}\n\nbool default_check_apicid_used(physid_mask_t *map, int apicid)\n{\n\treturn physid_isset(apicid, *map);\n}\n\nvoid default_ioapic_phys_id_map(physid_mask_t *phys_map, physid_mask_t *retmap)\n{\n\t*retmap = *phys_map;\n}\n\nint default_cpu_present_to_apicid(int mps_cpu)\n{\n\tif (mps_cpu < nr_cpu_ids && cpu_present(mps_cpu))\n\t\treturn (int)per_cpu(x86_cpu_to_apicid, mps_cpu);\n\telse\n\t\treturn BAD_APICID;\n}\nEXPORT_SYMBOL_GPL(default_cpu_present_to_apicid);\n\nbool default_apic_id_registered(void)\n{\n\treturn physid_isset(read_apic_id(), phys_cpu_present_map);\n}\n\n \nvoid default_init_apic_ldr(void)\n{\n\tunsigned long val;\n\n\tapic_write(APIC_DFR, APIC_DFR_FLAT);\n\tval = apic_read(APIC_LDR) & ~APIC_LDR_MASK;\n\tval |= SET_APIC_LOGICAL_ID(1UL << smp_processor_id());\n\tapic_write(APIC_LDR, val);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

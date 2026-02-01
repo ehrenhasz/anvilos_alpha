@@ -1,0 +1,9 @@
+{
+  "module_name": "s5p_mfc_intr.h",
+  "hash_id": "6e479117a82fa28d930f39006d5456366f6334efa0ffbf7322dfaffe687ee681",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/s5p-mfc/s5p_mfc_intr.h",
+  "human_readable_source": " \n \n\n#ifndef S5P_MFC_INTR_H_\n#define S5P_MFC_INTR_H_\n\n#include \"s5p_mfc_common.h\"\n\nint s5p_mfc_wait_for_done_ctx(struct s5p_mfc_ctx *ctx,\n\t\t\t      int command, int interrupt);\nint s5p_mfc_wait_for_done_dev(struct s5p_mfc_dev *dev, int command);\nvoid s5p_mfc_clean_ctx_int_flags(struct s5p_mfc_ctx *ctx);\nvoid s5p_mfc_clean_dev_int_flags(struct s5p_mfc_dev *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ac97_id.h",
+  "hash_id": "8571f44e32f3a06afb5d2ce1e07038b7d261ba456cfc32512c3cd61bd6036a81",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ac97/ac97_id.h",
+  "human_readable_source": " \n \n\n#define AC97_ID_AK4540\t\t0x414b4d00\n#define AC97_ID_AK4542\t\t0x414b4d01\n#define AC97_ID_AD1819\t\t0x41445303\n#define AC97_ID_AD1881\t\t0x41445340\n#define AC97_ID_AD1881A\t\t0x41445348\n#define AC97_ID_AD1885\t\t0x41445360\n#define AC97_ID_AD1886\t\t0x41445361\n#define AC97_ID_AD1887\t\t0x41445362\n#define AC97_ID_AD1886A\t\t0x41445363\n#define AC97_ID_AD1980 \t\t0x41445370\n#define AC97_ID_TR28028\t\t0x54524108\n#define AC97_ID_STAC9700\t0x83847600\n#define AC97_ID_STAC9704\t0x83847604\n#define AC97_ID_STAC9705\t0x83847605\n#define AC97_ID_STAC9708\t0x83847608\n#define AC97_ID_STAC9721\t0x83847609\n#define AC97_ID_STAC9744\t0x83847644\n#define AC97_ID_STAC9756\t0x83847656\n#define AC97_ID_CS4297A\t\t0x43525910\n#define AC97_ID_CS4299\t\t0x43525930\n#define AC97_ID_CS4201\t\t0x43525948\n#define AC97_ID_CS4205\t\t0x43525958\n#define AC97_ID_CS_MASK\t\t0xfffffff8\t \n#define AC97_ID_ALC100\t\t0x414c4300\n#define AC97_ID_ALC650\t\t0x414c4720\n#define AC97_ID_ALC650D\t\t0x414c4721\n#define AC97_ID_ALC650E\t\t0x414c4722\n#define AC97_ID_ALC650F\t\t0x414c4723\n#define AC97_ID_ALC655\t\t0x414c4760\n#define AC97_ID_ALC658\t\t0x414c4780\n#define AC97_ID_ALC658D\t\t0x414c4781\n#define AC97_ID_ALC850\t\t0x414c4790\n#define AC97_ID_YMF743\t\t0x594d4800\n#define AC97_ID_YMF753\t\t0x594d4803\n#define AC97_ID_VT1616\t\t0x49434551\n#define AC97_ID_CM9738\t\t0x434d4941\n#define AC97_ID_CM9739\t\t0x434d4961\n#define AC97_ID_CM9761_78\t0x434d4978\n#define AC97_ID_CM9761_82\t0x434d4982\n#define AC97_ID_CM9761_83\t0x434d4983\n#define AC97_ID_ST7597\t\t0x53544d02\n#define AC97_ID_ST_AC97_ID4\t0x53544d04\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

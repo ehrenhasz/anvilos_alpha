@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "f3257187974d41bc0ef6f8f8f5ac75472506a5e72a5ca845eb94cce52fbc3de1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/amphion/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\ncomment \"Amphion drivers\"\n\nconfig VIDEO_AMPHION_VPU\n\ttristate \"Amphion VPU (Video Processing Unit) Codec IP\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on ARCH_MXC || COMPILE_TEST\n\tdepends on MEDIA_SUPPORT\n\tdepends on VIDEO_DEV && MAILBOX\n\tselect MEDIA_CONTROLLER\n\tselect V4L2_MEM2MEM_DEV\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect VIDEOBUF2_VMALLOC\n\thelp\n\t  Amphion VPU Codec IP contains two parts: Windsor and Malone.\n\t  Windsor is encoder that supports H.264, and Malone is decoder\n\t  that supports H.264, HEVC, and other video formats.\n\t  This is a V4L2 driver for NXP MXC 8Q video accelerator hardware.\n\t  It accelerates encoding and decoding operations on\n\t  various NXP SoCs.\n\t  To compile this driver as a module choose m here.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_ggtt_gmch.h",
+  "hash_id": "9ccaa8d91cca0f826d6fa3fc77160d1bcc2dc85a0cea9aaa049916ce13078388",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_ggtt_gmch.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_GGTT_GMCH_H__\n#define __INTEL_GGTT_GMCH_H__\n\n#include \"intel_gtt.h\"\n\n \n#if IS_ENABLED(CONFIG_X86)\n\nvoid intel_ggtt_gmch_flush(void);\nint intel_ggtt_gmch_enable_hw(struct drm_i915_private *i915);\nint intel_ggtt_gmch_probe(struct i915_ggtt *ggtt);\n\n \n#else\n\nstatic inline void intel_ggtt_gmch_flush(void) { }\nstatic inline int intel_ggtt_gmch_enable_hw(struct drm_i915_private *i915) { return -ENODEV; }\nstatic inline int intel_ggtt_gmch_probe(struct i915_ggtt *ggtt) { return -ENODEV; }\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

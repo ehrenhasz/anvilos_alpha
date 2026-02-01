@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7681b5789548aedfb0e67ad336336ec360f3137d79519dfa18d19d599723640c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pps/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the PPS core.\n#\n\npps_core-y\t\t\t:= pps.o kapi.o sysfs.o\npps_core-$(CONFIG_NTP_PPS)\t+= kc.o\nobj-$(CONFIG_PPS)\t\t:= pps_core.o\nobj-y\t\t\t\t+= clients/ generators/\n\nccflags-$(CONFIG_PPS_DEBUG) := -DDEBUG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

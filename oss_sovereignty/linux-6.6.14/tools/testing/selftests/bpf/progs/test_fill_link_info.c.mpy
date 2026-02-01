@@ -1,0 +1,9 @@
+{
+  "module_name": "test_fill_link_info.c",
+  "hash_id": "8532656b03d74cc3a1b8571e43116b3537ffd0d71a4180de4f6b71be85640593",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_fill_link_info.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_tracing.h>\n#include <stdbool.h>\n\nextern bool CONFIG_X86_KERNEL_IBT __kconfig __weak;\n\n \nint unused(void)\n{\n\treturn CONFIG_X86_KERNEL_IBT ? 0 : 1;\n}\n\nSEC(\"kprobe\")\nint BPF_PROG(kprobe_run)\n{\n\treturn 0;\n}\n\nSEC(\"uprobe\")\nint BPF_PROG(uprobe_run)\n{\n\treturn 0;\n}\n\nSEC(\"tracepoint\")\nint BPF_PROG(tp_run)\n{\n\treturn 0;\n}\n\nSEC(\"kprobe.multi\")\nint BPF_PROG(kmulti_run)\n{\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

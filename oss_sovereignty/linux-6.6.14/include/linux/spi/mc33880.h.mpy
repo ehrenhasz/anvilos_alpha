@@ -1,0 +1,9 @@
+{
+  "module_name": "mc33880.h",
+  "hash_id": "f8eea074759bab328a8feb0d84505b13d38eff64ccf8b4f31e061e306f095b5e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/mc33880.h",
+  "human_readable_source": " \n#ifndef LINUX_SPI_MC33880_H\n#define LINUX_SPI_MC33880_H\n\nstruct mc33880_platform_data {\n\t \n\tunsigned\tbase;\n};\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

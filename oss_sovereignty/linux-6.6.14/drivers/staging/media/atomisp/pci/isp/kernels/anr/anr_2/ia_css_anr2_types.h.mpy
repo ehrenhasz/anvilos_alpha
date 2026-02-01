@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_anr2_types.h",
+  "hash_id": "74473d84987968f2205cfe7f4aa80a0805d6aa6b4a78fe900517f45048bcdc22",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/anr/anr_2/ia_css_anr2_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_ANR2_TYPES_H\n#define __IA_CSS_ANR2_TYPES_H\n\n \n\n#include \"type_support.h\"\n\n#define ANR_PARAM_SIZE          13\n\n \nstruct ia_css_anr_thres {\n\ts16 data[13 * 64];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

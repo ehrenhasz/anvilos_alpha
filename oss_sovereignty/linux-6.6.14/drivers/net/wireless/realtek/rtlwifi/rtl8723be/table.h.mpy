@@ -1,0 +1,9 @@
+{
+  "module_name": "table.h",
+  "hash_id": "87ca9c40430e24b607bf9a07ef5dad15151dc5e5f550a7913eb45c629cf082c3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8723be/table.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL8723BE_TABLE__H_\n#define __RTL8723BE_TABLE__H_\n\n#include <linux/types.h>\nextern u32 RTL8723BEPHY_REG_1TARRAYLEN;\nextern u32 RTL8723BEPHY_REG_1TARRAY[];\nextern u32 RTL8723BEPHY_REG_ARRAY_PGLEN;\nextern u32 RTL8723BEPHY_REG_ARRAY_PG[];\nextern u32 RTL8723BE_RADIOA_1TARRAYLEN;\nextern u32 RTL8723BE_RADIOA_1TARRAY[];\nextern u32 RTL8723BEMAC_1T_ARRAYLEN;\nextern u32 RTL8723BEMAC_1T_ARRAY[];\nextern u32 RTL8723BEAGCTAB_1TARRAYLEN;\nextern u32 RTL8723BEAGCTAB_1TARRAY[];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

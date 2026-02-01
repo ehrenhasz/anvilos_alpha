@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_iter_sockmap.c",
+  "hash_id": "0853621fd927f6e3eeafe1244b3788c34fbf313edf9a584b7eed9be9ce7b9a8c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_iter_sockmap.c",
+  "human_readable_source": "\n \n#include \"bpf_iter.h\"\n#include \"bpf_tracing_net.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n#include <errno.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SOCKMAP);\n\t__uint(max_entries, 64);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} sockmap SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SOCKHASH);\n\t__uint(max_entries, 64);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} sockhash SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SOCKHASH);\n\t__uint(max_entries, 64);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} dst SEC(\".maps\");\n\n__u32 elems = 0;\n__u32 socks = 0;\n\nSEC(\"iter/sockmap\")\nint copy(struct bpf_iter__sockmap *ctx)\n{\n\tstruct sock *sk = ctx->sk;\n\t__u32 tmp, *key = ctx->key;\n\tint ret;\n\n\tif (!key)\n\t\treturn 0;\n\n\telems++;\n\n\t \n\ttmp = *key;\n\n\tif (sk) {\n\t\tsocks++;\n\t\treturn bpf_map_update_elem(&dst, &tmp, sk, 0) != 0;\n\t}\n\n\tret = bpf_map_delete_elem(&dst, &tmp);\n\treturn ret && ret != -ENOENT;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

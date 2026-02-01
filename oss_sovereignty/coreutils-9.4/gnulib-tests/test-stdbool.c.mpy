@@ -1,0 +1,9 @@
+{
+  "module_name": "test-stdbool.c",
+  "hash_id": "49ec7b62d4f526c50e9adef0bf2ee761a8c8dc04a60c06e20e2b2ba58684e0f6",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-stdbool.c",
+  "human_readable_source": " \n\n \n#if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)) \\\n    || (__clang_major__ >= 4)\n \n# pragma GCC diagnostic ignored \"-Waddress\"\n# define ADDRESS_CHECK_OKAY\n#elif defined __GNUC__ || defined __clang__\n \n#else\n \n# define ADDRESS_CHECK_OKAY\n#endif\n\n#include <config.h>\n\n#ifdef TEST_STDBOOL_H\n# include <stdbool.h>\n#endif\n\n#if false\n \"error: false is not 0\"\n#endif\n#if true != 1\n \"error: true is not 1\"\n#endif\n\n \n#if ((HAVE_C_BOOL || defined __cplusplus \\\n      || HAVE_STDBOOL_H || 3 <= __GNUC__ || 4 <= __clang_major__) \\\n     && !(defined _MSC_VER || defined __SUNPRO_C))\n# define WORKING_BOOL 1\n#else\n# define WORKING_BOOL 0\n#endif\n\n#if WORKING_BOOL\nstruct s { bool s: 1; bool t; } s;\n#endif\n\nchar a[true == 1 ? 1 : -1];\nchar b[false == 0 ? 1 : -1];\n#if WORKING_BOOL\nchar d[(bool) 0.5 == true ? 1 : -1];\n# ifdef ADDRESS_CHECK_OKAY  \n \n#  if defined __GNUC__ || defined __clang__\nbool e = &s;\n#  endif\n# endif\nchar f[(bool) 0.0 == false ? 1 : -1];\n#endif\nchar g[true];\nchar h[sizeof (bool)];\n#if WORKING_BOOL\nchar i[sizeof s.t];\n#endif\nenum { j = false, k = true, l = false * true, m = true * 256 };\nbool n[m];\nchar o[sizeof n == m * sizeof n[0] ? 1 : -1];\nchar p[-1 - (bool) 0 < 0 && -1 - (bool) 0 < 0 ? 1 : -1];\n \nbool q = true;\nbool *pq = &q;\n\nint\nmain ()\n{\n  int error = 0;\n\n#if WORKING_BOOL\n# ifdef ADDRESS_CHECK_OKAY  \n   \n  {\n    bool e1 = &s;\n    if (!e1)\n      error = 1;\n  }\n# endif\n#endif\n\n   \n  {\n    char digs[] = \"0123456789\";\n    if (&(digs + 5)[-2 + (bool) 1] != &digs[4])\n      error = 1;\n  }\n\n  return error;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

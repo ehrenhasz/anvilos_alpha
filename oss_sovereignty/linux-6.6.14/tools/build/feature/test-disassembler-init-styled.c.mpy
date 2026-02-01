@@ -1,0 +1,9 @@
+{
+  "module_name": "test-disassembler-init-styled.c",
+  "hash_id": "2f4682e475809bf10bd8c85bbfcd33ddf3106d3f1294a73a6b4fd03a2eb2f4e1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-disassembler-init-styled.c",
+  "human_readable_source": "\n#include <stdio.h>\n#include <dis-asm.h>\n\nint main(void)\n{\n\tstruct disassemble_info info;\n\n\tinit_disassemble_info(&info, stdout,\n\t\t\t      NULL, NULL);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

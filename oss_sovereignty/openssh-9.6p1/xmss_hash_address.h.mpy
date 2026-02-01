@@ -1,0 +1,9 @@
+{
+  "module_name": "xmss_hash_address.h",
+  "hash_id": "4c06fda419a6a2a229d69579187333dd02bc9741be2a9473133129d85b98ca3b",
+  "original_prompt": "Ingested from openssh-9.6p1/xmss_hash_address.h",
+  "human_readable_source": "#ifdef WITH_XMSS\n \n \n\n#ifdef HAVE_STDINT_H\n#include <stdint.h>\n#endif\n\nvoid setLayerADRS(uint32_t adrs[8], uint32_t layer);\n\nvoid setTreeADRS(uint32_t adrs[8], uint64_t tree);\n\nvoid setType(uint32_t adrs[8], uint32_t type);\n\nvoid setKeyAndMask(uint32_t adrs[8], uint32_t keyAndMask);\n\n\n\nvoid setOTSADRS(uint32_t adrs[8], uint32_t ots);\n\nvoid setChainADRS(uint32_t adrs[8], uint32_t chain);\n\nvoid setHashADRS(uint32_t adrs[8], uint32_t hash);\n\n\n\nvoid setLtreeADRS(uint32_t adrs[8], uint32_t ltree);\n\n\n\nvoid setTreeHeight(uint32_t adrs[8], uint32_t treeHeight);\n\nvoid setTreeIndex(uint32_t adrs[8], uint32_t treeIndex);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

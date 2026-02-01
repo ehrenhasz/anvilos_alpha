@@ -1,0 +1,9 @@
+{
+  "module_name": "mlxbf_gige_mdio_bf2.h",
+  "hash_id": "caf3729720c9ef18ed2bfee4646a4edcf9007b4b8180c8687dc6307a842a775b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio_bf2.h",
+  "human_readable_source": " \n\n \n\n#ifndef __MLXBF_GIGE_MDIO_BF2_H__\n#define __MLXBF_GIGE_MDIO_BF2_H__\n\n#include <linux/bitfield.h>\n\n#define MLXBF2_GIGE_MDIO_GW_OFFSET\t0x0\n#define MLXBF2_GIGE_MDIO_CFG_OFFSET\t0x4\n\n \n#define MLXBF2_GIGE_MDIO_GW_AD_MASK\tGENMASK(15, 0)\n#define MLXBF2_GIGE_MDIO_GW_DEVAD_MASK\tGENMASK(20, 16)\n#define MLXBF2_GIGE_MDIO_GW_PARTAD_MASK\tGENMASK(25, 21)\n#define MLXBF2_GIGE_MDIO_GW_OPCODE_MASK\tGENMASK(27, 26)\n#define MLXBF2_GIGE_MDIO_GW_ST1_MASK\tGENMASK(28, 28)\n#define MLXBF2_GIGE_MDIO_GW_BUSY_MASK\tGENMASK(30, 30)\n\n#define MLXBF2_GIGE_MDIO_GW_AD_SHIFT     0\n#define MLXBF2_GIGE_MDIO_GW_DEVAD_SHIFT  16\n#define MLXBF2_GIGE_MDIO_GW_PARTAD_SHIFT 21\n#define MLXBF2_GIGE_MDIO_GW_OPCODE_SHIFT 26\n#define MLXBF2_GIGE_MDIO_GW_ST1_SHIFT    28\n#define MLXBF2_GIGE_MDIO_GW_BUSY_SHIFT   30\n\n \n#define MLXBF2_GIGE_MDIO_CFG_MDIO_MODE_MASK\t\tGENMASK(1, 0)\n#define MLXBF2_GIGE_MDIO_CFG_MDIO3_3_MASK\t\tGENMASK(2, 2)\n#define MLXBF2_GIGE_MDIO_CFG_MDIO_FULL_DRIVE_MASK\tGENMASK(4, 4)\n#define MLXBF2_GIGE_MDIO_CFG_MDC_PERIOD_MASK\t\tGENMASK(15, 8)\n#define MLXBF2_GIGE_MDIO_CFG_MDIO_IN_SAMP_MASK\t\tGENMASK(23, 16)\n#define MLXBF2_GIGE_MDIO_CFG_MDIO_OUT_SAMP_MASK\t\tGENMASK(31, 24)\n\n#define MLXBF2_GIGE_MDIO_CFG_VAL (FIELD_PREP(MLXBF2_GIGE_MDIO_CFG_MDIO_MODE_MASK, 1) | \\\n\t\t\t\t FIELD_PREP(MLXBF2_GIGE_MDIO_CFG_MDIO3_3_MASK, 1) | \\\n\t\t\t\t FIELD_PREP(MLXBF2_GIGE_MDIO_CFG_MDIO_FULL_DRIVE_MASK, 1) | \\\n\t\t\t\t FIELD_PREP(MLXBF2_GIGE_MDIO_CFG_MDIO_IN_SAMP_MASK, 6) | \\\n\t\t\t\t FIELD_PREP(MLXBF2_GIGE_MDIO_CFG_MDIO_OUT_SAMP_MASK, 13))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "event.h",
+  "hash_id": "738d3c0537b70d804d92f25813c029994026c6ce9b8cf1ae469e21f4c1644432",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/event.h",
+  "human_readable_source": " \n \n\n#ifndef _SELFTESTS_POWERPC_PMU_EVENT_H\n#define _SELFTESTS_POWERPC_PMU_EVENT_H\n\n#include <unistd.h>\n#include <linux/perf_event.h>\n\n#include \"utils.h\"\n\n\nstruct event {\n\tstruct perf_event_attr attr;\n\tchar *name;\n\tint fd;\n\t \n\tstruct {\n\t\tu64 value;\n\t\tu64 running;\n\t\tu64 enabled;\n\t} result;\n\t \n\tvoid *mmap_buffer;\n};\n\nvoid event_init(struct event *e, u64 config);\nvoid event_init_named(struct event *e, u64 config, char *name);\nvoid event_init_opts(struct event *e, u64 config, int type, char *name);\nvoid event_init_sampling(struct event *e, u64 config);\nint event_open_with_options(struct event *e, pid_t pid, int cpu, int group_fd);\nint event_open_with_group(struct event *e, int group_fd);\nint event_open_with_pid(struct event *e, pid_t pid);\nint event_open_with_cpu(struct event *e, int cpu);\nint event_open(struct event *e);\nvoid event_close(struct event *e);\nint event_enable(struct event *e);\nint event_disable(struct event *e);\nint event_reset(struct event *e);\nint event_read(struct event *e);\nvoid event_report_justified(struct event *e, int name_width, int result_width);\nvoid event_report(struct event *e);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

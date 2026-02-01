@@ -1,0 +1,9 @@
+{
+  "module_name": "btf_type_tag.c",
+  "hash_id": "a7ca2cadb64f0a9cb2470e4e0a31294ddc77b2d9678ea75bbb90fff088bb3e23",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf_type_tag.c",
+  "human_readable_source": "\n \n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\n#if __has_attribute(btf_type_tag)\n#define __tag1 __attribute__((btf_type_tag(\"tag1\")))\n#define __tag2 __attribute__((btf_type_tag(\"tag2\")))\nvolatile const bool skip_tests = false;\n#else\n#define __tag1\n#define __tag2\nvolatile const bool skip_tests = true;\n#endif\n\nstruct btf_type_tag_test {\n\tint __tag1 * __tag1 __tag2 *p;\n} g;\n\nSEC(\"fentry/bpf_fentry_test1\")\nint BPF_PROG(sub, int x)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

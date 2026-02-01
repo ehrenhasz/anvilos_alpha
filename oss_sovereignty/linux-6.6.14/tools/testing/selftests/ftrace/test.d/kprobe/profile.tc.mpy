@@ -1,0 +1,9 @@
+{
+  "module_name": "profile.tc",
+  "hash_id": "6e401c328bfa1992ca5493824627cc9a616e8ca83a38b7d195bd8af38723f261",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Kprobe profile\n# requires: kprobe_events\n\n! grep -q 'myevent' kprobe_profile\necho \"p:myevent $FUNCTION_FORK\" > kprobe_events\ngrep -q 'myevent[[:space:]]*0[[:space:]]*0$' kprobe_profile\necho 1 > events/kprobes/myevent/enable\n( echo \"forked\" )\ngrep -q 'myevent[[:space:]]*[[:digit:]]*[[:space:]]*0$' kprobe_profile\necho 0 > events/kprobes/myevent/enable\necho > kprobe_events\n! grep -q 'myevent' kprobe_profile\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

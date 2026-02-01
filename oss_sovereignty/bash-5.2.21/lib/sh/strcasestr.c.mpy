@@ -1,0 +1,9 @@
+{
+  "module_name": "strcasestr.c",
+  "hash_id": "f375a7cf0f47b8444e7b9656487f0fc61d33922f808f1e0bf402700754e3a6e7",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/strcasestr.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#include <bashansi.h>\n#include <chartypes.h>\n\n#include <stdc.h>\n\n \nchar *\nstrcasestr (s1, s2)\n     const char *s1;\n     const char *s2;\n{\n  register int i, l, len, c;\n\n  c = TOLOWER ((unsigned char)s2[0]);\n  len = strlen (s1);\n  l = strlen (s2);\n  for (i = 0; (len - i) >= l; i++)\n    if ((TOLOWER ((unsigned char)s1[i]) == c) && (strncasecmp (s1 + i, s2, l) == 0))\n      return ((char *)s1 + i);\n  return ((char *)0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

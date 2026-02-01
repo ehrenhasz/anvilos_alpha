@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_xattr.h",
+  "hash_id": "e84d48236b85a07b76cb24f0de5fab7194e2dfe3887d5bbcebddf0140ec8a2ba",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_xattr.h",
+  "human_readable_source": "\n \n#ifndef __XFS_XATTR_H__\n#define __XFS_XATTR_H__\n\nint xfs_attr_change(struct xfs_da_args *args);\n\nextern const struct xattr_handler *xfs_xattr_handlers[];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

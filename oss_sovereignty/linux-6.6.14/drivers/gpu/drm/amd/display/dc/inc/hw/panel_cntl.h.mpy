@@ -1,0 +1,9 @@
+{
+  "module_name": "panel_cntl.h",
+  "hash_id": "273a2005df6c49244fd754210709be69d1126dc5e0a1d09a1c1adb0b2f8132f6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/inc/hw/panel_cntl.h",
+  "human_readable_source": " \n \n\n#ifndef DC_PANEL_CNTL_H_\n#define DC_PANEL_CNTL_H_\n\n#include \"dc_types.h\"\n\n#define MAX_BACKLIGHT_LEVEL 0xFFFF\n\nstruct panel_cntl_backlight_registers {\n\tunsigned int BL_PWM_CNTL;\n\tunsigned int BL_PWM_CNTL2;\n\tunsigned int BL_PWM_PERIOD_CNTL;\n\tunsigned int LVTMA_PWRSEQ_REF_DIV_BL_PWM_REF_DIV;\n\tunsigned int PANEL_PWRSEQ_REF_DIV2;\n};\n\nstruct panel_cntl_funcs {\n\tvoid (*destroy)(struct panel_cntl **panel_cntl);\n\tuint32_t (*hw_init)(struct panel_cntl *panel_cntl);\n\tbool (*is_panel_backlight_on)(struct panel_cntl *panel_cntl);\n\tbool (*is_panel_powered_on)(struct panel_cntl *panel_cntl);\n\tvoid (*store_backlight_level)(struct panel_cntl *panel_cntl);\n\tvoid (*driver_set_backlight)(struct panel_cntl *panel_cntl,\n\t\t\tuint32_t backlight_pwm_u16_16);\n\tuint32_t (*get_current_backlight)(struct panel_cntl *panel_cntl);\n};\n\nstruct panel_cntl_init_data {\n\tstruct dc_context *ctx;\n\tuint32_t inst;\n\tuint32_t pwrseq_inst;\n};\n\nstruct panel_cntl {\n\tconst struct panel_cntl_funcs *funcs;\n\tstruct dc_context *ctx;\n\tuint32_t inst;\n\tuint32_t pwrseq_inst;\n\t \n\tstruct panel_cntl_backlight_registers stored_backlight_registers;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

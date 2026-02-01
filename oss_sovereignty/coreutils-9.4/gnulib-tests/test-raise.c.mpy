@@ -1,0 +1,9 @@
+{
+  "module_name": "test-raise.c",
+  "hash_id": "478f191f62dbac55f5667b9e6e4d788e1c8c70b9401a75e34f5b6a6329fb2eaa",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-raise.c",
+  "human_readable_source": " \nstatic _Noreturn void\nhandler (int sig)\n{\n  _exit (0);\n}\n\nint\nmain (void)\n{\n   \n  ASSERT (raise (-1) != 0);\n\n   \n  ASSERT (signal (SIGINT, handler) != SIG_ERR);\n\n  raise (SIGINT);\n\n   \n  exit (1);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

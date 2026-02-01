@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-path-selector.h",
+  "hash_id": "ac377ccc9622fe45dc5f815b505eb3b482d8af0a9554021e32ce18866ab806e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/dm-path-selector.h",
+  "human_readable_source": " \n \n\n#ifndef\tDM_PATH_SELECTOR_H\n#define\tDM_PATH_SELECTOR_H\n\n#include <linux/device-mapper.h>\n\n#include \"dm-mpath.h\"\n\n \nstruct path_selector_type;\nstruct path_selector {\n\tstruct path_selector_type *type;\n\tvoid *context;\n};\n\n \n#define DM_PS_USE_HR_TIMER\t\t0x00000001\n#define dm_ps_use_hr_timer(type)\t((type)->features & DM_PS_USE_HR_TIMER)\n\n \nstruct path_selector_type {\n\tchar *name;\n\tstruct module *module;\n\n\tunsigned int features;\n\tunsigned int table_args;\n\tunsigned int info_args;\n\n\t \n\tint (*create)(struct path_selector *ps, unsigned int argc, char **argv);\n\tvoid (*destroy)(struct path_selector *ps);\n\n\t \n\tint (*add_path)(struct path_selector *ps, struct dm_path *path,\n\t\t\tint argc, char **argv, char **error);\n\n\t \n\tstruct dm_path *(*select_path)(struct path_selector *ps, size_t nr_bytes);\n\n\t \n\tvoid (*fail_path)(struct path_selector *ps, struct dm_path *p);\n\n\t \n\tint (*reinstate_path)(struct path_selector *ps, struct dm_path *p);\n\n\t \n\tint (*status)(struct path_selector *ps, struct dm_path *path,\n\t\t      status_type_t type, char *result, unsigned int maxlen);\n\n\tint (*start_io)(struct path_selector *ps, struct dm_path *path,\n\t\t\tsize_t nr_bytes);\n\tint (*end_io)(struct path_selector *ps, struct dm_path *path,\n\t\t      size_t nr_bytes, u64 start_time);\n};\n\n \nint dm_register_path_selector(struct path_selector_type *type);\n\n \nint dm_unregister_path_selector(struct path_selector_type *type);\n\n \nstruct path_selector_type *dm_get_path_selector(const char *name);\n\n \nvoid dm_put_path_selector(struct path_selector_type *pst);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

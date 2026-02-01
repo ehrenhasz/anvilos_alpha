@@ -1,0 +1,9 @@
+{
+  "module_name": "loop4.c",
+  "hash_id": "d2ef2462c4d93492d73e6505d310c48f04f51d7e2d8921bff1093202f62fcf50",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/loop4.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"socket\")\nint combinations(volatile struct __sk_buff* skb)\n{\n\tint ret = 0, i;\n\n#pragma nounroll\n\tfor (i = 0; i < 20; i++)\n\t\tif (skb->len)\n\t\t\tret |= 1 << i;\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

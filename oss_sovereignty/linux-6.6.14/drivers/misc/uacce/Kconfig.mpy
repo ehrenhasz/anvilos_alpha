@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4d2065508ee2f400c53edc3032dd22b5badc0550a7ae8b9207c3490dc2e25f1b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/uacce/Kconfig",
+  "human_readable_source": "config UACCE\n\ttristate \"Accelerator Framework for User Land\"\n\tdepends on IOMMU_API\n\thelp\n\t  UACCE provides interface for the user process to access the hardware\n\t  without interaction with the kernel space in data path.\n\n\t  The user-space interface is described in\n\t  include/uapi/misc/uacce/uacce.h\n\n\t  See Documentation/misc-devices/uacce.rst for more details.\n\n\t  If you don't know what to do here, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

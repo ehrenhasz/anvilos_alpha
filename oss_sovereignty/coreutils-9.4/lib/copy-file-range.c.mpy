@@ -1,0 +1,9 @@
+{
+  "module_name": "copy-file-range.c",
+  "hash_id": "603a34035a9996bbddcd621dd3ba7b29a60db6dbbba98f1b9b004bf572dd2a14",
+  "original_prompt": "Ingested from coreutils-9.4/lib/copy-file-range.c",
+  "human_readable_source": " \n\n    static signed char ok;\n\n    if (! ok)\n      {\n        struct utsname name;\n        uname (&name);\n        char *p = name.release;\n        ok = ((p[1] != '.' || '5' < p[0]\n               || (p[0] == '5' && (p[3] != '.' || '2' < p[2])))\n              ? 1 : -1);\n      }\n\n    if (0 < ok)\n      return copy_file_range (infd, pinoff, outfd, poutoff, length, flags);\n#endif\n\n   \n  errno = ENOSYS;\n  return -1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

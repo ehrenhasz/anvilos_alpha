@@ -1,0 +1,9 @@
+{
+  "module_name": "coresight-etm4x-cfg.h",
+  "hash_id": "0f3ecfde5f8bf32f28816c49d29f7c1c26b8e594a6a9ad3490a9f5cdad8cf9a4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwtracing/coresight/coresight-etm4x-cfg.h",
+  "human_readable_source": " \n \n\n#ifndef _CORESIGHT_ETM4X_CFG_H\n#define _CORESIGHT_ETM4X_CFG_H\n\n#include \"coresight-config.h\"\n#include \"coresight-etm4x.h\"\n\n \n\n \n\n#define ETM4_CFG_RES_CTR\t0x001\n#define ETM4_CFG_RES_CMP\t0x002\n#define ETM4_CFG_RES_CMP_PAIR0\t0x003\n#define ETM4_CFG_RES_CMP_PAIR1\t0x004\n#define ETM4_CFG_RES_SEL\t0x005\n#define ETM4_CFG_RES_SEL_PAIR0\t0x006\n#define ETM4_CFG_RES_SEL_PAIR1\t0x007\n#define ETM4_CFG_RES_SEQ\t0x008\n#define ETM4_CFG_RES_TS\t\t0x009\n#define ETM4_CFG_RES_MASK\t0x00F\n\n \nint etm4_cscfg_register(struct coresight_device *csdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

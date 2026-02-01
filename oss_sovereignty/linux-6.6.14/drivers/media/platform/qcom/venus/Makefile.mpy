@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "819838fb7a556484f31ae00a60abe922d9eabca0edbc62b7d647c9875c142b66",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/qcom/venus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Makefile for Qualcomm Venus driver\n\nvenus-core-objs += core.o helpers.o firmware.o \\\n\t\t   hfi_venus.o hfi_msgs.o hfi_cmds.o hfi.o \\\n\t\t   hfi_parser.o pm_helpers.o dbgfs.o \\\n\t\t   hfi_platform.o hfi_platform_v4.o \\\n\t\t   hfi_platform_v6.o hfi_plat_bufs_v6.o \\\n\nvenus-dec-objs += vdec.o vdec_ctrls.o\nvenus-enc-objs += venc.o venc_ctrls.o\n\nobj-$(CONFIG_VIDEO_QCOM_VENUS) += venus-core.o\nobj-$(CONFIG_VIDEO_QCOM_VENUS) += venus-dec.o\nobj-$(CONFIG_VIDEO_QCOM_VENUS) += venus-enc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

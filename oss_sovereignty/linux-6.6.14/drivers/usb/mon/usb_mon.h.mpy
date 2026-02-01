@@ -1,0 +1,9 @@
+{
+  "module_name": "usb_mon.h",
+  "hash_id": "ab3cf86210f206687ad6307e3001ae0b8f331954ed028a28d61f4cf379b59d12",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/mon/usb_mon.h",
+  "human_readable_source": " \n \n\n#ifndef __USB_MON_H\n#define __USB_MON_H\n\n#include <linux/list.h>\n#include <linux/slab.h>\n#include <linux/kref.h>\n \t \n\n#define TAG \"usbmon\"\n\nstruct mon_bus {\n\tstruct list_head bus_link;\n\tspinlock_t lock;\n\tstruct usb_bus *u_bus;\n\n\tint text_inited;\n\tint bin_inited;\n\tstruct dentry *dent_s;\t\t \n\tstruct dentry *dent_t;\t\t \n\tstruct dentry *dent_u;\t\t \n\tstruct device *classdev;\t \n\n\t \n\tint nreaders;\t\t\t \n\tstruct list_head r_list;\t \n\tstruct kref ref;\t\t \n\n\t \n\tunsigned int cnt_events;\n\tunsigned int cnt_text_lost;\n};\n\n \nstruct mon_reader {\n\tstruct list_head r_link;\n\tstruct mon_bus *m_bus;\n\tvoid *r_data;\t\t \n\n\tvoid (*rnf_submit)(void *data, struct urb *urb);\n\tvoid (*rnf_error)(void *data, struct urb *urb, int error);\n\tvoid (*rnf_complete)(void *data, struct urb *urb, int status);\n};\n\nvoid mon_reader_add(struct mon_bus *mbus, struct mon_reader *r);\nvoid mon_reader_del(struct mon_bus *mbus, struct mon_reader *r);\n\nstruct mon_bus *mon_bus_lookup(unsigned int num);\n\nint   mon_text_add(struct mon_bus *mbus, const struct usb_bus *ubus);\nvoid mon_text_del(struct mon_bus *mbus);\nint   mon_bin_add(struct mon_bus *mbus, const struct usb_bus *ubus);\nvoid mon_bin_del(struct mon_bus *mbus);\n\nint __init mon_text_init(void);\nvoid mon_text_exit(void);\nint __init mon_bin_init(void);\nvoid mon_bin_exit(void);\n\n \nextern struct mutex mon_lock;\n\nextern const struct file_operations mon_fops_stat;\n\nextern struct mon_bus mon_bus0;\t\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

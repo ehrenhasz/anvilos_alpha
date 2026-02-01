@@ -1,0 +1,9 @@
+{
+  "module_name": "psp-dbc.h",
+  "hash_id": "c71b5ca4c0833bfac83d511f6bcd107a3cdea3a7ca55353a73a26b8a5c2590ef",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/psp-dbc.h",
+  "human_readable_source": " \n \n\n#ifndef __PSP_DBC_USER_H__\n#define __PSP_DBC_USER_H__\n\n#include <linux/types.h>\n\n \n\n#define DBC_NONCE_SIZE\t\t16\n#define DBC_SIG_SIZE\t\t32\n#define DBC_UID_SIZE\t\t16\n\n \nstruct dbc_user_nonce {\n\t__u32\tauth_needed;\n\t__u8\tnonce[DBC_NONCE_SIZE];\n\t__u8\tsignature[DBC_SIG_SIZE];\n} __packed;\n\n \nstruct dbc_user_setuid {\n\t__u8\tuid[DBC_UID_SIZE];\n\t__u8\tsignature[DBC_SIG_SIZE];\n} __packed;\n\n \nstruct dbc_user_param {\n\t__u32\tmsg_index;\n\t__u32\tparam;\n\t__u8\tsignature[DBC_SIG_SIZE];\n} __packed;\n\n \n#define DBC_IOC_TYPE\t'D'\n\n \n#define DBCIOCNONCE\t_IOWR(DBC_IOC_TYPE, 0x1, struct dbc_user_nonce)\n\n \n#define DBCIOCUID\t_IOW(DBC_IOC_TYPE, 0x2, struct dbc_user_setuid)\n\n \n#define DBCIOCPARAM\t_IOWR(DBC_IOC_TYPE, 0x3, struct dbc_user_param)\n\n \nenum dbc_cmd_msg {\n\tPARAM_GET_FMAX_CAP\t= 0x3,\n\tPARAM_SET_FMAX_CAP\t= 0x4,\n\tPARAM_GET_PWR_CAP\t= 0x5,\n\tPARAM_SET_PWR_CAP\t= 0x6,\n\tPARAM_GET_GFX_MODE\t= 0x7,\n\tPARAM_SET_GFX_MODE\t= 0x8,\n\tPARAM_GET_CURR_TEMP\t= 0x9,\n\tPARAM_GET_FMAX_MAX\t= 0xA,\n\tPARAM_GET_FMAX_MIN\t= 0xB,\n\tPARAM_GET_SOC_PWR_MAX\t= 0xC,\n\tPARAM_GET_SOC_PWR_MIN\t= 0xD,\n\tPARAM_GET_SOC_PWR_CUR\t= 0xE,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

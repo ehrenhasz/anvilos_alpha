@@ -1,0 +1,9 @@
+{
+  "module_name": "ga102.c",
+  "hash_id": "e6962a862aeadfb3288a00d5d3c1bc92759aa9ac61f1b42eb6c460a9bca77a38",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/fifo/ga102.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <nvif/class.h>\n\nstatic const struct nvkm_fifo_func\nga102_fifo = {\n\t.runl_ctor = ga100_fifo_runl_ctor,\n\t.mmu_fault = &tu102_fifo_mmu_fault,\n\t.nonstall_ctor = ga100_fifo_nonstall_ctor,\n\t.nonstall = &ga100_fifo_nonstall,\n\t.runl = &ga100_runl,\n\t.runq = &ga100_runq,\n\t.engn = &ga100_engn,\n\t.engn_ce = &ga100_engn_ce,\n\t.cgrp = {{ 0, 0, KEPLER_CHANNEL_GROUP_A  }, &ga100_cgrp, .force = true },\n\t.chan = {{ 0, 0, AMPERE_CHANNEL_GPFIFO_B }, &ga100_chan },\n};\n\nint\nga102_fifo_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t       struct nvkm_fifo **pfifo)\n{\n\treturn nvkm_fifo_new_(&ga102_fifo, device, type, inst, pfifo);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

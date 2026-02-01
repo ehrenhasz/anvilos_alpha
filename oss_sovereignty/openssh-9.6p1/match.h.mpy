@@ -1,0 +1,9 @@
+{
+  "module_name": "match.h",
+  "hash_id": "cf0f4aca3ac3500ed1881592047f93165ca1fc4a69d6b35ba1e93d7c0c4ad362",
+  "original_prompt": "Ingested from openssh-9.6p1/match.h",
+  "human_readable_source": " \n\n \n#ifndef MATCH_H\n#define MATCH_H\n\nint\t match_pattern(const char *, const char *);\nint\t match_pattern_list(const char *, const char *, int);\nint\t match_usergroup_pattern_list(const char *, const char *);\nint\t match_hostname(const char *, const char *);\nint\t match_host_and_ip(const char *, const char *, const char *);\nint\t match_user(const char *, const char *, const char *, const char *);\nchar\t*match_list(const char *, const char *, u_int *);\nchar\t*match_filter_denylist(const char *, const char *);\nchar\t*match_filter_allowlist(const char *, const char *);\n\n \nint\t addr_match_list(const char *, const char *);\nint\t addr_match_cidr_list(const char *, const char *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

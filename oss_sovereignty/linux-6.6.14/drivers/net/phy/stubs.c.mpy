@@ -1,0 +1,9 @@
+{
+  "module_name": "stubs.c",
+  "hash_id": "db4d9aa01711a794988b778c49c8636f48b9ff05cb1c88b7965313d580467f71",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/phy/stubs.c",
+  "human_readable_source": "\n \n#include <linux/phylib_stubs.h>\n\nconst struct phylib_stubs *phylib_stubs;\nEXPORT_SYMBOL_GPL(phylib_stubs);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

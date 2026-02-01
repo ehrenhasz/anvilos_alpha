@@ -1,0 +1,9 @@
+{
+  "module_name": "file2h.py",
+  "hash_id": "0dc9fecf67fee6607d0053f7505df3b3790cec81a5ffe5e1290e539e743a5b94",
+  "original_prompt": "Ingested from sys_09_Anvil/source/tools/file2h.py",
+  "human_readable_source": "# Reads in a text file, and performs the necessary escapes so that it\n# can be #included as a static string like:\n#    static const char string_from_textfile[] =\n#    #include \"build/textfile.h\"\n#    ;\n# This script simply prints the escaped string straight to stdout\n\nfrom __future__ import print_function\n\nimport sys\n\n# Can either be set explicitly, or left blank to auto-detect\n# Except auto-detect doesn't work because the file has been passed\n# through Python text processing, which makes all EOL a \\n\nline_end = \"\\\\r\\\\n\"\n\nif __name__ == \"__main__\":\n    filename = sys.argv[1]\n    for line in open(filename, \"r\").readlines():\n        if not line_end:\n            for ending in (\"\\r\\n\", \"\\r\", \"\\n\"):\n                if line.endswith(ending):\n                    line_end = ending.replace(\"\\r\", \"\\\\r\").replace(\"\\n\", \"\\\\n\")\n                    break\n            if not line_end:\n                raise Exception(\"Couldn't auto-detect line-ending of %s\" % filename)\n        line = line.rstrip(\"\\r\\n\")\n        line = line.replace(\"\\\\\", \"\\\\\\\\\")\n        line = line.replace('\"', '\\\\\"')\n        print('\"%s%s\"' % (line, line_end))\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

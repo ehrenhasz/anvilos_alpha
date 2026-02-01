@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_debugfs_crc.h",
+  "hash_id": "84234276ced31bd4733aa2f7de082de5cce547bb567d4add0c690def9d436f53",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_debugfs_crc.h",
+  "human_readable_source": " \n#ifndef __DRM_DEBUGFS_CRC_H__\n#define __DRM_DEBUGFS_CRC_H__\n\n#define DRM_MAX_CRC_NR\t\t10\n\n \nstruct drm_crtc_crc_entry {\n\tbool has_frame_counter;\n\tuint32_t frame;\n\tuint32_t crcs[DRM_MAX_CRC_NR];\n};\n\n#define DRM_CRC_ENTRIES_NR\t128\n\n \nstruct drm_crtc_crc {\n\tspinlock_t lock;\n\tconst char *source;\n\tbool opened, overflow;\n\tstruct drm_crtc_crc_entry *entries;\n\tint head, tail;\n\tsize_t values_cnt;\n\twait_queue_head_t wq;\n};\n\n#if defined(CONFIG_DEBUG_FS)\nint drm_crtc_add_crc_entry(struct drm_crtc *crtc, bool has_frame,\n\t\t\t   uint32_t frame, uint32_t *crcs);\n#else\nstatic inline int drm_crtc_add_crc_entry(struct drm_crtc *crtc, bool has_frame,\n\t\t\t\t\t uint32_t frame, uint32_t *crcs)\n{\n\treturn -EINVAL;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

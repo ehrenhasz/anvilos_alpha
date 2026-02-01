@@ -1,0 +1,9 @@
+{
+  "module_name": "gnss.h",
+  "hash_id": "f0b00edba09512e8c47784cfd1336dd735b35fbf7340a81ec9908714373a64ff",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/gnss.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_GNSS_H\n#define _LINUX_GNSS_H\n\n#include <linux/cdev.h>\n#include <linux/device.h>\n#include <linux/kfifo.h>\n#include <linux/mutex.h>\n#include <linux/rwsem.h>\n#include <linux/types.h>\n#include <linux/wait.h>\n\nstruct gnss_device;\n\nenum gnss_type {\n\tGNSS_TYPE_NMEA = 0,\n\tGNSS_TYPE_SIRF,\n\tGNSS_TYPE_UBX,\n\tGNSS_TYPE_MTK,\n\n\tGNSS_TYPE_COUNT\n};\n\nstruct gnss_operations {\n\tint (*open)(struct gnss_device *gdev);\n\tvoid (*close)(struct gnss_device *gdev);\n\tint (*write_raw)(struct gnss_device *gdev, const unsigned char *buf,\n\t\t\t\tsize_t count);\n};\n\nstruct gnss_device {\n\tstruct device dev;\n\tstruct cdev cdev;\n\tint id;\n\n\tenum gnss_type type;\n\tunsigned long flags;\n\n\tstruct rw_semaphore rwsem;\n\tconst struct gnss_operations *ops;\n\tunsigned int count;\n\tunsigned int disconnected:1;\n\n\tstruct mutex read_mutex;\n\tstruct kfifo read_fifo;\n\twait_queue_head_t read_queue;\n\n\tstruct mutex write_mutex;\n\tchar *write_buf;\n};\n\nstruct gnss_device *gnss_allocate_device(struct device *parent);\nvoid gnss_put_device(struct gnss_device *gdev);\nint gnss_register_device(struct gnss_device *gdev);\nvoid gnss_deregister_device(struct gnss_device *gdev);\n\nint gnss_insert_raw(struct gnss_device *gdev, const unsigned char *buf,\n\t\t\tsize_t count);\n\nstatic inline void gnss_set_drvdata(struct gnss_device *gdev, void *data)\n{\n\tdev_set_drvdata(&gdev->dev, data);\n}\n\nstatic inline void *gnss_get_drvdata(struct gnss_device *gdev)\n{\n\treturn dev_get_drvdata(&gdev->dev);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

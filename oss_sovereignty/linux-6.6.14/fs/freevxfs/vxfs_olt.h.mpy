@@ -1,0 +1,9 @@
+{
+  "module_name": "vxfs_olt.h",
+  "hash_id": "01a6b818ffdd91f87fa8e79096002b544b35e04312d93c38706fc6fc605770aa",
+  "original_prompt": "Ingested from linux-6.6.14/fs/freevxfs/vxfs_olt.h",
+  "human_readable_source": " \n \n#ifndef _VXFS_OLT_H_\n#define _VXFS_OLT_H_\n\n \n\n\n \n#define VXFS_OLT_MAGIC\t\t0xa504FCF5\n\n \nenum {\n\tVXFS_OLT_FREE\t= 1,\n\tVXFS_OLT_FSHEAD\t= 2,\n\tVXFS_OLT_CUT\t= 3,\n\tVXFS_OLT_ILIST\t= 4,\n\tVXFS_OLT_DEV\t= 5,\n\tVXFS_OLT_SB\t= 6\n};\n\n \nstruct vxfs_olt {\n\t__fs32\t\tolt_magic;\t \n\t__fs32\t\tolt_size;\t \n\t__fs32\t\tolt_checksum;\t \n\t__u32\t\t__unused1;\t \n\t__fs32\t\tolt_mtime;\t \n\t__fs32\t\tolt_mutime;\t \n\t__fs32\t\tolt_totfree;\t \n\t__fs32\t\tolt_extents[2];\t \n\t__fs32\t\tolt_esize;\t \n\t__fs32\t\tolt_next[2];     \n\t__fs32\t\tolt_nsize;\t \n\t__u32\t\t__unused2;\t \n};\n\n \nstruct vxfs_oltcommon {\n\t__fs32\t\tolt_type;\t \n\t__fs32\t\tolt_size;\t \n};\n\n \nstruct vxfs_oltfree {\n\t__fs32\t\tolt_type;\t \n\t__fs32\t\tolt_fsize;\t \n};\n\n \nstruct vxfs_oltilist {\n\t__fs32\tolt_type;\t \n\t__fs32\tolt_size;\t \n\t__fs32\t\tolt_iext[2];\t \n};\n\n \nstruct vxfs_oltcut {\n\t__fs32\t\tolt_type;\t \n\t__fs32\t\tolt_size;\t \n\t__fs32\t\tolt_cutino;\t \n\t__u8\t\t__pad;\t\t \n};\n\n \nstruct vxfs_oltsb {\n\t__fs32\t\tolt_type;\t \n\t__fs32\t\tolt_size;\t \n\t__fs32\t\tolt_sbino;\t \n\t__u32\t\t__unused1;\t \n\t__fs32\t\tolt_logino[2];\t \n\t__fs32\t\tolt_oltino[2];\t \n};\n\n \nstruct vxfs_oltdev {\n\t__fs32\t\tolt_type;\t \n\t__fs32\t\tolt_size;\t \n\t__fs32\t\tolt_devino[2];\t \n};\n\n \nstruct vxfs_oltfshead {\n\t__fs32\t\tolt_type;\t \n\t__fs32\t\tolt_size;\t \n\t__fs32\t\tolt_fsino[2];    \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vesa.h",
+  "hash_id": "5abdaf7c6c4c269312964b94f5907604500ec68beb40a7a06213f22ec02dd450",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/vesa.h",
+  "human_readable_source": " \n \n\n#ifndef BOOT_VESA_H\n#define BOOT_VESA_H\n\ntypedef struct {\n\tu16 off, seg;\n} far_ptr;\n\n \nstruct vesa_general_info {\n\tu32 signature;\t\t \n\tu16 version;\t\t \n\tfar_ptr vendor_string;\t \n\tu32 capabilities;\t \n\tfar_ptr video_mode_ptr;\t \n\tu16 total_memory;\t \n\n\tu8 reserved[236];\t \n} __attribute__ ((packed));\n\n#define VESA_MAGIC ('V' + ('E' << 8) + ('S' << 16) + ('A' << 24))\n\nstruct vesa_mode_info {\n\tu16 mode_attr;\t\t \n\tu8 win_attr[2];\t\t \n\tu16 win_grain;\t\t \n\tu16 win_size;\t\t \n\tu16 win_seg[2];\t\t \n\tfar_ptr win_scheme;\t \n\tu16 logical_scan;\t \n\n\tu16 h_res;\t\t \n\tu16 v_res;\t\t \n\tu8 char_width;\t\t \n\tu8 char_height;\t\t \n\tu8 memory_planes;\t \n\tu8 bpp;\t\t\t \n\tu8 banks;\t\t \n\tu8 memory_layout;\t \n\tu8 bank_size;\t\t \n\tu8 image_planes;\t \n\tu8 page_function;\t \n\n\tu8 rmask;\t\t \n\tu8 rpos;\t\t \n\tu8 gmask;\t\t \n\tu8 gpos;\t\t \n\tu8 bmask;\t\t \n\tu8 bpos;\t\t \n\tu8 resv_mask;\t\t \n\tu8 resv_pos;\t\t \n\tu8 dcm_info;\t\t \n\n\tu32 lfb_ptr;\t\t \n\tu32 offscreen_ptr;\t \n\tu16 offscreen_size;\t \n\n\tu8 reserved[206];\t \n} __attribute__ ((packed));\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

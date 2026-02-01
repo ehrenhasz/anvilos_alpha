@@ -1,0 +1,9 @@
+{
+  "module_name": "curve25519.c",
+  "hash_id": "88478dc825e5c0b481962d642dc50cf5e3a7d94f506429696664308e0f337a71",
+  "original_prompt": "Ingested from linux-6.6.14/lib/crypto/curve25519.c",
+  "human_readable_source": "\n \n\n#include <crypto/curve25519.h>\n#include <linux/module.h>\n#include <linux/init.h>\n\nstatic int __init curve25519_init(void)\n{\n\tif (!IS_ENABLED(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS) &&\n\t    WARN_ON(!curve25519_selftest()))\n\t\treturn -ENODEV;\n\treturn 0;\n}\n\nstatic void __exit curve25519_exit(void)\n{\n}\n\nmodule_init(curve25519_init);\nmodule_exit(curve25519_exit);\n\nMODULE_LICENSE(\"GPL v2\");\nMODULE_DESCRIPTION(\"Curve25519 scalar multiplication\");\nMODULE_AUTHOR(\"Jason A. Donenfeld <Jason@zx2c4.com>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

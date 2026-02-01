@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d694d77c28c0f8751e7d223eec86ed50f50ad17a979192074d69e2f994b187d8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wl1251/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nwl1251-objs\t\t= main.o event.o tx.o rx.o ps.o cmd.o \\\n\t\t\t  acx.o boot.o init.o debugfs.o io.o\nwl1251_spi-objs\t\t+= spi.o\nwl1251_sdio-objs\t+= sdio.o\n\nobj-$(CONFIG_WL1251)\t\t+= wl1251.o\nobj-$(CONFIG_WL1251_SPI)\t+= wl1251_spi.o\nobj-$(CONFIG_WL1251_SDIO)\t+= wl1251_sdio.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

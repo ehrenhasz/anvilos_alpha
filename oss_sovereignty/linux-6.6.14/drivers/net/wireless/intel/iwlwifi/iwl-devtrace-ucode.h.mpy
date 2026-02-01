@@ -1,0 +1,9 @@
+{
+  "module_name": "iwl-devtrace-ucode.h",
+  "hash_id": "475bafc0bc490cf97e670b1d53876af4a4d4e594279a84d1d75bee8c6330b51d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/iwl-devtrace-ucode.h",
+  "human_readable_source": " \n \n\n#if !defined(__IWLWIFI_DEVICE_TRACE_UCODE) || defined(TRACE_HEADER_MULTI_READ)\n#define __IWLWIFI_DEVICE_TRACE_UCODE\n\n#include <linux/tracepoint.h>\n\n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM iwlwifi_ucode\n\nTRACE_EVENT(iwlwifi_dev_ucode_cont_event,\n\tTP_PROTO(const struct device *dev, u32 time, u32 data, u32 ev),\n\tTP_ARGS(dev, time, data, ev),\n\tTP_STRUCT__entry(\n\t\tDEV_ENTRY\n\n\t\t__field(u32, time)\n\t\t__field(u32, data)\n\t\t__field(u32, ev)\n\t),\n\tTP_fast_assign(\n\t\tDEV_ASSIGN;\n\t\t__entry->time = time;\n\t\t__entry->data = data;\n\t\t__entry->ev = ev;\n\t),\n\tTP_printk(\"[%s] EVT_LOGT:%010u:0x%08x:%04u\",\n\t\t  __get_str(dev), __entry->time, __entry->data, __entry->ev)\n);\n\nTRACE_EVENT(iwlwifi_dev_ucode_wrap_event,\n\tTP_PROTO(const struct device *dev, u32 wraps, u32 n_entry, u32 p_entry),\n\tTP_ARGS(dev, wraps, n_entry, p_entry),\n\tTP_STRUCT__entry(\n\t\tDEV_ENTRY\n\n\t\t__field(u32, wraps)\n\t\t__field(u32, n_entry)\n\t\t__field(u32, p_entry)\n\t),\n\tTP_fast_assign(\n\t\tDEV_ASSIGN;\n\t\t__entry->wraps = wraps;\n\t\t__entry->n_entry = n_entry;\n\t\t__entry->p_entry = p_entry;\n\t),\n\tTP_printk(\"[%s] wraps=#%02d n=0x%X p=0x%X\",\n\t\t  __get_str(dev), __entry->wraps, __entry->n_entry,\n\t\t  __entry->p_entry)\n);\n#endif  \n\n#undef TRACE_INCLUDE_PATH\n#define TRACE_INCLUDE_PATH .\n#undef TRACE_INCLUDE_FILE\n#define TRACE_INCLUDE_FILE iwl-devtrace-ucode\n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "smc_close.h",
+  "hash_id": "739d9b7699112cc75e2f7cb91623713397fd3f433be540440dd6052a14340022",
+  "original_prompt": "Ingested from linux-6.6.14/net/smc/smc_close.h",
+  "human_readable_source": " \n \n\n#ifndef SMC_CLOSE_H\n#define SMC_CLOSE_H\n\n#include <linux/workqueue.h>\n\n#include \"smc.h\"\n\n#define SMC_MAX_STREAM_WAIT_TIMEOUT\t\t(2 * HZ)\n#define SMC_CLOSE_SOCK_PUT_DELAY\t\tHZ\n\nvoid smc_close_wake_tx_prepared(struct smc_sock *smc);\nint smc_close_active(struct smc_sock *smc);\nint smc_close_shutdown_write(struct smc_sock *smc);\nvoid smc_close_init(struct smc_sock *smc);\nvoid smc_clcsock_release(struct smc_sock *smc);\nint smc_close_abort(struct smc_connection *conn);\nvoid smc_close_active_abort(struct smc_sock *smc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

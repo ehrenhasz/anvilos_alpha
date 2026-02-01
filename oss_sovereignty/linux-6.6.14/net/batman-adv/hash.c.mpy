@@ -1,0 +1,9 @@
+{
+  "module_name": "hash.c",
+  "hash_id": "8aae7d50848e917c15240d4dc94dd9877d00db5badb3d5c7ef50bb2f7083ad32",
+  "original_prompt": "Ingested from linux-6.6.14/net/batman-adv/hash.c",
+  "human_readable_source": "\n \n\n#include \"hash.h\"\n#include \"main.h\"\n\n#include <linux/gfp.h>\n#include <linux/lockdep.h>\n#include <linux/slab.h>\n\n \nstatic void batadv_hash_init(struct batadv_hashtable *hash)\n{\n\tu32 i;\n\n\tfor (i = 0; i < hash->size; i++) {\n\t\tINIT_HLIST_HEAD(&hash->table[i]);\n\t\tspin_lock_init(&hash->list_locks[i]);\n\t}\n\n\tatomic_set(&hash->generation, 0);\n}\n\n \nvoid batadv_hash_destroy(struct batadv_hashtable *hash)\n{\n\tkfree(hash->list_locks);\n\tkfree(hash->table);\n\tkfree(hash);\n}\n\n \nstruct batadv_hashtable *batadv_hash_new(u32 size)\n{\n\tstruct batadv_hashtable *hash;\n\n\thash = kmalloc(sizeof(*hash), GFP_ATOMIC);\n\tif (!hash)\n\t\treturn NULL;\n\n\thash->table = kmalloc_array(size, sizeof(*hash->table), GFP_ATOMIC);\n\tif (!hash->table)\n\t\tgoto free_hash;\n\n\thash->list_locks = kmalloc_array(size, sizeof(*hash->list_locks),\n\t\t\t\t\t GFP_ATOMIC);\n\tif (!hash->list_locks)\n\t\tgoto free_table;\n\n\thash->size = size;\n\tbatadv_hash_init(hash);\n\treturn hash;\n\nfree_table:\n\tkfree(hash->table);\nfree_hash:\n\tkfree(hash);\n\treturn NULL;\n}\n\n \nvoid batadv_hash_set_lock_class(struct batadv_hashtable *hash,\n\t\t\t\tstruct lock_class_key *key)\n{\n\tu32 i;\n\n\tfor (i = 0; i < hash->size; i++)\n\t\tlockdep_set_class(&hash->list_locks[i], key);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

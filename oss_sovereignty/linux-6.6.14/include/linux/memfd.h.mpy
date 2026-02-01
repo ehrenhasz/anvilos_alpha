@@ -1,0 +1,9 @@
+{
+  "module_name": "memfd.h",
+  "hash_id": "65a38513acf6868f48cdcab77785d702d4c371b2802a6c0c19612a7872fcc2e7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/memfd.h",
+  "human_readable_source": " \n#ifndef __LINUX_MEMFD_H\n#define __LINUX_MEMFD_H\n\n#include <linux/file.h>\n\n#ifdef CONFIG_MEMFD_CREATE\nextern long memfd_fcntl(struct file *file, unsigned int cmd, unsigned int arg);\n#else\nstatic inline long memfd_fcntl(struct file *f, unsigned int c, unsigned int a)\n{\n\treturn -EINVAL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

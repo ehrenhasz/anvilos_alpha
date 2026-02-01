@@ -1,0 +1,9 @@
+{
+  "module_name": "shred.x",
+  "hash_id": "1c590952f59d58f98c65b9af718c788cf4770f549f2055a8b4f4f777efe0ad5b",
+  "original_prompt": "Ingested from coreutils-9.4/man/shred.x",
+  "human_readable_source": "[NAME]\nshred \\- overwrite a file to hide its contents, and optionally delete it\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

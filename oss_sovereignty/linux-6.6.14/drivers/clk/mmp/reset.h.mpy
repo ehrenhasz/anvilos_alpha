@@ -1,0 +1,9 @@
+{
+  "module_name": "reset.h",
+  "hash_id": "5e2beae761fbf5052600afd67c896095c96909de78802da585e32d4933283013",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mmp/reset.h",
+  "human_readable_source": " \n#ifndef __MACH_MMP_CLK_RESET_H\n#define __MACH_MMP_CLK_RESET_H\n\n#include <linux/reset-controller.h>\n\n#define MMP_RESET_INVERT\t1\n\nstruct mmp_clk_reset_cell {\n\tunsigned int clk_id;\n\tvoid __iomem *reg;\n\tu32 bits;\n\tunsigned int flags;\n\tspinlock_t *lock;\n};\n\nstruct mmp_clk_reset_unit {\n\tstruct reset_controller_dev rcdev;\n\tstruct mmp_clk_reset_cell *cells;\n};\n\n#ifdef CONFIG_RESET_CONTROLLER\nvoid mmp_clk_reset_register(struct device_node *np,\n\t\t\tstruct mmp_clk_reset_cell *cells, int nr_resets);\n#else\nstatic inline void mmp_clk_reset_register(struct device_node *np,\n\t\t\tstruct mmp_clk_reset_cell *cells, int nr_resets)\n{\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

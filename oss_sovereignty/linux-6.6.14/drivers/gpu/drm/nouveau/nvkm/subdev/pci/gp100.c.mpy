@@ -1,0 +1,9 @@
+{
+  "module_name": "gp100.c",
+  "hash_id": "6b8746ae6218205295e1f566c6e95eee335f990130d154ae7178591c38a5a3ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/pci/gp100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic void\ngp100_pci_msi_rearm(struct nvkm_pci *pci)\n{\n\tnvkm_pci_wr32(pci, 0x0704, 0x00000000);\n}\n\nstatic const struct nvkm_pci_func\ngp100_pci_func = {\n\t.rd32 = nv40_pci_rd32,\n\t.wr08 = nv40_pci_wr08,\n\t.wr32 = nv40_pci_wr32,\n\t.msi_rearm = gp100_pci_msi_rearm,\n};\n\nint\ngp100_pci_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_pci **ppci)\n{\n\treturn nvkm_pci_new_(&gp100_pci_func, device, type, inst, ppci);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

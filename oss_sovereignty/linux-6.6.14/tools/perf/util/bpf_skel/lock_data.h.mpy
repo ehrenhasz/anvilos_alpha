@@ -1,0 +1,9 @@
+{
+  "module_name": "lock_data.h",
+  "hash_id": "0d418afffcdb5cf81525262558f75571ec7cf37b3105ab0ed45b75dd9fd5dc4f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/bpf_skel/lock_data.h",
+  "human_readable_source": "\n \n#ifndef UTIL_BPF_SKEL_LOCK_DATA_H\n#define UTIL_BPF_SKEL_LOCK_DATA_H\n\nstruct contention_key {\n\tu32 stack_id;\n\tu32 pid;\n\tu64 lock_addr;\n};\n\n#define TASK_COMM_LEN  16\n\nstruct contention_task_data {\n\tchar comm[TASK_COMM_LEN];\n};\n\n \n#define MAX_ENTRIES  16384\n\n \n#define LCD_F_MMAP_LOCK\t\t(1U << 31)\n#define LCD_F_SIGHAND_LOCK\t(1U << 30)\n\n#define LCB_F_MAX_FLAGS\t\t(1U << 7)\n\nstruct contention_data {\n\tu64 total_time;\n\tu64 min_time;\n\tu64 max_time;\n\tu32 count;\n\tu32 flags;\n};\n\nenum lock_aggr_mode {\n\tLOCK_AGGR_ADDR = 0,\n\tLOCK_AGGR_TASK,\n\tLOCK_AGGR_CALLER,\n};\n\nenum lock_class_sym {\n\tLOCK_CLASS_NONE,\n\tLOCK_CLASS_RQLOCK,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "conn.h",
+  "hash_id": "f07ee531b1562bc0dcd8cda4c52b71ef3f6baf296c1f6cf2295735906c0bd29e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/disp/conn.h",
+  "human_readable_source": " \n#ifndef __NVKM_DISP_CONN_H__\n#define __NVKM_DISP_CONN_H__\n#include \"priv.h\"\n\n#include <subdev/bios.h>\n#include <subdev/bios/conn.h>\n\nstruct nvkm_conn {\n\tstruct nvkm_disp *disp;\n\tint index;\n\tstruct nvbios_connE info;\n\n\tstruct list_head head;\n\n\tstruct nvkm_object object;\n};\n\nint nvkm_conn_new(struct nvkm_disp *, int index, struct nvbios_connE *,\n\t\t  struct nvkm_conn **);\nvoid nvkm_conn_del(struct nvkm_conn **);\nvoid nvkm_conn_init(struct nvkm_conn *);\nvoid nvkm_conn_fini(struct nvkm_conn *);\n\n#define CONN_MSG(c,l,f,a...) do {                                              \\\n\tstruct nvkm_conn *_conn = (c);                                    \\\n\tnvkm_##l(&_conn->disp->engine.subdev, \"conn %02x:%02x%02x: \"f\"\\n\",     \\\n\t\t _conn->index, _conn->info.location, _conn->info.type, ##a);   \\\n} while(0)\n#define CONN_ERR(c,f,a...) CONN_MSG((c), error, f, ##a)\n#define CONN_DBG(c,f,a...) CONN_MSG((c), debug, f, ##a)\n#define CONN_TRACE(c,f,a...) CONN_MSG((c), trace, f, ##a)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

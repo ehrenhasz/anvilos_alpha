@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_common_io_param.h",
+  "hash_id": "1384fdb7ef5a8f6f523121a1b4722e4ab9bc560ffad161b90abdc637066e6a78",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ipu2_io_ls/common/ia_css_common_io_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_COMMON_IO_PARAM\n#define __IA_CSS_COMMON_IO_PARAM\n\n#include \"../common/ia_css_common_io_types.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

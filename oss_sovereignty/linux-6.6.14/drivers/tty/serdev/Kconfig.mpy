@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e6fd3ec668593b8fe33321f07be1455fa665f864d6e01d1740d1ba82ceb09498",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/serdev/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Serial bus device driver configuration\n#\nmenuconfig SERIAL_DEV_BUS\n\ttristate \"Serial device bus\"\n\thelp\n\t  Core support for devices connected via a serial port.\n\n\t  Note that you typically also want to enable TTY port controller support.\n\nif SERIAL_DEV_BUS\n\nconfig SERIAL_DEV_CTRL_TTYPORT\n\tbool \"Serial device TTY port controller\"\n\thelp\n\t  Say Y here if you want to use the Serial device bus with common TTY\n\t  drivers (e.g. serial drivers).\n\n\t  If unsure, say Y.\n\tdepends on TTY\n\tdepends on SERIAL_DEV_BUS != m\n\tdefault y\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

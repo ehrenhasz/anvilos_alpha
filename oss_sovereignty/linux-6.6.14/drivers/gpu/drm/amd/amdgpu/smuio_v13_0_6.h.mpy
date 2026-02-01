@@ -1,0 +1,9 @@
+{
+  "module_name": "smuio_v13_0_6.h",
+  "hash_id": "96c680421d53f48fd41428c8aa0e223822bed8cef96fe7d62df7e6564ebc9d40",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/smuio_v13_0_6.h",
+  "human_readable_source": " \n#ifndef __SMUIO_V13_0_6_H__\n#define __SMUIO_V13_0_6_H__\n\n#include \"soc15_common.h\"\n\nextern const struct amdgpu_smuio_funcs smuio_v13_0_6_funcs;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

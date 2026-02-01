@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "3adf7f5cd5b26b3170dc3b0df79f299c441ce8f014c9c22e6519c54194089110",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/sof/debug.h",
+  "human_readable_source": " \n \n\n#ifndef __INCLUDE_SOUND_SOF_DEBUG_H__\n#define __INCLUDE_SOUND_SOF_DEBUG_H__\n\n#include <sound/sof/header.h>\n\n \nenum sof_ipc_dbg_mem_zone {\n\tSOF_IPC_MEM_ZONE_SYS\t\t= 0,\t \n\tSOF_IPC_MEM_ZONE_SYS_RUNTIME\t= 1,\t \n\tSOF_IPC_MEM_ZONE_RUNTIME\t= 2,\t \n\tSOF_IPC_MEM_ZONE_BUFFER\t\t= 3,\t \n\tSOF_IPC_MEM_ZONE_RUNTIME_SHARED\t= 4,\t \n\tSOF_IPC_MEM_ZONE_SYS_SHARED\t= 5,\t \n};\n\n \nstruct sof_ipc_dbg_mem_usage_elem {\n\tuint32_t zone;\t\t \n\tuint32_t id;\t\t \n\tuint32_t used;\t\t \n\tuint32_t free;\t\t \n\tuint32_t reserved;\t \n} __packed;\n\n \nstruct sof_ipc_dbg_mem_usage {\n\tstruct sof_ipc_reply rhdr;\t\t\t \n\tuint32_t reserved[4];\t\t\t\t \n\tuint32_t num_elems;\t\t\t\t \n\tstruct sof_ipc_dbg_mem_usage_elem elems[];\t \n} __packed;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "configinit.sh",
+  "hash_id": "bcf26f3b494c7b8f5dfff9316215fc9e9c225a1cc8e1ffe3f391f8f057ba7e8c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/bin/configinit.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Usage: configinit.sh config-spec-file results-dir\n#\n# Create a .config file from the spec file.  Run from the kernel source tree.\n# Exits with 0 if all went well, with 1 if all went well but the config\n# did not match, and some other number for other failures.\n#\n# The first argument is the .config specification file, which contains\n# desired settings, for example, \"CONFIG_NO_HZ=y\".  For best results,\n# this should be a full pathname.\n#\n# Copyright (C) IBM Corporation, 2013\n#\n# Authors: Paul E. McKenney <paulmck@linux.ibm.com>\n\nT=\"`mktemp -d ${TMPDIR-/tmp}/configinit.sh.XXXXXX`\"\ntrap 'rm -rf $T' 0\n\n# Capture config spec file.\n\nc=$1\nresdir=$2\n\nsed -e 's/^\\(CONFIG[0-9A-Z_]*\\)=.*$/grep -v \"^# \\1\" |/' < $c > $T/u.sh\nsed -e 's/^\\(CONFIG[0-9A-Z_]*=\\).*$/grep -v \\1 |/' < $c >> $T/u.sh\ngrep '^grep' < $T/u.sh > $T/upd.sh\necho \"cat - $c\" >> $T/upd.sh\nif test -z \"$TORTURE_TRUST_MAKE\"\nthen\n\tmake clean > $resdir/Make.clean 2>&1\nfi\nmake $TORTURE_KMAKE_ARG $TORTURE_DEFCONFIG > $resdir/Make.defconfig.out 2>&1\nmv .config .config.sav\nsh $T/upd.sh < .config.sav > .config\ncp .config .config.new\nyes '' | make $TORTURE_KMAKE_ARG oldconfig > $resdir/Make.oldconfig.out 2> $resdir/Make.oldconfig.err\n\n# verify new config matches specification.\nconfigcheck.sh .config $c\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

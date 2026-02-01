@@ -1,0 +1,9 @@
+{
+  "module_name": "asciidoctor-extensions.rb",
+  "hash_id": "2067154b944782a48951dd28544f8fbabba419a70111a2fc32d110bae5b2a808",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/asciidoctor-extensions.rb",
+  "human_readable_source": "require 'asciidoctor'\nrequire 'asciidoctor/extensions'\n\nmodule Perf\n  module Documentation\n    class LinkPerfProcessor < Asciidoctor::Extensions::InlineMacroProcessor\n      use_dsl\n\n      named :chrome\n\n      def process(parent, target, attrs)\n        if parent.document.basebackend? 'html'\n          %(<a href=\"#{target}.html\">#{target}(#{attrs[1]})</a>\\n)\n        elsif parent.document.basebackend? 'manpage'\n          \"#{target}(#{attrs[1]})\"\n        elsif parent.document.basebackend? 'docbook'\n          \"<citerefentry>\\n\" \\\n            \"<refentrytitle>#{target}</refentrytitle>\" \\\n            \"<manvolnum>#{attrs[1]}</manvolnum>\\n\" \\\n          \"</citerefentry>\\n\"\n        end\n      end\n    end\n  end\nend\n\nAsciidoctor::Extensions.register do\n  inline_macro Perf::Documentation::LinkPerfProcessor, :linkperf\nend\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

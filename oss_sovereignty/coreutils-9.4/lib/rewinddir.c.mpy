@@ -1,0 +1,9 @@
+{
+  "module_name": "rewinddir.c",
+  "hash_id": "6c6d28d66eeda437c465029dc6e6ed74d40900609197deef6560a1bd8b1a1bae",
+  "original_prompt": "Ingested from coreutils-9.4/lib/rewinddir.c",
+  "human_readable_source": " \n#include <dirent.h>\n\n#include <errno.h>\n\n#if GNULIB_defined_DIR\n# include \"dirent-private.h\"\n#endif\n\n \n#undef FindFirstFile\n#define FindFirstFile FindFirstFileA\n\nvoid\nrewinddir (DIR *dirp)\n#undef rewinddir\n{\n#if HAVE_DIRENT_H                        \n  rewinddir (dirp->real_dirp);\n#else\n   \n  if (dirp->current != INVALID_HANDLE_VALUE)\n    FindClose (dirp->current);\n\n   \n  dirp->status = -1;\n  dirp->current = FindFirstFile (dirp->dir_name_mask, &dirp->entry);\n  if (dirp->current == INVALID_HANDLE_VALUE)\n    {\n      switch (GetLastError ())\n        {\n        case ERROR_FILE_NOT_FOUND:\n          dirp->status = -2;\n          break;\n        default:\n           \n          dirp->status = ENOENT;\n          break;\n        }\n    }\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

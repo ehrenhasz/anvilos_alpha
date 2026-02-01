@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_pkttype.h",
+  "hash_id": "54071bcd16d54904bef519549dcdc9916b1dc2c4cec9a4b39b685ad4be8cde99",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_pkttype.h",
+  "human_readable_source": " \n#ifndef _XT_PKTTYPE_H\n#define _XT_PKTTYPE_H\n\nstruct xt_pkttype_info {\n\tint\tpkttype;\n\tint\tinvert;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

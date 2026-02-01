@@ -1,0 +1,9 @@
+{
+  "module_name": "filter.h",
+  "hash_id": "8d5b590218daa207141dc11a875b2004ebf09f4c6cde33d4ff101af4c3f06aab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/fw/api/filter.h",
+  "human_readable_source": " \n \n#ifndef __iwl_fw_api_filter_h__\n#define __iwl_fw_api_filter_h__\n\n#include \"fw/api/mac.h\"\n\n#define MAX_PORT_ID_NUM\t2\n#define MAX_MCAST_FILTERING_ADDRESSES 256\n\n \nstruct iwl_mcast_filter_cmd {\n\tu8 filter_own;\n\tu8 port_id;\n\tu8 count;\n\tu8 pass_all;\n\tu8 bssid[6];\n\tu8 reserved[2];\n\tu8 addr_list[];\n} __packed;  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

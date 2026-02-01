@@ -1,0 +1,9 @@
+{
+  "module_name": "can-ml.h",
+  "hash_id": "e3cd46a1bea8f754b45134665898f95bf227343e273ca727c5fa60a427cca1a2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/can/can-ml.h",
+  "human_readable_source": " \n \n\n#ifndef CAN_ML_H\n#define CAN_ML_H\n\n#include <linux/can.h>\n#include <linux/list.h>\n#include <linux/netdevice.h>\n\n#define CAN_SFF_RCV_ARRAY_SZ (1 << CAN_SFF_ID_BITS)\n#define CAN_EFF_RCV_HASH_BITS 10\n#define CAN_EFF_RCV_ARRAY_SZ (1 << CAN_EFF_RCV_HASH_BITS)\n\nenum { RX_ERR, RX_ALL, RX_FIL, RX_INV, RX_MAX };\n\nstruct can_dev_rcv_lists {\n\tstruct hlist_head rx[RX_MAX];\n\tstruct hlist_head rx_sff[CAN_SFF_RCV_ARRAY_SZ];\n\tstruct hlist_head rx_eff[CAN_EFF_RCV_ARRAY_SZ];\n\tint entries;\n};\n\nstruct can_ml_priv {\n\tstruct can_dev_rcv_lists dev_rcv_lists;\n#ifdef CAN_J1939\n\tstruct j1939_priv *j1939_priv;\n#endif\n};\n\nstatic inline struct can_ml_priv *can_get_ml_priv(struct net_device *dev)\n{\n\treturn netdev_get_ml_priv(dev, ML_PRIV_CAN);\n}\n\nstatic inline void can_set_ml_priv(struct net_device *dev,\n\t\t\t\t   struct can_ml_priv *ml_priv)\n{\n\tnetdev_set_ml_priv(dev, ml_priv, ML_PRIV_CAN);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

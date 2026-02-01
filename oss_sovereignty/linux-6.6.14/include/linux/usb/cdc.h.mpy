@@ -1,0 +1,9 @@
+{
+  "module_name": "cdc.h",
+  "hash_id": "6781b913d86b83b918b8d7936d829b78d3d74800337ed04f05533add88b2e256",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/cdc.h",
+  "human_readable_source": "\n \n#ifndef __LINUX_USB_CDC_H\n#define __LINUX_USB_CDC_H\n\n#include <uapi/linux/usb/cdc.h>\n\n \n\n#define CDC_PHONET_MAGIC_NUMBER\t\t0xAB\n\n \n\nstruct usb_cdc_parsed_header {\n\tstruct usb_cdc_union_desc *usb_cdc_union_desc;\n\tstruct usb_cdc_header_desc *usb_cdc_header_desc;\n\n\tstruct usb_cdc_call_mgmt_descriptor *usb_cdc_call_mgmt_descriptor;\n\tstruct usb_cdc_acm_descriptor *usb_cdc_acm_descriptor;\n\tstruct usb_cdc_country_functional_desc *usb_cdc_country_functional_desc;\n\tstruct usb_cdc_network_terminal_desc *usb_cdc_network_terminal_desc;\n\tstruct usb_cdc_ether_desc *usb_cdc_ether_desc;\n\tstruct usb_cdc_dmm_desc *usb_cdc_dmm_desc;\n\tstruct usb_cdc_mdlm_desc *usb_cdc_mdlm_desc;\n\tstruct usb_cdc_mdlm_detail_desc *usb_cdc_mdlm_detail_desc;\n\tstruct usb_cdc_obex_desc *usb_cdc_obex_desc;\n\tstruct usb_cdc_ncm_desc *usb_cdc_ncm_desc;\n\tstruct usb_cdc_mbim_desc *usb_cdc_mbim_desc;\n\tstruct usb_cdc_mbim_extended_desc *usb_cdc_mbim_extended_desc;\n\n\tbool phonet_magic_present;\n};\n\nstruct usb_interface;\nint cdc_parse_cdc_header(struct usb_cdc_parsed_header *hdr,\n\t\t\t\tstruct usb_interface *intf,\n\t\t\t\tu8 *buffer,\n\t\t\t\tint buflen);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

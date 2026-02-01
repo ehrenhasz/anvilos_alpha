@@ -1,0 +1,9 @@
+{
+  "module_name": "cache.h",
+  "hash_id": "c9c72625d1974caaac2e0b8b77610912c544d9b0072e379d2ec78fb509d9bf6f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/cache.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_CACHE_H\n#define _ASM_X86_CACHE_H\n\n#include <linux/linkage.h>\n\n \n#define L1_CACHE_SHIFT\t(CONFIG_X86_L1_CACHE_SHIFT)\n#define L1_CACHE_BYTES\t(1 << L1_CACHE_SHIFT)\n\n#define __read_mostly __section(\".data..read_mostly\")\n\n#define INTERNODE_CACHE_SHIFT CONFIG_X86_INTERNODE_CACHE_SHIFT\n#define INTERNODE_CACHE_BYTES (1 << INTERNODE_CACHE_SHIFT)\n\n#ifdef CONFIG_X86_VSMP\n#ifdef CONFIG_SMP\n#define __cacheline_aligned_in_smp\t\t\t\t\t\\\n\t__attribute__((__aligned__(INTERNODE_CACHE_BYTES)))\t\t\\\n\t__page_aligned_data\n#endif\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

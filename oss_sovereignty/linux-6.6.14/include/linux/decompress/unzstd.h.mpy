@@ -1,0 +1,9 @@
+{
+  "module_name": "unzstd.h",
+  "hash_id": "0356c734046cd776488b68198c066c27f5e5eb96c82027f486a749c85d2247a3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/decompress/unzstd.h",
+  "human_readable_source": " \n#ifndef LINUX_DECOMPRESS_UNZSTD_H\n#define LINUX_DECOMPRESS_UNZSTD_H\n\nint unzstd(unsigned char *inbuf, long len,\n\t   long (*fill)(void*, unsigned long),\n\t   long (*flush)(void*, unsigned long),\n\t   unsigned char *output,\n\t   long *pos,\n\t   void (*error_fn)(char *x));\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

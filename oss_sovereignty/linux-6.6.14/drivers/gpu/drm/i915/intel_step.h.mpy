@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_step.h",
+  "hash_id": "d84e59b560f831f44414f3efd61aa37fd5eb07ff21803ee16497dce2dc00dd86",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/intel_step.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_STEP_H__\n#define __INTEL_STEP_H__\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\n\nstruct intel_step_info {\n\t \n\tu8 graphics_step;\t \n\tu8 display_step;\n\tu8 media_step;\n\tu8 basedie_step;\n};\n\n#define STEP_ENUM_VAL(name)  STEP_##name,\n\n#define STEP_NAME_LIST(func)\t\t\\\n\tfunc(A0)\t\t\t\\\n\tfunc(A1)\t\t\t\\\n\tfunc(A2)\t\t\t\\\n\tfunc(A3)\t\t\t\\\n\tfunc(B0)\t\t\t\\\n\tfunc(B1)\t\t\t\\\n\tfunc(B2)\t\t\t\\\n\tfunc(B3)\t\t\t\\\n\tfunc(C0)\t\t\t\\\n\tfunc(C1)\t\t\t\\\n\tfunc(C2)\t\t\t\\\n\tfunc(C3)\t\t\t\\\n\tfunc(D0)\t\t\t\\\n\tfunc(D1)\t\t\t\\\n\tfunc(D2)\t\t\t\\\n\tfunc(D3)\t\t\t\\\n\tfunc(E0)\t\t\t\\\n\tfunc(E1)\t\t\t\\\n\tfunc(E2)\t\t\t\\\n\tfunc(E3)\t\t\t\\\n\tfunc(F0)\t\t\t\\\n\tfunc(F1)\t\t\t\\\n\tfunc(F2)\t\t\t\\\n\tfunc(F3)\t\t\t\\\n\tfunc(G0)\t\t\t\\\n\tfunc(G1)\t\t\t\\\n\tfunc(G2)\t\t\t\\\n\tfunc(G3)\t\t\t\\\n\tfunc(H0)\t\t\t\\\n\tfunc(H1)\t\t\t\\\n\tfunc(H2)\t\t\t\\\n\tfunc(H3)\t\t\t\\\n\tfunc(I0)\t\t\t\\\n\tfunc(I1)\t\t\t\\\n\tfunc(I2)\t\t\t\\\n\tfunc(I3)\t\t\t\\\n\tfunc(J0)\t\t\t\\\n\tfunc(J1)\t\t\t\\\n\tfunc(J2)\t\t\t\\\n\tfunc(J3)\n\n \nenum intel_step {\n\tSTEP_NONE = 0,\n\tSTEP_NAME_LIST(STEP_ENUM_VAL)\n\tSTEP_FUTURE,\n\tSTEP_FOREVER,\n};\n\nvoid intel_step_init(struct drm_i915_private *i915);\nconst char *intel_step_name(enum intel_step step);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

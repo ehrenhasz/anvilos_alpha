@@ -1,0 +1,9 @@
+{
+  "module_name": "xmss_hash.h",
+  "hash_id": "d01826a01e1a9aadfd6ffe948a6254f47217fa7fad8c333c5915cdad4937b4ef",
+  "original_prompt": "Ingested from openssh-9.6p1/xmss_hash.h",
+  "human_readable_source": "#ifdef WITH_XMSS\n \n \n\n#ifndef HASH_H\n#define HASH_H\n\n#define IS_LITTLE_ENDIAN 1\n\nunsigned char* addr_to_byte(unsigned char *bytes, const uint32_t addr[8]);\nint prf(unsigned char *out, const unsigned char *in, const unsigned char *key, unsigned int keylen);\nint h_msg(unsigned char *out,const unsigned char *in,unsigned long long inlen, const unsigned char *key, const unsigned int keylen, const unsigned int n);\nint hash_h(unsigned char *out, const unsigned char *in, const unsigned char *pub_seed, uint32_t addr[8], const unsigned int n);\nint hash_f(unsigned char *out, const unsigned char *in, const unsigned char *pub_seed, uint32_t addr[8], const unsigned int n);\n\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

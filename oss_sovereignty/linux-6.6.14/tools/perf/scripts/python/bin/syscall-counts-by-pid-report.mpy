@@ -1,0 +1,9 @@
+{
+  "module_name": "syscall-counts-by-pid-report",
+  "hash_id": "b39c0032e6354787bd59d3672eb6100c65e4deef8ceb71baf4d0da7a60887c29",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/syscall-counts-by-pid-report",
+  "human_readable_source": "#!/bin/bash\n# description: system-wide syscall counts, by pid\n# args: [comm]\nif [ $# -gt 0 ] ; then\n    if ! expr match \"$1\" \"-\" > /dev/null ; then\n\tcomm=$1\n\tshift\n    fi\nfi\nperf script $@ -s \"$PERF_EXEC_PATH\"/scripts/python/syscall-counts-by-pid.py $comm\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

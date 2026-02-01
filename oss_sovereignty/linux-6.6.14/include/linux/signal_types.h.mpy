@@ -1,0 +1,9 @@
+{
+  "module_name": "signal_types.h",
+  "hash_id": "6fb17deccd65dd266a625c9d3c68410626e12f6139b824851cc46e12665bda5e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/signal_types.h",
+  "human_readable_source": " \n#ifndef _LINUX_SIGNAL_TYPES_H\n#define _LINUX_SIGNAL_TYPES_H\n\n \n\n#include <linux/list.h>\n#include <uapi/linux/signal.h>\n\ntypedef struct kernel_siginfo {\n\t__SIGINFO;\n} kernel_siginfo_t;\n\nstruct ucounts;\n\n \n\nstruct sigqueue {\n\tstruct list_head list;\n\tint flags;\n\tkernel_siginfo_t info;\n\tstruct ucounts *ucounts;\n};\n\n \n#define SIGQUEUE_PREALLOC\t1\n\nstruct sigpending {\n\tstruct list_head list;\n\tsigset_t signal;\n};\n\nstruct sigaction {\n#ifndef __ARCH_HAS_IRIX_SIGACTION\n\t__sighandler_t\tsa_handler;\n\tunsigned long\tsa_flags;\n#else\n\tunsigned int\tsa_flags;\n\t__sighandler_t\tsa_handler;\n#endif\n#ifdef __ARCH_HAS_SA_RESTORER\n\t__sigrestore_t sa_restorer;\n#endif\n\tsigset_t\tsa_mask;\t \n};\n\nstruct k_sigaction {\n\tstruct sigaction sa;\n#ifdef __ARCH_HAS_KA_RESTORER\n\t__sigrestore_t ka_restorer;\n#endif\n};\n\n#ifdef CONFIG_OLD_SIGACTION\nstruct old_sigaction {\n\t__sighandler_t sa_handler;\n\told_sigset_t sa_mask;\n\tunsigned long sa_flags;\n\t__sigrestore_t sa_restorer;\n};\n#endif\n\nstruct ksignal {\n\tstruct k_sigaction ka;\n\tkernel_siginfo_t info;\n\tint sig;\n};\n\n \n#define SA_IMMUTABLE\t\t0x00800000\n\n#ifndef __ARCH_UAPI_SA_FLAGS\n#ifdef SA_RESTORER\n#define __ARCH_UAPI_SA_FLAGS\tSA_RESTORER\n#else\n#define __ARCH_UAPI_SA_FLAGS\t0\n#endif\n#endif\n\n#define UAPI_SA_FLAGS                                                          \\\n\t(SA_NOCLDSTOP | SA_NOCLDWAIT | SA_SIGINFO | SA_ONSTACK | SA_RESTART |  \\\n\t SA_NODEFER | SA_RESETHAND | SA_EXPOSE_TAGBITS | __ARCH_UAPI_SA_FLAGS)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

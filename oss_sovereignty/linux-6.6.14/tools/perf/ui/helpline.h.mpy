@@ -1,0 +1,9 @@
+{
+  "module_name": "helpline.h",
+  "hash_id": "6cb423648274a5422b59ea7e972393329c9bc41ebcbe1aba9a213869f51b08fd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/helpline.h",
+  "human_readable_source": " \n#ifndef _PERF_UI_HELPLINE_H_\n#define _PERF_UI_HELPLINE_H_ 1\n\n#include <stdio.h>\n#include <stdarg.h>\n\nstruct ui_helpline {\n\tvoid (*pop)(void);\n\tvoid (*push)(const char *msg);\n\tint  (*show)(const char *fmt, va_list ap);\n};\n\nextern struct ui_helpline *helpline_fns;\n\nvoid ui_helpline__init(void);\n\nvoid ui_helpline__pop(void);\nvoid ui_helpline__push(const char *msg);\nvoid ui_helpline__vpush(const char *fmt, va_list ap);\nvoid ui_helpline__fpush(const char *fmt, ...);\nvoid ui_helpline__puts(const char *msg);\nvoid ui_helpline__printf(const char *fmt, ...);\nint  ui_helpline__vshow(const char *fmt, va_list ap);\n\nextern char ui_helpline__current[512];\nextern char ui_helpline__last_msg[];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

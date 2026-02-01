@@ -1,0 +1,9 @@
+{
+  "module_name": "core.h",
+  "hash_id": "853e16e43894f0e31be8413b3a8a0a85b05090b3934b31b554b7b8020d726a76",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/atc260x/core.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MFD_ATC260X_CORE_H\n#define __LINUX_MFD_ATC260X_CORE_H\n\n#include <linux/mfd/atc260x/atc2603c.h>\n#include <linux/mfd/atc260x/atc2609a.h>\n\nenum atc260x_type {\n\tATC2603A = 0,\n\tATC2603C,\n\tATC2609A,\n};\n\nenum atc260x_ver {\n\tATC260X_A = 0,\n\tATC260X_B,\n\tATC260X_C,\n\tATC260X_D,\n\tATC260X_E,\n\tATC260X_F,\n\tATC260X_G,\n\tATC260X_H,\n};\n\nstruct atc260x {\n\tstruct device *dev;\n\n\tstruct regmap *regmap;\n\tconst struct regmap_irq_chip *regmap_irq_chip;\n\tstruct regmap_irq_chip_data *irq_data;\n\n\tstruct mutex *regmap_mutex;\t \n\n\tconst struct mfd_cell *cells;\n\tint nr_cells;\n\tint irq;\n\n\tenum atc260x_type ic_type;\n\tenum atc260x_ver ic_ver;\n\tconst char *type_name;\n\tunsigned int rev_reg;\n\n\tconst struct atc260x_init_regs *init_regs;  \n};\n\nstruct regmap_config;\n\nint atc260x_match_device(struct atc260x *atc260x, struct regmap_config *regmap_cfg);\nint atc260x_device_probe(struct atc260x *atc260x);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

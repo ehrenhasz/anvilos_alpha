@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "65f23b4de0aad5d100152e0f920160592199ee27f726c6daaee00ae935acfa06",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/virt/acrn/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig ACRN_HSM\n\ttristate \"ACRN Hypervisor Service Module\"\n\tdepends on ACRN_GUEST\n\tselect EVENTFD\n\thelp\n\t  ACRN Hypervisor Service Module (HSM) is a kernel module which\n\t  communicates with ACRN userspace through ioctls and talks to\n\t  the ACRN Hypervisor through hypercalls. HSM will only run in\n\t  a privileged management VM, called Service VM, to manage User\n\t  VMs and do I/O emulation. Not required for simply running\n\t  under ACRN as a User VM.\n\n\t  To compile as a module, choose M, the module will be called\n\t  acrn. If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

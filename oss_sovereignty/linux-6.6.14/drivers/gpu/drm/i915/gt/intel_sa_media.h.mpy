@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_sa_media.h",
+  "hash_id": "ded90a19605d0d419c6dc04135c4e9c8ec9e0a034b969ed61fafcb50d602359f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_sa_media.h",
+  "human_readable_source": " \n \n#ifndef __INTEL_SA_MEDIA__\n#define __INTEL_SA_MEDIA__\n\n#include <linux/types.h>\n\nstruct intel_gt;\n\nint intel_sa_mediagt_setup(struct intel_gt *gt, phys_addr_t phys_addr,\n\t\t\t   u32 gsi_offset);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

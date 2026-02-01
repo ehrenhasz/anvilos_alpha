@@ -1,0 +1,9 @@
+{
+  "module_name": "atmarp.h",
+  "hash_id": "1a3dbdd92c9c31ab9c7eb7c688274b58be388d19ac2e4c6a1f758af603628d33",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/atmarp.h",
+  "human_readable_source": " \n \n \n \n \n\n#ifndef _LINUX_ATMARP_H\n#define _LINUX_ATMARP_H\n\n#include <linux/types.h>\n#include <linux/atmapi.h>\n#include <linux/atmioc.h>\n\n\n#define ATMARP_RETRY_DELAY 30\t\t \n#define ATMARP_MAX_UNRES_PACKETS 5\t \n\n\n#define ATMARPD_CTRL\t_IO('a',ATMIOC_CLIP+1)\t \n#define ATMARP_MKIP\t_IO('a',ATMIOC_CLIP+2)\t \n#define ATMARP_SETENTRY\t_IO('a',ATMIOC_CLIP+3)\t \n#define ATMARP_ENCAP\t_IO('a',ATMIOC_CLIP+5)\t \n\n\nenum atmarp_ctrl_type {\n\tact_invalid,\t\t \n\tact_need,\t\t \n\tact_up,\t\t\t \n\tact_down,\t\t \n\tact_change\t\t \n};\n\nstruct atmarp_ctrl {\n\tenum atmarp_ctrl_type\ttype;\t \n\tint\t\t\titf_num; \n\t__be32\t\t\tip;\t \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

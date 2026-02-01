@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e9e1cd72bc283097568960d93edf22792c7a10d48d09d4b8f040ed114cfe7665",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/tags/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nCFLAGS += $(KHDR_INCLUDES)\nTEST_GEN_PROGS := tags_test\nTEST_PROGS := run_tags_test.sh\n\ninclude ../../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

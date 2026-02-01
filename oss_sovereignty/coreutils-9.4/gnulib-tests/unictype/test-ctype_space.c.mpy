@@ -1,0 +1,9 @@
+{
+  "module_name": "test-ctype_space.c",
+  "hash_id": "638418549394164b5ed05d1f35ded2db2a0961d9520c1df091521f07cf95cff8",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/unictype/test-ctype_space.c",
+  "human_readable_source": " \n/* Test the Unicode character type functions.\n   Copyright (C) 2007-2022 Free Software Foundation, Inc.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published\n   by the Free Software Foundation, either version 3 of the License,\n   or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with this program.  If not, see <https:\n\n#include \"test-predicate-part1.h\"\n\n    { 0x0009, 0x000D },\n    { 0x0020, 0x0020 },\n    { 0x1680, 0x1680 },\n    { 0x2000, 0x2006 },\n    { 0x2008, 0x200A },\n    { 0x2028, 0x2029 },\n    { 0x205F, 0x205F },\n    { 0x3000, 0x3000 }\n\n#define PREDICATE(c) uc_is_space (c)\n#include \"test-predicate-part2.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

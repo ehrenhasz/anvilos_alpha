@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype_graph.c",
+  "hash_id": "ebb4eb725c0595bc0a11b54a580bad81450c084f511f0f55bf5a1e2f2b15ba02",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unictype/ctype_graph.c",
+  "human_readable_source": " \n#include \"unictype.h\"\n\n#include \"bitmap.h\"\n\n \n#include \"ctype_graph.h\"\n\nbool\nuc_is_graph (ucs4_t uc)\n{\n  return bitmap_lookup (&u_is_graph, uc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

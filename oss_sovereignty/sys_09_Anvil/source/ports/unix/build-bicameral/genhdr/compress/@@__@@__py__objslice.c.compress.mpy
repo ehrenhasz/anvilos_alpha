@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objslice.c.compress",
+  "hash_id": "b48da7300eae4694177f427fd6f23c7b14be233e4fb42223df9a8945b55b3272",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__objslice.c.compress",
+  "human_readable_source": "slice step can't be zero\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

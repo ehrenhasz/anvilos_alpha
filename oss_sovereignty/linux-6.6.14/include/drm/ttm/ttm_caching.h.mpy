@@ -1,0 +1,9 @@
+{
+  "module_name": "ttm_caching.h",
+  "hash_id": "f24787c8faf64a3ef6531d438619e1dbae357dd10f5adb2eb51be250e651926a",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/ttm/ttm_caching.h",
+  "human_readable_source": " \n\n#ifndef _TTM_CACHING_H_\n#define _TTM_CACHING_H_\n\n#define TTM_NUM_CACHING_TYPES\t3\n\n \nenum ttm_caching {\n\t \n\tttm_uncached,\n\n\t \n\tttm_write_combined,\n\n\t \n\tttm_cached\n};\n\npgprot_t ttm_prot_from_caching(enum ttm_caching caching, pgprot_t tmp);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

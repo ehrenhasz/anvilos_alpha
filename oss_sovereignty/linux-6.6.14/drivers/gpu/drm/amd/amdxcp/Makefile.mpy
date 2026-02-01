@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f21c62d9a9c97f2af0155e7481b8de25a9e9bc26fa623f2c216b44edb93a800e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdxcp/Makefile",
+  "human_readable_source": "#\n# Copyright 2023 Advanced Micro Devices, Inc.\n#\n# Permission is hereby granted, free of charge, to any person obtaining a\n# copy of this software and associated documentation files (the \"Software\"),\n# to deal in the Software without restriction, including without limitation\n# the rights to use, copy, modify, merge, publish, distribute, sublicense,\n# and/or sell copies of the Software, and to permit persons to whom the\n# Software is furnished to do so, subject to the following conditions:\n#\n# The above copyright notice and this permission notice shall be included in\n# all copies or substantial portions of the Software.\n#\n# THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL\n# THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR\n# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,\n# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR\n# OTHER DEALINGS IN THE SOFTWARE.\n#\n\namdxcp-y := amdgpu_xcp_drv.o\n\nobj-$(CONFIG_DRM_AMDGPU) += amdxcp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_breakpoint.h",
+  "hash_id": "deb423283f0a97146bfc0d41121f8abae4d5fd21df47ac7b51644b138d53e04a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/uapi/linux/hw_breakpoint.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_HW_BREAKPOINT_H\n#define _UAPI_LINUX_HW_BREAKPOINT_H\n\nenum {\n\tHW_BREAKPOINT_LEN_1 = 1,\n\tHW_BREAKPOINT_LEN_2 = 2,\n\tHW_BREAKPOINT_LEN_3 = 3,\n\tHW_BREAKPOINT_LEN_4 = 4,\n\tHW_BREAKPOINT_LEN_5 = 5,\n\tHW_BREAKPOINT_LEN_6 = 6,\n\tHW_BREAKPOINT_LEN_7 = 7,\n\tHW_BREAKPOINT_LEN_8 = 8,\n};\n\nenum {\n\tHW_BREAKPOINT_EMPTY\t= 0,\n\tHW_BREAKPOINT_R\t\t= 1,\n\tHW_BREAKPOINT_W\t\t= 2,\n\tHW_BREAKPOINT_RW\t= HW_BREAKPOINT_R | HW_BREAKPOINT_W,\n\tHW_BREAKPOINT_X\t\t= 4,\n\tHW_BREAKPOINT_INVALID   = HW_BREAKPOINT_RW | HW_BREAKPOINT_X,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

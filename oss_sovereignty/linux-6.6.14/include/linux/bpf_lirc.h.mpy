@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_lirc.h",
+  "hash_id": "7583fb2ac91ac36727fd3e6073993acd882e4df9ddc1a912e5b26073e702fd25",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bpf_lirc.h",
+  "human_readable_source": " \n#ifndef _BPF_LIRC_H\n#define _BPF_LIRC_H\n\n#include <uapi/linux/bpf.h>\n\n#ifdef CONFIG_BPF_LIRC_MODE2\nint lirc_prog_attach(const union bpf_attr *attr, struct bpf_prog *prog);\nint lirc_prog_detach(const union bpf_attr *attr);\nint lirc_prog_query(const union bpf_attr *attr, union bpf_attr __user *uattr);\n#else\nstatic inline int lirc_prog_attach(const union bpf_attr *attr,\n\t\t\t\t   struct bpf_prog *prog)\n{\n\treturn -EINVAL;\n}\n\nstatic inline int lirc_prog_detach(const union bpf_attr *attr)\n{\n\treturn -EINVAL;\n}\n\nstatic inline int lirc_prog_query(const union bpf_attr *attr,\n\t\t\t\t  union bpf_attr __user *uattr)\n{\n\treturn -EINVAL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

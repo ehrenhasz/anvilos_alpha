@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3c2fefaa55deb8732b31ba28f0a1ea752c9d13f766d1bb4c3c8a710cae7b435c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/s390x/uvdevice/Makefile",
+  "human_readable_source": "include ../../../../../build/Build.include\n\nUNAME_M := $(shell uname -m)\n\nifneq ($(UNAME_M),s390x)\nnothing:\n.PHONY: all clean run_tests install\n.SILENT:\nelse\n\nTEST_GEN_PROGS := test_uvdevice\n\ntop_srcdir ?= ../../../../../..\nLINUX_TOOL_ARCH_INCLUDE = $(top_srcdir)/tools/arch/$(ARCH)/include\n\nCFLAGS += -Wall -Werror -static $(KHDR_INCLUDES) -I$(LINUX_TOOL_ARCH_INCLUDE)\n\ninclude ../../../lib.mk\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

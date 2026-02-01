@@ -1,0 +1,9 @@
+{
+  "module_name": "cxl_core_exports.c",
+  "hash_id": "15f9892cf4bdc5fd9d084b5cb1cd64582b6f2df2d8f5732d299dfa694eccfab1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/cxl/cxl_core_exports.c",
+  "human_readable_source": "\n \n\n#include \"cxl.h\"\n\n \nEXPORT_SYMBOL_NS_GPL(cxl_num_decoders_committed, CXL);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

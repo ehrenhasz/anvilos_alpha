@@ -1,0 +1,9 @@
+{
+  "module_name": "filevercmp.h",
+  "hash_id": "81926abeb8f2bed3b900b5dc5bd12b154cc75a2aa3d056cf55bb456b1676a5d5",
+  "original_prompt": "Ingested from coreutils-9.4/lib/filevercmp.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stddef.h>\n\n \nint filevercmp (char const *a, char const *b) _GL_ATTRIBUTE_PURE;\n\n \nint filenvercmp (char const *a, ptrdiff_t alen, char const *b, ptrdiff_t blen)\n  _GL_ATTRIBUTE_PURE;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kfd_pasid.c",
+  "hash_id": "35b2d6066e25ca376f4fb448e35e07ad2bccc7e0c64b2946d4548ff9c6395840",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdkfd/kfd_pasid.c",
+  "human_readable_source": "\n \n\n#include <linux/types.h>\n#include \"kfd_priv.h\"\n#include \"amdgpu_ids.h\"\n\nstatic unsigned int pasid_bits = 16;\nstatic bool pasids_allocated;  \n\nbool kfd_set_pasid_limit(unsigned int new_limit)\n{\n\tif (new_limit < 2)\n\t\treturn false;\n\n\tif (new_limit < (1U << pasid_bits)) {\n\t\tif (pasids_allocated)\n\t\t\t \n\t\t\treturn false;\n\n\t\twhile (new_limit < (1U << pasid_bits))\n\t\t\tpasid_bits--;\n\t}\n\n\treturn true;\n}\n\nunsigned int kfd_get_pasid_limit(void)\n{\n\treturn 1U << pasid_bits;\n}\n\nu32 kfd_pasid_alloc(void)\n{\n\tint r = amdgpu_pasid_alloc(pasid_bits);\n\n\tif (r > 0) {\n\t\tpasids_allocated = true;\n\t\treturn r;\n\t}\n\n\treturn 0;\n}\n\nvoid kfd_pasid_free(u32 pasid)\n{\n\tamdgpu_pasid_free(pasid);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

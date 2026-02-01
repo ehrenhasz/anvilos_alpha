@@ -1,0 +1,9 @@
+{
+  "module_name": "eventfd.h",
+  "hash_id": "3087630b122fd1ad0ab198ef857d563c00c4d3d09a6e2a73efe94376629c6bc8",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/eventfd.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_EVENTFD_H\n#define _UAPI_LINUX_EVENTFD_H\n\n#include <linux/fcntl.h>\n\n#define EFD_SEMAPHORE (1 << 0)\n#define EFD_CLOEXEC O_CLOEXEC\n#define EFD_NONBLOCK O_NONBLOCK\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pmag-ba-fb.h",
+  "hash_id": "7e31fc270b6cfc5d5a6e8fd04e0aabd1619ab99f2bcb0499a2c2bf0b36148ae3",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/pmag-ba-fb.h",
+  "human_readable_source": " \n\n \n#define PMAG_BA_FBMEM\t\t0x000000\t \n#define PMAG_BA_BT459\t\t0x200000\t \n#define PMAG_BA_IRQ\t\t0x300000\t \n#define PMAG_BA_ROM\t\t0x380000\t \n#define PMAG_BA_BT438\t\t0x380000\t \n#define PMAG_BA_SIZE\t\t0x400000\t \n\n \n#define BT459_ADDR_LO\t\t0x0\t\t \n#define BT459_ADDR_HI\t\t0x4\t\t \n#define BT459_DATA\t\t0x8\t\t \n#define BT459_CMAP\t\t0xc\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

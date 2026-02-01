@@ -1,0 +1,9 @@
+{
+  "module_name": "opendir-safer.c",
+  "hash_id": "cb330695b11ec0f133e8d2058e089d2ec1e0ca162135effdce908356301e399c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/opendir-safer.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"dirent-safer.h\"\n\n#include <errno.h>\n#include <fcntl.h>\n#include <unistd.h>\n\n \n\nDIR *\nopendir_safer (char const *name)\n{\n  DIR *dp = opendir (name);\n\n  if (dp)\n    {\n      int fd = dirfd (dp);\n\n      if (0 <= fd && fd <= STDERR_FILENO)\n        {\n           \n          DIR *newdp;\n          int e;\n#if HAVE_FDOPENDIR || GNULIB_FDOPENDIR\n          int f = fcntl (fd, F_DUPFD_CLOEXEC, STDERR_FILENO + 1);\n          if (f < 0)\n            {\n              e = errno;\n              newdp = NULL;\n            }\n          else\n            {\n              newdp = fdopendir (f);\n              e = errno;\n              if (! newdp)\n                close (f);\n            }\n#else  \n          newdp = opendir_safer (name);\n          e = errno;\n#endif\n          closedir (dp);\n          errno = e;\n          dp = newdp;\n        }\n    }\n\n  return dp;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

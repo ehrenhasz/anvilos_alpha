@@ -1,0 +1,9 @@
+{
+  "module_name": "rv770.h",
+  "hash_id": "33e4e801d467f64a78deb2933727ea61c8de3ced8c2c9aa60a64d0475373fc0a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/rv770.h",
+  "human_readable_source": " \n\n#ifndef __RADEON_RV770_H__\n#define __RADEON_RV770_H__\n\nstruct radeon_device;\nstruct radeon_ps;\n\nvoid rv770_set_clk_bypass_mode(struct radeon_device *rdev);\n\nstruct rv7xx_ps *rv770_get_ps(struct radeon_ps *rps);\nstruct rv7xx_power_info *rv770_get_pi(struct radeon_device *rdev);\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

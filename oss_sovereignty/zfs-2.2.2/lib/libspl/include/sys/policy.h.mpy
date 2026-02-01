@@ -1,0 +1,9 @@
+{
+  "module_name": "policy.h",
+  "hash_id": "c2f3a8bf0f39f0410b422966e6fc579fd4eabb7156c9fde246b753ea3c2cce51",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/policy.h",
+  "human_readable_source": " \n\n#ifndef\t_LIBSYS_SYS_POLICY_H\n#define\t_LIBSYS_SYS_POLICY_H\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

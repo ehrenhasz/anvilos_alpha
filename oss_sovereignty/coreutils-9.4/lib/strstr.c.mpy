@@ -1,0 +1,9 @@
+{
+  "module_name": "strstr.c",
+  "hash_id": "6ec4929af8015b71a258d884295585390a71490fff74867db380151967a4ab19",
+  "original_prompt": "Ingested from coreutils-9.4/lib/strstr.c",
+  "human_readable_source": " \n\n#ifndef _LIBC\n# include <config.h>\n#endif\n\n \n#include <string.h>\n\n#define RETURN_TYPE char *\n#define AVAILABLE(h, h_l, j, n_l)                       \\\n  (!memchr ((h) + (h_l), '\\0', (j) + (n_l) - (h_l))     \\\n   && ((h_l) = (j) + (n_l)))\n#include \"str-two-way.h\"\n\n \nchar *\nstrstr (const char *haystack_start, const char *needle_start)\n{\n  const char *haystack = haystack_start;\n  const char *needle = needle_start;\n  size_t needle_len;  \n  size_t haystack_len;  \n  bool ok = true;  \n\n   \n  while (*haystack && *needle)\n    ok &= *haystack++ == *needle++;\n  if (*needle)\n    return NULL;\n  if (ok)\n    return (char *) haystack_start;\n\n   \n  needle_len = needle - needle_start;\n  haystack = strchr (haystack_start + 1, *needle_start);\n  if (!haystack || __builtin_expect (needle_len == 1, 0))\n    return (char *) haystack;\n  needle -= needle_len;\n  haystack_len = (haystack > haystack_start + needle_len ? 1\n                  : needle_len + haystack_start - haystack);\n\n   \n  if (needle_len < LONG_NEEDLE_THRESHOLD)\n    return two_way_short_needle ((const unsigned char *) haystack,\n                                 haystack_len,\n                                 (const unsigned char *) needle, needle_len);\n  return two_way_long_needle ((const unsigned char *) haystack, haystack_len,\n                              (const unsigned char *) needle, needle_len);\n}\n\n#undef LONG_NEEDLE_THRESHOLD\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

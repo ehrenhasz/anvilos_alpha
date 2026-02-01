@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "66656d62034b3316bf0b3f58c97aa70e2f30446ba72c6279428f5c851538376c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/api/Build",
+  "human_readable_source": "libapi-y += fd/\nlibapi-y += fs/\nlibapi-y += cpu.o\nlibapi-y += debug.o\nlibapi-y += str_error_r.o\n\n$(OUTPUT)str_error_r.o: ../str_error_r.c FORCE\n\t$(call rule_mkdir)\n\t$(call if_changed_dep,cc_o_c)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

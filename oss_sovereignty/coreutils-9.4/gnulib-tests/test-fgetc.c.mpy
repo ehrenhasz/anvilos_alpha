@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fgetc.c",
+  "hash_id": "e4d8ad1619b223ce459a7528e738199fc6fcfefc12affebb6c11430ecd74036b",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fgetc.c",
+  "human_readable_source": " \n#if HAVE_MSVC_INVALID_PARAMETER_HANDLER \\\n    && MSVC_INVALID_PARAMETER_HANDLING == DEFAULT_HANDLING\n  gl_msvc_inval_ensure_handler ();\n#endif\n\n   \n  {\n    const char text[] = \"hello world\";\n    int fd = open (filename, O_RDWR | O_CREAT | O_TRUNC, 0600);\n    ASSERT (fd >= 0);\n    ASSERT (write (fd, text, sizeof (text)) == sizeof (text));\n    ASSERT (close (fd) == 0);\n  }\n\n   \n  #if !defined __ANDROID__  \n  {\n    FILE *fp = fopen (filename, \"r\");\n    ASSERT (fp != NULL);\n    ASSERT (close (fileno (fp)) == 0);\n    errno = 0;\n    ASSERT (fgetc (fp) == EOF);\n    ASSERT (errno == EBADF);\n    ASSERT (ferror (fp));\n    fclose (fp);\n  }\n  #endif\n\n   \n  {\n    FILE *fp = fdopen (-1, \"r\");\n    if (fp != NULL)\n      {\n        errno = 0;\n        ASSERT (fgetc (fp) == EOF);\n        ASSERT (errno == EBADF);\n        ASSERT (ferror (fp));\n        fclose (fp);\n      }\n  }\n  {\n    FILE *fp;\n    close (99);\n    fp = fdopen (99, \"r\");\n    if (fp != NULL)\n      {\n        errno = 0;\n        ASSERT (fgetc (fp) == EOF);\n        ASSERT (errno == EBADF);\n        ASSERT (ferror (fp));\n        fclose (fp);\n      }\n  }\n\n   \n  unlink (filename);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

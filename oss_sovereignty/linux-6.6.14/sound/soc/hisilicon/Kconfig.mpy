@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "75097c1cd32f57efccc487aa2c5e9f9864b83c53860ce02a74f5799b2ee9a1fc",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/hisilicon/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SND_I2S_HI6210_I2S\n\ttristate \"Hisilicon I2S controller\"\n\tselect SND_SOC_GENERIC_DMAENGINE_PCM\n\thelp\n\t  Hisilicon I2S\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

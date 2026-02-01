@@ -1,0 +1,9 @@
+{
+  "module_name": "wctob.c",
+  "hash_id": "4e0f1b6fabb5835fbc9696d79ebd830bb8ed11650135af44ad2832eb148d26dc",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/wctob.c",
+  "human_readable_source": " \n#include <wchar.h>\n\n#include <stdio.h>\n#include <stdlib.h>\n\nint\nwctob (wint_t wc)\n{\n  char buf[64];\n\n  if (!(MB_CUR_MAX <= sizeof (buf)))\n    abort ();\n   \n  if (wc == (wchar_t)wc)\n    if (wctomb (buf, (wchar_t)wc) == 1)\n      return (unsigned char) buf[0];\n  return EOF;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

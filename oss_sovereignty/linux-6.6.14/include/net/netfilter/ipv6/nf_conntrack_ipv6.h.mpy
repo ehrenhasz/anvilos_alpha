@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_ipv6.h",
+  "hash_id": "4f718c016aa389e294f082d674aa4ab2461e3f96330d0c8cd4339b6c05187033",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/ipv6/nf_conntrack_ipv6.h",
+  "human_readable_source": " \n#ifndef _NF_CONNTRACK_IPV6_H\n#define _NF_CONNTRACK_IPV6_H\n\nextern const struct nf_conntrack_l4proto nf_conntrack_l4proto_icmpv6;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

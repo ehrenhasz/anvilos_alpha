@@ -1,0 +1,9 @@
+{
+  "module_name": "vivid-osd.h",
+  "hash_id": "895c8937f47c767bd57fc7764594f46cbe475a120ec74deab7a6cbbf1f484a9c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vivid/vivid-osd.h",
+  "human_readable_source": " \n \n\n#ifndef _VIVID_OSD_H_\n#define _VIVID_OSD_H_\n\nint vivid_fb_init(struct vivid_dev *dev);\nvoid vivid_fb_release_buffers(struct vivid_dev *dev);\nvoid vivid_clear_fb(struct vivid_dev *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

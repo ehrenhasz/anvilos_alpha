@@ -1,0 +1,9 @@
+{
+  "module_name": "dfs_pri_detector.h",
+  "hash_id": "73935e9e70679793be2bd28b263dcc4603c45b351ea96aec51e8c0ceb5411131",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/dfs_pri_detector.h",
+  "human_readable_source": " \n\n#ifndef DFS_PRI_DETECTOR_H\n#define DFS_PRI_DETECTOR_H\n\n#include <linux/list.h>\n\nextern struct ath_dfs_pool_stats global_dfs_pool_stats;\n\n \nstruct pri_sequence {\n\tstruct list_head head;\n\tu32 pri;\n\tu32 dur;\n\tu32 count;\n\tu32 count_falses;\n\tu64 first_ts;\n\tu64 last_ts;\n\tu64 deadline_ts;\n};\n\n \nstruct pri_detector {\n\tvoid (*exit)     (struct pri_detector *de);\n\tstruct pri_sequence *\n\t     (*add_pulse)(struct pri_detector *de, struct pulse_event *e);\n\tvoid (*reset)    (struct pri_detector *de, u64 ts);\n\n\tconst struct radar_detector_specs *rs;\n\n \n\tu64 last_ts;\n\tstruct list_head sequences;\n\tstruct list_head pulses;\n\tu32 count;\n\tu32 max_count;\n\tu32 window_size;\n};\n\nstruct pri_detector *pri_detector_init(const struct radar_detector_specs *rs);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

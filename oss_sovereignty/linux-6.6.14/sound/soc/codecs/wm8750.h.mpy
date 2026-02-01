@@ -1,0 +1,9 @@
+{
+  "module_name": "wm8750.h",
+  "hash_id": "167d15b15be9eb450f6eff2fe22133aea9ffa66c68a71726f349b8238c1068dc",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/wm8750.h",
+  "human_readable_source": " \n \n\n#ifndef _WM8750_H\n#define _WM8750_H\n\n \n\n#define WM8750_LINVOL    0x00\n#define WM8750_RINVOL    0x01\n#define WM8750_LOUT1V    0x02\n#define WM8750_ROUT1V    0x03\n#define WM8750_ADCDAC    0x05\n#define WM8750_IFACE     0x07\n#define WM8750_SRATE     0x08\n#define WM8750_LDAC      0x0a\n#define WM8750_RDAC      0x0b\n#define WM8750_BASS      0x0c\n#define WM8750_TREBLE    0x0d\n#define WM8750_RESET     0x0f\n#define WM8750_3D        0x10\n#define WM8750_ALC1      0x11\n#define WM8750_ALC2      0x12\n#define WM8750_ALC3      0x13\n#define WM8750_NGATE     0x14\n#define WM8750_LADC      0x15\n#define WM8750_RADC      0x16\n#define WM8750_ADCTL1    0x17\n#define WM8750_ADCTL2    0x18\n#define WM8750_PWR1      0x19\n#define WM8750_PWR2      0x1a\n#define WM8750_ADCTL3    0x1b\n#define WM8750_ADCIN     0x1f\n#define WM8750_LADCIN    0x20\n#define WM8750_RADCIN    0x21\n#define WM8750_LOUTM1    0x22\n#define WM8750_LOUTM2    0x23\n#define WM8750_ROUTM1    0x24\n#define WM8750_ROUTM2    0x25\n#define WM8750_MOUTM1    0x26\n#define WM8750_MOUTM2    0x27\n#define WM8750_LOUT2V    0x28\n#define WM8750_ROUT2V    0x29\n#define WM8750_MOUTV     0x2a\n\n#define WM8750_CACHE_REGNUM 0x2a\n\n#define WM8750_SYSCLK\t0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

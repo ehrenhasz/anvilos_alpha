@@ -1,0 +1,9 @@
+{
+  "module_name": "user-zlib.m4",
+  "hash_id": "6a6c1b13618949cd70088c0726f598c0fabce97fddaf945cb5ac3458f7e0727e",
+  "original_prompt": "Ingested from zfs-2.2.2/config/user-zlib.m4",
+  "human_readable_source": "dnl #\ndnl # Check for zlib\ndnl #\nAC_DEFUN([ZFS_AC_CONFIG_USER_ZLIB], [\n\tZFS_AC_FIND_SYSTEM_LIBRARY(ZLIB, [zlib], [zlib.h], [], [z], [compress2 uncompress crc32], [], [\n\t    AC_MSG_FAILURE([*** zlib-devel package required])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

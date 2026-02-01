@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "be9886fc770763d3b645357ff4260ba5017f1fe5618e292ccd6ddd646314322c",
+  "original_prompt": "Ingested from linux-6.6.14/net/phonet/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_PHONET) += phonet.o pn_pep.o\n\nphonet-y := \\\n\tpn_dev.o \\\n\tpn_netlink.o \\\n\tsocket.o \\\n\tdatagram.o \\\n\tsysctl.o \\\n\taf_phonet.o\n\npn_pep-y := pep.o pep-gprs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

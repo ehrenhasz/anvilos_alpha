@@ -1,0 +1,9 @@
+{
+  "module_name": "sti_drv.h",
+  "hash_id": "59eff42cc093fe56b080fe308f0114f1d25008ad288ea0f50e8b7b6f7078745c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sti/sti_drv.h",
+  "human_readable_source": " \n \n\n#ifndef _STI_DRV_H_\n#define _STI_DRV_H_\n\n#include <linux/platform_device.h>\n\nstruct drm_device;\nstruct drm_property;\nstruct sti_compositor;\n\n \nstruct sti_private {\n\tstruct sti_compositor *compo;\n\tstruct drm_property *plane_zorder_property;\n\tstruct drm_device *drm_dev;\n};\n\nextern struct platform_driver sti_tvout_driver;\nextern struct platform_driver sti_hqvdp_driver;\nextern struct platform_driver sti_hdmi_driver;\nextern struct platform_driver sti_hda_driver;\nextern struct platform_driver sti_dvo_driver;\nextern struct platform_driver sti_vtg_driver;\nextern struct platform_driver sti_compositor_driver;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

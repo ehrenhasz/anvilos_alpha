@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__runtime.c.module",
+  "hash_id": "eb90e6f3e564576c6ba82955998da250969d04e058e8c5677779c638bcafe531",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/module/@@__py__runtime.c.module",
+  "human_readable_source": "MP_REGISTER_MODULE(MP_QSTR___main__, mp_module___main__);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

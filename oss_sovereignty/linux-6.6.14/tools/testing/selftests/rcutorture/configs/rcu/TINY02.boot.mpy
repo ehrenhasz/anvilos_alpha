@@ -1,0 +1,9 @@
+{
+  "module_name": "TINY02.boot",
+  "hash_id": "ffd86c62d9b4cb20c7315e9b43fc9e919ba6270d79c9b08b16bd858a68680068",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/TINY02.boot",
+  "human_readable_source": "rcupdate.rcu_self_test=1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

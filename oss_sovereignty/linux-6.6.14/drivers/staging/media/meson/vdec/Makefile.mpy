@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e6d6c6e73c03fb173965cc2d43b0ea591db0c35f4c37fde7ce5a983d5ac49ed2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/meson/vdec/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Makefile for Amlogic meson video decoder driver\n\nmeson-vdec-objs = esparser.o vdec.o vdec_helpers.o vdec_platform.o\nmeson-vdec-objs += vdec_1.o vdec_hevc.o\nmeson-vdec-objs += codec_mpeg12.o codec_h264.o codec_hevc_common.o codec_vp9.o\n\nobj-$(CONFIG_VIDEO_MESON_VDEC) += meson-vdec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

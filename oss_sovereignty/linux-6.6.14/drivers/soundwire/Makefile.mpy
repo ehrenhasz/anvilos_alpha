@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9cc07640e16166863cc04e2ca26aa72228b8205a0cb2b99b8c4499b70b66015b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soundwire/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for soundwire core\n#\n\n#Bus Objs\nsoundwire-bus-y := bus_type.o bus.o master.o slave.o mipi_disco.o stream.o  \\\n\t\t\tsysfs_slave.o sysfs_slave_dpn.o\nobj-$(CONFIG_SOUNDWIRE) += soundwire-bus.o\n\nsoundwire-generic-allocation-objs := generic_bandwidth_allocation.o\nobj-$(CONFIG_SOUNDWIRE_GENERIC_ALLOCATION) += soundwire-generic-allocation.o\n\nifdef CONFIG_DEBUG_FS\nsoundwire-bus-y += debugfs.o\nendif\n\nifdef CONFIG_IRQ_DOMAIN\nsoundwire-bus-y += irq.o\nendif\n\n#AMD driver\nsoundwire-amd-y :=\tamd_manager.o\nobj-$(CONFIG_SOUNDWIRE_AMD) += soundwire-amd.o\n\n#Cadence Objs\nsoundwire-cadence-y := cadence_master.o\nobj-$(CONFIG_SOUNDWIRE_CADENCE) += soundwire-cadence.o\n\n#Intel driver\nsoundwire-intel-y :=\tintel.o intel_ace2x.o intel_ace2x_debugfs.o \\\n\t\t\tintel_auxdevice.o intel_init.o dmi-quirks.o \\\n\t\t\tintel_bus_common.o\nobj-$(CONFIG_SOUNDWIRE_INTEL) += soundwire-intel.o\n\n#Qualcomm driver\nsoundwire-qcom-y :=\tqcom.o\nobj-$(CONFIG_SOUNDWIRE_QCOM) += soundwire-qcom.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

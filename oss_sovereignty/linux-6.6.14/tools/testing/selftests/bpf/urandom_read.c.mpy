@@ -1,0 +1,9 @@
+{
+  "module_name": "urandom_read.c",
+  "hash_id": "115b77ab3b8853a207597048983d8dd7bc750611aa19e565490ab61b3dc47b1b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/urandom_read.c",
+  "human_readable_source": "#include <stdbool.h>\n#include <stdio.h>\n#include <unistd.h>\n#include <errno.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <fcntl.h>\n#include <stdlib.h>\n#include <signal.h>\n\n#define _SDT_HAS_SEMAPHORES 1\n#include \"sdt.h\"\n\n#define SEC(name) __attribute__((section(name), used))\n\n#define BUF_SIZE 256\n\n \nvoid urand_read_without_sema(int iter_num, int iter_cnt, int read_sz);\n \nvoid urandlib_read_with_sema(int iter_num, int iter_cnt, int read_sz);\nvoid urandlib_read_without_sema(int iter_num, int iter_cnt, int read_sz);\n\nunsigned short urand_read_with_sema_semaphore SEC(\".probes\");\n\nstatic __attribute__((noinline))\nvoid urandom_read(int fd, int count)\n{\n\tchar buf[BUF_SIZE];\n\tint i;\n\n\tfor (i = 0; i < count; ++i) {\n\t\tread(fd, buf, BUF_SIZE);\n\n\t\t \n\t\turand_read_without_sema(i, count, BUF_SIZE);\n\t\tSTAP_PROBE3(urand, read_with_sema, i, count, BUF_SIZE);\n\n\t\t \n\t\turandlib_read_without_sema(i, count, BUF_SIZE);\n\t\turandlib_read_with_sema(i, count, BUF_SIZE);\n\t}\n}\n\nstatic volatile bool parent_ready;\n\nstatic void handle_sigpipe(int sig)\n{\n\tparent_ready = true;\n}\n\nint main(int argc, char *argv[])\n{\n\tint fd = open(\"/dev/urandom\", O_RDONLY);\n\tint count = 4;\n\tbool report_pid = false;\n\n\tif (fd < 0)\n\t\treturn 1;\n\n\tif (argc >= 2)\n\t\tcount = atoi(argv[1]);\n\tif (argc >= 3) {\n\t\treport_pid = true;\n\t\t \n\t\tsignal(SIGPIPE, handle_sigpipe);\n\t}\n\n\t \n\tif (report_pid) {\n\t\twhile (!parent_ready) {\n\t\t\tfprintf(stdout, \"%d\\n\", getpid());\n\t\t\tfflush(stdout);\n\t\t}\n\t\t \n\t}\n\n\turandom_read(fd, count);\n\n\tclose(fd);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

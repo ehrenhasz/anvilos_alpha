@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_mocs.h",
+  "hash_id": "5cf6cfcc986a449d3ebff984839ad1c63cd9589225cb84cda9b828c122b793e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_mocs.h",
+  "human_readable_source": " \n \n\n#ifndef INTEL_MOCS_H\n#define INTEL_MOCS_H\n\n \n\nstruct intel_engine_cs;\nstruct intel_gt;\n\nvoid intel_mocs_init(struct intel_gt *gt);\nvoid intel_mocs_init_engine(struct intel_engine_cs *engine);\nvoid intel_set_mocs_index(struct intel_gt *gt);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

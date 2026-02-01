@@ -1,0 +1,9 @@
+{
+  "module_name": "cma3000_d0x.h",
+  "hash_id": "ac5a8e539f3afbb390628dfa5493b60039c42b20331f04dc27f29d954edc81fb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/misc/cma3000_d0x.h",
+  "human_readable_source": " \n \n\n#ifndef _INPUT_CMA3000_H\n#define _INPUT_CMA3000_H\n\n#include <linux/types.h>\n#include <linux/input.h>\n\nstruct device;\nstruct cma3000_accl_data;\n\nstruct cma3000_bus_ops {\n\tu16 bustype;\n\tu8 ctrl_mod;\n\tint (*read)(struct device *, u8, char *);\n\tint (*write)(struct device *, u8, u8, char *);\n};\n\nstruct cma3000_accl_data *cma3000_init(struct device *dev, int irq,\n\t\t\t\t\tconst struct cma3000_bus_ops *bops);\nvoid cma3000_exit(struct cma3000_accl_data *);\nvoid cma3000_suspend(struct cma3000_accl_data *);\nvoid cma3000_resume(struct cma3000_accl_data *);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

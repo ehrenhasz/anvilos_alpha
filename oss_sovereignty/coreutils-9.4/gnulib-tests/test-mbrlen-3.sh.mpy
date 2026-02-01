@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrlen-3.sh",
+  "hash_id": "99ca114be64602bf8a8fd316e3fdebd114b5e77a547453548bd5e215a881d815",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrlen-3.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test whether a specific UTF-8 locale is installed.\n: \"${LOCALE_FR_UTF8=fr_FR.UTF-8}\"\nif test $LOCALE_FR_UTF8 = none; then\n  if test -f /usr/bin/localedef; then\n    echo \"Skipping test: no french Unicode locale is installed\"\n  else\n    echo \"Skipping test: no french Unicode locale is supported\"\n  fi\n  exit 77\nfi\n\nLC_ALL=$LOCALE_FR_UTF8 \\\n${CHECKER} ./test-mbrlen${EXEEXT} 3\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "coresight-tpdm.h",
+  "hash_id": "05b6468372ab2826c6d9d4dad6260ab8f2b4e3361a6b05a23a4d1508f14271a0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwtracing/coresight/coresight-tpdm.h",
+  "human_readable_source": " \n \n\n#ifndef _CORESIGHT_CORESIGHT_TPDM_H\n#define _CORESIGHT_CORESIGHT_TPDM_H\n\n \n#define TPDM_DATASETS       7\n\n \n#define TPDM_DSB_CR\t\t(0x780)\n \n#define TPDM_DSB_CR_ENA\t\tBIT(0)\n\n \n#define TPDM_ITATBCNTRL\t\t(0xEF0)\n#define TPDM_ITCNTRL\t\t(0xF00)\n\n \n#define ATBCNTRL_VAL_32\t\t0xC00F1409\n#define ATBCNTRL_VAL_64\t\t0xC01F1409\n\n \n#define INTEGRATION_TEST_CYCLE\t10\n\n \n\n#define TPDM_PIDR0_DS_IMPDEF\tBIT(0)\n#define TPDM_PIDR0_DS_DSB\tBIT(1)\n\n \n\nstruct tpdm_drvdata {\n\tvoid __iomem\t\t*base;\n\tstruct device\t\t*dev;\n\tstruct coresight_device\t*csdev;\n\tspinlock_t\t\tspinlock;\n\tbool\t\t\tenable;\n\tunsigned long\t\tdatasets;\n};\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

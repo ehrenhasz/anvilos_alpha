@@ -1,0 +1,9 @@
+{
+  "module_name": "dma_port.h",
+  "hash_id": "bc12b7a01be754df09593cdf897b38c04d715d00fef8fe68f48049e40c3487e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thunderbolt/dma_port.h",
+  "human_readable_source": " \n \n\n#ifndef DMA_PORT_H_\n#define DMA_PORT_H_\n\n#include \"tb.h\"\n\nstruct tb_switch;\nstruct tb_dma_port;\n\n#define DMA_PORT_CSS_ADDRESS\t\t0x3fffff\n#define DMA_PORT_CSS_MAX_SIZE\t\tSZ_128\n\nstruct tb_dma_port *dma_port_alloc(struct tb_switch *sw);\nvoid dma_port_free(struct tb_dma_port *dma);\nint dma_port_flash_read(struct tb_dma_port *dma, unsigned int address,\n\t\t\tvoid *buf, size_t size);\nint dma_port_flash_update_auth(struct tb_dma_port *dma);\nint dma_port_flash_update_auth_status(struct tb_dma_port *dma, u32 *status);\nint dma_port_flash_write(struct tb_dma_port *dma, unsigned int address,\n\t\t\t const void *buf, size_t size);\nint dma_port_power_cycle(struct tb_dma_port *dma);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

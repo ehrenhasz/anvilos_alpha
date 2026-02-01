@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "6200b06a91aa37d965e9f710b4d0bd8ecd2c102bebde6e30852a89c35773ae25",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tidss/Kconfig",
+  "human_readable_source": "config DRM_TIDSS\n\ttristate \"DRM Support for TI Keystone\"\n\tdepends on DRM && OF\n\tdepends on ARM || ARM64 || COMPILE_TEST\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\thelp\n\t  The TI Keystone family SoCs introduced a new generation of\n\t  Display SubSystem. There is currently three Keystone family\n\t  SoCs released with DSS. Each with somewhat different version\n\t  of it. The SoCs are 66AK2Gx, AM65x, and J721E. Set this to Y\n\t  or M to add display support for TI Keystone family\n\t  platforms.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

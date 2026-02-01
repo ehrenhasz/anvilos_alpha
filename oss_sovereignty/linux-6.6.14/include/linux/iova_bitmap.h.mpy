@@ -1,0 +1,9 @@
+{
+  "module_name": "iova_bitmap.h",
+  "hash_id": "136114315fd857969dc1a9e624fd04ef67afce1552610280f51e4fbb12c753fa",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iova_bitmap.h",
+  "human_readable_source": " \n \n#ifndef _IOVA_BITMAP_H_\n#define _IOVA_BITMAP_H_\n\n#include <linux/types.h>\n\nstruct iova_bitmap;\n\ntypedef int (*iova_bitmap_fn_t)(struct iova_bitmap *bitmap,\n\t\t\t\tunsigned long iova, size_t length,\n\t\t\t\tvoid *opaque);\n\nstruct iova_bitmap *iova_bitmap_alloc(unsigned long iova, size_t length,\n\t\t\t\t      unsigned long page_size,\n\t\t\t\t      u64 __user *data);\nvoid iova_bitmap_free(struct iova_bitmap *bitmap);\nint iova_bitmap_for_each(struct iova_bitmap *bitmap, void *opaque,\n\t\t\t iova_bitmap_fn_t fn);\nvoid iova_bitmap_set(struct iova_bitmap *bitmap,\n\t\t     unsigned long iova, size_t length);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

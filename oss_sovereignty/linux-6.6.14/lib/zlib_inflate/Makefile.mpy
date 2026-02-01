@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4ddab2e40ad8daa119358729eabcee964dc2b32ac6bcc5bea52daac520fc021b",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zlib_inflate/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# This is a modified version of zlib, which does all memory\n# allocation ahead of time.\n#\n# This is only the decompression, see zlib_deflate for the\n# the compression\n#\n# Decompression needs to be serialized for each memory\n# allocation.\n#\n# (The upsides of the simplification is that you can't get in\n# any nasty situations wrt memory management, and that the\n# uncompression can be done without blocking on allocation).\n#\n\nobj-$(CONFIG_ZLIB_INFLATE) += zlib_inflate.o\n\nzlib_inflate-objs := inffast.o inflate.o infutil.o \\\n\t\t     inftrees.o inflate_syms.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

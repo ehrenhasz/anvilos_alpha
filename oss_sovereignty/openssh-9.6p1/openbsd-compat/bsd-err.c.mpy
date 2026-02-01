@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-err.c",
+  "hash_id": "6fe11dbfcedfeca7602479a498e874d82c67385104f4dfc2b393424d2ed3bfc6",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-err.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#include <errno.h>\n#include <stdarg.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\n#ifndef HAVE_ERR\nvoid\nerr(int r, const char *fmt, ...)\n{\n\tva_list args;\n\n\tva_start(args, fmt);\n\tfprintf(stderr, \"%s: \", strerror(errno));\n\tvfprintf(stderr, fmt, args);\n\tfputc('\\n', stderr);\n\tva_end(args);\n\texit(r);\n}\n#endif\n\n#ifndef HAVE_ERRX\nvoid\nerrx(int r, const char *fmt, ...)\n{\n\tva_list args;\n\n\tva_start(args, fmt);\n\tvfprintf(stderr, fmt, args);\n\tfputc('\\n', stderr);\n\tva_end(args);\n\texit(r);\n}\n#endif\n\n#ifndef HAVE_WARN\nvoid\nwarn(const char *fmt, ...)\n{\n\tva_list args;\n\n\tva_start(args, fmt);\n\tfprintf(stderr, \"%s: \", strerror(errno));\n\tvfprintf(stderr, fmt, args);\n\tfputc('\\n', stderr);\n\tva_end(args);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

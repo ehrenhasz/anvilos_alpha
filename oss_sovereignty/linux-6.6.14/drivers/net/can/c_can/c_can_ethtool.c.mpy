@@ -1,0 +1,9 @@
+{
+  "module_name": "c_can_ethtool.c",
+  "hash_id": "35d034cb4159e987bd0d7cd8fccf2bb5ff4dd20fba8a43daa47b7c621911dbfe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/c_can/c_can_ethtool.c",
+  "human_readable_source": "\n \n\n#include <linux/ethtool.h>\n#include <linux/kernel.h>\n#include <linux/platform_device.h>\n#include <linux/netdevice.h>\n#include <linux/can/dev.h>\n\n#include \"c_can.h\"\n\nstatic void c_can_get_ringparam(struct net_device *netdev,\n\t\t\t\tstruct ethtool_ringparam *ring,\n\t\t\t\tstruct kernel_ethtool_ringparam *kernel_ring,\n\t\t\t\tstruct netlink_ext_ack *extack)\n{\n\tstruct c_can_priv *priv = netdev_priv(netdev);\n\n\tring->rx_max_pending = priv->msg_obj_num;\n\tring->tx_max_pending = priv->msg_obj_num;\n\tring->rx_pending = priv->msg_obj_rx_num;\n\tring->tx_pending = priv->msg_obj_tx_num;\n}\n\nconst struct ethtool_ops c_can_ethtool_ops = {\n\t.get_ringparam = c_can_get_ringparam,\n\t.get_ts_info = ethtool_op_get_ts_info,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

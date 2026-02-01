@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_slkcolor.c",
+  "hash_id": "d081b2e723cdbcdc17791c5f3468a6820f485d5ef1825fc323c1de2caa78a3ae",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_slkcolor.c",
+  "human_readable_source": " \n\n \n\n \n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_slkcolor.c,v 1.20 2020/02/02 23:34:34 tom Exp $\")\n\nstatic int\n_nc_slk_color(SCREEN *sp, int pair_arg)\n{\n    int code = ERR;\n\n    T((T_CALLED(\"slk_color(%p,%d)\"), (void *) sp, pair_arg));\n\n    if (sp != 0\n\t&& sp->_slk != 0\n\t&& pair_arg >= 0\n\t&& pair_arg < sp->_pair_limit) {\n\tTR(TRACE_ATTRS, (\"... current is %s\", _tracech_t(CHREF(sp->_slk->attr))));\n\tSetPair(sp->_slk->attr, pair_arg);\n\tTR(TRACE_ATTRS, (\"new attribute is %s\", _tracech_t(CHREF(sp->_slk->attr))));\n\tcode = OK;\n    }\n    returnCode(code);\n}\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(slk_color) (NCURSES_SP_DCLx NCURSES_PAIRS_T pair_arg)\n{\n    return _nc_slk_color(SP_PARM, pair_arg);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nslk_color(NCURSES_PAIRS_T pair_arg)\n{\n    return NCURSES_SP_NAME(slk_color) (CURRENT_SCREEN, pair_arg);\n}\n#endif\n\n#if NCURSES_EXT_COLORS\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(extended_slk_color) (NCURSES_SP_DCLx int pair_arg)\n{\n    return _nc_slk_color(SP_PARM, pair_arg);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nextended_slk_color(int pair_arg)\n{\n    return NCURSES_SP_NAME(extended_slk_color) (CURRENT_SCREEN, pair_arg);\n}\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

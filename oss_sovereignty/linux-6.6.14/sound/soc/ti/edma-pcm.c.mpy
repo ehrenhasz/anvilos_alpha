@@ -1,0 +1,9 @@
+{
+  "module_name": "edma-pcm.c",
+  "hash_id": "a8bb14095c952defa69f7856d7aab6978f219be4cf85004403dfe4989a3ee414",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/ti/edma-pcm.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <sound/core.h>\n#include <sound/pcm.h>\n#include <sound/pcm_params.h>\n#include <sound/soc.h>\n#include <sound/dmaengine_pcm.h>\n\n#include \"edma-pcm.h\"\n\nstatic const struct snd_pcm_hardware edma_pcm_hardware = {\n\t.info\t\t\t= SNDRV_PCM_INFO_MMAP |\n\t\t\t\t  SNDRV_PCM_INFO_MMAP_VALID |\n\t\t\t\t  SNDRV_PCM_INFO_PAUSE | SNDRV_PCM_INFO_RESUME |\n\t\t\t\t  SNDRV_PCM_INFO_NO_PERIOD_WAKEUP |\n\t\t\t\t  SNDRV_PCM_INFO_INTERLEAVED,\n\t.buffer_bytes_max\t= 128 * 1024,\n\t.period_bytes_min\t= 32,\n\t.period_bytes_max\t= 64 * 1024,\n\t.periods_min\t\t= 2,\n\t.periods_max\t\t= 19,  \n};\n\nstatic const struct snd_dmaengine_pcm_config edma_dmaengine_pcm_config = {\n\t.pcm_hardware = &edma_pcm_hardware,\n\t.prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config,\n\t.prealloc_buffer_size = 128 * 1024,\n};\n\nint edma_pcm_platform_register(struct device *dev)\n{\n\tstruct snd_dmaengine_pcm_config *config;\n\n\tif (dev->of_node)\n\t\treturn devm_snd_dmaengine_pcm_register(dev,\n\t\t\t\t\t\t&edma_dmaengine_pcm_config, 0);\n\n\tconfig = devm_kzalloc(dev, sizeof(*config), GFP_KERNEL);\n\tif (!config)\n\t\treturn -ENOMEM;\n\n\t*config = edma_dmaengine_pcm_config;\n\n\tconfig->chan_names[0] = \"tx\";\n\tconfig->chan_names[1] = \"rx\";\n\n\treturn devm_snd_dmaengine_pcm_register(dev, config, 0);\n}\nEXPORT_SYMBOL_GPL(edma_pcm_platform_register);\n\nMODULE_AUTHOR(\"Peter Ujfalusi <peter.ujfalusi@ti.com>\");\nMODULE_DESCRIPTION(\"eDMA PCM ASoC platform driver\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

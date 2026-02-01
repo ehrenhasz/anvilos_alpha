@@ -1,0 +1,9 @@
+{
+  "module_name": "sync_core.h",
+  "hash_id": "e7e6dc97b891e681ad9b0077543e1ea3c523576489cf2e015ff0d62aab81ea21",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/sync_core.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SYNC_CORE_H\n#define _ASM_X86_SYNC_CORE_H\n\n#include <linux/preempt.h>\n#include <asm/processor.h>\n#include <asm/cpufeature.h>\n#include <asm/special_insns.h>\n\n#ifdef CONFIG_X86_32\nstatic inline void iret_to_self(void)\n{\n\tasm volatile (\n\t\t\"pushfl\\n\\t\"\n\t\t\"pushl %%cs\\n\\t\"\n\t\t\"pushl $1f\\n\\t\"\n\t\t\"iret\\n\\t\"\n\t\t\"1:\"\n\t\t: ASM_CALL_CONSTRAINT : : \"memory\");\n}\n#else\nstatic inline void iret_to_self(void)\n{\n\tunsigned int tmp;\n\n\tasm volatile (\n\t\t\"mov %%ss, %0\\n\\t\"\n\t\t\"pushq %q0\\n\\t\"\n\t\t\"pushq %%rsp\\n\\t\"\n\t\t\"addq $8, (%%rsp)\\n\\t\"\n\t\t\"pushfq\\n\\t\"\n\t\t\"mov %%cs, %0\\n\\t\"\n\t\t\"pushq %q0\\n\\t\"\n\t\t\"pushq $1f\\n\\t\"\n\t\t\"iretq\\n\\t\"\n\t\t\"1:\"\n\t\t: \"=&r\" (tmp), ASM_CALL_CONSTRAINT : : \"cc\", \"memory\");\n}\n#endif  \n\n \nstatic inline void sync_core(void)\n{\n\t \n\tif (static_cpu_has(X86_FEATURE_SERIALIZE)) {\n\t\tserialize();\n\t\treturn;\n\t}\n\n\t \n\tiret_to_self();\n}\n\n \nstatic inline void sync_core_before_usermode(void)\n{\n\t \n\tif (static_cpu_has(X86_FEATURE_PTI))\n\t\treturn;\n\n\t \n\tsync_core();\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

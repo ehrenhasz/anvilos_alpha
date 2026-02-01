@@ -1,0 +1,9 @@
+{
+  "module_name": "sun4i_drv.h",
+  "hash_id": "84b130eb6fa444524cf87216223c7f413d94344e5e165bd34a137525bbb5dfe2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sun4i/sun4i_drv.h",
+  "human_readable_source": " \n \n\n#ifndef _SUN4I_DRV_H_\n#define _SUN4I_DRV_H_\n\n#include <linux/clk.h>\n#include <linux/list.h>\n#include <linux/regmap.h>\n\nstruct sun4i_drv {\n\tstruct list_head\tengine_list;\n\tstruct list_head\tfrontend_list;\n\tstruct list_head\ttcon_list;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6d0c8eb1076f40ee0dc120f24487929003c7f5e5c02d647e0ad2fdde76b964d8",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# To find a header included by define_trace.h.\nCFLAGS_amdtp-stream.o\t:= -I$(src)\n\nsnd-firewire-lib-objs := lib.o iso-resources.o packets-buffer.o \\\n\t\t\t fcp.o cmp.o amdtp-stream.o amdtp-am824.o\nsnd-isight-objs := isight.o\n\nobj-$(CONFIG_SND_FIREWIRE_LIB) += snd-firewire-lib.o\nobj-$(CONFIG_SND_DICE) += dice/\nobj-$(CONFIG_SND_OXFW) += oxfw/\nobj-$(CONFIG_SND_ISIGHT) += snd-isight.o\nobj-$(CONFIG_SND_FIREWORKS) += fireworks/\nobj-$(CONFIG_SND_BEBOB) += bebob/\nobj-$(CONFIG_SND_FIREWIRE_DIGI00X) += digi00x/\nobj-$(CONFIG_SND_FIREWIRE_TASCAM) += tascam/\nobj-$(CONFIG_SND_FIREWIRE_MOTU) += motu/\nobj-$(CONFIG_SND_FIREFACE) += fireface/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

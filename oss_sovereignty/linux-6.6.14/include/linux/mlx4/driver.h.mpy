@@ -1,0 +1,9 @@
+{
+  "module_name": "driver.h",
+  "hash_id": "cace232f1e3e1e6934f02c64029099e011dc04516d0203b2e6fa6126909e493f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mlx4/driver.h",
+  "human_readable_source": " \n\n#ifndef MLX4_DRIVER_H\n#define MLX4_DRIVER_H\n\n#include <net/devlink.h>\n#include <linux/auxiliary_bus.h>\n#include <linux/notifier.h>\n#include <linux/mlx4/device.h>\n\n#define MLX4_ADEV_NAME \"mlx4_core\"\n\nstruct mlx4_dev;\n\n#define MLX4_MAC_MASK\t   0xffffffffffffULL\n\nenum mlx4_dev_event {\n\tMLX4_DEV_EVENT_CATASTROPHIC_ERROR,\n\tMLX4_DEV_EVENT_PORT_UP,\n\tMLX4_DEV_EVENT_PORT_DOWN,\n\tMLX4_DEV_EVENT_PORT_REINIT,\n\tMLX4_DEV_EVENT_PORT_MGMT_CHANGE,\n\tMLX4_DEV_EVENT_SLAVE_INIT,\n\tMLX4_DEV_EVENT_SLAVE_SHUTDOWN,\n};\n\nenum {\n\tMLX4_INTFF_BONDING\t= 1 << 0\n};\n\nstruct mlx4_adrv {\n\tstruct auxiliary_driver\tadrv;\n\tenum mlx4_protocol\tprotocol;\n\tint\t\t\tflags;\n};\n\nint mlx4_register_auxiliary_driver(struct mlx4_adrv *madrv);\nvoid mlx4_unregister_auxiliary_driver(struct mlx4_adrv *madrv);\n\nint mlx4_register_event_notifier(struct mlx4_dev *dev,\n\t\t\t\t struct notifier_block *nb);\nint mlx4_unregister_event_notifier(struct mlx4_dev *dev,\n\t\t\t\t   struct notifier_block *nb);\n\nstruct devlink_port *mlx4_get_devlink_port(struct mlx4_dev *dev, int port);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

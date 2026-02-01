@@ -1,0 +1,9 @@
+{
+  "module_name": "test-bpf.c",
+  "hash_id": "5f73e26c39177b0536f8759f59d337590f223dbd642c226617ebdc06d830f382",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-bpf.c",
+  "human_readable_source": "\n#include <asm/unistd.h>\n#include <linux/bpf.h>\n#include <unistd.h>\n\n#ifndef __NR_bpf\n# if defined(__i386__)\n#  define __NR_bpf 357\n# elif defined(__x86_64__)\n#  define __NR_bpf 321\n# elif defined(__aarch64__)\n#  define __NR_bpf 280\n# elif defined(__sparc__)\n#  define __NR_bpf 349\n# elif defined(__s390__)\n#  define __NR_bpf 351\n# elif defined(__mips__) && defined(_ABIO32)\n#  define __NR_bpf 4355\n# elif defined(__mips__) && defined(_ABIN32)\n#  define __NR_bpf 6319\n# elif defined(__mips__) && defined(_ABI64)\n#  define __NR_bpf 5315\n# else\n#  error __NR_bpf not defined. libbpf does not support your arch.\n# endif\n#endif\n\nint main(void)\n{\n\tunion bpf_attr attr;\n\n\t \n\tattr.prog_type = BPF_PROG_TYPE_KPROBE;\n\tattr.insn_cnt = 0;\n\tattr.insns = 0;\n\tattr.license = 0;\n\tattr.log_buf = 0;\n\tattr.log_size = 0;\n\tattr.log_level = 0;\n\tattr.kern_version = 0;\n\tattr.prog_flags = 0;\n\n\t \n\treturn syscall(__NR_bpf, BPF_PROG_LOAD, &attr, sizeof(attr));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

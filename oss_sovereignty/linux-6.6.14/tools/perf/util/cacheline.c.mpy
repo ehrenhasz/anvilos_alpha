@@ -1,0 +1,9 @@
+{
+  "module_name": "cacheline.c",
+  "hash_id": "7448289c9f44a66258b94d37e3766977e99ffdfb8b6ee535b7f6802888a04960",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/cacheline.c",
+  "human_readable_source": "\n#include \"cacheline.h\"\n#include <unistd.h>\n\n#ifdef _SC_LEVEL1_DCACHE_LINESIZE\n#define cache_line_size(cacheline_sizep) *cacheline_sizep = sysconf(_SC_LEVEL1_DCACHE_LINESIZE)\n#else\n#include <api/fs/fs.h>\n#include \"debug.h\"\nstatic void cache_line_size(int *cacheline_sizep)\n{\n\tif (sysfs__read_int(\"devices/system/cpu/cpu0/cache/index0/coherency_line_size\", cacheline_sizep))\n\t\tpr_debug(\"cannot determine cache line size\");\n}\n#endif\n\nint cacheline_size(void)\n{\n\tstatic int size;\n\n\tif (!size)\n\t\tcache_line_size(&size);\n\n\treturn size;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

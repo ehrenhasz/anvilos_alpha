@@ -1,0 +1,9 @@
+{
+  "module_name": "pp_debug.h",
+  "hash_id": "56a1040d40f73e21f2a32e7add7e8fe39501c4823113a03a918fb1b7f7647bbc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/inc/pp_debug.h",
+  "human_readable_source": "\n \n#ifndef PP_DEBUG_H\n#define PP_DEBUG_H\n\n#ifdef pr_fmt\n#undef pr_fmt\n#endif\n\n#define pr_fmt(fmt) \"amdgpu: [powerplay] \" fmt\n\n#include <linux/types.h>\n#include <linux/kernel.h>\n#include <linux/slab.h>\n\n#define PP_ASSERT_WITH_CODE(cond, msg, code)\t\\\n\tdo {\t\t\t\t\t\\\n\t\tif (!(cond)) {\t\t\t\\\n\t\t\tpr_warn_ratelimited(\"%s\\n\", msg);\t\\\n\t\t\tcode;\t\t\t\\\n\t\t}\t\t\t\t\\\n\t} while (0)\n\n#define PP_ASSERT(cond, msg)\t\\\n\tdo {\t\t\t\t\t\\\n\t\tif (!(cond)) {\t\t\t\\\n\t\t\tpr_warn_ratelimited(\"%s\\n\", msg);\t\\\n\t\t}\t\t\t\t\\\n\t} while (0)\n\n#define PP_DBG_LOG(fmt, ...) \\\n\tdo { \\\n\t\tpr_debug(fmt, ##__VA_ARGS__); \\\n\t} while (0)\n\n\n#define GET_FLEXIBLE_ARRAY_MEMBER_ADDR(type, member, ptr, n)\t\\\n\t(type *)((char *)&(ptr)->member + (sizeof(type) * (n)))\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

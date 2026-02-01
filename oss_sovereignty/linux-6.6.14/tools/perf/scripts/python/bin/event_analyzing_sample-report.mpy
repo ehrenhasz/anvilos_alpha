@@ -1,0 +1,9 @@
+{
+  "module_name": "event_analyzing_sample-report",
+  "hash_id": "a2593ceb28815063c46ea30a77e6af5d94fb57acef8185bd01e6e2e576044116",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/event_analyzing_sample-report",
+  "human_readable_source": "#!/bin/bash\n# description: analyze all perf samples\nperf script $@ -s \"$PERF_EXEC_PATH\"/scripts/python/event_analyzing_sample.py\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

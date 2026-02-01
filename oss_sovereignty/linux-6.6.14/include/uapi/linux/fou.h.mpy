@@ -1,0 +1,9 @@
+{
+  "module_name": "fou.h",
+  "hash_id": "122653bcc8f3dae1a6bd8b2ed376a10697557a12aad075249ce6411ffac03530",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/fou.h",
+  "human_readable_source": " \n \n \n \n\n#ifndef _UAPI_LINUX_FOU_H\n#define _UAPI_LINUX_FOU_H\n\n#define FOU_GENL_NAME\t\t\"fou\"\n#define FOU_GENL_VERSION\t1\n\nenum {\n\tFOU_ENCAP_UNSPEC,\n\tFOU_ENCAP_DIRECT,\n\tFOU_ENCAP_GUE,\n};\n\nenum {\n\tFOU_ATTR_UNSPEC,\n\tFOU_ATTR_PORT,\n\tFOU_ATTR_AF,\n\tFOU_ATTR_IPPROTO,\n\tFOU_ATTR_TYPE,\n\tFOU_ATTR_REMCSUM_NOPARTIAL,\n\tFOU_ATTR_LOCAL_V4,\n\tFOU_ATTR_LOCAL_V6,\n\tFOU_ATTR_PEER_V4,\n\tFOU_ATTR_PEER_V6,\n\tFOU_ATTR_PEER_PORT,\n\tFOU_ATTR_IFINDEX,\n\n\t__FOU_ATTR_MAX\n};\n#define FOU_ATTR_MAX (__FOU_ATTR_MAX - 1)\n\nenum {\n\tFOU_CMD_UNSPEC,\n\tFOU_CMD_ADD,\n\tFOU_CMD_DEL,\n\tFOU_CMD_GET,\n\n\t__FOU_CMD_MAX\n};\n#define FOU_CMD_MAX (__FOU_CMD_MAX - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

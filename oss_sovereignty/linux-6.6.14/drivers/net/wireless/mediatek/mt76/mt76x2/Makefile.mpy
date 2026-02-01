@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d21d7b1b2fa478483dc01edbd6fce53eccc1a7f643e3d91b5bc0ec1bc0f2c7a5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt76x2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_MT76x2_COMMON) += mt76x2-common.o\nobj-$(CONFIG_MT76x2E) += mt76x2e.o\nobj-$(CONFIG_MT76x2U) += mt76x2u.o\n\nmt76x2-common-y := \\\n\teeprom.o mac.o init.o phy.o mcu.o\n\nmt76x2e-y := \\\n\tpci.o pci_main.o pci_init.o pci_mcu.o \\\n\tpci_phy.o\n\nmt76x2u-y := \\\n\tusb.o usb_init.o usb_main.o usb_mac.o usb_mcu.o \\\n\tusb_phy.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

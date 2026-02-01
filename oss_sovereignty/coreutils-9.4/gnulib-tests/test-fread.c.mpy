@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fread.c",
+  "hash_id": "471669ed129e62f0e1caedf880cbcb968e7e3eb18f0b9fcc11bc7dd7aeaffe74",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fread.c",
+  "human_readable_source": " \n#if HAVE_MSVC_INVALID_PARAMETER_HANDLER \\\n    && MSVC_INVALID_PARAMETER_HANDLING == DEFAULT_HANDLING\n  gl_msvc_inval_ensure_handler ();\n#endif\n\n   \n  {\n    const char text[] = \"hello world\";\n    int fd = open (filename, O_RDWR | O_CREAT | O_TRUNC, 0600);\n    ASSERT (fd >= 0);\n    ASSERT (write (fd, text, sizeof (text)) == sizeof (text));\n    ASSERT (close (fd) == 0);\n  }\n\n   \n  #if !defined __ANDROID__  \n  {\n    FILE *fp = fopen (filename, \"r\");\n    char buf[5];\n    ASSERT (fp != NULL);\n    ASSERT (close (fileno (fp)) == 0);\n    errno = 0;\n    ASSERT (fread (buf, 1, sizeof (buf), fp) == 0);\n    ASSERT (errno == EBADF);\n    ASSERT (ferror (fp));\n    fclose (fp);\n  }\n  #endif\n\n   \n  {\n    FILE *fp = fdopen (-1, \"r\");\n    if (fp != NULL)\n      {\n        char buf[1];\n        errno = 0;\n        ASSERT (fread (buf, 1, 1, fp) == 0);\n        ASSERT (errno == EBADF);\n        ASSERT (ferror (fp));\n        fclose (fp);\n      }\n  }\n  {\n    FILE *fp;\n    close (99);\n    fp = fdopen (99, \"r\");\n    if (fp != NULL)\n      {\n        char buf[1];\n        errno = 0;\n        ASSERT (fread (buf, 1, 1, fp) == 0);\n        ASSERT (errno == EBADF);\n        ASSERT (ferror (fp));\n        fclose (fp);\n      }\n  }\n\n   \n  unlink (filename);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

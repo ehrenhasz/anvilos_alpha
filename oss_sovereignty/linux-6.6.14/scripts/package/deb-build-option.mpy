@@ -1,0 +1,9 @@
+{
+  "module_name": "deb-build-option",
+  "hash_id": "bfc4120a5369de0b259be39bf19a52460800c725430350db582d6d0370cf4a33",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/package/deb-build-option",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-only\n\n# Set up CROSS_COMPILE if not defined yet\nif [ \"${CROSS_COMPILE+set}\" != \"set\" -a \"${DEB_HOST_ARCH}\" != \"${DEB_BUILD_ARCH}\" ]; then\n\techo CROSS_COMPILE=${DEB_HOST_GNU_TYPE}-\nfi\n\nversion=$(dpkg-parsechangelog -S Version)\ndebian_revision=\"${version##*-}\"\n\nif [ \"${version}\" != \"${debian_revision}\" ]; then\n\techo KBUILD_BUILD_VERSION=${debian_revision}\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

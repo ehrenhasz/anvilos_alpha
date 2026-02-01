@@ -1,0 +1,9 @@
+{
+  "module_name": "qedi_version.h",
+  "hash_id": "8ee275a115bd20f501a020e0f5e2d73a5b2c95a2b1c4084ddd53cc54b6d26e0e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/qedi/qedi_version.h",
+  "human_readable_source": " \n \n\n#define QEDI_MODULE_VERSION\t\"8.37.0.20\"\n#define QEDI_DRIVER_MAJOR_VER\t\t8\n#define QEDI_DRIVER_MINOR_VER\t\t37\n#define QEDI_DRIVER_REV_VER\t\t0\n#define QEDI_DRIVER_ENG_VER\t\t20\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

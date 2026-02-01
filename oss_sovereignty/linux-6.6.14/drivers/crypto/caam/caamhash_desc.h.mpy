@@ -1,0 +1,9 @@
+{
+  "module_name": "caamhash_desc.h",
+  "hash_id": "62172ceb2069e50dea5d48fb171a9ff899d8b642f2bd8be474a0952011084b19",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/caam/caamhash_desc.h",
+  "human_readable_source": " \n \n\n#ifndef _CAAMHASH_DESC_H_\n#define _CAAMHASH_DESC_H_\n\n \n#define DESC_AHASH_BASE\t\t\t(3 * CAAM_CMD_SZ)\n#define DESC_AHASH_UPDATE_LEN\t\t(6 * CAAM_CMD_SZ)\n#define DESC_AHASH_UPDATE_FIRST_LEN\t(DESC_AHASH_BASE + 4 * CAAM_CMD_SZ)\n#define DESC_AHASH_FINAL_LEN\t\t(DESC_AHASH_BASE + 5 * CAAM_CMD_SZ)\n#define DESC_AHASH_DIGEST_LEN\t\t(DESC_AHASH_BASE + 4 * CAAM_CMD_SZ)\n\nstatic inline bool is_xcbc_aes(u32 algtype)\n{\n\treturn (algtype & (OP_ALG_ALGSEL_MASK | OP_ALG_AAI_MASK)) ==\n\t       (OP_ALG_ALGSEL_AES | OP_ALG_AAI_XCBC_MAC);\n}\n\nvoid cnstr_shdsc_ahash(u32 * const desc, struct alginfo *adata, u32 state,\n\t\t       int digestsize, int ctx_len, bool import_ctx, int era);\n\nvoid cnstr_shdsc_sk_hash(u32 * const desc, struct alginfo *adata, u32 state,\n\t\t\t int digestsize, int ctx_len);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

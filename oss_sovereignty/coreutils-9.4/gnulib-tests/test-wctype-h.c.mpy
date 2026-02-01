@@ -1,0 +1,9 @@
+{
+  "module_name": "test-wctype-h.c",
+  "hash_id": "a8e9cebd8dc5743bf0dbe38d50033abaa15032dbb7d2bf4ebbb37301cd496f33",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-wctype-h.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <wctype.h>\n\n \nwint_t a = 'x';\n \nwint_t e = WEOF;\n\n \nwctype_t p;\n\n \nwctrans_t q;\n\n#include \"macros.h\"\n\nint\nmain (void)\n{\n   \n  (void) iswalnum (0);\n  (void) iswalpha (0);\n  (void) iswcntrl (0);\n  (void) iswdigit (0);\n  (void) iswgraph (0);\n  (void) iswlower (0);\n  (void) iswprint (0);\n  (void) iswpunct (0);\n  (void) iswspace (0);\n  (void) iswupper (0);\n  (void) iswxdigit (0);\n\n   \n  ASSERT (!iswalnum (e));\n  ASSERT (!iswalpha (e));\n  ASSERT (!iswcntrl (e));\n  ASSERT (!iswdigit (e));\n  ASSERT (!iswgraph (e));\n  ASSERT (!iswlower (e));\n  ASSERT (!iswprint (e));\n  ASSERT (!iswpunct (e));\n  ASSERT (!iswspace (e));\n  ASSERT (!iswupper (e));\n  ASSERT (!iswxdigit (e));\n\n   \n  ASSERT (iswprint (L' '));\n  ASSERT (!iswprint (L'\\t'));\n  ASSERT (!iswprint (L'\\n'));\n\n   \n  (void) towlower (0);\n  (void) towupper (0);\n\n   \n  ASSERT (towlower (e) == e);\n  ASSERT (towupper (e) == e);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

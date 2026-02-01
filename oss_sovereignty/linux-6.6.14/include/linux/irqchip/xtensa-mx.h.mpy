@@ -1,0 +1,9 @@
+{
+  "module_name": "xtensa-mx.h",
+  "hash_id": "820972b1cbc760c5692a1f9f36207af7ff631db1c7dde42554bd8331246d2e90",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/irqchip/xtensa-mx.h",
+  "human_readable_source": " \n\n#ifndef __LINUX_IRQCHIP_XTENSA_MX_H\n#define __LINUX_IRQCHIP_XTENSA_MX_H\n\nstruct device_node;\nint xtensa_mx_init_legacy(struct device_node *interrupt_parent);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

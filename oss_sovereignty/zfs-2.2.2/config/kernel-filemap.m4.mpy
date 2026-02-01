@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-filemap.m4",
+  "hash_id": "b9ded4be738ce39388636c30023b390ba2abc4e915def61483afe22371f5e304",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-filemap.m4",
+  "human_readable_source": "dnl #\ndnl # filemap_range_has_page was not available till 4.13\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_FILEMAP], [\n\tZFS_LINUX_TEST_SRC([filemap_range_has_page], [\n\t\t#include <linux/fs.h>\n\t],[\n\t\tstruct address_space *mapping = NULL;\n\t\tloff_t lstart = 0;\n\t\tloff_t lend = 0;\n\t\tbool ret __attribute__ ((unused));\n\n\t\tret = filemap_range_has_page(mapping, lstart, lend);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_FILEMAP], [\n\tAC_MSG_CHECKING([whether filemap_range_has_page() is available])\n\tZFS_LINUX_TEST_RESULT([filemap_range_has_page], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_FILEMAP_RANGE_HAS_PAGE, 1,\n\t\t[filemap_range_has_page() is available])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "wcswidth.m4",
+  "hash_id": "83c343c3193e7e47acb3891ebad16c20267fcd0cb8dc99896f54ebb02fea3d85",
+  "original_prompt": "Ingested from coreutils-9.4/m4/wcswidth.m4",
+  "human_readable_source": "# wcswidth.m4 serial 2\ndnl Copyright (C) 2011-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_WCSWIDTH],\n[\n  AC_REQUIRE([gl_WCHAR_H_DEFAULTS])\n  AC_REQUIRE([gl_FUNC_WCWIDTH])\n  AC_CHECK_FUNCS_ONCE([wcswidth])\n  if test $ac_cv_func_wcswidth = no; then\n    HAVE_WCSWIDTH=0\n  else\n    if test $REPLACE_WCWIDTH = 1; then\n      dnl If wcwidth needed to be replaced, wcswidth needs to be replaced\n      dnl as well.\n      REPLACE_WCSWIDTH=1\n    fi\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

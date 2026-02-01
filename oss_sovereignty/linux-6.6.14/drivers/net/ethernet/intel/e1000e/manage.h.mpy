@@ -1,0 +1,9 @@
+{
+  "module_name": "manage.h",
+  "hash_id": "5b19a95c90839df24131a1c4513e3826e921da7d926264ae0bc5c473646bdf68",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/e1000e/manage.h",
+  "human_readable_source": " \n \n\n#ifndef _E1000E_MANAGE_H_\n#define _E1000E_MANAGE_H_\n\nbool e1000e_check_mng_mode_generic(struct e1000_hw *hw);\nbool e1000e_enable_tx_pkt_filtering(struct e1000_hw *hw);\ns32 e1000e_mng_write_dhcp_info(struct e1000_hw *hw, u8 *buffer, u16 length);\nbool e1000e_enable_mng_pass_thru(struct e1000_hw *hw);\n\nenum e1000_mng_mode {\n\te1000_mng_mode_none = 0,\n\te1000_mng_mode_asf,\n\te1000_mng_mode_pt,\n\te1000_mng_mode_ipmi,\n\te1000_mng_mode_host_if_only\n};\n\n#define E1000_FACTPS_MNGCG\t\t\t0x20000000\n\n#define E1000_FWSM_MODE_MASK\t\t\t0xE\n#define E1000_FWSM_MODE_SHIFT\t\t\t1\n\n#define E1000_MNG_IAMT_MODE\t\t\t0x3\n#define E1000_MNG_DHCP_COOKIE_LENGTH\t\t0x10\n#define E1000_MNG_DHCP_COOKIE_OFFSET\t\t0x6F0\n#define E1000_MNG_DHCP_COMMAND_TIMEOUT\t\t10\n#define E1000_MNG_DHCP_TX_PAYLOAD_CMD\t\t64\n#define E1000_MNG_DHCP_COOKIE_STATUS_PARSING\t0x1\n#define E1000_MNG_DHCP_COOKIE_STATUS_VLAN\t0x2\n\n#define E1000_VFTA_ENTRY_SHIFT\t\t\t5\n#define E1000_VFTA_ENTRY_MASK\t\t\t0x7F\n#define E1000_VFTA_ENTRY_BIT_SHIFT_MASK\t\t0x1F\n\n#define E1000_HICR_EN\t\t\t0x01\t \n \n#define E1000_HICR_C\t\t\t0x02\n#define E1000_HICR_SV\t\t\t0x04\t \n#define E1000_HICR_FW_RESET_ENABLE\t0x40\n#define E1000_HICR_FW_RESET\t\t0x80\n\n \n#define E1000_IAMT_SIGNATURE\t\t0x544D4149\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

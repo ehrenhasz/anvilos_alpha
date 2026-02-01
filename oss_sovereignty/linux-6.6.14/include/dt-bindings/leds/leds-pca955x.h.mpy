@@ -1,0 +1,9 @@
+{
+  "module_name": "leds-pca955x.h",
+  "hash_id": "978915d9b131844ac72516b0b58f8cb6a97ae3919c82d2e47e4a4d613582cef5",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/leds/leds-pca955x.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_LEDS_PCA955X_H\n#define _DT_BINDINGS_LEDS_PCA955X_H\n\n#define PCA955X_TYPE_NONE         0\n#define PCA955X_TYPE_LED          1\n#define PCA955X_TYPE_GPIO         2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

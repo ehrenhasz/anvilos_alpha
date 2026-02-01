@@ -1,0 +1,9 @@
+{
+  "module_name": "ldt.h",
+  "hash_id": "ab769c7b4ec38f85a642b5003f41cd1e196a74b64e4ec4fa9e5ada9a019e21ff",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/ldt.h",
+  "human_readable_source": " \n \n#ifndef _ASM_X86_LDT_H\n#define _ASM_X86_LDT_H\n\n \n#define LDT_ENTRIES\t8192\n \n#define LDT_ENTRY_SIZE\t8\n\n#ifndef __ASSEMBLY__\n \nstruct user_desc {\n\tunsigned int  entry_number;\n\tunsigned int  base_addr;\n\tunsigned int  limit;\n\tunsigned int  seg_32bit:1;\n\tunsigned int  contents:2;\n\tunsigned int  read_exec_only:1;\n\tunsigned int  limit_in_pages:1;\n\tunsigned int  seg_not_present:1;\n\tunsigned int  useable:1;\n#ifdef __x86_64__\n\t \n\tunsigned int  lm:1;\n#endif\n};\n\n#define MODIFY_LDT_CONTENTS_DATA\t0\n#define MODIFY_LDT_CONTENTS_STACK\t1\n#define MODIFY_LDT_CONTENTS_CODE\t2\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

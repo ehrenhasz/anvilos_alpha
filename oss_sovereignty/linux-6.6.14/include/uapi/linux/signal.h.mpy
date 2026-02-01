@@ -1,0 +1,9 @@
+{
+  "module_name": "signal.h",
+  "hash_id": "e841c0f1452f63c2afb15458fb9925c7e2d561110a26ef84a9ae304500cad9ce",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/signal.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_SIGNAL_H\n#define _UAPI_LINUX_SIGNAL_H\n\n#include <asm/signal.h>\n#include <asm/siginfo.h>\n\n#define SS_ONSTACK\t1\n#define SS_DISABLE\t2\n\n \n#define SS_AUTODISARM\t(1U << 31)\t \n \n#define SS_FLAG_BITS\tSS_AUTODISARM\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

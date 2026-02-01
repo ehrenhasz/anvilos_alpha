@@ -1,0 +1,9 @@
+{
+  "module_name": "linebuffer.h",
+  "hash_id": "4c3d1e2ac79c619459b567a8fdd04acfcc6a3af4007bd46b1ea944d4bd7c8e20",
+  "original_prompt": "Ingested from coreutils-9.4/lib/linebuffer.h",
+  "human_readable_source": " \n\nstruct linebuffer\n{\n  idx_t size;                   \n  idx_t length;                 \n  char *buffer;\n};\n\n \nvoid initbuffer (struct linebuffer *linebuffer);\n\n \nstruct linebuffer *readlinebuffer_delim (struct linebuffer *linebuffer,\n                                         FILE *stream, char delimiter);\n\n \nstruct linebuffer *readlinebuffer (struct linebuffer *linebuffer, FILE *stream);\n\n \nvoid freebuffer (struct linebuffer *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

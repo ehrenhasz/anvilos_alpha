@@ -1,0 +1,9 @@
+{
+  "module_name": "socket.h",
+  "hash_id": "4c69b870b135caaf0d78f9cad5e8286b657e1ecce0f8f59a3bdb5827ff7864ca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireguard/socket.h",
+  "human_readable_source": " \n \n\n#ifndef _WG_SOCKET_H\n#define _WG_SOCKET_H\n\n#include <linux/netdevice.h>\n#include <linux/udp.h>\n#include <linux/if_vlan.h>\n#include <linux/if_ether.h>\n\nint wg_socket_init(struct wg_device *wg, u16 port);\nvoid wg_socket_reinit(struct wg_device *wg, struct sock *new4,\n\t\t      struct sock *new6);\nint wg_socket_send_buffer_to_peer(struct wg_peer *peer, void *data,\n\t\t\t\t  size_t len, u8 ds);\nint wg_socket_send_skb_to_peer(struct wg_peer *peer, struct sk_buff *skb,\n\t\t\t       u8 ds);\nint wg_socket_send_buffer_as_reply_to_skb(struct wg_device *wg,\n\t\t\t\t\t  struct sk_buff *in_skb,\n\t\t\t\t\t  void *out_buffer, size_t len);\n\nint wg_socket_endpoint_from_skb(struct endpoint *endpoint,\n\t\t\t\tconst struct sk_buff *skb);\nvoid wg_socket_set_peer_endpoint(struct wg_peer *peer,\n\t\t\t\t const struct endpoint *endpoint);\nvoid wg_socket_set_peer_endpoint_from_skb(struct wg_peer *peer,\n\t\t\t\t\t  const struct sk_buff *skb);\nvoid wg_socket_clear_peer_endpoint_src(struct wg_peer *peer);\n\n#if defined(CONFIG_DYNAMIC_DEBUG) || defined(DEBUG)\n#define net_dbg_skb_ratelimited(fmt, dev, skb, ...) do {                       \\\n\t\tstruct endpoint __endpoint;                                    \\\n\t\twg_socket_endpoint_from_skb(&__endpoint, skb);                 \\\n\t\tnet_dbg_ratelimited(fmt, dev, &__endpoint.addr,                \\\n\t\t\t\t    ##__VA_ARGS__);                            \\\n\t} while (0)\n#else\n#define net_dbg_skb_ratelimited(fmt, skb, ...)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

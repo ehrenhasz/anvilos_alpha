@@ -1,0 +1,9 @@
+{
+  "module_name": "mt2131_priv.h",
+  "hash_id": "f57fe3a373c8f0fd184de49be0fe93457aa5025ab72d4c2fbb8502579a6d7ab3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/mt2131_priv.h",
+  "human_readable_source": " \n \n\n#ifndef __MT2131_PRIV_H__\n#define __MT2131_PRIV_H__\n\n \n#define MT2131_PWR              0x07\n#define MT2131_UPC_1            0x0b\n#define MT2131_AGC_RL           0x10\n#define MT2131_MISC_2           0x15\n\n \n#define MT2131_IF1              1220\n#define MT2131_IF2              44000\n#define MT2131_FREF             16000\n\nstruct mt2131_priv {\n\tstruct mt2131_config *cfg;\n\tstruct i2c_adapter   *i2c;\n\n\tu32 frequency;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

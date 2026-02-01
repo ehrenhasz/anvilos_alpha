@@ -1,0 +1,9 @@
+{
+  "module_name": "sparx5_pgid.c",
+  "hash_id": "61ec47baab6f46e1fbd3a4541458b67cd0100127cca709f14934f8835301693d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/microchip/sparx5/sparx5_pgid.c",
+  "human_readable_source": "\n#include \"sparx5_main.h\"\n\nvoid sparx5_pgid_init(struct sparx5 *spx5)\n{\n\tint i;\n\n\tfor (i = 0; i < PGID_TABLE_SIZE; i++)\n\t\tspx5->pgid_map[i] = SPX5_PGID_FREE;\n\n\t \n\tfor (i = 0; i <= PGID_CPU; i++)\n\t\tspx5->pgid_map[i] = SPX5_PGID_RESERVED;\n}\n\nint sparx5_pgid_alloc_mcast(struct sparx5 *spx5, u16 *idx)\n{\n\tint i;\n\n\t \n\tfor (i = PGID_MCAST_START; i < PGID_TABLE_SIZE; i++) {\n\t\tif (spx5->pgid_map[i] == SPX5_PGID_FREE) {\n\t\t\tspx5->pgid_map[i] = SPX5_PGID_MULTICAST;\n\t\t\t*idx = i;\n\t\t\treturn 0;\n\t\t}\n\t}\n\n\treturn -EBUSY;\n}\n\nint sparx5_pgid_free(struct sparx5 *spx5, u16 idx)\n{\n\tif (idx <= PGID_CPU || idx >= PGID_TABLE_SIZE)\n\t\treturn -EINVAL;\n\n\tif (spx5->pgid_map[idx] == SPX5_PGID_FREE)\n\t\treturn -EINVAL;\n\n\tspx5->pgid_map[idx] = SPX5_PGID_FREE;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

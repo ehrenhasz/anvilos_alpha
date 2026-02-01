@@ -1,0 +1,9 @@
+{
+  "module_name": "dce80_resource.h",
+  "hash_id": "5cbee1d211a5e0cdea0502d13f71cda27271c03ba50fe85d2c335d6d5cd99e9d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce80/dce80_resource.h",
+  "human_readable_source": " \n\n#ifndef __DC_RESOURCE_DCE80_H__\n#define __DC_RESOURCE_DCE80_H__\n\n#include \"core_types.h\"\n\nstruct dc;\nstruct resource_pool;\n\nstruct resource_pool *dce80_create_resource_pool(\n\tuint8_t num_virtual_links,\n\tstruct dc *dc);\n\nstruct resource_pool *dce81_create_resource_pool(\n\tuint8_t num_virtual_links,\n\tstruct dc *dc);\n\nstruct resource_pool *dce83_create_resource_pool(\n\tuint8_t num_virtual_links,\n\tstruct dc *dc);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

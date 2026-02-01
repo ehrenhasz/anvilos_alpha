@@ -1,0 +1,9 @@
+{
+  "module_name": "modopenamp_remoteproc.h",
+  "hash_id": "02f22e45a78a5350a8a6b63365c4241d8ff1421c64c7e24c9c91ebb595a2189d",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/modopenamp_remoteproc.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_MODOPENAMP_REMOTEPROC_H\n#define MICROPY_INCLUDED_MODOPENAMP_REMOTEPROC_H\n\n#include \"openamp/remoteproc.h\"\n#include \"openamp/remoteproc_loader.h\"\n\nvoid *mp_openamp_remoteproc_store_alloc(void);\nstruct remoteproc *mp_openamp_remoteproc_init(struct remoteproc *rproc,\n    const struct remoteproc_ops *ops, void *arg);\nvoid *mp_openamp_remoteproc_mmap(struct remoteproc *rproc, metal_phys_addr_t *pa,\n    metal_phys_addr_t *da, size_t size, unsigned int attribute,\n    struct metal_io_region **io);\nint mp_openamp_remoteproc_start(struct remoteproc *rproc);\nint mp_openamp_remoteproc_stop(struct remoteproc *rproc);\nint mp_openamp_remoteproc_config(struct remoteproc *rproc, void *data);\nvoid mp_openamp_remoteproc_remove(struct remoteproc *rproc);\nint mp_openamp_remoteproc_shutdown(struct remoteproc *rproc);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "resources.h",
+  "hash_id": "093798d583f83180880990498b3618bdcdf645dc3a8e3a28fe7f64937c57b2a1",
+  "original_prompt": "Ingested from linux-6.6.14/net/atm/resources.h",
+  "human_readable_source": " \n \n\n \n\n\n#ifndef NET_ATM_RESOURCES_H\n#define NET_ATM_RESOURCES_H\n\n#include <linux/atmdev.h>\n#include <linux/mutex.h>\n\n\nextern struct list_head atm_devs;\nextern struct mutex atm_dev_mutex;\n\nint atm_getnames(void __user *buf, int __user *iobuf_len);\nint atm_dev_ioctl(unsigned int cmd, void __user *buf, int __user *sioc_len,\n\t\t  int number, int compat);\n\n#ifdef CONFIG_PROC_FS\n\n#include <linux/proc_fs.h>\n\nvoid *atm_dev_seq_start(struct seq_file *seq, loff_t *pos);\nvoid atm_dev_seq_stop(struct seq_file *seq, void *v);\nvoid *atm_dev_seq_next(struct seq_file *seq, void *v, loff_t *pos);\n\n\nint atm_proc_dev_register(struct atm_dev *dev);\nvoid atm_proc_dev_deregister(struct atm_dev *dev);\n\n#else\n\nstatic inline int atm_proc_dev_register(struct atm_dev *dev)\n{\n\treturn 0;\n}\n\nstatic inline void atm_proc_dev_deregister(struct atm_dev *dev)\n{\n\t \n}\n\n#endif  \n\nint atm_register_sysfs(struct atm_dev *adev, struct device *parent);\nvoid atm_unregister_sysfs(struct atm_dev *adev);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

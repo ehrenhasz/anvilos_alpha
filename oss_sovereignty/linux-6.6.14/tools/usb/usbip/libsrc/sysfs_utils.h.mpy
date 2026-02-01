@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfs_utils.h",
+  "hash_id": "bb7edb73441f2d8a3ba1db4d6f65a6ac2a7cc4710d1bc6cae2634b2e34a00bf1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/usbip/libsrc/sysfs_utils.h",
+  "human_readable_source": " \n\n#ifndef __SYSFS_UTILS_H\n#define __SYSFS_UTILS_H\n\nint write_sysfs_attribute(const char *attr_path, const char *new_value,\n\t\t\t  size_t len);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

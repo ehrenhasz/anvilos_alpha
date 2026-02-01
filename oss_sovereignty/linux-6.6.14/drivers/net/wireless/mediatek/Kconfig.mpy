@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7637f36bf9f374dde6df785e3caab3a1750b488f9dff841e0578b8c49a4682fd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig WLAN_VENDOR_MEDIATEK\n\tbool \"MediaTek devices\"\n\tdefault y\n\thelp\n\t  If you have a wireless card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all the\n\t  questions about these cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif WLAN_VENDOR_MEDIATEK\nsource \"drivers/net/wireless/mediatek/mt7601u/Kconfig\"\nsource \"drivers/net/wireless/mediatek/mt76/Kconfig\"\nendif # WLAN_VENDOR_MEDIATEK\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "84bf64145fef29bbb69196ea45ff13aef531887ced59fdb6b65585f02c6eb530",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/qcom/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\ncomment \"Qualcomm media platform drivers\"\n\nsource \"drivers/media/platform/qcom/camss/Kconfig\"\nsource \"drivers/media/platform/qcom/venus/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

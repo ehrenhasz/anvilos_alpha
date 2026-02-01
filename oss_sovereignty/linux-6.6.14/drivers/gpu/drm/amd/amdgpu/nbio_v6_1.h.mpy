@@ -1,0 +1,9 @@
+{
+  "module_name": "nbio_v6_1.h",
+  "hash_id": "47d7ed3023d6e82e2a74fb50c960f415c853cc300d31f0a6dc8f7634e5dddb02",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/nbio_v6_1.h",
+  "human_readable_source": " \n\n#ifndef __NBIO_V6_1_H__\n#define __NBIO_V6_1_H__\n\n#include \"soc15_common.h\"\n\nextern const struct nbio_hdp_flush_reg nbio_v6_1_hdp_flush_reg;\nextern const struct amdgpu_nbio_funcs nbio_v6_1_funcs;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

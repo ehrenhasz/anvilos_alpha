@@ -1,0 +1,9 @@
+{
+  "module_name": "nv31.h",
+  "hash_id": "c97d929a0db1bed7a5758635d5b2aaa30b388d4a085fa4a38883f4d51305bc25",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/mpeg/nv31.h",
+  "human_readable_source": " \n#ifndef __NV31_MPEG_H__\n#define __NV31_MPEG_H__\n#define nv31_mpeg(p) container_of((p), struct nv31_mpeg, engine)\n#include \"priv.h\"\n#include <engine/mpeg.h>\n\nstruct nv31_mpeg {\n\tconst struct nv31_mpeg_func *func;\n\tstruct nvkm_engine engine;\n\tstruct nv31_mpeg_chan *chan;\n};\n\nint nv31_mpeg_new_(const struct nv31_mpeg_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t   struct nvkm_engine **);\n\nstruct nv31_mpeg_func {\n\tbool (*mthd_dma)(struct nvkm_device *, u32 mthd, u32 data);\n};\n\n#define nv31_mpeg_chan(p) container_of((p), struct nv31_mpeg_chan, object)\n#include <core/object.h>\n\nstruct nv31_mpeg_chan {\n\tstruct nvkm_object object;\n\tstruct nv31_mpeg *mpeg;\n\tstruct nvkm_chan *fifo;\n};\n\nint nv31_mpeg_chan_new(struct nvkm_chan *, const struct nvkm_oclass *,\n\t\t       struct nvkm_object **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

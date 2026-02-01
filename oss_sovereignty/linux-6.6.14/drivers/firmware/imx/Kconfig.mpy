@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "bdaa77efb592ba8400c89472d6914f4c20b182622c982e1bb4b5e17eb4cf2c32",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/imx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig IMX_DSP\n\ttristate \"IMX DSP Protocol driver\"\n\tdepends on IMX_MBOX\n\thelp\n\t  This enables DSP IPC protocol between host AP (Linux)\n\t  and the firmware running on DSP.\n\t  DSP exists on some i.MX8 processors (e.g i.MX8QM, i.MX8QXP).\n\n\t  It acts like a doorbell. Client might use shared memory to\n\t  exchange information with DSP side.\n\nconfig IMX_SCU\n\tbool \"IMX SCU Protocol driver\"\n\tdepends on IMX_MBOX\n\tselect SOC_BUS\n\thelp\n\t  The System Controller Firmware (SCFW) is a low-level system function\n\t  which runs on a dedicated Cortex-M core to provide power, clock, and\n\t  resource management. It exists on some i.MX8 processors. e.g. i.MX8QM\n\t  (QM, QP), and i.MX8QX (QXP, DX).\n\n\t  This driver manages the IPC interface between host CPU and the\n\t  SCU firmware running on M4.\n\nconfig IMX_SCU_PD\n\tbool \"IMX SCU Power Domain driver\"\n\tdepends on IMX_SCU\n\thelp\n\t  The System Controller Firmware (SCFW) based power domain driver.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

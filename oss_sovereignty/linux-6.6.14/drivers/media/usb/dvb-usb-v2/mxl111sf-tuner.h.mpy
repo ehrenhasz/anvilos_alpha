@@ -1,0 +1,9 @@
+{
+  "module_name": "mxl111sf-tuner.h",
+  "hash_id": "b9a5938a1748c8f13cca7f955c0b7c44c0f794585d792943b94016d8dadb5cf8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/dvb-usb-v2/mxl111sf-tuner.h",
+  "human_readable_source": " \n \n\n#ifndef __MXL111SF_TUNER_H__\n#define __MXL111SF_TUNER_H__\n\n#include <media/dvb_frontend.h>\n#include \"mxl111sf.h\"\n\nenum mxl_if_freq {\n#if 0\n\tMXL_IF_LO    = 0x00,  \n#endif\n\tMXL_IF_4_0   = 0x01,  \n\tMXL_IF_4_5   = 0x02,  \n\tMXL_IF_4_57  = 0x03,  \n\tMXL_IF_5_0   = 0x04,  \n\tMXL_IF_5_38  = 0x05,  \n\tMXL_IF_6_0   = 0x06,  \n\tMXL_IF_6_28  = 0x07,  \n\tMXL_IF_7_2   = 0x08,  \n\tMXL_IF_35_25 = 0x09,  \n\tMXL_IF_36    = 0x0a,  \n\tMXL_IF_36_15 = 0x0b,  \n\tMXL_IF_44    = 0x0c,  \n#if 0\n\tMXL_IF_HI    = 0x0f,  \n#endif\n};\n\nstruct mxl111sf_tuner_config {\n\tenum mxl_if_freq if_freq;\n\tunsigned int invert_spectrum:1;\n\n\tint (*read_reg)(struct mxl111sf_state *state, u8 addr, u8 *data);\n\tint (*write_reg)(struct mxl111sf_state *state, u8 addr, u8 data);\n\tint (*program_regs)(struct mxl111sf_state *state,\n\t\t\t    struct mxl111sf_reg_ctrl_info *ctrl_reg_info);\n\tint (*top_master_ctrl)(struct mxl111sf_state *state, int onoff);\n\tint (*ant_hunt)(struct dvb_frontend *fe);\n};\n\n \n\n#if IS_ENABLED(CONFIG_DVB_USB_MXL111SF)\nextern\nstruct dvb_frontend *mxl111sf_tuner_attach(struct dvb_frontend *fe,\n\t\t\t\tstruct mxl111sf_state *mxl_state,\n\t\t\t\tconst struct mxl111sf_tuner_config *cfg);\n#else\nstatic inline\nstruct dvb_frontend *mxl111sf_tuner_attach(struct dvb_frontend *fe,\n\t\t\t\tstruct mxl111sf_state *mxl_state,\n\t\t\t\tconst struct mxl111sf_tuner_config *cfg)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

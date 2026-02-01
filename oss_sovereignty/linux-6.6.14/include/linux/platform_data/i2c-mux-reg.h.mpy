@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-mux-reg.h",
+  "hash_id": "08a713cedd8ada2acfba9c0a1dfa5770afe9f4fcee77562fdf042275eaae6400",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/i2c-mux-reg.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_PLATFORM_DATA_I2C_MUX_REG_H\n#define __LINUX_PLATFORM_DATA_I2C_MUX_REG_H\n\n \nstruct i2c_mux_reg_platform_data {\n\tint parent;\n\tint base_nr;\n\tconst unsigned int *values;\n\tint n_values;\n\tbool little_endian;\n\tbool write_only;\n\tconst unsigned int *classes;\n\tu32 idle;\n\tbool idle_in_use;\n\tvoid __iomem *reg;\n\tresource_size_t reg_size;\n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

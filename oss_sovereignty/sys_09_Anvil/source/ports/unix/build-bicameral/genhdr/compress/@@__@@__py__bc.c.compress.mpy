@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__bc.c.compress",
+  "hash_id": "7cd68e63a651a0cbfd1cbcc3bcd4b857eb19ae57b52566655edd06936ec4de4e",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__bc.c.compress",
+  "human_readable_source": "function takes %d positional arguments but %d were given\nfunction got multiple values for argument '%q'\nunexpected keyword argument '%q'\nfunction missing required positional argument #%d\nfunction missing required keyword argument '%q'\nfunction missing keyword-only argument\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

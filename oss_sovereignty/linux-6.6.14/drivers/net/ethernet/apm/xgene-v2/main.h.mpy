@@ -1,0 +1,9 @@
+{
+  "module_name": "main.h",
+  "hash_id": "7ef72f34287b743398ebab3e79c1730ffac027f9d3021be016e65ff6eb581bc1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/apm/xgene-v2/main.h",
+  "human_readable_source": " \n \n\n#ifndef __XGENE_ENET_V2_MAIN_H__\n#define __XGENE_ENET_V2_MAIN_H__\n\n#include <linux/acpi.h>\n#include <linux/clk.h>\n#include <linux/efi.h>\n#include <linux/if_vlan.h>\n#include <linux/irq.h>\n#include <linux/io.h>\n#include <linux/module.h>\n#include <linux/of_platform.h>\n#include <linux/of_net.h>\n#include <linux/of_mdio.h>\n#include <linux/prefetch.h>\n#include <linux/phy.h>\n#include <linux/platform_device.h>\n#include <net/ip.h>\n#include \"mac.h\"\n#include \"enet.h\"\n#include \"ring.h\"\n#include \"ethtool.h\"\n\n#define XGENE_ENET_STD_MTU\t1536\n#define XGENE_ENET_MIN_FRAME\t60\n#define IRQ_ID_SIZE             16\n\nstruct xge_resource {\n\tvoid __iomem *base_addr;\n\tint phy_mode;\n\tu32 irq;\n};\n\nstruct xge_stats {\n\tu64 tx_packets;\n\tu64 tx_bytes;\n\tu64 rx_packets;\n\tu64 rx_bytes;\n\tu64 rx_errors;\n};\n\n \nstruct xge_pdata {\n\tstruct xge_resource resources;\n\tstruct xge_desc_ring *tx_ring;\n\tstruct xge_desc_ring *rx_ring;\n\tstruct platform_device *pdev;\n\tchar irq_name[IRQ_ID_SIZE];\n\tstruct mii_bus *mdio_bus;\n\tstruct net_device *ndev;\n\tstruct napi_struct napi;\n\tstruct xge_stats stats;\n\tint phy_speed;\n\tu8 nbufs;\n};\n\nint xge_mdio_config(struct net_device *ndev);\nvoid xge_mdio_remove(struct net_device *ndev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

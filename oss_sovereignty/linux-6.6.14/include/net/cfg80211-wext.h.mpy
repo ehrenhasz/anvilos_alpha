@@ -1,0 +1,9 @@
+{
+  "module_name": "cfg80211-wext.h",
+  "hash_id": "0bf477084f2359f8fcdc4874354d4cb4925f2df0145bc4a1d9c5b76c2390313e",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/cfg80211-wext.h",
+  "human_readable_source": " \n#ifndef __NET_CFG80211_WEXT_H\n#define __NET_CFG80211_WEXT_H\n \n\n#include <linux/netdevice.h>\n#include <linux/wireless.h>\n#include <net/iw_handler.h>\n\n \nint cfg80211_wext_giwname(struct net_device *dev,\n\t\t\t  struct iw_request_info *info,\n\t\t\t  union iwreq_data *wrqu, char *extra);\nint cfg80211_wext_siwmode(struct net_device *dev, struct iw_request_info *info,\n\t\t\t  union iwreq_data *wrqu, char *extra);\nint cfg80211_wext_giwmode(struct net_device *dev, struct iw_request_info *info,\n\t\t\t  union iwreq_data *wrqu, char *extra);\nint cfg80211_wext_siwscan(struct net_device *dev,\n\t\t\t  struct iw_request_info *info,\n\t\t\t  union iwreq_data *wrqu, char *extra);\nint cfg80211_wext_giwscan(struct net_device *dev,\n\t\t\t  struct iw_request_info *info,\n\t\t\t  union iwreq_data *wrqu, char *extra);\nint cfg80211_wext_giwrange(struct net_device *dev,\n\t\t\t   struct iw_request_info *info,\n\t\t\t   union iwreq_data *wrqu, char *extra);\nint cfg80211_wext_siwrts(struct net_device *dev,\n\t\t\t struct iw_request_info *info,\n\t\t\t union iwreq_data *wrqu, char *extra);\nint cfg80211_wext_giwrts(struct net_device *dev,\n\t\t\t struct iw_request_info *info,\n\t\t\t union iwreq_data *wrqu, char *extra);\nint cfg80211_wext_siwfrag(struct net_device *dev,\n\t\t\t  struct iw_request_info *info,\n\t\t\t  union iwreq_data *wrqu, char *extra);\nint cfg80211_wext_giwfrag(struct net_device *dev,\n\t\t\t  struct iw_request_info *info,\n\t\t\t  union iwreq_data *wrqu, char *extra);\nint cfg80211_wext_giwretry(struct net_device *dev,\n\t\t\t   struct iw_request_info *info,\n\t\t\t   union iwreq_data *wrqu, char *extra);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

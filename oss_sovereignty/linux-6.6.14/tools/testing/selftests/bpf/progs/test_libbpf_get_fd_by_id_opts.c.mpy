@@ -1,0 +1,9 @@
+{
+  "module_name": "test_libbpf_get_fd_by_id_opts.c",
+  "hash_id": "6694000b62e825f58973ca1efb1bfe279281e1345ea390703a6ecd92a1cb788a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_libbpf_get_fd_by_id_opts.c",
+  "human_readable_source": "\n\n \n\n#include \"vmlinux.h\"\n#include <errno.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\n \n#define FMODE_WRITE\t0x2\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, __u32);\n} data_input SEC(\".maps\");\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"lsm/bpf_map\")\nint BPF_PROG(check_access, struct bpf_map *map, fmode_t fmode)\n{\n\tif (map != (struct bpf_map *)&data_input)\n\t\treturn 0;\n\n\tif (fmode & FMODE_WRITE)\n\t\treturn -EACCES;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

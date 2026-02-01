@@ -1,0 +1,9 @@
+{
+  "module_name": "navi10_ppt.h",
+  "hash_id": "84095f39401df9ae2fe179f9a8634b4ea35fa4ef4daa1fa9f1bbb039fea03238",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/swsmu/smu11/navi10_ppt.h",
+  "human_readable_source": " \n#ifndef __NAVI10_PPT_H__\n#define __NAVI10_PPT_H__\n\n#define NAVI10_PEAK_SCLK_XTX\t\t(1830)\n#define NAVI10_PEAK_SCLK_XT  \t\t(1755)\n#define NAVI10_PEAK_SCLK_XL  \t\t(1625)\n\n#define NAVI10_UMD_PSTATE_PROFILING_GFXCLK    (1300)\n#define NAVI10_UMD_PSTATE_PROFILING_SOCCLK    (980)\n#define NAVI10_UMD_PSTATE_PROFILING_MEMCLK    (625)\n#define NAVI10_UMD_PSTATE_PROFILING_VCLK      (980)\n#define NAVI10_UMD_PSTATE_PROFILING_DCLK      (850)\n\n#define NAVI14_UMD_PSTATE_PEAK_XT_GFXCLK      (1670)\n#define NAVI14_UMD_PSTATE_PEAK_XTM_GFXCLK     (1448)\n#define NAVI14_UMD_PSTATE_PEAK_XLM_GFXCLK     (1181)\n#define NAVI14_UMD_PSTATE_PEAK_XTX_GFXCLK     (1717)\n#define NAVI14_UMD_PSTATE_PEAK_XL_GFXCLK      (1448)\n\n#define NAVI14_UMD_PSTATE_PROFILING_GFXCLK    (1200)\n#define NAVI14_UMD_PSTATE_PROFILING_SOCCLK    (900)\n#define NAVI14_UMD_PSTATE_PROFILING_MEMCLK    (600)\n#define NAVI14_UMD_PSTATE_PROFILING_VCLK      (900)\n#define NAVI14_UMD_PSTATE_PROFILING_DCLK      (800)\n\n#define NAVI12_UMD_PSTATE_PEAK_GFXCLK     (1100)\n\n#define NAVI10_VOLTAGE_SCALE (4)\n\nextern void navi10_set_ppt_funcs(struct smu_context *smu);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

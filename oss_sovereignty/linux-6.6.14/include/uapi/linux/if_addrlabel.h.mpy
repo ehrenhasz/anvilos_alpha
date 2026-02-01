@@ -1,0 +1,9 @@
+{
+  "module_name": "if_addrlabel.h",
+  "hash_id": "3645f9f56f1d885de11e6b81e48bdfbd50112f0257c83a490d931c2210f41dee",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/if_addrlabel.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_IF_ADDRLABEL_H\n#define __LINUX_IF_ADDRLABEL_H\n\n#include <linux/types.h>\n\nstruct ifaddrlblmsg {\n\t__u8\t\tifal_family;\t\t \n\t__u8\t\t__ifal_reserved;\t \n\t__u8\t\tifal_prefixlen;\t\t \n\t__u8\t\tifal_flags;\t\t \n\t__u32\t\tifal_index;\t\t \n\t__u32\t\tifal_seq;\t\t \n};\n\nenum {\n\tIFAL_ADDRESS = 1,\n\tIFAL_LABEL = 2,\n\t__IFAL_MAX\n};\n\n#define IFAL_MAX\t(__IFAL_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

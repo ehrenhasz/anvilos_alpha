@@ -1,0 +1,9 @@
+{
+  "module_name": ".get_maintainer.ignore",
+  "hash_id": "e1b48a83f5af24485e3f2536874eb0c49116014aa5dc06f9174da3f0dc0b1be5",
+  "original_prompt": "Ingested from linux-6.6.14/.get_maintainer.ignore",
+  "human_readable_source": "Alan Cox <alan@lxorguk.ukuu.org.uk>\nAlan Cox <root@hraefn.swansea.linux.org.uk>\nChristoph Hellwig <hch@lst.de>\nMarc Gonzalez <marc.w.gonzalez@free.fr>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

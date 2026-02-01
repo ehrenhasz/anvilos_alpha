@@ -1,0 +1,9 @@
+{
+  "module_name": "builtin.h",
+  "hash_id": "95ff3ea29f1e4efd942f4e80c34000ac7eb22df6241d2b3b8234a9974b82da31",
+  "original_prompt": "Ingested from linux-6.6.14/tools/objtool/include/objtool/builtin.h",
+  "human_readable_source": " \n \n#ifndef _BUILTIN_H\n#define _BUILTIN_H\n\n#include <subcmd/parse-options.h>\n\nstruct opts {\n\t \n\tbool dump_orc;\n\tbool hack_jump_label;\n\tbool hack_noinstr;\n\tbool hack_skylake;\n\tbool ibt;\n\tbool mcount;\n\tbool noinstr;\n\tbool orc;\n\tbool retpoline;\n\tbool rethunk;\n\tbool unret;\n\tbool sls;\n\tbool stackval;\n\tbool static_call;\n\tbool uaccess;\n\tint prefix;\n\tbool cfi;\n\n\t \n\tbool backtrace;\n\tbool backup;\n\tbool dryrun;\n\tbool link;\n\tbool mnop;\n\tbool module;\n\tbool no_unreachable;\n\tbool sec_address;\n\tbool stats;\n\tbool verbose;\n};\n\nextern struct opts opts;\n\nextern int cmd_parse_options(int argc, const char **argv, const char * const usage[]);\n\nextern int objtool_run(int argc, const char **argv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

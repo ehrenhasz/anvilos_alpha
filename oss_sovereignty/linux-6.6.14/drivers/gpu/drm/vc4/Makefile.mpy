@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c66d060e9d07a53d35d5644dc2d9b5defcdcddb82b8e883d877e328581fca6e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/vc4/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Please keep these build lists sorted!\n\n# core driver code\nvc4-y := \\\n\tvc4_bo.o \\\n\tvc4_crtc.o \\\n\tvc4_drv.o \\\n\tvc4_dpi.o \\\n\tvc4_dsi.o \\\n\tvc4_fence.o \\\n\tvc4_kms.o \\\n\tvc4_gem.o \\\n\tvc4_hdmi.o \\\n\tvc4_hdmi_phy.o \\\n\tvc4_vec.o \\\n\tvc4_hvs.o \\\n\tvc4_irq.o \\\n\tvc4_perfmon.o \\\n\tvc4_plane.o \\\n\tvc4_render_cl.o \\\n\tvc4_trace_points.o \\\n\tvc4_txp.o \\\n\tvc4_v3d.o \\\n\tvc4_validate.o \\\n\tvc4_validate_shaders.o\n\nvc4-$(CONFIG_DRM_VC4_KUNIT_TEST) += \\\n\ttests/vc4_mock.o \\\n\ttests/vc4_mock_crtc.o \\\n\ttests/vc4_mock_output.o \\\n\ttests/vc4_mock_plane.o \\\n\ttests/vc4_test_pv_muxing.o\n\nvc4-$(CONFIG_DEBUG_FS) += vc4_debugfs.o\n\nobj-$(CONFIG_DRM_VC4)  += vc4.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

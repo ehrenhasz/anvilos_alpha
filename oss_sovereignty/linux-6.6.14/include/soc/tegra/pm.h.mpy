@@ -1,0 +1,9 @@
+{
+  "module_name": "pm.h",
+  "hash_id": "4be02d2c3e08a1bf9033eb02530d99eeec4389330a9bb8d0cf3242f5006ee56d",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/tegra/pm.h",
+  "human_readable_source": " \n \n\n#ifndef __SOC_TEGRA_PM_H__\n#define __SOC_TEGRA_PM_H__\n\n#include <linux/errno.h>\n\nenum tegra_suspend_mode {\n\tTEGRA_SUSPEND_NONE = 0,\n\tTEGRA_SUSPEND_LP2,  \n\tTEGRA_SUSPEND_LP1,  \n\tTEGRA_SUSPEND_LP0,  \n\tTEGRA_MAX_SUSPEND_MODE,\n\tTEGRA_SUSPEND_NOT_READY,\n};\n\n#if defined(CONFIG_PM_SLEEP) && defined(CONFIG_ARM) && defined(CONFIG_ARCH_TEGRA)\nenum tegra_suspend_mode\ntegra_pm_validate_suspend_mode(enum tegra_suspend_mode mode);\n\n \nvoid tegra_resume(void);\n\nint tegra30_pm_secondary_cpu_suspend(unsigned long arg);\nvoid tegra_pm_clear_cpu_in_lp2(void);\nvoid tegra_pm_set_cpu_in_lp2(void);\nint tegra_pm_enter_lp2(void);\nint tegra_pm_park_secondary_cpu(unsigned long cpu);\nvoid tegra_pm_init_suspend(void);\n#else\nstatic inline enum tegra_suspend_mode\ntegra_pm_validate_suspend_mode(enum tegra_suspend_mode mode)\n{\n\treturn TEGRA_SUSPEND_NONE;\n}\n\nstatic inline void tegra_resume(void)\n{\n}\n\nstatic inline int tegra30_pm_secondary_cpu_suspend(unsigned long arg)\n{\n\treturn -ENOTSUPP;\n}\n\nstatic inline void tegra_pm_clear_cpu_in_lp2(void)\n{\n}\n\nstatic inline void tegra_pm_set_cpu_in_lp2(void)\n{\n}\n\nstatic inline int tegra_pm_enter_lp2(void)\n{\n\treturn -ENOTSUPP;\n}\n\nstatic inline int tegra_pm_park_secondary_cpu(unsigned long cpu)\n{\n\treturn -ENOTSUPP;\n}\n\nstatic inline void tegra_pm_init_suspend(void)\n{\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

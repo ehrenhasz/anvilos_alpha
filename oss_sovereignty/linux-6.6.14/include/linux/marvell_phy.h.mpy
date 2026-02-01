@@ -1,0 +1,9 @@
+{
+  "module_name": "marvell_phy.h",
+  "hash_id": "75485ec70b99855d053367746009f3e43eb7c4a66cdc973fd38f104ef199e20b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/marvell_phy.h",
+  "human_readable_source": " \n#ifndef _MARVELL_PHY_H\n#define _MARVELL_PHY_H\n\n \n#define MARVELL_PHY_ID_MASK\t\t0xfffffff0\n\n \n#define MARVELL_PHY_ID_88E1101\t\t0x01410c60\n#define MARVELL_PHY_ID_88E1112\t\t0x01410c90\n#define MARVELL_PHY_ID_88E1111\t\t0x01410cc0\n#define MARVELL_PHY_ID_88E1118\t\t0x01410e10\n#define MARVELL_PHY_ID_88E1121R\t\t0x01410cb0\n#define MARVELL_PHY_ID_88E1145\t\t0x01410cd0\n#define MARVELL_PHY_ID_88E1149R\t\t0x01410e50\n#define MARVELL_PHY_ID_88E1240\t\t0x01410e30\n#define MARVELL_PHY_ID_88E1318S\t\t0x01410e90\n#define MARVELL_PHY_ID_88E1340S\t\t0x01410dc0\n#define MARVELL_PHY_ID_88E1116R\t\t0x01410e40\n#define MARVELL_PHY_ID_88E1510\t\t0x01410dd0\n#define MARVELL_PHY_ID_88E1540\t\t0x01410eb0\n#define MARVELL_PHY_ID_88E1545\t\t0x01410ea0\n#define MARVELL_PHY_ID_88E1548P\t\t0x01410ec0\n#define MARVELL_PHY_ID_88E3016\t\t0x01410e60\n#define MARVELL_PHY_ID_88X3310\t\t0x002b09a0\n#define MARVELL_PHY_ID_88E2110\t\t0x002b09b0\n#define MARVELL_PHY_ID_88X2222\t\t0x01410f10\n#define MARVELL_PHY_ID_88Q2110\t\t0x002b0980\n\n \n#define MARVELL_PHY_ID_88E1111_FINISAR\t0x01ff0cc0\n\n \n#define MARVELL_PHY_ID_88E6341_FAMILY\t0x01410f41\n#define MARVELL_PHY_ID_88E6390_FAMILY\t0x01410f90\n#define MARVELL_PHY_ID_88E6393_FAMILY\t0x002b0b9b\n\n#define MARVELL_PHY_FAMILY_ID(id)\t((id) >> 4)\n\n \n#define MARVELL_PHY_M1145_FLAGS_RESISTANCE\t0x00000001\n#define MARVELL_PHY_M1118_DNS323_LEDS\t\t0x00000002\n#define MARVELL_PHY_LED0_LINK_LED1_ACTIVE\t0x00000004\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

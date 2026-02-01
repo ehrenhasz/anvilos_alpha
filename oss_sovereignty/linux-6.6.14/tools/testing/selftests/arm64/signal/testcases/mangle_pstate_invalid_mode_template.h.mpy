@@ -1,0 +1,9 @@
+{
+  "module_name": "mangle_pstate_invalid_mode_template.h",
+  "hash_id": "1aaa759419d9d32b88508140186427947a2e28c55aa2515dd8100462dcb3e9ee",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/signal/testcases/mangle_pstate_invalid_mode_template.h",
+  "human_readable_source": " \n \n\n#define DEFINE_TESTCASE_MANGLE_PSTATE_INVALID_MODE(_mode)\t\t\\\n\t\t\t\t\t\t\t\t\t\\\nstatic int mangle_invalid_pstate_run(struct tdescr *td, siginfo_t *si,\t\\\n\t\t\t\t     ucontext_t *uc)\t\t\t\\\n{\t\t\t\t\t\t\t\t\t\\\n\tASSERT_GOOD_CONTEXT(uc);\t\t\t\t\t\\\n\t\t\t\t\t\t\t\t\t\\\n\tuc->uc_mcontext.pstate &= ~PSR_MODE_MASK;\t\t\t\\\n\tuc->uc_mcontext.pstate |= PSR_MODE_EL ## _mode;\t\t\t\\\n\t\t\t\t\t\t\t\t\t\\\n\treturn 1;\t\t\t\t\t\t\t\\\n}\t\t\t\t\t\t\t\t\t\\\n\t\t\t\t\t\t\t\t\t\\\nstruct tdescr tde = {\t\t\t\t\t\t\t\\\n\t\t.sanity_disabled = true,\t\t\t\t\\\n\t\t.name = \"MANGLE_PSTATE_INVALID_MODE_EL\"#_mode,\t\t\\\n\t\t.descr = \"Mangling uc_mcontext INVALID MODE EL\"#_mode,\t\\\n\t\t.sig_trig = SIGUSR1,\t\t\t\t\t\\\n\t\t.sig_ok = SIGSEGV,\t\t\t\t\t\\\n\t\t.run = mangle_invalid_pstate_run,\t\t\t\\\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

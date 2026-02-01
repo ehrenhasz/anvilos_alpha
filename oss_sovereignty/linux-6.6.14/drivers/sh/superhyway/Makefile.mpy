@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ff69cc80d296a6bf7f33e7435a9f070acd46b6c21c99243224f4779d25dd5bfa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/sh/superhyway/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the SuperHyway bus drivers.\n#\n\nobj-$(CONFIG_SUPERHYWAY)\t+= superhyway.o\nobj-$(CONFIG_SYSFS)\t\t+= superhyway-sysfs.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

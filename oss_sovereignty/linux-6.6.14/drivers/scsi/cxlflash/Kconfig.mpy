@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "23aaaf9877c24ba28c752dbeae1d73f4db23e2c8455e43848149aa664ab24b70",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/cxlflash/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# IBM CXL-attached Flash Accelerator SCSI Driver\n#\n\nconfig CXLFLASH\n\ttristate \"Support for IBM CAPI Flash\"\n\tdepends on PCI && SCSI && (CXL || OCXL) && EEH\n\tselect IRQ_POLL\n\tdefault m\n\thelp\n\t  Allows CAPI Accelerated IO to Flash\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

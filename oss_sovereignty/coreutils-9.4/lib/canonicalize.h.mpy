@@ -1,0 +1,9 @@
+{
+  "module_name": "canonicalize.h",
+  "hash_id": "555b6ba59fa940aaef5f4a7b81ccfd18b05b444c7f1283c21004c9ec18dc1e3d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/canonicalize.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stdlib.h>  \n\n#define CAN_MODE_MASK (CAN_EXISTING | CAN_ALL_BUT_LAST | CAN_MISSING)\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\nenum canonicalize_mode_t\n  {\n     \n    CAN_EXISTING = 0,\n\n     \n    CAN_ALL_BUT_LAST = 1,\n\n     \n    CAN_MISSING = 2,\n\n     \n    CAN_NOLINKS = 4\n  };\ntypedef enum canonicalize_mode_t canonicalize_mode_t;\n\n \nchar *canonicalize_filename_mode (const char *, canonicalize_mode_t)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

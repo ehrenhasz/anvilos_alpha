@@ -1,0 +1,9 @@
+{
+  "module_name": "gov_user_space.c",
+  "hash_id": "6a26961d7cc81a5803340662f02d0b740a00a9cdf7c0ebb87fa664a85add1f83",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/gov_user_space.c",
+  "human_readable_source": "\n \n\n#include <linux/slab.h>\n#include <linux/thermal.h>\n\n#include \"thermal_core.h\"\n\nstatic int user_space_bind(struct thermal_zone_device *tz)\n{\n\tpr_info_once(\"Consider using thermal netlink events interface\\n\");\n\n\treturn 0;\n}\n\n \nstatic int notify_user_space(struct thermal_zone_device *tz, int trip)\n{\n\tchar *thermal_prop[5];\n\tint i;\n\n\tlockdep_assert_held(&tz->lock);\n\n\tthermal_prop[0] = kasprintf(GFP_KERNEL, \"NAME=%s\", tz->type);\n\tthermal_prop[1] = kasprintf(GFP_KERNEL, \"TEMP=%d\", tz->temperature);\n\tthermal_prop[2] = kasprintf(GFP_KERNEL, \"TRIP=%d\", trip);\n\tthermal_prop[3] = kasprintf(GFP_KERNEL, \"EVENT=%d\", tz->notify_event);\n\tthermal_prop[4] = NULL;\n\tkobject_uevent_env(&tz->device.kobj, KOBJ_CHANGE, thermal_prop);\n\tfor (i = 0; i < 4; ++i)\n\t\tkfree(thermal_prop[i]);\n\n\treturn 0;\n}\n\nstatic struct thermal_governor thermal_gov_user_space = {\n\t.name\t\t= \"user_space\",\n\t.throttle\t= notify_user_space,\n\t.bind_to_tz\t= user_space_bind,\n};\nTHERMAL_GOVERNOR_DECLARE(thermal_gov_user_space);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

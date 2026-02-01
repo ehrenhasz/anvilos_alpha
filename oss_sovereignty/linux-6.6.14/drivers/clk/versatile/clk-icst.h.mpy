@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-icst.h",
+  "hash_id": "b2ed079db73ffcad54c1b80cffce7c2cef9e1e71b4fe3a187929620c5bfa7d6e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/versatile/clk-icst.h",
+  "human_readable_source": " \nstruct regmap;\n\n \nenum icst_control_type {\n\tICST_VERSATILE,  \n\tICST_INTEGRATOR_AP_CM,  \n\tICST_INTEGRATOR_AP_SYS,  \n\tICST_INTEGRATOR_AP_PCI,  \n\tICST_INTEGRATOR_CP_CM_CORE,  \n\tICST_INTEGRATOR_CP_CM_MEM,  \n\tICST_INTEGRATOR_IM_PD1,  \n};\n\n \nstruct clk_icst_desc {\n\tconst struct icst_params *params;\n\tu32 vco_offset;\n\tu32 lock_offset;\n};\n\nstruct clk *icst_clk_register(struct device *dev,\n\t\t\t      const struct clk_icst_desc *desc,\n\t\t\t      const char *name,\n\t\t\t      const char *parent_name,\n\t\t\t      void __iomem *base);\n\nstruct clk *icst_clk_setup(struct device *dev,\n\t\t\t   const struct clk_icst_desc *desc,\n\t\t\t   const char *name,\n\t\t\t   const char *parent_name,\n\t\t\t   struct regmap *map,\n\t\t\t   enum icst_control_type ctype);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

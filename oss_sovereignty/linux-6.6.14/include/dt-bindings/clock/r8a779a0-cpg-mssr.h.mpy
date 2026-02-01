@@ -1,0 +1,9 @@
+{
+  "module_name": "r8a779a0-cpg-mssr.h",
+  "hash_id": "0cb27c9ab96706c60d3462e9a4f9e5cda37af394a2f152e42ba361f3268c3e7c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/r8a779a0-cpg-mssr.h",
+  "human_readable_source": " \n \n#ifndef __DT_BINDINGS_CLOCK_R8A779A0_CPG_MSSR_H__\n#define __DT_BINDINGS_CLOCK_R8A779A0_CPG_MSSR_H__\n\n#include <dt-bindings/clock/renesas-cpg-mssr.h>\n\n \n#define R8A779A0_CLK_Z0\t\t\t0\n#define R8A779A0_CLK_ZX\t\t\t1\n#define R8A779A0_CLK_Z1\t\t\t2\n#define R8A779A0_CLK_ZR\t\t\t3\n#define R8A779A0_CLK_ZS\t\t\t4\n#define R8A779A0_CLK_ZT\t\t\t5\n#define R8A779A0_CLK_ZTR\t\t6\n#define R8A779A0_CLK_S1D1\t\t7\n#define R8A779A0_CLK_S1D2\t\t8\n#define R8A779A0_CLK_S1D4\t\t9\n#define R8A779A0_CLK_S1D8\t\t10\n#define R8A779A0_CLK_S1D12\t\t11\n#define R8A779A0_CLK_S3D1\t\t12\n#define R8A779A0_CLK_S3D2\t\t13\n#define R8A779A0_CLK_S3D4\t\t14\n#define R8A779A0_CLK_LB\t\t\t15\n#define R8A779A0_CLK_CP\t\t\t16\n#define R8A779A0_CLK_CL\t\t\t17\n#define R8A779A0_CLK_CL16MCK\t\t18\n#define R8A779A0_CLK_ZB30\t\t19\n#define R8A779A0_CLK_ZB30D2\t\t20\n#define R8A779A0_CLK_ZB30D4\t\t21\n#define R8A779A0_CLK_ZB31\t\t22\n#define R8A779A0_CLK_ZB31D2\t\t23\n#define R8A779A0_CLK_ZB31D4\t\t24\n#define R8A779A0_CLK_SD0H\t\t25\n#define R8A779A0_CLK_SD0\t\t26\n#define R8A779A0_CLK_RPC\t\t27\n#define R8A779A0_CLK_RPCD2\t\t28\n#define R8A779A0_CLK_MSO\t\t29\n#define R8A779A0_CLK_CANFD\t\t30\n#define R8A779A0_CLK_CSI0\t\t31\n#define R8A779A0_CLK_FRAY\t\t32\n#define R8A779A0_CLK_DSI\t\t33\n#define R8A779A0_CLK_VIP\t\t34\n#define R8A779A0_CLK_ADGH\t\t35\n#define R8A779A0_CLK_CNNDSP\t\t36\n#define R8A779A0_CLK_ICU\t\t37\n#define R8A779A0_CLK_ICUD2\t\t38\n#define R8A779A0_CLK_VCBUS\t\t39\n#define R8A779A0_CLK_CBFUSA\t\t40\n#define R8A779A0_CLK_R\t\t\t41\n#define R8A779A0_CLK_OSC\t\t42\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

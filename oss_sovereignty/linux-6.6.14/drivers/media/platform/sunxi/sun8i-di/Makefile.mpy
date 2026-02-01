@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "93a91a709294c28cc3218352869ea324ac0a4552ca999c0a80716675528cab1e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/sunxi/sun8i-di/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_VIDEO_SUN8I_DEINTERLACE) += sun8i-di.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

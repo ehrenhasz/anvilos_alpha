@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e6acd9147ad4dc6e6fd93f03e9472ca5aa8d5435347971e6f11d3b5838da33a5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/actions/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CLK_ACTIONS)\t+= clk-owl.o\n\nclk-owl-y\t\t\t+= owl-common.o\nclk-owl-y\t\t\t+= owl-gate.o\nclk-owl-y\t\t\t+= owl-mux.o\nclk-owl-y\t\t\t+= owl-divider.o\nclk-owl-y\t\t\t+= owl-factor.o\nclk-owl-y\t\t\t+= owl-composite.o\nclk-owl-y\t\t\t+= owl-pll.o\nclk-owl-y\t\t\t+= owl-reset.o\n\n# SoC support\nobj-$(CONFIG_CLK_OWL_S500)\t+= owl-s500.o\nobj-$(CONFIG_CLK_OWL_S700)\t+= owl-s700.o\nobj-$(CONFIG_CLK_OWL_S900)\t+= owl-s900.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

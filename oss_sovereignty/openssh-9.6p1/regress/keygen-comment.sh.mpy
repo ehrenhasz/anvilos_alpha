@@ -1,0 +1,9 @@
+{
+  "module_name": "keygen-comment.sh",
+  "hash_id": "3a6808cb9102c8be56915733140b2558b73ae39f98a1e4a8f651842e3e1bdbd5",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/keygen-comment.sh",
+  "human_readable_source": "#\u00a0\u00a0\u00a0 Placed in the Public Domain.\n\ntid=\"Comment extraction from private key\"\n\nS1=\"secret1\"\n\ncheck_fingerprint () {\n\tfile=\"$1\"\n\tcomment=\"$2\"\n\ttrace \"fingerprinting $file\"\n\tif ! ${SSHKEYGEN} -l -E sha256 -f $file > $OBJ/$t-fgp ; then\n\t\tfail \"ssh-keygen -l failed for $t-key\"\n\tfi\n\tif ! egrep \"^([0-9]+) SHA256:(.){43} ${comment} \\(.*\\)\\$\" \\\n\t    $OBJ/$t-fgp >/dev/null 2>&1 ; then\n\t\tfail \"comment is not correctly recovered for $t-key\"\n\tfi\n\trm -f $OBJ/$t-fgp\n}\n\nfor fmt in '' RFC4716 PKCS8 PEM; do\n\tfor t in $SSH_KEYTYPES; do\n\t\ttrace \"generating $t key in '$fmt' format\"\n\t\trm -f $OBJ/$t-key*\n\t\toldfmt=\"\"\n\t\tcase \"$fmt\" in\n\t\tPKCS8|PEM) oldfmt=1 ;;\n\t\tesac\n\t\t# Some key types like ssh-ed25519 and *@openssh.com are never\n\t\t# stored in old formats.\n\t\tcase \"$t\" in\n\t\tssh-ed25519|*openssh.com) test -z \"$oldfmt\" || continue ;;\n\t\tesac\n\t\tcomment=\"foo bar\"\n\t\tfmtarg=\"\"\n\t\ttest -z \"$fmt\" || fmtarg=\"-m $fmt\"\n\t\t${SSHKEYGEN} $fmtarg -N '' -C \"${comment}\" \\\n\t\t    -t $t -f $OBJ/$t-key >/dev/null 2>&1 || \\\n\t\t\tfatal \"keygen of $t in format $fmt failed\"\n\t\tcheck_fingerprint $OBJ/$t-key \"${comment}\"\n\t\tcheck_fingerprint $OBJ/$t-key.pub \"${comment}\"\n\t\t# Output fingerprint using only private file\n\t\ttrace \"fingerprinting $t key using private key file\"\n\t\trm -f $OBJ/$t-key.pub\n\t\tif [ ! -z \"$oldfmt\" ] ; then\n\t\t\t# Comment cannot be recovered from old format keys.\n\t\t\tcomment=\"no comment\"\n\t\tfi\n\t\tcheck_fingerprint $OBJ/$t-key \"${comment}\"\n\t\trm -f $OBJ/$t-key*\n\tdone\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mxl111sf-i2c.h",
+  "hash_id": "40310414ee07c81369c1dc8c97c0cfd627e7cfa798334e09b5f3fb5f1524ed29",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/dvb-usb-v2/mxl111sf-i2c.h",
+  "human_readable_source": " \n \n\n#ifndef _DVB_USB_MXL111SF_I2C_H_\n#define _DVB_USB_MXL111SF_I2C_H_\n\n#include <linux/i2c.h>\n\nint mxl111sf_i2c_xfer(struct i2c_adapter *adap,\n\t\t      struct i2c_msg msg[], int num);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

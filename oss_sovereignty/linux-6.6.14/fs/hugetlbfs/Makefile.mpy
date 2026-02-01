@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "112afc5637d9580e899d20420da57b4a11e160c708f78548535eac5b3286bc79",
+  "original_prompt": "Ingested from linux-6.6.14/fs/hugetlbfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the linux ramfs routines.\n#\n\nobj-$(CONFIG_HUGETLBFS) += hugetlbfs.o\n\nhugetlbfs-objs := inode.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

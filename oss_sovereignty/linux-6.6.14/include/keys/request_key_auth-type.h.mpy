@@ -1,0 +1,9 @@
+{
+  "module_name": "request_key_auth-type.h",
+  "hash_id": "3c8a64a584502c758ffa07030561c2e9e45df5fd15a3848fcce52da8577e9611",
+  "original_prompt": "Ingested from linux-6.6.14/include/keys/request_key_auth-type.h",
+  "human_readable_source": " \n \n\n#ifndef _KEYS_REQUEST_KEY_AUTH_TYPE_H\n#define _KEYS_REQUEST_KEY_AUTH_TYPE_H\n\n#include <linux/key.h>\n\n \nstruct request_key_auth {\n\tstruct rcu_head\t\trcu;\n\tstruct key\t\t*target_key;\n\tstruct key\t\t*dest_keyring;\n\tconst struct cred\t*cred;\n\tvoid\t\t\t*callout_info;\n\tsize_t\t\t\tcallout_len;\n\tpid_t\t\t\tpid;\n\tchar\t\t\top[8];\n} __randomize_layout;\n\nstatic inline struct request_key_auth *get_request_key_auth(const struct key *key)\n{\n\treturn key->payload.data[0];\n}\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "reboot.h",
+  "hash_id": "62b31b5dfa532bf49a7aad314079b713cd5416765d09f5b7a78ca3b577ca439e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/reboot.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_REBOOT_H\n#define _UAPI_LINUX_REBOOT_H\n\n \n\n#define\tLINUX_REBOOT_MAGIC1\t0xfee1dead\n#define\tLINUX_REBOOT_MAGIC2\t672274793\n#define\tLINUX_REBOOT_MAGIC2A\t85072278\n#define\tLINUX_REBOOT_MAGIC2B\t369367448\n#define\tLINUX_REBOOT_MAGIC2C\t537993216\n\n\n \n\n#define\tLINUX_REBOOT_CMD_RESTART\t0x01234567\n#define\tLINUX_REBOOT_CMD_HALT\t\t0xCDEF0123\n#define\tLINUX_REBOOT_CMD_CAD_ON\t\t0x89ABCDEF\n#define\tLINUX_REBOOT_CMD_CAD_OFF\t0x00000000\n#define\tLINUX_REBOOT_CMD_POWER_OFF\t0x4321FEDC\n#define\tLINUX_REBOOT_CMD_RESTART2\t0xA1B2C3D4\n#define\tLINUX_REBOOT_CMD_SW_SUSPEND\t0xD000FCE2\n#define\tLINUX_REBOOT_CMD_KEXEC\t\t0x45584543\n\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9d2ca793c895053485693c0761587b2f2d29a2d771d4d8c2df6c3977ff24c988",
+  "original_prompt": "Ingested from linux-6.6.14/sound/isa/gus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-gus-lib-objs := gus_main.o \\\n\t\t    gus_io.o gus_irq.o gus_timer.o \\\n\t\t    gus_mem.o gus_mem_proc.o gus_dram.o gus_dma.o gus_volume.o \\\n\t\t    gus_pcm.o gus_mixer.o \\\n\t\t    gus_uart.o \\\n\t\t    gus_reset.o\n\nsnd-gusclassic-objs := gusclassic.o\nsnd-gusextreme-objs := gusextreme.o\nsnd-gusmax-objs := gusmax.o\nsnd-interwave-objs := interwave.o\nsnd-interwave-stb-objs := interwave-stb.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_GUSCLASSIC) += snd-gusclassic.o snd-gus-lib.o\nobj-$(CONFIG_SND_GUSMAX) += snd-gusmax.o snd-gus-lib.o\nobj-$(CONFIG_SND_GUSEXTREME) += snd-gusextreme.o snd-gus-lib.o\nobj-$(CONFIG_SND_INTERWAVE) += snd-interwave.o snd-gus-lib.o\nobj-$(CONFIG_SND_INTERWAVE_STB) += snd-interwave-stb.o snd-gus-lib.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

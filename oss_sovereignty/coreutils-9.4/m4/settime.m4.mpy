@@ -1,0 +1,9 @@
+{
+  "module_name": "settime.m4",
+  "hash_id": "92c3a360a7b8157eccf4d5635a5fb3d9ed85e8342f04f15bf2b4a5b2d8404b2b",
+  "original_prompt": "Ingested from coreutils-9.4/m4/settime.m4",
+  "human_readable_source": "# settime.m4 serial 7\ndnl Copyright (C) 2002, 2004-2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_SETTIME],\n[\n  dnl Prerequisites of lib/settime.c.\n  AC_REQUIRE([gl_CLOCK_TIME])\n  AC_REQUIRE([gl_TIMESPEC])\n  AC_CHECK_FUNCS_ONCE([settimeofday stime])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

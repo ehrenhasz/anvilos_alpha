@@ -1,0 +1,9 @@
+{
+  "module_name": "test_smoke.sh",
+  "hash_id": "054889ded5cb7d4a22c2330cf2d504ced84fd89c7b78481c3d03503cd966fee1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tpm2/test_smoke.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)\n\n# Kselftest framework requirement - SKIP code is 4.\nksft_skip=4\n\n[ -e /dev/tpm0 ] || exit $ksft_skip\n\npython3 -m unittest -v tpm2_tests.SmokeTest\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

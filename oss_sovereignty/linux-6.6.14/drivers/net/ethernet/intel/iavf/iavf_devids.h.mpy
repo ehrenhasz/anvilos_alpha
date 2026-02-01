@@ -1,0 +1,9 @@
+{
+  "module_name": "iavf_devids.h",
+  "hash_id": "9e456f559366c1c08e40b52b0b6ee9a45f636b5895c8520dd0fcf42876fac865",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/iavf/iavf_devids.h",
+  "human_readable_source": " \n \n\n#ifndef _IAVF_DEVIDS_H_\n#define _IAVF_DEVIDS_H_\n\n \n#define IAVF_DEV_ID_VF\t\t\t0x154C\n#define IAVF_DEV_ID_VF_HV\t\t0x1571\n#define IAVF_DEV_ID_ADAPTIVE_VF\t\t0x1889\n#define IAVF_DEV_ID_X722_VF\t\t0x37CD\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

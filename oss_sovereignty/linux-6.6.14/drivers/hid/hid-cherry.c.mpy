@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-cherry.c",
+  "hash_id": "21d9dc4ad4e0aeac75a542e39e99556061bc64a0f76f9b39ea73f6b542215a04",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-cherry.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/device.h>\n#include <linux/hid.h>\n#include <linux/module.h>\n\n#include \"hid-ids.h\"\n\n \nstatic __u8 *ch_report_fixup(struct hid_device *hdev, __u8 *rdesc,\n\t\tunsigned int *rsize)\n{\n\tif (*rsize >= 18 && rdesc[11] == 0x3c && rdesc[12] == 0x02) {\n\t\thid_info(hdev, \"fixing up Cherry Cymotion report descriptor\\n\");\n\t\trdesc[11] = rdesc[16] = 0xff;\n\t\trdesc[12] = rdesc[17] = 0x03;\n\t}\n\treturn rdesc;\n}\n\n#define ch_map_key_clear(c)\thid_map_usage_clear(hi, usage, bit, max, \\\n\t\t\t\t\tEV_KEY, (c))\nstatic int ch_input_mapping(struct hid_device *hdev, struct hid_input *hi,\n\t\tstruct hid_field *field, struct hid_usage *usage,\n\t\tunsigned long **bit, int *max)\n{\n\tif ((usage->hid & HID_USAGE_PAGE) != HID_UP_CONSUMER)\n\t\treturn 0;\n\n\tswitch (usage->hid & HID_USAGE) {\n\tcase 0x301: ch_map_key_clear(KEY_PROG1);\tbreak;\n\tcase 0x302: ch_map_key_clear(KEY_PROG2);\tbreak;\n\tcase 0x303: ch_map_key_clear(KEY_PROG3);\tbreak;\n\tdefault:\n\t\treturn 0;\n\t}\n\n\treturn 1;\n}\n\nstatic const struct hid_device_id ch_devices[] = {\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_CHERRY, USB_DEVICE_ID_CHERRY_CYMOTION) },\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_CHERRY, USB_DEVICE_ID_CHERRY_CYMOTION_SOLAR) },\n\t{ }\n};\nMODULE_DEVICE_TABLE(hid, ch_devices);\n\nstatic struct hid_driver ch_driver = {\n\t.name = \"cherry\",\n\t.id_table = ch_devices,\n\t.report_fixup = ch_report_fixup,\n\t.input_mapping = ch_input_mapping,\n};\nmodule_hid_driver(ch_driver);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

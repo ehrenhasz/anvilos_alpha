@@ -1,0 +1,9 @@
+{
+  "module_name": "midi.h",
+  "hash_id": "1850c6d89d25845556c529f6661f558f9e924e77914d1f8628469e35130ea996",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/line6/midi.h",
+  "human_readable_source": " \n \n\n#ifndef MIDI_H\n#define MIDI_H\n\n#include <sound/rawmidi.h>\n\n#include \"midibuf.h\"\n\n#define MIDI_BUFFER_SIZE 1024\n\nstruct snd_line6_midi {\n\t \n\tstruct usb_line6 *line6;\n\n\t \n\tstruct snd_rawmidi_substream *substream_receive;\n\n\t \n\tstruct snd_rawmidi_substream *substream_transmit;\n\n\t \n\tint num_active_send_urbs;\n\n\t \n\tspinlock_t lock;\n\n\t \n\twait_queue_head_t send_wait;\n\n\t \n\tstruct midi_buffer midibuf_in;\n\n\t \n\tstruct midi_buffer midibuf_out;\n};\n\nextern int line6_init_midi(struct usb_line6 *line6);\nextern void line6_midi_receive(struct usb_line6 *line6, unsigned char *data,\n\t\t\t       int length);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

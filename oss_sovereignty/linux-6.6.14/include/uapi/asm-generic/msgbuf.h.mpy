@@ -1,0 +1,9 @@
+{
+  "module_name": "msgbuf.h",
+  "hash_id": "4c390c7f95dff8f23b0f9364d97c5bd0a0fbbc4eedf3387f214b6b73894725d6",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/asm-generic/msgbuf.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_MSGBUF_H\n#define __ASM_GENERIC_MSGBUF_H\n\n#include <asm/bitsperlong.h>\n#include <asm/ipcbuf.h>\n\n \n\nstruct msqid64_ds {\n\tstruct ipc64_perm msg_perm;\n#if __BITS_PER_LONG == 64\n\tlong\t\t msg_stime;\t \n\tlong\t\t msg_rtime;\t \n\tlong\t\t msg_ctime;\t \n#else\n\tunsigned long\tmsg_stime;\t \n\tunsigned long\tmsg_stime_high;\n\tunsigned long\tmsg_rtime;\t \n\tunsigned long\tmsg_rtime_high;\n\tunsigned long\tmsg_ctime;\t \n\tunsigned long\tmsg_ctime_high;\n#endif\n\tunsigned long\tmsg_cbytes;\t \n\tunsigned long\tmsg_qnum;\t \n\tunsigned long\t msg_qbytes;\t \n\t__kernel_pid_t msg_lspid;\t \n\t__kernel_pid_t msg_lrpid;\t \n\tunsigned long\t __unused4;\n\tunsigned long\t __unused5;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

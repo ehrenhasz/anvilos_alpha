@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "7c0e6963f1c981300804021e7a5d16a934b3e472069815c2962b8ee1bf571193",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/ebb/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nreg_access_test\nevent_attributes_test\ncycles_test\ncycles_with_freeze_test\npmc56_overflow_test\nebb_vs_cpu_event_test\ncpu_event_vs_ebb_test\ncpu_event_pinned_vs_ebb_test\ntask_event_vs_ebb_test\ntask_event_pinned_vs_ebb_test\nmulti_ebb_procs_test\nmulti_counter_test\npmae_handling_test\nclose_clears_pmcc_test\ninstruction_count_test\nfork_cleanup_test\nebb_on_child_test\nebb_on_willing_child_test\nback_to_back_ebbs_test\nlost_exception_test\nno_handler_test\ncycles_with_mmcr2_test\nregs_access_pmccext_test\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "marvell,pxa1928.h",
+  "hash_id": "5c7fc90186b07b8562d15d3b06a0bdbe65aab533f0686cf4d4b6c3417c9024a0",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/marvell,pxa1928.h",
+  "human_readable_source": " \n#ifndef __DTS_MARVELL_PXA1928_CLOCK_H\n#define __DTS_MARVELL_PXA1928_CLOCK_H\n\n \n\n \n#define PXA1928_CLK_RTC\t\t\t0x00\n#define PXA1928_CLK_TWSI0\t\t0x01\n#define PXA1928_CLK_TWSI1\t\t0x02\n#define PXA1928_CLK_TWSI2\t\t0x03\n#define PXA1928_CLK_TWSI3\t\t0x04\n#define PXA1928_CLK_OWIRE\t\t0x05\n#define PXA1928_CLK_KPC\t\t\t0x06\n#define PXA1928_CLK_TB_ROTARY\t\t0x07\n#define PXA1928_CLK_SW_JTAG\t\t0x08\n#define PXA1928_CLK_TIMER1\t\t0x09\n#define PXA1928_CLK_UART0\t\t0x0b\n#define PXA1928_CLK_UART1\t\t0x0c\n#define PXA1928_CLK_UART2\t\t0x0d\n#define PXA1928_CLK_GPIO\t\t0x0e\n#define PXA1928_CLK_PWM0\t\t0x0f\n#define PXA1928_CLK_PWM1\t\t0x10\n#define PXA1928_CLK_PWM2\t\t0x11\n#define PXA1928_CLK_PWM3\t\t0x12\n#define PXA1928_CLK_SSP0\t\t0x13\n#define PXA1928_CLK_SSP1\t\t0x14\n#define PXA1928_CLK_SSP2\t\t0x15\n\n#define PXA1928_CLK_TWSI4\t\t0x1f\n#define PXA1928_CLK_TWSI5\t\t0x20\n#define PXA1928_CLK_UART3\t\t0x22\n#define PXA1928_CLK_THSENS_GLOB\t\t0x24\n#define PXA1928_CLK_THSENS_CPU\t\t0x26\n#define PXA1928_CLK_THSENS_VPU\t\t0x27\n#define PXA1928_CLK_THSENS_GC\t\t0x28\n\n\n \n#define PXA1928_CLK_SDH0\t\t0x15\n#define PXA1928_CLK_SDH1\t\t0x16\n#define PXA1928_CLK_USB\t\t\t0x17\n#define PXA1928_CLK_NAND\t\t0x18\n#define PXA1928_CLK_DMA\t\t\t0x19\n\n#define PXA1928_CLK_SDH2\t\t0x3a\n#define PXA1928_CLK_SDH3\t\t0x3b\n#define PXA1928_CLK_HSIC\t\t0x3e\n#define PXA1928_CLK_SDH4\t\t0x57\n#define PXA1928_CLK_GC3D\t\t0x5d\n#define PXA1928_CLK_GC2D\t\t0x5f\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

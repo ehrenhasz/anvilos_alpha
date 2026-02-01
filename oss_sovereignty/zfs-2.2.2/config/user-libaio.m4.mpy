@@ -1,0 +1,9 @@
+{
+  "module_name": "user-libaio.m4",
+  "hash_id": "41e27c5f5bc0930efd743f24740b6e71e029f0f0faa0b00514de3f631a5b1cb8",
+  "original_prompt": "Ingested from zfs-2.2.2/config/user-libaio.m4",
+  "human_readable_source": "dnl #\ndnl # Check for libaio - only used for mmap_libaio test cases.\ndnl #\nAC_DEFUN([ZFS_AC_CONFIG_USER_LIBAIO], [\n\tZFS_AC_FIND_SYSTEM_LIBRARY(LIBAIO, [], [libaio.h], [], [aio], [], [user_libaio=yes], [user_libaio=no])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

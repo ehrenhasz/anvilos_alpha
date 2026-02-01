@@ -1,0 +1,9 @@
+{
+  "module_name": "wip.dot",
+  "hash_id": "0b693ea9bbb877cb78b479f28e44c8fec91766f49edfdaa3372227c6d983af5a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/verification/models/wip.dot",
+  "human_readable_source": "digraph state_automaton {\n\t{node [shape = circle] \"non_preemptive\"};\n\t{node [shape = plaintext, style=invis, label=\"\"] \"__init_preemptive\"};\n\t{node [shape = doublecircle] \"preemptive\"};\n\t{node [shape = circle] \"preemptive\"};\n\t\"__init_preemptive\" -> \"preemptive\";\n\t\"non_preemptive\" [label = \"non_preemptive\"];\n\t\"non_preemptive\" -> \"non_preemptive\" [ label = \"sched_waking\" ];\n\t\"non_preemptive\" -> \"preemptive\" [ label = \"preempt_enable\" ];\n\t\"preemptive\" [label = \"preemptive\"];\n\t\"preemptive\" -> \"non_preemptive\" [ label = \"preempt_disable\" ];\n\t{ rank = min ;\n\t\t\"__init_preemptive\";\n\t\t\"preemptive\";\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

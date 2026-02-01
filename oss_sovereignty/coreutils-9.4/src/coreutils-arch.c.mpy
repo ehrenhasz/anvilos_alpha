@@ -1,0 +1,9 @@
+{
+  "module_name": "coreutils-arch.c",
+  "hash_id": "ed89827d5feaa7b0d44f89c7db8fcd776e039bba74c96ee83b4812f5525a78cd",
+  "original_prompt": "Ingested from coreutils-9.4/src/coreutils-arch.c",
+  "human_readable_source": " \n\n#include <config.h>\n#include \"system.h\"\n\n#include \"uname.h\"\n \nint single_binary_main_uname (int argc, char **argv);\nint single_binary_main_arch (int argc, char **argv);\n\nint\nsingle_binary_main_arch (int argc, char **argv)\n{\n  uname_mode = UNAME_ARCH;\n  return single_binary_main_uname (argc, argv);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

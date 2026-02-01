@@ -1,0 +1,9 @@
+{
+  "module_name": "mmu_public.h",
+  "hash_id": "fcd432e385616e2cedcef8098ac75e4fc5fc664beb9440797f1714fc6a21c786",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/host/mmu_public.h",
+  "human_readable_source": " \n \n\n#ifndef __MMU_PUBLIC_H_INCLUDED__\n#define __MMU_PUBLIC_H_INCLUDED__\n\n#include \"system_local.h\"\n#include \"device_access.h\"\n#include \"assert_support.h\"\n\n \nvoid mmu_set_page_table_base_index(\n    const mmu_ID_t\t\tID,\n    const hrt_data\t\tbase_index);\n\n \nhrt_data mmu_get_page_table_base_index(\n    const mmu_ID_t\t\tID);\n\n \nvoid mmu_invalidate_cache(\n    const mmu_ID_t\t\tID);\n\n \nvoid mmu_invalidate_cache_all(void);\n\n \nstatic inline void mmu_reg_store(\n    const mmu_ID_t\t\tID,\n    const unsigned int\treg,\n    const hrt_data\t\tvalue)\n{\n\tassert(ID < N_MMU_ID);\n\tassert(MMU_BASE[ID] != (hrt_address) - 1);\n\tia_css_device_store_uint32(MMU_BASE[ID] + reg * sizeof(hrt_data), value);\n\treturn;\n}\n\n \nstatic inline hrt_data mmu_reg_load(\n    const mmu_ID_t\t\tID,\n    const unsigned int\treg)\n{\n\tassert(ID < N_MMU_ID);\n\tassert(MMU_BASE[ID] != (hrt_address) - 1);\n\treturn ia_css_device_load_uint32(MMU_BASE[ID] + reg * sizeof(hrt_data));\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

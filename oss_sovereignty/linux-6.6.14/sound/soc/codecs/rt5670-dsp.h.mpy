@@ -1,0 +1,9 @@
+{
+  "module_name": "rt5670-dsp.h",
+  "hash_id": "d37eced4d9684c734a11b681ce9f051545b27b400559b5b1272550d3621cdeba",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/rt5670-dsp.h",
+  "human_readable_source": " \n \n\n#ifndef __RT5670_DSP_H__\n#define __RT5670_DSP_H__\n\n#define RT5670_DSP_CTRL1\t\t0xe0\n#define RT5670_DSP_CTRL2\t\t0xe1\n#define RT5670_DSP_CTRL3\t\t0xe2\n#define RT5670_DSP_CTRL4\t\t0xe3\n#define RT5670_DSP_CTRL5\t\t0xe4\n\n \n#define RT5670_DSP_CMD_MASK\t\t(0xff << 8)\n#define RT5670_DSP_CMD_PE\t\t(0x0d << 8)\t \n#define RT5670_DSP_CMD_MW\t\t(0x3b << 8)\t \n#define RT5670_DSP_CMD_MR\t\t(0x37 << 8)\t \n#define RT5670_DSP_CMD_RR\t\t(0x60 << 8)\t \n#define RT5670_DSP_CMD_RW\t\t(0x68 << 8)\t \n#define RT5670_DSP_REG_DATHI\t\t(0x26 << 8)\t \n#define RT5670_DSP_REG_DATLO\t\t(0x25 << 8)\t \n#define RT5670_DSP_CLK_MASK\t\t(0x3 << 6)\n#define RT5670_DSP_CLK_SFT\t\t6\n#define RT5670_DSP_CLK_768K\t\t(0x0 << 6)\n#define RT5670_DSP_CLK_384K\t\t(0x1 << 6)\n#define RT5670_DSP_CLK_192K\t\t(0x2 << 6)\n#define RT5670_DSP_CLK_96K\t\t(0x3 << 6)\n#define RT5670_DSP_BUSY_MASK\t\t(0x1 << 5)\n#define RT5670_DSP_RW_MASK\t\t(0x1 << 4)\n#define RT5670_DSP_DL_MASK\t\t(0x3 << 2)\n#define RT5670_DSP_DL_0\t\t\t(0x0 << 2)\n#define RT5670_DSP_DL_1\t\t\t(0x1 << 2)\n#define RT5670_DSP_DL_2\t\t\t(0x2 << 2)\n#define RT5670_DSP_DL_3\t\t\t(0x3 << 2)\n#define RT5670_DSP_I2C_AL_16\t\t(0x1 << 1)\n#define RT5670_DSP_CMD_EN\t\t(0x1)\n\nstruct rt5670_dsp_param {\n\tu16 cmd_fmt;\n\tu16 addr;\n\tu16 data;\n\tu8 cmd;\n};\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

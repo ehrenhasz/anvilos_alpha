@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9f697a855cfea60551378f803d6376ce22b654f1f80d81c26399282f8257614e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/platform/iris/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_X86_32_IRIS)\t\t+= iris.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

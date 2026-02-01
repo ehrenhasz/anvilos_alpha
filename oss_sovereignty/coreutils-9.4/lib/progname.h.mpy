@@ -1,0 +1,9 @@
+{
+  "module_name": "progname.h",
+  "hash_id": "364099a140232c070d5f4ba2d26cdd1ba5e1eef9b55c29b2159beac76c3b848a",
+  "original_prompt": "Ingested from coreutils-9.4/lib/progname.h",
+  "human_readable_source": " \n\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n\n \nextern const char *program_name;\n\n \nextern void set_program_name (const char *argv0);\n\n#if ENABLE_RELOCATABLE\n\n \nextern void set_program_name_and_installdir (const char *argv0,\n                                             const char *orig_installprefix,\n                                             const char *orig_installdir);\n#undef set_program_name\n#define set_program_name(ARG0) \\\n  set_program_name_and_installdir (ARG0, INSTALLPREFIX, INSTALLDIR)\n\n \nextern char *get_full_program_name (void);\n\n#endif\n\n\n#ifdef __cplusplus\n}\n#endif\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

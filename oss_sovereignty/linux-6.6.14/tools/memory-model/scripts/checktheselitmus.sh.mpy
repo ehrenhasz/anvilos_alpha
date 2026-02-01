@@ -1,0 +1,9 @@
+{
+  "module_name": "checktheselitmus.sh",
+  "hash_id": "72ee07498d0eab12f3c101123992224ea0576c87eaafe46dd8588c0ae444ff46",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/scripts/checktheselitmus.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Invokes checklitmus.sh on its arguments to run the specified litmus\n# test and pass judgment on the results.\n#\n# Usage:\n#\tchecktheselitmus.sh -- [ file1.litmus [ file2.litmus ... ] ]\n#\n# Run this in the directory containing the memory model, specifying the\n# pathname of the litmus test to check.  The usual parseargs.sh arguments\n# can be specified prior to the \"--\".\n#\n# This script is intended for use with pathnames that start from the\n# tools/memory-model directory.  If some of the pathnames instead start at\n# the root directory, they all must do so and the \"--destdir /\" parseargs.sh\n# argument must be specified prior to the \"--\".  Alternatively, some other\n# \"--destdir\" argument can be supplied as long as the needed subdirectories\n# are populated.\n#\n# Copyright IBM Corporation, 2018\n#\n# Author: Paul E. McKenney <paulmck@linux.ibm.com>\n\n. scripts/parseargs.sh\n\nret=0\nfor i in \"$@\"\ndo\n\tif scripts/checklitmus.sh $i\n\tthen\n\t\t:\n\telse\n\t\tret=1\n\tfi\ndone\nif test \"$ret\" -ne 0\nthen\n\techo \" ^^^ VERIFICATION MISMATCHES\" 1>&2\nelse\n\techo All litmus tests verified as was expected. 1>&2\nfi\nexit $ret\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

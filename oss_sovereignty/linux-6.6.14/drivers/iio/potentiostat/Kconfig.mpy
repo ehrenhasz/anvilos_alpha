@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c4b25a4caeeed4c12f4ba89078585f79dcd3a1631f048f36c3a12306892d2429",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/potentiostat/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Potentiostat drivers\n#\n# When adding new entries keep the list in alphabetical order\n\nmenu \"Digital potentiostats\"\n\nconfig LMP91000\n\ttristate \"Texas Instruments LMP91000 potentiostat driver\"\n\tdepends on I2C\n\tselect REGMAP_I2C\n\tselect IIO_BUFFER\n\tselect IIO_BUFFER_CB\n\tselect IIO_TRIGGERED_BUFFER\n\thelp\n\t  Say yes here to build support for the Texas Instruments\n\t  LMP91000 digital potentiostat chip.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called lmp91000\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

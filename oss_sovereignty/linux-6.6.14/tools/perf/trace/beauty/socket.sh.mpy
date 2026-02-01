@@ -1,0 +1,9 @@
+{
+  "module_name": "socket.sh",
+  "hash_id": "75ffb7200eee24fcbfdffe7b4075b8d52e3cd4b8f5330b616488e1aaf0d8d442",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/socket.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n\nif [ $# -gt 0 ] ; then\n\tuapi_header_dir=$1\n\tbeauty_header_dir=$2\nelse\n\tuapi_header_dir=tools/include/uapi/linux/\n\tbeauty_header_dir=tools/perf/trace/beauty/include/linux/\nfi\n\nprintf \"static const char *socket_ipproto[] = {\\n\"\nipproto_regex='^[[:space:]]+IPPROTO_(\\w+)[[:space:]]+=[[:space:]]+([[:digit:]]+),.*'\n\ngrep -E $ipproto_regex ${uapi_header_dir}/in.h | \\\n\tsed -r \"s/$ipproto_regex/\\2 \\1/g\"\t| \\\n\tsort -n | xargs printf \"\\t[%s] = \\\"%s\\\",\\n\"\nprintf \"};\\n\\n\"\n\nprintf \"static const char *socket_level[] = {\\n\"\nsocket_level_regex='^#define[[:space:]]+SOL_(\\w+)[[:space:]]+([[:digit:]]+)([[:space:]]+\\/.*)?'\n\ngrep -E $socket_level_regex ${beauty_header_dir}/socket.h | \\\n\tsed -r \"s/$socket_level_regex/\\2 \\1/g\"\t| \\\n\tsort -n | xargs printf \"\\t[%s] = \\\"%s\\\",\\n\"\nprintf \"};\\n\\n\"\n\nprintf 'DEFINE_STRARRAY(socket_level, \"SOL_\");\\n'\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

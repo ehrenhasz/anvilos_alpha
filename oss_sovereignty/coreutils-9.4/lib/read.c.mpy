@@ -1,0 +1,9 @@
+{
+  "module_name": "read.c",
+  "hash_id": "095a5f9e83bfd689fa103262e7872dd4aa10ff8973301caedb686fcd5ffb4ad7",
+  "original_prompt": "Ingested from coreutils-9.4/lib/read.c",
+  "human_readable_source": " \n#include <unistd.h>\n\n#if defined _WIN32 && ! defined __CYGWIN__\n\n# include <errno.h>\n# include <io.h>\n\n# define WIN32_LEAN_AND_MEAN   \n# include <windows.h>\n\n# if HAVE_MSVC_INVALID_PARAMETER_HANDLER\n#  include \"msvc-inval.h\"\n# endif\n# if GNULIB_MSVC_NOTHROW\n#  include \"msvc-nothrow.h\"\n# else\n#  include <io.h>\n# endif\n\n \n# undef GetNamedPipeHandleState\n# define GetNamedPipeHandleState GetNamedPipeHandleStateA\n\n# undef read\n\n# if HAVE_MSVC_INVALID_PARAMETER_HANDLER\nstatic ssize_t\nread_nothrow (int fd, void *buf, size_t count)\n{\n  ssize_t result;\n\n  TRY_MSVC_INVAL\n    {\n      result = _read (fd, buf, count);\n    }\n  CATCH_MSVC_INVAL\n    {\n      result = -1;\n      errno = EBADF;\n    }\n  DONE_MSVC_INVAL;\n\n  return result;\n}\n# else\n#  define read_nothrow _read\n# endif\n\nssize_t\nrpl_read (int fd, void *buf, size_t count)\n{\n  ssize_t ret = read_nothrow (fd, buf, count);\n\n# if GNULIB_NONBLOCKING\n  if (ret < 0\n      && GetLastError () == ERROR_NO_DATA)\n    {\n      HANDLE h = (HANDLE) _get_osfhandle (fd);\n      if (GetFileType (h) == FILE_TYPE_PIPE)\n        {\n           \n          DWORD state;\n          if (GetNamedPipeHandleState (h, &state, NULL, NULL, NULL, NULL, 0)\n              && (state & PIPE_NOWAIT) != 0)\n             \n            errno = EAGAIN;\n        }\n    }\n# endif\n\n  return ret;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

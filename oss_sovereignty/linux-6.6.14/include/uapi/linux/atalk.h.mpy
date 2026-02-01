@@ -1,0 +1,9 @@
+{
+  "module_name": "atalk.h",
+  "hash_id": "b0d85e4a42d4cc161672cc25a93b3b0f3249e3b138c3d5a1775caa05f18d6b21",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/atalk.h",
+  "human_readable_source": " \n#ifndef _UAPI__LINUX_ATALK_H__\n#define _UAPI__LINUX_ATALK_H__\n\n#include <linux/types.h>\n#include <asm/byteorder.h>\n#include <linux/socket.h>\n\n \n#define ATPORT_FIRST\t1\n#define ATPORT_RESERVED\t128\n#define ATPORT_LAST\t254\t\t  \n#define ATADDR_ANYNET\t(__u16)0\n#define ATADDR_ANYNODE\t(__u8)0\n#define ATADDR_ANYPORT  (__u8)0\n#define ATADDR_BCAST\t(__u8)255\n#define DDP_MAXSZ\t587\n#define DDP_MAXHOPS     15\t\t \n\n#define SIOCATALKDIFADDR       (SIOCPROTOPRIVATE + 0)\n\nstruct atalk_addr {\n\t__be16\ts_net;\n\t__u8\ts_node;\n};\n\nstruct sockaddr_at {\n\t__kernel_sa_family_t sat_family;\n\t__u8\t\t  sat_port;\n\tstruct atalk_addr sat_addr;\n\tchar\t\t  sat_zero[8];\n};\n\nstruct atalk_netrange {\n\t__u8\tnr_phase;\n\t__be16\tnr_firstnet;\n\t__be16\tnr_lastnet;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

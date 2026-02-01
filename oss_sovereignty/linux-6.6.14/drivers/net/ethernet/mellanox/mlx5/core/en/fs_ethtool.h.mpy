@@ -1,0 +1,9 @@
+{
+  "module_name": "fs_ethtool.h",
+  "hash_id": "4cbb188256c53aba4f2a3508d91b573c656ef6c5cf694290a91872a5470ad720",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/fs_ethtool.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5E_FS_ETHTOOL_H__\n#define __MLX5E_FS_ETHTOOL_H__\n\nstruct mlx5e_priv;\nstruct mlx5e_ethtool_steering;\n#ifdef CONFIG_MLX5_EN_RXNFC\nint mlx5e_ethtool_alloc(struct mlx5e_ethtool_steering **ethtool);\nvoid mlx5e_ethtool_free(struct mlx5e_ethtool_steering *ethtool);\nvoid mlx5e_ethtool_init_steering(struct mlx5e_flow_steering *fs);\nvoid mlx5e_ethtool_cleanup_steering(struct mlx5e_flow_steering *fs);\nint mlx5e_ethtool_set_rxnfc(struct mlx5e_priv *priv, struct ethtool_rxnfc *cmd);\nint mlx5e_ethtool_get_rxnfc(struct mlx5e_priv *priv,\n\t\t\t    struct ethtool_rxnfc *info, u32 *rule_locs);\n#else\nstatic inline int mlx5e_ethtool_alloc(struct mlx5e_ethtool_steering **ethtool)\n{ return 0; }\nstatic inline void mlx5e_ethtool_free(struct mlx5e_ethtool_steering *ethtool) { }\nstatic inline void mlx5e_ethtool_init_steering(struct mlx5e_flow_steering *fs) { }\nstatic inline void mlx5e_ethtool_cleanup_steering(struct mlx5e_flow_steering *fs) { }\nstatic inline int mlx5e_ethtool_set_rxnfc(struct mlx5e_priv *priv, struct ethtool_rxnfc *cmd)\n{ return -EOPNOTSUPP; }\nstatic inline int mlx5e_ethtool_get_rxnfc(struct mlx5e_priv *priv,\n\t\t\t\t\t  struct ethtool_rxnfc *info, u32 *rule_locs)\n{ return -EOPNOTSUPP; }\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

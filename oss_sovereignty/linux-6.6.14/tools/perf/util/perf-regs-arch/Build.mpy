@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "b03e3dd6021a45a3228eb7308e094fb7984ccb6d5feedb9ec19bb608de8377f1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/perf-regs-arch/Build",
+  "human_readable_source": "perf-y += perf_regs_aarch64.o\nperf-y += perf_regs_arm.o\nperf-y += perf_regs_csky.o\nperf-y += perf_regs_loongarch.o\nperf-y += perf_regs_mips.o\nperf-y += perf_regs_powerpc.o\nperf-y += perf_regs_riscv.o\nperf-y += perf_regs_s390.o\nperf-y += perf_regs_x86.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

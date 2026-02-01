@@ -1,0 +1,9 @@
+{
+  "module_name": "requestqueue.h",
+  "hash_id": "f2be558cb3218dd4ee593e548682a3c7ee823a98011908d02533956dbe6246ed",
+  "original_prompt": "Ingested from linux-6.6.14/fs/dlm/requestqueue.h",
+  "human_readable_source": " \n \n\n#ifndef __REQUESTQUEUE_DOT_H__\n#define __REQUESTQUEUE_DOT_H__\n\nvoid dlm_add_requestqueue(struct dlm_ls *ls, int nodeid,\n\t\t\t  const struct dlm_message *ms);\nint dlm_process_requestqueue(struct dlm_ls *ls);\nvoid dlm_wait_requestqueue(struct dlm_ls *ls);\nvoid dlm_purge_requestqueue(struct dlm_ls *ls);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

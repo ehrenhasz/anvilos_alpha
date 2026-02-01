@@ -1,0 +1,9 @@
+{
+  "module_name": "SB+rfionceonce-poonceonces.litmus",
+  "hash_id": "57842574796aabd675b5a31c08f414cc5860420cec0dbd1087a27e5ec338ba74",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/SB+rfionceonce-poonceonces.litmus",
+  "human_readable_source": "C SB+rfionceonce-poonceonces\n\n(*\n * Result: Sometimes\n *\n * This litmus test demonstrates that LKMM is not fully multicopy atomic.\n *)\n\n{}\n\nP0(int *x, int *y)\n{\n\tint r1;\n\tint r2;\n\n\tWRITE_ONCE(*x, 1);\n\tr1 = READ_ONCE(*x);\n\tr2 = READ_ONCE(*y);\n}\n\nP1(int *x, int *y)\n{\n\tint r3;\n\tint r4;\n\n\tWRITE_ONCE(*y, 1);\n\tr3 = READ_ONCE(*y);\n\tr4 = READ_ONCE(*x);\n}\n\nlocations [0:r1; 1:r3; x; y] (* Debug aid: Print things not in \"exists\". *)\nexists (0:r2=0 /\\ 1:r4=0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

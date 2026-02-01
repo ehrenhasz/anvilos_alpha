@@ -1,0 +1,9 @@
+{
+  "module_name": "dst_priv.h",
+  "hash_id": "d8beda0fe6f0219effb48df06be34b97b165ee3f2bfb38f3516964fb2a51be46",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/bt8xx/dst_priv.h",
+  "human_readable_source": " \n \n\nstruct dst_gpio_enable {\n\tu32\tmask;\n\tu32\tenable;\n};\n\nstruct dst_gpio_output {\n\tu32\tmask;\n\tu32\thighvals;\n};\n\nstruct dst_gpio_read {\n\tunsigned long value;\n};\n\nunion dst_gpio_packet {\n\tstruct dst_gpio_enable enb;\n\tstruct dst_gpio_output outp;\n\tstruct dst_gpio_read rd;\n\tint    psize;\n};\n\n#define DST_IG_ENABLE\t0\n#define DST_IG_WRITE\t1\n#define DST_IG_READ\t2\n#define DST_IG_TS       3\n\nstruct bt878;\n\nint bt878_device_control(struct bt878 *bt, unsigned int cmd, union dst_gpio_packet *mp);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

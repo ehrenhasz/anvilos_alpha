@@ -1,0 +1,9 @@
+{
+  "module_name": "mediatek,mt6397-regulator.h",
+  "hash_id": "4e4667e83c99a78fd2905801c7c23e9e593da3bc55b4f121879b8ac9e2fb14b4",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/regulator/mediatek,mt6397-regulator.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_REGULATOR_MEDIATEK_MT6397_H_\n#define _DT_BINDINGS_REGULATOR_MEDIATEK_MT6397_H_\n\n \n\n#define MT6397_BUCK_MODE_AUTO\t\t0\n#define MT6397_BUCK_MODE_FORCE_PWM\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

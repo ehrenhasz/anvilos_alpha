@@ -1,0 +1,9 @@
+{
+  "module_name": "st_uvis25.h",
+  "hash_id": "eba93fea07186c0565386c553760bc11e1ec9cc26e84639fdd04a8b9a176a0b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/light/st_uvis25.h",
+  "human_readable_source": " \n \n\n#ifndef ST_UVIS25_H\n#define ST_UVIS25_H\n\n#define ST_UVIS25_DEV_NAME\t\t\"uvis25\"\n\n#include <linux/iio/iio.h>\n\n \nstruct st_uvis25_hw {\n\tstruct regmap *regmap;\n\n\tstruct iio_trigger *trig;\n\tbool enabled;\n\tint irq;\n\t \n\tstruct {\n\t\tu8 chan;\n\t\ts64 ts __aligned(8);\n\t} scan;\n};\n\nextern const struct dev_pm_ops st_uvis25_pm_ops;\n\nint st_uvis25_probe(struct device *dev, int irq, struct regmap *regmap);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

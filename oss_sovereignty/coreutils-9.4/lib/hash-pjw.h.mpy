@@ -1,0 +1,9 @@
+{
+  "module_name": "hash-pjw.h",
+  "hash_id": "cfd076fe9ce251fc64a66c77f6d0c98b7d69f3ab6b87b7eb62f1e7e5a20cd6d5",
+  "original_prompt": "Ingested from coreutils-9.4/lib/hash-pjw.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stddef.h>\n\n \nextern size_t hash_pjw (void const *x, size_t tablesize) _GL_ATTRIBUTE_PURE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

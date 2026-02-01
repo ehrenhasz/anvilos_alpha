@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "aec901fc49833d7ac5211a181cd50145f8b555cc01b27dc5b8d7cf272d6a2024",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/irdma/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig INFINIBAND_IRDMA\n\ttristate \"Intel(R) Ethernet Protocol Driver for RDMA\"\n\tdepends on INET\n\tdepends on IPV6 || !IPV6\n\tdepends on PCI\n\tdepends on ICE && I40E\n\tselect GENERIC_ALLOCATOR\n\tselect AUXILIARY_BUS\n\thelp\n\t  This is an Intel(R) Ethernet Protocol Driver for RDMA driver\n\t  that support E810 (iWARP/RoCE) and X722 (iWARP) network devices.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vsyscall.h",
+  "hash_id": "d95a80e202e86f0eda151568a182f78ef7c7c397e262c7ff3c42e1ed5e98a0ed",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/vdso/vsyscall.h",
+  "human_readable_source": " \n#ifndef __ASM_VDSO_VSYSCALL_H\n#define __ASM_VDSO_VSYSCALL_H\n\n#ifndef __ASSEMBLY__\n\n#include <linux/hrtimer.h>\n#include <linux/timekeeper_internal.h>\n#include <vdso/datapage.h>\n#include <asm/vgtod.h>\n#include <asm/vvar.h>\n\nDEFINE_VVAR(struct vdso_data, _vdso_data);\n \nstatic __always_inline\nstruct vdso_data *__x86_get_k_vdso_data(void)\n{\n\treturn _vdso_data;\n}\n#define __arch_get_k_vdso_data __x86_get_k_vdso_data\n\n \n#include <asm-generic/vdso/vsyscall.h>\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

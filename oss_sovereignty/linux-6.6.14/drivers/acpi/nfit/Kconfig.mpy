@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1c3bd70de1de6781e3bda32caf3754408887d5202be0bbaf365498d693662848",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/nfit/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig ACPI_NFIT\n\ttristate \"ACPI NVDIMM Firmware Interface Table (NFIT)\"\n\tdepends on PHYS_ADDR_T_64BIT\n\tdepends on BLK_DEV\n\tdepends on ARCH_HAS_PMEM_API\n\tselect LIBNVDIMM\n\thelp\n\t  Infrastructure to probe ACPI 6 compliant platforms for\n\t  NVDIMMs (NFIT) and register a libnvdimm device tree.  In\n\t  addition to storage devices this also enables libnvdimm to pass\n\t  ACPI._DSM messages for platform/dimm configuration.\n\n\t  To compile this driver as a module, choose M here:\n\t  the module will be called nfit.\n\nconfig NFIT_SECURITY_DEBUG\n\tbool \"Enable debug for NVDIMM security commands\"\n\tdepends on ACPI_NFIT\n\thelp\n\t  Some NVDIMM devices and controllers support encryption and\n\t  other security features. The payloads for the commands that\n\t  enable those features may contain sensitive clear-text\n\t  security material. Disable debug of those command payloads\n\t  by default. If you are a kernel developer actively working\n\t  on NVDIMM security enabling say Y, otherwise say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

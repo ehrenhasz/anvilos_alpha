@@ -1,0 +1,9 @@
+{
+  "module_name": "neon.c",
+  "hash_id": "68666b07ea122dd0f8f4ae8f7b4e8cab59fdc0a65c86759fc4d91abc5ef75552",
+  "original_prompt": "Ingested from linux-6.6.14/lib/raid6/neon.c",
+  "human_readable_source": "\n \n\n#include <linux/raid/pq.h>\n\n#ifdef __KERNEL__\n#include <asm/neon.h>\n#else\n#define kernel_neon_begin()\n#define kernel_neon_end()\n#define cpu_has_neon()\t\t(1)\n#endif\n\n \n\n#define RAID6_NEON_WRAPPER(_n)\t\t\t\t\t\t\\\n\tstatic void raid6_neon ## _n ## _gen_syndrome(int disks,\t\\\n\t\t\t\t\tsize_t bytes, void **ptrs)\t\\\n\t{\t\t\t\t\t\t\t\t\\\n\t\tvoid raid6_neon ## _n  ## _gen_syndrome_real(int,\t\\\n\t\t\t\t\t\tunsigned long, void**);\t\\\n\t\tkernel_neon_begin();\t\t\t\t\t\\\n\t\traid6_neon ## _n ## _gen_syndrome_real(disks,\t\t\\\n\t\t\t\t\t(unsigned long)bytes, ptrs);\t\\\n\t\tkernel_neon_end();\t\t\t\t\t\\\n\t}\t\t\t\t\t\t\t\t\\\n\tstatic void raid6_neon ## _n ## _xor_syndrome(int disks,\t\\\n\t\t\t\t\tint start, int stop, \t\t\\\n\t\t\t\t\tsize_t bytes, void **ptrs)\t\\\n\t{\t\t\t\t\t\t\t\t\\\n\t\tvoid raid6_neon ## _n  ## _xor_syndrome_real(int,\t\\\n\t\t\t\tint, int, unsigned long, void**);\t\\\n\t\tkernel_neon_begin();\t\t\t\t\t\\\n\t\traid6_neon ## _n ## _xor_syndrome_real(disks,\t\t\\\n\t\t\tstart, stop, (unsigned long)bytes, ptrs);\t\\\n\t\tkernel_neon_end();\t\t\t\t\t\\\n\t}\t\t\t\t\t\t\t\t\\\n\tstruct raid6_calls const raid6_neonx ## _n = {\t\t\t\\\n\t\traid6_neon ## _n ## _gen_syndrome,\t\t\t\\\n\t\traid6_neon ## _n ## _xor_syndrome,\t\t\t\\\n\t\traid6_have_neon,\t\t\t\t\t\\\n\t\t\"neonx\" #_n,\t\t\t\t\t\t\\\n\t\t0\t\t\t\t\t\t\t\\\n\t}\n\nstatic int raid6_have_neon(void)\n{\n\treturn cpu_has_neon();\n}\n\nRAID6_NEON_WRAPPER(1);\nRAID6_NEON_WRAPPER(2);\nRAID6_NEON_WRAPPER(4);\nRAID6_NEON_WRAPPER(8);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vidtv_common.c",
+  "hash_id": "12c13ca5f35eb0459987ae2606e6e182f3b59ed915559c878619b3436d11dcd3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vidtv/vidtv_common.c",
+  "human_readable_source": "\n \n#define pr_fmt(fmt) KBUILD_MODNAME \":%s, %d: \" fmt, __func__, __LINE__\n\n#include <linux/printk.h>\n#include <linux/ratelimit.h>\n#include <linux/string.h>\n#include <linux/types.h>\n\n#include \"vidtv_common.h\"\n\n \nu32 vidtv_memcpy(void *to,\n\t\t size_t to_offset,\n\t\t size_t to_size,\n\t\t const void *from,\n\t\t size_t len)\n{\n\tif (unlikely(to_offset + len > to_size)) {\n\t\tpr_err_ratelimited(\"overflow detected, skipping. Try increasing the buffer size. Needed %zu, had %zu\\n\",\n\t\t\t\t   to_offset + len,\n\t\t\t\t   to_size);\n\t\treturn 0;\n\t}\n\n\tmemcpy(to + to_offset, from, len);\n\treturn len;\n}\n\n \nu32 vidtv_memset(void *to,\n\t\t size_t to_offset,\n\t\t size_t to_size,\n\t\t const int c,\n\t\t size_t len)\n{\n\tif (unlikely(to_offset + len > to_size)) {\n\t\tpr_err_ratelimited(\"overflow detected, skipping. Try increasing the buffer size. Needed %zu, had %zu\\n\",\n\t\t\t\t   to_offset + len,\n\t\t\t\t   to_size);\n\t\treturn 0;\n\t}\n\n\tmemset(to + to_offset, c, len);\n\treturn len;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

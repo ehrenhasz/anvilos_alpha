@@ -1,0 +1,9 @@
+{
+  "module_name": "virtual_link_hwss.c",
+  "hash_id": "73f67e3a7012f29e0909bce5a9e57619ebd09330df572a55c79753fcd8a8b7fb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/virtual/virtual_link_hwss.c",
+  "human_readable_source": " \n\n#include \"virtual_link_hwss.h\"\n\nvoid virtual_setup_stream_encoder(struct pipe_ctx *pipe_ctx)\n{\n}\n\nvoid virtual_setup_stream_attribute(struct pipe_ctx *pipe_ctx)\n{\n}\n\nvoid virtual_reset_stream_encoder(struct pipe_ctx *pipe_ctx)\n{\n}\n\nstatic void virtual_disable_link_output(struct dc_link *link,\n\tconst struct link_resource *link_res,\n\tenum signal_type signal)\n{\n}\n\nstatic const struct link_hwss virtual_link_hwss = {\n\t.setup_stream_encoder = virtual_setup_stream_encoder,\n\t.reset_stream_encoder = virtual_reset_stream_encoder,\n\t.setup_stream_attribute = virtual_setup_stream_attribute,\n\t.disable_link_output = virtual_disable_link_output,\n};\n\nconst struct link_hwss *get_virtual_link_hwss(void)\n{\n\treturn &virtual_link_hwss;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

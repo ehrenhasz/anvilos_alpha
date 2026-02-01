@@ -1,0 +1,9 @@
+{
+  "module_name": "smack.h",
+  "hash_id": "39ef94f803721e38b407c624a6a74f858d0a2bdbefafe1a956e2e26994be37c5",
+  "original_prompt": "Ingested from coreutils-9.4/lib/smack.h",
+  "human_readable_source": " \n\n#ifdef HAVE_SMACK\n# include <sys/smack.h>\n#else\nstatic inline ssize_t\nsmack_new_label_from_self (char **label)\n{\n  return -1;\n}\n\nstatic inline int\nsmack_set_label_for_self (char const *label)\n{\n  return -1;\n}\n#endif\n\nstatic inline bool\nis_smack_enabled (void)\n{\n#ifdef HAVE_SMACK\n  return smack_smackfs_path () != nullptr;\n#else\n  return false;\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

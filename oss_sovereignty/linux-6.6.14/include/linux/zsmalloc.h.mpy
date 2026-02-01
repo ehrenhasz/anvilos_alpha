@@ -1,0 +1,9 @@
+{
+  "module_name": "zsmalloc.h",
+  "hash_id": "571951d9bb9eea698673fe64f4c2101a8044fc70da042b4e664ba9b4626526db",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/zsmalloc.h",
+  "human_readable_source": " \n\n#ifndef _ZS_MALLOC_H_\n#define _ZS_MALLOC_H_\n\n#include <linux/types.h>\n\n \nenum zs_mapmode {\n\tZS_MM_RW,  \n\tZS_MM_RO,  \n\tZS_MM_WO  \n\t \n};\n\nstruct zs_pool_stats {\n\t \n\tatomic_long_t pages_compacted;\n};\n\nstruct zs_pool;\n\nstruct zs_pool *zs_create_pool(const char *name);\nvoid zs_destroy_pool(struct zs_pool *pool);\n\nunsigned long zs_malloc(struct zs_pool *pool, size_t size, gfp_t flags);\nvoid zs_free(struct zs_pool *pool, unsigned long obj);\n\nsize_t zs_huge_class_size(struct zs_pool *pool);\n\nvoid *zs_map_object(struct zs_pool *pool, unsigned long handle,\n\t\t\tenum zs_mapmode mm);\nvoid zs_unmap_object(struct zs_pool *pool, unsigned long handle);\n\nunsigned long zs_get_total_pages(struct zs_pool *pool);\nunsigned long zs_compact(struct zs_pool *pool);\n\nunsigned int zs_lookup_class_index(struct zs_pool *pool, unsigned int size);\n\nvoid zs_pool_stats(struct zs_pool *pool, struct zs_pool_stats *stats);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

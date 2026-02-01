@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "793c3e63db54630d6811af212162b34f7b6fcadb2f999e87d11e02a30bca59ff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/appletalk/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for drivers/net/appletalk\n#\n\nobj-$(CONFIG_IPDDP) += ipddp.o\nobj-$(CONFIG_COPS) += cops.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

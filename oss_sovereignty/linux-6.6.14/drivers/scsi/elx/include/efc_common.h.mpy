@@ -1,0 +1,9 @@
+{
+  "module_name": "efc_common.h",
+  "hash_id": "56b03bc22608d43a187877d1268fe8db96adf698d8ee396d850737aa654fb68c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/elx/include/efc_common.h",
+  "human_readable_source": " \n \n\n#ifndef __EFC_COMMON_H__\n#define __EFC_COMMON_H__\n\n#include <linux/pci.h>\n\nstruct efc_dma {\n\tvoid\t\t*virt;\n\tvoid            *alloc;\n\tdma_addr_t\tphys;\n\n\tsize_t\t\tsize;\n\tsize_t          len;\n\tstruct pci_dev\t*pdev;\n};\n\n#define efc_log_crit(efc, fmt, args...) \\\n\t\tdev_crit(&((efc)->pci)->dev, fmt, ##args)\n\n#define efc_log_err(efc, fmt, args...) \\\n\t\tdev_err(&((efc)->pci)->dev, fmt, ##args)\n\n#define efc_log_warn(efc, fmt, args...) \\\n\t\tdev_warn(&((efc)->pci)->dev, fmt, ##args)\n\n#define efc_log_info(efc, fmt, args...) \\\n\t\tdev_info(&((efc)->pci)->dev, fmt, ##args)\n\n#define efc_log_debug(efc, fmt, args...) \\\n\t\tdev_dbg(&((efc)->pci)->dev, fmt, ##args)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

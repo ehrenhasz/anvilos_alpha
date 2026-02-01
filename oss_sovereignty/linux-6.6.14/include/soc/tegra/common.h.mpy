@@ -1,0 +1,9 @@
+{
+  "module_name": "common.h",
+  "hash_id": "bbec37477b5f94a764220b98570b19a081469e7e5c5c675c1f38833169f79980",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/tegra/common.h",
+  "human_readable_source": " \n \n\n#ifndef __SOC_TEGRA_COMMON_H__\n#define __SOC_TEGRA_COMMON_H__\n\n#include <linux/errno.h>\n#include <linux/types.h>\n\nstruct device;\n\n \nstruct tegra_core_opp_params {\n\tbool init_state;\n};\n\n#ifdef CONFIG_ARCH_TEGRA\nbool soc_is_tegra(void);\n\nint devm_tegra_core_dev_init_opp_table(struct device *dev,\n\t\t\t\t       struct tegra_core_opp_params *params);\n#else\nstatic inline bool soc_is_tegra(void)\n{\n\treturn false;\n}\n\nstatic inline int\ndevm_tegra_core_dev_init_opp_table(struct device *dev,\n\t\t\t\t   struct tegra_core_opp_params *params)\n{\n\treturn -ENODEV;\n}\n#endif\n\nstatic inline int\ndevm_tegra_core_dev_init_opp_table_common(struct device *dev)\n{\n\tstruct tegra_core_opp_params opp_params = {};\n\tint err;\n\n\topp_params.init_state = true;\n\n\terr = devm_tegra_core_dev_init_opp_table(dev, &opp_params);\n\tif (err != -ENODEV)\n\t\treturn err;\n\n\treturn 0;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

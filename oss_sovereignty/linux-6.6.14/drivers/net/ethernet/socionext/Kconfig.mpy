@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d5de536eca7fa735117841f85e1e4ce30ed4fe06a8d1d95568cfbc47a5354fac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/socionext/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NET_VENDOR_SOCIONEXT\n\tbool \"Socionext ethernet drivers\"\n\tdefault y\n\thelp\n\t  Option to select ethernet drivers for Socionext platforms.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Socionext devices. If you say Y, you will be asked\n\t  for your specific card in the following questions.\n\nif NET_VENDOR_SOCIONEXT\n\nconfig SNI_AVE\n\ttristate \"Socionext AVE ethernet support\"\n\tdepends on (ARCH_UNIPHIER || COMPILE_TEST) && OF\n\tdepends on HAS_IOMEM\n\tselect MFD_SYSCON\n\tselect PHYLIB\n\thelp\n\t  Driver for gigabit ethernet MACs, called AVE, in the\n\t  Socionext UniPhier family.\n\nconfig SNI_NETSEC\n\ttristate \"Socionext NETSEC ethernet support\"\n\tdepends on (ARCH_SYNQUACER || COMPILE_TEST) && OF\n\tselect PHYLIB\n\tselect PAGE_POOL\n\tselect MII\n\thelp\n\t  Enable to add support for the SocioNext NetSec Gigabit Ethernet\n\t  controller + PHY, as found on the Synquacer SC2A11 SoC\n\n\t  To compile this driver as a module, choose M here: the module will be\n\t  called netsec.  If unsure, say N.\n\nendif #NET_VENDOR_SOCIONEXT\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

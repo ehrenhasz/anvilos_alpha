@@ -1,0 +1,9 @@
+{
+  "module_name": "syscalls.h",
+  "hash_id": "cb35eec4f593b21a84b6e80b83d54c0f8d5e254a90c46a73cfa7b604464132be",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/syscalls.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM raw_syscalls\n#undef TRACE_INCLUDE_FILE\n#define TRACE_INCLUDE_FILE syscalls\n\n#if !defined(_TRACE_EVENTS_SYSCALLS_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_EVENTS_SYSCALLS_H\n\n#include <linux/tracepoint.h>\n\n#include <asm/ptrace.h>\n#include <asm/syscall.h>\n\n\n#ifdef CONFIG_HAVE_SYSCALL_TRACEPOINTS\n\nTRACE_EVENT_FN(sys_enter,\n\n\tTP_PROTO(struct pt_regs *regs, long id),\n\n\tTP_ARGS(regs, id),\n\n\tTP_STRUCT__entry(\n\t\t__field(\tlong,\t\tid\t\t)\n\t\t__array(\tunsigned long,\targs,\t6\t)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->id\t= id;\n\t\tsyscall_get_arguments(current, regs, __entry->args);\n\t),\n\n\tTP_printk(\"NR %ld (%lx, %lx, %lx, %lx, %lx, %lx)\",\n\t\t  __entry->id,\n\t\t  __entry->args[0], __entry->args[1], __entry->args[2],\n\t\t  __entry->args[3], __entry->args[4], __entry->args[5]),\n\n\tsyscall_regfunc, syscall_unregfunc\n);\n\nTRACE_EVENT_FLAGS(sys_enter, TRACE_EVENT_FL_CAP_ANY)\n\nTRACE_EVENT_FN(sys_exit,\n\n\tTP_PROTO(struct pt_regs *regs, long ret),\n\n\tTP_ARGS(regs, ret),\n\n\tTP_STRUCT__entry(\n\t\t__field(\tlong,\tid\t)\n\t\t__field(\tlong,\tret\t)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->id\t= syscall_get_nr(current, regs);\n\t\t__entry->ret\t= ret;\n\t),\n\n\tTP_printk(\"NR %ld = %ld\",\n\t\t  __entry->id, __entry->ret),\n\n\tsyscall_regfunc, syscall_unregfunc\n);\n\nTRACE_EVENT_FLAGS(sys_exit, TRACE_EVENT_FL_CAP_ANY)\n\n#endif  \n\n#endif  \n\n \n#include <trace/define_trace.h>\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

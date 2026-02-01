@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_common_io_types.h",
+  "hash_id": "96cd2ee7b2a3abea92e3bd895c45bf691f75ebef7683b218c6587ed50a3b44af",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ipu2_io_ls/common/ia_css_common_io_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_COMMON_IO_TYPES\n#define __IA_CSS_COMMON_IO_TYPES\n\n#define MAX_IO_DMA_CHANNELS 3\n\nstruct ia_css_common_io_config {\n\tunsigned int base_address;\n\tunsigned int width;\n\tunsigned int height;\n\tunsigned int stride;\n\tunsigned int ddr_elems_per_word;\n\tunsigned int dma_channel[MAX_IO_DMA_CHANNELS];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

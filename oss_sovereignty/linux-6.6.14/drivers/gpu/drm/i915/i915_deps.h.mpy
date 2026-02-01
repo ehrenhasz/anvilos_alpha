@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_deps.h",
+  "hash_id": "496ecb5d539b58ddc69743e0487334c4e5ceebd3ffe08747e9d73ceb8037d001",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_deps.h",
+  "human_readable_source": " \n \n\n#ifndef _I915_DEPS_H_\n#define _I915_DEPS_H_\n\n#include <linux/types.h>\n\nstruct ttm_operation_ctx;\nstruct dma_fence;\nstruct dma_resv;\n\n \nstruct i915_deps {\n\tstruct dma_fence *single;\n\tstruct dma_fence **fences;\n\tunsigned int num_deps;\n\tunsigned int fences_size;\n\tgfp_t gfp;\n};\n\nvoid i915_deps_init(struct i915_deps *deps, gfp_t gfp);\n\nvoid i915_deps_fini(struct i915_deps *deps);\n\nint i915_deps_add_dependency(struct i915_deps *deps,\n\t\t\t     struct dma_fence *fence,\n\t\t\t     const struct ttm_operation_ctx *ctx);\n\nint i915_deps_add_resv(struct i915_deps *deps, struct dma_resv *resv,\n\t\t       const struct ttm_operation_ctx *ctx);\n\nint i915_deps_sync(const struct i915_deps *deps,\n\t\t   const struct ttm_operation_ctx *ctx);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

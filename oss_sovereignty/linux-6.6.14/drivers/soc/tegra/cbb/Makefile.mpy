@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ccf75371053452087015ef775e9e46c1d8ea6406b55399cb7b3b622e02a6da32",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/tegra/cbb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Control Backbone Driver code.\n#\nifdef CONFIG_SOC_TEGRA_CBB\nobj-y += tegra-cbb.o\nobj-$(CONFIG_ARCH_TEGRA_194_SOC) += tegra194-cbb.o\nobj-$(CONFIG_ARCH_TEGRA_234_SOC) += tegra234-cbb.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

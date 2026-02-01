@@ -1,0 +1,9 @@
+{
+  "module_name": "mv643xx_i2c.h",
+  "hash_id": "db506a0a7e178f8cd38b75d2837ecd0a25851dbccf28ef05b5879496ecf30efb",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mv643xx_i2c.h",
+  "human_readable_source": " \n \n\n#ifndef _MV64XXX_I2C_H_\n#define _MV64XXX_I2C_H_\n\n#include <linux/types.h>\n\n#define MV64XXX_I2C_CTLR_NAME\t\"mv64xxx_i2c\"\n\n \nstruct mv64xxx_i2c_pdata {\n\tu32\tfreq_m;\n\tu32\tfreq_n;\n\tu32\ttimeout;\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

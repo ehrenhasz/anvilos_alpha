@@ -1,0 +1,9 @@
+{
+  "module_name": "mmu.c",
+  "hash_id": "643bf4f33965234966ecd7e7c59b5d4fd55692b3ce1013fe575c476946e2a38d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/host/mmu.c",
+  "human_readable_source": "\n \n\n \n#include \"mmu_device.h\"\n\nvoid mmu_set_page_table_base_index(\n    const mmu_ID_t\t\tID,\n    const hrt_data\t\tbase_index)\n{\n\tmmu_reg_store(ID, _HRT_MMU_PAGE_TABLE_BASE_ADDRESS_REG_IDX, base_index);\n\treturn;\n}\n\nhrt_data mmu_get_page_table_base_index(\n    const mmu_ID_t\t\tID)\n{\n\treturn mmu_reg_load(ID, _HRT_MMU_PAGE_TABLE_BASE_ADDRESS_REG_IDX);\n}\n\nvoid mmu_invalidate_cache(\n    const mmu_ID_t\t\tID)\n{\n\tmmu_reg_store(ID, _HRT_MMU_INVALIDATE_TLB_REG_IDX, 1);\n\treturn;\n}\n\nvoid mmu_invalidate_cache_all(void)\n{\n\tmmu_ID_t\tmmu_id;\n\n\tfor (mmu_id = (mmu_ID_t)0; mmu_id < N_MMU_ID; mmu_id++) {\n\t\tmmu_invalidate_cache(mmu_id);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "objgetitemiter.c",
+  "hash_id": "f14f33e33c8300823ab64d1c3c5dd7c7d2411608d853724f7fea0a251e66dff7",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/objgetitemiter.c",
+  "human_readable_source": " \n\n#include <stdlib.h>\n\n#include \"py/runtime.h\"\n\n\n\ntypedef struct _mp_obj_getitem_iter_t {\n    mp_obj_base_t base;\n    mp_obj_t args[3];\n} mp_obj_getitem_iter_t;\n\nstatic mp_obj_t it_iternext(mp_obj_t self_in) {\n    mp_obj_getitem_iter_t *self = MP_OBJ_TO_PTR(self_in);\n    nlr_buf_t nlr;\n    if (nlr_push(&nlr) == 0) {\n        \n        mp_obj_t value = mp_call_method_n_kw(1, 0, self->args);\n        self->args[2] = MP_OBJ_NEW_SMALL_INT(MP_OBJ_SMALL_INT_VALUE(self->args[2]) + 1);\n        nlr_pop();\n        return value;\n    } else {\n        \n        mp_obj_type_t *t = (mp_obj_type_t *)((mp_obj_base_t *)nlr.ret_val)->type;\n        if (t == &mp_type_StopIteration || t == &mp_type_IndexError) {\n            return MP_OBJ_STOP_ITERATION;\n        } else {\n            \n            nlr_jump(nlr.ret_val);\n        }\n    }\n}\n\nstatic MP_DEFINE_CONST_OBJ_TYPE(\n    mp_type_it,\n    MP_QSTR_iterator,\n    MP_TYPE_FLAG_ITER_IS_ITERNEXT,\n    iter, it_iternext\n    );\n\n\nmp_obj_t mp_obj_new_getitem_iter(mp_obj_t *args, mp_obj_iter_buf_t *iter_buf) {\n    assert(sizeof(mp_obj_getitem_iter_t) <= sizeof(mp_obj_iter_buf_t));\n    mp_obj_getitem_iter_t *o = (mp_obj_getitem_iter_t *)iter_buf;\n    o->base.type = &mp_type_it;\n    o->args[0] = args[0];\n    o->args[1] = args[1];\n    o->args[2] = MP_OBJ_NEW_SMALL_INT(0);\n    return MP_OBJ_FROM_PTR(o);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

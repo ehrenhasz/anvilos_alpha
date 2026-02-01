@@ -1,0 +1,9 @@
+{
+  "module_name": "sshsigopt_fuzz.cc",
+  "hash_id": "9ea1b0f30a97c43e670a86fa62af1483405b82c5ae4efe0ab6163309a312cf40",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/misc/fuzz-harness/sshsigopt_fuzz.cc",
+  "human_readable_source": "#include <stddef.h>\n#include <stdio.h>\n#include <stdint.h>\n#include <string.h>\n#include <stdlib.h>\n\nextern \"C\" {\n\n#include \"sshsig.h\"\n\nint LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)\n{\n\tchar *cp = (char *)malloc(size + 1);\n\tstruct sshsigopt *opts = NULL;\n\n\tif (cp == NULL)\n\t\tgoto out;\n\tmemcpy(cp, data, size);\n\tcp[size] = '\\0';\n\tif ((opts = sshsigopt_parse(cp, \"libfuzzer\", 0, NULL)) == NULL)\n\t\tgoto out;\n\n out:\n\tfree(cp);\n\tsshsigopt_free(opts);\n\treturn 0;\n}\n\n} \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

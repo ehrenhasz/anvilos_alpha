@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "e16342810a24921cb8c7848fdc34891b8670d89b34c73efeccb2b493e40b9117",
+  "original_prompt": "Ingested from linux-6.6.14/samples/pfsm/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n/pfsm-wakeup\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

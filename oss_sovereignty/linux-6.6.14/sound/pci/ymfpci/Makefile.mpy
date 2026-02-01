@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e030379a3ced21584efd3f727bef895a3ef97f25cf6ecc9e7cc4a3bc1d2b8ace",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ymfpci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-ymfpci-objs := ymfpci.o ymfpci_main.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_YMFPCI) += snd-ymfpci.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

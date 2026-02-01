@@ -1,0 +1,9 @@
+{
+  "module_name": "other.json",
+  "hash_id": "58993cdd451d9cd8ec8a0ba78f04a110e94dc25ab36e9ac20dabaf9e206985ac",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/skylake/other.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"Number of hardware interrupts received by the processor.\",\n        \"EventCode\": \"0xCB\",\n        \"EventName\": \"HW_INTERRUPTS.RECEIVED\",\n        \"PublicDescription\": \"Counts the number of hardware interruptions received by the processor.\",\n        \"SampleAfterValue\": \"203\",\n        \"UMask\": \"0x1\"\n    },\n    {\n        \"BriefDescription\": \"MEMORY_DISAMBIGUATION.HISTORY_RESET\",\n        \"EventCode\": \"0x09\",\n        \"EventName\": \"MEMORY_DISAMBIGUATION.HISTORY_RESET\",\n        \"SampleAfterValue\": \"2000003\",\n        \"UMask\": \"0x1\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

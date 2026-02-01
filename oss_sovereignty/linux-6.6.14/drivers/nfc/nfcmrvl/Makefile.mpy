@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3f6211f88b882bf7a938f322a444b91935eb6e957ee7f3aaad5bc6cab0e8deef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/nfcmrvl/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for NFCMRVL NCI based NFC driver\n#\n\nnfcmrvl-y += main.o fw_dnld.o\nobj-$(CONFIG_NFC_MRVL) += nfcmrvl.o\n\nnfcmrvl_usb-y += usb.o\nobj-$(CONFIG_NFC_MRVL_USB) += nfcmrvl_usb.o\n\nnfcmrvl_uart-y += uart.o\nobj-$(CONFIG_NFC_MRVL_UART) += nfcmrvl_uart.o\n\nnfcmrvl_i2c-y += i2c.o\nobj-$(CONFIG_NFC_MRVL_I2C) += nfcmrvl_i2c.o\n\nnfcmrvl_spi-y += spi.o\nobj-$(CONFIG_NFC_MRVL_SPI) += nfcmrvl_spi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

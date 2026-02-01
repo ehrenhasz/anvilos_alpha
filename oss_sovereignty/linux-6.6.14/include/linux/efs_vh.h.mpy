@@ -1,0 +1,9 @@
+{
+  "module_name": "efs_vh.h",
+  "hash_id": "0f62b0a09d50843dd2b46f0a17378ae6256d1fa40e5a1120fbbda1dafb9a20e6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/efs_vh.h",
+  "human_readable_source": " \n \n\n#ifndef __EFS_VH_H__\n#define __EFS_VH_H__\n\n#define VHMAGIC\t\t0xbe5a941\t \n#define NPARTAB\t\t16\t\t \n#define NVDIR\t\t15\t\t \n#define BFNAMESIZE\t16\t\t \n#define VDNAMESIZE\t8\n\nstruct volume_directory {\n\tchar\tvd_name[VDNAMESIZE];\t \n\t__be32\tvd_lbn;\t\t\t \n\t__be32\tvd_nbytes;\t\t \n};\n\nstruct partition_table {\t \n\t__be32\tpt_nblks;\t \n\t__be32\tpt_firstlbn;\t \n\t__be32\tpt_type;\t \n};\n\nstruct volume_header {\n\t__be32\tvh_magic;\t\t\t \n\t__be16\tvh_rootpt;\t\t\t \n\t__be16\tvh_swappt;\t\t\t \n\tchar\tvh_bootfile[BFNAMESIZE];\t \n\tchar\tpad[48];\t\t\t \n\tstruct volume_directory vh_vd[NVDIR];\t \n\tstruct partition_table  vh_pt[NPARTAB];\t \n\t__be32\tvh_csum;\t\t\t \n\t__be32\tvh_fill;\t\t\t \n};\n\n \n#define SGI_SYSV\t0x05\n#define SGI_EFS\t\t0x07\n#define IS_EFS(x)\t(((x) == SGI_EFS) || ((x) == SGI_SYSV))\n\nstruct pt_types {\n\tint\tpt_type;\n\tchar\t*pt_name;\n};\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

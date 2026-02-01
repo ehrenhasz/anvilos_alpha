@@ -1,0 +1,9 @@
+{
+  "module_name": "pthread_sigmask.c",
+  "hash_id": "b501f03f73d442f9eaabb15a29b1be9169d9e0f8870f7659f850b06076170f35",
+  "original_prompt": "Ingested from coreutils-9.4/lib/pthread_sigmask.c",
+  "human_readable_source": " \n#include <signal.h>\n\n#include <errno.h>\n#include <stddef.h>\n\n#if PTHREAD_SIGMASK_INEFFECTIVE\n# include <string.h>\n#endif\n\n#if PTHREAD_SIGMASK_UNBLOCK_BUG\n# include <unistd.h>\n#endif\n\nint\npthread_sigmask (int how, const sigset_t *new_mask, sigset_t *old_mask)\n#undef pthread_sigmask\n{\n#if HAVE_PTHREAD_SIGMASK\n  int ret;\n\n# if PTHREAD_SIGMASK_INEFFECTIVE\n  sigset_t omask, omask_copy;\n  sigset_t *old_mask_ptr = &omask;\n  sigemptyset (&omask);\n   \n  sigaddset (&omask, SIGILL);\n  memcpy (&omask_copy, &omask, sizeof omask);\n# else\n  sigset_t *old_mask_ptr = old_mask;\n# endif\n\n  ret = pthread_sigmask (how, new_mask, old_mask_ptr);\n\n# if PTHREAD_SIGMASK_INEFFECTIVE\n  if (ret == 0)\n    {\n       \n      if (memcmp (&omask_copy, &omask, sizeof omask) == 0\n          && pthread_sigmask (1729, &omask_copy, NULL) == 0)\n        {\n           \n          return (sigprocmask (how, new_mask, old_mask) < 0 ? errno : 0);\n        }\n\n      if (old_mask)\n        memcpy (old_mask, &omask, sizeof omask);\n    }\n# endif\n# if PTHREAD_SIGMASK_FAILS_WITH_ERRNO\n  if (ret == -1)\n    return errno;\n# endif\n# if PTHREAD_SIGMASK_UNBLOCK_BUG\n  if (ret == 0\n      && new_mask != NULL\n      && (how == SIG_UNBLOCK || how == SIG_SETMASK))\n    {\n       \n      usleep (1);\n    }\n# endif\n  return ret;\n#else\n  int ret = sigprocmask (how, new_mask, old_mask);\n  return (ret < 0 ? errno : 0);\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

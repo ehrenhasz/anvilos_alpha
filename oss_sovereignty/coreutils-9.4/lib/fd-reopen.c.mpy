@@ -1,0 +1,9 @@
+{
+  "module_name": "fd-reopen.c",
+  "hash_id": "8246fc319728e723710455a9d7278674e0a5380688011a833fd2d2fcb131b951",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fd-reopen.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"fd-reopen.h\"\n\n#include <errno.h>\n#include <fcntl.h>\n#include <unistd.h>\n\n \n\nint\nfd_reopen (int desired_fd, char const *file, int flags, mode_t mode)\n{\n  int fd = open (file, flags, mode);\n\n  if (fd == desired_fd || fd < 0)\n    return fd;\n  else\n    {\n      int fd2 = dup2 (fd, desired_fd);\n      int saved_errno = errno;\n      close (fd);\n      errno = saved_errno;\n      return fd2;\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

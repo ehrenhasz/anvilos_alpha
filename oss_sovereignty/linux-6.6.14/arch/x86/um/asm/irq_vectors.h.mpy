@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_vectors.h",
+  "hash_id": "9ab146b950227cfff1590ac48831f92a4659439def085818da8462250f37e722",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/asm/irq_vectors.h",
+  "human_readable_source": " \n\n#ifndef __UM_IRQ_VECTORS_H\n#define __UM_IRQ_VECTORS_H\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "20a3aec573459f90f78c3bc6bffc05afbe781ebe1fbfec06d76964bd5c3d66b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/virt/coco/sev-guest/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SEV_GUEST) += sev-guest.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

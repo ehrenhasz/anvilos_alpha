@@ -1,0 +1,9 @@
+{
+  "module_name": "r7s72100-pinctrl.h",
+  "hash_id": "a4295a592e94688bbe20eace16f15c287aa6dde016c52965b3ccf352c7e7657c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/r7s72100-pinctrl.h",
+  "human_readable_source": " \n \n#ifndef __DT_BINDINGS_PINCTRL_RENESAS_RZA1_H\n#define __DT_BINDINGS_PINCTRL_RENESAS_RZA1_H\n\n#define RZA1_PINS_PER_PORT\t16\n\n \n#define RZA1_PINMUX(b, p, f)\t((b) * RZA1_PINS_PER_PORT + (p) | (f << 16))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

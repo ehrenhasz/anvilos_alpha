@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "12cac585a12eda65847410a645fbc3041bda1e67e853d5b729b170aaaa7870d2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/most/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_MOST) += most_core.o\nmost_core-y :=\tcore.o \\\n\t\tconfigfs.o\n\nobj-$(CONFIG_MOST_USB_HDM) += most_usb.o\nobj-$(CONFIG_MOST_CDEV) += most_cdev.o\nobj-$(CONFIG_MOST_SND) += most_snd.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

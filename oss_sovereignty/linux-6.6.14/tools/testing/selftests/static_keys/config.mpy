@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "94c9993075289b0a3040704b24b72f868cf9878b1793f97b7d77eec65fb0cd6b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/static_keys/config",
+  "human_readable_source": "CONFIG_TEST_STATIC_KEYS=m\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

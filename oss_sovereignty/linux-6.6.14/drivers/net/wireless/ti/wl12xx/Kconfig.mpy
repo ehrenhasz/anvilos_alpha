@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9aebf12a64844d547ce0798464650a4b37afbea28807430408306677469ff992",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wl12xx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig WL12XX\n\ttristate \"TI wl12xx support\"\n\tdepends on MAC80211\n\tselect WLCORE\n\thelp\n\t  This module adds support for wireless adapters based on TI wl1271,\n\t  wl1273, wl1281 and wl1283 chipsets. This module does *not* include\n\t  support for wl1251.  For wl1251 support, use the separate homonymous\n\t  driver instead.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

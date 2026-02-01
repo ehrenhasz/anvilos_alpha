@@ -1,0 +1,9 @@
+{
+  "module_name": "iommu-sva.h",
+  "hash_id": "7f5be64fa90d552e51959e5dad17f18ce0e0fd6418fce86f629e0b2550799583",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/iommu-sva.h",
+  "human_readable_source": " \n \n#ifndef _IOMMU_SVA_H\n#define _IOMMU_SVA_H\n\n#include <linux/mm_types.h>\n\n \nstruct device;\nstruct iommu_fault;\nstruct iopf_queue;\n\n#ifdef CONFIG_IOMMU_SVA\nint iommu_queue_iopf(struct iommu_fault *fault, void *cookie);\n\nint iopf_queue_add_device(struct iopf_queue *queue, struct device *dev);\nint iopf_queue_remove_device(struct iopf_queue *queue,\n\t\t\t     struct device *dev);\nint iopf_queue_flush_dev(struct device *dev);\nstruct iopf_queue *iopf_queue_alloc(const char *name);\nvoid iopf_queue_free(struct iopf_queue *queue);\nint iopf_queue_discard_partial(struct iopf_queue *queue);\nenum iommu_page_response_code\niommu_sva_handle_iopf(struct iommu_fault *fault, void *data);\n\n#else  \nstatic inline int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)\n{\n\treturn -ENODEV;\n}\n\nstatic inline int iopf_queue_add_device(struct iopf_queue *queue,\n\t\t\t\t\tstruct device *dev)\n{\n\treturn -ENODEV;\n}\n\nstatic inline int iopf_queue_remove_device(struct iopf_queue *queue,\n\t\t\t\t\t   struct device *dev)\n{\n\treturn -ENODEV;\n}\n\nstatic inline int iopf_queue_flush_dev(struct device *dev)\n{\n\treturn -ENODEV;\n}\n\nstatic inline struct iopf_queue *iopf_queue_alloc(const char *name)\n{\n\treturn NULL;\n}\n\nstatic inline void iopf_queue_free(struct iopf_queue *queue)\n{\n}\n\nstatic inline int iopf_queue_discard_partial(struct iopf_queue *queue)\n{\n\treturn -ENODEV;\n}\n\nstatic inline enum iommu_page_response_code\niommu_sva_handle_iopf(struct iommu_fault *fault, void *data)\n{\n\treturn IOMMU_PAGE_RESP_INVALID;\n}\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

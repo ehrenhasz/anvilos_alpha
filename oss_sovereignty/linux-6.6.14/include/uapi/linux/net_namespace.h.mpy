@@ -1,0 +1,9 @@
+{
+  "module_name": "net_namespace.h",
+  "hash_id": "b6be3c8cb1d460af6c365a184b88e0b8f2efeb3b1cc327c46bc6691779ba922f",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/net_namespace.h",
+  "human_readable_source": " \n \n#ifndef _UAPI_LINUX_NET_NAMESPACE_H_\n#define _UAPI_LINUX_NET_NAMESPACE_H_\n\n \nenum {\n\tNETNSA_NONE,\n#define NETNSA_NSID_NOT_ASSIGNED -1\n\tNETNSA_NSID,\n\tNETNSA_PID,\n\tNETNSA_FD,\n\tNETNSA_TARGET_NSID,\n\tNETNSA_CURRENT_NSID,\n\t__NETNSA_MAX,\n};\n\n#define NETNSA_MAX\t\t(__NETNSA_MAX - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

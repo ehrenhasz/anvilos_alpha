@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "761afde20cc163b8a513eb0a17f3ed8a2c6e66d7a05bb96192e25d072a8d2427",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/octeon_ep/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Marvell's Octeon PCI Endpoint NIC Driver Configuration\n#\n\nconfig OCTEON_EP\n\ttristate \"Marvell Octeon PCI Endpoint NIC Driver\"\n\tdepends on 64BIT\n\tdepends on PCI\n\tdepends on PTP_1588_CLOCK_OPTIONAL\n\thelp\n\t  This driver supports networking functionality of Marvell's\n\t  Octeon PCI Endpoint NIC.\n\n\t  To know the list of devices supported by this driver, refer\n\t  documentation in\n\t  <file:Documentation/networking/device_drivers/ethernet/marvell/octeon_ep.rst>.\n\n\t  To compile this drivers as a module, choose M here. Name of the\n\t  module is octeon_ep.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cpuidle-psci.h",
+  "hash_id": "1cda4069a72aba63832b54a63a8eab48b2cf2d75fc8a15ae3f32dd1be85c7e6e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpuidle/cpuidle-psci.h",
+  "human_readable_source": " \n\n#ifndef __CPUIDLE_PSCI_H\n#define __CPUIDLE_PSCI_H\n\nstruct device;\nstruct device_node;\n\nvoid psci_set_domain_state(u32 state);\nint psci_dt_parse_state_node(struct device_node *np, u32 *state);\n\n#ifdef CONFIG_ARM_PSCI_CPUIDLE_DOMAIN\n\n#include \"dt_idle_genpd.h\"\n\nstatic inline struct device *psci_dt_attach_cpu(int cpu)\n{\n\treturn dt_idle_attach_cpu(cpu, \"psci\");\n}\n\nstatic inline void psci_dt_detach_cpu(struct device *dev)\n{\n\tdt_idle_detach_cpu(dev);\n}\n\n#else\nstatic inline struct device *psci_dt_attach_cpu(int cpu) { return NULL; }\nstatic inline void psci_dt_detach_cpu(struct device *dev) { }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

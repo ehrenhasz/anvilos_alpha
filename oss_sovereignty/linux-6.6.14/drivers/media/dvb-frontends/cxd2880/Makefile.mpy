@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e07e079a3a3e250023033d9c7156df026820a3db2d4f38252271861266528b98",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cxd2880/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\ncxd2880-objs := cxd2880_common.o \\\n\t\tcxd2880_devio_spi.o \\\n\t\tcxd2880_integ.o \\\n\t\tcxd2880_io.o \\\n\t\tcxd2880_spi_device.o \\\n\t\tcxd2880_tnrdmd.o \\\n\t\tcxd2880_tnrdmd_dvbt2.o \\\n\t\tcxd2880_tnrdmd_dvbt2_mon.o \\\n\t\tcxd2880_tnrdmd_dvbt.o \\\n\t\tcxd2880_tnrdmd_dvbt_mon.o\\\n\t\tcxd2880_tnrdmd_mon.o\\\n\t\tcxd2880_top.o\n\nobj-$(CONFIG_DVB_CXD2880) += cxd2880.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

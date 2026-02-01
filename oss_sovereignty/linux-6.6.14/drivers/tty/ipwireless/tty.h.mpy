@@ -1,0 +1,9 @@
+{
+  "module_name": "tty.h",
+  "hash_id": "bb58e9c502893e79f86ac194167bb326f12a7f34aa3275ffa6225c8fcb33d9fd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/ipwireless/tty.h",
+  "human_readable_source": " \n \n\n#ifndef _IPWIRELESS_CS_TTY_H_\n#define _IPWIRELESS_CS_TTY_H_\n\n#include <linux/types.h>\n#include <linux/sched.h>\n\n#include <pcmcia/cistpl.h>\n#include <pcmcia/ds.h>\n\nstruct ipw_tty;\nstruct ipw_network;\nstruct ipw_hardware;\n\nint ipwireless_tty_init(void);\nvoid ipwireless_tty_release(void);\n\nstruct ipw_tty *ipwireless_tty_create(struct ipw_hardware *hw,\n\t\t\t\t      struct ipw_network *net);\nvoid ipwireless_tty_free(struct ipw_tty *tty);\nvoid ipwireless_tty_received(struct ipw_tty *tty, unsigned char *data,\n\t\t\t     unsigned int length);\nint ipwireless_tty_is_modem(struct ipw_tty *tty);\nvoid ipwireless_tty_notify_control_line_change(struct ipw_tty *tty,\n\t\t\t\t\t       unsigned int channel_idx,\n\t\t\t\t\t       unsigned int control_lines,\n\t\t\t\t\t       unsigned int changed_mask);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

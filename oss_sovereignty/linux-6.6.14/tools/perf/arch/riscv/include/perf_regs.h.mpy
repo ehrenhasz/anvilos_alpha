@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_regs.h",
+  "hash_id": "7cacf2e02c542eef7ce7634479e424a6bb21b158a7099c223c3fdb8cfaaafb3f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/riscv/include/perf_regs.h",
+  "human_readable_source": " \n \n\n#ifndef ARCH_PERF_REGS_H\n#define ARCH_PERF_REGS_H\n\n#include <stdlib.h>\n#include <linux/types.h>\n#include <asm/perf_regs.h>\n\n#define PERF_REGS_MASK\t((1ULL << PERF_REG_RISCV_MAX) - 1)\n#define PERF_REGS_MAX\tPERF_REG_RISCV_MAX\n#if __riscv_xlen == 64\n#define PERF_SAMPLE_REGS_ABI    PERF_SAMPLE_REGS_ABI_64\n#else\n#define PERF_SAMPLE_REGS_ABI\tPERF_SAMPLE_REGS_ABI_32\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

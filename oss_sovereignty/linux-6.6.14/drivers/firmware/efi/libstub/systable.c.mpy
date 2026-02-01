@@ -1,0 +1,9 @@
+{
+  "module_name": "systable.c",
+  "hash_id": "6c8f469f319fd354a347dc2f0a23c919da8be3686ff6e00fbfc14de46bb3dfa9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/efi/libstub/systable.c",
+  "human_readable_source": "\n\n#include <linux/efi.h>\n#include <asm/efi.h>\n\n#include \"efistub.h\"\n\nconst efi_system_table_t *efi_system_table;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

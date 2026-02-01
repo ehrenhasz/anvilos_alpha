@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "186f97116ff48e35260635845d5de78bc39f5760024bda46a40642daf10e79d3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/acr/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\nnvkm-y += nvkm/subdev/acr/base.o\nnvkm-y += nvkm/subdev/acr/lsfw.o\nnvkm-y += nvkm/subdev/acr/gm200.o\nnvkm-y += nvkm/subdev/acr/gm20b.o\nnvkm-y += nvkm/subdev/acr/gp102.o\nnvkm-y += nvkm/subdev/acr/gp108.o\nnvkm-y += nvkm/subdev/acr/gv100.o\nnvkm-y += nvkm/subdev/acr/gp10b.o\nnvkm-y += nvkm/subdev/acr/tu102.o\nnvkm-y += nvkm/subdev/acr/ga100.o\nnvkm-y += nvkm/subdev/acr/ga102.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "spi-davinci.h",
+  "hash_id": "f3ffb200148d9692c92d1372623a008079c61f1852e805c1ab3ca62f635fea02",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/spi-davinci.h",
+  "human_readable_source": " \n \n\n#ifndef __ARCH_ARM_DAVINCI_SPI_H\n#define __ARCH_ARM_DAVINCI_SPI_H\n\n#include <linux/platform_data/edma.h>\n\n#define SPI_INTERN_CS\t0xFF\n\nenum {\n\tSPI_VERSION_1,  \n\tSPI_VERSION_2,  \n};\n\n \nstruct davinci_spi_platform_data {\n\tu8\t\t\tversion;\n\tu8\t\t\tnum_chipselect;\n\tu8\t\t\tintr_line;\n\tu8\t\t\tprescaler_limit;\n\tbool\t\t\tcshold_bug;\n\tenum dma_event_q\tdma_event_q;\n};\n\n \nstruct davinci_spi_config {\n\tu8\twdelay;\n\tu8\todd_parity;\n\tu8\tparity_enable;\n#define SPI_IO_TYPE_INTR\t0\n#define SPI_IO_TYPE_POLL\t1\n#define SPI_IO_TYPE_DMA\t\t2\n\tu8\tio_type;\n\tu8\ttimer_disable;\n\tu8\tc2tdelay;\n\tu8\tt2cdelay;\n\tu8\tt2edelay;\n\tu8\tc2edelay;\n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

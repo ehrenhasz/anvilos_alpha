@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "aa91b1956ed5a9d25114499bc3fd6250c3d82cc4541e9dadc1f5e989375e9f4f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/rockchip/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_PHY_ROCKCHIP_DP)\t\t+= phy-rockchip-dp.o\nobj-$(CONFIG_PHY_ROCKCHIP_DPHY_RX0)     += phy-rockchip-dphy-rx0.o\nobj-$(CONFIG_PHY_ROCKCHIP_EMMC)\t\t+= phy-rockchip-emmc.o\nobj-$(CONFIG_PHY_ROCKCHIP_INNO_CSIDPHY)\t+= phy-rockchip-inno-csidphy.o\nobj-$(CONFIG_PHY_ROCKCHIP_INNO_DSIDPHY)\t+= phy-rockchip-inno-dsidphy.o\nobj-$(CONFIG_PHY_ROCKCHIP_INNO_HDMI)\t+= phy-rockchip-inno-hdmi.o\nobj-$(CONFIG_PHY_ROCKCHIP_INNO_USB2)\t+= phy-rockchip-inno-usb2.o\nobj-$(CONFIG_PHY_ROCKCHIP_NANENG_COMBO_PHY)\t+= phy-rockchip-naneng-combphy.o\nobj-$(CONFIG_PHY_ROCKCHIP_PCIE)\t\t+= phy-rockchip-pcie.o\nobj-$(CONFIG_PHY_ROCKCHIP_SNPS_PCIE3)\t+= phy-rockchip-snps-pcie3.o\nobj-$(CONFIG_PHY_ROCKCHIP_TYPEC)\t+= phy-rockchip-typec.o\nobj-$(CONFIG_PHY_ROCKCHIP_USB)\t\t+= phy-rockchip-usb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

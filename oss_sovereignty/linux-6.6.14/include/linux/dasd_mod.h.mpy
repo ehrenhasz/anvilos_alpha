@@ -1,0 +1,9 @@
+{
+  "module_name": "dasd_mod.h",
+  "hash_id": "904fbb109e7c09d274d50e8b983391248e0a24aae156a416260a94942a7ab6a0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dasd_mod.h",
+  "human_readable_source": " \n#ifndef DASD_MOD_H\n#define DASD_MOD_H\n\n#include <asm/dasd.h>\n\nstruct gendisk;\n\nextern int dasd_biodasdinfo(struct gendisk *disk, dasd_information2_t *info);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

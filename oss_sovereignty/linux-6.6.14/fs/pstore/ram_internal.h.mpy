@@ -1,0 +1,9 @@
+{
+  "module_name": "ram_internal.h",
+  "hash_id": "fe1765a7c2072fd05d861cbd97535b31bca2ad14a518638cd992400b6da2b12b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/pstore/ram_internal.h",
+  "human_readable_source": " \n \n\n#include <linux/pstore_ram.h>\n\n \n#define PRZ_FLAG_NO_LOCK\tBIT(0)\n \n#define PRZ_FLAG_ZAP_OLD\tBIT(1)\n\n \nstruct persistent_ram_zone {\n\tphys_addr_t paddr;\n\tsize_t size;\n\tvoid *vaddr;\n\tchar *label;\n\tenum pstore_type_id type;\n\tu32 flags;\n\n\traw_spinlock_t buffer_lock;\n\tstruct persistent_ram_buffer *buffer;\n\tsize_t buffer_size;\n\n\tchar *par_buffer;\n\tchar *par_header;\n\tstruct rs_control *rs_decoder;\n\tint corrected_bytes;\n\tint bad_blocks;\n\tstruct persistent_ram_ecc_info ecc_info;\n\n\tchar *old_log;\n\tsize_t old_log_size;\n};\n\nstruct persistent_ram_zone *persistent_ram_new(phys_addr_t start, size_t size,\n\t\t\tu32 sig, struct persistent_ram_ecc_info *ecc_info,\n\t\t\tunsigned int memtype, u32 flags, char *label);\nvoid persistent_ram_free(struct persistent_ram_zone **_prz);\nvoid persistent_ram_zap(struct persistent_ram_zone *prz);\n\nint persistent_ram_write(struct persistent_ram_zone *prz, const void *s,\n\t\t\t unsigned int count);\nint persistent_ram_write_user(struct persistent_ram_zone *prz,\n\t\t\t      const void __user *s, unsigned int count);\n\nvoid persistent_ram_save_old(struct persistent_ram_zone *prz);\nsize_t persistent_ram_old_size(struct persistent_ram_zone *prz);\nvoid *persistent_ram_old(struct persistent_ram_zone *prz);\nvoid persistent_ram_free_old(struct persistent_ram_zone *prz);\nssize_t persistent_ram_ecc_string(struct persistent_ram_zone *prz,\n\tchar *str, size_t len);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

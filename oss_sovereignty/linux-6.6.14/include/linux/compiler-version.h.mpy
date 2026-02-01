@@ -1,0 +1,9 @@
+{
+  "module_name": "compiler-version.h",
+  "hash_id": "51294bffb8969f869a3c3f75abc511859e8f5bb18682bc2d048241bd2bccd8e7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/compiler-version.h",
+  "human_readable_source": " \n\n#ifdef  __LINUX_COMPILER_VERSION_H\n#error \"Please do not include <linux/compiler-version.h>. This is done by the build system.\"\n#endif\n#define __LINUX_COMPILER_VERSION_H\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

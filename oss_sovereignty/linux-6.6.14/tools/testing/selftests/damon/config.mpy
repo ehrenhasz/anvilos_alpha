@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "fd3b95610d8bf3f4f9b9c9df07d17d4466b6f995099c37798b5963d45e6f5945",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/damon/config",
+  "human_readable_source": "CONFIG_DAMON=y\nCONFIG_DAMON_SYSFS=y\nCONFIG_DAMON_DBGFS=y\nCONFIG_DAMON_PADDR=y\nCONFIG_DAMON_VADDR=y\nCONFIG_DAMON_RECLAIM=y\nCONFIG_DAMON_LRU_SORT=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "user-libblkid.m4",
+  "hash_id": "c91d1ebb3c5ea56506f6f54bb0a4447b90c05ca1e2b65c777d946e2143dbd4a8",
+  "original_prompt": "Ingested from zfs-2.2.2/config/user-libblkid.m4",
+  "human_readable_source": "dnl #\ndnl # Check for libblkid.  Basic support for detecting ZFS pools\ndnl # has existing in blkid since 2008.\ndnl #\nAC_DEFUN([ZFS_AC_CONFIG_USER_LIBBLKID], [\n\tZFS_AC_FIND_SYSTEM_LIBRARY(LIBBLKID, [blkid], [blkid/blkid.h], [], [blkid], [], [], [\n\t\tAC_MSG_FAILURE([\n\t\t*** blkid.h missing, libblkid-devel package required])])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

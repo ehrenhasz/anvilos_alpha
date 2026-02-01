@@ -1,0 +1,9 @@
+{
+  "module_name": "ratelimiter.h",
+  "hash_id": "1abe80fd569a0e17b8f974fc0103a42ef8c565cf5aa8219bdb0a9ef51ed4b32b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireguard/ratelimiter.h",
+  "human_readable_source": " \n \n\n#ifndef _WG_RATELIMITER_H\n#define _WG_RATELIMITER_H\n\n#include <linux/skbuff.h>\n\nint wg_ratelimiter_init(void);\nvoid wg_ratelimiter_uninit(void);\nbool wg_ratelimiter_allow(struct sk_buff *skb, struct net *net);\n\n#ifdef DEBUG\nbool wg_ratelimiter_selftest(void);\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

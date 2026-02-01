@@ -1,0 +1,9 @@
+{
+  "module_name": "sienna_cichlid.h",
+  "hash_id": "3d6a807eda392e8e13f2f8dda719f12a4de81a8a52191f75dc338c2d4dc734ea",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/sienna_cichlid.h",
+  "human_readable_source": " \n\n#ifndef __SIENNA_CICHLID_H__\n#define __SIENNA_CICHLID_H__\n\n#include \"amdgpu.h\"\n\nint sienna_cichlid_reset_init(struct amdgpu_device *adev);\nint sienna_cichlid_reset_fini(struct amdgpu_device *adev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "drxd.h",
+  "hash_id": "ea998220950a128f280c3975dcf671a472aee6bf90f11bbceb91d0ba306ec30c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/drxd.h",
+  "human_readable_source": " \n \n\n#ifndef _DRXD_H_\n#define _DRXD_H_\n\n#include <linux/types.h>\n#include <linux/i2c.h>\n\nstruct drxd_config {\n\tu8 index;\n\n\tu8 pll_address;\n\tu8 pll_type;\n#define DRXD_PLL_NONE     0\n#define DRXD_PLL_DTT7520X 1\n#define DRXD_PLL_MT3X0823 2\n\n\tu32 clock;\n\tu8 insert_rs_byte;\n\n\tu8 demod_address;\n\tu8 demoda_address;\n\tu8 demod_revision;\n\n\t \n\tu8 disable_i2c_gate_ctrl;\n\n\tu32 IF;\n\t s16(*osc_deviation) (void *priv, s16 dev, int flag);\n};\n\n#if IS_REACHABLE(CONFIG_DVB_DRXD)\nextern\nstruct dvb_frontend *drxd_attach(const struct drxd_config *config,\n\t\t\t\t void *priv, struct i2c_adapter *i2c,\n\t\t\t\t struct device *dev);\n#else\nstatic inline\nstruct dvb_frontend *drxd_attach(const struct drxd_config *config,\n\t\t\t\t void *priv, struct i2c_adapter *i2c,\n\t\t\t\t struct device *dev)\n{\n\tprintk(KERN_INFO \"%s: not probed - driver disabled by Kconfig\\n\",\n\t       __func__);\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "settings",
+  "hash_id": "fd93cf3ba673be0ca905aecbcb69cc189c846b3afcac5f5765710e6f8bf256b6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rtc/settings",
+  "human_readable_source": "timeout=210\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

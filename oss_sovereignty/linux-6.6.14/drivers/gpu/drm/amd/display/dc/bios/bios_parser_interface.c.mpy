@@ -1,0 +1,9 @@
+{
+  "module_name": "bios_parser_interface.c",
+  "hash_id": "79aeaa70b6c1a4d45895baa8076f798b70765f7f9b1fe79e2e481df08b62727d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/bios/bios_parser_interface.c",
+  "human_readable_source": " \n\n#include \"dm_services.h\"\n#include \"include/logger_interface.h\"\n\n#include \"bios_parser_interface.h\"\n#include \"bios_parser.h\"\n\n#include \"bios_parser2.h\"\n\n\nstruct dc_bios *dal_bios_parser_create(\n\tstruct bp_init_data *init,\n\tenum dce_version dce_version)\n{\n\tstruct dc_bios *bios = NULL;\n\n\tbios = firmware_parser_create(init, dce_version);\n\n\t \n\tif (bios == NULL)\n\t\tbios = bios_parser_create(init, dce_version);\n\n\treturn bios;\n}\n\nvoid dal_bios_parser_destroy(struct dc_bios **dcb)\n{\n\tstruct dc_bios *bios = *dcb;\n\n\tbios->funcs->bios_parser_destroy(dcb);\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

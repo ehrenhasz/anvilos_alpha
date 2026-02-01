@@ -1,0 +1,9 @@
+{
+  "module_name": "sclp_diag.h",
+  "hash_id": "49bc79556a9ab55926daf6c2dbeffb19c471c046dd38c9ba4884a960cd5befe3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/char/sclp_diag.h",
+  "human_readable_source": " \n \n\n#ifndef _SCLP_DIAG_H\n#define _SCLP_DIAG_H\n\n#include <linux/types.h>\n\n \n#define SCLP_DIAG_FTP_OK\t0x80U  \n#define SCLP_DIAG_FTP_LDFAIL\t0x01U  \n#define SCLP_DIAG_FTP_LDNPERM\t0x02U  \n#define SCLP_DIAG_FTP_LDRUNS\t0x03U  \n#define SCLP_DIAG_FTP_LDNRUNS\t0x04U  \n\n#define SCLP_DIAG_FTP_XPCX\t0x80  \n#define SCLP_DIAG_FTP_ROUTE\t4  \n\n \n#define SCLP_DIAG_FTP_EVBUF_LEN\t\t\t\t\\\n\t(offsetof(struct sclp_diag_evbuf, mdd) +\t\\\n\t sizeof(struct sclp_diag_ftp))\n\n \nstruct sclp_diag_ftp {\n\tu8 pcx;\n\tu8 ldflg;\n\tu8 cmd;\n\tu8 pgsize;\n\tu8 srcflg;\n\tu8 spare;\n\tu64 offset;\n\tu64 fsize;\n\tu64 length;\n\tu64 failaddr;\n\tu64 bufaddr;\n\tu64 asce;\n\n\tu8 fident[256];\n} __packed;\n\n \nstruct sclp_diag_evbuf {\n\tstruct evbuf_header hdr;\n\tu16 route;\n\n\tunion {\n\t\tstruct sclp_diag_ftp ftp;\n\t} mdd;\n} __packed;\n\n \nstruct sclp_diag_sccb {\n\n\tstruct sccb_header hdr;\n\tstruct sclp_diag_evbuf evbuf;\n} __packed;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

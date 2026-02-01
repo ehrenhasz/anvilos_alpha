@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__extmod__vfs_lfsx.c.qstr",
+  "hash_id": "422eed5d6842c2c9b9cf766de64f2b34a131f4e9803c61eda997785df54fe1be",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__extmod__vfs_lfsx.c.qstr",
+  "human_readable_source": "Q(_slash_)\nQ(mkfs)\nQ(open)\nQ(ilistdir)\nQ(mkdir)\nQ(rmdir)\nQ(chdir)\nQ(getcwd)\nQ(remove)\nQ(rename)\nQ(stat)\nQ(statvfs)\nQ(mount)\nQ(umount)\nQ(VfsLfs2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "marvell,mmp2-audio.h",
+  "hash_id": "fce65f4cfa9cb7d108cb620aee3185767a7b55d883652f7bdeda3216cd3509c6",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/marvell,mmp2-audio.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_CLOCK_MARVELL_MMP2_AUDIO_H\n#define __DT_BINDINGS_CLOCK_MARVELL_MMP2_AUDIO_H\n\n#define MMP2_CLK_AUDIO_SYSCLK\t\t0\n#define MMP2_CLK_AUDIO_SSPA0\t\t1\n#define MMP2_CLK_AUDIO_SSPA1\t\t2\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

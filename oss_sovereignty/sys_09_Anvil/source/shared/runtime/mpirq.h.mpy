@@ -1,0 +1,9 @@
+{
+  "module_name": "mpirq.h",
+  "hash_id": "4afff73b59559e8f2777a5b501de4ac386d3e99d71fa901d0a9cbe9217fc2673",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/runtime/mpirq.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_LIB_UTILS_MPIRQ_H\n#define MICROPY_INCLUDED_LIB_UTILS_MPIRQ_H\n\n#include \"py/runtime.h\"\n\n \n\nenum {\n    MP_IRQ_ARG_INIT_handler = 0,\n    MP_IRQ_ARG_INIT_trigger,\n    MP_IRQ_ARG_INIT_hard,\n    MP_IRQ_ARG_INIT_NUM_ARGS,\n};\n\n \n\ntypedef mp_uint_t (*mp_irq_trigger_fun_t)(mp_obj_t self, mp_uint_t trigger);\ntypedef mp_uint_t (*mp_irq_info_fun_t)(mp_obj_t self, mp_uint_t info_type);\n\nenum {\n    MP_IRQ_INFO_FLAGS,\n    MP_IRQ_INFO_TRIGGERS,\n};\n\ntypedef struct _mp_irq_methods_t {\n    mp_irq_trigger_fun_t trigger;\n    mp_irq_info_fun_t info;\n} mp_irq_methods_t;\n\ntypedef struct _mp_irq_obj_t {\n    mp_obj_base_t base;\n    mp_irq_methods_t *methods;\n    mp_obj_t parent;\n    mp_obj_t handler;\n    bool ishard;\n} mp_irq_obj_t;\n\n \n\nextern const mp_arg_t mp_irq_init_args[];\nextern const mp_obj_type_t mp_irq_type;\n\n \n\nmp_irq_obj_t *mp_irq_new(const mp_irq_methods_t *methods, mp_obj_t parent);\nvoid mp_irq_init(mp_irq_obj_t *self, const mp_irq_methods_t *methods, mp_obj_t parent);\nvoid mp_irq_handler(mp_irq_obj_t *self);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

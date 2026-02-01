@@ -1,0 +1,9 @@
+{
+  "module_name": "iwl-eeprom-read.h",
+  "hash_id": "92d8c03200f7cdc23104d6247f3d5104245966ef717ed16b8777a33a6846e30d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/iwl-eeprom-read.h",
+  "human_readable_source": " \n \n#ifndef __iwl_eeprom_h__\n#define __iwl_eeprom_h__\n\n#include \"iwl-trans.h\"\n\nint iwl_read_eeprom(struct iwl_trans *trans, u8 **eeprom, size_t *eeprom_size);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

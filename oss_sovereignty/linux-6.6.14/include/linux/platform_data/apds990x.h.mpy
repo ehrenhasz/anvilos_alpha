@@ -1,0 +1,9 @@
+{
+  "module_name": "apds990x.h",
+  "hash_id": "493da5d8a718b39f937c5dbff75021cf7c4c0451dfbfefc3514b2506be212847",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/apds990x.h",
+  "human_readable_source": " \n \n\n#ifndef __APDS990X_H__\n#define __APDS990X_H__\n\n\n#define APDS_IRLED_CURR_12mA\t0x3\n#define APDS_IRLED_CURR_25mA\t0x2\n#define APDS_IRLED_CURR_50mA\t0x1\n#define APDS_IRLED_CURR_100mA\t0x0\n\n \n#define APDS_PARAM_SCALE 4096\nstruct apds990x_chip_factors {\n\tint ga;\n\tint cf1;\n\tint irf1;\n\tint cf2;\n\tint irf2;\n\tint df;\n};\n\n \n\nstruct apds990x_platform_data {\n\tstruct apds990x_chip_factors cf;\n\tu8     pdrive;\n\tu8     ppcount;\n\tint    (*setup_resources)(void);\n\tint    (*release_resources)(void);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

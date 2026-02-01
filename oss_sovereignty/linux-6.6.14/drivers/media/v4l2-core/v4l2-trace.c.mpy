@@ -1,0 +1,9 @@
+{
+  "module_name": "v4l2-trace.c",
+  "hash_id": "22ce53a2c6bb3d1352777771625efa8e9855860e903c09f23a6b623cd4829bc5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/v4l2-core/v4l2-trace.c",
+  "human_readable_source": "\n#include <media/v4l2-common.h>\n#include <media/v4l2-fh.h>\n#include <media/videobuf2-v4l2.h>\n\n#define CREATE_TRACE_POINTS\n#include <trace/events/v4l2.h>\n\nEXPORT_TRACEPOINT_SYMBOL_GPL(vb2_v4l2_buf_done);\nEXPORT_TRACEPOINT_SYMBOL_GPL(vb2_v4l2_buf_queue);\nEXPORT_TRACEPOINT_SYMBOL_GPL(vb2_v4l2_dqbuf);\nEXPORT_TRACEPOINT_SYMBOL_GPL(vb2_v4l2_qbuf);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

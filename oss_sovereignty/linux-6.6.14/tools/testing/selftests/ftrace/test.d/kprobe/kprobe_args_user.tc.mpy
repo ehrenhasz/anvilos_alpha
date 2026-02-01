@@ -1,0 +1,9 @@
+{
+  "module_name": "kprobe_args_user.tc",
+  "hash_id": "1fbdf9ecb7f940e567db7201ee0859a96660c24f7fabe2ae124e29a055c1c4b5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_user.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Kprobe event user-memory access\n# requires: kprobe_events '$arg<N>':README\n\ngrep -A10 \"fetcharg:\" README | grep -q 'ustring' || exit_unsupported\ngrep -A10 \"fetcharg:\" README | grep -q '\\[u\\]<offset>' || exit_unsupported\n\n:;: \"user-memory access syntax and ustring working on user memory\";:\necho 'p:myevent do_sys_open path=+0($arg2):ustring path2=+u0($arg2):string' \\\n\t> kprobe_events\necho 'p:myevent2 do_sys_openat2 path=+0($arg2):ustring path2=+u0($arg2):string' \\\n\t>> kprobe_events\n\ngrep myevent kprobe_events | \\\n\tgrep -q 'path=+0($arg2):ustring path2=+u0($arg2):string'\necho 1 > events/kprobes/myevent/enable\necho 1 > events/kprobes/myevent2/enable\necho > /dev/null\necho 0 > events/kprobes/myevent/enable\necho 0 > events/kprobes/myevent2/enable\n\ngrep myevent trace | grep -q 'path=\"/dev/null\" path2=\"/dev/null\"'\n\n:;: \"user-memory access syntax and ustring not working with kernel memory\";:\necho 'p:myevent vfs_symlink path=+0($arg3):ustring path2=+u0($arg3):string' \\\n\t> kprobe_events\necho 1 > events/kprobes/myevent/enable\nln -s foo $TMPDIR/bar\necho 0 > events/kprobes/myevent/enable\n\ngrep myevent trace | grep -q 'path=(fault) path2=(fault)'\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vgatypes.h",
+  "hash_id": "cbaedf9672a190800b630d1048625748a614ad5ed781b2b8e8946daf00293bdc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/sis/vgatypes.h",
+  "human_readable_source": " \n \n \n\n#ifndef _VGATYPES_H_\n#define _VGATYPES_H_\n\n#define SISIOMEMTYPE\n\ntypedef unsigned long SISIOADDRESS;\n#include <linux/types.h>   \n#undef SISIOMEMTYPE\n#define SISIOMEMTYPE __iomem\n\ntypedef enum _SIS_CHIP_TYPE {\n    SIS_VGALegacy = 0,\n    SIS_530,\n    SIS_OLD,\n    SIS_300,\n    SIS_630,\n    SIS_730,\n    SIS_540,\n    SIS_315H,    \n    SIS_315,\n    SIS_315PRO,  \n    SIS_550,\n    SIS_650,\n    SIS_740,\n    SIS_330,\n    SIS_661,\n    SIS_741,\n    SIS_670,\n    SIS_660 = 35,\n    SIS_760,\n    SIS_761,\n    SIS_762,\n    SIS_770,\n    SIS_340 = 55,\n    SIS_341,\n    SIS_342,\n    XGI_20  = 75,\n    XGI_21,\n    XGI_40,\n    MAX_SIS_CHIP\n} SIS_CHIP_TYPE;\n\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "453ee83736e3fb00efe191c8a3c2f6a2942b5d20de847f89dec37d0afe0334ee",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/selinux/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsubdir-y := mdp genheaders\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

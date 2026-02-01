@@ -1,0 +1,9 @@
+{
+  "module_name": "router_bridge_lag.sh",
+  "hash_id": "73287aba23baed049bcd6a7e53d06117d8aaf2d981014aaff44c7e95f8a428d6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/router_bridge_lag.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# Test enslavement to LAG with a clean slate.\n# See $lib_dir/router_bridge_lag.sh for further details.\n\nALL_TESTS=\"\n\tconfig_devlink_reload\n\tconfig_enslave_h1\n\tconfig_enslave_h2\n\tconfig_enslave_h3\n\tconfig_enslave_h4\n\tconfig_enslave_swp1\n\tconfig_enslave_swp2\n\tconfig_enslave_swp3\n\tconfig_enslave_swp4\n\tconfig_wait\n\tping_ipv4\n\tping_ipv6\n\"\n\nconfig_devlink_reload()\n{\n\tlog_info \"Devlink reload\"\n\tdevlink_reload\n}\n\nconfig_enslave_h1()\n{\n\tconfig_enslave $h1 lag1\n}\n\nconfig_enslave_h2()\n{\n\tconfig_enslave $h2 lag4\n}\n\nconfig_enslave_h3()\n{\n\tconfig_enslave $h3 lag4\n}\n\nconfig_enslave_h4()\n{\n\tconfig_enslave $h4 lag1\n}\n\nlib_dir=$(dirname $0)/../../../net/forwarding\nEXTRA_SOURCE=\"source $lib_dir/devlink_lib.sh\"\nsource $lib_dir/router_bridge_lag.sh\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7f05d4e3c55aa37c376857f01c32af7a49baa01f2d671342614d9742d632d406",
+  "original_prompt": "Ingested from linux-6.6.14/sound/isa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-adlib-objs := adlib.o\nsnd-als100-objs := als100.o\nsnd-azt2320-objs := azt2320.o\nsnd-cmi8328-objs := cmi8328.o\nsnd-cmi8330-objs := cmi8330.o\nsnd-es18xx-objs := es18xx.o\nsnd-opl3sa2-objs := opl3sa2.o\nsnd-sc6000-objs := sc6000.o\nsnd-sscape-objs := sscape.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_ADLIB) += snd-adlib.o\nobj-$(CONFIG_SND_ALS100) += snd-als100.o\nobj-$(CONFIG_SND_AZT2320) += snd-azt2320.o\nobj-$(CONFIG_SND_CMI8328) += snd-cmi8328.o\nobj-$(CONFIG_SND_CMI8330) += snd-cmi8330.o\nobj-$(CONFIG_SND_ES18XX) += snd-es18xx.o\nobj-$(CONFIG_SND_OPL3SA2) += snd-opl3sa2.o\nobj-$(CONFIG_SND_SC6000) += snd-sc6000.o\nobj-$(CONFIG_SND_SSCAPE) += snd-sscape.o\n\nobj-$(CONFIG_SND) += ad1816a/ ad1848/ cs423x/ es1688/ galaxy/ gus/ msnd/ opti9xx/ \\\n\t\t     sb/ wavefront/ wss/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

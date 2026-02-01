@@ -1,0 +1,9 @@
+{
+  "module_name": "mm_context.h",
+  "hash_id": "e48cb2d53214bfc88842149a905cfcf2977a71afc1f7fa8eea31afd6035786d1",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/asm/mm_context.h",
+  "human_readable_source": " \n\n#ifndef __ASM_LDT_H\n#define __ASM_LDT_H\n\n#include <linux/mutex.h>\n#include <asm/ldt.h>\n\n#define LDT_PAGES_MAX \\\n\t((LDT_ENTRIES * LDT_ENTRY_SIZE)/PAGE_SIZE)\n#define LDT_ENTRIES_PER_PAGE \\\n\t(PAGE_SIZE/LDT_ENTRY_SIZE)\n#define LDT_DIRECT_ENTRIES \\\n\t((LDT_PAGES_MAX*sizeof(void *))/LDT_ENTRY_SIZE)\n\nstruct ldt_entry {\n\t__u32 a;\n\t__u32 b;\n};\n\ntypedef struct uml_ldt {\n\tint entry_count;\n\tstruct mutex lock;\n\tunion {\n\t\tstruct ldt_entry * pages[LDT_PAGES_MAX];\n\t\tstruct ldt_entry entries[LDT_DIRECT_ENTRIES];\n\t} u;\n} uml_ldt_t;\n\n#define LDT_entry_a(info) \\\n\t((((info)->base_addr & 0x0000ffff) << 16) | ((info)->limit & 0x0ffff))\n\n#define LDT_entry_b(info) \\\n\t(((info)->base_addr & 0xff000000) | \\\n\t(((info)->base_addr & 0x00ff0000) >> 16) | \\\n\t((info)->limit & 0xf0000) | \\\n\t(((info)->read_exec_only ^ 1) << 9) | \\\n\t((info)->contents << 10) | \\\n\t(((info)->seg_not_present ^ 1) << 15) | \\\n\t((info)->seg_32bit << 22) | \\\n\t((info)->limit_in_pages << 23) | \\\n\t((info)->useable << 20) | \\\n\t0x7000)\n\n#define _LDT_empty(info) (\\\n\t(info)->base_addr\t== 0\t&& \\\n\t(info)->limit\t\t== 0\t&& \\\n\t(info)->contents\t== 0\t&& \\\n\t(info)->read_exec_only\t== 1\t&& \\\n\t(info)->seg_32bit\t== 0\t&& \\\n\t(info)->limit_in_pages\t== 0\t&& \\\n\t(info)->seg_not_present\t== 1\t&& \\\n\t(info)->useable\t\t== 0\t)\n\n#ifdef CONFIG_X86_64\n#define LDT_empty(info) (_LDT_empty(info) && ((info)->lm == 0))\n#else\n#define LDT_empty(info) (_LDT_empty(info))\n#endif\n\nstruct uml_arch_mm_context {\n\tuml_ldt_t ldt;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

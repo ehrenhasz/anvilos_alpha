@@ -1,0 +1,9 @@
+{
+  "module_name": "zed_event.h",
+  "hash_id": "0f8496c3b970c40b2782fa9ef3955537db7c6d386de488d482ac4f2b801252cf",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zed/zed_event.h",
+  "human_readable_source": " \n\n#ifndef\tZED_EVENT_H\n#define\tZED_EVENT_H\n\n#include <stdint.h>\n\nint zed_event_init(struct zed_conf *zcp);\n\nvoid zed_event_fini(struct zed_conf *zcp);\n\nint zed_event_seek(struct zed_conf *zcp, uint64_t saved_eid,\n    int64_t saved_etime[]);\n\nint zed_event_service(struct zed_conf *zcp);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

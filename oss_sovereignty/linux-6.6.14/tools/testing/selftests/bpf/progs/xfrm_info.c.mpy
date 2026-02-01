@@ -1,0 +1,9 @@
+{
+  "module_name": "xfrm_info.c",
+  "hash_id": "398c3eb2a656a6c386d86ede92a31761b1ea30b687cab4b12d42a7a993444023",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/xfrm_info.c",
+  "human_readable_source": "\n#include \"vmlinux.h\"\n#include \"bpf_tracing_net.h\"\n#include <bpf/bpf_helpers.h>\n\nstruct bpf_xfrm_info___local {\n\tu32 if_id;\n\tint link;\n} __attribute__((preserve_access_index));\n\n__u32 req_if_id;\n__u32 resp_if_id;\n\nint bpf_skb_set_xfrm_info(struct __sk_buff *skb_ctx,\n\t\t\t  const struct bpf_xfrm_info___local *from) __ksym;\nint bpf_skb_get_xfrm_info(struct __sk_buff *skb_ctx,\n\t\t\t  struct bpf_xfrm_info___local *to) __ksym;\n\nSEC(\"tc\")\nint set_xfrm_info(struct __sk_buff *skb)\n{\n\tstruct bpf_xfrm_info___local info = { .if_id = req_if_id };\n\n\treturn bpf_skb_set_xfrm_info(skb, &info) ? TC_ACT_SHOT : TC_ACT_UNSPEC;\n}\n\nSEC(\"tc\")\nint get_xfrm_info(struct __sk_buff *skb)\n{\n\tstruct bpf_xfrm_info___local info = {};\n\n\tif (bpf_skb_get_xfrm_info(skb, &info) < 0)\n\t\treturn TC_ACT_SHOT;\n\n\tresp_if_id = info.if_id;\n\n\treturn TC_ACT_UNSPEC;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

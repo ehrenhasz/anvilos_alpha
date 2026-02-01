@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "75f825d809cdad168ba7fa7969302b79f12c78f80bea5495ee05e7b2680102fa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/max96712/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig VIDEO_MAX96712\n\ttristate \"Maxim MAX96712 Quad GMSL2 Deserializer support\"\n\tdepends on I2C\n\tdepends on OF_GPIO\n\tdepends on VIDEO_DEV\n\tselect V4L2_FWNODE\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect MEDIA_CONTROLLER\n\thelp\n\t  This driver supports the Maxim MAX96712 Quad GMSL2 Deserializer.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called max96712.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

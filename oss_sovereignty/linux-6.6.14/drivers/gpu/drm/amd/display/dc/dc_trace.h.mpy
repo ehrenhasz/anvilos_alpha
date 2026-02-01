@@ -1,0 +1,9 @@
+{
+  "module_name": "dc_trace.h",
+  "hash_id": "d771b636da9e0f69c11d5f9d563b339c2af44e9340ff939487ce5fd758b2fff7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dc_trace.h",
+  "human_readable_source": " \n\n#include \"amdgpu_dm_trace.h\"\n\n#define TRACE_DC_PIPE_STATE(pipe_ctx, index, max_pipes) \\\n\tfor (index = 0; index < max_pipes; ++index) { \\\n\t\tstruct pipe_ctx *pipe_ctx = &dc->current_state->res_ctx.pipe_ctx[index]; \\\n\t\tif (pipe_ctx->plane_state) \\\n\t\t\ttrace_amdgpu_dm_dc_pipe_state(pipe_ctx->pipe_idx, pipe_ctx->plane_state, \\\n\t\t\t\t\t\t      pipe_ctx->stream, &pipe_ctx->plane_res, \\\n\t\t\t\t\t\t      pipe_ctx->update_flags.raw); \\\n\t}\n\n#define TRACE_DCE_CLOCK_STATE(dce_clocks) \\\n\ttrace_amdgpu_dm_dce_clocks_state(dce_clocks)\n\n#define TRACE_DCN_CLOCK_STATE(dcn_clocks) \\\n\ttrace_amdgpu_dm_dc_clocks_state(dcn_clocks)\n\n#define TRACE_DCN_FPU(begin, function, line, ref_count) \\\n\ttrace_dcn_fpu(begin, function, line, ref_count)\n#define TRACE_OPTC_LOCK_UNLOCK_STATE(optc, inst, lock) \\\n\ttrace_dcn_optc_lock_unlock_state(optc, inst, lock, __func__, __LINE__)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

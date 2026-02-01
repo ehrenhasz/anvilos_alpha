@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d83ef1856f22880d38b7851f846f6e9e577f587115c564a0e06ab2d7689230b6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/korg1212/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-korg1212-objs := korg1212.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_KORG1212) += snd-korg1212.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

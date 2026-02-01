@@ -1,0 +1,9 @@
+{
+  "module_name": "i40e_diag.h",
+  "hash_id": "514b58b3f2d2eea6af7c6552c29349013c249e71287ce7329676e6d8d1be789f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/i40e/i40e_diag.h",
+  "human_readable_source": " \n \n\n#ifndef _I40E_DIAG_H_\n#define _I40E_DIAG_H_\n\n#include \"i40e_type.h\"\n\nenum i40e_lb_mode {\n\tI40E_LB_MODE_NONE       = 0x0,\n\tI40E_LB_MODE_PHY_LOCAL  = I40E_AQ_LB_PHY_LOCAL,\n\tI40E_LB_MODE_PHY_REMOTE = I40E_AQ_LB_PHY_REMOTE,\n\tI40E_LB_MODE_MAC_LOCAL  = I40E_AQ_LB_MAC_LOCAL,\n};\n\nstruct i40e_diag_reg_test_info {\n\tu32 offset;\t \n\tu32 mask;\t \n\tu32 elements;\t \n\tu32 stride;\t \n};\n\nextern const struct i40e_diag_reg_test_info i40e_reg_list[];\n\nint i40e_diag_reg_test(struct i40e_hw *hw);\nint i40e_diag_eeprom_test(struct i40e_hw *hw);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

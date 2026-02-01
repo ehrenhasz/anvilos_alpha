@@ -1,0 +1,9 @@
+{
+  "module_name": "pd6729.h",
+  "hash_id": "be9ceee9cb49a845f7f9204942ceaebf893f0f699f194a4f44e0d11626d45c79",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pcmcia/pd6729.h",
+  "human_readable_source": " \n#ifndef _INCLUDE_GUARD_PD6729_H_\n#define _INCLUDE_GUARD_PD6729_H_\n\n \n#define I365_DF_VS1\t\t0x40\t \n#define I365_DF_VS2\t\t0x80\n\n \n#define PD67_EXD_VS1(s)\t\t(0x01 << ((s) << 1))\n#define PD67_EXD_VS2(s)\t\t(0x02 << ((s) << 1))\n\n \n#define PD67_MASK\t0x0eb8\t \n\nstruct pd6729_socket {\n\tint\tnumber;\n\tint\tcard_irq;\n\tunsigned long io_base;\t \n\tstruct pcmcia_socket socket;\n\tstruct timer_list poll_timer;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

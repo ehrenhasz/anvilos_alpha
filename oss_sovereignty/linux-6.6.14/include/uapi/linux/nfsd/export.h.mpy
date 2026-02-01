@@ -1,0 +1,9 @@
+{
+  "module_name": "export.h",
+  "hash_id": "0cf3528a59e7458a43828a195c7c2ee5fb7eba98de1a117187bc7a005566a8ff",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/nfsd/export.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPINFSD_EXPORT_H\n#define _UAPINFSD_EXPORT_H\n\n# include <linux/types.h>\n\n \n#define NFSCLNT_IDMAX\t\t1024\n#define NFSCLNT_ADDRMAX\t\t16\n#define NFSCLNT_KEYMAX\t\t32\n\n \n#define NFSEXP_READONLY\t\t0x0001\n#define NFSEXP_INSECURE_PORT\t0x0002\n#define NFSEXP_ROOTSQUASH\t0x0004\n#define NFSEXP_ALLSQUASH\t0x0008\n#define NFSEXP_ASYNC\t\t0x0010\n#define NFSEXP_GATHERED_WRITES\t0x0020\n#define NFSEXP_NOREADDIRPLUS    0x0040\n#define NFSEXP_SECURITY_LABEL\t0x0080\n \n#define NFSEXP_NOHIDE\t\t0x0200\n#define NFSEXP_NOSUBTREECHECK\t0x0400\n#define\tNFSEXP_NOAUTHNLM\t0x0800\t\t \n#define NFSEXP_MSNFS\t\t0x1000\t \n#define NFSEXP_FSID\t\t0x2000\n#define\tNFSEXP_CROSSMOUNT\t0x4000\n#define\tNFSEXP_NOACL\t\t0x8000\t \n \n#define\tNFSEXP_V4ROOT\t\t0x10000\n#define NFSEXP_PNFS\t\t0x20000\n\n \n#define NFSEXP_ALLFLAGS\t\t0x3FEFF\n\n \n#define NFSEXP_SECINFO_FLAGS\t(NFSEXP_READONLY | NFSEXP_ROOTSQUASH \\\n\t\t\t\t\t| NFSEXP_ALLSQUASH \\\n\t\t\t\t\t| NFSEXP_INSECURE_PORT)\n\n \n#define NFSEXP_XPRTSEC_NONE\t0x0001\n#define NFSEXP_XPRTSEC_TLS\t0x0002\n#define NFSEXP_XPRTSEC_MTLS\t0x0004\n\n#define NFSEXP_XPRTSEC_NUM\t(3)\n\n#define NFSEXP_XPRTSEC_ALL\t(NFSEXP_XPRTSEC_NONE | \\\n\t\t\t\t NFSEXP_XPRTSEC_TLS | \\\n\t\t\t\t NFSEXP_XPRTSEC_MTLS)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "main.c",
+  "hash_id": "b60f8157a9158abb75f0007d06fd3cb84f5622a3c0f0a8cc9d76681f15dbb895",
+  "original_prompt": "Ingested from linux-6.6.14/fs/netfs/main.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/export.h>\n#include \"internal.h\"\n#define CREATE_TRACE_POINTS\n#include <trace/events/netfs.h>\n\nMODULE_DESCRIPTION(\"Network fs support\");\nMODULE_AUTHOR(\"Red Hat, Inc.\");\nMODULE_LICENSE(\"GPL\");\n\nunsigned netfs_debug;\nmodule_param_named(debug, netfs_debug, uint, S_IWUSR | S_IRUGO);\nMODULE_PARM_DESC(netfs_debug, \"Netfs support debugging mask\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

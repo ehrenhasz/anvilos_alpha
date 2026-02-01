@@ -1,0 +1,9 @@
+{
+  "module_name": "zisofs.h",
+  "hash_id": "d8b542c717802057194acfc86f396f4c3cbe8969ad4beaa6718dc9b8e81e4df4",
+  "original_prompt": "Ingested from linux-6.6.14/fs/isofs/zisofs.h",
+  "human_readable_source": " \n \n\n \n\n#ifdef CONFIG_ZISOFS\nextern const struct address_space_operations zisofs_aops;\nextern int __init zisofs_init(void);\nextern void zisofs_cleanup(void);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

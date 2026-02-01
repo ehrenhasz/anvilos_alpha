@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "572d6d828b1bbf0fa9e4723066895ee2fd323480eb4083812833b9e9c98be350",
+  "original_prompt": "Ingested from linux-6.6.14/samples/uhid/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nuserprogs-always-y += uhid-example\n\nuserccflags += -I usr/include\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tag_global.h",
+  "hash_id": "0ead88b2b0ce9329472006dfd2791faf061dbc24f0d68a8fa15d466edf6a250c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_shared/tag_global.h",
+  "human_readable_source": " \n \n\n#ifndef __TAG_GLOBAL_H_INCLUDED__\n#define __TAG_GLOBAL_H_INCLUDED__\n\n \n\n#define TAG_CAP\t1\n#define TAG_EXP\t2\n\n#define TAG_NUM_CAPTURES_SIGN_SHIFT\t 6\n#define TAG_OFFSET_SIGN_SHIFT\t\t 7\n#define TAG_NUM_CAPTURES_SHIFT\t\t 8\n#define TAG_OFFSET_SHIFT\t\t16\n#define TAG_SKIP_SHIFT\t\t\t24\n\n#define TAG_EXP_ID_SHIFT\t\t 8\n\n \n\nstruct sh_css_tag_descr {\n\tint num_captures;\n\tunsigned int skip;\n\tint offset;\n\tunsigned int exp_id;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

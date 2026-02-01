@@ -1,0 +1,9 @@
+{
+  "module_name": "nvdec.h",
+  "hash_id": "23325d776238538a4570be1caad1a53d533688d1131c8196a7c71290f3d6a76b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/engine/nvdec.h",
+  "human_readable_source": " \n#ifndef __NVKM_NVDEC_H__\n#define __NVKM_NVDEC_H__\n#define nvkm_nvdec(p) container_of((p), struct nvkm_nvdec, engine)\n#include <core/engine.h>\n#include <core/falcon.h>\n\nstruct nvkm_nvdec {\n\tconst struct nvkm_nvdec_func *func;\n\tstruct nvkm_engine engine;\n\tstruct nvkm_falcon falcon;\n};\n\nint gm107_nvdec_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_nvdec **);\nint ga102_nvdec_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_nvdec **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

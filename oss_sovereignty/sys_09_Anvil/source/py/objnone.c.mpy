@@ -1,0 +1,9 @@
+{
+  "module_name": "objnone.c",
+  "hash_id": "7d4cdfeda887c78f589551e28910cb8e84eec3c6ca1870411c66ceadc3449f47",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/objnone.c",
+  "human_readable_source": " \n\n#include <stdlib.h>\n\n#include \"py/obj.h\"\n\n#if !MICROPY_OBJ_IMMEDIATE_OBJS\ntypedef struct _mp_obj_none_t {\n    mp_obj_base_t base;\n} mp_obj_none_t;\n#endif\n\nstatic void none_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {\n    (void)self_in;\n    if (MICROPY_PY_JSON && kind == PRINT_JSON) {\n        mp_print_str(print, \"null\");\n    } else {\n        mp_print_str(print, \"None\");\n    }\n}\n\nMP_DEFINE_CONST_OBJ_TYPE(\n    mp_type_NoneType,\n    MP_QSTR_NoneType,\n    MP_TYPE_FLAG_NONE,\n    print, none_print\n    );\n\n#if !MICROPY_OBJ_IMMEDIATE_OBJS\nconst mp_obj_none_t mp_const_none_obj = {{&mp_type_NoneType}};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

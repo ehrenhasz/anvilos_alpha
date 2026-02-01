@@ -1,0 +1,9 @@
+{
+  "module_name": "true.x",
+  "hash_id": "6206767a9c81210eebbd8e789cbf270487a99604a973fd23891d3f0eb56aa99b",
+  "original_prompt": "Ingested from coreutils-9.4/man/true.x",
+  "human_readable_source": "[NAME]\ntrue \\- do nothing, successfully\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

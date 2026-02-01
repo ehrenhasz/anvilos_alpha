@@ -1,0 +1,9 @@
+{
+  "module_name": "onboard_hub.h",
+  "hash_id": "c049bc465bba53596988da802ea40ac8dfdfb49b654d7742be69f94f78c94c3f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/onboard_hub.h",
+  "human_readable_source": " \n\n#ifndef __LINUX_USB_ONBOARD_HUB_H\n#define __LINUX_USB_ONBOARD_HUB_H\n\nstruct usb_device;\nstruct list_head;\n\n#if IS_ENABLED(CONFIG_USB_ONBOARD_HUB)\nvoid onboard_hub_create_pdevs(struct usb_device *parent_hub, struct list_head *pdev_list);\nvoid onboard_hub_destroy_pdevs(struct list_head *pdev_list);\n#else\nstatic inline void onboard_hub_create_pdevs(struct usb_device *parent_hub,\n\t\t\t\t\t    struct list_head *pdev_list) {}\nstatic inline void onboard_hub_destroy_pdevs(struct list_head *pdev_list) {}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

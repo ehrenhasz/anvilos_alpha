@@ -1,0 +1,9 @@
+{
+  "module_name": "hisi.h",
+  "hash_id": "21a64d63bfff743213a50c81f78557f7e518b33f72cfe32284d9152dcd3a7dfb",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/hisi.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_PINCTRL_HISI_H\n#define _DT_BINDINGS_PINCTRL_HISI_H\n\n \n#define MUX_M0\t\t0\n#define MUX_M1\t\t1\n#define MUX_M2\t\t2\n#define MUX_M3\t\t3\n#define MUX_M4\t\t4\n#define MUX_M5\t\t5\n#define MUX_M6\t\t6\n#define MUX_M7\t\t7\n\n \n#define PULL_MASK\t(3)\n#define PULL_DIS\t(0)\n#define PULL_UP\t\t(1 << 0)\n#define PULL_DOWN\t(1 << 1)\n\n \n#define DRIVE_MASK\t(7 << 4)\n#define DRIVE1_02MA\t(0 << 4)\n#define DRIVE1_04MA\t(1 << 4)\n#define DRIVE1_08MA\t(2 << 4)\n#define DRIVE1_10MA\t(3 << 4)\n#define DRIVE2_02MA\t(0 << 4)\n#define DRIVE2_04MA\t(1 << 4)\n#define DRIVE2_08MA\t(2 << 4)\n#define DRIVE2_10MA\t(3 << 4)\n#define DRIVE3_04MA\t(0 << 4)\n#define DRIVE3_08MA\t(1 << 4)\n#define DRIVE3_12MA\t(2 << 4)\n#define DRIVE3_16MA\t(3 << 4)\n#define DRIVE3_20MA\t(4 << 4)\n#define DRIVE3_24MA\t(5 << 4)\n#define DRIVE3_32MA\t(6 << 4)\n#define DRIVE3_40MA\t(7 << 4)\n#define DRIVE4_02MA\t(0 << 4)\n#define DRIVE4_04MA\t(2 << 4)\n#define DRIVE4_08MA\t(4 << 4)\n#define DRIVE4_10MA\t(6 << 4)\n\n \n#define DRIVE6_MASK\t(15 << 4)\n#define DRIVE6_04MA\t(0 << 4)\n#define DRIVE6_12MA\t(4 << 4)\n#define DRIVE6_19MA\t(8 << 4)\n#define DRIVE6_27MA\t(10 << 4)\n#define DRIVE6_32MA\t(15 << 4)\n#define DRIVE7_02MA\t(0 << 4)\n#define DRIVE7_04MA\t(1 << 4)\n#define DRIVE7_06MA\t(2 << 4)\n#define DRIVE7_08MA\t(3 << 4)\n#define DRIVE7_10MA\t(4 << 4)\n#define DRIVE7_12MA\t(5 << 4)\n#define DRIVE7_14MA\t(6 << 4)\n#define DRIVE7_16MA\t(7 << 4)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

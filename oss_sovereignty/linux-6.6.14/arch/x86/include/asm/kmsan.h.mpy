@@ -1,0 +1,9 @@
+{
+  "module_name": "kmsan.h",
+  "hash_id": "165215f794fc7cf7855981a451fc6efbdab570c0fa25aa23b001998c680ba1e8",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/kmsan.h",
+  "human_readable_source": " \n \n\n#ifndef _ASM_X86_KMSAN_H\n#define _ASM_X86_KMSAN_H\n\n#ifndef MODULE\n\n#include <asm/cpu_entry_area.h>\n#include <asm/processor.h>\n#include <linux/mmzone.h>\n\nDECLARE_PER_CPU(char[CPU_ENTRY_AREA_SIZE], cpu_entry_area_shadow);\nDECLARE_PER_CPU(char[CPU_ENTRY_AREA_SIZE], cpu_entry_area_origin);\n\n \n\n \nstatic inline void *arch_kmsan_get_meta_or_null(void *addr, bool is_origin)\n{\n\tunsigned long addr64 = (unsigned long)addr;\n\tchar *metadata_array;\n\tunsigned long off;\n\tint cpu;\n\n\tif ((addr64 < CPU_ENTRY_AREA_BASE) ||\n\t    (addr64 >= (CPU_ENTRY_AREA_BASE + CPU_ENTRY_AREA_MAP_SIZE)))\n\t\treturn NULL;\n\tcpu = (addr64 - CPU_ENTRY_AREA_BASE) / CPU_ENTRY_AREA_SIZE;\n\toff = addr64 - (unsigned long)get_cpu_entry_area(cpu);\n\tif ((off < 0) || (off >= CPU_ENTRY_AREA_SIZE))\n\t\treturn NULL;\n\tmetadata_array = is_origin ? cpu_entry_area_origin :\n\t\t\t\t     cpu_entry_area_shadow;\n\treturn &per_cpu(metadata_array[off], cpu);\n}\n\n \nstatic inline bool kmsan_phys_addr_valid(unsigned long addr)\n{\n\tif (IS_ENABLED(CONFIG_PHYS_ADDR_T_64BIT))\n\t\treturn !(addr >> boot_cpu_data.x86_phys_bits);\n\telse\n\t\treturn true;\n}\n\n \nstatic inline bool kmsan_virt_addr_valid(void *addr)\n{\n\tunsigned long x = (unsigned long)addr;\n\tunsigned long y = x - __START_KERNEL_map;\n\n\t \n\tif (unlikely(x > y)) {\n\t\tx = y + phys_base;\n\n\t\tif (y >= KERNEL_IMAGE_SIZE)\n\t\t\treturn false;\n\t} else {\n\t\tx = y + (__START_KERNEL_map - PAGE_OFFSET);\n\n\t\t \n\t\tif ((x > y) || !kmsan_phys_addr_valid(x))\n\t\t\treturn false;\n\t}\n\n\treturn pfn_valid(x >> PAGE_SHIFT);\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

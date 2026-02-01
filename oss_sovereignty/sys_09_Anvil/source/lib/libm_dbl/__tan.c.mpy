@@ -1,0 +1,9 @@
+{
+  "module_name": "__tan.c",
+  "hash_id": "7b5e6930f7e1f7866b4aa22b1e41b650c8d67bca22573f0ead93391cc72b2b92",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/__tan.c",
+  "human_readable_source": " \n \n \n\n#include \"libm.h\"\n\nstatic const double T[] = {\n             3.33333333333334091986e-01,  \n             1.33333333333201242699e-01,  \n             5.39682539762260521377e-02,  \n             2.18694882948595424599e-02,  \n             8.86323982359930005737e-03,  \n             3.59207910759131235356e-03,  \n             1.45620945432529025516e-03,  \n             5.88041240820264096874e-04,  \n             2.46463134818469906812e-04,  \n             7.81794442939557092300e-05,  \n             7.14072491382608190305e-05,  \n            -1.85586374855275456654e-05,  \n             2.59073051863633712884e-05,  \n},\npio4 =       7.85398163397448278999e-01,  \npio4lo =     3.06161699786838301793e-17;  \n\ndouble __tan(double x, double y, int odd)\n{\n\tdouble_t z, r, v, w, s, a;\n\tdouble w0, a0;\n\tuint32_t hx;\n\tint big, sign;\n\n\tGET_HIGH_WORD(hx,x);\n\tbig = (hx&0x7fffffff) >= 0x3FE59428;  \n\tif (big) {\n\t\tsign = hx>>31;\n\t\tif (sign) {\n\t\t\tx = -x;\n\t\t\ty = -y;\n\t\t}\n\t\tx = (pio4 - x) + (pio4lo - y);\n\t\ty = 0.0;\n\t}\n\tz = x * x;\n\tw = z * z;\n\t \n\tr = T[1] + w*(T[3] + w*(T[5] + w*(T[7] + w*(T[9] + w*T[11]))));\n\tv = z*(T[2] + w*(T[4] + w*(T[6] + w*(T[8] + w*(T[10] + w*T[12])))));\n\ts = z * x;\n\tr = y + z*(s*(r + v) + y) + s*T[0];\n\tw = x + r;\n\tif (big) {\n\t\ts = 1 - 2*odd;\n\t\tv = s - 2.0 * (x + (r - w*w/(w + s)));\n\t\treturn sign ? -v : v;\n\t}\n\tif (!odd)\n\t\treturn w;\n\t \n\tw0 = w;\n\tSET_LOW_WORD(w0, 0);\n\tv = r - (w0 - x);        \n\ta0 = a = -1.0 / w;\n\tSET_LOW_WORD(a0, 0);\n\treturn a0 + a*(1.0 + a0*w0 + a0*v);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

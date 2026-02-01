@@ -1,0 +1,9 @@
+{
+  "module_name": "test-open.c",
+  "hash_id": "f7ac43026f013d2a72c3c4fdff19768afe2208eb95e0afbd2e037c1ab27c881f",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-open.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <fcntl.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (open, int, (char const *, int, ...));\n\n#include <errno.h>\n#include <stdio.h>\n#include <unistd.h>\n\n#include \"macros.h\"\n\n#define BASE \"test-open.t\"\n\n#include \"test-open.h\"\n\nint\nmain (void)\n{\n  return test_open (open, true);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

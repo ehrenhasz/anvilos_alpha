@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "feaf41513185f1f30719107348e5e5cb1dcc8d20fe2b8d2e735c4e6087645754",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ixgbe/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright(c) 1999 - 2018 Intel Corporation.\n#\n# Makefile for the Intel(R) 10GbE PCI Express ethernet driver\n#\n\nobj-$(CONFIG_IXGBE) += ixgbe.o\n\nixgbe-objs := ixgbe_main.o ixgbe_common.o ixgbe_ethtool.o \\\n              ixgbe_82599.o ixgbe_82598.o ixgbe_phy.o ixgbe_sriov.o \\\n              ixgbe_mbx.o ixgbe_x540.o ixgbe_x550.o ixgbe_lib.o ixgbe_ptp.o \\\n              ixgbe_xsk.o\n\nixgbe-$(CONFIG_IXGBE_DCB) +=  ixgbe_dcb.o ixgbe_dcb_82598.o \\\n                              ixgbe_dcb_82599.o ixgbe_dcb_nl.o\n\nixgbe-$(CONFIG_IXGBE_HWMON) += ixgbe_sysfs.o\nixgbe-$(CONFIG_DEBUG_FS) += ixgbe_debugfs.o\nixgbe-$(CONFIG_FCOE:m=y) += ixgbe_fcoe.o\nixgbe-$(CONFIG_IXGBE_IPSEC) += ixgbe_ipsec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tx.h",
+  "hash_id": "bc5867c65d57868922caf04f7e2b67f3d220569b57706bbb4a61a78f0c3afde8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/tx.h",
+  "human_readable_source": " \n \n\n#ifndef EFX_TX_H\n#define EFX_TX_H\n\n#include <linux/types.h>\n\n \n\nunsigned int efx_tx_limit_len(struct efx_tx_queue *tx_queue,\n\t\t\t      dma_addr_t dma_addr, unsigned int len);\n\nu8 *efx_tx_get_copy_buffer_limited(struct efx_tx_queue *tx_queue,\n\t\t\t\t   struct efx_tx_buffer *buffer, size_t len);\n\n \nstatic inline unsigned int efx_tx_csum_type_skb(struct sk_buff *skb)\n{\n\tif (skb->ip_summed != CHECKSUM_PARTIAL)\n\t\treturn 0;  \n\n\tif (skb->encapsulation &&\n\t    skb_checksum_start_offset(skb) == skb_inner_transport_offset(skb)) {\n\t\t \n\n\t\t \n\t\tif (skb_shinfo(skb)->gso_segs > 1 &&\n\t\t    !(skb_shinfo(skb)->gso_type & SKB_GSO_PARTIAL) &&\n\t\t    (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_TUNNEL_CSUM))\n\t\t\treturn EFX_TXQ_TYPE_OUTER_CSUM | EFX_TXQ_TYPE_INNER_CSUM;\n\t\treturn EFX_TXQ_TYPE_INNER_CSUM;\n\t}\n\n\t \n\treturn EFX_TXQ_TYPE_OUTER_CSUM;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

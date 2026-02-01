@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e450b8cdf0ce9623501a8b0ead68c381f93d0c3c6cfcfe714f094c061dea84c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/legacy/Makefile",
+  "human_readable_source": "# 16-bit wireless PCMCIA client drivers\nobj-$(CONFIG_PCMCIA_RAYCS)\t+= ray_cs.o\nobj-$(CONFIG_PCMCIA_WL3501)\t+= wl3501_cs.o\n\nobj-$(CONFIG_USB_NET_RNDIS_WLAN)\t+= rndis_wlan.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

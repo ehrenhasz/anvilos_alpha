@@ -1,0 +1,9 @@
+{
+  "module_name": "__init__.py",
+  "hash_id": "9873a0d0ce051e850d8b46df575d80ea4900c5d5b44903f1c013321aae861b9d",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/coverage/frzstr/frzstr_pkg1/__init__.py",
+  "human_readable_source": "# test frozen package with __init__.py\nprint(\"frzstr_pkg1.__init__\")\nx = 1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

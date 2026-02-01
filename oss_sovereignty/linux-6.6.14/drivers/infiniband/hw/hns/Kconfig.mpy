@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "03172a46b6f4ef7ad65bee74b614bdd29745943b5e11894ca91794fb4044e6e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hns/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig INFINIBAND_HNS\n\ttristate \"HNS RoCE Driver\"\n\tdepends on NET_VENDOR_HISILICON\n\tdepends on ARM64 || (COMPILE_TEST && 64BIT)\n\tdepends on (HNS_DSAF && HNS_ENET) || HNS3\n\thelp\n\t  This is a RoCE/RDMA driver for the Hisilicon RoCE engine.\n\n\t  To compile HIP08 driver as module, choose M here.\n\nconfig INFINIBAND_HNS_HIP08\n\tbool \"Hisilicon Hip08 Family RoCE support\"\n\tdepends on INFINIBAND_HNS && PCI && HNS3\n\tdepends on INFINIBAND_HNS=m || HNS3=y\n\thelp\n\t  RoCE driver support for Hisilicon RoCE engine in Hisilicon Hip08 SoC.\n\t  The RoCE engine is a PCI device.\n\n\t  To compile this driver, choose Y here: if INFINIBAND_HNS is m, this\n\t  module will be called hns-roce-hw-v2.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

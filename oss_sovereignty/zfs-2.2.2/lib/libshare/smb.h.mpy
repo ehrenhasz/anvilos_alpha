@@ -1,0 +1,9 @@
+{
+  "module_name": "smb.h",
+  "hash_id": "f7b35acd77e530a327adcde7c6be58c539baac71fcef21ab925bdea167ddc9c2",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libshare/smb.h",
+  "human_readable_source": " \n\n \n\n \n\n#define\tSMB_NAME_MAX\t\t255\n#define\tSMB_COMMENT_MAX\t\t255\n\n#define\tSHARE_DIR\t\t\"/var/lib/samba/usershares\"\n#define\tNET_CMD_PATH\t\t\"/usr/bin/net\"\n#define\tNET_CMD_ARG_HOST\t\"127.0.0.1\"\n\ntypedef struct smb_share_s {\n\tchar name[SMB_NAME_MAX];\t \n\tchar path[PATH_MAX];\t\t \n\tchar comment[SMB_COMMENT_MAX];\t \n\tboolean_t guest_ok;\t\t \n\n\tstruct smb_share_s *next;\n} smb_share_t;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vdpa.h",
+  "hash_id": "eae2d7b462c52b83eb8086639533961b5c8dc77207728857eb3061e4d19b29b3",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/vdpa.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_VDPA_H_\n#define _UAPI_LINUX_VDPA_H_\n\n#define VDPA_GENL_NAME \"vdpa\"\n#define VDPA_GENL_VERSION 0x1\n\nenum vdpa_command {\n\tVDPA_CMD_UNSPEC,\n\tVDPA_CMD_MGMTDEV_NEW,\n\tVDPA_CMD_MGMTDEV_GET,\t\t \n\tVDPA_CMD_DEV_NEW,\n\tVDPA_CMD_DEV_DEL,\n\tVDPA_CMD_DEV_GET,\t\t \n\tVDPA_CMD_DEV_CONFIG_GET,\t \n\tVDPA_CMD_DEV_VSTATS_GET,\n};\n\nenum vdpa_attr {\n\tVDPA_ATTR_UNSPEC,\n\n\t \n\tVDPA_ATTR_PAD = VDPA_ATTR_UNSPEC,\n\n\t \n\tVDPA_ATTR_MGMTDEV_BUS_NAME,\t\t \n\tVDPA_ATTR_MGMTDEV_DEV_NAME,\t\t \n\tVDPA_ATTR_MGMTDEV_SUPPORTED_CLASSES,\t \n\n\tVDPA_ATTR_DEV_NAME,\t\t\t \n\tVDPA_ATTR_DEV_ID,\t\t\t \n\tVDPA_ATTR_DEV_VENDOR_ID,\t\t \n\tVDPA_ATTR_DEV_MAX_VQS,\t\t\t \n\tVDPA_ATTR_DEV_MAX_VQ_SIZE,\t\t \n\tVDPA_ATTR_DEV_MIN_VQ_SIZE,\t\t \n\n\tVDPA_ATTR_DEV_NET_CFG_MACADDR,\t\t \n\tVDPA_ATTR_DEV_NET_STATUS,\t\t \n\tVDPA_ATTR_DEV_NET_CFG_MAX_VQP,\t\t \n\tVDPA_ATTR_DEV_NET_CFG_MTU,\t\t \n\n\tVDPA_ATTR_DEV_NEGOTIATED_FEATURES,\t \n\tVDPA_ATTR_DEV_MGMTDEV_MAX_VQS,\t\t \n\t \n\tVDPA_ATTR_DEV_SUPPORTED_FEATURES,\t \n\n\tVDPA_ATTR_DEV_QUEUE_INDEX,               \n\tVDPA_ATTR_DEV_VENDOR_ATTR_NAME,\t\t \n\tVDPA_ATTR_DEV_VENDOR_ATTR_VALUE,         \n\n\t \n\tVDPA_ATTR_DEV_FEATURES,                  \n\n\t \n\tVDPA_ATTR_MAX,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

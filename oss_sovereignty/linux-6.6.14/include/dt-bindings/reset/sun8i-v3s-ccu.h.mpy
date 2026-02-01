@@ -1,0 +1,9 @@
+{
+  "module_name": "sun8i-v3s-ccu.h",
+  "hash_id": "ffddb4010c242a1e1ffa58ba37cd64cb332e211b066c64d8a154c73419804a91",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/sun8i-v3s-ccu.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_RST_SUN8I_V3S_H_\n#define _DT_BINDINGS_RST_SUN8I_V3S_H_\n\n#define RST_USB_PHY0\t\t0\n\n#define RST_MBUS\t\t1\n\n#define RST_BUS_CE\t\t5\n#define RST_BUS_DMA\t\t6\n#define RST_BUS_MMC0\t\t7\n#define RST_BUS_MMC1\t\t8\n#define RST_BUS_MMC2\t\t9\n#define RST_BUS_DRAM\t\t11\n#define RST_BUS_EMAC\t\t12\n#define RST_BUS_HSTIMER\t\t14\n#define RST_BUS_SPI0\t\t15\n#define RST_BUS_OTG\t\t17\n#define RST_BUS_EHCI0\t\t18\n#define RST_BUS_OHCI0\t\t22\n#define RST_BUS_VE\t\t26\n#define RST_BUS_TCON0\t\t27\n#define RST_BUS_CSI\t\t30\n#define RST_BUS_DE\t\t34\n#define RST_BUS_DBG\t\t38\n#define RST_BUS_EPHY\t\t39\n#define RST_BUS_CODEC\t\t40\n#define RST_BUS_I2C0\t\t46\n#define RST_BUS_I2C1\t\t47\n#define RST_BUS_UART0\t\t49\n#define RST_BUS_UART1\t\t50\n#define RST_BUS_UART2\t\t51\n\n \n#define RST_BUS_I2S0\t\t52\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

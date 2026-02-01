@@ -1,0 +1,9 @@
+{
+  "module_name": "cpuidle_haltpoll.h",
+  "hash_id": "90247606e16deb33bb199e9f44405cb4a38cac075167c58b01ede8f0ddf770c4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cpuidle_haltpoll.h",
+  "human_readable_source": " \n#ifndef _CPUIDLE_HALTPOLL_H\n#define _CPUIDLE_HALTPOLL_H\n\n#ifdef CONFIG_ARCH_CPUIDLE_HALTPOLL\n#include <asm/cpuidle_haltpoll.h>\n#else\nstatic inline void arch_haltpoll_enable(unsigned int cpu)\n{\n}\n\nstatic inline void arch_haltpoll_disable(unsigned int cpu)\n{\n}\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tracex4.bpf.c",
+  "hash_id": "f2b9d3ff2fdf4bda4c160e1e1a3d4c1de724cff69640fa1a4c7df1bbbcec6df7",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/tracex4.bpf.c",
+  "human_readable_source": " \n#include \"vmlinux.h\"\n#include <linux/version.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nstruct pair {\n\tu64 val;\n\tu64 ip;\n};\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__type(key, long);\n\t__type(value, struct pair);\n\t__uint(max_entries, 1000000);\n} my_map SEC(\".maps\");\n\n \nSEC(\"kprobe/kmem_cache_free\")\nint bpf_prog1(struct pt_regs *ctx)\n{\n\tlong ptr = PT_REGS_PARM2(ctx);\n\n\tbpf_map_delete_elem(&my_map, &ptr);\n\treturn 0;\n}\n\nSEC(\"kretprobe/kmem_cache_alloc_node\")\nint bpf_prog2(struct pt_regs *ctx)\n{\n\tlong ptr = PT_REGS_RC(ctx);\n\tlong ip = 0;\n\n\t \n\tBPF_KRETPROBE_READ_RET_IP(ip, ctx);\n\n\tstruct pair v = {\n\t\t.val = bpf_ktime_get_ns(),\n\t\t.ip = ip,\n\t};\n\n\tbpf_map_update_elem(&my_map, &ptr, &v, BPF_ANY);\n\treturn 0;\n}\nchar _license[] SEC(\"license\") = \"GPL\";\nu32 _version SEC(\"version\") = LINUX_VERSION_CODE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

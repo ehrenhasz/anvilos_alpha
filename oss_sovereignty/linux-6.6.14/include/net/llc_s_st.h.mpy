@@ -1,0 +1,9 @@
+{
+  "module_name": "llc_s_st.h",
+  "hash_id": "752558d03874b7b570c4140c21075fda050724ac6ec223f7eec41dee5749df19",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/llc_s_st.h",
+  "human_readable_source": "#ifndef LLC_S_ST_H\n#define LLC_S_ST_H\n \n\n#include <linux/types.h>\n#include <net/llc_s_ac.h>\n#include <net/llc_s_ev.h>\n\nstruct llc_sap_state_trans;\n\n#define LLC_NR_SAP_STATES\t2        \n\n \n \nstruct llc_sap_state_trans {\n\tllc_sap_ev_t\t  ev;\n\tu8\t\t  next_state;\n\tconst llc_sap_action_t *ev_actions;\n};\n\nstruct llc_sap_state {\n\tu8\t\t\t   curr_state;\n\tstruct llc_sap_state_trans **transitions;\n};\n\n \nextern struct llc_sap_state llc_sap_state_table[LLC_NR_SAP_STATES];\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

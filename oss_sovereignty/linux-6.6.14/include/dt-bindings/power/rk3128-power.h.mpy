@@ -1,0 +1,9 @@
+{
+  "module_name": "rk3128-power.h",
+  "hash_id": "50badeeb03afb676efe4831ae6388374bc1b3f24bc4d920f58c3d304dec5ec83",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/rk3128-power.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_POWER_RK3128_POWER_H__\n#define __DT_BINDINGS_POWER_RK3128_POWER_H__\n\n \n#define RK3128_PD_CORE\t\t0\n\n \n#define RK3128_PD_VIO\t\t1\n#define RK3128_PD_VIDEO\t\t2\n#define RK3128_PD_GPU\t\t3\n#define RK3128_PD_MSCH\t\t4\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

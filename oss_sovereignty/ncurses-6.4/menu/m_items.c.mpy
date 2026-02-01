@@ -1,0 +1,9 @@
+{
+  "module_name": "m_items.c",
+  "hash_id": "2ec9621ffe5557dba04014cf54a2a07891463d95762dfc1343a5ff27fab13ee5",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_items.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_items.c,v 1.21 2021/06/17 21:20:30 tom Exp $\")\n\n \nMENU_EXPORT(int)\nset_menu_items(MENU *menu, ITEM **items)\n{\n  T((T_CALLED(\"set_menu_items(%p,%p)\"), (void *)menu, (void *)items));\n\n  if (!menu || (items && !(*items)))\n    RETURN(E_BAD_ARGUMENT);\n\n  if (menu->status & _POSTED)\n    RETURN(E_POSTED);\n\n  if (menu->items)\n    _nc_Disconnect_Items(menu);\n\n  if (items)\n    {\n      if (!_nc_Connect_Items(menu, items))\n\tRETURN(E_CONNECTED);\n    }\n\n  menu->items = items;\n  RETURN(E_OK);\n}\n\n \nMENU_EXPORT(ITEM **)\nmenu_items(const MENU *menu)\n{\n  T((T_CALLED(\"menu_items(%p)\"), (const void *)menu));\n  returnItemPtr(menu ? menu->items : (ITEM **)0);\n}\n\n \nMENU_EXPORT(int)\nitem_count(const MENU *menu)\n{\n  T((T_CALLED(\"item_count(%p)\"), (const void *)menu));\n  returnCode(menu ? menu->nitems : -1);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

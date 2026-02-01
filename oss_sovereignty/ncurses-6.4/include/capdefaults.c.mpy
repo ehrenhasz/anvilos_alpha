@@ -1,0 +1,9 @@
+{
+  "module_name": "capdefaults.c",
+  "hash_id": "1093da29f12b3eb0aaff78c8c60a0a1144af73dba88f6bc4c7b11f0a0a5f983a",
+  "original_prompt": "Ingested from ncurses-6.4/include/capdefaults.c",
+  "human_readable_source": " \n\n \n\n \n\n     \n{\n    char *strp;\n    short capval;\n\n#define EXTRACT_DELAY(str) \\\n    \t(short) (strp = strchr(str, '*'), strp ? atoi(strp+1) : 0)\n\n     \n    if (VALID_STRING(carriage_return)\n\t&& (capval = EXTRACT_DELAY(carriage_return)))\n\tcarriage_return_delay = capval;\n    if (VALID_STRING(newline) && (capval = EXTRACT_DELAY(newline)))\n\tnew_line_delay = capval;\n\n     \n    if (!VALID_STRING(termcap_init2) && VALID_STRING(init_3string)) {\n\ttermcap_init2 = init_3string;\n\tinit_3string = ABSENT_STRING;\n    }\n    if (!VALID_STRING(termcap_reset)\n     && VALID_STRING(reset_2string)\n     && !VALID_STRING(reset_1string)\n     && !VALID_STRING(reset_3string)) {\n\ttermcap_reset = reset_2string;\n\treset_2string = ABSENT_STRING;\n    }\n    if (magic_cookie_glitch_ul == ABSENT_NUMERIC\n\t&& magic_cookie_glitch != ABSENT_NUMERIC\n\t&& VALID_STRING(enter_underline_mode))\n\tmagic_cookie_glitch_ul = magic_cookie_glitch;\n\n     \n    linefeed_is_newline = (char) (VALID_STRING(newline)\n\t\t\t\t  && (strcmp(\"\\n\", newline) == 0));\n    if (VALID_STRING(cursor_left)\n\t&& (capval = EXTRACT_DELAY(cursor_left)))\n\tbackspace_delay = capval;\n    if (VALID_STRING(tab) && (capval = EXTRACT_DELAY(tab)))\n\thorizontal_tab_delay = capval;\n#undef EXTRACT_DELAY\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

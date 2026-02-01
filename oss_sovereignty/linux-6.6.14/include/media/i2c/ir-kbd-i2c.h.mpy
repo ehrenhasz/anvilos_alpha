@@ -1,0 +1,9 @@
+{
+  "module_name": "ir-kbd-i2c.h",
+  "hash_id": "2f7456526f48894554e8aa1a473e5d2198b5c0bc2a53d3b83f358ac4f10b84cc",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/ir-kbd-i2c.h",
+  "human_readable_source": " \n#ifndef _IR_I2C\n#define _IR_I2C\n\n#include <media/rc-core.h>\n\n#define DEFAULT_POLLING_INTERVAL\t100\t \n\nstruct IR_i2c;\n\nstruct IR_i2c {\n\tchar\t\t       *ir_codes;\n\tstruct i2c_client      *c;\n\tstruct rc_dev          *rc;\n\n\t \n\tunsigned char          old;\n\n\tu32                    polling_interval;  \n\n\tstruct delayed_work    work;\n\tchar                   phys[32];\n\tint                    (*get_key)(struct IR_i2c *ir,\n\t\t\t\t\t  enum rc_proto *protocol,\n\t\t\t\t\t  u32 *scancode, u8 *toggle);\n\t \n\tstruct i2c_client      *tx_c;\n\tstruct mutex\t       lock;\t \n\tunsigned int\t       carrier;\n\tunsigned int\t       duty_cycle;\n};\n\nenum ir_kbd_get_key_fn {\n\tIR_KBD_GET_KEY_CUSTOM = 0,\n\tIR_KBD_GET_KEY_PIXELVIEW,\n\tIR_KBD_GET_KEY_HAUP,\n\tIR_KBD_GET_KEY_KNC1,\n\tIR_KBD_GET_KEY_GENIATECH,\n\tIR_KBD_GET_KEY_FUSIONHDTV,\n\tIR_KBD_GET_KEY_HAUP_XVR,\n\tIR_KBD_GET_KEY_AVERMEDIA_CARDBUS,\n};\n\n \nstruct IR_i2c_init_data {\n\tchar\t\t\t*ir_codes;\n\tconst char\t\t*name;\n\tu64\t\t\ttype;  \n\tu32\t\t\tpolling_interval;  \n\n\t \n\tint                    (*get_key)(struct IR_i2c *ir,\n\t\t\t\t\t  enum rc_proto *protocol,\n\t\t\t\t\t  u32 *scancode, u8 *toggle);\n\tenum ir_kbd_get_key_fn internal_get_key_func;\n\n\tstruct rc_dev\t\t*rc_dev;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

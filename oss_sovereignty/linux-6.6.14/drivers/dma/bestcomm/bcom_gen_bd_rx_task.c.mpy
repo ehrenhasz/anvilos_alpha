@@ -1,0 +1,9 @@
+{
+  "module_name": "bcom_gen_bd_rx_task.c",
+  "hash_id": "b778245cb302a4875a25fc0b8936d0177925bf8f87759770fee04673b52ed231",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/bestcomm/bcom_gen_bd_rx_task.c",
+  "human_readable_source": "\n \n\n#include <asm/types.h>\n\n \n\nu32 bcom_gen_bd_rx_task[] = {\n\t \n\t0x4243544b,\n\t0x0d020409,\n\t0x00000000,\n\t0x00000000,\n\n\t \n\t0x808220da,  \n\t0x13e01010,  \n\t0xb880025b,  \n\t0x10001308,  \n\t0x60140002,  \n\t0x0cccfcca,  \n\t0xd9190240,  \n\t0xb8c5e009,  \n\t0x07fecf80,  \n\t0x99190024,  \n\t0x60000005,  \n\t0x0c4cf889,  \n\t0x000001f8,  \n\n\t \n\t0x40000000,\n\t0x7fff7fff,\n\n\t \n\t0x40000000,\n\t0xe0000000,\n\t0xa0000008,\n\t0x20000000,\n};\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

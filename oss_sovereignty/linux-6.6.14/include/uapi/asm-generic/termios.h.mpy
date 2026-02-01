@@ -1,0 +1,9 @@
+{
+  "module_name": "termios.h",
+  "hash_id": "78cf0b0c5c9949c951a75482b4bb21468f1c75ae3c479d7cd094f9d15d924643",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/asm-generic/termios.h",
+  "human_readable_source": " \n#ifndef _UAPI_ASM_GENERIC_TERMIOS_H\n#define _UAPI_ASM_GENERIC_TERMIOS_H\n \n\n#include <asm/termbits.h>\n#include <asm/ioctls.h>\n\nstruct winsize {\n\tunsigned short ws_row;\n\tunsigned short ws_col;\n\tunsigned short ws_xpixel;\n\tunsigned short ws_ypixel;\n};\n\n#define NCC 8\nstruct termio {\n\tunsigned short c_iflag;\t\t \n\tunsigned short c_oflag;\t\t \n\tunsigned short c_cflag;\t\t \n\tunsigned short c_lflag;\t\t \n\tunsigned char c_line;\t\t \n\tunsigned char c_cc[NCC];\t \n};\n\n \n#define TIOCM_LE\t0x001\n#define TIOCM_DTR\t0x002\n#define TIOCM_RTS\t0x004\n#define TIOCM_ST\t0x008\n#define TIOCM_SR\t0x010\n#define TIOCM_CTS\t0x020\n#define TIOCM_CAR\t0x040\n#define TIOCM_RNG\t0x080\n#define TIOCM_DSR\t0x100\n#define TIOCM_CD\tTIOCM_CAR\n#define TIOCM_RI\tTIOCM_RNG\n#define TIOCM_OUT1\t0x2000\n#define TIOCM_OUT2\t0x4000\n#define TIOCM_LOOP\t0x8000\n\n \n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

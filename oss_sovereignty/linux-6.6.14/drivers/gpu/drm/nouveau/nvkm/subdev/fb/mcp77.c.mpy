@@ -1,0 +1,9 @@
+{
+  "module_name": "mcp77.c",
+  "hash_id": "1c10dd5b429ef4d64ac79fb195c8670df68e2f5650c93cb4aac9d359b654aedd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/mcp77.c",
+  "human_readable_source": " \n#include \"nv50.h\"\n#include \"ram.h\"\n\nstatic const struct nv50_fb_func\nmcp77_fb = {\n\t.ram_new = mcp77_ram_new,\n\t.trap = 0x001d07ff,\n};\n\nint\nmcp77_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn nv50_fb_new_(&mcp77_fb, device, type, inst, pfb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

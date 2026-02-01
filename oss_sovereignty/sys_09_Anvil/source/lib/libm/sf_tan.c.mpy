@@ -1,0 +1,9 @@
+{
+  "module_name": "sf_tan.c",
+  "hash_id": "a564532e905e43e769a106948c0da3e0be05494065506e09e400e65207099334",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/sf_tan.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"fdlibm.h\"\n\n#ifdef __STDC__\n\tfloat tanf(float x)\n#else\n\tfloat tanf(x)\n\tfloat x;\n#endif\n{\n\tfloat y[2],z=0.0;\n\t__int32_t n,ix;\n\n\tGET_FLOAT_WORD(ix,x);\n\n     \n\tix &= 0x7fffffff;\n\tif(ix <= 0x3f490fda) return __kernel_tanf(x,z,1);\n\n     \n\telse if (!FLT_UWORD_IS_FINITE(ix)) return x-x;\t\t \n\n     \n\telse {\n\t    n = __ieee754_rem_pio2f(x,y);\n\t    return __kernel_tanf(y[0],y[1],1-((n&1)<<1));  \n\t}\n}\n\n#ifdef _DOUBLE_IS_32BITS\n\n#ifdef __STDC__\n\tdouble tan(double x)\n#else\n\tdouble tan(x)\n\tdouble x;\n#endif\n{\n\treturn (double) tanf((float) x);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

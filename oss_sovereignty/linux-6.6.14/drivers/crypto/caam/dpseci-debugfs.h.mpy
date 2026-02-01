@@ -1,0 +1,9 @@
+{
+  "module_name": "dpseci-debugfs.h",
+  "hash_id": "dcdaa32e4ceecc19ac35c12a6aa7b73a59440e54aac54d9f0a310396110aa013",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/caam/dpseci-debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef DPSECI_DEBUGFS_H\n#define DPSECI_DEBUGFS_H\n\n#include <linux/dcache.h>\n#include \"caamalg_qi2.h\"\n\n#ifdef CONFIG_DEBUG_FS\nvoid dpaa2_dpseci_debugfs_init(struct dpaa2_caam_priv *priv);\nvoid dpaa2_dpseci_debugfs_exit(struct dpaa2_caam_priv *priv);\n#else\nstatic inline void dpaa2_dpseci_debugfs_init(struct dpaa2_caam_priv *priv) {}\nstatic inline void dpaa2_dpseci_debugfs_exit(struct dpaa2_caam_priv *priv) {}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

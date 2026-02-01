@@ -1,0 +1,9 @@
+{
+  "module_name": "lo.h",
+  "hash_id": "622a0e5956ca6f2f6342eb1d31f7d20de96eed88d0b385c76c35fb035abf5e52",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/b43/lo.h",
+  "human_readable_source": " \n#ifndef B43_LO_H_\n#define B43_LO_H_\n\n \n\n#include \"phy_g.h\"\n\nstruct b43_wldev;\n\n \nstruct b43_loctl {\n\t \n\ts8 i;\n\ts8 q;\n};\n \n#define B43_LOCTL_POISON\t111\n\n \nstruct b43_lo_calib {\n\t \n\tstruct b43_bbatt bbatt;\n\tstruct b43_rfatt rfatt;\n\t \n\tstruct b43_loctl ctl;\n\t \n\tunsigned long calib_time;\n\t \n\tstruct list_head list;\n};\n\n \n#define B43_DC_LT_SIZE\t\t32\n\n \nstruct b43_txpower_lo_control {\n\t \n\tstruct b43_rfatt_list rfatt_list;\n\tstruct b43_bbatt_list bbatt_list;\n\n\t \n\tu16 dc_lt[B43_DC_LT_SIZE];\n\n\t \n\tstruct list_head calib_list;\n\t \n\tunsigned long pwr_vec_read_time;\n\t \n\tunsigned long txctl_measured_time;\n\n\t \n\tu8 tx_bias;\n\t \n\tu8 tx_magn;\n\n\t \n\tu64 power_vector;\n};\n\n \n#define B43_LO_CALIB_EXPIRE\t(HZ * (30 - 2))\n#define B43_LO_PWRVEC_EXPIRE\t(HZ * (30 - 2))\n#define B43_LO_TXCTL_EXPIRE\t(HZ * (180 - 4))\n\n\n \nvoid b43_lo_g_adjust(struct b43_wldev *dev);\n \nvoid b43_lo_g_adjust_to(struct b43_wldev *dev,\n\t\t\tu16 rfatt, u16 bbatt, u16 tx_control);\n\nvoid b43_gphy_dc_lt_init(struct b43_wldev *dev, bool update_all);\n\nvoid b43_lo_g_maintenance_work(struct b43_wldev *dev);\nvoid b43_lo_g_cleanup(struct b43_wldev *dev);\nvoid b43_lo_g_init(struct b43_wldev *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

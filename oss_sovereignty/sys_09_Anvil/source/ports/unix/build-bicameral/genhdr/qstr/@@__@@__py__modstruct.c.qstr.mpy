@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__modstruct.c.qstr",
+  "hash_id": "4382ed62071180f61b52d9904283a52c9286234057fd8910aee76d2e8319e62f",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__modstruct.c.qstr",
+  "human_readable_source": "Q(__name__)\nQ(struct)\nQ(calcsize)\nQ(pack)\nQ(pack_into)\nQ(unpack)\nQ(unpack_from)\nQ(struct)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

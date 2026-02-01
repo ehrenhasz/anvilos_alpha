@@ -1,0 +1,9 @@
+{
+  "module_name": "mpthreadport.h",
+  "hash_id": "3069b3cc27549eb7bad8baf2a99694f7016179094a0e5fb03ac09076c19523f5",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/mpthreadport.h",
+  "human_readable_source": " \n\n#include <pthread.h>\n#include <stdbool.h>\n\ntypedef pthread_mutex_t mp_thread_mutex_t;\n\nvoid mp_thread_init(void);\nvoid mp_thread_deinit(void);\nvoid mp_thread_gc_others(void);\n\n\n\nvoid mp_thread_unix_begin_atomic_section(void);\nvoid mp_thread_unix_end_atomic_section(void);\n\n\n#if defined(__APPLE__)\nextern bool mp_thread_is_realtime_enabled;\nvoid mp_thread_set_realtime(void);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

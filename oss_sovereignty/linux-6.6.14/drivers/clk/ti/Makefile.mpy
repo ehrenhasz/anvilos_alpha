@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "96591fc31b510d04ae784f5dace8654ccdf1b00e42b65122e392da029a3de561",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/ti/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nifeq ($(CONFIG_ARCH_OMAP2PLUS), y)\n\nobj-y\t\t\t\t\t+= clk.o autoidle.o clockdomain.o\nclk-common\t\t\t\t= dpll.o composite.o divider.o gate.o \\\n\t\t\t\t\t  fixed-factor.o mux.o apll.o \\\n\t\t\t\t\t  clkt_dpll.o clkt_iclk.o clkt_dflt.o \\\n\t\t\t\t\t  clkctrl.o\nobj-$(CONFIG_SOC_AM33XX)\t\t+= $(clk-common) clk-33xx.o dpll3xxx.o\nobj-$(CONFIG_SOC_TI81XX)\t\t+= $(clk-common) fapll.o clk-814x.o clk-816x.o\nobj-$(CONFIG_ARCH_OMAP2)\t\t+= $(clk-common) interface.o clk-2xxx.o\nobj-$(CONFIG_ARCH_OMAP3)\t\t+= $(clk-common) interface.o \\\n\t\t\t\t\t   clk-3xxx.o dpll3xxx.o\nobj-$(CONFIG_ARCH_OMAP4)\t\t+= $(clk-common) clk-44xx.o \\\n\t\t\t\t\t   dpll3xxx.o dpll44xx.o\nobj-$(CONFIG_SOC_OMAP5)\t\t\t+= $(clk-common) clk-54xx.o \\\n\t\t\t\t\t   dpll3xxx.o dpll44xx.o\nobj-$(CONFIG_SOC_DRA7XX)\t\t+= $(clk-common) clk-7xx.o \\\n\t\t\t\t\t   clk-dra7-atl.o dpll3xxx.o \\\n\t\t\t\t\t   dpll44xx.o\n\nobj-$(CONFIG_SOC_AM43XX)\t\t+= $(clk-common) dpll3xxx.o clk-43xx.o\n\nendif\t# CONFIG_ARCH_OMAP2PLUS\n\nobj-$(CONFIG_COMMON_CLK_TI_ADPLL)\t+= adpll.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

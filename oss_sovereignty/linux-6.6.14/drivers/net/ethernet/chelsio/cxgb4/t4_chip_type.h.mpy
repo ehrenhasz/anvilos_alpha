@@ -1,0 +1,9 @@
+{
+  "module_name": "t4_chip_type.h",
+  "hash_id": "28334fea18165e4b34abb45ed9bc66715c086ff903c3b984e9776b6151a6ef45",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4/t4_chip_type.h",
+  "human_readable_source": " \n#ifndef __T4_CHIP_TYPE_H__\n#define __T4_CHIP_TYPE_H__\n\n#define CHELSIO_PCI_ID_VER(__DeviceID)  ((__DeviceID) >> 12)\n\n#define CHELSIO_T4\t\t0x4\n#define CHELSIO_T5\t\t0x5\n#define CHELSIO_T6\t\t0x6\n\n \n#define CHELSIO_CHIP_CODE(version, revision) (((version) << 4) | (revision))\n#define CHELSIO_CHIP_VERSION(code) (((code) >> 4) & 0xf)\n#define CHELSIO_CHIP_RELEASE(code) ((code) & 0xf)\n\nenum chip_type {\n\tT4_A1 = CHELSIO_CHIP_CODE(CHELSIO_T4, 1),\n\tT4_A2 = CHELSIO_CHIP_CODE(CHELSIO_T4, 2),\n\tT4_FIRST_REV\t= T4_A1,\n\tT4_LAST_REV\t= T4_A2,\n\n\tT5_A0 = CHELSIO_CHIP_CODE(CHELSIO_T5, 0),\n\tT5_A1 = CHELSIO_CHIP_CODE(CHELSIO_T5, 1),\n\tT5_FIRST_REV\t= T5_A0,\n\tT5_LAST_REV\t= T5_A1,\n\n\tT6_A0 = CHELSIO_CHIP_CODE(CHELSIO_T6, 0),\n\tT6_FIRST_REV\t= T6_A0,\n\tT6_LAST_REV\t= T6_A0,\n};\n\nstatic inline int is_t4(enum chip_type chip)\n{\n\treturn (CHELSIO_CHIP_VERSION(chip) == CHELSIO_T4);\n}\n\nstatic inline int is_t5(enum chip_type chip)\n{\n\treturn (CHELSIO_CHIP_VERSION(chip) == CHELSIO_T5);\n}\n\nstatic inline int is_t6(enum chip_type chip)\n{\n\treturn (CHELSIO_CHIP_VERSION(chip) == CHELSIO_T6);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

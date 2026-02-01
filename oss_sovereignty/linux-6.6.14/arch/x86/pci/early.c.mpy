@@ -1,0 +1,9 @@
+{
+  "module_name": "early.c",
+  "hash_id": "fcc9820b3179b08aba6a2bca9555c6f481e655cc4b1d21d57e0ecfba2a580b9e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/pci/early.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <linux/pci.h>\n#include <asm/pci-direct.h>\n#include <asm/io.h>\n#include <asm/pci_x86.h>\n\n \n\nu32 read_pci_config(u8 bus, u8 slot, u8 func, u8 offset)\n{\n\tu32 v;\n\toutl(0x80000000 | (bus<<16) | (slot<<11) | (func<<8) | offset, 0xcf8);\n\tv = inl(0xcfc);\n\treturn v;\n}\n\nu8 read_pci_config_byte(u8 bus, u8 slot, u8 func, u8 offset)\n{\n\tu8 v;\n\toutl(0x80000000 | (bus<<16) | (slot<<11) | (func<<8) | offset, 0xcf8);\n\tv = inb(0xcfc + (offset&3));\n\treturn v;\n}\n\nu16 read_pci_config_16(u8 bus, u8 slot, u8 func, u8 offset)\n{\n\tu16 v;\n\toutl(0x80000000 | (bus<<16) | (slot<<11) | (func<<8) | offset, 0xcf8);\n\tv = inw(0xcfc + (offset&2));\n\treturn v;\n}\n\nvoid write_pci_config(u8 bus, u8 slot, u8 func, u8 offset,\n\t\t\t\t    u32 val)\n{\n\toutl(0x80000000 | (bus<<16) | (slot<<11) | (func<<8) | offset, 0xcf8);\n\toutl(val, 0xcfc);\n}\n\nvoid write_pci_config_byte(u8 bus, u8 slot, u8 func, u8 offset, u8 val)\n{\n\toutl(0x80000000 | (bus<<16) | (slot<<11) | (func<<8) | offset, 0xcf8);\n\toutb(val, 0xcfc + (offset&3));\n}\n\nvoid write_pci_config_16(u8 bus, u8 slot, u8 func, u8 offset, u16 val)\n{\n\toutl(0x80000000 | (bus<<16) | (slot<<11) | (func<<8) | offset, 0xcf8);\n\toutw(val, 0xcfc + (offset&2));\n}\n\nint early_pci_allowed(void)\n{\n\treturn (pci_probe & (PCI_PROBE_CONF1|PCI_PROBE_NOEARLY)) ==\n\t\t\tPCI_PROBE_CONF1;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

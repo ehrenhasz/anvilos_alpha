@@ -1,0 +1,9 @@
+{
+  "module_name": "symlink.c",
+  "hash_id": "36c5004350001a6c079b0d46588583703c0c2f53c2fe9b002376a214d3b946b3",
+  "original_prompt": "Ingested from linux-6.6.14/fs/efs/symlink.c",
+  "human_readable_source": "\n \n\n#include <linux/string.h>\n#include <linux/pagemap.h>\n#include <linux/buffer_head.h>\n#include \"efs.h\"\n\nstatic int efs_symlink_read_folio(struct file *file, struct folio *folio)\n{\n\tstruct page *page = &folio->page;\n\tchar *link = page_address(page);\n\tstruct buffer_head * bh;\n\tstruct inode * inode = page->mapping->host;\n\tefs_block_t size = inode->i_size;\n\tint err;\n  \n\terr = -ENAMETOOLONG;\n\tif (size > 2 * EFS_BLOCKSIZE)\n\t\tgoto fail;\n  \n\t \n\terr = -EIO;\n\tbh = sb_bread(inode->i_sb, efs_bmap(inode, 0));\n\tif (!bh)\n\t\tgoto fail;\n\tmemcpy(link, bh->b_data, (size > EFS_BLOCKSIZE) ? EFS_BLOCKSIZE : size);\n\tbrelse(bh);\n\tif (size > EFS_BLOCKSIZE) {\n\t\tbh = sb_bread(inode->i_sb, efs_bmap(inode, 1));\n\t\tif (!bh)\n\t\t\tgoto fail;\n\t\tmemcpy(link + EFS_BLOCKSIZE, bh->b_data, size - EFS_BLOCKSIZE);\n\t\tbrelse(bh);\n\t}\n\tlink[size] = '\\0';\n\tSetPageUptodate(page);\n\tunlock_page(page);\n\treturn 0;\nfail:\n\tSetPageError(page);\n\tunlock_page(page);\n\treturn err;\n}\n\nconst struct address_space_operations efs_symlink_aops = {\n\t.read_folio\t= efs_symlink_read_folio\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

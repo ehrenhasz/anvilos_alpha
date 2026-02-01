@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "94433fed8de6e5ae7816bd8c6767ddbab992e19cbb5183fd29349b18cbe77ba0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vimc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nvimc-y := vimc-core.o vimc-common.o vimc-streamer.o vimc-capture.o \\\n\t\tvimc-debayer.o vimc-scaler.o vimc-sensor.o vimc-lens.o\n\nobj-$(CONFIG_VIDEO_VIMC) += vimc.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

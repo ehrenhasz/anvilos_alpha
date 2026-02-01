@@ -1,0 +1,9 @@
+{
+  "module_name": "wakeup.tc",
+  "hash_id": "b4463d668046bacd21febcaf7c0e22c69529ec4b7e4daedc83a8eea211d37d1f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/tracer/wakeup.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Test wakeup tracer\n# requires: wakeup:tracer chrt:program\n\necho wakeup > current_tracer\necho 1 > tracing_on\necho 0 > tracing_max_latency\n\n: \"Wakeup higher priority task\"\nchrt -f 5 sleep 1\n\necho 0 > tracing_on\ngrep '+ \\[[[:digit:]]*\\]' trace\ngrep '==> \\[[[:digit:]]*\\]' trace\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

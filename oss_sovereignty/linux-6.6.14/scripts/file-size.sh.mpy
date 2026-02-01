@@ -1,0 +1,9 @@
+{
+  "module_name": "file-size.sh",
+  "hash_id": "78df01ba026fc532dd8a45be4b7d0f7887da824dffdc9a08b4bdd243ae847f91",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/file-size.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\nset -- $(ls -dn \"$1\")\nprintf '%s\\n' \"$5\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

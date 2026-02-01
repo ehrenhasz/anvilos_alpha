@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "303c376bd55cb7a3e93ea260a87076fd5faa8fd4b8ecf428bc1eccf07913af2b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/core/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\ninfiniband-$(CONFIG_INFINIBAND_ADDR_TRANS)\t:= rdma_cm.o\nuser_access-$(CONFIG_INFINIBAND_ADDR_TRANS)\t:= rdma_ucm.o\n\nobj-$(CONFIG_INFINIBAND) +=\t\tib_core.o ib_cm.o iw_cm.o \\\n\t\t\t\t\t$(infiniband-y)\nobj-$(CONFIG_INFINIBAND_USER_MAD) +=\tib_umad.o\nobj-$(CONFIG_INFINIBAND_USER_ACCESS) += ib_uverbs.o $(user_access-y)\n\nib_core-y :=\t\t\tpacker.o ud_header.o verbs.o cq.o rw.o sysfs.o \\\n\t\t\t\tdevice.o cache.o netlink.o \\\n\t\t\t\troce_gid_mgmt.o mr_pool.o addr.o sa_query.o \\\n\t\t\t\tmulticast.o mad.o smi.o agent.o mad_rmpp.o \\\n\t\t\t\tnldev.o restrack.o counters.o ib_core_uverbs.o \\\n\t\t\t\ttrace.o lag.o\n\nib_core-$(CONFIG_SECURITY_INFINIBAND) += security.o\nib_core-$(CONFIG_CGROUP_RDMA) += cgroup.o\n\nib_cm-y :=\t\t\tcm.o cm_trace.o\n\niw_cm-y :=\t\t\tiwcm.o iwpm_util.o iwpm_msg.o\n\nCFLAGS_cma_trace.o +=\t\t-I$(src)\nrdma_cm-y :=\t\t\tcma.o cma_trace.o\n\nrdma_cm-$(CONFIG_INFINIBAND_ADDR_TRANS_CONFIGFS) += cma_configfs.o\n\nrdma_ucm-y :=\t\t\tucma.o\n\nib_umad-y :=\t\t\tuser_mad.o\n\nib_uverbs-y :=\t\t\tuverbs_main.o uverbs_cmd.o uverbs_marshall.o \\\n\t\t\t\trdma_core.o uverbs_std_types.o uverbs_ioctl.o \\\n\t\t\t\tuverbs_std_types_cq.o \\\n\t\t\t\tuverbs_std_types_flow_action.o uverbs_std_types_dm.o \\\n\t\t\t\tuverbs_std_types_mr.o uverbs_std_types_counters.o \\\n\t\t\t\tuverbs_uapi.o uverbs_std_types_device.o \\\n\t\t\t\tuverbs_std_types_async_fd.o \\\n\t\t\t\tuverbs_std_types_srq.o \\\n\t\t\t\tuverbs_std_types_wq.o \\\n\t\t\t\tuverbs_std_types_qp.o\nib_uverbs-$(CONFIG_INFINIBAND_USER_MEM) += umem.o umem_dmabuf.o\nib_uverbs-$(CONFIG_INFINIBAND_ON_DEMAND_PAGING) += umem_odp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

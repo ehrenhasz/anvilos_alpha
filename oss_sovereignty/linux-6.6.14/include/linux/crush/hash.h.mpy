@@ -1,0 +1,9 @@
+{
+  "module_name": "hash.h",
+  "hash_id": "bb9656a3ebfde09f1ab8794d626e85b2637485ded3686c41ea553999ea6f3bb3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/crush/hash.h",
+  "human_readable_source": " \n#ifndef CEPH_CRUSH_HASH_H\n#define CEPH_CRUSH_HASH_H\n\n#ifdef __KERNEL__\n# include <linux/types.h>\n#else\n# include \"crush_compat.h\"\n#endif\n\n#define CRUSH_HASH_RJENKINS1   0\n\n#define CRUSH_HASH_DEFAULT CRUSH_HASH_RJENKINS1\n\nextern const char *crush_hash_name(int type);\n\nextern __u32 crush_hash32(int type, __u32 a);\nextern __u32 crush_hash32_2(int type, __u32 a, __u32 b);\nextern __u32 crush_hash32_3(int type, __u32 a, __u32 b, __u32 c);\nextern __u32 crush_hash32_4(int type, __u32 a, __u32 b, __u32 c, __u32 d);\nextern __u32 crush_hash32_5(int type, __u32 a, __u32 b, __u32 c, __u32 d,\n\t\t\t    __u32 e);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

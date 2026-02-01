@@ -1,0 +1,9 @@
+{
+  "module_name": "vermagic.h",
+  "hash_id": "689c14de0d1c84851af80884149f7ca8aad4ee0db89e2b55747b3da47ffa325a",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/vermagic.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_VERMAGIC_H\n#define _ASM_GENERIC_VERMAGIC_H\n\n#define MODULE_ARCH_VERMAGIC \"\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

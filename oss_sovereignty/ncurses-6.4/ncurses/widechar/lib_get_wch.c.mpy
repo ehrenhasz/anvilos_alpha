@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_get_wch.c",
+  "hash_id": "db520b53ccff48ab5bcf20754b379e772f9b301ebe558ed0b4fdcbf56f733ea9",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/widechar/lib_get_wch.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n#include <ctype.h>\n\nMODULE_ID(\"$Id: lib_get_wch.c,v 1.26 2021/04/17 16:12:54 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwget_wch(WINDOW *win, wint_t *result)\n{\n    SCREEN *sp;\n    int code;\n    int value = 0;\n#ifndef state_unused\n    mbstate_t state;\n#endif\n\n    T((T_CALLED(\"wget_wch(%p)\"), (void *) win));\n\n     \n    _nc_lock_global(curses);\n    sp = _nc_screen_of(win);\n\n    if (sp != 0) {\n\tsize_t count = 0;\n\n\tfor (;;) {\n\t    char buffer[(MB_LEN_MAX * 9) + 1];\t \n\n\t    T((\"reading %d of %d\", (int) count + 1, (int) sizeof(buffer)));\n\t    code = _nc_wgetch(win, &value, TRUE EVENTLIST_2nd((_nc_eventlist\n\t\t\t\t\t\t\t       *) 0));\n\t    if (code == ERR) {\n\t\tbreak;\n\t    } else if (code == KEY_CODE_YES) {\n\t\t \n\t\tif (count != 0) {\n\t\t    safe_ungetch(SP_PARM, value);\n\t\t    code = ERR;\n\t\t}\n\t\tbreak;\n\t    } else if (count + 1 >= sizeof(buffer)) {\n\t\tsafe_ungetch(SP_PARM, value);\n\t\tcode = ERR;\n\t\tbreak;\n\t    } else {\n\t\tint status;\n\n\t\tbuffer[count++] = (char) UChar(value);\n\t\treset_mbytes(state);\n\t\tstatus = count_mbytes(buffer, count, state);\n\t\tif (status >= 0) {\n\t\t    wchar_t wch;\n\t\t    reset_mbytes(state);\n\t\t    if (check_mbytes(wch, buffer, count, state) != status) {\n\t\t\tcode = ERR;\t \n\t\t\tsafe_ungetch(SP_PARM, value);\n\t\t    }\n\t\t    value = wch;\n\t\t    break;\n\t\t}\n\t    }\n\t}\n    } else {\n\tcode = ERR;\n    }\n\n    if (result != 0)\n\t*result = (wint_t) value;\n\n    _nc_unlock_global(curses);\n    T((\"result %#o\", value));\n    returnCode(code);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

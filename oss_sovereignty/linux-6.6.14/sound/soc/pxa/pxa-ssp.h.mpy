@@ -1,0 +1,9 @@
+{
+  "module_name": "pxa-ssp.h",
+  "hash_id": "6bf3db2bdc8f3106f06763f2a93f8cbe9f8c82d6995eb7b11702c3051252d8b8",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/pxa/pxa-ssp.h",
+  "human_readable_source": " \n \n\n#ifndef _PXA_SSP_H\n#define _PXA_SSP_H\n\n \n#define PXA_SSP_CLK_PLL\t0\n#define PXA_SSP_CLK_EXT\t1\n#define PXA_SSP_CLK_NET\t2\n#define PXA_SSP_CLK_AUDIO\t3\n#define PXA_SSP_CLK_NET_PLL\t4\n\n \n#define PXA_SSP_AUDIO_DIV_ACDS\t\t0\n#define PXA_SSP_AUDIO_DIV_SCDB\t\t1\n#define PXA_SSP_DIV_SCR\t\t\t\t2\n\n \n#define PXA_SSP_CLK_AUDIO_DIV_1\t\t0\n#define PXA_SSP_CLK_AUDIO_DIV_2\t\t1\n#define PXA_SSP_CLK_AUDIO_DIV_4\t\t2\n#define PXA_SSP_CLK_AUDIO_DIV_8\t\t3\n#define PXA_SSP_CLK_AUDIO_DIV_16\t4\n#define PXA_SSP_CLK_AUDIO_DIV_32\t5\n\n \n#define PXA_SSP_CLK_SCDB_4\t\t0\n#define PXA_SSP_CLK_SCDB_1\t\t1\n#define PXA_SSP_CLK_SCDB_8\t\t2\n\n#define PXA_SSP_PLL_OUT  0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

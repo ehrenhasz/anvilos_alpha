@@ -1,0 +1,9 @@
+{
+  "module_name": "pci_iomap.h",
+  "hash_id": "b6240478ba08969fce3f7595d7974c540eb694335f6feaa4a3ca1ee309bb5e91",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/pci_iomap.h",
+  "human_readable_source": " \n \n#ifndef __ASM_GENERIC_PCI_IOMAP_H\n#define __ASM_GENERIC_PCI_IOMAP_H\n\nstruct pci_dev;\n#ifdef CONFIG_PCI\n \nextern void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long max);\nextern void __iomem *pci_iomap_wc(struct pci_dev *dev, int bar, unsigned long max);\nextern void __iomem *pci_iomap_range(struct pci_dev *dev, int bar,\n\t\t\t\t     unsigned long offset,\n\t\t\t\t     unsigned long maxlen);\nextern void __iomem *pci_iomap_wc_range(struct pci_dev *dev, int bar,\n\t\t\t\t\tunsigned long offset,\n\t\t\t\t\tunsigned long maxlen);\nextern void pci_iounmap(struct pci_dev *dev, void __iomem *);\n \n#ifdef CONFIG_NO_GENERIC_PCI_IOPORT_MAP\nextern void __iomem *__pci_ioport_map(struct pci_dev *dev, unsigned long port,\n\t\t\t\t      unsigned int nr);\n#elif !defined(CONFIG_HAS_IOPORT_MAP)\n#define __pci_ioport_map(dev, port, nr) NULL\n#else\n#define __pci_ioport_map(dev, port, nr) ioport_map((port), (nr))\n#endif\n\n#elif defined(CONFIG_GENERIC_PCI_IOMAP)\nstatic inline void __iomem *pci_iomap(struct pci_dev *dev, int bar, unsigned long max)\n{\n\treturn NULL;\n}\n\nstatic inline void __iomem *pci_iomap_wc(struct pci_dev *dev, int bar, unsigned long max)\n{\n\treturn NULL;\n}\nstatic inline void __iomem *pci_iomap_range(struct pci_dev *dev, int bar,\n\t\t\t\t\t    unsigned long offset,\n\t\t\t\t\t    unsigned long maxlen)\n{\n\treturn NULL;\n}\nstatic inline void __iomem *pci_iomap_wc_range(struct pci_dev *dev, int bar,\n\t\t\t\t\t       unsigned long offset,\n\t\t\t\t\t       unsigned long maxlen)\n{\n\treturn NULL;\n}\nstatic inline void pci_iounmap(struct pci_dev *dev, void __iomem *addr)\n{ }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

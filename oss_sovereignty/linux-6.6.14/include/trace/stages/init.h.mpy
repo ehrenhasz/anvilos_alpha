@@ -1,0 +1,9 @@
+{
+  "module_name": "init.h",
+  "hash_id": "80e5cde1a2ecdf8bedafdee9f2e7c01d9aec26b25a805fa460f726fa15539670",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/stages/init.h",
+  "human_readable_source": "\n#define __app__(x, y) str__##x##y\n#define __app(x, y) __app__(x, y)\n\n#define TRACE_SYSTEM_STRING __app(TRACE_SYSTEM_VAR,__trace_system_name)\n\n#define TRACE_MAKE_SYSTEM_STR()\t\t\t\t\\\n\tstatic const char TRACE_SYSTEM_STRING[] =\t\\\n\t\t__stringify(TRACE_SYSTEM)\n\nTRACE_MAKE_SYSTEM_STR();\n\n#undef TRACE_DEFINE_ENUM\n#define TRACE_DEFINE_ENUM(a)\t\t\t\t\\\n\tstatic struct trace_eval_map __used __initdata\t\\\n\t__##TRACE_SYSTEM##_##a =\t\t\t\\\n\t{\t\t\t\t\t\t\\\n\t\t.system = TRACE_SYSTEM_STRING,\t\t\\\n\t\t.eval_string = #a,\t\t\t\\\n\t\t.eval_value = a\t\t\t\t\\\n\t};\t\t\t\t\t\t\\\n\tstatic struct trace_eval_map __used\t\t\\\n\t__section(\"_ftrace_eval_map\")\t\t\t\\\n\t*TRACE_SYSTEM##_##a = &__##TRACE_SYSTEM##_##a\n\n#undef TRACE_DEFINE_SIZEOF\n#define TRACE_DEFINE_SIZEOF(a)\t\t\t\t\\\n\tstatic struct trace_eval_map __used __initdata\t\\\n\t__##TRACE_SYSTEM##_##a =\t\t\t\\\n\t{\t\t\t\t\t\t\\\n\t\t.system = TRACE_SYSTEM_STRING,\t\t\\\n\t\t.eval_string = \"sizeof(\" #a \")\",\t\\\n\t\t.eval_value = sizeof(a)\t\t\t\\\n\t};\t\t\t\t\t\t\\\n\tstatic struct trace_eval_map __used\t\t\\\n\t__section(\"_ftrace_eval_map\")\t\t\t\\\n\t*TRACE_SYSTEM##_##a = &__##TRACE_SYSTEM##_##a\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

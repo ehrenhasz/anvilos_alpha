@@ -1,0 +1,9 @@
+{
+  "module_name": "cobalt-alsa.h",
+  "hash_id": "97003f031e14cf6eba6fd71a4abbdcaed1e933bb43a33f8d844b4b524f2a2af3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cobalt/cobalt-alsa.h",
+  "human_readable_source": " \n \n\nstruct snd_card;\n\nstruct snd_cobalt_card {\n\tstruct cobalt_stream *s;\n\tstruct snd_card *sc;\n\tunsigned int capture_transfer_done;\n\tunsigned int hwptr_done_capture;\n\tunsigned alsa_record_cnt;\n\tstruct snd_pcm_substream *capture_pcm_substream;\n\n\tunsigned int pb_size;\n\tunsigned int pb_count;\n\tunsigned int pb_pos;\n\tunsigned pb_filled;\n\tbool alsa_pb_channel;\n\tunsigned alsa_playback_cnt;\n\tstruct snd_pcm_substream *playback_pcm_substream;\n};\n\nint cobalt_alsa_init(struct cobalt_stream *s);\nvoid cobalt_alsa_exit(struct cobalt_stream *s);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

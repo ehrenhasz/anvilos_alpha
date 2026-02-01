@@ -1,0 +1,9 @@
+{
+  "module_name": "sti_hdmi.h",
+  "hash_id": "2aa9a50150ec149473c15fdd915c2213691f178739373d9898f64ad854165045",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sti/sti_hdmi.h",
+  "human_readable_source": " \n \n\n#ifndef _STI_HDMI_H_\n#define _STI_HDMI_H_\n\n#include <linux/hdmi.h>\n#include <linux/platform_device.h>\n\n#include <media/cec-notifier.h>\n\n#include <drm/drm_modes.h>\n#include <drm/drm_property.h>\n\n#define HDMI_STA           0x0010\n#define HDMI_STA_DLL_LCK   BIT(5)\n#define HDMI_STA_HOT_PLUG  BIT(4)\n\nstruct sti_hdmi;\n\nstruct hdmi_phy_ops {\n\tbool (*start)(struct sti_hdmi *hdmi);\n\tvoid (*stop)(struct sti_hdmi *hdmi);\n};\n\nstruct hdmi_audio_params {\n\tbool enabled;\n\tunsigned int sample_width;\n\tunsigned int sample_rate;\n\tstruct hdmi_audio_infoframe cea;\n};\n\n#define DEFAULT_COLORSPACE_MODE HDMI_COLORSPACE_RGB\n\n \nstruct sti_hdmi {\n\tstruct device dev;\n\tstruct drm_device *drm_dev;\n\tstruct drm_display_mode mode;\n\tvoid __iomem *regs;\n\tvoid __iomem *syscfg;\n\tstruct clk *clk_pix;\n\tstruct clk *clk_tmds;\n\tstruct clk *clk_phy;\n\tstruct clk *clk_audio;\n\tint irq;\n\tu32 irq_status;\n\tstruct hdmi_phy_ops *phy_ops;\n\tbool enabled;\n\tbool hpd;\n\twait_queue_head_t wait_event;\n\tbool event_received;\n\tstruct reset_control *reset;\n\tstruct i2c_adapter *ddc_adapt;\n\tenum hdmi_colorspace colorspace;\n\tstruct platform_device *audio_pdev;\n\tstruct hdmi_audio_params audio;\n\tstruct drm_connector *drm_connector;\n\tstruct cec_notifier *notifier;\n};\n\nu32 hdmi_read(struct sti_hdmi *hdmi, int offset);\nvoid hdmi_write(struct sti_hdmi *hdmi, u32 val, int offset);\n\n \nstruct hdmi_phy_config {\n\tu32 min_tmds_freq;\n\tu32 max_tmds_freq;\n\tu32 config[4];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

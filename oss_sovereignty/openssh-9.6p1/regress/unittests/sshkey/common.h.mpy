@@ -1,0 +1,9 @@
+{
+  "module_name": "common.h",
+  "hash_id": "28766268b7a6e9db506a0eea2983c6370784215fa09848c481abb5b490a72979",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshkey/common.h",
+  "human_readable_source": " \n \n\n \nstruct sshbuf *load_file(const char *name);\n\n \nstruct sshbuf *load_text_file(const char *name);\n\n \nBIGNUM *load_bignum(const char *name);\n\n \nconst BIGNUM *rsa_n(struct sshkey *k);\nconst BIGNUM *rsa_e(struct sshkey *k);\nconst BIGNUM *rsa_p(struct sshkey *k);\nconst BIGNUM *rsa_q(struct sshkey *k);\nconst BIGNUM *dsa_g(struct sshkey *k);\nconst BIGNUM *dsa_pub_key(struct sshkey *k);\nconst BIGNUM *dsa_priv_key(struct sshkey *k);\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vc4_trace_points.c",
+  "hash_id": "b82f808ec689efc34b5ae69736101ffe2303a01dbd62b5da5f0880456e1e7c4c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/vc4/vc4_trace_points.c",
+  "human_readable_source": "\n \n\n#include \"vc4_drv.h\"\n\n#ifndef __CHECKER__\n#define CREATE_TRACE_POINTS\n#include \"vc4_trace.h\"\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__modmicropython.c.qstr",
+  "hash_id": "90d35ffc87223d880c69904ed78f8763ecabb3cd568c9aa27570057495917d2e",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__modmicropython.c.qstr",
+  "human_readable_source": "Q(__name__)\nQ(micropython)\nQ(const)\nQ(opt_level)\nQ(heap_lock)\nQ(heap_unlock)\nQ(micropython)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

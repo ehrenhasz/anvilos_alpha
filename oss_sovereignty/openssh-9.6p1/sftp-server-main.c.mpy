@@ -1,0 +1,9 @@
+{
+  "module_name": "sftp-server-main.c",
+  "hash_id": "31399e592c6b5666a221d04af2ed8e690c03f09313e9659ce8f27d2062f390ff",
+  "original_prompt": "Ingested from openssh-9.6p1/sftp-server-main.c",
+  "human_readable_source": " \n \n\n#include \"includes.h\"\n\n#include <sys/types.h>\n#include <pwd.h>\n#include <stdarg.h>\n#include <stdio.h>\n#include <unistd.h>\n\n#include \"log.h\"\n#include \"sftp.h\"\n#include \"misc.h\"\n#include \"xmalloc.h\"\n\nvoid\ncleanup_exit(int i)\n{\n\tsftp_server_cleanup_exit(i);\n}\n\nint\nmain(int argc, char **argv)\n{\n\tstruct passwd *user_pw;\n\n\t \n\tsanitise_stdfd();\n\n\tif ((user_pw = getpwuid(getuid())) == NULL) {\n\t\tfprintf(stderr, \"No user found for uid %lu\\n\",\n\t\t    (u_long)getuid());\n\t\treturn 1;\n\t}\n\n\treturn (sftp_server_main(argc, argv, user_pw));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

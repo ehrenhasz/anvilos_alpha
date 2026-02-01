@@ -1,0 +1,9 @@
+{
+  "module_name": "export-to-sqlite-record",
+  "hash_id": "adfa585c17990dfb4dabfd3c29a4fe369a3ed8529a680662723ceb712f89712a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/export-to-sqlite-record",
+  "human_readable_source": "#!/bin/bash\n\n#\n# export perf data to a sqlite3 database. Can cover\n# perf ip samples (excluding the tracepoints). No special\n# record requirements, just record what you want to export.\n#\nperf record $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

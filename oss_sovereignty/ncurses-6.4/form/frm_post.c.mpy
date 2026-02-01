@@ -1,0 +1,9 @@
+{
+  "module_name": "frm_post.c",
+  "hash_id": "a0f44cbf2de7826e02cbdc971898697c0efe262dfc6ea215731a105a3d910114",
+  "original_prompt": "Ingested from ncurses-6.4/form/frm_post.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: frm_post.c,v 1.14 2020/05/24 01:40:20 anonymous.maarten Exp $\")\n\n \nFORM_EXPORT(int)\npost_form(FORM *form)\n{\n  WINDOW *formwin;\n  int err;\n  int page;\n\n  T((T_CALLED(\"post_form(%p)\"), (void *)form));\n\n  if (!form)\n    RETURN(E_BAD_ARGUMENT);\n\n  if (form->status & _POSTED)\n    RETURN(E_POSTED);\n\n  if (!(form->field))\n    RETURN(E_NOT_CONNECTED);\n\n  formwin = Get_Form_Window(form);\n  if ((form->cols > getmaxx(formwin)) || (form->rows > getmaxy(formwin)))\n    RETURN(E_NO_ROOM);\n\n   \n  page = form->curpage;\n  form->curpage = -1;\n  if ((err = _nc_Set_Form_Page(form, page, form->current)) != E_OK)\n    RETURN(err);\n\n  SetStatus(form, _POSTED);\n\n  Call_Hook(form, forminit);\n  Call_Hook(form, fieldinit);\n\n  _nc_Refresh_Current_Field(form);\n  RETURN(E_OK);\n}\n\n \nFORM_EXPORT(int)\nunpost_form(FORM *form)\n{\n  T((T_CALLED(\"unpost_form(%p)\"), (void *)form));\n\n  if (!form)\n    RETURN(E_BAD_ARGUMENT);\n\n  if (!(form->status & _POSTED))\n    RETURN(E_NOT_POSTED);\n\n  if (form->status & _IN_DRIVER)\n    RETURN(E_BAD_STATE);\n\n  Call_Hook(form, fieldterm);\n  Call_Hook(form, formterm);\n\n  werase(Get_Form_Window(form));\n  delwin(form->w);\n  form->w = (WINDOW *)0;\n  ClrStatus(form, _POSTED);\n  RETURN(E_OK);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

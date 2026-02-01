@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a97dadb8a140a878a082e48808caa49191984274b0efb5f760413158747d8823",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/common/scmi_sensors/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the IIO over SCMI\n#\nobj-$(CONFIG_IIO_SCMI) += scmi_iio.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

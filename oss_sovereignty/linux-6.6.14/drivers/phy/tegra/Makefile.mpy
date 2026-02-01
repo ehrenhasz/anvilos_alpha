@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "67716c814d8e0ad5c7118f4f1e8cef535ebe98e409abc3f2392dfa37cc5fe1ce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/tegra/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_PHY_TEGRA_XUSB) += phy-tegra-xusb.o\n\nphy-tegra-xusb-y += xusb.o\nphy-tegra-xusb-$(CONFIG_ARCH_TEGRA_124_SOC) += xusb-tegra124.o\nphy-tegra-xusb-$(CONFIG_ARCH_TEGRA_132_SOC) += xusb-tegra124.o\nphy-tegra-xusb-$(CONFIG_ARCH_TEGRA_210_SOC) += xusb-tegra210.o\nphy-tegra-xusb-$(CONFIG_ARCH_TEGRA_186_SOC) += xusb-tegra186.o\nphy-tegra-xusb-$(CONFIG_ARCH_TEGRA_194_SOC) += xusb-tegra186.o\nphy-tegra-xusb-$(CONFIG_ARCH_TEGRA_234_SOC) += xusb-tegra186.o\nobj-$(CONFIG_PHY_TEGRA194_P2U) += phy-tegra194-p2u.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

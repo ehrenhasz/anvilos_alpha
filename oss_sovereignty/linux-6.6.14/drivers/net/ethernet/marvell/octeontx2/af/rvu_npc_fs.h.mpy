@@ -1,0 +1,9 @@
+{
+  "module_name": "rvu_npc_fs.h",
+  "hash_id": "e7c75a792c73957499ae9ddb1545951bef4056297ef764509d73249ceb0c4fe4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.h",
+  "human_readable_source": " \n \n\n#ifndef __RVU_NPC_FS_H\n#define __RVU_NPC_FS_H\n\n#define IPV6_WORDS\t4\n#define NPC_BYTESM\tGENMASK_ULL(19, 16)\n#define NPC_HDR_OFFSET\tGENMASK_ULL(15, 8)\n#define NPC_KEY_OFFSET\tGENMASK_ULL(5, 0)\n#define NPC_LDATA_EN\tBIT_ULL(7)\n\nvoid npc_update_entry(struct rvu *rvu, enum key_fields type,\n\t\t      struct mcam_entry *entry, u64 val_lo,\n\t\t      u64 val_hi, u64 mask_lo, u64 mask_hi, u8 intf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

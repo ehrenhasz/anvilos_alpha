@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "bd57965f16c7a99bbded1edccad8a9c0b6f8bc4074744202b38349bda4cdc3fb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/dma-buf/udmabuf\n/s390x/uvdevice/test_uvdevice\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

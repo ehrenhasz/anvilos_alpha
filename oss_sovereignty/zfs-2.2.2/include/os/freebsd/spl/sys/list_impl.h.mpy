@@ -1,0 +1,9 @@
+{
+  "module_name": "list_impl.h",
+  "hash_id": "de7581672ebf0d4f4c34791c010c2915f21c75c738f337fc9b52a01fc56f8d28",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/list_impl.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_LIST_IMPL_H\n#define\t_SYS_LIST_IMPL_H\n\n#include <sys/types.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\nstruct list_node {\n\tstruct list_node *list_next;\n\tstruct list_node *list_prev;\n};\n\nstruct list {\n\tsize_t\tlist_size;\n\tsize_t\tlist_offset;\n\tstruct list_node list_head;\n};\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

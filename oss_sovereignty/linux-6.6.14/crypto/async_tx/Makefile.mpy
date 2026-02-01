@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ad082092c11165dc3f8294a8c71d38f790ca511bc898ff643ffcda3e875f8a0b",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/async_tx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_ASYNC_CORE) += async_tx.o\nobj-$(CONFIG_ASYNC_MEMCPY) += async_memcpy.o\nobj-$(CONFIG_ASYNC_XOR) += async_xor.o\nobj-$(CONFIG_ASYNC_PQ) += async_pq.o\nobj-$(CONFIG_ASYNC_RAID6_RECOV) += async_raid6_recov.o\nobj-$(CONFIG_ASYNC_RAID6_TEST) += raid6test.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

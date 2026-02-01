@@ -1,0 +1,9 @@
+{
+  "module_name": "arch.h",
+  "hash_id": "00c7b7ca7f4bcbdc8f36d53e9ab0f1f9d98225ba24a7b99083273a3e7a56fd4b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/nolibc/arch.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _NOLIBC_ARCH_H\n#define _NOLIBC_ARCH_H\n\n#if defined(__x86_64__)\n#include \"arch-x86_64.h\"\n#elif defined(__i386__) || defined(__i486__) || defined(__i586__) || defined(__i686__)\n#include \"arch-i386.h\"\n#elif defined(__ARM_EABI__)\n#include \"arch-arm.h\"\n#elif defined(__aarch64__)\n#include \"arch-aarch64.h\"\n#elif defined(__mips__) && defined(_ABIO32)\n#include \"arch-mips.h\"\n#elif defined(__powerpc__)\n#include \"arch-powerpc.h\"\n#elif defined(__riscv)\n#include \"arch-riscv.h\"\n#elif defined(__s390x__)\n#include \"arch-s390.h\"\n#elif defined(__loongarch__)\n#include \"arch-loongarch.h\"\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

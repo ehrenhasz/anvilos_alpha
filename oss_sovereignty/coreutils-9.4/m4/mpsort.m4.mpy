@@ -1,0 +1,9 @@
+{
+  "module_name": "mpsort.m4",
+  "hash_id": "9202c3742f2bb590a1137a26f22021d171d5e300cf1aaa8210c9a878e36af5a8",
+  "original_prompt": "Ingested from coreutils-9.4/m4/mpsort.m4",
+  "human_readable_source": "# Sort a vector of pointers to data.\n\n# Copyright (C) 2007, 2009-2023 Free Software Foundation, Inc.\n\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_MPSORT],\n[\n  AC_REQUIRE([AC_C_RESTRICT])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

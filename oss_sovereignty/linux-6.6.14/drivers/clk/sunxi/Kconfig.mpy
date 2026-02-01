@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "10910a4fa50c8b367081c5fd2497009dd7f985f82eeb191c10850859ec5fe0a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig CLK_SUNXI\n\tbool \"Legacy clock support for Allwinner SoCs\"\n\tdepends on (ARM && ARCH_SUNXI) || COMPILE_TEST\n\tdefault y\n\nif CLK_SUNXI\n\nconfig CLK_SUNXI_CLOCKS\n\tbool \"Legacy clock drivers\"\n\tdefault y\n\thelp\n\t  Legacy clock drivers being used on older (A10, A13, A20,\n\t  A23, A31, A80) SoCs. These drivers are kept around for\n\t  Device Tree backward compatibility issues, in case one would\n\t  still use a Device Tree with one clock provider by\n\t  node. Newer Device Trees and newer SoCs use the drivers\n\t  controlled by CONFIG_SUNXI_CCU.\n\nconfig CLK_SUNXI_PRCM_SUN6I\n\tbool \"Legacy A31 PRCM driver\"\n\tdefault y\n\thelp\n\t  Legacy clock driver for the A31 PRCM clocks. Those are\n\t  usually needed for the PMIC communication, mostly.\n\nconfig CLK_SUNXI_PRCM_SUN8I\n\tbool \"Legacy sun8i PRCM driver\"\n\tdefault y\n\thelp\n\t  Legacy clock driver for the sun8i family PRCM clocks.\n\t  Those are usually needed for the PMIC communication,\n\t  mostly.\n\nconfig CLK_SUNXI_PRCM_SUN9I\n\tbool \"Legacy A80 PRCM driver\"\n\tdefault y\n\thelp\n\t  Legacy clock driver for the A80 PRCM clocks. Those are\n\t  usually needed for the PMIC communication, mostly.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

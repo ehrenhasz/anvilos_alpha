@@ -1,0 +1,9 @@
+{
+  "module_name": "igc_tsn.h",
+  "hash_id": "db9b6de4f091af387880cfaf3962968ce5c986853875f043c94d770f4533d1c9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/igc/igc_tsn.h",
+  "human_readable_source": " \n \n\n#ifndef _IGC_TSN_H_\n#define _IGC_TSN_H_\n\nint igc_tsn_offload_apply(struct igc_adapter *adapter);\nint igc_tsn_reset(struct igc_adapter *adapter);\nvoid igc_tsn_adjust_txtime_offset(struct igc_adapter *adapter);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

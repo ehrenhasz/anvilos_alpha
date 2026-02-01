@@ -1,0 +1,9 @@
+{
+  "module_name": "xstrtoumax.c",
+  "hash_id": "b093eedb610a86c40e8e43c446777ff8aa7d5df276851b82179609b1c2a8f973",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xstrtoumax.c",
+  "human_readable_source": "/* A more useful interface to strtoumax.\n\n   Copyright (C) 1999-2023 Free Software Foundation, Inc.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published\n   by the Free Software Foundation, either version 3 of the License,\n   or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with this program.  If not, see <https:\n\n#define __strtol strtoumax\n#define __strtol_t uintmax_t\n#define __xstrtol xstrtoumax\n#define STRTOL_T_MINIMUM 0\n#define STRTOL_T_MAXIMUM UINTMAX_MAX\n#define XSTRTOL_INCLUDE_INTTYPES_H 1\n#include \"xstrtol.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

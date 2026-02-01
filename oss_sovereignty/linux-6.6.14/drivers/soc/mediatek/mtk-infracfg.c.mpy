@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk-infracfg.c",
+  "hash_id": "8058c1465f6a3b2fb08718590c9fcc87d0f1393d40e7372c5ef2a7e7a8fe5a6c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/mediatek/mtk-infracfg.c",
+  "human_readable_source": "\n \n\n#include <linux/export.h>\n#include <linux/jiffies.h>\n#include <linux/regmap.h>\n#include <linux/mfd/syscon.h>\n#include <linux/soc/mediatek/infracfg.h>\n#include <asm/processor.h>\n\n#define MTK_POLL_DELAY_US   10\n#define MTK_POLL_TIMEOUT    (jiffies_to_usecs(HZ))\n\n \nint mtk_infracfg_set_bus_protection(struct regmap *infracfg, u32 mask,\n\t\tbool reg_update)\n{\n\tu32 val;\n\tint ret;\n\n\tif (reg_update)\n\t\tregmap_update_bits(infracfg, INFRA_TOPAXI_PROTECTEN, mask,\n\t\t\t\tmask);\n\telse\n\t\tregmap_write(infracfg, INFRA_TOPAXI_PROTECTEN_SET, mask);\n\n\tret = regmap_read_poll_timeout(infracfg, INFRA_TOPAXI_PROTECTSTA1,\n\t\t\t\t       val, (val & mask) == mask,\n\t\t\t\t       MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);\n\n\treturn ret;\n}\n\n \n\nint mtk_infracfg_clear_bus_protection(struct regmap *infracfg, u32 mask,\n\t\tbool reg_update)\n{\n\tint ret;\n\tu32 val;\n\n\tif (reg_update)\n\t\tregmap_update_bits(infracfg, INFRA_TOPAXI_PROTECTEN, mask, 0);\n\telse\n\t\tregmap_write(infracfg, INFRA_TOPAXI_PROTECTEN_CLR, mask);\n\n\tret = regmap_read_poll_timeout(infracfg, INFRA_TOPAXI_PROTECTSTA1,\n\t\t\t\t       val, !(val & mask),\n\t\t\t\t       MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);\n\n\treturn ret;\n}\n\nstatic int __init mtk_infracfg_init(void)\n{\n\tstruct regmap *infracfg;\n\n\t \n\tinfracfg = syscon_regmap_lookup_by_compatible(\"mediatek,mt8192-infracfg\");\n\tif (!IS_ERR(infracfg))\n\t\tregmap_set_bits(infracfg, MT8192_INFRA_CTRL,\n\t\t\t\tMT8192_INFRA_CTRL_DISABLE_MFG2ACP);\n\treturn 0;\n}\npostcore_initcall(mtk_infracfg_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

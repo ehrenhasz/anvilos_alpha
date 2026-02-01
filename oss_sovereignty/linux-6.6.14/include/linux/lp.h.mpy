@@ -1,0 +1,9 @@
+{
+  "module_name": "lp.h",
+  "hash_id": "b6aaf85e47c3a50c242e252a2cd424b861ec082f8e15c189fa3fc36e03588faa",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/lp.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_LP_H\n#define _LINUX_LP_H\n\n\n#include <linux/wait.h>\n#include <linux/mutex.h>\n#include <uapi/linux/lp.h>\n\n \n#define LP_PARPORT_UNSPEC -4\n#define LP_PARPORT_AUTO -3\n#define LP_PARPORT_OFF -2\n#define LP_PARPORT_NONE -1\n\n#define LP_F(minor)\tlp_table[(minor)].flags\t\t \n#define LP_CHAR(minor)\tlp_table[(minor)].chars\t\t \n#define LP_TIME(minor)\tlp_table[(minor)].time\t\t \n#define LP_WAIT(minor)\tlp_table[(minor)].wait\t\t \n#define LP_IRQ(minor)\tlp_table[(minor)].dev->port->irq  \n\t\t\t\t\t \n#ifdef LP_STATS\n#define LP_STAT(minor)\tlp_table[(minor)].stats\t\t \n#endif\n#define LP_BUFFER_SIZE PAGE_SIZE\n\n#define LP_BASE(x)\tlp_table[(x)].dev->port->base\n\n#ifdef LP_STATS\nstruct lp_stats {\n\tunsigned long chars;\n\tunsigned long sleeps;\n\tunsigned int maxrun;\n\tunsigned int maxwait;\n\tunsigned int meanwait;\n\tunsigned int mdev;\n};\n#endif\n\nstruct lp_struct {\n\tstruct pardevice *dev;\n\tunsigned long flags;\n\tunsigned int chars;\n\tunsigned int time;\n\tunsigned int wait;\n\tchar *lp_buffer;\n#ifdef LP_STATS\n\tunsigned int lastcall;\n\tunsigned int runchars;\n\tstruct lp_stats stats;\n#endif\n\twait_queue_head_t waitq;\n\tunsigned int last_error;\n\tstruct mutex port_mutex;\n\twait_queue_head_t dataq;\n\tlong timeout;\n\tunsigned int best_mode;\n\tunsigned int current_mode;\n\tunsigned long bits;\n};\n\n \n\n\n \n#define LP_PINTEN\t0x10   \n#define LP_PSELECP\t0x08   \n#define LP_PINITP\t0x04   \n#define LP_PAUTOLF\t0x02   \n#define LP_PSTROBE\t0x01   \n\n \n#define LP_DUMMY\t0x00\n\n \n#define LP_DELAY \t50\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

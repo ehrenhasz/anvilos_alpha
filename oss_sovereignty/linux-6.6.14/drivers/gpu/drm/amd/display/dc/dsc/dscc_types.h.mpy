@@ -1,0 +1,9 @@
+{
+  "module_name": "dscc_types.h",
+  "hash_id": "7aeef19d08c93dc0992274af09b2b40377441b3ce21241dc542366d86e23f771",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dsc/dscc_types.h",
+  "human_readable_source": "\n \n#ifndef __DSCC_TYPES_H__\n#define __DSCC_TYPES_H__\n\n#include <drm/display/drm_dsc.h>\n\n#ifndef NUM_BUF_RANGES\n#define NUM_BUF_RANGES 15\n#endif\n\nstruct dsc_pps_rc_range {\n\tint range_min_qp;\n\tint range_max_qp;\n\tint range_bpg_offset;\n};\n\nstruct dsc_parameters {\n\tstruct drm_dsc_config pps;\n\n\t \n\tuint32_t bytes_per_pixel;  \n\tuint32_t rc_buffer_model_size;\n};\n\nstruct rc_params;\n\nint dscc_compute_dsc_parameters(const struct drm_dsc_config *pps,\n\t\tconst struct rc_params *rc,\n\t\tstruct dsc_parameters *dsc_params);\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

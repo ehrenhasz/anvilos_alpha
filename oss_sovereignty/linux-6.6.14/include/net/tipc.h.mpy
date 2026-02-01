@@ -1,0 +1,9 @@
+{
+  "module_name": "tipc.h",
+  "hash_id": "b2b7fd5385afa405f4a7b85553c36dd74d01b503203a80007f4af459c9cedec9",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/tipc.h",
+  "human_readable_source": " \n\n#ifndef _TIPC_HDR_H\n#define _TIPC_HDR_H\n\n#include <linux/random.h>\n\n#define KEEPALIVE_MSG_MASK 0x0e080000   \n\nstruct tipc_basic_hdr {\n\t__be32 w[4];\n};\n\nstatic inline __be32 tipc_hdr_rps_key(struct tipc_basic_hdr *hdr)\n{\n\tu32 w0 = ntohl(hdr->w[0]);\n\tbool keepalive_msg = (w0 & KEEPALIVE_MSG_MASK) == KEEPALIVE_MSG_MASK;\n\t__be32 key;\n\n\t \n\tif (likely(!keepalive_msg))\n\t\treturn hdr->w[3];\n\n\t \n\tget_random_bytes(&key, sizeof(key));\n\treturn key;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

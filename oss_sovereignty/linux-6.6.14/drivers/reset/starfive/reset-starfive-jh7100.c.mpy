@@ -1,0 +1,9 @@
+{
+  "module_name": "reset-starfive-jh7100.c",
+  "hash_id": "22771a1f5652cf831ca29160ec8baf0e7c2125e9f0f06b71ceb88321a2c8ec7c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/reset/starfive/reset-starfive-jh7100.c",
+  "human_readable_source": "\n \n\n#include <linux/mod_devicetable.h>\n#include <linux/platform_device.h>\n\n#include \"reset-starfive-jh71x0.h\"\n\n#include <dt-bindings/reset/starfive-jh7100.h>\n\n \n#define JH7100_RESET_ASSERT0\t0x00\n#define JH7100_RESET_ASSERT1\t0x04\n#define JH7100_RESET_ASSERT2\t0x08\n#define JH7100_RESET_ASSERT3\t0x0c\n#define JH7100_RESET_STATUS0\t0x10\n#define JH7100_RESET_STATUS1\t0x14\n#define JH7100_RESET_STATUS2\t0x18\n#define JH7100_RESET_STATUS3\t0x1c\n\n \nstatic const u32 jh7100_reset_asserted[4] = {\n\t \n\tBIT(JH7100_RST_U74 % 32) |\n\tBIT(JH7100_RST_VP6_DRESET % 32) |\n\tBIT(JH7100_RST_VP6_BRESET % 32),\n\t \n\tBIT(JH7100_RST_HIFI4_DRESET % 32) |\n\tBIT(JH7100_RST_HIFI4_BRESET % 32),\n\t \n\tBIT(JH7100_RST_E24 % 32),\n\t \n\t0,\n};\n\nstatic int __init jh7100_reset_probe(struct platform_device *pdev)\n{\n\tvoid __iomem *base = devm_platform_ioremap_resource(pdev, 0);\n\n\tif (IS_ERR(base))\n\t\treturn PTR_ERR(base);\n\n\treturn reset_starfive_jh71x0_register(&pdev->dev, pdev->dev.of_node,\n\t\t\t\t\t      base + JH7100_RESET_ASSERT0,\n\t\t\t\t\t      base + JH7100_RESET_STATUS0,\n\t\t\t\t\t      jh7100_reset_asserted,\n\t\t\t\t\t      JH7100_RSTN_END,\n\t\t\t\t\t      THIS_MODULE);\n}\n\nstatic const struct of_device_id jh7100_reset_dt_ids[] = {\n\t{ .compatible = \"starfive,jh7100-reset\" },\n\t{   }\n};\n\nstatic struct platform_driver jh7100_reset_driver = {\n\t.driver = {\n\t\t.name = \"jh7100-reset\",\n\t\t.of_match_table = jh7100_reset_dt_ids,\n\t\t.suppress_bind_attrs = true,\n\t},\n};\nbuiltin_platform_driver_probe(jh7100_reset_driver, jh7100_reset_probe);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

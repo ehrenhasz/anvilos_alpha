@@ -1,0 +1,9 @@
+{
+  "module_name": "berlin2q.h",
+  "hash_id": "59fbaf5dfb780171139f8bd35c6809cc898d9530619588afbc91d4b003db3661",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/berlin2q.h",
+  "human_readable_source": " \n \n\n#define CLKID_SYS\t\t0\n#define CLKID_DRMFIGO\t\t1\n#define CLKID_CFG\t\t2\n#define CLKID_GFX2D\t\t3\n#define CLKID_ZSP\t\t4\n#define CLKID_PERIF\t\t5\n#define CLKID_PCUBE\t\t6\n#define CLKID_VSCOPE\t\t7\n#define CLKID_NFC_ECC\t\t8\n#define CLKID_VPP\t\t9\n#define CLKID_APP\t\t10\n#define CLKID_SDIO0XIN\t\t11\n#define CLKID_SDIO1XIN\t\t12\n#define CLKID_GFX2DAXI\t\t13\n#define CLKID_GETH0\t\t14\n#define CLKID_SATA\t\t15\n#define CLKID_AHBAPB\t\t16\n#define CLKID_USB0\t\t17\n#define CLKID_USB1\t\t18\n#define CLKID_USB2\t\t19\n#define CLKID_USB3\t\t20\n#define CLKID_PBRIDGE\t\t21\n#define CLKID_SDIO\t\t22\n#define CLKID_NFC\t\t23\n#define CLKID_SMEMC\t\t24\n#define CLKID_PCIE\t\t25\n#define CLKID_TWD\t\t26\n#define CLKID_CPU\t\t27\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

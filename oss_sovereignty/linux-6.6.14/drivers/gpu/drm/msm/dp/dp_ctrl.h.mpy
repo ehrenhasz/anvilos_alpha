@@ -1,0 +1,9 @@
+{
+  "module_name": "dp_ctrl.h",
+  "hash_id": "a7279dea43dc91d21c15aceecaf5d4c807d99b71e15a6d0cd85796b5c419d2d3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/dp/dp_ctrl.h",
+  "human_readable_source": " \n \n\n#ifndef _DP_CTRL_H_\n#define _DP_CTRL_H_\n\n#include \"dp_aux.h\"\n#include \"dp_panel.h\"\n#include \"dp_link.h\"\n#include \"dp_parser.h\"\n#include \"dp_power.h\"\n#include \"dp_catalog.h\"\n\nstruct dp_ctrl {\n\tatomic_t aborted;\n\tbool wide_bus_en;\n};\n\nint dp_ctrl_on_link(struct dp_ctrl *dp_ctrl);\nint dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl, bool force_link_train);\nint dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl);\nint dp_ctrl_off_link(struct dp_ctrl *dp_ctrl);\nint dp_ctrl_off(struct dp_ctrl *dp_ctrl);\nvoid dp_ctrl_push_idle(struct dp_ctrl *dp_ctrl);\nirqreturn_t dp_ctrl_isr(struct dp_ctrl *dp_ctrl);\nvoid dp_ctrl_handle_sink_request(struct dp_ctrl *dp_ctrl);\nstruct dp_ctrl *dp_ctrl_get(struct device *dev, struct dp_link *link,\n\t\t\tstruct dp_panel *panel,\tstruct drm_dp_aux *aux,\n\t\t\tstruct dp_power *power, struct dp_catalog *catalog,\n\t\t\tstruct dp_parser *parser);\n\nvoid dp_ctrl_reset_irq_ctrl(struct dp_ctrl *dp_ctrl, bool enable);\nvoid dp_ctrl_phy_init(struct dp_ctrl *dp_ctrl);\nvoid dp_ctrl_phy_exit(struct dp_ctrl *dp_ctrl);\nvoid dp_ctrl_irq_phy_exit(struct dp_ctrl *dp_ctrl);\n\nvoid dp_ctrl_set_psr(struct dp_ctrl *dp_ctrl, bool enable);\nvoid dp_ctrl_config_psr(struct dp_ctrl *dp_ctrl);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

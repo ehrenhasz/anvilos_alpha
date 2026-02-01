@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "05cfeca1eef7e21163c0c4076a5984ee3ea04aaea3c265cefc713b8eed91e76f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/controller/cadence/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_PCIE_CADENCE) += pcie-cadence.o\nobj-$(CONFIG_PCIE_CADENCE_HOST) += pcie-cadence-host.o\nobj-$(CONFIG_PCIE_CADENCE_EP) += pcie-cadence-ep.o\nobj-$(CONFIG_PCIE_CADENCE_PLAT) += pcie-cadence-plat.o\nobj-$(CONFIG_PCI_J721E) += pci-j721e.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

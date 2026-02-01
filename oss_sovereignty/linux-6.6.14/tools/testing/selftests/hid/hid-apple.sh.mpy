@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-apple.sh",
+  "hash_id": "804f5b60ad95cfdf1b63741ea5ea9adba1ae32efd8454f932946b6543c06b020",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/hid/hid-apple.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# Runs tests for the HID subsystem\n\nexport TARGET=test_apple_keyboard.py\n\nbash ./run-hid-tools-tests.sh\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

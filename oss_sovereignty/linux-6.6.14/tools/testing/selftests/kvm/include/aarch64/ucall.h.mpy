@@ -1,0 +1,9 @@
+{
+  "module_name": "ucall.h",
+  "hash_id": "75d0d53fbd40a2b3b94570054e5c497b99d7dc1ac973336132425b50a98dc195",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/include/aarch64/ucall.h",
+  "human_readable_source": " \n#ifndef SELFTEST_KVM_UCALL_H\n#define SELFTEST_KVM_UCALL_H\n\n#include \"kvm_util_base.h\"\n\n#define UCALL_EXIT_REASON       KVM_EXIT_MMIO\n\n \nextern vm_vaddr_t *ucall_exit_mmio_addr;\n\nstatic inline void ucall_arch_do_ucall(vm_vaddr_t uc)\n{\n\tWRITE_ONCE(*ucall_exit_mmio_addr, uc);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

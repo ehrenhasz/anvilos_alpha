@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "44fe11ce71ee4acbbe9d210a5fbe04c2a3b22e25eaa474ca16599f96e14c5b43",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/amd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nacp_audio_dma-objs := acp-pcm-dma.o\nsnd-soc-acp-da7219mx98357-mach-objs := acp-da7219-max98357a.o\nsnd-soc-acp-rt5645-mach-objs := acp-rt5645.o\nsnd-soc-acp-es8336-mach-objs := acp-es8336.o\nsnd-soc-acp-rt5682-mach-objs := acp3x-rt5682-max9836.o\nsnd-acp-config-objs := acp-config.o\n\nobj-$(CONFIG_SND_SOC_AMD_ACP) += acp_audio_dma.o\nobj-$(CONFIG_SND_SOC_AMD_CZ_DA7219MX98357_MACH) += snd-soc-acp-da7219mx98357-mach.o\nobj-$(CONFIG_SND_SOC_AMD_CZ_RT5645_MACH) += snd-soc-acp-rt5645-mach.o\nobj-$(CONFIG_SND_SOC_AMD_ST_ES8336_MACH) += snd-soc-acp-es8336-mach.o\nobj-$(CONFIG_SND_SOC_AMD_ACP3x) += raven/\nobj-$(CONFIG_SND_SOC_AMD_RV_RT5682_MACH) += snd-soc-acp-rt5682-mach.o\nobj-$(CONFIG_SND_SOC_AMD_RENOIR) += renoir/\nobj-$(CONFIG_SND_SOC_AMD_ACP5x) += vangogh/\nobj-$(CONFIG_SND_SOC_AMD_ACP6x) += yc/\nobj-$(CONFIG_SND_SOC_AMD_ACP_COMMON) += acp/\nobj-$(CONFIG_SND_AMD_ACP_CONFIG) += snd-acp-config.o\nobj-$(CONFIG_SND_SOC_AMD_RPL_ACP6x) += rpl/\nobj-$(CONFIG_SND_SOC_AMD_PS) += ps/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

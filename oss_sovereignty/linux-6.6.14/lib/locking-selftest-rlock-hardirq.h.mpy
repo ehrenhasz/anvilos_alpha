@@ -1,0 +1,9 @@
+{
+  "module_name": "locking-selftest-rlock-hardirq.h",
+  "hash_id": "7bb1bb51b52f5832b9335e060fd6823ec8ab7c6d89a7404f964c050d51b9e3e0",
+  "original_prompt": "Ingested from linux-6.6.14/lib/locking-selftest-rlock-hardirq.h",
+  "human_readable_source": "#include \"locking-selftest-rlock.h\"\n#include \"locking-selftest-hardirq.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

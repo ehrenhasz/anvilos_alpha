@@ -1,0 +1,9 @@
+{
+  "module_name": "fsi-slave.h",
+  "hash_id": "f305b9887544f5d4b7d37e4d29a99f44dcb3000e436aff117b62e29f3d66665f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/fsi/fsi-slave.h",
+  "human_readable_source": " \n \n\n#ifndef DRIVERS_FSI_SLAVE_H\n#define DRIVERS_FSI_SLAVE_H\n\n#include <linux/cdev.h>\n#include <linux/device.h>\n\nstruct fsi_master;\n\nstruct fsi_slave {\n\tstruct device\t\tdev;\n\tstruct fsi_master\t*master;\n\tstruct cdev\t\tcdev;\n\tint\t\t\tcdev_idx;\n\tint\t\t\tid;\t \n\tint\t\t\tlink;\t \n\tu32\t\t\tcfam_id;\n\tint\t\t\tchip_id;\n\tuint32_t\t\tsize;\t \n\tu8\t\t\tt_send_delay;\n\tu8\t\t\tt_echo_delay;\n};\n\n#define to_fsi_slave(d) container_of(d, struct fsi_slave, dev)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

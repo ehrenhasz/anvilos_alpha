@@ -1,0 +1,9 @@
+{
+  "module_name": "syscore_ops.h",
+  "hash_id": "4f50538c110657841ee3eafe5c9193af81b11c3a1c2bbdb7f23055b7f052a38d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/syscore_ops.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_SYSCORE_OPS_H\n#define _LINUX_SYSCORE_OPS_H\n\n#include <linux/list.h>\n\nstruct syscore_ops {\n\tstruct list_head node;\n\tint (*suspend)(void);\n\tvoid (*resume)(void);\n\tvoid (*shutdown)(void);\n};\n\nextern void register_syscore_ops(struct syscore_ops *ops);\nextern void unregister_syscore_ops(struct syscore_ops *ops);\n#ifdef CONFIG_PM_SLEEP\nextern int syscore_suspend(void);\nextern void syscore_resume(void);\n#endif\nextern void syscore_shutdown(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

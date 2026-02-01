@@ -1,0 +1,9 @@
+{
+  "module_name": "msix.h",
+  "hash_id": "1a23594d6f4ceb78551b88cb36f5bfd6c693ca5f1f548ff1857d03b996ea598f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/msix.h",
+  "human_readable_source": " \n \n\n#ifndef _HFI1_MSIX_H\n#define _HFI1_MSIX_H\n\n#include \"hfi.h\"\n\n \nint msix_initialize(struct hfi1_devdata *dd);\nint msix_request_irqs(struct hfi1_devdata *dd);\nvoid msix_clean_up_interrupts(struct hfi1_devdata *dd);\nint msix_request_general_irq(struct hfi1_devdata *dd);\nint msix_request_rcd_irq(struct hfi1_ctxtdata *rcd);\nint msix_request_sdma_irq(struct sdma_engine *sde);\nvoid msix_free_irq(struct hfi1_devdata *dd, u8 msix_intr);\n\n \nvoid msix_netdev_synchronize_irq(struct hfi1_devdata *dd);\nint msix_netdev_request_rcd_irq(struct hfi1_ctxtdata *rcd);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

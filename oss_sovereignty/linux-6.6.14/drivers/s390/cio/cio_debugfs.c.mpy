@@ -1,0 +1,9 @@
+{
+  "module_name": "cio_debugfs.c",
+  "hash_id": "621e57c6c9ad438896d2870e313fea5717a869348837aba276dc4d9adbdfc99a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/cio/cio_debugfs.c",
+  "human_readable_source": "\n \n\n#include <linux/debugfs.h>\n#include \"cio_debug.h\"\n\nstruct dentry *cio_debugfs_dir;\n\n \nstatic int __init cio_debugfs_init(void)\n{\n\tcio_debugfs_dir = debugfs_create_dir(\"cio\", arch_debugfs_dir);\n\n\treturn 0;\n}\nsubsys_initcall(cio_debugfs_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mksyscalltbl",
+  "hash_id": "cf9a7ea2953144e48a19ce3533c51f4c58eb4ff4f5a98623cf588c87533c8e04",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/s390/entry/syscalls/mksyscalltbl",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n#\n# Generate system call table for perf\n#\n# Copyright IBM Corp. 2017, 2018\n# Author(s):  Hendrik Brueckner <brueckner@linux.vnet.ibm.com>\n#\n\nSYSCALL_TBL=$1\n\nif ! test -r $SYSCALL_TBL; then\n\techo \"Could not read input file\" >&2\n\texit 1\nfi\n\ncreate_table()\n{\n\tlocal max_nr nr abi sc discard\n\n\techo 'static const char *const syscalltbl_s390_64[] = {'\n\twhile read nr abi sc discard; do\n\t\tprintf '\\t[%d] = \"%s\",\\n' $nr $sc\n\t\tmax_nr=$nr\n\tdone\n\techo '};'\n\techo \"#define SYSCALLTBL_S390_64_MAX_ID $max_nr\"\n}\n\ngrep -E \"^[[:digit:]]+[[:space:]]+(common|64)\" $SYSCALL_TBL\t\\\n\t|sort -k1 -n\t\t\t\t\t\\\n\t|create_table\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nfs4_mount.h",
+  "hash_id": "7ceda61437006c4e9648e300963fa1b390cde56dfc0c19e04ce7ca381b8473f5",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/nfs4_mount.h",
+  "human_readable_source": " \n#ifndef _LINUX_NFS4_MOUNT_H\n#define _LINUX_NFS4_MOUNT_H\n\n \n\n \n#define NFS4_MOUNT_VERSION\t1\n\nstruct nfs_string {\n\tunsigned int len;\n\tconst char __user * data;\n};\n\nstruct nfs4_mount_data {\n\tint version;\t\t\t\t \n\tint flags;\t\t\t\t \n\tint rsize;\t\t\t\t \n\tint wsize;\t\t\t\t \n\tint timeo;\t\t\t\t \n\tint retrans;\t\t\t\t \n\tint acregmin;\t\t\t\t \n\tint acregmax;\t\t\t\t \n\tint acdirmin;\t\t\t\t \n\tint acdirmax;\t\t\t\t \n\n\t \n\tstruct nfs_string client_addr;\t\t \n\n\t \n\tstruct nfs_string mnt_path;\t\t \n\n\t \n\tstruct nfs_string hostname;\t\t \n\t \n\tunsigned int host_addrlen;\t\t \n\tstruct sockaddr __user * host_addr;\t \n\n\t \n\tint proto;\t\t\t\t \n\n\t \n\tint auth_flavourlen;\t\t\t \n\tint __user *auth_flavours;\t\t \n};\n\n \n \n\n#define NFS4_MOUNT_SOFT\t\t0x0001\t \n#define NFS4_MOUNT_INTR\t\t0x0002\t \n#define NFS4_MOUNT_NOCTO\t0x0010\t \n#define NFS4_MOUNT_NOAC\t\t0x0020\t \n#define NFS4_MOUNT_STRICTLOCK\t0x1000\t \n#define NFS4_MOUNT_UNSHARED\t0x8000\t \n#define NFS4_MOUNT_FLAGMASK\t0x9033\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2fffff566c3c36374e1e2d78727a9694dd81924613b15b31aa914bad7ede1848",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/stm32/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_VIDEO_STM32_DCMI) += stm32-dcmi.o\nstm32-dma2d-objs := dma2d/dma2d.o dma2d/dma2d-hw.o\nobj-$(CONFIG_VIDEO_STM32_DMA2D) += stm32-dma2d.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

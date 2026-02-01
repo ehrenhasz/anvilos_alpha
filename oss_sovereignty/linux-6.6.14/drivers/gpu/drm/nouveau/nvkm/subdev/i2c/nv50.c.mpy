@@ -1,0 +1,9 @@
+{
+  "module_name": "nv50.c",
+  "hash_id": "2fa2309b122f3e45f3bcd818f62aa781a75a7f3ec66754c767d607feb4fe18ac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/i2c/nv50.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"pad.h\"\n\nstatic const struct nvkm_i2c_func\nnv50_i2c = {\n\t.pad_x_new = nv50_i2c_pad_new,\n};\n\nint\nnv50_i2c_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t     struct nvkm_i2c **pi2c)\n{\n\treturn nvkm_i2c_new_(&nv50_i2c, device, type, inst, pi2c);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

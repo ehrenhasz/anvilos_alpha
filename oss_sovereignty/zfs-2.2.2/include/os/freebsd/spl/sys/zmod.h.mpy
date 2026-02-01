@@ -1,0 +1,9 @@
+{
+  "module_name": "zmod.h",
+  "hash_id": "a5e83591c707567f10a981ac2bcdca28da9d729d8ee0fcdb0a52a17141c129a7",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/zmod.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_ZMOD_H\n#define\t_ZMOD_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \n\n#define\tZ_OK\t\t0\n#define\tZ_STREAM_END\t1\n#define\tZ_NEED_DICT\t2\n#define\tZ_ERRNO\t\t(-1)\n#define\tZ_STREAM_ERROR\t(-2)\n#define\tZ_DATA_ERROR\t(-3)\n#define\tZ_MEM_ERROR\t(-4)\n#define\tZ_BUF_ERROR\t(-5)\n#define\tZ_VERSION_ERROR\t(-6)\n\n#define\tZ_NO_COMPRESSION\t0\n#define\tZ_BEST_SPEED\t\t1\n#define\tZ_BEST_COMPRESSION\t9\n#define\tZ_DEFAULT_COMPRESSION\t(-1)\n\nextern int z_uncompress(void *, size_t *, const void *, size_t);\nextern int z_compress(void *, size_t *, const void *, size_t);\nextern int z_compress_level(void *, size_t *, const void *, size_t, int);\nextern const char *z_strerror(int);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

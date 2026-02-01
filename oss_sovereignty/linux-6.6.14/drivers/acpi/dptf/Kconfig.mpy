@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c5714af7a8067dd71489fdadc66c81690efed6600e832ad5a138dc53f7d5881b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/dptf/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nmenuconfig ACPI_DPTF\n\tbool \"Intel DPTF (Dynamic Platform and Thermal Framework) Support\"\n\tdepends on X86\n\thelp\n\t  Intel Dynamic Platform and Thermal Framework (DPTF) is a platform\n\t  level hardware/software solution for power and thermal management.\n\n\t  As a container for multiple power/thermal technologies, DPTF provides\n\t  a coordinated approach for different policies to effect the hardware\n\t  state of a system.\n\nif ACPI_DPTF\n\nconfig DPTF_POWER\n\ttristate \"Platform Power DPTF Participant\"\n\tdefault m\n\thelp\n\t  This driver adds support for Dynamic Platform and Thermal Framework\n\t  (DPTF) Platform Power Participant device (INT3407) support.\n\t  This participant is responsible for exposing platform telemetry:\n\t\tmax_platform_power\n\t\tplatform_power_source\n\t\tadapter_rating\n\t\tbattery_steady_power\n\t\tcharger_type\n\n\t  To compile this driver as a module, choose M here:\n\t  the module will be called dptf_power.\n\nconfig DPTF_PCH_FIVR\n\ttristate \"PCH FIVR DPTF Participant\"\n\tdefault m\n\thelp\n\t  This driver adds support for Dynamic Platform and Thermal Framework\n\t  (DPTF) PCH FIVR Participant device support. This driver allows to\n\t  switch the PCH FIVR (Fully Integrated Voltage Regulator) frequency.\n\t  This participant is responsible for exposing:\n\t\tfreq_mhz_low_clock\n\t\tfreq_mhz_high_clock\n\n\t  To compile this driver as a module, choose M here:\n\t  the module will be called dptf_pch_fivr.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

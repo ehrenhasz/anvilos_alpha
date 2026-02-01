@@ -1,0 +1,9 @@
+{
+  "module_name": "test-pthread_sigmask2.c",
+  "hash_id": "96198c2882c93a1b9352e345bb5f0030f46a329726510a26463d063c55377d18",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-pthread_sigmask2.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <signal.h>\n\n#include <errno.h>\n#include <pthread.h>\n#include <stdio.h>\n#include <unistd.h>\n\n#include \"macros.h\"\n\n#if USE_POSIX_THREADS || USE_ISOC_AND_POSIX_THREADS\n\nstatic pthread_t main_thread;\nstatic pthread_t killer_thread;\n\nstatic void *\nkiller_thread_func (void *arg)\n{\n  sleep (1);\n  pthread_kill (main_thread, SIGINT);\n  return NULL;\n}\n\nstatic volatile int sigint_occurred;\n\nstatic void\nsigint_handler (int sig)\n{\n  sigint_occurred++;\n}\n\nint\nmain (int argc, char *argv[])\n{\n  sigset_t set;\n\n  signal (SIGINT, sigint_handler);\n\n  sigemptyset (&set);\n  sigaddset (&set, SIGINT);\n\n   \n   \n#if !defined __NetBSD__\n  ASSERT (pthread_sigmask (1729, &set, NULL) == EINVAL);\n#endif\n\n   \n  ASSERT (pthread_sigmask (SIG_BLOCK, &set, NULL) == 0);\n\n   \n  main_thread = pthread_self ();\n  ASSERT (pthread_create (&killer_thread, NULL, killer_thread_func, NULL) == 0);\n\n   \n  sleep (2);\n\n   \n  ASSERT (sigint_occurred == 0);\n\n   \n  ASSERT (pthread_sigmask (SIG_UNBLOCK, &set, NULL) == 0);\n\n   \n  ASSERT (sigint_occurred == 1);\n\n   \n  ASSERT (pthread_join (killer_thread, NULL) == 0);\n\n  return 0;\n}\n\n#else\n\nint\nmain ()\n{\n  fputs (\"Skipping test: POSIX threads not enabled\\n\", stderr);\n  return 77;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

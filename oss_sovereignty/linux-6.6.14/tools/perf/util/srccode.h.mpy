@@ -1,0 +1,9 @@
+{
+  "module_name": "srccode.h",
+  "hash_id": "9bdf7086411adc7c59b43ad7da644ef73543f20c226bfd48397e351af58e914a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/srccode.h",
+  "human_readable_source": "#ifndef SRCCODE_H\n#define SRCCODE_H 1\n\nstruct srccode_state {\n\tchar\t *srcfile;\n\tunsigned line;\n};\n\nstatic inline void srccode_state_init(struct srccode_state *state)\n{\n\tstate->srcfile = NULL;\n\tstate->line    = 0;\n}\n\nvoid srccode_state_free(struct srccode_state *state);\n\n \nchar *find_sourceline(char *fn, unsigned line, int *lenp);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

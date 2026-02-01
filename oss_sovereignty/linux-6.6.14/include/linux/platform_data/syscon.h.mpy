@@ -1,0 +1,9 @@
+{
+  "module_name": "syscon.h",
+  "hash_id": "c4cce1966d8fa32ac3a01d8849165492c69b6390016eb90a2bca3882bc0c6d4b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/syscon.h",
+  "human_readable_source": " \n#ifndef PLATFORM_DATA_SYSCON_H\n#define PLATFORM_DATA_SYSCON_H\n\nstruct syscon_platform_data {\n\tconst char *label;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

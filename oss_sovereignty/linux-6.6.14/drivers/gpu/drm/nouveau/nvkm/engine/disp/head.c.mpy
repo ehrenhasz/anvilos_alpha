@@ -1,0 +1,9 @@
+{
+  "module_name": "head.c",
+  "hash_id": "3bacd766db477155a886527107170b9bddfc57a53a3d8d57de56e3c444a4a8f0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/disp/head.c",
+  "human_readable_source": " \n#include \"head.h\"\n\n#include <core/client.h>\n\n#include <nvif/cl0046.h>\n#include <nvif/unpack.h>\n\nstruct nvkm_head *\nnvkm_head_find(struct nvkm_disp *disp, int id)\n{\n\tstruct nvkm_head *head;\n\tlist_for_each_entry(head, &disp->heads, head) {\n\t\tif (head->id == id)\n\t\t\treturn head;\n\t}\n\treturn NULL;\n}\n\nvoid\nnvkm_head_del(struct nvkm_head **phead)\n{\n\tstruct nvkm_head *head = *phead;\n\tif (head) {\n\t\tHEAD_DBG(head, \"dtor\");\n\t\tlist_del(&head->head);\n\t\tkfree(*phead);\n\t\t*phead = NULL;\n\t}\n}\n\nint\nnvkm_head_new_(const struct nvkm_head_func *func,\n\t       struct nvkm_disp *disp, int id)\n{\n\tstruct nvkm_head *head;\n\tif (!(head = kzalloc(sizeof(*head), GFP_KERNEL)))\n\t\treturn -ENOMEM;\n\thead->func = func;\n\thead->disp = disp;\n\thead->id = id;\n\tlist_add_tail(&head->head, &disp->heads);\n\tHEAD_DBG(head, \"ctor\");\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

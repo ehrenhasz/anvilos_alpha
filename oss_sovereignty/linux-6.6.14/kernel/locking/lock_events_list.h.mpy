@@ -1,0 +1,9 @@
+{
+  "module_name": "lock_events_list.h",
+  "hash_id": "638c1a9baae121ee432272a7adc8a28cf686284fffc06cdb9b31f016f71c8bec",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/locking/lock_events_list.h",
+  "human_readable_source": " \n \n\n#ifndef LOCK_EVENT\n#define LOCK_EVENT(name)\tLOCKEVENT_ ## name,\n#endif\n\n#ifdef CONFIG_QUEUED_SPINLOCKS\n#ifdef CONFIG_PARAVIRT_SPINLOCKS\n \nLOCK_EVENT(pv_hash_hops)\t \nLOCK_EVENT(pv_kick_unlock)\t \nLOCK_EVENT(pv_kick_wake)\t \nLOCK_EVENT(pv_latency_kick)\t \nLOCK_EVENT(pv_latency_wake)\t \nLOCK_EVENT(pv_lock_stealing)\t \nLOCK_EVENT(pv_spurious_wakeup)\t \nLOCK_EVENT(pv_wait_again)\t \nLOCK_EVENT(pv_wait_early)\t \nLOCK_EVENT(pv_wait_head)\t \nLOCK_EVENT(pv_wait_node)\t \n#endif  \n\n \nLOCK_EVENT(lock_pending)\t \nLOCK_EVENT(lock_slowpath)\t \nLOCK_EVENT(lock_use_node2)\t \nLOCK_EVENT(lock_use_node3)\t \nLOCK_EVENT(lock_use_node4)\t \nLOCK_EVENT(lock_no_node)\t \n#endif  \n\n \nLOCK_EVENT(rwsem_sleep_reader)\t \nLOCK_EVENT(rwsem_sleep_writer)\t \nLOCK_EVENT(rwsem_wake_reader)\t \nLOCK_EVENT(rwsem_wake_writer)\t \nLOCK_EVENT(rwsem_opt_lock)\t \nLOCK_EVENT(rwsem_opt_fail)\t \nLOCK_EVENT(rwsem_opt_nospin)\t \nLOCK_EVENT(rwsem_rlock)\t\t \nLOCK_EVENT(rwsem_rlock_steal)\t \nLOCK_EVENT(rwsem_rlock_fast)\t \nLOCK_EVENT(rwsem_rlock_fail)\t \nLOCK_EVENT(rwsem_rlock_handoff)\t \nLOCK_EVENT(rwsem_wlock)\t\t \nLOCK_EVENT(rwsem_wlock_fail)\t \nLOCK_EVENT(rwsem_wlock_handoff)\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

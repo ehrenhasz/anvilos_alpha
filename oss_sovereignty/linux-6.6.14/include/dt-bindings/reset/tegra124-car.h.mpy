@@ -1,0 +1,9 @@
+{
+  "module_name": "tegra124-car.h",
+  "hash_id": "b8639741a423a8fdddbe426700a37ce1fa511a9436a6c06cbabe635d361a1062",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/tegra124-car.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_RESET_TEGRA124_CAR_H\n#define _DT_BINDINGS_RESET_TEGRA124_CAR_H\n\n#define TEGRA124_RESET(x)\t\t(6 * 32 + (x))\n#define TEGRA124_RST_DFLL_DVCO\t\tTEGRA124_RESET(0)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

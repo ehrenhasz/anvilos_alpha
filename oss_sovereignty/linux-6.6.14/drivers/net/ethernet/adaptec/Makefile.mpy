@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "60ae519eabb7c5d454408de53eb78aab8c54428df0ee5fb51dad46ed4f1dedb5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/adaptec/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Adaptec network device drivers.\n#\n\nobj-$(CONFIG_ADAPTEC_STARFIRE) += starfire.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

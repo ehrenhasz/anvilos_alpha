@@ -1,0 +1,9 @@
+{
+  "module_name": "failed-syscalls.pl",
+  "hash_id": "a21ecbed4a2f1a3be0bb51f80351de36a1c523f174ba7d4818826f521342a3eb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/perl/failed-syscalls.pl",
+  "human_readable_source": "# failed system call counts\n# (c) 2010, Tom Zanussi <tzanussi@gmail.com>\n# Licensed under the terms of the GNU GPL License version 2\n#\n# Displays system-wide failed system call totals\n# If a [comm] arg is specified, only syscalls called by [comm] are displayed.\n\nuse lib \"$ENV{'PERF_EXEC_PATH'}/scripts/perl/Perf-Trace-Util/lib\";\nuse lib \"./Perf-Trace-Util/lib\";\nuse Perf::Trace::Core;\nuse Perf::Trace::Context;\nuse Perf::Trace::Util;\n\nmy $for_comm = shift;\n\nmy %failed_syscalls;\n\nsub raw_syscalls::sys_exit\n{\n\tmy ($event_name, $context, $common_cpu, $common_secs, $common_nsecs,\n\t    $common_pid, $common_comm, $common_callchain,\n\t    $id, $ret) = @_;\n\n\tif ($ret < 0) {\n\t    $failed_syscalls{$common_comm}++;\n\t}\n}\n\nsub syscalls::sys_exit\n{\n\traw_syscalls::sys_exit(@_)\n}\n\nsub trace_end\n{\n    printf(\"\\nfailed syscalls by comm:\\n\\n\");\n\n    printf(\"%-20s  %10s\\n\", \"comm\", \"# errors\");\n    printf(\"%-20s  %6s  %10s\\n\", \"--------------------\", \"----------\");\n\n    foreach my $comm (sort {$failed_syscalls{$b} <=> $failed_syscalls{$a}}\n\t\t      keys %failed_syscalls) {\n\tnext if ($for_comm && $comm ne $for_comm);\n\n\tprintf(\"%-20s  %10s\\n\", $comm, $failed_syscalls{$comm});\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

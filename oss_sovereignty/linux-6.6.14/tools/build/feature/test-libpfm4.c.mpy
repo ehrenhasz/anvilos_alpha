@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libpfm4.c",
+  "hash_id": "6abc5f24d699d537f812205f6b2b897ae1e1c6a0adc27ca64e4647aed43ffb5f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libpfm4.c",
+  "human_readable_source": "\n#include <sys/types.h>\n#include <perfmon/pfmlib.h>\n\nint main(void)\n{\n\tpfm_initialize();\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

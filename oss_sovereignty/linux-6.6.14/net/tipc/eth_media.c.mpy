@@ -1,0 +1,9 @@
+{
+  "module_name": "eth_media.c",
+  "hash_id": "e8de9b80bbb9dbd412b494a1c1cd87a453d1a7aee0a0753307fbb5dd9f3a744b",
+  "original_prompt": "Ingested from linux-6.6.14/net/tipc/eth_media.c",
+  "human_readable_source": " \n\n#include \"core.h\"\n#include \"bearer.h\"\n\n \nstatic int tipc_eth_addr2str(struct tipc_media_addr *addr,\n\t\t\t     char *strbuf, int bufsz)\n{\n\tif (bufsz < 18)\t \n\t\treturn 1;\n\n\tsprintf(strbuf, \"%pM\", addr->value);\n\treturn 0;\n}\n\n \nstatic int tipc_eth_addr2msg(char *msg, struct tipc_media_addr *addr)\n{\n\tmemset(msg, 0, TIPC_MEDIA_INFO_SIZE);\n\tmsg[TIPC_MEDIA_TYPE_OFFSET] = TIPC_MEDIA_TYPE_ETH;\n\tmemcpy(msg + TIPC_MEDIA_ADDR_OFFSET, addr->value, ETH_ALEN);\n\treturn 0;\n}\n\n \nstatic int tipc_eth_raw2addr(struct tipc_bearer *b,\n\t\t\t     struct tipc_media_addr *addr,\n\t\t\t     const char *msg)\n{\n\tmemset(addr, 0, sizeof(*addr));\n\tether_addr_copy(addr->value, msg);\n\taddr->media_id = TIPC_MEDIA_TYPE_ETH;\n\taddr->broadcast = is_broadcast_ether_addr(addr->value);\n\treturn 0;\n}\n\n \nstatic int tipc_eth_msg2addr(struct tipc_bearer *b,\n\t\t\t     struct tipc_media_addr *addr,\n\t\t\t     char *msg)\n{\n\t \n\tmsg += TIPC_MEDIA_ADDR_OFFSET;\n\treturn tipc_eth_raw2addr(b, addr, msg);\n}\n\n \nstruct tipc_media eth_media_info = {\n\t.send_msg\t= tipc_l2_send_msg,\n\t.enable_media\t= tipc_enable_l2_media,\n\t.disable_media\t= tipc_disable_l2_media,\n\t.addr2str\t= tipc_eth_addr2str,\n\t.addr2msg\t= tipc_eth_addr2msg,\n\t.msg2addr\t= tipc_eth_msg2addr,\n\t.raw2addr\t= tipc_eth_raw2addr,\n\t.priority\t= TIPC_DEF_LINK_PRI,\n\t.tolerance\t= TIPC_DEF_LINK_TOL,\n\t.min_win\t= TIPC_DEF_LINK_WIN,\n\t.max_win\t= TIPC_MAX_LINK_WIN,\n\t.type_id\t= TIPC_MEDIA_TYPE_ETH,\n\t.hwaddr_len\t= ETH_ALEN,\n\t.name\t\t= \"eth\"\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

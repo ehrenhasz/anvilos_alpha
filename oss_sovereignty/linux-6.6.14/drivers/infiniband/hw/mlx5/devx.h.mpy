@@ -1,0 +1,9 @@
+{
+  "module_name": "devx.h",
+  "hash_id": "e13d48374481c5c7d68f4630bb9d285bbb402bf379dd7c3dc59a6d8c51bd086c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/mlx5/devx.h",
+  "human_readable_source": " \n \n\n#ifndef _MLX5_IB_DEVX_H\n#define _MLX5_IB_DEVX_H\n\n#include \"mlx5_ib.h\"\n\n#define MLX5_MAX_DESTROY_INBOX_SIZE_DW MLX5_ST_SZ_DW(delete_fte_in)\nstruct devx_obj {\n\tstruct mlx5_ib_dev\t*ib_dev;\n\tu64\t\t\tobj_id;\n\tu32\t\t\tdinlen;  \n\tu32\t\t\tdinbox[MLX5_MAX_DESTROY_INBOX_SIZE_DW];\n\tu32\t\t\tflags;\n\tunion {\n\t\tstruct mlx5_ib_mkey\tmkey;\n\t\tstruct mlx5_core_dct\tcore_dct;\n\t\tstruct mlx5_core_cq\tcore_cq;\n\t\tu32\t\t\tflow_counter_bulk_size;\n\t};\n\tstruct list_head event_sub;  \n};\n#if IS_ENABLED(CONFIG_INFINIBAND_USER_ACCESS)\nint mlx5_ib_devx_create(struct mlx5_ib_dev *dev, bool is_user);\nvoid mlx5_ib_devx_destroy(struct mlx5_ib_dev *dev, u16 uid);\nint mlx5_ib_devx_init(struct mlx5_ib_dev *dev);\nvoid mlx5_ib_devx_cleanup(struct mlx5_ib_dev *dev);\n#else\nstatic inline int mlx5_ib_devx_create(struct mlx5_ib_dev *dev, bool is_user)\n{\n\treturn -EOPNOTSUPP;\n}\nstatic inline void mlx5_ib_devx_destroy(struct mlx5_ib_dev *dev, u16 uid) {}\nstatic inline int mlx5_ib_devx_init(struct mlx5_ib_dev *dev)\n{\n\treturn 0;\n}\nstatic inline void mlx5_ib_devx_cleanup(struct mlx5_ib_dev *dev)\n{\n}\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

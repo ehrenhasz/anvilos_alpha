@@ -1,0 +1,9 @@
+{
+  "module_name": "test_skb_cgroup_id.sh",
+  "hash_id": "6e364fd6cde8c1935b76a512ea5e524328faa8e3a9521754b7a6a54d59f9c52b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/test_skb_cgroup_id.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# Copyright (c) 2018 Facebook\n\nset -eu\n\nwait_for_ip()\n{\n\tlocal _i\n\techo -n \"Wait for testing link-local IP to become available \"\n\tfor _i in $(seq ${MAX_PING_TRIES}); do\n\t\techo -n \".\"\n\t\tif $PING6 -c 1 -W 1 ff02::1%${TEST_IF} >/dev/null 2>&1; then\n\t\t\techo \" OK\"\n\t\t\treturn\n\t\tfi\n\t\tsleep 1\n\tdone\n\techo 1>&2 \"ERROR: Timeout waiting for test IP to become available.\"\n\texit 1\n}\n\nsetup()\n{\n\t# Create testing interfaces not to interfere with current environment.\n\tip link add dev ${TEST_IF} type veth peer name ${TEST_IF_PEER}\n\tip link set ${TEST_IF} up\n\tip link set ${TEST_IF_PEER} up\n\n\twait_for_ip\n\n\ttc qdisc add dev ${TEST_IF} clsact\n\ttc filter add dev ${TEST_IF} egress bpf obj ${BPF_PROG_OBJ} \\\n\t\tsec ${BPF_PROG_SECTION} da\n\n\tBPF_PROG_ID=$(tc filter show dev ${TEST_IF} egress | \\\n\t\t\tawk '/ id / {sub(/.* id /, \"\", $0); print($1)}')\n}\n\ncleanup()\n{\n\tip link del ${TEST_IF} 2>/dev/null || :\n\tip link del ${TEST_IF_PEER} 2>/dev/null || :\n}\n\nmain()\n{\n\ttrap cleanup EXIT 2 3 6 15\n\tsetup\n\t${PROG} ${TEST_IF} ${BPF_PROG_ID}\n}\n\nDIR=$(dirname $0)\nTEST_IF=\"test_cgid_1\"\nTEST_IF_PEER=\"test_cgid_2\"\nMAX_PING_TRIES=5\nBPF_PROG_OBJ=\"${DIR}/test_skb_cgroup_id_kern.bpf.o\"\nBPF_PROG_SECTION=\"cgroup_id_logger\"\nBPF_PROG_ID=0\nPROG=\"${DIR}/test_skb_cgroup_id_user\"\ntype ping6 >/dev/null 2>&1 && PING6=\"ping6\" || PING6=\"ping -6\"\n\nmain\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

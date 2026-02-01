@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "93e9ddc7da49d277279bdd1d1e04007e7eb9c1ca7d1a049faecdf92c89b825f5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/hyperv/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig HYPERV_NET\n\ttristate \"Microsoft Hyper-V virtual network driver\"\n\tdepends on HYPERV\n\tselect UCS2_STRING\n\tselect NLS\n\thelp\n\t  Select this option to enable the Hyper-V virtual network driver.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

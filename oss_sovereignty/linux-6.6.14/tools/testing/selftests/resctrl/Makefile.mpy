@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8e7f4e92bfe71dbfdadbbfebbea621663f5d12007f096f22df5d98f63655413a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/resctrl/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nCFLAGS = -g -Wall -O2 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE\nCFLAGS += $(KHDR_INCLUDES)\n\nTEST_GEN_PROGS := resctrl_tests\n\ninclude ../lib.mk\n\n$(OUTPUT)/resctrl_tests: $(wildcard *.[ch])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

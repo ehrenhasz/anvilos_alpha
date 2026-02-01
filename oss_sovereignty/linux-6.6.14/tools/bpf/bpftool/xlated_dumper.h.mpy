@@ -1,0 +1,9 @@
+{
+  "module_name": "xlated_dumper.h",
+  "hash_id": "29b694f3c9fb5025f55676609fd7d3a3e2d3c154d3ea0267cd508176a7fc75f5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bpf/bpftool/xlated_dumper.h",
+  "human_readable_source": " \n \n\n#ifndef __BPF_TOOL_XLATED_DUMPER_H\n#define __BPF_TOOL_XLATED_DUMPER_H\n\n#define SYM_MAX_NAME\t256\n#define MODULE_MAX_NAME\t64\n\nstruct bpf_prog_linfo;\n\nstruct kernel_sym {\n\tunsigned long address;\n\tchar name[SYM_MAX_NAME];\n\tchar module[MODULE_MAX_NAME];\n};\n\nstruct dump_data {\n\tunsigned long address_call_base;\n\tstruct kernel_sym *sym_mapping;\n\t__u32 sym_count;\n\t__u64 *jited_ksyms;\n\t__u32 nr_jited_ksyms;\n\tstruct btf *btf;\n\tvoid *func_info;\n\t__u32 finfo_rec_size;\n\tconst struct bpf_prog_linfo *prog_linfo;\n\tchar scratch_buff[SYM_MAX_NAME + 8];\n};\n\nvoid kernel_syms_load(struct dump_data *dd);\nvoid kernel_syms_destroy(struct dump_data *dd);\nstruct kernel_sym *kernel_syms_search(struct dump_data *dd, unsigned long key);\nvoid dump_xlated_json(struct dump_data *dd, void *buf, unsigned int len,\n\t\t       bool opcodes, bool linum);\nvoid dump_xlated_plain(struct dump_data *dd, void *buf, unsigned int len,\n\t\t       bool opcodes, bool linum);\nvoid dump_xlated_for_graph(struct dump_data *dd, void *buf, void *buf_end,\n\t\t\t   unsigned int start_index,\n\t\t\t   bool opcodes, bool linum);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

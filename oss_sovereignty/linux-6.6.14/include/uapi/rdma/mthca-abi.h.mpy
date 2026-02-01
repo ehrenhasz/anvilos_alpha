@@ -1,0 +1,9 @@
+{
+  "module_name": "mthca-abi.h",
+  "hash_id": "fef61bae12ba0cf8d3dd2fe7edc771b1d852319d0f021c7bd702561abaabf09b",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/rdma/mthca-abi.h",
+  "human_readable_source": " \n \n\n#ifndef MTHCA_ABI_USER_H\n#define MTHCA_ABI_USER_H\n\n#include <linux/types.h>\n\n \n#define MTHCA_UVERBS_ABI_VERSION\t1\n\n \nstruct mthca_alloc_ucontext_resp {\n\t__u32 qp_tab_size;\n\t__u32 uarc_size;\n};\n\nstruct mthca_alloc_pd_resp {\n\t__u32 pdn;\n\t__u32 reserved;\n};\n\n \n#define MTHCA_MR_DMASYNC\t0x1\n\nstruct mthca_reg_mr {\n\t__u32 mr_attrs;\n\t__u32 reserved;\n};\n\nstruct mthca_create_cq {\n\t__u32 lkey;\n\t__u32 pdn;\n\t__aligned_u64 arm_db_page;\n\t__aligned_u64 set_db_page;\n\t__u32 arm_db_index;\n\t__u32 set_db_index;\n};\n\nstruct mthca_create_cq_resp {\n\t__u32 cqn;\n\t__u32 reserved;\n};\n\nstruct mthca_resize_cq {\n\t__u32 lkey;\n\t__u32 reserved;\n};\n\nstruct mthca_create_srq {\n\t__u32 lkey;\n\t__u32 db_index;\n\t__aligned_u64 db_page;\n};\n\nstruct mthca_create_srq_resp {\n\t__u32 srqn;\n\t__u32 reserved;\n};\n\nstruct mthca_create_qp {\n\t__u32 lkey;\n\t__u32 reserved;\n\t__aligned_u64 sq_db_page;\n\t__aligned_u64 rq_db_page;\n\t__u32 sq_db_index;\n\t__u32 rq_db_index;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

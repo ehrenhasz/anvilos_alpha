@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "970b9bbc55fba250c5016975e7092d6d0beeb05d7cf3df6375b682f2354d0058",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hsi/controllers/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for HSI controllers drivers\n#\n\nomap_ssi-objs\t\t+= omap_ssi_core.o omap_ssi_port.o\nobj-$(CONFIG_OMAP_SSI)\t+= omap_ssi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

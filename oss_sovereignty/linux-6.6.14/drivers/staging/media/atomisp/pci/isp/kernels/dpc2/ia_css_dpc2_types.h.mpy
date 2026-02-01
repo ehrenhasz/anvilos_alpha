@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_dpc2_types.h",
+  "hash_id": "7bd024511625b0b126b63656c84cb4e0ab2cca060aa25206e81f7ef3cbc2dedf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/dpc2/ia_css_dpc2_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_DPC2_TYPES_H\n#define __IA_CSS_DPC2_TYPES_H\n\n \n\n#include \"type_support.h\"\n\n \n \n#define METRIC1_ONE_FP\tBIT(12)\n#define METRIC2_ONE_FP\tBIT(5)\n#define METRIC3_ONE_FP\tBIT(12)\n#define WBGAIN_ONE_FP\tBIT(9)\n \n\n \n \nstruct ia_css_dpc2_config {\n\t \n\ts32 metric1;\n\ts32 metric2;\n\ts32 metric3;\n\ts32 wb_gain_gr;\n\ts32 wb_gain_r;\n\ts32 wb_gain_b;\n\ts32 wb_gain_gb;\n\t \n};\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

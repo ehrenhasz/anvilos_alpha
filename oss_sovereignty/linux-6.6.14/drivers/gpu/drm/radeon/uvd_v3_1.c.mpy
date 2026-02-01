@@ -1,0 +1,9 @@
+{
+  "module_name": "uvd_v3_1.c",
+  "hash_id": "d67c2ea6c72c0daab2ab57bf342f7513b9dad9e561f5496eb7b4e611382c5267",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/uvd_v3_1.c",
+  "human_readable_source": " \n\n#include \"radeon.h\"\n#include \"radeon_asic.h\"\n#include \"nid.h\"\n\n \nbool uvd_v3_1_semaphore_emit(struct radeon_device *rdev,\n\t\t\t     struct radeon_ring *ring,\n\t\t\t     struct radeon_semaphore *semaphore,\n\t\t\t     bool emit_wait)\n{\n\tuint64_t addr = semaphore->gpu_addr;\n\n\tradeon_ring_write(ring, PACKET0(UVD_SEMA_ADDR_LOW, 0));\n\tradeon_ring_write(ring, (addr >> 3) & 0x000FFFFF);\n\n\tradeon_ring_write(ring, PACKET0(UVD_SEMA_ADDR_HIGH, 0));\n\tradeon_ring_write(ring, (addr >> 23) & 0x000FFFFF);\n\n\tradeon_ring_write(ring, PACKET0(UVD_SEMA_CMD, 0));\n\tradeon_ring_write(ring, 0x80 | (emit_wait ? 1 : 0));\n\n\treturn true;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "opmethods.c",
+  "hash_id": "6f1127fff5845aa0afa7917acbf235d05927c6ba8dbc3f8cde4c3499823d2298",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/opmethods.c",
+  "human_readable_source": " \n\n#include \"py/obj.h\"\n#include \"py/builtin.h\"\n\nstatic mp_obj_t op_getitem(mp_obj_t self_in, mp_obj_t key_in) {\n    const mp_obj_type_t *type = mp_obj_get_type(self_in);\n    \n    return MP_OBJ_TYPE_GET_SLOT(type, subscr)(self_in, key_in, MP_OBJ_SENTINEL);\n}\nMP_DEFINE_CONST_FUN_OBJ_2(mp_op_getitem_obj, op_getitem);\n\nstatic mp_obj_t op_setitem(mp_obj_t self_in, mp_obj_t key_in, mp_obj_t value_in) {\n    const mp_obj_type_t *type = mp_obj_get_type(self_in);\n    \n    return MP_OBJ_TYPE_GET_SLOT(type, subscr)(self_in, key_in, value_in);\n}\nMP_DEFINE_CONST_FUN_OBJ_3(mp_op_setitem_obj, op_setitem);\n\nstatic mp_obj_t op_delitem(mp_obj_t self_in, mp_obj_t key_in) {\n    const mp_obj_type_t *type = mp_obj_get_type(self_in);\n    \n    return MP_OBJ_TYPE_GET_SLOT(type, subscr)(self_in, key_in, MP_OBJ_NULL);\n}\nMP_DEFINE_CONST_FUN_OBJ_2(mp_op_delitem_obj, op_delitem);\n\nstatic mp_obj_t op_contains(mp_obj_t lhs_in, mp_obj_t rhs_in) {\n    const mp_obj_type_t *type = mp_obj_get_type(lhs_in);\n    \n    return MP_OBJ_TYPE_GET_SLOT(type, binary_op)(MP_BINARY_OP_CONTAINS, lhs_in, rhs_in);\n}\nMP_DEFINE_CONST_FUN_OBJ_2(mp_op_contains_obj, op_contains);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

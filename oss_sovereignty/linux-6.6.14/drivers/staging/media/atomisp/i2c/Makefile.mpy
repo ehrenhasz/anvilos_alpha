@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c559ff91b8b2c0f7a49416aa9511538c0bb7c86a6e22cf2029459f2afc12023a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/i2c/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for sensor drivers\n#\n\nobj-$(CONFIG_VIDEO_ATOMISP_OV5693)     += ov5693/\nobj-$(CONFIG_VIDEO_ATOMISP_MT9M114)    += atomisp-mt9m114.o\nobj-$(CONFIG_VIDEO_ATOMISP_GC2235)     += atomisp-gc2235.o\nobj-$(CONFIG_VIDEO_ATOMISP_OV2722)     += atomisp-ov2722.o\nobj-$(CONFIG_VIDEO_ATOMISP_GC0310)     += atomisp-gc0310.o\n\nobj-$(CONFIG_VIDEO_ATOMISP_MSRLIST_HELPER) += atomisp-libmsrlisthelper.o\n\n# Makefile for flash drivers\n#\n\nobj-$(CONFIG_VIDEO_ATOMISP_LM3554) += atomisp-lm3554.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

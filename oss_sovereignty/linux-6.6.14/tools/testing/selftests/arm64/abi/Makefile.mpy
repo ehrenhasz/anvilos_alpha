@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "39e7b8ec8c1e52594ba5db815251822402e4738392540bce255517ea78214b88",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/abi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (C) 2021 ARM Limited\n\nTEST_GEN_PROGS := hwcap ptrace syscall-abi tpidr2\n\ninclude ../../lib.mk\n\n$(OUTPUT)/syscall-abi: syscall-abi.c syscall-abi-asm.S\n\n# Build with nolibc since TPIDR2 is intended to be actively managed by\n# libc and we're trying to test the functionality that it depends on here.\n$(OUTPUT)/tpidr2: tpidr2.c\n\t$(CC) -fno-asynchronous-unwind-tables -fno-ident -s -Os -nostdlib \\\n\t\t-static -include ../../../../include/nolibc/nolibc.h \\\n\t\t-ffreestanding -Wall $^ -o $@ -lgcc\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

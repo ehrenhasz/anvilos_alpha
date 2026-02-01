@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f70134ece6325a0861e6d852fc4c40289c5b77f1a3215a0ff2069bace28a6451",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/zynq/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Zynq clock specific Makefile\n\nobj-y\t+= clkc.o pll.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

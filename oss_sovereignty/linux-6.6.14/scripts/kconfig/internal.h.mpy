@@ -1,0 +1,9 @@
+{
+  "module_name": "internal.h",
+  "hash_id": "70ee4fe140fdfab6d332725517a7262ad0cdd749d80e781d600bef80daf730c7",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/kconfig/internal.h",
+  "human_readable_source": " \n#ifndef INTERNAL_H\n#define INTERNAL_H\n\nstruct menu;\n\nextern struct menu *current_menu, *current_entry;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

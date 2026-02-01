@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn303_init.c",
+  "hash_id": "e534272fd0b3d016d94423afd74e8f045ac19ae8cfea0c0bda00d4a2b25102f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn303/dcn303_init.c",
+  "human_readable_source": "\n \n\n#include \"dcn303_hwseq.h\"\n#include \"dcn30/dcn30_init.h\"\n#include \"dc.h\"\n\n#include \"dcn303_init.h\"\n\nvoid dcn303_hw_sequencer_construct(struct dc *dc)\n{\n\tdcn30_hw_sequencer_construct(dc);\n\n\tdc->hwseq->funcs.dpp_pg_control = dcn303_dpp_pg_control;\n\tdc->hwseq->funcs.hubp_pg_control = dcn303_hubp_pg_control;\n\tdc->hwseq->funcs.dsc_pg_control = dcn303_dsc_pg_control;\n\tdc->hwseq->funcs.enable_power_gating_plane = dcn303_enable_power_gating_plane;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

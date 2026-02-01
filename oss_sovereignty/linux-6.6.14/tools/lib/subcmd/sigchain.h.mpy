@@ -1,0 +1,9 @@
+{
+  "module_name": "sigchain.h",
+  "hash_id": "266943bc610eb63aa4b7563fd39e90fd102e0a106583572893cc06c8ef365ad8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/subcmd/sigchain.h",
+  "human_readable_source": " \n#ifndef __SUBCMD_SIGCHAIN_H\n#define __SUBCMD_SIGCHAIN_H\n\ntypedef void (*sigchain_fun)(int);\n\nint sigchain_pop(int sig);\n\nvoid sigchain_push_common(sigchain_fun f);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

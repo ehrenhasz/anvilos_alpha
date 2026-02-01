@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "504bc5c53601d7df69c2680fc08d14e30c163f06af5d85690e08e58e2886178e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/bridge/synopsys/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_DW_HDMI\n\ttristate\n\tselect DRM_DISPLAY_HDMI_HELPER\n\tselect DRM_DISPLAY_HELPER\n\tselect DRM_KMS_HELPER\n\tselect REGMAP_MMIO\n\tselect CEC_CORE if CEC_NOTIFIER\n\nconfig DRM_DW_HDMI_AHB_AUDIO\n\ttristate \"Synopsys Designware AHB Audio interface\"\n\tdepends on DRM_DW_HDMI && SND\n\tselect SND_PCM\n\tselect SND_PCM_ELD\n\tselect SND_PCM_IEC958\n\thelp\n\t  Support the AHB Audio interface which is part of the Synopsys\n\t  Designware HDMI block.  This is used in conjunction with\n\t  the i.MX6 HDMI driver.\n\nconfig DRM_DW_HDMI_I2S_AUDIO\n\ttristate \"Synopsys Designware I2S Audio interface\"\n\tdepends on SND_SOC\n\tdepends on DRM_DW_HDMI\n\tselect SND_SOC_HDMI_CODEC\n\thelp\n\t  Support the I2S Audio interface which is part of the Synopsys\n\t  Designware HDMI block.\n\nconfig DRM_DW_HDMI_GP_AUDIO\n\ttristate \"Synopsys Designware GP Audio interface\"\n\tdepends on DRM_DW_HDMI && SND\n\tselect SND_PCM\n\tselect SND_PCM_ELD\n\tselect SND_PCM_IEC958\n\thelp\n\t  Support the GP Audio interface which is part of the Synopsys\n\t  Designware HDMI block.\n\nconfig DRM_DW_HDMI_CEC\n\ttristate \"Synopsis Designware CEC interface\"\n\tdepends on DRM_DW_HDMI\n\tselect CEC_CORE\n\tselect CEC_NOTIFIER\n\thelp\n\t  Support the CE interface which is part of the Synopsys\n\t  Designware HDMI block.\n\nconfig DRM_DW_MIPI_DSI\n\ttristate\n\tselect DRM_KMS_HELPER\n\tselect DRM_MIPI_DSI\n\tselect DRM_PANEL_BRIDGE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

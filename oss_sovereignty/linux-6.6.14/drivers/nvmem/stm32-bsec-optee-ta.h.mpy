@@ -1,0 +1,9 @@
+{
+  "module_name": "stm32-bsec-optee-ta.h",
+  "hash_id": "7c8745f526312dfbd4c1431762f3d52c32846626622b98c496faf868b15fd9f3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nvmem/stm32-bsec-optee-ta.h",
+  "human_readable_source": " \n \n\n#if IS_ENABLED(CONFIG_NVMEM_STM32_BSEC_OPTEE_TA)\n \nint stm32_bsec_optee_ta_open(struct tee_context **ctx);\n\n \nvoid stm32_bsec_optee_ta_close(void *ctx);\n\n \nint stm32_bsec_optee_ta_read(struct tee_context *ctx, unsigned int offset,\n\t\t\t     void *buf, size_t bytes);\n\n \nint stm32_bsec_optee_ta_write(struct tee_context *ctx, unsigned int lower,\n\t\t\t      unsigned int offset, void *buf, size_t bytes);\n\n#else\n\nstatic inline int stm32_bsec_optee_ta_open(struct tee_context **ctx)\n{\n\treturn -EOPNOTSUPP;\n}\n\nstatic inline void stm32_bsec_optee_ta_close(void *ctx)\n{\n}\n\nstatic inline int stm32_bsec_optee_ta_read(struct tee_context *ctx,\n\t\t\t\t\t   unsigned int offset, void *buf,\n\t\t\t\t\t   size_t bytes)\n{\n\treturn -EOPNOTSUPP;\n}\n\nstatic inline int stm32_bsec_optee_ta_write(struct tee_context *ctx,\n\t\t\t\t\t    unsigned int lower,\n\t\t\t\t\t    unsigned int offset, void *buf,\n\t\t\t\t\t    size_t bytes)\n{\n\treturn -EOPNOTSUPP;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d03560f177473bd798c7848a8414bd89c310b90171755a42fa3143296e4fa490",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4vf/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Chelsio T4 SR-IOV Virtual Function Driver\n#\n\nobj-$(CONFIG_CHELSIO_T4VF) += cxgb4vf.o\n\ncxgb4vf-objs := cxgb4vf_main.o t4vf_hw.o sge.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

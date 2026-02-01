@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.h",
+  "hash_id": "b8d1f45296be8f85c9cdda7b7c1dfb82334d913425d3cbb02f5ddc264cbae600",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/catpt/trace.h",
+  "human_readable_source": " \n \n\n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM intel_catpt\n\n#if !defined(__SND_SOC_INTEL_CATPT_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)\n#define __SND_SOC_INTEL_CATPT_TRACE_H\n\n#include <linux/types.h>\n#include <linux/tracepoint.h>\n\nDECLARE_EVENT_CLASS(catpt_ipc_msg,\n\n\tTP_PROTO(u32 header),\n\n\tTP_ARGS(header),\n\n\tTP_STRUCT__entry(\n\t\t__field(u32, header)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->header = header;\n\t),\n\n\tTP_printk(\"0x%08x\", __entry->header)\n);\n\nDEFINE_EVENT(catpt_ipc_msg, catpt_irq,\n\tTP_PROTO(u32 header),\n\tTP_ARGS(header)\n);\n\nDEFINE_EVENT(catpt_ipc_msg, catpt_ipc_request,\n\tTP_PROTO(u32 header),\n\tTP_ARGS(header)\n);\n\nDEFINE_EVENT(catpt_ipc_msg, catpt_ipc_reply,\n\tTP_PROTO(u32 header),\n\tTP_ARGS(header)\n);\n\nDEFINE_EVENT(catpt_ipc_msg, catpt_ipc_notify,\n\tTP_PROTO(u32 header),\n\tTP_ARGS(header)\n);\n\nTRACE_EVENT_CONDITION(catpt_ipc_payload,\n\n\tTP_PROTO(const u8 *data, size_t size),\n\n\tTP_ARGS(data, size),\n\n\tTP_CONDITION(data && size),\n\n\tTP_STRUCT__entry(\n\t\t__dynamic_array(u8, buf, size)\n\t),\n\n\tTP_fast_assign(\n\t\tmemcpy(__get_dynamic_array(buf), data, size);\n\t),\n\n\tTP_printk(\"%u byte(s)%s\",\n\t\t  __get_dynamic_array_len(buf),\n\t\t  __print_hex_dump(\"\", DUMP_PREFIX_NONE, 16, 4,\n\t\t\t\t   __get_dynamic_array(buf),\n\t\t\t\t   __get_dynamic_array_len(buf), false))\n);\n\n#endif  \n\n \n#undef TRACE_INCLUDE_PATH\n#define TRACE_INCLUDE_PATH .\n#define TRACE_INCLUDE_FILE trace\n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "av7110_av.h",
+  "hash_id": "821cf6e7d4fabf830da11138b5d355bf33cdf8080f59c2197885a40c23509661",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/av7110_av.h",
+  "human_readable_source": " \n#ifndef _AV7110_AV_H_\n#define _AV7110_AV_H_\n\nstruct av7110;\n\nextern int av7110_set_vidmode(struct av7110 *av7110,\n\t\t\t      enum av7110_video_mode mode);\n\nextern int av7110_record_cb(struct dvb_filter_pes2ts *p2t, u8 *buf, size_t len);\nextern int av7110_pes_play(void *dest, struct dvb_ringbuffer *buf, int dlen);\nextern int av7110_write_to_decoder(struct dvb_demux_feed *feed, const u8 *buf, size_t len);\n\nextern int av7110_set_volume(struct av7110 *av7110, unsigned int volleft,\n\t\t\t     unsigned int volright);\nextern int av7110_av_stop(struct av7110 *av7110, int av);\nextern int av7110_av_start_record(struct av7110 *av7110, int av,\n\t\t\t  struct dvb_demux_feed *dvbdmxfeed);\nextern int av7110_av_start_play(struct av7110 *av7110, int av);\n\nextern void dvb_video_add_event(struct av7110 *av7110, struct video_event *event);\n\nextern void av7110_p2t_init(struct av7110_p2t *p, struct dvb_demux_feed *feed);\nextern void av7110_p2t_write(u8 const *buf, long int length, u16 pid, struct av7110_p2t *p);\n\nextern int av7110_av_register(struct av7110 *av7110);\nextern void av7110_av_unregister(struct av7110 *av7110);\nextern int av7110_av_init(struct av7110 *av7110);\nextern void av7110_av_exit(struct av7110 *av7110);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

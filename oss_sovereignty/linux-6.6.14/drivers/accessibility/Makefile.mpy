@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c60af1c211c0e5397c3fec3f680b9d26e8216881d893d73c6fc4d7d6ae9a86c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accessibility/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y\t\t\t\t+= braille/\nobj-$(CONFIG_SPEAKUP)\t\t+= speakup/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

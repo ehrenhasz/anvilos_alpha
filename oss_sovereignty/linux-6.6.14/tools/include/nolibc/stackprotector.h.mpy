@@ -1,0 +1,9 @@
+{
+  "module_name": "stackprotector.h",
+  "hash_id": "364bff92c9f6b58b08c63a639f9c991ef7696cbed371f47d5d65977b357b611e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/nolibc/stackprotector.h",
+  "human_readable_source": " \n \n\n#ifndef _NOLIBC_STACKPROTECTOR_H\n#define _NOLIBC_STACKPROTECTOR_H\n\n#include \"compiler.h\"\n\n#if defined(_NOLIBC_STACKPROTECTOR)\n\n#include \"sys.h\"\n#include \"stdlib.h\"\n\n \n\n__attribute__((weak,noreturn,section(\".text.nolibc_stack_chk\")))\nvoid __stack_chk_fail(void)\n{\n\tpid_t pid;\n\tmy_syscall3(__NR_write, STDERR_FILENO, \"!!Stack smashing detected!!\\n\", 28);\n\tpid = my_syscall0(__NR_getpid);\n\tmy_syscall2(__NR_kill, pid, SIGABRT);\n\tfor (;;);\n}\n\n__attribute__((weak,noreturn,section(\".text.nolibc_stack_chk\")))\nvoid __stack_chk_fail_local(void)\n{\n\t__stack_chk_fail();\n}\n\n__attribute__((weak,section(\".data.nolibc_stack_chk\")))\nuintptr_t __stack_chk_guard;\n\nstatic __no_stack_protector void __stack_chk_init(void)\n{\n\tmy_syscall3(__NR_getrandom, &__stack_chk_guard, sizeof(__stack_chk_guard), 0);\n\t \n\tif (__stack_chk_guard != (uintptr_t) &__stack_chk_guard)\n\t\t__stack_chk_guard ^= (uintptr_t) &__stack_chk_guard;\n}\n#else  \nstatic void __stack_chk_init(void) {}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

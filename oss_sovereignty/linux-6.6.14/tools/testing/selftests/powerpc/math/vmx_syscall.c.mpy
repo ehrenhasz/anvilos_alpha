@@ -1,0 +1,9 @@
+{
+  "module_name": "vmx_syscall.c",
+  "hash_id": "87a06455a532a5071681ed0fd6b5a4203161f700c793bd5075cb541c7428139f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/math/vmx_syscall.c",
+  "human_readable_source": "\n \n\n#include <altivec.h>\n#include <stdio.h>\n#include <unistd.h>\n#include <sys/syscall.h>\n#include <sys/time.h>\n#include <stdlib.h>\n#include <sys/types.h>\n#include <sys/wait.h>\n#include \"utils.h\"\n\nvector int varray[] = {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10,11,12},\n\t{13,14,15,16},{17,18,19,20},{21,22,23,24},\n\t{25,26,27,28},{29,30,31,32},{33,34,35,36},\n\t{37,38,39,40},{41,42,43,44},{45,46,47,48}};\n\nextern int test_vmx(vector int *varray, pid_t *pid);\n\nint vmx_syscall(void)\n{\n\tpid_t fork_pid;\n\tint i;\n\tint ret;\n\tint child_ret;\n\tfor (i = 0; i < 1000; i++) {\n\t\t \n\t\tret = test_vmx(varray, &fork_pid);\n\t\tif (fork_pid == -1)\n\t\t\treturn -1;\n\t\tif (fork_pid == 0)\n\t\t\texit(ret);\n\t\twaitpid(fork_pid, &child_ret, 0);\n\t\tif (ret || child_ret)\n\t\t\treturn 1;\n\t}\n\n\treturn 0;\n}\n\nint test_vmx_syscall(void)\n{\n\t \n\tpid_t pid2;\n\tpid_t pid;\n\tint ret;\n\tint child_ret;\n\n\t\n\tSKIP_IF(!have_hwcap2(PPC_FEATURE2_ARCH_2_07));\n\n\tpid = fork();\n\tFAIL_IF(pid == -1);\n\n\tpid2 = fork();\n\tret = vmx_syscall();\n\t \n\tif (pid2 == -1) {\n\t\t \n\t\tret = child_ret = 1;\n\t} else {\n\t\tif (pid2)\n\t\t\twaitpid(pid2, &child_ret, 0);\n\t\telse\n\t\t\texit(ret);\n\t}\n\n\tret |= child_ret;\n\n\tif (pid)\n\t\twaitpid(pid, &child_ret, 0);\n\telse\n\t\texit(ret);\n\n\tFAIL_IF(ret || child_ret);\n\treturn 0;\n}\n\nint main(int argc, char *argv[])\n{\n\treturn test_harness(test_vmx_syscall, \"vmx_syscall\");\n\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

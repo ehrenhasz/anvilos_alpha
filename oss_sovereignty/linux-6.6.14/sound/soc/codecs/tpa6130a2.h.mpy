@@ -1,0 +1,9 @@
+{
+  "module_name": "tpa6130a2.h",
+  "hash_id": "8647e192293a106e2e1a3dd0936206ed1c608d22a0c4ce5920924f2492803fac",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/tpa6130a2.h",
+  "human_readable_source": " \n \n\n#ifndef __TPA6130A2_H__\n#define __TPA6130A2_H__\n\n \n#define TPA6130A2_REG_CONTROL\t\t0x01\n#define TPA6130A2_REG_VOL_MUTE\t\t0x02\n#define TPA6130A2_REG_OUT_IMPEDANCE\t0x03\n#define TPA6130A2_REG_VERSION\t\t0x04\n\n \n \n#define TPA6130A2_SWS_SHIFT\t\t0\n#define TPA6130A2_SWS\t\t\t(0x01 << TPA6130A2_SWS_SHIFT)\n#define TPA6130A2_TERMAL\t\t(0x01 << 1)\n#define TPA6130A2_MODE(x)\t\t(x << 4)\n#define TPA6130A2_MODE_STEREO\t\t(0x00)\n#define TPA6130A2_MODE_DUAL_MONO\t(0x01)\n#define TPA6130A2_MODE_BRIDGE\t\t(0x02)\n#define TPA6130A2_MODE_MASK\t\t(0x03)\n#define TPA6130A2_HP_EN_R_SHIFT\t\t6\n#define TPA6130A2_HP_EN_R\t\t(0x01 << TPA6130A2_HP_EN_R_SHIFT)\n#define TPA6130A2_HP_EN_L_SHIFT\t\t7\n#define TPA6130A2_HP_EN_L\t\t(0x01 << TPA6130A2_HP_EN_L_SHIFT)\n\n \n#define TPA6130A2_VOLUME(x)\t\t((x & 0x3f) << 0)\n#define TPA6130A2_MUTE_R\t\t(0x01 << 6)\n#define TPA6130A2_MUTE_L\t\t(0x01 << 7)\n\n \n#define TPA6130A2_HIZ_R\t\t\t(0x01 << 0)\n#define TPA6130A2_HIZ_L\t\t\t(0x01 << 1)\n\n \n#define TPA6130A2_VERSION_MASK\t\t(0x0f)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

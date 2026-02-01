@@ -1,0 +1,9 @@
+{
+  "module_name": "__expo2.c",
+  "hash_id": "88c355023a3a1419f455472193548d77306034d9bf7a55aa580804908a947806",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/__expo2.c",
+  "human_readable_source": "#include \"libm.h\"\n\n \nstatic const int k = 2043;\nstatic const double kln2 = 0x1.62066151add8bp+10;\n\n \ndouble __expo2(double x)\n{\n\tdouble scale;\n\n\t \n\tINSERT_WORDS(scale, (uint32_t)(0x3ff + k/2) << 20, 0);\n\t \n\treturn exp(x - kln2) * scale * scale;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

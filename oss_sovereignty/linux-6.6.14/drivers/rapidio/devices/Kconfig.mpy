@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9ebc5f78e8a8e42caadb439b8f89aab7a0410db106e8367c2705e83acfd5a989",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/rapidio/devices/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# RapidIO master port configuration\n#\n\nconfig RAPIDIO_TSI721\n\ttristate \"IDT Tsi721 PCI Express SRIO Controller support\"\n\tdepends on RAPIDIO && PCIEPORTBUS\n\tdefault \"n\"\n\thelp\n\t  Include support for IDT Tsi721 PCI Express Serial RapidIO controller.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

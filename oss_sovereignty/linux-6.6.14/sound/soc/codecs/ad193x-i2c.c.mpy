@@ -1,0 +1,9 @@
+{
+  "module_name": "ad193x-i2c.c",
+  "hash_id": "0e9f7dee0d4b85b518b856996e11ac5e4ecf8d9ada998e173961c6cabc74cdd3",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/ad193x-i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/i2c.h>\n#include <linux/regmap.h>\n\n#include <sound/soc.h>\n\n#include \"ad193x.h\"\n\nstatic const struct i2c_device_id ad193x_id[] = {\n\t{ \"ad1936\", AD193X },\n\t{ \"ad1937\", AD193X },\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, ad193x_id);\n\nstatic int ad193x_i2c_probe(struct i2c_client *client)\n{\n\tstruct regmap_config config;\n\tconst struct i2c_device_id *id = i2c_match_id(ad193x_id, client);\n\n\tconfig = ad193x_regmap_config;\n\tconfig.val_bits = 8;\n\tconfig.reg_bits = 8;\n\n\treturn ad193x_probe(&client->dev,\n\t\t\t    devm_regmap_init_i2c(client, &config),\n\t\t\t    (enum ad193x_type)id->driver_data);\n}\n\nstatic struct i2c_driver ad193x_i2c_driver = {\n\t.driver = {\n\t\t.name = \"ad193x\",\n\t},\n\t.probe = ad193x_i2c_probe,\n\t.id_table = ad193x_id,\n};\nmodule_i2c_driver(ad193x_i2c_driver);\n\nMODULE_DESCRIPTION(\"ASoC AD1936/AD1937 audio CODEC driver\");\nMODULE_AUTHOR(\"Barry Song <21cnbao@gmail.com>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

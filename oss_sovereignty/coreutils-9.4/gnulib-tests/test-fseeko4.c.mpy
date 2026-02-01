@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fseeko4.c",
+  "hash_id": "56e022b02a66bfa5861d95074fe8262accb9621f8aa87f64d4b02177fc813ab8",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fseeko4.c",
+  "human_readable_source": " \n  {\n    FILE *fp = fopen (filename, \"r\");\n    ASSERT (fp != NULL);\n    #if !defined __ANDROID__  \n    setvbuf (fp, NULL, _IONBF, 0);\n    ASSERT (ftell (fp) == 0);\n    ASSERT (fseeko (fp, 0, SEEK_END) == 0);\n    ASSERT (ftell (fp) > 0);\n    ASSERT (close (fileno (fp)) == 0);\n    errno = 0;\n    ASSERT (fseeko (fp, 0, SEEK_SET) == -1);\n    ASSERT (errno == EBADF);\n    #endif\n    fclose (fp);\n  }\n\n   \n  {\n    FILE *fp = fdopen (-1, \"w\");\n    if (fp != NULL)\n      {\n        errno = 0;\n        ASSERT (fseeko (fp, 0, SEEK_END) == -1);\n        ASSERT (errno == EBADF);\n        fclose (fp);\n      }\n  }\n  {\n    FILE *fp;\n    close (99);\n    fp = fdopen (99, \"w\");\n    if (fp != NULL)\n      {\n        errno = 0;\n        ASSERT (fseeko (fp, 0, SEEK_END) == -1);\n        ASSERT (errno == EBADF);\n        fclose (fp);\n      }\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

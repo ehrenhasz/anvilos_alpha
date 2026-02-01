@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d30615370ee70f5c0b17dc63ac3580e4df87cbb64d3d4b8f62cc83ab3444f55e",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/cs46xx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-cs46xx-y := cs46xx.o cs46xx_lib.o\nsnd-cs46xx-$(CONFIG_SND_CS46XX_NEW_DSP) += dsp_spos.o dsp_spos_scb_lib.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_CS46XX) += snd-cs46xx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vmalloc.h",
+  "hash_id": "58acd34cf6f5ffb9f61cec83dd8404318e2d2650d59a80cf8259325c6bf1b9a3",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/vmalloc.h",
+  "human_readable_source": "#ifndef _ASM_X86_VMALLOC_H\n#define _ASM_X86_VMALLOC_H\n\n#include <asm/cpufeature.h>\n#include <asm/page.h>\n#include <asm/pgtable_areas.h>\n\n#ifdef CONFIG_HAVE_ARCH_HUGE_VMAP\n\n#ifdef CONFIG_X86_64\n#define arch_vmap_pud_supported arch_vmap_pud_supported\nstatic inline bool arch_vmap_pud_supported(pgprot_t prot)\n{\n\treturn boot_cpu_has(X86_FEATURE_GBPAGES);\n}\n#endif\n\n#define arch_vmap_pmd_supported arch_vmap_pmd_supported\nstatic inline bool arch_vmap_pmd_supported(pgprot_t prot)\n{\n\treturn boot_cpu_has(X86_FEATURE_PSE);\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

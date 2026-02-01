@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "0dcffe70bb457ffdd4fe005c412860db04661a0ffac474bcfc8c55210ba6cbcc",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/Makefile.am",
+  "human_readable_source": "include $(srcdir)/%D%/include/Makefile.am\n\nlibspl_assert_la_CFLAGS = $(AM_CFLAGS) $(LIBRARY_CFLAGS)\nlibspl_la_CFLAGS        = $(libspl_assert_la_CFLAGS)\n\nnoinst_LTLIBRARIES += libspl_assert.la libspl.la\nCPPCHECKTARGETS    += libspl_assert.la libspl.la\n\nlibspl_assert_la_SOURCES = \\\n\t%D%/assert.c\n\nlibspl_la_SOURCES = \\\n\t%D%/libspl_impl.h \\\n\t%D%/atomic.c \\\n\t%D%/getexecname.c \\\n\t%D%/list.c \\\n\t%D%/mkdirp.c \\\n\t%D%/page.c \\\n\t%D%/strlcat.c \\\n\t%D%/strlcpy.c \\\n\t%D%/timestamp.c \\\n\t%D%/include/sys/list.h \\\n\t%D%/include/sys/list_impl.h\n\nif BUILD_LINUX\nlibspl_la_SOURCES += \\\n\t%D%/os/linux/getexecname.c \\\n\t%D%/os/linux/gethostid.c \\\n\t%D%/os/linux/getmntany.c \\\n\t%D%/os/linux/zone.c\nendif\n\nif BUILD_FREEBSD\nlibspl_la_SOURCES += \\\n\t%D%/os/freebsd/getexecname.c \\\n\t%D%/os/freebsd/gethostid.c \\\n\t%D%/os/freebsd/getmntany.c \\\n\t%D%/os/freebsd/mnttab.c \\\n\t%D%/os/freebsd/zone.c\nendif\n\nlibspl_la_LIBADD = \\\n\tlibspl_assert.la\n\nlibspl_la_LIBADD += $(LIBATOMIC_LIBS) $(LIBCLOCK_GETTIME)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

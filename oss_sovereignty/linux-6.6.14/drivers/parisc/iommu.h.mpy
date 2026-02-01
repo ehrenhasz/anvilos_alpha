@@ -1,0 +1,9 @@
+{
+  "module_name": "iommu.h",
+  "hash_id": "7635d46dfff649e9c10ee51916c9efa4d1f19198d3d22db12705bfed10fd0395",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/parisc/iommu.h",
+  "human_readable_source": "#ifndef _IOMMU_H\n#define _IOMMU_H 1\n\n#include <linux/pci.h>\n\nstruct parisc_device;\nstruct ioc;\n\nstatic inline struct pci_hba_data *parisc_walk_tree(struct device *dev)\n{\n\tstruct device *otherdev;\n\n\tif (likely(dev->platform_data))\n\t\treturn dev->platform_data;\n\n\t \n\tfor (otherdev = dev->parent;\n\t     otherdev;\n\t     otherdev = otherdev->parent) {\n\t\tif (otherdev->platform_data) {\n\t\t\tdev->platform_data = otherdev->platform_data;\n\t\t\tbreak;\n\t\t}\n\t}\n\n\treturn dev->platform_data;\n}\n\nstatic inline struct ioc *GET_IOC(struct device *dev)\n{\n\tstruct pci_hba_data *pdata = parisc_walk_tree(dev);\n\n\tif (!pdata)\n\t\treturn NULL;\n\treturn pdata->iommu;\n}\n\n#ifdef CONFIG_IOMMU_CCIO\nvoid *ccio_get_iommu(const struct parisc_device *dev);\nint ccio_request_resource(const struct parisc_device *dev,\n\t\tstruct resource *res);\nint ccio_allocate_resource(const struct parisc_device *dev,\n\t\tstruct resource *res, unsigned long size,\n\t\tunsigned long min, unsigned long max, unsigned long align);\n#else  \n#define ccio_get_iommu(dev) NULL\n#define ccio_request_resource(dev, res) insert_resource(&iomem_resource, res)\n#define ccio_allocate_resource(dev, res, size, min, max, align) \\\n\t\tallocate_resource(&iomem_resource, res, size, min, max, \\\n\t\t\t\talign, NULL, NULL)\n#endif  \n\nvoid *sba_get_iommu(struct parisc_device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "strnlen1.h",
+  "hash_id": "b83d0e4bba221223e47963a7ffc2dd795343a96945e8cecf0ecda291c95f9bf7",
+  "original_prompt": "Ingested from coreutils-9.4/lib/strnlen1.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stddef.h>\n\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n\n \n \nextern size_t strnlen1 (const char *string, size_t maxlen)\n  _GL_ATTRIBUTE_PURE;\n\n\n#ifdef __cplusplus\n}\n#endif\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

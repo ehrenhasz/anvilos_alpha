@@ -1,0 +1,9 @@
+{
+  "module_name": "c-strcasecmp.c",
+  "hash_id": "7db8e6d146493db11dda78580ebfa0c8d32351163c556eeb72cfdc57d23010b8",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c-strcasecmp.c",
+  "human_readable_source": " \n#include \"c-strcase.h\"\n\n#include <limits.h>\n\n#include \"c-ctype.h\"\n\nint\nc_strcasecmp (const char *s1, const char *s2)\n{\n  register const unsigned char *p1 = (const unsigned char *) s1;\n  register const unsigned char *p2 = (const unsigned char *) s2;\n  unsigned char c1, c2;\n\n  if (p1 == p2)\n    return 0;\n\n  do\n    {\n      c1 = c_tolower (*p1);\n      c2 = c_tolower (*p2);\n\n      if (c1 == '\\0')\n        break;\n\n      ++p1;\n      ++p2;\n    }\n  while (c1 == c2);\n\n  if (UCHAR_MAX <= INT_MAX)\n    return c1 - c2;\n  else\n     \n    return _GL_CMP (c1, c2);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

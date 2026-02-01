@@ -1,0 +1,9 @@
+{
+  "module_name": "quirks.h",
+  "hash_id": "249c8b5578edfaca1f0f14c87c9dd69e883752087941da928cb8e79b72f57d25",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/quirks.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_USB_QUIRKS_H\n#define __LINUX_USB_QUIRKS_H\n\n \n#define USB_QUIRK_STRING_FETCH_255\t\tBIT(0)\n\n \n#define USB_QUIRK_RESET_RESUME\t\t\tBIT(1)\n\n \n#define USB_QUIRK_NO_SET_INTF\t\t\tBIT(2)\n\n \n#define USB_QUIRK_CONFIG_INTF_STRINGS\t\tBIT(3)\n\n \n#define USB_QUIRK_RESET\t\t\t\tBIT(4)\n\n \n#define USB_QUIRK_HONOR_BNUMINTERFACES\t\tBIT(5)\n\n \n#define USB_QUIRK_DELAY_INIT\t\t\tBIT(6)\n\n \n#define USB_QUIRK_LINEAR_UFRAME_INTR_BINTERVAL\tBIT(7)\n\n \n#define USB_QUIRK_DEVICE_QUALIFIER\t\tBIT(8)\n\n \n#define USB_QUIRK_IGNORE_REMOTE_WAKEUP\t\tBIT(9)\n\n \n#define USB_QUIRK_NO_LPM\t\t\tBIT(10)\n\n \n#define USB_QUIRK_LINEAR_FRAME_INTR_BINTERVAL\tBIT(11)\n\n \n#define USB_QUIRK_DISCONNECT_SUSPEND\t\tBIT(12)\n\n \n#define USB_QUIRK_DELAY_CTRL_MSG\t\tBIT(13)\n\n \n#define USB_QUIRK_HUB_SLOW_RESET\t\tBIT(14)\n\n \n#define USB_QUIRK_ENDPOINT_IGNORE\t\tBIT(15)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

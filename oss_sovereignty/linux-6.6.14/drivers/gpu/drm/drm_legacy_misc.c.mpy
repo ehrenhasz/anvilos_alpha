@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_legacy_misc.c",
+  "hash_id": "7b5bd248cd85125f7007ab30e57088151b881dbf623f728bf0eba638eef012c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/drm_legacy_misc.c",
+  "human_readable_source": " \n\n \n\n#include <drm/drm_device.h>\n#include <drm/drm_drv.h>\n#include <drm/drm_print.h>\n\n#include \"drm_internal.h\"\n#include \"drm_legacy.h\"\n\nvoid drm_legacy_init_members(struct drm_device *dev)\n{\n\tINIT_LIST_HEAD(&dev->ctxlist);\n\tINIT_LIST_HEAD(&dev->vmalist);\n\tINIT_LIST_HEAD(&dev->maplist);\n\tspin_lock_init(&dev->buf_lock);\n\tmutex_init(&dev->ctxlist_mutex);\n}\n\nvoid drm_legacy_destroy_members(struct drm_device *dev)\n{\n\tmutex_destroy(&dev->ctxlist_mutex);\n}\n\nint drm_legacy_setup(struct drm_device * dev)\n{\n\tint ret;\n\n\tif (dev->driver->firstopen &&\n\t    drm_core_check_feature(dev, DRIVER_LEGACY)) {\n\t\tret = dev->driver->firstopen(dev);\n\t\tif (ret != 0)\n\t\t\treturn ret;\n\t}\n\n\tret = drm_legacy_dma_setup(dev);\n\tif (ret < 0)\n\t\treturn ret;\n\n\n\tDRM_DEBUG(\"\\n\");\n\treturn 0;\n}\n\nvoid drm_legacy_dev_reinit(struct drm_device *dev)\n{\n\tif (dev->irq_enabled)\n\t\tdrm_legacy_irq_uninstall(dev);\n\n\tmutex_lock(&dev->struct_mutex);\n\n\tdrm_legacy_agp_clear(dev);\n\n\tdrm_legacy_sg_cleanup(dev);\n\tdrm_legacy_vma_flush(dev);\n\tdrm_legacy_dma_takedown(dev);\n\n\tmutex_unlock(&dev->struct_mutex);\n\n\tdev->sigdata.lock = NULL;\n\n\tdev->context_flag = 0;\n\tdev->last_context = 0;\n\tdev->if_version = 0;\n\n\tDRM_DEBUG(\"lastclose completed\\n\");\n}\n\nvoid drm_master_legacy_init(struct drm_master *master)\n{\n\tspin_lock_init(&master->lock.spinlock);\n\tinit_waitqueue_head(&master->lock.lock_queue);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

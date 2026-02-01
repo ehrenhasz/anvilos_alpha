@@ -1,0 +1,9 @@
+{
+  "module_name": "sun8i_a83t_dphy.h",
+  "hash_id": "e59de9f3927009ae243340cb15bab654116c060a937fec699aa8b5f97dd9bc1c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/sunxi/sun8i-a83t-mipi-csi2/sun8i_a83t_dphy.h",
+  "human_readable_source": " \n \n\n#ifndef _SUN8I_A83T_DPHY_H_\n#define _SUN8I_A83T_DPHY_H_\n\n#include \"sun8i_a83t_mipi_csi2.h\"\n\n#define SUN8I_A83T_DPHY_CTRL_REG\t\t0x10\n#define SUN8I_A83T_DPHY_CTRL_INIT_VALUE\t\t0xb8df698e\n#define SUN8I_A83T_DPHY_CTRL_RESET_N\t\tBIT(31)\n#define SUN8I_A83T_DPHY_CTRL_SHUTDOWN_N\t\tBIT(15)\n#define SUN8I_A83T_DPHY_CTRL_DEBUG\t\tBIT(8)\n#define SUN8I_A83T_DPHY_STATUS_REG\t\t0x14\n#define SUN8I_A83T_DPHY_STATUS_CLK_STOP\t\tBIT(10)\n#define SUN8I_A83T_DPHY_STATUS_CLK_ULPS\t\tBIT(9)\n#define SUN8I_A83T_DPHY_STATUS_HSCLK\t\tBIT(8)\n#define SUN8I_A83T_DPHY_STATUS_D3_STOP\t\tBIT(7)\n#define SUN8I_A83T_DPHY_STATUS_D2_STOP\t\tBIT(6)\n#define SUN8I_A83T_DPHY_STATUS_D1_STOP\t\tBIT(5)\n#define SUN8I_A83T_DPHY_STATUS_D0_STOP\t\tBIT(4)\n#define SUN8I_A83T_DPHY_STATUS_D3_ULPS\t\tBIT(3)\n#define SUN8I_A83T_DPHY_STATUS_D2_ULPS\t\tBIT(2)\n#define SUN8I_A83T_DPHY_STATUS_D1_ULPS\t\tBIT(1)\n#define SUN8I_A83T_DPHY_STATUS_D0_ULPS\t\tBIT(0)\n\n#define SUN8I_A83T_DPHY_ANA0_REG\t\t0x30\n#define SUN8I_A83T_DPHY_ANA0_REXT_EN\t\tBIT(31)\n#define SUN8I_A83T_DPHY_ANA0_REXT\t\tBIT(30)\n#define SUN8I_A83T_DPHY_ANA0_RINT(v)\t\t(((v) << 28) & GENMASK(29, 28))\n#define SUN8I_A83T_DPHY_ANA0_SNK(v)\t\t(((v) << 20) & GENMASK(22, 20))\n\nint sun8i_a83t_dphy_register(struct sun8i_a83t_mipi_csi2_device *csi2_dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

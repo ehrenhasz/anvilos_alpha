@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_util.h",
+  "hash_id": "49c1b716dcb24b957f5ff1a24acb9cef5a0846993fe3dae4bfc13301db714f49",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_util.h",
+  "human_readable_source": " \n\n#ifndef _DRM_UTIL_H_\n#define _DRM_UTIL_H_\n\n \n\n#include <linux/interrupt.h>\n#include <linux/kgdb.h>\n#include <linux/preempt.h>\n#include <linux/smp.h>\n\n \n#if defined(CONFIG_DRM_EXPORT_FOR_TESTS)\n#define EXPORT_SYMBOL_FOR_TESTS_ONLY(x) EXPORT_SYMBOL(x)\n#else\n#define EXPORT_SYMBOL_FOR_TESTS_ONLY(x)\n#endif\n\n \n#define for_each_if(condition) if (!(condition)) {} else\n\n \nstatic inline bool drm_can_sleep(void)\n{\n\tif (in_atomic() || in_dbg_master() || irqs_disabled())\n\t\treturn false;\n\treturn true;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_config.c",
+  "hash_id": "6edce930867ba8e33f98698db4b79527bd12bd8b73fcf5424c3b55bf1ce1df3a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_config.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n\n#include \"i915_config.h\"\n#include \"i915_utils.h\"\n\nunsigned long\ni915_fence_context_timeout(const struct drm_i915_private *i915, u64 context)\n{\n\tif (CONFIG_DRM_I915_FENCE_TIMEOUT && context)\n\t\treturn msecs_to_jiffies_timeout(CONFIG_DRM_I915_FENCE_TIMEOUT);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

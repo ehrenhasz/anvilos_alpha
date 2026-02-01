@@ -1,0 +1,9 @@
+{
+  "module_name": "tsc.c",
+  "hash_id": "4f737109505467e8c83228b670b01bdb92ea15d77042f190ed8737c02c79c0f9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/x86/util/tsc.c",
+  "human_readable_source": "\n#include <linux/types.h>\n#include <math.h>\n#include <string.h>\n#include <stdlib.h>\n\n#include \"../../../util/debug.h\"\n#include \"../../../util/tsc.h\"\n#include \"cpuid.h\"\n\nu64 rdtsc(void)\n{\n\tunsigned int low, high;\n\n\tasm volatile(\"rdtsc\" : \"=a\" (low), \"=d\" (high));\n\n\treturn low | ((u64)high) << 32;\n}\n\n \nstatic double cpuinfo_tsc_freq(void)\n{\n\tdouble result = 0;\n\tFILE *cpuinfo;\n\tchar *line = NULL;\n\tsize_t len = 0;\n\n\tcpuinfo = fopen(\"/proc/cpuinfo\", \"r\");\n\tif (!cpuinfo) {\n\t\tpr_err(\"Failed to read /proc/cpuinfo for TSC frequency\");\n\t\treturn NAN;\n\t}\n\twhile (getline(&line, &len, cpuinfo) > 0) {\n\t\tif (!strncmp(line, \"model name\", 10)) {\n\t\t\tchar *pos = strstr(line + 11, \" @ \");\n\n\t\t\tif (pos && sscanf(pos, \" @ %lfGHz\", &result) == 1) {\n\t\t\t\tresult *= 1000000000;\n\t\t\t\tgoto out;\n\t\t\t}\n\t\t}\n\t}\nout:\n\tif (fpclassify(result) == FP_ZERO)\n\t\tpr_err(\"Failed to find TSC frequency in /proc/cpuinfo\");\n\n\tfree(line);\n\tfclose(cpuinfo);\n\treturn result;\n}\n\ndouble arch_get_tsc_freq(void)\n{\n\tunsigned int a, b, c, d, lvl;\n\tstatic bool cached;\n\tstatic double tsc;\n\tchar vendor[16];\n\n\tif (cached)\n\t\treturn tsc;\n\n\tcached = true;\n\tget_cpuid_0(vendor, &lvl);\n\tif (!strstr(vendor, \"Intel\"))\n\t\treturn 0;\n\n\t \n\tif (lvl < 0x15) {\n\t\ttsc = cpuinfo_tsc_freq();\n\t\treturn tsc;\n\t}\n\n\tcpuid(0x15, 0, &a, &b, &c, &d);\n\t \n\tif (!a || !b || !c) {\n\t\ttsc = cpuinfo_tsc_freq();\n\t\treturn tsc;\n\t}\n\n\ttsc = (double)c * (double)b / (double)a;\n\treturn tsc;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

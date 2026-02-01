@@ -1,0 +1,9 @@
+{
+  "module_name": "c2p.h",
+  "hash_id": "0b37c4670b0f5695815f5fe5e2b8c90b8f0a9ece834997bf2f0b1557b3871f61",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/c2p.h",
+  "human_readable_source": " \n\n#include <linux/types.h>\n\nextern void c2p_planar(void *dst, const void *src, u32 dx, u32 dy, u32 width,\n\t\t       u32 height, u32 dst_nextline, u32 dst_nextplane,\n\t\t       u32 src_nextline, u32 bpp);\n\nextern void c2p_iplan2(void *dst, const void *src, u32 dx, u32 dy, u32 width,\n\t\t       u32 height, u32 dst_nextline, u32 src_nextline,\n\t\t       u32 bpp);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

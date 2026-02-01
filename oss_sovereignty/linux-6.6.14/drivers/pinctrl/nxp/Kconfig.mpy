@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9f3ca81f5115f934bd61bd67f7affc1a7ec28876d553b356f1f50896317a8749",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/nxp/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig PINCTRL_S32CC\n\tbool\n\tdepends on ARCH_S32 && OF\n\tselect GENERIC_PINCTRL_GROUPS\n\tselect GENERIC_PINMUX_FUNCTIONS\n\tselect GENERIC_PINCONF\n\tselect REGMAP_MMIO\n\nconfig PINCTRL_S32G2\n\tdepends on ARCH_S32 && OF\n\tbool \"NXP S32G2 pinctrl driver\"\n\tselect PINCTRL_S32CC\n\thelp\n\t  Say Y here to enable the pinctrl driver for NXP S32G2 family SoCs\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

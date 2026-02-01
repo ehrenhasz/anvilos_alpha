@@ -1,0 +1,9 @@
+{
+  "module_name": "nv_tco.h",
+  "hash_id": "bea46167edfacd21684b2781dc223a105b82ab31537a88d02f5c97060b0e94de",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/watchdog/nv_tco.h",
+  "human_readable_source": " \n \n\n \n\n#define TCO_RLD(base)\t((base) + 0x00)\t \n#define TCO_TMR(base)\t((base) + 0x01)\t \n\n#define TCO_STS(base)\t((base) + 0x04)\t \n \n#  define TCO_STS_BOOT_STS\t(1 << 9)\n \n#  define TCO_STS_TCO_INT_STS\t(1 << 1)\n#  define TCO_STS_TCO2TO_STS\t(1 << 10)\n#  define TCO_STS_RESET\t\t(TCO_STS_BOOT_STS | TCO_STS_TCO2TO_STS | \\\n\t\t\t\t TCO_STS_TCO_INT_STS)\n\n#define TCO_CNT(base)\t((base) + 0x08)\t \n#  define TCO_CNT_TCOHALT\t(1 << 12)\n\n#define MCP51_SMBUS_SETUP_B 0xe8\n#  define MCP51_SMBUS_SETUP_B_TCO_REBOOT (1 << 25)\n\n \n#define MCP51_SMI_EN(base)\t((base) - 0x40 + 0x04)\n#  define MCP51_SMI_EN_TCO\t((1 << 4) | (1 << 5))\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

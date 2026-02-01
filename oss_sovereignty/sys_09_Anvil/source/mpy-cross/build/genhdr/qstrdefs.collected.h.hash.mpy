@@ -1,0 +1,9 @@
+{
+  "module_name": "qstrdefs.collected.h.hash",
+  "hash_id": "130fb3e181ab7e738e464c04b2cead29a8d75467cc96dbf89bd83f4271bdb0c7",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstrdefs.collected.h.hash",
+  "human_readable_source": "5fac44baf53b85bfd3c1116cf7993cbd",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

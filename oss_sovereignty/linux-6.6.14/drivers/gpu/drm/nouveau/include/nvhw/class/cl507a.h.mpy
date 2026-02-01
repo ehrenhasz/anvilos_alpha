@@ -1,0 +1,9 @@
+{
+  "module_name": "cl507a.h",
+  "hash_id": "2e8526548dc524f459d38e95b66316c682af3044fd6c9b57d85b8f9c66d97f93",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvhw/class/cl507a.h",
+  "human_readable_source": " \n\n\n#ifndef _cl507a_h_\n#define _cl507a_h_\n\n#define NV507A_FREE                                                             (0x00000008)\n#define NV507A_FREE_COUNT                                                       5:0\n#define NV507A_UPDATE                                                           (0x00000080)\n#define NV507A_UPDATE_INTERLOCK_WITH_CORE                                       0:0\n#define NV507A_UPDATE_INTERLOCK_WITH_CORE_DISABLE                               (0x00000000)\n#define NV507A_UPDATE_INTERLOCK_WITH_CORE_ENABLE                                (0x00000001)\n#define NV507A_SET_CURSOR_HOT_SPOT_POINT_OUT                                    (0x00000084)\n#define NV507A_SET_CURSOR_HOT_SPOT_POINT_OUT_X                                  15:0\n#define NV507A_SET_CURSOR_HOT_SPOT_POINT_OUT_Y                                  31:16\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

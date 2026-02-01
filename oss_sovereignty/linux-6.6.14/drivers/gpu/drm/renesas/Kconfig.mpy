@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "576d7b3ff846ea26eef3da89b9a9436790665bd4ea2f7f2ea8bb4a609c970b49",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/renesas/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nsource \"drivers/gpu/drm/renesas/rcar-du/Kconfig\"\nsource \"drivers/gpu/drm/renesas/shmobile/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

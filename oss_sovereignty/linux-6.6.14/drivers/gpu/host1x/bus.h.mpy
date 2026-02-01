@@ -1,0 +1,9 @@
+{
+  "module_name": "bus.h",
+  "hash_id": "a6407c824904248a804fa5e05ba68b42021ff32ed52c6dd7abf6b4c524904411",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/bus.h",
+  "human_readable_source": " \n \n\n#ifndef HOST1X_BUS_H\n#define HOST1X_BUS_H\n\nstruct bus_type;\nstruct host1x;\n\nextern struct bus_type host1x_bus_type;\n\nint host1x_register(struct host1x *host1x);\nint host1x_unregister(struct host1x *host1x);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

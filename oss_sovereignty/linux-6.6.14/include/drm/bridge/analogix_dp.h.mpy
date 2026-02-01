@@ -1,0 +1,9 @@
+{
+  "module_name": "analogix_dp.h",
+  "hash_id": "2fef77dd808ba79668458c0f99bb6fbba632ce44d30f2b1f519ff76213ce6d6d",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/bridge/analogix_dp.h",
+  "human_readable_source": " \n \n#ifndef _ANALOGIX_DP_H_\n#define _ANALOGIX_DP_H_\n\n#include <drm/drm_crtc.h>\n\nstruct analogix_dp_device;\n\nenum analogix_dp_devtype {\n\tEXYNOS_DP,\n\tRK3288_DP,\n\tRK3399_EDP,\n};\n\nstatic inline bool is_rockchip(enum analogix_dp_devtype type)\n{\n\treturn type == RK3288_DP || type == RK3399_EDP;\n}\n\nstruct analogix_dp_plat_data {\n\tenum analogix_dp_devtype dev_type;\n\tstruct drm_panel *panel;\n\tstruct drm_encoder *encoder;\n\tstruct drm_connector *connector;\n\tbool skip_connector;\n\n\tint (*power_on_start)(struct analogix_dp_plat_data *);\n\tint (*power_on_end)(struct analogix_dp_plat_data *);\n\tint (*power_off)(struct analogix_dp_plat_data *);\n\tint (*attach)(struct analogix_dp_plat_data *, struct drm_bridge *,\n\t\t      struct drm_connector *);\n\tint (*get_modes)(struct analogix_dp_plat_data *,\n\t\t\t struct drm_connector *);\n};\n\nint analogix_dp_resume(struct analogix_dp_device *dp);\nint analogix_dp_suspend(struct analogix_dp_device *dp);\n\nstruct analogix_dp_device *\nanalogix_dp_probe(struct device *dev, struct analogix_dp_plat_data *plat_data);\nint analogix_dp_bind(struct analogix_dp_device *dp, struct drm_device *drm_dev);\nvoid analogix_dp_unbind(struct analogix_dp_device *dp);\nvoid analogix_dp_remove(struct analogix_dp_device *dp);\n\nint analogix_dp_start_crc(struct drm_connector *connector);\nint analogix_dp_stop_crc(struct drm_connector *connector);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

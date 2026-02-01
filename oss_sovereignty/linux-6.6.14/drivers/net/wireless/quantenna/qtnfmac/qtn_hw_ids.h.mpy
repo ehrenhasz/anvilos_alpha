@@ -1,0 +1,9 @@
+{
+  "module_name": "qtn_hw_ids.h",
+  "hash_id": "5ce3b6ae792ab5d611b2b82f03781cdba1d9d38c854ba3cbeb5edfbd678c4538",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/quantenna/qtnfmac/qtn_hw_ids.h",
+  "human_readable_source": " \n \n\n#ifndef\t_QTN_HW_IDS_H_\n#define\t_QTN_HW_IDS_H_\n\n#include <linux/pci_ids.h>\n\n#define PCIE_VENDOR_ID_QUANTENNA\t(0x1bb5)\n\n \n\n#define\tPCIE_DEVICE_ID_QSR\t\t(0x0008)\n\n#define QTN_REG_SYS_CTRL_CSR\t\t0x14\n#define QTN_CHIP_ID_MASK\t\t0xF0\n#define QTN_CHIP_ID_TOPAZ\t\t0x40\n#define QTN_CHIP_ID_PEARL\t\t0x50\n#define QTN_CHIP_ID_PEARL_B\t\t0x60\n#define QTN_CHIP_ID_PEARL_C\t\t0x70\n\n \n\n#define QTN_PCI_PEARL_FW_NAME\t\t\"qtn/fmac_qsr10g.img\"\n#define QTN_PCI_TOPAZ_FW_NAME\t\t\"qtn/fmac_qsr1000.img\"\n#define QTN_PCI_TOPAZ_BOOTLD_NAME\t\"qtn/uboot_qsr1000.img\"\n\nstatic inline unsigned int qtnf_chip_id_get(const void __iomem *regs_base)\n{\n\tu32 board_rev = readl(regs_base + QTN_REG_SYS_CTRL_CSR);\n\n\treturn board_rev & QTN_CHIP_ID_MASK;\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

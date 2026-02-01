@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "83f589eb452e73b17f9d7f354b6ad5665085533c91efe4ed606f63498dde3a06",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hv/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_HYPERV)\t\t+= hv_vmbus.o\nobj-$(CONFIG_HYPERV_UTILS)\t+= hv_utils.o\nobj-$(CONFIG_HYPERV_BALLOON)\t+= hv_balloon.o\n\nCFLAGS_hv_trace.o = -I$(src)\nCFLAGS_hv_balloon.o = -I$(src)\n\nhv_vmbus-y := vmbus_drv.o \\\n\t\t hv.o connection.o channel.o \\\n\t\t channel_mgmt.o ring_buffer.o hv_trace.o\nhv_vmbus-$(CONFIG_HYPERV_TESTING)\t+= hv_debugfs.o\nhv_utils-y := hv_util.o hv_kvp.o hv_snapshot.o hv_fcopy.o hv_utils_transport.o\n\n# Code that must be built-in\nobj-$(subst m,y,$(CONFIG_HYPERV)) += hv_common.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

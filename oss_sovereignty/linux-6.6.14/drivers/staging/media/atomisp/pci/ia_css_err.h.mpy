@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_err.h",
+  "hash_id": "e59154494cc954965f0c5c0197175289056ce70f5ccdc209ca1d0f526fdbf1e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/ia_css_err.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_ERR_H\n#define __IA_CSS_ERR_H\n\n \n\n \nenum ia_css_fw_warning {\n\tIA_CSS_FW_WARNING_NONE,\n\tIA_CSS_FW_WARNING_ISYS_QUEUE_FULL,  \n\tIA_CSS_FW_WARNING_PSYS_QUEUE_FULL,  \n\tIA_CSS_FW_WARNING_CIRCBUF_ALL_LOCKED,  \n\tIA_CSS_FW_WARNING_EXP_ID_LOCKED,  \n\tIA_CSS_FW_WARNING_TAG_EXP_ID_FAILED,  \n\tIA_CSS_FW_WARNING_FRAME_PARAM_MISMATCH,  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

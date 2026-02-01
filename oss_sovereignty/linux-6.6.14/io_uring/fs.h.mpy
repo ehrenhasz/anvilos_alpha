@@ -1,0 +1,9 @@
+{
+  "module_name": "fs.h",
+  "hash_id": "aae8cacf61f59028526be8f46b722695b3034495b9fe131ea197fc9f813d2092",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/fs.h",
+  "human_readable_source": "\n\nint io_renameat_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_renameat(struct io_kiocb *req, unsigned int issue_flags);\nvoid io_renameat_cleanup(struct io_kiocb *req);\n\nint io_unlinkat_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_unlinkat(struct io_kiocb *req, unsigned int issue_flags);\nvoid io_unlinkat_cleanup(struct io_kiocb *req);\n\nint io_mkdirat_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_mkdirat(struct io_kiocb *req, unsigned int issue_flags);\nvoid io_mkdirat_cleanup(struct io_kiocb *req);\n\nint io_symlinkat_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_symlinkat(struct io_kiocb *req, unsigned int issue_flags);\n\nint io_linkat_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_linkat(struct io_kiocb *req, unsigned int issue_flags);\nvoid io_link_cleanup(struct io_kiocb *req);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

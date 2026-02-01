@@ -1,0 +1,9 @@
+{
+  "module_name": "stack_var_off.c",
+  "hash_id": "7b2c078b588f2d52e9d5ab1e06d4265c8c7c2a4743a959227bed6fc92ac061fe",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/stack_var_off.c",
+  "human_readable_source": "\n#include <test_progs.h>\n#include \"test_stack_var_off.skel.h\"\n\n \nvoid test_stack_var_off(void)\n{\n\tint duration = 0;\n\tstruct test_stack_var_off *skel;\n\n\tskel = test_stack_var_off__open_and_load();\n\tif (CHECK(!skel, \"skel_open\", \"failed to open skeleton\\n\"))\n\t\treturn;\n\n\t \n\tskel->bss->test_pid = getpid();\n\t \n\tskel->bss->input[0] = 2;\n\tskel->bss->input[1] = 42;   \n\n\tif (!ASSERT_OK(test_stack_var_off__attach(skel), \"skel_attach\"))\n\t\tgoto cleanup;\n\n\t \n\tusleep(1);\n\n\tif (CHECK(skel->bss->probe_res != 42, \"check_probe_res\",\n\t\t  \"wrong probe res: %d\\n\", skel->bss->probe_res))\n\t\tgoto cleanup;\n\ncleanup:\n\ttest_stack_var_off__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

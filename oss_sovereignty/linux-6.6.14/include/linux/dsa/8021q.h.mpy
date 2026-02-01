@@ -1,0 +1,9 @@
+{
+  "module_name": "8021q.h",
+  "hash_id": "40b18cd59c654f6c93f49263c4640e1860c040ba7ddb3df2450a94395833781c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dsa/8021q.h",
+  "human_readable_source": " \n\n#ifndef _NET_DSA_8021Q_H\n#define _NET_DSA_8021Q_H\n\n#include <net/dsa.h>\n#include <linux/types.h>\n\nint dsa_tag_8021q_register(struct dsa_switch *ds, __be16 proto);\n\nvoid dsa_tag_8021q_unregister(struct dsa_switch *ds);\n\nint dsa_tag_8021q_bridge_join(struct dsa_switch *ds, int port,\n\t\t\t      struct dsa_bridge bridge);\n\nvoid dsa_tag_8021q_bridge_leave(struct dsa_switch *ds, int port,\n\t\t\t\tstruct dsa_bridge bridge);\n\nu16 dsa_tag_8021q_bridge_vid(unsigned int bridge_num);\n\nu16 dsa_tag_8021q_standalone_vid(const struct dsa_port *dp);\n\nint dsa_8021q_rx_switch_id(u16 vid);\n\nint dsa_8021q_rx_source_port(u16 vid);\n\nbool vid_is_dsa_8021q(u16 vid);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

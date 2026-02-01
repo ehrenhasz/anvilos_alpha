@@ -1,0 +1,9 @@
+{
+  "module_name": "e820.h",
+  "hash_id": "79f7545abff4063cf88135fce7bceac1d2e87c80e35ce973a5fd33671e00bea0",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/e820.h",
+  "human_readable_source": " \n#ifndef _UAPI_ASM_X86_E820_H\n#define _UAPI_ASM_X86_E820_H\n#define E820MAP\t0x2d0\t\t \n#define E820MAX\t128\t\t \n\n \n\n#ifndef __KERNEL__\n#define E820_X_MAX E820MAX\n#endif\n\n#define E820NR\t0x1e8\t\t \n\n#define E820_RAM\t1\n#define E820_RESERVED\t2\n#define E820_ACPI\t3\n#define E820_NVS\t4\n#define E820_UNUSABLE\t5\n#define E820_PMEM\t7\n\n \n#define E820_PRAM\t12\n\n \n#define E820_RESERVED_KERN        128\n\n#ifndef __ASSEMBLY__\n#include <linux/types.h>\nstruct e820entry {\n\t__u64 addr;\t \n\t__u64 size;\t \n\t__u32 type;\t \n} __attribute__((packed));\n\nstruct e820map {\n\t__u32 nr_map;\n\tstruct e820entry map[E820_X_MAX];\n};\n\n#define ISA_START_ADDRESS\t0xa0000\n#define ISA_END_ADDRESS\t\t0x100000\n\n#define BIOS_BEGIN\t\t0x000a0000\n#define BIOS_END\t\t0x00100000\n\n#define BIOS_ROM_BASE\t\t0xffe00000\n#define BIOS_ROM_END\t\t0xffffffff\n\n#endif  \n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

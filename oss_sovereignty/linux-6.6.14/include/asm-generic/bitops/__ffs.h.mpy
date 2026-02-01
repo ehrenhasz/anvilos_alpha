@@ -1,0 +1,9 @@
+{
+  "module_name": "__ffs.h",
+  "hash_id": "73861cdb42831ecaff8dfdab4f730351e4cc833dd201a76faf6c821e942c18ae",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/bitops/__ffs.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_BITOPS___FFS_H_\n#define _ASM_GENERIC_BITOPS___FFS_H_\n\n#include <asm/types.h>\n\n \nstatic __always_inline unsigned long __ffs(unsigned long word)\n{\n\tint num = 0;\n\n#if BITS_PER_LONG == 64\n\tif ((word & 0xffffffff) == 0) {\n\t\tnum += 32;\n\t\tword >>= 32;\n\t}\n#endif\n\tif ((word & 0xffff) == 0) {\n\t\tnum += 16;\n\t\tword >>= 16;\n\t}\n\tif ((word & 0xff) == 0) {\n\t\tnum += 8;\n\t\tword >>= 8;\n\t}\n\tif ((word & 0xf) == 0) {\n\t\tnum += 4;\n\t\tword >>= 4;\n\t}\n\tif ((word & 0x3) == 0) {\n\t\tnum += 2;\n\t\tword >>= 2;\n\t}\n\tif ((word & 0x1) == 0)\n\t\tnum += 1;\n\treturn num;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vprintf.c",
+  "hash_id": "3c00c86e1532111c1e7707dcc3754b10d8706a900cdb2e0d2a9e5fcf6a126243",
+  "original_prompt": "Ingested from coreutils-9.4/lib/vprintf.c",
+  "human_readable_source": " \n#include <stdio.h>\n\n#include <stdarg.h>\n\n \nint\nvprintf (const char *format, va_list args)\n{\n  return vfprintf (stdout, format, args);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

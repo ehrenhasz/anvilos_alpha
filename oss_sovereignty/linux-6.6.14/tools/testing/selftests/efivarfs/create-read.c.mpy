@@ -1,0 +1,9 @@
+{
+  "module_name": "create-read.c",
+  "hash_id": "a9955e155943bb57d4ba41b61f3ca9ce0c22e362a23bcac36f83d02ddeb71cae",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/efivarfs/create-read.c",
+  "human_readable_source": "\n#include <stdio.h>\n#include <stdint.h>\n#include <stdlib.h>\n#include <unistd.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <fcntl.h>\n#include <errno.h>\n#include <string.h>\n\nint main(int argc, char **argv)\n{\n\tconst char *path;\n\tchar buf[4];\n\tint fd, rc;\n\n\tif (argc < 2) {\n\t\tfprintf(stderr, \"usage: %s <path>\\n\", argv[0]);\n\t\treturn EXIT_FAILURE;\n\t}\n\n\tpath = argv[1];\n\n\t \n\tfd = open(path, O_RDWR | O_CREAT, 0600);\n\tif (fd < 0) {\n\t\tperror(\"open(O_WRONLY)\");\n\t\treturn EXIT_FAILURE;\n\t}\n\n\trc = read(fd, buf, sizeof(buf));\n\tif (rc != 0) {\n\t\tfprintf(stderr, \"Reading a new var should return EOF\\n\");\n\t\tclose(fd);\n\t\treturn EXIT_FAILURE;\n\t}\n\n\tclose(fd);\n\treturn EXIT_SUCCESS;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

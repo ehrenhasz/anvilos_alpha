@@ -1,0 +1,9 @@
+{
+  "module_name": "svm_nested_shutdown_test.c",
+  "hash_id": "e4915b0ff529bbe17a33d87d865c6a026dde7ffdcb8d4f362010a5191a5dd3a3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/x86_64/svm_nested_shutdown_test.c",
+  "human_readable_source": "\n \n\n#include \"test_util.h\"\n#include \"kvm_util.h\"\n#include \"processor.h\"\n#include \"svm_util.h\"\n\nstatic void l2_guest_code(struct svm_test_data *svm)\n{\n\t__asm__ __volatile__(\"ud2\");\n}\n\nstatic void l1_guest_code(struct svm_test_data *svm, struct idt_entry *idt)\n{\n\t#define L2_GUEST_STACK_SIZE 64\n\tunsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];\n\tstruct vmcb *vmcb = svm->vmcb;\n\n\tgeneric_svm_setup(svm, l2_guest_code,\n\t\t\t  &l2_guest_stack[L2_GUEST_STACK_SIZE]);\n\n\tvmcb->control.intercept &= ~(BIT(INTERCEPT_SHUTDOWN));\n\n\tidt[6].p   = 0; \n\tidt[11].p  = 0; \n\t\t\t\n\tidt[8].p   = 0; \n\n\trun_guest(vmcb, svm->vmcb_gpa);\n\n\t \n\tGUEST_ASSERT(0);\n}\n\nint main(int argc, char *argv[])\n{\n\tstruct kvm_vcpu *vcpu;\n\tvm_vaddr_t svm_gva;\n\tstruct kvm_vm *vm;\n\n\tTEST_REQUIRE(kvm_cpu_has(X86_FEATURE_SVM));\n\n\tvm = vm_create_with_one_vcpu(&vcpu, l1_guest_code);\n\tvm_init_descriptor_tables(vm);\n\tvcpu_init_descriptor_tables(vcpu);\n\n\tvcpu_alloc_svm(vm, &svm_gva);\n\n\tvcpu_args_set(vcpu, 2, svm_gva, vm->idt);\n\n\tvcpu_run(vcpu);\n\tTEST_ASSERT_KVM_EXIT_REASON(vcpu, KVM_EXIT_SHUTDOWN);\n\n\tkvm_vm_free(vm);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

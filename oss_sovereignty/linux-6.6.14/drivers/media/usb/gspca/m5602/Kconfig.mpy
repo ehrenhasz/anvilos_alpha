@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b1582f5ef9662c486a495602332aa45f6a3cc8dbeaa31783ed590a18065dfba3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/gspca/m5602/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig USB_M5602\n\ttristate \"ALi USB m5602 Camera Driver\"\n\tdepends on VIDEO_DEV && USB_GSPCA\n\thelp\n\t  Say Y here if you want support for cameras based on the\n\t  ALi m5602 connected to various image sensors.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called gspca_m5602.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "lualib.h",
+  "hash_id": "00a57469716c1763177b6ce9f4699f5e9a14840e81d77f4f2fdc3d2835f5c822",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/lua/lualib.h",
+  "human_readable_source": " \n\n\n#ifndef lualib_h\n#define lualib_h\n\n#include <sys/lua/lua.h>\n\n\n\nLUAMOD_API int (luaopen_base) (lua_State *L);\n\n#define LUA_COLIBNAME\t\"coroutine\"\nLUAMOD_API int (luaopen_coroutine) (lua_State *L);\n\n#define LUA_TABLIBNAME\t\"table\"\nLUAMOD_API int (luaopen_table) (lua_State *L);\n\n#define LUA_IOLIBNAME\t\"io\"\nLUAMOD_API int (luaopen_io) (lua_State *L);\n\n#define LUA_OSLIBNAME\t\"os\"\nLUAMOD_API int (luaopen_os) (lua_State *L);\n\n#define LUA_STRLIBNAME\t\"string\"\nLUAMOD_API int (luaopen_string) (lua_State *L);\n\n#define LUA_BITLIBNAME\t\"bit32\"\nLUAMOD_API int (luaopen_bit32) (lua_State *L);\n\n#define LUA_MATHLIBNAME\t\"math\"\nLUAMOD_API int (luaopen_math) (lua_State *L);\n\n#define LUA_DBLIBNAME\t\"debug\"\nLUAMOD_API int (luaopen_debug) (lua_State *L);\n\n#define LUA_LOADLIBNAME\t\"package\"\nLUAMOD_API int (luaopen_package) (lua_State *L);\n\n\n \nLUALIB_API void (luaL_openlibs) (lua_State *L);\n\n\n\n#if !defined(lua_assert)\n#define lua_assert(x)\t((void)0)\n#endif\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

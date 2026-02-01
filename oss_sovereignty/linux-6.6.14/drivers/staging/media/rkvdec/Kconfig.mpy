@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "55f079ea974d2f99bca4b8563c9af8f6a6c630f690c799b1e5e9ccc3cd6dbcf2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/rkvdec/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig VIDEO_ROCKCHIP_VDEC\n\ttristate \"Rockchip Video Decoder driver\"\n\tdepends on ARCH_ROCKCHIP || COMPILE_TEST\n\tdepends on VIDEO_DEV\n\tselect MEDIA_CONTROLLER\n\tselect MEDIA_CONTROLLER_REQUEST_API\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect VIDEOBUF2_VMALLOC\n\tselect V4L2_MEM2MEM_DEV\n\tselect V4L2_H264\n\tselect V4L2_VP9\n\thelp\n\t  Support for the Rockchip Video Decoder IP present on Rockchip SoCs,\n\t  which accelerates video decoding.\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called rockchip-vdec.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

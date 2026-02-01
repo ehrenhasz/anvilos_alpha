@@ -1,0 +1,9 @@
+{
+  "module_name": "net-cw1200.h",
+  "hash_id": "f2ab14054bc0959e4895fc1c1389f1c27b30ce6835652019ff3726aa5448f2e1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/net-cw1200.h",
+  "human_readable_source": " \n \n\n#ifndef CW1200_PLAT_H_INCLUDED\n#define CW1200_PLAT_H_INCLUDED\n\nstruct cw1200_platform_data_spi {\n\tu8 spi_bits_per_word;            \n\tu16 ref_clk;                     \n\n\t \n\tbool have_5ghz;\n\tint reset;                      \n\tint powerup;                    \n\tint (*power_ctrl)(const struct cw1200_platform_data_spi *pdata,\n\t\t\t  bool enable);  \n\tint (*clk_ctrl)(const struct cw1200_platform_data_spi *pdata,\n\t\t\tbool enable);  \n\tconst u8 *macaddr;   \n\tconst char *sdd_file;   \n};\n\nstruct cw1200_platform_data_sdio {\n\tu16 ref_clk;                     \n\n\t \n\tbool have_5ghz;\n\tbool no_nptb;        \n\tint reset;           \n\tint powerup;         \n\tint irq;             \n\tint (*power_ctrl)(const struct cw1200_platform_data_sdio *pdata,\n\t\t\t  bool enable);  \n\tint (*clk_ctrl)(const struct cw1200_platform_data_sdio *pdata,\n\t\t\tbool enable);  \n\tconst u8 *macaddr;   \n\tconst char *sdd_file;   \n};\n\n\n \n\n \n\nvoid __init cw1200_sdio_set_platform_data(struct cw1200_platform_data_sdio *pdata);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

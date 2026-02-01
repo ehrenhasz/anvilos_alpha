@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio-charger.h",
+  "hash_id": "7fcbe6f3f58511a27fe0716c048c73a5d57700445f8d85cbee624cefebb86964",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/power/gpio-charger.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_POWER_GPIO_CHARGER_H__\n#define __LINUX_POWER_GPIO_CHARGER_H__\n\n#include <linux/power_supply.h>\n#include <linux/types.h>\n\n \nstruct gpio_charger_platform_data {\n\tconst char *name;\n\tenum power_supply_type type;\n\tchar **supplied_to;\n\tsize_t num_supplicants;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

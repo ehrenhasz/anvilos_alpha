@@ -1,0 +1,9 @@
+{
+  "module_name": "bman_priv.h",
+  "hash_id": "125ba1ea10ce7a31c1e75bdf231ab722fcc50f5a4be5d41fd8794239c1142a02",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/fsl/qbman/bman_priv.h",
+  "human_readable_source": " \n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include \"dpaa_sys.h\"\n\n#include <soc/fsl/bman.h>\n\n \n#define BM_PIRQ_RCRI\t0x00000002\t \n\n \n#define BMAN_REV10 0x0100\n#define BMAN_REV20 0x0200\n#define BMAN_REV21 0x0201\nextern u16 bman_ip_rev;\t \n\nextern struct gen_pool *bm_bpalloc;\n\nstruct bm_portal_config {\n\t \n\tvoid  *addr_virt_ce;\n\tvoid __iomem *addr_virt_ci;\n\t \n\tstruct list_head list;\n\tstruct device *dev;\n\t \n\t \n\tint cpu;\n\t \n\tint irq;\n};\n\nstruct bman_portal *bman_create_affine_portal(\n\t\t\tconst struct bm_portal_config *config);\n \nint bman_p_irqsource_add(struct bman_portal *p, u32 bits);\n\n \n#define BM_PIRQ_VISIBLE\tBM_PIRQ_RCRI\n\nconst struct bm_portal_config *\nbman_get_bm_portal_config(const struct bman_portal *portal);\n\nint bman_requires_cleanup(void);\nvoid bman_done_cleanup(void);\n\nint bm_shutdown_pool(u32 bpid);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

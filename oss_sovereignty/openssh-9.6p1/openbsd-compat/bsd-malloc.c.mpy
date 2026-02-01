@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-malloc.c",
+  "hash_id": "582d48d1fd586e410184c836586657412acb00b1f686bc5e33d13c8460bcb4ea",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-malloc.c",
+  "human_readable_source": " \n\n#include \"config.h\"\n#undef malloc\n#undef calloc\n#undef realloc\n\n#include <sys/types.h>\n#include <stdlib.h>\n\n#if defined(HAVE_MALLOC) && HAVE_MALLOC == 0\nvoid *\nrpl_malloc(size_t size)\n{\n\tif (size == 0)\n\t\tsize = 1;\n\treturn malloc(size);\n}\n#endif\n\n#if defined(HAVE_CALLOC) && HAVE_CALLOC == 0\nvoid *\nrpl_calloc(size_t nmemb, size_t size)\n{\n\tif (nmemb == 0)\n\t\tnmemb = 1;\n\tif (size == 0)\n\t\tsize = 1;\n\treturn calloc(nmemb, size);\n}\n#endif\n\n#if defined (HAVE_REALLOC) && HAVE_REALLOC == 0\nvoid *\nrpl_realloc(void *ptr, size_t size)\n{\n\tif (size == 0)\n\t\tsize = 1;\n\tif (ptr == 0)\n\t\treturn malloc(size);\n\treturn realloc(ptr, size);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

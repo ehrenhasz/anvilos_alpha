@@ -1,0 +1,9 @@
+{
+  "module_name": "test-binary-io.c",
+  "hash_id": "a42f0f180accd4d501ccb22df56feb568e61b78974cf9753a7027b2a137480f7",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-binary-io.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"binary-io.h\"\n\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <fcntl.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n\n#include \"macros.h\"\n\nint\nmain (int argc, char *argv[])\n{\n   \n  {\n    int fd =\n      open (\"t-bin-out0.tmp\", O_CREAT | O_TRUNC | O_RDWR | O_BINARY, 0600);\n    if (write (fd, \"Hello\\n\", 6) < 0)\n      exit (1);\n    close (fd);\n  }\n  {\n    struct stat statbuf;\n    if (stat (\"t-bin-out0.tmp\", &statbuf) < 0)\n      exit (1);\n    ASSERT (statbuf.st_size == 6);\n  }\n\n  switch (argv[1][0])\n    {\n    case '1':\n       \n      set_binary_mode (1, O_BINARY);\n      fputs (\"Hello\\n\", stdout);\n      break;\n\n    default:\n      break;\n    }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "irqflags.S",
+  "hash_id": "fe2247e1df25937d3fcb94292dfd65c2dee9be3cc8ec9e065b40379f55338686",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/irqflags.S",
+  "human_readable_source": " \n\n#include <asm/asm.h>\n#include <asm/export.h>\n#include <linux/linkage.h>\n\n \n.pushsection .noinstr.text, \"ax\"\nSYM_FUNC_START(native_save_fl)\n\tpushf\n\tpop %_ASM_AX\n\tRET\nSYM_FUNC_END(native_save_fl)\n.popsection\nEXPORT_SYMBOL(native_save_fl)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

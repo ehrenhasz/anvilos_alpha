@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a48e2f4d1ddc573d5704ebc0792baea62f641544b1686056462f59743a91e1c3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cisco/enic/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Cisco device configuration\n#\n\nconfig ENIC\n\ttristate \"Cisco VIC Ethernet NIC Support\"\n\tdepends on PCI\n\thelp\n\t  This enables the support for the Cisco VIC Ethernet card.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

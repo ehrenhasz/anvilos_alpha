@@ -1,0 +1,9 @@
+{
+  "module_name": "sendmsg6_prog.c",
+  "hash_id": "0fc9eef3931e657d9fa6b77c9eafa0a28cc74c9d34310671609a8d2bbe21081c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/sendmsg6_prog.c",
+  "human_readable_source": "\n\n\n#include <linux/stddef.h>\n#include <linux/bpf.h>\n#include <sys/socket.h>\n\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n\n#include <bpf_sockopt_helpers.h>\n\n#define SRC_REWRITE_IP6_0\t0\n#define SRC_REWRITE_IP6_1\t0\n#define SRC_REWRITE_IP6_2\t0\n#define SRC_REWRITE_IP6_3\t6\n\n#define DST_REWRITE_IP6_0\t0\n#define DST_REWRITE_IP6_1\t0\n#define DST_REWRITE_IP6_2\t0\n#define DST_REWRITE_IP6_3\t1\n\n#define DST_REWRITE_PORT6\t6666\n\nSEC(\"cgroup/sendmsg6\")\nint sendmsg_v6_prog(struct bpf_sock_addr *ctx)\n{\n\tif (ctx->type != SOCK_DGRAM)\n\t\treturn 0;\n\n\tif (!get_set_sk_priority(ctx))\n\t\treturn 0;\n\n\t \n\tif (ctx->msg_src_ip6[3] == bpf_htonl(1) ||\n\t    ctx->msg_src_ip6[3] == bpf_htonl(0)) {\n\t\tctx->msg_src_ip6[0] = bpf_htonl(SRC_REWRITE_IP6_0);\n\t\tctx->msg_src_ip6[1] = bpf_htonl(SRC_REWRITE_IP6_1);\n\t\tctx->msg_src_ip6[2] = bpf_htonl(SRC_REWRITE_IP6_2);\n\t\tctx->msg_src_ip6[3] = bpf_htonl(SRC_REWRITE_IP6_3);\n\t} else {\n\t\t \n\t\treturn 0;\n\t}\n\n\t \n\tif (ctx->user_ip6[0] == bpf_htonl(0xFACEB00C)) {\n\t\tctx->user_ip6[0] = bpf_htonl(DST_REWRITE_IP6_0);\n\t\tctx->user_ip6[1] = bpf_htonl(DST_REWRITE_IP6_1);\n\t\tctx->user_ip6[2] = bpf_htonl(DST_REWRITE_IP6_2);\n\t\tctx->user_ip6[3] = bpf_htonl(DST_REWRITE_IP6_3);\n\n\t\tctx->user_port = bpf_htons(DST_REWRITE_PORT6);\n\t} else {\n\t\t \n\t\treturn 0;\n\t}\n\n\treturn 1;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intr_regs_no_crash_wo_pmu_test.c",
+  "hash_id": "ecb2275057277afa7b8f726cacd1ad0f41cec40cd95c995a98ad77396ac12179",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/sampling_tests/intr_regs_no_crash_wo_pmu_test.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <stdlib.h>\n\n#include \"../event.h\"\n#include \"misc.h\"\n#include \"utils.h\"\n\n \nstatic int intr_regs_no_crash_wo_pmu_test(void)\n{\n\tstruct event event;\n\n\t \n\tevent_init_opts(&event, 0, PERF_TYPE_SOFTWARE, \"cycles\");\n\n\tevent.attr.sample_period = 1000;\n\tevent.attr.sample_type = PERF_SAMPLE_REGS_INTR;\n\tevent.attr.disabled = 1;\n\n\t \n\tevent_open(&event);\n\n\tevent_close(&event);\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(intr_regs_no_crash_wo_pmu_test, \"intr_regs_no_crash_wo_pmu_test\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

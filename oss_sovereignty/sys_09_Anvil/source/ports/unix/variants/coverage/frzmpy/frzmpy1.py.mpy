@@ -1,0 +1,9 @@
+{
+  "module_name": "frzmpy1.py",
+  "hash_id": "47143234a9f4b888272d401135c713476c5f8e77d6bdcd6087b2c1e70a6e6d92",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/coverage/frzmpy/frzmpy1.py",
+  "human_readable_source": "print(\"frzmpy1\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

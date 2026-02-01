@@ -1,0 +1,9 @@
+{
+  "module_name": "virtual_stream_encoder.h",
+  "hash_id": "172e0eada6605314b77f69febc7eb456251b09607fd7e958ffcee6066b384e3b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/virtual/virtual_stream_encoder.h",
+  "human_readable_source": " \n\n#ifndef __DC_VIRTUAL_STREAM_ENCODER_H__\n#define __DC_VIRTUAL_STREAM_ENCODER_H__\n\n#include \"stream_encoder.h\"\n\nstruct stream_encoder *virtual_stream_encoder_create(\n\tstruct dc_context *ctx, struct dc_bios *bp);\n\nbool virtual_stream_encoder_construct(\n\tstruct stream_encoder *enc,\n\tstruct dc_context *ctx,\n\tstruct dc_bios *bp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

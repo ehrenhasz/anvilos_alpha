@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "baf0dc49887253fac9af32d49fccb9d76015b3b611fd1045725a0b69063cf68b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/cec/platform/stm32/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CEC_STM32) += stm32-cec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

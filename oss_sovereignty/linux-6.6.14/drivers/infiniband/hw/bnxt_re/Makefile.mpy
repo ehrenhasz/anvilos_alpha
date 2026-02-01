@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9d91fd02599e561feaac1c348e65ae520a77ce03d8ff33980492115e15d44571",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/bnxt_re/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nccflags-y := -I $(srctree)/drivers/net/ethernet/broadcom/bnxt\nobj-$(CONFIG_INFINIBAND_BNXT_RE) += bnxt_re.o\nbnxt_re-y := main.o ib_verbs.o \\\n\t     qplib_res.o qplib_rcfw.o\t\\\n\t     qplib_sp.o qplib_fp.o  hw_counters.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

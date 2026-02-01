@@ -1,0 +1,9 @@
+{
+  "module_name": "define_key.c",
+  "hash_id": "0407dd8fb0af8973ff9cd8673e178ab8bd7fe8bcb97286f7a09a77227b0e7c0e",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/define_key.c",
+  "human_readable_source": " \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: define_key.c,v 1.22 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(define_key) (NCURSES_SP_DCLx const char *str, int keycode)\n{\n    int code = ERR;\n\n    T((T_CALLED(\"define_key(%p, %s,%d)\"), (void *) SP_PARM, _nc_visbuf(str), keycode));\n    if (SP_PARM == 0 || !HasTInfoTerminal(SP_PARM)) {\n\tcode = ERR;\n    } else if (keycode > 0) {\n\tunsigned ukey = (unsigned) keycode;\n\n#ifdef USE_TERM_DRIVER\n#define CallHasKey(keycode) CallDriver_1(SP_PARM, td_kyExist, keycode)\n#else\n#define CallHasKey(keycode) NCURSES_SP_NAME(has_key)(NCURSES_SP_ARGx keycode)\n#endif\n\n\tif (str != 0) {\n\t    NCURSES_SP_NAME(define_key) (NCURSES_SP_ARGx str, 0);\n\t} else if (CallHasKey(keycode)) {\n\t    while (_nc_remove_key(&(SP_PARM->_keytry), ukey))\n\t\tcode = OK;\n\t}\n\tif (str != 0) {\n\t    if (NCURSES_SP_NAME(key_defined) (NCURSES_SP_ARGx str) == 0) {\n\t\tif (_nc_add_to_try(&(SP_PARM->_keytry), str, ukey) == OK) {\n\t\t    code = OK;\n\t\t} else {\n\t\t    code = ERR;\n\t\t}\n\t    } else {\n\t\tcode = ERR;\n\t    }\n\t}\n    } else {\n\twhile (_nc_remove_string(&(SP_PARM->_keytry), str))\n\t    code = OK;\n    }\n    returnCode(code);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\ndefine_key(const char *str, int keycode)\n{\n    return NCURSES_SP_NAME(define_key) (CURRENT_SCREEN, str, keycode);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

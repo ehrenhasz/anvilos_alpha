@@ -1,0 +1,9 @@
+{
+  "module_name": "stty.x",
+  "hash_id": "661980e52212bcb4b1eb4fdd077453ae8ce74d67f125dd615c97496d3fc20596",
+  "original_prompt": "Ingested from coreutils-9.4/man/stty.x",
+  "human_readable_source": "[NAME]\nstty \\- change and print terminal line settings\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

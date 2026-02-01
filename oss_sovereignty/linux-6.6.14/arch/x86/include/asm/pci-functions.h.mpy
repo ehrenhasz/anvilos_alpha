@@ -1,0 +1,9 @@
+{
+  "module_name": "pci-functions.h",
+  "hash_id": "818b5bf329cc26b049bcf11537e9c2c3eaa291f682e65636a4212b51a940cc55",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/pci-functions.h",
+  "human_readable_source": " \n \n\n#define PCIBIOS_PCI_FUNCTION_ID \t0xb1XX\n#define PCIBIOS_PCI_BIOS_PRESENT \t0xb101\n#define PCIBIOS_FIND_PCI_DEVICE\t\t0xb102\n#define PCIBIOS_FIND_PCI_CLASS_CODE\t0xb103\n#define PCIBIOS_GENERATE_SPECIAL_CYCLE\t0xb106\n#define PCIBIOS_READ_CONFIG_BYTE\t0xb108\n#define PCIBIOS_READ_CONFIG_WORD\t0xb109\n#define PCIBIOS_READ_CONFIG_DWORD\t0xb10a\n#define PCIBIOS_WRITE_CONFIG_BYTE\t0xb10b\n#define PCIBIOS_WRITE_CONFIG_WORD\t0xb10c\n#define PCIBIOS_WRITE_CONFIG_DWORD\t0xb10d\n#define PCIBIOS_GET_ROUTING_OPTIONS\t0xb10e\n#define PCIBIOS_SET_PCI_HW_INT\t\t0xb10f\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

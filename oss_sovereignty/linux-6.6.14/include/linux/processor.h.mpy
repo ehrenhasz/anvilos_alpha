@@ -1,0 +1,9 @@
+{
+  "module_name": "processor.h",
+  "hash_id": "8c1356bb35ab556031e192533aca8cc65a1d42a28e1f7e73b3708a58e57c0782",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/processor.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_PROCESSOR_H\n#define _LINUX_PROCESSOR_H\n\n#include <asm/processor.h>\n\n \n#ifndef spin_begin\n#define spin_begin()\n#endif\n\n#ifndef spin_cpu_relax\n#define spin_cpu_relax() cpu_relax()\n#endif\n\n#ifndef spin_end\n#define spin_end()\n#endif\n\n \n#ifndef spin_until_cond\n#define spin_until_cond(cond)\t\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\\\n\tif (unlikely(!(cond))) {\t\t\t\t\\\n\t\tspin_begin();\t\t\t\t\t\\\n\t\tdo {\t\t\t\t\t\t\\\n\t\t\tspin_cpu_relax();\t\t\t\\\n\t\t} while (!(cond));\t\t\t\t\\\n\t\tspin_end();\t\t\t\t\t\\\n\t}\t\t\t\t\t\t\t\\\n} while (0)\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

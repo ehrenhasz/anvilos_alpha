@@ -1,0 +1,9 @@
+{
+  "module_name": "modechange.h",
+  "hash_id": "ca215297c2f7ba2086f4577933740176d54245a215029de2474b99137fb5d700",
+  "original_prompt": "Ingested from coreutils-9.4/lib/modechange.h",
+  "human_readable_source": " \n# if !_GL_CONFIG_H_INCLUDED\n#  error \"Please include config.h first.\"\n# endif\n\n# include <stdlib.h>\n# include <sys/types.h>\n\nstruct mode_change *mode_compile (const char *)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\nstruct mode_change *mode_create_from_ref (const char *)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\nmode_t mode_adjust (mode_t, bool, mode_t, struct mode_change const *,\n                    mode_t *)\n  _GL_ATTRIBUTE_PURE;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "qos_lib.sh",
+  "hash_id": "929816ab1d0d12122d26dd086de37bc0ce8ea14147ac9a26a8b7e6d3fded0bce",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/qos_lib.sh",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\ncheck_rate()\n{\n\tlocal rate=$1; shift\n\tlocal min=$1; shift\n\tlocal what=$1; shift\n\n\tif ((rate > min)); then\n\t\treturn 0\n\tfi\n\n\techo \"$what $(humanize $ir) < $(humanize $min)\" > /dev/stderr\n\treturn 1\n}\n\nmeasure_rate()\n{\n\tlocal sw_in=$1; shift   # Where the traffic ingresses the switch\n\tlocal host_in=$1; shift # Where it ingresses another host\n\tlocal counter=$1; shift # Counter to use for measurement\n\tlocal what=$1; shift\n\n\tlocal interval=10\n\tlocal i\n\tlocal ret=0\n\n\t# Dips in performance might cause momentary ingress rate to drop below\n\t# 1Gbps. That wouldn't saturate egress and MC would thus get through,\n\t# seemingly winning bandwidth on account of UC. Demand at least 2Gbps\n\t# average ingress rate to somewhat mitigate this.\n\tlocal min_ingress=2147483648\n\n\tfor i in {5..0}; do\n\t\tlocal t0=$(ethtool_stats_get $host_in $counter)\n\t\tlocal u0=$(ethtool_stats_get $sw_in $counter)\n\t\tsleep $interval\n\t\tlocal t1=$(ethtool_stats_get $host_in $counter)\n\t\tlocal u1=$(ethtool_stats_get $sw_in $counter)\n\n\t\tlocal ir=$(rate $u0 $u1 $interval)\n\t\tlocal er=$(rate $t0 $t1 $interval)\n\n\t\tif check_rate $ir $min_ingress \"$what ingress rate\"; then\n\t\t\tbreak\n\t\tfi\n\n\t\t# Fail the test if we can't get the throughput.\n\t\tif ((i == 0)); then\n\t\t\tret=1\n\t\tfi\n\tdone\n\n\techo $ir $er\n\treturn $ret\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

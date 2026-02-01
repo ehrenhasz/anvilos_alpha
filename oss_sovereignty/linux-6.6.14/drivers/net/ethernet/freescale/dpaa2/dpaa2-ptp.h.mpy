@@ -1,0 +1,9 @@
+{
+  "module_name": "dpaa2-ptp.h",
+  "hash_id": "7a9699944191862ef7d7508f77533631d6c481f37ecc50139009e72758a72a4a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.h",
+  "human_readable_source": " \n \n\n#ifndef __RTC_H\n#define __RTC_H\n\n#include <linux/fsl/ptp_qoriq.h>\n\n#include \"dprtc.h\"\n#include \"dprtc-cmd.h\"\n\nextern int dpaa2_phc_index;\nextern struct ptp_qoriq *dpaa2_ptp;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

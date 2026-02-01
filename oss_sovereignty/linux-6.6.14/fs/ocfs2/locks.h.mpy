@@ -1,0 +1,9 @@
+{
+  "module_name": "locks.h",
+  "hash_id": "4bbcdbb21e931593ab644bbf67c48410c05a1f7f9aa8704bfe32af5b3cacd7a3",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/locks.h",
+  "human_readable_source": " \n \n\n#ifndef OCFS2_LOCKS_H\n#define OCFS2_LOCKS_H\n\nint ocfs2_flock(struct file *file, int cmd, struct file_lock *fl);\nint ocfs2_lock(struct file *file, int cmd, struct file_lock *fl);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

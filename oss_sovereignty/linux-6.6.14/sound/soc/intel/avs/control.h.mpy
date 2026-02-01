@@ -1,0 +1,9 @@
+{
+  "module_name": "control.h",
+  "hash_id": "45637fabcd62b8df0cabb74f658322d0a4d9643264e80e952f69d2c60a34e674",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/avs/control.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_SOC_INTEL_AVS_CTRL_H\n#define __SOUND_SOC_INTEL_AVS_CTRL_H\n\n#include <sound/control.h>\n\nstruct avs_control_data {\n\tu32 id;\n\n\tlong volume;\n};\n\nint avs_control_volume_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol);\nint avs_control_volume_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

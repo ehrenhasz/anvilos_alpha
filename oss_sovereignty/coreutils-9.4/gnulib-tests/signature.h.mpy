@@ -1,0 +1,9 @@
+{
+  "module_name": "signature.h",
+  "hash_id": "3aeb0feabb0d6ac36686c0c662653a029f2b346e74be0263dbf3b861296f25ea",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/signature.h",
+  "human_readable_source": " \n# define SIGNATURE_CHECK(fn, ret, args) \\\n  SIGNATURE_CHECK1 (fn, ret, args, __LINE__)\n\n \n# define SIGNATURE_CHECK1(fn, ret, args, id) \\\n  SIGNATURE_CHECK2 (fn, ret, args, id)  \n# define SIGNATURE_CHECK2(fn, ret, args, id) \\\n  _GL_UNUSED static ret (*signature_check ## id) args = fn\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

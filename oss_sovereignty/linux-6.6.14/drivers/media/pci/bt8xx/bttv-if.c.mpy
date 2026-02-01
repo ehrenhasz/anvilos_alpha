@@ -1,0 +1,9 @@
+{
+  "module_name": "bttv-if.c",
+  "hash_id": "98e0afc4ac0c98b4049ab831f62c32062458e045345ab4dd344b99023c7fa8c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/bt8xx/bttv-if.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/delay.h>\n#include <asm/io.h>\n\n#include \"bttvp.h\"\n\nEXPORT_SYMBOL(bttv_get_pcidev);\nEXPORT_SYMBOL(bttv_gpio_enable);\nEXPORT_SYMBOL(bttv_read_gpio);\nEXPORT_SYMBOL(bttv_write_gpio);\n\n \n \n \n \n\nstruct pci_dev* bttv_get_pcidev(unsigned int card)\n{\n\tif (card >= bttv_num)\n\t\treturn NULL;\n\tif (!bttvs[card])\n\t\treturn NULL;\n\n\treturn bttvs[card]->c.pci;\n}\n\n\nint bttv_gpio_enable(unsigned int card, unsigned long mask, unsigned long data)\n{\n\tstruct bttv *btv;\n\n\tif (card >= bttv_num) {\n\t\treturn -EINVAL;\n\t}\n\n\tbtv = bttvs[card];\n\tif (!btv)\n\t\treturn -ENODEV;\n\n\tgpio_inout(mask,data);\n\tif (bttv_gpio)\n\t\tbttv_gpio_tracking(btv,\"extern enable\");\n\treturn 0;\n}\n\nint bttv_read_gpio(unsigned int card, unsigned long *data)\n{\n\tstruct bttv *btv;\n\n\tif (card >= bttv_num) {\n\t\treturn -EINVAL;\n\t}\n\n\tbtv = bttvs[card];\n\tif (!btv)\n\t\treturn -ENODEV;\n\n\tif(btv->shutdown) {\n\t\treturn -ENODEV;\n\t}\n\n \n\t*data = gpio_read();\n\treturn 0;\n}\n\nint bttv_write_gpio(unsigned int card, unsigned long mask, unsigned long data)\n{\n\tstruct bttv *btv;\n\n\tif (card >= bttv_num) {\n\t\treturn -EINVAL;\n\t}\n\n\tbtv = bttvs[card];\n\tif (!btv)\n\t\treturn -ENODEV;\n\n \n\tgpio_bits(mask,data);\n\tif (bttv_gpio)\n\t\tbttv_gpio_tracking(btv,\"extern write\");\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

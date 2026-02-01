@@ -1,0 +1,9 @@
+{
+  "module_name": "ef100_rep.h",
+  "hash_id": "8afaae8e5e9e0fc804223c0f5d793cdbb7eeeb8909f527dc43745a1a771c395e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/ef100_rep.h",
+  "human_readable_source": " \n \n\n \n#ifndef EF100_REP_H\n#define EF100_REP_H\n\n#include \"net_driver.h\"\n#include \"tc.h\"\n\nstruct efx_rep_sw_stats {\n\tatomic64_t rx_packets, tx_packets;\n\tatomic64_t rx_bytes, tx_bytes;\n\tatomic64_t rx_dropped, tx_errors;\n};\n\nstruct devlink_port;\n\n \nstruct efx_rep {\n\tstruct efx_nic *parent;\n\tstruct net_device *net_dev;\n\tu32 msg_enable;\n\tu32 mport;\n\tunsigned int idx;\n\tunsigned int write_index, read_index;\n\tunsigned int rx_pring_size;\n\tstruct efx_tc_flow_rule dflt;\n\tstruct list_head list;\n\tstruct list_head rx_list;\n\tspinlock_t rx_lock;\n\tstruct napi_struct napi;\n\tstruct efx_rep_sw_stats stats;\n\tstruct devlink_port *dl_port;\n};\n\nint efx_ef100_vfrep_create(struct efx_nic *efx, unsigned int i);\nvoid efx_ef100_vfrep_destroy(struct efx_nic *efx, struct efx_rep *efv);\nvoid efx_ef100_fini_vfreps(struct efx_nic *efx);\n\nvoid efx_ef100_rep_rx_packet(struct efx_rep *efv, struct efx_rx_buffer *rx_buf);\n \nstruct efx_rep *efx_ef100_find_rep_by_mport(struct efx_nic *efx, u16 mport);\nextern const struct net_device_ops efx_ef100_rep_netdev_ops;\nvoid efx_ef100_init_reps(struct efx_nic *efx);\nvoid efx_ef100_fini_reps(struct efx_nic *efx);\nstruct mae_mport_desc;\nbool ef100_mport_on_local_intf(struct efx_nic *efx,\n\t\t\t       struct mae_mport_desc *mport_desc);\nbool ef100_mport_is_vf(struct mae_mport_desc *mport_desc);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

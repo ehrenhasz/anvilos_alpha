@@ -1,0 +1,9 @@
+{
+  "module_name": "test-xalloc-die.sh",
+  "hash_id": "5784f38f11d41b5bb6b93d44f77ba8de273c3677f8bc1529d665edbc4738bd7e",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-xalloc-die.sh",
+  "human_readable_source": "#!/bin/sh\n# Test suite for xalloc_die.\n# Copyright (C) 2009-2023 Free Software Foundation, Inc.\n# This file is part of the GNUlib Library.\n#\n# This program is free software: you can redistribute it and/or modify\n# it under the terms of the GNU General Public License as published by\n# the Free Software Foundation, either version 3 of the License, or\n# (at your option) any later version.\n#\n# This program is distributed in the hope that it will be useful,\n# but WITHOUT ANY WARRANTY; without even the implied warranty of\n# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n# GNU General Public License for more details.\n#\n# You should have received a copy of the GNU General Public License\n# along with this program.  If not, see <https://www.gnu.org/licenses/>.\n\n. \"${srcdir=.}/init.sh\"; path_prepend_ .\n\n${CHECKER} test-xalloc-die${EXEEXT} > out 2> err\ncase $? in\n  1) ;;\n  *) Exit 1;;\nesac\n\ntr -d '\\015' < err \\\n  | sed 's,.*test-xalloc-die[.ex]*:,test-xalloc-die:,' > err2 || Exit 1\n\ncompare - err2 <<\\EOF || Exit 1\ntest-xalloc-die: memory exhausted\nEOF\n\ntest -s out && Exit 1\n\nExit $fail\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

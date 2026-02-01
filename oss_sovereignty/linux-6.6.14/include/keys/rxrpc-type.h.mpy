@@ -1,0 +1,9 @@
+{
+  "module_name": "rxrpc-type.h",
+  "hash_id": "3737915ead256433215329b78eba412f946aec2e127b6a65abd117bda6b55a13",
+  "original_prompt": "Ingested from linux-6.6.14/include/keys/rxrpc-type.h",
+  "human_readable_source": " \n \n\n#ifndef _KEYS_RXRPC_TYPE_H\n#define _KEYS_RXRPC_TYPE_H\n\n#include <linux/key.h>\n\n \nextern struct key_type key_type_rxrpc;\n\nextern struct key *rxrpc_get_null_key(const char *);\n\n \nstruct rxkad_key {\n\tu32\tvice_id;\n\tu32\tstart;\t\t\t \n\tu32\texpiry;\t\t\t \n\tu32\tkvno;\t\t\t \n\tu8\tprimary_flag;\t\t \n\tu16\tticket_len;\t\t \n\tu8\tsession_key[8];\t\t \n\tu8\tticket[];\t\t \n};\n\n \nstruct rxrpc_key_token {\n\tu16\tsecurity_index;\t\t \n\tbool\tno_leak_key;\t\t \n\tstruct rxrpc_key_token *next;\t \n\tunion {\n\t\tstruct rxkad_key *kad;\n\t};\n};\n\n \nstruct rxrpc_key_data_v1 {\n\tu16\t\tsecurity_index;\n\tu16\t\tticket_length;\n\tu32\t\texpiry;\t\t\t \n\tu32\t\tkvno;\n\tu8\t\tsession_key[8];\n\tu8\t\tticket[];\n};\n\n \n#define AFSTOKEN_LENGTH_MAX\t\t16384\t \n#define AFSTOKEN_STRING_MAX\t\t256\t \n#define AFSTOKEN_DATA_MAX\t\t64\t \n#define AFSTOKEN_CELL_MAX\t\t64\t \n#define AFSTOKEN_MAX\t\t\t8\t \n#define AFSTOKEN_BDATALN_MAX\t\t16384\t \n#define AFSTOKEN_RK_TIX_MAX\t\t12000\t \n#define AFSTOKEN_GK_KEY_MAX\t\t64\t \n#define AFSTOKEN_GK_TOKEN_MAX\t\t16384\t \n\n \nstatic inline u32 rxrpc_time64_to_u32(time64_t time)\n{\n\tif (time < 0)\n\t\treturn 0;\n\n\tif (time > UINT_MAX)\n\t\treturn UINT_MAX;\n\n\treturn (u32)time;\n}\n\n \nstatic inline time64_t rxrpc_u32_to_time64(u32 time)\n{\n\treturn (time64_t)time;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

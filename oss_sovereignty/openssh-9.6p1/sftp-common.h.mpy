@@ -1,0 +1,9 @@
+{
+  "module_name": "sftp-common.h",
+  "hash_id": "350f15f3cc447d422e679073a4f369cdc703986857794221521ac58659641f55",
+  "original_prompt": "Ingested from openssh-9.6p1/sftp-common.h",
+  "human_readable_source": " \n\n \n\n \n#define SFTP_MAX_MSG_LENGTH\t(256 * 1024)\n\nstruct sshbuf;\ntypedef struct Attrib Attrib;\n\n \nstruct Attrib {\n\tu_int32_t\tflags;\n\tu_int64_t\tsize;\n\tu_int32_t\tuid;\n\tu_int32_t\tgid;\n\tu_int32_t\tperm;\n\tu_int32_t\tatime;\n\tu_int32_t\tmtime;\n};\n\nvoid\t attrib_clear(Attrib *);\nvoid\t stat_to_attrib(const struct stat *, Attrib *);\nvoid\t attrib_to_stat(const Attrib *, struct stat *);\nint\t decode_attrib(struct sshbuf *, Attrib *);\nint\t encode_attrib(struct sshbuf *, const Attrib *);\nchar\t*ls_file(const char *, const struct stat *, int, int,\n    const char *, const char *);\n\nconst char *fx2txt(int);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "of_net.h",
+  "hash_id": "28b93d543f5c038eaedb4be2db25398efbc159b58ae73044c32a2af64d8af80f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/of_net.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_OF_NET_H\n#define __LINUX_OF_NET_H\n\n#include <linux/phy.h>\n\n#if defined(CONFIG_OF) && defined(CONFIG_NET)\n#include <linux/of.h>\n\nstruct net_device;\nextern int of_get_phy_mode(struct device_node *np, phy_interface_t *interface);\nextern int of_get_mac_address(struct device_node *np, u8 *mac);\nextern int of_get_mac_address_nvmem(struct device_node *np, u8 *mac);\nint of_get_ethdev_address(struct device_node *np, struct net_device *dev);\nextern struct net_device *of_find_net_device_by_node(struct device_node *np);\n#else\nstatic inline int of_get_phy_mode(struct device_node *np,\n\t\t\t\t  phy_interface_t *interface)\n{\n\treturn -ENODEV;\n}\n\nstatic inline int of_get_mac_address(struct device_node *np, u8 *mac)\n{\n\treturn -ENODEV;\n}\n\nstatic inline int of_get_mac_address_nvmem(struct device_node *np, u8 *mac)\n{\n\treturn -ENODEV;\n}\n\nstatic inline int of_get_ethdev_address(struct device_node *np, struct net_device *dev)\n{\n\treturn -ENODEV;\n}\n\nstatic inline struct net_device *of_find_net_device_by_node(struct device_node *np)\n{\n\treturn NULL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

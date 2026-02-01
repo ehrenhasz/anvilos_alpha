@@ -1,0 +1,9 @@
+{
+  "module_name": "jz4780-dma.h",
+  "hash_id": "c3b50c375a1c63e8f05eaa2b0a4f9ac43a39a3cdaab5e63b0ef9876a7759ef27",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/dma/jz4780-dma.h",
+  "human_readable_source": "#ifndef __DT_BINDINGS_DMA_JZ4780_DMA_H__\n#define __DT_BINDINGS_DMA_JZ4780_DMA_H__\n\n \n#define JZ4780_DMA_I2S1_TX\t0x4\n#define JZ4780_DMA_I2S1_RX\t0x5\n#define JZ4780_DMA_I2S0_TX\t0x6\n#define JZ4780_DMA_I2S0_RX\t0x7\n#define JZ4780_DMA_AUTO\t\t0x8\n#define JZ4780_DMA_SADC_RX\t0x9\n#define JZ4780_DMA_UART4_TX\t0xc\n#define JZ4780_DMA_UART4_RX\t0xd\n#define JZ4780_DMA_UART3_TX\t0xe\n#define JZ4780_DMA_UART3_RX\t0xf\n#define JZ4780_DMA_UART2_TX\t0x10\n#define JZ4780_DMA_UART2_RX\t0x11\n#define JZ4780_DMA_UART1_TX\t0x12\n#define JZ4780_DMA_UART1_RX\t0x13\n#define JZ4780_DMA_UART0_TX\t0x14\n#define JZ4780_DMA_UART0_RX\t0x15\n#define JZ4780_DMA_SSI0_TX\t0x16\n#define JZ4780_DMA_SSI0_RX\t0x17\n#define JZ4780_DMA_SSI1_TX\t0x18\n#define JZ4780_DMA_SSI1_RX\t0x19\n#define JZ4780_DMA_MSC0_TX\t0x1a\n#define JZ4780_DMA_MSC0_RX\t0x1b\n#define JZ4780_DMA_MSC1_TX\t0x1c\n#define JZ4780_DMA_MSC1_RX\t0x1d\n#define JZ4780_DMA_MSC2_TX\t0x1e\n#define JZ4780_DMA_MSC2_RX\t0x1f\n#define JZ4780_DMA_PCM0_TX\t0x20\n#define JZ4780_DMA_PCM0_RX\t0x21\n#define JZ4780_DMA_SMB0_TX\t0x24\n#define JZ4780_DMA_SMB0_RX\t0x25\n#define JZ4780_DMA_SMB1_TX\t0x26\n#define JZ4780_DMA_SMB1_RX\t0x27\n#define JZ4780_DMA_SMB2_TX\t0x28\n#define JZ4780_DMA_SMB2_RX\t0x29\n#define JZ4780_DMA_SMB3_TX\t0x2a\n#define JZ4780_DMA_SMB3_RX\t0x2b\n#define JZ4780_DMA_SMB4_TX\t0x2c\n#define JZ4780_DMA_SMB4_RX\t0x2d\n#define JZ4780_DMA_DES_TX\t0x2e\n#define JZ4780_DMA_DES_RX\t0x2f\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "f_trace.c",
+  "hash_id": "adc4a07cdba27bcb0bffec8be67f7f8c68991c8254fbc74c0c1da72e01b83744",
+  "original_prompt": "Ingested from ncurses-6.4/form/f_trace.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: f_trace.c,v 1.6 2020/05/24 01:40:20 anonymous.maarten Exp $\")\n\nFORM_EXPORT(FIELD **)\n_nc_retrace_field_ptr(FIELD **code)\n{\n  T((T_RETURN(\"%p\"), (void *)code));\n  return code;\n}\n\nFORM_EXPORT(FIELD *)\n_nc_retrace_field(FIELD *code)\n{\n  T((T_RETURN(\"%p\"), (void *)code));\n  return code;\n}\n\nFORM_EXPORT(FIELDTYPE *)\n_nc_retrace_field_type(FIELDTYPE *code)\n{\n  T((T_RETURN(\"%p\"), (void *)code));\n  return code;\n}\n\nFORM_EXPORT(FORM *)\n_nc_retrace_form(FORM *code)\n{\n  T((T_RETURN(\"%p\"), (void *)code));\n  return code;\n}\n\nFORM_EXPORT(Form_Hook)\n_nc_retrace_form_hook(Form_Hook code)\n{\n  TR_FUNC_BFR(1);\n  T((T_RETURN(\"%s\"), TR_FUNC_ARG(0, code)));\n  return code;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

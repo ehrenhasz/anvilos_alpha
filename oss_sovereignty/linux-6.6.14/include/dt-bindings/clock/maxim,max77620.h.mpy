@@ -1,0 +1,9 @@
+{
+  "module_name": "maxim,max77620.h",
+  "hash_id": "71f12b2145484f3969b6875b37af6f3590ccbddb71950c45dfc2c1d1095fcea5",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/maxim,max77620.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLOCK_MAXIM_MAX77620_CLOCK_H\n#define _DT_BINDINGS_CLOCK_MAXIM_MAX77620_CLOCK_H\n\n \n\n#define MAX77620_CLK_32K_OUT0\t\t0\n\n \n#define MAX77620_CLKS_NUM\t\t(MAX77620_CLK_32K_OUT0 + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

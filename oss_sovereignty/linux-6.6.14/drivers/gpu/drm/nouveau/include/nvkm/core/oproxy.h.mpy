@@ -1,0 +1,9 @@
+{
+  "module_name": "oproxy.h",
+  "hash_id": "64cc645d660c329dc2df85428a2f22344cebf0718f5c4d264b8194f33131ca3a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/core/oproxy.h",
+  "human_readable_source": " \n#ifndef __NVKM_OPROXY_H__\n#define __NVKM_OPROXY_H__\n#define nvkm_oproxy(p) container_of((p), struct nvkm_oproxy, base)\n#include <core/object.h>\n\nstruct nvkm_oproxy {\n\tconst struct nvkm_oproxy_func *func;\n\tstruct nvkm_object base;\n\tstruct nvkm_object *object;\n};\n\nstruct nvkm_oproxy_func {\n\tvoid (*dtor[2])(struct nvkm_oproxy *);\n\tint  (*init[2])(struct nvkm_oproxy *);\n\tint  (*fini[2])(struct nvkm_oproxy *, bool suspend);\n};\n\nvoid nvkm_oproxy_ctor(const struct nvkm_oproxy_func *,\n\t\t      const struct nvkm_oclass *, struct nvkm_oproxy *);\nint  nvkm_oproxy_new_(const struct nvkm_oproxy_func *,\n\t\t      const struct nvkm_oclass *, struct nvkm_oproxy **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

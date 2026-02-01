@@ -1,0 +1,9 @@
+{
+  "module_name": "dpu_hw_lm.h",
+  "hash_id": "8a5c95a7868f705ec7f01dc13388847ce9c2add02ecb6e3db68c66f6ad88d7aa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_lm.h",
+  "human_readable_source": " \n \n\n#ifndef _DPU_HW_LM_H\n#define _DPU_HW_LM_H\n\n#include \"dpu_hw_mdss.h\"\n#include \"dpu_hw_util.h\"\n\nstruct dpu_hw_mixer;\n\nstruct dpu_hw_mixer_cfg {\n\tu32 out_width;\n\tu32 out_height;\n\tbool right_mixer;\n\tint flags;\n};\n\nstruct dpu_hw_color3_cfg {\n\tu8 keep_fg[DPU_STAGE_MAX];\n};\n\n \nstruct dpu_hw_lm_ops {\n\t \n\tvoid (*setup_mixer_out)(struct dpu_hw_mixer *ctx,\n\t\tstruct dpu_hw_mixer_cfg *cfg);\n\n\t \n\tvoid (*setup_blend_config)(struct dpu_hw_mixer *ctx, uint32_t stage,\n\t\tuint32_t fg_alpha, uint32_t bg_alpha, uint32_t blend_op);\n\n\t \n\tvoid (*setup_alpha_out)(struct dpu_hw_mixer *ctx, uint32_t mixer_op);\n\n\t \n\tvoid (*setup_border_color)(struct dpu_hw_mixer *ctx,\n\t\tstruct dpu_mdss_color *color,\n\t\tu8 border_en);\n\n\t \n\tvoid (*setup_misr)(struct dpu_hw_mixer *ctx);\n\n\t \n\tint (*collect_misr)(struct dpu_hw_mixer *ctx, u32 *misr_value);\n};\n\nstruct dpu_hw_mixer {\n\tstruct dpu_hw_blk base;\n\tstruct dpu_hw_blk_reg_map hw;\n\n\t \n\tenum dpu_lm  idx;\n\tconst struct dpu_lm_cfg   *cap;\n\tconst struct dpu_mdp_cfg  *mdp;\n\tconst struct dpu_ctl_cfg  *ctl;\n\n\t \n\tstruct dpu_hw_lm_ops ops;\n\n\t \n\tstruct dpu_hw_mixer_cfg cfg;\n};\n\n \nstatic inline struct dpu_hw_mixer *to_dpu_hw_mixer(struct dpu_hw_blk *hw)\n{\n\treturn container_of(hw, struct dpu_hw_mixer, base);\n}\n\n \nstruct dpu_hw_mixer *dpu_hw_lm_init(const struct dpu_lm_cfg *cfg,\n\t\tvoid __iomem *addr);\n\n \nvoid dpu_hw_lm_destroy(struct dpu_hw_mixer *lm);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

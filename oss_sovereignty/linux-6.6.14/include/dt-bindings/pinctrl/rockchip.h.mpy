@@ -1,0 +1,9 @@
+{
+  "module_name": "rockchip.h",
+  "hash_id": "35161831eef4b7ab20b8b4bad4a3897c82afa831e89498d588822c7445a10c63",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/rockchip.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_ROCKCHIP_PINCTRL_H__\n#define __DT_BINDINGS_ROCKCHIP_PINCTRL_H__\n\n#define RK_PA0\t\t0\n#define RK_PA1\t\t1\n#define RK_PA2\t\t2\n#define RK_PA3\t\t3\n#define RK_PA4\t\t4\n#define RK_PA5\t\t5\n#define RK_PA6\t\t6\n#define RK_PA7\t\t7\n#define RK_PB0\t\t8\n#define RK_PB1\t\t9\n#define RK_PB2\t\t10\n#define RK_PB3\t\t11\n#define RK_PB4\t\t12\n#define RK_PB5\t\t13\n#define RK_PB6\t\t14\n#define RK_PB7\t\t15\n#define RK_PC0\t\t16\n#define RK_PC1\t\t17\n#define RK_PC2\t\t18\n#define RK_PC3\t\t19\n#define RK_PC4\t\t20\n#define RK_PC5\t\t21\n#define RK_PC6\t\t22\n#define RK_PC7\t\t23\n#define RK_PD0\t\t24\n#define RK_PD1\t\t25\n#define RK_PD2\t\t26\n#define RK_PD3\t\t27\n#define RK_PD4\t\t28\n#define RK_PD5\t\t29\n#define RK_PD6\t\t30\n#define RK_PD7\t\t31\n\n#define RK_FUNC_GPIO\t0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

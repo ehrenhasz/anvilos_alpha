@@ -1,0 +1,9 @@
+{
+  "module_name": "curve25519-generic.c",
+  "hash_id": "b0d736475f3ef95f20502a0905cafe4b039c18b79378d839864a21ecdefe1003",
+  "original_prompt": "Ingested from linux-6.6.14/lib/crypto/curve25519-generic.c",
+  "human_readable_source": "\n \n\n#include <crypto/curve25519.h>\n#include <linux/module.h>\n\nconst u8 curve25519_null_point[CURVE25519_KEY_SIZE] __aligned(32) = { 0 };\nconst u8 curve25519_base_point[CURVE25519_KEY_SIZE] __aligned(32) = { 9 };\n\nEXPORT_SYMBOL(curve25519_null_point);\nEXPORT_SYMBOL(curve25519_base_point);\nEXPORT_SYMBOL(curve25519_generic);\n\nMODULE_LICENSE(\"GPL v2\");\nMODULE_DESCRIPTION(\"Curve25519 scalar multiplication\");\nMODULE_AUTHOR(\"Jason A. Donenfeld <Jason@zx2c4.com>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c1e9d91cca3ee7c907551f33626e86e5334ac6057e1fe9c9b14e0436de16d11e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/imx/dcss/Makefile",
+  "human_readable_source": "imx-dcss-objs := dcss-drv.o dcss-dev.o dcss-blkctl.o dcss-ctxld.o dcss-dtg.o \\\n\t\t\t\t dcss-ss.o dcss-dpr.o dcss-scaler.o dcss-kms.o dcss-crtc.o \\\n\t\t\t\t dcss-plane.o\n\nobj-$(CONFIG_DRM_IMX_DCSS) += imx-dcss.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tegra234-gpio.h",
+  "hash_id": "bdce0e65347e8f7a89639e0ae98f1c2655fe775881be17c4352fee910f84a3d3",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/gpio/tegra234-gpio.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _DT_BINDINGS_GPIO_TEGRA234_GPIO_H\n#define _DT_BINDINGS_GPIO_TEGRA234_GPIO_H\n\n#include <dt-bindings/gpio/gpio.h>\n\n \n#define TEGRA234_MAIN_GPIO_PORT_A   0\n#define TEGRA234_MAIN_GPIO_PORT_B   1\n#define TEGRA234_MAIN_GPIO_PORT_C   2\n#define TEGRA234_MAIN_GPIO_PORT_D   3\n#define TEGRA234_MAIN_GPIO_PORT_E   4\n#define TEGRA234_MAIN_GPIO_PORT_F   5\n#define TEGRA234_MAIN_GPIO_PORT_G   6\n#define TEGRA234_MAIN_GPIO_PORT_H   7\n#define TEGRA234_MAIN_GPIO_PORT_I   8\n#define TEGRA234_MAIN_GPIO_PORT_J   9\n#define TEGRA234_MAIN_GPIO_PORT_K  10\n#define TEGRA234_MAIN_GPIO_PORT_L  11\n#define TEGRA234_MAIN_GPIO_PORT_M  12\n#define TEGRA234_MAIN_GPIO_PORT_N  13\n#define TEGRA234_MAIN_GPIO_PORT_P  14\n#define TEGRA234_MAIN_GPIO_PORT_Q  15\n#define TEGRA234_MAIN_GPIO_PORT_R  16\n#define TEGRA234_MAIN_GPIO_PORT_X  17\n#define TEGRA234_MAIN_GPIO_PORT_Y  18\n#define TEGRA234_MAIN_GPIO_PORT_Z  19\n#define TEGRA234_MAIN_GPIO_PORT_AC 20\n#define TEGRA234_MAIN_GPIO_PORT_AD 21\n#define TEGRA234_MAIN_GPIO_PORT_AE 22\n#define TEGRA234_MAIN_GPIO_PORT_AF 23\n#define TEGRA234_MAIN_GPIO_PORT_AG 24\n\n#define TEGRA234_MAIN_GPIO(port, offset) \\\n\t((TEGRA234_MAIN_GPIO_PORT_##port * 8) + offset)\n\n \n#define TEGRA234_AON_GPIO_PORT_AA 0\n#define TEGRA234_AON_GPIO_PORT_BB 1\n#define TEGRA234_AON_GPIO_PORT_CC 2\n#define TEGRA234_AON_GPIO_PORT_DD 3\n#define TEGRA234_AON_GPIO_PORT_EE 4\n#define TEGRA234_AON_GPIO_PORT_GG 5\n\n#define TEGRA234_AON_GPIO(port, offset) \\\n\t((TEGRA234_AON_GPIO_PORT_##port * 8) + offset)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

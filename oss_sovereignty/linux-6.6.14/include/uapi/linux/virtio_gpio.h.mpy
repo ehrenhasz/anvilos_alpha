@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_gpio.h",
+  "hash_id": "4204d3cfa67231b744b8d8e620e78dd92bc1f1aef6b278636dbf976c22075e23",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/virtio_gpio.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_VIRTIO_GPIO_H\n#define _LINUX_VIRTIO_GPIO_H\n\n#include <linux/types.h>\n\n \n#define VIRTIO_GPIO_F_IRQ\t\t\t0\n\n \n#define VIRTIO_GPIO_MSG_GET_NAMES\t\t0x0001\n#define VIRTIO_GPIO_MSG_GET_DIRECTION\t\t0x0002\n#define VIRTIO_GPIO_MSG_SET_DIRECTION\t\t0x0003\n#define VIRTIO_GPIO_MSG_GET_VALUE\t\t0x0004\n#define VIRTIO_GPIO_MSG_SET_VALUE\t\t0x0005\n#define VIRTIO_GPIO_MSG_IRQ_TYPE\t\t0x0006\n\n \n#define VIRTIO_GPIO_STATUS_OK\t\t\t0x0\n#define VIRTIO_GPIO_STATUS_ERR\t\t\t0x1\n\n \n#define VIRTIO_GPIO_DIRECTION_NONE\t\t0x00\n#define VIRTIO_GPIO_DIRECTION_OUT\t\t0x01\n#define VIRTIO_GPIO_DIRECTION_IN\t\t0x02\n\n \n#define VIRTIO_GPIO_IRQ_TYPE_NONE\t\t0x00\n#define VIRTIO_GPIO_IRQ_TYPE_EDGE_RISING\t0x01\n#define VIRTIO_GPIO_IRQ_TYPE_EDGE_FALLING\t0x02\n#define VIRTIO_GPIO_IRQ_TYPE_EDGE_BOTH\t\t0x03\n#define VIRTIO_GPIO_IRQ_TYPE_LEVEL_HIGH\t\t0x04\n#define VIRTIO_GPIO_IRQ_TYPE_LEVEL_LOW\t\t0x08\n\nstruct virtio_gpio_config {\n\t__le16 ngpio;\n\t__u8 padding[2];\n\t__le32 gpio_names_size;\n};\n\n \nstruct virtio_gpio_request {\n\t__le16 type;\n\t__le16 gpio;\n\t__le32 value;\n};\n\nstruct virtio_gpio_response {\n\t__u8 status;\n\t__u8 value;\n};\n\nstruct virtio_gpio_response_get_names {\n\t__u8 status;\n\t__u8 value[];\n};\n\n \nstruct virtio_gpio_irq_request {\n\t__le16 gpio;\n};\n\nstruct virtio_gpio_irq_response {\n\t__u8 status;\n};\n\n \n#define VIRTIO_GPIO_IRQ_STATUS_INVALID\t\t0x0\n#define VIRTIO_GPIO_IRQ_STATUS_VALID\t\t0x1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

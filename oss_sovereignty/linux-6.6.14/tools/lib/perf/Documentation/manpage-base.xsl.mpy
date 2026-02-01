@@ -1,0 +1,9 @@
+{
+  "module_name": "manpage-base.xsl",
+  "hash_id": "a575d876a691cb68271b51377af7f34d48657dad5a6fdff48f7c766fb26bbd52",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/perf/Documentation/manpage-base.xsl",
+  "human_readable_source": "<!-- manpage-base.xsl:\n     special formatting for manpages rendered from asciidoc+docbook -->\n<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n\t\tversion=\"1.0\">\n\n<!-- these params silence some output from xmlto -->\n<xsl:param name=\"man.output.quietly\" select=\"1\"/>\n<xsl:param name=\"refentry.meta.get.quietly\" select=\"1\"/>\n\n<!-- convert asciidoc callouts to man page format;\n     git.docbook.backslash and git.docbook.dot params\n     must be supplied by another XSL file or other means -->\n<xsl:template match=\"co\">\n\t<xsl:value-of select=\"concat(\n\t\t\t      $git.docbook.backslash,'fB(',\n\t\t\t      substring-after(@id,'-'),')',\n\t\t\t      $git.docbook.backslash,'fR')\"/>\n</xsl:template>\n<xsl:template match=\"calloutlist\">\n\t<xsl:value-of select=\"$git.docbook.dot\"/>\n\t<xsl:text>sp&#10;</xsl:text>\n\t<xsl:apply-templates/>\n\t<xsl:text>&#10;</xsl:text>\n</xsl:template>\n<xsl:template match=\"callout\">\n\t<xsl:value-of select=\"concat(\n\t\t\t      $git.docbook.backslash,'fB',\n\t\t\t      substring-after(@arearefs,'-'),\n\t\t\t      '. ',$git.docbook.backslash,'fR')\"/>\n\t<xsl:apply-templates/>\n\t<xsl:value-of select=\"$git.docbook.dot\"/>\n\t<xsl:text>br&#10;</xsl:text>\n</xsl:template>\n\n</xsl:stylesheet>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

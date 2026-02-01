@@ -1,0 +1,9 @@
+{
+  "module_name": "cls_cgroup.h",
+  "hash_id": "4fd8ed4a7b68909ddf862bc4380e55582abdc5c137a0066b221d385f131762f5",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/cls_cgroup.h",
+  "human_readable_source": " \n \n\n#ifndef _NET_CLS_CGROUP_H\n#define _NET_CLS_CGROUP_H\n\n#include <linux/cgroup.h>\n#include <linux/hardirq.h>\n#include <linux/rcupdate.h>\n#include <net/sock.h>\n#include <net/inet_sock.h>\n\n#ifdef CONFIG_CGROUP_NET_CLASSID\nstruct cgroup_cls_state {\n\tstruct cgroup_subsys_state css;\n\tu32 classid;\n};\n\nstruct cgroup_cls_state *task_cls_state(struct task_struct *p);\n\nstatic inline u32 task_cls_classid(struct task_struct *p)\n{\n\tu32 classid;\n\n\tif (in_interrupt())\n\t\treturn 0;\n\n\trcu_read_lock();\n\tclassid = container_of(task_css(p, net_cls_cgrp_id),\n\t\t\t       struct cgroup_cls_state, css)->classid;\n\trcu_read_unlock();\n\n\treturn classid;\n}\n\nstatic inline void sock_update_classid(struct sock_cgroup_data *skcd)\n{\n\tu32 classid;\n\n\tclassid = task_cls_classid(current);\n\tsock_cgroup_set_classid(skcd, classid);\n}\n\nstatic inline u32 __task_get_classid(struct task_struct *task)\n{\n\treturn task_cls_state(task)->classid;\n}\n\nstatic inline u32 task_get_classid(const struct sk_buff *skb)\n{\n\tu32 classid = __task_get_classid(current);\n\n\t \n\tif (in_serving_softirq()) {\n\t\tstruct sock *sk = skb_to_full_sk(skb);\n\n\t\t \n\t\tif (!sk || !sk_fullsock(sk))\n\t\t\treturn 0;\n\n\t\tclassid = sock_cgroup_classid(&sk->sk_cgrp_data);\n\t}\n\n\treturn classid;\n}\n#else  \nstatic inline void sock_update_classid(struct sock_cgroup_data *skcd)\n{\n}\n\nstatic inline u32 task_get_classid(const struct sk_buff *skb)\n{\n\treturn 0;\n}\n#endif  \n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

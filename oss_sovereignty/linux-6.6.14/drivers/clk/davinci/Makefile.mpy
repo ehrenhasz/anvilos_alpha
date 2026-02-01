@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6acfbe9ab9290ec09d98a13d246fb39e3c08c16834aace0ea3cb9c8daaa893bc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/davinci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nifeq ($(CONFIG_COMMON_CLK), y)\nobj-$(CONFIG_ARCH_DAVINCI_DA8XX)\t+= da8xx-cfgchip.o\n\nobj-y += pll.o\nobj-$(CONFIG_ARCH_DAVINCI_DA830)\t+= pll-da830.o\nobj-$(CONFIG_ARCH_DAVINCI_DA850)\t+= pll-da850.o\n\nobj-y += psc.o\nobj-$(CONFIG_ARCH_DAVINCI_DA830)\t+= psc-da830.o\nobj-$(CONFIG_ARCH_DAVINCI_DA850)\t+= psc-da850.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

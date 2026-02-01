@@ -1,0 +1,9 @@
+{
+  "module_name": "pm.h",
+  "hash_id": "467c20b533a7e602ee272584f50f4405351ab2035bcfba2d1e1c64e0ec0ec276",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mmc/pm.h",
+  "human_readable_source": " \n \n\n#ifndef LINUX_MMC_PM_H\n#define LINUX_MMC_PM_H\n\n \n\ntypedef unsigned int mmc_pm_flag_t;\n\n#define MMC_PM_KEEP_POWER\t(1 << 0)\t \n#define MMC_PM_WAKE_SDIO_IRQ\t(1 << 1)\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "generic_regs.h",
+  "hash_id": "fb8dbbef99da6a8c5590a7b14ac07f3f917925fee6ad4e2f14b66833293e9349",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/generic_regs.h",
+  "human_readable_source": " \n\n#ifndef DRIVERS_GPU_DRM_AMD_DC_DEV_DC_GPIO_GENERIC_REGS_H_\n#define DRIVERS_GPU_DRM_AMD_DC_DEV_DC_GPIO_GENERIC_REGS_H_\n\n#include \"gpio_regs.h\"\n\n#define GENERIC_GPIO_REG_LIST_ENTRY(type, cd, id) \\\n\t.type ## _reg =  REG(DC_GPIO_GENERIC_## type),\\\n\t.type ## _mask =  DC_GPIO_GENERIC_ ## type ## __DC_GPIO_GENERIC ## id ## _ ## type ## _MASK,\\\n\t.type ## _shift = DC_GPIO_GENERIC_ ## type ## __DC_GPIO_GENERIC ## id ## _ ## type ## __SHIFT\n\n#define GENERIC_GPIO_REG_LIST(id) \\\n\t{\\\n\tGENERIC_GPIO_REG_LIST_ENTRY(MASK, cd, id),\\\n\tGENERIC_GPIO_REG_LIST_ENTRY(A, cd, id),\\\n\tGENERIC_GPIO_REG_LIST_ENTRY(EN, cd, id),\\\n\tGENERIC_GPIO_REG_LIST_ENTRY(Y, cd, id)\\\n\t}\n\n#define GENERIC_REG_LIST(id) \\\n\tGENERIC_GPIO_REG_LIST(id), \\\n\t.mux = REG(DC_GENERIC ## id),\\\n\n#define GENERIC_MASK_SH_LIST(mask_sh, cd) \\\n\t{(DC_GENERIC ## cd ##__GENERIC ## cd ##_EN## mask_sh),\\\n\t(DC_GENERIC ## cd ##__GENERIC ## cd ##_SEL## mask_sh)}\n\nstruct generic_registers {\n\tstruct gpio_registers gpio;\n\tuint32_t mux;\n};\n\nstruct generic_sh_mask {\n\t \n\tuint32_t GENERIC_EN;\n\t \n\tuint32_t GENERIC_SEL;\n\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

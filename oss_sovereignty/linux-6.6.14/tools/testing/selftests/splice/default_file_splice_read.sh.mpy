@@ -1,0 +1,9 @@
+{
+  "module_name": "default_file_splice_read.sh",
+  "hash_id": "b1467e04371980c327ed84d8d08faea708053bc754cd07add8578921dbdb9960",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/splice/default_file_splice_read.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\nn=`./default_file_splice_read </dev/null | wc -c`\n\ntest \"$n\" = 0 && exit 0\n\necho \"default_file_splice_read broken: leaked $n\"\nexit 1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

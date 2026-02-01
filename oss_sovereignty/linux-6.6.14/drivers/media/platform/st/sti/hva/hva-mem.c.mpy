@@ -1,0 +1,9 @@
+{
+  "module_name": "hva-mem.c",
+  "hash_id": "f5fc8b18f83380b95b17c59677682ea72f35dc4d85bb24a8f7b73bffbaf15517",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/hva/hva-mem.c",
+  "human_readable_source": "\n \n\n#include \"hva.h\"\n#include \"hva-mem.h\"\n\nint hva_mem_alloc(struct hva_ctx *ctx, u32 size, const char *name,\n\t\t  struct hva_buffer **buf)\n{\n\tstruct device *dev = ctx_to_dev(ctx);\n\tstruct hva_buffer *b;\n\tdma_addr_t paddr;\n\tvoid *base;\n\n\tb = devm_kzalloc(dev, sizeof(*b), GFP_KERNEL);\n\tif (!b) {\n\t\tctx->sys_errors++;\n\t\treturn -ENOMEM;\n\t}\n\n\tbase = dma_alloc_attrs(dev, size, &paddr, GFP_KERNEL,\n\t\t\t       DMA_ATTR_WRITE_COMBINE);\n\tif (!base) {\n\t\tdev_err(dev, \"%s %s : dma_alloc_attrs failed for %s (size=%d)\\n\",\n\t\t\tctx->name, __func__, name, size);\n\t\tctx->sys_errors++;\n\t\tdevm_kfree(dev, b);\n\t\treturn -ENOMEM;\n\t}\n\n\tb->size = size;\n\tb->paddr = paddr;\n\tb->vaddr = base;\n\tb->name = name;\n\n\tdev_dbg(dev,\n\t\t\"%s allocate %d bytes of HW memory @(virt=%p, phy=%pad): %s\\n\",\n\t\tctx->name, size, b->vaddr, &b->paddr, b->name);\n\n\t \n\t*buf = b;\n\n\treturn 0;\n}\n\nvoid hva_mem_free(struct hva_ctx *ctx, struct hva_buffer *buf)\n{\n\tstruct device *dev = ctx_to_dev(ctx);\n\n\tdev_dbg(dev,\n\t\t\"%s free %d bytes of HW memory @(virt=%p, phy=%pad): %s\\n\",\n\t\tctx->name, buf->size, buf->vaddr, &buf->paddr, buf->name);\n\n\tdma_free_attrs(dev, buf->size, buf->vaddr, buf->paddr,\n\t\t       DMA_ATTR_WRITE_COMBINE);\n\n\tdevm_kfree(dev, buf);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

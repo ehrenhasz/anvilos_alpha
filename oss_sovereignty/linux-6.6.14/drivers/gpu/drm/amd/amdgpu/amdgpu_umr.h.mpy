@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_umr.h",
+  "hash_id": "415a6170135435f0b447e75b6dc70b3461c8c617a9f3d8f18c741fd84ddbebe1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_umr.h",
+  "human_readable_source": " \n#include <linux/ioctl.h>\n\n \nstruct amdgpu_debugfs_regs2_iocdata {\n\t__u32 use_srbm, use_grbm, pg_lock;\n\tstruct {\n\t\t__u32 se, sh, instance;\n\t} grbm;\n\tstruct {\n\t\t__u32 me, pipe, queue, vmid;\n\t} srbm;\n};\n\nstruct amdgpu_debugfs_regs2_iocdata_v2 {\n\t__u32 use_srbm, use_grbm, pg_lock;\n\tstruct {\n\t\t__u32 se, sh, instance;\n\t} grbm;\n\tstruct {\n\t\t__u32 me, pipe, queue, vmid;\n\t} srbm;\n\tu32 xcc_id;\n};\n\nstruct amdgpu_debugfs_gprwave_iocdata {\n\tu32 gpr_or_wave, se, sh, cu, wave, simd, xcc_id;\n\tstruct {\n\t\tu32 thread, vpgr_or_sgpr;\n\t} gpr;\n};\n\n \nstruct amdgpu_debugfs_regs2_data {\n\tstruct amdgpu_device *adev;\n\tstruct mutex lock;\n\tstruct amdgpu_debugfs_regs2_iocdata_v2 id;\n};\n\nstruct amdgpu_debugfs_gprwave_data {\n\tstruct amdgpu_device *adev;\n\tstruct mutex lock;\n\tstruct amdgpu_debugfs_gprwave_iocdata id;\n};\n\nenum AMDGPU_DEBUGFS_REGS2_CMDS {\n\tAMDGPU_DEBUGFS_REGS2_CMD_SET_STATE=0,\n\tAMDGPU_DEBUGFS_REGS2_CMD_SET_STATE_V2,\n};\n\nenum AMDGPU_DEBUGFS_GPRWAVE_CMDS {\n\tAMDGPU_DEBUGFS_GPRWAVE_CMD_SET_STATE=0,\n};\n\n\n#define AMDGPU_DEBUGFS_REGS2_IOC_SET_STATE _IOWR(0x20, AMDGPU_DEBUGFS_REGS2_CMD_SET_STATE, struct amdgpu_debugfs_regs2_iocdata)\n#define AMDGPU_DEBUGFS_REGS2_IOC_SET_STATE_V2 _IOWR(0x20, AMDGPU_DEBUGFS_REGS2_CMD_SET_STATE_V2, struct amdgpu_debugfs_regs2_iocdata_v2)\n\n\n#define AMDGPU_DEBUGFS_GPRWAVE_IOC_SET_STATE _IOWR(0x20, AMDGPU_DEBUGFS_GPRWAVE_CMD_SET_STATE, struct amdgpu_debugfs_gprwave_iocdata)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

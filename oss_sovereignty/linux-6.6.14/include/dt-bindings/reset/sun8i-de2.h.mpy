@@ -1,0 +1,9 @@
+{
+  "module_name": "sun8i-de2.h",
+  "hash_id": "02e4787bccf3e293d63097ef296c96ab480e3569be1f1ef5d17e7292d1b4e3b5",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/sun8i-de2.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_RESET_SUN8I_DE2_H_\n#define _DT_BINDINGS_RESET_SUN8I_DE2_H_\n\n#define RST_MIXER0\t0\n#define RST_MIXER1\t1\n#define RST_WB\t\t2\n#define RST_ROT\t\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

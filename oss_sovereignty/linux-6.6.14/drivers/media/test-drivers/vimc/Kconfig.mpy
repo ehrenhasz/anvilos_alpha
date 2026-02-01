@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "6250a821d0865c06518ab3ad80b6084b03d4f9f6aea6072cb768523e2361b059",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vimc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_VIMC\n\ttristate \"Virtual Media Controller Driver (VIMC)\"\n\tdepends on VIDEO_DEV\n\tselect FONT_SUPPORT\n\tselect FONT_8x16\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect VIDEOBUF2_VMALLOC\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect VIDEO_V4L2_TPG\n\thelp\n\t  Skeleton driver for Virtual Media Controller\n\n\t  This driver can be compared to the vivid driver for emulating\n\t  a media node that exposes a complex media topology. The topology\n\t  is hard coded for now but is meant to be highly configurable in\n\t  the future.\n\n\t  When in doubt, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

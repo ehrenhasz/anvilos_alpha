@@ -1,0 +1,9 @@
+{
+  "module_name": "otx2_ptp.h",
+  "hash_id": "d3f38f746f87ba40aa118c19babf6373c13a75fd3f73f56218687f881195ed86",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ptp.h",
+  "human_readable_source": " \n \n\n#ifndef OTX2_PTP_H\n#define OTX2_PTP_H\n\nstatic inline u64 otx2_ptp_convert_rx_timestamp(u64 timestamp)\n{\n\treturn be64_to_cpu(*(__be64 *)&timestamp);\n}\n\nstatic inline u64 otx2_ptp_convert_tx_timestamp(u64 timestamp)\n{\n\treturn timestamp;\n}\n\nstatic inline u64 cn10k_ptp_convert_timestamp(u64 timestamp)\n{\n\treturn ((timestamp >> 32) * NSEC_PER_SEC) + (timestamp & 0xFFFFFFFFUL);\n}\n\nint otx2_ptp_init(struct otx2_nic *pfvf);\nvoid otx2_ptp_destroy(struct otx2_nic *pfvf);\n\nint otx2_ptp_clock_index(struct otx2_nic *pfvf);\nint otx2_ptp_tstamp2time(struct otx2_nic *pfvf, u64 tstamp, u64 *tsns);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

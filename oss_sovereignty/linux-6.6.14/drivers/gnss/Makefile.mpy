@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "96418b42278203c4f544c35aabab4b89c0af0b3414f6164c26786b98e7e6043d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gnss/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the GNSS subsystem.\n#\n\nobj-$(CONFIG_GNSS)\t\t\t+= gnss.o\ngnss-y := core.o\n\nobj-$(CONFIG_GNSS_SERIAL)\t\t+= gnss-serial.o\ngnss-serial-y := serial.o\n\nobj-$(CONFIG_GNSS_MTK_SERIAL)\t\t+= gnss-mtk.o\ngnss-mtk-y := mtk.o\n\nobj-$(CONFIG_GNSS_SIRF_SERIAL)\t\t+= gnss-sirf.o\ngnss-sirf-y := sirf.o\n\nobj-$(CONFIG_GNSS_UBX_SERIAL)\t\t+= gnss-ubx.o\ngnss-ubx-y := ubx.o\n\nobj-$(CONFIG_GNSS_USB)\t\t\t+= gnss-usb.o\ngnss-usb-y := usb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

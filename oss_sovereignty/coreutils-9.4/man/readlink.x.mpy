@@ -1,0 +1,9 @@
+{
+  "module_name": "readlink.x",
+  "hash_id": "880aa91b3a13e31c68db31883532db7f0ea67ab58c921663a18dd3ab2bbe6345",
+  "original_prompt": "Ingested from coreutils-9.4/man/readlink.x",
+  "human_readable_source": "[NAME]\nreadlink \\- print resolved symbolic links or canonical file names\n[DESCRIPTION]\n.\\\" Add any additional description here\nNote realpath(1) is the preferred command to use\nfor canonicalization functionality.\n[SEE ALSO]\nreadlink(2), realpath(1), realpath(3)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

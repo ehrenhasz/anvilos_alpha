@@ -1,0 +1,9 @@
+{
+  "module_name": "mpbthci.c",
+  "hash_id": "b0e03fdccac5f98eef05474a91cad65570a1a38984ca07622063654be2a9dc79",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/mpbthci.c",
+  "human_readable_source": " \n\n\n\n#include \"py/mphal.h\"\n\n#if MICROPY_PY_BLUETOOTH\n\n#define DEBUG_printf(...) \n\n#include \"extmod/mpbthci.h\"\n\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

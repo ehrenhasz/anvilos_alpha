@@ -1,0 +1,9 @@
+{
+  "module_name": "pistachio-resets.h",
+  "hash_id": "85cb63f22225f061198567656158dcf0dd2ffc7cb218fd6e7869e39468f6af8c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/pistachio-resets.h",
+  "human_readable_source": " \n \n\n#ifndef _PISTACHIO_RESETS_H\n#define _PISTACHIO_RESETS_H\n\n#define PISTACHIO_RESET_I2C0\t\t0\n#define PISTACHIO_RESET_I2C1\t\t1\n#define PISTACHIO_RESET_I2C2\t\t2\n#define PISTACHIO_RESET_I2C3\t\t3\n#define PISTACHIO_RESET_I2S_IN\t\t4\n#define PISTACHIO_RESET_PRL_OUT\t\t5\n#define PISTACHIO_RESET_SPDIF_OUT\t6\n#define PISTACHIO_RESET_SPI\t\t7\n#define PISTACHIO_RESET_PWM_PDM\t\t8\n#define PISTACHIO_RESET_UART0\t\t9\n#define PISTACHIO_RESET_UART1\t\t10\n#define PISTACHIO_RESET_QSPI\t\t11\n#define PISTACHIO_RESET_MDC\t\t12\n#define PISTACHIO_RESET_SDHOST\t\t13\n#define PISTACHIO_RESET_ETHERNET\t14\n#define PISTACHIO_RESET_IR\t\t15\n#define PISTACHIO_RESET_HASH\t\t16\n#define PISTACHIO_RESET_TIMER\t\t17\n#define PISTACHIO_RESET_I2S_OUT\t\t18\n#define PISTACHIO_RESET_SPDIF_IN\t19\n#define PISTACHIO_RESET_EVT\t\t20\n#define PISTACHIO_RESET_USB_H\t\t21\n#define PISTACHIO_RESET_USB_PR\t\t22\n#define PISTACHIO_RESET_USB_PHY_PR\t23\n#define PISTACHIO_RESET_USB_PHY_PON\t24\n#define PISTACHIO_RESET_MAX\t\t24\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

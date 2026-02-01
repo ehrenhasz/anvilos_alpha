@@ -1,0 +1,9 @@
+{
+  "module_name": "cg_storage_multi_shared.c",
+  "hash_id": "1ceb52903084fe36cf8034f7f781803464799395736974371f3e8e3844ceadd9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/cg_storage_multi_shared.c",
+  "human_readable_source": "\n\n \n\n#include <errno.h>\n#include <linux/bpf.h>\n#include <linux/ip.h>\n#include <linux/udp.h>\n#include <bpf/bpf_helpers.h>\n\n#include \"progs/cg_storage_multi.h\"\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_CGROUP_STORAGE);\n\t__type(key, __u64);\n\t__type(value, struct cgroup_value);\n} cgroup_storage SEC(\".maps\");\n\n__u32 invocations = 0;\n\nSEC(\"cgroup_skb/egress\")\nint egress1(struct __sk_buff *skb)\n{\n\tstruct cgroup_value *ptr_cg_storage =\n\t\tbpf_get_local_storage(&cgroup_storage, 0);\n\n\t__sync_fetch_and_add(&ptr_cg_storage->egress_pkts, 1);\n\t__sync_fetch_and_add(&invocations, 1);\n\n\treturn 1;\n}\n\nSEC(\"cgroup_skb/egress\")\nint egress2(struct __sk_buff *skb)\n{\n\tstruct cgroup_value *ptr_cg_storage =\n\t\tbpf_get_local_storage(&cgroup_storage, 0);\n\n\t__sync_fetch_and_add(&ptr_cg_storage->egress_pkts, 1);\n\t__sync_fetch_and_add(&invocations, 1);\n\n\treturn 1;\n}\n\nSEC(\"cgroup_skb/ingress\")\nint ingress(struct __sk_buff *skb)\n{\n\tstruct cgroup_value *ptr_cg_storage =\n\t\tbpf_get_local_storage(&cgroup_storage, 0);\n\n\t__sync_fetch_and_add(&ptr_cg_storage->ingress_pkts, 1);\n\t__sync_fetch_and_add(&invocations, 1);\n\n\treturn 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

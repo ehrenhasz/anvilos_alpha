@@ -1,0 +1,9 @@
+{
+  "module_name": "iommu-priv.h",
+  "hash_id": "52a8bbded099ae9947537fae8105897c9479e09631ae14bc50a8b91160c32a62",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/iommu-priv.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_IOMMU_PRIV_H\n#define __LINUX_IOMMU_PRIV_H\n\n#include <linux/iommu.h>\n\nstatic inline const struct iommu_ops *dev_iommu_ops(struct device *dev)\n{\n\t \n\treturn dev->iommu->iommu_dev->ops;\n}\n\nint iommu_group_replace_domain(struct iommu_group *group,\n\t\t\t       struct iommu_domain *new_domain);\n\nint iommu_device_register_bus(struct iommu_device *iommu,\n\t\t\t      const struct iommu_ops *ops, struct bus_type *bus,\n\t\t\t      struct notifier_block *nb);\nvoid iommu_device_unregister_bus(struct iommu_device *iommu,\n\t\t\t\t struct bus_type *bus,\n\t\t\t\t struct notifier_block *nb);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

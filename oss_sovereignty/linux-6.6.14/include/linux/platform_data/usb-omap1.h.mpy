@@ -1,0 +1,9 @@
+{
+  "module_name": "usb-omap1.h",
+  "hash_id": "4c5044b5a60759ea351a039146b2b1766933bf23c419633c941f338825259ab9",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/usb-omap1.h",
+  "human_readable_source": " \n#ifndef __LINUX_USB_OMAP1_H\n#define __LINUX_USB_OMAP1_H\n\n#include <linux/platform_device.h>\n\nstruct omap_usb_config {\n\t \n\tunsigned\tregister_host:1;\n\tunsigned\tregister_dev:1;\n\tu8\t\totg;\t \n\n\tconst char\t*extcon;\t \n\n\tu8\t\thmc_mode;\n\n\t \n\tu8\t\trwc;\n\n\t \n\tu8\t\tpins[3];\n\n\tstruct platform_device *udc_device;\n\tstruct platform_device *ohci_device;\n\tstruct platform_device *otg_device;\n\n\tu32 (*usb0_init)(unsigned nwires, unsigned is_device);\n\tu32 (*usb1_init)(unsigned nwires);\n\tu32 (*usb2_init)(unsigned nwires, unsigned alt_pingroup);\n\n\tint (*ocpi_enable)(void);\n\n\tvoid (*lb_reset)(void);\n\n\tint (*transceiver_power)(int on);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

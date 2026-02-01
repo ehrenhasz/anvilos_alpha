@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "213b55e2b21d91440a0c58c4ae6d1696435d31dca042c3042c78ab64ec59cc90",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qlogic/netxen/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-or-later\n# Copyright (C) 2003 - 2009 NetXen, Inc.\n# Copyright (C) 2009 - QLogic Corporation.\n# All rights reserved.\n#\n\n\nobj-$(CONFIG_NETXEN_NIC) := netxen_nic.o\n\nnetxen_nic-y := netxen_nic_hw.o netxen_nic_main.o netxen_nic_init.o \\\n\tnetxen_nic_ethtool.o netxen_nic_ctx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

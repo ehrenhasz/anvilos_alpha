@@ -1,0 +1,9 @@
+{
+  "module_name": "af_alg.h",
+  "hash_id": "15ac94b2db12d8cb787e3fe1baf1e46cbc1b8bad45f71e7d3fe2873b5cfa58db",
+  "original_prompt": "Ingested from coreutils-9.4/lib/af_alg.h",
+  "human_readable_source": " \n\n \n\n#ifndef AF_ALG_H\n# define AF_ALG_H 1\n\n# include <stdio.h>\n# include <errno.h>\n\n# ifdef __cplusplus\nextern \"C\" {\n# endif\n\n# if USE_LINUX_CRYPTO_API\n\n \nint\nafalg_buffer (const char *buffer, size_t len, const char *alg,\n              void *resblock, ssize_t hashlen);\n\n \nint\nafalg_stream (FILE *stream, const char *alg,\n              void *resblock, ssize_t hashlen);\n\n# else\n\nstatic inline int\nafalg_buffer (const char *buffer, size_t len, const char *alg,\n              void *resblock, ssize_t hashlen)\n{\n  return -EAFNOSUPPORT;\n}\n\nstatic inline int\nafalg_stream (FILE *stream, const char *alg,\n              void *resblock, ssize_t hashlen)\n{\n  return -EAFNOSUPPORT;\n}\n\n# endif\n\n# ifdef __cplusplus\n}\n# endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

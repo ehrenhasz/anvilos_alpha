@@ -1,0 +1,9 @@
+{
+  "module_name": "proc.h",
+  "hash_id": "6b776947112af2358271a2cb8254497b84aa95aa171e77afd2946f1f004e8c10",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/proc.h",
+  "human_readable_source": " \n\n#ifndef _SPL_PROC_H\n#define\t_SPL_PROC_H\n\n#include <linux/proc_fs.h>\n#include <linux/sched.h>\n\nextern struct proc_dir_entry *proc_spl_kstat;\n\nint spl_proc_init(void);\nvoid spl_proc_fini(void);\n\nstatic inline boolean_t\nzfs_proc_is_caller(struct task_struct *t)\n{\n\treturn (t->group_leader == current->group_leader);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

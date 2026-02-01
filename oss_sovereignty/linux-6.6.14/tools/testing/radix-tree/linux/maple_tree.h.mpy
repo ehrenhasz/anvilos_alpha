@@ -1,0 +1,9 @@
+{
+  "module_name": "maple_tree.h",
+  "hash_id": "0b15339f10a941f3149e8c505c8112ebad7bfa6bc88b38901b4f6e5bba27d011",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/radix-tree/linux/maple_tree.h",
+  "human_readable_source": " \n#define atomic_t int32_t\n#include \"../../../../include/linux/maple_tree.h\"\n#define atomic_inc(x) uatomic_inc(x)\n#define atomic_read(x) uatomic_read(x)\n#define atomic_set(x, y) do {} while (0)\n#define U8_MAX UCHAR_MAX\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

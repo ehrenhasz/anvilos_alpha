@@ -1,0 +1,9 @@
+{
+  "module_name": "usbdevice_fs.h",
+  "hash_id": "2f725bdbe3278c6d83b96973ed010b61a70bab1eee7373eb6f30af55dc22ee72",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usbdevice_fs.h",
+  "human_readable_source": "\n \n\n \n\n \n#ifndef _LINUX_USBDEVICE_FS_H\n#define _LINUX_USBDEVICE_FS_H\n\n#include <uapi/linux/usbdevice_fs.h>\n\n#ifdef CONFIG_COMPAT\n#include <linux/compat.h>\n\nstruct usbdevfs_ctrltransfer32 {\n        u8 bRequestType;\n        u8 bRequest;\n        u16 wValue;\n        u16 wIndex;\n        u16 wLength;\n        u32 timeout;   \n        compat_caddr_t data;\n};\n\nstruct usbdevfs_bulktransfer32 {\n        compat_uint_t ep;\n        compat_uint_t len;\n        compat_uint_t timeout;  \n        compat_caddr_t data;\n};\n\nstruct usbdevfs_disconnectsignal32 {\n        compat_int_t signr;\n        compat_caddr_t context;\n};\n\nstruct usbdevfs_urb32 {\n\tunsigned char type;\n\tunsigned char endpoint;\n\tcompat_int_t status;\n\tcompat_uint_t flags;\n\tcompat_caddr_t buffer;\n\tcompat_int_t buffer_length;\n\tcompat_int_t actual_length;\n\tcompat_int_t start_frame;\n\tcompat_int_t number_of_packets;\n\tcompat_int_t error_count;\n\tcompat_uint_t signr;\n\tcompat_caddr_t usercontext;  \n\tstruct usbdevfs_iso_packet_desc iso_frame_desc[];\n};\n\nstruct usbdevfs_ioctl32 {\n\ts32 ifno;\n\ts32 ioctl_code;\n\tcompat_caddr_t data;\n};\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "iosm_ipc_imem_ops.h",
+  "hash_id": "6be40d3f05a6c63ee18881a1c0b439df680b368f29706f5ba14b1ff0a17a7b51",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wwan/iosm/iosm_ipc_imem_ops.h",
+  "human_readable_source": " \n\n#ifndef IOSM_IPC_IMEM_OPS_H\n#define IOSM_IPC_IMEM_OPS_H\n\n#include \"iosm_ipc_mux_codec.h\"\n\n \n#define IPC_READ_TIMEOUT 3000\n\n \n#define SIO_UNREGISTER_DEFER_DELAY_MS 1\n\n \n#define PSI_START_DEFAULT_TIMEOUT 3000\n\n \n#define BOOT_CHECK_DEFAULT_TIMEOUT 400\n\n \n#define IP_MUX_SESSION_START 0\n#define IP_MUX_SESSION_END 7\n\n \n#define IP_MUX_SESSION_DEFAULT\t0\n\n \nstruct ipc_mem_channel *ipc_imem_sys_port_open(struct iosm_imem *ipc_imem,\n\t\t\t\t\t       int chl_id, int hp_id);\nvoid ipc_imem_sys_port_close(struct iosm_imem *ipc_imem,\n\t\t\t     struct ipc_mem_channel *channel);\n\n \nint ipc_imem_sys_cdev_write(struct iosm_cdev *ipc_cdev, struct sk_buff *skb);\n\n \nint ipc_imem_sys_wwan_open(struct iosm_imem *ipc_imem, int if_id);\n\n \nvoid ipc_imem_sys_wwan_close(struct iosm_imem *ipc_imem, int if_id,\n\t\t\t     int channel_id);\n\n \nint ipc_imem_sys_wwan_transmit(struct iosm_imem *ipc_imem, int if_id,\n\t\t\t       int channel_id, struct sk_buff *skb);\n \nint ipc_imem_wwan_channel_init(struct iosm_imem *ipc_imem,\n\t\t\t       enum ipc_mux_protocol mux_type);\n\n \nstruct ipc_mem_channel *ipc_imem_sys_devlink_open(struct iosm_imem *ipc_imem);\n\n \nvoid ipc_imem_sys_devlink_close(struct iosm_devlink *ipc_devlink);\n\n \nvoid ipc_imem_sys_devlink_notify_rx(struct iosm_devlink *ipc_devlink,\n\t\t\t\t    struct sk_buff *skb);\n\n \nint ipc_imem_sys_devlink_read(struct iosm_devlink *ipc_devlink, u8 *data,\n\t\t\t      u32 bytes_to_read, u32 *bytes_read);\n\n \nint ipc_imem_sys_devlink_write(struct iosm_devlink *ipc_devlink,\n\t\t\t       unsigned char *buf, int count);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

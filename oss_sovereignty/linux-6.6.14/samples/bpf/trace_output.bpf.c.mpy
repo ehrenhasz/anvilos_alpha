@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_output.bpf.c",
+  "hash_id": "f52e85b8aea3eaff7b002c9f3f98a506cfec7ab5aee2cd12ba2e5da039af2a52",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/trace_output.bpf.c",
+  "human_readable_source": "#include \"vmlinux.h\"\n#include <linux/version.h>\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);\n\t__uint(key_size, sizeof(int));\n\t__uint(value_size, sizeof(u32));\n\t__uint(max_entries, 2);\n} my_map SEC(\".maps\");\n\nSEC(\"ksyscall/write\")\nint bpf_prog1(struct pt_regs *ctx)\n{\n\tstruct S {\n\t\tu64 pid;\n\t\tu64 cookie;\n\t} data;\n\n\tdata.pid = bpf_get_current_pid_tgid();\n\tdata.cookie = 0x12345678;\n\n\tbpf_perf_event_output(ctx, &my_map, 0, &data, sizeof(data));\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\nu32 _version SEC(\"version\") = LINUX_VERSION_CODE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

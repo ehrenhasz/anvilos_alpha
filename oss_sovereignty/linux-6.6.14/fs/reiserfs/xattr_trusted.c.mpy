@@ -1,0 +1,9 @@
+{
+  "module_name": "xattr_trusted.c",
+  "hash_id": "ee54d9cef15c8889ab32fb556119e425341e30e57fee7aada9916239502f7145",
+  "original_prompt": "Ingested from linux-6.6.14/fs/reiserfs/xattr_trusted.c",
+  "human_readable_source": "\n#include \"reiserfs.h\"\n#include <linux/capability.h>\n#include <linux/errno.h>\n#include <linux/fs.h>\n#include <linux/pagemap.h>\n#include <linux/xattr.h>\n#include \"xattr.h\"\n#include <linux/uaccess.h>\n\nstatic int\ntrusted_get(const struct xattr_handler *handler, struct dentry *unused,\n\t    struct inode *inode, const char *name, void *buffer, size_t size)\n{\n\tif (!capable(CAP_SYS_ADMIN) || IS_PRIVATE(inode))\n\t\treturn -EPERM;\n\n\treturn reiserfs_xattr_get(inode, xattr_full_name(handler, name),\n\t\t\t\t  buffer, size);\n}\n\nstatic int\ntrusted_set(const struct xattr_handler *handler,\n\t    struct mnt_idmap *idmap, struct dentry *unused,\n\t    struct inode *inode, const char *name, const void *buffer,\n\t    size_t size, int flags)\n{\n\tif (!capable(CAP_SYS_ADMIN) || IS_PRIVATE(inode))\n\t\treturn -EPERM;\n\n\treturn reiserfs_xattr_set(inode,\n\t\t\t\t  xattr_full_name(handler, name),\n\t\t\t\t  buffer, size, flags);\n}\n\nstatic bool trusted_list(struct dentry *dentry)\n{\n\treturn capable(CAP_SYS_ADMIN) && !IS_PRIVATE(d_inode(dentry));\n}\n\nconst struct xattr_handler reiserfs_xattr_trusted_handler = {\n\t.prefix = XATTR_TRUSTED_PREFIX,\n\t.get = trusted_get,\n\t.set = trusted_set,\n\t.list = trusted_list,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

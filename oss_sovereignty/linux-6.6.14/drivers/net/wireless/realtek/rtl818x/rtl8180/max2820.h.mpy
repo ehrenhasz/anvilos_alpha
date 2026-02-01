@@ -1,0 +1,9 @@
+{
+  "module_name": "max2820.h",
+  "hash_id": "5ebd030197f2fe501081e5656c1bb76982b5f53b6f76e602022faf9f855ca292",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtl818x/rtl8180/max2820.h",
+  "human_readable_source": " \n#ifndef RTL8180_MAX2820_H\n#define RTL8180_MAX2820_H\n\n \n\n#define MAXIM_ANTENNA 0xb3\n\nextern const struct rtl818x_rf_ops max2820_rf_ops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

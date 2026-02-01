@@ -1,0 +1,9 @@
+{
+  "module_name": "efi_stub_32.S",
+  "hash_id": "8c65b03e0872fb8bc471e1a888e2d76190f9748fca6048403c38f7095356c56e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/platform/efi/efi_stub_32.S",
+  "human_readable_source": " \n \n\n#include <linux/linkage.h>\n#include <linux/init.h>\n#include <asm/asm-offsets.h>\n#include <asm/page_types.h>\n\n\t__INIT\nSYM_FUNC_START(efi_call_svam)\n\tpush\t%ebp\n\tmovl\t%esp, %ebp\n\tpush\t%ebx\n\n\tpush\t16(%esp)\n\tpush\t16(%esp)\n\tpush\t%ecx\n\tpush\t%edx\n\tmovl\t%eax, %ebx\t\t \n\n\t \n\tmovl\t$1f, %edx\n\tsubl\t$__PAGE_OFFSET, %edx\n\tjmp\t*%edx\n1:\n\n\t \n\tmovl\t%cr0, %edx\n\tandl\t$0x7fffffff, %edx\n\tmovl\t%edx, %cr0\n\n\t \n\tsubl\t$__PAGE_OFFSET, %esp\n\n\t \n\tmovl\t(%eax), %eax\n\tcall\t*EFI_svam(%eax)\n\n\t \n\tmovl\t(%ebx), %ecx\n\tmovl\t36(%esp), %edx\t\t \n\tmovl\t%ecx, (%edx)\n\n\t \n\tmovl\t%cr0, %edx\n\torl\t$0x80000000, %edx\n\tmovl\t%edx, %cr0\n\n\tmovl\t16(%esp), %ebx\n\tleave\n\tRET\nSYM_FUNC_END(efi_call_svam)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

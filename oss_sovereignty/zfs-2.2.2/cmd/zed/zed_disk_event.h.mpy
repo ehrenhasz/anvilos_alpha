@@ -1,0 +1,9 @@
+{
+  "module_name": "zed_disk_event.h",
+  "hash_id": "62990684958f8e68c4e3c32317546ebc904076c50c4b5ff32c91fdd6eee6a534",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zed/zed_disk_event.h",
+  "human_readable_source": " \n\n \n\n#ifndef\tZED_DISK_EVENT_H\n#define\tZED_DISK_EVENT_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\nextern int zed_disk_event_init(void);\nextern void zed_disk_event_fini(void);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

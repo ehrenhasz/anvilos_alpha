@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0ba5607091cba3c260e0a6fdcbafe2ded9e495f0d1718700e70d0656fd2dbe2e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/nvidia/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-y += tegra-vde/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

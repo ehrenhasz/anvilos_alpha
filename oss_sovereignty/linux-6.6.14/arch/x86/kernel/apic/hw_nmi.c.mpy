@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_nmi.c",
+  "hash_id": "5888a4b5600fa3d9849a90a110f1516670e251c7a57bb935b9cc8164ac772444",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/apic/hw_nmi.c",
+  "human_readable_source": "\n \n#include <linux/thread_info.h>\n#include <asm/apic.h>\n#include <asm/nmi.h>\n\n#include <linux/cpumask.h>\n#include <linux/kdebug.h>\n#include <linux/notifier.h>\n#include <linux/kprobes.h>\n#include <linux/nmi.h>\n#include <linux/init.h>\n#include <linux/delay.h>\n\n#include \"local.h\"\n\n#ifdef CONFIG_HARDLOCKUP_DETECTOR_PERF\nu64 hw_nmi_get_sample_period(int watchdog_thresh)\n{\n\treturn (u64)(cpu_khz) * 1000 * watchdog_thresh;\n}\n#endif\n\n#ifdef arch_trigger_cpumask_backtrace\nstatic void nmi_raise_cpu_backtrace(cpumask_t *mask)\n{\n\t__apic_send_IPI_mask(mask, NMI_VECTOR);\n}\n\nvoid arch_trigger_cpumask_backtrace(const cpumask_t *mask, int exclude_cpu)\n{\n\tnmi_trigger_cpumask_backtrace(mask, exclude_cpu,\n\t\t\t\t      nmi_raise_cpu_backtrace);\n}\n\nstatic int nmi_cpu_backtrace_handler(unsigned int cmd, struct pt_regs *regs)\n{\n\tif (nmi_cpu_backtrace(regs))\n\t\treturn NMI_HANDLED;\n\n\treturn NMI_DONE;\n}\nNOKPROBE_SYMBOL(nmi_cpu_backtrace_handler);\n\nstatic int __init register_nmi_cpu_backtrace_handler(void)\n{\n\tregister_nmi_handler(NMI_LOCAL, nmi_cpu_backtrace_handler,\n\t\t\t\t0, \"arch_bt\");\n\treturn 0;\n}\nearly_initcall(register_nmi_cpu_backtrace_handler);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

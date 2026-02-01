@@ -1,0 +1,9 @@
+{
+  "module_name": "ecrdsa_params.asn1",
+  "hash_id": "6e9dea8c12c70ceae9c7327c70e9613eadc93774592dcf0f20e89a0b657f0549",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/ecrdsa_params.asn1",
+  "human_readable_source": "EcrdsaParams ::= SEQUENCE {\n\tcurve\tOBJECT IDENTIFIER ({ ecrdsa_param_curve }),\n\tdigest\tOBJECT IDENTIFIER OPTIONAL ({ ecrdsa_param_digest })\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

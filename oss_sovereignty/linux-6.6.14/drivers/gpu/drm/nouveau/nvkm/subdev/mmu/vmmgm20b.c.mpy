@@ -1,0 +1,9 @@
+{
+  "module_name": "vmmgm20b.c",
+  "hash_id": "c90935d3b28c245150ba86fa3a3fe7c077ac958b86ced2b31e8a807d8d74c4cd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/vmmgm20b.c",
+  "human_readable_source": " \n#include \"vmm.h\"\n\nstatic const struct nvkm_vmm_func\ngm20b_vmm_17 = {\n\t.join = gm200_vmm_join,\n\t.part = gf100_vmm_part,\n\t.aper = gk20a_vmm_aper,\n\t.valid = gf100_vmm_valid,\n\t.flush = gf100_vmm_flush,\n\t.invalidate_pdb = gf100_vmm_invalidate_pdb,\n\t.page = {\n\t\t{ 27, &gm200_vmm_desc_17_17[1], NVKM_VMM_PAGE_Sxxx },\n\t\t{ 17, &gm200_vmm_desc_17_17[0], NVKM_VMM_PAGE_SxHC },\n\t\t{ 12, &gm200_vmm_desc_17_12[0], NVKM_VMM_PAGE_SxHx },\n\t\t{}\n\t}\n};\n\nstatic const struct nvkm_vmm_func\ngm20b_vmm_16 = {\n\t.join = gm200_vmm_join,\n\t.part = gf100_vmm_part,\n\t.aper = gk20a_vmm_aper,\n\t.valid = gf100_vmm_valid,\n\t.flush = gf100_vmm_flush,\n\t.invalidate_pdb = gf100_vmm_invalidate_pdb,\n\t.page = {\n\t\t{ 27, &gm200_vmm_desc_16_16[1], NVKM_VMM_PAGE_Sxxx },\n\t\t{ 16, &gm200_vmm_desc_16_16[0], NVKM_VMM_PAGE_SxHC },\n\t\t{ 12, &gm200_vmm_desc_16_12[0], NVKM_VMM_PAGE_SxHx },\n\t\t{}\n\t}\n};\n\nint\ngm20b_vmm_new(struct nvkm_mmu *mmu, bool managed, u64 addr, u64 size,\n\t      void *argv, u32 argc, struct lock_class_key *key,\n\t      const char *name, struct nvkm_vmm **pvmm)\n{\n\treturn gm200_vmm_new_(&gm20b_vmm_16, &gm20b_vmm_17, mmu, managed, addr,\n\t\t\t      size, argv, argc, key, name, pvmm);\n}\n\nint\ngm20b_vmm_new_fixed(struct nvkm_mmu *mmu, bool managed, u64 addr, u64 size,\n\t\t    void *argv, u32 argc, struct lock_class_key *key,\n\t\t    const char *name, struct nvkm_vmm **pvmm)\n{\n\treturn gf100_vmm_new_(&gm20b_vmm_16, &gm20b_vmm_17, mmu, managed, addr,\n\t\t\t      size, argv, argc, key, name, pvmm);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "osq_lock.h",
+  "hash_id": "9af20320f12626ec4854cb545d1137287aee77eb177dafe0b3834788b271e492",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/osq_lock.h",
+  "human_readable_source": " \n#ifndef __LINUX_OSQ_LOCK_H\n#define __LINUX_OSQ_LOCK_H\n\n \nstruct optimistic_spin_node {\n\tstruct optimistic_spin_node *next, *prev;\n\tint locked;  \n\tint cpu;  \n};\n\nstruct optimistic_spin_queue {\n\t \n\tatomic_t tail;\n};\n\n#define OSQ_UNLOCKED_VAL (0)\n\n \n#define OSQ_LOCK_UNLOCKED { ATOMIC_INIT(OSQ_UNLOCKED_VAL) }\n\nstatic inline void osq_lock_init(struct optimistic_spin_queue *lock)\n{\n\tatomic_set(&lock->tail, OSQ_UNLOCKED_VAL);\n}\n\nextern bool osq_lock(struct optimistic_spin_queue *lock);\nextern void osq_unlock(struct optimistic_spin_queue *lock);\n\nstatic inline bool osq_is_locked(struct optimistic_spin_queue *lock)\n{\n\treturn atomic_read(&lock->tail) != OSQ_UNLOCKED_VAL;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

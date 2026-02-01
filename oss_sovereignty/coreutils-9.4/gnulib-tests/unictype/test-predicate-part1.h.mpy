@@ -1,0 +1,9 @@
+{
+  "module_name": "test-predicate-part1.h",
+  "hash_id": "1f0cd570bbad10defacae7ec6ba6801707529068b68999b07d12e2138dd2f5af",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/unictype/test-predicate-part1.h",
+  "human_readable_source": " \ntypedef struct { ucs4_t start; ucs4_t end; } interval_t;\n\n \nstatic const interval_t set[] =\n  {\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

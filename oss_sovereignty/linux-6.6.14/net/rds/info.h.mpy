@@ -1,0 +1,9 @@
+{
+  "module_name": "info.h",
+  "hash_id": "4d85c11bc7e38f54ac031af7478f75f68716b39b3023f8068ac47029362f397c",
+  "original_prompt": "Ingested from linux-6.6.14/net/rds/info.h",
+  "human_readable_source": " \n#ifndef _RDS_INFO_H\n#define _RDS_INFO_H\n\nstruct rds_info_lengths {\n\tunsigned int\tnr;\n\tunsigned int\teach;\n};\n\nstruct rds_info_iterator;\n\n \ntypedef void (*rds_info_func)(struct socket *sock, unsigned int len,\n\t\t\t      struct rds_info_iterator *iter,\n\t\t\t      struct rds_info_lengths *lens);\n\nvoid rds_info_register_func(int optname, rds_info_func func);\nvoid rds_info_deregister_func(int optname, rds_info_func func);\nint rds_info_getsockopt(struct socket *sock, int optname, char __user *optval,\n\t\t\tint __user *optlen);\nvoid rds_info_copy(struct rds_info_iterator *iter, void *data,\n\t\t   unsigned long bytes);\nvoid rds_info_iter_unmap(struct rds_info_iterator *iter);\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

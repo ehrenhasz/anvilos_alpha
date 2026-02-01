@@ -1,0 +1,9 @@
+{
+  "module_name": "test_fpu.c",
+  "hash_id": "7e57cc77b3045d2cc08c420b3c0e5682155c7c49fdaf76c3ff7d048069ab4167",
+  "original_prompt": "Ingested from linux-6.6.14/lib/test_fpu.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/kernel.h>\n#include <linux/debugfs.h>\n#include <asm/fpu/api.h>\n\nstatic int test_fpu(void)\n{\n\t \n\tvolatile double a, b, c, d, e, f, g;\n\n\ta = 4.0;\n\tb = 1e-15;\n\tc = 1e-310;\n\n\t \n\td = a + b;\n\n\t \n\te = a + b / 2;\n\n\t \n\tf = b / c;\n\n\t \n\tg = a + c * f;\n\n\tif (d > a && e > a && g > a)\n\t\treturn 0;\n\telse\n\t\treturn -EINVAL;\n}\n\nstatic int test_fpu_get(void *data, u64 *val)\n{\n\tint status = -EINVAL;\n\n\tkernel_fpu_begin();\n\tstatus = test_fpu();\n\tkernel_fpu_end();\n\n\t*val = 1;\n\treturn status;\n}\n\nDEFINE_DEBUGFS_ATTRIBUTE(test_fpu_fops, test_fpu_get, NULL, \"%lld\\n\");\nstatic struct dentry *selftest_dir;\n\nstatic int __init test_fpu_init(void)\n{\n\tselftest_dir = debugfs_create_dir(\"selftest_helpers\", NULL);\n\tif (!selftest_dir)\n\t\treturn -ENOMEM;\n\n\tdebugfs_create_file_unsafe(\"test_fpu\", 0444, selftest_dir, NULL,\n\t\t\t\t   &test_fpu_fops);\n\n\treturn 0;\n}\n\nstatic void __exit test_fpu_exit(void)\n{\n\tdebugfs_remove(selftest_dir);\n}\n\nmodule_init(test_fpu_init);\nmodule_exit(test_fpu_exit);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

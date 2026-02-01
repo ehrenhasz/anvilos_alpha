@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6f48efb4a7ea650da9e95fa3f9f3cf5caeb564688053ca9b8720173d70a849e0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/core/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_FB_NOTIFY)           += fb_notify.o\nobj-$(CONFIG_FB_CORE)             += fb.o\nfb-y                              := fb_info.o \\\n                                     fbmem.o fbcmap.o \\\n                                     modedb.o fbcvt.o fb_cmdline.o fb_io_fops.o\nifdef CONFIG_FB\nfb-y                              += fb_backlight.o fbmon.o\nendif\nfb-$(CONFIG_FB_DEFERRED_IO)       += fb_defio.o\nfb-$(CONFIG_FB_DEVICE)            += fb_chrdev.o \\\n                                     fb_procfs.o \\\n                                     fbsysfs.o\n\nifeq ($(CONFIG_FRAMEBUFFER_CONSOLE),y)\nfb-y\t\t\t\t  += fbcon.o bitblit.o softcursor.o\nifeq ($(CONFIG_FB_TILEBLITTING),y)\nfb-y\t\t\t\t  += tileblit.o\nendif\nifeq ($(CONFIG_FRAMEBUFFER_CONSOLE_ROTATION),y)\nfb-y\t\t\t\t  += fbcon_rotate.o fbcon_cw.o fbcon_ud.o \\\n\t\t\t\t     fbcon_ccw.o\nendif\nendif\n\nobj-$(CONFIG_FB_CFB_FILLRECT)  += cfbfillrect.o\nobj-$(CONFIG_FB_CFB_COPYAREA)  += cfbcopyarea.o\nobj-$(CONFIG_FB_CFB_IMAGEBLIT) += cfbimgblt.o\nobj-$(CONFIG_FB_SYS_FILLRECT)  += sysfillrect.o\nobj-$(CONFIG_FB_SYS_COPYAREA)  += syscopyarea.o\nobj-$(CONFIG_FB_SYS_IMAGEBLIT) += sysimgblt.o\nobj-$(CONFIG_FB_SYS_FOPS)      += fb_sys_fops.o\nobj-$(CONFIG_FB_SVGALIB)       += svgalib.o\nobj-$(CONFIG_FB_DDC)           += fb_ddc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

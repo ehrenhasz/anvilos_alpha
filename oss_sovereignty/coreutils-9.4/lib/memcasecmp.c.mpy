@@ -1,0 +1,9 @@
+{
+  "module_name": "memcasecmp.c",
+  "hash_id": "f39ce95e9134155c9f07d7066f0c9e459a2907d5d17935156da4a5f481e7c8ce",
+  "original_prompt": "Ingested from coreutils-9.4/lib/memcasecmp.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"memcasecmp.h\"\n\n#include <ctype.h>\n#include <limits.h>\n\n \n\nint\nmemcasecmp (const void *vs1, const void *vs2, size_t n)\n{\n  size_t i;\n  char const *s1 = vs1;\n  char const *s2 = vs2;\n  for (i = 0; i < n; i++)\n    {\n      unsigned char u1 = s1[i];\n      unsigned char u2 = s2[i];\n      int U1 = toupper (u1);\n      int U2 = toupper (u2);\n      int diff = (UCHAR_MAX <= INT_MAX ? U1 - U2 : _GL_CMP (U1, U2));\n      if (diff)\n        return diff;\n    }\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

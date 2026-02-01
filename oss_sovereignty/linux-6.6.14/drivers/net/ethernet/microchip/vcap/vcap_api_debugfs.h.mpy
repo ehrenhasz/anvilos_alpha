@@ -1,0 +1,9 @@
+{
+  "module_name": "vcap_api_debugfs.h",
+  "hash_id": "1246ccddf62a57dddc3ae22e0af1cb8c216d6e078b8379d69097d4fd59b11c87",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/microchip/vcap/vcap_api_debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef __VCAP_API_DEBUGFS__\n#define __VCAP_API_DEBUGFS__\n\n#include <linux/types.h>\n#include <linux/debugfs.h>\n#include <linux/netdevice.h>\n\n#include \"vcap_api.h\"\n\n#if defined(CONFIG_DEBUG_FS)\n\nvoid vcap_port_debugfs(struct device *dev, struct dentry *parent,\n\t\t       struct vcap_control *vctrl,\n\t\t       struct net_device *ndev);\n\n \nstruct dentry *vcap_debugfs(struct device *dev, struct dentry *parent,\n\t\t\t    struct vcap_control *vctrl);\n\n#else\n\nstatic inline void vcap_port_debugfs(struct device *dev, struct dentry *parent,\n\t\t\t\t     struct vcap_control *vctrl,\n\t\t\t\t     struct net_device *ndev)\n{\n}\n\nstatic inline struct dentry *vcap_debugfs(struct device *dev,\n\t\t\t\t\t  struct dentry *parent,\n\t\t\t\t\t  struct vcap_control *vctrl)\n{\n\treturn NULL;\n}\n\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

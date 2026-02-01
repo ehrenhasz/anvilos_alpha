@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_ob_types.h",
+  "hash_id": "f2c3b8b9eb792db4d59a53b2c51fab7b5b90da716bb356cf7353cb321fc0c411",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ob/ob_1.0/ia_css_ob_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_OB_TYPES_H\n#define __IA_CSS_OB_TYPES_H\n\n \n\n#include \"ia_css_frac.h\"\n\n \nenum ia_css_ob_mode {\n\tIA_CSS_OB_MODE_NONE,\t \n\tIA_CSS_OB_MODE_FIXED,\t \n\tIA_CSS_OB_MODE_RASTER\t \n};\n\n \nstruct ia_css_ob_config {\n\tenum ia_css_ob_mode mode;  \n\tia_css_u0_16 level_gr;     \n\tia_css_u0_16 level_r;      \n\tia_css_u0_16 level_b;      \n\tia_css_u0_16 level_gb;     \n\tu16 start_position;  \n\tu16 end_position;   \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

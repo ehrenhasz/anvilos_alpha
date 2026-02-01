@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_s3a.host.h",
+  "hash_id": "b72bea21c398c64336b788035f61ee98de0f00dfceae221dfe4c138498c8ace2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/s3a/s3a_1.0/ia_css_s3a.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_S3A_HOST_H\n#define __IA_CSS_S3A_HOST_H\n\n#include \"ia_css_s3a_types.h\"\n#include \"ia_css_s3a_param.h\"\n#include \"bh/bh_2/ia_css_bh.host.h\"\n\nextern const struct ia_css_3a_config default_3a_config;\n\nvoid\nia_css_s3a_configure(\n    unsigned int raw_bit_depth);\n\nvoid\nia_css_s3a_encode(\n    struct sh_css_isp_s3a_params *to,\n    const struct ia_css_3a_config *from,\n    unsigned int size);\n\n#ifndef IA_CSS_NO_DEBUG\nvoid\nia_css_ae_dump(\n    const struct sh_css_isp_ae_params *ae,\n    unsigned int level);\n\nvoid\nia_css_awb_dump(\n    const struct sh_css_isp_awb_params *awb,\n    unsigned int level);\n\nvoid\nia_css_af_dump(\n    const struct sh_css_isp_af_params *af,\n    unsigned int level);\n\nvoid\nia_css_s3a_dump(\n    const struct sh_css_isp_s3a_params *s3a,\n    unsigned int level);\n\nvoid\nia_css_s3a_debug_dtrace(\n    const struct ia_css_3a_config *config,\n    unsigned int level);\n#endif\n\nvoid\nia_css_s3a_hmem_decode(\n    struct ia_css_3a_statistics *host_stats,\n    const struct ia_css_bh_table *hmem_buf);\n\nvoid\nia_css_s3a_dmem_decode(\n    struct ia_css_3a_statistics *host_stats,\n    const struct ia_css_3a_output *isp_stats);\n\nvoid\nia_css_s3a_vmem_decode(\n    struct ia_css_3a_statistics *host_stats,\n    const u16 *isp_stats_hi,\n    const uint16_t *isp_stats_lo);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

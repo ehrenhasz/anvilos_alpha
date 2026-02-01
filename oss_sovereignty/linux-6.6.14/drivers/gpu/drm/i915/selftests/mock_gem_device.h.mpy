@@ -1,0 +1,9 @@
+{
+  "module_name": "mock_gem_device.h",
+  "hash_id": "9bfab77c089826df11439baa64d377a4d52c495e315192328260398cb47f11b2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/mock_gem_device.h",
+  "human_readable_source": " \n#ifndef __MOCK_GEM_DEVICE_H__\n#define __MOCK_GEM_DEVICE_H__\n\nstruct drm_i915_private;\n\nstruct drm_i915_private *mock_gem_device(void);\nvoid mock_device_flush(struct drm_i915_private *i915);\n\nvoid mock_destroy_device(struct drm_i915_private *i915);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "e6c2c7badce6e55d950924b30277e8bc54236b8f2be72033d97077dc4bafbc20",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n*\n!/**/\n!*.c\n!*.h\n!*.S\n!*.sh\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

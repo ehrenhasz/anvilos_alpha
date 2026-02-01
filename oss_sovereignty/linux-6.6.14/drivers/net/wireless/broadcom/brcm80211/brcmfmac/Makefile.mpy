@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bfefaa28a715d30be373c8771391c6d82d1ea3030ab5664f0335570478ef8010",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: ISC\n#\n# Makefile fragment for Broadcom 802.11 Networking Device Driver\n#\n# Copyright (c) 2010 Broadcom Corporation\n#\n\nccflags-y += \\\n\t-I $(srctree)/$(src) \\\n\t-I $(srctree)/$(src)/../include\n\nobj-$(CONFIG_BRCMFMAC) += brcmfmac.o\nbrcmfmac-objs += \\\n\t\tcfg80211.o \\\n\t\tchip.o \\\n\t\tfwil.o \\\n\t\tfweh.o \\\n\t\tp2p.o \\\n\t\tproto.o \\\n\t\tcommon.o \\\n\t\tcore.o \\\n\t\tfirmware.o \\\n\t\tfwvid.o \\\n\t\tfeature.o \\\n\t\tbtcoex.o \\\n\t\tvendor.o \\\n\t\tpno.o \\\n\t\txtlv.o\nbrcmfmac-$(CONFIG_BRCMFMAC_PROTO_BCDC) += \\\n\t\tbcdc.o \\\n\t\tfwsignal.o\nbrcmfmac-$(CONFIG_BRCMFMAC_PROTO_MSGBUF) += \\\n\t\tcommonring.o \\\n\t\tflowring.o \\\n\t\tmsgbuf.o\nbrcmfmac-$(CONFIG_BRCMFMAC_SDIO) += \\\n\t\tsdio.o \\\n\t\tbcmsdh.o\nbrcmfmac-$(CONFIG_BRCMFMAC_USB) += \\\n\t\tusb.o\nbrcmfmac-$(CONFIG_BRCMFMAC_PCIE) += \\\n\t\tpcie.o\nbrcmfmac-$(CONFIG_BRCMDBG) += \\\n\t\tdebug.o\nbrcmfmac-$(CONFIG_BRCM_TRACING) += \\\n\t\ttracepoint.o\nbrcmfmac-$(CONFIG_OF) += \\\n\t\tof.o\nbrcmfmac-$(CONFIG_DMI) += \\\n\t\tdmi.o\nbrcmfmac-$(CONFIG_ACPI) += \\\n\t\tacpi.o\n\nifeq ($(CONFIG_BRCMFMAC),m)\nobj-m += wcc/\nobj-m += cyw/\nobj-m += bca/\nelse\nbrcmfmac-$(CONFIG_BRCMFMAC) += wcc/core.o\nbrcmfmac-$(CONFIG_BRCMFMAC) += cyw/core.o\nbrcmfmac-$(CONFIG_BRCMFMAC) += bca/core.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

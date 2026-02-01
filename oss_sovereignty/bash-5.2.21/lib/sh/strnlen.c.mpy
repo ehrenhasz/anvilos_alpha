@@ -1,0 +1,9 @@
+{
+  "module_name": "strnlen.c",
+  "hash_id": "70ddbb63ba28f4d31a19e3f1edb0e200acbad59f9279c8a9cb586d5f4828550b",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/strnlen.c",
+  "human_readable_source": " \n\n \n\n#ifdef HAVE_CONFIG_H\n# include <config.h>\n#endif\n\n#if !defined (HAVE_STRNLEN)\n\n#include <sys/types.h>\n\n#if defined (HAVE_UNISTD_H)\n#  include <unistd.h>\n#endif\n\n#include <stdc.h>\n\n \nsize_t\nstrnlen (s, maxlen)\n     register const char *s;\n     size_t maxlen;\n{\n  register const char *e;\n  size_t n;\n\n  for (e = s, n = 0; *e && n < maxlen; e++, n++)\n    ;\n  return n;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

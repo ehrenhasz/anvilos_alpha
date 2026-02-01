@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5577eca0112690196385af4b8d046bdd94b760eba6d11c312efaa86dd49a7330",
+  "original_prompt": "Ingested from linux-6.6.14/net/vmw_vsock/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_VSOCKETS) += vsock.o\nobj-$(CONFIG_VSOCKETS_DIAG) += vsock_diag.o\nobj-$(CONFIG_VMWARE_VMCI_VSOCKETS) += vmw_vsock_vmci_transport.o\nobj-$(CONFIG_VIRTIO_VSOCKETS) += vmw_vsock_virtio_transport.o\nobj-$(CONFIG_VIRTIO_VSOCKETS_COMMON) += vmw_vsock_virtio_transport_common.o\nobj-$(CONFIG_HYPERV_VSOCKETS) += hv_sock.o\nobj-$(CONFIG_VSOCKETS_LOOPBACK) += vsock_loopback.o\n\nvsock-y += af_vsock.o af_vsock_tap.o vsock_addr.o\nvsock-$(CONFIG_BPF_SYSCALL) += vsock_bpf.o\n\nvsock_diag-y += diag.o\n\nvmw_vsock_vmci_transport-y += vmci_transport.o vmci_transport_notify.o \\\n\tvmci_transport_notify_qstate.o\n\nvmw_vsock_virtio_transport-y += virtio_transport.o\n\nvmw_vsock_virtio_transport_common-y += virtio_transport_common.o\n\nhv_sock-y += hyperv_transport.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

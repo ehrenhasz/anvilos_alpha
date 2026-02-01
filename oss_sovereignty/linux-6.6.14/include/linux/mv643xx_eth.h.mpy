@@ -1,0 +1,9 @@
+{
+  "module_name": "mv643xx_eth.h",
+  "hash_id": "8b9d002bace1ee19d8cec8d0785c5ad48b6619dd305b050d08076cc3d2d9b0e4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mv643xx_eth.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MV643XX_ETH_H\n#define __LINUX_MV643XX_ETH_H\n\n#include <linux/mbus.h>\n#include <linux/if_ether.h>\n#include <linux/phy.h>\n\n#define MV643XX_ETH_SHARED_NAME\t\t\"mv643xx_eth\"\n#define MV643XX_ETH_NAME\t\t\"mv643xx_eth_port\"\n#define MV643XX_ETH_SHARED_REGS\t\t0x2000\n#define MV643XX_ETH_SHARED_REGS_SIZE\t0x2000\n#define MV643XX_ETH_BAR_4\t\t0x2220\n#define MV643XX_ETH_SIZE_REG_4\t\t0x2224\n#define MV643XX_ETH_BASE_ADDR_ENABLE_REG\t0x2290\n\n#define MV643XX_TX_CSUM_DEFAULT_LIMIT\t0\n\nstruct mv643xx_eth_shared_platform_data {\n\tstruct mbus_dram_target_info\t*dram;\n\t \n\tint\t\t\ttx_csum_limit;\n};\n\n#define MV643XX_ETH_PHY_ADDR_DEFAULT\t0\n#define MV643XX_ETH_PHY_ADDR(x)\t\t(0x80 | (x))\n#define MV643XX_ETH_PHY_NONE\t\t0xff\n\nstruct device_node;\nstruct mv643xx_eth_platform_data {\n\t \n\tstruct platform_device\t*shared;\n\tint\t\t\tport_number;\n\n\t \n\tint\t\t\tphy_addr;\n\tstruct device_node\t*phy_node;\n\n\t \n\tu8\t\t\tmac_addr[ETH_ALEN];\n\n\t \n\tint\t\t\tspeed;\n\tint\t\t\tduplex;\n\tphy_interface_t\t\tinterface;\n\n\t \n\tint\t\t\trx_queue_count;\n\tint\t\t\ttx_queue_count;\n\n\t \n\tint\t\t\trx_queue_size;\n\tint\t\t\ttx_queue_size;\n\n\t \n\tunsigned long\t\trx_sram_addr;\n\tint\t\t\trx_sram_size;\n\tunsigned long\t\ttx_sram_addr;\n\tint\t\t\ttx_sram_size;\n};\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

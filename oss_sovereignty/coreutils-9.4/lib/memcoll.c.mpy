@@ -1,0 +1,9 @@
+{
+  "module_name": "memcoll.c",
+  "hash_id": "97b57d721fb13b5c41127b66cd5753e3dc0e0e8e87e46138b983af39ef60374e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/memcoll.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"memcoll.h\"\n\n#include <errno.h>\n#include <stdlib.h>\n#include <string.h>\n\n \nstatic int\nstrcoll_loop (char const *s1, size_t s1size, char const *s2, size_t s2size)\n{\n  int diff;\n\n  while (! (errno = 0, (diff = strcoll (s1, s2)) || errno))\n    {\n       \n      size_t size1 = strlen (s1) + 1;\n      size_t size2 = strlen (s2) + 1;\n      s1 += size1;\n      s2 += size2;\n      s1size -= size1;\n      s2size -= size2;\n\n      if (s1size == 0)\n        return - (s2size != 0);\n      if (s2size == 0)\n        return 1;\n    }\n\n  return diff;\n}\n\n \nint\nmemcoll (char *s1, size_t s1len, char *s2, size_t s2len)\n{\n  int diff;\n\n   \n\n  if (s1len == s2len && memcmp (s1, s2, s1len) == 0)\n    {\n      errno = 0;\n      diff = 0;\n    }\n  else\n    {\n      char n1 = s1[s1len];\n      char n2 = s2[s2len];\n\n      s1[s1len] = '\\0';\n      s2[s2len] = '\\0';\n\n      diff = strcoll_loop (s1, s1len + 1, s2, s2len + 1);\n\n      s1[s1len] = n1;\n      s2[s2len] = n2;\n    }\n\n  return diff;\n}\n\n \nint\nmemcoll0 (char const *s1, size_t s1size, char const *s2, size_t s2size)\n{\n  if (s1size == s2size && memcmp (s1, s2, s1size) == 0)\n    {\n      errno = 0;\n      return 0;\n    }\n  else\n    return strcoll_loop (s1, s1size, s2, s2size);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

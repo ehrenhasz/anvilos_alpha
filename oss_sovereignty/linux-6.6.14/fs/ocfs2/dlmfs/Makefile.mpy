@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a7ef86e16559c8033a196d9009681fe6407cf86057561454dc361af143339e00",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/dlmfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_OCFS2_FS) += ocfs2_dlmfs.o\n\nocfs2_dlmfs-objs := userdlm.o dlmfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

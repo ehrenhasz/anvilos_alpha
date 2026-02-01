@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-macally.c",
+  "hash_id": "75f5cf7323d5606ce2e27d343c37d8e5df5697eee63e35be5f59d13b4b24695b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-macally.c",
+  "human_readable_source": "\n \n\n#include <linux/hid.h>\n#include <linux/module.h>\n\n#include \"hid-ids.h\"\n\nMODULE_AUTHOR(\"Alex Henrie <alexhenrie24@gmail.com>\");\nMODULE_DESCRIPTION(\"Macally devices\");\nMODULE_LICENSE(\"GPL\");\n\n \nstatic __u8 *macally_report_fixup(struct hid_device *hdev, __u8 *rdesc,\n\t\t\t\t unsigned int *rsize)\n{\n\tif (*rsize >= 60 && rdesc[53] == 0x65 && rdesc[59] == 0x65) {\n\t\thid_info(hdev,\n\t\t\t\"fixing up Macally ikey keyboard report descriptor\\n\");\n\t\trdesc[53] = rdesc[59] = 0x67;\n\t}\n\treturn rdesc;\n}\n\nstatic const struct hid_device_id macally_id_table[] = {\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_SOLID_YEAR,\n\t\t\t USB_DEVICE_ID_MACALLY_IKEY_KEYBOARD) },\n\t{ }\n};\nMODULE_DEVICE_TABLE(hid, macally_id_table);\n\nstatic struct hid_driver macally_driver = {\n\t.name\t\t\t= \"macally\",\n\t.id_table\t\t= macally_id_table,\n\t.report_fixup\t\t= macally_report_fixup,\n};\n\nmodule_hid_driver(macally_driver);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

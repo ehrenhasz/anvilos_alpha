@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_type_based___diff.c",
+  "hash_id": "eb15be0e2172e2e79b95b72798c651281b47f36aa6131f3641656ea6d02aaf53",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_type_based___diff.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_type_based___diff x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

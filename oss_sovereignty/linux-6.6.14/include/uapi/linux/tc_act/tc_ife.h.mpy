@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_ife.h",
+  "hash_id": "f23de0085a094743c0e8a3b370dcb63db3edd17eb281da3b6ef18af9af83d7be",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_act/tc_ife.h",
+  "human_readable_source": " \n#ifndef __UAPI_TC_IFE_H\n#define __UAPI_TC_IFE_H\n\n#include <linux/types.h>\n#include <linux/pkt_cls.h>\n#include <linux/ife.h>\n\n \n#define IFE_ENCODE 1\n#define IFE_DECODE 0\n\nstruct tc_ife {\n\ttc_gen;\n\t__u16 flags;\n};\n\n \nenum {\n\tTCA_IFE_UNSPEC,\n\tTCA_IFE_PARMS,\n\tTCA_IFE_TM,\n\tTCA_IFE_DMAC,\n\tTCA_IFE_SMAC,\n\tTCA_IFE_TYPE,\n\tTCA_IFE_METALST,\n\tTCA_IFE_PAD,\n\t__TCA_IFE_MAX\n};\n#define TCA_IFE_MAX (__TCA_IFE_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

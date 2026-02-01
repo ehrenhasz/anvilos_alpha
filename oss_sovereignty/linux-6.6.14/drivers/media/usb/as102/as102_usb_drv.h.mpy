@@ -1,0 +1,9 @@
+{
+  "module_name": "as102_usb_drv.h",
+  "hash_id": "105db10ca4d8718d06f3b59ff235d37796cba735424a0810801b80215df136e0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/as102/as102_usb_drv.h",
+  "human_readable_source": " \n \n#ifndef _AS102_USB_DRV_H_\n#define _AS102_USB_DRV_H_\n\n#define AS102_USB_DEVICE_TX_CTRL_CMD\t0xF1\n#define AS102_USB_DEVICE_RX_CTRL_CMD\t0xF2\n\n \n\n \n#define AS102_REFERENCE_DESIGN\t\t\"Abilis Systems DVB-Titan\"\n#define AS102_USB_DEVICE_VENDOR_ID\t0x1BA6\n#define AS102_USB_DEVICE_PID_0001\t0x0001\n\n \n#define AS102_PCTV_74E\t\t\t\"PCTV Systems picoStick (74e)\"\n#define PCTV_74E_USB_VID\t\t0x2013\n#define PCTV_74E_USB_PID\t\t0x0246\n\n \n#define AS102_ELGATO_EYETV_DTT_NAME\t\"Elgato EyeTV DTT Deluxe\"\n#define ELGATO_EYETV_DTT_USB_VID\t0x0fd9\n#define ELGATO_EYETV_DTT_USB_PID\t0x002c\n\n \n#define AS102_NBOX_DVBT_DONGLE_NAME\t\"nBox DVB-T Dongle\"\n#define NBOX_DVBT_DONGLE_USB_VID\t0x0b89\n#define NBOX_DVBT_DONGLE_USB_PID\t0x0007\n\n \n#define AS102_SKY_IT_DIGITAL_KEY_NAME\t\"Sky IT Digital Key (green led)\"\n#define SKY_IT_DIGITAL_KEY_USB_VID\t0x2137\n#define SKY_IT_DIGITAL_KEY_USB_PID\t0x0001\n\nvoid as102_urb_stream_irq(struct urb *urb);\n\nstruct as10x_usb_token_cmd_t {\n\t \n\tstruct as10x_cmd_t c;\n\t \n\tstruct as10x_cmd_t r;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

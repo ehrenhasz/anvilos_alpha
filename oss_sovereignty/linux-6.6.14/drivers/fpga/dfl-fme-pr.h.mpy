@@ -1,0 +1,9 @@
+{
+  "module_name": "dfl-fme-pr.h",
+  "hash_id": "ca4745ec39ab9d5bc27929aa4ad29a2f5325d56d5300b8c27cc848496b675fd1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/fpga/dfl-fme-pr.h",
+  "human_readable_source": " \n \n\n#ifndef __DFL_FME_PR_H\n#define __DFL_FME_PR_H\n\n#include <linux/platform_device.h>\n\n \nstruct dfl_fme_region {\n\tstruct platform_device *region;\n\tstruct list_head node;\n\tint port_id;\n};\n\n \nstruct dfl_fme_region_pdata {\n\tstruct platform_device *mgr;\n\tstruct platform_device *br;\n\tint region_id;\n};\n\n \nstruct dfl_fme_bridge {\n\tstruct platform_device *br;\n\tstruct list_head node;\n};\n\n \nstruct dfl_fme_br_pdata {\n\tstruct dfl_fpga_cdev *cdev;\n\tint port_id;\n};\n\n \nstruct dfl_fme_mgr_pdata {\n\tvoid __iomem *ioaddr;\n};\n\n#define DFL_FPGA_FME_MGR\t\"dfl-fme-mgr\"\n#define DFL_FPGA_FME_BRIDGE\t\"dfl-fme-bridge\"\n#define DFL_FPGA_FME_REGION\t\"dfl-fme-region\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

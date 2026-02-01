@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_sprite_uapi.h",
+  "hash_id": "e981a9ba1d768f5179fc82a1c07cd6fed9ad8cbaf0d1b3ab6b727c784e23cbe3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_sprite_uapi.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_SPRITE_UAPI_H__\n#define __INTEL_SPRITE_UAPI_H__\n\nstruct drm_device;\nstruct drm_file;\n\nint intel_sprite_set_colorkey_ioctl(struct drm_device *dev, void *data,\n\t\t\t\t    struct drm_file *file_priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cobalt-v4l2.h",
+  "hash_id": "abe419950eec3e91a7efa0672cdb53c0f5e21986f01f95fbb5b04815529eb9a4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cobalt/cobalt-v4l2.h",
+  "human_readable_source": " \n \n\nint cobalt_nodes_register(struct cobalt *cobalt);\nvoid cobalt_nodes_unregister(struct cobalt *cobalt);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

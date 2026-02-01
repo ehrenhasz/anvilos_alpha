@@ -1,0 +1,9 @@
+{
+  "module_name": "ansi_stdlib.h",
+  "hash_id": "18aab0dff9b0c28013ebaa740febc59c4864e04ee442f95647da50f409c81c9a",
+  "original_prompt": "Ingested from bash-5.2.21/lib/readline/ansi_stdlib.h",
+  "human_readable_source": " \n \n\n \n\n#if !defined (_STDLIB_H_)\n#define\t_STDLIB_H_ 1\n\n \nextern int atoi ();\n\nextern double atof ();\nextern double strtod ();\n\n \n \n#ifndef PTR_T\n\n#if defined (__STDC__)\n#  define PTR_T\tvoid *\n#else\n#  define PTR_T char *\n#endif\n\n#endif  \n\nextern PTR_T malloc ();\nextern PTR_T realloc ();\nextern void free ();\n\n \nextern void abort ();\nextern void exit ();\nextern char *getenv ();\nextern void qsort ();\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

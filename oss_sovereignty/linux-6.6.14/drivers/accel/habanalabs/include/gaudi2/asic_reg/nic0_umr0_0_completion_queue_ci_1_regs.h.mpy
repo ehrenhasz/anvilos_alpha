@@ -1,0 +1,9 @@
+{
+  "module_name": "nic0_umr0_0_completion_queue_ci_1_regs.h",
+  "hash_id": "f43c3b399eb804dbace4894c33d8423d0f2951637b92ccf8ba9fa474fc64e9a2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/gaudi2/asic_reg/nic0_umr0_0_completion_queue_ci_1_regs.h",
+  "human_readable_source": " \n\n \n\n#ifndef ASIC_REG_NIC0_UMR0_0_COMPLETION_QUEUE_CI_1_REGS_H_\n#define ASIC_REG_NIC0_UMR0_0_COMPLETION_QUEUE_CI_1_REGS_H_\n\n \n\n#define mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_NUMBER 0x5400180\n\n#define mmNIC0_UMR0_0_COMPLETION_QUEUE_CI_1_CQ_CONSUMER_INDEX 0x5400184\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2b508432e94e837f2310a94595da24b6b6f11ff60df52ca17542a90af712971b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/mce/Makefile",
+  "human_readable_source": "#SPDX-License-Identifier: GPL-2.0-or-later\n\nTEST_GEN_PROGS := inject-ra-err\n\ninclude ../../lib.mk\n\n$(TEST_GEN_PROGS): ../harness.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

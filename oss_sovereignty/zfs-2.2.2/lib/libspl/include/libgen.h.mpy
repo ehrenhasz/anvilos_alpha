@@ -1,0 +1,9 @@
+{
+  "module_name": "libgen.h",
+  "hash_id": "bbc0271154b8666294be00fd0a9b0167b7dc15d1ddc02120b5257c06387678dc",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/libgen.h",
+  "human_readable_source": " \n \n\n#ifndef _LIBSPL_LIBGEN_H\n#define\t_LIBSPL_LIBGEN_H\n\n#include <sys/types.h>\n#include_next <libgen.h>\n\nextern int mkdirp(const char *, mode_t);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

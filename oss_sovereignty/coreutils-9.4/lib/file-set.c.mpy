@@ -1,0 +1,9 @@
+{
+  "module_name": "file-set.c",
+  "hash_id": "b9ba576b24d21d712d4b8be6f2c972518197756e5ba978d21996927de06b3c7e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/file-set.c",
+  "human_readable_source": " \n\n#include <config.h>\n#include \"file-set.h\"\n\n#include \"hash-triple.h\"\n#include \"xalloc.h\"\n\n \nvoid\nrecord_file (Hash_table *ht, char const *file, struct stat const *stats)\n{\n  struct F_triple *ent;\n\n  if (ht == NULL)\n    return;\n\n  ent = xmalloc (sizeof *ent);\n  ent->name = xstrdup (file);\n  ent->st_ino = stats->st_ino;\n  ent->st_dev = stats->st_dev;\n\n  {\n    struct F_triple *ent_from_table = hash_insert (ht, ent);\n    if (ent_from_table == NULL)\n      {\n         \n        xalloc_die ();\n      }\n\n    if (ent_from_table != ent)\n      {\n         \n        triple_free (ent);\n      }\n  }\n}\n\n \nbool\nseen_file (Hash_table const *ht, char const *file,\n           struct stat const *stats)\n{\n  struct F_triple new_ent;\n\n  if (ht == NULL)\n    return false;\n\n  new_ent.name = (char *) file;\n  new_ent.st_ino = stats->st_ino;\n  new_ent.st_dev = stats->st_dev;\n\n  return !!hash_lookup (ht, &new_ent);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

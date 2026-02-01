@@ -1,0 +1,9 @@
+{
+  "module_name": "adi-axi-common.h",
+  "hash_id": "3a109d5c32b330e00203937a5e759b1f87997b33265ce95ca39056fe6494eefe",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fpga/adi-axi-common.h",
+  "human_readable_source": " \n \n\n#ifndef ADI_AXI_COMMON_H_\n#define ADI_AXI_COMMON_H_\n\n#define ADI_AXI_REG_VERSION\t\t\t0x0000\n\n#define ADI_AXI_PCORE_VER(major, minor, patch)\t\\\n\t(((major) << 16) | ((minor) << 8) | (patch))\n\n#define ADI_AXI_PCORE_VER_MAJOR(version)\t(((version) >> 16) & 0xff)\n#define ADI_AXI_PCORE_VER_MINOR(version)\t(((version) >> 8) & 0xff)\n#define ADI_AXI_PCORE_VER_PATCH(version)\t((version) & 0xff)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

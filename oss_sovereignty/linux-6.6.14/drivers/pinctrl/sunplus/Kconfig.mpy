@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5367bd08a9da59c5e43a97d7b890c18748216afb83f8f28294250edb0fb946b6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/sunplus/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Sunplus Pin control driver configuration\n#\n\nconfig PINCTRL_SPPCTL\n\ttristate \"Sunplus SP7021 PinMux and GPIO driver\"\n\tdepends on SOC_SP7021\n\tdepends on OF && HAS_IOMEM\n\tselect GENERIC_PINCTRL_GROUPS\n\tselect GENERIC_PINMUX_FUNCTIONS\n\tselect GENERIC_PINCONF\n\tselect PINCONF\n\tselect PINMUX\n\tselect GPIOLIB\n\tselect OF_GPIO\n\thelp\n\t  Say Y here to support Sunplus SP7021 pinmux controller.\n\t  This driver requires the pinctrl framework.\n\t  GPIO is provided by the same driver.\n\t  To compile this driver as a module, choose M here.\n\t  The module will be called sppinctrl.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "c32isgraph.c",
+  "hash_id": "53e2933e3c0d483ceb3027ac904646a47284ee1c9ab9ba94541a0a63b2b2724f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c32isgraph.c",
+  "human_readable_source": " \n#include <uchar.h>\n\n#define FUNC c32isgraph\n#define WCHAR_FUNC iswgraph\n#define UCS_FUNC uc_is_graph\n#include \"c32is-impl.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

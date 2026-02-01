@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-jabra.c",
+  "hash_id": "b4ad22c0c768fa25b2577df65ff4c0250130bb752df59d779d1b464aecf2555b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-jabra.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/hid.h>\n#include <linux/module.h>\n\n#include \"hid-ids.h\"\n\n#define HID_UP_VENDOR_DEFINED_MIN\t0xff000000\n#define HID_UP_VENDOR_DEFINED_MAX\t0xffff0000\n\nstatic int jabra_input_mapping(struct hid_device *hdev,\n\t\t\t       struct hid_input *hi,\n\t\t\t       struct hid_field *field,\n\t\t\t       struct hid_usage *usage,\n\t\t\t       unsigned long **bit, int *max)\n{\n\tint is_vendor_defined =\n\t\t((usage->hid & HID_USAGE_PAGE) >= HID_UP_VENDOR_DEFINED_MIN &&\n\t\t (usage->hid & HID_USAGE_PAGE) <= HID_UP_VENDOR_DEFINED_MAX);\n\n\tdbg_hid(\"hid=0x%08x appl=0x%08x coll_idx=0x%02x usage_idx=0x%02x: %s\\n\",\n\t\tusage->hid,\n\t\tfield->application,\n\t\tusage->collection_index,\n\t\tusage->usage_index,\n\t\tis_vendor_defined ? \"ignored\" : \"defaulted\");\n\n\t \n\treturn is_vendor_defined ? -1 : 0;\n}\n\nstatic const struct hid_device_id jabra_devices[] = {\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_JABRA, HID_ANY_ID) },\n\t{ }\n};\nMODULE_DEVICE_TABLE(hid, jabra_devices);\n\nstatic struct hid_driver jabra_driver = {\n\t.name = \"jabra\",\n\t.id_table = jabra_devices,\n\t.input_mapping = jabra_input_mapping,\n};\nmodule_hid_driver(jabra_driver);\n\nMODULE_AUTHOR(\"Niels Skou Olsen <nolsen@jabra.com>\");\nMODULE_DESCRIPTION(\"Jabra USB HID Driver\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

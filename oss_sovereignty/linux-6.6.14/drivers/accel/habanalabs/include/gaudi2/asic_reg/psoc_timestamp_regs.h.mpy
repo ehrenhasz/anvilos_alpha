@@ -1,0 +1,9 @@
+{
+  "module_name": "psoc_timestamp_regs.h",
+  "hash_id": "8bee74e818a560a47f059aa756abc7d8b2582ca82be8e5f8e9c82e117b9e4802",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/gaudi2/asic_reg/psoc_timestamp_regs.h",
+  "human_readable_source": " \n\n \n\n#ifndef ASIC_REG_PSOC_TIMESTAMP_REGS_H_\n#define ASIC_REG_PSOC_TIMESTAMP_REGS_H_\n\n \n\n#define mmPSOC_TIMESTAMP_CNTCR 0x4C49000\n\n#define mmPSOC_TIMESTAMP_CNTSR 0x4C49004\n\n#define mmPSOC_TIMESTAMP_CNTCVL 0x4C49008\n\n#define mmPSOC_TIMESTAMP_CNTCVU 0x4C4900C\n\n#define mmPSOC_TIMESTAMP_CNTFID0 0x4C49020\n\n#define mmPSOC_TIMESTAMP_PIDR4 0x4C49FD0\n\n#define mmPSOC_TIMESTAMP_PIDR5 0x4C49FD4\n\n#define mmPSOC_TIMESTAMP_PIDR6 0x4C49FD8\n\n#define mmPSOC_TIMESTAMP_PIDR7 0x4C49FDC\n\n#define mmPSOC_TIMESTAMP_PIDR0 0x4C49FE0\n\n#define mmPSOC_TIMESTAMP_PIDR1 0x4C49FE4\n\n#define mmPSOC_TIMESTAMP_PIDR2 0x4C49FE8\n\n#define mmPSOC_TIMESTAMP_PIDR3 0x4C49FEC\n\n#define mmPSOC_TIMESTAMP_CIDR0 0x4C49FF0\n\n#define mmPSOC_TIMESTAMP_CIDR1 0x4C49FF4\n\n#define mmPSOC_TIMESTAMP_CIDR2 0x4C49FF8\n\n#define mmPSOC_TIMESTAMP_CIDR3 0x4C49FFC\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

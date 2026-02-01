@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5b0633508d9fff98cb7d0894e62692408bb12c431c1f7e022b63750aaf89971c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/nuvoton/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig PINCTRL_WPCM450\n\ttristate \"Pinctrl and GPIO driver for Nuvoton WPCM450\"\n\tdepends on ARCH_WPCM450 || COMPILE_TEST\n\tdepends on OF\n\tselect PINMUX\n\tselect PINCONF\n\tselect GENERIC_PINCONF\n\tselect GENERIC_PINCTRL_GROUPS\n\tselect GPIOLIB\n\tselect GPIO_GENERIC\n\tselect GPIOLIB_IRQCHIP\n\tselect MFD_SYSCON\n\thelp\n\t  Say Y or M here to enable pin controller and GPIO support for\n\t  the Nuvoton WPCM450 SoC. This is strongly recommended when\n\t  building a kernel that will run on this chip.\n\n\t  If this driver is compiled as a module, it will be named\n\t  pinctrl-wpcm450.\n\nconfig PINCTRL_NPCM7XX\n\tbool \"Pinctrl and GPIO driver for Nuvoton NPCM7XX\"\n\tdepends on (ARCH_NPCM7XX || COMPILE_TEST) && OF\n\tselect PINMUX\n\tselect PINCONF\n\tselect GENERIC_PINCONF\n\tselect GPIOLIB\n\tselect GPIO_GENERIC\n\tselect GPIOLIB_IRQCHIP\n\thelp\n\t  Say Y here to enable pin controller and GPIO support\n\t  for Nuvoton NPCM750/730/715/705 SoCs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

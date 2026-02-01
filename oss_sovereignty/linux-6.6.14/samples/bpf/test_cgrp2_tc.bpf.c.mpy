@@ -1,0 +1,9 @@
+{
+  "module_name": "test_cgrp2_tc.bpf.c",
+  "hash_id": "a0b59f553c9dddd120e1d47d3529b6a974f4b7389a0bae38d5cf80b5eb27dcb3",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/test_cgrp2_tc.bpf.c",
+  "human_readable_source": " \n#define KBUILD_MODNAME \"foo\"\n#include \"vmlinux.h\"\n#include \"net_shared.h\"\n#include <bpf/bpf_helpers.h>\n\n \nstruct eth_hdr {\n\tunsigned char   h_dest[ETH_ALEN];\n\tunsigned char   h_source[ETH_ALEN];\n\tunsigned short  h_proto;\n};\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_CGROUP_ARRAY);\n\t__type(key, u32);\n\t__type(value, u32);\n\t__uint(pinning, LIBBPF_PIN_BY_NAME);\n\t__uint(max_entries, 1);\n} test_cgrp2_array_pin SEC(\".maps\");\n\nSEC(\"filter\")\nint handle_egress(struct __sk_buff *skb)\n{\n\tvoid *data = (void *)(long)skb->data;\n\tstruct eth_hdr *eth = data;\n\tstruct ipv6hdr *ip6h = data + sizeof(*eth);\n\tvoid *data_end = (void *)(long)skb->data_end;\n\tchar dont_care_msg[] = \"dont care %04x %d\\n\";\n\tchar pass_msg[] = \"pass\\n\";\n\tchar reject_msg[] = \"reject\\n\";\n\n\t \n\tif (data + sizeof(*eth) + sizeof(*ip6h) > data_end)\n\t\treturn TC_ACT_OK;\n\n\tif (eth->h_proto != bpf_htons(ETH_P_IPV6) ||\n\t    ip6h->nexthdr != IPPROTO_ICMPV6) {\n\t\tbpf_trace_printk(dont_care_msg, sizeof(dont_care_msg),\n\t\t\t\t eth->h_proto, ip6h->nexthdr);\n\t\treturn TC_ACT_OK;\n\t} else if (bpf_skb_under_cgroup(skb, &test_cgrp2_array_pin, 0) != 1) {\n\t\tbpf_trace_printk(pass_msg, sizeof(pass_msg));\n\t\treturn TC_ACT_OK;\n\t} else {\n\t\tbpf_trace_printk(reject_msg, sizeof(reject_msg));\n\t\treturn TC_ACT_SHOT;\n\t}\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "microchip,pdmc.h",
+  "hash_id": "4db7d6a37d5d0b2d7f3889bb7ec1ba06ae19150be5d40733547c228f2b128d3a",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/sound/microchip,pdmc.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_MICROCHIP_PDMC_H__\n#define __DT_BINDINGS_MICROCHIP_PDMC_H__\n\n \n#define MCHP_PDMC_DS0 0\n#define MCHP_PDMC_DS1 1\n\n \n#define MCHP_PDMC_CLK_POSITIVE 0\n#define MCHP_PDMC_CLK_NEGATIVE 1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

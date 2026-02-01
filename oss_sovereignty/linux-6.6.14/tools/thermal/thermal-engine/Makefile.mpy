@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "efc2d4c6b64c2218a986fdb61fb46e949b22f6926832a9f86ee5c3976330097d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/thermal/thermal-engine/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Makefile for thermal tools\n\nifeq ($(srctree),)\nsrctree := $(patsubst %/,%,$(dir $(CURDIR)))\nsrctree := $(patsubst %/,%,$(dir $(srctree)))\nsrctree := $(patsubst %/,%,$(dir $(srctree)))\n# $(info Determined 'srctree' to be $(srctree))\nendif\n\nCFLAGS = -Wall -Wextra\nCFLAGS += -I$(srctree)/tools/thermal/lib\nCFLAGS += -I$(srctree)/tools/lib/thermal/include\n\nLDFLAGS = -L$(srctree)/tools/thermal/lib\nLDFLAGS += -L$(srctree)/tools/lib/thermal\nLDFLAGS += -lthermal_tools\nLDFLAGS += -lthermal\nLDFLAGS += -lconfig\nLDFLAGS += -lnl-genl-3 -lnl-3\n\nVERSION = 0.0.1\n\nall: thermal-engine\n%: %.c\n\t$(CC) $(CFLAGS) -D VERSION=\\\"$(VERSION)\\\" -o $@ $^ $(LDFLAGS)\nclean:\n\t$(RM) thermal-engine\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

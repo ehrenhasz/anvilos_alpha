@@ -1,0 +1,9 @@
+{
+  "module_name": "industrialio-configfs.c",
+  "hash_id": "19c980fc910e42f57206c3feb686be0278e41dae7b12d95c500d0809edccccdb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/industrialio-configfs.c",
+  "human_readable_source": "\n \n\n#include <linux/configfs.h>\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/kmod.h>\n#include <linux/slab.h>\n\n#include <linux/iio/iio.h>\n#include <linux/iio/configfs.h>\n\nstatic const struct config_item_type iio_root_group_type = {\n\t.ct_owner       = THIS_MODULE,\n};\n\nstruct configfs_subsystem iio_configfs_subsys = {\n\t.su_group = {\n\t\t.cg_item = {\n\t\t\t.ci_namebuf = \"iio\",\n\t\t\t.ci_type = &iio_root_group_type,\n\t\t},\n\t},\n\t.su_mutex = __MUTEX_INITIALIZER(iio_configfs_subsys.su_mutex),\n};\nEXPORT_SYMBOL(iio_configfs_subsys);\n\nstatic int __init iio_configfs_init(void)\n{\n\tconfig_group_init(&iio_configfs_subsys.su_group);\n\n\treturn configfs_register_subsystem(&iio_configfs_subsys);\n}\nmodule_init(iio_configfs_init);\n\nstatic void __exit iio_configfs_exit(void)\n{\n\tconfigfs_unregister_subsystem(&iio_configfs_subsys);\n}\nmodule_exit(iio_configfs_exit);\n\nMODULE_AUTHOR(\"Daniel Baluta <daniel.baluta@intel.com>\");\nMODULE_DESCRIPTION(\"Industrial I/O configfs support\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

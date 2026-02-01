@@ -1,0 +1,9 @@
+{
+  "module_name": "file.h",
+  "hash_id": "34aad698d61b2b1a163695bd7fb4ea7db98a34f75ad60de6bf650032d7755f58",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/file.h",
+  "human_readable_source": " \n\n#ifndef BTRFS_FILE_H\n#define BTRFS_FILE_H\n\nextern const struct file_operations btrfs_file_operations;\n\nint btrfs_sync_file(struct file *file, loff_t start, loff_t end, int datasync);\nint btrfs_drop_extents(struct btrfs_trans_handle *trans,\n\t\t       struct btrfs_root *root, struct btrfs_inode *inode,\n\t\t       struct btrfs_drop_extents_args *args);\nint btrfs_replace_file_extents(struct btrfs_inode *inode,\n\t\t\t   struct btrfs_path *path, const u64 start,\n\t\t\t   const u64 end,\n\t\t\t   struct btrfs_replace_extent_info *extent_info,\n\t\t\t   struct btrfs_trans_handle **trans_out);\nint btrfs_mark_extent_written(struct btrfs_trans_handle *trans,\n\t\t\t      struct btrfs_inode *inode, u64 start, u64 end);\nssize_t btrfs_do_write_iter(struct kiocb *iocb, struct iov_iter *from,\n\t\t\t    const struct btrfs_ioctl_encoded_io_args *encoded);\nint btrfs_release_file(struct inode *inode, struct file *file);\nint btrfs_dirty_pages(struct btrfs_inode *inode, struct page **pages,\n\t\t      size_t num_pages, loff_t pos, size_t write_bytes,\n\t\t      struct extent_state **cached, bool noreserve);\nint btrfs_fdatawrite_range(struct inode *inode, loff_t start, loff_t end);\nint btrfs_check_nocow_lock(struct btrfs_inode *inode, loff_t pos,\n\t\t\t   size_t *write_bytes, bool nowait);\nvoid btrfs_check_nocow_unlock(struct btrfs_inode *inode);\nbool btrfs_find_delalloc_in_range(struct btrfs_inode *inode, u64 start, u64 end,\n\t\t\t\t  struct extent_state **cached_state,\n\t\t\t\t  u64 *delalloc_start_ret, u64 *delalloc_end_ret);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

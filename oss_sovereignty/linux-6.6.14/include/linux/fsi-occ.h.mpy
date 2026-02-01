@@ -1,0 +1,9 @@
+{
+  "module_name": "fsi-occ.h",
+  "hash_id": "81112b444cf6f8b1e1337bcc782ff69e3c351f2c848cb4405936e61ec1995f9e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fsi-occ.h",
+  "human_readable_source": "\n\n#ifndef LINUX_FSI_OCC_H\n#define LINUX_FSI_OCC_H\n\nstruct device;\n\n#define OCC_RESP_CMD_IN_PRG\t\t0xFF\n#define OCC_RESP_SUCCESS\t\t0\n#define OCC_RESP_CMD_INVAL\t\t0x11\n#define OCC_RESP_CMD_LEN_INVAL\t\t0x12\n#define OCC_RESP_DATA_INVAL\t\t0x13\n#define OCC_RESP_CHKSUM_ERR\t\t0x14\n#define OCC_RESP_INT_ERR\t\t0x15\n#define OCC_RESP_BAD_STATE\t\t0x16\n#define OCC_RESP_CRIT_EXCEPT\t\t0xE0\n#define OCC_RESP_CRIT_INIT\t\t0xE1\n#define OCC_RESP_CRIT_WATCHDOG\t\t0xE2\n#define OCC_RESP_CRIT_OCB\t\t0xE3\n#define OCC_RESP_CRIT_HW\t\t0xE4\n\n#define OCC_MAX_RESP_WORDS\t\t2048\n\nint fsi_occ_submit(struct device *dev, const void *request, size_t req_len,\n\t\t   void *response, size_t *resp_len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

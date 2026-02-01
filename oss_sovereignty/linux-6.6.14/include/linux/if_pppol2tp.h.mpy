@@ -1,0 +1,9 @@
+{
+  "module_name": "if_pppol2tp.h",
+  "hash_id": "03e3913225e2aa2c25a1aea39235d52aa152a8135e61c1e109b18c3b3f1eb005",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/if_pppol2tp.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_IF_PPPOL2TP_H\n#define __LINUX_IF_PPPOL2TP_H\n\n#include <linux/in.h>\n#include <linux/in6.h>\n#include <uapi/linux/if_pppol2tp.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

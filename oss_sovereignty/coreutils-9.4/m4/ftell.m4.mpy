@@ -1,0 +1,9 @@
+{
+  "module_name": "ftell.m4",
+  "hash_id": "fc7e7907dd7d02c69658c204af0dd83c4d1e57aadd1cab32c940c05898404987",
+  "original_prompt": "Ingested from coreutils-9.4/m4/ftell.m4",
+  "human_readable_source": "# ftell.m4 serial 3\ndnl Copyright (C) 2007, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_FTELL],\n[\n  AC_REQUIRE([gl_STDIO_H_DEFAULTS])\n  AC_REQUIRE([gl_FUNC_FTELLO])\n  dnl When ftello needs fixes, ftell needs them too.\n  if test $HAVE_FTELLO = 0 || test $REPLACE_FTELLO = 1; then\n    REPLACE_FTELL=1\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

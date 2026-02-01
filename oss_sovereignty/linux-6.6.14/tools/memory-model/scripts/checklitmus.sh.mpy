@@ -1,0 +1,9 @@
+{
+  "module_name": "checklitmus.sh",
+  "hash_id": "423f038916526b719794174b9c81592a4b020fe574e105d1acc5ddfdb16c2b71",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/scripts/checklitmus.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Invokes runlitmus.sh and judgelitmus.sh on its arguments to run the\n# specified litmus test and pass judgment on the results.\n#\n# Usage:\n#\tchecklitmus.sh file.litmus\n#\n# Run this in the directory containing the memory model, specifying the\n# pathname of the litmus test to check.  The caller is expected to have\n# properly set up the LKMM environment variables.\n#\n# Copyright IBM Corporation, 2018\n#\n# Author: Paul E. McKenney <paulmck@linux.ibm.com>\n\nscripts/runlitmus.sh $1\nscripts/judgelitmus.sh $1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

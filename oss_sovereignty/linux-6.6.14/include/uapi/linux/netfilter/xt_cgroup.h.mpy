@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_cgroup.h",
+  "hash_id": "62af3376f4f772e32d5be788dffa7a84f46d262e88013520acdef2185635ab47",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_cgroup.h",
+  "human_readable_source": " \n#ifndef _UAPI_XT_CGROUP_H\n#define _UAPI_XT_CGROUP_H\n\n#include <linux/types.h>\n#include <linux/limits.h>\n\nstruct xt_cgroup_info_v0 {\n\t__u32 id;\n\t__u32 invert;\n};\n\nstruct xt_cgroup_info_v1 {\n\t__u8\t\thas_path;\n\t__u8\t\thas_classid;\n\t__u8\t\tinvert_path;\n\t__u8\t\tinvert_classid;\n\tchar\t\tpath[PATH_MAX];\n\t__u32\t\tclassid;\n\n\t \n\tvoid\t\t*priv __attribute__((aligned(8)));\n};\n\n#define XT_CGROUP_PATH_MAX\t512\n\nstruct xt_cgroup_info_v2 {\n\t__u8\t\thas_path;\n\t__u8\t\thas_classid;\n\t__u8\t\tinvert_path;\n\t__u8\t\tinvert_classid;\n\tunion {\n\t\tchar\tpath[XT_CGROUP_PATH_MAX];\n\t\t__u32\tclassid;\n\t};\n\n\t \n\tvoid\t\t*priv __attribute__((aligned(8)));\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mmcr0_fc56_pmc56_test.c",
+  "hash_id": "0b3dfc13d32f77f698b1fa87c8b2967e2f2b8054b6d116e5834d4388f4287d23",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/sampling_tests/mmcr0_fc56_pmc56_test.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <stdlib.h>\n\n#include \"../event.h\"\n#include \"misc.h\"\n#include \"utils.h\"\n\nextern void thirty_two_instruction_loop(int loops);\n\n \nstatic int mmcr0_fc56_pmc56(void)\n{\n\tstruct event event;\n\tu64 *intr_regs;\n\n\t  \n\tSKIP_IF(check_pvr_for_sampling_tests());\n\n\t \n\tevent_init_sampling(&event, 0x500fa);\n\tevent.attr.sample_regs_intr = platform_extended_mask;\n\tFAIL_IF(event_open(&event));\n\tevent.mmap_buffer = event_sample_buf_mmap(event.fd, 1);\n\n\tFAIL_IF(event_enable(&event));\n\n\t \n\tthirty_two_instruction_loop(10000);\n\n\tFAIL_IF(event_disable(&event));\n\n\t \n\tFAIL_IF(!collect_samples(event.mmap_buffer));\n\n\tintr_regs = get_intr_regs(&event, event.mmap_buffer);\n\n\t \n\tFAIL_IF(!intr_regs);\n\n\t \n\tFAIL_IF(get_mmcr0_fc56(get_reg_value(intr_regs, \"MMCR0\"), 5));\n\n\tevent_close(&event);\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(mmcr0_fc56_pmc56, \"mmcr0_fc56_pmc56\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

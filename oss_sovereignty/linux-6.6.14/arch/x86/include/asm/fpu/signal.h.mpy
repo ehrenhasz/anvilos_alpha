@@ -1,0 +1,9 @@
+{
+  "module_name": "signal.h",
+  "hash_id": "84d1034530558c71cb830ac26ee9d77d17575f0b2f5d3d8fafc8c59e1f9e8725",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/fpu/signal.h",
+  "human_readable_source": " \n \n#ifndef _ASM_X86_FPU_SIGNAL_H\n#define _ASM_X86_FPU_SIGNAL_H\n\n#include <linux/compat.h>\n#include <linux/user.h>\n\n#include <asm/fpu/types.h>\n\n#ifdef CONFIG_X86_64\n# include <uapi/asm/sigcontext.h>\n# include <asm/user32.h>\n#else\n# define user_i387_ia32_struct\tuser_i387_struct\n# define user32_fxsr_struct\tuser_fxsr_struct\n#endif\n\nextern void convert_from_fxsr(struct user_i387_ia32_struct *env,\n\t\t\t      struct task_struct *tsk);\nextern void convert_to_fxsr(struct fxregs_state *fxsave,\n\t\t\t    const struct user_i387_ia32_struct *env);\n\nunsigned long\nfpu__alloc_mathframe(unsigned long sp, int ia32_frame,\n\t\t     unsigned long *buf_fx, unsigned long *size);\n\nunsigned long fpu__get_fpstate_size(void);\n\nextern bool copy_fpstate_to_sigframe(void __user *buf, void __user *fp, int size);\nextern void fpu__clear_user_states(struct fpu *fpu);\nextern bool fpu__restore_sig(void __user *buf, int ia32_frame);\n\nextern void restore_fpregs_from_fpstate(struct fpstate *fpstate, u64 mask);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

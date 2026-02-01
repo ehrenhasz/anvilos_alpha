@@ -1,0 +1,9 @@
+{
+  "module_name": "dce100_hw_sequencer.h",
+  "hash_id": "5175f27fcc5e394d1c3d7f793fc854296889e3d2e062d42dfbcaebb5adcaf1cc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce100/dce100_hw_sequencer.h",
+  "human_readable_source": " \n\n#ifndef __DC_HWSS_DCE100_H__\n#define __DC_HWSS_DCE100_H__\n\n#include \"core_types.h\"\n#include \"hw_sequencer_private.h\"\n\nstruct dc;\nstruct dc_state;\n\nvoid dce100_hw_sequencer_construct(struct dc *dc);\n\nvoid dce100_prepare_bandwidth(\n\t\tstruct dc *dc,\n\t\tstruct dc_state *context);\n\nvoid dce100_optimize_bandwidth(\n\t\tstruct dc *dc,\n\t\tstruct dc_state *context);\n\nbool dce100_enable_display_power_gating(struct dc *dc, uint8_t controller_id,\n\t\t\t\t\tstruct dc_bios *dcb,\n\t\t\t\t\tenum pipe_gating_control power_gating);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

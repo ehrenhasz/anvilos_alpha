@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "31ad6c9b0d94567261a794950c27727b69216fd6e90d61d32f232dae65d35fa6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig RTL8723BS\n\ttristate \"Realtek RTL8723BS SDIO Wireless LAN NIC driver\"\n\tdepends on WLAN && MMC && CFG80211\n\tdepends on m\n\tselect CFG80211_WEXT\n\tselect CRYPTO\n\tselect CRYPTO_LIB_ARC4\n\thelp\n\tThis option enables support for RTL8723BS SDIO drivers, such as\n\tthe wifi found on the 1st gen Intel Compute Stick, the CHIP\n\tand many other Intel Atom and ARM based devices.\n\tIf built as a module, it will be called r8723bs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bind.c",
+  "hash_id": "42329038d50af490cf25842dbd7425838581f45d0e83d2cf2d8ec38f2eb3db6a",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/bind.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#define WIN32_LEAN_AND_MEAN\n \n#include <sys/socket.h>\n\n \n#include \"w32sock.h\"\n\n#undef bind\n\nint\nrpl_bind (int fd, const struct sockaddr *sockaddr, socklen_t len)\n{\n  SOCKET sock = FD_TO_SOCKET (fd);\n\n  if (sock == INVALID_SOCKET)\n    {\n      errno = EBADF;\n      return -1;\n    }\n  else\n    {\n      int r = bind (sock, sockaddr, len);\n      if (r < 0)\n        set_winsock_errno ();\n\n      return r;\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

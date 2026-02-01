@@ -1,0 +1,9 @@
+{
+  "module_name": "dma.h",
+  "hash_id": "24e555457a70bc904c9327679ee4a034f8f9ec67eefa3edeb6c06d892013948c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/memblock/asm/dma.h",
+  "human_readable_source": " \n#ifndef _TOOLS_DMA_H\n#define _TOOLS_DMA_H\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

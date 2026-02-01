@@ -1,0 +1,9 @@
+{
+  "module_name": "pcspeaker.c",
+  "hash_id": "51b94ce21684330c7b275e45f9a9679fcd3dd7b300168eb60a5c54baf3551668",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/pcspeaker.c",
+  "human_readable_source": "\n#include <linux/platform_device.h>\n#include <linux/err.h>\n#include <linux/init.h>\n\nstatic __init int add_pcspkr(void)\n{\n\tstruct platform_device *pd;\n\n\tpd = platform_device_register_simple(\"pcspkr\", -1, NULL, 0);\n\n\treturn PTR_ERR_OR_ZERO(pd);\n}\ndevice_initcall(add_pcspkr);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

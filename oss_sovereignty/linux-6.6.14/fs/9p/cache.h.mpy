@@ -1,0 +1,9 @@
+{
+  "module_name": "cache.h",
+  "hash_id": "b7d8c8a54059c53f7d56229ab919011f31e2d31668eccdbb13f69628eac84f19",
+  "original_prompt": "Ingested from linux-6.6.14/fs/9p/cache.h",
+  "human_readable_source": " \n \n\n#ifndef _9P_CACHE_H\n#define _9P_CACHE_H\n\n#ifdef CONFIG_9P_FSCACHE\n#include <linux/fscache.h>\n\nextern int v9fs_cache_session_get_cookie(struct v9fs_session_info *v9ses,\n\t\t\t\t\t  const char *dev_name);\n\nextern void v9fs_cache_inode_get_cookie(struct inode *inode);\n\n#else  \n\nstatic inline void v9fs_cache_inode_get_cookie(struct inode *inode)\n{\n}\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

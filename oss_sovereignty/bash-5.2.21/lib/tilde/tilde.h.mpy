@@ -1,0 +1,9 @@
+{
+  "module_name": "tilde.h",
+  "hash_id": "6f63a439d6453be0ece259646c3704f2d542e5447d06c9aaeb04d0c0f8b51c56",
+  "original_prompt": "Ingested from bash-5.2.21/lib/tilde/tilde.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_TILDE_H_)\n#  define _TILDE_H_\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\ntypedef char *tilde_hook_func_t (char *);\n\n \nextern tilde_hook_func_t *tilde_expansion_preexpansion_hook;\n\n \nextern tilde_hook_func_t *tilde_expansion_failure_hook;\n\n \nextern char **tilde_additional_prefixes;\n\n \nextern char **tilde_additional_suffixes;\n\n \nextern char *tilde_expand (const char *);\n\n \nextern char *tilde_expand_word (const char *);\n\n \nextern char *tilde_find_word (const char *, int, int *);\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

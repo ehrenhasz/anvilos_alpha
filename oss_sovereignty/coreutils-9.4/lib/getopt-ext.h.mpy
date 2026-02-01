@@ -1,0 +1,9 @@
+{
+  "module_name": "getopt-ext.h",
+  "hash_id": "976542c24b3e1050396e01721ccfbb1da99ec885280bf19e884a5986fde3b7b8",
+  "original_prompt": "Ingested from coreutils-9.4/lib/getopt-ext.h",
+  "human_readable_source": " \n\n__BEGIN_DECLS\n\n \n\nstruct option\n{\n  const char *name;\n   \n  int has_arg;\n  int *flag;\n  int val;\n};\n\n \n\n#define no_argument\t\t0\n#define required_argument\t1\n#define optional_argument\t2\n\nextern int getopt_long (int ___argc, char *__getopt_argv_const *___argv,\n\t\t\tconst char *__shortopts,\n\t\t        const struct option *__longopts, int *__longind)\n       __THROW _GL_ARG_NONNULL ((2, 3));\nextern int getopt_long_only (int ___argc, char *__getopt_argv_const *___argv,\n\t\t\t     const char *__shortopts,\n\t\t             const struct option *__longopts, int *__longind)\n       __THROW _GL_ARG_NONNULL ((2, 3));\n\n__END_DECLS\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

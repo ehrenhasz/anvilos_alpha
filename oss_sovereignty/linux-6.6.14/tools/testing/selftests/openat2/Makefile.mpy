@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "67331bb61fb70e7333ddbd431dc2a4dbc1b7a142b26748590d1442dbe289a55c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/openat2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-or-later\n\nCFLAGS += -Wall -O2 -g -fsanitize=address -fsanitize=undefined -static-libasan\nTEST_GEN_PROGS := openat2_test resolve_test rename_attack_test\n\ninclude ../lib.mk\n\n$(TEST_GEN_PROGS): helpers.c helpers.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

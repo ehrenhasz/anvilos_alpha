@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs.h",
+  "hash_id": "018e98b2e1f7961271cd5eaa5fb6cb0ea7132385c37b29464048b98bf5d80192",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/marvell/libertas/debugfs.h",
+  "human_readable_source": " \n#ifndef _LBS_DEBUGFS_H_\n#define _LBS_DEBUGFS_H_\n\nvoid lbs_debugfs_init(void);\nvoid lbs_debugfs_remove(void);\n\nvoid lbs_debugfs_init_one(struct lbs_private *priv, struct net_device *dev);\nvoid lbs_debugfs_remove_one(struct lbs_private *priv);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "8250_pcilib.h",
+  "hash_id": "962389dbb58e74b3f84d729cd3e00304ac1c7ec8cbec101d6029aa984b30ce0e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/serial/8250/8250_pcilib.h",
+  "human_readable_source": " \n \n\n#include <linux/types.h>\n\nstruct pci_dev;\n\nstruct uart_8250_port;\n\nint serial8250_pci_setup_port(struct pci_dev *dev, struct uart_8250_port *port, u8 bar,\n\t\t   unsigned int offset, int regshift);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

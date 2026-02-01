@@ -1,0 +1,9 @@
+{
+  "module_name": "ipa_power.h",
+  "hash_id": "eea08930f658d6c2a4c2db44dd9ae2bfd3eb5845ba00213ff1cef802674fde6d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ipa/ipa_power.h",
+  "human_readable_source": " \n\n \n#ifndef _IPA_POWER_H_\n#define _IPA_POWER_H_\n\nstruct device;\n\nstruct ipa;\nstruct ipa_power_data;\nenum ipa_irq_id;\n\n \nextern const struct dev_pm_ops ipa_pm_ops;\n\n \nu32 ipa_core_clock_rate(struct ipa *ipa);\n\n \nvoid ipa_power_modem_queue_stop(struct ipa *ipa);\n\n \nvoid ipa_power_modem_queue_wake(struct ipa *ipa);\n\n \nvoid ipa_power_modem_queue_active(struct ipa *ipa);\n\n \nvoid ipa_power_retention(struct ipa *ipa, bool enable);\n\n \nvoid ipa_power_suspend_handler(struct ipa *ipa, enum ipa_irq_id irq_id);\n\n \nint ipa_power_setup(struct ipa *ipa);\n\n \nvoid ipa_power_teardown(struct ipa *ipa);\n\n \nstruct ipa_power *ipa_power_init(struct device *dev,\n\t\t\t\t const struct ipa_power_data *data);\n\n \nvoid ipa_power_exit(struct ipa_power *power);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

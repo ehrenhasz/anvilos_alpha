@@ -1,0 +1,9 @@
+{
+  "module_name": "v4l2-mc.h",
+  "hash_id": "73fa19cecc916dcddfd508718dbcd747c734c606d71dd050e3b0173bd442f312",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/v4l2-mc.h",
+  "human_readable_source": " \n \n\n#ifndef _V4L2_MC_H\n#define _V4L2_MC_H\n\n#include <media/media-device.h>\n#include <media/v4l2-dev.h>\n#include <media/v4l2-subdev.h>\n#include <linux/types.h>\n\n \nstruct pci_dev;\nstruct usb_device;\n\n#ifdef CONFIG_MEDIA_CONTROLLER\n \nint v4l2_mc_create_media_graph(struct media_device *mdev);\n\n \nint v4l_enable_media_source(struct video_device *vdev);\n\n \nvoid v4l_disable_media_source(struct video_device *vdev);\n\n \nint v4l_vb2q_enable_media_source(struct vb2_queue *q);\n\n \nint v4l2_create_fwnode_links_to_pad(struct v4l2_subdev *src_sd,\n\t\t\t\t    struct media_pad *sink, u32 flags);\n\n \nint v4l2_create_fwnode_links(struct v4l2_subdev *src_sd,\n\t\t\t     struct v4l2_subdev *sink_sd);\n\n \nint v4l2_pipeline_pm_get(struct media_entity *entity);\n\n \nvoid v4l2_pipeline_pm_put(struct media_entity *entity);\n\n\n \nint v4l2_pipeline_link_notify(struct media_link *link, u32 flags,\n\t\t\t      unsigned int notification);\n\n#else  \n\nstatic inline int v4l2_mc_create_media_graph(struct media_device *mdev)\n{\n\treturn 0;\n}\n\nstatic inline int v4l_enable_media_source(struct video_device *vdev)\n{\n\treturn 0;\n}\n\nstatic inline void v4l_disable_media_source(struct video_device *vdev)\n{\n}\n\nstatic inline int v4l_vb2q_enable_media_source(struct vb2_queue *q)\n{\n\treturn 0;\n}\n\nstatic inline int v4l2_pipeline_pm_get(struct media_entity *entity)\n{\n\treturn 0;\n}\n\nstatic inline void v4l2_pipeline_pm_put(struct media_entity *entity)\n{}\n\nstatic inline int v4l2_pipeline_link_notify(struct media_link *link, u32 flags,\n\t\t\t\t\t    unsigned int notification)\n{\n\treturn 0;\n}\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

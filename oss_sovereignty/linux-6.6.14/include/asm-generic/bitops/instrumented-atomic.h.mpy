@@ -1,0 +1,9 @@
+{
+  "module_name": "instrumented-atomic.h",
+  "hash_id": "105b1a63a6508718edaee8fe276bf11ad1e229e6f7aa12f2a930628b8f98b539",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/bitops/instrumented-atomic.h",
+  "human_readable_source": " \n\n \n#ifndef _ASM_GENERIC_BITOPS_INSTRUMENTED_ATOMIC_H\n#define _ASM_GENERIC_BITOPS_INSTRUMENTED_ATOMIC_H\n\n#include <linux/instrumented.h>\n\n \nstatic __always_inline void set_bit(long nr, volatile unsigned long *addr)\n{\n\tinstrument_atomic_write(addr + BIT_WORD(nr), sizeof(long));\n\tarch_set_bit(nr, addr);\n}\n\n \nstatic __always_inline void clear_bit(long nr, volatile unsigned long *addr)\n{\n\tinstrument_atomic_write(addr + BIT_WORD(nr), sizeof(long));\n\tarch_clear_bit(nr, addr);\n}\n\n \nstatic __always_inline void change_bit(long nr, volatile unsigned long *addr)\n{\n\tinstrument_atomic_write(addr + BIT_WORD(nr), sizeof(long));\n\tarch_change_bit(nr, addr);\n}\n\n \nstatic __always_inline bool test_and_set_bit(long nr, volatile unsigned long *addr)\n{\n\tkcsan_mb();\n\tinstrument_atomic_read_write(addr + BIT_WORD(nr), sizeof(long));\n\treturn arch_test_and_set_bit(nr, addr);\n}\n\n \nstatic __always_inline bool test_and_clear_bit(long nr, volatile unsigned long *addr)\n{\n\tkcsan_mb();\n\tinstrument_atomic_read_write(addr + BIT_WORD(nr), sizeof(long));\n\treturn arch_test_and_clear_bit(nr, addr);\n}\n\n \nstatic __always_inline bool test_and_change_bit(long nr, volatile unsigned long *addr)\n{\n\tkcsan_mb();\n\tinstrument_atomic_read_write(addr + BIT_WORD(nr), sizeof(long));\n\treturn arch_test_and_change_bit(nr, addr);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

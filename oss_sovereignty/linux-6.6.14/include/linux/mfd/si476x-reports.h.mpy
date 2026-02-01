@@ -1,0 +1,9 @@
+{
+  "module_name": "si476x-reports.h",
+  "hash_id": "2947e4c704bc9cfdd9a7f24bdfa96c1633104ce7a4e9a6caa115a10707a522cf",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/si476x-reports.h",
+  "human_readable_source": " \n \n\n#ifndef __SI476X_REPORTS_H__\n#define __SI476X_REPORTS_H__\n\n \nstruct si476x_rsq_status_report {\n\t__u8 multhint, multlint;\n\t__u8 snrhint,  snrlint;\n\t__u8 rssihint, rssilint;\n\t__u8 bltf;\n\t__u8 snr_ready;\n\t__u8 rssiready;\n\t__u8 injside;\n\t__u8 afcrl;\n\t__u8 valid;\n\n\t__u16 readfreq;\n\t__s8  freqoff;\n\t__s8  rssi;\n\t__s8  snr;\n\t__s8  issi;\n\t__s8  lassi, hassi;\n\t__s8  mult;\n\t__u8  dev;\n\t__u16 readantcap;\n\t__s8  assi;\n\t__s8  usn;\n\n\t__u8 pilotdev;\n\t__u8 rdsdev;\n\t__u8 assidev;\n\t__u8 strongdev;\n\t__u16 rdspi;\n} __packed;\n\n \nstruct si476x_acf_status_report {\n\t__u8 blend_int;\n\t__u8 hblend_int;\n\t__u8 hicut_int;\n\t__u8 chbw_int;\n\t__u8 softmute_int;\n\t__u8 smute;\n\t__u8 smattn;\n\t__u8 chbw;\n\t__u8 hicut;\n\t__u8 hiblend;\n\t__u8 pilot;\n\t__u8 stblend;\n} __packed;\n\nenum si476x_fmagc {\n\tSI476X_FMAGC_10K_OHM\t= 0,\n\tSI476X_FMAGC_800_OHM\t= 1,\n\tSI476X_FMAGC_400_OHM\t= 2,\n\tSI476X_FMAGC_200_OHM\t= 4,\n\tSI476X_FMAGC_100_OHM\t= 8,\n\tSI476X_FMAGC_50_OHM\t= 16,\n\tSI476X_FMAGC_25_OHM\t= 32,\n\tSI476X_FMAGC_12P5_OHM\t= 64,\n\tSI476X_FMAGC_6P25_OHM\t= 128,\n};\n\nstruct si476x_agc_status_report {\n\t__u8 mxhi;\n\t__u8 mxlo;\n\t__u8 lnahi;\n\t__u8 lnalo;\n\t__u8 fmagc1;\n\t__u8 fmagc2;\n\t__u8 pgagain;\n\t__u8 fmwblang;\n} __packed;\n\nstruct si476x_rds_blockcount_report {\n\t__u16 expected;\n\t__u16 received;\n\t__u16 uncorrectable;\n} __packed;\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

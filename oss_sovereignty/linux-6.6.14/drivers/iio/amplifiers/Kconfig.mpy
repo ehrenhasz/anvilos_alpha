@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "449a22e6c6a90c8eee24c2fe9a31372808e912f20206f74f74815ae0dac51622",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/amplifiers/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Gain Amplifiers, etc.\n#\n# When adding new entries keep the list in alphabetical order\n\nmenu \"Amplifiers\"\n\nconfig AD8366\n\ttristate \"Analog Devices AD8366 and similar Gain Amplifiers\"\n\tdepends on SPI\n\tdepends on GPIOLIB\n\tselect BITREVERSE\n\thelp\n\t  Say yes here to build support for Analog Devices AD8366 and similar\n\t  gain amplifiers. This driver supports the following gain amplifiers\n\t  from Analog Devices:\n\t    AD8366 Dual-Digital Variable Gain Amplifier (VGA)\n\t    ADA4961 BiCMOS RF Digital Gain Amplifier (DGA)\n\t    ADL5240 Digitally controlled variable gain amplifier (VGA)\n\t    HMC792A 0.25 dB LSB GaAs MMIC 6-Bit Digital Attenuator\n\t    HMC1119 0.25 dB LSB, 7-Bit, Silicon Digital Attenuator\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called ad8366.\n\nconfig ADA4250\n\ttristate \"Analog Devices ADA4250 Instrumentation Amplifier\"\n\tdepends on SPI\n\thelp\n\t  Say yes here to build support for Analog Devices ADA4250\n\t  SPI Amplifier's support. The driver provides direct access via\n\t  sysfs.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called ada4250.\n\nconfig HMC425\n\ttristate \"Analog Devices HMC425A and similar GPIO Gain Amplifiers\"\n\tdepends on GPIOLIB\n\thelp\n\t  Say yes here to build support for Analog Devices HMC425A and similar\n\t  gain amplifiers or step attenuators.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called hmc425a.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tegra_pcm.h",
+  "hash_id": "b3502f2af1883dda39b4fbe086c0149e24f18740a1c60cfc8ff6318369b57a52",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/tegra/tegra_pcm.h",
+  "human_readable_source": " \n \n\n#ifndef __TEGRA_PCM_H__\n#define __TEGRA_PCM_H__\n\n#include <sound/dmaengine_pcm.h>\n#include <sound/asound.h>\n\nint tegra_pcm_construct(struct snd_soc_component *component,\n\t\t\tstruct snd_soc_pcm_runtime *rtd);\nint tegra_pcm_open(struct snd_soc_component *component,\n\t\t   struct snd_pcm_substream *substream);\nint tegra_pcm_close(struct snd_soc_component *component,\n\t\t    struct snd_pcm_substream *substream);\nint tegra_pcm_hw_params(struct snd_soc_component *component,\n\t\t\tstruct snd_pcm_substream *substream,\n\t\t\tstruct snd_pcm_hw_params *params);\nsnd_pcm_uframes_t tegra_pcm_pointer(struct snd_soc_component *component,\n\t\t\t\t    struct snd_pcm_substream *substream);\nint tegra_pcm_platform_register(struct device *dev);\nint devm_tegra_pcm_platform_register(struct device *dev);\nint tegra_pcm_platform_register_with_chan_names(struct device *dev,\n\t\t\t\tstruct snd_dmaengine_pcm_config *config,\n\t\t\t\tchar *txdmachan, char *rxdmachan);\nvoid tegra_pcm_platform_unregister(struct device *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "timer-xilinx.h",
+  "hash_id": "a923048458bb55633e34050e0f1acac810057a3e8bd3cce9196dd0293acc6dd6",
+  "original_prompt": "Ingested from linux-6.6.14/include/clocksource/timer-xilinx.h",
+  "human_readable_source": " \n \n\n#ifndef XILINX_TIMER_H\n#define XILINX_TIMER_H\n\n#include <linux/compiler.h>\n\n#define TCSR0\t0x00\n#define TLR0\t0x04\n#define TCR0\t0x08\n#define TCSR1\t0x10\n#define TLR1\t0x14\n#define TCR1\t0x18\n\n#define TCSR_MDT\tBIT(0)\n#define TCSR_UDT\tBIT(1)\n#define TCSR_GENT\tBIT(2)\n#define TCSR_CAPT\tBIT(3)\n#define TCSR_ARHT\tBIT(4)\n#define TCSR_LOAD\tBIT(5)\n#define TCSR_ENIT\tBIT(6)\n#define TCSR_ENT\tBIT(7)\n#define TCSR_TINT\tBIT(8)\n#define TCSR_PWMA\tBIT(9)\n#define TCSR_ENALL\tBIT(10)\n#define TCSR_CASC\tBIT(11)\n\nstruct clk;\nstruct device_node;\nstruct regmap;\n\n \nstruct xilinx_timer_priv {\n\tstruct regmap *map;\n\tstruct clk *clk;\n\tu32 max;\n};\n\n \nu32 xilinx_timer_tlr_cycles(struct xilinx_timer_priv *priv, u32 tcsr,\n\t\t\t    u64 cycles);\n\n \nunsigned int xilinx_timer_get_period(struct xilinx_timer_priv *priv,\n\t\t\t\t     u32 tlr, u32 tcsr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

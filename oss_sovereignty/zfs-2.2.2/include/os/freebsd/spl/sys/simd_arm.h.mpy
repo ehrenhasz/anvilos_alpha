@@ -1,0 +1,9 @@
+{
+  "module_name": "simd_arm.h",
+  "hash_id": "b5a9bd1ceed7c043062e6da313b740e9cdd38d0a5dfbfc4a1bebdbf54de1bef1",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/simd_arm.h",
+  "human_readable_source": " \n\n \n\n#ifndef _FREEBSD_SIMD_ARM_H\n#define\t_FREEBSD_SIMD_ARM_H\n\n#include <sys/types.h>\n#include <machine/elf.h>\n#include <machine/md_var.h>\n\n#define\tkfpu_allowed()\t\t1\n#define\tkfpu_initialize(tsk)\tdo {} while (0)\n#define\tkfpu_begin()\t\tdo {} while (0)\n#define\tkfpu_end()\t\tdo {} while (0)\n#define\tkfpu_init()\t\t(0)\n#define\tkfpu_fini()\t\tdo {} while (0)\n\n \nstatic inline boolean_t\nzfs_neon_available(void)\n{\n\treturn (elf_hwcap & HWCAP_NEON);\n}\n\n \nstatic inline boolean_t\nzfs_sha256_available(void)\n{\n\treturn (elf_hwcap2 & HWCAP2_SHA2);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

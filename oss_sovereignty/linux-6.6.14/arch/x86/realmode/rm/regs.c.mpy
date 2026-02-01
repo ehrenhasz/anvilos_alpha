@@ -1,0 +1,9 @@
+{
+  "module_name": "regs.c",
+  "hash_id": "97ec0968460dab77adfe9dfaf6b268153a84fea84e5c8cd79b033c7717ed0134",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/realmode/rm/regs.c",
+  "human_readable_source": "#include \"../../boot/regs.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

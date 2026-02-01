@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ddef64febd4e7d23f5f040f0fdbfbb15ad4407e819a0c2d286041d917897ba82",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/marvell/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig WLAN_VENDOR_MARVELL\n\tbool \"Marvell devices\"\n\tdefault y\n\thelp\n\t  If you have a wireless card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all the\n\t  questions about these cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif WLAN_VENDOR_MARVELL\n\nsource \"drivers/net/wireless/marvell/libertas/Kconfig\"\nsource \"drivers/net/wireless/marvell/libertas_tf/Kconfig\"\nsource \"drivers/net/wireless/marvell/mwifiex/Kconfig\"\n\nconfig MWL8K\n\ttristate \"Marvell 88W8xxx PCI/PCIe Wireless support\"\n\tdepends on MAC80211 && PCI\n\thelp\n\t  This driver supports Marvell TOPDOG 802.11 wireless cards.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called mwl8k.  If unsure, say N.\n\nendif # WLAN_VENDOR_MARVELL\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

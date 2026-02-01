@@ -1,0 +1,9 @@
+{
+  "module_name": "groupaccess.h",
+  "hash_id": "78a23d605f1bf895937bb73284f5af3aeb64f476990a466679d693dd655da9a6",
+  "original_prompt": "Ingested from openssh-9.6p1/groupaccess.h",
+  "human_readable_source": " \n\n \n\n#ifndef GROUPACCESS_H\n#define GROUPACCESS_H\n\nint\t ga_init(const char *, gid_t);\nint\t ga_match(char * const *, int);\nint\t ga_match_pattern_list(const char *);\nvoid\t ga_free(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

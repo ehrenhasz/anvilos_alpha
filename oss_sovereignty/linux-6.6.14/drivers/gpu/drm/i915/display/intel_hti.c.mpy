@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_hti.c",
+  "hash_id": "d35fa7270ed19120638a02993ec96466874bea58e20efcd0fb23b16491faf44c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_hti.c",
+  "human_readable_source": "\n \n\n#include \"i915_drv.h\"\n#include \"intel_de.h\"\n#include \"intel_display.h\"\n#include \"intel_hti.h\"\n#include \"intel_hti_regs.h\"\n\nvoid intel_hti_init(struct drm_i915_private *i915)\n{\n\t \n\tif (DISPLAY_INFO(i915)->has_hti)\n\t\ti915->display.hti.state = intel_de_read(i915, HDPORT_STATE);\n}\n\nbool intel_hti_uses_phy(struct drm_i915_private *i915, enum phy phy)\n{\n\tif (drm_WARN_ON(&i915->drm, phy == PHY_NONE))\n\t\treturn false;\n\n\treturn i915->display.hti.state & HDPORT_ENABLED &&\n\t\ti915->display.hti.state & HDPORT_DDI_USED(phy);\n}\n\nu32 intel_hti_dpll_mask(struct drm_i915_private *i915)\n{\n\tif (!(i915->display.hti.state & HDPORT_ENABLED))\n\t\treturn 0;\n\n\t \n\treturn REG_FIELD_GET(HDPORT_DPLL_USED_MASK, i915->display.hti.state);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

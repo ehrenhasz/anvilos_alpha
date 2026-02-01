@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4f61613cf6751ecef0fbc5eb648befef4182fee97e6a549fbe575c5e5312dd84",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_INFINIBAND_MTHCA)\t\t+= mthca/\nobj-$(CONFIG_INFINIBAND_QIB)\t\t+= qib/\nobj-$(CONFIG_INFINIBAND_CXGB4)\t\t+= cxgb4/\nobj-$(CONFIG_INFINIBAND_EFA)\t\t+= efa/\nobj-$(CONFIG_INFINIBAND_IRDMA)\t\t+= irdma/\nobj-$(CONFIG_MANA_INFINIBAND)\t\t+= mana/\nobj-$(CONFIG_MLX4_INFINIBAND)\t\t+= mlx4/\nobj-$(CONFIG_MLX5_INFINIBAND)\t\t+= mlx5/\nobj-$(CONFIG_INFINIBAND_OCRDMA)\t\t+= ocrdma/\nobj-$(CONFIG_INFINIBAND_VMWARE_PVRDMA)\t+= vmw_pvrdma/\nobj-$(CONFIG_INFINIBAND_USNIC)\t\t+= usnic/\nobj-$(CONFIG_INFINIBAND_HFI1)\t\t+= hfi1/\nobj-$(CONFIG_INFINIBAND_HNS)\t\t+= hns/\nobj-$(CONFIG_INFINIBAND_QEDR)\t\t+= qedr/\nobj-$(CONFIG_INFINIBAND_BNXT_RE)\t+= bnxt_re/\nobj-$(CONFIG_INFINIBAND_ERDMA)\t\t+= erdma/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

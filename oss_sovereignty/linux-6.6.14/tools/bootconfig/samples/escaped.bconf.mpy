@@ -1,0 +1,9 @@
+{
+  "module_name": "escaped.bconf",
+  "hash_id": "1cf817483f22e5a9d703d2a66cf20eede13f35535232cf8bb07c29923aa16791",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bootconfig/samples/escaped.bconf",
+  "human_readable_source": "key1 = \"A\\B\\C\"\nkey2 = '\\'\\''\nkey3 = \"\\\\\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

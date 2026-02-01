@@ -1,0 +1,9 @@
+{
+  "module_name": "compat.h",
+  "hash_id": "75ce50aa6cacf79a4d215a2efcda05137fd8915e3c251181e6d74d45400e1c0b",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/ac97/compat.h",
+  "human_readable_source": " \n\n#ifndef AC97_COMPAT_H\n#define AC97_COMPAT_H\n\n#include <sound/ac97_codec.h>\n\nstruct snd_ac97 *snd_ac97_compat_alloc(struct ac97_codec_device *adev);\nvoid snd_ac97_compat_release(struct snd_ac97 *ac97);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

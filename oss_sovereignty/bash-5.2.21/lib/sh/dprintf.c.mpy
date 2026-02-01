@@ -1,0 +1,9 @@
+{
+  "module_name": "dprintf.c",
+  "hash_id": "b9db7f2656fa1b6a77d561a6507223c190b93f38f3d7ab29f79aef324b593d5f",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/dprintf.c",
+  "human_readable_source": " \n\n \n                                 \n#ifdef HAVE_CONFIG_H\n#  include <config.h>\n#endif\n\n#include <stdc.h>\n\n#if defined (HAVE_UNISTD_H)\n#  include <unistd.h>\n#endif\n\n#if defined (PREFER_STDARG)\n#  include <stdarg.h>\n#else\n#  include <varargs.h>\n#endif\n\n#include <stdio.h>\n\nint\n#if defined (PREFER_STDARG)\ndprintf(int fd, const char *format, ...)\n#else\ndprintf(fd, format, va_alist)\n     int fd;\n     const char *format;\n     va_dcl\n#endif\n{\n  FILE *fp;\n  int fd2, rc, r2;\n  va_list args;\n\n  if ((fd2 = dup(fd)) < 0)\n    return -1;\n  fp = fdopen (fd2, \"w\");\n  if (fp == 0)\n    {\n      close (fd2);\n      return -1;\n    }\n\n  SH_VA_START (args, format);\n  rc = vfprintf (fp, format, args);\n  fflush (fp);\n  va_end (args);\n\n  r2 = fclose (fp);\t \n\n  return rc;\n}           \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".kunitconfig",
+  "hash_id": "dc27e6ba8507f1bbb09083ce1dac759ea7ace10a9061c25b331b3e2c2f5cff59",
+  "original_prompt": "Ingested from linux-6.6.14/mm/kfence/.kunitconfig",
+  "human_readable_source": "CONFIG_KUNIT=y\nCONFIG_KFENCE=y\nCONFIG_KFENCE_KUNIT_TEST=y\n\n# Additional dependencies.\nCONFIG_FTRACE=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

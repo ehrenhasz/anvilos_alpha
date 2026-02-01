@@ -1,0 +1,9 @@
+{
+  "module_name": "mm.h",
+  "hash_id": "e960b1a5d86ba56db124acce213c57da904162f0be008aa42c9922f288da1835",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/decompress/mm.h",
+  "human_readable_source": " \n \n\n#ifndef DECOMPR_MM_H\n#define DECOMPR_MM_H\n\n#ifdef STATIC\n\n \n\n \n#ifndef STATIC_RW_DATA\n#define STATIC_RW_DATA static\n#endif\n\n \n#ifndef MALLOC_VISIBLE\n#define MALLOC_VISIBLE static\n#endif\n\n \nSTATIC_RW_DATA unsigned long malloc_ptr;\nSTATIC_RW_DATA int malloc_count;\n\nMALLOC_VISIBLE void *malloc(int size)\n{\n\tvoid *p;\n\n\tif (size < 0)\n\t\treturn NULL;\n\tif (!malloc_ptr)\n\t\tmalloc_ptr = free_mem_ptr;\n\n\tmalloc_ptr = (malloc_ptr + 7) & ~7;      \n\n\tp = (void *)malloc_ptr;\n\tmalloc_ptr += size;\n\n\tif (free_mem_end_ptr && malloc_ptr >= free_mem_end_ptr)\n\t\treturn NULL;\n\n\tmalloc_count++;\n\treturn p;\n}\n\nMALLOC_VISIBLE void free(void *where)\n{\n\tmalloc_count--;\n\tif (!malloc_count)\n\t\tmalloc_ptr = free_mem_ptr;\n}\n\n#define large_malloc(a) malloc(a)\n#define large_free(a) free(a)\n\n#define INIT\n\n#else  \n\n \n\n#include <linux/kernel.h>\n#include <linux/fs.h>\n#include <linux/string.h>\n#include <linux/slab.h>\n#include <linux/vmalloc.h>\n\n \n\n#define malloc(a) kmalloc(a, GFP_KERNEL)\n#define free(a) kfree(a)\n\n#define large_malloc(a) vmalloc(a)\n#define large_free(a) vfree(a)\n\n#define INIT __init\n#define STATIC\n\n#include <linux/init.h>\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrlen-w32-5.sh",
+  "hash_id": "352dd4281ca84e264b68f398adfa61f585225d278f04d054a318967820e9d68b",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrlen-w32-5.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a CP932 locale.\n${CHECKER} ./test-mbrlen-w32${EXEEXT} Japanese_Japan 932\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

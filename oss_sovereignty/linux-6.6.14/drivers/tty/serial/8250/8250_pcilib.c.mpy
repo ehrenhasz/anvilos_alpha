@@ -1,0 +1,9 @@
+{
+  "module_name": "8250_pcilib.c",
+  "hash_id": "d88f36b89714e92a6ef26a465838c751e4863e050e91967e7c4c1d78586c4d0b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/serial/8250/8250_pcilib.c",
+  "human_readable_source": "\n \n#include <linux/errno.h>\n#include <linux/ioport.h>\n#include <linux/pci.h>\n#include <linux/types.h>\n\n#include \"8250.h\"\n#include \"8250_pcilib.h\"\n\nint serial8250_pci_setup_port(struct pci_dev *dev, struct uart_8250_port *port,\n\t\t   u8 bar, unsigned int offset, int regshift)\n{\n\tif (bar >= PCI_STD_NUM_BARS)\n\t\treturn -EINVAL;\n\n\tif (pci_resource_flags(dev, bar) & IORESOURCE_MEM) {\n\t\tif (!pcim_iomap(dev, bar, 0) && !pcim_iomap_table(dev))\n\t\t\treturn -ENOMEM;\n\n\t\tport->port.iotype = UPIO_MEM;\n\t\tport->port.iobase = 0;\n\t\tport->port.mapbase = pci_resource_start(dev, bar) + offset;\n\t\tport->port.membase = pcim_iomap_table(dev)[bar] + offset;\n\t\tport->port.regshift = regshift;\n\t} else {\n\t\tport->port.iotype = UPIO_PORT;\n\t\tport->port.iobase = pci_resource_start(dev, bar) + offset;\n\t\tport->port.mapbase = 0;\n\t\tport->port.membase = NULL;\n\t\tport->port.regshift = 0;\n\t}\n\treturn 0;\n}\nEXPORT_SYMBOL_NS_GPL(serial8250_pci_setup_port, SERIAL_8250_PCI);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

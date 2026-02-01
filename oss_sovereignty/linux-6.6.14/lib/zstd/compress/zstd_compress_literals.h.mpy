@@ -1,0 +1,9 @@
+{
+  "module_name": "zstd_compress_literals.h",
+  "hash_id": "441a2b029b1bed8bfebedf1017284a0553a6d17180f27d3689b7ae85f8f23967",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zstd/compress/zstd_compress_literals.h",
+  "human_readable_source": " \n\n#ifndef ZSTD_COMPRESS_LITERALS_H\n#define ZSTD_COMPRESS_LITERALS_H\n\n#include \"zstd_compress_internal.h\"  \n\n\nsize_t ZSTD_noCompressLiterals (void* dst, size_t dstCapacity, const void* src, size_t srcSize);\n\nsize_t ZSTD_compressRleLiteralsBlock (void* dst, size_t dstCapacity, const void* src, size_t srcSize);\n\n \nsize_t ZSTD_compressLiterals (ZSTD_hufCTables_t const* prevHuf,\n                              ZSTD_hufCTables_t* nextHuf,\n                              ZSTD_strategy strategy, int disableLiteralCompression,\n                              void* dst, size_t dstCapacity,\n                        const void* src, size_t srcSize,\n                              void* entropyWorkspace, size_t entropyWorkspaceSize,\n                        const int bmi2,\n                        unsigned suspectUncompressible);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

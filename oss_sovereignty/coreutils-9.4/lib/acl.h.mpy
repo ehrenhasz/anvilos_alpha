@@ -1,0 +1,9 @@
+{
+  "module_name": "acl.h",
+  "hash_id": "dacbf64405b2aceafccfbdcce9318158279a5b3ae3f420650367f41f5511e759",
+  "original_prompt": "Ingested from coreutils-9.4/lib/acl.h",
+  "human_readable_source": " \n\n#ifndef _GL_ACL_H\n#define _GL_ACL_H 1\n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <sys/types.h>\n#include <sys/stat.h>\n\nbool acl_errno_valid (int) _GL_ATTRIBUTE_CONST;\nint file_has_acl (char const *, struct stat const *);\nint qset_acl (char const *, int, mode_t);\nint set_acl (char const *, int, mode_t);\nint qcopy_acl (char const *, int, char const *, int, mode_t);\nint copy_acl (char const *, int, char const *, int, mode_t);\nint chmod_or_fchmod (char const *, int, mode_t);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "590abaf3fcb6a4a50f4e4cb3c9940a0790348e2e0141936249d4324f992771cf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/serio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the input core drivers.\n#\n\n# Each configuration option enables a list of files.\n\nobj-$(CONFIG_SERIO)\t\t+= serio.o\nobj-$(CONFIG_SERIO_I8042)\t+= i8042.o\nobj-$(CONFIG_SERIO_PARKBD)\t+= parkbd.o\nobj-$(CONFIG_SERIO_SERPORT)\t+= serport.o\nobj-$(CONFIG_SERIO_CT82C710)\t+= ct82c710.o\nobj-$(CONFIG_SERIO_RPCKBD)\t+= rpckbd.o\nobj-$(CONFIG_SERIO_SA1111)\t+= sa1111ps2.o\nobj-$(CONFIG_SERIO_AMBAKMI)\t+= ambakmi.o\nobj-$(CONFIG_SERIO_Q40KBD)\t+= q40kbd.o\nobj-$(CONFIG_SERIO_GSCPS2)\t+= gscps2.o\nobj-$(CONFIG_HP_SDC)\t\t+= hp_sdc.o\nobj-$(CONFIG_HIL_MLC)\t\t+= hp_sdc_mlc.o hil_mlc.o\nobj-$(CONFIG_SERIO_PCIPS2)\t+= pcips2.o\nobj-$(CONFIG_SERIO_PS2MULT)\t+= ps2mult.o\nobj-$(CONFIG_SERIO_MACEPS2)\t+= maceps2.o\nobj-$(CONFIG_SERIO_SGI_IOC3)\t+= ioc3kbd.o\nobj-$(CONFIG_SERIO_LIBPS2)\t+= libps2.o\nobj-$(CONFIG_SERIO_RAW)\t\t+= serio_raw.o\nobj-$(CONFIG_SERIO_AMS_DELTA)\t+= ams_delta_serio.o\nobj-$(CONFIG_SERIO_XILINX_XPS_PS2)\t+= xilinx_ps2.o\nobj-$(CONFIG_SERIO_ALTERA_PS2)\t+= altera_ps2.o\nobj-$(CONFIG_SERIO_ARC_PS2)\t+= arc_ps2.o\nobj-$(CONFIG_SERIO_APBPS2)\t+= apbps2.o\nobj-$(CONFIG_SERIO_OLPC_APSP)\t+= olpc_apsp.o\nobj-$(CONFIG_HYPERV_KEYBOARD)\t+= hyperv-keyboard.o\nobj-$(CONFIG_SERIO_SUN4I_PS2)\t+= sun4i-ps2.o\nobj-$(CONFIG_SERIO_GPIO_PS2)\t+= ps2-gpio.o\nobj-$(CONFIG_USERIO)\t\t+= userio.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

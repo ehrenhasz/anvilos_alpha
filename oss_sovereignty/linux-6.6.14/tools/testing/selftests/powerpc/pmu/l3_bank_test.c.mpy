@@ -1,0 +1,9 @@
+{
+  "module_name": "l3_bank_test.c",
+  "hash_id": "b1a001c636d2199652e6b05cfde29ef543e988506b08ea1d704e653e7619a167",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/l3_bank_test.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <stdlib.h>\n\n#include \"event.h\"\n#include \"utils.h\"\n\n#define MALLOC_SIZE     (0x10000 * 10)   \n\n \nstatic int l3_bank_test(void)\n{\n\tstruct event event;\n\tchar *p;\n\tint i;\n\n\t\n\tSKIP_IF(!have_hwcap2(PPC_FEATURE2_ARCH_2_07));\n\n\tp = malloc(MALLOC_SIZE);\n\tFAIL_IF(!p);\n\n\tevent_init(&event, 0x84918F);\n\n\tFAIL_IF(event_open(&event));\n\n\tfor (i = 0; i < MALLOC_SIZE; i += 0x10000)\n\t\tp[i] = i;\n\n\tevent_read(&event);\n\tevent_report(&event);\n\n\tFAIL_IF(event.result.running == 0);\n\tFAIL_IF(event.result.enabled == 0);\n\n\tevent_close(&event);\n\tfree(p);\n\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(l3_bank_test, \"l3_bank_test\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

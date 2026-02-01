@@ -1,0 +1,9 @@
+{
+  "module_name": "vsyscall.h",
+  "hash_id": "c77f7f8f4bd99ba1c6ec9ae2c556be6e98a038bd991a65133cbe28701ddccdd6",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/vsyscall.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_VSYSCALL_H\n#define _ASM_X86_VSYSCALL_H\n\n#include <linux/seqlock.h>\n#include <uapi/asm/vsyscall.h>\n\n#ifdef CONFIG_X86_VSYSCALL_EMULATION\nextern void map_vsyscall(void);\nextern void set_vsyscall_pgtable_user_bits(pgd_t *root);\n\n \nextern bool emulate_vsyscall(unsigned long error_code,\n\t\t\t     struct pt_regs *regs, unsigned long address);\n#else\nstatic inline void map_vsyscall(void) {}\nstatic inline bool emulate_vsyscall(unsigned long error_code,\n\t\t\t\t    struct pt_regs *regs, unsigned long address)\n{\n\treturn false;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

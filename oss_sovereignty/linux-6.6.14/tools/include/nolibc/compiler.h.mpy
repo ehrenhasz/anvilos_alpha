@@ -1,0 +1,9 @@
+{
+  "module_name": "compiler.h",
+  "hash_id": "040c926512cb0af11293af2b573a2c91efbb43a7f7b2c2c2bafb267119a4354b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/nolibc/compiler.h",
+  "human_readable_source": " \n \n#ifndef _NOLIBC_COMPILER_H\n#define _NOLIBC_COMPILER_H\n\n#if defined(__SSP__) || defined(__SSP_STRONG__) || defined(__SSP_ALL__) || defined(__SSP_EXPLICIT__)\n\n#define _NOLIBC_STACKPROTECTOR\n\n#endif  \n\n#if defined(__has_attribute)\n#  if __has_attribute(no_stack_protector)\n#    define __no_stack_protector __attribute__((no_stack_protector))\n#  else\n#    define __no_stack_protector __attribute__((__optimize__(\"-fno-stack-protector\")))\n#  endif\n#else\n#  define __no_stack_protector __attribute__((__optimize__(\"-fno-stack-protector\")))\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

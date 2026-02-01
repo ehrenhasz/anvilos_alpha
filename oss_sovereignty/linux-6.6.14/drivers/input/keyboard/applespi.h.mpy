@@ -1,0 +1,9 @@
+{
+  "module_name": "applespi.h",
+  "hash_id": "a8aca033301ea46c93b5d97905ff2be736403859dc7506539346f715a9c2774c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/keyboard/applespi.h",
+  "human_readable_source": " \n \n\n#ifndef _APPLESPI_H_\n#define _APPLESPI_H_\n\nenum applespi_evt_type {\n\tET_CMD_TP_INI = BIT(0),\n\tET_CMD_BL = BIT(1),\n\tET_CMD_CL = BIT(2),\n\tET_RD_KEYB = BIT(8),\n\tET_RD_TPAD = BIT(9),\n\tET_RD_UNKN = BIT(10),\n\tET_RD_IRQ = BIT(11),\n\tET_RD_CRC = BIT(12),\n};\n\nenum applespi_pkt_type {\n\tPT_READ,\n\tPT_WRITE,\n\tPT_STATUS,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

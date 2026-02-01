@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_macsetting_bitdef.h",
+  "hash_id": "c594fcc39680ce5c21d34a526a02b50eb9482a8bbba0307c3e3738f049564525",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_macsetting_bitdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_MACSETTING_BITDEF_H__\n#define __RTL8712_MACSETTING_BITDEF_H__\n\n \n \n\n \n#define\t_HWVID_MSK\t\t\t\t0x0F\n\n \n \n\n \n#define\t_POOLING\t\t\t\tBIT(31)\n#define\t_WRITE_EN\t\t\t\tBIT(16)\n#define\t_CAM_ADDR_MSK\t\t\t0x001F\n#define\t_CAM_ADDR_SHT\t\t\t0\n\n \n#define _BUILDTIME_MSK\t\t\t0x3FFFFFFF\n\n \n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

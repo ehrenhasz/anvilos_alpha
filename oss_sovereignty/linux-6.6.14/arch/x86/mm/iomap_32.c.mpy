@@ -1,0 +1,9 @@
+{
+  "module_name": "iomap_32.c",
+  "hash_id": "7cec823f1a4b3524f342ba09e5ebeca8bdd4037dde9705c9d47527543b108512",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/mm/iomap_32.c",
+  "human_readable_source": "\n \n\n#include <asm/iomap.h>\n#include <asm/memtype.h>\n#include <linux/export.h>\n#include <linux/highmem.h>\n\nstatic int is_io_mapping_possible(resource_size_t base, unsigned long size)\n{\n#if !defined(CONFIG_X86_PAE) && defined(CONFIG_PHYS_ADDR_T_64BIT)\n\t \n\tif (base + size > 0x100000000ULL)\n\t\treturn 0;\n#endif\n\treturn 1;\n}\n\nint iomap_create_wc(resource_size_t base, unsigned long size, pgprot_t *prot)\n{\n\tenum page_cache_mode pcm = _PAGE_CACHE_MODE_WC;\n\tint ret;\n\n\tif (!is_io_mapping_possible(base, size))\n\t\treturn -EINVAL;\n\n\tret = memtype_reserve_io(base, base + size, &pcm);\n\tif (ret)\n\t\treturn ret;\n\n\t*prot = __pgprot(__PAGE_KERNEL | cachemode2protval(pcm));\n\t \n\tpgprot_val(*prot) &= __default_kernel_pte_mask;\n\n\treturn 0;\n}\nEXPORT_SYMBOL_GPL(iomap_create_wc);\n\nvoid iomap_free(resource_size_t base, unsigned long size)\n{\n\tmemtype_free_io(base, base + size);\n}\nEXPORT_SYMBOL_GPL(iomap_free);\n\nvoid __iomem *__iomap_local_pfn_prot(unsigned long pfn, pgprot_t prot)\n{\n\t \n\tif (!pat_enabled() && pgprot2cachemode(prot) != _PAGE_CACHE_MODE_WB)\n\t\tprot = __pgprot(__PAGE_KERNEL |\n\t\t\t\tcachemode2protval(_PAGE_CACHE_MODE_UC_MINUS));\n\n\t \n\tpgprot_val(prot) &= __default_kernel_pte_mask;\n\n\treturn (void __force __iomem *)__kmap_local_pfn_prot(pfn, prot);\n}\nEXPORT_SYMBOL_GPL(__iomap_local_pfn_prot);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

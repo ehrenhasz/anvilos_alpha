@@ -1,0 +1,9 @@
+{
+  "module_name": "processor.h",
+  "hash_id": "b31c83958b329ebf83505e5e0eeb52953d59f5bf4248f9c5dad2b663825e4b76",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/processor.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _SYS_PROCESSOR_H\n#define\t_SYS_PROCESSOR_H\n\n#include <sys/types.h>\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \n\n \ntypedef uint16_t lgrpid_t;\n\n \ntypedef\tint\tprocessorid_t;\ntypedef int\tchipid_t;\n\n#define\tgetcpuid() curcpu\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

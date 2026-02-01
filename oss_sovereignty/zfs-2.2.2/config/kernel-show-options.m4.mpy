@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-show-options.m4",
+  "hash_id": "4cc94b986391b962fac356b737514024f45ce0e093fb405efdecc918be203fb6",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-show-options.m4",
+  "human_readable_source": "dnl #\ndnl # Linux 3.3 API\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_SHOW_OPTIONS], [\n\tZFS_LINUX_TEST_SRC([super_operations_show_options], [\n\t\t#include <linux/fs.h>\n\n\t\tint show_options(struct seq_file * x, struct dentry * y) {\n\t\t\treturn 0;\n\t\t};\n\n\t\tstatic struct super_operations sops __attribute__ ((unused)) = {\n\t\t\t.show_options = show_options,\n\t\t};\n\t],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_SHOW_OPTIONS], [\n\tAC_MSG_CHECKING([whether sops->show_options() wants dentry])\n\tZFS_LINUX_TEST_RESULT([super_operations_show_options], [\n\t\tAC_MSG_RESULT([yes])\n\t],[\n\t\tZFS_LINUX_TEST_ERROR([sops->show_options()])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

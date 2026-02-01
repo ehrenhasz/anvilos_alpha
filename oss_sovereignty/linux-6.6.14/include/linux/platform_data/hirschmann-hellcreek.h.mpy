@@ -1,0 +1,9 @@
+{
+  "module_name": "hirschmann-hellcreek.h",
+  "hash_id": "84dff89d42b586c2ac470364fd88368262acfd0ce365e400674d55f136c98d65",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/hirschmann-hellcreek.h",
+  "human_readable_source": " \n \n\n#ifndef _HIRSCHMANN_HELLCREEK_H_\n#define _HIRSCHMANN_HELLCREEK_H_\n\n#include <linux/types.h>\n\nstruct hellcreek_platform_data {\n\tconst char *name;\t \n\tint num_ports;\t\t \n\tint is_100_mbits;\t \n\tint qbv_support;\t \n\tint qbv_on_cpu_port;\t \n\tint qbu_support;\t \n\tu16 module_id;\t\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

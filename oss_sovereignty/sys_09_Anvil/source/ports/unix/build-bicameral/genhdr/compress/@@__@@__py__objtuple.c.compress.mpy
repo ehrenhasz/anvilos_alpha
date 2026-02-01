@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objtuple.c.compress",
+  "hash_id": "c9f9c3fe796ee1dd68e21cfdd814810cfaa391f007680f2775eeaa8003fac7fe",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__objtuple.c.compress",
+  "human_readable_source": "only slices with step=1 (aka None) are supported\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "113acf3fedcecc165d8d16936c046923e16e4387f95731beb8517d896888e2c9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/mips/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CPU_HWMON) += cpu_hwmon.o\nobj-$(CONFIG_RS780E_ACPI) += rs780e-acpi.o\nobj-$(CONFIG_LS2K_RESET) += ls2k-reset.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

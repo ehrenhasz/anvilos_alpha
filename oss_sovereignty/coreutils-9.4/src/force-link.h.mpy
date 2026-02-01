@@ -1,0 +1,9 @@
+{
+  "module_name": "force-link.h",
+  "hash_id": "d5e46e50aa99f08f1041046ab11c20eb990ac2f8f5d8c17dafab9ac6ebf36cd9",
+  "original_prompt": "Ingested from coreutils-9.4/src/force-link.h",
+  "human_readable_source": "extern int force_linkat (int, char const *, int, char const *, int, bool, int)\n  _GL_ATTRIBUTE_NONNULL ();\nextern int force_symlinkat (char const *, int, char const *, bool, int)\n  _GL_ATTRIBUTE_NONNULL ();\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

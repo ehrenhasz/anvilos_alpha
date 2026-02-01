@@ -1,0 +1,9 @@
+{
+  "module_name": "mem-memcpy-x86-64-asm-def.h",
+  "hash_id": "d37637e1d3d2e4260c0108877226c0fb163b97b7c01a5c1a7088e432545b7ff7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/bench/mem-memcpy-x86-64-asm-def.h",
+  "human_readable_source": " \n\nMEMCPY_FN(memcpy_orig,\n\t\"x86-64-unrolled\",\n\t\"unrolled memcpy() in arch/x86/lib/memcpy_64.S\")\n\nMEMCPY_FN(__memcpy,\n\t\"x86-64-movsq\",\n\t\"movsq-based memcpy() in arch/x86/lib/memcpy_64.S\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

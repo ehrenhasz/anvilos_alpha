@@ -1,0 +1,9 @@
+{
+  "module_name": "rtw_version.h",
+  "hash_id": "3903a4996c21ff36010943637726fad89f9790d4ea05d451fa5bf2b7e87eecde",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/rtw_version.h",
+  "human_readable_source": " \n#define DRIVERVERSION\t\"v4.3.5.5_12290.20140916_BTCOEX20140507-4E40\"\n#define BTCOEXVERSION\t\"BTCOEX20140507-4E40\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

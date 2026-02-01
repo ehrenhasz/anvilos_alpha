@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_mirred.h",
+  "hash_id": "92e8689d0079b1324e3763d1eab8198a6724db4b9542c69df925e8338b328701",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/tc_act/tc_mirred.h",
+  "human_readable_source": " \n#ifndef __NET_TC_MIR_H\n#define __NET_TC_MIR_H\n\n#include <net/act_api.h>\n#include <linux/tc_act/tc_mirred.h>\n\nstruct tcf_mirred {\n\tstruct tc_action\tcommon;\n\tint\t\t\ttcfm_eaction;\n\tbool\t\t\ttcfm_mac_header_xmit;\n\tstruct net_device __rcu\t*tcfm_dev;\n\tnetdevice_tracker\ttcfm_dev_tracker;\n\tstruct list_head\ttcfm_list;\n};\n#define to_mirred(a) ((struct tcf_mirred *)a)\n\nstatic inline bool is_tcf_mirred_egress_redirect(const struct tc_action *a)\n{\n#ifdef CONFIG_NET_CLS_ACT\n\tif (a->ops && a->ops->id == TCA_ID_MIRRED)\n\t\treturn to_mirred(a)->tcfm_eaction == TCA_EGRESS_REDIR;\n#endif\n\treturn false;\n}\n\nstatic inline bool is_tcf_mirred_egress_mirror(const struct tc_action *a)\n{\n#ifdef CONFIG_NET_CLS_ACT\n\tif (a->ops && a->ops->id == TCA_ID_MIRRED)\n\t\treturn to_mirred(a)->tcfm_eaction == TCA_EGRESS_MIRROR;\n#endif\n\treturn false;\n}\n\nstatic inline bool is_tcf_mirred_ingress_redirect(const struct tc_action *a)\n{\n#ifdef CONFIG_NET_CLS_ACT\n\tif (a->ops && a->ops->id == TCA_ID_MIRRED)\n\t\treturn to_mirred(a)->tcfm_eaction == TCA_INGRESS_REDIR;\n#endif\n\treturn false;\n}\n\nstatic inline bool is_tcf_mirred_ingress_mirror(const struct tc_action *a)\n{\n#ifdef CONFIG_NET_CLS_ACT\n\tif (a->ops && a->ops->id == TCA_ID_MIRRED)\n\t\treturn to_mirred(a)->tcfm_eaction == TCA_INGRESS_MIRROR;\n#endif\n\treturn false;\n}\n\nstatic inline struct net_device *tcf_mirred_dev(const struct tc_action *a)\n{\n\treturn rtnl_dereference(to_mirred(a)->tcfm_dev);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sparx5_pool.c",
+  "hash_id": "63e18ed40deb714fde9ac42bcdcf6e1dd2c7b2d4c87081983447034a7e324efb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/microchip/sparx5/sparx5_pool.c",
+  "human_readable_source": "\n \n\n#include \"sparx5_main_regs.h\"\n#include \"sparx5_main.h\"\n\nstatic u32 sparx5_pool_id_to_idx(u32 id)\n{\n\treturn --id;\n}\n\nu32 sparx5_pool_idx_to_id(u32 idx)\n{\n\treturn ++idx;\n}\n\n \nint sparx5_pool_put(struct sparx5_pool_entry *pool, int size, u32 id)\n{\n\tstruct sparx5_pool_entry *e_itr;\n\n\te_itr = (pool + sparx5_pool_id_to_idx(id));\n\tif (e_itr->ref_cnt == 0)\n\t\treturn -EINVAL;\n\n\treturn --e_itr->ref_cnt;\n}\n\n \nint sparx5_pool_get(struct sparx5_pool_entry *pool, int size, u32 *id)\n{\n\tstruct sparx5_pool_entry *e_itr;\n\tint i;\n\n\tfor (i = 0, e_itr = pool; i < size; i++, e_itr++) {\n\t\tif (e_itr->ref_cnt == 0) {\n\t\t\t*id = sparx5_pool_idx_to_id(i);\n\t\t\treturn ++e_itr->ref_cnt;\n\t\t}\n\t}\n\n\treturn -ENOSPC;\n}\n\n \nint sparx5_pool_get_with_idx(struct sparx5_pool_entry *pool, int size, u32 idx,\n\t\t\t     u32 *id)\n{\n\tstruct sparx5_pool_entry *e_itr;\n\tint i, ret = -ENOSPC;\n\n\tfor (i = 0, e_itr = pool; i < size; i++, e_itr++) {\n\t\t \n\t\tif (e_itr->ref_cnt == 0 && ret == -ENOSPC)\n\t\t\tret = i;\n\t\t \n\t\tif (e_itr->idx == idx && e_itr->ref_cnt > 0) {\n\t\t\tret = i;\n\t\t\tbreak;\n\t\t}\n\t}\n\n\t \n\tif (ret >= 0) {\n\t\t*id = sparx5_pool_idx_to_id(ret);\n\t\te_itr = (pool + ret);\n\t\te_itr->idx = idx;\n\t\treturn ++e_itr->ref_cnt;\n\t}\n\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

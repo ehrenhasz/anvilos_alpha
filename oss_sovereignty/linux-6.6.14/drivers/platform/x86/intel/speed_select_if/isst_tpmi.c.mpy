@@ -1,0 +1,9 @@
+{
+  "module_name": "isst_tpmi.c",
+  "hash_id": "09fb8500bb1884127ab4ec500e43d6701bb5b7c9432d6886fddc2ae4126c2ab6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/speed_select_if/isst_tpmi.c",
+  "human_readable_source": "\n \n\n#include <linux/auxiliary_bus.h>\n#include <linux/module.h>\n#include <linux/intel_tpmi.h>\n\n#include \"isst_tpmi_core.h\"\n\nstatic int intel_sst_probe(struct auxiliary_device *auxdev, const struct auxiliary_device_id *id)\n{\n\tint ret;\n\n\tret = tpmi_sst_init();\n\tif (ret)\n\t\treturn ret;\n\n\tret = tpmi_sst_dev_add(auxdev);\n\tif (ret)\n\t\ttpmi_sst_exit();\n\n\treturn ret;\n}\n\nstatic void intel_sst_remove(struct auxiliary_device *auxdev)\n{\n\ttpmi_sst_dev_remove(auxdev);\n\ttpmi_sst_exit();\n}\n\nstatic int intel_sst_suspend(struct device *dev)\n{\n\ttpmi_sst_dev_suspend(to_auxiliary_dev(dev));\n\n\treturn 0;\n}\n\nstatic int intel_sst_resume(struct device *dev)\n{\n\ttpmi_sst_dev_resume(to_auxiliary_dev(dev));\n\n\treturn 0;\n}\n\nstatic DEFINE_SIMPLE_DEV_PM_OPS(intel_sst_pm, intel_sst_suspend, intel_sst_resume);\n\nstatic const struct auxiliary_device_id intel_sst_id_table[] = {\n\t{ .name = \"intel_vsec.tpmi-sst\" },\n\t{}\n};\nMODULE_DEVICE_TABLE(auxiliary, intel_sst_id_table);\n\nstatic struct auxiliary_driver intel_sst_aux_driver = {\n\t.id_table       = intel_sst_id_table,\n\t.remove         = intel_sst_remove,\n\t.probe          = intel_sst_probe,\n\t.driver = {\n\t\t.pm = pm_sleep_ptr(&intel_sst_pm),\n\t},\n};\n\nmodule_auxiliary_driver(intel_sst_aux_driver);\n\nMODULE_IMPORT_NS(INTEL_TPMI_SST);\nMODULE_DESCRIPTION(\"Intel TPMI SST Driver\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

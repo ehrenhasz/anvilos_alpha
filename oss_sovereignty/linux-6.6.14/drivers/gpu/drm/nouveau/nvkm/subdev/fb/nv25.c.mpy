@@ -1,0 +1,9 @@
+{
+  "module_name": "nv25.c",
+  "hash_id": "4c549db4b7715b066c5a1d9a66fbb0a14c85112503fe0e63d52596dfb9d6b208",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/nv25.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"ram.h\"\n\nstatic void\nnv25_fb_tile_comp(struct nvkm_fb *fb, int i, u32 size, u32 flags,\n\t\t  struct nvkm_fb_tile *tile)\n{\n\tu32 tiles = DIV_ROUND_UP(size, 0x40);\n\tu32 tags  = round_up(tiles / fb->ram->parts, 0x40);\n\tif (!nvkm_mm_head(&fb->tags.mm, 0, 1, tags, tags, 1, &tile->tag)) {\n\t\tif (!(flags & 2)) tile->zcomp = 0x00100000;  \n\t\telse              tile->zcomp = 0x00200000;  \n\t\ttile->zcomp |= tile->tag->offset;\n#ifdef __BIG_ENDIAN\n\t\ttile->zcomp |= 0x01000000;\n#endif\n\t}\n}\n\nstatic const struct nvkm_fb_func\nnv25_fb = {\n\t.tags = nv20_fb_tags,\n\t.tile.regions = 8,\n\t.tile.init = nv20_fb_tile_init,\n\t.tile.comp = nv25_fb_tile_comp,\n\t.tile.fini = nv20_fb_tile_fini,\n\t.tile.prog = nv20_fb_tile_prog,\n\t.ram_new = nv20_ram_new,\n};\n\nint\nnv25_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn nvkm_fb_new_(&nv25_fb, device, type, inst, pfb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

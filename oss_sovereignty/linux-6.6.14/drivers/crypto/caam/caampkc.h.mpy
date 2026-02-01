@@ -1,0 +1,9 @@
+{
+  "module_name": "caampkc.h",
+  "hash_id": "391b8f7ae06baf03290c0bae97d72b17605af9b31330c82562ff80f14dfc443a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/caam/caampkc.h",
+  "human_readable_source": " \n \n\n#ifndef _PKC_DESC_H_\n#define _PKC_DESC_H_\n#include \"compat.h\"\n#include \"pdb.h\"\n\n \nenum caam_priv_key_form {\n\tFORM1,\n\tFORM2,\n\tFORM3\n};\n\n \nstruct caam_rsa_key {\n\tu8 *n;\n\tu8 *e;\n\tu8 *d;\n\tu8 *p;\n\tu8 *q;\n\tu8 *dp;\n\tu8 *dq;\n\tu8 *qinv;\n\tu8 *tmp1;\n\tu8 *tmp2;\n\tsize_t n_sz;\n\tsize_t e_sz;\n\tsize_t d_sz;\n\tsize_t p_sz;\n\tsize_t q_sz;\n\tenum caam_priv_key_form priv_form;\n};\n\n \nstruct caam_rsa_ctx {\n\tstruct caam_rsa_key key;\n\tstruct device *dev;\n\tdma_addr_t padding_dma;\n\n};\n\n \nstruct caam_rsa_req_ctx {\n\tstruct scatterlist src[2];\n\tstruct scatterlist *fixup_src;\n\tunsigned int fixup_src_len;\n\tstruct rsa_edesc *edesc;\n\tvoid (*akcipher_op_done)(struct device *jrdev, u32 *desc, u32 err,\n\t\t\t\t void *context);\n};\n\n \nstruct rsa_edesc {\n\tint src_nents;\n\tint dst_nents;\n\tint mapped_src_nents;\n\tint mapped_dst_nents;\n\tint sec4_sg_bytes;\n\tbool bklog;\n\tdma_addr_t sec4_sg_dma;\n\tstruct sec4_sg_entry *sec4_sg;\n\tunion {\n\t\tstruct rsa_pub_pdb pub;\n\t\tstruct rsa_priv_f1_pdb priv_f1;\n\t\tstruct rsa_priv_f2_pdb priv_f2;\n\t\tstruct rsa_priv_f3_pdb priv_f3;\n\t} pdb;\n\tu32 hw_desc[];\n};\n\n \nvoid init_rsa_pub_desc(u32 *desc, struct rsa_pub_pdb *pdb);\nvoid init_rsa_priv_f1_desc(u32 *desc, struct rsa_priv_f1_pdb *pdb);\nvoid init_rsa_priv_f2_desc(u32 *desc, struct rsa_priv_f2_pdb *pdb);\nvoid init_rsa_priv_f3_desc(u32 *desc, struct rsa_priv_f3_pdb *pdb);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

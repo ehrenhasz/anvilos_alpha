@@ -1,0 +1,9 @@
+{
+  "module_name": "pgtable-3level_types.h",
+  "hash_id": "dd9fe929ee838eeff309e69788cdc671202ac3d1fa3e9b4fcf9445e026e911c0",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/pgtable-3level_types.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PGTABLE_3LEVEL_DEFS_H\n#define _ASM_X86_PGTABLE_3LEVEL_DEFS_H\n\n#ifndef __ASSEMBLY__\n#include <linux/types.h>\n\ntypedef u64\tpteval_t;\ntypedef u64\tpmdval_t;\ntypedef u64\tpudval_t;\ntypedef u64\tp4dval_t;\ntypedef u64\tpgdval_t;\ntypedef u64\tpgprotval_t;\n\ntypedef union {\n\tstruct {\n\t\tunsigned long pte_low, pte_high;\n\t};\n\tpteval_t pte;\n} pte_t;\n\ntypedef union {\n\tstruct {\n\t\tunsigned long pmd_low, pmd_high;\n\t};\n\tpmdval_t pmd;\n} pmd_t;\n#endif\t \n\n#define SHARED_KERNEL_PMD\t(!static_cpu_has(X86_FEATURE_PTI))\n\n#define ARCH_PAGE_TABLE_SYNC_MASK\t(SHARED_KERNEL_PMD ? 0 : PGTBL_PMD_MODIFIED)\n\n \n#define PGDIR_SHIFT\t30\n#define PTRS_PER_PGD\t4\n\n \n#define PMD_SHIFT\t21\n#define PTRS_PER_PMD\t512\n\n \n#define PTRS_PER_PTE\t512\n\n#define MAX_POSSIBLE_PHYSMEM_BITS\t36\n#define PGD_KERNEL_START\t(CONFIG_PAGE_OFFSET >> PGDIR_SHIFT)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

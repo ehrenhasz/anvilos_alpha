@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "70e2105266fb30605f44ed00682e81c20d68f9ff634cc5a3281f45a29dd8e0cb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlxbf_gige/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause\n\nobj-$(CONFIG_MLXBF_GIGE) += mlxbf_gige.o\n\nmlxbf_gige-y := mlxbf_gige_ethtool.o \\\n\t\tmlxbf_gige_intr.o \\\n\t\tmlxbf_gige_main.o \\\n\t\tmlxbf_gige_mdio.o \\\n\t\tmlxbf_gige_rx.o   \\\n\t\tmlxbf_gige_tx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

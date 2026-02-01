@@ -1,0 +1,9 @@
+{
+  "module_name": "atomic_xchg.c",
+  "hash_id": "2c3af7b6dddc0738a241171cc847f3f31fbea87e1c056491a4f494156746f56b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/verifier/atomic_xchg.c",
+  "human_readable_source": "{\n\t\"atomic exchange smoketest - 64bit\",\n\t.insns = {\n\t\t \n\t\tBPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 3),\n\t\t \n\t\tBPF_MOV64_IMM(BPF_REG_1, 4),\n\t\tBPF_ATOMIC_OP(BPF_DW, BPF_XCHG, BPF_REG_10, BPF_REG_1, -8),\n\t\t \n\t\tBPF_JMP_IMM(BPF_JEQ, BPF_REG_1, 3, 2),\n\t\tBPF_MOV64_IMM(BPF_REG_0, 1),\n\t\tBPF_EXIT_INSN(),\n\t\t \n\t\tBPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_10, -8),\n\t\tBPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 4, 2),\n\t\tBPF_MOV64_IMM(BPF_REG_0, 2),\n\t\tBPF_EXIT_INSN(),\n\t\t \n\t\tBPF_MOV64_IMM(BPF_REG_0, 0),\n\t\tBPF_EXIT_INSN(),\n\t},\n\t.result = ACCEPT,\n},\n{\n\t\"atomic exchange smoketest - 32bit\",\n\t.insns = {\n\t\t \n\t\tBPF_ST_MEM(BPF_W, BPF_REG_10, -4, 3),\n\t\t \n\t\tBPF_MOV32_IMM(BPF_REG_1, 4),\n\t\tBPF_ATOMIC_OP(BPF_W, BPF_XCHG, BPF_REG_10, BPF_REG_1, -4),\n\t\t \n\t\tBPF_JMP32_IMM(BPF_JEQ, BPF_REG_1, 3, 2),\n\t\tBPF_MOV32_IMM(BPF_REG_0, 1),\n\t\tBPF_EXIT_INSN(),\n\t\t \n\t\tBPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_10, -4),\n\t\tBPF_JMP32_IMM(BPF_JEQ, BPF_REG_0, 4, 2),\n\t\tBPF_MOV32_IMM(BPF_REG_0, 2),\n\t\tBPF_EXIT_INSN(),\n\t\t \n\t\tBPF_MOV32_IMM(BPF_REG_0, 0),\n\t\tBPF_EXIT_INSN(),\n\t},\n\t.result = ACCEPT,\n},\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

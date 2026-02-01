@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b7b36906a33b2adb7ff8d8f1723e87c68b73e7becacf447af88d46f1321c43f8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/cec/platform/seco/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CEC_SECO) += seco-cec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

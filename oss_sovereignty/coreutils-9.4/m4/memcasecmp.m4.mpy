@@ -1,0 +1,9 @@
+{
+  "module_name": "memcasecmp.m4",
+  "hash_id": "63385f99e2f1db65a381fa3947950409def06796cb0a0c3b4988825b0c56f63c",
+  "original_prompt": "Ingested from coreutils-9.4/m4/memcasecmp.m4",
+  "human_readable_source": "#serial 6\ndnl Copyright (C) 2005-2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_MEMCASECMP],\n[\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

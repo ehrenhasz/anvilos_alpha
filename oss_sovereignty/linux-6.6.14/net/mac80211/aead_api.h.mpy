@@ -1,0 +1,9 @@
+{
+  "module_name": "aead_api.h",
+  "hash_id": "b9a88ea2e78d08e1aaaf34541e2ec887d5ff90e1fcae92c67f881fcc1d765638",
+  "original_prompt": "Ingested from linux-6.6.14/net/mac80211/aead_api.h",
+  "human_readable_source": " \n\n#ifndef _AEAD_API_H\n#define _AEAD_API_H\n\n#include <crypto/aead.h>\n#include <linux/crypto.h>\n\nstruct crypto_aead *\naead_key_setup_encrypt(const char *alg, const u8 key[],\n\t\t       size_t key_len, size_t mic_len);\n\nint aead_encrypt(struct crypto_aead *tfm, u8 *b_0, u8 *aad,\n\t\t size_t aad_len, u8 *data,\n\t\t size_t data_len, u8 *mic);\n\nint aead_decrypt(struct crypto_aead *tfm, u8 *b_0, u8 *aad,\n\t\t size_t aad_len, u8 *data,\n\t\t size_t data_len, u8 *mic);\n\nvoid aead_key_free(struct crypto_aead *tfm);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

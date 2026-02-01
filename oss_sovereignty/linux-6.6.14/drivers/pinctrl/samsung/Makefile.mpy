@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bbf8de3fe9412e9d5c5dee2096cb3bcc1d34fc187d8df91fa861a3a3bf6c4ab1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/samsung/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Samsung pin control drivers\n\nobj-$(CONFIG_PINCTRL_SAMSUNG)\t+= pinctrl-samsung.o\nobj-$(CONFIG_PINCTRL_EXYNOS)\t+= pinctrl-exynos.o\nobj-$(CONFIG_PINCTRL_EXYNOS_ARM)\t+= pinctrl-exynos-arm.o\nobj-$(CONFIG_PINCTRL_EXYNOS_ARM64)\t+= pinctrl-exynos-arm64.o\nobj-$(CONFIG_PINCTRL_S3C64XX)\t+= pinctrl-s3c64xx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

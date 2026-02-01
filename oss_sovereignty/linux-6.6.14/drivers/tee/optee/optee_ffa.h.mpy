@@ -1,0 +1,9 @@
+{
+  "module_name": "optee_ffa.h",
+  "hash_id": "a8fd5206bd5fa7c6f6e47faf37f6507b545319b44627f6b84f6fd7d1ab8af333",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tee/optee/optee_ffa.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef __OPTEE_FFA_H\n#define __OPTEE_FFA_H\n\n#include <linux/arm_ffa.h>\n\n \n\n#define OPTEE_FFA_VERSION_MAJOR\t1\n#define OPTEE_FFA_VERSION_MINOR\t0\n\n#define OPTEE_FFA_BLOCKING_CALL(id)\t(id)\n#define OPTEE_FFA_YIELDING_CALL_BIT\t31\n#define OPTEE_FFA_YIELDING_CALL(id)\t((id) | BIT(OPTEE_FFA_YIELDING_CALL_BIT))\n\n \n#define OPTEE_FFA_GET_API_VERSION\tOPTEE_FFA_BLOCKING_CALL(0)\n\n \n#define OPTEE_FFA_GET_OS_VERSION\tOPTEE_FFA_BLOCKING_CALL(1)\n\n \n \n#define OPTEE_FFA_SEC_CAP_ARG_OFFSET\tBIT(0)\n\n#define OPTEE_FFA_EXCHANGE_CAPABILITIES OPTEE_FFA_BLOCKING_CALL(2)\n\n \n#define OPTEE_FFA_UNREGISTER_SHM\tOPTEE_FFA_BLOCKING_CALL(3)\n\n \n#define OPTEE_FFA_YIELDING_CALL_WITH_ARG\tOPTEE_FFA_YIELDING_CALL(0)\n#define OPTEE_FFA_YIELDING_CALL_RESUME\t\tOPTEE_FFA_YIELDING_CALL(1)\n\n#define OPTEE_FFA_YIELDING_CALL_RETURN_DONE\t\t0\n#define OPTEE_FFA_YIELDING_CALL_RETURN_RPC_CMD\t\t1\n#define OPTEE_FFA_YIELDING_CALL_RETURN_INTERRUPT\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

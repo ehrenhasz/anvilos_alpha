@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4c65ea7fed8a92157c46a49eb1756c119c5ac56b0adeb11d3b108f76dbf3ba67",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/misc/sisusbvga/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig USB_SISUSBVGA\n\ttristate \"USB 2.0 SVGA dongle support (Net2280/SiS315)\"\n\tdepends on (USB_MUSB_HDRC || USB_EHCI_HCD)\n\thelp\n\t  Say Y here if you intend to attach a USB2VGA dongle based on a\n\t  Net2280 and a SiS315 chip.\n\n\t  Note that this device requires a USB 2.0 host controller. It will not\n\t  work with USB 1.x controllers.\n\n\t  To compile this driver as a module, choose M here; the module will be\n\t  called sisusbvga. If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

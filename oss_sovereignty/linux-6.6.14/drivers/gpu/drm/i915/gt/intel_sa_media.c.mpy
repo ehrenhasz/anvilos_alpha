@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_sa_media.c",
+  "hash_id": "ee578170a3475f7a8a8a5fc6e273cb00dd994a667fdab64136d9807f17a753b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_sa_media.c",
+  "human_readable_source": "\n \n\n#include <drm/drm_managed.h>\n\n#include \"i915_drv.h\"\n#include \"gt/intel_gt.h\"\n#include \"gt/intel_sa_media.h\"\n\nint intel_sa_mediagt_setup(struct intel_gt *gt, phys_addr_t phys_addr,\n\t\t\t   u32 gsi_offset)\n{\n\tstruct drm_i915_private *i915 = gt->i915;\n\tstruct intel_uncore *uncore;\n\n\tuncore = drmm_kzalloc(&i915->drm, sizeof(*uncore), GFP_KERNEL);\n\tif (!uncore)\n\t\treturn -ENOMEM;\n\n\tuncore->gsi_offset = gsi_offset;\n\n\tgt->irq_lock = to_gt(i915)->irq_lock;\n\tintel_gt_common_init_early(gt);\n\tintel_uncore_init_early(uncore, gt);\n\n\t \n\tuncore->regs = intel_uncore_regs(&i915->uncore);\n\tif (drm_WARN_ON(&i915->drm, uncore->regs == NULL))\n\t\treturn -EIO;\n\n\tgt->uncore = uncore;\n\tgt->phys_addr = phys_addr;\n\n\t \n\tdrm_WARN_ON(&i915->drm, i915->media_gt);\n\ti915->media_gt = gt;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

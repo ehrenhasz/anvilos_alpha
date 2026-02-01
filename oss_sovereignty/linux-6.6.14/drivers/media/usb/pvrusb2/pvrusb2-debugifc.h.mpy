@@ -1,0 +1,9 @@
+{
+  "module_name": "pvrusb2-debugifc.h",
+  "hash_id": "994c381843063909ff171164b95f0c03439563d7776e9e91bef9a2b32030a10a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pvrusb2/pvrusb2-debugifc.h",
+  "human_readable_source": " \n \n#ifndef __PVRUSB2_DEBUGIFC_H\n#define __PVRUSB2_DEBUGIFC_H\n\nstruct pvr2_hdw;\n\n \nint pvr2_debugifc_print_info(struct pvr2_hdw *,\n\t\t\t     char *buf_ptr, unsigned int buf_size);\n\n \nint pvr2_debugifc_print_status(struct pvr2_hdw *,\n\t\t\t       char *buf_ptr,unsigned int buf_size);\n\n \nint pvr2_debugifc_docmd(struct pvr2_hdw *,\n\t\t\tconst char *buf_ptr,unsigned int buf_size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

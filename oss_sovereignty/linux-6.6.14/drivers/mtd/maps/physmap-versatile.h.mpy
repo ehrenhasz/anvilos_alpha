@@ -1,0 +1,9 @@
+{
+  "module_name": "physmap-versatile.h",
+  "hash_id": "8cae8c39d350650fa8126f1765585e8b7bca11f5b0e315892c85475e941df62d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/maps/physmap-versatile.h",
+  "human_readable_source": " \n#include <linux/of.h>\n#include <linux/mtd/map.h>\n\n#ifdef CONFIG_MTD_PHYSMAP_VERSATILE\nint of_flash_probe_versatile(struct platform_device *pdev,\n\t\t\t     struct device_node *np,\n\t\t\t     struct map_info *map);\n#else\nstatic inline\nint of_flash_probe_versatile(struct platform_device *pdev,\n\t\t\t     struct device_node *np,\n\t\t\t     struct map_info *map)\n{\n\treturn 0;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

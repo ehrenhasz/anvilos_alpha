@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "6d50666f342db8ba509e872daf0c36fc9d32a694d0cc1b0f517824a01084edd9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/atm/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nfore200e_mkfirm\nfore200e_pca_fw.c\npca200e.bin\npca200e_ecd.bin2\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

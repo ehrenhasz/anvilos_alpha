@@ -1,0 +1,9 @@
+{
+  "module_name": "berlin2.h",
+  "hash_id": "b6aa1b0ac54d6d7d2a0c3a90fbd3905d9717ffc6a245e9dcf8e2cecb43d089ca",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/berlin2.h",
+  "human_readable_source": " \n \n\n#define CLKID_SYS\t\t0\n#define CLKID_CPU\t\t1\n#define CLKID_DRMFIGO\t\t2\n#define CLKID_CFG\t\t3\n#define CLKID_GFX\t\t4\n#define CLKID_ZSP\t\t5\n#define CLKID_PERIF\t\t6\n#define CLKID_PCUBE\t\t7\n#define CLKID_VSCOPE\t\t8\n#define CLKID_NFC_ECC\t\t9\n#define CLKID_VPP\t\t10\n#define CLKID_APP\t\t11\n#define CLKID_AUDIO0\t\t12\n#define CLKID_AUDIO2\t\t13\n#define CLKID_AUDIO3\t\t14\n#define CLKID_AUDIO1\t\t15\n#define CLKID_GFX3D_CORE\t16\n#define CLKID_GFX3D_SYS\t\t17\n#define CLKID_ARC\t\t18\n#define CLKID_VIP\t\t19\n#define CLKID_SDIO0XIN\t\t20\n#define CLKID_SDIO1XIN\t\t21\n#define CLKID_GFX3D_EXTRA\t22\n#define CLKID_GC360\t\t23\n#define CLKID_SDIO_DLLMST\t24\n#define CLKID_GETH0\t\t25\n#define CLKID_GETH1\t\t26\n#define CLKID_SATA\t\t27\n#define CLKID_AHBAPB\t\t28\n#define CLKID_USB0\t\t29\n#define CLKID_USB1\t\t30\n#define CLKID_PBRIDGE\t\t31\n#define CLKID_SDIO0\t\t32\n#define CLKID_SDIO1\t\t33\n#define CLKID_NFC\t\t34\n#define CLKID_SMEMC\t\t35\n#define CLKID_AUDIOHD\t\t36\n#define CLKID_VIDEO0\t\t37\n#define CLKID_VIDEO1\t\t38\n#define CLKID_VIDEO2\t\t39\n#define CLKID_TWD\t\t40\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

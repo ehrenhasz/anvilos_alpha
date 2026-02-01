@@ -1,0 +1,9 @@
+{
+  "module_name": "berlin2-pll.h",
+  "hash_id": "565e7ea0ba44d8ee2ae682523b9dbf5764bda5cf96f04e8d58563ff08601b948",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/berlin/berlin2-pll.h",
+  "human_readable_source": " \n \n#ifndef __BERLIN2_PLL_H\n#define __BERLIN2_PLL_H\n\nstruct berlin2_pll_map {\n\tconst u8 vcodiv[16];\n\tu8 mult;\n\tu8 fbdiv_shift;\n\tu8 rfdiv_shift;\n\tu8 divsel_shift;\n};\n\nint berlin2_pll_register(const struct berlin2_pll_map *map,\n\t\t\t void __iomem *base, const char *name,\n\t\t\t const char *parent_name, unsigned long flags);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

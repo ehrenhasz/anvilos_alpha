@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "001942f7ad7a20ac4c9cd3690ac7e0359d3ad24e1cd4abee7b61014574c1b616",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/selinux/mdp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nhostprogs-always-y += mdp\nHOST_EXTRACFLAGS += \\\n\t-I$(srctree)/include/uapi -I$(srctree)/include \\\n\t-I$(srctree)/security/selinux/include -I$(objtree)/include\n\nclean-files\t:= policy.* file_contexts\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_file.h",
+  "hash_id": "50fccd2b18913f99436076d89bcda53e248b6d5f877e6744bdacd2a300c3d42c",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zfs_file.h",
+  "human_readable_source": " \n\n#ifndef\t_SYS_ZFS_FILE_H\n#define\t_SYS_ZFS_FILE_H\n\n#include <sys/zfs_context.h>\n\n#ifndef _KERNEL\ntypedef struct zfs_file {\n\tint f_fd;\n\tint f_dump_fd;\n} zfs_file_t;\n#elif defined(__linux__) || defined(__FreeBSD__)\ntypedef struct file zfs_file_t;\n#else\n#error \"unknown OS\"\n#endif\n\ntypedef struct zfs_file_attr {\n\tuint64_t\tzfa_size;\t \n\tmode_t\t\tzfa_mode;\t \n} zfs_file_attr_t;\n\nint zfs_file_open(const char *path, int flags, int mode, zfs_file_t **fp);\nvoid zfs_file_close(zfs_file_t *fp);\n\nint zfs_file_write(zfs_file_t *fp, const void *buf, size_t len, ssize_t *resid);\nint zfs_file_pwrite(zfs_file_t *fp, const void *buf, size_t len, loff_t off,\n    ssize_t *resid);\nint zfs_file_read(zfs_file_t *fp, void *buf, size_t len, ssize_t *resid);\nint zfs_file_pread(zfs_file_t *fp, void *buf, size_t len, loff_t off,\n    ssize_t *resid);\n\nint zfs_file_seek(zfs_file_t *fp, loff_t *offp, int whence);\nint zfs_file_getattr(zfs_file_t *fp, zfs_file_attr_t *zfattr);\nint zfs_file_fsync(zfs_file_t *fp, int flags);\nint zfs_file_fallocate(zfs_file_t *fp, int mode, loff_t offset, loff_t len);\nloff_t zfs_file_off(zfs_file_t *fp);\nint zfs_file_unlink(const char *);\n\nzfs_file_t *zfs_file_get(int fd);\nvoid zfs_file_put(zfs_file_t *fp);\nvoid *zfs_file_private(zfs_file_t *fp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

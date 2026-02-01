@@ -1,0 +1,9 @@
+{
+  "module_name": "pmem_test.c",
+  "hash_id": "e4dd135ba769bba5ecc9cf349dfd33a1cb70e992ff2db785d66255f8bb4967de",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/nvdimm/pmem_test.c",
+  "human_readable_source": "\n\n\n#include <linux/module.h>\n#include <linux/printk.h>\n#include \"watermark.h\"\n\nnfit_test_watermark(pmem);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

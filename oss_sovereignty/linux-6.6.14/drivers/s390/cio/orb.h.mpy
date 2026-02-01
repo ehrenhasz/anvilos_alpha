@@ -1,0 +1,9 @@
+{
+  "module_name": "orb.h",
+  "hash_id": "5f3f6d9fe9b63250b7704f7886f064c2e19bdb393e13a6e5be7c4303048b0e46",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/cio/orb.h",
+  "human_readable_source": " \n \n\n#ifndef S390_ORB_H\n#define S390_ORB_H\n\n \nstruct cmd_orb {\n\tu32 intparm;\t \n\tu32 key:4;\t \n\tu32 spnd:1;\t \n\tu32 res1:1;\t \n\tu32 mod:1;\t \n\tu32 sync:1;\t \n\tu32 fmt:1;\t \n\tu32 pfch:1;\t \n\tu32 isic:1;\t \n\tu32 alcc:1;\t \n\tu32 ssic:1;\t \n\tu32 res2:1;\t \n\tu32 c64:1;\t \n\tu32 i2k:1;\t \n\tu32 lpm:8;\t \n\tu32 ils:1;\t \n\tu32 zero:6;\t \n\tu32 orbx:1;\t \n\tu32 cpa;\t \n}  __packed __aligned(4);\n\n \nstruct tm_orb {\n\tu32 intparm;\n\tu32 key:4;\n\tu32:9;\n\tu32 b:1;\n\tu32:2;\n\tu32 lpm:8;\n\tu32:7;\n\tu32 x:1;\n\tu32 tcw;\n\tu32 prio:8;\n\tu32:8;\n\tu32 rsvpgm:8;\n\tu32:8;\n\tu32:32;\n\tu32:32;\n\tu32:32;\n\tu32:32;\n}  __packed __aligned(4);\n\n \nstruct eadm_orb {\n\tu32 intparm;\n\tu32 key:4;\n\tu32:4;\n\tu32 compat1:1;\n\tu32 compat2:1;\n\tu32:21;\n\tu32 x:1;\n\tu32 aob;\n\tu32 css_prio:8;\n\tu32:8;\n\tu32 scm_prio:8;\n\tu32:8;\n\tu32:29;\n\tu32 fmt:3;\n\tu32:32;\n\tu32:32;\n\tu32:32;\n}  __packed __aligned(4);\n\nunion orb {\n\tstruct cmd_orb cmd;\n\tstruct tm_orb tm;\n\tstruct eadm_orb eadm;\n}  __packed __aligned(4);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ovly.c",
+  "hash_id": "6646181f9eae97966f759edc3fb2ed3c0529ca3ad211e84652b63ffe78e624f2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/ovly.c",
+  "human_readable_source": " \n#include \"ovly.h\"\n#include \"oimm.h\"\n\n#include <nvif/class.h>\n\nint\nnv50_ovly_new(struct nouveau_drm *drm, int head, struct nv50_wndw **pwndw)\n{\n\tstatic const struct {\n\t\ts32 oclass;\n\t\tint version;\n\t\tint (*new)(struct nouveau_drm *, int, s32, struct nv50_wndw **);\n\t} ovlys[] = {\n\t\t{ GK104_DISP_OVERLAY_CONTROL_DMA, 0, ovly917e_new },\n\t\t{ GF110_DISP_OVERLAY_CONTROL_DMA, 0, ovly907e_new },\n\t\t{ GT214_DISP_OVERLAY_CHANNEL_DMA, 0, ovly827e_new },\n\t\t{ GT200_DISP_OVERLAY_CHANNEL_DMA, 0, ovly827e_new },\n\t\t{   G82_DISP_OVERLAY_CHANNEL_DMA, 0, ovly827e_new },\n\t\t{  NV50_DISP_OVERLAY_CHANNEL_DMA, 0, ovly507e_new },\n\t\t{}\n\t};\n\tstruct nv50_disp *disp = nv50_disp(drm->dev);\n\tint cid, ret;\n\n\tcid = nvif_mclass(&disp->disp->object, ovlys);\n\tif (cid < 0) {\n\t\tNV_ERROR(drm, \"No supported overlay class\\n\");\n\t\treturn cid;\n\t}\n\n\tret = ovlys[cid].new(drm, head, ovlys[cid].oclass, pwndw);\n\tif (ret)\n\t\treturn ret;\n\n\treturn nv50_oimm_init(drm, *pwndw);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

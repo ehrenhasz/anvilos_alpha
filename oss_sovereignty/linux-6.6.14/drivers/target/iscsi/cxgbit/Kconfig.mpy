@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e0e6184d2d226ce46708e881ffab052bbd982a14b2079ab1b26508a4f148c1d4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/iscsi/cxgbit/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig ISCSI_TARGET_CXGB4\n\ttristate \"Chelsio iSCSI target offload driver\"\n\tdepends on ISCSI_TARGET && CHELSIO_T4 && INET\n\tselect CHELSIO_LIB\n\thelp\n\tTo compile this driver as module, choose M here: the module\n\twill be called cxgbit.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

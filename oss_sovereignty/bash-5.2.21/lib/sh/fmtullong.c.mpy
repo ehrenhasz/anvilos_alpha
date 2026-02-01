@@ -1,0 +1,9 @@
+{
+  "module_name": "fmtullong.c",
+  "hash_id": "84df7d2a9c035067132dfe71989a2d1ed711feccd7328267f04e1f9abcca84b1",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/fmtullong.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#ifdef HAVE_LONG_LONG_INT\n\n#define LONG\t\tlong long\n#define UNSIGNED_LONG\tunsigned long long\n#define fmtulong\tfmtullong\n\n#include \"fmtulong.c\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

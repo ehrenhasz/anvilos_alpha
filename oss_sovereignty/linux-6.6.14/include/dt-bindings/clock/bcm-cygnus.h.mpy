@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm-cygnus.h",
+  "hash_id": "22eef1a7c3b67c51248866c02fedcb17e549e4d830aca5a09e88b08c5e32a348",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/bcm-cygnus.h",
+  "human_readable_source": " \n\n#ifndef _CLOCK_BCM_CYGNUS_H\n#define _CLOCK_BCM_CYGNUS_H\n\n \n#define BCM_CYGNUS_GENPLL                     0\n#define BCM_CYGNUS_GENPLL_AXI21_CLK           1\n#define BCM_CYGNUS_GENPLL_250MHZ_CLK          2\n#define BCM_CYGNUS_GENPLL_IHOST_SYS_CLK       3\n#define BCM_CYGNUS_GENPLL_ENET_SW_CLK         4\n#define BCM_CYGNUS_GENPLL_AUDIO_125_CLK       5\n#define BCM_CYGNUS_GENPLL_CAN_CLK             6\n\n \n#define BCM_CYGNUS_LCPLL0                     0\n#define BCM_CYGNUS_LCPLL0_PCIE_PHY_REF_CLK    1\n#define BCM_CYGNUS_LCPLL0_DDR_PHY_CLK         2\n#define BCM_CYGNUS_LCPLL0_SDIO_CLK            3\n#define BCM_CYGNUS_LCPLL0_USB_PHY_REF_CLK     4\n#define BCM_CYGNUS_LCPLL0_SMART_CARD_CLK      5\n#define BCM_CYGNUS_LCPLL0_CH5_UNUSED          6\n\n \n#define BCM_CYGNUS_MIPIPLL                    0\n#define BCM_CYGNUS_MIPIPLL_CH0_UNUSED         1\n#define BCM_CYGNUS_MIPIPLL_CH1_LCD            2\n#define BCM_CYGNUS_MIPIPLL_CH2_V3D            3\n#define BCM_CYGNUS_MIPIPLL_CH3_UNUSED         4\n#define BCM_CYGNUS_MIPIPLL_CH4_UNUSED         5\n#define BCM_CYGNUS_MIPIPLL_CH5_UNUSED         6\n\n \n#define BCM_CYGNUS_ASIU_KEYPAD_CLK    0\n#define BCM_CYGNUS_ASIU_ADC_CLK       1\n#define BCM_CYGNUS_ASIU_PWM_CLK       2\n\n \n#define BCM_CYGNUS_AUDIOPLL           0\n#define BCM_CYGNUS_AUDIOPLL_CH0       1\n#define BCM_CYGNUS_AUDIOPLL_CH1       2\n#define BCM_CYGNUS_AUDIOPLL_CH2       3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

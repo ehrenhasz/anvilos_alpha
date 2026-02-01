@@ -1,0 +1,9 @@
+{
+  "module_name": "mmpfb.h",
+  "hash_id": "13f69101cb4e4635fe4db6a1c24baa473ac161a6f2944e27ebcc5a642701fac4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/mmp/fb/mmpfb.h",
+  "human_readable_source": " \n \n\n#ifndef _MMP_FB_H_\n#define _MMP_FB_H_\n\n#include <video/mmp_disp.h>\n#include <linux/fb.h>\n\n \nstruct mmpfb_info {\n\tstruct device\t*dev;\n\tint\tid;\n\tconst char\t*name;\n\n\tstruct fb_info\t*fb_info;\n\t \n\tstruct fb_videomode\tmode;\n\tint\tpix_fmt;\n\n\tvoid\t*fb_start;\n\tint\tfb_size;\n\tdma_addr_t\tfb_start_dma;\n\n\tstruct mmp_overlay\t*overlay;\n\tstruct mmp_path\t*path;\n\n\tstruct mutex\taccess_ok;\n\n\tunsigned int\t\tpseudo_palette[16];\n\tint output_fmt;\n};\n\n#define MMPFB_DEFAULT_SIZE (PAGE_ALIGN(1920 * 1080 * 4 * 2))\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

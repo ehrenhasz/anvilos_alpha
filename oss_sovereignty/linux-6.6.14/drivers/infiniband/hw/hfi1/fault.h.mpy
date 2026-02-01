@@ -1,0 +1,9 @@
+{
+  "module_name": "fault.h",
+  "hash_id": "131dd8a6a3103353a331e37f3aa457a422b173b5d6774bfa1aec1b782227e275",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/fault.h",
+  "human_readable_source": " \n \n\n#ifndef _HFI1_FAULT_H\n#define _HFI1_FAULT_H\n\n#include <linux/fault-inject.h>\n#include <linux/dcache.h>\n#include <linux/bitops.h>\n#include <linux/kernel.h>\n#include <rdma/rdma_vt.h>\n\n#include \"hfi.h\"\n\nstruct hfi1_ibdev;\n\n#if defined(CONFIG_FAULT_INJECTION) && defined(CONFIG_FAULT_INJECTION_DEBUG_FS)\nstruct fault {\n\tstruct fault_attr attr;\n\tstruct dentry *dir;\n\tu64 n_rxfaults[(1U << BITS_PER_BYTE)];\n\tu64 n_txfaults[(1U << BITS_PER_BYTE)];\n\tu64 fault_skip;\n\tu64 skip;\n\tu64 fault_skip_usec;\n\tunsigned long skip_usec;\n\tunsigned long opcodes[(1U << BITS_PER_BYTE) / BITS_PER_LONG];\n\tbool enable;\n\tbool suppress_err;\n\tbool opcode;\n\tu8 direction;\n};\n\nint hfi1_fault_init_debugfs(struct hfi1_ibdev *ibd);\nbool hfi1_dbg_should_fault_tx(struct rvt_qp *qp, u32 opcode);\nbool hfi1_dbg_should_fault_rx(struct hfi1_packet *packet);\nbool hfi1_dbg_fault_suppress_err(struct hfi1_ibdev *ibd);\nvoid hfi1_fault_exit_debugfs(struct hfi1_ibdev *ibd);\n\n#else\n\nstatic inline int hfi1_fault_init_debugfs(struct hfi1_ibdev *ibd)\n{\n\treturn 0;\n}\n\nstatic inline bool hfi1_dbg_should_fault_rx(struct hfi1_packet *packet)\n{\n\treturn false;\n}\n\nstatic inline bool hfi1_dbg_should_fault_tx(struct rvt_qp *qp,\n\t\t\t\t\t    u32 opcode)\n{\n\treturn false;\n}\n\nstatic inline bool hfi1_dbg_fault_suppress_err(struct hfi1_ibdev *ibd)\n{\n\treturn false;\n}\n\nstatic inline void hfi1_fault_exit_debugfs(struct hfi1_ibdev *ibd)\n{\n}\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

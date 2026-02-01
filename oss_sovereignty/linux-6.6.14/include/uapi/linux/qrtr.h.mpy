@@ -1,0 +1,9 @@
+{
+  "module_name": "qrtr.h",
+  "hash_id": "c9c582500b238250f82f59812758b997d946ddd6c3c6a62810f65caaa436a038",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/qrtr.h",
+  "human_readable_source": " \n#ifndef _LINUX_QRTR_H\n#define _LINUX_QRTR_H\n\n#include <linux/socket.h>\n#include <linux/types.h>\n\n#define QRTR_NODE_BCAST\t0xffffffffu\n#define QRTR_PORT_CTRL\t0xfffffffeu\n\nstruct sockaddr_qrtr {\n\t__kernel_sa_family_t sq_family;\n\t__u32 sq_node;\n\t__u32 sq_port;\n};\n\nenum qrtr_pkt_type {\n\tQRTR_TYPE_DATA\t\t= 1,\n\tQRTR_TYPE_HELLO\t\t= 2,\n\tQRTR_TYPE_BYE\t\t= 3,\n\tQRTR_TYPE_NEW_SERVER\t= 4,\n\tQRTR_TYPE_DEL_SERVER\t= 5,\n\tQRTR_TYPE_DEL_CLIENT\t= 6,\n\tQRTR_TYPE_RESUME_TX\t= 7,\n\tQRTR_TYPE_EXIT          = 8,\n\tQRTR_TYPE_PING          = 9,\n\tQRTR_TYPE_NEW_LOOKUP\t= 10,\n\tQRTR_TYPE_DEL_LOOKUP\t= 11,\n};\n\nstruct qrtr_ctrl_pkt {\n\t__le32 cmd;\n\n\tunion {\n\t\tstruct {\n\t\t\t__le32 service;\n\t\t\t__le32 instance;\n\t\t\t__le32 node;\n\t\t\t__le32 port;\n\t\t} server;\n\n\t\tstruct {\n\t\t\t__le32 node;\n\t\t\t__le32 port;\n\t\t} client;\n\t};\n} __packed;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

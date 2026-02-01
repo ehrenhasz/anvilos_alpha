@@ -1,0 +1,9 @@
+{
+  "module_name": "resource.h",
+  "hash_id": "47eab22d9e3424ae57899150fc81c107c5a90938fc86c71e57797f279e140598",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/resource.h",
+  "human_readable_source": " \n \n\n#ifndef __RESOURCE_H_INCLUDED__\n#define __RESOURCE_H_INCLUDED__\n\n \n\n#include \"system_local.h\"\n#include \"resource_local.h\"\n\n#ifndef __INLINE_RESOURCE__\n#define STORAGE_CLASS_RESOURCE_H extern\n#define STORAGE_CLASS_RESOURCE_C\n#include \"resource_public.h\"\n#else   \n#define STORAGE_CLASS_RESOURCE_H static inline\n#define STORAGE_CLASS_RESOURCE_C static inline\n#include \"resource_private.h\"\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

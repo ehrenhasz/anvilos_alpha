@@ -1,0 +1,9 @@
+{
+  "module_name": "pipeline.json",
+  "hash_id": "56e5cf3d2ffc79a7c85ae56b28bb245ef1b412b993873d48eb6be7afa81dc7e9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/ampere/emag/pipeline.json",
+  "human_readable_source": "[\n    {\n        \"PublicDescription\": \"Decode starved for instruction cycle\",\n        \"EventCode\": \"0x108\",\n        \"EventName\": \"DECODE_STALL\",\n        \"BriefDescription\": \"Decode starved\"\n    },\n    {\n        \"PublicDescription\": \"Op dispatch stalled cycle\",\n        \"EventCode\": \"0x109\",\n        \"EventName\": \"DISPATCH_STALL\",\n        \"BriefDescription\": \"Dispatch stalled\"\n    },\n    {\n        \"PublicDescription\": \"IXA Op non-issue\",\n        \"EventCode\": \"0x10a\",\n        \"EventName\": \"IXA_STALL\",\n        \"BriefDescription\": \"IXA stalled\"\n    },\n    {\n        \"PublicDescription\": \"IXB Op non-issue\",\n        \"EventCode\": \"0x10b\",\n        \"EventName\": \"IXB_STALL\",\n        \"BriefDescription\": \"IXB stalled\"\n    },\n    {\n        \"PublicDescription\": \"BX Op non-issue\",\n        \"EventCode\": \"0x10c\",\n        \"EventName\": \"BX_STALL\",\n        \"BriefDescription\": \"BX stalled\"\n    },\n    {\n        \"PublicDescription\": \"LX Op non-issue\",\n        \"EventCode\": \"0x10d\",\n        \"EventName\": \"LX_STALL\",\n        \"BriefDescription\": \"LX stalled\"\n    },\n    {\n        \"PublicDescription\": \"SX Op non-issue\",\n        \"EventCode\": \"0x10e\",\n        \"EventName\": \"SX_STALL\",\n        \"BriefDescription\": \"SX stalled\"\n    },\n    {\n        \"PublicDescription\": \"FX Op non-issue\",\n        \"EventCode\": \"0x10f\",\n        \"EventName\": \"FX_STALL\",\n        \"BriefDescription\": \"FX stalled\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-meson8-pmx.h",
+  "hash_id": "6acf6c8480fca11afce81169aa4cdebe8fdc3c196e9d665a4d8a8e47e38fd11e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/meson/pinctrl-meson8-pmx.h",
+  "human_readable_source": " \n \n\nstruct meson8_pmx_data {\n\tbool is_gpio;\n\tunsigned int reg;\n\tunsigned int bit;\n};\n\n#define PMX_DATA(r, b, g)\t\t\t\t\t\t\\\n\t{\t\t\t\t\t\t\t\t\\\n\t\t.reg = r,\t\t\t\t\t\t\\\n\t\t.bit = b,\t\t\t\t\t\t\\\n\t\t.is_gpio = g,\t\t\t\t\t\t\\\n\t}\n\n#define GROUP(grp, r, b)\t\t\t\t\t\t\\\n\t{\t\t\t\t\t\t\t\t\\\n\t\t.name = #grp,\t\t\t\t\t\t\\\n\t\t.pins = grp ## _pins,\t\t\t\t\t\\\n\t\t.num_pins = ARRAY_SIZE(grp ## _pins),\t\t\t\\\n\t\t.data = (const struct meson8_pmx_data[]){\t\t\\\n\t\t\tPMX_DATA(r, b, false),\t\t\t\t\\\n\t\t},\t\t\t\t\t\t\t\\\n\t }\n\n#define GPIO_GROUP(gpio)\t\t\t\t\t\t\\\n\t{\t\t\t\t\t\t\t\t\\\n\t\t.name = #gpio,\t\t\t\t\t\t\\\n\t\t.pins = (const unsigned int[]){ gpio },\t\t\t\\\n\t\t.num_pins = 1,\t\t\t\t\t\t\\\n\t\t.data = (const struct meson8_pmx_data[]){\t\t\\\n\t\t\tPMX_DATA(0, 0, true),\t\t\t\t\\\n\t\t},\t\t\t\t\t\t\t\\\n\t}\n\nextern const struct pinmux_ops meson8_pmx_ops;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

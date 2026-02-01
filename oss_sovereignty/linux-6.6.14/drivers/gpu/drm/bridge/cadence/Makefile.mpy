@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "88be03c8a0140ccb5aa64f3391244574c8f9ecb67013029b62ed23822989e2f9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/bridge/cadence/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_DRM_CDNS_DSI) += cdns-dsi.o\ncdns-dsi-y := cdns-dsi-core.o\ncdns-dsi-$(CONFIG_DRM_CDNS_DSI_J721E) += cdns-dsi-j721e.o\nobj-$(CONFIG_DRM_CDNS_MHDP8546) += cdns-mhdp8546.o\ncdns-mhdp8546-y := cdns-mhdp8546-core.o cdns-mhdp8546-hdcp.o\ncdns-mhdp8546-$(CONFIG_DRM_CDNS_MHDP8546_J721E) += cdns-mhdp8546-j721e.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vmwgfx_devcaps.h",
+  "hash_id": "a692584efabd066a83f46989ac3dd5f039dd518a1f3db0c7735e726828394ea1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/vmwgfx/vmwgfx_devcaps.h",
+  "human_readable_source": " \n \n\n#ifndef _VMWGFX_DEVCAPS_H_\n#define _VMWGFX_DEVCAPS_H_\n\n#include \"vmwgfx_drv.h\"\n\n#include \"device_include/svga_reg.h\"\n\nint vmw_devcaps_create(struct vmw_private *vmw);\nvoid vmw_devcaps_destroy(struct vmw_private *vmw);\nuint32_t vmw_devcaps_size(const struct vmw_private *vmw, bool gb_aware);\nint vmw_devcaps_copy(struct vmw_private *vmw, bool gb_aware,\n\t\t     void *dst, uint32_t dst_size);\n\nstatic inline uint32_t vmw_devcap_get(struct vmw_private *vmw,\n\t\t\t\t      uint32_t devcap)\n{\n\tbool gb_objects = !!(vmw->capabilities & SVGA_CAP_GBOBJECTS);\n\tif (gb_objects)\n\t\treturn vmw->devcaps[devcap];\n\treturn 0;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

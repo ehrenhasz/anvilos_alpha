@@ -1,0 +1,9 @@
+{
+  "module_name": "hva-hw.h",
+  "hash_id": "0965bc9335e6d66cf1c421312ed38cd0e91fea650c4eca52472bbe4f5f1bf08a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/hva/hva-hw.h",
+  "human_readable_source": " \n \n\n#ifndef HVA_HW_H\n#define HVA_HW_H\n\n#include \"hva-mem.h\"\n\n \n#define HVA_VERSION_UNKNOWN    0x000\n#define HVA_VERSION_V400       0x400\n\n \nenum hva_hw_cmd_type {\n\t \n\t \n\tH264_ENC = 0x02,\n\t \n\t \n\t \n\t \n\t \n\tREMOVE_CLIENT = 0x08,\n\tFREEZE_CLIENT = 0x09,\n\tSTART_CLIENT = 0x0A,\n\tFREEZE_ALL = 0x0B,\n\tSTART_ALL = 0x0C,\n\tREMOVE_ALL = 0x0D\n};\n\nint hva_hw_probe(struct platform_device *pdev, struct hva_dev *hva);\nvoid hva_hw_remove(struct hva_dev *hva);\nint hva_hw_runtime_suspend(struct device *dev);\nint hva_hw_runtime_resume(struct device *dev);\nint hva_hw_execute_task(struct hva_ctx *ctx, enum hva_hw_cmd_type cmd,\n\t\t\tstruct hva_buffer *task);\n#ifdef CONFIG_VIDEO_STI_HVA_DEBUGFS\nvoid hva_hw_dump_regs(struct hva_dev *hva, struct seq_file *s);\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

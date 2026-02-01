@@ -1,0 +1,9 @@
+{
+  "module_name": "dns_resolver.h",
+  "hash_id": "1d2477d6419ad7b1cbc11bac99c2f930c1c3f9a9cd7e3e000125bce4f67273a1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dns_resolver.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_DNS_RESOLVER_H\n#define _LINUX_DNS_RESOLVER_H\n\n#include <uapi/linux/dns_resolver.h>\n\nstruct net;\nextern int dns_query(struct net *net, const char *type, const char *name, size_t namelen,\n\t\t     const char *options, char **_result, time64_t *_expiry,\n\t\t     bool invalidate);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

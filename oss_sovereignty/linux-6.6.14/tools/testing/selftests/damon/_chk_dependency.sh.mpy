@@ -1,0 +1,9 @@
+{
+  "module_name": "_chk_dependency.sh",
+  "hash_id": "468dac2505ae257eff01dfe819cc0fef17bd6b4b0c61431859f3c13572721eef",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/damon/_chk_dependency.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# Kselftest framework requirement - SKIP code is 4.\nksft_skip=4\n\nDBGFS=/sys/kernel/debug/damon\n\nif [ $EUID -ne 0 ];\nthen\n\techo \"Run as root\"\n\texit $ksft_skip\nfi\n\nif [ ! -d \"$DBGFS\" ]\nthen\n\techo \"$DBGFS not found\"\n\texit $ksft_skip\nfi\n\nfor f in attrs target_ids monitor_on\ndo\n\tif [ ! -f \"$DBGFS/$f\" ]\n\tthen\n\t\techo \"$f not found\"\n\t\texit 1\n\tfi\ndone\n\npermission_error=\"Operation not permitted\"\nfor f in attrs target_ids monitor_on\ndo\n\tstatus=$( cat \"$DBGFS/$f\" 2>&1 )\n\tif [ \"${status#*$permission_error}\" != \"$status\" ]; then\n\t\techo \"Permission for reading $DBGFS/$f denied; maybe secureboot enabled?\"\n\t\texit $ksft_skip\n\tfi\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

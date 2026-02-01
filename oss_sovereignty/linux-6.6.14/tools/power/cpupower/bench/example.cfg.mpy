@@ -1,0 +1,9 @@
+{
+  "module_name": "example.cfg",
+  "hash_id": "55fa5837d193c70db53f127e268c68847a68bb1c82453cf2dc3b922f674762b6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/bench/example.cfg",
+  "human_readable_source": "sleep = 50000\nload = 50000\ncpu = 0\npriority = LOW\noutput = /var/log/cpufreq-bench\nsleep_step = 50000\nload_step = 50000\ncycles = 20\nrounds = 40\nverbose = 0\ngovernor = ondemand\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

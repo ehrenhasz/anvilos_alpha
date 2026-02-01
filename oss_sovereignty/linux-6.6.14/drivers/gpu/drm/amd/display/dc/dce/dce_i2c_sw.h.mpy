@@ -1,0 +1,9 @@
+{
+  "module_name": "dce_i2c_sw.h",
+  "hash_id": "29146ffc2b91202d4356c6d6f10f8cc959b1a76c0b236c308d5e86e402924729",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce/dce_i2c_sw.h",
+  "human_readable_source": " \n\n#ifndef __DCE_I2C_SW_H__\n#define __DCE_I2C_SW_H__\n\nenum {\n\tDCE_I2C_DEFAULT_I2C_SW_SPEED = 50,\n\tI2C_SW_RETRIES = 10,\n\tI2C_SW_TIMEOUT_DELAY = 3000,\n};\n\nstruct dce_i2c_sw {\n\tstruct ddc *ddc;\n\tstruct dc_context *ctx;\n\tuint32_t clock_delay;\n\tuint32_t speed;\n};\n\nvoid dce_i2c_sw_construct(\n\tstruct dce_i2c_sw *dce_i2c_sw,\n\tstruct dc_context *ctx);\n\nbool dce_i2c_submit_command_sw(\n\tstruct resource_pool *pool,\n\tstruct ddc *ddc,\n\tstruct i2c_command *cmd,\n\tstruct dce_i2c_sw *dce_i2c_sw);\n\nbool dce_i2c_engine_acquire_sw(\n\tstruct dce_i2c_sw *dce_i2c_sw,\n\tstruct ddc *ddc_handle);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

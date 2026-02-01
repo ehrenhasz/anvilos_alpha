@@ -1,0 +1,9 @@
+{
+  "module_name": "leds.h",
+  "hash_id": "7146b05782b9183089ef2142c6ebcf3b1b167bd2d558cdf69ed7f1ac3cfa5f6b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/b43/leds.h",
+  "human_readable_source": " \n#ifndef B43_LEDS_H_\n#define B43_LEDS_H_\n\nstruct b43_wl;\nstruct b43_wldev;\n\n#ifdef CONFIG_B43_LEDS\n\n#include <linux/types.h>\n#include <linux/leds.h>\n#include <linux/workqueue.h>\n\n\n#define B43_LED_MAX_NAME_LEN\t31\n\nstruct b43_led {\n\tstruct b43_wl *wl;\n\t \n\tstruct led_classdev led_dev;\n\t \n\tu8 index;\n\t \n\tbool activelow;\n\t \n\tchar name[B43_LED_MAX_NAME_LEN + 1];\n\t \n\tatomic_t state;\n\t \n\tbool hw_state;\n};\n\nstruct b43_leds {\n\tstruct b43_led led_tx;\n\tstruct b43_led led_rx;\n\tstruct b43_led led_radio;\n\tstruct b43_led led_assoc;\n\n\tbool stop;\n\tstruct work_struct work;\n};\n\n#define B43_MAX_NR_LEDS\t\t\t4\n\n#define B43_LED_BEHAVIOUR\t\t0x7F\n#define B43_LED_ACTIVELOW\t\t0x80\n \nenum b43_led_behaviour {\n\tB43_LED_OFF,\n\tB43_LED_ON,\n\tB43_LED_ACTIVITY,\n\tB43_LED_RADIO_ALL,\n\tB43_LED_RADIO_A,\n\tB43_LED_RADIO_B,\n\tB43_LED_MODE_BG,\n\tB43_LED_TRANSFER,\n\tB43_LED_APTRANSFER,\n\tB43_LED_WEIRD,\t\t\n\tB43_LED_ASSOC,\n\tB43_LED_INACTIVE,\n};\n\nvoid b43_leds_register(struct b43_wldev *dev);\nvoid b43_leds_unregister(struct b43_wl *wl);\nvoid b43_leds_init(struct b43_wldev *dev);\nvoid b43_leds_exit(struct b43_wldev *dev);\nvoid b43_leds_stop(struct b43_wldev *dev);\n\n\n#else  \n \n\nstruct b43_leds {\n\t \n};\n\nstatic inline void b43_leds_register(struct b43_wldev *dev)\n{\n}\nstatic inline void b43_leds_unregister(struct b43_wl *wl)\n{\n}\nstatic inline void b43_leds_init(struct b43_wldev *dev)\n{\n}\nstatic inline void b43_leds_exit(struct b43_wldev *dev)\n{\n}\nstatic inline void b43_leds_stop(struct b43_wldev *dev)\n{\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

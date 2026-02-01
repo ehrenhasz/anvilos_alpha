@@ -1,0 +1,9 @@
+{
+  "module_name": "builtin-expect.m4",
+  "hash_id": "322099bf4af867b6747e6a12b1977969f28e413fc08979e19390ef3f95eecdaa",
+  "original_prompt": "Ingested from coreutils-9.4/m4/builtin-expect.m4",
+  "human_readable_source": "dnl Check for __builtin_expect.\n\ndnl Copyright 2016-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl Written by Paul Eggert.\n\nAC_DEFUN([gl___BUILTIN_EXPECT],\n[\n  AC_CACHE_CHECK([for __builtin_expect],\n    [gl_cv___builtin_expect],\n    [AC_LINK_IFELSE(\n       [AC_LANG_SOURCE([[\n         int\n         main (int argc, char **argv)\n         {\n           argc = __builtin_expect (argc, 100);\n           return argv[argc != 100][0];\n         }]])],\n       [gl_cv___builtin_expect=yes],\n       [AC_LINK_IFELSE(\n          [AC_LANG_SOURCE([[\n             #include <builtins.h>\n             int\n             main (int argc, char **argv)\n             {\n               argc = __builtin_expect (argc, 100);\n               return argv[argc != 100][0];\n             }]])],\n          [gl_cv___builtin_expect=\"in <builtins.h>\"],\n          [gl_cv___builtin_expect=no])])])\n  if test \"$gl_cv___builtin_expect\" = yes; then\n    AC_DEFINE([HAVE___BUILTIN_EXPECT], [1])\n  elif test \"$gl_cv___builtin_expect\" = \"in <builtins.h>\"; then\n    AC_DEFINE([HAVE___BUILTIN_EXPECT], [2])\n  fi\n  AH_VERBATIM([HAVE___BUILTIN_EXPECT],\n    [/* Define to 1 if the compiler supports __builtin_expect,\n   and to 2 if <builtins.h> does.  */\n#undef HAVE___BUILTIN_EXPECT\n#ifndef HAVE___BUILTIN_EXPECT\n# define __builtin_expect(e, c) (e)\n#elif HAVE___BUILTIN_EXPECT == 2\n# include <builtins.h>\n#endif\n    ])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

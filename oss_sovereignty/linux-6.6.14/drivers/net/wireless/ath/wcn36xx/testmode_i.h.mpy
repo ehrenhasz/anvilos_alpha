@@ -1,0 +1,9 @@
+{
+  "module_name": "testmode_i.h",
+  "hash_id": "4d911de957b70ad17ad257e10176384d27a22e3664f8aed472437166bb3e9443",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/wcn36xx/testmode_i.h",
+  "human_readable_source": " \n\n#define WCN36XX_TM_DATA_MAX_LEN\t\t5000\n\nenum wcn36xx_tm_attr {\n\t__WCN36XX_TM_ATTR_INVALID\t= 0,\n\tWCN36XX_TM_ATTR_CMD\t\t= 1,\n\tWCN36XX_TM_ATTR_DATA\t\t= 2,\n\n\t \n\t__WCN36XX_TM_ATTR_AFTER_LAST,\n\tWCN36XX_TM_ATTR_MAX\t\t= __WCN36XX_TM_ATTR_AFTER_LAST - 1,\n};\n\n#define WCN36XX_TM_CMD_PTT 3\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

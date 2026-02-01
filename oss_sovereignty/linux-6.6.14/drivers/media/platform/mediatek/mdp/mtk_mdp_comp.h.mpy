@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_mdp_comp.h",
+  "hash_id": "f7eb4cb8a64a7414905cbd446e5347bf3604157ad4c90fa85ec8e5d93ecba6b7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/mdp/mtk_mdp_comp.h",
+  "human_readable_source": " \n \n\n#ifndef __MTK_MDP_COMP_H__\n#define __MTK_MDP_COMP_H__\n\n \nenum mtk_mdp_comp_type {\n\tMTK_MDP_RDMA,\n\tMTK_MDP_RSZ,\n\tMTK_MDP_WDMA,\n\tMTK_MDP_WROT,\n};\n\n \nstruct mtk_mdp_comp {\n\tstruct list_head\tnode;\n\tstruct device_node\t*dev_node;\n\tstruct clk\t\t*clk[2];\n\tenum mtk_mdp_comp_type\ttype;\n};\n\nint mtk_mdp_comp_init(struct device *dev, struct device_node *node,\n\t\t      struct mtk_mdp_comp *comp,\n\t\t      enum mtk_mdp_comp_type comp_type);\nvoid mtk_mdp_comp_deinit(struct device *dev, struct mtk_mdp_comp *comp);\nvoid mtk_mdp_comp_clock_on(struct device *dev, struct mtk_mdp_comp *comp);\nvoid mtk_mdp_comp_clock_off(struct device *dev, struct mtk_mdp_comp *comp);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cs35l41.h",
+  "hash_id": "0578dc3de3d6b39dbd4f2de7bde08a601dad4af267bdc61daf5dc2ad38788aae",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/cs35l41.h",
+  "human_readable_source": " \n\n#ifndef __CS35L41_H__\n#define __CS35L41_H__\n\n#include <linux/gpio/consumer.h>\n#include <linux/regulator/consumer.h>\n#include <linux/firmware.h>\n#include <sound/core.h>\n#include <sound/cs35l41.h>\n\n#include \"wm_adsp.h\"\n\n#define CS35L41_RX_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S24_LE)\n#define CS35L41_TX_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S24_LE)\n\nextern const struct dev_pm_ops cs35l41_pm_ops;\n\nstruct cs35l41_private {\n\tstruct wm_adsp dsp;  \n\tstruct snd_soc_codec *codec;\n\tstruct cs35l41_hw_cfg hw_cfg;\n\tstruct device *dev;\n\tstruct regmap *regmap;\n\tstruct regulator_bulk_data supplies[CS35L41_NUM_SUPPLIES];\n\tint irq;\n\t \n\tstruct gpio_desc *reset_gpio;\n};\n\nint cs35l41_probe(struct cs35l41_private *cs35l41, const struct cs35l41_hw_cfg *hw_cfg);\nvoid cs35l41_remove(struct cs35l41_private *cs35l41);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

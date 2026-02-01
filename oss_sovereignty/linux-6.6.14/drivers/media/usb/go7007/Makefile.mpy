@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7ea06c4df7ebcb4368a02145d78b9de315c06d8a821f708eda0a05fd5b2b6d19",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/go7007/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_VIDEO_GO7007) += go7007.o\nobj-$(CONFIG_VIDEO_GO7007_USB) += go7007-usb.o\nobj-$(CONFIG_VIDEO_GO7007_LOADER) += go7007-loader.o\nobj-$(CONFIG_VIDEO_GO7007_USB_S2250_BOARD) += s2250.o\n\ngo7007-y := go7007-v4l2.o go7007-driver.o go7007-i2c.o go7007-fw.o \\\n\t\tsnd-go7007.o\n\ns2250-y := s2250-board.o\n\nccflags-$(CONFIG_VIDEO_GO7007_LOADER:m=y) += -I $(srctree)/drivers/media/common\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

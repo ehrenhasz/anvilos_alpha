@@ -1,0 +1,9 @@
+{
+  "module_name": "c32tolower.c",
+  "hash_id": "74f2c03c432030d0178592e3e7f7fe2b60734b1a7c081f4dbdcb129f709381ca",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c32tolower.c",
+  "human_readable_source": " \n#include <uchar.h>\n\n#define FUNC c32tolower\n#define WCHAR_FUNC towlower\n#define UCS_FUNC uc_tolower\n#include \"c32to-impl.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

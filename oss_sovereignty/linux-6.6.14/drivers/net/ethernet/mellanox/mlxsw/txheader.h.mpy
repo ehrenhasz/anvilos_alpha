@@ -1,0 +1,9 @@
+{
+  "module_name": "txheader.h",
+  "hash_id": "383b2df437fdd8ed626a207212e15e228e68399b7f04634ef238bfa43495ac26",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlxsw/txheader.h",
+  "human_readable_source": " \n \n\n#ifndef _MLXSW_TXHEADER_H\n#define _MLXSW_TXHEADER_H\n\n#define MLXSW_TXHDR_LEN 0x10\n#define MLXSW_TXHDR_VERSION_0 0\n#define MLXSW_TXHDR_VERSION_1 1\n\nenum {\n\tMLXSW_TXHDR_ETH_CTL,\n\tMLXSW_TXHDR_ETH_DATA,\n};\n\n#define MLXSW_TXHDR_PROTO_ETH 1\n\nenum {\n\tMLXSW_TXHDR_ETCLASS_0,\n\tMLXSW_TXHDR_ETCLASS_1,\n\tMLXSW_TXHDR_ETCLASS_2,\n\tMLXSW_TXHDR_ETCLASS_3,\n\tMLXSW_TXHDR_ETCLASS_4,\n\tMLXSW_TXHDR_ETCLASS_5,\n\tMLXSW_TXHDR_ETCLASS_6,\n\tMLXSW_TXHDR_ETCLASS_7,\n};\n\nenum {\n\tMLXSW_TXHDR_RDQ_OTHER,\n\tMLXSW_TXHDR_RDQ_EMAD = 0x1f,\n};\n\n#define MLXSW_TXHDR_CTCLASS3 0\n#define MLXSW_TXHDR_CPU_SIG 0\n#define MLXSW_TXHDR_SIG 0xE0E0\n#define MLXSW_TXHDR_STCLASS_NONE 0\n\nenum {\n\tMLXSW_TXHDR_NOT_EMAD,\n\tMLXSW_TXHDR_EMAD,\n};\n\nenum {\n\tMLXSW_TXHDR_TYPE_DATA,\n\tMLXSW_TXHDR_TYPE_CONTROL = 6,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

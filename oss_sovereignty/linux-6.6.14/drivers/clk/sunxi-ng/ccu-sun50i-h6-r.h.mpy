@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu-sun50i-h6-r.h",
+  "hash_id": "234a4c821d69bd539e6f104dda2f596da1b0f1f3dbcec6168e895e12d56e98f2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu-sun50i-h6-r.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_SUN50I_H6_R_H\n#define _CCU_SUN50I_H6_R_H\n\n#include <dt-bindings/clock/sun50i-h6-r-ccu.h>\n#include <dt-bindings/reset/sun50i-h6-r-ccu.h>\n\n \n#define CLK_R_AHB\t1\n\n#define CLK_R_APB2\t3\n\n#define CLK_NUMBER\t(CLK_R_APB1_RTC + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

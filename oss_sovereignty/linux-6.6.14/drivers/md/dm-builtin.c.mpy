@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-builtin.c",
+  "hash_id": "67f0383612c3f75d7f64203ae56998e7cc8a28e4fa973edf57aa29d8172f0ba9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/dm-builtin.c",
+  "human_readable_source": "\n#include \"dm-core.h\"\n\n \n\nvoid dm_kobject_release(struct kobject *kobj)\n{\n\tcomplete(dm_get_completion_from_kobject(kobj));\n}\nEXPORT_SYMBOL(dm_kobject_release);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

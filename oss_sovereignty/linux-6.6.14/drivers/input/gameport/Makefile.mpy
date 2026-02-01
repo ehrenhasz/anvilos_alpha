@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2066aeb0b7b1ce823509f89136bc6e139b0ff6f95a9a5b28e939f2e2625d6e4c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/gameport/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the gameport drivers.\n#\n\n# Each configuration option enables a list of files.\n\nobj-$(CONFIG_GAMEPORT)\t\t+= gameport.o\nobj-$(CONFIG_GAMEPORT_EMU10K1)\t+= emu10k1-gp.o\nobj-$(CONFIG_GAMEPORT_FM801)\t+= fm801-gp.o\nobj-$(CONFIG_GAMEPORT_L4)\t+= lightning.o\nobj-$(CONFIG_GAMEPORT_NS558)\t+= ns558.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

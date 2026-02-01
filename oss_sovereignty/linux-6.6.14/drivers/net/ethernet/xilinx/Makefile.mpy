@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2bb03f5de4b150681ccb30075c90743549588c78ca5b94dbe25d1d0650132114",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/xilinx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Xilink network device drivers.\n#\n\nll_temac-objs := ll_temac_main.o ll_temac_mdio.o\nobj-$(CONFIG_XILINX_LL_TEMAC) += ll_temac.o\nobj-$(CONFIG_XILINX_EMACLITE) += xilinx_emaclite.o\nxilinx_emac-objs := xilinx_axienet_main.o xilinx_axienet_mdio.o\nobj-$(CONFIG_XILINX_AXI_EMAC) += xilinx_emac.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

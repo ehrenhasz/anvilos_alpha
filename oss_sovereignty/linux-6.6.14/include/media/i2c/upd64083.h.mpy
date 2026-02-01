@@ -1,0 +1,9 @@
+{
+  "module_name": "upd64083.h",
+  "hash_id": "08219ee26f2e9c6fc6edfe3705517da32677d6b53b9661a6d03cf1fb50ba5cc7",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/upd64083.h",
+  "human_readable_source": " \n \n\n#ifndef _UPD64083_H_\n#define _UPD64083_H_\n\n \n\n \n\n \n#define UPD64083_YCS_MODE      0\n \n#define UPD64083_YCS_PLUS_MODE 1\n\n \n \n#define UPD64083_MNNR_MODE     2\n \n#define UPD64083_YCNR_MODE     3\n\n \n#define UPD64083_EXT_Y_ADC     (1 << 2)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

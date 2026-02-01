@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio_service.h",
+  "hash_id": "2b359bae40025b783d589b1b73905edf9ba20e6108c2f771f5d764675641dfe4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/gpio_service.h",
+  "human_readable_source": " \n\n#ifndef __DAL_GPIO_SERVICE_H__\n#define __DAL_GPIO_SERVICE_H__\n\nstruct hw_translate;\nstruct hw_factory;\n\nstruct gpio_service {\n\tstruct dc_context *ctx;\n\tstruct hw_translate translate;\n\tstruct hw_factory factory;\n\t \n\tchar *busyness[GPIO_ID_COUNT];\n};\n\nenum gpio_result dal_gpio_service_open(\n\tstruct gpio *gpio);\n\nvoid dal_gpio_service_close(\n\tstruct gpio_service *service,\n\tstruct hw_gpio_pin **ptr);\n\nenum gpio_result dal_gpio_service_lock(\n\tstruct gpio_service *service,\n\tenum gpio_id id,\n\tuint32_t en);\n\nenum gpio_result dal_gpio_service_unlock(\n\tstruct gpio_service *service,\n\tenum gpio_id id,\n\tuint32_t en);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

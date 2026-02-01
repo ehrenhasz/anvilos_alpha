@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.kmsan",
+  "hash_id": "3825a031563a85b8c0d7135037b2faa51208b7c4201c6d7f1ba8efa9b9a86593",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/Makefile.kmsan",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nkmsan-cflags := -fsanitize=kernel-memory\n\nifdef CONFIG_KMSAN_CHECK_PARAM_RETVAL\nkmsan-cflags += -fsanitize-memory-param-retval\nendif\n\nexport CFLAGS_KMSAN := $(kmsan-cflags)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

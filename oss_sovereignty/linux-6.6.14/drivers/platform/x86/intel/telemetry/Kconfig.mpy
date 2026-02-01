@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1e2ead7bbbe8538e1fe1c190d26792e3db05afa9ffc3c776ebd645b81d0044d1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/telemetry/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Intel x86 Platform Specific Drivers\n#\n\nconfig INTEL_TELEMETRY\n\ttristate \"Intel SoC Telemetry driver\"\n\tdepends on X86_64\n\tdepends on MFD_INTEL_PMC_BXT\n\tdepends on INTEL_PUNIT_IPC\n\thelp\n\t  This driver provides interfaces to configure and use\n\t  telemetry for Intel SoC from Apollo Lake onwards.\n\t  It is also used to get various SoC events and parameters\n\t  directly via debugfs files. Various tools may use\n\t  this interface for SoC state monitoring.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xsize.h",
+  "hash_id": "0ac51cf7586802e3ae1774f012f2429143e2a634470006b39552c3b116e632e6",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xsize.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n#include <stddef.h>\n\n \n#include <limits.h>\n#if HAVE_STDINT_H\n# include <stdint.h>\n#endif\n\n \n#include \"attribute.h\"\n\n_GL_INLINE_HEADER_BEGIN\n#ifndef XSIZE_INLINE\n# define XSIZE_INLINE _GL_INLINE\n#endif\n\n \n\n \n#define xcast_size_t(N) \\\n  ((N) <= SIZE_MAX ? (size_t) (N) : SIZE_MAX)\n\n \nXSIZE_INLINE size_t ATTRIBUTE_PURE\nxsum (size_t size1, size_t size2)\n{\n  size_t sum = size1 + size2;\n  return (sum >= size1 ? sum : SIZE_MAX);\n}\n\n \nXSIZE_INLINE size_t ATTRIBUTE_PURE\nxsum3 (size_t size1, size_t size2, size_t size3)\n{\n  return xsum (xsum (size1, size2), size3);\n}\n\n \nXSIZE_INLINE size_t ATTRIBUTE_PURE\nxsum4 (size_t size1, size_t size2, size_t size3, size_t size4)\n{\n  return xsum (xsum (xsum (size1, size2), size3), size4);\n}\n\n \nXSIZE_INLINE size_t ATTRIBUTE_PURE\nxmax (size_t size1, size_t size2)\n{\n   \n  return (size1 >= size2 ? size1 : size2);\n}\n\n \n#define xtimes(N, ELSIZE) \\\n  ((N) <= SIZE_MAX / (ELSIZE) ? (size_t) (N) * (ELSIZE) : SIZE_MAX)\n\n \n#define size_overflow_p(SIZE) \\\n  ((SIZE) == SIZE_MAX)\n \n#define size_in_bounds_p(SIZE) \\\n  ((SIZE) != SIZE_MAX)\n\n_GL_INLINE_HEADER_END\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

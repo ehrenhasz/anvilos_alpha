@@ -1,0 +1,9 @@
+{
+  "module_name": "restart_block.h",
+  "hash_id": "071c6792f65b2ddc023a618bb061ffdcc64c4a2effd28d4b54028ae56d8bc41e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/restart_block.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_RESTART_BLOCK_H\n#define __LINUX_RESTART_BLOCK_H\n\n#include <linux/compiler.h>\n#include <linux/types.h>\n#include <linux/time64.h>\n\nstruct timespec;\nstruct old_timespec32;\nstruct pollfd;\n\nenum timespec_type {\n\tTT_NONE\t\t= 0,\n\tTT_NATIVE\t= 1,\n\tTT_COMPAT\t= 2,\n};\n\n \nstruct restart_block {\n\tunsigned long arch_data;\n\tlong (*fn)(struct restart_block *);\n\tunion {\n\t\t \n\t\tstruct {\n\t\t\tu32 __user *uaddr;\n\t\t\tu32 val;\n\t\t\tu32 flags;\n\t\t\tu32 bitset;\n\t\t\tu64 time;\n\t\t\tu32 __user *uaddr2;\n\t\t} futex;\n\t\t \n\t\tstruct {\n\t\t\tclockid_t clockid;\n\t\t\tenum timespec_type type;\n\t\t\tunion {\n\t\t\t\tstruct __kernel_timespec __user *rmtp;\n\t\t\t\tstruct old_timespec32 __user *compat_rmtp;\n\t\t\t};\n\t\t\tu64 expires;\n\t\t} nanosleep;\n\t\t \n\t\tstruct {\n\t\t\tstruct pollfd __user *ufds;\n\t\t\tint nfds;\n\t\t\tint has_timeout;\n\t\t\tunsigned long tv_sec;\n\t\t\tunsigned long tv_nsec;\n\t\t} poll;\n\t};\n};\n\nextern long do_no_restart_syscall(struct restart_block *parm);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

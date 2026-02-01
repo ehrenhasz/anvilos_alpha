@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c356b5211899fc3ecc461a28dd4dae8ec2d2de58392ff20413f88de61cee1161",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/brocade/bna/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Copyright (c) 2005-2014 Brocade Communications Systems, Inc.\n# Copyright (c) 2014-2015 QLogic Corporation.\n# All rights reserved.\n#\n\nobj-$(CONFIG_BNA) += bna.o\n\nbna-objs := bnad.o bnad_ethtool.o bnad_debugfs.o bna_enet.o bna_tx_rx.o\nbna-objs += bfa_msgq.o bfa_ioc.o bfa_ioc_ct.o bfa_cee.o\nbna-objs += cna_fwimg.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

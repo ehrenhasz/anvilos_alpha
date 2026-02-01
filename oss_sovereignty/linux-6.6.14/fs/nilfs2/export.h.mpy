@@ -1,0 +1,9 @@
+{
+  "module_name": "export.h",
+  "hash_id": "e731fa46f2e48adcbe8386bec4b458d868fa9362ce719a83854ac72eeef57736",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nilfs2/export.h",
+  "human_readable_source": " \n#ifndef NILFS_EXPORT_H\n#define NILFS_EXPORT_H\n\n#include <linux/exportfs.h>\n\nextern const struct export_operations nilfs_export_ops;\n\n \nstruct nilfs_fid {\n\tu64 cno;\n\tu64 ino;\n\tu32 gen;\n\n\tu32 parent_gen;\n\tu64 parent_ino;\n} __packed;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

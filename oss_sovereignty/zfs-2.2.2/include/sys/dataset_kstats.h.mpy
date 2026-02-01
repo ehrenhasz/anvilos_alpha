@@ -1,0 +1,9 @@
+{
+  "module_name": "dataset_kstats.h",
+  "hash_id": "b8f14eb5ee4170babf69d30ed976b1755aafacb1e8c241def625d5e228042bfe",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/dataset_kstats.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SYS_DATASET_KSTATS_H\n#define\t_SYS_DATASET_KSTATS_H\n\n#include <sys/wmsum.h>\n#include <sys/dmu.h>\n#include <sys/kstat.h>\n#include <sys/zil.h>\n\ntypedef struct dataset_sum_stats_t {\n\twmsum_t dss_writes;\n\twmsum_t dss_nwritten;\n\twmsum_t dss_reads;\n\twmsum_t dss_nread;\n\twmsum_t dss_nunlinks;\n\twmsum_t dss_nunlinked;\n} dataset_sum_stats_t;\n\ntypedef struct dataset_kstat_values {\n\tkstat_named_t dkv_ds_name;\n\tkstat_named_t dkv_writes;\n\tkstat_named_t dkv_nwritten;\n\tkstat_named_t dkv_reads;\n\tkstat_named_t dkv_nread;\n\t \n\tkstat_named_t dkv_nunlinks;\n\t \n\tkstat_named_t dkv_nunlinked;\n\t \n\tzil_kstat_values_t dkv_zil_stats;\n} dataset_kstat_values_t;\n\ntypedef struct dataset_kstats {\n\tdataset_sum_stats_t dk_sums;\n\tzil_sums_t dk_zil_sums;\n\tkstat_t *dk_kstats;\n} dataset_kstats_t;\n\nint dataset_kstats_create(dataset_kstats_t *, objset_t *);\nvoid dataset_kstats_destroy(dataset_kstats_t *);\n\nvoid dataset_kstats_update_write_kstats(dataset_kstats_t *, int64_t);\nvoid dataset_kstats_update_read_kstats(dataset_kstats_t *, int64_t);\n\nvoid dataset_kstats_update_nunlinks_kstat(dataset_kstats_t *, int64_t);\nvoid dataset_kstats_update_nunlinked_kstat(dataset_kstats_t *, int64_t);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

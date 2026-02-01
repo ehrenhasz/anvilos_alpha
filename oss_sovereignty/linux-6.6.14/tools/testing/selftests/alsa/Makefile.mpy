@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c6144b1f06485886dfddde03e5a2edbb52f8fee6e709d6bfb321500e30ebcedc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/alsa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n\nCFLAGS += $(shell pkg-config --cflags alsa)\nLDLIBS += $(shell pkg-config --libs alsa)\nifeq ($(LDLIBS),)\nLDLIBS += -lasound\nendif\nCFLAGS += -L$(OUTPUT) -Wl,-rpath=./\n\nLDLIBS+=-lpthread\n\nOVERRIDE_TARGETS = 1\n\nTEST_GEN_PROGS := mixer-test pcm-test test-pcmtest-driver\n\nTEST_GEN_PROGS_EXTENDED := libatest.so\n\nTEST_FILES := conf.d pcm-test.conf\n\ninclude ../lib.mk\n\n$(OUTPUT)/libatest.so: conf.c alsa-local.h\n\t$(CC) $(CFLAGS) -shared -fPIC $< $(LDLIBS) -o $@\n\n$(OUTPUT)/%: %.c $(TEST_GEN_PROGS_EXTENDED) alsa-local.h\n\t$(CC) $(CFLAGS) $< $(LDLIBS) -latest -o $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

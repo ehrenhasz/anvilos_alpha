@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2b77eb3e0e5216fb04c4e509bc4f5ac0742cca4824b2704794df4ae0592294e4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ibm/emac/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the PowerPC 4xx on-chip ethernet driver\n#\n\nobj-$(CONFIG_IBM_EMAC) += ibm_emac.o\n\nibm_emac-y := mal.o core.o phy.o\nibm_emac-$(CONFIG_IBM_EMAC_ZMII) += zmii.o\nibm_emac-$(CONFIG_IBM_EMAC_RGMII) += rgmii.o\nibm_emac-$(CONFIG_IBM_EMAC_TAH) += tah.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

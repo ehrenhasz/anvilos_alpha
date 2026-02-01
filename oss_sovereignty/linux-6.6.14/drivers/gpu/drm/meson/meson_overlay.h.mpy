@@ -1,0 +1,9 @@
+{
+  "module_name": "meson_overlay.h",
+  "hash_id": "3f16db9924f8ed6b87bac64008529f46638bff8d13b50558c89222beb64f7d63",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/meson/meson_overlay.h",
+  "human_readable_source": " \n \n\n#ifndef __MESON_OVERLAY_H\n#define __MESON_OVERLAY_H\n\n#include \"meson_drv.h\"\n\nint meson_overlay_create(struct meson_drm *priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

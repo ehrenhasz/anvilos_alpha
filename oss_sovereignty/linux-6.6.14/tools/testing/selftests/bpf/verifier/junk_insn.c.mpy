@@ -1,0 +1,9 @@
+{
+  "module_name": "junk_insn.c",
+  "hash_id": "bff7a5af860ee39b7db6b4af6a146ed61570f004a1f73eb1539bf6cd974a95eb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/verifier/junk_insn.c",
+  "human_readable_source": "{\n\t\"junk insn\",\n\t.insns = {\n\tBPF_RAW_INSN(0, 0, 0, 0, 0),\n\tBPF_EXIT_INSN(),\n\t},\n\t.errstr = \"unknown opcode 00\",\n\t.result = REJECT,\n},\n{\n\t\"junk insn2\",\n\t.insns = {\n\tBPF_RAW_INSN(1, 0, 0, 0, 0),\n\tBPF_EXIT_INSN(),\n\t},\n\t.errstr = \"BPF_LDX uses reserved fields\",\n\t.result = REJECT,\n},\n{\n\t\"junk insn3\",\n\t.insns = {\n\tBPF_RAW_INSN(-1, 0, 0, 0, 0),\n\tBPF_EXIT_INSN(),\n\t},\n\t.errstr = \"unknown opcode ff\",\n\t.result = REJECT,\n},\n{\n\t\"junk insn4\",\n\t.insns = {\n\tBPF_RAW_INSN(-1, -1, -1, -1, -1),\n\tBPF_EXIT_INSN(),\n\t},\n\t.errstr = \"unknown opcode ff\",\n\t.result = REJECT,\n},\n{\n\t\"junk insn5\",\n\t.insns = {\n\tBPF_RAW_INSN(0x7f, -1, -1, -1, -1),\n\tBPF_EXIT_INSN(),\n\t},\n\t.errstr = \"BPF_ALU uses reserved fields\",\n\t.result = REJECT,\n},\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

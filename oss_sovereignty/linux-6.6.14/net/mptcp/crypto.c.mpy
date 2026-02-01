@@ -1,0 +1,9 @@
+{
+  "module_name": "crypto.c",
+  "hash_id": "25b305b5efabb9c4bb7561a4c622a870092640a0dbedb7910bcb98e6f777bbc6",
+  "original_prompt": "Ingested from linux-6.6.14/net/mptcp/crypto.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <crypto/sha2.h>\n#include <asm/unaligned.h>\n\n#include \"protocol.h\"\n\n#define SHA256_DIGEST_WORDS (SHA256_DIGEST_SIZE / 4)\n\nvoid mptcp_crypto_key_sha(u64 key, u32 *token, u64 *idsn)\n{\n\t__be32 mptcp_hashed_key[SHA256_DIGEST_WORDS];\n\t__be64 input = cpu_to_be64(key);\n\n\tsha256((__force u8 *)&input, sizeof(input), (u8 *)mptcp_hashed_key);\n\n\tif (token)\n\t\t*token = be32_to_cpu(mptcp_hashed_key[0]);\n\tif (idsn)\n\t\t*idsn = be64_to_cpu(*((__be64 *)&mptcp_hashed_key[6]));\n}\n\nvoid mptcp_crypto_hmac_sha(u64 key1, u64 key2, u8 *msg, int len, void *hmac)\n{\n\tu8 input[SHA256_BLOCK_SIZE + SHA256_DIGEST_SIZE];\n\tu8 key1be[8];\n\tu8 key2be[8];\n\tint i;\n\n\tif (WARN_ON_ONCE(len > SHA256_DIGEST_SIZE))\n\t\tlen = SHA256_DIGEST_SIZE;\n\n\tput_unaligned_be64(key1, key1be);\n\tput_unaligned_be64(key2, key2be);\n\n\t \n\tmemset(input, 0x36, SHA256_BLOCK_SIZE);\n\tfor (i = 0; i < 8; i++)\n\t\tinput[i] ^= key1be[i];\n\tfor (i = 0; i < 8; i++)\n\t\tinput[i + 8] ^= key2be[i];\n\n\tmemcpy(&input[SHA256_BLOCK_SIZE], msg, len);\n\n\t \n\tsha256(input, SHA256_BLOCK_SIZE + len, &input[SHA256_BLOCK_SIZE]);\n\n\t \n\tmemset(input, 0x5C, SHA256_BLOCK_SIZE);\n\tfor (i = 0; i < 8; i++)\n\t\tinput[i] ^= key1be[i];\n\tfor (i = 0; i < 8; i++)\n\t\tinput[i + 8] ^= key2be[i];\n\n\tsha256(input, SHA256_BLOCK_SIZE + SHA256_DIGEST_SIZE, hmac);\n}\n\n#if IS_MODULE(CONFIG_MPTCP_KUNIT_TEST)\nEXPORT_SYMBOL_GPL(mptcp_crypto_hmac_sha);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

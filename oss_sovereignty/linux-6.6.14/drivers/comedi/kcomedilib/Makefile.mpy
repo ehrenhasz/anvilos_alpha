@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "baa2b1e10c9077f9a3a34ef3f5675185927e23a3e3cde043f24b47182702107f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/kcomedilib/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nccflags-$(CONFIG_COMEDI_DEBUG)\t\t:= -DDEBUG\n\nobj-$(CONFIG_COMEDI_KCOMEDILIB)\t+= kcomedilib.o\n\nkcomedilib-objs := kcomedilib_main.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

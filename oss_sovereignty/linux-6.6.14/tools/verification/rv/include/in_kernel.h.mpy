@@ -1,0 +1,9 @@
+{
+  "module_name": "in_kernel.h",
+  "hash_id": "03808521951b1fe4de68940910e05fdb9dfa0b51b53a765c5507811023124763",
+  "original_prompt": "Ingested from linux-6.6.14/tools/verification/rv/include/in_kernel.h",
+  "human_readable_source": "\nint ikm_list_monitors(void);\nint ikm_run_monitor(char *monitor, int argc, char **argv);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

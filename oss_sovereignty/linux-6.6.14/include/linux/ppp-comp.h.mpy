@@ -1,0 +1,9 @@
+{
+  "module_name": "ppp-comp.h",
+  "hash_id": "60b9c4c70f2f44394a85957c02ab3490730e80310fff451fd489949c0d393394",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ppp-comp.h",
+  "human_readable_source": " \n \n#ifndef _NET_PPP_COMP_H\n#define _NET_PPP_COMP_H\n\n#include <uapi/linux/ppp-comp.h>\n\nstruct compstat;\nstruct module;\n\n \n\n#ifndef DO_BSD_COMPRESS\n#define DO_BSD_COMPRESS\t1\t \n#endif\n#ifndef DO_DEFLATE\n#define DO_DEFLATE\t1\t \n#endif\n#define DO_PREDICTOR_1\t0\n#define DO_PREDICTOR_2\t0\n\n \n\nstruct compressor {\n\tint\tcompress_proto;\t \n\n\t \n\tvoid\t*(*comp_alloc) (unsigned char *options, int opt_len);\n\n\t \n\tvoid\t(*comp_free) (void *state);\n\n\t \n\tint\t(*comp_init) (void *state, unsigned char *options,\n\t\t\t      int opt_len, int unit, int opthdr, int debug);\n\n\t \n\tvoid\t(*comp_reset) (void *state);\n\n\t \n\tint     (*compress) (void *state, unsigned char *rptr,\n\t\t\t      unsigned char *obuf, int isize, int osize);\n\n\t \n\tvoid\t(*comp_stat) (void *state, struct compstat *stats);\n\n\t \n\tvoid\t*(*decomp_alloc) (unsigned char *options, int opt_len);\n\n\t \n\tvoid\t(*decomp_free) (void *state);\n\n\t \n\tint\t(*decomp_init) (void *state, unsigned char *options,\n\t\t\t\tint opt_len, int unit, int opthdr, int mru,\n\t\t\t\tint debug);\n\n\t \n\tvoid\t(*decomp_reset) (void *state);\n\n\t \n\tint\t(*decompress) (void *state, unsigned char *ibuf, int isize,\n\t\t\t\tunsigned char *obuf, int osize);\n\n\t \n\tvoid\t(*incomp) (void *state, unsigned char *ibuf, int icnt);\n\n\t \n\tvoid\t(*decomp_stat) (void *state, struct compstat *stats);\n\n\t \n\tstruct module *owner;\n\t \n\tunsigned int comp_extra;\n};\n\n \n\n#define DECOMP_ERROR\t\t-1\t \n#define DECOMP_FATALERROR\t-2\t \n\nextern int ppp_register_compressor(struct compressor *);\nextern void ppp_unregister_compressor(struct compressor *);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9b41236d063cc4a375a0f19f0a7a9614e1a7368fb1843f568ba0a3e8ed803cec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cxl/core/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_CXL_BUS) += cxl_core.o\nobj-$(CONFIG_CXL_SUSPEND) += suspend.o\n\nccflags-y += -I$(srctree)/drivers/cxl\nCFLAGS_trace.o = -DTRACE_INCLUDE_PATH=. -I$(src)\n\ncxl_core-y := port.o\ncxl_core-y += pmem.o\ncxl_core-y += regs.o\ncxl_core-y += memdev.o\ncxl_core-y += mbox.o\ncxl_core-y += pci.o\ncxl_core-y += hdm.o\ncxl_core-y += pmu.o\ncxl_core-$(CONFIG_TRACING) += trace.o\ncxl_core-$(CONFIG_CXL_REGION) += region.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

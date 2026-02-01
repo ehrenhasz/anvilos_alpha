@@ -1,0 +1,9 @@
+{
+  "module_name": "trap.h",
+  "hash_id": "40ac054639a4d479ce7183611604f7df09480e3ca3b733c09a6e2625a57c5fa8",
+  "original_prompt": "Ingested from zfs-2.2.2/module/icp/include/sys/trap.h",
+  "human_readable_source": " \n \n\n#ifndef _SYS_TRAP_H\n#define\t_SYS_TRAP_H\n\n#if defined(__i386) || defined(__amd64)\n\n#include <sys/ia32/trap.h>\t \n\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

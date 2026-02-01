@@ -1,0 +1,9 @@
+{
+  "module_name": "creat-safer.c",
+  "hash_id": "f833ab92e74244b871dd9f8ae08622d39aa16dee1c5e3a71c9c449e92a33fd9a",
+  "original_prompt": "Ingested from coreutils-9.4/lib/creat-safer.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"fcntl-safer.h\"\n\n#include <fcntl.h>\n#include \"unistd-safer.h\"\n\nint\ncreat_safer (char const *file, mode_t mode)\n{\n  return fd_safer (creat (file, mode));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

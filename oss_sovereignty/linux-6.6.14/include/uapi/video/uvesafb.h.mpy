@@ -1,0 +1,9 @@
+{
+  "module_name": "uvesafb.h",
+  "hash_id": "c1128a9a108c68a0905950252a644b5e3f6b121e980b8007e5bd4d08c22e8775",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/video/uvesafb.h",
+  "human_readable_source": " \n#ifndef _UAPI_UVESAFB_H\n#define _UAPI_UVESAFB_H\n\n#include <linux/types.h>\n\nstruct v86_regs {\n\t__u32 ebx;\n\t__u32 ecx;\n\t__u32 edx;\n\t__u32 esi;\n\t__u32 edi;\n\t__u32 ebp;\n\t__u32 eax;\n\t__u32 eip;\n\t__u32 eflags;\n\t__u32 esp;\n\t__u16 cs;\n\t__u16 ss;\n\t__u16 es;\n\t__u16 ds;\n\t__u16 fs;\n\t__u16 gs;\n};\n\n \n#define TF_VBEIB\t0x01\n#define TF_BUF_ESDI\t0x02\n#define TF_BUF_ESBX\t0x04\n#define TF_BUF_RET\t0x08\n#define TF_EXIT\t\t0x10\n\nstruct uvesafb_task {\n\t__u8 flags;\n\tint buf_len;\n\tstruct v86_regs regs;\n};\n\n \n#define VBE_CAP_CAN_SWITCH_DAC\t0x01\n#define VBE_CAP_VGACOMPAT\t0x02\n\n \nstruct vbe_ib {\n\tchar  vbe_signature[4];\n\t__u16 vbe_version;\n\t__u32 oem_string_ptr;\n\t__u32 capabilities;\n\t__u32 mode_list_ptr;\n\t__u16 total_memory;\n\t__u16 oem_software_rev;\n\t__u32 oem_vendor_name_ptr;\n\t__u32 oem_product_name_ptr;\n\t__u32 oem_product_rev_ptr;\n\t__u8  reserved[222];\n\tchar  oem_data[256];\n\tchar  misc_data[512];\n} __attribute__ ((packed));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

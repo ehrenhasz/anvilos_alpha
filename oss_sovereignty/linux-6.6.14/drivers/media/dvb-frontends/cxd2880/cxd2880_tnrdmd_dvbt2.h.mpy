@@ -1,0 +1,9 @@
+{
+  "module_name": "cxd2880_tnrdmd_dvbt2.h",
+  "hash_id": "b8702fe2deeea22bd0e9986eb840a91135fc1a3c03088d77c5e6df741b7bc764",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cxd2880/cxd2880_tnrdmd_dvbt2.h",
+  "human_readable_source": " \n \n\n#ifndef CXD2880_TNRDMD_DVBT2_H\n#define CXD2880_TNRDMD_DVBT2_H\n\n#include \"cxd2880_common.h\"\n#include \"cxd2880_tnrdmd.h\"\n\nenum cxd2880_tnrdmd_dvbt2_tune_info {\n\tCXD2880_TNRDMD_DVBT2_TUNE_INFO_OK,\n\tCXD2880_TNRDMD_DVBT2_TUNE_INFO_INVALID_PLP_ID\n};\n\nstruct cxd2880_dvbt2_tune_param {\n\tu32 center_freq_khz;\n\tenum cxd2880_dtv_bandwidth bandwidth;\n\tu16 data_plp_id;\n\tenum cxd2880_dvbt2_profile profile;\n\tenum cxd2880_tnrdmd_dvbt2_tune_info tune_info;\n};\n\n#define CXD2880_DVBT2_TUNE_PARAM_PLPID_AUTO  0xffff\n\nint cxd2880_tnrdmd_dvbt2_tune1(struct cxd2880_tnrdmd *tnr_dmd,\n\t\t\t       struct cxd2880_dvbt2_tune_param\n\t\t\t       *tune_param);\n\nint cxd2880_tnrdmd_dvbt2_tune2(struct cxd2880_tnrdmd *tnr_dmd,\n\t\t\t       struct cxd2880_dvbt2_tune_param\n\t\t\t       *tune_param);\n\nint cxd2880_tnrdmd_dvbt2_sleep_setting(struct cxd2880_tnrdmd\n\t\t\t\t       *tnr_dmd);\n\nint cxd2880_tnrdmd_dvbt2_check_demod_lock(struct cxd2880_tnrdmd\n\t\t\t\t\t  *tnr_dmd,\n\t\t\t\t\t  enum\n\t\t\t\t\t  cxd2880_tnrdmd_lock_result\n\t\t\t\t\t  *lock);\n\nint cxd2880_tnrdmd_dvbt2_check_ts_lock(struct cxd2880_tnrdmd\n\t\t\t\t       *tnr_dmd,\n\t\t\t\t       enum\n\t\t\t\t       cxd2880_tnrdmd_lock_result\n\t\t\t\t       *lock);\n\nint cxd2880_tnrdmd_dvbt2_set_plp_cfg(struct cxd2880_tnrdmd\n\t\t\t\t     *tnr_dmd, u8 auto_plp,\n\t\t\t\t     u8 plp_id);\n\nint cxd2880_tnrdmd_dvbt2_diver_fef_setting(struct cxd2880_tnrdmd\n\t\t\t\t\t   *tnr_dmd);\n\nint cxd2880_tnrdmd_dvbt2_check_l1post_valid(struct cxd2880_tnrdmd\n\t\t\t\t\t    *tnr_dmd,\n\t\t\t\t\t    u8 *l1_post_valid);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

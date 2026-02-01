@@ -1,0 +1,9 @@
+{
+  "module_name": "console.h",
+  "hash_id": "5822ec71bde5662a7ec06a8daf5d01eceebe60c7ae9d5944f7c449bb35040470",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/interface/io/console.h",
+  "human_readable_source": " \n \n\n#ifndef __XEN_PUBLIC_IO_CONSOLE_H__\n#define __XEN_PUBLIC_IO_CONSOLE_H__\n\ntypedef uint32_t XENCONS_RING_IDX;\n\n#define MASK_XENCONS_IDX(idx, ring) ((idx) & (sizeof(ring)-1))\n\nstruct xencons_interface {\n    char in[1024];\n    char out[2048];\n    XENCONS_RING_IDX in_cons, in_prod;\n    XENCONS_RING_IDX out_cons, out_prod;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

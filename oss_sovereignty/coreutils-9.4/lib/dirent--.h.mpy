@@ -1,0 +1,9 @@
+{
+  "module_name": "dirent--.h",
+  "hash_id": "00f77fb1ac1e80e4d4558d9158c6b4cb0bc57ffb4cdfe37d46866d7af85fcbff",
+  "original_prompt": "Ingested from coreutils-9.4/lib/dirent--.h",
+  "human_readable_source": " \n\n#include \"dirent-safer.h\"\n\n#undef opendir\n#define opendir opendir_safer\n#define GNULIB_defined_opendir 1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "input_system_private.h",
+  "hash_id": "80b5092810a82914faba57b79788a743959576386865acd4b740c3ec68222068",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/input_system_private.h",
+  "human_readable_source": " \n\n \n\n#ifdef ISP2401\n#  include \"isp2401_input_system_private.h\"\n#else\n#  include \"isp2400_input_system_private.h\"\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "c-strtod.h",
+  "hash_id": "f95c0a905fa5aab52f6de49fe34bc44dae131f5649a10b5944ca01524415fc0a",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c-strtod.h",
+  "human_readable_source": " \nextern double      c_strtod  (char const *nptr, char **endptr);\nextern long double c_strtold (char const *nptr, char **endptr);\n\n#ifdef __cplusplus\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

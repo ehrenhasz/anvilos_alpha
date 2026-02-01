@@ -1,0 +1,9 @@
+{
+  "module_name": "leds-lp55xx.h",
+  "hash_id": "9f6d54243b5aff46d26ae950d415e493311439deb819a96c9cb9c81d009519eb",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/leds-lp55xx.h",
+  "human_readable_source": " \n \n\n#ifndef _LEDS_LP55XX_H\n#define _LEDS_LP55XX_H\n\n#include <linux/gpio/consumer.h>\n#include <linux/led-class-multicolor.h>\n\n \n#define LP55XX_CLOCK_AUTO\t0\n#define LP55XX_CLOCK_INT\t1\n#define LP55XX_CLOCK_EXT\t2\n\n#define LP55XX_MAX_GROUPED_CHAN\t4\n\nstruct lp55xx_led_config {\n\tconst char *name;\n\tconst char *default_trigger;\n\tu8 chan_nr;\n\tu8 led_current;  \n\tu8 max_current;\n\tint num_colors;\n\tunsigned int max_channel;\n\tint color_id[LED_COLOR_ID_MAX];\n\tint output_num[LED_COLOR_ID_MAX];\n};\n\nstruct lp55xx_predef_pattern {\n\tconst u8 *r;\n\tconst u8 *g;\n\tconst u8 *b;\n\tu8 size_r;\n\tu8 size_g;\n\tu8 size_b;\n};\n\nenum lp8501_pwr_sel {\n\tLP8501_ALL_VDD,\t\t \n\tLP8501_6VDD_3VOUT,\t \n\tLP8501_3VDD_6VOUT,\t \n\tLP8501_ALL_VOUT,\t \n};\n\n \nstruct lp55xx_platform_data {\n\n\t \n\tstruct lp55xx_led_config *led_config;\n\tu8 num_channels;\n\tconst char *label;\n\n\t \n\tu8 clock_mode;\n\n\t \n\tu32 charge_pump_mode;\n\n\t \n\tstruct gpio_desc *enable_gpiod;\n\n\t \n\tstruct lp55xx_predef_pattern *patterns;\n\tunsigned int num_patterns;\n\n\t \n\tenum lp8501_pwr_sel pwr_sel;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

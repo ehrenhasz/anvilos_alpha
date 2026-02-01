@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3219803815f5e4c5e88768c4410d10275aa9426550378c04b31bea6eb0797ba4",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/cs5535audio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for cs5535audio\n#\n\nsnd-cs5535audio-y := cs5535audio.o cs5535audio_pcm.o\nsnd-cs5535audio-$(CONFIG_PM_SLEEP) += cs5535audio_pm.o\nsnd-cs5535audio-$(CONFIG_OLPC) += cs5535audio_olpc.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_CS5535AUDIO) += snd-cs5535audio.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

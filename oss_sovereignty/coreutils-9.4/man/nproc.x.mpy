@@ -1,0 +1,9 @@
+{
+  "module_name": "nproc.x",
+  "hash_id": "ce7d49f459e3f48664293eed49795dc1c8f5420a6990971150ea9f7e9f6b3068",
+  "original_prompt": "Ingested from coreutils-9.4/man/nproc.x",
+  "human_readable_source": "[NAME]\nnproc \\- print the number of processing units available\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

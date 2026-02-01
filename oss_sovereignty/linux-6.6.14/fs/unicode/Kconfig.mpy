@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "37ad15be90a22f055f99644c1b707aaec3f3c5ca033838e31e79fb955b582e87",
+  "original_prompt": "Ingested from linux-6.6.14/fs/unicode/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# UTF-8 normalization\n#\nconfig UNICODE\n\ttristate \"UTF-8 normalization and casefolding support\"\n\thelp\n\t  Say Y here to enable UTF-8 NFD normalization and NFD+CF casefolding\n\t  support.  If you say M here the large table of case foldings will\n\t  be a separate loadable module that gets requested only when a file\n\t  system actually use it.\n\nconfig UNICODE_NORMALIZATION_SELFTEST\n\ttristate \"Test UTF-8 normalization support\"\n\tdepends on UNICODE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

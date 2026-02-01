@@ -1,0 +1,9 @@
+{
+  "module_name": "rt286.h",
+  "hash_id": "6a0739548858d093a67e1c9b18c2e42ea52a07f0d255f6164f512426c0a9867a",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/rt286.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SND_RT286_H\n#define __LINUX_SND_RT286_H\n\nstruct rt286_platform_data {\n\tbool cbj_en;  \n\tbool gpio2_en;  \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

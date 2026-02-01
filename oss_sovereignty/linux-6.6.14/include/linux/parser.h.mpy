@@ -1,0 +1,9 @@
+{
+  "module_name": "parser.h",
+  "hash_id": "7776352e068e32e0332b7687a6a6134d216f499e6734295c4f72f0b2b8269489",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/parser.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_PARSER_H\n#define _LINUX_PARSER_H\n\n \nstruct match_token {\n\tint token;\n\tconst char *pattern;\n};\n\ntypedef struct match_token match_table_t[];\n\n \nenum {MAX_OPT_ARGS = 3};\n\n \ntypedef struct {\n\tchar *from;\n\tchar *to;\n} substring_t;\n\nint match_token(char *, const match_table_t table, substring_t args[]);\nint match_int(substring_t *, int *result);\nint match_uint(substring_t *s, unsigned int *result);\nint match_u64(substring_t *, u64 *result);\nint match_octal(substring_t *, int *result);\nint match_hex(substring_t *, int *result);\nbool match_wildcard(const char *pattern, const char *str);\nsize_t match_strlcpy(char *, const substring_t *, size_t);\nchar *match_strdup(const substring_t *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

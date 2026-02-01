@@ -1,0 +1,9 @@
+{
+  "module_name": "check_cc.sh",
+  "hash_id": "7fd153bfd71006f03ea91e519f1dbdc8a40fc1445f3b2fdcd0e862487beb05e3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/x86/check_cc.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-only\n# check_cc.sh - Helper to test userspace compilation support\n# Copyright (c) 2015 Andrew Lutomirski\n\nCC=\"$1\"\nTESTPROG=\"$2\"\nshift 2\n\nif [ -n \"$CC\" ] && $CC -o /dev/null \"$TESTPROG\" -O0 \"$@\" 2>/dev/null; then\n    echo 1\nelse\n    echo 0\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

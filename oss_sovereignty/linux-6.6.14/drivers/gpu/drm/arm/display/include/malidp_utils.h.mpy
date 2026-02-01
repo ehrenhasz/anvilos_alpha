@@ -1,0 +1,9 @@
+{
+  "module_name": "malidp_utils.h",
+  "hash_id": "b2c0fe60318905d57f2640f0a93b969baabac29d050195863736bbd38b3201de",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/arm/display/include/malidp_utils.h",
+  "human_readable_source": " \n \n#ifndef _MALIDP_UTILS_\n#define _MALIDP_UTILS_\n\n#include <linux/delay.h>\n#include <linux/errno.h>\n\n#define has_bit(nr, mask)\t(BIT(nr) & (mask))\n#define has_bits(bits, mask)\t(((bits) & (mask)) == (bits))\n\n#define dp_wait_cond(__cond, __tries, __min_range, __max_range)\t\\\n({\t\t\t\t\t\t\t\\\n\tint num_tries = __tries;\t\t\t\\\n\twhile (!__cond && (num_tries > 0)) {\t\t\\\n\t\tusleep_range(__min_range, __max_range);\t\\\n\t\tnum_tries--;\t\t\t\t\\\n\t}\t\t\t\t\t\t\\\n\t(__cond) ? 0 : -ETIMEDOUT;\t\t\t\\\n})\n\n \nstruct malidp_range {\n\tu32 start;\n\tu32 end;\n};\n\nstatic inline void set_range(struct malidp_range *rg, u32 start, u32 end)\n{\n\trg->start = start;\n\trg->end   = end;\n}\n\nstatic inline bool malidp_in_range(struct malidp_range *rg, u32 v)\n{\n\treturn (v >= rg->start) && (v <= rg->end);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mangle_pstate_invalid_compat_toggle.c",
+  "hash_id": "fac70bcace23731438563ced1b4920b54d71da68286fc5be3006b04cdf418bda",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/signal/testcases/mangle_pstate_invalid_compat_toggle.c",
+  "human_readable_source": "\n \n\n#include \"test_signals_utils.h\"\n#include \"testcases.h\"\n\nstatic int mangle_invalid_pstate_run(struct tdescr *td, siginfo_t *si,\n\t\t\t\t     ucontext_t *uc)\n{\n\tASSERT_GOOD_CONTEXT(uc);\n\n\t \n\tuc->uc_mcontext.pstate ^= PSR_MODE32_BIT;\n\n\treturn 1;\n}\n\nstruct tdescr tde = {\n\t\t.sanity_disabled = true,\n\t\t.name = \"MANGLE_PSTATE_INVALID_STATE_TOGGLE\",\n\t\t.descr = \"Mangling uc_mcontext with INVALID STATE_TOGGLE\",\n\t\t.sig_trig = SIGUSR1,\n\t\t.sig_ok = SIGSEGV,\n\t\t.run = mangle_invalid_pstate_run,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

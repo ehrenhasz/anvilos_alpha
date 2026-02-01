@@ -1,0 +1,9 @@
+{
+  "module_name": "sdio_hal.h",
+  "hash_id": "645e381fc3019e32ce9a2a8416e99de7935e2690a36330ed263e588f7fd22d14",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/sdio_hal.h",
+  "human_readable_source": " \n \n#ifndef __SDIO_HAL_H__\n#define __SDIO_HAL_H__\n\n\nextern u8 sd_hal_bus_init(struct adapter *padapter);\nextern u8 sd_hal_bus_deinit(struct adapter *padapter);\n\nu8 sd_int_isr(struct adapter *padapter);\nvoid sd_int_dpc(struct adapter *padapter);\nvoid rtw_set_hal_ops(struct adapter *padapter);\n\nvoid rtl8723bs_set_hal_ops(struct adapter *padapter);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sys_random.in.h",
+  "hash_id": "7f6ea23d8938c1355ca682068a7b4efdcd3574cda549ef7f97ea30e2ebbbb455",
+  "original_prompt": "Ingested from coreutils-9.4/lib/sys_random.in.h",
+  "human_readable_source": " \n# ifndef __GLIBC__\n#  include <stddef.h>\n# endif\n \n# if defined __APPLE__ && defined __MACH__                   \n#  include <sys/types.h>\n#  include <stdlib.h>\n# endif\n\n \n# @INCLUDE_NEXT@ @NEXT_SYS_RANDOM_H@\n\n#endif\n\n#ifndef _@GUARD_PREFIX@_SYS_RANDOM_H\n#define _@GUARD_PREFIX@_SYS_RANDOM_H\n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <sys/types.h>\n\n \n#ifndef GRND_NONBLOCK\n# define GRND_NONBLOCK 1\n# define GRND_RANDOM 2\n#endif\n\n \n\n \n\n \n\n\n \n\n\n#if @GNULIB_GETRANDOM@\n \n# if @REPLACE_GETRANDOM@\n#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)\n#   undef getrandom\n#   define getrandom rpl_getrandom\n#  endif\n_GL_FUNCDECL_RPL (getrandom, ssize_t,\n                  (void *buffer, size_t length, unsigned int flags)\n                  _GL_ARG_NONNULL ((1)));\n_GL_CXXALIAS_RPL (getrandom, ssize_t,\n                  (void *buffer, size_t length, unsigned int flags));\n# else\n#  if !@HAVE_GETRANDOM@\n_GL_FUNCDECL_SYS (getrandom, ssize_t,\n                  (void *buffer, size_t length, unsigned int flags)\n                  _GL_ARG_NONNULL ((1)));\n#  endif\n_GL_CXXALIAS_SYS (getrandom, ssize_t,\n                  (void *buffer, size_t length, unsigned int flags));\n# endif\n# if __GLIBC__ + (__GLIBC_MINOR__ >= 25) > 2\n_GL_CXXALIASWARN (getrandom);\n# endif\n#elif defined GNULIB_POSIXCHECK\n# undef getrandom\n# if HAVE_RAW_DECL_GETRANDOM\n_GL_WARN_ON_USE (getrandom, \"getrandom is unportable - \"\n                 \"use gnulib module getrandom for portability\");\n# endif\n#endif\n\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

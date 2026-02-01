@@ -1,0 +1,9 @@
+{
+  "module_name": "kmsan_string.h",
+  "hash_id": "bfe07feab661bd4ccc7eaf169327ef79c2fe5c1a9c25c64515e6b530eb635aa8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kmsan_string.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_KMSAN_STRING_H\n#define _LINUX_KMSAN_STRING_H\n\n \nvoid *__msan_memcpy(void *dst, const void *src, size_t size);\nvoid *__msan_memset(void *s, int c, size_t n);\nvoid *__msan_memmove(void *dest, const void *src, size_t len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

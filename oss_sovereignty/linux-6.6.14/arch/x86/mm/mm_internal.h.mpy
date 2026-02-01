@@ -1,0 +1,9 @@
+{
+  "module_name": "mm_internal.h",
+  "hash_id": "c8b286622b829fb2a0fe2a101b6bea59a3f0de6627bbe27cb90cc30acc05e32f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/mm/mm_internal.h",
+  "human_readable_source": " \n#ifndef __X86_MM_INTERNAL_H\n#define __X86_MM_INTERNAL_H\n\nvoid *alloc_low_pages(unsigned int num);\nstatic inline void *alloc_low_page(void)\n{\n\treturn alloc_low_pages(1);\n}\n\nvoid early_ioremap_page_table_range_init(void);\n\nunsigned long kernel_physical_mapping_init(unsigned long start,\n\t\t\t\t\t     unsigned long end,\n\t\t\t\t\t     unsigned long page_size_mask,\n\t\t\t\t\t     pgprot_t prot);\nunsigned long kernel_physical_mapping_change(unsigned long start,\n\t\t\t\t\t     unsigned long end,\n\t\t\t\t\t     unsigned long page_size_mask);\nvoid zone_sizes_init(void);\n\nextern int after_bootmem;\n\nvoid update_cache_mode_entry(unsigned entry, enum page_cache_mode cache);\n\nextern unsigned long tlb_single_page_flush_ceiling;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

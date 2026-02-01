@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ac7ab9edd9799f2edb1359af1d6f2cbb1d57cd47000d00054e9b7207ed342d6a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/timens/Makefile",
+  "human_readable_source": "TEST_GEN_PROGS := timens timerfd timer clock_nanosleep procfs exec futex vfork_exec\nTEST_GEN_PROGS_EXTENDED := gettime_perf\n\nCFLAGS := -Wall -Werror -pthread\nLDLIBS := -lrt -ldl\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

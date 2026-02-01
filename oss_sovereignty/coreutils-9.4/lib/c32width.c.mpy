@@ -1,0 +1,9 @@
+{
+  "module_name": "c32width.c",
+  "hash_id": "f51bd5ccf415273c802a20bdebf82f17c67d45850ae8723545e57cdcb2cd80a6",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c32width.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#define IN_C32WIDTH\n \n#include <uchar.h>\n\n#include <wchar.h>\n\n#ifdef __CYGWIN__\n# include <cygwin/version.h>\n#endif\n\n#if GNULIB_defined_mbstate_t\n# include \"streq.h\"\n#endif\n\n#include \"localcharset.h\"\n\n#if GL_CHAR32_T_IS_UNICODE\n# include \"lc-charset-unicode.h\"\n#endif\n\n#include \"uniwidth.h\"\n\n#if _GL_WCHAR_T_IS_UCS4 && !GNULIB_defined_mbstate_t\n_GL_EXTERN_INLINE\n#endif\nint\nc32width (char32_t wc)\n{\n   \n\n#if GNULIB_defined_mbstate_t             \n   \n  const char *encoding = locale_charset ();\n  if (STREQ_OPT (encoding, \"UTF-8\", 'U', 'T', 'F', '-', '8', 0, 0, 0, 0))\n    return uc_width (wc, encoding);\n  else\n    return wcwidth (wc);\n\n#elif HAVE_WORKING_MBRTOC32              \n   \n\n# if _GL_WCHAR_T_IS_UCS4\n   \n  return wcwidth (wc);\n# else\n   \n  return uc_width (wc, locale_charset ());\n# endif\n\n#elif _GL_SMALL_WCHAR_T                  \n   \n\n# if defined __CYGWIN__ && CYGWIN_VERSION_DLL_MAJOR >= 1007 && 0\n   \n  return wcwidth (wc);\n# else\n  if (wc == (wchar_t) wc)\n     \n    return wcwidth (wc);\n  else\n    return uc_width (wc, locale_charset ());\n# endif\n\n#else  \n   \n  static_assert (sizeof (char32_t) == sizeof (wchar_t));\n\n# if GL_CHAR32_T_IS_UNICODE && GL_CHAR32_T_VS_WCHAR_T_NEEDS_CONVERSION\n  return uc_width (wc, locale_charset ());\n# endif\n  return wcwidth (wc);\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

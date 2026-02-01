@@ -1,0 +1,9 @@
+{
+  "module_name": "if000b.h",
+  "hash_id": "c088b315abb6012b0096684884b0d3d1ccf6d60c0023de6ce87127919535c592",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/if000b.h",
+  "human_readable_source": "#ifndef __NVIF_IF000B_H__\n#define __NVIF_IF000B_H__\n#include \"if000a.h\"\n\nstruct nv04_mem_vn {\n\t \n};\n\nstruct nv04_mem_map_vn {\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

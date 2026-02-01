@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d4c349abffe2086cc815df5912885d0a16f258dcdd74a29f03e0f6275e0cb7d3",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nmenu \"Host processor type and features\"\n\nsource \"arch/x86/Kconfig.cpu\"\n\nendmenu\n\nconfig UML_X86\n\tdef_bool y\n\tselect ARCH_BINFMT_ELF_EXTRA_PHDRS if X86_32\n\tselect DCACHE_WORD_ACCESS\n\nconfig 64BIT\n\tbool \"64-bit kernel\" if \"$(SUBARCH)\" = \"x86\"\n\tdefault \"$(SUBARCH)\" != \"i386\"\n\nconfig X86_32\n\tdef_bool !64BIT\n\tselect ARCH_32BIT_OFF_T\n\tselect ARCH_WANT_IPC_PARSE_VERSION\n\tselect MODULES_USE_ELF_REL\n\tselect CLONE_BACKWARDS\n\tselect OLD_SIGSUSPEND3\n\tselect OLD_SIGACTION\n\nconfig X86_64\n\tdef_bool 64BIT\n\tselect MODULES_USE_ELF_RELA\n\nconfig 3_LEVEL_PGTABLES\n\tbool \"Three-level pagetables\" if !64BIT\n\tdefault 64BIT\n\thelp\n\t  Three-level pagetables will let UML have more than 4G of physical\n\t  memory.  All the memory that can't be mapped directly will be treated\n\t  as high memory.\n\n\t  However, this it experimental on 32-bit architectures, so if unsure say\n\t  N (on x86-64 it's automatically enabled, instead, as it's safe there).\n\nconfig ARCH_HAS_SC_SIGNALS\n\tdef_bool !64BIT\n\nconfig ARCH_REUSE_HOST_VSYSCALL_AREA\n\tdef_bool !64BIT\n\nconfig GENERIC_HWEIGHT\n\tdef_bool y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

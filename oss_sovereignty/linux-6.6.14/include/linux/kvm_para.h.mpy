@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm_para.h",
+  "hash_id": "503f2b80bcb2cdaf12b888b35224a89d96633abfcc039882503ad3d880f32811",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kvm_para.h",
+  "human_readable_source": " \n#ifndef __LINUX_KVM_PARA_H\n#define __LINUX_KVM_PARA_H\n\n#include <uapi/linux/kvm_para.h>\n\n\nstatic inline bool kvm_para_has_feature(unsigned int feature)\n{\n\treturn !!(kvm_arch_para_features() & (1UL << feature));\n}\n\nstatic inline bool kvm_para_has_hint(unsigned int feature)\n{\n\treturn !!(kvm_arch_para_hints() & (1UL << feature));\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

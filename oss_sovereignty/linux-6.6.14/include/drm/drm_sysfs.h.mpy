@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_sysfs.h",
+  "hash_id": "e70ec2268881fa0acbf845958e0a8e7b7cb41d47fe9c60464c57cff5498d33aa",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_sysfs.h",
+  "human_readable_source": " \n#ifndef _DRM_SYSFS_H_\n#define _DRM_SYSFS_H_\n\nstruct drm_device;\nstruct device;\nstruct drm_connector;\nstruct drm_property;\n\nint drm_class_device_register(struct device *dev);\nvoid drm_class_device_unregister(struct device *dev);\n\nvoid drm_sysfs_hotplug_event(struct drm_device *dev);\nvoid drm_sysfs_connector_hotplug_event(struct drm_connector *connector);\nvoid drm_sysfs_connector_property_event(struct drm_connector *connector,\n\t\t\t\t\tstruct drm_property *property);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

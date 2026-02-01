@@ -1,0 +1,9 @@
+{
+  "module_name": "taprio_wait_for_admin.sh",
+  "hash_id": "72bdb30585917b74438a5fa578354a67918def7093116551f81749869c218806",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tc-testing/taprio_wait_for_admin.sh",
+  "human_readable_source": "#!/bin/bash\n\nTC=\"$1\"; shift\nETH=\"$1\"; shift\n\n# The taprio architecture changes the admin schedule from a hrtimer and not\n# from process context, so we need to wait in order to make sure that any\n# schedule change actually took place.\nwhile :; do\n\thas_admin=\"$($TC -j qdisc show dev $ETH root | jq '.[].options | has(\"admin\")')\"\n\tif [ \"$has_admin\" = \"false\" ]; then\n\t\tbreak;\n\tfi\n\n\tsleep 1\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

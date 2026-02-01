@@ -1,0 +1,9 @@
+{
+  "module_name": "pvrusb2-util.h",
+  "hash_id": "5efd40961874e31a5738e273c46635be3eee1c71351421a03b621ee70d29b09a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pvrusb2/pvrusb2-util.h",
+  "human_readable_source": " \n \n#ifndef __PVRUSB2_UTIL_H\n#define __PVRUSB2_UTIL_H\n\n#define PVR2_DECOMPOSE_LE(t,i,d) \\\n    do {    \\\n\t(t)[i] = (d) & 0xff;\\\n\t(t)[i+1] = ((d) >> 8) & 0xff;\\\n\t(t)[i+2] = ((d) >> 16) & 0xff;\\\n\t(t)[i+3] = ((d) >> 24) & 0xff;\\\n    } while(0)\n\n#define PVR2_DECOMPOSE_BE(t,i,d) \\\n    do {    \\\n\t(t)[i+3] = (d) & 0xff;\\\n\t(t)[i+2] = ((d) >> 8) & 0xff;\\\n\t(t)[i+1] = ((d) >> 16) & 0xff;\\\n\t(t)[i] = ((d) >> 24) & 0xff;\\\n    } while(0)\n\n#define PVR2_COMPOSE_LE(t,i) \\\n    ((((u32)((t)[i+3])) << 24) | \\\n     (((u32)((t)[i+2])) << 16) | \\\n     (((u32)((t)[i+1])) << 8) | \\\n     ((u32)((t)[i])))\n\n#define PVR2_COMPOSE_BE(t,i) \\\n    ((((u32)((t)[i])) << 24) | \\\n     (((u32)((t)[i+1])) << 16) | \\\n     (((u32)((t)[i+2])) << 8) | \\\n     ((u32)((t)[i+3])))\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

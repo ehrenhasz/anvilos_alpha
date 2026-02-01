@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5b78567cea8acb1789491d40fc6f25ca33a5fb243fa221f4a650dcadb761169d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/arm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y += arm-smmu/ arm-smmu-v3/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

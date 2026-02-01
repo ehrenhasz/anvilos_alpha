@@ -1,0 +1,9 @@
+{
+  "module_name": "fd-safer-flag.c",
+  "hash_id": "ab3d75a1689a9dd544f028a79dd535255f0a82daebc72280f5d99624e15b2bc6",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fd-safer-flag.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include \"unistd-safer.h\"\n\n#include <errno.h>\n#include <unistd.h>\n\n \n\nint\nfd_safer_flag (int fd, int flag)\n{\n  if (STDIN_FILENO <= fd && fd <= STDERR_FILENO)\n    {\n      int f = dup_safer_flag (fd, flag);\n      int e = errno;\n      close (fd);\n      errno = e;\n      fd = f;\n    }\n\n  return fd;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ppp_channel.h",
+  "hash_id": "d0ea2613a197eaece4dd0d70efc504ca91fbf6a386cf932d46e04ebd7adac0b0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ppp_channel.h",
+  "human_readable_source": " \n#ifndef _PPP_CHANNEL_H_\n#define _PPP_CHANNEL_H_\n \n\n#include <linux/list.h>\n#include <linux/skbuff.h>\n#include <linux/poll.h>\n#include <net/net_namespace.h>\n\nstruct net_device_path;\nstruct net_device_path_ctx;\nstruct ppp_channel;\n\nstruct ppp_channel_ops {\n\t \n\tint\t(*start_xmit)(struct ppp_channel *, struct sk_buff *);\n\t \n\tint\t(*ioctl)(struct ppp_channel *, unsigned int, unsigned long);\n\tint\t(*fill_forward_path)(struct net_device_path_ctx *,\n\t\t\t\t     struct net_device_path *,\n\t\t\t\t     const struct ppp_channel *);\n};\n\nstruct ppp_channel {\n\tvoid\t\t*private;\t \n\tconst struct ppp_channel_ops *ops;  \n\tint\t\tmtu;\t\t \n\tint\t\thdrlen;\t\t \n\tvoid\t\t*ppp;\t\t \n\tint\t\tspeed;\t\t \n\t \n\tint\t\tlatency;\t \n};\n\n#ifdef __KERNEL__\n \nextern void ppp_output_wakeup(struct ppp_channel *);\n\n \nextern void ppp_input(struct ppp_channel *, struct sk_buff *);\n\n \nextern void ppp_input_error(struct ppp_channel *, int code);\n\n \nextern int ppp_register_net_channel(struct net *, struct ppp_channel *);\n\n \nextern int ppp_register_channel(struct ppp_channel *);\n\n \nextern void ppp_unregister_channel(struct ppp_channel *);\n\n \nextern int ppp_channel_index(struct ppp_channel *);\n\n \nextern int ppp_unit_number(struct ppp_channel *);\n\n \nextern char *ppp_dev_name(struct ppp_channel *);\n\n \n\n#endif  \n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

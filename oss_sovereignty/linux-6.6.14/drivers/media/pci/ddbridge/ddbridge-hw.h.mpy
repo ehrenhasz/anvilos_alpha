@@ -1,0 +1,9 @@
+{
+  "module_name": "ddbridge-hw.h",
+  "hash_id": "7c18ae4588a66e38a58c539a24fd8eab4acea6d308cdc358d4a004600a886049",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ddbridge/ddbridge-hw.h",
+  "human_readable_source": " \n \n\n#ifndef _DDBRIDGE_HW_H_\n#define _DDBRIDGE_HW_H_\n\n#include \"ddbridge.h\"\n\n \n\n#define DDVID 0xdd01  \n\n \n\nstruct ddb_device_id {\n\tu16 vendor;\n\tu16 device;\n\tu16 subvendor;\n\tu16 subdevice;\n\tconst struct ddb_info *info;\n};\n\n \n\nconst struct ddb_info *get_ddb_info(u16 vendor, u16 device,\n\t\t\t\t    u16 subvendor, u16 subdevice);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

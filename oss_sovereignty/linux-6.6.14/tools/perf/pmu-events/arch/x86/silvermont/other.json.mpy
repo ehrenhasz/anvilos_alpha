@@ -1,0 +1,9 @@
+{
+  "module_name": "other.json",
+  "hash_id": "b46aa546b6a91a34621dba593b9b523cab1e0e78360bf705a72b6b31861f54d0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/silvermont/other.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"Cycles code-fetch stalled due to any reason.\",\n        \"EventCode\": \"0x86\",\n        \"EventName\": \"FETCH_STALL.ALL\",\n        \"PublicDescription\": \"Counts cycles that fetch is stalled due to any reason. That is, the decoder queue is able to accept bytes, but the fetch unit is unable to provide bytes.  This will include cycles due to an ITLB miss, ICache miss and other events.\",\n        \"SampleAfterValue\": \"200003\",\n        \"UMask\": \"0x3f\"\n    },\n    {\n        \"BriefDescription\": \"Cycles code-fetch stalled due to an outstanding ITLB miss.\",\n        \"EventCode\": \"0x86\",\n        \"EventName\": \"FETCH_STALL.ITLB_FILL_PENDING_CYCLES\",\n        \"PublicDescription\": \"Counts cycles that fetch is stalled due to an outstanding ITLB miss. That is, the decoder queue is able to accept bytes, but the fetch unit is unable to provide bytes due to an ITLB miss.  Note: this event is not the same as page walk cycles to retrieve an instruction translation.\",\n        \"SampleAfterValue\": \"200003\",\n        \"UMask\": \"0x2\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

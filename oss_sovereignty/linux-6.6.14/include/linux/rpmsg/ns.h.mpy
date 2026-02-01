@@ -1,0 +1,9 @@
+{
+  "module_name": "ns.h",
+  "hash_id": "a8155c3cb91f15f94913727a580e7dd104b1d4e1e548744f4b05a5a17ab295a2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rpmsg/ns.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_RPMSG_NS_H\n#define _LINUX_RPMSG_NS_H\n\n#include <linux/mod_devicetable.h>\n#include <linux/rpmsg.h>\n#include <linux/rpmsg/byteorder.h>\n#include <linux/types.h>\n\n \nstruct rpmsg_ns_msg {\n\tchar name[RPMSG_NAME_SIZE];\n\t__rpmsg32 addr;\n\t__rpmsg32 flags;\n} __packed;\n\n \nenum rpmsg_ns_flags {\n\tRPMSG_NS_CREATE\t\t= 0,\n\tRPMSG_NS_DESTROY\t= 1,\n};\n\n \n#define RPMSG_NS_ADDR\t\t\t(53)\n\nint rpmsg_ns_register_device(struct rpmsg_device *rpdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

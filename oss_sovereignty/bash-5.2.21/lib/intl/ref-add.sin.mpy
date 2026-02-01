@@ -1,0 +1,9 @@
+{
+  "module_name": "ref-add.sin",
+  "hash_id": "09f8335345bfcf2b7d7f8abc00f7b01fdae92b1bf9a68fed1f88f9e2245f354e",
+  "original_prompt": "Ingested from bash-5.2.21/lib/intl/ref-add.sin",
+  "human_readable_source": "# Add this package to a list of references stored in a text file.\n#\n#   Copyright (C) 2000 Free Software Foundation, Inc.\n#\n#   This program is free software: you can redistribute it and/or modify\n#   it under the terms of the GNU General Public License as published by\n#   the Free Software Foundation, either version 3 of the License, or\n#   (at your option) any later version.\n#\n#   This program is distributed in the hope that it will be useful,\n#   but WITHOUT ANY WARRANTY; without even the implied warranty of\n#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n#   GNU General Public License for more details.\n#\n#   You should have received a copy of the GNU General Public License\n#   along with this program.  If not, see <http://www.gnu.org/licenses/>.\n#\n# Written by Bruno Haible <haible@clisp.cons.org>.\n#\n/^# Packages using this file: / {\n  s/# Packages using this file://\n  ta\n  :a\n  s/ @PACKAGE@ / @PACKAGE@ /\n  tb\n  s/ $/ @PACKAGE@ /\n  :b\n  s/^/# Packages using this file:/\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

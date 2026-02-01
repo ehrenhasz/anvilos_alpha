@@ -1,0 +1,9 @@
+{
+  "module_name": "test-snprintf.c",
+  "hash_id": "5f9756f5a90f34eb39525ace4793e72e41443f799dd1805caacb66ef3a87de87",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-snprintf.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdio.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (snprintf, int, (char *, size_t, char const *, ...));\n\n#include <string.h>\n\n#include \"macros.h\"\n\nint\nmain (int argc, char *argv[])\n{\n  char buf[8];\n  int size;\n  int retval;\n\n  retval = snprintf (NULL, 0, \"%d\", 12345);\n  ASSERT (retval == 5);\n\n  for (size = 0; size <= 8; size++)\n    {\n      memcpy (buf, \"DEADBEEF\", 8);\n      retval = snprintf (buf, size, \"%d\", 12345);\n      ASSERT (retval == 5);\n      if (size < 6)\n        {\n          if (size > 0)\n            {\n              ASSERT (memcmp (buf, \"12345\", size - 1) == 0);\n              ASSERT (buf[size - 1] == '\\0' || buf[size - 1] == '0' + size);\n            }\n#if !CHECK_SNPRINTF_POSIX\n          if (size > 0)\n#endif\n            ASSERT (memcmp (buf + size, &\"DEADBEEF\"[size], 8 - size) == 0);\n        }\n      else\n        {\n          ASSERT (memcmp (buf, \"12345\\0EF\", 8) == 0);\n        }\n    }\n\n   \n  {\n    char result[100];\n    retval = snprintf (result, sizeof (result), \"%2$d %1$d\", 33, 55);\n    ASSERT (strcmp (result, \"55 33\") == 0);\n    ASSERT (retval == strlen (result));\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

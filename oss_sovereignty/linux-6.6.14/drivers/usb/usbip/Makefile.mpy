@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "dce950b5e4b5d5900bd85b2aa0446403db76b13ef896638433c22df4478cf015",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/usbip/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nccflags-$(CONFIG_USBIP_DEBUG) := -DDEBUG\n\nobj-$(CONFIG_USBIP_CORE) += usbip-core.o\nusbip-core-y := usbip_common.o usbip_event.o\n\nobj-$(CONFIG_USBIP_VHCI_HCD) += vhci-hcd.o\nvhci-hcd-y := vhci_sysfs.o vhci_tx.o vhci_rx.o vhci_hcd.o\n\nobj-$(CONFIG_USBIP_HOST) += usbip-host.o\nusbip-host-y := stub_dev.o stub_main.o stub_rx.o stub_tx.o\n\nobj-$(CONFIG_USBIP_VUDC) += usbip-vudc.o\nusbip-vudc-y := vudc_dev.o vudc_sysfs.o vudc_tx.o vudc_rx.o vudc_transfer.o vudc_main.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

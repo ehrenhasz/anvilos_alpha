@@ -1,0 +1,9 @@
+{
+  "module_name": "page.h",
+  "hash_id": "883f0a1acb826748e98902388da7ecab82b05fe48693519011f4f44430a9457e",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/page.h",
+  "human_readable_source": " \n#ifndef _XEN_PAGE_H\n#define _XEN_PAGE_H\n\n#include <asm/page.h>\n\n \n#define XEN_PAGE_SHIFT\t12\n#define XEN_PAGE_SIZE\t(_AC(1, UL) << XEN_PAGE_SHIFT)\n#define XEN_PAGE_MASK\t(~(XEN_PAGE_SIZE-1))\n#define xen_offset_in_page(p)\t((unsigned long)(p) & ~XEN_PAGE_MASK)\n\n \n\n#define xen_pfn_to_page(xen_pfn)\t\\\n\t(pfn_to_page((unsigned long)(xen_pfn) >> (PAGE_SHIFT - XEN_PAGE_SHIFT)))\n#define page_to_xen_pfn(page)\t\t\\\n\t((page_to_pfn(page)) << (PAGE_SHIFT - XEN_PAGE_SHIFT))\n\n#define XEN_PFN_PER_PAGE\t(PAGE_SIZE / XEN_PAGE_SIZE)\n\n#define XEN_PFN_DOWN(x)\t((x) >> XEN_PAGE_SHIFT)\n#define XEN_PFN_UP(x)\t(((x) + XEN_PAGE_SIZE-1) >> XEN_PAGE_SHIFT)\n\n#include <asm/xen/page.h>\n\n \nstatic inline unsigned long xen_page_to_gfn(struct page *page)\n{\n\treturn pfn_to_gfn(page_to_xen_pfn(page));\n}\n\nstruct xen_memory_region {\n\tunsigned long start_pfn;\n\tunsigned long n_pfns;\n};\n\n#define XEN_EXTRA_MEM_MAX_REGIONS 128  \n\nextern __initdata\nstruct xen_memory_region xen_extra_mem[XEN_EXTRA_MEM_MAX_REGIONS];\n\nextern unsigned long xen_released_pages;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

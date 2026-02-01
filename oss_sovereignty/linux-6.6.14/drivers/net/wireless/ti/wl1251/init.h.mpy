@@ -1,0 +1,9 @@
+{
+  "module_name": "init.h",
+  "hash_id": "5eb073aadd5e55cb743d19f698ef101ac004b06dddbff57af943bb5d32244fa4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wl1251/init.h",
+  "human_readable_source": " \n \n\n#ifndef __WL1251_INIT_H__\n#define __WL1251_INIT_H__\n\n#include \"wl1251.h\"\n\nenum {\n\t \n\tAC_BE = 0,\n\n\t \n\tAC_BK = 1,\n\n\t \n\tAC_VI = 2,\n\n\t \n\tAC_VO = 3,\n\n\t \n\tAC_BCAST = 4,\n\n\tNUM_ACCESS_CATEGORIES = 4\n};\n\n \n#define CWMIN_BK  15\n#define CWMIN_BE  15\n#define CWMIN_VI  7\n#define CWMIN_VO  3\n#define CWMAX_BK  1023\n#define CWMAX_BE  63\n#define CWMAX_VI  15\n#define CWMAX_VO  7\n\n \n#define AIFS_PIFS 1\n\n \n#define AIFS_DIFS 2\n\n#define AIFSN_BK  7\n#define AIFSN_BE  3\n#define AIFSN_VI  AIFS_PIFS\n#define AIFSN_VO  AIFS_PIFS\n#define TXOP_BK   0\n#define TXOP_BE   0\n#define TXOP_VI   3008\n#define TXOP_VO   1504\n\nint wl1251_hw_init_hwenc_config(struct wl1251 *wl);\nint wl1251_hw_init_templates_config(struct wl1251 *wl);\nint wl1251_hw_init_rx_config(struct wl1251 *wl, u32 config, u32 filter);\nint wl1251_hw_init_phy_config(struct wl1251 *wl);\nint wl1251_hw_init_beacon_filter(struct wl1251 *wl);\nint wl1251_hw_init_pta(struct wl1251 *wl);\nint wl1251_hw_init_energy_detection(struct wl1251 *wl);\nint wl1251_hw_init_beacon_broadcast(struct wl1251 *wl);\nint wl1251_hw_init_power_auth(struct wl1251 *wl);\nint wl1251_hw_init_mem_config(struct wl1251 *wl);\nint wl1251_hw_init(struct wl1251 *wl);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

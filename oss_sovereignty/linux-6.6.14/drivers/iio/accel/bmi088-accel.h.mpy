@@ -1,0 +1,9 @@
+{
+  "module_name": "bmi088-accel.h",
+  "hash_id": "977a85fed4dbdb01fc813c9b9eb50e9d2f72fa19c7904195c86977c3ca324d27",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/accel/bmi088-accel.h",
+  "human_readable_source": " \n#ifndef BMI088_ACCEL_H\n#define BMI088_ACCEL_H\n\n#include <linux/pm.h>\n#include <linux/regmap.h>\n#include <linux/types.h>\n\nstruct device;\n\nenum bmi_device_type {\n\tBOSCH_BMI085,\n\tBOSCH_BMI088,\n\tBOSCH_BMI090L,\n\tBOSCH_UNKNOWN,\n};\n\nextern const struct regmap_config bmi088_regmap_conf;\nextern const struct dev_pm_ops bmi088_accel_pm_ops;\n\nint bmi088_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,\n\t\t\t    enum bmi_device_type type);\nvoid bmi088_accel_core_remove(struct device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

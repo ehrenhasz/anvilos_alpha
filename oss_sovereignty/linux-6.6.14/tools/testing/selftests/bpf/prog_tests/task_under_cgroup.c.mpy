@@ -1,0 +1,9 @@
+{
+  "module_name": "task_under_cgroup.c",
+  "hash_id": "f8739339040cc693d2fdddccd0c62112ed1f070ce9e4a6c00046ac90e31c5820",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/task_under_cgroup.c",
+  "human_readable_source": "\n \n\n#include <sys/syscall.h>\n#include <test_progs.h>\n#include <cgroup_helpers.h>\n#include \"test_task_under_cgroup.skel.h\"\n\n#define FOO\t\"/foo\"\n\nvoid test_task_under_cgroup(void)\n{\n\tstruct test_task_under_cgroup *skel;\n\tint ret, foo;\n\tpid_t pid;\n\n\tfoo = test__join_cgroup(FOO);\n\tif (!ASSERT_OK(foo < 0, \"cgroup_join_foo\"))\n\t\treturn;\n\n\tskel = test_task_under_cgroup__open();\n\tif (!ASSERT_OK_PTR(skel, \"test_task_under_cgroup__open\"))\n\t\tgoto cleanup;\n\n\tskel->rodata->local_pid = getpid();\n\tskel->bss->remote_pid = getpid();\n\tskel->rodata->cgid = get_cgroup_id(FOO);\n\n\tret = test_task_under_cgroup__load(skel);\n\tif (!ASSERT_OK(ret, \"test_task_under_cgroup__load\"))\n\t\tgoto cleanup;\n\n\tret = test_task_under_cgroup__attach(skel);\n\tif (!ASSERT_OK(ret, \"test_task_under_cgroup__attach\"))\n\t\tgoto cleanup;\n\n\tpid = fork();\n\tif (pid == 0)\n\t\texit(0);\n\n\tret = (pid == -1);\n\tif (ASSERT_OK(ret, \"fork process\"))\n\t\twait(NULL);\n\n\ttest_task_under_cgroup__detach(skel);\n\n\tASSERT_NEQ(skel->bss->remote_pid, skel->rodata->local_pid,\n\t\t   \"test task_under_cgroup\");\n\ncleanup:\n\ttest_task_under_cgroup__destroy(skel);\n\tclose(foo);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

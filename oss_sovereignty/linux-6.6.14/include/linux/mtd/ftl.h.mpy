@@ -1,0 +1,9 @@
+{
+  "module_name": "ftl.h",
+  "hash_id": "454b08aaa350ade40b85ec67bffd43577e2518e068f5e70e5802b6988a026d9e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/ftl.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_FTL_H\n#define _LINUX_FTL_H\n\ntypedef struct erase_unit_header_t {\n    uint8_t\tLinkTargetTuple[5];\n    uint8_t\tDataOrgTuple[10];\n    uint8_t\tNumTransferUnits;\n    uint32_t\tEraseCount;\n    uint16_t\tLogicalEUN;\n    uint8_t\tBlockSize;\n    uint8_t\tEraseUnitSize;\n    uint16_t\tFirstPhysicalEUN;\n    uint16_t\tNumEraseUnits;\n    uint32_t\tFormattedSize;\n    uint32_t\tFirstVMAddress;\n    uint16_t\tNumVMPages;\n    uint8_t\tFlags;\n    uint8_t\tCode;\n    uint32_t\tSerialNumber;\n    uint32_t\tAltEUHOffset;\n    uint32_t\tBAMOffset;\n    uint8_t\tReserved[12];\n    uint8_t\tEndTuple[2];\n} erase_unit_header_t;\n\n \n#define HIDDEN_AREA\t\t0x01\n#define REVERSE_POLARITY\t0x02\n#define DOUBLE_BAI\t\t0x04\n\n \n\n#define BLOCK_FREE(b)\t\t((b) == 0xffffffff)\n#define BLOCK_DELETED(b)\t(((b) == 0) || ((b) == 0xfffffffe))\n\n#define BLOCK_TYPE(b)\t\t((b) & 0x7f)\n#define BLOCK_ADDRESS(b)\t((b) & ~0x7f)\n#define BLOCK_NUMBER(b)\t\t((b) >> 9)\n#define BLOCK_CONTROL\t\t0x30\n#define BLOCK_DATA\t\t0x40\n#define BLOCK_REPLACEMENT\t0x60\n#define BLOCK_BAD\t\t0x70\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

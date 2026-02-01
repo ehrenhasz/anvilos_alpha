@@ -1,0 +1,9 @@
+{
+  "module_name": "svga3d_reg.h",
+  "hash_id": "f898ca0b6fa813d2d5ccaa16db0a67eec167577c4e23a5481d032d375c31de6c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/vmwgfx/device_include/svga3d_reg.h",
+  "human_readable_source": " \n \n\n \n\n\n\n#ifndef _SVGA3D_REG_H_\n#define _SVGA3D_REG_H_\n\n#include \"svga_reg.h\"\n\n#include \"svga3d_types.h\"\n#include \"svga3d_limits.h\"\n#include \"svga3d_cmd.h\"\n#include \"svga3d_dx.h\"\n#include \"svga3d_devcaps.h\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

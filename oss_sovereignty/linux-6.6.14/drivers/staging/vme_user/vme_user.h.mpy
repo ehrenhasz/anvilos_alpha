@@ -1,0 +1,9 @@
+{
+  "module_name": "vme_user.h",
+  "hash_id": "8cae8a348596dfbf6ccf7b10e7f1501f52939be5cbcf5230e353be13d0594f08",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vme_user/vme_user.h",
+  "human_readable_source": " \n#ifndef _VME_USER_H_\n#define _VME_USER_H_\n\n#define VME_USER_BUS_MAX\t1\n\n \nstruct vme_master {\n\t__u32 enable;\t\t \n\t__u64 vme_addr;\t\t \n\t__u64 size;\t\t \n\t__u32 aspace;\t\t \n\t__u32 cycle;\t\t \n\t__u32 dwidth;\t\t \n#if 0\n\tchar prefetchenable;\t\t \n\tint prefetchsize;\t\t \n\tchar wrpostenable;\t\t \n#endif\n} __packed;\n\n \n\n \n#define VME_IOC_MAGIC 0xAE\n\n \nstruct vme_slave {\n\t__u32 enable;\t\t \n\t__u64 vme_addr;\t\t \n\t__u64 size;\t\t \n\t__u32 aspace;\t\t \n\t__u32 cycle;\t\t \n#if 0\n\tchar wrpostenable;\t\t \n\tchar rmwlock;\t\t\t \n\tchar data64bitcapable;\t\t \n#endif\n} __packed;\n\nstruct vme_irq_id {\n\t__u8 level;\n\t__u8 statid;\n};\n\n#define VME_GET_SLAVE _IOR(VME_IOC_MAGIC, 1, struct vme_slave)\n#define VME_SET_SLAVE _IOW(VME_IOC_MAGIC, 2, struct vme_slave)\n#define VME_GET_MASTER _IOR(VME_IOC_MAGIC, 3, struct vme_master)\n#define VME_SET_MASTER _IOW(VME_IOC_MAGIC, 4, struct vme_master)\n#define VME_IRQ_GEN _IOW(VME_IOC_MAGIC, 5, struct vme_irq_id)\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

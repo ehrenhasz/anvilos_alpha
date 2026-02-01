@@ -1,0 +1,9 @@
+{
+  "module_name": "atom-types.h",
+  "hash_id": "40580399d30431e6c0c0e8415b961f546c4162ebea52823fdbf740ec85df921d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/atom-types.h",
+  "human_readable_source": " \n\n#ifndef ATOM_TYPES_H\n#define ATOM_TYPES_H\n\n \n\ntypedef uint16_t USHORT;\ntypedef uint32_t ULONG;\ntypedef uint8_t UCHAR;\n\n\n#ifndef ATOM_BIG_ENDIAN\n#if defined(__BIG_ENDIAN)\n#define ATOM_BIG_ENDIAN 1\n#else\n#define ATOM_BIG_ENDIAN 0\n#endif\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

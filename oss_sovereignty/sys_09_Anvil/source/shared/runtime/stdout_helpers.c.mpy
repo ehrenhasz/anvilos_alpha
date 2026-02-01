@@ -1,0 +1,9 @@
+{
+  "module_name": "stdout_helpers.c",
+  "hash_id": "4c5cffc27ec57755d32f82bb5331a1b2a0a72d0096cff264ba505c6696b67350",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/runtime/stdout_helpers.c",
+  "human_readable_source": " \n\n#include <string.h>\n#include \"py/mphal.h\"\n\n \n\n\n\n\n\nvoid mp_hal_stdout_tx_strn_cooked(const char *str, size_t len) {\n    const char *last = str;\n    while (len--) {\n        if (*str == '\\n') {\n            if (str > last) {\n                mp_hal_stdout_tx_strn(last, str - last);\n            }\n            mp_hal_stdout_tx_strn(\"\\r\\n\", 2);\n            ++str;\n            last = str;\n        } else {\n            ++str;\n        }\n    }\n    if (str > last) {\n        mp_hal_stdout_tx_strn(last, str - last);\n    }\n}\n\n\nvoid mp_hal_stdout_tx_str(const char *str) {\n    mp_hal_stdout_tx_strn(str, strlen(str));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

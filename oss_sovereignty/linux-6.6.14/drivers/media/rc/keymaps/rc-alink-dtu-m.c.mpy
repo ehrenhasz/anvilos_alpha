@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-alink-dtu-m.c",
+  "hash_id": "05d1871c7f30d666b1081c2a4366f8d238948bae6784ba3eed7a35dc962a6354",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-alink-dtu-m.c",
+  "human_readable_source": "\n \n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \nstatic struct rc_map_table alink_dtu_m[] = {\n\t{ 0x0800, KEY_VOLUMEUP },\n\t{ 0x0801, KEY_NUMERIC_1 },\n\t{ 0x0802, KEY_NUMERIC_3 },\n\t{ 0x0803, KEY_NUMERIC_7 },\n\t{ 0x0804, KEY_NUMERIC_9 },\n\t{ 0x0805, KEY_NEW },              \n\t{ 0x0806, KEY_NUMERIC_0 },\n\t{ 0x0807, KEY_CHANNEL },          \n\t{ 0x080d, KEY_NUMERIC_5 },\n\t{ 0x080f, KEY_NUMERIC_2 },\n\t{ 0x0812, KEY_POWER2 },\n\t{ 0x0814, KEY_CHANNELUP },\n\t{ 0x0816, KEY_VOLUMEDOWN },\n\t{ 0x0818, KEY_NUMERIC_6 },\n\t{ 0x081a, KEY_MUTE },\n\t{ 0x081b, KEY_NUMERIC_8 },\n\t{ 0x081c, KEY_NUMERIC_4 },\n\t{ 0x081d, KEY_CHANNELDOWN },\n};\n\nstatic struct rc_map_list alink_dtu_m_map = {\n\t.map = {\n\t\t.scan     = alink_dtu_m,\n\t\t.size     = ARRAY_SIZE(alink_dtu_m),\n\t\t.rc_proto = RC_PROTO_NEC,\n\t\t.name     = RC_MAP_ALINK_DTU_M,\n\t}\n};\n\nstatic int __init init_rc_map_alink_dtu_m(void)\n{\n\treturn rc_map_register(&alink_dtu_m_map);\n}\n\nstatic void __exit exit_rc_map_alink_dtu_m(void)\n{\n\trc_map_unregister(&alink_dtu_m_map);\n}\n\nmodule_init(init_rc_map_alink_dtu_m)\nmodule_exit(exit_rc_map_alink_dtu_m)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Antti Palosaari <crope@iki.fi>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

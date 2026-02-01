@@ -1,0 +1,9 @@
+{
+  "module_name": "lm90.h",
+  "hash_id": "96796bf0b416b1198cda82fd85b351e06677ce26954002995cc722b03b7a0a7f",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/thermal/lm90.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_THERMAL_LM90_H_\n#define _DT_BINDINGS_THERMAL_LM90_H_\n\n#define LM90_LOCAL_TEMPERATURE 0\n#define LM90_REMOTE_TEMPERATURE 1\n#define LM90_REMOTE2_TEMPERATURE 2\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

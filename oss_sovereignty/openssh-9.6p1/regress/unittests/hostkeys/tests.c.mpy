@@ -1,0 +1,9 @@
+{
+  "module_name": "tests.c",
+  "hash_id": "7f46386cd84d2ad80d6d5d04cb5665135fd358cb6707a714365f4d251318b6c3",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/hostkeys/tests.c",
+  "human_readable_source": " \n \n\nvoid tests(void);\nvoid test_iterate(void);  \n\nvoid\ntests(void)\n{\n\ttest_iterate();\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

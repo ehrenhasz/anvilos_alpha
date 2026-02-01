@@ -1,0 +1,9 @@
+{
+  "module_name": "gv100.c",
+  "hash_id": "852f85acbad6795e59a6b57bbd61eb1990abfe534ef2367d12436df1d2a7806e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/gv100.c",
+  "human_readable_source": " \n#include \"mem.h\"\n#include \"vmm.h\"\n\n#include <core/option.h>\n\n#include <nvif/class.h>\n\nstatic const struct nvkm_mmu_func\ngv100_mmu = {\n\t.dma_bits = 47,\n\t.mmu = {{ -1, -1, NVIF_CLASS_MMU_GF100}},\n\t.mem = {{ -1,  0, NVIF_CLASS_MEM_GF100}, gf100_mem_new, gf100_mem_map },\n\t.vmm = {{ -1,  0, NVIF_CLASS_VMM_GP100}, gv100_vmm_new },\n\t.kind = gm200_mmu_kind,\n\t.kind_sys = true,\n};\n\nint\ngv100_mmu_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_mmu **pmmu)\n{\n\treturn nvkm_mmu_new_(&gv100_mmu, device, type, inst, pmmu);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-utimens.c",
+  "hash_id": "898079b5e86403735e2606e91a26c92fedd3d8d4f0a44faf24a8a231f21bf03c",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-utimens.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"utimens.h\"\n\n#include <stdio.h>\n#include <stdlib.h>\n\n#include \"ignore-value.h\"\n#include \"macros.h\"\n\n#define BASE \"test-utimens.t\"\n\n#include \"test-futimens.h\"\n#include \"test-lutimens.h\"\n#include \"test-utimens.h\"\n\n \nstatic int\ndo_futimens (int fd, struct timespec const times[2])\n{\n  return fdutimens (fd, NULL, times);\n}\n\n \nstatic int\ndo_fdutimens (char const *name, struct timespec const times[2])\n{\n  int result;\n  int fd = open (name, O_WRONLY);\n  if (fd < 0)\n    fd = open (name, O_RDONLY);\n  errno = 0;\n  result = fdutimens (fd, name, times);\n  if (0 <= fd)\n    {\n      int saved_errno = errno;\n      close (fd);\n      errno = saved_errno;\n    }\n  return result;\n}\n\nint\nmain (void)\n{\n  int result1;  \n  int result2;  \n  int result3;  \n\n   \n  ignore_value (system (\"rm -rf \" BASE \"*\"));\n\n  result1 = test_utimens (utimens, true);\n  ASSERT (test_utimens (do_fdutimens, false) == result1);\n   \n  result2 = test_futimens (do_futimens, result1 == 0);\n  result3 = test_lutimens (lutimens, (result1 + result2) == 0);\n   \n  ASSERT (result1 <= result3);\n  return result1 | result2 | result3;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

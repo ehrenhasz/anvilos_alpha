@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5d522650da9b5e9085f9585cad250aadd7208c618496b0f4d3fb4bbc13c6bd31",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/6fire/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-usb-6fire-objs += chip.o comm.o midi.o control.o firmware.o pcm.o\nobj-$(CONFIG_SND_USB_6FIRE) += snd-usb-6fire.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

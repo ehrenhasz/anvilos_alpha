@@ -1,0 +1,9 @@
+{
+  "module_name": "delayed_call.h",
+  "hash_id": "a34d9e85de6d38822f8885dadddbf4279389f110ae2920e2d13b9ba131e845f0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/delayed_call.h",
+  "human_readable_source": " \n#ifndef _DELAYED_CALL_H\n#define _DELAYED_CALL_H\n\n \n\nstruct delayed_call {\n\tvoid (*fn)(void *);\n\tvoid *arg;\n};\n\n#define DEFINE_DELAYED_CALL(name) struct delayed_call name = {NULL, NULL}\n\n \nstatic inline void set_delayed_call(struct delayed_call *call,\n\t\tvoid (*fn)(void *), void *arg)\n{\n\tcall->fn = fn;\n\tcall->arg = arg;\n}\n\nstatic inline void do_delayed_call(struct delayed_call *call)\n{\n\tif (call->fn)\n\t\tcall->fn(call->arg);\n}\n\nstatic inline void clear_delayed_call(struct delayed_call *call)\n{\n\tcall->fn = NULL;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

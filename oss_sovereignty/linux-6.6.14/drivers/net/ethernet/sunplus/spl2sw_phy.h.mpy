@@ -1,0 +1,9 @@
+{
+  "module_name": "spl2sw_phy.h",
+  "hash_id": "cd97a3ea71ec6fbf6e97f8f65f79642098d93dd66fe08d06be7f6d19d17c4774",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sunplus/spl2sw_phy.h",
+  "human_readable_source": " \n \n\n#ifndef __SPL2SW_PHY_H__\n#define __SPL2SW_PHY_H__\n\nint  spl2sw_phy_connect(struct spl2sw_common *comm);\nvoid spl2sw_phy_remove(struct spl2sw_common *comm);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

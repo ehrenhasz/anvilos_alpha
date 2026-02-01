@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-mpll.h",
+  "hash_id": "5537f36521d463d5e0adbd5c4a029bd52b5c970c7a35583532be67bcd41dc716",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/meson/clk-mpll.h",
+  "human_readable_source": " \n \n\n#ifndef __MESON_CLK_MPLL_H\n#define __MESON_CLK_MPLL_H\n\n#include <linux/clk-provider.h>\n#include <linux/spinlock.h>\n\n#include \"parm.h\"\n\nstruct meson_clk_mpll_data {\n\tstruct parm sdm;\n\tstruct parm sdm_en;\n\tstruct parm n2;\n\tstruct parm ssen;\n\tstruct parm misc;\n\tconst struct reg_sequence *init_regs;\n\tunsigned int init_count;\n\tspinlock_t *lock;\n\tu8 flags;\n};\n\n#define CLK_MESON_MPLL_ROUND_CLOSEST\tBIT(0)\n#define CLK_MESON_MPLL_SPREAD_SPECTRUM\tBIT(1)\n\nextern const struct clk_ops meson_clk_mpll_ro_ops;\nextern const struct clk_ops meson_clk_mpll_ops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

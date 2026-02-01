@@ -1,0 +1,9 @@
+{
+  "module_name": "imx7-iomuxc-gpr.h",
+  "hash_id": "cc8c28445fa14c99a0a7d4c6f0ae87c2c6275a091dcfd5f6d9ea7266905b073b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/syscon/imx7-iomuxc-gpr.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_IMX7_IOMUXC_GPR_H\n#define __LINUX_IMX7_IOMUXC_GPR_H\n\n#define IOMUXC_GPR0\t0x00\n#define IOMUXC_GPR1\t0x04\n#define IOMUXC_GPR2\t0x08\n#define IOMUXC_GPR3\t0x0c\n#define IOMUXC_GPR4\t0x10\n#define IOMUXC_GPR5\t0x14\n#define IOMUXC_GPR6\t0x18\n#define IOMUXC_GPR7\t0x1c\n#define IOMUXC_GPR8\t0x20\n#define IOMUXC_GPR9\t0x24\n#define IOMUXC_GPR10\t0x28\n#define IOMUXC_GPR11\t0x2c\n#define IOMUXC_GPR12\t0x30\n#define IOMUXC_GPR13\t0x34\n#define IOMUXC_GPR14\t0x38\n#define IOMUXC_GPR15\t0x3c\n#define IOMUXC_GPR16\t0x40\n#define IOMUXC_GPR17\t0x44\n#define IOMUXC_GPR18\t0x48\n#define IOMUXC_GPR19\t0x4c\n#define IOMUXC_GPR20\t0x50\n#define IOMUXC_GPR21\t0x54\n#define IOMUXC_GPR22\t0x58\n\n \n#define IMX7D_GPR1_IRQ_MASK\t\t\t(0x1 << 12)\n#define IMX7D_GPR1_ENET1_TX_CLK_SEL_MASK\t(0x1 << 13)\n#define IMX7D_GPR1_ENET2_TX_CLK_SEL_MASK\t(0x1 << 14)\n#define IMX7D_GPR1_ENET_TX_CLK_SEL_MASK\t\t(0x3 << 13)\n#define IMX7D_GPR1_ENET1_CLK_DIR_MASK\t\t(0x1 << 17)\n#define IMX7D_GPR1_ENET2_CLK_DIR_MASK\t\t(0x1 << 18)\n#define IMX7D_GPR1_ENET_CLK_DIR_MASK\t\t(0x3 << 17)\n\n#define IMX7D_GPR5_CSI_MUX_CONTROL_MIPI\t\t(0x1 << 4)\n\n#define IMX7D_GPR12_PCIE_PHY_REFCLK_SEL\t\tBIT(5)\n\n#define IMX7D_GPR22_PCIE_PHY_PLL_LOCKED\t\tBIT(31)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

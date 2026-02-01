@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bc859a72813688dbdcf52c414783260301c2a318dea39a9ea3f25803ef8c8b06",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/futex/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nSUBDIRS := functional\n\nTEST_PROGS := run.sh\n\n.PHONY: all clean\n\ninclude ../lib.mk\n\nall:\n\t@for DIR in $(SUBDIRS); do\t\t\\\n\t\tBUILD_TARGET=$(OUTPUT)/$$DIR;\t\\\n\t\tmkdir $$BUILD_TARGET  -p;\t\\\n\t\t$(MAKE) OUTPUT=$$BUILD_TARGET -C $$DIR $@;\\\n\t\tif [ -e $$DIR/$(TEST_PROGS) ]; then \\\n\t\t\trsync -a $$DIR/$(TEST_PROGS) $$BUILD_TARGET/; \\\n\t\tfi \\\n\tdone\n\noverride define INSTALL_RULE\n\tmkdir -p $(INSTALL_PATH)\n\tinstall -t $(INSTALL_PATH) $(TEST_PROGS) $(TEST_PROGS_EXTENDED) $(TEST_FILES)\n\n\t@for SUBDIR in $(SUBDIRS); do \\\n\t\tBUILD_TARGET=$(OUTPUT)/$$SUBDIR;\t\\\n\t\tmkdir $$BUILD_TARGET  -p;\t\\\n\t\t$(MAKE) OUTPUT=$$BUILD_TARGET -C $$SUBDIR INSTALL_PATH=$(INSTALL_PATH)/$$SUBDIR install; \\\n\tdone;\nendef\n\noverride define CLEAN\n\t@for DIR in $(SUBDIRS); do\t\t\\\n\t\tBUILD_TARGET=$(OUTPUT)/$$DIR;\t\\\n\t\tmkdir $$BUILD_TARGET  -p;\t\\\n\t\t$(MAKE) OUTPUT=$$BUILD_TARGET -C $$DIR $@;\\\n\tdone\nendef\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

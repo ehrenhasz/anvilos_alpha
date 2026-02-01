@@ -1,0 +1,9 @@
+{
+  "module_name": "rammap.h",
+  "hash_id": "e429b1adb2d29783f561c28632b417cc974ad9a597b64191565e27127c78ab12",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/rammap.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_RAMMAP_H__\n#define __NVBIOS_RAMMAP_H__\n#include <subdev/bios/ramcfg.h>\n\nu32 nvbios_rammapTe(struct nvkm_bios *, u8 *ver, u8 *hdr,\n\t\t    u8 *cnt, u8 *len, u8 *snr, u8 *ssz);\n\nu32 nvbios_rammapEe(struct nvkm_bios *, int idx,\n\t\t    u8 *ver, u8 *hdr, u8 *cnt, u8 *len);\nu32 nvbios_rammapEp_from_perf(struct nvkm_bios *bios, u32 data, u8 size,\n\t\t    struct nvbios_ramcfg *p);\nu32 nvbios_rammapEp(struct nvkm_bios *, int idx,\n\t\t    u8 *ver, u8 *hdr, u8 *cnt, u8 *len, struct nvbios_ramcfg *);\nu32 nvbios_rammapEm(struct nvkm_bios *, u16 mhz,\n\t\t    u8 *ver, u8 *hdr, u8 *cnt, u8 *len, struct nvbios_ramcfg *);\n\nu32 nvbios_rammapSe(struct nvkm_bios *, u32 data,\n\t\t    u8 ever, u8 ehdr, u8 ecnt, u8 elen, int idx,\n\t\t    u8 *ver, u8 *hdr);\nu32 nvbios_rammapSp_from_perf(struct nvkm_bios *bios, u32 data, u8 size, int idx,\n\t\t    struct nvbios_ramcfg *p);\nu32 nvbios_rammapSp(struct nvkm_bios *, u32 data,\n\t\t    u8 ever, u8 ehdr, u8 ecnt, u8 elen, int idx,\n\t\t    u8 *ver, u8 *hdr, struct nvbios_ramcfg *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

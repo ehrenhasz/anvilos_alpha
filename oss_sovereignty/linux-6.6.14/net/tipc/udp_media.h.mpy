@@ -1,0 +1,9 @@
+{
+  "module_name": "udp_media.h",
+  "hash_id": "75690fad8dee9835b2d8395a292f92a168ded98c720a8f57b034f026a3fc6492",
+  "original_prompt": "Ingested from linux-6.6.14/net/tipc/udp_media.h",
+  "human_readable_source": " \n\n#ifdef CONFIG_TIPC_MEDIA_UDP\n#ifndef _TIPC_UDP_MEDIA_H\n#define _TIPC_UDP_MEDIA_H\n\n#include <linux/ip.h>\n#include <linux/udp.h>\n\nint tipc_udp_nl_bearer_add(struct tipc_bearer *b, struct nlattr *attr);\nint tipc_udp_nl_add_bearer_data(struct tipc_nl_msg *msg, struct tipc_bearer *b);\nint tipc_udp_nl_dump_remoteip(struct sk_buff *skb, struct netlink_callback *cb);\n\n \nstatic inline bool tipc_udp_mtu_bad(u32 mtu)\n{\n\tif (mtu >= (TIPC_MIN_BEARER_MTU + sizeof(struct iphdr) +\n\t    sizeof(struct udphdr)))\n\t\treturn false;\n\n\tpr_warn(\"MTU too low for tipc bearer\\n\");\n\treturn true;\n}\n\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

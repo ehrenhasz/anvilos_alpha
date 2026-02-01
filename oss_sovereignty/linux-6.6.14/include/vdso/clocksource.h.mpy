@@ -1,0 +1,9 @@
+{
+  "module_name": "clocksource.h",
+  "hash_id": "b932fbc91ef37ea341c92039474a13494c90f45a8b1c3e6fdf49cd2ea50f9179",
+  "original_prompt": "Ingested from linux-6.6.14/include/vdso/clocksource.h",
+  "human_readable_source": " \n#ifndef __VDSO_CLOCKSOURCE_H\n#define __VDSO_CLOCKSOURCE_H\n\n#include <vdso/limits.h>\n\n#ifdef CONFIG_GENERIC_GETTIMEOFDAY\n#include <asm/vdso/clocksource.h>\n#endif  \n\nenum vdso_clock_mode {\n\tVDSO_CLOCKMODE_NONE,\n#ifdef CONFIG_GENERIC_GETTIMEOFDAY\n\tVDSO_ARCH_CLOCKMODES,\n#endif\n\tVDSO_CLOCKMODE_MAX,\n\n\t \n\tVDSO_CLOCKMODE_TIMENS = INT_MAX\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

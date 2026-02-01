@@ -1,0 +1,9 @@
+{
+  "module_name": "file.c",
+  "hash_id": "2196fdecad267ca918aa987c78976e4a4369c22246e4488b90b7edab3dd8901e",
+  "original_prompt": "Ingested from linux-6.6.14/fs/efs/file.c",
+  "human_readable_source": "\n \n\n#include <linux/buffer_head.h>\n#include \"efs.h\"\n\nint efs_get_block(struct inode *inode, sector_t iblock,\n\t\t  struct buffer_head *bh_result, int create)\n{\n\tint error = -EROFS;\n\tlong phys;\n\n\tif (create)\n\t\treturn error;\n\tif (iblock >= inode->i_blocks) {\n#ifdef DEBUG\n\t\t \n\t\tpr_warn(\"%s(): block %d >= %ld (filesize %ld)\\n\",\n\t\t\t__func__, block, inode->i_blocks, inode->i_size);\n#endif\n\t\treturn 0;\n\t}\n\tphys = efs_map_block(inode, iblock);\n\tif (phys)\n\t\tmap_bh(bh_result, inode->i_sb, phys);\n\treturn 0;\n}\n\nint efs_bmap(struct inode *inode, efs_block_t block) {\n\n\tif (block < 0) {\n\t\tpr_warn(\"%s(): block < 0\\n\", __func__);\n\t\treturn 0;\n\t}\n\n\t \n\tif (!(block < inode->i_blocks)) {\n#ifdef DEBUG\n\t\t \n\t\tpr_warn(\"%s(): block %d >= %ld (filesize %ld)\\n\",\n\t\t\t__func__, block, inode->i_blocks, inode->i_size);\n#endif\n\t\treturn 0;\n\t}\n\n\treturn efs_map_block(inode, block);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

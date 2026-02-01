@@ -1,0 +1,9 @@
+{
+  "module_name": "pppcielanes.h",
+  "hash_id": "35f3ff316464beee1b3b86be8d4e6666c1200d6b2745b3ab18f5af5b61533e1f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/pppcielanes.h",
+  "human_readable_source": " \n\n#ifndef PP_PCIELANES_H\n#define PP_PCIELANES_H\n\nextern uint8_t encode_pcie_lane_width(uint32_t num_lanes);\nextern uint8_t decode_pcie_lane_width(uint32_t num_lanes);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mbschr.c",
+  "hash_id": "e0f7f260c97bd2d43dc690278cd428653b74ae79f48acd936297002d20538855",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mbschr.c",
+  "human_readable_source": " \n#include <string.h>\n\n#include \"mbuiterf.h\"\n\n \nchar *\nmbschr (const char *string, int c)\n{\n  if (MB_CUR_MAX > 1\n       \n      && (unsigned char) c >= 0x30)\n    {\n      mbuif_state_t state;\n      const char *iter;\n      for (mbuif_init (state), iter = string;; )\n        {\n          if (!mbuif_avail (state, iter))\n            goto notfound;\n          mbchar_t cur = mbuif_next (state, iter);\n          if (mb_len (cur) == 1 && (unsigned char) *iter == (unsigned char) c)\n            break;\n          iter += mb_len (cur);\n        }\n      return (char *) iter;\n     notfound:\n      return NULL;\n    }\n  else\n    return strchr (string, c);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

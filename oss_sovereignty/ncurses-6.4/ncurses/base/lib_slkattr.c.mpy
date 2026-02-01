@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_slkattr.c",
+  "hash_id": "14196a7e456a784c4572f22bc99ef7d9f07417090c243b3f16670737c8b35df4",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_slkattr.c",
+  "human_readable_source": " \n\n \n\n \n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_slkattr.c,v 1.12 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(attr_t)\nNCURSES_SP_NAME(slk_attr) (NCURSES_SP_DCL0)\n{\n    T((T_CALLED(\"slk_attr(%p)\"), (void *) SP_PARM));\n\n    if (SP_PARM != 0 && SP_PARM->_slk != 0) {\n\tattr_t result = AttrOf(SP_PARM->_slk->attr) & ALL_BUT_COLOR;\n\tint pair = GetPair(SP_PARM->_slk->attr);\n\n\tresult |= (attr_t) ColorPair(pair);\n\treturnAttr(result);\n    } else\n\treturnAttr(0);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(attr_t)\nslk_attr(void)\n{\n    return NCURSES_SP_NAME(slk_attr) (CURRENT_SCREEN);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

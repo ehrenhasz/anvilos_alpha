@@ -1,0 +1,9 @@
+{
+  "module_name": "scsicam.h",
+  "hash_id": "cae99bb5f28e81a913d1a4d34a261223ce7a48f3f46306a3931d93f9bf19b27f",
+  "original_prompt": "Ingested from linux-6.6.14/include/scsi/scsicam.h",
+  "human_readable_source": " \n \n\n#ifndef SCSICAM_H\n#define SCSICAM_H\nint scsicam_bios_param(struct block_device *bdev, sector_t capacity, int *ip);\nbool scsi_partsize(struct block_device *bdev, sector_t capacity, int geom[3]);\nunsigned char *scsi_bios_ptable(struct block_device *bdev);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

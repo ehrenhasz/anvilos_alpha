@@ -1,0 +1,9 @@
+{
+  "module_name": "gen8_ppgtt.h",
+  "hash_id": "cb46b73624b8f939908095af555666ba0dd620b373e58a948fb6f6fe494529ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/gen8_ppgtt.h",
+  "human_readable_source": " \n \n\n#ifndef __GEN8_PPGTT_H__\n#define __GEN8_PPGTT_H__\n\n#include <linux/kernel.h>\n\nstruct i915_address_space;\nstruct intel_gt;\n\nstruct i915_ppgtt *gen8_ppgtt_create(struct intel_gt *gt,\n\t\t\t\t     unsigned long lmem_pt_obj_flags);\n\nu64 gen8_ggtt_pte_encode(dma_addr_t addr,\n\t\t\t unsigned int pat_index,\n\t\t\t u32 flags);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d6eb5c4617f69e364410d89143dc8a3575b37b43bed14c12b785ab1d10719ec1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/starfive/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_PINCTRL_STARFIVE_JH7100)\t+= pinctrl-starfive-jh7100.o\n\nobj-$(CONFIG_PINCTRL_STARFIVE_JH7110)\t\t+= pinctrl-starfive-jh7110.o\nobj-$(CONFIG_PINCTRL_STARFIVE_JH7110_SYS)\t+= pinctrl-starfive-jh7110-sys.o\nobj-$(CONFIG_PINCTRL_STARFIVE_JH7110_AON)\t+= pinctrl-starfive-jh7110-aon.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

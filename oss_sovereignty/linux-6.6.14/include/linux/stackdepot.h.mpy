@@ -1,0 +1,9 @@
+{
+  "module_name": "stackdepot.h",
+  "hash_id": "75e6e28f2d40150236136146e6bd3b8cc7c04fd7126aee982a805e2ba2fec148",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/stackdepot.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_STACKDEPOT_H\n#define _LINUX_STACKDEPOT_H\n\n#include <linux/gfp.h>\n\ntypedef u32 depot_stack_handle_t;\n\n \n#define STACK_DEPOT_EXTRA_BITS 5\n\n \n#ifdef CONFIG_STACKDEPOT\nint stack_depot_init(void);\n\nvoid __init stack_depot_request_early_init(void);\n\n \nint __init stack_depot_early_init(void);\n#else\nstatic inline int stack_depot_init(void) { return 0; }\n\nstatic inline void stack_depot_request_early_init(void) { }\n\nstatic inline int stack_depot_early_init(void)\t{ return 0; }\n#endif\n\n \ndepot_stack_handle_t __stack_depot_save(unsigned long *entries,\n\t\t\t\t\tunsigned int nr_entries,\n\t\t\t\t\tgfp_t gfp_flags, bool can_alloc);\n\n \ndepot_stack_handle_t stack_depot_save(unsigned long *entries,\n\t\t\t\t      unsigned int nr_entries, gfp_t gfp_flags);\n\n \nunsigned int stack_depot_fetch(depot_stack_handle_t handle,\n\t\t\t       unsigned long **entries);\n\n \nvoid stack_depot_print(depot_stack_handle_t stack);\n\n \nint stack_depot_snprint(depot_stack_handle_t handle, char *buf, size_t size,\n\t\t       int spaces);\n\n \ndepot_stack_handle_t __must_check stack_depot_set_extra_bits(\n\t\t\tdepot_stack_handle_t handle, unsigned int extra_bits);\n\n \nunsigned int stack_depot_get_extra_bits(depot_stack_handle_t handle);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "ad121f2f9f89057d780f52144937b7ad93f31fde312132d271943cc6e6f404ea",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bpf/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nFEATURE-DUMP.bpf\nfeature\nbpf_asm\nbpf_dbg\nbpf_exp.yacc.*\nbpf_jit_disasm\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "strtoll.c",
+  "hash_id": "b4610b010c60b3720def2f8715ac6f2b4f2e82c7fe9331abe95624d054f88a03",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/strtoll.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#if defined (HAVE_LONG_LONG_INT) && !HAVE_STRTOLL\n\n#define QUAD\t\t1\n#undef HAVE_STRTOL\n\n#include \"strtol.c\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

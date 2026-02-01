@@ -1,0 +1,9 @@
+{
+  "module_name": "smp_hvm.c",
+  "hash_id": "56cf54c84a8c543182220772c507bc8949b9611113e38fd5cf4a6e71b8d647de",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/xen/smp_hvm.c",
+  "human_readable_source": "\n#include <linux/thread_info.h>\n#include <asm/smp.h>\n\n#include <xen/events.h>\n\n#include \"xen-ops.h\"\n#include \"smp.h\"\n\n\nstatic void __init xen_hvm_smp_prepare_boot_cpu(void)\n{\n\tBUG_ON(smp_processor_id() != 0);\n\tnative_smp_prepare_boot_cpu();\n\n\t \n\txen_vcpu_setup(0);\n\n\t \n\txen_hvm_init_time_ops();\n\n\t \n\txen_init_spinlocks();\n}\n\nstatic void __init xen_hvm_smp_prepare_cpus(unsigned int max_cpus)\n{\n\tint cpu;\n\n\tnative_smp_prepare_cpus(max_cpus);\n\n\tif (xen_have_vector_callback) {\n\t\tWARN_ON(xen_smp_intr_init(0));\n\t\txen_init_lock_cpu(0);\n\t}\n\n\tfor_each_possible_cpu(cpu) {\n\t\tif (cpu == 0)\n\t\t\tcontinue;\n\n\t\t \n\t\tper_cpu(xen_vcpu_id, cpu) = XEN_VCPU_ID_INVALID;\n\t}\n}\n\n#ifdef CONFIG_HOTPLUG_CPU\nstatic void xen_hvm_cleanup_dead_cpu(unsigned int cpu)\n{\n\tif (xen_have_vector_callback) {\n\t\txen_smp_intr_free(cpu);\n\t\txen_uninit_lock_cpu(cpu);\n\t\txen_teardown_timer(cpu);\n\t}\n}\n#else\nstatic void xen_hvm_cleanup_dead_cpu(unsigned int cpu)\n{\n\tBUG();\n}\n#endif\n\nvoid __init xen_hvm_smp_init(void)\n{\n\tsmp_ops.smp_prepare_boot_cpu = xen_hvm_smp_prepare_boot_cpu;\n\tsmp_ops.smp_prepare_cpus = xen_hvm_smp_prepare_cpus;\n\tsmp_ops.smp_cpus_done = xen_smp_cpus_done;\n\tsmp_ops.cleanup_dead_cpu = xen_hvm_cleanup_dead_cpu;\n\n\tif (!xen_have_vector_callback) {\n#ifdef CONFIG_PARAVIRT_SPINLOCKS\n\t\tnopvspin = true;\n#endif\n\t\treturn;\n\t}\n\n\tsmp_ops.smp_send_reschedule = xen_smp_send_reschedule;\n\tsmp_ops.send_call_func_ipi = xen_smp_send_call_function_ipi;\n\tsmp_ops.send_call_func_single_ipi = xen_smp_send_call_function_single_ipi;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

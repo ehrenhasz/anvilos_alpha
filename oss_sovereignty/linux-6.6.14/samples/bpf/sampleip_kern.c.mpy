@@ -1,0 +1,9 @@
+{
+  "module_name": "sampleip_kern.c",
+  "hash_id": "bdce9fdb9a7a15299e062c86b13b7f333268cd83aa1116083e6433398890573b",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/sampleip_kern.c",
+  "human_readable_source": " \n#include <linux/ptrace.h>\n#include <uapi/linux/bpf.h>\n#include <uapi/linux/bpf_perf_event.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\n#define MAX_IPS\t\t8192\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__type(key, u64);\n\t__type(value, u32);\n\t__uint(max_entries, MAX_IPS);\n} ip_map SEC(\".maps\");\n\nSEC(\"perf_event\")\nint do_sample(struct bpf_perf_event_data *ctx)\n{\n\tu64 ip;\n\tu32 *value, init_val = 1;\n\n\tip = PT_REGS_IP(&ctx->regs);\n\tvalue = bpf_map_lookup_elem(&ip_map, &ip);\n\tif (value)\n\t\t*value += 1;\n\telse\n\t\t \n\t\tbpf_map_update_elem(&ip_map, &ip, &init_val, BPF_NOEXIST);\n\n\treturn 0;\n}\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

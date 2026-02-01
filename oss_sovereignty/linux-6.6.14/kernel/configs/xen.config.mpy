@@ -1,0 +1,9 @@
+{
+  "module_name": "xen.config",
+  "hash_id": "f70961108b2013da6c1a3018d52b1888147b8541fe903293b735c24444ac21da",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/configs/xen.config",
+  "human_readable_source": "# Help: Bootable as a Xen guest\n#\n# global stuff - these enable us to allow some\n# of the not so generic stuff below for xen\nCONFIG_PARAVIRT=y\nCONFIG_NET=y\nCONFIG_NET_CORE=y\nCONFIG_NETDEVICES=y\nCONFIG_BLOCK=y\nCONFIG_WATCHDOG=y\nCONFIG_TARGET_CORE=y\nCONFIG_SCSI=y\nCONFIG_FB=y\nCONFIG_INPUT_MISC=y\nCONFIG_MEMORY_HOTPLUG=y\nCONFIG_TTY=y\n# Technically not required but otherwise produces\n# pretty useless systems starting from allnoconfig\n# You want TCP/IP and ELF binaries right?\nCONFIG_INET=y\nCONFIG_BINFMT_ELF=y\n# generic config\nCONFIG_XEN=y\nCONFIG_XEN_DOM0=y\n# backend drivers\nCONFIG_XEN_BACKEND=y\nCONFIG_XEN_BLKDEV_BACKEND=m\nCONFIG_XEN_NETDEV_BACKEND=m\nCONFIG_HVC_XEN=y\nCONFIG_XEN_WDT=m\nCONFIG_XEN_SCSI_BACKEND=m\n# frontend drivers\nCONFIG_XEN_FBDEV_FRONTEND=m\nCONFIG_HVC_XEN_FRONTEND=y\nCONFIG_INPUT_XEN_KBDDEV_FRONTEND=m\nCONFIG_XEN_SCSI_FRONTEND=m\n# others\nCONFIG_XEN_BALLOON=y\nCONFIG_XEN_DEV_EVTCHN=m\nCONFIG_XEN_BLKDEV_FRONTEND=m\nCONFIG_XEN_NETDEV_FRONTEND=m\nCONFIG_XENFS=m\nCONFIG_XEN_COMPAT_XENFS=y\nCONFIG_XEN_SYS_HYPERVISOR=y\nCONFIG_XEN_XENBUS_FRONTEND=y\nCONFIG_XEN_GNTDEV=m\nCONFIG_XEN_GRANT_DEV_ALLOC=m\nCONFIG_SWIOTLB_XEN=y\nCONFIG_XEN_PRIVCMD=m\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

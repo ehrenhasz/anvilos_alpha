@@ -1,0 +1,9 @@
+{
+  "module_name": "if_alg.h",
+  "hash_id": "335a2990434341f1484872cbcb957f2687633d6835ac6205d0b75210c2d63535",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/if_alg.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_IF_ALG_H\n#define _LINUX_IF_ALG_H\n\n#include <linux/types.h>\n\nstruct sockaddr_alg {\n\t__u16\tsalg_family;\n\t__u8\tsalg_type[14];\n\t__u32\tsalg_feat;\n\t__u32\tsalg_mask;\n\t__u8\tsalg_name[64];\n};\n\n \nstruct sockaddr_alg_new {\n\t__u16\tsalg_family;\n\t__u8\tsalg_type[14];\n\t__u32\tsalg_feat;\n\t__u32\tsalg_mask;\n\t__u8\tsalg_name[];\n};\n\nstruct af_alg_iv {\n\t__u32\tivlen;\n\t__u8\tiv[];\n};\n\n \n#define ALG_SET_KEY\t\t\t1\n#define ALG_SET_IV\t\t\t2\n#define ALG_SET_OP\t\t\t3\n#define ALG_SET_AEAD_ASSOCLEN\t\t4\n#define ALG_SET_AEAD_AUTHSIZE\t\t5\n#define ALG_SET_DRBG_ENTROPY\t\t6\n#define ALG_SET_KEY_BY_KEY_SERIAL\t7\n\n \n#define ALG_OP_DECRYPT\t\t\t0\n#define ALG_OP_ENCRYPT\t\t\t1\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mirred_nic.c",
+  "hash_id": "26d33218c7c83c83dcad81a6d1002b591d85783e6a040ebd6c3377d5bee13733",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/mirred_nic.c",
+  "human_readable_source": "\n\n\n#include \"act.h\"\n#include \"en/tc_priv.h\"\n\nstatic bool\ntc_act_can_offload_mirred_nic(struct mlx5e_tc_act_parse_state *parse_state,\n\t\t\t      const struct flow_action_entry *act,\n\t\t\t      int act_index,\n\t\t\t      struct mlx5_flow_attr *attr)\n{\n\tstruct netlink_ext_ack *extack = parse_state->extack;\n\tstruct mlx5e_tc_flow *flow = parse_state->flow;\n\tstruct net_device *out_dev = act->dev;\n\tstruct mlx5e_priv *priv = flow->priv;\n\n\tif (act->id != FLOW_ACTION_REDIRECT)\n\t\treturn false;\n\n\tif (priv->netdev->netdev_ops != out_dev->netdev_ops ||\n\t    !mlx5e_same_hw_devs(priv, netdev_priv(out_dev))) {\n\t\tNL_SET_ERR_MSG_MOD(extack,\n\t\t\t\t   \"devices are not on same switch HW, can't offload forwarding\");\n\t\tnetdev_warn(priv->netdev,\n\t\t\t    \"devices %s %s not on same switch HW, can't offload forwarding\\n\",\n\t\t\t    netdev_name(priv->netdev),\n\t\t\t    out_dev->name);\n\t\treturn false;\n\t}\n\n\treturn true;\n}\n\nstatic int\ntc_act_parse_mirred_nic(struct mlx5e_tc_act_parse_state *parse_state,\n\t\t\tconst struct flow_action_entry *act,\n\t\t\tstruct mlx5e_priv *priv,\n\t\t\tstruct mlx5_flow_attr *attr)\n{\n\tattr->parse_attr->mirred_ifindex[0] = act->dev->ifindex;\n\tflow_flag_set(parse_state->flow, HAIRPIN);\n\tattr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;\n\n\treturn 0;\n}\n\nstruct mlx5e_tc_act mlx5e_tc_act_mirred_nic = {\n\t.can_offload = tc_act_can_offload_mirred_nic,\n\t.parse_action = tc_act_parse_mirred_nic,\n\t.is_terminating_action = true,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

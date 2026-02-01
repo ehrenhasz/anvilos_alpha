@@ -1,0 +1,9 @@
+{
+  "module_name": "openzfsonosx-1.8.1",
+  "hash_id": "6f207eff951687c0713380fbc7bfc4898284f0bba72bce25c664988ad8d273e3",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/compatibility.d/openzfsonosx-1.8.1",
+  "human_readable_source": "# Features supported by OpenZFSonOSX 1.8.1\nasync_destroy\nbookmarks\ndevice_removal\nedonr\nembedded_data\nempty_bpobj\nenabled_txg\nextensible_dataset\nfilesystem_limits\nhole_birth\nlarge_blocks\nlz4_compress\nmulti_vdev_crash_dump\nobsolete_counts\nsha512\nskein\nspacemap_histogram\nspacemap_v2\nzpool_checkpoint\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

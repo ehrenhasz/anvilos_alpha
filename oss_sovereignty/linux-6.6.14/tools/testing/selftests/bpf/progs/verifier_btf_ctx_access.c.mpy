@@ -1,0 +1,9 @@
+{
+  "module_name": "verifier_btf_ctx_access.c",
+  "hash_id": "bb5db01c2aa6078461954ec4d0901ce01566bc429e6746d937a4b24cf20491eb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/verifier_btf_ctx_access.c",
+  "human_readable_source": "\n \n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nSEC(\"fentry/bpf_modify_return_test\")\n__description(\"btf_ctx_access accept\")\n__success __retval(0)\n__naked void btf_ctx_access_accept(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr2 = *(u32*)(r1 + 8);\t\t \\\n\tr0 = 0;\t\t\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t::: __clobber_all);\n}\n\nSEC(\"fentry/bpf_fentry_test9\")\n__description(\"btf_ctx_access u32 pointer accept\")\n__success __retval(0)\n__naked void ctx_access_u32_pointer_accept(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr2 = *(u32*)(r1 + 0);\t\t \\\n\tr0 = 0;\t\t\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t::: __clobber_all);\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

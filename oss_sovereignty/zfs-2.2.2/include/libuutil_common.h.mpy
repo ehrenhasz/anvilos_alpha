@@ -1,0 +1,9 @@
+{
+  "module_name": "libuutil_common.h",
+  "hash_id": "b43d68c8be4472576b5e6e58fdf052d3e1f41514a126bfce9d66da2f57ba7373",
+  "original_prompt": "Ingested from zfs-2.2.2/include/libuutil_common.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_LIBUUTIL_COMMON_H\n#define\t_LIBUUTIL_COMMON_H\n\n\n\n#include <libuutil.h>\n#include <libuutil_impl.h>\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "THIRDPARTYLICENSE.gplv2.descrip",
+  "hash_id": "360a090b7d24fdd51b687cee2bd90bfae61fb50c7a104df2a64d3a9502c31a46",
+  "original_prompt": "Ingested from zfs-2.2.2/module/os/linux/spl/THIRDPARTYLICENSE.gplv2.descrip",
+  "human_readable_source": "COMPATIBILITY LAYER FOR OPENZFS ON LINUX\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

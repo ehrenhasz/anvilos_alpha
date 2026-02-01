@@ -1,0 +1,9 @@
+{
+  "module_name": "stream.h",
+  "hash_id": "0873e609d9391ca44407e1a0045b75cfffbafb4a443ec8477d83888a0cd4178c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/stream.h",
+  "human_readable_source": " \n#ifndef __USBAUDIO_STREAM_H\n#define __USBAUDIO_STREAM_H\n\nint snd_usb_parse_audio_interface(struct snd_usb_audio *chip,\n\t\t\t\t  int iface_no);\n\nint snd_usb_add_audio_stream(struct snd_usb_audio *chip,\n\t\t\t     int stream,\n\t\t\t     struct audioformat *fp);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

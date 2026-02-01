@@ -1,0 +1,9 @@
+{
+  "module_name": "ddbridge-max.h",
+  "hash_id": "15a43b434dc7da93b939d3a286eaf989de9e81c32c01023abd96ab68b6a3db50",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ddbridge/ddbridge-max.h",
+  "human_readable_source": " \n \n\n#ifndef _DDBRIDGE_MAX_H_\n#define _DDBRIDGE_MAX_H_\n\n#include \"ddbridge.h\"\n\n \n\nint ddb_lnb_init_fmode(struct ddb *dev, struct ddb_link *link, u32 fm);\nint ddb_fe_attach_mxl5xx(struct ddb_input *input);\nint ddb_fe_attach_mci(struct ddb_input *input, u32 type);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

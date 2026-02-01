@@ -1,0 +1,9 @@
+{
+  "module_name": "assembler.h",
+  "hash_id": "2c89aacad1c5d57345da9b26f4057e923e3123fca040d134f34d7d30311f03e0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/fp/assembler.h",
+  "human_readable_source": "\n\n\n\n#ifndef ASSEMBLER_H\n#define ASSEMBLER_H\n\n.macro __for from:req, to:req\n\t.if (\\from) == (\\to)\n\t\t_for__body %\\from\n\t.else\n\t\t__for \\from, %(\\from) + ((\\to) - (\\from)) / 2\n\t\t__for %(\\from) + ((\\to) - (\\from)) / 2 + 1, \\to\n\t.endif\n.endm\n\n.macro _for var:req, from:req, to:req, insn:vararg\n\t.macro _for__body \\var:req\n\t\t.noaltmacro\n\t\t\\insn\n\t\t.altmacro\n\t.endm\n\n\t.altmacro\n\t__for \\from, \\to\n\t.noaltmacro\n\n\t.purgem _for__body\n.endm\n\n.macro function name\n\t.macro endfunction\n\t\t.type \\name, @function\n\t\t.purgem endfunction\n\t.endm\n\\name:\n.endm\n\n.macro define_accessor name, num, insn\n\t.macro \\name\\()_entry n\n\t\t\\insn \\n, 1\n\t\tret\n\t.endm\n\nfunction \\name\n\tadr\tx2, .L__accessor_tbl\\@\n\tadd\tx2, x2, x0, lsl #3\n\tbr\tx2\n\n.L__accessor_tbl\\@:\n\t_for x, 0, (\\num) - 1, \\name\\()_entry \\x\nendfunction\n\n\t.purgem \\name\\()_entry\n.endm\n\n\n\n.macro puts string\n\t.pushsection .rodata.str1.1, \"aMS\", @progbits, 1\n.L__puts_literal\\@: .string \"\\string\"\n\t.popsection\n\n\tldr\tx0, =.L__puts_literal\\@\n\tbl\tputs\n.endm\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

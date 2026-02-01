@@ -1,0 +1,9 @@
+{
+  "module_name": "file-type.h",
+  "hash_id": "02fcd559649f0a74078880681b6b8d7040fd1c4367e3679d507859195032452c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/file-type.h",
+  "human_readable_source": " \n\n#ifndef FILE_TYPE_H\n# define FILE_TYPE_H 1\n\n \n# if !_GL_CONFIG_H_INCLUDED\n#  error \"Please include config.h first.\"\n# endif\n\n# include <sys/types.h>\n# include <sys/stat.h>\n\nchar const *c_file_type (struct stat const *) _GL_ATTRIBUTE_PURE;\nchar const *file_type (struct stat const *) _GL_ATTRIBUTE_PURE;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

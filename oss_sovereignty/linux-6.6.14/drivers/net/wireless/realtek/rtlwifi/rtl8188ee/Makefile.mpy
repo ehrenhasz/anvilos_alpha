@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d0563bfc0c0744a6f2095f6d24d95e5ce447a460866524a8ab807505e8aaf95d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nrtl8188ee-objs :=\t\t\\\n\t\tdm.o\t\t\\\n\t\tfw.o\t\t\\\n\t\thw.o\t\t\\\n\t\tled.o\t\t\\\n\t\tphy.o\t\t\\\n\t\tpwrseq.o\t\\\n\t\trf.o\t\t\\\n\t\tsw.o\t\t\\\n\t\ttable.o\t\t\\\n\t\ttrx.o\n\nobj-$(CONFIG_RTL8188EE) += rtl8188ee.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

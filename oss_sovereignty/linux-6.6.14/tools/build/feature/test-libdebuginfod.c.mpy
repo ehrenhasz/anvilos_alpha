@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libdebuginfod.c",
+  "hash_id": "02a930eed77212d34063f41b65468351fd1c482c09008a88ccfa28ad08662cd4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libdebuginfod.c",
+  "human_readable_source": "\n#include <elfutils/debuginfod.h>\n\nint main(void)\n{\n\tdebuginfod_client* c = debuginfod_begin();\n\treturn (long)c;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

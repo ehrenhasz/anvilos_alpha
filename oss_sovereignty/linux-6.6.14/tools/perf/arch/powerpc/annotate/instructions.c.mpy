@@ -1,0 +1,9 @@
+{
+  "module_name": "instructions.c",
+  "hash_id": "9a4933c835ee658bb19532cd8cb869ca6a5d09ca3c655a01988d80df87ee4a59",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/powerpc/annotate/instructions.c",
+  "human_readable_source": "\n#include <linux/compiler.h>\n\nstatic struct ins_ops *powerpc__associate_instruction_ops(struct arch *arch, const char *name)\n{\n\tint i;\n\tstruct ins_ops *ops;\n\n\t \n\tif (name[0] != 'b'             ||\n\t    !strncmp(name, \"bcd\", 3)   ||\n\t    !strncmp(name, \"brinc\", 5) ||\n\t    !strncmp(name, \"bper\", 4))\n\t\treturn NULL;\n\n\tops = &jump_ops;\n\n\ti = strlen(name) - 1;\n\tif (i < 0)\n\t\treturn NULL;\n\n\t \n\tif (name[i] == '+' || name[i] == '-')\n\t\ti--;\n\n\tif (name[i] == 'l' || (name[i] == 'a' && name[i-1] == 'l')) {\n\t\t \n\t\tif (strcmp(name, \"bnl\") && strcmp(name, \"bnl+\") &&\n\t\t    strcmp(name, \"bnl-\") && strcmp(name, \"bnla\") &&\n\t\t    strcmp(name, \"bnla+\") && strcmp(name, \"bnla-\"))\n\t\t\tops = &call_ops;\n\t}\n\tif (name[i] == 'r' && name[i-1] == 'l')\n\t\t \n\t\tops = &ret_ops;\n\n\tarch__associate_ins_ops(arch, name, ops);\n\treturn ops;\n}\n\nstatic int powerpc__annotate_init(struct arch *arch, char *cpuid __maybe_unused)\n{\n\tif (!arch->initialized) {\n\t\tarch->initialized = true;\n\t\tarch->associate_instruction_ops = powerpc__associate_instruction_ops;\n\t\tarch->objdump.comment_char      = '#';\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-insert-inode-locked.m4",
+  "hash_id": "d1520340139a5e6d7574180cc02ac44318d87621a5807e4d9c5ac55e24d60890",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-insert-inode-locked.m4",
+  "human_readable_source": "dnl #\ndnl # 2.6.28 API change\ndnl # Added insert_inode_locked() helper function.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_INSERT_INODE_LOCKED], [\n\tZFS_LINUX_TEST_SRC([insert_inode_locked], [\n\t\t#include <linux/fs.h>\n\t], [\n\t\tinsert_inode_locked(NULL);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_INSERT_INODE_LOCKED], [\n\tAC_MSG_CHECKING([whether insert_inode_locked() is available])\n\tZFS_LINUX_TEST_RESULT_SYMBOL([insert_inode_locked],\n\t    [insert_inode_locked], [fs/inode.c], [\n\t\tAC_MSG_RESULT(yes)\n\t], [\n\t\tZFS_LINUX_TEST_ERROR([insert_inode_locked()])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "settings",
+  "hash_id": "e1392eec05e503cea271a6fd6024ef42cbaa4fb4f52fdb3d417c8e225fb87a8b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/hid/settings",
+  "human_readable_source": "# HID tests can be long, so give a little bit more time\n# to them\ntimeout=200\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

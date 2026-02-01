@@ -1,0 +1,9 @@
+{
+  "module_name": "irq.h",
+  "hash_id": "4d86f8dc31dba48a806c4ae231573c7e5d8fc41d9a55a2345c83fd0c164000da",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/qcom/irq.h",
+  "human_readable_source": " \n\n#ifndef __QCOM_IRQ_H\n#define __QCOM_IRQ_H\n\n#include <linux/irqdomain.h>\n\n#define GPIO_NO_WAKE_IRQ\t~0U\n\n \n#define IRQ_DOMAIN_FLAG_QCOM_PDC_WAKEUP\t\t(IRQ_DOMAIN_FLAG_NONCORE << 0)\n#define IRQ_DOMAIN_FLAG_QCOM_MPM_WAKEUP\t\t(IRQ_DOMAIN_FLAG_NONCORE << 1)\n\n \nstatic inline bool irq_domain_qcom_handle_wakeup(const struct irq_domain *d)\n{\n\treturn (d->flags & IRQ_DOMAIN_FLAG_QCOM_PDC_WAKEUP);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

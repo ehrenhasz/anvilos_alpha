@@ -1,0 +1,9 @@
+{
+  "module_name": "qed_roce.h",
+  "hash_id": "8526e933896e7aaad32ee179ea695d9c78ab3ef23eb596f972cc7777f571009d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qlogic/qed/qed_roce.h",
+  "human_readable_source": " \n \n\n#ifndef _QED_ROCE_H\n#define _QED_ROCE_H\n#include <linux/types.h>\n#include <linux/slab.h>\n\n#if IS_ENABLED(CONFIG_QED_RDMA)\nvoid qed_roce_dpm_dcbx(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt);\n#else\nstatic inline void qed_roce_dpm_dcbx(struct qed_hwfn *p_hwfn,\n\t\t\t\t     struct qed_ptt *p_ptt) {}\n#endif\n\nint qed_roce_setup(struct qed_hwfn *p_hwfn);\nvoid qed_roce_stop(struct qed_hwfn *p_hwfn);\nint qed_roce_init_hw(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt);\nint qed_roce_alloc_cid(struct qed_hwfn *p_hwfn, u16 *cid);\nint qed_roce_destroy_qp(struct qed_hwfn *p_hwfn, struct qed_rdma_qp *qp);\n\nint qed_roce_query_qp(struct qed_hwfn *p_hwfn,\n\t\t      struct qed_rdma_qp *qp,\n\t\t      struct qed_rdma_query_qp_out_params *out_params);\n\nint qed_roce_modify_qp(struct qed_hwfn *p_hwfn,\n\t\t       struct qed_rdma_qp *qp,\n\t\t       enum qed_roce_qp_state prev_state,\n\t\t       struct qed_rdma_modify_qp_in_params *params);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

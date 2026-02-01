@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "26f5bdb00552334030ca1e5a4272e89bfc4156bfc9497d9b18f7b46baf0d07da",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/admtek/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig WLAN_VENDOR_ADMTEK\n\tbool \"ADMtek devices\"\n\tdefault y\n\thelp\n\t  If you have a wireless card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all the\n\t  questions about these cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif WLAN_VENDOR_ADMTEK\n\nconfig ADM8211\n\ttristate \"ADMtek ADM8211 support\"\n\tdepends on MAC80211 && PCI\n\tselect CRC32\n\tselect EEPROM_93CX6\n\thelp\n\t  This driver is for ADM8211A, ADM8211B, and ADM8211C based cards.\n\t  These are PCI/mini-PCI/Cardbus 802.11b chips found in cards such as:\n\n\t  Xterasys Cardbus XN-2411b\n\t  Blitz NetWave Point PC\n\t  TrendNet 221pc\n\t  Belkin F5D6001\n\t  SMC 2635W\n\t  Linksys WPC11 v1\n\t  Fiberline FL-WL-200X\n\t  3com Office Connect (3CRSHPW796)\n\t  Corega WLPCIB-11\n\t  SMC 2602W V2 EU\n\t  D-Link DWL-520 Revision C\n\n\t  However, some of these cards have been replaced with other chips\n\t  like the RTL8180L (Xterasys Cardbus XN-2411b, Belkin F5D6001) or\n\t  the Ralink RT2400 (SMC2635W) without a model number change.\n\n\t  Thanks to Infineon-ADMtek for their support of this driver.\n\nendif # WLAN_VENDOR_ADMTEK\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

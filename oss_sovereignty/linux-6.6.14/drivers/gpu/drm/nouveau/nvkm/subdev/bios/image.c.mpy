@@ -1,0 +1,9 @@
+{
+  "module_name": "image.c",
+  "hash_id": "b7b4c97781d6d6bdfdc3d965a93868e140838015065e48dd85d091333156f60d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bios/image.c",
+  "human_readable_source": " \n#include <subdev/bios.h>\n#include <subdev/bios/image.h>\n#include <subdev/bios/pcir.h>\n#include <subdev/bios/npde.h>\n\nstatic bool\nnvbios_imagen(struct nvkm_bios *bios, struct nvbios_image *image)\n{\n\tstruct nvkm_subdev *subdev = &bios->subdev;\n\tstruct nvbios_pcirT pcir;\n\tstruct nvbios_npdeT npde;\n\tu8  ver;\n\tu16 hdr;\n\tu32 data;\n\n\tswitch ((data = nvbios_rd16(bios, image->base + 0x00))) {\n\tcase 0xaa55:\n\tcase 0xbb77:\n\tcase 0x4e56:  \n\t\tbreak;\n\tdefault:\n\t\tnvkm_debug(subdev, \"%08x: ROM signature (%04x) unknown\\n\",\n\t\t\t   image->base, data);\n\t\treturn false;\n\t}\n\n\tif (!(data = nvbios_pcirTp(bios, image->base, &ver, &hdr, &pcir)))\n\t\treturn false;\n\timage->size = pcir.image_size;\n\timage->type = pcir.image_type;\n\timage->last = pcir.last;\n\n\tif (image->type != 0x70) {\n\t\tif (!(data = nvbios_npdeTp(bios, image->base, &npde)))\n\t\t\treturn true;\n\t\timage->size = npde.image_size;\n\t\timage->last = npde.last;\n\t} else {\n\t\timage->last = true;\n\t}\n\n\treturn true;\n}\n\nbool\nnvbios_image(struct nvkm_bios *bios, int idx, struct nvbios_image *image)\n{\n\tu32 imaged_addr = bios->imaged_addr;\n\tmemset(image, 0x00, sizeof(*image));\n\tbios->imaged_addr = 0;\n\tdo {\n\t\timage->base += image->size;\n\t\tif (image->last || !nvbios_imagen(bios, image)) {\n\t\t\tbios->imaged_addr = imaged_addr;\n\t\t\treturn false;\n\t\t}\n\t} while(idx--);\n\tbios->imaged_addr = imaged_addr;\n\treturn true;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

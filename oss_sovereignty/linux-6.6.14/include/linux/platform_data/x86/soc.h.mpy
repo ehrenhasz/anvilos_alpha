@@ -1,0 +1,9 @@
+{
+  "module_name": "soc.h",
+  "hash_id": "2860f4606b95978a4d2c7c1c8420e96057637dfe2def1b16a4e48f049e3e2e1b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/x86/soc.h",
+  "human_readable_source": " \n \n\n#ifndef __PLATFORM_DATA_X86_SOC_H\n#define __PLATFORM_DATA_X86_SOC_H\n\n#include <linux/types.h>\n\n#if IS_ENABLED(CONFIG_X86)\n\n#include <linux/mod_devicetable.h>\n\n#include <asm/cpu_device_id.h>\n\n#define SOC_INTEL_IS_CPU(soc, type)\t\t\t\t\\\nstatic inline bool soc_intel_is_##soc(void)\t\t\t\\\n{\t\t\t\t\t\t\t\t\\\n\tstatic const struct x86_cpu_id soc##_cpu_ids[] = {\t\\\n\t\tX86_MATCH_INTEL_FAM6_MODEL(type, NULL),\t\t\\\n\t\t{}\t\t\t\t\t\t\\\n\t};\t\t\t\t\t\t\t\\\n\tconst struct x86_cpu_id *id;\t\t\t\t\\\n\t\t\t\t\t\t\t\t\\\n\tid = x86_match_cpu(soc##_cpu_ids);\t\t\t\\\n\tif (id)\t\t\t\t\t\t\t\\\n\t\treturn true;\t\t\t\t\t\\\n\treturn false;\t\t\t\t\t\t\\\n}\n\nSOC_INTEL_IS_CPU(byt, ATOM_SILVERMONT);\nSOC_INTEL_IS_CPU(cht, ATOM_AIRMONT);\nSOC_INTEL_IS_CPU(apl, ATOM_GOLDMONT);\nSOC_INTEL_IS_CPU(glk, ATOM_GOLDMONT_PLUS);\nSOC_INTEL_IS_CPU(cml, KABYLAKE_L);\n\n#undef SOC_INTEL_IS_CPU\n\n#else  \n\nstatic inline bool soc_intel_is_byt(void)\n{\n\treturn false;\n}\n\nstatic inline bool soc_intel_is_cht(void)\n{\n\treturn false;\n}\n\nstatic inline bool soc_intel_is_apl(void)\n{\n\treturn false;\n}\n\nstatic inline bool soc_intel_is_glk(void)\n{\n\treturn false;\n}\n\nstatic inline bool soc_intel_is_cml(void)\n{\n\treturn false;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hfi_plat_bufs.h",
+  "hash_id": "3563bfd266c38b4a0117de80419898f93c4fb21f30884aaa65a202da2b34bd84",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/qcom/venus/hfi_plat_bufs.h",
+  "human_readable_source": " \n \n\n#ifndef __HFI_PLATFORM_BUFFERS_H__\n#define __HFI_PLATFORM_BUFFERS_H__\n\n#include <linux/types.h>\n#include \"hfi_helper.h\"\n\nstruct hfi_plat_buffers_params {\n\tu32 width;\n\tu32 height;\n\tu32 out_width;\n\tu32 out_height;\n\tu32 codec;\n\tu32 hfi_color_fmt;\n\tu32 hfi_dpb_color_fmt;\n\tenum hfi_version version;\n\tu32 num_vpp_pipes;\n\tunion {\n\t\tstruct {\n\t\t\tu32 max_mbs_per_frame;\n\t\t\tu32 buffer_size_limit;\n\t\t\tbool is_secondary_output;\n\t\t\tbool is_interlaced;\n\t\t} dec;\n\t\tstruct {\n\t\t\tu32 work_mode;\n\t\t\tu32 rc_type;\n\t\t\tu32 num_b_frames;\n\t\t\tbool is_tenbit;\n\t\t} enc;\n\t};\n};\n\nint hfi_plat_bufreq_v6(struct hfi_plat_buffers_params *params, u32 session_type,\n\t\t       u32 buftype, struct hfi_buffer_requirements *bufreq);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8ef9a66eba2e3fe2a3e28404301fcca5c29d9d7a0012f0c1ee6ee88cdfa043d9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/xilinx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nxilinx-video-objs += xilinx-dma.o xilinx-vip.o xilinx-vipp.o\n\nobj-$(CONFIG_VIDEO_XILINX) += xilinx-video.o\nobj-$(CONFIG_VIDEO_XILINX_CSI2RXSS) += xilinx-csi2rxss.o\nobj-$(CONFIG_VIDEO_XILINX_TPG) += xilinx-tpg.o\nobj-$(CONFIG_VIDEO_XILINX_VTC) += xilinx-vtc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

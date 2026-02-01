@@ -1,0 +1,9 @@
+{
+  "module_name": "randint.h",
+  "hash_id": "03aa2ddcfb2d39f94d62861d14d9fcdf81110a8c136beb1951a6e6f94fcecfb4",
+  "original_prompt": "Ingested from coreutils-9.4/lib/randint.h",
+  "human_readable_source": " \n\n#ifndef RANDINT_H\n\n# define RANDINT_H 1\n\n# include <stdint.h>\n\n# include \"randread.h\"\n\n \ntypedef uintmax_t randint;\n# define RANDINT_MAX UINTMAX_MAX\n\nstruct randint_source;\n\nvoid randint_free (struct randint_source *) _GL_ATTRIBUTE_NONNULL ();\nint randint_all_free (struct randint_source *) _GL_ATTRIBUTE_NONNULL ();\nstruct randint_source *randint_new (struct randread_source *)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC (randint_free, 1)\n  _GL_ATTRIBUTE_NONNULL () _GL_ATTRIBUTE_RETURNS_NONNULL;\nstruct randint_source *randint_all_new (char const *, size_t)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC (randint_all_free, 1);\nstruct randread_source *randint_get_source (struct randint_source const *)\n  _GL_ATTRIBUTE_NONNULL () _GL_ATTRIBUTE_PURE;\nrandint randint_genmax (struct randint_source *, randint genmax)\n  _GL_ATTRIBUTE_NONNULL ();\n\n \nstatic inline randint\nrandint_choose (struct randint_source *s, randint choices)\n{\n  return randint_genmax (s, choices - 1);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

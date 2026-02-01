@@ -1,0 +1,9 @@
+{
+  "module_name": "run-on-all.sh",
+  "hash_id": "5b2cf4bb6239f5269e72c7b5cf4fa0b0e51e09e7e6f91cf36023f52180ec70db",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/ringtest/run-on-all.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\nCPUS_ONLINE=$(lscpu --online -p=cpu|grep -v -e '#')\n#use last CPU for host. Why not the first?\n#many devices tend to use cpu0 by default so\n#it tends to be busier\nHOST_AFFINITY=$(echo \"${CPUS_ONLINE}\"|tail -n 1)\n\n#run command on all cpus\nfor cpu in $CPUS_ONLINE\ndo\n\t#Don't run guest and host on same CPU\n\t#It actually works ok if using signalling\n\tif\n\t\t(echo \"$@\" | grep -e \"--sleep\" > /dev/null) || \\\n\t\t\ttest $HOST_AFFINITY '!=' $cpu\n\tthen\n\t\techo \"GUEST AFFINITY $cpu\"\n\t\t\"$@\" --host-affinity $HOST_AFFINITY --guest-affinity $cpu\n\tfi\ndone\necho \"NO GUEST AFFINITY\"\n\"$@\" --host-affinity $HOST_AFFINITY\necho \"NO AFFINITY\"\n\"$@\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

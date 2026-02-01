@@ -1,0 +1,9 @@
+{
+  "module_name": "msm_debugfs.h",
+  "hash_id": "154f22b3bda8669c71e3e40b51d3d54e2751d540d5c329aeefd389e75f32f4c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/msm_debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef __MSM_DEBUGFS_H__\n#define __MSM_DEBUGFS_H__\n\n#ifdef CONFIG_DEBUG_FS\nvoid msm_debugfs_init(struct drm_minor *minor);\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

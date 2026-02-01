@@ -1,0 +1,9 @@
+{
+  "module_name": "add_remove_fprobe.tc",
+  "hash_id": "1a769af8e172db33087aaf99db8523ec8b6817c65afe0d077d5458b8dc1d9841",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/dynevent/add_remove_fprobe.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Generic dynamic event - add/remove fprobe events\n# requires: dynamic_events \"f[:[<group>/][<event>]] <func-name>[%return] [<args>]\":README\n\necho 0 > events/enable\necho > dynamic_events\n\nPLACE=$FUNCTION_FORK\n\necho \"f:myevent1 $PLACE\" >> dynamic_events\necho \"f:myevent2 $PLACE%return\" >> dynamic_events\n\ngrep -q myevent1 dynamic_events\ngrep -q myevent2 dynamic_events\ntest -d events/fprobes/myevent1\ntest -d events/fprobes/myevent2\n\necho \"-:myevent2\" >> dynamic_events\n\ngrep -q myevent1 dynamic_events\n! grep -q myevent2 dynamic_events\n\necho > dynamic_events\n\nclear_trace\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gfp_types.h",
+  "hash_id": "616d4c65450d85a1fb605a3992d9e482b560c4513e12de34c5d9abba6520ff1e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/gfp_types.h",
+  "human_readable_source": "#include \"../../../include/linux/gfp_types.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

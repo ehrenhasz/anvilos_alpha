@@ -1,0 +1,9 @@
+{
+  "module_name": "audit_change_attr.h",
+  "hash_id": "603a22c8e28a8f24efb277df4dde9f5db2abc08d9e2c3c5bcdb0a15c5aad1c74",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/audit_change_attr.h",
+  "human_readable_source": " \n#ifdef __NR_chmod\n__NR_chmod,\n#endif\n__NR_fchmod,\n#ifdef __NR_chown\n__NR_chown,\n__NR_lchown,\n#endif\n#ifdef __NR_fchown\n__NR_fchown,\n#endif\n__NR_setxattr,\n__NR_lsetxattr,\n__NR_fsetxattr,\n__NR_removexattr,\n__NR_lremovexattr,\n__NR_fremovexattr,\n#ifdef __NR_fchownat\n__NR_fchownat,\n__NR_fchmodat,\n#endif\n#ifdef __NR_chown32\n__NR_chown32,\n__NR_fchown32,\n__NR_lchown32,\n#endif\n#ifdef __NR_link\n__NR_link,\n#endif\n#ifdef __NR_linkat\n__NR_linkat,\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

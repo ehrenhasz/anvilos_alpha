@@ -1,0 +1,9 @@
+{
+  "module_name": "readtokens0.h",
+  "hash_id": "4471bb94c4a846ceb2201f2b461bc5e7debd6e296a2c2f3a0332accf016f08e4",
+  "original_prompt": "Ingested from coreutils-9.4/lib/readtokens0.h",
+  "human_readable_source": " \n\n#ifndef READTOKENS0_H\n# define READTOKENS0_H 1\n\n# include <stdio.h>\n# include <sys/types.h>\n# include \"obstack.h\"\n\nstruct Tokens\n{\n  size_t n_tok;\n  char **tok;\n  size_t *tok_len;\n  struct obstack o_data;  \n  struct obstack o_tok;  \n  struct obstack o_tok_len;  \n};\n\nvoid readtokens0_init (struct Tokens *t);\nvoid readtokens0_free (struct Tokens *t);\nbool readtokens0 (FILE *in, struct Tokens *t);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

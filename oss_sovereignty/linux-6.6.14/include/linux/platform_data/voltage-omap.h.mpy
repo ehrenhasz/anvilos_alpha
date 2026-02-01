@@ -1,0 +1,9 @@
+{
+  "module_name": "voltage-omap.h",
+  "hash_id": "f1b44174f7a98f8a274fe33a7545af29e13e02deebc31809faffdb8694baea3b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/voltage-omap.h",
+  "human_readable_source": " \n \n\n#ifndef __ARCH_ARM_OMAP_VOLTAGE_H\n#define __ARCH_ARM_OMAP_VOLTAGE_H\n\n \nstruct omap_volt_data {\n\tu32\tvolt_nominal;\n\tu32\tsr_efuse_offs;\n\tu8\tsr_errminlimit;\n\tu8\tvp_errgain;\n};\nstruct voltagedomain;\n\nstruct voltagedomain *voltdm_lookup(const char *name);\nunsigned long voltdm_get_voltage(struct voltagedomain *voltdm);\nstruct omap_volt_data *omap_voltage_get_voltdata(struct voltagedomain *voltdm,\n\t\tunsigned long volt);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

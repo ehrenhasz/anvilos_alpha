@@ -1,0 +1,9 @@
+{
+  "module_name": "mt2060.h",
+  "hash_id": "243bd60bf100a2bcfe59033ed76cddc176704bdec237d2e92bb98578424ef275",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/mt2060.h",
+  "human_readable_source": " \n \n\n#ifndef MT2060_H\n#define MT2060_H\n\nstruct dvb_frontend;\nstruct i2c_adapter;\n\n \n\n \n\nstruct mt2060_platform_data {\n\tu8 clock_out;\n\tu16 if1;\n\tunsigned int i2c_write_max:5;\n\tstruct dvb_frontend *dvb_frontend;\n};\n\n\n \nstruct mt2060_config {\n\tu8 i2c_address;\n\tu8 clock_out;  \n};\n\n#if IS_REACHABLE(CONFIG_MEDIA_TUNER_MT2060)\nextern struct dvb_frontend * mt2060_attach(struct dvb_frontend *fe, struct i2c_adapter *i2c, struct mt2060_config *cfg, u16 if1);\n#else\nstatic inline struct dvb_frontend * mt2060_attach(struct dvb_frontend *fe, struct i2c_adapter *i2c, struct mt2060_config *cfg, u16 if1)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

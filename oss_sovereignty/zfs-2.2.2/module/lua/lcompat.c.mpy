@@ -1,0 +1,9 @@
+{
+  "module_name": "lcompat.c",
+  "hash_id": "ac49f816affd173fe2e8c034cae795a2196a5c44773846cabe237ed81fbbf18b",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/lcompat.c",
+  "human_readable_source": " \n\n#include <sys/lua/lua.h>\n\n\nssize_t\nlcompat_sprintf(char *buf, size_t size, const char *fmt, ...)\n{\n\tssize_t res;\n\tva_list args;\n\n\tva_start(args, fmt);\n\tres = vsnprintf(buf, size, fmt, args);\n\tva_end(args);\n\n\treturn (res);\n}\n\nint64_t\nlcompat_strtoll(const char *str, char **ptr)\n{\n\tint base;\n\tconst char *cp;\n\tint digits;\n\tint64_t value;\n\tboolean_t is_negative;\n\n\tcp = str;\n\twhile (*cp == ' ' || *cp == '\\t' || *cp == '\\n') {\n\t\tcp++;\n\t}\n\tis_negative = (*cp == '-');\n\tif (is_negative) {\n\t\tcp++;\n\t}\n\tbase = 10;\n\n\tif (*cp == '0') {\n\t\tbase = 8;\n\t\tcp++;\n\t\tif (*cp == 'x' || *cp == 'X') {\n\t\t\tbase = 16;\n\t\t\tcp++;\n\t\t}\n\t}\n\n\tvalue = 0;\n\tfor (; *cp != '\\0'; cp++) {\n\t\tif (*cp >= '0' && *cp <= '9') {\n\t\t\tdigits = *cp - '0';\n\t\t} else if (*cp >= 'a' && *cp <= 'f') {\n\t\t\tdigits = *cp - 'a' + 10;\n\t\t} else if (*cp >= 'A' && *cp <= 'F') {\n\t\t\tdigits = *cp - 'A' + 10;\n\t\t} else {\n\t\t\tbreak;\n\t\t}\n\t\tif (digits >= base) {\n\t\t\tbreak;\n\t\t}\n\t\tvalue = (value * base) + digits;\n\t}\n\n\tif (ptr != NULL) {\n\t\t*ptr = (char *)cp;\n\t}\n\tif (is_negative) {\n\t\tvalue = -value;\n\t}\n\treturn (value);\n}\n\nint64_t\nlcompat_pow(int64_t x, int64_t y)\n{\n\tint64_t result = 1;\n\tif (y < 0)\n\t\treturn (0);\n\n\twhile (y) {\n\t\tif (y & 1)\n\t\t\tresult *= x;\n\t\ty >>= 1;\n\t\tx *= x;\n\t}\n\treturn (result);\n}\n\nint\nlcompat_hashnum(int64_t x)\n{\n\tx = (~x) + (x << 18);\n\tx = x ^ (x >> 31);\n\tx = x * 21;\n\tx = x ^ (x >> 11);\n\tx = x + (x << 6);\n\tx = x ^ (x >> 22);\n\treturn ((int)x);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

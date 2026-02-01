@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3c38446903dc52a4b63e4b8c2daf0a413b81951e262e5fa77a1f01417dcb7b00",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the kernel mmc device drivers.\n#\n\nobj-$(CONFIG_MMC)\t\t+= core/\nobj-$(subst m,y,$(CONFIG_MMC))\t+= host/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

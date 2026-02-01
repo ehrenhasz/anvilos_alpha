@@ -1,0 +1,9 @@
+{
+  "module_name": "bunzip2.h",
+  "hash_id": "e43396ac0ececa4aa303ba34f34bb019e02df371510fa73a6d7c688529259da8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/decompress/bunzip2.h",
+  "human_readable_source": " \n#ifndef DECOMPRESS_BUNZIP2_H\n#define DECOMPRESS_BUNZIP2_H\n\nint bunzip2(unsigned char *inbuf, long len,\n\t    long (*fill)(void*, unsigned long),\n\t    long (*flush)(void*, unsigned long),\n\t    unsigned char *output,\n\t    long *pos,\n\t    void(*error)(char *x));\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

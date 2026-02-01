@@ -1,0 +1,9 @@
+{
+  "module_name": "locking-selftest-wlock.h",
+  "hash_id": "1a5b7bd88508322bf7dc8e7effdb1ea93230fc3649f9061b4d5b1b400a460f7b",
+  "original_prompt": "Ingested from linux-6.6.14/lib/locking-selftest-wlock.h",
+  "human_readable_source": " \n#undef LOCK\n#define LOCK\t\tWL\n\n#undef UNLOCK\n#define UNLOCK\t\tWU\n\n#undef RLOCK\n#define RLOCK\t\tRL\n\n#undef WLOCK\n#define WLOCK\t\tWL\n\n#undef INIT\n#define INIT\t\tRWI\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

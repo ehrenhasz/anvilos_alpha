@@ -1,0 +1,9 @@
+{
+  "module_name": "branch.json",
+  "hash_id": "858d488038cb3385da679db017c1d1c9dbacd6bddc5835aa4d11e33303653cba",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/amdzen1/branch.json",
+  "human_readable_source": "[\n  {\n    \"EventName\": \"bp_l1_btb_correct\",\n    \"EventCode\": \"0x8a\",\n    \"BriefDescription\": \"L1 BTB Correction.\"\n  },\n  {\n    \"EventName\": \"bp_l2_btb_correct\",\n    \"EventCode\": \"0x8b\",\n    \"BriefDescription\": \"L2 BTB Correction.\"\n  },\n  {\n    \"EventName\": \"bp_dyn_ind_pred\",\n    \"EventCode\": \"0x8e\",\n    \"BriefDescription\": \"Dynamic Indirect Predictions.\",\n    \"PublicDescription\": \"Indirect Branch Prediction for potential multi-target branch (speculative).\"\n  },\n  {\n    \"EventName\": \"bp_de_redirect\",\n    \"EventCode\": \"0x91\",\n    \"BriefDescription\": \"Decoder Overrides Existing Branch Prediction (speculative).\"\n  },\n  {\n    \"EventName\": \"bp_l1_tlb_fetch_hit\",\n    \"EventCode\": \"0x94\",\n    \"BriefDescription\": \"The number of instruction fetches that hit in the L1 ITLB.\"\n  }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

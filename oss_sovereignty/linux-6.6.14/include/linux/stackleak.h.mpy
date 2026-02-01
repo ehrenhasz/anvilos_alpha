@@ -1,0 +1,9 @@
+{
+  "module_name": "stackleak.h",
+  "hash_id": "ef16d09a3729aaf4bc0989bc22e8a31210f2e21c1b6ce7bd98a16170dd7be326",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/stackleak.h",
+  "human_readable_source": " \n#ifndef _LINUX_STACKLEAK_H\n#define _LINUX_STACKLEAK_H\n\n#include <linux/sched.h>\n#include <linux/sched/task_stack.h>\n\n \n#define STACKLEAK_POISON -0xBEEF\n#define STACKLEAK_SEARCH_DEPTH 128\n\n#ifdef CONFIG_GCC_PLUGIN_STACKLEAK\n#include <asm/stacktrace.h>\n\n \nstatic __always_inline unsigned long\nstackleak_task_low_bound(const struct task_struct *tsk)\n{\n\t \n\treturn (unsigned long)end_of_stack(tsk) + sizeof(unsigned long);\n}\n\n \nstatic __always_inline unsigned long\nstackleak_task_high_bound(const struct task_struct *tsk)\n{\n\t \n\treturn (unsigned long)task_pt_regs(tsk);\n}\n\n \nstatic __always_inline unsigned long\nstackleak_find_top_of_poison(const unsigned long low, const unsigned long high)\n{\n\tconst unsigned int depth = STACKLEAK_SEARCH_DEPTH / sizeof(unsigned long);\n\tunsigned int poison_count = 0;\n\tunsigned long poison_high = high;\n\tunsigned long sp = high;\n\n\twhile (sp > low && poison_count < depth) {\n\t\tsp -= sizeof(unsigned long);\n\n\t\tif (*(unsigned long *)sp == STACKLEAK_POISON) {\n\t\t\tpoison_count++;\n\t\t} else {\n\t\t\tpoison_count = 0;\n\t\t\tpoison_high = sp;\n\t\t}\n\t}\n\n\treturn poison_high;\n}\n\nstatic inline void stackleak_task_init(struct task_struct *t)\n{\n\tt->lowest_stack = stackleak_task_low_bound(t);\n# ifdef CONFIG_STACKLEAK_METRICS\n\tt->prev_lowest_stack = t->lowest_stack;\n# endif\n}\n\n#else  \nstatic inline void stackleak_task_init(struct task_struct *t) { }\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

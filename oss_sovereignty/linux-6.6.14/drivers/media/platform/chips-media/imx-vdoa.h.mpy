@@ -1,0 +1,9 @@
+{
+  "module_name": "imx-vdoa.h",
+  "hash_id": "dddf6fb55ecde2ccf2c0a60fc5a106fa28554cda57f812553f5a25127c1afabd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/chips-media/imx-vdoa.h",
+  "human_readable_source": " \n \n\n#ifndef IMX_VDOA_H\n#define IMX_VDOA_H\n\nstruct vdoa_data;\nstruct vdoa_ctx;\n\n#if (defined CONFIG_VIDEO_IMX_VDOA || defined CONFIG_VIDEO_IMX_VDOA_MODULE)\n\nstruct vdoa_ctx *vdoa_context_create(struct vdoa_data *vdoa);\nint vdoa_context_configure(struct vdoa_ctx *ctx,\n\t\t\t   unsigned int width, unsigned int height,\n\t\t\t   u32 pixelformat);\nvoid vdoa_context_destroy(struct vdoa_ctx *ctx);\n\nvoid vdoa_device_run(struct vdoa_ctx *ctx, dma_addr_t dst, dma_addr_t src);\nint vdoa_wait_for_completion(struct vdoa_ctx *ctx);\n\n#else\n\nstatic inline struct vdoa_ctx *vdoa_context_create(struct vdoa_data *vdoa)\n{\n\treturn NULL;\n}\n\nstatic inline int vdoa_context_configure(struct vdoa_ctx *ctx,\n\t\t\t\t\t unsigned int width,\n\t\t\t\t\t unsigned int height,\n\t\t\t\t\t u32 pixelformat)\n{\n\treturn 0;\n}\n\nstatic inline void vdoa_context_destroy(struct vdoa_ctx *ctx) { };\n\nstatic inline void vdoa_device_run(struct vdoa_ctx *ctx,\n\t\t\t\t   dma_addr_t dst, dma_addr_t src) { };\n\nstatic inline int vdoa_wait_for_completion(struct vdoa_ctx *ctx)\n{\n\treturn 0;\n};\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

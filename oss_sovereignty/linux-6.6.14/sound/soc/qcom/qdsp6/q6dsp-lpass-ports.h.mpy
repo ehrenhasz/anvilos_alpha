@@ -1,0 +1,9 @@
+{
+  "module_name": "q6dsp-lpass-ports.h",
+  "hash_id": "b1581ceb4f8b2071681990e26158d0b5829fa04deb1619e1fd61f025f3381530",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/qcom/qdsp6/q6dsp-lpass-ports.h",
+  "human_readable_source": " \n\n#ifndef __Q6DSP_AUDIO_PORTS_H__\n#define __Q6DSP_AUDIO_PORTS_H__\n\nstruct q6dsp_audio_port_dai_driver_config {\n\tint (*probe)(struct snd_soc_dai *dai);\n\tint (*remove)(struct snd_soc_dai *dai);\n\tconst struct snd_soc_dai_ops *q6hdmi_ops;\n\tconst struct snd_soc_dai_ops *q6slim_ops;\n\tconst struct snd_soc_dai_ops *q6i2s_ops;\n\tconst struct snd_soc_dai_ops *q6tdm_ops;\n\tconst struct snd_soc_dai_ops *q6dma_ops;\n};\n\nstruct snd_soc_dai_driver *q6dsp_audio_ports_set_config(struct device *dev,\n\t\t\t\t\tstruct q6dsp_audio_port_dai_driver_config *cfg,\n\t\t\t\t\tint *num_dais);\nint q6dsp_audio_ports_of_xlate_dai_name(struct snd_soc_component *component,\n\t\t\t\t\tconst struct of_phandle_args *args,\n\t\t\t\t\tconst char **dai_name);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

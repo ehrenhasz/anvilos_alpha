@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "45d5c4c252c7f489c5e50a79a553d3cb711073679a0954c4936aab3d39c3b4b2",
+  "original_prompt": "Ingested from linux-6.6.14/sound/ac97/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# make for AC97 bus drivers\n#\n\nobj-$(CONFIG_AC97_BUS_NEW)\t+= ac97.o\n\nac97-y\t\t\t\t+= bus.o codec.o\nac97-$(CONFIG_AC97_BUS_COMPAT)\t+= snd_ac97_compat.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

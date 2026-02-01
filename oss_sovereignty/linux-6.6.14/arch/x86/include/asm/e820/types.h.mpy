@@ -1,0 +1,9 @@
+{
+  "module_name": "types.h",
+  "hash_id": "febfd05cc774c4f445284763cb5d11fc71a06352661f18af3c76e5f082c5df67",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/e820/types.h",
+  "human_readable_source": " \n#ifndef _ASM_E820_TYPES_H\n#define _ASM_E820_TYPES_H\n\n#include <uapi/asm/bootparam.h>\n\n \nenum e820_type {\n\tE820_TYPE_RAM\t\t= 1,\n\tE820_TYPE_RESERVED\t= 2,\n\tE820_TYPE_ACPI\t\t= 3,\n\tE820_TYPE_NVS\t\t= 4,\n\tE820_TYPE_UNUSABLE\t= 5,\n\tE820_TYPE_PMEM\t\t= 7,\n\n\t \n\tE820_TYPE_PRAM\t\t= 12,\n\n\t \n\tE820_TYPE_SOFT_RESERVED\t= 0xefffffff,\n\n\t \n\tE820_TYPE_RESERVED_KERN\t= 128,\n};\n\n \nstruct e820_entry {\n\tu64\t\t\taddr;\n\tu64\t\t\tsize;\n\tenum e820_type\t\ttype;\n} __attribute__((packed));\n\n \n\n#include <linux/numa.h>\n\n#define E820_MAX_ENTRIES\t(E820_MAX_ENTRIES_ZEROPAGE + 3*MAX_NUMNODES)\n\n \nstruct e820_table {\n\t__u32 nr_entries;\n\tstruct e820_entry entries[E820_MAX_ENTRIES];\n};\n\n \n#define ISA_START_ADDRESS\t0x000a0000\n#define ISA_END_ADDRESS\t\t0x00100000\n\n#define BIOS_BEGIN\t\t0x000a0000\n#define BIOS_END\t\t0x00100000\n\n#define HIGH_MEMORY\t\t0x00100000\n\n#define BIOS_ROM_BASE\t\t0xffe00000\n#define BIOS_ROM_END\t\t0xffffffff\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

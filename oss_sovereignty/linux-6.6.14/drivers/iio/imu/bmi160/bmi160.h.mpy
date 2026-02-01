@@ -1,0 +1,9 @@
+{
+  "module_name": "bmi160.h",
+  "hash_id": "2f8c49685fd6d8aa81fa80bd84f78416b771c5f8a6888e2064a3c2bfee5ba003",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/bmi160/bmi160.h",
+  "human_readable_source": " \n#ifndef BMI160_H_\n#define BMI160_H_\n\n#include <linux/iio/iio.h>\n#include <linux/regulator/consumer.h>\n\nstruct bmi160_data {\n\tstruct regmap *regmap;\n\tstruct iio_trigger *trig;\n\tstruct regulator_bulk_data supplies[2];\n\tstruct iio_mount_matrix orientation;\n\t \n\t__le16 buf[12] __aligned(8);\n};\n\nextern const struct regmap_config bmi160_regmap_config;\n\nint bmi160_core_probe(struct device *dev, struct regmap *regmap,\n\t\t      const char *name, bool use_spi);\n\nint bmi160_enable_irq(struct regmap *regmap, bool enable);\n\nint bmi160_probe_trigger(struct iio_dev *indio_dev, int irq, u32 irq_type);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

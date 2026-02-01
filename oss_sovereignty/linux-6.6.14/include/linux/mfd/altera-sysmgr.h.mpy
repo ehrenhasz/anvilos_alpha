@@ -1,0 +1,9 @@
+{
+  "module_name": "altera-sysmgr.h",
+  "hash_id": "a777d092a2f20b3973de28de1fc401806bce726cbfa42bb2d9e058ef6d54b261",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/altera-sysmgr.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MFD_ALTERA_SYSMGR_H__\n#define __LINUX_MFD_ALTERA_SYSMGR_H__\n\n#include <linux/err.h>\n#include <linux/errno.h>\n#include <linux/firmware/intel/stratix10-smc.h>\n\nstruct device_node;\n\n#ifdef CONFIG_MFD_ALTERA_SYSMGR\nstruct regmap *altr_sysmgr_regmap_lookup_by_phandle(struct device_node *np,\n\t\t\t\t\t\t    const char *property);\n#else\nstatic inline struct regmap *\naltr_sysmgr_regmap_lookup_by_phandle(struct device_node *np,\n\t\t\t\t     const char *property)\n{\n\treturn ERR_PTR(-ENOTSUPP);\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

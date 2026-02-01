@@ -1,0 +1,9 @@
+{
+  "module_name": "mISDNdsp.h",
+  "hash_id": "494b7cd10514c32a764eef102d1e54c7f5f32c97cab8a033043b5b6d33b01306",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mISDNdsp.h",
+  "human_readable_source": " \n#ifndef __mISDNdsp_H__\n#define __mISDNdsp_H__\n\nstruct mISDN_dsp_element_arg {\n\tchar\t*name;\n\tchar\t*def;\n\tchar\t*desc;\n};\n\nstruct mISDN_dsp_element {\n\tchar\t*name;\n\tvoid\t*(*new)(const char *arg);\n\tvoid\t(*free)(void *p);\n\tvoid\t(*process_tx)(void *p, unsigned char *data, int len);\n\tvoid\t(*process_rx)(void *p, unsigned char *data, int len,\n\t\t\tunsigned int txlen);\n\tint\tnum_args;\n\tstruct mISDN_dsp_element_arg\n\t\t*args;\n};\n\nextern int  mISDN_dsp_element_register(struct mISDN_dsp_element *elem);\nextern void mISDN_dsp_element_unregister(struct mISDN_dsp_element *elem);\n\nstruct dsp_features {\n\tint\thfc_id;  \n\tint\thfc_dtmf;  \n\tint\thfc_conf;  \n\tint\thfc_loops;  \n\tint\thfc_echocanhw;  \n\tint\tpcm_id;  \n\tint\tpcm_slots;  \n\tint\tpcm_banks;  \n\tint\tunclocked;  \n\tint\tunordered;  \n};\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

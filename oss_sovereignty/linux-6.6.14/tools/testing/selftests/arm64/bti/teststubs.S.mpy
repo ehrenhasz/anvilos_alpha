@@ -1,0 +1,9 @@
+{
+  "module_name": "teststubs.S",
+  "hash_id": "b7819f514382a888a196cd98877b46dfef0823d7f9a65b44b80bc23006d1eddb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/bti/teststubs.S",
+  "human_readable_source": " \n \n\n#include \"assembler.h\"\n\nstartfn bti_none_func\n\tbti\n\tret\nendfn\n\nstartfn bti_c_func\n\tbti\tc\n\tret\nendfn\n\nstartfn bti_j_func\n\tbti\tj\n\tret\nendfn\n\nstartfn bti_jc_func\n\tbti\tjc\n\tret\nendfn\n\nstartfn paciasp_func\n\tpaciasp\n\tautiasp\n\tret\nendfn\n\nstartfn nohint_func\n\tret\nendfn\n\nemit_aarch64_feature_1_and\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

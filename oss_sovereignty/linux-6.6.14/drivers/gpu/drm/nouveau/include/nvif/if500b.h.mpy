@@ -1,0 +1,9 @@
+{
+  "module_name": "if500b.h",
+  "hash_id": "c9e82be3dc21975b38496ccd5b152449be6539cd731208d1ad99806f7c6478b5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/if500b.h",
+  "human_readable_source": "#ifndef __NVIF_IF500B_H__\n#define __NVIF_IF500B_H__\n#include \"if000a.h\"\n\nstruct nv50_mem_vn {\n\t \n};\n\nstruct nv50_mem_v0 {\n\t \n\t__u8  version;\n\t__u8  bankswz;\n\t__u8  contig;\n};\n\nstruct nv50_mem_map_vn {\n};\n\nstruct nv50_mem_map_v0 {\n\t__u8  version;\n\t__u8  ro;\n\t__u8  kind;\n\t__u8  comp;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

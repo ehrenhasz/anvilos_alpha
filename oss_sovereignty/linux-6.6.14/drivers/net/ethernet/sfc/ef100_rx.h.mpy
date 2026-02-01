@@ -1,0 +1,9 @@
+{
+  "module_name": "ef100_rx.h",
+  "hash_id": "dcf79ca31f3e050e6443f92fcd12ebefdbb9d2b1c5f400e8031cb8f0fcea06dc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/ef100_rx.h",
+  "human_readable_source": " \n \n\n#ifndef EFX_EF100_RX_H\n#define EFX_EF100_RX_H\n\n#include \"net_driver.h\"\n\nbool ef100_rx_buf_hash_valid(const u8 *prefix);\nvoid efx_ef100_ev_rx(struct efx_channel *channel, const efx_qword_t *p_event);\nvoid ef100_rx_write(struct efx_rx_queue *rx_queue);\nvoid __ef100_rx_packet(struct efx_channel *channel);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

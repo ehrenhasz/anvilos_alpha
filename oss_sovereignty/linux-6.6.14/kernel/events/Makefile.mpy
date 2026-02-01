@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8730bd0b0a11b94548cf24404b3ddb31696b4cb7816facdb579902905605e0dd",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/events/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y := core.o ring_buffer.o callchain.o\n\nobj-$(CONFIG_HAVE_HW_BREAKPOINT) += hw_breakpoint.o\nobj-$(CONFIG_HW_BREAKPOINT_KUNIT_TEST) += hw_breakpoint_test.o\nobj-$(CONFIG_UPROBES) += uprobes.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

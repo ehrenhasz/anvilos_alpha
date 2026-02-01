@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-mknod.m4",
+  "hash_id": "34bfac12d2199133ca2fd3aa97bcdbc46ce2f29e68f1c87381441f189bd83e86",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-mknod.m4",
+  "human_readable_source": "AC_DEFUN([ZFS_AC_KERNEL_SRC_MKNOD], [\n\tdnl #\n\tdnl # 6.3 API change\n\tdnl # The first arg is now struct mnt_idmap*\n\tdnl #\n\tZFS_LINUX_TEST_SRC([mknod_mnt_idmap], [\n\t\t#include <linux/fs.h>\n\t\t#include <linux/sched.h>\n\n\t\tint tmp_mknod(struct mnt_idmap *idmap,\n\t\t    struct inode *inode ,struct dentry *dentry,\n\t\t    umode_t u, dev_t d) { return 0; }\n\n\t\tstatic const struct inode_operations\n\t\t\tiops __attribute__ ((unused)) = {\n\t\t\t.mknod          = tmp_mknod,\n\t\t};\n\t],[])\n\n\tdnl #\n\tdnl # 5.12 API change that added the struct user_namespace* arg\n\tdnl # to the front of this function type's arg list.\n\tdnl #\n\tZFS_LINUX_TEST_SRC([mknod_userns], [\n\t\t#include <linux/fs.h>\n\t\t#include <linux/sched.h>\n\n\t\tint tmp_mknod(struct user_namespace *userns,\n\t\t    struct inode *inode ,struct dentry *dentry,\n\t\t    umode_t u, dev_t d) { return 0; }\n\n\t\tstatic const struct inode_operations\n\t\t\tiops __attribute__ ((unused)) = {\n\t\t\t.mknod\t\t= tmp_mknod,\n\t\t};\n\t],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_MKNOD], [\n\tAC_MSG_CHECKING([whether iops->mknod() takes struct mnt_idmap*])\n\tZFS_LINUX_TEST_RESULT([mknod_mnt_idmap], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_IOPS_MKNOD_IDMAP, 1,\n\t\t    [iops->mknod() takes struct mnt_idmap*])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t\tAC_MSG_CHECKING([whether iops->mknod() takes struct user_namespace*])\n\t\tZFS_LINUX_TEST_RESULT([mknod_userns], [\n\t\t\tAC_MSG_RESULT(yes)\n\t\t\tAC_DEFINE(HAVE_IOPS_MKNOD_USERNS, 1,\n\t\t\t    [iops->mknod() takes struct user_namespace*])\n\t\t],[\n\t\t\tAC_MSG_RESULT(no)\n\t\t])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

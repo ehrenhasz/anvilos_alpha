@@ -1,0 +1,9 @@
+{
+  "module_name": "dwarf-regs-table.h",
+  "hash_id": "b821b9faa019537784e5b852b88297a4a9932a5c94e75f5ba0aea64e65759ac5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/x86/include/dwarf-regs-table.h",
+  "human_readable_source": " \n#ifdef DEFINE_DWARF_REGSTR_TABLE\n \n\nstatic const char * const x86_32_regstr_tbl[] = {\n\t\"%ax\", \"%cx\", \"%dx\", \"%bx\", \"$stack\", \n\t\"%bp\", \"%si\", \"%di\",\n};\n\nstatic const char * const x86_64_regstr_tbl[] = {\n\t\"%ax\", \"%dx\", \"%cx\", \"%bx\", \"%si\", \"%di\",\n\t\"%bp\", \"%sp\", \"%r8\", \"%r9\", \"%r10\", \"%r11\",\n\t\"%r12\", \"%r13\", \"%r14\", \"%r15\",\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

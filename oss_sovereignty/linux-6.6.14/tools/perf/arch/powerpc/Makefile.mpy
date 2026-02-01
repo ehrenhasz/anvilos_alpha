@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "dcf8c87d2916405cee52a5709225bf2dfb5452277e091b6f36ee251fc9f31532",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/powerpc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nifndef NO_DWARF\nPERF_HAVE_DWARF_REGS := 1\nendif\n\nHAVE_KVM_STAT_SUPPORT := 1\nPERF_HAVE_ARCH_REGS_QUERY_REGISTER_OFFSET := 1\nPERF_HAVE_JITDUMP := 1\n\n#\n# Syscall table generation for perf\n#\n\nout    := $(OUTPUT)arch/powerpc/include/generated/asm\nheader32 := $(out)/syscalls_32.c\nheader64 := $(out)/syscalls_64.c\nsysprf := $(srctree)/tools/perf/arch/powerpc/entry/syscalls\nsysdef := $(sysprf)/syscall.tbl\nsystbl := $(sysprf)/mksyscalltbl\n\n# Create output directory if not already present\n_dummy := $(shell [ -d '$(out)' ] || mkdir -p '$(out)')\n\n$(header64): $(sysdef) $(systbl)\n\t$(Q)$(SHELL) '$(systbl)' '64' $(sysdef) > $@\n\n$(header32): $(sysdef) $(systbl)\n\t$(Q)$(SHELL) '$(systbl)' '32' $(sysdef) > $@\n\nclean::\n\t$(call QUIET_CLEAN, powerpc) $(RM) $(header32) $(header64)\n\narchheaders: $(header32) $(header64)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

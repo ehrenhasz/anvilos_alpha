@@ -1,0 +1,9 @@
+{
+  "module_name": "vchiq_debugfs.h",
+  "hash_id": "19022c1ba085cdfdc64fc601909a2ebe8851ced0bcd096216b760ba934778d3c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef VCHIQ_DEBUGFS_H\n#define VCHIQ_DEBUGFS_H\n\n#include \"vchiq_core.h\"\n\nstruct vchiq_debugfs_node {\n\tstruct dentry *dentry;\n};\n\nvoid vchiq_debugfs_init(void);\n\nvoid vchiq_debugfs_deinit(void);\n\nvoid vchiq_debugfs_add_instance(struct vchiq_instance *instance);\n\nvoid vchiq_debugfs_remove_instance(struct vchiq_instance *instance);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

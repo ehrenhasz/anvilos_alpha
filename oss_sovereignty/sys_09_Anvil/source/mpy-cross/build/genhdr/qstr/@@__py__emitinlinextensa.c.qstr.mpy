@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__emitinlinextensa.c.qstr",
+  "hash_id": "0f10ae27199dc897d2b47d19236532ad0c3ee781b3544d5f6b1ad27dd2db8d9a",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__emitinlinextensa.c.qstr",
+  "human_readable_source": "Q(and_)\nQ(or_)\nQ(xor)\nQ(add)\nQ(sub)\nQ(mull)\nQ(l8ui)\nQ(l16ui)\nQ(l32i)\nQ(s8i)\nQ(s16i)\nQ(s32i)\nQ(l16si)\nQ(addi)\nQ(ball)\nQ(bany)\nQ(bbc)\nQ(bbs)\nQ(beq)\nQ(bge)\nQ(bgeu)\nQ(blt)\nQ(bnall)\nQ(bne)\nQ(bnone)\nQ(ret_n)\nQ(callx0)\nQ(j)\nQ(jx)\nQ(beqz)\nQ(bnez)\nQ(mov)\nQ(mov_n)\nQ(movi)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

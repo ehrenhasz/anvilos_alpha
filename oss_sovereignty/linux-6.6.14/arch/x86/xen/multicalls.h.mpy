@@ -1,0 +1,9 @@
+{
+  "module_name": "multicalls.h",
+  "hash_id": "c67ce3e4b8430f76f81a0d85ab6962d139277e4b9c1e63f8e010f9724921f85d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/xen/multicalls.h",
+  "human_readable_source": " \n#ifndef _XEN_MULTICALLS_H\n#define _XEN_MULTICALLS_H\n\n#include <trace/events/xen.h>\n\n#include \"xen-ops.h\"\n\n \nstruct multicall_space\n{\n\tstruct multicall_entry *mc;\n\tvoid *args;\n};\n\n \nstruct multicall_space __xen_mc_entry(size_t args);\n\nDECLARE_PER_CPU(unsigned long, xen_mc_irq_flags);\n\n \nstatic inline void xen_mc_batch(void)\n{\n\tunsigned long flags;\n\n\t \n\tlocal_irq_save(flags);\n\ttrace_xen_mc_batch(xen_get_lazy_mode());\n\t__this_cpu_write(xen_mc_irq_flags, flags);\n}\n\nstatic inline struct multicall_space xen_mc_entry(size_t args)\n{\n\txen_mc_batch();\n\treturn __xen_mc_entry(args);\n}\n\n \nvoid xen_mc_flush(void);\n\n \nstatic inline void xen_mc_issue(unsigned mode)\n{\n\ttrace_xen_mc_issue(mode);\n\n\tif ((xen_get_lazy_mode() & mode) == 0)\n\t\txen_mc_flush();\n\n\t \n\tlocal_irq_restore(this_cpu_read(xen_mc_irq_flags));\n}\n\n \nvoid xen_mc_callback(void (*fn)(void *), void *data);\n\n \nstruct multicall_space xen_mc_extend_args(unsigned long op, size_t arg_size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

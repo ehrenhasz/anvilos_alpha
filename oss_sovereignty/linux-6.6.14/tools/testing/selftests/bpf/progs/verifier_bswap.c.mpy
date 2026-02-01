@@ -1,0 +1,9 @@
+{
+  "module_name": "verifier_bswap.c",
+  "hash_id": "beed93e5e2f16e6b02dc6a827b5f25bf05fbcebd2139f44624e9662a13ebded8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/verifier_bswap.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\n#if (defined(__TARGET_ARCH_arm64) || defined(__TARGET_ARCH_x86) || \\\n     (defined(__TARGET_ARCH_riscv) && __riscv_xlen == 64)) && __clang_major__ >= 18\n\nSEC(\"socket\")\n__description(\"BSWAP, 16\")\n__success __success_unpriv __retval(0x23ff)\n__naked void bswap_16(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr0 = 0xff23;\t\t\t\t\t\\\n\tr0 = bswap16 r0;\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t::: __clobber_all);\n}\n\nSEC(\"socket\")\n__description(\"BSWAP, 32\")\n__success __success_unpriv __retval(0x23ff0000)\n__naked void bswap_32(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr0 = 0xff23;\t\t\t\t\t\\\n\tr0 = bswap32 r0;\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t::: __clobber_all);\n}\n\nSEC(\"socket\")\n__description(\"BSWAP, 64\")\n__success __success_unpriv __retval(0x34ff12ff)\n__naked void bswap_64(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr0 = %[u64_val] ll;\t\t\t\t\t\\\n\tr0 = bswap64 r0;\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t:\n\t: [u64_val]\"i\"(0xff12ff34ff56ff78ull)\n\t: __clobber_all);\n}\n\n#else\n\nSEC(\"socket\")\n__description(\"cpuv4 is not supported by compiler or jit, use a dummy test\")\n__success\nint dummy_test(void)\n{\n\treturn 0;\n}\n\n#endif\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

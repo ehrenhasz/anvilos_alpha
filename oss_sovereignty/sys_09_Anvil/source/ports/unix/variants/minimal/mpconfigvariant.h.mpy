@@ -1,0 +1,9 @@
+{
+  "module_name": "mpconfigvariant.h",
+  "hash_id": "a7d96bbd259a2ec747eb66a10fabfe4ff56669d8d86a053443d6244517615ce0",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/minimal/mpconfigvariant.h",
+  "human_readable_source": " \n\n\n\n#define MICROPY_CONFIG_ROM_LEVEL (MICROPY_CONFIG_ROM_LEVEL_MINIMUM)\n\n\n#define MICROPY_EMIT_X86 (0)\n#define MICROPY_EMIT_X64 (0)\n#define MICROPY_EMIT_THUMB (0)\n#define MICROPY_EMIT_ARM (0)\n\n\n#define MICROPY_ALLOC_QSTR_CHUNK_INIT (64)\n#define MICROPY_ALLOC_PARSE_RULE_INIT (8)\n#define MICROPY_ALLOC_PARSE_RULE_INC  (8)\n#define MICROPY_ALLOC_PARSE_RESULT_INIT (8)\n#define MICROPY_ALLOC_PARSE_RESULT_INC (8)\n#define MICROPY_ALLOC_PARSE_CHUNK_INIT (64)\n\n\n#define MICROPY_COMP_CONST_FOLDING (1)\n#define MICROPY_COMP_CONST_LITERAL (1)\n#define MICROPY_COMP_CONST_TUPLE (1)\n#define MICROPY_COMP_DOUBLE_TUPLE_ASSIGN (1)\n#define MICROPY_ENABLE_COMPILER (1)\n#define MICROPY_ENABLE_EXTERNAL_IMPORT (1)\n#define MICROPY_FULL_CHECKS (1)\n#define MICROPY_HELPER_REPL (1)\n#define MICROPY_KBD_EXCEPTION (1)\n#define MICROPY_MODULE_GETATTR (1)\n#define MICROPY_MULTIPLE_INHERITANCE (1)\n#define MICROPY_PY_ASSIGN_EXPR (1)\n#define MICROPY_PY_ASYNC_AWAIT (1)\n#define MICROPY_PY_ATTRTUPLE (1)\n#define MICROPY_PY_BUILTINS_DICT_FROMKEYS (1)\n#define MICROPY_PY_BUILTINS_RANGE_ATTRS (1)\n#define MICROPY_PY_GENERATOR_PEND_THROW (1)\n\n\n#define MICROPY_PY_SYS (1)\n#define MICROPY_PY_OS (1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

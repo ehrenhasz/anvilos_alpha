@@ -1,0 +1,9 @@
+{
+  "module_name": "nv41.c",
+  "hash_id": "347500e6008f883c145665187e188120b51a905b4883dbe8c38c66d0ae12c0d1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/timer/nv41.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"regsnv04.h\"\n\nstatic void\nnv41_timer_init(struct nvkm_timer *tmr)\n{\n\tstruct nvkm_subdev *subdev = &tmr->subdev;\n\tstruct nvkm_device *device = subdev->device;\n\tu32 f = device->crystal;\n\tu32 m = 1, n, d;\n\n\t \n\td = 1000000 / 32;\n\tn = f;\n\n\twhile (n < (d * 2)) {\n\t\tn += (n / m);\n\t\tm++;\n\t}\n\n\t \n\twhile (((n % 5) == 0) && ((d % 5) == 0)) {\n\t\tn /= 5;\n\t\td /= 5;\n\t}\n\n\twhile (((n % 2) == 0) && ((d % 2) == 0)) {\n\t\tn /= 2;\n\t\td /= 2;\n\t}\n\n\twhile (n > 0xffff || d > 0xffff) {\n\t\tn >>= 1;\n\t\td >>= 1;\n\t}\n\n\tnvkm_debug(subdev, \"input frequency : %dHz\\n\", f);\n\tnvkm_debug(subdev, \"input multiplier: %d\\n\", m);\n\tnvkm_debug(subdev, \"numerator       : %08x\\n\", n);\n\tnvkm_debug(subdev, \"denominator     : %08x\\n\", d);\n\tnvkm_debug(subdev, \"timer frequency : %dHz\\n\", (f * m) * d / n);\n\n\tnvkm_wr32(device, 0x009220, m - 1);\n\tnvkm_wr32(device, NV04_PTIMER_NUMERATOR, n);\n\tnvkm_wr32(device, NV04_PTIMER_DENOMINATOR, d);\n}\n\nstatic const struct nvkm_timer_func\nnv41_timer = {\n\t.init = nv41_timer_init,\n\t.intr = nv04_timer_intr,\n\t.read = nv04_timer_read,\n\t.time = nv04_timer_time,\n\t.alarm_init = nv04_timer_alarm_init,\n\t.alarm_fini = nv04_timer_alarm_fini,\n};\n\nint\nnv41_timer_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t       struct nvkm_timer **ptmr)\n{\n\treturn nvkm_timer_new_(&nv41_timer, device, type, inst, ptmr);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

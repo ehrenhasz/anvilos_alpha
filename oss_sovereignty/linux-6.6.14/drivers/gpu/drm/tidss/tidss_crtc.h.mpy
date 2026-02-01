@@ -1,0 +1,9 @@
+{
+  "module_name": "tidss_crtc.h",
+  "hash_id": "23e2c12d11c0cd23ab526b3eabcbc0fbce3e7758763da603206c6edb83b338a8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tidss/tidss_crtc.h",
+  "human_readable_source": " \n \n\n#ifndef __TIDSS_CRTC_H__\n#define __TIDSS_CRTC_H__\n\n#include <linux/completion.h>\n#include <linux/wait.h>\n\n#include <drm/drm_crtc.h>\n\n#define to_tidss_crtc(c) container_of((c), struct tidss_crtc, crtc)\n\nstruct tidss_device;\n\nstruct tidss_crtc {\n\tstruct drm_crtc crtc;\n\n\tu32 hw_videoport;\n\n\tstruct drm_pending_vblank_event *event;\n\n\tstruct completion framedone_completion;\n};\n\n#define to_tidss_crtc_state(x) container_of(x, struct tidss_crtc_state, base)\n\nstruct tidss_crtc_state {\n\t \n\tstruct drm_crtc_state base;\n\n\tbool plane_pos_changed;\n\n\tu32 bus_format;\n\tu32 bus_flags;\n};\n\nvoid tidss_crtc_vblank_irq(struct drm_crtc *crtc);\nvoid tidss_crtc_framedone_irq(struct drm_crtc *crtc);\nvoid tidss_crtc_error_irq(struct drm_crtc *crtc, u64 irqstatus);\n\nstruct tidss_crtc *tidss_crtc_create(struct tidss_device *tidss,\n\t\t\t\t     u32 hw_videoport,\n\t\t\t\t     struct drm_plane *primary);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

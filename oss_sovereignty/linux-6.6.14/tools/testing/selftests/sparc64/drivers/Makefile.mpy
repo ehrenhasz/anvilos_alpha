@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6efa85381be5d79fbeaf94027afeede3b623b17090bc0e6cd5dcf3a94c460664",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sparc64/drivers/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nINCLUDEDIR := -I.\nCFLAGS := $(CFLAGS) $(INCLUDEDIR) -Wall -O2 -g\n\nTEST_GEN_FILES := adi-test\n\nall: $(TEST_GEN_FILES)\n\n$(TEST_GEN_FILES): adi-test.c\n\nTEST_PROGS := drivers_test.sh\n\ninclude ../../lib.mk\n\n$(OUTPUT)/adi-test: adi-test.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

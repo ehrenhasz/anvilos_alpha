@@ -1,0 +1,9 @@
+{
+  "module_name": "procattr.h",
+  "hash_id": "d016951faf01738616966640119e9a7a99770dcd00c2e25a7c2c232fd26847ae",
+  "original_prompt": "Ingested from linux-6.6.14/security/apparmor/include/procattr.h",
+  "human_readable_source": " \n \n\n#ifndef __AA_PROCATTR_H\n#define __AA_PROCATTR_H\n\nint aa_getprocattr(struct aa_label *label, char **string);\nint aa_setprocattr_changehat(char *args, size_t size, int flags);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

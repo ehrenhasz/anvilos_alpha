@@ -1,0 +1,9 @@
+{
+  "module_name": "uleds.h",
+  "hash_id": "801299526a599e851412863d72827c89e351eb1c812f3881949141c7a587a9d2",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/uleds.h",
+  "human_readable_source": " \n \n#ifndef _UAPI__ULEDS_H_\n#define _UAPI__ULEDS_H_\n\n#define LED_MAX_NAME_SIZE\t64\n\nstruct uleds_user_dev {\n\tchar name[LED_MAX_NAME_SIZE];\n\tint max_brightness;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

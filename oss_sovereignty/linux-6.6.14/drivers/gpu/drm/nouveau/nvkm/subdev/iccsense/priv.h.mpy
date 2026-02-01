@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "8db6aeafbb61333debcfe3a532a4c39233ec770befbf4e03aadbb47ed0cb1c62",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/iccsense/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_ICCSENSE_PRIV_H__\n#define __NVKM_ICCSENSE_PRIV_H__\n#define nvkm_iccsense(p) container_of((p), struct nvkm_iccsense, subdev)\n#include <subdev/iccsense.h>\n#include <subdev/bios/extdev.h>\n\nstruct nvkm_iccsense_sensor {\n\tstruct list_head head;\n\tint id;\n\tenum nvbios_extdev_type type;\n\tstruct i2c_adapter *i2c;\n\tu8 addr;\n\tu16 config;\n};\n\nstruct nvkm_iccsense_rail {\n\tstruct list_head head;\n\tint (*read)(struct nvkm_iccsense *, struct nvkm_iccsense_rail *);\n\tstruct nvkm_iccsense_sensor *sensor;\n\tu8 idx;\n\tu8 mohm;\n};\n\nvoid nvkm_iccsense_ctor(struct nvkm_device *, enum nvkm_subdev_type, int, struct nvkm_iccsense *);\nint nvkm_iccsense_new_(struct nvkm_device *, enum nvkm_subdev_type, int, struct nvkm_iccsense **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

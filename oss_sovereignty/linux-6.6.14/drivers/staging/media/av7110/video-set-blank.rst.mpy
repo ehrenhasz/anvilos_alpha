@@ -1,0 +1,9 @@
+{
+  "module_name": "video-set-blank.rst",
+  "hash_id": "5970e90fc1543ea1f707e9d5385304593ec5a7612d3897a289c06b2431cab155",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/video-set-blank.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n.. c:namespace:: DTV.video\n\n.. _VIDEO_SET_BLANK:\n\n===============\nVIDEO_SET_BLANK\n===============\n\nName\n----\n\nVIDEO_SET_BLANK\n\n.. attention:: This ioctl is deprecated.\n\nSynopsis\n--------\n\n.. c:macro:: VIDEO_SET_BLANK\n\n``int ioctl(fd, VIDEO_SET_BLANK, boolean mode)``\n\nArguments\n---------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -  .. row 1\n\n       -  int fd\n\n       -  File descriptor returned by a previous call to open().\n\n    -  .. row 2\n\n       -  int request\n\n       -  Equals VIDEO_SET_BLANK for this command.\n\n    -  .. row 3\n\n       -  boolean mode\n\n       -  TRUE: Blank screen when stop.\n\n    -  .. row 4\n\n       -\n       -  FALSE: Show last decoded frame.\n\nDescription\n-----------\n\nThis ioctl call asks the Video Device to blank out the picture.\n\nReturn Value\n------------\n\nOn success 0 is returned, on error -1 and the ``errno`` variable is set\nappropriately. The generic error codes are described at the\n:ref:`Generic Error Codes <gen-errors>` chapter.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

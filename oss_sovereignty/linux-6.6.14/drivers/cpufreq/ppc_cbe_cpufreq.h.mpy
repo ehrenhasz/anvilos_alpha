@@ -1,0 +1,9 @@
+{
+  "module_name": "ppc_cbe_cpufreq.h",
+  "hash_id": "34f4ca1f0d4b39ab513e81010c807af43ee09231a1c2ecef76c520dd86a98cb0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpufreq/ppc_cbe_cpufreq.h",
+  "human_readable_source": " \n \n\n#include <linux/cpufreq.h>\n#include <linux/types.h>\n\nint cbe_cpufreq_set_pmode(int cpu, unsigned int pmode);\nint cbe_cpufreq_get_pmode(int cpu);\n\nint cbe_cpufreq_set_pmode_pmi(int cpu, unsigned int pmode);\n\n#if IS_ENABLED(CONFIG_CPU_FREQ_CBE_PMI)\nextern bool cbe_cpufreq_has_pmi;\nvoid cbe_cpufreq_pmi_policy_init(struct cpufreq_policy *policy);\nvoid cbe_cpufreq_pmi_policy_exit(struct cpufreq_policy *policy);\nvoid cbe_cpufreq_pmi_init(void);\nvoid cbe_cpufreq_pmi_exit(void);\n#else\n#define cbe_cpufreq_has_pmi (0)\nstatic inline void cbe_cpufreq_pmi_policy_init(struct cpufreq_policy *policy) {}\nstatic inline void cbe_cpufreq_pmi_policy_exit(struct cpufreq_policy *policy) {}\nstatic inline void cbe_cpufreq_pmi_init(void) {}\nstatic inline void cbe_cpufreq_pmi_exit(void) {}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

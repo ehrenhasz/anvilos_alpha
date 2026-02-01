@@ -1,0 +1,9 @@
+{
+  "module_name": "ovly917e.c",
+  "hash_id": "e7ffd533a498d4b193ae3dd0a4a0a40aad31de45cbd415fbcffb42f04e3f20e0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/ovly917e.c",
+  "human_readable_source": " \n#include \"ovly.h\"\n\nstatic const u32\novly917e_format[] = {\n\tDRM_FORMAT_YUYV,\n\tDRM_FORMAT_UYVY,\n\tDRM_FORMAT_XRGB8888,\n\tDRM_FORMAT_XRGB1555,\n\tDRM_FORMAT_XBGR2101010,\n\tDRM_FORMAT_XRGB2101010,\n\tDRM_FORMAT_XBGR16161616F,\n\t0\n};\n\nint\novly917e_new(struct nouveau_drm *drm, int head, s32 oclass,\n\t     struct nv50_wndw **pwndw)\n{\n\treturn ovly507e_new_(&ovly907e, ovly917e_format, drm, head, oclass,\n\t\t\t     0x00000004 << (head * 4), pwndw);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

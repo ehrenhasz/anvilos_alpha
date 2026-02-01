@@ -1,0 +1,9 @@
+{
+  "module_name": "vboxguest_version.h",
+  "hash_id": "f8a62b90d570bc6135916156bdca674830824f01fdac4508a962a870831eaf61",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/virt/vboxguest/vboxguest_version.h",
+  "human_readable_source": " \n \n\n#ifndef __VBOX_VERSION_H__\n#define __VBOX_VERSION_H__\n\n#define VBG_VERSION_MAJOR 6\n#define VBG_VERSION_MINOR 0\n#define VBG_VERSION_BUILD 0\n#define VBG_SVN_REV 127566\n#define VBG_VERSION_STRING \"6.0.0\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

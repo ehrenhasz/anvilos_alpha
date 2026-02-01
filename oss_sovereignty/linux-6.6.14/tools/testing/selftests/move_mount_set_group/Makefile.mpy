@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f4a5a0ffc39873a79c1d8e34b3a4b03e817c0f78655bb7dee7666922050cafac",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/move_mount_set_group/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Makefile for mount selftests.\nCFLAGS = -g $(KHDR_INCLUDES) -Wall -O2\n\nTEST_GEN_FILES += move_mount_set_group_test\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

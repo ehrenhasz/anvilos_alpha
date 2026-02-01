@@ -1,0 +1,9 @@
+{
+  "module_name": "hellcreek_hwtstamp.h",
+  "hash_id": "89b59d3af2e18864c2c09ff50682a8c56dde0db0d830ea746848bf20bb4bb099",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/hirschmann/hellcreek_hwtstamp.h",
+  "human_readable_source": " \n \n\n#ifndef _HELLCREEK_HWTSTAMP_H_\n#define _HELLCREEK_HWTSTAMP_H_\n\n#include <net/dsa.h>\n#include \"hellcreek.h\"\n\n \n#define PR_TS_RX_P1_STATUS_C\t(0x1d * 2)\n#define PR_TS_RX_P1_DATA_C\t(0x1e * 2)\n#define PR_TS_TX_P1_STATUS_C\t(0x1f * 2)\n#define PR_TS_TX_P1_DATA_C\t(0x20 * 2)\n#define PR_TS_RX_P2_STATUS_C\t(0x25 * 2)\n#define PR_TS_RX_P2_DATA_C\t(0x26 * 2)\n#define PR_TS_TX_P2_STATUS_C\t(0x27 * 2)\n#define PR_TS_TX_P2_DATA_C\t(0x28 * 2)\n\n#define PR_TS_STATUS_TS_AVAIL\tBIT(2)\n#define PR_TS_STATUS_TS_LOST\tBIT(3)\n\n#define SKB_PTP_TYPE(__skb) (*(unsigned int *)((__skb)->cb))\n\n \n#define TX_TSTAMP_TIMEOUT\tmsecs_to_jiffies(40)\n\nint hellcreek_port_hwtstamp_set(struct dsa_switch *ds, int port,\n\t\t\t\tstruct ifreq *ifr);\nint hellcreek_port_hwtstamp_get(struct dsa_switch *ds, int port,\n\t\t\t\tstruct ifreq *ifr);\n\nbool hellcreek_port_rxtstamp(struct dsa_switch *ds, int port,\n\t\t\t     struct sk_buff *clone, unsigned int type);\nvoid hellcreek_port_txtstamp(struct dsa_switch *ds, int port,\n\t\t\t     struct sk_buff *skb);\n\nint hellcreek_get_ts_info(struct dsa_switch *ds, int port,\n\t\t\t  struct ethtool_ts_info *info);\n\nlong hellcreek_hwtstamp_work(struct ptp_clock_info *ptp);\n\nint hellcreek_hwtstamp_setup(struct hellcreek *chip);\nvoid hellcreek_hwtstamp_free(struct hellcreek *chip);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

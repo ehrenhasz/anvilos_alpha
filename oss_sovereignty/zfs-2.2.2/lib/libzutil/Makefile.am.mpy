@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "e0c736ed337e651839e98f0bc608f5b0e3f58baf4a22636ded19fb71245ae70a",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libzutil/Makefile.am",
+  "human_readable_source": "libzutil_la_CFLAGS  = $(AM_CFLAGS) $(LIBRARY_CFLAGS)\nlibzutil_la_CFLAGS += $(LIBBLKID_CFLAGS) $(LIBUDEV_CFLAGS)\nlibzutil_la_CFLAGS += -fvisibility=hidden\n\nlibzutil_la_CPPFLAGS  = $(AM_CPPFLAGS)\nlibzutil_la_CPPFLAGS += -I$(srcdir)/%D%\n\nnoinst_LTLIBRARIES += libzutil.la\nCPPCHECKTARGETS    += libzutil.la\n\nlibzutil_la_SOURCES = \\\n\t%D%/zutil_device_path.c \\\n\t%D%/zutil_import.c \\\n\t%D%/zutil_import.h \\\n\t%D%/zutil_nicenum.c \\\n\t%D%/zutil_pool.c\n\nif BUILD_LINUX\nlibzutil_la_SOURCES += \\\n\t%D%/os/linux/zutil_setproctitle.c \\\n\t%D%/os/linux/zutil_device_path_os.c \\\n\t%D%/os/linux/zutil_import_os.c\nendif\n\nif BUILD_FREEBSD\nlibzutil_la_SOURCES += \\\n\t%D%/os/freebsd/zutil_device_path_os.c \\\n\t%D%/os/freebsd/zutil_import_os.c\nendif\n\nlibzutil_la_LIBADD = \\\n\tlibavl.la \\\n\tlibtpool.la \\\n\tlibnvpair.la \\\n\tlibspl.la\n\nif BUILD_LINUX\nlibzutil_la_LIBADD += \\\n\tlibefi.la \\\n\t-lrt\nendif\n\nlibzutil_la_LIBADD += -lm $(LIBBLKID_LIBS) $(LIBUDEV_LIBS)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

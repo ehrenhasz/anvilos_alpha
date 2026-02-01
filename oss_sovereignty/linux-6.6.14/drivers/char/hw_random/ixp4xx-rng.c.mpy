@@ -1,0 +1,9 @@
+{
+  "module_name": "ixp4xx-rng.c",
+  "hash_id": "c53d30030f9f02dd3bf974271759767b1dcf63ac830e033123b0c40c68482a3e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/hw_random/ixp4xx-rng.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/types.h>\n#include <linux/module.h>\n#include <linux/moduleparam.h>\n#include <linux/platform_device.h>\n#include <linux/init.h>\n#include <linux/bitops.h>\n#include <linux/hw_random.h>\n#include <linux/of.h>\n#include <linux/soc/ixp4xx/cpu.h>\n\n#include <asm/io.h>\n\nstatic int ixp4xx_rng_data_read(struct hwrng *rng, u32 *buffer)\n{\n\tvoid __iomem * rng_base = (void __iomem *)rng->priv;\n\n\t*buffer = __raw_readl(rng_base);\n\n\treturn 4;\n}\n\nstatic struct hwrng ixp4xx_rng_ops = {\n\t.name\t\t= \"ixp4xx\",\n\t.data_read\t= ixp4xx_rng_data_read,\n};\n\nstatic int ixp4xx_rng_probe(struct platform_device *pdev)\n{\n\tvoid __iomem * rng_base;\n\tstruct device *dev = &pdev->dev;\n\n\tif (!cpu_is_ixp46x())  \n\t\treturn -ENOSYS;\n\n\trng_base = devm_platform_ioremap_resource(pdev, 0);\n\tif (IS_ERR(rng_base))\n\t\treturn PTR_ERR(rng_base);\n\n\tixp4xx_rng_ops.priv = (unsigned long)rng_base;\n\treturn devm_hwrng_register(dev, &ixp4xx_rng_ops);\n}\n\nstatic const struct of_device_id ixp4xx_rng_of_match[] = {\n\t{\n\t\t.compatible = \"intel,ixp46x-rng\",\n\t},\n\t{},\n};\nMODULE_DEVICE_TABLE(of, ixp4xx_rng_of_match);\n\nstatic struct platform_driver ixp4xx_rng_driver = {\n\t.driver = {\n\t\t.name = \"ixp4xx-hwrandom\",\n\t\t.of_match_table = ixp4xx_rng_of_match,\n\t},\n\t.probe = ixp4xx_rng_probe,\n};\nmodule_platform_driver(ixp4xx_rng_driver);\n\nMODULE_AUTHOR(\"Deepak Saxena <dsaxena@plexity.net>\");\nMODULE_DESCRIPTION(\"H/W Pseudo-Random Number Generator (RNG) driver for IXP45x/46x\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

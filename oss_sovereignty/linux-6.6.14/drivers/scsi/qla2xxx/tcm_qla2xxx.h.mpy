@@ -1,0 +1,9 @@
+{
+  "module_name": "tcm_qla2xxx.h",
+  "hash_id": "feb40a1aff6aab03531d8ac552558113487cfeddc1d3edd6adb3debd88bdc052",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/qla2xxx/tcm_qla2xxx.h",
+  "human_readable_source": " \n#include <target/target_core_base.h>\n#include <linux/btree.h>\n\n \n#define TCM_QLA2XXX_NAMELEN\t32\n \n#define TCM_QLA2XXX_DEFAULT_TAGS 2088\n\n#include \"qla_target.h\"\n\nstruct tcm_qla2xxx_nacl {\n\tstruct se_node_acl se_node_acl;\n\n\t \n\tu32 nport_id;\n\t \n\tu64 nport_wwnn;\n\t \n\tchar nport_name[TCM_QLA2XXX_NAMELEN];\n\t \n\tstruct fc_port *fc_port;\n\t \n\tstruct se_session *nport_nexus;\n};\n\nstruct tcm_qla2xxx_tpg_attrib {\n\tint generate_node_acls;\n\tint cache_dynamic_acls;\n\tint demo_mode_write_protect;\n\tint prod_mode_write_protect;\n\tint demo_mode_login_only;\n\tint fabric_prot_type;\n\tint jam_host;\n};\n\nstruct tcm_qla2xxx_tpg {\n\t \n\tu16 lport_tpgt;\n\t \n\tatomic_t lport_tpg_enabled;\n\t \n\tstruct tcm_qla2xxx_lport *lport;\n\t \n\tstruct tcm_qla2xxx_tpg_attrib tpg_attrib;\n\t \n\tstruct se_portal_group se_tpg;\n};\n\nstruct tcm_qla2xxx_fc_loopid {\n\tstruct se_node_acl *se_nacl;\n};\n\nstruct tcm_qla2xxx_lport {\n\t \n\tu64 lport_wwpn;\n\t \n\tu64 lport_npiv_wwpn;\n\t \n\tu64 lport_npiv_wwnn;\n\t \n\tchar lport_name[TCM_QLA2XXX_NAMELEN];\n\t \n\tchar lport_naa_name[TCM_QLA2XXX_NAMELEN];\n\t \n\tstruct btree_head32 lport_fcport_map;\n\t \n\tstruct tcm_qla2xxx_fc_loopid *lport_loopid_map;\n\t \n\tstruct scsi_qla_host *qla_vha;\n\t \n\tstruct qla_tgt lport_qla_tgt;\n\t \n\tstruct tcm_qla2xxx_tpg *tpg_1;\n\t \n\tstruct se_wwn lport_wwn;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

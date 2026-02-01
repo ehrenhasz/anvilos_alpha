@@ -1,0 +1,9 @@
+{
+  "module_name": "fs_types.c",
+  "hash_id": "c137d095d48541f9fb812c87b056afe012badc4fa40b2c6763d965f9ae9ab36d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/fs_types.c",
+  "human_readable_source": "\n#include <linux/fs.h>\n#include <linux/export.h>\n\n \nstatic const unsigned char fs_dtype_by_ftype[FT_MAX] = {\n\t[FT_UNKNOWN]\t= DT_UNKNOWN,\n\t[FT_REG_FILE]\t= DT_REG,\n\t[FT_DIR]\t= DT_DIR,\n\t[FT_CHRDEV]\t= DT_CHR,\n\t[FT_BLKDEV]\t= DT_BLK,\n\t[FT_FIFO]\t= DT_FIFO,\n\t[FT_SOCK]\t= DT_SOCK,\n\t[FT_SYMLINK]\t= DT_LNK\n};\n\n \nunsigned char fs_ftype_to_dtype(unsigned int filetype)\n{\n\tif (filetype >= FT_MAX)\n\t\treturn DT_UNKNOWN;\n\n\treturn fs_dtype_by_ftype[filetype];\n}\nEXPORT_SYMBOL_GPL(fs_ftype_to_dtype);\n\n \nstatic const unsigned char fs_ftype_by_dtype[DT_MAX] = {\n\t[DT_REG]\t= FT_REG_FILE,\n\t[DT_DIR]\t= FT_DIR,\n\t[DT_LNK]\t= FT_SYMLINK,\n\t[DT_CHR]\t= FT_CHRDEV,\n\t[DT_BLK]\t= FT_BLKDEV,\n\t[DT_FIFO]\t= FT_FIFO,\n\t[DT_SOCK]\t= FT_SOCK,\n};\n\n \nunsigned char fs_umode_to_ftype(umode_t mode)\n{\n\treturn fs_ftype_by_dtype[S_DT(mode)];\n}\nEXPORT_SYMBOL_GPL(fs_umode_to_ftype);\n\n \nunsigned char fs_umode_to_dtype(umode_t mode)\n{\n\treturn fs_ftype_to_dtype(fs_umode_to_ftype(mode));\n}\nEXPORT_SYMBOL_GPL(fs_umode_to_dtype);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mac_be.c",
+  "hash_id": "9e9556238b4900db5bd4fb216fd519789e86b0140fe0e47aa66f9081c9b63cc2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw89/mac_be.c",
+  "human_readable_source": "\n \n\n#include \"mac.h\"\n#include \"reg.h\"\n\nstatic const u32 rtw89_mac_mem_base_addrs_be[RTW89_MAC_MEM_NUM] = {\n\t[RTW89_MAC_MEM_AXIDMA]\t        = AXIDMA_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_SHARED_BUF]\t= SHARED_BUF_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_DMAC_TBL]\t= DMAC_TBL_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_SHCUT_MACHDR]\t= SHCUT_MACHDR_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_STA_SCHED]\t= STA_SCHED_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_RXPLD_FLTR_CAM]\t= RXPLD_FLTR_CAM_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_SECURITY_CAM]\t= SEC_CAM_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_WOW_CAM]\t\t= WOW_CAM_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_CMAC_TBL]\t= CMAC_TBL_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_ADDR_CAM]\t= ADDR_CAM_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_BA_CAM]\t\t= BA_CAM_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_BCN_IE_CAM0]\t= BCN_IE_CAM0_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_BCN_IE_CAM1]\t= BCN_IE_CAM1_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_TXD_FIFO_0]\t= TXD_FIFO_0_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_TXD_FIFO_1]\t= TXD_FIFO_1_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_TXDATA_FIFO_0]\t= TXDATA_FIFO_0_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_TXDATA_FIFO_1]\t= TXDATA_FIFO_1_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_CPU_LOCAL]\t= CPU_LOCAL_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_BSSID_CAM]\t= BSSID_CAM_BASE_ADDR_BE,\n\t[RTW89_MAC_MEM_WD_PAGE]\t\t= WD_PAGE_BASE_ADDR_BE,\n};\n\nconst struct rtw89_mac_gen_def rtw89_mac_gen_be = {\n\t.band1_offset = RTW89_MAC_BE_BAND_REG_OFFSET,\n\t.filter_model_addr = R_BE_FILTER_MODEL_ADDR,\n\t.indir_access_addr = R_BE_INDIR_ACCESS_ENTRY,\n\t.mem_base_addrs = rtw89_mac_mem_base_addrs_be,\n\t.rx_fltr = R_BE_RX_FLTR_OPT,\n};\nEXPORT_SYMBOL(rtw89_mac_gen_be);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

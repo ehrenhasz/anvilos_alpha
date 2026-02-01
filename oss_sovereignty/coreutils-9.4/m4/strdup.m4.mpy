@@ -1,0 +1,9 @@
+{
+  "module_name": "strdup.m4",
+  "hash_id": "aa1a4e12de02cea1dd367928a6e89f8b909d3aba3fbecfd580d837db2318f91e",
+  "original_prompt": "Ingested from coreutils-9.4/m4/strdup.m4",
+  "human_readable_source": "# strdup.m4 serial 15\n\ndnl Copyright (C) 2002-2023 Free Software Foundation, Inc.\n\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_STRDUP],\n[\n  AC_REQUIRE([gl_STRING_H_DEFAULTS])\n  AC_CHECK_DECLS_ONCE([strdup])\n  if test $ac_cv_have_decl_strdup = no; then\n    HAVE_DECL_STRDUP=0\n  fi\n])\n\nAC_DEFUN([gl_FUNC_STRDUP_POSIX],\n[\n  AC_REQUIRE([gl_STRING_H_DEFAULTS])\n  AC_REQUIRE([gl_CHECK_MALLOC_POSIX])\n  if test $gl_cv_func_malloc_posix != yes; then\n    REPLACE_STRDUP=1\n  fi\n  AC_CHECK_DECLS_ONCE([strdup])\n  if test $ac_cv_have_decl_strdup = no; then\n    HAVE_DECL_STRDUP=0\n  fi\n])\n\n# Prerequisites of lib/strdup.c.\nAC_DEFUN([gl_PREREQ_STRDUP], [:])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

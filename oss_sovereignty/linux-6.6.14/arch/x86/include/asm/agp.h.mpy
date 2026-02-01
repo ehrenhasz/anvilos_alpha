@@ -1,0 +1,9 @@
+{
+  "module_name": "agp.h",
+  "hash_id": "a5d7f206c9dd385b374346b62578aa1714f366699d820ff8e12380be10567223",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/agp.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_AGP_H\n#define _ASM_X86_AGP_H\n\n#include <linux/pgtable.h>\n#include <asm/cacheflush.h>\n\n \n\n#define map_page_into_agp(page) set_pages_uc(page, 1)\n#define unmap_page_from_agp(page) set_pages_wb(page, 1)\n\n \n#define flush_agp_cache() wbinvd()\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

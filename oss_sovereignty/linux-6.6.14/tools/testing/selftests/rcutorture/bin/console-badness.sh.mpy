@@ -1,0 +1,9 @@
+{
+  "module_name": "console-badness.sh",
+  "hash_id": "febca401131c1f77f2bc0e6b6f6bbf521dd8aa4aa45ffa675b833304acba9957",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/bin/console-badness.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Scan standard input for error messages, dumping any found to standard\n# output.\n#\n# Usage: console-badness.sh\n#\n# Copyright (C) 2020 Facebook, Inc.\n#\n# Authors: Paul E. McKenney <paulmck@kernel.org>\n\ngrep -E 'Badness|WARNING:|Warn|BUG|===========|BUG: KCSAN:|Call Trace:|Oops:|detected stalls on CPUs/tasks:|self-detected stall on CPU|Stall ended before state dump start|\\?\\?\\? Writer stall state|rcu_.*kthread starved for|!!!' |\ngrep -v 'ODEBUG: ' |\ngrep -v 'This means that this is a DEBUG kernel and it is' |\ngrep -v 'Warning: unable to open an initial console' |\ngrep -v 'Warning: Failed to add ttynull console. No stdin, stdout, and stderr.*the init process!' |\ngrep -v 'NOHZ tick-stop error: Non-RCU local softirq work is pending, handler'\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

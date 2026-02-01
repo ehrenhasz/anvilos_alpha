@@ -1,0 +1,9 @@
+{
+  "module_name": "tdx-guest.h",
+  "hash_id": "ad77cae389288130a1a2d7488ea7b45744fd22d15a6aea6ad83e2049ae62aed2",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tdx-guest.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_TDX_GUEST_H_\n#define _UAPI_LINUX_TDX_GUEST_H_\n\n#include <linux/ioctl.h>\n#include <linux/types.h>\n\n \n#define TDX_REPORTDATA_LEN              64\n\n \n#define TDX_REPORT_LEN                  1024\n\n \nstruct tdx_report_req {\n\t__u8 reportdata[TDX_REPORTDATA_LEN];\n\t__u8 tdreport[TDX_REPORT_LEN];\n};\n\n \n#define TDX_CMD_GET_REPORT0              _IOWR('T', 1, struct tdx_report_req)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

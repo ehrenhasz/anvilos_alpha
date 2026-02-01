@@ -1,0 +1,9 @@
+{
+  "module_name": "lib.h",
+  "hash_id": "5b5924b9e99d87dcbf7cc026e5c34bac0893a7838b2c6908cda0ea554e3b7c09",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/lib.h",
+  "human_readable_source": " \n \n\n#ifndef __SELFTESTS_POWERPC_PMU_LIB_H\n#define __SELFTESTS_POWERPC_PMU_LIB_H\n\n#include <stdbool.h>\n#include <stdio.h>\n#include <stdint.h>\n#include <string.h>\n#include <unistd.h>\n\nunion pipe {\n\tstruct {\n\t\tint read_fd;\n\t\tint write_fd;\n\t};\n\tint fds[2];\n};\n\nextern int kill_child_and_wait(pid_t child_pid);\nextern int wait_for_child(pid_t child_pid);\nextern int sync_with_child(union pipe read_pipe, union pipe write_pipe);\nextern int wait_for_parent(union pipe read_pipe);\nextern int notify_parent(union pipe write_pipe);\nextern int notify_parent_of_error(union pipe write_pipe);\nextern pid_t eat_cpu(int (test_function)(void));\nextern bool require_paranoia_below(int level);\n\nstruct addr_range {\n\tuint64_t first, last;\n};\n\nextern struct addr_range libc, vdso;\n\nint parse_proc_maps(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pfxlen.h",
+  "hash_id": "216c6255a3b1219cc90771894ec0fb14f491ae299bc32ea0011b602b887a7fba",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter/ipset/pfxlen.h",
+  "human_readable_source": " \n#ifndef _PFXLEN_H\n#define _PFXLEN_H\n\n#include <asm/byteorder.h>\n#include <linux/netfilter.h>\n#include <net/tcp.h>\n\n \nextern const union nf_inet_addr ip_set_netmask_map[];\nextern const union nf_inet_addr ip_set_hostmask_map[];\n\nstatic inline __be32\nip_set_netmask(u8 pfxlen)\n{\n\treturn ip_set_netmask_map[pfxlen].ip;\n}\n\nstatic inline const __be32 *\nip_set_netmask6(u8 pfxlen)\n{\n\treturn &ip_set_netmask_map[pfxlen].ip6[0];\n}\n\nstatic inline u32\nip_set_hostmask(u8 pfxlen)\n{\n\treturn (__force u32) ip_set_hostmask_map[pfxlen].ip;\n}\n\nstatic inline const __be32 *\nip_set_hostmask6(u8 pfxlen)\n{\n\treturn &ip_set_hostmask_map[pfxlen].ip6[0];\n}\n\nextern u32 ip_set_range_to_cidr(u32 from, u32 to, u8 *cidr);\n\n#define ip_set_mask_from_to(from, to, cidr)\t\\\ndo {\t\t\t\t\t\t\\\n\tfrom &= ip_set_hostmask(cidr);\t\t\\\n\tto = from | ~ip_set_hostmask(cidr);\t\\\n} while (0)\n\nstatic inline void\nip6_netmask(union nf_inet_addr *ip, u8 prefix)\n{\n\tip->ip6[0] &= ip_set_netmask6(prefix)[0];\n\tip->ip6[1] &= ip_set_netmask6(prefix)[1];\n\tip->ip6[2] &= ip_set_netmask6(prefix)[2];\n\tip->ip6[3] &= ip_set_netmask6(prefix)[3];\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

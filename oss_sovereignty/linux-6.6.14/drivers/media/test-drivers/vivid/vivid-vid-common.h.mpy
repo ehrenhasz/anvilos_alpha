@@ -1,0 +1,9 @@
+{
+  "module_name": "vivid-vid-common.h",
+  "hash_id": "2b23239ed2b00813414c34942dbd1b895a654ed9b8f9fc3633872ac5abea98d9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vivid/vivid-vid-common.h",
+  "human_readable_source": " \n \n\n#ifndef _VIVID_VID_COMMON_H_\n#define _VIVID_VID_COMMON_H_\n\ntypedef int (*fmtfunc)(struct file *file, void *priv, struct v4l2_format *f);\n\n \nvoid fmt_sp2mp(const struct v4l2_format *sp_fmt, struct v4l2_format *mp_fmt);\nint fmt_sp2mp_func(struct file *file, void *priv,\n\t\tstruct v4l2_format *f, fmtfunc func);\n\nextern const struct v4l2_dv_timings_cap vivid_dv_timings_cap;\n\nconst struct vivid_fmt *vivid_get_format(struct vivid_dev *dev, u32 pixelformat);\n\nbool vivid_vid_can_loop(struct vivid_dev *dev);\nvoid vivid_send_source_change(struct vivid_dev *dev, unsigned type);\n\nint vivid_vid_adjust_sel(unsigned flags, struct v4l2_rect *r);\n\nint vivid_enum_fmt_vid(struct file *file, void  *priv, struct v4l2_fmtdesc *f);\nint vidioc_g_std(struct file *file, void *priv, v4l2_std_id *id);\nint vidioc_g_dv_timings(struct file *file, void *_fh, struct v4l2_dv_timings *timings);\nint vidioc_enum_dv_timings(struct file *file, void *_fh, struct v4l2_enum_dv_timings *timings);\nint vidioc_dv_timings_cap(struct file *file, void *_fh, struct v4l2_dv_timings_cap *cap);\nint vidioc_g_edid(struct file *file, void *_fh, struct v4l2_edid *edid);\nint vidioc_subscribe_event(struct v4l2_fh *fh, const struct v4l2_event_subscription *sub);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

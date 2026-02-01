@@ -1,0 +1,9 @@
+{
+  "module_name": "regsnv04.h",
+  "hash_id": "c20ee68ff45d6d5134944dfd3f0c65537054c362af5b2ab73db8be90d4af16f5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/regsnv04.h",
+  "human_readable_source": " \n#ifndef __NVKM_FB_REGS_04_H__\n#define __NVKM_FB_REGS_04_H__\n\n#define NV04_PFB_BOOT_0\t\t\t\t\t\t0x00100000\n#\tdefine NV04_PFB_BOOT_0_RAM_AMOUNT\t\t\t0x00000003\n#\tdefine NV04_PFB_BOOT_0_RAM_AMOUNT_32MB\t\t\t0x00000000\n#\tdefine NV04_PFB_BOOT_0_RAM_AMOUNT_4MB\t\t\t0x00000001\n#\tdefine NV04_PFB_BOOT_0_RAM_AMOUNT_8MB\t\t\t0x00000002\n#\tdefine NV04_PFB_BOOT_0_RAM_AMOUNT_16MB\t\t\t0x00000003\n#\tdefine NV04_PFB_BOOT_0_RAM_WIDTH_128\t\t\t0x00000004\n#\tdefine NV04_PFB_BOOT_0_RAM_TYPE\t\t\t\t0x00000028\n#\tdefine NV04_PFB_BOOT_0_RAM_TYPE_SGRAM_8MBIT\t\t0x00000000\n#\tdefine NV04_PFB_BOOT_0_RAM_TYPE_SGRAM_16MBIT\t\t0x00000008\n#\tdefine NV04_PFB_BOOT_0_RAM_TYPE_SGRAM_16MBIT_4BANK\t0x00000010\n#\tdefine NV04_PFB_BOOT_0_RAM_TYPE_SDRAM_16MBIT\t\t0x00000018\n#\tdefine NV04_PFB_BOOT_0_RAM_TYPE_SDRAM_64MBIT\t\t0x00000020\n#\tdefine NV04_PFB_BOOT_0_RAM_TYPE_SDRAM_64MBITX16\t\t0x00000028\n#\tdefine NV04_PFB_BOOT_0_UMA_ENABLE\t\t\t0x00000100\n#\tdefine NV04_PFB_BOOT_0_UMA_SIZE\t\t\t\t0x0000f000\n#define NV04_PFB_CFG0\t\t\t\t\t\t0x00100200\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

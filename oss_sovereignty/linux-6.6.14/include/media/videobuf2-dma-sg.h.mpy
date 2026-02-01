@@ -1,0 +1,9 @@
+{
+  "module_name": "videobuf2-dma-sg.h",
+  "hash_id": "2dd054b706813692ac335ce23b2145e6e06c21b1f5d6caaa878fc584ced4358a",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/videobuf2-dma-sg.h",
+  "human_readable_source": " \n\n#ifndef _MEDIA_VIDEOBUF2_DMA_SG_H\n#define _MEDIA_VIDEOBUF2_DMA_SG_H\n\n#include <media/videobuf2-v4l2.h>\n\nstatic inline struct sg_table *vb2_dma_sg_plane_desc(\n\t\tstruct vb2_buffer *vb, unsigned int plane_no)\n{\n\treturn (struct sg_table *)vb2_plane_cookie(vb, plane_no);\n}\n\nextern const struct vb2_mem_ops vb2_dma_sg_memops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

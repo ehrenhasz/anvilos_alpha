@@ -1,0 +1,9 @@
+{
+  "module_name": "btf_module.c",
+  "hash_id": "0834f61419524800b25ce18097af06cf62c3191ab6014ca093548147df91cbc1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/btf_module.c",
+  "human_readable_source": " \n \n\n#include <test_progs.h>\n#include <bpf/btf.h>\n\nstatic const char *module_name = \"bpf_testmod\";\nstatic const char *symbol_name = \"bpf_testmod_test_read\";\n\nvoid test_btf_module()\n{\n\tstruct btf *vmlinux_btf, *module_btf;\n\t__s32 type_id;\n\n\tif (!env.has_testmod) {\n\t\ttest__skip();\n\t\treturn;\n\t}\n\n\tvmlinux_btf = btf__load_vmlinux_btf();\n\tif (!ASSERT_OK_PTR(vmlinux_btf, \"could not load vmlinux BTF\"))\n\t\treturn;\n\n\tmodule_btf = btf__load_module_btf(module_name, vmlinux_btf);\n\tif (!ASSERT_OK_PTR(module_btf, \"could not load module BTF\"))\n\t\tgoto cleanup;\n\n\ttype_id = btf__find_by_name(module_btf, symbol_name);\n\tASSERT_GT(type_id, 0, \"func not found\");\n\ncleanup:\n\tbtf__free(module_btf);\n\tbtf__free(vmlinux_btf);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

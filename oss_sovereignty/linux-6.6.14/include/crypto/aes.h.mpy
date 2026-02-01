@@ -1,0 +1,9 @@
+{
+  "module_name": "aes.h",
+  "hash_id": "5531f828061587a5b78c7fcb65a6e0dbf510d4ef59a455a9de18de3e57543f7f",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/aes.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYPTO_AES_H\n#define _CRYPTO_AES_H\n\n#include <linux/types.h>\n#include <linux/crypto.h>\n\n#define AES_MIN_KEY_SIZE\t16\n#define AES_MAX_KEY_SIZE\t32\n#define AES_KEYSIZE_128\t\t16\n#define AES_KEYSIZE_192\t\t24\n#define AES_KEYSIZE_256\t\t32\n#define AES_BLOCK_SIZE\t\t16\n#define AES_MAX_KEYLENGTH\t(15 * 16)\n#define AES_MAX_KEYLENGTH_U32\t(AES_MAX_KEYLENGTH / sizeof(u32))\n\n \nstruct crypto_aes_ctx {\n\tu32 key_enc[AES_MAX_KEYLENGTH_U32];\n\tu32 key_dec[AES_MAX_KEYLENGTH_U32];\n\tu32 key_length;\n};\n\nextern const u32 crypto_ft_tab[4][256] ____cacheline_aligned;\nextern const u32 crypto_it_tab[4][256] ____cacheline_aligned;\n\n \nstatic inline int aes_check_keylen(unsigned int keylen)\n{\n\tswitch (keylen) {\n\tcase AES_KEYSIZE_128:\n\tcase AES_KEYSIZE_192:\n\tcase AES_KEYSIZE_256:\n\t\tbreak;\n\tdefault:\n\t\treturn -EINVAL;\n\t}\n\n\treturn 0;\n}\n\nint crypto_aes_set_key(struct crypto_tfm *tfm, const u8 *in_key,\n\t\tunsigned int key_len);\n\n \nint aes_expandkey(struct crypto_aes_ctx *ctx, const u8 *in_key,\n\t\t  unsigned int key_len);\n\n \nvoid aes_encrypt(const struct crypto_aes_ctx *ctx, u8 *out, const u8 *in);\n\n \nvoid aes_decrypt(const struct crypto_aes_ctx *ctx, u8 *out, const u8 *in);\n\nextern const u8 crypto_aes_sbox[];\nextern const u8 crypto_aes_inv_sbox[];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

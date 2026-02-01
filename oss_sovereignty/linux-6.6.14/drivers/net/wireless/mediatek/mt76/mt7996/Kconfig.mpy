@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "fc80996a4aee47f8d980010d49fd1458e142e87d92875d7f3076d7345b78236c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt7996/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: ISC\nconfig MT7996E\n\ttristate \"MediaTek MT7996 (PCIe) support\"\n\tselect MT76_CONNAC_LIB\n\tselect WANT_DEV_COREDUMP\n\tselect RELAY\n\tdepends on MAC80211\n\tdepends on PCI\n\thelp\n\t  This adds support for MT7996-based PCIe wireless devices,\n\t  which support concurrent tri-band operation at 6GHz, 5GHz,\n\t  and 2.4GHz IEEE 802.11be 4x4:4SS 4096-QAM, 320MHz channels.\n\n\t  To compile this driver as a module, choose M here.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "365aba245e0e228b924b2163e19c9509aae02b7d7b4cd4b5342da5166c667dab",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/Build",
+  "human_readable_source": "pmu-events-y\t+= pmu-events.o\nJDIR\t\t=  pmu-events/arch/$(SRCARCH)\nJSON\t\t=  $(shell [ -d $(JDIR) ] &&\t\t\t\t\\\n\t\t\tfind $(JDIR) -name '*.json' -o -name 'mapfile.csv')\nJDIR_TEST\t=  pmu-events/arch/test\nJSON_TEST\t=  $(shell [ -d $(JDIR_TEST) ] &&\t\t\t\\\n\t\t\tfind $(JDIR_TEST) -name '*.json')\nJEVENTS_PY\t=  pmu-events/jevents.py\nMETRIC_PY\t=  pmu-events/metric.py\nMETRIC_TEST_PY\t=  pmu-events/metric_test.py\nEMPTY_PMU_EVENTS_C = pmu-events/empty-pmu-events.c\nPMU_EVENTS_C\t=  $(OUTPUT)pmu-events/pmu-events.c\nMETRIC_TEST_LOG\t=  $(OUTPUT)pmu-events/metric_test.log\n\nifeq ($(JEVENTS_ARCH),)\nJEVENTS_ARCH=$(SRCARCH)\nendif\nJEVENTS_MODEL ?= all\n\n#\n# Locate/process JSON files in pmu-events/arch/\n# directory and create tables in pmu-events.c.\n#\n\nifeq ($(NO_JEVENTS),1)\n$(PMU_EVENTS_C): $(EMPTY_PMU_EVENTS_C)\n\t$(call rule_mkdir)\n\t$(Q)$(call echo-cmd,gen)cp $< $@\nelse\n$(METRIC_TEST_LOG): $(METRIC_TEST_PY) $(METRIC_PY)\n\t$(call rule_mkdir)\n\t$(Q)$(call echo-cmd,test)$(PYTHON) $< 2> $@ || (cat $@ && false)\n\n$(PMU_EVENTS_C): $(JSON) $(JSON_TEST) $(JEVENTS_PY) $(METRIC_PY) $(METRIC_TEST_LOG)\n\t$(call rule_mkdir)\n\t$(Q)$(call echo-cmd,gen)$(PYTHON) $(JEVENTS_PY) $(JEVENTS_ARCH) $(JEVENTS_MODEL) pmu-events/arch $@\nendif\n\n# pmu-events.c file is generated in the OUTPUT directory so it needs a\n# separate rule to depend on it properly\n$(OUTPUT)pmu-events/pmu-events.o: $(PMU_EVENTS_C)\n\t$(call rule_mkdir)\n\t$(call if_changed_dep,cc_o_c)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

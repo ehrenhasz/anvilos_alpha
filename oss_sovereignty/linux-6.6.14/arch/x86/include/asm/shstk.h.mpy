@@ -1,0 +1,9 @@
+{
+  "module_name": "shstk.h",
+  "hash_id": "504f79d4ab6ed6a9e1d877852082ca6936e333fd9ed6f338c83b9558aa6ff987",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/shstk.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SHSTK_H\n#define _ASM_X86_SHSTK_H\n\n#ifndef __ASSEMBLY__\n#include <linux/types.h>\n\nstruct task_struct;\nstruct ksignal;\n\n#ifdef CONFIG_X86_USER_SHADOW_STACK\nstruct thread_shstk {\n\tu64\tbase;\n\tu64\tsize;\n};\n\nlong shstk_prctl(struct task_struct *task, int option, unsigned long arg2);\nvoid reset_thread_features(void);\nunsigned long shstk_alloc_thread_stack(struct task_struct *p, unsigned long clone_flags,\n\t\t\t\t       unsigned long stack_size);\nvoid shstk_free(struct task_struct *p);\nint setup_signal_shadow_stack(struct ksignal *ksig);\nint restore_signal_shadow_stack(void);\n#else\nstatic inline long shstk_prctl(struct task_struct *task, int option,\n\t\t\t       unsigned long arg2) { return -EINVAL; }\nstatic inline void reset_thread_features(void) {}\nstatic inline unsigned long shstk_alloc_thread_stack(struct task_struct *p,\n\t\t\t\t\t\t     unsigned long clone_flags,\n\t\t\t\t\t\t     unsigned long stack_size) { return 0; }\nstatic inline void shstk_free(struct task_struct *p) {}\nstatic inline int setup_signal_shadow_stack(struct ksignal *ksig) { return 0; }\nstatic inline int restore_signal_shadow_stack(void) { return 0; }\n#endif  \n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

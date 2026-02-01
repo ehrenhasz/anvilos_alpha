@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objpolyiter.c.qstr",
+  "hash_id": "ca2230a8bdf602c21f081f63b956b886a5ea3b7f4a010bd2488e35d86472f322",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objpolyiter.c.qstr",
+  "human_readable_source": "Q(iterator)\nQ(__del__)\nQ(iterator)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

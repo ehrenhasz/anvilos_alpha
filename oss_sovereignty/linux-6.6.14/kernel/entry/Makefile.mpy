@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bb66c610490c97af3752529ded3d6f10158827d40c0250eb994ffccfe06203b6",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/entry/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n# Prevent the noinstr section from being pestered by sanitizer and other goodies\n# as long as these things cannot be disabled per function.\nKASAN_SANITIZE := n\nUBSAN_SANITIZE := n\nKCOV_INSTRUMENT := n\n\nCFLAGS_REMOVE_common.o\t = -fstack-protector -fstack-protector-strong\nCFLAGS_common.o\t\t+= -fno-stack-protector\n\nobj-$(CONFIG_GENERIC_ENTRY) \t\t+= common.o syscall_user_dispatch.o\nobj-$(CONFIG_KVM_XFER_TO_GUEST_WORK)\t+= kvm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tm-exec.c",
+  "hash_id": "48ddfc1b0ea3ae69455a37395e1ba311ea959faa561e005927ac9057497956b2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/tm/tm-exec.c",
+  "human_readable_source": "\n \n\n#define _GNU_SOURCE\n#include <errno.h>\n#include <inttypes.h>\n#include <libgen.h>\n#include <pthread.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n\n#include \"utils.h\"\n#include \"tm.h\"\n\nstatic char *path;\n\nstatic int test_exec(void)\n{\n\tSKIP_IF(!have_htm());\n\tSKIP_IF(htm_is_synthetic());\n\n\tasm __volatile__(\n\t\t\"tbegin.;\"\n\t\t\"blt    1f; \"\n\t\t\"tsuspend.;\"\n\t\t\"1: ;\"\n\t\t: : : \"memory\");\n\n\texecl(path, \"tm-exec\", \"--child\", NULL);\n\n\t \n\tperror(\"execl() failed\");\n\treturn 1;\n}\n\nstatic int after_exec(void)\n{\n\tasm __volatile__(\n\t\t\"tbegin.;\"\n\t\t\"blt    1f;\"\n\t\t\"tsuspend.;\"\n\t\t\"1: ;\"\n\t\t: : : \"memory\");\n\n\tFAIL_IF(failure_is_nesting());\n\treturn 0;\n}\n\nint main(int argc, char *argv[])\n{\n\tpath = argv[0];\n\n\tif (argc > 1 && strcmp(argv[1], \"--child\") == 0)\n\t\treturn after_exec();\n\n\treturn test_harness(test_exec, \"tm_exec\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

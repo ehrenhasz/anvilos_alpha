@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f056afa629b80482e3b05c8125f0345b189fc1b7e7715faf735331dc51113f7b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/saa7134/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nsaa7134-y +=\tsaa7134-cards.o saa7134-core.o saa7134-i2c.o\nsaa7134-y +=\tsaa7134-ts.o saa7134-tvaudio.o saa7134-vbi.o\nsaa7134-y +=\tsaa7134-video.o\nsaa7134-$(CONFIG_VIDEO_SAA7134_RC) += saa7134-input.o\n\nobj-$(CONFIG_VIDEO_SAA7134) +=  saa7134.o saa7134-empress.o\nobj-$(CONFIG_VIDEO_SAA7134_GO7007) += saa7134-go7007.o\n\nobj-$(CONFIG_VIDEO_SAA7134_ALSA) += saa7134-alsa.o\n\nobj-$(CONFIG_VIDEO_SAA7134_DVB) += saa7134-dvb.o\n\nccflags-y += -I$(srctree)/drivers/media/tuners\nccflags-y += -I$(srctree)/drivers/media/dvb-frontends\nccflags-y += -I$(srctree)/drivers/media/usb/go7007\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

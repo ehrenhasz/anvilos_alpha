@@ -1,0 +1,9 @@
+{
+  "module_name": "arg-nonnull.h",
+  "hash_id": "b05ce973c018a7d50124c1470f3d9c3f9d61ec3b2fe19583db50c550baf1d54e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/arg-nonnull.h",
+  "human_readable_source": " \n#ifndef _GL_ARG_NONNULL\n# if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3) || defined __clang__\n#  define _GL_ARG_NONNULL(params) __attribute__ ((__nonnull__ params))\n# else\n#  define _GL_ARG_NONNULL(params)\n# endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

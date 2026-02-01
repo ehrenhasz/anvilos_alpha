@@ -1,0 +1,9 @@
+{
+  "module_name": "r8a7795-sysc.h",
+  "hash_id": "d2e14ab9d0e5a9c8b4c27bdb51af3bb055787f8085c12bf72ac12c1ab0f4cb95",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/r8a7795-sysc.h",
+  "human_readable_source": " \n \n#ifndef __DT_BINDINGS_POWER_R8A7795_SYSC_H__\n#define __DT_BINDINGS_POWER_R8A7795_SYSC_H__\n\n \n\n#define R8A7795_PD_CA57_CPU0\t\t 0\n#define R8A7795_PD_CA57_CPU1\t\t 1\n#define R8A7795_PD_CA57_CPU2\t\t 2\n#define R8A7795_PD_CA57_CPU3\t\t 3\n#define R8A7795_PD_CA53_CPU0\t\t 5\n#define R8A7795_PD_CA53_CPU1\t\t 6\n#define R8A7795_PD_CA53_CPU2\t\t 7\n#define R8A7795_PD_CA53_CPU3\t\t 8\n#define R8A7795_PD_A3VP\t\t\t 9\n#define R8A7795_PD_CA57_SCU\t\t12\n#define R8A7795_PD_CR7\t\t\t13\n#define R8A7795_PD_A3VC\t\t\t14\n#define R8A7795_PD_3DG_A\t\t17\n#define R8A7795_PD_3DG_B\t\t18\n#define R8A7795_PD_3DG_C\t\t19\n#define R8A7795_PD_3DG_D\t\t20\n#define R8A7795_PD_CA53_SCU\t\t21\n#define R8A7795_PD_3DG_E\t\t22\n#define R8A7795_PD_A3IR\t\t\t24\n#define R8A7795_PD_A2VC1\t\t26\n\n \n#define R8A7795_PD_ALWAYS_ON\t\t32\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

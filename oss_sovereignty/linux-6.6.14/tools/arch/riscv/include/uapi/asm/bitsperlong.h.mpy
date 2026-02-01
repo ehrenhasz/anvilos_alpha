@@ -1,0 +1,9 @@
+{
+  "module_name": "bitsperlong.h",
+  "hash_id": "7a2f7299f7cf1709089c7bb9d82f27a9d42dd4bdfa70585427632637644b3c9b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/riscv/include/uapi/asm/bitsperlong.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_ASM_RISCV_BITSPERLONG_H\n#define _UAPI_ASM_RISCV_BITSPERLONG_H\n\n#define __BITS_PER_LONG (__SIZEOF_POINTER__ * 8)\n\n#include <asm-generic/bitsperlong.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

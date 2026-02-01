@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e4a1bee225b79b56558079ada1ebf2805223be551127732031737ca6777e5b2e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/st_lsm9ds0/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_IIO_ST_LSM9DS0) += st_lsm9ds0.o\nst_lsm9ds0-y := st_lsm9ds0_core.o\nobj-$(CONFIG_IIO_ST_LSM9DS0_I2C) += st_lsm9ds0_i2c.o\nobj-$(CONFIG_IIO_ST_LSM9DS0_SPI) += st_lsm9ds0_spi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

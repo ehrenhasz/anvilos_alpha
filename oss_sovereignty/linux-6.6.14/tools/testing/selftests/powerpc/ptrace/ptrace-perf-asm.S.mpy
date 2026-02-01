@@ -1,0 +1,9 @@
+{
+  "module_name": "ptrace-perf-asm.S",
+  "hash_id": "fdbc9cf25a1d34bb9a3204d928eade836847e443ddb89070026ec8f38a8b4d24",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/ptrace/ptrace-perf-asm.S",
+  "human_readable_source": " \n\n#include <ppc-asm.h>\n\n.global same_watch_addr_load\n.global same_watch_addr_trap\n\nFUNC_START(same_watch_addr_child)\n\tnop\nsame_watch_addr_load:\n\tld 0,0(3)\n\tnop\nsame_watch_addr_trap:\n\ttrap\n\tblr\nFUNC_END(same_watch_addr_child)\n\n\n.global perf_then_ptrace_load1\n.global perf_then_ptrace_load2\n.global perf_then_ptrace_trap\n\nFUNC_START(perf_then_ptrace_child)\n\tnop\nperf_then_ptrace_load1:\n\tld 0,0(3)\nperf_then_ptrace_load2:\n\tld 0,0(4)\n\tnop\nperf_then_ptrace_trap:\n\ttrap\n\tblr\nFUNC_END(perf_then_ptrace_child)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "30635a50787e25f7c0ef0b1d93a42e119e08e7d5373e89286552ac919c7783cc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/pcmcia/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCC := $(CROSS_COMPILE)gcc\nCFLAGS := -I../../usr/include\n\nPROGS := crc32hash\n\nall: $(PROGS)\n\nclean:\n\trm -fr $(PROGS)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

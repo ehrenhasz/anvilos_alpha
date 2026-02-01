@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm3368-clock.h",
+  "hash_id": "a68a0f4dc1b0df0c7037227a99d7e65b5c979dfd3c2473e5ef5a47fac5db9013",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/bcm3368-clock.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_CLOCK_BCM3368_H\n#define __DT_BINDINGS_CLOCK_BCM3368_H\n\n#define BCM3368_CLK_MAC \t3\n#define BCM3368_CLK_TC         \t5\n#define BCM3368_CLK_US_TOP\t6\n#define BCM3368_CLK_DS_TOP\t7\n#define BCM3368_CLK_ACM \t8\n#define BCM3368_CLK_SPI\t        9\n#define BCM3368_CLK_USBS\t10\n#define BCM3368_CLK_BMU         11\n#define BCM3368_CLK_PCM         12\n#define BCM3368_CLK_NTP         13\n#define BCM3368_CLK_ACP_B       14\n#define BCM3368_CLK_ACP_A       15\n#define BCM3368_CLK_EMUSB       17\n#define BCM3368_CLK_ENET0       18\n#define BCM3368_CLK_ENET1       19\n#define BCM3368_CLK_USBSU       20\n#define BCM3368_CLK_EPHY        21\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

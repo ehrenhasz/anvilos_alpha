@@ -1,0 +1,9 @@
+{
+  "module_name": "tda826x.h",
+  "hash_id": "2cda4ad0734becbd33739ed6ab446d3ba7a187a01297007a3cc4cc5edd740cc8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/tda826x.h",
+  "human_readable_source": " \n   \n\n#ifndef __DVB_TDA826X_H__\n#define __DVB_TDA826X_H__\n\n#include <linux/i2c.h>\n#include <media/dvb_frontend.h>\n\n \n#if IS_REACHABLE(CONFIG_DVB_TDA826X)\nextern struct dvb_frontend* tda826x_attach(struct dvb_frontend *fe, int addr,\n\t\t\t\t\t   struct i2c_adapter *i2c,\n\t\t\t\t\t   int has_loopthrough);\n#else\nstatic inline struct dvb_frontend* tda826x_attach(struct dvb_frontend *fe,\n\t\t\t\t\t\t  int addr,\n\t\t\t\t\t\t  struct i2c_adapter *i2c,\n\t\t\t\t\t\t  int has_loopthrough)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif \n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

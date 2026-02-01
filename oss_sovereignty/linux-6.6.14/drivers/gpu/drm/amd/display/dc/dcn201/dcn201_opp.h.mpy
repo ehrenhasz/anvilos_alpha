@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn201_opp.h",
+  "hash_id": "cdd17bfab98241ea750b2e603390ea4ebdb6fc32a1bd61b5b7f0cc89fe6e64e4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn201/dcn201_opp.h",
+  "human_readable_source": " \n\n#ifndef __DC_OPP_DCN201_H__\n#define __DC_OPP_DCN201_H__\n\n#include \"dcn20/dcn20_opp.h\"\n\n#define TO_DCN201_OPP(opp)\\\n\tcontainer_of(opp, struct dcn201_opp, base)\n\n#define OPP_SF(reg_name, field_name, post_fix)\\\n\t.field_name = reg_name ## __ ## field_name ## post_fix\n\n#define OPP_REG_LIST_DCN201(id) \\\n\tOPP_REG_LIST_DCN10(id), \\\n\tOPP_DPG_REG_LIST(id), \\\n\tSRI(FMT_422_CONTROL, FMT, id)\n\n#define OPP_MASK_SH_LIST_DCN201(mask_sh) \\\n\tOPP_MASK_SH_LIST_DCN20(mask_sh)\n\n#define OPP_DCN201_REG_FIELD_LIST(type) \\\n\tOPP_DCN20_REG_FIELD_LIST(type);\n\nstruct dcn201_opp_shift {\n\tOPP_DCN201_REG_FIELD_LIST(uint8_t);\n};\n\nstruct dcn201_opp_mask {\n\tOPP_DCN201_REG_FIELD_LIST(uint32_t);\n};\n\nstruct dcn201_opp_registers {\n\tOPP_REG_VARIABLE_LIST_DCN2_0;\n};\n\nstruct dcn201_opp {\n\tstruct output_pixel_processor base;\n\tconst struct  dcn201_opp_registers *regs;\n\tconst struct  dcn201_opp_shift *opp_shift;\n\tconst struct  dcn201_opp_mask *opp_mask;\n\tbool is_write_to_ram_a_safe;\n};\n\nvoid dcn201_opp_construct(struct dcn201_opp *oppn201,\n\tstruct dc_context *ctx,\n\tuint32_t inst,\n\tconst struct dcn201_opp_registers *regs,\n\tconst struct dcn201_opp_shift *opp_shift,\n\tconst struct dcn201_opp_mask *opp_mask);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "uprobe_multi_bench.c",
+  "hash_id": "73b63e12720c92dd7cf1f60ba124da3be1034010c4ed004f26cf549902a232b6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/uprobe_multi_bench.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nint count;\n\nSEC(\"uprobe.multi/./uprobe_multi:uprobe_multi_func_*\")\nint uprobe_bench(struct pt_regs *ctx)\n{\n\tcount++;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

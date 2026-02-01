@@ -1,0 +1,9 @@
+{
+  "module_name": "netlink.c",
+  "hash_id": "3b6769be669efe254111a83689004e62ab9f120bf65b180f5a2c2e8baccf2a8b",
+  "original_prompt": "Ingested from linux-6.6.14/net/dsa/netlink.c",
+  "human_readable_source": "\n \n#include <linux/netdevice.h>\n#include <net/rtnetlink.h>\n\n#include \"netlink.h\"\n#include \"slave.h\"\n\nstatic const struct nla_policy dsa_policy[IFLA_DSA_MAX + 1] = {\n\t[IFLA_DSA_MASTER]\t= { .type = NLA_U32 },\n};\n\nstatic int dsa_changelink(struct net_device *dev, struct nlattr *tb[],\n\t\t\t  struct nlattr *data[],\n\t\t\t  struct netlink_ext_ack *extack)\n{\n\tint err;\n\n\tif (!data)\n\t\treturn 0;\n\n\tif (data[IFLA_DSA_MASTER]) {\n\t\tu32 ifindex = nla_get_u32(data[IFLA_DSA_MASTER]);\n\t\tstruct net_device *master;\n\n\t\tmaster = __dev_get_by_index(dev_net(dev), ifindex);\n\t\tif (!master)\n\t\t\treturn -EINVAL;\n\n\t\terr = dsa_slave_change_master(dev, master, extack);\n\t\tif (err)\n\t\t\treturn err;\n\t}\n\n\treturn 0;\n}\n\nstatic size_t dsa_get_size(const struct net_device *dev)\n{\n\treturn nla_total_size(sizeof(u32)) +\t \n\t       0;\n}\n\nstatic int dsa_fill_info(struct sk_buff *skb, const struct net_device *dev)\n{\n\tstruct net_device *master = dsa_slave_to_master(dev);\n\n\tif (nla_put_u32(skb, IFLA_DSA_MASTER, master->ifindex))\n\t\treturn -EMSGSIZE;\n\n\treturn 0;\n}\n\nstruct rtnl_link_ops dsa_link_ops __read_mostly = {\n\t.kind\t\t\t= \"dsa\",\n\t.priv_size\t\t= sizeof(struct dsa_port),\n\t.maxtype\t\t= IFLA_DSA_MAX,\n\t.policy\t\t\t= dsa_policy,\n\t.changelink\t\t= dsa_changelink,\n\t.get_size\t\t= dsa_get_size,\n\t.fill_info\t\t= dsa_fill_info,\n\t.netns_refund\t\t= true,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

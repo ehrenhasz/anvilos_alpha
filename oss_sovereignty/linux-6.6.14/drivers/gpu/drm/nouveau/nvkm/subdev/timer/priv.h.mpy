@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "c591f17c65424fc975f60ded62889dc005d145ac91d413d3f8fd66b8cd3d2787",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/timer/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_TIMER_PRIV_H__\n#define __NVKM_TIMER_PRIV_H__\n#define nvkm_timer(p) container_of((p), struct nvkm_timer, subdev)\n#include <subdev/timer.h>\n\nint nvkm_timer_new_(const struct nvkm_timer_func *, struct nvkm_device *, enum nvkm_subdev_type,\n\t\t    int, struct nvkm_timer **);\n\nstruct nvkm_timer_func {\n\tvoid (*init)(struct nvkm_timer *);\n\tvoid (*intr)(struct nvkm_timer *);\n\tu64 (*read)(struct nvkm_timer *);\n\tvoid (*time)(struct nvkm_timer *, u64 time);\n\tvoid (*alarm_init)(struct nvkm_timer *, u32 time);\n\tvoid (*alarm_fini)(struct nvkm_timer *);\n};\n\nvoid nvkm_timer_alarm_trigger(struct nvkm_timer *);\n\nvoid nv04_timer_fini(struct nvkm_timer *);\nvoid nv04_timer_intr(struct nvkm_timer *);\nvoid nv04_timer_time(struct nvkm_timer *, u64);\nu64 nv04_timer_read(struct nvkm_timer *);\nvoid nv04_timer_alarm_init(struct nvkm_timer *, u32);\nvoid nv04_timer_alarm_fini(struct nvkm_timer *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "saa6588.h",
+  "hash_id": "12039292464e9b6379d86c7e4705212299047bb2e1555a342a33e177dc2a9fd1",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/saa6588.h",
+  "human_readable_source": " \n \n\n#ifndef _SAA6588_H\n#define _SAA6588_H\n\nstruct saa6588_command {\n\tunsigned int  block_count;\n\tbool          nonblocking;\n\tint           result;\n\tunsigned char __user *buffer;\n\tstruct file   *instance;\n\tpoll_table    *event_list;\n\t__poll_t      poll_mask;\n};\n\n \n#define SAA6588_CMD_CLOSE\t_IOW('R', 2, int)\n#define SAA6588_CMD_READ\t_IOR('R', 3, int)\n#define SAA6588_CMD_POLL\t_IOR('R', 4, int)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "btf_data.c",
+  "hash_id": "87a155939ceabf2af75fec1b541019ac2f3257c4b833b28c857a7cf14cd7ee43",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf_data.c",
+  "human_readable_source": "\n\nstruct S {\n\tint\ta;\n\tint\tb;\n\tint\tc;\n};\n\nunion U {\n\tint\ta;\n\tint\tb;\n\tint\tc;\n};\n\nstruct S1 {\n\tint\ta;\n\tint\tb;\n\tint\tc;\n};\n\nunion U1 {\n\tint\ta;\n\tint\tb;\n\tint\tc;\n};\n\ntypedef int T;\ntypedef int S;\ntypedef int U;\ntypedef int T1;\ntypedef int S1;\ntypedef int U1;\n\nstruct root_struct {\n\tS\t\tm_1;\n\tT\t\tm_2;\n\tU\t\tm_3;\n\tS1\t\tm_4;\n\tT1\t\tm_5;\n\tU1\t\tm_6;\n\tstruct S\tm_7;\n\tstruct S1\tm_8;\n\tunion  U\tm_9;\n\tunion  U1\tm_10;\n};\n\nint func(struct root_struct *root)\n{\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

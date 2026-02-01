@@ -1,0 +1,9 @@
+{
+  "module_name": "gov.h",
+  "hash_id": "e4639babc79f225bea124be753e02478a76af72cb279b60188efba0f166cab8d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpuidle/governors/gov.h",
+  "human_readable_source": " \n\n \n\n#ifndef __CPUIDLE_GOVERNOR_H\n#define __CPUIDLE_GOVERNOR_H\n\n \n#define RESIDENCY_THRESHOLD_NS\t(15 * NSEC_PER_USEC)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

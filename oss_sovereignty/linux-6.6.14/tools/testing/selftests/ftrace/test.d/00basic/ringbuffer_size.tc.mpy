@@ -1,0 +1,9 @@
+{
+  "module_name": "ringbuffer_size.tc",
+  "hash_id": "34dc2718acd47bd07a16adb59b4d5aab324f559cae5f36483207732ee3f509f7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/00basic/ringbuffer_size.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Change the ringbuffer size\n# flags: instance\n\nrb_size_test() {\nORIG=`cat buffer_size_kb`\n\nexpr $ORIG / 2 > buffer_size_kb\n\nexpr $ORIG \\* 2 > buffer_size_kb\n\necho $ORIG > buffer_size_kb\n}\n\nrb_size_test\n\n: \"If per-cpu buffer is supported, imbalance it\"\nif [ -d per_cpu/cpu0 ]; then\n  cd per_cpu/cpu0\n  rb_size_test\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

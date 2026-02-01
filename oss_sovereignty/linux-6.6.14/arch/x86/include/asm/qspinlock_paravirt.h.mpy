@@ -1,0 +1,9 @@
+{
+  "module_name": "qspinlock_paravirt.h",
+  "hash_id": "67b80dc0911403e99936af1e0bec3fe4b0a7ad123423bc92e225935da9268cc0",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/qspinlock_paravirt.h",
+  "human_readable_source": " \n#ifndef __ASM_QSPINLOCK_PARAVIRT_H\n#define __ASM_QSPINLOCK_PARAVIRT_H\n\n#include <asm/ibt.h>\n\nvoid __lockfunc __pv_queued_spin_unlock_slowpath(struct qspinlock *lock, u8 locked);\n\n \n#ifdef CONFIG_64BIT\n\n__PV_CALLEE_SAVE_REGS_THUNK(__pv_queued_spin_unlock_slowpath, \".spinlock.text\");\n#define __pv_queued_spin_unlock\t__pv_queued_spin_unlock\n\n \n#define PV_UNLOCK_ASM\t\t\t\t\t\t\t\\\n\tFRAME_BEGIN\t\t\t\t\t\t\t\\\n\t\"push  %rdx\\n\\t\"\t\t\t\t\t\t\\\n\t\"mov   $0x1,%eax\\n\\t\"\t\t\t\t\t\t\\\n\t\"xor   %edx,%edx\\n\\t\"\t\t\t\t\t\t\\\n\tLOCK_PREFIX \"cmpxchg %dl,(%rdi)\\n\\t\"\t\t\t\t\\\n\t\"cmp   $0x1,%al\\n\\t\"\t\t\t\t\t\t\\\n\t\"jne   .slowpath\\n\\t\"\t\t\t\t\t\t\\\n\t\"pop   %rdx\\n\\t\"\t\t\t\t\t\t\\\n\tFRAME_END\t\t\t\t\t\t\t\\\n\tASM_RET\t\t\t\t\t\t\t\t\\\n\t\".slowpath:\\n\\t\"\t\t\t\t\t\t\\\n\t\"push   %rsi\\n\\t\"\t\t\t\t\t\t\\\n\t\"movzbl %al,%esi\\n\\t\"\t\t\t\t\t\t\\\n\t\"call __raw_callee_save___pv_queued_spin_unlock_slowpath\\n\\t\"\t\\\n\t\"pop    %rsi\\n\\t\"\t\t\t\t\t\t\\\n\t\"pop    %rdx\\n\\t\"\t\t\t\t\t\t\\\n\tFRAME_END\n\nDEFINE_PARAVIRT_ASM(__raw_callee_save___pv_queued_spin_unlock,\n\t\t    PV_UNLOCK_ASM, .spinlock.text);\n\n#else  \n\nextern void __lockfunc __pv_queued_spin_unlock(struct qspinlock *lock);\n__PV_CALLEE_SAVE_REGS_THUNK(__pv_queued_spin_unlock, \".spinlock.text\");\n\n#endif  \n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

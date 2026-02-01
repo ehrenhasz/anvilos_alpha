@@ -1,0 +1,9 @@
+{
+  "module_name": "team_mode_random.c",
+  "hash_id": "3168505abcefd89709e7c03f1dcb6ecfe8f5a78c923b09cf0160857d655db880",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/team/team_mode_random.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/types.h>\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/skbuff.h>\n#include <linux/if_team.h>\n\nstatic bool rnd_transmit(struct team *team, struct sk_buff *skb)\n{\n\tstruct team_port *port;\n\tint port_index;\n\n\tport_index = get_random_u32_below(team->en_port_count);\n\tport = team_get_port_by_index_rcu(team, port_index);\n\tif (unlikely(!port))\n\t\tgoto drop;\n\tport = team_get_first_port_txable_rcu(team, port);\n\tif (unlikely(!port))\n\t\tgoto drop;\n\tif (team_dev_queue_xmit(team, port, skb))\n\t\treturn false;\n\treturn true;\n\ndrop:\n\tdev_kfree_skb_any(skb);\n\treturn false;\n}\n\nstatic const struct team_mode_ops rnd_mode_ops = {\n\t.transmit\t\t= rnd_transmit,\n\t.port_enter\t\t= team_modeop_port_enter,\n\t.port_change_dev_addr\t= team_modeop_port_change_dev_addr,\n};\n\nstatic const struct team_mode rnd_mode = {\n\t.kind\t\t= \"random\",\n\t.owner\t\t= THIS_MODULE,\n\t.ops\t\t= &rnd_mode_ops,\n\t.lag_tx_type\t= NETDEV_LAG_TX_TYPE_RANDOM,\n};\n\nstatic int __init rnd_init_module(void)\n{\n\treturn team_mode_register(&rnd_mode);\n}\n\nstatic void __exit rnd_cleanup_module(void)\n{\n\tteam_mode_unregister(&rnd_mode);\n}\n\nmodule_init(rnd_init_module);\nmodule_exit(rnd_cleanup_module);\n\nMODULE_LICENSE(\"GPL v2\");\nMODULE_AUTHOR(\"Jiri Pirko <jiri@resnulli.us>\");\nMODULE_DESCRIPTION(\"Random mode for team\");\nMODULE_ALIAS_TEAM_MODE(\"random\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

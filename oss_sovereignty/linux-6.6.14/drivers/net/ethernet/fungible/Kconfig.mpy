@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8347c39a981c2d7c6e1f3280be2cda4c261abbf359a5de896559ac94ca706653",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/fungible/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Fungible network driver configuration\n#\n\nconfig NET_VENDOR_FUNGIBLE\n\tbool \"Fungible devices\"\n\tdefault y\n\thelp\n\t  If you have a Fungible network device, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Fungible cards. If you say Y, you will be asked\n\t  for your specific card in the following questions.\n\nif NET_VENDOR_FUNGIBLE\n\nconfig FUN_CORE\n\ttristate\n\tselect SBITMAP\n\thelp\n\t  A service module offering basic common services to Fungible\n\t  device drivers.\n\nsource \"drivers/net/ethernet/fungible/funeth/Kconfig\"\n\nendif # NET_VENDOR_FUNGIBLE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

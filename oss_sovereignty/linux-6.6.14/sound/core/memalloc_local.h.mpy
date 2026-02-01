@@ -1,0 +1,9 @@
+{
+  "module_name": "memalloc_local.h",
+  "hash_id": "82854d1ab7938886a6c46efe923b9288f5cc735662ff587ef59d524cce2a8bf7",
+  "original_prompt": "Ingested from linux-6.6.14/sound/core/memalloc_local.h",
+  "human_readable_source": "\n#ifndef __MEMALLOC_LOCAL_H\n#define __MEMALLOC_LOCAL_H\n\nstruct snd_malloc_ops {\n\tvoid *(*alloc)(struct snd_dma_buffer *dmab, size_t size);\n\tvoid (*free)(struct snd_dma_buffer *dmab);\n\tdma_addr_t (*get_addr)(struct snd_dma_buffer *dmab, size_t offset);\n\tstruct page *(*get_page)(struct snd_dma_buffer *dmab, size_t offset);\n\tunsigned int (*get_chunk_size)(struct snd_dma_buffer *dmab,\n\t\t\t\t       unsigned int ofs, unsigned int size);\n\tint (*mmap)(struct snd_dma_buffer *dmab, struct vm_area_struct *area);\n\tvoid (*sync)(struct snd_dma_buffer *dmab, enum snd_dma_sync_mode mode);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

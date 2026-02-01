@@ -1,0 +1,9 @@
+{
+  "module_name": "test-pthread-attr-setaffinity-np.c",
+  "hash_id": "cba3d14914428db7a861d5c489c4321db6fd6e554c274a0f1b5d6895543d703a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-pthread-attr-setaffinity-np.c",
+  "human_readable_source": "\n#include <stdint.h>\n#include <pthread.h>\n#include <sched.h>\n\nint main(void)\n{\n\tint ret = 0;\n\tpthread_attr_t thread_attr;\n\tcpu_set_t cs;\n\n\tpthread_attr_init(&thread_attr);\n\tCPU_ZERO(&cs);\n\n\tret = pthread_attr_setaffinity_np(&thread_attr, sizeof(cs), &cs);\n\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "internal.h",
+  "hash_id": "5c3d078f26bf9efa278c0cc937378ea03e81480f218352a016a14dbf5f9652b9",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ramfs/internal.h",
+  "human_readable_source": " \n \n\n\nextern const struct inode_operations ramfs_file_inode_operations;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "iswblank.c",
+  "hash_id": "cd3c5273dc11835c52dc6bfdd6c99290601783dba87ae8f38ee3cb249a285544",
+  "original_prompt": "Ingested from coreutils-9.4/lib/iswblank.c",
+  "human_readable_source": " \n#include <wctype.h>\n\nint\niswblank (wint_t wc)\n{\n  return wc == ' ' || wc == '\\t';\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

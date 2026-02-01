@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-speedlink.c",
+  "hash_id": "33f6c5d8384df936767256e5555f7b4bc2f9f9be2be92a1d8129746294d12823",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-speedlink.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/device.h>\n#include <linux/hid.h>\n#include <linux/module.h>\n\n#include \"hid-ids.h\"\n\nstatic const struct hid_device_id speedlink_devices[] = {\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_X_TENSIONS, USB_DEVICE_ID_SPEEDLINK_VAD_CEZANNE)},\n\t{ }\n};\n\nstatic int speedlink_input_mapping(struct hid_device *hdev,\n\t\tstruct hid_input *hi,\n\t\tstruct hid_field *field, struct hid_usage *usage,\n\t\tunsigned long **bit, int *max)\n{\n\t \n\tswitch (usage->hid & HID_USAGE_PAGE) {\n\tcase HID_UP_LED:\n\t\treturn -1;\n\t}\n\treturn 0;\n}\n\nstatic int speedlink_event(struct hid_device *hdev, struct hid_field *field,\n\t\tstruct hid_usage *usage, __s32 value)\n{\n\t \n\n\t \n\tif (abs(value) >= 256)\n\t\treturn 1;\n\t \n\tif (value == 0)\n\t\treturn 1;\n\n\treturn 0;\n}\n\nMODULE_DEVICE_TABLE(hid, speedlink_devices);\n\nstatic const struct hid_usage_id speedlink_grabbed_usages[] = {\n\t{ HID_GD_X, EV_REL, 0 },\n\t{ HID_GD_Y, EV_REL, 1 },\n\t{ HID_ANY_ID - 1, HID_ANY_ID - 1, HID_ANY_ID - 1}\n};\n\nstatic struct hid_driver speedlink_driver = {\n\t.name = \"speedlink\",\n\t.id_table = speedlink_devices,\n\t.usage_table = speedlink_grabbed_usages,\n\t.input_mapping = speedlink_input_mapping,\n\t.event = speedlink_event,\n};\nmodule_hid_driver(speedlink_driver);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

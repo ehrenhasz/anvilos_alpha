@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_insdel.c",
+  "hash_id": "2585fc5f7bd03f47183b8157d582057e54ec2188079fcbada8857b1f01daebc4",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_insdel.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_insdel.c,v 1.14 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwinsdelln(WINDOW *win, int n)\n{\n    int code = ERR;\n\n    T((T_CALLED(\"winsdelln(%p,%d)\"), (void *) win, n));\n\n    if (win) {\n\tif (n != 0) {\n\t    _nc_scroll_window(win, -n, win->_cury, win->_maxy,\n\t\t\t      win->_nc_bkgd);\n\t    _nc_synchook(win);\n\t}\n\tcode = OK;\n    }\n    returnCode(code);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

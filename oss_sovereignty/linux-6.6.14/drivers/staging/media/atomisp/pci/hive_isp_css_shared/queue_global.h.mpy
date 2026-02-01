@@ -1,0 +1,9 @@
+{
+  "module_name": "queue_global.h",
+  "hash_id": "fa8977a7b2c906f98704552e4c291d76ea647d30e659eee59988cbd8dcf41934",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_shared/queue_global.h",
+  "human_readable_source": " \n \n\n#ifndef __QUEUE_GLOBAL_H_INCLUDED__\n#define __QUEUE_GLOBAL_H_INCLUDED__\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "btf_type_tag_percpu.c",
+  "hash_id": "aee098a6d3e60e9d1698a7ac28a47634a3770b85d53cd718ec866e44fb9e8e92",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf_type_tag_percpu.c",
+  "human_readable_source": "\n \n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nstruct bpf_testmod_btf_type_tag_1 {\n\tint a;\n};\n\nstruct bpf_testmod_btf_type_tag_2 {\n\tstruct bpf_testmod_btf_type_tag_1 *p;\n};\n\n__u64 g;\n\nSEC(\"fentry/bpf_testmod_test_btf_type_tag_percpu_1\")\nint BPF_PROG(test_percpu1, struct bpf_testmod_btf_type_tag_1 *arg)\n{\n\tg = arg->a;\n\treturn 0;\n}\n\nSEC(\"fentry/bpf_testmod_test_btf_type_tag_percpu_2\")\nint BPF_PROG(test_percpu2, struct bpf_testmod_btf_type_tag_2 *arg)\n{\n\tg = arg->p->a;\n\treturn 0;\n}\n\n \nSEC(\"tp_btf/cgroup_mkdir\")\nint BPF_PROG(test_percpu_load, struct cgroup *cgrp, const char *path)\n{\n\tg = (__u64)cgrp->rstat_cpu->updated_children;\n\treturn 0;\n}\n\nSEC(\"tp_btf/cgroup_mkdir\")\nint BPF_PROG(test_percpu_helper, struct cgroup *cgrp, const char *path)\n{\n\tstruct cgroup_rstat_cpu *rstat;\n\t__u32 cpu;\n\n\tcpu = bpf_get_smp_processor_id();\n\trstat = (struct cgroup_rstat_cpu *)bpf_per_cpu_ptr(cgrp->rstat_cpu, cpu);\n\tif (rstat) {\n\t\t \n\t\t*(volatile int *)rstat;\n\t}\n\n\treturn 0;\n}\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

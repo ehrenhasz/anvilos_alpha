@@ -1,0 +1,9 @@
+{
+  "module_name": "tlv320aic32x4.h",
+  "hash_id": "ff27c663e8c26c3c0f1d0059a33728be014b317e1060523dc5e2eb97f3349adf",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/tlv320aic32x4.h",
+  "human_readable_source": " \n \n\n#ifndef _AIC32X4_PDATA_H\n#define _AIC32X4_PDATA_H\n\n#define AIC32X4_PWR_MICBIAS_2075_LDOIN\t\t0x00000001\n#define AIC32X4_PWR_AVDD_DVDD_WEAK_DISABLE\t0x00000002\n#define AIC32X4_PWR_AIC32X4_LDO_ENABLE\t\t0x00000004\n#define AIC32X4_PWR_CMMODE_LDOIN_RANGE_18_36\t0x00000008\n#define AIC32X4_PWR_CMMODE_HP_LDOIN_POWERED\t0x00000010\n\n#define AIC32X4_MICPGA_ROUTE_LMIC_IN2R_10K\t0x00000001\n#define AIC32X4_MICPGA_ROUTE_RMIC_IN1L_10K\t0x00000002\n\n \n#define AIC32X4_MFPX_DEFAULT_VALUE\t0xff\n\n#define AIC32X4_MFP1_DIN_DISABLED\t0\n#define AIC32X4_MFP1_DIN_ENABLED\t0x2\n#define AIC32X4_MFP1_GPIO_IN\t\t0x4\n\n#define AIC32X4_MFP2_GPIO_OUT_LOW\t0x0\n#define AIC32X4_MFP2_GPIO_OUT_HIGH\t0x1\n\n#define AIC32X4_MFP_GPIO_ENABLED\t0x4\n\n#define AIC32X4_MFP5_GPIO_DISABLED\t0x0\n#define AIC32X4_MFP5_GPIO_INPUT\t\t0x8\n#define AIC32X4_MFP5_GPIO_OUTPUT\t0xc\n#define AIC32X4_MFP5_GPIO_OUT_LOW\t0x0\n#define AIC32X4_MFP5_GPIO_OUT_HIGH\t0x1\n\nstruct aic32x4_setup_data {\n\tunsigned int gpio_func[5];\n};\n\nstruct aic32x4_pdata {\n\tstruct aic32x4_setup_data *setup;\n\tu32 power_cfg;\n\tu32 micpga_routing;\n\tbool swapdacs;\n\tint rstn_gpio;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

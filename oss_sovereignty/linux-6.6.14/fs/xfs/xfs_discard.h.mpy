@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_discard.h",
+  "hash_id": "4dfba0d6b9c71154facabb565338771e16c11b3a03532710c4635cc63558d449",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_discard.h",
+  "human_readable_source": " \n#ifndef XFS_DISCARD_H\n#define XFS_DISCARD_H 1\n\nstruct fstrim_range;\nstruct xfs_mount;\nstruct xfs_busy_extents;\n\nint xfs_discard_extents(struct xfs_mount *mp, struct xfs_busy_extents *busy);\nint xfs_ioc_trim(struct xfs_mount *mp, struct fstrim_range __user *fstrim);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

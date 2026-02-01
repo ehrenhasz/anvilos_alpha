@@ -1,0 +1,9 @@
+{
+  "module_name": "ssm2602-i2c.c",
+  "hash_id": "9b22b12c8bbdfc5861c1e7e5506a4ba3b09bb6b7f546c9b51bdf883120ce18f7",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/ssm2602-i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/i2c.h>\n#include <linux/regmap.h>\n\n#include <sound/soc.h>\n\n#include \"ssm2602.h\"\n\nstatic const struct i2c_device_id ssm2602_i2c_id[];\n\n \nstatic int ssm2602_i2c_probe(struct i2c_client *client)\n{\n\tconst struct i2c_device_id *id = i2c_match_id(ssm2602_i2c_id, client);\n\treturn ssm2602_probe(&client->dev, id->driver_data,\n\t\tdevm_regmap_init_i2c(client, &ssm2602_regmap_config));\n}\n\nstatic const struct i2c_device_id ssm2602_i2c_id[] = {\n\t{ \"ssm2602\", SSM2602 },\n\t{ \"ssm2603\", SSM2602 },\n\t{ \"ssm2604\", SSM2604 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, ssm2602_i2c_id);\n\nstatic const struct of_device_id ssm2602_of_match[] = {\n\t{ .compatible = \"adi,ssm2602\", },\n\t{ .compatible = \"adi,ssm2603\", },\n\t{ .compatible = \"adi,ssm2604\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, ssm2602_of_match);\n\nstatic struct i2c_driver ssm2602_i2c_driver = {\n\t.driver = {\n\t\t.name = \"ssm2602\",\n\t\t.of_match_table = ssm2602_of_match,\n\t},\n\t.probe = ssm2602_i2c_probe,\n\t.id_table = ssm2602_i2c_id,\n};\nmodule_i2c_driver(ssm2602_i2c_driver);\n\nMODULE_DESCRIPTION(\"ASoC SSM2602/SSM2603/SSM2604 I2C driver\");\nMODULE_AUTHOR(\"Cliff Cai\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

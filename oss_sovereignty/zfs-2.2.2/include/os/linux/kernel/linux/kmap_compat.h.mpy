@@ -1,0 +1,9 @@
+{
+  "module_name": "kmap_compat.h",
+  "hash_id": "197458f7ca4115d6a06bfc21fe9dc0b3641acbced83f00d90088a7637f24eb28",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/kernel/linux/kmap_compat.h",
+  "human_readable_source": " \n\n \n\n#ifndef _ZFS_KMAP_H\n#define\t_ZFS_KMAP_H\n\n#include <linux/highmem.h>\n#include <linux/uaccess.h>\n\n \n#define\tzfs_kmap_atomic(page)\tkmap_atomic(page)\n#define\tzfs_kunmap_atomic(addr)\tkunmap_atomic(addr)\n\n \n#ifdef HAVE_ACCESS_OK_TYPE\n#define\tzfs_access_ok(type, addr, size)\taccess_ok(type, addr, size)\n#else\n#define\tzfs_access_ok(type, addr, size)\taccess_ok(addr, size)\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

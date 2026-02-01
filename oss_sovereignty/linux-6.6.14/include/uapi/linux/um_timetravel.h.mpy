@@ -1,0 +1,9 @@
+{
+  "module_name": "um_timetravel.h",
+  "hash_id": "ddaa3ac110ad902cc71fa97aa307b4691a7badc407285dd4bf0ad017b60369cc",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/um_timetravel.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_UM_TIMETRAVEL_H\n#define _UAPI_LINUX_UM_TIMETRAVEL_H\n#include <linux/types.h>\n\n \nstruct um_timetravel_msg {\n\t \n\t__u32 op;\n\n\t \n\t__u32 seq;\n\n\t \n\t__u64 time;\n};\n\n \nenum um_timetravel_ops {\n\t \n\tUM_TIMETRAVEL_ACK\t\t= 0,\n\n\t \n\tUM_TIMETRAVEL_START\t\t= 1,\n\n\t \n\tUM_TIMETRAVEL_REQUEST\t\t= 2,\n\n\t \n\tUM_TIMETRAVEL_WAIT\t\t= 3,\n\n\t \n\tUM_TIMETRAVEL_GET\t\t= 4,\n\n\t \n\tUM_TIMETRAVEL_UPDATE\t\t= 5,\n\n\t \n\tUM_TIMETRAVEL_RUN\t\t= 6,\n\n\t \n\tUM_TIMETRAVEL_FREE_UNTIL\t= 7,\n\n\t \n\tUM_TIMETRAVEL_GET_TOD\t\t= 8,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

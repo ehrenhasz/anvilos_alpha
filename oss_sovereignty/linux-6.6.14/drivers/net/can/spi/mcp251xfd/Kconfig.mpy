@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "664685e7290d1d9b79f3ac41c99d7b2b66e79d25c2172071aba9d568d772c4f6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/spi/mcp251xfd/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig CAN_MCP251XFD\n\ttristate \"Microchip MCP251xFD SPI CAN controllers\"\n\tselect CAN_RX_OFFLOAD\n\tselect REGMAP\n\tselect WANT_DEV_COREDUMP\n\thelp\n\t  Driver for the Microchip MCP251XFD SPI FD-CAN controller\n\t  family.\n\nconfig CAN_MCP251XFD_SANITY\n\tdepends on CAN_MCP251XFD\n\tbool \"Additional Sanity Checks\"\n\thelp\n\t  This option enables additional sanity checks in the driver,\n\t  that compares various internal counters with the in chip\n\t  variants. This comes with a runtime overhead.\n\t  Disable if unsure.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "swiotlb-xen.h",
+  "hash_id": "2cf96ede9bd34fa4eddef210116066aaf6906611b220a1defe3d3fceeb0e3b41",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/xen/swiotlb-xen.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SWIOTLB_XEN_H\n#define _ASM_X86_SWIOTLB_XEN_H\n\nint xen_swiotlb_fixup(void *buf, unsigned long nslabs);\nint xen_create_contiguous_region(phys_addr_t pstart, unsigned int order,\n\t\t\t\tunsigned int address_bits,\n\t\t\t\tdma_addr_t *dma_handle);\nvoid xen_destroy_contiguous_region(phys_addr_t pstart, unsigned int order);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

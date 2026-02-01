@@ -1,0 +1,9 @@
+{
+  "module_name": "recovery.h",
+  "hash_id": "61d9f7cdb116bf4f5ecdf603aebdd7c6d69e94306a58028b9a78de5aa41c2bd8",
+  "original_prompt": "Ingested from linux-6.6.14/fs/gfs2/recovery.h",
+  "human_readable_source": " \n \n\n#ifndef __RECOVERY_DOT_H__\n#define __RECOVERY_DOT_H__\n\n#include \"incore.h\"\n\nextern struct workqueue_struct *gfs2_recovery_wq;\n\nstatic inline void gfs2_replay_incr_blk(struct gfs2_jdesc *jd, u32 *blk)\n{\n\tif (++*blk == jd->jd_blocks)\n\t        *blk = 0;\n}\n\nextern int gfs2_replay_read_block(struct gfs2_jdesc *jd, unsigned int blk,\n\t\t\t   struct buffer_head **bh);\n\nextern int gfs2_revoke_add(struct gfs2_jdesc *jd, u64 blkno, unsigned int where);\nextern int gfs2_revoke_check(struct gfs2_jdesc *jd, u64 blkno, unsigned int where);\nextern void gfs2_revoke_clean(struct gfs2_jdesc *jd);\n\nextern int gfs2_recover_journal(struct gfs2_jdesc *gfs2_jd, bool wait);\nextern void gfs2_recover_func(struct work_struct *work);\nextern int __get_log_header(struct gfs2_sbd *sdp,\n\t\t\t    const struct gfs2_log_header *lh, unsigned int blkno,\n\t\t\t    struct gfs2_log_header_host *head);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

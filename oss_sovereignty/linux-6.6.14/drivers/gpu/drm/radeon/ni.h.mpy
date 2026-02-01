@@ -1,0 +1,9 @@
+{
+  "module_name": "ni.h",
+  "hash_id": "c706a1c974885c6bea0dd436298e1a5c19760ee1e43998c952b4922ad1e49f8f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/ni.h",
+  "human_readable_source": " \n\n#ifndef __NI_H__\n#define __NI_H__\n\nstruct radeon_device;\n\nvoid cayman_cp_int_cntl_setup(struct radeon_device *rdev,\n\t\t\t      int ring, u32 cp_int_cntl);\nvoid cayman_vm_decode_fault(struct radeon_device *rdev,\n\t\t\t    u32 status, u32 addr);\nu32 cayman_gpu_check_soft_reset(struct radeon_device *rdev);\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

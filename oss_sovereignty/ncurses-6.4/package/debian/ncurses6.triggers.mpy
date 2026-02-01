@@ -1,0 +1,9 @@
+{
+  "module_name": "ncurses6.triggers",
+  "hash_id": "957f8a87f6641013d828285b82905ec7cc0ba8a376994de8f1ddb18c974f8923",
+  "original_prompt": "Ingested from ncurses-6.4/package/debian/ncurses6.triggers",
+  "human_readable_source": "activate-noawait ldconfig\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

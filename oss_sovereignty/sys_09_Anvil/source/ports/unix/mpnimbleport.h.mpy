@@ -1,0 +1,9 @@
+{
+  "module_name": "mpnimbleport.h",
+  "hash_id": "8fe0d96772fed0f2f4c0177b0d4cc73fe6516794e75bdc6529c6c0e41b2318b9",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/mpnimbleport.h",
+  "human_readable_source": " \n\n#ifndef MICROPY_INCLUDED_UNIX_NIMBLE_PORT_H\n#define MICROPY_INCLUDED_UNIX_NIMBLE_PORT_H\n\n#define MICROPY_HW_BLE_UART_ID (0)\n#define MICROPY_HW_BLE_UART_BAUDRATE (1000000)\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

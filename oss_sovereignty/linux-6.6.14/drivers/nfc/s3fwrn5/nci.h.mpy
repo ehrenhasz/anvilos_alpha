@@ -1,0 +1,9 @@
+{
+  "module_name": "nci.h",
+  "hash_id": "dff8b1fdc3838c10cdba9178a316b960c042b4dde6adf3c0f310fef4bfdf7901",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/s3fwrn5/nci.h",
+  "human_readable_source": " \n \n\n#ifndef __LOCAL_S3FWRN5_NCI_H_\n#define __LOCAL_S3FWRN5_NCI_H_\n\n#include \"s3fwrn5.h\"\n\n#define NCI_PROP_SET_RFREG\t0x22\n\nstruct nci_prop_set_rfreg_cmd {\n\t__u8 index;\n\t__u8 data[252];\n};\n\nstruct nci_prop_set_rfreg_rsp {\n\t__u8 status;\n};\n\n#define NCI_PROP_START_RFREG\t0x26\n\nstruct nci_prop_start_rfreg_rsp {\n\t__u8 status;\n};\n\n#define NCI_PROP_STOP_RFREG\t0x27\n\nstruct nci_prop_stop_rfreg_cmd {\n\t__u16 checksum;\n};\n\nstruct nci_prop_stop_rfreg_rsp {\n\t__u8 status;\n};\n\n#define NCI_PROP_FW_CFG\t\t0x28\n\nstruct nci_prop_fw_cfg_cmd {\n\t__u8 clk_type;\n\t__u8 clk_speed;\n\t__u8 clk_req;\n};\n\nstruct nci_prop_fw_cfg_rsp {\n\t__u8 status;\n};\n\nextern const struct nci_driver_ops s3fwrn5_nci_prop_ops[4];\nint s3fwrn5_nci_rf_configure(struct s3fwrn5_info *info, const char *fw_name);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

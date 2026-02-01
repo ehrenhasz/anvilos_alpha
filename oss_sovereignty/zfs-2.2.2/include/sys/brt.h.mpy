@@ -1,0 +1,9 @@
+{
+  "module_name": "brt.h",
+  "hash_id": "fa725dfdd3247d2d14747d6e476e9dbb0a8f9bfefe5eadd8dd703dc18bf7075f",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/brt.h",
+  "human_readable_source": " \n \n\n#ifndef _SYS_BRT_H\n#define\t_SYS_BRT_H\n\n#include <sys/sysmacros.h>\n#include <sys/types.h>\n#include <sys/fs/zfs.h>\n#include <sys/zio.h>\n#include <sys/dmu.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\nextern boolean_t brt_entry_decref(spa_t *spa, const blkptr_t *bp);\nextern uint64_t brt_entry_get_refcount(spa_t *spa, const blkptr_t *bp);\n\nextern uint64_t brt_get_dspace(spa_t *spa);\nextern uint64_t brt_get_used(spa_t *spa);\nextern uint64_t brt_get_saved(spa_t *spa);\nextern uint64_t brt_get_ratio(spa_t *spa);\n\nextern boolean_t brt_maybe_exists(spa_t *spa, const blkptr_t *bp);\nextern void brt_init(void);\nextern void brt_fini(void);\n\nextern void brt_pending_add(spa_t *spa, const blkptr_t *bp, dmu_tx_t *tx);\nextern void brt_pending_remove(spa_t *spa, const blkptr_t *bp, dmu_tx_t *tx);\nextern void brt_pending_apply(spa_t *spa, uint64_t txg);\n\nextern void brt_create(spa_t *spa);\nextern int brt_load(spa_t *spa);\nextern void brt_unload(spa_t *spa);\nextern void brt_sync(spa_t *spa, uint64_t txg);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "942617aee16520c8637b7c3bfd825c146bac46e7191c75699bfe653640a902bb",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/uniphier/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsnd-soc-uniphier-aio-cpu-objs := aio-core.o aio-dma.o aio-cpu.o aio-compress.o\nsnd-soc-uniphier-aio-ld11-objs := aio-ld11.o\nsnd-soc-uniphier-aio-pxs2-objs := aio-pxs2.o\n\nobj-$(CONFIG_SND_SOC_UNIPHIER_AIO) += snd-soc-uniphier-aio-cpu.o\nobj-$(CONFIG_SND_SOC_UNIPHIER_LD11) += snd-soc-uniphier-aio-ld11.o\nobj-$(CONFIG_SND_SOC_UNIPHIER_PXS2) += snd-soc-uniphier-aio-pxs2.o\n\nsnd-soc-uniphier-evea-objs := evea.o\nobj-$(CONFIG_SND_SOC_UNIPHIER_EVEA_CODEC) += snd-soc-uniphier-evea.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

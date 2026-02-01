@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-aureal.c",
+  "hash_id": "890a66f58884e5506432963d7556c6954f689da8c30ea337714fad03fe1a00a3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-aureal.c",
+  "human_readable_source": "\n \n#include <linux/device.h>\n#include <linux/hid.h>\n#include <linux/module.h>\n\n#include \"hid-ids.h\"\n\nstatic __u8 *aureal_report_fixup(struct hid_device *hdev, __u8 *rdesc,\n\t\tunsigned int *rsize)\n{\n\tif (*rsize >= 54 && rdesc[52] == 0x25 && rdesc[53] == 0x01) {\n\t\tdev_info(&hdev->dev, \"fixing Aureal Cy se W-01RN USB_V3.1 report descriptor.\\n\");\n\t\trdesc[53] = 0x65;\n\t}\n\treturn rdesc;\n}\n\nstatic const struct hid_device_id aureal_devices[] = {\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_AUREAL, USB_DEVICE_ID_AUREAL_W01RN) },\n\t{ }\n};\nMODULE_DEVICE_TABLE(hid, aureal_devices);\n\nstatic struct hid_driver aureal_driver = {\n\t.name = \"aureal\",\n\t.id_table = aureal_devices,\n\t.report_fixup = aureal_report_fixup,\n};\nmodule_hid_driver(aureal_driver);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

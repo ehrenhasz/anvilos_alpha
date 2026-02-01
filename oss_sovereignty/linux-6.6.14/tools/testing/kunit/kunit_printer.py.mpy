@@ -1,0 +1,9 @@
+{
+  "module_name": "kunit_printer.py",
+  "hash_id": "0f3e94642b7a07f8b9a29e849b7ea2bc6b5dfd9520a200a93a123d6980d71644",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/kunit_printer.py",
+  "human_readable_source": "#!/usr/bin/env python3\n# SPDX-License-Identifier: GPL-2.0\n#\n# Utilities for printing and coloring output.\n#\n# Copyright (C) 2022, Google LLC.\n# Author: Daniel Latypov <dlatypov@google.com>\n\nimport datetime\nimport sys\nimport typing\n\n_RESET = '\\033[0;0m'\n\nclass Printer:\n\t\"\"\"Wraps a file object, providing utilities for coloring output, etc.\"\"\"\n\n\tdef __init__(self, output: typing.IO[str]):\n\t\tself._output = output\n\t\tself._use_color = output.isatty()\n\n\tdef print(self, message: str) -> None:\n\t\tprint(message, file=self._output)\n\n\tdef print_with_timestamp(self, message: str) -> None:\n\t\tts = datetime.datetime.now().strftime('%H:%M:%S')\n\t\tself.print(f'[{ts}] {message}')\n\n\tdef _color(self, code: str, text: str) -> str:\n\t\tif not self._use_color:\n\t\t\treturn text\n\t\treturn code + text + _RESET\n\n\tdef red(self, text: str) -> str:\n\t\treturn self._color('\\033[1;31m', text)\n\n\tdef yellow(self, text: str) -> str:\n\t\treturn self._color('\\033[1;33m', text)\n\n\tdef green(self, text: str) -> str:\n\t\treturn self._color('\\033[1;32m', text)\n\n\tdef color_len(self) -> int:\n\t\t\"\"\"Returns the length of the color escape codes.\"\"\"\n\t\treturn len(self.red(''))\n\n# Provides a default instance that prints to stdout\nstdout = Printer(sys.stdout)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

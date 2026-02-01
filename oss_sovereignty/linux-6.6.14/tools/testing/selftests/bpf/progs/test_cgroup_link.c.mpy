@@ -1,0 +1,9 @@
+{
+  "module_name": "test_cgroup_link.c",
+  "hash_id": "5475cd48fb5d8df3a2c39ee8b4e80028cad0e9fb0ff66d5e73824d58b483e756",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_cgroup_link.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nint calls = 0;\nint alt_calls = 0;\n\nSEC(\"cgroup_skb/egress\")\nint egress(struct __sk_buff *skb)\n{\n\t__sync_fetch_and_add(&calls, 1);\n\treturn 1;\n}\n\nSEC(\"cgroup_skb/egress\")\nint egress_alt(struct __sk_buff *skb)\n{\n\t__sync_fetch_and_add(&alt_calls, 1);\n\treturn 1;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

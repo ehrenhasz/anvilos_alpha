@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1af74dcb8d3834d1322ef69eb0604482ff1310697a1f504b9f1de35f83b4ab6a",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ali5451/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-ali5451-objs := ali5451.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_ALI5451) += snd-ali5451.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

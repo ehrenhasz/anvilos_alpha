@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "44bfbfb988b268d3a254110cdc087d4127a70635f3c1c07ba8b2d1506eea07eb",
+  "original_prompt": "Ingested from linux-6.6.14/fs/freevxfs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VXFS_FS\n\ttristate \"FreeVxFS file system support (VERITAS VxFS(TM) compatible)\"\n\tdepends on BLOCK\n\tselect BUFFER_HEAD\n\thelp\n\t  FreeVxFS is a file system driver that support the VERITAS VxFS(TM)\n\t  file system format.  VERITAS VxFS(TM) is the standard file system\n\t  of SCO UnixWare (and possibly others) and optionally available\n\t  for Sunsoft Solaris, HP-UX and many other operating systems. However\n\t  these particular OS implementations of vxfs may differ in on-disk\n\t  data endianness and/or superblock offset. The vxfs module has been\n\t  tested with SCO UnixWare and HP-UX B.10.20 (pa-risc 1.1 arch.)\n\t  Currently only readonly access is supported and VxFX versions\n\t  2, 3 and 4. Tests were performed with HP-UX VxFS version 3.\n\n\t  NOTE: the file system type as used by mount(1), mount(2) and\n\t  fstab(5) is 'vxfs' as it describes the file system format, not\n\t  the actual driver.\n\n\t  There is a userspace utility for HP-UX logical volumes which makes\n\t  creating HP-UX logical volumes easy from HP-UX disk block device file\n\t  or regular file with image of the disk. See:\n\t         https://sourceforge.net/projects/linux-vxfs/\n\n\t  To compile this as a module, choose M here: the module will be\n\t  called freevxfs.  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

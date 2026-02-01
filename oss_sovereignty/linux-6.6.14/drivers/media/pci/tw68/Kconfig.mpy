@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d2a3bb05d582be1c00652eaa97a5747395993551fcee8915242c3f84f91c1535",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/tw68/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_TW68\n\ttristate \"Techwell tw68x Video For Linux\"\n\tdepends on VIDEO_DEV && PCI\n\tselect VIDEOBUF2_DMA_SG\n\thelp\n\t  Support for Techwell tw68xx based frame grabber boards.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called tw68.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bperf_leader.bpf.c",
+  "hash_id": "5505123b1fff5d6970834a9f3cab14152aadad38f5e6bbe90f49d6788fb0efe4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/bpf_skel/bperf_leader.bpf.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);\n\t__uint(key_size, sizeof(__u32));\n\t__uint(value_size, sizeof(int));\n\t__uint(map_flags, BPF_F_PRESERVE_ELEMS);\n} events SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);\n\t__uint(key_size, sizeof(__u32));\n\t__uint(value_size, sizeof(struct bpf_perf_event_value));\n\t__uint(max_entries, 1);\n} prev_readings SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);\n\t__uint(key_size, sizeof(__u32));\n\t__uint(value_size, sizeof(struct bpf_perf_event_value));\n\t__uint(max_entries, 1);\n} diff_readings SEC(\".maps\");\n\nSEC(\"raw_tp/sched_switch\")\nint BPF_PROG(on_switch)\n{\n\tstruct bpf_perf_event_value val, *prev_val, *diff_val;\n\t__u32 key = bpf_get_smp_processor_id();\n\t__u32 zero = 0;\n\tlong err;\n\n\tprev_val = bpf_map_lookup_elem(&prev_readings, &zero);\n\tif (!prev_val)\n\t\treturn 0;\n\n\tdiff_val = bpf_map_lookup_elem(&diff_readings, &zero);\n\tif (!diff_val)\n\t\treturn 0;\n\n\terr = bpf_perf_event_read_value(&events, key, &val, sizeof(val));\n\tif (err)\n\t\treturn 0;\n\n\tdiff_val->counter = val.counter - prev_val->counter;\n\tdiff_val->enabled = val.enabled - prev_val->enabled;\n\tdiff_val->running = val.running - prev_val->running;\n\t*prev_val = val;\n\treturn 0;\n}\n\nchar LICENSE[] SEC(\"license\") = \"Dual BSD/GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

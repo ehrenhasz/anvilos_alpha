@@ -1,0 +1,9 @@
+{
+  "module_name": "aic7xxx_inline.h",
+  "hash_id": "4251b8bc1ea4cd8286b2413fe42740367cd5481d3180064e7e8759a63583c7e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/aic7xxx/aic7xxx_inline.h",
+  "human_readable_source": " \n\n#ifndef _AIC7XXX_INLINE_H_\n#define _AIC7XXX_INLINE_H_\n\n \nint  ahc_is_paused(struct ahc_softc *ahc);\nvoid ahc_pause(struct ahc_softc *ahc);\nvoid ahc_unpause(struct ahc_softc *ahc);\n\n \nvoid\tahc_sync_sglist(struct ahc_softc *ahc,\n\t\t\tstruct scb *scb, int op);\n\n \nstatic inline char *ahc_name(struct ahc_softc *ahc);\n\nstatic inline char *ahc_name(struct ahc_softc *ahc)\n{\n\treturn (ahc->name);\n}\n\n \n\nstruct ahc_initiator_tinfo *\n\tahc_fetch_transinfo(struct ahc_softc *ahc,\n\t\t\t    char channel, u_int our_id,\n\t\t\t    u_int remote_id,\n\t\t\t    struct ahc_tmode_tstate **tstate);\nuint16_t\n\tahc_inw(struct ahc_softc *ahc, u_int port);\nvoid\tahc_outw(struct ahc_softc *ahc, u_int port,\n\t\t u_int value);\nuint32_t\n\tahc_inl(struct ahc_softc *ahc, u_int port);\nvoid\tahc_outl(struct ahc_softc *ahc, u_int port,\n\t\t uint32_t value);\nuint64_t\n\tahc_inq(struct ahc_softc *ahc, u_int port);\nvoid\tahc_outq(struct ahc_softc *ahc, u_int port,\n\t\t uint64_t value);\nstruct scb*\n\tahc_get_scb(struct ahc_softc *ahc);\nvoid\tahc_free_scb(struct ahc_softc *ahc, struct scb *scb);\nstruct scb *\n\tahc_lookup_scb(struct ahc_softc *ahc, u_int tag);\nvoid\tahc_queue_scb(struct ahc_softc *ahc, struct scb *scb);\nstruct scsi_sense_data *\n\tahc_get_sense_buf(struct ahc_softc *ahc,\n\t\t\t  struct scb *scb);\n\n \nint\tahc_intr(struct ahc_softc *ahc);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7cab6ca1dec2d8699cc41691e0f3bd33d8aefa033d420d9176987205f4df1552",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/msi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the PCI/MSI\nobj-$(CONFIG_PCI)\t\t\t+= pcidev_msi.o\nobj-$(CONFIG_PCI_MSI)\t\t\t+= api.o msi.o irqdomain.o\nobj-$(CONFIG_PCI_MSI_ARCH_FALLBACKS)\t+= legacy.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

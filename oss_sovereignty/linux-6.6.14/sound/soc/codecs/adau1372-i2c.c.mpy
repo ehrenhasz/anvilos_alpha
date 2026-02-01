@@ -1,0 +1,9 @@
+{
+  "module_name": "adau1372-i2c.c",
+  "hash_id": "6aa7ca680f445d79ed9405c9e0247ce017272e0f480743fe5b8767a2086840a0",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/adau1372-i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/i2c.h>\n#include <linux/mod_devicetable.h>\n#include <linux/module.h>\n#include <linux/regmap.h>\n#include <sound/soc.h>\n\n#include \"adau1372.h\"\n\nstatic int adau1372_i2c_probe(struct i2c_client *client)\n{\n\treturn adau1372_probe(&client->dev,\n\t\tdevm_regmap_init_i2c(client, &adau1372_regmap_config), NULL);\n}\n\nstatic const struct i2c_device_id adau1372_i2c_ids[] = {\n\t{ \"adau1372\", 0 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, adau1372_i2c_ids);\n\nstatic struct i2c_driver adau1372_i2c_driver = {\n\t.driver = {\n\t\t.name = \"adau1372\",\n\t},\n\t.probe = adau1372_i2c_probe,\n\t.id_table = adau1372_i2c_ids,\n};\nmodule_i2c_driver(adau1372_i2c_driver);\n\nMODULE_DESCRIPTION(\"ASoC ADAU1372 CODEC I2C driver\");\nMODULE_AUTHOR(\"Lars-Peter Clausen <lars@metafoo.de>\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

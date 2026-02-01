@@ -1,0 +1,9 @@
+{
+  "module_name": "test-bug.h",
+  "hash_id": "6f4c37f435f682a6820113df7ecbf4e9b9e5634109d4a9acd4aa90d2a8dbad1d",
+  "original_prompt": "Ingested from linux-6.6.14/include/kunit/test-bug.h",
+  "human_readable_source": " \n \n\n#ifndef _KUNIT_TEST_BUG_H\n#define _KUNIT_TEST_BUG_H\n\n#include <linux/stddef.h>  \n\n#if IS_ENABLED(CONFIG_KUNIT)\n\n#include <linux/jump_label.h>  \n#include <linux/sched.h>\n\n \nDECLARE_STATIC_KEY_FALSE(kunit_running);\n\n \nextern struct kunit_hooks_table {\n\t__printf(3, 4) void (*fail_current_test)(const char*, int, const char*, ...);\n\tvoid *(*get_static_stub_address)(struct kunit *test, void *real_fn_addr);\n} kunit_hooks;\n\n \nstatic inline struct kunit *kunit_get_current_test(void)\n{\n\tif (!static_branch_unlikely(&kunit_running))\n\t\treturn NULL;\n\n\treturn current->kunit_test;\n}\n\n\n \n#define kunit_fail_current_test(fmt, ...) do {\t\t\t\t\t\\\n\t\tif (static_branch_unlikely(&kunit_running)) {\t\t\t\\\n\t\t\t \t\\\n\t\t\tkunit_hooks.fail_current_test(__FILE__, __LINE__,\t\\\n\t\t\t\t\t\t  fmt, ##__VA_ARGS__);\t\t\\\n\t\t}\t\t\t\t\t\t\t\t\\\n\t} while (0)\n\n#else\n\nstatic inline struct kunit *kunit_get_current_test(void) { return NULL; }\n\n#define kunit_fail_current_test(fmt, ...) do {} while (0)\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

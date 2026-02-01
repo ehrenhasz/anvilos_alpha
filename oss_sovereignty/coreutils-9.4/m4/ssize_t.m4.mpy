@@ -1,0 +1,9 @@
+{
+  "module_name": "ssize_t.m4",
+  "hash_id": "f1e6ae24e4c50ca07e84f9be1d8f8fa73bb836c0b24ea99e5d229a4ddc5f9b8f",
+  "original_prompt": "Ingested from coreutils-9.4/m4/ssize_t.m4",
+  "human_readable_source": "# ssize_t.m4 serial 6\ndnl Copyright (C) 2001-2003, 2006, 2010-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl From Bruno Haible.\ndnl Define ssize_t if it does not already exist.\n\nAC_DEFUN([gt_TYPE_SSIZE_T],\n[\n  AC_CACHE_CHECK([for ssize_t], [gl_cv_ssize_t],\n    [AC_COMPILE_IFELSE(\n       [AC_LANG_PROGRAM(\n          [[#include <sys/types.h>]],\n          [[int x = sizeof (ssize_t *) + sizeof (ssize_t);\n            return !x;]])],\n       [gl_cv_ssize_t=yes], [gl_cv_ssize_t=no])])\n  if test $gl_cv_ssize_t = no; then\n    dnl On 64-bit native Windows, ssize_t needs to be defined as 'long long',\n    dnl for consistency with the 64-bit size_t.\n    AC_CACHE_CHECK([whether size_t is wider than 'long'], [gl_cv_size_t_large],\n      [AC_COMPILE_IFELSE(\n         [AC_LANG_PROGRAM(\n            [[#include <sys/types.h>\n              typedef int array [2 * (sizeof (size_t) > sizeof (long)) - 1];\n            ]])],\n         [gl_cv_size_t_large=yes], [gl_cv_size_t_large=no])])\n    if test $gl_cv_size_t_large = yes; then\n      gl_def_ssize_t='long long'\n    else\n      gl_def_ssize_t='long'\n    fi\n    AC_DEFINE_UNQUOTED([ssize_t], [$gl_def_ssize_t],\n                       [Define as a signed type of the same size as size_t.])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

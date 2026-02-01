@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-truncate-setsize.m4",
+  "hash_id": "05736962eb58ea4908acf4f504975df641eb2abb570742ab13a78595c39b2590",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-truncate-setsize.m4",
+  "human_readable_source": "dnl #\ndnl # 2.6.35 API change\ndnl # Added truncate_setsize() helper function.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_TRUNCATE_SETSIZE], [\n\tZFS_LINUX_TEST_SRC([truncate_setsize], [\n\t\t#include <linux/mm.h>\n\t], [\n\t\ttruncate_setsize(NULL, 0);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_TRUNCATE_SETSIZE], [\n\tAC_MSG_CHECKING([whether truncate_setsize() is available])\n\tZFS_LINUX_TEST_RESULT_SYMBOL([truncate_setsize],\n\t    [truncate_setsize], [mm/truncate.c], [\n\t\tAC_MSG_RESULT(yes)\n\t], [\n\t\tZFS_LINUX_TEST_ERROR([truncate_setsize])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

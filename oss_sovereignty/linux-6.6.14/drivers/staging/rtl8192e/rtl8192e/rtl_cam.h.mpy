@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl_cam.h",
+  "hash_id": "b76fe49ed9f614d28f0d099e42994b447ea31c884f08fb065377ea779a346a73",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192e/rtl8192e/rtl_cam.h",
+  "human_readable_source": " \n \n#ifndef _RTL_CAM_H\n#define _RTL_CAM_H\n\n#include <linux/types.h>\nstruct net_device;\n\nvoid rtl92e_cam_reset(struct net_device *dev);\nvoid rtl92e_enable_hw_security_config(struct net_device *dev);\nvoid rtl92e_set_key(struct net_device *dev, u8 EntryNo, u8 KeyIndex,\n\t\t    u16 KeyType, const u8 *MacAddr, u8 DefaultKey,\n\t\t    u32 *KeyContent);\nvoid rtl92e_set_swcam(struct net_device *dev, u8 EntryNo, u8 KeyIndex,\n\t\t      u16 KeyType, const u8 *MacAddr, u32 *KeyContent);\nvoid rtl92e_cam_restore(struct net_device *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

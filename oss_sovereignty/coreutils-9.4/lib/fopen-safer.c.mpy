@@ -1,0 +1,9 @@
+{
+  "module_name": "fopen-safer.c",
+  "hash_id": "44d06bfe25856cb8604f20179ee8aa3e218e58c86246786979aab42ffbbf28a6",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fopen-safer.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"stdio-safer.h\"\n\n#include <errno.h>\n#include <unistd.h>\n#include \"unistd-safer.h\"\n\n \n\nFILE *\nfopen_safer (char const *file, char const *mode)\n{\n  FILE *fp = fopen (file, mode);\n\n  if (fp)\n    {\n      int fd = fileno (fp);\n\n      if (0 <= fd && fd <= STDERR_FILENO)\n        {\n          int f = dup_safer (fd);\n\n          if (f < 0)\n            {\n              int e = errno;\n              fclose (fp);\n              errno = e;\n              return NULL;\n            }\n\n          if (fclose (fp) != 0\n              || ! (fp = fdopen (f, mode)))\n            {\n              int e = errno;\n              close (f);\n              errno = e;\n              return NULL;\n            }\n        }\n    }\n\n  return fp;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

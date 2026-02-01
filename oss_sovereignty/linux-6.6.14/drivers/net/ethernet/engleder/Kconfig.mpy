@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b365153941c1de2779af8e2341c941985da66b2a828398ecce02adefa0865756",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/engleder/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Engleder network device configuration\n#\n\nconfig NET_VENDOR_ENGLEDER\n\tbool \"Engleder devices\"\n\tdefault y\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Engleder devices. If you say Y, you will be asked\n\t  for your specific card in the following questions.\n\nif NET_VENDOR_ENGLEDER\n\nconfig TSNEP\n\ttristate \"TSN endpoint support\"\n\tdepends on HAS_IOMEM && HAS_DMA\n\tdepends on PTP_1588_CLOCK_OPTIONAL\n\tselect PHYLIB\n\tselect PAGE_POOL\n\thelp\n\t  Support for the Engleder TSN endpoint Ethernet MAC IP Core.\n\n\t  To compile this driver as a module, choose M here. The module will be\n\t  called tsnep.\n\nconfig TSNEP_SELFTESTS\n\tbool \"TSN endpoint self test support\"\n\tdefault n\n\tdepends on TSNEP\n\thelp\n\t  This enables self test support within the TSN endpoint driver.\n\n\t  If unsure, say N.\n\nendif # NET_VENDOR_ENGLEDER\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

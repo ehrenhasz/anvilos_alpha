@@ -1,0 +1,9 @@
+{
+  "module_name": "rename.c",
+  "hash_id": "422b5416baf8ed56208de6054e3e7bff814de57bdf64a9ca6a29dbda1e69beff",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/rename.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#if !defined (HAVE_RENAME)\n\n#include <bashtypes.h>\n#include <posixstat.h>\n\n#if defined (HAVE_UNISTD_H)\n#  include <unistd.h>\n#endif\n#include <errno.h>\n\n#include <stdc.h>\n\n#ifndef errno\nextern int errno;\n#endif\n\nint\nrename (from, to)\n     const char *from, *to;\n{\n  struct stat fb, tb;\n\n  if (stat (from, &fb) < 0)\n    return -1;  \n\n  if (stat (to, &tb) < 0)\n    {\n      if (errno != ENOENT)\n\treturn -1;\n    }\n  else\n    {\n      if (fb.st_dev == tb.st_dev && fb.st_ino == tb.st_ino)\n        return 0;\t\t \n      if (unlink (to) < 0 && errno != ENOENT)\n        return -1;\n    }\n\n  if (link (from, to) < 0)\n    return (-1);\n\n  if (unlink (from) < 0 && errno != ENOENT)\n    {\n      int e = errno;\n      unlink (to);\n      errno = e;\n      return (-1);\n    }\n\n  return (0);\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

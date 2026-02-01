@@ -1,0 +1,9 @@
+{
+  "module_name": "crc32c.h",
+  "hash_id": "c4e682e0df4bcb71df173cfacc157c1760b9d004bef182bc1ec074fdfb4313b1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/crc32c.h",
+  "human_readable_source": " \n#ifndef _LINUX_CRC32C_H\n#define _LINUX_CRC32C_H\n\n#include <linux/types.h>\n\nextern u32 crc32c(u32 crc, const void *address, unsigned int length);\n\n \n#define crc32c_le crc32c\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

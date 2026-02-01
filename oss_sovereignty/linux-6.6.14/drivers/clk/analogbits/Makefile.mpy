@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c750ea6923d814cec8257025a820aea5b0758f5d917f6b3102f1ddb2f2e59db1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/analogbits/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_CLK_ANALOGBITS_WRPLL_CLN28HPC)\t+= wrpll-cln28hpc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

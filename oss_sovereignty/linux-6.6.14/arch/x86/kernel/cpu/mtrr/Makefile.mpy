@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a66fd5fed3762bd00db1f9878e0a0ab116255e8888f19e8da1b94ff70ce3c71b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/cpu/mtrr/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y\t\t:= mtrr.o if.o generic.o cleanup.o\nobj-$(CONFIG_X86_32) += amd.o cyrix.o centaur.o legacy.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mailbox_client.h",
+  "hash_id": "a94249189b5f0b9532eab94da82e818e928a8dbe4f738dc355a6d4efaf4fb67d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mailbox_client.h",
+  "human_readable_source": " \n \n\n#ifndef __MAILBOX_CLIENT_H\n#define __MAILBOX_CLIENT_H\n\n#include <linux/of.h>\n#include <linux/device.h>\n\nstruct mbox_chan;\n\n \nstruct mbox_client {\n\tstruct device *dev;\n\tbool tx_block;\n\tunsigned long tx_tout;\n\tbool knows_txdone;\n\n\tvoid (*rx_callback)(struct mbox_client *cl, void *mssg);\n\tvoid (*tx_prepare)(struct mbox_client *cl, void *mssg);\n\tvoid (*tx_done)(struct mbox_client *cl, void *mssg, int r);\n};\n\nint mbox_bind_client(struct mbox_chan *chan, struct mbox_client *cl);\nstruct mbox_chan *mbox_request_channel_byname(struct mbox_client *cl,\n\t\t\t\t\t      const char *name);\nstruct mbox_chan *mbox_request_channel(struct mbox_client *cl, int index);\nint mbox_send_message(struct mbox_chan *chan, void *mssg);\nint mbox_flush(struct mbox_chan *chan, unsigned long timeout);\nvoid mbox_client_txdone(struct mbox_chan *chan, int r);  \nbool mbox_client_peek_data(struct mbox_chan *chan);  \nvoid mbox_free_channel(struct mbox_chan *chan);  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

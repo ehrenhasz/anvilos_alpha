@@ -1,0 +1,9 @@
+{
+  "module_name": "rodata_test.c",
+  "hash_id": "73ac99edb9fb9a1e80ae13f12f8525ad4a80ee27ce96d8d70021a243dee9a277",
+  "original_prompt": "Ingested from linux-6.6.14/mm/rodata_test.c",
+  "human_readable_source": "\n \n#define pr_fmt(fmt) \"rodata_test: \" fmt\n\n#include <linux/rodata_test.h>\n#include <linux/uaccess.h>\n#include <linux/mm.h>\n#include <asm/sections.h>\n\nstatic const int rodata_test_data = 0xC3;\n\nvoid rodata_test(void)\n{\n\tint zero = 0;\n\n\t \n\t \n\tif (!rodata_test_data) {\n\t\tpr_err(\"test 1 fails (start data)\\n\");\n\t\treturn;\n\t}\n\n\t \n\tif (!copy_to_kernel_nofault((void *)&rodata_test_data,\n\t\t\t\t(void *)&zero, sizeof(zero))) {\n\t\tpr_err(\"test data was not read only\\n\");\n\t\treturn;\n\t}\n\n\t \n\tif (rodata_test_data == zero) {\n\t\tpr_err(\"test data was changed\\n\");\n\t\treturn;\n\t}\n\n\t \n\tif (!PAGE_ALIGNED(__start_rodata)) {\n\t\tpr_err(\"start of .rodata is not page size aligned\\n\");\n\t\treturn;\n\t}\n\tif (!PAGE_ALIGNED(__end_rodata)) {\n\t\tpr_err(\"end of .rodata is not page size aligned\\n\");\n\t\treturn;\n\t}\n\n\tpr_info(\"all tests were successful\\n\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

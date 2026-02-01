@@ -1,0 +1,9 @@
+{
+  "module_name": "digitv.h",
+  "hash_id": "43f6fcb072a06c508c2d675a9c4caf6fe74bad3c2244ce3af0f1e2fc2d21b12f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/dvb-usb/digitv.h",
+  "human_readable_source": " \n#ifndef _DVB_USB_DIGITV_H_\n#define _DVB_USB_DIGITV_H_\n\n#define DVB_USB_LOG_PREFIX \"digitv\"\n#include \"dvb-usb.h\"\n\nstruct digitv_state {\n\tint is_nxt6000;\n\n\tunsigned char sndbuf[7];\n\tunsigned char rcvbuf[7];\n};\n\n \n#define USB_READ_EEPROM         1\n\n#define USB_READ_COFDM          2\n#define USB_WRITE_COFDM         5\n\n#define USB_WRITE_TUNER         6\n\n#define USB_READ_REMOTE         3\n#define USB_WRITE_REMOTE        7\n#define USB_WRITE_REMOTE_TYPE   8\n\n#define USB_DEV_INIT            9\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

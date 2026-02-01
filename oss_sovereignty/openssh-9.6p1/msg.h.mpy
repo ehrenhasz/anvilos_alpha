@@ -1,0 +1,9 @@
+{
+  "module_name": "msg.h",
+  "hash_id": "59f36060671d13c4cedce9d5726724a67a07caeab5fc98c20cf4723613f5e03b",
+  "original_prompt": "Ingested from openssh-9.6p1/msg.h",
+  "human_readable_source": " \n \n#ifndef SSH_MSG_H\n#define SSH_MSG_H\n\nstruct sshbuf;\nint\t ssh_msg_send(int, u_char, struct sshbuf *);\nint\t ssh_msg_recv(int, struct sshbuf *);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

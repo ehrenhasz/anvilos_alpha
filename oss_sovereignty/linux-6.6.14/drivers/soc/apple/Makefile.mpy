@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "85ea7cd1c681b8b1afe0d64e927cdc1932fa7d74092c77d2d462698fc40c7db3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/apple/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_APPLE_RTKIT) += apple-rtkit.o\napple-rtkit-y = rtkit.o rtkit-crashlog.o\n\nobj-$(CONFIG_APPLE_SART) += apple-sart.o\napple-sart-y = sart.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

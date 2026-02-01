@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8717a159781970ee66860483f545697eeeefdfbb808d6300e3cca2c01b830865",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/parport/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the kernel Parallel port device drivers.\n#\n\nparport-objs\t:= share.o ieee1284.o ieee1284_ops.o procfs.o\n\nifeq ($(CONFIG_PARPORT_1284),y)\n\tparport-objs\t+= daisy.o probe.o\nendif\n\nobj-$(CONFIG_PARPORT)\t\t+= parport.o\nobj-$(CONFIG_PARPORT_PC)\t+= parport_pc.o\nobj-$(CONFIG_PARPORT_SERIAL)\t+= parport_serial.o\nobj-$(CONFIG_PARPORT_PC_PCMCIA) += parport_cs.o\nobj-$(CONFIG_PARPORT_AMIGA)\t+= parport_amiga.o\nobj-$(CONFIG_PARPORT_MFC3)\t+= parport_mfc3.o\nobj-$(CONFIG_PARPORT_ATARI)\t+= parport_atari.o\nobj-$(CONFIG_PARPORT_SUNBPP)\t+= parport_sunbpp.o\nobj-$(CONFIG_PARPORT_GSC)\t+= parport_gsc.o\nobj-$(CONFIG_PARPORT_IP32)\t+= parport_ip32.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

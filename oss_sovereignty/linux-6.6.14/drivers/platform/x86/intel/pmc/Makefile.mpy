@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "467a7b1030c0a97dad4bd1c81454fb9a903a9f4ee7f5a3035c36633a1a2ccfbd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/pmc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Intel x86 Platform-Specific Drivers\n#\n\nintel_pmc_core-y\t\t\t:= core.o core_ssram.o spt.o cnp.o \\\n\t\t\t\t\t   icl.o tgl.o adl.o mtl.o\nobj-$(CONFIG_INTEL_PMC_CORE)\t\t+= intel_pmc_core.o\nintel_pmc_core_pltdrv-y\t\t\t:= pltdrv.o\nobj-$(CONFIG_INTEL_PMC_CORE)\t\t+= intel_pmc_core_pltdrv.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

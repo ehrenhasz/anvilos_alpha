@@ -1,0 +1,9 @@
+{
+  "module_name": "pedit.h",
+  "hash_id": "d61bb24016271fd2c5d9398eeb1b4a32ba12cac54afebcdb082c46c987b36196",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/pedit.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_EN_TC_ACT_PEDIT_H__\n#define __MLX5_EN_TC_ACT_PEDIT_H__\n\n#include \"en_tc.h\"\n\nstruct pedit_headers {\n\tstruct ethhdr   eth;\n\tstruct vlan_hdr vlan;\n\tstruct iphdr    ip4;\n\tstruct ipv6hdr  ip6;\n\tstruct tcphdr   tcp;\n\tstruct udphdr   udp;\n};\n\nstruct pedit_headers_action {\n\tstruct pedit_headers vals;\n\tstruct pedit_headers masks;\n\tu32 pedits;\n};\n\nint\nmlx5e_tc_act_pedit_parse_action(struct mlx5e_priv *priv,\n\t\t\t\tconst struct flow_action_entry *act, int namespace,\n\t\t\t\tstruct pedit_headers_action *hdrs,\n\t\t\t\tstruct netlink_ext_ack *extack);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ec2d5638057d3a2125616079bd832cadc38275eff7b85b62314c77a899b50890",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/sifive/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_SIFIVE_CCACHE)\t+= sifive_ccache.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

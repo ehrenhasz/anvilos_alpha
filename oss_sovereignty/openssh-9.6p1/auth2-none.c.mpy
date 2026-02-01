@@ -1,0 +1,9 @@
+{
+  "module_name": "auth2-none.c",
+  "hash_id": "6ea69b24e22b6965eaa54b7f0633676fa735839fc0cc433695fee7cca506dd9a",
+  "original_prompt": "Ingested from openssh-9.6p1/auth2-none.c",
+  "human_readable_source": " \n \n\n#include \"includes.h\"\n\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <sys/uio.h>\n\n#include <fcntl.h>\n#include <string.h>\n#include <unistd.h>\n#include <stdarg.h>\n#include <stdio.h>\n\n#include \"atomicio.h\"\n#include \"xmalloc.h\"\n#include \"sshkey.h\"\n#include \"hostfile.h\"\n#include \"auth.h\"\n#include \"packet.h\"\n#include \"log.h\"\n#include \"misc.h\"\n#include \"servconf.h\"\n#include \"ssh2.h\"\n#include \"ssherr.h\"\n#ifdef GSSAPI\n#include \"ssh-gss.h\"\n#endif\n#include \"monitor_wrap.h\"\n\n \nextern ServerOptions options;\n\n \nstatic int none_enabled = 1;\n\nstatic int\nuserauth_none(struct ssh *ssh, const char *method)\n{\n\tint r;\n\n\tnone_enabled = 0;\n\tif ((r = sshpkt_get_end(ssh)) != 0)\n\t\tfatal_fr(r, \"parse packet\");\n\tif (options.permit_empty_passwd && options.password_authentication)\n\t\treturn (PRIVSEP(auth_password(ssh, \"\")));\n\treturn (0);\n}\n\nAuthmethod method_none = {\n\t\"none\",\n\tNULL,\n\tuserauth_none,\n\t&none_enabled\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

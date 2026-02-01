@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "833b508c1260e77d8e67ddae57cb5e185840a5523aebc9637b7b16174f07e34e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/mptcp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\ntop_srcdir = ../../../../..\n\nCFLAGS =  -Wall -Wl,--no-as-needed -O2 -g -I$(top_srcdir)/usr/include $(KHDR_INCLUDES)\n\nTEST_PROGS := mptcp_connect.sh pm_netlink.sh mptcp_join.sh diag.sh \\\n\t      simult_flows.sh mptcp_sockopt.sh userspace_pm.sh\n\nTEST_GEN_FILES = mptcp_connect pm_nl_ctl mptcp_sockopt mptcp_inq\n\nTEST_FILES := mptcp_lib.sh settings\n\nEXTRA_CLEAN := *.pcap\n\ninclude ../../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

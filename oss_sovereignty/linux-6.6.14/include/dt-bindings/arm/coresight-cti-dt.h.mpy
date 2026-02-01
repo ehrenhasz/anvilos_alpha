@@ -1,0 +1,9 @@
+{
+  "module_name": "coresight-cti-dt.h",
+  "hash_id": "e581aeead3188113d60eccd8091fb9a37a5f30b2f0614c426e5f0be2c7a3e0de",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/arm/coresight-cti-dt.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_ARM_CORESIGHT_CTI_DT_H\n#define _DT_BINDINGS_ARM_CORESIGHT_CTI_DT_H\n\n#define GEN_IO\t\t0\n#define GEN_INTREQ\t1\n#define GEN_INTACK\t2\n#define GEN_HALTREQ\t3\n#define GEN_RESTARTREQ\t4\n#define PE_EDBGREQ\t5\n#define PE_DBGRESTART\t6\n#define PE_CTIIRQ\t7\n#define PE_PMUIRQ\t8\n#define PE_DBGTRIGGER\t9\n#define ETM_EXTOUT\t10\n#define ETM_EXTIN\t11\n#define SNK_FULL\t12\n#define SNK_ACQCOMP\t13\n#define SNK_FLUSHCOMP\t14\n#define SNK_FLUSHIN\t15\n#define SNK_TRIGIN\t16\n#define STM_ASYNCOUT\t17\n#define STM_TOUT_SPTE\t18\n#define STM_TOUT_SW\t19\n#define STM_TOUT_HETE\t20\n#define STM_HWEVENT\t21\n#define ELA_TSTART\t22\n#define ELA_TSTOP\t23\n#define ELA_DBGREQ\t24\n#define CTI_TRIG_MAX\t25\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

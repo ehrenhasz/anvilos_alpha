@@ -1,0 +1,9 @@
+{
+  "module_name": "data-convert.h",
+  "hash_id": "d6d40f603cd89467b298b3b3cd37051e8210377de083ee16c9a293faddaf4156",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/data-convert.h",
+  "human_readable_source": " \n#ifndef __DATA_CONVERT_H\n#define __DATA_CONVERT_H\n\n#include <stdbool.h>\n\nstruct perf_data_convert_opts {\n\tbool force;\n\tbool all;\n\tbool tod;\n};\n\n#ifdef HAVE_LIBBABELTRACE_SUPPORT\nint bt_convert__perf2ctf(const char *input_name, const char *to_ctf,\n\t\t\t struct perf_data_convert_opts *opts);\n#endif  \n\nint bt_convert__perf2json(const char *input_name, const char *to_ctf,\n\t\t\t struct perf_data_convert_opts *opts);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

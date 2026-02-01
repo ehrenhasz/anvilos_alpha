@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__builtinimport.c.compress",
+  "hash_id": "a89c343dcac4cd04b72b4301283304ba9ef27211fb30cd87141679952df0f356",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__builtinimport.c.compress",
+  "human_readable_source": "script compilation not supported\ncan't perform relative import\nno module named '%q'\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

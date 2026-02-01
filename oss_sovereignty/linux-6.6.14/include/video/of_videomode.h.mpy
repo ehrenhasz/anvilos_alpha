@@ -1,0 +1,9 @@
+{
+  "module_name": "of_videomode.h",
+  "hash_id": "fe92df170b3fac2d5a2a916d1cd5dfd80de0d954847ec07af079dd73ef1bb228",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/of_videomode.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_OF_VIDEOMODE_H\n#define __LINUX_OF_VIDEOMODE_H\n\nstruct device_node;\nstruct videomode;\n\nint of_get_videomode(struct device_node *np, struct videomode *vm,\n\t\t     int index);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

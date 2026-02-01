@@ -1,0 +1,9 @@
+{
+  "module_name": "e1000_nvm.h",
+  "hash_id": "38f6bcbfa7ebe1751dfd83b606cece84ddfdea94776cad7aba5fba001b753448",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/igb/e1000_nvm.h",
+  "human_readable_source": " \n \n\n#ifndef _E1000_NVM_H_\n#define _E1000_NVM_H_\n\ns32  igb_acquire_nvm(struct e1000_hw *hw);\nvoid igb_release_nvm(struct e1000_hw *hw);\ns32  igb_read_mac_addr(struct e1000_hw *hw);\ns32  igb_read_part_num(struct e1000_hw *hw, u32 *part_num);\ns32  igb_read_part_string(struct e1000_hw *hw, u8 *part_num,\n\t\t\t  u32 part_num_size);\ns32  igb_read_nvm_eerd(struct e1000_hw *hw, u16 offset, u16 words, u16 *data);\ns32  igb_read_nvm_spi(struct e1000_hw *hw, u16 offset, u16 words, u16 *data);\ns32  igb_write_nvm_spi(struct e1000_hw *hw, u16 offset, u16 words, u16 *data);\ns32  igb_validate_nvm_checksum(struct e1000_hw *hw);\ns32  igb_update_nvm_checksum(struct e1000_hw *hw);\n\nstruct e1000_fw_version {\n\tu32 etrack_id;\n\tu16 eep_major;\n\tu16 eep_minor;\n\tu16 eep_build;\n\n\tu8 invm_major;\n\tu8 invm_minor;\n\tu8 invm_img_type;\n\n\tbool or_valid;\n\tu16 or_major;\n\tu16 or_build;\n\tu16 or_patch;\n};\nvoid igb_get_fw_version(struct e1000_hw *hw, struct e1000_fw_version *fw_vers);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

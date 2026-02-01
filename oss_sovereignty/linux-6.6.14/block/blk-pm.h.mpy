@@ -1,0 +1,9 @@
+{
+  "module_name": "blk-pm.h",
+  "hash_id": "432f8ffc4621c5692749eb1d9f700a3b3cfabb957c23611afcc4940818347904",
+  "original_prompt": "Ingested from linux-6.6.14/block/blk-pm.h",
+  "human_readable_source": " \n\n#ifndef _BLOCK_BLK_PM_H_\n#define _BLOCK_BLK_PM_H_\n\n#include <linux/pm_runtime.h>\n\n#ifdef CONFIG_PM\nstatic inline int blk_pm_resume_queue(const bool pm, struct request_queue *q)\n{\n\tif (!q->dev || !blk_queue_pm_only(q))\n\t\treturn 1;\t \n\tif (pm && q->rpm_status != RPM_SUSPENDED)\n\t\treturn 1;\t \n\tpm_request_resume(q->dev);\n\treturn 0;\n}\n\nstatic inline void blk_pm_mark_last_busy(struct request *rq)\n{\n\tif (rq->q->dev && !(rq->rq_flags & RQF_PM))\n\t\tpm_runtime_mark_last_busy(rq->q->dev);\n}\n#else\nstatic inline int blk_pm_resume_queue(const bool pm, struct request_queue *q)\n{\n\treturn 1;\n}\n\nstatic inline void blk_pm_mark_last_busy(struct request *rq)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

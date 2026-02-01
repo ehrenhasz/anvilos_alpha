@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_devids.h",
+  "hash_id": "a8c5b9ef87619ef1d4f22519aa366bd605444a18e3cab43c3f123903c2a0692b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_devids.h",
+  "human_readable_source": " \n \n\n#ifndef _ICE_DEVIDS_H_\n#define _ICE_DEVIDS_H_\n\n \n#define ICE_DEV_ID_E822_SI_DFLT         0x1888\n \n#define ICE_DEV_ID_E823L_BACKPLANE\t0x124C\n \n#define ICE_DEV_ID_E823L_SFP\t\t0x124D\n \n#define ICE_DEV_ID_E823L_10G_BASE_T\t0x124E\n \n#define ICE_DEV_ID_E823L_1GBE\t\t0x124F\n \n#define ICE_DEV_ID_E823L_QSFP\t\t0x151D\n \n#define ICE_DEV_ID_E810C_BACKPLANE\t0x1591\n \n#define ICE_DEV_ID_E810C_QSFP\t\t0x1592\n \n#define ICE_DEV_ID_E810C_SFP\t\t0x1593\n#define ICE_SUBDEV_ID_E810T\t\t0x000E\n#define ICE_SUBDEV_ID_E810T2\t\t0x000F\n#define ICE_SUBDEV_ID_E810T3\t\t0x0010\n#define ICE_SUBDEV_ID_E810T4\t\t0x0011\n#define ICE_SUBDEV_ID_E810T5\t\t0x0012\n#define ICE_SUBDEV_ID_E810T6\t\t0x02E9\n#define ICE_SUBDEV_ID_E810T7\t\t0x02EA\n \n#define ICE_DEV_ID_E810_XXV_BACKPLANE\t0x1599\n \n#define ICE_DEV_ID_E810_XXV_QSFP\t0x159A\n \n#define ICE_DEV_ID_E810_XXV_SFP\t\t0x159B\n \n#define ICE_DEV_ID_E823C_BACKPLANE\t0x188A\n \n#define ICE_DEV_ID_E823C_QSFP\t\t0x188B\n \n#define ICE_DEV_ID_E823C_SFP\t\t0x188C\n \n#define ICE_DEV_ID_E823C_10G_BASE_T\t0x188D\n \n#define ICE_DEV_ID_E823C_SGMII\t\t0x188E\n \n#define ICE_DEV_ID_E822C_BACKPLANE\t0x1890\n \n#define ICE_DEV_ID_E822C_QSFP\t\t0x1891\n \n#define ICE_DEV_ID_E822C_SFP\t\t0x1892\n \n#define ICE_DEV_ID_E822C_10G_BASE_T\t0x1893\n \n#define ICE_DEV_ID_E822C_SGMII\t\t0x1894\n \n#define ICE_DEV_ID_E822L_BACKPLANE\t0x1897\n \n#define ICE_DEV_ID_E822L_SFP\t\t0x1898\n \n#define ICE_DEV_ID_E822L_10G_BASE_T\t0x1899\n \n#define ICE_DEV_ID_E822L_SGMII\t\t0x189A\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

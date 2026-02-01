@@ -1,0 +1,9 @@
+{
+  "module_name": "tda18218.h",
+  "hash_id": "61ff04c901248f260b03e4df31b051bf6c8a52f752fdb03f0e6c2b2a293f7ad0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/tda18218.h",
+  "human_readable_source": " \n \n\n#ifndef TDA18218_H\n#define TDA18218_H\n\n#include <media/dvb_frontend.h>\n\nstruct tda18218_config {\n\tu8 i2c_address;\n\tu8 i2c_wr_max;\n\tu8 loop_through:1;\n};\n\n#if IS_REACHABLE(CONFIG_MEDIA_TUNER_TDA18218)\nextern struct dvb_frontend *tda18218_attach(struct dvb_frontend *fe,\n\tstruct i2c_adapter *i2c, struct tda18218_config *cfg);\n#else\nstatic inline struct dvb_frontend *tda18218_attach(struct dvb_frontend *fe,\n\tstruct i2c_adapter *i2c, struct tda18218_config *cfg)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

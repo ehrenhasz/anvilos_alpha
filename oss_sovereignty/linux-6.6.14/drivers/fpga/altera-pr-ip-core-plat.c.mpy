@@ -1,0 +1,9 @@
+{
+  "module_name": "altera-pr-ip-core-plat.c",
+  "hash_id": "fb3442ef51955f464c07e47a0a053c8d3aa26eee1c553b4ac5cb5cbf44c11f9b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/fpga/altera-pr-ip-core-plat.c",
+  "human_readable_source": "\n \n#include <linux/fpga/altera-pr-ip-core.h>\n#include <linux/module.h>\n#include <linux/mod_devicetable.h>\n#include <linux/platform_device.h>\n\nstatic int alt_pr_platform_probe(struct platform_device *pdev)\n{\n\tstruct device *dev = &pdev->dev;\n\tvoid __iomem *reg_base;\n\n\t \n\treg_base = devm_platform_ioremap_resource(pdev, 0);\n\tif (IS_ERR(reg_base))\n\t\treturn PTR_ERR(reg_base);\n\n\treturn alt_pr_register(dev, reg_base);\n}\n\nstatic const struct of_device_id alt_pr_of_match[] = {\n\t{ .compatible = \"altr,a10-pr-ip\", },\n\t{},\n};\n\nMODULE_DEVICE_TABLE(of, alt_pr_of_match);\n\nstatic struct platform_driver alt_pr_platform_driver = {\n\t.probe = alt_pr_platform_probe,\n\t.driver = {\n\t\t.name\t= \"alt_a10_pr_ip\",\n\t\t.of_match_table = alt_pr_of_match,\n\t},\n};\n\nmodule_platform_driver(alt_pr_platform_driver);\nMODULE_AUTHOR(\"Matthew Gerlach <matthew.gerlach@linux.intel.com>\");\nMODULE_DESCRIPTION(\"Altera Partial Reconfiguration IP Platform Driver\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

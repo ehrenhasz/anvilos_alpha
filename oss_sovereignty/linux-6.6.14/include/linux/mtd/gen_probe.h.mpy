@@ -1,0 +1,9 @@
+{
+  "module_name": "gen_probe.h",
+  "hash_id": "aa86c0587bb9fa4e6b9ace3bf2a34bc90c46e5bb31e4cee0c2e6023f82cdc8c5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/gen_probe.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MTD_GEN_PROBE_H__\n#define __LINUX_MTD_GEN_PROBE_H__\n\n#include <linux/mtd/flashchip.h>\n#include <linux/mtd/map.h>\n#include <linux/mtd/cfi.h>\n#include <linux/bitops.h>\n\nstruct chip_probe {\n\tchar *name;\n\tint (*probe_chip)(struct map_info *map, __u32 base,\n\t\t\t  unsigned long *chip_map, struct cfi_private *cfi);\n};\n\nstruct mtd_info *mtd_do_chip_probe(struct map_info *map, struct chip_probe *cp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

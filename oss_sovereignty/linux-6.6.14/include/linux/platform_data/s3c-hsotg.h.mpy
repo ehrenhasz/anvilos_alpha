@@ -1,0 +1,9 @@
+{
+  "module_name": "s3c-hsotg.h",
+  "hash_id": "3c68ef3a9e679d99ff3f00cb4f3244f3aaf3960020b276098b636de101440675",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/s3c-hsotg.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_USB_S3C_HSOTG_H\n#define __LINUX_USB_S3C_HSOTG_H\n\nstruct platform_device;\n\nenum dwc2_hsotg_dmamode {\n\tS3C_HSOTG_DMA_NONE,\t \n\tS3C_HSOTG_DMA_ONLY,\t \n\tS3C_HSOTG_DMA_DRV,\t \n};\n\n \nstruct dwc2_hsotg_plat {\n\tenum dwc2_hsotg_dmamode\tdma;\n\tunsigned int\t\tis_osc:1;\n\tint                     phy_type;\n\n\tint (*phy_init)(struct platform_device *pdev, int type);\n\tint (*phy_exit)(struct platform_device *pdev, int type);\n};\n\nextern void dwc2_hsotg_set_platdata(struct dwc2_hsotg_plat *pd);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

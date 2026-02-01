@@ -1,0 +1,9 @@
+{
+  "module_name": "stdint_h.m4",
+  "hash_id": "5597421455201261c819525cffda843ca20dd36138bed57e3919d9e9df0885e7",
+  "original_prompt": "Ingested from bash-5.2.21/m4/stdint_h.m4",
+  "human_readable_source": "# stdint_h.m4 serial 9\ndnl Copyright (C) 1997-2004, 2006, 2008-2019 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl From Paul Eggert.\n\n# Define HAVE_STDINT_H_WITH_UINTMAX if <stdint.h> exists,\n# doesn't clash with <sys/types.h>, and declares uintmax_t.\n\nAC_DEFUN([gl_AC_HEADER_STDINT_H],\n[\n  AC_CACHE_CHECK([for stdint.h], [gl_cv_header_stdint_h],\n    [AC_COMPILE_IFELSE(\n       [AC_LANG_PROGRAM(\n          [[#include <sys/types.h>\n            #include <stdint.h>]],\n          [[uintmax_t i = (uintmax_t) -1; return !i;]])],\n       [gl_cv_header_stdint_h=yes],\n       [gl_cv_header_stdint_h=no])])\n  if test $gl_cv_header_stdint_h = yes; then\n    AC_DEFINE_UNQUOTED([HAVE_STDINT_H_WITH_UINTMAX], [1],\n      [Define if <stdint.h> exists, doesn't clash with <sys/types.h>,\n       and declares uintmax_t. ])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

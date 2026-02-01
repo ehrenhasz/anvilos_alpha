@@ -1,0 +1,9 @@
+{
+  "module_name": "video-vga.c",
+  "hash_id": "9af6e1819285b7a514338d8b2dda0b9c5800b86cd8267b8755b14d6261e723a7",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/realmode/rm/video-vga.c",
+  "human_readable_source": "#include \"../../boot/video-vga.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

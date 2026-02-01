@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "70a51e0942405df74a1e22606ffa353db577796a753516e78e61979ead17347d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/bno055/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_BOSCH_BNO055) += bno055.o\nobj-$(CONFIG_BOSCH_BNO055_SERIAL) += bno055_ser.o\nbno055_ser-y := bno055_ser_core.o\n# define_trace.h needs to know how to find our header\nCFLAGS_bno055_ser_trace.o := -I$(src)\nbno055_ser-$(CONFIG_TRACING) += bno055_ser_trace.o\n\nobj-$(CONFIG_BOSCH_BNO055_I2C) += bno055_i2c.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

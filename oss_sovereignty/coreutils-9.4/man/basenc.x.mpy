@@ -1,0 +1,9 @@
+{
+  "module_name": "basenc.x",
+  "hash_id": "eedb91531a58a96a10dbd21b25b935eb1a202f5e5b1764b688bcd55dc4f8b330",
+  "original_prompt": "Ingested from coreutils-9.4/man/basenc.x",
+  "human_readable_source": "'\\\" Copyright (C) 2018-2023 Free Software Foundation, Inc.\n'\\\"\n'\\\" This is free software.  You may redistribute copies of it under the terms\n'\\\" of the GNU General Public License <https://www.gnu.org/licenses/gpl.html>.\n'\\\" There is NO WARRANTY, to the extent permitted by law.\n[NAME]\nbasenc \\- Encode/decode data and print to standard output\n[DESCRIPTION]\n.\\\" Add any additional description here\n[ENCODING EXAMPLES]\n.PP\n.nf\n.RS\n$ printf '\\\\376\\\\117\\\\202' | basenc \\-\\-base64\n/k+C\n\n$ printf '\\\\376\\\\117\\\\202' | basenc \\-\\-base64url\n_k-C\n\n$ printf '\\\\376\\\\117\\\\202' | basenc \\-\\-base32\n7ZHYE===\n\n$ printf '\\\\376\\\\117\\\\202' | basenc \\-\\-base32hex\nVP7O4===\n\n$ printf '\\\\376\\\\117\\\\202' | basenc \\-\\-base16\nFE4F82\n\n$ printf '\\\\376\\\\117\\\\202' | basenc \\-\\-base2lsbf\n011111111111001001000001\n\n$ printf '\\\\376\\\\117\\\\202' | basenc \\-\\-base2msbf\n111111100100111110000010\n\n$ printf '\\\\376\\\\117\\\\202\\\\000' | basenc \\-\\-z85\n@.FaC\n.RE\n.fi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

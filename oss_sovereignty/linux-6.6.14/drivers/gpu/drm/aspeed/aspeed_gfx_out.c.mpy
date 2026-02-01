@@ -1,0 +1,9 @@
+{
+  "module_name": "aspeed_gfx_out.c",
+  "hash_id": "a8a5dec46a2c5d3fc5db9931b5b3d4d29437eb558241c9f318c914e6ac8ab9b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/aspeed/aspeed_gfx_out.c",
+  "human_readable_source": "\n\n\n#include <drm/drm_atomic_helper.h>\n#include <drm/drm_connector.h>\n#include <drm/drm_edid.h>\n#include <drm/drm_probe_helper.h>\n\n#include \"aspeed_gfx.h\"\n\nstatic int aspeed_gfx_get_modes(struct drm_connector *connector)\n{\n\treturn drm_add_modes_noedid(connector, 800, 600);\n}\n\nstatic const struct\ndrm_connector_helper_funcs aspeed_gfx_connector_helper_funcs = {\n\t.get_modes = aspeed_gfx_get_modes,\n};\n\nstatic const struct drm_connector_funcs aspeed_gfx_connector_funcs = {\n\t.fill_modes\t\t= drm_helper_probe_single_connector_modes,\n\t.destroy\t\t= drm_connector_cleanup,\n\t.reset\t\t\t= drm_atomic_helper_connector_reset,\n\t.atomic_duplicate_state\t= drm_atomic_helper_connector_duplicate_state,\n\t.atomic_destroy_state\t= drm_atomic_helper_connector_destroy_state,\n};\n\nint aspeed_gfx_create_output(struct drm_device *drm)\n{\n\tstruct aspeed_gfx *priv = to_aspeed_gfx(drm);\n\tint ret;\n\n\tpriv->connector.dpms = DRM_MODE_DPMS_OFF;\n\tpriv->connector.polled = 0;\n\tdrm_connector_helper_add(&priv->connector,\n\t\t\t\t &aspeed_gfx_connector_helper_funcs);\n\tret = drm_connector_init(drm, &priv->connector,\n\t\t\t\t &aspeed_gfx_connector_funcs,\n\t\t\t\t DRM_MODE_CONNECTOR_Unknown);\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

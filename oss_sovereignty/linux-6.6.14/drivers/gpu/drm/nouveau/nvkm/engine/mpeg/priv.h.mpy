@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "0925093e20180db1c9368c13552bb56e0addd51ae1a9efe63dbf6c02086e5cd6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/mpeg/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_MPEG_PRIV_H__\n#define __NVKM_MPEG_PRIV_H__\n#include <engine/mpeg.h>\nstruct nvkm_chan;\n\nint nv31_mpeg_init(struct nvkm_engine *);\nvoid nv31_mpeg_tile(struct nvkm_engine *, int, struct nvkm_fb_tile *);\nextern const struct nvkm_object_func nv31_mpeg_object;\n\nbool nv40_mpeg_mthd_dma(struct nvkm_device *, u32, u32);\n\nint nv50_mpeg_init(struct nvkm_engine *);\nvoid nv50_mpeg_intr(struct nvkm_engine *);\n\nextern const struct nvkm_object_func nv50_mpeg_cclass;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0932a2ce03bab9c1cae327a8f889eeb89c90f7d1ed46b2af90f1988373205e9e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/sf-pdma/Makefile",
+  "human_readable_source": "obj-$(CONFIG_SF_PDMA)   += sf-pdma.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

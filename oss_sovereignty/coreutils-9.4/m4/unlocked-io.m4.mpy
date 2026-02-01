@@ -1,0 +1,9 @@
+{
+  "module_name": "unlocked-io.m4",
+  "hash_id": "276d52c5fe89ac725cbd0b7712e71afca0cbc7d59a24ed753754c3a322c6bc70",
+  "original_prompt": "Ingested from coreutils-9.4/m4/unlocked-io.m4",
+  "human_readable_source": "# unlocked-io.m4 serial 16\n\n# Copyright (C) 1998-2006, 2009-2023 Free Software Foundation, Inc.\n#\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\ndnl From Jim Meyering.\ndnl\ndnl See if the glibc *_unlocked I/O macros or functions are available.\ndnl Use only those *_unlocked macros or functions that are declared\ndnl (because some of them were declared in Solaris 2.5.1 but were removed\ndnl in Solaris 2.6, whereas we want binaries built on Solaris 2.5.1 to run\ndnl on Solaris 2.6).\n\nAC_DEFUN([gl_FUNC_GLIBC_UNLOCKED_IO],\n[\n  dnl Persuade glibc and Solaris <stdio.h> to declare\n  dnl fgets_unlocked(), fputs_unlocked() etc.\n  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])\n\n  AC_CHECK_DECLS_ONCE([clearerr_unlocked])\n  AC_CHECK_DECLS_ONCE([feof_unlocked])\n  AC_CHECK_DECLS_ONCE([ferror_unlocked])\n  AC_CHECK_DECLS_ONCE([fflush_unlocked])\n  AC_CHECK_DECLS_ONCE([fgets_unlocked])\n  AC_CHECK_DECLS_ONCE([fputc_unlocked])\n  AC_CHECK_DECLS_ONCE([fputs_unlocked])\n  AC_CHECK_DECLS_ONCE([fread_unlocked])\n  AC_CHECK_DECLS_ONCE([fwrite_unlocked])\n  AC_CHECK_DECLS_ONCE([getc_unlocked])\n  AC_CHECK_DECLS_ONCE([getchar_unlocked])\n  AC_CHECK_DECLS_ONCE([putc_unlocked])\n  AC_CHECK_DECLS_ONCE([putchar_unlocked])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

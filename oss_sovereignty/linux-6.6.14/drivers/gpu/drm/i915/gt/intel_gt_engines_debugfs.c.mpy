@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_gt_engines_debugfs.c",
+  "hash_id": "5e44b6597b0789e790cba14fb234ca077e42541bb7aa2f2c7882678bb97472a0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_gt_engines_debugfs.c",
+  "human_readable_source": "\n\n \n\n#include <drm/drm_print.h>\n\n#include \"i915_drv.h\"  \n#include \"intel_engine.h\"\n#include \"intel_gt_debugfs.h\"\n#include \"intel_gt_engines_debugfs.h\"\n\nstatic int engines_show(struct seq_file *m, void *data)\n{\n\tstruct intel_gt *gt = m->private;\n\tstruct intel_engine_cs *engine;\n\tenum intel_engine_id id;\n\tstruct drm_printer p;\n\n\tp = drm_seq_file_printer(m);\n\tfor_each_engine(engine, gt, id)\n\t\tintel_engine_dump(engine, &p, \"%s\\n\", engine->name);\n\n\treturn 0;\n}\nDEFINE_INTEL_GT_DEBUGFS_ATTRIBUTE(engines);\n\nvoid intel_gt_engines_debugfs_register(struct intel_gt *gt, struct dentry *root)\n{\n\tstatic const struct intel_gt_debugfs_file files[] = {\n\t\t{ \"engines\", &engines_fops },\n\t};\n\n\tintel_gt_debugfs_register_files(root, files, ARRAY_SIZE(files), gt);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

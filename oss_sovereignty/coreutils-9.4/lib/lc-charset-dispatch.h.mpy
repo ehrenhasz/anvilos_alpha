@@ -1,0 +1,9 @@
+{
+  "module_name": "lc-charset-dispatch.h",
+  "hash_id": "0d0d93de3979ef6a2022b6fce0238e31815ed049f2e42f553d6c5ae6fa6f6e99",
+  "original_prompt": "Ingested from coreutils-9.4/lib/lc-charset-dispatch.h",
+  "human_readable_source": " \n\n#include <wchar.h>\n\n#if GNULIB_defined_mbstate_t\n\n \ntypedef enum\n  {\n    enc_other,       \n    enc_utf8,        \n    enc_eucjp,       \n    enc_94,          \n    enc_euctw,       \n    enc_gb18030,     \n    enc_sjis         \n  }\n  enc_t;\n\n \nextern enc_t locale_encoding_classification (void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

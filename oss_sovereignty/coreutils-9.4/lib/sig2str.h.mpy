@@ -1,0 +1,9 @@
+{
+  "module_name": "sig2str.h",
+  "hash_id": "166f65b1cc8570c991ba0ff1e9980bcab88a6d6fc1297acbb2a7a615e46e94b1",
+  "original_prompt": "Ingested from coreutils-9.4/lib/sig2str.h",
+  "human_readable_source": " \n\n#include <signal.h>\n\n \n#ifndef SIG2STR_MAX\n\n# include \"intprops.h\"\n\n \n# define SIG2STR_MAX (sizeof \"SIGRTMAX\" + INT_STRLEN_BOUND (int) - 1)\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\nint sig2str (int, char *);\nint str2sig (char const *, int *);\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif\n\n \n\n#if defined _sys_nsig\n# define SIGNUM_BOUND (_sys_nsig - 1)\n#elif defined _SIG_MAXSIG\n# define SIGNUM_BOUND (_SIG_MAXSIG - 2)  \n#elif defined NSIG\n# define SIGNUM_BOUND (NSIG - 1)\n#else\n# define SIGNUM_BOUND 64\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

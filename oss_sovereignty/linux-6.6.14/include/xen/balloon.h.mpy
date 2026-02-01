@@ -1,0 +1,9 @@
+{
+  "module_name": "balloon.h",
+  "hash_id": "3a27640767965e8c83b037c8a20daf55b8a440e1d7c07007e9e9435d0fd98687",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/balloon.h",
+  "human_readable_source": " \n \n#ifndef _XEN_BALLOON_H\n#define _XEN_BALLOON_H\n\n#define RETRY_UNLIMITED\t0\n\nstruct balloon_stats {\n\t \n\tunsigned long current_pages;\n\tunsigned long target_pages;\n\tunsigned long target_unpopulated;\n\t \n\tunsigned long balloon_low;\n\tunsigned long balloon_high;\n\tunsigned long total_pages;\n\tunsigned long schedule_delay;\n\tunsigned long max_schedule_delay;\n\tunsigned long retry_count;\n\tunsigned long max_retry_count;\n};\n\nextern struct balloon_stats balloon_stats;\n\nvoid balloon_set_new_target(unsigned long target);\n\nint xen_alloc_ballooned_pages(unsigned int nr_pages, struct page **pages);\nvoid xen_free_ballooned_pages(unsigned int nr_pages, struct page **pages);\n\n#ifdef CONFIG_XEN_BALLOON\nvoid xen_balloon_init(void);\n#else\nstatic inline void xen_balloon_init(void)\n{\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

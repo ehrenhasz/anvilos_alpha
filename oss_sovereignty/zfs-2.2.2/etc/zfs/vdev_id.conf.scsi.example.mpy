@@ -1,0 +1,9 @@
+{
+  "module_name": "vdev_id.conf.scsi.example",
+  "hash_id": "6fac7dafc2097eb21462d74901a3993c2fdc21c22380f1a0b059cff7f53b4e12",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/zfs/vdev_id.conf.scsi.example",
+  "human_readable_source": "multipath     no\ntopology      scsi\nphys_per_port 1\n# Usually scsi disks are numbered from 0, but this can be offset, to\n# match the physical bay numbers, as follows:\nfirst_bay_number 1\n\n#       PCI_ID  HBA PORT  CHANNEL NAME\nchannel 0c:00.0 0         Y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

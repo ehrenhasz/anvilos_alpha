@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_nat_tftp.c",
+  "hash_id": "1684f1b5db5ed0db8f23607413e0989c94820d169137f4b2952fa92f95bba4af",
+  "original_prompt": "Ingested from linux-6.6.14/net/netfilter/nf_nat_tftp.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/udp.h>\n\n#include <net/netfilter/nf_conntrack_helper.h>\n#include <net/netfilter/nf_conntrack_expect.h>\n#include <net/netfilter/nf_nat_helper.h>\n#include <linux/netfilter/nf_conntrack_tftp.h>\n\n#define NAT_HELPER_NAME \"tftp\"\n\nMODULE_AUTHOR(\"Magnus Boden <mb@ozaba.mine.nu>\");\nMODULE_DESCRIPTION(\"TFTP NAT helper\");\nMODULE_LICENSE(\"GPL\");\nMODULE_ALIAS_NF_NAT_HELPER(NAT_HELPER_NAME);\n\nstatic struct nf_conntrack_nat_helper nat_helper_tftp =\n\tNF_CT_NAT_HELPER_INIT(NAT_HELPER_NAME);\n\nstatic unsigned int help(struct sk_buff *skb,\n\t\t\t enum ip_conntrack_info ctinfo,\n\t\t\t struct nf_conntrack_expect *exp)\n{\n\tconst struct nf_conn *ct = exp->master;\n\n\texp->saved_proto.udp.port\n\t\t= ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple.src.u.udp.port;\n\texp->dir = IP_CT_DIR_REPLY;\n\texp->expectfn = nf_nat_follow_master;\n\tif (nf_ct_expect_related(exp, 0) != 0) {\n\t\tnf_ct_helper_log(skb, exp->master, \"cannot add expectation\");\n\t\treturn NF_DROP;\n\t}\n\treturn NF_ACCEPT;\n}\n\nstatic void __exit nf_nat_tftp_fini(void)\n{\n\tnf_nat_helper_unregister(&nat_helper_tftp);\n\tRCU_INIT_POINTER(nf_nat_tftp_hook, NULL);\n\tsynchronize_rcu();\n}\n\nstatic int __init nf_nat_tftp_init(void)\n{\n\tBUG_ON(nf_nat_tftp_hook != NULL);\n\tnf_nat_helper_register(&nat_helper_tftp);\n\tRCU_INIT_POINTER(nf_nat_tftp_hook, help);\n\treturn 0;\n}\n\nmodule_init(nf_nat_tftp_init);\nmodule_exit(nf_nat_tftp_fini);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

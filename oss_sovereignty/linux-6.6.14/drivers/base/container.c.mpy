@@ -1,0 +1,9 @@
+{
+  "module_name": "container.c",
+  "hash_id": "881642dbe2746a7b2a7b90226a845b2a916dd816fbd7f78e5ea71e9d634ebe4c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/base/container.c",
+  "human_readable_source": "\n \n\n#include <linux/container.h>\n\n#include \"base.h\"\n\n#define CONTAINER_BUS_NAME\t\"container\"\n\nstatic int trivial_online(struct device *dev)\n{\n\treturn 0;\n}\n\nstatic int container_offline(struct device *dev)\n{\n\tstruct container_dev *cdev = to_container_dev(dev);\n\n\treturn cdev->offline ? cdev->offline(cdev) : 0;\n}\n\nstruct bus_type container_subsys = {\n\t.name = CONTAINER_BUS_NAME,\n\t.dev_name = CONTAINER_BUS_NAME,\n\t.online = trivial_online,\n\t.offline = container_offline,\n};\n\nvoid __init container_dev_init(void)\n{\n\tint ret;\n\n\tret = subsys_system_register(&container_subsys, NULL);\n\tif (ret)\n\t\tpr_err(\"%s() failed: %d\\n\", __func__, ret);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

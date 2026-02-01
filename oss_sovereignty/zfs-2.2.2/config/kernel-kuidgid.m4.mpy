@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-kuidgid.m4",
+  "hash_id": "30ff611ea7d7509652c0127bf487625f5a8509886b0fd37f95035eb3c4536343",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-kuidgid.m4",
+  "human_readable_source": "dnl #\ndnl # 3.8 API change,\ndnl # User namespaces, use kuid_t in place of uid_t where available.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_KUIDGID_T], [\n\tZFS_LINUX_TEST_SRC([kuidgid_t], [\n\t\t#include <linux/uidgid.h>\n\t], [\n\t\tkuid_t userid __attribute__ ((unused)) = KUIDT_INIT(0);\n\t\tkgid_t groupid __attribute__ ((unused)) = KGIDT_INIT(0);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_KUIDGID_T], [\n\tAC_MSG_CHECKING([whether kuid_t/kgid_t is available])\n\tZFS_LINUX_TEST_RESULT([kuidgid_t], [\n\t\tAC_MSG_RESULT(yes)\n\t],[\n\t\tZFS_LINUX_TEST_ERROR([kuid_t/kgid_t])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

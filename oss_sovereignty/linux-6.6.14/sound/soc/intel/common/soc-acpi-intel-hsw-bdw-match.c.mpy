@@ -1,0 +1,9 @@
+{
+  "module_name": "soc-acpi-intel-hsw-bdw-match.c",
+  "hash_id": "630135964bfc1de38cafe19fd620a75d0c6a53b5727788e76ef5326af6f71294",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/common/soc-acpi-intel-hsw-bdw-match.c",
+  "human_readable_source": "\n \n\n#include <linux/dmi.h>\n#include <sound/soc-acpi.h>\n#include <sound/soc-acpi-intel-match.h>\n\nstruct snd_soc_acpi_mach snd_soc_acpi_intel_broadwell_machines[] = {\n\t{\n\t\t.id = \"INT343A\",\n\t\t.drv_name = \"bdw_rt286\",\n\t\t.sof_tplg_filename = \"sof-bdw-rt286.tplg\",\n\t},\n\t{\n\t\t.id = \"10EC5650\",\n\t\t.drv_name = \"bdw-rt5650\",\n\t\t.sof_tplg_filename = \"sof-bdw-rt5650.tplg\",\n\t},\n\t{\n\t\t.id = \"RT5677CE\",\n\t\t.drv_name = \"bdw-rt5677\",\n\t\t.sof_tplg_filename = \"sof-bdw-rt5677.tplg\",\n\t},\n\t{\n\t\t.id = \"INT33CA\",\n\t\t.drv_name = \"hsw_rt5640\",\n\t\t.sof_tplg_filename = \"sof-bdw-rt5640.tplg\",\n\t},\n\t{}\n};\nEXPORT_SYMBOL_GPL(snd_soc_acpi_intel_broadwell_machines);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

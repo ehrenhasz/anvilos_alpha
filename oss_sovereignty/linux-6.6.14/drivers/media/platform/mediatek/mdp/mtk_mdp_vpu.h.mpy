@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_mdp_vpu.h",
+  "hash_id": "c363506e37295aa2711bec3d8388e150eec4d7bcfe85e8d41fc3cca7dcc3f2a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/mdp/mtk_mdp_vpu.h",
+  "human_readable_source": " \n \n\n#ifndef __MTK_MDP_VPU_H__\n#define __MTK_MDP_VPU_H__\n\n#include \"mtk_mdp_ipi.h\"\n\n\n \nstruct mtk_mdp_vpu {\n\tstruct platform_device\t*pdev;\n\tuint32_t\t\tinst_addr;\n\tint32_t\t\t\tfailure;\n\tstruct mdp_process_vsi\t*vsi;\n};\n\nint mtk_mdp_vpu_register(struct platform_device *pdev);\nint mtk_mdp_vpu_init(struct mtk_mdp_vpu *vpu);\nint mtk_mdp_vpu_deinit(struct mtk_mdp_vpu *vpu);\nint mtk_mdp_vpu_process(struct mtk_mdp_vpu *vpu);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

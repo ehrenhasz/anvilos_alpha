@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "c5f361c5424d10e9759c9752c5ab744355d564a6c969ebec7ee5d472699cac2d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/usbip/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nMakefile\nMakefile.in\naclocal.m4\nautom4te.cache/\ncompile\nconfig.guess\nconfig.h\nconfig.h.in\nconfig.log\nconfig.status\nconfig.sub\nconfigure\ndepcomp\ninstall-sh\nlibsrc/Makefile\nlibsrc/Makefile.in\nlibtool\nltmain.sh\nmissing\nsrc/Makefile\nsrc/Makefile.in\nstamp-h1\nlibsrc/libusbip.la\nlibsrc/libusbip_la-names.lo\nlibsrc/libusbip_la-sysfs_utils.lo\nlibsrc/libusbip_la-usbip_common.lo\nlibsrc/libusbip_la-usbip_device_driver.lo\nlibsrc/libusbip_la-usbip_host_common.lo\nlibsrc/libusbip_la-usbip_host_driver.lo\nlibsrc/libusbip_la-vhci_driver.lo\nsrc/usbip\nsrc/usbipd\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

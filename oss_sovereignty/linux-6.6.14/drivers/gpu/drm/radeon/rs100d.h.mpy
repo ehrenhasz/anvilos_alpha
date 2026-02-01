@@ -1,0 +1,9 @@
+{
+  "module_name": "rs100d.h",
+  "hash_id": "ac1dc818f2972725177bf287da14fc71ae880f84efe100465f359c419e537e70",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/rs100d.h",
+  "human_readable_source": " \n#ifndef __RS100D_H__\n#define __RS100D_H__\n\n \n#define R_00015C_NB_TOM                              0x00015C\n#define   S_00015C_MC_FB_START(x)                      (((x) & 0xFFFF) << 0)\n#define   G_00015C_MC_FB_START(x)                      (((x) >> 0) & 0xFFFF)\n#define   C_00015C_MC_FB_START                         0xFFFF0000\n#define   S_00015C_MC_FB_TOP(x)                        (((x) & 0xFFFF) << 16)\n#define   G_00015C_MC_FB_TOP(x)                        (((x) >> 16) & 0xFFFF)\n#define   C_00015C_MC_FB_TOP                           0x0000FFFF\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

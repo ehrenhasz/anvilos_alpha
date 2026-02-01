@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c2366f50698210b336b0c72a07193d61fbca782969e06b5b780208af4c627096",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hsi/controllers/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# HSI controllers configuration\n#\ncomment \"HSI controllers\"\n\nconfig OMAP_SSI\n\ttristate \"OMAP SSI hardware driver\"\n\tdepends on HSI && OF && ARM && COMMON_CLK\n\tdepends on ARCH_OMAP3 || COMPILE_TEST\n\thelp\n\t  SSI is a legacy version of HSI. It is usually used to connect\n\t  an application engine with a cellular modem.\n\t  If you say Y here, you will enable the OMAP SSI hardware driver.\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

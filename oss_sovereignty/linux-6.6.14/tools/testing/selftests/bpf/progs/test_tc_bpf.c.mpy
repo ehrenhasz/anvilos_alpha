@@ -1,0 +1,9 @@
+{
+  "module_name": "test_tc_bpf.c",
+  "hash_id": "e26eb59147ecb0eb5e6060fb048b0eee8399ed22748b36922ca3dc074de4d560",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_tc_bpf.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <linux/if_ether.h>\n#include <linux/ip.h>\n\n \n\nSEC(\"tc\")\nint cls(struct __sk_buff *skb)\n{\n\treturn 0;\n}\n\n \nSEC(\"tcx/ingress\")\nint pkt_ptr(struct __sk_buff *skb)\n{\n\tstruct iphdr *iph = (void *)(long)skb->data + sizeof(struct ethhdr);\n\n\tif ((long)(iph + 1) > (long)skb->data_end)\n\t\treturn 1;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

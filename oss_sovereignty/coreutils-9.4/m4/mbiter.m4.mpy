@@ -1,0 +1,9 @@
+{
+  "module_name": "mbiter.m4",
+  "hash_id": "4c3afd289cb66347fb6649ebfb64d79c9e2773c4bad9705fb300f343d7faf8f5",
+  "original_prompt": "Ingested from coreutils-9.4/m4/mbiter.m4",
+  "human_readable_source": "# mbiter.m4 serial 7\ndnl Copyright (C) 2005, 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl autoconf tests required for use of mbiter.h\ndnl From Bruno Haible.\n\nAC_DEFUN([gl_MBITER],\n[\n  AC_REQUIRE([AC_TYPE_MBSTATE_T])\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

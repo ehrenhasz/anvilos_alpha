@@ -1,0 +1,9 @@
+{
+  "module_name": "rw.h",
+  "hash_id": "c63d8ed9ae3800f5ba07b33422787d82660767c5d603f2de8382f69f11edb1f6",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/rw.h",
+  "human_readable_source": "\n\n#include <linux/pagemap.h>\n\nstruct io_rw_state {\n\tstruct iov_iter\t\t\titer;\n\tstruct iov_iter_state\t\titer_state;\n\tstruct iovec\t\t\tfast_iov[UIO_FASTIOV];\n};\n\nstruct io_async_rw {\n\tstruct io_rw_state\t\ts;\n\tconst struct iovec\t\t*free_iovec;\n\tsize_t\t\t\t\tbytes_done;\n\tstruct wait_page_queue\t\twpq;\n};\n\nint io_prep_rw(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_read(struct io_kiocb *req, unsigned int issue_flags);\nint io_readv_prep_async(struct io_kiocb *req);\nint io_write(struct io_kiocb *req, unsigned int issue_flags);\nint io_writev_prep_async(struct io_kiocb *req);\nvoid io_readv_writev_cleanup(struct io_kiocb *req);\nvoid io_rw_fail(struct io_kiocb *req);\nvoid io_req_rw_complete(struct io_kiocb *req, struct io_tw_state *ts);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "unexpand.x",
+  "hash_id": "0e72111a6f70ae99a66d7961a102f82a8d9907df718575338b2bd8ee2ff2ed01",
+  "original_prompt": "Ingested from coreutils-9.4/man/unexpand.x",
+  "human_readable_source": "[NAME]\nunexpand \\- convert spaces to tabs\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nexpand(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

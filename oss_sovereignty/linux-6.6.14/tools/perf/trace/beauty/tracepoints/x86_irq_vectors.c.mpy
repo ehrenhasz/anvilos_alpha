@@ -1,0 +1,9 @@
+{
+  "module_name": "x86_irq_vectors.c",
+  "hash_id": "e917dfb197e18ab0d1eeb622e333b09e635adbc7a8ea35df3b730a7abfb800b0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/tracepoints/x86_irq_vectors.c",
+  "human_readable_source": "\n \n\n#include \"trace/beauty/beauty.h\"\n\n#include \"trace/beauty/generated/x86_arch_irq_vectors_array.c\"\n\nstatic DEFINE_STRARRAY(x86_irq_vectors, \"_VECTOR\");\n\nstatic size_t x86_irq_vectors__scnprintf(unsigned long vector, char *bf, size_t size, bool show_prefix)\n{\n\treturn strarray__scnprintf_suffix(&strarray__x86_irq_vectors, bf, size, \"%#x\", show_prefix, vector);\n}\n\nsize_t syscall_arg__scnprintf_x86_irq_vectors(char *bf, size_t size, struct syscall_arg *arg)\n{\n\tunsigned long vector = arg->val;\n\n\treturn x86_irq_vectors__scnprintf(vector, bf, size, arg->show_string_prefix);\n}\n\nbool syscall_arg__strtoul_x86_irq_vectors(char *bf, size_t size, struct syscall_arg *arg __maybe_unused, u64 *ret)\n{\n\treturn strarray__strtoul(&strarray__x86_irq_vectors, bf, size, ret);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

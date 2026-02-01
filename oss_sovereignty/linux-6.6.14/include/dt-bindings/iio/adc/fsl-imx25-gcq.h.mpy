@@ -1,0 +1,9 @@
+{
+  "module_name": "fsl-imx25-gcq.h",
+  "hash_id": "1efa7e44e3a7ad408c1b9a9a4c8030c1c6df8932253624f75d1bf8c92e0ada5e",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/iio/adc/fsl-imx25-gcq.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_IIO_ADC_FS_IMX25_GCQ_H\n#define _DT_BINDINGS_IIO_ADC_FS_IMX25_GCQ_H\n\n#define MX25_ADC_REFP_YP\t0  \n#define MX25_ADC_REFP_XP\t1  \n#define MX25_ADC_REFP_EXT\t2  \n#define MX25_ADC_REFP_INT\t3  \n\n#define MX25_ADC_REFN_XN\t0  \n#define MX25_ADC_REFN_YN\t1  \n#define MX25_ADC_REFN_NGND\t2  \n#define MX25_ADC_REFN_NGND2\t3  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

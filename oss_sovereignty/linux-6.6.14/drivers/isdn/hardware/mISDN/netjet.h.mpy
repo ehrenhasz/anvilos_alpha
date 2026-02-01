@@ -1,0 +1,9 @@
+{
+  "module_name": "netjet.h",
+  "hash_id": "99966738c6ad1344625be1c592550bfa30c5a1fdad0b0cc0a6670ee5c41ef3c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/isdn/hardware/mISDN/netjet.h",
+  "human_readable_source": " \n \n\n#define NJ_CTRL\t\t\t0x00\n#define NJ_DMACTRL\t\t0x01\n#define NJ_AUXCTRL\t\t0x02\n#define NJ_AUXDATA\t\t0x03\n#define NJ_IRQMASK0\t\t0x04\n#define NJ_IRQMASK1\t\t0x05\n#define NJ_IRQSTAT0\t\t0x06\n#define NJ_IRQSTAT1\t\t0x07\n#define NJ_DMA_READ_START\t0x08\n#define NJ_DMA_READ_IRQ\t\t0x0c\n#define NJ_DMA_READ_END\t\t0x10\n#define NJ_DMA_READ_ADR\t\t0x14\n#define NJ_DMA_WRITE_START\t0x18\n#define NJ_DMA_WRITE_IRQ\t0x1c\n#define NJ_DMA_WRITE_END\t0x20\n#define NJ_DMA_WRITE_ADR\t0x24\n#define NJ_PULSE_CNT\t\t0x28\n\n#define NJ_ISAC_OFF\t\t0xc0\n#define NJ_ISACIRQ\t\t0x10\n\n#define NJ_IRQM0_RD_MASK\t0x03\n#define NJ_IRQM0_RD_IRQ\t\t0x01\n#define NJ_IRQM0_RD_END\t\t0x02\n#define NJ_IRQM0_WR_MASK\t0x0c\n#define NJ_IRQM0_WR_IRQ\t\t0x04\n#define NJ_IRQM0_WR_END\t\t0x08\n\n \n#define NJ_DMA_SIZE\t\t4096\n \n#define NJ_DMA_RXSIZE\t\t128   \n#define NJ_DMA_TXSIZE\t\t128   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

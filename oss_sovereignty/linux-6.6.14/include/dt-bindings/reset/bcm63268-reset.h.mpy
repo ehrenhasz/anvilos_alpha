@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm63268-reset.h",
+  "hash_id": "fbe96511f937387c5f7da24aee1d6d82a8d80f834960fb70f30e5035e60e7adb",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/bcm63268-reset.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_RESET_BCM63268_H\n#define __DT_BINDINGS_RESET_BCM63268_H\n\n#define BCM63268_RST_SPI\t0\n#define BCM63268_RST_IPSEC\t1\n#define BCM63268_RST_EPHY\t2\n#define BCM63268_RST_SAR\t3\n#define BCM63268_RST_ENETSW\t4\n#define BCM63268_RST_USBS\t5\n#define BCM63268_RST_USBH\t6\n#define BCM63268_RST_PCM\t7\n#define BCM63268_RST_PCIE_CORE\t8\n#define BCM63268_RST_PCIE\t9\n#define BCM63268_RST_PCIE_EXT\t10\n#define BCM63268_RST_WLAN_SHIM\t11\n#define BCM63268_RST_DDR_PHY\t12\n#define BCM63268_RST_FAP0\t13\n#define BCM63268_RST_WLAN_UBUS\t14\n#define BCM63268_RST_DECT\t15\n#define BCM63268_RST_FAP1\t16\n#define BCM63268_RST_PCIE_HARD\t17\n#define BCM63268_RST_GPHY\t18\n\n#define BCM63268_TRST_SW\t29\n#define BCM63268_TRST_HW\t30\n#define BCM63268_TRST_POR\t31\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

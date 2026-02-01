@@ -1,0 +1,9 @@
+{
+  "module_name": "ringbuf.h",
+  "hash_id": "e5d899e533a14a0344aef39a33395fb1098c1e20844517f5bcddd5cc504ae33b",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/ringbuf.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_RINGBUF_H\n#define MICROPY_INCLUDED_PY_RINGBUF_H\n\n#include <stddef.h>\n#include <stdint.h>\n\n#ifdef _MSC_VER\n#include \"py/mpconfig.h\" \n#endif\n\ntypedef struct _ringbuf_t {\n    uint8_t *buf;\n    uint16_t size;\n    uint16_t iget;\n    uint16_t iput;\n} ringbuf_t;\n\n\n\n\n\n\n#define ringbuf_alloc(r, sz) \\\n    { \\\n        (r)->buf = m_new(uint8_t, sz); \\\n        (r)->size = sz; \\\n        (r)->iget = (r)->iput = 0; \\\n    }\n\nstatic inline int ringbuf_get(ringbuf_t *r) {\n    if (r->iget == r->iput) {\n        return -1;\n    }\n    uint8_t v = r->buf[r->iget++];\n    if (r->iget >= r->size) {\n        r->iget = 0;\n    }\n    return v;\n}\n\nstatic inline int ringbuf_peek(ringbuf_t *r) {\n    if (r->iget == r->iput) {\n        return -1;\n    }\n    return r->buf[r->iget];\n}\n\nstatic inline int ringbuf_put(ringbuf_t *r, uint8_t v) {\n    uint32_t iput_new = r->iput + 1;\n    if (iput_new >= r->size) {\n        iput_new = 0;\n    }\n    if (iput_new == r->iget) {\n        return -1;\n    }\n    r->buf[r->iput] = v;\n    r->iput = iput_new;\n    return 0;\n}\n\nstatic inline size_t ringbuf_free(ringbuf_t *r) {\n    return (r->size + r->iget - r->iput - 1) % r->size;\n}\n\nstatic inline size_t ringbuf_avail(ringbuf_t *r) {\n    return (r->size + r->iput - r->iget) % r->size;\n}\n\n\nint ringbuf_get16(ringbuf_t *r);\nint ringbuf_peek16(ringbuf_t *r);\nint ringbuf_put16(ringbuf_t *r, uint16_t v);\n\nint ringbuf_get_bytes(ringbuf_t *r, uint8_t *data, size_t data_len);\nint ringbuf_put_bytes(ringbuf_t *r, const uint8_t *data, size_t data_len);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

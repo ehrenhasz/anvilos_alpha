@@ -1,0 +1,9 @@
+{
+  "module_name": "pyperf180.c",
+  "hash_id": "f1dd75e3569af3e7ef3548e3ca72e3cc149310ff6493475c68afa283dfc9be55",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/pyperf180.c",
+  "human_readable_source": "\n\n#define STACK_MAX_LEN 180\n#include \"pyperf.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

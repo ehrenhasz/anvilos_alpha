@@ -1,0 +1,9 @@
+{
+  "module_name": "nand_esmt.c",
+  "hash_id": "5afe403869ce61e7b45e046a1b7a0cff85dce6de0556c850d1d1c75e4c9be6bc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/nand/raw/nand_esmt.c",
+  "human_readable_source": "\n \n\n#include <linux/mtd/rawnand.h>\n#include \"internals.h\"\n\nstatic void esmt_nand_decode_id(struct nand_chip *chip)\n{\n\tstruct nand_device *base = &chip->base;\n\tstruct nand_ecc_props requirements = {};\n\n\tnand_decode_ext_id(chip);\n\n\t \n\tif (chip->id.len >= 5 && nand_is_slc(chip)) {\n\t\trequirements.step_size = 512;\n\t\tswitch (chip->id.data[4] & 0x3) {\n\t\tcase 0x0:\n\t\t\trequirements.strength = 4;\n\t\t\tbreak;\n\t\tcase 0x1:\n\t\t\trequirements.strength = 2;\n\t\t\tbreak;\n\t\tcase 0x2:\n\t\t\trequirements.strength = 1;\n\t\t\tbreak;\n\t\tdefault:\n\t\t\tWARN(1, \"Could not get ECC info\");\n\t\t\trequirements.step_size = 0;\n\t\t\tbreak;\n\t\t}\n\t}\n\n\tnanddev_set_ecc_requirements(base, &requirements);\n}\n\nstatic int esmt_nand_init(struct nand_chip *chip)\n{\n\tif (nand_is_slc(chip))\n\t\t \n\t\tchip->options |= NAND_BBM_FIRSTPAGE | NAND_BBM_SECONDPAGE |\n\t\t\t\t NAND_BBM_LASTPAGE;\n\n\treturn 0;\n}\n\nconst struct nand_manufacturer_ops esmt_nand_manuf_ops = {\n\t.detect = esmt_nand_decode_id,\n\t.init = esmt_nand_init,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

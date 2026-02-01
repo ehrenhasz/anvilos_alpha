@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e58b93d00a67667d1658edb0fd6477ebdcf75b8f887947d64be8a6d8c96001f2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/stringloops/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# The loops are all 64-bit code\nCFLAGS += -I$(CURDIR)\n\nEXTRA_SOURCES := ../harness.c\n\nbuild_32bit = $(shell if ($(CC) $(CFLAGS) -m32 -o /dev/null memcmp.c >/dev/null 2>&1) then echo \"1\"; fi)\n\nTEST_GEN_PROGS := memcmp_64 strlen\n\n$(OUTPUT)/memcmp_64: memcmp.c ../utils.c\n$(OUTPUT)/memcmp_64: CFLAGS += -m64 -maltivec\n\nifeq ($(build_32bit),1)\n$(OUTPUT)/memcmp_32: memcmp.c\n$(OUTPUT)/memcmp_32: CFLAGS += -m32\n\nTEST_GEN_PROGS += memcmp_32\nendif\n\n$(OUTPUT)/strlen: strlen.c string.c\n\nifeq ($(build_32bit),1)\n$(OUTPUT)/strlen_32: strlen.c\n$(OUTPUT)/strlen_32: CFLAGS += -m32\n\nTEST_GEN_PROGS += strlen_32\nendif\n\nASFLAGS = $(CFLAGS)\n\ntop_srcdir = ../../../../..\ninclude ../../lib.mk\n\n$(TEST_GEN_PROGS): $(EXTRA_SOURCES)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

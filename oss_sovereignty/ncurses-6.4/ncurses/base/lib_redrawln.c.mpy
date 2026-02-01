@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_redrawln.c",
+  "hash_id": "a3167d8de1344570a40488d5822c29cf5263f8b144451f9755915401e1a9f95a",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_redrawln.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_redrawln.c,v 1.18 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwredrawln(WINDOW *win, int beg, int num)\n{\n    int i;\n    int end;\n    size_t len;\n    SCREEN *sp;\n\n    T((T_CALLED(\"wredrawln(%p,%d,%d)\"), (void *) win, beg, num));\n\n    if (win == 0)\n\treturnCode(ERR);\n\n    sp = _nc_screen_of(win);\n\n    if (beg < 0)\n\tbeg = 0;\n\n    if (touchline(win, beg, num) == ERR)\n\treturnCode(ERR);\n\n    if (touchline(CurScreen(sp), beg + win->_begy, num) == ERR)\n\treturnCode(ERR);\n\n    end = beg + num;\n    if (end > CurScreen(sp)->_maxy + 1 - win->_begy)\n\tend = CurScreen(sp)->_maxy + 1 - win->_begy;\n    if (end > win->_maxy + 1)\n\tend = win->_maxy + 1;\n\n    len = (size_t) (win->_maxx + 1);\n    if (len > (size_t) (CurScreen(sp)->_maxx + 1 - win->_begx))\n\tlen = (size_t) (CurScreen(sp)->_maxx + 1 - win->_begx);\n    len *= sizeof(CurScreen(sp)->_line[0].text[0]);\n\n    for (i = beg; i < end; i++) {\n\tint crow = i + win->_begy;\n\n\tmemset(CurScreen(sp)->_line[crow].text + win->_begx, 0, len);\n\tNCURSES_SP_NAME(_nc_make_oldhash) (NCURSES_SP_ARGx crow);\n    }\n\n    returnCode(OK);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

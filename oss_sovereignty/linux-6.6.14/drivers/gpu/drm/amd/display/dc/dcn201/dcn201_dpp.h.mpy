@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn201_dpp.h",
+  "hash_id": "d1bbd1e2d61d84ed9fe939836d3493c775f276796a427380c9f34c5f4a09d377",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn201/dcn201_dpp.h",
+  "human_readable_source": " \n\n#ifndef __DCN201_DPP_H__\n#define __DCN201_DPP_H__\n\n#include \"dcn20/dcn20_dpp.h\"\n\n#define TO_DCN201_DPP(dpp)\\\n\tcontainer_of(dpp, struct dcn201_dpp, base)\n\n#define TF_REG_LIST_DCN201(id) \\\n\tTF_REG_LIST_DCN20(id)\n\n#define TF_REG_LIST_SH_MASK_DCN201(mask_sh)\\\n\tTF_REG_LIST_SH_MASK_DCN20(mask_sh)\n\n#define TF_REG_FIELD_LIST_DCN201(type) \\\n\tTF_REG_FIELD_LIST_DCN2_0(type)\n\nstruct dcn201_dpp_shift {\n\tTF_REG_FIELD_LIST_DCN201(uint8_t);\n};\n\nstruct dcn201_dpp_mask {\n\tTF_REG_FIELD_LIST_DCN201(uint32_t);\n};\n\n#define DPP_DCN201_REG_VARIABLE_LIST \\\n\tDPP_DCN2_REG_VARIABLE_LIST\n\nstruct dcn201_dpp_registers {\n\tDPP_DCN201_REG_VARIABLE_LIST;\n};\n\nstruct dcn201_dpp {\n\tstruct dpp base;\n\n\tconst struct dcn201_dpp_registers *tf_regs;\n\tconst struct dcn201_dpp_shift *tf_shift;\n\tconst struct dcn201_dpp_mask *tf_mask;\n\n\tconst uint16_t *filter_v;\n\tconst uint16_t *filter_h;\n\tconst uint16_t *filter_v_c;\n\tconst uint16_t *filter_h_c;\n\tint lb_pixel_depth_supported;\n\tint lb_memory_size;\n\tint lb_bits_per_entry;\n\tbool is_write_to_ram_a_safe;\n\tstruct scaler_data scl_data;\n\tstruct pwl_params pwl_data;\n};\n\nbool dpp201_construct(struct dcn201_dpp *dpp2,\n\tstruct dc_context *ctx,\n\tuint32_t inst,\n\tconst struct dcn201_dpp_registers *tf_regs,\n\tconst struct dcn201_dpp_shift *tf_shift,\n\tconst struct dcn201_dpp_mask *tf_mask);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

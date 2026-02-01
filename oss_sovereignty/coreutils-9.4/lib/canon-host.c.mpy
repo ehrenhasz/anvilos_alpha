@@ -1,0 +1,9 @@
+{
+  "module_name": "canon-host.c",
+  "hash_id": "2d6a8131d09111815a57b5481f0021d230a42c319a3d71038b38ef4e48679bcb",
+  "original_prompt": "Ingested from coreutils-9.4/lib/canon-host.c",
+  "human_readable_source": " \nstatic int last_cherror;\n\n \nchar *\ncanon_host (const char *host)\n{\n  return canon_host_r (host, &last_cherror);\n}\n\n \nchar *\ncanon_host_r (char const *host, int *cherror)\n{\n  char *retval = NULL;\n  static struct addrinfo hints;\n  struct addrinfo *res = NULL;\n  int status;\n\n  hints.ai_flags = AI_CANONNAME;\n  status = getaddrinfo (host, NULL, &hints, &res);\n  if (!status)\n    {\n       \n      retval = strdup (res->ai_canonname ? res->ai_canonname : host);\n      if (!retval && cherror)\n        *cherror = EAI_MEMORY;\n      freeaddrinfo (res);\n    }\n  else if (cherror)\n    *cherror = status;\n\n  return retval;\n}\n\n \nconst char *\nch_strerror (void)\n{\n  return gai_strerror (last_cherror);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

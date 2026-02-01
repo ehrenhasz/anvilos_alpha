@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_defact.h",
+  "hash_id": "dea253b6322cee3366287f1e8a1530749b9a2feee9d14f53dce68d42cac9fb94",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/tc_act/tc_defact.h",
+  "human_readable_source": " \n#ifndef __NET_TC_DEF_H\n#define __NET_TC_DEF_H\n\n#include <net/act_api.h>\n\nstruct tcf_defact {\n\tstruct tc_action\tcommon;\n\tu32\t\ttcfd_datalen;\n\tvoid\t\t*tcfd_defdata;\n};\n#define to_defact(a) ((struct tcf_defact *)a)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

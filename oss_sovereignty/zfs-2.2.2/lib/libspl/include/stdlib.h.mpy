@@ -1,0 +1,9 @@
+{
+  "module_name": "stdlib.h",
+  "hash_id": "e946a8867781260cc5c76579cd61efb79f2729d3bf4fa057ce4a7bd9e5a83f94",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/stdlib.h",
+  "human_readable_source": " \n \n\n#include_next <stdlib.h>\n\n#ifndef _LIBSPL_STDLIB_H\n#define\t_LIBSPL_STDLIB_H\n\nextern const char *getexecname(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bashjmp.h",
+  "hash_id": "ed55b619f603d40506e733be4c285cbf6ee2628d0cc134dfe336c67d04eb778b",
+  "original_prompt": "Ingested from bash-5.2.21/bashjmp.h",
+  "human_readable_source": " \n\n \n\n#ifndef _BASHJMP_H_\n#define _BASHJMP_H_\n\n#include \"posixjmp.h\"\n\nextern procenv_t\ttop_level;\nextern procenv_t\tsubshell_top_level;\nextern procenv_t\treturn_catch;\t \nextern procenv_t\twait_intr_buf;\n\nextern int no_longjmp_on_fatal_error;\n\n#define SHFUNC_RETURN()\tsh_longjmp (return_catch, 1)\n\n#define COPY_PROCENV(old, save) \\\n\txbcopy ((char *)old, (char *)save, sizeof (procenv_t));\n\n \n#define NOT_JUMPED\t0\t \n#define FORCE_EOF\t1\t \n#define DISCARD\t\t2\t \n#define EXITPROG\t3\t \n#define ERREXIT\t\t4\t \t\n#define SIGEXIT\t\t5\t \n#define EXITBLTIN\t6\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "time.h",
+  "hash_id": "7d6acb0c71a9ebf3c252bb7309f9da5e31c110a69961b187061b05c62f17f377",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ntfs/time.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_NTFS_TIME_H\n#define _LINUX_NTFS_TIME_H\n\n#include <linux/time.h>\t\t \n#include <asm/div64.h>\t\t \n\n#include \"endian.h\"\n\n#define NTFS_TIME_OFFSET ((s64)(369 * 365 + 89) * 24 * 3600 * 10000000)\n\n \nstatic inline sle64 utc2ntfs(const struct timespec64 ts)\n{\n\t \n\treturn cpu_to_sle64((s64)ts.tv_sec * 10000000 + ts.tv_nsec / 100 +\n\t\t\tNTFS_TIME_OFFSET);\n}\n\n \nstatic inline sle64 get_current_ntfs_time(void)\n{\n\tstruct timespec64 ts;\n\n\tktime_get_coarse_real_ts64(&ts);\n\treturn utc2ntfs(ts);\n}\n\n \nstatic inline struct timespec64 ntfs2utc(const sle64 time)\n{\n\tstruct timespec64 ts;\n\n\t \n\tu64 t = (u64)(sle64_to_cpu(time) - NTFS_TIME_OFFSET);\n\t \n\tts.tv_nsec = do_div(t, 10000000) * 100;\n\tts.tv_sec = t;\n\treturn ts;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

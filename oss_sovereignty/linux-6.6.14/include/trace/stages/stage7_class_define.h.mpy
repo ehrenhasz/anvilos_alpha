@@ -1,0 +1,9 @@
+{
+  "module_name": "stage7_class_define.h",
+  "hash_id": "26d056aed1c6ec017568a22d77c2b8cc5e9c755783e6a43f9427fed27ac5460a",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/stages/stage7_class_define.h",
+  "human_readable_source": " \n\n \n\n#undef __entry\n#define __entry REC\n\n#undef __print_flags\n#undef __print_symbolic\n#undef __print_hex\n#undef __print_hex_str\n#undef __get_dynamic_array\n#undef __get_dynamic_array_len\n#undef __get_str\n#undef __get_bitmask\n#undef __get_cpumask\n#undef __get_sockaddr\n#undef __get_rel_dynamic_array\n#undef __get_rel_dynamic_array_len\n#undef __get_rel_str\n#undef __get_rel_bitmask\n#undef __get_rel_cpumask\n#undef __get_rel_sockaddr\n#undef __print_array\n#undef __print_hex_dump\n#undef __get_buf\n\n \n#undef __print_ns_to_secs\n#define __print_ns_to_secs(val) (val) / 1000000000UL\n\n#undef __print_ns_without_secs\n#define __print_ns_without_secs(val) (val) % 1000000000UL\n\n#undef TP_printk\n#define TP_printk(fmt, args...) \"\\\"\" fmt \"\\\", \"  __stringify(args)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

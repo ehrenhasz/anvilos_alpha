@@ -1,0 +1,9 @@
+{
+  "module_name": "r8192E_firmware.h",
+  "hash_id": "f804704317ec0e90f2996fe0b96c05c88e3880cda43eebf15c6b878ddaa8fbc0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192e/rtl8192e/r8192E_firmware.h",
+  "human_readable_source": " \n \n#ifndef __INC_FIRMWARE_H\n#define __INC_FIRMWARE_H\n\n#define RTL8192E_BOOT_IMG_FW\t\"RTL8192E/boot.img\"\n#define RTL8192E_MAIN_IMG_FW\t\"RTL8192E/main.img\"\n#define RTL8192E_DATA_IMG_FW\t\"RTL8192E/data.img\"\n\nenum firmware_init_step {\n\tFW_INIT_STEP0_BOOT = 0,\n\tFW_INIT_STEP1_MAIN = 1,\n\tFW_INIT_STEP2_DATA = 2,\n};\n\nenum opt_rst_type {\n\tOPT_SYSTEM_RESET = 0,\n\tOPT_FIRMWARE_RESET = 1,\n};\n\nenum desc_packet_type {\n\tDESC_PACKET_TYPE_INIT = 0,\n\tDESC_PACKET_TYPE_NORMAL = 1,\n};\n\nenum firmware_status {\n\tFW_STATUS_0_INIT = 0,\n\tFW_STATUS_1_MOVE_BOOT_CODE = 1,\n\tFW_STATUS_2_MOVE_MAIN_CODE = 2,\n\tFW_STATUS_3_TURNON_CPU = 3,\n\tFW_STATUS_4_MOVE_DATA_CODE = 4,\n\tFW_STATUS_5_READY = 5,\n};\n\n#define MAX_FW_SIZE 64000\nstruct rt_fw_blob {\n\tu16 size;\n\tu8 data[MAX_FW_SIZE];\n};\n\n#define FW_BLOBS 3\nstruct rt_firmware {\n\tenum firmware_status status;\n\tstruct rt_fw_blob blobs[FW_BLOBS];\n};\n\nbool rtl92e_init_fw(struct net_device *dev);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

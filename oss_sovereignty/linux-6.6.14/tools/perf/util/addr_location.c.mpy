@@ -1,0 +1,9 @@
+{
+  "module_name": "addr_location.c",
+  "hash_id": "645bc754d49d6a9eeb39ef9ede265bb84bb2ce07e807de43b1ab4b9041d3ad3b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/addr_location.c",
+  "human_readable_source": "\n#include \"addr_location.h\"\n#include \"map.h\"\n#include \"maps.h\"\n#include \"thread.h\"\n\nvoid addr_location__init(struct addr_location *al)\n{\n\tal->thread = NULL;\n\tal->maps = NULL;\n\tal->map = NULL;\n\tal->sym = NULL;\n\tal->srcline = NULL;\n\tal->addr = 0;\n\tal->level = 0;\n\tal->filtered = 0;\n\tal->cpumode = 0;\n\tal->cpu = 0;\n\tal->socket = 0;\n}\n\n \nvoid addr_location__exit(struct addr_location *al)\n{\n\tmap__zput(al->map);\n\tthread__zput(al->thread);\n\tmaps__zput(al->maps);\n}\n\nvoid addr_location__copy(struct addr_location *dst, struct addr_location *src)\n{\n\tthread__put(dst->thread);\n\tmaps__put(dst->maps);\n\tmap__put(dst->map);\n\t*dst = *src;\n\tdst->thread = thread__get(src->thread);\n\tdst->maps = maps__get(src->maps);\n\tdst->map = map__get(src->map);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

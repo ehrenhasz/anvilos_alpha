@@ -1,0 +1,9 @@
+{
+  "module_name": "mv.x",
+  "hash_id": "85f5f0defa2ba5232af8105a0a97f36d37e24a803c3b5fe324ffd17323ed70f6",
+  "original_prompt": "Ingested from coreutils-9.4/man/mv.x",
+  "human_readable_source": "[NAME]\nmv \\- move (rename) files\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nrename(2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dis-asm-compat.h",
+  "hash_id": "bd96ba18bcae9f8de5569b5307558fdeb460408236c42235003ef4ae2b77e15e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/tools/dis-asm-compat.h",
+  "human_readable_source": " \n#ifndef _TOOLS_DIS_ASM_COMPAT_H\n#define _TOOLS_DIS_ASM_COMPAT_H\n\n#include <stdio.h>\n#include <dis-asm.h>\n\n \n#ifndef DISASM_INIT_STYLED\nenum disassembler_style {DISASSEMBLER_STYLE_NOT_EMPTY};\ntypedef int (*fprintf_styled_ftype) (void *, enum disassembler_style, const char*, ...);\n#endif\n\n \nstatic inline int fprintf_styled(void *out,\n\t\t\t\t enum disassembler_style style,\n\t\t\t\t const char *fmt, ...)\n{\n\tva_list args;\n\tint r;\n\n\t(void)style;\n\n\tva_start(args, fmt);\n\tr = vfprintf(out, fmt, args);\n\tva_end(args);\n\n\treturn r;\n}\n\n \nstatic inline void init_disassemble_info_compat(struct disassemble_info *info,\n\t\t\t\t\t\tvoid *stream,\n\t\t\t\t\t\tfprintf_ftype unstyled_func,\n\t\t\t\t\t\tfprintf_styled_ftype styled_func)\n{\n#ifdef DISASM_INIT_STYLED\n\tinit_disassemble_info(info, stream,\n\t\t\t      unstyled_func,\n\t\t\t      styled_func);\n#else\n\t(void)styled_func;\n\tinit_disassemble_info(info, stream,\n\t\t\t      unstyled_func);\n#endif\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "iostat.h",
+  "hash_id": "af8c1cbbb00f00edfedce9319832d60bcc8f40241594da1c5960ee43620d2aed",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/iostat.h",
+  "human_readable_source": " \n \n\n#ifndef _IOSTAT_H\n#define _IOSTAT_H\n\n#include <subcmd/parse-options.h>\n#include \"util/stat.h\"\n#include \"util/parse-events.h\"\n#include \"util/evlist.h\"\n\nstruct option;\nstruct perf_stat_config;\nstruct evlist;\nstruct timespec;\n\nenum iostat_mode_t {\n\tIOSTAT_NONE\t\t= -1,\n\tIOSTAT_RUN\t\t= 0,\n\tIOSTAT_LIST\t\t= 1\n};\n\nextern enum iostat_mode_t iostat_mode;\n\ntypedef void (*iostat_print_counter_t)(struct perf_stat_config *, struct evsel *, void *);\n\nint iostat_prepare(struct evlist *evlist, struct perf_stat_config *config);\nint iostat_parse(const struct option *opt, const char *str,\n\t\t int unset __maybe_unused);\nvoid iostat_list(struct evlist *evlist, struct perf_stat_config *config);\nvoid iostat_release(struct evlist *evlist);\nvoid iostat_prefix(struct evlist *evlist, struct perf_stat_config *config,\n\t\t   char *prefix, struct timespec *ts);\nvoid iostat_print_header_prefix(struct perf_stat_config *config);\nvoid iostat_print_metric(struct perf_stat_config *config, struct evsel *evsel,\n\t\t\t struct perf_stat_output_ctx *out);\nvoid iostat_print_counters(struct evlist *evlist,\n\t\t\t   struct perf_stat_config *config, struct timespec *ts,\n\t\t\t   char *prefix, iostat_print_counter_t print_cnt_cb, void *arg);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

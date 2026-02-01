@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_dmc.h",
+  "hash_id": "ef8c2d0371bfbf79378703703efe0a31dbe7dc94c998a1a2b7481dfa048c8fb4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_dmc.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_DMC_H__\n#define __INTEL_DMC_H__\n\n#include <linux/types.h>\n\nstruct drm_i915_error_state_buf;\nstruct drm_i915_private;\nenum pipe;\n\nvoid intel_dmc_init(struct drm_i915_private *i915);\nvoid intel_dmc_load_program(struct drm_i915_private *i915);\nvoid intel_dmc_disable_program(struct drm_i915_private *i915);\nvoid intel_dmc_enable_pipe(struct drm_i915_private *i915, enum pipe pipe);\nvoid intel_dmc_disable_pipe(struct drm_i915_private *i915, enum pipe pipe);\nvoid intel_dmc_fini(struct drm_i915_private *i915);\nvoid intel_dmc_suspend(struct drm_i915_private *i915);\nvoid intel_dmc_resume(struct drm_i915_private *i915);\nbool intel_dmc_has_payload(struct drm_i915_private *i915);\nvoid intel_dmc_debugfs_register(struct drm_i915_private *i915);\nvoid intel_dmc_print_error_state(struct drm_i915_error_state_buf *m,\n\t\t\t\t struct drm_i915_private *i915);\n\nvoid assert_dmc_loaded(struct drm_i915_private *i915);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

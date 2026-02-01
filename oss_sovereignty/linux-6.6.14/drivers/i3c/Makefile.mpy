@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6414c7976dcaa57be712b8e6ecf75c6dbecfa1836f522799584237831d8f87b7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/i3c/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\ni3c-y\t\t\t\t:= device.o master.o\nobj-$(CONFIG_I3C)\t\t+= i3c.o\nobj-$(CONFIG_I3C)\t\t+= master/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

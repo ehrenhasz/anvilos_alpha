@@ -1,0 +1,9 @@
+{
+  "module_name": "irqsrcs_thm_9_0.h",
+  "hash_id": "52da914f8e919849c7d1f566e855711a5c7b89c81fc7dcabe621e422b11ac932",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/ivsrcid/thm/irqsrcs_thm_9_0.h",
+  "human_readable_source": " \n\n#ifndef __IRQSRCS_THM_9_0_H__\n#define __IRQSRCS_THM_9_0_H__\n\n#define THM_9_0__SRCID__THM_DIG_THERM_L2H\t\t0\t\t \n#define THM_9_0__SRCID__THM_DIG_THERM_H2L\t\t1\t\t \n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

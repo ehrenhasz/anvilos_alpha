@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8451d9200ad8be5c0e08a7699c58f3a47f1886ebce5a6cbaec98d0b22bfc8120",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/broadcom/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig BCM2711_THERMAL\n\ttristate \"Broadcom AVS RO thermal sensor driver\"\n\tdepends on ARCH_BCM2835 || COMPILE_TEST\n\tdepends on THERMAL_OF && MFD_SYSCON\n\thelp\n\t  Support for thermal sensors on Broadcom BCM2711 SoCs.\n\nconfig BCM2835_THERMAL\n\ttristate \"Thermal sensors on bcm2835 SoC\"\n\tdepends on ARCH_BCM2835 || COMPILE_TEST\n\tdepends on HAS_IOMEM\n\tdepends on THERMAL_OF\n\thelp\n\t  Support for thermal sensors on Broadcom bcm2835 SoCs.\n\nconfig BRCMSTB_THERMAL\n\ttristate \"Broadcom STB AVS TMON thermal driver\"\n\tdepends on ARCH_BRCMSTB || COMPILE_TEST\n\thelp\n\t  Enable this driver if you have a Broadcom STB SoC and would like\n\t  thermal framework support.\n\nconfig BCM_NS_THERMAL\n\ttristate \"Northstar thermal driver\"\n\tdepends on ARCH_BCM_IPROC || COMPILE_TEST\n\tdefault y if ARCH_BCM_IPROC\n\thelp\n\t  Support for the Northstar and Northstar Plus family of SoCs (e.g.\n\t  BCM4708, BCM4709, BCM5301x, BCM95852X, etc). It contains DMU (Device\n\t  Management Unit) block with a thermal sensor that allows checking CPU\n\t  temperature.\n\nconfig BCM_SR_THERMAL\n\ttristate \"Stingray thermal driver\"\n\tdepends on ARCH_BCM_IPROC || COMPILE_TEST\n\tdefault ARCH_BCM_IPROC\n\thelp\n\t  Support for the Stingray family of SoCs. Its different blocks like\n\t  iHost, CRMU and NITRO has thermal sensor that allows checking its\n\t  temperature.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

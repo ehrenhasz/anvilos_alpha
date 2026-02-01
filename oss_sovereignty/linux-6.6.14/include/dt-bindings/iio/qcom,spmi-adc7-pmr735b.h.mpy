@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,spmi-adc7-pmr735b.h",
+  "hash_id": "e1369ea05b67b9345881957232e9feec8af0c3536125137308b31d3185170da5",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/iio/qcom,spmi-adc7-pmr735b.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_QCOM_SPMI_VADC_PMR735B_H\n#define _DT_BINDINGS_QCOM_SPMI_VADC_PMR735B_H\n\n#ifndef PMR735B_SID\n#define PMR735B_SID\t\t\t\t\t5\n#endif\n\n#include <dt-bindings/iio/qcom,spmi-vadc.h>\n\n \n#define PMR735B_ADC7_REF_GND\t\t\t(PMR735B_SID << 8 | ADC7_REF_GND)\n#define PMR735B_ADC7_1P25VREF\t\t\t(PMR735B_SID << 8 | ADC7_1P25VREF)\n#define PMR735B_ADC7_VREF_VADC\t\t\t(PMR735B_SID << 8 | ADC7_VREF_VADC)\n#define PMR735B_ADC7_DIE_TEMP\t\t\t(PMR735B_SID << 8 | ADC7_DIE_TEMP)\n\n#define PMR735B_ADC7_GPIO1\t\t\t(PMR735B_SID << 8 | ADC7_GPIO1)\n#define PMR735B_ADC7_GPIO2\t\t\t(PMR735B_SID << 8 | ADC7_GPIO2)\n#define PMR735B_ADC7_GPIO3\t\t\t(PMR735B_SID << 8 | ADC7_GPIO3)\n\n \n#define PMR735B_ADC7_GPIO1_100K_PU\t\t(PMR735B_SID << 8 | ADC7_GPIO1_100K_PU)\n#define PMR735B_ADC7_GPIO2_100K_PU\t\t(PMR735B_SID << 8 | ADC7_GPIO2_100K_PU)\n#define PMR735B_ADC7_GPIO3_100K_PU\t\t(PMR735B_SID << 8 | ADC7_GPIO3_100K_PU)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "754216166ad671daaff00b7f9e888b47cac36e0796bb68f31371455d664a21b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/vcodec/encoder/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_VIDEO_MEDIATEK_VCODEC) += mtk-vcodec-enc.o\n\nmtk-vcodec-enc-y := venc/venc_vp8_if.o \\\n\t\tvenc/venc_h264_if.o \\\n\t\tmtk_vcodec_enc.o \\\n\t\tmtk_vcodec_enc_drv.o \\\n\t\tmtk_vcodec_enc_pm.o \\\n\t\tvenc_drv_if.o \\\n\t\tvenc_vpu_if.o \\\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

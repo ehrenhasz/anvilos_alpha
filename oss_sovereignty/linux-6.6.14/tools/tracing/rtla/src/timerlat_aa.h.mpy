@@ -1,0 +1,9 @@
+{
+  "module_name": "timerlat_aa.h",
+  "hash_id": "9d80c6f6114e0e6091df6e632e595e41d0a08e3c8d04adf001250e3c64b2f272",
+  "original_prompt": "Ingested from linux-6.6.14/tools/tracing/rtla/src/timerlat_aa.h",
+  "human_readable_source": "\n \n\nint timerlat_aa_init(struct osnoise_tool *tool, int dump_task);\nvoid timerlat_aa_destroy(void);\n\nvoid timerlat_auto_analysis(int irq_thresh, int thread_thresh);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

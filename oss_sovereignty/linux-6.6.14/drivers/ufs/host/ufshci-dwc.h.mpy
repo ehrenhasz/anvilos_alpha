@@ -1,0 +1,9 @@
+{
+  "module_name": "ufshci-dwc.h",
+  "hash_id": "6d3a412700205003952e23abf07a73fb535edbebaaf485f246b64161cac3c9ca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ufs/host/ufshci-dwc.h",
+  "human_readable_source": " \n \n\n#ifndef _UFSHCI_DWC_H\n#define _UFSHCI_DWC_H\n\n \nenum dwc_specific_registers {\n\tDWC_UFS_REG_HCLKDIV\t= 0xFC,\n};\n\n \nenum clk_div_values {\n\tDWC_UFS_REG_HCLKDIV_DIV_62_5\t= 0x3e,\n\tDWC_UFS_REG_HCLKDIV_DIV_125\t= 0x7d,\n\tDWC_UFS_REG_HCLKDIV_DIV_200\t= 0xc8,\n};\n\n \nenum selector_index {\n\tSELIND_LN0_TX\t\t= 0x00,\n\tSELIND_LN1_TX\t\t= 0x01,\n\tSELIND_LN0_RX\t\t= 0x04,\n\tSELIND_LN1_RX\t\t= 0x05,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

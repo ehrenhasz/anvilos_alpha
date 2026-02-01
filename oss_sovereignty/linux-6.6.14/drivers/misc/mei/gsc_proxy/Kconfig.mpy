@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "53f7cc878c926687dddfd112c86d82490016ecd13e908cddcb2b764384b31619",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/mei/gsc_proxy/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (c) 2022-2023, Intel Corporation. All rights reserved.\n#\nconfig INTEL_MEI_GSC_PROXY\n\ttristate \"Intel GSC Proxy services of ME Interface\"\n\tselect INTEL_MEI_ME\n\tdepends on DRM_I915\n\thelp\n         MEI Support for GSC Proxy Services on Intel platforms.\n\n         MEI GSC proxy enables messaging between GSC service on\n         Intel graphics card and services on CSE (MEI) firmware\n         residing SoC or PCH.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

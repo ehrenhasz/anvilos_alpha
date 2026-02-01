@@ -1,0 +1,9 @@
+{
+  "module_name": "posixwait.h",
+  "hash_id": "a63629a6bf89d1231218739dc3655e16183d653b03bb19a5e2d990f4afd2fbcb",
+  "original_prompt": "Ingested from bash-5.2.21/include/posixwait.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_POSIXWAIT_H_)\n#  define _POSIXWAIT_H_\n\n \n#if defined (HAVE_SYS_WAIT_H)\n#  include <sys/wait.h>\n#else  \n#  if !defined (_POSIX_VERSION)\n#    include \"unionwait.h\"\n#  endif\n#endif   \n\n \n#if !defined (_POSIX_VERSION)\ntypedef union wait WAIT;\n#  define WSTATUS(t)  (t.w_status)\n#else  \ntypedef int WAIT;\n#  define WSTATUS(t)  (t)\n#endif  \n\n \n#if !defined (WNOHANG)\n#  define WNOHANG 1\n#  define WUNTRACED 2\n#endif  \n\n \n#if defined (_POSIX_VERSION)\n\n#  if !defined (WSTOPSIG)\n#    define WSTOPSIG(s)       ((s) >> 8)\n#  endif  \n\n#  if !defined (WTERMSIG)\n#    define WTERMSIG(s)\t      ((s) & 0177)\n#  endif  \n\n#  if !defined (WEXITSTATUS)\n#    define WEXITSTATUS(s)    ((s) >> 8)\n#  endif  \n\n#  if !defined (WIFSTOPPED)\n#    define WIFSTOPPED(s)     (((s) & 0177) == 0177)\n#  endif  \n\n#  if !defined (WIFEXITED)\n#    define WIFEXITED(s)      (((s) & 0377) == 0)\n#  endif  \n\n#  if !defined (WIFSIGNALED)\n#    define WIFSIGNALED(s)    (!WIFSTOPPED(s) && !WIFEXITED(s))\n#  endif  \n\n#  if !defined (WIFCORED)\n#    if defined (WCOREDUMP)\n#      define WIFCORED(s)\t(WCOREDUMP(s))\n#    else\n#      define WIFCORED(s)       ((s) & 0200)\n#    endif\n#  endif  \n\n#else  \n\n#  if !defined (WSTOPSIG)\n#    define WSTOPSIG(s)\t      ((s).w_stopsig)\n#  endif  \n\n#  if !defined (WTERMSIG)\n#    define WTERMSIG(s)\t      ((s).w_termsig)\n#  endif  \n\n#  if !defined (WEXITSTATUS)\n#    define WEXITSTATUS(s)    ((s).w_retcode)\n#  endif  \n\n#  if !defined (WIFCORED)\n#    define WIFCORED(s)       ((s).w_coredump)\n#  endif  \n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "msi_api.h",
+  "hash_id": "9ecb06bfe2bb9917eb6cc2e1add03b21a20f45c05e67a7350ab2ece005c22417",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/msi_api.h",
+  "human_readable_source": " \n#ifndef LINUX_MSI_API_H\n#define LINUX_MSI_API_H\n\n \n\nstruct device;\n\n \nenum msi_domain_ids {\n\tMSI_DEFAULT_DOMAIN,\n\tMSI_SECONDARY_DOMAIN,\n\tMSI_MAX_DEVICE_IRQDOMAINS,\n};\n\n \nunion msi_instance_cookie {\n\tu64\tvalue;\n\tvoid\t*ptr;\n};\n\n \nstruct msi_map {\n\tint\tindex;\n\tint\tvirq;\n};\n\n \n#define MSI_ANY_INDEX\t\tUINT_MAX\n\nunsigned int msi_domain_get_virq(struct device *dev, unsigned int domid, unsigned int index);\n\n \nstatic inline unsigned int msi_get_virq(struct device *dev, unsigned int index)\n{\n\treturn msi_domain_get_virq(dev, MSI_DEFAULT_DOMAIN, index);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rcuref.h",
+  "hash_id": "ab5bae25827a45ba16cdc4a6b230036b0b1042844c0e56b00125bbf9520b8754",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rcuref.h",
+  "human_readable_source": " \n#ifndef _LINUX_RCUREF_H\n#define _LINUX_RCUREF_H\n\n#include <linux/atomic.h>\n#include <linux/bug.h>\n#include <linux/limits.h>\n#include <linux/lockdep.h>\n#include <linux/preempt.h>\n#include <linux/rcupdate.h>\n\n#define RCUREF_ONEREF\t\t0x00000000U\n#define RCUREF_MAXREF\t\t0x7FFFFFFFU\n#define RCUREF_SATURATED\t0xA0000000U\n#define RCUREF_RELEASED\t\t0xC0000000U\n#define RCUREF_DEAD\t\t0xE0000000U\n#define RCUREF_NOREF\t\t0xFFFFFFFFU\n\n \nstatic inline void rcuref_init(rcuref_t *ref, unsigned int cnt)\n{\n\tatomic_set(&ref->refcnt, cnt - 1);\n}\n\n \nstatic inline unsigned int rcuref_read(rcuref_t *ref)\n{\n\tunsigned int c = atomic_read(&ref->refcnt);\n\n\t \n\treturn c >= RCUREF_RELEASED ? 0 : c + 1;\n}\n\nextern __must_check bool rcuref_get_slowpath(rcuref_t *ref);\n\n \nstatic inline __must_check bool rcuref_get(rcuref_t *ref)\n{\n\t \n\tif (likely(!atomic_add_negative_relaxed(1, &ref->refcnt)))\n\t\treturn true;\n\n\t \n\treturn rcuref_get_slowpath(ref);\n}\n\nextern __must_check bool rcuref_put_slowpath(rcuref_t *ref);\n\n \nstatic __always_inline __must_check bool __rcuref_put(rcuref_t *ref)\n{\n\tRCU_LOCKDEP_WARN(!rcu_read_lock_held() && preemptible(),\n\t\t\t \"suspicious rcuref_put_rcusafe() usage\");\n\t \n\tif (likely(!atomic_add_negative_release(-1, &ref->refcnt)))\n\t\treturn false;\n\n\t \n\treturn rcuref_put_slowpath(ref);\n}\n\n \nstatic inline __must_check bool rcuref_put_rcusafe(rcuref_t *ref)\n{\n\treturn __rcuref_put(ref);\n}\n\n \nstatic inline __must_check bool rcuref_put(rcuref_t *ref)\n{\n\tbool released;\n\n\tpreempt_disable();\n\treleased = __rcuref_put(ref);\n\tpreempt_enable();\n\treturn released;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

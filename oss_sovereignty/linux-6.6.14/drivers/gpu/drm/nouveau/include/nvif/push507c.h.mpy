@@ -1,0 +1,9 @@
+{
+  "module_name": "push507c.h",
+  "hash_id": "32552a705b5ccb11cff17c142bca50229ce4fb992dda26c1b7dd6fb79a4427af",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/push507c.h",
+  "human_readable_source": "#ifndef __NVIF_PUSH507C_H__\n#define __NVIF_PUSH507C_H__\n#include <nvif/push.h>\n\n#include <nvhw/class/cl507c.h>\n\n#define PUSH_HDR(p,m,c) do {                                                    \\\n        PUSH_ASSERT(!((m) & ~DRF_SMASK(NV507C_DMA_METHOD_OFFSET)), \"mthd\");     \\\n        PUSH_ASSERT(!((c) & ~DRF_MASK(NV507C_DMA_METHOD_COUNT)), \"size\");       \\\n        PUSH_DATA__((p), NVDEF(NV507C, DMA, OPCODE, METHOD) |                   \\\n\t\t\t NVVAL(NV507C, DMA, METHOD_COUNT, (c)) |                \\\n\t\t\t NVVAL(NV507C, DMA, METHOD_OFFSET, (m) >> 2),           \\\n\t\t    \" mthd 0x%04x size %d - %s\", (u32)(m), (u32)(c), __func__); \\\n} while(0)\n\n#define PUSH_MTHD_HDR(p,s,m,c) PUSH_HDR(p,m,c)\n#define PUSH_MTHD_INC 4:4\n\n#define PUSH_JUMP(p,o) do {                                                 \\\n        PUSH_ASSERT(!((o) & ~DRF_SMASK(NV507C_DMA_JUMP_OFFSET)), \"offset\"); \\\n\tPUSH_DATA__((p), NVDEF(NV507C, DMA, OPCODE, JUMP) |                 \\\n\t\t\t NVVAL(NV507C, DMA, JUMP_OFFSET, (o) >> 2),         \\\n\t\t    \" jump 0x%08x - %s\", (u32)(o), __func__);               \\\n} while(0)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

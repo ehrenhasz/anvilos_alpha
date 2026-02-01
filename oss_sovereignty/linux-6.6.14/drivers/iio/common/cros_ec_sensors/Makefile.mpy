@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1a3179cbc3090e46713f67e0c7bc3b4b676568c6e86448a3bb3ea7773535fa58",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/common/cros_ec_sensors/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for sensors seen through the ChromeOS EC sensor hub.\n#\n\nobj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o\nobj-$(CONFIG_IIO_CROS_EC_SENSORS) += cros_ec_sensors.o\nobj-$(CONFIG_IIO_CROS_EC_SENSORS_LID_ANGLE) += cros_ec_lid_angle.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ks0127.h",
+  "hash_id": "f6772584dd20a11ecd4ea9df17aa6abf562d055540e2933bb0493049b20e45d0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/i2c/ks0127.h",
+  "human_readable_source": " \n \n\n#ifndef KS0127_H\n#define KS0127_H\n\n \n#define KS_INPUT_COMPOSITE_1    0\n#define KS_INPUT_COMPOSITE_2    1\n#define KS_INPUT_COMPOSITE_3    2\n#define KS_INPUT_COMPOSITE_4    4\n#define KS_INPUT_COMPOSITE_5    5\n#define KS_INPUT_COMPOSITE_6    6\n\n#define KS_INPUT_SVIDEO_1       8\n#define KS_INPUT_SVIDEO_2       9\n#define KS_INPUT_SVIDEO_3       10\n\n#define KS_INPUT_YUV656\t\t15\n#define KS_INPUT_COUNT          10\n\n \n#define KS_OUTPUT_YUV656E       0\n#define KS_OUTPUT_EXV           1\n\n \n#define KS_STD_NTSC_N           112        \n#define KS_STD_PAL_M            113        \n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

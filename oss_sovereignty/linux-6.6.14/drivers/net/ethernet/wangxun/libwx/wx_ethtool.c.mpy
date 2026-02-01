@@ -1,0 +1,9 @@
+{
+  "module_name": "wx_ethtool.c",
+  "hash_id": "d5d43c837160c4fae6cb860143c76734c94d65e301e69d12ffee40b9dcafeaa7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/wangxun/libwx/wx_ethtool.c",
+  "human_readable_source": "\n \n\n#include <linux/pci.h>\n#include <linux/phy.h>\n\n#include \"wx_type.h\"\n#include \"wx_ethtool.h\"\n\nvoid wx_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *info)\n{\n\tstruct wx *wx = netdev_priv(netdev);\n\n\tstrscpy(info->driver, wx->driver_name, sizeof(info->driver));\n\tstrscpy(info->fw_version, wx->eeprom_id, sizeof(info->fw_version));\n\tstrscpy(info->bus_info, pci_name(wx->pdev), sizeof(info->bus_info));\n}\nEXPORT_SYMBOL(wx_get_drvinfo);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

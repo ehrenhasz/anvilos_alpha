@@ -1,0 +1,9 @@
+{
+  "module_name": "ssh-sk-null.cc",
+  "hash_id": "2b67a88832bb34b56dbb841e2a0c62773e05bfa2fdef4bc24982700df932220b",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/misc/fuzz-harness/ssh-sk-null.cc",
+  "human_readable_source": " \n \n\nextern \"C\" {\n\n#include \"includes.h\"\n\n#include <sys/types.h>\n\n#include \"ssherr.h\"\n#include \"ssh-sk.h\"\n\nint\nsshsk_enroll(int type, const char *provider_path, const char *device,\n    const char *application, const char *userid, uint8_t flags,\n    const char *pin, struct sshbuf *challenge_buf,\n    struct sshkey **keyp, struct sshbuf *attest)\n{\n\treturn SSH_ERR_FEATURE_UNSUPPORTED;\n}\n\nint\nsshsk_sign(const char *provider_path, struct sshkey *key,\n    u_char **sigp, size_t *lenp, const u_char *data, size_t datalen,\n    u_int compat, const char *pin)\n{\n\treturn SSH_ERR_FEATURE_UNSUPPORTED;\n}\n\nint\nsshsk_load_resident(const char *provider_path, const char *device,\n    const char *pin, u_int flags, struct sshsk_resident_key ***srksp,\n    size_t *nsrksp)\n{\n\treturn SSH_ERR_FEATURE_UNSUPPORTED;\n}\n\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

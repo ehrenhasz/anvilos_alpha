@@ -1,0 +1,9 @@
+{
+  "module_name": "vt8500lcdfb.h",
+  "hash_id": "b09b8cc0a9296c5761fb230b410784cc1f00b538f40a5cb03393ab134d4e9721",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/vt8500lcdfb.h",
+  "human_readable_source": " \n \n\nstruct vt8500lcd_info {\n\tstruct fb_info\t\tfb;\n\tvoid __iomem\t\t*regbase;\n\tvoid __iomem\t\t*palette_cpu;\n\tdma_addr_t\t\tpalette_phys;\n\tsize_t\t\t\tpalette_size;\n\twait_queue_head_t\twait;\n};\n\nstatic int bpp_values[] = {\n\t1,\n\t2,\n\t4,\n\t8,\n\t12,\n\t16,\n\t18,\n\t24,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

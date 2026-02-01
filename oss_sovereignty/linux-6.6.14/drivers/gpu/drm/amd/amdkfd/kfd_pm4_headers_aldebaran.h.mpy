@@ -1,0 +1,9 @@
+{
+  "module_name": "kfd_pm4_headers_aldebaran.h",
+  "hash_id": "6e909bfaf73171bfca3c617ce534fda450af4a0bf7b2d156cd2655e9f8a263e6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdkfd/kfd_pm4_headers_aldebaran.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef PM4_MES_MAP_PROCESS_PER_DEBUG_VMID_DEFINED\n#define PM4_MES_MAP_PROCESS_PER_DEBUG_VMID_DEFINED\n\nstruct pm4_mes_map_process_aldebaran {\n\tunion {\n\t\tunion PM4_MES_TYPE_3_HEADER header;\t \n\t\tuint32_t ordinal1;\n\t};\n\n\tunion {\n\t\tstruct {\n\t\t\tuint32_t pasid:16;\t     \n\t\t\tuint32_t single_memops:1;    \n\t\t\tuint32_t reserved1:1;\t     \n\t\t\tuint32_t debug_vmid:4;\t     \n\t\t\tuint32_t new_debug:1;\t     \n\t\t\tuint32_t tmz:1;\t\t     \n\t\t\tuint32_t diq_enable:1;       \n\t\t\tuint32_t process_quantum:7;  \n\t\t} bitfields2;\n\t\tuint32_t ordinal2;\n\t};\n\n\tuint32_t vm_context_page_table_base_addr_lo32;\n\n\tuint32_t vm_context_page_table_base_addr_hi32;\n\n\tuint32_t sh_mem_bases;\n\n\tuint32_t sh_mem_config;\n\n\tuint32_t sq_shader_tba_lo;\n\n\tuint32_t sq_shader_tba_hi;\n\n\tuint32_t sq_shader_tma_lo;\n\n\tuint32_t sq_shader_tma_hi;\n\n\tuint32_t reserved6;\n\n\tuint32_t gds_addr_lo;\n\n\tuint32_t gds_addr_hi;\n\n\tunion {\n\t\tstruct {\n\t\t\tuint32_t num_gws:7;\n\t\t\tuint32_t sdma_enable:1;\n\t\t\tuint32_t num_oac:4;\n\t\t\tuint32_t gds_size_hi:4;\n\t\t\tuint32_t gds_size:6;\n\t\t\tuint32_t num_queues:10;\n\t\t} bitfields14;\n\t\tuint32_t ordinal14;\n\t};\n\n\tuint32_t spi_gdbg_per_vmid_cntl;\n\n\tuint32_t tcp_watch_cntl[4];\n\n\tuint32_t completion_signal_lo;\n\n\tuint32_t completion_signal_hi;\n\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_rvt.h",
+  "hash_id": "b4ed3227a8d28dd464100c2885cd7485159c13a2ff694c39c8d5366d53732249",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/sw/rdmavt/trace_rvt.h",
+  "human_readable_source": " \n \n#if !defined(__RVT_TRACE_RVT_H) || defined(TRACE_HEADER_MULTI_READ)\n#define __RVT_TRACE_RVT_H\n\n#include <linux/tracepoint.h>\n#include <linux/trace_seq.h>\n\n#include <rdma/ib_verbs.h>\n#include <rdma/rdma_vt.h>\n\n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM rvt\n\nTRACE_EVENT(rvt_dbg,\n\tTP_PROTO(struct rvt_dev_info *rdi,\n\t\t const char *msg),\n\tTP_ARGS(rdi, msg),\n\tTP_STRUCT__entry(\n\t\tRDI_DEV_ENTRY(rdi)\n\t\t__string(msg, msg)\n\t),\n\tTP_fast_assign(\n\t\tRDI_DEV_ASSIGN(rdi);\n\t\t__assign_str(msg, msg);\n\t),\n\tTP_printk(\"[%s]: %s\", __get_str(dev), __get_str(msg))\n);\n\n#endif  \n\n#undef TRACE_INCLUDE_PATH\n#undef TRACE_INCLUDE_FILE\n#define TRACE_INCLUDE_PATH .\n#define TRACE_INCLUDE_FILE trace_rvt\n#include <trace/define_trace.h>\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

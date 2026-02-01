@@ -1,0 +1,9 @@
+{
+  "module_name": "vfs_fat.h",
+  "hash_id": "108f7dd3a42a339806eb00d793a176c609512cb841290cc696bf9b0e1284957b",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/vfs_fat.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_EXTMOD_VFS_FAT_H\n#define MICROPY_INCLUDED_EXTMOD_VFS_FAT_H\n\n#include \"py/obj.h\"\n#include \"lib/oofatfs/ff.h\"\n#include \"extmod/vfs.h\"\n\ntypedef struct _fs_user_mount_t {\n    mp_obj_base_t base;\n    mp_vfs_blockdev_t blockdev;\n    FATFS fatfs;\n} fs_user_mount_t;\n\nextern const byte fresult_to_errno_table[20];\nextern const mp_obj_type_t mp_fat_vfs_type;\nextern const mp_obj_type_t mp_type_vfs_fat_fileio;\nextern const mp_obj_type_t mp_type_vfs_fat_textio;\n\nMP_DECLARE_CONST_FUN_OBJ_3(fat_vfs_open_obj);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

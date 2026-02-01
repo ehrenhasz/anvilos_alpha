@@ -1,0 +1,9 @@
+{
+  "module_name": "fake_32bit_build.h",
+  "hash_id": "921107e6066b71b359c12e4a32b13ea772e9316905e8f21449cc496fab130ea6",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/vdso/vdso32/fake_32bit_build.h",
+  "human_readable_source": " \n#ifdef CONFIG_X86_64\n\n \n#undef CONFIG_64BIT\n#undef CONFIG_X86_64\n#undef CONFIG_COMPAT\n#undef CONFIG_PGTABLE_LEVELS\n#undef CONFIG_ILLEGAL_POINTER_VALUE\n#undef CONFIG_SPARSEMEM_VMEMMAP\n#undef CONFIG_NR_CPUS\n#undef CONFIG_PARAVIRT_XXL\n\n#define CONFIG_X86_32 1\n#define CONFIG_PGTABLE_LEVELS 2\n#define CONFIG_PAGE_OFFSET 0\n#define CONFIG_ILLEGAL_POINTER_VALUE 0\n#define CONFIG_NR_CPUS 1\n\n#define BUILD_VDSO32_64\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

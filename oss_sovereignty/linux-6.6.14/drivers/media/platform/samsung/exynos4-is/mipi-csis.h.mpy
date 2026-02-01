@@ -1,0 +1,9 @@
+{
+  "module_name": "mipi-csis.h",
+  "hash_id": "f05de859bce9671090aa735201a511d1a4de5554c21350ad3b3f463d2f47c1fa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/exynos4-is/mipi-csis.h",
+  "human_readable_source": " \n \n#ifndef S5P_MIPI_CSIS_H_\n#define S5P_MIPI_CSIS_H_\n\n#define CSIS_DRIVER_NAME\t\"s5p-mipi-csis\"\n#define CSIS_SUBDEV_NAME\tCSIS_DRIVER_NAME\n#define CSIS_MAX_ENTITIES\t2\n#define CSIS0_MAX_LANES\t\t4\n#define CSIS1_MAX_LANES\t\t2\n\n#define CSIS_PAD_SINK\t\t0\n#define CSIS_PAD_SOURCE\t\t1\n#define CSIS_PADS_NUM\t\t2\n\n#define S5PCSIS_DEF_PIX_WIDTH\t640\n#define S5PCSIS_DEF_PIX_HEIGHT\t480\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

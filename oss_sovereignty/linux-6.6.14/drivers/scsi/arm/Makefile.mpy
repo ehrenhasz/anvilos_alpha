@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "17ac851785852b05fe77f7d33b21cfeb4749f1cd0c37fb2f584dc16d06220f87",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/arm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for drivers/scsi/arm\n#\n\nacornscsi_mod-objs\t:= acornscsi.o acornscsi-io.o\n\nobj-$(CONFIG_SCSI_ACORNSCSI_3)\t+= acornscsi_mod.o queue.o msgqueue.o\nobj-$(CONFIG_SCSI_ARXESCSI)\t+= arxescsi.o fas216.o queue.o msgqueue.o\nobj-$(CONFIG_SCSI_CUMANA_1)\t+= cumana_1.o\nobj-$(CONFIG_SCSI_CUMANA_2)\t+= cumana_2.o fas216.o queue.o msgqueue.o\nobj-$(CONFIG_SCSI_OAK1)\t\t+= oak.o\nobj-$(CONFIG_SCSI_POWERTECSCSI)\t+= powertec.o fas216.o queue.o msgqueue.o\nobj-$(CONFIG_SCSI_EESOXSCSI)\t+= eesox.o fas216.o queue.o msgqueue.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

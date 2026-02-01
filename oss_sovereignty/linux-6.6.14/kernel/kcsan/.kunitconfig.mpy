@@ -1,0 +1,9 @@
+{
+  "module_name": ".kunitconfig",
+  "hash_id": "6e535c9ac56ac08e2441d9e331b9ce01899b13b2c1638c3337774e244e13d645",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/kcsan/.kunitconfig",
+  "human_readable_source": "# Note that the KCSAN tests need to run on an SMP setup.\n# Under kunit_tool, this can be done by using the --qemu_args\n# option to configure a machine with several cores. For example:\n# ./tools/testing/kunit/kunit.py run --kunitconfig=kernel/kcsan \\\n# \t\t\t\t --arch=x86_64 --qemu_args=\"-smp 8\"\n\nCONFIG_KUNIT=y\n\nCONFIG_DEBUG_KERNEL=y\n\n# Need some level of concurrency to test a concurrency sanitizer.\nCONFIG_SMP=y\n\nCONFIG_KCSAN=y\nCONFIG_KCSAN_KUNIT_TEST=y\n\n# Set these if you want to run test_barrier_nothreads\n#CONFIG_KCSAN_STRICT=y\n#CONFIG_KCSAN_WEAK_MEMORY=y\n\n# This prevents the test from timing out on many setups. Feel free to remove\n# (or alter) this, in conjunction with setting a different test timeout with,\n# for example, the --timeout kunit_tool option.\nCONFIG_KCSAN_REPORT_ONCE_IN_MS=100\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

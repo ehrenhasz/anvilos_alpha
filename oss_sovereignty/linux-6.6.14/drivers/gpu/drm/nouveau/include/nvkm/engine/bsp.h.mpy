@@ -1,0 +1,9 @@
+{
+  "module_name": "bsp.h",
+  "hash_id": "dfaab73ae4855ebacf2bd000e8384d938cd7e054e861ce0510f96421133e6dfa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/engine/bsp.h",
+  "human_readable_source": " \n#ifndef __NVKM_BSP_H__\n#define __NVKM_BSP_H__\n#include <engine/xtensa.h>\nint g84_bsp_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_engine **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

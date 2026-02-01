@@ -1,0 +1,9 @@
+{
+  "module_name": "ultrix.c",
+  "hash_id": "9cdf1c9cd916745f0a3e97427bd61f421a9a487ba58eac53e43aa4f71fbf872c",
+  "original_prompt": "Ingested from linux-6.6.14/block/partitions/ultrix.c",
+  "human_readable_source": "\n \n\n#include \"check.h\"\n\nint ultrix_partition(struct parsed_partitions *state)\n{\n\tint i;\n\tSector sect;\n\tunsigned char *data;\n\tstruct ultrix_disklabel {\n\t\ts32\tpt_magic;\t \n\t\ts32\tpt_valid;\t \n\t\tstruct  pt_info {\n\t\t\ts32\t\tpi_nblocks;  \n\t\t\tu32\t\tpi_blkoff;   \n\t\t} pt_part[8];\n\t} *label;\n\n#define PT_MAGIC\t0x032957\t \n#define PT_VALID\t1\t\t \n\n\tdata = read_part_sector(state, (16384 - sizeof(*label))/512, &sect);\n\tif (!data)\n\t\treturn -1;\n\t\n\tlabel = (struct ultrix_disklabel *)(data + 512 - sizeof(*label));\n\n\tif (label->pt_magic == PT_MAGIC && label->pt_valid == PT_VALID) {\n\t\tfor (i=0; i<8; i++)\n\t\t\tif (label->pt_part[i].pi_nblocks)\n\t\t\t\tput_partition(state, i+1, \n\t\t\t\t\t      label->pt_part[i].pi_blkoff,\n\t\t\t\t\t      label->pt_part[i].pi_nblocks);\n\t\tput_dev_sector(sect);\n\t\tstrlcat(state->pp_buf, \"\\n\", PAGE_SIZE);\n\t\treturn 1;\n\t} else {\n\t\tput_dev_sector(sect);\n\t\treturn 0;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

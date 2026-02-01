@@ -1,0 +1,9 @@
+{
+  "module_name": "lib.c",
+  "hash_id": "f51e139cfd9c22621e0be8b69a99909e3bc7405e3c7435c77a7441946a7575e1",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/lib.c",
+  "human_readable_source": "\n \n\n#include <linux/delay.h>\n#include <linux/device.h>\n#include <linux/firewire.h>\n#include <linux/module.h>\n#include <linux/slab.h>\n#include \"lib.h\"\n\n#define ERROR_RETRY_DELAY_MS\t20\n\n \nint snd_fw_transaction(struct fw_unit *unit, int tcode,\n\t\t       u64 offset, void *buffer, size_t length,\n\t\t       unsigned int flags)\n{\n\tstruct fw_device *device = fw_parent_device(unit);\n\tint generation, rcode, tries = 0;\n\n\tgeneration = flags & FW_GENERATION_MASK;\n\tfor (;;) {\n\t\tif (!(flags & FW_FIXED_GENERATION)) {\n\t\t\tgeneration = device->generation;\n\t\t\tsmp_rmb();  \n\t\t}\n\t\trcode = fw_run_transaction(device->card, tcode,\n\t\t\t\t\t   device->node_id, generation,\n\t\t\t\t\t   device->max_speed, offset,\n\t\t\t\t\t   buffer, length);\n\n\t\tif (rcode == RCODE_COMPLETE)\n\t\t\treturn 0;\n\n\t\tif (rcode == RCODE_GENERATION && (flags & FW_FIXED_GENERATION))\n\t\t\treturn -EAGAIN;\n\n\t\tif (rcode_is_permanent_error(rcode) || ++tries >= 3) {\n\t\t\tif (!(flags & FW_QUIET))\n\t\t\t\tdev_err(&unit->device,\n\t\t\t\t\t\"transaction failed: %s\\n\",\n\t\t\t\t\tfw_rcode_string(rcode));\n\t\t\treturn -EIO;\n\t\t}\n\n\t\tmsleep(ERROR_RETRY_DELAY_MS);\n\t}\n}\nEXPORT_SYMBOL(snd_fw_transaction);\n\nMODULE_DESCRIPTION(\"FireWire audio helper functions\");\nMODULE_AUTHOR(\"Clemens Ladisch <clemens@ladisch.de>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "25fc5e325fa4d3a6825102873cf5a58b368bfa787de693bd62bf3cd6d88fd218",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/platform/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nvfio-platform-base-y := vfio_platform_common.o vfio_platform_irq.o\nobj-$(CONFIG_VFIO_PLATFORM_BASE) += vfio-platform-base.o\nobj-$(CONFIG_VFIO_PLATFORM_BASE) += reset/\n\nvfio-platform-y := vfio_platform.o\nobj-$(CONFIG_VFIO_PLATFORM) += vfio-platform.o\n\nvfio-amba-y := vfio_amba.o\nobj-$(CONFIG_VFIO_AMBA) += vfio-amba.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

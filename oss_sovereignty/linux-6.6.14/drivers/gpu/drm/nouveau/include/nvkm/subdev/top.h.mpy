@@ -1,0 +1,9 @@
+{
+  "module_name": "top.h",
+  "hash_id": "9b96175547096a26221da25cf9c89f8568d9394e26932a036c88ac8c77952bb6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/top.h",
+  "human_readable_source": " \n#ifndef __NVKM_TOP_H__\n#define __NVKM_TOP_H__\n#include <core/subdev.h>\n\nstruct nvkm_top {\n\tconst struct nvkm_top_func *func;\n\tstruct nvkm_subdev subdev;\n\tstruct list_head device;\n};\n\nstruct nvkm_top_device {\n\tenum nvkm_subdev_type type;\n\tint inst;\n\tu32 addr;\n\tint fault;\n\tint engine;\n\tint runlist;\n\tint reset;\n\tint intr;\n\tstruct list_head head;\n};\n\nint nvkm_top_parse(struct nvkm_device *);\nu32 nvkm_top_addr(struct nvkm_device *, enum nvkm_subdev_type, int);\nu32 nvkm_top_reset(struct nvkm_device *, enum nvkm_subdev_type, int);\nu32 nvkm_top_intr_mask(struct nvkm_device *, enum nvkm_subdev_type, int);\nint nvkm_top_fault_id(struct nvkm_device *, enum nvkm_subdev_type, int);\nstruct nvkm_subdev *nvkm_top_fault(struct nvkm_device *, int fault);\n\nint gk104_top_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_top **);\nint ga100_top_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_top **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

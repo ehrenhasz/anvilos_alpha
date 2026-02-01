@@ -1,0 +1,9 @@
+{
+  "module_name": "buffer.py",
+  "hash_id": "1254375af0d0b44127b460e5e3b89a66309022aa895e8b7e8e39096a5b6c8f65",
+  "original_prompt": "Ingested from sys_09_Anvil/buffer.py",
+  "human_readable_source": "\nclass TextBuffer:\n    def __init__(self):\n        self.lines = []\n    \n    def load_text(self, text):\n        self.lines = text.splitlines()\n    \n    def get_line(self, index):\n        if 0 <= index < len(self.lines):\n            return self.lines[index]\n        return None\n    \n    def count_lines(self):\n        return len(self.lines)\n\ndef test():\n    buf = TextBuffer()\n    buf.load_text('Hello\\nAnvil\\nSovereignty')\n    print('Lines:', buf.count_lines())\n    print('Line 1:', buf.get_line(1))\n    if buf.count_lines() == 3 and buf.get_line(1) == 'Anvil':\n        print('>> TEST_BUFFER: SUCCESS')\n    else:\n        print('>> TEST_BUFFER: FAILED')\n        exit(1)\n\nif __name__ == '__main__':\n    test()\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

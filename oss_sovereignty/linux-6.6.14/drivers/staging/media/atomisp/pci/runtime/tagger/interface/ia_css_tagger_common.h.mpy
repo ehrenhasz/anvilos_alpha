@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_tagger_common.h",
+  "hash_id": "60581ea3bc2bd7a011ad02cc40ce736027c41047157e1315af24a8216fce7d1d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/tagger/interface/ia_css_tagger_common.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_TAGGER_COMMON_H__\n#define __IA_CSS_TAGGER_COMMON_H__\n\n#include <system_local.h>\n#include <type_support.h>\n\n \n#define MAX_CB_ELEMS_FOR_TAGGER 14\n\n \ntypedef struct {\n\tu32 frame;\t \n\tu32 param;\t \n\tu8 mark;\t \n\tu8 lock;\t \n\tu8 exp_id;  \n} ia_css_tagger_buf_sp_elem_t;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8e85d331e3ff39f88cf9144a08baf3fd4e93efdf08ea46ef913691544cec5600",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/tpm/st33zp24/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ST33ZP24 TPM 1.2 driver\n#\n\ntpm_st33zp24-objs = st33zp24.o\nobj-$(CONFIG_TCG_TIS_ST33ZP24) += tpm_st33zp24.o\n\ntpm_st33zp24_i2c-objs = i2c.o\nobj-$(CONFIG_TCG_TIS_ST33ZP24_I2C) += tpm_st33zp24_i2c.o\n\ntpm_st33zp24_spi-objs = spi.o\nobj-$(CONFIG_TCG_TIS_ST33ZP24_SPI) += tpm_st33zp24_spi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1bc1c0dd016f001812c1a54a92ef15eefd77c0aeca0f63986f489c6f176e3202",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/sunxi/sun8i-a83t-mipi-csi2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsun8i-a83t-mipi-csi2-y += sun8i_a83t_mipi_csi2.o sun8i_a83t_dphy.o\n\nobj-$(CONFIG_VIDEO_SUN8I_A83T_MIPI_CSI2) += sun8i-a83t-mipi-csi2.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

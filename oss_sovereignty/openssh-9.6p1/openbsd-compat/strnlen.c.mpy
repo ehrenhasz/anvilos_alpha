@@ -1,0 +1,9 @@
+{
+  "module_name": "strnlen.c",
+  "hash_id": "43bbca84c6bcba193e343cdf30deb3e75185928555ad17049b1f6507c121e33b",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/strnlen.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"includes.h\"\n#if !defined(HAVE_STRNLEN) || defined(BROKEN_STRNLEN)\n#include <sys/types.h>\n\n#include <string.h>\n\nsize_t\nstrnlen(const char *str, size_t maxlen)\n{\n\tconst char *cp;\n\n\tfor (cp = str; maxlen != 0 && *cp != '\\0'; cp++, maxlen--)\n\t\t;\n\n\treturn (size_t)(cp - str);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

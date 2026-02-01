@@ -1,0 +1,9 @@
+{
+  "module_name": "rsmu.h",
+  "hash_id": "8735e20a6a4e5b383bbb05ce62bd408b65175a466e527403879a025448507c56",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/rsmu.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MFD_RSMU_H\n#define __LINUX_MFD_RSMU_H\n\n#define RSMU_MAX_WRITE_COUNT\t(255)\n#define RSMU_MAX_READ_COUNT\t(255)\n\n \nenum rsmu_type {\n\tRSMU_CM\t\t= 0x34000,\n\tRSMU_SABRE\t= 0x33810,\n\tRSMU_SL\t\t= 0x19850,\n};\n\n \nstruct rsmu_ddata {\n\tstruct device *dev;\n\tstruct regmap *regmap;\n\tstruct mutex lock;\n\tenum rsmu_type type;\n\tu32 page;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

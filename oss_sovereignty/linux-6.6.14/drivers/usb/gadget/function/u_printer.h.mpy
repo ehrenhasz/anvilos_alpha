@@ -1,0 +1,9 @@
+{
+  "module_name": "u_printer.h",
+  "hash_id": "f14ca157ad2a8e273d25e0b0c1305314debe77d3d8b6e302598c32bc07ab1491",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/function/u_printer.h",
+  "human_readable_source": " \n \n\n#ifndef U_PRINTER_H\n#define U_PRINTER_H\n\n#include <linux/usb/composite.h>\n\nstruct f_printer_opts {\n\tstruct usb_function_instance\tfunc_inst;\n\tint\t\t\t\tminor;\n\tchar\t\t\t\t*pnp_string;\n\tbool\t\t\t\tpnp_string_allocated;\n\tunsigned\t\t\tq_len;\n\n\t \n\tstruct mutex\t\t\tlock;\n\tint\t\t\t\trefcnt;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

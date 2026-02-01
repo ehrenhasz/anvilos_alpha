@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "db8feda4d1641a8c9b947c7bcfc5ade2f8533a6a08b4c99b19c8e31a4d3a46a8",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nifeq ($(wildcard $(srctree)/arch/$(SRCARCH)/include/uapi/asm/a.out.h),)\nno-export-headers += linux/a.out.h\nendif\n\nifeq ($(wildcard $(srctree)/arch/$(SRCARCH)/include/uapi/asm/kvm.h),)\nno-export-headers += linux/kvm.h\nendif\n\nifeq ($(wildcard $(srctree)/arch/$(SRCARCH)/include/uapi/asm/kvm_para.h),)\nifeq ($(wildcard $(objtree)/arch/$(SRCARCH)/include/generated/uapi/asm/kvm_para.h),)\nno-export-headers += linux/kvm_para.h\nendif\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

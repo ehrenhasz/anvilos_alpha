@@ -1,0 +1,9 @@
+{
+  "module_name": "THIRDPARTYLICENSE.gladman",
+  "hash_id": "fdcd6d91dae5ea52832123b266710e76e6d439a3c08c0bda9eb4f70f04cc3d56",
+  "original_prompt": "Ingested from zfs-2.2.2/module/icp/asm-x86_64/aes/THIRDPARTYLICENSE.gladman",
+  "human_readable_source": " ---------------------------------------------------------------------------\n Copyright (c) 1998-2007, Brian Gladman, Worcester, UK. All rights reserved.\n\n LICENSE TERMS\n\n The free distribution and use of this software is allowed (with or without\n changes) provided that:\n\n  1. source code distributions include the above copyright notice, this\n     list of conditions and the following disclaimer;\n\n  2. binary distributions include the above copyright notice, this list\n     of conditions and the following disclaimer in their documentation;\n\n  3. the name of the copyright holder is not used to endorse products\n     built using this software without specific written permission.\n\n DISCLAIMER\n\n This software is provided 'as is' with no explicit or implied warranties\n in respect of its properties, including, but not limited to, correctness\n and/or fitness for purpose.\n ---------------------------------------------------------------------------\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

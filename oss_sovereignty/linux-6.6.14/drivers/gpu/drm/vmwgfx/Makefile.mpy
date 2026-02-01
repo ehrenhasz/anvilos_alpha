@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "847c05a5e56071a3ef62134dce4b51cacb03675a1e76022387dc5c598839eb5d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/vmwgfx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nvmwgfx-y := vmwgfx_execbuf.o vmwgfx_gmr.o vmwgfx_kms.o vmwgfx_drv.o \\\n\t    vmwgfx_ioctl.o vmwgfx_resource.o vmwgfx_ttm_buffer.o \\\n\t    vmwgfx_cmd.o vmwgfx_irq.o vmwgfx_ldu.o \\\n\t    vmwgfx_overlay.o vmwgfx_gmrid_manager.o vmwgfx_fence.o \\\n\t    vmwgfx_bo.o vmwgfx_scrn.o vmwgfx_context.o \\\n\t    vmwgfx_surface.o vmwgfx_prime.o vmwgfx_mob.o vmwgfx_shader.o \\\n\t    vmwgfx_cmdbuf_res.o vmwgfx_cmdbuf.o vmwgfx_stdu.o \\\n\t    vmwgfx_cotable.o vmwgfx_so.o vmwgfx_binding.o vmwgfx_msg.o \\\n\t    vmwgfx_simple_resource.o vmwgfx_va.o vmwgfx_blit.o \\\n\t    vmwgfx_validation.o vmwgfx_page_dirty.o vmwgfx_streamoutput.o \\\n\t    vmwgfx_devcaps.o ttm_object.o vmwgfx_system_manager.o \\\n\t    vmwgfx_gem.o\n\nobj-$(CONFIG_DRM_VMWGFX) := vmwgfx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

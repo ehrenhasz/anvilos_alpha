@@ -1,0 +1,9 @@
+{
+  "module_name": "rm3100-i2c.c",
+  "hash_id": "8f3375c9882a18e40004cebcfa2b179d98b10c98de278a828459a20132319ee4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/magnetometer/rm3100-i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/i2c.h>\n#include <linux/module.h>\n\n#include \"rm3100.h\"\n\nstatic const struct regmap_config rm3100_regmap_config = {\n\t.reg_bits = 8,\n\t.val_bits = 8,\n\n\t.rd_table = &rm3100_readable_table,\n\t.wr_table = &rm3100_writable_table,\n\t.volatile_table = &rm3100_volatile_table,\n\n\t.cache_type = REGCACHE_RBTREE,\n};\n\nstatic int rm3100_probe(struct i2c_client *client)\n{\n\tstruct regmap *regmap;\n\n\tregmap = devm_regmap_init_i2c(client, &rm3100_regmap_config);\n\tif (IS_ERR(regmap))\n\t\treturn PTR_ERR(regmap);\n\n\treturn rm3100_common_probe(&client->dev, regmap, client->irq);\n}\n\nstatic const struct of_device_id rm3100_dt_match[] = {\n\t{ .compatible = \"pni,rm3100\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, rm3100_dt_match);\n\nstatic struct i2c_driver rm3100_driver = {\n\t.driver = {\n\t\t.name = \"rm3100-i2c\",\n\t\t.of_match_table = rm3100_dt_match,\n\t},\n\t.probe = rm3100_probe,\n};\nmodule_i2c_driver(rm3100_driver);\n\nMODULE_AUTHOR(\"Song Qiang <songqiang1304521@gmail.com>\");\nMODULE_DESCRIPTION(\"PNI RM3100 3-axis magnetometer i2c driver\");\nMODULE_LICENSE(\"GPL v2\");\nMODULE_IMPORT_NS(IIO_RM3100);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

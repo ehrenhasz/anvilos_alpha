@@ -1,0 +1,9 @@
+{
+  "module_name": "dell-wmi-privacy.h",
+  "hash_id": "19beacabb1f5c8b2e778d3ccefa5bb0b6c2f62ce925994ea97437a026cd5b1ad",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/dell/dell-wmi-privacy.h",
+  "human_readable_source": " \n \n\n#ifndef _DELL_PRIVACY_WMI_H_\n#define _DELL_PRIVACY_WMI_H_\n\n#if IS_ENABLED(CONFIG_DELL_WMI_PRIVACY)\nbool dell_privacy_has_mic_mute(void);\nbool dell_privacy_process_event(int type, int code, int status);\nint dell_privacy_register_driver(void);\nvoid dell_privacy_unregister_driver(void);\n#else  \nstatic inline bool dell_privacy_has_mic_mute(void)\n{\n\treturn false;\n}\n\nstatic inline bool dell_privacy_process_event(int type, int code, int status)\n{\n\treturn false;\n}\n\nstatic inline int dell_privacy_register_driver(void)\n{\n\treturn 0;\n}\n\nstatic inline void dell_privacy_unregister_driver(void)\n{\n}\n#endif  \n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

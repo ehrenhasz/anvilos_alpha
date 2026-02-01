@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "df3730fac2619de0f6ec816969acbcd804f5beb0aabf7c4d7803431c964a3934",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libshare/Makefile.am",
+  "human_readable_source": "libshare_la_CFLAGS  = $(AM_CFLAGS) $(LIBRARY_CFLAGS)\nlibshare_la_CFLAGS += -fvisibility=hidden\n\nlibshare_la_CPPFLAGS  = $(AM_CPPFLAGS)\nlibshare_la_CPPFLAGS += -I$(srcdir)/%D%\n\nnoinst_LTLIBRARIES += libshare.la\nCPPCHECKTARGETS    += libshare.la\n\nlibshare_la_SOURCES = \\\n\t%D%/libshare_impl.h \\\n\t%D%/libshare.c \\\n\t%D%/nfs.c \\\n\t%D%/nfs.h \\\n\t%D%/smb.h\n\nif BUILD_LINUX\nlibshare_la_SOURCES += \\\n\t%D%/os/linux/nfs.c \\\n\t%D%/os/linux/smb.c\nendif\n\nif BUILD_FREEBSD\nlibshare_la_SOURCES += \\\n\t%D%/os/freebsd/nfs.c \\\n\t%D%/os/freebsd/smb.c\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

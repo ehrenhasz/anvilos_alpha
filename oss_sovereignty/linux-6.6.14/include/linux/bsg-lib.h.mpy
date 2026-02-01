@@ -1,0 +1,9 @@
+{
+  "module_name": "bsg-lib.h",
+  "hash_id": "36b9ec1cdc0b1472bb6ec42d25f4ed8322439fad5ad9f046fa431c18fc9159a9",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bsg-lib.h",
+  "human_readable_source": " \n \n#ifndef _BLK_BSG_\n#define _BLK_BSG_\n\n#include <linux/blkdev.h>\n\nstruct bsg_job;\nstruct request;\nstruct device;\nstruct scatterlist;\nstruct request_queue;\n\ntypedef int (bsg_job_fn) (struct bsg_job *);\ntypedef enum blk_eh_timer_return (bsg_timeout_fn)(struct request *);\n\nstruct bsg_buffer {\n\tunsigned int payload_len;\n\tint sg_cnt;\n\tstruct scatterlist *sg_list;\n};\n\nstruct bsg_job {\n\tstruct device *dev;\n\n\tstruct kref kref;\n\n\tunsigned int timeout;\n\n\t \n\tvoid *request;\n\tvoid *reply;\n\n\tunsigned int request_len;\n\tunsigned int reply_len;\n\t \n\n\t \n\tstruct bsg_buffer request_payload;\n\tstruct bsg_buffer reply_payload;\n\n\tint result;\n\tunsigned int reply_payload_rcv_len;\n\n\t \n\tstruct request *bidi_rq;\n\tstruct bio *bidi_bio;\n\n\tvoid *dd_data;\t\t \n};\n\nvoid bsg_job_done(struct bsg_job *job, int result,\n\t\t  unsigned int reply_payload_rcv_len);\nstruct request_queue *bsg_setup_queue(struct device *dev, const char *name,\n\t\tbsg_job_fn *job_fn, bsg_timeout_fn *timeout, int dd_job_size);\nvoid bsg_remove_queue(struct request_queue *q);\nvoid bsg_job_put(struct bsg_job *job);\nint __must_check bsg_job_get(struct bsg_job *job);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

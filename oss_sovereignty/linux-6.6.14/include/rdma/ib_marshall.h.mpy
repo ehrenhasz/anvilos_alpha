@@ -1,0 +1,9 @@
+{
+  "module_name": "ib_marshall.h",
+  "hash_id": "e76ddd9280c6d44609d01e013fa7066de7f19b227f6840b3a55c46311558cae4",
+  "original_prompt": "Ingested from linux-6.6.14/include/rdma/ib_marshall.h",
+  "human_readable_source": " \n \n\n#ifndef IB_USER_MARSHALL_H\n#define IB_USER_MARSHALL_H\n\n#include <rdma/ib_verbs.h>\n#include <rdma/ib_sa.h>\n#include <rdma/ib_user_verbs.h>\n#include <rdma/ib_user_sa.h>\n\nvoid ib_copy_qp_attr_to_user(struct ib_device *device,\n\t\t\t     struct ib_uverbs_qp_attr *dst,\n\t\t\t     struct ib_qp_attr *src);\n\nvoid ib_copy_ah_attr_to_user(struct ib_device *device,\n\t\t\t     struct ib_uverbs_ah_attr *dst,\n\t\t\t     struct rdma_ah_attr *src);\n\nvoid ib_copy_path_rec_to_user(struct ib_user_path_rec *dst,\n\t\t\t      struct sa_path_rec *src);\n\nvoid ib_copy_path_rec_from_user(struct sa_path_rec *dst,\n\t\t\t\tstruct ib_user_path_rec *src);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

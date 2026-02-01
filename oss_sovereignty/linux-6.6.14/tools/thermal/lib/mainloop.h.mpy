@@ -1,0 +1,9 @@
+{
+  "module_name": "mainloop.h",
+  "hash_id": "ce65dacf8dee37d4fb6913ee2ff32b389cd5f879fcb06c9260f2984c7dc185b7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/thermal/lib/mainloop.h",
+  "human_readable_source": " \n \n#ifndef __THERMAL_TOOLS_MAINLOOP_H\n#define __THERMAL_TOOLS_MAINLOOP_H\n\ntypedef int (*mainloop_callback_t)(int fd, void *data);\n\nextern int mainloop(unsigned int timeout);\nextern int mainloop_add(int fd, mainloop_callback_t cb, void *data);\nextern int mainloop_del(int fd);\nextern void mainloop_exit(void);\nextern int mainloop_init(void);\nextern void mainloop_fini(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

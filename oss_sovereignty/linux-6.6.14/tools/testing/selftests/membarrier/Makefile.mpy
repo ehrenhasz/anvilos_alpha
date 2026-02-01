@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3448cbb122360a03706d06cce8eda66b597f43d05f1bb5cff47e49f507bda133",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/membarrier/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nCFLAGS += -g $(KHDR_INCLUDES)\nLDLIBS += -lpthread\n\nTEST_GEN_PROGS := membarrier_test_single_thread \\\n\t\tmembarrier_test_multi_thread\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

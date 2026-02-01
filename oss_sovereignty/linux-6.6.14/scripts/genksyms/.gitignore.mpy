@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "fb0bb4f273ec55ff2ecfc28846297501e35427fa0fb8967b5fe182cd88e19a04",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/genksyms/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/genksyms\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

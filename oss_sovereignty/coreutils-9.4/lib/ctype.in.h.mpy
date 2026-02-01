@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype.in.h",
+  "hash_id": "1b77161739a321189d85b37dd32f4eb354fcac06bf71588ba41a5a89b0d06c44",
+  "original_prompt": "Ingested from coreutils-9.4/lib/ctype.in.h",
+  "human_readable_source": " \n\n \n\n#ifndef _@GUARD_PREFIX@_CTYPE_H\n\n#if __GNUC__ >= 3\n@PRAGMA_SYSTEM_HEADER@\n#endif\n@PRAGMA_COLUMNS@\n\n \n \n#@INCLUDE_NEXT@ @NEXT_CTYPE_H@\n\n#ifndef _@GUARD_PREFIX@_CTYPE_H\n#define _@GUARD_PREFIX@_CTYPE_H\n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n\n \n\n \n#if @GNULIB_ISBLANK@\n# if !@HAVE_ISBLANK@\n_GL_EXTERN_C int isblank (int c);\n# endif\n#elif defined GNULIB_POSIXCHECK\n# undef isblank\n# if HAVE_RAW_DECL_ISBLANK\n_GL_WARN_ON_USE (isblank, \"isblank is unportable - \"\n                 \"use gnulib module isblank for portability\");\n# endif\n#endif\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

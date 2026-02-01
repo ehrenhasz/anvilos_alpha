@@ -1,0 +1,9 @@
+{
+  "module_name": "spintest.bpf.c",
+  "hash_id": "8592a3b7f593343ea44bec62676072c2c9e73947caae2cd6a41c9989229b1ef7",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/spintest.bpf.c",
+  "human_readable_source": " \n#include \"vmlinux.h\"\n#include <linux/version.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\n#ifndef PERF_MAX_STACK_DEPTH\n#define PERF_MAX_STACK_DEPTH         127\n#endif\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__type(key, long);\n\t__type(value, long);\n\t__uint(max_entries, 1024);\n} my_map SEC(\".maps\");\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PERCPU_HASH);\n\t__uint(key_size, sizeof(long));\n\t__uint(value_size, sizeof(long));\n\t__uint(max_entries, 1024);\n} my_map2 SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_STACK_TRACE);\n\t__uint(key_size, sizeof(u32));\n\t__uint(value_size, PERF_MAX_STACK_DEPTH * sizeof(u64));\n\t__uint(max_entries, 10000);\n} stackmap SEC(\".maps\");\n\n#define PROG(foo) \\\nint foo(struct pt_regs *ctx) \\\n{ \\\n\tlong v = PT_REGS_IP(ctx), *val; \\\n\\\n\tval = bpf_map_lookup_elem(&my_map, &v); \\\n\tbpf_map_update_elem(&my_map, &v, &v, BPF_ANY); \\\n\tbpf_map_update_elem(&my_map2, &v, &v, BPF_ANY); \\\n\tbpf_map_delete_elem(&my_map2, &v); \\\n\tbpf_get_stackid(ctx, &stackmap, BPF_F_REUSE_STACKID); \\\n\treturn 0; \\\n}\n\n \nSEC(\"kprobe.multi/spin_*lock*\")PROG(spin_lock)\nSEC(\"kprobe.multi/*_spin_on_owner\")PROG(spin_on_owner)\nSEC(\"kprobe.multi/_raw_spin_*lock*\")PROG(raw_spin_lock)\n\n \nSEC(\"kprobe/htab_map_update_elem\")PROG(p15)\nSEC(\"kprobe/__htab_percpu_map_update_elem\")PROG(p16)\nSEC(\"kprobe/htab_map_alloc\")PROG(p17)\n\nchar _license[] SEC(\"license\") = \"GPL\";\nu32 _version SEC(\"version\") = LINUX_VERSION_CODE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

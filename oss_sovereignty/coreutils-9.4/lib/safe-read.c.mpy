@@ -1,0 +1,9 @@
+{
+  "module_name": "safe-read.c",
+  "hash_id": "d8262818db8bffeb18369d1bba0a52a0f73227c8eabf09b812b9cc87a32f252b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/safe-read.c",
+  "human_readable_source": " \n#ifdef SAFE_WRITE\n# include \"safe-write.h\"\n#else\n# include \"safe-read.h\"\n#endif\n\n \n#include <sys/types.h>\n#include <unistd.h>\n\n#include <errno.h>\n\n#ifdef EINTR\n# define IS_EINTR(x) ((x) == EINTR)\n#else\n# define IS_EINTR(x) 0\n#endif\n\n#include \"sys-limits.h\"\n\n#ifdef SAFE_WRITE\n# define safe_rw safe_write\n# define rw write\n#else\n# define safe_rw safe_read\n# define rw read\n# undef const\n# define const  \n#endif\n\n \nsize_t\nsafe_rw (int fd, void const *buf, size_t count)\n{\n  for (;;)\n    {\n      ssize_t result = rw (fd, buf, count);\n\n      if (0 <= result)\n        return result;\n      else if (IS_EINTR (errno))\n        continue;\n      else if (errno == EINVAL && SYS_BUFSIZE_MAX < count)\n        count = SYS_BUFSIZE_MAX;\n      else\n        return result;\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

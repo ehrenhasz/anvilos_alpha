@@ -1,0 +1,9 @@
+{
+  "module_name": "frzmpy3.py",
+  "hash_id": "af2591594ac0d2705fee03b0332a3b5c8e7c94d815b692e823351ff3aedfa5f5",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/coverage/frzmpy/frzmpy3.py",
+  "human_readable_source": "# Test freezing objects that may not be handled well by the build process.\n\nprint(\"\\\\\")\nprint(\"\\nX\")\nprint(repr(\"\\x1b\"))\nprint(b\"\\x00\\xff\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

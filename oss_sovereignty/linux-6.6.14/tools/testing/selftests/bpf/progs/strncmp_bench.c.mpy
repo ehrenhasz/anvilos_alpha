@@ -1,0 +1,9 @@
+{
+  "module_name": "strncmp_bench.c",
+  "hash_id": "bd4255ae9b860e7a75f26b6e5bb920045473bd77382633ce2e9b9ef1458ba016",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/strncmp_bench.c",
+  "human_readable_source": "\n \n#include <linux/types.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\n#define STRNCMP_STR_SZ 4096\n\n \nconst volatile unsigned int cmp_str_len = 1;\nconst char target[STRNCMP_STR_SZ];\n\nlong hits = 0;\nchar str[STRNCMP_STR_SZ];\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstatic __always_inline int local_strncmp(const char *s1, unsigned int sz,\n\t\t\t\t\t const char *s2)\n{\n\tint ret = 0;\n\tunsigned int i;\n\n\tfor (i = 0; i < sz; i++) {\n\t\t \n\t\tret = (unsigned char)s1[i] - (unsigned char)s2[i];\n\t\tif (ret || !s1[i])\n\t\t\tbreak;\n\t}\n\n\treturn ret;\n}\n\nSEC(\"tp/syscalls/sys_enter_getpgid\")\nint strncmp_no_helper(void *ctx)\n{\n\tif (local_strncmp(str, cmp_str_len + 1, target) < 0)\n\t\t__sync_add_and_fetch(&hits, 1);\n\treturn 0;\n}\n\nSEC(\"tp/syscalls/sys_enter_getpgid\")\nint strncmp_helper(void *ctx)\n{\n\tif (bpf_strncmp(str, cmp_str_len + 1, target) < 0)\n\t\t__sync_add_and_fetch(&hits, 1);\n\treturn 0;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

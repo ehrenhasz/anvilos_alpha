@@ -1,0 +1,9 @@
+{
+  "module_name": "current_stack_pointer.h",
+  "hash_id": "68c0aee6915c6d62478948f5b6e2195624c3d9275164795d46e394672be05df8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sigaltstack/current_stack_pointer.h",
+  "human_readable_source": " \n\n#if __alpha__\nregister unsigned long sp asm(\"$30\");\n#elif __arm__ || __aarch64__ || __csky__ || __m68k__ || __mips__ || __riscv\nregister unsigned long sp asm(\"sp\");\n#elif __i386__\nregister unsigned long sp asm(\"esp\");\n#elif __loongarch64\nregister unsigned long sp asm(\"$sp\");\n#elif __ppc__\nregister unsigned long sp asm(\"r1\");\n#elif __s390x__\nregister unsigned long sp asm(\"%15\");\n#elif __sh__\nregister unsigned long sp asm(\"r15\");\n#elif __x86_64__\nregister unsigned long sp asm(\"rsp\");\n#elif __XTENSA__\nregister unsigned long sp asm(\"a1\");\n#else\n#error \"implement current_stack_pointer equivalent\"\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

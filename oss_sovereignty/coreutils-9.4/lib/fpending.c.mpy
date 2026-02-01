@@ -1,0 +1,9 @@
+{
+  "module_name": "fpending.c",
+  "hash_id": "9fdea2786c14177c86cc8aabc8b9880b4dcd7dc909889aedd3d2ec2c697255e8",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fpending.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include \"fpending.h\"\n\n#include \"stdio-impl.h\"\n\n \n\n \nsize_t\n__fpending (FILE *fp)\n{\n   \n#if defined _IO_EOF_SEEN || defined _IO_ftrylockfile || __GNU_LIBRARY__ == 1\n   \n  return fp->_IO_write_ptr - fp->_IO_write_base;\n#elif defined __sferror || defined __DragonFly__ || defined __ANDROID__\n   \n  return fp_->_p - fp_->_bf._base;\n#elif defined __EMX__                 \n  return fp->_ptr - fp->_buffer;\n#elif defined __minix                 \n  return fp_->_ptr - fp_->_buf;\n#elif defined _IOERR                  \n  return (fp_->_ptr ? fp_->_ptr - fp_->_base : 0);\n#elif defined __UCLIBC__              \n  return (fp->__modeflags & __FLAG_WRITING ? fp->__bufpos - fp->__bufstart : 0);\n#elif defined __QNX__                 \n  return (fp->_Mode & 0x2000   ? fp->_Next - fp->_Buf : 0);\n#elif defined __MINT__                \n  return fp->__bufp - fp->__buffer;\n#elif defined EPLAN9                  \n  return fp->wp - fp->buf;\n#else\n# error \"Please port gnulib fpending.c to your platform!\"\n  return 1;\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_ipt.h",
+  "hash_id": "83949c042728e9c2e917adb3f1888a0f15cf0d28b9bcbb54e41d521e428c7d08",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/tc_act/tc_ipt.h",
+  "human_readable_source": " \n#ifndef __NET_TC_IPT_H\n#define __NET_TC_IPT_H\n\n#include <net/act_api.h>\n\nstruct xt_entry_target;\n\nstruct tcf_ipt {\n\tstruct tc_action\tcommon;\n\tu32\t\t\ttcfi_hook;\n\tchar\t\t\t*tcfi_tname;\n\tstruct xt_entry_target\t*tcfi_t;\n};\n#define to_ipt(a) ((struct tcf_ipt *)a)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

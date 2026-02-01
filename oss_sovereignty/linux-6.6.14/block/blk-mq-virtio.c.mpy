@@ -1,0 +1,9 @@
+{
+  "module_name": "blk-mq-virtio.c",
+  "hash_id": "f624b8e9aad3a3594b4240a64237c90b5f3d21827e7ae80f5b5de9448cbe7378",
+  "original_prompt": "Ingested from linux-6.6.14/block/blk-mq-virtio.c",
+  "human_readable_source": "\n \n#include <linux/device.h>\n#include <linux/blk-mq-virtio.h>\n#include <linux/virtio_config.h>\n#include <linux/module.h>\n#include \"blk-mq.h\"\n\n \nvoid blk_mq_virtio_map_queues(struct blk_mq_queue_map *qmap,\n\t\tstruct virtio_device *vdev, int first_vec)\n{\n\tconst struct cpumask *mask;\n\tunsigned int queue, cpu;\n\n\tif (!vdev->config->get_vq_affinity)\n\t\tgoto fallback;\n\n\tfor (queue = 0; queue < qmap->nr_queues; queue++) {\n\t\tmask = vdev->config->get_vq_affinity(vdev, first_vec + queue);\n\t\tif (!mask)\n\t\t\tgoto fallback;\n\n\t\tfor_each_cpu(cpu, mask)\n\t\t\tqmap->mq_map[cpu] = qmap->queue_offset + queue;\n\t}\n\n\treturn;\n\nfallback:\n\tblk_mq_map_queues(qmap);\n}\nEXPORT_SYMBOL_GPL(blk_mq_virtio_map_queues);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

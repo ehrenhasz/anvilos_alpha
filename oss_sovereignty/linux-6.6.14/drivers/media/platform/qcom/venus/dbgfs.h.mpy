@@ -1,0 +1,9 @@
+{
+  "module_name": "dbgfs.h",
+  "hash_id": "40946309ec63fb6828d22d20fd60539092b8f22a3517e24ef4de8b22d7cddaf0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/qcom/venus/dbgfs.h",
+  "human_readable_source": " \n \n\n#ifndef __VENUS_DBGFS_H__\n#define __VENUS_DBGFS_H__\n\n#include <linux/fault-inject.h>\n\nstruct venus_core;\n\n#ifdef CONFIG_FAULT_INJECTION\nextern struct fault_attr venus_ssr_attr;\nstatic inline bool venus_fault_inject_ssr(void)\n{\n\treturn should_fail(&venus_ssr_attr, 1);\n}\n#else\nstatic inline bool venus_fault_inject_ssr(void) { return false; }\n#endif\n\n\nvoid venus_dbgfs_init(struct venus_core *core);\nvoid venus_dbgfs_deinit(struct venus_core *core);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

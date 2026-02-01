@@ -1,0 +1,9 @@
+{
+  "module_name": "zecho.c",
+  "hash_id": "5250cc571e78b93b8c27adadcd7dbde754c38465e719529ac2d6158a77d7a6cd",
+  "original_prompt": "Ingested from bash-5.2.21/support/zecho.c",
+  "human_readable_source": " \n\n \n\n#if defined (HAVE_CONFIG_H)\n#  include  <config.h>\n#endif\n\n#include \"bashansi.h\"\n#include <stdio.h>\n\nint\nmain(argc, argv)\nint\targc;\nchar\t**argv;\n{\n\targv++;\n\n\twhile (*argv) {\n\t\t(void)printf(\"%s\", *argv);\n\t\tif (*++argv)\n\t\t\tputchar(' ');\n\t}\n\n\tputchar('\\n');\n\texit(0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-dntv-live-dvb-t.c",
+  "hash_id": "36429af17a0c24f125a2096718b7aebaf338be84d71e367b29c37f2f0b9cc543",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-dntv-live-dvb-t.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n\nstatic struct rc_map_table dntv_live_dvb_t[] = {\n\t{ 0x00, KEY_ESC },\t\t \n\t \n\t{ 0x0a, KEY_NUMERIC_0 },\n\t{ 0x01, KEY_NUMERIC_1 },\n\t{ 0x02, KEY_NUMERIC_2 },\n\t{ 0x03, KEY_NUMERIC_3 },\n\t{ 0x04, KEY_NUMERIC_4 },\n\t{ 0x05, KEY_NUMERIC_5 },\n\t{ 0x06, KEY_NUMERIC_6 },\n\t{ 0x07, KEY_NUMERIC_7 },\n\t{ 0x08, KEY_NUMERIC_8 },\n\t{ 0x09, KEY_NUMERIC_9 },\n\n\t{ 0x0b, KEY_TUNER },\t\t \n\t{ 0x0c, KEY_SEARCH },\t\t \n\t{ 0x0d, KEY_STOP },\n\t{ 0x0e, KEY_PAUSE },\n\t{ 0x0f, KEY_VIDEO },\t\t \n\n\t{ 0x10, KEY_MUTE },\n\t{ 0x11, KEY_REWIND },\t\t \n\t{ 0x12, KEY_POWER },\n\t{ 0x13, KEY_CAMERA },\t\t \n\t{ 0x14, KEY_AUDIO },\t\t \n\t{ 0x15, KEY_CLEAR },\t\t \n\t{ 0x16, KEY_PLAY },\n\t{ 0x17, KEY_ENTER },\n\t{ 0x18, KEY_ZOOM },\t\t \n\t{ 0x19, KEY_FASTFORWARD },\t \n\t{ 0x1a, KEY_CHANNELUP },\n\t{ 0x1b, KEY_VOLUMEUP },\n\t{ 0x1c, KEY_INFO },\t\t \n\t{ 0x1d, KEY_RECORD },\t\t \n\t{ 0x1e, KEY_CHANNELDOWN },\n\t{ 0x1f, KEY_VOLUMEDOWN },\n};\n\nstatic struct rc_map_list dntv_live_dvb_t_map = {\n\t.map = {\n\t\t.scan     = dntv_live_dvb_t,\n\t\t.size     = ARRAY_SIZE(dntv_live_dvb_t),\n\t\t.rc_proto = RC_PROTO_UNKNOWN,\t \n\t\t.name     = RC_MAP_DNTV_LIVE_DVB_T,\n\t}\n};\n\nstatic int __init init_rc_map_dntv_live_dvb_t(void)\n{\n\treturn rc_map_register(&dntv_live_dvb_t_map);\n}\n\nstatic void __exit exit_rc_map_dntv_live_dvb_t(void)\n{\n\trc_map_unregister(&dntv_live_dvb_t_map);\n}\n\nmodule_init(init_rc_map_dntv_live_dvb_t)\nmodule_exit(exit_rc_map_dntv_live_dvb_t)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Mauro Carvalho Chehab\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

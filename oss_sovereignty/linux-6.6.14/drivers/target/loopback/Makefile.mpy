@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "620b4eb6867f78c48548e9882298949377bf40c25ff900dc4cc856ed20ead7e1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/loopback/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_LOOPBACK_TARGET)\t+= tcm_loop.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

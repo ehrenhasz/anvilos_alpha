@@ -1,0 +1,9 @@
+{
+  "module_name": "enet.h",
+  "hash_id": "36a63531de3383ce40d3e35e2f2cb6a21001cb34135640e7e8ed125c67dbe97a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/apm/xgene-v2/enet.h",
+  "human_readable_source": " \n \n\n#ifndef __XGENE_ENET_V2_ENET_H__\n#define __XGENE_ENET_V2_ENET_H__\n\n#define ENET_CLKEN\t\t0xc008\n#define ENET_SRST\t\t0xc000\n#define ENET_SHIM\t\t0xc010\n#define CFG_MEM_RAM_SHUTDOWN\t0xd070\n#define BLOCK_MEM_RDY\t\t0xd074\n\n#define MEM_RDY\t\t\t0xffffffff\n#define DEVM_ARAUX_COH\t\tBIT(19)\n#define DEVM_AWAUX_COH\t\tBIT(3)\n\n#define CFG_FORCE_LINK_STATUS_EN\t0x229c\n#define FORCE_LINK_STATUS\t\t0x22a0\n#define CFG_LINK_AGGR_RESUME\t\t0x27c8\n#define RX_DV_GATE_REG\t\t\t0x2dfc\n\nvoid xge_wr_csr(struct xge_pdata *pdata, u32 offset, u32 val);\nu32 xge_rd_csr(struct xge_pdata *pdata, u32 offset);\nint xge_port_reset(struct net_device *ndev);\nvoid xge_port_init(struct net_device *ndev);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

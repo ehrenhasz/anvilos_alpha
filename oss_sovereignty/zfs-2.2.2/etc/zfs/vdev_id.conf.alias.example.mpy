@@ -1,0 +1,9 @@
+{
+  "module_name": "vdev_id.conf.alias.example",
+  "hash_id": "5c6b183b0a1a22ad0a2ba2c46b3c4fe0f50e5ea498105db24735d19390f24560",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/zfs/vdev_id.conf.alias.example",
+  "human_readable_source": "#     by-vdev\n#     name     fully qualified or base name of device link\nalias d1       /dev/disk/by-id/wwn-0x5000c5002de3b9ca\nalias d2       wwn-0x5000c5002def789e\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dump_entry.h",
+  "hash_id": "e4a469ec349c38634ff84aa8dc7dea6d03c756143cf939f57fb810f0d97b3fa7",
+  "original_prompt": "Ingested from ncurses-6.4/progs/dump_entry.h",
+  "human_readable_source": " \n\n \n\n \n\n#ifndef DUMP_ENTRY_H\n#define DUMP_ENTRY_H 1\n\n#define NCURSES_OPAQUE    0\n#define NCURSES_INTERNALS 1\n#include <curses.h>\n#include <term.h>\n\n \n#define F_TERMINFO\t0\t \n#define F_VARIABLE\t1\t \n#define F_TERMCAP\t2\t \n#define F_TCONVERR\t3\t \n#define F_LITERAL\t4\t \n\n \n#define S_DEFAULT\t0\t \n#define S_NOSORT\t1\t \n#define S_TERMINFO\t2\t \n#define S_VARIABLE\t3\t \n#define S_TERMCAP\t4\t \n\n \n#define CMP_BOOLEAN\t0\t \n#define CMP_NUMBER\t1\t \n#define CMP_STRING\t2\t \n#define CMP_USE\t\t3\t \n\n#ifndef _TERMSORT_H\ntypedef unsigned PredType;\ntypedef unsigned PredIdx;\n#endif\n\ntypedef int (*PredFunc) (PredType, PredIdx);\ntypedef void (*PredHook) (PredType, PredIdx, const char *);\n\nextern NCURSES_CONST char *nametrans(const char *);\nextern bool has_params(const char *, bool);\nextern int fmt_entry(TERMTYPE2 *, PredFunc, int, int, int, int);\nextern int show_entry(void);\nextern void compare_entry(PredHook, TERMTYPE2 *, bool);\nextern void dump_entry(TERMTYPE2 *, int, int, int, PredFunc);\nextern void dump_init(const char *, int, int, bool, int, int, unsigned, bool,\n\t\t      bool, int);\nextern void dump_uses(const char *, bool);\nextern void repair_acsc(TERMTYPE2 *tp);\n\n#define L_CURL \"{\"\n#define R_CURL \"}\"\n\n#define FAIL\t-1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

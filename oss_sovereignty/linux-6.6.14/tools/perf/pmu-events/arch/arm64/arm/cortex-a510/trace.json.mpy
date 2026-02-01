@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.json",
+  "hash_id": "813540ec732e8200c204c527b7672e60420b78148f06dbc675fb7cc28f3ea23b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a510/trace.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"TRB_WRAP\"\n    },\n    {\n        \"ArchStdEvent\": \"TRB_TRIG\"\n    },\n    {\n        \"ArchStdEvent\": \"TRCEXTOUT0\"\n    },\n    {\n        \"ArchStdEvent\": \"TRCEXTOUT1\"\n    },\n    {\n        \"ArchStdEvent\": \"TRCEXTOUT2\"\n    },\n    {\n        \"ArchStdEvent\": \"TRCEXTOUT3\"\n    },\n    {\n        \"ArchStdEvent\": \"CTI_TRIGOUT4\"\n    },\n    {\n        \"ArchStdEvent\": \"CTI_TRIGOUT5\"\n    },\n    {\n        \"ArchStdEvent\": \"CTI_TRIGOUT6\"\n    },\n    {\n        \"ArchStdEvent\": \"CTI_TRIGOUT7\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

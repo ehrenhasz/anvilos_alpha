@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d20e7e0cf88c9407a7d9a4cef56549b79e6bb78a936ddb1a5fc977e9985c65d3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/cec/usb/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# USB drivers\n\nif USB_SUPPORT && TTY\nsource \"drivers/media/cec/usb/pulse8/Kconfig\"\nsource \"drivers/media/cec/usb/rainshadow/Kconfig\"\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

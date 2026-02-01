@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "17de0cb0e711ac0b22f9b770918e35e2cf754c904b2dc45f2b1bbbadefd36ddd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cobalt/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\ncobalt-objs    := cobalt-driver.o cobalt-irq.o cobalt-v4l2.o \\\n\t\t  cobalt-i2c.o cobalt-omnitek.o cobalt-flash.o cobalt-cpld.o \\\n\t\t  cobalt-alsa-main.o cobalt-alsa-pcm.o\n\nobj-$(CONFIG_VIDEO_COBALT) += cobalt.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

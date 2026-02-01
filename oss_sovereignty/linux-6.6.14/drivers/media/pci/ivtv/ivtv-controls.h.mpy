@@ -1,0 +1,9 @@
+{
+  "module_name": "ivtv-controls.h",
+  "hash_id": "b0c8aa3d9de84794b485773f7dc29c52e47130ecdaaeb4283fa44abc8a95e838",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ivtv/ivtv-controls.h",
+  "human_readable_source": " \n \n\n#ifndef IVTV_CONTROLS_H\n#define IVTV_CONTROLS_H\n\nextern const struct cx2341x_handler_ops ivtv_cxhdl_ops;\nextern const struct v4l2_ctrl_ops ivtv_hdl_out_ops;\nint ivtv_g_pts_frame(struct ivtv *itv, s64 *pts, s64 *frame);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

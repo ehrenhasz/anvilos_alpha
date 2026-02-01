@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e8679826457530cfd484e395221400c7701fce8a92db8d3ec081ab5dc4e11a9d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/libsas/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Kernel Makefile for the libsas helpers\n#\n# Copyright (C) 2005 Adaptec, Inc.  All rights reserved.\n# Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>\n#\n\nobj-$(CONFIG_SCSI_SAS_LIBSAS) += libsas.o\nlibsas-y +=  sas_init.o     \\\n\t\tsas_phy.o      \\\n\t\tsas_port.o     \\\n\t\tsas_event.o    \\\n\t\tsas_discover.o \\\n\t\tsas_expander.o \\\n\t\tsas_scsi_host.o \\\n\t\tsas_task.o\nlibsas-$(CONFIG_SCSI_SAS_ATA) +=\tsas_ata.o\nlibsas-$(CONFIG_SCSI_SAS_HOST_SMP) +=\tsas_host_smp.o\n\nccflags-y := -DDEBUG -I$(srctree)/drivers/scsi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

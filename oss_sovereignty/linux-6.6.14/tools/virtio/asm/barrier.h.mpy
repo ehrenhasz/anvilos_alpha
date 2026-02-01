@@ -1,0 +1,9 @@
+{
+  "module_name": "barrier.h",
+  "hash_id": "22855c169bfbcee3333543507835cbebcb307a8cee5d23f0c7eac3ab4b4015d8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/asm/barrier.h",
+  "human_readable_source": " \n#include <stdlib.h>\n#if defined(__i386__) || defined(__x86_64__)\n#define barrier() asm volatile(\"\" ::: \"memory\")\n#define virt_mb() __sync_synchronize()\n#define virt_rmb() barrier()\n#define virt_wmb() barrier()\n \n#define virt_store_mb(var, value)  do { \\\n\ttypeof(var) virt_store_mb_value = (value); \\\n\t__atomic_exchange(&(var), &virt_store_mb_value, &virt_store_mb_value, \\\n\t\t\t  __ATOMIC_SEQ_CST); \\\n\tbarrier(); \\\n} while (0);\n \n# define mb() abort()\n# define dma_rmb() abort()\n# define dma_wmb() abort()\n#elif defined(__aarch64__)\n#define dmb(opt) asm volatile(\"dmb \" #opt : : : \"memory\")\n#define virt_mb() __sync_synchronize()\n#define virt_rmb() dmb(ishld)\n#define virt_wmb() dmb(ishst)\n#define virt_store_mb(var, value)  do { WRITE_ONCE(var, value); dmb(ish); } while (0)\n \n# define mb() abort()\n# define dma_rmb() abort()\n# define dma_wmb() abort()\n#else\n#error Please fill in barrier macros\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

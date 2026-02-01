@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "49d7303e546c7cf6a0c448c6008b84151a10a4ae427a57052742dc9bda6a84b6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/bestcomm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for BestComm & co\n#\n\nbestcomm-core-objs\t:= bestcomm.o sram.o\nbestcomm-ata-objs\t:= ata.o bcom_ata_task.o\nbestcomm-fec-objs\t:= fec.o bcom_fec_rx_task.o bcom_fec_tx_task.o\nbestcomm-gen-bd-objs\t:= gen_bd.o bcom_gen_bd_rx_task.o bcom_gen_bd_tx_task.o\n\nobj-$(CONFIG_PPC_BESTCOMM)\t\t+= bestcomm-core.o\nobj-$(CONFIG_PPC_BESTCOMM_ATA)\t\t+= bestcomm-ata.o\nobj-$(CONFIG_PPC_BESTCOMM_FEC)\t\t+= bestcomm-fec.o\nobj-$(CONFIG_PPC_BESTCOMM_GEN_BD)\t+= bestcomm-gen-bd.o\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mpl115.h",
+  "hash_id": "e762427671e9ed553f599025ac34680588e4c61a031427de2e40fbcb830c667e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/pressure/mpl115.h",
+  "human_readable_source": " \n \n\n#include <linux/pm_runtime.h>\n\n#ifndef _MPL115_H_\n#define _MPL115_H_\n\nstruct mpl115_ops {\n\tint (*init)(struct device *);\n\tint (*read)(struct device *, u8);\n\tint (*write)(struct device *, u8, u8);\n};\n\nint mpl115_probe(struct device *dev, const char *name,\n\t\t\tconst struct mpl115_ops *ops);\n\n \nextern const struct dev_pm_ops mpl115_dev_pm_ops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

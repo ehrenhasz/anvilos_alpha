@@ -1,0 +1,9 @@
+{
+  "module_name": "xc2028.h",
+  "hash_id": "50d6accc16734da5fff0ded2ec4092a6dc95199b4f7bc7f6b3144e23ebc14db5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/xc2028.h",
+  "human_readable_source": " \n \n\n#ifndef __TUNER_XC2028_H__\n#define __TUNER_XC2028_H__\n\n#include <media/dvb_frontend.h>\n\n#define XC2028_DEFAULT_FIRMWARE \"xc3028-v27.fw\"\n#define XC3028L_DEFAULT_FIRMWARE \"xc3028L-v36.fw\"\n\n \n#define\tXC3028_FE_DEFAULT\t0\t\t \n#define XC3028_FE_LG60\t\t6000\n#define\tXC3028_FE_ATI638\t6380\n#define\tXC3028_FE_OREN538\t5380\n#define\tXC3028_FE_OREN36\t3600\n#define\tXC3028_FE_TOYOTA388\t3880\n#define\tXC3028_FE_TOYOTA794\t7940\n#define\tXC3028_FE_DIBCOM52\t5200\n#define\tXC3028_FE_ZARLINK456\t4560\n#define\tXC3028_FE_CHINA\t\t5200\n\nenum firmware_type {\n\tXC2028_AUTO = 0,         \n\tXC2028_D2633,\n\tXC2028_D2620,\n};\n\nstruct xc2028_ctrl {\n\tchar\t\t\t*fname;\n\tint\t\t\tmax_len;\n\tint\t\t\tmsleep;\n\tunsigned int\t\tscode_table;\n\tunsigned int\t\tmts   :1;\n\tunsigned int\t\tinput1:1;\n\tunsigned int\t\tvhfbw7:1;\n\tunsigned int\t\tuhfbw8:1;\n\tunsigned int\t\tdisable_power_mgmt:1;\n\tunsigned int            read_not_reliable:1;\n\tunsigned int\t\tdemod;\n\tenum firmware_type\ttype:2;\n};\n\nstruct xc2028_config {\n\tstruct i2c_adapter *i2c_adap;\n\tu8\t\t   i2c_addr;\n\tstruct xc2028_ctrl *ctrl;\n};\n\n \n#define XC2028_TUNER_RESET\t0\n#define XC2028_RESET_CLK\t1\n#define XC2028_I2C_FLUSH\t2\n\n#if IS_REACHABLE(CONFIG_MEDIA_TUNER_XC2028)\nextern struct dvb_frontend *xc2028_attach(struct dvb_frontend *fe,\n\t\t\t\t\t  struct xc2028_config *cfg);\n#else\nstatic inline struct dvb_frontend *xc2028_attach(struct dvb_frontend *fe,\n\t\t\t\t\t\t struct xc2028_config *cfg)\n{\n\tprintk(KERN_INFO \"%s: not probed - driver disabled by Kconfig\\n\",\n\t       __func__);\n\treturn NULL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

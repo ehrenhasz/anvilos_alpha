@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "194c770304c7cb28fbe8e28e27c84b9512079a8796256ffdcb7c536f598234f2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/etnaviv/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\netnaviv-y := \\\n\tetnaviv_buffer.o \\\n\tetnaviv_cmd_parser.o \\\n\tetnaviv_cmdbuf.o \\\n\tetnaviv_drv.o \\\n\tetnaviv_dump.o \\\n\tetnaviv_gem_prime.o \\\n\tetnaviv_gem_submit.o \\\n\tetnaviv_gem.o \\\n\tetnaviv_gpu.o \\\n\tetnaviv_hwdb.o \\\n\tetnaviv_iommu_v2.o \\\n\tetnaviv_iommu.o \\\n\tetnaviv_mmu.o \\\n\tetnaviv_perfmon.o \\\n\tetnaviv_sched.o\n\nobj-$(CONFIG_DRM_ETNAVIV)\t+= etnaviv.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

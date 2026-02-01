@@ -1,0 +1,9 @@
+{
+  "module_name": "opensshd.init.in",
+  "hash_id": "de95afed7e932b06aae3b31100fcf6966cfd91d8ac8682c7a09c0733453aaf27",
+  "original_prompt": "Ingested from openssh-9.6p1/opensshd.init.in",
+  "human_readable_source": "#!@STARTUP_SCRIPT_SHELL@\n# Donated code that was put under PD license.\n#\n# Stripped PRNGd out of it for the time being.\n\numask 022\n\nCAT=@CAT@\nKILL=@KILL@\n\nprefix=@prefix@\nsysconfdir=@sysconfdir@\npiddir=@piddir@\n\nSSHD=$prefix/sbin/sshd\nPIDFILE=$piddir/sshd.pid\nPidFile=`grep \"^PidFile\" ${sysconfdir}/sshd_config | tr \"=\" \" \" | awk '{print $2}'`\n[ X$PidFile = X ]  ||  PIDFILE=$PidFile\nSSH_KEYGEN=$prefix/bin/ssh-keygen\n\nstop_service() {\n    if [  -r $PIDFILE  -a  ! -z ${PIDFILE}  ]; then\n\tPID=`${CAT} ${PIDFILE}`\n    fi\n    if [  ${PID:=0} -gt 1 -a  ! \"X$PID\" = \"X \"  ]; then\n\t${KILL} ${PID}\n    else\n\techo \"Unable to read PID file\"\n    fi\n}\n\nstart_service() {\n    # XXX We really should check if the service is already going, but\n    # XXX we will opt out at this time. - Bal\n\n    # Check to see if we have keys that need to be made\n    ${SSH_KEYGEN} -A\n\n    # Start SSHD\n    echo \"starting $SSHD... \\c\"         ; $SSHD\n\n    sshd_rc=$?\n    if [ $sshd_rc -ne 0 ]; then\n\techo \"$0: Error ${sshd_rc} starting ${SSHD}... bailing.\"\n\texit $sshd_rc\n    fi\n    echo done.\n}\n\ncase $1 in\n\n'start')\n    start_service\n    ;;\n\n'stop')\n    stop_service\n    ;;\n\n'restart')\n    stop_service\n    start_service\n    ;;\n\n*)\n    echo \"$0:  usage:  $0 {start|stop|restart}\"\n    ;;\nesac\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

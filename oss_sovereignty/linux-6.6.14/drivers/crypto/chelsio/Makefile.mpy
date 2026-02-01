@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ece5f4e941f5c5ba2f2f3fa5028789d766c80f50514ea6aeb5ec0b68afe9519a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/chelsio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nccflags-y := -I $(srctree)/drivers/net/ethernet/chelsio/cxgb4\n\nobj-$(CONFIG_CRYPTO_DEV_CHELSIO) += chcr.o\nchcr-objs :=  chcr_core.o chcr_algo.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fence",
+  "hash_id": "f36a21e16284cfd563078fdd685febf6abd3518a0cde00c94bc8e87505d38522",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/fallbacks/fence",
+  "human_readable_source": "cat <<EOF\n\t${ret} ret;\n\t__atomic_pre_full_fence();\n\tret = arch_${atomic}_${pfx}${name}${sfx}_relaxed(${args});\n\t__atomic_post_full_fence();\n\treturn ret;\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

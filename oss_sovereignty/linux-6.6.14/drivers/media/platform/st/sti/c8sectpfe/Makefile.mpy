@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "751fa039461d9793995aa279a0d69e529262cc49c9c662dea6a72c166aa85b23",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/c8sectpfe/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nc8sectpfe-y += c8sectpfe-core.o c8sectpfe-common.o c8sectpfe-dvb.o \\\n\t\tc8sectpfe-debugfs.o\n\nobj-$(CONFIG_DVB_C8SECTPFE) += c8sectpfe.o\n\nccflags-y += -I $(srctree)/drivers/media/dvb-frontends/\nccflags-y += -I $(srctree)/drivers/media/tuners/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

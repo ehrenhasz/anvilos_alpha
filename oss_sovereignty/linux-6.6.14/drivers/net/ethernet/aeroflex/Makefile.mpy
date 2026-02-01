@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c97a8b0e14c63f772ece0a00e333911a470778dedf3016665d7553b851b06373",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/aeroflex/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Aeroflex Gaisler network device drivers.\n#\n\nobj-$(CONFIG_GRETH) += greth.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

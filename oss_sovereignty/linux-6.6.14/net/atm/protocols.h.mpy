@@ -1,0 +1,9 @@
+{
+  "module_name": "protocols.h",
+  "hash_id": "e644d302d0dff322509a1c4c43f31307a36fe1a06ce19e20922bf639252a6d30",
+  "original_prompt": "Ingested from linux-6.6.14/net/atm/protocols.h",
+  "human_readable_source": " \n \n\n \n\n\n#ifndef NET_ATM_PROTOCOLS_H\n#define NET_ATM_PROTOCOLS_H\n\nint atm_init_aal0(struct atm_vcc *vcc);\t \nint atm_init_aal34(struct atm_vcc *vcc); \nint atm_init_aal5(struct atm_vcc *vcc);\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "da9055.h",
+  "hash_id": "7d39f1cdcb3b4916baff30aa5a046f184c72e4201eeb6daaf41403583cc69b76",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/da9055.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_DA9055_H__\n#define __SOUND_DA9055_H__\n\nenum da9055_micbias_voltage {\n\tDA9055_MICBIAS_1_6V = 0,\n\tDA9055_MICBIAS_1_8V = 1,\n\tDA9055_MICBIAS_2_1V = 2,\n\tDA9055_MICBIAS_2_2V = 3,\n};\n\nstruct da9055_platform_data {\n\t \n\tbool micbias_source;\n\t \n\tenum da9055_micbias_voltage micbias;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "regd.h",
+  "hash_id": "76b5ee33ee60deddb1de4577d43565cf3c16fe4911e00656b2fa6374f3d5add0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/regd.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL_REGD_H__\n#define __RTL_REGD_H__\n\n \n#define IEEE80211_CHAN_NO_IBSS IEEE80211_CHAN_NO_IR\n#define IEEE80211_CHAN_PASSIVE_SCAN IEEE80211_CHAN_NO_IR\n\nstruct country_code_to_enum_rd {\n\tu16 countrycode;\n\tconst char *iso_name;\n};\n\nenum country_code_type_t {\n\tCOUNTRY_CODE_FCC = 0,\n\tCOUNTRY_CODE_IC = 1,\n\tCOUNTRY_CODE_ETSI = 2,\n\tCOUNTRY_CODE_SPAIN = 3,\n\tCOUNTRY_CODE_FRANCE = 4,\n\tCOUNTRY_CODE_MKK = 5,\n\tCOUNTRY_CODE_MKK1 = 6,\n\tCOUNTRY_CODE_ISRAEL = 7,\n\tCOUNTRY_CODE_TELEC = 8,\n\tCOUNTRY_CODE_MIC = 9,\n\tCOUNTRY_CODE_GLOBAL_DOMAIN = 10,\n\tCOUNTRY_CODE_WORLD_WIDE_13 = 11,\n\tCOUNTRY_CODE_TELEC_NETGEAR = 12,\n\tCOUNTRY_CODE_WORLD_WIDE_13_5G_ALL = 13,\n\n\t \n\tCOUNTRY_CODE_MAX\n};\n\nint rtl_regd_init(struct ieee80211_hw *hw,\n\t\t  void (*reg_notifier) (struct wiphy *wiphy,\n\t\t  struct regulatory_request *request));\nvoid rtl_reg_notifier(struct wiphy *wiphy, struct regulatory_request *request);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

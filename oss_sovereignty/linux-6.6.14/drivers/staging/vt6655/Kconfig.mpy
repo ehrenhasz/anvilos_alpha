@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "6d96b2b0e4473c62dab6c17fbe4f65a19b8c9f1d71d76eec1c1b837c90e7fd5d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vt6655/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig VT6655\n   tristate \"VIA Technologies VT6655 support\"\n   depends on PCI && HAS_IOPORT && MAC80211 && m\n   help\n     This is a vendor-written driver for VIA VT6655.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

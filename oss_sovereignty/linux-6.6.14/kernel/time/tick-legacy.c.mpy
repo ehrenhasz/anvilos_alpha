@@ -1,0 +1,9 @@
+{
+  "module_name": "tick-legacy.c",
+  "hash_id": "e16b1998cd558b1a1f23ca130975087f82dd9b2a9941effb8f9eddf7822455ff",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/time/tick-legacy.c",
+  "human_readable_source": "\n \n\n#include <linux/irq.h>\n#include <linux/profile.h>\n#include <linux/timekeeper_internal.h>\n\n#include \"tick-internal.h\"\n\n \nvoid legacy_timer_tick(unsigned long ticks)\n{\n\tif (ticks) {\n\t\traw_spin_lock(&jiffies_lock);\n\t\twrite_seqcount_begin(&jiffies_seq);\n\t\tdo_timer(ticks);\n\t\twrite_seqcount_end(&jiffies_seq);\n\t\traw_spin_unlock(&jiffies_lock);\n\t\tupdate_wall_time();\n\t}\n\tupdate_process_times(user_mode(get_irq_regs()));\n\tprofile_tick(CPU_PROFILING);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8d5b537e62268d153aee365e81fbeeb788850ebcdbe192eb4457c89dace75408",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/qxl/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_QXL\n\ttristate \"QXL virtual GPU\"\n\tdepends on DRM && PCI && MMU\n\tselect DRM_KMS_HELPER\n\tselect DRM_TTM\n\tselect DRM_TTM_HELPER\n\tselect CRC32\n\thelp\n\t  QXL virtual GPU for Spice virtualization desktop integration.\n\t  Do not enable this driver unless your distro ships a corresponding\n\t  X.org QXL driver that can handle kernel modesetting.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "d-type.m4",
+  "hash_id": "8a1439c8a6192455c29bbcc07992a499066cff890b807a402adcba63e00b847b",
+  "original_prompt": "Ingested from coreutils-9.4/m4/d-type.m4",
+  "human_readable_source": "# serial 12\n\ndnl From Jim Meyering.\ndnl\ndnl Check whether struct dirent has a member named d_type.\ndnl\n\n# Copyright (C) 1997, 1999-2004, 2006, 2009-2023 Free Software Foundation, Inc.\n#\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_CHECK_TYPE_STRUCT_DIRENT_D_TYPE],\n  [AC_CACHE_CHECK([for d_type member in directory struct],\n                  [gl_cv_struct_dirent_d_type],\n     [AC_LINK_IFELSE([AC_LANG_PROGRAM([[\n#include <sys/types.h>\n#include <dirent.h>\n         ]],\n         [[struct dirent dp; dp.d_type = 0;]])],\n       [gl_cv_struct_dirent_d_type=yes],\n       [gl_cv_struct_dirent_d_type=no])\n     ]\n   )\n   if test $gl_cv_struct_dirent_d_type = yes; then\n     AC_DEFINE([HAVE_STRUCT_DIRENT_D_TYPE], [1],\n       [Define if there is a member named d_type in the struct describing\n        directory headers.])\n   fi\n  ]\n)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

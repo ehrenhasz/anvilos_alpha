@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "77d6a39b9430de5d35cdbed15bf5222c1cfaef26ba268ca0b8344643239eee23",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/w1/masters/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for 1-wire bus master drivers.\n#\n\nobj-$(CONFIG_W1_MASTER_MATROX)\t\t+= matrox_w1.o\nobj-$(CONFIG_W1_MASTER_DS2490)\t\t+= ds2490.o\nobj-$(CONFIG_W1_MASTER_DS2482)\t\t+= ds2482.o\nobj-$(CONFIG_W1_MASTER_MXC)\t\t+= mxc_w1.o\n\nobj-$(CONFIG_W1_MASTER_GPIO)\t\t+= w1-gpio.o\nobj-$(CONFIG_HDQ_MASTER_OMAP)\t\t+= omap_hdq.o\nobj-$(CONFIG_W1_MASTER_SGI)\t\t+= sgi_w1.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "143a63e9508c5200bf364d37ff49a2387dd951568ada248c2ec5af20841c4eab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/perf/hisilicon/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig HISI_PMU\n\ttristate \"HiSilicon SoC PMU drivers\"\n\tdepends on ARM64 && ACPI\n\t  help\n\t  Support for HiSilicon SoC L3 Cache performance monitor, Hydra Home\n\t  Agent performance monitor and DDR Controller performance monitor.\n\nconfig HISI_PCIE_PMU\n\ttristate \"HiSilicon PCIE PERF PMU\"\n\tdepends on PCI && ARM64\n\thelp\n\t  Provide support for HiSilicon PCIe performance monitoring unit (PMU)\n\t  RCiEP devices.\n\t  Adds the PCIe PMU into perf events system for monitoring latency,\n\t  bandwidth etc.\n\nconfig HNS3_PMU\n\ttristate \"HNS3 PERF PMU\"\n\tdepends on ARM64 || COMPILE_TEST\n\tdepends on PCI\n\thelp\n\t  Provide support for HNS3 performance monitoring unit (PMU) RCiEP\n\t  devices.\n\t  Adds the HNS3 PMU into perf events system for monitoring latency,\n\t  bandwidth etc.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

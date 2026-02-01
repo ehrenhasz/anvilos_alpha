@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-register_sysctl_table.m4",
+  "hash_id": "5c51ed35bb2c15b56ac54f9e2fcacb32b34573bec6c4240c7e2b89d53de97ad5",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-register_sysctl_table.m4",
+  "human_readable_source": "dnl #\ndnl # Linux 6.5 removes register_sysctl_table\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_REGISTER_SYSCTL_TABLE], [\n\tZFS_LINUX_TEST_SRC([has_register_sysctl_table], [\n\t\t#include <linux/sysctl.h>\n\n\t\tstatic struct ctl_table dummy_table[] = {\n\t\t\t{}\n\t\t};\n\n    ],[\n\t\tstruct ctl_table_header *h\n\t\t\t__attribute((unused)) = register_sysctl_table(dummy_table);\n    ])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_REGISTER_SYSCTL_TABLE], [\n\tAC_MSG_CHECKING([whether register_sysctl_table exists])\n\tZFS_LINUX_TEST_RESULT([has_register_sysctl_table], [\n\t\tAC_MSG_RESULT([yes])\n\t\tAC_DEFINE(HAVE_REGISTER_SYSCTL_TABLE, 1,\n\t\t\t[register_sysctl_table exists])\n\t],[\n\t\tAC_MSG_RESULT([no])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

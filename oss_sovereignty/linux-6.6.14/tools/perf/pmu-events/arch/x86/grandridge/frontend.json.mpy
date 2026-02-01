@@ -1,0 +1,9 @@
+{
+  "module_name": "frontend.json",
+  "hash_id": "2dca82ae493a2b5b62dd1d4b8c4156e5332ec3cc3a094302d1221b2b0bd122f1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/grandridge/frontend.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"Counts every time the code stream enters into a new cache line by walking sequential from the previous line or being redirected by a jump.\",\n        \"EventCode\": \"0x80\",\n        \"EventName\": \"ICACHE.ACCESSES\",\n        \"SampleAfterValue\": \"200003\",\n        \"UMask\": \"0x3\"\n    },\n    {\n        \"BriefDescription\": \"Counts every time the code stream enters into a new cache line by walking sequential from the previous line or being redirected by a jump and the instruction cache registers bytes are not present. -\",\n        \"EventCode\": \"0x80\",\n        \"EventName\": \"ICACHE.MISSES\",\n        \"SampleAfterValue\": \"200003\",\n        \"UMask\": \"0x2\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

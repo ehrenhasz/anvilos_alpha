@@ -1,0 +1,9 @@
+{
+  "module_name": "fail_page_alloc.c",
+  "hash_id": "d50d13bd043f4739ce58de27a064a99a49002e2e9576022eda6c7e0a81b90fc9",
+  "original_prompt": "Ingested from linux-6.6.14/mm/fail_page_alloc.c",
+  "human_readable_source": "\n#include <linux/fault-inject.h>\n#include <linux/mm.h>\n\nstatic struct {\n\tstruct fault_attr attr;\n\n\tbool ignore_gfp_highmem;\n\tbool ignore_gfp_reclaim;\n\tu32 min_order;\n} fail_page_alloc = {\n\t.attr = FAULT_ATTR_INITIALIZER,\n\t.ignore_gfp_reclaim = true,\n\t.ignore_gfp_highmem = true,\n\t.min_order = 1,\n};\n\nstatic int __init setup_fail_page_alloc(char *str)\n{\n\treturn setup_fault_attr(&fail_page_alloc.attr, str);\n}\n__setup(\"fail_page_alloc=\", setup_fail_page_alloc);\n\nbool __should_fail_alloc_page(gfp_t gfp_mask, unsigned int order)\n{\n\tint flags = 0;\n\n\tif (order < fail_page_alloc.min_order)\n\t\treturn false;\n\tif (gfp_mask & __GFP_NOFAIL)\n\t\treturn false;\n\tif (fail_page_alloc.ignore_gfp_highmem && (gfp_mask & __GFP_HIGHMEM))\n\t\treturn false;\n\tif (fail_page_alloc.ignore_gfp_reclaim &&\n\t\t\t(gfp_mask & __GFP_DIRECT_RECLAIM))\n\t\treturn false;\n\n\t \n\tif (gfp_mask & __GFP_NOWARN)\n\t\tflags |= FAULT_NOWARN;\n\n\treturn should_fail_ex(&fail_page_alloc.attr, 1 << order, flags);\n}\n\n#ifdef CONFIG_FAULT_INJECTION_DEBUG_FS\n\nstatic int __init fail_page_alloc_debugfs(void)\n{\n\tumode_t mode = S_IFREG | 0600;\n\tstruct dentry *dir;\n\n\tdir = fault_create_debugfs_attr(\"fail_page_alloc\", NULL,\n\t\t\t\t\t&fail_page_alloc.attr);\n\n\tdebugfs_create_bool(\"ignore-gfp-wait\", mode, dir,\n\t\t\t    &fail_page_alloc.ignore_gfp_reclaim);\n\tdebugfs_create_bool(\"ignore-gfp-highmem\", mode, dir,\n\t\t\t    &fail_page_alloc.ignore_gfp_highmem);\n\tdebugfs_create_u32(\"min-order\", mode, dir, &fail_page_alloc.min_order);\n\n\treturn 0;\n}\n\nlate_initcall(fail_page_alloc_debugfs);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

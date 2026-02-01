@@ -1,0 +1,9 @@
+{
+  "module_name": "dwarf-regs-table.h",
+  "hash_id": "63c722cc6f891f1ccfc83e3a7f21f65cfcef7a3243cb27a0d1e3763691418212",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arm64/include/dwarf-regs-table.h",
+  "human_readable_source": " \n#ifdef DEFINE_DWARF_REGSTR_TABLE\n \n\nstatic const char * const aarch64_regstr_tbl[] = {\n\t\"%x0\", \"%x1\", \"%x2\", \"%x3\", \"%x4\",\n\t\"%x5\", \"%x6\", \"%x7\", \"%x8\", \"%x9\",\n\t\"%x10\", \"%x11\", \"%x12\", \"%x13\", \"%x14\",\n\t\"%x15\", \"%x16\", \"%x17\", \"%x18\", \"%x19\",\n\t\"%x20\", \"%x21\", \"%x22\", \"%x23\", \"%x24\",\n\t\"%x25\", \"%x26\", \"%x27\", \"%x28\", \"%x29\",\n\t\"%lr\", \"%sp\",\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

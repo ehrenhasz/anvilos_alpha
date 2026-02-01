@@ -1,0 +1,9 @@
+{
+  "module_name": "idle_inject.h",
+  "hash_id": "ca9dd67bc1c77bd8303793f3e785d457173ac6786f977bb64d4eaa2c402c440e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/idle_inject.h",
+  "human_readable_source": " \n \n#ifndef __IDLE_INJECT_H__\n#define __IDLE_INJECT_H__\n\n \nstruct idle_inject_device;\n\nstruct idle_inject_device *idle_inject_register(struct cpumask *cpumask);\n\nstruct idle_inject_device *idle_inject_register_full(struct cpumask *cpumask,\n\t\t\t\t\t\t     bool (*update)(void));\n\nvoid idle_inject_unregister(struct idle_inject_device *ii_dev);\n\nint idle_inject_start(struct idle_inject_device *ii_dev);\n\nvoid idle_inject_stop(struct idle_inject_device *ii_dev);\n\nvoid idle_inject_set_duration(struct idle_inject_device *ii_dev,\n\t\t\t\t unsigned int run_duration_us,\n\t\t\t\t unsigned int idle_duration_us);\n\nvoid idle_inject_get_duration(struct idle_inject_device *ii_dev,\n\t\t\t\t unsigned int *run_duration_us,\n\t\t\t\t unsigned int *idle_duration_us);\n\nvoid idle_inject_set_latency(struct idle_inject_device *ii_dev,\n\t\t\t     unsigned int latency_us);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "set_release",
+  "hash_id": "8270df101dfb8e526e616b8f30e3b4e5998cbc3a55430f9dcfd51e2bbc93fbea",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/fallbacks/set_release",
+  "human_readable_source": "cat <<EOF\n\tif (__native_word(${atomic}_t)) {\n\t\tsmp_store_release(&(v)->counter, i);\n\t} else {\n\t\t__atomic_release_fence();\n\t\traw_${atomic}_set(v, i);\n\t}\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

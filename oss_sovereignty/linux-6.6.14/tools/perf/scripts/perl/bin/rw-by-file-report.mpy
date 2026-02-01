@@ -1,0 +1,9 @@
+{
+  "module_name": "rw-by-file-report",
+  "hash_id": "f2baf63791942bdb40af66047487eca98e9ed03bb7419679e699036abf606a13",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/perl/bin/rw-by-file-report",
+  "human_readable_source": "#!/bin/bash\n# description: r/w activity for a program, by file\n# args: <comm>\nif [ $# -lt 1 ] ; then\n    echo \"usage: rw-by-file <comm>\"\n    exit\nfi\ncomm=$1\nshift\nperf script $@ -s \"$PERF_EXEC_PATH\"/scripts/perl/rw-by-file.pl $comm\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

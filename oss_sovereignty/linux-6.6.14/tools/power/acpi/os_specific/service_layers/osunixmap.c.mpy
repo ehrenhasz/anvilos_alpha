@@ -1,0 +1,9 @@
+{
+  "module_name": "osunixmap.c",
+  "hash_id": "75b4f5be3c54eab8243f9bda291c067113b205e0a8293d1943184ce11340df71",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/acpi/os_specific/service_layers/osunixmap.c",
+  "human_readable_source": "\n \n\n#include \"acpidump.h\"\n#include <unistd.h>\n#include <sys/mman.h>\n#ifdef _free_BSD\n#include <sys/param.h>\n#endif\n\n#define _COMPONENT          ACPI_OS_SERVICES\nACPI_MODULE_NAME(\"osunixmap\")\n\n#ifndef O_BINARY\n#define O_BINARY 0\n#endif\n#if defined(_dragon_fly) || defined(_free_BSD) || defined(_QNX)\n#define MMAP_FLAGS          MAP_SHARED\n#else\n#define MMAP_FLAGS          MAP_PRIVATE\n#endif\n#define SYSTEM_MEMORY       \"/dev/mem\"\n \nstatic acpi_size acpi_os_get_page_size(void)\n{\n\n#ifdef PAGE_SIZE\n\treturn PAGE_SIZE;\n#else\n\treturn sysconf(_SC_PAGESIZE);\n#endif\n}\n\n \n\nvoid *acpi_os_map_memory(acpi_physical_address where, acpi_size length)\n{\n\tu8 *mapped_memory;\n\tacpi_physical_address offset;\n\tacpi_size page_size;\n\tint fd;\n\n\tfd = open(SYSTEM_MEMORY, O_RDONLY | O_BINARY);\n\tif (fd < 0) {\n\t\tfprintf(stderr, \"Cannot open %s\\n\", SYSTEM_MEMORY);\n\t\treturn (NULL);\n\t}\n\n\t \n\n\tpage_size = acpi_os_get_page_size();\n\toffset = where % page_size;\n\n\t \n\n\tmapped_memory = mmap(NULL, (length + offset), PROT_READ, MMAP_FLAGS,\n\t\t\t     fd, (where - offset));\n\tif (mapped_memory == MAP_FAILED) {\n\t\tfprintf(stderr, \"Cannot map %s\\n\", SYSTEM_MEMORY);\n\t\tclose(fd);\n\t\treturn (NULL);\n\t}\n\n\tclose(fd);\n\treturn (ACPI_CAST8(mapped_memory + offset));\n}\n\n \n\nvoid acpi_os_unmap_memory(void *where, acpi_size length)\n{\n\tacpi_physical_address offset;\n\tacpi_size page_size;\n\n\tpage_size = acpi_os_get_page_size();\n\toffset = ACPI_TO_INTEGER(where) % page_size;\n\tmunmap((u8 *)where - offset, (length + offset));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

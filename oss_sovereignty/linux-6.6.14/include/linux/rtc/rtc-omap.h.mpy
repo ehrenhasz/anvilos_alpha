@@ -1,0 +1,9 @@
+{
+  "module_name": "rtc-omap.h",
+  "hash_id": "a1d0ddda0d917b6b3fd000e9fd261f92e8dc58d0a9034fc105fb8043cacfa8f6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rtc/rtc-omap.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_RTCOMAP_H_\n#define _LINUX_RTCOMAP_H_\n\nint omap_rtc_power_off_program(struct device *dev);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

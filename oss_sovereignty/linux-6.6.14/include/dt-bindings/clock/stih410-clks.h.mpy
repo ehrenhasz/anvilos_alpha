@@ -1,0 +1,9 @@
+{
+  "module_name": "stih410-clks.h",
+  "hash_id": "e374bfc0cf0064a4ba7fe1ce4a099f0537928279ddf656de52da8a3f3bedda4d",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/stih410-clks.h",
+  "human_readable_source": " \n \n#ifndef _DT_BINDINGS_CLK_STIH410\n#define _DT_BINDINGS_CLK_STIH410\n\n#include \"stih407-clks.h\"\n\n \n\n \n#define CLK_TX_ICN_HADES\t32\n#define CLK_RX_ICN_HADES\t33\n#define CLK_ICN_REG_16\t\t34\n#define CLK_PP_HADES\t\t35\n#define CLK_CLUST_HADES\t\t36\n#define CLK_HWPE_HADES\t\t37\n#define CLK_FC_HADES\t\t38\n\n \n#define CLK_PCMR10_MASTER\t4\n#define CLK_USB2_PHY\t\t5\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

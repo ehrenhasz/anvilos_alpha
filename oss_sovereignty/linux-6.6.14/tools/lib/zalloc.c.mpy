@@ -1,0 +1,9 @@
+{
+  "module_name": "zalloc.c",
+  "hash_id": "b12b84c028275874fd91508c649bd40a46c65c5c5769a8d83335eb9087810dbf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/zalloc.c",
+  "human_readable_source": "\n\n#include <stdlib.h>\n#include <linux/zalloc.h>\n\nvoid *zalloc(size_t size)\n{\n\treturn calloc(1, size);\n}\n\nvoid __zfree(void **ptr)\n{\n\tfree(*ptr);\n\t*ptr = NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

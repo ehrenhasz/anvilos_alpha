@@ -1,0 +1,9 @@
+{
+  "module_name": "sdw_amd.h",
+  "hash_id": "837e44d8e1efe45fa2ef9c2bf5569de1baac5fee4479ee1987d50485aa71f9f0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soundwire/sdw_amd.h",
+  "human_readable_source": " \n \n\n#ifndef __SDW_AMD_H\n#define __SDW_AMD_H\n\n#include <linux/soundwire/sdw.h>\n\n \n\n \n#define AMD_SDW_CLK_STOP_MODE\t\t1\n\n \n#define AMD_SDW_POWER_OFF_MODE\t\t2\n#define ACP_SDW0\t0\n#define ACP_SDW1\t1\n\nstruct acp_sdw_pdata {\n\tu16 instance;\n\t \n\tstruct mutex *acp_sdw_lock;\n};\n\nstruct sdw_manager_reg_mask {\n\tu32 sw_pad_enable_mask;\n\tu32 sw_pad_pulldown_mask;\n\tu32 acp_sdw_intr_mask;\n};\n\n \nstruct sdw_amd_dai_runtime {\n\tchar *name;\n\tstruct sdw_stream_runtime *stream;\n\tstruct sdw_bus *bus;\n\tenum sdw_stream_type stream_type;\n};\n\n \nstruct amd_sdw_manager {\n\tstruct sdw_bus bus;\n\tstruct device *dev;\n\n\tvoid __iomem *mmio;\n\tvoid __iomem *acp_mmio;\n\n\tstruct sdw_manager_reg_mask *reg_mask;\n\tstruct work_struct amd_sdw_irq_thread;\n\tstruct work_struct amd_sdw_work;\n\tstruct work_struct probe_work;\n\t \n\tstruct mutex *acp_sdw_lock;\n\n\tenum sdw_slave_status status[SDW_MAX_DEVICES + 1];\n\n\tint num_din_ports;\n\tint num_dout_ports;\n\n\tint cols_index;\n\tint rows_index;\n\n\tu32 instance;\n\tu32 quirks;\n\tu32 wake_en_mask;\n\tu32 power_mode_mask;\n\tbool clk_stopped;\n\n\tstruct sdw_amd_dai_runtime **dai_runtime_array;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

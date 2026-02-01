@@ -1,0 +1,9 @@
+{
+  "module_name": "acl.h",
+  "hash_id": "d95100b5e654d647a88d06d82e71e7091f854bab6c283593c345f80693775aaa",
+  "original_prompt": "Ingested from linux-6.6.14/fs/jffs2/acl.h",
+  "human_readable_source": " \n\nstruct jffs2_acl_entry {\n\tjint16_t\te_tag;\n\tjint16_t\te_perm;\n\tjint32_t\te_id;\n};\n\nstruct jffs2_acl_entry_short {\n\tjint16_t\te_tag;\n\tjint16_t\te_perm;\n};\n\nstruct jffs2_acl_header {\n\tjint32_t\ta_version;\n\tstruct jffs2_acl_entry\ta_entries[];\n};\n\n#ifdef CONFIG_JFFS2_FS_POSIX_ACL\n\nstruct posix_acl *jffs2_get_acl(struct inode *inode, int type, bool rcu);\nint jffs2_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,\n\t\t  struct posix_acl *acl, int type);\nextern int jffs2_init_acl_pre(struct inode *, struct inode *, umode_t *);\nextern int jffs2_init_acl_post(struct inode *);\n\n#else\n\n#define jffs2_get_acl\t\t\t\t(NULL)\n#define jffs2_set_acl\t\t\t\t(NULL)\n#define jffs2_init_acl_pre(dir_i,inode,mode)\t(0)\n#define jffs2_init_acl_post(inode)\t\t(0)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

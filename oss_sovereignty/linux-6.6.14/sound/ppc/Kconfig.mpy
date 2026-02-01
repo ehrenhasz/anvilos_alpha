@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "dfe25eb33c661d35b600d31f3a20806b53e5ab44953c3a2a3a25be73e47ba0a5",
+  "original_prompt": "Ingested from linux-6.6.14/sound/ppc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# ALSA PowerMac drivers\n\nmenuconfig SND_PPC\n\tbool \"PowerPC sound devices\"\n\tdepends on PPC\n\tdefault y\n\thelp\n\t  Support for sound devices specific to PowerPC architectures.\n\nif SND_PPC\n\nconfig SND_POWERMAC\n\ttristate \"PowerMac (AWACS, DACA, Burgundy, Tumbler, Keywest)\"\n\tdepends on I2C && INPUT && PPC_PMAC\n\tselect SND_PCM\n\tselect SND_VMASTER\n\thelp\n\t  Say Y here to include support for the integrated sound device.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called snd-powermac.\n\nconfig SND_POWERMAC_AUTO_DRC\n\tbool \"Toggle DRC automatically at headphone/line plug-in\"\n\tdepends on SND_POWERMAC\n\tdefault y\n\thelp\n\t  Say Y here to enable the automatic toggle of DRC (dynamic\n\t  range compression) on Tumbler/Snapper.\n\t  If this feature is enabled, DRC is turned off when the\n\t  headphone/line jack is plugged, and turned on when unplugged.\n\n\t  Note that you can turn on/off DRC manually even without this\n\t  option.\n\nconfig SND_PS3\n\ttristate \"PS3 Audio support\"\n\tdepends on PS3_PS3AV\n\tselect SND_PCM\n\tdefault m\n\thelp\n\t  Say Y here to include support for audio on the PS3\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called snd_ps3.\n\nconfig SND_PS3_DEFAULT_START_DELAY\n\tint \"Startup delay time in ms\"\n\tdepends on SND_PS3\n\tdefault \"2000\"\n\nendif\t# SND_PPC\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

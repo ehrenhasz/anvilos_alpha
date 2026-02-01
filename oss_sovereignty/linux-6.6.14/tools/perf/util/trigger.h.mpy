@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger.h",
+  "hash_id": "553e7d1dd482f687d2f0e0b0b9b5268fd41fec6d41df0c1fb0cf43db05b3df12",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/trigger.h",
+  "human_readable_source": " \n#ifndef __TRIGGER_H_\n#define __TRIGGER_H_ 1\n\n#include \"asm/bug.h\"\n\n \n\nstruct trigger {\n\tvolatile enum {\n\t\tTRIGGER_ERROR\t\t= -2,\n\t\tTRIGGER_OFF\t\t= -1,\n\t\tTRIGGER_ON\t\t= 0,\n\t\tTRIGGER_READY\t\t= 1,\n\t\tTRIGGER_HIT\t\t= 2,\n\t} state;\n\tconst char *name;\n};\n\n#define TRIGGER_WARN_ONCE(t, exp) \\\n\tWARN_ONCE(t->state != exp, \"trigger '%s' state transist error: %d in %s()\\n\", \\\n\t\t  t->name, t->state, __func__)\n\nstatic inline bool trigger_is_available(struct trigger *t)\n{\n\treturn t->state >= 0;\n}\n\nstatic inline bool trigger_is_error(struct trigger *t)\n{\n\treturn t->state <= TRIGGER_ERROR;\n}\n\nstatic inline void trigger_on(struct trigger *t)\n{\n\tTRIGGER_WARN_ONCE(t, TRIGGER_OFF);\n\tt->state = TRIGGER_ON;\n}\n\nstatic inline void trigger_ready(struct trigger *t)\n{\n\tif (!trigger_is_available(t))\n\t\treturn;\n\tt->state = TRIGGER_READY;\n}\n\nstatic inline void trigger_hit(struct trigger *t)\n{\n\tif (!trigger_is_available(t))\n\t\treturn;\n\tTRIGGER_WARN_ONCE(t, TRIGGER_READY);\n\tt->state = TRIGGER_HIT;\n}\n\nstatic inline void trigger_off(struct trigger *t)\n{\n\tif (!trigger_is_available(t))\n\t\treturn;\n\tt->state = TRIGGER_OFF;\n}\n\nstatic inline void trigger_error(struct trigger *t)\n{\n\tt->state = TRIGGER_ERROR;\n}\n\nstatic inline bool trigger_is_ready(struct trigger *t)\n{\n\treturn t->state == TRIGGER_READY;\n}\n\nstatic inline bool trigger_is_hit(struct trigger *t)\n{\n\treturn t->state == TRIGGER_HIT;\n}\n\n#define DEFINE_TRIGGER(n) \\\nstruct trigger n = {.state = TRIGGER_OFF, .name = #n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

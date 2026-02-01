@@ -1,0 +1,9 @@
+{
+  "module_name": "shtc1.h",
+  "hash_id": "89155c4e7a3df9407ec368cb1b4bfae91172e75131803ecf240fef4ba6ad784f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/shtc1.h",
+  "human_readable_source": " \n \n\n#ifndef __SHTC1_H_\n#define __SHTC1_H_\n\nstruct shtc1_platform_data {\n\tbool blocking_io;\n\tbool high_precision;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

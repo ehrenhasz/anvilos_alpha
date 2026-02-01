@@ -1,0 +1,9 @@
+{
+  "module_name": "test_sockhash_kern.c",
+  "hash_id": "097e8545c05ca0aae106a5fcc1c7d8a82add61ab84a4969fa1ce2b3625b5e398",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_sockhash_kern.c",
+  "human_readable_source": "\n\n#undef SOCKMAP\n#define TEST_MAP_TYPE BPF_MAP_TYPE_SOCKHASH\n#include \"./test_sockmap_kern.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

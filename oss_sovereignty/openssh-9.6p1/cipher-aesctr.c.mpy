@@ -1,0 +1,9 @@
+{
+  "module_name": "cipher-aesctr.c",
+  "hash_id": "d1cd17d05bb946ccc31299d8a3b74bc414e6283ba22073b13e864598508adc3a",
+  "original_prompt": "Ingested from openssh-9.6p1/cipher-aesctr.c",
+  "human_readable_source": " \n \n\n#include \"includes.h\"\n\n#include <sys/types.h>\n#include <string.h>\n\n#ifndef WITH_OPENSSL\n\n#include \"cipher-aesctr.h\"\n\n \nstatic inline void\naesctr_inc(u8 *ctr, u32 len)\n{\n\tssize_t i;\n\n#ifndef CONSTANT_TIME_INCREMENT\n\tfor (i = len - 1; i >= 0; i--)\n\t\tif (++ctr[i])\t \n\t\t\treturn;\n#else\n\tu8 x, add = 1;\n\n\tfor (i = len - 1; i >= 0; i--) {\n\t\tctr[i] += add;\n\t\t \n\t\tx = ctr[i];\n\t\tx = (x | (x >> 4)) & 0xf;\n\t\tx = (x | (x >> 2)) & 0x3;\n\t\tx = (x | (x >> 1)) & 0x1;\n\t\tadd *= (x^1);\n\t}\n#endif\n}\n\nvoid\naesctr_keysetup(aesctr_ctx *x,const u8 *k,u32 kbits,u32 ivbits)\n{\n\tx->rounds = rijndaelKeySetupEnc(x->ek, k, kbits);\n}\n\nvoid\naesctr_ivsetup(aesctr_ctx *x,const u8 *iv)\n{\n\tmemcpy(x->ctr, iv, AES_BLOCK_SIZE);\n}\n\nvoid\naesctr_encrypt_bytes(aesctr_ctx *x,const u8 *m,u8 *c,u32 bytes)\n{\n\tu32 n = 0;\n\tu8 buf[AES_BLOCK_SIZE];\n\n\twhile ((bytes--) > 0) {\n\t\tif (n == 0) {\n\t\t\trijndaelEncrypt(x->ek, x->rounds, x->ctr, buf);\n\t\t\taesctr_inc(x->ctr, AES_BLOCK_SIZE);\n\t\t}\n\t\t*(c++) = *(m++) ^ buf[n];\n\t\tn = (n + 1) % AES_BLOCK_SIZE;\n\t}\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

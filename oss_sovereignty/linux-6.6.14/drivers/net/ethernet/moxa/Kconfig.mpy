@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ef269eb6c508236feb75947be5e11dd1cb4975745c903e506cffcb3dd6669c10",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/moxa/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# MOXART device configuration\n#\n\nconfig NET_VENDOR_MOXART\n\tbool \"MOXA ART devices\"\n\tdefault y\n\tdepends on (ARM && ARCH_MOXART)\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about MOXA ART devices. If you say Y, you will be asked\n\t  for your specific card in the following questions.\n\nif NET_VENDOR_MOXART\n\nconfig ARM_MOXART_ETHER\n\ttristate \"MOXART Ethernet support\"\n\tdepends on ARM && ARCH_MOXART\n\tselect NET_CORE\n\thelp\n\t  If you wish to compile a kernel for a hardware with MOXA ART SoC and\n\t  want to use the internal ethernet then you should answer Y to this.\n\n\nendif # NET_VENDOR_MOXART\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cmdline.c",
+  "hash_id": "736e6182cd37e5b2f85051621e9ee9fcfb24794edf56b968119ade29036db292",
+  "original_prompt": "Ingested from linux-6.6.14/fs/proc/cmdline.c",
+  "human_readable_source": "\n#include <linux/fs.h>\n#include <linux/init.h>\n#include <linux/proc_fs.h>\n#include <linux/seq_file.h>\n#include \"internal.h\"\n\nstatic int cmdline_proc_show(struct seq_file *m, void *v)\n{\n\tseq_puts(m, saved_command_line);\n\tseq_putc(m, '\\n');\n\treturn 0;\n}\n\nstatic int __init proc_cmdline_init(void)\n{\n\tstruct proc_dir_entry *pde;\n\n\tpde = proc_create_single(\"cmdline\", 0, NULL, cmdline_proc_show);\n\tpde_make_permanent(pde);\n\tpde->size = saved_command_line_len + 1;\n\treturn 0;\n}\nfs_initcall(proc_cmdline_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

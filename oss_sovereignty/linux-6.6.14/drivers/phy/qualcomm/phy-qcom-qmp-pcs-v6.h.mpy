@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-qcom-qmp-pcs-v6.h",
+  "hash_id": "05f98182f102a6f6168083bed88d639da5449286adc523af701ce6aa505e242a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/qualcomm/phy-qcom-qmp-pcs-v6.h",
+  "human_readable_source": " \n \n\n#ifndef QCOM_PHY_QMP_PCS_V6_H_\n#define QCOM_PHY_QMP_PCS_V6_H_\n\n \n#define QPHY_V6_PCS_REFGEN_REQ_CONFIG1\t\t0xdc\n#define QPHY_V6_PCS_RX_SIGDET_LVL\t\t0x188\n#define QPHY_V6_PCS_RATE_SLEW_CNTRL1\t\t0x198\n#define QPHY_V6_PCS_EQ_CONFIG2\t\t\t0x1e0\n#define QPHY_V6_PCS_PCS_TX_RX_CONFIG\t\t0x1d0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

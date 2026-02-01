@@ -1,0 +1,9 @@
+{
+  "module_name": "modbluetooth_nimble.h",
+  "hash_id": "747b9bb5041098abaf8b411294c953284de99a8dc8d80c5a511ac62108c2403a",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/nimble/modbluetooth_nimble.h",
+  "human_readable_source": " \n\n#ifndef MICROPY_INCLUDED_EXTMOD_NIMBLE_MODBLUETOOTH_NIMBLE_H\n#define MICROPY_INCLUDED_EXTMOD_NIMBLE_MODBLUETOOTH_NIMBLE_H\n\n#include \"extmod/modbluetooth.h\"\n\n#define MP_BLUETOOTH_NIMBLE_MAX_SERVICES (8)\n\ntypedef struct _mp_bluetooth_nimble_pending_characteristic_t {\n    uint16_t value_handle;\n    uint8_t properties;\n    mp_obj_bluetooth_uuid_t uuid;\n    uint8_t ready;\n} mp_bluetooth_nimble_pending_characteristic_t;\n\ntypedef struct _mp_bluetooth_nimble_root_pointers_t {\n    \n    mp_gatts_db_t gatts_db;\n\n    \n    size_t n_services;\n    struct ble_gatt_svc_def *services[MP_BLUETOOTH_NIMBLE_MAX_SERVICES];\n\n    #if MICROPY_PY_BLUETOOTH_ENABLE_L2CAP_CHANNELS\n    \n    struct _mp_bluetooth_nimble_l2cap_channel_t *l2cap_chan;\n    bool l2cap_listening;\n    #endif\n\n    #if MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT\n    \n    \n    uint16_t char_disc_end_handle;\n    const mp_obj_bluetooth_uuid_t *char_filter_uuid;\n    mp_bluetooth_nimble_pending_characteristic_t pending_char_result;\n    #endif\n} mp_bluetooth_nimble_root_pointers_t;\n\nenum {\n    MP_BLUETOOTH_NIMBLE_BLE_STATE_OFF,\n    MP_BLUETOOTH_NIMBLE_BLE_STATE_STARTING,\n    MP_BLUETOOTH_NIMBLE_BLE_STATE_WAITING_FOR_SYNC,\n    MP_BLUETOOTH_NIMBLE_BLE_STATE_ACTIVE,\n    MP_BLUETOOTH_NIMBLE_BLE_STATE_STOPPING,\n};\n\nextern volatile int mp_bluetooth_nimble_ble_state;\n\n\n\n\n\nvoid mp_bluetooth_nimble_port_hci_init(void);\n\n\nvoid mp_bluetooth_nimble_port_hci_deinit(void);\n\n\nvoid mp_bluetooth_nimble_port_start(void);\n\n\nvoid mp_bluetooth_nimble_port_shutdown(void);\n\n\nvoid mp_bluetooth_nimble_sent_hci_packet(void);\n\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

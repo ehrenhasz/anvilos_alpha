@@ -1,0 +1,9 @@
+{
+  "module_name": "uniwidth.in.h",
+  "hash_id": "159ccd666ea4140fb85b2f8f57231b3931f389cee74ca73438ccbd620338eeb1",
+  "original_prompt": "Ingested from coreutils-9.4/lib/uniwidth.in.h",
+  "human_readable_source": " \n#include <stddef.h>\n\n \n#include \"localcharset.h\"\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n\n \n\n \n\n \nextern int\n       uc_width (ucs4_t uc, const char *encoding)\n       _UC_ATTRIBUTE_PURE;\n\n \nextern int\n       u8_width (const uint8_t *s, size_t n, const char *encoding)\n       _UC_ATTRIBUTE_PURE;\nextern int\n       u16_width (const uint16_t *s, size_t n, const char *encoding)\n       _UC_ATTRIBUTE_PURE;\nextern int\n       u32_width (const uint32_t *s, size_t n, const char *encoding)\n       _UC_ATTRIBUTE_PURE;\n\n \nextern int\n       u8_strwidth (const uint8_t *s, const char *encoding)\n       _UC_ATTRIBUTE_PURE;\nextern int\n       u16_strwidth (const uint16_t *s, const char *encoding)\n       _UC_ATTRIBUTE_PURE;\nextern int\n       u32_strwidth (const uint32_t *s, const char *encoding)\n       _UC_ATTRIBUTE_PURE;\n\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

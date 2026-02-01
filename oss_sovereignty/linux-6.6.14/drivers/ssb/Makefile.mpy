@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8f7c946e267b4a0a58083d5bf3184c012d5d9243aa1516efb00ca5128fde618a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ssb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# core\nssb-y\t\t\t\t\t+= main.o scan.o\nssb-$(CONFIG_SSB_EMBEDDED)\t\t+= embedded.o\nssb-$(CONFIG_SSB_SPROM)\t\t\t+= sprom.o\n\n# host support\nssb-$(CONFIG_SSB_PCIHOST)\t\t+= pci.o pcihost_wrapper.o\nssb-$(CONFIG_SSB_PCMCIAHOST)\t\t+= pcmcia.o bridge_pcmcia_80211.o\nssb-$(CONFIG_SSB_SDIOHOST)\t\t+= sdio.o\nssb-$(CONFIG_SSB_HOST_SOC)\t\t+= host_soc.o\n\n# built-in drivers\nssb-y\t\t\t\t\t+= driver_chipcommon.o\nssb-y\t\t\t\t\t+= driver_chipcommon_pmu.o\nssb-$(CONFIG_SSB_SFLASH)\t\t+= driver_chipcommon_sflash.o\nssb-$(CONFIG_SSB_DRIVER_MIPS)\t\t+= driver_mipscore.o\nssb-$(CONFIG_SSB_DRIVER_EXTIF)\t\t+= driver_extif.o\nssb-$(CONFIG_SSB_DRIVER_PCICORE)\t+= driver_pcicore.o\nssb-$(CONFIG_SSB_DRIVER_GIGE)\t\t+= driver_gige.o\nssb-$(CONFIG_SSB_DRIVER_GPIO)\t\t+= driver_gpio.o\n\n# b43 pci-ssb-bridge driver\n# Not strictly a part of SSB, but kept here for convenience\nssb-$(CONFIG_SSB_B43_PCI_BRIDGE)\t+= b43_pci_bridge.o\n\nobj-$(CONFIG_SSB)\t\t\t+= ssb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

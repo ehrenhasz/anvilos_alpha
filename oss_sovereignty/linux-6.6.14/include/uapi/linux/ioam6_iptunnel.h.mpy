@@ -1,0 +1,9 @@
+{
+  "module_name": "ioam6_iptunnel.h",
+  "hash_id": "2b12e6c06c7902a8a75b389bd64515c2c574a4223b4fa76358b537d634324819",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/ioam6_iptunnel.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_IOAM6_IPTUNNEL_H\n#define _UAPI_LINUX_IOAM6_IPTUNNEL_H\n\n \nenum {\n\t__IOAM6_IPTUNNEL_MODE_MIN,\n\n\tIOAM6_IPTUNNEL_MODE_INLINE,\n\tIOAM6_IPTUNNEL_MODE_ENCAP,\n\tIOAM6_IPTUNNEL_MODE_AUTO,\n\n\t__IOAM6_IPTUNNEL_MODE_MAX,\n};\n\n#define IOAM6_IPTUNNEL_MODE_MIN (__IOAM6_IPTUNNEL_MODE_MIN + 1)\n#define IOAM6_IPTUNNEL_MODE_MAX (__IOAM6_IPTUNNEL_MODE_MAX - 1)\n\nenum {\n\tIOAM6_IPTUNNEL_UNSPEC,\n\n\t \n\tIOAM6_IPTUNNEL_MODE,\t\t \n\n\t \n\tIOAM6_IPTUNNEL_DST,\t\t \n\n\t \n\tIOAM6_IPTUNNEL_TRACE,\t\t \n\n\t \n#define IOAM6_IPTUNNEL_FREQ_MIN 1\n#define IOAM6_IPTUNNEL_FREQ_MAX 1000000\n\tIOAM6_IPTUNNEL_FREQ_K,\t\t \n\tIOAM6_IPTUNNEL_FREQ_N,\t\t \n\n\t__IOAM6_IPTUNNEL_MAX,\n};\n\n#define IOAM6_IPTUNNEL_MAX (__IOAM6_IPTUNNEL_MAX - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

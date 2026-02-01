@@ -1,0 +1,9 @@
+{
+  "module_name": "read_bpf_task_storage_busy.c",
+  "hash_id": "21c3801005c557484149426d3c1f8e0a15d7b73d6f2b1ba7834058a5533f3e33",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/read_bpf_task_storage_busy.c",
+  "human_readable_source": "\n \n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nextern bool CONFIG_PREEMPT __kconfig __weak;\nextern const int bpf_task_storage_busy __ksym;\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nint pid = 0;\nint busy = 0;\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_TASK_STORAGE);\n\t__uint(map_flags, BPF_F_NO_PREALLOC);\n\t__type(key, int);\n\t__type(value, long);\n} task SEC(\".maps\");\n\nSEC(\"raw_tp/sys_enter\")\nint BPF_PROG(read_bpf_task_storage_busy)\n{\n\tint *value;\n\n\tif (!CONFIG_PREEMPT)\n\t\treturn 0;\n\n\tif (bpf_get_current_pid_tgid() >> 32 != pid)\n\t\treturn 0;\n\n\tvalue = bpf_this_cpu_ptr(&bpf_task_storage_busy);\n\tif (value)\n\t\tbusy = *value;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

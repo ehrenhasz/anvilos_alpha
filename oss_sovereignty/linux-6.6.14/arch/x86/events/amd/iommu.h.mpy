@@ -1,0 +1,9 @@
+{
+  "module_name": "iommu.h",
+  "hash_id": "89c611a9c78fe0e03a20a3f8eb954ee4ec53f0150fd999e74d5cd5ad182f66ee",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/events/amd/iommu.h",
+  "human_readable_source": " \n \n\n#ifndef _PERF_EVENT_AMD_IOMMU_H_\n#define _PERF_EVENT_AMD_IOMMU_H_\n\n \n#define IOMMU_PC_COUNTER_REG\t\t\t0x00\n#define IOMMU_PC_COUNTER_SRC_REG\t\t0x08\n#define IOMMU_PC_PASID_MATCH_REG\t\t0x10\n#define IOMMU_PC_DOMID_MATCH_REG\t\t0x18\n#define IOMMU_PC_DEVID_MATCH_REG\t\t0x20\n#define IOMMU_PC_COUNTER_REPORT_REG\t\t0x28\n\n \n#define PC_MAX_SPEC_BNKS\t\t\t64\n#define PC_MAX_SPEC_CNTRS\t\t\t16\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

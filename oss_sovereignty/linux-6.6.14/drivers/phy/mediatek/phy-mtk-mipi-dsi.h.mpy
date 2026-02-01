@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-mtk-mipi-dsi.h",
+  "hash_id": "fb282842d3c08bc501f95715f764010fe450719f409ef1f2b2951b2eafe4369e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/mediatek/phy-mtk-mipi-dsi.h",
+  "human_readable_source": " \n \n\n#ifndef _MTK_MIPI_TX_H\n#define _MTK_MIPI_TX_H\n\n#include <linux/clk.h>\n#include <linux/clk-provider.h>\n#include <linux/delay.h>\n#include <linux/module.h>\n#include <linux/nvmem-consumer.h>\n#include <linux/platform_device.h>\n#include <linux/phy/phy.h>\n#include <linux/slab.h>\n\nstruct mtk_mipitx_data {\n\tconst u32 mppll_preserve;\n\tconst struct clk_ops *mipi_tx_clk_ops;\n\tvoid (*mipi_tx_enable_signal)(struct phy *phy);\n\tvoid (*mipi_tx_disable_signal)(struct phy *phy);\n};\n\nstruct mtk_mipi_tx {\n\tstruct device *dev;\n\tvoid __iomem *regs;\n\tu32 data_rate;\n\tu32 mipitx_drive;\n\tu32 rt_code[5];\n\tconst struct mtk_mipitx_data *driver_data;\n\tstruct clk_hw pll_hw;\n};\n\nstruct mtk_mipi_tx *mtk_mipi_tx_from_clk_hw(struct clk_hw *hw);\nint mtk_mipi_tx_pll_set_rate(struct clk_hw *hw, unsigned long rate,\n\t\t\t     unsigned long parent_rate);\nunsigned long mtk_mipi_tx_pll_recalc_rate(struct clk_hw *hw,\n\t\t\t\t\t  unsigned long parent_rate);\n\nextern const struct mtk_mipitx_data mt2701_mipitx_data;\nextern const struct mtk_mipitx_data mt8173_mipitx_data;\nextern const struct mtk_mipitx_data mt8183_mipitx_data;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

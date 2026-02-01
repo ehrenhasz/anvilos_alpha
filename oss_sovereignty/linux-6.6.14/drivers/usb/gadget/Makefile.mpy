@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "107d435a30207fb1a20820b438c7c6753c3422e1b3e979f8d557afded11af9ae",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# USB peripheral controller drivers\n#\nsubdir-ccflags-$(CONFIG_USB_GADGET_DEBUG)\t:= -DDEBUG\nsubdir-ccflags-$(CONFIG_USB_GADGET_VERBOSE)\t+= -DVERBOSE_DEBUG\n\nobj-$(CONFIG_USB_LIBCOMPOSITE)\t+= libcomposite.o\nlibcomposite-y\t\t\t:= usbstring.o config.o epautoconf.o\nlibcomposite-y\t\t\t+= composite.o functions.o configfs.o u_f.o\n\nobj-$(CONFIG_USB_GADGET)\t+= udc/ function/ legacy/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

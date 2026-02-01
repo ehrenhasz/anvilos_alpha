@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_c3xxx_hw_data.h",
+  "hash_id": "d3ee6a4f1f14a711b8fce9d71c6d07cb343edd4e260718b6b2e03e31c76f6a38",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_c3xxx/adf_c3xxx_hw_data.h",
+  "human_readable_source": " \n \n#ifndef ADF_C3XXX_HW_DATA_H_\n#define ADF_C3XXX_HW_DATA_H_\n\n#include <linux/units.h>\n\n \n#define ADF_C3XXX_PMISC_BAR 0\n#define ADF_C3XXX_ETR_BAR 1\n#define ADF_C3XXX_SRAM_BAR 0\n#define ADF_C3XXX_MAX_ACCELERATORS 3\n#define ADF_C3XXX_MAX_ACCELENGINES 6\n#define ADF_C3XXX_ACCELERATORS_REG_OFFSET 16\n#define ADF_C3XXX_ACCELERATORS_MASK 0x7\n#define ADF_C3XXX_ACCELENGINES_MASK 0x3F\n#define ADF_C3XXX_ETR_MAX_BANKS 16\n#define ADF_C3XXX_SOFTSTRAP_CSR_OFFSET 0x2EC\n\n \n#define ADF_C3XXX_AE2FUNC_MAP_GRP_A_NUM_REGS 48\n#define ADF_C3XXX_AE2FUNC_MAP_GRP_B_NUM_REGS 6\n\n \n#define ADF_C3XXX_AE_FREQ (685 * HZ_PER_MHZ)\n#define ADF_C3XXX_MIN_AE_FREQ (533 * HZ_PER_MHZ)\n#define ADF_C3XXX_MAX_AE_FREQ (685 * HZ_PER_MHZ)\n\n \n#define ADF_C3XXX_FW \"qat_c3xxx.bin\"\n#define ADF_C3XXX_MMP \"qat_c3xxx_mmp.bin\"\n\nvoid adf_init_hw_data_c3xxx(struct adf_hw_device_data *hw_data);\nvoid adf_clean_hw_data_c3xxx(struct adf_hw_device_data *hw_data);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

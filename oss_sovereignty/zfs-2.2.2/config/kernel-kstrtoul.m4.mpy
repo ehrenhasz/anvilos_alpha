@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-kstrtoul.m4",
+  "hash_id": "968d4e113ecf81ceb5c4b07a1852b47d94c73361b2b11cff2bc310b8afdd5c2a",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-kstrtoul.m4",
+  "human_readable_source": "dnl #\ndnl # 2.6.39 API change\ndnl # Added kstrtoul()\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_KSTRTOUL], [\n\tZFS_LINUX_TEST_SRC([kstrtoul], [\n\t\t#include <linux/kernel.h>\n\t],[\n\t\tint ret __attribute__ ((unused)) = kstrtoul(NULL, 10, NULL);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_KSTRTOUL], [\n\tAC_MSG_CHECKING([whether kstrtoul() exists])\n\tZFS_LINUX_TEST_RESULT([kstrtoul], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_KSTRTOUL, 1, [kstrtoul() exists])\n\t],[\n\t\tZFS_LINUX_TEST_ERROR([kstrtoul()])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

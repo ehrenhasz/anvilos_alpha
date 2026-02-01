@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "08c44315cdd0dd0e133c53a29c454d809413294c911760ac50607f49c9a71fef",
+  "original_prompt": "Ingested from linux-6.6.14/tools/accounting/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ngetdelays\nprocacct\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

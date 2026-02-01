@@ -1,0 +1,9 @@
+{
+  "module_name": "test-numa_num_possible_cpus.c",
+  "hash_id": "58219b8873895a71553c07d37c27e9e926acc025ef492bc3146a114c0e42f334",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-numa_num_possible_cpus.c",
+  "human_readable_source": "\n#include <numa.h>\n\nint main(void)\n{\n\treturn numa_num_possible_cpus();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

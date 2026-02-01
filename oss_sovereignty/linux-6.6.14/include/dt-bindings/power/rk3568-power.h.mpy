@@ -1,0 +1,9 @@
+{
+  "module_name": "rk3568-power.h",
+  "hash_id": "e4fc4a76b66de25aee70c4d87403eaa6bb5bfeba5a6cdf67c7d8ae61cf46c60d",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/rk3568-power.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_POWER_RK3568_POWER_H__\n#define __DT_BINDINGS_POWER_RK3568_POWER_H__\n\n \n#define RK3568_PD_CPU_0\t\t0\n#define RK3568_PD_CPU_1\t\t1\n#define RK3568_PD_CPU_2\t\t2\n#define RK3568_PD_CPU_3\t\t3\n#define RK3568_PD_CORE_ALIVE\t4\n\n \n#define RK3568_PD_PMU\t\t5\n\n \n#define RK3568_PD_NPU\t\t6\n\n \n#define RK3568_PD_GPU\t\t7\n\n \n#define RK3568_PD_VI\t\t8\n#define RK3568_PD_VO\t\t9\n#define RK3568_PD_RGA\t\t10\n#define RK3568_PD_VPU\t\t11\n#define RK3568_PD_CENTER\t12\n#define RK3568_PD_RKVDEC\t13\n#define RK3568_PD_RKVENC\t14\n#define RK3568_PD_PIPE\t\t15\n#define RK3568_PD_LOGIC_ALIVE\t16\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

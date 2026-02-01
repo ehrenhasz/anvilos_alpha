@@ -1,0 +1,9 @@
+{
+  "module_name": "test_xdp_link.c",
+  "hash_id": "8887c6f0e9197f5c9e710207ba290f46282c0171f1fef339261569d837160cc3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_xdp_link.c",
+  "human_readable_source": "\n \n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nchar LICENSE[] SEC(\"license\") = \"GPL\";\n\nSEC(\"xdp\")\nint xdp_handler(struct xdp_md *xdp)\n{\n\treturn 0;\n}\n\nSEC(\"tc\")\nint tc_handler(struct __sk_buff *skb)\n{\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

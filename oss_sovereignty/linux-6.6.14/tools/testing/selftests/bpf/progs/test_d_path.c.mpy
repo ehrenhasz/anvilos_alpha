@@ -1,0 +1,9 @@
+{
+  "module_name": "test_d_path.c",
+  "hash_id": "42c88a5c1a60e742c3f57536c1783a2fd40d49634210ac0ee762f1e5c563cfdd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_d_path.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\n#define MAX_PATH_LEN\t\t128\n#define MAX_FILES\t\t7\n\npid_t my_pid = 0;\n__u32 cnt_stat = 0;\n__u32 cnt_close = 0;\nchar paths_stat[MAX_FILES][MAX_PATH_LEN] = {};\nchar paths_close[MAX_FILES][MAX_PATH_LEN] = {};\nint rets_stat[MAX_FILES] = {};\nint rets_close[MAX_FILES] = {};\n\nint called_stat = 0;\nint called_close = 0;\n\nSEC(\"fentry/security_inode_getattr\")\nint BPF_PROG(prog_stat, struct path *path, struct kstat *stat,\n\t     __u32 request_mask, unsigned int query_flags)\n{\n\tpid_t pid = bpf_get_current_pid_tgid() >> 32;\n\t__u32 cnt = cnt_stat;\n\tint ret;\n\n\tcalled_stat = 1;\n\n\tif (pid != my_pid)\n\t\treturn 0;\n\n\tif (cnt >= MAX_FILES)\n\t\treturn 0;\n\tret = bpf_d_path(path, paths_stat[cnt], MAX_PATH_LEN);\n\n\trets_stat[cnt] = ret;\n\tcnt_stat++;\n\treturn 0;\n}\n\nSEC(\"fentry/filp_close\")\nint BPF_PROG(prog_close, struct file *file, void *id)\n{\n\tpid_t pid = bpf_get_current_pid_tgid() >> 32;\n\t__u32 cnt = cnt_close;\n\tint ret;\n\n\tcalled_close = 1;\n\n\tif (pid != my_pid)\n\t\treturn 0;\n\n\tif (cnt >= MAX_FILES)\n\t\treturn 0;\n\tret = bpf_d_path(&file->f_path,\n\t\t\t paths_close[cnt], MAX_PATH_LEN);\n\n\trets_close[cnt] = ret;\n\tcnt_close++;\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

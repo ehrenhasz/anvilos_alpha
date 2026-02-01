@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_1.dtso",
+  "hash_id": "6548b7ff888b967812878beac9e231e9914021a87ab9941dd4519820f0716c5a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_1.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n/* overlay_1 - disable using absolute target path */\n\n&{/testcase-data/overlay-node/test-bus/test-unittest1} {\n\tstatus = \"disabled\";\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

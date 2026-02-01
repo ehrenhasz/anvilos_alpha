@@ -1,0 +1,9 @@
+{
+  "module_name": "monitor_fdpass.h",
+  "hash_id": "89e2e142497eec9dc85b358c6246695e631890b2ea3ee47ddf193edc93f35119",
+  "original_prompt": "Ingested from openssh-9.6p1/monitor_fdpass.h",
+  "human_readable_source": " \n\n \n\n#ifndef _MM_FDPASS_H_\n#define _MM_FDPASS_H_\n\nint mm_send_fd(int, int);\nint mm_receive_fd(int);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

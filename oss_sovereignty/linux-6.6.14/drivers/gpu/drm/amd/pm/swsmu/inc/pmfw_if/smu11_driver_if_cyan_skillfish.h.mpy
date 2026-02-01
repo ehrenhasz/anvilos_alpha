@@ -1,0 +1,9 @@
+{
+  "module_name": "smu11_driver_if_cyan_skillfish.h",
+  "hash_id": "4b171dfe52f29eebddeebf127a01ffc1e08bdc2010c1587cec7acc3f1cfb412c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/swsmu/inc/pmfw_if/smu11_driver_if_cyan_skillfish.h",
+  "human_readable_source": " \n#ifndef __SMU11_DRIVER_IF_CYAN_SKILLFISH_H__\n#define __SMU11_DRIVER_IF_CYAN_SKILLFISH_H__\n\n\n\n\n#define MP1_DRIVER_IF_VERSION 0x8\n\n#define TABLE_BIOS_IF            0 \n#define TABLE_WATERMARKS         1 \n#define TABLE_PMSTATUSLOG        3 \n#define TABLE_DPMCLOCKS          4 \n#define TABLE_MOMENTARY_PM       5 \n#define TABLE_SMU_METRICS        6 \n#define TABLE_COUNT              7\n\ntypedef struct SmuMetricsTable_t {\n\t\n\tuint16_t CoreFrequency[6];              \n\tuint32_t CorePower[6];                  \n\tuint16_t CoreTemperature[6];            \n\tuint16_t L3Frequency[2];                \n\tuint16_t L3Temperature[2];              \n\tuint16_t C0Residency[6];                \n\n\t\n\tuint16_t GfxclkFrequency;               \n\tuint16_t GfxTemperature;                \n\n\t\n\tuint16_t SocclkFrequency;               \n\tuint16_t VclkFrequency;                 \n\tuint16_t DclkFrequency;                 \n\tuint16_t MemclkFrequency;               \n\n\t\n\tuint32_t Voltage[2];                    \n\tuint32_t Current[2];                    \n\tuint32_t Power[2];                      \n\tuint32_t CurrentSocketPower;            \n\n\tuint16_t SocTemperature;                \n\tuint16_t EdgeTemperature;\n\tuint16_t ThrottlerStatus;\n\tuint16_t Spare;\n\n} SmuMetricsTable_t;\n\ntypedef struct SmuMetrics_t {\n\tSmuMetricsTable_t Current;\n\tSmuMetricsTable_t Average;\n\tuint32_t SampleStartTime;\n\tuint32_t SampleStopTime;\n\tuint32_t Accnt;\n} SmuMetrics_t;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

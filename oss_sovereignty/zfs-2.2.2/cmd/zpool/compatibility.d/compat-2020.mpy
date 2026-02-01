@@ -1,0 +1,9 @@
+{
+  "module_name": "compat-2020",
+  "hash_id": "823522f3f49b582fd93843c3c195d6b82ac2125055e050f4699f5be1ff3250c8",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/compatibility.d/compat-2020",
+  "human_readable_source": "# Features supported by all Tier 1 platforms as of 2020\nasync_destroy\nbookmarks\nembedded_data\nempty_bpobj\nenabled_txg\nextensible_dataset\nfilesystem_limits\nhole_birth\nlarge_blocks\nlz4_compress\nmulti_vdev_crash_dump\nsha512\nskein\nspacemap_histogram\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

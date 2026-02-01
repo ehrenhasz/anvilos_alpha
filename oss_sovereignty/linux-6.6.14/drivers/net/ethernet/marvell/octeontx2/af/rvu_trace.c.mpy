@@ -1,0 +1,9 @@
+{
+  "module_name": "rvu_trace.c",
+  "hash_id": "8db8dfb47c27e8ebce666368b5f69c7fe37a40d6a6e0d2f5277e4cfbb08e69eb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/octeontx2/af/rvu_trace.c",
+  "human_readable_source": "\n \n\n#define CREATE_TRACE_POINTS\n#include \"rvu_trace.h\"\n\nEXPORT_TRACEPOINT_SYMBOL(otx2_msg_alloc);\nEXPORT_TRACEPOINT_SYMBOL(otx2_msg_interrupt);\nEXPORT_TRACEPOINT_SYMBOL(otx2_msg_process);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

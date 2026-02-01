@@ -1,0 +1,9 @@
+{
+  "module_name": "subcmd-config.c",
+  "hash_id": "11d16cbe269f0a4c804df69576e2dbd59b1b0fafd81b5c36a8043f286f5b2def",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/subcmd/subcmd-config.c",
+  "human_readable_source": "\n#include \"subcmd-config.h\"\n\n#define UNDEFINED \"SUBCMD_HAS_NOT_BEEN_INITIALIZED\"\n\nstruct subcmd_config subcmd_config = {\n\t.exec_name\t= UNDEFINED,\n\t.prefix\t\t= UNDEFINED,\n\t.exec_path\t= UNDEFINED,\n\t.exec_path_env\t= UNDEFINED,\n\t.pager_env\t= UNDEFINED,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

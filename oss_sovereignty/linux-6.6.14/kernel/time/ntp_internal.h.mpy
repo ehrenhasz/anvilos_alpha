@@ -1,0 +1,9 @@
+{
+  "module_name": "ntp_internal.h",
+  "hash_id": "5f6a5365d468eed8403f06888c3d2c6233e05dceca9d30ef8e65aa53620600e9",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/time/ntp_internal.h",
+  "human_readable_source": " \n#ifndef _LINUX_NTP_INTERNAL_H\n#define _LINUX_NTP_INTERNAL_H\n\nextern void ntp_init(void);\nextern void ntp_clear(void);\n \nextern u64 ntp_tick_length(void);\nextern ktime_t ntp_get_next_leap(void);\nextern int second_overflow(time64_t secs);\nextern int __do_adjtimex(struct __kernel_timex *txc,\n\t\t\t const struct timespec64 *ts,\n\t\t\t s32 *time_tai, struct audit_ntp_data *ad);\nextern void __hardpps(const struct timespec64 *phase_ts, const struct timespec64 *raw_ts);\n\n#if defined(CONFIG_GENERIC_CMOS_UPDATE) || defined(CONFIG_RTC_SYSTOHC)\nextern void ntp_notify_cmos_timer(void);\n#else\nstatic inline void ntp_notify_cmos_timer(void) { }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pcie_dec0_cmd_regs.h",
+  "hash_id": "8f06c9befadedfa4ca16d08f7d1c927912db7c39c48f3001d900999061cd9707",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/gaudi2/asic_reg/pcie_dec0_cmd_regs.h",
+  "human_readable_source": " \n\n \n\n#ifndef ASIC_REG_PCIE_DEC0_CMD_REGS_H_\n#define ASIC_REG_PCIE_DEC0_CMD_REGS_H_\n\n \n\n#define mmPCIE_DEC0_CMD_SWREG0 0x4F00000\n\n#define mmPCIE_DEC0_CMD_SWREG1 0x4F00004\n\n#define mmPCIE_DEC0_CMD_SWREG2 0x4F00008\n\n#define mmPCIE_DEC0_CMD_SWREG3 0x4F0000C\n\n#define mmPCIE_DEC0_CMD_SWREG4 0x4F00010\n\n#define mmPCIE_DEC0_CMD_SWREG5 0x4F00014\n\n#define mmPCIE_DEC0_CMD_SWREG6 0x4F00018\n\n#define mmPCIE_DEC0_CMD_SWREG7 0x4F0001C\n\n#define mmPCIE_DEC0_CMD_SWREG8 0x4F00020\n\n#define mmPCIE_DEC0_CMD_SWREG9 0x4F00024\n\n#define mmPCIE_DEC0_CMD_SWREG10 0x4F00028\n\n#define mmPCIE_DEC0_CMD_SWREG11 0x4F0002C\n\n#define mmPCIE_DEC0_CMD_SWREG12 0x4F00030\n\n#define mmPCIE_DEC0_CMD_SWREG13 0x4F00034\n\n#define mmPCIE_DEC0_CMD_SWREG14 0x4F00038\n\n#define mmPCIE_DEC0_CMD_SWREG15 0x4F0003C\n\n#define mmPCIE_DEC0_CMD_SWREG16 0x4F00040\n\n#define mmPCIE_DEC0_CMD_SWREG17 0x4F00044\n\n#define mmPCIE_DEC0_CMD_SWREG18 0x4F00048\n\n#define mmPCIE_DEC0_CMD_SWREG19 0x4F0004C\n\n#define mmPCIE_DEC0_CMD_SWREG20 0x4F00050\n\n#define mmPCIE_DEC0_CMD_SWREG21 0x4F00054\n\n#define mmPCIE_DEC0_CMD_SWREG22 0x4F00058\n\n#define mmPCIE_DEC0_CMD_SWREG23 0x4F0005C\n\n#define mmPCIE_DEC0_CMD_SWREG24 0x4F00060\n\n#define mmPCIE_DEC0_CMD_SWREG25 0x4F00064\n\n#define mmPCIE_DEC0_CMD_SWREG26 0x4F00068\n\n#define mmPCIE_DEC0_CMD_SWREG64 0x4F00100\n\n#define mmPCIE_DEC0_CMD_SWREG65 0x4F00104\n\n#define mmPCIE_DEC0_CMD_SWREG66 0x4F00108\n\n#define mmPCIE_DEC0_CMD_SWREG67 0x4F0010C\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

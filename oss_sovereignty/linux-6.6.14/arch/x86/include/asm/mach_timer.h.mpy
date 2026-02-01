@@ -1,0 +1,9 @@
+{
+  "module_name": "mach_timer.h",
+  "hash_id": "a8650b4f505f054afb23e1c7d5fd3dad1fea83f8d2d1ef41c167a2ec2f279573",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/mach_timer.h",
+  "human_readable_source": " \n \n \n#ifndef _ASM_X86_MACH_DEFAULT_MACH_TIMER_H\n#define _ASM_X86_MACH_DEFAULT_MACH_TIMER_H\n\n#define CALIBRATE_TIME_MSEC 30  \n#define CALIBRATE_LATCH\t\\\n\t((PIT_TICK_RATE * CALIBRATE_TIME_MSEC + 1000/2)/1000)\n\nstatic inline void mach_prepare_counter(void)\n{\n        \n\toutb((inb(0x61) & ~0x02) | 0x01, 0x61);\n\n\t \n\toutb(0xb0, 0x43);\t\t\t \n\toutb_p(CALIBRATE_LATCH & 0xff, 0x42);\t \n\toutb_p(CALIBRATE_LATCH >> 8, 0x42);        \n}\n\nstatic inline void mach_countup(unsigned long *count_p)\n{\n\tunsigned long count = 0;\n\tdo {\n\t\tcount++;\n\t} while ((inb_p(0x61) & 0x20) == 0);\n\t*count_p = count;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

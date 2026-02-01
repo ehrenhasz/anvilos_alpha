@@ -1,0 +1,9 @@
+{
+  "module_name": "sleep.h",
+  "hash_id": "8d5d0c22cd8d094dd9f04da0c478e90375aee906b82918ecb3e9ba8ad73a6abc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/sleep.h",
+  "human_readable_source": " \n\nextern void acpi_enable_wakeup_devices(u8 sleep_state);\nextern void acpi_disable_wakeup_devices(u8 sleep_state);\nextern bool acpi_check_wakeup_handlers(void);\n\nextern struct list_head acpi_wakeup_device_list;\nextern struct mutex acpi_device_lock;\n\nextern void acpi_resume_power_resources(void);\n\nstatic inline acpi_status acpi_set_waking_vector(u32 wakeup_address)\n{\n\treturn acpi_set_firmware_waking_vector(\n\t\t\t\t(acpi_physical_address)wakeup_address, 0);\n}\n\nextern int acpi_s2idle_begin(void);\nextern int acpi_s2idle_prepare(void);\nextern int acpi_s2idle_prepare_late(void);\nextern void acpi_s2idle_check(void);\nextern bool acpi_s2idle_wake(void);\nextern void acpi_s2idle_restore_early(void);\nextern void acpi_s2idle_restore(void);\nextern void acpi_s2idle_end(void);\n\nextern void acpi_s2idle_setup(void);\n\n#ifdef CONFIG_ACPI_SLEEP\nextern bool acpi_sleep_default_s3;\n#else\n#define acpi_sleep_default_s3\t(1)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

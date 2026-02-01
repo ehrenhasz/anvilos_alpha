@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "995425e544cac4dd495dd7543623e03596315664ee83a29023b4d8a023b95eb6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/tcm_fc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\ntcm_fc-y +=\t\ttfc_cmd.o \\\n\t\t\ttfc_conf.o \\\n\t\t\ttfc_io.o \\\n\t\t\ttfc_sess.o\n\nobj-$(CONFIG_TCM_FC)\t+= tcm_fc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

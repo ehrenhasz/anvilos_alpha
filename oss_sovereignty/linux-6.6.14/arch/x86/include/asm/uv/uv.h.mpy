@@ -1,0 +1,9 @@
+{
+  "module_name": "uv.h",
+  "hash_id": "4f9bb68d93d8a39d4d5cb4b5b5262b460317949d36ae74e672f82fb3d99c4c01",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/uv/uv.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_UV_UV_H\n#define _ASM_X86_UV_UV_H\n\nenum uv_system_type {UV_NONE, UV_LEGACY_APIC, UV_X2APIC};\n\n#ifdef CONFIG_X86_UV\n#include <linux/efi.h>\n\n#define\tUV_PROC_NODE\t\"sgi_uv\"\n\nstatic inline int uv(int uvtype)\n{\n\t \n\tif (uvtype >= 0 && uvtype <= 30)\n\t\treturn 1 << uvtype;\n\treturn 1;\n}\n\nextern unsigned long uv_systab_phys;\n\nextern enum uv_system_type get_uv_system_type(void);\nstatic inline bool is_early_uv_system(void)\n{\n\treturn uv_systab_phys && uv_systab_phys != EFI_INVALID_TABLE_ADDR;\n}\nextern int is_uv_system(void);\nextern int is_uv_hubbed(int uvtype);\nextern void uv_cpu_init(void);\nextern void uv_nmi_init(void);\nextern void uv_system_init(void);\n\n#else\t \n\nstatic inline enum uv_system_type get_uv_system_type(void) { return UV_NONE; }\nstatic inline bool is_early_uv_system(void)\t{ return 0; }\nstatic inline int is_uv_system(void)\t{ return 0; }\nstatic inline int is_uv_hubbed(int uv)\t{ return 0; }\nstatic inline void uv_cpu_init(void)\t{ }\nstatic inline void uv_system_init(void)\t{ }\n\n#endif\t \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

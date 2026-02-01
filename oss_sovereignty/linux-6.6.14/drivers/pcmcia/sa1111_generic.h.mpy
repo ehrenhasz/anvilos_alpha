@@ -1,0 +1,9 @@
+{
+  "module_name": "sa1111_generic.h",
+  "hash_id": "aa1ef3b17120d7b7ecde6ceba2ac00fff2f528098d17287bc74cd3ee4764c608",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pcmcia/sa1111_generic.h",
+  "human_readable_source": " \n#include \"soc_common.h\"\n#include \"sa11xx_base.h\"\n\nstruct sa1111_pcmcia_socket {\n\tstruct soc_pcmcia_socket soc;\n\tstruct sa1111_dev *dev;\n\tstruct sa1111_pcmcia_socket *next;\n};\n\nstatic inline struct sa1111_pcmcia_socket *to_skt(struct soc_pcmcia_socket *s)\n{\n\treturn container_of(s, struct sa1111_pcmcia_socket, soc);\n}\n\nint sa1111_pcmcia_add(struct sa1111_dev *dev, struct pcmcia_low_level *ops,\n\tint (*add)(struct soc_pcmcia_socket *));\n\nextern void sa1111_pcmcia_socket_state(struct soc_pcmcia_socket *, struct pcmcia_state *);\nextern int sa1111_pcmcia_configure_socket(struct soc_pcmcia_socket *, const socket_state_t *);\n\nextern int pcmcia_badge4_init(struct sa1111_dev *);\nextern int pcmcia_jornada720_init(struct sa1111_dev *);\nextern int pcmcia_lubbock_init(struct sa1111_dev *);\nextern int pcmcia_neponset_init(struct sa1111_dev *);\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

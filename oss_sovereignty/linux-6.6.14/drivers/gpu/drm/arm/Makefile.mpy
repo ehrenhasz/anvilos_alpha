@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4a032eb75a97f3d6078d108d2d5ffb209164abd2988e67eba0f3cf60ed63708c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/arm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nhdlcd-y := hdlcd_drv.o hdlcd_crtc.o\nobj-$(CONFIG_DRM_HDLCD)\t+= hdlcd.o\nmali-dp-y := malidp_drv.o malidp_hw.o malidp_planes.o malidp_crtc.o\nmali-dp-y += malidp_mw.o\nobj-$(CONFIG_DRM_MALI_DISPLAY)\t+= mali-dp.o\nobj-$(CONFIG_DRM_KOMEDA) += display/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

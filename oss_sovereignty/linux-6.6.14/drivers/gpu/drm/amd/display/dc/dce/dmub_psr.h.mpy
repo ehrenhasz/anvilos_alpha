@@ -1,0 +1,9 @@
+{
+  "module_name": "dmub_psr.h",
+  "hash_id": "608244dc6b90df9cc1852a16e2ec314e06ae424ba1cda135962e24e36289ee84",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce/dmub_psr.h",
+  "human_readable_source": " \n\n#ifndef _DMUB_PSR_H_\n#define _DMUB_PSR_H_\n\n#include \"dc_types.h\"\nstruct dc_link;\nstruct dmub_psr_funcs;\n\nstruct dmub_psr {\n\tstruct dc_context *ctx;\n\tconst struct dmub_psr_funcs *funcs;\n};\n\nstruct dmub_psr_funcs {\n\tbool (*psr_copy_settings)(struct dmub_psr *dmub, struct dc_link *link,\n\tstruct psr_context *psr_context, uint8_t panel_inst);\n\tvoid (*psr_enable)(struct dmub_psr *dmub, bool enable, bool wait,\n\tuint8_t panel_inst);\n\tvoid (*psr_get_state)(struct dmub_psr *dmub, enum dc_psr_state *dc_psr_state,\n\tuint8_t panel_inst);\n\tvoid (*psr_set_level)(struct dmub_psr *dmub, uint16_t psr_level,\n\tuint8_t panel_inst);\n\tvoid (*psr_force_static)(struct dmub_psr *dmub, uint8_t panel_inst);\n\tvoid (*psr_get_residency)(struct dmub_psr *dmub, uint32_t *residency,\n\tuint8_t panel_inst);\n\tvoid (*psr_set_sink_vtotal_in_psr_active)(struct dmub_psr *dmub,\n\tuint16_t psr_vtotal_idle, uint16_t psr_vtotal_su);\n\tvoid (*psr_set_power_opt)(struct dmub_psr *dmub, unsigned int power_opt, uint8_t panel_inst);\n};\n\nstruct dmub_psr *dmub_psr_create(struct dc_context *ctx);\nvoid dmub_psr_destroy(struct dmub_psr **dmub);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

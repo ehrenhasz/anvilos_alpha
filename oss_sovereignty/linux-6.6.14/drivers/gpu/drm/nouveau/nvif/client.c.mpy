@@ -1,0 +1,9 @@
+{
+  "module_name": "client.c",
+  "hash_id": "a27b7f07a5f1f8ac950aeaf9a70ab01c91a6360c0f2b5dc9cfc39d0ce86033dc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvif/client.c",
+  "human_readable_source": " \n\n#include <nvif/client.h>\n#include <nvif/driver.h>\n#include <nvif/ioctl.h>\n\n#include <nvif/class.h>\n#include <nvif/if0000.h>\n\nint\nnvif_client_ioctl(struct nvif_client *client, void *data, u32 size)\n{\n\treturn client->driver->ioctl(client->object.priv, data, size, NULL);\n}\n\nint\nnvif_client_suspend(struct nvif_client *client)\n{\n\treturn client->driver->suspend(client->object.priv);\n}\n\nint\nnvif_client_resume(struct nvif_client *client)\n{\n\treturn client->driver->resume(client->object.priv);\n}\n\nvoid\nnvif_client_dtor(struct nvif_client *client)\n{\n\tnvif_object_dtor(&client->object);\n\tif (client->driver) {\n\t\tif (client->driver->fini)\n\t\t\tclient->driver->fini(client->object.priv);\n\t\tclient->driver = NULL;\n\t}\n}\n\nint\nnvif_client_ctor(struct nvif_client *parent, const char *name, u64 device,\n\t\t struct nvif_client *client)\n{\n\tstruct nvif_client_v0 args = { .device = device };\n\tstruct {\n\t\tstruct nvif_ioctl_v0 ioctl;\n\t\tstruct nvif_ioctl_nop_v0 nop;\n\t} nop = {};\n\tint ret;\n\n\tstrncpy(args.name, name, sizeof(args.name));\n\tret = nvif_object_ctor(parent != client ? &parent->object : NULL,\n\t\t\t       name ? name : \"nvifClient\", 0,\n\t\t\t       NVIF_CLASS_CLIENT, &args, sizeof(args),\n\t\t\t       &client->object);\n\tif (ret)\n\t\treturn ret;\n\n\tclient->object.client = client;\n\tclient->object.handle = ~0;\n\tclient->route = NVIF_IOCTL_V0_ROUTE_NVIF;\n\tclient->driver = parent->driver;\n\n\tif (ret == 0) {\n\t\tret = nvif_client_ioctl(client, &nop, sizeof(nop));\n\t\tclient->version = nop.nop.version;\n\t}\n\n\tif (ret)\n\t\tnvif_client_dtor(client);\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

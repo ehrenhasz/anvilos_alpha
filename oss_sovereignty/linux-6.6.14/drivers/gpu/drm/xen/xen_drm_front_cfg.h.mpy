@@ -1,0 +1,9 @@
+{
+  "module_name": "xen_drm_front_cfg.h",
+  "hash_id": "d4df3ec46ffe97081c01ecbf4e0e6ca119c2e82f6b9d2101d79e0cfedda2fa24",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/xen/xen_drm_front_cfg.h",
+  "human_readable_source": " \n\n \n\n#ifndef __XEN_DRM_FRONT_CFG_H_\n#define __XEN_DRM_FRONT_CFG_H_\n\n#include <linux/types.h>\n\n#define XEN_DRM_FRONT_MAX_CRTCS\t4\n\nstruct xen_drm_front_cfg_connector {\n\tint width;\n\tint height;\n\tchar *xenstore_path;\n};\n\nstruct xen_drm_front_cfg {\n\tstruct xen_drm_front_info *front_info;\n\t \n\tint num_connectors;\n\t \n\tstruct xen_drm_front_cfg_connector connectors[XEN_DRM_FRONT_MAX_CRTCS];\n\t \n\tbool be_alloc;\n};\n\nint xen_drm_front_cfg_card(struct xen_drm_front_info *front_info,\n\t\t\t   struct xen_drm_front_cfg *cfg);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

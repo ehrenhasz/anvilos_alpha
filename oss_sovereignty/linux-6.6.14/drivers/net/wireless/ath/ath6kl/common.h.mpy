@@ -1,0 +1,9 @@
+{
+  "module_name": "common.h",
+  "hash_id": "faa4ae564e7fe6ba8678f495c69295f113e94add81e2ca6104bc47deebc1d632",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath6kl/common.h",
+  "human_readable_source": " \n\n#ifndef COMMON_H\n#define COMMON_H\n\n#include <linux/netdevice.h>\n\n#define ATH6KL_MAX_IE\t\t\t256\n\n__printf(2, 3) void ath6kl_printk(const char *level, const char *fmt, ...);\n\n \n#define ATH6KL_ABI_VERSION        1\n\n#define SIGNAL_QUALITY_METRICS_NUM_MAX    2\n\nenum {\n\tSIGNAL_QUALITY_METRICS_SNR = 0,\n\tSIGNAL_QUALITY_METRICS_RSSI,\n\tSIGNAL_QUALITY_METRICS_ALL,\n};\n\n \n\n#define WMI_MAX_TX_DATA_FRAME_LENGTH\t      \\\n\t(1500 + sizeof(struct wmi_data_hdr) + \\\n\t sizeof(struct ethhdr) +      \\\n\t sizeof(struct ath6kl_llc_snap_hdr))\n\n   \n#define WMI_MAX_AMSDU_RX_DATA_FRAME_LENGTH    \\\n\t(3840 + sizeof(struct wmi_data_hdr) + \\\n\t sizeof(struct ethhdr) +      \\\n\t sizeof(struct ath6kl_llc_snap_hdr))\n\n#define EPPING_ALIGNMENT_PAD\t\t\t       \\\n\t(((sizeof(struct htc_frame_hdr) + 3) & (~0x3)) \\\n\t - sizeof(struct htc_frame_hdr))\n\nstruct ath6kl_llc_snap_hdr {\n\tu8 dsap;\n\tu8 ssap;\n\tu8 cntl;\n\tu8 org_code[3];\n\t__be16 eth_type;\n} __packed;\n\nenum ath6kl_crypto_type {\n\tNONE_CRYPT          = 0x01,\n\tWEP_CRYPT           = 0x02,\n\tTKIP_CRYPT          = 0x04,\n\tAES_CRYPT           = 0x08,\n\tWAPI_CRYPT          = 0x10,\n};\n\nstruct htc_endpoint_credit_dist;\nstruct ath6kl;\nstruct ath6kl_htcap;\nenum htc_credit_dist_reason;\nstruct ath6kl_htc_credit_info;\n\nstruct sk_buff *ath6kl_buf_alloc(int size);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "atmsvc.h",
+  "hash_id": "fae14ff67e27dd9b699f88d55625cdbbebe994cc4733f6eda0fa3cfda5931e4e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/atmsvc.h",
+  "human_readable_source": " \n \n \n \n \n\n#ifndef _LINUX_ATMSVC_H\n#define _LINUX_ATMSVC_H\n\n#include <linux/atmapi.h>\n#include <linux/atm.h>\n#include <linux/atmioc.h>\n\n\n#define ATMSIGD_CTRL _IO('a',ATMIOC_SPECIAL)\n\t\t\t\t \n\nenum atmsvc_msg_type { as_catch_null, as_bind, as_connect, as_accept, as_reject,\n\t\t       as_listen, as_okay, as_error, as_indicate, as_close,\n\t\t       as_itf_notify, as_modify, as_identify, as_terminate,\n\t\t       as_addparty, as_dropparty };\n\nstruct atmsvc_msg {\n\tenum atmsvc_msg_type type;\n\tatm_kptr_t vcc;\n\tatm_kptr_t listen_vcc;\t\t \n\tint reply;\t\t\t \n\t\t\t\t\t \n\t\t\t\t\t \n\t\t\t\t\t \n\t\t\t\t         \n\t\t\t\t\t \n\tstruct sockaddr_atmpvc pvc;\t \n\tstruct sockaddr_atmsvc local;\t \n\tstruct atm_qos qos;\t\t \n\tstruct atm_sap sap;\t\t \n\tunsigned int session;\t\t \n\tstruct sockaddr_atmsvc svc;\t \n} __ATM_API_ALIGN;\n\n \n\n \n\n#define SELECT_TOP_PCR(tp) ((tp).pcr ? (tp).pcr : \\\n  (tp).max_pcr && (tp).max_pcr != ATM_MAX_PCR ? (tp).max_pcr : \\\n  (tp).min_pcr ? (tp).min_pcr : ATM_MAX_PCR)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

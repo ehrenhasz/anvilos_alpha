@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_hspi.h",
+  "hash_id": "3267702309ee706a530ef00635ee201aa292b04e085f032007e0ffa64c0cb2f6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/sh_hspi.h",
+  "human_readable_source": " \n \n#ifndef SH_HSPI_H\n#define SH_HSPI_H\n\nstruct sh_hspi_info {\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

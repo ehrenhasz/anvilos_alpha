@@ -1,0 +1,9 @@
+{
+  "module_name": "sh7760-ac97.c",
+  "hash_id": "7f328e73bf6f754ca216584168f959be5ab5af086498e39c59bf80b472974b6a",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sh/sh7760-ac97.c",
+  "human_readable_source": "\n\n\n\n\n\n#include <linux/module.h>\n#include <linux/moduleparam.h>\n#include <linux/platform_device.h>\n#include <sound/core.h>\n#include <sound/pcm.h>\n#include <sound/soc.h>\n#include <asm/io.h>\n\n#define IPSEL 0xFE400034\n\nSND_SOC_DAILINK_DEFS(ac97,\n\tDAILINK_COMP_ARRAY(COMP_CPU(\"hac-dai.0\")),\t \n\tDAILINK_COMP_ARRAY(COMP_CODEC(\"ac97-codec\", \"ac97-hifi\")),\n\tDAILINK_COMP_ARRAY(COMP_PLATFORM(\"sh7760-pcm-audio\")));\n\nstatic struct snd_soc_dai_link sh7760_ac97_dai = {\n\t.name = \"AC97\",\n\t.stream_name = \"AC97 HiFi\",\n\tSND_SOC_DAILINK_REG(ac97),\n};\n\nstatic struct snd_soc_card sh7760_ac97_soc_machine  = {\n\t.name = \"SH7760 AC97\",\n\t.owner = THIS_MODULE,\n\t.dai_link = &sh7760_ac97_dai,\n\t.num_links = 1,\n};\n\nstatic struct platform_device *sh7760_ac97_snd_device;\n\nstatic int __init sh7760_ac97_init(void)\n{\n\tint ret;\n\tunsigned short ipsel;\n\n\t \n\tipsel = __raw_readw(IPSEL);\n\t__raw_writew(ipsel | (3 << 10), IPSEL);\n\n\tret = -ENOMEM;\n\tsh7760_ac97_snd_device = platform_device_alloc(\"soc-audio\", -1);\n\tif (!sh7760_ac97_snd_device)\n\t\tgoto out;\n\n\tplatform_set_drvdata(sh7760_ac97_snd_device,\n\t\t\t     &sh7760_ac97_soc_machine);\n\tret = platform_device_add(sh7760_ac97_snd_device);\n\n\tif (ret)\n\t\tplatform_device_put(sh7760_ac97_snd_device);\n\nout:\n\treturn ret;\n}\n\nstatic void __exit sh7760_ac97_exit(void)\n{\n\tplatform_device_unregister(sh7760_ac97_snd_device);\n}\n\nmodule_init(sh7760_ac97_init);\nmodule_exit(sh7760_ac97_exit);\n\nMODULE_LICENSE(\"GPL v2\");\nMODULE_DESCRIPTION(\"Generic SH7760 AC97 sound machine\");\nMODULE_AUTHOR(\"Manuel Lauss <mano@roarinelk.homelinux.net>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

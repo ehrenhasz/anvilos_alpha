@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk-mdp3-type.h",
+  "hash_id": "0e842c107086f0cad027140e72d46bda29baa5400ec9d8ebe0c9b372ab80ff33",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/mdp3/mtk-mdp3-type.h",
+  "human_readable_source": " \n \n\n#ifndef __MTK_MDP3_TYPE_H__\n#define __MTK_MDP3_TYPE_H__\n\n#include <linux/types.h>\n\n#define IMG_MAX_HW_INPUTS\t3\n#define IMG_MAX_HW_OUTPUTS\t4\n#define IMG_MAX_PLANES\t\t3\n#define IMG_MAX_COMPONENTS\t20\n\nstruct img_crop {\n\ts32 left;\n\ts32 top;\n\tu32 width;\n\tu32 height;\n\tu32 left_subpix;\n\tu32 top_subpix;\n\tu32 width_subpix;\n\tu32 height_subpix;\n} __packed;\n\nstruct img_region {\n\ts32 left;\n\ts32 right;\n\ts32 top;\n\ts32 bottom;\n} __packed;\n\nstruct img_offset {\n\ts32 left;\n\ts32 top;\n\tu32 left_subpix;\n\tu32 top_subpix;\n} __packed;\n\nstruct img_mux {\n\tu32 reg;\n\tu32 value;\n\tu32 subsys_id;\n} __packed;\n\nstruct img_mmsys_ctrl {\n\tstruct img_mux sets[IMG_MAX_COMPONENTS * 2];\n\tu32 num_sets;\n} __packed;\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

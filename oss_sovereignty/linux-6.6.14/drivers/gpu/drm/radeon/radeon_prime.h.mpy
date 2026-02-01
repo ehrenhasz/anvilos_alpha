@@ -1,0 +1,9 @@
+{
+  "module_name": "radeon_prime.h",
+  "hash_id": "d809a1fcba5813126bba1e638a3fffe6d304903cf8a871f37a220931365deab5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/radeon_prime.h",
+  "human_readable_source": " \n\n#ifndef __RADEON_PRIME_H__\n#define __RADEON_PRIME_H__\n\nstruct dma_buf *radeon_gem_prime_export(struct drm_gem_object *gobj,\n\t\t\t\t\tint flags);\nstruct sg_table *radeon_gem_prime_get_sg_table(struct drm_gem_object *obj);\nint radeon_gem_prime_pin(struct drm_gem_object *obj);\nvoid radeon_gem_prime_unpin(struct drm_gem_object *obj);\nvoid *radeon_gem_prime_vmap(struct drm_gem_object *obj);\nvoid radeon_gem_prime_vunmap(struct drm_gem_object *obj, void *vaddr);\nstruct drm_gem_object *radeon_gem_prime_import_sg_table(struct drm_device *dev,\n\t\t\t\t\t\t\tstruct dma_buf_attachment *,\n\t\t\t\t\t\t\tstruct sg_table *sg);\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

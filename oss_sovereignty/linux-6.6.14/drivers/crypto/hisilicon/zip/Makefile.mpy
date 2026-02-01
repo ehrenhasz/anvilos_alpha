@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0ddc8362227368ca40a46df8e4d8e02acfae146a81baa2b2428009db6e942687",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/hisilicon/zip/Makefile",
+  "human_readable_source": "obj-$(CONFIG_CRYPTO_DEV_HISI_ZIP) += hisi_zip.o\nhisi_zip-objs = zip_main.o zip_crypto.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

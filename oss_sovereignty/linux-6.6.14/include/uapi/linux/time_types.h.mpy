@@ -1,0 +1,9 @@
+{
+  "module_name": "time_types.h",
+  "hash_id": "93a33515ef7bc7e2dc0a214a84fbc6c40a9056d5d830d487d691ff254f6d8618",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/time_types.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_TIME_TYPES_H\n#define _UAPI_LINUX_TIME_TYPES_H\n\n#include <linux/types.h>\n\nstruct __kernel_timespec {\n\t__kernel_time64_t       tv_sec;                  \n\tlong long               tv_nsec;                 \n};\n\nstruct __kernel_itimerspec {\n\tstruct __kernel_timespec it_interval;     \n\tstruct __kernel_timespec it_value;        \n};\n\n \n#ifndef __kernel_old_timeval\nstruct __kernel_old_timeval {\n\t__kernel_long_t tv_sec;\n\t__kernel_long_t tv_usec;\n};\n#endif\n\nstruct __kernel_old_timespec {\n\t__kernel_old_time_t\ttv_sec;\t\t \n\tlong\t\t\ttv_nsec;\t \n};\n\nstruct __kernel_old_itimerval {\n\tstruct __kernel_old_timeval it_interval; \n\tstruct __kernel_old_timeval it_value;\t \n};\n\nstruct __kernel_sock_timeval {\n\t__s64 tv_sec;\n\t__s64 tv_usec;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

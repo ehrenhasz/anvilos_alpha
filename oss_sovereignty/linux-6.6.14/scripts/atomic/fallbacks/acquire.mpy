@@ -1,0 +1,9 @@
+{
+  "module_name": "acquire",
+  "hash_id": "1ab6a241eb3acc2dd1d2a02d13fd9dd7b5f3934590f16ec4201fbf30f59b02bb",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/fallbacks/acquire",
+  "human_readable_source": "cat <<EOF\n\t${ret} ret = arch_${atomic}_${pfx}${name}${sfx}_relaxed(${args});\n\t__atomic_acquire_fence();\n\treturn ret;\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

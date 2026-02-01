@@ -1,0 +1,9 @@
+{
+  "module_name": "cxgbit_lro.h",
+  "hash_id": "96bd447aaa2ad0a228c613eddb4356255b10f44672d7c223fd5d682e3191effd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/iscsi/cxgbit/cxgbit_lro.h",
+  "human_readable_source": " \n\n#ifndef\t__CXGBIT_LRO_H__\n#define\t__CXGBIT_LRO_H__\n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/errno.h>\n#include <linux/types.h>\n#include <linux/skbuff.h>\n\n#define LRO_FLUSH_LEN_MAX\t65535\n\nstruct cxgbit_lro_cb {\n\tstruct cxgbit_sock *csk;\n\tu32 pdu_totallen;\n\tu32 offset;\n\tu8 pdu_idx;\n\tbool complete;\n};\n\nenum cxgbit_pducb_flags {\n\tPDUCBF_RX_HDR\t\t= (1 << 0),  \n\tPDUCBF_RX_DATA\t\t= (1 << 1),  \n\tPDUCBF_RX_STATUS\t= (1 << 2),  \n\tPDUCBF_RX_DATA_DDPD\t= (1 << 3),  \n\tPDUCBF_RX_DDP_CMP\t= (1 << 4),  \n\tPDUCBF_RX_HCRC_ERR\t= (1 << 5),  \n\tPDUCBF_RX_DCRC_ERR\t= (1 << 6),  \n};\n\nstruct cxgbit_lro_pdu_cb {\n\tu8 flags;\n\tu8 frags;\n\tu8 hfrag_idx;\n\tu8 nr_dfrags;\n\tu8 dfrag_idx;\n\tbool complete;\n\tu32 seq;\n\tu32 pdulen;\n\tu32 hlen;\n\tu32 dlen;\n\tu32 doffset;\n\tu32 ddigest;\n\tvoid *hdr;\n};\n\n#define LRO_SKB_MAX_HEADROOM  \\\n\t\t(sizeof(struct cxgbit_lro_cb) + \\\n\t\t (MAX_SKB_FRAGS * sizeof(struct cxgbit_lro_pdu_cb)))\n\n#define LRO_SKB_MIN_HEADROOM  \\\n\t\t(sizeof(struct cxgbit_lro_cb) + \\\n\t\t sizeof(struct cxgbit_lro_pdu_cb))\n\n#define cxgbit_skb_lro_cb(skb)\t((struct cxgbit_lro_cb *)skb->data)\n#define cxgbit_skb_lro_pdu_cb(skb, i)\t\\\n\t((struct cxgbit_lro_pdu_cb *)(skb->data + sizeof(struct cxgbit_lro_cb) \\\n\t\t+ (i * sizeof(struct cxgbit_lro_pdu_cb))))\n\n#define CPL_RX_ISCSI_DDP_STATUS_DDP_SHIFT\t16  \n#define CPL_RX_ISCSI_DDP_STATUS_PAD_SHIFT\t19  \n#define CPL_RX_ISCSI_DDP_STATUS_HCRC_SHIFT\t20  \n#define CPL_RX_ISCSI_DDP_STATUS_DCRC_SHIFT\t21  \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

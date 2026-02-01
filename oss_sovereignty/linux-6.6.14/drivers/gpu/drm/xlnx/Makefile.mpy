@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "88bdd9d37cef10509b9a560b35083726cbae8729674318d122310eea8cea037d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/xlnx/Makefile",
+  "human_readable_source": "zynqmp-dpsub-y := zynqmp_disp.o zynqmp_dpsub.o zynqmp_dp.o zynqmp_kms.o\nobj-$(CONFIG_DRM_ZYNQMP_DPSUB) += zynqmp-dpsub.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

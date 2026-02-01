@@ -1,0 +1,9 @@
+{
+  "module_name": "slab.h",
+  "hash_id": "7f575bb7d79310ad23391fac29cd44678412899740753883155de6edf834c749",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/linux/slab.h",
+  "human_readable_source": " \n#ifndef LINUX_SLAB_H\n#define GFP_KERNEL 0\n#define GFP_ATOMIC 0\n#define __GFP_NOWARN 0\n#define __GFP_ZERO 0\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

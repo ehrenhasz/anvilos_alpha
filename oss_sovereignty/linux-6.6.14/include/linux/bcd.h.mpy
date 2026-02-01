@@ -1,0 +1,9 @@
+{
+  "module_name": "bcd.h",
+  "hash_id": "d32973a13b64c3e84ef19ce8a6d3f8170bc5c47feea3a8d99f85c316eb01becc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bcd.h",
+  "human_readable_source": " \n#ifndef _BCD_H\n#define _BCD_H\n\n#include <linux/compiler.h>\n\n#define bcd2bin(x)\t\t\t\t\t\\\n\t\t(__builtin_constant_p((u8 )(x)) ?\t\\\n\t\tconst_bcd2bin(x) :\t\t\t\\\n\t\t_bcd2bin(x))\n\n#define bin2bcd(x)\t\t\t\t\t\\\n\t\t(__builtin_constant_p((u8 )(x)) ?\t\\\n\t\tconst_bin2bcd(x) :\t\t\t\\\n\t\t_bin2bcd(x))\n\n#define bcd_is_valid(x)\t\t\t\t\t\\\n\t\tconst_bcd_is_valid(x)\n\n#define const_bcd2bin(x)\t(((x) & 0x0f) + ((x) >> 4) * 10)\n#define const_bin2bcd(x)\t((((x) / 10) << 4) + (x) % 10)\n#define const_bcd_is_valid(x)\t(((x) & 0x0f) < 10 && ((x) >> 4) < 10)\n\nunsigned _bcd2bin(unsigned char val) __attribute_const__;\nunsigned char _bin2bcd(unsigned val) __attribute_const__;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

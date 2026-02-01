@@ -1,0 +1,9 @@
+{
+  "module_name": "imx_earlycon.c",
+  "hash_id": "bc3d5cc87e925f380907c34318d26f72979fe135bde18865bed8c5c358aed2ce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/serial/imx_earlycon.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/ioport.h>\n#include <linux/init.h>\n#include <linux/serial_core.h>\n#include <linux/serial.h>\n#include <linux/delay.h>\n#include <linux/of.h>\n#include <linux/io.h>\n\n#define URTX0 0x40  \n#define UTS_TXFULL (1<<4)  \n#define IMX21_UTS 0xb4  \n\nstatic void imx_uart_console_early_putchar(struct uart_port *port, unsigned char ch)\n{\n\twhile (readl_relaxed(port->membase + IMX21_UTS) & UTS_TXFULL)\n\t\tcpu_relax();\n\n\twritel_relaxed(ch, port->membase + URTX0);\n}\n\nstatic void imx_uart_console_early_write(struct console *con, const char *s,\n\t\t\t\t\t unsigned count)\n{\n\tstruct earlycon_device *dev = con->data;\n\n\tuart_console_write(&dev->port, s, count, imx_uart_console_early_putchar);\n}\n\nstatic int __init\nimx_console_early_setup(struct earlycon_device *dev, const char *opt)\n{\n\tif (!dev->port.membase)\n\t\treturn -ENODEV;\n\n\tdev->con->write = imx_uart_console_early_write;\n\n\treturn 0;\n}\nOF_EARLYCON_DECLARE(ec_imx6q, \"fsl,imx6q-uart\", imx_console_early_setup);\nOF_EARLYCON_DECLARE(ec_imx21, \"fsl,imx21-uart\", imx_console_early_setup);\n\nMODULE_AUTHOR(\"NXP\");\nMODULE_DESCRIPTION(\"IMX earlycon driver\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

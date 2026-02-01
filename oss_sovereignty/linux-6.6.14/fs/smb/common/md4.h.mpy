@@ -1,0 +1,9 @@
+{
+  "module_name": "md4.h",
+  "hash_id": "a3ad9a2c96dd4e80e532f417ccc16e19d6ea9d182fb5ea632302e0b16f683785",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/common/md4.h",
+  "human_readable_source": " \n \n\n#ifndef _CIFS_MD4_H\n#define _CIFS_MD4_H\n\n#include <linux/types.h>\n\n#define MD4_DIGEST_SIZE\t\t16\n#define MD4_HMAC_BLOCK_SIZE\t64\n#define MD4_BLOCK_WORDS\t\t16\n#define MD4_HASH_WORDS\t\t4\n\nstruct md4_ctx {\n\tu32 hash[MD4_HASH_WORDS];\n\tu32 block[MD4_BLOCK_WORDS];\n\tu64 byte_count;\n};\n\n\nint cifs_md4_init(struct md4_ctx *mctx);\nint cifs_md4_update(struct md4_ctx *mctx, const u8 *data, unsigned int len);\nint cifs_md4_final(struct md4_ctx *mctx, u8 *out);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

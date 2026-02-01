@@ -1,0 +1,9 @@
+{
+  "module_name": "test-bionic.c",
+  "hash_id": "21c9df0d84eb77aa8cab0976f020fa1068fc46cab7509fc99249454232191f0b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-bionic.c",
+  "human_readable_source": "\n#include <android/api-level.h>\n\nint main(void)\n{\n\treturn __ANDROID_API__;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_gsc.h",
+  "hash_id": "8733959e079c646e9c917b76e450dd091e3707a729f9936cf8fc5387dce2da5f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_gsc.h",
+  "human_readable_source": " \n \n#ifndef __INTEL_GSC_DEV_H__\n#define __INTEL_GSC_DEV_H__\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\nstruct intel_gt;\nstruct mei_aux_device;\n\n#define INTEL_GSC_NUM_INTERFACES 2\n \n#define GSC_IRQ_INTF(_x)  BIT(15 - (_x))\n\n \nstruct intel_gsc {\n\tstruct intel_gsc_intf {\n\t\tstruct mei_aux_device *adev;\n\t\tstruct drm_i915_gem_object *gem_obj;\n\t\tint irq;\n\t\tunsigned int id;\n\t} intf[INTEL_GSC_NUM_INTERFACES];\n};\n\nvoid intel_gsc_init(struct intel_gsc *gsc, struct drm_i915_private *i915);\nvoid intel_gsc_fini(struct intel_gsc *gsc);\nvoid intel_gsc_irq_handler(struct intel_gt *gt, u32 iir);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "connector.h",
+  "hash_id": "d02b490745b209225c896ee7df07070eb7a227e484a01beb92560cf6d313bf4a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/connector.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI__CONNECTOR_H\n#define _UAPI__CONNECTOR_H\n\n#include <linux/types.h>\n\n \n#define CN_IDX_PROC\t\t\t0x1\n#define CN_VAL_PROC\t\t\t0x1\n#define CN_IDX_CIFS\t\t\t0x2\n#define CN_VAL_CIFS                     0x1\n#define CN_W1_IDX\t\t\t0x3\t \n#define CN_W1_VAL\t\t\t0x1\n#define CN_IDX_V86D\t\t\t0x4\n#define CN_VAL_V86D_UVESAFB\t\t0x1\n#define CN_IDX_BB\t\t\t0x5\t \n#define CN_DST_IDX\t\t\t0x6\n#define CN_DST_VAL\t\t\t0x1\n#define CN_IDX_DM\t\t\t0x7\t \n#define CN_VAL_DM_USERSPACE_LOG\t\t0x1\n#define CN_IDX_DRBD\t\t\t0x8\n#define CN_VAL_DRBD\t\t\t0x1\n#define CN_KVP_IDX\t\t\t0x9\t \n#define CN_KVP_VAL\t\t\t0x1\t \n#define CN_VSS_IDX\t\t\t0xA      \n#define CN_VSS_VAL\t\t\t0x1      \n\n\n#define CN_NETLINK_USERS\t\t11\t \n\n \n#define CONNECTOR_MAX_MSG_SIZE\t\t16384\n\n \n\nstruct cb_id {\n\t__u32 idx;\n\t__u32 val;\n};\n\nstruct cn_msg {\n\tstruct cb_id id;\n\n\t__u32 seq;\n\t__u32 ack;\n\n\t__u16 len;\t\t \n\t__u16 flags;\n\t__u8 data[];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

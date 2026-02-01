@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_gp_bitdef.h",
+  "hash_id": "fbfbf46aa4bbe2219674ee17418583d0b5c1a44f142ee242fbc27d6ff5bacfd8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_gp_bitdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_GP_BITDEF_H__\n#define __RTL8712_GP_BITDEF_H__\n\n \n#define\t_GPIO_MOD_MSK\t\t\t0xFF000000\n#define\t_GPIO_MOD_SHT\t\t\t24\n#define\t_GPIO_IO_SEL_MSK\t\t0x00FF0000\n#define\t_GPIO_IO_SEL_SHT\t\t16\n#define\t_GPIO_OUT_MSK\t\t\t0x0000FF00\n#define\t_GPIO_OUT_SHT\t\t\t8\n#define\t_GPIO_IN_MSK\t\t\t0x000000FF\n#define\t_GPIO_IN_SHT\t\t\t0\n\n \n#define\t_GPIOSEL_MSK\t\t\t0x0003\n#define\t_GPIOSEL_SHT\t\t\t0\n\n \n#define _LED1SV\t\t\t\tBIT(7)\n#define _LED1CM_MSK\t\t\t0x0070\n#define _LED1CM_SHT\t\t\t4\n#define _LED0SV\t\t\t\tBIT(3)\n#define _LED0CM_MSK\t\t\t0x0007\n#define _LED0CM_SHT\t\t\t0\n\n \n#define _HST_RDRDY_SHT\t\t\t0\n#define _HST_RDRDY_MSK\t\t\t0xFF\n#define _HST_RDRDY\t\t\tBIT(_HST_RDRDY_SHT)\n#define _CPU_WTBUSY_SHT\t\t\t1\n#define _CPU_WTBUSY_MSK\t\t\t0xFF\n#define _CPU_WTBUSY\t\t\tBIT(_CPU_WTBUSY_SHT)\n\n \n\n \n\n \n\n#define\t\tGPIOMUX_EN\tBIT(3)\t \n#define\t\tGPIOSEL_GPIO\t0\t \n#define\t\tGPIOSEL_PHYDBG\t1\t \n#define\t\tGPIOSEL_BT\t2\t \n#define\t\tGPIOSEL_WLANDBG\t3\t \n#define\t\tGPIOSEL_GPIO_MASK\t(~(BIT(0) | BIT(1)))\n \n#define\t\tHAL_8192S_HW_GPIO_OFF_BIT\tBIT(3)\n#define\t\tHAL_8192S_HW_GPIO_OFF_MASK\t0xF7\n#define\t\tHAL_8192S_HW_GPIO_WPS_BIT\tBIT(4)\n\n#endif\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

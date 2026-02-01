@@ -1,0 +1,9 @@
+{
+  "module_name": "mmcra_bhrb_disable_no_branch_test.c",
+  "hash_id": "4e9badf488a29b4407a26d10a9294e88e844f9d1efb02b8b7acf3d615e027d2e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/sampling_tests/mmcra_bhrb_disable_no_branch_test.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <stdlib.h>\n\n#include \"../event.h\"\n#include \"misc.h\"\n#include \"utils.h\"\n\nextern void thirty_two_instruction_loop(int loops);\n\n \n#define EventCode 0x500fa\n\n \nstatic int mmcra_bhrb_disable_no_branch_test(void)\n{\n\tstruct event event;\n\tu64 *intr_regs;\n\n\t \n\tSKIP_IF(check_pvr_for_sampling_tests());\n\tSKIP_IF(!have_hwcap2(PPC_FEATURE2_ARCH_3_1));\n\n\t  \n\tevent_init_sampling(&event, EventCode);\n\tevent.attr.sample_regs_intr = platform_extended_mask;\n\tevent.attr.exclude_kernel = 1;\n\n\tFAIL_IF(event_open(&event));\n\tevent.mmap_buffer = event_sample_buf_mmap(event.fd, 1);\n\n\tFAIL_IF(event_enable(&event));\n\n\t \n\tthirty_two_instruction_loop(10000);\n\n\tFAIL_IF(event_disable(&event));\n\n\tintr_regs = get_intr_regs(&event, event.mmap_buffer);\n\n\t \n\tFAIL_IF(!intr_regs);\n\n\t \n\tFAIL_IF(!get_mmcra_bhrb_disable(get_reg_value(intr_regs, \"MMCRA\"), 5));\n\n\tevent_close(&event);\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(mmcra_bhrb_disable_no_branch_test, \"mmcra_bhrb_disable_no_branch_test\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

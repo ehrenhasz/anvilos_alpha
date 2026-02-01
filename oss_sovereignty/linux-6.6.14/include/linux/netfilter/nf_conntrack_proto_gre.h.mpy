@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_proto_gre.h",
+  "hash_id": "f96325e43a5f26484754a4e342587ec627e4deca212d2cc658646e3cd7c3d299",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter/nf_conntrack_proto_gre.h",
+  "human_readable_source": " \n#ifndef _CONNTRACK_PROTO_GRE_H\n#define _CONNTRACK_PROTO_GRE_H\n#include <asm/byteorder.h>\n#include <net/gre.h>\n#include <net/pptp.h>\n\nstruct nf_ct_gre {\n\tunsigned int stream_timeout;\n\tunsigned int timeout;\n};\n\n#include <net/netfilter/nf_conntrack_tuple.h>\n\nstruct nf_conn;\n\n \nstruct nf_ct_gre_keymap {\n\tstruct list_head list;\n\tstruct nf_conntrack_tuple tuple;\n\tstruct rcu_head rcu;\n};\n\n \nint nf_ct_gre_keymap_add(struct nf_conn *ct, enum ip_conntrack_dir dir,\n\t\t\t struct nf_conntrack_tuple *t);\n\n \nvoid nf_ct_gre_keymap_destroy(struct nf_conn *ct);\n\nbool gre_pkt_to_tuple(const struct sk_buff *skb, unsigned int dataoff,\n\t\t      struct net *net, struct nf_conntrack_tuple *tuple);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

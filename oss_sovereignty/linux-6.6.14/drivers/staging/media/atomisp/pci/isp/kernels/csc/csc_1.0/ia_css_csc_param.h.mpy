@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_csc_param.h",
+  "hash_id": "32f086d128cb440ef08c7fd6f7bcc52e03e93a7a8c728f36dfccf96517f531c7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/csc/csc_1.0/ia_css_csc_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_CSC_PARAM_H\n#define __IA_CSS_CSC_PARAM_H\n\n#include \"type_support.h\"\n \nstruct sh_css_isp_csc_params {\n\tu16\tm_shift;\n\ts16\t\tm00;\n\ts16\t\tm01;\n\ts16\t\tm02;\n\ts16\t\tm10;\n\ts16\t\tm11;\n\ts16\t\tm12;\n\ts16\t\tm20;\n\ts16\t\tm21;\n\ts16\t\tm22;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

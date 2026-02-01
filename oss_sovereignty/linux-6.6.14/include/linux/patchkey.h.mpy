@@ -1,0 +1,9 @@
+{
+  "module_name": "patchkey.h",
+  "hash_id": "889387bf69ab9fa97ea78ae19ebe4783ad64865d9857b1d0c7edf345cb6ebeea",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/patchkey.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_PATCHKEY_H\n#define _LINUX_PATCHKEY_H\n\n#  include <asm/byteorder.h>\n#include <uapi/linux/patchkey.h>\n\n#  if defined(__BIG_ENDIAN)\n#    define _PATCHKEY(id) (0xfd00|id)\n#  elif defined(__LITTLE_ENDIAN)\n#    define _PATCHKEY(id) ((id<<8)|0x00fd)\n#  else\n#    error \"could not determine byte order\"\n#  endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

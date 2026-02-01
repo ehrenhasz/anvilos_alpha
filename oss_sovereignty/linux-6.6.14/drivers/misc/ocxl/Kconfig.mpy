@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b94de541ab77f6d315df542f6bedd1e6f01a819fb9673f2c26fe5706ee922eb5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/ocxl/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Open Coherent Accelerator (OCXL) compatible devices\n#\n\nconfig OCXL_BASE\n\tbool\n\tselect PPC_COPRO_BASE\n\nconfig OCXL\n\ttristate \"OpenCAPI coherent accelerator support\"\n\tdepends on HOTPLUG_PCI_POWERNV\n\tselect OCXL_BASE\n\tdefault m\n\thelp\n\t  Select this option to enable the ocxl driver for Open\n\t  Coherent Accelerator Processor Interface (OpenCAPI) devices.\n\n\t  OpenCAPI allows FPGA and ASIC accelerators to be coherently\n\t  attached to a CPU over an OpenCAPI link.\n\n\t  The ocxl driver enables userspace programs to access these\n\t  accelerators through devices in /dev/ocxl/.\n\n\t  For more information, see https://opencapi.org.\n\n\t  This is not to be confused with the support for IBM CAPI\n\t  accelerators (CONFIG_CXL), which are PCI-based instead of a\n\t  dedicated OpenCAPI link, and don't follow the same protocol.\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

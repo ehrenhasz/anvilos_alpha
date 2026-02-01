@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi.h",
+  "hash_id": "472fcaa7270b59b64c39ec336a3f918375a12e936099f702e2311afe507b6471",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/device/acpi.h",
+  "human_readable_source": " \n#ifndef __NVKM_DEVICE_ACPI_H__\n#define __NVKM_DEVICE_ACPI_H__\n#include <core/os.h>\nstruct nvkm_device;\n\nvoid nvkm_acpi_init(struct nvkm_device *);\nvoid nvkm_acpi_fini(struct nvkm_device *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

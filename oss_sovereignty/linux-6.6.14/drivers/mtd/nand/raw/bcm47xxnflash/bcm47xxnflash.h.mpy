@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm47xxnflash.h",
+  "hash_id": "d68fe1f4037859bbad148d5859c730755be671649fb7bbeeb6e7e8c63c133ded",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/nand/raw/bcm47xxnflash/bcm47xxnflash.h",
+  "human_readable_source": " \n#ifndef __BCM47XXNFLASH_H\n#define __BCM47XXNFLASH_H\n\n#ifndef pr_fmt\n#define pr_fmt(fmt)\t\tKBUILD_MODNAME \": \" fmt\n#endif\n\n#include <linux/mtd/mtd.h>\n#include <linux/mtd/rawnand.h>\n\nstruct bcm47xxnflash {\n\tstruct bcma_drv_cc *cc;\n\n\tstruct nand_chip nand_chip;\n\n\tunsigned curr_command;\n\tint curr_page_addr;\n\tint curr_column;\n\n\tu8 id_data[8];\n};\n\nint bcm47xxnflash_ops_bcm4706_init(struct bcm47xxnflash *b47n);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

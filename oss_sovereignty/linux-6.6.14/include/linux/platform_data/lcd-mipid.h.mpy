@@ -1,0 +1,9 @@
+{
+  "module_name": "lcd-mipid.h",
+  "hash_id": "e141ec21b60438e36979bb87772deb21c1149a1efd248bc76815fa694a18bea9",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/lcd-mipid.h",
+  "human_readable_source": " \n#ifndef __LCD_MIPID_H\n#define __LCD_MIPID_H\n\nenum mipid_test_num {\n\tMIPID_TEST_RGB_LINES,\n};\n\nenum mipid_test_result {\n\tMIPID_TEST_SUCCESS,\n\tMIPID_TEST_INVALID,\n\tMIPID_TEST_FAILED,\n};\n\n#ifdef __KERNEL__\n\nstruct mipid_platform_data {\n\tint\tdata_lines;\n\n\tvoid\t(*set_bklight_level)(struct mipid_platform_data *pdata,\n\t\t\t\t     int level);\n\tint\t(*get_bklight_level)(struct mipid_platform_data *pdata);\n\tint\t(*get_bklight_max)(struct mipid_platform_data *pdata);\n};\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

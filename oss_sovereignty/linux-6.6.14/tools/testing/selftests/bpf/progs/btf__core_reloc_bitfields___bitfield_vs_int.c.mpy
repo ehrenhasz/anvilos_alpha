@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_bitfields___bitfield_vs_int.c",
+  "hash_id": "828ef4066d8ddc9e3466568af00ede1b9caae42056f857cec3011121b48b210d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_bitfields___bitfield_vs_int.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_bitfields___bitfield_vs_int x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

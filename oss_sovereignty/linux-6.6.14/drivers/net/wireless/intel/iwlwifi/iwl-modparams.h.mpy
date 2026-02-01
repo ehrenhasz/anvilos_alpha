@@ -1,0 +1,9 @@
+{
+  "module_name": "iwl-modparams.h",
+  "hash_id": "f1f885da368ff48ea5595d8b684d720d7ea30a45a8b800a4c886e34d0b25634f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/iwl-modparams.h",
+  "human_readable_source": " \n \n#ifndef __iwl_modparams_h__\n#define __iwl_modparams_h__\n\n#include <linux/types.h>\n#include <linux/spinlock.h>\n#include <linux/gfp.h>\n\nextern struct iwl_mod_params iwlwifi_mod_params;\n\nenum iwl_power_level {\n\tIWL_POWER_INDEX_1,\n\tIWL_POWER_INDEX_2,\n\tIWL_POWER_INDEX_3,\n\tIWL_POWER_INDEX_4,\n\tIWL_POWER_INDEX_5,\n\tIWL_POWER_NUM\n};\n\nenum iwl_disable_11n {\n\tIWL_DISABLE_HT_ALL\t = BIT(0),\n\tIWL_DISABLE_HT_TXAGG\t = BIT(1),\n\tIWL_DISABLE_HT_RXAGG\t = BIT(2),\n\tIWL_ENABLE_HT_TXAGG\t = BIT(3),\n};\n\nenum iwl_amsdu_size {\n\tIWL_AMSDU_DEF = 0,\n\tIWL_AMSDU_4K = 1,\n\tIWL_AMSDU_8K = 2,\n\tIWL_AMSDU_12K = 3,\n\t \n\tIWL_AMSDU_2K = 4,\n};\n\nenum iwl_uapsd_disable {\n\tIWL_DISABLE_UAPSD_BSS\t\t= BIT(0),\n\tIWL_DISABLE_UAPSD_P2P_CLIENT\t= BIT(1),\n};\n\n \nstruct iwl_mod_params {\n\tint swcrypto;\n\tunsigned int disable_11n;\n\tint amsdu_size;\n\tbool fw_restart;\n\tbool bt_coex_active;\n\tint led_mode;\n\tbool power_save;\n\tint power_level;\n#ifdef CONFIG_IWLWIFI_DEBUG\n\tu32 debug_level;\n#endif\n\tchar *nvm_file;\n\tu32 uapsd_disable;\n\tbool disable_11ac;\n\t \n\tbool disable_11ax;\n\tbool remove_when_gone;\n\tu32 enable_ini;\n\tbool disable_11be;\n};\n\nstatic inline bool iwl_enable_rx_ampdu(void)\n{\n\tif (iwlwifi_mod_params.disable_11n & IWL_DISABLE_HT_RXAGG)\n\t\treturn false;\n\treturn true;\n}\n\nstatic inline bool iwl_enable_tx_ampdu(void)\n{\n\tif (iwlwifi_mod_params.disable_11n & IWL_DISABLE_HT_TXAGG)\n\t\treturn false;\n\tif (iwlwifi_mod_params.disable_11n & IWL_ENABLE_HT_TXAGG)\n\t\treturn true;\n\n\t \n\treturn true;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

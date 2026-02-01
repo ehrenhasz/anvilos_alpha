@@ -1,0 +1,9 @@
+{
+  "module_name": "mt7986-resets.h",
+  "hash_id": "cbf915497fa9348a8569f720a727b0815236bcc9d62516a9635c982949823045",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/mt7986-resets.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_RESET_CONTROLLER_MT7986\n#define _DT_BINDINGS_RESET_CONTROLLER_MT7986\n\n \n#define MT7986_INFRACFG_PEXTP_MAC_SW_RST\t6\n#define MT7986_INFRACFG_SSUSB_SW_RST\t\t7\n#define MT7986_INFRACFG_EIP97_SW_RST\t\t8\n#define MT7986_INFRACFG_AUDIO_SW_RST\t\t13\n#define MT7986_INFRACFG_CQ_DMA_SW_RST\t\t14\n\n#define MT7986_INFRACFG_TRNG_SW_RST\t\t17\n#define MT7986_INFRACFG_AP_DMA_SW_RST\t\t32\n#define MT7986_INFRACFG_I2C_SW_RST\t\t33\n#define MT7986_INFRACFG_NFI_SW_RST\t\t34\n#define MT7986_INFRACFG_SPI0_SW_RST\t\t35\n#define MT7986_INFRACFG_SPI1_SW_RST\t\t36\n#define MT7986_INFRACFG_UART0_SW_RST\t\t37\n#define MT7986_INFRACFG_UART1_SW_RST\t\t38\n#define MT7986_INFRACFG_UART2_SW_RST\t\t39\n#define MT7986_INFRACFG_AUXADC_SW_RST\t\t43\n\n#define MT7986_INFRACFG_APXGPT_SW_RST\t\t66\n#define MT7986_INFRACFG_PWM_SW_RST\t\t68\n\n#define MT7986_INFRACFG_SW_RST_NUM\t\t69\n\n \n#define MT7986_TOPRGU_APMIXEDSYS_SW_RST\t\t0\n#define MT7986_TOPRGU_SGMII0_SW_RST\t\t1\n#define MT7986_TOPRGU_SGMII1_SW_RST\t\t2\n#define MT7986_TOPRGU_INFRA_SW_RST\t\t3\n#define MT7986_TOPRGU_U2PHY_SW_RST\t\t5\n#define MT7986_TOPRGU_PCIE_SW_RST\t\t6\n#define MT7986_TOPRGU_SSUSB_SW_RST\t\t7\n#define MT7986_TOPRGU_ETHDMA_SW_RST\t\t20\n#define MT7986_TOPRGU_CONSYS_SW_RST\t\t23\n\n#define MT7986_TOPRGU_SW_RST_NUM\t\t24\n\n \n#define MT7986_ETHSYS_FE_SW_RST\t\t\t6\n#define MT7986_ETHSYS_PMTR_SW_RST\t\t8\n#define MT7986_ETHSYS_GMAC_SW_RST\t\t23\n#define MT7986_ETHSYS_PPE0_SW_RST\t\t30\n#define MT7986_ETHSYS_PPE1_SW_RST\t\t31\n\n#define MT7986_ETHSYS_SW_RST_NUM\t\t32\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

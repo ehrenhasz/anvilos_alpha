@@ -1,0 +1,9 @@
+{
+  "module_name": "pinmux.h",
+  "hash_id": "672c83ddb37414098839743dacd1728838c8c7117f46593a82d1ebf432f33ada",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pinctrl/pinmux.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_PINCTRL_PINMUX_H\n#define __LINUX_PINCTRL_PINMUX_H\n\n#include <linux/types.h>\n\nstruct pinctrl_dev;\nstruct pinctrl_gpio_range;\n\n \nstruct pinmux_ops {\n\tint (*request) (struct pinctrl_dev *pctldev, unsigned offset);\n\tint (*free) (struct pinctrl_dev *pctldev, unsigned offset);\n\tint (*get_functions_count) (struct pinctrl_dev *pctldev);\n\tconst char *(*get_function_name) (struct pinctrl_dev *pctldev,\n\t\t\t\t\t  unsigned selector);\n\tint (*get_function_groups) (struct pinctrl_dev *pctldev,\n\t\t\t\t  unsigned selector,\n\t\t\t\t  const char * const **groups,\n\t\t\t\t  unsigned *num_groups);\n\tint (*set_mux) (struct pinctrl_dev *pctldev, unsigned func_selector,\n\t\t\tunsigned group_selector);\n\tint (*gpio_request_enable) (struct pinctrl_dev *pctldev,\n\t\t\t\t    struct pinctrl_gpio_range *range,\n\t\t\t\t    unsigned offset);\n\tvoid (*gpio_disable_free) (struct pinctrl_dev *pctldev,\n\t\t\t\t   struct pinctrl_gpio_range *range,\n\t\t\t\t   unsigned offset);\n\tint (*gpio_set_direction) (struct pinctrl_dev *pctldev,\n\t\t\t\t   struct pinctrl_gpio_range *range,\n\t\t\t\t   unsigned offset,\n\t\t\t\t   bool input);\n\tbool strict;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__gc.c.qstr",
+  "hash_id": "d600c4fb0f3827d4013accd803a3b84b7768543683b085509d04a03d2cf80f1b",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__gc.c.qstr",
+  "human_readable_source": "Q(__del__)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

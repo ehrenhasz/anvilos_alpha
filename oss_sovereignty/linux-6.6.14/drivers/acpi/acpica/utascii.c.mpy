@@ -1,0 +1,9 @@
+{
+  "module_name": "utascii.c",
+  "hash_id": "8c9fb2c0d06c43f63b0dc0b1508608fb016168a25293116e33fc598442654f19",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/acpica/utascii.c",
+  "human_readable_source": "\n \n\n#include <acpi/acpi.h>\n#include \"accommon.h\"\n\n \n\nu8 acpi_ut_valid_nameseg(char *name)\n{\n\tu32 i;\n\n\t \n\n\tfor (i = 0; i < ACPI_NAMESEG_SIZE; i++) {\n\t\tif (!acpi_ut_valid_name_char(name[i], i)) {\n\t\t\treturn (FALSE);\n\t\t}\n\t}\n\n\treturn (TRUE);\n}\n\n \n\nu8 acpi_ut_valid_name_char(char character, u32 position)\n{\n\n\tif (!((character >= 'A' && character <= 'Z') ||\n\t      (character >= '0' && character <= '9') || (character == '_'))) {\n\n\t\t \n\n\t\tif (character == '!' && position == 3) {\n\t\t\treturn (TRUE);\n\t\t}\n\n\t\treturn (FALSE);\n\t}\n\n\treturn (TRUE);\n}\n\n \n\nvoid acpi_ut_check_and_repair_ascii(u8 *name, char *repaired_name, u32 count)\n{\n\tu32 i;\n\n\tfor (i = 0; i < count; i++) {\n\t\trepaired_name[i] = (char)name[i];\n\n\t\tif (!name[i]) {\n\t\t\treturn;\n\t\t}\n\t\tif (!isprint(name[i])) {\n\t\t\trepaired_name[i] = ' ';\n\t\t}\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2ba0843a42286d397d7f2e82702068cd0b55c07c7ecdb20c14a05585df5f958d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/uio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_UIO)\t+= uio.o\nobj-$(CONFIG_UIO_CIF)\t+= uio_cif.o\nobj-$(CONFIG_UIO_PDRV_GENIRQ)\t+= uio_pdrv_genirq.o\nobj-$(CONFIG_UIO_DMEM_GENIRQ)\t+= uio_dmem_genirq.o\nobj-$(CONFIG_UIO_AEC)\t+= uio_aec.o\nobj-$(CONFIG_UIO_SERCOS3)\t+= uio_sercos3.o\nobj-$(CONFIG_UIO_PCI_GENERIC)\t+= uio_pci_generic.o\nobj-$(CONFIG_UIO_NETX)\t+= uio_netx.o\nobj-$(CONFIG_UIO_PRUSS)         += uio_pruss.o\nobj-$(CONFIG_UIO_MF624)         += uio_mf624.o\nobj-$(CONFIG_UIO_FSL_ELBC_GPCM)\t+= uio_fsl_elbc_gpcm.o\nobj-$(CONFIG_UIO_HV_GENERIC)\t+= uio_hv_generic.o\nobj-$(CONFIG_UIO_DFL)\t+= uio_dfl.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

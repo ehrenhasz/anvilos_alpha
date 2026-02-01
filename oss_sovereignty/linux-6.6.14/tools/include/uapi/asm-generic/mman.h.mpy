@@ -1,0 +1,9 @@
+{
+  "module_name": "mman.h",
+  "hash_id": "bb64e1f653de0b8e4da1290d9be0bf6e1e3995dbc79602e04ce71009dc1a5dec",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/uapi/asm-generic/mman.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_MMAN_H\n#define __ASM_GENERIC_MMAN_H\n\n#include <asm-generic/mman-common-tools.h>\n\n#define MAP_GROWSDOWN\t0x0100\t\t \n#define MAP_DENYWRITE\t0x0800\t\t \n#define MAP_EXECUTABLE\t0x1000\t\t \n#define MAP_LOCKED\t0x2000\t\t \n#define MAP_NORESERVE\t0x4000\t\t \n\n \n\n#define MCL_CURRENT\t1\t\t \n#define MCL_FUTURE\t2\t\t \n#define MCL_ONFAULT\t4\t\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "getopt.h",
+  "hash_id": "ae849468243543598aa47fa30e567be28afa888461a6980aea699da19544d289",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/getopt.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _GETOPT_H_\n#define _GETOPT_H_\n\n \n#define no_argument        0\n#define required_argument  1\n#define optional_argument  2\n\n#if 0\nstruct option {\n\t \n\tconst char *name;\n\t \n\tint has_arg;\n\t \n\tint *flag;\n\t \n\tint val;\n};\n\nint\t getopt_long(int, char * const *, const char *,\n\t    const struct option *, int *);\nint\t getopt_long_only(int, char * const *, const char *,\n\t    const struct option *, int *);\n#endif\n\n#ifndef _GETOPT_DEFINED_\n#define _GETOPT_DEFINED_\nint\t getopt(int, char * const *, const char *);\nint\t getsubopt(char **, char * const *, char **);\n\nextern   char *optarg;                   \nextern   int opterr;\nextern   int optind;\nextern   int optopt;\nextern   int optreset;\nextern   char *suboptarg;                \n#endif\n \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

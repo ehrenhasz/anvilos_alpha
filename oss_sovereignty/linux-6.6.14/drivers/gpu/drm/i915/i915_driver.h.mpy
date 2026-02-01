@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_driver.h",
+  "hash_id": "554d64fa11d0c6138cd619c07a0c78fa815843aa060e9ba9dd1d8f81dc510a8b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_driver.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_DRIVER_H__\n#define __I915_DRIVER_H__\n\n#include <linux/pm.h>\n\nstruct pci_dev;\nstruct pci_device_id;\nstruct drm_i915_private;\nstruct drm_printer;\n\n#define DRIVER_NAME\t\t\"i915\"\n#define DRIVER_DESC\t\t\"Intel Graphics\"\n#define DRIVER_DATE\t\t\"20201103\"\n#define DRIVER_TIMESTAMP\t1604406085\n\nextern const struct dev_pm_ops i915_pm_ops;\n\nint i915_driver_probe(struct pci_dev *pdev, const struct pci_device_id *ent);\nvoid i915_driver_remove(struct drm_i915_private *i915);\nvoid i915_driver_shutdown(struct drm_i915_private *i915);\n\nint i915_driver_resume_switcheroo(struct drm_i915_private *i915);\nint i915_driver_suspend_switcheroo(struct drm_i915_private *i915, pm_message_t state);\n\nvoid\ni915_print_iommu_status(struct drm_i915_private *i915, struct drm_printer *p);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

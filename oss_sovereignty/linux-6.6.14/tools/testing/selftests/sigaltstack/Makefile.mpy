@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5d25df52b2b09715870272d9604a4f3327b1e86c9a648d16deffa65c60eb133f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sigaltstack/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nCFLAGS = -Wall\nTEST_GEN_PROGS = sas\n\ninclude ../lib.mk\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

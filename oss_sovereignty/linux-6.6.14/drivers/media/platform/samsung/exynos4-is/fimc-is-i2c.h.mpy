@@ -1,0 +1,9 @@
+{
+  "module_name": "fimc-is-i2c.h",
+  "hash_id": "324a2b8bac6fc107b0e07dbfecc51c673733642b1990d9bd17690c027caa3797",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/exynos4-is/fimc-is-i2c.h",
+  "human_readable_source": " \n \n\n#define FIMC_IS_I2C_COMPATIBLE\t\"samsung,exynos4212-i2c-isp\"\n\nint fimc_is_register_i2c_driver(void);\nvoid fimc_is_unregister_i2c_driver(void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "join.x",
+  "hash_id": "25401064cfc78f7e4afa230294027404973c14bbcfc5605d98f74445781a68e5",
+  "original_prompt": "Ingested from coreutils-9.4/man/join.x",
+  "human_readable_source": "[NAME]\njoin \\- join lines of two files on a common field\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ncomm(1), uniq(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

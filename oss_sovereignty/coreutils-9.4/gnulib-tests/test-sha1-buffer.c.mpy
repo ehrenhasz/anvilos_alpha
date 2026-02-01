@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sha1-buffer.c",
+  "hash_id": "6757f46c511863772e803ff4a1f4c1af6e30eeb28b55390c5c514eb545c0f7bc",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sha1-buffer.c",
+  "human_readable_source": "/*\n * Copyright (C) 2005, 2008-2023 Free Software Foundation, Inc.\n * Written by Simon Josefsson\n *\n * This program is free software: you can redistribute it and/or modify\n * it under the terms of the GNU General Public License as published by\n * the Free Software Foundation, either version 3 of the License, or\n * (at your option) any later version.\n *\n * This program is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n * GNU General Public License for more details.\n *\n * You should have received a copy of the GNU General Public License\n * along with this program.  If not, see <https:\n\n#include <config.h>\n\n#include \"sha1.h\"\n\n#include <stdio.h>\n#include <string.h>\n\nint\nmain (void)\n{\n  const char *in1 = \"abcdefgh\";\n  const char *out1 = \"\\x42\\x5a\\xf1\\x2a\\x07\\x43\\x50\\x2b\"\n    \"\\x32\\x2e\\x93\\xa0\\x15\\xbc\\xf8\\x68\\xe3\\x24\\xd5\\x6a\";\n  char buf[SHA1_DIGEST_SIZE];\n\n  if (memcmp (sha1_buffer (in1, strlen (in1), buf),\n              out1, SHA1_DIGEST_SIZE) != 0)\n    {\n      size_t i;\n      printf (\"expected:\\n\");\n      for (i = 0; i < SHA1_DIGEST_SIZE; i++)\n        printf (\"%02x \", out1[i] & 0xFFu);\n      printf (\"\\ncomputed:\\n\");\n      for (i = 0; i < SHA1_DIGEST_SIZE; i++)\n        printf (\"%02x \", buf[i] & 0xFFu);\n      printf (\"\\n\");\n      return 1;\n    }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

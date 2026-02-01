@@ -1,0 +1,9 @@
+{
+  "module_name": "netdevice.h",
+  "hash_id": "d2533c140b31e723bf07fd0f4f2493f4c8bbd8323bed09cf386c9cbb2f50f856",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netdevice.h",
+  "human_readable_source": " \n \n#ifndef _UAPI_LINUX_NETDEVICE_H\n#define _UAPI_LINUX_NETDEVICE_H\n\n#include <linux/if.h>\n#include <linux/if_ether.h>\n#include <linux/if_packet.h>\n#include <linux/if_link.h>\n\n\n#define MAX_ADDR_LEN\t32\t\t \n\n \n#define INIT_NETDEV_GROUP\t0\n\n\n \n#define NET_NAME_UNKNOWN\t0\t \n#define NET_NAME_ENUM\t\t1\t \n#define NET_NAME_PREDICTABLE\t2\t \n#define NET_NAME_USER\t\t3\t \n#define NET_NAME_RENAMED\t4\t \n\n \nenum {\n        IF_PORT_UNKNOWN = 0,\n        IF_PORT_10BASE2,\n        IF_PORT_10BASET,\n        IF_PORT_AUI,\n        IF_PORT_100BASET,\n        IF_PORT_100BASETX,\n        IF_PORT_100BASEFX\n};\n\n \n#define NET_ADDR_PERM\t\t0\t \n#define NET_ADDR_RANDOM\t\t1\t \n#define NET_ADDR_STOLEN\t\t2\t \n#define NET_ADDR_SET\t\t3\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

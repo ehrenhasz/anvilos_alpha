@@ -1,0 +1,9 @@
+{
+  "module_name": "nv20.h",
+  "hash_id": "90a921638573e56fcb584bb1991eb55d92c09e888cd238092798d9abd9cf1921",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/gr/nv20.h",
+  "human_readable_source": " \n#ifndef __NV20_GR_H__\n#define __NV20_GR_H__\n#define nv20_gr(p) container_of((p), struct nv20_gr, base)\n#include \"priv.h\"\n\nstruct nv20_gr {\n\tstruct nvkm_gr base;\n\tstruct nvkm_memory *ctxtab;\n};\n\nint nv20_gr_new_(const struct nvkm_gr_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t struct nvkm_gr **);\nvoid *nv20_gr_dtor(struct nvkm_gr *);\nint nv20_gr_oneinit(struct nvkm_gr *);\nint nv20_gr_init(struct nvkm_gr *);\nvoid nv20_gr_intr(struct nvkm_gr *);\nvoid nv20_gr_tile(struct nvkm_gr *, int, struct nvkm_fb_tile *);\n\nint nv30_gr_init(struct nvkm_gr *);\n\n#define nv20_gr_chan(p) container_of((p), struct nv20_gr_chan, object)\n#include <core/object.h>\n\nstruct nv20_gr_chan {\n\tstruct nvkm_object object;\n\tstruct nv20_gr *gr;\n\tint chid;\n\tstruct nvkm_memory *inst;\n};\n\nvoid *nv20_gr_chan_dtor(struct nvkm_object *);\nint nv20_gr_chan_init(struct nvkm_object *);\nint nv20_gr_chan_fini(struct nvkm_object *, bool);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

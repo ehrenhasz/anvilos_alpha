@@ -1,0 +1,9 @@
+{
+  "module_name": "vmsystm.h",
+  "hash_id": "0c2b4607e7c30ab000be2d6ff122e50ef2db52191cf700f72e8ded11a8ab3502",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/vmsystm.h",
+  "human_readable_source": " \n\n#ifndef _SPL_VMSYSTM_H\n#define\t_SPL_VMSYSTM_H\n\n#include <linux/mmzone.h>\n#include <linux/mm.h>\n#include <linux/swap.h>\n#include <linux/highmem.h>\n#include <linux/vmalloc.h>\n#include <sys/types.h>\n#include <asm/uaccess.h>\n\n#ifdef HAVE_TOTALRAM_PAGES_FUNC\n#define\tzfs_totalram_pages\ttotalram_pages()\n#else\n#define\tzfs_totalram_pages\ttotalram_pages\n#endif\n\n#ifdef HAVE_TOTALHIGH_PAGES\n#define\tzfs_totalhigh_pages\ttotalhigh_pages()\n#else\n#define\tzfs_totalhigh_pages\ttotalhigh_pages\n#endif\n\n#define\tmembar_consumer()\t\tsmp_rmb()\n#define\tmembar_producer()\t\tsmp_wmb()\n#define\tmembar_sync()\t\t\tsmp_mb()\n\n#define\tphysmem\t\t\t\tzfs_totalram_pages\n\n#define\txcopyin(from, to, size)\t\tcopy_from_user(to, from, size)\n#define\txcopyout(from, to, size)\tcopy_to_user(to, from, size)\n\nstatic __inline__ int\ncopyin(const void *from, void *to, size_t len)\n{\n\t \n\tif (xcopyin(from, to, len))\n\t\treturn (-1);\n\n\treturn (0);\n}\n\nstatic __inline__ int\ncopyout(const void *from, void *to, size_t len)\n{\n\t \n\tif (xcopyout(from, to, len))\n\t\treturn (-1);\n\n\treturn (0);\n}\n\nstatic __inline__ int\ncopyinstr(const void *from, void *to, size_t len, size_t *done)\n{\n\tsize_t rc;\n\n\tif (len == 0)\n\t\treturn (-ENAMETOOLONG);\n\n\t \n\n\tmemset(to, 0, len);\n\trc = copyin(from, to, len - 1);\n\tif (done != NULL)\n\t\t*done = rc;\n\n\treturn (0);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

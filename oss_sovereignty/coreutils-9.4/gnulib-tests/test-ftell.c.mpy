@@ -1,0 +1,9 @@
+{
+  "module_name": "test-ftell.c",
+  "hash_id": "9cdac8be6c730162b8daabd1b9289450aba5b7b2e93bb9973e4806ed54618fc5",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-ftell.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#define _GL_NO_LARGE_FILES\n#include <stdio.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (ftell, long, (FILE *));\n\n#include \"binary-io.h\"\n#include \"macros.h\"\n\n#ifndef FUNC_UNGETC_BROKEN\n# define FUNC_UNGETC_BROKEN 0\n#endif\n\nint\nmain (int argc, char **argv)\n{\n  int ch;\n   \n  if (argc == 1)\n    {\n      ASSERT (ftell (stdin) == -1);\n      return 0;\n    }\n\n   \n  set_binary_mode (0, O_BINARY);\n\n   \n  ASSERT (ftell (stdin) == 0);\n\n  ch = fgetc (stdin);\n  ASSERT (ch == '#');\n  ASSERT (ftell (stdin) == 1);\n\n   \n  ch = ungetc ('#', stdin);\n  ASSERT (ch == '#');\n  ASSERT (ftell (stdin) == 0);\n\n  ch = fgetc (stdin);\n  ASSERT (ch == '#');\n  ASSERT (ftell (stdin) == 1);\n\n   \n  ASSERT (fseek (stdin, 2, SEEK_SET) == 0);\n  ASSERT (ftell (stdin) == 2);\n\n   \n  ch = fgetc (stdin);\n  ASSERT (ch == '/');\n  ch = ungetc ('@', stdin);\n  ASSERT (ch == '@');\n  ASSERT (ftell (stdin) == 2);\n\n  ch = fgetc (stdin);\n  ASSERT (ch == '@');\n  ASSERT (ftell (stdin) == 3);\n\n  if (2 < argc)\n    {\n      if (FUNC_UNGETC_BROKEN)\n        {\n          fputs (\"Skipping test: ungetc cannot handle arbitrary bytes\\n\",\n                 stderr);\n          return 77;\n        }\n       \n      ASSERT (fseek (stdin, 0, SEEK_CUR) == 0);\n      ASSERT (ftell (stdin) == 3);\n\n      ch = ungetc ('~', stdin);\n      ASSERT (ch == '~');\n      ASSERT (ftell (stdin) == 2);\n    }\n\n#if !defined __MINT__  \n   \n  ASSERT (fseek (stdin, 0, SEEK_END) == 0);\n  ch = ftell (stdin);\n  ASSERT (fseek (stdin, 10, SEEK_END) == 0);\n  ASSERT (ftell (stdin) == ch + 10);\n#endif\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

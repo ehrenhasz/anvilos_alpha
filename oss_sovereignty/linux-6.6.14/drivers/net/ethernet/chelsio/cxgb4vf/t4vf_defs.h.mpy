@@ -1,0 +1,9 @@
+{
+  "module_name": "t4vf_defs.h",
+  "hash_id": "9e2463236cdcadbf09cdd1aa51cbeb9a072cfccb6eea22c321fb36534d0d6128",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4vf/t4vf_defs.h",
+  "human_readable_source": " \n\n#ifndef __T4VF_DEFS_H__\n#define __T4VF_DEFS_H__\n\n#include \"../cxgb4/t4_regs.h\"\n\n \n#define T4VF_SGE_BASE_ADDR\t0x0000\n#define T4VF_MPS_BASE_ADDR\t0x0100\n#define T4VF_PL_BASE_ADDR\t0x0200\n#define T4VF_MBDATA_BASE_ADDR\t0x0240\n#define T6VF_MBDATA_BASE_ADDR\t0x0280\n#define T4VF_CIM_BASE_ADDR\t0x0300\n\n#define T4VF_REGMAP_START\t0x0000\n#define T4VF_REGMAP_SIZE\t0x0400\n\n \n#if T4VF_MBDATA_BASE_ADDR != CIM_PF_MAILBOX_DATA_A\n#error T4VF_MBDATA_BASE_ADDR must match CIM_PF_MAILBOX_DATA_A!\n#endif\n\n \n#define T4VF_MOD_MAP(module, index, first, last) \\\n\tT4VF_MOD_MAP_##module##_INDEX  = (index), \\\n\tT4VF_MOD_MAP_##module##_FIRST  = (first), \\\n\tT4VF_MOD_MAP_##module##_LAST   = (last), \\\n\tT4VF_MOD_MAP_##module##_OFFSET = ((first)/4), \\\n\tT4VF_MOD_MAP_##module##_BASE = \\\n\t\t(T4VF_##module##_BASE_ADDR/4 + (first)/4), \\\n\tT4VF_MOD_MAP_##module##_LIMIT = \\\n\t\t(T4VF_##module##_BASE_ADDR/4 + (last)/4),\n\n#define SGE_VF_KDOORBELL 0x0\n#define SGE_VF_GTS 0x4\n#define MPS_VF_CTL 0x0\n#define MPS_VF_STAT_RX_VF_ERR_FRAMES_H 0xfc\n#define PL_VF_WHOAMI 0x0\n#define CIM_VF_EXT_MAILBOX_CTRL 0x0\n#define CIM_VF_EXT_MAILBOX_STATUS 0x4\n\nenum {\n    T4VF_MOD_MAP(SGE, 2, SGE_VF_KDOORBELL, SGE_VF_GTS)\n    T4VF_MOD_MAP(MPS, 0, MPS_VF_CTL, MPS_VF_STAT_RX_VF_ERR_FRAMES_H)\n    T4VF_MOD_MAP(PL,  3, PL_VF_WHOAMI, PL_VF_WHOAMI)\n    T4VF_MOD_MAP(CIM, 1, CIM_VF_EXT_MAILBOX_CTRL, CIM_VF_EXT_MAILBOX_STATUS)\n};\n\n \n#define NUM_CIM_VF_MAILBOX_DATA_INSTANCES 16\n\n#define T4VF_MBDATA_FIRST\t0\n#define T4VF_MBDATA_LAST\t((NUM_CIM_VF_MAILBOX_DATA_INSTANCES-1)*4)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

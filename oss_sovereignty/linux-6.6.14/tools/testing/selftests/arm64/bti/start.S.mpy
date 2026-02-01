@@ -1,0 +1,9 @@
+{
+  "module_name": "start.S",
+  "hash_id": "3fc299470ae42b2693d94d2e3fd1f7cc389a8f94fe41a8e7ead790fad3f81d6f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/bti/start.S",
+  "human_readable_source": " \n \n\n#include \"assembler.h\"\n\nstartfn _start\n\tmov\tx0, sp\n\tb\tstart\nendfn\n\nemit_aarch64_feature_1_and\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

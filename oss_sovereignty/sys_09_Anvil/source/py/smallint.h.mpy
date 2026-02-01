@@ -1,0 +1,9 @@
+{
+  "module_name": "smallint.h",
+  "hash_id": "0ac8808736f74f1ff8f991cf3a651669de21325ba698bfdb078d5863b8066bb5",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/smallint.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_SMALLINT_H\n#define MICROPY_INCLUDED_PY_SMALLINT_H\n\n#include \"py/mpconfig.h\"\n#include \"py/misc.h\"\n\n\n\n#ifndef MP_SMALL_INT_MIN\n\n\n#if MICROPY_OBJ_REPR == MICROPY_OBJ_REPR_A || MICROPY_OBJ_REPR == MICROPY_OBJ_REPR_C\n\n#define MP_SMALL_INT_MIN ((mp_int_t)(((mp_int_t)MP_OBJ_WORD_MSBIT_HIGH) >> 1))\n#define MP_SMALL_INT_FITS(n) ((((n) ^ ((mp_uint_t)(n) << 1)) & MP_OBJ_WORD_MSBIT_HIGH) == 0)\n\n#define MP_SMALL_INT_POSITIVE_MASK ~(MP_OBJ_WORD_MSBIT_HIGH | (MP_OBJ_WORD_MSBIT_HIGH >> 1))\n\n#elif MICROPY_OBJ_REPR == MICROPY_OBJ_REPR_B\n\n#define MP_SMALL_INT_MIN ((mp_int_t)(((mp_int_t)MP_OBJ_WORD_MSBIT_HIGH) >> 2))\n#define MP_SMALL_INT_FITS(n) ((((n) & MP_SMALL_INT_MIN) == 0) || (((n) & MP_SMALL_INT_MIN) == MP_SMALL_INT_MIN))\n\n#define MP_SMALL_INT_POSITIVE_MASK ~(MP_OBJ_WORD_MSBIT_HIGH | (MP_OBJ_WORD_MSBIT_HIGH >> 1) | (MP_OBJ_WORD_MSBIT_HIGH >> 2))\n\n#elif MICROPY_OBJ_REPR == MICROPY_OBJ_REPR_D\n\n#define MP_SMALL_INT_MIN ((mp_int_t)(((mp_int_t)0xffff800000000000) >> 1))\n#define MP_SMALL_INT_FITS(n) ((((n) ^ ((n) << 1)) & 0xffff800000000000) == 0)\n\n#define MP_SMALL_INT_POSITIVE_MASK ~(0xffff800000000000 | (0xffff800000000000 >> 1))\n\n#endif\n\n#endif\n\n#define MP_SMALL_INT_MAX ((mp_int_t)(~(MP_SMALL_INT_MIN)))\n\n\n\n#define MP_IMAX_BITS(m) ((m) / ((m) % 255 + 1) / 255 % 255 * 8 + 7 - 86 / ((m) % 255 + 12))\n\n\n#define MP_SMALL_INT_BITS (MP_IMAX_BITS(MP_SMALL_INT_MAX) + 1)\n\nbool mp_small_int_mul_overflow(mp_int_t x, mp_int_t y);\nmp_int_t mp_small_int_modulo(mp_int_t dividend, mp_int_t divisor);\nmp_int_t mp_small_int_floor_divide(mp_int_t num, mp_int_t denom);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

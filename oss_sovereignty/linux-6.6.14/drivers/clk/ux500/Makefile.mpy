@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "357ed091b7b9e0d1eec67658a319175815240484247c38669d05d7ce1b1d8cf7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/ux500/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ux500 clocks\n#\n\n# Clock types\nobj-y += clk-prcc.o\nobj-y += clk-prcmu.o\nobj-y += clk-sysctrl.o\n\n# Reset control\nobj-y += reset-prcc.o\n\n# Clock definitions\nobj-y += u8500_of_clk.o\n\n# ABX500 clock driver\nobj-y += abx500-clk.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

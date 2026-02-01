@@ -1,0 +1,9 @@
+{
+  "module_name": "systeminfo.h",
+  "hash_id": "b699e5dbd39cba1dad916cada9c538d6096348b7ad362d46d81dfbd62d93ce08",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/systeminfo.h",
+  "human_readable_source": " \n\n#ifndef _SPL_SYSTEMINFO_H\n#define\t_SPL_SYSTEMINFO_H\n\n#define\tHW_HOSTID_LEN\t\t11\t\t \n\t\t\t\t\t\t \n\t\t\t\t\t\t \n\n \n#define\tHW_HOSTID_PATH\t\t\"/etc/hostid\"    \n#define\tHW_HOSTID_MASK\t\t0xFFFFFFFF \t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

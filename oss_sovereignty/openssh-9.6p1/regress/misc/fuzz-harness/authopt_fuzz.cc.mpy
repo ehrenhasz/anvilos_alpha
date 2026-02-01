@@ -1,0 +1,9 @@
+{
+  "module_name": "authopt_fuzz.cc",
+  "hash_id": "63de187a3b526a92056cdcb0d61603811ca77bd7130467ad093db7c5857f70b3",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/misc/fuzz-harness/authopt_fuzz.cc",
+  "human_readable_source": "#include <stddef.h>\n#include <stdio.h>\n#include <stdint.h>\n#include <string.h>\n#include <stdlib.h>\n\nextern \"C\" {\n\n#include \"auth-options.h\"\n\nint LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)\n{\n\tchar *cp = (char *)malloc(size + 1);\n\tstruct sshauthopt *opts = NULL, *merge = NULL, *add = sshauthopt_new();\n\n\tif (cp == NULL || add == NULL)\n\t\tgoto out;\n\tmemcpy(cp, data, size);\n\tcp[size] = '\\0';\n\tif ((opts = sshauthopt_parse(cp, NULL)) == NULL)\n\t\tgoto out;\n\tif ((merge = sshauthopt_merge(opts, add, NULL)) == NULL)\n\t\tgoto out;\n\n out:\n\tfree(cp);\n\tsshauthopt_free(add);\n\tsshauthopt_free(opts);\n\tsshauthopt_free(merge);\n\treturn 0;\n}\n\n} \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "perfconfig.example",
+  "hash_id": "86cffe0265e7afaadfe5baf7132efdb7a806c8c22739f4aea2956f91f5266976",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/perfconfig.example",
+  "human_readable_source": "[colors]\n\n\t# These were the old defaults\n\ttop = red, lightgray\n\tmedium = green, lightgray\n\tnormal = black, lightgray\n\tselected = lightgray, magenta\n\tjump_arrows = blue, lightgray\n\taddr = magenta, lightgray\n\n[tui]\n\n\t# Defaults if linked with libslang\n\treport = on\n\tannotate = on\n\ttop = on\n\n[buildid]\n\n\t# Default, disable using /dev/null\n\tdir = /root/.debug\n\n[annotate]\n\n\t# Defaults\n\thide_src_code = false\n\tuse_offset = true\n\tjump_arrows = true\n\tshow_nr_jumps = false\n\n[report]\n\n\t# Defaults\n\tsort-order = comm,dso,symbol\n\tpercent-limit = 0\n\tqueue-size = 0\n\tchildren = true\n\tgroup = true\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

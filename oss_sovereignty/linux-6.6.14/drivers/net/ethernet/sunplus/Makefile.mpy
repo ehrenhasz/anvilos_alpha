@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b3d7e4fb27669778a473850d2b9d60c0d8db6f3c4c4371b2b38e63ceb9857ff9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sunplus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Sunplus network device drivers.\n#\nobj-$(CONFIG_SP7021_EMAC) += sp7021_emac.o\nsp7021_emac-objs := spl2sw_driver.o spl2sw_int.o spl2sw_desc.o spl2sw_mac.o spl2sw_mdio.o spl2sw_phy.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

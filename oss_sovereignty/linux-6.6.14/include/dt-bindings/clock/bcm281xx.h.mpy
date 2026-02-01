@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm281xx.h",
+  "hash_id": "05656cdd5b64db6a4bb63120d378663bda2bf81feae239e59d75b0ce95eec0f0",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/bcm281xx.h",
+  "human_readable_source": " \n \n\n#ifndef _CLOCK_BCM281XX_H\n#define _CLOCK_BCM281XX_H\n\n \n\n \n#define BCM281XX_DT_ROOT_CCU_COMPAT\t\"brcm,bcm11351-root-ccu\"\n#define BCM281XX_DT_AON_CCU_COMPAT\t\"brcm,bcm11351-aon-ccu\"\n#define BCM281XX_DT_HUB_CCU_COMPAT\t\"brcm,bcm11351-hub-ccu\"\n#define BCM281XX_DT_MASTER_CCU_COMPAT\t\"brcm,bcm11351-master-ccu\"\n#define BCM281XX_DT_SLAVE_CCU_COMPAT\t\"brcm,bcm11351-slave-ccu\"\n\n \n\n#define BCM281XX_ROOT_CCU_FRAC_1M\t\t0\n#define BCM281XX_ROOT_CCU_CLOCK_COUNT\t\t1\n\n \n\n#define BCM281XX_AON_CCU_HUB_TIMER\t\t0\n#define BCM281XX_AON_CCU_PMU_BSC\t\t1\n#define BCM281XX_AON_CCU_PMU_BSC_VAR\t\t2\n#define BCM281XX_AON_CCU_CLOCK_COUNT\t\t3\n\n \n\n#define BCM281XX_HUB_CCU_TMON_1M\t\t0\n#define BCM281XX_HUB_CCU_CLOCK_COUNT\t\t1\n\n \n\n#define BCM281XX_MASTER_CCU_SDIO1\t\t0\n#define BCM281XX_MASTER_CCU_SDIO2\t\t1\n#define BCM281XX_MASTER_CCU_SDIO3\t\t2\n#define BCM281XX_MASTER_CCU_SDIO4\t\t3\n#define BCM281XX_MASTER_CCU_USB_IC\t\t4\n#define BCM281XX_MASTER_CCU_HSIC2_48M\t\t5\n#define BCM281XX_MASTER_CCU_HSIC2_12M\t\t6\n#define BCM281XX_MASTER_CCU_CLOCK_COUNT\t\t7\n\n \n\n#define BCM281XX_SLAVE_CCU_UARTB\t\t0\n#define BCM281XX_SLAVE_CCU_UARTB2\t\t1\n#define BCM281XX_SLAVE_CCU_UARTB3\t\t2\n#define BCM281XX_SLAVE_CCU_UARTB4\t\t3\n#define BCM281XX_SLAVE_CCU_SSP0\t\t\t4\n#define BCM281XX_SLAVE_CCU_SSP2\t\t\t5\n#define BCM281XX_SLAVE_CCU_BSC1\t\t\t6\n#define BCM281XX_SLAVE_CCU_BSC2\t\t\t7\n#define BCM281XX_SLAVE_CCU_BSC3\t\t\t8\n#define BCM281XX_SLAVE_CCU_PWM\t\t\t9\n#define BCM281XX_SLAVE_CCU_CLOCK_COUNT\t\t10\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

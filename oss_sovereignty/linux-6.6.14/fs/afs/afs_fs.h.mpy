@@ -1,0 +1,9 @@
+{
+  "module_name": "afs_fs.h",
+  "hash_id": "3f3e65a007e2fc9d74694e6d45be98c93133ca7e5808d98a500a1f65af653aa9",
+  "original_prompt": "Ingested from linux-6.6.14/fs/afs/afs_fs.h",
+  "human_readable_source": " \n \n\n#ifndef AFS_FS_H\n#define AFS_FS_H\n\n#define AFS_FS_PORT\t\t7000\t \n#define FS_SERVICE\t\t1\t \n\nenum AFS_FS_Operations {\n\tFSFETCHDATA\t\t= 130,\t \n\tFSFETCHACL\t\t= 131,\t \n\tFSFETCHSTATUS\t\t= 132,\t \n\tFSSTOREDATA\t\t= 133,\t \n\tFSSTOREACL\t\t= 134,\t \n\tFSSTORESTATUS\t\t= 135,\t \n\tFSREMOVEFILE\t\t= 136,\t \n\tFSCREATEFILE\t\t= 137,\t \n\tFSRENAME\t\t= 138,\t \n\tFSSYMLINK\t\t= 139,\t \n\tFSLINK\t\t\t= 140,\t \n\tFSMAKEDIR\t\t= 141,\t \n\tFSREMOVEDIR\t\t= 142,\t \n\tFSGIVEUPCALLBACKS\t= 147,\t \n\tFSGETVOLUMEINFO\t\t= 148,\t \n\tFSGETVOLUMESTATUS\t= 149,\t \n\tFSGETROOTVOLUME\t\t= 151,\t \n\tFSBULKSTATUS\t\t= 155,\t \n\tFSSETLOCK\t\t= 156,\t \n\tFSEXTENDLOCK\t\t= 157,\t \n\tFSRELEASELOCK\t\t= 158,\t \n\tFSLOOKUP\t\t= 161,\t \n\tFSINLINEBULKSTATUS\t= 65536,  \n\tFSFETCHDATA64\t\t= 65537,  \n\tFSSTOREDATA64\t\t= 65538,  \n\tFSGIVEUPALLCALLBACKS\t= 65539,  \n\tFSGETCAPABILITIES\t= 65540,  \n};\n\nenum AFS_FS_Errors {\n\tVRESTARTING\t= -100,\t \n\tVSALVAGE\t= 101,\t \n\tVNOVNODE\t= 102,\t \n\tVNOVOL\t\t= 103,\t \n\tVVOLEXISTS\t= 104,\t \n\tVNOSERVICE\t= 105,\t \n\tVOFFLINE\t= 106,\t \n\tVONLINE\t\t= 107,\t \n\tVDISKFULL\t= 108,\t \n\tVOVERQUOTA\t= 109,\t \n\tVBUSY\t\t= 110,\t \n\tVMOVED\t\t= 111,\t \n\tVIO\t\t= 112,\t \n\tVSALVAGING\t= 113,\t \n\tVRESTRICTED\t= 120,\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

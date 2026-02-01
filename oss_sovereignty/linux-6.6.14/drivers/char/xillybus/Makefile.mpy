@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b97d6ef8f7913de266094862d1431f926b96e9c75a86726f7c83df431ec25073",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/xillybus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for Xillybus driver\n#\n\nobj-$(CONFIG_XILLYBUS_CLASS)\t+= xillybus_class.o\nobj-$(CONFIG_XILLYBUS)\t\t+= xillybus_core.o\nobj-$(CONFIG_XILLYBUS_PCIE)\t+= xillybus_pcie.o\nobj-$(CONFIG_XILLYBUS_OF)\t+= xillybus_of.o\nobj-$(CONFIG_XILLYUSB)\t\t+= xillyusb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "int-ll64.h",
+  "hash_id": "7bee54f8e3c2d4cc69b88d98405064a57db73645a44b6af5f273367b3d37abe7",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/asm-generic/int-ll64.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_ASM_GENERIC_INT_LL64_H\n#define _UAPI_ASM_GENERIC_INT_LL64_H\n\n#include <asm/bitsperlong.h>\n\n#ifndef __ASSEMBLY__\n \n\ntypedef __signed__ char __s8;\ntypedef unsigned char __u8;\n\ntypedef __signed__ short __s16;\ntypedef unsigned short __u16;\n\ntypedef __signed__ int __s32;\ntypedef unsigned int __u32;\n\n#ifdef __GNUC__\n__extension__ typedef __signed__ long long __s64;\n__extension__ typedef unsigned long long __u64;\n#else\ntypedef __signed__ long long __s64;\ntypedef unsigned long long __u64;\n#endif\n\n#endif  \n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

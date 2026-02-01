@@ -1,0 +1,9 @@
+{
+  "module_name": "s5pv210-audss.h",
+  "hash_id": "a37bef34577a7e4e3f367b4cad95c569e319e120d5862f79bccf1ee32743ce4f",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/s5pv210-audss.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLOCK_S5PV210_AUDSS_H\n#define _DT_BINDINGS_CLOCK_S5PV210_AUDSS_H\n\n#define CLK_MOUT_AUDSS\t\t0\n#define CLK_MOUT_I2S_A\t\t1\n\n#define CLK_DOUT_AUD_BUS\t2\n#define CLK_DOUT_I2S_A\t\t3\n\n#define CLK_I2S\t\t\t4\n#define CLK_HCLK_I2S\t\t5\n#define CLK_HCLK_UART\t\t6\n#define CLK_HCLK_HWA\t\t7\n#define CLK_HCLK_DMA\t\t8\n#define CLK_HCLK_BUF\t\t9\n#define CLK_HCLK_RP\t\t10\n\n#define AUDSS_MAX_CLKS\t\t11\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

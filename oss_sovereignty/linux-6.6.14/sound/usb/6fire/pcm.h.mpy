@@ -1,0 +1,9 @@
+{
+  "module_name": "pcm.h",
+  "hash_id": "7c7b788d12f87336455dcd1d2152a0dd6c9dcc994e15b45ed0115e3ac3a45f01",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/6fire/pcm.h",
+  "human_readable_source": " \n \n\n#ifndef USB6FIRE_PCM_H\n#define USB6FIRE_PCM_H\n\n#include <sound/pcm.h>\n#include <linux/mutex.h>\n\n#include \"common.h\"\n\nenum  \n{\n\t \n\tPCM_N_URBS = 16, PCM_N_PACKETS_PER_URB = 8, PCM_MAX_PACKET_SIZE = 604\n};\n\nstruct pcm_urb {\n\tstruct sfire_chip *chip;\n\n\t \n\tstruct urb instance;\n\tstruct usb_iso_packet_descriptor packets[PCM_N_PACKETS_PER_URB];\n\t \n\tu8 *buffer;\n\n\tstruct pcm_urb *peer;\n};\n\nstruct pcm_substream {\n\tspinlock_t lock;\n\tstruct snd_pcm_substream *instance;\n\n\tbool active;\n\n\tsnd_pcm_uframes_t dma_off;  \n\tsnd_pcm_uframes_t period_off;  \n};\n\nstruct pcm_runtime {\n\tstruct sfire_chip *chip;\n\tstruct snd_pcm *instance;\n\n\tstruct pcm_substream playback;\n\tstruct pcm_substream capture;\n\tbool panic;  \n\n\tstruct pcm_urb in_urbs[PCM_N_URBS];\n\tstruct pcm_urb out_urbs[PCM_N_URBS];\n\tint in_packet_size;\n\tint out_packet_size;\n\tint in_n_analog;  \n\tint out_n_analog;  \n\n\tstruct mutex stream_mutex;\n\tu8 stream_state;  \n\tu8 rate;  \n\twait_queue_head_t stream_wait_queue;\n\tbool stream_wait_cond;\n};\n\nint usb6fire_pcm_init(struct sfire_chip *chip);\nvoid usb6fire_pcm_abort(struct sfire_chip *chip);\nvoid usb6fire_pcm_destroy(struct sfire_chip *chip);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

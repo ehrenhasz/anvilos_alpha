@@ -1,0 +1,9 @@
+{
+  "module_name": "relpath.h",
+  "hash_id": "b2a27434badfc753860d1aedc4093b62e687064bc892604ec36374c347998851",
+  "original_prompt": "Ingested from coreutils-9.4/src/relpath.h",
+  "human_readable_source": " \n\n#ifndef _RELPATH_H\n# define _RELPATH_H\n\nextern bool\nrelpath (char const *can_fname, char const *can_reldir, char *buf, size_t len);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

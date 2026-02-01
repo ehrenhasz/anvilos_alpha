@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0044a2bf73ff4946c1c29036d6e008b496f4538ad51333d3a742247e3cfce6d1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/samsung/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Samsung Clock specific Makefile\n#\n\nobj-$(CONFIG_COMMON_CLK)\t+= clk.o clk-pll.o clk-cpu.o\nobj-$(CONFIG_EXYNOS_3250_COMMON_CLK)\t+= clk-exynos3250.o\nobj-$(CONFIG_EXYNOS_4_COMMON_CLK)\t+= clk-exynos4.o\nobj-$(CONFIG_EXYNOS_4_COMMON_CLK)\t+= clk-exynos4412-isp.o\nobj-$(CONFIG_EXYNOS_5250_COMMON_CLK)\t+= clk-exynos5250.o\nobj-$(CONFIG_EXYNOS_5250_COMMON_CLK)\t+= clk-exynos5-subcmu.o\nobj-$(CONFIG_EXYNOS_5260_COMMON_CLK)\t+= clk-exynos5260.o\nobj-$(CONFIG_EXYNOS_5410_COMMON_CLK)\t+= clk-exynos5410.o\nobj-$(CONFIG_EXYNOS_5420_COMMON_CLK)\t+= clk-exynos5420.o\nobj-$(CONFIG_EXYNOS_5420_COMMON_CLK)\t+= clk-exynos5-subcmu.o\nobj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)\t+= clk-exynos5433.o\nobj-$(CONFIG_EXYNOS_AUDSS_CLK_CON) += clk-exynos-audss.o\nobj-$(CONFIG_EXYNOS_CLKOUT)\t+= clk-exynos-clkout.o\nobj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)\t+= clk-exynos-arm64.o\nobj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)\t+= clk-exynos7.o\nobj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)\t+= clk-exynos7885.o\nobj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)\t+= clk-exynos850.o\nobj-$(CONFIG_EXYNOS_ARM64_COMMON_CLK)\t+= clk-exynosautov9.o\nobj-$(CONFIG_S3C64XX_COMMON_CLK)\t+= clk-s3c64xx.o\nobj-$(CONFIG_S5PV210_COMMON_CLK)\t+= clk-s5pv210.o clk-s5pv210-audss.o\nobj-$(CONFIG_TESLA_FSD_COMMON_CLK)\t+= clk-fsd.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "proc.c",
+  "hash_id": "340e1e551d63239702c54d1ecb8073c4c617831337ec48cf54e52b1d8ae2cd1e",
+  "original_prompt": "Ingested from linux-6.6.14/fs/fscache/proc.c",
+  "human_readable_source": "\n \n\n#define FSCACHE_DEBUG_LEVEL CACHE\n#include <linux/module.h>\n#include <linux/proc_fs.h>\n#include <linux/seq_file.h>\n#include \"internal.h\"\n\n \nint __init fscache_proc_init(void)\n{\n\tif (!proc_mkdir(\"fs/fscache\", NULL))\n\t\tgoto error_dir;\n\n\tif (!proc_create_seq(\"fs/fscache/caches\", S_IFREG | 0444, NULL,\n\t\t\t     &fscache_caches_seq_ops))\n\t\tgoto error;\n\n\tif (!proc_create_seq(\"fs/fscache/volumes\", S_IFREG | 0444, NULL,\n\t\t\t     &fscache_volumes_seq_ops))\n\t\tgoto error;\n\n\tif (!proc_create_seq(\"fs/fscache/cookies\", S_IFREG | 0444, NULL,\n\t\t\t     &fscache_cookies_seq_ops))\n\t\tgoto error;\n\n#ifdef CONFIG_FSCACHE_STATS\n\tif (!proc_create_single(\"fs/fscache/stats\", S_IFREG | 0444, NULL,\n\t\t\t\tfscache_stats_show))\n\t\tgoto error;\n#endif\n\n\treturn 0;\n\nerror:\n\tremove_proc_entry(\"fs/fscache\", NULL);\nerror_dir:\n\treturn -ENOMEM;\n}\n\n \nvoid fscache_proc_cleanup(void)\n{\n\tremove_proc_subtree(\"fs/fscache\", NULL);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

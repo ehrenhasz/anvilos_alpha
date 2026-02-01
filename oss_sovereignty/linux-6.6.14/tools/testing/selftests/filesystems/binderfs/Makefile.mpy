@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "973dacdcd729425fb2607f275f232fb94b034db4f07f1ce674d185da6e8584c5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/filesystems/binderfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nCFLAGS += $(KHDR_INCLUDES) -pthread\nTEST_GEN_PROGS := binderfs_test\n\nbinderfs_test: binderfs_test.c ../../kselftest.h ../../kselftest_harness.h\n\ninclude ../../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

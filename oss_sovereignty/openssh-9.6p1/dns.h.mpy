@@ -1,0 +1,9 @@
+{
+  "module_name": "dns.h",
+  "hash_id": "756dd3991606e27fb9281552f317158e5ed099541d02c59fd8a090a7c4bc2051",
+  "original_prompt": "Ingested from openssh-9.6p1/dns.h",
+  "human_readable_source": " \n\n \n\n#ifndef DNS_H\n#define DNS_H\n\nenum sshfp_types {\n\tSSHFP_KEY_RESERVED = 0,\n\tSSHFP_KEY_RSA = 1,\n\tSSHFP_KEY_DSA = 2,\n\tSSHFP_KEY_ECDSA = 3,\n\tSSHFP_KEY_ED25519 = 4,\n\tSSHFP_KEY_XMSS = 5\n};\n\nenum sshfp_hashes {\n\tSSHFP_HASH_RESERVED = 0,\n\tSSHFP_HASH_SHA1 = 1,\n\tSSHFP_HASH_SHA256 = 2,\n\tSSHFP_HASH_MAX = 3\n};\n\n#define DNS_RDATACLASS_IN\t1\n#define DNS_RDATATYPE_SSHFP\t44\n\n#define DNS_VERIFY_FOUND\t0x00000001\n#define DNS_VERIFY_MATCH\t0x00000002\n#define DNS_VERIFY_SECURE\t0x00000004\n#define DNS_VERIFY_FAILED\t0x00000008\n\nint\tverify_host_key_dns(const char *, struct sockaddr *,\n    struct sshkey *, int *);\nint\texport_dns_rr(const char *, struct sshkey *, FILE *, int, int);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

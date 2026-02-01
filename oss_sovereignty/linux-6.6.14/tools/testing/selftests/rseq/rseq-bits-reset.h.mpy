@@ -1,0 +1,9 @@
+{
+  "module_name": "rseq-bits-reset.h",
+  "hash_id": "bf66758419288c792d966bb52ac2a3dff783e1ca6099cf2e97ff46a6b11355c4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rseq/rseq-bits-reset.h",
+  "human_readable_source": " \n \n\n#undef RSEQ_TEMPLATE_IDENTIFIER\n#undef RSEQ_TEMPLATE_CPU_ID_FIELD\n#undef RSEQ_TEMPLATE_CPU_ID_OFFSET\n#undef RSEQ_TEMPLATE_SUFFIX\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

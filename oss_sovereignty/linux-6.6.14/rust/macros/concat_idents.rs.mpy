@@ -1,0 +1,9 @@
+{
+  "module_name": "concat_idents.rs",
+  "hash_id": "c9e7bd0d7ec9ccde83beaf087b5bb938ee7e69e136cb7b714e5b0cd149b0459f",
+  "original_prompt": "Ingested from linux-6.6.14/rust/macros/concat_idents.rs",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n\nuse proc_macro::{token_stream, Ident, TokenStream, TokenTree};\n\nuse crate::helpers::expect_punct;\n\nfn expect_ident(it: &mut token_stream::IntoIter) -> Ident {\n    if let Some(TokenTree::Ident(ident)) = it.next() {\n        ident\n    } else {\n        panic!(\"Expected Ident\")\n    }\n}\n\npub(crate) fn concat_idents(ts: TokenStream) -> TokenStream {\n    let mut it = ts.into_iter();\n    let a = expect_ident(&mut it);\n    assert_eq!(expect_punct(&mut it), ',');\n    let b = expect_ident(&mut it);\n    assert!(it.next().is_none(), \"only two idents can be concatenated\");\n    let res = Ident::new(&format!(\"{a}{b}\"), b.span());\n    TokenStream::from_iter([TokenTree::Ident(res)])\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

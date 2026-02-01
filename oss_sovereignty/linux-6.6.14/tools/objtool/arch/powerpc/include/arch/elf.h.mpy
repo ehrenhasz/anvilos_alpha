@@ -1,0 +1,9 @@
+{
+  "module_name": "elf.h",
+  "hash_id": "dfa36423294513417769a3f582eb8801e39ce6708bf29592e850e932564b78ee",
+  "original_prompt": "Ingested from linux-6.6.14/tools/objtool/arch/powerpc/include/arch/elf.h",
+  "human_readable_source": " \n#ifndef _OBJTOOL_ARCH_ELF\n#define _OBJTOOL_ARCH_ELF\n\n#define R_NONE\t\tR_PPC_NONE\n#define R_ABS64\t\tR_PPC64_ADDR64\n#define R_ABS32\t\tR_PPC_ADDR32\n#define R_DATA32\tR_PPC_REL32\n#define R_DATA64\tR_PPC64_REL64\n#define R_TEXT32\tR_PPC_REL32\n#define R_TEXT64\tR_PPC64_REL32\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

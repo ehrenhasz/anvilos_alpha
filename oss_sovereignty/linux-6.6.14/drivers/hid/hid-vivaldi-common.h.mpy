@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-vivaldi-common.h",
+  "hash_id": "fbce08a7185facbfac6b4e3ee1f83826af71922b95e65c5e0ecaa56c62cf485c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-vivaldi-common.h",
+  "human_readable_source": " \n#ifndef _HID_VIVALDI_COMMON_H\n#define _HID_VIVALDI_COMMON_H\n\nstruct hid_device;\nstruct hid_field;\nstruct hid_usage;\n\nvoid vivaldi_feature_mapping(struct hid_device *hdev,\n\t\t\t     struct hid_field *field, struct hid_usage *usage);\n\nextern const struct attribute_group *vivaldi_attribute_groups[];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

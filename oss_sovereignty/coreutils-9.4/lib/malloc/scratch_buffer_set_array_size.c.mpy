@@ -1,0 +1,9 @@
+{
+  "module_name": "scratch_buffer_set_array_size.c",
+  "hash_id": "fd394d93c7697ffcb372afed83e5bb8e6a98c9901a8f15bf6e3118a003ac9684",
+  "original_prompt": "Ingested from coreutils-9.4/lib/malloc/scratch_buffer_set_array_size.c",
+  "human_readable_source": " \n  if ((nelem | size) >> (sizeof (size_t) * CHAR_BIT / 2) != 0\n      && nelem != 0 && size != new_length / nelem)\n    {\n       \n      scratch_buffer_free (buffer);\n      scratch_buffer_init (buffer);\n      __set_errno (ENOMEM);\n      return false;\n    }\n\n  if (new_length <= buffer->length)\n    return true;\n\n   \n  scratch_buffer_free (buffer);\n\n  char *new_ptr = malloc (new_length);\n  if (new_ptr == NULL)\n    {\n       \n      scratch_buffer_init (buffer);\n      return false;\n    }\n\n   \n  buffer->data = new_ptr;\n  buffer->length = new_length;\n  return true;\n}\nlibc_hidden_def (__libc_scratch_buffer_set_array_size)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

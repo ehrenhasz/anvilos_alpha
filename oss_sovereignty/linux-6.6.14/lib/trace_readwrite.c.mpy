@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_readwrite.c",
+  "hash_id": "0c1470c68b6de9d660a55551f320c42a2aab431fd721aa4b878ef1e8a69cd984",
+  "original_prompt": "Ingested from linux-6.6.14/lib/trace_readwrite.c",
+  "human_readable_source": "\n \n\n#include <linux/ftrace.h>\n#include <linux/module.h>\n#include <asm-generic/io.h>\n\n#define CREATE_TRACE_POINTS\n#include <trace/events/rwmmio.h>\n\n#ifdef CONFIG_TRACE_MMIO_ACCESS\nvoid log_write_mmio(u64 val, u8 width, volatile void __iomem *addr,\n\t\t    unsigned long caller_addr, unsigned long caller_addr0)\n{\n\ttrace_rwmmio_write(caller_addr, caller_addr0, val, width, addr);\n}\nEXPORT_SYMBOL_GPL(log_write_mmio);\nEXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_write);\n\nvoid log_post_write_mmio(u64 val, u8 width, volatile void __iomem *addr,\n\t\t\t unsigned long caller_addr, unsigned long caller_addr0)\n{\n\ttrace_rwmmio_post_write(caller_addr, caller_addr0, val, width, addr);\n}\nEXPORT_SYMBOL_GPL(log_post_write_mmio);\nEXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_post_write);\n\nvoid log_read_mmio(u8 width, const volatile void __iomem *addr,\n\t\t   unsigned long caller_addr, unsigned long caller_addr0)\n{\n\ttrace_rwmmio_read(caller_addr, caller_addr0, width, addr);\n}\nEXPORT_SYMBOL_GPL(log_read_mmio);\nEXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_read);\n\nvoid log_post_read_mmio(u64 val, u8 width, const volatile void __iomem *addr,\n\t\t\tunsigned long caller_addr, unsigned long caller_addr0)\n{\n\ttrace_rwmmio_post_read(caller_addr, caller_addr0, val, width, addr);\n}\nEXPORT_SYMBOL_GPL(log_post_read_mmio);\nEXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_post_read);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

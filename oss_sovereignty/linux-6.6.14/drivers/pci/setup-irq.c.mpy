@@ -1,0 +1,9 @@
+{
+  "module_name": "setup-irq.c",
+  "hash_id": "3347654f56b5251980189631ed57e2694562be82658fd8d5fc11fa4de87aab2e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/setup-irq.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/pci.h>\n#include <linux/errno.h>\n#include <linux/ioport.h>\n#include <linux/cache.h>\n#include \"pci.h\"\n\nvoid pci_assign_irq(struct pci_dev *dev)\n{\n\tu8 pin;\n\tu8 slot = -1;\n\tint irq = 0;\n\tstruct pci_host_bridge *hbrg = pci_find_host_bridge(dev->bus);\n\n\tif (!(hbrg->map_irq)) {\n\t\tpci_dbg(dev, \"runtime IRQ mapping not provided by arch\\n\");\n\t\treturn;\n\t}\n\n\t \n\tpci_read_config_byte(dev, PCI_INTERRUPT_PIN, &pin);\n\t \n\tif (pin > 4)\n\t\tpin = 1;\n\n\tif (pin) {\n\t\t \n\t\tif (hbrg->swizzle_irq)\n\t\t\tslot = (*(hbrg->swizzle_irq))(dev, &pin);\n\n\t\t \n\t\tirq = (*(hbrg->map_irq))(dev, slot, pin);\n\t\tif (irq == -1)\n\t\t\tirq = 0;\n\t}\n\tdev->irq = irq;\n\n\tpci_dbg(dev, \"assign IRQ: got %d\\n\", dev->irq);\n\n\t \n\tpci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

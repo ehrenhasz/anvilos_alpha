@@ -1,0 +1,9 @@
+{
+  "module_name": "mxs-dma.h",
+  "hash_id": "73877e280cf702f8298244a042a66e2252599a666954be74ad8a4fe65d9abb47",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dma/mxs-dma.h",
+  "human_readable_source": " \n#ifndef _MXS_DMA_H_\n#define _MXS_DMA_H_\n\n#include <linux/dmaengine.h>\n\n#define MXS_DMA_CTRL_WAIT4END\tBIT(31)\n#define MXS_DMA_CTRL_WAIT4RDY\tBIT(30)\n\n \nstatic inline struct dma_async_tx_descriptor *mxs_dmaengine_prep_pio(\n        struct dma_chan *chan, u32 *pio, unsigned int npio,\n        enum dma_transfer_direction dir, unsigned long flags)\n{\n\treturn dmaengine_prep_slave_sg(chan, (struct scatterlist *)pio, npio,\n\t\t\t\t       dir, flags);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

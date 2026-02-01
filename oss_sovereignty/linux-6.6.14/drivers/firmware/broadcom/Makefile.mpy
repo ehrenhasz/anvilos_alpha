@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e953f84ab50b35c84832e972e1ea0eda08f6ff6a6265a7bf284713de611adcf4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/broadcom/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_BCM47XX_NVRAM)\t\t+= bcm47xx_nvram.o\nobj-$(CONFIG_BCM47XX_SPROM)\t\t+= bcm47xx_sprom.o\nobj-$(CONFIG_TEE_BNXT_FW)\t\t+= tee_bnxt_fw.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

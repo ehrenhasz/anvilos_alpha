@@ -1,0 +1,9 @@
+{
+  "module_name": "compat_dh.c",
+  "hash_id": "61b5ce33f48e518008ffef330b2ea1e88a067342d8931e58da8a824609ef29ff",
+  "original_prompt": "Ingested from linux-6.6.14/security/keys/compat_dh.c",
+  "human_readable_source": "\n \n\n#include <linux/uaccess.h>\n\n#include \"internal.h\"\n\n \nlong compat_keyctl_dh_compute(struct keyctl_dh_params __user *params,\n\t\t\t      char __user *buffer, size_t buflen,\n\t\t\t      struct compat_keyctl_kdf_params __user *kdf)\n{\n\tstruct keyctl_kdf_params kdfcopy;\n\tstruct compat_keyctl_kdf_params compat_kdfcopy;\n\n\tif (!kdf)\n\t\treturn __keyctl_dh_compute(params, buffer, buflen, NULL);\n\n\tif (copy_from_user(&compat_kdfcopy, kdf, sizeof(compat_kdfcopy)) != 0)\n\t\treturn -EFAULT;\n\n\tkdfcopy.hashname = compat_ptr(compat_kdfcopy.hashname);\n\tkdfcopy.otherinfo = compat_ptr(compat_kdfcopy.otherinfo);\n\tkdfcopy.otherinfolen = compat_kdfcopy.otherinfolen;\n\tmemcpy(kdfcopy.__spare, compat_kdfcopy.__spare,\n\t       sizeof(kdfcopy.__spare));\n\n\treturn __keyctl_dh_compute(params, buffer, buflen, &kdfcopy);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

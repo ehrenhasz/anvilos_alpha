@@ -1,0 +1,9 @@
+{
+  "module_name": "unpriv_helpers.h",
+  "hash_id": "5a5ac58958007b6f7acc248c9b819c0ff4ce2677d37454349e190448fff04ec6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/unpriv_helpers.h",
+  "human_readable_source": "\n\n#include <stdbool.h>\n\n#define UNPRIV_SYSCTL \"kernel/unprivileged_bpf_disabled\"\n\nbool get_unpriv_disabled(void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

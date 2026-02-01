@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-starfive-jh7110.h",
+  "hash_id": "c4aa363b3ac89aadd9654ebcf6e3c7c521593ecf65ed5709896a8bdc3778059d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/starfive/clk-starfive-jh7110.h",
+  "human_readable_source": " \n#ifndef __CLK_STARFIVE_JH7110_H\n#define __CLK_STARFIVE_JH7110_H\n\n#include \"clk-starfive-jh71x0.h\"\n\n \nstruct jh7110_top_sysclk {\n\tstruct clk_bulk_data *top_clks;\n\tint top_clks_num;\n};\n\nint jh7110_reset_controller_register(struct jh71x0_clk_priv *priv,\n\t\t\t\t     const char *adev_name,\n\t\t\t\t     u32 adev_id);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

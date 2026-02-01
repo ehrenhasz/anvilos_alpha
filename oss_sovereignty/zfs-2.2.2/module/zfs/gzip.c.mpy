@@ -1,0 +1,9 @@
+{
+  "module_name": "gzip.c",
+  "hash_id": "30c70c07706ce219f2a12f967b8a3ed41997e1a935844ee09c62e55147c486ff",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zfs/gzip.c",
+  "human_readable_source": " \n\n \n\n\n\n#include <sys/debug.h>\n#include <sys/types.h>\n#include <sys/qat.h>\n#include <sys/zio_compress.h>\n\n#ifdef _KERNEL\n\n#include <sys/zmod.h>\ntypedef size_t zlen_t;\n#define\tcompress_func\tz_compress_level\n#define\tuncompress_func\tz_uncompress\n\n#else  \n\n#include <zlib.h>\ntypedef uLongf zlen_t;\n#define\tcompress_func\tcompress2\n#define\tuncompress_func\tuncompress\n\n#endif\n\nsize_t\ngzip_compress(void *s_start, void *d_start, size_t s_len, size_t d_len, int n)\n{\n\tint ret;\n\tzlen_t dstlen = d_len;\n\n\tASSERT(d_len <= s_len);\n\n\t \n\tif (qat_dc_use_accel(s_len)) {\n\t\tret = qat_compress(QAT_COMPRESS, s_start, s_len, d_start,\n\t\t    d_len, &dstlen);\n\t\tif (ret == CPA_STATUS_SUCCESS) {\n\t\t\treturn ((size_t)dstlen);\n\t\t} else if (ret == CPA_STATUS_INCOMPRESSIBLE) {\n\t\t\tif (d_len != s_len)\n\t\t\t\treturn (s_len);\n\n\t\t\tmemcpy(d_start, s_start, s_len);\n\t\t\treturn (s_len);\n\t\t}\n\t\t \n\t}\n\n\tif (compress_func(d_start, &dstlen, s_start, s_len, n) != Z_OK) {\n\t\tif (d_len != s_len)\n\t\t\treturn (s_len);\n\n\t\tmemcpy(d_start, s_start, s_len);\n\t\treturn (s_len);\n\t}\n\n\treturn ((size_t)dstlen);\n}\n\nint\ngzip_decompress(void *s_start, void *d_start, size_t s_len, size_t d_len, int n)\n{\n\t(void) n;\n\tzlen_t dstlen = d_len;\n\n\tASSERT(d_len >= s_len);\n\n\t \n\tif (qat_dc_use_accel(d_len)) {\n\t\tif (qat_compress(QAT_DECOMPRESS, s_start, s_len,\n\t\t    d_start, d_len, &dstlen) == CPA_STATUS_SUCCESS)\n\t\t\treturn (0);\n\t\t \n\t}\n\n\tif (uncompress_func(d_start, &dstlen, s_start, s_len) != Z_OK)\n\t\treturn (-1);\n\n\treturn (0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "keyring-type.h",
+  "hash_id": "63d40db8cdb12d4ca2d65e0bc56def3c53f176c76b83eda3f5e19493317f5f3b",
+  "original_prompt": "Ingested from linux-6.6.14/include/keys/keyring-type.h",
+  "human_readable_source": " \n \n\n#ifndef _KEYS_KEYRING_TYPE_H\n#define _KEYS_KEYRING_TYPE_H\n\n#include <linux/key.h>\n#include <linux/assoc_array.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-nextstep.h",
+  "hash_id": "3db50c2f1517e739812f77f04b64d152065762c035fa4a5d259f0fd9f8f46574",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-nextstep.h",
+  "human_readable_source": " \n\n#ifndef _NEXT_POSIX_H\n#define _NEXT_POSIX_H\n\n#ifdef HAVE_NEXT\n#include <sys/dir.h>\n\n \n#undef NGROUPS_MAX\n#define NGROUPS_MAX NGROUPS\n\n \n#define dirent direct\n\n \npid_t posix_wait(int *);\n#define wait(a) posix_wait(a)\n\n \npid_t getppid(void);\nvoid vhangup(void);\nint innetgr(const char *, const char *, const char *, const char *);\n\n \nint tcgetattr(int, struct termios *);\nint tcsetattr(int, int, const struct termios *);\nint tcsetpgrp(int, pid_t);\nspeed_t cfgetospeed(const struct termios *);\nspeed_t cfgetispeed(const struct termios *);\nint cfsetospeed(struct termios *, int);\nint cfsetispeed(struct termios *, int);\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4e5c69d5834a02ce685d0e15d66905677b8c6970650ecbb029c473cc9724e86a",
+  "original_prompt": "Ingested from linux-6.6.14/net/ieee802154/6lowpan/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_IEEE802154_6LOWPAN) += ieee802154_6lowpan.o\n\nieee802154_6lowpan-y := core.o rx.o reassembly.o tx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

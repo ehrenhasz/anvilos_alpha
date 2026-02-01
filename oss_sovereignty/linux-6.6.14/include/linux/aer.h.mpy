@@ -1,0 +1,9 @@
+{
+  "module_name": "aer.h",
+  "hash_id": "98e42200d65cd504867254d9ea9ed8fb23488780ab0dcb6612f57989d8978c66",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/aer.h",
+  "human_readable_source": " \n \n\n#ifndef _AER_H_\n#define _AER_H_\n\n#include <linux/errno.h>\n#include <linux/types.h>\n\n#define AER_NONFATAL\t\t\t0\n#define AER_FATAL\t\t\t1\n#define AER_CORRECTABLE\t\t\t2\n#define DPC_FATAL\t\t\t3\n\nstruct pci_dev;\n\nstruct aer_header_log_regs {\n\tunsigned int dw0;\n\tunsigned int dw1;\n\tunsigned int dw2;\n\tunsigned int dw3;\n};\n\nstruct aer_capability_regs {\n\tu32 header;\n\tu32 uncor_status;\n\tu32 uncor_mask;\n\tu32 uncor_severity;\n\tu32 cor_status;\n\tu32 cor_mask;\n\tu32 cap_control;\n\tstruct aer_header_log_regs header_log;\n\tu32 root_command;\n\tu32 root_status;\n\tu16 cor_err_source;\n\tu16 uncor_err_source;\n};\n\n#if defined(CONFIG_PCIEAER)\nint pci_aer_clear_nonfatal_status(struct pci_dev *dev);\nint pcie_aer_is_native(struct pci_dev *dev);\n#else\nstatic inline int pci_aer_clear_nonfatal_status(struct pci_dev *dev)\n{\n\treturn -EINVAL;\n}\nstatic inline int pcie_aer_is_native(struct pci_dev *dev) { return 0; }\n#endif\n\nvoid cper_print_aer(struct pci_dev *dev, int aer_severity,\n\t\t    struct aer_capability_regs *aer);\nint cper_severity_to_aer(int cper_severity);\nvoid aer_recover_queue(int domain, unsigned int bus, unsigned int devfn,\n\t\t       int severity, struct aer_capability_regs *aer_regs);\n#endif \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

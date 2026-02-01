@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7c79bafa9d6e3d66f659744a080827f9d4cd666be03289a86b19ea49f7ccaaad",
+  "original_prompt": "Ingested from linux-6.6.14/fs/9p/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_9P_FS) := 9p.o\n\n9p-objs := \\\n\tvfs_super.o \\\n\tvfs_inode.o \\\n\tvfs_inode_dotl.o \\\n\tvfs_addr.o \\\n\tvfs_file.o \\\n\tvfs_dir.o \\\n\tvfs_dentry.o \\\n\tv9fs.o \\\n\tfid.o  \\\n\txattr.o\n\n9p-$(CONFIG_9P_FSCACHE) += cache.o\n9p-$(CONFIG_9P_FS_POSIX_ACL) += acl.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

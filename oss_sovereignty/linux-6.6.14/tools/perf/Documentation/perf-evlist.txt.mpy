@@ -1,0 +1,9 @@
+{
+  "module_name": "perf-evlist.txt",
+  "hash_id": "5ef4bb0872ea98ed30bc27c6f737da9385ae539f833b014457df4e5e66879101",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/perf-evlist.txt",
+  "human_readable_source": "perf-evlist(1)\n==============\n\nNAME\n----\nperf-evlist - List the event names in a perf.data file\n\nSYNOPSIS\n--------\n[verse]\n'perf evlist <options>'\n\nDESCRIPTION\n-----------\nThis command displays the names of events sampled in a perf.data file.\n\nOPTIONS\n-------\n-i::\n--input=::\n        Input file name. (default: perf.data unless stdin is a fifo)\n\n-f::\n--force::\n\tDon't complain, do it.\n\n-F::\n--freq=::\n\tShow just the sample frequency used for each event.\n\n-v::\n--verbose::\n\tShow all fields.\n\n-g::\n--group::\n\tShow event group information.\n\n--trace-fields::\n\tShow tracepoint field names.\n\nSEE ALSO\n--------\nlinkperf:perf-record[1], linkperf:perf-list[1],\nlinkperf:perf-report[1]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

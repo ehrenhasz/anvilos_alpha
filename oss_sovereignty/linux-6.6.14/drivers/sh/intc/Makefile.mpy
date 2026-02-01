@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f344922d3158dc9c4b99652a5d02291d9e216b4068fedbe3d738ea8ca13ad2f0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/sh/intc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y \t:= access.o chip.o core.o handle.o irqdomain.o virq.o\n\nobj-$(CONFIG_INTC_BALANCING)\t\t+= balancing.o\nobj-$(CONFIG_INTC_USERIMASK)\t\t+= userimask.o\nobj-$(CONFIG_INTC_MAPPING_DEBUG)\t+= virq-debugfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

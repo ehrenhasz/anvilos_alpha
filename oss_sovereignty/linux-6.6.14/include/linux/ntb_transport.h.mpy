@@ -1,0 +1,9 @@
+{
+  "module_name": "ntb_transport.h",
+  "hash_id": "728c180c80b8335180ffa9aa3d7843caead9b5bf9e21f705b8fe6e34cc3675c5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ntb_transport.h",
+  "human_readable_source": " \n\nstruct ntb_transport_qp;\n\nstruct ntb_transport_client {\n\tstruct device_driver driver;\n\tint (*probe)(struct device *client_dev);\n\tvoid (*remove)(struct device *client_dev);\n};\n\nint ntb_transport_register_client(struct ntb_transport_client *drvr);\nvoid ntb_transport_unregister_client(struct ntb_transport_client *drvr);\nint ntb_transport_register_client_dev(char *device_name);\nvoid ntb_transport_unregister_client_dev(char *device_name);\n\nstruct ntb_queue_handlers {\n\tvoid (*rx_handler)(struct ntb_transport_qp *qp, void *qp_data,\n\t\t\t   void *data, int len);\n\tvoid (*tx_handler)(struct ntb_transport_qp *qp, void *qp_data,\n\t\t\t   void *data, int len);\n\tvoid (*event_handler)(void *data, int status);\n};\n\nunsigned char ntb_transport_qp_num(struct ntb_transport_qp *qp);\nunsigned int ntb_transport_max_size(struct ntb_transport_qp *qp);\nstruct ntb_transport_qp *\nntb_transport_create_queue(void *data, struct device *client_dev,\n\t\t\t   const struct ntb_queue_handlers *handlers);\nvoid ntb_transport_free_queue(struct ntb_transport_qp *qp);\nint ntb_transport_rx_enqueue(struct ntb_transport_qp *qp, void *cb, void *data,\n\t\t\t     unsigned int len);\nint ntb_transport_tx_enqueue(struct ntb_transport_qp *qp, void *cb, void *data,\n\t\t\t     unsigned int len);\nvoid *ntb_transport_rx_remove(struct ntb_transport_qp *qp, unsigned int *len);\nvoid ntb_transport_link_up(struct ntb_transport_qp *qp);\nvoid ntb_transport_link_down(struct ntb_transport_qp *qp);\nbool ntb_transport_link_query(struct ntb_transport_qp *qp);\nunsigned int ntb_transport_tx_free_entry(struct ntb_transport_qp *qp);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "manifest.py",
+  "hash_id": "cd0a5d1b477b6edcea545c87131aeb7092a59286e58262be3449d48b99eb85db",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/coverage/manifest.py",
+  "human_readable_source": "add_library(\"unix-ffi\", \"$(MPY_LIB_DIR)/unix-ffi\")\nfreeze_as_str(\"frzstr\")\nfreeze_as_mpy(\"frzmpy\")\nfreeze_mpy(\"$(MPY_DIR)/tests/frozen\")\nrequire(\"ssl\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

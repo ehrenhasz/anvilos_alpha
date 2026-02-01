@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_inchstr.c",
+  "hash_id": "21ba938b658adf1903a7bcef817c5693de4a927fb8dc2ed3481d32e7a8b86c74",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_inchstr.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_inchstr.c,v 1.17 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwinchnstr(WINDOW *win, chtype *str, int n)\n{\n    int i = 0;\n\n    T((T_CALLED(\"winchnstr(%p,%p,%d)\"), (void *) win, (void *) str, n));\n\n    if (!win || !str) {\n\ti = ERR;\n    } else {\n\tint row = win->_cury;\n\tint col = win->_curx;\n\tNCURSES_CH_T *text = win->_line[row].text;\n\n\tfor (; (n < 0 || (i < n)) && (col + i <= win->_maxx); i++) {\n\t    str[i] = (((chtype) CharOf(text[col + i]) & A_CHARTEXT) |\n\t\t      AttrOf(text[col + i]));\n\t}\n\tstr[i] = (chtype) 0;\n    }\n\n    returnCode(i);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

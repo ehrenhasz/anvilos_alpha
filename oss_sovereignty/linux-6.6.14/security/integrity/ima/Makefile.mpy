@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8fd39fe501b69722a546559ee701f8499b30671da38258b21ad3b58366164850",
+  "original_prompt": "Ingested from linux-6.6.14/security/integrity/ima/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for building Trusted Computing Group's(TCG) runtime Integrity\n# Measurement Architecture(IMA).\n#\n\nobj-$(CONFIG_IMA) += ima.o\n\nima-y := ima_fs.o ima_queue.o ima_init.o ima_main.o ima_crypto.o ima_api.o \\\n\t ima_policy.o ima_template.o ima_template_lib.o\nima-$(CONFIG_IMA_APPRAISE) += ima_appraise.o\nima-$(CONFIG_IMA_APPRAISE_MODSIG) += ima_modsig.o\nima-$(CONFIG_HAVE_IMA_KEXEC) += ima_kexec.o\nima-$(CONFIG_IMA_BLACKLIST_KEYRING) += ima_mok.o\nima-$(CONFIG_IMA_MEASURE_ASYMMETRIC_KEYS) += ima_asymmetric_keys.o\nima-$(CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS) += ima_queue_keys.o\n\nifeq ($(CONFIG_EFI),y)\nima-$(CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT) += ima_efi.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

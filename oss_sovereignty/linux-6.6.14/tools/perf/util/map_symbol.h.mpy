@@ -1,0 +1,9 @@
+{
+  "module_name": "map_symbol.h",
+  "hash_id": "082c29585a1201523b3e7c36bae8e1c06d446b5b7dff2165dba343d3607e68d6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/map_symbol.h",
+  "human_readable_source": "\n#ifndef __PERF_MAP_SYMBOL\n#define __PERF_MAP_SYMBOL 1\n\n#include <linux/types.h>\n\nstruct maps;\nstruct map;\nstruct symbol;\n\nstruct map_symbol {\n\tstruct maps   *maps;\n\tstruct map    *map;\n\tstruct symbol *sym;\n};\n\nstruct addr_map_symbol {\n\tstruct map_symbol ms;\n\tu64\t      addr;\n\tu64\t      al_addr;\n\tchar\t      al_level;\n\tu64\t      phys_addr;\n\tu64\t      data_page_size;\n};\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

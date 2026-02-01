@@ -1,0 +1,9 @@
+{
+  "module_name": "link_hwss_hpo_frl.c",
+  "hash_id": "898cb2f53e058ab4594c1929a824b89465915bcdef3d0868ca8d7856d55aa369",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/link_hwss_hpo_frl.c",
+  "human_readable_source": " \n#include \"link_hwss_hpo_frl.h\"\n#include \"core_types.h\"\n#include \"virtual/virtual_link_hwss.h\"\n\nstatic void setup_hpo_frl_stream_attribute(struct pipe_ctx *pipe_ctx)\n{\n\tstruct hpo_frl_stream_encoder *stream_enc = pipe_ctx->stream_res.hpo_frl_stream_enc;\n\tstruct dc_stream_state *stream = pipe_ctx->stream;\n\tstruct pipe_ctx *odm_pipe;\n\tint odm_combine_num_segments = 1;\n\n\t \n\tfor (odm_pipe = pipe_ctx->next_odm_pipe; odm_pipe; odm_pipe = odm_pipe->next_odm_pipe)\n\t\todm_combine_num_segments++;\n\n\tstream_enc->funcs->hdmi_frl_set_stream_attribute(\n\t\t\tstream_enc,\n\t\t\t&stream->timing,\n\t\t\t&stream->link->frl_link_settings.borrow_params,\n\t\t\todm_combine_num_segments);\n}\n\nstatic const struct link_hwss hpo_frl_link_hwss = {\n\t.setup_stream_encoder = virtual_setup_stream_encoder,\n\t.reset_stream_encoder = virtual_reset_stream_encoder,\n\t.setup_stream_attribute = setup_hpo_frl_stream_attribute,\n};\n\nbool can_use_hpo_frl_link_hwss(const struct dc_link *link,\n\t\tconst struct link_resource *link_res)\n{\n\treturn link_res->hpo_frl_link_enc != NULL;\n}\n\nconst struct link_hwss *get_hpo_frl_link_hwss(void)\n{\n\treturn &hpo_frl_link_hwss;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rds_single_path.h",
+  "hash_id": "d50ae905a19b55f20845b064599e1c9297cb2b0f9d8178dd64fc9660d8b10262",
+  "original_prompt": "Ingested from linux-6.6.14/net/rds/rds_single_path.h",
+  "human_readable_source": " \n#ifndef _RDS_RDS_SINGLE_H\n#define _RDS_RDS_SINGLE_H\n\n#define\tc_xmit_rm\t\tc_path[0].cp_xmit_rm\n#define\tc_xmit_sg\t\tc_path[0].cp_xmit_sg\n#define\tc_xmit_hdr_off\t\tc_path[0].cp_xmit_hdr_off\n#define\tc_xmit_data_off\t\tc_path[0].cp_xmit_data_off\n#define\tc_xmit_atomic_sent\tc_path[0].cp_xmit_atomic_sent\n#define\tc_xmit_rdma_sent\tc_path[0].cp_xmit_rdma_sent\n#define\tc_xmit_data_sent\tc_path[0].cp_xmit_data_sent\n#define\tc_lock\t\t\tc_path[0].cp_lock\n#define c_next_tx_seq\t\tc_path[0].cp_next_tx_seq\n#define c_send_queue\t\tc_path[0].cp_send_queue\n#define c_retrans\t\tc_path[0].cp_retrans\n#define c_next_rx_seq\t\tc_path[0].cp_next_rx_seq\n#define c_transport_data\tc_path[0].cp_transport_data\n#define c_state\t\t\tc_path[0].cp_state\n#define c_send_gen\t\tc_path[0].cp_send_gen\n#define c_flags\t\t\tc_path[0].cp_flags\n#define c_reconnect_jiffies\tc_path[0].cp_reconnect_jiffies\n#define c_send_w\t\tc_path[0].cp_send_w\n#define c_recv_w\t\tc_path[0].cp_recv_w\n#define c_conn_w\t\tc_path[0].cp_conn_w\n#define c_down_w\t\tc_path[0].cp_down_w\n#define c_cm_lock\t\tc_path[0].cp_cm_lock\n#define c_waitq\t\t\tc_path[0].cp_waitq\n#define c_unacked_packets\tc_path[0].cp_unacked_packets\n#define c_unacked_bytes\t\tc_path[0].cp_unacked_bytes\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "powerpc.config",
+  "hash_id": "eb40c0ebc34b73d505465442782daa0ab017384dadccc1585127bebcb42aed62",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/wireguard/qemu/arch/powerpc.config",
+  "human_readable_source": "CONFIG_PPC_QEMU_E500=y\nCONFIG_FSL_SOC_BOOKE=y\nCONFIG_PPC_85xx=y\nCONFIG_PHYS_64BIT=y\nCONFIG_SERIAL_8250=y\nCONFIG_SERIAL_8250_CONSOLE=y\nCONFIG_COMPAT_32BIT_TIME=y\nCONFIG_MATH_EMULATION=y\nCONFIG_CMDLINE_BOOL=y\nCONFIG_CMDLINE=\"console=ttyS0 wg.success=ttyS1 panic_on_warn=1\"\nCONFIG_FRAME_WARN=1024\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

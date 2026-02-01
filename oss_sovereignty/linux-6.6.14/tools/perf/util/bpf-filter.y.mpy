@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf-filter.y",
+  "hash_id": "e059734e18bb63e7f5321283be2fd6d0b5f4ada53b2c9a06f8e50e289426db55",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/bpf-filter.y",
+  "human_readable_source": "%parse-param {struct list_head *expr_head}\n%define parse.error verbose\n\n%{\n\n#include <stdio.h>\n#include <string.h>\n#include <linux/compiler.h>\n#include <linux/list.h>\n#include \"bpf-filter.h\"\n\nint perf_bpf_filter_lex(void);\n\nstatic void perf_bpf_filter_error(struct list_head *expr __maybe_unused,\n\t\t\t\t  char const *msg)\n{\n\tprintf(\"perf_bpf_filter: %s\\n\", msg);\n}\n\n%}\n\n%union\n{\n\tunsigned long num;\n\tstruct {\n\t\tunsigned long type;\n\t\tint part;\n\t} sample;\n\tenum perf_bpf_filter_op op;\n\tstruct perf_bpf_filter_expr *expr;\n}\n\n%token BFT_SAMPLE BFT_OP BFT_ERROR BFT_NUM BFT_LOGICAL_OR\n%type <expr> filter_term filter_expr\n%destructor { free ($$); } <expr>\n%type <sample> BFT_SAMPLE\n%type <op> BFT_OP\n%type <num> BFT_NUM\n\n%%\n\nfilter:\nfilter ',' filter_term\n{\n\tlist_add_tail(&$3->list, expr_head);\n}\n|\nfilter_term\n{\n\tlist_add_tail(&$1->list, expr_head);\n}\n\nfilter_term:\nfilter_term BFT_LOGICAL_OR filter_expr\n{\n\tstruct perf_bpf_filter_expr *expr;\n\n\tif ($1->op == PBF_OP_GROUP_BEGIN) {\n\t\texpr = $1;\n\t} else {\n\t\texpr = perf_bpf_filter_expr__new(0, 0, PBF_OP_GROUP_BEGIN, 1);\n\t\tlist_add_tail(&$1->list, &expr->groups);\n\t}\n\texpr->val++;\n\tlist_add_tail(&$3->list, &expr->groups);\n\t$$ = expr;\n}\n|\nfilter_expr\n{\n\t$$ = $1;\n}\n\nfilter_expr:\nBFT_SAMPLE BFT_OP BFT_NUM\n{\n\t$$ = perf_bpf_filter_expr__new($1.type, $1.part, $2, $3);\n}\n\n%%\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

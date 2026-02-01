@@ -1,0 +1,9 @@
+{
+  "module_name": "stub_64.S",
+  "hash_id": "2ee8e179bc4ef6650416c7cdc2a78d89eb72d3a623384224ae321defe150bdf7",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/stub_64.S",
+  "human_readable_source": " \n#include <as-layout.h>\n\n.section .__syscall_stub, \"ax\"\n\t.globl batch_syscall_stub\nbatch_syscall_stub:\n\t \n\tmov\t%rsp, %rbx\n\tadd\t$0x10, %rsp\nagain:\n\t \n\tmov\t0x0(%rsp), %rax\n\n\t \n\t \n\tmov\t%rax, 8(%rbx)\n\tcmp\t$0, %rax\n\tjz\tdone\n\n\t \n\tmov\t%rsp, 8(%rbx)\n\n\t \n\tadd\t%rax, %rsp\n\n\t \n\tpop\t%rax\n\n\t \n\tpop\t%rdi\n\tpop\t%rsi\n\tpop\t%rdx\n\tpop\t%r10\n \tpop\t%r8\n\tpop\t%r9\n\n\t \n\tsyscall\n\n\t \n\tpop\t%rcx\n\tcmp\t%rcx, %rax\n\tje\tagain\n\ndone:\n\t \n\tmov\t%rax, (%rbx)\n\n\t \n\tint3\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

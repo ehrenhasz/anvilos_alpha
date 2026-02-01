@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_cmd_parser.h",
+  "hash_id": "cf4bb13e8aee815ec8d8cb5182b799fbcb9b3a7bb9ba8f3c9874c504b6cdcf50",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_cmd_parser.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_CMD_PARSER_H__\n#define __I915_CMD_PARSER_H__\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\nstruct intel_engine_cs;\nstruct i915_vma;\n\nint i915_cmd_parser_get_version(struct drm_i915_private *dev_priv);\nint intel_engine_init_cmd_parser(struct intel_engine_cs *engine);\nvoid intel_engine_cleanup_cmd_parser(struct intel_engine_cs *engine);\nint intel_engine_cmd_parser(struct intel_engine_cs *engine,\n\t\t\t    struct i915_vma *batch,\n\t\t\t    unsigned long batch_offset,\n\t\t\t    unsigned long batch_length,\n\t\t\t    struct i915_vma *shadow,\n\t\t\t    bool trampoline);\n#define I915_CMD_PARSER_TRAMPOLINE_SIZE 8\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

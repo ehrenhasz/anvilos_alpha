@@ -1,0 +1,9 @@
+{
+  "module_name": "lshrdi3.c",
+  "hash_id": "c78ecd8e95b9268adfe263be968097d88a46b51cbe822eb5694e6efbdab34489",
+  "original_prompt": "Ingested from linux-6.6.14/lib/lshrdi3.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/libgcc.h>\n\nlong long notrace __lshrdi3(long long u, word_type b)\n{\n\tDWunion uu, w;\n\tword_type bm;\n\n\tif (b == 0)\n\t\treturn u;\n\n\tuu.ll = u;\n\tbm = 32 - b;\n\n\tif (bm <= 0) {\n\t\tw.s.high = 0;\n\t\tw.s.low = (unsigned int) uu.s.high >> -bm;\n\t} else {\n\t\tconst unsigned int carries = (unsigned int) uu.s.high << bm;\n\n\t\tw.s.high = (unsigned int) uu.s.high >> b;\n\t\tw.s.low = ((unsigned int) uu.s.low >> b) | carries;\n\t}\n\n\treturn w.ll;\n}\nEXPORT_SYMBOL(__lshrdi3);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "isl6405.h",
+  "hash_id": "d589866fd77f7c98050466c903ce5a80693c23b22f7875abfeab4500cdc5047a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/isl6405.h",
+  "human_readable_source": " \n \n\n#ifndef _ISL6405_H\n#define _ISL6405_H\n\n#include <linux/dvb/frontend.h>\n\n \n\n \n\n#define ISL6405_SR\t0x80\n\n \n#define ISL6405_OLF1\t0x01\n#define ISL6405_EN1\t0x02\n#define ISL6405_VSEL1\t0x04\n#define ISL6405_LLC1\t0x08\n#define ISL6405_ENT1\t0x10\n#define ISL6405_ISEL1\t0x20\n#define ISL6405_DCL\t0x40\n\n \n#define ISL6405_OLF2\t0x01\n#define ISL6405_OTF\t0x02\n#define ISL6405_EN2\t0x04\n#define ISL6405_VSEL2\t0x08\n#define ISL6405_LLC2\t0x10\n#define ISL6405_ENT2\t0x20\n#define ISL6405_ISEL2\t0x40\n\n#if IS_REACHABLE(CONFIG_DVB_ISL6405)\n \nextern struct dvb_frontend *isl6405_attach(struct dvb_frontend *fe, struct i2c_adapter *i2c,\n\t\t\t\t\t   u8 i2c_addr, u8 override_set, u8 override_clear);\n#else\nstatic inline struct dvb_frontend *isl6405_attach(struct dvb_frontend *fe,\n\t\t\t\t\t\t  struct i2c_adapter *i2c, u8 i2c_addr,\n\t\t\t\t\t\t  u8 override_set, u8 override_clear)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

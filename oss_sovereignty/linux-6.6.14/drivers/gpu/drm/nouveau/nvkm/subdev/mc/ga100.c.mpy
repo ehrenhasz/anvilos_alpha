@@ -1,0 +1,9 @@
+{
+  "module_name": "ga100.c",
+  "hash_id": "ca48957c0f91a1b3f98af9bf9fdae01bc2b4379b6b0857952878d5e548b06763",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mc/ga100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic void\nga100_mc_device_disable(struct nvkm_mc *mc, u32 mask)\n{\n\tstruct nvkm_device *device = mc->subdev.device;\n\n\tnvkm_mask(device, 0x000600, mask, 0x00000000);\n\tnvkm_rd32(device, 0x000600);\n\tnvkm_rd32(device, 0x000600);\n}\n\nstatic void\nga100_mc_device_enable(struct nvkm_mc *mc, u32 mask)\n{\n\tstruct nvkm_device *device = mc->subdev.device;\n\n\tnvkm_mask(device, 0x000600, mask, mask);\n\tnvkm_rd32(device, 0x000600);\n\tnvkm_rd32(device, 0x000600);\n}\n\nstatic bool\nga100_mc_device_enabled(struct nvkm_mc *mc, u32 mask)\n{\n\treturn (nvkm_rd32(mc->subdev.device, 0x000600) & mask) == mask;\n}\n\nstatic const struct nvkm_mc_device_func\nga100_mc_device = {\n\t.enabled = ga100_mc_device_enabled,\n\t.enable = ga100_mc_device_enable,\n\t.disable = ga100_mc_device_disable,\n};\n\nstatic void\nga100_mc_init(struct nvkm_mc *mc)\n{\n\tstruct nvkm_device *device = mc->subdev.device;\n\n\tnvkm_wr32(device, 0x000200, 0xffffffff);\n\tnvkm_wr32(device, 0x000600, 0xffffffff);\n}\n\nstatic const struct nvkm_mc_func\nga100_mc = {\n\t.init = ga100_mc_init,\n\t.device = &ga100_mc_device,\n};\n\nint\nga100_mc_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_mc **pmc)\n{\n\treturn nvkm_mc_new_(&ga100_mc, device, type, inst, pmc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

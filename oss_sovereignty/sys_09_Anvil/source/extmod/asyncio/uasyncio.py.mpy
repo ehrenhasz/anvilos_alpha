@@ -1,0 +1,9 @@
+{
+  "module_name": "uasyncio.py",
+  "hash_id": "01f002e26c3f570725f572451425472cced79bc3b36b4165de36430bcfa7ddfd",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/asyncio/uasyncio.py",
+  "human_readable_source": "# This module just allows `import uasyncio` to work. It lazy-loads from\n# `asyncio` without duplicating its globals dict.\n\n\ndef __getattr__(attr):\n    import asyncio\n\n    return getattr(asyncio, attr)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

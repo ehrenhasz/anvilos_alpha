@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.dtbinst",
+  "hash_id": "2a3ae42b9a46220b80f4d9ae05bb1ee3b1ed9647fc60035561a155def0bd7742",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/Makefile.dtbinst",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# ==========================================================================\n# Installing dtb files\n#\n# Installs all dtb files listed in $(dtb-y) either in the\n# INSTALL_DTBS_PATH directory or the default location:\n#\n#   $INSTALL_PATH/dtbs/$KERNELRELEASE\n# ==========================================================================\n\nsrc := $(obj)\n\nPHONY := __dtbs_install\n__dtbs_install:\n\ninclude include/config/auto.conf\ninclude $(srctree)/scripts/Kbuild.include\ninclude $(kbuild-file)\n\ndtbs    := $(addprefix $(dst)/, $(dtb-y) $(if $(CONFIG_OF_ALL_DTBS),$(dtb-)))\nsubdirs := $(addprefix $(obj)/, $(subdir-y) $(subdir-m))\n\n__dtbs_install: $(dtbs) $(subdirs)\n\t@:\n\nquiet_cmd_dtb_install = INSTALL $@\n      cmd_dtb_install = install -D $< $@\n\n$(dst)/%.dtb: $(obj)/%.dtb\n\t$(call cmd,dtb_install)\n\n$(dst)/%.dtbo: $(obj)/%.dtbo\n\t$(call cmd,dtb_install)\n\nPHONY += $(subdirs)\n$(subdirs):\n\t$(Q)$(MAKE) $(dtbinst)=$@ dst=$(if $(CONFIG_ARCH_WANT_FLAT_DTB_INSTALL),$(dst),$(patsubst $(obj)/%,$(dst)/%,$@))\n\n.PHONY: $(PHONY)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

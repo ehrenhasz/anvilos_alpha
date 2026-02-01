@@ -1,0 +1,9 @@
+{
+  "module_name": "tegra-cbb.h",
+  "hash_id": "528345030aec950e29b9a63196ead7fdb990e4e10d191bade79caa2347661fff",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/tegra/tegra-cbb.h",
+  "human_readable_source": " \n \n\n#ifndef TEGRA_CBB_H\n#define TEGRA_CBB_H\n\n#include <linux/list.h>\n\nstruct tegra_cbb_error {\n\tconst char *code;\n\tconst char *source;\n\tconst char *desc;\n};\n\nstruct tegra_cbb {\n\tstruct device *dev;\n\tconst struct tegra_cbb_ops *ops;\n\tstruct list_head node;\n};\n\nstruct tegra_cbb_ops {\n\tint (*debugfs_show)(struct tegra_cbb *cbb, struct seq_file *s, void *v);\n\tint (*interrupt_enable)(struct tegra_cbb *cbb);\n\tvoid (*error_enable)(struct tegra_cbb *cbb);\n\tvoid (*fault_enable)(struct tegra_cbb *cbb);\n\tvoid (*stall_enable)(struct tegra_cbb *cbb);\n\tvoid (*error_clear)(struct tegra_cbb *cbb);\n\tu32 (*get_status)(struct tegra_cbb *cbb);\n};\n\nint tegra_cbb_get_irq(struct platform_device *pdev, unsigned int *nonsec_irq,\n\t\t      unsigned int *sec_irq);\n__printf(2, 3)\nvoid tegra_cbb_print_err(struct seq_file *file, const char *fmt, ...);\n\nvoid tegra_cbb_print_cache(struct seq_file *file, u32 cache);\nvoid tegra_cbb_print_prot(struct seq_file *file, u32 prot);\nint tegra_cbb_register(struct tegra_cbb *cbb);\n\nvoid tegra_cbb_fault_enable(struct tegra_cbb *cbb);\nvoid tegra_cbb_stall_enable(struct tegra_cbb *cbb);\nvoid tegra_cbb_error_clear(struct tegra_cbb *cbb);\nu32 tegra_cbb_get_status(struct tegra_cbb *cbb);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

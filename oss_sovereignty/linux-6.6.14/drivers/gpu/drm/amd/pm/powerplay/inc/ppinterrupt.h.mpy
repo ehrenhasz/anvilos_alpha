@@ -1,0 +1,9 @@
+{
+  "module_name": "ppinterrupt.h",
+  "hash_id": "ec88ea426e18711ebd45e21e144e3470494483ced8f61ff42c22ccd7aabf78b1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/inc/ppinterrupt.h",
+  "human_readable_source": " \n\n#ifndef _PP_INTERRUPT_H_\n#define _PP_INTERRUPT_H_\n\nenum amd_thermal_irq {\n\tAMD_THERMAL_IRQ_LOW_TO_HIGH = 0,\n\tAMD_THERMAL_IRQ_HIGH_TO_LOW,\n\n\tAMD_THERMAL_IRQ_LAST\n};\n\n \ntypedef int (*irq_handler_func_t)(void *private_data,\n\t\t\t\tunsigned src_id, const uint32_t *iv_entry);\n\n \nstruct pp_interrupt_registration_info {\n\tirq_handler_func_t call_back;  \n\tvoid *context;                    \n\tuint32_t src_id;                \n\tconst uint32_t *iv_entry;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

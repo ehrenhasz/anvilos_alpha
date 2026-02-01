@@ -1,0 +1,9 @@
+{
+  "module_name": "wakeup_rt.tc",
+  "hash_id": "688ea33d1cf9f39c86ead837bea5a6194bcb7678dc427cbbb1ef021a785776cc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/tracer/wakeup_rt.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Test wakeup RT tracer\n# requires: wakeup_rt:tracer chrt:program\n\necho wakeup_rt > current_tracer\necho 1 > tracing_on\necho 0 > tracing_max_latency\n\n: \"Wakeup a realtime task\"\nchrt -f 5 sleep 1\n\necho 0 > tracing_on\ngrep \"+ \\[[[:digit:]]*\\]\" trace\ngrep \"==> \\[[[:digit:]]*\\]\" trace\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "if_pppol2tp.h",
+  "hash_id": "79cf797f13364f99ea701471fc055b29bea5a1dccddbf9ec5572c292b59fd878",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/if_pppol2tp.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI__LINUX_IF_PPPOL2TP_H\n#define _UAPI__LINUX_IF_PPPOL2TP_H\n\n#include <linux/types.h>\n#include <linux/in.h>\n#include <linux/in6.h>\n#include <linux/l2tp.h>\n\n \nstruct pppol2tp_addr {\n\t__kernel_pid_t\tpid;\t\t \n\tint\tfd;\t\t\t \n\n\tstruct sockaddr_in addr;\t \n\n\t__u16 s_tunnel, s_session;\t \n\t__u16 d_tunnel, d_session;\t \n};\n\n \nstruct pppol2tpin6_addr {\n\t__kernel_pid_t\tpid;\t\t \n\tint\tfd;\t\t\t \n\n\t__u16 s_tunnel, s_session;\t \n\t__u16 d_tunnel, d_session;\t \n\n\tstruct sockaddr_in6 addr;\t \n};\n\n \nstruct pppol2tpv3_addr {\n\t__kernel_pid_t\tpid;\t\t \n\tint\tfd;\t\t\t \n\n\tstruct sockaddr_in addr;\t \n\n\t__u32 s_tunnel, s_session;\t \n\t__u32 d_tunnel, d_session;\t \n};\n\nstruct pppol2tpv3in6_addr {\n\t__kernel_pid_t\tpid;\t\t \n\tint\tfd;\t\t\t \n\n\t__u32 s_tunnel, s_session;\t \n\t__u32 d_tunnel, d_session;\t \n\n\tstruct sockaddr_in6 addr;\t \n};\n\n \nenum {\n\tPPPOL2TP_SO_DEBUG\t= 1,\n\tPPPOL2TP_SO_RECVSEQ\t= 2,\n\tPPPOL2TP_SO_SENDSEQ\t= 3,\n\tPPPOL2TP_SO_LNSMODE\t= 4,\n\tPPPOL2TP_SO_REORDERTO\t= 5,\n};\n\n \nenum {\n\tPPPOL2TP_MSG_DEBUG\t= L2TP_MSG_DEBUG,\n\tPPPOL2TP_MSG_CONTROL\t= L2TP_MSG_CONTROL,\n\tPPPOL2TP_MSG_SEQ\t= L2TP_MSG_SEQ,\n\tPPPOL2TP_MSG_DATA\t= L2TP_MSG_DATA,\n};\n\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

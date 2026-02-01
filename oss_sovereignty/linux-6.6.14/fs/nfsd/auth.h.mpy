@@ -1,0 +1,9 @@
+{
+  "module_name": "auth.h",
+  "hash_id": "fbf2afe85dc79c50eb86c32cbab02e4941b7ac026dec87f1eee2bd8fe0baacf8",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfsd/auth.h",
+  "human_readable_source": " \n \n\n#ifndef LINUX_NFSD_AUTH_H\n#define LINUX_NFSD_AUTH_H\n\n \nint nfsd_setuser(struct svc_rqst *, struct svc_export *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

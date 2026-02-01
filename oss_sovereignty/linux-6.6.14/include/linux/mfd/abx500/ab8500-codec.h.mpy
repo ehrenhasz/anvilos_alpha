@@ -1,0 +1,9 @@
+{
+  "module_name": "ab8500-codec.h",
+  "hash_id": "360e7dce327caa57c844c16c652bda6850ed6a87afd3e4409241fa235e7d5081",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/abx500/ab8500-codec.h",
+  "human_readable_source": " \n \n\n#ifndef AB8500_CORE_CODEC_H\n#define AB8500_CORE_CODEC_H\n\n \nenum amic_type {\n\tAMIC_TYPE_SINGLE_ENDED,\n\tAMIC_TYPE_DIFFERENTIAL\n};\n\n \nenum amic_micbias {\n\tAMIC_MICBIAS_VAMIC1,\n\tAMIC_MICBIAS_VAMIC2,\n\tAMIC_MICBIAS_UNKNOWN\n};\n\n \nenum ear_cm_voltage {\n\tEAR_CMV_0_95V,\n\tEAR_CMV_1_10V,\n\tEAR_CMV_1_27V,\n\tEAR_CMV_1_58V,\n\tEAR_CMV_UNKNOWN\n};\n\n \nstruct amic_settings {\n\tenum amic_type mic1_type;\n\tenum amic_type mic2_type;\n\tenum amic_micbias mic1a_micbias;\n\tenum amic_micbias mic1b_micbias;\n\tenum amic_micbias mic2_micbias;\n};\n\n \nstruct ab8500_codec_platform_data {\n\tstruct amic_settings amics;\n\tenum ear_cm_voltage ear_cmv;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

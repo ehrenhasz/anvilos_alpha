@@ -1,0 +1,9 @@
+{
+  "module_name": "driver_chipcommon_b.c",
+  "hash_id": "b4487bd90200ce2809389fecd0357a755400ddd87b6398a0014ccf4debd1620b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bcma/driver_chipcommon_b.c",
+  "human_readable_source": " \n\n#include \"bcma_private.h\"\n#include <linux/export.h>\n#include <linux/bcma/bcma.h>\n\nstatic bool bcma_wait_reg(struct bcma_bus *bus, void __iomem *addr, u32 mask,\n\t\t\t  u32 value, int timeout)\n{\n\tunsigned long deadline = jiffies + timeout;\n\tu32 val;\n\n\tdo {\n\t\tval = readl(addr);\n\t\tif ((val & mask) == value)\n\t\t\treturn true;\n\t\tcpu_relax();\n\t\tudelay(10);\n\t} while (!time_after_eq(jiffies, deadline));\n\n\tbcma_err(bus, \"Timeout waiting for register %p\\n\", addr);\n\n\treturn false;\n}\n\nvoid bcma_chipco_b_mii_write(struct bcma_drv_cc_b *ccb, u32 offset, u32 value)\n{\n\tstruct bcma_bus *bus = ccb->core->bus;\n\tvoid __iomem *mii = ccb->mii;\n\n\twritel(offset, mii + BCMA_CCB_MII_MNG_CTL);\n\tbcma_wait_reg(bus, mii + BCMA_CCB_MII_MNG_CTL, 0x0100, 0x0000, 100);\n\twritel(value, mii + BCMA_CCB_MII_MNG_CMD_DATA);\n\tbcma_wait_reg(bus, mii + BCMA_CCB_MII_MNG_CTL, 0x0100, 0x0000, 100);\n}\nEXPORT_SYMBOL_GPL(bcma_chipco_b_mii_write);\n\nint bcma_core_chipcommon_b_init(struct bcma_drv_cc_b *ccb)\n{\n\tif (ccb->setup_done)\n\t\treturn 0;\n\n\tccb->setup_done = 1;\n\tccb->mii = ioremap(ccb->core->addr_s[1], BCMA_CORE_SIZE);\n\tif (!ccb->mii)\n\t\treturn -ENOMEM;\n\n\treturn 0;\n}\n\nvoid bcma_core_chipcommon_b_free(struct bcma_drv_cc_b *ccb)\n{\n\tif (ccb->mii)\n\t\tiounmap(ccb->mii);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

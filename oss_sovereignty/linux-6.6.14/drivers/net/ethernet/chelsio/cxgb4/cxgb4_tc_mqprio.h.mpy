@@ -1,0 +1,9 @@
+{
+  "module_name": "cxgb4_tc_mqprio.h",
+  "hash_id": "2d464d49a1b4213df09a0560aaedd8d08df9643d60c17de93a4ca67bc9ddcc37",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_mqprio.h",
+  "human_readable_source": " \n \n\n#ifndef __CXGB4_TC_MQPRIO_H__\n#define __CXGB4_TC_MQPRIO_H__\n\n#include <net/pkt_sched.h>\n\n#define CXGB4_EOSW_TXQ_DEFAULT_DESC_NUM 128\n\n#define CXGB4_EOHW_TXQ_DEFAULT_DESC_NUM 1024\n\n#define CXGB4_EOHW_RXQ_DEFAULT_DESC_NUM 1024\n#define CXGB4_EOHW_RXQ_DEFAULT_DESC_SIZE 64\n#define CXGB4_EOHW_RXQ_DEFAULT_INTR_USEC 5\n#define CXGB4_EOHW_RXQ_DEFAULT_PKT_CNT 8\n\n#define CXGB4_EOHW_FLQ_DEFAULT_DESC_NUM 72\n\n#define CXGB4_FLOWC_WAIT_TIMEOUT (5 * HZ)\n\nenum cxgb4_mqprio_state {\n\tCXGB4_MQPRIO_STATE_DISABLED = 0,\n\tCXGB4_MQPRIO_STATE_ACTIVE,\n};\n\nstruct cxgb4_tc_port_mqprio {\n\tenum cxgb4_mqprio_state state;  \n\tstruct tc_mqprio_qopt_offload mqprio;  \n\tstruct sge_eosw_txq *eosw_txq;  \n\tu8 tc_hwtc_map[TC_QOPT_MAX_QUEUE];  \n};\n\nstruct cxgb4_tc_mqprio {\n\trefcount_t refcnt;  \n\tstruct mutex mqprio_mutex;  \n\tstruct cxgb4_tc_port_mqprio *port_mqprio;  \n};\n\nint cxgb4_setup_tc_mqprio(struct net_device *dev,\n\t\t\t  struct tc_mqprio_qopt_offload *mqprio);\nvoid cxgb4_mqprio_stop_offload(struct adapter *adap);\nint cxgb4_init_tc_mqprio(struct adapter *adap);\nvoid cxgb4_cleanup_tc_mqprio(struct adapter *adap);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

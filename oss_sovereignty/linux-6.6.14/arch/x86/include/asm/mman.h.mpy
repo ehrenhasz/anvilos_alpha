@@ -1,0 +1,9 @@
+{
+  "module_name": "mman.h",
+  "hash_id": "2340640c5afd2eed94d11da42fc7954aef70b254e5996573cabd0f983320478d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/mman.h",
+  "human_readable_source": " \n#ifndef __ASM_MMAN_H__\n#define __ASM_MMAN_H__\n\n#ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS\n#define arch_calc_vm_prot_bits(prot, key) (\t\t\\\n\t\t((key) & 0x1 ? VM_PKEY_BIT0 : 0) |      \\\n\t\t((key) & 0x2 ? VM_PKEY_BIT1 : 0) |      \\\n\t\t((key) & 0x4 ? VM_PKEY_BIT2 : 0) |      \\\n\t\t((key) & 0x8 ? VM_PKEY_BIT3 : 0))\n#endif\n\n#include <uapi/asm/mman.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

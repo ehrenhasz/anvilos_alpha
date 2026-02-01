@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "31c519d5b14f5cad85169d8926d07b77352b7d3dfb350e5d93c155a031357341",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/hisi_sas/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SCSI_HISI_SAS\n\ttristate \"HiSilicon SAS\"\n\tdepends on HAS_IOMEM\n\tdepends on ARM64 || COMPILE_TEST\n\tselect SCSI_SAS_LIBSAS\n\tselect BLK_DEV_INTEGRITY\n\tdepends on ATA\n\tselect SATA_HOST\n\thelp\n\t\tThis driver supports HiSilicon's SAS HBA, including support based\n\t\ton platform device\n\nconfig SCSI_HISI_SAS_PCI\n\ttristate \"HiSilicon SAS on PCI bus\"\n\tdepends on SCSI_HISI_SAS\n\tdepends on PCI\n\tdepends on ACPI\n\thelp\n\t\tThis driver supports HiSilicon's SAS HBA based on PCI device\n\nconfig SCSI_HISI_SAS_DEBUGFS_DEFAULT_ENABLE\n\tbool \"HiSilicon SAS debugging default enable\"\n\tdepends on SCSI_HISI_SAS\n\thelp\n\t\tSet Y to default enable DEBUGFS for SCSI_HISI_SAS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

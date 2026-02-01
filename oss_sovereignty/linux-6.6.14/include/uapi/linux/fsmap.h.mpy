@@ -1,0 +1,9 @@
+{
+  "module_name": "fsmap.h",
+  "hash_id": "a2321081938d3973910a123036181304da3e779756643bc0aa919e5015b6ac28",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/fsmap.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_FSMAP_H\n#define _LINUX_FSMAP_H\n\n#include <linux/types.h>\n\n \nstruct fsmap {\n\t__u32\t\tfmr_device;\t \n\t__u32\t\tfmr_flags;\t \n\t__u64\t\tfmr_physical;\t \n\t__u64\t\tfmr_owner;\t \n\t__u64\t\tfmr_offset;\t \n\t__u64\t\tfmr_length;\t \n\t__u64\t\tfmr_reserved[3];\t \n};\n\nstruct fsmap_head {\n\t__u32\t\tfmh_iflags;\t \n\t__u32\t\tfmh_oflags;\t \n\t__u32\t\tfmh_count;\t \n\t__u32\t\tfmh_entries;\t \n\t__u64\t\tfmh_reserved[6];\t \n\n\tstruct fsmap\tfmh_keys[2];\t \n\tstruct fsmap\tfmh_recs[];\t \n};\n\n \nstatic inline __kernel_size_t\nfsmap_sizeof(\n\tunsigned int\tnr)\n{\n\treturn sizeof(struct fsmap_head) + nr * sizeof(struct fsmap);\n}\n\n \nstatic inline void\nfsmap_advance(\n\tstruct fsmap_head\t*head)\n{\n\thead->fmh_keys[0] = head->fmh_recs[head->fmh_entries - 1];\n}\n\n \n \n#define FMH_IF_VALID\t\t0\n\n \n#define FMH_OF_DEV_T\t\t0x1\t \n\n \n#define FMR_OF_PREALLOC\t\t0x1\t \n#define FMR_OF_ATTR_FORK\t0x2\t \n#define FMR_OF_EXTENT_MAP\t0x4\t \n#define FMR_OF_SHARED\t\t0x8\t \n#define FMR_OF_SPECIAL_OWNER\t0x10\t \n#define FMR_OF_LAST\t\t0x20\t \n\n \n#define FMR_OWNER(type, code)\t(((__u64)type << 32) | \\\n\t\t\t\t ((__u64)code & 0xFFFFFFFFULL))\n#define FMR_OWNER_TYPE(owner)\t((__u32)((__u64)owner >> 32))\n#define FMR_OWNER_CODE(owner)\t((__u32)(((__u64)owner & 0xFFFFFFFFULL)))\n#define FMR_OWN_FREE\t\tFMR_OWNER(0, 1)  \n#define FMR_OWN_UNKNOWN\t\tFMR_OWNER(0, 2)  \n#define FMR_OWN_METADATA\tFMR_OWNER(0, 3)  \n\n#define FS_IOC_GETFSMAP\t\t_IOWR('X', 59, struct fsmap_head)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

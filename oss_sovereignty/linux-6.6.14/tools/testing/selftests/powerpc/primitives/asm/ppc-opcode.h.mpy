@@ -1,0 +1,9 @@
+{
+  "module_name": "ppc-opcode.h",
+  "hash_id": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/primitives/asm/ppc-opcode.h",
+  "human_readable_source": "",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

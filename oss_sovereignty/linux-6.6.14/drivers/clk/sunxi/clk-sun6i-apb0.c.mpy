@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-sun6i-apb0.c",
+  "hash_id": "25b9617d4018b8b1bee25072f57faf8752754b58493c93e1a666d8f291c1ef2e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi/clk-sun6i-apb0.c",
+  "human_readable_source": "\n \n\n#include <linux/clk-provider.h>\n#include <linux/init.h>\n#include <linux/of.h>\n#include <linux/platform_device.h>\n\n \nstatic const struct clk_div_table sun6i_a31_apb0_divs[] = {\n\t{ .val = 0, .div = 2, },\n\t{ .val = 1, .div = 2, },\n\t{ .val = 2, .div = 4, },\n\t{ .val = 3, .div = 8, },\n\t{   },\n};\n\nstatic int sun6i_a31_apb0_clk_probe(struct platform_device *pdev)\n{\n\tstruct device_node *np = pdev->dev.of_node;\n\tconst char *clk_name = np->name;\n\tconst char *clk_parent;\n\tvoid __iomem *reg;\n\tstruct clk *clk;\n\n\treg = devm_platform_ioremap_resource(pdev, 0);\n\tif (IS_ERR(reg))\n\t\treturn PTR_ERR(reg);\n\n\tclk_parent = of_clk_get_parent_name(np, 0);\n\tif (!clk_parent)\n\t\treturn -EINVAL;\n\n\tof_property_read_string(np, \"clock-output-names\", &clk_name);\n\n\tclk = clk_register_divider_table(&pdev->dev, clk_name, clk_parent,\n\t\t\t\t\t 0, reg, 0, 2, 0, sun6i_a31_apb0_divs,\n\t\t\t\t\t NULL);\n\tif (IS_ERR(clk))\n\t\treturn PTR_ERR(clk);\n\n\treturn of_clk_add_provider(np, of_clk_src_simple_get, clk);\n}\n\nstatic const struct of_device_id sun6i_a31_apb0_clk_dt_ids[] = {\n\t{ .compatible = \"allwinner,sun6i-a31-apb0-clk\" },\n\t{   }\n};\n\nstatic struct platform_driver sun6i_a31_apb0_clk_driver = {\n\t.driver = {\n\t\t.name = \"sun6i-a31-apb0-clk\",\n\t\t.of_match_table = sun6i_a31_apb0_clk_dt_ids,\n\t},\n\t.probe = sun6i_a31_apb0_clk_probe,\n};\nbuiltin_platform_driver(sun6i_a31_apb0_clk_driver);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

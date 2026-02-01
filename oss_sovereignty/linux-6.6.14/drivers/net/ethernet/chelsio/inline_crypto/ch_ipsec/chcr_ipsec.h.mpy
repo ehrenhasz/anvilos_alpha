@@ -1,0 +1,9 @@
+{
+  "module_name": "chcr_ipsec.h",
+  "hash_id": "ec774f8f27ccaacfa46f97ab318aa8b1d8c5dbd9347681b98096dfb028cf98c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.h",
+  "human_readable_source": " \n \n\n#ifndef __CHCR_IPSEC_H__\n#define __CHCR_IPSEC_H__\n\n#include <crypto/algapi.h>\n#include \"t4_hw.h\"\n#include \"cxgb4.h\"\n#include \"t4_msg.h\"\n#include \"cxgb4_uld.h\"\n\n#include \"chcr_core.h\"\n#include \"chcr_algo.h\"\n#include \"chcr_crypto.h\"\n\n#define CHIPSEC_DRV_MODULE_NAME \"ch_ipsec\"\n#define CHIPSEC_DRV_VERSION \"1.0.0.0-ko\"\n#define CHIPSEC_DRV_DESC \"Chelsio T6 Crypto Ipsec offload Driver\"\n\nstruct ipsec_uld_ctx {\n\tstruct list_head entry;\n\tstruct cxgb4_lld_info lldi;\n};\n\nstruct chcr_ipsec_req {\n\tstruct ulp_txpkt ulptx;\n\tstruct ulptx_idata sc_imm;\n\tstruct cpl_tx_sec_pdu sec_cpl;\n\tstruct _key_ctx key_ctx;\n};\n\nstruct chcr_ipsec_wr {\n\tstruct fw_ulptx_wr wreq;\n\tstruct chcr_ipsec_req req;\n};\n\n#define ESN_IV_INSERT_OFFSET 12\nstruct chcr_ipsec_aadiv {\n\t__be32 spi;\n\tu8 seq_no[8];\n\tu8 iv[8];\n};\n\nstruct ipsec_sa_entry {\n\tint hmac_ctrl;\n\tu16 esn;\n\tu16 resv;\n\tunsigned int enckey_len;\n\tunsigned int kctx_len;\n\tunsigned int authsize;\n\t__be32 key_ctx_hdr;\n\tchar salt[MAX_SALT];\n\tchar key[2 * AES_MAX_KEY_SIZE];\n};\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

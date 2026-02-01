@@ -1,0 +1,9 @@
+{
+  "module_name": "stdcrt",
+  "hash_id": "f87d9f55729e8948aa31561672fb0b94d57971efd07bb473c2cc59d3fbf6a7d3",
+  "original_prompt": "Ingested from ncurses-6.4/misc/tabset/stdcrt",
+  "human_readable_source": "\n\u001b3\n        \u001b1        \u001b1        \u001b1        \u001b1        \u001b1        \u001b1        \u001b1        \u001b1        \u001b1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

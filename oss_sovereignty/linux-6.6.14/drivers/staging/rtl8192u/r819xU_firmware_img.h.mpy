@@ -1,0 +1,9 @@
+{
+  "module_name": "r819xU_firmware_img.h",
+  "hash_id": "e826f7e2d003bbf066b64f4a60373ce7bb56638f4d066275b4f2dd4b2a616854",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192u/r819xU_firmware_img.h",
+  "human_readable_source": " \n#ifndef IMG_H\n#define IMG_H\n\n#define MACPHY_Array_PGLength 30\n#define PHY_REG_1T2RArrayLength 296\n#define AGCTAB_ArrayLength 384\n#define MACPHY_ArrayLength 18\n\n#define RadioA_ArrayLength 246\n#define RadioB_ArrayLength 78\n#define RadioC_ArrayLength 1\n#define RadioD_ArrayLength 1\n#define PHY_REGArrayLength 1\n\nextern u32 Rtl8192UsbPHY_REGArray[];\nextern u32 Rtl8192UsbPHY_REG_1T2RArray[];\nextern u32 Rtl8192UsbRadioA_Array[];\nextern u32 Rtl8192UsbRadioB_Array[];\nextern u32 Rtl8192UsbRadioC_Array[];\nextern u32 Rtl8192UsbRadioD_Array[];\nextern u32 Rtl8192UsbMACPHY_Array[];\nextern u32 Rtl8192UsbMACPHY_Array_PG[];\nextern u32 Rtl8192UsbAGCTAB_Array[];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

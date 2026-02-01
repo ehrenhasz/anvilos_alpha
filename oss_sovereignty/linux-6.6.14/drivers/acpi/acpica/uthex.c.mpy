@@ -1,0 +1,9 @@
+{
+  "module_name": "uthex.c",
+  "hash_id": "f1d69d03dc171fc852b629ed87b1f21297d4961ce41bf4d2de583ab7dcd514c9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/acpica/uthex.c",
+  "human_readable_source": "\n \n\n#include <acpi/acpi.h>\n#include \"accommon.h\"\n\n#define _COMPONENT          ACPI_COMPILER\nACPI_MODULE_NAME(\"uthex\")\n\n \nstatic const char acpi_gbl_hex_to_ascii[] = {\n\t'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D',\n\t    'E', 'F'\n};\n\n \n\nchar acpi_ut_hex_to_ascii_char(u64 integer, u32 position)\n{\n\tu64 index;\n\n\tacpi_ut_short_shift_right(integer, position, &index);\n\treturn (acpi_gbl_hex_to_ascii[index & 0xF]);\n}\n\n \n\nacpi_status acpi_ut_ascii_to_hex_byte(char *two_ascii_chars, u8 *return_byte)\n{\n\n\t \n\n\tif (!isxdigit((int)two_ascii_chars[0]) ||\n\t    !isxdigit((int)two_ascii_chars[1])) {\n\t\treturn (AE_BAD_HEX_CONSTANT);\n\t}\n\n\t*return_byte =\n\t    acpi_ut_ascii_char_to_hex(two_ascii_chars[1]) |\n\t    (acpi_ut_ascii_char_to_hex(two_ascii_chars[0]) << 4);\n\n\treturn (AE_OK);\n}\n\n \n\nu8 acpi_ut_ascii_char_to_hex(int hex_char)\n{\n\n\t \n\n\tif (hex_char <= '9') {\n\t\treturn ((u8)(hex_char - '0'));\n\t}\n\n\t \n\n\tif (hex_char <= 'F') {\n\t\treturn ((u8)(hex_char - 0x37));\n\t}\n\n\t \n\n\treturn ((u8)(hex_char - 0x57));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

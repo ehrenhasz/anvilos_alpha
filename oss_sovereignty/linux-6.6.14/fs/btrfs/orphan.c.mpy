@@ -1,0 +1,9 @@
+{
+  "module_name": "orphan.c",
+  "hash_id": "7b8dfa6203c69f3b8e452eaf004e2271397124679e20d144601382062760ec1e",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/orphan.c",
+  "human_readable_source": "\n \n\n#include \"ctree.h\"\n#include \"disk-io.h\"\n#include \"orphan.h\"\n\nint btrfs_insert_orphan_item(struct btrfs_trans_handle *trans,\n\t\t\t     struct btrfs_root *root, u64 offset)\n{\n\tstruct btrfs_path *path;\n\tstruct btrfs_key key;\n\tint ret = 0;\n\n\tkey.objectid = BTRFS_ORPHAN_OBJECTID;\n\tkey.type = BTRFS_ORPHAN_ITEM_KEY;\n\tkey.offset = offset;\n\n\tpath = btrfs_alloc_path();\n\tif (!path)\n\t\treturn -ENOMEM;\n\n\tret = btrfs_insert_empty_item(trans, root, path, &key, 0);\n\n\tbtrfs_free_path(path);\n\treturn ret;\n}\n\nint btrfs_del_orphan_item(struct btrfs_trans_handle *trans,\n\t\t\t  struct btrfs_root *root, u64 offset)\n{\n\tstruct btrfs_path *path;\n\tstruct btrfs_key key;\n\tint ret = 0;\n\n\tkey.objectid = BTRFS_ORPHAN_OBJECTID;\n\tkey.type = BTRFS_ORPHAN_ITEM_KEY;\n\tkey.offset = offset;\n\n\tpath = btrfs_alloc_path();\n\tif (!path)\n\t\treturn -ENOMEM;\n\n\tret = btrfs_search_slot(trans, root, &key, path, -1, 1);\n\tif (ret < 0)\n\t\tgoto out;\n\tif (ret) {  \n\t\tret = -ENOENT;\n\t\tgoto out;\n\t}\n\n\tret = btrfs_del_item(trans, root, path);\n\nout:\n\tbtrfs_free_path(path);\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

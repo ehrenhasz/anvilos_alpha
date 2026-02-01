@@ -1,0 +1,9 @@
+{
+  "module_name": "ivpu_mmu_context.h",
+  "hash_id": "a9b7117393140f02205901419ea5eb3b1b53c00d4b2c85ac311bbe86d82430f5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/ivpu/ivpu_mmu_context.h",
+  "human_readable_source": " \n \n\n#ifndef __IVPU_MMU_CONTEXT_H__\n#define __IVPU_MMU_CONTEXT_H__\n\n#include <drm/drm_mm.h>\n\nstruct ivpu_device;\nstruct ivpu_file_priv;\nstruct ivpu_addr_range;\n\n#define IVPU_MMU_PGTABLE_ENTRIES\t512ull\n\nstruct ivpu_mmu_pgtable {\n\tu64\t\t***pte_ptrs[IVPU_MMU_PGTABLE_ENTRIES];\n\tu64\t\t**pmd_ptrs[IVPU_MMU_PGTABLE_ENTRIES];\n\tu64\t\t*pud_ptrs[IVPU_MMU_PGTABLE_ENTRIES];\n\tu64\t\t*pgd_dma_ptr;\n\tdma_addr_t\tpgd_dma;\n};\n\nstruct ivpu_mmu_context {\n\tstruct mutex lock;  \n\tstruct drm_mm mm;\n\tstruct ivpu_mmu_pgtable pgtable;\n\tstruct list_head bo_list;\n\tu32 id;\n};\n\nint ivpu_mmu_global_context_init(struct ivpu_device *vdev);\nvoid ivpu_mmu_global_context_fini(struct ivpu_device *vdev);\n\nint ivpu_mmu_user_context_init(struct ivpu_device *vdev, struct ivpu_mmu_context *ctx, u32 ctx_id);\nvoid ivpu_mmu_user_context_fini(struct ivpu_device *vdev, struct ivpu_mmu_context *ctx);\nvoid ivpu_mmu_user_context_mark_invalid(struct ivpu_device *vdev, u32 ssid);\n\nint ivpu_mmu_context_insert_node_locked(struct ivpu_mmu_context *ctx,\n\t\t\t\t\tconst struct ivpu_addr_range *range,\n\t\t\t\t\tu64 size, struct drm_mm_node *node);\nvoid ivpu_mmu_context_remove_node_locked(struct ivpu_mmu_context *ctx,\n\t\t\t\t\t struct drm_mm_node *node);\n\nint ivpu_mmu_context_map_sgt(struct ivpu_device *vdev, struct ivpu_mmu_context *ctx,\n\t\t\t     u64 vpu_addr, struct sg_table *sgt, bool llc_coherent);\nvoid ivpu_mmu_context_unmap_sgt(struct ivpu_device *vdev, struct ivpu_mmu_context *ctx,\n\t\t\t\tu64 vpu_addr, struct sg_table *sgt);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

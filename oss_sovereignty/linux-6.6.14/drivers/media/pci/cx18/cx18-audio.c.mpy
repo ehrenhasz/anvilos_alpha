@@ -1,0 +1,9 @@
+{
+  "module_name": "cx18-audio.c",
+  "hash_id": "2700fd1e127319680344b9b49321caf017314931144fe6a61b7a3f9dbebd482f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx18/cx18-audio.c",
+  "human_readable_source": "\n \n\n#include \"cx18-driver.h\"\n#include \"cx18-io.h\"\n#include \"cx18-cards.h\"\n#include \"cx18-audio.h\"\n\n#define CX18_AUDIO_ENABLE    0xc72014\n#define CX18_AI1_MUX_MASK    0x30\n#define CX18_AI1_MUX_I2S1    0x00\n#define CX18_AI1_MUX_I2S2    0x10\n#define CX18_AI1_MUX_843_I2S 0x20\n\n \nint cx18_audio_set_io(struct cx18 *cx)\n{\n\tconst struct cx18_card_audio_input *in;\n\tu32 u, v;\n\tint err;\n\n\t \n\tif (test_bit(CX18_F_I_RADIO_USER, &cx->i_flags))\n\t\tin = &cx->card->radio_input;\n\telse\n\t\tin = &cx->card->audio_inputs[cx->audio_input];\n\n\t \n\tv4l2_subdev_call(cx->sd_extmux, audio, s_routing,\n\t\t\t (u32) in->muxer_input, 0, 0);\n\n\terr = cx18_call_hw_err(cx, cx->card->hw_audio_ctrl,\n\t\t\t       audio, s_routing, in->audio_input, 0, 0);\n\tif (err)\n\t\treturn err;\n\n\t \n\tu = cx18_read_reg(cx, CX18_AUDIO_ENABLE);\n\tv = u & ~CX18_AI1_MUX_MASK;\n\tswitch (in->audio_input) {\n\tcase CX18_AV_AUDIO_SERIAL1:\n\t\tv |= CX18_AI1_MUX_I2S1;\n\t\tbreak;\n\tcase CX18_AV_AUDIO_SERIAL2:\n\t\tv |= CX18_AI1_MUX_I2S2;\n\t\tbreak;\n\tdefault:\n\t\tv |= CX18_AI1_MUX_843_I2S;\n\t\tbreak;\n\t}\n\tif (v == u) {\n\t\t \n\t\tu &= ~CX18_AI1_MUX_MASK;\n\t\tswitch (in->audio_input) {\n\t\tcase CX18_AV_AUDIO_SERIAL1:\n\t\t\tu |= CX18_AI1_MUX_843_I2S;\n\t\t\tbreak;\n\t\tcase CX18_AV_AUDIO_SERIAL2:\n\t\t\tu |= CX18_AI1_MUX_843_I2S;\n\t\t\tbreak;\n\t\tdefault:\n\t\t\tu |= CX18_AI1_MUX_I2S1;\n\t\t\tbreak;\n\t\t}\n\t\tcx18_write_reg_expect(cx, u | 0xb00, CX18_AUDIO_ENABLE,\n\t\t\t\t      u, CX18_AI1_MUX_MASK);\n\t}\n\tcx18_write_reg_expect(cx, v | 0xb00, CX18_AUDIO_ENABLE,\n\t\t\t      v, CX18_AI1_MUX_MASK);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pmc.h",
+  "hash_id": "0bda00ebfde97c6c6e476fdbc1088a9376fd26ee4e09e9afaeda95ab2ab724ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/wcn36xx/pmc.h",
+  "human_readable_source": " \n\n#ifndef _WCN36XX_PMC_H_\n#define _WCN36XX_PMC_H_\n\nstruct wcn36xx;\n\nenum wcn36xx_power_state {\n\tWCN36XX_FULL_POWER,\n\tWCN36XX_BMPS\n};\n\nint wcn36xx_pmc_enter_bmps_state(struct wcn36xx *wcn,\n\t\t\t\t struct ieee80211_vif *vif);\nint wcn36xx_pmc_exit_bmps_state(struct wcn36xx *wcn,\n\t\t\t\tstruct ieee80211_vif *vif);\nint wcn36xx_enable_keep_alive_null_packet(struct wcn36xx *wcn,\n\t\t\t\t\t  struct ieee80211_vif *vif);\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

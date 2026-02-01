@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7778062129177b8cdfe28bf68d1f8e154e4caeeb63bc858d5029c27301d88a06",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/nxp/imx8-isi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig VIDEO_IMX8_ISI\n\ttristate \"i.MX8 Image Sensor Interface (ISI) driver\"\n\tdepends on ARCH_MXC || COMPILE_TEST\n\tdepends on HAS_DMA && PM\n\tdepends on VIDEO_DEV\n\tselect MEDIA_CONTROLLER\n\tselect V4L2_FWNODE\n\tselect V4L2_MEM2MEM_DEV if VIDEO_IMX8_ISI_M2M\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect VIDEOBUF2_DMA_CONTIG\n\thelp\n\t  V4L2 driver for the Image Sensor Interface (ISI) found in various\n\t  i.MX8 SoCs.\n\nconfig VIDEO_IMX8_ISI_M2M\n\tbool \"i.MX8 Image Sensor Interface (ISI) memory-to-memory support\"\n\tdepends on VIDEO_IMX8_ISI\n\thelp\n\t  Select 'yes' here to enable support for memory-to-memory processing\n\t  in the ISI driver.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

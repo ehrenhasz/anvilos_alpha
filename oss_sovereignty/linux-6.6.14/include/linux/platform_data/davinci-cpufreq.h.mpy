@@ -1,0 +1,9 @@
+{
+  "module_name": "davinci-cpufreq.h",
+  "hash_id": "1f82342bd1c2fac2f65717ae0865f2ec9c249b7a0122993f0f85c239cebf1b89",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/davinci-cpufreq.h",
+  "human_readable_source": " \n \n\n#ifndef _MACH_DAVINCI_CPUFREQ_H\n#define _MACH_DAVINCI_CPUFREQ_H\n\n#include <linux/cpufreq.h>\n\nstruct davinci_cpufreq_config {\n\tstruct cpufreq_frequency_table *freq_table;\n\tint (*set_voltage)(unsigned int index);\n\tint (*init)(void);\n};\n\n#ifdef CONFIG_CPU_FREQ\nint davinci_cpufreq_init(void);\n#else\nstatic inline int davinci_cpufreq_init(void) { return 0; }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

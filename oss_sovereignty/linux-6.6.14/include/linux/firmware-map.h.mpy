@@ -1,0 +1,9 @@
+{
+  "module_name": "firmware-map.h",
+  "hash_id": "7a3d48337d0e66b3fe3442bc991a1a720eaa8d0457839b02421a6b8f1eae49be",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/firmware-map.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_FIRMWARE_MAP_H\n#define _LINUX_FIRMWARE_MAP_H\n\n#include <linux/list.h>\n\n \n#ifdef CONFIG_FIRMWARE_MEMMAP\n\nint firmware_map_add_early(u64 start, u64 end, const char *type);\nint firmware_map_add_hotplug(u64 start, u64 end, const char *type);\nint firmware_map_remove(u64 start, u64 end, const char *type);\n\n#else  \n\nstatic inline int firmware_map_add_early(u64 start, u64 end, const char *type)\n{\n\treturn 0;\n}\n\nstatic inline int firmware_map_add_hotplug(u64 start, u64 end, const char *type)\n{\n\treturn 0;\n}\n\nstatic inline int firmware_map_remove(u64 start, u64 end, const char *type)\n{\n\treturn 0;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

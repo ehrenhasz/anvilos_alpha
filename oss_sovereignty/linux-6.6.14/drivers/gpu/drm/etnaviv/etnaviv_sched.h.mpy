@@ -1,0 +1,9 @@
+{
+  "module_name": "etnaviv_sched.h",
+  "hash_id": "2a6e6aebad73983c8d01c0703101c0c5c48e4ec11a536afebd1c6877b6da78ea",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/etnaviv/etnaviv_sched.h",
+  "human_readable_source": " \n \n\n#ifndef __ETNAVIV_SCHED_H__\n#define __ETNAVIV_SCHED_H__\n\n#include <drm/gpu_scheduler.h>\n\nstruct etnaviv_gpu;\n\nstatic inline\nstruct etnaviv_gem_submit *to_etnaviv_submit(struct drm_sched_job *sched_job)\n{\n\treturn container_of(sched_job, struct etnaviv_gem_submit, sched_job);\n}\n\nint etnaviv_sched_init(struct etnaviv_gpu *gpu);\nvoid etnaviv_sched_fini(struct etnaviv_gpu *gpu);\nint etnaviv_sched_push_job(struct etnaviv_gem_submit *submit);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "path.h",
+  "hash_id": "7d9adb44fe5c7affbabccf496ce72847d19b5110c97190cdd9696eff015efbcf",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/avs/path.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_SOC_INTEL_AVS_PATH_H\n#define __SOUND_SOC_INTEL_AVS_PATH_H\n\n#include <linux/list.h>\n#include \"avs.h\"\n#include \"topology.h\"\n\nstruct avs_path {\n\tu32 dma_id;\n\tstruct list_head ppl_list;\n\tu32 state;\n\n\tstruct avs_tplg_path *template;\n\tstruct avs_dev *owner;\n\t \n\tstruct list_head node;\n};\n\nstruct avs_path_pipeline {\n\tu8 instance_id;\n\tstruct list_head mod_list;\n\tstruct list_head binding_list;\n\n\tstruct avs_tplg_pipeline *template;\n\tstruct avs_path *owner;\n\t \n\tstruct list_head node;\n};\n\nstruct avs_path_module {\n\tu16 module_id;\n\tu8 instance_id;\n\tunion avs_gtw_attributes gtw_attrs;\n\n\tstruct avs_tplg_module *template;\n\tstruct avs_path_pipeline *owner;\n\t \n\tstruct list_head node;\n};\n\nstruct avs_path_binding {\n\tstruct avs_path_module *source;\n\tu8 source_pin;\n\tstruct avs_path_module *sink;\n\tu8 sink_pin;\n\n\tstruct avs_tplg_binding *template;\n\tstruct avs_path_pipeline *owner;\n\t \n\tstruct list_head node;\n};\n\nvoid avs_path_free(struct avs_path *path);\nstruct avs_path *avs_path_create(struct avs_dev *adev, u32 dma_id,\n\t\t\t\t struct avs_tplg_path_template *template,\n\t\t\t\t struct snd_pcm_hw_params *fe_params,\n\t\t\t\t struct snd_pcm_hw_params *be_params);\nint avs_path_bind(struct avs_path *path);\nint avs_path_unbind(struct avs_path *path);\nint avs_path_reset(struct avs_path *path);\nint avs_path_pause(struct avs_path *path);\nint avs_path_run(struct avs_path *path, int trigger);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

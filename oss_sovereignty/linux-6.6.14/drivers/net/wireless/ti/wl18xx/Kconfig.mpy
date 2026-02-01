@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "672d71433ea548d01f8f7b976a58138d20c15fde89b278a8f2a8e9e3fc8d58db",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wl18xx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig WL18XX\n\ttristate \"TI wl18xx support\"\n\tdepends on MAC80211\n\tselect WLCORE\n\thelp\n\t  This module adds support for wireless adapters based on TI\n\t  WiLink 8 chipsets.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

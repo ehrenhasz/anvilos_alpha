@@ -1,0 +1,9 @@
+{
+  "module_name": "settings",
+  "hash_id": "dcb500e44883c63914d42d16b5cf811c6a2a47e9d1ea86f2e53f037622f719fb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tc-testing/settings",
+  "human_readable_source": "timeout=900\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fsync.c",
+  "hash_id": "7cb7b5f56bb9a292e997e8e49c680cc3257762dc1cc10abe36f03643f96f5acc",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fsync.c",
+  "human_readable_source": " \n  for (fd = 0; fd < 2; fd++)\n    if (fsync (fd) != 0)\n      {\n        ASSERT (errno == EINVAL  \n                || errno == ENOTSUP  \n                || errno == EBADF  \n                || errno == EIO  \n                );\n      }\n\n   \n  {\n    errno = 0;\n    ASSERT (fsync (-1) == -1);\n    ASSERT (errno == EBADF);\n  }\n  {\n    close (99);\n    errno = 0;\n    ASSERT (fsync (99) == -1);\n    ASSERT (errno == EBADF);\n  }\n\n  fd = open (file, O_WRONLY|O_CREAT|O_TRUNC, 0644);\n  ASSERT (0 <= fd);\n  ASSERT (write (fd, \"hello\", 5) == 5);\n  ASSERT (fsync (fd) == 0);\n  ASSERT (close (fd) == 0);\n\n   \n#if !(defined _AIX || defined __CYGWIN__)\n  fd = open (file, O_RDONLY);\n  ASSERT (0 <= fd);\n  {\n    char buf[1];\n    ASSERT (read (fd, buf, sizeof buf) == sizeof buf);\n  }\n  ASSERT (fsync (fd) == 0);\n  ASSERT (close (fd) == 0);\n#endif\n\n  ASSERT (unlink (file) == 0);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pm.h",
+  "hash_id": "51ef26f464da96b468ea221c4a1fa9726bc923ca79b790088240e24260e6170e",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/sof/pm.h",
+  "human_readable_source": " \n \n\n#ifndef __INCLUDE_SOUND_SOF_PM_H__\n#define __INCLUDE_SOUND_SOF_PM_H__\n\n#include <sound/sof/header.h>\n\n \n\n \nstruct sof_ipc_pm_ctx_elem {\n\tstruct sof_ipc_hdr hdr;\n\tuint32_t type;\n\tuint32_t size;\n\tuint64_t addr;\n}  __packed;\n\n \nstruct sof_ipc_pm_ctx {\n\tstruct sof_ipc_cmd_hdr hdr;\n\tstruct sof_ipc_host_buffer buffer;\n\tuint32_t num_elems;\n\tuint32_t size;\n\n\t \n\tuint32_t reserved[8];\n\n\tstruct sof_ipc_pm_ctx_elem elems[];\n} __packed;\n\n \nstruct sof_ipc_pm_core_config {\n\tstruct sof_ipc_cmd_hdr hdr;\n\tuint32_t enable_mask;\n} __packed;\n\nstruct sof_ipc_pm_gate {\n\tstruct sof_ipc_cmd_hdr hdr;\n\tuint32_t flags;\t \n\n\t \n\tuint32_t reserved[5];\n} __packed;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

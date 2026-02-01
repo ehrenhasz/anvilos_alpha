@@ -1,0 +1,9 @@
+{
+  "module_name": "vidtv_channel.h",
+  "hash_id": "042056233a16261c4909d74847e7979c65a86f48eee74543cd2596b61026a4ef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vidtv/vidtv_channel.h",
+  "human_readable_source": " \n \n\n#ifndef VIDTV_CHANNEL_H\n#define VIDTV_CHANNEL_H\n\n#include <linux/types.h>\n\n#include \"vidtv_encoder.h\"\n#include \"vidtv_mux.h\"\n#include \"vidtv_psi.h\"\n\n \nstruct vidtv_channel {\n\tchar *name;\n\tu16 transport_stream_id;\n\tstruct vidtv_psi_table_sdt_service *service;\n\tu16 program_num;\n\tstruct vidtv_psi_table_pat_program *program;\n\tstruct vidtv_psi_table_pmt_stream *streams;\n\tstruct vidtv_encoder *encoders;\n\tstruct vidtv_psi_table_eit_event *events;\n\tstruct vidtv_channel *next;\n};\n\n \nint vidtv_channel_si_init(struct vidtv_mux *m);\nvoid vidtv_channel_si_destroy(struct vidtv_mux *m);\n\n \nint vidtv_channels_init(struct vidtv_mux *m);\nstruct vidtv_channel\n*vidtv_channel_s302m_init(struct vidtv_channel *head, u16 transport_stream_id);\nvoid vidtv_channels_destroy(struct vidtv_mux *m);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

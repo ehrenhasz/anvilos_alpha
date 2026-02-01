@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b693ef7a90f41ae0685502dcca0f648d2bff6fdd6e552f828ce08336deb8bcb1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ipc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nuname_M := $(shell uname -m 2>/dev/null || echo not)\nARCH ?= $(shell echo $(uname_M) | sed -e s/i.86/i386/)\nifeq ($(ARCH),i386)\n        ARCH := x86\n\tCFLAGS := -DCONFIG_X86_32 -D__i386__\nendif\nifeq ($(ARCH),x86_64)\n\tARCH := x86\n\tCFLAGS := -DCONFIG_X86_64 -D__x86_64__\nendif\n\nCFLAGS += $(KHDR_INCLUDES)\n\nTEST_GEN_PROGS := msgque\n\ninclude ../lib.mk\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

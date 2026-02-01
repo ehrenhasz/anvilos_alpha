@@ -1,0 +1,9 @@
+{
+  "module_name": "test-strsignal.c",
+  "hash_id": "0a7b6fb5fe7f60ccd1d03df25fbba380aab63c477d7fbef01db10e2e668e4535",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-strsignal.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <string.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (strsignal, char *, (int));\n\n#include <signal.h>\n\n#include \"macros.h\"\n\n#if HAVE_DECL_SYS_SIGLIST\n# define ASSERT_DESCRIPTION(actual, expected)\n#else\n \n# define ASSERT_DESCRIPTION(actual, expected) \\\n   ASSERT (strncmp (actual, expected, strlen (expected)) == 0)\n#endif\n\nint\nmain (void)\n{\n   \n  const char *str;\n\n   \n\n#ifdef SIGHUP\n  str = strsignal (SIGHUP);\n  ASSERT (str);\n  ASSERT (*str);\n  ASSERT_DESCRIPTION (str, \"Hangup\");\n#endif\n\n#ifdef SIGINT\n  str = strsignal (SIGINT);\n  ASSERT (str);\n  ASSERT (*str);\n  ASSERT_DESCRIPTION (str, \"Interrupt\");\n#endif\n\n   \n\n  str = strsignal (-1);\n  ASSERT (str);\n  ASSERT (str != (char *) -1);\n  ASSERT (strlen (str));\n\n  str = strsignal (9249234);\n  ASSERT (str);\n  ASSERT (str != (char *) -1);\n  ASSERT (strlen (str));\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

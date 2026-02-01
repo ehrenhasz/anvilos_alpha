@@ -1,0 +1,9 @@
+{
+  "module_name": "mmu_context.h",
+  "hash_id": "63e2a8edc1ac25466b470085da7811bcc735e4e97c46ac5b5a7b4a69a50ffe51",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/mmu_context.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_MMU_CONTEXT_H\n#define __ASM_GENERIC_MMU_CONTEXT_H\n\n \n\nstruct task_struct;\nstruct mm_struct;\n\n \n#ifndef enter_lazy_tlb\nstatic inline void enter_lazy_tlb(struct mm_struct *mm,\n\t\t\tstruct task_struct *tsk)\n{\n}\n#endif\n\n \n#ifndef init_new_context\nstatic inline int init_new_context(struct task_struct *tsk,\n\t\t\tstruct mm_struct *mm)\n{\n\treturn 0;\n}\n#endif\n\n \n#ifndef destroy_context\nstatic inline void destroy_context(struct mm_struct *mm)\n{\n}\n#endif\n\n \n#ifndef activate_mm\nstatic inline void activate_mm(struct mm_struct *prev_mm,\n\t\t\t       struct mm_struct *next_mm)\n{\n\tswitch_mm(prev_mm, next_mm, current);\n}\n#endif\n\n \n#ifndef deactivate_mm\nstatic inline void deactivate_mm(struct task_struct *tsk,\n\t\t\tstruct mm_struct *mm)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

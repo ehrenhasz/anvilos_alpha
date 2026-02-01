@@ -1,0 +1,9 @@
+{
+  "module_name": "driver.h",
+  "hash_id": "8dab5622dc7dd5d63cedf15c7cd1f33a9b63e23773cd059ba9898611c2445776",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/driver.h",
+  "human_readable_source": " \n#ifndef __NVIF_DRIVER_H__\n#define __NVIF_DRIVER_H__\n#include <nvif/os.h>\nstruct nvif_client;\n\nstruct nvif_driver {\n\tconst char *name;\n\tint (*init)(const char *name, u64 device, const char *cfg,\n\t\t    const char *dbg, void **priv);\n\tvoid (*fini)(void *priv);\n\tint (*suspend)(void *priv);\n\tint (*resume)(void *priv);\n\tint (*ioctl)(void *priv, void *data, u32 size, void **hack);\n\tvoid __iomem *(*map)(void *priv, u64 handle, u32 size);\n\tvoid (*unmap)(void *priv, void __iomem *ptr, u32 size);\n\tbool keep;\n};\n\nint nvif_driver_init(const char *drv, const char *cfg, const char *dbg,\n\t\t     const char *name, u64 device, struct nvif_client *);\n\nextern const struct nvif_driver nvif_driver_nvkm;\nextern const struct nvif_driver nvif_driver_drm;\nextern const struct nvif_driver nvif_driver_lib;\nextern const struct nvif_driver nvif_driver_null;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

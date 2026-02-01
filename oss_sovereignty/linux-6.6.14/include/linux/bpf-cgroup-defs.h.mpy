@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf-cgroup-defs.h",
+  "hash_id": "d57a3110e0d3a5601e57e41adb920c4baea51d38807f8cb9450daac6e785df48",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bpf-cgroup-defs.h",
+  "human_readable_source": " \n#ifndef _BPF_CGROUP_DEFS_H\n#define _BPF_CGROUP_DEFS_H\n\n#ifdef CONFIG_CGROUP_BPF\n\n#include <linux/list.h>\n#include <linux/percpu-refcount.h>\n#include <linux/workqueue.h>\n\nstruct bpf_prog_array;\n\n#ifdef CONFIG_BPF_LSM\n \n#define CGROUP_LSM_NUM 10\n#else\n#define CGROUP_LSM_NUM 0\n#endif\n\nenum cgroup_bpf_attach_type {\n\tCGROUP_BPF_ATTACH_TYPE_INVALID = -1,\n\tCGROUP_INET_INGRESS = 0,\n\tCGROUP_INET_EGRESS,\n\tCGROUP_INET_SOCK_CREATE,\n\tCGROUP_SOCK_OPS,\n\tCGROUP_DEVICE,\n\tCGROUP_INET4_BIND,\n\tCGROUP_INET6_BIND,\n\tCGROUP_INET4_CONNECT,\n\tCGROUP_INET6_CONNECT,\n\tCGROUP_INET4_POST_BIND,\n\tCGROUP_INET6_POST_BIND,\n\tCGROUP_UDP4_SENDMSG,\n\tCGROUP_UDP6_SENDMSG,\n\tCGROUP_SYSCTL,\n\tCGROUP_UDP4_RECVMSG,\n\tCGROUP_UDP6_RECVMSG,\n\tCGROUP_GETSOCKOPT,\n\tCGROUP_SETSOCKOPT,\n\tCGROUP_INET4_GETPEERNAME,\n\tCGROUP_INET6_GETPEERNAME,\n\tCGROUP_INET4_GETSOCKNAME,\n\tCGROUP_INET6_GETSOCKNAME,\n\tCGROUP_INET_SOCK_RELEASE,\n\tCGROUP_LSM_START,\n\tCGROUP_LSM_END = CGROUP_LSM_START + CGROUP_LSM_NUM - 1,\n\tMAX_CGROUP_BPF_ATTACH_TYPE\n};\n\nstruct cgroup_bpf {\n\t \n\tstruct bpf_prog_array __rcu *effective[MAX_CGROUP_BPF_ATTACH_TYPE];\n\n\t \n\tstruct hlist_head progs[MAX_CGROUP_BPF_ATTACH_TYPE];\n\tu8 flags[MAX_CGROUP_BPF_ATTACH_TYPE];\n\n\t \n\tstruct list_head storages;\n\n\t \n\tstruct bpf_prog_array *inactive;\n\n\t \n\tstruct percpu_ref refcnt;\n\n\t \n\tstruct work_struct release_work;\n};\n\n#else  \nstruct cgroup_bpf {};\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

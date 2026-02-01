@@ -1,0 +1,9 @@
+{
+  "module_name": "idle_monitors.def",
+  "hash_id": "cf27cd4cbeb43ed6ef7c105fb2499ab6e94bb1398e02be2a3aafd102537c9599",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/utils/idle_monitor/idle_monitors.def",
+  "human_readable_source": "#if defined(__i386__) || defined(__x86_64__)\nDEF(amd_fam14h)\nDEF(intel_nhm)\nDEF(intel_snb)\nDEF(intel_hsw_ext)\nDEF(mperf)\nDEF(rapl)\n#endif\nDEF(cpuidle_sysfs)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

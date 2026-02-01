@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "63238b7248245fc7a3eb4a46246c014c3ac3f07f60fabce59f09f974b2fd337c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nvdimm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_LIBNVDIMM) += libnvdimm.o\nobj-$(CONFIG_BLK_DEV_PMEM) += nd_pmem.o\nobj-$(CONFIG_ND_BTT) += nd_btt.o\nobj-$(CONFIG_X86_PMEM_LEGACY) += nd_e820.o\nobj-$(CONFIG_OF_PMEM) += of_pmem.o\nobj-$(CONFIG_VIRTIO_PMEM) += virtio_pmem.o nd_virtio.o\n\nnd_pmem-y := pmem.o\n\nnd_btt-y := btt.o\n\nnd_e820-y := e820.o\n\nlibnvdimm-y := core.o\nlibnvdimm-y += bus.o\nlibnvdimm-y += dimm_devs.o\nlibnvdimm-$(CONFIG_PERF_EVENTS) += nd_perf.o\nlibnvdimm-y += dimm.o\nlibnvdimm-y += region_devs.o\nlibnvdimm-y += region.o\nlibnvdimm-y += namespace_devs.o\nlibnvdimm-y += label.o\nlibnvdimm-y += badrange.o\nlibnvdimm-$(CONFIG_ND_CLAIM) += claim.o\nlibnvdimm-$(CONFIG_BTT) += btt_devs.o\nlibnvdimm-$(CONFIG_NVDIMM_PFN) += pfn_devs.o\nlibnvdimm-$(CONFIG_NVDIMM_DAX) += dax_devs.o\nlibnvdimm-$(CONFIG_NVDIMM_KEYS) += security.o\n\nTOOLS := ../../tools\nTEST_SRC := $(TOOLS)/testing/nvdimm/test\nobj-$(CONFIG_NVDIMM_TEST_BUILD) += $(TEST_SRC)/iomap.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

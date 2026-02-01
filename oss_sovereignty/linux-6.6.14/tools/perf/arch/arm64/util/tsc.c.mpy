@@ -1,0 +1,9 @@
+{
+  "module_name": "tsc.c",
+  "hash_id": "9d8dcbe1637545d9c7f0365de1087ea09d129b19cecb6741b704156d7d35d2d8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arm64/util/tsc.c",
+  "human_readable_source": "\n\n#include <linux/types.h>\n\n#include \"../../../util/tsc.h\"\n\nu64 rdtsc(void)\n{\n\tu64 val;\n\n\t \n\tasm volatile(\"mrs %0, cntvct_el0\" : \"=r\" (val));\n\n\treturn val;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

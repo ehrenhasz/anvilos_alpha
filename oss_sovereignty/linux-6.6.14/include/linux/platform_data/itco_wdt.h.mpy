@@ -1,0 +1,9 @@
+{
+  "module_name": "itco_wdt.h",
+  "hash_id": "9bf85fd70f13da9a393e5a113ff5f27b6282b44523e29e2001998cf6b5643cc3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/itco_wdt.h",
+  "human_readable_source": " \n \n\n#ifndef _ITCO_WDT_H_\n#define _ITCO_WDT_H_\n\n \n#define ICH_RES_IO_TCO\t\t0\n#define ICH_RES_IO_SMI\t\t1\n#define ICH_RES_MEM_OFF\t\t2\n#define ICH_RES_MEM_GCS_PMC\t0\n\n \nstruct itco_wdt_platform_data {\n\tchar name[32];\n\tunsigned int version;\n\tbool no_reboot_use_pmc;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

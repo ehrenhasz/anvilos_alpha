@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "41cfd5209526e13f88eb733a2deb4ea7aab6d6bb03ba12b72e3929df88511697",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/move_mount_set_group/.gitignore",
+  "human_readable_source": "move_mount_set_group_test\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

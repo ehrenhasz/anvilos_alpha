@@ -1,0 +1,9 @@
+{
+  "module_name": "netdev-times-record",
+  "hash_id": "899358892076ffecacd1142b9e0c53504e9ad70775929a2355d541e988e6e770",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/netdev-times-record",
+  "human_readable_source": "#!/bin/bash\nperf record -e net:net_dev_xmit -e net:net_dev_queue\t\t\\\n\t\t-e net:netif_receive_skb -e net:netif_rx\t\t\\\n\t\t-e skb:consume_skb -e skb:kfree_skb\t\t\t\\\n\t\t-e skb:skb_copy_datagram_iovec -e napi:napi_poll\t\\\n\t\t-e irq:irq_handler_entry -e irq:irq_handler_exit\t\\\n\t\t-e irq:softirq_entry -e irq:softirq_exit\t\t\\\n\t\t-e irq:softirq_raise $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

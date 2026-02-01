@@ -1,0 +1,9 @@
+{
+  "module_name": "lru_bug.c",
+  "hash_id": "a64090130ce20234088e6c3285c7c6a03280392038b805e123c1af61e42fe8d4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/lru_bug.c",
+  "human_readable_source": "\n#include <test_progs.h>\n\n#include \"lru_bug.skel.h\"\n\nvoid test_lru_bug(void)\n{\n\tstruct lru_bug *skel;\n\tint ret;\n\n\tskel = lru_bug__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"lru_bug__open_and_load\"))\n\t\treturn;\n\tret = lru_bug__attach(skel);\n\tif (!ASSERT_OK(ret, \"lru_bug__attach\"))\n\t\tgoto end;\n\tusleep(1);\n\tASSERT_OK(skel->data->result, \"prealloc_lru_pop doesn't call check_and_init_map_value\");\nend:\n\tlru_bug__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

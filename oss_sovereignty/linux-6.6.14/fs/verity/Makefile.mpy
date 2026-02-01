@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ef4a2aeee1084785912062004f2e1d77456ec98f0187bbfbbd013ceb497d2b0b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/verity/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_FS_VERITY) += enable.o \\\n\t\t\t   hash_algs.o \\\n\t\t\t   init.o \\\n\t\t\t   measure.o \\\n\t\t\t   open.o \\\n\t\t\t   read_metadata.o \\\n\t\t\t   verify.o\n\nobj-$(CONFIG_FS_VERITY_BUILTIN_SIGNATURES) += signature.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

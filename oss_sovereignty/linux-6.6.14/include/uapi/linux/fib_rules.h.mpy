@@ -1,0 +1,9 @@
+{
+  "module_name": "fib_rules.h",
+  "hash_id": "b943f435f380d9c6a850af236f674194d5ed50c9443872f3984a56f41fb06aee",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/fib_rules.h",
+  "human_readable_source": " \n#ifndef __LINUX_FIB_RULES_H\n#define __LINUX_FIB_RULES_H\n\n#include <linux/types.h>\n#include <linux/rtnetlink.h>\n\n \n#define FIB_RULE_PERMANENT\t0x00000001\n#define FIB_RULE_INVERT\t\t0x00000002\n#define FIB_RULE_UNRESOLVED\t0x00000004\n#define FIB_RULE_IIF_DETACHED\t0x00000008\n#define FIB_RULE_DEV_DETACHED\tFIB_RULE_IIF_DETACHED\n#define FIB_RULE_OIF_DETACHED\t0x00000010\n\n \n#define FIB_RULE_FIND_SADDR\t0x00010000\n\nstruct fib_rule_hdr {\n\t__u8\t\tfamily;\n\t__u8\t\tdst_len;\n\t__u8\t\tsrc_len;\n\t__u8\t\ttos;\n\n\t__u8\t\ttable;\n\t__u8\t\tres1;    \n\t__u8\t\tres2;\t \n\t__u8\t\taction;\n\n\t__u32\t\tflags;\n};\n\nstruct fib_rule_uid_range {\n\t__u32\t\tstart;\n\t__u32\t\tend;\n};\n\nstruct fib_rule_port_range {\n\t__u16\t\tstart;\n\t__u16\t\tend;\n};\n\nenum {\n\tFRA_UNSPEC,\n\tFRA_DST,\t \n\tFRA_SRC,\t \n\tFRA_IIFNAME,\t \n#define FRA_IFNAME\tFRA_IIFNAME\n\tFRA_GOTO,\t \n\tFRA_UNUSED2,\n\tFRA_PRIORITY,\t \n\tFRA_UNUSED3,\n\tFRA_UNUSED4,\n\tFRA_UNUSED5,\n\tFRA_FWMARK,\t \n\tFRA_FLOW,\t \n\tFRA_TUN_ID,\n\tFRA_SUPPRESS_IFGROUP,\n\tFRA_SUPPRESS_PREFIXLEN,\n\tFRA_TABLE,\t \n\tFRA_FWMASK,\t \n\tFRA_OIFNAME,\n\tFRA_PAD,\n\tFRA_L3MDEV,\t \n\tFRA_UID_RANGE,\t \n\tFRA_PROTOCOL,    \n\tFRA_IP_PROTO,\t \n\tFRA_SPORT_RANGE,  \n\tFRA_DPORT_RANGE,  \n\t__FRA_MAX\n};\n\n#define FRA_MAX (__FRA_MAX - 1)\n\nenum {\n\tFR_ACT_UNSPEC,\n\tFR_ACT_TO_TBL,\t\t \n\tFR_ACT_GOTO,\t\t \n\tFR_ACT_NOP,\t\t \n\tFR_ACT_RES3,\n\tFR_ACT_RES4,\n\tFR_ACT_BLACKHOLE,\t \n\tFR_ACT_UNREACHABLE,\t \n\tFR_ACT_PROHIBIT,\t \n\t__FR_ACT_MAX,\n};\n\n#define FR_ACT_MAX (__FR_ACT_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

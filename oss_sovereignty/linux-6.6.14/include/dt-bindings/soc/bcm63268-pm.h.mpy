@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm63268-pm.h",
+  "hash_id": "c55894716f385ad422443b5db17c121e1bd84dabebad767d1b390a180897b5ff",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/soc/bcm63268-pm.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_BMIPS_BCM63268_PM_H\n#define __DT_BINDINGS_BMIPS_BCM63268_PM_H\n\n#define BCM63268_POWER_DOMAIN_SAR\t0\n#define BCM63268_POWER_DOMAIN_IPSEC\t1\n#define BCM63268_POWER_DOMAIN_MIPS\t2\n#define BCM63268_POWER_DOMAIN_DECT\t3\n#define BCM63268_POWER_DOMAIN_USBH\t4\n#define BCM63268_POWER_DOMAIN_USBD\t5\n#define BCM63268_POWER_DOMAIN_ROBOSW\t6\n#define BCM63268_POWER_DOMAIN_PCM\t7\n#define BCM63268_POWER_DOMAIN_PERIPH\t8\n#define BCM63268_POWER_DOMAIN_VDSL_PHY\t9\n#define BCM63268_POWER_DOMAIN_VDSL_MIPS\t10\n#define BCM63268_POWER_DOMAIN_FAP\t11\n#define BCM63268_POWER_DOMAIN_PCIE\t12\n#define BCM63268_POWER_DOMAIN_WLAN_PADS\t13\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

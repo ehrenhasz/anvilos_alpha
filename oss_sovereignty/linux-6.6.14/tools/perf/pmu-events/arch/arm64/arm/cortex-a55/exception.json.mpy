@@ -1,0 +1,9 @@
+{
+  "module_name": "exception.json",
+  "hash_id": "80f246630d535296eb6bdefeb4b816d8abe302d3334d734457bc1d4ff434df70",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a55/exception.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"EXC_TAKEN\"\n    },\n    {\n        \"ArchStdEvent\": \"MEMORY_ERROR\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_IRQ\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_FIQ\"\n    },\n    {\n        \"PublicDescription\": \"Predecode error\",\n        \"EventCode\": \"0xC6\",\n        \"EventName\": \"PREDECODE_ERROR\",\n        \"BriefDescription\": \"Predecode error\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

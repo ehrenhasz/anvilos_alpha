@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "6b024dea07c05ba0cef44a7c846ad959ef0af596a800fe0bc0a1f58da86b4d0b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/aspeed/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig PINCTRL_ASPEED\n\tbool\n\tdepends on (ARCH_ASPEED || COMPILE_TEST) && OF\n\tselect MFD_SYSCON\n\tselect PINMUX\n\tselect PINCONF\n\tselect GENERIC_PINCONF\n\tselect REGMAP_MMIO\n\nconfig PINCTRL_ASPEED_G4\n\tbool \"Aspeed G4 SoC pin control\"\n\tdepends on (MACH_ASPEED_G4 || COMPILE_TEST) && OF\n\tselect PINCTRL_ASPEED\n\thelp\n\t  Say Y here to enable pin controller support for Aspeed's 4th\n\t  generation SoCs. GPIO is provided by a separate GPIO driver.\n\nconfig PINCTRL_ASPEED_G5\n\tbool \"Aspeed G5 SoC pin control\"\n\tdepends on (MACH_ASPEED_G5 || COMPILE_TEST) && OF\n\tselect PINCTRL_ASPEED\n\thelp\n\t  Say Y here to enable pin controller support for Aspeed's 5th\n\t  generation SoCs. GPIO is provided by a separate GPIO driver.\n\nconfig PINCTRL_ASPEED_G6\n\tbool \"Aspeed G6 SoC pin control\"\n\tdepends on (MACH_ASPEED_G6 || COMPILE_TEST) && OF\n\tselect PINCTRL_ASPEED\n\thelp\n\t  Say Y here to enable pin controller support for Aspeed's 6th\n\t  generation SoCs. GPIO is provided by a separate GPIO driver.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

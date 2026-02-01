@@ -1,0 +1,9 @@
+{
+  "module_name": "spi-fsl-dspi.h",
+  "hash_id": "1ccf72f6f8ad07cd0a3c9d2303f6610c3e5945cf42ffaa1331daab5d4f2b4625",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/spi-fsl-dspi.h",
+  "human_readable_source": " \n \n\n#ifndef SPI_FSL_DSPI_HEADER_H\n#define SPI_FSL_DSPI_HEADER_H\n\n \nstruct fsl_dspi_platform_data {\n\tu32 cs_num;\n\tu32 bus_num;\n\tu32 sck_cs_delay;\n\tu32 cs_sck_delay;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

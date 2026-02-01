@@ -1,0 +1,9 @@
+{
+  "module_name": "blake3.h",
+  "hash_id": "b495dc2d125b531f11bd8a25fdbaddce154d36abd445633f5d7a7e9293d532de",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/blake3.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_SYS_BLAKE3_H\n#define\t_SYS_BLAKE3_H\n\n#ifdef  _KERNEL\n#include <sys/types.h>\n#else\n#include <stdint.h>\n#include <stdlib.h>\n#endif\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n#define\tBLAKE3_KEY_LEN\t\t32\n#define\tBLAKE3_OUT_LEN\t\t32\n#define\tBLAKE3_MAX_DEPTH\t54\n#define\tBLAKE3_BLOCK_LEN\t64\n#define\tBLAKE3_CHUNK_LEN\t1024\n\n \ntypedef struct {\n\tuint32_t cv[8];\n\tuint64_t chunk_counter;\n\tuint8_t buf[BLAKE3_BLOCK_LEN];\n\tuint8_t buf_len;\n\tuint8_t blocks_compressed;\n\tuint8_t flags;\n} blake3_chunk_state_t;\n\ntypedef struct {\n\tuint32_t key[8];\n\tblake3_chunk_state_t chunk;\n\tuint8_t cv_stack_len;\n\n\t \n\tuint8_t cv_stack[(BLAKE3_MAX_DEPTH + 1) * BLAKE3_OUT_LEN];\n\n\t \n\tconst void *ops;\n} BLAKE3_CTX;\n\n \nvoid Blake3_Init(BLAKE3_CTX *ctx);\n\n \nvoid Blake3_InitKeyed(BLAKE3_CTX *ctx, const uint8_t key[BLAKE3_KEY_LEN]);\n\n \nvoid Blake3_Update(BLAKE3_CTX *ctx, const void *input, size_t input_len);\n\n \nvoid Blake3_Final(const BLAKE3_CTX *ctx, uint8_t *out);\n\n \nvoid Blake3_FinalSeek(const BLAKE3_CTX *ctx, uint64_t seek, uint8_t *out,\n    size_t out_len);\n\n \nextern void **blake3_per_cpu_ctx;\nextern void blake3_per_cpu_ctx_init(void);\nextern void blake3_per_cpu_ctx_fini(void);\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

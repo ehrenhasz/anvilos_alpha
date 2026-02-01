@@ -1,0 +1,9 @@
+{
+  "module_name": "xattr_trusted.c",
+  "hash_id": "53fa4399c8b8a0b1c35fe6b22ec80fb1cd894028d078d56f1b218ffa986686ee",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ext2/xattr_trusted.c",
+  "human_readable_source": "\n \n\n#include \"ext2.h\"\n#include \"xattr.h\"\n\nstatic bool\next2_xattr_trusted_list(struct dentry *dentry)\n{\n\treturn capable(CAP_SYS_ADMIN);\n}\n\nstatic int\next2_xattr_trusted_get(const struct xattr_handler *handler,\n\t\t       struct dentry *unused, struct inode *inode,\n\t\t       const char *name, void *buffer, size_t size)\n{\n\treturn ext2_xattr_get(inode, EXT2_XATTR_INDEX_TRUSTED, name,\n\t\t\t      buffer, size);\n}\n\nstatic int\next2_xattr_trusted_set(const struct xattr_handler *handler,\n\t\t       struct mnt_idmap *idmap,\n\t\t       struct dentry *unused, struct inode *inode,\n\t\t       const char *name, const void *value,\n\t\t       size_t size, int flags)\n{\n\treturn ext2_xattr_set(inode, EXT2_XATTR_INDEX_TRUSTED, name,\n\t\t\t      value, size, flags);\n}\n\nconst struct xattr_handler ext2_xattr_trusted_handler = {\n\t.prefix\t= XATTR_TRUSTED_PREFIX,\n\t.list\t= ext2_xattr_trusted_list,\n\t.get\t= ext2_xattr_trusted_get,\n\t.set\t= ext2_xattr_trusted_set,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

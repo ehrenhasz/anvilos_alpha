@@ -1,0 +1,9 @@
+{
+  "module_name": "keysyms.h",
+  "hash_id": "9a9e45ff401591df24e15cc5d4e9e90feaaf843cd62d4d1ec5fa3d5b01a49f0a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/keysyms.h",
+  "human_readable_source": " \n#ifndef _PERF_KEYSYMS_H_\n#define _PERF_KEYSYMS_H_ 1\n\n#include \"libslang.h\"\n\n#define K_DOWN\tSL_KEY_DOWN\n#define K_END\tSL_KEY_END\n#define K_ENTER\t'\\r'\n#define K_ESC\t033\n#define K_F1\tSL_KEY_F(1)\n#define K_HOME\tSL_KEY_HOME\n#define K_LEFT\tSL_KEY_LEFT\n#define K_PGDN\tSL_KEY_NPAGE\n#define K_PGUP\tSL_KEY_PPAGE\n#define K_RIGHT\tSL_KEY_RIGHT\n#define K_TAB\t'\\t'\n#define K_UNTAB\tSL_KEY_UNTAB\n#define K_UP\tSL_KEY_UP\n#define K_BKSPC 0x7f\n#define K_DEL\tSL_KEY_DELETE\n\n \n#define K_TIMER\t -1\n#define K_ERROR\t -2\n#define K_RESIZE -3\n#define K_SWITCH_INPUT_DATA -4\n#define K_RELOAD -5\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

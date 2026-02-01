@@ -1,0 +1,9 @@
+{
+  "module_name": "timewait_sock.h",
+  "hash_id": "a8e772079bc7dbdfc391e3361927b7124bdc91e9203b5a250653fcd83344b076",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/timewait_sock.h",
+  "human_readable_source": " \n \n#ifndef _TIMEWAIT_SOCK_H\n#define _TIMEWAIT_SOCK_H\n\n#include <linux/slab.h>\n#include <linux/bug.h>\n#include <net/sock.h>\n\nstruct timewait_sock_ops {\n\tstruct kmem_cache\t*twsk_slab;\n\tchar\t\t*twsk_slab_name;\n\tunsigned int\ttwsk_obj_size;\n\tint\t\t(*twsk_unique)(struct sock *sk,\n\t\t\t\t       struct sock *sktw, void *twp);\n\tvoid\t\t(*twsk_destructor)(struct sock *sk);\n};\n\nstatic inline int twsk_unique(struct sock *sk, struct sock *sktw, void *twp)\n{\n\tif (sk->sk_prot->twsk_prot->twsk_unique != NULL)\n\t\treturn sk->sk_prot->twsk_prot->twsk_unique(sk, sktw, twp);\n\treturn 0;\n}\n\nstatic inline void twsk_destructor(struct sock *sk)\n{\n\tif (sk->sk_prot->twsk_prot->twsk_destructor != NULL)\n\t\tsk->sk_prot->twsk_prot->twsk_destructor(sk);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

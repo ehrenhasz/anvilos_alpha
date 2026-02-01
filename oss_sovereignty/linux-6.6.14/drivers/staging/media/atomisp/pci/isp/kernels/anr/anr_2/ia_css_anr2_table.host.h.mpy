@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_anr2_table.host.h",
+  "hash_id": "900a75486aa0f6c2dc6d06d9869aae217e7157ee63970e32d69930015978220b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/anr/anr_2/ia_css_anr2_table.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_ANR2_TABLE_HOST_H\n#define __IA_CSS_ANR2_TABLE_HOST_H\n\n#include \"ia_css_anr2_types.h\"\n\nextern const struct ia_css_anr_thres default_anr_thres;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

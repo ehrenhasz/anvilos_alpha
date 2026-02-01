@@ -1,0 +1,9 @@
+{
+  "module_name": "getugroups.m4",
+  "hash_id": "6fe106e9de4dd1a534860d4e270f492faeaa048985e699964a468c9f6850a60a",
+  "original_prompt": "Ingested from coreutils-9.4/m4/getugroups.m4",
+  "human_readable_source": "# getugroups.m4 serial 9\ndnl Copyright (C) 2002-2003, 2005-2006, 2009-2023 Free Software Foundation,\ndnl Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_GETUGROUPS],\n[\n  AC_CHECK_HEADERS_ONCE([grp.h])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

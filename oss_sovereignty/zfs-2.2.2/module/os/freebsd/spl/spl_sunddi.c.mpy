@@ -1,0 +1,9 @@
+{
+  "module_name": "spl_sunddi.c",
+  "hash_id": "517ec07b1888622874d7ddb09a1bee78fe9926e10ef26f0fa5578d46fd36282f",
+  "original_prompt": "Ingested from zfs-2.2.2/module/os/freebsd/spl/spl_sunddi.c",
+  "human_readable_source": " \n\n#include <sys/cdefs.h>\n__FBSDID(\"$FreeBSD$\");\n\n#include <sys/types.h>\n#include <sys/param.h>\n#include <sys/jail.h>\n#include <sys/kernel.h>\n#include <sys/libkern.h>\n#include <sys/limits.h>\n#include <sys/misc.h>\n#include <sys/sunddi.h>\n#include <sys/sysctl.h>\n\nint\nddi_strtol(const char *str, char **nptr, int base, long *result)\n{\n\n\t*result = strtol(str, nptr, base);\n\treturn (0);\n}\n\nint\nddi_strtoull(const char *str, char **nptr, int base, unsigned long long *result)\n{\n\n\t*result = (unsigned long long)strtouq(str, nptr, base);\n\treturn (0);\n}\n\nint\nddi_strtoll(const char *str, char **nptr, int base, long long *result)\n{\n\n\t*result = (long long)strtoq(str, nptr, base);\n\treturn (0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

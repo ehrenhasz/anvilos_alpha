@@ -1,0 +1,9 @@
+{
+  "module_name": "power.h",
+  "hash_id": "ad943909275cfbb288dd1d7ea0c465c43f0b90a0a48b7bc55142d71b7d73ea8d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/gma500/power.h",
+  "human_readable_source": " \n#ifndef _PSB_POWERMGMT_H_\n#define _PSB_POWERMGMT_H_\n\n#include <linux/pci.h>\n\nstruct device;\nstruct drm_device;\n\nvoid gma_power_init(struct drm_device *dev);\nvoid gma_power_uninit(struct drm_device *dev);\n\n \nint gma_power_suspend(struct device *dev);\nint gma_power_resume(struct device *dev);\n\n \nbool gma_power_begin(struct drm_device *dev, bool force);\nvoid gma_power_end(struct drm_device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

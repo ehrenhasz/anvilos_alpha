@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e61f353e9ae0364d5a5ab7cd960a30d9accba0861d035a8aab7a9e1f23a09776",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/omap4iss/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig VIDEO_OMAP4\n\ttristate \"OMAP 4 Camera support\"\n\tdepends on VIDEO_DEV  && I2C\n\tdepends on ARCH_OMAP4 || COMPILE_TEST\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect MFD_SYSCON\n\tselect VIDEOBUF2_DMA_CONTIG\n\thelp\n\t  Driver for an OMAP 4 ISS controller.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

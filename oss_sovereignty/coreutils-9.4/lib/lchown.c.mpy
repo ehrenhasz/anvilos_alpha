@@ -1,0 +1,9 @@
+{
+  "module_name": "lchown.c",
+  "hash_id": "dede58e3035d45c75eb61dc395e1bedcffa0208f9fce94119821648223746bef",
+  "original_prompt": "Ingested from coreutils-9.4/lib/lchown.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <unistd.h>\n\n#include <errno.h>\n#include <string.h>\n#include <sys/stat.h>\n\n#if !HAVE_LCHOWN\n\n \n# if CHOWN_MODIFIES_SYMLINK\n#  undef chown\n# endif\n\n \n\nint\nlchown (const char *file, uid_t uid, gid_t gid)\n{\n# if HAVE_CHOWN\n#  if ! CHOWN_MODIFIES_SYMLINK\n  char readlink_buf[1];\n\n  if (0 <= readlink (file, readlink_buf, sizeof readlink_buf))\n    {\n      errno = EOPNOTSUPP;\n      return -1;\n    }\n#  endif\n\n  return chown (file, uid, gid);\n\n# else  \n  errno = ENOSYS;\n  return -1;\n# endif\n}\n\n#else  \n\n# undef lchown\n\n \nint\nrpl_lchown (const char *file, uid_t uid, gid_t gid)\n{\n  bool stat_valid = false;\n  int result;\n\n# if CHOWN_CHANGE_TIME_BUG\n  struct stat st;\n\n  if (gid != (gid_t) -1 || uid != (uid_t) -1)\n    {\n      if (lstat (file, &st))\n        return -1;\n      stat_valid = true;\n      if (!S_ISLNK (st.st_mode))\n        return chown (file, uid, gid);\n    }\n# endif\n\n# if CHOWN_TRAILING_SLASH_BUG\n  if (!stat_valid)\n    {\n      size_t len = strlen (file);\n      if (len && file[len - 1] == '/')\n        return chown (file, uid, gid);\n    }\n# endif\n\n  result = lchown (file, uid, gid);\n\n# if CHOWN_CHANGE_TIME_BUG && HAVE_LCHMOD\n  if (result == 0 && stat_valid\n      && (uid == st.st_uid || uid == (uid_t) -1)\n      && (gid == st.st_gid || gid == (gid_t) -1))\n    {\n       \n      result = lchmod (file, st.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO\n                                           | S_ISUID | S_ISGID | S_ISVTX));\n    }\n# endif\n\n  return result;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

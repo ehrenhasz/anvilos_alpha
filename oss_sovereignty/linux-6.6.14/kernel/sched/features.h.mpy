@@ -1,0 +1,9 @@
+{
+  "module_name": "features.h",
+  "hash_id": "a04602259c4956debf0498464c6874cfc5ff1cc1f75856cb3931c31bb060158b",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/sched/features.h",
+  "human_readable_source": " \n\n \nSCHED_FEAT(PLACE_LAG, true)\nSCHED_FEAT(PLACE_DEADLINE_INITIAL, true)\nSCHED_FEAT(RUN_TO_PARITY, true)\n\n \nSCHED_FEAT(NEXT_BUDDY, false)\n\n \nSCHED_FEAT(CACHE_HOT_BUDDY, true)\n\n \nSCHED_FEAT(WAKEUP_PREEMPTION, true)\n\nSCHED_FEAT(HRTICK, false)\nSCHED_FEAT(HRTICK_DL, false)\nSCHED_FEAT(DOUBLE_TICK, false)\n\n \nSCHED_FEAT(NONTASK_CAPACITY, true)\n\n#ifdef CONFIG_PREEMPT_RT\nSCHED_FEAT(TTWU_QUEUE, false)\n#else\n\n \nSCHED_FEAT(TTWU_QUEUE, true)\n#endif\n\n \nSCHED_FEAT(SIS_PROP, false)\nSCHED_FEAT(SIS_UTIL, true)\n\n \nSCHED_FEAT(WARN_DOUBLE_CLOCK, false)\n\n#ifdef HAVE_RT_PUSH_IPI\n \nSCHED_FEAT(RT_PUSH_IPI, true)\n#endif\n\nSCHED_FEAT(RT_RUNTIME_SHARE, false)\nSCHED_FEAT(LB_MIN, false)\nSCHED_FEAT(ATTACH_AGE_LOAD, true)\n\nSCHED_FEAT(WA_IDLE, true)\nSCHED_FEAT(WA_WEIGHT, true)\nSCHED_FEAT(WA_BIAS, true)\n\n \nSCHED_FEAT(UTIL_EST, true)\nSCHED_FEAT(UTIL_EST_FASTUP, true)\n\nSCHED_FEAT(LATENCY_WARN, false)\n\nSCHED_FEAT(HZ_BW, true)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f1b738627e4bb17cc4fc1b3e1b5c84297e7906f2cecbc666e9b03bdedf5b9517",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/common/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-soc-sst-dsp-objs := sst-dsp.o\nsnd-soc-sst-ipc-objs := sst-ipc.o\nsnd-soc-acpi-intel-match-objs := soc-acpi-intel-byt-match.o soc-acpi-intel-cht-match.o \\\n\tsoc-acpi-intel-hsw-bdw-match.o \\\n\tsoc-acpi-intel-skl-match.o soc-acpi-intel-kbl-match.o \\\n\tsoc-acpi-intel-bxt-match.o soc-acpi-intel-glk-match.o \\\n\tsoc-acpi-intel-cnl-match.o soc-acpi-intel-cfl-match.o \\\n\tsoc-acpi-intel-cml-match.o soc-acpi-intel-icl-match.o \\\n\tsoc-acpi-intel-tgl-match.o soc-acpi-intel-ehl-match.o \\\n\tsoc-acpi-intel-jsl-match.o soc-acpi-intel-adl-match.o \\\n\tsoc-acpi-intel-rpl-match.o soc-acpi-intel-mtl-match.o \\\n\tsoc-acpi-intel-lnl-match.o \\\n\tsoc-acpi-intel-hda-match.o \\\n\tsoc-acpi-intel-sdw-mockup-match.o\n\nobj-$(CONFIG_SND_SOC_INTEL_SST) += snd-soc-sst-dsp.o snd-soc-sst-ipc.o\nobj-$(CONFIG_SND_SOC_ACPI_INTEL_MATCH) += snd-soc-acpi-intel-match.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

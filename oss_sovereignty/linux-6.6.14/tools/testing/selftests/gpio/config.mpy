@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "5bf543cc2a60d90b570d9501bd8b89a798fb76c5968e2b83dcd75fbd90ed1c9d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/gpio/config",
+  "human_readable_source": "CONFIG_GPIOLIB=y\nCONFIG_GPIO_CDEV=y\nCONFIG_GPIO_MOCKUP=m\nCONFIG_GPIO_SIM=m\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

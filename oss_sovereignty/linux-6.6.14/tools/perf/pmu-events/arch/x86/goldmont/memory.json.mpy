@@ -1,0 +1,9 @@
+{
+  "module_name": "memory.json",
+  "hash_id": "c7eb8586e3362772cfba61cd304f803cdcbd2f921868712e8d06ce6b60f40125",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/goldmont/memory.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"Machine clears due to memory ordering issue\",\n        \"EventCode\": \"0xC3\",\n        \"EventName\": \"MACHINE_CLEARS.MEMORY_ORDERING\",\n        \"PublicDescription\": \"Counts machine clears due to memory ordering issues.  This occurs when a snoop request happens and the machine is uncertain if memory ordering will be preserved as another core is in the process of modifying the data.\",\n        \"SampleAfterValue\": \"200003\",\n        \"UMask\": \"0x2\"\n    },\n    {\n        \"BriefDescription\": \"Load uops that split a page (Precise event capable)\",\n        \"EventCode\": \"0x13\",\n        \"EventName\": \"MISALIGN_MEM_REF.LOAD_PAGE_SPLIT\",\n        \"PEBS\": \"2\",\n        \"PublicDescription\": \"Counts when a memory load of a uop spans a page boundary (a split) is retired.\",\n        \"SampleAfterValue\": \"200003\",\n        \"UMask\": \"0x2\"\n    },\n    {\n        \"BriefDescription\": \"Store uops that split a page (Precise event capable)\",\n        \"EventCode\": \"0x13\",\n        \"EventName\": \"MISALIGN_MEM_REF.STORE_PAGE_SPLIT\",\n        \"PEBS\": \"2\",\n        \"PublicDescription\": \"Counts when a memory store of a uop spans a page boundary (a split) is retired.\",\n        \"SampleAfterValue\": \"200003\",\n        \"UMask\": \"0x4\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

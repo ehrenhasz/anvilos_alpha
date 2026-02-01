@@ -1,0 +1,9 @@
+{
+  "module_name": "mkdir-p.h",
+  "hash_id": "6977922493851e1aba3aaa602deb9b4341e121a985398c34a41768860569d68b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mkdir-p.h",
+  "human_readable_source": " \n\n#include <sys/types.h>\n\nstruct savewd;\nbool make_dir_parents (char *dir,\n                       struct savewd *wd,\n                       int (*make_ancestor) (char const *, char const *,\n                                             void *),\n                       void *options,\n                       mode_t mode,\n                       void (*announce) (char const *, void *),\n                       mode_t mode_bits,\n                       uid_t owner,\n                       gid_t group,\n                       bool preserve_existing);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

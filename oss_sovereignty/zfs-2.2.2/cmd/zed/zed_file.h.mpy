@@ -1,0 +1,9 @@
+{
+  "module_name": "zed_file.h",
+  "hash_id": "2756684988ebfd2d65c2d6eb5be220336f4ba0e58598db95e7edcaf01e98ac75",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zed/zed_file.h",
+  "human_readable_source": " \n\n#ifndef\tZED_FILE_H\n#define\tZED_FILE_H\n\n#include <sys/types.h>\n#include <unistd.h>\n\nint zed_file_lock(int fd);\n\nint zed_file_unlock(int fd);\n\npid_t zed_file_is_locked(int fd);\n\nvoid zed_file_close_from(int fd);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

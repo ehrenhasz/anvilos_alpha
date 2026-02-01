@@ -1,0 +1,9 @@
+{
+  "module_name": "qemu.h",
+  "hash_id": "d846d74042bfbbdccc64ed97df9335fb5748d1636a0d6cd180759c2ad7f2aca6",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/qemu.h",
+  "human_readable_source": " \n\n#ifdef __linux__\n# include <fcntl.h>\n# include <string.h>\n# include <unistd.h>\n#endif\n\n \n\nstatic bool\nis_running_under_qemu_user (void)\n{\n#ifdef __linux__\n  char buf[4096 + 1];\n  int fd;\n\n# if defined __m68k__\n  fd = open (\"/proc/hardware\", O_RDONLY);\n  if (fd >= 0)\n    {\n      int n = read (fd, buf, sizeof (buf) - 1);\n      close (fd);\n      if (n > 0)\n        {\n          buf[n] = '\\0';\n          if (strstr (buf, \"qemu\") != NULL)\n            return true;\n        }\n    }\n# endif\n\n  fd = open (\"/proc/cpuinfo\", O_RDONLY);\n  if (fd >= 0)\n    {\n      int n = read (fd, buf, sizeof (buf) - 1);\n      close (fd);\n      if (n > 0)\n        {\n          buf[n] = '\\0';\n# if defined __hppa__\n          if (strstr (buf, \"QEMU\") != NULL)\n            return true;\n# endif\n# if !(defined __i386__ || defined __x86_64__)\n          if (strstr (buf, \"AuthenticAMD\") != NULL\n              || strstr (buf, \"GenuineIntel\") != NULL)\n            return true;\n# endif\n# if !(defined __arm__ || defined __aarch64__)\n          if (strstr (buf, \"ARM\") != NULL\n              || strcasestr (buf, \"aarch64\") != NULL)\n            return true;\n# endif\n# if !defined __sparc__\n          if (strcasestr (buf, \"SPARC\") != NULL)\n            return true;\n# endif\n# if !defined __powerpc__\n          if (strstr (buf, \"POWER\") != NULL)\n            return true;\n# endif\n        }\n    }\n\n   \n#endif\n\n  return false;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

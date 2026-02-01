@@ -1,0 +1,9 @@
+{
+  "module_name": "auth2-kbdint.c",
+  "hash_id": "76c011da32b16e7c6d89dfdcfd64bfd6935ddf20bf043393e27793fbf6cd2346",
+  "original_prompt": "Ingested from openssh-9.6p1/auth2-kbdint.c",
+  "human_readable_source": " \n \n\n#include \"includes.h\"\n\n#include <sys/types.h>\n\n#include <stdlib.h>\n#include <stdio.h>\n#include <stdarg.h>\n\n#include \"xmalloc.h\"\n#include \"packet.h\"\n#include \"hostfile.h\"\n#include \"auth.h\"\n#include \"log.h\"\n#include \"misc.h\"\n#include \"servconf.h\"\n#include \"ssherr.h\"\n\n \nextern ServerOptions options;\n\nstatic int\nuserauth_kbdint(struct ssh *ssh, const char *method)\n{\n\tint r, authenticated = 0;\n\tchar *lang, *devs;\n\n\tif ((r = sshpkt_get_cstring(ssh, &lang, NULL)) != 0 ||\n\t    (r = sshpkt_get_cstring(ssh, &devs, NULL)) != 0 ||\n\t    (r = sshpkt_get_end(ssh)) != 0)\n\t\tfatal_fr(r, \"parse packet\");\n\n\tdebug(\"keyboard-interactive devs %s\", devs);\n\n\tif (options.kbd_interactive_authentication)\n\t\tauthenticated = auth2_challenge(ssh, devs);\n\n\tfree(devs);\n\tfree(lang);\n\treturn authenticated;\n}\n\nAuthmethod method_kbdint = {\n\t\"keyboard-interactive\",\n\tNULL,\n\tuserauth_kbdint,\n\t&options.kbd_interactive_authentication\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

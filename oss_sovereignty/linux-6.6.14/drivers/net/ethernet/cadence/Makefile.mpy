@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7c26360d4132acd0315920722ceecffd1113af91a98b25ced9f16ac9ae81e59a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cadence/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Atmel network device drivers.\n#\nmacb-y\t:= macb_main.o\n\nifeq ($(CONFIG_MACB_USE_HWSTAMP),y)\nmacb-y\t+= macb_ptp.o\nendif\n\nobj-$(CONFIG_MACB) += macb.o\nobj-$(CONFIG_MACB_PCI) += macb_pci.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

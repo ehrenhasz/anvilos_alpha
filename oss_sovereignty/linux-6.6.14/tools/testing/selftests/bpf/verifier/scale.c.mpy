@@ -1,0 +1,9 @@
+{
+  "module_name": "scale.c",
+  "hash_id": "65e58359e7c721cb40bbe4a482a435867b2693574b4d00a3d460a6e2cf3ace1f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/verifier/scale.c",
+  "human_readable_source": "{\n\t\"scale: scale test 1\",\n\t.insns = { },\n\t.data = { },\n\t.fill_helper = bpf_fill_scale,\n\t.prog_type = BPF_PROG_TYPE_SCHED_CLS,\n\t.result = ACCEPT,\n\t.retval = 1,\n},\n{\n\t\"scale: scale test 2\",\n\t.insns = { },\n\t.data = { },\n\t.fill_helper = bpf_fill_scale,\n\t.prog_type = BPF_PROG_TYPE_SCHED_CLS,\n\t.result = ACCEPT,\n\t.retval = 2,\n},\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

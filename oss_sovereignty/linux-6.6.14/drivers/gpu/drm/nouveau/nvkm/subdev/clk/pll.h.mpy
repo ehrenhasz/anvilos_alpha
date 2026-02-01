@@ -1,0 +1,9 @@
+{
+  "module_name": "pll.h",
+  "hash_id": "9a174f2f9f84fe673f663dda64ee42ab9d5dd19d89c52f58a866aba9f1c6a96e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/clk/pll.h",
+  "human_readable_source": " \n#ifndef __NVKM_PLL_H__\n#define __NVKM_PLL_H__\n#include <core/os.h>\nstruct nvkm_subdev;\nstruct nvbios_pll;\n\nint nv04_pll_calc(struct nvkm_subdev *, struct nvbios_pll *, u32 freq,\n\t\t  int *N1, int *M1, int *N2, int *M2, int *P);\nint gt215_pll_calc(struct nvkm_subdev *, struct nvbios_pll *, u32 freq,\n\t\t  int *N, int *fN, int *M, int *P);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tlb.h",
+  "hash_id": "25f85ae6389beadbc0c36b6747ca20279111a659a39d2525d886eec8b6b26ca3",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/tlb.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_TLB_H\n#define _ASM_X86_TLB_H\n\n#define tlb_flush tlb_flush\nstatic inline void tlb_flush(struct mmu_gather *tlb);\n\n#include <asm-generic/tlb.h>\n\nstatic inline void tlb_flush(struct mmu_gather *tlb)\n{\n\tunsigned long start = 0UL, end = TLB_FLUSH_ALL;\n\tunsigned int stride_shift = tlb_get_unmap_shift(tlb);\n\n\tif (!tlb->fullmm && !tlb->need_flush_all) {\n\t\tstart = tlb->start;\n\t\tend = tlb->end;\n\t}\n\n\tflush_tlb_mm_range(tlb->mm, start, end, stride_shift, tlb->freed_tables);\n}\n\n \nstatic inline void __tlb_remove_table(void *table)\n{\n\tfree_page_and_swap_cache(table);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

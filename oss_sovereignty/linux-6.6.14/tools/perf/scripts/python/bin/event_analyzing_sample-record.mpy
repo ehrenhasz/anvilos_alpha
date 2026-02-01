@@ -1,0 +1,9 @@
+{
+  "module_name": "event_analyzing_sample-record",
+  "hash_id": "10db5e5f7bc6ba12086bc1e3cf630b109bba1e93035533a99409855c4db3f950",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/event_analyzing_sample-record",
+  "human_readable_source": "#!/bin/bash\n\n#\n# event_analyzing_sample.py can cover all type of perf samples including\n# the tracepoints, so no special record requirements, just record what\n# you want to analyze.\n#\nperf record $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

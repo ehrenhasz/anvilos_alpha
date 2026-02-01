@@ -1,0 +1,9 @@
+{
+  "module_name": "pgtable-2level_types.h",
+  "hash_id": "c6564e82f77dc626fb2d8202a2afd90f7b332230a59ce7b311a5807a9cd9883d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/pgtable-2level_types.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PGTABLE_2LEVEL_DEFS_H\n#define _ASM_X86_PGTABLE_2LEVEL_DEFS_H\n\n#ifndef __ASSEMBLY__\n#include <linux/types.h>\n\ntypedef unsigned long\tpteval_t;\ntypedef unsigned long\tpmdval_t;\ntypedef unsigned long\tpudval_t;\ntypedef unsigned long\tp4dval_t;\ntypedef unsigned long\tpgdval_t;\ntypedef unsigned long\tpgprotval_t;\n\ntypedef union {\n\tpteval_t pte;\n\tpteval_t pte_low;\n} pte_t;\n#endif\t \n\n#define SHARED_KERNEL_PMD\t0\n\n#define ARCH_PAGE_TABLE_SYNC_MASK\tPGTBL_PMD_MODIFIED\n\n \n\n#define PGDIR_SHIFT\t22\n#define PTRS_PER_PGD\t1024\n\n\n \n\n#define PTRS_PER_PTE\t1024\n\n \n#define PGD_KERNEL_START\t(CONFIG_PAGE_OFFSET >> PGDIR_SHIFT)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

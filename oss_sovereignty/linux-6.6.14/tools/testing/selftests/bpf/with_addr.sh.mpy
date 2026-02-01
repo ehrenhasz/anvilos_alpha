@@ -1,0 +1,9 @@
+{
+  "module_name": "with_addr.sh",
+  "hash_id": "c274f448e3f713ee13d6ae6668f62f629a8b68a662d66ff99f47cf6bb96650ea",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/with_addr.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n#\n# add private ipv4 and ipv6 addresses to loopback\n\nreadonly V6_INNER='100::a/128'\nreadonly V4_INNER='192.168.0.1/32'\n\nif getopts \":s\" opt; then\n  readonly SIT_DEV_NAME='sixtofourtest0'\n  readonly V6_SIT='2::/64'\n  readonly V4_SIT='172.17.0.1/32'\n  shift\nfi\n\nfail() {\n  echo \"error: $*\" 1>&2\n  exit 1\n}\n\nsetup() {\n  ip -6 addr add \"${V6_INNER}\" dev lo || fail 'failed to setup v6 address'\n  ip -4 addr add \"${V4_INNER}\" dev lo || fail 'failed to setup v4 address'\n\n  if [[ -n \"${V6_SIT}\" ]]; then\n    ip link add \"${SIT_DEV_NAME}\" type sit remote any local any \\\n\t    || fail 'failed to add sit'\n    ip link set dev \"${SIT_DEV_NAME}\" up \\\n\t    || fail 'failed to bring sit device up'\n    ip -6 addr add \"${V6_SIT}\" dev \"${SIT_DEV_NAME}\" \\\n\t    || fail 'failed to setup v6 SIT address'\n    ip -4 addr add \"${V4_SIT}\" dev \"${SIT_DEV_NAME}\" \\\n\t    || fail 'failed to setup v4 SIT address'\n  fi\n\n  sleep 2\t# avoid race causing bind to fail\n}\n\ncleanup() {\n  if [[ -n \"${V6_SIT}\" ]]; then\n    ip -4 addr del \"${V4_SIT}\" dev \"${SIT_DEV_NAME}\"\n    ip -6 addr del \"${V6_SIT}\" dev \"${SIT_DEV_NAME}\"\n    ip link del \"${SIT_DEV_NAME}\"\n  fi\n\n  ip -4 addr del \"${V4_INNER}\" dev lo\n  ip -6 addr del \"${V6_INNER}\" dev lo\n}\n\ntrap cleanup EXIT\n\nsetup\n\"$@\"\nexit \"$?\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

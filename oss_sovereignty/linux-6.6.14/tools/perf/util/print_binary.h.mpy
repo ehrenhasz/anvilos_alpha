@@ -1,0 +1,9 @@
+{
+  "module_name": "print_binary.h",
+  "hash_id": "64b3f41a582f05ecc0398c4331b0a131f6e6d5d1db7440f159d104bc94a619b2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/print_binary.h",
+  "human_readable_source": " \n#ifndef PERF_PRINT_BINARY_H\n#define PERF_PRINT_BINARY_H\n\n#include <stddef.h>\n#include <stdio.h>\n\nenum binary_printer_ops {\n\tBINARY_PRINT_DATA_BEGIN,\n\tBINARY_PRINT_LINE_BEGIN,\n\tBINARY_PRINT_ADDR,\n\tBINARY_PRINT_NUM_DATA,\n\tBINARY_PRINT_NUM_PAD,\n\tBINARY_PRINT_SEP,\n\tBINARY_PRINT_CHAR_DATA,\n\tBINARY_PRINT_CHAR_PAD,\n\tBINARY_PRINT_LINE_END,\n\tBINARY_PRINT_DATA_END,\n};\n\ntypedef int (*binary__fprintf_t)(enum binary_printer_ops op,\n\t\t\t\t unsigned int val, void *extra, FILE *fp);\n\nint binary__fprintf(unsigned char *data, size_t len,\n\t\t    size_t bytes_per_line, binary__fprintf_t printer,\n\t\t    void *extra, FILE *fp);\n\nstatic inline void print_binary(unsigned char *data, size_t len,\n\t\t\t\tsize_t bytes_per_line, binary__fprintf_t printer,\n\t\t\t\tvoid *extra)\n{\n\tbinary__fprintf(data, len, bytes_per_line, printer, extra, stdout);\n}\n\nint is_printable_array(char *p, unsigned int len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

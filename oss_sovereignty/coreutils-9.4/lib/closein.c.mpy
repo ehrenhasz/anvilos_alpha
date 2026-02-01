@@ -1,0 +1,9 @@
+{
+  "module_name": "closein.c",
+  "hash_id": "81b1d83f07feba4cdb30ca7ca1866438856e447846178efd0e3ec638e518c66d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/closein.c",
+  "human_readable_source": " \nvoid\nclose_stdin_set_file_name (const char *file)\n{\n  file_name = file;\n}\n\n \n\nvoid\nclose_stdin (void)\n{\n  bool fail = false;\n\n   \n  if (freadahead (stdin) > 0)\n    {\n       \n      if (fseeko (stdin, 0, SEEK_CUR) == 0 && fflush (stdin) != 0)\n        fail = true;\n    }\n  if (close_stream (stdin) != 0)\n    fail = true;\n  if (fail)\n    {\n       \n      char const *close_error = _(\"error closing file\");\n      if (file_name)\n        error (0, errno, \"%s: %s\", quotearg_colon (file_name),\n               close_error);\n      else\n        error (0, errno, \"%s\", close_error);\n    }\n\n  close_stdout ();\n\n  if (fail)\n    _exit (exit_failure);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

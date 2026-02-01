@@ -1,0 +1,9 @@
+{
+  "module_name": "user-type.h",
+  "hash_id": "5f4fcace053e380dd4464e9c5a10b8dfc9c8549e886e7af3f790bbf10f4f7087",
+  "original_prompt": "Ingested from linux-6.6.14/include/keys/user-type.h",
+  "human_readable_source": " \n \n\n#ifndef _KEYS_USER_TYPE_H\n#define _KEYS_USER_TYPE_H\n\n#include <linux/key.h>\n#include <linux/rcupdate.h>\n\n#ifdef CONFIG_KEYS\n\n \n \nstruct user_key_payload {\n\tstruct rcu_head\trcu;\t\t \n\tunsigned short\tdatalen;\t \n\tchar\t\tdata[] __aligned(__alignof__(u64));  \n};\n\nextern struct key_type key_type_user;\nextern struct key_type key_type_logon;\n\nstruct key_preparsed_payload;\n\nextern int user_preparse(struct key_preparsed_payload *prep);\nextern void user_free_preparse(struct key_preparsed_payload *prep);\nextern int user_update(struct key *key, struct key_preparsed_payload *prep);\nextern void user_revoke(struct key *key);\nextern void user_destroy(struct key *key);\nextern void user_describe(const struct key *user, struct seq_file *m);\nextern long user_read(const struct key *key, char *buffer, size_t buflen);\n\nstatic inline const struct user_key_payload *user_key_payload_rcu(const struct key *key)\n{\n\treturn (struct user_key_payload *)dereference_key_rcu(key);\n}\n\nstatic inline struct user_key_payload *user_key_payload_locked(const struct key *key)\n{\n\treturn (struct user_key_payload *)dereference_key_locked((struct key *)key);\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

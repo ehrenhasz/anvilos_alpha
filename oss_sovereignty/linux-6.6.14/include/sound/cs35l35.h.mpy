@@ -1,0 +1,9 @@
+{
+  "module_name": "cs35l35.h",
+  "hash_id": "1655425ee962140059940afaee2ea87320f4b3145606a9d3d9d0ae4dac057bc6",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/cs35l35.h",
+  "human_readable_source": " \n \n\n#ifndef __CS35L35_H\n#define __CS35L35_H\n\nstruct classh_cfg {\n\t \n\tbool classh_bst_override;\n\tbool classh_algo_enable;\n\tint classh_bst_max_limit;\n\tint classh_mem_depth;\n\tint classh_release_rate;\n\tint classh_headroom;\n\tint classh_wk_fet_disable;\n\tint classh_wk_fet_delay;\n\tint classh_wk_fet_thld;\n\tint classh_vpch_auto;\n\tint classh_vpch_rate;\n\tint classh_vpch_man;\n};\n\nstruct monitor_cfg {\n\t \n\tbool is_present;\n\tbool imon_specs;\n\tbool vmon_specs;\n\tbool vpmon_specs;\n\tbool vbstmon_specs;\n\tbool vpbrstat_specs;\n\tbool zerofill_specs;\n\tu8 imon_dpth;\n\tu8 imon_loc;\n\tu8 imon_frm;\n\tu8 imon_scale;\n\tu8 vmon_dpth;\n\tu8 vmon_loc;\n\tu8 vmon_frm;\n\tu8 vpmon_dpth;\n\tu8 vpmon_loc;\n\tu8 vpmon_frm;\n\tu8 vbstmon_dpth;\n\tu8 vbstmon_loc;\n\tu8 vbstmon_frm;\n\tu8 vpbrstat_dpth;\n\tu8 vpbrstat_loc;\n\tu8 vpbrstat_frm;\n\tu8 zerofill_dpth;\n\tu8 zerofill_loc;\n\tu8 zerofill_frm;\n};\n\nstruct cs35l35_platform_data {\n\n\t \n\tbool stereo;\n\t \n\tint sp_drv_str;\n\t \n\tint sp_drv_unused;\n\t \n\tbool bst_pdn_fet_on;\n\t \n\tint bst_vctl;\n\t \n\tint bst_ipk;\n\t \n\tbool gain_zc;\n\t \n\tint aud_channel;\n\t \n\tint adv_channel;\n\t \n\tbool shared_bst;\n\t \n\tbool ext_bst;\n\t \n\tint boost_ind;\n\t \n\tstruct classh_cfg classh_algo;\n\t \n\tstruct monitor_cfg mon_cfg;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

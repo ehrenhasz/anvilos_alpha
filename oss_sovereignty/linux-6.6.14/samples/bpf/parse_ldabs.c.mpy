@@ -1,0 +1,9 @@
+{
+  "module_name": "parse_ldabs.c",
+  "hash_id": "300b548a20149b2264dc1060f74e849489ed7aee45a76a7aff359ae4a833055d",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/parse_ldabs.c",
+  "human_readable_source": " \n#define KBUILD_MODNAME \"foo\"\n#include <linux/ip.h>\n#include <linux/ipv6.h>\n#include <linux/in.h>\n#include <linux/tcp.h>\n#include <linux/udp.h>\n#include <uapi/linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_legacy.h\"\n\n#define DEFAULT_PKTGEN_UDP_PORT\t9\n#define IP_MF\t\t\t0x2000\n#define IP_OFFSET\t\t0x1FFF\n\nstatic inline int ip_is_fragment(struct __sk_buff *ctx, __u64 nhoff)\n{\n\treturn load_half(ctx, nhoff + offsetof(struct iphdr, frag_off))\n\t\t& (IP_MF | IP_OFFSET);\n}\n\nSEC(\"ldabs\")\nint handle_ingress(struct __sk_buff *skb)\n{\n\t__u64 troff = ETH_HLEN + sizeof(struct iphdr);\n\n\tif (load_half(skb, offsetof(struct ethhdr, h_proto)) != ETH_P_IP)\n\t\treturn 0;\n\tif (load_byte(skb, ETH_HLEN + offsetof(struct iphdr, protocol)) != IPPROTO_UDP ||\n\t    load_byte(skb, ETH_HLEN) != 0x45)\n\t\treturn 0;\n\tif (ip_is_fragment(skb, ETH_HLEN))\n\t\treturn 0;\n\tif (load_half(skb, troff + offsetof(struct udphdr, dest)) == DEFAULT_PKTGEN_UDP_PORT)\n\t\treturn TC_ACT_SHOT;\n\treturn 0;\n}\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

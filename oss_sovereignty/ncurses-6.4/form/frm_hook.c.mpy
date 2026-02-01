@@ -1,0 +1,9 @@
+{
+  "module_name": "frm_hook.c",
+  "hash_id": "a540f4c010665feb05895ab1bf45856de3dfeebf1dde0a65f87cf40b4554a267",
+  "original_prompt": "Ingested from ncurses-6.4/form/frm_hook.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: frm_hook.c,v 1.20 2020/05/24 01:40:20 anonymous.maarten Exp $\")\n\n \n#define GEN_HOOK_SET_FUNCTION( typ, name ) \\\nFORM_IMPEXP int NCURSES_API set_ ## typ ## _ ## name (FORM *form, Form_Hook func)\\\n{\\\n   TR_FUNC_BFR(1); \\\n   T((T_CALLED(\"set_\" #typ\"_\"#name\"(%p,%s)\"), (void *) form, TR_FUNC_ARG(0, func)));\\\n   (Normalize_Form( form ) -> typ ## name) = func ;\\\n   RETURN(E_OK);\\\n}\n\n \n#define GEN_HOOK_GET_FUNCTION( typ, name ) \\\nFORM_IMPEXP Form_Hook NCURSES_API typ ## _ ## name ( const FORM *form )\\\n{\\\n   T((T_CALLED(#typ \"_\" #name \"(%p)\"), (const void *) form));\\\n   returnFormHook( Normalize_Form( form ) -> typ ## name );\\\n}\n\n \nGEN_HOOK_SET_FUNCTION(field, init)\n\n \nGEN_HOOK_GET_FUNCTION(field, init)\n\n \nGEN_HOOK_SET_FUNCTION(field, term)\n\n \nGEN_HOOK_GET_FUNCTION(field, term)\n\n \nGEN_HOOK_SET_FUNCTION(form, init)\n\n \nGEN_HOOK_GET_FUNCTION(form, init)\n\n \nGEN_HOOK_SET_FUNCTION(form, term)\n\n \nGEN_HOOK_GET_FUNCTION(form, term)\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

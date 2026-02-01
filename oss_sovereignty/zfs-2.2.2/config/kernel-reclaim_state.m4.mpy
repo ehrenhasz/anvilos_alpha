@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-reclaim_state.m4",
+  "hash_id": "9a309b215acea5b05130a2c323c85e4fceac58c8b98e7f6178b5cbb0e2cf6e7a",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-reclaim_state.m4",
+  "human_readable_source": "AC_DEFUN([ZFS_AC_KERNEL_SRC_RECLAIMED], [\n\tdnl #\n\tdnl # 6.4 API change\n\tdnl # The reclaimed_slab of struct reclaim_state\n\tdnl # is renamed to reclaimed\n\tdnl #\n\tZFS_LINUX_TEST_SRC([reclaim_state_reclaimed], [\n\t\t#include <linux/swap.h>\n\t\tstatic const struct reclaim_state\n\t\t    rs  __attribute__ ((unused)) = {\n\t\t    .reclaimed = 100,\n\t\t};\n\t],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_RECLAIMED], [\n\tAC_MSG_CHECKING([whether struct reclaim_state has reclaimed field])\n\tZFS_LINUX_TEST_RESULT([reclaim_state_reclaimed], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_RECLAIM_STATE_RECLAIMED, 1,\n\t\t   [struct reclaim_state has reclaimed])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "06465709053ee54fddc78b6b662352bfe02f09bdd3e37a842a98d415a43b61f8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/benchmarks/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nTEST_GEN_PROGS := gettimeofday context_switch fork mmap_bench futex_bench null_syscall\nTEST_GEN_FILES := exec_target\n\nTEST_FILES := settings\n\nCFLAGS += -O2\n\ntop_srcdir = ../../../../..\ninclude ../../lib.mk\n\n$(TEST_GEN_PROGS): ../harness.c\n\n$(OUTPUT)/context_switch: ../utils.c\n$(OUTPUT)/context_switch: CFLAGS += -maltivec -mvsx -mabi=altivec\n$(OUTPUT)/context_switch: LDLIBS += -lpthread\n\n$(OUTPUT)/fork: LDLIBS += -lpthread\n\n$(OUTPUT)/exec_target: CFLAGS += -static -nostartfiles\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "282bdb1138a58b57c3a2d451617391d5f11b39dc528d40b9e0e14b7734265793",
+  "original_prompt": "Ingested from linux-6.6.14/net/caif/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nccflags-$(CONFIG_CAIF_DEBUG)     :=      -DDEBUG\n\ncaif-y := caif_dev.o \\\n\tcfcnfg.o cfmuxl.o cfctrl.o  \\\n\tcffrml.o cfveil.o cfdbgl.o\\\n\tcfserl.o cfdgml.o  \\\n\tcfrfml.o cfvidl.o cfutill.o \\\n\tcfsrvl.o cfpkt_skbuff.o\n\nobj-$(CONFIG_CAIF) += caif.o\nobj-$(CONFIG_CAIF_NETDEV) += chnl_net.o\nobj-$(CONFIG_CAIF) += caif_socket.o\nobj-$(CONFIG_CAIF_USB) += caif_usb.o\n\nexport-y := caif.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

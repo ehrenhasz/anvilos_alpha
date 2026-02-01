@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0b95e36d7041585b8cbf46b4f3ab660db6701453387456dabc441dfe28c3d2a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/fsl/dpio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# QorIQ DPAA2 DPIO driver\n#\n\nobj-$(CONFIG_FSL_MC_DPIO) += fsl-mc-dpio.o\n\nfsl-mc-dpio-objs := dpio.o qbman-portal.o dpio-service.o dpio-driver.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

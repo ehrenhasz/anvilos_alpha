@@ -1,0 +1,9 @@
+{
+  "module_name": "fld_stat.c",
+  "hash_id": "d14f2f1f115b038164fcaa8cb257c8f3024268af18e80ffeb26fcb81eadab72d",
+  "original_prompt": "Ingested from ncurses-6.4/form/fld_stat.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: fld_stat.c,v 1.18 2021/06/17 21:20:30 tom Exp $\")\n\n \nFORM_EXPORT(int)\nset_field_status(FIELD *field, bool status)\n{\n  T((T_CALLED(\"set_field_status(%p,%d)\"), (void *)field, status));\n\n  Normalize_Field(field);\n\n  if (status)\n    SetStatus(field, _CHANGED);\n  else\n    ClrStatus(field, _CHANGED);\n\n  RETURN(E_OK);\n}\n\n \nFORM_EXPORT(bool)\nfield_status(const FIELD *field)\n{\n  T((T_CALLED(\"field_status(%p)\"), (const void *)field));\n\n  returnBool((Normalize_Field(field)->status & _CHANGED) ? TRUE : FALSE);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

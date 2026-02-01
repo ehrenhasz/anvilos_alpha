@@ -1,0 +1,9 @@
+{
+  "module_name": "gen6_engine_cs.h",
+  "hash_id": "5466359bff70ca3111b23bce9059e78febbad00a43cba8240de8cad009a84afc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/gen6_engine_cs.h",
+  "human_readable_source": " \n \n\n#ifndef __GEN6_ENGINE_CS_H__\n#define __GEN6_ENGINE_CS_H__\n\n#include <linux/types.h>\n\n#include \"intel_gpu_commands.h\"\n\nstruct i915_request;\nstruct intel_engine_cs;\n\nint gen6_emit_flush_rcs(struct i915_request *rq, u32 mode);\nint gen6_emit_flush_vcs(struct i915_request *rq, u32 mode);\nint gen6_emit_flush_xcs(struct i915_request *rq, u32 mode);\nu32 *gen6_emit_breadcrumb_rcs(struct i915_request *rq, u32 *cs);\nu32 *gen6_emit_breadcrumb_xcs(struct i915_request *rq, u32 *cs);\n\nint gen7_emit_flush_rcs(struct i915_request *rq, u32 mode);\nu32 *gen7_emit_breadcrumb_rcs(struct i915_request *rq, u32 *cs);\nu32 *gen7_emit_breadcrumb_xcs(struct i915_request *rq, u32 *cs);\n\nint gen6_emit_bb_start(struct i915_request *rq,\n\t\t       u64 offset, u32 len,\n\t\t       unsigned int dispatch_flags);\nint hsw_emit_bb_start(struct i915_request *rq,\n\t\t      u64 offset, u32 len,\n\t\t      unsigned int dispatch_flags);\n\nvoid gen6_irq_enable(struct intel_engine_cs *engine);\nvoid gen6_irq_disable(struct intel_engine_cs *engine);\n\nvoid hsw_irq_enable_vecs(struct intel_engine_cs *engine);\nvoid hsw_irq_disable_vecs(struct intel_engine_cs *engine);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

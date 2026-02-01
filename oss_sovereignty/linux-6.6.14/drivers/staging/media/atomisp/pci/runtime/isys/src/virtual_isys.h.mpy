@@ -1,0 +1,9 @@
+{
+  "module_name": "virtual_isys.h",
+  "hash_id": "9efd3df1b97662bd3a35fd0a4f2763c0090d22e44a257832e7dc5cef6e2bed17",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/isys/src/virtual_isys.h",
+  "human_readable_source": " \n \n\n#ifndef __VIRTUAL_ISYS_H_INCLUDED__\n#define __VIRTUAL_ISYS_H_INCLUDED__\n\n \n#define _STREAM2MMIO_CMD_TOKEN_STORE_PACKETS\t1\n\n \n#define _STREAM2MMIO_CMD_TOKEN_SYNC_FRAME\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

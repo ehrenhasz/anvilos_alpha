@@ -1,0 +1,9 @@
+{
+  "module_name": "test-termios.c",
+  "hash_id": "737b1438beeda92bc134a0c5480fbf1d2b76e931d2b64673c08a811cf53437e8",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-termios.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <termios.h>\n\n \npid_t t1;\n\nint\nmain (void)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

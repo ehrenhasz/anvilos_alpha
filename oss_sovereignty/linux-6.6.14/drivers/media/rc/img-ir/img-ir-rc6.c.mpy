@@ -1,0 +1,9 @@
+{
+  "module_name": "img-ir-rc6.c",
+  "hash_id": "83a8fbbc3ada6fb19394a822c27d50dd365636987f85e2eb7a55c12d99450a83",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/img-ir/img-ir-rc6.c",
+  "human_readable_source": "\n \n\n#include \"img-ir-hw.h\"\n\n \nstatic int img_ir_rc6_scancode(int len, u64 raw, u64 enabled_protocols,\n\t\t\t\tstruct img_ir_scancode_req *request)\n{\n\tunsigned int addr, cmd, mode, trl1, trl2;\n\n\t \n\n\traw\t>>= 27;\n\n\ttrl1\t= (raw >>  17)\t& 0x01;\n\ttrl2\t= (raw >>  16)\t& 0x01;\n\n\tmode\t= (raw >>  18)\t& 0x07;\n\taddr\t= (raw >>   8)\t& 0xff;\n\tcmd\t=  raw\t\t& 0xff;\n\n\t \n\tif (trl1 == trl2)\n\t\treturn -EINVAL;\n\n\t \n\tif (mode)\n\t\treturn -EINVAL;\n\n\trequest->protocol = RC_PROTO_RC6_0;\n\trequest->scancode = addr << 8 | cmd;\n\trequest->toggle\t  = trl2;\n\treturn IMG_IR_SCANCODE;\n}\n\n \nstatic int img_ir_rc6_filter(const struct rc_scancode_filter *in,\n\t\t\t\t struct img_ir_filter *out, u64 protocols)\n{\n\t \n\treturn -EINVAL;\n}\n\n \nstruct img_ir_decoder img_ir_rc6 = {\n\t.type\t\t= RC_PROTO_BIT_RC6_0,\n\t.control\t= {\n\t\t.bitorien\t= 1,\n\t\t.code_type\t= IMG_IR_CODETYPE_BIPHASE,\n\t\t.decoden\t= 1,\n\t\t.decodinpol\t= 1,\n\t},\n\t \n\t.tolerance\t= 20,\n\t \n\t.timings\t= {\n\t\t \n\t\t.ldr = {\n\t\t\t.pulse\t= { 650 },\n\t\t\t.space\t= { 660 },\n\t\t},\n\t\t \n\t\t.s00 = {\n\t\t\t.pulse\t= { 370 },\n\t\t\t.space\t= { 370 },\n\t\t},\n\t\t \n\t\t.s01 = {\n\t\t\t.pulse\t= { 370 },\n\t\t\t.space\t= { 370 },\n\t\t},\n\t\t \n\t\t.ft  = {\n\t\t\t.minlen = 21,\n\t\t\t.maxlen = 21,\n\t\t\t.ft_min = 2666,\t \n\t\t},\n\t},\n\n\t \n\t.scancode\t= img_ir_rc6_scancode,\n\t.filter\t\t= img_ir_rc6_filter,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

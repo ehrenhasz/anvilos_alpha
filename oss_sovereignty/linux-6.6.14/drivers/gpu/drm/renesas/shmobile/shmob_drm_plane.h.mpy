@@ -1,0 +1,9 @@
+{
+  "module_name": "shmob_drm_plane.h",
+  "hash_id": "301f7bfeef3fa13b503e07d12f30c7b581943ce0dd596ea671c7f872b58393b0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/renesas/shmobile/shmob_drm_plane.h",
+  "human_readable_source": " \n \n\n#ifndef __SHMOB_DRM_PLANE_H__\n#define __SHMOB_DRM_PLANE_H__\n\nstruct drm_plane;\nstruct shmob_drm_device;\n\nint shmob_drm_plane_create(struct shmob_drm_device *sdev, unsigned int index);\nvoid shmob_drm_plane_setup(struct drm_plane *plane);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

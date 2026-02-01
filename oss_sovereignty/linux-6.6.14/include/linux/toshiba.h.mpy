@@ -1,0 +1,9 @@
+{
+  "module_name": "toshiba.h",
+  "hash_id": "5c4dc8b79b0b8ab1f7c16af0f7ad575fcf011c867b682980874ad9fafebebab3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/toshiba.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_TOSHIBA_H\n#define _LINUX_TOSHIBA_H\n\n#include <uapi/linux/toshiba.h>\n\nint tosh_smm(SMMRegisters *regs);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

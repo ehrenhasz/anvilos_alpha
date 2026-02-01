@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "15832d1e1edec63dd1ab42ce9256fd575b3be2780b1060149093ec1717f1305b",
+  "original_prompt": "Ingested from linux-6.6.14/net/ife/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the IFE encapsulation protocol\n#\n\nobj-$(CONFIG_NET_IFE) += ife.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pvrusb2-i2c-core.h",
+  "hash_id": "8556d0a3e7ff2664b4f0517a98c176f22f3d4ebb36c8f00b83cfdb16c35717c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pvrusb2/pvrusb2-i2c-core.h",
+  "human_readable_source": " \n \n#ifndef __PVRUSB2_I2C_CORE_H\n#define __PVRUSB2_I2C_CORE_H\n\nstruct pvr2_hdw;\n\nvoid pvr2_i2c_core_init(struct pvr2_hdw *);\nvoid pvr2_i2c_core_done(struct pvr2_hdw *);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

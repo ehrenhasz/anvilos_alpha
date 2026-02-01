@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b4e767c290ad3e07e1ffde4e74e996da33074d70e4dde954d5ab4644dfce1cf4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/allwinner/Makefile",
+  "human_readable_source": "obj-$(CONFIG_CRYPTO_DEV_SUN4I_SS) += sun4i-ss/\nobj-$(CONFIG_CRYPTO_DEV_SUN8I_CE) += sun8i-ce/\nobj-$(CONFIG_CRYPTO_DEV_SUN8I_SS) += sun8i-ss/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

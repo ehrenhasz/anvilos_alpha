@@ -1,0 +1,9 @@
+{
+  "module_name": "vsp1_hgo.h",
+  "hash_id": "da8df00b0642105a824f4d2c1c147d67bf0bc324139d5dd2f9796deb0d76e903",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/renesas/vsp1/vsp1_hgo.h",
+  "human_readable_source": " \n \n#ifndef __VSP1_HGO_H__\n#define __VSP1_HGO_H__\n\n#include <media/media-entity.h>\n#include <media/v4l2-ctrls.h>\n#include <media/v4l2-subdev.h>\n\n#include \"vsp1_histo.h\"\n\nstruct vsp1_device;\n\nstruct vsp1_hgo {\n\tstruct vsp1_histogram histo;\n\n\tstruct {\n\t\tstruct v4l2_ctrl_handler handler;\n\t\tstruct v4l2_ctrl *max_rgb;\n\t\tstruct v4l2_ctrl *num_bins;\n\t} ctrls;\n\n\tbool max_rgb;\n\tunsigned int num_bins;\n};\n\nstatic inline struct vsp1_hgo *to_hgo(struct v4l2_subdev *subdev)\n{\n\treturn container_of(subdev, struct vsp1_hgo, histo.entity.subdev);\n}\n\nstruct vsp1_hgo *vsp1_hgo_create(struct vsp1_device *vsp1);\nvoid vsp1_hgo_frame_end(struct vsp1_entity *hgo);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

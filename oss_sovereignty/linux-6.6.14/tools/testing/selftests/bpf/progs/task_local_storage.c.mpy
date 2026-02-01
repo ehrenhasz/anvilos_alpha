@@ -1,0 +1,9 @@
+{
+  "module_name": "task_local_storage.c",
+  "hash_id": "ba7a2453636e580de37836dd5c075620c6424168ad91658d95a27cff9eba274b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/task_local_storage.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_TASK_STORAGE);\n\t__uint(map_flags, BPF_F_NO_PREALLOC);\n\t__type(key, int);\n\t__type(value, long);\n} enter_id SEC(\".maps\");\n\n#define MAGIC_VALUE 0xabcd1234\n\npid_t target_pid = 0;\nint mismatch_cnt = 0;\nint enter_cnt = 0;\nint exit_cnt = 0;\n\nSEC(\"tp_btf/sys_enter\")\nint BPF_PROG(on_enter, struct pt_regs *regs, long id)\n{\n\tstruct task_struct *task;\n\tlong *ptr;\n\n\ttask = bpf_get_current_task_btf();\n\tif (task->pid != target_pid)\n\t\treturn 0;\n\n\tptr = bpf_task_storage_get(&enter_id, task, 0,\n\t\t\t\t   BPF_LOCAL_STORAGE_GET_F_CREATE);\n\tif (!ptr)\n\t\treturn 0;\n\n\t__sync_fetch_and_add(&enter_cnt, 1);\n\t*ptr = MAGIC_VALUE + enter_cnt;\n\n\treturn 0;\n}\n\nSEC(\"tp_btf/sys_exit\")\nint BPF_PROG(on_exit, struct pt_regs *regs, long id)\n{\n\tstruct task_struct *task;\n\tlong *ptr;\n\n\ttask = bpf_get_current_task_btf();\n\tif (task->pid != target_pid)\n\t\treturn 0;\n\n\tptr = bpf_task_storage_get(&enter_id, task, 0,\n\t\t\t\t   BPF_LOCAL_STORAGE_GET_F_CREATE);\n\tif (!ptr)\n\t\treturn 0;\n\n\t__sync_fetch_and_add(&exit_cnt, 1);\n\tif (*ptr != MAGIC_VALUE + exit_cnt)\n\t\t__sync_fetch_and_add(&mismatch_cnt, 1);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

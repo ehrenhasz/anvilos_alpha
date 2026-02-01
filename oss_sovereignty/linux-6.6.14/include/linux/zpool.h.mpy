@@ -1,0 +1,9 @@
+{
+  "module_name": "zpool.h",
+  "hash_id": "d3c1deb383fe4487b661d91af8a45dd403fe227f3bee9e140a7392abd65b8bb0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/zpool.h",
+  "human_readable_source": " \n \n\n#ifndef _ZPOOL_H_\n#define _ZPOOL_H_\n\nstruct zpool;\n\n \nenum zpool_mapmode {\n\tZPOOL_MM_RW,  \n\tZPOOL_MM_RO,  \n\tZPOOL_MM_WO,  \n\n\tZPOOL_MM_DEFAULT = ZPOOL_MM_RW\n};\n\nbool zpool_has_pool(char *type);\n\nstruct zpool *zpool_create_pool(const char *type, const char *name, gfp_t gfp);\n\nconst char *zpool_get_type(struct zpool *pool);\n\nvoid zpool_destroy_pool(struct zpool *pool);\n\nbool zpool_malloc_support_movable(struct zpool *pool);\n\nint zpool_malloc(struct zpool *pool, size_t size, gfp_t gfp,\n\t\t\tunsigned long *handle);\n\nvoid zpool_free(struct zpool *pool, unsigned long handle);\n\nvoid *zpool_map_handle(struct zpool *pool, unsigned long handle,\n\t\t\tenum zpool_mapmode mm);\n\nvoid zpool_unmap_handle(struct zpool *pool, unsigned long handle);\n\nu64 zpool_get_total_size(struct zpool *pool);\n\n\n \nstruct zpool_driver {\n\tchar *type;\n\tstruct module *owner;\n\tatomic_t refcount;\n\tstruct list_head list;\n\n\tvoid *(*create)(const char *name, gfp_t gfp);\n\tvoid (*destroy)(void *pool);\n\n\tbool malloc_support_movable;\n\tint (*malloc)(void *pool, size_t size, gfp_t gfp,\n\t\t\t\tunsigned long *handle);\n\tvoid (*free)(void *pool, unsigned long handle);\n\n\tbool sleep_mapped;\n\tvoid *(*map)(void *pool, unsigned long handle,\n\t\t\t\tenum zpool_mapmode mm);\n\tvoid (*unmap)(void *pool, unsigned long handle);\n\n\tu64 (*total_size)(void *pool);\n};\n\nvoid zpool_register_driver(struct zpool_driver *driver);\n\nint zpool_unregister_driver(struct zpool_driver *driver);\n\nbool zpool_can_sleep_mapped(struct zpool *pool);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

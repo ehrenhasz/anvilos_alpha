@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "de180321ef9f2e30b5a732a41f75ebedc77d7744b088bb66941ac6ace36cedfb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/interconnect/samsung/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nexynos-interconnect-objs\t\t:= exynos.o\n\nobj-$(CONFIG_INTERCONNECT_EXYNOS)\t+= exynos-interconnect.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

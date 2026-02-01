@@ -1,0 +1,9 @@
+{
+  "module_name": "mingw64-ncurses6.lintian-overrides",
+  "hash_id": "55f8d87abf32900c03b32b564cc35a1750465fd5adf55088cd21d6f7a3c25e3f",
+  "original_prompt": "Ingested from ncurses-6.4/package/debian-mingw64/mingw64-ncurses6.lintian-overrides",
+  "human_readable_source": "mingw64-ncurses6: latest-debian-changelog-entry-changed-to-native\n\nmingw64-ncurses6: non-standard-dir-in-usr\nmingw64-ncurses6: file-in-unusual-dir\n\nmingw64-ncurses6: binary-without-manpage\nmingw64-ncurses6: executable-not-elf-or-script\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

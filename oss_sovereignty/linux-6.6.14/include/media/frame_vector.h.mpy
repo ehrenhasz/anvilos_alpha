@@ -1,0 +1,9 @@
+{
+  "module_name": "frame_vector.h",
+  "hash_id": "30aebbe44e5501bb5c9abb9cc76d411a91673a13afb021939e28bc2d13c9656e",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/frame_vector.h",
+  "human_readable_source": "\n#ifndef _MEDIA_FRAME_VECTOR_H\n#define _MEDIA_FRAME_VECTOR_H\n\n \nstruct frame_vector {\n\tunsigned int nr_allocated;\t \n\tunsigned int nr_frames;\t \n\tbool got_ref;\t\t \n\tbool is_pfns;\t\t \n\tvoid *ptrs[];\t\t \n};\n\nstruct frame_vector *frame_vector_create(unsigned int nr_frames);\nvoid frame_vector_destroy(struct frame_vector *vec);\nint get_vaddr_frames(unsigned long start, unsigned int nr_pfns,\n\t\t     bool write, struct frame_vector *vec);\nvoid put_vaddr_frames(struct frame_vector *vec);\nint frame_vector_to_pages(struct frame_vector *vec);\nvoid frame_vector_to_pfns(struct frame_vector *vec);\n\nstatic inline unsigned int frame_vector_count(struct frame_vector *vec)\n{\n\treturn vec->nr_frames;\n}\n\nstatic inline struct page **frame_vector_pages(struct frame_vector *vec)\n{\n\tif (vec->is_pfns) {\n\t\tint err = frame_vector_to_pages(vec);\n\n\t\tif (err)\n\t\t\treturn ERR_PTR(err);\n\t}\n\treturn (struct page **)(vec->ptrs);\n}\n\nstatic inline unsigned long *frame_vector_pfns(struct frame_vector *vec)\n{\n\tif (!vec->is_pfns)\n\t\tframe_vector_to_pfns(vec);\n\treturn (unsigned long *)(vec->ptrs);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

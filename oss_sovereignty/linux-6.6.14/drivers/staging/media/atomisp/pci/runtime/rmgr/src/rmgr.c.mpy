@@ -1,0 +1,9 @@
+{
+  "module_name": "rmgr.c",
+  "hash_id": "37fe5014160131f7c3d4a24a17f251911e70ec492fdfdb4c31603930e4dc3d98",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/rmgr/src/rmgr.c",
+  "human_readable_source": "\n \n\n#include \"ia_css_rmgr.h\"\n\nint ia_css_rmgr_init(void)\n{\n\tint err = 0;\n\n\terr = ia_css_rmgr_init_vbuf(vbuf_ref);\n\tif (!err)\n\t\terr = ia_css_rmgr_init_vbuf(vbuf_write);\n\tif (!err)\n\t\terr = ia_css_rmgr_init_vbuf(hmm_buffer_pool);\n\tif (err)\n\t\tia_css_rmgr_uninit();\n\treturn err;\n}\n\n \nvoid ia_css_rmgr_uninit(void)\n{\n\tia_css_rmgr_uninit_vbuf(hmm_buffer_pool);\n\tia_css_rmgr_uninit_vbuf(vbuf_write);\n\tia_css_rmgr_uninit_vbuf(vbuf_ref);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "asymmetric_keys.h",
+  "hash_id": "1bcfc7db73639bc0f4cfec57b0484157c9751bffba36e9ccaf3d55fcd44dcaf7",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/asymmetric_keys/asymmetric_keys.h",
+  "human_readable_source": " \n \n\n#include <keys/asymmetric-type.h>\n\nextern struct asymmetric_key_id *asymmetric_key_hex_to_key_id(const char *id);\n\nextern int __asymmetric_key_hex_to_key_id(const char *id,\n\t\t\t\t\t  struct asymmetric_key_id *match_id,\n\t\t\t\t\t  size_t hexlen);\n\nextern int asymmetric_key_eds_op(struct kernel_pkey_params *params,\n\t\t\t\t const void *in, void *out);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

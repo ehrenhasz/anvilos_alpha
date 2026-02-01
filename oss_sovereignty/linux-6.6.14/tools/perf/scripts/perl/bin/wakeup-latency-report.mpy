@@ -1,0 +1,9 @@
+{
+  "module_name": "wakeup-latency-report",
+  "hash_id": "0dbe8fbfbac8785ceea32941444f188a1dc38bf2cd0e851c4b923fd314937281",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/perl/bin/wakeup-latency-report",
+  "human_readable_source": "#!/bin/bash\n# description: system-wide min/max/avg wakeup latency\nperf script $@ -s \"$PERF_EXEC_PATH\"/scripts/perl/wakeup-latency.pl\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

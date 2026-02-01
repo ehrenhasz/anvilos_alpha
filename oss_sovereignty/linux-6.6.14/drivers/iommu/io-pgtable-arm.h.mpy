@@ -1,0 +1,9 @@
+{
+  "module_name": "io-pgtable-arm.h",
+  "hash_id": "d302aae6730cc8f2beef082ce2aa326e148bcbe72c22d8675e0d14088ef3d285",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/io-pgtable-arm.h",
+  "human_readable_source": " \n#ifndef IO_PGTABLE_ARM_H_\n#define IO_PGTABLE_ARM_H_\n\n#define ARM_LPAE_TCR_TG0_4K\t\t0\n#define ARM_LPAE_TCR_TG0_64K\t\t1\n#define ARM_LPAE_TCR_TG0_16K\t\t2\n\n#define ARM_LPAE_TCR_TG1_16K\t\t1\n#define ARM_LPAE_TCR_TG1_4K\t\t2\n#define ARM_LPAE_TCR_TG1_64K\t\t3\n\n#define ARM_LPAE_TCR_SH_NS\t\t0\n#define ARM_LPAE_TCR_SH_OS\t\t2\n#define ARM_LPAE_TCR_SH_IS\t\t3\n\n#define ARM_LPAE_TCR_RGN_NC\t\t0\n#define ARM_LPAE_TCR_RGN_WBWA\t\t1\n#define ARM_LPAE_TCR_RGN_WT\t\t2\n#define ARM_LPAE_TCR_RGN_WB\t\t3\n\n#define ARM_LPAE_TCR_PS_32_BIT\t\t0x0ULL\n#define ARM_LPAE_TCR_PS_36_BIT\t\t0x1ULL\n#define ARM_LPAE_TCR_PS_40_BIT\t\t0x2ULL\n#define ARM_LPAE_TCR_PS_42_BIT\t\t0x3ULL\n#define ARM_LPAE_TCR_PS_44_BIT\t\t0x4ULL\n#define ARM_LPAE_TCR_PS_48_BIT\t\t0x5ULL\n#define ARM_LPAE_TCR_PS_52_BIT\t\t0x6ULL\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

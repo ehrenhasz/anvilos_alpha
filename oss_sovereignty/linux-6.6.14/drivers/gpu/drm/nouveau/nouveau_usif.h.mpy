@@ -1,0 +1,9 @@
+{
+  "module_name": "nouveau_usif.h",
+  "hash_id": "71f119ad1ec18d9e053acc0d130c17fa0ac297c983ab959aff051c6fdf6d3275",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nouveau_usif.h",
+  "human_readable_source": " \n#ifndef __NOUVEAU_USIF_H__\n#define __NOUVEAU_USIF_H__\n\nvoid usif_client_init(struct nouveau_cli *);\nvoid usif_client_fini(struct nouveau_cli *);\nint  usif_ioctl(struct drm_file *, void __user *, u32);\nint  usif_notify(const void *, u32, const void *, u32);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

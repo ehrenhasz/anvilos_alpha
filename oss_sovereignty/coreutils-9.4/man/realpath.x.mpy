@@ -1,0 +1,9 @@
+{
+  "module_name": "realpath.x",
+  "hash_id": "2d14c06fb6a362b4e9c392e0b0ee18bba453cc5b804ac43e1dba59009eb1dcbc",
+  "original_prompt": "Ingested from coreutils-9.4/man/realpath.x",
+  "human_readable_source": "[NAME]\nrealpath \\- print the resolved path\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nreadlink(1), readlink(2), realpath(3)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

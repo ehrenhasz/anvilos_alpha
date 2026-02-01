@@ -1,0 +1,9 @@
+{
+  "module_name": "test_global_func14.c",
+  "hash_id": "a6b43d2a3b20fd5b55712d85eb60bcbb05d43e5644259b3cc4cdf0088be21c63",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_global_func14.c",
+  "human_readable_source": "\n#include <stddef.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nstruct S;\n\n__noinline int foo(const struct S *s)\n{\n\tif (s)\n\t\treturn bpf_get_prandom_u32() < *(const int *) s;\n\n\treturn 0;\n}\n\nSEC(\"cgroup_skb/ingress\")\n__failure __msg(\"reference type('FWD S') size cannot be determined\")\nint global_func14(struct __sk_buff *skb)\n{\n\n\treturn foo(NULL);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

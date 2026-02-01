@@ -1,0 +1,9 @@
+{
+  "module_name": "fcntl-safer.m4",
+  "hash_id": "e842bf84816a387ef9fd1635323cb2ac992148511f3ef9d8f5a6ef0d92f63048",
+  "original_prompt": "Ingested from coreutils-9.4/m4/fcntl-safer.m4",
+  "human_readable_source": "#serial 9\ndnl Copyright (C) 2005-2007, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FCNTL_SAFER],\n[\n  dnl Prerequisites of lib/open-safer.c.\n  AC_REQUIRE([gl_PROMOTED_TYPE_MODE_T])\n])\n\nAC_DEFUN([gl_OPENAT_SAFER],\n[\n  AC_REQUIRE([gl_FCNTL_SAFER])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

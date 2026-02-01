@@ -1,0 +1,9 @@
+{
+  "module_name": "ftrace.h",
+  "hash_id": "27c118bbde6a48bb65757536c33d91d3ad6de8ce6edfe5e9acea248d5f0036f4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/ftrace.h",
+  "human_readable_source": "#ifndef _TOOLS_INCLUDE_LINUX_FTRACE_H\n#define _TOOLS_INCLUDE_LINUX_FTRACE_H\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

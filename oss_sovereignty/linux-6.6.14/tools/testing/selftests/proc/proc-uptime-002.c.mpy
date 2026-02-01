@@ -1,0 +1,9 @@
+{
+  "module_name": "proc-uptime-002.c",
+  "hash_id": "08a7108ab134a63db89eefd23c43cedf6732689608e45123fe5e69c53e24fde2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/proc/proc-uptime-002.c",
+  "human_readable_source": " \n\n\n\n\n#undef NDEBUG\n#include <assert.h>\n#include <errno.h>\n#include <unistd.h>\n#include <sys/syscall.h>\n#include <stdlib.h>\n#include <string.h>\n\n#include <stdint.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <fcntl.h>\n\n#include \"proc-uptime.h\"\n\nstatic inline int sys_sched_getaffinity(pid_t pid, unsigned int len, unsigned long *m)\n{\n\treturn syscall(SYS_sched_getaffinity, pid, len, m);\n}\n\nstatic inline int sys_sched_setaffinity(pid_t pid, unsigned int len, unsigned long *m)\n{\n\treturn syscall(SYS_sched_setaffinity, pid, len, m);\n}\n\nint main(void)\n{\n\tuint64_t u0, u1, c0, c1;\n\tunsigned int len;\n\tunsigned long *m;\n\tunsigned int cpu;\n\tint fd;\n\n\t \n\tm = NULL;\n\tlen = 0;\n\tdo {\n\t\tlen += sizeof(unsigned long);\n\t\tfree(m);\n\t\tm = malloc(len);\n\t} while (sys_sched_getaffinity(0, len, m) == -1 && errno == EINVAL);\n\n\tfd = open(\"/proc/uptime\", O_RDONLY);\n\tassert(fd >= 0);\n\n\tu0 = proc_uptime(fd);\n\tc0 = clock_boottime();\n\n\tfor (cpu = 0; cpu < len * 8; cpu++) {\n\t\tmemset(m, 0, len);\n\t\tm[cpu / (8 * sizeof(unsigned long))] |= 1UL << (cpu % (8 * sizeof(unsigned long)));\n\n\t\t \n\t\tsys_sched_setaffinity(0, len, m);\n\n\t\tu1 = proc_uptime(fd);\n\t\tc1 = clock_boottime();\n\n\t\t \n\t\tassert(u1 >= u0);\n\n\t\t \n\t\tassert(c1 >= c0);\n\n\t\t \n\t\tassert(c0 >= u0);\n\n\t\tu0 = u1;\n\t\tc0 = c1;\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

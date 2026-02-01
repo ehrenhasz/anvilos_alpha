@@ -1,0 +1,9 @@
+{
+  "module_name": "dma-dw.h",
+  "hash_id": "962321861b540ad5c07ce48853d237638b4e691efd023e4f691af32631abab49",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/dma-dw.h",
+  "human_readable_source": " \n \n#ifndef _PLATFORM_DATA_DMA_DW_H\n#define _PLATFORM_DATA_DMA_DW_H\n\n#include <linux/bits.h>\n#include <linux/types.h>\n\n#define DW_DMA_MAX_NR_MASTERS\t4\n#define DW_DMA_MAX_NR_CHANNELS\t8\n#define DW_DMA_MIN_BURST\t1\n#define DW_DMA_MAX_BURST\t256\n\nstruct device;\n\n \nstruct dw_dma_slave {\n\tstruct device\t\t*dma_dev;\n\tu8\t\t\tsrc_id;\n\tu8\t\t\tdst_id;\n\tu8\t\t\tm_master;\n\tu8\t\t\tp_master;\n\tu8\t\t\tchannels;\n\tbool\t\t\ths_polarity;\n};\n\n \nstruct dw_dma_platform_data {\n\tu32\t\tnr_masters;\n\tu32\t\tnr_channels;\n#define CHAN_ALLOCATION_ASCENDING\t0\t \n#define CHAN_ALLOCATION_DESCENDING\t1\t \n\tu32\t\tchan_allocation_order;\n#define CHAN_PRIORITY_ASCENDING\t\t0\t \n#define CHAN_PRIORITY_DESCENDING\t1\t \n\tu32\t\tchan_priority;\n\tu32\t\tblock_size;\n\tu32\t\tdata_width[DW_DMA_MAX_NR_MASTERS];\n\tu32\t\tmulti_block[DW_DMA_MAX_NR_CHANNELS];\n\tu32\t\tmax_burst[DW_DMA_MAX_NR_CHANNELS];\n#define CHAN_PROTCTL_PRIVILEGED\t\tBIT(0)\n#define CHAN_PROTCTL_BUFFERABLE\t\tBIT(1)\n#define CHAN_PROTCTL_CACHEABLE\t\tBIT(2)\n#define CHAN_PROTCTL_MASK\t\tGENMASK(2, 0)\n\tu32\t\tprotctl;\n#define DW_DMA_QUIRK_XBAR_PRESENT\tBIT(0)\n\tu32\t\tquirks;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

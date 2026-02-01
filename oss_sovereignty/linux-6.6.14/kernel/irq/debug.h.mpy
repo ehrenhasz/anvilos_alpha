@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "90ea746a8a75768fb189d1ab6fb672ef9d8387b079532cf2261a77b4e63aa6f2",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/irq/debug.h",
+  "human_readable_source": " \n \n\n#define ___P(f) if (desc->status_use_accessors & f) printk(\"%14s set\\n\", #f)\n#define ___PS(f) if (desc->istate & f) printk(\"%14s set\\n\", #f)\n \n#define ___PD(f) do { } while (0)\n\nstatic inline void print_irq_desc(unsigned int irq, struct irq_desc *desc)\n{\n\tstatic DEFINE_RATELIMIT_STATE(ratelimit, 5 * HZ, 5);\n\n\tif (!__ratelimit(&ratelimit))\n\t\treturn;\n\n\tprintk(\"irq %d, desc: %p, depth: %d, count: %d, unhandled: %d\\n\",\n\t\tirq, desc, desc->depth, desc->irq_count, desc->irqs_unhandled);\n\tprintk(\"->handle_irq():  %p, %pS\\n\",\n\t\tdesc->handle_irq, desc->handle_irq);\n\tprintk(\"->irq_data.chip(): %p, %pS\\n\",\n\t\tdesc->irq_data.chip, desc->irq_data.chip);\n\tprintk(\"->action(): %p\\n\", desc->action);\n\tif (desc->action) {\n\t\tprintk(\"->action->handler(): %p, %pS\\n\",\n\t\t\tdesc->action->handler, desc->action->handler);\n\t}\n\n\t___P(IRQ_LEVEL);\n\t___P(IRQ_PER_CPU);\n\t___P(IRQ_NOPROBE);\n\t___P(IRQ_NOREQUEST);\n\t___P(IRQ_NOTHREAD);\n\t___P(IRQ_NOAUTOEN);\n\n\t___PS(IRQS_AUTODETECT);\n\t___PS(IRQS_REPLAY);\n\t___PS(IRQS_WAITING);\n\t___PS(IRQS_PENDING);\n\n\t___PD(IRQS_INPROGRESS);\n\t___PD(IRQS_DISABLED);\n\t___PD(IRQS_MASKED);\n}\n\n#undef ___P\n#undef ___PS\n#undef ___PD\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

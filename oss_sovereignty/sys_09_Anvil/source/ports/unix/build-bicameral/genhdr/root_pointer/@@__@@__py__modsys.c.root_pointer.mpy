@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__modsys.c.root_pointer",
+  "hash_id": "cce8fb331ffe961fb43ac0a89761ac676c75ff03a04eb89102547ef3b3588d6d",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/root_pointer/@@__@@__py__modsys.c.root_pointer",
+  "human_readable_source": "MP_REGISTER_ROOT_POINTER(mp_obj_list_t mp_sys_argv_obj);\nMP_REGISTER_ROOT_POINTER(mp_obj_t sys_mutable[MP_SYS_MUTABLE_NUM]);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

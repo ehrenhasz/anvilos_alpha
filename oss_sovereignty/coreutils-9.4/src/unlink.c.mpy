@@ -1,0 +1,9 @@
+{
+  "module_name": "unlink.c",
+  "hash_id": "a39dcd720bcb376fa6f573f9d9d834ecb865afce8ad170ab9aa0432df9f20fb7",
+  "original_prompt": "Ingested from coreutils-9.4/src/unlink.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n#include <stdio.h>\n#include <sys/types.h>\n\n#include \"system.h\"\n#include \"long-options.h\"\n#include \"quote.h\"\n\n \n#define PROGRAM_NAME \"unlink\"\n\n#define AUTHORS proper_name (\"Michael Stone\")\n\nvoid\nusage (int status)\n{\n  if (status != EXIT_SUCCESS)\n    emit_try_help ();\n  else\n    {\n      printf (_(\"\\\nUsage: %s FILE\\n\\\n  or:  %s OPTION\\n\"), program_name, program_name);\n      fputs (_(\"Call the unlink function to remove the specified FILE.\\n\\n\"),\n             stdout);\n      fputs (HELP_OPTION_DESCRIPTION, stdout);\n      fputs (VERSION_OPTION_DESCRIPTION, stdout);\n      emit_ancillary_info (PROGRAM_NAME);\n    }\n  exit (status);\n}\n\nint\nmain (int argc, char **argv)\n{\n  initialize_main (&argc, &argv);\n  set_program_name (argv[0]);\n  setlocale (LC_ALL, \"\");\n  bindtextdomain (PACKAGE, LOCALEDIR);\n  textdomain (PACKAGE);\n\n  atexit (close_stdout);\n\n  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,\n                                   Version, true, usage, AUTHORS,\n                                   (char const *) nullptr);\n\n  if (argc < optind + 1)\n    {\n      error (0, 0, _(\"missing operand\"));\n      usage (EXIT_FAILURE);\n    }\n\n  if (optind + 1 < argc)\n    {\n      error (0, 0, _(\"extra operand %s\"), quote (argv[optind + 1]));\n      usage (EXIT_FAILURE);\n    }\n\n  if (unlink (argv[optind]) != 0)\n    error (EXIT_FAILURE, errno, _(\"cannot unlink %s\"), quoteaf (argv[optind]));\n\n  return EXIT_SUCCESS;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

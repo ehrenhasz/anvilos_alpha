@@ -1,0 +1,9 @@
+{
+  "module_name": "tlv320aic23-spi.c",
+  "hash_id": "7ae0389938e5374d8fd8164679f507021a4f6d9f7da9962a2f435d72f6614000",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/tlv320aic23-spi.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/regmap.h>\n#include <linux/spi/spi.h>\n#include <sound/soc.h>\n\n#include \"tlv320aic23.h\"\n\nstatic int aic23_spi_probe(struct spi_device *spi)\n{\n\tint ret;\n\tstruct regmap *regmap;\n\n\tdev_dbg(&spi->dev, \"probing tlv320aic23 spi device\\n\");\n\n\tspi->mode = SPI_MODE_0;\n\tret = spi_setup(spi);\n\tif (ret < 0)\n\t\treturn ret;\n\n\tregmap = devm_regmap_init_spi(spi, &tlv320aic23_regmap);\n\treturn tlv320aic23_probe(&spi->dev, regmap);\n}\n\nstatic struct spi_driver aic23_spi = {\n\t.driver = {\n\t\t.name = \"tlv320aic23\",\n\t},\n\t.probe = aic23_spi_probe,\n};\n\nmodule_spi_driver(aic23_spi);\n\nMODULE_DESCRIPTION(\"ASoC TLV320AIC23 codec driver SPI\");\nMODULE_AUTHOR(\"Arun KS <arunks@mistralsolutions.com>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

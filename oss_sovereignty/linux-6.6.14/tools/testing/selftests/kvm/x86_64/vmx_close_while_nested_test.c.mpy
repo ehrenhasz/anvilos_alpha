@@ -1,0 +1,9 @@
+{
+  "module_name": "vmx_close_while_nested_test.c",
+  "hash_id": "8eb345dc680bebe7ef2cdc32afef6b51e02d7d79e22468d3ce99cab6891ea883",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/x86_64/vmx_close_while_nested_test.c",
+  "human_readable_source": "\n \n\n#include \"test_util.h\"\n#include \"kvm_util.h\"\n#include \"processor.h\"\n#include \"vmx.h\"\n\n#include <string.h>\n#include <sys/ioctl.h>\n\n#include \"kselftest.h\"\n\nenum {\n\tPORT_L0_EXIT = 0x2000,\n};\n\nstatic void l2_guest_code(void)\n{\n\t \n\tasm volatile(\"inb %%dx, %%al\"\n\t\t     : : [port] \"d\" (PORT_L0_EXIT) : \"rax\");\n}\n\nstatic void l1_guest_code(struct vmx_pages *vmx_pages)\n{\n#define L2_GUEST_STACK_SIZE 64\n\tunsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];\n\n\tGUEST_ASSERT(prepare_for_vmx_operation(vmx_pages));\n\tGUEST_ASSERT(load_vmcs(vmx_pages));\n\n\t \n\tprepare_vmcs(vmx_pages, l2_guest_code,\n\t\t     &l2_guest_stack[L2_GUEST_STACK_SIZE]);\n\n\tGUEST_ASSERT(!vmlaunch());\n\tGUEST_ASSERT(0);\n}\n\nint main(int argc, char *argv[])\n{\n\tvm_vaddr_t vmx_pages_gva;\n\tstruct kvm_vcpu *vcpu;\n\tstruct kvm_vm *vm;\n\n\tTEST_REQUIRE(kvm_cpu_has(X86_FEATURE_VMX));\n\n\tvm = vm_create_with_one_vcpu(&vcpu, l1_guest_code);\n\n\t \n\tvcpu_alloc_vmx(vm, &vmx_pages_gva);\n\tvcpu_args_set(vcpu, 1, vmx_pages_gva);\n\n\tfor (;;) {\n\t\tvolatile struct kvm_run *run = vcpu->run;\n\t\tstruct ucall uc;\n\n\t\tvcpu_run(vcpu);\n\t\tTEST_ASSERT_KVM_EXIT_REASON(vcpu, KVM_EXIT_IO);\n\n\t\tif (run->io.port == PORT_L0_EXIT)\n\t\t\tbreak;\n\n\t\tswitch (get_ucall(vcpu, &uc)) {\n\t\tcase UCALL_ABORT:\n\t\t\tREPORT_GUEST_ASSERT(uc);\n\t\t\t \n\t\tdefault:\n\t\t\tTEST_FAIL(\"Unknown ucall %lu\", uc.cmd);\n\t\t}\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "af6c47a49d839685f2781f00dba7cd66209f60483b1218d9dba88654aa39c326",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/xen/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_XEN\n\tbool\n\nconfig DRM_XEN_FRONTEND\n\ttristate \"Para-virtualized frontend driver for Xen guest OS\"\n\tdepends on XEN && DRM\n\tselect DRM_XEN\n\tselect DRM_KMS_HELPER\n\tselect VIDEOMODE_HELPERS\n\tselect XEN_XENBUS_FRONTEND\n\tselect XEN_FRONT_PGDIR_SHBUF\n\thelp\n\t  Choose this option if you want to enable a para-virtualized\n\t  frontend DRM/KMS driver for Xen guest OSes.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

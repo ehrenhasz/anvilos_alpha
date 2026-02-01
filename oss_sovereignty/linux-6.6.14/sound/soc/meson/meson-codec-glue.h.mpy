@@ -1,0 +1,9 @@
+{
+  "module_name": "meson-codec-glue.h",
+  "hash_id": "391547ef0c88caedacef6694b58a6eeb480a2c1550aa37f705dd2abac782e4b2",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/meson/meson-codec-glue.h",
+  "human_readable_source": " \n\n#ifndef _MESON_CODEC_GLUE_H\n#define _MESON_CODEC_GLUE_H\n\n#include <sound/soc.h>\n\nstruct meson_codec_glue_input {\n\tstruct snd_soc_pcm_stream params;\n\tunsigned int fmt;\n};\n\n \nstruct meson_codec_glue_input *\nmeson_codec_glue_input_get_data(struct snd_soc_dai *dai);\nint meson_codec_glue_input_hw_params(struct snd_pcm_substream *substream,\n\t\t\t\t     struct snd_pcm_hw_params *params,\n\t\t\t\t     struct snd_soc_dai *dai);\nint meson_codec_glue_input_set_fmt(struct snd_soc_dai *dai,\n\t\t\t\t   unsigned int fmt);\nint meson_codec_glue_input_dai_probe(struct snd_soc_dai *dai);\nint meson_codec_glue_input_dai_remove(struct snd_soc_dai *dai);\n\n \nint meson_codec_glue_output_startup(struct snd_pcm_substream *substream,\n\t\t\t\t    struct snd_soc_dai *dai);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

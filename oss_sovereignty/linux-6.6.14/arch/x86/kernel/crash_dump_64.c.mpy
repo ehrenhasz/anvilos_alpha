@@ -1,0 +1,9 @@
+{
+  "module_name": "crash_dump_64.c",
+  "hash_id": "49615cfcca4ba151a521b1ce0b25c4ec1a16aae0cb3bcd517baa2d944a268cc5",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/crash_dump_64.c",
+  "human_readable_source": "\n \n\n#include <linux/errno.h>\n#include <linux/crash_dump.h>\n#include <linux/uio.h>\n#include <linux/io.h>\n#include <linux/cc_platform.h>\n\nstatic ssize_t __copy_oldmem_page(struct iov_iter *iter, unsigned long pfn,\n\t\t\t\t  size_t csize, unsigned long offset,\n\t\t\t\t  bool encrypted)\n{\n\tvoid  *vaddr;\n\n\tif (!csize)\n\t\treturn 0;\n\n\tif (encrypted)\n\t\tvaddr = (__force void *)ioremap_encrypted(pfn << PAGE_SHIFT, PAGE_SIZE);\n\telse\n\t\tvaddr = (__force void *)ioremap_cache(pfn << PAGE_SHIFT, PAGE_SIZE);\n\n\tif (!vaddr)\n\t\treturn -ENOMEM;\n\n\tcsize = copy_to_iter(vaddr + offset, csize, iter);\n\n\tiounmap((void __iomem *)vaddr);\n\treturn csize;\n}\n\nssize_t copy_oldmem_page(struct iov_iter *iter, unsigned long pfn, size_t csize,\n\t\t\t unsigned long offset)\n{\n\treturn __copy_oldmem_page(iter, pfn, csize, offset, false);\n}\n\n \nssize_t copy_oldmem_page_encrypted(struct iov_iter *iter, unsigned long pfn,\n\t\t\t\t   size_t csize, unsigned long offset)\n{\n\treturn __copy_oldmem_page(iter, pfn, csize, offset, true);\n}\n\nssize_t elfcorehdr_read(char *buf, size_t count, u64 *ppos)\n{\n\tstruct kvec kvec = { .iov_base = buf, .iov_len = count };\n\tstruct iov_iter iter;\n\n\tiov_iter_kvec(&iter, ITER_DEST, &kvec, 1, count);\n\n\treturn read_from_oldmem(&iter, count, ppos,\n\t\t\t\tcc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

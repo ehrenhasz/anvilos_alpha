@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm.c",
+  "hash_id": "4158b0120f1fc62482ee365fd86c87d642f3da442e17b7ee16fa8811df0808ad",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/entry/kvm.c",
+  "human_readable_source": "\n\n#include <linux/entry-kvm.h>\n#include <linux/kvm_host.h>\n\nstatic int xfer_to_guest_mode_work(struct kvm_vcpu *vcpu, unsigned long ti_work)\n{\n\tdo {\n\t\tint ret;\n\n\t\tif (ti_work & (_TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL)) {\n\t\t\tkvm_handle_signal_exit(vcpu);\n\t\t\treturn -EINTR;\n\t\t}\n\n\t\tif (ti_work & _TIF_NEED_RESCHED)\n\t\t\tschedule();\n\n\t\tif (ti_work & _TIF_NOTIFY_RESUME)\n\t\t\tresume_user_mode_work(NULL);\n\n\t\tret = arch_xfer_to_guest_mode_handle_work(vcpu, ti_work);\n\t\tif (ret)\n\t\t\treturn ret;\n\n\t\tti_work = read_thread_flags();\n\t} while (ti_work & XFER_TO_GUEST_MODE_WORK || need_resched());\n\treturn 0;\n}\n\nint xfer_to_guest_mode_handle_work(struct kvm_vcpu *vcpu)\n{\n\tunsigned long ti_work;\n\n\t \n\tti_work = read_thread_flags();\n\tif (!(ti_work & XFER_TO_GUEST_MODE_WORK))\n\t\treturn 0;\n\n\treturn xfer_to_guest_mode_work(vcpu, ti_work);\n}\nEXPORT_SYMBOL_GPL(xfer_to_guest_mode_handle_work);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

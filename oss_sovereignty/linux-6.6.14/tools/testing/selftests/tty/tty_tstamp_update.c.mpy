@@ -1,0 +1,9 @@
+{
+  "module_name": "tty_tstamp_update.c",
+  "hash_id": "3e893363339f1075d718819c8ed514624d1bfd3fb4036e05a406265eb0a19c7f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tty/tty_tstamp_update.c",
+  "human_readable_source": "\n\n#include <errno.h>\n#include <stdbool.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <sys/stat.h>\n#include <unistd.h>\n#include <linux/limits.h>\n\n#include \"../kselftest.h\"\n\n#define MIN_TTY_PATH_LEN 8\n\nstatic bool tty_valid(char *tty)\n{\n\tif (strlen(tty) < MIN_TTY_PATH_LEN)\n\t\treturn false;\n\n\tif (strncmp(tty, \"/dev/tty\", MIN_TTY_PATH_LEN) == 0 ||\n\t    strncmp(tty, \"/dev/pts\", MIN_TTY_PATH_LEN) == 0)\n\t\treturn true;\n\n\treturn false;\n}\n\nstatic int write_dev_tty(void)\n{\n\tFILE *f;\n\tint r = 0;\n\n\tf = fopen(\"/dev/tty\", \"r+\");\n\tif (!f)\n\t\treturn -errno;\n\n\tr = fprintf(f, \"hello, world!\\n\");\n\tif (r != strlen(\"hello, world!\\n\"))\n\t\tr = -EIO;\n\n\tfclose(f);\n\treturn r;\n}\n\nint main(int argc, char **argv)\n{\n\tint r;\n\tchar tty[PATH_MAX] = {};\n\tstruct stat st1, st2;\n\n\tksft_print_header();\n\tksft_set_plan(1);\n\n\tr = readlink(\"/proc/self/fd/0\", tty, PATH_MAX);\n\tif (r < 0)\n\t\tksft_exit_fail_msg(\"readlink on /proc/self/fd/0 failed: %m\\n\");\n\n\tif (!tty_valid(tty))\n\t\tksft_exit_skip(\"invalid tty path '%s'\\n\", tty);\n\n\tr = stat(tty, &st1);\n\tif (r < 0)\n\t\tksft_exit_fail_msg(\"stat failed on tty path '%s': %m\\n\", tty);\n\n\t \n\t \n\tif (st1.st_atim.tv_sec == st2.st_atim.tv_sec &&\n\t    st1.st_mtim.tv_sec == st2.st_mtim.tv_sec) {\n\t\tksft_test_result_fail(\"tty timestamps not updated\\n\");\n\t\tksft_exit_fail();\n\t}\n\n\tksft_test_result_pass(\n\t\t\"timestamps of terminal '%s' updated after write to /dev/tty\\n\", tty);\n\treturn EXIT_SUCCESS;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

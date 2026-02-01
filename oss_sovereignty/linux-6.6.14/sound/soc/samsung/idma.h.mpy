@@ -1,0 +1,9 @@
+{
+  "module_name": "idma.h",
+  "hash_id": "2354afc7f0d5c7755d3acace501f88cfb0efae034fbbb4fc2cf30cd54a8a0b14",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/samsung/idma.h",
+  "human_readable_source": " \n \n\n#ifndef __SND_SOC_SAMSUNG_IDMA_H_\n#define __SND_SOC_SAMSUNG_IDMA_H_\n\nextern void idma_reg_addr_init(void __iomem *regs, dma_addr_t addr);\n\n \n#define LPAM_DMA_STOP\t0\n#define LPAM_DMA_START\t1\n\n#define MAX_IDMA_PERIOD (128 * 1024)\n#define MAX_IDMA_BUFFER (160 * 1024)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

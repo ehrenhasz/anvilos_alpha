@@ -1,0 +1,9 @@
+{
+  "module_name": "if_ltalk.h",
+  "hash_id": "88167d148ddb78d9ad280d2f88134369fcf8fddc0284cfb8c524fab9b9ebd8c9",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/if_ltalk.h",
+  "human_readable_source": " \n#ifndef __LINUX_LTALK_H\n#define __LINUX_LTALK_H\n\n#include <uapi/linux/if_ltalk.h>\n\nextern struct net_device *alloc_ltalkdev(int sizeof_priv);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

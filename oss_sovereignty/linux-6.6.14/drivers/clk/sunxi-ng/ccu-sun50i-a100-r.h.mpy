@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu-sun50i-a100-r.h",
+  "hash_id": "852ffa1d0d40222de5c26fc5f72f250b09c51c9c456486d7ba48065a68fe9fbe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu-sun50i-a100-r.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_SUN50I_A100_R_H\n#define _CCU_SUN50I_A100_R_H\n\n#include <dt-bindings/clock/sun50i-a100-r-ccu.h>\n#include <dt-bindings/reset/sun50i-a100-r-ccu.h>\n\n#define CLK_R_CPUS\t\t0\n#define CLK_R_AHB\t\t1\n\n \n\n#define CLK_R_APB2\t\t3\n\n#define CLK_NUMBER\t(CLK_R_AHB_BUS_RTC + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

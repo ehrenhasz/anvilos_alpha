@@ -1,0 +1,9 @@
+{
+  "module_name": "acl.h",
+  "hash_id": "2fd68da29df13946b6229dd99fc96d9176558520ab7d354e1b2070611c2970a6",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ext4/acl.h",
+  "human_readable_source": "\n \n\n#include <linux/posix_acl_xattr.h>\n\n#define EXT4_ACL_VERSION\t0x0001\n\ntypedef struct {\n\t__le16\t\te_tag;\n\t__le16\t\te_perm;\n\t__le32\t\te_id;\n} ext4_acl_entry;\n\ntypedef struct {\n\t__le16\t\te_tag;\n\t__le16\t\te_perm;\n} ext4_acl_entry_short;\n\ntypedef struct {\n\t__le32\t\ta_version;\n} ext4_acl_header;\n\nstatic inline size_t ext4_acl_size(int count)\n{\n\tif (count <= 4) {\n\t\treturn sizeof(ext4_acl_header) +\n\t\t       count * sizeof(ext4_acl_entry_short);\n\t} else {\n\t\treturn sizeof(ext4_acl_header) +\n\t\t       4 * sizeof(ext4_acl_entry_short) +\n\t\t       (count - 4) * sizeof(ext4_acl_entry);\n\t}\n}\n\nstatic inline int ext4_acl_count(size_t size)\n{\n\tssize_t s;\n\tsize -= sizeof(ext4_acl_header);\n\ts = size - 4 * sizeof(ext4_acl_entry_short);\n\tif (s < 0) {\n\t\tif (size % sizeof(ext4_acl_entry_short))\n\t\t\treturn -1;\n\t\treturn size / sizeof(ext4_acl_entry_short);\n\t} else {\n\t\tif (s % sizeof(ext4_acl_entry))\n\t\t\treturn -1;\n\t\treturn s / sizeof(ext4_acl_entry) + 4;\n\t}\n}\n\n#ifdef CONFIG_EXT4_FS_POSIX_ACL\n\n \nstruct posix_acl *ext4_get_acl(struct inode *inode, int type, bool rcu);\nint ext4_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,\n\t\t struct posix_acl *acl, int type);\nextern int ext4_init_acl(handle_t *, struct inode *, struct inode *);\n\n#else   \n#include <linux/sched.h>\n#define ext4_get_acl NULL\n#define ext4_set_acl NULL\n\nstatic inline int\next4_init_acl(handle_t *handle, struct inode *inode, struct inode *dir)\n{\n\t \n\tinode->i_mode &= ~current_umask();\n\n\treturn 0;\n}\n#endif   \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

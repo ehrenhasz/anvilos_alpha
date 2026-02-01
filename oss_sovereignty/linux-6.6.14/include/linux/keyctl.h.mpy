@@ -1,0 +1,9 @@
+{
+  "module_name": "keyctl.h",
+  "hash_id": "381923386c4f669bccdfae7d12a0aca193aaee6631ce1d5325dcee8539594474",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/keyctl.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_KEYCTL_H\n#define __LINUX_KEYCTL_H\n\n#include <uapi/linux/keyctl.h>\n\nstruct kernel_pkey_query {\n\t__u32\t\tsupported_ops;\t \n\t__u32\t\tkey_size;\t \n\t__u16\t\tmax_data_size;\t \n\t__u16\t\tmax_sig_size;\t \n\t__u16\t\tmax_enc_size;\t \n\t__u16\t\tmax_dec_size;\t \n};\n\nenum kernel_pkey_operation {\n\tkernel_pkey_encrypt,\n\tkernel_pkey_decrypt,\n\tkernel_pkey_sign,\n\tkernel_pkey_verify,\n};\n\nstruct kernel_pkey_params {\n\tstruct key\t*key;\n\tconst char\t*encoding;\t \n\tconst char\t*hash_algo;\t \n\tchar\t\t*info;\t\t \n\t__u32\t\tin_len;\t\t \n\tunion {\n\t\t__u32\tout_len;\t \n\t\t__u32\tin2_len;\t \n\t};\n\tenum kernel_pkey_operation op : 8;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

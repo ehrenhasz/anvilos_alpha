@@ -1,0 +1,9 @@
+{
+  "module_name": "prio.h",
+  "hash_id": "74d2e874b12023ff518d65be2c3ff86b22f454b79c0c4c1acb79fdbd0ebfca8b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/prio.h",
+  "human_readable_source": " \n#ifndef _LINUX_SCHED_PRIO_H\n#define _LINUX_SCHED_PRIO_H\n\n#define MAX_NICE\t19\n#define MIN_NICE\t-20\n#define NICE_WIDTH\t(MAX_NICE - MIN_NICE + 1)\n\n \n\n#define MAX_RT_PRIO\t\t100\n\n#define MAX_PRIO\t\t(MAX_RT_PRIO + NICE_WIDTH)\n#define DEFAULT_PRIO\t\t(MAX_RT_PRIO + NICE_WIDTH / 2)\n\n \n#define NICE_TO_PRIO(nice)\t((nice) + DEFAULT_PRIO)\n#define PRIO_TO_NICE(prio)\t((prio) - DEFAULT_PRIO)\n\n \nstatic inline long nice_to_rlimit(long nice)\n{\n\treturn (MAX_NICE - nice + 1);\n}\n\n \nstatic inline long rlimit_to_nice(long prio)\n{\n\treturn (MAX_NICE - prio + 1);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

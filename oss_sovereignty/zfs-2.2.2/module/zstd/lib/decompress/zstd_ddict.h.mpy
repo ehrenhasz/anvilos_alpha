@@ -1,0 +1,9 @@
+{
+  "module_name": "zstd_ddict.h",
+  "hash_id": "fd60ac8d86f2963ee546d626e9ec63aceab4a5f9b55da6cd753d3691156b1acb",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/lib/decompress/zstd_ddict.h",
+  "human_readable_source": " \n\n\n#ifndef ZSTD_DDICT_H\n#define ZSTD_DDICT_H\n\n \n#include <stddef.h>    \n#include \"../zstd.h\"      \n\n\n \n\n \n\nconst void* ZSTD_DDict_dictContent(const ZSTD_DDict* ddict);\nsize_t ZSTD_DDict_dictSize(const ZSTD_DDict* ddict);\n\nvoid ZSTD_copyDDictParameters(ZSTD_DCtx* dctx, const ZSTD_DDict* ddict);\n\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

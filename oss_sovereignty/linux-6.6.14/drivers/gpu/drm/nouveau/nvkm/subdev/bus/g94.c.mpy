@@ -1,0 +1,9 @@
+{
+  "module_name": "g94.c",
+  "hash_id": "49f556def94dd3ddeec2c8aca45a429a38df408709a1bb9559db584f1ae55df2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bus/g94.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <subdev/timer.h>\n\nstatic int\ng94_bus_hwsq_exec(struct nvkm_bus *bus, u32 *data, u32 size)\n{\n\tstruct nvkm_device *device = bus->subdev.device;\n\tint i;\n\n\tnvkm_mask(device, 0x001098, 0x00000008, 0x00000000);\n\tnvkm_wr32(device, 0x001304, 0x00000000);\n\tnvkm_wr32(device, 0x001318, 0x00000000);\n\tfor (i = 0; i < size; i++)\n\t\tnvkm_wr32(device, 0x080000 + (i * 4), data[i]);\n\tnvkm_mask(device, 0x001098, 0x00000018, 0x00000018);\n\tnvkm_wr32(device, 0x00130c, 0x00000001);\n\n\tif (nvkm_msec(device, 2000,\n\t\tif (!(nvkm_rd32(device, 0x001308) & 0x00000100))\n\t\t\tbreak;\n\t) < 0)\n\t\treturn -ETIMEDOUT;\n\n\treturn 0;\n}\n\nstatic const struct nvkm_bus_func\ng94_bus = {\n\t.init = nv50_bus_init,\n\t.intr = nv50_bus_intr,\n\t.hwsq_exec = g94_bus_hwsq_exec,\n\t.hwsq_size = 128,\n};\n\nint\ng94_bus_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t    struct nvkm_bus **pbus)\n{\n\treturn nvkm_bus_new_(&g94_bus, device, type, inst, pbus);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

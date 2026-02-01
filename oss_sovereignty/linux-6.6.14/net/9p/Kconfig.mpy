@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "794da6fbeca715e27261eb6d3487c279b56cd4730a03f44a444b6051c4aa59f6",
+  "original_prompt": "Ingested from linux-6.6.14/net/9p/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# 9P protocol configuration\n#\n\nmenuconfig NET_9P\n\ttristate \"Plan 9 Resource Sharing Support (9P2000)\"\n\thelp\n\t  If you say Y here, you will get experimental support for\n\t  Plan 9 resource sharing via the 9P2000 protocol.\n\n\t  See <http://v9fs.sf.net> for more information.\n\n\t  If unsure, say N.\n\nif NET_9P\n\nconfig NET_9P_FD\n\tdefault NET_9P\n\timply INET\n\timply UNIX\n\ttristate \"9P FD Transport\"\n\thelp\n\t  This builds support for transports over TCP, Unix sockets and\n\t  filedescriptors.\n\nconfig NET_9P_VIRTIO\n\tdepends on VIRTIO\n\ttristate \"9P Virtio Transport\"\n\thelp\n\t  This builds support for a transports between\n\t  guest partitions and a host partition.\n\nconfig NET_9P_XEN\n\tdepends on XEN\n\tselect XEN_XENBUS_FRONTEND\n\ttristate \"9P Xen Transport\"\n\thelp\n\t  This builds support for a transport for 9pfs between\n\t  two Xen domains.\n\n\nconfig NET_9P_RDMA\n\tdepends on INET && INFINIBAND && INFINIBAND_ADDR_TRANS\n\ttristate \"9P RDMA Transport (Experimental)\"\n\thelp\n\t  This builds support for an RDMA transport.\n\nconfig NET_9P_DEBUG\n\tbool \"Debug information\"\n\thelp\n\t  Say Y if you want the 9P subsystem to log debug information.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

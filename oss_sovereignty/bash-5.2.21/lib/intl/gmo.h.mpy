@@ -1,0 +1,9 @@
+{
+  "module_name": "gmo.h",
+  "hash_id": "a6fa6dba18b5deeaba79bcc124647bf5a7f121fcc8f0fa19f1fd56c52c5db883",
+  "original_prompt": "Ingested from bash-5.2.21/lib/intl/gmo.h",
+  "human_readable_source": " \n\n \n\n#ifndef _GETTEXT_H\n#define _GETTEXT_H 1\n\n#include <limits.h>\n\n \n\n \n#define _MAGIC 0x950412de\n#define _MAGIC_SWAPPED 0xde120495\n\n \n#define MO_REVISION_NUMBER 0\n\n \n\n#if __STDC__\n# define UINT_MAX_32_BITS 4294967295U\n#else\n# define UINT_MAX_32_BITS 0xFFFFFFFF\n#endif\n\n \n\n#ifndef UINT_MAX\n# define UINT_MAX UINT_MAX_32_BITS\n#endif\n\n#if UINT_MAX == UINT_MAX_32_BITS\ntypedef unsigned nls_uint32;\n#else\n# if USHRT_MAX == UINT_MAX_32_BITS\ntypedef unsigned short nls_uint32;\n# else\n#  if ULONG_MAX == UINT_MAX_32_BITS\ntypedef unsigned long nls_uint32;\n#  else\n   \n  \"Cannot determine unsigned 32-bit data type.\"\n#  endif\n# endif\n#endif\n\n\n \nstruct mo_file_header\n{\n   \n  nls_uint32 magic;\n   \n  nls_uint32 revision;\n\n   \n\n   \n  nls_uint32 nstrings;\n   \n  nls_uint32 orig_tab_offset;\n   \n  nls_uint32 trans_tab_offset;\n   \n  nls_uint32 hash_tab_size;\n   \n  nls_uint32 hash_tab_offset;\n\n   \n\n   \n  nls_uint32 n_sysdep_segments;\n   \n  nls_uint32 sysdep_segments_offset;\n   \n  nls_uint32 n_sysdep_strings;\n   \n  nls_uint32 orig_sysdep_tab_offset;\n   \n  nls_uint32 trans_sysdep_tab_offset;\n};\n\n \nstruct string_desc\n{\n   \n  nls_uint32 length;\n   \n  nls_uint32 offset;\n};\n\n \n\n \nstruct sysdep_segment\n{\n   \n  nls_uint32 length;\n   \n  nls_uint32 offset;\n};\n\n \nstruct sysdep_string\n{\n   \n  nls_uint32 offset;\n   \n  struct segment_pair\n  {\n     \n    nls_uint32 segsize;\n     \n    nls_uint32 sysdepref;\n  } segments[1];\n};\n\n \n#define SEGMENTS_END ((nls_uint32) ~0)\n\n \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

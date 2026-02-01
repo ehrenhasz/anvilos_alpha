@@ -1,0 +1,9 @@
+{
+  "module_name": "hv_get_dhcp_info.sh",
+  "hash_id": "35eedbee59d2536d64eb9a87fc1cd2c5543f3f0df2c1e0881fad23dec5f29942",
+  "original_prompt": "Ingested from linux-6.6.14/tools/hv/hv_get_dhcp_info.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# This example script retrieves the DHCP state of a given interface.\n# In the interest of keeping the KVP daemon code free of distro specific\n# information; the kvp daemon code invokes this external script to gather\n# DHCP setting for the specific interface.\n#\n# Input: Name of the interface\n#\n# Output: The script prints the string \"Enabled\" to stdout to indicate\n#\tthat DHCP is enabled on the interface. If DHCP is not enabled,\n#\tthe script prints the string \"Disabled\" to stdout.\n#\n# Each Distro is expected to implement this script in a distro specific\n# fashion. For instance, on Distros that ship with Network Manager enabled,\n# this script can be based on the Network Manager APIs for retrieving DHCP\n# information.\n\nif_file=\"/etc/sysconfig/network-scripts/ifcfg-\"$1\n\ndhcp=$(grep \"dhcp\" $if_file 2>/dev/null)\n\nif [ \"$dhcp\" != \"\" ];\nthen\necho \"Enabled\"\nelse\necho \"Disabled\"\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

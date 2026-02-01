@@ -1,0 +1,9 @@
+{
+  "module_name": "test-cplus-demangle.c",
+  "hash_id": "40489194d43b464ec445983bd94f5e729dd2fb2241a195f847eb2c38c853f358",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-cplus-demangle.c",
+  "human_readable_source": "\nextern int printf(const char *format, ...);\nextern char *cplus_demangle(const char *, int);\n\nint main(void)\n{\n\tchar symbol[4096] = \"FieldName__9ClassNameFd\";\n\tchar *tmp;\n\n\ttmp = cplus_demangle(symbol, 0);\n\n\tprintf(\"demangled symbol: {%s}\\n\", tmp);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

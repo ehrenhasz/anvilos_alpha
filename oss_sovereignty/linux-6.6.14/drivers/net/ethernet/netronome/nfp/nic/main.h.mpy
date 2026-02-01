@@ -1,0 +1,9 @@
+{
+  "module_name": "main.h",
+  "hash_id": "51f078aac02c180c2298a0bf8bb7d6bb3074e304afad3083befd643915ea3ef1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/netronome/nfp/nic/main.h",
+  "human_readable_source": " \n \n\n#ifndef __NFP_NIC_H__\n#define __NFP_NIC_H__ 1\n\n#include <linux/netdevice.h>\n\n#ifdef CONFIG_DCB\n \n#define NFP_NET_MAX_DSCP\t64\n#define NFP_NET_MAX_TC\t\tIEEE_8021QAZ_MAX_TCS\n#define NFP_NET_MAX_PRIO\t8\n#define NFP_DCB_CFG_STRIDE\t256\n\nstruct nfp_dcb {\n\tu8 dscp2prio[NFP_NET_MAX_DSCP];\n\tu8 prio2tc[NFP_NET_MAX_PRIO];\n\tu8 tc2idx[IEEE_8021QAZ_MAX_TCS];\n\tu64 tc_maxrate[IEEE_8021QAZ_MAX_TCS];\n\tu8 tc_tx_pct[IEEE_8021QAZ_MAX_TCS];\n\tu8 tc_tsa[IEEE_8021QAZ_MAX_TCS];\n\tu8 dscp_cnt;\n\tu8 trust_status;\n\tbool rate_init;\n\tbool ets_init;\n\n\tstruct nfp_cpp_area *dcbcfg_tbl_area;\n\tu8 __iomem *dcbcfg_tbl;\n\tu32 cfg_offset;\n};\n\nint nfp_nic_dcb_init(struct nfp_net *nn);\nvoid nfp_nic_dcb_clean(struct nfp_net *nn);\n#else\nstatic inline int nfp_nic_dcb_init(struct nfp_net *nn) { return 0; }\nstatic inline void nfp_nic_dcb_clean(struct nfp_net *nn) {}\n#endif\n\nstruct nfp_app_nic_private {\n#ifdef CONFIG_DCB\n\tstruct nfp_dcb dcb;\n#endif\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-timegm.c",
+  "hash_id": "0e9fe37687b7a475691c72a591ff13578395f1140f9e0f962e6d7d243891a062",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-timegm.c",
+  "human_readable_source": " \n\n \n\n#include \"includes.h\"\n\n#include <time.h>\n\n#ifndef HAVE_TIMEGM\n\nstatic int is_leap(unsigned y)\n{\n\ty += 1900;\n\treturn (y % 4) == 0 && ((y % 100) != 0 || (y % 400) == 0);\n}\n\ntime_t timegm(struct tm *tm)\n{\n\tstatic const unsigned ndays[2][12] ={\n\t\t{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},\n\t\t{31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}};\n\ttime_t res = 0;\n\tunsigned i;\n\n\tif (tm->tm_mon > 12 ||\n\t    tm->tm_mon < 0 ||\n\t    tm->tm_mday > 31 ||\n\t    tm->tm_min > 60 ||\n\t    tm->tm_sec > 60 ||\n\t    tm->tm_hour > 24) {\n\t\t \n\t\treturn 0;\n\t}\n\n\tfor (i = 70; i < tm->tm_year; ++i)\n\t\tres += is_leap(i) ? 366 : 365;\n\n\tfor (i = 0; i < tm->tm_mon; ++i)\n\t\tres += ndays[is_leap(tm->tm_year)][i];\n\tres += tm->tm_mday - 1;\n\tres *= 24;\n\tres += tm->tm_hour;\n\tres *= 60;\n\tres += tm->tm_min;\n\tres *= 60;\n\tres += tm->tm_sec;\n\treturn res;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

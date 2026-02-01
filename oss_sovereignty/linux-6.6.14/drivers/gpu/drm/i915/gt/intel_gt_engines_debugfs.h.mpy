@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_gt_engines_debugfs.h",
+  "hash_id": "dce8438351b53e08b64fc107dd24b95390066e38e0e1e65197800471e80ae190",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_gt_engines_debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef INTEL_GT_ENGINES_DEBUGFS_H\n#define INTEL_GT_ENGINES_DEBUGFS_H\n\nstruct intel_gt;\nstruct dentry;\n\nvoid intel_gt_engines_debugfs_register(struct intel_gt *gt, struct dentry *root);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

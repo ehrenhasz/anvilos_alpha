@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7b3def9bb06f5f7f63137f3906a69461785b499b930488dcb8725f3d8afaf6a4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/fotg210/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n# This setup links the different object files into one single\n# module so we don't have to EXPORT() a lot of internal symbols\n# or create unnecessary submodules.\nfotg210-objs-y\t\t\t\t+= fotg210-core.o\nfotg210-objs-$(CONFIG_USB_FOTG210_HCD)\t+= fotg210-hcd.o\nfotg210-objs-$(CONFIG_USB_FOTG210_UDC)\t+= fotg210-udc.o\nfotg210-objs\t\t\t\t:= $(fotg210-objs-y)\nobj-$(CONFIG_USB_FOTG210)\t\t+= fotg210.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

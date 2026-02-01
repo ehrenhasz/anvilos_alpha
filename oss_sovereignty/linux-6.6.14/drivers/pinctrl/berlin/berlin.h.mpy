@@ -1,0 +1,9 @@
+{
+  "module_name": "berlin.h",
+  "hash_id": "283722128334cc65cb6e4881b4b03498089aeb7ea80adc92e2c3f4827733a43b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/berlin/berlin.h",
+  "human_readable_source": " \n \n\n#ifndef __PINCTRL_BERLIN_H\n#define __PINCTRL_BERLIN_H\n\nstruct berlin_desc_function {\n\tconst char\t*name;\n\tu8\t\tmuxval;\n};\n\nstruct berlin_desc_group {\n\tconst char\t\t\t*name;\n\tu8\t\t\t\toffset;\n\tu8\t\t\t\tbit_width;\n\tu8\t\t\t\tlsb;\n\tstruct berlin_desc_function\t*functions;\n};\n\nstruct berlin_pinctrl_desc {\n\tconst struct berlin_desc_group\t*groups;\n\tunsigned\t\t\tngroups;\n};\n\nstruct berlin_pinctrl_function {\n\tconst char\t*name;\n\tconst char\t**groups;\n\tunsigned\tngroups;\n};\n\n#define BERLIN_PINCTRL_GROUP(_name, _offset, _width, _lsb, ...)\t\t\\\n\t{\t\t\t\t\t\t\t\t\\\n\t\t.name = _name,\t\t\t\t\t\t\\\n\t\t.offset = _offset,\t\t\t\t\t\\\n\t\t.bit_width = _width,\t\t\t\t\t\\\n\t\t.lsb = _lsb,\t\t\t\t\t\t\\\n\t\t.functions = (struct berlin_desc_function[]){\t\t\\\n\t\t\t__VA_ARGS__, { } },\t\t\t\t\\\n\t}\n\n#define BERLIN_PINCTRL_FUNCTION(_muxval, _name)\t\t\\\n\t{\t\t\t\t\t\t\\\n\t\t.name = _name,\t\t\t\t\\\n\t\t.muxval = _muxval,\t\t\t\\\n\t}\n\n#define BERLIN_PINCTRL_FUNCTION_UNKNOWN\t\t{}\n\nint berlin_pinctrl_probe(struct platform_device *pdev,\n\t\t\t const struct berlin_pinctrl_desc *desc);\n\nint berlin_pinctrl_probe_regmap(struct platform_device *pdev,\n\t\t\t\tconst struct berlin_pinctrl_desc *desc,\n\t\t\t\tstruct regmap *regmap);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

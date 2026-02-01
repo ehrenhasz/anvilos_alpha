@@ -1,0 +1,9 @@
+{
+  "module_name": "pipeline.json",
+  "hash_id": "181bec1dbebeed133284be81d056454b6cb4997d7e437793af8fcd4a5ff20536",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a76/pipeline.json",
+  "human_readable_source": "[\n    {\n        \"PublicDescription\": \"The counter counts on any cycle when there are no fetched instructions available to dispatch.\",\n        \"ArchStdEvent\": \"STALL_FRONTEND\"\n    },\n    {\n        \"PublicDescription\": \"The counter counts on any cycle fetched instructions are not dispatched due to resource constraints.\",\n        \"ArchStdEvent\": \"STALL_BACKEND\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fprintftime.h",
+  "hash_id": "aa3486363fd87ebe23dae41a975a19a7dccb8838d81c69e9c0643f882c724ec9",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fprintftime.h",
+  "human_readable_source": " \n\n \nsize_t fprintftime (FILE *fp, char const *fmt, struct tm const *tm,\n                    timezone_t zone, int nanoseconds);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

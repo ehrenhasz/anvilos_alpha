@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_css_mipi.h",
+  "hash_id": "42a038761e57e98022a8b7412dcb643d85d23b4977bdec4127e1fe9df23e75d4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/sh_css_mipi.h",
+  "human_readable_source": " \n \n\n#ifndef __SH_CSS_MIPI_H\n#define __SH_CSS_MIPI_H\n\n#include <ia_css_err.h>\t\t   \n#include <ia_css_types.h>\t   \n#include <ia_css_stream_public.h>  \n\nvoid\nmipi_init(void);\n\nbool mipi_is_free(void);\n\nint\nallocate_mipi_frames(struct ia_css_pipe *pipe, struct ia_css_stream_info *info);\n\nint\nfree_mipi_frames(struct ia_css_pipe *pipe);\n\nint\nsend_mipi_frames(struct ia_css_pipe *pipe);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

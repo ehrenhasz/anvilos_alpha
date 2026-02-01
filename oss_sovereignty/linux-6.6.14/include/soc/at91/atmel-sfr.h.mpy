@@ -1,0 +1,9 @@
+{
+  "module_name": "atmel-sfr.h",
+  "hash_id": "8c455722f090b9de8d9aae2d34c46a3e545afdf59012b02208b4204c1b831c9b",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/at91/atmel-sfr.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_MFD_SYSCON_ATMEL_SFR_H\n#define _LINUX_MFD_SYSCON_ATMEL_SFR_H\n\n#define AT91_SFR_DDRCFG\t\t0x04\t \n#define AT91_SFR_CCFG_EBICSA\t0x04\t \n \n#define AT91_SFR_OHCIICR\t0x10\t \n#define AT91_SFR_OHCIISR\t0x14\t \n#define AT91_SFR_UTMICKTRIM\t0x30\t \n#define AT91_SFR_UTMISWAP\t0x3c\t \n#define AT91_SFR_LS\t\t0x7c\t \n#define AT91_SFR_I2SCLKSEL\t0x90\t \n#define AT91_SFR_WPMR\t\t0xe4\t \n\n \n#define AT91_SFR_CCFG_EBI_CSA(cs, val)\t\t((val) << (cs))\n#define AT91_SFR_CCFG_EBI_DBPUC\t\t\tBIT(8)\n#define AT91_SFR_CCFG_EBI_DBPDC\t\t\tBIT(9)\n#define AT91_SFR_CCFG_EBI_DRIVE\t\t\tBIT(17)\n#define AT91_SFR_CCFG_NFD0_ON_D16\t\tBIT(24)\n#define AT91_SFR_CCFG_DDR_MP_EN\t\t\tBIT(25)\n\n#define AT91_SFR_OHCIICR_RES(x)\t\t\tBIT(x)\n#define AT91_SFR_OHCIICR_ARIE\t\t\tBIT(4)\n#define AT91_SFR_OHCIICR_APPSTART\t\tBIT(5)\n#define AT91_SFR_OHCIICR_USB_SUSP(x)\t\tBIT(8 + (x))\n#define AT91_SFR_OHCIICR_UDPPUDIS\t\tBIT(23)\n#define AT91_OHCIICR_USB_SUSPEND\t\tGENMASK(10, 8)\n\n#define AT91_SFR_OHCIISR_RIS(x)\t\t\tBIT(x)\n\n#define AT91_UTMICKTRIM_FREQ\t\t\tGENMASK(1, 0)\n\n#define AT91_SFR_UTMISWAP_PORT(x)\t\tBIT(x)\n\n#define AT91_SFR_LS_VALUE(x)\t\t\tBIT(x)\n#define AT91_SFR_LS_MEM_POWER_GATING_ULP1_EN\tBIT(16)\n\n#define AT91_SFR_WPMR_WPEN\t\t\tBIT(0)\n#define AT91_SFR_WPMR_WPKEY_MASK\t\tGENMASK(31, 8)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

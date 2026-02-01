@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b4ee55f964c95e3cb17df07b2ae0b426416f7cb65fb6b83f172f9badbf9a48d2",
+  "original_prompt": "Ingested from linux-6.6.14/samples/kdb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SAMPLE_KDB) += kdb_hello.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

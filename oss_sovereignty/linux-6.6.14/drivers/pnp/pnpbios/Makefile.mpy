@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ee53de0a4c300cd1e1f191bca00a94b88afa14fc3a9257b85d2ebb85ec75cd20",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pnp/pnpbios/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the kernel PNPBIOS driver.\n#\nobj-y := pnp.o\n\npnp-y := core.o bioscalls.o rsparser.o\n\npnp-$(CONFIG_PNPBIOS_PROC_FS) += proc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

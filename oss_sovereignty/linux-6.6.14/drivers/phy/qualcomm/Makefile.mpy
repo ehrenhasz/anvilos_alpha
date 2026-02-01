@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "218e01aa38206da42a4ee2a7fae45ed775748a65c8c80dd6e7b897a9f77606b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/qualcomm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_PHY_ATH79_USB)\t\t+= phy-ath79-usb.o\nobj-$(CONFIG_PHY_QCOM_APQ8064_SATA)\t+= phy-qcom-apq8064-sata.o\nobj-$(CONFIG_PHY_QCOM_EDP)\t\t+= phy-qcom-edp.o\nobj-$(CONFIG_PHY_QCOM_IPQ4019_USB)\t+= phy-qcom-ipq4019-usb.o\nobj-$(CONFIG_PHY_QCOM_IPQ806X_SATA)\t+= phy-qcom-ipq806x-sata.o\nobj-$(CONFIG_PHY_QCOM_M31_USB)\t\t+= phy-qcom-m31.o\nobj-$(CONFIG_PHY_QCOM_PCIE2)\t\t+= phy-qcom-pcie2.o\n\nobj-$(CONFIG_PHY_QCOM_QMP_COMBO)\t+= phy-qcom-qmp-combo.o\nobj-$(CONFIG_PHY_QCOM_QMP_PCIE)\t\t+= phy-qcom-qmp-pcie.o\nobj-$(CONFIG_PHY_QCOM_QMP_PCIE_8996)\t+= phy-qcom-qmp-pcie-msm8996.o\nobj-$(CONFIG_PHY_QCOM_QMP_UFS)\t\t+= phy-qcom-qmp-ufs.o\nobj-$(CONFIG_PHY_QCOM_QMP_USB)\t\t+= phy-qcom-qmp-usb.o\nobj-$(CONFIG_PHY_QCOM_QMP_USB_LEGACY)\t+= phy-qcom-qmp-usb-legacy.o\n\nobj-$(CONFIG_PHY_QCOM_QUSB2)\t\t+= phy-qcom-qusb2.o\nobj-$(CONFIG_PHY_QCOM_SNPS_EUSB2)\t+= phy-qcom-snps-eusb2.o\nobj-$(CONFIG_PHY_QCOM_EUSB2_REPEATER)\t+= phy-qcom-eusb2-repeater.o\nobj-$(CONFIG_PHY_QCOM_USB_HS) \t\t+= phy-qcom-usb-hs.o\nobj-$(CONFIG_PHY_QCOM_USB_HSIC) \t+= phy-qcom-usb-hsic.o\nobj-$(CONFIG_PHY_QCOM_USB_HS_28NM)\t+= phy-qcom-usb-hs-28nm.o\nobj-$(CONFIG_PHY_QCOM_USB_SS)\t\t+= phy-qcom-usb-ss.o\nobj-$(CONFIG_PHY_QCOM_USB_SNPS_FEMTO_V2)+= phy-qcom-snps-femto-v2.o\nobj-$(CONFIG_PHY_QCOM_IPQ806X_USB)\t+= phy-qcom-ipq806x-usb.o\nobj-$(CONFIG_PHY_QCOM_SGMII_ETH)\t+= phy-qcom-sgmii-eth.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

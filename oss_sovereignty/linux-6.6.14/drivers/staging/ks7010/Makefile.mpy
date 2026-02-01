@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "32f902231206a3e8ade8753c3530f6b42f90c59df5e1920fa08a2fca9a9091d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/ks7010/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_KS7010) += ks7010.o\n\nks7010-y\t:= ks_hostif.o ks_wlan_net.o ks7010_sdio.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

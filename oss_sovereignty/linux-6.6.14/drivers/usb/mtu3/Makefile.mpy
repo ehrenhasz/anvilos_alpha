@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bd8c95223be738ebd462d0983b58ca687ee1e610a16321ae7550cd68cf4faee4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/mtu3/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nccflags-$(CONFIG_USB_MTU3_DEBUG)\t+= -DDEBUG\n\n# define_trace.h needs to know how to find our header\nCFLAGS_mtu3_trace.o\t:= -I$(src)\n\nobj-$(CONFIG_USB_MTU3)\t+= mtu3.o\n\nmtu3-y\t:= mtu3_plat.o\n\nifneq ($(CONFIG_TRACING),)\n\tmtu3-y\t+= mtu3_trace.o\nendif\n\nifneq ($(filter y,$(CONFIG_USB_MTU3_HOST) $(CONFIG_USB_MTU3_DUAL_ROLE)),)\n\tmtu3-y\t+= mtu3_host.o\nendif\n\nifneq ($(filter y,$(CONFIG_USB_MTU3_GADGET) $(CONFIG_USB_MTU3_DUAL_ROLE)),)\n\tmtu3-y\t+= mtu3_core.o mtu3_gadget_ep0.o mtu3_gadget.o mtu3_qmu.o\nendif\n\nifneq ($(CONFIG_USB_MTU3_DUAL_ROLE),)\n\tmtu3-y\t+= mtu3_dr.o\nendif\n\nifneq ($(CONFIG_DEBUG_FS),)\n\tmtu3-y\t+= mtu3_debugfs.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c54866c733d0412c5c00a807f7f0340314dad5165979d2875682a4a0871a58d2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nifeq ($(srctree),)\nsrctree := $(patsubst %/,%,$(dir $(CURDIR)))\nsrctree := $(patsubst %/,%,$(dir $(srctree)))\nendif\n\ninclude $(srctree)/tools//scripts/Makefile.include\n\ndefine allow-override\n  $(if $(or $(findstring environment,$(origin $(1))),\\\n            $(findstring command line,$(origin $(1)))),,\\\n    $(eval $(1) = $(2)))\nendef\n\n$(call allow-override,CC,$(CROSS_COMPILE)gcc)\n$(call allow-override,LD,$(CROSS_COMPILE)ld)\n\nexport HOSTCC HOSTLD HOSTAR\n\nifeq ($(V),1)\n  Q =\nelse\n  Q = @\nendif\n\nexport Q srctree CC LD\n\nMAKEFLAGS := --no-print-directory\nbuild     := -f $(srctree)/tools/build/Makefile.build dir=. obj\n\nall: $(OUTPUT)fixdep\n\n# Make sure there's anything to clean,\n# feature contains check for existing OUTPUT\nTMP_O := $(if $(OUTPUT),$(OUTPUT)feature/,./)\n\nclean:\n\t$(call QUIET_CLEAN, fixdep)\n\t$(Q)find $(or $(OUTPUT),.) -name '*.o' -delete -o -name '\\.*.cmd' -delete -o -name '\\.*.d' -delete\n\t$(Q)rm -f $(OUTPUT)fixdep\n\t$(call QUIET_CLEAN, feature-detect)\nifneq ($(wildcard $(TMP_O)),)\n\t$(Q)$(MAKE) -C feature OUTPUT=$(TMP_O) clean >/dev/null\nendif\n\n$(OUTPUT)fixdep-in.o: FORCE\n\t$(Q)$(MAKE) $(build)=fixdep\n\n$(OUTPUT)fixdep: $(OUTPUT)fixdep-in.o\n\t$(QUIET_LINK)$(HOSTCC) $(KBUILD_HOSTLDFLAGS) -o $@ $<\n\nFORCE:\n\n.PHONY: FORCE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

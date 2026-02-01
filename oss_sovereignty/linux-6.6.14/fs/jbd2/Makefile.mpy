@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9f9dae3a7f4aea3fcca30d7d02d13ae8134be73d99926f4ee00a54d806eced7e",
+  "original_prompt": "Ingested from linux-6.6.14/fs/jbd2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the linux journaling routines.\n#\n\nobj-$(CONFIG_JBD2) += jbd2.o\n\njbd2-objs := transaction.o commit.o recovery.o checkpoint.o revoke.o journal.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

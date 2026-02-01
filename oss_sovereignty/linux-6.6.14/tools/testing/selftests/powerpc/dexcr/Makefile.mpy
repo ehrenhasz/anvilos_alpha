@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "948568813aaf0e1d70884bc5d4ab1ca341c07e2aa2010b2ac8ebb9b0d42ce935",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/dexcr/Makefile",
+  "human_readable_source": "TEST_GEN_PROGS := hashchk_test\nTEST_GEN_FILES := lsdexcr\n\ninclude ../../lib.mk\n\n$(OUTPUT)/hashchk_test: CFLAGS += -fno-pie $(call cc-option,-mno-rop-protect)\n\n$(TEST_GEN_PROGS): ../harness.c ../utils.c ./dexcr.c\n$(TEST_GEN_FILES): ../utils.c ./dexcr.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

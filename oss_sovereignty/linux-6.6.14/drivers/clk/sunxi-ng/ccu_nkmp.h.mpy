@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu_nkmp.h",
+  "hash_id": "eaecc0ff1cbb1122963edc2cdaeab4afa36485974dce4241fda888601f8d6351",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu_nkmp.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_NKMP_H_\n#define _CCU_NKMP_H_\n\n#include <linux/clk-provider.h>\n\n#include \"ccu_common.h\"\n#include \"ccu_div.h\"\n#include \"ccu_mult.h\"\n\n \nstruct ccu_nkmp {\n\tu32\t\t\tenable;\n\tu32\t\t\tlock;\n\n\tstruct ccu_mult_internal\tn;\n\tstruct ccu_mult_internal\tk;\n\tstruct ccu_div_internal\t\tm;\n\tstruct ccu_div_internal\t\tp;\n\n\tunsigned int\t\tfixed_post_div;\n\tunsigned int\t\tmax_rate;\n\n\tstruct ccu_common\tcommon;\n};\n\n#define SUNXI_CCU_NKMP_WITH_GATE_LOCK(_struct, _name, _parent, _reg,\t\\\n\t\t\t\t      _nshift, _nwidth,\t\t\t\\\n\t\t\t\t      _kshift, _kwidth,\t\t\t\\\n\t\t\t\t      _mshift, _mwidth,\t\t\t\\\n\t\t\t\t      _pshift, _pwidth,\t\t\t\\\n\t\t\t\t      _gate, _lock, _flags)\t\t\\\n\tstruct ccu_nkmp _struct = {\t\t\t\t\t\\\n\t\t.enable\t\t= _gate,\t\t\t\t\\\n\t\t.lock\t\t= _lock,\t\t\t\t\\\n\t\t.n\t\t= _SUNXI_CCU_MULT(_nshift, _nwidth),\t\\\n\t\t.k\t\t= _SUNXI_CCU_MULT(_kshift, _kwidth),\t\\\n\t\t.m\t\t= _SUNXI_CCU_DIV(_mshift, _mwidth),\t\\\n\t\t.p\t\t= _SUNXI_CCU_DIV(_pshift, _pwidth),\t\\\n\t\t.common\t\t= {\t\t\t\t\t\\\n\t\t\t.reg\t\t= _reg,\t\t\t\t\\\n\t\t\t.hw.init\t= CLK_HW_INIT(_name,\t\t\\\n\t\t\t\t\t\t      _parent,\t\t\\\n\t\t\t\t\t\t      &ccu_nkmp_ops,\t\\\n\t\t\t\t\t\t      _flags),\t\t\\\n\t\t},\t\t\t\t\t\t\t\\\n\t}\n\nstatic inline struct ccu_nkmp *hw_to_ccu_nkmp(struct clk_hw *hw)\n{\n\tstruct ccu_common *common = hw_to_ccu_common(hw);\n\n\treturn container_of(common, struct ccu_nkmp, common);\n}\n\nextern const struct clk_ops ccu_nkmp_ops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

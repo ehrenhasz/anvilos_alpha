@@ -1,0 +1,9 @@
+{
+  "module_name": "sprd_drm.h",
+  "hash_id": "635d1cd0b7c9a0f74218c9e356b6b7b9e7726bae8b38532716941eca1bb31485",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sprd/sprd_drm.h",
+  "human_readable_source": " \n \n\n#ifndef _SPRD_DRM_H_\n#define _SPRD_DRM_H_\n\n#include <drm/drm_atomic.h>\n#include <drm/drm_print.h>\n\nstruct sprd_drm {\n\tstruct drm_device drm;\n};\n\nextern struct platform_driver sprd_dpu_driver;\nextern struct platform_driver sprd_dsi_driver;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

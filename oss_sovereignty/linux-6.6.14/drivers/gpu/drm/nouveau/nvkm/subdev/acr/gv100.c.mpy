@@ -1,0 +1,9 @@
+{
+  "module_name": "gv100.c",
+  "hash_id": "a97acde7d76260c4206a45d126256af96fcf46486a52c382437d1bbc850390b6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/acr/gv100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nMODULE_FIRMWARE(\"nvidia/gv100/acr/unload_bl.bin\");\nMODULE_FIRMWARE(\"nvidia/gv100/acr/ucode_unload.bin\");\n\nstatic const struct nvkm_acr_hsf_fwif\ngv100_acr_unload_fwif[] = {\n\t{ 0, gm200_acr_hsfw_ctor, &gp108_acr_hsfw_0, NVKM_ACR_HSF_PMU, 0, 0x00000000 },\n\t{}\n};\n\nMODULE_FIRMWARE(\"nvidia/gv100/acr/bl.bin\");\nMODULE_FIRMWARE(\"nvidia/gv100/acr/ucode_load.bin\");\n\nstatic const struct nvkm_acr_hsf_fwif\ngv100_acr_load_fwif[] = {\n\t{ 0, gm200_acr_hsfw_ctor, &gp108_acr_load_0, NVKM_ACR_HSF_SEC2, 0, 0x00000010 },\n\t{}\n};\n\nstatic const struct nvkm_acr_func\ngv100_acr = {\n\t.load = gv100_acr_load_fwif,\n\t.unload = gv100_acr_unload_fwif,\n\t.wpr_parse = gp102_acr_wpr_parse,\n\t.wpr_layout = gp102_acr_wpr_layout,\n\t.wpr_alloc = gp102_acr_wpr_alloc,\n\t.wpr_build = gp102_acr_wpr_build,\n\t.wpr_patch = gp102_acr_wpr_patch,\n\t.wpr_check = gm200_acr_wpr_check,\n\t.init = gm200_acr_init,\n};\n\nstatic const struct nvkm_acr_fwif\ngv100_acr_fwif[] = {\n\t{  0, gp102_acr_load, &gv100_acr },\n\t{ -1, gm200_acr_nofw, &gm200_acr },\n\t{}\n};\n\nint\ngv100_acr_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_acr **pacr)\n{\n\treturn nvkm_acr_new_(gv100_acr_fwif, device, type, inst, pacr);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

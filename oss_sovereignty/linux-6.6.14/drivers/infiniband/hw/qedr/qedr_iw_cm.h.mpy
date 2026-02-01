@@ -1,0 +1,9 @@
+{
+  "module_name": "qedr_iw_cm.h",
+  "hash_id": "ae10ac1b527896980885ddbd5c7380665f880101d20a037edb2083a665228527",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/qedr/qedr_iw_cm.h",
+  "human_readable_source": " \n#include <rdma/iw_cm.h>\n\nint qedr_iw_connect(struct iw_cm_id *cm_id,\n\t\t    struct iw_cm_conn_param *conn_param);\n\nint qedr_iw_create_listen(struct iw_cm_id *cm_id, int backlog);\n\nint qedr_iw_destroy_listen(struct iw_cm_id *cm_id);\n\nint qedr_iw_accept(struct iw_cm_id *cm_id, struct iw_cm_conn_param *conn_param);\n\nint qedr_iw_reject(struct iw_cm_id *cm_id, const void *pdata, u8 pdata_len);\n\nvoid qedr_iw_qp_add_ref(struct ib_qp *qp);\n\nvoid qedr_iw_qp_rem_ref(struct ib_qp *qp);\n\nstruct ib_qp *qedr_iw_get_qp(struct ib_device *dev, int qpn);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

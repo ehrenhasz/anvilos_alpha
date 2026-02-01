@@ -1,0 +1,9 @@
+{
+  "module_name": "dpc.h",
+  "hash_id": "d41bced021161a4b62646121e619d4f1e2dc8fa6e256a90bb8f767dcbcd363b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vt6655/dpc.h",
+  "human_readable_source": " \n \n\n#ifndef __DPC_H__\n#define __DPC_H__\n\n#include \"device.h\"\n\nbool vnt_receive_frame(struct vnt_private *priv, struct vnt_rx_desc *curr_rd);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

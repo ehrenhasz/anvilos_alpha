@@ -1,0 +1,9 @@
+{
+  "module_name": "rtw8852b_rfk.h",
+  "hash_id": "c4e721412e63045ca8184f7f3ac145a3c8beacd15ef61bc3d729ab6e0bedb581",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw89/rtw8852b_rfk.h",
+  "human_readable_source": " \n \n\n#ifndef __RTW89_8852B_RFK_H__\n#define __RTW89_8852B_RFK_H__\n\n#include \"core.h\"\n\nvoid rtw8852b_rck(struct rtw89_dev *rtwdev);\nvoid rtw8852b_dack(struct rtw89_dev *rtwdev);\nvoid rtw8852b_iqk(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy_idx);\nvoid rtw8852b_rx_dck(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy_idx);\nvoid rtw8852b_dpk_init(struct rtw89_dev *rtwdev);\nvoid rtw8852b_dpk(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy);\nvoid rtw8852b_dpk_track(struct rtw89_dev *rtwdev);\nvoid rtw8852b_tssi(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy, bool hwtx_en);\nvoid rtw8852b_tssi_scan(struct rtw89_dev *rtwdev, enum rtw89_phy_idx phy);\nvoid rtw8852b_wifi_scan_notify(struct rtw89_dev *rtwdev, bool scan_start,\n\t\t\t       enum rtw89_phy_idx phy_idx);\nvoid rtw8852b_set_channel_rf(struct rtw89_dev *rtwdev,\n\t\t\t     const struct rtw89_chan *chan,\n\t\t\t     enum rtw89_phy_idx phy_idx);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

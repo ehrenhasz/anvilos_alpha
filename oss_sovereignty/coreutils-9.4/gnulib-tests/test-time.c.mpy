@@ -1,0 +1,9 @@
+{
+  "module_name": "test-time.c",
+  "hash_id": "4db7b63f049f05065ae8afc51a4eab9c24af4092adf60abc77e5978b5e3bf9f9",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-time.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <time.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (time, time_t, (time_t *));\n\n#include <sys/time.h>\n\n#include \"macros.h\"\n\nint\nmain (void)\n{\n   \n  struct timeval tv1;\n  struct timeval tv2;\n  time_t tt3;\n\n   \n  ASSERT (gettimeofday (&tv1, NULL) == 0);\n  do\n    ASSERT (gettimeofday (&tv2, NULL) == 0);\n  while (tv2.tv_sec == tv1.tv_sec);\n   \n  tt3 = time (NULL);\n  ASSERT (tt3 >= tv2.tv_sec);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

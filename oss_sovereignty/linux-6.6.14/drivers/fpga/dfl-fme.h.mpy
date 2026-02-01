@@ -1,0 +1,9 @@
+{
+  "module_name": "dfl-fme.h",
+  "hash_id": "f52b635f32476142897ac907e145e6bab786a0171e1803b48afc77f1ecd34b18",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/fpga/dfl-fme.h",
+  "human_readable_source": " \n \n\n#ifndef __DFL_FME_H\n#define __DFL_FME_H\n\n \nstruct dfl_fme {\n\tstruct platform_device *mgr;\n\tstruct list_head region_list;\n\tstruct list_head bridge_list;\n\tstruct dfl_feature_platform_data *pdata;\n};\n\nextern const struct dfl_feature_ops fme_pr_mgmt_ops;\nextern const struct dfl_feature_id fme_pr_mgmt_id_table[];\nextern const struct dfl_feature_ops fme_global_err_ops;\nextern const struct dfl_feature_id fme_global_err_id_table[];\nextern const struct attribute_group fme_global_err_group;\nextern const struct dfl_feature_ops fme_perf_ops;\nextern const struct dfl_feature_id fme_perf_id_table[];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "types.h",
+  "hash_id": "ab72b424a944f1d0154d8761301ed655aa1963ee0fdbf0cdce0c17be70765ea0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ceph/types.h",
+  "human_readable_source": " \n#ifndef _FS_CEPH_TYPES_H\n#define _FS_CEPH_TYPES_H\n\n \n#include <linux/in.h>\n#include <linux/types.h>\n#include <linux/fcntl.h>\n#include <linux/string.h>\n\n#include <linux/ceph/ceph_fs.h>\n#include <linux/ceph/ceph_frag.h>\n#include <linux/ceph/ceph_hash.h>\n\n \nstruct ceph_vino {\n\tu64 ino;\n\tu64 snap;\n};\n\n\n \nstruct ceph_cap_reservation {\n\tint count;\n\tint used;\n};\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

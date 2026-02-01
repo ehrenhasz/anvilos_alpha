@@ -1,0 +1,9 @@
+{
+  "module_name": "explicit_bzero.c",
+  "hash_id": "8756592da4c26f6a759a90758619457df92b3caf884d4021a09aec880e021983",
+  "original_prompt": "Ingested from coreutils-9.4/lib/explicit_bzero.c",
+  "human_readable_source": " \nvoid\nexplicit_bzero (void *s, size_t len)\n{\n  memset_explicit (s, 0, len);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

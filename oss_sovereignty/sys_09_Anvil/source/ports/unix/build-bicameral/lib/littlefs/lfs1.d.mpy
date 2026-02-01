@@ -1,0 +1,9 @@
+{
+  "module_name": "lfs1.d",
+  "hash_id": "69d0fac5fcd270b404426c6e034449febfe77e1d889cbcdb42911b5fc948baed",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/lib/littlefs/lfs1.d",
+  "human_readable_source": "build-bicameral/lib/littlefs/lfs1.o: ../../lib/littlefs/lfs1.c \\\n /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/stdc-predef.h \\\n ../../lib/littlefs/lfs1.h \\\n /home/aimeat/anvilos/ext/toolchain/lib/gcc/x86_64-unknown-linux-musl/15.2.0/include/stdint.h \\\n /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/stdint.h \\\n /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/bits/alltypes.h \\\n /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/bits/stdint.h \\\n /home/aimeat/anvilos/ext/toolchain/lib/gcc/x86_64-unknown-linux-musl/15.2.0/include/stdbool.h \\\n ../../lib/littlefs/lfs1_util.h \\\n /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/string.h \\\n /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/features.h \\\n /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/strings.h \\\n /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/inttypes.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

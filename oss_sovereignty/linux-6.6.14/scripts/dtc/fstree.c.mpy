@@ -1,0 +1,9 @@
+{
+  "module_name": "fstree.c",
+  "hash_id": "ecddd6c59576c96342675daccf2dd7c2d7cff0fbac41da9628e1e05bf1cd83ac",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/dtc/fstree.c",
+  "human_readable_source": "\n \n\n#include \"dtc.h\"\n\n#include <dirent.h>\n#include <sys/stat.h>\n\nstatic struct node *read_fstree(const char *dirname)\n{\n\tDIR *d;\n\tstruct dirent *de;\n\tstruct stat st;\n\tstruct node *tree;\n\n\td = opendir(dirname);\n\tif (!d)\n\t\tdie(\"Couldn't opendir() \\\"%s\\\": %s\\n\", dirname, strerror(errno));\n\n\ttree = build_node(NULL, NULL, NULL);\n\n\twhile ((de = readdir(d)) != NULL) {\n\t\tchar *tmpname;\n\n\t\tif (streq(de->d_name, \".\")\n\t\t    || streq(de->d_name, \"..\"))\n\t\t\tcontinue;\n\n\t\ttmpname = join_path(dirname, de->d_name);\n\n\t\tif (stat(tmpname, &st) < 0)\n\t\t\tdie(\"stat(%s): %s\\n\", tmpname, strerror(errno));\n\n\t\tif (S_ISREG(st.st_mode)) {\n\t\t\tstruct property *prop;\n\t\t\tFILE *pfile;\n\n\t\t\tpfile = fopen(tmpname, \"rb\");\n\t\t\tif (! pfile) {\n\t\t\t\tfprintf(stderr,\n\t\t\t\t\t\"WARNING: Cannot open %s: %s\\n\",\n\t\t\t\t\ttmpname, strerror(errno));\n\t\t\t} else {\n\t\t\t\tprop = build_property(xstrdup(de->d_name),\n\t\t\t\t\t\t      data_copy_file(pfile,\n\t\t\t\t\t\t\t\t     st.st_size),\n\t\t\t\t\t\t      NULL);\n\t\t\t\tadd_property(tree, prop);\n\t\t\t\tfclose(pfile);\n\t\t\t}\n\t\t} else if (S_ISDIR(st.st_mode)) {\n\t\t\tstruct node *newchild;\n\n\t\t\tnewchild = read_fstree(tmpname);\n\t\t\tnewchild = name_node(newchild, xstrdup(de->d_name));\n\t\t\tadd_child(tree, newchild);\n\t\t}\n\n\t\tfree(tmpname);\n\t}\n\n\tclosedir(d);\n\treturn tree;\n}\n\nstruct dt_info *dt_from_fs(const char *dirname)\n{\n\tstruct node *tree;\n\n\ttree = read_fstree(dirname);\n\ttree = name_node(tree, \"\");\n\n\treturn build_dt_info(DTSF_V1, NULL, tree, guess_boot_cpuid(tree));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

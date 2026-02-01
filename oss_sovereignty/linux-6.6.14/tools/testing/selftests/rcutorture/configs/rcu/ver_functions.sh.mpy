@@ -1,0 +1,9 @@
+{
+  "module_name": "ver_functions.sh",
+  "hash_id": "3422e8d624c56f8312dff20862faffa62d28d8aded8b49d31bc63810b614761d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/ver_functions.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Kernel-version-dependent shell functions for the rest of the scripts.\n#\n# Copyright (C) IBM Corporation, 2013\n#\n# Authors: Paul E. McKenney <paulmck@linux.ibm.com>\n\n# rcutorture_param_n_barrier_cbs bootparam-string\n#\n# Adds n_barrier_cbs rcutorture module parameter if not already specified.\nrcutorture_param_n_barrier_cbs () {\n\tif echo $1 | grep -q \"rcutorture\\.n_barrier_cbs\"\n\tthen\n\t\t:\n\telse\n\t\techo rcutorture.n_barrier_cbs=4\n\tfi\n}\n\n# rcutorture_param_onoff bootparam-string config-file\n#\n# Adds onoff rcutorture module parameters to kernels having it.\nrcutorture_param_onoff () {\n\tif ! bootparam_hotplug_cpu \"$1\" && configfrag_hotplug_cpu \"$2\"\n\tthen\n\t\techo CPU-hotplug kernel, adding rcutorture onoff. 1>&2\n\t\techo rcutorture.onoff_interval=1000 rcutorture.onoff_holdoff=30\n\tfi\n}\n\n# rcutorture_param_stat_interval bootparam-string\n#\n# Adds stat_interval rcutorture module parameter if not already specified.\nrcutorture_param_stat_interval () {\n\tif echo $1 | grep -q \"rcutorture\\.stat_interval\"\n\tthen\n\t\t:\n\telse\n\t\techo rcutorture.stat_interval=15\n\tfi\n}\n\n# per_version_boot_params bootparam-string config-file seconds\n#\n# Adds per-version torture-module parameters to kernels supporting them.\nper_version_boot_params () {\n\techo\t`rcutorture_param_onoff \"$1\" \"$2\"` \\\n\t\t`rcutorture_param_n_barrier_cbs \"$1\"` \\\n\t\t`rcutorture_param_stat_interval \"$1\"` \\\n\t\trcutorture.shutdown_secs=$3 \\\n\t\trcutorture.test_no_idle_hz=1 \\\n\t\trcutorture.verbose=1 \\\n\t\t$1\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

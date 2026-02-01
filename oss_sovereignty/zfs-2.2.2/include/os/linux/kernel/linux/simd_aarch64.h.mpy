@@ -1,0 +1,9 @@
+{
+  "module_name": "simd_aarch64.h",
+  "hash_id": "052e6ad2a26d82bf811815d70725b57db4e8b0a825a9b7cdca1594da75ab649a",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/kernel/linux/simd_aarch64.h",
+  "human_readable_source": " \n\n \n\n \n\n#ifndef _LINUX_SIMD_AARCH64_H\n#define\t_LINUX_SIMD_AARCH64_H\n\n#include <sys/types.h>\n#include <asm/neon.h>\n#include <asm/elf.h>\n#include <asm/hwcap.h>\n#include <linux/version.h>\n\n#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 17, 0)\n#include <asm/sysreg.h>\n#else\n#define\tsys_reg(op0, op1, crn, crm, op2) ( \\\n\t((op0) << Op0_shift) | \\\n\t((op1) << Op1_shift) | \\\n\t((crn) << CRn_shift) | \\\n\t((crm) << CRm_shift) | \\\n\t((op2) << Op2_shift))\n#endif\n\n#define\tID_AA64PFR0_EL1\t\tsys_reg(3, 0, 0, 1, 0)\n#define\tID_AA64ISAR0_EL1\tsys_reg(3, 0, 0, 6, 0)\n\n#define\tkfpu_allowed()\t\t1\n#define\tkfpu_begin()\t\tkernel_neon_begin()\n#define\tkfpu_end()\t\tkernel_neon_end()\n#define\tkfpu_init()\t\t(0)\n#define\tkfpu_fini()\t\tdo {} while (0)\n\n#define\tget_ftr(id) {\t\t\t\t\\\n\tunsigned long __val;\t\t\t\\\n\tasm(\"mrs %0, \"#id : \"=r\" (__val));\t\\\n\t__val;\t\t\t\t\t\\\n}\n\n \nstatic inline boolean_t\nzfs_neon_available(void)\n{\n\tunsigned long ftr = ((get_ftr(ID_AA64PFR0_EL1)) >> 16) & 0xf;\n\treturn (ftr == 0 || ftr == 1);\n}\n\n \nstatic inline boolean_t\nzfs_sha256_available(void)\n{\n\tunsigned long ftr = ((get_ftr(ID_AA64ISAR0_EL1)) >> 12) & 0x3;\n\treturn (ftr & 0x1);\n}\n\n \nstatic inline boolean_t\nzfs_sha512_available(void)\n{\n\tunsigned long ftr = ((get_ftr(ID_AA64ISAR0_EL1)) >> 12) & 0x3;\n\treturn (ftr & 0x2);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

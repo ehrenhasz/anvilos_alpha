@@ -1,0 +1,9 @@
+{
+  "module_name": "spi-brcmstb-qspi.c",
+  "hash_id": "664b435fa67fa0dc7f8c3b4d139691ac7dda0b9a4af93e5cd8dea0fc316d0998",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/spi/spi-brcmstb-qspi.c",
+  "human_readable_source": "\n \n\n#include <linux/device.h>\n#include <linux/module.h>\n#include <linux/platform_device.h>\n#include <linux/of.h>\n#include \"spi-bcm-qspi.h\"\n\nstatic const struct of_device_id brcmstb_qspi_of_match[] = {\n\t{ .compatible = \"brcm,spi-brcmstb-qspi\" },\n\t{ .compatible = \"brcm,spi-brcmstb-mspi\" },\n\t{},\n};\nMODULE_DEVICE_TABLE(of, brcmstb_qspi_of_match);\n\nstatic int brcmstb_qspi_probe(struct platform_device *pdev)\n{\n\treturn bcm_qspi_probe(pdev, NULL);\n}\n\nstatic void brcmstb_qspi_remove(struct platform_device *pdev)\n{\n\tbcm_qspi_remove(pdev);\n}\n\nstatic struct platform_driver brcmstb_qspi_driver = {\n\t.probe\t\t\t= brcmstb_qspi_probe,\n\t.remove_new\t\t= brcmstb_qspi_remove,\n\t.driver = {\n\t\t.name\t\t= \"brcmstb_qspi\",\n\t\t.pm\t\t= &bcm_qspi_pm_ops,\n\t\t.of_match_table = brcmstb_qspi_of_match,\n\t}\n};\nmodule_platform_driver(brcmstb_qspi_driver);\n\nMODULE_LICENSE(\"GPL v2\");\nMODULE_AUTHOR(\"Kamal Dasu\");\nMODULE_DESCRIPTION(\"Broadcom SPI driver for settop SoC\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

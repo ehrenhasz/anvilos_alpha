@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fb7e5ad6f6d7e0a140fc5220c386cbdf19c34361c73e1f6615205d47086b0c41",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/pxa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y\t\t\t\t+= clk-pxa.o\nobj-$(CONFIG_PXA25x)\t\t+= clk-pxa25x.o\nobj-$(CONFIG_PXA27x)\t\t+= clk-pxa27x.o\nobj-$(CONFIG_PXA3xx)\t\t+= clk-pxa3xx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

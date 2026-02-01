@@ -1,0 +1,9 @@
+{
+  "module_name": "cpuidle-calxeda.c",
+  "hash_id": "2f6c8f53e5b87930a2b95b6a3f688300cee81828dacdea28649dd01b37ab5852",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpuidle/cpuidle-calxeda.c",
+  "human_readable_source": "\n \n\n#include <linux/cpuidle.h>\n#include <linux/cpu_pm.h>\n#include <linux/init.h>\n#include <linux/mm.h>\n#include <linux/platform_device.h>\n#include <linux/psci.h>\n\n#include <asm/cpuidle.h>\n#include <asm/suspend.h>\n\n#include <uapi/linux/psci.h>\n\n#define CALXEDA_IDLE_PARAM \\\n\t((0 << PSCI_0_2_POWER_STATE_ID_SHIFT) | \\\n\t (0 << PSCI_0_2_POWER_STATE_AFFL_SHIFT) | \\\n\t (PSCI_POWER_STATE_TYPE_POWER_DOWN << PSCI_0_2_POWER_STATE_TYPE_SHIFT))\n\nstatic int calxeda_idle_finish(unsigned long val)\n{\n\treturn psci_ops.cpu_suspend(CALXEDA_IDLE_PARAM, __pa(cpu_resume));\n}\n\nstatic int calxeda_pwrdown_idle(struct cpuidle_device *dev,\n\t\t\t\tstruct cpuidle_driver *drv,\n\t\t\t\tint index)\n{\n\tcpu_pm_enter();\n\tcpu_suspend(0, calxeda_idle_finish);\n\tcpu_pm_exit();\n\n\treturn index;\n}\n\nstatic struct cpuidle_driver calxeda_idle_driver = {\n\t.name = \"calxeda_idle\",\n\t.states = {\n\t\tARM_CPUIDLE_WFI_STATE,\n\t\t{\n\t\t\t.name = \"PG\",\n\t\t\t.desc = \"Power Gate\",\n\t\t\t.exit_latency = 30,\n\t\t\t.power_usage = 50,\n\t\t\t.target_residency = 200,\n\t\t\t.enter = calxeda_pwrdown_idle,\n\t\t},\n\t},\n\t.state_count = 2,\n};\n\nstatic int calxeda_cpuidle_probe(struct platform_device *pdev)\n{\n\treturn cpuidle_register(&calxeda_idle_driver, NULL);\n}\n\nstatic struct platform_driver calxeda_cpuidle_plat_driver = {\n        .driver = {\n                .name = \"cpuidle-calxeda\",\n        },\n        .probe = calxeda_cpuidle_probe,\n};\nbuiltin_platform_driver(calxeda_cpuidle_plat_driver);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

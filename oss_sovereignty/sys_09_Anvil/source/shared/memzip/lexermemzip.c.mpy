@@ -1,0 +1,9 @@
+{
+  "module_name": "lexermemzip.c",
+  "hash_id": "0580f83ace1ddaf261d4e94826a24dfeaf6af54474b328d0a4ad9c0ba16d083a",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/memzip/lexermemzip.c",
+  "human_readable_source": "#include <stdlib.h>\n\n#include \"py/lexer.h\"\n#include \"py/runtime.h\"\n#include \"py/mperrno.h\"\n#include \"memzip.h\"\n\nmp_lexer_t *mp_lexer_new_from_file(qstr filename)\n{\n    void *data;\n    size_t len;\n\n    if (memzip_locate(qstr_str(filename), &data, &len) != MZ_OK) {\n        mp_raise_OSError(MP_ENOENT);\n    }\n\n    return mp_lexer_new_from_str_len(filename, (const char *)data, (mp_uint_t)len, 0);\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

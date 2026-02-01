@@ -1,0 +1,9 @@
+{
+  "module_name": "xtime.h",
+  "hash_id": "34f5d1dd95d21ae43a849639e27af6eb9b91bd9df74ca602313c49e3f24387bc",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xtime.h",
+  "human_readable_source": " \n\n#ifndef XTIME_H_\n#define XTIME_H_ 1\n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n_GL_INLINE_HEADER_BEGIN\n#ifndef XTIME_INLINE\n# define XTIME_INLINE _GL_INLINE\n#endif\n\n \ntypedef long long int xtime_t;\n#define XTIME_PRECISION 1000000000\n\n#ifdef  __cplusplus\nextern \"C\" {\n#endif\n\n \nXTIME_INLINE xtime_t\nxtime_make (xtime_t s, long int ns)\n{\n  return XTIME_PRECISION * s + ns;\n}\n\n \n\n \nXTIME_INLINE xtime_t\nxtime_nonnegative_sec (xtime_t t)\n{\n  return t / XTIME_PRECISION;\n}\n\n \nXTIME_INLINE xtime_t\nxtime_sec (xtime_t t)\n{\n  return (t + (t < 0)) / XTIME_PRECISION - (t < 0);\n}\n\n \nXTIME_INLINE long int\nxtime_nonnegative_nsec (xtime_t t)\n{\n  return t % XTIME_PRECISION;\n}\n\n \nXTIME_INLINE long int\nxtime_nsec (xtime_t t)\n{\n  long int ns = t % XTIME_PRECISION;\n  if (ns < 0)\n    ns += XTIME_PRECISION;\n  return ns;\n}\n\n#ifdef  __cplusplus\n}\n#endif\n\n_GL_INLINE_HEADER_END\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vpu_cmds.h",
+  "hash_id": "d4791decb987aa13e4c3fe851489ca7b19dd18d78a5580b79552b1b1fa68c3f7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/amphion/vpu_cmds.h",
+  "human_readable_source": " \n \n\n#ifndef _AMPHION_VPU_CMDS_H\n#define _AMPHION_VPU_CMDS_H\n\nint vpu_session_configure_codec(struct vpu_inst *inst);\nint vpu_session_start(struct vpu_inst *inst);\nint vpu_session_stop(struct vpu_inst *inst);\nint vpu_session_abort(struct vpu_inst *inst);\nint vpu_session_rst_buf(struct vpu_inst *inst);\nint vpu_session_encode_frame(struct vpu_inst *inst, s64 timestamp);\nint vpu_session_alloc_fs(struct vpu_inst *inst, struct vpu_fs_info *fs);\nint vpu_session_release_fs(struct vpu_inst *inst, struct vpu_fs_info *fs);\nint vpu_session_fill_timestamp(struct vpu_inst *inst, struct vpu_ts_info *info);\nint vpu_session_update_parameters(struct vpu_inst *inst, void *arg);\nint vpu_core_snapshot(struct vpu_core *core);\nint vpu_core_sw_reset(struct vpu_core *core);\nint vpu_response_cmd(struct vpu_inst *inst, u32 response, u32 handled);\nvoid vpu_clear_request(struct vpu_inst *inst);\nint vpu_session_debug(struct vpu_inst *inst);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

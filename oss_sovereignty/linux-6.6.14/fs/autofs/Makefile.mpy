@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8f143584d9a9caf2d32913aa26874eab5d83ed659a68f6e9c069857b226eca8d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/autofs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the linux autofs-filesystem routines.\n#\n\nobj-$(CONFIG_AUTOFS_FS) += autofs4.o\n\nautofs4-objs := init.o inode.o root.o symlink.o waitq.o expire.o dev-ioctl.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

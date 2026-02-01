@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5050cc0c4be7f27e5bd76ed09701ec5bd6f26d5df7ae7e18b02d347907b0d3b8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/pensando/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Pensando network device drivers.\n#\n\nobj-$(CONFIG_IONIC) += ionic/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8abb6fe5ffecdaa9576ac18bde81e2d31bf83438536049a6549db7f7bbc9e7ec",
+  "original_prompt": "Ingested from linux-6.6.14/fs/jffs2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux Journalling Flash File System v2 (JFFS2)\n#\n#\n\nobj-$(CONFIG_JFFS2_FS) += jffs2.o\n\njffs2-y\t:= compr.o dir.o file.o ioctl.o nodelist.o malloc.o\njffs2-y\t+= read.o nodemgmt.o readinode.o write.o scan.o gc.o\njffs2-y\t+= symlink.o build.o erase.o background.o fs.o writev.o\njffs2-y\t+= super.o debug.o\n\njffs2-$(CONFIG_JFFS2_FS_WRITEBUFFER)\t+= wbuf.o\njffs2-$(CONFIG_JFFS2_FS_XATTR)\t\t+= xattr.o xattr_trusted.o xattr_user.o\njffs2-$(CONFIG_JFFS2_FS_SECURITY)\t+= security.o\njffs2-$(CONFIG_JFFS2_FS_POSIX_ACL)\t+= acl.o\njffs2-$(CONFIG_JFFS2_RUBIN)\t+= compr_rubin.o\njffs2-$(CONFIG_JFFS2_RTIME)\t+= compr_rtime.o\njffs2-$(CONFIG_JFFS2_ZLIB)\t+= compr_zlib.o\njffs2-$(CONFIG_JFFS2_LZO)\t+= compr_lzo.o\njffs2-$(CONFIG_JFFS2_SUMMARY)   += summary.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

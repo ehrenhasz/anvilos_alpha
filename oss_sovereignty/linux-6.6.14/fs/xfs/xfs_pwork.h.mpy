@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_pwork.h",
+  "hash_id": "b9186325c8ffe9020bf941c08ec0de6ddba324e4f82a2aa920766cf6d4eedce8",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_pwork.h",
+  "human_readable_source": " \n \n#ifndef __XFS_PWORK_H__\n#define __XFS_PWORK_H__\n\nstruct xfs_pwork;\nstruct xfs_mount;\n\ntypedef int (*xfs_pwork_work_fn)(struct xfs_mount *mp, struct xfs_pwork *pwork);\n\n \nstruct xfs_pwork_ctl {\n\tstruct workqueue_struct\t*wq;\n\tstruct xfs_mount\t*mp;\n\txfs_pwork_work_fn\twork_fn;\n\tstruct wait_queue_head\tpoll_wait;\n\tatomic_t\t\tnr_work;\n\tint\t\t\terror;\n};\n\n \nstruct xfs_pwork {\n\tstruct work_struct\twork;\n\tstruct xfs_pwork_ctl\t*pctl;\n};\n\n#define XFS_PWORK_SINGLE_THREADED\t{ .pctl = NULL }\n\n \nstatic inline bool\nxfs_pwork_ctl_want_abort(\n\tstruct xfs_pwork_ctl\t*pctl)\n{\n\treturn pctl && pctl->error;\n}\n\n \nstatic inline bool\nxfs_pwork_want_abort(\n\tstruct xfs_pwork\t*pwork)\n{\n\treturn xfs_pwork_ctl_want_abort(pwork->pctl);\n}\n\nint xfs_pwork_init(struct xfs_mount *mp, struct xfs_pwork_ctl *pctl,\n\t\txfs_pwork_work_fn work_fn, const char *tag);\nvoid xfs_pwork_queue(struct xfs_pwork_ctl *pctl, struct xfs_pwork *pwork);\nint xfs_pwork_destroy(struct xfs_pwork_ctl *pctl);\nvoid xfs_pwork_poll(struct xfs_pwork_ctl *pctl);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

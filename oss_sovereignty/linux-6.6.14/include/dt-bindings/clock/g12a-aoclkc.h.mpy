@@ -1,0 +1,9 @@
+{
+  "module_name": "g12a-aoclkc.h",
+  "hash_id": "c370e895fdb8b6e518ac8a464bafb6ad279a9e2958fc551418b8f90bbf793e39",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/g12a-aoclkc.h",
+  "human_readable_source": " \n \n\n#ifndef DT_BINDINGS_CLOCK_AMLOGIC_MESON_G12A_AOCLK\n#define DT_BINDINGS_CLOCK_AMLOGIC_MESON_G12A_AOCLK\n\n#define CLKID_AO_AHB\t\t0\n#define CLKID_AO_IR_IN\t\t1\n#define CLKID_AO_I2C_M0\t\t2\n#define CLKID_AO_I2C_S0\t\t3\n#define CLKID_AO_UART\t\t4\n#define CLKID_AO_PROD_I2C\t5\n#define CLKID_AO_UART2\t\t6\n#define CLKID_AO_IR_OUT\t\t7\n#define CLKID_AO_SAR_ADC\t8\n#define CLKID_AO_MAILBOX\t9\n#define CLKID_AO_M3\t\t10\n#define CLKID_AO_AHB_SRAM\t11\n#define CLKID_AO_RTI\t\t12\n#define CLKID_AO_M4_FCLK\t13\n#define CLKID_AO_M4_HCLK\t14\n#define CLKID_AO_CLK81\t\t15\n#define CLKID_AO_SAR_ADC_DIV\t17\n#define CLKID_AO_SAR_ADC_SEL\t16\n#define CLKID_AO_SAR_ADC_CLK\t18\n#define CLKID_AO_CTS_OSCIN\t19\n#define CLKID_AO_32K_PRE\t20\n#define CLKID_AO_32K_DIV\t21\n#define CLKID_AO_32K_SEL\t22\n#define CLKID_AO_32K\t\t23\n#define CLKID_AO_CEC_PRE\t24\n#define CLKID_AO_CEC_DIV\t25\n#define CLKID_AO_CEC_SEL\t26\n#define CLKID_AO_CEC\t\t27\n#define CLKID_AO_CTS_RTC_OSCIN\t28\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

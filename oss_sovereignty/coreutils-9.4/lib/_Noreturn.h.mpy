@@ -1,0 +1,9 @@
+{
+  "module_name": "_Noreturn.h",
+  "hash_id": "fdfb0c9de4648d5c0bd4de72893df2ee686b6b979ba0bc85cdddc8ccd71c6b84",
+  "original_prompt": "Ingested from coreutils-9.4/lib/_Noreturn.h",
+  "human_readable_source": " \n#  define _Noreturn [[noreturn]]\n# elif (defined __clang__ && __clang_major__ < 16 \\\n        && defined _GL_WORK_AROUND_LLVM_BUG_59792)\n    \n#  define _Noreturn\n# elif ((!defined __cplusplus || defined __clang__) \\\n        && (201112 <= (defined __STDC_VERSION__ ? __STDC_VERSION__ : 0) \\\n            || (!defined __STRICT_ANSI__ \\\n                && (4 < __GNUC__ + (7 <= __GNUC_MINOR__) \\\n                    || (defined __apple_build_version__ \\\n                        ? 6000000 <= __apple_build_version__ \\\n                        : 3 < __clang_major__ + (5 <= __clang_minor__))))))\n    \n# elif (2 < __GNUC__ + (8 <= __GNUC_MINOR__) || defined __clang__ \\\n        || 0x5110 <= __SUNPRO_C)\n#  define _Noreturn __attribute__ ((__noreturn__))\n# elif 1200 <= (defined _MSC_VER ? _MSC_VER : 0)\n#  define _Noreturn __declspec (noreturn)\n# else\n#  define _Noreturn\n# endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

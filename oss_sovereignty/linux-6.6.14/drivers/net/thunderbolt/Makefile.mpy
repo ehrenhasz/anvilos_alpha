@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "024edbee2d9c9e65f0132d97b701e907fedff9200d1890d4b6809b314827f8a4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/thunderbolt/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_USB4_NET) := thunderbolt_net.o\nthunderbolt_net-objs := main.o trace.o\n\n# Tracepoints need to know where to find trace.h\nCFLAGS_trace.o := -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

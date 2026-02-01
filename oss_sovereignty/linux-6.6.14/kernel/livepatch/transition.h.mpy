@@ -1,0 +1,9 @@
+{
+  "module_name": "transition.h",
+  "hash_id": "b70d7004e79c2b6874e70af091ae1d6ff179f26f843bd055fffc5aa6fecf4311",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/livepatch/transition.h",
+  "human_readable_source": " \n#ifndef _LIVEPATCH_TRANSITION_H\n#define _LIVEPATCH_TRANSITION_H\n\n#include <linux/livepatch.h>\n\nextern struct klp_patch *klp_transition_patch;\n\nvoid klp_init_transition(struct klp_patch *patch, int state);\nvoid klp_cancel_transition(void);\nvoid klp_start_transition(void);\nvoid klp_try_complete_transition(void);\nvoid klp_reverse_transition(void);\nvoid klp_force_transition(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

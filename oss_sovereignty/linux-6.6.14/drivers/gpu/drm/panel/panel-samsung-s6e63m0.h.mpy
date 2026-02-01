@@ -1,0 +1,9 @@
+{
+  "module_name": "panel-samsung-s6e63m0.h",
+  "hash_id": "94bdc18a892684298d3410646efab5c3e015964244117cd7bc077bed74783bb0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/panel/panel-samsung-s6e63m0.h",
+  "human_readable_source": " \n\n#ifndef _PANEL_SAMSUNG_S6E63M0_H\n#define _PANEL_SAMSUNG_S6E63M0_H\n\n \n#define MCS_ELVSS_ON\t\t0xb1\n#define MCS_TEMP_SWIRE\t\t0xb2\n#define MCS_PENTILE_1\t\t0xb3\n#define MCS_PENTILE_2\t\t0xb4\n#define MCS_GAMMA_DELTA_Y_RED\t0xb5\n#define MCS_GAMMA_DELTA_X_RED\t0xb6\n#define MCS_GAMMA_DELTA_Y_GREEN\t0xb7\n#define MCS_GAMMA_DELTA_X_GREEN\t0xb8\n#define MCS_GAMMA_DELTA_Y_BLUE\t0xb9\n#define MCS_GAMMA_DELTA_X_BLUE\t0xba\n#define MCS_MIECTL1\t\t0xc0\n#define MCS_BCMODE\t\t0xc1\n#define MCS_ERROR_CHECK\t\t0xd5\n#define MCS_READ_ID1\t\t0xda\n#define MCS_READ_ID2\t\t0xdb\n#define MCS_READ_ID3\t\t0xdc\n#define MCS_LEVEL_2_KEY\t\t0xf0\n#define MCS_MTP_KEY\t\t0xf1\n#define MCS_DISCTL\t\t0xf2\n#define MCS_SRCCTL\t\t0xf6\n#define MCS_IFCTL\t\t0xf7\n#define MCS_PANELCTL\t\t0xf8\n#define MCS_PGAMMACTL\t\t0xfa\n\nint s6e63m0_probe(struct device *dev, void *trsp,\n\t\t  int (*dcs_read)(struct device *dev, void *trsp,\n\t\t\t\t  const u8 cmd, u8 *val),\n\t\t  int (*dcs_write)(struct device *dev, void *trsp,\n\t\t\t\t   const u8 *data,\n\t\t\t\t   size_t len),\n\t\t  bool dsi_mode);\nvoid s6e63m0_remove(struct device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

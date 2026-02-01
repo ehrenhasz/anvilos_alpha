@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7c1eb10c9fe871d924bbda6b555802aa430c1747151595ad27a44bd4119932c2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/fchmodat2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-or-later\n\nCFLAGS += -Wall -O2 -g -fsanitize=address -fsanitize=undefined -static-libasan $(KHDR_INCLUDES)\nTEST_GEN_PROGS := fchmodat2_test\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

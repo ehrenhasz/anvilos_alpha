@@ -1,0 +1,9 @@
+{
+  "module_name": "acp-trace.c",
+  "hash_id": "6636e833441f8bb3e8b00281f3a9b71d8a0a421b92dfff609fc66509042be8b2",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/amd/acp-trace.c",
+  "human_readable_source": "\n\n\n\n\n\n\n\n\n\n \n\n#include \"acp.h\"\n\n#define ACP_LOGGER_STREAM\t8\n#define NUM_PAGES\t\t16\n\nint acp_sof_trace_release(struct snd_sof_dev *sdev)\n{\n\tstruct acp_dsp_stream *stream;\n\tstruct acp_dev_data *adata;\n\tint ret;\n\n\tadata = sdev->pdata->hw_pdata;\n\tstream = adata->dtrace_stream;\n\tret = acp_dsp_stream_put(sdev, stream);\n\tif (ret < 0) {\n\t\tdev_err(sdev->dev, \"Failed to release trace stream\\n\");\n\t\treturn ret;\n\t}\n\n\tadata->dtrace_stream = NULL;\n\treturn 0;\n}\nEXPORT_SYMBOL_NS(acp_sof_trace_release, SND_SOC_SOF_AMD_COMMON);\n\nint acp_sof_trace_init(struct snd_sof_dev *sdev, struct snd_dma_buffer *dmab,\n\t\t       struct sof_ipc_dma_trace_params_ext *dtrace_params)\n{\n\tstruct acp_dsp_stream *stream;\n\tstruct acp_dev_data *adata;\n\tint ret;\n\n\tadata = sdev->pdata->hw_pdata;\n\tstream = acp_dsp_stream_get(sdev, ACP_LOGGER_STREAM);\n\tif (!stream)\n\t\treturn -ENODEV;\n\n\tstream->dmab = dmab;\n\tstream->num_pages = NUM_PAGES;\n\n\tret = acp_dsp_stream_config(sdev, stream);\n\tif (ret < 0) {\n\t\tacp_dsp_stream_put(sdev, stream);\n\t\treturn ret;\n\t}\n\n\tadata->dtrace_stream = stream;\n\tdtrace_params->stream_tag = stream->stream_tag;\n\tdtrace_params->buffer.phy_addr = stream->reg_offset;\n\n\treturn 0;\n}\nEXPORT_SYMBOL_NS(acp_sof_trace_init, SND_SOC_SOF_AMD_COMMON);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

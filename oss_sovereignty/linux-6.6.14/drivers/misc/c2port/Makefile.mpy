@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c2faeaff5a8912ce295b3bf3a1799c6f79d0252b0b640e88adb3e8b2512cf58d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/c2port/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_C2PORT)\t\t+= core.o\n\nobj-$(CONFIG_C2PORT_DURAMAR_2150)\t+= c2port-duramar2150.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

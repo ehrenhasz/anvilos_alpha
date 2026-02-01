@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9473ea0d5471840b742a898d8a2f84d105b0d7aa0426feba3a69c994806f2565",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/i3c/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nmenuconfig I3C\n\ttristate \"I3C support\"\n\tselect I2C\n\thelp\n\t  I3C is a serial protocol standardized by the MIPI alliance.\n\n\t  It's supposed to be backward compatible with I2C while providing\n\t  support for high speed transfers and native interrupt support\n\t  without the need for extra pins.\n\n\t  The I3C protocol also standardizes the slave device types and is\n\t  mainly designed to communicate with sensors.\n\n\t  If you want I3C support, you should say Y here and also to the\n\t  specific driver for your bus adapter(s) below.\n\n\t  This I3C support can also be built as a module.  If so, the module\n\t  will be called i3c.\n\nif I3C\nsource \"drivers/i3c/master/Kconfig\"\nendif # I3C\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

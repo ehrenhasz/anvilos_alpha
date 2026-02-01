@@ -1,0 +1,9 @@
+{
+  "module_name": "dummy_st_ops_success.c",
+  "hash_id": "a7d08bfaf601eeccb259f0cac17dca181d24dfb272bf40980800085829f34bee",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/dummy_st_ops_success.c",
+  "human_readable_source": "\n \n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"struct_ops/test_1\")\nint BPF_PROG(test_1, struct bpf_dummy_ops_state *state)\n{\n\tint ret;\n\n\tif (!state)\n\t\treturn 0xf2f3f4f5;\n\n\tret = state->val;\n\tstate->val = 0x5a;\n\treturn ret;\n}\n\n__u64 test_2_args[5];\n\nSEC(\"struct_ops/test_2\")\nint BPF_PROG(test_2, struct bpf_dummy_ops_state *state, int a1, unsigned short a2,\n\t     char a3, unsigned long a4)\n{\n\ttest_2_args[0] = (unsigned long)state;\n\ttest_2_args[1] = a1;\n\ttest_2_args[2] = a2;\n\ttest_2_args[3] = a3;\n\ttest_2_args[4] = a4;\n\treturn 0;\n}\n\nSEC(\"struct_ops.s/test_sleepable\")\nint BPF_PROG(test_sleepable, struct bpf_dummy_ops_state *state)\n{\n\treturn 0;\n}\n\nSEC(\".struct_ops\")\nstruct bpf_dummy_ops dummy_1 = {\n\t.test_1 = (void *)test_1,\n\t.test_2 = (void *)test_2,\n\t.test_sleepable = (void *)test_sleepable,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

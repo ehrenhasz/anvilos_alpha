@@ -1,0 +1,9 @@
+{
+  "module_name": "inet_ntoa.c",
+  "hash_id": "3c752c51b283156ccf01a0672edc850f7969fd8ac3822da58b588292d51fd57b",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/inet_ntoa.c",
+  "human_readable_source": " \n \n\n \n\n#include \"includes.h\"\n\n#if defined(BROKEN_INET_NTOA) || !defined(HAVE_INET_NTOA)\n\n \n#include <sys/types.h>\n#include <netinet/in.h>\n#include <arpa/inet.h>\n#include <stdio.h>\n\nchar *\ninet_ntoa(struct in_addr in)\n{\n\tstatic char b[18];\n\tchar *p;\n\n\tp = (char *)&in;\n#define\tUC(b)\t(((int)b)&0xff)\n\t(void)snprintf(b, sizeof(b),\n\t    \"%u.%u.%u.%u\", UC(p[0]), UC(p[1]), UC(p[2]), UC(p[3]));\n\treturn (b);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

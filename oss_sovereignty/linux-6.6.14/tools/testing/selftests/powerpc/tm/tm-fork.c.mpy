@@ -1,0 +1,9 @@
+{
+  "module_name": "tm-fork.c",
+  "hash_id": "f2ea5a903a82614b03e3898e3bc9081f00da26b7922b742e876e687756d25c51",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/tm/tm-fork.c",
+  "human_readable_source": "\n \n\n#include <errno.h>\n#include <inttypes.h>\n#include <pthread.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n\n#include \"utils.h\"\n#include \"tm.h\"\n\nint test_fork(void)\n{\n\tSKIP_IF(!have_htm());\n\tSKIP_IF(htm_is_synthetic());\n\n\tasm __volatile__(\n\t\t\"tbegin.;\"\n\t\t\"blt    1f; \"\n\t\t\"li     0, 2;\"   \n\t\t\"sc  ;\"\n\t\t\"tend.;\"\n\t\t\"1: ;\"\n\t\t: : : \"memory\", \"r0\");\n\t \n\n\treturn 0;\n}\n\nint main(int argc, char *argv[])\n{\n\treturn test_harness(test_fork, \"tm_fork\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

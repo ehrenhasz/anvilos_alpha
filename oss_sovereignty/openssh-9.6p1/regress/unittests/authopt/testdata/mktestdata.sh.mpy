@@ -1,0 +1,9 @@
+{
+  "module_name": "mktestdata.sh",
+  "hash_id": "97c418d6603796245200b7a7fcf5727afa926a77df65a5dbb99c7b85361c5220",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/authopt/testdata/mktestdata.sh",
+  "human_readable_source": "#/bin/sh\n\nset -xe\n\nrm -f ca_key ca_key.pub\nrm -f user_key user_key.pub\nrm -f *.cert\n\nssh-keygen -q -f ca_key -t ed25519 -C CA -N ''\nssh-keygen -q -f user_key -t ed25519 -C \"user key\" -N ''\n\nsign() {\n\toutput=$1\n\tshift\n\tset -xe\n\tssh-keygen -q -s ca_key -I user -n user \\\n\t    -V 19990101:19991231 -z 1 \"$@\" user_key.pub\n\tmv user_key-cert.pub \"$output\"\n}\n\nsign all_permit.cert -Opermit-agent-forwarding -Opermit-port-forwarding \\\n    -Opermit-pty -Opermit-user-rc -Opermit-X11-forwarding\nsign no_permit.cert -Oclear\n\nsign no_agentfwd.cert -Ono-agent-forwarding\nsign no_portfwd.cert -Ono-port-forwarding\nsign no_pty.cert -Ono-pty\nsign no_user_rc.cert -Ono-user-rc\nsign no_x11fwd.cert -Ono-X11-forwarding\n\nsign only_agentfwd.cert -Oclear -Opermit-agent-forwarding\nsign only_portfwd.cert -Oclear -Opermit-port-forwarding\nsign only_pty.cert -Oclear -Opermit-pty\nsign only_user_rc.cert -Oclear -Opermit-user-rc\nsign only_x11fwd.cert -Oclear -Opermit-X11-forwarding\n\nsign force_command.cert -Oforce-command=\"foo\"\nsign sourceaddr.cert -Osource-address=\"127.0.0.1/32,::1/128\"\n\n# ssh-keygen won't permit generation of certs with invalid source-address\n# values, so we do it as a custom extension.\nsign bad_sourceaddr.cert -Ocritical:source-address=xxxxx\n\nsign unknown_critical.cert -Ocritical:blah=foo\n\nsign host.cert -h\n\nrm -f user_key ca_key user_key.pub ca_key.pub\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

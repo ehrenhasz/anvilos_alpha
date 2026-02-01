@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "30a964a32a41a5b1b8737d9208d29c7ecb583de8fd6e5236e19dae1daae8bfde",
+  "original_prompt": "Ingested from linux-6.6.14/security/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the kernel security code\n#\n\nobj-$(CONFIG_KEYS)\t\t\t+= keys/\n\n# always enable default capabilities\nobj-y\t\t\t\t\t+= commoncap.o\nobj-$(CONFIG_MMU)\t\t\t+= min_addr.o\n\n# Object file lists\nobj-$(CONFIG_SECURITY)\t\t\t+= security.o\nobj-$(CONFIG_SECURITYFS)\t\t+= inode.o\nobj-$(CONFIG_SECURITY_SELINUX)\t\t+= selinux/\nobj-$(CONFIG_SECURITY_SMACK)\t\t+= smack/\nobj-$(CONFIG_SECURITY)\t\t\t+= lsm_audit.o\nobj-$(CONFIG_SECURITY_TOMOYO)\t\t+= tomoyo/\nobj-$(CONFIG_SECURITY_APPARMOR)\t\t+= apparmor/\nobj-$(CONFIG_SECURITY_YAMA)\t\t+= yama/\nobj-$(CONFIG_SECURITY_LOADPIN)\t\t+= loadpin/\nobj-$(CONFIG_SECURITY_SAFESETID)       += safesetid/\nobj-$(CONFIG_SECURITY_LOCKDOWN_LSM)\t+= lockdown/\nobj-$(CONFIG_CGROUPS)\t\t\t+= device_cgroup.o\nobj-$(CONFIG_BPF_LSM)\t\t\t+= bpf/\nobj-$(CONFIG_SECURITY_LANDLOCK)\t\t+= landlock/\n\n# Object integrity file lists\nobj-$(CONFIG_INTEGRITY)\t\t\t+= integrity/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

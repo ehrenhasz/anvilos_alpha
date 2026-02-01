@@ -1,0 +1,9 @@
+{
+  "module_name": "netlabel_cipso_v4.h",
+  "hash_id": "94fa4f2055c480272d88d4d5fb27cd28ff56685aaa2cd53956389cfefcaeb0a0",
+  "original_prompt": "Ingested from linux-6.6.14/net/netlabel/netlabel_cipso_v4.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _NETLABEL_CIPSO_V4\n#define _NETLABEL_CIPSO_V4\n\n#include <net/netlabel.h>\n\n \n\n \nenum {\n\tNLBL_CIPSOV4_C_UNSPEC,\n\tNLBL_CIPSOV4_C_ADD,\n\tNLBL_CIPSOV4_C_REMOVE,\n\tNLBL_CIPSOV4_C_LIST,\n\tNLBL_CIPSOV4_C_LISTALL,\n\t__NLBL_CIPSOV4_C_MAX,\n};\n\n \nenum {\n\tNLBL_CIPSOV4_A_UNSPEC,\n\tNLBL_CIPSOV4_A_DOI,\n\t \n\tNLBL_CIPSOV4_A_MTYPE,\n\t \n\tNLBL_CIPSOV4_A_TAG,\n\t \n\tNLBL_CIPSOV4_A_TAGLST,\n\t \n\tNLBL_CIPSOV4_A_MLSLVLLOC,\n\t \n\tNLBL_CIPSOV4_A_MLSLVLREM,\n\t \n\tNLBL_CIPSOV4_A_MLSLVL,\n\t \n\tNLBL_CIPSOV4_A_MLSLVLLST,\n\t \n\tNLBL_CIPSOV4_A_MLSCATLOC,\n\t \n\tNLBL_CIPSOV4_A_MLSCATREM,\n\t \n\tNLBL_CIPSOV4_A_MLSCAT,\n\t \n\tNLBL_CIPSOV4_A_MLSCATLST,\n\t \n\t__NLBL_CIPSOV4_A_MAX,\n};\n#define NLBL_CIPSOV4_A_MAX (__NLBL_CIPSOV4_A_MAX - 1)\n\n \nint netlbl_cipsov4_genl_init(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

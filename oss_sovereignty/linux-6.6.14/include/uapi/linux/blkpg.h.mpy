@@ -1,0 +1,9 @@
+{
+  "module_name": "blkpg.h",
+  "hash_id": "3201b30f2cf0940fb44b19bd13f8db59e59ad0818cb1ef2c8b52f8ac98b5e099",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/blkpg.h",
+  "human_readable_source": " \n#ifndef _UAPI__LINUX_BLKPG_H\n#define _UAPI__LINUX_BLKPG_H\n\n#include <linux/compiler.h>\n#include <linux/ioctl.h>\n\n#define BLKPG      _IO(0x12,105)\n\n \nstruct blkpg_ioctl_arg {\n        int op;\n        int flags;\n        int datalen;\n        void __user *data;\n};\n\n \n#define BLKPG_ADD_PARTITION\t1\n#define BLKPG_DEL_PARTITION\t2\n#define BLKPG_RESIZE_PARTITION\t3\n\n \n#define BLKPG_DEVNAMELTH\t64\n#define BLKPG_VOLNAMELTH\t64\n\n \nstruct blkpg_partition {\n\tlong long start;\t\t \n\tlong long length;\t\t \n\tint pno;\t\t\t \n\tchar devname[BLKPG_DEVNAMELTH];\t \n\tchar volname[BLKPG_VOLNAMELTH];\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

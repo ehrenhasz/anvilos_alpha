@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c68c24e47cb0054f24f3c9d75be92867a83aa518ef1fa7057211c4cdcb675efa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/airspy/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_USB_AIRSPY)              += airspy.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "PERF-VERSION-GEN",
+  "hash_id": "233c2d275e0e36b8fae4c4d1b628125f8cdbd2930c3f8cd93d6d35b9c900fa1b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/PERF-VERSION-GEN",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\nif [ $# -eq 1 ]  ; then\n\tOUTPUT=$1\nfi\n\nGVF=${OUTPUT}PERF-VERSION-FILE\n\nLF='\n'\n\n#\n# Use version from kernel Makefile unless not in a git repository and\n# PERF-VERSION-FILE exists\n#\nCID=\nTAG=\nif test -d ../../.git -o -f ../../.git\nthen\n\tTAG=$(MAKEFLAGS= make -sC ../.. kernelversion)\n\tCID=$(git log -1 --abbrev=12 --pretty=format:\"%h\" --no-show-signature 2>/dev/null) && CID=\"-g$CID\"\nelif test -f ../../PERF-VERSION-FILE\nthen\n\tTAG=$(cut -d' ' -f3 ../../PERF-VERSION-FILE | sed -e 's/\\\"//g')\nfi\nif test -z \"$TAG\"\nthen\n\tTAG=$(MAKEFLAGS= make -sC ../.. kernelversion)\nfi\n\nVN=\"$TAG$CID\"\nif test -n \"$CID\"\nthen\n\t# format version string, strip trailing zero of sublevel:\n\tVN=$(echo \"$VN\" | sed -e 's/-/./g;s/\\([0-9]*[.][0-9]*\\)[.]0/\\1/')\nfi\n\nVN=$(expr \"$VN\" : v*'\\(.*\\)')\n\nif test -r $GVF\nthen\n\tVC=$(sed -e 's/^#define PERF_VERSION \"\\(.*\\)\"/\\1/' <$GVF)\nelse\n\tVC=unset\nfi\ntest \"$VN\" = \"$VC\" || {\n\techo >&2 \"  PERF_VERSION = $VN\"\n\techo \"#define PERF_VERSION \\\"$VN\\\"\" >$GVF\n}\n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

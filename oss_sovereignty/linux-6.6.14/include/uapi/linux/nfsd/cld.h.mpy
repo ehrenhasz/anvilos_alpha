@@ -1,0 +1,9 @@
+{
+  "module_name": "cld.h",
+  "hash_id": "76ca0ea5a22e1f128b3c0064ad0aadeacc6e59956480dbda1aeaf7740985c882",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/nfsd/cld.h",
+  "human_readable_source": " \n \n\n#ifndef _NFSD_CLD_H\n#define _NFSD_CLD_H\n\n#include <linux/types.h>\n\n \n#define CLD_UPCALL_VERSION 2\n\n \n#define NFS4_OPAQUE_LIMIT 1024\n\n#ifndef SHA256_DIGEST_SIZE\n#define SHA256_DIGEST_SIZE      32\n#endif\n\nenum cld_command {\n\tCld_Create,\t\t \n\tCld_Remove,\t\t \n\tCld_Check,\t\t \n\tCld_GraceDone,\t\t \n\tCld_GraceStart,\t\t \n\tCld_GetVersion,\t\t \n};\n\n \nstruct cld_name {\n\t__u16\t\tcn_len;\t\t\t\t \n\tunsigned char\tcn_id[NFS4_OPAQUE_LIMIT];\t \n} __attribute__((packed));\n\n \nstruct cld_princhash {\n\t__u8\t\tcp_len;\t\t\t\t \n\tunsigned char\tcp_data[SHA256_DIGEST_SIZE];\t \n} __attribute__((packed));\n\nstruct cld_clntinfo {\n\tstruct cld_name\t\tcc_name;\n\tstruct cld_princhash\tcc_princhash;\n} __attribute__((packed));\n\n \nstruct cld_msg {\n\t__u8\t\tcm_vers;\t\t \n\t__u8\t\tcm_cmd;\t\t\t \n\t__s16\t\tcm_status;\t\t \n\t__u32\t\tcm_xid;\t\t\t \n\tunion {\n\t\t__s64\t\tcm_gracetime;\t \n\t\tstruct cld_name\tcm_name;\n\t\t__u8\t\tcm_version;\t \n\t} __attribute__((packed)) cm_u;\n} __attribute__((packed));\n\n \nstruct cld_msg_v2 {\n\t__u8\t\tcm_vers;\t\t \n\t__u8\t\tcm_cmd;\t\t\t \n\t__s16\t\tcm_status;\t\t \n\t__u32\t\tcm_xid;\t\t\t \n\tunion {\n\t\tstruct cld_name\tcm_name;\n\t\t__u8\t\tcm_version;\t \n\t\tstruct cld_clntinfo cm_clntinfo;  \n\t} __attribute__((packed)) cm_u;\n} __attribute__((packed));\n\nstruct cld_msg_hdr {\n\t__u8\t\tcm_vers;\t\t \n\t__u8\t\tcm_cmd;\t\t\t \n\t__s16\t\tcm_status;\t\t \n\t__u32\t\tcm_xid;\t\t\t \n} __attribute__((packed));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nstrftime.m4",
+  "hash_id": "b7d9919801246aa119fc7fdf7b2fd2df71d8a9cad71c0caa1477c653426dacb6",
+  "original_prompt": "Ingested from coreutils-9.4/m4/nstrftime.m4",
+  "human_readable_source": "# serial 37\n\n# Copyright (C) 1996-1997, 1999-2007, 2009-2023 Free Software Foundation, Inc.\n#\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\n# Written by Jim Meyering and Paul Eggert.\n\nAC_DEFUN([gl_FUNC_GNU_STRFTIME],\n[\n AC_REQUIRE([AC_C_RESTRICT])\n\n # This defines (or not) HAVE_TZNAME and HAVE_STRUCT_TM_TM_ZONE.\n AC_REQUIRE([AC_STRUCT_TIMEZONE])\n\n AC_REQUIRE([gl_TM_GMTOFF])\n\n AC_DEFINE([my_strftime], [nstrftime],\n   [Define to the name of the strftime replacement function.])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7b88b7cce86d21009e7eb09a87f7afe22ff22ae6638c8fb68c2a236dd4bdf45c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/mei/gsc_proxy/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Copyright (c) 2022-2023, Intel Corporation. All rights reserved.\n#\n# Makefile - GSC Proxy client driver for Intel MEI Bus Driver.\n\nobj-$(CONFIG_INTEL_MEI_GSC_PROXY) += mei_gsc_proxy.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

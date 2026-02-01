@@ -1,0 +1,9 @@
+{
+  "module_name": "socfpga.h",
+  "hash_id": "65d27f10db904c650f627ef7ebee40797576c9972a345ff0895936d0de0d046f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/reset/socfpga.h",
+  "human_readable_source": " \n#ifndef __LINUX_RESET_SOCFPGA_H__\n#define __LINUX_RESET_SOCFPGA_H__\n\nvoid __init socfpga_reset_init(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

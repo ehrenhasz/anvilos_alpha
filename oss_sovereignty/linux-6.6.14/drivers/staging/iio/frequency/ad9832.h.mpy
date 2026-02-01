@@ -1,0 +1,9 @@
+{
+  "module_name": "ad9832.h",
+  "hash_id": "6d8788b9e267d37d1aeb27077ce99c26f559a4c3e348225cb1314de037a71994",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/iio/frequency/ad9832.h",
+  "human_readable_source": " \n \n#ifndef IIO_DDS_AD9832_H_\n#define IIO_DDS_AD9832_H_\n\n \n\n \n\nstruct ad9832_platform_data {\n\tunsigned long\t\tfreq0;\n\tunsigned long\t\tfreq1;\n\tunsigned short\t\tphase0;\n\tunsigned short\t\tphase1;\n\tunsigned short\t\tphase2;\n\tunsigned short\t\tphase3;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

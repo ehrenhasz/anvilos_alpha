@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_factory_dce110.h",
+  "hash_id": "28e284475a731839930ffb07b4b3d8476748421fb8f7d26837270be4149438ce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/dce110/hw_factory_dce110.h",
+  "human_readable_source": " \n\n#ifndef __DAL_HW_FACTORY_DCE110_H__\n#define __DAL_HW_FACTORY_DCE110_H__\n\n \nvoid dal_hw_factory_dce110_init(struct hw_factory *factory);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

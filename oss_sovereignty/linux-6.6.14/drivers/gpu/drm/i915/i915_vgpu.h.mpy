@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_vgpu.h",
+  "hash_id": "cf88d9ab49417df6f1ae4a82ed3515212fdf3943f5c2a3ef3a786423f2a45258",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_vgpu.h",
+  "human_readable_source": " \n\n#ifndef _I915_VGPU_H_\n#define _I915_VGPU_H_\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\nstruct i915_ggtt;\n\nvoid intel_vgpu_detect(struct drm_i915_private *i915);\nbool intel_vgpu_active(struct drm_i915_private *i915);\nvoid intel_vgpu_register(struct drm_i915_private *i915);\nbool intel_vgpu_has_full_ppgtt(struct drm_i915_private *i915);\nbool intel_vgpu_has_hwsp_emulation(struct drm_i915_private *i915);\nbool intel_vgpu_has_huge_gtt(struct drm_i915_private *i915);\n\nint intel_vgt_balloon(struct i915_ggtt *ggtt);\nvoid intel_vgt_deballoon(struct i915_ggtt *ggtt);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

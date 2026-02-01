@@ -1,0 +1,9 @@
+{
+  "module_name": "xfree.c",
+  "hash_id": "b789d43f09e7bc83aef9b24ada7feb24c488bdd311d60ea088450569986d5791",
+  "original_prompt": "Ingested from bash-5.2.21/lib/readline/xfree.c",
+  "human_readable_source": " \n\n \n\n#define READLINE_LIBRARY\n\n#if defined (HAVE_CONFIG_H)\n#include <config.h>\n#endif\n\n#if defined (HAVE_STDLIB_H)\n#  include <stdlib.h>\n#else\n#  include \"ansi_stdlib.h\"\n#endif  \n\n#include \"xmalloc.h\"\n\n \n \n \n \n \n\n \nvoid\nxfree (PTR_T string)\n{\n  if (string)\n    free (string);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "modanvil.c.module",
+  "hash_id": "212119fde091ea54122a67f4ff0a28b6999e0708c9ff989bccce5fa25b88baff",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/module/modanvil.c.module",
+  "human_readable_source": "MP_REGISTER_MODULE(MP_QSTR_anvil, mp_module_anvil);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

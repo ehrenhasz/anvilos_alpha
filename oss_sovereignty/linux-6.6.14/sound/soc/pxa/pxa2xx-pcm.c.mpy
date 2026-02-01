@@ -1,0 +1,9 @@
+{
+  "module_name": "pxa2xx-pcm.c",
+  "hash_id": "08489635f76103e4b147193e43c52b8312559d6153395edd2633b0d7295d57b8",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/pxa/pxa2xx-pcm.c",
+  "human_readable_source": "\n \n\n#include <linux/dma-mapping.h>\n#include <linux/module.h>\n#include <linux/dmaengine.h>\n#include <linux/of.h>\n\n#include <sound/core.h>\n#include <sound/soc.h>\n#include <sound/pxa2xx-lib.h>\n#include <sound/dmaengine_pcm.h>\n\nstatic const struct snd_soc_component_driver pxa2xx_soc_platform = {\n\t.pcm_construct\t= pxa2xx_soc_pcm_new,\n\t.open\t\t= pxa2xx_soc_pcm_open,\n\t.close\t\t= pxa2xx_soc_pcm_close,\n\t.hw_params\t= pxa2xx_soc_pcm_hw_params,\n\t.prepare\t= pxa2xx_soc_pcm_prepare,\n\t.trigger\t= pxa2xx_soc_pcm_trigger,\n\t.pointer\t= pxa2xx_soc_pcm_pointer,\n};\n\nstatic int pxa2xx_soc_platform_probe(struct platform_device *pdev)\n{\n\treturn devm_snd_soc_register_component(&pdev->dev, &pxa2xx_soc_platform,\n\t\t\t\t\t       NULL, 0);\n}\n\nstatic struct platform_driver pxa_pcm_driver = {\n\t.driver = {\n\t\t.name = \"pxa-pcm-audio\",\n\t},\n\n\t.probe = pxa2xx_soc_platform_probe,\n};\n\nmodule_platform_driver(pxa_pcm_driver);\n\nMODULE_AUTHOR(\"Nicolas Pitre\");\nMODULE_DESCRIPTION(\"Intel PXA2xx PCM DMA module\");\nMODULE_LICENSE(\"GPL\");\nMODULE_ALIAS(\"platform:pxa-pcm-audio\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

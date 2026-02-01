@@ -1,0 +1,9 @@
+{
+  "module_name": "usb_phy_generic.h",
+  "hash_id": "c84814a07e40571db166a884eb7e394d43b1a2f00e373f0d57579cd928385250",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/usb_phy_generic.h",
+  "human_readable_source": " \n#ifndef __LINUX_USB_NOP_XCEIV_H\n#define __LINUX_USB_NOP_XCEIV_H\n\n#include <linux/usb/otg.h>\n\n#if IS_ENABLED(CONFIG_NOP_USB_XCEIV)\n \nextern struct platform_device *usb_phy_generic_register(void);\nextern void usb_phy_generic_unregister(struct platform_device *);\n#else\nstatic inline struct platform_device *usb_phy_generic_register(void)\n{\n\treturn NULL;\n}\n\nstatic inline void usb_phy_generic_unregister(struct platform_device *pdev)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

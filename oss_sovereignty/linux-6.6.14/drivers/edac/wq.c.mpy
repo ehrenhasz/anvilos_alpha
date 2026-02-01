@@ -1,0 +1,9 @@
+{
+  "module_name": "wq.c",
+  "hash_id": "94273ddfb6e46fb5253306499d4787b8d9497228ec4c6451791c002b543501f8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/edac/wq.c",
+  "human_readable_source": "\n#include \"edac_module.h\"\n\nstatic struct workqueue_struct *wq;\n\nbool edac_queue_work(struct delayed_work *work, unsigned long delay)\n{\n\treturn queue_delayed_work(wq, work, delay);\n}\nEXPORT_SYMBOL_GPL(edac_queue_work);\n\nbool edac_mod_work(struct delayed_work *work, unsigned long delay)\n{\n\treturn mod_delayed_work(wq, work, delay);\n}\nEXPORT_SYMBOL_GPL(edac_mod_work);\n\nbool edac_stop_work(struct delayed_work *work)\n{\n\tbool ret;\n\n\tret = cancel_delayed_work_sync(work);\n\tflush_workqueue(wq);\n\n\treturn ret;\n}\nEXPORT_SYMBOL_GPL(edac_stop_work);\n\nint edac_workqueue_setup(void)\n{\n\twq = alloc_ordered_workqueue(\"edac-poller\", WQ_MEM_RECLAIM);\n\tif (!wq)\n\t\treturn -ENODEV;\n\telse\n\t\treturn 0;\n}\n\nvoid edac_workqueue_teardown(void)\n{\n\tdestroy_workqueue(wq);\n\twq = NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

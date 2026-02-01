@@ -1,0 +1,9 @@
+{
+  "module_name": "ocfs2_heartbeat.h",
+  "hash_id": "6085ec6bacdd7cdca73241144e3d46f131ec16eba4b0fd71fd2fff592a03d893",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/cluster/ocfs2_heartbeat.h",
+  "human_readable_source": " \n \n\n#ifndef _OCFS2_HEARTBEAT_H\n#define _OCFS2_HEARTBEAT_H\n\nstruct o2hb_disk_heartbeat_block {\n\t__le64 hb_seq;\n\t__u8  hb_node;\n\t__u8  hb_pad1[3];\n\t__le32 hb_cksum;\n\t__le64 hb_generation;\n\t__le32 hb_dead_ms;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

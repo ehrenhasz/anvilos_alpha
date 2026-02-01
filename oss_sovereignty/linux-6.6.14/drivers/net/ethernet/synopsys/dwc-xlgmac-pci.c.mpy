@@ -1,0 +1,9 @@
+{
+  "module_name": "dwc-xlgmac-pci.c",
+  "hash_id": "d74a716db5e5ffb2709680ac07adc63bbae74742b9fc2aa0fd4a8866c259097f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/synopsys/dwc-xlgmac-pci.c",
+  "human_readable_source": " \n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/pci.h>\n\n#include \"dwc-xlgmac.h\"\n#include \"dwc-xlgmac-reg.h\"\n\nstatic int xlgmac_probe(struct pci_dev *pcidev, const struct pci_device_id *id)\n{\n\tstruct device *dev = &pcidev->dev;\n\tstruct xlgmac_resources res;\n\tint i, ret;\n\n\tret = pcim_enable_device(pcidev);\n\tif (ret) {\n\t\tdev_err(dev, \"ERROR: failed to enable device\\n\");\n\t\treturn ret;\n\t}\n\n\tfor (i = 0; i < PCI_STD_NUM_BARS; i++) {\n\t\tif (pci_resource_len(pcidev, i) == 0)\n\t\t\tcontinue;\n\t\tret = pcim_iomap_regions(pcidev, BIT(i), XLGMAC_DRV_NAME);\n\t\tif (ret)\n\t\t\treturn ret;\n\t\tbreak;\n\t}\n\n\tpci_set_master(pcidev);\n\n\tmemset(&res, 0, sizeof(res));\n\tres.irq = pcidev->irq;\n\tres.addr = pcim_iomap_table(pcidev)[i];\n\n\treturn xlgmac_drv_probe(&pcidev->dev, &res);\n}\n\nstatic void xlgmac_remove(struct pci_dev *pcidev)\n{\n\txlgmac_drv_remove(&pcidev->dev);\n}\n\nstatic const struct pci_device_id xlgmac_pci_tbl[] = {\n\t{ PCI_DEVICE(PCI_VENDOR_ID_SYNOPSYS, 0x7302) },\n\t{ 0 }\n};\nMODULE_DEVICE_TABLE(pci, xlgmac_pci_tbl);\n\nstatic struct pci_driver xlgmac_pci_driver = {\n\t.name\t\t= XLGMAC_DRV_NAME,\n\t.id_table\t= xlgmac_pci_tbl,\n\t.probe\t\t= xlgmac_probe,\n\t.remove\t\t= xlgmac_remove,\n};\n\nmodule_pci_driver(xlgmac_pci_driver);\n\nMODULE_DESCRIPTION(XLGMAC_DRV_DESC);\nMODULE_VERSION(XLGMAC_DRV_VERSION);\nMODULE_AUTHOR(\"Jie Deng <jiedeng@synopsys.com>\");\nMODULE_LICENSE(\"Dual BSD/GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a1242ea3242836ce902b9e4a5f4acf4a6575297dcd1713cb3fffcf04300773c5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/fsi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nobj-$(CONFIG_FSI) += fsi-core.o\nobj-$(CONFIG_FSI_MASTER_HUB) += fsi-master-hub.o\nobj-$(CONFIG_FSI_MASTER_ASPEED) += fsi-master-aspeed.o\nobj-$(CONFIG_FSI_MASTER_GPIO) += fsi-master-gpio.o\nobj-$(CONFIG_FSI_MASTER_I2CR) += fsi-master-i2cr.o\nobj-$(CONFIG_FSI_MASTER_AST_CF) += fsi-master-ast-cf.o\nobj-$(CONFIG_FSI_SCOM) += fsi-scom.o\nobj-$(CONFIG_FSI_SBEFIFO) += fsi-sbefifo.o\nobj-$(CONFIG_FSI_OCC) += fsi-occ.o\nobj-$(CONFIG_I2CR_SCOM) += i2cr-scom.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_gc2_table.host.h",
+  "hash_id": "550f90320e52fb05e628db5a2aeca04beeb91604ec1845e59db66ab73b8a8c4f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/gc/gc_2/ia_css_gc2_table.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_GC2_TABLE_HOST_H\n#define __IA_CSS_GC2_TABLE_HOST_H\n\n#include \"ia_css_gc2_types.h\"\n\nextern struct ia_css_rgb_gamma_table default_r_gamma_table;\nextern struct ia_css_rgb_gamma_table default_g_gamma_table;\nextern struct ia_css_rgb_gamma_table default_b_gamma_table;\n\nvoid ia_css_config_rgb_gamma_tables(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

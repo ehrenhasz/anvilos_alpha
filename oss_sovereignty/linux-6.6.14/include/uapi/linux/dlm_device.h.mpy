@@ -1,0 +1,9 @@
+{
+  "module_name": "dlm_device.h",
+  "hash_id": "7ba0468d50fec476db25c44613ca5d5efb9ea0d0fa42d3ff734d0b19ebc21d5d",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/dlm_device.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_DLM_DEVICE_H\n#define _LINUX_DLM_DEVICE_H\n\n \n\n#include <linux/dlm.h>\n#include <linux/types.h>\n\n#define DLM_USER_LVB_LEN\t32\n\n \n#define DLM_DEVICE_VERSION_MAJOR 6\n#define DLM_DEVICE_VERSION_MINOR 0\n#define DLM_DEVICE_VERSION_PATCH 2\n\n \nstruct dlm_lock_params {\n\t__u8 mode;\n\t__u8 namelen;\n\t__u16 unused;\n\t__u32 flags;\n\t__u32 lkid;\n\t__u32 parent;\n\t__u64 xid;\n\t__u64 timeout;\n\tvoid __user *castparam;\n\tvoid __user *castaddr;\n\tvoid __user *bastparam;\n\tvoid __user *bastaddr;\n\tstruct dlm_lksb __user *lksb;\n\tchar lvb[DLM_USER_LVB_LEN];\n\tchar name[];\n};\n\nstruct dlm_lspace_params {\n\t__u32 flags;\n\t__u32 minor;\n\tchar name[];\n};\n\nstruct dlm_purge_params {\n\t__u32 nodeid;\n\t__u32 pid;\n};\n\nstruct dlm_write_request {\n\t__u32 version[3];\n\t__u8 cmd;\n\t__u8 is64bit;\n\t__u8 unused[2];\n\n\tunion  {\n\t\tstruct dlm_lock_params   lock;\n\t\tstruct dlm_lspace_params lspace;\n\t\tstruct dlm_purge_params  purge;\n\t} i;\n};\n\nstruct dlm_device_version {\n\t__u32 version[3];\n};\n\n \n\nstruct dlm_lock_result {\n\t__u32 version[3];\n\t__u32 length;\n\tvoid __user * user_astaddr;\n\tvoid __user * user_astparam;\n\tstruct dlm_lksb __user * user_lksb;\n\tstruct dlm_lksb lksb;\n\t__u8 bast_mode;\n\t__u8 unused[3];\n\t \n\t__u32 lvb_offset;\n};\n\n \n#define DLM_USER_LOCK         1\n#define DLM_USER_UNLOCK       2\n#define DLM_USER_QUERY        3\n#define DLM_USER_CREATE_LOCKSPACE  4\n#define DLM_USER_REMOVE_LOCKSPACE  5\n#define DLM_USER_PURGE        6\n#define DLM_USER_DEADLOCK     7\n\n \n#define DLM_USER_LSFLG_AUTOFREE   1\n#define DLM_USER_LSFLG_FORCEFREE  2\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "spi-intel.h",
+  "hash_id": "9667a08d3d4223aacf9b2fb6d3e2823df378ae8c537876d283f8ea9734e2d9be",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/x86/spi-intel.h",
+  "human_readable_source": " \n \n\n#ifndef SPI_INTEL_PDATA_H\n#define SPI_INTEL_PDATA_H\n\nenum intel_spi_type {\n\tINTEL_SPI_BYT = 1,\n\tINTEL_SPI_LPT,\n\tINTEL_SPI_BXT,\n\tINTEL_SPI_CNL,\n};\n\n \nstruct intel_spi_boardinfo {\n\tenum intel_spi_type type;\n\tbool (*set_writeable)(void __iomem *base, void *data);\n\tvoid *data;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sja1105_dynamic_config.h",
+  "hash_id": "c01527b1511f710cb35a6a85f07054732fa2d6d3ec4bad33e9212b4afae92a2c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/sja1105/sja1105_dynamic_config.h",
+  "human_readable_source": " \n \n#ifndef _SJA1105_DYNAMIC_CONFIG_H\n#define _SJA1105_DYNAMIC_CONFIG_H\n\n#include \"sja1105.h\"\n#include <linux/packing.h>\n\n \n#define SJA1105_SEARCH\t\t-1\n\nstruct sja1105_dyn_cmd;\n\nstruct sja1105_dynamic_table_ops {\n\t \n\tsize_t (*entry_packing)(void *buf, void *entry_ptr, enum packing_op op);\n\tvoid (*cmd_packing)(void *buf, struct sja1105_dyn_cmd *cmd,\n\t\t\t    enum packing_op op);\n\tsize_t max_entry_count;\n\tsize_t packed_size;\n\tu64 addr;\n\tu8 access;\n};\n\nstruct sja1105_mgmt_entry {\n\tu64 tsreg;\n\tu64 takets;\n\tu64 macaddr;\n\tu64 destports;\n\tu64 enfport;\n\tu64 index;\n};\n\nextern const struct sja1105_dynamic_table_ops sja1105et_dyn_ops[BLK_IDX_MAX_DYN];\nextern const struct sja1105_dynamic_table_ops sja1105pqrs_dyn_ops[BLK_IDX_MAX_DYN];\nextern const struct sja1105_dynamic_table_ops sja1110_dyn_ops[BLK_IDX_MAX_DYN];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

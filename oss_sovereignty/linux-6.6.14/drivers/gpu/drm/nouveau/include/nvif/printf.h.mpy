@@ -1,0 +1,9 @@
+{
+  "module_name": "printf.h",
+  "hash_id": "a7a9aae57f27589a0dadd2e42e81901919516eacf8e9c3da76c41ee1f48eacff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/printf.h",
+  "human_readable_source": " \n#ifndef __NVIF_PRINTF_H__\n#define __NVIF_PRINTF_H__\n#include <nvif/client.h>\n#include <nvif/parent.h>\n\n#define NVIF_PRINT(l,o,f,a...) do {                                                                \\\n\tstruct nvif_object *_o = (o);                                                              \\\n\tstruct nvif_parent *_p = _o->parent;                                                       \\\n\t_p->func->l(_o, \"[%s/%08x:%s] \"f\"\\n\", _o->client->object.name, _o->handle, _o->name, ##a); \\\n} while(0)\n\n#ifndef NVIF_DEBUG_PRINT_DISABLE\n#define NVIF_DEBUG(o,f,a...) NVIF_PRINT(debugf, (o), f, ##a)\n#else\n#define NVIF_DEBUG(o,f,a...)\n#endif\n\n#define NVIF_ERROR(o,f,a...) NVIF_PRINT(errorf, (o), f, ##a)\n#define NVIF_ERRON(c,o,f,a...) do {                            \\\n\tstruct nvif_object *_object = (o);                     \\\n\tint _cond = (c);                                       \\\n\tif (_cond) {                                           \\\n\t\tNVIF_ERROR(_object, f\" (ret:%d)\", ##a, _cond); \\\n\t} else {                                               \\\n\t\tNVIF_DEBUG(_object, f, ##a);                   \\\n\t}                                                      \\\n} while(0)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

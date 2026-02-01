@@ -1,0 +1,9 @@
+{
+  "module_name": "samsung,s2mps11.h",
+  "hash_id": "a1b8b5db3004ebe71cef55c35318d29cefbe655aa93f3ac9c10cbe536c6fac5a",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/samsung,s2mps11.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLOCK_SAMSUNG_S2MPS11_CLOCK_H\n#define _DT_BINDINGS_CLOCK_SAMSUNG_S2MPS11_CLOCK_H\n\n \n\n#define S2MPS11_CLK_AP\t\t0\n#define S2MPS11_CLK_CP\t\t1\n#define S2MPS11_CLK_BT\t\t2\n\n \n#define S2MPS11_CLKS_NUM\t\t(S2MPS11_CLK_BT + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

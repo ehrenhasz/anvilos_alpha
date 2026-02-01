@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_ratectrl_bitdef.h",
+  "hash_id": "4844d4eb2fb280ffe6c6c1c8b47c787e23241b08de729c4d6fa428fc80a8153c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_ratectrl_bitdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_RATECTRL_BITDEF_H__\n#define __RTL8712_RATECTRL_BITDEF_H__\n\n \n#define\t_INIRTSMCS_SEL_MSK\t\t0x3F\n\n \n#define\t_RRSR_SHORT\t\t\tBIT(23)\n#define\t_RRSR_RSC_MSK\t\t0x600000\n#define\t_RRSR_RSC_SHT\t\t21\n#define\t_RRSR_BITMAP_MSK\t0x0FFFFF\n#define\t_RRSR_BITMAP_SHT\t0\n\n \n#define\t_AGGLMT_MCS32_MSK\t\t\t0xF0\n#define\t_AGGLMT_MCS32_SHT\t\t\t4\n#define\t_AGGLMT_MCS15_SGI_MSK\t\t0x0F\n#define\t_AGGLMT_MCS15_SGI_SHT\t\t0\n\n \n \n \n \n#define\t_CCK_MSK\t\t\t0xFF00\n#define\t_CCK_SHT\t\t\t8\n#define\t_BARKER_MSK\t\t\t0x00FF\n#define\t_BARKER_SHT\t\t\t0\n\n#endif\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "meson-g12a-toacodec.h",
+  "hash_id": "7d4a81a96dabf58e224132a23f71b79304cbe6f83b4694cd761fb2a1ee693f0b",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/sound/meson-g12a-toacodec.h",
+  "human_readable_source": " \n#ifndef __DT_MESON_G12A_TOACODEC_H\n#define __DT_MESON_G12A_TOACODEC_H\n\n#define TOACODEC_IN_A\t0\n#define TOACODEC_IN_B\t1\n#define TOACODEC_IN_C\t2\n#define TOACODEC_OUT\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

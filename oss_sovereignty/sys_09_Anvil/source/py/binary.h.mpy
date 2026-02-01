@@ -1,0 +1,9 @@
+{
+  "module_name": "binary.h",
+  "hash_id": "3a0c0479f431f3d1dca207c43e81306959efd39b091742567d391ab7b6b0ac8d",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/binary.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_BINARY_H\n#define MICROPY_INCLUDED_PY_BINARY_H\n\n#include \"py/obj.h\"\n\n\n\n\n#define BYTEARRAY_TYPECODE 1\n\nsize_t mp_binary_get_size(char struct_type, char val_type, size_t *palign);\nmp_obj_t mp_binary_get_val_array(char typecode, void *p, size_t index);\nvoid mp_binary_set_val_array(char typecode, void *p, size_t index, mp_obj_t val_in);\nvoid mp_binary_set_val_array_from_int(char typecode, void *p, size_t index, mp_int_t val);\nmp_obj_t mp_binary_get_val(char struct_type, char val_type, byte *p_base, byte **ptr);\nvoid mp_binary_set_val(char struct_type, char val_type, mp_obj_t val_in, byte *p_base, byte **ptr);\nlong long mp_binary_get_int(size_t size, bool is_signed, bool big_endian, const byte *src);\nvoid mp_binary_set_int(size_t val_sz, bool big_endian, byte *dest, mp_uint_t val);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

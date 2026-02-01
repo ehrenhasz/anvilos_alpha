@@ -1,0 +1,9 @@
+{
+  "module_name": "add_unless",
+  "hash_id": "5bb5ee62a52ce19edc69099e180cb10bba9d1806f3fe4f4ad54b6140aba2c142",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/fallbacks/add_unless",
+  "human_readable_source": "cat << EOF\n\treturn raw_${atomic}_fetch_add_unless(v, a, u) != u;\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

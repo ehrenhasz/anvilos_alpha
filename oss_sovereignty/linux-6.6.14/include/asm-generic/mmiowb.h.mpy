@@ -1,0 +1,9 @@
+{
+  "module_name": "mmiowb.h",
+  "hash_id": "ceb558e140d872843ba1de0269023a03cae95bb0b45626af077f2e1a9e1c0ae4",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/mmiowb.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_MMIOWB_H\n#define __ASM_GENERIC_MMIOWB_H\n\n \n#ifdef CONFIG_MMIOWB\n\n#include <linux/compiler.h>\n#include <asm-generic/mmiowb_types.h>\n\n#ifndef arch_mmiowb_state\n#include <asm/percpu.h>\n#include <asm/smp.h>\n\nDECLARE_PER_CPU(struct mmiowb_state, __mmiowb_state);\n#define __mmiowb_state()\traw_cpu_ptr(&__mmiowb_state)\n#else\n#define __mmiowb_state()\tarch_mmiowb_state()\n#endif\t \n\nstatic inline void mmiowb_set_pending(void)\n{\n\tstruct mmiowb_state *ms = __mmiowb_state();\n\n\tif (likely(ms->nesting_count))\n\t\tms->mmiowb_pending = ms->nesting_count;\n}\n\nstatic inline void mmiowb_spin_lock(void)\n{\n\tstruct mmiowb_state *ms = __mmiowb_state();\n\tms->nesting_count++;\n}\n\nstatic inline void mmiowb_spin_unlock(void)\n{\n\tstruct mmiowb_state *ms = __mmiowb_state();\n\n\tif (unlikely(ms->mmiowb_pending)) {\n\t\tms->mmiowb_pending = 0;\n\t\tmmiowb();\n\t}\n\n\tms->nesting_count--;\n}\n#else\n#define mmiowb_set_pending()\t\tdo { } while (0)\n#define mmiowb_spin_lock()\t\tdo { } while (0)\n#define mmiowb_spin_unlock()\t\tdo { } while (0)\n#endif\t \n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

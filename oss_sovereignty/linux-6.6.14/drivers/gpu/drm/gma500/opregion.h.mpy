@@ -1,0 +1,9 @@
+{
+  "module_name": "opregion.h",
+  "hash_id": "97af8288cc33390ebc438502ac6465322957503d25b9cb3c13e0c09754c41b90",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/gma500/opregion.h",
+  "human_readable_source": " \n\n#if defined(CONFIG_ACPI)\nextern void psb_intel_opregion_asle_intr(struct drm_device *dev);\nextern void psb_intel_opregion_init(struct drm_device *dev);\nextern void psb_intel_opregion_fini(struct drm_device *dev);\nextern int psb_intel_opregion_setup(struct drm_device *dev);\nextern void psb_intel_opregion_enable_asle(struct drm_device *dev);\n\n#else\n\nextern inline void psb_intel_opregion_asle_intr(struct drm_device *dev)\n{\n}\n\nextern inline void psb_intel_opregion_init(struct drm_device *dev)\n{\n}\n\nextern inline void psb_intel_opregion_fini(struct drm_device *dev)\n{\n}\n\nextern inline int psb_intel_opregion_setup(struct drm_device *dev)\n{\n\treturn 0;\n}\n\nextern inline void psb_intel_opregion_enable_asle(struct drm_device *dev)\n{\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "98934f4d88c7294c71279d437720d589ef736ba3f9d7ff8d90689429e84ed41a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/steering/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsubdir-ccflags-y += -I$(src)/..\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

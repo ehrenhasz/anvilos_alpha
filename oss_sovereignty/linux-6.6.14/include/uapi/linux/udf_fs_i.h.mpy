@@ -1,0 +1,9 @@
+{
+  "module_name": "udf_fs_i.h",
+  "hash_id": "e2940b28ab7b11e6d34359f24a681a0488fdc2b1948fe07f57352f2201e56c06",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/udf_fs_i.h",
+  "human_readable_source": " \n \n#ifndef _UDF_FS_I_H\n#define _UDF_FS_I_H 1\n\n \n#define UDF_GETEASIZE   _IOR('l', 0x40, int)\n#define UDF_GETEABLOCK  _IOR('l', 0x41, void *)\n#define UDF_GETVOLIDENT _IOR('l', 0x42, void *)\n#define UDF_RELOCATE_BLOCKS _IOWR('l', 0x43, long)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

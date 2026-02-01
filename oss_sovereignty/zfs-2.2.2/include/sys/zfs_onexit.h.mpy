@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_onexit.h",
+  "hash_id": "2406fa0d5dd9ca616c1a8b89d24634f8816713914efaf6aa981f91ad92923652",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zfs_onexit.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_SYS_ZFS_ONEXIT_H\n#define\t_SYS_ZFS_ONEXIT_H\n\n#include <sys/zfs_context.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n#ifdef _KERNEL\n\ntypedef struct zfs_onexit {\n\tkmutex_t\tzo_lock;\n\tlist_t\t\tzo_actions;\n} zfs_onexit_t;\n\ntypedef struct zfs_onexit_action_node {\n\tlist_node_t\tza_link;\n\tvoid\t\t(*za_func)(void *);\n\tvoid\t\t*za_data;\n} zfs_onexit_action_node_t;\n\nextern void zfs_onexit_init(zfs_onexit_t **zo);\nextern void zfs_onexit_destroy(zfs_onexit_t *zo);\n\n#endif\n\nextern zfs_file_t *zfs_onexit_fd_hold(int fd, minor_t *minorp);\nextern void zfs_onexit_fd_rele(zfs_file_t *);\nextern int zfs_onexit_add_cb(minor_t minor, void (*func)(void *), void *data,\n    uintptr_t *action_handle);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

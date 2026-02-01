@@ -1,0 +1,9 @@
+{
+  "module_name": "tps40422.c",
+  "hash_id": "6721cdff02077fe028032d420d83659db60fc65796e83e168877ae3b0a1db4cc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwmon/pmbus/tps40422.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/err.h>\n#include <linux/i2c.h>\n#include \"pmbus.h\"\n\nstatic struct pmbus_driver_info tps40422_info = {\n\t.pages = 2,\n\t.format[PSC_VOLTAGE_IN] = linear,\n\t.format[PSC_VOLTAGE_OUT] = linear,\n\t.format[PSC_TEMPERATURE] = linear,\n\t.func[0] = PMBUS_HAVE_VOUT | PMBUS_HAVE_TEMP2\n\t\t| PMBUS_HAVE_STATUS_VOUT | PMBUS_HAVE_STATUS_TEMP\n\t\t| PMBUS_HAVE_IOUT | PMBUS_HAVE_STATUS_IOUT,\n\t.func[1] = PMBUS_HAVE_VOUT | PMBUS_HAVE_TEMP2\n\t\t| PMBUS_HAVE_STATUS_VOUT | PMBUS_HAVE_STATUS_TEMP\n\t\t| PMBUS_HAVE_IOUT | PMBUS_HAVE_STATUS_IOUT,\n};\n\nstatic int tps40422_probe(struct i2c_client *client)\n{\n\treturn pmbus_do_probe(client, &tps40422_info);\n}\n\nstatic const struct i2c_device_id tps40422_id[] = {\n\t{\"tps40422\", 0},\n\t{}\n};\n\nMODULE_DEVICE_TABLE(i2c, tps40422_id);\n\n \nstatic struct i2c_driver tps40422_driver = {\n\t.driver = {\n\t\t   .name = \"tps40422\",\n\t\t   },\n\t.probe = tps40422_probe,\n\t.id_table = tps40422_id,\n};\n\nmodule_i2c_driver(tps40422_driver);\n\nMODULE_AUTHOR(\"Zhu Laiwen <richard.zhu@nsn.com>\");\nMODULE_DESCRIPTION(\"PMBus driver for TI TPS40422\");\nMODULE_LICENSE(\"GPL\");\nMODULE_IMPORT_NS(PMBUS);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ecdsa_sk2.fp.bb",
+  "hash_id": "58afb2c4f3b1e497d8edb33d45c4d5cf691754f64401756c287048a28c755f4e",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshkey/testdata/ecdsa_sk2.fp.bb",
+  "human_readable_source": "xobel-gavur-gorym-pedop-rarob-bunek-gucer-lofeg-syhaf-fylur-zoxix\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

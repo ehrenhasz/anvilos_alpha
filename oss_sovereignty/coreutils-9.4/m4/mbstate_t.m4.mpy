@@ -1,0 +1,9 @@
+{
+  "module_name": "mbstate_t.m4",
+  "hash_id": "f516c417506f1af54f7ed6df3aac579f5dc5dedb71fb3dfb18e9d9f642975496",
+  "original_prompt": "Ingested from coreutils-9.4/m4/mbstate_t.m4",
+  "human_readable_source": "# mbstate_t.m4 serial 14\ndnl Copyright (C) 2000-2002, 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n# From Paul Eggert.\n\n# BeOS 5 has <wchar.h> but does not define mbstate_t,\n# so you can't declare an object of that type.\n# Check for this incompatibility with Standard C.\n\n# AC_TYPE_MBSTATE_T\n# -----------------\nAC_DEFUN([AC_TYPE_MBSTATE_T],\n[\n   AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS]) dnl for HP-UX 11.11\n\n   AC_CACHE_CHECK([for mbstate_t], [ac_cv_type_mbstate_t],\n     [AC_COMPILE_IFELSE(\n        [AC_LANG_PROGRAM(\n           [AC_INCLUDES_DEFAULT[\n             #include <wchar.h>]],\n           [[mbstate_t x; return sizeof x;]])],\n        [ac_cv_type_mbstate_t=yes],\n        [ac_cv_type_mbstate_t=no])])\n   if test $ac_cv_type_mbstate_t = yes; then\n     AC_DEFINE([HAVE_MBSTATE_T], [1],\n               [Define to 1 if <wchar.h> declares mbstate_t.])\n   else\n     AC_DEFINE([mbstate_t], [int],\n               [Define to a type if <wchar.h> does not define.])\n   fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

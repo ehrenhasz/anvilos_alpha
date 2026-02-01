@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "18c672e5594af9abae369fb26589e7b146fc6d8999dfefe0abaa863c023ab068",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/keystone/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_COMMON_CLK_KEYSTONE)\t+= pll.o gate.o\nobj-$(CONFIG_TI_SCI_CLK)\t\t+= sci-clk.o\nobj-$(CONFIG_TI_SYSCON_CLK)\t\t+= syscon-clk.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "isnand-nolibm.h",
+  "hash_id": "8d49f86886ceea68268807ad332a302dc09cfd874ad82e851a0c91bf995263e3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/isnand-nolibm.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#if HAVE_ISNAND_IN_LIBC\n \n# include <math.h>\n# if (__GNUC__ >= 4) || (__clang_major__ >= 4)\n    \n#  undef isnand\n#  define isnand(x) __builtin_isnan ((double)(x))\n# else\n#  undef isnand\n#  define isnand(x) isnan ((double)(x))\n# endif\n#else\n \n# undef isnand\n# define isnand rpl_isnand\nextern int isnand (double x);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

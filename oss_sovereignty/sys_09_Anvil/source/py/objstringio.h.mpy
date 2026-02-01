@@ -1,0 +1,9 @@
+{
+  "module_name": "objstringio.h",
+  "hash_id": "cb1809afe9ce7949e42309ab62ce99e743459fe2da9ca5f0f3c53662d3eb032a",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/objstringio.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_OBJSTRINGIO_H\n#define MICROPY_INCLUDED_PY_OBJSTRINGIO_H\n\n#include \"py/obj.h\"\n\ntypedef struct _mp_obj_stringio_t {\n    mp_obj_base_t base;\n    vstr_t *vstr;\n    \n    mp_uint_t pos;\n    \n    mp_obj_t ref_obj;\n} mp_obj_stringio_t;\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

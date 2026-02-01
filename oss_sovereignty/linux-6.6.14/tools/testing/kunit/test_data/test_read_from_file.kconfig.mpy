@@ -1,0 +1,9 @@
+{
+  "module_name": "test_read_from_file.kconfig",
+  "hash_id": "f190fd7a374ca42e9439ee7f599353d5ad8ee181f56db72725f8b0bc4b8297a8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/test_data/test_read_from_file.kconfig",
+  "human_readable_source": "#\n# Automatically generated file; DO NOT EDIT.\n# User Mode Linux/x86 4.12.0-rc3 Kernel Configuration\n#\nCONFIG_UML=y\nCONFIG_MMU=y\n\n#\n# UML-specific options\n#\n\n#\n# Host processor type and features\n#\n# CONFIG_MK8 is not set\nCONFIG_TEST=y\nCONFIG_EXAMPLE_TEST=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

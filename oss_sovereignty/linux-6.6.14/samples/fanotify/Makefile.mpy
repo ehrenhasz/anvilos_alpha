@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3b5889ea857a70e4a9f2d482b9c6a670872d523a79d34f85c4510378840545d6",
+  "original_prompt": "Ingested from linux-6.6.14/samples/fanotify/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nuserprogs-always-y += fs-monitor\n\nuserccflags += -I usr/include -Wall\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

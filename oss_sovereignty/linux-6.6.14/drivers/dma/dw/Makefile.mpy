@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3dbdfe4c6b3c112f40ef1789e63781e48cd43f1b906893ec1e47a080467aa916",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/dw/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_DW_DMAC_CORE)\t+= dw_dmac_core.o\ndw_dmac_core-y\t\t\t:= core.o dw.o idma32.o\ndw_dmac_core-$(CONFIG_ACPI)\t+= acpi.o\n\nobj-$(CONFIG_DW_DMAC)\t\t+= dw_dmac.o\ndw_dmac-y\t\t\t:= platform.o\ndw_dmac-$(CONFIG_OF)\t\t+= of.o\n\nobj-$(CONFIG_DW_DMAC_PCI)\t+= dw_dmac_pci.o\ndw_dmac_pci-y\t\t\t:= pci.o\n\nobj-$(CONFIG_RZN1_DMAMUX)\t+= rzn1-dmamux.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

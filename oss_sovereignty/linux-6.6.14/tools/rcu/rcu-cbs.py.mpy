@@ -1,0 +1,9 @@
+{
+  "module_name": "rcu-cbs.py",
+  "hash_id": "078938c164db1eb26656a4e3ba0ce9ac28475861c986a51d76c4db7a4cb07b22",
+  "original_prompt": "Ingested from linux-6.6.14/tools/rcu/rcu-cbs.py",
+  "human_readable_source": "#!/usr/bin/env drgn\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Dump out the number of RCU callbacks outstanding.\n#\n# On older kernels having multiple flavors of RCU, this dumps out the\n# number of callbacks for the most heavily used flavor.\n#\n# Usage: sudo drgn rcu-cbs.py\n#\n# Copyright (C) 2021 Facebook, Inc.\n#\n# Authors: Paul E. McKenney <paulmck@kernel.org>\n\nimport sys\nimport drgn\nfrom drgn import NULL, Object\nfrom drgn.helpers.linux import *\n\ndef get_rdp0(prog):\n\ttry:\n\t\trdp0 = prog.variable('rcu_preempt_data', 'kernel/rcu/tree.c');\n\texcept LookupError:\n\t\trdp0 = NULL;\n\n\tif rdp0 == NULL:\n\t\ttry:\n\t\t\trdp0 = prog.variable('rcu_sched_data',\n\t\t\t\t\t     'kernel/rcu/tree.c');\n\t\texcept LookupError:\n\t\t\trdp0 = NULL;\n\n\tif rdp0 == NULL:\n\t\trdp0 = prog.variable('rcu_data', 'kernel/rcu/tree.c');\n\treturn rdp0.address_of_();\n\nrdp0 = get_rdp0(prog);\n\n# Sum up RCU callbacks.\nsum = 0;\nfor cpu in for_each_possible_cpu(prog):\n\trdp = per_cpu_ptr(rdp0, cpu);\n\tlen = rdp.cblist.len.value_();\n\t# print(\"CPU \" + str(cpu) + \" RCU callbacks: \" + str(len));\n\tsum += len;\nprint(\"Number of RCU callbacks in flight: \" + str(sum));\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

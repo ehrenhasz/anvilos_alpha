@@ -1,0 +1,9 @@
+{
+  "module_name": "serial_base.h",
+  "hash_id": "1dd802aed89e45aac3edfa5faeeb5906dc1da549ba8decda942c1ca7b52c9d3a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/serial/serial_base.h",
+  "human_readable_source": " \n \n\n#define to_serial_base_ctrl_device(d) container_of((d), struct serial_ctrl_device, dev)\n#define to_serial_base_port_device(d) container_of((d), struct serial_port_device, dev)\n\nstruct uart_driver;\nstruct uart_port;\nstruct device_driver;\nstruct device;\n\nstruct serial_ctrl_device {\n\tstruct device dev;\n\tstruct ida port_ida;\n};\n\nstruct serial_port_device {\n\tstruct device dev;\n\tstruct uart_port *port;\n};\n\nint serial_base_ctrl_init(void);\nvoid serial_base_ctrl_exit(void);\n\nint serial_base_port_init(void);\nvoid serial_base_port_exit(void);\n\nint serial_base_driver_register(struct device_driver *driver);\nvoid serial_base_driver_unregister(struct device_driver *driver);\n\nstruct serial_ctrl_device *serial_base_ctrl_add(struct uart_port *port,\n\t\t\t\t\t\tstruct device *parent);\nstruct serial_port_device *serial_base_port_add(struct uart_port *port,\n\t\t\t\t\t\tstruct serial_ctrl_device *parent);\nvoid serial_base_ctrl_device_remove(struct serial_ctrl_device *ctrl_dev);\nvoid serial_base_port_device_remove(struct serial_port_device *port_dev);\n\nint serial_ctrl_register_port(struct uart_driver *drv, struct uart_port *port);\nvoid serial_ctrl_unregister_port(struct uart_driver *drv, struct uart_port *port);\n\nint serial_core_register_port(struct uart_driver *drv, struct uart_port *port);\nvoid serial_core_unregister_port(struct uart_driver *drv, struct uart_port *port);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

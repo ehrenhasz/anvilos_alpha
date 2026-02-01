@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pxp_cmd_interface_43.h",
+  "hash_id": "a3c9adca91f3ac303ec94ca9375f8fdde6d875af1a3d7033c19058ee2db29801",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/pxp/intel_pxp_cmd_interface_43.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_PXP_FW_INTERFACE_43_H__\n#define __INTEL_PXP_FW_INTERFACE_43_H__\n\n#include <linux/types.h>\n#include \"intel_pxp_cmd_interface_cmn.h\"\n\n \n#define PXP43_CMDID_START_HUC_AUTH 0x0000003A\n#define PXP43_CMDID_NEW_HUC_AUTH 0x0000003F  \n#define PXP43_CMDID_INIT_SESSION 0x00000036\n\n \n#define PXP43_MAX_HECI_INOUT_SIZE (SZ_32K)\n\n \n#define PXP43_HUC_AUTH_INOUT_SIZE (SZ_4K)\n\n \nstruct pxp43_start_huc_auth_in {\n\tstruct pxp_cmd_header header;\n\t__le64 huc_base_address;\n} __packed;\n\n \nstruct pxp43_new_huc_auth_in {\n\tstruct pxp_cmd_header header;\n\tu64 huc_base_address;\n\tu32 huc_size;\n} __packed;\n\n \nstruct pxp43_huc_auth_out {\n\tstruct pxp_cmd_header header;\n} __packed;\n\n \nstruct pxp43_create_arb_in {\n\tstruct pxp_cmd_header header;\n\t\t \n\t\t#define PXP43_INIT_SESSION_VALID BIT(0)\n\t\t#define PXP43_INIT_SESSION_APPTYPE BIT(1)\n\t\t#define PXP43_INIT_SESSION_APPID GENMASK(17, 2)\n\tu32 protection_mode;\n\t\t#define PXP43_INIT_SESSION_PROTECTION_ARB 0x2\n\tu32 sub_session_id;\n\tu32 init_flags;\n\tu32 rsvd[12];\n} __packed;\n\n \nstruct pxp43_create_arb_out {\n\tstruct pxp_cmd_header header;\n\tu32 rsvd[8];\n} __packed;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

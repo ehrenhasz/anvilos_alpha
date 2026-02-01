@@ -1,0 +1,9 @@
+{
+  "module_name": "test-xstrtoimax.sh",
+  "hash_id": "41f3f32c9432df12c22505cc34e7aa7739580704b4e7c06acdf63fdd0fe18a1c",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-xstrtoimax.sh",
+  "human_readable_source": "#!/bin/sh\n: \"${srcdir=.}\"\n. \"$srcdir/init.sh\"; path_prepend_ .\n\ntoo_big=99999999999999999999999999999999999999999999999999999999999999999999\nresult=0\n\n# test xstrtoimax\n${CHECKER} test-xstrtoimax 1 >> out 2>&1 || result=1\n${CHECKER} test-xstrtoimax -1 >> out 2>&1 || result=1\n${CHECKER} test-xstrtoimax 1k >> out 2>&1 || result=1\n${CHECKER} test-xstrtoimax ${too_big}h >> out 2>&1 && result=1\n${CHECKER} test-xstrtoimax $too_big >> out 2>&1 && result=1\n${CHECKER} test-xstrtoimax x >> out 2>&1 && result=1\n${CHECKER} test-xstrtoimax 9x >> out 2>&1 && result=1\n${CHECKER} test-xstrtoimax 010 >> out 2>&1 || result=1\n${CHECKER} test-xstrtoimax MiB >> out 2>&1 || result=1\n\n# Find out how to remove carriage returns from output. Solaris /usr/ucb/tr\n# does not understand '\\r'.\nif echo solaris | tr -d '\\r' | grep solais > /dev/null; then\n  cr='\\015'\nelse\n  cr='\\r'\nfi\n\n# normalize output\nLC_ALL=C tr -d \"$cr\" < out > k\nmv k out\n\n# compare expected output\ncat > exp <<EOF\n1->1 ()\n-1->-1 ()\n1k->1024 ()\ninvalid suffix in X argument '${too_big}h'\nX argument '$too_big' too large\ninvalid X argument 'x'\ninvalid suffix in X argument '9x'\n010->8 ()\nMiB->1048576 ()\nEOF\n\ncompare exp out || result=1\n\nExit $result\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rmi_2d_sensor.h",
+  "hash_id": "1d795b28cb36ca85ec2c22c42e84619ff3aa8515b6523acffa7276fbbddaa6c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/rmi4/rmi_2d_sensor.h",
+  "human_readable_source": " \n \n\n#ifndef _RMI_2D_SENSOR_H\n#define _RMI_2D_SENSOR_H\n\nenum rmi_2d_sensor_object_type {\n\tRMI_2D_OBJECT_NONE,\n\tRMI_2D_OBJECT_FINGER,\n\tRMI_2D_OBJECT_STYLUS,\n\tRMI_2D_OBJECT_PALM,\n\tRMI_2D_OBJECT_UNCLASSIFIED,\n};\n\nstruct rmi_2d_sensor_abs_object {\n\tenum rmi_2d_sensor_object_type type;\n\tint mt_tool;\n\tu16 x;\n\tu16 y;\n\tu8 z;\n\tu8 wx;\n\tu8 wy;\n};\n\n \nstruct rmi_2d_sensor {\n\tstruct rmi_2d_axis_alignment axis_align;\n\tstruct input_mt_pos *tracking_pos;\n\tint *tracking_slots;\n\tbool kernel_tracking;\n\tstruct rmi_2d_sensor_abs_object *objs;\n\tint dmax;\n\tu16 min_x;\n\tu16 max_x;\n\tu16 min_y;\n\tu16 max_y;\n\tu8 nbr_fingers;\n\tu8 *data_pkt;\n\tint pkt_size;\n\tint attn_size;\n\tbool topbuttonpad;\n\tenum rmi_sensor_type sensor_type;\n\tstruct input_dev *input;\n\tstruct rmi_function *fn;\n\tchar input_phys[32];\n\tu8 report_abs;\n\tu8 report_rel;\n\tu8 x_mm;\n\tu8 y_mm;\n\tenum rmi_reg_state dribble;\n\tenum rmi_reg_state palm_detect;\n};\n\nint rmi_2d_sensor_of_probe(struct device *dev,\n\t\t\t\tstruct rmi_2d_sensor_platform_data *pdata);\n\nvoid rmi_2d_sensor_abs_process(struct rmi_2d_sensor *sensor,\n\t\t\t\tstruct rmi_2d_sensor_abs_object *obj,\n\t\t\t\tint slot);\n\nvoid rmi_2d_sensor_abs_report(struct rmi_2d_sensor *sensor,\n\t\t\t\tstruct rmi_2d_sensor_abs_object *obj,\n\t\t\t\tint slot);\n\nvoid rmi_2d_sensor_rel_report(struct rmi_2d_sensor *sensor, int x, int y);\n\nint rmi_2d_sensor_configure_input(struct rmi_function *fn,\n\t\t\t\t\tstruct rmi_2d_sensor *sensor);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

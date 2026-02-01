@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_pfvf_pf_proto.h",
+  "hash_id": "598fd629813b7592d2aac178d61ebc0939902fee23cbb9744d7a0d7ceecfedc3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/adf_pfvf_pf_proto.h",
+  "human_readable_source": " \n \n#ifndef ADF_PFVF_PF_PROTO_H\n#define ADF_PFVF_PF_PROTO_H\n\n#include <linux/types.h>\n#include \"adf_accel_devices.h\"\n\nint adf_send_pf2vf_msg(struct adf_accel_dev *accel_dev, u8 vf_nr, struct pfvf_message msg);\n\nint adf_enable_pf2vf_comms(struct adf_accel_dev *accel_dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

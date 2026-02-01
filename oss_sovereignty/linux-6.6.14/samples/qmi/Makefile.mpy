@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ab978c5694ef57738576cf0b00b92c31b1c04e5a5d32a53a00edb75a7bbd30a8",
+  "original_prompt": "Ingested from linux-6.6.14/samples/qmi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SAMPLE_QMI_CLIENT) += qmi_sample_client.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fentry_many_args.c",
+  "hash_id": "3dee2a44ff36907498d3c38c969f9686ee4e9bc83408881b9bbfb9cc1c09fdd8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/fentry_many_args.c",
+  "human_readable_source": "\n \n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\n__u64 test1_result = 0;\nSEC(\"fentry/bpf_testmod_fentry_test7\")\nint BPF_PROG(test1, __u64 a, void *b, short c, int d, void *e, char f,\n\t     int g)\n{\n\ttest1_result = a == 16 && b == (void *)17 && c == 18 && d == 19 &&\n\t\te == (void *)20 && f == 21 && g == 22;\n\treturn 0;\n}\n\n__u64 test2_result = 0;\nSEC(\"fentry/bpf_testmod_fentry_test11\")\nint BPF_PROG(test2, __u64 a, void *b, short c, int d, void *e, char f,\n\t     int g, unsigned int h, long i, __u64 j, unsigned long k)\n{\n\ttest2_result = a == 16 && b == (void *)17 && c == 18 && d == 19 &&\n\t\te == (void *)20 && f == 21 && g == 22 && h == 23 &&\n\t\ti == 24 && j == 25 && k == 26;\n\treturn 0;\n}\n\n__u64 test3_result = 0;\nSEC(\"fentry/bpf_testmod_fentry_test11\")\nint BPF_PROG(test3, __u64 a, __u64 b, __u64 c, __u64 d, __u64 e, __u64 f,\n\t     __u64 g, __u64 h, __u64 i, __u64 j, __u64 k)\n{\n\ttest3_result = a == 16 && b == 17 && c == 18 && d == 19 &&\n\t\te == 20 && f == 21 && g == 22 && h == 23 &&\n\t\ti == 24 && j == 25 && k == 26;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

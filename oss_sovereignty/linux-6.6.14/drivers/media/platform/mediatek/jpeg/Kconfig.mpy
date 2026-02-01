@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "723f46d215b6e33c81179fcfcc84af1b1c865e5feedeaa6be96c56230d1128c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/jpeg/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_MEDIATEK_JPEG\n\ttristate \"Mediatek JPEG Codec driver\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on MTK_IOMMU_V1 || MTK_IOMMU || COMPILE_TEST\n\tdepends on VIDEO_DEV\n\tdepends on ARCH_MEDIATEK || COMPILE_TEST\n\tdepends on MTK_SMI || (COMPILE_TEST && MTK_SMI=n)\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_MEM2MEM_DEV\n\thelp\n\t  Mediatek jpeg codec driver provides HW capability to decode\n\t  JPEG format\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called mtk-jpeg\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dc_edid_parser.h",
+  "hash_id": "24efa6f45b188d81d07fe7d8124fae3d99c15ff14fb595862ce52c9ef02bd9f3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dc_edid_parser.h",
+  "human_readable_source": " \n\n#ifndef _DC_EDID_PARSER_H_\n#define _DC_EDID_PARSER_H_\n\n#include \"core_types.h\"\n\nbool dc_edid_parser_send_cea(struct dc *dc,\n\t\tint offset,\n\t\tint total_length,\n\t\tuint8_t *data,\n\t\tint length);\n\nbool dc_edid_parser_recv_cea_ack(struct dc *dc, int *offset);\n\nbool dc_edid_parser_recv_amd_vsdb(struct dc *dc,\n\t\tint *version,\n\t\tint *min_frame_rate,\n\t\tint *max_frame_rate);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

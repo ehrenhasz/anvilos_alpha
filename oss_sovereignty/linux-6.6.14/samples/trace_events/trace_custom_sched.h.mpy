@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_custom_sched.h",
+  "hash_id": "290ef86f7e9505950c31e287fed44712307bcef79816b6ebd5274b4294e92cf9",
+  "original_prompt": "Ingested from linux-6.6.14/samples/trace_events/trace_custom_sched.h",
+  "human_readable_source": " \n\n \n#if !defined(_TRACE_CUSTOM_SCHED_H) || defined(TRACE_CUSTOM_MULTI_READ)\n#define _TRACE_CUSTOM_SCHED_H\n\n \n#include <linux/trace_events.h>\n\n \nTRACE_CUSTOM_EVENT(sched_switch,\n\n\t \n\tTP_PROTO(bool preempt,\n\t\t struct task_struct *prev,\n\t\t struct task_struct *next,\n\t\t unsigned int prev_state),\n\n\tTP_ARGS(preempt, prev, next, prev_state),\n\n\t \n\tTP_STRUCT__entry(\n\t\t__field(\tunsigned short,\t\tprev_prio\t)\n\t\t__field(\tunsigned short,\t\tnext_prio\t)\n\t\t__field(\tpid_t,\tnext_pid\t\t\t)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->prev_prio\t= prev->prio;\n\t\t__entry->next_pid\t= next->pid;\n\t\t__entry->next_prio\t= next->prio;\n\t),\n\n\tTP_printk(\"prev_prio=%d next_pid=%d next_prio=%d\",\n\t\t  __entry->prev_prio, __entry->next_pid, __entry->next_prio)\n)\n\n\nTRACE_CUSTOM_EVENT(sched_waking,\n\n\tTP_PROTO(struct task_struct *p),\n\n\tTP_ARGS(p),\n\n\tTP_STRUCT__entry(\n\t\t__field(\tpid_t,\t\t\tpid\t)\n\t\t__field(\tunsigned short,\t\tprio\t)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->pid\t= p->pid;\n\t\t__entry->prio\t= p->prio;\n\t),\n\n\tTP_printk(\"pid=%d prio=%d\", __entry->pid, __entry->prio)\n)\n#endif\n \n\n \n#undef TRACE_INCLUDE_PATH\n#undef TRACE_INCLUDE_FILE\n#define TRACE_INCLUDE_PATH .\n\n \n#define TRACE_INCLUDE_FILE trace_custom_sched\n#include <trace/define_custom_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

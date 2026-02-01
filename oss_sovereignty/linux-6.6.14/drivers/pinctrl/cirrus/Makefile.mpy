@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7cca0244d7eb08774d8be20fe7fe3ff151ea7946d4f54b58421a2ab11c227dcd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/cirrus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Cirrus Logic pinctrl drivers\nobj-$(CONFIG_PINCTRL_CS42L43)\t+= pinctrl-cs42l43.o\n\nobj-$(CONFIG_PINCTRL_LOCHNAGAR)\t+= pinctrl-lochnagar.o\n\npinctrl-madera-objs\t\t:= pinctrl-madera-core.o\nifeq ($(CONFIG_PINCTRL_CS47L15),y)\npinctrl-madera-objs\t\t+= pinctrl-cs47l15.o\nendif\nifeq ($(CONFIG_PINCTRL_CS47L35),y)\npinctrl-madera-objs\t\t+= pinctrl-cs47l35.o\nendif\nifeq ($(CONFIG_PINCTRL_CS47L85),y)\npinctrl-madera-objs\t\t+= pinctrl-cs47l85.o\nendif\nifeq ($(CONFIG_PINCTRL_CS47L90),y)\npinctrl-madera-objs\t\t+= pinctrl-cs47l90.o\nendif\nifeq ($(CONFIG_PINCTRL_CS47L92),y)\npinctrl-madera-objs\t\t+= pinctrl-cs47l92.o\nendif\n\nobj-$(CONFIG_PINCTRL_MADERA)\t+= pinctrl-madera.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

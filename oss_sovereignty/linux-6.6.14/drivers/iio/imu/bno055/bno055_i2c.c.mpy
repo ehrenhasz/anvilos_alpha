@@ -1,0 +1,9 @@
+{
+  "module_name": "bno055_i2c.c",
+  "hash_id": "03dd4e6192b0eb6dae7ca15a91278686f208d0d6d770e975d048de6c977c95c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/bno055/bno055_i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/i2c.h>\n#include <linux/mod_devicetable.h>\n#include <linux/module.h>\n#include <linux/regmap.h>\n\n#include \"bno055.h\"\n\n#define BNO055_I2C_XFER_BURST_BREAK_THRESHOLD 3\n\nstatic int bno055_i2c_probe(struct i2c_client *client)\n{\n\tstruct regmap *regmap;\n\n\tregmap = devm_regmap_init_i2c(client, &bno055_regmap_config);\n\tif (IS_ERR(regmap))\n\t\treturn dev_err_probe(&client->dev, PTR_ERR(regmap),\n\t\t\t\t     \"Unable to init register map\");\n\n\treturn bno055_probe(&client->dev, regmap,\n\t\t\t    BNO055_I2C_XFER_BURST_BREAK_THRESHOLD, true);\n}\n\nstatic const struct i2c_device_id bno055_i2c_id[] = {\n\t{\"bno055\", 0},\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, bno055_i2c_id);\n\nstatic const struct of_device_id __maybe_unused bno055_i2c_of_match[] = {\n\t{ .compatible = \"bosch,bno055\" },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, bno055_i2c_of_match);\n\nstatic struct i2c_driver bno055_driver = {\n\t.driver = {\n\t\t.name = \"bno055-i2c\",\n\t\t.of_match_table = bno055_i2c_of_match,\n\t},\n\t.probe = bno055_i2c_probe,\n\t.id_table = bno055_i2c_id,\n};\nmodule_i2c_driver(bno055_driver);\n\nMODULE_AUTHOR(\"Andrea Merello\");\nMODULE_DESCRIPTION(\"Bosch BNO055 I2C interface\");\nMODULE_IMPORT_NS(IIO_BNO055);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

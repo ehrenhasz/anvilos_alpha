@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "90addad9f42eafc5f475a54631006c7317ebe60c6546ce1278a594674e2d4612",
+  "original_prompt": "Ingested from linux-6.6.14/ipc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the linux ipc.\n#\n\nobj-$(CONFIG_SYSVIPC_COMPAT) += compat.o\nobj-$(CONFIG_SYSVIPC) += util.o msgutil.o msg.o sem.o shm.o syscall.o\nobj-$(CONFIG_SYSVIPC_SYSCTL) += ipc_sysctl.o\nobj-$(CONFIG_POSIX_MQUEUE) += mqueue.o msgutil.o\nobj-$(CONFIG_IPC_NS) += namespace.o\nobj-$(CONFIG_POSIX_MQUEUE_SYSCTL) += mq_sysctl.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

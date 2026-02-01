@@ -1,0 +1,9 @@
+{
+  "module_name": "module.lds.S",
+  "hash_id": "a944318924ed6fb835387c617cbab45c168a1280d35d85091a505a01560c1166",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/module.lds.S",
+  "human_readable_source": " \n#ifdef CONFIG_UNWIND_TABLES\n#define DISCARD_EH_FRAME\n#else\n#define DISCARD_EH_FRAME\t*(.eh_frame)\n#endif\n\nSECTIONS {\n\t/DISCARD/ : {\n\t\t*(.discard)\n\t\t*(.discard.*)\n\t}\n\n\t__ksymtab\t\t0 : { *(SORT(___ksymtab+*)) }\n\t__ksymtab_gpl\t\t0 : { *(SORT(___ksymtab_gpl+*)) }\n\t__kcrctab\t\t0 : { *(SORT(___kcrctab+*)) }\n\t__kcrctab_gpl\t\t0 : { *(SORT(___kcrctab_gpl+*)) }\n\n\t.ctors\t\t\t0 : ALIGN(8) { *(SORT(.ctors.*)) *(.ctors) }\n\t.init_array\t\t0 : ALIGN(8) { *(SORT(.init_array.*)) *(.init_array) }\n\n\t.altinstructions\t0 : ALIGN(8) { KEEP(*(.altinstructions)) }\n\t__bug_table\t\t0 : ALIGN(8) { KEEP(*(__bug_table)) }\n\t__jump_table\t\t0 : ALIGN(8) { KEEP(*(__jump_table)) }\n\n\t__patchable_function_entries : { *(__patchable_function_entries) }\n\n#ifdef CONFIG_ARCH_USES_CFI_TRAPS\n\t__kcfi_traps \t\t: { KEEP(*(.kcfi_traps)) }\n#endif\n\n#ifdef CONFIG_LTO_CLANG\n\t \n\t.bss : {\n\t\t*(.bss .bss.[0-9a-zA-Z_]*)\n\t\t*(.bss..L*)\n\t}\n\n\t.data : {\n\t\t*(.data .data.[0-9a-zA-Z_]*)\n\t\t*(.data..L*)\n\t}\n\n\t.rodata : {\n\t\t*(.rodata .rodata.[0-9a-zA-Z_]*)\n\t\t*(.rodata..L*)\n\t}\n#endif\n}\n\n \n#include <asm/module.lds.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

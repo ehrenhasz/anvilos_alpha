@@ -1,0 +1,9 @@
+{
+  "module_name": "dec",
+  "hash_id": "54472fa40520ff4d9649721893e57830606e719e2d3c0e21aa28cd77f250eac4",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/fallbacks/dec",
+  "human_readable_source": "cat <<EOF\n\t${retstmt}raw_${atomic}_${pfx}sub${sfx}${order}(1, v);\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

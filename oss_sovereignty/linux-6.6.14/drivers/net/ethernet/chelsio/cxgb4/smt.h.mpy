@@ -1,0 +1,9 @@
+{
+  "module_name": "smt.h",
+  "hash_id": "65abb23434873a24e41bc5a114773b4f228bee9352529c60b1aff4432d219c14",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4/smt.h",
+  "human_readable_source": " \n\n#ifndef __CXGB4_SMT_H\n#define __CXGB4_SMT_H\n\n#include <linux/spinlock.h>\n#include <linux/if_ether.h>\n#include <linux/atomic.h>\n\nstruct adapter;\nstruct cpl_smt_write_rpl;\n\n \nenum {\n\tSMT_STATE_SWITCHING,\n\tSMT_STATE_UNUSED,\n\tSMT_STATE_ERROR\n};\n\nenum {\n\tSMT_SIZE = 256\n};\n\nstruct smt_entry {\n\tu16 state;\n\tu16 idx;\n\tu16 pfvf;\n\tu8 src_mac[ETH_ALEN];\n\tint refcnt;\n\tspinlock_t lock;\t \n};\n\nstruct smt_data {\n\tunsigned int smt_size;\n\trwlock_t lock;\n\tstruct smt_entry smtab[];\n};\n\nstruct smt_data *t4_init_smt(void);\nstruct smt_entry *cxgb4_smt_alloc_switching(struct net_device *dev, u8 *smac);\nvoid cxgb4_smt_release(struct smt_entry *e);\nvoid do_smt_write_rpl(struct adapter *p, const struct cpl_smt_write_rpl *rpl);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

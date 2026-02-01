@@ -1,0 +1,9 @@
+{
+  "module_name": "cpuidle-exynos.h",
+  "hash_id": "553391fad12cceb2d611cfcb910f2502763c4c440b457ed46bfc6e3dac8b9d31",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/cpuidle-exynos.h",
+  "human_readable_source": " \n \n\n#ifndef __CPUIDLE_EXYNOS_H\n#define __CPUIDLE_EXYNOS_H\n\nstruct cpuidle_exynos_data {\n\tint (*cpu0_enter_aftr)(void);\n\tint (*cpu1_powerdown)(void);\n\tvoid (*pre_enter_aftr)(void);\n\tvoid (*post_enter_aftr)(void);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

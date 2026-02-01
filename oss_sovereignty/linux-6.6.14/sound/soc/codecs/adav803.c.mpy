@@ -1,0 +1,9 @@
+{
+  "module_name": "adav803.c",
+  "hash_id": "860614aa97374dd18ddb201b6176b8aac53c199491fad6e1f7d343b5a0a4f362",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/adav803.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/i2c.h>\n#include <linux/regmap.h>\n\n#include <sound/soc.h>\n\n#include \"adav80x.h\"\n\nstatic const struct i2c_device_id adav803_id[] = {\n\t{ \"adav803\", 0 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, adav803_id);\n\nstatic int adav803_probe(struct i2c_client *client)\n{\n\treturn adav80x_bus_probe(&client->dev,\n\t\tdevm_regmap_init_i2c(client, &adav80x_regmap_config));\n}\n\nstatic struct i2c_driver adav803_driver = {\n\t.driver = {\n\t\t.name = \"adav803\",\n\t},\n\t.probe = adav803_probe,\n\t.id_table = adav803_id,\n};\nmodule_i2c_driver(adav803_driver);\n\nMODULE_DESCRIPTION(\"ASoC ADAV803 driver\");\nMODULE_AUTHOR(\"Lars-Peter Clausen <lars@metafoo.de>\");\nMODULE_AUTHOR(\"Yi Li <yi.li@analog.com>>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

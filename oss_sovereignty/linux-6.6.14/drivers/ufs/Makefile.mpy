@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "39536c3adc7af30548fb94f2fa982e5688f91ba25f64d0d43736b59430794ce3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ufs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n# The link order is important here. ufshcd-core must initialize\n# before vendor drivers.\nobj-$(CONFIG_SCSI_UFSHCD)\t+= core/ host/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

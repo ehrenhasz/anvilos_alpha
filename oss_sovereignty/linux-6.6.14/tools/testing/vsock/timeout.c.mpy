@@ -1,0 +1,9 @@
+{
+  "module_name": "timeout.c",
+  "hash_id": "88d4f0bff8a2172992207800ec2d172f4e8645133afaad15ceb7c7c575368396",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/vsock/timeout.c",
+  "human_readable_source": "\n \n\n \n\n#include <stdlib.h>\n#include <stdbool.h>\n#include <unistd.h>\n#include <stdio.h>\n#include \"timeout.h\"\n\nstatic volatile bool timeout;\n\n \nvoid sigalrm(int signo)\n{\n\ttimeout = true;\n}\n\n \nvoid timeout_begin(unsigned int seconds)\n{\n\talarm(seconds);\n}\n\n \nvoid timeout_check(const char *operation)\n{\n\tif (timeout) {\n\t\tfprintf(stderr, \"%s timed out\\n\", operation);\n\t\texit(EXIT_FAILURE);\n\t}\n}\n\n \nvoid timeout_end(void)\n{\n\talarm(0);\n\ttimeout = false;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

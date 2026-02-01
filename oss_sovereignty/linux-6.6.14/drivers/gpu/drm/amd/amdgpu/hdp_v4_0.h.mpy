@@ -1,0 +1,9 @@
+{
+  "module_name": "hdp_v4_0.h",
+  "hash_id": "2bf0ccd5688b44f3cdf6d5040ad421996826357fff7735b925cfa97b170fff4e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/hdp_v4_0.h",
+  "human_readable_source": " \n\n#ifndef __HDP_V4_0_H__\n#define __HDP_V4_0_H__\n\n#include \"soc15_common.h\"\n\nextern const struct amdgpu_hdp_funcs hdp_v4_0_funcs;\nextern struct amdgpu_hdp_ras  hdp_v4_0_ras;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

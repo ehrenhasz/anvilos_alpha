@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sys_socket.c",
+  "hash_id": "0535059bfbabcaaaf42bbad4c98a9958cb58840ab5f01c341a9af2a3e829fec5",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sys_socket.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/socket.h>\n\n#if HAVE_SHUTDOWN\n \nint a[] = { SHUT_RD, SHUT_WR, SHUT_RDWR };\n#endif\n\n \nsocklen_t t1;\n\n \nsize_t t2;\nssize_t t3;\n\n \nstruct iovec io;\n\n \nstruct msghdr msg;\n\n#include <errno.h>\n\nint\nmain (void)\n{\n  struct sockaddr_storage x;\n  sa_family_t i;\n\n   \n  switch (ENOTSOCK)\n    {\n    case ENOTSOCK:\n    case EADDRINUSE:\n    case ENETRESET:\n    case ECONNABORTED:\n    case ECONNRESET:\n    case ENOTCONN:\n    case ESHUTDOWN:\n      break;\n    }\n\n  x.ss_family = 42;\n  i = 42;\n  msg.msg_iov = &io;\n\n  return (x.ss_family - i + msg.msg_namelen + msg.msg_iov->iov_len\n          + msg.msg_iovlen);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

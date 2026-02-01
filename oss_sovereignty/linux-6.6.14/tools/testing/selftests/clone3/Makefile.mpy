@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "624634c761e229f67e4ddeea4d9e5d5ffabd36a4b02472b6ec5739effc585440",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/clone3/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCFLAGS += -g -std=gnu99 $(KHDR_INCLUDES)\nLDLIBS += -lcap\n\nTEST_GEN_PROGS := clone3 clone3_clear_sighand clone3_set_tid \\\n\tclone3_cap_checkpoint_restore\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_RATEEST.h",
+  "hash_id": "fa645da7a99924935e30b241da95a400c45c8b734f596fd533dc2e1d0e6b3a69",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_RATEEST.h",
+  "human_readable_source": " \n#ifndef _XT_RATEEST_TARGET_H\n#define _XT_RATEEST_TARGET_H\n\n#include <linux/types.h>\n#include <linux/if.h>\n\nstruct xt_rateest_target_info {\n\tchar\t\t\tname[IFNAMSIZ];\n\t__s8\t\t\tinterval;\n\t__u8\t\tewma_log;\n\n\t \n\tstruct xt_rateest\t*est __attribute__((aligned(8)));\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

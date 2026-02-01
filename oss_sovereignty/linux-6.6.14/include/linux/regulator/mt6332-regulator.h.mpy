@@ -1,0 +1,9 @@
+{
+  "module_name": "mt6332-regulator.h",
+  "hash_id": "de422d3c0bd81bd8372c53f7f0cb7d90e48cd3dae192adac0676ca2236d6ebb0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/mt6332-regulator.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_REGULATOR_MT6332_H\n#define __LINUX_REGULATOR_MT6332_H\n\nenum {\n\t \n\tMT6332_ID_VDRAM = 0,\n\tMT6332_ID_VDVFS2,\n\tMT6332_ID_VPA,\n\tMT6332_ID_VRF1,\n\tMT6332_ID_VRF2,\n\tMT6332_ID_VSBST,\n\t \n\tMT6332_ID_VAUXB32,\n\tMT6332_ID_VBIF28,\n\tMT6332_ID_VDIG18,\n\tMT6332_ID_VSRAM_DVFS2,\n\tMT6332_ID_VUSB33,\n\tMT6332_ID_VREG_MAX\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

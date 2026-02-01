@@ -1,0 +1,9 @@
+{
+  "module_name": "mmc-davinci.h",
+  "hash_id": "4fe7527232b12726789bda464401a2fe5ef9735ec913eb3e47e85e58a1a88be3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/mmc-davinci.h",
+  "human_readable_source": " \n \n\n#ifndef _DAVINCI_MMC_H\n#define _DAVINCI_MMC_H\n\n#include <linux/types.h>\n#include <linux/mmc/host.h>\n\nstruct davinci_mmc_config {\n\t \n\tint\t(*get_cd)(int module);\n\tint\t(*get_ro)(int module);\n\n\tvoid\t(*set_power)(int module, bool on);\n\n\t \n\tu8\twires;\n\n\tu32     max_freq;\n\n\t \n\tu32     caps;\n\n\t \n\tu8\tnr_sg;\n};\nvoid davinci_setup_mmc(int module, struct davinci_mmc_config *config);\n\nenum {\n\tMMC_CTLR_VERSION_1 = 0,\t \n\tMMC_CTLR_VERSION_2,\t \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

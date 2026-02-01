@@ -1,0 +1,9 @@
+{
+  "module_name": "mm_slot.h",
+  "hash_id": "c624a311207d39cdac602e11aba472b02dac15aaa7719d8b098b63eb632ff35d",
+  "original_prompt": "Ingested from linux-6.6.14/mm/mm_slot.h",
+  "human_readable_source": "\n\n#ifndef _LINUX_MM_SLOT_H\n#define _LINUX_MM_SLOT_H\n\n#include <linux/hashtable.h>\n#include <linux/slab.h>\n\n \nstruct mm_slot {\n\tstruct hlist_node hash;\n\tstruct list_head mm_node;\n\tstruct mm_struct *mm;\n};\n\n#define mm_slot_entry(ptr, type, member) \\\n\tcontainer_of(ptr, type, member)\n\nstatic inline void *mm_slot_alloc(struct kmem_cache *cache)\n{\n\tif (!cache)\t \n\t\treturn NULL;\n\treturn kmem_cache_zalloc(cache, GFP_KERNEL);\n}\n\nstatic inline void mm_slot_free(struct kmem_cache *cache, void *objp)\n{\n\tkmem_cache_free(cache, objp);\n}\n\n#define mm_slot_lookup(_hashtable, _mm) \t\t\t\t       \\\n({\t\t\t\t\t\t\t\t\t       \\\n\tstruct mm_slot *tmp_slot, *mm_slot = NULL;\t\t\t       \\\n\t\t\t\t\t\t\t\t\t       \\\n\thash_for_each_possible(_hashtable, tmp_slot, hash, (unsigned long)_mm) \\\n\t\tif (_mm == tmp_slot->mm) {\t\t\t\t       \\\n\t\t\tmm_slot = tmp_slot;\t\t\t\t       \\\n\t\t\tbreak;\t\t\t\t\t\t       \\\n\t\t}\t\t\t\t\t\t\t       \\\n\t\t\t\t\t\t\t\t\t       \\\n\tmm_slot;\t\t\t\t\t\t\t       \\\n})\n\n#define mm_slot_insert(_hashtable, _mm, _mm_slot)\t\t\t       \\\n({\t\t\t\t\t\t\t\t\t       \\\n\t_mm_slot->mm = _mm;\t\t\t\t\t\t       \\\n\thash_add(_hashtable, &_mm_slot->hash, (unsigned long)_mm);\t       \\\n})\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

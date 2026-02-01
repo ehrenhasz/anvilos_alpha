@@ -1,0 +1,9 @@
+{
+  "module_name": "audio-fwrite.rst",
+  "hash_id": "eac56a4c2ee52abbc1aa0b67f91d6dac7db9ada7627f1f837bea57c024dbd890",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/audio-fwrite.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n.. c:namespace:: DTV.audio\n\n.. _audio_fwrite:\n\n=========================\nDigital TV audio write()\n=========================\n\nName\n----\n\nDigital TV audio write()\n\n.. attention:: This ioctl is deprecated\n\nSynopsis\n--------\n\n.. c:function:: size_t write(int fd, const void *buf, size_t count)\n\nArguments\n---------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -  .. row 1\n\n       -  int fd\n\n       -  File descriptor returned by a previous call to open().\n\n    -  .. row 2\n\n       -  void \\*buf\n\n       -  Pointer to the buffer containing the PES data.\n\n    -  .. row 3\n\n       -  size_t count\n\n       -  Size of buf.\n\nDescription\n-----------\n\nThis system call can only be used if AUDIO_SOURCE_MEMORY is selected\nin the ioctl call AUDIO_SELECT_SOURCE. The data provided shall be in\nPES format. If O_NONBLOCK is not specified the function will block\nuntil buffer space is available. The amount of data to be transferred is\nimplied by count.\n\nReturn Value\n------------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -  .. row 1\n\n       -  ``EPERM``\n\n       -  Mode AUDIO_SOURCE_MEMORY not selected.\n\n    -  .. row 2\n\n       -  ``ENOMEM``\n\n       -  Attempted to write more data than the internal buffer can hold.\n\n    -  .. row 3\n\n       -  ``EBADF``\n\n       -  fd is not a valid open file descriptor.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

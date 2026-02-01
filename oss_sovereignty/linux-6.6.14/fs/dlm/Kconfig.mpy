@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "878c6e897c55d2c255acfd7f0db8fbba6b8d4887f4b2313994ec203f7ef74ade",
+  "original_prompt": "Ingested from linux-6.6.14/fs/dlm/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig DLM\n\ttristate \"Distributed Lock Manager (DLM)\"\n\tdepends on INET\n\tdepends on SYSFS && CONFIGFS_FS && (IPV6 || IPV6=n)\n\tselect IP_SCTP\n\thelp\n\tA general purpose distributed lock manager for kernel or userspace\n\tapplications.\n\nconfig DLM_DEBUG\n\tbool \"DLM debugging\"\n\tdepends on DLM\n\thelp\n\tUnder the debugfs mount point, the name of each lockspace will\n\tappear as a file in the \"dlm\" directory.  The output is the\n\tlist of resource and locks the local node knows about.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

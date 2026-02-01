@@ -1,0 +1,9 @@
+{
+  "module_name": "sparc.py",
+  "hash_id": "e45b1b79a779af0a97599409be977d7b4a9b96b4ac86345c9039c34353cd9d53",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/qemu_configs/sparc.py",
+  "human_readable_source": "from ..qemu_config import QemuArchParams\n\nQEMU_ARCH = QemuArchParams(linux_arch='sparc',\n\t\t\t   kconfig='''\nCONFIG_SERIAL_8250=y\nCONFIG_SERIAL_8250_CONSOLE=y''',\n\t\t\t   qemu_arch='sparc',\n\t\t\t   kernel_path='arch/sparc/boot/zImage',\n\t\t\t   kernel_command_line='console=ttyS0 mem=256M',\n\t\t\t   extra_qemu_params=['-m', '256'])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

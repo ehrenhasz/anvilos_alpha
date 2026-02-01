@@ -1,0 +1,9 @@
+{
+  "module_name": "rwsem.c",
+  "hash_id": "3878c60400420351ed31aa357ef2995db323a69e8bd7b1d17a841c5a2164c649",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/rwsem.c",
+  "human_readable_source": "\n#include \"util.h\"\n#include \"rwsem.h\"\n\nint init_rwsem(struct rw_semaphore *sem)\n{\n\treturn pthread_rwlock_init(&sem->lock, NULL);\n}\n\nint exit_rwsem(struct rw_semaphore *sem)\n{\n\treturn pthread_rwlock_destroy(&sem->lock);\n}\n\nint down_read(struct rw_semaphore *sem)\n{\n\treturn perf_singlethreaded ? 0 : pthread_rwlock_rdlock(&sem->lock);\n}\n\nint up_read(struct rw_semaphore *sem)\n{\n\treturn perf_singlethreaded ? 0 : pthread_rwlock_unlock(&sem->lock);\n}\n\nint down_write(struct rw_semaphore *sem)\n{\n\treturn perf_singlethreaded ? 0 : pthread_rwlock_wrlock(&sem->lock);\n}\n\nint up_write(struct rw_semaphore *sem)\n{\n\treturn perf_singlethreaded ? 0 : pthread_rwlock_unlock(&sem->lock);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

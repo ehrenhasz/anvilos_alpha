@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_spl.h",
+  "hash_id": "a32d629af7c48f94d6937af2f035a5a48b19c262b3c005082478cb740fceab50",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/trace_spl.h",
+  "human_readable_source": " \n\n#ifndef _LIBSPL_SPL_TRACE_H\n#define\t_LIBSPL_SPL_TRACE_H\n\n \n#undef SET_ERROR\n#define\tSET_ERROR(err) \\\n\t(__set_error(__FILE__, __func__, __LINE__, err), err)\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "page_actor.h",
+  "hash_id": "b9f27707b6bc3f5248e44851885925845bc6f60fd7390a6cf62a8867b875de6b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/squashfs/page_actor.h",
+  "human_readable_source": " \n#ifndef PAGE_ACTOR_H\n#define PAGE_ACTOR_H\n \n\nstruct squashfs_page_actor {\n\tunion {\n\t\tvoid\t\t**buffer;\n\t\tstruct page\t**page;\n\t};\n\tvoid\t*pageaddr;\n\tvoid\t*tmp_buffer;\n\tvoid    *(*squashfs_first_page)(struct squashfs_page_actor *);\n\tvoid    *(*squashfs_next_page)(struct squashfs_page_actor *);\n\tvoid    (*squashfs_finish_page)(struct squashfs_page_actor *);\n\tstruct page *last_page;\n\tint\tpages;\n\tint\tlength;\n\tint\tnext_page;\n\tint\talloc_buffer;\n\tint\treturned_pages;\n\tpgoff_t\tnext_index;\n};\n\nextern struct squashfs_page_actor *squashfs_page_actor_init(void **buffer,\n\t\t\t\tint pages, int length);\nextern struct squashfs_page_actor *squashfs_page_actor_init_special(\n\t\t\t\tstruct squashfs_sb_info *msblk,\n\t\t\t\tstruct page **page, int pages, int length);\nstatic inline struct page *squashfs_page_actor_free(struct squashfs_page_actor *actor)\n{\n\tstruct page *last_page = actor->last_page;\n\n\tkfree(actor->tmp_buffer);\n\tkfree(actor);\n\treturn last_page;\n}\nstatic inline void *squashfs_first_page(struct squashfs_page_actor *actor)\n{\n\treturn actor->squashfs_first_page(actor);\n}\nstatic inline void *squashfs_next_page(struct squashfs_page_actor *actor)\n{\n\treturn actor->squashfs_next_page(actor);\n}\nstatic inline void squashfs_finish_page(struct squashfs_page_actor *actor)\n{\n\tactor->squashfs_finish_page(actor);\n}\nstatic inline void squashfs_actor_nobuff(struct squashfs_page_actor *actor)\n{\n\tactor->alloc_buffer = 0;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

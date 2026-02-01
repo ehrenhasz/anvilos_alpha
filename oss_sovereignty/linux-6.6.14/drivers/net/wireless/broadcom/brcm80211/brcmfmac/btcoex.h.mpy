@@ -1,0 +1,9 @@
+{
+  "module_name": "btcoex.h",
+  "hash_id": "04719ba3212db137993c3d9981cf18f216172f6463ae4be4be762acad212f08e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/btcoex.h",
+  "human_readable_source": "\n \n#ifndef WL_BTCOEX_H_\n#define WL_BTCOEX_H_\n\nenum brcmf_btcoex_mode {\n\tBRCMF_BTCOEX_DISABLED,\n\tBRCMF_BTCOEX_ENABLED\n};\n\nint brcmf_btcoex_attach(struct brcmf_cfg80211_info *cfg);\nvoid brcmf_btcoex_detach(struct brcmf_cfg80211_info *cfg);\nint brcmf_btcoex_set_mode(struct brcmf_cfg80211_vif *vif,\n\t\t\t  enum brcmf_btcoex_mode mode, u16 duration);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

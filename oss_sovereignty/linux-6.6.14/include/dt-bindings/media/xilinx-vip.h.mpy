@@ -1,0 +1,9 @@
+{
+  "module_name": "xilinx-vip.h",
+  "hash_id": "4a993460037cefa0e4a581eee72a53341e83cea0eb34b28fae9b4d84446ba66d",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/media/xilinx-vip.h",
+  "human_readable_source": "\n \n\n#ifndef __DT_BINDINGS_MEDIA_XILINX_VIP_H__\n#define __DT_BINDINGS_MEDIA_XILINX_VIP_H__\n\n \n#define XVIP_VF_YUV_422\t\t\t0\n#define XVIP_VF_YUV_444\t\t\t1\n#define XVIP_VF_RBG\t\t\t2\n#define XVIP_VF_YUV_420\t\t\t3\n#define XVIP_VF_YUVA_422\t\t4\n#define XVIP_VF_YUVA_444\t\t5\n#define XVIP_VF_RGBA\t\t\t6\n#define XVIP_VF_YUVA_420\t\t7\n#define XVIP_VF_YUVD_422\t\t8\n#define XVIP_VF_YUVD_444\t\t9\n#define XVIP_VF_RGBD\t\t\t10\n#define XVIP_VF_YUVD_420\t\t11\n#define XVIP_VF_MONO_SENSOR\t\t12\n#define XVIP_VF_CUSTOM2\t\t\t13\n#define XVIP_VF_CUSTOM3\t\t\t14\n#define XVIP_VF_CUSTOM4\t\t\t15\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

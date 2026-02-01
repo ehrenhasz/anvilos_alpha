@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sys_ioctl.c",
+  "hash_id": "5a874fb9d2c6a7502f94fce871cece4bcb2d8d9e7f510c6e37514a60258ba7df",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sys_ioctl.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/ioctl.h>\n\nint\nmain (void)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

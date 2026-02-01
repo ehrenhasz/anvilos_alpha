@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "560cb5314da88f394709d260ff15ef5ca512a4bbc1cb38befb4a5fde1c5bb498",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/mei/hdcp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Copyright (c) 2019, Intel Corporation. All rights reserved.\n#\n# Makefile - HDCP client driver for Intel MEI Bus Driver.\n\nobj-$(CONFIG_INTEL_MEI_HDCP) += mei_hdcp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dsa_1_pw",
+  "hash_id": "4c135ca13eb8dc12cfa7a031ec3d2119f5bec718f491a7c751c1eb71c750004f",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshkey/testdata/dsa_1_pw",
+  "human_readable_source": "-----BEGIN DSA PRIVATE KEY-----\nProc-Type: 4,ENCRYPTED\nDEK-Info: AES-128-CBC,BC8386C373B22EB7F00ADC821D5D8BE9\n\n+HDV2DQ09sxrIAeXTz9r3YFuPRa2hk1+NGcr3ETkXbC6KiZ14wpTnGTloKwaQjIW\neXTa9mpCOWAoohgvsVb+hOuOlP7AfeHu1IXV4EAS+GDpkiV5UxlCXXwqlD75Buu4\nwwDd/p4SWzILH3WGjDk5JIXoxWNY13LHwC7Q6gtGJx4AicUG7YBRTXMIBDa/Kh77\n6o2rFETKmp4VHBvHbakmiETfptdM8bbWxKWeY2vakThyESgeofsLoTOQCIwlEfJC\ns2D/KYL65C8VbHYgIoSLTQnooO45DDyxIuhCqP+H23mhv9vB1Od3nc2atgHj/XFs\ndcOPFkF/msDRYqxY3V0AS6+jpKwFodZ7g/hyGcyPxOkzlJVuKoKuH6P5PyQ69Gx0\niqri0xEPyABr7kGlXNrjjctojX+B4WwSnjg/2euXXWFXCRalIdA7ErATTiQbGOx7\nVd6Gn8PZbSy1MkqEDrZRip0pfAFJYI/8GXPC75BpnRsrVlfhtrngbW+kBP35LzaN\nl2K+RQ3gSB3iFoqNb1Kuu6T5MZlyVl5H2dVlJSeb1euQ2OycXdDoFTyJ4AiyWS7w\nVlh8zeJnso5QRDjMwx99pZilbbuFGSLsahiGEveFc6o=\n-----END DSA PRIVATE KEY-----\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

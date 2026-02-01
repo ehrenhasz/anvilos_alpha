@@ -1,0 +1,9 @@
+{
+  "module_name": "lan937x.h",
+  "hash_id": "1df43a2e5583adcd4a7b8017976dd3e5fcabe2bf346654a1752dbe2341893a41",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/microchip/lan937x.h",
+  "human_readable_source": " \n \n\n#ifndef __LAN937X_CFG_H\n#define __LAN937X_CFG_H\n\nint lan937x_reset_switch(struct ksz_device *dev);\nint lan937x_setup(struct dsa_switch *ds);\nvoid lan937x_teardown(struct dsa_switch *ds);\nvoid lan937x_port_setup(struct ksz_device *dev, int port, bool cpu_port);\nvoid lan937x_config_cpu_port(struct dsa_switch *ds);\nint lan937x_switch_init(struct ksz_device *dev);\nvoid lan937x_switch_exit(struct ksz_device *dev);\nint lan937x_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data);\nint lan937x_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val);\nint lan937x_change_mtu(struct ksz_device *dev, int port, int new_mtu);\nvoid lan937x_phylink_get_caps(struct ksz_device *dev, int port,\n\t\t\t      struct phylink_config *config);\nvoid lan937x_setup_rgmii_delay(struct ksz_device *dev, int port);\nint lan937x_set_ageing_time(struct ksz_device *dev, unsigned int msecs);\nint lan937x_tc_cbs_set_cinc(struct ksz_device *dev, int port, u32 val);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

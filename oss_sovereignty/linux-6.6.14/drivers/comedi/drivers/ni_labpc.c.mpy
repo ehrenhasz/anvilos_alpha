@@ -1,0 +1,9 @@
+{
+  "module_name": "ni_labpc.c",
+  "hash_id": "2e8b886d4109af8783ac95c30789e7bc43b50c6202ef6604b3efe69dd121b5d0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/ni_labpc.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/module.h>\n#include <linux/comedi/comedidev.h>\n\n#include \"ni_labpc.h\"\n#include \"ni_labpc_isadma.h\"\n\nstatic const struct labpc_boardinfo labpc_boards[] = {\n\t{\n\t\t.name\t\t\t= \"lab-pc-1200\",\n\t\t.ai_speed\t\t= 10000,\n\t\t.ai_scan_up\t\t= 1,\n\t\t.has_ao\t\t\t= 1,\n\t\t.is_labpc1200\t\t= 1,\n\t}, {\n\t\t.name\t\t\t= \"lab-pc-1200ai\",\n\t\t.ai_speed\t\t= 10000,\n\t\t.ai_scan_up\t\t= 1,\n\t\t.is_labpc1200\t\t= 1,\n\t}, {\n\t\t.name\t\t\t= \"lab-pc+\",\n\t\t.ai_speed\t\t= 12000,\n\t\t.has_ao\t\t\t= 1,\n\t},\n};\n\nstatic int labpc_attach(struct comedi_device *dev, struct comedi_devconfig *it)\n{\n\tunsigned int irq = it->options[1];\n\tunsigned int dma_chan = it->options[2];\n\tint ret;\n\n\tret = comedi_request_region(dev, it->options[0], 0x20);\n\tif (ret)\n\t\treturn ret;\n\n\tret = labpc_common_attach(dev, irq, 0);\n\tif (ret)\n\t\treturn ret;\n\n\tif (dev->irq)\n\t\tlabpc_init_dma_chan(dev, dma_chan);\n\n\treturn 0;\n}\n\nstatic void labpc_detach(struct comedi_device *dev)\n{\n\tlabpc_free_dma_chan(dev);\n\tlabpc_common_detach(dev);\n\tcomedi_legacy_detach(dev);\n}\n\nstatic struct comedi_driver labpc_driver = {\n\t.driver_name\t= \"ni_labpc\",\n\t.module\t\t= THIS_MODULE,\n\t.attach\t\t= labpc_attach,\n\t.detach\t\t= labpc_detach,\n\t.num_names\t= ARRAY_SIZE(labpc_boards),\n\t.board_name\t= &labpc_boards[0].name,\n\t.offset\t\t= sizeof(struct labpc_boardinfo),\n};\nmodule_comedi_driver(labpc_driver);\n\nMODULE_AUTHOR(\"Comedi https://www.comedi.org\");\nMODULE_DESCRIPTION(\"Comedi driver for NI Lab-PC ISA boards\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

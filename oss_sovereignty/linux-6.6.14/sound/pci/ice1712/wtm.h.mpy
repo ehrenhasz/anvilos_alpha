@@ -1,0 +1,9 @@
+{
+  "module_name": "wtm.h",
+  "hash_id": "831755ef9b6fe3bef0816d6ebc351e2ebe8932a7e73b636d51a29cd9a68bee28",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ice1712/wtm.h",
+  "human_readable_source": " \n#ifndef __SOUND_WTM_H\n#define __SOUND_WTM_H\n\n \n#define WTM_DEVICE_DESC\t\t\"{EGO SYS INC,WaveTerminal 192M},\"\n#define VT1724_SUBDEVICE_WTM\t0x36495345\t \n\n \n\n#define\tAK4114_ADDR\t\t0x20\t \n#define STAC9460_I2C_ADDR\t0x54\t \n#define STAC9460_2_I2C_ADDR\t0x56\t \n\n\nextern struct snd_ice1712_card_info snd_vt1724_wtm_cards[];\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

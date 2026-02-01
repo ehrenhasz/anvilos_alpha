@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e8d3bcb9c125071a6a096b5cf159997f930d53dabc49ac5b189835499128cfac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/vt8500/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# VIA/Wondermedia pinctrl support\n\nobj-$(CONFIG_PINCTRL_WMT)\t+= pinctrl-wmt.o\nobj-$(CONFIG_PINCTRL_VT8500)\t+= pinctrl-vt8500.o\nobj-$(CONFIG_PINCTRL_WM8505)\t+= pinctrl-wm8505.o\nobj-$(CONFIG_PINCTRL_WM8650)\t+= pinctrl-wm8650.o\nobj-$(CONFIG_PINCTRL_WM8750)\t+= pinctrl-wm8750.o\nobj-$(CONFIG_PINCTRL_WM8850)\t+= pinctrl-wm8850.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

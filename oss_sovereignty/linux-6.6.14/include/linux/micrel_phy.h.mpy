@@ -1,0 +1,9 @@
+{
+  "module_name": "micrel_phy.h",
+  "hash_id": "a42e854346028d7664454bfcd7f078f9d76834cc9c0443ecc556ac2606a4592d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/micrel_phy.h",
+  "human_readable_source": " \n \n\n#ifndef _MICREL_PHY_H\n#define _MICREL_PHY_H\n\n#define MICREL_OUI\t\t0x0885\n\n#define MICREL_PHY_ID_MASK\t0x00fffff0\n\n#define PHY_ID_KSZ8873MLL\t0x000e7237\n#define PHY_ID_KSZ9021\t\t0x00221610\n#define PHY_ID_KSZ9021RLRN\t0x00221611\n#define PHY_ID_KS8737\t\t0x00221720\n#define PHY_ID_KSZ8021\t\t0x00221555\n#define PHY_ID_KSZ8031\t\t0x00221556\n#define PHY_ID_KSZ8041\t\t0x00221510\n \n#define PHY_ID_KSZ8041RNLI\t0x00221537\n#define PHY_ID_KSZ8051\t\t0x00221550\n \n#define PHY_ID_KSZ8001\t\t0x0022161A\n \n#define PHY_ID_KSZ8081\t\t0x00221560\n#define PHY_ID_KSZ8061\t\t0x00221570\n#define PHY_ID_KSZ9031\t\t0x00221620\n#define PHY_ID_KSZ9131\t\t0x00221640\n#define PHY_ID_LAN8814\t\t0x00221660\n#define PHY_ID_LAN8804\t\t0x00221670\n#define PHY_ID_LAN8841\t\t0x00221650\n\n#define PHY_ID_KSZ886X\t\t0x00221430\n#define PHY_ID_KSZ8863\t\t0x00221435\n\n#define PHY_ID_KSZ87XX\t\t0x00221550\n\n#define\tPHY_ID_KSZ9477\t\t0x00221631\n\n \n#define MICREL_PHY_50MHZ_CLK\tBIT(0)\n#define MICREL_PHY_FXEN\t\tBIT(1)\n#define MICREL_KSZ8_P1_ERRATA\tBIT(2)\n#define MICREL_NO_EEE\t\tBIT(3)\n\n#define MICREL_KSZ9021_EXTREG_CTRL\t0xB\n#define MICREL_KSZ9021_EXTREG_DATA_WRITE\t0xC\n#define MICREL_KSZ9021_RGMII_CLK_CTRL_PAD_SCEW\t0x104\n#define MICREL_KSZ9021_RGMII_RX_DATA_PAD_SCEW\t0x105\n\n \n \n#define KSZ886X_BMCR_HP_MDIX\t\t\tBIT(5)\n \n#define KSZ886X_BMCR_FORCE_MDI\t\t\tBIT(4)\n \n#define KSZ886X_BMCR_DISABLE_AUTO_MDIX\t\tBIT(3)\n#define KSZ886X_BMCR_DISABLE_FAR_END_FAULT\tBIT(2)\n#define KSZ886X_BMCR_DISABLE_TRANSMIT\t\tBIT(1)\n#define KSZ886X_BMCR_DISABLE_LED\t\tBIT(0)\n\n#define KSZ886X_CTRL_MDIX_STAT\t\t\tBIT(4)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

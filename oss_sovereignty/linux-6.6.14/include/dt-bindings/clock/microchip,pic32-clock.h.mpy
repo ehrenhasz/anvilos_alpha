@@ -1,0 +1,9 @@
+{
+  "module_name": "microchip,pic32-clock.h",
+  "hash_id": "4a0d005b4b4bf76394e6b9a51af693a5dfacf466e22036e3d44bb00812338143",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/microchip,pic32-clock.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_MICROCHIP_PIC32_H_\n#define _DT_BINDINGS_CLK_MICROCHIP_PIC32_H_\n\n \n#define POSCCLK\t\t0\n#define FRCCLK\t\t1\n#define BFRCCLK\t\t2\n#define LPRCCLK\t\t3\n#define SOSCCLK\t\t4\n#define FRCDIVCLK\t5\n#define PLLCLK\t\t6\n#define SCLK\t\t7\n#define PB1CLK\t\t8\n#define PB2CLK\t\t9\n#define PB3CLK\t\t10\n#define PB4CLK\t\t11\n#define PB5CLK\t\t12\n#define PB6CLK\t\t13\n#define PB7CLK\t\t14\n#define REF1CLK\t\t15\n#define REF2CLK\t\t16\n#define REF3CLK\t\t17\n#define REF4CLK\t\t18\n#define REF5CLK\t\t19\n#define UPLLCLK\t\t20\n#define MAXCLKS\t\t21\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

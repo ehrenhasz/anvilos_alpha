@@ -1,0 +1,9 @@
+{
+  "module_name": "aiu-fifo.h",
+  "hash_id": "0a7348147ebba9899f6f5c179e05e1eb2c5eca3ff3ec4865173c9541c16a870d",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/meson/aiu-fifo.h",
+  "human_readable_source": " \n \n\n#ifndef _MESON_AIU_FIFO_H\n#define _MESON_AIU_FIFO_H\n\nstruct snd_pcm_hardware;\nstruct snd_soc_component_driver;\nstruct snd_soc_dai_driver;\nstruct clk;\nstruct snd_pcm_ops;\nstruct snd_pcm_substream;\nstruct snd_soc_dai;\nstruct snd_pcm_hw_params;\nstruct platform_device;\n\nstruct aiu_fifo {\n\tstruct snd_pcm_hardware *pcm;\n\tunsigned int mem_offset;\n\tunsigned int fifo_block;\n\tstruct clk *pclk;\n\tint irq;\n};\n\nint aiu_fifo_dai_probe(struct snd_soc_dai *dai);\nint aiu_fifo_dai_remove(struct snd_soc_dai *dai);\n\nsnd_pcm_uframes_t aiu_fifo_pointer(struct snd_soc_component *component,\n\t\t\t\t   struct snd_pcm_substream *substream);\n\nint aiu_fifo_trigger(struct snd_pcm_substream *substream, int cmd,\n\t\t     struct snd_soc_dai *dai);\nint aiu_fifo_prepare(struct snd_pcm_substream *substream,\n\t\t     struct snd_soc_dai *dai);\nint aiu_fifo_hw_params(struct snd_pcm_substream *substream,\n\t\t       struct snd_pcm_hw_params *params,\n\t\t       struct snd_soc_dai *dai);\nint aiu_fifo_hw_free(struct snd_pcm_substream *substream,\n\t\t     struct snd_soc_dai *dai);\nint aiu_fifo_startup(struct snd_pcm_substream *substream,\n\t\t     struct snd_soc_dai *dai);\nvoid aiu_fifo_shutdown(struct snd_pcm_substream *substream,\n\t\t       struct snd_soc_dai *dai);\nint aiu_fifo_pcm_new(struct snd_soc_pcm_runtime *rtd,\n\t\t     struct snd_soc_dai *dai);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

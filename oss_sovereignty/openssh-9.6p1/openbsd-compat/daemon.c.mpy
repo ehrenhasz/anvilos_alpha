@@ -1,0 +1,9 @@
+{
+  "module_name": "daemon.c",
+  "hash_id": "32a0f6161a1a8ebd58cd7c36687a3833a0f5d4a564d8b7ed64b0adf519a97c40",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/daemon.c",
+  "human_readable_source": " \n \n\n \n\n#include \"includes.h\"\n\n#ifndef HAVE_DAEMON\n\n#include <sys/types.h>\n\n#ifdef HAVE_SYS_STAT_H\n# include <sys/stat.h>\n#endif\n\n#ifdef HAVE_FCNTL_H\n# include <fcntl.h>\n#endif\n\n#ifdef HAVE_UNISTD_H\n# include <unistd.h>\n#endif\n\nint\ndaemon(int nochdir, int noclose)\n{\n\tint fd;\n\n\tswitch (fork()) {\n\tcase -1:\n\t\treturn (-1);\n\tcase 0:\n\t\tbreak;\n\tdefault:\n\t\t_exit(0);\n\t}\n\n\tif (setsid() == -1)\n\t\treturn (-1);\n\n\tif (!nochdir)\n\t\t(void)chdir(\"/\");\n\n\tif (!noclose && (fd = open(_PATH_DEVNULL, O_RDWR, 0)) != -1) {\n\t\t(void)dup2(fd, STDIN_FILENO);\n\t\t(void)dup2(fd, STDOUT_FILENO);\n\t\t(void)dup2(fd, STDERR_FILENO);\n\t\tif (fd > 2)\n\t\t\t(void)close (fd);\n\t}\n\treturn (0);\n}\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

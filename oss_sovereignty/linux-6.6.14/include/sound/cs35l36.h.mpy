@@ -1,0 +1,9 @@
+{
+  "module_name": "cs35l36.h",
+  "hash_id": "4fab04c80288f7be1e4a26cbcfe045899a2de68112f843d30d0568659d1a4e5f",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/cs35l36.h",
+  "human_readable_source": " \n \n\n#ifndef __CS35L36_H\n#define __CS35L36_H\n\nstruct cs35l36_vpbr_cfg {\n\tbool is_present;\n\tbool vpbr_en;\n\tint vpbr_thld;\n\tint vpbr_atk_rate;\n\tint vpbr_atk_vol;\n\tint vpbr_max_attn;\n\tint vpbr_wait;\n\tint vpbr_rel_rate;\n\tint vpbr_mute_en;\n};\n\nstruct cs35l36_platform_data {\n\tbool multi_amp_mode;\n\tbool dcm_mode;\n\tbool amp_pcm_inv;\n\tbool imon_pol_inv;\n\tbool vmon_pol_inv;\n\tint boost_ind;\n\tint bst_vctl;\n\tint bst_vctl_sel;\n\tint bst_ipk;\n\tbool extern_boost;\n\tint temp_warn_thld;\n\tint irq_drv_sel;\n\tint irq_gpio_sel;\n\tstruct cs35l36_vpbr_cfg vpbr_config;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

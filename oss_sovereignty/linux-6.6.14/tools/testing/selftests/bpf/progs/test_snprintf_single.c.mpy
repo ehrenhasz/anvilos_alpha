@@ -1,0 +1,9 @@
+{
+  "module_name": "test_snprintf_single.c",
+  "hash_id": "846d8ee40112acacbf37eee96ebd91167281c537d2a349621501fde125c4907a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_snprintf_single.c",
+  "human_readable_source": "\n \n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\n \nconst char fmt[10];\n\nSEC(\"raw_tp/sys_enter\")\nint handler(const void *ctx)\n{\n\tunsigned long long arg = 42;\n\n\tbpf_snprintf(NULL, 0, fmt, &arg, sizeof(arg));\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

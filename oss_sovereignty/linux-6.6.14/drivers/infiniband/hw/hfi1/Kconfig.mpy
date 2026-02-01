@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "fa41b2943780db444e1c38700a7b43c6543f444fc97ae7105e0301b32f8a9d06",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig INFINIBAND_HFI1\n\ttristate \"Cornelis OPX Gen1 support\"\n\tdepends on X86_64 && INFINIBAND_RDMAVT && I2C && !UML\n\tselect MMU_NOTIFIER\n\tselect CRC32\n\tselect I2C_ALGOBIT\n\thelp\n\tThis is a low-level driver for Cornelis OPX Gen1 adapter.\nconfig HFI1_DEBUG_SDMA_ORDER\n\tbool \"HFI1 SDMA Order debug\"\n\tdepends on INFINIBAND_HFI1\n\tdefault n\n\thelp\n\tThis is a debug flag to test for out of order\n\tsdma completions for unit testing\nconfig SDMA_VERBOSITY\n\tbool \"Config SDMA Verbosity\"\n\tdepends on INFINIBAND_HFI1\n\tdefault n\n\thelp\n\tThis is a configuration flag to enable verbose\n\tSDMA debug\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

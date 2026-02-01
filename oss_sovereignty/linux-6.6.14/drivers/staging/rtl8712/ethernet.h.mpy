@@ -1,0 +1,9 @@
+{
+  "module_name": "ethernet.h",
+  "hash_id": "c1499560305993a4d7ee7253d582dcc5960732697717f5404d8f2b29ab7d4b99",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/ethernet.h",
+  "human_readable_source": " \n \n#ifndef __INC_ETHERNET_H\n#define __INC_ETHERNET_H\n\n#define ETHERNET_HEADER_SIZE\t\t14\t \n#define LLC_HEADER_SIZE\t\t\t6\t \n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

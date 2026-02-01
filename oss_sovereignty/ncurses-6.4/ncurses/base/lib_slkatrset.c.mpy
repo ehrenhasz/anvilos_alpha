@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_slkatrset.c",
+  "hash_id": "bdcb35f4507d6de514b862a11c06eb3cdb0d45cb34a05118674d5a5a8704c472",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_slkatrset.c",
+  "human_readable_source": " \n\n \n\n \n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_slkatrset.c,v 1.11 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(slk_attrset) (NCURSES_SP_DCLx const chtype attr)\n{\n    T((T_CALLED(\"slk_attrset(%p,%s)\"), (void *) SP_PARM, _traceattr(attr)));\n\n    if (SP_PARM != 0 && SP_PARM->_slk != 0) {\n\tSetAttr(SP_PARM->_slk->attr, attr);\n\treturnCode(OK);\n    } else\n\treturnCode(ERR);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nslk_attrset(const chtype attr)\n{\n    return NCURSES_SP_NAME(slk_attrset) (CURRENT_SCREEN, attr);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

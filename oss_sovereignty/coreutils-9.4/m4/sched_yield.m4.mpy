@@ -1,0 +1,9 @@
+{
+  "module_name": "sched_yield.m4",
+  "hash_id": "a06948abe1a2b1a293510460eb5421e670f049f726420cbd941d20e9b00fb602",
+  "original_prompt": "Ingested from coreutils-9.4/m4/sched_yield.m4",
+  "human_readable_source": "# sched_yield.m4 serial 3\ndnl Copyright (C) 2019-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_SCHED_YIELD],\n[\n  AC_REQUIRE([gl_SCHED_H_DEFAULTS])\n  AC_REQUIRE([gl_PTHREADLIB])\n  AC_REQUIRE([AC_CANONICAL_HOST])\n\n  if { case \"$host_os\" in mingw* | windows*) true;; *) false;; esac; } \\\n     && test $gl_threads_api = windows; then\n    dnl Choose function names that don't conflict with the mingw-w64 winpthreads\n    dnl library.\n    REPLACE_SCHED_YIELD=1\n  else\n    AC_CHECK_DECL([sched_yield], , [HAVE_SCHED_YIELD=0],\n      [[#include <sched.h>]])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ecdsa_sk",
+  "hash_id": "f81b969ccd3e85f02b71465ba38fb51b5adf6f11b09f2e9e82ed6b2ab31f2356",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshsig/testdata/ecdsa_sk",
+  "human_readable_source": "-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAfwAAACJzay1lY2\nRzYS1zaGEyLW5pc3RwMjU2QG9wZW5zc2guY29tAAAACG5pc3RwMjU2AAAAQQSg1WuY0XE+\nVexOsrJsFYuxyVoe6eQ/oXmyz2pEHKZw9moyWehv+Fs7oZWFp3JVmOtybKQ6dvfUZYauQE\n/Ov4PAAAAABHNzaDoAAAGI6iV41+oleNcAAAAic2stZWNkc2Etc2hhMi1uaXN0cDI1NkBv\ncGVuc3NoLmNvbQAAAAhuaXN0cDI1NgAAAEEEoNVrmNFxPlXsTrKybBWLsclaHunkP6F5ss\n9qRBymcPZqMlnob/hbO6GVhadyVZjrcmykOnb31GWGrkBPzr+DwAAAAARzc2g6AQAAAOMt\nLS0tLUJFR0lOIEVDIFBSSVZBVEUgS0VZLS0tLS0KTUhjQ0FRRUVJQm9oeW54M2tpTFVEeS\nt5UjU3WXBXSU5KektnU1p6WnV2VTljYXFla3JGcW9Bb0dDQ3FHU000OQpBd0VIb1VRRFFn\nQUVvTlZybU5GeFBsWHNUckt5YkJXTHNjbGFIdW5rUDZGNXNzOXFSQnltY1BacU1sbm9iL2\nhiCk82R1ZoYWR5VlpqcmNteWtPbmIzMUdXR3JrQlB6citEd0E9PQotLS0tLUVORCBFQyBQ\nUklWQVRFIEtFWS0tLS0tCgAAAAAAAAARRUNEU0EtU0sgdGVzdCBrZXk=\n-----END OPENSSH PRIVATE KEY-----\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "default.config",
+  "hash_id": "3df9fdbc2f90d0d3c61a3e2ae0152687b2dfb6cb1a97cbef9d91be636323aa8c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/configs/default.config",
+  "human_readable_source": "CONFIG_KUNIT=y\nCONFIG_KUNIT_EXAMPLE_TEST=y\nCONFIG_KUNIT_ALL_TESTS=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

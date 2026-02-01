@@ -1,0 +1,9 @@
+{
+  "module_name": "skew_consistency.c",
+  "hash_id": "80291fd4361750a66829a9a01acf0998e421a3584eb652ead992b99506431de4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/timers/skew_consistency.c",
+  "human_readable_source": " \n\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n#include <sys/time.h>\n#include <sys/timex.h>\n#include <time.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <fcntl.h>\n#include <string.h>\n#include <sys/wait.h>\n#include \"../kselftest.h\"\n\n#define NSEC_PER_SEC 1000000000LL\n\nint main(int argc, char **argv)\n{\n\tstruct timex tx;\n\tint ret, ppm;\n\tpid_t pid;\n\n\n\tprintf(\"Running Asynchronous Frequency Changing Tests...\\n\");\n\n\tpid = fork();\n\tif (!pid)\n\t\treturn system(\"./inconsistency-check -c 1 -t 600\");\n\n\tppm = 500;\n\tret = 0;\n\n\twhile (pid != waitpid(pid, &ret, WNOHANG)) {\n\t\tppm = -ppm;\n\t\ttx.modes = ADJ_FREQUENCY;\n\t\ttx.freq = ppm << 16;\n\t\tadjtimex(&tx);\n\t\tusleep(500000);\n\t}\n\n\t \n\ttx.modes = ADJ_FREQUENCY;\n\ttx.offset = 0;\n\tadjtimex(&tx);\n\n\n\tif (ret) {\n\t\tprintf(\"[FAILED]\\n\");\n\t\treturn ksft_exit_fail();\n\t}\n\tprintf(\"[OK]\\n\");\n\treturn ksft_exit_pass();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

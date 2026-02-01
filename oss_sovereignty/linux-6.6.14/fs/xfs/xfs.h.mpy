@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs.h",
+  "hash_id": "51a45e24c1f1f50c59c7260e3508f58241247ac1f05a0a2d5df2e719a49706f7",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs.h",
+  "human_readable_source": "\n \n#ifndef __XFS_H__\n#define __XFS_H__\n\n#ifdef CONFIG_XFS_DEBUG\n#define DEBUG 1\n#endif\n\n#ifdef CONFIG_XFS_ASSERT_FATAL\n#define XFS_ASSERT_FATAL 1\n#endif\n\n#ifdef CONFIG_XFS_WARN\n#define XFS_WARN 1\n#endif\n\n\n#include \"xfs_linux.h\"\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

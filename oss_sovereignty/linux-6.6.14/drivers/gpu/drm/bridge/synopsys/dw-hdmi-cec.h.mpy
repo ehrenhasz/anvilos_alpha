@@ -1,0 +1,9 @@
+{
+  "module_name": "dw-hdmi-cec.h",
+  "hash_id": "326b319d2b3d01c18ed919ef82949564bbea8a821dce24d432498c16d19c23ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/bridge/synopsys/dw-hdmi-cec.h",
+  "human_readable_source": "#ifndef DW_HDMI_CEC_H\n#define DW_HDMI_CEC_H\n\nstruct dw_hdmi;\n\nstruct dw_hdmi_cec_ops {\n\tvoid (*write)(struct dw_hdmi *hdmi, u8 val, int offset);\n\tu8 (*read)(struct dw_hdmi *hdmi, int offset);\n\tvoid (*enable)(struct dw_hdmi *hdmi);\n\tvoid (*disable)(struct dw_hdmi *hdmi);\n};\n\nstruct dw_hdmi_cec_data {\n\tstruct dw_hdmi *hdmi;\n\tconst struct dw_hdmi_cec_ops *ops;\n\tint irq;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

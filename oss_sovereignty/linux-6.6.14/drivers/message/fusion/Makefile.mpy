@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1fa1e4112eed5cb28e0bc5b6804484cefe0a0c3e55ffdd6350031ca2a92be3fe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/message/fusion/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Fusion MPT drivers; recognized debug defines...\n\n# enable verbose logging\n# CONFIG_FUSION_LOGGING needs to be enabled in Kconfig\n#ccflags-y := -DMPT_DEBUG_VERBOSE\n\n\n#=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-} LSI_LOGIC\n\nobj-$(CONFIG_FUSION_SPI)\t+= mptbase.o mptscsih.o mptspi.o\nobj-$(CONFIG_FUSION_FC)\t\t+= mptbase.o mptscsih.o mptfc.o\nobj-$(CONFIG_FUSION_SAS)\t+= mptbase.o mptscsih.o mptsas.o\nobj-$(CONFIG_FUSION_CTL)\t+= mptctl.o\nobj-$(CONFIG_FUSION_LAN)\t+= mptlan.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

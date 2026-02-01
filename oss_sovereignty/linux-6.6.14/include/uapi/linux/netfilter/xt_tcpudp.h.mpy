@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_tcpudp.h",
+  "hash_id": "72c855a2c3b9225e98682e3db2d23bcbd4b69d1d778b8e338e44cd2a99aba7ae",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_tcpudp.h",
+  "human_readable_source": " \n#ifndef _XT_TCPUDP_H\n#define _XT_TCPUDP_H\n\n#include <linux/types.h>\n\n \nstruct xt_tcp {\n\t__u16 spts[2];\t\t\t \n\t__u16 dpts[2];\t\t\t \n\t__u8 option;\t\t\t \n\t__u8 flg_mask;\t\t\t \n\t__u8 flg_cmp;\t\t\t \n\t__u8 invflags;\t\t\t \n};\n\n \n#define XT_TCP_INV_SRCPT\t0x01\t \n#define XT_TCP_INV_DSTPT\t0x02\t \n#define XT_TCP_INV_FLAGS\t0x04\t \n#define XT_TCP_INV_OPTION\t0x08\t \n#define XT_TCP_INV_MASK\t\t0x0F\t \n\n \nstruct xt_udp {\n\t__u16 spts[2];\t\t\t \n\t__u16 dpts[2];\t\t\t \n\t__u8 invflags;\t\t\t \n};\n\n \n#define XT_UDP_INV_SRCPT\t0x01\t \n#define XT_UDP_INV_DSTPT\t0x02\t \n#define XT_UDP_INV_MASK\t0x03\t \n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

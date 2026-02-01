@@ -1,0 +1,9 @@
+{
+  "module_name": "time_tai.c",
+  "hash_id": "430cbed1cc1536b09c92476a3b9e7e187a8278de345da647dabab6f979b5e499",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/time_tai.c",
+  "human_readable_source": "\n \n\n#include <test_progs.h>\n#include <network_helpers.h>\n\n#include \"test_time_tai.skel.h\"\n\n#include <time.h>\n#include <stdint.h>\n\n#define TAI_THRESHOLD\t1000000000ULL  \n#define NSEC_PER_SEC\t1000000000ULL\n\nstatic __u64 ts_to_ns(const struct timespec *ts)\n{\n\treturn ts->tv_sec * NSEC_PER_SEC + ts->tv_nsec;\n}\n\nvoid test_time_tai(void)\n{\n\tstruct __sk_buff skb = {\n\t\t.cb[0] = 0,\n\t\t.cb[1] = 0,\n\t\t.tstamp = 0,\n\t};\n\tLIBBPF_OPTS(bpf_test_run_opts, topts,\n\t\t.data_in = &pkt_v4,\n\t\t.data_size_in = sizeof(pkt_v4),\n\t\t.ctx_in = &skb,\n\t\t.ctx_size_in = sizeof(skb),\n\t\t.ctx_out = &skb,\n\t\t.ctx_size_out = sizeof(skb),\n\t);\n\tstruct test_time_tai *skel;\n\tstruct timespec now_tai;\n\t__u64 ts1, ts2, now;\n\tint ret, prog_fd;\n\n\t \n\tskel = test_time_tai__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"tai_open\"))\n\t\treturn;\n\n\t \n\tprog_fd = bpf_program__fd(skel->progs.time_tai);\n\tret = bpf_prog_test_run_opts(prog_fd, &topts);\n\tASSERT_OK(ret, \"test_run\");\n\n\t \n\tts1 = skb.tstamp;\n\tts2 = skb.cb[0] | ((__u64)skb.cb[1] << 32);\n\n\t \n\tASSERT_NEQ(ts1, 0, \"tai_ts1\");\n\tASSERT_NEQ(ts2, 0, \"tai_ts2\");\n\n\t \n\tASSERT_GE(ts2, ts1, \"tai_forward\");\n\n\t \n\tret = clock_gettime(CLOCK_TAI, &now_tai);\n\tASSERT_EQ(ret, 0, \"tai_gettime\");\n\tnow = ts_to_ns(&now_tai);\n\n\tASSERT_TRUE(now > ts1, \"tai_future_ts1\");\n\tASSERT_TRUE(now > ts2, \"tai_future_ts2\");\n\n\t \n\tASSERT_TRUE(now - ts1 < TAI_THRESHOLD, \"tai_range_ts1\");\n\tASSERT_TRUE(now - ts2 < TAI_THRESHOLD, \"tai_range_ts2\");\n\n\ttest_time_tai__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

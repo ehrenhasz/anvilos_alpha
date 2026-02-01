@@ -1,0 +1,9 @@
+{
+  "module_name": "gfx_v7_0.h",
+  "hash_id": "67c1e94d6aa7a1453a167d41e16a2135b77ebb663b4a09e2267dba3a81015cdb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/gfx_v7_0.h",
+  "human_readable_source": " \n\n#ifndef __GFX_V7_0_H__\n#define __GFX_V7_0_H__\n\nextern const struct amdgpu_ip_block_version gfx_v7_1_ip_block;\nextern const struct amdgpu_ip_block_version gfx_v7_2_ip_block;\nextern const struct amdgpu_ip_block_version gfx_v7_3_ip_block;\n\nstruct amdgpu_device;\nstruct cik_mqd;\n\nint gfx_v7_0_mqd_commit(struct amdgpu_device *adev, struct cik_mqd *mqd);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

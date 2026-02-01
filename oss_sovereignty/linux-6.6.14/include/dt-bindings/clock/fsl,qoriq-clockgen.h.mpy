@@ -1,0 +1,9 @@
+{
+  "module_name": "fsl,qoriq-clockgen.h",
+  "hash_id": "9143448079897cf2dd66dc5bd81a66fc90e3783d28fff2bae2e90bbe729c912c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/fsl,qoriq-clockgen.h",
+  "human_readable_source": " \n\n#ifndef DT_CLOCK_FSL_QORIQ_CLOCKGEN_H\n#define DT_CLOCK_FSL_QORIQ_CLOCKGEN_H\n\n#define QORIQ_CLK_SYSCLK\t0\n#define QORIQ_CLK_CMUX\t\t1\n#define QORIQ_CLK_HWACCEL\t2\n#define QORIQ_CLK_FMAN\t\t3\n#define QORIQ_CLK_PLATFORM_PLL\t4\n#define QORIQ_CLK_CORECLK\t5\n\n#define QORIQ_CLK_PLL_DIV(x)\t((x) - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

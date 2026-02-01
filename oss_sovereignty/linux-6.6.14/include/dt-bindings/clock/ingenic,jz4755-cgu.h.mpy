@@ -1,0 +1,9 @@
+{
+  "module_name": "ingenic,jz4755-cgu.h",
+  "hash_id": "5f547ebdc2458bc7c2fe7b36347bea56ca8ecc364b2fb4ce9f060c07209ce6d4",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/ingenic,jz4755-cgu.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_CLOCK_JZ4755_CGU_H__\n#define __DT_BINDINGS_CLOCK_JZ4755_CGU_H__\n\n#define JZ4755_CLK_EXT\t\t0\n#define JZ4755_CLK_OSC32K\t1\n#define JZ4755_CLK_PLL\t\t2\n#define JZ4755_CLK_PLL_HALF\t3\n#define JZ4755_CLK_EXT_HALF\t4\n#define JZ4755_CLK_CCLK\t\t5\n#define JZ4755_CLK_H0CLK\t6\n#define JZ4755_CLK_PCLK\t\t7\n#define JZ4755_CLK_MCLK\t\t8\n#define JZ4755_CLK_H1CLK\t9\n#define JZ4755_CLK_UDC\t\t10\n#define JZ4755_CLK_LCD\t\t11\n#define JZ4755_CLK_UART0\t12\n#define JZ4755_CLK_UART1\t13\n#define JZ4755_CLK_UART2\t14\n#define JZ4755_CLK_DMA\t\t15\n#define JZ4755_CLK_MMC\t\t16\n#define JZ4755_CLK_MMC0\t\t17\n#define JZ4755_CLK_MMC1\t\t18\n#define JZ4755_CLK_EXT512\t19\n#define JZ4755_CLK_RTC\t\t20\n#define JZ4755_CLK_UDC_PHY\t21\n#define JZ4755_CLK_I2S\t\t22\n#define JZ4755_CLK_SPI\t\t23\n#define JZ4755_CLK_AIC\t\t24\n#define JZ4755_CLK_ADC\t\t25\n#define JZ4755_CLK_TCU\t\t26\n#define JZ4755_CLK_BCH\t\t27\n#define JZ4755_CLK_I2C\t\t28\n#define JZ4755_CLK_TVE\t\t29\n#define JZ4755_CLK_CIM\t\t30\n#define JZ4755_CLK_AUX_CPU\t31\n#define JZ4755_CLK_AHB1\t\t32\n#define JZ4755_CLK_IDCT\t\t33\n#define JZ4755_CLK_DB\t\t34\n#define JZ4755_CLK_ME\t\t35\n#define JZ4755_CLK_MC\t\t36\n#define JZ4755_CLK_TSSI\t\t37\n#define JZ4755_CLK_IPU\t\t38\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

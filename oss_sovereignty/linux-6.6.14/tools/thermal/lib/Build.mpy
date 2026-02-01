@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "066fcc43d81332c47750db75d855091a980cf28314d0384d083c63f735399228",
+  "original_prompt": "Ingested from linux-6.6.14/tools/thermal/lib/Build",
+  "human_readable_source": "libthermal_tools-y += mainloop.o\nlibthermal_tools-y += log.o\nlibthermal_tools-y += uptimeofday.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

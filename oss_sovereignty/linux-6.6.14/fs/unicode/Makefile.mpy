@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8fb42d5c948ffc862d6d157cfbd8402fd2a0458e2af9fb852d65ac622f77d0ce",
+  "original_prompt": "Ingested from linux-6.6.14/fs/unicode/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nifneq ($(CONFIG_UNICODE),)\nobj-y\t\t\t+= unicode.o\nendif\nobj-$(CONFIG_UNICODE)\t+= utf8data.o\nobj-$(CONFIG_UNICODE_NORMALIZATION_SELFTEST) += utf8-selftest.o\n\nunicode-y := utf8-norm.o utf8-core.o\n\n$(obj)/utf8-data.o: $(obj)/utf8data.c\n\n# In the normal build, the checked-in utf8data.c is just shipped.\n#\n# To generate utf8data.c from UCD, put *.txt files in this directory\n# and pass REGENERATE_UTF8DATA=1 from the command line.\nifdef REGENERATE_UTF8DATA\n\nquiet_cmd_utf8data = GEN     $@\n      cmd_utf8data = $< \\\n\t\t-a $(srctree)/$(src)/DerivedAge.txt \\\n\t\t-c $(srctree)/$(src)/DerivedCombiningClass.txt \\\n\t\t-p $(srctree)/$(src)/DerivedCoreProperties.txt \\\n\t\t-d $(srctree)/$(src)/UnicodeData.txt \\\n\t\t-f $(srctree)/$(src)/CaseFolding.txt \\\n\t\t-n $(srctree)/$(src)/NormalizationCorrections.txt \\\n\t\t-t $(srctree)/$(src)/NormalizationTest.txt \\\n\t\t-o $@\n\n$(obj)/utf8data.c: $(obj)/mkutf8data $(filter %.txt, $(cmd_utf8data)) FORCE\n\t$(call if_changed,utf8data)\n\nelse\n\n$(obj)/utf8data.c: $(src)/utf8data.c_shipped FORCE\n\t$(call if_changed,copy)\n\nendif\n\ntargets += utf8data.c\nhostprogs += mkutf8data\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

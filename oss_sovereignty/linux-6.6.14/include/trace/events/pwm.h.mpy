@@ -1,0 +1,9 @@
+{
+  "module_name": "pwm.h",
+  "hash_id": "c9d42b8e7ce580e3c399be7a850f39563b463ee525b6c84c810ac29bc388a353",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/pwm.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM pwm\n\n#if !defined(_TRACE_PWM_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_PWM_H\n\n#include <linux/pwm.h>\n#include <linux/tracepoint.h>\n\nDECLARE_EVENT_CLASS(pwm,\n\n\tTP_PROTO(struct pwm_device *pwm, const struct pwm_state *state, int err),\n\n\tTP_ARGS(pwm, state, err),\n\n\tTP_STRUCT__entry(\n\t\t__field(struct pwm_device *, pwm)\n\t\t__field(u64, period)\n\t\t__field(u64, duty_cycle)\n\t\t__field(enum pwm_polarity, polarity)\n\t\t__field(bool, enabled)\n\t\t__field(int, err)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->pwm = pwm;\n\t\t__entry->period = state->period;\n\t\t__entry->duty_cycle = state->duty_cycle;\n\t\t__entry->polarity = state->polarity;\n\t\t__entry->enabled = state->enabled;\n\t\t__entry->err = err;\n\t),\n\n\tTP_printk(\"%p: period=%llu duty_cycle=%llu polarity=%d enabled=%d err=%d\",\n\t\t  __entry->pwm, __entry->period, __entry->duty_cycle,\n\t\t  __entry->polarity, __entry->enabled, __entry->err)\n\n);\n\nDEFINE_EVENT(pwm, pwm_apply,\n\n\tTP_PROTO(struct pwm_device *pwm, const struct pwm_state *state, int err),\n\n\tTP_ARGS(pwm, state, err)\n);\n\nDEFINE_EVENT(pwm, pwm_get,\n\n\tTP_PROTO(struct pwm_device *pwm, const struct pwm_state *state, int err),\n\n\tTP_ARGS(pwm, state, err)\n);\n\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

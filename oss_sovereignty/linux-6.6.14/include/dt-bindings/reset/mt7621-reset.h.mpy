@@ -1,0 +1,9 @@
+{
+  "module_name": "mt7621-reset.h",
+  "hash_id": "241641032e3552d12fe45c611c85c00c5c06d969c405bbe51140ece26509a2ac",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/mt7621-reset.h",
+  "human_readable_source": " \n \n\n#ifndef DT_BINDING_MT7621_RESET_H\n#define DT_BINDING_MT7621_RESET_H\n\n#define MT7621_RST_SYS\t\t0\n#define MT7621_RST_MCM\t\t2\n#define MT7621_RST_HSDMA\t5\n#define MT7621_RST_FE\t\t6\n#define MT7621_RST_SPDIFTX\t7\n#define MT7621_RST_TIMER\t8\n#define MT7621_RST_INT\t\t9\n#define MT7621_RST_MC\t\t10\n#define MT7621_RST_PCM\t\t11\n#define MT7621_RST_PIO\t\t13\n#define MT7621_RST_GDMA\t\t14\n#define MT7621_RST_NFI\t\t15\n#define MT7621_RST_I2C\t\t16\n#define MT7621_RST_I2S\t\t17\n#define MT7621_RST_SPI\t\t18\n#define MT7621_RST_UART1\t19\n#define MT7621_RST_UART2\t20\n#define MT7621_RST_UART3\t21\n#define MT7621_RST_ETH\t\t23\n#define MT7621_RST_PCIE0\t24\n#define MT7621_RST_PCIE1\t25\n#define MT7621_RST_PCIE2\t26\n#define MT7621_RST_AUX_STCK\t28\n#define MT7621_RST_CRYPTO\t29\n#define MT7621_RST_SDXC\t\t30\n#define MT7621_RST_PPE\t\t31\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

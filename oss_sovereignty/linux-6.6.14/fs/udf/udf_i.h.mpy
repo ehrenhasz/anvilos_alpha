@@ -1,0 +1,9 @@
+{
+  "module_name": "udf_i.h",
+  "hash_id": "cb1b79a2d18b5843555b3e1971ac8a7fd50ba20818f7bf3a7f5ab56398c3c4bb",
+  "original_prompt": "Ingested from linux-6.6.14/fs/udf/udf_i.h",
+  "human_readable_source": " \n#ifndef _UDF_I_H\n#define _UDF_I_H\n\nstruct extent_position {\n\tstruct buffer_head *bh;\n\tuint32_t offset;\n\tstruct kernel_lb_addr block;\n};\n\nstruct udf_ext_cache {\n\t \n\tstruct extent_position epos;\n\t \n\tloff_t lstart;\n};\n\n \n\nstruct udf_inode_info {\n\tstruct timespec64\ti_crtime;\n\t \n\tstruct kernel_lb_addr\t\ti_location;\n\t__u64\t\t\ti_unique;\n\t__u32\t\t\ti_lenEAttr;\n\t__u32\t\t\ti_lenAlloc;\n\t__u64\t\t\ti_lenExtents;\n\t__u32\t\t\ti_next_alloc_block;\n\t__u32\t\t\ti_next_alloc_goal;\n\t__u32\t\t\ti_checkpoint;\n\t__u32\t\t\ti_extraPerms;\n\tunsigned\t\ti_alloc_type : 3;\n\tunsigned\t\ti_efe : 1;\t \n\tunsigned\t\ti_use : 1;\t \n\tunsigned\t\ti_strat4096 : 1;\n\tunsigned\t\ti_streamdir : 1;\n\tunsigned\t\ti_hidden : 1;\t \n\tunsigned\t\treserved : 24;\n\t__u8\t\t\t*i_data;\n\tstruct kernel_lb_addr\ti_locStreamdir;\n\t__u64\t\t\ti_lenStreams;\n\tstruct rw_semaphore\ti_data_sem;\n\tstruct udf_ext_cache cached_extent;\n\t \n\tspinlock_t i_extent_cache_lock;\n\tstruct inode vfs_inode;\n};\n\nstatic inline struct udf_inode_info *UDF_I(struct inode *inode)\n{\n\treturn container_of(inode, struct udf_inode_info, vfs_inode);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

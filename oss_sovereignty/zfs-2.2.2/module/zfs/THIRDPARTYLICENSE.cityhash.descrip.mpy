@@ -1,0 +1,9 @@
+{
+  "module_name": "THIRDPARTYLICENSE.cityhash.descrip",
+  "hash_id": "95727b8b32bcbda3f0d8dc926f46aa2678c5df1e8a3c0d3c13b3e46570bc7c91",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zfs/THIRDPARTYLICENSE.cityhash.descrip",
+  "human_readable_source": "CITYHASH CHECKSUM FUNCTIONALITY IN ZFS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

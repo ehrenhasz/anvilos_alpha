@@ -1,0 +1,9 @@
+{
+  "module_name": "wc.x",
+  "hash_id": "96c2755e978388f97c0c7769cb17925a202e40e9b8c1ae10b679d4725e5b9876",
+  "original_prompt": "Ingested from coreutils-9.4/man/wc.x",
+  "human_readable_source": "[NAME]\nwc \\- print newline, word, and byte counts for each file\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

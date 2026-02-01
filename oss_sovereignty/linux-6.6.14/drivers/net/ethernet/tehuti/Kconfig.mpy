@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "36b8aea6d7a9a2b7df898c6349e435597742e86d091fbdd934e95bf363ee1f86",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/tehuti/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Tehuti network device configuration\n#\n\nconfig NET_VENDOR_TEHUTI\n\tbool \"Tehuti devices\"\n\tdefault y\n\tdepends on PCI\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Tehuti cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif NET_VENDOR_TEHUTI\n\nconfig TEHUTI\n\ttristate \"Tehuti Networks 10G Ethernet\"\n\tdepends on PCI\n\thelp\n\t  Tehuti Networks 10G Ethernet NIC\n\nendif # NET_VENDOR_TEHUTI\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

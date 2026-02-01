@@ -1,0 +1,9 @@
+{
+  "module_name": "unionwait.h",
+  "hash_id": "0b33b41a8f06794b4e0aa82b5dd5eecd13e6caa3733fbcd84970747c92d919d4",
+  "original_prompt": "Ingested from bash-5.2.21/include/unionwait.h",
+  "human_readable_source": " \n\n \n\n#ifndef _UNIONWAIT_H\n#define _UNIONWAIT_H\n\n#if !defined (WORDS_BIGENDIAN)\nunion wait\n  {\n    int\tw_status;\t\t \n\n     \n    struct\n      {\n\tunsigned short\n\t  w_Termsig  : 7,\t \n\t  w_Coredump : 1,\t \n\t  w_Retcode  : 8,\t \n\t  w_Fill1    : 16;\t \n      } w_T;\n\n     \n    struct\n      {\n\tunsigned short\n\t  w_Stopval : 8,\t \n\t  w_Stopsig : 8,\t \n\t  w_Fill2   : 16;\t \n      } w_S;\n  };\n\n#else   \n\n \n\nunion wait\n  {\n    int\tw_status;\t\t \n\n     \n    struct\n      {\n\tunsigned short w_Fill1    : 16;\t \n\tunsigned       w_Retcode  : 8;\t \n\tunsigned       w_Coredump : 1;\t \n\tunsigned       w_Termsig  : 7;\t \n      } w_T;\n\n     \n    struct\n      {\n\tunsigned short w_Fill2   : 16;\t \n\tunsigned       w_Stopsig : 8;\t \n\tunsigned       w_Stopval : 8;\t \n      } w_S;\n  };\n\n#endif  \n\n#define w_termsig  w_T.w_Termsig\n#define w_coredump w_T.w_Coredump\n#define w_retcode  w_T.w_Retcode\n#define w_stopval  w_S.w_Stopval\n#define w_stopsig  w_S.w_Stopsig\n\n#define WSTOPPED       0177\n#define WIFSTOPPED(x)  ((x).w_stopval == WSTOPPED)\n#define WIFEXITED(x)   ((x).w_stopval != WSTOPPED && (x).w_termsig == 0)\n#define WIFSIGNALED(x) ((x).w_stopval != WSTOPPED && (x).w_termsig != 0)\n\n#define WTERMSIG(x)    ((x).w_termsig)\n#define WSTOPSIG(x)    ((x).w_stopsig)\n#define WEXITSTATUS(x) ((x).w_retcode)\n#define WIFCORED(x)    ((x).w_coredump)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

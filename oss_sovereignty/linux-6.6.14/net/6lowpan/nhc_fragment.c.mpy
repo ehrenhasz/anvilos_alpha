@@ -1,0 +1,9 @@
+{
+  "module_name": "nhc_fragment.c",
+  "hash_id": "b578fd9e07fac93a50129ba28cac4c51c2e7b9d58059b1d81f3f6e9e073e3d2f",
+  "original_prompt": "Ingested from linux-6.6.14/net/6lowpan/nhc_fragment.c",
+  "human_readable_source": "\n \n\n#include \"nhc.h\"\n\n#define LOWPAN_NHC_FRAGMENT_ID_0\t0xe4\n#define LOWPAN_NHC_FRAGMENT_MASK_0\t0xfe\n\nLOWPAN_NHC(nhc_fragment, \"RFC6282 Fragment\", NEXTHDR_FRAGMENT, 0,\n\t   LOWPAN_NHC_FRAGMENT_ID_0, LOWPAN_NHC_FRAGMENT_MASK_0, NULL, NULL);\n\nmodule_lowpan_nhc(nhc_fragment);\nMODULE_DESCRIPTION(\"6LoWPAN next header RFC6282 Fragment compression\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

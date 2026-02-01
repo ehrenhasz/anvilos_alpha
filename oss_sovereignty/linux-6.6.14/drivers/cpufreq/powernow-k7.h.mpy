@@ -1,0 +1,9 @@
+{
+  "module_name": "powernow-k7.h",
+  "hash_id": "3b5db662b6034f2eafe526b8807ff491765ab7e21b9a987a9283e6b081a4f645",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpufreq/powernow-k7.h",
+  "human_readable_source": " \n \n\nunion msr_fidvidctl {\n\tstruct {\n\t\tunsigned FID:5,\t\t\t\n\t\treserved1:3,\t\n\t\tVID:5,\t\t\t\n\t\treserved2:3,\t\n\t\tFIDC:1,\t\t\t\n\t\tVIDC:1,\t\t\t\n\t\treserved3:2,\t\n\t\tFIDCHGRATIO:1,\t\n\t\treserved4:11,\t\n\t\tSGTC:20,\t\t\n\t\treserved5:12;\t\n\t} bits;\n\tunsigned long long val;\n};\n\nunion msr_fidvidstatus {\n\tstruct {\n\t\tunsigned CFID:5,\t\t\t\n\t\treserved1:3,\t\n\t\tSFID:5,\t\t\t\n\t\treserved2:3,\t\n\t\tMFID:5,\t\t\t\n\t\treserved3:11,\t\n\t\tCVID:5,\t\t\t\n\t\treserved4:3,\t\n\t\tSVID:5,\t\t\t\n\t\treserved5:3,\t\n\t\tMVID:5,\t\t\t\n\t\treserved6:11;\t\n\t} bits;\n\tunsigned long long val;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

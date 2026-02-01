@@ -1,0 +1,9 @@
+{
+  "module_name": "swap_slots.h",
+  "hash_id": "a0acfbe2ef47f2c7d3bc8b75f80aaa2ea38963f583e21884000d793b15ae569c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/swap_slots.h",
+  "human_readable_source": " \n#ifndef _LINUX_SWAP_SLOTS_H\n#define _LINUX_SWAP_SLOTS_H\n\n#include <linux/swap.h>\n#include <linux/spinlock.h>\n#include <linux/mutex.h>\n\n#define SWAP_SLOTS_CACHE_SIZE\t\t\tSWAP_BATCH\n#define THRESHOLD_ACTIVATE_SWAP_SLOTS_CACHE\t(5*SWAP_SLOTS_CACHE_SIZE)\n#define THRESHOLD_DEACTIVATE_SWAP_SLOTS_CACHE\t(2*SWAP_SLOTS_CACHE_SIZE)\n\nstruct swap_slots_cache {\n\tbool\t\tlock_initialized;\n\tstruct mutex\talloc_lock;  \n\tswp_entry_t\t*slots;\n\tint\t\tnr;\n\tint\t\tcur;\n\tspinlock_t\tfree_lock;   \n\tswp_entry_t\t*slots_ret;\n\tint\t\tn_ret;\n};\n\nvoid disable_swap_slots_cache_lock(void);\nvoid reenable_swap_slots_cache_unlock(void);\nvoid enable_swap_slots_cache(void);\nvoid free_swap_slot(swp_entry_t entry);\n\nextern bool swap_slot_cache_enabled;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

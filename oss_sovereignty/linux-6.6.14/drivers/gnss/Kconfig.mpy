@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "481ec160d3151146ef7d96be878396645373ae114fcac9aaed172e3d21684520",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gnss/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# GNSS receiver configuration\n#\n\nmenuconfig GNSS\n\ttristate \"GNSS receiver support\"\n\thelp\n\t  Say Y here if you have a GNSS receiver (e.g. a GPS receiver).\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called gnss.\n\nif GNSS\n\nconfig GNSS_SERIAL\n\ttristate\n\nconfig GNSS_MTK_SERIAL\n\ttristate \"Mediatek GNSS receiver support\"\n\tdepends on SERIAL_DEV_BUS\n\tselect GNSS_SERIAL\n\thelp\n\t  Say Y here if you have a Mediatek-based GNSS receiver which uses a\n\t  serial interface.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called gnss-mtk.\n\n\t  If unsure, say N.\n\nconfig GNSS_SIRF_SERIAL\n\ttristate \"SiRFstar GNSS receiver support\"\n\tdepends on SERIAL_DEV_BUS\n\thelp\n\t  Say Y here if you have a SiRFstar-based GNSS receiver which uses a\n\t  serial interface.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called gnss-sirf.\n\n\t  If unsure, say N.\n\nconfig GNSS_UBX_SERIAL\n\ttristate \"u-blox GNSS receiver support\"\n\tdepends on SERIAL_DEV_BUS\n\tselect GNSS_SERIAL\n\thelp\n\t  Say Y here if you have a u-blox GNSS receiver which uses a serial\n\t  interface.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called gnss-ubx.\n\n\t  If unsure, say N.\n\nconfig GNSS_USB\n\ttristate \"USB GNSS receiver support\"\n\tdepends on USB\n\thelp\n\t  Say Y here if you have a GNSS receiver which uses a USB interface.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called gnss-usb.\n\n\t  If unsure, say N.\n\nendif # GNSS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

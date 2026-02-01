@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c8d9d7daf3d33d985ee29601406a0b4aea44963ef4b9c5aad5ad1e050f9fc731",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/as102/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DVB_AS102\n\ttristate \"Abilis AS102 DVB receiver\"\n\tdepends on DVB_CORE && USB && I2C && INPUT\n\tselect FW_LOADER\n\thelp\n\t  Choose Y or M here if you have a device containing an AS102\n\n\t  To compile this driver as a module, choose M here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__shared__libc__abort_.c.compress",
+  "hash_id": "85fc0d5d0eb16fe923f87f67ad005423d17cc7d788e48eeeac5ffc23ddf0a372",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__shared__libc__abort_.c.compress",
+  "human_readable_source": "abort() called\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

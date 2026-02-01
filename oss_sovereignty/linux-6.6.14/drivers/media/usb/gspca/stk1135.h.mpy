@@ -1,0 +1,9 @@
+{
+  "module_name": "stk1135.h",
+  "hash_id": "ae45dc662388bef94b2e19c2b9745ebb2c22a84391ffcb1dcaa2e4d7192a2451",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/gspca/stk1135.h",
+  "human_readable_source": " \n \n\n#define STK1135_REG_GCTRL\t0x000\t \n#define STK1135_REG_ICTRL\t0x004\t \n#define STK1135_REG_IDATA\t0x008\t \n#define STK1135_REG_RMCTL\t0x00c\t \n#define STK1135_REG_POSVA\t0x010\t \n\n#define STK1135_REG_SENSO\t0x018\t \n#define STK1135_REG_PLLFD\t0x01c\t \n\n#define STK1135_REG_SCTRL\t0x100\t \n#define STK1135_REG_DCTRL\t0x104\t \n#define STK1135_REG_CISPO\t0x110\t \n#define STK1135_REG_CIEPO\t0x114\t \n#define STK1135_REG_TCTRL\t0x120\t \n\n#define STK1135_REG_SICTL\t0x200\t \n#define STK1135_REG_SBUSW\t0x204\t \n#define STK1135_REG_SBUSR\t0x208\t \n#define STK1135_REG_SCSI\t0x20c\t \n#define STK1135_REG_GSBWP\t0x210\t \n#define STK1135_REG_GSBRP\t0x214\t \n#define STK1135_REG_ASIC\t0x2fc\t \n\n#define STK1135_REG_TMGEN\t0x300\t \n#define STK1135_REG_TCP1\t0x350\t \n\nstruct stk1135_pkt_header {\n\tu8 flags;\n\tu8 seq;\n\t__le16 gpio;\n} __packed;\n\n#define STK1135_HDR_FRAME_START\t(1 << 7)\n#define STK1135_HDR_ODD\t\t(1 << 6)\n#define STK1135_HDR_I2C_VBLANK\t(1 << 5)\n\n#define STK1135_HDR_SEQ_MASK\t0x3f\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "waitid_options.c",
+  "hash_id": "7875b491d079719ba5fa24652d3f32f969222ceb8c7cb09ba68472d7545f3615",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/waitid_options.c",
+  "human_readable_source": "\n#include <sys/types.h>\n#include <sys/wait.h>\n\nstatic size_t syscall_arg__scnprintf_waitid_options(char *bf, size_t size,\n\t\t\t\t\t\t    struct syscall_arg *arg)\n{\n\tbool show_prefix = arg->show_string_prefix;\n\tconst char *prefix = \"W\";\n\tint printed = 0, options = arg->val;\n\n#define\tP_OPTION(n) \\\n\tif (options & W##n) { \\\n\t\tprinted += scnprintf(bf + printed, size - printed, \"%s%s%s\", printed ? \"|\" : \"\", show_prefix ? prefix : \"\",  #n); \\\n\t\toptions &= ~W##n; \\\n\t}\n\n\tP_OPTION(NOHANG);\n\tP_OPTION(UNTRACED);\n\tP_OPTION(CONTINUED);\n#undef P_OPTION\n\n\tif (options)\n\t\tprinted += scnprintf(bf + printed, size - printed, \"%s%#x\", printed ? \"|\" : \"\", options);\n\n\treturn printed;\n}\n\n#define SCA_WAITID_OPTIONS syscall_arg__scnprintf_waitid_options\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mlxsw_lib.sh",
+  "hash_id": "02b9e83ff7f2b3c6d76adc23618c25fbe4fc9531a8b81fe9df523ba2aed9a930",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/mlxsw_lib.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n##############################################################################\n# Defines\n\nif [[ ! -v MLXSW_CHIP ]]; then\n\tMLXSW_CHIP=$(devlink -j dev info $DEVLINK_DEV | jq -r '.[][][\"driver\"]')\n\tif [ -z \"$MLXSW_CHIP\" ]; then\n\t\techo \"SKIP: Device $DEVLINK_DEV doesn't support devlink info command\"\n\t\texit 1\n\tfi\nfi\n\nMLXSW_SPECTRUM_REV=$(case $MLXSW_CHIP in\n\t\t\t     mlxsw_spectrum)\n\t\t\t\t     echo 1 ;;\n\t\t\t     mlxsw_spectrum*)\n\t\t\t\t     echo ${MLXSW_CHIP#mlxsw_spectrum} ;;\n\t\t\t     *)\n\t\t\t\t     echo \"Couldn't determine Spectrum chip revision.\" \\\n\t\t\t\t\t  > /dev/stderr ;;\n\t\t     esac)\n\nmlxsw_on_spectrum()\n{\n\tlocal rev=$1; shift\n\tlocal op=\"==\"\n\tlocal rev2=${rev%+}\n\n\tif [[ $rev2 != $rev ]]; then\n\t\top=\">=\"\n\tfi\n\n\t((MLXSW_SPECTRUM_REV $op rev2))\n}\n\n__mlxsw_only_on_spectrum()\n{\n\tlocal rev=$1; shift\n\tlocal caller=$1; shift\n\tlocal src=$1; shift\n\n\tif ! mlxsw_on_spectrum \"$rev\"; then\n\t\tlog_test_skip $src:$caller \"(Spectrum-$rev only)\"\n\t\treturn 1\n\tfi\n}\n\nmlxsw_only_on_spectrum()\n{\n\tlocal caller=${FUNCNAME[1]}\n\tlocal src=${BASH_SOURCE[1]}\n\tlocal rev\n\n\tfor rev in \"$@\"; do\n\t\tif __mlxsw_only_on_spectrum \"$rev\" \"$caller\" \"$src\"; then\n\t\t\treturn 0\n\t\tfi\n\tdone\n\n\treturn 1\n}\n\nmlxsw_max_descriptors_get()\n{\n\tlocal spectrum_rev=$MLXSW_SPECTRUM_REV\n\n\tcase $spectrum_rev in\n\t1) echo 81920 ;;\n\t2) echo 136960 ;;\n\t3) echo 204800 ;;\n\t4) echo 220000 ;;\n\t*) echo \"Unknown max descriptors for chip revision.\" > /dev/stderr\n\t   return 1 ;;\n\tesac\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

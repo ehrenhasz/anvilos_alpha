@@ -1,0 +1,9 @@
+{
+  "module_name": "cpufreq-dt.h",
+  "hash_id": "037f428f6a16b9b0c0280313e8e5bc2f1814855497500181b4e00db324698283",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpufreq/cpufreq-dt.h",
+  "human_readable_source": " \n \n\n#ifndef __CPUFREQ_DT_H__\n#define __CPUFREQ_DT_H__\n\n#include <linux/types.h>\n\nstruct cpufreq_policy;\n\nstruct cpufreq_dt_platform_data {\n\tbool have_governor_per_policy;\n\n\tunsigned int\t(*get_intermediate)(struct cpufreq_policy *policy,\n\t\t\t\t\t    unsigned int index);\n\tint\t\t(*target_intermediate)(struct cpufreq_policy *policy,\n\t\t\t\t\t       unsigned int index);\n\tint (*suspend)(struct cpufreq_policy *policy);\n\tint (*resume)(struct cpufreq_policy *policy);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

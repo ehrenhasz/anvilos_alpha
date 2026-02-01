@@ -1,0 +1,9 @@
+{
+  "module_name": "glob_loop.c",
+  "hash_id": "17e8de25f5528427ac1f8e34d8ad291e37e2d901deb710d8209e8a96c58a7569",
+  "original_prompt": "Ingested from bash-5.2.21/lib/glob/glob_loop.c",
+  "human_readable_source": " \n\nstatic int INTERNAL_GLOB_PATTERN_P PARAMS((const GCHAR *));\n\n \nstatic int\nINTERNAL_GLOB_PATTERN_P (pattern)\n     const GCHAR *pattern;\n{\n  register const GCHAR *p;\n  register GCHAR c;\n  int bopen, bsquote;\n\n  p = pattern;\n  bopen = bsquote = 0;\n\n  while ((c = *p++) != L('\\0'))\n    switch (c)\n      {\n      case L('?'):\n      case L('*'):\n\treturn 1;\n\n      case L('['):       \n\tbopen++;         \n\tcontinue;        \n      case L(']'):\n\tif (bopen)\n\t  return 1;\n\tcontinue;\n\n      case L('+'):          \n      case L('@'):\n      case L('!'):\n\tif (*p == L('('))   \n\t  return 1;\n\tcontinue;\n\n      case L('\\\\'):\n\t \n\tif (*p != L('\\0'))\n\t  {\n\t    p++;\n\t    bsquote = 1;\n\t    continue;\n\t  }\n\telse \t \n\t  return 0;\n      }\n\n#if 0\n  return bsquote ? 2 : 0;\n#else\n  return (0);\n#endif\n}\n\n#undef INTERNAL_GLOB_PATTERN_P\n#undef L\n#undef INT\n#undef CHAR\n#undef GCHAR\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "max1600.h",
+  "hash_id": "251e8ee6d416cf240e8b78c0521ff3580734101c7fa512bdf4c644e413bd05a0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pcmcia/max1600.h",
+  "human_readable_source": " \n#ifndef MAX1600_H\n#define MAX1600_H\n\nstruct gpio_desc;\n\nenum {\n\tMAX1600_GPIO_0VCC = 0,\n\tMAX1600_GPIO_1VCC,\n\tMAX1600_GPIO_0VPP,\n\tMAX1600_GPIO_1VPP,\n\tMAX1600_GPIO_MAX,\n\n\tMAX1600_CHAN_A,\n\tMAX1600_CHAN_B,\n\n\tMAX1600_CODE_LOW,\n\tMAX1600_CODE_HIGH,\n};\n\nstruct max1600 {\n\tstruct gpio_desc *gpio[MAX1600_GPIO_MAX];\n\tstruct device *dev;\n\tunsigned int code;\n};\n\nint max1600_init(struct device *dev, struct max1600 **ptr,\n\tunsigned int channel, unsigned int code);\n\nint max1600_configure(struct max1600 *, unsigned int vcc, unsigned int vpp);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

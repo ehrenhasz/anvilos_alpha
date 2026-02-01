@@ -1,0 +1,9 @@
+{
+  "module_name": "iss_ipipeif.h",
+  "hash_id": "039bf8ba14ec2aeab40fa5d4ffa655323c251e1416f1e0b4e45ae0f0f23822e5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/omap4iss/iss_ipipeif.h",
+  "human_readable_source": " \n \n\n#ifndef OMAP4_ISS_IPIPEIF_H\n#define OMAP4_ISS_IPIPEIF_H\n\n#include \"iss_video.h\"\n\nenum ipipeif_input_entity {\n\tIPIPEIF_INPUT_NONE,\n\tIPIPEIF_INPUT_CSI2A,\n\tIPIPEIF_INPUT_CSI2B\n};\n\n#define IPIPEIF_OUTPUT_MEMORY\t\t\tBIT(0)\n#define IPIPEIF_OUTPUT_VP\t\t\tBIT(1)\n\n \n#define IPIPEIF_PAD_SINK\t\t\t0\n#define IPIPEIF_PAD_SOURCE_ISIF_SF\t\t1\n#define IPIPEIF_PAD_SOURCE_VP\t\t\t2\n#define IPIPEIF_PADS_NUM\t\t\t3\n\n \nstruct iss_ipipeif_device {\n\tstruct v4l2_subdev subdev;\n\tstruct media_pad pads[IPIPEIF_PADS_NUM];\n\tstruct v4l2_mbus_framefmt formats[IPIPEIF_PADS_NUM];\n\n\tenum ipipeif_input_entity input;\n\tunsigned int output;\n\tstruct iss_video video_out;\n\tunsigned int error;\n\n\tenum iss_pipeline_stream_state state;\n\twait_queue_head_t wait;\n\tatomic_t stopping;\n};\n\nstruct iss_device;\n\nint omap4iss_ipipeif_init(struct iss_device *iss);\nint omap4iss_ipipeif_create_links(struct iss_device *iss);\nvoid omap4iss_ipipeif_cleanup(struct iss_device *iss);\nint omap4iss_ipipeif_register_entities(struct iss_ipipeif_device *ipipeif,\n\t\t\t\t       struct v4l2_device *vdev);\nvoid omap4iss_ipipeif_unregister_entities(struct iss_ipipeif_device *ipipeif);\n\nint omap4iss_ipipeif_busy(struct iss_ipipeif_device *ipipeif);\nvoid omap4iss_ipipeif_isr(struct iss_ipipeif_device *ipipeif, u32 events);\nvoid omap4iss_ipipeif_restore_context(struct iss_device *iss);\nvoid omap4iss_ipipeif_max_rate(struct iss_ipipeif_device *ipipeif,\n\t\t\t       unsigned int *max_rate);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

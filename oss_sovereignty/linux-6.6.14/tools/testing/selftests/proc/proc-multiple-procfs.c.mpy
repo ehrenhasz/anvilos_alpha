@@ -1,0 +1,9 @@
+{
+  "module_name": "proc-multiple-procfs.c",
+  "hash_id": "514090afe10b40b4c4ee32a042d69b15a73fb59b4f5d0d5aada609bfaf3a0cb3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/proc/proc-multiple-procfs.c",
+  "human_readable_source": " \n#include <assert.h>\n#include <stdlib.h>\n#include <stdio.h>\n#include <sys/mount.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n\nint main(void)\n{\n\tstruct stat proc_st1, proc_st2;\n\tchar procbuff[] = \"/tmp/proc.XXXXXX/meminfo\";\n\tchar procdir1[] = \"/tmp/proc.XXXXXX\";\n\tchar procdir2[] = \"/tmp/proc.XXXXXX\";\n\n\tassert(mkdtemp(procdir1) != NULL);\n\tassert(mkdtemp(procdir2) != NULL);\n\n\tassert(!mount(\"proc\", procdir1, \"proc\", 0, \"hidepid=1\"));\n\tassert(!mount(\"proc\", procdir2, \"proc\", 0, \"hidepid=2\"));\n\n\tsnprintf(procbuff, sizeof(procbuff), \"%s/meminfo\", procdir1);\n\tassert(!stat(procbuff, &proc_st1));\n\n\tsnprintf(procbuff, sizeof(procbuff), \"%s/meminfo\", procdir2);\n\tassert(!stat(procbuff, &proc_st2));\n\n\tumount(procdir1);\n\tumount(procdir2);\n\n\tassert(proc_st1.st_dev != proc_st2.st_dev);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

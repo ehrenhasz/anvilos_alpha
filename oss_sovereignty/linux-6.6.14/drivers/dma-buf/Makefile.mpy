@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "778ff517bb8e0554574e25bbffe4356376d8a072ec629f4b29801459107b2e55",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma-buf/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y := dma-buf.o dma-fence.o dma-fence-array.o dma-fence-chain.o \\\n\t dma-fence-unwrap.o dma-resv.o\nobj-$(CONFIG_DMABUF_HEAPS)\t+= dma-heap.o\nobj-$(CONFIG_DMABUF_HEAPS)\t+= heaps/\nobj-$(CONFIG_SYNC_FILE)\t\t+= sync_file.o\nobj-$(CONFIG_SW_SYNC)\t\t+= sw_sync.o sync_debug.o\nobj-$(CONFIG_UDMABUF)\t\t+= udmabuf.o\nobj-$(CONFIG_DMABUF_SYSFS_STATS) += dma-buf-sysfs-stats.o\n\ndmabuf_selftests-y := \\\n\tselftest.o \\\n\tst-dma-fence.o \\\n\tst-dma-fence-chain.o \\\n\tst-dma-fence-unwrap.o \\\n\tst-dma-resv.o\n\nobj-$(CONFIG_DMABUF_SELFTESTS)\t+= dmabuf_selftests.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

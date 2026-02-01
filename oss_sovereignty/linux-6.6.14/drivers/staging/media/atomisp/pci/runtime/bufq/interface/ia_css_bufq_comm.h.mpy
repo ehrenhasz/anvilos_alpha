@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_bufq_comm.h",
+  "hash_id": "7a72565fdc4fd0543a237aadba2276d94c7c5526b91c83a471df2da3c42fe800",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/bufq/interface/ia_css_bufq_comm.h",
+  "human_readable_source": " \n \n\n#ifndef _IA_CSS_BUFQ_COMM_H\n#define _IA_CSS_BUFQ_COMM_H\n\n#include \"system_global.h\"\n\nenum sh_css_queue_id {\n\tSH_CSS_INVALID_QUEUE_ID     = -1,\n\tSH_CSS_QUEUE_A_ID = 0,\n\tSH_CSS_QUEUE_B_ID,\n\tSH_CSS_QUEUE_C_ID,\n\tSH_CSS_QUEUE_D_ID,\n\tSH_CSS_QUEUE_E_ID,\n\tSH_CSS_QUEUE_F_ID,\n\tSH_CSS_QUEUE_G_ID,\n\tSH_CSS_QUEUE_H_ID,  \n\n#define SH_CSS_MAX_NUM_QUEUES (SH_CSS_QUEUE_H_ID + 1)\n\n};\n\n#define SH_CSS_MAX_DYNAMIC_BUFFERS_PER_THREAD SH_CSS_MAX_NUM_QUEUES\n \n#define IA_CSS_PARAMETER_SET_QUEUE_ID SH_CSS_QUEUE_A_ID\n#define IA_CSS_PER_FRAME_PARAMETER_SET_QUEUE_ID SH_CSS_QUEUE_B_ID\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

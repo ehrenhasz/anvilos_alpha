@@ -1,0 +1,9 @@
+{
+  "module_name": "util.h",
+  "hash_id": "3ca8691e3ebf0843d7da21c6f99e18dbec2890e7622240747b6391c79510cae8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/vsock/util.h",
+  "human_readable_source": " \n#ifndef UTIL_H\n#define UTIL_H\n\n#include <sys/socket.h>\n#include <linux/vm_sockets.h>\n\n \nenum test_mode {\n\tTEST_MODE_UNSET,\n\tTEST_MODE_CLIENT,\n\tTEST_MODE_SERVER\n};\n\n \nstruct test_opts {\n\tenum test_mode mode;\n\tunsigned int peer_cid;\n};\n\n \nstruct test_case {\n\tconst char *name;  \n\n\t \n\tvoid (*run_client)(const struct test_opts *opts);\n\n\t \n\tvoid (*run_server)(const struct test_opts *opts);\n\n\tbool skip;\n};\n\nvoid init_signals(void);\nunsigned int parse_cid(const char *str);\nint vsock_stream_connect(unsigned int cid, unsigned int port);\nint vsock_seqpacket_connect(unsigned int cid, unsigned int port);\nint vsock_stream_accept(unsigned int cid, unsigned int port,\n\t\t\tstruct sockaddr_vm *clientaddrp);\nint vsock_seqpacket_accept(unsigned int cid, unsigned int port,\n\t\t\t   struct sockaddr_vm *clientaddrp);\nvoid vsock_wait_remote_close(int fd);\nvoid send_byte(int fd, int expected_ret, int flags);\nvoid recv_byte(int fd, int expected_ret, int flags);\nvoid run_tests(const struct test_case *test_cases,\n\t       const struct test_opts *opts);\nvoid list_tests(const struct test_case *test_cases);\nvoid skip_test(struct test_case *test_cases, size_t test_cases_len,\n\t       const char *test_id_str);\nunsigned long hash_djb2(const void *data, size_t len);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

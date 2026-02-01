@@ -1,0 +1,9 @@
+{
+  "module_name": "caif_device.h",
+  "hash_id": "7cc73d548d78a7436446be2da934e1aa7f64f32d2d0cdcae314b862a3eb33b63",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/caif/caif_device.h",
+  "human_readable_source": " \n \n\n#ifndef CAIF_DEVICE_H_\n#define CAIF_DEVICE_H_\n#include <linux/kernel.h>\n#include <linux/net.h>\n#include <linux/netdevice.h>\n#include <linux/caif/caif_socket.h>\n#include <net/caif/caif_device.h>\n\n \n struct caif_dev_common {\n\tvoid (*flowctrl)(struct net_device *net, int on);\n\tenum caif_link_selector link_select;\n\tint use_frag;\n\tint use_fcs;\n\tint use_stx;\n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

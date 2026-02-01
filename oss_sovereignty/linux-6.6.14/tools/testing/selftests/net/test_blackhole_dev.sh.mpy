@@ -1,0 +1,9 @@
+{
+  "module_name": "test_blackhole_dev.sh",
+  "hash_id": "fa0f3ebd6b012768c8b6cc8d7a4cbf7a338d25fcf981d87a38d2fec1e8a61900",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/test_blackhole_dev.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# Runs blackhole-dev test using blackhole-dev kernel module\n\nif /sbin/modprobe -q test_blackhole_dev ; then\n\t/sbin/modprobe -q -r test_blackhole_dev;\n\techo \"test_blackhole_dev: ok\";\nelse\n\techo \"test_blackhole_dev: [FAIL]\";\n\texit 1;\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

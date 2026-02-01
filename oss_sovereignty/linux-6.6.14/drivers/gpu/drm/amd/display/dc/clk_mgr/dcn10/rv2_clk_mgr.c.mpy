@@ -1,0 +1,9 @@
+{
+  "module_name": "rv2_clk_mgr.c",
+  "hash_id": "6e77f2d6d85936810fc8f750192d4d54a87a274e9b45c0d27dd6390bd7b6b984",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn10/rv2_clk_mgr.c",
+  "human_readable_source": " \n\n#include \"core_types.h\"\n#include \"clk_mgr_internal.h\"\n#include \"rv1_clk_mgr.h\"\n#include \"rv2_clk_mgr.h\"\n#include \"dce112/dce112_clk_mgr.h\"\n\nstatic struct clk_mgr_internal_funcs rv2_clk_internal_funcs = {\n\t.set_dispclk = dce112_set_dispclk,\n\t.set_dprefclk = dce112_set_dprefclk\n};\n\nvoid rv2_clk_mgr_construct(struct dc_context *ctx, struct clk_mgr_internal *clk_mgr, struct pp_smu_funcs *pp_smu)\n\n{\n\trv1_clk_mgr_construct(ctx, clk_mgr, pp_smu);\n\n\tclk_mgr->funcs = &rv2_clk_internal_funcs;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

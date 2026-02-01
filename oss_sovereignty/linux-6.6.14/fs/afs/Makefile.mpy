@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "902b59678412cf68fd22ce1705210c2643bfb9eaf1be3b9b723756fe2d9069b1",
+  "original_prompt": "Ingested from linux-6.6.14/fs/afs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Red Hat Linux AFS client.\n#\n\nkafs-y := \\\n\taddr_list.o \\\n\tcallback.o \\\n\tcell.o \\\n\tcmservice.o \\\n\tdir.o \\\n\tdir_edit.o \\\n\tdir_silly.o \\\n\tdynroot.o \\\n\tfile.o \\\n\tflock.o \\\n\tfsclient.o \\\n\tfs_operation.o \\\n\tfs_probe.o \\\n\tinode.o \\\n\tmain.o \\\n\tmisc.o \\\n\tmntpt.o \\\n\trotate.o \\\n\trxrpc.o \\\n\tsecurity.o \\\n\tserver.o \\\n\tserver_list.o \\\n\tsuper.o \\\n\tvlclient.o \\\n\tvl_alias.o \\\n\tvl_list.o \\\n\tvl_probe.o \\\n\tvl_rotate.o \\\n\tvolume.o \\\n\twrite.o \\\n\txattr.o \\\n\tyfsclient.o\n\nkafs-$(CONFIG_PROC_FS) += proc.o\nobj-$(CONFIG_AFS_FS)  := kafs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

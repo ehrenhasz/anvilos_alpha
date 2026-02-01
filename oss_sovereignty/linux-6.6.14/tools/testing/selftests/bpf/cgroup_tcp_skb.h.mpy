@@ -1,0 +1,9 @@
+{
+  "module_name": "cgroup_tcp_skb.h",
+  "hash_id": "c92d7997259ba9910c0ed15ddc8bdc791f3026cda15d384266bf6a6087e25d27",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/cgroup_tcp_skb.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef __CGROUP_TCP_SKB_H__\n#define __CGROUP_TCP_SKB_H__\n\nenum {\n\tINIT,\n\tCLOSED,\n\tSYN_SENT,\n\tSYN_RECV_SENDING_SYN_ACK,\n\tSYN_RECV,\n\tESTABLISHED,\n\tFIN_WAIT1,\n\tFIN_WAIT2,\n\tCLOSE_WAIT_SENDING_ACK,\n\tCLOSE_WAIT,\n\tCLOSING,\n\tLAST_ACK,\n\tTIME_WAIT_SENDING_ACK,\n\tTIME_WAIT,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

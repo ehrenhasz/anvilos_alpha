@@ -1,0 +1,9 @@
+{
+  "module_name": "nmi.h",
+  "hash_id": "1916bdcfd0a2eb5cf00f28143280399e1069c9d75275c7c971c8d017a343de1e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/nmi.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_NMI_H\n#define _ASM_X86_NMI_H\n\n#include <linux/irq_work.h>\n#include <linux/pm.h>\n#include <asm/irq.h>\n#include <asm/io.h>\n\n#ifdef CONFIG_X86_LOCAL_APIC\n\nextern int reserve_perfctr_nmi(unsigned int);\nextern void release_perfctr_nmi(unsigned int);\nextern int reserve_evntsel_nmi(unsigned int);\nextern void release_evntsel_nmi(unsigned int);\n\nstruct ctl_table;\nextern int proc_nmi_enabled(struct ctl_table *, int ,\n\t\t\tvoid __user *, size_t *, loff_t *);\nextern int unknown_nmi_panic;\n\n#endif  \n\n#define NMI_FLAG_FIRST\t1\n\nenum {\n\tNMI_LOCAL=0,\n\tNMI_UNKNOWN,\n\tNMI_SERR,\n\tNMI_IO_CHECK,\n\tNMI_MAX\n};\n\n#define NMI_DONE\t0\n#define NMI_HANDLED\t1\n\ntypedef int (*nmi_handler_t)(unsigned int, struct pt_regs *);\n\nstruct nmiaction {\n\tstruct list_head\tlist;\n\tnmi_handler_t\t\thandler;\n\tu64\t\t\tmax_duration;\n\tunsigned long\t\tflags;\n\tconst char\t\t*name;\n};\n\n#define register_nmi_handler(t, fn, fg, n, init...)\t\\\n({\t\t\t\t\t\t\t\\\n\tstatic struct nmiaction init fn##_na = {\t\\\n\t\t.list = LIST_HEAD_INIT(fn##_na.list),\t\\\n\t\t.handler = (fn),\t\t\t\\\n\t\t.name = (n),\t\t\t\t\\\n\t\t.flags = (fg),\t\t\t\t\\\n\t};\t\t\t\t\t\t\\\n\t__register_nmi_handler((t), &fn##_na);\t\t\\\n})\n\nint __register_nmi_handler(unsigned int, struct nmiaction *);\n\nvoid unregister_nmi_handler(unsigned int, const char *);\n\nvoid stop_nmi(void);\nvoid restart_nmi(void);\nvoid local_touch_nmi(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

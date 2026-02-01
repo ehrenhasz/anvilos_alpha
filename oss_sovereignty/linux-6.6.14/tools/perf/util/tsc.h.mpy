@@ -1,0 +1,9 @@
+{
+  "module_name": "tsc.h",
+  "hash_id": "822147518444b1a5863b7abc4e9de1271811ff0c38cc5f9fa1d95d5ed547404e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/tsc.h",
+  "human_readable_source": " \n#ifndef __PERF_TSC_H\n#define __PERF_TSC_H\n\n#include <linux/types.h>\n\n#include \"event.h\"\n\nstruct perf_tsc_conversion {\n\tu16 time_shift;\n\tu32 time_mult;\n\tu64 time_zero;\n\tu64 time_cycles;\n\tu64 time_mask;\n\n\tbool cap_user_time_zero;\n\tbool cap_user_time_short;\n};\n\nstruct perf_event_mmap_page;\n\nint perf_read_tsc_conversion(const struct perf_event_mmap_page *pc,\n\t\t\t     struct perf_tsc_conversion *tc);\n\nu64 perf_time_to_tsc(u64 ns, struct perf_tsc_conversion *tc);\nu64 tsc_to_perf_time(u64 cyc, struct perf_tsc_conversion *tc);\nu64 rdtsc(void);\ndouble arch_get_tsc_freq(void);\n\nsize_t perf_event__fprintf_time_conv(union perf_event *event, FILE *fp);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

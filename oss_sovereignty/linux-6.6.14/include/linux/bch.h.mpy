@@ -1,0 +1,9 @@
+{
+  "module_name": "bch.h",
+  "hash_id": "7f8211ef264cbf9ad499031d797a8c91b1b519a0d10957c85f4bb687ba8f0d5b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bch.h",
+  "human_readable_source": " \n \n#ifndef _BCH_H\n#define _BCH_H\n\n#include <linux/types.h>\n\n \nstruct bch_control {\n\tunsigned int    m;\n\tunsigned int    n;\n\tunsigned int    t;\n\tunsigned int    ecc_bits;\n\tunsigned int    ecc_bytes;\n \n\tuint16_t       *a_pow_tab;\n\tuint16_t       *a_log_tab;\n\tuint32_t       *mod8_tab;\n\tuint32_t       *ecc_buf;\n\tuint32_t       *ecc_buf2;\n\tunsigned int   *xi_tab;\n\tunsigned int   *syn;\n\tint            *cache;\n\tstruct gf_poly *elp;\n\tstruct gf_poly *poly_2t[4];\n\tbool\t\tswap_bits;\n};\n\nstruct bch_control *bch_init(int m, int t, unsigned int prim_poly,\n\t\t\t     bool swap_bits);\n\nvoid bch_free(struct bch_control *bch);\n\nvoid bch_encode(struct bch_control *bch, const uint8_t *data,\n\t\tunsigned int len, uint8_t *ecc);\n\nint bch_decode(struct bch_control *bch, const uint8_t *data, unsigned int len,\n\t       const uint8_t *recv_ecc, const uint8_t *calc_ecc,\n\t       const unsigned int *syn, unsigned int *errloc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

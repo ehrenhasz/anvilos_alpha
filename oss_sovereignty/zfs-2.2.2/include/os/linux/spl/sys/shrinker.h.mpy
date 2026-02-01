@@ -1,0 +1,9 @@
+{
+  "module_name": "shrinker.h",
+  "hash_id": "862df09620a181a6a5095c63662ee6420f0c175399ea20cadb4816ec0304b95e",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/shrinker.h",
+  "human_readable_source": " \n\n#ifndef _SPL_SHRINKER_H\n#define\t_SPL_SHRINKER_H\n\n#include <linux/mm.h>\n#include <linux/fs.h>\n\n \n\n#ifdef HAVE_REGISTER_SHRINKER_VARARG\n#define\tspl_register_shrinker(x)\tregister_shrinker(x, \"zfs-arc-shrinker\")\n#else\n#define\tspl_register_shrinker(x)\tregister_shrinker(x)\n#endif\n#define\tspl_unregister_shrinker(x)\tunregister_shrinker(x)\n\n \n#if defined(HAVE_SINGLE_SHRINKER_CALLBACK)\n#define\tSPL_SHRINKER_DECLARE(varname, countfunc, scanfunc, seek_cost)\t\\\nstatic int\t\t\t\t\t\t\t\t\\\n__ ## varname ## _wrapper(struct shrinker *shrink, struct shrink_control *sc)\\\n{\t\t\t\t\t\t\t\t\t\\\n\tif (sc->nr_to_scan != 0) {\t\t\t\t\t\\\n\t\t(void) scanfunc(shrink, sc);\t\t\t\t\\\n\t}\t\t\t\t\t\t\t\t\\\n\treturn (countfunc(shrink, sc));\t\t\t\t\t\\\n}\t\t\t\t\t\t\t\t\t\\\n\t\t\t\t\t\t\t\t\t\\\nstatic struct shrinker varname = {\t\t\t\t\t\\\n\t.shrink = __ ## varname ## _wrapper,\t\t\t\t\\\n\t.seeks = seek_cost,\t\t\t\t\t\t\\\n}\n\n#define\tSHRINK_STOP\t(-1)\n\n \n#elif defined(HAVE_SPLIT_SHRINKER_CALLBACK)\n#define\tSPL_SHRINKER_DECLARE(varname, countfunc, scanfunc, seek_cost)\t\\\nstatic struct shrinker varname = {\t\t\t\t\t\\\n\t.count_objects = countfunc,\t\t\t\t\t\\\n\t.scan_objects = scanfunc,\t\t\t\t\t\\\n\t.seeks = seek_cost,\t\t\t\t\t\t\\\n}\n\n#else\n \n#error \"Unknown shrinker callback\"\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

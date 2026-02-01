@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_engine_stats.h",
+  "hash_id": "380f6d9d4bf905862470f575d018cdd9c20e10d37b1bc432174198057c5f424d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_engine_stats.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_ENGINE_STATS_H__\n#define __INTEL_ENGINE_STATS_H__\n\n#include <linux/atomic.h>\n#include <linux/ktime.h>\n#include <linux/seqlock.h>\n\n#include \"i915_gem.h\"  \n#include \"intel_engine.h\"\n\nstatic inline void intel_engine_context_in(struct intel_engine_cs *engine)\n{\n\tstruct intel_engine_execlists_stats *stats = &engine->stats.execlists;\n\tunsigned long flags;\n\n\tif (stats->active) {\n\t\tstats->active++;\n\t\treturn;\n\t}\n\n\t \n\tlocal_irq_save(flags);\n\twrite_seqcount_begin(&stats->lock);\n\n\tstats->start = ktime_get();\n\tstats->active++;\n\n\twrite_seqcount_end(&stats->lock);\n\tlocal_irq_restore(flags);\n\n\tGEM_BUG_ON(!stats->active);\n}\n\nstatic inline void intel_engine_context_out(struct intel_engine_cs *engine)\n{\n\tstruct intel_engine_execlists_stats *stats = &engine->stats.execlists;\n\tunsigned long flags;\n\n\tGEM_BUG_ON(!stats->active);\n\tif (stats->active > 1) {\n\t\tstats->active--;\n\t\treturn;\n\t}\n\n\tlocal_irq_save(flags);\n\twrite_seqcount_begin(&stats->lock);\n\n\tstats->active--;\n\tstats->total = ktime_add(stats->total,\n\t\t\t\t ktime_sub(ktime_get(), stats->start));\n\n\twrite_seqcount_end(&stats->lock);\n\tlocal_irq_restore(flags);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

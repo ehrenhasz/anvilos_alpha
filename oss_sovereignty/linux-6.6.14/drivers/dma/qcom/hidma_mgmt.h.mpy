@@ -1,0 +1,9 @@
+{
+  "module_name": "hidma_mgmt.h",
+  "hash_id": "998cf8617b0fe1c201f8ba773d99b475f5dc53937c2283d858e9934184140a9e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/qcom/hidma_mgmt.h",
+  "human_readable_source": " \n \n\nstruct hidma_mgmt_dev {\n\tu8 hw_version_major;\n\tu8 hw_version_minor;\n\n\tu32 max_wr_xactions;\n\tu32 max_rd_xactions;\n\tu32 max_write_request;\n\tu32 max_read_request;\n\tu32 dma_channels;\n\tu32 chreset_timeout_cycles;\n\tu32 hw_version;\n\tu32 *priority;\n\tu32 *weight;\n\n\t \n\tvoid __iomem *virtaddr;\n\tresource_size_t addrsize;\n\n\tstruct kobject **chroots;\n\tstruct platform_device *pdev;\n};\n\nint hidma_mgmt_init_sys(struct hidma_mgmt_dev *dev);\nint hidma_mgmt_setup(struct hidma_mgmt_dev *mgmtdev);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

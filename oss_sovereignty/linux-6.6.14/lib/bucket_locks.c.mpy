@@ -1,0 +1,9 @@
+{
+  "module_name": "bucket_locks.c",
+  "hash_id": "89d0c7cf079ffe1872d5e1d5940d0be95162d5a1f6ba0741cc8c1fd5835511bf",
+  "original_prompt": "Ingested from linux-6.6.14/lib/bucket_locks.c",
+  "human_readable_source": "#include <linux/export.h>\n#include <linux/kernel.h>\n#include <linux/mm.h>\n#include <linux/slab.h>\n#include <linux/vmalloc.h>\n\n \n\nint __alloc_bucket_spinlocks(spinlock_t **locks, unsigned int *locks_mask,\n\t\t\t     size_t max_size, unsigned int cpu_mult, gfp_t gfp,\n\t\t\t     const char *name, struct lock_class_key *key)\n{\n\tspinlock_t *tlocks = NULL;\n\tunsigned int i, size;\n#if defined(CONFIG_PROVE_LOCKING)\n\tunsigned int nr_pcpus = 2;\n#else\n\tunsigned int nr_pcpus = num_possible_cpus();\n#endif\n\n\tif (cpu_mult) {\n\t\tnr_pcpus = min_t(unsigned int, nr_pcpus, 64UL);\n\t\tsize = min_t(unsigned int, nr_pcpus * cpu_mult, max_size);\n\t} else {\n\t\tsize = max_size;\n\t}\n\n\tif (sizeof(spinlock_t) != 0) {\n\t\ttlocks = kvmalloc_array(size, sizeof(spinlock_t), gfp);\n\t\tif (!tlocks)\n\t\t\treturn -ENOMEM;\n\t\tfor (i = 0; i < size; i++) {\n\t\t\tspin_lock_init(&tlocks[i]);\n\t\t\tlockdep_init_map(&tlocks[i].dep_map, name, key, 0);\n\t\t}\n\t}\n\n\t*locks = tlocks;\n\t*locks_mask = size - 1;\n\n\treturn 0;\n}\nEXPORT_SYMBOL(__alloc_bucket_spinlocks);\n\nvoid free_bucket_spinlocks(spinlock_t *locks)\n{\n\tkvfree(locks);\n}\nEXPORT_SYMBOL(free_bucket_spinlocks);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

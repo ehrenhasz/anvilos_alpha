@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "dc42e257fa6b55383f79ad81da2d1491dc077dcafdda6c6b8e77a719cd8c91b1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/ti-st/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for TI's shared transport line discipline\n# and its protocol drivers (BT, FM, GPS)\n#\nobj-$(CONFIG_TI_ST) \t\t+= st_drv.o\nst_drv-objs\t\t\t:= st_core.o st_kim.o st_ll.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

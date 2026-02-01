@@ -1,0 +1,9 @@
+{
+  "module_name": "mmiowb_types.h",
+  "hash_id": "ed8667bec0e2267b94f0c1cc43923200146976c949bef0d80af6de5aecd36f4a",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/mmiowb_types.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_MMIOWB_TYPES_H\n#define __ASM_GENERIC_MMIOWB_TYPES_H\n\n#include <linux/types.h>\n\nstruct mmiowb_state {\n\tu16\tnesting_count;\n\tu16\tmmiowb_pending;\n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

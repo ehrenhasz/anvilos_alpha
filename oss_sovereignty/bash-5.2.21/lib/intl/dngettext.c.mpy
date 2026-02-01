@@ -1,0 +1,9 @@
+{
+  "module_name": "dngettext.c",
+  "hash_id": "0475b85f5a1f3bd34c8b035e67da1333abc4b07fd6c064eb53ab545bc5ce9e3a",
+  "original_prompt": "Ingested from bash-5.2.21/lib/intl/dngettext.c",
+  "human_readable_source": " \n\n \n\n#ifdef HAVE_CONFIG_H\n# include <config.h>\n#endif\n\n#include <locale.h>\n\n#include \"gettextP.h\"\n#ifdef _LIBC\n# include <libintl.h>\n#else\n# include \"libgnuintl.h\"\n#endif\n\n \n\n \n#ifdef _LIBC\n# define DNGETTEXT __dngettext\n# define DCNGETTEXT __dcngettext\n#else\n# define DNGETTEXT libintl_dngettext\n# define DCNGETTEXT libintl_dcngettext\n#endif\n\n \nchar *\nDNGETTEXT (domainname, msgid1, msgid2, n)\n     const char *domainname;\n     const char *msgid1;\n     const char *msgid2;\n     unsigned long int n;\n{\n  return DCNGETTEXT (domainname, msgid1, msgid2, n, LC_MESSAGES);\n}\n\n#ifdef _LIBC\n \nweak_alias (__dngettext, dngettext);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

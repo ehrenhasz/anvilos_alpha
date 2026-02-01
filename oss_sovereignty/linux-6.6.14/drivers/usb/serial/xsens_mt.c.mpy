@@ -1,0 +1,9 @@
+{
+  "module_name": "xsens_mt.c",
+  "hash_id": "5373788651100012856fad811dfb66305e2092891b883d42b72d85b4fb914878",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/serial/xsens_mt.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/tty.h>\n#include <linux/module.h>\n#include <linux/usb.h>\n#include <linux/usb/serial.h>\n#include <linux/uaccess.h>\n\n#define XSENS_VID 0x2639\n\n#define MTi_10_IMU_PID\t\t0x0001\n#define MTi_20_VRU_PID\t\t0x0002\n#define MTi_30_AHRS_PID\t\t0x0003\n\n#define MTi_100_IMU_PID\t\t0x0011\n#define MTi_200_VRU_PID\t\t0x0012\n#define MTi_300_AHRS_PID\t0x0013\n\n#define MTi_G_700_GPS_INS_PID\t0x0017\n\nstatic const struct usb_device_id id_table[] = {\n\t{ USB_DEVICE(XSENS_VID, MTi_10_IMU_PID) },\n\t{ USB_DEVICE(XSENS_VID, MTi_20_VRU_PID) },\n\t{ USB_DEVICE(XSENS_VID, MTi_30_AHRS_PID) },\n\n\t{ USB_DEVICE(XSENS_VID, MTi_100_IMU_PID) },\n\t{ USB_DEVICE(XSENS_VID, MTi_200_VRU_PID) },\n\t{ USB_DEVICE(XSENS_VID, MTi_300_AHRS_PID) },\n\n\t{ USB_DEVICE(XSENS_VID, MTi_G_700_GPS_INS_PID) },\n\t{ },\n};\nMODULE_DEVICE_TABLE(usb, id_table);\n\nstatic int xsens_mt_probe(struct usb_serial *serial,\n\t\t\t\t\tconst struct usb_device_id *id)\n{\n\tif (serial->interface->cur_altsetting->desc.bInterfaceNumber == 1)\n\t\treturn 0;\n\n\treturn -ENODEV;\n}\n\nstatic struct usb_serial_driver xsens_mt_device = {\n\t.driver = {\n\t\t.owner = THIS_MODULE,\n\t\t.name = \"xsens_mt\",\n\t},\n\t.id_table = id_table,\n\t.num_ports = 1,\n\n\t.probe = xsens_mt_probe,\n};\n\nstatic struct usb_serial_driver * const serial_drivers[] = {\n\t&xsens_mt_device, NULL\n};\n\nmodule_usb_serial_driver(serial_drivers, id_table);\n\nMODULE_AUTHOR(\"Frans Klaver <frans.klaver@xsens.com>\");\nMODULE_DESCRIPTION(\"USB-serial driver for Xsens motion trackers\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

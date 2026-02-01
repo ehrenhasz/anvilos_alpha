@@ -1,0 +1,9 @@
+{
+  "module_name": "test-ctype.c",
+  "hash_id": "83e37adfb9fb25ca40c141f4bde5b67c2322f921467a57fcf532c88b4f346d4f",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-ctype.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <ctype.h>\n\nint\nmain (void)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

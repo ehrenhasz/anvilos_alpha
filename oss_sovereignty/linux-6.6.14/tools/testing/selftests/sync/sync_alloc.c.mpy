@@ -1,0 +1,9 @@
+{
+  "module_name": "sync_alloc.c",
+  "hash_id": "d5a1b723b533f86edcb88251a6235dc42878a9301802b67fc1cb8c7584ce3111",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sync/sync_alloc.c",
+  "human_readable_source": " \n\n#include \"sync.h\"\n#include \"sw_sync.h\"\n#include \"synctest.h\"\n\nint test_alloc_timeline(void)\n{\n\tint timeline, valid;\n\n\ttimeline = sw_sync_timeline_create();\n\tvalid = sw_sync_timeline_is_valid(timeline);\n\tASSERT(valid, \"Failure allocating timeline\\n\");\n\n\tsw_sync_timeline_destroy(timeline);\n\treturn 0;\n}\n\nint test_alloc_fence(void)\n{\n\tint timeline, fence, valid;\n\n\ttimeline = sw_sync_timeline_create();\n\tvalid = sw_sync_timeline_is_valid(timeline);\n\tASSERT(valid, \"Failure allocating timeline\\n\");\n\n\tfence = sw_sync_fence_create(timeline, \"allocFence\", 1);\n\tvalid = sw_sync_fence_is_valid(fence);\n\tASSERT(valid, \"Failure allocating fence\\n\");\n\n\tsw_sync_fence_destroy(fence);\n\tsw_sync_timeline_destroy(timeline);\n\treturn 0;\n}\n\nint test_alloc_fence_negative(void)\n{\n\tint fence, timeline;\n\n\ttimeline = sw_sync_timeline_create();\n\tASSERT(timeline > 0, \"Failure allocating timeline\\n\");\n\n\tfence = sw_sync_fence_create(-1, \"fence\", 1);\n\tASSERT(fence < 0, \"Success allocating negative fence\\n\");\n\n\tsw_sync_fence_destroy(fence);\n\tsw_sync_timeline_destroy(timeline);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

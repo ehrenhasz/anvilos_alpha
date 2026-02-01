@@ -1,0 +1,9 @@
+{
+  "module_name": "button.h",
+  "hash_id": "f639736d6432330972976df85cebf4dac87903d4ed75465afaab9a55b1d83f78",
+  "original_prompt": "Ingested from linux-6.6.14/include/acpi/button.h",
+  "human_readable_source": " \n#ifndef ACPI_BUTTON_H\n#define ACPI_BUTTON_H\n\n#define ACPI_BUTTON_HID_POWER\t\"PNP0C0C\"\n#define ACPI_BUTTON_HID_LID\t\"PNP0C0D\"\n#define ACPI_BUTTON_HID_SLEEP\t\"PNP0C0E\"\n\n#if IS_ENABLED(CONFIG_ACPI_BUTTON)\nextern int acpi_lid_open(void);\n#else\nstatic inline int acpi_lid_open(void)\n{\n\treturn 1;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

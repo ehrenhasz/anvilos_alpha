@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs_empty_targets.sh",
+  "hash_id": "8c75df3ba12044883786e83307e5f959d39955cf3db17d3dde1219a1efac255a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/damon/debugfs_empty_targets.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nsource _debugfs_common.sh\n\n# Test empty targets case\n# =======================\n\norig_target_ids=$(cat \"$DBGFS/target_ids\")\necho \"\" > \"$DBGFS/target_ids\"\norig_monitor_on=$(cat \"$DBGFS/monitor_on\")\ntest_write_fail \"$DBGFS/monitor_on\" \"on\" \"orig_monitor_on\" \"empty target ids\"\necho \"$orig_target_ids\" > \"$DBGFS/target_ids\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

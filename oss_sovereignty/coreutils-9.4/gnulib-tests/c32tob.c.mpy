@@ -1,0 +1,9 @@
+{
+  "module_name": "c32tob.c",
+  "hash_id": "bda0a5aa37cb1484499e4dc940262a331716cd1f01088fe3bb61c35798c20b14",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/c32tob.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#define IN_C32TOB\n \n#include <uchar.h>\n\n#include <stdio.h>\n#include <string.h>\n#include <wchar.h>\n\n#if GL_CHAR32_T_IS_UNICODE\n# include \"lc-charset-unicode.h\"\n#endif\n\n#if _GL_WCHAR_T_IS_UCS4\n_GL_EXTERN_INLINE\n#endif\nint\nc32tob (wint_t wc)\n{\n#if HAVE_WORKING_MBRTOC32 && !_GL_WCHAR_T_IS_UCS4\n   \n  if (wc != WEOF)\n    {\n      mbstate_t state;\n      char buf[8];\n\n      mbszero (&state);\n      if (c32rtomb (buf, wc, &state) == 1)\n        return (unsigned char) buf[0];\n    }\n  return EOF;\n#elif _GL_SMALL_WCHAR_T\n   \n  if (wc != WEOF && (wchar_t) wc == wc)\n    return wctob ((wchar_t) wc);\n  else\n    return EOF;\n#else\n# if GL_CHAR32_T_IS_UNICODE && GL_CHAR32_T_VS_WCHAR_T_NEEDS_CONVERSION\n  if (wc != 0)\n    {\n      wc = unicode_to_locale_encoding (wc);\n      if (wc == 0)\n        return EOF;\n    }\n# endif\n  return wctob (wc);\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

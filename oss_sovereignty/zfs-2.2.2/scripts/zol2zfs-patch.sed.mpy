@@ -1,0 +1,9 @@
+{
+  "module_name": "zol2zfs-patch.sed",
+  "hash_id": "a489750c648ff0667d9c3f6cf427b5954c7175d82993ea59a2b304be6197ca22",
+  "original_prompt": "Ingested from zfs-2.2.2/scripts/zol2zfs-patch.sed",
+  "human_readable_source": "#!/bin/sed -f\n\ns:cmd:usr/src/cmd:g\ns:include/libzfs.h:usr/src/lib/libzfs/common/libzfs.h:g\ns:include/libzfs_core.h:usr/src/lib/libzfs_core/common/libzfs_core.h:g\ns:include/sys:lib/libzpool/common/sys:g\ns:include/sys:usr/src/uts/common/fs/zfs/sys:g\ns:include/sys:usr/src/uts/common/sys:g\ns:include/zfs_fletcher.h:usr/src/common/zfs/zfs_fletcher.h:g\ns:include:usr/src/common/zfs:g\ns:lib/libzfs:usr/src/lib/libzfs/common:g\ns:lib/libzfs_core:usr/src/lib/libzfs_core/common:g\ns:lib/libzpool:lib/libzpool/common:g\ns:lib/libzpool:usr/src/lib/libzpool:g\ns:man/man7/zpool-features.7:usr/src/man/man5/zpool-features.5:g\ns:man/man8/zfs.8:usr/src/man/man1m/zfs.1m:g\ns:module/nvpair:usr/src/common/nvpair:g\ns:module/zcommon:usr/src/common/zfs/:g\ns:module/zfs:usr/src/uts/common/fs/zfs:g\ns:tests/zfs-tests:test/zfs-tests:g\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

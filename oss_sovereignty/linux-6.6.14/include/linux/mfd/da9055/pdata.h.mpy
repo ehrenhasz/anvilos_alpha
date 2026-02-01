@@ -1,0 +1,9 @@
+{
+  "module_name": "pdata.h",
+  "hash_id": "61629f2d6747c6d74d74bbf89c7fc4a3952dc19ddb04e89a8af4b06066b39b68",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/da9055/pdata.h",
+  "human_readable_source": " \n \n#ifndef __DA9055_PDATA_H\n#define __DA9055_PDATA_H\n\n#define DA9055_MAX_REGULATORS\t8\n\nstruct da9055;\nstruct gpio_desc;\n\nenum gpio_select {\n\tNO_GPIO = 0,\n\tGPIO_1,\n\tGPIO_2\n};\n\nstruct da9055_pdata {\n\tint (*init) (struct da9055 *da9055);\n\tint irq_base;\n\tint gpio_base;\n\n\tstruct regulator_init_data *regulators[DA9055_MAX_REGULATORS];\n\t \n\tbool reset_enable;\n\t \n\tint *gpio_ren;\n\t \n\tint *gpio_rsel;\n\t \n\tenum gpio_select *reg_ren;\n\t \n\tenum gpio_select *reg_rsel;\n\t \n\tstruct gpio_desc **ena_gpiods;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

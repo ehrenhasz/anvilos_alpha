@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_console.h",
+  "hash_id": "aa8d7d771c7be9ccff30332906f70823b3ca5942ed6f815945877eb00e895a04",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/virtio_console.h",
+  "human_readable_source": " \n#ifndef _LINUX_VIRTIO_CONSOLE_H\n#define _LINUX_VIRTIO_CONSOLE_H\n\n#include <uapi/linux/virtio_console.h>\n\nint __init virtio_cons_early_init(int (*put_chars)(u32, const char *, int));\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "LOCK07.boot",
+  "hash_id": "1cfc82960357b0660a86d78584da2583ed3ced2715680bc3854caabb1e66cefa",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/lock/LOCK07.boot",
+  "human_readable_source": "locktorture.torture_type=ww_mutex_lock\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

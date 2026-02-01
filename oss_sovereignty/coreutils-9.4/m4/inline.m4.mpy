@@ -1,0 +1,9 @@
+{
+  "module_name": "inline.m4",
+  "hash_id": "ccd74d6e5721e6bf49c58af5cbc3e1401d6992a95b686ce246fbcbd50c184296",
+  "original_prompt": "Ingested from coreutils-9.4/m4/inline.m4",
+  "human_readable_source": "# inline.m4 serial 4\ndnl Copyright (C) 2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl Test for the 'inline' keyword or equivalent.\ndnl Define 'inline' to a supported equivalent, or to nothing if not supported,\ndnl like AC_C_INLINE does.  Also, define HAVE_INLINE if 'inline' or an\ndnl equivalent is effectively supported, i.e. if the compiler is likely to\ndnl drop unused 'static inline' functions.\nAC_DEFUN([gl_INLINE],\n[\n  AC_REQUIRE([AC_C_INLINE])\n  AC_CACHE_CHECK([whether the compiler generally respects inline],\n    [gl_cv_c_inline_effective],\n    [if test $ac_cv_c_inline = no; then\n       gl_cv_c_inline_effective=no\n     else\n       dnl GCC defines __NO_INLINE__ if not optimizing or if -fno-inline is\n       dnl specified.\n       dnl Use AC_COMPILE_IFELSE here, not AC_EGREP_CPP, because the result\n       dnl depends on optimization flags, which can be in CFLAGS.\n       dnl (AC_EGREP_CPP looks only at the CPPFLAGS.)\n       AC_COMPILE_IFELSE(\n         [AC_LANG_PROGRAM([[]],\n           [[#ifdef __NO_INLINE__\n               #error \"inline is not effective\"\n             #endif]])],\n         [gl_cv_c_inline_effective=yes],\n         [gl_cv_c_inline_effective=no])\n     fi\n    ])\n  if test $gl_cv_c_inline_effective = yes; then\n    AC_DEFINE([HAVE_INLINE], [1],\n      [Define to 1 if the compiler supports one of the keywords\n       'inline', '__inline__', '__inline' and effectively inlines\n       functions marked as such.])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

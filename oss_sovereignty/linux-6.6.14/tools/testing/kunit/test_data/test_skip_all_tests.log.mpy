@@ -1,0 +1,9 @@
+{
+  "module_name": "test_skip_all_tests.log",
+  "hash_id": "01790f1186116c295542c89a2d4f96a334953bcea49d3f83f8751370ae22ac06",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/test_data/test_skip_all_tests.log",
+  "human_readable_source": "TAP version 14\n1..2\n    # Subtest: string-stream-test\n    1..3\n    ok 1 - string_stream_test_empty_on_creation # SKIP all tests skipped\n    ok 2 - string_stream_test_not_empty_after_add # SKIP all tests skipped\n    ok 3 - string_stream_test_get_string # SKIP all tests skipped\nok 1 - string-stream-test # SKIP\n    # Subtest: example\n    1..2\n    # example_simple_test: initializing\n    ok 1 - example_simple_test # SKIP all tests skipped\n    # example_skip_test: initializing\n    ok 2 - example_skip_test # SKIP this test should be skipped\nok 2 - example # SKIP\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

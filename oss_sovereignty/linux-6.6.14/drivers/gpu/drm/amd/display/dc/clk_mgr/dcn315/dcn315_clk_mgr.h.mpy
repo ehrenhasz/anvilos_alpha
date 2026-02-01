@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn315_clk_mgr.h",
+  "hash_id": "a1164121d4915e8f2c65c649efdbb6444a1d58b867459dfd11440cec0864d1aa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.h",
+  "human_readable_source": " \n\n#ifndef __DCN315_CLK_MGR_H__\n#define __DCN315_CLK_MGR_H__\n#include \"clk_mgr_internal.h\"\n\nstruct dcn315_watermarks;\n\nstruct dcn315_smu_watermark_set {\n\tstruct dcn315_watermarks *wm_set;\n\tunion large_integer mc_address;\n};\n\nstruct clk_mgr_dcn315 {\n\tstruct clk_mgr_internal base;\n\tstruct dcn315_smu_watermark_set smu_wm_set;\n};\n\nvoid dcn315_clk_mgr_construct(struct dc_context *ctx,\n\t\tstruct clk_mgr_dcn315 *clk_mgr,\n\t\tstruct pp_smu_funcs *pp_smu,\n\t\tstruct dccg *dccg);\n\nvoid dcn315_clk_mgr_destroy(struct clk_mgr_internal *clk_mgr_int);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gm200.c",
+  "hash_id": "3a6af1070dab5f558ed28e7cce1182360673b0993b722d6149d56b27f67151bb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/i2c/gm200.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"pad.h\"\n\nstatic void\ngm200_aux_autodpcd(struct nvkm_i2c *i2c, int aux, bool enable)\n{\n\tnvkm_mask(i2c->subdev.device, 0x00d968 + (aux * 0x50), 0x00010000, enable << 16);\n}\n\nstatic const struct nvkm_i2c_func\ngm200_i2c = {\n\t.pad_x_new = gf119_i2c_pad_x_new,\n\t.pad_s_new = gm200_i2c_pad_s_new,\n\t.aux = 8,\n\t.aux_stat = gk104_aux_stat,\n\t.aux_mask = gk104_aux_mask,\n\t.aux_autodpcd = gm200_aux_autodpcd,\n};\n\nint\ngm200_i2c_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_i2c **pi2c)\n{\n\treturn nvkm_i2c_new_(&gm200_i2c, device, type, inst, pi2c);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

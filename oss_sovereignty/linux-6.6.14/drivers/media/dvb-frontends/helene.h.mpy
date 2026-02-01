@@ -1,0 +1,9 @@
+{
+  "module_name": "helene.h",
+  "hash_id": "42967e0c265058f21f5d6d852f6a05461d92965bbc2782a36eba2d04d1806b3c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/helene.h",
+  "human_readable_source": " \n \n\n#ifndef __DVB_HELENE_H__\n#define __DVB_HELENE_H__\n\n#include <linux/dvb/frontend.h>\n#include <linux/i2c.h>\n\nenum helene_xtal {\n\tSONY_HELENE_XTAL_16000,  \n\tSONY_HELENE_XTAL_20500,  \n\tSONY_HELENE_XTAL_24000,  \n\tSONY_HELENE_XTAL_41000  \n};\n\n \nstruct helene_config {\n\tu8\ti2c_address;\n\tu8\txtal_freq_mhz;\n\tvoid\t*set_tuner_priv;\n\tint\t(*set_tuner_callback)(void *, int);\n\tenum helene_xtal xtal;\n\n\tstruct dvb_frontend *fe;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_HELENE)\n \nextern struct dvb_frontend *helene_attach(struct dvb_frontend *fe,\n\t\t\t\t\tconst struct helene_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c);\n\n \nextern struct dvb_frontend *helene_attach_s(struct dvb_frontend *fe,\n\t\t\t\t\tconst struct helene_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *helene_attach(struct dvb_frontend *fe,\n\t\t\t\t\tconst struct helene_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c)\n{\n\tpr_warn(\"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\nstatic inline struct dvb_frontend *helene_attach_s(struct dvb_frontend *fe,\n\t\t\t\t\tconst struct helene_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c)\n{\n\tpr_warn(\"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

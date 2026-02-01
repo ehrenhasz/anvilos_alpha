@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_xnr3_param.h",
+  "hash_id": "b8326023a898b35d25f727a142bd2dad5f5893d7ad9205765f42346be75e1897",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/xnr/xnr_3.0/ia_css_xnr3_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_XNR3_PARAM_H\n#define __IA_CSS_XNR3_PARAM_H\n\n#include \"type_support.h\"\n#include \"vmem.h\"  \n\n \n#define XNR_ALPHA_SCALE_LOG2        5\n#define XNR_ALPHA_SCALE_FACTOR      BIT(XNR_ALPHA_SCALE_LOG2)\n\n \n#define XNR_CORING_SCALE_LOG2       (ISP_VEC_ELEMBITS - 1)\n#define XNR_CORING_SCALE_FACTOR     BIT(XNR_CORING_SCALE_LOG2)\n\n \n#define XNR_BLENDING_SCALE_LOG2     (ISP_VEC_ELEMBITS - 1)\n#define XNR_BLENDING_SCALE_FACTOR   BIT(XNR_BLENDING_SCALE_LOG2)\n\n \n#define XNR_FILTER_SIZE             5\n\n \nstruct sh_css_xnr3_alpha_params {\n\ts32 y0;\n\ts32 u0;\n\ts32 v0;\n\ts32 ydiff;\n\ts32 udiff;\n\ts32 vdiff;\n};\n\n \nstruct sh_css_xnr3_coring_params {\n\ts32 u0;\n\ts32 v0;\n\ts32 udiff;\n\ts32 vdiff;\n};\n\n \nstruct sh_css_xnr3_blending_params {\n\ts32 strength;\n};\n\n \nstruct sh_css_isp_xnr3_params {\n\tstruct sh_css_xnr3_alpha_params    alpha;\n\tstruct sh_css_xnr3_coring_params   coring;\n\tstruct sh_css_xnr3_blending_params blending;\n};\n\n \n \nstruct sh_css_isp_xnr3_vmem_params {\n\tVMEM_ARRAY(x, ISP_VEC_NELEMS);\n\tVMEM_ARRAY(a, ISP_VEC_NELEMS);\n\tVMEM_ARRAY(b, ISP_VEC_NELEMS);\n\tVMEM_ARRAY(c, ISP_VEC_NELEMS);\n};\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

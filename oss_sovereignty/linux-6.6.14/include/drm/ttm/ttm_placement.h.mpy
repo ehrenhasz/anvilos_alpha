@@ -1,0 +1,9 @@
+{
+  "module_name": "ttm_placement.h",
+  "hash_id": "8ff691d26c96d139b25d51b995598a28488a892324cbb3cc5bb32075f12e313f",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/ttm/ttm_placement.h",
+  "human_readable_source": " \n \n\n#ifndef _TTM_PLACEMENT_H_\n#define _TTM_PLACEMENT_H_\n\n#include <linux/types.h>\n\n \n\n#define TTM_PL_SYSTEM           0\n#define TTM_PL_TT               1\n#define TTM_PL_VRAM             2\n#define TTM_PL_PRIV             3\n\n \n\n#define TTM_PL_FLAG_CONTIGUOUS  (1 << 0)\n#define TTM_PL_FLAG_TOPDOWN     (1 << 1)\n\n \n#define TTM_PL_FLAG_TEMPORARY   (1 << 2)\n\n \nstruct ttm_place {\n\tunsigned\tfpfn;\n\tunsigned\tlpfn;\n\tuint32_t\tmem_type;\n\tuint32_t\tflags;\n};\n\n \nstruct ttm_placement {\n\tunsigned\t\tnum_placement;\n\tconst struct ttm_place\t*placement;\n\tunsigned\t\tnum_busy_placement;\n\tconst struct ttm_place\t*busy_placement;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

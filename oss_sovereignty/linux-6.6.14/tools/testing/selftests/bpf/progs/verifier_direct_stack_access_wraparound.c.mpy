@@ -1,0 +1,9 @@
+{
+  "module_name": "verifier_direct_stack_access_wraparound.c",
+  "hash_id": "aee18aad4ab96ed271b0fa2354e9d5b1061aa927b36044e8e84e3aff5afd29ef",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/verifier_direct_stack_access_wraparound.c",
+  "human_readable_source": "\n \n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nSEC(\"socket\")\n__description(\"direct stack access with 32-bit wraparound. test1\")\n__failure __msg(\"fp pointer and 2147483647\")\n__failure_unpriv\n__naked void with_32_bit_wraparound_test1(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr1 = r10;\t\t\t\t\t\\\n\tr1 += 0x7fffffff;\t\t\t\t\\\n\tr1 += 0x7fffffff;\t\t\t\t\\\n\tw0 = 0;\t\t\t\t\t\t\\\n\t*(u8*)(r1 + 0) = r0;\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t::: __clobber_all);\n}\n\nSEC(\"socket\")\n__description(\"direct stack access with 32-bit wraparound. test2\")\n__failure __msg(\"fp pointer and 1073741823\")\n__failure_unpriv\n__naked void with_32_bit_wraparound_test2(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr1 = r10;\t\t\t\t\t\\\n\tr1 += 0x3fffffff;\t\t\t\t\\\n\tr1 += 0x3fffffff;\t\t\t\t\\\n\tw0 = 0;\t\t\t\t\t\t\\\n\t*(u8*)(r1 + 0) = r0;\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t::: __clobber_all);\n}\n\nSEC(\"socket\")\n__description(\"direct stack access with 32-bit wraparound. test3\")\n__failure __msg(\"fp pointer offset 1073741822\")\n__msg_unpriv(\"R1 stack pointer arithmetic goes out of range\")\n__naked void with_32_bit_wraparound_test3(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr1 = r10;\t\t\t\t\t\\\n\tr1 += 0x1fffffff;\t\t\t\t\\\n\tr1 += 0x1fffffff;\t\t\t\t\\\n\tw0 = 0;\t\t\t\t\t\t\\\n\t*(u8*)(r1 + 0) = r0;\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t::: __clobber_all);\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

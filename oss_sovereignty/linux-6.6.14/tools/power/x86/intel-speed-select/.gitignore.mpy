@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "af700110ee1c8c3234572ef0c654793b16551c9b4ab48bed8b71e15053198df0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/x86/intel-speed-select/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ninclude/\nintel-speed-select\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

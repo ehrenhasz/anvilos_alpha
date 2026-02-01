@@ -1,0 +1,9 @@
+{
+  "module_name": "debug_kmemleak.c",
+  "hash_id": "1b139da35ea3582840a6cb974ce3fbca9518da1bbaa1802ae015c247fb27d535",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/module/debug_kmemleak.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/kmemleak.h>\n#include \"internal.h\"\n\nvoid kmemleak_load_module(const struct module *mod,\n\t\t\t  const struct load_info *info)\n{\n\tunsigned int i;\n\n\t \n\tkmemleak_scan_area(mod, sizeof(struct module), GFP_KERNEL);\n\n\tfor (i = 1; i < info->hdr->e_shnum; i++) {\n\t\t \n\t\tif (!(info->sechdrs[i].sh_flags & SHF_ALLOC) ||\n\t\t    !(info->sechdrs[i].sh_flags & SHF_WRITE) ||\n\t\t    (info->sechdrs[i].sh_flags & SHF_EXECINSTR))\n\t\t\tcontinue;\n\n\t\tkmemleak_scan_area((void *)info->sechdrs[i].sh_addr,\n\t\t\t\t   info->sechdrs[i].sh_size, GFP_KERNEL);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

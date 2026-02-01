@@ -1,0 +1,9 @@
+{
+  "module_name": "ioblksize.h",
+  "hash_id": "ebca762565e864f8f75abdf2936748f63fa5c09474367feab9c253deebdb03ff",
+  "original_prompt": "Ingested from coreutils-9.4/src/ioblksize.h",
+  "human_readable_source": " \n\n \n#include \"count-leading-zeros.h\"\n#include \"stat-size.h\"\n\n\n \nenum { IO_BUFSIZE = 128 * 1024 };\nstatic inline idx_t\nio_blksize (struct stat sb)\n{\n   \n  idx_t blocksize = ST_BLKSIZE (sb) <= 0 ? IO_BUFSIZE : ST_BLKSIZE (sb);\n\n   \n  blocksize += (IO_BUFSIZE - 1) - (IO_BUFSIZE - 1) % blocksize;\n\n   \n  if (S_ISREG (sb.st_mode)\n      && blocksize & (blocksize - 1))\n    {\n      int leading_zeros = count_leading_zeros_ll (blocksize);\n      if (IDX_MAX < ULLONG_MAX || leading_zeros)\n        {\n          unsigned long long power = 1ull << (ULLONG_WIDTH - leading_zeros);\n          if (power <= IDX_MAX)\n            blocksize = power;\n        }\n    }\n\n   \n  return MIN (MIN (IDX_MAX, SIZE_MAX) / 2 + 1,\n              blocksize);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

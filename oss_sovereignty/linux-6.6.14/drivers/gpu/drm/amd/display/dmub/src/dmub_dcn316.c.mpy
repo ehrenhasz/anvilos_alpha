@@ -1,0 +1,9 @@
+{
+  "module_name": "dmub_dcn316.c",
+  "hash_id": "050f834a327b7d712c44561b1126972e3943c59fb45cd7e3ce4d63428d2ddd08",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dmub/src/dmub_dcn316.c",
+  "human_readable_source": " \n\n#include \"../dmub_srv.h\"\n#include \"dmub_reg.h\"\n#include \"dmub_dcn316.h\"\n\n#include \"dcn/dcn_3_1_6_offset.h\"\n#include \"dcn/dcn_3_1_6_sh_mask.h\"\n\n#define DCN_BASE__INST0_SEG0                       0x00000012\n#define DCN_BASE__INST0_SEG1                       0x000000C0\n#define DCN_BASE__INST0_SEG2                       0x000034C0\n#define DCN_BASE__INST0_SEG3                       0x00009000\n#define DCN_BASE__INST0_SEG4                       0x02403C00\n#define DCN_BASE__INST0_SEG5                       0\n\n#define BASE_INNER(seg) DCN_BASE__INST0_SEG##seg\n#define CTX dmub\n#define REGS dmub->regs_dcn31\n#define REG_OFFSET_EXP(reg_name) (BASE(reg##reg_name##_BASE_IDX) + reg##reg_name)\n\n \n\nconst struct dmub_srv_dcn31_regs dmub_srv_dcn316_regs = {\n#define DMUB_SR(reg) REG_OFFSET_EXP(reg),\n\t{\n\t\tDMUB_DCN31_REGS()\n\t\tDMCUB_INTERNAL_REGS()\n\t},\n#undef DMUB_SR\n\n#define DMUB_SF(reg, field) FD_MASK(reg, field),\n\t{ DMUB_DCN31_FIELDS() },\n#undef DMUB_SF\n\n#define DMUB_SF(reg, field) FD_SHIFT(reg, field),\n\t{ DMUB_DCN31_FIELDS() },\n#undef DMUB_SF\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gethrxtime.c",
+  "hash_id": "8f51def0c365fbb700b6a81cbfd5222dd28238ed9e158214041434b5722dd1f8",
+  "original_prompt": "Ingested from coreutils-9.4/lib/gethrxtime.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#define GETHRXTIME_INLINE _GL_EXTERN_INLINE\n#include \"gethrxtime.h\"\n\n#if ! (HAVE_ARITHMETIC_HRTIME_T && HAVE_DECL_GETHRTIME)\n\n#include <sys/time.h>\n#include \"timespec.h\"\n\n \n\nxtime_t\ngethrxtime (void)\n{\n# if HAVE_NANOUPTIME\n  {\n    struct timespec ts;\n    nanouptime (&ts);\n    return xtime_make (ts.tv_sec, ts.tv_nsec);\n  }\n# else\n\n#  if defined CLOCK_MONOTONIC && HAVE_CLOCK_GETTIME\n  {\n    struct timespec ts;\n    if (clock_gettime (CLOCK_MONOTONIC, &ts) == 0)\n      return xtime_make (ts.tv_sec, ts.tv_nsec);\n  }\n#  endif\n\n#  if HAVE_MICROUPTIME\n  {\n    struct timeval tv;\n    microuptime (&tv);\n    return xtime_make (tv.tv_sec, 1000 * tv.tv_usec);\n  }\n\n#  else\n   \n  {\n    struct timespec ts;\n    gettime (&ts);\n    return xtime_make (ts.tv_sec, ts.tv_nsec);\n  }\n#  endif\n# endif\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

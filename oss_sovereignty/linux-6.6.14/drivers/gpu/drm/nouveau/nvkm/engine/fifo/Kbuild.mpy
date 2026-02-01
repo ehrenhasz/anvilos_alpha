@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "b523fa446c18067691f171e34b90d6523a186d137287e152abe6873a16e5d0b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/fifo/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\nnvkm-y += nvkm/engine/fifo/base.o\nnvkm-y += nvkm/engine/fifo/cgrp.o\nnvkm-y += nvkm/engine/fifo/chan.o\nnvkm-y += nvkm/engine/fifo/chid.o\nnvkm-y += nvkm/engine/fifo/runl.o\nnvkm-y += nvkm/engine/fifo/runq.o\n\nnvkm-y += nvkm/engine/fifo/nv04.o\nnvkm-y += nvkm/engine/fifo/nv10.o\nnvkm-y += nvkm/engine/fifo/nv17.o\nnvkm-y += nvkm/engine/fifo/nv40.o\nnvkm-y += nvkm/engine/fifo/nv50.o\nnvkm-y += nvkm/engine/fifo/g84.o\nnvkm-y += nvkm/engine/fifo/g98.o\nnvkm-y += nvkm/engine/fifo/gf100.o\nnvkm-y += nvkm/engine/fifo/gk104.o\nnvkm-y += nvkm/engine/fifo/gk110.o\nnvkm-y += nvkm/engine/fifo/gk208.o\nnvkm-y += nvkm/engine/fifo/gk20a.o\nnvkm-y += nvkm/engine/fifo/gm107.o\nnvkm-y += nvkm/engine/fifo/gm200.o\nnvkm-y += nvkm/engine/fifo/gp100.o\nnvkm-y += nvkm/engine/fifo/gv100.o\nnvkm-y += nvkm/engine/fifo/tu102.o\nnvkm-y += nvkm/engine/fifo/ga100.o\nnvkm-y += nvkm/engine/fifo/ga102.o\n\nnvkm-y += nvkm/engine/fifo/ucgrp.o\nnvkm-y += nvkm/engine/fifo/uchan.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

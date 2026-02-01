@@ -1,0 +1,9 @@
+{
+  "module_name": "iavf_osdep.h",
+  "hash_id": "04fa2d43f5a3549f9baa726177a153074d9754bdd8459d0d2e1b06f4986aef1d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/iavf/iavf_osdep.h",
+  "human_readable_source": " \n \n\n#ifndef _IAVF_OSDEP_H_\n#define _IAVF_OSDEP_H_\n\n#include <linux/types.h>\n#include <linux/if_ether.h>\n#include <linux/if_vlan.h>\n#include <linux/tcp.h>\n#include <linux/pci.h>\n\n \n#include <linux/io-64-nonatomic-lo-hi.h>\n\n#define wr32(a, reg, value)\twritel((value), ((a)->hw_addr + (reg)))\n#define rd32(a, reg)\t\treadl((a)->hw_addr + (reg))\n\n#define wr64(a, reg, value)\twriteq((value), ((a)->hw_addr + (reg)))\n#define rd64(a, reg)\t\treadq((a)->hw_addr + (reg))\n#define iavf_flush(a)\t\treadl((a)->hw_addr + IAVF_VFGEN_RSTAT)\n\n \nstruct iavf_dma_mem {\n\tvoid *va;\n\tdma_addr_t pa;\n\tu32 size;\n};\n\n#define iavf_allocate_dma_mem(h, m, unused, s, a) \\\n\tiavf_allocate_dma_mem_d(h, m, s, a)\n\nstruct iavf_virt_mem {\n\tvoid *va;\n\tu32 size;\n};\n\n#define iavf_debug(h, m, s, ...)\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\\\n\tif (((m) & (h)->debug_mask))\t\t\t\t\\\n\t\tpr_info(\"iavf %02x:%02x.%x \" s,\t\t\t\\\n\t\t\t(h)->bus.bus_id, (h)->bus.device,\t\\\n\t\t\t(h)->bus.func, ##__VA_ARGS__);\t\t\\\n} while (0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

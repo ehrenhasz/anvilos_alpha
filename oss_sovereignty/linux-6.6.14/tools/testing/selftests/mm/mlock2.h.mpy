@@ -1,0 +1,9 @@
+{
+  "module_name": "mlock2.h",
+  "hash_id": "2218a16e9ca58e87cc7ce174b1e7799715e7f78aa93e7df0214c9cce460a9aed",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/mm/mlock2.h",
+  "human_readable_source": " \n#include <syscall.h>\n#include <errno.h>\n#include <stdio.h>\n#include <stdlib.h>\n\nstatic int mlock2_(void *start, size_t len, int flags)\n{\n#ifdef __NR_mlock2\n\treturn syscall(__NR_mlock2, start, len, flags);\n#else\n\terrno = ENOSYS;\n\treturn -1;\n#endif\n}\n\nstatic FILE *seek_to_smaps_entry(unsigned long addr)\n{\n\tFILE *file;\n\tchar *line = NULL;\n\tsize_t size = 0;\n\tunsigned long start, end;\n\tchar perms[5];\n\tunsigned long offset;\n\tchar dev[32];\n\tunsigned long inode;\n\tchar path[BUFSIZ];\n\n\tfile = fopen(\"/proc/self/smaps\", \"r\");\n\tif (!file) {\n\t\tperror(\"fopen smaps\");\n\t\t_exit(1);\n\t}\n\n\twhile (getline(&line, &size, file) > 0) {\n\t\tif (sscanf(line, \"%lx-%lx %s %lx %s %lu %s\\n\",\n\t\t\t   &start, &end, perms, &offset, dev, &inode, path) < 6)\n\t\t\tgoto next;\n\n\t\tif (start <= addr && addr < end)\n\t\t\tgoto out;\n\nnext:\n\t\tfree(line);\n\t\tline = NULL;\n\t\tsize = 0;\n\t}\n\n\tfclose(file);\n\tfile = NULL;\n\nout:\n\tfree(line);\n\treturn file;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

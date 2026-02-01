@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn301_init.h",
+  "hash_id": "1bedb06bd3ba05dd13ca0951e49e659c6ae19e3a1bbf96c0bbcd2843c7bb73bc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_init.h",
+  "human_readable_source": " \n\n#ifndef __DC_DCN30_INIT_H__\n#define __DC_DCN30_INIT_H__\n\nstruct dc;\n\nvoid dcn301_hw_sequencer_construct(struct dc *dc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

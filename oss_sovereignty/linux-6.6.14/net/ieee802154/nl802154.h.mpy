@@ -1,0 +1,9 @@
+{
+  "module_name": "nl802154.h",
+  "hash_id": "108911f20f301fca17c455b142e0657c312d0526c99113f3748ab635309e92df",
+  "original_prompt": "Ingested from linux-6.6.14/net/ieee802154/nl802154.h",
+  "human_readable_source": " \n#ifndef __IEEE802154_NL802154_H\n#define __IEEE802154_NL802154_H\n\nint nl802154_init(void);\nvoid nl802154_exit(void);\nint nl802154_scan_event(struct wpan_phy *wpan_phy, struct wpan_dev *wpan_dev,\n\t\t\tstruct ieee802154_coord_desc *desc);\nint nl802154_scan_started(struct wpan_phy *wpan_phy, struct wpan_dev *wpan_dev);\nint nl802154_scan_done(struct wpan_phy *wpan_phy, struct wpan_dev *wpan_dev,\n\t\t       enum nl802154_scan_done_reasons reason);\nvoid nl802154_beaconing_done(struct wpan_dev *wpan_dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

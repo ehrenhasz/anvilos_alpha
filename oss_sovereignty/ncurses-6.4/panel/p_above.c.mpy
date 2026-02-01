@@ -1,0 +1,9 @@
+{
+  "module_name": "p_above.c",
+  "hash_id": "ff6dd9924ced99be30f5ef54bed3fa3ed97298220c881dff55292df10ca86092",
+  "original_prompt": "Ingested from ncurses-6.4/panel/p_above.c",
+  "human_readable_source": " \n\n \n\n \n#include \"panel.priv.h\"\n\nMODULE_ID(\"$Id: p_above.c,v 1.11 2020/05/24 01:40:20 anonymous.maarten Exp $\")\n\n#if NCURSES_SP_FUNCS\nPANEL_EXPORT(PANEL *)\nground_panel(SCREEN * sp)\n{\n  T((T_CALLED(\"ground_panel(%p)\"), (void *)sp));\n  if (sp)\n    {\n      struct panelhook *ph = NCURSES_SP_NAME(_nc_panelhook) (sp);\n\n      if (_nc_bottom_panel)\t \n\treturnPanel(_nc_bottom_panel->above);\n      else\n\treturnPanel(0);\n    }\n  else\n    {\n      if (0 == CURRENT_SCREEN)\n\treturnPanel(0);\n      else\n\treturnPanel(ground_panel(CURRENT_SCREEN));\n    }\n}\n#endif\n\nPANEL_EXPORT(PANEL *)\npanel_above(const PANEL * pan)\n{\n  PANEL *result;\n\n  T((T_CALLED(\"panel_above(%p)\"), (const void *)pan));\n  if (pan)\n    result = pan->above;\n  else\n    {\n#if NCURSES_SP_FUNCS\n      result = ground_panel(CURRENT_SCREEN);\n#else\n       \n      result = EMPTY_STACK()? (PANEL *) 0 : _nc_bottom_panel->above;\n#endif\n    }\n  returnPanel(result);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

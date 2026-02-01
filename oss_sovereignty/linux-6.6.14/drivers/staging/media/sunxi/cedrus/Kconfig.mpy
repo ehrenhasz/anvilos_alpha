@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7f694817302970a917925ad492c701587f28f2f23a772e3bb6c6ddd785d8cbc7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/sunxi/cedrus/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig VIDEO_SUNXI_CEDRUS\n\ttristate \"Allwinner Cedrus VPU driver\"\n\tdepends on VIDEO_DEV\n\tdepends on RESET_CONTROLLER\n\tdepends on HAS_DMA\n\tdepends on OF\n\tselect MEDIA_CONTROLLER\n\tselect MEDIA_CONTROLLER_REQUEST_API\n\tselect SUNXI_SRAM\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_MEM2MEM_DEV\n\thelp\n\t  Support for the VPU found in Allwinner SoCs, also known as the Cedar\n\t  video engine.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called sunxi-cedrus.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

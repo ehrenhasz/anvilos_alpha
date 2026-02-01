@@ -1,0 +1,9 @@
+{
+  "module_name": "excluded_middle.cocci",
+  "hash_id": "b95c3ee14031f77f049148eef7c0a537b5a0a07cd26c634dfec0a4f6f77d67f1",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/misc/excluded_middle.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0-only\n///\n/// Condition !A || A && B is equivalent to !A || B.\n///\n// Confidence: High\n// Copyright: (C) 2020 Denis Efremov ISPRAS\n// Options: --no-includes --include-headers\n\nvirtual patch\nvirtual context\nvirtual org\nvirtual report\n\n@r depends on !patch@\nexpression A, B;\nposition p;\n@@\n\n* !A || (A &&@p B)\n\n@depends on patch@\nexpression A, B;\n@@\n\n  !A ||\n-       (A && B)\n+       B\n\n@script:python depends on report@\np << r.p;\n@@\n\ncoccilib.report.print_report(p[0], \"WARNING !A || A && B is equivalent to !A || B\")\n\n@script:python depends on org@\np << r.p;\n@@\n\ncoccilib.org.print_todo(p[0], \"WARNING !A || A && B is equivalent to !A || B\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

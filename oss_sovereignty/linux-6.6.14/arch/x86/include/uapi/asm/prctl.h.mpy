@@ -1,0 +1,9 @@
+{
+  "module_name": "prctl.h",
+  "hash_id": "bdd32cc3fc8656177c08853c823756be3b9cdf5ea6b270e2c95fa00b65437e78",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/prctl.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PRCTL_H\n#define _ASM_X86_PRCTL_H\n\n#define ARCH_SET_GS\t\t\t0x1001\n#define ARCH_SET_FS\t\t\t0x1002\n#define ARCH_GET_FS\t\t\t0x1003\n#define ARCH_GET_GS\t\t\t0x1004\n\n#define ARCH_GET_CPUID\t\t\t0x1011\n#define ARCH_SET_CPUID\t\t\t0x1012\n\n#define ARCH_GET_XCOMP_SUPP\t\t0x1021\n#define ARCH_GET_XCOMP_PERM\t\t0x1022\n#define ARCH_REQ_XCOMP_PERM\t\t0x1023\n#define ARCH_GET_XCOMP_GUEST_PERM\t0x1024\n#define ARCH_REQ_XCOMP_GUEST_PERM\t0x1025\n\n#define ARCH_XCOMP_TILECFG\t\t17\n#define ARCH_XCOMP_TILEDATA\t\t18\n\n#define ARCH_MAP_VDSO_X32\t\t0x2001\n#define ARCH_MAP_VDSO_32\t\t0x2002\n#define ARCH_MAP_VDSO_64\t\t0x2003\n\n \n\n#define ARCH_GET_UNTAG_MASK\t\t0x4001\n#define ARCH_ENABLE_TAGGED_ADDR\t\t0x4002\n#define ARCH_GET_MAX_TAG_BITS\t\t0x4003\n#define ARCH_FORCE_TAGGED_SVA\t\t0x4004\n\n#define ARCH_SHSTK_ENABLE\t\t0x5001\n#define ARCH_SHSTK_DISABLE\t\t0x5002\n#define ARCH_SHSTK_LOCK\t\t\t0x5003\n#define ARCH_SHSTK_UNLOCK\t\t0x5004\n#define ARCH_SHSTK_STATUS\t\t0x5005\n\n \n#define ARCH_SHSTK_SHSTK\t\t(1ULL <<  0)\n#define ARCH_SHSTK_WRSS\t\t\t(1ULL <<  1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

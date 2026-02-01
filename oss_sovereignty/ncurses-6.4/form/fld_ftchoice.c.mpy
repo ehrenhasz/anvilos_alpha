@@ -1,0 +1,9 @@
+{
+  "module_name": "fld_ftchoice.c",
+  "hash_id": "83a242b5a2fe0cc0f84f60495d430ec27d8ccdade446ad75c74f988dc923f2f3",
+  "original_prompt": "Ingested from ncurses-6.4/form/fld_ftchoice.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: fld_ftchoice.c,v 1.18 2021/06/17 21:26:02 tom Exp $\")\n\n \nFORM_EXPORT(int)\nset_fieldtype_choice(FIELDTYPE *typ,\n\t\t     bool (*const next_choice) (FIELD *, const void *),\n\t\t     bool (*const prev_choice) (FIELD *, const void *))\n{\n  TR_FUNC_BFR(2);\n\n  T((T_CALLED(\"set_fieldtype_choice(%p,%s,%s)\"),\n     (void *)typ,\n     TR_FUNC_ARG(0, next_choice),\n     TR_FUNC_ARG(1, prev_choice)));\n\n  if (!typ || !next_choice || !prev_choice)\n    RETURN(E_BAD_ARGUMENT);\n\n  SetStatus(typ, _HAS_CHOICE);\n#if NCURSES_INTEROP_FUNCS\n  typ->enum_next.onext = next_choice;\n  typ->enum_prev.oprev = prev_choice;\n#else\n  typ->next = next_choice;\n  typ->prev = prev_choice;\n#endif\n  RETURN(E_OK);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

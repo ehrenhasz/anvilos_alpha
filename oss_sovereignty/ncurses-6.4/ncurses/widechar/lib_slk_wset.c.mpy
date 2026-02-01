@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_slk_wset.c",
+  "hash_id": "eb4b8276ae7db1593ed2cc375fb508edc0fd80a8b9bf8f66eec4adba1728f11e",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/widechar/lib_slk_wset.c",
+  "human_readable_source": " \n\n \n\n \n#include <curses.priv.h>\n\n#if HAVE_WCTYPE_H\n#include <wctype.h>\n#endif\n\nMODULE_ID(\"$Id: lib_slk_wset.c,v 1.15 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nslk_wset(int i, const wchar_t *astr, int format)\n{\n    int result = ERR;\n    const wchar_t *str;\n    mbstate_t state;\n\n    T((T_CALLED(\"slk_wset(%d, %s, %d)\"), i, _nc_viswbuf(astr), format));\n\n    if (astr != 0) {\n\tsize_t arglen;\n\n\tinit_mb(state);\n\tstr = astr;\n\n\tif ((arglen = wcsrtombs(NULL, &str, (size_t) 0, &state)) != (size_t) -1) {\n\t    char *mystr;\n\n\t    if ((mystr = (char *) _nc_doalloc(0, arglen + 1)) != 0) {\n\t\tstr = astr;\n\t\tif (wcsrtombs(mystr, &str, arglen, &state) != (size_t) -1) {\n\t\t     \n\t\t    mystr[arglen] = 0;\n\t\t    result = slk_set(i, mystr, format);\n\t\t}\n\t\tfree(mystr);\n\t    }\n\t}\n    }\n    returnCode(result);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

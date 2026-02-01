@@ -1,0 +1,9 @@
+{
+  "module_name": "pruss.h",
+  "hash_id": "74f07a94edf20c5abcef0b71858179bd1d4af0d6cd7ec3801d0b77ce0ff26576",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/remoteproc/pruss.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_PRUSS_H\n#define __LINUX_PRUSS_H\n\n#include <linux/device.h>\n#include <linux/types.h>\n\n#define PRU_RPROC_DRVNAME \"pru-rproc\"\n\n \n\nenum pruss_pru_id {\n\tPRUSS_PRU0 = 0,\n\tPRUSS_PRU1,\n\tPRUSS_NUM_PRUS,\n};\n\n \nenum pru_ctable_idx {\n\tPRU_C24 = 0,\n\tPRU_C25,\n\tPRU_C26,\n\tPRU_C27,\n\tPRU_C28,\n\tPRU_C29,\n\tPRU_C30,\n\tPRU_C31,\n};\n\nstruct device_node;\nstruct rproc;\n\n#if IS_ENABLED(CONFIG_PRU_REMOTEPROC)\n\nstruct rproc *pru_rproc_get(struct device_node *np, int index,\n\t\t\t    enum pruss_pru_id *pru_id);\nvoid pru_rproc_put(struct rproc *rproc);\nint pru_rproc_set_ctable(struct rproc *rproc, enum pru_ctable_idx c, u32 addr);\n\n#else\n\nstatic inline struct rproc *\npru_rproc_get(struct device_node *np, int index, enum pruss_pru_id *pru_id)\n{\n\treturn ERR_PTR(-EOPNOTSUPP);\n}\n\nstatic inline void pru_rproc_put(struct rproc *rproc) { }\n\nstatic inline int pru_rproc_set_ctable(struct rproc *rproc,\n\t\t\t\t       enum pru_ctable_idx c, u32 addr)\n{\n\treturn -EOPNOTSUPP;\n}\n\n#endif  \n\nstatic inline bool is_pru_rproc(struct device *dev)\n{\n\tconst char *drv_name = dev_driver_string(dev);\n\n\tif (strncmp(drv_name, PRU_RPROC_DRVNAME, sizeof(PRU_RPROC_DRVNAME)))\n\t\treturn false;\n\n\treturn true;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

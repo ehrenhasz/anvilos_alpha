@@ -1,0 +1,9 @@
+{
+  "module_name": "cdns2-trace.c",
+  "hash_id": "fd88ac0fdb80b073a5e5a16e4edb2f0daa85c5e6a69ccf8210b3d89088b8ecd9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/udc/cdns2/cdns2-trace.c",
+  "human_readable_source": "\n \n\n#define CREATE_TRACE_POINTS\n#include \"cdns2-trace.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

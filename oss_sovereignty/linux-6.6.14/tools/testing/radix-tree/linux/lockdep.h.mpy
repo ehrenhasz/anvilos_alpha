@@ -1,0 +1,9 @@
+{
+  "module_name": "lockdep.h",
+  "hash_id": "4e43966718809fee55af1e1fba51de95aa474795e7bc3cfb45b8408ce940d685",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/radix-tree/linux/lockdep.h",
+  "human_readable_source": "#ifndef _LINUX_LOCKDEP_H\n#define _LINUX_LOCKDEP_H\n\n#include <linux/spinlock.h>\n\nstruct lock_class_key {\n\tunsigned int a;\n};\n\nstatic inline void lockdep_set_class(spinlock_t *lock,\n\t\t\t\t\tstruct lock_class_key *key)\n{\n}\n\nextern int lockdep_is_held(const void *);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

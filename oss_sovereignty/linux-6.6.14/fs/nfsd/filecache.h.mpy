@@ -1,0 +1,9 @@
+{
+  "module_name": "filecache.h",
+  "hash_id": "730da81864227c29b77eebda0ec7f1fbdffac3be3384fcfda3ea4970a32dfb61",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfsd/filecache.h",
+  "human_readable_source": "#ifndef _FS_NFSD_FILECACHE_H\n#define _FS_NFSD_FILECACHE_H\n\n#include <linux/fsnotify_backend.h>\n\n \nstruct nfsd_file_mark {\n\tstruct fsnotify_mark\tnfm_mark;\n\trefcount_t\t\tnfm_ref;\n};\n\n \nstruct nfsd_file {\n\tstruct rhlist_head\tnf_rlist;\n\tvoid\t\t\t*nf_inode;\n\tstruct file\t\t*nf_file;\n\tconst struct cred\t*nf_cred;\n\tstruct net\t\t*nf_net;\n#define NFSD_FILE_HASHED\t(0)\n#define NFSD_FILE_PENDING\t(1)\n#define NFSD_FILE_REFERENCED\t(2)\n#define NFSD_FILE_GC\t\t(3)\n\tunsigned long\t\tnf_flags;\n\trefcount_t\t\tnf_ref;\n\tunsigned char\t\tnf_may;\n\n\tstruct nfsd_file_mark\t*nf_mark;\n\tstruct list_head\tnf_lru;\n\tstruct rcu_head\t\tnf_rcu;\n\tktime_t\t\t\tnf_birthtime;\n};\n\nint nfsd_file_cache_init(void);\nvoid nfsd_file_cache_purge(struct net *);\nvoid nfsd_file_cache_shutdown(void);\nint nfsd_file_cache_start_net(struct net *net);\nvoid nfsd_file_cache_shutdown_net(struct net *net);\nvoid nfsd_file_put(struct nfsd_file *nf);\nstruct nfsd_file *nfsd_file_get(struct nfsd_file *nf);\nvoid nfsd_file_close_inode_sync(struct inode *inode);\nbool nfsd_file_is_cached(struct inode *inode);\n__be32 nfsd_file_acquire_gc(struct svc_rqst *rqstp, struct svc_fh *fhp,\n\t\t  unsigned int may_flags, struct nfsd_file **nfp);\n__be32 nfsd_file_acquire(struct svc_rqst *rqstp, struct svc_fh *fhp,\n\t\t  unsigned int may_flags, struct nfsd_file **nfp);\n__be32 nfsd_file_acquire_opened(struct svc_rqst *rqstp, struct svc_fh *fhp,\n\t\t  unsigned int may_flags, struct file *file,\n\t\t  struct nfsd_file **nfp);\nint nfsd_file_cache_stats_show(struct seq_file *m, void *v);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

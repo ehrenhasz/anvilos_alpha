@@ -1,0 +1,9 @@
+{
+  "module_name": "digsig.h",
+  "hash_id": "8c5def7ba686a73d52b4cad3949351d1e23a3e26531ad86969cc6dd2003fdcba",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/digsig.h",
+  "human_readable_source": " \n \n\n#ifndef _DIGSIG_H\n#define _DIGSIG_H\n\n#include <linux/key.h>\n\nenum pubkey_algo {\n\tPUBKEY_ALGO_RSA,\n\tPUBKEY_ALGO_MAX,\n};\n\nenum digest_algo {\n\tDIGEST_ALGO_SHA1,\n\tDIGEST_ALGO_SHA256,\n\tDIGEST_ALGO_MAX\n};\n\nstruct pubkey_hdr {\n\tuint8_t\t\tversion;\t \n\tuint32_t\ttimestamp;\t \n\tuint8_t\t\talgo;\n\tuint8_t\t\tnmpi;\n\tchar\t\tmpi[];\n} __packed;\n\nstruct signature_hdr {\n\tuint8_t\t\tversion;\t \n\tuint32_t\ttimestamp;\t \n\tuint8_t\t\talgo;\n\tuint8_t\t\thash;\n\tuint8_t\t\tkeyid[8];\n\tuint8_t\t\tnmpi;\n\tchar\t\tmpi[];\n} __packed;\n\n#if defined(CONFIG_SIGNATURE) || defined(CONFIG_SIGNATURE_MODULE)\n\nint digsig_verify(struct key *keyring, const char *sig, int siglen,\n\t\t\t\t\tconst char *digest, int digestlen);\n\n#else\n\nstatic inline int digsig_verify(struct key *keyring, const char *sig,\n\t\t\t\tint siglen, const char *digest, int digestlen)\n{\n\treturn -EOPNOTSUPP;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5496b9a2f13d83f81fac67befb13ee293f8a94170be7b5551ad95715510913ae",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/bridge/adv7511/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nadv7511-y := adv7511_drv.o adv7533.o\nadv7511-$(CONFIG_DRM_I2C_ADV7511_AUDIO) += adv7511_audio.o\nadv7511-$(CONFIG_DRM_I2C_ADV7511_CEC) += adv7511_cec.o\nobj-$(CONFIG_DRM_I2C_ADV7511) += adv7511.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

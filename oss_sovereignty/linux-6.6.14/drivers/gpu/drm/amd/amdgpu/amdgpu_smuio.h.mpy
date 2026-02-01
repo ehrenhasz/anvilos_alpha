@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_smuio.h",
+  "hash_id": "1c6ca23e0ebab3d4386645261a544e79a423ddbb4979598ec14d40ea6cc3ae5d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_smuio.h",
+  "human_readable_source": " \n#ifndef __AMDGPU_SMUIO_H__\n#define __AMDGPU_SMUIO_H__\n\nstruct amdgpu_smuio_funcs {\n\tu32 (*get_rom_index_offset)(struct amdgpu_device *adev);\n\tu32 (*get_rom_data_offset)(struct amdgpu_device *adev);\n\tvoid (*update_rom_clock_gating)(struct amdgpu_device *adev, bool enable);\n\tvoid (*get_clock_gating_state)(struct amdgpu_device *adev, u64 *flags);\n\tu32 (*get_die_id)(struct amdgpu_device *adev);\n\tu32 (*get_socket_id)(struct amdgpu_device *adev);\n\tenum amdgpu_pkg_type (*get_pkg_type)(struct amdgpu_device *adev);\n\tbool (*is_host_gpu_xgmi_supported)(struct amdgpu_device *adev);\n};\n\nstruct amdgpu_smuio {\n\tconst struct amdgpu_smuio_funcs\t\t*funcs;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

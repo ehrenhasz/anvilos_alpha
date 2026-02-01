@@ -1,0 +1,9 @@
+{
+  "module_name": "fb_cmdline.c",
+  "hash_id": "a3974b52783ec67abc0bd1ebbe92edff11c7b99136258abb146351bd2c6e79da",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/core/fb_cmdline.c",
+  "human_readable_source": " \n\n#include <linux/export.h>\n#include <linux/fb.h>\n#include <linux/string.h>\n\n#include <video/cmdline.h>\n\n \nint fb_get_options(const char *name, char **option)\n{\n\tconst char *options = NULL;\n\tbool is_of = false;\n\tbool enabled;\n\n\tif (name)\n\t\tis_of = strncmp(name, \"offb\", 4);\n\n\tenabled = __video_get_options(name, &options, is_of);\n\n\tif (options) {\n\t\tif (!strncmp(options, \"off\", 3))\n\t\t\tenabled = false;\n\t}\n\n\tif (option) {\n\t\tif (options)\n\t\t\t*option = kstrdup(options, GFP_KERNEL);\n\t\telse\n\t\t\t*option = NULL;\n\t}\n\n\treturn enabled ? 0 : 1; \n}\nEXPORT_SYMBOL(fb_get_options);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

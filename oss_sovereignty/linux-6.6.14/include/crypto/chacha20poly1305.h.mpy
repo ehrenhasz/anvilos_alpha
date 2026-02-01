@@ -1,0 +1,9 @@
+{
+  "module_name": "chacha20poly1305.h",
+  "hash_id": "147d911310324205c96bf3a5d87245aa332ad9360c203751bc7cba6321f0f5fb",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/chacha20poly1305.h",
+  "human_readable_source": " \n \n\n#ifndef __CHACHA20POLY1305_H\n#define __CHACHA20POLY1305_H\n\n#include <linux/types.h>\n#include <linux/scatterlist.h>\n\nenum chacha20poly1305_lengths {\n\tXCHACHA20POLY1305_NONCE_SIZE = 24,\n\tCHACHA20POLY1305_KEY_SIZE = 32,\n\tCHACHA20POLY1305_AUTHTAG_SIZE = 16\n};\n\nvoid chacha20poly1305_encrypt(u8 *dst, const u8 *src, const size_t src_len,\n\t\t\t      const u8 *ad, const size_t ad_len,\n\t\t\t      const u64 nonce,\n\t\t\t      const u8 key[CHACHA20POLY1305_KEY_SIZE]);\n\nbool __must_check\nchacha20poly1305_decrypt(u8 *dst, const u8 *src, const size_t src_len,\n\t\t\t const u8 *ad, const size_t ad_len, const u64 nonce,\n\t\t\t const u8 key[CHACHA20POLY1305_KEY_SIZE]);\n\nvoid xchacha20poly1305_encrypt(u8 *dst, const u8 *src, const size_t src_len,\n\t\t\t       const u8 *ad, const size_t ad_len,\n\t\t\t       const u8 nonce[XCHACHA20POLY1305_NONCE_SIZE],\n\t\t\t       const u8 key[CHACHA20POLY1305_KEY_SIZE]);\n\nbool __must_check xchacha20poly1305_decrypt(\n\tu8 *dst, const u8 *src, const size_t src_len, const u8 *ad,\n\tconst size_t ad_len, const u8 nonce[XCHACHA20POLY1305_NONCE_SIZE],\n\tconst u8 key[CHACHA20POLY1305_KEY_SIZE]);\n\nbool chacha20poly1305_encrypt_sg_inplace(struct scatterlist *src, size_t src_len,\n\t\t\t\t\t const u8 *ad, const size_t ad_len,\n\t\t\t\t\t const u64 nonce,\n\t\t\t\t\t const u8 key[CHACHA20POLY1305_KEY_SIZE]);\n\nbool chacha20poly1305_decrypt_sg_inplace(struct scatterlist *src, size_t src_len,\n\t\t\t\t\t const u8 *ad, const size_t ad_len,\n\t\t\t\t\t const u64 nonce,\n\t\t\t\t\t const u8 key[CHACHA20POLY1305_KEY_SIZE]);\n\nbool chacha20poly1305_selftest(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

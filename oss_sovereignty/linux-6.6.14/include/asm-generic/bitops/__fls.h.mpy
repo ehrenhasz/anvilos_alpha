@@ -1,0 +1,9 @@
+{
+  "module_name": "__fls.h",
+  "hash_id": "8b5d4ac1ac2b288a64abf5e5a24c76ef25ab5cf7e07e2b1be90f53371497cfb2",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/bitops/__fls.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_BITOPS___FLS_H_\n#define _ASM_GENERIC_BITOPS___FLS_H_\n\n#include <asm/types.h>\n\n \nstatic __always_inline unsigned long __fls(unsigned long word)\n{\n\tint num = BITS_PER_LONG - 1;\n\n#if BITS_PER_LONG == 64\n\tif (!(word & (~0ul << 32))) {\n\t\tnum -= 32;\n\t\tword <<= 32;\n\t}\n#endif\n\tif (!(word & (~0ul << (BITS_PER_LONG-16)))) {\n\t\tnum -= 16;\n\t\tword <<= 16;\n\t}\n\tif (!(word & (~0ul << (BITS_PER_LONG-8)))) {\n\t\tnum -= 8;\n\t\tword <<= 8;\n\t}\n\tif (!(word & (~0ul << (BITS_PER_LONG-4)))) {\n\t\tnum -= 4;\n\t\tword <<= 4;\n\t}\n\tif (!(word & (~0ul << (BITS_PER_LONG-2)))) {\n\t\tnum -= 2;\n\t\tword <<= 2;\n\t}\n\tif (!(word & (~0ul << (BITS_PER_LONG-1))))\n\t\tnum -= 1;\n\treturn num;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

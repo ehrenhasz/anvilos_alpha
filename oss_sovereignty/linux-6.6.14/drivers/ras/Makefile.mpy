@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "157f7329fba92b3c360c379caf8fc1d390dcca7763c0128cc58b2de77bc25e04",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ras/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_RAS)\t+= ras.o\nobj-$(CONFIG_DEBUG_FS)\t+= debugfs.o\nobj-$(CONFIG_RAS_CEC)\t+= cec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

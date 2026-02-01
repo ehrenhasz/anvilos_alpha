@@ -1,0 +1,9 @@
+{
+  "module_name": "cpudeadline.h",
+  "hash_id": "a0187a646729849def19f9af5d9b92ec19be0461d7210718a604d9ba66ef9be3",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/sched/cpudeadline.h",
+  "human_readable_source": " \n\n#define IDX_INVALID\t\t-1\n\nstruct cpudl_item {\n\tu64\t\t\tdl;\n\tint\t\t\tcpu;\n\tint\t\t\tidx;\n};\n\nstruct cpudl {\n\traw_spinlock_t\t\tlock;\n\tint\t\t\tsize;\n\tcpumask_var_t\t\tfree_cpus;\n\tstruct cpudl_item\t*elements;\n};\n\n#ifdef CONFIG_SMP\nint  cpudl_find(struct cpudl *cp, struct task_struct *p, struct cpumask *later_mask);\nvoid cpudl_set(struct cpudl *cp, int cpu, u64 dl);\nvoid cpudl_clear(struct cpudl *cp, int cpu);\nint  cpudl_init(struct cpudl *cp);\nvoid cpudl_set_freecpu(struct cpudl *cp, int cpu);\nvoid cpudl_clear_freecpu(struct cpudl *cp, int cpu);\nvoid cpudl_cleanup(struct cpudl *cp);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

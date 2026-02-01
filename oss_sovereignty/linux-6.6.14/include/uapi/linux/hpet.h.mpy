@@ -1,0 +1,9 @@
+{
+  "module_name": "hpet.h",
+  "hash_id": "50cc8b052baf23a354c27bfc31037b3d31757398e92935d64fa6df8202cc321c",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/hpet.h",
+  "human_readable_source": " \n#ifndef _UAPI__HPET__\n#define _UAPI__HPET__\n\n#include <linux/compiler.h>\n\n\nstruct hpet_info {\n\tunsigned long hi_ireqfreq;\t \n\tunsigned long hi_flags;\t \n\tunsigned short hi_hpet;\n\tunsigned short hi_timer;\n};\n\n#define HPET_INFO_PERIODIC\t0x0010\t \n\n#define\tHPET_IE_ON\t_IO('h', 0x01)\t \n#define\tHPET_IE_OFF\t_IO('h', 0x02)\t \n#define\tHPET_INFO\t_IOR('h', 0x03, struct hpet_info)\n#define\tHPET_EPI\t_IO('h', 0x04)\t \n#define\tHPET_DPI\t_IO('h', 0x05)\t \n#define\tHPET_IRQFREQ\t_IOW('h', 0x6, unsigned long)\t \n\n#define MAX_HPET_TBS\t8\t\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

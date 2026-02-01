@@ -1,0 +1,9 @@
+{
+  "module_name": "core_read_macros.c",
+  "hash_id": "295d5047a1d7ed1dca873a027f39a5f6b97976f552a69a487c47a0843696c75d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/core_read_macros.c",
+  "human_readable_source": "\n \n\n#include <test_progs.h>\n\nstruct callback_head {\n\tstruct callback_head *next;\n\tvoid (*func)(struct callback_head *head);\n};\n\n \nstruct callback_head___shuffled {\n\tstruct callback_head___shuffled *next;\n\tvoid (*func)(struct callback_head *head);\n};\n\n#include \"test_core_read_macros.skel.h\"\n\nvoid test_core_read_macros(void)\n{\n\tint duration = 0, err;\n\tstruct test_core_read_macros* skel;\n\tstruct test_core_read_macros__bss *bss;\n\tstruct callback_head u_probe_in;\n\tstruct callback_head___shuffled u_core_in;\n\n\tskel = test_core_read_macros__open_and_load();\n\tif (CHECK(!skel, \"skel_open\", \"failed to open skeleton\\n\"))\n\t\treturn;\n\tbss = skel->bss;\n\tbss->my_pid = getpid();\n\n\t \n\tbss->k_probe_in.func = (void *)(long)0x1234;\n\tbss->k_core_in.func = (void *)(long)0xabcd;\n\n\tu_probe_in.next = &u_probe_in;\n\tu_probe_in.func = (void *)(long)0x5678;\n\tbss->u_probe_in = &u_probe_in;\n\n\tu_core_in.next = &u_core_in;\n\tu_core_in.func = (void *)(long)0xdbca;\n\tbss->u_core_in = &u_core_in;\n\n\terr = test_core_read_macros__attach(skel);\n\tif (CHECK(err, \"skel_attach\", \"skeleton attach failed: %d\\n\", err))\n\t\tgoto cleanup;\n\n\t \n\tusleep(1);\n\n\tASSERT_EQ(bss->k_probe_out, 0x1234, \"k_probe_out\");\n\tASSERT_EQ(bss->k_core_out, 0xabcd, \"k_core_out\");\n\n\tASSERT_EQ(bss->u_probe_out, 0x5678, \"u_probe_out\");\n\tASSERT_EQ(bss->u_core_out, 0xdbca, \"u_core_out\");\n\ncleanup:\n\ttest_core_read_macros__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

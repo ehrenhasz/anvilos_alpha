@@ -1,0 +1,9 @@
+{
+  "module_name": "opa_addr.h",
+  "hash_id": "d460410a46a65200750210f9b5a50179c3609d07a528fe250f2c44ebdab572ba",
+  "original_prompt": "Ingested from linux-6.6.14/include/rdma/opa_addr.h",
+  "human_readable_source": " \n \n\n#ifndef OPA_ADDR_H\n#define OPA_ADDR_H\n\n#include <rdma/opa_smi.h>\n\n#define\tOPA_SPECIAL_OUI\t\t(0x00066AULL)\n#define OPA_MAKE_ID(x)          (cpu_to_be64(OPA_SPECIAL_OUI << 40 | (x)))\n#define OPA_TO_IB_UCAST_LID(x) (((x) >= be16_to_cpu(IB_MULTICAST_LID_BASE)) \\\n\t\t\t\t? 0 : x)\n#define OPA_GID_INDEX\t\t0x1\n \n#define OPA_MCAST_NR 0x4  \n#define OPA_COLLECTIVE_NR 0x1  \n\n \nstatic inline bool ib_is_opa_gid(const union ib_gid *gid)\n{\n\treturn ((be64_to_cpu(gid->global.interface_id) >> 40) ==\n\t\tOPA_SPECIAL_OUI);\n}\n\n \nstatic inline u32 opa_get_lid_from_gid(const union ib_gid *gid)\n{\n\treturn be64_to_cpu(gid->global.interface_id) & 0xFFFFFFFF;\n}\n\n \nstatic inline bool opa_is_extended_lid(__be32 dlid, __be32 slid)\n{\n\tif ((be32_to_cpu(dlid) >=\n\t     be16_to_cpu(IB_MULTICAST_LID_BASE)) ||\n\t    (be32_to_cpu(slid) >=\n\t     be16_to_cpu(IB_MULTICAST_LID_BASE)))\n\t\treturn true;\n\n\treturn false;\n}\n\n \nstatic inline u32 opa_get_mcast_base(u32 nr_top_bits)\n{\n\treturn (be32_to_cpu(OPA_LID_PERMISSIVE) << (32 - nr_top_bits));\n}\n\n \nstatic inline bool rdma_is_valid_unicast_lid(struct rdma_ah_attr *attr)\n{\n\tif (attr->type == RDMA_AH_ATTR_TYPE_IB) {\n\t\tif (!rdma_ah_get_dlid(attr) ||\n\t\t    rdma_ah_get_dlid(attr) >=\n\t\t    be16_to_cpu(IB_MULTICAST_LID_BASE))\n\t\t\treturn false;\n\t} else if (attr->type == RDMA_AH_ATTR_TYPE_OPA) {\n\t\tif (!rdma_ah_get_dlid(attr) ||\n\t\t    rdma_ah_get_dlid(attr) >=\n\t\t    opa_get_mcast_base(OPA_MCAST_NR))\n\t\t\treturn false;\n\t}\n\treturn true;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xnanosleep.c",
+  "hash_id": "948e11bbf8c9145ca00e045f278ec92dc113d5839f0394a9bfac68084c75c242",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xnanosleep.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"xnanosleep.h\"\n\n#include <intprops.h>\n#include <timespec.h>\n\n#include <errno.h>\n#include <time.h>\n#include <unistd.h>\n\n \n\nint\nxnanosleep (double seconds)\n{\n#if HAVE_PAUSE\n  if (1.0 + TYPE_MAXIMUM (time_t) <= seconds)\n    {\n      do\n        pause ();\n      while (errno == EINTR);\n\n       \n    }\n#endif\n\n  struct timespec ts_sleep = dtotimespec (seconds);\n\n  for (;;)\n    {\n       \n      errno = 0;\n      if (nanosleep (&ts_sleep, &ts_sleep) == 0)\n        break;\n      if (errno != EINTR && errno != 0)\n        return -1;\n    }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

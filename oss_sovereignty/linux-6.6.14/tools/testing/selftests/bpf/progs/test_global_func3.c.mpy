@@ -1,0 +1,9 @@
+{
+  "module_name": "test_global_func3.c",
+  "hash_id": "70ccfb3c3a8cd993b52305cedb11ff447bcb36f0bf780afe38b8f84bebca3b1b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_global_func3.c",
+  "human_readable_source": "\n \n#include <stddef.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\n__attribute__ ((noinline))\nint f1(struct __sk_buff *skb)\n{\n\treturn skb->len;\n}\n\n__attribute__ ((noinline))\nint f2(int val, struct __sk_buff *skb)\n{\n\treturn f1(skb) + val;\n}\n\n__attribute__ ((noinline))\nint f3(int val, struct __sk_buff *skb, int var)\n{\n\treturn f2(var, skb) + val;\n}\n\n__attribute__ ((noinline))\nint f4(struct __sk_buff *skb)\n{\n\treturn f3(1, skb, 2);\n}\n\n__attribute__ ((noinline))\nint f5(struct __sk_buff *skb)\n{\n\treturn f4(skb);\n}\n\n__attribute__ ((noinline))\nint f6(struct __sk_buff *skb)\n{\n\treturn f5(skb);\n}\n\n__attribute__ ((noinline))\nint f7(struct __sk_buff *skb)\n{\n\treturn f6(skb);\n}\n\n__attribute__ ((noinline))\nint f8(struct __sk_buff *skb)\n{\n\treturn f7(skb);\n}\n\nSEC(\"tc\")\n__failure __msg(\"the call stack of 8 frames\")\nint global_func3(struct __sk_buff *skb)\n{\n\treturn f8(skb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

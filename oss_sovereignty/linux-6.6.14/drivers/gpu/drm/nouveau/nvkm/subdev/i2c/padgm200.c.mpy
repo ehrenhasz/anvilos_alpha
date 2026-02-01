@@ -1,0 +1,9 @@
+{
+  "module_name": "padgm200.c",
+  "hash_id": "8f467c388627f82363b8507f4b683bc9240f46a676b1138a0b6d6eebc79f548c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/i2c/padgm200.c",
+  "human_readable_source": " \n#include \"pad.h\"\n#include \"aux.h\"\n#include \"bus.h\"\n\nstatic void\ngm200_i2c_pad_mode(struct nvkm_i2c_pad *pad, enum nvkm_i2c_pad_mode mode)\n{\n\tstruct nvkm_subdev *subdev = &pad->i2c->subdev;\n\tstruct nvkm_device *device = subdev->device;\n\tconst u32 base = (pad->id - NVKM_I2C_PAD_HYBRID(0)) * 0x50;\n\n\tswitch (mode) {\n\tcase NVKM_I2C_PAD_OFF:\n\t\tnvkm_mask(device, 0x00d97c + base, 0x00000001, 0x00000001);\n\t\tbreak;\n\tcase NVKM_I2C_PAD_I2C:\n\t\tnvkm_mask(device, 0x00d970 + base, 0x0000c003, 0x0000c001);\n\t\tnvkm_mask(device, 0x00d97c + base, 0x00000001, 0x00000000);\n\t\tbreak;\n\tcase NVKM_I2C_PAD_AUX:\n\t\tnvkm_mask(device, 0x00d970 + base, 0x0000c003, 0x00000002);\n\t\tnvkm_mask(device, 0x00d97c + base, 0x00000001, 0x00000000);\n\t\tbreak;\n\tdefault:\n\t\tWARN_ON(1);\n\t\tbreak;\n\t}\n}\n\nstatic const struct nvkm_i2c_pad_func\ngm200_i2c_pad_s_func = {\n\t.bus_new_4 = gf119_i2c_bus_new,\n\t.aux_new_6 = gm200_i2c_aux_new,\n\t.mode = gm200_i2c_pad_mode,\n};\n\nint\ngm200_i2c_pad_s_new(struct nvkm_i2c *i2c, int id, struct nvkm_i2c_pad **ppad)\n{\n\treturn nvkm_i2c_pad_new_(&gm200_i2c_pad_s_func, i2c, id, ppad);\n}\n\nstatic const struct nvkm_i2c_pad_func\ngm200_i2c_pad_x_func = {\n\t.bus_new_4 = gf119_i2c_bus_new,\n\t.aux_new_6 = gm200_i2c_aux_new,\n};\n\nint\ngm200_i2c_pad_x_new(struct nvkm_i2c *i2c, int id, struct nvkm_i2c_pad **ppad)\n{\n\treturn nvkm_i2c_pad_new_(&gm200_i2c_pad_x_func, i2c, id, ppad);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

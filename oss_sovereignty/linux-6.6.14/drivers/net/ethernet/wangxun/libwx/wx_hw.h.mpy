@@ -1,0 +1,9 @@
+{
+  "module_name": "wx_hw.h",
+  "hash_id": "072a5b180499f328db60cc899c1c7753ff9cf097a54bb19a03929699710cf70f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/wangxun/libwx/wx_hw.h",
+  "human_readable_source": " \n \n\n#ifndef _WX_HW_H_\n#define _WX_HW_H_\n\nvoid wx_intr_enable(struct wx *wx, u64 qmask);\nvoid wx_irq_disable(struct wx *wx);\nint wx_check_flash_load(struct wx *wx, u32 check_bit);\nvoid wx_control_hw(struct wx *wx, bool drv);\nint wx_mng_present(struct wx *wx);\nint wx_host_interface_command(struct wx *wx, u32 *buffer,\n\t\t\t      u32 length, u32 timeout, bool return_data);\nint wx_read_ee_hostif(struct wx *wx, u16 offset, u16 *data);\nint wx_read_ee_hostif_buffer(struct wx *wx,\n\t\t\t     u16 offset, u16 words, u16 *data);\nvoid wx_init_eeprom_params(struct wx *wx);\nvoid wx_get_mac_addr(struct wx *wx, u8 *mac_addr);\nvoid wx_init_rx_addrs(struct wx *wx);\nvoid wx_mac_set_default_filter(struct wx *wx, u8 *addr);\nvoid wx_flush_sw_mac_table(struct wx *wx);\nint wx_set_mac(struct net_device *netdev, void *p);\nvoid wx_disable_rx(struct wx *wx);\nvoid wx_set_rx_mode(struct net_device *netdev);\nint wx_change_mtu(struct net_device *netdev, int new_mtu);\nvoid wx_disable_rx_queue(struct wx *wx, struct wx_ring *ring);\nvoid wx_configure_rx(struct wx *wx);\nvoid wx_configure(struct wx *wx);\nvoid wx_start_hw(struct wx *wx);\nint wx_disable_pcie_master(struct wx *wx);\nint wx_stop_adapter(struct wx *wx);\nvoid wx_reset_misc(struct wx *wx);\nint wx_get_pcie_msix_counts(struct wx *wx, u16 *msix_count, u16 max_msix_count);\nint wx_sw_init(struct wx *wx);\nint wx_vlan_rx_add_vid(struct net_device *netdev, __be16 proto, u16 vid);\nint wx_vlan_rx_kill_vid(struct net_device *netdev, __be16 proto, u16 vid);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

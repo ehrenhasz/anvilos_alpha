@@ -1,0 +1,9 @@
+{
+  "module_name": "rk3588-power.h",
+  "hash_id": "15445491bf4be0040f50711dea6f980c2c6bcbbe433bbca06244e7da5c3acd4f",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/rk3588-power.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_POWER_RK3588_POWER_H__\n#define __DT_BINDINGS_POWER_RK3588_POWER_H__\n\n \n#define RK3588_PD_CPU_0\t\t0\n#define RK3588_PD_CPU_1\t\t1\n#define RK3588_PD_CPU_2\t\t2\n#define RK3588_PD_CPU_3\t\t3\n\n \n#define RK3588_PD_CPU_4\t\t4\n#define RK3588_PD_CPU_5\t\t5\n\n \n#define RK3588_PD_CPU_6\t\t6\n#define RK3588_PD_CPU_7\t\t7\n\n \n#define RK3588_PD_NPU\t\t8\n#define RK3588_PD_NPUTOP\t9\n#define RK3588_PD_NPU1\t\t10\n#define RK3588_PD_NPU2\t\t11\n\n \n#define RK3588_PD_GPU\t\t12\n\n \n#define RK3588_PD_VCODEC\t13\n#define RK3588_PD_RKVDEC0\t14\n#define RK3588_PD_RKVDEC1\t15\n#define RK3588_PD_VENC0\t\t16\n#define RK3588_PD_VENC1\t\t17\n\n \n#define RK3588_PD_DDR01\t\t18\n\n \n#define RK3588_PD_DDR23\t\t19\n\n \n#define RK3588_PD_CENTER\t20\n#define RK3588_PD_VDPU\t\t21\n#define RK3588_PD_RGA30\t\t22\n#define RK3588_PD_AV1\t\t23\n#define RK3588_PD_VOP\t\t24\n#define RK3588_PD_VO0\t\t25\n#define RK3588_PD_VO1\t\t26\n#define RK3588_PD_VI\t\t27\n#define RK3588_PD_ISP1\t\t28\n#define RK3588_PD_FEC\t\t29\n#define RK3588_PD_RGA31\t\t30\n#define RK3588_PD_USB\t\t31\n#define RK3588_PD_PHP\t\t32\n#define RK3588_PD_GMAC\t\t33\n#define RK3588_PD_PCIE\t\t34\n#define RK3588_PD_NVM\t\t35\n#define RK3588_PD_NVM0\t\t36\n#define RK3588_PD_SDIO\t\t37\n#define RK3588_PD_AUDIO\t\t38\n#define RK3588_PD_SECURE\t39\n#define RK3588_PD_SDMMC\t\t40\n#define RK3588_PD_CRYPTO\t41\n#define RK3588_PD_BUS\t\t42\n\n \n#define RK3588_PD_PMU1\t\t43\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

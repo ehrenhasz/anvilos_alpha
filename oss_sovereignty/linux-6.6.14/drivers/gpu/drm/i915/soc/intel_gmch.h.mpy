@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_gmch.h",
+  "hash_id": "7aa6d7a472a61e931b15a21fbdf8515a9b7aad10f36990167a2c5d67aa9e1b95",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/soc/intel_gmch.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_GMCH_H__\n#define __INTEL_GMCH_H__\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\n\nint intel_gmch_bridge_setup(struct drm_i915_private *i915);\nvoid intel_gmch_bar_setup(struct drm_i915_private *i915);\nvoid intel_gmch_bar_teardown(struct drm_i915_private *i915);\nint intel_gmch_vga_set_state(struct drm_i915_private *i915, bool enable_decode);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

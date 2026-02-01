@@ -1,0 +1,9 @@
+{
+  "module_name": "test_doc_build.sh",
+  "hash_id": "fd6f9cfe05e3a72aadd23f66c843d7d7158803dfbab013eeadc30e6daa1b0fda",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/test_doc_build.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)\nset -e\n\n# Assume script is located under tools/testing/selftests/bpf/. We want to start\n# build attempts from the top of kernel repository.\nSCRIPT_REL_PATH=$(realpath $0)\nSCRIPT_REL_DIR=$(dirname $SCRIPT_REL_PATH)\nKDIR_ROOT_DIR=$(realpath $SCRIPT_REL_DIR/../../../../)\nSCRIPT_REL_DIR=$(dirname $(realpath --relative-to=$KDIR_ROOT_DIR $SCRIPT_REL_PATH))\ncd $KDIR_ROOT_DIR\n\nif [ ! -e $PWD/$SCRIPT_REL_DIR/Makefile ]; then\n\techo -e \"skip:    bpftool files not found!\\n\"\n\texit 4 # KSFT_SKIP=4\nfi\n\nfor tgt in docs docs-clean; do\n\tmake -s -C $PWD/$SCRIPT_REL_DIR $tgt;\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

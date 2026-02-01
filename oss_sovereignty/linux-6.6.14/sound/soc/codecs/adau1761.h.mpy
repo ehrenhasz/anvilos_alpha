@@ -1,0 +1,9 @@
+{
+  "module_name": "adau1761.h",
+  "hash_id": "5e5142190fe4fb8a68848b2196623d3c7f68285f052616a3021e34622bb8704a",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/adau1761.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_SOC_CODECS_ADAU1761_H__\n#define __SOUND_SOC_CODECS_ADAU1761_H__\n\n#include <linux/regmap.h>\n#include \"adau17x1.h\"\n\nstruct device;\n\nint adau1761_probe(struct device *dev, struct regmap *regmap,\n\tenum adau17x1_type type, void (*switch_mode)(struct device *dev));\n\nextern const struct regmap_config adau1761_regmap_config;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

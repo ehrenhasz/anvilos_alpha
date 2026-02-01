@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0dc4e26649e66ea85cb91e90a59d4d60a13f13bdc5b67d90f90c4a12ff1ce2b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/imx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig VIDEO_IMX_MEDIA\n\ttristate \"i.MX5/6 V4L2 media drivers\"\n\tdepends on ARCH_MXC || COMPILE_TEST\n\tdepends on HAS_DMA\n\tdepends on VIDEO_DEV\n\tdepends on VIDEO_DEV\n\tdepends on IMX_IPUV3_CORE\n\tselect MEDIA_CONTROLLER\n\tselect V4L2_FWNODE\n\tselect V4L2_MEM2MEM_DEV\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect VIDEO_V4L2_SUBDEV_API\n\thelp\n\t  Say yes here to enable support for video4linux media controller\n\t  drivers for the i.MX5/6 SOC.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "coredump.h",
+  "hash_id": "20da2d2a0b598274a38002602904deff4692e7ffadb4a43e8fe1782df53cd298",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/coredump.h",
+  "human_readable_source": " \n#ifndef _LINUX_COREDUMP_H\n#define _LINUX_COREDUMP_H\n\n#include <linux/types.h>\n#include <linux/mm.h>\n#include <linux/fs.h>\n#include <asm/siginfo.h>\n\n#ifdef CONFIG_COREDUMP\nstruct core_vma_metadata {\n\tunsigned long start, end;\n\tunsigned long flags;\n\tunsigned long dump_size;\n\tunsigned long pgoff;\n\tstruct file   *file;\n};\n\nstruct coredump_params {\n\tconst kernel_siginfo_t *siginfo;\n\tstruct file *file;\n\tunsigned long limit;\n\tunsigned long mm_flags;\n\tint cpu;\n\tloff_t written;\n\tloff_t pos;\n\tloff_t to_skip;\n\tint vma_count;\n\tsize_t vma_data_size;\n\tstruct core_vma_metadata *vma_meta;\n};\n\n \nextern void dump_skip_to(struct coredump_params *cprm, unsigned long to);\nextern void dump_skip(struct coredump_params *cprm, size_t nr);\nextern int dump_emit(struct coredump_params *cprm, const void *addr, int nr);\nextern int dump_align(struct coredump_params *cprm, int align);\nint dump_user_range(struct coredump_params *cprm, unsigned long start,\n\t\t    unsigned long len);\nextern void do_coredump(const kernel_siginfo_t *siginfo);\n#else\nstatic inline void do_coredump(const kernel_siginfo_t *siginfo) {}\n#endif\n\n#if defined(CONFIG_COREDUMP) && defined(CONFIG_SYSCTL)\nextern void validate_coredump_safety(void);\n#else\nstatic inline void validate_coredump_safety(void) {}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

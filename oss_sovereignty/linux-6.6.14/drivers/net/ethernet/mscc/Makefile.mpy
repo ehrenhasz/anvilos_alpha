@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5f373ec88b855966d52543539388b775f23251e52fd0b1ab7bf3d0ca988803c0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mscc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: (GPL-2.0 OR MIT)\nobj-$(CONFIG_MSCC_OCELOT_SWITCH_LIB) += mscc_ocelot_switch_lib.o\nmscc_ocelot_switch_lib-y := \\\n\tocelot.o \\\n\tocelot_devlink.o \\\n\tocelot_flower.o \\\n\tocelot_io.o \\\n\tocelot_mm.o \\\n\tocelot_police.o \\\n\tocelot_ptp.o \\\n\tocelot_stats.o \\\n\tocelot_vcap.o \\\n\tvsc7514_regs.o\nmscc_ocelot_switch_lib-$(CONFIG_BRIDGE_MRP) += ocelot_mrp.o\nobj-$(CONFIG_MSCC_OCELOT_SWITCH) += mscc_ocelot.o\nmscc_ocelot-y := \\\n\tocelot_fdma.o \\\n\tocelot_net.o \\\n\tocelot_vsc7514.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "memweight.c",
+  "hash_id": "2729ba0bcb2089fe9efee320ae250d541193ccdae1dadabf50aca04b67966bba",
+  "original_prompt": "Ingested from linux-6.6.14/lib/memweight.c",
+  "human_readable_source": "\n#include <linux/export.h>\n#include <linux/bug.h>\n#include <linux/bitmap.h>\n\n \nsize_t memweight(const void *ptr, size_t bytes)\n{\n\tsize_t ret = 0;\n\tsize_t longs;\n\tconst unsigned char *bitmap = ptr;\n\n\tfor (; bytes > 0 && ((unsigned long)bitmap) % sizeof(long);\n\t\t\tbytes--, bitmap++)\n\t\tret += hweight8(*bitmap);\n\n\tlongs = bytes / sizeof(long);\n\tif (longs) {\n\t\tBUG_ON(longs >= INT_MAX / BITS_PER_LONG);\n\t\tret += bitmap_weight((unsigned long *)bitmap,\n\t\t\t\tlongs * BITS_PER_LONG);\n\t\tbytes -= longs * sizeof(long);\n\t\tbitmap += longs * sizeof(long);\n\t}\n\t \n\tfor (; bytes > 0; bytes--, bitmap++)\n\t\tret += hweight8(*bitmap);\n\n\treturn ret;\n}\nEXPORT_SYMBOL(memweight);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

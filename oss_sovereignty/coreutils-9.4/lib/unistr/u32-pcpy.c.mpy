@@ -1,0 +1,9 @@
+{
+  "module_name": "u32-pcpy.c",
+  "hash_id": "6fe4c01354d42587cdc766acdb8bf2214adb591bc53a948ac16fbe546e087447",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unistr/u32-pcpy.c",
+  "human_readable_source": " \n#include \"unistr.h\"\n\n#define FUNC u32_pcpy\n#define UNIT uint32_t\n#define U_CPY u32_cpy\n#include \"u-pcpy.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

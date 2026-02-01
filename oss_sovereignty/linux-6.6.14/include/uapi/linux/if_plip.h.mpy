@@ -1,0 +1,9 @@
+{
+  "module_name": "if_plip.h",
+  "hash_id": "2b201b9f9c57010c10722590654c81187ff00c5b2cf91d46f60dac55652af5a9",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/if_plip.h",
+  "human_readable_source": " \n \n \n#ifndef _LINUX_IF_PLIP_H\n#define _LINUX_IF_PLIP_H\n\n#include <linux/sockios.h>\n\n#define\tSIOCDEVPLIP\tSIOCDEVPRIVATE\n\nstruct plipconf {\n\tunsigned short pcmd;\n\tunsigned long  nibble;\n\tunsigned long  trigger;\n};\n\n#define PLIP_GET_TIMEOUT\t0x1\n#define PLIP_SET_TIMEOUT\t0x2\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

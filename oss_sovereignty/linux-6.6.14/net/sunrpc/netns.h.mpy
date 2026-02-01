@@ -1,0 +1,9 @@
+{
+  "module_name": "netns.h",
+  "hash_id": "bda388b8e52249361d45ad6db46295ace83f9447bdbf783c664b2c7433eebb16",
+  "original_prompt": "Ingested from linux-6.6.14/net/sunrpc/netns.h",
+  "human_readable_source": " \n#ifndef __SUNRPC_NETNS_H__\n#define __SUNRPC_NETNS_H__\n\n#include <net/net_namespace.h>\n#include <net/netns/generic.h>\n\nstruct cache_detail;\n\nstruct sunrpc_net {\n\tstruct proc_dir_entry *proc_net_rpc;\n\tstruct cache_detail *ip_map_cache;\n\tstruct cache_detail *unix_gid_cache;\n\tstruct cache_detail *rsc_cache;\n\tstruct cache_detail *rsi_cache;\n\n\tstruct super_block *pipefs_sb;\n\tstruct rpc_pipe *gssd_dummy;\n\tstruct mutex pipefs_sb_lock;\n\n\tstruct list_head all_clients;\n\tspinlock_t rpc_client_lock;\n\n\tstruct rpc_clnt *rpcb_local_clnt;\n\tstruct rpc_clnt *rpcb_local_clnt4;\n\tspinlock_t rpcb_clnt_lock;\n\tunsigned int rpcb_users;\n\tunsigned int rpcb_is_af_local : 1;\n\n\tstruct mutex gssp_lock;\n\tstruct rpc_clnt *gssp_clnt;\n\tint use_gss_proxy;\n\tint pipe_version;\n\tatomic_t pipe_users;\n\tstruct proc_dir_entry *use_gssp_proc;\n\tstruct proc_dir_entry *gss_krb5_enctypes;\n};\n\nextern unsigned int sunrpc_net_id;\n\nint ip_map_cache_create(struct net *);\nvoid ip_map_cache_destroy(struct net *);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

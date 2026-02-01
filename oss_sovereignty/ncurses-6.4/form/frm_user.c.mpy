@@ -1,0 +1,9 @@
+{
+  "module_name": "frm_user.c",
+  "hash_id": "41220e377f7738ea53a9ce6fd3cbace8143608ce42c334f63bebc7419c8d930c",
+  "original_prompt": "Ingested from ncurses-6.4/form/frm_user.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: frm_user.c,v 1.19 2021/06/17 21:20:30 tom Exp $\")\n\n \nFORM_EXPORT(int)\nset_form_userptr(FORM *form, void *usrptr)\n{\n  T((T_CALLED(\"set_form_userptr(%p,%p)\"), (void *)form, (void *)usrptr));\n\n  Normalize_Form(form)->usrptr = usrptr;\n  RETURN(E_OK);\n}\n\n \nFORM_EXPORT(void *)\nform_userptr(const FORM *form)\n{\n  T((T_CALLED(\"form_userptr(%p)\"), (const void *)form));\n  returnVoidPtr(Normalize_Form(form)->usrptr);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

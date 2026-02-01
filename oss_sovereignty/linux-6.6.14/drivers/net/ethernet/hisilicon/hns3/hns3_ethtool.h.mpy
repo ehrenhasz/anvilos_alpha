@@ -1,0 +1,9 @@
+{
+  "module_name": "hns3_ethtool.h",
+  "hash_id": "0551a537a0ebfadb19605e3c063e411560693372f9bdf27358b6202f71bec0ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.h",
+  "human_readable_source": " \n\n\n#ifndef __HNS3_ETHTOOL_H\n#define __HNS3_ETHTOOL_H\n\n#include <linux/ethtool.h>\n#include <linux/netdevice.h>\n\nstruct hns3_stats {\n\tchar stats_string[ETH_GSTRING_LEN];\n\tint stats_offset;\n};\n\nstruct hns3_sfp_type {\n\tu8 type;\n\tu8 ext_type;\n};\n\nstruct hns3_pflag_desc {\n\tchar name[ETH_GSTRING_LEN];\n\tvoid (*handler)(struct net_device *netdev, bool enable);\n};\n\nstruct hns3_ethtool_link_ext_state_mapping {\n\tu32 status_code;\n\tenum ethtool_link_ext_state link_ext_state;\n\tu8 link_ext_substate;\n};\n\nstruct hns3_ring_param {\n\tu32 tx_desc_num;\n\tu32 rx_desc_num;\n\tu32 rx_buf_len;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

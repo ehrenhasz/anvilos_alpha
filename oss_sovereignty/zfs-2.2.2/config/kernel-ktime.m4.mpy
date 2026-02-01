@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-ktime.m4",
+  "hash_id": "ce42b6d920e05e461e5d213287e2db27c3d941af5d5e3a3c5db1f21d1e048af4",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-ktime.m4",
+  "human_readable_source": "dnl #\ndnl # 4.18: ktime_get_coarse_real_ts64() replaces current_kernel_time64().\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_KTIME_GET_COARSE_REAL_TS64], [\n\tZFS_LINUX_TEST_SRC([ktime_get_coarse_real_ts64], [\n\t\t#include <linux/mm.h>\n\t], [\n\t\tstruct timespec64 ts;\n\t\tktime_get_coarse_real_ts64(&ts);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_KTIME_GET_COARSE_REAL_TS64], [\n\tAC_MSG_CHECKING([whether ktime_get_coarse_real_ts64() exists])\n\tZFS_LINUX_TEST_RESULT([ktime_get_coarse_real_ts64], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_KTIME_GET_COARSE_REAL_TS64, 1,\n\t\t    [ktime_get_coarse_real_ts64() exists])\n\t], [\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n\ndnl #\ndnl # 4.18: ktime_get_raw_ts64() replaces getrawmonotonic64().\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_KTIME_GET_RAW_TS64], [\n\tZFS_LINUX_TEST_SRC([ktime_get_raw_ts64], [\n\t\t#include <linux/mm.h>\n\t], [\n\t\tstruct timespec64 ts;\n\t\tktime_get_raw_ts64(&ts);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_KTIME_GET_RAW_TS64], [\n\tAC_MSG_CHECKING([whether ktime_get_raw_ts64() exists])\n\tZFS_LINUX_TEST_RESULT([ktime_get_raw_ts64], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_KTIME_GET_RAW_TS64, 1,\n\t\t    [ktime_get_raw_ts64() exists])\n\t], [\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_SRC_KTIME], [\n\tZFS_AC_KERNEL_SRC_KTIME_GET_COARSE_REAL_TS64\n\tZFS_AC_KERNEL_SRC_KTIME_GET_RAW_TS64\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_KTIME], [\n\tZFS_AC_KERNEL_KTIME_GET_COARSE_REAL_TS64\n\tZFS_AC_KERNEL_KTIME_GET_RAW_TS64\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

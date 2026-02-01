@@ -1,0 +1,9 @@
+{
+  "module_name": "mv_usb.h",
+  "hash_id": "436a9fc905867234aed6fab099519c6e0ffd9f8893f4f11058edbbcacee6a93e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/mv_usb.h",
+  "human_readable_source": " \n \n\n#ifndef __MV_PLATFORM_USB_H\n#define __MV_PLATFORM_USB_H\n\nenum {\n\tMV_USB_MODE_OTG,\n\tMV_USB_MODE_HOST,\n};\n\nenum {\n\tVBUS_LOW\t= 0,\n\tVBUS_HIGH\t= 1 << 0,\n};\n\nstruct mv_usb_addon_irq {\n\tunsigned int\tirq;\n\tint\t\t(*poll)(void);\n};\n\nstruct mv_usb_platform_data {\n\tstruct mv_usb_addon_irq\t*id;\t \n\tstruct mv_usb_addon_irq\t*vbus;\t \n\n\t \n\tunsigned int\t\tmode;\n\n\t \n\tunsigned int    disable_otg_clock_gating:1;\n\t \n\t unsigned int    otg_force_a_bus_req:1;\n\n\tint\t(*phy_init)(void __iomem *regbase);\n\tvoid\t(*phy_deinit)(void __iomem *regbase);\n\tint\t(*set_vbus)(unsigned int vbus);\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dirent-safer.h",
+  "hash_id": "4ab34704bc9a96a8a9d8fd61e95523f6fd70d66132a651e7a750b301c599cdbb",
+  "original_prompt": "Ingested from coreutils-9.4/lib/dirent-safer.h",
+  "human_readable_source": " \n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <dirent.h>\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\nDIR *opendir_safer (const char *name)\n  _GL_ATTRIBUTE_DEALLOC (closedir, 1);\n\n#ifdef __cplusplus\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

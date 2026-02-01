@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f1840301427632d4472f104876d8628553b299b43e26a2b49c30a00ebefa8ad7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sun/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Sun network device drivers.\n#\n\nobj-$(CONFIG_HAPPYMEAL) += sunhme.o\nobj-$(CONFIG_SUNQE) += sunqe.o\nobj-$(CONFIG_SUNBMAC) += sunbmac.o\nobj-$(CONFIG_SUNGEM) += sungem.o\nobj-$(CONFIG_CASSINI) += cassini.o\nobj-$(CONFIG_SUNVNET_COMMON) += sunvnet_common.o\nobj-$(CONFIG_SUNVNET) += sunvnet.o\nobj-$(CONFIG_LDMVSW) += ldmvsw.o\nobj-$(CONFIG_NIU) += niu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

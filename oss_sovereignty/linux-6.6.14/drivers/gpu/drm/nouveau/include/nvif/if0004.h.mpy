@@ -1,0 +1,9 @@
+{
+  "module_name": "if0004.h",
+  "hash_id": "c19e7fafebdd08029e31ebcc9dcccb0ab02345ce177b501be049e625612b9ddd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/if0004.h",
+  "human_readable_source": " \n#ifndef __NVIF_IF0004_H__\n#define __NVIF_IF0004_H__\n\nunion nv04_nvsw_event_args {\n\tstruct nv04_nvsw_event_vn {\n\t} vn;\n};\n\n#define NV04_NVSW_GET_REF                                                  0x00\n\nstruct nv04_nvsw_get_ref_v0 {\n\t__u8  version;\n\t__u8  pad01[3];\n\t__u32 ref;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

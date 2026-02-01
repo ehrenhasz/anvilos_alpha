@@ -1,0 +1,9 @@
+{
+  "module_name": "r8a774c0-sysc.c",
+  "hash_id": "7b0c8cac4a2fa257919cf2d3810a35c6d4ab61c46ebb67011eb9870c4fe26b3b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pmdomain/renesas/r8a774c0-sysc.c",
+  "human_readable_source": "\n \n\n#include <linux/bits.h>\n#include <linux/kernel.h>\n#include <linux/sys_soc.h>\n\n#include <dt-bindings/power/r8a774c0-sysc.h>\n\n#include \"rcar-sysc.h\"\n\nstatic struct rcar_sysc_area r8a774c0_areas[] __initdata = {\n\t{ \"always-on\",\t    0, 0, R8A774C0_PD_ALWAYS_ON, -1, PD_ALWAYS_ON },\n\t{ \"ca53-scu\",\t0x140, 0, R8A774C0_PD_CA53_SCU,  R8A774C0_PD_ALWAYS_ON,\n\t  PD_SCU },\n\t{ \"ca53-cpu0\",\t0x200, 0, R8A774C0_PD_CA53_CPU0, R8A774C0_PD_CA53_SCU,\n\t  PD_CPU_NOCR },\n\t{ \"ca53-cpu1\",\t0x200, 1, R8A774C0_PD_CA53_CPU1, R8A774C0_PD_CA53_SCU,\n\t  PD_CPU_NOCR },\n\t{ \"a3vc\",\t0x380, 0, R8A774C0_PD_A3VC,\tR8A774C0_PD_ALWAYS_ON },\n\t{ \"a2vc1\",\t0x3c0, 1, R8A774C0_PD_A2VC1,\tR8A774C0_PD_A3VC },\n\t{ \"3dg-a\",\t0x100, 0, R8A774C0_PD_3DG_A,\tR8A774C0_PD_ALWAYS_ON },\n\t{ \"3dg-b\",\t0x100, 1, R8A774C0_PD_3DG_B,\tR8A774C0_PD_3DG_A },\n};\n\n \nstatic const struct soc_device_attribute r8a774c0[] __initconst = {\n\t{ .soc_id = \"r8a774c0\", .revision = \"ES1.0\" },\n\t{   }\n};\n\nstatic int __init r8a774c0_sysc_init(void)\n{\n\tif (soc_device_match(r8a774c0)) {\n\t\t \n\t\tswap(r8a774c0_areas[6], r8a774c0_areas[7]);\n\t\tr8a774c0_areas[6].parent = R8A774C0_PD_ALWAYS_ON;\n\t\tr8a774c0_areas[7].parent = R8A774C0_PD_3DG_B;\n\t}\n\n\treturn 0;\n}\n\nconst struct rcar_sysc_info r8a774c0_sysc_info __initconst = {\n\t.init = r8a774c0_sysc_init,\n\t.areas = r8a774c0_areas,\n\t.num_areas = ARRAY_SIZE(r8a774c0_areas),\n\t.extmask_offs = 0x2f8,\n\t.extmask_val = BIT(0),\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

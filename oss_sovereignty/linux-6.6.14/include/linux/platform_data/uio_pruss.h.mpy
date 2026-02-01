@@ -1,0 +1,9 @@
+{
+  "module_name": "uio_pruss.h",
+  "hash_id": "4740a13ffebb84c080ac24262c9666bc5095503f5e0421a66c58b21dc751711e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/uio_pruss.h",
+  "human_readable_source": " \n \n\n#ifndef _UIO_PRUSS_H_\n#define _UIO_PRUSS_H_\n\n \nstruct uio_pruss_pdata {\n\tu32\t\tpintc_base;\n\tstruct gen_pool *sram_pool;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

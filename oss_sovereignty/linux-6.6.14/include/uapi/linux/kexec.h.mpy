@@ -1,0 +1,9 @@
+{
+  "module_name": "kexec.h",
+  "hash_id": "28ce0ee1b5dfe761033f3b565010f564100ef25b0ae3e7f4b02b2c1ae5d81427",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/kexec.h",
+  "human_readable_source": " \n#ifndef _UAPILINUX_KEXEC_H\n#define _UAPILINUX_KEXEC_H\n\n \n\n#include <linux/types.h>\n\n \n#define KEXEC_ON_CRASH\t\t0x00000001\n#define KEXEC_PRESERVE_CONTEXT\t0x00000002\n#define KEXEC_UPDATE_ELFCOREHDR\t0x00000004\n#define KEXEC_ARCH_MASK\t\t0xffff0000\n\n \n#define KEXEC_FILE_UNLOAD\t0x00000001\n#define KEXEC_FILE_ON_CRASH\t0x00000002\n#define KEXEC_FILE_NO_INITRAMFS\t0x00000004\n\n \n#define KEXEC_ARCH_DEFAULT ( 0 << 16)\n#define KEXEC_ARCH_386     ( 3 << 16)\n#define KEXEC_ARCH_68K     ( 4 << 16)\n#define KEXEC_ARCH_PARISC  (15 << 16)\n#define KEXEC_ARCH_X86_64  (62 << 16)\n#define KEXEC_ARCH_PPC     (20 << 16)\n#define KEXEC_ARCH_PPC64   (21 << 16)\n#define KEXEC_ARCH_IA_64   (50 << 16)\n#define KEXEC_ARCH_ARM     (40 << 16)\n#define KEXEC_ARCH_S390    (22 << 16)\n#define KEXEC_ARCH_SH      (42 << 16)\n#define KEXEC_ARCH_MIPS_LE (10 << 16)\n#define KEXEC_ARCH_MIPS    ( 8 << 16)\n#define KEXEC_ARCH_AARCH64 (183 << 16)\n#define KEXEC_ARCH_RISCV   (243 << 16)\n#define KEXEC_ARCH_LOONGARCH\t(258 << 16)\n\n \n#define KEXEC_SEGMENT_MAX 16\n\n#ifndef __KERNEL__\n \nstruct kexec_segment {\n\tconst void *buf;\n\t__kernel_size_t bufsz;\n\tconst void *mem;\n\t__kernel_size_t memsz;\n};\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

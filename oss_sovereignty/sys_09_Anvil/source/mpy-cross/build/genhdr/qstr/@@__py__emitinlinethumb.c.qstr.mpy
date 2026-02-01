@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__emitinlinethumb.c.qstr",
+  "hash_id": "1d7a4fd4c4b6dd025c755c010b095346bfe6bb423bbe586c1471227f357d4f43",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__emitinlinethumb.c.qstr",
+  "human_readable_source": "Q(ldr)\nQ(ldrb)\nQ(ldrh)\nQ(str)\nQ(strb)\nQ(strh)\nQ(vcmp)\nQ(vsqrt)\nQ(vneg)\nQ(vcvt_f32_s32)\nQ(vcvt_s32_f32)\nQ(vmrs)\nQ(vmov)\nQ(vldr)\nQ(vstr)\nQ(nop)\nQ(wfi)\nQ(b)\nQ(bl)\nQ(bx)\nQ(cpsid)\nQ(cpsie)\nQ(push)\nQ(pop)\nQ(mov)\nQ(clz)\nQ(rbit)\nQ(mrs)\nQ(and_)\nQ(mov)\nQ(cmp)\nQ(add)\nQ(sub)\nQ(movw)\nQ(movt)\nQ(movwt)\nQ(ldrex)\nQ(lsl)\nQ(lsr)\nQ(asr)\nQ(add)\nQ(sdiv)\nQ(udiv)\nQ(sub)\nQ(strex)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

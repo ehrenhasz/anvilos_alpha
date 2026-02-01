@@ -1,0 +1,9 @@
+{
+  "module_name": "hrtimer_api.h",
+  "hash_id": "6ac3607377a14bc3f316579b65378fa2a015ace3e8e0fe61662823513b7fcbeb",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/hrtimer_api.h",
+  "human_readable_source": "#include <linux/hrtimer.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

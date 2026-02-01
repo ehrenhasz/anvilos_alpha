@@ -1,0 +1,9 @@
+{
+  "module_name": "fxls8962af.h",
+  "hash_id": "38493ae48e0c935fe88e19326c6a7828a825d7b99cb9f414ca10f9d75c44743e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/accel/fxls8962af.h",
+  "human_readable_source": " \n \n#ifndef _FXLS8962AF_H_\n#define _FXLS8962AF_H_\n\nstruct regmap;\nstruct device;\n\nenum {\n\tfxls8962af,\n\tfxls8964af,\n};\n\nint fxls8962af_core_probe(struct device *dev, struct regmap *regmap, int irq);\nint fxls8962af_core_remove(struct device *dev);\n\nextern const struct dev_pm_ops fxls8962af_pm_ops;\nextern const struct regmap_config fxls8962af_i2c_regmap_conf;\nextern const struct regmap_config fxls8962af_spi_regmap_conf;\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

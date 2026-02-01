@@ -1,0 +1,9 @@
+{
+  "module_name": "mount_flags.sh",
+  "hash_id": "c67faafc10f8961283a203db2873d66ad79140d9aaf2a7345d7170b9a5d09cf8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/mount_flags.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n\n[ $# -eq 1 ] && header_dir=$1 || header_dir=tools/include/uapi/linux/\n\nprintf \"static const char *mount_flags[] = {\\n\"\nregex='^[[:space:]]*#[[:space:]]*define[[:space:]]+MS_([[:alnum:]_]+)[[:space:]]+([[:digit:]]+)[[:space:]]*.*'\ngrep -E $regex ${header_dir}/mount.h | grep -E -v '(MSK|VERBOSE|MGC_VAL)\\>' | \\\n\tsed -r \"s/$regex/\\2 \\2 \\1/g\" | sort -n | \\\n\txargs printf \"\\t[%s ? (ilog2(%s) + 1) : 0] = \\\"%s\\\",\\n\"\nregex='^[[:space:]]*#[[:space:]]*define[[:space:]]+MS_([[:alnum:]_]+)[[:space:]]+\\(1<<([[:digit:]]+)\\)[[:space:]]*.*'\ngrep -E $regex ${header_dir}/mount.h | \\\n\tsed -r \"s/$regex/\\2 \\1/g\" | \\\n\txargs printf \"\\t[%s + 1] = \\\"%s\\\",\\n\"\nprintf \"};\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

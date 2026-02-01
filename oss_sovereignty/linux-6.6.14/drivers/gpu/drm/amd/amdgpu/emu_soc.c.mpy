@@ -1,0 +1,9 @@
+{
+  "module_name": "emu_soc.c",
+  "hash_id": "58daf5b4d5f4a1294e3739d96116b672aec05f1d5dc1cc6b0278b5b3376c2993",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/emu_soc.c",
+  "human_readable_source": " \n#include \"amdgpu.h\"\n#include \"soc15.h\"\n\n#include \"soc15_common.h\"\n#include \"soc15_hw_ip.h\"\n\nint emu_soc_asic_init(struct amdgpu_device *adev)\n{\n\treturn 0;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

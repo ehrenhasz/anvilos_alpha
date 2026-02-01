@@ -1,0 +1,9 @@
+{
+  "module_name": "core907d.c",
+  "hash_id": "2d694d04a586ba1567ee481ba0b06915ab5e46492749403888352a0fef9ed5da",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/core907d.c",
+  "human_readable_source": " \n#include \"core.h\"\n#include \"head.h\"\n\n#include <nvif/push507c.h>\n#include <nvif/timer.h>\n\n#include <nvhw/class/cl907d.h>\n\n#include \"nouveau_bo.h\"\n\nint\ncore907d_caps_init(struct nouveau_drm *drm, struct nv50_disp *disp)\n{\n\tstruct nv50_core *core = disp->core;\n\tstruct nouveau_bo *bo = disp->sync;\n\ts64 time;\n\tint ret;\n\n\tNVBO_WR32(bo, NV50_DISP_CORE_NTFY, NV907D_CORE_NOTIFIER_3, CAPABILITIES_4,\n\t\t\t\t     NVDEF(NV907D_CORE_NOTIFIER_3, CAPABILITIES_4, DONE, FALSE));\n\n\tret = core507d_read_caps(disp);\n\tif (ret < 0)\n\t\treturn ret;\n\n\ttime = nvif_msec(core->chan.base.device, 2000ULL,\n\t\t\t if (NVBO_TD32(bo, NV50_DISP_CORE_NTFY,\n\t\t\t\t       NV907D_CORE_NOTIFIER_3, CAPABILITIES_4, DONE, ==, TRUE))\n\t\t\t\t break;\n\t\t\t usleep_range(1, 2);\n\t\t\t );\n\tif (time < 0)\n\t\tNV_ERROR(drm, \"core caps notifier timeout\\n\");\n\n\treturn 0;\n}\n\nstatic const struct nv50_core_func\ncore907d = {\n\t.init = core507d_init,\n\t.ntfy_init = core507d_ntfy_init,\n\t.caps_init = core907d_caps_init,\n\t.ntfy_wait_done = core507d_ntfy_wait_done,\n\t.update = core507d_update,\n\t.head = &head907d,\n#if IS_ENABLED(CONFIG_DEBUG_FS)\n\t.crc = &crc907d,\n#endif\n\t.dac = &dac907d,\n\t.sor = &sor907d,\n};\n\nint\ncore907d_new(struct nouveau_drm *drm, s32 oclass, struct nv50_core **pcore)\n{\n\treturn core507d_new_(&core907d, drm, oclass, pcore);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

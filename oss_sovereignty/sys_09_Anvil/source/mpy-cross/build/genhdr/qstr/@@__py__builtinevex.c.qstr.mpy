@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__builtinevex.c.qstr",
+  "hash_id": "eaed93dcf5bb01bd90081c6f1b4dfe901d86f83b89a3b8d183af02f161e2fa7c",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__builtinevex.c.qstr",
+  "human_readable_source": "Q(_lt_string_gt_)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

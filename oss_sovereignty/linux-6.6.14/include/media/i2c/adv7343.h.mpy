@@ -1,0 +1,9 @@
+{
+  "module_name": "adv7343.h",
+  "hash_id": "cdce73603d7863c82a2da4f0a9639b9d9f386a90bdcc743254e6d7b46eafa201",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/adv7343.h",
+  "human_readable_source": " \n \n\n#ifndef ADV7343_H\n#define ADV7343_H\n\n#define ADV7343_COMPOSITE_ID\t(0)\n#define ADV7343_COMPONENT_ID\t(1)\n#define ADV7343_SVIDEO_ID\t(2)\n\n \nstruct adv7343_power_mode {\n\tbool sleep_mode;\n\tbool pll_control;\n\tu32 dac[6];\n};\n\n \nstruct adv7343_sd_config {\n\t \n\tu32 sd_dac_out[2];\n};\n\n \nstruct adv7343_platform_data {\n\tstruct adv7343_power_mode mode_config;\n\tstruct adv7343_sd_config sd_config;\n};\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

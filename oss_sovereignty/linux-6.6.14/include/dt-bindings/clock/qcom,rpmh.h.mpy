@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,rpmh.h",
+  "hash_id": "056f37c2cacebce2b393d587f09c0fa2332ed6e1ead874e66e2217295b484995",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,rpmh.h",
+  "human_readable_source": " \n \n\n\n#ifndef _DT_BINDINGS_CLK_MSM_RPMH_H\n#define _DT_BINDINGS_CLK_MSM_RPMH_H\n\n \n#define RPMH_CXO_CLK\t\t\t\t0\n#define RPMH_CXO_CLK_A\t\t\t\t1\n#define RPMH_LN_BB_CLK2\t\t\t\t2\n#define RPMH_LN_BB_CLK2_A\t\t\t3\n#define RPMH_LN_BB_CLK3\t\t\t\t4\n#define RPMH_LN_BB_CLK3_A\t\t\t5\n#define RPMH_RF_CLK1\t\t\t\t6\n#define RPMH_RF_CLK1_A\t\t\t\t7\n#define RPMH_RF_CLK2\t\t\t\t8\n#define RPMH_RF_CLK2_A\t\t\t\t9\n#define RPMH_RF_CLK3\t\t\t\t10\n#define RPMH_RF_CLK3_A\t\t\t\t11\n#define RPMH_IPA_CLK\t\t\t\t12\n#define RPMH_LN_BB_CLK1\t\t\t\t13\n#define RPMH_LN_BB_CLK1_A\t\t\t14\n#define RPMH_CE_CLK\t\t\t\t15\n#define RPMH_QPIC_CLK\t\t\t\t16\n#define RPMH_DIV_CLK1\t\t\t\t17\n#define RPMH_DIV_CLK1_A\t\t\t\t18\n#define RPMH_RF_CLK4\t\t\t\t19\n#define RPMH_RF_CLK4_A\t\t\t\t20\n#define RPMH_RF_CLK5\t\t\t\t21\n#define RPMH_RF_CLK5_A\t\t\t\t22\n#define RPMH_PKA_CLK\t\t\t\t23\n#define RPMH_HWKM_CLK\t\t\t\t24\n#define RPMH_QLINK_CLK\t\t\t\t25\n#define RPMH_QLINK_CLK_A\t\t\t26\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

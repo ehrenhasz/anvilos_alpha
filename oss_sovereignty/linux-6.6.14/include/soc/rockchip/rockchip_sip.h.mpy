@@ -1,0 +1,9 @@
+{
+  "module_name": "rockchip_sip.h",
+  "hash_id": "fbb83acd7d6f17fb575c3f7db73adbdbcb3cb1933db3dfeafa79a611428532a8",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/rockchip/rockchip_sip.h",
+  "human_readable_source": " \n \n#ifndef __SOC_ROCKCHIP_SIP_H\n#define __SOC_ROCKCHIP_SIP_H\n\n#define ROCKCHIP_SIP_DRAM_FREQ\t\t\t0x82000008\n#define ROCKCHIP_SIP_CONFIG_DRAM_INIT\t\t0x00\n#define ROCKCHIP_SIP_CONFIG_DRAM_SET_RATE\t0x01\n#define ROCKCHIP_SIP_CONFIG_DRAM_ROUND_RATE\t0x02\n#define ROCKCHIP_SIP_CONFIG_DRAM_SET_AT_SR\t0x03\n#define ROCKCHIP_SIP_CONFIG_DRAM_GET_BW\t\t0x04\n#define ROCKCHIP_SIP_CONFIG_DRAM_GET_RATE\t0x05\n#define ROCKCHIP_SIP_CONFIG_DRAM_CLR_IRQ\t0x06\n#define ROCKCHIP_SIP_CONFIG_DRAM_SET_PARAM\t0x07\n#define ROCKCHIP_SIP_CONFIG_DRAM_SET_ODT_PD\t0x08\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

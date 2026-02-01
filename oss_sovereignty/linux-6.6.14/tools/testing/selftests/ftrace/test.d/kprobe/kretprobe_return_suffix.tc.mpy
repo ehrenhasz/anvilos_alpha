@@ -1,0 +1,9 @@
+{
+  "module_name": "kretprobe_return_suffix.tc",
+  "hash_id": "c994a223dac6d71f6e0fdceff3332026747d670f45b85db1217e0273c72d3739",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/kretprobe_return_suffix.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Kretprobe %%return suffix test\n# requires: kprobe_events '<symbol>[+<offset>]%return':README\n\n# Test for kretprobe by \"r\"\necho 'r:myprobeaccept vfs_read' > kprobe_events\nRESULT1=`cat kprobe_events`\n\n# Test for kretprobe by \"%return\"\necho 'p:myprobeaccept vfs_read%return' > kprobe_events\nRESULT2=`cat kprobe_events`\n\nif [ \"$RESULT1\" != \"$RESULT2\" ]; then\n\techo \"Error: %return suffix didn't make a return probe.\"\n\techo \"r-command: $RESULT1\"\n\techo \"%return: $RESULT2\"\n\texit_fail\nfi\n\necho > kprobe_events\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

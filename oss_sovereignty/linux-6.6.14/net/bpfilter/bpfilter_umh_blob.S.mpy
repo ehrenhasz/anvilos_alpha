@@ -1,0 +1,9 @@
+{
+  "module_name": "bpfilter_umh_blob.S",
+  "hash_id": "e6f55fe2e939b9aecc7a5d2393263f59d850be287097aad75b5daef2a1bd05ac",
+  "original_prompt": "Ingested from linux-6.6.14/net/bpfilter/bpfilter_umh_blob.S",
+  "human_readable_source": " \n\t.section .init.rodata, \"a\"\n\t.global bpfilter_umh_start\nbpfilter_umh_start:\n\t.incbin \"net/bpfilter/bpfilter_umh\"\n\t.global bpfilter_umh_end\nbpfilter_umh_end:\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-vfs-filemap_dirty_folio.m4",
+  "hash_id": "5185d7085ab328059bf4dd1530ebcf4adf716b877d8a1713f11d4448c90bca6c",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-vfs-filemap_dirty_folio.m4",
+  "human_readable_source": "dnl #\ndnl # Linux 5.18 uses filemap_dirty_folio in lieu of\ndnl # ___set_page_dirty_nobuffers\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_VFS_FILEMAP_DIRTY_FOLIO], [\n\tZFS_LINUX_TEST_SRC([vfs_has_filemap_dirty_folio], [\n\t\t#include <linux/pagemap.h>\n\t\t#include <linux/writeback.h>\n\n\t\tstatic const struct address_space_operations\n\t\t    aops __attribute__ ((unused)) = {\n\t\t\t.dirty_folio\t= filemap_dirty_folio,\n\t\t};\n\t],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_VFS_FILEMAP_DIRTY_FOLIO], [\n\tdnl #\n\tdnl # Linux 5.18 uses filemap_dirty_folio in lieu of\n\tdnl # ___set_page_dirty_nobuffers\n\tdnl #\n\tAC_MSG_CHECKING([whether filemap_dirty_folio exists])\n\tZFS_LINUX_TEST_RESULT([vfs_has_filemap_dirty_folio], [\n\t\tAC_MSG_RESULT([yes])\n\t\tAC_DEFINE(HAVE_VFS_FILEMAP_DIRTY_FOLIO, 1,\n\t\t\t[filemap_dirty_folio exists])\n\t],[\n\t\tAC_MSG_RESULT([no])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sigmadsp.h",
+  "hash_id": "74fbfa466ec88e7295d2cab8f1a5baba5a1cacab9cc0f9c7318cc800df62c470",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/sigmadsp.h",
+  "human_readable_source": " \n \n\n#ifndef __SIGMA_FIRMWARE_H__\n#define __SIGMA_FIRMWARE_H__\n\n#include <linux/device.h>\n#include <linux/regmap.h>\n#include <linux/list.h>\n\n#include <sound/pcm.h>\n\nstruct sigmadsp;\nstruct snd_soc_component;\nstruct snd_pcm_substream;\n\nstruct sigmadsp_ops {\n\tint (*safeload)(struct sigmadsp *sigmadsp, unsigned int addr,\n\t\t\tconst uint8_t *data, size_t len);\n};\n\nstruct sigmadsp {\n\tconst struct sigmadsp_ops *ops;\n\n\tstruct list_head ctrl_list;\n\tstruct list_head data_list;\n\n\tstruct snd_pcm_hw_constraint_list rate_constraints;\n\n\tunsigned int current_samplerate;\n\tstruct snd_soc_component *component;\n\tstruct device *dev;\n\n\tstruct mutex lock;\n\n\tvoid *control_data;\n\tint (*write)(void *, unsigned int, const uint8_t *, size_t);\n\tint (*read)(void *, unsigned int, uint8_t *, size_t);\n};\n\nstruct sigmadsp *devm_sigmadsp_init(struct device *dev,\n\tconst struct sigmadsp_ops *ops, const char *firmware_name);\n\nint sigmadsp_restrict_params(struct sigmadsp *sigmadsp,\n\tstruct snd_pcm_substream *substream);\n\nstruct i2c_client;\n\nstruct sigmadsp *devm_sigmadsp_init_regmap(struct device *dev,\n\tstruct regmap *regmap, const struct sigmadsp_ops *ops,\n\tconst char *firmware_name);\nstruct sigmadsp *devm_sigmadsp_init_i2c(struct i2c_client *client,\n\tconst struct sigmadsp_ops *ops,\tconst char *firmware_name);\n\nint sigmadsp_attach(struct sigmadsp *sigmadsp,\n\tstruct snd_soc_component *component);\nint sigmadsp_setup(struct sigmadsp *sigmadsp, unsigned int samplerate);\nvoid sigmadsp_reset(struct sigmadsp *sigmadsp);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

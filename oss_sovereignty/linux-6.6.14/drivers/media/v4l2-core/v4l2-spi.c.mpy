@@ -1,0 +1,9 @@
+{
+  "module_name": "v4l2-spi.c",
+  "hash_id": "1fa032c3651fc673694091805caeeab7a1cea792d8d0863c926cabfaffae8b6a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/v4l2-core/v4l2-spi.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/spi/spi.h>\n#include <media/v4l2-common.h>\n#include <media/v4l2-device.h>\n\nvoid v4l2_spi_subdev_unregister(struct v4l2_subdev *sd)\n{\n\tstruct spi_device *spi = v4l2_get_subdevdata(sd);\n\n\tif (spi && !spi->dev.of_node && !spi->dev.fwnode)\n\t\tspi_unregister_device(spi);\n}\n\nvoid v4l2_spi_subdev_init(struct v4l2_subdev *sd, struct spi_device *spi,\n\t\t\t  const struct v4l2_subdev_ops *ops)\n{\n\tv4l2_subdev_init(sd, ops);\n\tsd->flags |= V4L2_SUBDEV_FL_IS_SPI;\n\t \n\tsd->owner = spi->dev.driver->owner;\n\tsd->dev = &spi->dev;\n\t \n\tv4l2_set_subdevdata(sd, spi);\n\tspi_set_drvdata(spi, sd);\n\t \n\tsnprintf(sd->name, sizeof(sd->name), \"%s %s\",\n\t\t spi->dev.driver->name, dev_name(&spi->dev));\n}\nEXPORT_SYMBOL_GPL(v4l2_spi_subdev_init);\n\nstruct v4l2_subdev *v4l2_spi_new_subdev(struct v4l2_device *v4l2_dev,\n\t\t\t\t\tstruct spi_master *master,\n\t\t\t\t\tstruct spi_board_info *info)\n{\n\tstruct v4l2_subdev *sd = NULL;\n\tstruct spi_device *spi = NULL;\n\n\tif (!v4l2_dev)\n\t\treturn NULL;\n\tif (info->modalias[0])\n\t\trequest_module(info->modalias);\n\n\tspi = spi_new_device(master, info);\n\n\tif (!spi || !spi->dev.driver)\n\t\tgoto error;\n\n\tif (!try_module_get(spi->dev.driver->owner))\n\t\tgoto error;\n\n\tsd = spi_get_drvdata(spi);\n\n\t \n\tif (v4l2_device_register_subdev(v4l2_dev, sd))\n\t\tsd = NULL;\n\n\t \n\tmodule_put(spi->dev.driver->owner);\n\nerror:\n\t \n\tif (!sd)\n\t\tspi_unregister_device(spi);\n\n\treturn sd;\n}\nEXPORT_SYMBOL_GPL(v4l2_spi_new_subdev);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4444da72f600cf6c3dcc1029e0e5c8cf54e1bf92ec7a4f58d776063be0671f95",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/ringtest/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nall:\n\nall: ring virtio_ring_0_9 virtio_ring_poll virtio_ring_inorder ptr_ring noring\n\nCFLAGS += -Wall\nCFLAGS += -pthread -O2 -ggdb -flto -fwhole-program\nLDFLAGS += -pthread -O2 -ggdb -flto -fwhole-program\n\nmain.o: main.c main.h\nring.o: ring.c main.h\nptr_ring.o: ptr_ring.c main.h ../../../include/linux/ptr_ring.h\nvirtio_ring_0_9.o: virtio_ring_0_9.c main.h\nvirtio_ring_poll.o: virtio_ring_poll.c virtio_ring_0_9.c main.h\nvirtio_ring_inorder.o: virtio_ring_inorder.c virtio_ring_0_9.c main.h\nring: ring.o main.o\nvirtio_ring_0_9: virtio_ring_0_9.o main.o\nvirtio_ring_poll: virtio_ring_poll.o main.o\nvirtio_ring_inorder: virtio_ring_inorder.o main.o\nptr_ring: ptr_ring.o main.o\nnoring: noring.o main.o\nclean:\n\t-rm main.o\n\t-rm ring.o ring\n\t-rm virtio_ring_0_9.o virtio_ring_0_9\n\t-rm virtio_ring_poll.o virtio_ring_poll\n\t-rm virtio_ring_inorder.o virtio_ring_inorder\n\t-rm ptr_ring.o ptr_ring\n\t-rm noring.o noring\n\n.PHONY: all clean\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

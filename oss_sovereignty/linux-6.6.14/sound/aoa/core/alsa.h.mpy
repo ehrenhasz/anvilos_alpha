@@ -1,0 +1,9 @@
+{
+  "module_name": "alsa.h",
+  "hash_id": "e6165f858c0409b78433164340e436508d245229d052f8a0b0263519f6201541",
+  "original_prompt": "Ingested from linux-6.6.14/sound/aoa/core/alsa.h",
+  "human_readable_source": " \n \n\n#ifndef __SND_AOA_ALSA_H\n#define __SND_AOA_ALSA_H\n#include \"../aoa.h\"\n\nextern int aoa_alsa_init(char *name, struct module *mod, struct device *dev);\nextern void aoa_alsa_cleanup(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

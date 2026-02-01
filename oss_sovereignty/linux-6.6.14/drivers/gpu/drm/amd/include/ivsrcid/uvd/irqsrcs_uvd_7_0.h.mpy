@@ -1,0 +1,9 @@
+{
+  "module_name": "irqsrcs_uvd_7_0.h",
+  "hash_id": "5a09cfdd4f6fe4ad89246bd16cf20ec220d7f1be9e61a8ba74a51e055ba8ddad",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/ivsrcid/uvd/irqsrcs_uvd_7_0.h",
+  "human_readable_source": " \n\n#ifndef __IRQSRCS_UVD_7_0_H__\n#define __IRQSRCS_UVD_7_0_H__\n\n#define UVD_7_0__SRCID__UVD_ENC_GEN_PURP                119\n#define UVD_7_0__SRCID__UVD_ENC_LOW_LATENCY             120\n#define UVD_7_0__SRCID__UVD_SYSTEM_MESSAGE_INTERRUPT\t124\t\t \n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "arc_farm_kdma_kdma_cgm_regs.h",
+  "hash_id": "d6c15949be0b87939cbff742ab9a0ea2f392bcfebf451c6d0c6822efdeb3739a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/gaudi2/asic_reg/arc_farm_kdma_kdma_cgm_regs.h",
+  "human_readable_source": " \n\n \n\n#ifndef ASIC_REG_ARC_FARM_KDMA_KDMA_CGM_REGS_H_\n#define ASIC_REG_ARC_FARM_KDMA_KDMA_CGM_REGS_H_\n\n \n\n#define mmARC_FARM_KDMA_KDMA_CGM_CFG 0x4E8BE00\n\n#define mmARC_FARM_KDMA_KDMA_CGM_STS 0x4E8BE04\n\n#define mmARC_FARM_KDMA_KDMA_CGM_CFG1 0x4E8BE08\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

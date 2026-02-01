@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "639224a00df734929d4ccdfef9f7249934a438ccc6844809d9aa6b1c70cfa0cb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/common/videobuf2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nvideobuf2-common-objs := videobuf2-core.o\nvideobuf2-common-objs += frame_vector.o\n\nifeq ($(CONFIG_TRACEPOINTS),y)\n  videobuf2-common-objs += vb2-trace.o\nendif\n\n# Please keep it alphabetically sorted by Kconfig name\n# (e. g. LC_ALL=C sort Makefile)\nobj-$(CONFIG_VIDEOBUF2_CORE) += videobuf2-common.o\nobj-$(CONFIG_VIDEOBUF2_DMA_CONTIG) += videobuf2-dma-contig.o\nobj-$(CONFIG_VIDEOBUF2_DMA_SG) += videobuf2-dma-sg.o\nobj-$(CONFIG_VIDEOBUF2_DVB) += videobuf2-dvb.o\nobj-$(CONFIG_VIDEOBUF2_MEMOPS) += videobuf2-memops.o\nobj-$(CONFIG_VIDEOBUF2_V4L2) += videobuf2-v4l2.o\nobj-$(CONFIG_VIDEOBUF2_VMALLOC) += videobuf2-vmalloc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

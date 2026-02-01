@@ -1,0 +1,9 @@
+{
+  "module_name": "wext.h",
+  "hash_id": "f6b30de69b900f2725dc8e50d7817ffab41c09b9f572bacd797fa68877120f3f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intersil/orinoco/wext.h",
+  "human_readable_source": " \n#ifndef _ORINOCO_WEXT_H_\n#define _ORINOCO_WEXT_H_\n\n#include <net/iw_handler.h>\n\n \nextern const struct iw_handler_def orinoco_handler_def;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

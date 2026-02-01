@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1ba09ee7f4d3ce4d775e18026bd2994ffe13ff1dee5b8f136a111e3fa8cb1fa9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n# When ARCH not overridden for crosscompiling, lookup machine\nARCH ?= $(shell uname -m 2>/dev/null || echo not)\n\nifneq (,$(filter $(ARCH),aarch64 arm64))\nARM64_SUBTARGETS ?= tags signal pauth fp mte bti abi\nelse\nARM64_SUBTARGETS :=\nendif\n\nCFLAGS := -Wall -O2 -g\n\n# A proper top_srcdir is needed by KSFT(lib.mk)\ntop_srcdir = $(realpath ../../../../)\n\n# Additional include paths needed by kselftest.h and local headers\nCFLAGS += -I$(top_srcdir)/tools/testing/selftests/\n\nCFLAGS += $(KHDR_INCLUDES)\n\nCFLAGS += -I$(top_srcdir)/tools/include\n\nexport CFLAGS\nexport top_srcdir\n\nall:\n\t@for DIR in $(ARM64_SUBTARGETS); do\t\t\t\t\\\n\t\tBUILD_TARGET=$(OUTPUT)/$$DIR;\t\t\t\\\n\t\tmkdir -p $$BUILD_TARGET;\t\t\t\\\n\t\tmake OUTPUT=$$BUILD_TARGET -C $$DIR $@;\t\t\\\n\tdone\n\ninstall: all\n\t@for DIR in $(ARM64_SUBTARGETS); do\t\t\t\t\\\n\t\tBUILD_TARGET=$(OUTPUT)/$$DIR;\t\t\t\\\n\t\tmake OUTPUT=$$BUILD_TARGET -C $$DIR $@;\t\t\\\n\tdone\n\nrun_tests: all\n\t@for DIR in $(ARM64_SUBTARGETS); do\t\t\t\t\\\n\t\tBUILD_TARGET=$(OUTPUT)/$$DIR;\t\t\t\\\n\t\tmake OUTPUT=$$BUILD_TARGET -C $$DIR $@;\t\t\\\n\tdone\n\n# Avoid any output on non arm64 on emit_tests\nemit_tests:\n\t@for DIR in $(ARM64_SUBTARGETS); do\t\t\t\t\\\n\t\tBUILD_TARGET=$(OUTPUT)/$$DIR;\t\t\t\\\n\t\tmake OUTPUT=$$BUILD_TARGET -C $$DIR $@;\t\t\\\n\tdone\n\nclean:\n\t@for DIR in $(ARM64_SUBTARGETS); do\t\t\t\t\\\n\t\tBUILD_TARGET=$(OUTPUT)/$$DIR;\t\t\t\\\n\t\tmake OUTPUT=$$BUILD_TARGET -C $$DIR $@;\t\t\\\n\tdone\n\n.PHONY: all clean install run_tests emit_tests\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

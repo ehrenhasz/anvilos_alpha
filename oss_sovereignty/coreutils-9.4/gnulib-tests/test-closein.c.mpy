@@ -1,0 +1,9 @@
+{
+  "module_name": "test-closein.c",
+  "hash_id": "fc654d12c5f217f7f2c8e93ebc485933041db11ff2233750cbb41b52fd703227",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-closein.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"closein.h\"\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n\n#include \"binary-io.h\"\n#include \"ignore-value.h\"\n\n \nint\nmain (int argc, char **argv)\n{\n  char buf[7];\n  atexit (close_stdin);\n\n   \n  set_binary_mode (0, O_BINARY);\n\n  if (argc > 2)\n    close (0);\n\n  if (argc > 1)\n    ignore_value (fread (buf, 1, 6, stdin));\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

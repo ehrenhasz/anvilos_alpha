@@ -1,0 +1,9 @@
+{
+  "module_name": "xprintf.c",
+  "hash_id": "b384c3ffdfedc15f100b5438a0e2fa9619a597073d03ea05fde93b6d245f3ced",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xprintf.c",
+  "human_readable_source": " \n\n \nint\nxprintf (char const *restrict format, ...)\n{\n  va_list args;\n  int retval;\n  va_start (args, format);\n  retval = xvprintf (format, args);\n  va_end (args);\n\n  return retval;\n}\n\n \nint\nxvprintf (char const *restrict format, va_list args)\n{\n  int retval = vprintf (format, args);\n  if (retval < 0 && ! ferror (stdout))\n    error (exit_failure, errno, gettext (\"cannot perform formatted output\"));\n\n  return retval;\n}\n\n \nint\nxfprintf (FILE *restrict stream, char const *restrict format, ...)\n{\n  va_list args;\n  int retval;\n  va_start (args, format);\n  retval = xvfprintf (stream, format, args);\n  va_end (args);\n\n  return retval;\n}\n\n \nint\nxvfprintf (FILE *restrict stream, char const *restrict format, va_list args)\n{\n  int retval = vfprintf (stream, format, args);\n  if (retval < 0 && ! ferror (stream))\n    error (exit_failure, errno, gettext (\"cannot perform formatted output\"));\n\n  return retval;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

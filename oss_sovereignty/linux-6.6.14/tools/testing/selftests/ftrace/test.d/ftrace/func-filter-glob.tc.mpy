@@ -1,0 +1,9 @@
+{
+  "module_name": "func-filter-glob.tc",
+  "hash_id": "137a229c9f6007d47c39bcf4e728dd043224ef8ca9db716ea9930e835ce542fb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/ftrace/func-filter-glob.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: ftrace - function glob filters\n# requires: set_ftrace_filter function:tracer\n\n# Make sure that function glob matching filter works.\n\ndisable_tracing\nclear_trace\n\nftrace_filter_check() { # glob grep\n  echo \"$1\" > set_ftrace_filter\n  cut -f1 -d\" \" set_ftrace_filter > $TMPDIR/actual\n  cut -f1 -d\" \" available_filter_functions | grep \"$2\" > $TMPDIR/expected\n  DIFF=`diff $TMPDIR/actual $TMPDIR/expected`\n  test -z \"$DIFF\"\n}\n\n# filter by *, front match\nftrace_filter_check '*schedule' '^.*schedule$'\n\n# filter by *, middle match\nftrace_filter_check '*schedule*' '^.*schedule.*$'\n\n# filter by *, end match\nftrace_filter_check 'schedule*' '^schedule.*$'\n\n# filter by *mid*end\nftrace_filter_check '*pin*lock' '.*pin.*lock$'\n\n# filter by start*mid*\nftrace_filter_check 'mutex*try*' '^mutex.*try.*'\n\n# Advanced full-glob matching feature is recently supported.\n# Skip the tests if we are sure the kernel does not support it.\nif grep -q 'accepts: .* glob-matching-pattern' README ; then\n\n# filter by *, both side match\nftrace_filter_check 'sch*ule' '^sch.*ule$'\n\n# filter by char class.\nftrace_filter_check '[Ss]y[Ss]_*' '^[Ss]y[Ss]_.*$'\n\n# filter by ?, schedule is always good\nif ! echo \"sch?dule\" > set_ftrace_filter; then\n    # test for powerpc 64\n    if ! echo \".sch?dule\" > set_ftrace_filter; then\n\tfail \"can not enable schedule filter\"\n    fi\n    cat set_ftrace_filter | grep '^.schedule$'\nelse\n    cat set_ftrace_filter | grep '^schedule$'\nfi\n\nfi\n\necho > set_ftrace_filter\nenable_tracing\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "async-thread.h",
+  "hash_id": "178ffd97c2f7293022bb5c40e442b68129bcb72421ebd1fa50afcab70cf2e54b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/async-thread.h",
+  "human_readable_source": " \n \n\n#ifndef BTRFS_ASYNC_THREAD_H\n#define BTRFS_ASYNC_THREAD_H\n\n#include <linux/workqueue.h>\n\nstruct btrfs_fs_info;\nstruct btrfs_workqueue;\nstruct btrfs_work;\ntypedef void (*btrfs_func_t)(struct btrfs_work *arg);\n\nstruct btrfs_work {\n\tbtrfs_func_t func;\n\tbtrfs_func_t ordered_func;\n\tbtrfs_func_t ordered_free;\n\n\t \n\tstruct work_struct normal_work;\n\tstruct list_head ordered_list;\n\tstruct btrfs_workqueue *wq;\n\tunsigned long flags;\n};\n\nstruct btrfs_workqueue *btrfs_alloc_workqueue(struct btrfs_fs_info *fs_info,\n\t\t\t\t\t      const char *name,\n\t\t\t\t\t      unsigned int flags,\n\t\t\t\t\t      int limit_active,\n\t\t\t\t\t      int thresh);\nstruct btrfs_workqueue *btrfs_alloc_ordered_workqueue(\n\t\t\t\tstruct btrfs_fs_info *fs_info, const char *name,\n\t\t\t\tunsigned int flags);\nvoid btrfs_init_work(struct btrfs_work *work, btrfs_func_t func,\n\t\t     btrfs_func_t ordered_func, btrfs_func_t ordered_free);\nvoid btrfs_queue_work(struct btrfs_workqueue *wq,\n\t\t      struct btrfs_work *work);\nvoid btrfs_destroy_workqueue(struct btrfs_workqueue *wq);\nvoid btrfs_workqueue_set_max(struct btrfs_workqueue *wq, int max);\nstruct btrfs_fs_info * __pure btrfs_work_owner(const struct btrfs_work *work);\nstruct btrfs_fs_info * __pure btrfs_workqueue_owner(const struct btrfs_workqueue *wq);\nbool btrfs_workqueue_normal_congested(const struct btrfs_workqueue *wq);\nvoid btrfs_flush_workqueue(struct btrfs_workqueue *wq);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

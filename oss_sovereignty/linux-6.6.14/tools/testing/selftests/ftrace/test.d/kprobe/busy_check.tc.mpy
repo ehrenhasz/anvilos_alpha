@@ -1,0 +1,9 @@
+{
+  "module_name": "busy_check.tc",
+  "hash_id": "ac8293fee1a7b74dd1339ba43cb969078efecea3f9832d5551f1ba2147bdfa86",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/busy_check.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Kprobe dynamic event - busy event check\n# requires: kprobe_events\n\necho p:myevent $FUNCTION_FORK > kprobe_events\ntest -d events/kprobes/myevent\necho 1 > events/kprobes/myevent/enable\necho > kprobe_events && exit_fail # this must fail\necho 0 > events/kprobes/myevent/enable\necho > kprobe_events # this must succeed\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

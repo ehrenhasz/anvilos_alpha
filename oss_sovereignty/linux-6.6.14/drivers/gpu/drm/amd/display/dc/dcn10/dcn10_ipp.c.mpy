@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn10_ipp.c",
+  "hash_id": "4107e2621911904b0ef5112e4275c592534faaff0600ba3b51f70af7b67978ff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_ipp.c",
+  "human_readable_source": " \n\n#include \"dm_services.h\"\n#include \"dcn10_ipp.h\"\n#include \"reg_helper.h\"\n\n#define REG(reg) \\\n\t(ippn10->regs->reg)\n\n#undef FN\n#define FN(reg_name, field_name) \\\n\tippn10->ipp_shift->field_name, ippn10->ipp_mask->field_name\n\n#define CTX \\\n\tippn10->base.ctx\n\n \n \n \n\nstatic void dcn10_ipp_destroy(struct input_pixel_processor **ipp)\n{\n\tkfree(TO_DCN10_IPP(*ipp));\n\t*ipp = NULL;\n}\n\nstatic const struct ipp_funcs dcn10_ipp_funcs = {\n\t.ipp_destroy\t\t\t= dcn10_ipp_destroy\n};\n\nstatic const struct ipp_funcs dcn20_ipp_funcs = {\n\t.ipp_destroy\t\t\t= dcn10_ipp_destroy\n};\n\nvoid dcn10_ipp_construct(\n\tstruct dcn10_ipp *ippn10,\n\tstruct dc_context *ctx,\n\tint inst,\n\tconst struct dcn10_ipp_registers *regs,\n\tconst struct dcn10_ipp_shift *ipp_shift,\n\tconst struct dcn10_ipp_mask *ipp_mask)\n{\n\tippn10->base.ctx = ctx;\n\tippn10->base.inst = inst;\n\tippn10->base.funcs = &dcn10_ipp_funcs;\n\n\tippn10->regs = regs;\n\tippn10->ipp_shift = ipp_shift;\n\tippn10->ipp_mask = ipp_mask;\n}\n\nvoid dcn20_ipp_construct(\n\tstruct dcn10_ipp *ippn10,\n\tstruct dc_context *ctx,\n\tint inst,\n\tconst struct dcn10_ipp_registers *regs,\n\tconst struct dcn10_ipp_shift *ipp_shift,\n\tconst struct dcn10_ipp_mask *ipp_mask)\n{\n\tippn10->base.ctx = ctx;\n\tippn10->base.inst = inst;\n\tippn10->base.funcs = &dcn20_ipp_funcs;\n\n\tippn10->regs = regs;\n\tippn10->ipp_shift = ipp_shift;\n\tippn10->ipp_mask = ipp_mask;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

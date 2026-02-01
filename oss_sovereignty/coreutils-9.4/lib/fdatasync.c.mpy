@@ -1,0 +1,9 @@
+{
+  "module_name": "fdatasync.c",
+  "hash_id": "f30da9bf3dad65e81f97e43a383b96d7eeb16e1d64eb9d9eda21f448c97f4f33",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fdatasync.c",
+  "human_readable_source": " \n  return fsync (fd);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "00f831eb2b3b7a3771e5b0c1ace603c1952cb5d08b1d06cafc84ff09fda01d86",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/starfive/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_PHY_STARFIVE_JH7110_DPHY_RX)\t+= phy-jh7110-dphy-rx.o\nobj-$(CONFIG_PHY_STARFIVE_JH7110_PCIE)\t\t+= phy-jh7110-pcie.o\nobj-$(CONFIG_PHY_STARFIVE_JH7110_USB)\t\t+= phy-jh7110-usb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

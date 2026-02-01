@@ -1,0 +1,9 @@
+{
+  "module_name": "tilcdc_panel.h",
+  "hash_id": "4f671bb5f1af7075063e5497afaeabff82e8ceb4130d65c5fb1e5e1e89cd82ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tilcdc/tilcdc_panel.h",
+  "human_readable_source": " \n \n\n#ifndef __TILCDC_PANEL_H__\n#define __TILCDC_PANEL_H__\n\n \n\nint tilcdc_panel_init(void);\nvoid tilcdc_panel_fini(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

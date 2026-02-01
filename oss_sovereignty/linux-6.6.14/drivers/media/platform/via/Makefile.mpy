@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c6a78251076b51b7921ae2d21e31e4a2a87b3d6bae7d0b1873b959f6c284b50e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/via/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_VIDEO_VIA_CAMERA) += via-camera.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

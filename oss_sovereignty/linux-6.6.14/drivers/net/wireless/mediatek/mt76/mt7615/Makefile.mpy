@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cac8a7a74c70c455b225b1d7966dc4938579d941e98db6468da91e2c09a41c08",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt7615/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: ISC\n\nobj-$(CONFIG_MT7615_COMMON) += mt7615-common.o\nobj-$(CONFIG_MT7615E) += mt7615e.o\nobj-$(CONFIG_MT7663_USB_SDIO_COMMON) += mt7663-usb-sdio-common.o\nobj-$(CONFIG_MT7663U) += mt7663u.o\nobj-$(CONFIG_MT7663S) += mt7663s.o\n\nCFLAGS_trace.o := -I$(src)\n\nmt7615-common-y := main.o init.o mcu.o eeprom.o mac.o \\\n\t\t   debugfs.o trace.o\nmt7615-common-$(CONFIG_NL80211_TESTMODE) += testmode.o\n\nmt7615e-y := pci.o pci_init.o dma.o pci_mac.o mmio.o\nmt7615e-$(CONFIG_MT7622_WMAC) += soc.o\n\nmt7663-usb-sdio-common-y := usb_sdio.o\nmt7663u-y := usb.o usb_mcu.o\nmt7663s-y := sdio.o sdio_mcu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "525db8b9c8a4d5c3cff78687eb70595b8a83f9425ea7d4d1fdd23ff4f6262990",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/virtual/Makefile",
+  "human_readable_source": "#\n# Copyright 2017 Advanced Micro Devices, Inc.\n#\n# Permission is hereby granted, free of charge, to any person obtaining a\n# copy of this software and associated documentation files (the \"Software\"),\n# to deal in the Software without restriction, including without limitation\n# the rights to use, copy, modify, merge, publish, distribute, sublicense,\n# and/or sell copies of the Software, and to permit persons to whom the\n# Software is furnished to do so, subject to the following conditions:\n#\n# The above copyright notice and this permission notice shall be included in\n# all copies or substantial portions of the Software.\n#\n# THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL\n# THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR\n# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,\n# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR\n# OTHER DEALINGS IN THE SOFTWARE.\n#\n#\n# Makefile for the virtual sub-component of DAL.\n# It provides the control and status of HW CRTC block.\n\nVIRTUAL = virtual_link_encoder.o virtual_stream_encoder.o virtual_link_hwss.o\n\nAMD_DAL_VIRTUAL = $(addprefix $(AMDDALPATH)/dc/virtual/,$(VIRTUAL))\n\nAMD_DISPLAY_FILES += $(AMD_DAL_VIRTUAL)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

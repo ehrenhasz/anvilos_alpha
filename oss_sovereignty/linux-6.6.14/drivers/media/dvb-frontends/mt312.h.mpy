@@ -1,0 +1,9 @@
+{
+  "module_name": "mt312.h",
+  "hash_id": "5d5301bc6343e0d97b1d83722dfcd5dc39d84090e59235e8a371c048b036ab0c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/mt312.h",
+  "human_readable_source": " \n \n\n#ifndef MT312_H\n#define MT312_H\n\n#include <linux/dvb/frontend.h>\n\nstruct mt312_config {\n\t \n\tu8 demod_address;\n\n\t \n\tunsigned int voltage_inverted:1;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_MT312)\nstruct dvb_frontend *mt312_attach(const struct mt312_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *mt312_attach(\n\tconst struct mt312_config *config, struct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

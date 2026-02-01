@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_ids_to_path.8",
+  "hash_id": "8453a3ee3314528673406ed509e823a084c7c2db87ef23fbeb26f08b92b6692b",
+  "original_prompt": "Ingested from zfs-2.2.2/man/man8/zfs_ids_to_path.8",
+  "human_readable_source": ".\\\"\n.\\\" CDDL HEADER START\n.\\\"\n.\\\" The contents of this file are subject to the terms of the\n.\\\" Common Development and Distribution License (the \"License\").\n.\\\" You may not use this file except in compliance with the License.\n.\\\"\n.\\\" You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE\n.\\\" or https://opensource.org/licenses/CDDL-1.0.\n.\\\" See the License for the specific language governing permissions\n.\\\" and limitations under the License.\n.\\\"\n.\\\" When distributing Covered Code, include this CDDL HEADER in each\n.\\\" file and include the License file at usr/src/OPENSOLARIS.LICENSE.\n.\\\" If applicable, add the following below this CDDL HEADER, with the\n.\\\" fields enclosed by brackets \"[]\" replaced with your own identifying\n.\\\" information: Portions Copyright [yyyy] [name of copyright owner]\n.\\\"\n.\\\" CDDL HEADER END\n.\\\"\n.\\\" Copyright (c) 2020 by Delphix. All rights reserved.\n.\\\"\n.Dd April 17, 2020\n.Dt ZFS_IDS_TO_PATH 8\n.Os\n.\n.Sh NAME\n.Nm zfs_ids_to_path\n.Nd convert objset and object ids to names and paths\n.Sh SYNOPSIS\n.Nm\n.Op Fl v\n.Ar pool\n.Ar objset-id\n.Ar object-id\n.\n.Sh DESCRIPTION\nThe\n.Sy zfs_ids_to_path\nutility converts a provided objset and object ids\ninto a path to the file they refer to.\n.Bl -tag -width \"-D\"\n.It Fl v\nVerbose.\nPrint the dataset name and the file path within the dataset separately.\nThis will work correctly even if the dataset is not mounted.\n.El\n.\n.Sh SEE ALSO\n.Xr zdb 8 ,\n.Xr zfs 8\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

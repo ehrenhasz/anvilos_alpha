@@ -1,0 +1,9 @@
+{
+  "module_name": "s5p_mfc_cmd_v5.h",
+  "hash_id": "c450810f21122c3cf82129127dc78fec958e3e15895bdfc92d4ed5437ee720be",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/s5p-mfc/s5p_mfc_cmd_v5.h",
+  "human_readable_source": " \n \n\n#ifndef S5P_MFC_CMD_V5_H_\n#define S5P_MFC_CMD_V5_H_\n\n#include \"s5p_mfc_common.h\"\n\nstruct s5p_mfc_hw_cmds *s5p_mfc_init_hw_cmds_v5(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

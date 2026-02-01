@@ -1,0 +1,9 @@
+{
+  "module_name": "exynos-asv.h",
+  "hash_id": "006b253b35c75b1d19f90b953ea502c1f110adc4c65e28dd5973ab47b41f11b5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/samsung/exynos-asv.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_SOC_EXYNOS_ASV_H\n#define __LINUX_SOC_EXYNOS_ASV_H\n\nstruct regmap;\n\n \nstruct asv_limit_entry {\n\tunsigned int hpm;\n\tunsigned int ids;\n};\n\nstruct exynos_asv_table {\n\tunsigned int num_rows;\n\tunsigned int num_cols;\n\tu32 *buf;\n};\n\nstruct exynos_asv_subsys {\n\tstruct exynos_asv *asv;\n\tconst char *cpu_dt_compat;\n\tint id;\n\tstruct exynos_asv_table table;\n\n\tunsigned int base_volt;\n\tunsigned int offset_volt_h;\n\tunsigned int offset_volt_l;\n};\n\nstruct exynos_asv {\n\tstruct device *dev;\n\tstruct regmap *chipid_regmap;\n\tstruct exynos_asv_subsys subsys[2];\n\n\tint (*opp_get_voltage)(const struct exynos_asv_subsys *subs,\n\t\t\t       int level, unsigned int voltage);\n\tunsigned int group;\n\tunsigned int table;\n\n\t \n\tbool use_sg;\n\t \n\tint of_bin;\n};\n\nstatic inline u32 __asv_get_table_entry(const struct exynos_asv_table *table,\n\t\t\t\t\tunsigned int row, unsigned int col)\n{\n\treturn table->buf[row * (table->num_cols) + col];\n}\n\nstatic inline u32 exynos_asv_opp_get_voltage(const struct exynos_asv_subsys *subsys,\n\t\t\t\t\tunsigned int level, unsigned int group)\n{\n\treturn __asv_get_table_entry(&subsys->table, level, group + 1);\n}\n\nstatic inline u32 exynos_asv_opp_get_frequency(const struct exynos_asv_subsys *subsys,\n\t\t\t\t\tunsigned int level)\n{\n\treturn __asv_get_table_entry(&subsys->table, level, 0);\n}\n\nint exynos_asv_init(struct device *dev, struct regmap *regmap);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

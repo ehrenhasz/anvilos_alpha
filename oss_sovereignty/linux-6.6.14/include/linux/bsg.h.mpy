@@ -1,0 +1,9 @@
+{
+  "module_name": "bsg.h",
+  "hash_id": "08f8d0abc94be3dcadce67f16fcd49c5be44fba01ce56710a407bed9ff68c69a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bsg.h",
+  "human_readable_source": " \n#ifndef _LINUX_BSG_H\n#define _LINUX_BSG_H\n\n#include <uapi/linux/bsg.h>\n\nstruct bsg_device;\nstruct device;\nstruct request_queue;\n\ntypedef int (bsg_sg_io_fn)(struct request_queue *, struct sg_io_v4 *hdr,\n\t\tbool open_for_write, unsigned int timeout);\n\nstruct bsg_device *bsg_register_queue(struct request_queue *q,\n\t\tstruct device *parent, const char *name,\n\t\tbsg_sg_io_fn *sg_io_fn);\nvoid bsg_unregister_queue(struct bsg_device *bcd);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

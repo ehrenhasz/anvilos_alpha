@@ -1,0 +1,9 @@
+{
+  "module_name": "thunk_64.S",
+  "hash_id": "3ba8d83f62219ecf24213991180b2325fcbe68f0cebc0db27996a134a7ce9e58",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/thunk_64.S",
+  "human_readable_source": " \n \n#include <linux/linkage.h>\n#include \"calling.h\"\n#include <asm/asm.h>\n#include <asm/export.h>\n\n\t \n\t.macro THUNK name, func\nSYM_FUNC_START(\\name)\n\tpushq %rbp\n\tmovq %rsp, %rbp\n\n\tpushq %rdi\n\tpushq %rsi\n\tpushq %rdx\n\tpushq %rcx\n\tpushq %rax\n\tpushq %r8\n\tpushq %r9\n\tpushq %r10\n\tpushq %r11\n\n\tcall \\func\n\n\tpopq %r11\n\tpopq %r10\n\tpopq %r9\n\tpopq %r8\n\tpopq %rax\n\tpopq %rcx\n\tpopq %rdx\n\tpopq %rsi\n\tpopq %rdi\n\tpopq %rbp\n\tRET\nSYM_FUNC_END(\\name)\n\t_ASM_NOKPROBE(\\name)\n\t.endm\n\nTHUNK preempt_schedule_thunk, preempt_schedule\nTHUNK preempt_schedule_notrace_thunk, preempt_schedule_notrace\nEXPORT_SYMBOL(preempt_schedule_thunk)\nEXPORT_SYMBOL(preempt_schedule_notrace_thunk)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

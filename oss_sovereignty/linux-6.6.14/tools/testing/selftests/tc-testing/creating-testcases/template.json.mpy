@@ -1,0 +1,9 @@
+{
+  "module_name": "template.json",
+  "hash_id": "61ca6ce86eef993e848243128d8f2ad028cc2b305e116c27c1c22b649a608ab8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tc-testing/creating-testcases/template.json",
+  "human_readable_source": "[\n    {\n        \"id\": \"\",\n        \"name\": \"\",\n        \"category\": [\n            \"\",\n            \"\"\n        ],\n        \"setup\": [\n            \"\"\n        ],\n        \"cmdUnderTest\": \"\",\n        \"expExitCode\": \"\",\n        \"verifyCmd\": \"\",\n        \"matchPattern\": \"\",\n        \"matchCount\": \"\",\n        \"teardown\": [\n            \"\"\n        ]\n    },\n    {\n        \"id\": \"\",\n        \"name\": \"\",\n        \"category\": [\n            \"\",\n            \"\"\n        ],\n        \"setup\": [\n            \"\",\n\t    [\n\t\t\"\",\n\t\t0,\n\t\t1,\n\t\t255\n\t    ]\n        ],\n        \"cmdUnderTest\": \"\",\n        \"expExitCode\": \"\",\n        \"verifyCmd\": \"\",\n        \"matchPattern\": \"\",\n        \"matchCount\": \"\",\n        \"teardown\": [\n            \"\",\n\t    [\n\t\t\"\",\n\t\t0,\n\t\t255\n            ]\n        ]\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

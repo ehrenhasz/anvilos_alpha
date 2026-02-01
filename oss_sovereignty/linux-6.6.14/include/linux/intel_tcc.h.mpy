@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_tcc.h",
+  "hash_id": "8165af506c98fae315b2deea6b913fa24190fa851c79c404fda9e08dc4e31cd2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/intel_tcc.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_TCC_H__\n#define __INTEL_TCC_H__\n\n#include <linux/types.h>\n\nint intel_tcc_get_tjmax(int cpu);\nint intel_tcc_get_offset(int cpu);\nint intel_tcc_set_offset(int cpu, int offset);\nint intel_tcc_get_temp(int cpu, bool pkg);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

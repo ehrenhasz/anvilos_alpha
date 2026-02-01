@@ -1,0 +1,9 @@
+{
+  "module_name": "sienna_cichlid_ppt.h",
+  "hash_id": "ce2e3a68a4fd37841281ca0306164a152375e9a9e7f2be29a7a198db36e46edc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.h",
+  "human_readable_source": " \n#ifndef __SIENNA_CICHLID_PPT_H__\n#define __SIENNA_CICHLID_PPT_H__\n\ntypedef enum {\n  POWER_SOURCE_AC,\n  POWER_SOURCE_DC,\n  POWER_SOURCE_COUNT,\n} POWER_SOURCE_e;\n\n#define SIENNA_CICHLID_UMD_PSTATE_PROFILING_GFXCLK    1825\n#define SIENNA_CICHLID_UMD_PSTATE_PROFILING_SOCCLK    960\n#define SIENNA_CICHLID_UMD_PSTATE_PROFILING_MEMCLK    1000\n\n#define DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_GFXCLK 1950\n#define DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_SOCCLK 960\n#define DIMGREY_CAVEFISH_UMD_PSTATE_PROFILING_MEMCLK 676\n\n#define BEIGE_GOBY_UMD_PSTATE_PROFILING_GFXCLK 2200\n#define BEIGE_GOBY_UMD_PSTATE_PROFILING_SOCCLK 960\n#define BEIGE_GOBY_UMD_PSTATE_PROFILING_MEMCLK 1000\n\nextern void sienna_cichlid_set_ppt_funcs(struct smu_context *smu);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

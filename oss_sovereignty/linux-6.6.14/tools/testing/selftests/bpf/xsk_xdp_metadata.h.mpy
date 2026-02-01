@@ -1,0 +1,9 @@
+{
+  "module_name": "xsk_xdp_metadata.h",
+  "hash_id": "79b55e4193a6a3b55b461e97a17a738d3ef32aa6c17e0e2e3b059edcd4e398c8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/xsk_xdp_metadata.h",
+  "human_readable_source": " \n\nstruct xdp_info {\n\t__u64 count;\n} __attribute__((aligned(32)));\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

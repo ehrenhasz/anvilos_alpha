@@ -1,0 +1,9 @@
+{
+  "module_name": "vfio.h",
+  "hash_id": "54cb7b63898ce3d2da44aaa6b3c9a92f3ccab086487cc081e0054dbf6527b8c5",
+  "original_prompt": "Ingested from linux-6.6.14/virt/kvm/vfio.h",
+  "human_readable_source": " \n#ifndef __KVM_VFIO_H\n#define __KVM_VFIO_H\n\n#ifdef CONFIG_KVM_VFIO\nint kvm_vfio_ops_init(void);\nvoid kvm_vfio_ops_exit(void);\n#else\nstatic inline int kvm_vfio_ops_init(void)\n{\n\treturn 0;\n}\nstatic inline void kvm_vfio_ops_exit(void)\n{\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

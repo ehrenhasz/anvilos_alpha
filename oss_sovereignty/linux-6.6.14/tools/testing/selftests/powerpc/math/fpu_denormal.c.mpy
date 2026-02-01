@@ -1,0 +1,9 @@
+{
+  "module_name": "fpu_denormal.c",
+  "hash_id": "41c4337bb2ba8b3b50ba1c727e1fef8f405312988be31b96b4793116e9fd1ce3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/math/fpu_denormal.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <string.h>\n\n#include \"utils.h\"\n\nstatic int test_denormal_fpu(void)\n{\n\tunsigned int m32;\n\tunsigned long m64;\n\tvolatile float f;\n\tvolatile double d;\n\n\t \n\n\tm32 = 0x00715fcf;  \n\tmemcpy((float *)&f, &m32, sizeof(f));\n\td = f;\n\tmemcpy(&m64, (double *)&d, sizeof(d));\n\n\tFAIL_IF((long)(m64 != 0x380c57f3c0000000));  \n\n\treturn 0;\n}\n\nint main(int argc, char *argv[])\n{\n\treturn test_harness(test_denormal_fpu, \"fpu_denormal\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

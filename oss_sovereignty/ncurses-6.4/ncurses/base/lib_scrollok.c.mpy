@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_scrollok.c",
+  "hash_id": "ca24cd817449c33285c5d03a069bccdc1de617cc9a2ee378a40d7252bc9a07d2",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_scrollok.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_scrollok.c,v 1.6 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nscrollok(WINDOW *win, bool flag)\n{\n    T((T_CALLED(\"scrollok(%p,%d)\"), (void *) win, flag));\n\n    if (win) {\n\twin->_scroll = flag;\n\treturnCode(OK);\n    } else\n\treturnCode(ERR);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

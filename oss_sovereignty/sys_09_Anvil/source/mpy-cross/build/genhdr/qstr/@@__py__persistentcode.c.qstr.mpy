@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__persistentcode.c.qstr",
+  "hash_id": "df2ef6afe694e40a8c4f2d7b7f925b5c384e42d8786d3b80c401057167c260ac",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__persistentcode.c.qstr",
+  "human_readable_source": "Q(zip)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

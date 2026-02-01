@@ -1,0 +1,9 @@
+{
+  "module_name": "ialloc.h",
+  "hash_id": "9fc839e221473e42df988c08723509c9b8c076fcfd20d07185b5b1bc86d57e16",
+  "original_prompt": "Ingested from coreutils-9.4/lib/ialloc.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include \"idx.h\"\n\n#include <errno.h>\n#include <stdint.h>\n#include <stdlib.h>\n\n_GL_INLINE_HEADER_BEGIN\n#ifndef IALLOC_INLINE\n# define IALLOC_INLINE _GL_INLINE\n#endif\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\nIALLOC_INLINE void * _GL_ATTRIBUTE_COLD\n_gl_alloc_nomem (void)\n{\n  errno = ENOMEM;\n  return NULL;\n}\n\n \nIALLOC_INLINE\n_GL_ATTRIBUTE_MALLOC  \nvoid *\nimalloc (idx_t s)\n{\n  return s <= SIZE_MAX ? malloc (s) : _gl_alloc_nomem ();\n}\n\n \nIALLOC_INLINE\n \nvoid *\nirealloc (void *p, idx_t s)\n{\n   \n  return s <= SIZE_MAX ? realloc (p, s | !s) : _gl_alloc_nomem ();\n}\n\n \nIALLOC_INLINE\n_GL_ATTRIBUTE_MALLOC  \nvoid *\nicalloc (idx_t n, idx_t s)\n{\n  if (SIZE_MAX < n)\n    {\n      if (s != 0)\n        return _gl_alloc_nomem ();\n      n = 0;\n    }\n  if (SIZE_MAX < s)\n    {\n      if (n != 0)\n        return _gl_alloc_nomem ();\n      s = 0;\n    }\n  return calloc (n, s);\n}\n\n \nIALLOC_INLINE void *\nireallocarray (void *p, idx_t n, idx_t s)\n{\n   \n  if (n == 0 || s == 0)\n    n = s = 1;\n  return (n <= SIZE_MAX && s <= SIZE_MAX\n          ? reallocarray (p, n, s)\n          : _gl_alloc_nomem ());\n}\n\n#ifdef __cplusplus\n}\n#endif\n\n_GL_INLINE_HEADER_END\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

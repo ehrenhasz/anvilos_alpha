@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7c09ab0697495e091e80020b06efc63d9e07b03a227012d9000659c4031e0bb2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/signal/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (C) 2019 ARM Limited\n\n# Additional include paths needed by kselftest.h and local headers\nCFLAGS += -D_GNU_SOURCE -std=gnu99 -I.\n\nSRCS := $(filter-out testcases/testcases.c,$(wildcard testcases/*.c))\nPROGS := $(patsubst %.c,%,$(SRCS))\n\n# Generated binaries to be installed by top KSFT script\nTEST_GEN_PROGS := $(notdir $(PROGS))\n\n# Get Kernel headers installed and use them.\n\n# Including KSFT lib.mk here will also mangle the TEST_GEN_PROGS list\n# to account for any OUTPUT target-dirs optionally provided by\n# the toplevel makefile\ninclude ../../lib.mk\n\n$(TEST_GEN_PROGS): $(PROGS)\n\tcp $(PROGS) $(OUTPUT)/\n\n# Common test-unit targets to build common-layout test-cases executables\n# Needs secondary expansion to properly include the testcase c-file in pre-reqs\nCOMMON_SOURCES := test_signals.c test_signals_utils.c testcases/testcases.c \\\n\tsignals.S\nCOMMON_HEADERS := test_signals.h test_signals_utils.h testcases/testcases.h\n\n.SECONDEXPANSION:\n$(PROGS): $$@.c ${COMMON_SOURCES} ${COMMON_HEADERS}\n\t$(CC) $(CFLAGS) ${@}.c ${COMMON_SOURCES} -o $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_guc_slpc_types.h",
+  "hash_id": "18de2aa90b93cf36bc2ac20fa706b3529168e82adebd438357466d040e169044",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/uc/intel_guc_slpc_types.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_GUC_SLPC_TYPES_H_\n#define _INTEL_GUC_SLPC_TYPES_H_\n\n#include <linux/atomic.h>\n#include <linux/workqueue.h>\n#include <linux/mutex.h>\n#include <linux/types.h>\n\n#define SLPC_RESET_TIMEOUT_MS 5\n\nstruct intel_guc_slpc {\n\tstruct i915_vma *vma;\n\tstruct slpc_shared_data *vaddr;\n\tbool supported;\n\tbool selected;\n\n\t \n\tbool min_is_rpmax;\n\n\t \n\tu32 min_freq;\n\tu32 rp0_freq;\n\tu32 rp1_freq;\n\tu32 boost_freq;\n\n\t \n\tu32 min_freq_softlimit;\n\tu32 max_freq_softlimit;\n\tbool ignore_eff_freq;\n\n\t \n\tu32 media_ratio_mode;\n\n\t \n\tstruct mutex lock;\n\n\tstruct work_struct boost_work;\n\tatomic_t num_waiters;\n\tu32 num_boosts;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

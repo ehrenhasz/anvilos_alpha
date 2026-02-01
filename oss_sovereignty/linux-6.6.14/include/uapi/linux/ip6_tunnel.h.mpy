@@ -1,0 +1,9 @@
+{
+  "module_name": "ip6_tunnel.h",
+  "hash_id": "7371a88f9a2dce171deb0578e860b3fc885eecd524a62d029b872889fcf855e4",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/ip6_tunnel.h",
+  "human_readable_source": " \n#ifndef _IP6_TUNNEL_H\n#define _IP6_TUNNEL_H\n\n#include <linux/types.h>\n#include <linux/if.h>\t\t \n#include <linux/in6.h>\t\t \n\n#define IPV6_TLV_TNL_ENCAP_LIMIT 4\n#define IPV6_DEFAULT_TNL_ENCAP_LIMIT 4\n\n \n#define IP6_TNL_F_IGN_ENCAP_LIMIT 0x1\n \n#define IP6_TNL_F_USE_ORIG_TCLASS 0x2\n \n#define IP6_TNL_F_USE_ORIG_FLOWLABEL 0x4\n \n#define IP6_TNL_F_MIP6_DEV 0x8\n \n#define IP6_TNL_F_RCV_DSCP_COPY 0x10\n \n#define IP6_TNL_F_USE_ORIG_FWMARK 0x20\n \n#define IP6_TNL_F_ALLOW_LOCAL_REMOTE 0x40\n\nstruct ip6_tnl_parm {\n\tchar name[IFNAMSIZ];\t \n\tint link;\t\t \n\t__u8 proto;\t\t \n\t__u8 encap_limit;\t \n\t__u8 hop_limit;\t\t \n\t__be32 flowinfo;\t \n\t__u32 flags;\t\t \n\tstruct in6_addr laddr;\t \n\tstruct in6_addr raddr;\t \n};\n\nstruct ip6_tnl_parm2 {\n\tchar name[IFNAMSIZ];\t \n\tint link;\t\t \n\t__u8 proto;\t\t \n\t__u8 encap_limit;\t \n\t__u8 hop_limit;\t\t \n\t__be32 flowinfo;\t \n\t__u32 flags;\t\t \n\tstruct in6_addr laddr;\t \n\tstruct in6_addr raddr;\t \n\n\t__be16\t\t\ti_flags;\n\t__be16\t\t\to_flags;\n\t__be32\t\t\ti_key;\n\t__be32\t\t\to_key;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

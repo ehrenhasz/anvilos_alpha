@@ -1,0 +1,9 @@
+{
+  "module_name": "pru_rproc.h",
+  "hash_id": "df836a95f0caadc646caf28f8bdb9b4aab007bc7c1e20bb06664ebda5959f715",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/remoteproc/pru_rproc.h",
+  "human_readable_source": " \n \n\n#ifndef _PRU_RPROC_H_\n#define _PRU_RPROC_H_\n\n \nstruct pruss_int_map {\n\tu8 event;\n\tu8 chnl;\n\tu8 host;\n};\n\n \nstruct pru_irq_rsc {\n\tu8 type;\n\tu8 num_evts;\n\tstruct pruss_int_map pru_intc_map[];\n} __packed;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-version-etc.c",
+  "hash_id": "5dd428837c2b16d648b7279d02f845f464df82fcd29ec9ad0775745451e06d5a",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-version-etc.c",
+  "human_readable_source": "/* Test suite for version-etc.\n   Copyright (C) 2009-2023 Free Software Foundation, Inc.\n   This file is part of the GNUlib Library.\n\n   This program is free software: you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published by\n   the Free Software Foundation, either version 3 of the License, or\n   (at your option) any later version.\n\n   This program is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with this program.  If not, see <https:\n\n#include <config.h>\n\n#include \"version-etc.h\"\n\n\n#define AUTHORS \"Sergey Poznyakoff\", \"Eric Blake\"\n\nint\nmain (_GL_UNUSED int argc, char **argv)\n{\n  version_etc (stdout, \"test-version-etc\", \"dummy\", \"0\", AUTHORS,\n               (const char *) NULL);\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

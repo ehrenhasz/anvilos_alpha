@@ -1,0 +1,9 @@
+{
+  "module_name": "isp_types.h",
+  "hash_id": "47619d366729cc395115e2abafec8b409d516d77434c0af0d018795a636a1e30",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/modes/interface/isp_types.h",
+  "human_readable_source": " \n \n\n#ifndef _ISP_TYPES_H_\n#define _ISP_TYPES_H_\n\n \nstruct ia_css_3a_output;\n\n \nenum sh_stream_format {\n\tsh_stream_format_yuv420_legacy,\n\tsh_stream_format_yuv420,\n\tsh_stream_format_yuv422,\n\tsh_stream_format_rgb,\n\tsh_stream_format_raw,\n\tsh_stream_format_binary,\t \n};\n\nstruct s_isp_frames {\n\t \n\t \n\tchar *xmem_base_addr_y;\n\tchar *xmem_base_addr_uv;\n\tchar *xmem_base_addr_u;\n\tchar *xmem_base_addr_v;\n\t \n\tchar *xmem_base_addr_second_out_y;\n\tchar *xmem_base_addr_second_out_u;\n\tchar *xmem_base_addr_second_out_v;\n\t \n\tchar *xmem_base_addr_y_in;\n\tchar *xmem_base_addr_u_in;\n\tchar *xmem_base_addr_v_in;\n\t \n\tchar *xmem_base_addr_raw;\n\t \n\tchar *xmem_base_addr_raw_out;\n\t \n\tchar *xmem_base_addr_vfout_y;\n\tchar *xmem_base_addr_vfout_u;\n\tchar *xmem_base_addr_vfout_v;\n\t \n\tchar *xmem_base_addr_overlay_y;\n\tchar *xmem_base_addr_overlay_u;\n\tchar *xmem_base_addr_overlay_v;\n\t \n\tchar *xmem_base_addr_qplane_r;\n\tchar *xmem_base_addr_qplane_ratb;\n\tchar *xmem_base_addr_qplane_gr;\n\tchar *xmem_base_addr_qplane_gb;\n\tchar *xmem_base_addr_qplane_b;\n\tchar *xmem_base_addr_qplane_batr;\n\t \n\tchar *xmem_base_addr_yuv_16_y;\n\tchar *xmem_base_addr_yuv_16_u;\n\tchar *xmem_base_addr_yuv_16_v;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "so_netns_cookie.c",
+  "hash_id": "2807050384f70c95b565794bdc25d3e048abe4f733178aca834e0851121f89fe",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/so_netns_cookie.c",
+  "human_readable_source": "\n#define _GNU_SOURCE\n#include <sched.h>\n#include <unistd.h>\n#include <stdio.h>\n#include <errno.h>\n#include <string.h>\n#include <stdlib.h>\n#include <stdint.h>\n#include <sys/types.h>\n#include <sys/socket.h>\n\n#ifndef SO_NETNS_COOKIE\n#define SO_NETNS_COOKIE 71\n#endif\n\n#define pr_err(fmt, ...) \\\n\t({ \\\n\t\tfprintf(stderr, \"%s:%d:\" fmt \": %m\\n\", \\\n\t\t\t__func__, __LINE__, ##__VA_ARGS__); \\\n\t\t1; \\\n\t})\n\nint main(int argc, char *argvp[])\n{\n\tuint64_t cookie1, cookie2;\n\tsocklen_t vallen;\n\tint sock1, sock2;\n\n\tsock1 = socket(AF_INET, SOCK_STREAM, 0);\n\tif (sock1 < 0)\n\t\treturn pr_err(\"Unable to create TCP socket\");\n\n\tvallen = sizeof(cookie1);\n\tif (getsockopt(sock1, SOL_SOCKET, SO_NETNS_COOKIE, &cookie1, &vallen) != 0)\n\t\treturn pr_err(\"getsockopt(SOL_SOCKET, SO_NETNS_COOKIE)\");\n\n\tif (!cookie1)\n\t\treturn pr_err(\"SO_NETNS_COOKIE returned zero cookie\");\n\n\tif (unshare(CLONE_NEWNET))\n\t\treturn pr_err(\"unshare\");\n\n\tsock2 = socket(AF_INET, SOCK_STREAM, 0);\n\tif (sock2 < 0)\n\t\treturn pr_err(\"Unable to create TCP socket\");\n\n\tvallen = sizeof(cookie2);\n\tif (getsockopt(sock2, SOL_SOCKET, SO_NETNS_COOKIE, &cookie2, &vallen) != 0)\n\t\treturn pr_err(\"getsockopt(SOL_SOCKET, SO_NETNS_COOKIE)\");\n\n\tif (!cookie2)\n\t\treturn pr_err(\"SO_NETNS_COOKIE returned zero cookie\");\n\n\tif (cookie1 == cookie2)\n\t\treturn pr_err(\"SO_NETNS_COOKIE returned identical cookies for distinct ns\");\n\n\tclose(sock1);\n\tclose(sock2);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

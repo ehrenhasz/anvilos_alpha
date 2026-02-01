@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1987e328fd7d6357787d73d883d4fed3694ef6c9d8c0522b4dc77ffe93988a14",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/block/null_blk/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Null block device driver configuration\n#\n\nconfig BLK_DEV_NULL_BLK\n\ttristate \"Null test block driver\"\n\tselect CONFIGFS_FS\n\nconfig BLK_DEV_NULL_BLK_FAULT_INJECTION\n\tbool \"Support fault injection for Null test block driver\"\n\tdepends on BLK_DEV_NULL_BLK && FAULT_INJECTION_CONFIGFS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

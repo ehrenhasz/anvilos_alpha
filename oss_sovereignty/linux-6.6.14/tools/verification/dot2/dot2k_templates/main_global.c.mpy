@@ -1,0 +1,9 @@
+{
+  "module_name": "main_global.c",
+  "hash_id": "527400a81e396034f1fc3e052ec328cc5a32d44047a0af09efc82774cb5249ce",
+  "original_prompt": "Ingested from linux-6.6.14/tools/verification/dot2/dot2k_templates/main_global.c",
+  "human_readable_source": "\n#include <linux/ftrace.h>\n#include <linux/tracepoint.h>\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/rv.h>\n#include <rv/instrumentation.h>\n#include <rv/da_monitor.h>\n\n#define MODULE_NAME \"MODEL_NAME\"\n\n \n#include <trace/events/rv.h>\n\n \n#include \"MODEL_NAME.h\"\n\n \nstatic struct rv_monitor rv_MODEL_NAME;\nDECLARE_DA_MON_GLOBAL(MODEL_NAME, MIN_TYPE);\n\n \nTRACEPOINT_HANDLERS_SKEL\nstatic int enable_MODEL_NAME(void)\n{\n\tint retval;\n\n\tretval = da_monitor_init_MODEL_NAME();\n\tif (retval)\n\t\treturn retval;\n\nTRACEPOINT_ATTACH\n\n\treturn 0;\n}\n\nstatic void disable_MODEL_NAME(void)\n{\n\trv_MODEL_NAME.enabled = 0;\n\nTRACEPOINT_DETACH\n\n\tda_monitor_destroy_MODEL_NAME();\n}\n\n \nstatic struct rv_monitor rv_MODEL_NAME = {\n\t.name = \"MODEL_NAME\",\n\t.description = \"auto-generated MODEL_NAME\",\n\t.enable = enable_MODEL_NAME,\n\t.disable = disable_MODEL_NAME,\n\t.reset = da_monitor_reset_all_MODEL_NAME,\n\t.enabled = 0,\n};\n\nstatic int __init register_MODEL_NAME(void)\n{\n\trv_register_monitor(&rv_MODEL_NAME);\n\treturn 0;\n}\n\nstatic void __exit unregister_MODEL_NAME(void)\n{\n\trv_unregister_monitor(&rv_MODEL_NAME);\n}\n\nmodule_init(register_MODEL_NAME);\nmodule_exit(unregister_MODEL_NAME);\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"dot2k: auto-generated\");\nMODULE_DESCRIPTION(\"MODEL_NAME\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

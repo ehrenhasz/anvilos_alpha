@@ -1,0 +1,9 @@
+{
+  "module_name": "vlanproc.h",
+  "hash_id": "ca65c708495554da7be85eb3d2612597e053521442dc8cba89cc3f2625872b43",
+  "original_prompt": "Ingested from linux-6.6.14/net/8021q/vlanproc.h",
+  "human_readable_source": " \n#ifndef __BEN_VLAN_PROC_INC__\n#define __BEN_VLAN_PROC_INC__\n\n#ifdef CONFIG_PROC_FS\nstruct net;\n\nint vlan_proc_init(struct net *net);\nvoid vlan_proc_rem_dev(struct net_device *vlandev);\nint vlan_proc_add_dev(struct net_device *vlandev);\nvoid vlan_proc_cleanup(struct net *net);\n\n#else  \n\n#define vlan_proc_init(net)\t(0)\n#define vlan_proc_cleanup(net)\tdo {} while (0)\n#define vlan_proc_add_dev(dev)\t({(void)(dev), 0; })\n#define vlan_proc_rem_dev(dev)\tdo {} while (0)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

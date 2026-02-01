@@ -1,0 +1,9 @@
+{
+  "module_name": "uvmm.h",
+  "hash_id": "112cb7a77c97e5713c73df9f548667a2bdddbe19049d7c263aba04d8b990b9c5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/uvmm.h",
+  "human_readable_source": "#ifndef __NVKM_UVMM_H__\n#define __NVKM_UVMM_H__\n#define nvkm_uvmm(p) container_of((p), struct nvkm_uvmm, object)\n#include <core/object.h>\n#include \"vmm.h\"\n\nstruct nvkm_uvmm {\n\tstruct nvkm_object object;\n\tstruct nvkm_vmm *vmm;\n};\n\nint nvkm_uvmm_new(const struct nvkm_oclass *, void *argv, u32 argc,\n\t\t  struct nvkm_object **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

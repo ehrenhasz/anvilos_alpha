@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_termname.c",
+  "hash_id": "7c7d3fdff7d403aca8a3e4fde833e6d4bf234a87f206db8b8f00b672873537b2",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/tinfo/lib_termname.c",
+  "human_readable_source": " \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_termname.c,v 1.13 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(char *)\nNCURSES_SP_NAME(termname) (NCURSES_SP_DCL0)\n{\n    char *name = 0;\n\n    T((T_CALLED(\"termname(%p)\"), (void *) SP_PARM));\n\n#if NCURSES_SP_FUNCS\n    if (TerminalOf(SP_PARM) != 0) {\n\tname = TerminalOf(SP_PARM)->_termname;\n    }\n#else\n    if (cur_term != 0)\n\tname = cur_term->_termname;\n#endif\n\n    returnPtr(name);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(char *)\ntermname(void)\n{\n    return NCURSES_SP_NAME(termname) (CURRENT_SCREEN);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

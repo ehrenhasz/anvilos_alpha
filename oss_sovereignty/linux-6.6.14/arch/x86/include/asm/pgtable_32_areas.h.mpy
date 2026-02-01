@@ -1,0 +1,9 @@
+{
+  "module_name": "pgtable_32_areas.h",
+  "hash_id": "b2231f45a7d9ddc5eb5169889e40d8891f91e2eb9734c7a0a6530dcc4e61a3d6",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/pgtable_32_areas.h",
+  "human_readable_source": "#ifndef _ASM_X86_PGTABLE_32_AREAS_H\n#define _ASM_X86_PGTABLE_32_AREAS_H\n\n#include <asm/cpu_entry_area.h>\n\n \n#define VMALLOC_OFFSET\t(8 * 1024 * 1024)\n\n#ifndef __ASSEMBLY__\nextern bool __vmalloc_start_set;  \n#endif\n\n#define VMALLOC_START\t((unsigned long)high_memory + VMALLOC_OFFSET)\n#ifdef CONFIG_X86_PAE\n#define LAST_PKMAP 512\n#else\n#define LAST_PKMAP 1024\n#endif\n\n#define CPU_ENTRY_AREA_PAGES\t\t(NR_CPUS * DIV_ROUND_UP(sizeof(struct cpu_entry_area), PAGE_SIZE))\n\n \n#define CPU_ENTRY_AREA_BASE\t\\\n\t((FIXADDR_TOT_START - PAGE_SIZE*(CPU_ENTRY_AREA_PAGES+1)) & PMD_MASK)\n\n#define LDT_BASE_ADDR\t\t\\\n\t((CPU_ENTRY_AREA_BASE - PAGE_SIZE) & PMD_MASK)\n\n#define LDT_END_ADDR\t\t(LDT_BASE_ADDR + PMD_SIZE)\n\n#define PKMAP_BASE\t\t\\\n\t((LDT_BASE_ADDR - PAGE_SIZE) & PMD_MASK)\n\n#ifdef CONFIG_HIGHMEM\n# define VMALLOC_END\t(PKMAP_BASE - 2 * PAGE_SIZE)\n#else\n# define VMALLOC_END\t(LDT_BASE_ADDR - 2 * PAGE_SIZE)\n#endif\n\n#define MODULES_VADDR\tVMALLOC_START\n#define MODULES_END\tVMALLOC_END\n#define MODULES_LEN\t(MODULES_VADDR - MODULES_END)\n\n#define MAXMEM\t(VMALLOC_END - PAGE_OFFSET - __VMALLOC_RESERVE)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

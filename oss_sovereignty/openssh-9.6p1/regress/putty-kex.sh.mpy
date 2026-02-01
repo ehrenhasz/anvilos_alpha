@@ -1,0 +1,9 @@
+{
+  "module_name": "putty-kex.sh",
+  "hash_id": "edda082b505d6bd5aa67eb0c806a56c7e65fc9946b772ed678ad7ed8c5234b76",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/putty-kex.sh",
+  "human_readable_source": "#\t$OpenBSD: putty-kex.sh,v 1.9 2021/09/01 03:16:06 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"putty KEX\"\n\nif test \"x$REGRESS_INTEROP_PUTTY\" != \"xyes\" ; then\n\tskip \"putty interop tests not enabled\"\nfi\n\n# Re-enable ssh-rsa on older PuTTY versions.\noldver=\"`${PLINK} --version | awk '/plink: Release/{if ($3<0.76)print \"yes\"}'`\"\nif [ \"x$oldver\" = \"xyes\" ]; then\n\techo \"HostKeyAlgorithms +ssh-rsa\" >> ${OBJ}/sshd_proxy\n\techo \"PubkeyAcceptedKeyTypes +ssh-rsa\" >> ${OBJ}/sshd_proxy\nfi\n\nfor k in dh-gex-sha1 dh-group1-sha1 dh-group14-sha1 ecdh ; do\n\tverbose \"$tid: kex $k\"\n\tcp ${OBJ}/.putty/sessions/localhost_proxy \\\n\t    ${OBJ}/.putty/sessions/kex_$k\n\techo \"KEX=$k\" >> ${OBJ}/.putty/sessions/kex_$k\n\n\tenv HOME=$PWD ${PLINK} -load kex_$k -batch -i ${OBJ}/putty.rsa2 true\n\tif [ $? -ne 0 ]; then\n\t\tfail \"KEX $k failed\"\n\tfi\ndone\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

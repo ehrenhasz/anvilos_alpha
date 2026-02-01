@@ -1,0 +1,9 @@
+{
+  "module_name": "edac.h",
+  "hash_id": "78210c4fe0c4f9dcf4e0dd95513f3a071f5727b51698ecc133dd04eb0e7185f5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fsl/edac.h",
+  "human_readable_source": " \n#ifndef FSL_EDAC_H\n#define FSL_EDAC_H\n\nstruct mpc85xx_edac_pci_plat_data {\n\tstruct device_node *of_node;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

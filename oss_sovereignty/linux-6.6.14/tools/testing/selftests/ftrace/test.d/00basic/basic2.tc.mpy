@@ -1,0 +1,9 @@
+{
+  "module_name": "basic2.tc",
+  "hash_id": "5671958c67fad3f436d294d6d145adf6be0bcfb79c3cd4d7635900106b0b361c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/00basic/basic2.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Basic test for tracers\n# flags: instance\ntest -f available_tracers\nfor t in `cat available_tracers`; do\n  echo $t > current_tracer\ndone\necho nop > current_tracer\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

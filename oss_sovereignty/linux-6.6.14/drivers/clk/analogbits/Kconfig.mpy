@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2242efd3c1ae874d071b3f5e4f8b615bdc81521c22a81b217a9701feac923637",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/analogbits/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CLK_ANALOGBITS_WRPLL_CLN28HPC\n\tbool\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

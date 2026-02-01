@@ -1,0 +1,9 @@
+{
+  "module_name": "test_ksyms_btf.c",
+  "hash_id": "37f26fd48823411b6c49dea3bf243a5a70c243200032bba8c91ddf3c438a473e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_ksyms_btf.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n\n#include <bpf/bpf_helpers.h>\n\n__u64 out__runqueues_addr = -1;\n__u64 out__bpf_prog_active_addr = -1;\n\n__u32 out__rq_cpu = -1;  \nint out__bpf_prog_active = -1;  \n\n__u32 out__this_rq_cpu = -1;\nint out__this_bpf_prog_active = -1;\n\n__u32 out__cpu_0_rq_cpu = -1;  \n\nextern const struct rq runqueues __ksym;  \nextern const int bpf_prog_active __ksym;  \n\nSEC(\"raw_tp/sys_enter\")\nint handler(const void *ctx)\n{\n\tstruct rq *rq;\n\tint *active;\n\t__u32 cpu;\n\n\tout__runqueues_addr = (__u64)&runqueues;\n\tout__bpf_prog_active_addr = (__u64)&bpf_prog_active;\n\n\tcpu = bpf_get_smp_processor_id();\n\n\t \n\trq = (struct rq *)bpf_per_cpu_ptr(&runqueues, cpu);\n\tif (rq)\n\t\tout__rq_cpu = rq->cpu;\n\tactive = (int *)bpf_per_cpu_ptr(&bpf_prog_active, cpu);\n\tif (active)\n\t\tout__bpf_prog_active = *active;\n\n\trq = (struct rq *)bpf_per_cpu_ptr(&runqueues, 0);\n\tif (rq)  \n\t\tout__cpu_0_rq_cpu = rq->cpu;\n\n\t \n\trq = (struct rq *)bpf_this_cpu_ptr(&runqueues);\n\tout__this_rq_cpu = rq->cpu;\n\tactive = (int *)bpf_this_cpu_ptr(&bpf_prog_active);\n\tout__this_bpf_prog_active = *active;\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

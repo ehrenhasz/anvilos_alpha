@@ -1,0 +1,9 @@
+{
+  "module_name": "subarch.include",
+  "hash_id": "f263967d8784ef9e4ee1dc4b942d7f60c1f0f9994bde1615f1e3532e97c290e4",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/subarch.include",
+  "human_readable_source": "# SUBARCH tells the usermode build what the underlying arch is.  That is set\n# first, and if a usermode build is happening, the \"ARCH=um\" on the command\n# line overrides the setting of ARCH below.  If a native build is happening,\n# then ARCH is assigned, getting whatever value it gets normally, and\n# SUBARCH is subsequently ignored.\n\nSUBARCH := $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \\\n\t\t\t\t  -e s/sun4u/sparc64/ \\\n\t\t\t\t  -e s/arm.*/arm/ -e s/sa110/arm/ \\\n\t\t\t\t  -e s/s390x/s390/ \\\n\t\t\t\t  -e s/ppc.*/powerpc/ -e s/mips.*/mips/ \\\n\t\t\t\t  -e s/sh[234].*/sh/ -e s/aarch64.*/arm64/ \\\n\t\t\t\t  -e s/riscv.*/riscv/ -e s/loongarch.*/loongarch/)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

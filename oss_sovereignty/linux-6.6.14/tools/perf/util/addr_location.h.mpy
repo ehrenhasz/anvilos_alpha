@@ -1,0 +1,9 @@
+{
+  "module_name": "addr_location.h",
+  "hash_id": "8705029440c3f70732103975ff3cc8df74984b1181eebf00533bd32abe068ecf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/addr_location.h",
+  "human_readable_source": " \n#ifndef __PERF_ADDR_LOCATION\n#define __PERF_ADDR_LOCATION 1\n\n#include <linux/types.h>\n\nstruct thread;\nstruct maps;\nstruct map;\nstruct symbol;\n\nstruct addr_location {\n\tstruct thread *thread;\n\tstruct maps   *maps;\n\tstruct map    *map;\n\tstruct symbol *sym;\n\tconst char    *srcline;\n\tu64\t      addr;\n\tchar\t      level;\n\tu8\t      filtered;\n\tu8\t      cpumode;\n\ts32\t      cpu;\n\ts32\t      socket;\n};\n\nvoid addr_location__init(struct addr_location *al);\nvoid addr_location__exit(struct addr_location *al);\n\nvoid addr_location__copy(struct addr_location *dst, struct addr_location *src);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

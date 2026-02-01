@@ -1,0 +1,9 @@
+{
+  "module_name": "ivpu_jsm_msg.h",
+  "hash_id": "ad650bc9a346d958d99a8290b9cbc37cdd9c97e597d1ac2ae65de2528d7c9c99",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/ivpu/ivpu_jsm_msg.h",
+  "human_readable_source": " \n \n\n#ifndef __IVPU_JSM_MSG_H__\n#define __IVPU_JSM_MSG_H__\n\n#include \"vpu_jsm_api.h\"\n\nint ivpu_jsm_register_db(struct ivpu_device *vdev, u32 ctx_id, u32 db_id,\n\t\t\t u64 jobq_base, u32 jobq_size);\nint ivpu_jsm_unregister_db(struct ivpu_device *vdev, u32 db_id);\nint ivpu_jsm_get_heartbeat(struct ivpu_device *vdev, u32 engine, u64 *heartbeat);\nint ivpu_jsm_reset_engine(struct ivpu_device *vdev, u32 engine);\nint ivpu_jsm_preempt_engine(struct ivpu_device *vdev, u32 engine, u32 preempt_id);\nint ivpu_jsm_dyndbg_control(struct ivpu_device *vdev, char *command, size_t size);\nint ivpu_jsm_trace_get_capability(struct ivpu_device *vdev, u32 *trace_destination_mask,\n\t\t\t\t  u64 *trace_hw_component_mask);\nint ivpu_jsm_trace_set_config(struct ivpu_device *vdev, u32 trace_level, u32 trace_destination_mask,\n\t\t\t      u64 trace_hw_component_mask);\nint ivpu_jsm_context_release(struct ivpu_device *vdev, u32 host_ssid);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

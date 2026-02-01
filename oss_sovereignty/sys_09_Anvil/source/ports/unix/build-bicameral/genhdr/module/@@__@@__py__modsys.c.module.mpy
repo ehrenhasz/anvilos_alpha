@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__modsys.c.module",
+  "hash_id": "39b9031c5cf197a4db8b503006c40406a9e26ab8d92f67d3eb6673889a300a46",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/module/@@__@@__py__modsys.c.module",
+  "human_readable_source": "MP_REGISTER_MODULE(MP_QSTR_sys, mp_module_sys);\nMP_REGISTER_MODULE_DELEGATION(mp_module_sys, mp_module_sys_attr);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rc_calc.c",
+  "hash_id": "d32bbe0e5f5b87eb82c1b16d5f6856e25b80d5aa14b4d628064f14bdf68b9499",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dsc/rc_calc.c",
+  "human_readable_source": "\n \n#include \"rc_calc.h\"\n\n \nvoid calc_rc_params(struct rc_params *rc, const struct drm_dsc_config *pps)\n{\n#if defined(CONFIG_DRM_AMD_DC_FP)\n\tenum colour_mode mode;\n\tenum bits_per_comp bpc;\n\tbool is_navite_422_or_420;\n\tu16 drm_bpp = pps->bits_per_pixel;\n\tint slice_width  = pps->slice_width;\n\tint slice_height = pps->slice_height;\n\n\tmode = pps->convert_rgb ? CM_RGB : (pps->simple_422  ? CM_444 :\n\t\t\t\t\t   (pps->native_422  ? CM_422 :\n\t\t\t\t\t    pps->native_420  ? CM_420 : CM_444));\n\tbpc = (pps->bits_per_component == 8) ? BPC_8 : (pps->bits_per_component == 10)\n\t\t\t\t\t     ? BPC_10 : BPC_12;\n\n\tis_navite_422_or_420 = pps->native_422 || pps->native_420;\n\n\tDC_FP_START();\n\t_do_calc_rc_params(rc, mode, bpc, drm_bpp, is_navite_422_or_420,\n\t\t\t   slice_width, slice_height,\n\t\t\t   pps->dsc_version_minor);\n\tDC_FP_END();\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

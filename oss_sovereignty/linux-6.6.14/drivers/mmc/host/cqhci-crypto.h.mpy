@@ -1,0 +1,9 @@
+{
+  "module_name": "cqhci-crypto.h",
+  "hash_id": "f3d8f0e15893138ec0baf0ba16c91079b25f5822b1e987e527dc46ca246cfd85",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/host/cqhci-crypto.h",
+  "human_readable_source": " \n \n\n#ifndef LINUX_MMC_CQHCI_CRYPTO_H\n#define LINUX_MMC_CQHCI_CRYPTO_H\n\n#include <linux/mmc/host.h>\n\n#include \"cqhci.h\"\n\n#ifdef CONFIG_MMC_CRYPTO\n\nint cqhci_crypto_init(struct cqhci_host *host);\n\n \nstatic inline u64 cqhci_crypto_prep_task_desc(struct mmc_request *mrq)\n{\n\tif (!mrq->crypto_ctx)\n\t\treturn 0;\n\n\t \n\tWARN_ON_ONCE(mrq->crypto_ctx->bc_dun[0] > U32_MAX);\n\n\treturn CQHCI_CRYPTO_ENABLE_BIT |\n\t       CQHCI_CRYPTO_KEYSLOT(mrq->crypto_key_slot) |\n\t       mrq->crypto_ctx->bc_dun[0];\n}\n\n#else  \n\nstatic inline int cqhci_crypto_init(struct cqhci_host *host)\n{\n\treturn 0;\n}\n\nstatic inline u64 cqhci_crypto_prep_task_desc(struct mmc_request *mrq)\n{\n\treturn 0;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sig-handler.h",
+  "hash_id": "9ec3a3393f33c6e6b9d3d54428b2c48ba70ebe2accc3a940753706c0948f821c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/sig-handler.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <signal.h>\n\n_GL_INLINE_HEADER_BEGIN\n#ifndef SIG_HANDLER_INLINE\n# define SIG_HANDLER_INLINE _GL_INLINE\n#endif\n\n \ntypedef void (*sa_handler_t) (int);\n\n \nSIG_HANDLER_INLINE sa_handler_t _GL_ATTRIBUTE_PURE\nget_handler (struct sigaction const *a)\n{\n   \n  return a->sa_handler;\n}\n\n_GL_INLINE_HEADER_END\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ebt_arp.h",
+  "hash_id": "d6965af701d331f722c066f46e22b80f49878b7090f4013c81d4dc93f291f537",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_bridge/ebt_arp.h",
+  "human_readable_source": " \n#ifndef __LINUX_BRIDGE_EBT_ARP_H\n#define __LINUX_BRIDGE_EBT_ARP_H\n\n#include <linux/types.h>\n#include <linux/if_ether.h>\n\n#define EBT_ARP_OPCODE 0x01\n#define EBT_ARP_HTYPE 0x02\n#define EBT_ARP_PTYPE 0x04\n#define EBT_ARP_SRC_IP 0x08\n#define EBT_ARP_DST_IP 0x10\n#define EBT_ARP_SRC_MAC 0x20\n#define EBT_ARP_DST_MAC 0x40\n#define EBT_ARP_GRAT 0x80\n#define EBT_ARP_MASK (EBT_ARP_OPCODE | EBT_ARP_HTYPE | EBT_ARP_PTYPE | \\\n   EBT_ARP_SRC_IP | EBT_ARP_DST_IP | EBT_ARP_SRC_MAC | EBT_ARP_DST_MAC | \\\n   EBT_ARP_GRAT)\n#define EBT_ARP_MATCH \"arp\"\n\nstruct ebt_arp_info\n{\n\t__be16 htype;\n\t__be16 ptype;\n\t__be16 opcode;\n\t__be32 saddr;\n\t__be32 smsk;\n\t__be32 daddr;\n\t__be32 dmsk;\n\tunsigned char smaddr[ETH_ALEN];\n\tunsigned char smmsk[ETH_ALEN];\n\tunsigned char dmaddr[ETH_ALEN];\n\tunsigned char dmmsk[ETH_ALEN];\n\t__u8  bitmask;\n\t__u8  invflags;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

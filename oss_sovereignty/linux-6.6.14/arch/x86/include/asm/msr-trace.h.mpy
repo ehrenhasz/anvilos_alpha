@@ -1,0 +1,9 @@
+{
+  "module_name": "msr-trace.h",
+  "hash_id": "91f87994ca114e4543a4ddae8d12555d55f5da752b1efba29baa0c757174c0f5",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/msr-trace.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM msr\n\n#undef TRACE_INCLUDE_FILE\n#define TRACE_INCLUDE_FILE msr-trace\n\n#undef TRACE_INCLUDE_PATH\n#define TRACE_INCLUDE_PATH asm/\n\n#if !defined(_TRACE_MSR_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_MSR_H\n\n#include <linux/tracepoint.h>\n\n \n\nDECLARE_EVENT_CLASS(msr_trace_class,\n\t    TP_PROTO(unsigned msr, u64 val, int failed),\n\t    TP_ARGS(msr, val, failed),\n\t    TP_STRUCT__entry(\n\t\t    __field(\tunsigned,\tmsr )\n\t\t    __field(    u64,\t\tval )\n\t\t    __field(    int,\t\tfailed )\n\t    ),\n\t    TP_fast_assign(\n\t\t    __entry->msr = msr;\n\t\t    __entry->val = val;\n\t\t    __entry->failed = failed;\n\t    ),\n\t    TP_printk(\"%x, value %llx%s\",\n\t\t      __entry->msr,\n\t\t      __entry->val,\n\t\t      __entry->failed ? \" #GP\" : \"\")\n);\n\nDEFINE_EVENT(msr_trace_class, read_msr,\n\t     TP_PROTO(unsigned msr, u64 val, int failed),\n\t     TP_ARGS(msr, val, failed)\n);\n\nDEFINE_EVENT(msr_trace_class, write_msr,\n\t     TP_PROTO(unsigned msr, u64 val, int failed),\n\t     TP_ARGS(msr, val, failed)\n);\n\nDEFINE_EVENT(msr_trace_class, rdpmc,\n\t     TP_PROTO(unsigned msr, u64 val, int failed),\n\t     TP_ARGS(msr, val, failed)\n);\n\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

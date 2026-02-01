@@ -1,0 +1,9 @@
+{
+  "module_name": "CREDITS",
+  "hash_id": "eb0bac8bb92acf34a71c4294f3d3c6fd747127630a3f330381d908cf79637783",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/CREDITS",
+  "human_readable_source": "Most of the infrastructure that 'perf' uses here has been reused\nfrom the Git project, as of version:\n\n    66996ec: Sync with 1.6.2.4\n\nHere is an (incomplete!) list of main contributors to those files\nin util/* and elsewhere:\n\n Alex Riesen\n Christian Couder\n Dmitry Potapov\n Jeff King\n Johannes Schindelin\n Johannes Sixt\n Junio C Hamano\n Linus Torvalds\n Matthias Kestenholz\n Michal Ostrowski\n Miklos Vajna\n Petr Baudis\n Pierre Habouzit\n Ren\u00e9 Scharfe\n Samuel Tardieu\n Shawn O. Pearce\n Steffen Prohaska\n Steve Haslam\n\nThanks guys!\n\nThe full history of the files can be found in the upstream Git commits.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

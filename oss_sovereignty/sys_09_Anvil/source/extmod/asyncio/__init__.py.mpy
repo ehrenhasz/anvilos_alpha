@@ -1,0 +1,9 @@
+{
+  "module_name": "__init__.py",
+  "hash_id": "adee6584b56979ca6ba31a8d4b168c01a2b76611dea36154b98a2f2c2acd4cd6",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/asyncio/__init__.py",
+  "human_readable_source": "# MicroPython asyncio module\n# MIT license; Copyright (c) 2019 Damien P. George\n\nfrom .core import *\n\n__version__ = (3, 0, 0)\n\n_attrs = {\n    \"wait_for\": \"funcs\",\n    \"wait_for_ms\": \"funcs\",\n    \"gather\": \"funcs\",\n    \"Event\": \"event\",\n    \"ThreadSafeFlag\": \"event\",\n    \"Lock\": \"lock\",\n    \"open_connection\": \"stream\",\n    \"start_server\": \"stream\",\n    \"StreamReader\": \"stream\",\n    \"StreamWriter\": \"stream\",\n}\n\n\n# Lazy loader, effectively does:\n#   global attr\n#   from .mod import attr\ndef __getattr__(attr):\n    mod = _attrs.get(attr, None)\n    if mod is None:\n        raise AttributeError(attr)\n    value = getattr(__import__(mod, None, None, True, 1), attr)\n    globals()[attr] = value\n    return value\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

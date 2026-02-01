@@ -1,0 +1,9 @@
+{
+  "module_name": "image.h",
+  "hash_id": "1ff4a1b255ecfc847deef1bfac39cece6a687342ec38822ae1953f14e27a0ec5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/image.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_IMAGE_H__\n#define __NVBIOS_IMAGE_H__\nstruct nvbios_image {\n\tu32  base;\n\tu32  size;\n\tu8   type;\n\tbool last;\n};\n\nbool nvbios_image(struct nvkm_bios *, int, struct nvbios_image *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

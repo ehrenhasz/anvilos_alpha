@@ -1,0 +1,9 @@
+{
+  "module_name": "msr.c",
+  "hash_id": "bd7273e2bd43a902bd1ea8b756b9d4071878b3fea93e687c3fdba8f0cddf9381",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/utils/helpers/msr.c",
+  "human_readable_source": "\n#if defined(__i386__) || defined(__x86_64__)\n\n#include <fcntl.h>\n#include <stdio.h>\n#include <unistd.h>\n#include <stdint.h>\n\n#include \"helpers/helpers.h\"\n\n \n#define MSR_IA32_PERF_STATUS\t\t0x198\n#define MSR_IA32_MISC_ENABLES\t\t0x1a0\n#define MSR_NEHALEM_TURBO_RATIO_LIMIT\t0x1ad\n\n \n\nint read_msr(int cpu, unsigned int idx, unsigned long long *val)\n{\n\tint fd;\n\tchar msr_file_name[64];\n\n\tsprintf(msr_file_name, \"/dev/cpu/%d/msr\", cpu);\n\tfd = open(msr_file_name, O_RDONLY);\n\tif (fd < 0)\n\t\treturn -1;\n\tif (lseek(fd, idx, SEEK_CUR) == -1)\n\t\tgoto err;\n\tif (read(fd, val, sizeof *val) != sizeof *val)\n\t\tgoto err;\n\tclose(fd);\n\treturn 0;\n err:\n\tclose(fd);\n\treturn -1;\n}\n\n \nint write_msr(int cpu, unsigned int idx, unsigned long long val)\n{\n\tint fd;\n\tchar msr_file_name[64];\n\n\tsprintf(msr_file_name, \"/dev/cpu/%d/msr\", cpu);\n\tfd = open(msr_file_name, O_WRONLY);\n\tif (fd < 0)\n\t\treturn -1;\n\tif (lseek(fd, idx, SEEK_CUR) == -1)\n\t\tgoto err;\n\tif (write(fd, &val, sizeof val) != sizeof val)\n\t\tgoto err;\n\tclose(fd);\n\treturn 0;\n err:\n\tclose(fd);\n\treturn -1;\n}\n\nunsigned long long msr_intel_get_turbo_ratio(unsigned int cpu)\n{\n\tunsigned long long val;\n\tint ret;\n\n\tif (!(cpupower_cpu_info.caps & CPUPOWER_CAP_HAS_TURBO_RATIO))\n\t\treturn -1;\n\n\tret = read_msr(cpu, MSR_NEHALEM_TURBO_RATIO_LIMIT, &val);\n\tif (ret)\n\t\treturn ret;\n\treturn val;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

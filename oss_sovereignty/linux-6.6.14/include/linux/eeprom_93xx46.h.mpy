@@ -1,0 +1,9 @@
+{
+  "module_name": "eeprom_93xx46.h",
+  "hash_id": "98c83ffcb00cbee51761423094d692704fac7f49b39da050de66560960d11bcb",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/eeprom_93xx46.h",
+  "human_readable_source": " \n \n#include <linux/gpio/consumer.h>\n\nstruct eeprom_93xx46_platform_data {\n\tunsigned char\tflags;\n#define EE_ADDR8\t0x01\t\t \n#define EE_ADDR16\t0x02\t\t \n#define EE_READONLY\t0x08\t\t \n#define EE_SIZE1K\t0x10\t\t \n#define EE_SIZE2K\t0x20\t\t \n#define EE_SIZE4K\t0x40\t\t \n\n\tunsigned int\tquirks;\n \n#define EEPROM_93XX46_QUIRK_SINGLE_WORD_READ\t\t(1 << 0)\n \n#define EEPROM_93XX46_QUIRK_INSTRUCTION_LENGTH\t\t(1 << 1)\n \n#define EEPROM_93XX46_QUIRK_EXTRA_READ_CYCLE\t\tBIT(2)\n\n\t \n\tvoid (*prepare)(void *);\n\tvoid (*finish)(void *);\n\tstruct gpio_desc *select;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

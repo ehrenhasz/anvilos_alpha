@@ -1,0 +1,9 @@
+{
+  "module_name": "fsi.h",
+  "hash_id": "8f22fa2eaf7287ec42aec04df5d9d5334d2f6c8588d3026b66860bc336f07c68",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/fsi.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_FSI_H\n#define _UAPI_LINUX_FSI_H\n\n#include <linux/types.h>\n#include <linux/ioctl.h>\n\n \n\n \nstruct scom_access {\n\t__u64\taddr;\t\t \n\t__u64\tdata;\t\t \n\t__u64\tmask;\t\t \n\t__u32\tintf_errors;\t \n#define SCOM_INTF_ERR_PARITY\t\t0x00000001  \n#define SCOM_INTF_ERR_PROTECTION\t0x00000002  \n#define SCOM_INTF_ERR_ABORT\t\t0x00000004  \n#define SCOM_INTF_ERR_UNKNOWN\t\t0x80000000  \n\t \n\t__u8\tpib_status;\t \n#define SCOM_PIB_SUCCESS\t0\t \n#define SCOM_PIB_BLOCKED\t1\t \n#define SCOM_PIB_OFFLINE\t2\t \n#define SCOM_PIB_PARTIAL\t3\t \n#define SCOM_PIB_BAD_ADDR\t4\t \n#define SCOM_PIB_CLK_ERR\t5\t \n#define SCOM_PIB_PARITY_ERR\t6\t \n#define SCOM_PIB_TIMEOUT\t7\t \n\t__u8\tpad;\n};\n\n \n#define SCOM_CHECK_SUPPORTED\t0x00000001\t \n#define SCOM_CHECK_PROTECTED\t0x00000002\t \n\n \n#define SCOM_RESET_INTF\t\t0x00000001\t \n#define SCOM_RESET_PIB\t\t0x00000002\t \n\n#define FSI_SCOM_CHECK\t_IOR('s', 0x00, __u32)\n#define FSI_SCOM_READ\t_IOWR('s', 0x01, struct scom_access)\n#define FSI_SCOM_WRITE\t_IOWR('s', 0x02, struct scom_access)\n#define FSI_SCOM_RESET\t_IOW('s', 0x03, __u32)\n\n \n\n \n#define FSI_SBEFIFO_CMD_TIMEOUT_SECONDS\t\t_IOW('s', 0x01, __u32)\n\n \n#define FSI_SBEFIFO_READ_TIMEOUT_SECONDS\t_IOW('s', 0x00, __u32)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

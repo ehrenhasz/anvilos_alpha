@@ -1,0 +1,9 @@
+{
+  "module_name": "readtokens.h",
+  "hash_id": "97c8f277bce4a9a7e27e857c595cfeb036bdb8987f0895c15afccc8a6516f0cb",
+  "original_prompt": "Ingested from coreutils-9.4/lib/readtokens.h",
+  "human_readable_source": " \n\n#ifndef READTOKENS_H\n# define READTOKENS_H\n\n# include <stdio.h>\n\n \n\nstruct tokenbuffer\n{\n  size_t size;\n  char *buffer;\n};\ntypedef struct tokenbuffer token_buffer;\n\nvoid init_tokenbuffer (token_buffer *tokenbuffer);\n\nsize_t\n  readtoken (FILE *stream, const char *delim, size_t n_delim,\n             token_buffer *tokenbuffer);\nsize_t\n  readtokens (FILE *stream, size_t projected_n_tokens,\n              const char *delim, size_t n_delim,\n              char ***tokens_out, size_t **token_lengths);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "234a4243b9e0c2def1b590b9e2c3b25c53ac9cd3471168b2788c69a947ee1cf5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ipc/config",
+  "human_readable_source": "CONFIG_EXPERT=y\nCONFIG_CHECKPOINT_RESTORE=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

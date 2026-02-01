@@ -1,0 +1,9 @@
+{
+  "module_name": "seq_info.h",
+  "hash_id": "42cd149b7272de844cc347f7bf5cf3a123916fb9aa800ad5be373d5fd1bafe98",
+  "original_prompt": "Ingested from linux-6.6.14/sound/core/seq/seq_info.h",
+  "human_readable_source": " \n \n#ifndef __SND_SEQ_INFO_H\n#define __SND_SEQ_INFO_H\n\n#include <sound/info.h>\n#include <sound/seq_kernel.h>\n\nvoid snd_seq_info_clients_read(struct snd_info_entry *entry, struct snd_info_buffer *buffer);\nvoid snd_seq_info_timer_read(struct snd_info_entry *entry, struct snd_info_buffer *buffer);\nvoid snd_seq_info_queues_read(struct snd_info_entry *entry, struct snd_info_buffer *buffer);\n\n\n#ifdef CONFIG_SND_PROC_FS\nint snd_seq_info_init(void);\nvoid snd_seq_info_done(void);\n#else\nstatic inline int snd_seq_info_init(void) { return 0; }\nstatic inline void snd_seq_info_done(void) {}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

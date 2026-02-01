@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,icc.h",
+  "hash_id": "fc6ddbbd86cb1e879c90ce2ddc9db35aca47c2d5f9affe2f8c3c763d895054eb",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/interconnect/qcom,icc.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_INTERCONNECT_QCOM_ICC_H\n#define __DT_BINDINGS_INTERCONNECT_QCOM_ICC_H\n\n \n#define QCOM_ICC_BUCKET_AMC\t\t0\n#define QCOM_ICC_BUCKET_WAKE\t\t1\n#define QCOM_ICC_BUCKET_SLEEP\t\t2\n#define QCOM_ICC_NUM_BUCKETS\t\t3\n\n#define QCOM_ICC_TAG_AMC\t\t(1 << QCOM_ICC_BUCKET_AMC)\n#define QCOM_ICC_TAG_WAKE\t\t(1 << QCOM_ICC_BUCKET_WAKE)\n#define QCOM_ICC_TAG_SLEEP\t\t(1 << QCOM_ICC_BUCKET_SLEEP)\n#define QCOM_ICC_TAG_ACTIVE_ONLY\t(QCOM_ICC_TAG_AMC | QCOM_ICC_TAG_WAKE)\n#define QCOM_ICC_TAG_ALWAYS\t\t(QCOM_ICC_TAG_AMC | QCOM_ICC_TAG_WAKE |\\\n\t\t\t\t\t QCOM_ICC_TAG_SLEEP)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

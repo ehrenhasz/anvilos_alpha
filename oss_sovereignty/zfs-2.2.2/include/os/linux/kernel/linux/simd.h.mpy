@@ -1,0 +1,9 @@
+{
+  "module_name": "simd.h",
+  "hash_id": "638a6e78760c35a6f1d5ac3dc30a7e418e8301d8a2410cd285a8d1b14d440e01",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/kernel/linux/simd.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_SIMD_H\n#define\t_LINUX_SIMD_H\n\n#if defined(__x86)\n#include <linux/simd_x86.h>\n\n#elif defined(__arm__)\n#include <linux/simd_arm.h>\n\n#elif defined(__aarch64__)\n#include <linux/simd_aarch64.h>\n\n#elif defined(__powerpc__)\n#include <linux/simd_powerpc.h>\n\n#else\n#define\tkfpu_allowed()\t\t0\n#define\tkfpu_begin()\t\tdo {} while (0)\n#define\tkfpu_end()\t\tdo {} while (0)\n#define\tkfpu_init()\t\t0\n#define\tkfpu_fini()\t\t((void) 0)\n\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

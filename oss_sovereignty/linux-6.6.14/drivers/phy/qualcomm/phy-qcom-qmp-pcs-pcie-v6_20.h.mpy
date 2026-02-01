@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-qcom-qmp-pcs-pcie-v6_20.h",
+  "hash_id": "1ec959c11ef1f3e2d830cf689fbdccfdac0f8853f09399b1924e4fb848399a2d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/qualcomm/phy-qcom-qmp-pcs-pcie-v6_20.h",
+  "human_readable_source": " \n \n\n#ifndef QCOM_PHY_QMP_PCS_PCIE_V6_20_H_\n#define QCOM_PHY_QMP_PCS_PCIE_V6_20_H_\n\n \n#define QPHY_PCIE_V6_20_PCS_POWER_STATE_CONFIG2\t\t0x00c\n#define QPHY_PCIE_V6_20_PCS_TX_RX_CONFIG\t\t0x018\n#define QPHY_PCIE_V6_20_PCS_ENDPOINT_REFCLK_DRIVE\t0x01c\n#define QPHY_PCIE_V6_20_PCS_OSC_DTCT_ATCIONS\t\t0x090\n#define QPHY_PCIE_V6_20_PCS_EQ_CONFIG1\t\t\t0x0a0\n#define QPHY_PCIE_V6_20_PCS_EQ_CONFIG5\t\t\t0x108\n#define QPHY_PCIE_V6_20_PCS_G4_PRE_GAIN\t\t\t0x15c\n#define QPHY_PCIE_V6_20_PCS_RX_MARGINING_CONFIG1\t0x17c\n#define QPHY_PCIE_V6_20_PCS_RX_MARGINING_CONFIG3\t0x184\n#define QPHY_PCIE_V6_20_PCS_RX_MARGINING_CONFIG5\t0x18c\n#define QPHY_PCIE_V6_20_PCS_G3_FOM_EQ_CONFIG5\t\t0x1ac\n#define QPHY_PCIE_V6_20_PCS_G4_FOM_EQ_CONFIG5\t\t0x1c0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

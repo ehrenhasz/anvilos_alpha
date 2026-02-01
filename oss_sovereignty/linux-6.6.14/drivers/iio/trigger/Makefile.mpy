@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "629c99465844876c8acfa6b29f6f60ac6d4f9cd0ee8b3b0b61850460edf83b84",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/trigger/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for triggers not associated with iio-devices\n#\n\n# When adding new entries keep the list in alphabetical order\n\nobj-$(CONFIG_IIO_HRTIMER_TRIGGER) += iio-trig-hrtimer.o\nobj-$(CONFIG_IIO_INTERRUPT_TRIGGER) += iio-trig-interrupt.o\nobj-$(CONFIG_IIO_STM32_LPTIMER_TRIGGER) += stm32-lptimer-trigger.o\nobj-$(CONFIG_IIO_STM32_TIMER_TRIGGER) += stm32-timer-trigger.o\nobj-$(CONFIG_IIO_SYSFS_TRIGGER) += iio-trig-sysfs.o\nobj-$(CONFIG_IIO_TIGHTLOOP_TRIGGER) += iio-trig-loop.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

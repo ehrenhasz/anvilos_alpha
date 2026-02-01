@@ -1,0 +1,9 @@
+{
+  "module_name": "gf100.c",
+  "hash_id": "0f332ae262a57a51949dea1a7fc4003618caae4f9b91b1b5157055f86d4d1b58",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gf100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"fuc/gf100.fuc3.h\"\n\n#include <subdev/mc.h>\n\nvoid\ngf100_pmu_reset(struct nvkm_pmu *pmu)\n{\n\tstruct nvkm_device *device = pmu->subdev.device;\n\tnvkm_mc_disable(device, NVKM_SUBDEV_PMU, 0);\n\tnvkm_mc_enable(device, NVKM_SUBDEV_PMU, 0);\n}\n\nbool\ngf100_pmu_enabled(struct nvkm_pmu *pmu)\n{\n\treturn nvkm_mc_enabled(pmu->subdev.device, NVKM_SUBDEV_PMU, 0);\n}\n\nstatic const struct nvkm_pmu_func\ngf100_pmu = {\n\t.flcn = &gt215_pmu_flcn,\n\t.code.data = gf100_pmu_code,\n\t.code.size = sizeof(gf100_pmu_code),\n\t.data.data = gf100_pmu_data,\n\t.data.size = sizeof(gf100_pmu_data),\n\t.enabled = gf100_pmu_enabled,\n\t.reset = gf100_pmu_reset,\n\t.init = gt215_pmu_init,\n\t.fini = gt215_pmu_fini,\n\t.intr = gt215_pmu_intr,\n\t.send = gt215_pmu_send,\n\t.recv = gt215_pmu_recv,\n};\n\nint\ngf100_pmu_nofw(struct nvkm_pmu *pmu, int ver, const struct nvkm_pmu_fwif *fwif)\n{\n\treturn 0;\n}\n\nstatic const struct nvkm_pmu_fwif\ngf100_pmu_fwif[] = {\n\t{ -1, gf100_pmu_nofw, &gf100_pmu },\n\t{}\n};\n\nint\ngf100_pmu_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_pmu **ppmu)\n{\n\treturn nvkm_pmu_new_(gf100_pmu_fwif, device, type, inst, ppmu);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

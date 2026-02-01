@@ -1,0 +1,9 @@
+{
+  "module_name": "test-readtokens.sh",
+  "hash_id": "732dfcade5285f2f630f061fb0e178ce4c87b12217b12a085c5a3bc55acd198f",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-readtokens.sh",
+  "human_readable_source": "#!/bin/sh\n. \"${srcdir=.}/init.sh\"; path_prepend_ .\n\nfail=0\n\n${CHECKER} test-readtokens || fail=1\n\n# Simplest case.\necho a:b:c: > exp || fail=1\nprintf a:b:c | ${CHECKER} test-readtokens : > tmp 2>&1 || fail=1\nLC_ALL=C tr -d '\\r' < tmp > out || fail=1\ncompare exp out || fail=1\n\n# Use NUL as the delimiter.\necho a:b:c: > exp || fail=1\nprintf 'a\\0b\\0c' | ${CHECKER} test-readtokens '\\0' > tmp 2>&1 || fail=1\nLC_ALL=C tr -d '\\r' < tmp > out || fail=1\ncompare exp out || fail=1\n\n# Two delimiter bytes, and adjacent delimiters in the input.\necho a:b:c: > exp || fail=1\nprintf a:-:b-:c:: | ${CHECKER} test-readtokens :- > tmp 2>&1 || fail=1\nLC_ALL=C tr -d '\\r' < tmp > out || fail=1\ncompare exp out || fail=1\n\nExit $fail\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

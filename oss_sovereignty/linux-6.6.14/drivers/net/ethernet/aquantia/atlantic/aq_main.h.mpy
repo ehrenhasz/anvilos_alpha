@@ -1,0 +1,9 @@
+{
+  "module_name": "aq_main.h",
+  "hash_id": "8698c542d4d55e8ff5e0eb57bfa51d1e939c865aea65c1571836859745f3af6f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/aquantia/atlantic/aq_main.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef AQ_MAIN_H\n#define AQ_MAIN_H\n\n#include \"aq_common.h\"\n#include \"aq_nic.h\"\n\nDECLARE_STATIC_KEY_FALSE(aq_xdp_locking_key);\n\nvoid aq_ndev_schedule_work(struct work_struct *work);\nstruct net_device *aq_ndev_alloc(void);\nint aq_ndev_open(struct net_device *ndev);\nint aq_ndev_close(struct net_device *ndev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

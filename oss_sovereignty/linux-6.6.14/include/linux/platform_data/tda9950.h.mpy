@@ -1,0 +1,9 @@
+{
+  "module_name": "tda9950.h",
+  "hash_id": "cc7d8c3b5794cc0f10268cd1c2d830aeba6916033ec5a23c2e551e4b492d5854",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/tda9950.h",
+  "human_readable_source": "#ifndef LINUX_PLATFORM_DATA_TDA9950_H\n#define LINUX_PLATFORM_DATA_TDA9950_H\n\nstruct device;\n\nstruct tda9950_glue {\n\tstruct device *parent;\n\tunsigned long irq_flags;\n\tvoid *data;\n\tint (*init)(void *);\n\tvoid (*exit)(void *);\n\tint (*open)(void *);\n\tvoid (*release)(void *);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

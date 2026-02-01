@@ -1,0 +1,9 @@
+{
+  "module_name": "ad7877.h",
+  "hash_id": "163f3f12f8e532ac52c1388d380b85c49a83b693ccdb5a0bab6d9a98e83f8d25",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/ad7877.h",
+  "human_readable_source": " \n \n\n \nstruct ad7877_platform_data {\n\tu16\tmodel;\t\t\t \n\tu16\tvref_delay_usecs;\t \n\tu16\tx_plate_ohms;\n\tu16\ty_plate_ohms;\n\n\tu16\tx_min, x_max;\n\tu16\ty_min, y_max;\n\tu16\tpressure_min, pressure_max;\n\n\tu8\tstopacq_polarity;\t \n\tu8\tfirst_conversion_delay;\t \n\tu8\tacquisition_time;\t \n\tu8\taveraging;\t\t \n\tu8\tpen_down_acc_interval;\t \n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

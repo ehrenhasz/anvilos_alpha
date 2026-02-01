@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "e00834805b4cf6884ab94ae98ffd43694e31b869427f8b696ba9d2e716fb3a54",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/devinit/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_DEVINIT_PRIV_H__\n#define __NVKM_DEVINIT_PRIV_H__\n#define nvkm_devinit(p) container_of((p), struct nvkm_devinit, subdev)\n#include <subdev/devinit.h>\n\nstruct nvkm_devinit_func {\n\tvoid *(*dtor)(struct nvkm_devinit *);\n\tvoid (*preinit)(struct nvkm_devinit *);\n\tvoid (*init)(struct nvkm_devinit *);\n\tint  (*post)(struct nvkm_devinit *, bool post);\n\tu32  (*mmio)(struct nvkm_devinit *, u32);\n\tvoid (*meminit)(struct nvkm_devinit *);\n\tint  (*pll_set)(struct nvkm_devinit *, u32 type, u32 freq);\n\tvoid (*disable)(struct nvkm_devinit *);\n};\n\nvoid nvkm_devinit_ctor(const struct nvkm_devinit_func *, struct nvkm_device *,\n\t\t       enum nvkm_subdev_type, int inst, struct nvkm_devinit *);\nu64 nvkm_devinit_disable(struct nvkm_devinit *);\n\nint nv04_devinit_post(struct nvkm_devinit *, bool);\nint tu102_devinit_post(struct nvkm_devinit *, bool);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

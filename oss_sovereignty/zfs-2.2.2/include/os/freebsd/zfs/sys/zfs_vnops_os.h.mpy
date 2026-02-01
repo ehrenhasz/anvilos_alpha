@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_vnops_os.h",
+  "hash_id": "5a27ec0db969455e1dd4ee9fbd0995796509508b8071bba06d5e62490a8dfd95",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/zfs/sys/zfs_vnops_os.h",
+  "human_readable_source": " \n\n#ifndef\t_SYS_FS_ZFS_VNOPS_OS_H\n#define\t_SYS_FS_ZFS_VNOPS_OS_H\n\nint dmu_write_pages(objset_t *os, uint64_t object, uint64_t offset,\n    uint64_t size, struct vm_page **ppa, dmu_tx_t *tx);\nint dmu_read_pages(objset_t *os, uint64_t object, vm_page_t *ma, int count,\n    int *rbehind, int *rahead, int last_size);\nextern int zfs_remove(znode_t *dzp, const char *name, cred_t *cr, int flags);\nextern int zfs_mkdir(znode_t *dzp, const char *dirname, vattr_t *vap,\n    znode_t **zpp, cred_t *cr, int flags, vsecattr_t *vsecp, zidmap_t *mnt_ns);\nextern int zfs_rmdir(znode_t *dzp, const char *name, znode_t *cwd,\n    cred_t *cr, int flags);\nextern int zfs_setattr(znode_t *zp, vattr_t *vap, int flag, cred_t *cr,\n    zidmap_t *mnt_ns);\nextern int zfs_rename(znode_t *sdzp, const char *snm, znode_t *tdzp,\n    const char *tnm, cred_t *cr, int flags, uint64_t rflags, vattr_t *wo_vap,\n    zidmap_t *mnt_ns);\nextern int zfs_symlink(znode_t *dzp, const char *name, vattr_t *vap,\n    const char *link, znode_t **zpp, cred_t *cr, int flags, zidmap_t *mnt_ns);\nextern int zfs_link(znode_t *tdzp, znode_t *sp,\n    const char *name, cred_t *cr, int flags);\nextern int zfs_space(znode_t *zp, int cmd, struct flock *bfp, int flag,\n    offset_t offset, cred_t *cr);\nextern int zfs_create(znode_t *dzp, const char *name, vattr_t *vap, int excl,\n    int mode, znode_t **zpp, cred_t *cr, int flag, vsecattr_t *vsecp,\n    zidmap_t *mnt_ns);\nextern int zfs_setsecattr(znode_t *zp, vsecattr_t *vsecp, int flag,\n    cred_t *cr);\nextern int zfs_write_simple(znode_t *zp, const void *data, size_t len,\n    loff_t pos, size_t *resid);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

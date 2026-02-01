@@ -1,0 +1,9 @@
+{
+  "module_name": "xlnx-vcu.h",
+  "hash_id": "0e3566c0d5c6be680bbb97ac18f5109ec432cf166adf9c3a8bd9369c7cbde2f1",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/xlnx-vcu.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLOCK_XLNX_VCU_H\n#define _DT_BINDINGS_CLOCK_XLNX_VCU_H\n\n#define CLK_XVCU_ENC_CORE\t\t0\n#define CLK_XVCU_ENC_MCU\t\t1\n#define CLK_XVCU_DEC_CORE\t\t2\n#define CLK_XVCU_DEC_MCU\t\t3\n#define CLK_XVCU_NUM_CLOCKS\t\t4\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

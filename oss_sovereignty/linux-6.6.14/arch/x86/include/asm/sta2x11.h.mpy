@@ -1,0 +1,9 @@
+{
+  "module_name": "sta2x11.h",
+  "hash_id": "e777a81e9e03f60a72cbc72ac0085c9f5cc0d2353ebd85c20d36206524012eab",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/sta2x11.h",
+  "human_readable_source": " \n \n#ifndef __ASM_STA2X11_H\n#define __ASM_STA2X11_H\n\n#include <linux/pci.h>\n\n \nstruct sta2x11_instance *sta2x11_get_instance(struct pci_dev *pdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

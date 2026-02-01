@@ -1,0 +1,9 @@
+{
+  "module_name": "bind_unbind_sample.sh",
+  "hash_id": "a4c6e3c0524f5322aa85d67db667ea6c2f85fd776270a107f3eacd65a80b2cdb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/media_tests/bind_unbind_sample.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n# Find device number in /sys/bus/usb/drivers/drivername\n# Edit this file to update the driver numer and name\n# Example test for uvcvideo driver\n#i=0\n# while :; do\n#  i=$((i+1))\n#  echo 1-5:1.0 > /sys/bus/usb/drivers/uvcvideo/unbind;\n#  echo 1-5:1.0 > /sys/bus/usb/drivers/uvcvideo/bind;\n#  clear\n#\techo $i\n#done\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

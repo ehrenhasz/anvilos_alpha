@@ -1,0 +1,9 @@
+{
+  "module_name": "keyok.c",
+  "hash_id": "7a645b8c07bb9359ab4898ba0c0606e2c5b836186da7b8e9997640490d41bb7c",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/keyok.c",
+  "human_readable_source": " \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: keyok.c,v 1.17 2021/06/17 21:26:02 tom Exp $\")\n\n \n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(keyok) (NCURSES_SP_DCLx int c, bool flag)\n{\n    int code = ERR;\n\n    if (HasTerminal(SP_PARM)) {\n\tT((T_CALLED(\"keyok(%p, %d,%d)\"), (void *) SP_PARM, c, flag));\n#ifdef USE_TERM_DRIVER\n\tcode = CallDriver_2(sp, td_kyOk, c, flag);\n#else\n\tif (c >= 0) {\n\t    int count = 0;\n\t    char *s;\n\t    unsigned ch = (unsigned) c;\n\n\t    if (flag) {\n\t\twhile ((s = _nc_expand_try(SP_PARM->_key_ok,\n\t\t\t\t\t   ch, &count, (size_t) 0)) != 0) {\n\t\t    if (_nc_remove_key(&(SP_PARM->_key_ok), ch)) {\n\t\t\tcode = _nc_add_to_try(&(SP_PARM->_keytry), s, ch);\n\t\t\tfree(s);\n\t\t\tcount = 0;\n\t\t\tif (code != OK)\n\t\t\t    break;\n\t\t    } else {\n\t\t\tfree(s);\n\t\t    }\n\t\t}\n\t    } else {\n\t\twhile ((s = _nc_expand_try(SP_PARM->_keytry,\n\t\t\t\t\t   ch, &count, (size_t) 0)) != 0) {\n\t\t    if (_nc_remove_key(&(SP_PARM->_keytry), ch)) {\n\t\t\tcode = _nc_add_to_try(&(SP_PARM->_key_ok), s, ch);\n\t\t\tfree(s);\n\t\t\tcount = 0;\n\t\t\tif (code != OK)\n\t\t\t    break;\n\t\t    } else {\n\t\t\tfree(s);\n\t\t    }\n\t\t}\n\t    }\n\t}\n#endif\n    }\n    returnCode(code);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nkeyok(int c, bool flag)\n{\n    return NCURSES_SP_NAME(keyok) (CURRENT_SCREEN, c, flag);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

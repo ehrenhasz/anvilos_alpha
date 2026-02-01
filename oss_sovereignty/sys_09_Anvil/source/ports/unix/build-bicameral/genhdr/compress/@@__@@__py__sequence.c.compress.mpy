@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__sequence.c.compress",
+  "hash_id": "1d04916a7cc04197665445f1b6c6fee944686686636a8fcfd1e7d08f8af92c57",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__sequence.c.compress",
+  "human_readable_source": "object not in sequence\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

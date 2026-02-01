@@ -1,0 +1,9 @@
+{
+  "module_name": "ecdsa_n",
+  "hash_id": "1cccaa23aca49238099494fc7b49b550311719c9ac6bb138797e1077f4d7973d",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshkey/testdata/ecdsa_n",
+  "human_readable_source": "-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAaAAAABNlY2RzYS\n1zaGEyLW5pc3RwMjU2AAAACG5pc3RwMjU2AAAAQQQMWVuWQ6tb3J0pWG0z70Bjdz2xoETt\nIbeUXHfycFq+QAMNoj2OHf+S8b8m32+mbbarCiSVMIYN/MKReQgppaUHAAAAoFrmmZBa5p\nmQAAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBAxZW5ZDq1vcnSlY\nbTPvQGN3PbGgRO0ht5Rcd/JwWr5AAw2iPY4d/5Lxvybfb6ZttqsKJJUwhg38wpF5CCmlpQ\ncAAAAhAPPNyUAnjvFr+eT/7t/IyjuQQd/aLFiTY92LB9gIjyrMAAAAAAECAwQFBgc=\n-----END OPENSSH PRIVATE KEY-----\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "86be7b82b9ff4e8784f185efcfe9eaa2ba80965e298390565c6d7184b5d8ab8b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/controller/mobiveil/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_PCIE_MOBIVEIL) += pcie-mobiveil.o\nobj-$(CONFIG_PCIE_MOBIVEIL_HOST) += pcie-mobiveil-host.o\nobj-$(CONFIG_PCIE_MOBIVEIL_PLAT) += pcie-mobiveil-plat.o\nobj-$(CONFIG_PCIE_LAYERSCAPE_GEN4) += pcie-layerscape-gen4.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

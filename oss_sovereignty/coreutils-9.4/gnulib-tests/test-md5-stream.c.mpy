@@ -1,0 +1,9 @@
+{
+  "module_name": "test-md5-stream.c",
+  "hash_id": "fa2da482a0590e3e944e67da53121093fb6526f3940535d9644bcaf70ec736fc",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-md5-stream.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"md5.h\"\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n\n#include \"macros.h\"\n\n#define TESTFILE \"test-md5.data\"\n#include \"test-digest.h\"\n\nint\nmain (void)\n{\n   \n  test_digest_on_files (md5_stream, \"md5_stream\", 16,\n                        \"\\xd4\\x1d\\x8c\\xd9\\x8f\\x00\\xb2\\x04\\xe9\\x80\\x09\\x98\\xec\\xf8\\x42\\x7e\",\n                        \"\\x0d\\x70\\x06\\xcd\\x05\\x5e\\x94\\xcf\\x61\\x45\\x87\\xe1\\xd2\\xae\\x0c\\x8e\",\n                        \"\\xec\\x99\\x67\\x9b\\xff\\xc0\\xf9\\xb0\\x6d\\x18\\x30\\x6b\\x06\\xd6\\x56\\x23\");\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

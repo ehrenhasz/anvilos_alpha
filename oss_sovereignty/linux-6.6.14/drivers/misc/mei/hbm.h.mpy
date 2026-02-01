@@ -1,0 +1,9 @@
+{
+  "module_name": "hbm.h",
+  "hash_id": "3bac881ff12e91ea807134329df2dbb4607157ebc77a6a57f228dda6285db856",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/mei/hbm.h",
+  "human_readable_source": " \n \n\n#ifndef _MEI_HBM_H_\n#define _MEI_HBM_H_\n\nstruct mei_device;\nstruct mei_msg_hdr;\nstruct mei_cl;\nstruct mei_dma_data;\n\n \nenum mei_hbm_state {\n\tMEI_HBM_IDLE = 0,\n\tMEI_HBM_STARTING,\n\tMEI_HBM_CAP_SETUP,\n\tMEI_HBM_DR_SETUP,\n\tMEI_HBM_ENUM_CLIENTS,\n\tMEI_HBM_CLIENT_PROPERTIES,\n\tMEI_HBM_STARTED,\n\tMEI_HBM_STOPPED,\n};\n\nconst char *mei_hbm_state_str(enum mei_hbm_state state);\n\nint mei_hbm_dispatch(struct mei_device *dev, struct mei_msg_hdr *hdr);\n\nvoid mei_hbm_idle(struct mei_device *dev);\nvoid mei_hbm_reset(struct mei_device *dev);\nint mei_hbm_start_req(struct mei_device *dev);\nint mei_hbm_start_wait(struct mei_device *dev);\nint mei_hbm_cl_flow_control_req(struct mei_device *dev, struct mei_cl *cl);\nint mei_hbm_cl_disconnect_req(struct mei_device *dev, struct mei_cl *cl);\nint mei_hbm_cl_disconnect_rsp(struct mei_device *dev, struct mei_cl *cl);\nint mei_hbm_cl_connect_req(struct mei_device *dev, struct mei_cl *cl);\nbool mei_hbm_version_is_supported(struct mei_device *dev);\nint mei_hbm_pg(struct mei_device *dev, u8 pg_cmd);\nvoid mei_hbm_pg_resume(struct mei_device *dev);\nint mei_hbm_cl_notify_req(struct mei_device *dev,\n\t\t\t  struct mei_cl *cl, u8 request);\nint mei_hbm_cl_dma_map_req(struct mei_device *dev, struct mei_cl *cl);\nint mei_hbm_cl_dma_unmap_req(struct mei_device *dev, struct mei_cl *cl);\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

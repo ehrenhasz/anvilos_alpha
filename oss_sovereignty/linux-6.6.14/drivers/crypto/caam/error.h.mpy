@@ -1,0 +1,9 @@
+{
+  "module_name": "error.h",
+  "hash_id": "60b4e6478e3149d3ed8001260a049b9a6c0bc12af979ffb726f9e95c7cd66da7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/caam/error.h",
+  "human_readable_source": " \n \n\n#ifndef CAAM_ERROR_H\n#define CAAM_ERROR_H\n\n#include \"desc.h\"\n\n#define CAAM_ERROR_STR_MAX 302\n\nint caam_strstatus(struct device *dev, u32 status, bool qi_v2);\n\n#define caam_jr_strstatus(jrdev, status) caam_strstatus(jrdev, status, false)\n#define caam_qi2_strstatus(qidev, status) caam_strstatus(qidev, status, true)\n\nvoid caam_dump_sg(const char *prefix_str, int prefix_type,\n\t\t  int rowsize, int groupsize, struct scatterlist *sg,\n\t\t  size_t tlen, bool ascii);\n\nstatic inline bool is_mdha(u32 algtype)\n{\n\treturn (algtype & OP_ALG_ALGSEL_MASK & ~OP_ALG_ALGSEL_SUBMASK) ==\n\t       OP_ALG_CHA_MDHA;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

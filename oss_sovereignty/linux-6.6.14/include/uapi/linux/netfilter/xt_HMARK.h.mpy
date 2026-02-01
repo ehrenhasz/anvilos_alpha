@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_HMARK.h",
+  "hash_id": "918e63f5b364d1201fee5b968f821613c75bd4b5e9dc03b69abd73f0c7694c88",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_HMARK.h",
+  "human_readable_source": " \n#ifndef XT_HMARK_H_\n#define XT_HMARK_H_\n\n#include <linux/types.h>\n#include <linux/netfilter.h>\n\nenum {\n\tXT_HMARK_SADDR_MASK,\n\tXT_HMARK_DADDR_MASK,\n\tXT_HMARK_SPI,\n\tXT_HMARK_SPI_MASK,\n\tXT_HMARK_SPORT,\n\tXT_HMARK_DPORT,\n\tXT_HMARK_SPORT_MASK,\n\tXT_HMARK_DPORT_MASK,\n\tXT_HMARK_PROTO_MASK,\n\tXT_HMARK_RND,\n\tXT_HMARK_MODULUS,\n\tXT_HMARK_OFFSET,\n\tXT_HMARK_CT,\n\tXT_HMARK_METHOD_L3,\n\tXT_HMARK_METHOD_L3_4,\n};\n#define XT_HMARK_FLAG(flag)\t(1 << flag)\n\nunion hmark_ports {\n\tstruct {\n\t\t__u16\tsrc;\n\t\t__u16\tdst;\n\t} p16;\n\tstruct {\n\t\t__be16\tsrc;\n\t\t__be16\tdst;\n\t} b16;\n\t__u32\tv32;\n\t__be32\tb32;\n};\n\nstruct xt_hmark_info {\n\tunion nf_inet_addr\tsrc_mask;\n\tunion nf_inet_addr\tdst_mask;\n\tunion hmark_ports\tport_mask;\n\tunion hmark_ports\tport_set;\n\t__u32\t\t\tflags;\n\t__u16\t\t\tproto_mask;\n\t__u32\t\t\thashrnd;\n\t__u32\t\t\thmodulus;\n\t__u32\t\t\thoffset;\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kcov.h",
+  "hash_id": "82d23a2f9815f71136512e81b1c3a2ce45a9bfe43b49256bd3b72000ab687d0e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/kcov.h",
+  "human_readable_source": " \n#ifndef _LINUX_KCOV_IOCTLS_H\n#define _LINUX_KCOV_IOCTLS_H\n\n#include <linux/types.h>\n\n \nstruct kcov_remote_arg {\n\t__u32\t\ttrace_mode;\t \n\t__u32\t\tarea_size;\t \n\t__u32\t\tnum_handles;\t \n\t__aligned_u64\tcommon_handle;\n\t__aligned_u64\thandles[];\n};\n\n#define KCOV_REMOTE_MAX_HANDLES\t\t0x100\n\n#define KCOV_INIT_TRACE\t\t\t_IOR('c', 1, unsigned long)\n#define KCOV_ENABLE\t\t\t_IO('c', 100)\n#define KCOV_DISABLE\t\t\t_IO('c', 101)\n#define KCOV_REMOTE_ENABLE\t\t_IOW('c', 102, struct kcov_remote_arg)\n\nenum {\n\t \n\tKCOV_TRACE_PC = 0,\n\t \n\tKCOV_TRACE_CMP = 1,\n};\n\n \n#define KCOV_CMP_CONST          (1 << 0)\n#define KCOV_CMP_SIZE(n)        ((n) << 1)\n#define KCOV_CMP_MASK           KCOV_CMP_SIZE(3)\n\n#define KCOV_SUBSYSTEM_COMMON\t(0x00ull << 56)\n#define KCOV_SUBSYSTEM_USB\t(0x01ull << 56)\n\n#define KCOV_SUBSYSTEM_MASK\t(0xffull << 56)\n#define KCOV_INSTANCE_MASK\t(0xffffffffull)\n\nstatic inline __u64 kcov_remote_handle(__u64 subsys, __u64 inst)\n{\n\tif (subsys & ~KCOV_SUBSYSTEM_MASK || inst & ~KCOV_INSTANCE_MASK)\n\t\treturn 0;\n\treturn subsys | inst;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

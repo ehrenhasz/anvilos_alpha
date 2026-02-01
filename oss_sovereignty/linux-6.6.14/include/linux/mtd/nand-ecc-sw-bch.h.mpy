@@ -1,0 +1,9 @@
+{
+  "module_name": "nand-ecc-sw-bch.h",
+  "hash_id": "bfd39fd3e6571c9665b126b2b227d0a4707c7d9f837298d3765d5cad3c294dfc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/nand-ecc-sw-bch.h",
+  "human_readable_source": " \n \n\n#ifndef __MTD_NAND_ECC_SW_BCH_H__\n#define __MTD_NAND_ECC_SW_BCH_H__\n\n#include <linux/mtd/nand.h>\n#include <linux/bch.h>\n\n \nstruct nand_ecc_sw_bch_conf {\n\tstruct nand_ecc_req_tweak_ctx req_ctx;\n\tunsigned int code_size;\n\tu8 *calc_buf;\n\tu8 *code_buf;\n\tstruct bch_control *bch;\n\tunsigned int *errloc;\n\tunsigned char *eccmask;\n};\n\n#if IS_ENABLED(CONFIG_MTD_NAND_ECC_SW_BCH)\n\nint nand_ecc_sw_bch_calculate(struct nand_device *nand,\n\t\t\t      const unsigned char *buf, unsigned char *code);\nint nand_ecc_sw_bch_correct(struct nand_device *nand, unsigned char *buf,\n\t\t\t    unsigned char *read_ecc, unsigned char *calc_ecc);\nint nand_ecc_sw_bch_init_ctx(struct nand_device *nand);\nvoid nand_ecc_sw_bch_cleanup_ctx(struct nand_device *nand);\nstruct nand_ecc_engine *nand_ecc_sw_bch_get_engine(void);\n\n#else  \n\nstatic inline int nand_ecc_sw_bch_calculate(struct nand_device *nand,\n\t\t\t\t\t    const unsigned char *buf,\n\t\t\t\t\t    unsigned char *code)\n{\n\treturn -ENOTSUPP;\n}\n\nstatic inline int nand_ecc_sw_bch_correct(struct nand_device *nand,\n\t\t\t\t\t  unsigned char *buf,\n\t\t\t\t\t  unsigned char *read_ecc,\n\t\t\t\t\t  unsigned char *calc_ecc)\n{\n\treturn -ENOTSUPP;\n}\n\nstatic inline int nand_ecc_sw_bch_init_ctx(struct nand_device *nand)\n{\n\treturn -ENOTSUPP;\n}\n\nstatic inline void nand_ecc_sw_bch_cleanup_ctx(struct nand_device *nand) {}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

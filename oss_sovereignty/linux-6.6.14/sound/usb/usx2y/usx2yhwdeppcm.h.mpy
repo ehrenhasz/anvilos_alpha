@@ -1,0 +1,9 @@
+{
+  "module_name": "usx2yhwdeppcm.h",
+  "hash_id": "985abce9e0ea2c52394ccba8c37cf813dccad9636ab7199687c35c5d854c77eb",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/usx2y/usx2yhwdeppcm.h",
+  "human_readable_source": " \n#define MAXPACK 50\n#define MAXBUFFERMS 100\n#define MAXSTRIDE 3\n\n#define SSS (((MAXPACK*MAXBUFFERMS*MAXSTRIDE + 4096) / 4096) * 4096)\nstruct snd_usx2y_hwdep_pcm_shm {\n\tchar playback[SSS];\n\tchar capture0x8[SSS];\n\tchar capture0xA[SSS];\n\tvolatile int playback_iso_head;\n\tint playback_iso_start;\n\tstruct {\n\t\tint\tframe,\n\t\t\toffset,\n\t\t\tlength;\n\t} captured_iso[128];\n\tvolatile int captured_iso_head;\n\tvolatile unsigned captured_iso_frames;\n\tint capture_iso_start;\n};\n\nint usx2y_hwdep_pcm_new(struct snd_card *card);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

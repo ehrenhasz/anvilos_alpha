@@ -1,0 +1,9 @@
+{
+  "module_name": "nouveau_ioc32.c",
+  "hash_id": "5757de56c2c007ca3db4a9609e691a98a6fd15a43979b49ae36b44ce658870e7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nouveau_ioc32.c",
+  "human_readable_source": " \n\n#include <linux/compat.h>\n\n#include <drm/drm.h>\n#include <drm/drm_ioctl.h>\n\n#include \"nouveau_ioctl.h\"\n\n \nlong nouveau_compat_ioctl(struct file *filp, unsigned int cmd,\n\t\t\t unsigned long arg)\n{\n\tunsigned int nr = DRM_IOCTL_NR(cmd);\n\tdrm_ioctl_compat_t *fn = NULL;\n\tint ret;\n\n\tif (nr < DRM_COMMAND_BASE)\n\t\treturn drm_compat_ioctl(filp, cmd, arg);\n\n#if 0\n\tif (nr < DRM_COMMAND_BASE + ARRAY_SIZE(mga_compat_ioctls))\n\t\tfn = nouveau_compat_ioctls[nr - DRM_COMMAND_BASE];\n#endif\n\tif (fn != NULL)\n\t\tret = (*fn)(filp, cmd, arg);\n\telse\n\t\tret = nouveau_drm_ioctl(filp, cmd, arg);\n\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

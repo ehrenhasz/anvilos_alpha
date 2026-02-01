@@ -1,0 +1,9 @@
+{
+  "module_name": "chan.h",
+  "hash_id": "6f6f5cdfce8932a0590cf3765ea052611568d435929f046058da1ba342f420ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/sw/chan.h",
+  "human_readable_source": " \n#ifndef __NVKM_SW_CHAN_H__\n#define __NVKM_SW_CHAN_H__\n#define nvkm_sw_chan(p) container_of((p), struct nvkm_sw_chan, object)\n#include <core/object.h>\n#include <core/event.h>\n\n#include \"priv.h\"\n\nstruct nvkm_sw_chan {\n\tconst struct nvkm_sw_chan_func *func;\n\tstruct nvkm_object object;\n\tstruct nvkm_sw *sw;\n\tstruct nvkm_chan *fifo;\n\tstruct list_head head;\n\n#define NVKM_SW_CHAN_EVENT_PAGE_FLIP BIT(0)\n\tstruct nvkm_event event;\n};\n\nstruct nvkm_sw_chan_func {\n\tvoid *(*dtor)(struct nvkm_sw_chan *);\n\tbool (*mthd)(struct nvkm_sw_chan *, int subc, u32 mthd, u32 data);\n};\n\nint nvkm_sw_chan_ctor(const struct nvkm_sw_chan_func *, struct nvkm_sw *,\n\t\t      struct nvkm_chan *, const struct nvkm_oclass *,\n\t\t      struct nvkm_sw_chan *);\nbool nvkm_sw_chan_mthd(struct nvkm_sw_chan *, int subc, u32 mthd, u32 data);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

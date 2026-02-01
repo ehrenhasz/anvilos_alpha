@@ -1,0 +1,9 @@
+{
+  "module_name": "atomic.h",
+  "hash_id": "fc548d17f164928d6f36dc2781a4c6c9f4dc167f4d4080dd4f4e4756ef90fc2e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/asm/atomic.h",
+  "human_readable_source": " \n#ifndef __TOOLS_LINUX_ASM_ATOMIC_H\n#define __TOOLS_LINUX_ASM_ATOMIC_H\n\n#if defined(__i386__) || defined(__x86_64__)\n#include \"../../arch/x86/include/asm/atomic.h\"\n#else\n#include <asm-generic/atomic-gcc.h>\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

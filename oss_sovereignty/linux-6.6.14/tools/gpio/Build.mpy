@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "aeaff9aa669d66427f8f2d4e7a4b05cf34dc7634f14672c5b2489c5cd1be4863",
+  "original_prompt": "Ingested from linux-6.6.14/tools/gpio/Build",
+  "human_readable_source": "gpio-utils-y += gpio-utils.o\nlsgpio-y += lsgpio.o gpio-utils.o\ngpio-hammer-y += gpio-hammer.o gpio-utils.o\ngpio-event-mon-y += gpio-event-mon.o gpio-utils.o\ngpio-watch-y += gpio-watch.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sme_trap_za.c",
+  "hash_id": "7f2180857eb2a72cd7fcef115d93bbc54d6e422d57d99de210b786225fc1ba78",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/signal/testcases/sme_trap_za.c",
+  "human_readable_source": "\n \n\n#include <signal.h>\n#include <ucontext.h>\n#include <sys/prctl.h>\n\n#include \"test_signals_utils.h\"\n#include \"testcases.h\"\n\nint sme_trap_za_trigger(struct tdescr *td)\n{\n\t \n\tasm volatile(\".inst 0xc00800ff\");\n\n\treturn 0;\n}\n\nint sme_trap_za_run(struct tdescr *td, siginfo_t *si, ucontext_t *uc)\n{\n\treturn 1;\n}\n\nstruct tdescr tde = {\n\t.name = \"SME ZA trap\",\n\t.descr = \"Check that we get a SIGILL if we access ZA without enabling\",\n\t.timeout = 3,\n\t.sanity_disabled = true,\n\t.trigger = sme_trap_za_trigger,\n\t.run = sme_trap_za_run,\n\t.sig_ok = SIGILL,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

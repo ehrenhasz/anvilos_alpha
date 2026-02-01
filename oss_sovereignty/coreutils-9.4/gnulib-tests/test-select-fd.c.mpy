@@ -1,0 +1,9 @@
+{
+  "module_name": "test-select-fd.c",
+  "hash_id": "7e189a20171b12777fe2b3c83a20b3c705f1fed559d46b647850ddb87d996813",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-select-fd.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/select.h>\n\nint\nmain (int argc, char *argv[])\n{\n  if (argc == 4)\n    {\n      char mode = argv[1][0];\n\n      if (mode == 'r' || mode == 'w')\n        {\n          int fd = atoi (argv[2]);\n\n          if (fd >= 0)\n            {\n              const char *result_file_name = argv[3];\n              FILE *result_file = fopen (result_file_name, \"wb\");\n\n              if (result_file != NULL)\n                {\n                  fd_set fds;\n                  struct timeval timeout;\n                  int ret;\n\n                  FD_ZERO (&fds);\n                  FD_SET (fd, &fds);\n                  timeout.tv_sec = 0;\n                  timeout.tv_usec = 10000;\n                  ret = (mode == 'r'\n                         ? select (fd + 1, &fds, NULL, NULL, &timeout)\n                         : select (fd + 1, NULL, &fds, NULL, &timeout));\n                  if (ret < 0)\n                    {\n                      perror (\"select failed\");\n                      exit (1);\n                    }\n                  if ((ret == 0) != ! FD_ISSET (fd, &fds))\n                    {\n                      fprintf (stderr, \"incorrect return value\\n\");\n                      exit (1);\n                    }\n                  fprintf (result_file, \"%d\\n\", ret);\n                  exit (0);\n                }\n            }\n        }\n    }\n  fprintf (stderr, \"Usage: test-select-fd mode fd result-file-name\\n\");\n  exit (1);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

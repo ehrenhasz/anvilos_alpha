@@ -1,0 +1,9 @@
+{
+  "module_name": "max1617.h",
+  "hash_id": "899ee1d6bf6d3020bf07792caf94da9ab26e01e803d00d316766926e0b8befd7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/sbus/char/max1617.h",
+  "human_readable_source": " \n \n#ifndef _MAX1617_H\n#define _MAX1617_H\n\n#define MAX1617_AMB_TEMP\t0x00  \n#define MAX1617_CPU_TEMP\t0x01  \n#define MAX1617_STATUS\t\t0x02  \n\n \n#define MAX1617_RD_CFG_BYTE\t0x03  \n#define MAX1617_RD_CVRATE_BYTE\t0x04  \n#define MAX1617_RD_AMB_HIGHLIM\t0x05  \n#define MAX1617_RD_AMB_LOWLIM\t0x06  \n#define MAX1617_RD_CPU_HIGHLIM\t0x07  \n#define MAX1617_RD_CPU_LOWLIM\t0x08  \n\n \n#define MAX1617_WR_CFG_BYTE\t0x09\n#define MAX1617_WR_CVRATE_BYTE\t0x0a\n#define MAX1617_WR_AMB_HIGHLIM\t0x0b\n#define MAX1617_WR_AMB_LOWLIM\t0x0c\n#define MAX1617_WR_CPU_HIGHLIM\t0x0d\n#define MAX1617_WR_CPU_LOWLIM\t0x0e\n\n#define MAX1617_ONESHOT\t\t0x0f\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "basic_types.h",
+  "hash_id": "140e10742a294006b560bd9c32db9bc5a36197c21f82df26901980dba2120cff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/basic_types.h",
+  "human_readable_source": " \n \n#ifndef __BASIC_TYPES_H__\n#define __BASIC_TYPES_H__\n\n#include <linux/types.h>\n\n#define sint signed int\n\n \n#define addr_t unsigned long\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

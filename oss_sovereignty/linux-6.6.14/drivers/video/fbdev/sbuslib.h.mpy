@@ -1,0 +1,9 @@
+{
+  "module_name": "sbuslib.h",
+  "hash_id": "c9587442256186f89470eac5c249a376688719152c12df3eb615b0eac9b47adf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/sbuslib.h",
+  "human_readable_source": " \n \n#ifndef _SBUSLIB_H\n#define _SBUSLIB_H\n\nstruct sbus_mmap_map {\n\tunsigned long voff;\n\tunsigned long poff;\n\tunsigned long size;\n};\n\n#define SBUS_MMAP_FBSIZE(n) (-n)\n#define SBUS_MMAP_EMPTY\t0x80000000\n\nextern void sbusfb_fill_var(struct fb_var_screeninfo *var,\n\t\t\t    struct device_node *dp, int bpp);\nstruct vm_area_struct;\nextern int sbusfb_mmap_helper(struct sbus_mmap_map *map,\n\t\t\t      unsigned long physbase, unsigned long fbsize,\n\t\t\t      unsigned long iospace,\n\t\t\t      struct vm_area_struct *vma);\nint sbusfb_ioctl_helper(unsigned long cmd, unsigned long arg,\n\t\t\tstruct fb_info *info,\n\t\t\tint type, int fb_depth, unsigned long fb_size);\nint sbusfb_compat_ioctl(struct fb_info *info, unsigned int cmd,\n\t\t\tunsigned long arg);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

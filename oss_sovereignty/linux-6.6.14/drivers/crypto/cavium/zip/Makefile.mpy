@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e85051a7723fa437662a591a39d278e65489cd4c90da2ce45e79deff6de213e0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/cavium/zip/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Cavium's ZIP Driver.\n#\n\nobj-$(CONFIG_CRYPTO_DEV_CAVIUM_ZIP) += thunderx_zip.o\nthunderx_zip-y := zip_main.o    \\\n                  zip_device.o  \\\n                  zip_crypto.o  \\\n                  zip_mem.o     \\\n                  zip_deflate.o \\\n                  zip_inflate.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fd3cdc70c0ba1d68058ec525f4089d3a0511f595552cc8e5ac18028fe8f3dbf9",
+  "original_prompt": "Ingested from linux-6.6.14/sound/drivers/vx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-vx-lib-objs := vx_core.o vx_hwdep.o vx_pcm.o vx_mixer.o vx_cmd.o vx_uer.o\n\nobj-$(CONFIG_SND_VX_LIB) += snd-vx-lib.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

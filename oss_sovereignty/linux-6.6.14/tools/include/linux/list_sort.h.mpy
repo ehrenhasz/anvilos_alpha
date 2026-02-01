@@ -1,0 +1,9 @@
+{
+  "module_name": "list_sort.h",
+  "hash_id": "ae200998ef3c3e11218d4df60f53ef58826aac084b03c3b1b9bd630e13582726",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/list_sort.h",
+  "human_readable_source": " \n#ifndef _LINUX_LIST_SORT_H\n#define _LINUX_LIST_SORT_H\n\n#include <linux/types.h>\n\nstruct list_head;\n\ntypedef int __attribute__((nonnull(2,3))) (*list_cmp_func_t)(void *,\n\t\tconst struct list_head *, const struct list_head *);\n\n__attribute__((nonnull(2,3)))\nvoid list_sort(void *priv, struct list_head *head, list_cmp_func_t cmp);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

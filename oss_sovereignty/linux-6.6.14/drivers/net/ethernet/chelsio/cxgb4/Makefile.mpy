@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2091dd914466dd5f47c24e36a7d60d14b8a36bb67181e91533ce6105c8f0dff7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Chelsio T4 driver\n#\n\nobj-$(CONFIG_CHELSIO_T4) += cxgb4.o\n\ncxgb4-objs := cxgb4_main.o l2t.o smt.o t4_hw.o sge.o clip_tbl.o cxgb4_ethtool.o \\\n\t      cxgb4_uld.o srq.o sched.o cxgb4_filter.o cxgb4_tc_u32.o \\\n\t      cxgb4_ptp.o cxgb4_tc_flower.o cxgb4_cudbg.o cxgb4_mps.o \\\n\t      cudbg_common.o cudbg_lib.o cudbg_zlib.o cxgb4_tc_mqprio.o \\\n\t      cxgb4_tc_matchall.o\ncxgb4-$(CONFIG_CHELSIO_T4_DCB) +=  cxgb4_dcb.o\ncxgb4-$(CONFIG_CHELSIO_T4_FCOE) +=  cxgb4_fcoe.o\ncxgb4-$(CONFIG_DEBUG_FS) += cxgb4_debugfs.o\ncxgb4-$(CONFIG_THERMAL) += cxgb4_thermal.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

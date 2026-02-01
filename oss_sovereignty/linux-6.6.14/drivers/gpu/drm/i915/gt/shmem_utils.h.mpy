@@ -1,0 +1,9 @@
+{
+  "module_name": "shmem_utils.h",
+  "hash_id": "e89607d872d660ebe652f6990dc7ed7e27a716abdab86fe573caba50acfc4449",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/shmem_utils.h",
+  "human_readable_source": " \n \n\n#ifndef SHMEM_UTILS_H\n#define SHMEM_UTILS_H\n\n#include <linux/types.h>\n\nstruct iosys_map;\nstruct drm_i915_gem_object;\nstruct file;\n\nstruct file *shmem_create_from_data(const char *name, void *data, size_t len);\nstruct file *shmem_create_from_object(struct drm_i915_gem_object *obj);\n\nvoid *shmem_pin_map(struct file *file);\nvoid shmem_unpin_map(struct file *file, void *ptr);\n\nint shmem_read_to_iosys_map(struct file *file, loff_t off,\n\t\t\t    struct iosys_map *map, size_t map_off, size_t len);\nint shmem_read(struct file *file, loff_t off, void *dst, size_t len);\nint shmem_write(struct file *file, loff_t off, void *src, size_t len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

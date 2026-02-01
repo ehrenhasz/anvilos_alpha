@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn31_panel_cntl.h",
+  "hash_id": "37413eb3eb4571ad6586624a080b7985836e9adc15600018cbe19a09535a6280",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_panel_cntl.h",
+  "human_readable_source": " \n\n#ifndef __DC_PANEL_CNTL__DCN31_H__\n#define __DC_PANEL_CNTL__DCN31_H__\n\n#include \"panel_cntl.h\"\n#include \"dce/dce_panel_cntl.h\"\n\nstruct dcn31_panel_cntl {\n\tstruct panel_cntl base;\n};\n\nvoid dcn31_panel_cntl_construct(\n\tstruct dcn31_panel_cntl *dcn31_panel_cntl,\n\tconst struct panel_cntl_init_data *init_data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

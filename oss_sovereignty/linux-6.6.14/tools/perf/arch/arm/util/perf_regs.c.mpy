@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_regs.c",
+  "hash_id": "5a9f243215bccb4e04e6ab9d43fc2b7cb1c16155300d667d533217f8c5dbdd0a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arm/util/perf_regs.c",
+  "human_readable_source": "\n#include \"perf_regs.h\"\n#include \"../../../util/perf_regs.h\"\n\nconst struct sample_reg sample_reg_masks[] = {\n\tSMPL_REG_END\n};\n\nuint64_t arch__intr_reg_mask(void)\n{\n\treturn PERF_REGS_MASK;\n}\n\nuint64_t arch__user_reg_mask(void)\n{\n\treturn PERF_REGS_MASK;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

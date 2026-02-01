@@ -1,0 +1,9 @@
+{
+  "module_name": "si2165.h",
+  "hash_id": "b80192e7de87e4cc9d9c29877aa9b883057bdeb082ecfe86888415f024c08800",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/si2165.h",
+  "human_readable_source": " \n \n\n#ifndef _DVB_SI2165_H\n#define _DVB_SI2165_H\n\n#include <linux/dvb/frontend.h>\n\nenum {\n\tSI2165_MODE_OFF = 0x00,\n\tSI2165_MODE_PLL_EXT = 0x20,\n\tSI2165_MODE_PLL_XTAL = 0x21\n};\n\n \nstruct si2165_platform_data {\n\t \n\tstruct dvb_frontend **fe;\n\n\t \n\tu8 chip_mode;\n\n\t \n\tu32 ref_freq_hz;\n\n\t \n\tbool inversion;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

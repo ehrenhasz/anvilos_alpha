@@ -1,0 +1,9 @@
+{
+  "module_name": "modvfs.c",
+  "hash_id": "c2556ac416894cf77d97f83490fa1a8728cafd7624b042735f274f0f0e65b7cb",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/modvfs.c",
+  "human_readable_source": " \n\n#include \"py/runtime.h\"\n\n#if MICROPY_PY_VFS\n\n#include \"extmod/vfs.h\"\n#include \"extmod/vfs_fat.h\"\n#include \"extmod/vfs_lfs.h\"\n#include \"extmod/vfs_posix.h\"\n\n#if !MICROPY_VFS\n#error \"MICROPY_PY_VFS requires MICROPY_VFS\"\n#endif\n\nstatic const mp_rom_map_elem_t vfs_module_globals_table[] = {\n    { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_vfs) },\n\n    { MP_ROM_QSTR(MP_QSTR_mount), MP_ROM_PTR(&mp_vfs_mount_obj) },\n    { MP_ROM_QSTR(MP_QSTR_umount), MP_ROM_PTR(&mp_vfs_umount_obj) },\n    #if MICROPY_VFS_FAT\n    { MP_ROM_QSTR(MP_QSTR_VfsFat), MP_ROM_PTR(&mp_fat_vfs_type) },\n    #endif\n    #if MICROPY_VFS_LFS1\n    { MP_ROM_QSTR(MP_QSTR_VfsLfs1), MP_ROM_PTR(&mp_type_vfs_lfs1) },\n    #endif\n    #if MICROPY_VFS_LFS2\n    { MP_ROM_QSTR(MP_QSTR_VfsLfs2), MP_ROM_PTR(&mp_type_vfs_lfs2) },\n    #endif\n    #if MICROPY_VFS_POSIX\n    { MP_ROM_QSTR(MP_QSTR_VfsPosix), MP_ROM_PTR(&mp_type_vfs_posix) },\n    #endif\n};\nstatic MP_DEFINE_CONST_DICT(vfs_module_globals, vfs_module_globals_table);\n\nconst mp_obj_module_t mp_module_vfs = {\n    .base = { &mp_type_module },\n    .globals = (mp_obj_dict_t *)&vfs_module_globals,\n};\n\nMP_REGISTER_MODULE(MP_QSTR_vfs, mp_module_vfs);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

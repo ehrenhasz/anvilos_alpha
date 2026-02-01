@@ -1,0 +1,9 @@
+{
+  "module_name": "ef_sqrt.c",
+  "hash_id": "ff553c045ddc5fcded8996de400bd93ad84d0970c15e3e41927f0f7c1830c52d",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/ef_sqrt.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"fdlibm.h\"\n\n#ifdef __STDC__\nstatic\tconst float\tone\t= 1.0f, tiny=1.0e-30f;\n#else\nstatic\tfloat\tone\t= 1.0f, tiny=1.0e-30f;\n#endif\n\n\nfloat sqrtf(float x)\n \n{\n\tfloat z;\n\t__uint32_t r,hx;\n\t__int32_t ix,s,q,m,t,i;\n\n\tGET_FLOAT_WORD(ix,x);\n\thx = ix&0x7fffffff;\n\n     \n\tif(!FLT_UWORD_IS_FINITE(hx))\n\t    return x*x+x;\t\t \n     \n\tif(FLT_UWORD_IS_ZERO(hx)) return x; \n\tif(ix<0) return (x-x)/(x-x);\t\t \n\n     \n\tm = (ix>>23);\n\tif(FLT_UWORD_IS_SUBNORMAL(hx)) {\t\t \n\t    for(i=0;(ix&0x00800000L)==0;i++) ix<<=1;\n\t    m -= i-1;\n\t}\n\tm -= 127;\t \n\tix = (ix&0x007fffffL)|0x00800000L;\n\tif(m&1)\t \n\t    ix += ix;\n\tm >>= 1;\t \n\n     \n\tix += ix;\n\tq = s = 0;\t\t \n\tr = 0x01000000L;\t\t \n\n\twhile(r!=0) {\n\t    t = s+r; \n\t    if(t<=ix) { \n\t\ts    = t+r; \n\t\tix  -= t; \n\t\tq   += r; \n\t    } \n\t    ix += ix;\n\t    r>>=1;\n\t}\n\n     \n\tif(ix!=0) {\n\t    z = one-tiny;  \n\t    if (z>=one) {\n\t        z = one+tiny;\n\t\tif (z>one)\n\t\t    q += 2;\n\t\telse\n\t\t    q += (q&1);\n\t    }\n\t}\n\tix = (q>>1)+0x3f000000L;\n\tix += (m <<23);\n\tSET_FLOAT_WORD(z,ix);\n\treturn z;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

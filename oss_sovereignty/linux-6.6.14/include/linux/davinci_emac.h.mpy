@@ -1,0 +1,9 @@
+{
+  "module_name": "davinci_emac.h",
+  "hash_id": "e99911bc386309c651560ba605bc5f2015b83fe0cbed88a3d925f6fc2a311d32",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/davinci_emac.h",
+  "human_readable_source": " \n#ifndef _LINUX_DAVINCI_EMAC_H\n#define _LINUX_DAVINCI_EMAC_H\n\n#include <linux/if_ether.h>\n#include <linux/nvmem-consumer.h>\n\nstruct mdio_platform_data {\n\tunsigned long\t\tbus_freq;\n};\n\nstruct emac_platform_data {\n\tchar mac_addr[ETH_ALEN];\n\tu32 ctrl_reg_offset;\n\tu32 ctrl_mod_reg_offset;\n\tu32 ctrl_ram_offset;\n\tu32 hw_ram_addr;\n\tu32 ctrl_ram_size;\n\n\t \n\tconst char *phy_id;\n\n\tu8 rmii_en;\n\tu8 version;\n\tbool no_bd_ram;\n\tvoid (*interrupt_enable) (void);\n\tvoid (*interrupt_disable) (void);\n};\n\nenum {\n\tEMAC_VERSION_1,\t \n\tEMAC_VERSION_2,\t \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

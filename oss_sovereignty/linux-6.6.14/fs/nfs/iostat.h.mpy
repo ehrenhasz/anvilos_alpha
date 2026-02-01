@@ -1,0 +1,9 @@
+{
+  "module_name": "iostat.h",
+  "hash_id": "717f9cac3707b9366d7c0746e0ae640d0ed0c94ba7cbe620788666c6a15df747",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfs/iostat.h",
+  "human_readable_source": " \n \n\n#ifndef _NFS_IOSTAT\n#define _NFS_IOSTAT\n\n#include <linux/percpu.h>\n#include <linux/cache.h>\n#include <linux/nfs_iostat.h>\n\nstruct nfs_iostats {\n\tunsigned long long\tbytes[__NFSIOS_BYTESMAX];\n\tunsigned long\t\tevents[__NFSIOS_COUNTSMAX];\n} ____cacheline_aligned;\n\nstatic inline void nfs_inc_server_stats(const struct nfs_server *server,\n\t\t\t\t\tenum nfs_stat_eventcounters stat)\n{\n\tthis_cpu_inc(server->io_stats->events[stat]);\n}\n\nstatic inline void nfs_inc_stats(const struct inode *inode,\n\t\t\t\t enum nfs_stat_eventcounters stat)\n{\n\tnfs_inc_server_stats(NFS_SERVER(inode), stat);\n}\n\nstatic inline void nfs_add_server_stats(const struct nfs_server *server,\n\t\t\t\t\tenum nfs_stat_bytecounters stat,\n\t\t\t\t\tlong addend)\n{\n\tthis_cpu_add(server->io_stats->bytes[stat], addend);\n}\n\nstatic inline void nfs_add_stats(const struct inode *inode,\n\t\t\t\t enum nfs_stat_bytecounters stat,\n\t\t\t\t long addend)\n{\n\tnfs_add_server_stats(NFS_SERVER(inode), stat, addend);\n}\n\nstatic inline struct nfs_iostats __percpu *nfs_alloc_iostats(void)\n{\n\treturn alloc_percpu(struct nfs_iostats);\n}\n\nstatic inline void nfs_free_iostats(struct nfs_iostats __percpu *stats)\n{\n\tif (stats != NULL)\n\t\tfree_percpu(stats);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

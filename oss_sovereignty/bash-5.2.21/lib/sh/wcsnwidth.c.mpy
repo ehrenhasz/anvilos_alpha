@@ -1,0 +1,9 @@
+{
+  "module_name": "wcsnwidth.c",
+  "hash_id": "607c70ceccd03216118ed2f552ded87b4d5d03d50fdcf55a583ccc15a52b987a",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/wcsnwidth.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#if defined (HANDLE_MULTIBYTE)\n\n#include <stdc.h>\n#include <wchar.h>\n#include <bashansi.h>\n\n \nint\nwcsnwidth(pwcs, n, max)\n     const wchar_t *pwcs;\n     size_t n, max;\n{\n  wchar_t wc, *ws;\n  int len, l;\n\n  len = 0;\n  ws = (wchar_t *)pwcs;\n  while (n-- > 0 && (wc = *ws++) != L'\\0')\n    {\n      l = wcwidth (wc);\n      if (l < 0)\n\treturn (-1);\n      else if (l == max - len)\n        return (ws - pwcs);\n      else if (l > max - len)\n        return (--ws - pwcs);\n      len += l;\n    }\n  return (ws - pwcs);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

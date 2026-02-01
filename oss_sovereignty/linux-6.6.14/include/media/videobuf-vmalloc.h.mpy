@@ -1,0 +1,9 @@
+{
+  "module_name": "videobuf-vmalloc.h",
+  "hash_id": "01cb47fd861ee008aea75a75e903e34ab37fbe1559efd9690e405dc95c462653",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/videobuf-vmalloc.h",
+  "human_readable_source": " \n \n#ifndef _VIDEOBUF_VMALLOC_H\n#define _VIDEOBUF_VMALLOC_H\n\n#include <media/videobuf-core.h>\n\n \n\nstruct videobuf_vmalloc_memory {\n\tu32                 magic;\n\n\tvoid                *vaddr;\n\n\t \n\tstruct vm_area_struct *vma;\n};\n\nvoid videobuf_queue_vmalloc_init(struct videobuf_queue *q,\n\t\t\t const struct videobuf_queue_ops *ops,\n\t\t\t struct device *dev,\n\t\t\t spinlock_t *irqlock,\n\t\t\t enum v4l2_buf_type type,\n\t\t\t enum v4l2_field field,\n\t\t\t unsigned int msize,\n\t\t\t void *priv,\n\t\t\t struct mutex *ext_lock);\n\nvoid *videobuf_to_vmalloc(struct videobuf_buffer *buf);\n\nvoid videobuf_vmalloc_free(struct videobuf_buffer *buf);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

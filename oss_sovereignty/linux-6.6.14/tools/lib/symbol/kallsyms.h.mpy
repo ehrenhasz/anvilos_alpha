@@ -1,0 +1,9 @@
+{
+  "module_name": "kallsyms.h",
+  "hash_id": "6c39555bb30e8279f2acc9336490ce2525b46614c1db83b201d47e61b06640cd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/symbol/kallsyms.h",
+  "human_readable_source": " \n#ifndef __TOOLS_KALLSYMS_H_\n#define __TOOLS_KALLSYMS_H_ 1\n\n#include <elf.h>\n#include <linux/ctype.h>\n#include <linux/types.h>\n\n#ifndef KSYM_NAME_LEN\n#define KSYM_NAME_LEN 512\n#endif\n\nstatic inline u8 kallsyms2elf_binding(char type)\n{\n\tif (type == 'W')\n\t\treturn STB_WEAK;\n\n\treturn isupper(type) ? STB_GLOBAL : STB_LOCAL;\n}\n\nu8 kallsyms2elf_type(char type);\n\nbool kallsyms__is_function(char symbol_type);\n\nint kallsyms__parse(const char *filename, void *arg,\n\t\t    int (*process_symbol)(void *arg, const char *name,\n\t\t\t\t\t  char type, u64 start));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

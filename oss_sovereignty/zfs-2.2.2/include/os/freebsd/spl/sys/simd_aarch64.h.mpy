@@ -1,0 +1,9 @@
+{
+  "module_name": "simd_aarch64.h",
+  "hash_id": "846bd748417bb84db5d1b0da2300184557bf1c4a20c703470c620531a48ad21b",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/simd_aarch64.h",
+  "human_readable_source": " \n\n \n\n#ifndef _FREEBSD_SIMD_AARCH64_H\n#define\t_FREEBSD_SIMD_AARCH64_H\n\n#include <sys/types.h>\n#include <sys/ucontext.h>\n#include <machine/elf.h>\n#include <machine/fpu.h>\n#include <machine/md_var.h>\n#include <machine/pcb.h>\n\n#define\tkfpu_allowed()\t\t1\n#define\tkfpu_initialize(tsk)\tdo {} while (0)\n#define\tkfpu_begin() do {\t\t\t\t\t\t\\\n\tif (__predict_false(!is_fpu_kern_thread(0)))\t\t\t\\\n\t\tfpu_kern_enter(curthread, NULL, FPU_KERN_NOCTX);\t\\\n} while (0)\n\n#define\tkfpu_end() do {\t\t\t\t\t\t\t\\\n\tif (__predict_false(curthread->td_pcb->pcb_fpflags & PCB_FP_NOSAVE)) \\\n\t\tfpu_kern_leave(curthread, NULL);\t\t\t\\\n} while (0)\n#define\tkfpu_init()\t\t(0)\n#define\tkfpu_fini()\t\tdo {} while (0)\n\n \nstatic inline boolean_t\nzfs_neon_available(void)\n{\n\treturn (elf_hwcap & HWCAP_FP);\n}\n\n \nstatic inline boolean_t\nzfs_sha256_available(void)\n{\n\treturn (elf_hwcap & HWCAP_SHA2);\n}\n\n \nstatic inline boolean_t\nzfs_sha512_available(void)\n{\n\treturn (elf_hwcap & HWCAP_SHA512);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

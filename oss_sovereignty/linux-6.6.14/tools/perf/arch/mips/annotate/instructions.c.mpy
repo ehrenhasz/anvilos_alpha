@@ -1,0 +1,9 @@
+{
+  "module_name": "instructions.c",
+  "hash_id": "540c767068015726a41a9318c51a03fe25fe2a46e192bc4ebd1264444354e8fb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/mips/annotate/instructions.c",
+  "human_readable_source": "\n\nstatic\nstruct ins_ops *mips__associate_ins_ops(struct arch *arch, const char *name)\n{\n\tstruct ins_ops *ops = NULL;\n\n\tif (!strncmp(name, \"bal\", 3) ||\n\t    !strncmp(name, \"bgezal\", 6) ||\n\t    !strncmp(name, \"bltzal\", 6) ||\n\t    !strncmp(name, \"bgtzal\", 6) ||\n\t    !strncmp(name, \"blezal\", 6) ||\n\t    !strncmp(name, \"beqzal\", 6) ||\n\t    !strncmp(name, \"bnezal\", 6) ||\n\t    !strncmp(name, \"bgtzl\", 5) ||\n\t    !strncmp(name, \"bltzl\", 5) ||\n\t    !strncmp(name, \"bgezl\", 5) ||\n\t    !strncmp(name, \"blezl\", 5) ||\n\t    !strncmp(name, \"jialc\", 5) ||\n\t    !strncmp(name, \"beql\", 4) ||\n\t    !strncmp(name, \"bnel\", 4) ||\n\t    !strncmp(name, \"jal\", 3))\n\t\tops = &call_ops;\n\telse if (!strncmp(name, \"jr\", 2))\n\t\tops = &ret_ops;\n\telse if (name[0] == 'j' || name[0] == 'b')\n\t\tops = &jump_ops;\n\telse\n\t\treturn NULL;\n\n\tarch__associate_ins_ops(arch, name, ops);\n\n\treturn ops;\n}\n\nstatic\nint mips__annotate_init(struct arch *arch, char *cpuid __maybe_unused)\n{\n\tif (!arch->initialized) {\n\t\tarch->associate_instruction_ops = mips__associate_ins_ops;\n\t\tarch->initialized = true;\n\t\tarch->objdump.comment_char = '#';\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

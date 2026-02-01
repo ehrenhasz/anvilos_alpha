@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d72fdfb5674207a4f5e7f08e0ce822505867019a608a870f88487aca4ebbf73c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/ulp/opa_vnic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Makefile - Cornelis Omni-Path Express Virtual Network Controller driver\n# Copyright(c) 2017, Intel Corporation.\n# Copyright(c) 2021, Cornelis Networks.\n#\nobj-$(CONFIG_INFINIBAND_OPA_VNIC) += opa_vnic.o\n\nopa_vnic-y := opa_vnic_netdev.o opa_vnic_encap.o opa_vnic_ethtool.o \\\n              opa_vnic_vema.o opa_vnic_vema_iface.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

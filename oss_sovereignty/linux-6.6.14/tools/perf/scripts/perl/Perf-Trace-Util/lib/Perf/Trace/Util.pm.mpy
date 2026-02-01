@@ -1,0 +1,9 @@
+{
+  "module_name": "Util.pm",
+  "hash_id": "11739cb278c97b506992bb6b40b6231aa8a7bc5dd20d0664fdc3ec2616d598f5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/perl/Perf-Trace-Util/lib/Perf/Trace/Util.pm",
+  "human_readable_source": "package Perf::Trace::Util;\n\nuse 5.010000;\nuse strict;\nuse warnings;\n\nrequire Exporter;\n\nour @ISA = qw(Exporter);\n\nour %EXPORT_TAGS = ( 'all' => [ qw(\n) ] );\n\nour @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );\n\nour @EXPORT = qw(\navg nsecs nsecs_secs nsecs_nsecs nsecs_usecs print_nsecs\nclear_term\n);\n\nour $VERSION = '0.01';\n\nsub avg\n{\n    my ($total, $n) = @_;\n\n    return $total / $n;\n}\n\nmy $NSECS_PER_SEC    = 1000000000;\n\nsub nsecs\n{\n    my ($secs, $nsecs) = @_;\n\n    return $secs * $NSECS_PER_SEC + $nsecs;\n}\n\nsub nsecs_secs {\n    my ($nsecs) = @_;\n\n    return $nsecs / $NSECS_PER_SEC;\n}\n\nsub nsecs_nsecs {\n    my ($nsecs) = @_;\n\n    return $nsecs % $NSECS_PER_SEC;\n}\n\nsub nsecs_str {\n    my ($nsecs) = @_;\n\n    my $str = sprintf(\"%5u.%09u\", nsecs_secs($nsecs), nsecs_nsecs($nsecs));\n\n    return $str;\n}\n\nsub clear_term\n{\n    print \"\\x1b[H\\x1b[2J\";\n}\n\n1;\n__END__\n=head1 NAME\n\nPerf::Trace::Util - Perl extension for perf script\n\n=head1 SYNOPSIS\n\n  use Perf::Trace::Util;\n\n=head1 SEE ALSO\n\nPerf (script) documentation\n\n=head1 AUTHOR\n\nTom Zanussi, E<lt>tzanussi@gmail.com<gt>\n\n=head1 COPYRIGHT AND LICENSE\n\nCopyright (C) 2009 by Tom Zanussi\n\nThis library is free software; you can redistribute it and/or modify\nit under the same terms as Perl itself, either Perl version 5.10.0 or,\nat your option, any later version of Perl 5 you may have available.\n\nAlternatively, this software may be distributed under the terms of the\nGNU General Public License (\"GPL\") version 2 as published by the Free\nSoftware Foundation.\n\n=cut\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

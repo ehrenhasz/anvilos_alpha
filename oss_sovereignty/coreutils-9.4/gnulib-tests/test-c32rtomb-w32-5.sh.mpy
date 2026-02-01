@@ -1,0 +1,9 @@
+{
+  "module_name": "test-c32rtomb-w32-5.sh",
+  "hash_id": "53125d77b4d1cbd0e3b883ce86f9aeba0f55fe40bd2d59ed7d66b5d5dd8d1f91",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-c32rtomb-w32-5.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a CP932 locale.\n${CHECKER} ./test-c32rtomb-w32${EXEEXT} Japanese_Japan 932\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

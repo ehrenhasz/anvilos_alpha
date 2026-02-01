@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_drm_client.h",
+  "hash_id": "afc5fbc45da7ca70d0bc022dbb9a32aefcc8dce4848f0c7e02b6131b6fa638e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_drm_client.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_DRM_CLIENT_H__\n#define __I915_DRM_CLIENT_H__\n\n#include <linux/kref.h>\n#include <linux/list.h>\n#include <linux/spinlock.h>\n\n#include <uapi/drm/i915_drm.h>\n\n#define I915_LAST_UABI_ENGINE_CLASS I915_ENGINE_CLASS_COMPUTE\n\nstruct drm_file;\nstruct drm_printer;\n\nstruct i915_drm_client {\n\tstruct kref kref;\n\n\tunsigned int id;\n\n\tspinlock_t ctx_lock;  \n\tstruct list_head ctx_list;  \n\n\t \n\tatomic64_t past_runtime[I915_LAST_UABI_ENGINE_CLASS + 1];\n};\n\nstatic inline struct i915_drm_client *\ni915_drm_client_get(struct i915_drm_client *client)\n{\n\tkref_get(&client->kref);\n\treturn client;\n}\n\nvoid __i915_drm_client_free(struct kref *kref);\n\nstatic inline void i915_drm_client_put(struct i915_drm_client *client)\n{\n\tkref_put(&client->kref, __i915_drm_client_free);\n}\n\nstruct i915_drm_client *i915_drm_client_alloc(void);\n\nvoid i915_drm_client_fdinfo(struct drm_printer *p, struct drm_file *file);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

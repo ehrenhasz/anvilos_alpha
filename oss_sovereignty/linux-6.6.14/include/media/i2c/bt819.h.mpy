@@ -1,0 +1,9 @@
+{
+  "module_name": "bt819.h",
+  "hash_id": "294c121ad6bdbc01749208b130dd0b9822a8d15280e8a64561e02b5a5697bdea",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/bt819.h",
+  "human_readable_source": " \n \n\n#ifndef _BT819_H_\n#define _BT819_H_\n\n#include <linux/ioctl.h>\n\n \n\n \n#define BT819_FIFO_RESET_LOW\t_IO('b', 0)\n#define BT819_FIFO_RESET_HIGH\t_IO('b', 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

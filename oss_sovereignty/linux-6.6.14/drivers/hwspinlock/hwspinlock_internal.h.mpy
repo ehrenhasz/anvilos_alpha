@@ -1,0 +1,9 @@
+{
+  "module_name": "hwspinlock_internal.h",
+  "hash_id": "f8aa1e225957b11c10ef48b2819c96faa662672a326237f63112caf1e489d32d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwspinlock/hwspinlock_internal.h",
+  "human_readable_source": " \n \n\n#ifndef __HWSPINLOCK_HWSPINLOCK_H\n#define __HWSPINLOCK_HWSPINLOCK_H\n\n#include <linux/spinlock.h>\n#include <linux/device.h>\n\nstruct hwspinlock_device;\n\n \nstruct hwspinlock_ops {\n\tint (*trylock)(struct hwspinlock *lock);\n\tvoid (*unlock)(struct hwspinlock *lock);\n\tvoid (*relax)(struct hwspinlock *lock);\n};\n\n \nstruct hwspinlock {\n\tstruct hwspinlock_device *bank;\n\tspinlock_t lock;\n\tvoid *priv;\n};\n\n \nstruct hwspinlock_device {\n\tstruct device *dev;\n\tconst struct hwspinlock_ops *ops;\n\tint base_id;\n\tint num_locks;\n\tstruct hwspinlock lock[];\n};\n\nstatic inline int hwlock_to_id(struct hwspinlock *hwlock)\n{\n\tint local_id = hwlock - &hwlock->bank->lock[0];\n\n\treturn hwlock->bank->base_id + local_id;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mixer_quirks.h",
+  "hash_id": "ef556ff2483a9ac9a2f82e1c9a21b427df36701d03ffbce18925b04d1f8d7339",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/mixer_quirks.h",
+  "human_readable_source": " \n#ifndef SND_USB_MIXER_QUIRKS_H\n#define SND_USB_MIXER_QUIRKS_H\n\nint snd_usb_mixer_apply_create_quirk(struct usb_mixer_interface *mixer);\n\nvoid snd_emuusb_set_samplerate(struct snd_usb_audio *chip,\n\t\t\t       unsigned char samplerate_id);\n\nvoid snd_usb_mixer_rc_memory_change(struct usb_mixer_interface *mixer,\n\t\t\t\t    int unitid);\n\nvoid snd_usb_mixer_fu_apply_quirk(struct usb_mixer_interface *mixer,\n\t\t\t\t  struct usb_mixer_elem_info *cval, int unitid,\n\t\t\t\t  struct snd_kcontrol *kctl);\n\nvoid snd_usb_mixer_resume_quirk(struct usb_mixer_interface *mixer);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mux.h",
+  "hash_id": "620e45288e3e7226e77bc1193007092bdce19c8b6ec3a33bd235fc17bb828325",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/typec/mux.h",
+  "human_readable_source": " \n\n#ifndef __USB_TYPEC_MUX__\n#define __USB_TYPEC_MUX__\n\n#include <linux/usb/typec_mux.h>\n\nstruct typec_switch_dev {\n\tstruct device dev;\n\ttypec_switch_set_fn_t set;\n};\n\nstruct typec_mux_dev {\n\tstruct device dev;\n\ttypec_mux_set_fn_t set;\n};\n\n#define to_typec_switch_dev(_dev_) container_of(_dev_, struct typec_switch_dev, dev)\n#define to_typec_mux_dev(_dev_) container_of(_dev_, struct typec_mux_dev, dev)\n\nextern const struct device_type typec_switch_dev_type;\nextern const struct device_type typec_mux_dev_type;\n\n#define is_typec_switch_dev(dev) ((dev)->type == &typec_switch_dev_type)\n#define is_typec_mux_dev(dev) ((dev)->type == &typec_mux_dev_type)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

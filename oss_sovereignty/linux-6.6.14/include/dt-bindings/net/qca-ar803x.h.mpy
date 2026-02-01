@@ -1,0 +1,9 @@
+{
+  "module_name": "qca-ar803x.h",
+  "hash_id": "6df23a955baecc245dc7b77a216914bbed0790ac53265c51ba40b65464c52c33",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/net/qca-ar803x.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_QCA_AR803X_H\n#define _DT_BINDINGS_QCA_AR803X_H\n\n#define AR803X_STRENGTH_FULL\t\t0\n#define AR803X_STRENGTH_HALF\t\t1\n#define AR803X_STRENGTH_QUARTER\t\t2\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

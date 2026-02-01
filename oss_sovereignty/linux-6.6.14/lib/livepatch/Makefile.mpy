@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fbec7b47066f2f02162d78bbec550a37debb7943fb2d6d687feab436561cbea0",
+  "original_prompt": "Ingested from linux-6.6.14/lib/livepatch/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for livepatch test code.\n\nobj-$(CONFIG_TEST_LIVEPATCH) += test_klp_atomic_replace.o \\\n\t\t\t\ttest_klp_callbacks_demo.o \\\n\t\t\t\ttest_klp_callbacks_demo2.o \\\n\t\t\t\ttest_klp_callbacks_busy.o \\\n\t\t\t\ttest_klp_callbacks_mod.o \\\n\t\t\t\ttest_klp_livepatch.o \\\n\t\t\t\ttest_klp_shadow_vars.o \\\n\t\t\t\ttest_klp_state.o \\\n\t\t\t\ttest_klp_state2.o \\\n\t\t\t\ttest_klp_state3.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

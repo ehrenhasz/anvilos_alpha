@@ -1,0 +1,9 @@
+{
+  "module_name": "exec_target.c",
+  "hash_id": "72ebf2f3784ca0d7d27758762e020be3f740b79044e861f2fd65b7854f282798",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/pauth/exec_target.c",
+  "human_readable_source": "\n\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/auxv.h>\n\n#include \"helper.h\"\n\nint main(void)\n{\n\tstruct signatures signed_vals;\n\tunsigned long hwcaps;\n\tsize_t val;\n\n\tfread(&val, sizeof(size_t), 1, stdin);\n\n\t \n\thwcaps = getauxval(AT_HWCAP);\n\n\tif (hwcaps & HWCAP_PACA) {\n\t\tsigned_vals.keyia = keyia_sign(val);\n\t\tsigned_vals.keyib = keyib_sign(val);\n\t\tsigned_vals.keyda = keyda_sign(val);\n\t\tsigned_vals.keydb = keydb_sign(val);\n\t}\n\tsigned_vals.keyg = (hwcaps & HWCAP_PACG) ?  keyg_sign(val) : 0;\n\n\tfwrite(&signed_vals, sizeof(struct signatures), 1, stdout);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

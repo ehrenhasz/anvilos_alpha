@@ -1,0 +1,9 @@
+{
+  "module_name": "fs.h",
+  "hash_id": "3a4573bf8e745e341722cde32ed709a0817545a10230e5c45230678002cd7feb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/mlx5/fs.h",
+  "human_readable_source": " \n \n\n#ifndef _MLX5_IB_FS_H\n#define _MLX5_IB_FS_H\n\n#include \"mlx5_ib.h\"\n\n#if IS_ENABLED(CONFIG_INFINIBAND_USER_ACCESS)\nint mlx5_ib_fs_init(struct mlx5_ib_dev *dev);\nvoid mlx5_ib_fs_cleanup_anchor(struct mlx5_ib_dev *dev);\n#else\nstatic inline int mlx5_ib_fs_init(struct mlx5_ib_dev *dev)\n{\n\tdev->flow_db = kzalloc(sizeof(*dev->flow_db), GFP_KERNEL);\n\n\tif (!dev->flow_db)\n\t\treturn -ENOMEM;\n\n\tmutex_init(&dev->flow_db->lock);\n\treturn 0;\n}\n\ninline void mlx5_ib_fs_cleanup_anchor(struct mlx5_ib_dev *dev) {}\n#endif\n\nstatic inline void mlx5_ib_fs_cleanup(struct mlx5_ib_dev *dev)\n{\n\t \n\tmlx5_ib_fs_cleanup_anchor(dev);\n\tkfree(dev->flow_db);\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

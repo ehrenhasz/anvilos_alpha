@@ -1,0 +1,9 @@
+{
+  "module_name": "cursesmain.cc",
+  "hash_id": "4de84166d6a6d70417ec39c75fc8830fc21e6390f8b2f811540f4413370b0e8a",
+  "original_prompt": "Ingested from ncurses-6.4/c++/cursesmain.cc",
+  "human_readable_source": "\n \n\n \n\n#include \"internal.h\"\n#include \"cursesapp.h\"\n\n#if CPP_HAS_TRY_CATCH && HAVE_IOSTREAM\n#pragma GCC diagnostic ignored \"-Weffc++\"\n#include <iostream>\n#pragma GCC diagnostic warning \"-Weffc++\"\n#else\n#undef CPP_HAS_TRY_CATCH\n#define CPP_HAS_TRY_CATCH 0\n#endif\n\nMODULE_ID(\"$Id: cursesmain.cc,v 1.20 2020/07/18 19:57:11 anonymous.maarten Exp $\")\n\n#if HAVE_LOCALE_H\n#include <locale.h>\n#else\n#define setlocale(name,string)  \n#endif\n\n#if NO_LEAKS\n#include <nc_alloc.h>\n#endif\n\n \nint NCURSES_CXX_MAIN_NAME(int argc, char* argv[])\n{\n  setlocale(LC_ALL, \"\");\n\n  NCursesApplication* A = NCursesApplication::getApplication();\n  if (!A)\n    return(1);\n  else {\n    int res;\n\n    A->handleArgs(argc,argv);\n    ::endwin();\n#if CPP_HAS_TRY_CATCH\n    try {\n      res = (*A)();\n      ::endwin();\n    }\n    catch(const NCursesException &e) {\n      ::endwin();\n      std::cerr << e.message << std::endl;\n      res = e.errorno;\n    }\n#else\n    res = (*A)();\n    ::endwin();\n#endif\n#if NO_LEAKS\n    delete A;\n    exit_curses(res);\n#else\n    return(res);\n#endif\n  }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

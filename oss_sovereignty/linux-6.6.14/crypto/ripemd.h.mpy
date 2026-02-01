@@ -1,0 +1,9 @@
+{
+  "module_name": "ripemd.h",
+  "hash_id": "246ce74bd61440b8c4c576338bef6707e4893a9c6dc9cbfb5b5373e544478fe0",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/ripemd.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYPTO_RMD_H\n#define _CRYPTO_RMD_H\n\n#define RMD160_DIGEST_SIZE      20\n#define RMD160_BLOCK_SIZE       64\n\n \n#define RMD_H0  0x67452301UL\n#define RMD_H1  0xefcdab89UL\n#define RMD_H2  0x98badcfeUL\n#define RMD_H3  0x10325476UL\n#define RMD_H4  0xc3d2e1f0UL\n\n \n#define RMD_K1  0x00000000UL\n#define RMD_K2  0x5a827999UL\n#define RMD_K3  0x6ed9eba1UL\n#define RMD_K4  0x8f1bbcdcUL\n#define RMD_K5  0xa953fd4eUL\n#define RMD_K6  0x50a28be6UL\n#define RMD_K7  0x5c4dd124UL\n#define RMD_K8  0x6d703ef3UL\n#define RMD_K9  0x7a6d76e9UL\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

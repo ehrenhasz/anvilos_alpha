@@ -1,0 +1,9 @@
+{
+  "module_name": "tps6594_pfsm.h",
+  "hash_id": "0d45bc17d8f7fcbfa7d2089948bdb96c58853bd937c38274049de4064f0ca630",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tps6594_pfsm.h",
+  "human_readable_source": " \n \n\n#ifndef __TPS6594_PFSM_H\n#define __TPS6594_PFSM_H\n\n#include <linux/const.h>\n#include <linux/ioctl.h>\n#include <linux/types.h>\n\n \nstruct pmic_state_opt {\n\t__u8 gpio_retention;\n\t__u8 ddr_retention;\n\t__u8 mcu_only_startup_dest;\n};\n\n \n#define PMIC_BASE\t\t\t'P'\n\n#define PMIC_GOTO_STANDBY\t\t_IO(PMIC_BASE, 0)\n#define PMIC_GOTO_LP_STANDBY\t\t_IO(PMIC_BASE, 1)\n#define PMIC_UPDATE_PGM\t\t\t_IO(PMIC_BASE, 2)\n#define PMIC_SET_ACTIVE_STATE\t\t_IO(PMIC_BASE, 3)\n#define PMIC_SET_MCU_ONLY_STATE\t\t_IOW(PMIC_BASE, 4, struct pmic_state_opt)\n#define PMIC_SET_RETENTION_STATE\t_IOW(PMIC_BASE, 5, struct pmic_state_opt)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

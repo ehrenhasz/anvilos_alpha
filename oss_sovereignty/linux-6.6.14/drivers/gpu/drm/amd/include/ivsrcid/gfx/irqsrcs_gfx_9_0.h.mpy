@@ -1,0 +1,9 @@
+{
+  "module_name": "irqsrcs_gfx_9_0.h",
+  "hash_id": "7548773966d9551f03f4d7d0abab1aa8b06dbbc1e15b2bbf900feeddeaa2d032",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/ivsrcid/gfx/irqsrcs_gfx_9_0.h",
+  "human_readable_source": " \n\n#ifndef __IRQSRCS_GFX_9_0_H__\n#define __IRQSRCS_GFX_9_0_H__\n\n\n#define GFX_9_0__SRCID__CP_RB_INTERRUPT_PKT\t\t\t\t\t176\t\t \n#define GFX_9_0__SRCID__CP_IB1_INTERRUPT_PKT\t\t\t\t177\t\t \n#define GFX_9_0__SRCID__CP_IB2_INTERRUPT_PKT\t\t\t\t178\t\t \n#define GFX_9_0__SRCID__CP_PM4_PKT_RSVD_BIT_ERROR\t\t\t180\t\t \n#define GFX_9_0__SRCID__CP_EOP_INTERRUPT\t\t\t\t\t181\t\t \n#define GFX_9_0__SRCID__CP_BAD_OPCODE_ERROR\t\t\t\t\t183\t\t \n#define GFX_9_0__SRCID__CP_PRIV_REG_FAULT\t\t\t\t\t184\t\t \n#define GFX_9_0__SRCID__CP_PRIV_INSTR_FAULT\t\t\t\t\t185\t\t \n#define GFX_9_0__SRCID__CP_WAIT_MEM_SEM_FAULT\t\t\t\t186\t\t \n#define GFX_9_0__SRCID__CP_CTX_EMPTY_INTERRUPT\t\t\t\t187\t\t \n#define GFX_9_0__SRCID__CP_CTX_BUSY_INTERRUPT\t\t\t\t188\t\t \n#define GFX_9_0__SRCID__CP_ME_WAIT_REG_MEM_POLL_TIMEOUT\t\t192\t\t \n#define GFX_9_0__SRCID__CP_SIG_INCOMPLETE\t\t\t\t\t193\t\t \n#define GFX_9_0__SRCID__CP_PREEMPT_ACK\t\t\t\t\t    194\t\t \n#define GFX_9_0__SRCID__CP_GPF\t\t\t\t\t            195\t\t \n#define GFX_9_0__SRCID__CP_GDS_ALLOC_ERROR\t\t\t\t\t196\t\t \n#define GFX_9_0__SRCID__CP_ECC_ERROR\t\t\t\t\t    197\t\t \n#define GFX_9_0__SRCID__CP_COMPUTE_QUERY_STATUS             199      \n#define GFX_9_0__SRCID__CP_VM_DOORBELL\t\t\t\t\t    200\t\t \n#define GFX_9_0__SRCID__CP_FUE_ERROR\t\t\t\t\t    201\t\t \n#define GFX_9_0__SRCID__RLC_STRM_PERF_MONITOR_INTERRUPT\t\t202\t\t \n#define GFX_9_0__SRCID__GRBM_RD_TIMEOUT_ERROR\t\t\t\t232\t\t \n#define GFX_9_0__SRCID__GRBM_REG_GUI_IDLE\t\t\t\t\t233\t\t \n#define GFX_9_0__SRCID__SQ_INTERRUPT_ID\t\t\t\t\t    239\t\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

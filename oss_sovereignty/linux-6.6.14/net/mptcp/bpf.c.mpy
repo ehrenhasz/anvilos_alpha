@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf.c",
+  "hash_id": "0904751a4a2b878cf62b98b65f7de3ae768caf2b748a6473235cf83aeade52c8",
+  "original_prompt": "Ingested from linux-6.6.14/net/mptcp/bpf.c",
+  "human_readable_source": "\n \n\n#define pr_fmt(fmt) \"MPTCP: \" fmt\n\n#include <linux/bpf.h>\n#include \"protocol.h\"\n\nstruct mptcp_sock *bpf_mptcp_sock_from_subflow(struct sock *sk)\n{\n\tif (sk && sk_fullsock(sk) && sk->sk_protocol == IPPROTO_TCP && sk_is_mptcp(sk))\n\t\treturn mptcp_sk(mptcp_subflow_ctx(sk)->conn);\n\n\treturn NULL;\n}\n\nBTF_SET8_START(bpf_mptcp_fmodret_ids)\nBTF_ID_FLAGS(func, update_socket_protocol)\nBTF_SET8_END(bpf_mptcp_fmodret_ids)\n\nstatic const struct btf_kfunc_id_set bpf_mptcp_fmodret_set = {\n\t.owner = THIS_MODULE,\n\t.set   = &bpf_mptcp_fmodret_ids,\n};\n\nstatic int __init bpf_mptcp_kfunc_init(void)\n{\n\treturn register_btf_fmodret_id_set(&bpf_mptcp_fmodret_set);\n}\nlate_initcall(bpf_mptcp_kfunc_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

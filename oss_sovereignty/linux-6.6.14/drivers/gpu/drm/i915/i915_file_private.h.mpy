@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_file_private.h",
+  "hash_id": "5de4dc9ca4c342c8bda5574c19ae52f147efef27cbacd719f49ee2993ca9cfd3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_file_private.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_FILE_PRIVATE_H__\n#define __I915_FILE_PRIVATE_H__\n\n#include <linux/mutex.h>\n#include <linux/types.h>\n#include <linux/xarray.h>\n\nstruct drm_i915_private;\nstruct drm_file;\nstruct i915_drm_client;\n\nstruct drm_i915_file_private {\n\tstruct drm_i915_private *i915;\n\n\tunion {\n\t\tstruct drm_file *file;\n\t\tstruct rcu_head rcu;\n\t};\n\n\t \n\tstruct mutex proto_context_lock;\n\n\t \n\tstruct xarray proto_context_xa;\n\n\t \n\tstruct xarray context_xa;\n\tstruct xarray vm_xa;\n\n\tunsigned int bsd_engine;\n\n \n#define I915_CLIENT_SCORE_HANG_FAST\t1\n#define   I915_CLIENT_FAST_HANG_JIFFIES (60 * HZ)\n#define I915_CLIENT_SCORE_CONTEXT_BAN   3\n#define I915_CLIENT_SCORE_BANNED\t9\n\t \n\tatomic_t ban_score;\n\tunsigned long hang_timestamp;\n\n\tstruct i915_drm_client *client;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

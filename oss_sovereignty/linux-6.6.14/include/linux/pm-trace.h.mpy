@@ -1,0 +1,9 @@
+{
+  "module_name": "pm-trace.h",
+  "hash_id": "c56ea1fcc00a7b682e84bec470a70d14c4f9ea058ce92748a5d63e6ac361b75a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pm-trace.h",
+  "human_readable_source": " \n#ifndef PM_TRACE_H\n#define PM_TRACE_H\n\n#include <linux/types.h>\n#ifdef CONFIG_PM_TRACE\n#include <asm/pm-trace.h>\n\nextern int pm_trace_enabled;\nextern bool pm_trace_rtc_abused;\n\nstatic inline bool pm_trace_rtc_valid(void)\n{\n\treturn !pm_trace_rtc_abused;\n}\n\nstatic inline int pm_trace_is_enabled(void)\n{\n       return pm_trace_enabled;\n}\n\nstruct device;\nextern void set_trace_device(struct device *);\nextern void generate_pm_trace(const void *tracedata, unsigned int user);\nextern int show_trace_dev_match(char *buf, size_t size);\n\n#define TRACE_DEVICE(dev) do { \\\n\tif (pm_trace_enabled) \\\n\t\tset_trace_device(dev); \\\n\t} while(0)\n\n#else\n\nstatic inline bool pm_trace_rtc_valid(void) { return true; }\nstatic inline int pm_trace_is_enabled(void) { return 0; }\n\n#define TRACE_DEVICE(dev) do { } while (0)\n#define TRACE_RESUME(dev) do { } while (0)\n#define TRACE_SUSPEND(dev) do { } while (0)\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

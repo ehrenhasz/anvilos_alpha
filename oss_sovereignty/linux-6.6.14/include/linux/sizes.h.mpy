@@ -1,0 +1,9 @@
+{
+  "module_name": "sizes.h",
+  "hash_id": "8d209a2becfa8c3dc7c82328b1a04f11f3923b2e84694aeb04c3c1d708499378",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sizes.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_SIZES_H__\n#define __LINUX_SIZES_H__\n\n#include <linux/const.h>\n\n#define SZ_1\t\t\t\t0x00000001\n#define SZ_2\t\t\t\t0x00000002\n#define SZ_4\t\t\t\t0x00000004\n#define SZ_8\t\t\t\t0x00000008\n#define SZ_16\t\t\t\t0x00000010\n#define SZ_32\t\t\t\t0x00000020\n#define SZ_64\t\t\t\t0x00000040\n#define SZ_128\t\t\t\t0x00000080\n#define SZ_256\t\t\t\t0x00000100\n#define SZ_512\t\t\t\t0x00000200\n\n#define SZ_1K\t\t\t\t0x00000400\n#define SZ_2K\t\t\t\t0x00000800\n#define SZ_4K\t\t\t\t0x00001000\n#define SZ_8K\t\t\t\t0x00002000\n#define SZ_16K\t\t\t\t0x00004000\n#define SZ_32K\t\t\t\t0x00008000\n#define SZ_64K\t\t\t\t0x00010000\n#define SZ_128K\t\t\t\t0x00020000\n#define SZ_256K\t\t\t\t0x00040000\n#define SZ_512K\t\t\t\t0x00080000\n\n#define SZ_1M\t\t\t\t0x00100000\n#define SZ_2M\t\t\t\t0x00200000\n#define SZ_4M\t\t\t\t0x00400000\n#define SZ_8M\t\t\t\t0x00800000\n#define SZ_16M\t\t\t\t0x01000000\n#define SZ_32M\t\t\t\t0x02000000\n#define SZ_64M\t\t\t\t0x04000000\n#define SZ_128M\t\t\t\t0x08000000\n#define SZ_256M\t\t\t\t0x10000000\n#define SZ_512M\t\t\t\t0x20000000\n\n#define SZ_1G\t\t\t\t0x40000000\n#define SZ_2G\t\t\t\t0x80000000\n\n#define SZ_4G\t\t\t\t_AC(0x100000000, ULL)\n#define SZ_8G\t\t\t\t_AC(0x200000000, ULL)\n#define SZ_16G\t\t\t\t_AC(0x400000000, ULL)\n#define SZ_32G\t\t\t\t_AC(0x800000000, ULL)\n\n#define SZ_1T\t\t\t\t_AC(0x10000000000, ULL)\n#define SZ_64T\t\t\t\t_AC(0x400000000000, ULL)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

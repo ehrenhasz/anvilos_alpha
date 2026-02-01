@@ -1,0 +1,9 @@
+{
+  "module_name": "altr,rst-mgr-a10sr.h",
+  "hash_id": "e14d3cd83082c6f0eceb6b0983ecbc4ac3784daa8dcd2f3ebcfcf6247e3989c6",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/altr,rst-mgr-a10sr.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_RESET_ALTR_RST_MGR_A10SR_H\n#define _DT_BINDINGS_RESET_ALTR_RST_MGR_A10SR_H\n\n \n#define A10SR_RESET_ENET_HPS\t0\n#define A10SR_RESET_PCIE\t1\n#define A10SR_RESET_FILE\t2\n#define A10SR_RESET_BQSPI\t3\n#define A10SR_RESET_USB\t\t4\n\n#define A10SR_RESET_NUM\t\t5\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

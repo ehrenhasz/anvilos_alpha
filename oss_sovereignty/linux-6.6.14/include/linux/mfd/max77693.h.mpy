@@ -1,0 +1,9 @@
+{
+  "module_name": "max77693.h",
+  "hash_id": "660f912dbfa176ec3cd37dde48f57eaccd85eb98ffedb6f79000d21ae0303cb2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/max77693.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MFD_MAX77693_H\n#define __LINUX_MFD_MAX77693_H\n\n \nenum max77693_regulators {\n\tMAX77693_ESAFEOUT1 = 0,\n\tMAX77693_ESAFEOUT2,\n\tMAX77693_CHARGER,\n\tMAX77693_REG_MAX,\n};\n\nstruct max77693_reg_data {\n\tu8 addr;\n\tu8 data;\n};\n\nstruct max77693_muic_platform_data {\n\tstruct max77693_reg_data *init_data;\n\tint num_init_data;\n\n\tint detcable_delay_ms;\n\n\t \n\tint path_usb;\n\tint path_uart;\n};\n\n \n\n \nenum max77693_led_trigger {\n\tMAX77693_LED_TRIG_OFF,\n\tMAX77693_LED_TRIG_FLASH,\n\tMAX77693_LED_TRIG_TORCH,\n\tMAX77693_LED_TRIG_EXT,\n\tMAX77693_LED_TRIG_SOFT,\n};\n\n \nenum max77693_led_trigger_type {\n\tMAX77693_LED_TRIG_TYPE_EDGE,\n\tMAX77693_LED_TRIG_TYPE_LEVEL,\n};\n\n \nenum max77693_led_boost_mode {\n\tMAX77693_LED_BOOST_NONE,\n\tMAX77693_LED_BOOST_ADAPTIVE,\n\tMAX77693_LED_BOOST_FIXED,\n};\n\n \n\nstruct max77693_platform_data {\n\t \n\tstruct max77693_muic_platform_data *muic_data;\n\tstruct max77693_led_platform_data *led_data;\n};\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

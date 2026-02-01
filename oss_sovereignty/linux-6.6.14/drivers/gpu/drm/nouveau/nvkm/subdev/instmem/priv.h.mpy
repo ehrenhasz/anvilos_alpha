@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "1707db50ba245c79cc1234e3910969f000810188ffe60358b72d4b45f161db9c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/instmem/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_INSTMEM_PRIV_H__\n#define __NVKM_INSTMEM_PRIV_H__\n#define nvkm_instmem(p) container_of((p), struct nvkm_instmem, subdev)\n#include <subdev/instmem.h>\n\nstruct nvkm_instmem_func {\n\tvoid *(*dtor)(struct nvkm_instmem *);\n\tint (*oneinit)(struct nvkm_instmem *);\n\tvoid (*fini)(struct nvkm_instmem *);\n\tu32  (*rd32)(struct nvkm_instmem *, u32 addr);\n\tvoid (*wr32)(struct nvkm_instmem *, u32 addr, u32 data);\n\tint (*memory_new)(struct nvkm_instmem *, u32 size, u32 align,\n\t\t\t  bool zero, struct nvkm_memory **);\n\tint (*memory_wrap)(struct nvkm_instmem *, struct nvkm_memory *, struct nvkm_memory **);\n\tbool zero;\n};\n\nvoid nvkm_instmem_ctor(const struct nvkm_instmem_func *, struct nvkm_device *,\n\t\t       enum nvkm_subdev_type, int, struct nvkm_instmem *);\nvoid nvkm_instmem_boot(struct nvkm_instmem *);\n\n#include <core/memory.h>\n\nstruct nvkm_instobj {\n\tstruct nvkm_memory memory;\n\tstruct list_head head;\n\tu32 *suspend;\n};\n\nvoid nvkm_instobj_ctor(const struct nvkm_memory_func *func,\n\t\t       struct nvkm_instmem *, struct nvkm_instobj *);\nvoid nvkm_instobj_dtor(struct nvkm_instmem *, struct nvkm_instobj *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

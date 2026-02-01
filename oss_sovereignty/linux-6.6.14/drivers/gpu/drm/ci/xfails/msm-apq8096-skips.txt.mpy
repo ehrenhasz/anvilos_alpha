@@ -1,0 +1,9 @@
+{
+  "module_name": "msm-apq8096-skips.txt",
+  "hash_id": "952aec2ac215014cd55554f5f67d43b310604515447874c1cef2566556c6045f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/msm-apq8096-skips.txt",
+  "human_readable_source": "# Whole machine hangs\nkms_cursor_legacy@all-pipes-torture-move",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

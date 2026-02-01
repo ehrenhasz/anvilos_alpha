@@ -1,0 +1,9 @@
+{
+  "module_name": "audio-set-mute.rst",
+  "hash_id": "241c2493b6baee8ec425d165c35e5e113c5983da6002dcbcfd8d621a289a7429",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/audio-set-mute.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n.. c:namespace:: DTV.audio\n\n.. _AUDIO_SET_MUTE:\n\n==============\nAUDIO_SET_MUTE\n==============\n\nName\n----\n\nAUDIO_SET_MUTE\n\n.. attention:: This ioctl is deprecated\n\nSynopsis\n--------\n\n.. c:macro:: AUDIO_SET_MUTE\n\n``int ioctl(int fd, AUDIO_SET_MUTE, boolean state)``\n\nArguments\n---------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -\n\n       -  int fd\n\n       -  File descriptor returned by a previous call to open().\n\n    -\n\n       -  boolean state\n\n       -  Indicates if audio device shall mute or not.\n\n          TRUE: Audio Mute\n\n          FALSE: Audio Un-mute\n\nDescription\n-----------\n\nThis ioctl is for Digital TV devices only. To control a V4L2 decoder use the\nV4L2 :ref:`VIDIOC_DECODER_CMD` with the\n``V4L2_DEC_CMD_START_MUTE_AUDIO`` flag instead.\n\nThis ioctl call asks the audio device to mute the stream that is\ncurrently being played.\n\nReturn Value\n------------\n\nOn success 0 is returned, on error -1 and the ``errno`` variable is set\nappropriately. The generic error codes are described at the\n:ref:`Generic Error Codes <gen-errors>` chapter.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

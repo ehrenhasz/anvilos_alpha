@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "fd31e3c7256ef64f7176cce3e4d438702b13cd372b1f3132df8e3e5f416c9d2f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/rapidio/switches/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# RapidIO switches configuration\n#\nconfig RAPIDIO_CPS_XX\n\ttristate \"IDT CPS-xx SRIO switches support\"\n\thelp\n\t  Includes support for IDT CPS-16/12/10/8 serial RapidIO switches.\n\nconfig RAPIDIO_CPS_GEN2\n\ttristate \"IDT CPS Gen.2 SRIO switch support\"\n\tdefault n\n\thelp\n\t  Includes support for ITD CPS Gen.2 serial RapidIO switches.\n\nconfig RAPIDIO_RXS_GEN3\n\ttristate \"IDT RXS Gen.3 SRIO switch support\"\n\tdefault n\n\thelp\n\t  Includes support for ITD RXS Gen.3 serial RapidIO switches.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

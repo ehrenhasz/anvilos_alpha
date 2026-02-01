@@ -1,0 +1,9 @@
+{
+  "module_name": "pipe-safer.c",
+  "hash_id": "005c1a37b654ff5d3cee6fe3ced92bba2ba3e582fc2aaa9d5c7d8efd505a2916",
+  "original_prompt": "Ingested from coreutils-9.4/lib/pipe-safer.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"unistd-safer.h\"\n\n#include <unistd.h>\n#include <errno.h>\n\n \n\nint\npipe_safer (int fd[2])\n{\n  if (pipe (fd) == 0)\n    {\n      int i;\n      for (i = 0; i < 2; i++)\n        {\n          fd[i] = fd_safer (fd[i]);\n          if (fd[i] < 0)\n            {\n              int saved_errno = errno;\n              close (fd[1 - i]);\n              errno = saved_errno;\n              return -1;\n            }\n        }\n\n      return 0;\n    }\n\n  return -1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

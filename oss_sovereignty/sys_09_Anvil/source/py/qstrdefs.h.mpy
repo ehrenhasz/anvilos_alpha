@@ -1,0 +1,9 @@
+{
+  "module_name": "qstrdefs.h",
+  "hash_id": "78ced7210d64d60d4608f94d1353faa14ddeb38fe36874023b97c158bb6a31f6",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/qstrdefs.h",
+  "human_readable_source": " \n\n\n\n#include \"py/mpconfig.h\"\n\n\n\n\n\nQCFG(BYTES_IN_LEN, MICROPY_QSTR_BYTES_IN_LEN)\nQCFG(BYTES_IN_HASH, MICROPY_QSTR_BYTES_IN_HASH)\n\nQ()\nQ(*)\nQ(_)\nQ(/)\n#if MICROPY_PY_SYS_PS1_PS2\nQ(>>> )\nQ(... )\n#endif\n#if MICROPY_PY_BUILTINS_STR_OP_MODULO\nQ(%#o)\nQ(%#x)\n#else\nQ({:#o})\nQ({:#x})\n#endif\nQ({:#b})\nQ( )\nQ(\\n)\nQ(maximum recursion depth exceeded)\nQ(<module>)\nQ(<lambda>)\nQ(<listcomp>)\nQ(<dictcomp>)\nQ(<setcomp>)\nQ(<genexpr>)\nQ(<string>)\nQ(<stdin>)\nQ(utf-8)\n\n#if MICROPY_MODULE_FROZEN\nQ(.frozen)\n#endif\n\n#if MICROPY_ENABLE_PYSTACK\nQ(pystack exhausted)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

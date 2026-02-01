@@ -1,0 +1,9 @@
+{
+  "module_name": "ISA2+poonceonces.litmus",
+  "hash_id": "0f548b255181e089884532f27a88237ffd808fdf3bcbf490740558df8d1919eb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/ISA2+poonceonces.litmus",
+  "human_readable_source": "C ISA2+poonceonces\n\n(*\n * Result: Sometimes\n *\n * Given a release-acquire chain ordering the first process's store\n * against the last process's load, is ordering preserved if all of the\n * smp_store_release() invocations are replaced by WRITE_ONCE() and all\n * of the smp_load_acquire() invocations are replaced by READ_ONCE()?\n *)\n\n{}\n\nP0(int *x, int *y)\n{\n\tWRITE_ONCE(*x, 1);\n\tWRITE_ONCE(*y, 1);\n}\n\nP1(int *y, int *z)\n{\n\tint r0;\n\n\tr0 = READ_ONCE(*y);\n\tWRITE_ONCE(*z, 1);\n}\n\nP2(int *x, int *z)\n{\n\tint r0;\n\tint r1;\n\n\tr0 = READ_ONCE(*z);\n\tr1 = READ_ONCE(*x);\n}\n\nexists (1:r0=1 /\\ 2:r0=1 /\\ 2:r1=0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

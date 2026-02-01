@@ -1,0 +1,9 @@
+{
+  "module_name": "lzo.h",
+  "hash_id": "2b04dbe5ee95b77b13920c4cbd2fe15ab5843e36e2d9065473d286943d6c0c75",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/lzo.h",
+  "human_readable_source": " \n#ifndef __LZO_H__\n#define __LZO_H__\n \n\n#define LZO1X_1_MEM_COMPRESS\t(8192 * sizeof(unsigned short))\n#define LZO1X_MEM_COMPRESS\tLZO1X_1_MEM_COMPRESS\n\n#define lzo1x_worst_compress(x) ((x) + ((x) / 16) + 64 + 3 + 2)\n\n \nint lzo1x_1_compress(const unsigned char *src, size_t src_len,\n\t\t     unsigned char *dst, size_t *dst_len, void *wrkmem);\n\n \nint lzorle1x_1_compress(const unsigned char *src, size_t src_len,\n\t\t     unsigned char *dst, size_t *dst_len, void *wrkmem);\n\n \nint lzo1x_decompress_safe(const unsigned char *src, size_t src_len,\n\t\t\t  unsigned char *dst, size_t *dst_len);\n\n \n#define LZO_E_OK\t\t\t0\n#define LZO_E_ERROR\t\t\t(-1)\n#define LZO_E_OUT_OF_MEMORY\t\t(-2)\n#define LZO_E_NOT_COMPRESSIBLE\t\t(-3)\n#define LZO_E_INPUT_OVERRUN\t\t(-4)\n#define LZO_E_OUTPUT_OVERRUN\t\t(-5)\n#define LZO_E_LOOKBEHIND_OVERRUN\t(-6)\n#define LZO_E_EOF_NOT_FOUND\t\t(-7)\n#define LZO_E_INPUT_NOT_CONSUMED\t(-8)\n#define LZO_E_NOT_YET_IMPLEMENTED\t(-9)\n#define LZO_E_INVALID_ARGUMENT\t\t(-10)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

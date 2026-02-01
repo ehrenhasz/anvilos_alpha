@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6f253221cfa625708f06e4587b01656c9e0d191ae70cd8ef8db83f79a6d6673c",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/apic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for local APIC drivers and for the IO-APIC code\n#\n\n# Leads to non-deterministic coverage that is not a function of syscall inputs.\n# In particualr, smp_apic_timer_interrupt() is called in random places.\nKCOV_INSTRUMENT\t\t:= n\n\nobj-$(CONFIG_X86_LOCAL_APIC)\t+= apic.o apic_common.o apic_noop.o ipi.o vector.o init.o\nobj-y\t\t\t\t+= hw_nmi.o\n\nobj-$(CONFIG_X86_IO_APIC)\t+= io_apic.o\nobj-$(CONFIG_PCI_MSI)\t\t+= msi.o\nobj-$(CONFIG_SMP)\t\t+= ipi.o\n\nifeq ($(CONFIG_X86_64),y)\n# APIC probe will depend on the listing order here\nobj-$(CONFIG_X86_NUMACHIP)\t+= apic_numachip.o\nobj-$(CONFIG_X86_UV)\t\t+= x2apic_uv_x.o\nobj-$(CONFIG_X86_X2APIC)\t+= x2apic_phys.o\nobj-$(CONFIG_X86_X2APIC)\t+= x2apic_cluster.o\nobj-y\t\t\t\t+= apic_flat_64.o\nendif\n\n# APIC probe will depend on the listing order here\nobj-$(CONFIG_X86_BIGSMP)\t+= bigsmp_32.o\n\n# For 32bit, probe_32 need to be listed last\nobj-$(CONFIG_X86_LOCAL_APIC)\t+= probe_$(BITS).o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

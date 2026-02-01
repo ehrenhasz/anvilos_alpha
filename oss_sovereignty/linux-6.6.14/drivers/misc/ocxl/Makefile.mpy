@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2ee451d1169895764594df2af6b0e132372760c3dd869bdfd54e558eef930694",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/ocxl/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\nccflags-$(CONFIG_PPC_WERROR)\t+= -Werror\n\nocxl-y\t\t\t\t+= main.o pci.o config.o file.o pasid.o mmio.o\nocxl-y\t\t\t\t+= link.o context.o afu_irq.o sysfs.o trace.o\nocxl-y\t\t\t\t+= core.o\nobj-$(CONFIG_OCXL)\t\t+= ocxl.o\n\n# For tracepoints to include our trace.h from tracepoint infrastructure:\nCFLAGS_trace.o := -I$(src)\n\n# ccflags-y += -DDEBUG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

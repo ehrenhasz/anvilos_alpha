@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig.powerpc",
+  "hash_id": "f9d25a795eb1883c0033c08f560406e3116372e2c37d909b0b2df2ab76240be7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpuidle/Kconfig.powerpc",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# POWERPC CPU Idle Drivers\n#\nconfig PSERIES_CPUIDLE\n\tbool \"Cpuidle driver for pSeries platforms\"\n\tdepends on CPU_IDLE\n\tdepends on PPC_PSERIES\n\tdefault y\n\thelp\n\t  Select this option to enable processor idle state management\n\t  through cpuidle subsystem.\n\nconfig POWERNV_CPUIDLE\n\tbool \"Cpuidle driver for powernv platforms\"\n\tdepends on CPU_IDLE\n\tdepends on PPC_POWERNV\n\tdefault y\n\thelp\n\t  Select this option to enable processor idle state management\n\t  through cpuidle subsystem.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

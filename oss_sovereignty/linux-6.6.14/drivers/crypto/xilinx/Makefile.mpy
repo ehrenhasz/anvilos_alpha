@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fbefcae15274bb447f53739ea8b81ebb54a788e1e0d7d74b603e5aa4fbca6d57",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/xilinx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CRYPTO_DEV_ZYNQMP_AES) += zynqmp-aes-gcm.o\nobj-$(CONFIG_CRYPTO_DEV_ZYNQMP_SHA3) += zynqmp-sha.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

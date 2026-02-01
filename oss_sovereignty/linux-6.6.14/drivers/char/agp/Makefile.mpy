@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5e3c92edfff0d170d9b5004f30d3dfad0e84f1a6fe26368364e6bf627d45143f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/agp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nagpgart-y := backend.o generic.o isoch.o\n\nifeq ($(CONFIG_DRM_LEGACY),y)\nagpgart-$(CONFIG_COMPAT)\t+= compat_ioctl.o\nagpgart-y\t\t\t+= frontend.o\nendif\n\n\nobj-$(CONFIG_AGP)\t\t+= agpgart.o\nobj-$(CONFIG_AGP_ALI)\t\t+= ali-agp.o\nobj-$(CONFIG_AGP_ATI)\t\t+= ati-agp.o\nobj-$(CONFIG_AGP_AMD)\t\t+= amd-k7-agp.o\nobj-$(CONFIG_AGP_AMD64)\t\t+= amd64-agp.o\nobj-$(CONFIG_AGP_ALPHA_CORE)\t+= alpha-agp.o\nobj-$(CONFIG_AGP_EFFICEON)\t+= efficeon-agp.o\nobj-$(CONFIG_AGP_HP_ZX1)\t+= hp-agp.o\nobj-$(CONFIG_AGP_PARISC)\t+= parisc-agp.o\nobj-$(CONFIG_AGP_I460)\t\t+= i460-agp.o\nobj-$(CONFIG_AGP_INTEL)\t\t+= intel-agp.o\nobj-$(CONFIG_INTEL_GTT)\t\t+= intel-gtt.o\nobj-$(CONFIG_AGP_NVIDIA)\t+= nvidia-agp.o\nobj-$(CONFIG_AGP_SIS)\t\t+= sis-agp.o\nobj-$(CONFIG_AGP_SWORKS)\t+= sworks-agp.o\nobj-$(CONFIG_AGP_UNINORTH)\t+= uninorth-agp.o\nobj-$(CONFIG_AGP_VIA)\t\t+= via-agp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

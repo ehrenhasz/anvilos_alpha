@@ -1,0 +1,9 @@
+{
+  "module_name": "s4.h",
+  "hash_id": "308e87d2f13a0b98f46f70487a38ac3c38c88ecdc9c81c187b7b7cb0f692dc0c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/firmware/imx/s4.h",
+  "human_readable_source": " \n \n\n#ifndef _S4_IPC_H\n#define _S4_IPC_H\n\nstruct imx_s4_ipc;\n\nstruct imx_s4_rpc_msg {\n\tuint8_t ver;\n\tuint8_t size;\n\tuint8_t cmd;\n\tuint8_t tag;\n} __packed;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

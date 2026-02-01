@@ -1,0 +1,9 @@
+{
+  "module_name": "test_overhead.c",
+  "hash_id": "c1cb6d4d14752e8b287732f3d79c1cf65c744fb1df03dc97d5d42ef26bbcb0ad",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_overhead.c",
+  "human_readable_source": "\n \n#include <stdbool.h>\n#include <stddef.h>\n#include <linux/bpf.h>\n#include <linux/ptrace.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nstruct task_struct;\n\nSEC(\"kprobe/__set_task_comm\")\nint BPF_KPROBE(prog1, struct task_struct *tsk, const char *buf, bool exec)\n{\n\treturn !tsk;\n}\n\nSEC(\"kretprobe/__set_task_comm\")\nint BPF_KRETPROBE(prog2, int ret)\n{\n\treturn ret;\n}\n\nSEC(\"raw_tp/task_rename\")\nint prog3(struct bpf_raw_tracepoint_args *ctx)\n{\n\treturn !ctx->args[0];\n}\n\nSEC(\"fentry/__set_task_comm\")\nint BPF_PROG(prog4, struct task_struct *tsk, const char *buf, bool exec)\n{\n\treturn 0;\n}\n\nSEC(\"fexit/__set_task_comm\")\nint BPF_PROG(prog5, struct task_struct *tsk, const char *buf, bool exec)\n{\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mkostemp.m4",
+  "hash_id": "46c7948993bc934353f7b6ebe0e32c071e88024f638f1ba97f3ae34b0d7d997e",
+  "original_prompt": "Ingested from coreutils-9.4/m4/mkostemp.m4",
+  "human_readable_source": "# mkostemp.m4 serial 4\ndnl Copyright (C) 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_MKOSTEMP],\n[\n  AC_REQUIRE([gl_STDLIB_H_DEFAULTS])\n\n  dnl Persuade glibc <stdlib.h> to declare mkostemp().\n  AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])\n\n  gl_CHECK_FUNCS_ANDROID([mkostemp], [[#include <stdlib.h>]])\n  if test $ac_cv_func_mkostemp != yes; then\n    HAVE_MKOSTEMP=0\n    case \"$gl_cv_onwards_func_mkostemp\" in\n      future*) REPLACE_MKOSTEMP=1 ;;\n    esac\n  fi\n])\n\n# Prerequisites of lib/mkostemp.c.\nAC_DEFUN([gl_PREREQ_MKOSTEMP],\n[\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

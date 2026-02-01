@@ -1,0 +1,9 @@
+{
+  "module_name": "special.h",
+  "hash_id": "71cbb4d41a39fa92fcf10af3a3d99d23a5dd6f6a41afe161b401ad28d256f103",
+  "original_prompt": "Ingested from linux-6.6.14/tools/objtool/arch/powerpc/include/arch/special.h",
+  "human_readable_source": " \n#ifndef _PPC_ARCH_SPECIAL_H\n#define _PPC_ARCH_SPECIAL_H\n\n#define EX_ENTRY_SIZE 8\n#define EX_ORIG_OFFSET 0\n#define EX_NEW_OFFSET 4\n\n#define JUMP_ENTRY_SIZE 16\n#define JUMP_ORIG_OFFSET 0\n#define JUMP_NEW_OFFSET 4\n#define JUMP_KEY_OFFSET 8\n\n#define ALT_ENTRY_SIZE 12\n#define ALT_ORIG_OFFSET 0\n#define ALT_NEW_OFFSET 4\n#define ALT_FEATURE_OFFSET 8\n#define ALT_ORIG_LEN_OFFSET 10\n#define ALT_NEW_LEN_OFFSET 11\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

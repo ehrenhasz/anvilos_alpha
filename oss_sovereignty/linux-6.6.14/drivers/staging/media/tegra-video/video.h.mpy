@@ -1,0 +1,9 @@
+{
+  "module_name": "video.h",
+  "hash_id": "e5f3b0085aad90d57d36aed7db88cfb516c0b5ab4ea2c5c106705625ae5ac976",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/tegra-video/video.h",
+  "human_readable_source": " \n \n\n#ifndef __TEGRA_VIDEO_H__\n#define __TEGRA_VIDEO_H__\n\n#include <linux/host1x.h>\n\n#include <media/media-device.h>\n#include <media/v4l2-device.h>\n\n#include \"vi.h\"\n\nstruct tegra_video_device {\n\tstruct v4l2_device v4l2_dev;\n\tstruct media_device media_dev;\n\tstruct tegra_vi *vi;\n\tstruct tegra_csi *csi;\n};\n\nint tegra_v4l2_nodes_setup_tpg(struct tegra_video_device *vid);\nvoid tegra_v4l2_nodes_cleanup_tpg(struct tegra_video_device *vid);\n\nextern struct platform_driver tegra_vi_driver;\nextern struct platform_driver tegra_vip_driver;\nextern struct platform_driver tegra_csi_driver;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

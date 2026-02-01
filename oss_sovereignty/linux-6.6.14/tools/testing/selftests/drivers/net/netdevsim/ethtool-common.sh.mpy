@@ -1,0 +1,9 @@
+{
+  "module_name": "ethtool-common.sh",
+  "hash_id": "7900dd954758ede5a7e6f801fb7bd24303560abce5d06b0e2482430e83f341fa",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/netdevsim/ethtool-common.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0-only\n\nNSIM_ID=$((RANDOM % 1024))\nNSIM_DEV_SYS=/sys/bus/netdevsim/devices/netdevsim$NSIM_ID\nNSIM_DEV_DFS=/sys/kernel/debug/netdevsim/netdevsim$NSIM_ID/ports/0\nNSIM_NETDEV=\nnum_passes=0\nnum_errors=0\n\nfunction cleanup_nsim {\n    if [ -e $NSIM_DEV_SYS ]; then\n\techo $NSIM_ID > /sys/bus/netdevsim/del_device\n    fi\n}\n\nfunction cleanup {\n    cleanup_nsim\n}\n\ntrap cleanup EXIT\n\nfunction check {\n    local code=$1\n    local str=$2\n    local exp_str=$3\n    local exp_fail=$4\n\n    [ -z \"$exp_fail\" ] && cop=\"-ne\" || cop=\"-eq\"\n\n    if [ $code $cop 0 ]; then\n\t((num_errors++))\n\treturn\n    fi\n\n    if [ \"$str\" != \"$exp_str\"  ]; then\n\techo -e \"Expected: '$exp_str', got '$str'\"\n\t((num_errors++))\n\treturn\n    fi\n\n    ((num_passes++))\n}\n\nfunction make_netdev {\n    # Make a netdevsim\n    old_netdevs=$(ls /sys/class/net)\n\n    if ! $(lsmod | grep -q netdevsim); then\n\tmodprobe netdevsim\n    fi\n\n    echo $NSIM_ID $@ > /sys/bus/netdevsim/new_device\n    # get new device name\n    ls /sys/bus/netdevsim/devices/netdevsim${NSIM_ID}/net/\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

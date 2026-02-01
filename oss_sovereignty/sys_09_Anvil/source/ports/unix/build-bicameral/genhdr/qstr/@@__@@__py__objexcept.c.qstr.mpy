@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objexcept.c.qstr",
+  "hash_id": "2f52d76c8b98fb304981c905b72988ae8bfbc996804fd28eab2276c895c77681",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objexcept.c.qstr",
+  "human_readable_source": "Q(__traceback__)\nQ(args)\nQ(value)\nQ(errno)\nQ(BaseException)\nQ(SystemExit)\nQ(KeyboardInterrupt)\nQ(GeneratorExit)\nQ(Exception)\nQ(StopAsyncIteration)\nQ(StopIteration)\nQ(ArithmeticError)\nQ(OverflowError)\nQ(ZeroDivisionError)\nQ(AssertionError)\nQ(AttributeError)\nQ(EOFError)\nQ(ImportError)\nQ(LookupError)\nQ(IndexError)\nQ(KeyError)\nQ(MemoryError)\nQ(NameError)\nQ(OSError)\nQ(RuntimeError)\nQ(NotImplementedError)\nQ(SyntaxError)\nQ(IndentationError)\nQ(TypeError)\nQ(ViperTypeError)\nQ(ValueError)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

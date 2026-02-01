@@ -1,0 +1,9 @@
+{
+  "module_name": "mac.h",
+  "hash_id": "7df6469f5d4a5e8ca82fa1e97b8323f5c9941776b33f5de62e3ebddb41423b75",
+  "original_prompt": "Ingested from openssh-9.6p1/mac.h",
+  "human_readable_source": " \n \n\n#ifndef SSHMAC_H\n#define SSHMAC_H\n\n#include <sys/types.h>\n\nstruct sshmac {\n\tchar\t*name;\n\tint\tenabled;\n\tu_int\tmac_len;\n\tu_char\t*key;\n\tu_int\tkey_len;\n\tint\ttype;\n\tint\tetm;\t\t \n\tstruct ssh_hmac_ctx\t*hmac_ctx;\n\tstruct umac_ctx\t\t*umac_ctx;\n};\n\nint\t mac_valid(const char *);\nchar\t*mac_alg_list(char);\nint\t mac_setup(struct sshmac *, char *);\nint\t mac_init(struct sshmac *);\nint\t mac_compute(struct sshmac *, u_int32_t, const u_char *, int,\n    u_char *, size_t);\nint\t mac_check(struct sshmac *, u_int32_t, const u_char *, size_t,\n    const u_char *, size_t);\nvoid\t mac_clear(struct sshmac *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cirrus_legacy.h",
+  "hash_id": "8367bcbc8a9575bf073bd9b808e64a14a4a7710f0848d3e337c697e2c255b8df",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/cirrus_legacy.h",
+  "human_readable_source": " \n \n\nstatic inline int cirrus_read_device_id(struct regmap *regmap, unsigned int reg)\n{\n\tu8 devid[3];\n\tint ret;\n\n\tret = regmap_bulk_read(regmap, reg, devid, ARRAY_SIZE(devid));\n\tif (ret < 0)\n\t\treturn ret;\n\n\treturn ((devid[0] & 0xFF) << 12) |\n\t       ((devid[1] & 0xFF) <<  4) |\n\t       ((devid[2] & 0xF0) >>  4);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

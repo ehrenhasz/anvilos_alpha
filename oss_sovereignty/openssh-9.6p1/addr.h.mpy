@@ -1,0 +1,9 @@
+{
+  "module_name": "addr.h",
+  "hash_id": "71fddc6e453ed4a510fc0689b35556736a09b50805dfd9dc6197a5a2473ef0f5",
+  "original_prompt": "Ingested from openssh-9.6p1/addr.h",
+  "human_readable_source": " \n\n \n\n#ifndef _ADDR_H\n#define _ADDR_H\n\n#include <sys/socket.h>\n#include <netinet/in.h>\n\nstruct xaddr {\n\tsa_family_t\taf;\n\tunion {\n\t\tstruct in_addr\t\tv4;\n\t\tstruct in6_addr\t\tv6;\n\t\tu_int8_t\t\taddr8[16];\n\t\tu_int16_t\t\taddr16[8];\n\t\tu_int32_t\t\taddr32[4];\n\t} xa;\t\t     \n\tu_int32_t\tscope_id;\t \n#define v4\txa.v4\n#define v6\txa.v6\n#define addr8\txa.addr8\n#define addr16\txa.addr16\n#define addr32\txa.addr32\n};\n\nint addr_unicast_masklen(int af);\nint addr_xaddr_to_sa(const struct xaddr *xa, struct sockaddr *sa,\n    socklen_t *len, u_int16_t port);\nint addr_sa_to_xaddr(struct sockaddr *sa, socklen_t slen, struct xaddr *xa);\nint addr_netmask(int af, u_int l, struct xaddr *n);\nint addr_hostmask(int af, u_int l, struct xaddr *n);\nint addr_invert(struct xaddr *n);\nint addr_pton(const char *p, struct xaddr *n);\nint addr_sa_pton(const char *h, const char *s, struct sockaddr *sa,\n    socklen_t slen);\nint addr_pton_cidr(const char *p, struct xaddr *n, u_int *l);\nint addr_ntop(const struct xaddr *n, char *p, size_t len);\nint addr_and(struct xaddr *dst, const struct xaddr *a, const struct xaddr *b);\nint addr_or(struct xaddr *dst, const struct xaddr *a, const struct xaddr *b);\nint addr_cmp(const struct xaddr *a, const struct xaddr *b);\nint addr_is_all0s(const struct xaddr *n);\nint addr_host_is_all0s(const struct xaddr *n, u_int masklen);\nint addr_host_to_all0s(struct xaddr *a, u_int masklen);\nint addr_host_to_all1s(struct xaddr *a, u_int masklen);\nint addr_netmatch(const struct xaddr *host, const struct xaddr *net,\n    u_int masklen);\nvoid addr_increment(struct xaddr *a);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

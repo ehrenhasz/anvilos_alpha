@@ -1,0 +1,9 @@
+{
+  "module_name": "uuid.h",
+  "hash_id": "e30832e68f5277783bb8e4bfa96fb050faa267c06fe3bcc5a733fade76e0487a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/uuid.h",
+  "human_readable_source": "#include <linux/mei_uuid.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

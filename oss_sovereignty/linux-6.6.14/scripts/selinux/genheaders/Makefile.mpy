@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "157e25e1e5ec0791400e17dde601c4b423bb991221cbbe0c69caef0d2d566c56",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/selinux/genheaders/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nhostprogs-always-y += genheaders\nHOST_EXTRACFLAGS += \\\n\t-I$(srctree)/include/uapi -I$(srctree)/include \\\n\t-I$(srctree)/security/selinux/include\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

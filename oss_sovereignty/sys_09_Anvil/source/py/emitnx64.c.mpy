@@ -1,0 +1,9 @@
+{
+  "module_name": "emitnx64.c",
+  "hash_id": "cf321fe477912b6441f99dd50dcac529cd544b3ce453f61b56427ec46a30904f",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/emitnx64.c",
+  "human_readable_source": "\n\n#include \"py/mpconfig.h\"\n\n#if MICROPY_EMIT_X64\n\n\n#define GENERIC_ASM_API (1)\n#include \"py/asmx64.h\"\n\n\n#define NLR_BUF_IDX_LOCAL_1 (5) \n\n#define N_X64 (1)\n#define EXPORT_FUN(name) emit_native_x64_##name\n#include \"py/emitnative.c\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

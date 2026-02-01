@@ -1,0 +1,9 @@
+{
+  "module_name": "topsrv.h",
+  "hash_id": "4fcf7eb63da7a3f591bf246b9c62118193f566bc30d951c7728564d9a310e081",
+  "original_prompt": "Ingested from linux-6.6.14/net/tipc/topsrv.h",
+  "human_readable_source": " \n\n#ifndef _TIPC_SERVER_H\n#define _TIPC_SERVER_H\n\n#include \"core.h\"\n\n#define TIPC_SERVER_NAME_LEN\t32\n#define TIPC_SUB_CLUSTER_SCOPE  0x20\n#define TIPC_SUB_NODE_SCOPE     0x40\n#define TIPC_SUB_NO_STATUS      0x80\n\nvoid tipc_topsrv_queue_evt(struct net *net, int conid,\n\t\t\t   u32 event, struct tipc_event *evt);\n\nbool tipc_topsrv_kern_subscr(struct net *net, u32 port, u32 type, u32 lower,\n\t\t\t     u32 upper, u32 filter, int *conid);\nvoid tipc_topsrv_kern_unsubscr(struct net *net, int conid);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

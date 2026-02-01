@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9a3371dd630caf79d8b6b5944c709cf3f4c931d32bdc07bbf47c985333d1af32",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/bdisp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_VIDEO_STI_BDISP) += bdisp.o\n\nbdisp-objs := bdisp-v4l2.o bdisp-hw.o bdisp-debug.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mmap.h",
+  "hash_id": "6dc9af1503ae0c36dfed9ab79ba5615898d487553ce3f5e42941d9582bef0e05",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/mmap.h",
+  "human_readable_source": " \n#ifndef OCFS2_MMAP_H\n#define OCFS2_MMAP_H\n\nint ocfs2_mmap(struct file *file, struct vm_area_struct *vma);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

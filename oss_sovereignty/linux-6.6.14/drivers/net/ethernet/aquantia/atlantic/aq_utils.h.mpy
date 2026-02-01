@@ -1,0 +1,9 @@
+{
+  "module_name": "aq_utils.h",
+  "hash_id": "d925d4911811e0ab1a9e74d1853b2190655b810b5a7949cd4e3e18afe7dadcc2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/aquantia/atlantic/aq_utils.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef AQ_UTILS_H\n#define AQ_UTILS_H\n\n#include \"aq_common.h\"\n\nstatic inline void aq_utils_obj_set(atomic_t *flags, u32 mask)\n{\n\tunsigned long flags_old, flags_new;\n\n\tdo {\n\t\tflags_old = atomic_read(flags);\n\t\tflags_new = flags_old | (mask);\n\t} while (atomic_cmpxchg(flags, flags_old, flags_new) != flags_old);\n}\n\nstatic inline void aq_utils_obj_clear(atomic_t *flags, u32 mask)\n{\n\tunsigned long flags_old, flags_new;\n\n\tdo {\n\t\tflags_old = atomic_read(flags);\n\t\tflags_new = flags_old & ~(mask);\n\t} while (atomic_cmpxchg(flags, flags_old, flags_new) != flags_old);\n}\n\nstatic inline bool aq_utils_obj_test(atomic_t *flags, u32 mask)\n{\n\treturn atomic_read(flags) & mask;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

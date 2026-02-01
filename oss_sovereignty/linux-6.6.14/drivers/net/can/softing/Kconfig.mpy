@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d880b12db2b0cc71aef2703b5e14a43605bf5150c163333c8b4590a59216ce07",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/softing/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CAN_SOFTING\n\ttristate \"Softing Gmbh CAN generic support\"\n\tdepends on HAS_IOMEM\n\thelp\n\t  Support for CAN cards from Softing Gmbh & some cards\n\t  from Vector Gmbh.\n\t  Softing Gmbh CAN cards come with 1 or 2 physical buses.\n\t  Those cards typically use Dual Port RAM to communicate\n\t  with the host CPU. The interface is then identical for PCI\n\t  and PCMCIA cards. This driver operates on a platform device,\n\t  which has been created by softing_cs or softing_pci driver.\n\t  Warning:\n\t  The API of the card does not allow fine control per bus, but\n\t  controls the 2 buses on the card together.\n\t  As such, some actions (start/stop/busoff recovery) on 1 bus\n\t  must bring down the other bus too temporarily.\n\nconfig CAN_SOFTING_CS\n\ttristate \"Softing Gmbh CAN pcmcia cards\"\n\tdepends on PCMCIA\n\tdepends on CAN_SOFTING\n\thelp\n\t  Support for PCMCIA cards from Softing Gmbh & some cards\n\t  from Vector Gmbh.\n\t  You need firmware for these, which you can get at\n\t  https://github.com/linux-can/can-firmware\n\t  This version of the driver is written against\n\t  firmware version 4.6 (softing-fw-4.6-binaries.tar.gz)\n\t  In order to use the card as CAN device, you need the Softing generic\n\t  support too.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

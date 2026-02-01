@@ -1,0 +1,9 @@
+{
+  "module_name": "freebsd_rwlock.h",
+  "hash_id": "d2f67271ac4175b64a3f9c22eda14d99a1611bb6173d4a8e0c3a8a1ca716cbbe",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/freebsd_rwlock.h",
+  "human_readable_source": " \n\n#ifndef _OPENSOLARIS_SYS_FREEBSD_RWLOCK_H_\n#define\t_OPENSOLARIS_SYS_FREEBSD_RWLOCK_H_\n\n#include_next <sys/rwlock.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

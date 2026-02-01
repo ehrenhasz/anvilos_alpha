@@ -1,0 +1,9 @@
+{
+  "module_name": "coda-mpeg2.c",
+  "hash_id": "d4d682e031ae689a59182c906534a33a6dde925da8cb359a9556c4d80569f627",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/chips-media/coda-mpeg2.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/videodev2.h>\n#include \"coda.h\"\n\nint coda_mpeg2_profile(int profile_idc)\n{\n\tswitch (profile_idc) {\n\tcase 5:\n\t\treturn V4L2_MPEG_VIDEO_MPEG2_PROFILE_SIMPLE;\n\tcase 4:\n\t\treturn V4L2_MPEG_VIDEO_MPEG2_PROFILE_MAIN;\n\tcase 3:\n\t\treturn V4L2_MPEG_VIDEO_MPEG2_PROFILE_SNR_SCALABLE;\n\tcase 2:\n\t\treturn V4L2_MPEG_VIDEO_MPEG2_PROFILE_SPATIALLY_SCALABLE;\n\tcase 1:\n\t\treturn V4L2_MPEG_VIDEO_MPEG2_PROFILE_HIGH;\n\tdefault:\n\t\treturn -EINVAL;\n\t}\n}\n\nint coda_mpeg2_level(int level_idc)\n{\n\tswitch (level_idc) {\n\tcase 10:\n\t\treturn V4L2_MPEG_VIDEO_MPEG2_LEVEL_LOW;\n\tcase 8:\n\t\treturn V4L2_MPEG_VIDEO_MPEG2_LEVEL_MAIN;\n\tcase 6:\n\t\treturn V4L2_MPEG_VIDEO_MPEG2_LEVEL_HIGH_1440;\n\tcase 4:\n\t\treturn V4L2_MPEG_VIDEO_MPEG2_LEVEL_HIGH;\n\tdefault:\n\t\treturn -EINVAL;\n\t}\n}\n\n \nu32 coda_mpeg2_parse_headers(struct coda_ctx *ctx, u8 *buf, u32 size)\n{\n\tstatic const u8 sequence_header_start[4] = { 0x00, 0x00, 0x01, 0xb3 };\n\tstatic const union {\n\t\tu8 extension_start[4];\n\t\tu8 start_code_prefix[3];\n\t} u = { { 0x00, 0x00, 0x01, 0xb5 } };\n\n\tif (size < 22 ||\n\t    memcmp(buf, sequence_header_start, 4) != 0)\n\t\treturn 0;\n\n\tif ((size == 22 ||\n\t     (size >= 25 && memcmp(buf + 22, u.start_code_prefix, 3) == 0)) &&\n\t    memcmp(buf + 12, u.extension_start, 4) == 0)\n\t\treturn 22;\n\n\tif ((size == 86 ||\n\t     (size > 89 && memcmp(buf + 86, u.start_code_prefix, 3) == 0)) &&\n\t    memcmp(buf + 76, u.extension_start, 4) == 0)\n\t\treturn 86;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

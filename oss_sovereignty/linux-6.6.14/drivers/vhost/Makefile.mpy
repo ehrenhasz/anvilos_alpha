@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d1f4e61b43910e67e9d8508e28560257dd922756d9dbf37799cde725000edc3d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vhost/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_VHOST_NET) += vhost_net.o\nvhost_net-y := net.o\n\nobj-$(CONFIG_VHOST_SCSI) += vhost_scsi.o\nvhost_scsi-y := scsi.o\n\nobj-$(CONFIG_VHOST_VSOCK) += vhost_vsock.o\nvhost_vsock-y := vsock.o\n\nobj-$(CONFIG_VHOST_RING) += vringh.o\n\nobj-$(CONFIG_VHOST_VDPA) += vhost_vdpa.o\nvhost_vdpa-y := vdpa.o\n\nobj-$(CONFIG_VHOST)\t+= vhost.o\n\nobj-$(CONFIG_VHOST_IOTLB) += vhost_iotlb.o\nvhost_iotlb-y := iotlb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

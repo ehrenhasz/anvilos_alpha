@@ -1,0 +1,9 @@
+{
+  "module_name": "wireguard.h",
+  "hash_id": "efa7567f42b77adb96ec258f38350b5cf6cb177e05c39798de74138cd962ddb0",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/wireguard.h",
+  "human_readable_source": " \n \n\n#ifndef _WG_UAPI_WIREGUARD_H\n#define _WG_UAPI_WIREGUARD_H\n\n#define WG_GENL_NAME \"wireguard\"\n#define WG_GENL_VERSION 1\n\n#define WG_KEY_LEN 32\n\nenum wg_cmd {\n\tWG_CMD_GET_DEVICE,\n\tWG_CMD_SET_DEVICE,\n\t__WG_CMD_MAX\n};\n#define WG_CMD_MAX (__WG_CMD_MAX - 1)\n\nenum wgdevice_flag {\n\tWGDEVICE_F_REPLACE_PEERS = 1U << 0,\n\t__WGDEVICE_F_ALL = WGDEVICE_F_REPLACE_PEERS\n};\nenum wgdevice_attribute {\n\tWGDEVICE_A_UNSPEC,\n\tWGDEVICE_A_IFINDEX,\n\tWGDEVICE_A_IFNAME,\n\tWGDEVICE_A_PRIVATE_KEY,\n\tWGDEVICE_A_PUBLIC_KEY,\n\tWGDEVICE_A_FLAGS,\n\tWGDEVICE_A_LISTEN_PORT,\n\tWGDEVICE_A_FWMARK,\n\tWGDEVICE_A_PEERS,\n\t__WGDEVICE_A_LAST\n};\n#define WGDEVICE_A_MAX (__WGDEVICE_A_LAST - 1)\n\nenum wgpeer_flag {\n\tWGPEER_F_REMOVE_ME = 1U << 0,\n\tWGPEER_F_REPLACE_ALLOWEDIPS = 1U << 1,\n\tWGPEER_F_UPDATE_ONLY = 1U << 2,\n\t__WGPEER_F_ALL = WGPEER_F_REMOVE_ME | WGPEER_F_REPLACE_ALLOWEDIPS |\n\t\t\t WGPEER_F_UPDATE_ONLY\n};\nenum wgpeer_attribute {\n\tWGPEER_A_UNSPEC,\n\tWGPEER_A_PUBLIC_KEY,\n\tWGPEER_A_PRESHARED_KEY,\n\tWGPEER_A_FLAGS,\n\tWGPEER_A_ENDPOINT,\n\tWGPEER_A_PERSISTENT_KEEPALIVE_INTERVAL,\n\tWGPEER_A_LAST_HANDSHAKE_TIME,\n\tWGPEER_A_RX_BYTES,\n\tWGPEER_A_TX_BYTES,\n\tWGPEER_A_ALLOWEDIPS,\n\tWGPEER_A_PROTOCOL_VERSION,\n\t__WGPEER_A_LAST\n};\n#define WGPEER_A_MAX (__WGPEER_A_LAST - 1)\n\nenum wgallowedip_attribute {\n\tWGALLOWEDIP_A_UNSPEC,\n\tWGALLOWEDIP_A_FAMILY,\n\tWGALLOWEDIP_A_IPADDR,\n\tWGALLOWEDIP_A_CIDR_MASK,\n\t__WGALLOWEDIP_A_LAST\n};\n#define WGALLOWEDIP_A_MAX (__WGALLOWEDIP_A_LAST - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

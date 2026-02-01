@@ -1,0 +1,9 @@
+{
+  "module_name": "tpm-dev.c",
+  "hash_id": "d8da1d656e9c898aceea6ed1c275b1ab5b7cc6001093948542f8551f15cca68a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/tpm/tpm-dev.c",
+  "human_readable_source": "\n \n#include <linux/slab.h>\n#include \"tpm-dev.h\"\n\nstatic int tpm_open(struct inode *inode, struct file *file)\n{\n\tstruct tpm_chip *chip;\n\tstruct file_priv *priv;\n\n\tchip = container_of(inode->i_cdev, struct tpm_chip, cdev);\n\n\t \n\tif (test_and_set_bit(0, &chip->is_open)) {\n\t\tdev_dbg(&chip->dev, \"Another process owns this TPM\\n\");\n\t\treturn -EBUSY;\n\t}\n\n\tpriv = kzalloc(sizeof(*priv), GFP_KERNEL);\n\tif (priv == NULL)\n\t\tgoto out;\n\n\ttpm_common_open(file, chip, priv, NULL);\n\n\treturn 0;\n\n out:\n\tclear_bit(0, &chip->is_open);\n\treturn -ENOMEM;\n}\n\n \nstatic int tpm_release(struct inode *inode, struct file *file)\n{\n\tstruct file_priv *priv = file->private_data;\n\n\ttpm_common_release(file, priv);\n\tclear_bit(0, &priv->chip->is_open);\n\tkfree(priv);\n\n\treturn 0;\n}\n\nconst struct file_operations tpm_fops = {\n\t.owner = THIS_MODULE,\n\t.llseek = no_llseek,\n\t.open = tpm_open,\n\t.read = tpm_common_read,\n\t.write = tpm_common_write,\n\t.poll = tpm_common_poll,\n\t.release = tpm_release,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

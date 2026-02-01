@@ -1,0 +1,9 @@
+{
+  "module_name": "intf.h",
+  "hash_id": "4e8998d6f3ce19e5236d3cd1479c0cccfdb6371cae9d6a89bd8945407fb5d5be",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/purelifi/plfxlc/intf.h",
+  "human_readable_source": " \n \n\n#define PURELIFI_BYTE_NUM_ALIGNMENT 4\n#define ETH_ALEN 6\n#define AP_USER_LIMIT 8\n\n#define PLF_VNDR_FPGA_STATE_REQ 0x30\n#define PLF_VNDR_FPGA_SET_REQ 0x33\n#define PLF_VNDR_FPGA_SET_CMD 0x34\n#define PLF_VNDR_FPGA_STATE_CMD 0x35\n\n#define PLF_VNDR_XL_FW_CMD 0x80\n#define PLF_VNDR_XL_DATA_CMD 0x81\n#define PLF_VNDR_XL_FILE_CMD 0x82\n#define PLF_VNDR_XL_EX_CMD 0x83\n\n#define PLF_MAC_VENDOR_REQUEST 0x36\n#define PLF_SERIAL_NUMBER_VENDOR_REQUEST 0x37\n#define PLF_FIRMWARE_VERSION_VENDOR_REQUEST 0x39\n#define PLF_SERIAL_LEN 14\n#define PLF_FW_VER_LEN 8\n\nstruct rx_status {\n\t__be16 rssi;\n\tu8     rate_idx;\n\tu8     pad;\n\t__be64 crc_error_count;\n} __packed;\n\nenum plf_usb_req_enum {\n\tUSB_REQ_TEST_WR            = 0,\n\tUSB_REQ_MAC_WR             = 1,\n\tUSB_REQ_POWER_WR           = 2,\n\tUSB_REQ_RXTX_WR            = 3,\n\tUSB_REQ_BEACON_WR          = 4,\n\tUSB_REQ_BEACON_INTERVAL_WR = 5,\n\tUSB_REQ_RTS_CTS_RATE_WR    = 6,\n\tUSB_REQ_HASH_WR            = 7,\n\tUSB_REQ_DATA_TX            = 8,\n\tUSB_REQ_RATE_WR            = 9,\n\tUSB_REQ_SET_FREQ           = 15\n};\n\nstruct plf_usb_req {\n\t__be32         id;  \n\t__be32\t       len;\n\tu8             buf[512];\n};\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

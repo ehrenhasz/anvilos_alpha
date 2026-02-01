@@ -1,0 +1,9 @@
+{
+  "module_name": "tkip.h",
+  "hash_id": "ca872bfd66f2e5acd178f47c2ba3f7aca08e616cfb3824ef344ba38957fcc737",
+  "original_prompt": "Ingested from linux-6.6.14/net/mac80211/tkip.h",
+  "human_readable_source": " \n \n\n#ifndef TKIP_H\n#define TKIP_H\n\n#include <linux/types.h>\n#include <linux/crypto.h>\n#include \"key.h\"\n\nint ieee80211_tkip_encrypt_data(struct arc4_ctx *ctx,\n\t\t\t\tstruct ieee80211_key *key,\n\t\t\t\tstruct sk_buff *skb,\n\t\t\t\tu8 *payload, size_t payload_len);\n\nenum {\n\tTKIP_DECRYPT_OK = 0,\n\tTKIP_DECRYPT_NO_EXT_IV = -1,\n\tTKIP_DECRYPT_INVALID_KEYIDX = -2,\n\tTKIP_DECRYPT_REPLAY = -3,\n};\nint ieee80211_tkip_decrypt_data(struct arc4_ctx *ctx,\n\t\t\t\tstruct ieee80211_key *key,\n\t\t\t\tu8 *payload, size_t payload_len, u8 *ta,\n\t\t\t\tu8 *ra, int only_iv, int queue,\n\t\t\t\tu32 *out_iv32, u16 *out_iv16);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

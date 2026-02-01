@@ -1,0 +1,9 @@
+{
+  "module_name": "math64.h",
+  "hash_id": "0253d750bb8cd45a8a671495427425654061f0060cba674ff77f1ab5759f2557",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/math64.h",
+  "human_readable_source": " \n#ifndef _LINUX_MATH64_H\n#define _LINUX_MATH64_H\n\n#include <linux/types.h>\n\n#ifdef __x86_64__\nstatic inline u64 mul_u64_u64_div64(u64 a, u64 b, u64 c)\n{\n\tu64 q;\n\n\tasm (\"mulq %2; divq %3\" : \"=a\" (q)\n\t\t\t\t: \"a\" (a), \"rm\" (b), \"rm\" (c)\n\t\t\t\t: \"rdx\");\n\n\treturn q;\n}\n#define mul_u64_u64_div64 mul_u64_u64_div64\n#endif\n\n#ifdef __SIZEOF_INT128__\nstatic inline u64 mul_u64_u32_shr(u64 a, u32 b, unsigned int shift)\n{\n\treturn (u64)(((unsigned __int128)a * b) >> shift);\n}\n\n#else\n\n#ifdef __i386__\nstatic inline u64 mul_u32_u32(u32 a, u32 b)\n{\n\tu32 high, low;\n\n\tasm (\"mull %[b]\" : \"=a\" (low), \"=d\" (high)\n\t\t\t : [a] \"a\" (a), [b] \"rm\" (b) );\n\n\treturn low | ((u64)high) << 32;\n}\n#else\nstatic inline u64 mul_u32_u32(u32 a, u32 b)\n{\n\treturn (u64)a * b;\n}\n#endif\n\nstatic inline u64 mul_u64_u32_shr(u64 a, u32 b, unsigned int shift)\n{\n\tu32 ah, al;\n\tu64 ret;\n\n\tal = a;\n\tah = a >> 32;\n\n\tret = mul_u32_u32(al, b) >> shift;\n\tif (ah)\n\t\tret += mul_u32_u32(ah, b) << (32 - shift);\n\n\treturn ret;\n}\n\n#endif\t \n\n#ifndef mul_u64_u64_div64\nstatic inline u64 mul_u64_u64_div64(u64 a, u64 b, u64 c)\n{\n\tu64 quot, rem;\n\n\tquot = a / c;\n\trem = a % c;\n\n\treturn quot * b + (rem * b) / c;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tag_public.h",
+  "hash_id": "792276ad0be475f95e16c547d568cb34a1943f470f856a47889c1c4ebafb02ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/host/tag_public.h",
+  "human_readable_source": " \n \n\n#ifndef __TAG_PUBLIC_H_INCLUDED__\n#define __TAG_PUBLIC_H_INCLUDED__\n\n \nvoid\nsh_css_create_tag_descr(int num_captures,\n\t\t\tunsigned int skip,\n\t\t\tint offset,\n\t\t\tunsigned int exp_id,\n\t\t\tstruct sh_css_tag_descr *tag_descr);\n\n \nunsigned int\nsh_css_encode_tag_descr(struct sh_css_tag_descr *tag);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

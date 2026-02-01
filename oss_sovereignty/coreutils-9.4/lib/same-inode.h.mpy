@@ -1,0 +1,9 @@
+{
+  "module_name": "same-inode.h",
+  "hash_id": "9b0f95a096e85634afa02d64262e7a160d7a45ded253b1ee5868f3253f310ac0",
+  "original_prompt": "Ingested from coreutils-9.4/lib/same-inode.h",
+  "human_readable_source": " \n#  if _GL_WINDOWS_STAT_INODES\n     \n#   define SAME_INODE(a, b) \\\n     (!((a).st_ino == 0 && (a).st_dev == 0) \\\n      && (a).st_ino == (b).st_ino && (a).st_dev == (b).st_dev)\n#  else\n     \n#   define SAME_INODE(a, b) 0\n#  endif\n# else\n#  define SAME_INODE(a, b)    \\\n    ((a).st_ino == (b).st_ino \\\n     && (a).st_dev == (b).st_dev)\n# endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

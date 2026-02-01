@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__objcomplex.c.qstr",
+  "hash_id": "b919cfcd471ab56d99add6fd7399143c205c2e89c7f0417e688595fbce9ec47b",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__objcomplex.c.qstr",
+  "human_readable_source": "Q(real)\nQ(imag)\nQ(complex)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel.h",
+  "hash_id": "e8396702250c5ec3a56208c51f39c5e2060cf413344725456ed73884b1e84d0a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/radix-tree/linux/kernel.h",
+  "human_readable_source": " \n#ifndef _KERNEL_H\n#define _KERNEL_H\n\n#include \"../../include/linux/kernel.h\"\n#include <string.h>\n#include <stdio.h>\n#include <limits.h>\n\n#include <linux/compiler.h>\n#include <linux/err.h>\n#include <linux/bitops.h>\n#include <linux/log2.h>\n#include \"../../../include/linux/kconfig.h\"\n\n#define printk printf\n#define pr_err printk\n#define pr_info printk\n#define pr_debug printk\n#define pr_cont printk\n\n#define __acquires(x)\n#define __releases(x)\n#define __must_hold(x)\n\n#define EXPORT_PER_CPU_SYMBOL_GPL(x)\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

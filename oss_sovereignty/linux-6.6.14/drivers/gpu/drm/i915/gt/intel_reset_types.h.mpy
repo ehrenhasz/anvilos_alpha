@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_reset_types.h",
+  "hash_id": "19780772e2bb97328be0bd555a584ab4d5ab7af5ae7d5af6f157a58aa198ed94",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_reset_types.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_RESET_TYPES_H_\n#define __INTEL_RESET_TYPES_H_\n\n#include <linux/mutex.h>\n#include <linux/wait.h>\n#include <linux/srcu.h>\n\nstruct intel_reset {\n\t \n\tunsigned long flags;\n#define I915_RESET_BACKOFF\t0\n#define I915_RESET_MODESET\t1\n#define I915_RESET_ENGINE\t2\n#define I915_WEDGED_ON_INIT\t(BITS_PER_LONG - 3)\n#define I915_WEDGED_ON_FINI\t(BITS_PER_LONG - 2)\n#define I915_WEDGED\t\t(BITS_PER_LONG - 1)\n\n\tstruct mutex mutex;  \n\n\t \n\twait_queue_head_t queue;\n\n\tstruct srcu_struct backoff_srcu;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

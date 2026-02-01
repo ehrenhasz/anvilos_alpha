@@ -1,0 +1,9 @@
+{
+  "module_name": "armada_ap_cp_helper.h",
+  "hash_id": "28ade1c2412eb94751fe125e75cd46ab1c0904872bcc700a932fe2d244d51508",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mvebu/armada_ap_cp_helper.h",
+  "human_readable_source": " \n\n#ifndef __ARMADA_AP_CP_HELPER_H\n#define __ARMADA_AP_CP_HELPER_H\n\nstruct device;\nstruct device_node;\n\nchar *ap_cp_unique_name(struct device *dev, struct device_node *np,\n\t\t\tconst char *name);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

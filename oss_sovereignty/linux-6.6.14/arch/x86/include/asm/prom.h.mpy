@@ -1,0 +1,9 @@
+{
+  "module_name": "prom.h",
+  "hash_id": "0a974fc86cfac399846db3f78f18f82fcd45cf5ee323732e82f7388267fa6d66",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/prom.h",
+  "human_readable_source": " \n \n\n#ifndef _ASM_X86_PROM_H\n#define _ASM_X86_PROM_H\n#ifndef __ASSEMBLY__\n\n#include <linux/of.h>\n#include <linux/types.h>\n#include <linux/pci.h>\n\n#include <asm/irq.h>\n#include <linux/atomic.h>\n#include <asm/setup.h>\n\n#ifdef CONFIG_OF\nextern int of_ioapic;\nextern u64 initial_dtb;\nextern void add_dtb(u64 data);\nvoid x86_of_pci_init(void);\nvoid x86_dtb_init(void);\n#else\nstatic inline void add_dtb(u64 data) { }\nstatic inline void x86_of_pci_init(void) { }\nstatic inline void x86_dtb_init(void) { }\n#define of_ioapic 0\n#endif\n\nextern char cmd_line[COMMAND_LINE_SIZE];\n\n#endif  \n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

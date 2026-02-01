@@ -1,0 +1,9 @@
+{
+  "module_name": "michael.h",
+  "hash_id": "65b95e3112eb324235eecdbbf173a5eb8683804ddae841ff2a326809385698bf",
+  "original_prompt": "Ingested from linux-6.6.14/net/mac80211/michael.h",
+  "human_readable_source": " \n \n\n#ifndef MICHAEL_H\n#define MICHAEL_H\n\n#include <linux/types.h>\n#include <linux/ieee80211.h>\n\n#define MICHAEL_MIC_LEN 8\n\nstruct michael_mic_ctx {\n\tu32 l, r;\n};\n\nvoid michael_mic(const u8 *key, struct ieee80211_hdr *hdr,\n\t\t const u8 *data, size_t data_len, u8 *mic);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

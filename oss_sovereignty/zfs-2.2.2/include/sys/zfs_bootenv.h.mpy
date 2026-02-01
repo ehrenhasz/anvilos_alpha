@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_bootenv.h",
+  "hash_id": "3d4f0c00191cb01aa53a2febee518de49fde51ac6b40c5e9fde370c891cbac66",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zfs_bootenv.h",
+  "human_readable_source": " \n\n \n\n#ifndef _ZFS_BOOTENV_H\n#define\t_ZFS_BOOTENV_H\n\n \n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n#define\tBOOTENV_VERSION\t\t\"version\"\n\n#define\tBE_ILLUMOS_VENDOR\t\"illumos\"\n#define\tBE_FREEBSD_VENDOR\t\"freebsd\"\n#define\tBE_GRUB_VENDOR\t\t\"grub\"\n#define\tBE_LINUX_VENDOR\t\t\"linux\"\n\n#include <sys/zfs_bootenv_os.h>\n\n#define\tGRUB_ENVMAP\t\tBE_GRUB_VENDOR \":\" \"envmap\"\n\n#define\tFREEBSD_BOOTONCE\tBE_FREEBSD_VENDOR \":\" \"bootonce\"\n#define\tFREEBSD_BOOTONCE_USED\tBE_FREEBSD_VENDOR \":\" \"bootonce-used\"\n#define\tFREEBSD_NVSTORE\t\tBE_FREEBSD_VENDOR \":\" \"nvstore\"\n#define\tILLUMOS_BOOTONCE\tBE_ILLUMOS_VENDOR \":\" \"bootonce\"\n#define\tILLUMOS_BOOTONCE_USED\tBE_ILLUMOS_VENDOR \":\" \"bootonce-used\"\n#define\tILLUMOS_NVSTORE\t\tBE_ILLUMOS_VENDOR \":\" \"nvstore\"\n\n#define\tOS_BOOTONCE\t\tBOOTENV_OS \":\" \"bootonce\"\n#define\tOS_BOOTONCE_USED\tBOOTENV_OS \":\" \"bootonce-used\"\n#define\tOS_NVSTORE\t\tBOOTENV_OS \":\" \"nvstore\"\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

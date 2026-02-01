@@ -1,0 +1,9 @@
+{
+  "module_name": "fileblocks.c",
+  "hash_id": "46edb6bfbb69a864cadfb9f04dd2a48d0c67f17309df5ebf625de7aa589654c8",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fileblocks.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/types.h>\n\n#if HAVE_SYS_PARAM_H\n# include <sys/param.h>\n#endif\n\n#if !HAVE_STRUCT_STAT_ST_BLOCKS && !defined _POSIX_SOURCE && defined BSIZE\n\n# include <unistd.h>\n\n# ifndef NINDIR\n\n#  if defined __DJGPP__\ntypedef long daddr_t;  \n#  endif\n\n \n \n#  define NINDIR (BSIZE / sizeof (daddr_t))\n# endif  \n\n \n# define NDIR   10\n\n \n\noff_t\nst_blocks (off_t size)\n{\n  off_t datablks = size / 512 + (size % 512 != 0);\n  off_t indrblks = 0;\n\n  if (datablks > NDIR)\n    {\n      indrblks = (datablks - NDIR - 1) / NINDIR + 1;\n\n      if (datablks > NDIR + NINDIR)\n        {\n          indrblks += (datablks - NDIR - NINDIR - 1) / (NINDIR * NINDIR) + 1;\n\n          if (datablks > NDIR + NINDIR + NINDIR * NINDIR)\n            indrblks++;\n        }\n    }\n\n  return datablks + indrblks;\n}\n#else\n \ntypedef int textutils_fileblocks_unused;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pm8001_chips.h",
+  "hash_id": "c184c4ec8ae99f21287f58c9b1dbeec43f20e2beaaaaaee6c3be5923a309dc79",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/pm8001/pm8001_chips.h",
+  "human_readable_source": " \n\n#ifndef _PM8001_CHIPS_H_\n#define _PM8001_CHIPS_H_\n\nstatic inline u32 pm8001_read_32(void *virt_addr)\n{\n\treturn *((u32 *)virt_addr);\n}\n\nstatic inline void pm8001_write_32(void *addr, u32 offset, __le32 val)\n{\n\t*((__le32 *)(addr + offset)) = val;\n}\n\nstatic inline u32 pm8001_cr32(struct pm8001_hba_info *pm8001_ha, u32 bar,\n\t\tu32 offset)\n{\n\treturn readl(pm8001_ha->io_mem[bar].memvirtaddr + offset);\n}\n\nstatic inline void pm8001_cw32(struct pm8001_hba_info *pm8001_ha, u32 bar,\n\t\tu32 addr, u32 val)\n{\n\twritel(val, pm8001_ha->io_mem[bar].memvirtaddr + addr);\n}\nstatic inline u32 pm8001_mr32(void __iomem *addr, u32 offset)\n{\n\treturn readl(addr + offset);\n}\nstatic inline void pm8001_mw32(void __iomem *addr, u32 offset, u32 val)\n{\n\twritel(val, addr + offset);\n}\nstatic inline u32 get_pci_bar_index(u32 pcibar)\n{\n\t\tswitch (pcibar) {\n\t\tcase 0x18:\n\t\tcase 0x1C:\n\t\t\treturn 1;\n\t\tcase 0x20:\n\t\t\treturn 2;\n\t\tcase 0x24:\n\t\t\treturn 3;\n\t\tdefault:\n\t\t\treturn 0;\n\t}\n}\n\n#endif   \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "input-compat.h",
+  "hash_id": "b882e7e8174c3a187b228bcdf24e57d17ee8831032a66ab589dedb74612f98f2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/input-compat.h",
+  "human_readable_source": " \n#ifndef _INPUT_COMPAT_H\n#define _INPUT_COMPAT_H\n\n \n\n#include <linux/compiler.h>\n#include <linux/compat.h>\n#include <linux/input.h>\n\n#ifdef CONFIG_COMPAT\n\nstruct input_event_compat {\n\tcompat_ulong_t sec;\n\tcompat_ulong_t usec;\n\t__u16 type;\n\t__u16 code;\n\t__s32 value;\n};\n\nstruct ff_periodic_effect_compat {\n\t__u16 waveform;\n\t__u16 period;\n\t__s16 magnitude;\n\t__s16 offset;\n\t__u16 phase;\n\n\tstruct ff_envelope envelope;\n\n\t__u32 custom_len;\n\tcompat_uptr_t custom_data;\n};\n\nstruct ff_effect_compat {\n\t__u16 type;\n\t__s16 id;\n\t__u16 direction;\n\tstruct ff_trigger trigger;\n\tstruct ff_replay replay;\n\n\tunion {\n\t\tstruct ff_constant_effect constant;\n\t\tstruct ff_ramp_effect ramp;\n\t\tstruct ff_periodic_effect_compat periodic;\n\t\tstruct ff_condition_effect condition[2];  \n\t\tstruct ff_rumble_effect rumble;\n\t} u;\n};\n\nstatic inline size_t input_event_size(void)\n{\n\treturn (in_compat_syscall() && !COMPAT_USE_64BIT_TIME) ?\n\t\tsizeof(struct input_event_compat) : sizeof(struct input_event);\n}\n\n#else\n\nstatic inline size_t input_event_size(void)\n{\n\treturn sizeof(struct input_event);\n}\n\n#endif  \n\nint input_event_from_user(const char __user *buffer,\n\t\t\t struct input_event *event);\n\nint input_event_to_user(char __user *buffer,\n\t\t\tconst struct input_event *event);\n\nint input_ff_effect_from_user(const char __user *buffer, size_t size,\n\t\t\t      struct ff_effect *effect);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

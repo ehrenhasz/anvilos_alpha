@@ -1,0 +1,9 @@
+{
+  "module_name": "mmconfig.h",
+  "hash_id": "b5ba05b6e7ae4f70b2c045e5cc7b68db39410626b96e59c673c6220b7069322f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/mmconfig.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_MMCONFIG_H\n#define _ASM_X86_MMCONFIG_H\n\n#ifdef CONFIG_PCI_MMCONFIG\nextern void fam10h_check_enable_mmcfg(void);\nextern void check_enable_amd_mmconf_dmi(void);\n#else\nstatic inline void fam10h_check_enable_mmcfg(void) { }\nstatic inline void check_enable_amd_mmconf_dmi(void) { }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

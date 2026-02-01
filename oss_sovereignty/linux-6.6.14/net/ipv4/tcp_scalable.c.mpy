@@ -1,0 +1,9 @@
+{
+  "module_name": "tcp_scalable.c",
+  "hash_id": "48e724e250f55797d48071a1e2a0f3c65860b08fff9864c1ea847e3084ec9d76",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv4/tcp_scalable.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <net/tcp.h>\n\n \n#define TCP_SCALABLE_AI_CNT\t100U\n#define TCP_SCALABLE_MD_SCALE\t3\n\nstatic void tcp_scalable_cong_avoid(struct sock *sk, u32 ack, u32 acked)\n{\n\tstruct tcp_sock *tp = tcp_sk(sk);\n\n\tif (!tcp_is_cwnd_limited(sk))\n\t\treturn;\n\n\tif (tcp_in_slow_start(tp)) {\n\t\tacked = tcp_slow_start(tp, acked);\n\t\tif (!acked)\n\t\t\treturn;\n\t}\n\ttcp_cong_avoid_ai(tp, min(tcp_snd_cwnd(tp), TCP_SCALABLE_AI_CNT),\n\t\t\t  acked);\n}\n\nstatic u32 tcp_scalable_ssthresh(struct sock *sk)\n{\n\tconst struct tcp_sock *tp = tcp_sk(sk);\n\n\treturn max(tcp_snd_cwnd(tp) - (tcp_snd_cwnd(tp)>>TCP_SCALABLE_MD_SCALE), 2U);\n}\n\nstatic struct tcp_congestion_ops tcp_scalable __read_mostly = {\n\t.ssthresh\t= tcp_scalable_ssthresh,\n\t.undo_cwnd\t= tcp_reno_undo_cwnd,\n\t.cong_avoid\t= tcp_scalable_cong_avoid,\n\n\t.owner\t\t= THIS_MODULE,\n\t.name\t\t= \"scalable\",\n};\n\nstatic int __init tcp_scalable_register(void)\n{\n\treturn tcp_register_congestion_control(&tcp_scalable);\n}\n\nstatic void __exit tcp_scalable_unregister(void)\n{\n\ttcp_unregister_congestion_control(&tcp_scalable);\n}\n\nmodule_init(tcp_scalable_register);\nmodule_exit(tcp_scalable_unregister);\n\nMODULE_AUTHOR(\"John Heffner\");\nMODULE_LICENSE(\"GPL\");\nMODULE_DESCRIPTION(\"Scalable TCP\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "readline.h",
+  "hash_id": "15935e363f3156e006346e3641d0e92841fb8e14fa83c0480b276fd5255d359c",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/readline/readline.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_LIB_MP_READLINE_READLINE_H\n#define MICROPY_INCLUDED_LIB_MP_READLINE_READLINE_H\n\n#define CHAR_CTRL_A (1)\n#define CHAR_CTRL_B (2)\n#define CHAR_CTRL_C (3)\n#define CHAR_CTRL_D (4)\n#define CHAR_CTRL_E (5)\n#define CHAR_CTRL_F (6)\n#define CHAR_CTRL_K (11)\n#define CHAR_CTRL_N (14)\n#define CHAR_CTRL_P (16)\n#define CHAR_CTRL_U (21)\n#define CHAR_CTRL_W (23)\n\nvoid readline_init0(void);\nint readline(vstr_t *line, const char *prompt);\nvoid readline_push_history(const char *line);\n\nvoid readline_init(vstr_t *line, const char *prompt);\nvoid readline_note_newline(const char *prompt);\nint readline_process_char(int c);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hip04-clock.h",
+  "hash_id": "7e58d2f6cf94bce744e6657947a9b5b716400fb2c3f5cc000b4bd270cd0daa63",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/hip04-clock.h",
+  "human_readable_source": " \n \n\n#ifndef __DTS_HIP04_CLOCK_H\n#define __DTS_HIP04_CLOCK_H\n\n#define HIP04_NONE_CLOCK\t0\n\n \n#define HIP04_OSC50M\t\t1\n#define HIP04_CLK_50M\t\t2\n#define HIP04_CLK_168M\t\t3\n\n#define HIP04_NR_CLKS\t\t64\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

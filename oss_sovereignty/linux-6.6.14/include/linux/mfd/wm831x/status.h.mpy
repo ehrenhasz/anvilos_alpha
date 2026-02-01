@@ -1,0 +1,9 @@
+{
+  "module_name": "status.h",
+  "hash_id": "317399558dabe4ff341207ba0e4955fe14045e43ade15daa524adb4a371239f6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/wm831x/status.h",
+  "human_readable_source": " \n \n\n#ifndef __MFD_WM831X_STATUS_H__\n#define __MFD_WM831X_STATUS_H__\n\n#define WM831X_LED_SRC_MASK                    0xC000   \n#define WM831X_LED_SRC_SHIFT                       14   \n#define WM831X_LED_SRC_WIDTH                        2   \n#define WM831X_LED_MODE_MASK                   0x0300   \n#define WM831X_LED_MODE_SHIFT                       8   \n#define WM831X_LED_MODE_WIDTH                       2   \n#define WM831X_LED_SEQ_LEN_MASK                0x0030   \n#define WM831X_LED_SEQ_LEN_SHIFT                    4   \n#define WM831X_LED_SEQ_LEN_WIDTH                    2   \n#define WM831X_LED_DUR_MASK                    0x000C   \n#define WM831X_LED_DUR_SHIFT                        2   \n#define WM831X_LED_DUR_WIDTH                        2   \n#define WM831X_LED_DUTY_CYC_MASK               0x0003   \n#define WM831X_LED_DUTY_CYC_SHIFT                   0   \n#define WM831X_LED_DUTY_CYC_WIDTH                   2   \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

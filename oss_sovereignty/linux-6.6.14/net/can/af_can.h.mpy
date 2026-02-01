@@ -1,0 +1,9 @@
+{
+  "module_name": "af_can.h",
+  "hash_id": "8212f1562d3ed448f6e386882fa2334c29654744a351e4cc4376a34e4e54ffed",
+  "original_prompt": "Ingested from linux-6.6.14/net/can/af_can.h",
+  "human_readable_source": " \n \n\n#ifndef AF_CAN_H\n#define AF_CAN_H\n\n#include <linux/skbuff.h>\n#include <linux/netdevice.h>\n#include <linux/list.h>\n#include <linux/rcupdate.h>\n#include <linux/can.h>\n\n \n\nstruct receiver {\n\tstruct hlist_node list;\n\tcanid_t can_id;\n\tcanid_t mask;\n\tunsigned long matches;\n\tvoid (*func)(struct sk_buff *skb, void *data);\n\tvoid *data;\n\tchar *ident;\n\tstruct sock *sk;\n\tstruct rcu_head rcu;\n};\n\n \n\n \nstruct can_pkg_stats {\n\tunsigned long jiffies_init;\n\n\tunsigned long rx_frames;\n\tunsigned long tx_frames;\n\tunsigned long matches;\n\n\tunsigned long total_rx_rate;\n\tunsigned long total_tx_rate;\n\tunsigned long total_rx_match_ratio;\n\n\tunsigned long current_rx_rate;\n\tunsigned long current_tx_rate;\n\tunsigned long current_rx_match_ratio;\n\n\tunsigned long max_rx_rate;\n\tunsigned long max_tx_rate;\n\tunsigned long max_rx_match_ratio;\n\n\tunsigned long rx_frames_delta;\n\tunsigned long tx_frames_delta;\n\tunsigned long matches_delta;\n};\n\n \nstruct can_rcv_lists_stats {\n\tunsigned long stats_reset;\n\tunsigned long user_reset;\n\tunsigned long rcv_entries;\n\tunsigned long rcv_entries_max;\n};\n\n \nvoid can_init_proc(struct net *net);\nvoid can_remove_proc(struct net *net);\nvoid can_stat_update(struct timer_list *t);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

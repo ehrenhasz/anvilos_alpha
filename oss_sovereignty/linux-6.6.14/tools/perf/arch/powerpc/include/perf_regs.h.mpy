@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_regs.h",
+  "hash_id": "99d517217c569cd1f25fe3393566545186f764841e699d48e5bd2deef06b509c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/powerpc/include/perf_regs.h",
+  "human_readable_source": " \n#ifndef ARCH_PERF_REGS_H\n#define ARCH_PERF_REGS_H\n\n#include <stdlib.h>\n#include <linux/types.h>\n#include <asm/perf_regs.h>\n\nvoid perf_regs_load(u64 *regs);\n\n#define PERF_REGS_MASK  ((1ULL << PERF_REG_POWERPC_MAX) - 1)\n#define PERF_REGS_MAX   PERF_REG_POWERPC_MAX\n#ifdef __powerpc64__\n\t#define PERF_SAMPLE_REGS_ABI\tPERF_SAMPLE_REGS_ABI_64\n#else\n\t#define PERF_SAMPLE_REGS_ABI\tPERF_SAMPLE_REGS_ABI_32\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

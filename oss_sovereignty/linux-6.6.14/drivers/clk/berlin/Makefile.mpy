@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ef24da7b94301c1a8d46fdeac9b1ab69601d98605737b928be490e8a053dce26",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/berlin/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y += berlin2-avpll.o berlin2-pll.o berlin2-div.o\nobj-$(CONFIG_MACH_BERLIN_BG2)\t+= bg2.o\nobj-$(CONFIG_MACH_BERLIN_BG2CD)\t+= bg2.o\nobj-$(CONFIG_MACH_BERLIN_BG2Q)\t+= bg2q.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

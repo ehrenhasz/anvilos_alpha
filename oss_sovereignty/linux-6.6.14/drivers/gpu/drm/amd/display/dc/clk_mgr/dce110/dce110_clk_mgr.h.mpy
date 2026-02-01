@@ -1,0 +1,9 @@
+{
+  "module_name": "dce110_clk_mgr.h",
+  "hash_id": "7d1c44022eb35602d98efe3ed932b3d7754f6b12c260e57fd6dde543528fd4a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/clk_mgr/dce110/dce110_clk_mgr.h",
+  "human_readable_source": " \n\n#ifndef DAL_DC_DCE_DCE110_CLK_MGR_H_\n#define DAL_DC_DCE_DCE110_CLK_MGR_H_\n\nvoid dce110_clk_mgr_construct(\n\t\tstruct dc_context *ctx,\n\t\tstruct clk_mgr_internal *clk_mgr);\n\nvoid dce110_fill_display_configs(\n\tconst struct dc_state *context,\n\tstruct dm_pp_display_configuration *pp_display_cfg);\n\n \nvoid dce11_pplib_apply_display_requirements(\n\tstruct dc *dc,\n\tstruct dc_state *context);\n\nuint32_t dce110_get_min_vblank_time_us(const struct dc_state *context);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

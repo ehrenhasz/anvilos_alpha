@@ -1,0 +1,9 @@
+{
+  "module_name": "cxgb4_tc_matchall.h",
+  "hash_id": "8e1142a0aaa59b1808facf7a94f9467070e63fda12fe62d077c067c90cd51a9f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.h",
+  "human_readable_source": " \n \n\n#ifndef __CXGB4_TC_MATCHALL_H__\n#define __CXGB4_TC_MATCHALL_H__\n\n#include <net/pkt_cls.h>\n\nenum cxgb4_matchall_state {\n\tCXGB4_MATCHALL_STATE_DISABLED = 0,\n\tCXGB4_MATCHALL_STATE_ENABLED,\n};\n\nstruct cxgb4_matchall_egress_entry {\n\tenum cxgb4_matchall_state state;  \n\tu8 hwtc;  \n\tu64 cookie;  \n};\n\nstruct cxgb4_matchall_ingress_entry {\n\tenum cxgb4_matchall_state state;  \n\tu32 tid[CXGB4_FILTER_TYPE_MAX];  \n\t \n\tstruct ch_filter_specification fs[CXGB4_FILTER_TYPE_MAX];\n\tu16 viid_mirror;  \n\tu64 bytes;  \n\tu64 packets;  \n\tu64 last_used;  \n};\n\nstruct cxgb4_tc_port_matchall {\n\tstruct cxgb4_matchall_egress_entry egress;  \n\tstruct cxgb4_matchall_ingress_entry ingress;  \n};\n\nstruct cxgb4_tc_matchall {\n\tstruct cxgb4_tc_port_matchall *port_matchall;  \n};\n\nint cxgb4_tc_matchall_replace(struct net_device *dev,\n\t\t\t      struct tc_cls_matchall_offload *cls_matchall,\n\t\t\t      bool ingress);\nint cxgb4_tc_matchall_destroy(struct net_device *dev,\n\t\t\t      struct tc_cls_matchall_offload *cls_matchall,\n\t\t\t      bool ingress);\nint cxgb4_tc_matchall_stats(struct net_device *dev,\n\t\t\t    struct tc_cls_matchall_offload *cls_matchall);\n\nint cxgb4_init_tc_matchall(struct adapter *adap);\nvoid cxgb4_cleanup_tc_matchall(struct adapter *adap);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

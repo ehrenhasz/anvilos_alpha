@@ -1,0 +1,9 @@
+{
+  "module_name": "rt5668.h",
+  "hash_id": "053783a446ee60923692efce5fbbb632f5594536983e50a407355dd45534a6e9",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/rt5668.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SND_RT5668_H\n#define __LINUX_SND_RT5668_H\n\nenum rt5668_dmic1_data_pin {\n\tRT5668_DMIC1_NULL,\n\tRT5668_DMIC1_DATA_GPIO2,\n\tRT5668_DMIC1_DATA_GPIO5,\n};\n\nenum rt5668_dmic1_clk_pin {\n\tRT5668_DMIC1_CLK_GPIO1,\n\tRT5668_DMIC1_CLK_GPIO3,\n};\n\nenum rt5668_jd_src {\n\tRT5668_JD_NULL,\n\tRT5668_JD1,\n};\n\nstruct rt5668_platform_data {\n\tenum rt5668_dmic1_data_pin dmic1_data_pin;\n\tenum rt5668_dmic1_clk_pin dmic1_clk_pin;\n\tenum rt5668_jd_src jd_src;\n};\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

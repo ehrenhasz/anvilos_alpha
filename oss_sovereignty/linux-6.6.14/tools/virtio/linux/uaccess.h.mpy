@@ -1,0 +1,9 @@
+{
+  "module_name": "uaccess.h",
+  "hash_id": "fdb5f86af2e9455908b01d6c7c8e4d9c1908e7b84e6f4f1c57fae9f728b537c4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/linux/uaccess.h",
+  "human_readable_source": " \n#ifndef UACCESS_H\n#define UACCESS_H\n\n#include <linux/compiler.h>\n\nextern void *__user_addr_min, *__user_addr_max;\n\n#define put_user(x, ptr)\t\t\t\t\t\\\n({\t\t\t\t\t\t\t\t\\\n\ttypeof(ptr) __pu_ptr = (ptr);\t\t\t\t\\\n\t__chk_user_ptr(__pu_ptr);\t\t\t\t\\\n\tWRITE_ONCE(*(__pu_ptr), x);\t\t\t\t\\\n\t0;\t\t\t\t\t\t\t\\\n})\n\n#define get_user(x, ptr)\t\t\t\t\t\\\n({\t\t\t\t\t\t\t\t\\\n\ttypeof(ptr) __pu_ptr = (ptr);\t\t\t\t\\\n\t__chk_user_ptr(__pu_ptr);\t\t\t\t\\\n\tx = READ_ONCE(*(__pu_ptr));\t\t\t\t\\\n\t0;\t\t\t\t\t\t\t\\\n})\n\nstatic void volatile_memcpy(volatile char *to, const volatile char *from, \n\t\t\t    unsigned long n)\n{\n\twhile (n--)\n\t\t*(to++) = *(from++);\n}\n\nstatic inline int copy_from_user(void *to, const void __user volatile *from,\n\t\t\t\t unsigned long n)\n{\n\tvolatile_memcpy(to, from, n);\n\treturn 0;\n}\n\nstatic inline int copy_to_user(void __user volatile *to, const void *from,\n\t\t\t       unsigned long n)\n{\n\tvolatile_memcpy(to, from, n);\n\treturn 0;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

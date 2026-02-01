@@ -1,0 +1,9 @@
+{
+  "module_name": "fake_sigreturn_duplicated_fpsimd.c",
+  "hash_id": "94a4d6b25be886d80f2db2023dd872e3ce8c73ec6d31608bb185b18c507725c2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/signal/testcases/fake_sigreturn_duplicated_fpsimd.c",
+  "human_readable_source": "\n \n\n#include <signal.h>\n#include <ucontext.h>\n\n#include \"test_signals_utils.h\"\n#include \"testcases.h\"\n\nstruct fake_sigframe sf;\n\nstatic int fake_sigreturn_duplicated_fpsimd_run(struct tdescr *td,\n\t\t\t\t\t\tsiginfo_t *si, ucontext_t *uc)\n{\n\tstruct _aarch64_ctx *shead = GET_SF_RESV_HEAD(sf), *head;\n\n\t \n\tif (!get_current_context(td, &sf.uc, sizeof(sf.uc)))\n\t\treturn 1;\n\n\thead = get_starting_head(shead, sizeof(struct fpsimd_context) + HDR_SZ,\n\t\t\t\t GET_SF_RESV_SIZE(sf), NULL);\n\tif (!head)\n\t\treturn 0;\n\n\t \n\thead->magic = FPSIMD_MAGIC;\n\thead->size = sizeof(struct fpsimd_context);\n\t \n\twrite_terminator_record(GET_RESV_NEXT_HEAD(head));\n\n\tASSERT_BAD_CONTEXT(&sf.uc);\n\tfake_sigreturn(&sf, sizeof(sf), 0);\n\n\treturn 1;\n}\n\nstruct tdescr tde = {\n\t\t.name = \"FAKE_SIGRETURN_DUPLICATED_FPSIMD\",\n\t\t.descr = \"Triggers a sigreturn including two fpsimd_context\",\n\t\t.sig_ok = SIGSEGV,\n\t\t.timeout = 3,\n\t\t.run = fake_sigreturn_duplicated_fpsimd_run,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

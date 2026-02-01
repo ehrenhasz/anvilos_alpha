@@ -1,0 +1,9 @@
+{
+  "module_name": "acp-mach.h",
+  "hash_id": "85e2249fd28efad8f64d8866739fb8ebd499718e353ff5271869e658700c415b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/amd/acp/acp-mach.h",
+  "human_readable_source": " \n \n#ifndef __ACP_MACH_H\n#define __ACP_MACH_H\n\n#include <sound/core.h>\n#include <sound/jack.h>\n#include <sound/pcm_params.h>\n#include <sound/soc-dapm.h>\n#include <linux/input.h>\n#include <linux/module.h>\n#include <sound/soc.h>\n\n#define TDM_CHANNELS\t8\n\nenum be_id {\n\tHEADSET_BE_ID = 0,\n\tAMP_BE_ID,\n\tDMIC_BE_ID,\n};\n\nenum cpu_endpoints {\n\tNONE = 0,\n\tI2S_HS,\n\tI2S_SP,\n\tI2S_BT,\n\tDMIC,\n};\n\nenum codec_endpoints {\n\tDUMMY = 0,\n\tRT5682,\n\tRT1019,\n\tMAX98360A,\n\tRT5682S,\n\tNAU8825,\n\tNAU8821,\n\tMAX98388,\n};\n\nenum platform_end_point {\n\tRENOIR = 0,\n\tREMBRANDT,\n};\n\nstruct acp_card_drvdata {\n\tunsigned int hs_cpu_id;\n\tunsigned int amp_cpu_id;\n\tunsigned int dmic_cpu_id;\n\tunsigned int hs_codec_id;\n\tunsigned int amp_codec_id;\n\tunsigned int dmic_codec_id;\n\tunsigned int dai_fmt;\n\tunsigned int platform;\n\tstruct clk *wclk;\n\tstruct clk *bclk;\n\tbool soc_mclk;\n\tbool tdm_mode;\n};\n\nint acp_sofdsp_dai_links_create(struct snd_soc_card *card);\nint acp_legacy_dai_links_create(struct snd_soc_card *card);\nextern const struct dmi_system_id acp_quirk_table[];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

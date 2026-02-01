@@ -1,0 +1,9 @@
+{
+  "module_name": "cifs_unicode.h",
+  "hash_id": "d7cef48a8b857861f712d40223147d358f00308b35a48f342c7da85cb2503d8f",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/client/cifs_unicode.h",
+  "human_readable_source": " \n \n#ifndef _CIFS_UNICODE_H\n#define _CIFS_UNICODE_H\n\n#include <asm/byteorder.h>\n#include <linux/types.h>\n#include <linux/nls.h>\n#include \"../../nls/nls_ucs2_utils.h\"\n\n \n\n#define SFM_DOUBLEQUOTE ((__u16) 0xF020)\n#define SFM_ASTERISK    ((__u16) 0xF021)\n#define SFM_QUESTION    ((__u16) 0xF025)\n#define SFM_COLON       ((__u16) 0xF022)\n#define SFM_GRTRTHAN    ((__u16) 0xF024)\n#define SFM_LESSTHAN    ((__u16) 0xF023)\n#define SFM_PIPE        ((__u16) 0xF027)\n#define SFM_SLASH       ((__u16) 0xF026)\n#define SFM_SPACE\t((__u16) 0xF028)\n#define SFM_PERIOD\t((__u16) 0xF029)\n\n \n#define NO_MAP_UNI_RSVD\t\t0\n#define SFM_MAP_UNI_RSVD\t1\n#define SFU_MAP_UNI_RSVD\t2\n\n#ifdef __KERNEL__\nint cifs_from_utf16(char *to, const __le16 *from, int tolen, int fromlen,\n\t\t    const struct nls_table *cp, int map_type);\nint cifs_utf16_bytes(const __le16 *from, int maxbytes,\n\t\t     const struct nls_table *codepage);\nint cifs_strtoUTF16(__le16 *, const char *, int, const struct nls_table *);\nchar *cifs_strndup_from_utf16(const char *src, const int maxlen,\n\t\t\t      const bool is_unicode,\n\t\t\t      const struct nls_table *codepage);\nextern int cifsConvertToUTF16(__le16 *target, const char *source, int maxlen,\n\t\t\t      const struct nls_table *cp, int mapChars);\nextern int cifs_remap(struct cifs_sb_info *cifs_sb);\nextern __le16 *cifs_strndup_to_utf16(const char *src, const int maxlen,\n\t\t\t\t     int *utf16_len, const struct nls_table *cp,\n\t\t\t\t     int remap);\n#endif\n\nwchar_t cifs_toupper(wchar_t in);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

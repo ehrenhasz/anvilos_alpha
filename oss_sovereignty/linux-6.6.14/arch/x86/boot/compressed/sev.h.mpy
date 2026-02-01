@@ -1,0 +1,9 @@
+{
+  "module_name": "sev.h",
+  "hash_id": "5d186f1de6613545391c232f0a8f9dcdd57c7e46cf6b70d39b0d57b68ad7d5ed",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/compressed/sev.h",
+  "human_readable_source": " \n \n\n#ifndef BOOT_COMPRESSED_SEV_H\n#define BOOT_COMPRESSED_SEV_H\n\n#ifdef CONFIG_AMD_MEM_ENCRYPT\n\nbool sev_snp_enabled(void);\nvoid snp_accept_memory(phys_addr_t start, phys_addr_t end);\n\n#else\n\nstatic inline bool sev_snp_enabled(void) { return false; }\nstatic inline void snp_accept_memory(phys_addr_t start, phys_addr_t end) { }\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

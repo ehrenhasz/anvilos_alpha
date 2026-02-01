@@ -1,0 +1,9 @@
+{
+  "module_name": "otx_cpt_common.h",
+  "hash_id": "b30f177610422bc0e1f486d045341f43d3a0bcf501013462d2d78023dafaf652",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/marvell/octeontx/otx_cpt_common.h",
+  "human_readable_source": " \n\n#ifndef __OTX_CPT_COMMON_H\n#define __OTX_CPT_COMMON_H\n\n#include <linux/types.h>\n#include <linux/delay.h>\n#include <linux/device.h>\n\n#define OTX_CPT_MAX_MBOX_DATA_STR_SIZE 64\n\nenum otx_cptpf_type {\n\tOTX_CPT_AE = 2,\n\tOTX_CPT_SE = 3,\n\tBAD_OTX_CPTPF_TYPE,\n};\n\nenum otx_cptvf_type {\n\tOTX_CPT_AE_TYPES = 1,\n\tOTX_CPT_SE_TYPES = 2,\n\tBAD_OTX_CPTVF_TYPE,\n};\n\n \nenum otx_cpt_mbox_opcode {\n\tOTX_CPT_MSG_VF_UP = 1,\n\tOTX_CPT_MSG_VF_DOWN,\n\tOTX_CPT_MSG_READY,\n\tOTX_CPT_MSG_QLEN,\n\tOTX_CPT_MSG_QBIND_GRP,\n\tOTX_CPT_MSG_VQ_PRIORITY,\n\tOTX_CPT_MSG_PF_TYPE,\n\tOTX_CPT_MSG_ACK,\n\tOTX_CPT_MSG_NACK\n};\n\n \nstruct otx_cpt_mbox {\n\tu64 msg;  \n\tu64 data; \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

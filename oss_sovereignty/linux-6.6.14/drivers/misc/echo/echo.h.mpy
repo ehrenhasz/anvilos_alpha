@@ -1,0 +1,9 @@
+{
+  "module_name": "echo.h",
+  "hash_id": "4faabbab57f0d79b81c773941c047fa2a59e96196211579837f90bd5bca67254",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/echo/echo.h",
+  "human_readable_source": " \n \n\n#ifndef __ECHO_H\n#define __ECHO_H\n\n \n\n#include \"fir.h\"\n#include \"oslec.h\"\n\n \nstruct oslec_state {\n\tint16_t tx;\n\tint16_t rx;\n\tint16_t clean;\n\tint16_t clean_nlp;\n\n\tint nonupdate_dwell;\n\tint curr_pos;\n\tint taps;\n\tint log2taps;\n\tint adaption_mode;\n\n\tint cond_met;\n\tint32_t pstates;\n\tint16_t adapt;\n\tint32_t factor;\n\tint16_t shift;\n\n\t \n\tint ltxacc;\n\tint lrxacc;\n\tint lcleanacc;\n\tint lclean_bgacc;\n\tint ltx;\n\tint lrx;\n\tint lclean;\n\tint lclean_bg;\n\tint lbgn;\n\tint lbgn_acc;\n\tint lbgn_upper;\n\tint lbgn_upper_acc;\n\n\t \n\tstruct fir16_state_t fir_state;\n\tstruct fir16_state_t fir_state_bg;\n\tint16_t *fir_taps16[2];\n\n\t \n\tint tx_1;\n\tint tx_2;\n\tint rx_1;\n\tint rx_2;\n\n\t \n\tint32_t xvtx[5];\n\tint32_t yvtx[5];\n\tint32_t xvrx[5];\n\tint32_t yvrx[5];\n\n\t \n\tint cng_level;\n\tint cng_rndnum;\n\tint cng_filter;\n\n\t \n\tint16_t *snapshot;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

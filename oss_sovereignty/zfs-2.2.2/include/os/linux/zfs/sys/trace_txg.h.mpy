@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_txg.h",
+  "hash_id": "a1e179ed5f6c6ab83ece9b019ae22c0f1704c786be50d1e129a7178e8bef85cf",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/zfs/sys/trace_txg.h",
+  "human_readable_source": " \n\n#if defined(_KERNEL)\n#if defined(HAVE_DECLARE_EVENT_CLASS)\n\n#undef TRACE_SYSTEM\n#define\tTRACE_SYSTEM zfs\n\n#undef TRACE_SYSTEM_VAR\n#define\tTRACE_SYSTEM_VAR zfs_txg\n\n#if !defined(_TRACE_TXG_H) || defined(TRACE_HEADER_MULTI_READ)\n#define\t_TRACE_TXG_H\n\n#include <linux/tracepoint.h>\n#include <sys/types.h>\n\n \n \nDECLARE_EVENT_CLASS(zfs_txg_class,\n\tTP_PROTO(dsl_pool_t *dp, uint64_t txg),\n\tTP_ARGS(dp, txg),\n\tTP_STRUCT__entry(\n\t    __field(uint64_t, txg)\n\t),\n\tTP_fast_assign(\n\t    __entry->txg = txg;\n\t),\n\tTP_printk(\"txg %llu\", __entry->txg)\n);\n \n\n#define\tDEFINE_TXG_EVENT(name) \\\nDEFINE_EVENT(zfs_txg_class, name, \\\n    TP_PROTO(dsl_pool_t *dp, uint64_t txg), \\\n    TP_ARGS(dp, txg))\nDEFINE_TXG_EVENT(zfs_dsl_pool_sync__done);\nDEFINE_TXG_EVENT(zfs_txg__quiescing);\nDEFINE_TXG_EVENT(zfs_txg__opened);\nDEFINE_TXG_EVENT(zfs_txg__syncing);\nDEFINE_TXG_EVENT(zfs_txg__synced);\nDEFINE_TXG_EVENT(zfs_txg__quiesced);\n\n#endif  \n\n#undef TRACE_INCLUDE_PATH\n#undef TRACE_INCLUDE_FILE\n#define\tTRACE_INCLUDE_PATH sys\n#define\tTRACE_INCLUDE_FILE trace_txg\n#include <trace/define_trace.h>\n\n#else\n\nDEFINE_DTRACE_PROBE2(dsl_pool_sync__done);\nDEFINE_DTRACE_PROBE2(txg__quiescing);\nDEFINE_DTRACE_PROBE2(txg__opened);\nDEFINE_DTRACE_PROBE2(txg__syncing);\nDEFINE_DTRACE_PROBE2(txg__synced);\nDEFINE_DTRACE_PROBE2(txg__quiesced);\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9eebd314291b6142fad51d28bbc5cd19f2f88e81a7a902be21c0e15415bbf9d3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_IPW2100) += ipw2x00/\nobj-$(CONFIG_IPW2200) += ipw2x00/\n\nobj-$(CONFIG_IWLEGACY)\t+= iwlegacy/\n\nobj-$(CONFIG_IWLWIFI)\t+= iwlwifi/\nobj-$(CONFIG_IWLMEI)\t+= iwlwifi/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

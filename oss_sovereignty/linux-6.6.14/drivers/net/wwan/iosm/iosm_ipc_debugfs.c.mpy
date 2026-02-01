@@ -1,0 +1,9 @@
+{
+  "module_name": "iosm_ipc_debugfs.c",
+  "hash_id": "a010fa3ba529fd38d8a6d15d2e336683aefd55c85fb94461660ab128715ded58",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wwan/iosm/iosm_ipc_debugfs.c",
+  "human_readable_source": "\n \n\n#include <linux/debugfs.h>\n#include <linux/wwan.h>\n\n#include \"iosm_ipc_imem.h\"\n#include \"iosm_ipc_trace.h\"\n#include \"iosm_ipc_debugfs.h\"\n\nvoid ipc_debugfs_init(struct iosm_imem *ipc_imem)\n{\n\tipc_imem->debugfs_wwan_dir = wwan_get_debugfs_dir(ipc_imem->dev);\n\n\tipc_imem->debugfs_dir = debugfs_create_dir(KBUILD_MODNAME,\n\t\t\t\t\t\t   ipc_imem->debugfs_wwan_dir);\n\n\tipc_imem->trace = ipc_trace_init(ipc_imem);\n\tif (!ipc_imem->trace)\n\t\tdev_warn(ipc_imem->dev, \"trace channel init failed\");\n}\n\nvoid ipc_debugfs_deinit(struct iosm_imem *ipc_imem)\n{\n\tipc_trace_deinit(ipc_imem->trace);\n\tdebugfs_remove_recursive(ipc_imem->debugfs_dir);\n\twwan_put_debugfs_dir(ipc_imem->debugfs_wwan_dir);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

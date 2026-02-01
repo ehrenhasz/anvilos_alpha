@@ -1,0 +1,9 @@
+{
+  "module_name": "fsmap.h",
+  "hash_id": "268fb1e555ffcde0133ba3c807ad558890b9a3fc01b519c06321a3de3252783e",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ext4/fsmap.h",
+  "human_readable_source": "\n \n#ifndef __EXT4_FSMAP_H__\n#define\t__EXT4_FSMAP_H__\n\nstruct fsmap;\n\n \nstruct ext4_fsmap {\n\tstruct list_head\tfmr_list;\n\tdev_t\t\tfmr_device;\t \n\tuint32_t\tfmr_flags;\t \n\tuint64_t\tfmr_physical;\t \n\tuint64_t\tfmr_owner;\t \n\tuint64_t\tfmr_length;\t \n};\n\nstruct ext4_fsmap_head {\n\tuint32_t\tfmh_iflags;\t \n\tuint32_t\tfmh_oflags;\t \n\tunsigned int\tfmh_count;\t \n\tunsigned int\tfmh_entries;\t \n\n\tstruct ext4_fsmap fmh_keys[2];\t \n};\n\nvoid ext4_fsmap_from_internal(struct super_block *sb, struct fsmap *dest,\n\t\tstruct ext4_fsmap *src);\nvoid ext4_fsmap_to_internal(struct super_block *sb, struct ext4_fsmap *dest,\n\t\tstruct fsmap *src);\n\n \ntypedef int (*ext4_fsmap_format_t)(struct ext4_fsmap *, void *);\n\nint ext4_getfsmap(struct super_block *sb, struct ext4_fsmap_head *head,\n\t\text4_fsmap_format_t formatter, void *arg);\n\n#define EXT4_QUERY_RANGE_ABORT\t\t1\n#define EXT4_QUERY_RANGE_CONTINUE\t0\n\n \n#define EXT4_FMR_OWN_FREE\tFMR_OWN_FREE       \n#define EXT4_FMR_OWN_UNKNOWN\tFMR_OWN_UNKNOWN    \n#define EXT4_FMR_OWN_FS\t\tFMR_OWNER('X', 1)  \n#define EXT4_FMR_OWN_LOG\tFMR_OWNER('X', 2)  \n#define EXT4_FMR_OWN_INODES\tFMR_OWNER('X', 5)  \n#define EXT4_FMR_OWN_GDT\tFMR_OWNER('f', 1)  \n#define EXT4_FMR_OWN_RESV_GDT\tFMR_OWNER('f', 2)  \n#define EXT4_FMR_OWN_BLKBM\tFMR_OWNER('f', 3)  \n#define EXT4_FMR_OWN_INOBM\tFMR_OWNER('f', 4)  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

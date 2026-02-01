@@ -1,0 +1,9 @@
+{
+  "module_name": "s390.py",
+  "hash_id": "cfb9b691781b6e1cacb92ac2b43586cbfb5dc610339d004ba2d0d4a35c626727",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/qemu_configs/s390.py",
+  "human_readable_source": "from ..qemu_config import QemuArchParams\n\nQEMU_ARCH = QemuArchParams(linux_arch='s390',\n\t\t\t   kconfig='''\nCONFIG_EXPERT=y\nCONFIG_TUNE_ZEC12=y\nCONFIG_NUMA=y\nCONFIG_MODULES=y''',\n\t\t\t   qemu_arch='s390x',\n\t\t\t   kernel_path='arch/s390/boot/bzImage',\n\t\t\t   kernel_command_line='console=ttyS0',\n\t\t\t   extra_qemu_params=[\n\t\t\t\t\t   '-machine', 's390-ccw-virtio',\n\t\t\t\t\t   '-cpu', 'qemu',])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

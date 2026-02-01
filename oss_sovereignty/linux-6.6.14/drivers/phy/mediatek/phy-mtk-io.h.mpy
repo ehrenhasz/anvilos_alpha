@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-mtk-io.h",
+  "hash_id": "a249c06de8580020e752576af828ecda022484a967e5d0afb88a153d6ba2e8e0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/mediatek/phy-mtk-io.h",
+  "human_readable_source": " \n \n\n#ifndef __PHY_MTK_H__\n#define __PHY_MTK_H__\n\n#include <linux/bitfield.h>\n#include <linux/io.h>\n\nstatic inline void mtk_phy_clear_bits(void __iomem *reg, u32 bits)\n{\n\tu32 tmp = readl(reg);\n\n\ttmp &= ~bits;\n\twritel(tmp, reg);\n}\n\nstatic inline void mtk_phy_set_bits(void __iomem *reg, u32 bits)\n{\n\tu32 tmp = readl(reg);\n\n\ttmp |= bits;\n\twritel(tmp, reg);\n}\n\nstatic inline void mtk_phy_update_bits(void __iomem *reg, u32 mask, u32 val)\n{\n\tu32 tmp = readl(reg);\n\n\ttmp &= ~mask;\n\ttmp |= val & mask;\n\twritel(tmp, reg);\n}\n\n \n#define mtk_phy_update_field(reg, mask, val) \\\n({ \\\n\tBUILD_BUG_ON_MSG(!__builtin_constant_p(mask), \"mask is not constant\"); \\\n\tmtk_phy_update_bits(reg, mask, FIELD_PREP(mask, val)); \\\n})\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

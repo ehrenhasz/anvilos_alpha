@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c0b1297006746def02ded93a262400b5343931209f70025265e10f0f85295680",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/sm750fb/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig FB_SM750\n\ttristate \"Silicon Motion SM750 framebuffer support\"\n\tdepends on FB && PCI && HAS_IOPORT\n\tselect FB_MODE_HELPERS\n\tselect FB_CFB_FILLRECT\n\tselect FB_CFB_COPYAREA\n\tselect FB_CFB_IMAGEBLIT\n\tselect VIDEO_NOMODESET\n\thelp\n\t  Frame buffer driver for the Silicon Motion SM750 chip\n\t  with 2D acceleration and dual head support.\n\n\t  This driver is also available as a module. The module will be\n\t  called sm750fb. If you want to compile it as a module, say M\n\t  here and read <file:Documentation/kbuild/modules.rst>.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

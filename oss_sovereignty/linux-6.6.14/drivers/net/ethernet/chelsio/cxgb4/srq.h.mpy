@@ -1,0 +1,9 @@
+{
+  "module_name": "srq.h",
+  "hash_id": "e62fff381ba2366ae958bfbadbe93faa2a590b62ea46289aa2b99205f5730d9b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4/srq.h",
+  "human_readable_source": " \n\n#ifndef __CXGB4_SRQ_H\n#define __CXGB4_SRQ_H\n\nstruct adapter;\nstruct cpl_srq_table_rpl;\n\n#define SRQ_WAIT_TO\t(HZ * 5)\n\nstruct srq_entry {\n\tu8 valid;\n\tu8 idx;\n\tu8 qlen;\n\tu16 pdid;\n\tu16 cur_msn;\n\tu16 max_msn;\n\tu32 qbase;\n};\n\nstruct srq_data {\n\tunsigned int srq_size;\n\tstruct srq_entry *entryp;\n\tstruct completion comp;\n\tstruct mutex lock;  \n};\n\nstruct srq_data *t4_init_srq(int srq_size);\nint cxgb4_get_srq_entry(struct net_device *dev,\n\t\t\tint srq_idx, struct srq_entry *entryp);\nvoid do_srq_table_rpl(struct adapter *adap,\n\t\t      const struct cpl_srq_table_rpl *rpl);\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

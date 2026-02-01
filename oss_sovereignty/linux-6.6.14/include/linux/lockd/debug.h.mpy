@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "1cb17cfb4fa011e76483cb9f0be0da8180d7b36b3f6a77407aba1cc6a9a89ca6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/lockd/debug.h",
+  "human_readable_source": " \n \n\n#ifndef LINUX_LOCKD_DEBUG_H\n#define LINUX_LOCKD_DEBUG_H\n\n#include <linux/sunrpc/debug.h>\n\n \n#undef ifdebug\n#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)\n# define ifdebug(flag)\t\tif (unlikely(nlm_debug & NLMDBG_##flag))\n#else\n# define ifdebug(flag)\t\tif (0)\n#endif\n\n \n#define NLMDBG_SVC\t\t0x0001\n#define NLMDBG_CLIENT\t\t0x0002\n#define NLMDBG_CLNTLOCK\t\t0x0004\n#define NLMDBG_SVCLOCK\t\t0x0008\n#define NLMDBG_MONITOR\t\t0x0010\n#define NLMDBG_CLNTSUBS\t\t0x0020\n#define NLMDBG_SVCSUBS\t\t0x0040\n#define NLMDBG_HOSTCACHE\t0x0080\n#define NLMDBG_XDR\t\t0x0100\n#define NLMDBG_ALL\t\t0x7fff\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

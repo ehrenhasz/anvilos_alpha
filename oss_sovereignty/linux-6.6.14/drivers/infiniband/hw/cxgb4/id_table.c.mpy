@@ -1,0 +1,9 @@
+{
+  "module_name": "id_table.c",
+  "hash_id": "89e784525c7ba9e7abca86d63885fc3c5a523d9734fd0692e8d9a9b10bffe4e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/cxgb4/id_table.c",
+  "human_readable_source": " \n#include <linux/kernel.h>\n#include <linux/random.h>\n#include \"iw_cxgb4.h\"\n\n#define RANDOM_SKIP 16\n\n \nu32 c4iw_id_alloc(struct c4iw_id_table *alloc)\n{\n\tunsigned long flags;\n\tu32 obj;\n\n\tspin_lock_irqsave(&alloc->lock, flags);\n\n\tobj = find_next_zero_bit(alloc->table, alloc->max, alloc->last);\n\tif (obj >= alloc->max)\n\t\tobj = find_first_zero_bit(alloc->table, alloc->max);\n\n\tif (obj < alloc->max) {\n\t\tif (alloc->flags & C4IW_ID_TABLE_F_RANDOM)\n\t\t\talloc->last += get_random_u32_below(RANDOM_SKIP);\n\t\telse\n\t\t\talloc->last = obj + 1;\n\t\tif (alloc->last >= alloc->max)\n\t\t\talloc->last = 0;\n\t\t__set_bit(obj, alloc->table);\n\t\tobj += alloc->start;\n\t} else\n\t\tobj = -1;\n\n\tspin_unlock_irqrestore(&alloc->lock, flags);\n\treturn obj;\n}\n\nvoid c4iw_id_free(struct c4iw_id_table *alloc, u32 obj)\n{\n\tunsigned long flags;\n\n\tobj -= alloc->start;\n\n\tspin_lock_irqsave(&alloc->lock, flags);\n\t__clear_bit(obj, alloc->table);\n\tspin_unlock_irqrestore(&alloc->lock, flags);\n}\n\nint c4iw_id_table_alloc(struct c4iw_id_table *alloc, u32 start, u32 num,\n\t\t\tu32 reserved, u32 flags)\n{\n\talloc->start = start;\n\talloc->flags = flags;\n\tif (flags & C4IW_ID_TABLE_F_RANDOM)\n\t\talloc->last = get_random_u32_below(RANDOM_SKIP);\n\telse\n\t\talloc->last = 0;\n\talloc->max = num;\n\tspin_lock_init(&alloc->lock);\n\talloc->table = bitmap_zalloc(num, GFP_KERNEL);\n\tif (!alloc->table)\n\t\treturn -ENOMEM;\n\n\tif (!(alloc->flags & C4IW_ID_TABLE_F_EMPTY))\n\t\tbitmap_set(alloc->table, 0, reserved);\n\n\treturn 0;\n}\n\nvoid c4iw_id_table_free(struct c4iw_id_table *alloc)\n{\n\tbitmap_free(alloc->table);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

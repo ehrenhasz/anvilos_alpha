@@ -1,0 +1,9 @@
+{
+  "module_name": "broadsheetfb.h",
+  "hash_id": "ee9070d36cc6093efd1280b6397d4e8f9563036b0bb427502e4985ed6eea6317",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/broadsheetfb.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_BROADSHEETFB_H_\n#define _LINUX_BROADSHEETFB_H_\n\n \n#define BS_CMD_INIT_SYS_RUN\t0x06\n#define BS_CMD_INIT_DSPE_CFG\t0x09\n#define BS_CMD_INIT_DSPE_TMG\t0x0A\n#define BS_CMD_INIT_ROTMODE\t0x0B\n#define BS_CMD_RD_REG\t\t0x10\n#define BS_CMD_WR_REG\t\t0x11\n#define BS_CMD_LD_IMG\t\t0x20\n#define BS_CMD_LD_IMG_AREA\t0x22\n#define BS_CMD_LD_IMG_END\t0x23\n#define BS_CMD_WAIT_DSPE_TRG\t0x28\n#define BS_CMD_WAIT_DSPE_FREND\t0x29\n#define BS_CMD_RD_WFM_INFO\t0x30\n#define BS_CMD_UPD_INIT\t\t0x32\n#define BS_CMD_UPD_FULL\t\t0x33\n#define BS_CMD_UPD_GDRV_CLR\t0x37\n\n \n#define BS_REG_REV\t\t0x00\n#define BS_REG_PRC\t\t0x02\n\n \n#define BS_CS\t0x01\n#define BS_DC \t0x02\n#define BS_WR \t0x03\n\n \n#define BS_MMIO_CMD\t0x01\n#define BS_MMIO_DATA\t0x02\n\n \nstruct broadsheetfb_par {\n\tstruct fb_info *info;\n\tstruct broadsheet_board *board;\n\tvoid (*write_reg)(struct broadsheetfb_par *, u16 reg, u16 val);\n\tu16 (*read_reg)(struct broadsheetfb_par *, u16 reg);\n\twait_queue_head_t waitq;\n\tint panel_index;\n\tstruct mutex io_lock;\n};\n\n \nstruct broadsheet_board {\n\tstruct module *owner;\n\tint (*init)(struct broadsheetfb_par *);\n\tint (*wait_for_rdy)(struct broadsheetfb_par *);\n\tvoid (*cleanup)(struct broadsheetfb_par *);\n\tint (*get_panel_type)(void);\n\tint (*setup_irq)(struct fb_info *);\n\n\t \n\tvoid (*set_ctl)(struct broadsheetfb_par *, unsigned char, u8);\n\tvoid (*set_hdb)(struct broadsheetfb_par *, u16);\n\tu16 (*get_hdb)(struct broadsheetfb_par *);\n\n\t \n\tvoid (*mmio_write)(struct broadsheetfb_par *, int type, u16);\n\tu16 (*mmio_read)(struct broadsheetfb_par *);\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

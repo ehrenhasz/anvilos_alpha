@@ -1,0 +1,9 @@
+{
+  "module_name": "richtek,rt5190a-regulator.h",
+  "hash_id": "28466ff55476fac1f3e8bc792bbae99212b985bcaee3d5385419ffb7c4466779",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/regulator/richtek,rt5190a-regulator.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_RICHTEK_RT5190A_REGULATOR_H__\n#define __DT_BINDINGS_RICHTEK_RT5190A_REGULATOR_H__\n\n \n\n#define RT5190A_OPMODE_AUTO\t0\n#define RT5190A_OPMODE_FPWM\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

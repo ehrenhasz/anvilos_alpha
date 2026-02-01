@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b190b9b3a9c45d60f7b9824d42cb1a9f92d6185dffa63eec180a42fd5723cae2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: ISC\nobj-$(CONFIG_ATH5K)\t\t+= ath5k/\nobj-$(CONFIG_ATH9K_HW)\t\t+= ath9k/\nobj-$(CONFIG_CARL9170)\t\t+= carl9170/\nobj-$(CONFIG_ATH6KL)\t\t+= ath6kl/\nobj-$(CONFIG_AR5523)\t\t+= ar5523/\nobj-$(CONFIG_WIL6210)\t\t+= wil6210/\nobj-$(CONFIG_ATH10K)\t\t+= ath10k/\nobj-$(CONFIG_WCN36XX)\t\t+= wcn36xx/\nobj-$(CONFIG_ATH11K)\t\t+= ath11k/\nobj-$(CONFIG_ATH12K)\t\t+= ath12k/\n\nobj-$(CONFIG_ATH_COMMON)\t+= ath.o\n\nath-objs :=\tmain.o \\\n\t\tregd.o \\\n\t\thw.o \\\n\t\tkey.o \\\n\t\tdfs_pattern_detector.o \\\n\t\tdfs_pri_detector.o\n\nath-$(CONFIG_ATH_DEBUG) += debug.o\nath-$(CONFIG_ATH_TRACEPOINTS) += trace.o\n\nCFLAGS_trace.o := -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

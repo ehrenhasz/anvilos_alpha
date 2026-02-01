@@ -1,0 +1,9 @@
+{
+  "module_name": "nv50.h",
+  "hash_id": "d78220a1663f4bd1f45ce4bbe5dda4c73a29f89ffc987c6f35e3d4c8add7f818",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/clk/nv50.h",
+  "human_readable_source": " \n#ifndef __NV50_CLK_H__\n#define __NV50_CLK_H__\n#define nv50_clk(p) container_of((p), struct nv50_clk, base)\n#include \"priv.h\"\n\n#include <subdev/bus/hwsq.h>\n\nstruct nv50_clk_hwsq {\n\tstruct hwsq base;\n\tstruct hwsq_reg r_fifo;\n\tstruct hwsq_reg r_spll[2];\n\tstruct hwsq_reg r_nvpll[2];\n\tstruct hwsq_reg r_divs;\n\tstruct hwsq_reg r_mast;\n};\n\nstruct nv50_clk {\n\tstruct nvkm_clk base;\n\tstruct nv50_clk_hwsq hwsq;\n};\n\nint nv50_clk_new_(const struct nvkm_clk_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t  bool, struct nvkm_clk **);\nint nv50_clk_read(struct nvkm_clk *, enum nv_clk_src);\nint nv50_clk_calc(struct nvkm_clk *, struct nvkm_cstate *);\nint nv50_clk_prog(struct nvkm_clk *);\nvoid nv50_clk_tidy(struct nvkm_clk *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

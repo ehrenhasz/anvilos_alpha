@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "613fa85cd98b9887439a8c3d06eea6a6f818ad2b101486ce3133f8b8d9dc7396",
+  "original_prompt": "Ingested from linux-6.6.14/tools/verification/dot2/Makefile",
+  "human_readable_source": "INSTALL=install\n\nprefix  ?= /usr\nbindir  ?= $(prefix)/bin\nmandir  ?= $(prefix)/share/man\nmiscdir ?= $(prefix)/share/dot2\nsrcdir  ?= $(prefix)/src\n\nPYLIB  ?= $(shell python3 -c 'import sysconfig;  print (sysconfig.get_path(\"purelib\"))')\n\n.PHONY: all\nall:\n\n.PHONY: clean\nclean:\n\n.PHONY: install\ninstall:\n\t$(INSTALL) automata.py -D -m 644 $(DESTDIR)$(PYLIB)/dot2/automata.py\n\t$(INSTALL) dot2c.py -D -m 644 $(DESTDIR)$(PYLIB)/dot2/dot2c.py\n\t$(INSTALL) dot2c -D -m 755 $(DESTDIR)$(bindir)/\n\t$(INSTALL) dot2k.py -D -m 644 $(DESTDIR)$(PYLIB)/dot2/dot2k.py\n\t$(INSTALL) dot2k -D -m 755 $(DESTDIR)$(bindir)/\n\n\tmkdir -p ${miscdir}/\n\tcp -rp dot2k_templates $(DESTDIR)$(miscdir)/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

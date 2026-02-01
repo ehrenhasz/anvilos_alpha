@@ -1,0 +1,9 @@
+{
+  "module_name": "ti-dp83869.h",
+  "hash_id": "1a2993fd1ba5e72ef7f2a0cf51a6ca9443af32479752eb111e0a2b1fd41c1443",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/net/ti-dp83869.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_TI_DP83869_H\n#define _DT_BINDINGS_TI_DP83869_H\n\n \n#define DP83869_PHYCR_FIFO_DEPTH_3_B_NIB\t0x00\n#define DP83869_PHYCR_FIFO_DEPTH_4_B_NIB\t0x01\n#define DP83869_PHYCR_FIFO_DEPTH_6_B_NIB\t0x02\n#define DP83869_PHYCR_FIFO_DEPTH_8_B_NIB\t0x03\n\n \n#define DP83869_CLK_O_SEL_CHN_A_RCLK\t\t0x0\n#define DP83869_CLK_O_SEL_CHN_B_RCLK\t\t0x1\n#define DP83869_CLK_O_SEL_CHN_C_RCLK\t\t0x2\n#define DP83869_CLK_O_SEL_CHN_D_RCLK\t\t0x3\n#define DP83869_CLK_O_SEL_CHN_A_RCLK_DIV5\t0x4\n#define DP83869_CLK_O_SEL_CHN_B_RCLK_DIV5\t0x5\n#define DP83869_CLK_O_SEL_CHN_C_RCLK_DIV5\t0x6\n#define DP83869_CLK_O_SEL_CHN_D_RCLK_DIV5\t0x7\n#define DP83869_CLK_O_SEL_CHN_A_TCLK\t\t0x8\n#define DP83869_CLK_O_SEL_CHN_B_TCLK\t\t0x9\n#define DP83869_CLK_O_SEL_CHN_C_TCLK\t\t0xa\n#define DP83869_CLK_O_SEL_CHN_D_TCLK\t\t0xb\n#define DP83869_CLK_O_SEL_REF_CLK\t\t0xc\n\n#define DP83869_RGMII_COPPER_ETHERNET\t\t0x00\n#define DP83869_RGMII_1000_BASE\t\t\t0x01\n#define DP83869_RGMII_100_BASE\t\t\t0x02\n#define DP83869_RGMII_SGMII_BRIDGE\t\t0x03\n#define DP83869_1000M_MEDIA_CONVERT\t\t0x04\n#define DP83869_100M_MEDIA_CONVERT\t\t0x05\n#define DP83869_SGMII_COPPER_ETHERNET\t\t0x06\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

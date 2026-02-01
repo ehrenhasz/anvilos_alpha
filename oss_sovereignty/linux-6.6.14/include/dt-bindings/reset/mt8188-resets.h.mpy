@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8188-resets.h",
+  "hash_id": "1cdf7d5542951cd6c176f9c5d345523533daf6bde09d6846922a90821fc9c97e",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/mt8188-resets.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_RESET_CONTROLLER_MT8188\n#define _DT_BINDINGS_RESET_CONTROLLER_MT8188\n\n#define MT8188_TOPRGU_CONN_MCU_SW_RST          0\n#define MT8188_TOPRGU_INFRA_GRST_SW_RST        1\n#define MT8188_TOPRGU_IPU0_SW_RST              2\n#define MT8188_TOPRGU_IPU1_SW_RST              3\n#define MT8188_TOPRGU_IPU2_SW_RST              4\n#define MT8188_TOPRGU_AUD_ASRC_SW_RST          5\n#define MT8188_TOPRGU_INFRA_SW_RST             6\n#define MT8188_TOPRGU_MMSYS_SW_RST             7\n#define MT8188_TOPRGU_MFG_SW_RST               8\n#define MT8188_TOPRGU_VENC_SW_RST              9\n#define MT8188_TOPRGU_VDEC_SW_RST              10\n#define MT8188_TOPRGU_CAM_VCORE_SW_RST         11\n#define MT8188_TOPRGU_SCP_SW_RST               12\n#define MT8188_TOPRGU_APMIXEDSYS_SW_RST        13\n#define MT8188_TOPRGU_AUDIO_SW_RST             14\n#define MT8188_TOPRGU_CAMSYS_SW_RST            15\n#define MT8188_TOPRGU_MJC_SW_RST               16\n#define MT8188_TOPRGU_PERI_SW_RST              17\n#define MT8188_TOPRGU_PERI_AO_SW_RST           18\n#define MT8188_TOPRGU_PCIE_SW_RST              19\n#define MT8188_TOPRGU_ADSPSYS_SW_RST           21\n#define MT8188_TOPRGU_DPTX_SW_RST              22\n#define MT8188_TOPRGU_SPMI_MST_SW_RST          23\n\n#define MT8188_TOPRGU_SW_RST_NUM               24\n\n \n#define MT8188_INFRA_RST1_THERMAL_MCU_RST          0\n#define MT8188_INFRA_RST1_THERMAL_CTRL_RST         1\n#define MT8188_INFRA_RST3_PTP_CTRL_RST             2\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

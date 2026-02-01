@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_tracechr.c",
+  "hash_id": "ed7ba226cded4cad48d37662f39323e9037d7f431a83ba0e93ebdb32c3d70e59",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/trace/lib_tracechr.c",
+  "human_readable_source": " \n\n \n\n \n#include <curses.priv.h>\n\n#include <ctype.h>\n\nMODULE_ID(\"$Id: lib_tracechr.c,v 1.23 2020/02/02 23:34:34 tom Exp $\")\n\n#ifdef TRACE\n\n#define MyBufSize sizeof(_nc_globals.tracechr_buf)\n\nNCURSES_EXPORT(char *)\n_nc_tracechar(SCREEN *sp, int ch)\n{\n    NCURSES_CONST char *name;\n    char *MyBuffer = ((sp != 0)\n\t\t      ? sp->tracechr_buf\n\t\t      : _nc_globals.tracechr_buf);\n\n    if (ch > KEY_MIN || ch < 0) {\n\tname = safe_keyname(SP_PARM, ch);\n\tif (name == 0 || *name == '\\0')\n\t    name = \"NULL\";\n\t_nc_SPRINTF(MyBuffer, _nc_SLIMIT(MyBufSize)\n\t\t    \"'%.30s' = %#03o\", name, ch);\n    } else if (!is8bits(ch) || !isprint(UChar(ch))) {\n\t \n\t_nc_SPRINTF(MyBuffer, _nc_SLIMIT(MyBufSize)\n\t\t    \"%#03o\", ch);\n    } else {\n\tname = safe_unctrl(SP_PARM, (chtype) ch);\n\tif (name == 0 || *name == 0)\n\t    name = \"null\";\t \n\t_nc_SPRINTF(MyBuffer, _nc_SLIMIT(MyBufSize)\n\t\t    \"'%.30s' = %#03o\", name, ch);\n    }\n    return (MyBuffer);\n}\n\nNCURSES_EXPORT(char *)\n_tracechar(int ch)\n{\n    return _nc_tracechar(CURRENT_SCREEN, ch);\n}\n#else\nEMPTY_MODULE(_nc_lib_tracechr)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

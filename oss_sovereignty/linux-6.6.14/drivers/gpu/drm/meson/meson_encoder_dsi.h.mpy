@@ -1,0 +1,9 @@
+{
+  "module_name": "meson_encoder_dsi.h",
+  "hash_id": "ecd8ade325065c2efe952d293c7196d11af5c80b3c9bd7919e28060f4e43f902",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/meson/meson_encoder_dsi.h",
+  "human_readable_source": " \n \n\n#ifndef __MESON_ENCODER_DSI_H\n#define __MESON_ENCODER_DSI_H\n\nint meson_encoder_dsi_init(struct meson_drm *priv);\nvoid meson_encoder_dsi_remove(struct meson_drm *priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

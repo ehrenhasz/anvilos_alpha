@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,videocc-sdm845.h",
+  "hash_id": "0db19df873dd1470e4ff563d3555cb1611a61ecc0dfbb4440d1fcf713d039f12",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,videocc-sdm845.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_SDM_VIDEO_CC_SDM845_H\n#define _DT_BINDINGS_CLK_SDM_VIDEO_CC_SDM845_H\n\n \n#define VIDEO_CC_APB_CLK\t\t0\n#define VIDEO_CC_AT_CLK\t\t\t1\n#define VIDEO_CC_QDSS_TRIG_CLK\t\t2\n#define VIDEO_CC_QDSS_TSCTR_DIV8_CLK\t3\n#define VIDEO_CC_VCODEC0_AXI_CLK\t4\n#define VIDEO_CC_VCODEC0_CORE_CLK\t5\n#define VIDEO_CC_VCODEC1_AXI_CLK\t6\n#define VIDEO_CC_VCODEC1_CORE_CLK\t7\n#define VIDEO_CC_VENUS_AHB_CLK\t\t8\n#define VIDEO_CC_VENUS_CLK_SRC\t\t9\n#define VIDEO_CC_VENUS_CTL_AXI_CLK\t10\n#define VIDEO_CC_VENUS_CTL_CORE_CLK\t11\n#define VIDEO_PLL0\t\t\t12\n\n \n#define VIDEO_CC_VENUS_BCR\t\t0\n#define VIDEO_CC_VCODEC0_BCR\t\t1\n#define VIDEO_CC_VCODEC1_BCR\t\t2\n#define VIDEO_CC_INTERFACE_BCR\t\t3\n\n \n#define VENUS_GDSC\t\t\t0\n#define VCODEC0_GDSC\t\t\t1\n#define VCODEC1_GDSC\t\t\t2\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mkdirs",
+  "hash_id": "b30e23f017337d631dbbc1e52017d76994a72605856e1d668219216f13f005b8",
+  "original_prompt": "Ingested from readline-8.2/support/mkdirs",
+  "human_readable_source": "#! /bin/sh\n#\n# mkdirs - a work-alike for `mkdir -p'\n#\n# Chet Ramey\n# chet@po.cwru.edu\n\n# Copyright (C) 1996-2002 Free Software Foundation, Inc.\n#\n#   This program is free software: you can redistribute it and/or modify\n#   it under the terms of the GNU General Public License as published by\n#   the Free Software Foundation, either version 3 of the License, or\n#   (at your option) any later version.\n#\n#   This program is distributed in the hope that it will be useful,\n#   but WITHOUT ANY WARRANTY; without even the implied warranty of\n#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n#   GNU General Public License for more details.\n#\n#   You should have received a copy of the GNU General Public License\n#   along with this program.  If not, see <http://www.gnu.org/licenses/>.\n\nfor dir\ndo\n\n\ttest -d \"$dir\" && continue\n\n\ttomake=$dir\n\twhile test -n \"$dir\" ; do\n\t\t# dir=${dir%/*}\n\t\t# dir=`expr \"$dir\" ':' '\\(/.*\\)/[^/]*'`\n\t\tif dir=`expr \"$dir\" ':' '\\(.*\\)/[^/]*'`; then\n\t\t\ttomake=\"$dir $tomake\"\n\t\telse\n\t\t\tdir=\n\t\tfi\n\tdone\n\n\tfor d in $tomake\n\tdo\n\t\ttest -d \"$d\" && continue\n\t\techo mkdir \"$d\"\n\t\tmkdir \"$d\"\n\tdone\ndone\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

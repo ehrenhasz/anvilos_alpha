@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f7afdde39e80582c5620299a176a461638db5bd2e1caf8da1b70f03315b0eb33",
+  "original_prompt": "Ingested from linux-6.6.14/sound/i2c/other/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ALSA\n# Copyright (c) 2003 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-ak4114-objs := ak4114.o\nsnd-ak4117-objs := ak4117.o\nsnd-ak4113-objs := ak4113.o\nsnd-ak4xxx-adda-objs := ak4xxx-adda.o\nsnd-pt2258-objs := pt2258.o\n\n# Module Dependency\nobj-$(CONFIG_SND_PDAUDIOCF) += snd-ak4117.o\nobj-$(CONFIG_SND_ICE1712) += snd-ak4xxx-adda.o\nobj-$(CONFIG_SND_ICE1724) += snd-ak4114.o snd-ak4113.o snd-ak4xxx-adda.o snd-pt2258.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

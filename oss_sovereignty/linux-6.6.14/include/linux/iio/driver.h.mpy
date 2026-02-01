@@ -1,0 +1,9 @@
+{
+  "module_name": "driver.h",
+  "hash_id": "27b5782db523b9f31b81ed6ea8baf59d4d14d378d0a71ceb23b31345ec698dc0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/driver.h",
+  "human_readable_source": " \n \n\n#ifndef _IIO_INKERN_H_\n#define _IIO_INKERN_H_\n\nstruct device;\nstruct iio_dev;\nstruct iio_map;\n\n \nint iio_map_array_register(struct iio_dev *indio_dev,\n\t\t\t   struct iio_map *map);\n\n \nint iio_map_array_unregister(struct iio_dev *indio_dev);\n\n \nint devm_iio_map_array_register(struct device *dev, struct iio_dev *indio_dev, struct iio_map *maps);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

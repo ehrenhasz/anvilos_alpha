@@ -1,0 +1,9 @@
+{
+  "module_name": "ebt_limit.h",
+  "hash_id": "4d6ca5f922a3859d42783b1fa0506cd977313c98b7500f3aa616341eeab20867",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_bridge/ebt_limit.h",
+  "human_readable_source": " \n#ifndef __LINUX_BRIDGE_EBT_LIMIT_H\n#define __LINUX_BRIDGE_EBT_LIMIT_H\n\n#include <linux/types.h>\n\n#define EBT_LIMIT_MATCH \"limit\"\n\n \n#define EBT_LIMIT_SCALE 10000\n\n \n\nstruct ebt_limit_info {\n\t__u32 avg;     \n\t__u32 burst;   \n\n\t \n\tunsigned long prev;\n\t__u32 credit;\n\t__u32 credit_cap, cost;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

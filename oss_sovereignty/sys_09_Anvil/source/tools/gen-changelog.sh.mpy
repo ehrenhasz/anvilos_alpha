@@ -1,0 +1,9 @@
+{
+  "module_name": "gen-changelog.sh",
+  "hash_id": "8f4e3054a5de7a7ba70b46f9e0fb33d5016bca050e395a2be196dc8ecb6362e3",
+  "original_prompt": "Ingested from sys_09_Anvil/source/tools/gen-changelog.sh",
+  "human_readable_source": "#!/bin/sh\n\necho \"MicroPython change log\"\n\nfor t in $(git tag | grep -v -- '-rc1\\|-preview' | sort -rV); do\n    echo ''\n    echo '========'\n    echo ''\n    git show -s --format=%cD `git rev-list $t --max-count=1`\n    echo ''\n    git tag -l $t -n9999\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

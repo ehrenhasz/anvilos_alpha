@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b7d8c62f79717b8be58b6daaa876e8fb098a20b26f19cd55e0ce7b90b26886c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intersil/p54/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\np54common-objs\t\t\t:= eeprom.o fwio.o txrx.o main.o\np54common-$(CONFIG_P54_LEDS)\t+= led.o\n\nobj-$(CONFIG_P54_COMMON)\t+= p54common.o\nobj-$(CONFIG_P54_USB)\t\t+= p54usb.o\nobj-$(CONFIG_P54_PCI)\t\t+= p54pci.o\nobj-$(CONFIG_P54_SPI)\t\t+= p54spi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

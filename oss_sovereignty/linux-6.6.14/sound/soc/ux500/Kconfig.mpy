@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8691252d5474828ae2468e04e1fedbed9a499aea3e5c5ad09745671b69c00e2d",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/ux500/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Ux500 SoC audio configuration\n#\nmenuconfig SND_SOC_UX500\n\ttristate \"SoC Audio support for Ux500 platform\"\n\tdepends on SND_SOC\n\tdepends on MFD_DB8500_PRCMU\n\thelp\n\t\tSay Y if you want to enable ASoC-support for\n\t\tany of the Ux500 platforms (e.g. U8500).\n\nconfig SND_SOC_UX500_PLAT_MSP_I2S\n\ttristate\n\tdepends on SND_SOC_UX500\n\nconfig SND_SOC_UX500_PLAT_DMA\n\ttristate \"Platform - DB8500 (DMA)\"\n\tdepends on SND_SOC_UX500\n\tselect SND_SOC_GENERIC_DMAENGINE_PCM\n\thelp\n\t\tSay Y if you want to enable the Ux500 platform-driver.\n\nconfig SND_SOC_UX500_MACH_MOP500\n\ttristate \"Machine - MOP500 (Ux500 + AB8500)\"\n\tdepends on AB8500_CORE && AB8500_GPADC && SND_SOC_UX500\n\tselect SND_SOC_AB8500_CODEC\n\tselect SND_SOC_UX500_PLAT_MSP_I2S\n\tselect SND_SOC_UX500_PLAT_DMA\n\thelp\n\t\tSelect this to enable the MOP500 machine-driver.\n\t\tThis will enable platform-drivers for: Ux500\n\t\tThis will enable codec-drivers for: AB8500\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

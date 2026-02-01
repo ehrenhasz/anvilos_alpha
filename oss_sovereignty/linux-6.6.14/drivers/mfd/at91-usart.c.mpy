@@ -1,0 +1,9 @@
+{
+  "module_name": "at91-usart.c",
+  "hash_id": "7a1755bd880a23432e8eba0b3f01a792aec270e2908c28c3f0e61779a2167cc3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/at91-usart.c",
+  "human_readable_source": "\n \n\n#include <dt-bindings/mfd/at91-usart.h>\n\n#include <linux/module.h>\n#include <linux/mfd/core.h>\n#include <linux/of.h>\n#include <linux/property.h>\n\nstatic const struct mfd_cell at91_usart_spi_subdev =\n\tMFD_CELL_NAME(\"at91_usart_spi\");\n\nstatic const struct mfd_cell at91_usart_serial_subdev =\n\tMFD_CELL_NAME(\"atmel_usart_serial\");\n\nstatic int at91_usart_mode_probe(struct platform_device *pdev)\n{\n\tconst struct mfd_cell *cell;\n\tu32 opmode = AT91_USART_MODE_SERIAL;\n\n\tdevice_property_read_u32(&pdev->dev, \"atmel,usart-mode\", &opmode);\n\n\tswitch (opmode) {\n\tcase AT91_USART_MODE_SPI:\n\t\tcell = &at91_usart_spi_subdev;\n\t\tbreak;\n\tcase AT91_USART_MODE_SERIAL:\n\t\tcell = &at91_usart_serial_subdev;\n\t\tbreak;\n\tdefault:\n\t\tdev_err(&pdev->dev, \"atmel,usart-mode has an invalid value %u\\n\",\n\t\t\topmode);\n\t\treturn -EINVAL;\n\t}\n\n\treturn devm_mfd_add_devices(&pdev->dev, PLATFORM_DEVID_AUTO, cell, 1,\n\t\t\t      NULL, 0, NULL);\n}\n\nstatic const struct of_device_id at91_usart_mode_of_match[] = {\n\t{ .compatible = \"atmel,at91rm9200-usart\" },\n\t{ .compatible = \"atmel,at91sam9260-usart\" },\n\t{   }\n};\n\nMODULE_DEVICE_TABLE(of, at91_usart_mode_of_match);\n\nstatic struct platform_driver at91_usart_mfd = {\n\t.probe\t= at91_usart_mode_probe,\n\t.driver\t= {\n\t\t.name\t\t= \"at91_usart_mode\",\n\t\t.of_match_table\t= at91_usart_mode_of_match,\n\t},\n};\n\nmodule_platform_driver(at91_usart_mfd);\n\nMODULE_AUTHOR(\"Radu Pirea <radu.pirea@microchip.com>\");\nMODULE_DESCRIPTION(\"AT91 USART MFD driver\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cthw20k1.h",
+  "hash_id": "138b30860c2181909d5fe6cf8a8d74b103028b65cb2900a3827ab20e180bd6b5",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ctxfi/cthw20k1.h",
+  "human_readable_source": " \n \n\n#ifndef CTHW20K1_H\n#define CTHW20K1_H\n\n#include \"cthardware.h\"\n\nint create_20k1_hw_obj(struct hw **rhw);\nint destroy_20k1_hw_obj(struct hw *hw);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

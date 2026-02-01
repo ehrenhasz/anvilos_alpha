@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "1a7f28ffe4908165dca626bc26e6f5ffb49b6024917c488b20ccd6613b90c147",
+  "original_prompt": "Ingested from linux-6.6.14/tools/objtool/arch/powerpc/Build",
+  "human_readable_source": "objtool-y += decode.o\nobjtool-y += special.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

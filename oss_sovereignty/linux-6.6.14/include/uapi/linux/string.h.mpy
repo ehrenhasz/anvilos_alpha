@@ -1,0 +1,9 @@
+{
+  "module_name": "string.h",
+  "hash_id": "17c06a96230ef97b1a12c64ed4a63ec50afa8188181543d6e3867a399166c350",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/string.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_STRING_H_\n#define _UAPI_LINUX_STRING_H_\n\n \n\n#ifndef __KERNEL__\n#include <string.h>\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "iommu.h",
+  "hash_id": "7736e60e724114ecb7e3a84935ac74f44894c08930f59f55de10b7006e6f235b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/iommu.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_IOMMU_H\n#define _ASM_X86_IOMMU_H\n\n#include <linux/acpi.h>\n\n#include <asm/e820/api.h>\n\nextern int force_iommu, no_iommu;\nextern int iommu_detected;\nextern int iommu_merge;\nextern int panic_on_overflow;\n\n#ifdef CONFIG_SWIOTLB\nextern bool x86_swiotlb_enable;\n#else\n#define x86_swiotlb_enable false\n#endif\n\n \n#define DMAR_OPERATION_TIMEOUT ((cycles_t) tsc_khz*10*1000)\n\nstatic inline int __init\narch_rmrr_sanity_check(struct acpi_dmar_reserved_memory *rmrr)\n{\n\tu64 start = rmrr->base_address;\n\tu64 end = rmrr->end_address + 1;\n\tint entry_type;\n\n\tentry_type = e820__get_entry_type(start, end);\n\tif (entry_type == E820_TYPE_RESERVED || entry_type == E820_TYPE_NVS)\n\t\treturn 0;\n\n\tpr_err(FW_BUG \"No firmware reserved region can cover this RMRR [%#018Lx-%#018Lx], contact BIOS vendor for fixes\\n\",\n\t       start, end - 1);\n\treturn -EINVAL;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

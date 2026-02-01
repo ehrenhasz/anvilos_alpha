@@ -1,0 +1,9 @@
+{
+  "module_name": "adxl345.h",
+  "hash_id": "ebcd2b55eaeeb0f6b97125d55aa123b9f1084f690333c3b246bc5c84b79dc5c5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/accel/adxl345.h",
+  "human_readable_source": " \n \n\n#ifndef _ADXL345_H_\n#define _ADXL345_H_\n\nenum adxl345_device_type {\n\tADXL345\t= 1,\n\tADXL375 = 2,\n};\n\nint adxl345_core_probe(struct device *dev, struct regmap *regmap);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

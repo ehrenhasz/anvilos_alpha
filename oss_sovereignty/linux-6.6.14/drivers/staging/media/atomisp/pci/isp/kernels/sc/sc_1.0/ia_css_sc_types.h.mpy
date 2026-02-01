@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_sc_types.h",
+  "hash_id": "430a6fbe30afe69286988bb93f964b44c9f745dd607ea4148a2612cb3caa5ac3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/sc/sc_1.0/ia_css_sc_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_SC_TYPES_H\n#define __IA_CSS_SC_TYPES_H\n\n \n\n \n#define IA_CSS_SC_NUM_COLORS           4\n\n \nenum ia_css_sc_color {\n\tIA_CSS_SC_COLOR_GR,  \n\tIA_CSS_SC_COLOR_R,   \n\tIA_CSS_SC_COLOR_B,   \n\tIA_CSS_SC_COLOR_GB   \n};\n\n \nstruct ia_css_shading_table {\n\tu32 enable;  \n\t \n\tu32 sensor_width;   \n\tu32 sensor_height;  \n\t \n\tu32 width;   \n\tu32 height;  \n\tu32 fraction_bits;  \n\tu16 *data[IA_CSS_SC_NUM_COLORS];\n\t \n};\n\n \n \nstruct ia_css_shading_settings {\n\tu32 enable_shading_table_conversion;  \n};\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

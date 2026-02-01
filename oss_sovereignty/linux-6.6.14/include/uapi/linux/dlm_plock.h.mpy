@@ -1,0 +1,9 @@
+{
+  "module_name": "dlm_plock.h",
+  "hash_id": "d2979091f76416c2013862cfc05b9186c3500869e7ff3d09e5370b80b36b9d7c",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/dlm_plock.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI__DLM_PLOCK_DOT_H__\n#define _UAPI__DLM_PLOCK_DOT_H__\n\n#include <linux/types.h>\n\n#define DLM_PLOCK_MISC_NAME\t\t\"dlm_plock\"\n\n#define DLM_PLOCK_VERSION_MAJOR\t1\n#define DLM_PLOCK_VERSION_MINOR\t2\n#define DLM_PLOCK_VERSION_PATCH\t0\n\nenum {\n\tDLM_PLOCK_OP_LOCK = 1,\n\tDLM_PLOCK_OP_UNLOCK,\n\tDLM_PLOCK_OP_GET,\n\tDLM_PLOCK_OP_CANCEL,\n};\n\n#define DLM_PLOCK_FL_CLOSE 1\n\nstruct dlm_plock_info {\n\t__u32 version[3];\n\t__u8 optype;\n\t__u8 ex;\n\t__u8 wait;\n\t__u8 flags;\n\t__u32 pid;\n\t__s32 nodeid;\n\t__s32 rv;\n\t__u32 fsid;\n\t__u64 number;\n\t__u64 start;\n\t__u64 end;\n\t__u64 owner;\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

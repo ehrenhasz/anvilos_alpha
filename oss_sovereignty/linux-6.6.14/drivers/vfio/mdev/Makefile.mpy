@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "437e321e61ad7cc9945c6f4de2156daa0f3c03c8fee097397fad4ba18fe4ab05",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/mdev/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nmdev-y := mdev_core.o mdev_sysfs.o mdev_driver.o\n\nobj-$(CONFIG_VFIO_MDEV) += mdev.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

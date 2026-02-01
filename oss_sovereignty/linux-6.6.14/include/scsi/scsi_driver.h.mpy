@@ -1,0 +1,9 @@
+{
+  "module_name": "scsi_driver.h",
+  "hash_id": "915741de02e4bead0229ddf0feba25da0794ec721452a95ef4df601959f8db28",
+  "original_prompt": "Ingested from linux-6.6.14/include/scsi/scsi_driver.h",
+  "human_readable_source": " \n#ifndef _SCSI_SCSI_DRIVER_H\n#define _SCSI_SCSI_DRIVER_H\n\n#include <linux/blk_types.h>\n#include <linux/device.h>\n#include <scsi/scsi_cmnd.h>\n\nstruct module;\nstruct request;\n\nstruct scsi_driver {\n\tstruct device_driver\tgendrv;\n\n\tvoid (*rescan)(struct device *);\n\tblk_status_t (*init_command)(struct scsi_cmnd *);\n\tvoid (*uninit_command)(struct scsi_cmnd *);\n\tint (*done)(struct scsi_cmnd *);\n\tint (*eh_action)(struct scsi_cmnd *, int);\n\tvoid (*eh_reset)(struct scsi_cmnd *);\n};\n#define to_scsi_driver(drv) \\\n\tcontainer_of((drv), struct scsi_driver, gendrv)\n\nextern int scsi_register_driver(struct device_driver *);\n#define scsi_unregister_driver(drv) \\\n\tdriver_unregister(drv);\n\nextern int scsi_register_interface(struct class_interface *);\n#define scsi_unregister_interface(intf) \\\n\tclass_interface_unregister(intf)\n\n \nstatic inline struct scsi_driver *scsi_cmd_to_driver(struct scsi_cmnd *cmd)\n{\n\treturn to_scsi_driver(cmd->device->sdev_gendev.driver);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

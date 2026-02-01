@@ -1,0 +1,9 @@
+{
+  "module_name": "keygen-change.sh",
+  "hash_id": "4bb0da64beaea07a4ce74bd47cdc55cad57f5ee8070d08034f1553514684d54c",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/keygen-change.sh",
+  "human_readable_source": "#\t$OpenBSD: keygen-change.sh,v 1.9 2019/12/16 02:39:05 djm Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"change passphrase for key\"\n\nS1=\"secret1\"\nS2=\"2secret\"\n\nfor t in $SSH_KEYTYPES; do\n\ttrace \"generating $t key\"\n\trm -f $OBJ/$t-key\n\t${SSHKEYGEN} -q -N ${S1} -t $t -f $OBJ/$t-key\n\tif [ $? -eq 0 ]; then\n\t\t${SSHKEYGEN} -p -P ${S1} -N ${S2} -f $OBJ/$t-key > /dev/null\n\t\tif [ $? -ne 0 ]; then\n\t\t\tfail \"ssh-keygen -p failed for $t-key\"\n\t\tfi\n\telse\n\t\tfail \"ssh-keygen for $t-key failed\"\n\tfi\n\trm -f $OBJ/$t-key $OBJ/$t-key.pub\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

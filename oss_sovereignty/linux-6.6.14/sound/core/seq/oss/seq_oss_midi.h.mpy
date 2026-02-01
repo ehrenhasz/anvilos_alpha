@@ -1,0 +1,9 @@
+{
+  "module_name": "seq_oss_midi.h",
+  "hash_id": "754a63ffaa4c4ff5807b863c4e7564f9b0cc0c6aefc40198f790707f0fca3656",
+  "original_prompt": "Ingested from linux-6.6.14/sound/core/seq/oss/seq_oss_midi.h",
+  "human_readable_source": " \n \n\n#ifndef __SEQ_OSS_MIDI_H\n#define __SEQ_OSS_MIDI_H\n\n#include \"seq_oss_device.h\"\n#include <sound/seq_oss_legacy.h>\n\nint snd_seq_oss_midi_lookup_ports(int client);\nint snd_seq_oss_midi_check_new_port(struct snd_seq_port_info *pinfo);\nint snd_seq_oss_midi_check_exit_port(int client, int port);\nvoid snd_seq_oss_midi_clear_all(void);\n\nvoid snd_seq_oss_midi_setup(struct seq_oss_devinfo *dp);\nvoid snd_seq_oss_midi_cleanup(struct seq_oss_devinfo *dp);\n\nint snd_seq_oss_midi_open(struct seq_oss_devinfo *dp, int dev, int file_mode);\nvoid snd_seq_oss_midi_open_all(struct seq_oss_devinfo *dp, int file_mode);\nint snd_seq_oss_midi_close(struct seq_oss_devinfo *dp, int dev);\nvoid snd_seq_oss_midi_reset(struct seq_oss_devinfo *dp, int dev);\nint snd_seq_oss_midi_putc(struct seq_oss_devinfo *dp, int dev, unsigned char c,\n\t\t\t  struct snd_seq_event *ev);\nint snd_seq_oss_midi_input(struct snd_seq_event *ev, int direct, void *private);\nint snd_seq_oss_midi_filemode(struct seq_oss_devinfo *dp, int dev);\nint snd_seq_oss_midi_make_info(struct seq_oss_devinfo *dp, int dev, struct midi_info *inf);\nvoid snd_seq_oss_midi_get_addr(struct seq_oss_devinfo *dp, int dev, struct snd_seq_addr *addr);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

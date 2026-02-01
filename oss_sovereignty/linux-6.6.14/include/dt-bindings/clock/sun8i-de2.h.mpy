@@ -1,0 +1,9 @@
+{
+  "module_name": "sun8i-de2.h",
+  "hash_id": "2c6dd1361f0a2cdb74acf475cf19abdb206d5832c7893605db122f0d08d65279",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/sun8i-de2.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_CLOCK_SUN8I_DE2_H_\n#define _DT_BINDINGS_CLOCK_SUN8I_DE2_H_\n\n#define CLK_BUS_MIXER0\t\t0\n#define CLK_BUS_MIXER1\t\t1\n#define CLK_BUS_WB\t\t2\n\n#define CLK_MIXER0\t\t6\n#define CLK_MIXER1\t\t7\n#define CLK_WB\t\t\t8\n\n#define CLK_BUS_ROT\t\t9\n#define CLK_ROT\t\t\t10\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

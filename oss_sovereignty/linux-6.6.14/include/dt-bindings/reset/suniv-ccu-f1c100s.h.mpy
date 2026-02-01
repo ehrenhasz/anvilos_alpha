@@ -1,0 +1,9 @@
+{
+  "module_name": "suniv-ccu-f1c100s.h",
+  "hash_id": "3fec0a4f6e783610ed069496c2a18daff7feda51ccf4c979b49f1f0567e6d65e",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/suniv-ccu-f1c100s.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_RST_SUNIV_F1C100S_H_\n#define _DT_BINDINGS_RST_SUNIV_F1C100S_H_\n\n#define RST_USB_PHY0\t\t0\n#define RST_BUS_DMA\t\t1\n#define RST_BUS_MMC0\t\t2\n#define RST_BUS_MMC1\t\t3\n#define RST_BUS_DRAM\t\t4\n#define RST_BUS_SPI0\t\t5\n#define RST_BUS_SPI1\t\t6\n#define RST_BUS_OTG\t\t7\n#define RST_BUS_VE\t\t8\n#define RST_BUS_LCD\t\t9\n#define RST_BUS_DEINTERLACE\t10\n#define RST_BUS_CSI\t\t11\n#define RST_BUS_TVD\t\t12\n#define RST_BUS_TVE\t\t13\n#define RST_BUS_DE_BE\t\t14\n#define RST_BUS_DE_FE\t\t15\n#define RST_BUS_CODEC\t\t16\n#define RST_BUS_SPDIF\t\t17\n#define RST_BUS_IR\t\t18\n#define RST_BUS_RSB\t\t19\n#define RST_BUS_I2S0\t\t20\n#define RST_BUS_I2C0\t\t21\n#define RST_BUS_I2C1\t\t22\n#define RST_BUS_I2C2\t\t23\n#define RST_BUS_UART0\t\t24\n#define RST_BUS_UART1\t\t25\n#define RST_BUS_UART2\t\t26\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

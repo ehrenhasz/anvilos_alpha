@@ -1,0 +1,9 @@
+{
+  "module_name": "printf.sh",
+  "hash_id": "d2bb7ee756d4f20e130183a1d8fc01efbc10efc98071b1fc9429be5ef2d846a7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/lib/printf.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# Tests the printf infrastructure using test_printf kernel module.\n$(dirname $0)/../kselftest/module.sh \"printf\" test_printf\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

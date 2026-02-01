@@ -1,0 +1,9 @@
+{
+  "module_name": "tee.x",
+  "hash_id": "41bb66fc248d136ab5e8d78bcd9094cf79481acde54e7f8ac0eb0f1a347179ba",
+  "original_prompt": "Ingested from coreutils-9.4/man/tee.x",
+  "human_readable_source": "[NAME]\ntee \\- read from standard input and write to standard output and files\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

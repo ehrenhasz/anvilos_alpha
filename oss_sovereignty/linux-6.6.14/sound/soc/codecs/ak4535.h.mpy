@@ -1,0 +1,9 @@
+{
+  "module_name": "ak4535.h",
+  "hash_id": "6a8b91387a87d6329792ea5013f8b87dcf6643bad15932c8049c4fe32d028bb8",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/ak4535.h",
+  "human_readable_source": " \n \n\n#ifndef _AK4535_H\n#define _AK4535_H\n\n \n\n#define AK4535_PM1\t\t0x0\n#define AK4535_PM2\t\t0x1\n#define AK4535_SIG1\t\t0x2\n#define AK4535_SIG2\t\t0x3\n#define AK4535_MODE1\t\t0x4\n#define AK4535_MODE2\t\t0x5\n#define AK4535_DAC\t\t0x6\n#define AK4535_MIC\t\t0x7\n#define AK4535_TIMER\t\t0x8\n#define AK4535_ALC1\t\t0x9\n#define AK4535_ALC2\t\t0xa\n#define AK4535_PGA\t\t0xb\n#define AK4535_LATT\t\t0xc\n#define AK4535_RATT\t\t0xd\n#define AK4535_VOL\t\t0xe\n#define AK4535_STATUS\t\t0xf\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

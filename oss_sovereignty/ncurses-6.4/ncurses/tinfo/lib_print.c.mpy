@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_print.c",
+  "hash_id": "bffdb1489ccdb0851a601602fa1bb13a0abb95a54d22b313a6e47bf967fc6d16",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/tinfo/lib_print.c",
+  "human_readable_source": " \n\n \n\n#include <curses.priv.h>\n\n#ifndef CUR\n#define CUR SP_TERMTYPE\n#endif\n\nMODULE_ID(\"$Id: lib_print.c,v 1.30 2021/04/18 14:58:57 tom Exp $\")\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(mcprint) (NCURSES_SP_DCLx char *data, int len)\n \n{\n    int result;\n    char *mybuf = NULL, *switchon;\n    size_t onsize, offsize;\n    size_t need;\n\n    errno = 0;\n    if (!HasTInfoTerminal(SP_PARM)\n\t|| len <= 0\n\t|| (!prtr_non && (!prtr_on || !prtr_off))) {\n\terrno = ENODEV;\n\treturn (ERR);\n    }\n\n    if (prtr_non) {\n\tswitchon = TIPARM_1(prtr_non, len);\n\tonsize = strlen(switchon);\n\toffsize = 0;\n    } else {\n\tswitchon = prtr_on;\n\tonsize = strlen(prtr_on);\n\toffsize = strlen(prtr_off);\n    }\n\n    need = onsize + (size_t) len + offsize;\n\n    if (switchon == 0\n\t|| (mybuf = typeMalloc(char, need + 1)) == 0) {\n\tfree(mybuf);\n\terrno = ENOMEM;\n\treturn (ERR);\n    }\n\n    _nc_STRCPY(mybuf, switchon, need);\n    memcpy(mybuf + onsize, data, (size_t) len);\n    if (offsize)\n\t_nc_STRCPY(mybuf + onsize + len, prtr_off, need);\n\n     \n    result = (int) write(TerminalOf(SP_PARM)->Filedes, mybuf, need);\n\n     \n#ifndef _NC_WINDOWS\n    (void) sleep(0);\n#endif\n    free(mybuf);\n    return (result);\n}\n\n#if NCURSES_SP_FUNCS && !defined(USE_TERM_DRIVER)\nNCURSES_EXPORT(int)\nmcprint(char *data, int len)\n{\n    return NCURSES_SP_NAME(mcprint) (CURRENT_SCREEN, data, len);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

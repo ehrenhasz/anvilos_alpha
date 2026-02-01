@@ -1,0 +1,9 @@
+{
+  "module_name": "braille.h",
+  "hash_id": "c87df8368a3e82ae587e23f9b67933b611bd50f765a294c7856abf6da373d262",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/printk/braille.h",
+  "human_readable_source": " \n#ifndef _PRINTK_BRAILLE_H\n#define _PRINTK_BRAILLE_H\n\n#ifdef CONFIG_A11Y_BRAILLE_CONSOLE\n\nstatic inline void\nbraille_set_options(struct console_cmdline *c, char *brl_options)\n{\n\tc->brl_options = brl_options;\n}\n\n \nint\n_braille_console_setup(char **str, char **brl_options);\n\nint\n_braille_register_console(struct console *console, struct console_cmdline *c);\n\nint\n_braille_unregister_console(struct console *console);\n\n#else\n\nstatic inline void\nbraille_set_options(struct console_cmdline *c, char *brl_options)\n{\n}\n\nstatic inline int\n_braille_console_setup(char **str, char **brl_options)\n{\n\treturn 0;\n}\n\nstatic inline int\n_braille_register_console(struct console *console, struct console_cmdline *c)\n{\n\treturn 0;\n}\n\nstatic inline int\n_braille_unregister_console(struct console *console)\n{\n\treturn 0;\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "config.um",
+  "hash_id": "88d59decc92ba803a258ad72490d2bbd78fa9f4b3e662611d784d2e81257521d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/landlock/config.um",
+  "human_readable_source": "CONFIG_HOSTFS=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

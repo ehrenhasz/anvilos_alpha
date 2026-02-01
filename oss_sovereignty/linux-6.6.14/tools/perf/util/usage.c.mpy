@@ -1,0 +1,9 @@
+{
+  "module_name": "usage.c",
+  "hash_id": "def8c989631df7b49114f535337ddeb7b26594d03902ed279f0ae954d911e088",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/usage.c",
+  "human_readable_source": "\n \n#include \"util.h\"\n#include <stdio.h>\n#include <stdlib.h>\n#include <linux/compiler.h>\n\nconst char perf_usage_string[] =\n\t\"perf [--version] [--help] [OPTIONS] COMMAND [ARGS]\";\n\nconst char perf_more_info_string[] =\n\t\"See 'perf help COMMAND' for more information on a specific command.\";\n\nstatic __noreturn void usage_builtin(const char *err)\n{\n\tfprintf(stderr, \"\\n Usage: %s\\n\", err);\n\texit(129);\n}\n\n \nstatic void (*usage_routine)(const char *err) __noreturn = usage_builtin;\n\nvoid usage(const char *err)\n{\n\tusage_routine(err);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

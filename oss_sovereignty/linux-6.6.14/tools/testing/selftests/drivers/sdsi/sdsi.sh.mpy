@@ -1,0 +1,9 @@
+{
+  "module_name": "sdsi.sh",
+  "hash_id": "5931668a42855391f102bb1a574c72d684d06586b7c7e4db880e5a72c159022b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/sdsi/sdsi.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# Runs tests for the intel_sdsi driver\n\nif ! command -v python3 > /dev/null 2>&1; then\n\techo \"drivers/sdsi: [SKIP] python3 not installed\"\n\texit 77\nfi\n\nif ! python3 -c \"import pytest\" > /dev/null 2>&1; then\n\techo \"drivers/sdsi: [SKIP] pytest module not installed\"\n\texit 77\nfi\n\nif ! /sbin/modprobe -q -r intel_sdsi; then\n\techo \"drivers/sdsi: [SKIP]\"\n\texit 77\nfi\n\nif /sbin/modprobe -q intel_sdsi && python3 -m pytest sdsi_test.py; then\n\techo \"drivers/sdsi: [OK]\"\nelse\n\techo \"drivers/sdsi: [FAIL]\"\n\texit 1\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

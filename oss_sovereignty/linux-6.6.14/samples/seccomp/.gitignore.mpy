@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "ef6fdb3dfecff541a9a322dce1e8bf1ddf81aec58015848a65c94d2b82ec4e71",
+  "original_prompt": "Ingested from linux-6.6.14/samples/seccomp/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/bpf-direct\n/bpf-fancy\n/dropper\n/user-trap\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

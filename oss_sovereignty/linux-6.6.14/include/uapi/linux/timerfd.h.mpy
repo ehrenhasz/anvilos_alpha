@@ -1,0 +1,9 @@
+{
+  "module_name": "timerfd.h",
+  "hash_id": "89e22b9a39cbb2c819d0677e1ac77cb13644a87f7f12eb894b15fe4bb6246767",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/timerfd.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_TIMERFD_H\n#define _UAPI_LINUX_TIMERFD_H\n\n#include <linux/types.h>\n\n \n#include <linux/fcntl.h>\n\n \n#include <linux/ioctl.h>\n\n \n#define TFD_TIMER_ABSTIME (1 << 0)\n#define TFD_TIMER_CANCEL_ON_SET (1 << 1)\n#define TFD_CLOEXEC O_CLOEXEC\n#define TFD_NONBLOCK O_NONBLOCK\n\n#define TFD_IOC_SET_TICKS\t_IOW('T', 0, __u64)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

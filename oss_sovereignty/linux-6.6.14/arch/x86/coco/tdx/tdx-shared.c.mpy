@@ -1,0 +1,9 @@
+{
+  "module_name": "tdx-shared.c",
+  "hash_id": "18b77d0432ea48458a2f68126c387bc372e2c6209f61f61b839e729cd6526a49",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/coco/tdx/tdx-shared.c",
+  "human_readable_source": "#include <asm/tdx.h>\n#include <asm/pgtable.h>\n\nstatic unsigned long try_accept_one(phys_addr_t start, unsigned long len,\n\t\t\t\t    enum pg_level pg_level)\n{\n\tunsigned long accept_size = page_level_size(pg_level);\n\tu64 tdcall_rcx;\n\tu8 page_size;\n\n\tif (!IS_ALIGNED(start, accept_size))\n\t\treturn 0;\n\n\tif (len < accept_size)\n\t\treturn 0;\n\n\t \n\tswitch (pg_level) {\n\tcase PG_LEVEL_4K:\n\t\tpage_size = 0;\n\t\tbreak;\n\tcase PG_LEVEL_2M:\n\t\tpage_size = 1;\n\t\tbreak;\n\tcase PG_LEVEL_1G:\n\t\tpage_size = 2;\n\t\tbreak;\n\tdefault:\n\t\treturn 0;\n\t}\n\n\ttdcall_rcx = start | page_size;\n\tif (__tdx_module_call(TDX_ACCEPT_PAGE, tdcall_rcx, 0, 0, 0, NULL))\n\t\treturn 0;\n\n\treturn accept_size;\n}\n\nbool tdx_accept_memory(phys_addr_t start, phys_addr_t end)\n{\n\t \n\twhile (start < end) {\n\t\tunsigned long len = end - start;\n\t\tunsigned long accept_size;\n\n\t\t \n\n\t\taccept_size = try_accept_one(start, len, PG_LEVEL_1G);\n\t\tif (!accept_size)\n\t\t\taccept_size = try_accept_one(start, len, PG_LEVEL_2M);\n\t\tif (!accept_size)\n\t\t\taccept_size = try_accept_one(start, len, PG_LEVEL_4K);\n\t\tif (!accept_size)\n\t\t\treturn false;\n\t\tstart += accept_size;\n\t}\n\n\treturn true;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

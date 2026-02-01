@@ -1,0 +1,9 @@
+{
+  "module_name": "ndfc.h",
+  "hash_id": "3e2867ac0c7d2352bfbaf94088e6dc6d403102f04af8df808dd9ee2936fd21a1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/ndfc.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_MTD_NDFC_H\n#define __LINUX_MTD_NDFC_H\n\n \n#define NDFC_CMD\t\t0x00\n#define NDFC_ALE\t\t0x04\n#define NDFC_DATA\t\t0x08\n#define NDFC_ECC\t\t0x10\n#define NDFC_BCFG0\t\t0x30\n#define NDFC_BCFG1\t\t0x34\n#define NDFC_BCFG2\t\t0x38\n#define NDFC_BCFG3\t\t0x3c\n#define NDFC_CCR\t\t0x40\n#define NDFC_STAT\t\t0x44\n#define NDFC_HWCTL\t\t0x48\n#define NDFC_REVID\t\t0x50\n\n#define NDFC_STAT_IS_READY\t0x01000000\n\n#define NDFC_CCR_RESET_CE\t0x80000000  \n#define NDFC_CCR_RESET_ECC\t0x40000000  \n#define NDFC_CCR_RIE\t\t0x20000000  \n#define NDFC_CCR_REN\t\t0x10000000  \n#define NDFC_CCR_ROMEN\t\t0x08000000  \n#define NDFC_CCR_ARE\t\t0x04000000  \n#define NDFC_CCR_BS(x)\t\t(((x) & 0x3) << 24)  \n#define NDFC_CCR_BS_MASK\t0x03000000  \n#define NDFC_CCR_ARAC0\t\t0x00000000  \n#define NDFC_CCR_ARAC1\t\t0x00001000  \n#define NDFC_CCR_ARAC2\t\t0x00002000  \n#define NDFC_CCR_ARAC3\t\t0x00003000  \n#define NDFC_CCR_ARAC_MASK\t0x00003000  \n#define NDFC_CCR_RPG\t\t0x0000C000  \n#define NDFC_CCR_EBCC\t\t0x00000004  \n#define NDFC_CCR_DHC\t\t0x00000002  \n\n#define NDFC_BxCFG_EN\t\t0x80000000  \n#define NDFC_BxCFG_CED\t\t0x40000000  \n#define NDFC_BxCFG_SZ_MASK\t0x08000000  \n#define NDFC_BxCFG_SZ_8BIT\t0x00000000  \n#define NDFC_BxCFG_SZ_16BIT\t0x08000000  \n\n#define NDFC_MAX_BANKS\t\t4\n\nstruct ndfc_controller_settings {\n\tuint32_t\tccr_settings;\n\tuint64_t\tndfc_erpn;\n};\n\nstruct ndfc_chip_settings {\n\tuint32_t\tbank_settings;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

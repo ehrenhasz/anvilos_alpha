@@ -1,0 +1,9 @@
+{
+  "module_name": "polyval.h",
+  "hash_id": "3a6e873387c9213f65f4057417188cf5474538a37135ff16b8cb4def9eca767e",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/polyval.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYPTO_POLYVAL_H\n#define _CRYPTO_POLYVAL_H\n\n#include <linux/types.h>\n#include <linux/crypto.h>\n\n#define POLYVAL_BLOCK_SIZE\t16\n#define POLYVAL_DIGEST_SIZE\t16\n\nvoid polyval_mul_non4k(u8 *op1, const u8 *op2);\n\nvoid polyval_update_non4k(const u8 *key, const u8 *in,\n\t\t\t  size_t nblocks, u8 *accumulator);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

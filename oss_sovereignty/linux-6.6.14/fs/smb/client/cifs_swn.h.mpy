@@ -1,0 +1,9 @@
+{
+  "module_name": "cifs_swn.h",
+  "hash_id": "bb47f8c90fdb48cfff5162133c57e543616b162cd339cbb2368bcfdfdfad8cb4",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/client/cifs_swn.h",
+  "human_readable_source": " \n \n\n#ifndef _CIFS_SWN_H\n#define _CIFS_SWN_H\n#include \"cifsglob.h\"\n\nstruct cifs_tcon;\nstruct sk_buff;\nstruct genl_info;\n\n#ifdef CONFIG_CIFS_SWN_UPCALL\nextern int cifs_swn_register(struct cifs_tcon *tcon);\n\nextern int cifs_swn_unregister(struct cifs_tcon *tcon);\n\nextern int cifs_swn_notify(struct sk_buff *skb, struct genl_info *info);\n\nextern void cifs_swn_dump(struct seq_file *m);\n\nextern void cifs_swn_check(void);\n\nstatic inline bool cifs_swn_set_server_dstaddr(struct TCP_Server_Info *server)\n{\n\tif (server->use_swn_dstaddr) {\n\t\tserver->dstaddr = server->swn_dstaddr;\n\t\treturn true;\n\t}\n\treturn false;\n}\n\nstatic inline void cifs_swn_reset_server_dstaddr(struct TCP_Server_Info *server)\n{\n\tserver->use_swn_dstaddr = false;\n}\n\n#else\n\nstatic inline int cifs_swn_register(struct cifs_tcon *tcon) { return 0; }\nstatic inline int cifs_swn_unregister(struct cifs_tcon *tcon) { return 0; }\nstatic inline int cifs_swn_notify(struct sk_buff *s, struct genl_info *i) { return 0; }\nstatic inline void cifs_swn_dump(struct seq_file *m) {}\nstatic inline void cifs_swn_check(void) {}\nstatic inline bool cifs_swn_set_server_dstaddr(struct TCP_Server_Info *server) { return false; }\nstatic inline void cifs_swn_reset_server_dstaddr(struct TCP_Server_Info *server) {}\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

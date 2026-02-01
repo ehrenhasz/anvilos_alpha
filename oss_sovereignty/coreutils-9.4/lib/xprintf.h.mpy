@@ -1,0 +1,9 @@
+{
+  "module_name": "xprintf.h",
+  "hash_id": "0d50d93a861d6abb907377a4e89986f00effda48572656362dc47438bf9f3c88",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xprintf.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stdarg.h>\n#include <stdio.h>\n\nextern int xprintf (char const *restrict format, ...)\n#if GNULIB_VPRINTF_POSIX\n     _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_STANDARD, 1, 2))\n#else\n     _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_SYSTEM, 1, 2))\n#endif\n     ;\n\nextern int xvprintf (char const *restrict format, va_list args)\n#if GNULIB_VPRINTF_POSIX\n     _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_STANDARD, 1, 0))\n#else\n     _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_SYSTEM, 1, 0))\n#endif\n     ;\n\nextern int xfprintf (FILE *restrict stream, char const *restrict format, ...)\n#if GNULIB_VFPRINTF_POSIX\n     _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_STANDARD, 2, 3))\n#else\n     _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_SYSTEM, 2, 3))\n#endif\n     ;\n\nextern int xvfprintf (FILE *restrict stream, char const *restrict format,\n                      va_list args)\n#if GNULIB_VFPRINTF_POSIX\n     _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_STANDARD, 2, 0))\n#else\n     _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_SYSTEM, 2, 0))\n#endif\n     ;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

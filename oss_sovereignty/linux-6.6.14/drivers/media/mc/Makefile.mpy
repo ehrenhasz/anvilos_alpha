@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cc2747c7efa64e51bd6d406ea1d6b5bf594f7f64f48d087060a46281436c67d7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/mc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nmc-objs\t:= mc-device.o mc-devnode.o mc-entity.o \\\n\t   mc-request.o\n\nifneq ($(CONFIG_USB),)\n\tmc-objs += mc-dev-allocator.o\nendif\n\nobj-$(CONFIG_MEDIA_SUPPORT) += mc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

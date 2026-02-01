@@ -1,0 +1,9 @@
+{
+  "module_name": "test_xdp_bpf2bpf.c",
+  "hash_id": "728085fa06cc513c8fa27a26da2109c85d1b67f468591b9dab5fde71f17875e2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_xdp_bpf2bpf.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n#include <bpf/bpf_tracing.h>\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct net_device {\n\t \n\tint ifindex;\n} __attribute__((preserve_access_index));\n\nstruct xdp_rxq_info {\n\t \n\tstruct net_device *dev;\n\t__u32 queue_index;\n} __attribute__((preserve_access_index));\n\nstruct xdp_buff {\n\tvoid *data;\n\tvoid *data_end;\n\tvoid *data_meta;\n\tvoid *data_hard_start;\n\tunsigned long handle;\n\tstruct xdp_rxq_info *rxq;\n} __attribute__((preserve_access_index));\n\nstruct meta {\n\tint ifindex;\n\tint pkt_len;\n};\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);\n\t__type(key, int);\n\t__type(value, int);\n} perf_buf_map SEC(\".maps\");\n\n__u64 test_result_fentry = 0;\nSEC(\"fentry/FUNC\")\nint BPF_PROG(trace_on_entry, struct xdp_buff *xdp)\n{\n\tstruct meta meta;\n\n\tmeta.ifindex = xdp->rxq->dev->ifindex;\n\tmeta.pkt_len = bpf_xdp_get_buff_len((struct xdp_md *)xdp);\n\tbpf_xdp_output(xdp, &perf_buf_map,\n\t\t       ((__u64) meta.pkt_len << 32) |\n\t\t       BPF_F_CURRENT_CPU,\n\t\t       &meta, sizeof(meta));\n\n\ttest_result_fentry = xdp->rxq->dev->ifindex;\n\treturn 0;\n}\n\n__u64 test_result_fexit = 0;\nSEC(\"fexit/FUNC\")\nint BPF_PROG(trace_on_exit, struct xdp_buff *xdp, int ret)\n{\n\ttest_result_fexit = ret;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fib6_notifier.c",
+  "hash_id": "ca620b072975f1486881a56978c31945143929143c5b11699e1cf7c76ec64437",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv6/fib6_notifier.c",
+  "human_readable_source": "#include <linux/notifier.h>\n#include <linux/socket.h>\n#include <linux/kernel.h>\n#include <linux/export.h>\n#include <net/net_namespace.h>\n#include <net/fib_notifier.h>\n#include <net/netns/ipv6.h>\n#include <net/ip6_fib.h>\n\nint call_fib6_notifier(struct notifier_block *nb,\n\t\t       enum fib_event_type event_type,\n\t\t       struct fib_notifier_info *info)\n{\n\tinfo->family = AF_INET6;\n\treturn call_fib_notifier(nb, event_type, info);\n}\n\nint call_fib6_notifiers(struct net *net, enum fib_event_type event_type,\n\t\t\tstruct fib_notifier_info *info)\n{\n\tinfo->family = AF_INET6;\n\treturn call_fib_notifiers(net, event_type, info);\n}\n\nstatic unsigned int fib6_seq_read(struct net *net)\n{\n\treturn fib6_tables_seq_read(net) + fib6_rules_seq_read(net);\n}\n\nstatic int fib6_dump(struct net *net, struct notifier_block *nb,\n\t\t     struct netlink_ext_ack *extack)\n{\n\tint err;\n\n\terr = fib6_rules_dump(net, nb, extack);\n\tif (err)\n\t\treturn err;\n\n\treturn fib6_tables_dump(net, nb, extack);\n}\n\nstatic const struct fib_notifier_ops fib6_notifier_ops_template = {\n\t.family\t\t= AF_INET6,\n\t.fib_seq_read\t= fib6_seq_read,\n\t.fib_dump\t= fib6_dump,\n\t.owner\t\t= THIS_MODULE,\n};\n\nint __net_init fib6_notifier_init(struct net *net)\n{\n\tstruct fib_notifier_ops *ops;\n\n\tops = fib_notifier_ops_register(&fib6_notifier_ops_template, net);\n\tif (IS_ERR(ops))\n\t\treturn PTR_ERR(ops);\n\tnet->ipv6.notifier_ops = ops;\n\n\treturn 0;\n}\n\nvoid __net_exit fib6_notifier_exit(struct net *net)\n{\n\tfib_notifier_ops_unregister(net->ipv6.notifier_ops);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

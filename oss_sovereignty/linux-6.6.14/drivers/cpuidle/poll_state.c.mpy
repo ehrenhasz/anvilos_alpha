@@ -1,0 +1,9 @@
+{
+  "module_name": "poll_state.c",
+  "hash_id": "c7547b764444a7478a88a765ecd0ccb47d7aa89eac5336372adb38e4f082033e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpuidle/poll_state.c",
+  "human_readable_source": "\n \n\n#include <linux/cpuidle.h>\n#include <linux/sched.h>\n#include <linux/sched/clock.h>\n#include <linux/sched/idle.h>\n\n#define POLL_IDLE_RELAX_COUNT\t200\n\nstatic int __cpuidle poll_idle(struct cpuidle_device *dev,\n\t\t\t       struct cpuidle_driver *drv, int index)\n{\n\tu64 time_start;\n\n\ttime_start = local_clock_noinstr();\n\n\tdev->poll_time_limit = false;\n\n\traw_local_irq_enable();\n\tif (!current_set_polling_and_test()) {\n\t\tunsigned int loop_count = 0;\n\t\tu64 limit;\n\n\t\tlimit = cpuidle_poll_time(drv, dev);\n\n\t\twhile (!need_resched()) {\n\t\t\tcpu_relax();\n\t\t\tif (loop_count++ < POLL_IDLE_RELAX_COUNT)\n\t\t\t\tcontinue;\n\n\t\t\tloop_count = 0;\n\t\t\tif (local_clock_noinstr() - time_start > limit) {\n\t\t\t\tdev->poll_time_limit = true;\n\t\t\t\tbreak;\n\t\t\t}\n\t\t}\n\t}\n\traw_local_irq_disable();\n\n\tcurrent_clr_polling();\n\n\treturn index;\n}\n\nvoid cpuidle_poll_state_init(struct cpuidle_driver *drv)\n{\n\tstruct cpuidle_state *state = &drv->states[0];\n\n\tsnprintf(state->name, CPUIDLE_NAME_LEN, \"POLL\");\n\tsnprintf(state->desc, CPUIDLE_DESC_LEN, \"CPUIDLE CORE POLL IDLE\");\n\tstate->exit_latency = 0;\n\tstate->target_residency = 0;\n\tstate->exit_latency_ns = 0;\n\tstate->target_residency_ns = 0;\n\tstate->power_usage = -1;\n\tstate->enter = poll_idle;\n\tstate->flags = CPUIDLE_FLAG_POLLING;\n}\nEXPORT_SYMBOL_GPL(cpuidle_poll_state_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

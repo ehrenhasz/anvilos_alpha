@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d22fb1cfbbc29df4667f5149fe46a847a87b36cf74bcf07dcd5432f3bdfbb3e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/mediatek/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig MTK_HSDMA\n\ttristate \"MediaTek High-Speed DMA controller support\"\n\tdepends on ARCH_MEDIATEK || COMPILE_TEST\n\tselect DMA_ENGINE\n\tselect DMA_VIRTUAL_CHANNELS\n\thelp\n\t  Enable support for High-Speed DMA controller on MediaTek\n\t  SoCs.\n\n\t  This controller provides the channels which is dedicated to\n\t  memory-to-memory transfer to offload from CPU through ring-\n\t  based descriptor management.\n\nconfig MTK_CQDMA\n\ttristate \"MediaTek Command-Queue DMA controller support\"\n\tdepends on ARCH_MEDIATEK || COMPILE_TEST\n\tselect DMA_ENGINE\n\tselect DMA_VIRTUAL_CHANNELS\n\tselect ASYNC_TX_ENABLE_CHANNEL_SWITCH\n\thelp\n\t  Enable support for Command-Queue DMA controller on MediaTek\n\t  SoCs.\n\n\t  This controller provides the channels which is dedicated to\n\t  memory-to-memory transfer to offload from CPU.\n\nconfig MTK_UART_APDMA\n\ttristate \"MediaTek SoCs APDMA support for UART\"\n\tdepends on OF && SERIAL_8250_MT6577\n\tselect DMA_ENGINE\n\tselect DMA_VIRTUAL_CHANNELS\n\thelp\n\t  Support for the UART DMA engine found on MediaTek MTK SoCs.\n\t  When SERIAL_8250_MT6577 is enabled, and if you want to use DMA,\n\t  you can enable the config. The DMA engine can only be used\n\t  with MediaTek SoCs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

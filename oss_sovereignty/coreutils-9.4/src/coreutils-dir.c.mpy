@@ -1,0 +1,9 @@
+{
+  "module_name": "coreutils-dir.c",
+  "hash_id": "bf8a4d0ef9b630d57f61589157ad1965346467e5a2554885593bcda160c8653e",
+  "original_prompt": "Ingested from coreutils-9.4/src/coreutils-dir.c",
+  "human_readable_source": " \n\n#include <config.h>\n#include \"system.h\"\n\n#include \"ls.h\"\n \nint single_binary_main_ls (int argc, char **argv);\nint single_binary_main_dir (int argc, char **argv);\n\nint\nsingle_binary_main_dir (int argc, char **argv)\n{\n  ls_mode = LS_MULTI_COL;\n  return single_binary_main_ls (argc, argv);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

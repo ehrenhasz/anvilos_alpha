@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c4ab77a73146b7f395f3effb3cb743ab61145ae1a7c63cbc7a76a5c6bd3f5c0f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/kyro/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Kyro framebuffer driver\n#\n\nobj-$(CONFIG_FB_KYRO)\t+= kyrofb.o\n\nkyrofb-objs\t:= STG4000Ramdac.o STG4000VTG.o STG4000OverlayDevice.o \\\n\t\t   STG4000InitDevice.o fbdev.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

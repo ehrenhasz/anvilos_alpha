@@ -1,0 +1,9 @@
+{
+  "module_name": "vsock_addr.c",
+  "hash_id": "e13f7fdf4c3e7aecadc5fe43e702a08a06be5cf3cf1f55c59526a8289cde188a",
+  "original_prompt": "Ingested from linux-6.6.14/net/vmw_vsock/vsock_addr.c",
+  "human_readable_source": "\n \n\n#include <linux/types.h>\n#include <linux/socket.h>\n#include <linux/stddef.h>\n#include <net/sock.h>\n#include <net/vsock_addr.h>\n\nvoid vsock_addr_init(struct sockaddr_vm *addr, u32 cid, u32 port)\n{\n\tmemset(addr, 0, sizeof(*addr));\n\taddr->svm_family = AF_VSOCK;\n\taddr->svm_cid = cid;\n\taddr->svm_port = port;\n}\nEXPORT_SYMBOL_GPL(vsock_addr_init);\n\nint vsock_addr_validate(const struct sockaddr_vm *addr)\n{\n\t__u8 svm_valid_flags = VMADDR_FLAG_TO_HOST;\n\n\tif (!addr)\n\t\treturn -EFAULT;\n\n\tif (addr->svm_family != AF_VSOCK)\n\t\treturn -EAFNOSUPPORT;\n\n\tif (addr->svm_flags & ~svm_valid_flags)\n\t\treturn -EINVAL;\n\n\treturn 0;\n}\nEXPORT_SYMBOL_GPL(vsock_addr_validate);\n\nbool vsock_addr_bound(const struct sockaddr_vm *addr)\n{\n\treturn addr->svm_port != VMADDR_PORT_ANY;\n}\nEXPORT_SYMBOL_GPL(vsock_addr_bound);\n\nvoid vsock_addr_unbind(struct sockaddr_vm *addr)\n{\n\tvsock_addr_init(addr, VMADDR_CID_ANY, VMADDR_PORT_ANY);\n}\nEXPORT_SYMBOL_GPL(vsock_addr_unbind);\n\nbool vsock_addr_equals_addr(const struct sockaddr_vm *addr,\n\t\t\t    const struct sockaddr_vm *other)\n{\n\treturn addr->svm_cid == other->svm_cid &&\n\t\taddr->svm_port == other->svm_port;\n}\nEXPORT_SYMBOL_GPL(vsock_addr_equals_addr);\n\nint vsock_addr_cast(const struct sockaddr *addr,\n\t\t    size_t len, struct sockaddr_vm **out_addr)\n{\n\tif (len < sizeof(**out_addr))\n\t\treturn -EFAULT;\n\n\t*out_addr = (struct sockaddr_vm *)addr;\n\treturn vsock_addr_validate(*out_addr);\n}\nEXPORT_SYMBOL_GPL(vsock_addr_cast);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

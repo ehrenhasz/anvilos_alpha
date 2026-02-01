@@ -1,0 +1,9 @@
+{
+  "module_name": "kfd_kernel_queue.h",
+  "hash_id": "8653690a7337b2c376c3a8983a72f701156ba2ba63b174d939b13033346a8377",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdkfd/kfd_kernel_queue.h",
+  "human_readable_source": " \n \n\n#ifndef KFD_KERNEL_QUEUE_H_\n#define KFD_KERNEL_QUEUE_H_\n\n#include <linux/list.h>\n#include <linux/types.h>\n#include \"kfd_priv.h\"\n\n \n\nint kq_acquire_packet_buffer(struct kernel_queue *kq,\n\t\t\t\tsize_t packet_size_in_dwords,\n\t\t\t\tunsigned int **buffer_ptr);\nvoid kq_submit_packet(struct kernel_queue *kq);\nvoid kq_rollback_packet(struct kernel_queue *kq);\n\n\nstruct kernel_queue {\n\t \n\tstruct kfd_node\t\t*dev;\n\tstruct mqd_manager\t*mqd_mgr;\n\tstruct queue\t\t*queue;\n\tuint64_t\t\tpending_wptr64;\n\tuint32_t\t\tpending_wptr;\n\tunsigned int\t\tnop_packet;\n\n\tstruct kfd_mem_obj\t*rptr_mem;\n\tuint32_t\t\t*rptr_kernel;\n\tuint64_t\t\trptr_gpu_addr;\n\tstruct kfd_mem_obj\t*wptr_mem;\n\tunion {\n\t\tuint64_t\t*wptr64_kernel;\n\t\tuint32_t\t*wptr_kernel;\n\t};\n\tuint64_t\t\twptr_gpu_addr;\n\tstruct kfd_mem_obj\t*pq;\n\tuint64_t\t\tpq_gpu_addr;\n\tuint32_t\t\t*pq_kernel_addr;\n\tstruct kfd_mem_obj\t*eop_mem;\n\tuint64_t\t\teop_gpu_addr;\n\tuint32_t\t\t*eop_kernel_addr;\n\n\tstruct kfd_mem_obj\t*fence_mem_obj;\n\tuint64_t\t\tfence_gpu_addr;\n\tvoid\t\t\t*fence_kernel_address;\n\n\tstruct list_head\tlist;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

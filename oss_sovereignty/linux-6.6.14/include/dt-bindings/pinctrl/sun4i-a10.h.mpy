@@ -1,0 +1,9 @@
+{
+  "module_name": "sun4i-a10.h",
+  "hash_id": "767d1e87c4dfee97b6ae02887763e8dd62e3a5e855e247390d4af88cbda5a46f",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/sun4i-a10.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_PINCTRL_SUN4I_A10_H_\n#define __DT_BINDINGS_PINCTRL_SUN4I_A10_H_\n\n#define SUN4I_PINCTRL_10_MA\t0\n#define SUN4I_PINCTRL_20_MA\t1\n#define SUN4I_PINCTRL_30_MA\t2\n#define SUN4I_PINCTRL_40_MA\t3\n\n#define SUN4I_PINCTRL_NO_PULL\t0\n#define SUN4I_PINCTRL_PULL_UP\t1\n#define SUN4I_PINCTRL_PULL_DOWN\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

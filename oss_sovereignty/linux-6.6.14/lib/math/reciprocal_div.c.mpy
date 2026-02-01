@@ -1,0 +1,9 @@
+{
+  "module_name": "reciprocal_div.c",
+  "hash_id": "52d3044c9271c6a6a6767f7dec185e0712d366a6888fa1d16ce707a856f2c280",
+  "original_prompt": "Ingested from linux-6.6.14/lib/math/reciprocal_div.c",
+  "human_readable_source": "\n#include <linux/bitops.h>\n#include <linux/bug.h>\n#include <linux/export.h>\n#include <linux/limits.h>\n#include <linux/math.h>\n#include <linux/minmax.h>\n#include <linux/types.h>\n\n#include <linux/reciprocal_div.h>\n\n \n\nstruct reciprocal_value reciprocal_value(u32 d)\n{\n\tstruct reciprocal_value R;\n\tu64 m;\n\tint l;\n\n\tl = fls(d - 1);\n\tm = ((1ULL << 32) * ((1ULL << l) - d));\n\tdo_div(m, d);\n\t++m;\n\tR.m = (u32)m;\n\tR.sh1 = min(l, 1);\n\tR.sh2 = max(l - 1, 0);\n\n\treturn R;\n}\nEXPORT_SYMBOL(reciprocal_value);\n\nstruct reciprocal_value_adv reciprocal_value_adv(u32 d, u8 prec)\n{\n\tstruct reciprocal_value_adv R;\n\tu32 l, post_shift;\n\tu64 mhigh, mlow;\n\n\t \n\tl = fls(d - 1);\n\t \n\tWARN(l == 32,\n\t     \"ceil(log2(0x%08x)) == 32, %s doesn't support such divisor\",\n\t     d, __func__);\n\tpost_shift = l;\n\tmlow = 1ULL << (32 + l);\n\tdo_div(mlow, d);\n\tmhigh = (1ULL << (32 + l)) + (1ULL << (32 + l - prec));\n\tdo_div(mhigh, d);\n\n\tfor (; post_shift > 0; post_shift--) {\n\t\tu64 lo = mlow >> 1, hi = mhigh >> 1;\n\n\t\tif (lo >= hi)\n\t\t\tbreak;\n\n\t\tmlow = lo;\n\t\tmhigh = hi;\n\t}\n\n\tR.m = (u32)mhigh;\n\tR.sh = post_shift;\n\tR.exp = l;\n\tR.is_wide_m = mhigh > U32_MAX;\n\n\treturn R;\n}\nEXPORT_SYMBOL(reciprocal_value_adv);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

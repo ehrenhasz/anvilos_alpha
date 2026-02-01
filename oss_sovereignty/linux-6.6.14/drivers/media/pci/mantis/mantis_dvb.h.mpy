@@ -1,0 +1,9 @@
+{
+  "module_name": "mantis_dvb.h",
+  "hash_id": "8bc54d1ff4b7ffc5d1e2aa90b7fa3abc9dc5444d95eb32ecf289165a3cde3f01",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/mantis/mantis_dvb.h",
+  "human_readable_source": " \n \n\n#ifndef __MANTIS_DVB_H\n#define __MANTIS_DVB_H\n\nenum mantis_power {\n\tPOWER_OFF\t= 0,\n\tPOWER_ON\t= 1\n};\n\nextern int mantis_frontend_power(struct mantis_pci *mantis, enum mantis_power power);\nextern void mantis_frontend_soft_reset(struct mantis_pci *mantis);\n\nextern int mantis_dvb_init(struct mantis_pci *mantis);\nextern int mantis_dvb_exit(struct mantis_pci *mantis);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

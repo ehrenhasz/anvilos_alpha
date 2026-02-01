@@ -1,0 +1,9 @@
+{
+  "module_name": "kludge-fd_set.c",
+  "hash_id": "a760c94c2843cdae15ba14ea14030894aeffe5a336336c2b76ec5497ae8d611a",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/kludge-fd_set.c",
+  "human_readable_source": " \n\n \n\n#include \"config.h\"\n\n#if defined(HAVE_FEATURES_H) && defined(_FORTIFY_SOURCE)\n# include <features.h>\n# if defined(__GNU_LIBRARY__) && defined(__GLIBC_PREREQ)\n#  if __GLIBC_PREREQ(2, 15) && (_FORTIFY_SOURCE > 0)\n#   undef _FORTIFY_SOURCE\n#   undef __USE_FORTIFY_LEVEL\n#   include <sys/socket.h>\nvoid kludge_FD_SET(int n, fd_set *set) {\n\tFD_SET(n, set);\n}\nint kludge_FD_ISSET(int n, fd_set *set) {\n\treturn FD_ISSET(n, set);\n}\n#  endif  \n# endif  \n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

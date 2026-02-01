@@ -1,0 +1,9 @@
+{
+  "module_name": "sample.h",
+  "hash_id": "ec3730f7c6752869745886ad0babbd2de288954c8c6799785cc3b55d28170016",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_EN_TC_ACT_SAMPLE_H__\n#define __MLX5_EN_TC_ACT_SAMPLE_H__\n\n#include <net/flow_offload.h>\n#include \"en/tc_priv.h\"\n\nbool\nmlx5e_tc_act_sample_is_multi_table(struct mlx5_core_dev *mdev,\n\t\t\t\t   struct mlx5_flow_attr *attr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

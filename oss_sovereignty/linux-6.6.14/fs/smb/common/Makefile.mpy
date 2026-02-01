@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "780f8fd5fd2a3cdb7a292df4c9d58faed7334754effb15d0f1dee088011c314b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/common/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for Linux filesystem routines that are shared by client and server.\n#\n\nobj-$(CONFIG_SMBFS) += cifs_arc4.o\nobj-$(CONFIG_SMBFS) += cifs_md4.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

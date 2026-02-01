@@ -1,0 +1,9 @@
+{
+  "module_name": "signaling.h",
+  "hash_id": "71f7212814f3a4c9b2e09bb88c63e41356f4e2fdb0c7fe2e1d9fb8013e246eb9",
+  "original_prompt": "Ingested from linux-6.6.14/net/atm/signaling.h",
+  "human_readable_source": " \n \n\n \n\n\n#ifndef NET_ATM_SIGNALING_H\n#define NET_ATM_SIGNALING_H\n\n#include <linux/atm.h>\n#include <linux/atmdev.h>\n#include <linux/atmsvc.h>\n\n\nextern struct atm_vcc *sigd;  \n\n\n \n\nvoid sigd_enq2(struct atm_vcc *vcc,enum atmsvc_msg_type type,\n    struct atm_vcc *listen_vcc,const struct sockaddr_atmpvc *pvc,\n    const struct sockaddr_atmsvc *svc,const struct atm_qos *qos,int reply);\nvoid sigd_enq(struct atm_vcc *vcc,enum atmsvc_msg_type type,\n    struct atm_vcc *listen_vcc,const struct sockaddr_atmpvc *pvc,\n    const struct sockaddr_atmsvc *svc);\nint sigd_attach(struct atm_vcc *vcc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

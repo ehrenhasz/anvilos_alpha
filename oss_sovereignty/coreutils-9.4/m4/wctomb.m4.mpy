@@ -1,0 +1,9 @@
+{
+  "module_name": "wctomb.m4",
+  "hash_id": "d707f8268f8ccdab84066360fd06820ad8bccad7c32dd1bb969d215715689285",
+  "original_prompt": "Ingested from coreutils-9.4/m4/wctomb.m4",
+  "human_readable_source": "# wctomb.m4 serial 2\ndnl Copyright (C) 2011-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_WCTOMB],\n[\n  AC_REQUIRE([gl_STDLIB_H_DEFAULTS])\n\n  if false; then\n    REPLACE_WCTOMB=1\n  fi\n])\n\n# Prerequisites of lib/wctomb.c.\nAC_DEFUN([gl_PREREQ_WCTOMB], [\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

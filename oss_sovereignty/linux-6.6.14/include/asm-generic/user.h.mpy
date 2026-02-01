@@ -1,0 +1,9 @@
+{
+  "module_name": "user.h",
+  "hash_id": "defd83f1b54e939fcab88d6721c82bb705750bc1e422300337bf9c2de082e546",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/user.h",
+  "human_readable_source": "#ifndef __ASM_GENERIC_USER_H\n#define __ASM_GENERIC_USER_H\n \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

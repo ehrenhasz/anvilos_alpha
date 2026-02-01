@@ -1,0 +1,9 @@
+{
+  "module_name": "module.c",
+  "hash_id": "1180a19da4149be0825a1678eed73d11cfec2ee3adb1602d0015c2ca02453e28",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/wcc/module.c",
+  "human_readable_source": "\n \n#include <linux/module.h>\n#include <bus.h>\n#include <core.h>\n#include <fwvid.h>\n\n#include \"vops.h\"\n\nstatic int __init brcmf_wcc_init(void)\n{\n\treturn brcmf_fwvid_register_vendor(BRCMF_FWVENDOR_WCC, THIS_MODULE,\n\t\t\t\t\t   &brcmf_wcc_ops);\n}\n\nstatic void __exit brcmf_wcc_exit(void)\n{\n\tbrcmf_fwvid_unregister_vendor(BRCMF_FWVENDOR_WCC, THIS_MODULE);\n}\n\nMODULE_LICENSE(\"Dual BSD/GPL\");\nMODULE_IMPORT_NS(BRCMFMAC);\n\nmodule_init(brcmf_wcc_init);\nmodule_exit(brcmf_wcc_exit);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

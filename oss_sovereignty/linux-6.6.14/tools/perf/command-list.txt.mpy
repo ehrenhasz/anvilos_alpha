@@ -1,0 +1,9 @@
+{
+  "module_name": "command-list.txt",
+  "hash_id": "129e1381b03ef3d6bb9dd6501477ad95574361aef0dd7a36e2aed05bf2588e16",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/command-list.txt",
+  "human_readable_source": "#\n# List of known perf commands.\n# command name\t\t\tcategory [deprecated] [common]\n#\nperf-annotate\t\t\tmainporcelain common\nperf-archive\t\t\tmainporcelain common\nperf-bench\t\t\tmainporcelain common\nperf-buildid-cache\t\tmainporcelain common\nperf-buildid-list\t\tmainporcelain common\nperf-data\t\t\tmainporcelain common\nperf-diff\t\t\tmainporcelain common\nperf-c2c\t\t\tmainporcelain common\nperf-config\t\t\tmainporcelain common\nperf-evlist\t\t\tmainporcelain common\nperf-ftrace\t\t\tmainporcelain common\nperf-inject\t\t\tmainporcelain common\nperf-iostat\t\t\tmainporcelain common\nperf-kallsyms\t\t\tmainporcelain common\nperf-kmem\t\t\tmainporcelain traceevent\nperf-kvm\t\t\tmainporcelain common\nperf-kwork\t\t\tmainporcelain traceevent\nperf-list\t\t\tmainporcelain common\nperf-lock\t\t\tmainporcelain traceevent\nperf-mem\t\t\tmainporcelain common\nperf-probe\t\t\tmainporcelain full\nperf-record\t\t\tmainporcelain common\nperf-report\t\t\tmainporcelain common\nperf-sched\t\t\tmainporcelain traceevent\nperf-script\t\t\tmainporcelain common\nperf-stat\t\t\tmainporcelain common\nperf-test\t\t\tmainporcelain common\nperf-timechart\t\t\tmainporcelain traceevent\nperf-top\t\t\tmainporcelain common\nperf-trace\t\t\tmainporcelain audit\nperf-version\t\t\tmainporcelain common\nperf-daemon\t\t\tmainporcelain common\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-snapshot-action-hist.tc",
+  "hash_id": "351b122bfacb62a9eb81ee2d73ab2786a0be08ff56f768e11aea3c7d106ef683",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/inter-event/trigger-snapshot-action-hist.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event trigger - test inter-event histogram trigger snapshot action\n# requires: set_event snapshot events/sched/sched_process_fork/hist \"onchange(var)\":README \"snapshot()\":README ping:program\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\necho \"Test snapshot action\"\n\necho 1 > events/sched/enable\n\necho 'hist:keys=comm:newprio=prio:onchange($newprio).save(comm,prio):onchange($newprio).snapshot() if comm==\"ping\"' >> events/sched/sched_waking/trigger\n\nping $LOCALHOST -c 3\nnice -n 1 ping $LOCALHOST -c 3\n\necho 0 > tracing_on\n\nif ! grep -q \"changed:\" events/sched/sched_waking/hist; then\n    fail \"Failed to create onchange action inter-event histogram\"\nfi\n\nif ! grep -q \"comm=ping\" snapshot; then\n    fail \"Failed to create snapshot action inter-event histogram\"\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

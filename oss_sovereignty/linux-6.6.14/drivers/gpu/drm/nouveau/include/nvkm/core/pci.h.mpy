@@ -1,0 +1,9 @@
+{
+  "module_name": "pci.h",
+  "hash_id": "8d8a1b8fe56f1c03b65481af6bd8d123eb756941d82ec6d105722a066006da18",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/core/pci.h",
+  "human_readable_source": " \n#ifndef __NVKM_DEVICE_PCI_H__\n#define __NVKM_DEVICE_PCI_H__\n#include <core/device.h>\n\nstruct nvkm_device_pci {\n\tstruct nvkm_device device;\n\tstruct pci_dev *pdev;\n\tbool suspend;\n};\n\nint nvkm_device_pci_new(struct pci_dev *, const char *cfg, const char *dbg,\n\t\t\tbool detect, bool mmio, u64 subdev_mask,\n\t\t\tstruct nvkm_device **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

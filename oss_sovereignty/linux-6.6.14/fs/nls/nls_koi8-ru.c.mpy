@@ -1,0 +1,9 @@
+{
+  "module_name": "nls_koi8-ru.c",
+  "hash_id": "014fea3c3a05d9fe208f0a735b027f559d09e60f21304a6de970657490394fb5",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nls/nls_koi8-ru.c",
+  "human_readable_source": " \n\n#include <linux/module.h>\n#include <linux/kernel.h>\n#include <linux/string.h>\n#include <linux/nls.h>\n#include <linux/errno.h>\n\nstatic struct nls_table *p_nls;\n\nstatic int uni2char(const wchar_t uni,\n\t\t    unsigned char *out, int boundlen)\n{\n\tif (boundlen <= 0)\n\t\treturn -ENAMETOOLONG;\n\n\tif ((uni & 0xffaf) == 0x040e || (uni & 0xffce) == 0x254c) {\n\t\t \n\t\tif (uni == 0x040e)\n\t\t\tout[0] = 0xbe;\n\t\telse if (uni == 0x045e)\n\t\t\tout[0] = 0xae;\n\t\telse if (uni == 0x255d || uni == 0x256c)\n\t\t\treturn 0;\n\t\telse\n\t\t\treturn p_nls->uni2char(uni, out, boundlen);\n\t\treturn 1;\n\t}\n\telse\n\t\t \n\t\treturn p_nls->uni2char(uni, out, boundlen);\n}\n\nstatic int char2uni(const unsigned char *rawstring, int boundlen,\n\t\t    wchar_t *uni)\n{\n\tint n;\n\n\tif ((*rawstring & 0xef) != 0xae) {\n\t\t \n\t\t*uni = (*rawstring & 0x10) ? 0x040e : 0x045e;\n\t\treturn 1;\n\t}\n\n\tn = p_nls->char2uni(rawstring, boundlen, uni);\n\treturn n;\n}\n\nstatic struct nls_table table = {\n\t.charset\t= \"koi8-ru\",\n\t.uni2char\t= uni2char,\n\t.char2uni\t= char2uni,\n};\n\nstatic int __init init_nls_koi8_ru(void)\n{\n\tp_nls = load_nls(\"koi8-u\");\n\n\tif (p_nls) {\n\t\ttable.charset2upper = p_nls->charset2upper;\n\t\ttable.charset2lower = p_nls->charset2lower;\n\t\treturn register_nls(&table);\n\t}\n\n\treturn -EINVAL;\n}\n\nstatic void __exit exit_nls_koi8_ru(void)\n{\n\tunregister_nls(&table);\n\tunload_nls(p_nls);\n}\n\nmodule_init(init_nls_koi8_ru)\nmodule_exit(exit_nls_koi8_ru)\n\nMODULE_LICENSE(\"Dual BSD/GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

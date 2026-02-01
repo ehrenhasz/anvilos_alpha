@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "de530bed5e94c5a10cee56131a6d22619e923333b96bb9020d07be390c15b257",
+  "original_prompt": "Ingested from linux-6.6.14/fs/fuse/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the FUSE filesystem.\n#\n\nobj-$(CONFIG_FUSE_FS) += fuse.o\nobj-$(CONFIG_CUSE) += cuse.o\nobj-$(CONFIG_VIRTIO_FS) += virtiofs.o\n\nfuse-y := dev.o dir.o file.o inode.o control.o xattr.o acl.o readdir.o ioctl.o\nfuse-$(CONFIG_FUSE_DAX) += dax.o\n\nvirtiofs-y := virtio_fs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

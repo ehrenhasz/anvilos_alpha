@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__extmod__vfs_lfsx_file.c.qstr",
+  "hash_id": "00c180e1b06d1bab1a3c108fed6423f7d9ba538cf1978806a7bc7e981c1ad008",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__extmod__vfs_lfsx_file.c.qstr",
+  "human_readable_source": "Q(read)\nQ(readinto)\nQ(readline)\nQ(readlines)\nQ(write)\nQ(flush)\nQ(close)\nQ(seek)\nQ(tell)\nQ(__del__)\nQ(__enter__)\nQ(__exit__)\nQ(FileIO)\nQ(TextIOWrapper)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

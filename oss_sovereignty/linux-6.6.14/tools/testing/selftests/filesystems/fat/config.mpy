@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "74f8b2b5cc11f8d6f8d51ad930786267ae30f9f85db6bac31744715d5b7cbd6a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/filesystems/fat/config",
+  "human_readable_source": "CONFIG_BLK_DEV_LOOP=y\nCONFIG_VFAT_FS=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

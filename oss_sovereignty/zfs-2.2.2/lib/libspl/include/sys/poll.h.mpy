@@ -1,0 +1,9 @@
+{
+  "module_name": "poll.h",
+  "hash_id": "1110768a073052903d7e73a19b5856e51b56ec2427ebcf78f7e416fccbf9c1bc",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/poll.h",
+  "human_readable_source": " \n \n\n \n#ifndef _LIBSPL_SYS_POLL_H\n#define\t_LIBSPL_SYS_POLL_H\n#if defined(__GLIBC__) || defined(__KLIBC__) || defined(__UCLIBC__)\n#include_next <sys/poll.h>\n#else\n#include <poll.h>\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

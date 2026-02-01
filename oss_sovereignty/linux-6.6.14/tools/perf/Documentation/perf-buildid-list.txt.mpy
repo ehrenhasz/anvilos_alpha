@@ -1,0 +1,9 @@
+{
+  "module_name": "perf-buildid-list.txt",
+  "hash_id": "50aabde8006dfeb8f7aa79f008ea0bc8ce56edad3e73940ac7ef3e7cb9933ddd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/perf-buildid-list.txt",
+  "human_readable_source": "perf-buildid-list(1)\n====================\n\nNAME\n----\nperf-buildid-list - List the buildids in a perf.data file\n\nSYNOPSIS\n--------\n[verse]\n'perf buildid-list <options>'\n\nDESCRIPTION\n-----------\nThis command displays the buildids found in a perf.data file, so that other\ntools can be used to fetch packages with matching symbol tables for use by\nperf report.\n\nIt can also be used to show the build id of the running kernel or in an ELF\nfile using -i/--input.\n\nOPTIONS\n-------\n-H::\n--with-hits::\n        Show only DSOs with hits.\n-i::\n--input=::\n        Input file name. (default: perf.data unless stdin is a fifo)\n-f::\n--force::\n\tDon't do ownership validation.\n-k::\n--kernel::\n\tShow running kernel build id.\n-m::\n--kernel-maps::\n\tShow buildid, start/end text address, and path of running kernel and\n\tits modules.\n-v::\n--verbose::\n\tBe more verbose.\n\nSEE ALSO\n--------\nlinkperf:perf-record[1], linkperf:perf-top[1],\nlinkperf:perf-report[1]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

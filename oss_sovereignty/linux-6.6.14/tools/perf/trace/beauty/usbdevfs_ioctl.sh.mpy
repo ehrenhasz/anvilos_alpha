@@ -1,0 +1,9 @@
+{
+  "module_name": "usbdevfs_ioctl.sh",
+  "hash_id": "858076fe74ac06b29a5d93531941cf44e445434da0be3b20c98401333ba328ad",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/usbdevfs_ioctl.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n\n[ $# -eq 1 ] && header_dir=$1 || header_dir=tools/include/uapi/linux/\n\n# also as:\n# #define USBDEVFS_CONNINFO_EX(len)  _IOC(_IOC_READ, 'U', 32, len)\n\nprintf \"static const char *usbdevfs_ioctl_cmds[] = {\\n\"\nregex=\"^#[[:space:]]*define[[:space:]]+USBDEVFS_(\\w+)(\\(\\w+\\))?[[:space:]]+_IO[CWR]{0,2}\\([[:space:]]*(_IOC_\\w+,[[:space:]]*)?'U'[[:space:]]*,[[:space:]]*([[:digit:]]+).*\"\ngrep -E \"$regex\" ${header_dir}/usbdevice_fs.h | grep -E -v 'USBDEVFS_\\w+32[[:space:]]' | \\\n\tsed -r \"s/$regex/\\4 \\1/g\"\t| \\\n\tsort | xargs printf \"\\t[%s] = \\\"%s\\\",\\n\"\nprintf \"};\\n\\n\"\nprintf \"#if 0\\n\"\nprintf \"static const char *usbdevfs_ioctl_32_cmds[] = {\\n\"\nregex=\"^#[[:space:]]*define[[:space:]]+USBDEVFS_(\\w+)[[:space:]]+_IO[WR]{0,2}\\([[:space:]]*'U'[[:space:]]*,[[:space:]]*([[:digit:]]+).*\"\ngrep -E $regex ${header_dir}/usbdevice_fs.h | grep -E 'USBDEVFS_\\w+32[[:space:]]' | \\\n\tsed -r \"s/$regex/\\2 \\1/g\"\t| \\\n\tsort | xargs printf \"\\t[%s] = \\\"%s\\\",\\n\"\nprintf \"};\\n\"\nprintf \"#endif\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

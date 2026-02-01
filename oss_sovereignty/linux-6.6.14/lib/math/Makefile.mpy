@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a829c1b9e55c694a9774ba757808904851e6436967c1c0699ea98ffc953ecf1e",
+  "original_prompt": "Ingested from linux-6.6.14/lib/math/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y += div64.o gcd.o lcm.o int_log.o int_pow.o int_sqrt.o reciprocal_div.o\n\nobj-$(CONFIG_CORDIC)\t\t+= cordic.o\nobj-$(CONFIG_PRIME_NUMBERS)\t+= prime_numbers.o\nobj-$(CONFIG_RATIONAL)\t\t+= rational.o\n\nobj-$(CONFIG_TEST_DIV64)\t+= test_div64.o\nobj-$(CONFIG_RATIONAL_KUNIT_TEST) += rational-test.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sierra_ms.h",
+  "hash_id": "cb14c8c6b408ff28a353d90b2a86a62cdbb47ea5487c9078c43df1b9615ac37b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/storage/sierra_ms.h",
+  "human_readable_source": " \n#ifndef _SIERRA_MS_H_\n#define _SIERRA_MS_H_\nextern int sierra_ms_init(struct us_data *us);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

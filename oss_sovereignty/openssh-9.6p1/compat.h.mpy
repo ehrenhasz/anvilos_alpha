@@ -1,0 +1,9 @@
+{
+  "module_name": "compat.h",
+  "hash_id": "a97dd7b8f2b1738d2308992f934ab43fdea214d269ebaf6682687cc87942e18b",
+  "original_prompt": "Ingested from openssh-9.6p1/compat.h",
+  "human_readable_source": " \n\n \n\n#ifndef COMPAT_H\n#define COMPAT_H\n\n#define SSH_BUG_UTF8TTYMODE\t0x00000001\n#define SSH_BUG_SIGTYPE\t\t0x00000002\n#define SSH_BUG_SIGTYPE74\t0x00000004\n \n#define SSH_OLD_SESSIONID\t0x00000010\n \n#define SSH_BUG_DEBUG\t\t0x00000040\n \n \n \n \n#define SSH_BUG_SCANNER\t\t0x00000800\n \n \n#define SSH_OLD_DHGEX\t\t0x00004000\n#define SSH_BUG_NOREKEY\t\t0x00008000\n \n \n \n \n#define SSH_BUG_EXTEOF\t\t0x00200000\n#define SSH_BUG_PROBE\t\t0x00400000\n \n#define SSH_OLD_FORWARD_ADDR\t0x01000000\n \n#define SSH_NEW_OPENSSH\t\t0x04000000\n#define SSH_BUG_DYNAMIC_RPORT\t0x08000000\n#define SSH_BUG_CURVE25519PAD\t0x10000000\n#define SSH_BUG_HOSTKEYS\t0x20000000\n#define SSH_BUG_DHGEX_LARGE\t0x40000000\n\nstruct ssh;\n\nvoid    compat_banner(struct ssh *, const char *);\nchar\t*compat_kex_proposal(struct ssh *, const char *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

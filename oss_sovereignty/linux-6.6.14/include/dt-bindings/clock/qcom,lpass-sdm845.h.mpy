@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,lpass-sdm845.h",
+  "hash_id": "a6b443833d07f48fbe4c7aa4d04ad1683ec8d0b1f3f72b6ab391e6bb4858c17b",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,lpass-sdm845.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_SDM_LPASS_SDM845_H\n#define _DT_BINDINGS_CLK_SDM_LPASS_SDM845_H\n\n#define LPASS_Q6SS_AHBM_AON_CLK\t\t\t\t0\n#define LPASS_Q6SS_AHBS_AON_CLK\t\t\t\t1\n#define LPASS_QDSP6SS_XO_CLK\t\t\t\t2\n#define LPASS_QDSP6SS_SLEEP_CLK\t\t\t\t3\n#define LPASS_QDSP6SS_CORE_CLK\t\t\t\t4\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

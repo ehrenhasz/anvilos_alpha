@@ -1,0 +1,9 @@
+{
+  "module_name": "isl6421.h",
+  "hash_id": "7ba5cfedb095b4a4c743ca7a07cd2667173bb343febcbdd34fa02d1b7fd0261a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/isl6421.h",
+  "human_readable_source": " \n \n\n#ifndef _ISL6421_H\n#define _ISL6421_H\n\n#include <linux/dvb/frontend.h>\n\n \n#define ISL6421_OLF1\t0x01\n#define ISL6421_EN1\t0x02\n#define ISL6421_VSEL1\t0x04\n#define ISL6421_LLC1\t0x08\n#define ISL6421_ENT1\t0x10\n#define ISL6421_ISEL1\t0x20\n#define ISL6421_DCL\t0x40\n\n#if IS_REACHABLE(CONFIG_DVB_ISL6421)\n \nextern struct dvb_frontend *isl6421_attach(struct dvb_frontend *fe, struct i2c_adapter *i2c, u8 i2c_addr,\n\t\t\t  u8 override_set, u8 override_clear, bool override_tone);\n#else\nstatic inline struct dvb_frontend *isl6421_attach(struct dvb_frontend *fe, struct i2c_adapter *i2c, u8 i2c_addr,\n\t\t\t\t\t\t  u8 override_set, u8 override_clear, bool override_tone)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

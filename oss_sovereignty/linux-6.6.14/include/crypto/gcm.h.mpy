@@ -1,0 +1,9 @@
+{
+  "module_name": "gcm.h",
+  "hash_id": "5e180d540c06da2001d63d0e7691958c050e039e3f4346401ea7ac0934814b54",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/gcm.h",
+  "human_readable_source": "#ifndef _CRYPTO_GCM_H\n#define _CRYPTO_GCM_H\n\n#include <linux/errno.h>\n\n#include <crypto/aes.h>\n#include <crypto/gf128mul.h>\n\n#define GCM_AES_IV_SIZE 12\n#define GCM_RFC4106_IV_SIZE 8\n#define GCM_RFC4543_IV_SIZE 8\n\n \nstatic inline int crypto_gcm_check_authsize(unsigned int authsize)\n{\n\tswitch (authsize) {\n\tcase 4:\n\tcase 8:\n\tcase 12:\n\tcase 13:\n\tcase 14:\n\tcase 15:\n\tcase 16:\n\t\tbreak;\n\tdefault:\n\t\treturn -EINVAL;\n\t}\n\n\treturn 0;\n}\n\n \nstatic inline int crypto_rfc4106_check_authsize(unsigned int authsize)\n{\n\tswitch (authsize) {\n\tcase 8:\n\tcase 12:\n\tcase 16:\n\t\tbreak;\n\tdefault:\n\t\treturn -EINVAL;\n\t}\n\n\treturn 0;\n}\n\n \nstatic inline int crypto_ipsec_check_assoclen(unsigned int assoclen)\n{\n\tswitch (assoclen) {\n\tcase 16:\n\tcase 20:\n\t\tbreak;\n\tdefault:\n\t\treturn -EINVAL;\n\t}\n\n\treturn 0;\n}\n\nstruct aesgcm_ctx {\n\tbe128\t\t\tghash_key;\n\tstruct crypto_aes_ctx\taes_ctx;\n\tunsigned int\t\tauthsize;\n};\n\nint aesgcm_expandkey(struct aesgcm_ctx *ctx, const u8 *key,\n\t\t     unsigned int keysize, unsigned int authsize);\n\nvoid aesgcm_encrypt(const struct aesgcm_ctx *ctx, u8 *dst, const u8 *src,\n\t\t    int crypt_len, const u8 *assoc, int assoc_len,\n\t\t    const u8 iv[GCM_AES_IV_SIZE], u8 *authtag);\n\nbool __must_check aesgcm_decrypt(const struct aesgcm_ctx *ctx, u8 *dst,\n\t\t\t\t const u8 *src, int crypt_len, const u8 *assoc,\n\t\t\t\t int assoc_len, const u8 iv[GCM_AES_IV_SIZE],\n\t\t\t\t const u8 *authtag);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

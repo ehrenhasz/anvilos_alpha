@@ -1,0 +1,9 @@
+{
+  "module_name": "mkstemp-safer.c",
+  "hash_id": "a54357443a91b2bfc95803335061d0aa9857148aafa6bc871e2eb13a10ef5e74",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mkstemp-safer.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"stdlib-safer.h\"\n\n#include <stdlib.h>\n#include \"unistd-safer.h\"\n\n \n\nint\nmkstemp_safer (char *templ)\n{\n  return fd_safer (mkstemp (templ));\n}\n\n#if GNULIB_MKOSTEMP\n \nint\nmkostemp_safer (char *templ, int flags)\n{\n  return fd_safer_flag (mkostemp (templ, flags), flags);\n}\n#endif\n\n#if GNULIB_MKOSTEMPS\n \nint\nmkostemps_safer (char *templ, int suffixlen, int flags)\n{\n  return fd_safer_flag (mkostemps (templ, suffixlen, flags), flags);\n}\n#endif\n\n#if GNULIB_MKSTEMPS\n \nint mkstemps_safer (char *templ, int suffixlen)\n{\n  return fd_safer (mkstemps (templ, suffixlen));\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

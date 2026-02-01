@@ -1,0 +1,9 @@
+{
+  "module_name": "visl-trace-points.c",
+  "hash_id": "aef1346227210e8e67d8c2e5504750347ecbacc610f0d6c84d76da42a6ed822a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/visl/visl-trace-points.c",
+  "human_readable_source": "\n#include \"visl.h\"\n\n#define CREATE_TRACE_POINTS\n#include \"visl-trace-fwht.h\"\n#include \"visl-trace-mpeg2.h\"\n#include \"visl-trace-vp8.h\"\n#include \"visl-trace-vp9.h\"\n#include \"visl-trace-h264.h\"\n#include \"visl-trace-hevc.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

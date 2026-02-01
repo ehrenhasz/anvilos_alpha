@@ -1,0 +1,9 @@
+{
+  "module_name": "wd501p.h",
+  "hash_id": "2053dd83f5e7e06688e5cbc027cf15d9fcf239295086284a994e7902c74a4888",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/watchdog/wd501p.h",
+  "human_readable_source": " \n \n\n\n#define WDT_COUNT0\t\t(io+0)\n#define WDT_COUNT1\t\t(io+1)\n#define WDT_COUNT2\t\t(io+2)\n#define WDT_CR\t\t\t(io+3)\n#define WDT_SR\t\t\t(io+4)\t \n#define WDT_RT\t\t\t(io+5)\t \n#define WDT_BUZZER\t\t(io+6)\t \n#define WDT_DC\t\t\t(io+7)\n\n \n#define WDT_CLOCK\t\t(io+12)\t \n \n#define WDT_OPTONOTRST\t\t(io+13)\t \n \n#define WDT_OPTORST\t\t(io+14)\t \n \n#define WDT_PROGOUT\t\t(io+15)\t \n\n\t\t\t\t\t\t\t  \n#define WDC_SR_WCCR\t\t1\t   \n#define WDC_SR_TGOOD\t\t2\t\t\t  \n#define WDC_SR_ISOI0\t\t4\t\t\t  \n#define WDC_SR_ISII1\t\t8\t\t\t  \n#define WDC_SR_FANGOOD\t\t16\t\t\t  \n#define WDC_SR_PSUOVER\t\t32\t   \n#define WDC_SR_PSUUNDR\t\t64\t   \n#define WDC_SR_IRQ\t\t128\t   \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

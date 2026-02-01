@@ -1,0 +1,9 @@
+{
+  "module_name": "hgpk.h",
+  "hash_id": "68666a7ffedb6d288cfe3bcd62c57794eef3c8ec73fceca95670e54d33eb5d0e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/mouse/hgpk.h",
+  "human_readable_source": " \n \n\n#ifndef _HGPK_H\n#define _HGPK_H\n\n#define HGPK_GS\t\t0xff        \n#define HGPK_PT\t\t0xcf        \n\nenum hgpk_model_t {\n\tHGPK_MODEL_PREA = 0x0a,\t \n\tHGPK_MODEL_A = 0x14,\t \n\tHGPK_MODEL_B = 0x28,\t \n\tHGPK_MODEL_C = 0x3c,\n\tHGPK_MODEL_D = 0x50,\t \n};\n\nenum hgpk_spew_flag {\n\tNO_SPEW,\n\tMAYBE_SPEWING,\n\tSPEW_DETECTED,\n\tRECALIBRATING,\n};\n\n#define SPEW_WATCH_COUNT 42   \n\nenum hgpk_mode {\n\tHGPK_MODE_MOUSE,\n\tHGPK_MODE_GLIDESENSOR,\n\tHGPK_MODE_PENTABLET,\n\tHGPK_MODE_INVALID\n};\n\nstruct hgpk_data {\n\tstruct psmouse *psmouse;\n\tenum hgpk_mode mode;\n\tbool powered;\n\tenum hgpk_spew_flag spew_flag;\n\tint spew_count, x_tally, y_tally;\t \n\tunsigned long recalib_window;\n\tstruct delayed_work recalib_wq;\n\tint abs_x, abs_y;\n\tint dupe_count;\n\tint xbigj, ybigj, xlast, ylast;  \n\tint xsaw_secondary, ysaw_secondary;  \n};\n\nint hgpk_detect(struct psmouse *psmouse, bool set_properties);\nint hgpk_init(struct psmouse *psmouse);\n\n#ifdef CONFIG_MOUSE_PS2_OLPC\nvoid hgpk_module_init(void);\n#else\nstatic inline void hgpk_module_init(void)\n{\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

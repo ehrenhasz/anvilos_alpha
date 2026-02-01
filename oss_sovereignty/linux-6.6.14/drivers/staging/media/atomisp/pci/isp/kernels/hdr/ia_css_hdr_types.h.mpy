@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_hdr_types.h",
+  "hash_id": "d5fbe7e7fe4dbabdb3c1fec77d0582933f0a5522aa746105ee0c738193a23b6b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/hdr/ia_css_hdr_types.h",
+  "human_readable_source": " \n \n \n\n#ifndef __IA_CSS_HDR_TYPES_H\n#define __IA_CSS_HDR_TYPES_H\n\n#define IA_CSS_HDR_MAX_NUM_INPUT_FRAMES         (3)\n\n \nstruct ia_css_hdr_irradiance_params {\n\tint test_irr;                                           \n\tint match_shift[IA_CSS_HDR_MAX_NUM_INPUT_FRAMES -\n\t\t\t\t\t\t\t1];   \n\tint match_mul[IA_CSS_HDR_MAX_NUM_INPUT_FRAMES -\n\t\t\t\t\t\t      1];     \n\tint thr_low[IA_CSS_HDR_MAX_NUM_INPUT_FRAMES -\n\t\t\t\t\t\t    1];       \n\tint thr_high[IA_CSS_HDR_MAX_NUM_INPUT_FRAMES -\n\t\t\t\t\t\t     1];      \n\tint thr_coeff[IA_CSS_HDR_MAX_NUM_INPUT_FRAMES -\n\t\t\t\t\t\t      1];     \n\tint thr_shift[IA_CSS_HDR_MAX_NUM_INPUT_FRAMES -\n\t\t\t\t\t\t      1];     \n\tint weight_bpp;                                         \n};\n\n \nstruct ia_css_hdr_deghost_params {\n\tint test_deg;  \n};\n\n \nstruct ia_css_hdr_exclusion_params {\n\tint test_excl;  \n};\n\n \nstruct ia_css_hdr_config {\n\tstruct ia_css_hdr_irradiance_params irradiance;  \n\tstruct ia_css_hdr_deghost_params    deghost;     \n\tstruct ia_css_hdr_exclusion_params  exclusion;  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

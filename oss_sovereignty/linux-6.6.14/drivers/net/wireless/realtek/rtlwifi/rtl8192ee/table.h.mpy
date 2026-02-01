@@ -1,0 +1,9 @@
+{
+  "module_name": "table.h",
+  "hash_id": "67a8026d7ca4683e7881c827449332bb08c6e5d9e30cc84989483fa441649ba9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8192ee/table.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL92E_TABLE__H_\n#define __RTL92E_TABLE__H_\n\n#include <linux/types.h>\n#define RTL8192EE_PHY_REG_ARRAY_LEN\t448\nextern u32 RTL8192EE_PHY_REG_ARRAY[];\n#define RTL8192EE_PHY_REG_ARRAY_PG_LEN\t168\nextern u32 RTL8192EE_PHY_REG_ARRAY_PG[];\n#define\tRTL8192EE_RADIOA_ARRAY_LEN\t238\nextern u32 RTL8192EE_RADIOA_ARRAY[];\n#define\tRTL8192EE_RADIOB_ARRAY_LEN\t198\nextern u32 RTL8192EE_RADIOB_ARRAY[];\n#define RTL8192EE_MAC_ARRAY_LEN\t\t202\nextern u32 RTL8192EE_MAC_ARRAY[];\n#define RTL8192EE_AGC_TAB_ARRAY_LEN\t532\nextern u32 RTL8192EE_AGC_TAB_ARRAY[];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

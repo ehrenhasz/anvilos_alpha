@@ -1,0 +1,9 @@
+{
+  "module_name": "s390-cpumcf-kernel.h",
+  "hash_id": "241f23f1bebfa1e4d240d22756271bd39f0c4007ebe229258181dbced722037b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/s390-cpumcf-kernel.h",
+  "human_readable_source": " \n \n#ifndef S390_CPUMCF_KERNEL_H\n#define S390_CPUMCF_KERNEL_H\n\n#define\tS390_CPUMCF_DIAG_DEF\t0xfeef\t \n#define\tPERF_EVENT_CPUM_CF_DIAG\t0xBC000\t \n#define PERF_EVENT_CPUM_SF_DIAG\t0xBD000  \n\nstruct cf_ctrset_entry {\t \n\tunsigned int def:16;\t \n\tunsigned int set:16;\t \n\tunsigned int ctr:16;\t \n\tunsigned int res1:16;\t \n};\n\nstruct cf_trailer_entry {\t \n\t \n\tunion {\n\t\tstruct {\n\t\t\tunsigned int clock_base:1;\t \n\t\t\tunsigned int speed:1;\t\t \n\t\t\t \n\t\t\tunsigned int mtda:1;\t \n\t\t\tunsigned int caca:1;\t \n\t\t\tunsigned int lcda:1;\t \n\t\t};\n\t\tunsigned long flags;\t\t \n\t};\n\t \n\tunsigned int cfvn:16;\t\t\t \n\tunsigned int csvn:16;\t\t\t \n\tunsigned int cpu_speed:32;\t\t \n\t \n\tunsigned long timestamp;\t\t \n\t \n\tunion {\n\t\tstruct {\n\t\t\tunsigned long progusage1;\n\t\t\tunsigned long progusage2;\n\t\t\tunsigned long progusage3;\n\t\t\tunsigned long tod_base;\n\t\t};\n\t\tunsigned long progusage[4];\n\t};\n\t \n\tunsigned int mach_type:16;\t\t \n\tunsigned int res1:16;\t\t\t \n\tunsigned int res2:32;\t\t\t \n};\n\n#define\tCPUMF_CTR_SET_BASIC\t0\t \n#define\tCPUMF_CTR_SET_USER\t1\t \n#define\tCPUMF_CTR_SET_CRYPTO\t2\t \n#define\tCPUMF_CTR_SET_EXT\t3\t \n#define\tCPUMF_CTR_SET_MT_DIAG\t4\t \n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tcp_estats.c",
+  "hash_id": "ff37122a6d99521e51a4b776ebffd788e7e434e258dbe64cbb306285674f4930",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/tcp_estats.c",
+  "human_readable_source": "\n#include <test_progs.h>\n\nvoid test_tcp_estats(void)\n{\n\tconst char *file = \"./test_tcp_estats.bpf.o\";\n\tint err, prog_fd;\n\tstruct bpf_object *obj;\n\n\terr = bpf_prog_test_load(file, BPF_PROG_TYPE_TRACEPOINT, &obj, &prog_fd);\n\tif (!ASSERT_OK(err, \"\"))\n\t\treturn;\n\n\tbpf_object__close(obj);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

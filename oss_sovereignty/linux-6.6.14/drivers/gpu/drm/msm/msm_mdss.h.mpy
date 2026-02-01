@@ -1,0 +1,9 @@
+{
+  "module_name": "msm_mdss.h",
+  "hash_id": "247a9a8009747e5c1ae5612dc7a33f8f4ce040954e53651efb37d467488f4ef8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/msm_mdss.h",
+  "human_readable_source": " \n \n\n#ifndef __MSM_MDSS_H__\n#define __MSM_MDSS_H__\n\nstruct msm_mdss_data {\n\tu32 ubwc_enc_version;\n\t \n\tu32 ubwc_dec_version;\n\tu32 ubwc_swizzle;\n\tu32 ubwc_static;\n\tu32 highest_bank_bit;\n\tu32 macrotile_mode;\n};\n\n#define UBWC_1_0 0x10000000\n#define UBWC_2_0 0x20000000\n#define UBWC_3_0 0x30000000\n#define UBWC_4_0 0x40000000\n#define UBWC_4_3 0x40030000\n\nconst struct msm_mdss_data *msm_mdss_get_mdss_data(struct device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

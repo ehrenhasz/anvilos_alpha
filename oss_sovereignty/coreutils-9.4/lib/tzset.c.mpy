@@ -1,0 +1,9 @@
+{
+  "module_name": "tzset.c",
+  "hash_id": "22f93fed8cf2e5affe1e4a93fc19b739ebeb48c2e9beaafa816dd57352f8681f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/tzset.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <time.h>\n\n#include <stdlib.h>\n#include <string.h>\n\nvoid\nrpl_tzset (void)\n#undef tzset\n{\n#if defined _WIN32 && ! defined __CYGWIN__\n   \n  const char *tz = getenv (\"TZ\");\n  if (tz != NULL && strchr (tz, '/') != NULL)\n    _putenv (\"TZ=\");\n\n  /* On native Windows, tzset() is deprecated.  Use _tzset() instead.  See\n     <https:\n     <https:\n  _tzset ();\n#else\n  tzset ();\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

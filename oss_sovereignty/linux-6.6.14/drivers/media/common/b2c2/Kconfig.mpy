@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "328a994e35a3f4501f7fc311001766c2e0b2ad883f5b8e8caf3c65fbbed4db20",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/common/b2c2/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DVB_B2C2_FLEXCOP\n\ttristate\n\tdepends on DVB_CORE && I2C\n\tdepends on DVB_B2C2_FLEXCOP_PCI || DVB_B2C2_FLEXCOP_USB\n\tdefault y\n\tselect DVB_PLL if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_STV0299 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_MT352 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_MT312 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_NXT200X if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_STV0297 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_BCM3510 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_LGDT330X if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_S5H1420 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_TUNER_ITD1000 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_ISL6421 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_CX24120 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_CX24123 if MEDIA_SUBDRV_AUTOSELECT\n\tselect MEDIA_TUNER_SIMPLE if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_TUNER_CX24113 if MEDIA_SUBDRV_AUTOSELECT\n\n# Selected via the PCI or USB flexcop drivers\nconfig DVB_B2C2_FLEXCOP_DEBUG\n\tbool\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

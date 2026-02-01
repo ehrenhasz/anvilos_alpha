@@ -1,0 +1,9 @@
+{
+  "module_name": "stdarg.in.h",
+  "hash_id": "da6a8f37e6069491b199c49c48c0b4fceb6c725bfdee9226583cab0bd0bb521e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/stdarg.in.h",
+  "human_readable_source": " \n#@INCLUDE_NEXT@ @NEXT_STDARG_H@\n\n#ifndef _@GUARD_PREFIX@_STDARG_H\n#define _@GUARD_PREFIX@_STDARG_H\n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#ifndef va_copy\n# define va_copy(a,b) ((a) = (b))\n#endif\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

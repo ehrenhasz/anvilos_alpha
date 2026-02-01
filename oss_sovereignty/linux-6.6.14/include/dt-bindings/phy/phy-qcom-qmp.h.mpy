@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-qcom-qmp.h",
+  "hash_id": "956c96f32d473ec31e2c7ba19a442b24cf89e8d443565b43c594c2bbd63f99d1",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/phy/phy-qcom-qmp.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_PHY_QMP\n#define _DT_BINDINGS_PHY_QMP\n\n \n#define QMP_USB43DP_USB3_PIPE_CLK\t0\n#define QMP_USB43DP_DP_LINK_CLK\t\t1\n#define QMP_USB43DP_DP_VCO_DIV_CLK\t2\n\n \n#define QMP_USB43DP_USB3_PHY\t\t0\n#define QMP_USB43DP_DP_PHY\t\t1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

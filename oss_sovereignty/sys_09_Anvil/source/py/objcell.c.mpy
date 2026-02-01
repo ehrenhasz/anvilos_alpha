@@ -1,0 +1,9 @@
+{
+  "module_name": "objcell.c",
+  "hash_id": "5f585c573c5f67fcb4434a6f689d797eae8df2329ac573416f7342f41f6776b1",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/objcell.c",
+  "human_readable_source": " \n\n#include \"py/obj.h\"\n\n#if MICROPY_ERROR_REPORTING == MICROPY_ERROR_REPORTING_DETAILED\nstatic void cell_print(const mp_print_t *print, mp_obj_t o_in, mp_print_kind_t kind) {\n    (void)kind;\n    mp_obj_cell_t *o = MP_OBJ_TO_PTR(o_in);\n    mp_printf(print, \"<cell %p \", o->obj);\n    if (o->obj == MP_OBJ_NULL) {\n        mp_print_str(print, \"(nil)\");\n    } else {\n        mp_obj_print_helper(print, o->obj, PRINT_REPR);\n    }\n    mp_print_str(print, \">\");\n}\n#endif\n\n#if MICROPY_ERROR_REPORTING == MICROPY_ERROR_REPORTING_DETAILED\n#define CELL_TYPE_PRINT , print, cell_print\n#else\n#define CELL_TYPE_PRINT\n#endif\n\nstatic MP_DEFINE_CONST_OBJ_TYPE(\n    \n    mp_type_cell, MP_QSTR_, MP_TYPE_FLAG_NONE\n    CELL_TYPE_PRINT\n    );\n\nmp_obj_t mp_obj_new_cell(mp_obj_t obj) {\n    mp_obj_cell_t *o = mp_obj_malloc(mp_obj_cell_t, &mp_type_cell);\n    o->obj = obj;\n    return MP_OBJ_FROM_PTR(o);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

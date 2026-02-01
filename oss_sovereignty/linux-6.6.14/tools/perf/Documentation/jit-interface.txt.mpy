@@ -1,0 +1,9 @@
+{
+  "module_name": "jit-interface.txt",
+  "hash_id": "712ac455a66a4b0f3789fa75e9fe7952467d5790527132757018cbfa471fae6b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/jit-interface.txt",
+  "human_readable_source": "perf supports a simple JIT interface to resolve symbols for dynamic code generated\nby a JIT.\n\nThe JIT has to write a /tmp/perf-%d.map  (%d = pid of process) file\n\nThis is a text file.\n\nEach line has the following format, fields separated with spaces:\n\nSTART SIZE symbolname\n\nSTART and SIZE are hex numbers without 0x.\nsymbolname is the rest of the line, so it could contain special characters.\n\nThe ownership of the file has to match the process.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

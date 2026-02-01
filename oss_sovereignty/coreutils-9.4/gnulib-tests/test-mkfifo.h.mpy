@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mkfifo.h",
+  "hash_id": "6d719fc97335d387a83e8d26e72ae77d45c5a7a3b39d777fa23fbe493d949202",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mkfifo.h",
+  "human_readable_source": " \n\n \n\nstatic int\ntest_mkfifo (int (*func) (char const *, mode_t), bool print)\n{\n  int result = func (BASE \"fifo\", 0600);\n  struct stat st;\n  if (result == -1 && errno == ENOSYS)\n    {\n      if (print)\n        fputs (\"skipping test: no support for named fifos\\n\", stderr);\n      return 77;\n    }\n  ASSERT (result == 0);\n  ASSERT (stat (BASE \"fifo\", &st) == 0);\n  ASSERT (S_ISFIFO (st.st_mode));\n\n   \n  errno = 0;\n  ASSERT (func (\"\", S_IRUSR | S_IWUSR) == -1);\n  ASSERT (errno == ENOENT);\n  errno = 0;\n  ASSERT (func (\".\", 0600) == -1);\n   \n  ASSERT (errno == EEXIST || errno == EINVAL || errno == EISDIR);\n  errno = 0;\n  ASSERT (func (BASE \"fifo\", 0600) == -1);\n  ASSERT (errno == EEXIST);\n  ASSERT (unlink (BASE \"fifo\") == 0);\n  errno = 0;\n  ASSERT (func (BASE \"fifo/\", 0600) == -1);\n  ASSERT (errno == ENOENT || errno == ENOTDIR);\n\n   \n  if (symlink (BASE \"fifo\", BASE \"link\"))\n    {\n      if (print)\n        fputs (\"skipping test: symlinks not supported on this file system\\n\",\n               stderr);\n      return 77;\n    }\n  errno = 0;\n  ASSERT (func (BASE \"link\", 0600) == -1);\n  ASSERT (errno == EEXIST);\n  errno = 0;\n  ASSERT (func (BASE \"link/\", 0600) == -1);\n  ASSERT (errno == EEXIST || errno == ENOENT || errno == ENOTDIR);\n  errno = 0;\n  ASSERT (unlink (BASE \"fifo\") == -1);\n  ASSERT (errno == ENOENT);\n  ASSERT (unlink (BASE \"link\") == 0);\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

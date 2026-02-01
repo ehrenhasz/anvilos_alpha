@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio-pxa.h",
+  "hash_id": "b3879ebf87ed94b685bdc9858ac5d0f6e8af52ed0b0bcf8c35535f883d9d9df2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/gpio-pxa.h",
+  "human_readable_source": " \n#ifndef __GPIO_PXA_H\n#define __GPIO_PXA_H\n\n#define GPIO_bit(x)\t(1 << ((x) & 0x1f))\n\n#define gpio_to_bank(gpio)\t((gpio) >> 5)\n\n \nextern int pxa_last_gpio;\n\nextern int pxa_irq_to_gpio(int irq);\n\nstruct pxa_gpio_platform_data {\n\tint irq_base;\n\tint (*gpio_set_wake)(unsigned int gpio, unsigned int on);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

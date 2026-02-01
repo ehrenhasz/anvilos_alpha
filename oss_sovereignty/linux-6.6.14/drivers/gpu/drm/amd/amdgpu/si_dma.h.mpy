@@ -1,0 +1,9 @@
+{
+  "module_name": "si_dma.h",
+  "hash_id": "01024485dd5c7735a14aa5c03fd39b24d052a80d61bf2130ec87b963666a06bf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/si_dma.h",
+  "human_readable_source": " \n\n#ifndef __SI_DMA_H__\n#define __SI_DMA_H__\n\nextern const struct amdgpu_ip_block_version si_dma_ip_block;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

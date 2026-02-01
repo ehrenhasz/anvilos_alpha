@@ -1,0 +1,9 @@
+{
+  "module_name": "cmpxchg-local.h",
+  "hash_id": "de99e382b2e10d8f23fd0839ef6ad33e5fad077b4f762c490f4fa944cd0f5106",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/cmpxchg-local.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_CMPXCHG_LOCAL_H\n#define __ASM_GENERIC_CMPXCHG_LOCAL_H\n\n#include <linux/types.h>\n#include <linux/irqflags.h>\n\nextern unsigned long wrong_size_cmpxchg(volatile void *ptr)\n\t__noreturn;\n\n \nstatic inline unsigned long __generic_cmpxchg_local(volatile void *ptr,\n\t\tunsigned long old, unsigned long new, int size)\n{\n\tunsigned long flags, prev;\n\n\t \n\tif (size == 8 && sizeof(unsigned long) != 8)\n\t\twrong_size_cmpxchg(ptr);\n\n\traw_local_irq_save(flags);\n\tswitch (size) {\n\tcase 1: prev = *(u8 *)ptr;\n\t\tif (prev == (old & 0xffu))\n\t\t\t*(u8 *)ptr = (new & 0xffu);\n\t\tbreak;\n\tcase 2: prev = *(u16 *)ptr;\n\t\tif (prev == (old & 0xffffu))\n\t\t\t*(u16 *)ptr = (new & 0xffffu);\n\t\tbreak;\n\tcase 4: prev = *(u32 *)ptr;\n\t\tif (prev == (old & 0xffffffffu))\n\t\t\t*(u32 *)ptr = (new & 0xffffffffu);\n\t\tbreak;\n\tcase 8: prev = *(u64 *)ptr;\n\t\tif (prev == old)\n\t\t\t*(u64 *)ptr = (u64)new;\n\t\tbreak;\n\tdefault:\n\t\twrong_size_cmpxchg(ptr);\n\t}\n\traw_local_irq_restore(flags);\n\treturn prev;\n}\n\n \nstatic inline u64 __generic_cmpxchg64_local(volatile void *ptr,\n\t\tu64 old, u64 new)\n{\n\tu64 prev;\n\tunsigned long flags;\n\n\traw_local_irq_save(flags);\n\tprev = *(u64 *)ptr;\n\tif (prev == old)\n\t\t*(u64 *)ptr = new;\n\traw_local_irq_restore(flags);\n\treturn prev;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

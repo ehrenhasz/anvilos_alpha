@@ -1,0 +1,9 @@
+{
+  "module_name": "umc_6_0_sh_mask.h",
+  "hash_id": "46329c92b193fc72c0daf2013fe2163494d8a3a924cc98c49a42ffcdd8e7737e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/asic_reg/umc/umc_6_0_sh_mask.h",
+  "human_readable_source": " \n\n#ifndef _umc_6_0_SH_MASK_HEADER\n#define _umc_6_0_SH_MASK_HEADER\n\n#define UMCCH0_0_EccCtrl__RdEccEn_MASK   0x00000400L\n#define UMCCH0_0_EccCtrl__RdEccEn__SHIFT   0xa\n#define UMCCH0_0_EccCtrl__WrEccEn_MASK   0x00000001L\n#define UMCCH0_0_EccCtrl__WrEccEn__SHIFT   0x0\n\n#define UMCCH0_0_UMC_CONFIG__DramReady_MASK   0x80000000L\n#define UMCCH0_0_UMC_CONFIG__DramReady__SHIFT   0x1f\n\n#define UMCCH0_0_UmcLocalCap__EccDis_MASK   0x00000001L\n#define UMCCH0_0_UmcLocalCap__EccDis__SHIFT   0x0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

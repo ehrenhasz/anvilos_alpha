@@ -1,0 +1,9 @@
+{
+  "module_name": "stats.h",
+  "hash_id": "2a9445aae7db5de4831ade099d214925ee3e9afdaa315511d0c5935c4e8c0ee2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/bcache/stats.h",
+  "human_readable_source": " \n#ifndef _BCACHE_STATS_H_\n#define _BCACHE_STATS_H_\n\nstruct cache_stat_collector {\n\tatomic_t cache_hits;\n\tatomic_t cache_misses;\n\tatomic_t cache_bypass_hits;\n\tatomic_t cache_bypass_misses;\n\tatomic_t cache_miss_collisions;\n\tatomic_t sectors_bypassed;\n};\n\nstruct cache_stats {\n\tstruct kobject\t\tkobj;\n\n\tunsigned long cache_hits;\n\tunsigned long cache_misses;\n\tunsigned long cache_bypass_hits;\n\tunsigned long cache_bypass_misses;\n\tunsigned long cache_miss_collisions;\n\tunsigned long sectors_bypassed;\n\n\tunsigned int\t\trescale;\n};\n\nstruct cache_accounting {\n\tstruct closure\t\tcl;\n\tstruct timer_list\ttimer;\n\tatomic_t\t\tclosing;\n\n\tstruct cache_stat_collector collector;\n\n\tstruct cache_stats total;\n\tstruct cache_stats five_minute;\n\tstruct cache_stats hour;\n\tstruct cache_stats day;\n};\n\nstruct cache_set;\nstruct cached_dev;\nstruct bcache_device;\n\nvoid bch_cache_accounting_init(struct cache_accounting *acc,\n\t\t\t       struct closure *parent);\n\nint bch_cache_accounting_add_kobjs(struct cache_accounting *acc,\n\t\t\t\t   struct kobject *parent);\n\nvoid bch_cache_accounting_clear(struct cache_accounting *acc);\n\nvoid bch_cache_accounting_destroy(struct cache_accounting *acc);\n\nvoid bch_mark_cache_accounting(struct cache_set *c, struct bcache_device *d,\n\t\t\t       bool hit, bool bypass);\nvoid bch_mark_cache_miss_collision(struct cache_set *c,\n\t\t\t\t   struct bcache_device *d);\nvoid bch_mark_sectors_bypassed(struct cache_set *c,\n\t\t\t       struct cached_dev *dc,\n\t\t\t       int sectors);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

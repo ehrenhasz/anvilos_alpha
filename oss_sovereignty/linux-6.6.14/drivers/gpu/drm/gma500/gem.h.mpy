@@ -1,0 +1,9 @@
+{
+  "module_name": "gem.h",
+  "hash_id": "dea07d2c46c36f69894594e263ea593dc0f9f8e992d49f9c3c7407e1d93b1d45",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/gma500/gem.h",
+  "human_readable_source": " \n \n\n#ifndef _GEM_H\n#define _GEM_H\n\n#include <linux/kernel.h>\n\n#include <drm/drm_gem.h>\n\nstruct drm_device;\n\n \n\nstruct psb_gem_object {\n\tstruct drm_gem_object base;\n\n\tstruct resource resource;\t \n\tu32 offset;\t\t\t \n\tint in_gart;\t\t\t \n\tbool stolen;\t\t\t \n\tbool mmapping;\t\t\t \n\tstruct page **pages;\t\t \n};\n\nstatic inline struct psb_gem_object *to_psb_gem_object(struct drm_gem_object *obj)\n{\n\treturn container_of(obj, struct psb_gem_object, base);\n}\n\nstruct psb_gem_object *\npsb_gem_create(struct drm_device *dev, u64 size, const char *name, bool stolen, u32 align);\n\nint psb_gem_pin(struct psb_gem_object *pobj);\nvoid psb_gem_unpin(struct psb_gem_object *pobj);\n\n \n\nint psb_gem_mm_init(struct drm_device *dev);\nvoid psb_gem_mm_fini(struct drm_device *dev);\nint psb_gem_mm_resume(struct drm_device *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

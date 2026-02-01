@@ -1,0 +1,9 @@
+{
+  "module_name": "dmub_trace_buffer.h",
+  "hash_id": "db16c4eb6d16e1227110e0429c8c1c418ad21c841f0eb3e4c026a6db7e021061",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dmub/inc/dmub_trace_buffer.h",
+  "human_readable_source": " \n#ifndef _DMUB_TRACE_BUFFER_H_\n#define _DMUB_TRACE_BUFFER_H_\n\n#include \"dmub_cmd.h\"\n\n#define LOAD_DMCU_FW\t1\n#define LOAD_PHY_FW\t2\n\n\nenum dmucb_trace_code {\n\tDMCUB__UNKNOWN,\n\tDMCUB__MAIN_BEGIN,\n\tDMCUB__PHY_INIT_BEGIN,\n\tDMCUB__PHY_FW_SRAM_LOAD_BEGIN,\n\tDMCUB__PHY_FW_SRAM_LOAD_END,\n\tDMCUB__PHY_INIT_POLL_DONE,\n\tDMCUB__PHY_INIT_END,\n\tDMCUB__DMCU_ERAM_LOAD_BEGIN,\n\tDMCUB__DMCU_ERAM_LOAD_END,\n\tDMCUB__DMCU_ISR_LOAD_BEGIN,\n\tDMCUB__DMCU_ISR_LOAD_END,\n\tDMCUB__MAIN_IDLE,\n\tDMCUB__PERF_TRACE,\n\tDMCUB__PG_DONE,\n};\n\nstruct dmcub_trace_buf_entry {\n\tenum dmucb_trace_code trace_code;\n\tuint32_t tick_count;\n\tuint32_t param0;\n\tuint32_t param1;\n};\n\n#define TRACE_BUF_SIZE (1024) \n#define PERF_TRACE_MAX_ENTRY ((TRACE_BUF_SIZE - 8)/sizeof(struct dmcub_trace_buf_entry))\n\n\nstruct dmcub_trace_buf {\n\tuint32_t entry_count;\n\tuint32_t clk_freq;\n\tstruct dmcub_trace_buf_entry entries[PERF_TRACE_MAX_ENTRY];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

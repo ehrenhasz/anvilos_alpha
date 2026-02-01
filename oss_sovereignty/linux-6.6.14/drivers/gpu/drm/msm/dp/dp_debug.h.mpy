@@ -1,0 +1,9 @@
+{
+  "module_name": "dp_debug.h",
+  "hash_id": "99e735a57bbb791de229c591e574d9e045ce49c452a7d3dcc9b6204112720f5d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/dp/dp_debug.h",
+  "human_readable_source": " \n \n\n#ifndef _DP_DEBUG_H_\n#define _DP_DEBUG_H_\n\n#include \"dp_panel.h\"\n#include \"dp_link.h\"\n\n \nstruct dp_debug {\n\tbool debug_en;\n\tint aspect_ratio;\n\tint vdisplay;\n\tint hdisplay;\n\tint vrefresh;\n};\n\n#if defined(CONFIG_DEBUG_FS)\n\n \nstruct dp_debug *dp_debug_get(struct device *dev, struct dp_panel *panel,\n\t\tstruct dp_link *link,\n\t\tstruct drm_connector *connector,\n\t\tstruct drm_minor *minor);\n\n \nvoid dp_debug_put(struct dp_debug *dp_debug);\n\n#else\n\nstatic inline\nstruct dp_debug *dp_debug_get(struct device *dev, struct dp_panel *panel,\n\t\tstruct dp_link *link,\n\t\tstruct drm_connector *connector, struct drm_minor *minor)\n{\n\treturn ERR_PTR(-EINVAL);\n}\n\nstatic inline void dp_debug_put(struct dp_debug *dp_debug)\n{\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

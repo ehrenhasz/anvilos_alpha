@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5280c352398b6ff1c5f24526f44fefc2e42cd5d468d32f65b90d5b9da586b435",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/block/rnbd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-or-later\n\nccflags-y := -I$(srctree)/drivers/infiniband/ulp/rtrs\n\nrnbd-client-y := rnbd-clt.o \\\n\t\t  rnbd-clt-sysfs.o\n\nCFLAGS_rnbd-srv-trace.o = -I$(src)\n\nrnbd-server-y := rnbd-srv.o \\\n\t\t  rnbd-srv-sysfs.o \\\n\t\t  rnbd-srv-trace.o\n\nobj-$(CONFIG_BLK_DEV_RNBD_CLIENT) += rnbd-client.o\nobj-$(CONFIG_BLK_DEV_RNBD_SERVER) += rnbd-server.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

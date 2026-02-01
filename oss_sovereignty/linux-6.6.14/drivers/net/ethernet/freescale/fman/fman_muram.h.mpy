@@ -1,0 +1,9 @@
+{
+  "module_name": "fman_muram.h",
+  "hash_id": "9cfc455d3e730aa03f689eb11d2a0779e3ce645066d113adea480f469866a43c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/fman/fman_muram.h",
+  "human_readable_source": " \n \n\n#ifndef __FM_MURAM_EXT\n#define __FM_MURAM_EXT\n\n#include <linux/types.h>\n\n#define FM_MURAM_INVALID_ALLOCATION\t-1\n\n \nstruct muram_info;\n\nstruct muram_info *fman_muram_init(phys_addr_t base, size_t size);\n\nunsigned long fman_muram_offset_to_vbase(struct muram_info *muram,\n\t\t\t\t\t unsigned long offset);\n\nunsigned long fman_muram_alloc(struct muram_info *muram, size_t size);\n\nvoid fman_muram_free_mem(struct muram_info *muram, unsigned long offset,\n\t\t\t size_t size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

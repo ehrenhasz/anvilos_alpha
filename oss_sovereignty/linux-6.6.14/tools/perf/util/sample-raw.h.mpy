@@ -1,0 +1,9 @@
+{
+  "module_name": "sample-raw.h",
+  "hash_id": "a1f692ba20300af2dcc7b038c596b884229c73fbe5444841c5c5b4035796b1f0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/sample-raw.h",
+  "human_readable_source": " \n#ifndef __SAMPLE_RAW_H\n#define __SAMPLE_RAW_H 1\n\nstruct evlist;\nunion perf_event;\nstruct perf_sample;\n\nvoid evlist__s390_sample_raw(struct evlist *evlist, union perf_event *event,\n\t\t\t     struct perf_sample *sample);\nbool evlist__has_amd_ibs(struct evlist *evlist);\nvoid evlist__amd_sample_raw(struct evlist *evlist, union perf_event *event,\n\t\t\t    struct perf_sample *sample);\nvoid evlist__init_trace_event_sample_raw(struct evlist *evlist);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

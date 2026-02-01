@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "825922645de0c7f3f00fa73ffa3b5a066b9f0530b151edaef954fdb27cea334c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/carl9170/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CARL9170\n\ttristate \"Linux Community AR9170 802.11n USB support\"\n\tdepends on USB && MAC80211\n\tselect ATH_COMMON\n\tselect FW_LOADER\n\tselect CRC32\n\thelp\n\t  This is the mainline driver for the Atheros \"otus\" 802.11n USB devices.\n\n\t  It needs a special firmware (carl9170-1.fw), which can be downloaded\n\t  from our wiki here:\n\t  <https://wireless.wiki.kernel.org/en/users/Drivers/carl9170>\n\n\t  If you choose to build a module, it'll be called carl9170.\n\nconfig CARL9170_LEDS\n\tbool \"SoftLED Support\"\n\tdefault y\n\tdepends on CARL9170\n\tdepends on MAC80211_LEDS\n\thelp\n\t  This option is necessary, if you want your device's LEDs to blink.\n\n\t  Say Y, unless you need the LEDs for firmware debugging.\n\nconfig CARL9170_DEBUGFS\n\tbool \"DebugFS Support\"\n\tdepends on CARL9170 && DEBUG_FS && MAC80211_DEBUGFS\n\tdefault n\n\thelp\n\t  Export several driver and device internals to user space.\n\n\t  Say N.\n\nconfig CARL9170_WPC\n\tbool\n\tdepends on CARL9170 && (INPUT = y || INPUT = CARL9170)\n\tdefault y\n\nconfig CARL9170_HWRNG\n\tbool \"Random number generator\"\n\tdepends on CARL9170 && (HW_RANDOM = y || HW_RANDOM = CARL9170)\n\tdefault n\n\thelp\n\t  Provides a hardware random number generator to the kernel.\n\n\t  SECURITY WARNING: It's relatively easy to eavesdrop all\n\t  generated random numbers from the transport stream with\n\t  usbmon [software] or special usb sniffer hardware.\n\n\t  Say N, unless your setup[i.e.: embedded system] has no\n\t  other rng source and you can afford to take the risk.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

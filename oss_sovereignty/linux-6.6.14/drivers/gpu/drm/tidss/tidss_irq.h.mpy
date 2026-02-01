@@ -1,0 +1,9 @@
+{
+  "module_name": "tidss_irq.h",
+  "hash_id": "c90ea124e0eb98410b0d8b5cf59fae3bdcb0ab7906254e195c464f663df2ce00",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tidss/tidss_irq.h",
+  "human_readable_source": " \n \n\n#ifndef __TIDSS_IRQ_H__\n#define __TIDSS_IRQ_H__\n\n#include <linux/types.h>\n\n#include \"tidss_drv.h\"\n\n \n\n#define DSS_IRQ_DEVICE_OCP_ERR\t\t\tBIT(0)\n\n#define DSS_IRQ_DEVICE_FRAMEDONEWB\t\tBIT(1)\n#define DSS_IRQ_DEVICE_WBBUFFEROVERFLOW\t\tBIT(2)\n#define DSS_IRQ_DEVICE_WBUNCOMPLETEERROR\tBIT(3)\n#define DSS_IRQ_DEVICE_WB_MASK\t\t\tGENMASK(3, 1)\n\n#define DSS_IRQ_VP_BIT_N(ch, bit)\t(4 + 4 * (ch) + (bit))\n#define DSS_IRQ_PLANE_BIT_N(plane, bit) \\\n\t(DSS_IRQ_VP_BIT_N(TIDSS_MAX_PORTS, 0) + 1 * (plane) + (bit))\n\n#define DSS_IRQ_VP_BIT(ch, bit)\tBIT(DSS_IRQ_VP_BIT_N((ch), (bit)))\n#define DSS_IRQ_PLANE_BIT(plane, bit) \\\n\tBIT(DSS_IRQ_PLANE_BIT_N((plane), (bit)))\n\nstatic inline dispc_irq_t DSS_IRQ_VP_MASK(u32 ch)\n{\n\treturn GENMASK(DSS_IRQ_VP_BIT_N((ch), 3), DSS_IRQ_VP_BIT_N((ch), 0));\n}\n\nstatic inline dispc_irq_t DSS_IRQ_PLANE_MASK(u32 plane)\n{\n\treturn GENMASK(DSS_IRQ_PLANE_BIT_N((plane), 0),\n\t\t       DSS_IRQ_PLANE_BIT_N((plane), 0));\n}\n\n#define DSS_IRQ_VP_FRAME_DONE(ch)\tDSS_IRQ_VP_BIT((ch), 0)\n#define DSS_IRQ_VP_VSYNC_EVEN(ch)\tDSS_IRQ_VP_BIT((ch), 1)\n#define DSS_IRQ_VP_VSYNC_ODD(ch)\tDSS_IRQ_VP_BIT((ch), 2)\n#define DSS_IRQ_VP_SYNC_LOST(ch)\tDSS_IRQ_VP_BIT((ch), 3)\n\n#define DSS_IRQ_PLANE_FIFO_UNDERFLOW(plane)\tDSS_IRQ_PLANE_BIT((plane), 0)\n\nstruct drm_crtc;\nstruct drm_device;\n\nstruct tidss_device;\n\nvoid tidss_irq_enable_vblank(struct drm_crtc *crtc);\nvoid tidss_irq_disable_vblank(struct drm_crtc *crtc);\n\nint tidss_irq_install(struct drm_device *ddev, unsigned int irq);\nvoid tidss_irq_uninstall(struct drm_device *ddev);\n\nvoid tidss_irq_resume(struct tidss_device *tidss);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

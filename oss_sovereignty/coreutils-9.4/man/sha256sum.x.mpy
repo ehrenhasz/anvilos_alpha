@@ -1,0 +1,9 @@
+{
+  "module_name": "sha256sum.x",
+  "hash_id": "7ba0d26be38bfe95d17ea81869ea571f03066812f0089823701caca0421af0d4",
+  "original_prompt": "Ingested from coreutils-9.4/man/sha256sum.x",
+  "human_readable_source": "[NAME]\nsha256sum \\- compute and check SHA256 message digest\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ncksum(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl819x_TS.h",
+  "hash_id": "6ca5113313703817bba394fa2d56c227c7017d943918915e586b6ad28628faee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192e/rtl819x_TS.h",
+  "human_readable_source": " \n \n#ifndef _TSTYPE_H_\n#define _TSTYPE_H_\n#include \"rtl819x_Qos.h\"\n#define TS_ADDBA_DELAY\t\t60\n\n#define TOTAL_TS_NUM\t\t16\n#define TCLAS_NUM\t\t4\n\nenum tr_select {\n\tTX_DIR = 0,\n\tRX_DIR = 1,\n};\n\nstruct ts_common_info {\n\tstruct list_head\t\tList;\n\tu8\t\t\t\tAddr[ETH_ALEN];\n\tunion tspec_body TSpec;\n\tunion qos_tclas TClass[TCLAS_NUM];\n\tu8\t\t\t\tTClasProc;\n\tu8\t\t\t\tTClasNum;\n};\n\nstruct tx_ts_record {\n\tstruct ts_common_info TsCommonInfo;\n\tu16\t\t\t\tTxCurSeq;\n\tstruct ba_record TxPendingBARecord;\n\tstruct ba_record TxAdmittedBARecord;\n\tu8\t\t\t\tbAddBaReqInProgress;\n\tu8\t\t\t\tbAddBaReqDelayed;\n\tu8\t\t\t\tbUsingBa;\n\tu8\t\t\t\tbDisable_AddBa;\n\tstruct timer_list\t\tTsAddBaTimer;\n\tu8\t\t\t\tnum;\n};\n\nstruct rx_ts_record {\n\tstruct ts_common_info ts_common_info;\n\tu16 rx_indicate_seq;\n\tu16 rx_timeout_indicate_seq;\n\tstruct list_head rx_pending_pkt_list;\n\tstruct timer_list rx_pkt_pending_timer;\n\tstruct ba_record rx_admitted_ba_record;\n\tu16 rx_last_seq_num;\n\tu8 rx_last_frag_num;\n\tu8 num;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dce110_timing_generator_v.h",
+  "hash_id": "5dd662ea1df2dfcbf7e643ff4ff73857bc92faab2f9b8b6879ea4a960b5b1981",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator_v.h",
+  "human_readable_source": " \n\n#ifndef __DC_TIMING_GENERATOR_V_DCE110_H__\n#define __DC_TIMING_GENERATOR_V_DCE110_H__\n\nvoid dce110_timing_generator_v_construct(\n\tstruct dce110_timing_generator *tg110,\n\tstruct dc_context *ctx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

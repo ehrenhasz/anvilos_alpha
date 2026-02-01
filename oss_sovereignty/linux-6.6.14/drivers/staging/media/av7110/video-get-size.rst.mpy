@@ -1,0 +1,9 @@
+{
+  "module_name": "video-get-size.rst",
+  "hash_id": "e7fdf99bfb67b3eaaa9c3155f063d1a8e1a56d186d60bb68bd50685421024a73",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/video-get-size.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n.. c:namespace:: DTV.video\n\n.. _VIDEO_GET_SIZE:\n\n==============\nVIDEO_GET_SIZE\n==============\n\nName\n----\n\nVIDEO_GET_SIZE\n\n.. attention:: This ioctl is deprecated.\n\nSynopsis\n--------\n\n.. c:macro:: VIDEO_GET_SIZE\n\n``int ioctl(int fd, VIDEO_GET_SIZE, video_size_t *size)``\n\nArguments\n---------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -  .. row 1\n\n       -  int fd\n\n       -  File descriptor returned by a previous call to open().\n\n    -  .. row 2\n\n       -  int request\n\n       -  Equals VIDEO_GET_SIZE for this command.\n\n    -  .. row 3\n\n       -  video_size_t \\*size\n\n       -  Returns the size and aspect ratio.\n\nDescription\n-----------\n\nThis ioctl returns the size and aspect ratio.\n\n.. c:type:: video_size_t\n\n.. code-block::c\n\n\ttypedef struct {\n\t\tint w;\n\t\tint h;\n\t\tvideo_format_t aspect_ratio;\n\t} video_size_t;\n\nReturn Value\n------------\n\nOn success 0 is returned, on error -1 and the ``errno`` variable is set\nappropriately. The generic error codes are described at the\n:ref:`Generic Error Codes <gen-errors>` chapter.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

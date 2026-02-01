@@ -1,0 +1,9 @@
+{
+  "module_name": "keybound.c",
+  "hash_id": "4a9851298fe6f5bdb26caf8be7eb3eec1ece217dc037e536d67e8f4fd5c1487c",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/keybound.c",
+  "human_readable_source": " \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: keybound.c,v 1.12 2020/02/02 23:34:34 tom Exp $\")\n\n \nNCURSES_EXPORT(char *)\nNCURSES_SP_NAME(keybound) (NCURSES_SP_DCLx int code, int count)\n{\n    char *result = 0;\n\n    T((T_CALLED(\"keybound(%p, %d,%d)\"), (void *) SP_PARM, code, count));\n    if (SP_PARM != 0 && code >= 0) {\n\tresult = _nc_expand_try(SP_PARM->_keytry,\n\t\t\t\t(unsigned) code,\n\t\t\t\t&count,\n\t\t\t\t(size_t) 0);\n    }\n    returnPtr(result);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(char *)\nkeybound(int code, int count)\n{\n    return NCURSES_SP_NAME(keybound) (CURRENT_SCREEN, code, count);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

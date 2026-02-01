@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9d3bbdc6f1538973c317819dec0221676b630a32f3a46cdc93a67e950cf51435",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/sh/intc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SH_INTC\n\tbool\n\tselect IRQ_DOMAIN\n\nif SH_INTC\n\ncomment \"Interrupt controller options\"\n\nconfig INTC_USERIMASK\n\tbool \"Userspace interrupt masking support\"\n\tdepends on (SUPERH && CPU_SH4A) || COMPILE_TEST\n\thelp\n\t  This enables support for hardware-assisted userspace hardirq\n\t  masking.\n\n\t  SH-4A and newer interrupt blocks all support a special shadowed\n\t  page with all non-masking registers obscured when mapped in to\n\t  userspace. This is primarily for use by userspace device\n\t  drivers that are using special priority levels.\n\n\t  If in doubt, say N.\n\nconfig INTC_BALANCING\n\tbool \"Hardware IRQ balancing support\"\n\tdepends on SMP && SUPERH && CPU_SHX3\n\thelp\n\t  This enables support for IRQ auto-distribution mode on SH-X3\n\t  SMP parts. All of the balancing and CPU wakeup decisions are\n\t  taken care of automatically by hardware for distributed\n\t  vectors.\n\n\t  If in doubt, say N.\n\nconfig INTC_MAPPING_DEBUG\n\tbool \"Expose IRQ to per-controller id mapping via debugfs\"\n\tdepends on DEBUG_FS\n\thelp\n\t  This will create a debugfs entry for showing the relationship\n\t  between system IRQs and the per-controller id tables.\n\n\t  If in doubt, say N.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

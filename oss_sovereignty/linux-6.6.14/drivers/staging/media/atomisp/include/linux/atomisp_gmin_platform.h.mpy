@@ -1,0 +1,9 @@
+{
+  "module_name": "atomisp_gmin_platform.h",
+  "hash_id": "ffecd56b6e1c21321675617b1655aaf9b1f1a5fcf6e927167ead87a42a9a787c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/include/linux/atomisp_gmin_platform.h",
+  "human_readable_source": " \n \n#ifndef ATOMISP_GMIN_PLATFORM_H_\n#define ATOMISP_GMIN_PLATFORM_H_\n\n#include \"atomisp_platform.h\"\n\nint atomisp_register_i2c_module(struct v4l2_subdev *subdev,\n\t\t\t\tstruct camera_sensor_platform_data *plat_data,\n\t\t\t\tenum intel_v4l2_subdev_type type);\nint atomisp_gmin_remove_subdev(struct v4l2_subdev *sd);\nint gmin_get_var_int(struct device *dev, bool is_gmin,\n\t\t     const char *var, int def);\nstruct camera_sensor_platform_data *\ngmin_camera_platform_data(\n    struct v4l2_subdev *subdev,\n    enum atomisp_input_format csi_format,\n    enum atomisp_bayer_order csi_bayer);\n\nint atomisp_gmin_register_vcm_control(struct camera_vcm_control *);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

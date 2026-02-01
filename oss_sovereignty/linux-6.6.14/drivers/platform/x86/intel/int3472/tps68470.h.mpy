@@ -1,0 +1,9 @@
+{
+  "module_name": "tps68470.h",
+  "hash_id": "53ef2ae3c7e05c65a9db3e50d98e846eee521a0a00fe581f2664f207060a6f7d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/int3472/tps68470.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_SKL_INT3472_TPS68470_H\n#define _INTEL_SKL_INT3472_TPS68470_H\n\nstruct gpiod_lookup_table;\nstruct tps68470_regulator_platform_data;\n\nstruct int3472_tps68470_board_data {\n\tconst char *dev_name;\n\tconst struct tps68470_regulator_platform_data *tps68470_regulator_pdata;\n\tunsigned int n_gpiod_lookups;\n\tstruct gpiod_lookup_table *tps68470_gpio_lookup_tables[];\n};\n\nconst struct int3472_tps68470_board_data *int3472_tps68470_get_board_data(const char *dev_name);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

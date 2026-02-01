@@ -1,0 +1,9 @@
+{
+  "module_name": "n2-asm.S",
+  "hash_id": "45cba4a26228850b04683d47f0e9f70c5ccea8d17c47bef4eaec02f75faab336",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/hw_random/n2-asm.S",
+  "human_readable_source": " \n \n#include <linux/linkage.h>\n#include <asm/hypervisor.h>\n#include \"n2rng.h\"\n\n\t.text\n\nENTRY(sun4v_rng_get_diag_ctl)\n\tmov\tHV_FAST_RNG_GET_DIAG_CTL, %o5\n\tta\tHV_FAST_TRAP\n\tretl\n\t nop\nENDPROC(sun4v_rng_get_diag_ctl)\n\nENTRY(sun4v_rng_ctl_read_v1)\n\tmov\t%o1, %o3\n\tmov\t%o2, %o4\n\tmov\tHV_FAST_RNG_CTL_READ, %o5\n\tta\tHV_FAST_TRAP\n\tstx\t%o1, [%o3]\n\tretl\n\t stx\t%o2, [%o4]\nENDPROC(sun4v_rng_ctl_read_v1)\n\nENTRY(sun4v_rng_ctl_read_v2)\n\tsave\t%sp, -192, %sp\n\tmov\t%i0, %o0\n\tmov\t%i1, %o1\n\tmov\tHV_FAST_RNG_CTL_READ, %o5\n\tta\tHV_FAST_TRAP\n\tstx\t%o1, [%i2]\n\tstx\t%o2, [%i3]\n\tstx\t%o3, [%i4]\n\tstx\t%o4, [%i5]\n\tret\n\trestore\t%g0, %o0, %o0\nENDPROC(sun4v_rng_ctl_read_v2)\n\nENTRY(sun4v_rng_ctl_write_v1)\n\tmov\t%o3, %o4\n\tmov\tHV_FAST_RNG_CTL_WRITE, %o5\n\tta\tHV_FAST_TRAP\n\tretl\n\t stx\t%o1, [%o4]\nENDPROC(sun4v_rng_ctl_write_v1)\n\nENTRY(sun4v_rng_ctl_write_v2)\n\tmov\tHV_FAST_RNG_CTL_WRITE, %o5\n\tta\tHV_FAST_TRAP\n\tretl\n\t nop\nENDPROC(sun4v_rng_ctl_write_v2)\n\nENTRY(sun4v_rng_data_read_diag_v1)\n\tmov\t%o2, %o4\n\tmov\tHV_FAST_RNG_DATA_READ_DIAG, %o5\n\tta\tHV_FAST_TRAP\n\tretl\n\t stx\t%o1, [%o4]\nENDPROC(sun4v_rng_data_read_diag_v1)\n\nENTRY(sun4v_rng_data_read_diag_v2)\n\tmov\t%o3, %o4\n\tmov\tHV_FAST_RNG_DATA_READ_DIAG, %o5\n\tta\tHV_FAST_TRAP\n\tretl\n\t stx\t%o1, [%o4]\nENDPROC(sun4v_rng_data_read_diag_v2)\n\nENTRY(sun4v_rng_data_read)\n\tmov\t%o1, %o4\n\tmov\tHV_FAST_RNG_DATA_READ, %o5\n\tta\tHV_FAST_TRAP\n\tretl\n\t stx\t%o1, [%o4]\nENDPROC(sun4v_rng_data_read)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

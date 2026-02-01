@@ -1,0 +1,9 @@
+{
+  "module_name": "argv-iter.h",
+  "hash_id": "d3bed19b7cd07a776743736ef049032d7424f91bbd84a8acc37907912764d40f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/argv-iter.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stdio.h>\n\n \n#include \"arg-nonnull.h\"\n\nstruct argv_iterator;\n\nenum argv_iter_err\n{\n  AI_ERR_OK = 1,\n  AI_ERR_EOF,\n  AI_ERR_MEM,\n  AI_ERR_READ\n};\n\nvoid argv_iter_free (struct argv_iterator *)\n  _GL_ARG_NONNULL ((1));\n\nstruct argv_iterator *argv_iter_init_argv (char **argv)\n  _GL_ARG_NONNULL ((1)) _GL_ATTRIBUTE_DEALLOC (argv_iter_free, 1);\nstruct argv_iterator *argv_iter_init_stream (FILE *fp)\n  _GL_ARG_NONNULL ((1)) _GL_ATTRIBUTE_DEALLOC (argv_iter_free, 1);\nchar *argv_iter (struct argv_iterator *, enum argv_iter_err *)\n  _GL_ARG_NONNULL ((1, 2));\nsize_t argv_iter_n_args (struct argv_iterator const *)\n  _GL_ATTRIBUTE_PURE _GL_ARG_NONNULL ((1));\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

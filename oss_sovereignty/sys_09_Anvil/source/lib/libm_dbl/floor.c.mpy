@@ -1,0 +1,9 @@
+{
+  "module_name": "floor.c",
+  "hash_id": "95d256af417e57e0f9a3183b45f2f29e353306f41a5dbd204bf730b803b3bf85",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/floor.c",
+  "human_readable_source": "#include \"libm.h\"\n\n#if FLT_EVAL_METHOD==0 || FLT_EVAL_METHOD==1\n#define EPS DBL_EPSILON\n#elif FLT_EVAL_METHOD==2\n#define EPS LDBL_EPSILON\n#endif\nstatic const double_t toint = 1/EPS;\n\ndouble floor(double x)\n{\n\tunion {double f; uint64_t i;} u = {x};\n\tint e = u.i >> 52 & 0x7ff;\n\tdouble_t y;\n\n\tif (e >= 0x3ff+52 || x == 0)\n\t\treturn x;\n\t \n\tif (u.i >> 63)\n\t\ty = x - toint + toint - x;\n\telse\n\t\ty = x + toint - toint - x;\n\t \n\tif (e <= 0x3ff-1) {\n\t\tFORCE_EVAL(y);\n\t\treturn u.i >> 63 ? -1 : 0;\n\t}\n\tif (y > 0)\n\t\treturn x + y - 1;\n\treturn x + y;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

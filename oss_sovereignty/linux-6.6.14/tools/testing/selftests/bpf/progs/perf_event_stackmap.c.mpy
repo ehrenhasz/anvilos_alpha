@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_event_stackmap.c",
+  "hash_id": "afd008503f894e41aada18e698c0180dc04be9b0b30fc6d9b61fb9847d602328",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/perf_event_stackmap.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n\n#ifndef PERF_MAX_STACK_DEPTH\n#define PERF_MAX_STACK_DEPTH         127\n#endif\n\ntypedef __u64 stack_trace_t[PERF_MAX_STACK_DEPTH];\nstruct {\n\t__uint(type, BPF_MAP_TYPE_STACK_TRACE);\n\t__uint(max_entries, 16384);\n\t__type(key, __u32);\n\t__type(value, stack_trace_t);\n} stackmap SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, stack_trace_t);\n} stackdata_map SEC(\".maps\");\n\nlong stackid_kernel = 1;\nlong stackid_user = 1;\nlong stack_kernel = 1;\nlong stack_user = 1;\n\nSEC(\"perf_event\")\nint oncpu(void *ctx)\n{\n\tstack_trace_t *trace;\n\t__u32 key = 0;\n\tlong val;\n\n\tval = bpf_get_stackid(ctx, &stackmap, 0);\n\tif (val >= 0)\n\t\tstackid_kernel = 2;\n\tval = bpf_get_stackid(ctx, &stackmap, BPF_F_USER_STACK);\n\tif (val >= 0)\n\t\tstackid_user = 2;\n\n\ttrace = bpf_map_lookup_elem(&stackdata_map, &key);\n\tif (!trace)\n\t\treturn 0;\n\n\tval = bpf_get_stack(ctx, trace, sizeof(stack_trace_t), 0);\n\tif (val > 0)\n\t\tstack_kernel = 2;\n\n\tval = bpf_get_stack(ctx, trace, sizeof(stack_trace_t), BPF_F_USER_STACK);\n\tif (val > 0)\n\t\tstack_user = 2;\n\n\treturn 0;\n}\n\nchar LICENSE[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

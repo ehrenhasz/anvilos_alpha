@@ -1,0 +1,9 @@
+{
+  "module_name": "cache.h",
+  "hash_id": "e76c5ebd5d2290a4c6be0fa84784ebffa89a0234be3b9558234864e237be4553",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/cache.h",
+  "human_readable_source": " \n#ifndef __PERF_CACHE_H\n#define __PERF_CACHE_H\n\n#include \"strbuf.h\"\n#include <subcmd/pager.h>\n#include \"../ui/ui.h\"\n\n#include <linux/compiler.h>\n#include <linux/string.h>\n\n#define CMD_EXEC_PATH \"--exec-path\"\n#define CMD_DEBUGFS_DIR \"--debugfs-dir=\"\n\n#define EXEC_PATH_ENVIRONMENT \"PERF_EXEC_PATH\"\n#define PERF_DEBUGFS_ENVIRONMENT \"PERF_DEBUGFS_DIR\"\n#define PERF_TRACEFS_ENVIRONMENT \"PERF_TRACEFS_DIR\"\n#define PERF_PAGER_ENVIRONMENT \"PERF_PAGER\"\n\nint split_cmdline(char *cmdline, const char ***argv);\n\n#define alloc_nr(x) (((x)+16)*3/2)\n\nstatic inline int is_absolute_path(const char *path)\n{\n\treturn path[0] == '/';\n}\n\nchar *mkpath(char *path_buf, size_t sz, const char *fmt, ...) __printf(3, 4);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ktime.h",
+  "hash_id": "3932f7cb38c473ef9dfeccd5f664d6ab20cfc76a9676382afc3907b0b655faac",
+  "original_prompt": "Ingested from linux-6.6.14/include/vdso/ktime.h",
+  "human_readable_source": " \n#ifndef __VDSO_KTIME_H\n#define __VDSO_KTIME_H\n\n#include <vdso/jiffies.h>\n\n \n#define LOW_RES_NSEC\t\tTICK_NSEC\n#define KTIME_LOW_RES\t\t(LOW_RES_NSEC)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ctrl.h",
+  "hash_id": "f25d72fced598bb07ae9e8f10b8d3afd399490fd390b5e6acdca0632988c9061",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/device/ctrl.h",
+  "human_readable_source": " \n#ifndef __NVKM_DEVICE_CTRL_H__\n#define __NVKM_DEVICE_CTRL_H__\n#define nvkm_control(p) container_of((p), struct nvkm_control, object)\n#include <core/object.h>\n\nstruct nvkm_control {\n\tstruct nvkm_object object;\n\tstruct nvkm_device *device;\n};\n\nextern const struct nvkm_device_oclass nvkm_control_oclass;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfs.h",
+  "hash_id": "4a1b155b2eb2074ce806884ba53df1ce00586fa9f142f4b86b534d41aceaf2cc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/b43/sysfs.h",
+  "human_readable_source": " \n#ifndef B43_SYSFS_H_\n#define B43_SYSFS_H_\n\nstruct b43_wldev;\n\nint b43_sysfs_register(struct b43_wldev *dev);\nvoid b43_sysfs_unregister(struct b43_wldev *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

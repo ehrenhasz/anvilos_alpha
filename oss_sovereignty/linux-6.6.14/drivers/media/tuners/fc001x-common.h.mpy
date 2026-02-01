@@ -1,0 +1,9 @@
+{
+  "module_name": "fc001x-common.h",
+  "hash_id": "fcf6b62925e5857f2f199528454d4ffe878835522699382cf3f53a190b8eeafa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/fc001x-common.h",
+  "human_readable_source": " \n \n\n#ifndef _FC001X_COMMON_H_\n#define _FC001X_COMMON_H_\n\nenum fc001x_xtal_freq {\n\tFC_XTAL_27_MHZ,\t\t \n\tFC_XTAL_28_8_MHZ,\t \n\tFC_XTAL_36_MHZ,\t\t \n};\n\n \nenum fc001x_fe_callback_commands {\n\tFC_FE_CALLBACK_VHF_ENABLE,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

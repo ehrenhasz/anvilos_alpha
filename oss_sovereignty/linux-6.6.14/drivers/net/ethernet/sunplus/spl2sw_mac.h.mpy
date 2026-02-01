@@ -1,0 +1,9 @@
+{
+  "module_name": "spl2sw_mac.h",
+  "hash_id": "94c1b70d141d9b1013307edb0dcb979d0493fa27fdfc83f1bacb1b886b849bda",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sunplus/spl2sw_mac.h",
+  "human_readable_source": " \n \n\n#ifndef __SPL2SW_MAC_H__\n#define __SPL2SW_MAC_H__\n\nvoid spl2sw_mac_hw_stop(struct spl2sw_common *comm);\nvoid spl2sw_mac_hw_start(struct spl2sw_common *comm);\nint  spl2sw_mac_addr_add(struct spl2sw_mac *mac);\nint  spl2sw_mac_addr_del(struct spl2sw_mac *mac);\nvoid spl2sw_mac_hw_init(struct spl2sw_common *comm);\nvoid spl2sw_mac_rx_mode_set(struct spl2sw_mac *mac);\nvoid spl2sw_mac_init(struct spl2sw_common *comm);\nvoid spl2sw_mac_soft_reset(struct spl2sw_common *comm);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

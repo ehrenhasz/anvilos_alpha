@@ -1,0 +1,9 @@
+{
+  "module_name": "features.c",
+  "hash_id": "2b079bf87889d6406b6f12582074c60553824f0fd5c49e9b7b7b033bb55e9d5f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/xen/features.c",
+  "human_readable_source": "\n \n#include <linux/types.h>\n#include <linux/cache.h>\n#include <linux/export.h>\n#include <linux/printk.h>\n\n#include <asm/xen/hypercall.h>\n\n#include <xen/xen.h>\n#include <xen/interface/xen.h>\n#include <xen/interface/version.h>\n#include <xen/features.h>\n\n \n#define chk_required_feature(f) {\t\t\t\t\t\\\n\t\tif (!xen_feature(f))\t\t\t\t\t\\\n\t\t\tpanic(\"Xen: feature %s not available!\\n\", #f);\t\\\n\t}\n\nu8 xen_features[XENFEAT_NR_SUBMAPS * 32] __read_mostly;\nEXPORT_SYMBOL_GPL(xen_features);\n\nvoid xen_setup_features(void)\n{\n\tstruct xen_feature_info fi;\n\tint i, j;\n\n\tfor (i = 0; i < XENFEAT_NR_SUBMAPS; i++) {\n\t\tfi.submap_idx = i;\n\t\tif (HYPERVISOR_xen_version(XENVER_get_features, &fi) < 0)\n\t\t\tbreak;\n\t\tfor (j = 0; j < 32; j++)\n\t\t\txen_features[i * 32 + j] = !!(fi.submap & 1U << j);\n\t}\n\n\tif (xen_pv_domain()) {\n\t\tchk_required_feature(XENFEAT_mmu_pt_update_preserve_ad);\n\t\tchk_required_feature(XENFEAT_gnttab_map_avail_bits);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

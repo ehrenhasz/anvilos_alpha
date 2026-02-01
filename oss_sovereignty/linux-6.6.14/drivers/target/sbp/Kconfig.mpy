@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d6d27bfe8fa60e95386f24ca22411785f454264fab0a6d322a7d87fa4ce5da75",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/sbp/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SBP_TARGET\n\ttristate \"FireWire SBP-2 fabric module\"\n\tdepends on FIREWIRE\n\thelp\n\t  Say Y or M here to enable SCSI target functionality over FireWire.\n\t  This enables you to expose SCSI devices to other nodes on the FireWire\n\t  bus, for example hard disks. Similar to FireWire Target Disk mode on\n\t  many Apple computers.\n\n\t  To compile this driver as a module, say M here: The module will be\n\t  called sbp-target.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

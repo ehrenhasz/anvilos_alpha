@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8be8215c2d1b1c669d3a4351d848e2f7ebaaac364e1e352d2662d36c5ba9a75d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/aty/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_FB_ATY) += atyfb.o\nobj-$(CONFIG_FB_ATY128) += aty128fb.o\nobj-$(CONFIG_FB_RADEON) += radeonfb.o\n\natyfb-y\t\t\t\t:= atyfb_base.o mach64_accel.o mach64_cursor.o\natyfb-$(CONFIG_FB_ATY_GX)\t+= mach64_gx.o\natyfb-$(CONFIG_FB_ATY_CT)\t+= mach64_ct.o\n\natyfb-objs\t\t\t:= $(atyfb-y)\n\nradeonfb-y\t\t\t:= radeon_base.o radeon_pm.o radeon_monitor.o radeon_accel.o\nradeonfb-$(CONFIG_FB_RADEON_I2C)\t+= radeon_i2c.o\nradeonfb-$(CONFIG_FB_RADEON_BACKLIGHT)\t+= radeon_backlight.o\nradeonfb-objs\t\t\t:= $(radeonfb-y)\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

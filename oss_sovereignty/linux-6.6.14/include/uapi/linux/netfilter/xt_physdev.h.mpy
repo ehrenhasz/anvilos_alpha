@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_physdev.h",
+  "hash_id": "e2f00faef5b40e9fbd38a94a37bf3890ea92a46bb46dfb6628e85f6dccbe79c2",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_physdev.h",
+  "human_readable_source": " \n#ifndef _UAPI_XT_PHYSDEV_H\n#define _UAPI_XT_PHYSDEV_H\n\n#include <linux/types.h>\n#include <linux/if.h>\n\n#define XT_PHYSDEV_OP_IN\t\t0x01\n#define XT_PHYSDEV_OP_OUT\t\t0x02\n#define XT_PHYSDEV_OP_BRIDGED\t\t0x04\n#define XT_PHYSDEV_OP_ISIN\t\t0x08\n#define XT_PHYSDEV_OP_ISOUT\t\t0x10\n#define XT_PHYSDEV_OP_MASK\t\t(0x20 - 1)\n\nstruct xt_physdev_info {\n\tchar physindev[IFNAMSIZ];\n\tchar in_mask[IFNAMSIZ];\n\tchar physoutdev[IFNAMSIZ];\n\tchar out_mask[IFNAMSIZ];\n\t__u8 invert;\n\t__u8 bitmask;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

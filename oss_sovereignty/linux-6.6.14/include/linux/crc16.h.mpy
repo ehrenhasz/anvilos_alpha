@@ -1,0 +1,9 @@
+{
+  "module_name": "crc16.h",
+  "hash_id": "bc1e3d035cb3a49dca3df74cdec5ac944c7a3a01bb43e4388c9e30c16bd66524",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/crc16.h",
+  "human_readable_source": " \n \n\n#ifndef __CRC16_H\n#define __CRC16_H\n\n#include <linux/types.h>\n\nextern u16 const crc16_table[256];\n\nextern u16 crc16(u16 crc, const u8 *buffer, size_t len);\n\nstatic inline u16 crc16_byte(u16 crc, const u8 data)\n{\n\treturn (crc >> 8) ^ crc16_table[(crc ^ data) & 0xff];\n}\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mt6357-regulator.h",
+  "hash_id": "4693174ef5747b3c7a219de43aaf654c6d3d3e43c7990b0060e781ae2c3b3942",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/mt6357-regulator.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_REGULATOR_MT6357_H\n#define __LINUX_REGULATOR_MT6357_H\n\nenum {\n\t \n\tMT6357_ID_VCORE,\n\tMT6357_ID_VMODEM,\n\tMT6357_ID_VPA,\n\tMT6357_ID_VPROC,\n\tMT6357_ID_VS1,\n\n\t \n\tMT6357_ID_VAUX18,\n\tMT6357_ID_VAUD28,\n\tMT6357_ID_VCAMA,\n\tMT6357_ID_VCAMD,\n\tMT6357_ID_VCAMIO,\n\tMT6357_ID_VCN18,\n\tMT6357_ID_VCN28,\n\tMT6357_ID_VCN33_BT,\n\tMT6357_ID_VCN33_WIFI,\n\tMT6357_ID_VDRAM,\n\tMT6357_ID_VEFUSE,\n\tMT6357_ID_VEMC,\n\tMT6357_ID_VFE28,\n\tMT6357_ID_VIBR,\n\tMT6357_ID_VIO18,\n\tMT6357_ID_VIO28,\n\tMT6357_ID_VLDO28,\n\tMT6357_ID_VMC,\n\tMT6357_ID_VMCH,\n\tMT6357_ID_VRF12,\n\tMT6357_ID_VRF18,\n\tMT6357_ID_VSIM1,\n\tMT6357_ID_VSIM2,\n\tMT6357_ID_VSRAM_OTHERS,\n\tMT6357_ID_VSRAM_PROC,\n\tMT6357_ID_VUSB33,\n\tMT6357_ID_VXO22,\n\n\tMT6357_ID_RG_MAX,\n};\n\n#define MT6357_MAX_REGULATOR\tMT6357_ID_RG_MAX\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

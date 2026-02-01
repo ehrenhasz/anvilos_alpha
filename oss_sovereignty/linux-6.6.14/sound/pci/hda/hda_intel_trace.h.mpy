@@ -1,0 +1,9 @@
+{
+  "module_name": "hda_intel_trace.h",
+  "hash_id": "ed7cca367eb44ec1ee6db644566aa612297e837ba5a7c3f7f7a7459882a6c0be",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/hda/hda_intel_trace.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM hda_intel\n#define TRACE_INCLUDE_FILE hda_intel_trace\n\n#if !defined(_TRACE_HDA_INTEL_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_HDA_INTEL_H\n\n#include <linux/tracepoint.h>\n\nDECLARE_EVENT_CLASS(hda_pm,\n\tTP_PROTO(struct azx *chip),\n\n\tTP_ARGS(chip),\n\n\tTP_STRUCT__entry(\n\t\t__field(int, dev_index)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->dev_index = (chip)->dev_index;\n\t),\n\n\tTP_printk(\"card index: %d\", __entry->dev_index)\n);\n\nDEFINE_EVENT(hda_pm, azx_suspend,\n\tTP_PROTO(struct azx *chip),\n\tTP_ARGS(chip)\n);\n\nDEFINE_EVENT(hda_pm, azx_resume,\n\tTP_PROTO(struct azx *chip),\n\tTP_ARGS(chip)\n);\n\n#ifdef CONFIG_PM\nDEFINE_EVENT(hda_pm, azx_runtime_suspend,\n\tTP_PROTO(struct azx *chip),\n\tTP_ARGS(chip)\n);\n\nDEFINE_EVENT(hda_pm, azx_runtime_resume,\n\tTP_PROTO(struct azx *chip),\n\tTP_ARGS(chip)\n);\n#endif\n\n#endif  \n\n \n#undef TRACE_INCLUDE_PATH\n#define TRACE_INCLUDE_PATH .\n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

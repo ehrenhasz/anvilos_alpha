@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cf8081639aff1f39b04afdfd77e365a2bff450d6dc978597b3132d8b52a71d3e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/pn544/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for PN544 HCI based NFC driver\n#\n\npn544_i2c-objs  = i2c.o\npn544_mei-objs  = mei.o\n\nobj-$(CONFIG_NFC_PN544)     += pn544.o\nobj-$(CONFIG_NFC_PN544_I2C) += pn544_i2c.o\nobj-$(CONFIG_NFC_PN544_MEI) += pn544_mei.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

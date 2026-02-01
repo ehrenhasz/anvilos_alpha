@@ -1,0 +1,9 @@
+{
+  "module_name": "nexthop.h",
+  "hash_id": "19458e6ed67d3b652c47c0d08e35bf9fe99bb0ba33fb23444d1d135f1b43381b",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netns/nexthop.h",
+  "human_readable_source": " \n \n\n#ifndef __NETNS_NEXTHOP_H__\n#define __NETNS_NEXTHOP_H__\n\n#include <linux/notifier.h>\n#include <linux/rbtree.h>\n\nstruct netns_nexthop {\n\tstruct rb_root\t\trb_root;\t \n\tstruct hlist_head\t*devhash;\t \n\n\tunsigned int\t\tseq;\t\t \n\tu32\t\t\tlast_id_allocated;\n\tstruct blocking_notifier_head notifier_chain;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

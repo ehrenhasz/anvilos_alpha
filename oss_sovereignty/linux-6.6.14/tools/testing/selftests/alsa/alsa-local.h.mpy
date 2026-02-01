@@ -1,0 +1,9 @@
+{
+  "module_name": "alsa-local.h",
+  "hash_id": "4e3dd9ee94dec3ad97730a4ec9936ea21d42d197f16896d4dd5449b75f5a94c7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/alsa/alsa-local.h",
+  "human_readable_source": "\n\n\n\n\n\n\n#ifndef __ALSA_LOCAL_H\n#define __ALSA_LOCAL_H\n\n#include <alsa/asoundlib.h>\n\nsnd_config_t *get_alsalib_config(void);\n\nsnd_config_t *conf_load_from_file(const char *filename);\nvoid conf_load(void);\nvoid conf_free(void);\nsnd_config_t *conf_by_card(int card);\nsnd_config_t *conf_get_subtree(snd_config_t *root, const char *key1, const char *key2);\nint conf_get_count(snd_config_t *root, const char *key1, const char *key2);\nconst char *conf_get_string(snd_config_t *root, const char *key1, const char *key2, const char *def);\nlong conf_get_long(snd_config_t *root, const char *key1, const char *key2, long def);\nint conf_get_bool(snd_config_t *root, const char *key1, const char *key2, int def);\nvoid conf_get_string_array(snd_config_t *root, const char *key1, const char *key2,\n\t\t\t   const char **array, int array_size, const char *def);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

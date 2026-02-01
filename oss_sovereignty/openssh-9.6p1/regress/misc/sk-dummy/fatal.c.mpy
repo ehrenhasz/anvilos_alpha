@@ -1,0 +1,9 @@
+{
+  "module_name": "fatal.c",
+  "hash_id": "ce7ed0abf59b27835f12db9814757e8d6c0e092e810a47520e7b2fa5a4261b7c",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/misc/sk-dummy/fatal.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#include <stdlib.h>\n#include <stdio.h>\n#include <stdarg.h>\n#include <unistd.h>\n\n#include \"log.h\"\n\nvoid\nsshfatal(const char *file, const char *func, int line, int showfunc,\n    LogLevel level, const char *suffix, const char *fmt, ...)\n{\n\tva_list ap;\n\n\tif (showfunc)\n\t\tfprintf(stderr, \"%s: \", func);\n\tva_start(ap, fmt);\n\tvfprintf(stderr, fmt, ap);\n\tva_end(ap);\n\tif (suffix != NULL)\n\t\tfprintf(stderr, \": %s\", suffix);\n\tfputc('\\n', stderr);\n\t_exit(1);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

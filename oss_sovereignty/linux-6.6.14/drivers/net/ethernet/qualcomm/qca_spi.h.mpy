@@ -1,0 +1,9 @@
+{
+  "module_name": "qca_spi.h",
+  "hash_id": "19af6c8a290fdb4dc9d608f15a4a7114fc84fb2b40b62d0aa77f1e9e7f420dcf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qualcomm/qca_spi.h",
+  "human_readable_source": " \n\n \n\n#ifndef _QCA_SPI_H\n#define _QCA_SPI_H\n\n#include <linux/netdevice.h>\n#include <linux/sched.h>\n#include <linux/skbuff.h>\n#include <linux/spi/spi.h>\n#include <linux/types.h>\n\n#include \"qca_7k_common.h\"\n\n#define QCASPI_DRV_VERSION \"0.2.7-i\"\n#define QCASPI_DRV_NAME    \"qcaspi\"\n\n#define QCASPI_GOOD_SIGNATURE 0xAA55\n\n#define TX_RING_MAX_LEN 10\n#define TX_RING_MIN_LEN 2\n\n \n#define QCASPI_SYNC_UNKNOWN 0\n#define QCASPI_SYNC_RESET   1\n#define QCASPI_SYNC_READY   2\n\n#define QCASPI_RESET_TIMEOUT 10\n\n \n#define QCASPI_EVENT_UPDATE 0\n#define QCASPI_EVENT_CPUON  1\n\nstruct tx_ring {\n\tstruct sk_buff *skb[TX_RING_MAX_LEN];\n\tu16 head;\n\tu16 tail;\n\tu16 size;\n\tu16 count;\n};\n\nstruct qcaspi_stats {\n\tu64 trig_reset;\n\tu64 device_reset;\n\tu64 reset_timeout;\n\tu64 read_err;\n\tu64 write_err;\n\tu64 read_buf_err;\n\tu64 write_buf_err;\n\tu64 out_of_mem;\n\tu64 write_buf_miss;\n\tu64 ring_full;\n\tu64 spi_err;\n\tu64 write_verify_failed;\n\tu64 buf_avail_err;\n\tu64 bad_signature;\n};\n\nstruct qcaspi {\n\tstruct net_device *net_dev;\n\tstruct spi_device *spi_dev;\n\tstruct task_struct *spi_thread;\n\n\tstruct tx_ring txr;\n\tstruct qcaspi_stats stats;\n\n\tu8 *rx_buffer;\n\tu32 buffer_size;\n\tu8 sync;\n\n\tstruct qcafrm_handle frm_handle;\n\tstruct sk_buff *rx_skb;\n\n\tunsigned int intr_req;\n\tunsigned int intr_svc;\n\tu16 reset_count;\n\n#ifdef CONFIG_DEBUG_FS\n\tstruct dentry *device_root;\n#endif\n\n\t \n\tu32 clkspeed;\n\tu8 legacy_mode;\n\tu16 burst_len;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

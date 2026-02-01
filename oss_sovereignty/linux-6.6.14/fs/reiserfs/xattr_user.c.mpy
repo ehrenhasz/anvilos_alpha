@@ -1,0 +1,9 @@
+{
+  "module_name": "xattr_user.c",
+  "hash_id": "8ba25ce5720346aca485338fdf643f6106b8e6c3048a0e0c4c397c8c198cb546",
+  "original_prompt": "Ingested from linux-6.6.14/fs/reiserfs/xattr_user.c",
+  "human_readable_source": "\n#include \"reiserfs.h\"\n#include <linux/errno.h>\n#include <linux/fs.h>\n#include <linux/pagemap.h>\n#include <linux/xattr.h>\n#include \"xattr.h\"\n#include <linux/uaccess.h>\n\nstatic int\nuser_get(const struct xattr_handler *handler, struct dentry *unused,\n\t struct inode *inode, const char *name, void *buffer, size_t size)\n{\n\tif (!reiserfs_xattrs_user(inode->i_sb))\n\t\treturn -EOPNOTSUPP;\n\treturn reiserfs_xattr_get(inode, xattr_full_name(handler, name),\n\t\t\t\t  buffer, size);\n}\n\nstatic int\nuser_set(const struct xattr_handler *handler, struct mnt_idmap *idmap,\n\t struct dentry *unused,\n\t struct inode *inode, const char *name, const void *buffer,\n\t size_t size, int flags)\n{\n\tif (!reiserfs_xattrs_user(inode->i_sb))\n\t\treturn -EOPNOTSUPP;\n\treturn reiserfs_xattr_set(inode,\n\t\t\t\t  xattr_full_name(handler, name),\n\t\t\t\t  buffer, size, flags);\n}\n\nstatic bool user_list(struct dentry *dentry)\n{\n\treturn reiserfs_xattrs_user(dentry->d_sb);\n}\n\nconst struct xattr_handler reiserfs_xattr_user_handler = {\n\t.prefix = XATTR_USER_PREFIX,\n\t.get = user_get,\n\t.set = user_set,\n\t.list = user_list,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

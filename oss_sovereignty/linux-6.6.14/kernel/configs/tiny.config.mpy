@@ -1,0 +1,9 @@
+{
+  "module_name": "tiny.config",
+  "hash_id": "d716c51b9a262f71037b74efee849020750e80752d1ac099991463ed7a36014f",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/configs/tiny.config",
+  "human_readable_source": "# CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE is not set\nCONFIG_CC_OPTIMIZE_FOR_SIZE=y\n# CONFIG_KERNEL_GZIP is not set\n# CONFIG_KERNEL_BZIP2 is not set\n# CONFIG_KERNEL_LZMA is not set\nCONFIG_KERNEL_XZ=y\n# CONFIG_KERNEL_LZO is not set\n# CONFIG_KERNEL_LZ4 is not set\nCONFIG_SLUB=y\nCONFIG_SLUB_TINY=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

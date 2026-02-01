@@ -1,0 +1,9 @@
+{
+  "module_name": "test_sock_addr.sh",
+  "hash_id": "eba2490ed8e6a09cd0d6833a93d6f12f2af5972e464821eabe199277cea8cc1e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/test_sock_addr.sh",
+  "human_readable_source": "#!/bin/sh\n\nset -eu\n\nping_once()\n{\n\ttype ping${1} >/dev/null 2>&1 && PING=\"ping${1}\" || PING=\"ping -${1}\"\n\t$PING -q -c 1 -W 1 ${2%%/*} >/dev/null 2>&1\n}\n\nwait_for_ip()\n{\n\tlocal _i\n\techo -n \"Wait for testing IPv4/IPv6 to become available \"\n\tfor _i in $(seq ${MAX_PING_TRIES}); do\n\t\techo -n \".\"\n\t\tif ping_once 4 ${TEST_IPv4} && ping_once 6 ${TEST_IPv6}; then\n\t\t\techo \" OK\"\n\t\t\treturn\n\t\tfi\n\tdone\n\techo 1>&2 \"ERROR: Timeout waiting for test IP to become available.\"\n\texit 1\n}\n\nsetup()\n{\n\t# Create testing interfaces not to interfere with current environment.\n\tip link add dev ${TEST_IF} type veth peer name ${TEST_IF_PEER}\n\tip link set ${TEST_IF} up\n\tip link set ${TEST_IF_PEER} up\n\n\tip -4 addr add ${TEST_IPv4} dev ${TEST_IF}\n\tip -6 addr add ${TEST_IPv6} dev ${TEST_IF}\n\twait_for_ip\n}\n\ncleanup()\n{\n\tip link del ${TEST_IF} 2>/dev/null || :\n\tip link del ${TEST_IF_PEER} 2>/dev/null || :\n}\n\nmain()\n{\n\ttrap cleanup EXIT 2 3 6 15\n\tsetup\n\t./test_sock_addr setup_done\n}\n\nBASENAME=$(basename $0 .sh)\nTEST_IF=\"${BASENAME}1\"\nTEST_IF_PEER=\"${BASENAME}2\"\nTEST_IPv4=\"127.0.0.4/8\"\nTEST_IPv6=\"::6/128\"\nMAX_PING_TRIES=5\n\nmain\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

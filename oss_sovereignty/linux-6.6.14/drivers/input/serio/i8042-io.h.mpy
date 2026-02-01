@@ -1,0 +1,9 @@
+{
+  "module_name": "i8042-io.h",
+  "hash_id": "28357579dad3c78cdefaf22cc8656e4d71196d86dda1d77001b67b52469aeb61",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/serio/i8042-io.h",
+  "human_readable_source": " \n#ifndef _I8042_IO_H\n#define _I8042_IO_H\n\n\n \n\n#define I8042_KBD_PHYS_DESC \"isa0060/serio0\"\n#define I8042_AUX_PHYS_DESC \"isa0060/serio1\"\n#define I8042_MUX_PHYS_DESC \"isa0060/serio%d\"\n\n \n\n#ifdef __alpha__\n# define I8042_KBD_IRQ\t1\n# define I8042_AUX_IRQ\t(RTC_PORT(0) == 0x170 ? 9 : 12)\t \n#elif defined(__arm__)\n \n#include <asm/irq.h>\n#elif defined(CONFIG_PPC)\nextern int of_i8042_kbd_irq;\nextern int of_i8042_aux_irq;\n# define I8042_KBD_IRQ  of_i8042_kbd_irq\n# define I8042_AUX_IRQ  of_i8042_aux_irq\n#else\n# define I8042_KBD_IRQ\t1\n# define I8042_AUX_IRQ\t12\n#endif\n\n\n \n\n#define I8042_COMMAND_REG\t0x64\n#define I8042_STATUS_REG\t0x64\n#define I8042_DATA_REG\t\t0x60\n\nstatic inline int i8042_read_data(void)\n{\n\treturn inb(I8042_DATA_REG);\n}\n\nstatic inline int i8042_read_status(void)\n{\n\treturn inb(I8042_STATUS_REG);\n}\n\nstatic inline void i8042_write_data(int val)\n{\n\toutb(val, I8042_DATA_REG);\n}\n\nstatic inline void i8042_write_command(int val)\n{\n\toutb(val, I8042_COMMAND_REG);\n}\n\nstatic inline int i8042_platform_init(void)\n{\n \n#if defined(CONFIG_PPC)\n\tif (check_legacy_ioport(I8042_DATA_REG))\n\t\treturn -ENODEV;\n#endif\n#if !defined(__sh__) && !defined(__alpha__)\n\tif (!request_region(I8042_DATA_REG, 16, \"i8042\"))\n\t\treturn -EBUSY;\n#endif\n\n\ti8042_reset = I8042_RESET_ALWAYS;\n\treturn 0;\n}\n\nstatic inline void i8042_platform_exit(void)\n{\n#if !defined(__sh__) && !defined(__alpha__)\n\trelease_region(I8042_DATA_REG, 16);\n#endif\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

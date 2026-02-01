@@ -1,0 +1,9 @@
+{
+  "module_name": "test-u32-pcpy.c",
+  "hash_id": "9ae6649121b56cc8e22bf686bbb6e72da04bdb3c3353fe91c4b5afe947518f8b",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/unistr/test-u32-pcpy.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"unistr.h\"\n\n#include \"macros.h\"\n\n#define UNIT uint32_t\n#define U_PCPY u32_pcpy\n#define MAGIC 0xBADFACE\n#include \"test-pcpy.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

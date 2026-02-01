@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "764e4c6d0f76c9cae5aaabf071bde7b5a006414914d01c8c33a0b9df6b699bb9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/bpf_testmod/Makefile",
+  "human_readable_source": "BPF_TESTMOD_DIR := $(realpath $(dir $(abspath $(lastword $(MAKEFILE_LIST)))))\nKDIR ?= $(abspath $(BPF_TESTMOD_DIR)/../../../../..)\n\nifeq ($(V),1)\nQ =\nelse\nQ = @\nendif\n\nMODULES = bpf_testmod.ko\n\nobj-m += bpf_testmod.o\nCFLAGS_bpf_testmod.o = -I$(src)\n\nall:\n\t+$(Q)make -C $(KDIR) M=$(BPF_TESTMOD_DIR) modules\n\nclean:\n\t+$(Q)make -C $(KDIR) M=$(BPF_TESTMOD_DIR) clean\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

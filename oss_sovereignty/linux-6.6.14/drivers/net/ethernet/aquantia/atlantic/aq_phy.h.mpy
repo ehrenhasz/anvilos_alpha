@@ -1,0 +1,9 @@
+{
+  "module_name": "aq_phy.h",
+  "hash_id": "a6d36734ddfdfee6547c6559d1ad5142b031cea16b2824ae67709f7e68db9964",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/aquantia/atlantic/aq_phy.h",
+  "human_readable_source": " \n \n\n#ifndef AQ_PHY_H\n#define AQ_PHY_H\n\n#include <linux/mdio.h>\n\n#include \"hw_atl/hw_atl_llh.h\"\n#include \"hw_atl/hw_atl_llh_internal.h\"\n#include \"aq_hw_utils.h\"\n#include \"aq_hw.h\"\n\n#define HW_ATL_PHY_ID_MAX 32U\n\nbool aq_mdio_busy_wait(struct aq_hw_s *aq_hw);\n\nu16 aq_mdio_read_word(struct aq_hw_s *aq_hw, u16 mmd, u16 addr);\n\nvoid aq_mdio_write_word(struct aq_hw_s *aq_hw, u16 mmd, u16 addr, u16 data);\n\nu16 aq_phy_read_reg(struct aq_hw_s *aq_hw, u16 mmd, u16 address);\n\nvoid aq_phy_write_reg(struct aq_hw_s *aq_hw, u16 mmd, u16 address, u16 data);\n\nbool aq_phy_init_phy_id(struct aq_hw_s *aq_hw);\n\nbool aq_phy_init(struct aq_hw_s *aq_hw);\n\nvoid aq_phy_disable_ptp(struct aq_hw_s *aq_hw);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

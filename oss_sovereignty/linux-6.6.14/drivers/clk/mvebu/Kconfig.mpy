@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ec1982c01e057927b34f6d6c88043799e103521383e138676b921d11c149f1f2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mvebu/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig MVEBU_CLK_COMMON\n\tbool\n\nconfig MVEBU_CLK_CPU\n\tbool\n\nconfig MVEBU_CLK_COREDIV\n\tbool\n\nconfig ARMADA_AP_CP_HELPER\n\tbool\n\nconfig ARMADA_370_CLK\n\tbool\n\tselect MVEBU_CLK_COMMON\n\tselect MVEBU_CLK_CPU\n\nconfig ARMADA_375_CLK\n\tbool\n\tselect MVEBU_CLK_COMMON\n\nconfig ARMADA_38X_CLK\n\tbool\n\tselect MVEBU_CLK_COMMON\n\nconfig ARMADA_39X_CLK\n\tbool\n\tselect MVEBU_CLK_COMMON\n\nconfig ARMADA_37XX_CLK\n\tbool\n\nconfig ARMADA_XP_CLK\n\tbool\n\tselect MVEBU_CLK_COMMON\n\tselect MVEBU_CLK_CPU\n\nconfig ARMADA_AP806_SYSCON\n\tbool\n\tselect ARMADA_AP_CP_HELPER\n\nconfig ARMADA_AP_CPU_CLK\n\tbool\n\tselect ARMADA_AP_CP_HELPER\n\nconfig ARMADA_CP110_SYSCON\n\tbool\n\tselect ARMADA_AP_CP_HELPER\n\nconfig DOVE_CLK\n\tbool\n\tselect MVEBU_CLK_COMMON\n\nconfig KIRKWOOD_CLK\n\tbool\n\tselect MVEBU_CLK_COMMON\n\nconfig ORION_CLK\n\tbool\n\tselect MVEBU_CLK_COMMON\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

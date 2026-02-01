@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-getpagesize.c",
+  "hash_id": "42352ab6b0a591e699900dc1af0ba2f1bd86d189c2c93641cab1eff23aa86982",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-getpagesize.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#ifndef HAVE_GETPAGESIZE\n\n#include <unistd.h>\n#include <limits.h>\n\nint\ngetpagesize(void)\n{\n#if defined(HAVE_SYSCONF) && defined(_SC_PAGESIZE)\n\tlong r = sysconf(_SC_PAGESIZE);\n\tif (r > 0 && r < INT_MAX)\n\t\treturn (int)r;\n#endif\n\t \n\treturn 4096;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

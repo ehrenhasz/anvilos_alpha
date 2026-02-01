@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-cygwin_util.h",
+  "hash_id": "472326b7739fe9b0c4642b2e2f0fcd9243c2d57ea835acaa007d99797807193f",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-cygwin_util.h",
+  "human_readable_source": " \n\n#ifndef _BSD_CYGWIN_UTIL_H\n#define _BSD_CYGWIN_UTIL_H\n\n#ifdef HAVE_CYGWIN\n\n#undef ERROR\n\n \ntypedef void *HANDLE;\n#define INVALID_HANDLE_VALUE ((HANDLE) -1)\n#define DNLEN 16\n#define UNLEN 256\n\n \nextern HANDLE cygwin_logon_user (const struct passwd *, const char *);\nextern void cygwin_set_impersonation_token (const HANDLE);\n\n#include <sys/cygwin.h>\n#include <io.h>\n\n#define CYGWIN_SSH_PRIVSEP_USER (cygwin_ssh_privsep_user())\nconst char *cygwin_ssh_privsep_user();\n\nint binary_open(const char *, int , ...);\nint check_ntsec(const char *);\nchar **fetch_windows_environment(void);\nvoid free_windows_environment(char **);\nint cygwin_ug_match_pattern_list(const char *, const char *);\n\n#ifndef NO_BINARY_OPEN\n#define open binary_open\n#endif\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

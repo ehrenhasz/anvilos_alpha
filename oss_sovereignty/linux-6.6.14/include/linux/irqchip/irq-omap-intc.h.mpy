@@ -1,0 +1,9 @@
+{
+  "module_name": "irq-omap-intc.h",
+  "hash_id": "9631da4d86ee3a38919b7a521a066f2570bfb8aa25b8646990bcf1b7b3586c5d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/irqchip/irq-omap-intc.h",
+  "human_readable_source": " \n \n\n#ifndef __INCLUDE_LINUX_IRQCHIP_IRQ_OMAP_INTC_H\n#define __INCLUDE_LINUX_IRQCHIP_IRQ_OMAP_INTC_H\n\nint omap_irq_pending(void);\nvoid omap_intc_save_context(void);\nvoid omap_intc_restore_context(void);\nvoid omap3_intc_suspend(void);\nvoid omap3_intc_prepare_idle(void);\nvoid omap3_intc_resume_idle(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

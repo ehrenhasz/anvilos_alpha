@@ -1,0 +1,9 @@
+{
+  "module_name": "nft_meta.h",
+  "hash_id": "ba455e7e40594760fe5dbbc040bc89b6fa46f473c5c2d1f58b17dab9aceb4ce5",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nft_meta.h",
+  "human_readable_source": " \n#ifndef _NFT_META_H_\n#define _NFT_META_H_\n\n#include <net/netfilter/nf_tables.h>\n\nstruct nft_meta {\n\tenum nft_meta_keys\tkey:8;\n\tu8\t\t\tlen;\n\tunion {\n\t\tu8\t\tdreg;\n\t\tu8\t\tsreg;\n\t};\n};\n\nextern const struct nla_policy nft_meta_policy[];\n\nint nft_meta_get_init(const struct nft_ctx *ctx,\n\t\t      const struct nft_expr *expr,\n\t\t      const struct nlattr * const tb[]);\n\nint nft_meta_set_init(const struct nft_ctx *ctx,\n\t\t      const struct nft_expr *expr,\n\t\t      const struct nlattr * const tb[]);\n\nint nft_meta_get_dump(struct sk_buff *skb,\n\t\t      const struct nft_expr *expr, bool reset);\n\nint nft_meta_set_dump(struct sk_buff *skb,\n\t\t      const struct nft_expr *expr, bool reset);\n\nvoid nft_meta_get_eval(const struct nft_expr *expr,\n\t\t       struct nft_regs *regs,\n\t\t       const struct nft_pktinfo *pkt);\n\nvoid nft_meta_set_eval(const struct nft_expr *expr,\n\t\t       struct nft_regs *regs,\n\t\t       const struct nft_pktinfo *pkt);\n\nvoid nft_meta_set_destroy(const struct nft_ctx *ctx,\n\t\t\t  const struct nft_expr *expr);\n\nint nft_meta_set_validate(const struct nft_ctx *ctx,\n\t\t\t  const struct nft_expr *expr,\n\t\t\t  const struct nft_data **data);\n\nbool nft_meta_get_reduce(struct nft_regs_track *track,\n\t\t\t const struct nft_expr *expr);\n\nstruct nft_inner_tun_ctx;\nvoid nft_meta_inner_eval(const struct nft_expr *expr,\n\t\t\t struct nft_regs *regs, const struct nft_pktinfo *pkt,\n\t\t\t struct nft_inner_tun_ctx *tun_ctx);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

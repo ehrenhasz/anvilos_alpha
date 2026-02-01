@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "282d3553fa6649dee2b56c3965a5e701686170cc4713d6f5824a210ea9cc3d5c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/perf/arm_cspmu/Makefile",
+  "human_readable_source": "# Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved.\n#\n# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_ARM_CORESIGHT_PMU_ARCH_SYSTEM_PMU) += arm_cspmu_module.o\narm_cspmu_module-y := arm_cspmu.o nvidia_cspmu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

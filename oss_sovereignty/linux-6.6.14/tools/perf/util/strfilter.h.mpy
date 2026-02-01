@@ -1,0 +1,9 @@
+{
+  "module_name": "strfilter.h",
+  "hash_id": "7a80f89ad3432e437fc60d437232534eed4249fe8178d6a3f97cf7817c76625e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/strfilter.h",
+  "human_readable_source": " \n#ifndef __PERF_STRFILTER_H\n#define __PERF_STRFILTER_H\n \n\n#include <linux/list.h>\n#include <stdbool.h>\n\n \nstruct strfilter_node {\n\tstruct strfilter_node *l;\t \n\tstruct strfilter_node *r;\t \n\tconst char *p;\t\t \n};\n\n \nstruct strfilter {\n\tstruct strfilter_node *root;\n};\n\n \nstruct strfilter *strfilter__new(const char *rules, const char **err);\n\n \nint strfilter__or(struct strfilter *filter,\n\t\t  const char *rules, const char **err);\n\n \nint strfilter__and(struct strfilter *filter,\n\t\t   const char *rules, const char **err);\n\n \nbool strfilter__compare(struct strfilter *filter, const char *str);\n\n \nvoid strfilter__delete(struct strfilter *filter);\n\n \nchar *strfilter__string(struct strfilter *filter);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

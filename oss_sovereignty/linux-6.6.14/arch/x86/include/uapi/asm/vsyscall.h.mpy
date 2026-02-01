@@ -1,0 +1,9 @@
+{
+  "module_name": "vsyscall.h",
+  "hash_id": "6579fb707ec6498ee85ef10efefe53a732aa90e14038220ed6d7c6f8b6ed1c39",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/vsyscall.h",
+  "human_readable_source": " \n#ifndef _UAPI_ASM_X86_VSYSCALL_H\n#define _UAPI_ASM_X86_VSYSCALL_H\n\nenum vsyscall_num {\n\t__NR_vgettimeofday,\n\t__NR_vtime,\n\t__NR_vgetcpu,\n};\n\n#define VSYSCALL_ADDR (-10UL << 20)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

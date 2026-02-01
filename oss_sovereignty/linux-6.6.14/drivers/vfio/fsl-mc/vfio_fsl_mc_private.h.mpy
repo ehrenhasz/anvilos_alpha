@@ -1,0 +1,9 @@
+{
+  "module_name": "vfio_fsl_mc_private.h",
+  "hash_id": "baaf8500b2cfaba1252ee08e23cbb753e696987d7ef8a639fcf177e2d0896c0e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/fsl-mc/vfio_fsl_mc_private.h",
+  "human_readable_source": " \n \n\n#ifndef VFIO_FSL_MC_PRIVATE_H\n#define VFIO_FSL_MC_PRIVATE_H\n\n#define VFIO_FSL_MC_OFFSET_SHIFT    40\n#define VFIO_FSL_MC_OFFSET_MASK (((u64)(1) << VFIO_FSL_MC_OFFSET_SHIFT) - 1)\n\n#define VFIO_FSL_MC_OFFSET_TO_INDEX(off) ((off) >> VFIO_FSL_MC_OFFSET_SHIFT)\n\n#define VFIO_FSL_MC_INDEX_TO_OFFSET(index)\t\\\n\t((u64)(index) << VFIO_FSL_MC_OFFSET_SHIFT)\n\nstruct vfio_fsl_mc_irq {\n\tu32         flags;\n\tu32         count;\n\tstruct eventfd_ctx  *trigger;\n\tchar            *name;\n};\n\nstruct vfio_fsl_mc_region {\n\tu32\t\t\tflags;\n\tu32\t\t\ttype;\n\tu64\t\t\taddr;\n\tresource_size_t\t\tsize;\n\tvoid __iomem\t\t*ioaddr;\n};\n\nstruct vfio_fsl_mc_device {\n\tstruct vfio_device\t\tvdev;\n\tstruct fsl_mc_device\t\t*mc_dev;\n\tstruct notifier_block        nb;\n\tstruct vfio_fsl_mc_region\t*regions;\n\tstruct mutex         igate;\n\tstruct vfio_fsl_mc_irq      *mc_irqs;\n};\n\nint vfio_fsl_mc_set_irqs_ioctl(struct vfio_fsl_mc_device *vdev,\n\t\t\t       u32 flags, unsigned int index,\n\t\t\t       unsigned int start, unsigned int count,\n\t\t\t       void *data);\n\nvoid vfio_fsl_mc_irqs_cleanup(struct vfio_fsl_mc_device *vdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

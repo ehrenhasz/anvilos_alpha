@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "042d75241a708536313559e9672ad399dda34b701ee064d45b3d7f4dfc676dc0",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/trace.c",
+  "human_readable_source": "\n\n\n\n#include \"sof-priv.h\"\n\nint sof_fw_trace_init(struct snd_sof_dev *sdev)\n{\n\tconst struct sof_ipc_fw_tracing_ops *fw_tracing = sof_ipc_get_ops(sdev, fw_tracing);\n\n\tif (!fw_tracing) {\n\t\tdev_info(sdev->dev, \"Firmware tracing is not available\\n\");\n\t\tsdev->fw_trace_is_supported = false;\n\n\t\treturn 0;\n\t}\n\n\treturn fw_tracing->init(sdev);\n}\n\nvoid sof_fw_trace_free(struct snd_sof_dev *sdev)\n{\n\tif (!sdev->fw_trace_is_supported)\n\t\treturn;\n\n\tif (sdev->ipc->ops->fw_tracing->free)\n\t\tsdev->ipc->ops->fw_tracing->free(sdev);\n}\n\nvoid sof_fw_trace_fw_crashed(struct snd_sof_dev *sdev)\n{\n\tif (!sdev->fw_trace_is_supported)\n\t\treturn;\n\n\tif (sdev->ipc->ops->fw_tracing->fw_crashed)\n\t\tsdev->ipc->ops->fw_tracing->fw_crashed(sdev);\n}\n\nvoid sof_fw_trace_suspend(struct snd_sof_dev *sdev, pm_message_t pm_state)\n{\n\tif (!sdev->fw_trace_is_supported)\n\t\treturn;\n\n\tsdev->ipc->ops->fw_tracing->suspend(sdev, pm_state);\n}\n\nint sof_fw_trace_resume(struct snd_sof_dev *sdev)\n{\n\tif (!sdev->fw_trace_is_supported)\n\t\treturn 0;\n\n\treturn sdev->ipc->ops->fw_tracing->resume(sdev);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

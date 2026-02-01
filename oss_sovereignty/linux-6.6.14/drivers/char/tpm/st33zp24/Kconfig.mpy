@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "bf24cdb3f3a2bf0ea32a3ace881c82b402c1fcc9f00cb899d8ae7326a553a2b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/tpm/st33zp24/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig TCG_TIS_ST33ZP24\n\ttristate\n\thelp\n\t  STMicroelectronics ST33ZP24 core driver. It implements the core\n\t  TPM1.2 logic and hooks into the TPM kernel APIs. Physical layers will\n\t  register against it.\n\n\t  To compile this driver as a module, choose m here. The module will be called\n\t  tpm_st33zp24.\n\nconfig TCG_TIS_ST33ZP24_I2C\n\ttristate \"STMicroelectronics TPM Interface Specification 1.2 Interface (I2C)\"\n\tdepends on I2C\n\tselect TCG_TIS_ST33ZP24\n\thelp\n\t  This module adds support for the STMicroelectronics TPM security chip\n\t  ST33ZP24 with i2c interface.\n\t  To compile this driver as a module, choose M here; the module will be\n\t  called tpm_st33zp24_i2c.\n\nconfig TCG_TIS_ST33ZP24_SPI\n\ttristate \"STMicroelectronics TPM Interface Specification 1.2 Interface (SPI)\"\n\tdepends on SPI\n\tselect TCG_TIS_ST33ZP24\n\thelp\n\t  This module adds support for the STMicroelectronics TPM security chip\n\t  ST33ZP24 with spi interface.\n\t  To compile this driver as a module, choose M here; the module will be\n\t  called tpm_st33zp24_spi.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

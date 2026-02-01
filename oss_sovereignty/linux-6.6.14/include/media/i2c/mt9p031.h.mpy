@@ -1,0 +1,9 @@
+{
+  "module_name": "mt9p031.h",
+  "hash_id": "d0241261e6b6b426594c9bf946bccb8e1edad90ca30429113a1b2a96629c81ad",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/mt9p031.h",
+  "human_readable_source": " \n#ifndef MT9P031_H\n#define MT9P031_H\n\nstruct v4l2_subdev;\n\n \nstruct mt9p031_platform_data {\n\tunsigned int pixclk_pol:1;\n\tint ext_freq;\n\tint target_freq;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

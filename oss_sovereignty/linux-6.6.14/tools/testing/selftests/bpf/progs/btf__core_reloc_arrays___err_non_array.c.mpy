@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_arrays___err_non_array.c",
+  "hash_id": "b2e5fa209132d4fbf5ed66bdc88eca85cb3cfb22e3045138e0b65e23af6cfd2f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_non_array.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_arrays___err_non_array x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

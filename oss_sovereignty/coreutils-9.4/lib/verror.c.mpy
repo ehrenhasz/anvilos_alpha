@@ -1,0 +1,9 @@
+{
+  "module_name": "verror.c",
+  "hash_id": "54de10b07cc050ed1dc680fa61dbacd4ddd013d3a04ad3c5e1b0171ef5cd1420",
+  "original_prompt": "Ingested from coreutils-9.4/lib/verror.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include \"verror.h\"\n\n#include <errno.h>\n#include <stdarg.h>\n#include <stdlib.h>\n\n#include \"error.h\"\n#include \"xvasprintf.h\"\n\n#if ENABLE_NLS\n# include \"gettext.h\"\n# define _(msgid) gettext (msgid)\n#endif\n\n#ifndef _\n# define _(String) String\n#endif\n\n \nvoid\nverror (int status, int errnum, const char *format, va_list args)\n{\n  verror_at_line (status, errnum, NULL, 0, format, args);\n}\n\n \nvoid\nverror_at_line (int status, int errnum, const char *file,\n                unsigned int line_number, const char *format, va_list args)\n{\n  char *message = xvasprintf (format, args);\n  if (message)\n    {\n       \n      if (file)\n        error_at_line (status, errnum, file, line_number, \"%s\", message);\n      else\n        error (status, errnum, \"%s\", message);\n    }\n  else\n    {\n       \n      error (0, errno, _(\"unable to display error message\"));\n      abort ();\n    }\n  free (message);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "uio.h",
+  "hash_id": "b4412e152119e22b1929d4a0cfa0d677d074bfe7ba5b7cb81e857722d7c43b33",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/uio.h",
+  "human_readable_source": " \n\n#ifndef _OPENSOLARIS_SYS_UIO_H_\n#define\t_OPENSOLARIS_SYS_UIO_H_\n\n#ifndef _STANDALONE\n\n#include_next <sys/uio.h>\n#include <sys/_uio.h>\n#include <sys/debug.h>\n\ntypedef\tstruct iovec\tiovec_t;\ntypedef\tenum uio_seg\tzfs_uio_seg_t;\ntypedef\tenum uio_rw\tzfs_uio_rw_t;\n\ntypedef struct zfs_uio {\n\tstruct uio\t*uio;\n} zfs_uio_t;\n\n#define\tGET_UIO_STRUCT(u)\t(u)->uio\n#define\tzfs_uio_segflg(u)\tGET_UIO_STRUCT(u)->uio_segflg\n#define\tzfs_uio_offset(u)\tGET_UIO_STRUCT(u)->uio_offset\n#define\tzfs_uio_resid(u)\tGET_UIO_STRUCT(u)->uio_resid\n#define\tzfs_uio_iovcnt(u)\tGET_UIO_STRUCT(u)->uio_iovcnt\n#define\tzfs_uio_iovlen(u, idx)\tGET_UIO_STRUCT(u)->uio_iov[(idx)].iov_len\n#define\tzfs_uio_iovbase(u, idx)\tGET_UIO_STRUCT(u)->uio_iov[(idx)].iov_base\n#define\tzfs_uio_td(u)\t\tGET_UIO_STRUCT(u)->uio_td\n#define\tzfs_uio_rw(u)\t\tGET_UIO_STRUCT(u)->uio_rw\n#define\tzfs_uio_fault_disable(u, set)\n#define\tzfs_uio_prefaultpages(size, u)\t(0)\n\nstatic inline void\nzfs_uio_setoffset(zfs_uio_t *uio, offset_t off)\n{\n\tzfs_uio_offset(uio) = off;\n}\n\nstatic inline void\nzfs_uio_advance(zfs_uio_t *uio, size_t size)\n{\n\tzfs_uio_resid(uio) -= size;\n\tzfs_uio_offset(uio) += size;\n}\n\nstatic __inline void\nzfs_uio_init(zfs_uio_t *uio, struct uio *uio_s)\n{\n\tGET_UIO_STRUCT(uio) = uio_s;\n}\n\nint zfs_uio_fault_move(void *p, size_t n, zfs_uio_rw_t dir, zfs_uio_t *uio);\n\n#endif  \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

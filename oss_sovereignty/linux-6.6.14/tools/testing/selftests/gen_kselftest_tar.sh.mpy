@@ -1,0 +1,9 @@
+{
+  "module_name": "gen_kselftest_tar.sh",
+  "hash_id": "ccb9d80309d765595d76fd80ae17f9493268e573f6a57f3a302daad2a4658318",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/gen_kselftest_tar.sh",
+  "human_readable_source": "#!/bin/bash\n#\n# SPDX-License-Identifier: GPL-2.0\n# gen_kselftest_tar\n# Generate kselftest tarball\n# Author: Shuah Khan <shuahkh@osg.samsung.com>\n# Copyright (C) 2015 Samsung Electronics Co., Ltd.\n\n# main\nmain()\n{\n\tif [ \"$#\" -eq 0 ]; then\n\t\techo \"$0: Generating default compression gzip\"\n\t\tcopts=\"cvzf\"\n\t\text=\".tar.gz\"\n\telse\n\t\tcase \"$1\" in\n\t\t\ttar)\n\t\t\t\tcopts=\"cvf\"\n\t\t\t\text=\".tar\"\n\t\t\t\t;;\n\t\t\ttargz)\n\t\t\t\tcopts=\"cvzf\"\n\t\t\t\text=\".tar.gz\"\n\t\t\t\t;;\n\t\t\ttarbz2)\n\t\t\t\tcopts=\"cvjf\"\n\t\t\t\text=\".tar.bz2\"\n\t\t\t\t;;\n\t\t\ttarxz)\n\t\t\t\tcopts=\"cvJf\"\n\t\t\t\text=\".tar.xz\"\n\t\t\t\t;;\n\t\t\t*)\n\t\t\techo \"Unknown tarball format $1\"\n\t\t\texit 1\n\t\t\t;;\n\tesac\n\tfi\n\n\t# Create working directory.\n\tdest=`pwd`\n\tinstall_work=\"$dest\"/kselftest_install\n\tinstall_name=kselftest\n\tinstall_dir=\"$install_work\"/\"$install_name\"\n\tmkdir -p \"$install_dir\"\n\n\t# Run install using INSTALL_KSFT_PATH override to generate install\n\t# directory\n\t./kselftest_install.sh \"$install_dir\"\n\t(cd \"$install_work\"; tar $copts \"$dest\"/kselftest${ext} $install_name)\n\n\t# Don't put the message at the actual end as people may be parsing the\n\t# \"archive created\" line in their scripts.\n\techo -e \"\\nConsider using 'make gen_tar' instead of this script\\n\"\n\n\techo \"Kselftest archive kselftest${ext} created!\"\n\n\t# clean up top-level install work directory\n\trm -rf \"$install_work\"\n}\n\nmain \"$@\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

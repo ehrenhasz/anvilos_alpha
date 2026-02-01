@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f0af6f8401c65d04b104368eda6a33e34736a485d66037a508fd646ff1c57d82",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/realmode/Makefile",
+  "human_readable_source": "#\n# arch/x86/realmode/Makefile\n#\n# This file is subject to the terms and conditions of the GNU General Public\n# License.  See the file \"COPYING\" in the main directory of this archive\n# for more details.\n#\n#\n\n# Sanitizer runtimes are unavailable and cannot be linked here.\nKASAN_SANITIZE\t\t\t:= n\nKCSAN_SANITIZE\t\t\t:= n\n\nsubdir- := rm\n\nobj-y += init.o\nobj-y += rmpiggy.o\n\n$(obj)/rmpiggy.o: $(obj)/rm/realmode.bin\n\n$(obj)/rm/realmode.bin: FORCE\n\t$(Q)$(MAKE) $(build)=$(obj)/rm $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

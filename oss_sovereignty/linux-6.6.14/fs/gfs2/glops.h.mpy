@@ -1,0 +1,9 @@
+{
+  "module_name": "glops.h",
+  "hash_id": "606da138cdcb08a9c713a1cc9ac9d39153fc3b7f2e7f168a78e00730da6dab45",
+  "original_prompt": "Ingested from linux-6.6.14/fs/gfs2/glops.h",
+  "human_readable_source": " \n \n\n#ifndef __GLOPS_DOT_H__\n#define __GLOPS_DOT_H__\n\n#include \"incore.h\"\n\nextern struct workqueue_struct *gfs2_freeze_wq;\n\nextern const struct gfs2_glock_operations gfs2_meta_glops;\nextern const struct gfs2_glock_operations gfs2_inode_glops;\nextern const struct gfs2_glock_operations gfs2_rgrp_glops;\nextern const struct gfs2_glock_operations gfs2_freeze_glops;\nextern const struct gfs2_glock_operations gfs2_iopen_glops;\nextern const struct gfs2_glock_operations gfs2_flock_glops;\nextern const struct gfs2_glock_operations gfs2_nondisk_glops;\nextern const struct gfs2_glock_operations gfs2_quota_glops;\nextern const struct gfs2_glock_operations gfs2_journal_glops;\nextern const struct gfs2_glock_operations *gfs2_glops_list[];\n\nextern int gfs2_inode_metasync(struct gfs2_glock *gl);\nextern void gfs2_ail_flush(struct gfs2_glock *gl, bool fsync);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

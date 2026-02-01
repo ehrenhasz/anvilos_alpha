@@ -1,0 +1,9 @@
+{
+  "module_name": "ip6t_LOG.h",
+  "hash_id": "46713c8df6621310a5d699e61122684db391152882aad0e3cc2c23e7a2445717",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_ipv6/ip6t_LOG.h",
+  "human_readable_source": " \n#ifndef _IP6T_LOG_H\n#define _IP6T_LOG_H\n\n \n#define IP6T_LOG_TCPSEQ\t\t0x01\t \n#define IP6T_LOG_TCPOPT\t\t0x02\t \n#define IP6T_LOG_IPOPT\t\t0x04\t \n#define IP6T_LOG_UID\t\t0x08\t \n#define IP6T_LOG_NFLOG\t\t0x10\t \n#define IP6T_LOG_MACDECODE\t0x20\t \n#define IP6T_LOG_MASK\t\t0x2f\n\nstruct ip6t_log_info {\n\tunsigned char level;\n\tunsigned char logflags;\n\tchar prefix[30];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

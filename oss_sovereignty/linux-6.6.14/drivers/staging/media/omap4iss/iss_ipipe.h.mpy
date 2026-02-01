@@ -1,0 +1,9 @@
+{
+  "module_name": "iss_ipipe.h",
+  "hash_id": "869c7b626f2b3b873bf5b6bc29396ae1275a91623499276d14e51ead17ddd2a2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/omap4iss/iss_ipipe.h",
+  "human_readable_source": " \n \n\n#ifndef OMAP4_ISS_IPIPE_H\n#define OMAP4_ISS_IPIPE_H\n\n#include \"iss_video.h\"\n\nenum ipipe_input_entity {\n\tIPIPE_INPUT_NONE,\n\tIPIPE_INPUT_IPIPEIF,\n};\n\n#define IPIPE_OUTPUT_VP\t\t\t\tBIT(0)\n\n \n#define IPIPE_PAD_SINK\t\t\t\t0\n#define IPIPE_PAD_SOURCE_VP\t\t\t1\n#define IPIPE_PADS_NUM\t\t\t\t2\n\n \nstruct iss_ipipe_device {\n\tstruct v4l2_subdev subdev;\n\tstruct media_pad pads[IPIPE_PADS_NUM];\n\tstruct v4l2_mbus_framefmt formats[IPIPE_PADS_NUM];\n\n\tenum ipipe_input_entity input;\n\tunsigned int output;\n\tunsigned int error;\n\n\tenum iss_pipeline_stream_state state;\n\twait_queue_head_t wait;\n\tatomic_t stopping;\n};\n\nstruct iss_device;\n\nint omap4iss_ipipe_register_entities(struct iss_ipipe_device *ipipe,\n\t\t\t\t     struct v4l2_device *vdev);\nvoid omap4iss_ipipe_unregister_entities(struct iss_ipipe_device *ipipe);\n\nint omap4iss_ipipe_init(struct iss_device *iss);\nvoid omap4iss_ipipe_cleanup(struct iss_device *iss);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

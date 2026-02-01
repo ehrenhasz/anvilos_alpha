@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b1f4f29e7ce12b39cc64370195145acc1538bdec57f313b768ef581fa329a6c7",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/events/zhaoxin/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y\t+= core.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

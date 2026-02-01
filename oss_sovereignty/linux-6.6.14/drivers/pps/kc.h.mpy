@@ -1,0 +1,9 @@
+{
+  "module_name": "kc.h",
+  "hash_id": "fa81b74268988ee68c067cec9b678d6500fa4638310ca1c876e81cab0cedc246",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pps/kc.h",
+  "human_readable_source": " \n \n\n#ifndef LINUX_PPS_KC_H\n#define LINUX_PPS_KC_H\n\n#include <linux/errno.h>\n#include <linux/pps_kernel.h>\n\n#ifdef CONFIG_NTP_PPS\n\nextern int pps_kc_bind(struct pps_device *pps,\n\t\tstruct pps_bind_args *bind_args);\nextern void pps_kc_remove(struct pps_device *pps);\nextern void pps_kc_event(struct pps_device *pps,\n\t\tstruct pps_event_time *ts, int event);\n\n\n#else  \n\nstatic inline int pps_kc_bind(struct pps_device *pps,\n\t\tstruct pps_bind_args *bind_args) { return -EOPNOTSUPP; }\nstatic inline void pps_kc_remove(struct pps_device *pps) {}\nstatic inline void pps_kc_event(struct pps_device *pps,\n\t\tstruct pps_event_time *ts, int event) {}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

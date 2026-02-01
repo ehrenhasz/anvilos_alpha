@@ -1,0 +1,9 @@
+{
+  "module_name": "slcan.h",
+  "hash_id": "75835f1e6db5ec7517b0736201b3c0bd3b6969cbf2e62762bf6bae4a7a5afa2e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/slcan/slcan.h",
+  "human_readable_source": " \n\n#ifndef _SLCAN_H\n#define _SLCAN_H\n\nbool slcan_err_rst_on_open(struct net_device *ndev);\nint slcan_enable_err_rst_on_open(struct net_device *ndev, bool on);\n\nextern const struct ethtool_ops slcan_ethtool_ops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "desc.h",
+  "hash_id": "97ff1ab8420e4babcd032dadbfd8364c54bec11ac713447f3ac6298a5b1a54da",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/asm/desc.h",
+  "human_readable_source": " \n#ifndef __UM_DESC_H\n#define __UM_DESC_H\n\n \n#define LDT_empty(info) (\\\n\t(info)->base_addr\t== 0\t&& \\\n\t(info)->limit\t\t== 0\t&& \\\n\t(info)->contents\t== 0\t&& \\\n\t(info)->read_exec_only\t== 1\t&& \\\n\t(info)->seg_32bit\t== 0\t&& \\\n\t(info)->limit_in_pages\t== 0\t&& \\\n\t(info)->seg_not_present\t== 1\t&& \\\n\t(info)->useable\t\t== 0\t)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

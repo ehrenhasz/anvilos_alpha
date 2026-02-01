@@ -1,0 +1,9 @@
+{
+  "module_name": "nfstrace.c",
+  "hash_id": "754a3a93bf0eedea1c4d5f360e4081eb33b5ab4676d0deb3c4723325316ff98e",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfs/nfstrace.c",
+  "human_readable_source": "\n \n#include <linux/nfs_fs.h>\n#include <linux/namei.h>\n#include \"internal.h\"\n\n#define CREATE_TRACE_POINTS\n#include \"nfstrace.h\"\n\nEXPORT_TRACEPOINT_SYMBOL_GPL(nfs_fsync_enter);\nEXPORT_TRACEPOINT_SYMBOL_GPL(nfs_fsync_exit);\nEXPORT_TRACEPOINT_SYMBOL_GPL(nfs_xdr_status);\nEXPORT_TRACEPOINT_SYMBOL_GPL(nfs_xdr_bad_filehandle);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

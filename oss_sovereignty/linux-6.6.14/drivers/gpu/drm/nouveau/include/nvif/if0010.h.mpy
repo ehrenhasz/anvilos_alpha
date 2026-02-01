@@ -1,0 +1,9 @@
+{
+  "module_name": "if0010.h",
+  "hash_id": "0f92a34f7df634b17283bb865b80fd2d837cc0575a9e4b457229d068f0016253",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/if0010.h",
+  "human_readable_source": " \n#ifndef __NVIF_IF0010_H__\n#define __NVIF_IF0010_H__\n\nunion nvif_disp_args {\n\tstruct nvif_disp_v0 {\n\t\t__u8 version;\n\t\t__u8 pad01[3];\n\t\t__u32 conn_mask;\n\t\t__u32 outp_mask;\n\t\t__u32 head_mask;\n\t} v0;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

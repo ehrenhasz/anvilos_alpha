@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mapping-part2.h",
+  "hash_id": "6ab4144e7b733c6f9a854a667ff0b5075bf2728a4e2c5439f94b2a83e811afc6",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/unicase/test-mapping-part2.h",
+  "human_readable_source": "/* Test of single character case mapping functions.\n   Copyright (C) 2007-2023 Free Software Foundation, Inc.\n\n   This program is free software: you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published by\n   the Free Software Foundation, either version 3 of the License, or\n   (at your option) any later version.\n\n   This program is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with this program.  If not, see <https:\n\n  };\n\nint\nmain ()\n{\n  unsigned int c;\n  size_t i;\n\n  c = 0;\n  for (i = 0; i < SIZEOF (mapping); i++)\n    {\n      for (; c < mapping[i].ch; c++)\n        ASSERT (MAP (c) == c);\n      ASSERT (MAP (c) == mapping[i].value);\n      c++;\n    }\n  for (; c < 0x110000; c++)\n    ASSERT (MAP (c) == c);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

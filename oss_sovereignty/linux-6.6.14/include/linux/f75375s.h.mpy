@@ -1,0 +1,9 @@
+{
+  "module_name": "f75375s.h",
+  "hash_id": "10afbcf93328af444e56d913948bc2fd5cc7805ab8411e524022878e91a17dc6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/f75375s.h",
+  "human_readable_source": " \n\n#ifndef __LINUX_F75375S_H\n#define __LINUX_F75375S_H\n\n \nstruct f75375s_platform_data {\n\tu8 pwm[2];\n\tu8 pwm_enable[2];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

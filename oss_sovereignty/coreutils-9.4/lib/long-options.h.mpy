@@ -1,0 +1,9 @@
+{
+  "module_name": "long-options.h",
+  "hash_id": "f2e109f2d22f36fc1a689277733b65887d8ae33dabcdb13c0d02d6eaf7a8cb9a",
+  "original_prompt": "Ingested from coreutils-9.4/lib/long-options.h",
+  "human_readable_source": " \n\n#ifndef LONG_OPTIONS_H_\n# define LONG_OPTIONS_H_ 1\n\nvoid parse_long_options (int _argc,\n                         char **_argv,\n                         const char *_command_name,\n                         const char *_package,\n                         const char *_version,\n                         void (*_usage) (int),\n                           ...);\n\nvoid parse_gnu_standard_options_only (int argc,\n                                      char **argv,\n                                      const char *command_name,\n                                      const char *package,\n                                      const char *version,\n                                      bool scan_all,\n                                      void (*usage_func) (int),\n                                        ...);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

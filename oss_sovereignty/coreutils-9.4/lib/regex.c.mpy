@@ -1,0 +1,9 @@
+{
+  "module_name": "regex.c",
+  "hash_id": "2ab055daed7aabf4ee9592f5fd8f721ffe701ffdbe9aa023415d49a6468a20ba",
+  "original_prompt": "Ingested from coreutils-9.4/lib/regex.c",
+  "human_readable_source": " \n#if defined __cplusplus && defined _LIBC\n# error \"This is C code, use a C compiler\"\n#endif\n\n#ifdef _LIBC\n \n# define regfree(preg) __regfree (preg)\n# define regexec(pr, st, nm, pm, ef) __regexec (pr, st, nm, pm, ef)\n# define regcomp(preg, pattern, cflags) __regcomp (preg, pattern, cflags)\n# define regerror(errcode, preg, errbuf, errbuf_size) \\\n\t__regerror(errcode, preg, errbuf, errbuf_size)\n# define re_set_registers(bu, re, nu, st, en) \\\n\t__re_set_registers (bu, re, nu, st, en)\n# define re_match_2(bufp, string1, size1, string2, size2, pos, regs, stop) \\\n\t__re_match_2 (bufp, string1, size1, string2, size2, pos, regs, stop)\n# define re_match(bufp, string, size, pos, regs) \\\n\t__re_match (bufp, string, size, pos, regs)\n# define re_search(bufp, string, size, startpos, range, regs) \\\n\t__re_search (bufp, string, size, startpos, range, regs)\n# define re_compile_pattern(pattern, length, bufp) \\\n\t__re_compile_pattern (pattern, length, bufp)\n# define re_set_syntax(syntax) __re_set_syntax (syntax)\n# define re_search_2(bufp, st1, s1, st2, s2, startpos, range, regs, stop) \\\n\t__re_search_2 (bufp, st1, s1, st2, s2, startpos, range, regs, stop)\n# define re_compile_fastmap(bufp) __re_compile_fastmap (bufp)\n\n# include \"../locale/localeinfo.h\"\n#endif\n\n \n#include <limits.h>\n\n#include <regex.h>\n#include \"regex_internal.h\"\n\n#include \"regex_internal.c\"\n#include \"regcomp.c\"\n#include \"regexec.c\"\n\n \n#if _LIBC\n# include <shlib-compat.h>\n# if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_3)\nlink_warning (re_max_failures, \"the 're_max_failures' variable is obsolete and will go away.\")\nint re_max_failures = 2000;\n# endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

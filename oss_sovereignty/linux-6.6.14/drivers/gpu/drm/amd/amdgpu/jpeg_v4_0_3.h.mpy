@@ -1,0 +1,9 @@
+{
+  "module_name": "jpeg_v4_0_3.h",
+  "hash_id": "b7de6f3e769fff4fbf842a45310afb9c089e354add61e22be2dc8bbf31be1e52",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/jpeg_v4_0_3.h",
+  "human_readable_source": " \n\n#ifndef __JPEG_V4_0_3_H__\n#define __JPEG_V4_0_3_H__\n\n#define regUVD_JRBC_EXTERNAL_REG_INTERNAL_OFFSET\t\t\t0x1bfff\n#define regUVD_JPEG_GPCOM_CMD_INTERNAL_OFFSET\t\t\t\t0x404d\n#define regUVD_JPEG_GPCOM_DATA0_INTERNAL_OFFSET\t\t\t\t0x404e\n#define regUVD_JPEG_GPCOM_DATA1_INTERNAL_OFFSET\t\t\t\t0x404f\n#define regUVD_LMI_JRBC_RB_MEM_WR_64BIT_BAR_LOW_INTERNAL_OFFSET\t\t0x40ab\n#define regUVD_LMI_JRBC_RB_MEM_WR_64BIT_BAR_HIGH_INTERNAL_OFFSET\t0x40ac\n#define regUVD_LMI_JRBC_IB_VMID_INTERNAL_OFFSET\t\t\t\t0x40a4\n#define regUVD_LMI_JPEG_VMID_INTERNAL_OFFSET\t\t\t\t0x40a6\n#define regUVD_LMI_JRBC_IB_64BIT_BAR_LOW_INTERNAL_OFFSET\t\t0x40b6\n#define regUVD_LMI_JRBC_IB_64BIT_BAR_HIGH_INTERNAL_OFFSET\t\t0x40b7\n#define regUVD_JRBC_IB_SIZE_INTERNAL_OFFSET\t\t\t\t0x4082\n#define regUVD_LMI_JRBC_RB_MEM_RD_64BIT_BAR_LOW_INTERNAL_OFFSET\t\t0x42d4\n#define regUVD_LMI_JRBC_RB_MEM_RD_64BIT_BAR_HIGH_INTERNAL_OFFSET\t0x42d5\n#define regUVD_JRBC_RB_COND_RD_TIMER_INTERNAL_OFFSET\t\t\t0x4085\n#define regUVD_JRBC_RB_REF_DATA_INTERNAL_OFFSET\t\t\t\t0x4084\n#define regUVD_JRBC_STATUS_INTERNAL_OFFSET\t\t\t\t0x4089\n#define regUVD_JPEG_PITCH_INTERNAL_OFFSET\t\t\t\t0x4043\n#define regUVD_JRBC0_UVD_JRBC_SCRATCH0_INTERNAL_OFFSET\t\t\t0x4094\n#define regUVD_JRBC_EXTERNAL_MCM_ADDR_INTERNAL_OFFSET\t\t\t0x1bffe\n\n#define JRBC_DEC_EXTERNAL_REG_WRITE_ADDR\t\t\t\t0x18000\n\nextern const struct amdgpu_ip_block_version jpeg_v4_0_3_ip_block;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

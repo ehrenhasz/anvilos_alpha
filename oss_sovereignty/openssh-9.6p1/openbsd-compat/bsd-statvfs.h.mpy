@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-statvfs.h",
+  "hash_id": "f2b07e5dfd19597933a8e4d84fdf8a15612791b60a5d49d2a4fd221d722b18fd",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-statvfs.h",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#if !defined(HAVE_STATVFS) || !defined(HAVE_FSTATVFS)\n\n#include <sys/types.h>\n\n#ifdef HAVE_SYS_MOUNT_H\n#include <sys/mount.h>\n#endif\n#ifdef HAVE_SYS_STATFS_H\n#include <sys/statfs.h>\n#endif\n#ifdef HAVE_SYS_VFS_H\n#include <sys/vfs.h>\n#endif\n\n#ifndef HAVE_FSBLKCNT_T\ntypedef unsigned long fsblkcnt_t;\n#endif\n#ifndef HAVE_FSFILCNT_T\ntypedef unsigned long fsfilcnt_t;\n#endif\n\n#ifndef ST_RDONLY\n#define ST_RDONLY\t1\n#endif\n#ifndef ST_NOSUID\n#define ST_NOSUID\t2\n#endif\n\n\t \nstruct statvfs {\n\tunsigned long f_bsize;\t \n\tunsigned long f_frsize;\t \n\tfsblkcnt_t f_blocks;\t \n\t\t\t\t \n\tfsblkcnt_t    f_bfree;\t \n\tfsblkcnt_t    f_bavail;\t \n\t\t\t\t \n\tfsfilcnt_t    f_files;\t \n\tfsfilcnt_t    f_ffree;\t \n\tfsfilcnt_t    f_favail;\t \n\t\t\t\t \n\tunsigned long f_fsid;\t \n\tunsigned long f_flag;\t \n\tunsigned long f_namemax; \n};\n#endif\n\n#ifndef HAVE_STATVFS\nint statvfs(const char *, struct statvfs *);\n#endif\n\n#ifndef HAVE_FSTATVFS\nint fstatvfs(int, struct statvfs *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

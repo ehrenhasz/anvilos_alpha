@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "217022d39590a869008f94ba0c0848720e5a575bd76bcb0cc1c2811320c724c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/nuvoton/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Nuvoton pinctrl support\n\nobj-$(CONFIG_PINCTRL_WPCM450)\t+= pinctrl-wpcm450.o\nobj-$(CONFIG_PINCTRL_NPCM7XX)\t+= pinctrl-npcm7xx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

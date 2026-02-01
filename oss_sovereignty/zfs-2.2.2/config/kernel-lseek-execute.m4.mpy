@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-lseek-execute.m4",
+  "hash_id": "1ec50b841a3dcb69cab865623a82ee1b77f281d4348a86db09d1e4081b3f5204",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-lseek-execute.m4",
+  "human_readable_source": "dnl #\ndnl # 3.11 API change\ndnl # lseek_execute helper exported\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_LSEEK_EXECUTE], [\n\tZFS_LINUX_TEST_SRC([lseek_execute], [\n\t\t#include <linux/fs.h>\n\t], [\n\t\tstruct file *fp __attribute__ ((unused)) = NULL;\n\t\tstruct inode *ip __attribute__ ((unused)) = NULL;\n\t\tloff_t offset __attribute__ ((unused)) = 0;\n\t\tloff_t maxsize __attribute__ ((unused)) = 0;\n\n\t\tlseek_execute(fp, ip, offset, maxsize);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_LSEEK_EXECUTE], [\n\tAC_MSG_CHECKING([whether lseek_execute() is available])\n\tZFS_LINUX_TEST_RESULT_SYMBOL([lseek_execute],\n\t    [lseek_exclusive], [fs/read_write.c], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_LSEEK_EXECUTE, 1, [lseek_execute() is available])\n\t], [\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "eadm_sch.h",
+  "hash_id": "9e04dd4d8ecddb820d110466e4070ec3e22485ee6c6fedee2132f4bd6411a749",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/cio/eadm_sch.h",
+  "human_readable_source": " \n#ifndef EADM_SCH_H\n#define EADM_SCH_H\n\n#include <linux/completion.h>\n#include <linux/device.h>\n#include <linux/timer.h>\n#include <linux/list.h>\n#include \"orb.h\"\n\nstruct eadm_private {\n\tunion orb orb;\n\tenum {EADM_IDLE, EADM_BUSY, EADM_NOT_OPER} state;\n\tstruct completion *completion;\n\tstruct subchannel *sch;\n\tstruct timer_list timer;\n\tstruct list_head head;\n} __aligned(8);\n\n#define get_eadm_private(n) ((struct eadm_private *)dev_get_drvdata(&n->dev))\n#define set_eadm_private(n, p) (dev_set_drvdata(&n->dev, p))\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

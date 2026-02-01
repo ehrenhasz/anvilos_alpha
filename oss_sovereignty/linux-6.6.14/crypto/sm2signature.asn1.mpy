@@ -1,0 +1,9 @@
+{
+  "module_name": "sm2signature.asn1",
+  "hash_id": "40ddb9aaa90cbc622b4b5342773f19466d8ce0a917a6622c615dee678046b319",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/sm2signature.asn1",
+  "human_readable_source": "Sm2Signature ::= SEQUENCE {\n\tsig_r\tINTEGER ({ sm2_get_signature_r }),\n\tsig_s\tINTEGER ({ sm2_get_signature_s })\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

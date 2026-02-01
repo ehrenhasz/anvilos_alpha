@@ -1,0 +1,9 @@
+{
+  "module_name": "smsgiucv.h",
+  "hash_id": "b1d1c5acfed1093ea303541b7cfcbd0b33fa413e92a038be2a74e4a16d5e960e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/net/smsgiucv.h",
+  "human_readable_source": " \n \n\n#define SMSGIUCV_DRV_NAME     \"SMSGIUCV\"\n\nint  smsg_register_callback(const char *,\n\t\t\t    void (*)(const char *, char *));\nvoid smsg_unregister_callback(const char *,\n\t\t\t      void (*)(const char *, char *));\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

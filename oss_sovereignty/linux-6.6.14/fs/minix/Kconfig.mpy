@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3528b20f71ae29c071e97b5f389950be91eb5836ce57773a63fd84ef7c71e2c6",
+  "original_prompt": "Ingested from linux-6.6.14/fs/minix/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig MINIX_FS\n\ttristate \"Minix file system support\"\n\tdepends on BLOCK\n\tselect BUFFER_HEAD\n\thelp\n\t  Minix is a simple operating system used in many classes about OS's.\n\t  The minix file system (method to organize files on a hard disk\n\t  partition or a floppy disk) was the original file system for Linux,\n\t  but has been superseded by the second extended file system ext2fs.\n\t  You don't want to use the minix file system on your hard disk\n\t  because of certain built-in restrictions, but it is sometimes found\n\t  on older Linux floppy disks.  This option will enlarge your kernel\n\t  by about 28 KB. If unsure, say N.\n\n\t  To compile this file system support as a module, choose M here: the\n\t  module will be called minix.  Note that the file system of your root\n\t  partition (the one containing the directory /) cannot be compiled as\n\t  a module.\n\nconfig MINIX_FS_NATIVE_ENDIAN\n\tdef_bool MINIX_FS\n\tdepends on MICROBLAZE || MIPS || S390 || SUPERH || SPARC || XTENSA || (M68K && !MMU)\n\nconfig MINIX_FS_BIG_ENDIAN_16BIT_INDEXED\n\tdef_bool MINIX_FS\n\tdepends on M68K && MMU\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

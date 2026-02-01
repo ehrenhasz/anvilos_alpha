@@ -1,0 +1,9 @@
+{
+  "module_name": "gen_stats.h",
+  "hash_id": "4fbe5111de24b8c26927475a577d7f2cb9e3e2f92da59d63a6306d36ff9c9f9d",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/gen_stats.h",
+  "human_readable_source": " \n#ifndef __LINUX_GEN_STATS_H\n#define __LINUX_GEN_STATS_H\n\n#include <linux/types.h>\n\nenum {\n\tTCA_STATS_UNSPEC,\n\tTCA_STATS_BASIC,\n\tTCA_STATS_RATE_EST,\n\tTCA_STATS_QUEUE,\n\tTCA_STATS_APP,\n\tTCA_STATS_RATE_EST64,\n\tTCA_STATS_PAD,\n\tTCA_STATS_BASIC_HW,\n\tTCA_STATS_PKT64,\n\t__TCA_STATS_MAX,\n};\n#define TCA_STATS_MAX (__TCA_STATS_MAX - 1)\n\n \nstruct gnet_stats_basic {\n\t__u64\tbytes;\n\t__u32\tpackets;\n};\n\n \nstruct gnet_stats_rate_est {\n\t__u32\tbps;\n\t__u32\tpps;\n};\n\n \nstruct gnet_stats_rate_est64 {\n\t__u64\tbps;\n\t__u64\tpps;\n};\n\n \nstruct gnet_stats_queue {\n\t__u32\tqlen;\n\t__u32\tbacklog;\n\t__u32\tdrops;\n\t__u32\trequeues;\n\t__u32\toverlimits;\n};\n\n \nstruct gnet_estimator {\n\tsigned char\tinterval;\n\tunsigned char\tewma_log;\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

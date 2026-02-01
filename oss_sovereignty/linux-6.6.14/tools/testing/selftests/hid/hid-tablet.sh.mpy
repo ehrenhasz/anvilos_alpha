@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-tablet.sh",
+  "hash_id": "5f7046b3a9ade51e49e08d7a20600a3da4bbecdb44e86c1ac978a330c3a90aa6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/hid/hid-tablet.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# Runs tests for the HID subsystem\n\nexport TARGET=test_tablet.py\n\nbash ./run-hid-tools-tests.sh\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

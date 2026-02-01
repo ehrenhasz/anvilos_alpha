@@ -1,0 +1,9 @@
+{
+  "module_name": "THIRDPARTYLICENSE.cryptogams.descrip",
+  "hash_id": "632a6388ddf5bafd491e95ba198a815f5808857c81a97b4c69176d9f4c3dff73",
+  "original_prompt": "Ingested from zfs-2.2.2/module/icp/asm-x86_64/modes/THIRDPARTYLICENSE.cryptogams.descrip",
+  "human_readable_source": "PORTIONS OF GCM and GHASH FUNCTIONALITY\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

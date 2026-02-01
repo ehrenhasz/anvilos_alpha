@@ -1,0 +1,9 @@
+{
+  "module_name": "kill.x",
+  "hash_id": "44e88986f73f7416388e56728ec9af69db72ec310197e6eb417e5c098d3b62ad",
+  "original_prompt": "Ingested from coreutils-9.4/man/kill.x",
+  "human_readable_source": "[NAME]\nkill \\- send signals to processes, or list signals\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nkill(2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

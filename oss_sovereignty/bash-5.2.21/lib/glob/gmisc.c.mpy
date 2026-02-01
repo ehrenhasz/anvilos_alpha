@@ -1,0 +1,9 @@
+{
+  "module_name": "gmisc.c",
+  "hash_id": "b0206f52b801febb8c3c4bbd12d4bed92d8f51396677ccb6bc6939a4f2b62941",
+  "original_prompt": "Ingested from bash-5.2.21/lib/glob/gmisc.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"bashtypes.h\"\n\n#if defined (HAVE_UNISTD_H)\n#  include <unistd.h>\n#endif\n\n#include \"bashansi.h\"\n#include \"shmbutil.h\"\n#include \"chartypes.h\"\n\n#include \"stdc.h\"\n\n#ifndef FNM_CASEFOLD\n#  include \"strmatch.h\"\n#endif\n#include \"glob.h\"\n\n \nextern char *glob_patscan PARAMS((char *, char *, int));\n\n \n#define CHAR\tchar\n#define INT\tint\n#define L(CS)\tCS\n#define EXTGLOB_PATTERN_P extglob_pattern_p\n#define MATCH_PATTERN_CHAR match_pattern_char\n#define MATCHLEN umatchlen\n#define FOLD(c) ((flags & FNM_CASEFOLD) \\\n\t? TOLOWER ((unsigned char)c) \\\n\t: ((unsigned char)c))\n#ifndef LPAREN\n#define LPAREN '('\n#define RPAREN ')'\n#endif\n#include \"gm_loop.c\"\n\n \n#if HANDLE_MULTIBYTE\n\n#define CHAR\twchar_t\n#define INT\twint_t\n#define L(CS)\tL##CS\n#define EXTGLOB_PATTERN_P wextglob_pattern_p\n#define MATCH_PATTERN_CHAR match_pattern_wchar\n#define MATCHLEN wmatchlen\n\n#define FOLD(c) ((flags & FNM_CASEFOLD) && iswupper (c) ? towlower (c) : (c))\n#define LPAREN L'('\n#define RPAREN L')'\n#include \"gm_loop.c\"\n\n#endif  \n\n\n#if defined (EXTENDED_GLOB)\n \nchar *\nglob_dirscan (pat, dirsep)\n     char *pat;\n     int dirsep;\n{\n  char *p, *d, *pe, *se;\n\n  d = pe = se = 0;\n  for (p = pat; p && *p; p++)\n    {\n      if (extglob_pattern_p (p))\n\t{\n\t  if (se == 0)\n\t    se = p + strlen (p) - 1;\n\t  pe = glob_patscan (p + 2, se, 0);\n\t  if (pe == 0)\n\t    continue;\n\t  else if (*pe == 0)\n\t    break;\n\t  p = pe - 1;\t \n\t  continue;\n\t}\n      if (*p ==  dirsep)\n\td = p;\n    }\n  return d;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

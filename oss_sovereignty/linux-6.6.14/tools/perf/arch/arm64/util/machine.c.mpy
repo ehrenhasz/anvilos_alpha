@@ -1,0 +1,9 @@
+{
+  "module_name": "machine.c",
+  "hash_id": "fe58dcfc2e758095a1728153bd8664bfe71ad50afc3094289556fcdcfa01357b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arm64/util/machine.c",
+  "human_readable_source": "\n\n#include <inttypes.h>\n#include <stdio.h>\n#include <string.h>\n#include \"debug.h\"\n#include \"symbol.h\"\n#include \"callchain.h\"\n#include \"perf_regs.h\"\n#include \"record.h\"\n#include \"util/perf_regs.h\"\n\nvoid arch__add_leaf_frame_record_opts(struct record_opts *opts)\n{\n\topts->sample_user_regs |= sample_reg_masks[PERF_REG_ARM64_LR].mask;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

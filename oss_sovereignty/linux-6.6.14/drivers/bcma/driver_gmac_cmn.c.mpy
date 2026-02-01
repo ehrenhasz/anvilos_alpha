@@ -1,0 +1,9 @@
+{
+  "module_name": "driver_gmac_cmn.c",
+  "hash_id": "39c9107b21845505b62a8897af731cb93043e092cdf73839bb5604c70495d53d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bcma/driver_gmac_cmn.c",
+  "human_readable_source": " \n\n#include \"bcma_private.h\"\n#include <linux/bcma/bcma.h>\n\nvoid bcma_core_gmac_cmn_init(struct bcma_drv_gmac_cmn *gc)\n{\n\tmutex_init(&gc->phy_mutex);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

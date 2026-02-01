@@ -1,0 +1,9 @@
+{
+  "module_name": "file.h",
+  "hash_id": "16e5c3be5e67efd4edbf2691c236ef98d912db7fe9378cb4fe5b8fa83a599b1d",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/file.h",
+  "human_readable_source": " \n\n#ifndef _OPENSOLARIS_SYS_FILE_H_\n#define\t_OPENSOLARIS_SYS_FILE_H_\n\n#include <sys/refcount.h>\n#include_next <sys/file.h>\n\n#define\tFKIOCTL\t0x80000000\t \n\ntypedef\tstruct file\tfile_t;\n\n#include <sys/capsicum.h>\n\nstatic __inline file_t *\ngetf_caps(int fd, cap_rights_t *rightsp)\n{\n\tstruct file *fp;\n\n\tif (fget(curthread, fd, rightsp, &fp) == 0)\n\t\treturn (fp);\n\treturn (NULL);\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

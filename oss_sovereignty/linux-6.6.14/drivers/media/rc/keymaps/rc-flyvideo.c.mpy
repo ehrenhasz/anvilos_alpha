@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-flyvideo.c",
+  "hash_id": "1e04753fe9741a1ec8f50256b1b0282427a547bc58b6aa6caba198e6561c3558",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-flyvideo.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\nstatic struct rc_map_table flyvideo[] = {\n\t{ 0x0f, KEY_NUMERIC_0 },\n\t{ 0x03, KEY_NUMERIC_1 },\n\t{ 0x04, KEY_NUMERIC_2 },\n\t{ 0x05, KEY_NUMERIC_3 },\n\t{ 0x07, KEY_NUMERIC_4 },\n\t{ 0x08, KEY_NUMERIC_5 },\n\t{ 0x09, KEY_NUMERIC_6 },\n\t{ 0x0b, KEY_NUMERIC_7 },\n\t{ 0x0c, KEY_NUMERIC_8 },\n\t{ 0x0d, KEY_NUMERIC_9 },\n\n\t{ 0x0e, KEY_MODE },\t \n\t{ 0x11, KEY_VIDEO },\t \n\t{ 0x15, KEY_AUDIO },\t \n\t{ 0x00, KEY_POWER },\t \n\t{ 0x18, KEY_TUNER },\t \n\t{ 0x02, KEY_ZOOM },\t \n\t{ 0x1a, KEY_LANGUAGE },\t \n\t{ 0x1b, KEY_MUTE },\t \n\t{ 0x14, KEY_VOLUMEUP },\t \n\t{ 0x17, KEY_VOLUMEDOWN }, \n\t{ 0x12, KEY_CHANNELUP }, \n\t{ 0x13, KEY_CHANNELDOWN }, \n\t{ 0x06, KEY_AGAIN },\t \n\t{ 0x10, KEY_ENTER },\t \n\n\t{ 0x19, KEY_BACK },\t \n\t{ 0x1f, KEY_FORWARD },\t \n\t{ 0x0a, KEY_ANGLE },\t \n};\n\nstatic struct rc_map_list flyvideo_map = {\n\t.map = {\n\t\t.scan     = flyvideo,\n\t\t.size     = ARRAY_SIZE(flyvideo),\n\t\t.rc_proto = RC_PROTO_UNKNOWN,\t \n\t\t.name     = RC_MAP_FLYVIDEO,\n\t}\n};\n\nstatic int __init init_rc_map_flyvideo(void)\n{\n\treturn rc_map_register(&flyvideo_map);\n}\n\nstatic void __exit exit_rc_map_flyvideo(void)\n{\n\trc_map_unregister(&flyvideo_map);\n}\n\nmodule_init(init_rc_map_flyvideo)\nmodule_exit(exit_rc_map_flyvideo)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Mauro Carvalho Chehab\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

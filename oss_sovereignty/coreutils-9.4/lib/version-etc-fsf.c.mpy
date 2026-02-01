@@ -1,0 +1,9 @@
+{
+  "module_name": "version-etc-fsf.c",
+  "hash_id": "137dddfa9a8fc5907a61680051959e32d855d72801610b5e46bd0f080ac4e2fd",
+  "original_prompt": "Ingested from coreutils-9.4/lib/version-etc-fsf.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include \"version-etc.h\"\n\n \n\nconst char version_etc_copyright[] =\n   \n  \"Copyright %s %d Free Software Foundation, Inc.\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

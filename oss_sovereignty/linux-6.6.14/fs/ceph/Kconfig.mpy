@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e14584cd31aba9c6c10d33c767a6a7dda9a3f75c6b45ae85f3096ef989f0ff7e",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ceph/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CEPH_FS\n\ttristate \"Ceph distributed file system\"\n\tdepends on INET\n\tselect CEPH_LIB\n\tselect LIBCRC32C\n\tselect CRYPTO_AES\n\tselect CRYPTO\n\tselect NETFS_SUPPORT\n\tselect FS_ENCRYPTION_ALGS if FS_ENCRYPTION\n\tdefault n\n\thelp\n\t  Choose Y or M here to include support for mounting the\n\t  experimental Ceph distributed file system.  Ceph is an extremely\n\t  scalable file system designed to provide high performance,\n\t  reliable access to petabytes of storage.\n\n\t  More information at https://ceph.io/.\n\n\t  If unsure, say N.\n\nif CEPH_FS\nconfig CEPH_FSCACHE\n\tbool \"Enable Ceph client caching support\"\n\tdepends on CEPH_FS=m && FSCACHE || CEPH_FS=y && FSCACHE=y\n\thelp\n\t  Choose Y here to enable persistent, read-only local\n\t  caching support for Ceph clients using FS-Cache\n\nendif\n\nconfig CEPH_FS_POSIX_ACL\n\tbool \"Ceph POSIX Access Control Lists\"\n\tdepends on CEPH_FS\n\tselect FS_POSIX_ACL\n\thelp\n\t  POSIX Access Control Lists (ACLs) support permissions for users and\n\t  groups beyond the owner/group/world scheme.\n\n\t  If you don't know what Access Control Lists are, say N\n\nconfig CEPH_FS_SECURITY_LABEL\n\tbool \"CephFS Security Labels\"\n\tdepends on CEPH_FS && SECURITY\n\thelp\n\t  Security labels support alternative access control models\n\t  implemented by security modules like SELinux. This option\n\t  enables an extended attribute handler for file security\n\t  labels in the Ceph filesystem.\n\n\t  If you are not using a security module that requires using\n\t  extended attributes for file security labels, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

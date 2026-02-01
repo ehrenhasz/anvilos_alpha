@@ -1,0 +1,9 @@
+{
+  "module_name": "asinhf.c",
+  "hash_id": "e6bc052684ee7132359c26d555f462cb031a9f2b66ccd8d6df691199318b3ac0",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/asinhf.c",
+  "human_readable_source": " \n \n\n \n \n\n#include \"libm.h\"\n\n \nfloat asinhf(float x)\n{\n\tunion {float f; uint32_t i;} u = {.f = x};\n\tuint32_t i = u.i & 0x7fffffff;\n\tunsigned s = u.i >> 31;\n\n\t \n\tu.i = i;\n\tx = u.f;\n\n\tif (i >= 0x3f800000 + (12<<23)) {\n\t\t \n\t\tx = logf(x) + 0.693147180559945309417232121458176568f;\n\t} else if (i >= 0x3f800000 + (1<<23)) {\n\t\t \n\t\tx = logf(2*x + 1/(sqrtf(x*x+1)+x));\n\t} else if (i >= 0x3f800000 - (12<<23)) {\n\t\t \n\t\tx = log1pf(x + x*x/(sqrtf(x*x+1)+1));\n\t} else {\n\t\t \n\t\tFORCE_EVAL(x + 0x1p120f);\n\t}\n\treturn s ? -x : x;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

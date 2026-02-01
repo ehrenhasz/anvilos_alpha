@@ -1,0 +1,9 @@
+{
+  "module_name": "poison.h",
+  "hash_id": "921faf20cc75171ca1bd30448b94170eb72c31cef3e682ddfbe48e75cee29cb3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/poison.h",
+  "human_readable_source": " \n#ifndef _LINUX_POISON_H\n#define _LINUX_POISON_H\n\n \n\n \n#ifdef CONFIG_ILLEGAL_POINTER_VALUE\n# define POISON_POINTER_DELTA _AC(CONFIG_ILLEGAL_POINTER_VALUE, UL)\n#else\n# define POISON_POINTER_DELTA 0\n#endif\n\n \n#define LIST_POISON1  ((void *) 0x100 + POISON_POINTER_DELTA)\n#define LIST_POISON2  ((void *) 0x122 + POISON_POINTER_DELTA)\n\n \n#define TIMER_ENTRY_STATIC\t((void *) 0x300 + POISON_POINTER_DELTA)\n\n \n#define PAGE_POISON 0xaa\n\n \n\n#define TAIL_MAPPING\t((void *) 0x400 + POISON_POINTER_DELTA)\n\n \n \n#define\tRED_INACTIVE\t0x09F911029D74E35BULL\t \n#define\tRED_ACTIVE\t0xD84156C5635688C0ULL\t \n\n#define SLUB_RED_INACTIVE\t0xbb\n#define SLUB_RED_ACTIVE\t\t0xcc\n\n \n#define\tPOISON_INUSE\t0x5a\t \n#define POISON_FREE\t0x6b\t \n#define\tPOISON_END\t0xa5\t \n\n \n#define POISON_FREE_INITMEM\t0xcc\n\n \n \n\n \n#define JBD_POISON_FREE\t\t0x5b\n#define JBD2_POISON_FREE\t0x5c\n\n \n#define\tPOOL_POISON_FREED\t0xa7\t \n#define\tPOOL_POISON_ALLOCATED\t0xa9\t \n\n \n#define ATM_POISON_FREE\t\t0x12\n#define ATM_POISON\t\t0xdeadbeef\n\n \n#define MUTEX_DEBUG_INIT\t0x11\n#define MUTEX_DEBUG_FREE\t0x22\n#define MUTEX_POISON_WW_CTX\t((void *) 0x500 + POISON_POINTER_DELTA)\n\n \n#define KEY_DESTROY\t\t0xbd\n\n \n#define PP_SIGNATURE\t\t(0x40 + POISON_POINTER_DELTA)\n\n \n#define SKB_LIST_POISON_NEXT\t((void *)(0x800 + POISON_POINTER_DELTA))\n\n \n#define BPF_PTR_POISON ((void *)(0xeB9FUL + POISON_POINTER_DELTA))\n\n \n#define VFS_PTR_POISON ((void *)(0xF5 + POISON_POINTER_DELTA))\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

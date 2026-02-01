@@ -1,0 +1,9 @@
+{
+  "module_name": "sockopt_qos_to_cc.c",
+  "hash_id": "1ad1a48f95b46a50dba2bbcc914ec066a6ea1940974c573321d96b8e05364b76",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/sockopt_qos_to_cc.c",
+  "human_readable_source": "\n \n#include <string.h>\n#include <linux/tcp.h>\n#include <netinet/in.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_tcp_helpers.h\"\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\n__u32 page_size = 0;\n\nSEC(\"cgroup/setsockopt\")\nint sockopt_qos_to_cc(struct bpf_sockopt *ctx)\n{\n\tvoid *optval_end = ctx->optval_end;\n\tint *optval = ctx->optval;\n\tchar buf[TCP_CA_NAME_MAX];\n\tchar cc_reno[TCP_CA_NAME_MAX] = \"reno\";\n\tchar cc_cubic[TCP_CA_NAME_MAX] = \"cubic\";\n\n\tif (ctx->level != SOL_IPV6 || ctx->optname != IPV6_TCLASS)\n\t\tgoto out;\n\n\tif (optval + 1 > optval_end)\n\t\treturn 0;  \n\n\tif (bpf_getsockopt(ctx->sk, SOL_TCP, TCP_CONGESTION, &buf, sizeof(buf)))\n\t\treturn 0;\n\n\tif (!tcp_cc_eq(buf, cc_cubic))\n\t\treturn 0;\n\n\tif (*optval == 0x2d) {\n\t\tif (bpf_setsockopt(ctx->sk, SOL_TCP, TCP_CONGESTION, &cc_reno,\n\t\t\t\tsizeof(cc_reno)))\n\t\t\treturn 0;\n\t}\n\treturn 1;\n\nout:\n\t \n\tif (ctx->optlen > page_size)\n\t\tctx->optlen = 0;\n\treturn 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6855ba0767585f0a396e67f8d286140f02571b3adcba8b2faa66af0a65b9e5eb",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/xtensa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-soc-xtfpga-i2s-objs := xtfpga-i2s.o\n\nobj-$(CONFIG_SND_SOC_XTFPGA_I2S) += snd-soc-xtfpga-i2s.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mixer_s1810c.h",
+  "hash_id": "d60b7ab3c60b806469a3eabb5e40d397ed2aa49e2ecb22884e148b939009a725",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/mixer_s1810c.h",
+  "human_readable_source": " \n \n\nint snd_sc1810_init_mixer(struct usb_mixer_interface *mixer);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nitrox_common.h",
+  "hash_id": "b892bfbc3d08aa71912754e3b62c1f27c194877424811cb0c65c7c209a74edc5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/cavium/nitrox/nitrox_common.h",
+  "human_readable_source": " \n#ifndef __NITROX_COMMON_H\n#define __NITROX_COMMON_H\n\n#include \"nitrox_dev.h\"\n#include \"nitrox_req.h\"\n\nint nitrox_crypto_register(void);\nvoid nitrox_crypto_unregister(void);\nint nitrox_register_aeads(void);\nvoid nitrox_unregister_aeads(void);\nint nitrox_register_skciphers(void);\nvoid nitrox_unregister_skciphers(void);\nvoid *crypto_alloc_context(struct nitrox_device *ndev);\nvoid crypto_free_context(void *ctx);\nstruct nitrox_device *nitrox_get_first_device(void);\nvoid nitrox_put_device(struct nitrox_device *ndev);\n\nint nitrox_common_sw_init(struct nitrox_device *ndev);\nvoid nitrox_common_sw_cleanup(struct nitrox_device *ndev);\n\nvoid pkt_slc_resp_tasklet(unsigned long data);\nint nitrox_process_se_request(struct nitrox_device *ndev,\n\t\t\t      struct se_crypto_request *req,\n\t\t\t      completion_t cb,\n\t\t\t      void *cb_arg);\nvoid backlog_qflush_work(struct work_struct *work);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

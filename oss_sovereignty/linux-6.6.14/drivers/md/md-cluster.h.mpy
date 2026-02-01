@@ -1,0 +1,9 @@
+{
+  "module_name": "md-cluster.h",
+  "hash_id": "2ad8123dc1798a5067a42f5486f6a9b1009702e57aec9a786ebad4d7e2191e98",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/md-cluster.h",
+  "human_readable_source": " \n\n\n#ifndef _MD_CLUSTER_H\n#define _MD_CLUSTER_H\n\n#include \"md.h\"\n\nstruct mddev;\nstruct md_rdev;\n\nstruct md_cluster_operations {\n\tint (*join)(struct mddev *mddev, int nodes);\n\tint (*leave)(struct mddev *mddev);\n\tint (*slot_number)(struct mddev *mddev);\n\tint (*resync_info_update)(struct mddev *mddev, sector_t lo, sector_t hi);\n\tvoid (*resync_info_get)(struct mddev *mddev, sector_t *lo, sector_t *hi);\n\tint (*metadata_update_start)(struct mddev *mddev);\n\tint (*metadata_update_finish)(struct mddev *mddev);\n\tvoid (*metadata_update_cancel)(struct mddev *mddev);\n\tint (*resync_start)(struct mddev *mddev);\n\tint (*resync_finish)(struct mddev *mddev);\n\tint (*area_resyncing)(struct mddev *mddev, int direction, sector_t lo, sector_t hi);\n\tint (*add_new_disk)(struct mddev *mddev, struct md_rdev *rdev);\n\tvoid (*add_new_disk_cancel)(struct mddev *mddev);\n\tint (*new_disk_ack)(struct mddev *mddev, bool ack);\n\tint (*remove_disk)(struct mddev *mddev, struct md_rdev *rdev);\n\tvoid (*load_bitmaps)(struct mddev *mddev, int total_slots);\n\tint (*gather_bitmaps)(struct md_rdev *rdev);\n\tint (*resize_bitmaps)(struct mddev *mddev, sector_t newsize, sector_t oldsize);\n\tint (*lock_all_bitmaps)(struct mddev *mddev);\n\tvoid (*unlock_all_bitmaps)(struct mddev *mddev);\n\tvoid (*update_size)(struct mddev *mddev, sector_t old_dev_sectors);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

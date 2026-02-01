@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_impl.c",
+  "hash_id": "82169b171fd80544a8281181c1058e24a9beeaab529889bc5cac4386581b2e3d",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zfs/zfs_impl.c",
+  "human_readable_source": " \n\n \n\n#include <sys/zio_checksum.h>\n#include <sys/zfs_context.h>\n#include <sys/zfs_impl.h>\n\n#include <sys/blake3.h>\n#include <sys/sha2.h>\n\n \nconst zfs_impl_t *impl_ops[] = {\n\t&zfs_blake3_ops,\n\t&zfs_sha256_ops,\n\t&zfs_sha512_ops,\n\tNULL\n};\n\n \nconst zfs_impl_t *\nzfs_impl_get_ops(const char *algo)\n{\n\tconst zfs_impl_t **ops = impl_ops;\n\n\tif (!algo || !*algo)\n\t\treturn (*ops);\n\n\tfor (; *ops; ops++) {\n\t\tif (strcmp(algo, (*ops)->name) == 0)\n\t\t\tbreak;\n\t}\n\n\tASSERT3P(ops, !=, NULL);\n\treturn (*ops);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

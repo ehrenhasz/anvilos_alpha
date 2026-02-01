@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-tegra-io-pad.h",
+  "hash_id": "5e732b634b5baef8beada7aa54e3f1cff22769e7e3020c39dccfb1738c5b4a7d",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/pinctrl-tegra-io-pad.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_PINCTRL_TEGRA_IO_PAD_H\n#define _DT_BINDINGS_PINCTRL_TEGRA_IO_PAD_H\n\n \n#define TEGRA_IO_PAD_VOLTAGE_1V8\t0\n#define TEGRA_IO_PAD_VOLTAGE_3V3\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

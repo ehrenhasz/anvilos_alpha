@@ -1,0 +1,9 @@
+{
+  "module_name": "watch.h",
+  "hash_id": "da0dc14a67e92b6209f310dc517ac39e1a0e1d3fa631ca90a33d620d184f95fc",
+  "original_prompt": "Ingested from bash-5.2.21/lib/malloc/watch.h",
+  "human_readable_source": " \n\n \n\n#ifndef _MWATCH_H\n#define _MWATCH_H\n\n#include \"imalloc.h\"\n\n#ifdef MALLOC_WATCH\n\n \n\n#define W_ALLOC\t\t0x01\n#define W_FREE\t\t0x02\n#define W_REALLOC\t0x04\n#define W_RESIZED\t0x08\n\nextern int _malloc_nwatch;\n\nextern void _malloc_ckwatch PARAMS((PTR_T, const char *, int, int, unsigned long));\n                    \n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

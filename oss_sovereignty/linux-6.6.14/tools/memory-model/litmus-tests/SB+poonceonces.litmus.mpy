@@ -1,0 +1,9 @@
+{
+  "module_name": "SB+poonceonces.litmus",
+  "hash_id": "a9b498362b29cc0ccd79d998b587a7763ba42d7d47c6dd588c9fb19e6f9d1a89",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/SB+poonceonces.litmus",
+  "human_readable_source": "C SB+poonceonces\n\n(*\n * Result: Sometimes\n *\n * This litmus test demonstrates that at least some ordering is required\n * to order the store-buffering pattern, where each process writes to the\n * variable that the preceding process reads.\n *)\n\n{}\n\nP0(int *x, int *y)\n{\n\tint r0;\n\n\tWRITE_ONCE(*x, 1);\n\tr0 = READ_ONCE(*y);\n}\n\nP1(int *x, int *y)\n{\n\tint r0;\n\n\tWRITE_ONCE(*y, 1);\n\tr0 = READ_ONCE(*x);\n}\n\nexists (0:r0=0 /\\ 1:r0=0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

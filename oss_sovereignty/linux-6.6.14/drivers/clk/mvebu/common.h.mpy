@@ -1,0 +1,9 @@
+{
+  "module_name": "common.h",
+  "hash_id": "47c5a0700cd4ecf4af1c9820ba183def8530ecaf5ec1b21a60013a5e555349c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mvebu/common.h",
+  "human_readable_source": " \n \n\n#ifndef __CLK_MVEBU_COMMON_H_\n#define __CLK_MVEBU_COMMON_H_\n\n#include <linux/kernel.h>\n\nextern spinlock_t ctrl_gating_lock;\n\nstruct device_node;\n\nstruct coreclk_ratio {\n\tint id;\n\tconst char *name;\n};\n\nstruct coreclk_soc_desc {\n\tu32 (*get_tclk_freq)(void __iomem *sar);\n\tu32 (*get_cpu_freq)(void __iomem *sar);\n\tvoid (*get_clk_ratio)(void __iomem *sar, int id, int *mult, int *div);\n\tu32 (*get_refclk_freq)(void __iomem *sar);\n\tbool (*is_sscg_enabled)(void __iomem *sar);\n\tu32 (*fix_sscg_deviation)(u32 system_clk);\n\tconst struct coreclk_ratio *ratios;\n\tint num_ratios;\n};\n\nstruct clk_gating_soc_desc {\n\tconst char *name;\n\tconst char *parent;\n\tint bit_idx;\n\tunsigned long flags;\n};\n\nvoid __init mvebu_coreclk_setup(struct device_node *np,\n\t\t\t\tconst struct coreclk_soc_desc *desc);\n\nvoid __init mvebu_clk_gating_setup(struct device_node *np,\n\t\t\t\t   const struct clk_gating_soc_desc *desc);\n\n \nu32 kirkwood_fix_sscg_deviation(u32 system_clk);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

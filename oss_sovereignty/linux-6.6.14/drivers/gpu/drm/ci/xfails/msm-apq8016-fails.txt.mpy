@@ -1,0 +1,9 @@
+{
+  "module_name": "msm-apq8016-fails.txt",
+  "hash_id": "084f6cf9bcf212edf349e2b89c0cb62ff33f9939949de9fa1468253513a3e40c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/msm-apq8016-fails.txt",
+  "human_readable_source": "kms_3d,Fail\nkms_addfb_basic@addfb25-bad-modifier,Fail\nkms_cursor_legacy@all-pipes-forked-bo,Fail\nkms_cursor_legacy@all-pipes-forked-move,Fail\nkms_cursor_legacy@all-pipes-single-bo,Fail\nkms_cursor_legacy@all-pipes-single-move,Fail\nkms_cursor_legacy@all-pipes-torture-bo,Fail\nkms_cursor_legacy@all-pipes-torture-move,Fail\nkms_cursor_legacy@pipe-A-forked-bo,Fail\nkms_cursor_legacy@pipe-A-forked-move,Fail\nkms_cursor_legacy@pipe-A-single-bo,Fail\nkms_cursor_legacy@pipe-A-single-move,Fail\nkms_cursor_legacy@pipe-A-torture-bo,Fail\nkms_cursor_legacy@pipe-A-torture-move,Fail\nkms_hdmi_inject@inject-4k,Fail\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

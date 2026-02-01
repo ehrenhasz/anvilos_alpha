@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "934f09ca0007cb0e42746d166789ce8d67bb8e34019dfb6c8b2c318f16faa899",
+  "original_prompt": "Ingested from linux-6.6.14/sound/synth/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SND_SYNTH_EMUX\n\ttristate\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

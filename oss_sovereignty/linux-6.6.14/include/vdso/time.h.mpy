@@ -1,0 +1,9 @@
+{
+  "module_name": "time.h",
+  "hash_id": "7c0533e9a57fefd6154828c4bee96a588b92058a27a226373fafa24a1122be50",
+  "original_prompt": "Ingested from linux-6.6.14/include/vdso/time.h",
+  "human_readable_source": " \n#ifndef __VDSO_TIME_H\n#define __VDSO_TIME_H\n\n#include <uapi/linux/types.h>\n\nstruct timens_offset {\n\ts64\tsec;\n\tu64\tnsec;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

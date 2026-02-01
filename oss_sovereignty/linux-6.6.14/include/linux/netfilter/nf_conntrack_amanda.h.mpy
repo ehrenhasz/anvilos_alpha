@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_amanda.h",
+  "hash_id": "bcfbc58c7637b1ffa5781e26bad095572ef8fce5aa10b07a6a91c68b8eb1824c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter/nf_conntrack_amanda.h",
+  "human_readable_source": " \n#ifndef _NF_CONNTRACK_AMANDA_H\n#define _NF_CONNTRACK_AMANDA_H\n \n\n#include <linux/netfilter.h>\n#include <linux/skbuff.h>\n#include <net/netfilter/nf_conntrack_expect.h>\n\nextern unsigned int (*nf_nat_amanda_hook)(struct sk_buff *skb,\n\t\t\t\t\t  enum ip_conntrack_info ctinfo,\n\t\t\t\t\t  unsigned int protoff,\n\t\t\t\t\t  unsigned int matchoff,\n\t\t\t\t\t  unsigned int matchlen,\n\t\t\t\t\t  struct nf_conntrack_expect *exp);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

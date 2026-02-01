@@ -1,0 +1,9 @@
+{
+  "module_name": "jfs_superblock.h",
+  "hash_id": "bab39394127aa3f39c35437362c90c0109ae03598f15ccb9ba859ea339b45502",
+  "original_prompt": "Ingested from linux-6.6.14/fs/jfs/jfs_superblock.h",
+  "human_readable_source": " \n \n#ifndef\t_H_JFS_SUPERBLOCK\n#define _H_JFS_SUPERBLOCK\n\n#include <linux/uuid.h>\n\n \n#define JFS_MAGIC\t\"JFS1\"\t \n\n#define JFS_VERSION\t2\t \n\n#define LV_NAME_SIZE\t11\t \n\n \nstruct jfs_superblock {\n\tchar s_magic[4];\t \n\t__le32 s_version;\t \n\n\t__le64 s_size;\t\t \n\t__le32 s_bsize;\t\t \n\t__le16 s_l2bsize;\t \n\t__le16 s_l2bfactor;\t \n\t__le32 s_pbsize;\t \n\t__le16 s_l2pbsize;\t \n\t__le16 pad;\t\t \n\n\t__le32 s_agsize;\t \n\n\t__le32 s_flag;\t\t \n\t__le32 s_state;\t\t \n\t__le32 s_compress;\t\t \n\n\tpxd_t s_ait2;\t\t \n\n\tpxd_t s_aim2;\t\t \n\t__le32 s_logdev;\t\t \n\t__le32 s_logserial;\t \n\tpxd_t s_logpxd;\t\t \n\n\tpxd_t s_fsckpxd;\t \n\n\tstruct timestruc_t s_time;\t \n\n\t__le32 s_fsckloglen;\t \n\ts8 s_fscklog;\t\t \n\tchar s_fpack[11];\t \n\n\t \n\t__le64 s_xsize;\t\t \n\tpxd_t s_xfsckpxd;\t \n\tpxd_t s_xlogpxd;\t \n\tuuid_t s_uuid;\t\t \n\tchar s_label[16];\t \n\tuuid_t s_loguuid;\t \n\n};\n\nextern int readSuper(struct super_block *, struct buffer_head **);\nextern int updateSuper(struct super_block *, uint);\n__printf(2, 3)\nextern void jfs_error(struct super_block *, const char *, ...);\nextern int jfs_mount(struct super_block *);\nextern int jfs_mount_rw(struct super_block *, int);\nextern int jfs_umount(struct super_block *);\nextern int jfs_umount_rw(struct super_block *);\nextern int jfs_extendfs(struct super_block *, s64, int);\n\nextern struct task_struct *jfsIOthread;\nextern struct task_struct *jfsSyncThread;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2fe1e1bd68e26e39d9ced7119b39f3e139cd0800f83eaea6e996bfbd22f1e69a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nobj-$(CONFIG_DRM_ACCEL_HABANALABS)\t+= habanalabs/\nobj-$(CONFIG_DRM_ACCEL_IVPU)\t\t+= ivpu/\nobj-$(CONFIG_DRM_ACCEL_QAIC)\t\t+= qaic/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

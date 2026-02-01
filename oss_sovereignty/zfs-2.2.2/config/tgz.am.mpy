@@ -1,0 +1,9 @@
+{
+  "module_name": "tgz.am",
+  "hash_id": "3171c70fda75fb110a901ba1a4f1603e00afe58aa66fd2e023fa5787a1775b21",
+  "original_prompt": "Ingested from zfs-2.2.2/config/tgz.am",
+  "human_readable_source": "PHONY += tgz tgz-kmod tgz-utils tgz-local\n\ntgz-local:\n\t@(if test \"${HAVE_ALIEN}\" = \"no\"; then \\\n\t\techo -e \"\\n\" \\\n\t\"*** Required util ${ALIEN} missing.  Please install the\\n\" \\\n\t\"*** package for your distribution which provides ${ALIEN},\\n\" \\\n\t\"*** re-run configure, and try again.\\n\"; \\\n\t\texit 1; \\\n\tfi)\n\ntgz-kmod: tgz-local rpm-kmod\n\tname=${PACKAGE}; \\\n\tversion=${VERSION}-${RELEASE}; \\\n\tarch=`$(RPM) -qp $${name}-kmod-$${version}.src.rpm --qf %{arch} | tail -1`; \\\n\tpkg1=kmod-$${name}*$${version}.$${arch}.rpm; \\\n\tfakeroot $(ALIEN) --scripts --to-tgz $$pkg1; \\\n\t$(RM) $$pkg1\n\ntgz-utils: tgz-local rpm-utils\n\tname=${PACKAGE}; \\\n\tversion=${VERSION}-${RELEASE}; \\\n\tarch=`$(RPM) -qp $${name}-$${version}.src.rpm --qf %{arch} | tail -1`; \\\n\tpkg1=$${name}-$${version}.$${arch}.rpm; \\\n\tpkg2=$${name}-devel-$${version}.$${arch}.rpm; \\\n\tpkg3=$${name}-test-$${version}.$${arch}.rpm; \\\n\tfakeroot $(ALIEN) --scripts --to-tgz $$pkg1 $$pkg2 $$pkg3; \\\n\t$(RM) $$pkg1 $$pkg2 $$pkg3\n\ntgz: tgz-kmod tgz-utils\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

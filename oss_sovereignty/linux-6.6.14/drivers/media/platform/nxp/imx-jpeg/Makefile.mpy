@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f580185ffac803e79ae19d8dd3b3d134d2d36fe5c2d08e21cb28c723b8915f91",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/nxp/imx-jpeg/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nmxc-jpeg-encdec-objs := mxc-jpeg-hw.o mxc-jpeg.o\nobj-$(CONFIG_VIDEO_IMX8_JPEG) += mxc-jpeg-encdec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

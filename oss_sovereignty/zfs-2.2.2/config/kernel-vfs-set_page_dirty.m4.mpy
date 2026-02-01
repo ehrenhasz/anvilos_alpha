@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-vfs-set_page_dirty.m4",
+  "hash_id": "ffca500471399970533b9dcb7a63a339ccf39e4bd7c09d72788302d4beb6c561",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-vfs-set_page_dirty.m4",
+  "human_readable_source": "dnl #\ndnl # Linux 5.14 adds a change to require set_page_dirty to be manually\ndnl # wired up in struct address_space_operations. Determine if this needs\ndnl # to be done. This patch set also introduced __set_page_dirty_nobuffers\ndnl # declaration in linux/pagemap.h, so these tests look for the presence\ndnl # of that function to tell the compiler to assign set_page_dirty in\ndnl # module/os/linux/zfs/zpl_file.c\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_VFS_SET_PAGE_DIRTY_NOBUFFERS], [\n\tZFS_LINUX_TEST_SRC([vfs_has_set_page_dirty_nobuffers], [\n\t\t#include <linux/pagemap.h>\n\t\t#include <linux/fs.h>\n\n\t\tstatic const struct address_space_operations\n\t\t    aops __attribute__ ((unused)) = {\n\t\t\t.set_page_dirty = __set_page_dirty_nobuffers,\n\t\t};\n\t],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_VFS_SET_PAGE_DIRTY_NOBUFFERS], [\n\tdnl #\n\tdnl # Linux 5.14 change requires set_page_dirty() to be assigned\n\tdnl # in address_space_operations()\n\tdnl #\n\tAC_MSG_CHECKING([whether __set_page_dirty_nobuffers exists])\n\tZFS_LINUX_TEST_RESULT([vfs_has_set_page_dirty_nobuffers], [\n\t\tAC_MSG_RESULT([yes])\n\t\tAC_DEFINE(HAVE_VFS_SET_PAGE_DIRTY_NOBUFFERS, 1,\n\t\t\t[__set_page_dirty_nobuffers exists])\n\t],[\n\t\tAC_MSG_RESULT([no])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

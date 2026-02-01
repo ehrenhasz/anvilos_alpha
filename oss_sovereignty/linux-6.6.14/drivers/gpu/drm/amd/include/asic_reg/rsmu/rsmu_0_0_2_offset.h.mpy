@@ -1,0 +1,9 @@
+{
+  "module_name": "rsmu_0_0_2_offset.h",
+  "hash_id": "b47485f77abd0c9cb65aefc246d54e72bc6a0aa241e06f9c24a2cc1a65639542",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/asic_reg/rsmu/rsmu_0_0_2_offset.h",
+  "human_readable_source": " \n#ifndef _rsmu_0_0_2_OFFSET_HEADER\n#define _rsmu_0_0_2_OFFSET_HEADER\n\n#define\tmmRSMU_UMC_INDEX_REGISTER_NBIF_VG20_GPU\t\t\t\t\t\t\t\t0x0d91\n#define\tmmRSMU_UMC_INDEX_REGISTER_NBIF_VG20_GPU_BASE_IDX\t\t\t\t\t\t0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

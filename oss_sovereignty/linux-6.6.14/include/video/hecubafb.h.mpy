@@ -1,0 +1,9 @@
+{
+  "module_name": "hecubafb.h",
+  "hash_id": "58690f86b23a85444d46904edd4a714d79269ac34a507bd0471290e0e15f48ea",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/hecubafb.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_HECUBAFB_H_\n#define _LINUX_HECUBAFB_H_\n\n \n#define APOLLO_START_NEW_IMG\t0xA0\n#define APOLLO_STOP_IMG_DATA\t0xA1\n#define APOLLO_DISPLAY_IMG\t0xA2\n#define APOLLO_ERASE_DISPLAY\t0xA3\n#define APOLLO_INIT_DISPLAY\t0xA4\n\n \n#define HCB_WUP_BIT\t0x01\n#define HCB_DS_BIT \t0x02\n#define HCB_RW_BIT \t0x04\n#define HCB_CD_BIT \t0x08\n#define HCB_ACK_BIT \t0x80\n\n \nstruct hecubafb_par {\n\tstruct fb_info *info;\n\tstruct hecuba_board *board;\n\tvoid (*send_command)(struct hecubafb_par *, unsigned char);\n\tvoid (*send_data)(struct hecubafb_par *, unsigned char);\n};\n\n \nstruct hecuba_board {\n\tstruct module *owner;\n\tvoid (*remove)(struct hecubafb_par *);\n\tvoid (*set_ctl)(struct hecubafb_par *, unsigned char, unsigned char);\n\tvoid (*set_data)(struct hecubafb_par *, unsigned char);\n\tvoid (*wait_for_ack)(struct hecubafb_par *, int);\n\tint (*init)(struct hecubafb_par *);\n};\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

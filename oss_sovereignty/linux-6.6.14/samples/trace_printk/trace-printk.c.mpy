@@ -1,0 +1,9 @@
+{
+  "module_name": "trace-printk.c",
+  "hash_id": "38406a56ef85ba2bbc84a81d0a35c79d2e6855d9e884e7c057fc545af4722af6",
+  "original_prompt": "Ingested from linux-6.6.14/samples/trace_printk/trace-printk.c",
+  "human_readable_source": "\n#include <linux/module.h>\n#include <linux/kthread.h>\n#include <linux/irq_work.h>\n\n \nchar *trace_printk_test_global_str =\n\t\"This is a dynamic string that will use trace_puts\\n\";\n\nchar *trace_printk_test_global_str_irq =\n\t\"(irq) This is a dynamic string that will use trace_puts\\n\";\n\nchar *trace_printk_test_global_str_fmt =\n\t\"%sThis is a %s that will use trace_printk\\n\";\n\nstatic struct irq_work irqwork;\n\nstatic void trace_printk_irq_work(struct irq_work *work)\n{\n\ttrace_printk(\"(irq) This is a static string that will use trace_bputs\\n\");\n\ttrace_printk(trace_printk_test_global_str_irq);\n\n\ttrace_printk(\"(irq) This is a %s that will use trace_bprintk()\\n\",\n\t\t     \"static string\");\n\n\ttrace_printk(trace_printk_test_global_str_fmt,\n\t\t     \"(irq) \", \"dynamic string\");\n}\n\nstatic int __init trace_printk_init(void)\n{\n\tinit_irq_work(&irqwork, trace_printk_irq_work);\n\n\ttrace_printk(\"This is a static string that will use trace_bputs\\n\");\n\ttrace_printk(trace_printk_test_global_str);\n\n\t \n\tirq_work_queue(&irqwork);\n\tirq_work_sync(&irqwork);\n\n\ttrace_printk(\"This is a %s that will use trace_bprintk()\\n\",\n\t\t     \"static string\");\n\n\ttrace_printk(trace_printk_test_global_str_fmt, \"\", \"dynamic string\");\n\n\treturn 0;\n}\n\nstatic void __exit trace_printk_exit(void)\n{\n}\n\nmodule_init(trace_printk_init);\nmodule_exit(trace_printk_exit);\n\nMODULE_AUTHOR(\"Steven Rostedt\");\nMODULE_DESCRIPTION(\"trace-printk\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

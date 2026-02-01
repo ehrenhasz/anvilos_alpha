@@ -1,0 +1,9 @@
+{
+  "module_name": "asus-wmi.h",
+  "hash_id": "1594a62a54d18fd9f411f98b96bb2b9d760e26c9247af2206294e338702542f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/asus-wmi.h",
+  "human_readable_source": " \n \n\n#ifndef _ASUS_WMI_H_\n#define _ASUS_WMI_H_\n\n#include <linux/platform_device.h>\n#include <linux/i8042.h>\n\n#define ASUS_WMI_KEY_IGNORE (-1)\n#define ASUS_WMI_BRN_DOWN\t0x2e\n#define ASUS_WMI_BRN_UP\t\t0x2f\n\nstruct module;\nstruct key_entry;\nstruct asus_wmi;\n\nenum asus_wmi_tablet_switch_mode {\n\tasus_wmi_no_tablet_switch,\n\tasus_wmi_kbd_dock_devid,\n\tasus_wmi_lid_flip_devid,\n\tasus_wmi_lid_flip_rog_devid,\n};\n\nstruct quirk_entry {\n\tbool hotplug_wireless;\n\tbool scalar_panel_brightness;\n\tbool store_backlight_power;\n\tbool wmi_backlight_set_devstate;\n\tbool wmi_force_als_set;\n\tbool wmi_ignore_fan;\n\tenum asus_wmi_tablet_switch_mode tablet_switch_mode;\n\tint wapf;\n\t \n\tint no_display_toggle;\n\tu32 xusb2pr;\n\n\tbool (*i8042_filter)(unsigned char data, unsigned char str,\n\t\t\t     struct serio *serio);\n};\n\nstruct asus_wmi_driver {\n\tint\t\t\tbrightness;\n\tint\t\t\tpanel_power;\n\tint\t\t\twlan_ctrl_by_user;\n\n\tconst char\t\t*name;\n\tstruct module\t\t*owner;\n\n\tconst char\t\t*event_guid;\n\n\tconst struct key_entry\t*keymap;\n\tconst char\t\t*input_name;\n\tconst char\t\t*input_phys;\n\tstruct quirk_entry\t*quirks;\n\t \n\tvoid (*key_filter) (struct asus_wmi_driver *driver, int *code,\n\t\t\t    unsigned int *value, bool *autorelease);\n\n\tint (*probe) (struct platform_device *device);\n\tvoid (*detect_quirks) (struct asus_wmi_driver *driver);\n\n\tstruct platform_driver\tplatform_driver;\n\tstruct platform_device *platform_device;\n};\n\nint asus_wmi_register_driver(struct asus_wmi_driver *driver);\nvoid asus_wmi_unregister_driver(struct asus_wmi_driver *driver);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

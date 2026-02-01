@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn303_hwseq.h",
+  "hash_id": "6c783f48b87a637d0333e865fc7cc98104b6fa419077cac067b14fba118b5606",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn303/dcn303_hwseq.h",
+  "human_readable_source": "\n \n\n#ifndef __DC_HWSS_DCN303_H__\n#define __DC_HWSS_DCN303_H__\n\n#include \"hw_sequencer_private.h\"\n\nvoid dcn303_dpp_pg_control(struct dce_hwseq *hws, unsigned int dpp_inst, bool power_on);\nvoid dcn303_hubp_pg_control(struct dce_hwseq *hws, unsigned int hubp_inst, bool power_on);\nvoid dcn303_dsc_pg_control(struct dce_hwseq *hws, unsigned int dsc_inst, bool power_on);\nvoid dcn303_enable_power_gating_plane(struct dce_hwseq *hws, bool enable);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

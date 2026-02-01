@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_5.dtso",
+  "hash_id": "e50eca7ae8a880a1524fc17a758621329cae59eaa40011599e61cf8eaa4698d1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_5.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n/* overlay_5 - test overlay apply revert */\n\n&unittest5 {\n\tstatus = \"okay\";\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

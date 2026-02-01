@@ -1,0 +1,9 @@
+{
+  "module_name": "pktcdvd.h",
+  "hash_id": "44fcb8db27d47b421e71410d58fbbed5cf4a8cc579d0b3729b5b04b555062315",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/pktcdvd.h",
+  "human_readable_source": " \n \n#ifndef _UAPI__PKTCDVD_H\n#define _UAPI__PKTCDVD_H\n\n#include <linux/types.h>\n\n \n#define PACKET_DEBUG\t\t1\n\n#define\tMAX_WRITERS\t\t8\n\n#define PKT_RB_POOL_SIZE\t512\n\n \n#define PACKET_WAIT_TIME\t(HZ * 5 / 1000)\n\n \n\n \n#define PACKET_CDR\t\t1\n#define\tPACKET_CDRW\t\t2\n#define PACKET_DVDR\t\t3\n#define PACKET_DVDRW\t\t4\n\n \n#define PACKET_WRITABLE\t\t1\t \n#define PACKET_NWA_VALID\t2\t \n#define PACKET_LRA_VALID\t3\t \n#define PACKET_MERGE_SEGS\t4\t \n\t\t\t\t\t \n\n \n#define PACKET_DISC_EMPTY\t0\n#define PACKET_DISC_INCOMPLETE\t1\n#define PACKET_DISC_COMPLETE\t2\n#define PACKET_DISC_OTHER\t3\n\n \n#define PACKET_MODE1\t\t1\n#define PACKET_MODE2\t\t2\n#define PACKET_BLOCK_MODE1\t8\n#define PACKET_BLOCK_MODE2\t10\n\n \n#define PACKET_SESSION_EMPTY\t\t0\n#define PACKET_SESSION_INCOMPLETE\t1\n#define PACKET_SESSION_RESERVED\t\t2\n#define PACKET_SESSION_COMPLETE\t\t3\n\n#define PACKET_MCN\t\t\t\"4a656e734178626f65323030300000\"\n\n#undef PACKET_USE_LS\n\n#define PKT_CTRL_CMD_SETUP\t0\n#define PKT_CTRL_CMD_TEARDOWN\t1\n#define PKT_CTRL_CMD_STATUS\t2\n\nstruct pkt_ctrl_command {\n\t__u32 command;\t\t\t\t \n\t__u32 dev_index;\t\t\t \n\t__u32 dev;\t\t\t\t \n\t__u32 pkt_dev;\t\t\t\t \n\t__u32 num_devices;\t\t\t \n\t__u32 padding;\t\t\t\t \n};\n\n \n#define PACKET_IOCTL_MAGIC\t('X')\n#define PACKET_CTRL_CMD\t\t_IOWR(PACKET_IOCTL_MAGIC, 1, struct pkt_ctrl_command)\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

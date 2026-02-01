@@ -1,0 +1,9 @@
+{
+  "module_name": "dirname.c",
+  "hash_id": "c57e2f392afe4aff70769fe89695003ac064af64770095eeadd4147cf145d229",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/dirname.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"includes.h\"\n#ifndef HAVE_DIRNAME\n\n#include <errno.h>\n#include <string.h>\n\nchar *\ndirname(const char *path)\n{\n\tstatic char dname[MAXPATHLEN];\n\tsize_t len;\n\tconst char *endp;\n\n\t \n\tif (path == NULL || *path == '\\0') {\n\t\tdname[0] = '.';\n\t\tdname[1] = '\\0';\n\t\treturn (dname);\n\t}\n\n\t \n\tendp = path + strlen(path) - 1;\n\twhile (endp > path && *endp == '/')\n\t\tendp--;\n\n\t \n\twhile (endp > path && *endp != '/')\n\t\tendp--;\n\n\t \n\tif (endp == path) {\n\t\tdname[0] = *endp == '/' ? '/' : '.';\n\t\tdname[1] = '\\0';\n\t\treturn (dname);\n\t} else {\n\t\t \n\t\tdo {\n\t\t\tendp--;\n\t\t} while (endp > path && *endp == '/');\n\t}\n\n\tlen = endp - path + 1;\n\tif (len >= sizeof(dname)) {\n\t\terrno = ENAMETOOLONG;\n\t\treturn (NULL);\n\t}\n\tmemcpy(dname, path, len);\n\tdname[len] = '\\0';\n\treturn (dname);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

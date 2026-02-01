@@ -1,0 +1,9 @@
+{
+  "module_name": "unusual_karma.h",
+  "hash_id": "99ed4e229d42f5bacd3a870573f6a220ed8ff8c6c32d99a29cffe7e08b38e956",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/storage/unusual_karma.h",
+  "human_readable_source": " \n \n\n#if defined(CONFIG_USB_STORAGE_KARMA) || \\\n\t\tdefined(CONFIG_USB_STORAGE_KARMA_MODULE)\n\nUNUSUAL_DEV(  0x045a, 0x5210, 0x0101, 0x0101,\n\t\t\"Rio\",\n\t\t\"Rio Karma\",\n\t\tUSB_SC_SCSI, USB_PR_KARMA, rio_karma_init, 0),\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

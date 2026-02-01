@@ -1,0 +1,9 @@
+{
+  "module_name": "pci-pf-stub.c",
+  "hash_id": "ee7bc9c3ca74642f736e2645f791829767948cb9799750d7ede59e0934a2944c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/pci-pf-stub.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/pci.h>\n\n \nstatic const struct pci_device_id pci_pf_stub_whitelist[] = {\n\t{ PCI_VDEVICE(AMAZON, 0x0053) },\n\t \n\t{ 0 }\n};\nMODULE_DEVICE_TABLE(pci, pci_pf_stub_whitelist);\n\nstatic int pci_pf_stub_probe(struct pci_dev *dev,\n\t\t\t     const struct pci_device_id *id)\n{\n\tpci_info(dev, \"claimed by pci-pf-stub\\n\");\n\treturn 0;\n}\n\nstatic struct pci_driver pf_stub_driver = {\n\t.name\t\t\t= \"pci-pf-stub\",\n\t.id_table\t\t= pci_pf_stub_whitelist,\n\t.probe\t\t\t= pci_pf_stub_probe,\n\t.sriov_configure\t= pci_sriov_configure_simple,\n};\nmodule_pci_driver(pf_stub_driver);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

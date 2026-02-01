@@ -1,0 +1,9 @@
+{
+  "module_name": "thumb_vfp_sqrt.c",
+  "hash_id": "8ae38720561fabaeb0a4918718b975756c50cf385b626a5b4477335b5051fbb0",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/thumb_vfp_sqrt.c",
+  "human_readable_source": "\n\ndouble sqrt(double x) {\n    double ret;\n    __asm__ volatile (\n            \"vsqrt.f64  %P0, %P1\\n\"\n            : \"=w\" (ret)\n            : \"w\"  (x));\n    return ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ivtv-vbi.h",
+  "hash_id": "3e9ba1789a28acc39f00e64a8ace957081b10255d56272b037a5fdb468caa54d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ivtv/ivtv-vbi.h",
+  "human_readable_source": " \n \n\n#ifndef IVTV_VBI_H\n#define IVTV_VBI_H\n\nssize_t\nivtv_write_vbi_from_user(struct ivtv *itv,\n\t\t\t const struct v4l2_sliced_vbi_data __user *sliced,\n\t\t\t size_t count);\nvoid ivtv_process_vbi_data(struct ivtv *itv, struct ivtv_buffer *buf,\n\t\t\t   u64 pts_stamp, int streamtype);\nint ivtv_used_line(struct ivtv *itv, int line, int field);\nvoid ivtv_disable_cc(struct ivtv *itv);\nvoid ivtv_set_vbi(unsigned long arg);\nvoid ivtv_vbi_work_handler(struct ivtv *itv);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

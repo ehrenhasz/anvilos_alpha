@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "6942bfe15573c3385e9621d7984889837760f9f46aa6eb390333c660a9dd2146",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ipa/Kconfig",
+  "human_readable_source": "config QCOM_IPA\n\ttristate \"Qualcomm IPA support\"\n\tdepends on NET && QCOM_SMEM\n\tdepends on ARCH_QCOM || COMPILE_TEST\n\tdepends on INTERCONNECT\n\tdepends on QCOM_RPROC_COMMON || (QCOM_RPROC_COMMON=n && COMPILE_TEST)\n\tdepends on QCOM_AOSS_QMP || QCOM_AOSS_QMP=n\n\tselect QCOM_MDT_LOADER if ARCH_QCOM\n\tselect QCOM_SCM\n\tselect QCOM_QMI_HELPERS\n\thelp\n\t  Choose Y or M here to include support for the Qualcomm\n\t  IP Accelerator (IPA), a hardware block present in some\n\t  Qualcomm SoCs.  The IPA is a programmable protocol processor\n\t  that is capable of generic hardware handling of IP packets,\n\t  including routing, filtering, and NAT.  Currently the IPA\n\t  driver supports only basic transport of network traffic\n\t  between the AP and modem.\n\n\t  Note that if selected, the selection type must match that\n\t  of QCOM_Q6V5_COMMON (Y or M).\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

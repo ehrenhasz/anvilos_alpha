@@ -1,0 +1,9 @@
+{
+  "module_name": "iio_core_trigger.h",
+  "hash_id": "d2d9dbf969ae7131a0885f182d86c6ed65fda88d5f904b73f2638d68adb635bf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/iio_core_trigger.h",
+  "human_readable_source": " \n\n \n\n#ifdef CONFIG_IIO_TRIGGER\n \nint iio_device_register_trigger_consumer(struct iio_dev *indio_dev);\n\n \nvoid iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev);\n\n\nint iio_trigger_attach_poll_func(struct iio_trigger *trig,\n\t\t\t\t struct iio_poll_func *pf);\nint iio_trigger_detach_poll_func(struct iio_trigger *trig,\n\t\t\t\t struct iio_poll_func *pf);\n\n#else\n\n \nstatic inline int iio_device_register_trigger_consumer(struct iio_dev *indio_dev)\n{\n\treturn 0;\n}\n\n \nstatic inline void iio_device_unregister_trigger_consumer(struct iio_dev *indio_dev)\n{\n}\n\nstatic inline int iio_trigger_attach_poll_func(struct iio_trigger *trig,\n\t\t\t\t\t       struct iio_poll_func *pf)\n{\n\treturn 0;\n}\nstatic inline int iio_trigger_detach_poll_func(struct iio_trigger *trig,\n\t\t\t\t\t       struct iio_poll_func *pf)\n{\n\treturn 0;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "suniv-ccu-f1c100s.h",
+  "hash_id": "e837aeeb8a64c8fb22652686ee504b05be10a094f21203efa218649723258809",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/suniv-ccu-f1c100s.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_CLK_SUNIV_F1C100S_H_\n#define _DT_BINDINGS_CLK_SUNIV_F1C100S_H_\n\n#define CLK_CPU\t\t\t11\n\n#define CLK_BUS_DMA\t\t14\n#define CLK_BUS_MMC0\t\t15\n#define CLK_BUS_MMC1\t\t16\n#define CLK_BUS_DRAM\t\t17\n#define CLK_BUS_SPI0\t\t18\n#define CLK_BUS_SPI1\t\t19\n#define CLK_BUS_OTG\t\t20\n#define CLK_BUS_VE\t\t21\n#define CLK_BUS_LCD\t\t22\n#define CLK_BUS_DEINTERLACE\t23\n#define CLK_BUS_CSI\t\t24\n#define CLK_BUS_TVD\t\t25\n#define CLK_BUS_TVE\t\t26\n#define CLK_BUS_DE_BE\t\t27\n#define CLK_BUS_DE_FE\t\t28\n#define CLK_BUS_CODEC\t\t29\n#define CLK_BUS_SPDIF\t\t30\n#define CLK_BUS_IR\t\t31\n#define CLK_BUS_RSB\t\t32\n#define CLK_BUS_I2S0\t\t33\n#define CLK_BUS_I2C0\t\t34\n#define CLK_BUS_I2C1\t\t35\n#define CLK_BUS_I2C2\t\t36\n#define CLK_BUS_PIO\t\t37\n#define CLK_BUS_UART0\t\t38\n#define CLK_BUS_UART1\t\t39\n#define CLK_BUS_UART2\t\t40\n\n#define CLK_MMC0\t\t41\n#define CLK_MMC0_SAMPLE\t\t42\n#define CLK_MMC0_OUTPUT\t\t43\n#define CLK_MMC1\t\t44\n#define CLK_MMC1_SAMPLE\t\t45\n#define CLK_MMC1_OUTPUT\t\t46\n#define CLK_I2S\t\t\t47\n#define CLK_SPDIF\t\t48\n\n#define CLK_USB_PHY0\t\t49\n\n#define CLK_DRAM_VE\t\t50\n#define CLK_DRAM_CSI\t\t51\n#define CLK_DRAM_DEINTERLACE\t52\n#define CLK_DRAM_TVD\t\t53\n#define CLK_DRAM_DE_FE\t\t54\n#define CLK_DRAM_DE_BE\t\t55\n\n#define CLK_DE_BE\t\t56\n#define CLK_DE_FE\t\t57\n#define CLK_TCON\t\t58\n#define CLK_DEINTERLACE\t\t59\n#define CLK_TVE2_CLK\t\t60\n#define CLK_TVE1_CLK\t\t61\n#define CLK_TVD\t\t\t62\n#define CLK_CSI\t\t\t63\n#define CLK_VE\t\t\t64\n#define CLK_CODEC\t\t65\n#define CLK_AVS\t\t\t66\n\n#define CLK_IR\t\t\t67\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

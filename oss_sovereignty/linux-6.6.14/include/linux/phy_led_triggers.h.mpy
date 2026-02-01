@@ -1,0 +1,9 @@
+{
+  "module_name": "phy_led_triggers.h",
+  "hash_id": "268d927c63ca2707ada73d80f81b54d6f3f328544cbd8c235fa4dc8438bfa438",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/phy_led_triggers.h",
+  "human_readable_source": " \n \n#ifndef __PHY_LED_TRIGGERS\n#define __PHY_LED_TRIGGERS\n\nstruct phy_device;\n\n#ifdef CONFIG_LED_TRIGGER_PHY\n\n#include <linux/leds.h>\n#include <linux/phy.h>\n\n#define PHY_LED_TRIGGER_SPEED_SUFFIX_SIZE\t11\n\n#define PHY_LINK_LED_TRIGGER_NAME_SIZE (MII_BUS_ID_SIZE + \\\n\t\t\t\t       sizeof_field(struct mdio_device, addr)+\\\n\t\t\t\t       PHY_LED_TRIGGER_SPEED_SUFFIX_SIZE)\n\nstruct phy_led_trigger {\n\tstruct led_trigger trigger;\n\tchar name[PHY_LINK_LED_TRIGGER_NAME_SIZE];\n\tunsigned int speed;\n};\n\n\nextern int phy_led_triggers_register(struct phy_device *phy);\nextern void phy_led_triggers_unregister(struct phy_device *phy);\nextern void phy_led_trigger_change_speed(struct phy_device *phy);\n\n#else\n\nstatic inline int phy_led_triggers_register(struct phy_device *phy)\n{\n\treturn 0;\n}\nstatic inline void phy_led_triggers_unregister(struct phy_device *phy) { }\nstatic inline void phy_led_trigger_change_speed(struct phy_device *phy) { }\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

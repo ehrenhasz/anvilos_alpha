@@ -1,0 +1,9 @@
+{
+  "module_name": "otg.h",
+  "hash_id": "23fe794d52c490b415e0cd40ee4c872c861ab1b9387c791c6988f48aab911caf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/chipidea/otg.h",
+  "human_readable_source": " \n \n\n#ifndef __DRIVERS_USB_CHIPIDEA_OTG_H\n#define __DRIVERS_USB_CHIPIDEA_OTG_H\n\nu32 hw_read_otgsc(struct ci_hdrc *ci, u32 mask);\nvoid hw_write_otgsc(struct ci_hdrc *ci, u32 mask, u32 data);\nint ci_hdrc_otg_init(struct ci_hdrc *ci);\nvoid ci_hdrc_otg_destroy(struct ci_hdrc *ci);\nenum ci_role ci_otg_role(struct ci_hdrc *ci);\nvoid ci_handle_vbus_change(struct ci_hdrc *ci);\nvoid ci_handle_id_switch(struct ci_hdrc *ci);\nstatic inline void ci_otg_queue_work(struct ci_hdrc *ci)\n{\n\tdisable_irq_nosync(ci->irq);\n\tif (queue_work(ci->wq, &ci->work) == false)\n\t\tenable_irq(ci->irq);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

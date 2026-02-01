@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "daa2750d765270cc2b7c8861c6e6739c98019a22b957acc9ca01e302ad19400c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/arm/arm-smmu/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_QCOM_IOMMU) += qcom_iommu.o\nobj-$(CONFIG_ARM_SMMU) += arm_smmu.o\narm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-nvidia.o\narm_smmu-$(CONFIG_ARM_SMMU_QCOM) += arm-smmu-qcom.o\narm_smmu-$(CONFIG_ARM_SMMU_QCOM_DEBUG) += arm-smmu-qcom-debug.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

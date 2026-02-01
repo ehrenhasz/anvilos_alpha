@@ -1,0 +1,9 @@
+{
+  "module_name": "lzodefs.h",
+  "hash_id": "64daab01fecc095c5468fd5ef39bf91b907bab9f05810ec62c141d86f3e8da0b",
+  "original_prompt": "Ingested from linux-6.6.14/lib/lzo/lzodefs.h",
+  "human_readable_source": " \n \n\n\n \n#define LZO_VERSION 1\n\n#define COPY4(dst, src)\t\\\n\t\tput_unaligned(get_unaligned((const u32 *)(src)), (u32 *)(dst))\n#if defined(CONFIG_X86_64) || defined(CONFIG_ARM64)\n#define COPY8(dst, src)\t\\\n\t\tput_unaligned(get_unaligned((const u64 *)(src)), (u64 *)(dst))\n#else\n#define COPY8(dst, src)\t\\\n\t\tCOPY4(dst, src); COPY4((dst) + 4, (src) + 4)\n#endif\n\n#if defined(__BIG_ENDIAN) && defined(__LITTLE_ENDIAN)\n#error \"conflicting endian definitions\"\n#elif defined(CONFIG_X86_64) || defined(CONFIG_ARM64)\n#define LZO_USE_CTZ64\t1\n#define LZO_USE_CTZ32\t1\n#define LZO_FAST_64BIT_MEMORY_ACCESS\n#elif defined(CONFIG_X86) || defined(CONFIG_PPC)\n#define LZO_USE_CTZ32\t1\n#elif defined(CONFIG_ARM) && (__LINUX_ARM_ARCH__ >= 5)\n#define LZO_USE_CTZ32\t1\n#endif\n\n#define M1_MAX_OFFSET\t0x0400\n#define M2_MAX_OFFSET\t0x0800\n#define M3_MAX_OFFSET\t0x4000\n#define M4_MAX_OFFSET_V0\t0xbfff\n#define M4_MAX_OFFSET_V1\t0xbffe\n\n#define M1_MIN_LEN\t2\n#define M1_MAX_LEN\t2\n#define M2_MIN_LEN\t3\n#define M2_MAX_LEN\t8\n#define M3_MIN_LEN\t3\n#define M3_MAX_LEN\t33\n#define M4_MIN_LEN\t3\n#define M4_MAX_LEN\t9\n\n#define M1_MARKER\t0\n#define M2_MARKER\t64\n#define M3_MARKER\t32\n#define M4_MARKER\t16\n\n#define MIN_ZERO_RUN_LENGTH\t4\n#define MAX_ZERO_RUN_LENGTH\t(2047 + MIN_ZERO_RUN_LENGTH)\n\n#define lzo_dict_t      unsigned short\n#define D_BITS\t\t13\n#define D_SIZE\t\t(1u << D_BITS)\n#define D_MASK\t\t(D_SIZE - 1)\n#define D_HIGH\t\t((D_MASK >> 1) + 1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

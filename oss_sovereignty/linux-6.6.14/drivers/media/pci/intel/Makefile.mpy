@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f9ff5382cac5ca75ee6acb95c15cc30f9c24d6ebb4c31350c6388176689d74c3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/intel/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the IPU drivers\n#\nobj-$(CONFIG_IPU_BRIDGE) += ipu-bridge.o\nobj-y\t+= ipu3/\nobj-y\t+= ivsc/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "i8254.h",
+  "hash_id": "1c53097fca509f325ebf6308fbcb8c41619b7917f7bd3acf943bbdf44a23555e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/i8254.h",
+  "human_readable_source": " \n \n#ifndef _I8254_H_\n#define _I8254_H_\n\nstruct device;\nstruct regmap;\n\n \nstruct i8254_regmap_config {\n\tstruct device *parent;\n\tstruct regmap *map;\n};\n\nint devm_i8254_regmap_register(struct device *dev, const struct i8254_regmap_config *config);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

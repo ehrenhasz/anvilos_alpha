@@ -1,0 +1,9 @@
+{
+  "module_name": "reset_cmd.h",
+  "hash_id": "09392d9792abfa3e6bdcd7b6e145a1e83532b2fbd756a4c2c97e0e5b6e21af7b",
+  "original_prompt": "Ingested from ncurses-6.4/progs/reset_cmd.h",
+  "human_readable_source": " \n\n \n\n \n#ifndef RESET_CMD_H\n#define RESET_CMD_H 1\n \n\n#define USE_LIBTINFO\n#define __INTERNAL_CAPS_VISIBLE\t \n#include <progs.priv.h>\n\n#undef CTRL\n#define CTRL(x)\t((x) & 0x1f)\n\nextern bool send_init_strings(int  , TTY *  );\nextern void print_tty_chars(TTY *  , TTY *  );\nextern void reset_flush(void);\nextern void reset_start(FILE *  , bool  , bool   );\nextern void reset_tty_settings(int  , TTY *  , int  );\nextern void set_control_chars(TTY *  , int  , int  , int  );\nextern void set_conversions(TTY *  );\n\n#if HAVE_SIZECHANGE\nextern void set_window_size(int  , short *  , short *  );\n#endif\n\nextern const char *_nc_progname;\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

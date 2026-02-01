@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_ips.h",
+  "hash_id": "654efd1ab04f9aea514e632798f8047b09bbb84d0e35c3d183e4c77a8e7d2ea8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel_ips.h",
+  "human_readable_source": " \n \n\nvoid ips_link_to_i915_driver(void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

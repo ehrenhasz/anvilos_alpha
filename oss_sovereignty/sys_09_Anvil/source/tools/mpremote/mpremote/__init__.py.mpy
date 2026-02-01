@@ -1,0 +1,9 @@
+{
+  "module_name": "__init__.py",
+  "hash_id": "b823236db33d9cedd5a98aaabc62192335f2de3b96d611c3f1be0bad6d265a24",
+  "original_prompt": "Ingested from sys_09_Anvil/source/tools/mpremote/mpremote/__init__.py",
+  "human_readable_source": "try:\n    from importlib.metadata import version, PackageNotFoundError\n\n    try:\n        __version__ = version(\"mpremote\")\n    except PackageNotFoundError:\n        # Error loading package version (e.g. running from source).\n        __version__ = \"0.0.0-local\"\nexcept ImportError:\n    # importlib.metadata not available (e.g. CPython <3.8 without\n    # importlib_metadata compatibility package installed).\n    __version__ = \"0.0.0-unknown\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

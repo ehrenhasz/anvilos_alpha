@@ -1,0 +1,9 @@
+{
+  "module_name": "mnt_namespace.h",
+  "hash_id": "f32adb90bbcffd5b38c3074449f0bcce6fd5c794542409637d7f9c87131f6d65",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mnt_namespace.h",
+  "human_readable_source": " \n#ifndef _NAMESPACE_H_\n#define _NAMESPACE_H_\n#ifdef __KERNEL__\n\nstruct mnt_namespace;\nstruct fs_struct;\nstruct user_namespace;\nstruct ns_common;\n\nextern struct mnt_namespace *copy_mnt_ns(unsigned long, struct mnt_namespace *,\n\t\tstruct user_namespace *, struct fs_struct *);\nextern void put_mnt_ns(struct mnt_namespace *ns);\nextern struct ns_common *from_mnt_ns(struct mnt_namespace *);\n\nextern const struct file_operations proc_mounts_operations;\nextern const struct file_operations proc_mountinfo_operations;\nextern const struct file_operations proc_mountstats_operations;\n\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

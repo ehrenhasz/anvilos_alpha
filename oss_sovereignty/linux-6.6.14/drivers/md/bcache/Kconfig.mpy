@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d677e9259f7d81552bce6448c7f09a34e6c9e9c6bbd1570d9f7ba4b1a9864047",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/bcache/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig BCACHE\n\ttristate \"Block device as cache\"\n\tselect BLOCK_HOLDER_DEPRECATED if SYSFS\n\tselect CRC64\n\thelp\n\tAllows a block device to be used as cache for other devices; uses\n\ta btree for indexing and the layout is optimized for SSDs.\n\n\tSee Documentation/admin-guide/bcache.rst for details.\n\nconfig BCACHE_DEBUG\n\tbool \"Bcache debugging\"\n\tdepends on BCACHE\n\thelp\n\tDon't select this option unless you're a developer\n\n\tEnables extra debugging tools, allows expensive runtime checks to be\n\tturned on.\n\nconfig BCACHE_CLOSURES_DEBUG\n\tbool \"Debug closures\"\n\tdepends on BCACHE\n\tselect DEBUG_FS\n\thelp\n\tKeeps all active closures in a linked list and provides a debugfs\n\tinterface to list them, which makes it possible to see asynchronous\n\toperations that get stuck.\n\nconfig BCACHE_ASYNC_REGISTRATION\n\tbool \"Asynchronous device registration\"\n\tdepends on BCACHE\n\thelp\n\tAdd a sysfs file /sys/fs/bcache/register_async. Writing registering\n\tdevice path into this file will returns immediately and the real\n\tregistration work is handled in kernel work queue in asynchronous\n\tway.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

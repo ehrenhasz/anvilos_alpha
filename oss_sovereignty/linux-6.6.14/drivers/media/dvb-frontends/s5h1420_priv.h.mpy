@@ -1,0 +1,9 @@
+{
+  "module_name": "s5h1420_priv.h",
+  "hash_id": "de498ca34d748d9a55ae776a2886aafc3c09851998bb3eb91e2a0f65a3019d95",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/s5h1420_priv.h",
+  "human_readable_source": " \n \n#ifndef S5H1420_PRIV\n#define S5H1420_PRIV\n\n#include <asm/types.h>\n\nenum s5h1420_register {\n\tID01      = 0x00,\n\tCON_0     = 0x01,\n\tCON_1     = 0x02,\n\tPLL01     = 0x03,\n\tPLL02     = 0x04,\n\tQPSK01    = 0x05,\n\tQPSK02    = 0x06,\n\tPre01     = 0x07,\n\tPost01    = 0x08,\n\tLoop01    = 0x09,\n\tLoop02    = 0x0a,\n\tLoop03    = 0x0b,\n\tLoop04    = 0x0c,\n\tLoop05    = 0x0d,\n\tPnco01    = 0x0e,\n\tPnco02    = 0x0f,\n\tPnco03    = 0x10,\n\tTnco01    = 0x11,\n\tTnco02    = 0x12,\n\tTnco03    = 0x13,\n\tMonitor01 = 0x14,\n\tMonitor02 = 0x15,\n\tMonitor03 = 0x16,\n\tMonitor04 = 0x17,\n\tMonitor05 = 0x18,\n\tMonitor06 = 0x19,\n\tMonitor07 = 0x1a,\n\tMonitor12 = 0x1f,\n\n\tFEC01     = 0x22,\n\tSoft01    = 0x23,\n\tSoft02    = 0x24,\n\tSoft03    = 0x25,\n\tSoft04    = 0x26,\n\tSoft05    = 0x27,\n\tSoft06    = 0x28,\n\tVit01     = 0x29,\n\tVit02     = 0x2a,\n\tVit03     = 0x2b,\n\tVit04     = 0x2c,\n\tVit05     = 0x2d,\n\tVit06     = 0x2e,\n\tVit07     = 0x2f,\n\tVit08     = 0x30,\n\tVit09     = 0x31,\n\tVit10     = 0x32,\n\tVit11     = 0x33,\n\tVit12     = 0x34,\n\tSync01    = 0x35,\n\tSync02    = 0x36,\n\tRs01      = 0x37,\n\tMpeg01    = 0x38,\n\tMpeg02    = 0x39,\n\tDiS01     = 0x3a,\n\tDiS02     = 0x3b,\n\tDiS03     = 0x3c,\n\tDiS04     = 0x3d,\n\tDiS05     = 0x3e,\n\tDiS06     = 0x3f,\n\tDiS07     = 0x40,\n\tDiS08     = 0x41,\n\tDiS09     = 0x42,\n\tDiS10     = 0x43,\n\tDiS11     = 0x44,\n\tRf01      = 0x45,\n\tErr01     = 0x46,\n\tErr02     = 0x47,\n\tErr03     = 0x48,\n\tErr04     = 0x49,\n};\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sdma_v6_0.h",
+  "hash_id": "eb8393d7d2af41b868800d933e76f86c47ba9bfe425be4d1946502c9cc244c95",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/sdma_v6_0.h",
+  "human_readable_source": " \n\n#ifndef __SDMA_V6_0_H__\n#define __SDMA_V6_0_H__\n\nextern const struct amd_ip_funcs sdma_v6_0_ip_funcs;\nextern const struct amdgpu_ip_block_version sdma_v6_0_ip_block;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

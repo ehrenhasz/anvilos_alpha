@@ -1,0 +1,9 @@
+{
+  "module_name": "lima_gem.h",
+  "hash_id": "dce0086d40ebeefdfcbb47e3c7aea3ff90f07924dd6b5e6f897fd6e6cbcf5e2d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/lima/lima_gem.h",
+  "human_readable_source": " \n \n\n#ifndef __LIMA_GEM_H__\n#define __LIMA_GEM_H__\n\n#include <drm/drm_gem_shmem_helper.h>\n\nstruct lima_submit;\nstruct lima_vm;\n\nstruct lima_bo {\n\tstruct drm_gem_shmem_object base;\n\n\tstruct mutex lock;\n\tstruct list_head va;\n\n\tsize_t heap_size;\n};\n\nstatic inline struct lima_bo *\nto_lima_bo(struct drm_gem_object *obj)\n{\n\treturn container_of(to_drm_gem_shmem_obj(obj), struct lima_bo, base);\n}\n\nstatic inline size_t lima_bo_size(struct lima_bo *bo)\n{\n\treturn bo->base.base.size;\n}\n\nstatic inline struct dma_resv *lima_bo_resv(struct lima_bo *bo)\n{\n\treturn bo->base.base.resv;\n}\n\nint lima_heap_alloc(struct lima_bo *bo, struct lima_vm *vm);\nstruct drm_gem_object *lima_gem_create_object(struct drm_device *dev, size_t size);\nint lima_gem_create_handle(struct drm_device *dev, struct drm_file *file,\n\t\t\t   u32 size, u32 flags, u32 *handle);\nint lima_gem_get_info(struct drm_file *file, u32 handle, u32 *va, u64 *offset);\nint lima_gem_submit(struct drm_file *file, struct lima_submit *submit);\nint lima_gem_wait(struct drm_file *file, u32 handle, u32 op, s64 timeout_ns);\n\nvoid lima_set_vma_flags(struct vm_area_struct *vma);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

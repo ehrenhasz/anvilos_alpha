@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_slkatrof.c",
+  "hash_id": "5bb590cd76041e43769e0de3c33392536f7481bc69c6fc1bc6a164311a685c37",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_slkatrof.c",
+  "human_readable_source": " \n\n \n\n \n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_slkatrof.c,v 1.12 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(slk_attroff) (NCURSES_SP_DCLx const chtype attr)\n{\n    T((T_CALLED(\"slk_attroff(%p,%s)\"), (void *) SP_PARM, _traceattr(attr)));\n\n    if (SP_PARM != 0 && SP_PARM->_slk != 0) {\n\tTR(TRACE_ATTRS, (\"... current %s\", _tracech_t(CHREF(SP_PARM->_slk->attr))));\n\tRemAttr(SP_PARM->_slk->attr, attr);\n\tif ((attr & A_COLOR) != 0) {\n\t    SetPair(SP_PARM->_slk->attr, 0);\n\t}\n\tTR(TRACE_ATTRS, (\"new attribute is %s\", _tracech_t(CHREF(SP_PARM->_slk->attr))));\n\treturnCode(OK);\n    } else\n\treturnCode(ERR);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nslk_attroff(const chtype attr)\n{\n    return NCURSES_SP_NAME(slk_attroff) (CURRENT_SCREEN, attr);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

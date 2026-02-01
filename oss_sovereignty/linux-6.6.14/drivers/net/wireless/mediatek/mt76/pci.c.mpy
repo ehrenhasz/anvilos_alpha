@@ -1,0 +1,9 @@
+{
+  "module_name": "pci.c",
+  "hash_id": "9fc46fafe79ba8d447d1d5a8740274662db4063075dc508c349a9408076ca782",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/pci.c",
+  "human_readable_source": "\n \n\n#include \"mt76.h\"\n#include <linux/pci.h>\n\nvoid mt76_pci_disable_aspm(struct pci_dev *pdev)\n{\n\tstruct pci_dev *parent = pdev->bus->self;\n\tu16 aspm_conf, parent_aspm_conf = 0;\n\n\tpcie_capability_read_word(pdev, PCI_EXP_LNKCTL, &aspm_conf);\n\taspm_conf &= PCI_EXP_LNKCTL_ASPMC;\n\tif (parent) {\n\t\tpcie_capability_read_word(parent, PCI_EXP_LNKCTL,\n\t\t\t\t\t  &parent_aspm_conf);\n\t\tparent_aspm_conf &= PCI_EXP_LNKCTL_ASPMC;\n\t}\n\n\tif (!aspm_conf && (!parent || !parent_aspm_conf)) {\n\t\t \n\t\treturn;\n\t}\n\n\tdev_info(&pdev->dev, \"disabling ASPM %s %s\\n\",\n\t\t (aspm_conf & PCI_EXP_LNKCTL_ASPM_L0S) ? \"L0s\" : \"\",\n\t\t (aspm_conf & PCI_EXP_LNKCTL_ASPM_L1) ? \"L1\" : \"\");\n\n\tif (IS_ENABLED(CONFIG_PCIEASPM)) {\n\t\tint err;\n\n\t\terr = pci_disable_link_state(pdev, aspm_conf);\n\t\tif (!err)\n\t\t\treturn;\n\t}\n\n\t \n\tpcie_capability_clear_word(pdev, PCI_EXP_LNKCTL, aspm_conf);\n\tif (parent)\n\t\tpcie_capability_clear_word(parent, PCI_EXP_LNKCTL,\n\t\t\t\t\t   aspm_conf);\n}\nEXPORT_SYMBOL_GPL(mt76_pci_disable_aspm);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

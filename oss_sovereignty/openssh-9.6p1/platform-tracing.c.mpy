@@ -1,0 +1,9 @@
+{
+  "module_name": "platform-tracing.c",
+  "hash_id": "703fe03f234d72c047001f457af69e82c0b7e96e225a027a6260757f730d006b",
+  "original_prompt": "Ingested from openssh-9.6p1/platform-tracing.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#include <sys/types.h>\n#ifdef HAVE_SYS_PROCCTL_H\n#include <sys/procctl.h>\n#endif\n#if defined(HAVE_SYS_PRCTL_H)\n#include <sys/prctl.h>\t \n#endif\n#ifdef HAVE_SYS_PTRACE_H\n#include <sys/ptrace.h>\n#endif\n#ifdef HAVE_PRIV_H\n#include <priv.h>  \n#endif\n#include <stdarg.h>\n#include <stdio.h>\n#include <string.h>\n#include <unistd.h>\n\n#include \"log.h\"\n\nvoid\nplatform_disable_tracing(int strict)\n{\n#if defined(HAVE_PROCCTL) && defined(PROC_TRACE_CTL)\n\t \n\tint disable_trace = PROC_TRACE_CTL_DISABLE;\n\n\t \n\tif (procctl(P_PID, 0, PROC_TRACE_CTL, &disable_trace) == 0)\n\t\treturn;\n\tif (procctl(P_PID, getpid(), PROC_TRACE_CTL, &disable_trace) == 0)\n\t\treturn;\n\tif (strict)\n\t\tfatal(\"unable to make the process untraceable: %s\",\n\t\t    strerror(errno));\n#endif\n#if defined(HAVE_PRCTL) && defined(PR_SET_DUMPABLE)\n\t \n\tif (prctl(PR_SET_DUMPABLE, 0) != 0 && strict)\n\t\tfatal(\"unable to make the process undumpable: %s\",\n\t\t    strerror(errno));\n#endif\n#if defined(HAVE_SETPFLAGS) && defined(__PROC_PROTECT)\n\t \n\tif (setpflags(__PROC_PROTECT, 1) != 0 && strict)\n\t\tfatal(\"unable to make the process untraceable: %s\",\n\t\t    strerror(errno));\n#endif\n#ifdef PT_DENY_ATTACH\n\t \n\tif (ptrace(PT_DENY_ATTACH, 0, 0, 0) == -1 && strict)\n\t\tfatal(\"unable to set PT_DENY_ATTACH: %s\", strerror(errno));\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "zstd_fast.h",
+  "hash_id": "24fd2f0f87d4e33217d558584cd7cc6475859b2ed63ae6befe1ef9287dcf62a6",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/lib/compress/zstd_fast.h",
+  "human_readable_source": " \n\n#ifndef ZSTD_FAST_H\n#define ZSTD_FAST_H\n\n#if defined (__cplusplus)\nextern \"C\" {\n#endif\n\n#include \"../common/mem.h\"       \n#include \"zstd_compress_internal.h\"\n\nvoid ZSTD_fillHashTable(ZSTD_matchState_t* ms,\n                        void const* end, ZSTD_dictTableLoadMethod_e dtlm);\nsize_t ZSTD_compressBlock_fast(\n        ZSTD_matchState_t* ms, seqStore_t* seqStore, U32 rep[ZSTD_REP_NUM],\n        void const* src, size_t srcSize);\nsize_t ZSTD_compressBlock_fast_dictMatchState(\n        ZSTD_matchState_t* ms, seqStore_t* seqStore, U32 rep[ZSTD_REP_NUM],\n        void const* src, size_t srcSize);\nsize_t ZSTD_compressBlock_fast_extDict(\n        ZSTD_matchState_t* ms, seqStore_t* seqStore, U32 rep[ZSTD_REP_NUM],\n        void const* src, size_t srcSize);\n\n#if defined (__cplusplus)\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

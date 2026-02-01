@@ -1,0 +1,9 @@
+{
+  "module_name": "action.c",
+  "hash_id": "bda748681dfdfeb260438f9d17ce49c75ef696554d389f24234e523bcbc0cbdd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tc-testing/action.c",
+  "human_readable_source": " \n\n#include <linux/bpf.h>\n#include <linux/pkt_cls.h>\n\n__attribute__((section(\"action-ok\"),used)) int action_ok(struct __sk_buff *s)\n{\n\treturn TC_ACT_OK;\n}\n\n__attribute__((section(\"action-ko\"),used)) int action_ko(struct __sk_buff *s)\n{\n\ts->data = 0x0;\n\treturn TC_ACT_OK;\n}\n\nchar _license[] __attribute__((section(\"license\"),used)) = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

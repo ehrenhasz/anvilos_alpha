@@ -1,0 +1,9 @@
+{
+  "module_name": "ledtrig-audio.c",
+  "hash_id": "85ee4dad89d6402b251829a16fd25f15c7d9908b731193c2d1b4474e30bb3efa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/trigger/ledtrig-audio.c",
+  "human_readable_source": "\n\n\n\n\n#include <linux/kernel.h>\n#include <linux/leds.h>\n#include <linux/module.h>\n#include \"../leds.h\"\n\nstatic enum led_brightness audio_state[NUM_AUDIO_LEDS];\n\nstatic int ledtrig_audio_mute_activate(struct led_classdev *led_cdev)\n{\n\tled_set_brightness_nosleep(led_cdev, audio_state[LED_AUDIO_MUTE]);\n\treturn 0;\n}\n\nstatic int ledtrig_audio_micmute_activate(struct led_classdev *led_cdev)\n{\n\tled_set_brightness_nosleep(led_cdev, audio_state[LED_AUDIO_MICMUTE]);\n\treturn 0;\n}\n\nstatic struct led_trigger ledtrig_audio[NUM_AUDIO_LEDS] = {\n\t[LED_AUDIO_MUTE] = {\n\t\t.name     = \"audio-mute\",\n\t\t.activate = ledtrig_audio_mute_activate,\n\t},\n\t[LED_AUDIO_MICMUTE] = {\n\t\t.name     = \"audio-micmute\",\n\t\t.activate = ledtrig_audio_micmute_activate,\n\t},\n};\n\nenum led_brightness ledtrig_audio_get(enum led_audio type)\n{\n\treturn audio_state[type];\n}\nEXPORT_SYMBOL_GPL(ledtrig_audio_get);\n\nvoid ledtrig_audio_set(enum led_audio type, enum led_brightness state)\n{\n\taudio_state[type] = state;\n\tled_trigger_event(&ledtrig_audio[type], state);\n}\nEXPORT_SYMBOL_GPL(ledtrig_audio_set);\n\nstatic int __init ledtrig_audio_init(void)\n{\n\tled_trigger_register(&ledtrig_audio[LED_AUDIO_MUTE]);\n\tled_trigger_register(&ledtrig_audio[LED_AUDIO_MICMUTE]);\n\treturn 0;\n}\nmodule_init(ledtrig_audio_init);\n\nstatic void __exit ledtrig_audio_exit(void)\n{\n\tled_trigger_unregister(&ledtrig_audio[LED_AUDIO_MUTE]);\n\tled_trigger_unregister(&ledtrig_audio[LED_AUDIO_MICMUTE]);\n}\nmodule_exit(ledtrig_audio_exit);\n\nMODULE_DESCRIPTION(\"LED trigger for audio mute control\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

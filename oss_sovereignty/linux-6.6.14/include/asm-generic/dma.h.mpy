@@ -1,0 +1,9 @@
+{
+  "module_name": "dma.h",
+  "hash_id": "e7f7f40c0c5e2adec883a06940c2acc239d14b5a522245438904f3ba4438ba57",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/dma.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_DMA_H\n#define __ASM_GENERIC_DMA_H\n \n#define MAX_DMA_ADDRESS PAGE_OFFSET\n\nextern int request_dma(unsigned int dmanr, const char *device_id);\nextern void free_dma(unsigned int dmanr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

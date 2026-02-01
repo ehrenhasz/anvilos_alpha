@@ -1,0 +1,9 @@
+{
+  "module_name": "lima_gp.h",
+  "hash_id": "3518bb1040f7dde57672b775cd38fbcb26ff29df7eb7a9ae9cc04054c25f2ae4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/lima/lima_gp.h",
+  "human_readable_source": " \n \n\n#ifndef __LIMA_GP_H__\n#define __LIMA_GP_H__\n\nstruct lima_ip;\nstruct lima_device;\n\nint lima_gp_resume(struct lima_ip *ip);\nvoid lima_gp_suspend(struct lima_ip *ip);\nint lima_gp_init(struct lima_ip *ip);\nvoid lima_gp_fini(struct lima_ip *ip);\n\nint lima_gp_pipe_init(struct lima_device *dev);\nvoid lima_gp_pipe_fini(struct lima_device *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

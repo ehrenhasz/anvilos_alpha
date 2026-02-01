@@ -1,0 +1,9 @@
+{
+  "module_name": "omap_fbdev.h",
+  "hash_id": "8302f2833826549d2263ee37c12f8ec6662a44e9a7a217ad37af56c0aff46ee0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/omapdrm/omap_fbdev.h",
+  "human_readable_source": " \n \n\n#ifndef __OMAPDRM_FBDEV_H__\n#define __OMAPDRM_FBDEV_H__\n\nstruct drm_device;\n\n#ifdef CONFIG_DRM_FBDEV_EMULATION\nvoid omap_fbdev_setup(struct drm_device *dev);\n#else\nstatic inline void omap_fbdev_setup(struct drm_device *dev)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

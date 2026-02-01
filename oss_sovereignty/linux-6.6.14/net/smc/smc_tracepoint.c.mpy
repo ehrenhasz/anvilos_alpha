@@ -1,0 +1,9 @@
+{
+  "module_name": "smc_tracepoint.c",
+  "hash_id": "b23ed787915a7f354abf34bf3f0b30b3600b73399364e18245e65da6b08396bc",
+  "original_prompt": "Ingested from linux-6.6.14/net/smc/smc_tracepoint.c",
+  "human_readable_source": "\n\n#define CREATE_TRACE_POINTS\n#include \"smc_tracepoint.h\"\n\nEXPORT_TRACEPOINT_SYMBOL(smc_switch_to_fallback);\nEXPORT_TRACEPOINT_SYMBOL(smc_tx_sendmsg);\nEXPORT_TRACEPOINT_SYMBOL(smc_rx_recvmsg);\nEXPORT_TRACEPOINT_SYMBOL(smcr_link_down);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

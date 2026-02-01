@@ -1,0 +1,9 @@
+{
+  "module_name": "frexpl.c",
+  "hash_id": "c4f9d36a669f4dac73e1fdf7869400334e292395438f42c49c5b02898ff9e2f2",
+  "original_prompt": "Ingested from coreutils-9.4/lib/frexpl.c",
+  "human_readable_source": " \n# include <math.h>\n\nlong double\nfrexpl (long double x, int *expptr)\n{\n  return frexp (x, expptr);\n}\n\n#else\n\n# define USE_LONG_DOUBLE\n# include \"frexp.c\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

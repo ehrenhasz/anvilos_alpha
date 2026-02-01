@@ -1,0 +1,9 @@
+{
+  "module_name": "zip.h",
+  "hash_id": "3f9436010f29ca28787f6968d0efb0bbb24adee28551033075598459de6f1b96",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/bpf/zip.h",
+  "human_readable_source": " \n\n#ifndef __LIBBPF_ZIP_H\n#define __LIBBPF_ZIP_H\n\n#include <linux/types.h>\n\n \nstruct zip_archive;\n\n \nstruct zip_entry {\n\t \n\t__u16 compression;\n\n\t \n\tconst char *name;\n\t \n\t__u16 name_length;\n\n\t \n\tconst void *data;\n\t \n\t__u32 data_length;\n\t \n\t__u32 data_offset;\n};\n\n \nstruct zip_archive *zip_archive_open(const char *path);\n\n \nvoid zip_archive_close(struct zip_archive *archive);\n\n \nint zip_archive_find_entry(struct zip_archive *archive, const char *name, struct zip_entry *out);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

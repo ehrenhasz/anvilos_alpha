@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_regs.h",
+  "hash_id": "e9924e3db1c791cfdd4d5b8cb0ec5ba81ef562ef0aa3636c6e840fd19498c411",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/riscv/include/uapi/asm/perf_regs.h",
+  "human_readable_source": " \n \n\n#ifndef _ASM_RISCV_PERF_REGS_H\n#define _ASM_RISCV_PERF_REGS_H\n\nenum perf_event_riscv_regs {\n\tPERF_REG_RISCV_PC,\n\tPERF_REG_RISCV_RA,\n\tPERF_REG_RISCV_SP,\n\tPERF_REG_RISCV_GP,\n\tPERF_REG_RISCV_TP,\n\tPERF_REG_RISCV_T0,\n\tPERF_REG_RISCV_T1,\n\tPERF_REG_RISCV_T2,\n\tPERF_REG_RISCV_S0,\n\tPERF_REG_RISCV_S1,\n\tPERF_REG_RISCV_A0,\n\tPERF_REG_RISCV_A1,\n\tPERF_REG_RISCV_A2,\n\tPERF_REG_RISCV_A3,\n\tPERF_REG_RISCV_A4,\n\tPERF_REG_RISCV_A5,\n\tPERF_REG_RISCV_A6,\n\tPERF_REG_RISCV_A7,\n\tPERF_REG_RISCV_S2,\n\tPERF_REG_RISCV_S3,\n\tPERF_REG_RISCV_S4,\n\tPERF_REG_RISCV_S5,\n\tPERF_REG_RISCV_S6,\n\tPERF_REG_RISCV_S7,\n\tPERF_REG_RISCV_S8,\n\tPERF_REG_RISCV_S9,\n\tPERF_REG_RISCV_S10,\n\tPERF_REG_RISCV_S11,\n\tPERF_REG_RISCV_T3,\n\tPERF_REG_RISCV_T4,\n\tPERF_REG_RISCV_T5,\n\tPERF_REG_RISCV_T6,\n\tPERF_REG_RISCV_MAX,\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "skl_hda_dsp_common.h",
+  "hash_id": "937a2dd384ab3986f67c17c4bd211bef409f69d59f901fd538ae01245ec42216",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/boards/skl_hda_dsp_common.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef __SKL_HDA_DSP_COMMON_H\n#define __SKL_HDA_DSP_COMMON_H\n#include <linux/module.h>\n#include <linux/platform_device.h>\n#include <sound/core.h>\n#include <sound/jack.h>\n#include <sound/hda_codec.h>\n#include \"../../codecs/hdac_hda.h\"\n#include \"hda_dsp_common.h\"\n\n#define HDA_DSP_MAX_BE_DAI_LINKS 7\n\nstruct skl_hda_hdmi_pcm {\n\tstruct list_head head;\n\tstruct snd_soc_dai *codec_dai;\n\tstruct snd_soc_jack hdmi_jack;\n\tint device;\n};\n\nstruct skl_hda_private {\n\tstruct list_head hdmi_pcm_list;\n\tint pcm_count;\n\tint dai_index;\n\tconst char *platform_name;\n\tbool common_hdmi_codec_drv;\n\tbool idisp_codec;\n};\n\nextern struct snd_soc_dai_link skl_hda_be_dai_links[HDA_DSP_MAX_BE_DAI_LINKS];\nint skl_hda_hdmi_jack_init(struct snd_soc_card *card);\nint skl_hda_hdmi_add_pcm(struct snd_soc_card *card, int device);\n\n \nstatic inline int skl_hda_hdmi_build_controls(struct snd_soc_card *card)\n{\n\tstruct skl_hda_private *ctx = snd_soc_card_get_drvdata(card);\n\tstruct snd_soc_component *component;\n\tstruct skl_hda_hdmi_pcm *pcm;\n\n\t \n\tif (list_empty(&ctx->hdmi_pcm_list))\n\t\treturn 0;\n\n\tpcm = list_first_entry(&ctx->hdmi_pcm_list, struct skl_hda_hdmi_pcm,\n\t\t\t       head);\n\tcomponent = pcm->codec_dai->component;\n\tif (!component)\n\t\treturn -EINVAL;\n\n\treturn hda_dsp_hdmi_build_controls(card, component);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

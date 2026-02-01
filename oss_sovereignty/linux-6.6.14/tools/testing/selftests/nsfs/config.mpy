@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "e9f1ed33df6af39cd54ee2bb2a4bc7cb8b2db06e5992607645eee8f83be993b0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/nsfs/config",
+  "human_readable_source": "CONFIG_USER_NS=y\nCONFIG_UTS_NS=y\nCONFIG_PID_NS=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

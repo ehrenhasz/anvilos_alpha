@@ -1,0 +1,9 @@
+{
+  "module_name": "utils.c",
+  "hash_id": "872e4181beaab413d29875435084520c8cbea62db0e5de90c8eb71d6ab3486af",
+  "original_prompt": "Ingested from linux-6.6.14/net/rxrpc/utils.c",
+  "human_readable_source": "\n \n\n#include <linux/ip.h>\n#include <linux/ipv6.h>\n#include <linux/udp.h>\n#include \"ar-internal.h\"\n\n \nint rxrpc_extract_addr_from_skb(struct sockaddr_rxrpc *srx, struct sk_buff *skb)\n{\n\tmemset(srx, 0, sizeof(*srx));\n\n\tswitch (ntohs(skb->protocol)) {\n\tcase ETH_P_IP:\n\t\tsrx->transport_type = SOCK_DGRAM;\n\t\tsrx->transport_len = sizeof(srx->transport.sin);\n\t\tsrx->transport.sin.sin_family = AF_INET;\n\t\tsrx->transport.sin.sin_port = udp_hdr(skb)->source;\n\t\tsrx->transport.sin.sin_addr.s_addr = ip_hdr(skb)->saddr;\n\t\treturn 0;\n\n#ifdef CONFIG_AF_RXRPC_IPV6\n\tcase ETH_P_IPV6:\n\t\tsrx->transport_type = SOCK_DGRAM;\n\t\tsrx->transport_len = sizeof(srx->transport.sin6);\n\t\tsrx->transport.sin6.sin6_family = AF_INET6;\n\t\tsrx->transport.sin6.sin6_port = udp_hdr(skb)->source;\n\t\tsrx->transport.sin6.sin6_addr = ipv6_hdr(skb)->saddr;\n\t\treturn 0;\n#endif\n\n\tdefault:\n\t\tpr_warn_ratelimited(\"AF_RXRPC: Unknown eth protocol %u\\n\",\n\t\t\t\t    ntohs(skb->protocol));\n\t\treturn -EAFNOSUPPORT;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

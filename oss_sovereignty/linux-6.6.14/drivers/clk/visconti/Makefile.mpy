@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "638f0ab454ecf84f67d11fb30fa3340ff3eab1f04be399262f7726cacc460c35",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/visconti/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Makefile for Toshiba Visconti clock\n\nobj-y\t+= clkc.o pll.o reset.o\nobj-y\t+= pll-tmpv770x.o clkc-tmpv770x.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

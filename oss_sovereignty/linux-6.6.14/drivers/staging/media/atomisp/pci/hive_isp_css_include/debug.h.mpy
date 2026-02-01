@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "9d680f7b38701a39a20f4b0bbf75e9928108f0ac2ea77d02810a2c98f885b3f7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/debug.h",
+  "human_readable_source": " \n \n\n#ifndef __DEBUG_H_INCLUDED__\n#define __DEBUG_H_INCLUDED__\n\n \n\n#include \"system_local.h\"\n#include \"debug_local.h\"\n\n#ifndef __INLINE_DEBUG__\n#define STORAGE_CLASS_DEBUG_H extern\n#define STORAGE_CLASS_DEBUG_C\n#include \"debug_public.h\"\n#else   \n#define STORAGE_CLASS_DEBUG_H static inline\n#define STORAGE_CLASS_DEBUG_C static inline\n#include \"debug_private.h\"\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

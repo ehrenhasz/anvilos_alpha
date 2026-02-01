@@ -1,0 +1,9 @@
+{
+  "module_name": "strncmp_test.c",
+  "hash_id": "dc0102577581f46c884079917d64dcd548f04a58855b461047de809573e45e0c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/strncmp_test.c",
+  "human_readable_source": "\n \n#include <stdbool.h>\n#include <linux/types.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\n#define STRNCMP_STR_SZ 8\n\nconst char target[STRNCMP_STR_SZ] = \"EEEEEEE\";\nchar str[STRNCMP_STR_SZ];\nint cmp_ret = 0;\nint target_pid = 0;\n\nconst char no_str_target[STRNCMP_STR_SZ] = \"12345678\";\nchar writable_target[STRNCMP_STR_SZ];\nunsigned int no_const_str_size = STRNCMP_STR_SZ;\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"?tp/syscalls/sys_enter_nanosleep\")\nint do_strncmp(void *ctx)\n{\n\tif ((bpf_get_current_pid_tgid() >> 32) != target_pid)\n\t\treturn 0;\n\n\tcmp_ret = bpf_strncmp(str, STRNCMP_STR_SZ, target);\n\treturn 0;\n}\n\nSEC(\"?tp/syscalls/sys_enter_nanosleep\")\nint strncmp_bad_not_const_str_size(void *ctx)\n{\n\t \n\tcmp_ret = bpf_strncmp(str, no_const_str_size, target);\n\treturn 0;\n}\n\nSEC(\"?tp/syscalls/sys_enter_nanosleep\")\nint strncmp_bad_writable_target(void *ctx)\n{\n\t \n\tcmp_ret = bpf_strncmp(str, STRNCMP_STR_SZ, writable_target);\n\treturn 0;\n}\n\nSEC(\"?tp/syscalls/sys_enter_nanosleep\")\nint strncmp_bad_not_null_term_target(void *ctx)\n{\n\t \n\tcmp_ret = bpf_strncmp(str, STRNCMP_STR_SZ, no_str_target);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

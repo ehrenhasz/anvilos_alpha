@@ -1,0 +1,9 @@
+{
+  "module_name": "test_pound_no_prefix.log",
+  "hash_id": "fb0ba70d56f809c2261a7abc7cf365113a75e60d1ac4bfe577c3ed6f77e6350b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/test_data/test_pound_no_prefix.log",
+  "human_readable_source": " printk: console [mc-1] enabled\n random: get_random_bytes called from init_oops_id+0x35/0x40 with crng_init=0\n TAP version 14\n 1..3\n \t# Subtest: kunit-resource-test\n \t1..5\n \tok 1 - kunit_resource_test_init_resources\n \tok 2 - kunit_resource_test_alloc_resource\n \tok 3 - kunit_resource_test_destroy_resource\n  foo bar \t#\n \tok 4 - kunit_resource_test_cleanup_resources\n \tok 5 - kunit_resource_test_proper_free_ordering\n ok 1 - kunit-resource-test\n  foo bar \t# non-kunit output\n \t# Subtest: kunit-try-catch-test\n \t1..2\n \tok 1 - kunit_test_try_catch_successful_try_no_catch\n \tok 2 - kunit_test_try_catch_unsuccessful_try_does_catch\n ok 2 - kunit-try-catch-test\n \t# Subtest: string-stream-test\n \t1..3\n \tok 1 - string_stream_test_empty_on_creation\n \tok 2 - string_stream_test_not_empty_after_add\n \tok 3 - string_stream_test_get_string\n ok 3 - string-stream-test\n List of all partitions:\n No filesystem could mount root, tried:\n\n Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block(98,0)\n CPU: 0 PID: 1 Comm: swapper Not tainted 5.4.0-rc1-gea2dd7c0875e-dirty #2\n Stack:\n  602086f8 601bc260 705c0000 705c0000\n  602086f8 6005fcec 705c0000 6002c6ab\n  6005fcec 601bc260 705c0000 3000000010\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

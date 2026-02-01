@@ -1,0 +1,9 @@
+{
+  "module_name": "lan966x_vcap_ag_api.h",
+  "hash_id": "fc65c5fbd5785c9160b02b501bc64867c262f61b614afa6f10f13f277388a649",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/microchip/lan966x/lan966x_vcap_ag_api.h",
+  "human_readable_source": " \n\n#ifndef __LAN966X_VCAP_AG_API_H__\n#define __LAN966X_VCAP_AG_API_H__\n\n#include \"vcap_api.h\"\n\nextern const struct vcap_info lan966x_vcaps[];\nextern const struct vcap_statistics lan966x_vcap_stats;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

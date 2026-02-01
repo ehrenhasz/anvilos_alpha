@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_testmod.h",
+  "hash_id": "34fe433802cf8de7a867bdcbda6cde4ed2f0901a5ac670b1b587e73f30faa64d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.h",
+  "human_readable_source": " \n \n#ifndef _BPF_TESTMOD_H\n#define _BPF_TESTMOD_H\n\n#include <linux/types.h>\n\nstruct bpf_testmod_test_read_ctx {\n\tchar *buf;\n\tloff_t off;\n\tsize_t len;\n};\n\nstruct bpf_testmod_test_write_ctx {\n\tchar *buf;\n\tloff_t off;\n\tsize_t len;\n};\n\nstruct bpf_testmod_test_writable_ctx {\n\tbool early_ret;\n\tint val;\n};\n\n \nstruct bpf_iter_testmod_seq {\n\ts64 value;\n\tint cnt;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

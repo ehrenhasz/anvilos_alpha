@@ -1,0 +1,9 @@
+{
+  "module_name": "mxl111sf-phy.h",
+  "hash_id": "9266ce044b95316e45fcf5bed6040a1d3de538a0dd895a8ad460856ba72b6008",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/dvb-usb-v2/mxl111sf-phy.h",
+  "human_readable_source": " \n \n\n#ifndef _DVB_USB_MXL111SF_PHY_H_\n#define _DVB_USB_MXL111SF_PHY_H_\n\n#include \"mxl111sf.h\"\n\nint mxl1x1sf_soft_reset(struct mxl111sf_state *state);\nint mxl1x1sf_set_device_mode(struct mxl111sf_state *state, int mode);\nint mxl1x1sf_top_master_ctrl(struct mxl111sf_state *state, int onoff);\nint mxl111sf_disable_656_port(struct mxl111sf_state *state);\nint mxl111sf_init_tuner_demod(struct mxl111sf_state *state);\nint mxl111sf_enable_usb_output(struct mxl111sf_state *state);\nint mxl111sf_config_mpeg_in(struct mxl111sf_state *state,\n\t\t\t    unsigned int parallel_serial,\n\t\t\t    unsigned int msb_lsb_1st,\n\t\t\t    unsigned int clock_phase,\n\t\t\t    unsigned int mpeg_valid_pol,\n\t\t\t    unsigned int mpeg_sync_pol);\nint mxl111sf_config_i2s(struct mxl111sf_state *state,\n\t\t\tu8 msb_start_pos, u8 data_width);\nint mxl111sf_init_i2s_port(struct mxl111sf_state *state, u8 sample_size);\nint mxl111sf_disable_i2s_port(struct mxl111sf_state *state);\nint mxl111sf_config_spi(struct mxl111sf_state *state, int onoff);\nint mxl111sf_idac_config(struct mxl111sf_state *state,\n\t\t\t u8 control_mode, u8 current_setting,\n\t\t\t u8 current_value, u8 hysteresis_value);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "aad6b021ebb74c5b4cda751ae3658920ba198637ee00bf84e7821d74039b5f6d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/meson/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmeson-drm-y := meson_drv.o meson_plane.o meson_crtc.o meson_encoder_cvbs.o\nmeson-drm-y += meson_viu.o meson_vpp.o meson_venc.o meson_vclk.o meson_overlay.o\nmeson-drm-y += meson_rdma.o meson_osd_afbcd.o\nmeson-drm-y += meson_encoder_hdmi.o meson_encoder_dsi.o\n\nobj-$(CONFIG_DRM_MESON) += meson-drm.o\nobj-$(CONFIG_DRM_MESON_DW_HDMI) += meson_dw_hdmi.o\nobj-$(CONFIG_DRM_MESON_DW_MIPI_DSI) += meson_dw_mipi_dsi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

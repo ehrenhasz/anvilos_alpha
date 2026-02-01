@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d06456bb8e9d6eea43ccb7a49ea9cdbab9b9d5a6015dd00db7f1dae3bcb1f7b1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/w1/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig W1\n\ttristate \"Dallas's 1-wire support\"\n\tdepends on HAS_IOMEM\n\thelp\n\t  Dallas' 1-wire bus is useful to connect slow 1-pin devices\n\t  such as iButtons and thermal sensors.\n\n\t  If you want W1 support, you should say Y here.\n\n\t  This W1 support can also be built as a module.  If so, the module\n\t  will be called wire.\n\nif W1\n\nconfig W1_CON\n\tdepends on CONNECTOR\n\tbool \"Userspace communication over connector\"\n\tdefault y\n\thelp\n\t  This allows to communicate with userspace using connector. For more\n\t  information see <file:Documentation/driver-api/connector.rst>.\n\t  There are three types of messages between w1 core and userspace:\n\t  1. Events. They are generated each time new master or slave device found\n\t\teither due to automatic or requested search.\n\t  2. Userspace commands. Includes read/write and search/alarm search commands.\n\t  3. Replies to userspace commands.\n\nsource \"drivers/w1/masters/Kconfig\"\nsource \"drivers/w1/slaves/Kconfig\"\n\nendif # W1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

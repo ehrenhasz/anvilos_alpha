@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_random.h",
+  "hash_id": "a88c8f0d260cd4af00f30bc4caeffb94bcf3977015823c90689ab1cc717c6855",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/hw_random.h",
+  "human_readable_source": " \n\n#ifndef LINUX_HWRANDOM_H_\n#define LINUX_HWRANDOM_H_\n\n#include <linux/completion.h>\n#include <linux/types.h>\n#include <linux/list.h>\n#include <linux/kref.h>\n\n \nstruct hwrng {\n\tconst char *name;\n\tint (*init)(struct hwrng *rng);\n\tvoid (*cleanup)(struct hwrng *rng);\n\tint (*data_present)(struct hwrng *rng, int wait);\n\tint (*data_read)(struct hwrng *rng, u32 *data);\n\tint (*read)(struct hwrng *rng, void *data, size_t max, bool wait);\n\tunsigned long priv;\n\tunsigned short quality;\n\n\t \n\tstruct list_head list;\n\tstruct kref ref;\n\tstruct completion cleanup_done;\n\tstruct completion dying;\n};\n\nstruct device;\n\n \nextern int hwrng_register(struct hwrng *rng);\nextern int devm_hwrng_register(struct device *dev, struct hwrng *rng);\n \nextern void hwrng_unregister(struct hwrng *rng);\nextern void devm_hwrng_unregister(struct device *dve, struct hwrng *rng);\n\nextern long hwrng_msleep(struct hwrng *rng, unsigned int msecs);\nextern long hwrng_yield(struct hwrng *rng);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

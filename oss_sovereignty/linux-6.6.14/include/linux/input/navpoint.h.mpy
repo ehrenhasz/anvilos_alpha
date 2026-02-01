@@ -1,0 +1,9 @@
+{
+  "module_name": "navpoint.h",
+  "hash_id": "a81677b29adbbcab504e6179e708a42646c199efd6536fa6ca04fd470a4fadab",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/input/navpoint.h",
+  "human_readable_source": " \n \n\nstruct navpoint_platform_data {\n\tint\t\tport;\t\t \n\tint\t\tgpio;\t\t \n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a9612729cc025d2fb030c8d8ae8089a5dd4bbdd49318079b406c87c29a0de921",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/bridge/synopsys/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_DRM_DW_HDMI) += dw-hdmi.o\nobj-$(CONFIG_DRM_DW_HDMI_AHB_AUDIO) += dw-hdmi-ahb-audio.o\nobj-$(CONFIG_DRM_DW_HDMI_GP_AUDIO) += dw-hdmi-gp-audio.o\nobj-$(CONFIG_DRM_DW_HDMI_I2S_AUDIO) += dw-hdmi-i2s-audio.o\nobj-$(CONFIG_DRM_DW_HDMI_CEC) += dw-hdmi-cec.o\n\nobj-$(CONFIG_DRM_DW_MIPI_DSI) += dw-mipi-dsi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "34eaf63ff06da9539c10ed49da532f1f7ded73eda753d9c4084c0a3e38e072a6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn32/Makefile",
+  "human_readable_source": "#\n# (c) Copyright 2022 Advanced Micro Devices, Inc. All the rights reserved\n#\n#  All rights reserved.  This notice is intended as a precaution against\n#  inadvertent publication and does not imply publication or any waiver\n#  of confidentiality.  The year included in the foregoing notice is the\n#  year of creation of the work.\n#\n#  Authors: AMD\n#\n# Makefile for dcn32.\n\nDCN32 = dcn32_resource.o dcn32_hubbub.o dcn32_hwseq.o dcn32_init.o \\\n\t\tdcn32_dccg.o dcn32_optc.o dcn32_mmhubbub.o dcn32_hubp.o dcn32_dpp.o \\\n\t\tdcn32_dio_stream_encoder.o dcn32_dio_link_encoder.o dcn32_hpo_dp_link_encoder.o \\\n\t\tdcn32_resource_helpers.o dcn32_mpc.o\n\nAMD_DAL_DCN32 = $(addprefix $(AMDDALPATH)/dc/dcn32/,$(DCN32))\n\nAMD_DISPLAY_FILES += $(AMD_DAL_DCN32)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

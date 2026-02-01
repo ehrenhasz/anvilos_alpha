@@ -1,0 +1,9 @@
+{
+  "module_name": "dsa.h",
+  "hash_id": "a224fa56da694c106f7fcb7a3d88147c17dde1a4bef942563a271b4ff36dab02",
+  "original_prompt": "Ingested from linux-6.6.14/net/dsa/dsa.h",
+  "human_readable_source": " \n\n#ifndef __DSA_H\n#define __DSA_H\n\n#include <linux/list.h>\n#include <linux/types.h>\n\nstruct dsa_db;\nstruct dsa_device_ops;\nstruct dsa_lag;\nstruct dsa_switch_tree;\nstruct net_device;\nstruct work_struct;\n\nextern struct list_head dsa_tree_list;\n\nbool dsa_db_equal(const struct dsa_db *a, const struct dsa_db *b);\nbool dsa_schedule_work(struct work_struct *work);\nvoid dsa_lag_map(struct dsa_switch_tree *dst, struct dsa_lag *lag);\nvoid dsa_lag_unmap(struct dsa_switch_tree *dst, struct dsa_lag *lag);\nstruct dsa_lag *dsa_tree_lag_find(struct dsa_switch_tree *dst,\n\t\t\t\t  const struct net_device *lag_dev);\nstruct net_device *dsa_tree_find_first_master(struct dsa_switch_tree *dst);\nint dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,\n\t\t\t      const struct dsa_device_ops *tag_ops,\n\t\t\t      const struct dsa_device_ops *old_tag_ops);\nvoid dsa_tree_master_admin_state_change(struct dsa_switch_tree *dst,\n\t\t\t\t\tstruct net_device *master,\n\t\t\t\t\tbool up);\nvoid dsa_tree_master_oper_state_change(struct dsa_switch_tree *dst,\n\t\t\t\t       struct net_device *master,\n\t\t\t\t       bool up);\nunsigned int dsa_bridge_num_get(const struct net_device *bridge_dev, int max);\nvoid dsa_bridge_num_put(const struct net_device *bridge_dev,\n\t\t\tunsigned int bridge_num);\nstruct dsa_bridge *dsa_tree_bridge_find(struct dsa_switch_tree *dst,\n\t\t\t\t\tconst struct net_device *br);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

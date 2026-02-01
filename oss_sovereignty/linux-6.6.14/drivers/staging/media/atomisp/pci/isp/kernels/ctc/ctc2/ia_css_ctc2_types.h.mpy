@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_ctc2_types.h",
+  "hash_id": "45d138856ac65f44ca476235e0bcc89d0d96ea1924d1569408d77f937fcedd04",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ctc/ctc2/ia_css_ctc2_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_CTC2_TYPES_H\n#define __IA_CSS_CTC2_TYPES_H\n\n \nstruct ia_css_ctc2_config {\n\t \n\ts32 y_y0;\n\ts32 y_y1;\n\ts32 y_y2;\n\ts32 y_y3;\n\ts32 y_y4;\n\ts32 y_y5;\n\t \n\ts32 y_x1;\n\ts32 y_x2;\n\ts32 y_x3;\n\ts32 y_x4;\n\t \n\ts32 uv_y0;\n\ts32 uv_y1;\n\t \n\ts32 uv_x0;\n\ts32 uv_x1;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

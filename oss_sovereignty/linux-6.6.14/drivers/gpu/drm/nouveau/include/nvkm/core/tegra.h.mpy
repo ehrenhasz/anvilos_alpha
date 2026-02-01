@@ -1,0 +1,9 @@
+{
+  "module_name": "tegra.h",
+  "hash_id": "54aec78b6353f229f0120c7babe87796fb30ec59b915076e02276d31cd68059f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/core/tegra.h",
+  "human_readable_source": " \n#ifndef __NVKM_DEVICE_TEGRA_H__\n#define __NVKM_DEVICE_TEGRA_H__\n#include <core/device.h>\n#include <core/mm.h>\n\nstruct nvkm_device_tegra {\n\tconst struct nvkm_device_tegra_func *func;\n\tstruct nvkm_device device;\n\tstruct platform_device *pdev;\n\n\tstruct reset_control *rst;\n\tstruct clk *clk;\n\tstruct clk *clk_ref;\n\tstruct clk *clk_pwr;\n\n\tstruct regulator *vdd;\n\n\tstruct {\n\t\t \n\t\tstruct mutex mutex;\n\n\t\tstruct nvkm_mm mm;\n\t\tstruct iommu_domain *domain;\n\t\tunsigned long pgshift;\n\t} iommu;\n\n\tint gpu_speedo;\n\tint gpu_speedo_id;\n};\n\nstruct nvkm_device_tegra_func {\n\t \n\tu8 iommu_bit;\n\t \n\tbool require_ref_clk;\n\t \n\tbool require_vdd;\n};\n\nint nvkm_device_tegra_new(const struct nvkm_device_tegra_func *,\n\t\t\t  struct platform_device *,\n\t\t\t  const char *cfg, const char *dbg,\n\t\t\t  bool detect, bool mmio, u64 subdev_mask,\n\t\t\t  struct nvkm_device **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

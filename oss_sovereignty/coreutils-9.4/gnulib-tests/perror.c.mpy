@@ -1,0 +1,9 @@
+{
+  "module_name": "perror.c",
+  "hash_id": "b12b89620d4b4a8bb395fa3e2bf5080118ceb3911ea6935c466461a95910b35c",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/perror.c",
+  "human_readable_source": " \n#include <stdio.h>\n\n#include <errno.h>\n#include <stdlib.h>\n#include <string.h>\n\n#include \"strerror-override.h\"\n\n \n#undef fprintf\n\nvoid\nperror (const char *string)\n{\n  char stackbuf[STACKBUF_LEN];\n  int ret;\n\n   \n  ret = strerror_r (errno, stackbuf, sizeof stackbuf);\n  if (ret == ERANGE)\n    abort ();\n\n  if (string != NULL && *string != '\\0')\n    fprintf (stderr, \"%s: %s\\n\", string, stackbuf);\n  else\n    fprintf (stderr, \"%s\\n\", stackbuf);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

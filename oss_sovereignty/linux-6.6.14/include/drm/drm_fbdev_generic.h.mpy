@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_fbdev_generic.h",
+  "hash_id": "a78508dcc4214feb6fdba4b5aebc847a820fa44569c164900967d4e058f21496",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_fbdev_generic.h",
+  "human_readable_source": " \n\n#ifndef DRM_FBDEV_GENERIC_H\n#define DRM_FBDEV_GENERIC_H\n\nstruct drm_device;\n\n#ifdef CONFIG_DRM_FBDEV_EMULATION\nvoid drm_fbdev_generic_setup(struct drm_device *dev, unsigned int preferred_bpp);\n#else\nstatic inline void drm_fbdev_generic_setup(struct drm_device *dev, unsigned int preferred_bpp)\n{ }\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

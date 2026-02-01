@@ -1,0 +1,9 @@
+{
+  "module_name": "freplace_progmap.c",
+  "hash_id": "56af099d64ea325f8cebd72ab99a9159a33df200b8b148684bb1adecbda97d7d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/freplace_progmap.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_CPUMAP);\n\t__type(key, __u32);\n\t__type(value, struct bpf_cpumap_val);\n\t__uint(max_entries, 1);\n} cpu_map SEC(\".maps\");\n\nSEC(\"xdp/cpumap\")\nint xdp_drop_prog(struct xdp_md *ctx)\n{\n\treturn XDP_DROP;\n}\n\nSEC(\"freplace\")\nint xdp_cpumap_prog(struct xdp_md *ctx)\n{\n\treturn bpf_redirect_map(&cpu_map, 0, XDP_PASS);\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

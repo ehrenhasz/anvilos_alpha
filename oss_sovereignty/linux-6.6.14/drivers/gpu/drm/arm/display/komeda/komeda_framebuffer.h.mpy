@@ -1,0 +1,9 @@
+{
+  "module_name": "komeda_framebuffer.h",
+  "hash_id": "5a7d2e611cf0c4825425287021b24f6735f8061c7444f3809787709bfb0af937",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/arm/display/komeda/komeda_framebuffer.h",
+  "human_readable_source": " \n \n#ifndef _KOMEDA_FRAMEBUFFER_H_\n#define _KOMEDA_FRAMEBUFFER_H_\n\n#include <drm/drm_framebuffer.h>\n#include \"komeda_format_caps.h\"\n\n \nstruct komeda_fb {\n\t \n\tstruct drm_framebuffer base;\n\t \n\tconst struct komeda_format_caps *format_caps;\n\t \n\tbool is_va;\n\t \n\tu32 aligned_w;\n\t \n\tu32 aligned_h;\n\t \n\tu32 afbc_size;\n\t \n\tu32 offset_payload;\n};\n\n#define to_kfb(dfb)\tcontainer_of(dfb, struct komeda_fb, base)\n\nstruct drm_framebuffer *\nkomeda_fb_create(struct drm_device *dev, struct drm_file *file,\n\t\tconst struct drm_mode_fb_cmd2 *mode_cmd);\nint komeda_fb_check_src_coords(const struct komeda_fb *kfb,\n\t\t\t       u32 src_x, u32 src_y, u32 src_w, u32 src_h);\ndma_addr_t\nkomeda_fb_get_pixel_addr(struct komeda_fb *kfb, int x, int y, int plane);\nbool komeda_fb_is_layer_supported(struct komeda_fb *kfb, u32 layer_type,\n\t\tu32 rot);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "syscalls_32.c",
+  "hash_id": "01660a9005b6abc5a6273ce97cd5c837e4c5e5475e8fcd7d34e73f8d29b101f8",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/syscalls_32.c",
+  "human_readable_source": "\n#include <linux/syscalls.h>\n#include <os.h>\n\nSYSCALL_DEFINE2(arch_prctl, int, option, unsigned long, arg2)\n{\n\treturn -EINVAL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

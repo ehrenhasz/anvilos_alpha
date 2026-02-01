@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "817d1efe3344c4bb72c28cac930996067242620a737e43f4cecb110a8540646b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/filesystems/binderfs/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nbinderfs_test\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

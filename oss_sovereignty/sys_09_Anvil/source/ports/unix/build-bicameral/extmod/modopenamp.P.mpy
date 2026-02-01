@@ -1,0 +1,9 @@
+{
+  "module_name": "modopenamp.P",
+  "hash_id": "f64b55fe787bbd12d753eb592fd518906a09037ed861b3195b5e88cbe96866f7",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/extmod/modopenamp.P",
+  "human_readable_source": "build-bicameral/extmod/modopenamp.o: ../../extmod/modopenamp.c \\\n /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/stdc-predef.h\n../../extmod/modopenamp.c :\n /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/stdc-predef.h :\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

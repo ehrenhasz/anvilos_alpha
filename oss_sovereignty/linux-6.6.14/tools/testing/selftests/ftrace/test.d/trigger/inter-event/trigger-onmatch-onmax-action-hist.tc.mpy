@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-onmatch-onmax-action-hist.tc",
+  "hash_id": "3567464bb1ba95de522267a25dbc7e8ad3d04e56749d9924938b05fbf882f0a7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/inter-event/trigger-onmatch-onmax-action-hist.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event trigger - test inter-event histogram trigger onmatch-onmax action\n# requires: set_event synthetic_events events/sched/sched_process_fork/hist ping:program\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\necho \"Test create synthetic event\"\n\necho 'wakeup_latency  u64 lat pid_t pid char comm[16]' > synthetic_events\nif [ ! -d events/synthetic/wakeup_latency ]; then\n    fail \"Failed to create wakeup_latency synthetic event\"\nfi\n\necho \"Test create histogram for synthetic event\"\necho \"Test histogram variables,simple expression support and onmatch-onmax action\"\n\necho 'hist:keys=pid:ts0=common_timestamp.usecs if comm==\"ping\"' > events/sched/sched_wakeup/trigger\necho 'hist:keys=next_pid:wakeup_lat=common_timestamp.usecs-$ts0:onmatch(sched.sched_wakeup).wakeup_latency($wakeup_lat,next_pid,next_comm):onmax($wakeup_lat).save(next_comm,prev_pid,prev_prio,prev_comm) if next_comm==\"ping\"' >> events/sched/sched_switch/trigger\necho 'hist:keys=comm,pid,lat:wakeup_lat=lat:sort=lat' > events/synthetic/wakeup_latency/trigger\n\nping $LOCALHOST -c 5\nif [ ! grep -q \"ping\" events/synthetic/wakeup_latency/hist -o ! grep -q \"max:\" events/sched/sched_switch/hist]; then\n    fail \"Failed to create onmatch-onmax action inter-event histogram\"\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

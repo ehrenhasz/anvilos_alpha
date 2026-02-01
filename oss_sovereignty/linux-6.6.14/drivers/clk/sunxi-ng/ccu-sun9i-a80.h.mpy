@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu-sun9i-a80.h",
+  "hash_id": "3246decfd946dd0a7efb31c2ecf7b93ad7561f0b3306e43ff255eaffa0645f71",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu-sun9i-a80.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_SUN9I_A80_H_\n#define _CCU_SUN9I_A80_H_\n\n#include <dt-bindings/clock/sun9i-a80-ccu.h>\n#include <dt-bindings/reset/sun9i-a80-ccu.h>\n\n#define CLK_PLL_C0CPUX\t\t0\n#define CLK_PLL_C1CPUX\t\t1\n\n \n\n#define CLK_PLL_VE\t\t4\n#define CLK_PLL_DDR\t\t5\n#define CLK_PLL_VIDEO0\t\t6\n#define CLK_PLL_VIDEO1\t\t7\n#define CLK_PLL_GPU\t\t8\n#define CLK_PLL_DE\t\t9\n#define CLK_PLL_ISP\t\t10\n#define CLK_PLL_PERIPH1\t\t11\n\n \n\n#define CLK_ATB0\t\t14\n#define CLK_AXI0\t\t15\n#define CLK_ATB1\t\t16\n#define CLK_AXI1\t\t17\n#define CLK_GTBUS\t\t18\n#define CLK_AHB0\t\t19\n#define CLK_AHB1\t\t20\n#define CLK_AHB2\t\t21\n#define CLK_APB0\t\t22\n#define CLK_APB1\t\t23\n#define CLK_CCI400\t\t24\n#define CLK_ATS\t\t\t25\n#define CLK_TRACE\t\t26\n\n \n\n#define CLK_NUMBER\t\t(CLK_BUS_UART5 + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "wm0010.h",
+  "hash_id": "3a0c19f33ddcbc3c56ed4c2ddf55f3a760f2abd2c954e735f6edd8b33f402b88",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/wm0010.h",
+  "human_readable_source": " \n \n\n#ifndef WM0010_PDATA_H\n#define WM0010_PDATA_H\n\nstruct wm0010_pdata {\n\tint gpio_reset;\n\n\t \n\tint reset_active_high;\n\tint irq_flags;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

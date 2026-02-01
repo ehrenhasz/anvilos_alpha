@@ -1,0 +1,9 @@
+{
+  "module_name": "modules-common.c",
+  "hash_id": "f6b86b3ea909d819c8d90f11bf78dc40e9d7fff072cfd05f450d7fa81ced8099",
+  "original_prompt": "Ingested from linux-6.6.14/mm/damon/modules-common.c",
+  "human_readable_source": "\n \n\n#include <linux/damon.h>\n\n#include \"modules-common.h\"\n\n \nint damon_modules_new_paddr_ctx_target(struct damon_ctx **ctxp,\n\t\tstruct damon_target **targetp)\n{\n\tstruct damon_ctx *ctx;\n\tstruct damon_target *target;\n\n\tctx = damon_new_ctx();\n\tif (!ctx)\n\t\treturn -ENOMEM;\n\n\tif (damon_select_ops(ctx, DAMON_OPS_PADDR)) {\n\t\tdamon_destroy_ctx(ctx);\n\t\treturn -EINVAL;\n\t}\n\n\ttarget = damon_new_target();\n\tif (!target) {\n\t\tdamon_destroy_ctx(ctx);\n\t\treturn -ENOMEM;\n\t}\n\tdamon_add_target(ctx, target);\n\n\t*ctxp = ctx;\n\t*targetp = target;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

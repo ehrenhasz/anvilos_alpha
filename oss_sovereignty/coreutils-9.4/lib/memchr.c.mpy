@@ -1,0 +1,9 @@
+{
+  "module_name": "memchr.c",
+  "hash_id": "7d473d7e46335c27a5544a94325788c5c64e2012bab764894a1d142b3d1d7cbd",
+  "original_prompt": "Ingested from coreutils-9.4/lib/memchr.c",
+  "human_readable_source": " \nvoid *\n__memchr (void const *s, int c_in, size_t n)\n{\n   \n  typedef unsigned long int longword;\n\n  const unsigned char *char_ptr;\n  const longword *longword_ptr;\n  longword repeated_one;\n  longword repeated_c;\n  unsigned reg_char c;\n\n  c = (unsigned char) c_in;\n\n   \n  for (char_ptr = (const unsigned char *) s;\n       n > 0 && (size_t) char_ptr % sizeof (longword) != 0;\n       --n, ++char_ptr)\n    if (*char_ptr == c)\n      return (void *) char_ptr;\n\n  longword_ptr = (const longword *) char_ptr;\n\n   \n\n   \n  repeated_one = 0x01010101;\n  repeated_c = c | (c << 8);\n  repeated_c |= repeated_c << 16;\n  if (0xffffffffU < (longword) -1)\n    {\n      repeated_one |= repeated_one << 31 << 1;\n      repeated_c |= repeated_c << 31 << 1;\n      if (8 < sizeof (longword))\n        {\n          size_t i;\n\n          for (i = 64; i < sizeof (longword) * 8; i *= 2)\n            {\n              repeated_one |= repeated_one << i;\n              repeated_c |= repeated_c << i;\n            }\n        }\n    }\n\n   \n\n  while (n >= sizeof (longword))\n    {\n      longword longword1 = *longword_ptr ^ repeated_c;\n\n      if ((((longword1 - repeated_one) & ~longword1)\n           & (repeated_one << 7)) != 0)\n        break;\n      longword_ptr++;\n      n -= sizeof (longword);\n    }\n\n  char_ptr = (const unsigned char *) longword_ptr;\n\n   \n\n  for (; n > 0; --n, ++char_ptr)\n    {\n      if (*char_ptr == c)\n        return (void *) char_ptr;\n    }\n\n  return NULL;\n}\n#ifdef weak_alias\nweak_alias (__memchr, BP_SYM (memchr))\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

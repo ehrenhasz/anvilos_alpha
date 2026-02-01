@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrtoc32-w32-7.sh",
+  "hash_id": "7ce4187597fd744efbf507e9b9de8b9fa6b48371d1081233ea25dd9bcf562e7a",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrtoc32-w32-7.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a CP936 locale.\n${CHECKER} ./test-mbrtoc32-w32${EXEEXT} Chinese_China 936\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

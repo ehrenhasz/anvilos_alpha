@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_ioctl.sh",
+  "hash_id": "3ebc81716e6f8339725e2066dfc99125b022c24a70afce16740a19f3b1603a22",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/drm_ioctl.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n\n[ $# -eq 1 ] && header_dir=$1 || header_dir=tools/include/uapi/drm/\n\nprintf \"#ifndef DRM_COMMAND_BASE\\n\"\ngrep \"#define DRM_COMMAND_BASE\" $header_dir/drm.h\nprintf \"#endif\\n\"\n\nprintf \"static const char *drm_ioctl_cmds[] = {\\n\"\ngrep \"^#define DRM_IOCTL.*DRM_IO\" $header_dir/drm.h | \\\n\tsed -r 's/^#define +DRM_IOCTL_([A-Z0-9_]+)[\t ]+DRM_IO[A-Z]* *\\( *(0x[[:xdigit:]]+),*.*/\t[\\2] = \"\\1\",/g'\ngrep \"^#define DRM_I915_[A-Z_0-9]\\+[\t ]\\+0x\" $header_dir/i915_drm.h | \\\n\tsed -r 's/^#define +DRM_I915_([A-Z0-9_]+)[\t ]+(0x[[:xdigit:]]+)/\\t[DRM_COMMAND_BASE + \\2] = \"I915_\\1\",/g'\nprintf \"};\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

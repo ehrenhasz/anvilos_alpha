@@ -1,0 +1,9 @@
+{
+  "module_name": "smc_ism.h",
+  "hash_id": "161295f0c37cbeec84fd3f4c4bb6ffafb7c2ec10ebadf1c693b0a5a9ae83ad95",
+  "original_prompt": "Ingested from linux-6.6.14/net/smc/smc_ism.h",
+  "human_readable_source": " \n \n\n#ifndef SMCD_ISM_H\n#define SMCD_ISM_H\n\n#include <linux/uio.h>\n#include <linux/types.h>\n#include <linux/mutex.h>\n\n#include \"smc.h\"\n\nstruct smcd_dev_list {\t \n\tstruct list_head list;\n\tstruct mutex mutex;\t \n};\n\nextern struct smcd_dev_list\tsmcd_dev_list;\t \n\nstruct smc_ism_vlanid {\t\t\t \n\tstruct list_head list;\n\tunsigned short vlanid;\t\t \n\trefcount_t refcnt;\t\t \n};\n\nstruct smcd_dev;\n\nint smc_ism_cantalk(u64 peer_gid, unsigned short vlan_id, struct smcd_dev *dev);\nvoid smc_ism_set_conn(struct smc_connection *conn);\nvoid smc_ism_unset_conn(struct smc_connection *conn);\nint smc_ism_get_vlan(struct smcd_dev *dev, unsigned short vlan_id);\nint smc_ism_put_vlan(struct smcd_dev *dev, unsigned short vlan_id);\nint smc_ism_register_dmb(struct smc_link_group *lgr, int buf_size,\n\t\t\t struct smc_buf_desc *dmb_desc);\nint smc_ism_unregister_dmb(struct smcd_dev *dev, struct smc_buf_desc *dmb_desc);\nint smc_ism_signal_shutdown(struct smc_link_group *lgr);\nvoid smc_ism_get_system_eid(u8 **eid);\nu16 smc_ism_get_chid(struct smcd_dev *dev);\nbool smc_ism_is_v2_capable(void);\nint smc_ism_init(void);\nvoid smc_ism_exit(void);\nint smcd_nl_get_device(struct sk_buff *skb, struct netlink_callback *cb);\n\nstatic inline int smc_ism_write(struct smcd_dev *smcd, u64 dmb_tok,\n\t\t\t\tunsigned int idx, bool sf, unsigned int offset,\n\t\t\t\tvoid *data, size_t len)\n{\n\tint rc;\n\n\trc = smcd->ops->move_data(smcd, dmb_tok, idx, sf, offset, data, len);\n\treturn rc < 0 ? rc : 0;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

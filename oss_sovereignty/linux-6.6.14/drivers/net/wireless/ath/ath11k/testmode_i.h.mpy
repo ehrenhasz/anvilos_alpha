@@ -1,0 +1,9 @@
+{
+  "module_name": "testmode_i.h",
+  "hash_id": "4775d53860c26a41952dbb568208504aef6952a179470698670f354158ee9ca2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath11k/testmode_i.h",
+  "human_readable_source": " \n \n\n \n#define ATH11K_TESTMODE_VERSION_MAJOR 1\n\n \n#define ATH11K_TESTMODE_VERSION_MINOR 1\n\n#define ATH11K_TM_DATA_MAX_LEN\t\t5000\n#define ATH11K_FTM_EVENT_MAX_BUF_LENGTH 2048\n\nenum ath11k_tm_attr {\n\t__ATH11K_TM_ATTR_INVALID\t\t= 0,\n\tATH11K_TM_ATTR_CMD\t\t\t= 1,\n\tATH11K_TM_ATTR_DATA\t\t\t= 2,\n\tATH11K_TM_ATTR_WMI_CMDID\t\t= 3,\n\tATH11K_TM_ATTR_VERSION_MAJOR\t\t= 4,\n\tATH11K_TM_ATTR_VERSION_MINOR\t\t= 5,\n\tATH11K_TM_ATTR_WMI_OP_VERSION\t\t= 6,\n\n\t \n\t__ATH11K_TM_ATTR_AFTER_LAST,\n\tATH11K_TM_ATTR_MAX\t\t= __ATH11K_TM_ATTR_AFTER_LAST - 1,\n};\n\n \nenum ath11k_tm_cmd {\n\t \n\tATH11K_TM_CMD_GET_VERSION = 0,\n\n\t \n\tATH11K_TM_CMD_WMI = 1,\n\n\t \n\tATH11K_TM_CMD_TESTMODE_START = 2,\n\n\t \n\tATH11K_TM_CMD_WMI_FTM = 3,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

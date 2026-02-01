@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e5f87c78e2eb6b36498601a6c6a59fba41bb4ba96a98f52c0205b264c5c225aa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dax/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_DAX) += dax.o\nobj-$(CONFIG_DEV_DAX) += device_dax.o\nobj-$(CONFIG_DEV_DAX_KMEM) += kmem.o\nobj-$(CONFIG_DEV_DAX_PMEM) += dax_pmem.o\nobj-$(CONFIG_DEV_DAX_CXL) += dax_cxl.o\n\ndax-y := super.o\ndax-y += bus.o\ndevice_dax-y := device.o\ndax_pmem-y := pmem.o\ndax_cxl-y := cxl.o\n\nobj-y += hmem/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

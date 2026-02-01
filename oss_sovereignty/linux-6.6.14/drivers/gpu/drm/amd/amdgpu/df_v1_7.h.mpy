@@ -1,0 +1,9 @@
+{
+  "module_name": "df_v1_7.h",
+  "hash_id": "4f02ea1914b4f2661404ec4f71db4d193e43c3b8acae26f7905fd63dfb79df7d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/df_v1_7.h",
+  "human_readable_source": " \n\n#ifndef __DF_V1_7_H__\n#define __DF_V1_7_H__\n\n#include \"soc15_common.h\"\nenum DF_V1_7_MGCG\n{\n\tDF_V1_7_MGCG_DISABLE = 0,\n\tDF_V1_7_MGCG_ENABLE_00_CYCLE_DELAY =1,\n\tDF_V1_7_MGCG_ENABLE_01_CYCLE_DELAY =2,\n\tDF_V1_7_MGCG_ENABLE_15_CYCLE_DELAY =13,\n\tDF_V1_7_MGCG_ENABLE_31_CYCLE_DELAY =14,\n\tDF_V1_7_MGCG_ENABLE_63_CYCLE_DELAY =15\n};\n\nextern const struct amdgpu_df_funcs df_v1_7_funcs;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

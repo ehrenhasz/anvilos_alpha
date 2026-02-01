@@ -1,0 +1,9 @@
+{
+  "module_name": "io.h",
+  "hash_id": "642ec6bbd527138872644b191ce65ae8f710d142e4d04af561ffc30c946bcc1e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/io.h",
+  "human_readable_source": " \n#ifndef BOOT_IO_H\n#define BOOT_IO_H\n\n#include <asm/shared/io.h>\n\n#undef inb\n#undef inw\n#undef inl\n#undef outb\n#undef outw\n#undef outl\n\nstruct port_io_ops {\n\tu8\t(*f_inb)(u16 port);\n\tvoid\t(*f_outb)(u8 v, u16 port);\n\tvoid\t(*f_outw)(u16 v, u16 port);\n};\n\nextern struct port_io_ops pio_ops;\n\n \nstatic inline void init_default_io_ops(void)\n{\n\tpio_ops.f_inb  = __inb;\n\tpio_ops.f_outb = __outb;\n\tpio_ops.f_outw = __outw;\n}\n\n \n#define inb  pio_ops.f_inb\n#define outb pio_ops.f_outb\n#define outw pio_ops.f_outw\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

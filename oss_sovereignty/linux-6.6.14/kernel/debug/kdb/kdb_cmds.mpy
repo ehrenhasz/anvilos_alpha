@@ -1,0 +1,9 @@
+{
+  "module_name": "kdb_cmds",
+  "hash_id": "d9539fbacdc601561ba2d22d3b5a6b7c524d56940c9c0e599db55b9be3ca0ea5",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/debug/kdb/kdb_cmds",
+  "human_readable_source": "# Initial commands for kdb, alter to suit your needs.\n# These commands are executed in kdb_init() context, no SMP, no\n# processes.  Commands that require process data (including stack or\n# registers) are not reliable this early.  set and bp commands should\n# be safe.  Global breakpoint commands affect each cpu as it is booted.\n\n# Standard debugging information for first level support, just type archkdb\n# or archkdbcpu or archkdbshort at the kdb prompt.\n\ndefcmd dumpcommon \"\" \"Common kdb debugging\"\n  set BTAPROMPT 0\n  set LINES 10000\n  -summary\n  -cpu\n  -ps\n  -dmesg 600\n  -bt\nendefcmd\n\ndefcmd dumpall \"\" \"First line debugging\"\n  pid R\n  -dumpcommon\n  -bta\nendefcmd\n\ndefcmd dumpcpu \"\" \"Same as dumpall but only tasks on cpus\"\n  pid R\n  -dumpcommon\n  -btc\nendefcmd\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

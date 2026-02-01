@@ -1,0 +1,9 @@
+{
+  "module_name": "state_3d.xml.h",
+  "hash_id": "936de2a9f5be217e165da89167eaae8a703e1e74ebc6b54a2241162e58c61967",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/etnaviv/state_3d.xml.h",
+  "human_readable_source": " \n#ifndef STATE_3D_XML\n#define STATE_3D_XML\n\n \n\n#define VIVS_TS_FLUSH_CACHE\t\t\t\t\t0x00001650\n#define VIVS_TS_FLUSH_CACHE_FLUSH\t\t\t\t0x00000001\n\n#define VIVS_NTE_DESCRIPTOR_FLUSH\t\t\t\t0x00014c44\n#define VIVS_NTE_DESCRIPTOR_FLUSH_UNK28__MASK\t\t\t0xf0000000\n#define VIVS_NTE_DESCRIPTOR_FLUSH_UNK28__SHIFT\t\t\t28\n#define VIVS_NTE_DESCRIPTOR_FLUSH_UNK28(x)\t\t\t(((x) << VIVS_NTE_DESCRIPTOR_FLUSH_UNK28__SHIFT) & VIVS_NTE_DESCRIPTOR_FLUSH_UNK28__MASK)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

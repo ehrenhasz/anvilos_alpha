@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "69df39f8b4a21aa982165590a7cca76466ba8cb47e373f4362880c55e34f80ce",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/mediatek/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)\n\nconfig SND_SOC_SOF_MTK_TOPLEVEL\n\tbool \"SOF support for MTK audio DSPs\"\n\tdepends on ARM64 || COMPILE_TEST\n\tdepends on SND_SOC_SOF_OF\n\thelp\n\t  This adds support for Sound Open Firmware for Mediatek platforms.\n\t  It is top level for all mediatek platforms.\n\t  Say Y if you have such a device.\n\t  If unsure select \"N\".\n\nif SND_SOC_SOF_MTK_TOPLEVEL\nconfig SND_SOC_SOF_MTK_COMMON\n\ttristate\n\tselect SND_SOC_SOF_OF_DEV\n\tselect SND_SOC_SOF\n\tselect SND_SOC_SOF_IPC3\n\tselect SND_SOC_SOF_XTENSA\n\tselect SND_SOC_SOF_COMPRESS\n\thelp\n\t  This option is not user-selectable but automagically handled by\n\t  'select' statements at a higher level\n\nconfig SND_SOC_SOF_MT8186\n\ttristate \"SOF support for MT8186 audio DSP\"\n\tselect SND_SOC_SOF_MTK_COMMON\n\tdepends on MTK_ADSP_IPC\n\thelp\n\t  This adds support for Sound Open Firmware for Mediatek platforms\n\t  using the mt8186 processors.\n\t  Say Y if you have such a device.\n\t  If unsure select \"N\".\n\nconfig SND_SOC_SOF_MT8195\n\ttristate \"SOF support for MT8195 audio DSP\"\n\tselect SND_SOC_SOF_MTK_COMMON\n\tdepends on MTK_ADSP_IPC\n\thelp\n\t  This adds support for Sound Open Firmware for Mediatek platforms\n\t  using the mt8195 processors.\n\t  Say Y if you have such a device.\n\t  If unsure select \"N\".\n\nendif ## SND_SOC_SOF_MTK_TOPLEVEL\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

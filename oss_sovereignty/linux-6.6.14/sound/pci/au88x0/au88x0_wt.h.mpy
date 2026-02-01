@@ -1,0 +1,9 @@
+{
+  "module_name": "au88x0_wt.h",
+  "hash_id": "7d66ab4374fbacf7a0569988d97b8cdf4dd6a7a7916a2817bacaafa565b6dcb7",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/au88x0/au88x0_wt.h",
+  "human_readable_source": " \n \n#ifndef _AU88X0_WT_H\n#define _AU88X0_WT_H\n\n \n \n\n#define NR_WT_PB 0x20\n\n \n#define WT_BAR(x) (((x)&0xffe0)<<0x8)\n#define WT_BANK(x) (x>>5)\n \n#define WT_CTRL(bank)\t(((((bank)&1)<<0xd) + 0x00)<<2)\t \n#define WT_SRAMP(bank)\t(((((bank)&1)<<0xd) + 0x01)<<2)\t \n#define WT_DSREG(bank)\t(((((bank)&1)<<0xd) + 0x02)<<2)\t \n#define WT_MRAMP(bank)\t(((((bank)&1)<<0xd) + 0x03)<<2)\t \n#define WT_GMODE(bank)\t(((((bank)&1)<<0xd) + 0x04)<<2)\t \n#define WT_ARAMP(bank)\t(((((bank)&1)<<0xd) + 0x05)<<2)\t \n \n#define WT_STEREO(voice)\t((WT_BAR(voice)+ 0x20 +(((voice)&0x1f)>>1))<<2)\t \n#define WT_MUTE(voice)\t\t((WT_BAR(voice)+ 0x40 +((voice)&0x1f))<<2)\t \n#define WT_RUN(voice)\t\t((WT_BAR(voice)+ 0x60 +((voice)&0x1f))<<2)\t \n \n \n \n#define WT_PARM(x,y)\t(((WT_BAR(x))+ 0x80 +(((x)&0x1f)<<2)+(y))<<2)\t \n#define WT_DELAY(x,y)\t(((WT_BAR(x))+ 0x100 +(((x)&0x1f)<<2)+(y))<<2)\t \n\n \n#if 0\nenum {\n\trun = 0,\t\t \n\tparm0,\t\t\t \n\tparm1,\t\t\t \n\tparm2,\t\t\t \n\tparm3,\t\t\t \n\tsramp,\t\t\t \n\tmute,\t\t\t \n\tgmode,\t\t\t \n\taramp,\t\t\t \n\tmramp,\t\t\t \n\tctrl,\t\t\t \n\tdelay,\t\t\t \n\tdsreg,\t\t\t \n} wt_reg;\n#endif\n\ntypedef struct {\n\tu32 parm0;\t \n\tu32 parm1;\t \n\tu32 parm2;\t \n\tu32 parm3;\t \n\tu32 this_1D0;\n} wt_voice_t;\n\n#endif\t\t\t\t \n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

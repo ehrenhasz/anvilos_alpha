@@ -1,0 +1,9 @@
+{
+  "module_name": "xgethostname.c",
+  "hash_id": "aac0facc555e8c6397eb09b907b613716c9d12af818a907e91f2e3622f62a6d1",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xgethostname.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include \"xgethostname.h\"\n\n#define GETANAME gethostname\n#define XGETANAME xgethostname\n#include \"xgetaname-impl.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

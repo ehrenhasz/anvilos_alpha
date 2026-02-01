@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8b99b527fff544c244efc8c08f9e36bf86b6c61c65118c70b7a12ffa8514b3fb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/sw/rxe/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig RDMA_RXE\n\ttristate \"Software RDMA over Ethernet (RoCE) driver\"\n\tdepends on INET && PCI && INFINIBAND\n\tdepends on INFINIBAND_VIRT_DMA\n\tselect NET_UDP_TUNNEL\n\tselect CRYPTO\n\tselect CRYPTO_CRC32\n\thelp\n\tThis driver implements the InfiniBand RDMA transport over\n\tthe Linux network stack. It enables a system with a\n\tstandard Ethernet adapter to interoperate with a RoCE\n\tadapter or with another system running the RXE driver.\n\tDocumentation on InfiniBand and RoCE can be downloaded at\n\twww.infinibandta.org and www.openfabrics.org. (See also\n\tsiw which is a similar software driver for iWARP.)\n\n\tThe driver is split into two layers, one interfaces with the\n\tLinux RDMA stack and implements a kernel or user space\n\tverbs API. The user space verbs API requires a support\n\tlibrary named librxe which is loaded by the generic user\n\tspace verbs API, libibverbs. The other layer interfaces\n\twith the Linux network stack at layer 3.\n\n\tTo configure and work with soft-RoCE driver please use the\n\tfollowing wiki page under \"configure Soft-RoCE (RXE)\" section:\n\n\thttps://github.com/linux-rdma/rdma-core/blob/master/Documentation/rxe.md\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

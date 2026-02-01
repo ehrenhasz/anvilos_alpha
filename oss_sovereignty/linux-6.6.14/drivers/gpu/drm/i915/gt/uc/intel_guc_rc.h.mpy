@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_guc_rc.h",
+  "hash_id": "b4247d74c0c41adc36ad742c1d0fbc255ad4444f2eae7ca0e7e32915e258c3e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/uc/intel_guc_rc.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_GUC_RC_H_\n#define _INTEL_GUC_RC_H_\n\n#include \"intel_guc_submission.h\"\n\nvoid intel_guc_rc_init_early(struct intel_guc *guc);\n\nstatic inline bool intel_guc_rc_is_supported(struct intel_guc *guc)\n{\n\treturn guc->rc_supported;\n}\n\nstatic inline bool intel_guc_rc_is_wanted(struct intel_guc *guc)\n{\n\treturn guc->submission_selected && intel_guc_rc_is_supported(guc);\n}\n\nstatic inline bool intel_guc_rc_is_used(struct intel_guc *guc)\n{\n\treturn intel_guc_submission_is_used(guc) && intel_guc_rc_is_wanted(guc);\n}\n\nint intel_guc_rc_enable(struct intel_guc *guc);\nint intel_guc_rc_disable(struct intel_guc *guc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

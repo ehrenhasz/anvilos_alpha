@@ -1,0 +1,9 @@
+{
+  "module_name": "chained_irq.h",
+  "hash_id": "1fda0ee35832a5e4292ea102e4b8875d7829635bc1cfc68a7e601e1050ca53f6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/irqchip/chained_irq.h",
+  "human_readable_source": " \n \n#ifndef __IRQCHIP_CHAINED_IRQ_H\n#define __IRQCHIP_CHAINED_IRQ_H\n\n#include <linux/irq.h>\n\n \nstatic inline void chained_irq_enter(struct irq_chip *chip,\n\t\t\t\t     struct irq_desc *desc)\n{\n\t \n\tif (chip->irq_eoi)\n\t\treturn;\n\n\tif (chip->irq_mask_ack) {\n\t\tchip->irq_mask_ack(&desc->irq_data);\n\t} else {\n\t\tchip->irq_mask(&desc->irq_data);\n\t\tif (chip->irq_ack)\n\t\t\tchip->irq_ack(&desc->irq_data);\n\t}\n}\n\nstatic inline void chained_irq_exit(struct irq_chip *chip,\n\t\t\t\t    struct irq_desc *desc)\n{\n\tif (chip->irq_eoi)\n\t\tchip->irq_eoi(&desc->irq_data);\n\telse\n\t\tchip->irq_unmask(&desc->irq_data);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

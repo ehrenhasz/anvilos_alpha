@@ -1,0 +1,9 @@
+{
+  "module_name": "defs.h",
+  "hash_id": "ebfd48b40a49d6451f11b97182d2e8d6451520caa69211457bfea6bdaf8aa2fc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/defs.h",
+  "human_readable_source": " \n \n\n#ifndef _HRT_DEFS_H_\n#define _HRT_DEFS_H_\n\n#ifndef HRTCAT\n#define _HRTCAT(m, n)     m##n\n#define HRTCAT(m, n)      _HRTCAT(m, n)\n#endif\n\n#ifndef HRTSTR\n#define _HRTSTR(x)   #x\n#define HRTSTR(x)    _HRTSTR(x)\n#endif\n\n#ifndef HRTMIN\n#define HRTMIN(a, b) (((a) < (b)) ? (a) : (b))\n#endif\n\n#ifndef HRTMAX\n#define HRTMAX(a, b) (((a) > (b)) ? (a) : (b))\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

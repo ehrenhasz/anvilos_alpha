@@ -1,0 +1,9 @@
+{
+  "module_name": "ehci-fsl.h",
+  "hash_id": "43b381e31fb698e16481bfdc06722a469a4037a0efbb57c26a41f1523e095cd7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/host/ehci-fsl.h",
+  "human_readable_source": " \n \n#ifndef _EHCI_FSL_H\n#define _EHCI_FSL_H\n\n \n#define FSL_SOC_USB_SBUSCFG\t0x90\n#define SBUSCFG_INCR8\t\t0x02\t \n#define FSL_SOC_USB_ULPIVP\t0x170\n#define FSL_SOC_USB_PORTSC1\t0x184\n#define PORT_PTS_MSK\t\t(3<<30)\n#define PORT_PTS_UTMI\t\t(0<<30)\n#define PORT_PTS_ULPI\t\t(2<<30)\n#define\tPORT_PTS_SERIAL\t\t(3<<30)\n#define PORT_PTS_PTW\t\t(1<<28)\n#define FSL_SOC_USB_PORTSC2\t0x188\n#define FSL_SOC_USB_USBMODE\t0x1a8\n#define USBMODE_CM_MASK\t\t(3 << 0)\t \n#define USBMODE_CM_HOST\t\t(3 << 0)\t \n#define USBMODE_ES\t\t(1 << 2)\t \n\n#define FSL_SOC_USB_USBGENCTRL\t0x200\n#define USBGENCTRL_PPP\t\t(1 << 3)\n#define USBGENCTRL_PFP\t\t(1 << 2)\n#define FSL_SOC_USB_ISIPHYCTRL\t0x204\n#define ISIPHYCTRL_PXE\t\t(1)\n#define ISIPHYCTRL_PHYE\t\t(1 << 4)\n\n#define FSL_SOC_USB_SNOOP1\t0x400\t \n#define FSL_SOC_USB_SNOOP2\t0x404\t \n#define FSL_SOC_USB_AGECNTTHRSH\t0x408\t \n#define FSL_SOC_USB_PRICTRL\t0x40c\t \n#define FSL_SOC_USB_SICTRL\t0x410\t \n#define FSL_SOC_USB_CTRL\t0x500\t \n#define CTRL_UTMI_PHY_EN\t(1<<9)\n#define CTRL_PHY_CLK_VALID\t(1 << 17)\n#define SNOOP_SIZE_2GB\t\t0x1e\n\n \n#define CONTROL_REGISTER_W1C_MASK       0x00020000   \n#define ULPI_INT_EN             (1<<0)\n#define WU_INT_EN               (1<<1)\n#define USB_CTRL_USB_EN         (1<<2)\n#define LINE_STATE_FILTER__EN   (1<<3)\n#define KEEP_OTG_ON             (1<<4)\n#define OTG_PORT                (1<<5)\n#define PLL_RESET               (1<<8)\n#define UTMI_PHY_EN             (1<<9)\n#define ULPI_PHY_CLK_SEL        (1<<10)\n#define PHY_CLK_VALID\t\t(1<<17)\n\n \n#define UTMI_PHY_CLK_VALID_CHK_RETRY 5\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

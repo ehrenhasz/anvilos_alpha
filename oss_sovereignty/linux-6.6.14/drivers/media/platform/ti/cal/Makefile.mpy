@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6c39a11e4837f75aac0ca21c115320f1e7d628a9649ed5404af1924a8742ffc5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/ti/cal/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_VIDEO_TI_CAL) += ti-cal.o\nti-cal-y := cal.o cal-camerarx.o cal-video.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

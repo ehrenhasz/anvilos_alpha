@@ -1,0 +1,9 @@
+{
+  "module_name": "video-fclose.rst",
+  "hash_id": "c9cdac118e38816efc2bae302645b63f5b1fd6745cfbc723e45e93b9718778ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/video-fclose.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n.. c:namespace:: DTV.video\n\n.. _video_fclose:\n\n=================\ndvb video close()\n=================\n\nName\n----\n\ndvb video close()\n\n.. attention:: This ioctl is deprecated.\n\nSynopsis\n--------\n\n.. c:function:: int close(int fd)\n\nArguments\n---------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -  .. row 1\n\n       -  int fd\n\n       -  File descriptor returned by a previous call to open().\n\nDescription\n-----------\n\nThis system call closes a previously opened video device.\n\nReturn Value\n------------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -  .. row 1\n\n       -  ``EBADF``\n\n       -  fd is not a valid open file descriptor.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

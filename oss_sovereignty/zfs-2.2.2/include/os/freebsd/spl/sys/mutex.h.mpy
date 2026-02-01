@@ -1,0 +1,9 @@
+{
+  "module_name": "mutex.h",
+  "hash_id": "91acfce0fbda9cd96daaf66d15a783bce080a265dac8834f23938dec6f57d67a",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/mutex.h",
+  "human_readable_source": " \n\n#ifndef _OPENSOLARIS_SYS_MUTEX_H_\n#define\t_OPENSOLARIS_SYS_MUTEX_H_\n\ntypedef struct sx\tkmutex_t;\n\n#include <sys/param.h>\n#include <sys/lock.h>\n#include_next <sys/sdt.h>\n#include_next <sys/mutex.h>\n#include <sys/proc.h>\n#include <sys/sx.h>\n\ntypedef enum {\n\tMUTEX_DEFAULT = 0\t \n} kmutex_type_t;\n\n#define\tMUTEX_HELD(x)\t\t(mutex_owned(x))\n#define\tMUTEX_NOT_HELD(x)\t(!mutex_owned(x) || panicstr)\n\n#ifndef OPENSOLARIS_WITNESS\n#define\tMUTEX_FLAGS\t(SX_DUPOK | SX_NEW | SX_NOWITNESS)\n#else\n#define\tMUTEX_FLAGS\t(SX_DUPOK | SX_NEW)\n#endif\n\n#define\tmutex_init(lock, desc, type, arg)\tdo {\t\t\t\\\n\tconst char *_name;\t\t\t\t\t\t\\\n\tASSERT((type) == MUTEX_DEFAULT);\t\t\t\t\\\n\tfor (_name = #lock; *_name != '\\0'; _name++) {\t\t\t\\\n\t\tif (*_name >= 'a' && *_name <= 'z')\t\t\t\\\n\t\t\tbreak;\t\t\t\t\t\t\\\n\t}\t\t\t\t\t\t\t\t\\\n\tif (*_name == '\\0')\t\t\t\t\t\t\\\n\t\t_name = #lock;\t\t\t\t\t\t\\\n\tsx_init_flags((lock), _name, MUTEX_FLAGS);\t\t\t\\\n} while (0)\n#define\tmutex_destroy(lock)\tsx_destroy(lock)\n#define\tmutex_enter(lock)\tsx_xlock(lock)\n#define\tmutex_enter_interruptible(lock)\tsx_xlock_sig(lock)\n#define\tmutex_enter_nested(lock, type)\tsx_xlock(lock)\n#define\tmutex_tryenter(lock)\tsx_try_xlock(lock)\n#define\tmutex_exit(lock)\tsx_xunlock(lock)\n#define\tmutex_owned(lock)\tsx_xlocked(lock)\n#define\tmutex_owner(lock)\tsx_xholder(lock)\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

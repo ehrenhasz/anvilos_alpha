@@ -1,0 +1,9 @@
+{
+  "module_name": "linked_maps2.c",
+  "hash_id": "d87998a34d628e94d74f290daada7d2d5c49a526f2d0e8cb5bd5b50fc25b29b3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/linked_maps2.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\n \ntypedef struct my_key { long x; } key_type;\ntypedef struct my_value { long x; } value_type;\n\nextern struct {\n\t__uint(max_entries, 16);\n\t__type(key, key_type);\n\t__type(value, value_type);\n\t__uint(type, BPF_MAP_TYPE_HASH);\n} map1 SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__type(key, int);\n\t__type(value, int);\n\t__uint(max_entries, 8);\n} map2 SEC(\".maps\");\n\n \nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__type(key, int);\n\t__type(value, int);\n\t__uint(max_entries, 16);\n} map_weak __weak SEC(\".maps\");\n\nint output_first2;\nint output_second2;\nint output_weak2;\n\nSEC(\"raw_tp/sys_enter\")\nint BPF_PROG(handler_enter2)\n{\n\t \n\tint key = 2, val = 2;\n\tkey_type key_struct = { .x = 2 };\n\tvalue_type val_struct = { .x = 2000 };\n\n\tbpf_map_update_elem(&map1, &key_struct, &val_struct, 0);\n\tbpf_map_update_elem(&map2, &key, &val, 0);\n\tbpf_map_update_elem(&map_weak, &key, &val, 0);\n\n\treturn 0;\n}\n\nSEC(\"raw_tp/sys_exit\")\nint BPF_PROG(handler_exit2)\n{\n\t \n\tint key = 1, *val;\n\tkey_type key_struct = { .x = 1 };\n\tvalue_type *value_struct;\n\n\tvalue_struct = bpf_map_lookup_elem(&map1, &key_struct);\n\tif (value_struct)\n\t\toutput_first2 = value_struct->x;\n\n\tval = bpf_map_lookup_elem(&map2, &key);\n\tif (val)\n\t\toutput_second2 = *val;\n\n\tval = bpf_map_lookup_elem(&map_weak, &key);\n\tif (val)\n\t\toutput_weak2 = *val;\n\n\treturn 0;\n}\n\nchar LICENSE[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

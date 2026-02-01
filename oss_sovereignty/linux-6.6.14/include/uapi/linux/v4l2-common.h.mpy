@@ -1,0 +1,9 @@
+{
+  "module_name": "v4l2-common.h",
+  "hash_id": "2618cce91379ee1c2eedc162aa88c5181faef961992b880e83774385f4135fcb",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/v4l2-common.h",
+  "human_readable_source": " \n \n\n#ifndef __V4L2_COMMON__\n#define __V4L2_COMMON__\n\n#include <linux/types.h>\n\n \n\n \n#define V4L2_SEL_TGT_CROP\t\t0x0000\n \n#define V4L2_SEL_TGT_CROP_DEFAULT\t0x0001\n \n#define V4L2_SEL_TGT_CROP_BOUNDS\t0x0002\n \n#define V4L2_SEL_TGT_NATIVE_SIZE\t0x0003\n \n#define V4L2_SEL_TGT_COMPOSE\t\t0x0100\n \n#define V4L2_SEL_TGT_COMPOSE_DEFAULT\t0x0101\n \n#define V4L2_SEL_TGT_COMPOSE_BOUNDS\t0x0102\n \n#define V4L2_SEL_TGT_COMPOSE_PADDED\t0x0103\n\n \n#define V4L2_SEL_FLAG_GE\t\t(1 << 0)\n#define V4L2_SEL_FLAG_LE\t\t(1 << 1)\n#define V4L2_SEL_FLAG_KEEP_CONFIG\t(1 << 2)\n\nstruct v4l2_edid {\n\t__u32 pad;\n\t__u32 start_block;\n\t__u32 blocks;\n\t__u32 reserved[5];\n\t__u8  *edid;\n};\n\n#ifndef __KERNEL__\n \n#define V4L2_SEL_TGT_CROP_ACTIVE\tV4L2_SEL_TGT_CROP\n#define V4L2_SEL_TGT_COMPOSE_ACTIVE\tV4L2_SEL_TGT_COMPOSE\n#define V4L2_SUBDEV_SEL_TGT_CROP_ACTUAL\tV4L2_SEL_TGT_CROP\n#define V4L2_SUBDEV_SEL_TGT_COMPOSE_ACTUAL V4L2_SEL_TGT_COMPOSE\n#define V4L2_SUBDEV_SEL_TGT_CROP_BOUNDS\tV4L2_SEL_TGT_CROP_BOUNDS\n#define V4L2_SUBDEV_SEL_TGT_COMPOSE_BOUNDS V4L2_SEL_TGT_COMPOSE_BOUNDS\n\n \n#define V4L2_SUBDEV_SEL_FLAG_SIZE_GE\tV4L2_SEL_FLAG_GE\n#define V4L2_SUBDEV_SEL_FLAG_SIZE_LE\tV4L2_SEL_FLAG_LE\n#define V4L2_SUBDEV_SEL_FLAG_KEEP_CONFIG V4L2_SEL_FLAG_KEEP_CONFIG\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "brcmfmac.h",
+  "hash_id": "0b7ffb748dec5fdf33b8b7373c9a951f9086af9e90be3b9479c1a758fb25f5d7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/brcmfmac.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_BRCMFMAC_PLATFORM_H\n#define _LINUX_BRCMFMAC_PLATFORM_H\n\n\n#define BRCMFMAC_PDATA_NAME\t\t\"brcmfmac\"\n\n#define BRCMFMAC_COUNTRY_BUF_SZ\t\t4\n\n\n \n\n\n \n\n \nenum brcmf_bus_type {\n\tBRCMF_BUSTYPE_SDIO,\n\tBRCMF_BUSTYPE_USB,\n\tBRCMF_BUSTYPE_PCIE\n};\n\n\n \nstruct brcmfmac_sdio_pd {\n\tint\t\ttxglomsz;\n\tunsigned int\tdrive_strength;\n\tbool\t\toob_irq_supported;\n\tunsigned int\toob_irq_nr;\n\tunsigned long\toob_irq_flags;\n\tbool\t\tbroken_sg_support;\n\tunsigned short\tsd_head_align;\n\tunsigned short\tsd_sgentry_align;\n\tvoid\t\t(*reset)(void);\n};\n\n \nstruct brcmfmac_pd_cc_entry {\n\tchar\tiso3166[BRCMFMAC_COUNTRY_BUF_SZ];\n\tchar\tcc[BRCMFMAC_COUNTRY_BUF_SZ];\n\ts32\trev;\n};\n\n \nstruct brcmfmac_pd_cc {\n\tint\t\t\t\ttable_size;\n\tstruct brcmfmac_pd_cc_entry\ttable[];\n};\n\n \nstruct brcmfmac_pd_device {\n\tunsigned int\t\tid;\n\tunsigned int\t\trev;\n\tenum brcmf_bus_type\tbus_type;\n\tunsigned int\t\tfeature_disable;\n\tstruct brcmfmac_pd_cc\t*country_codes;\n\tunion {\n\t\tstruct brcmfmac_sdio_pd sdio;\n\t} bus;\n};\n\n \nstruct brcmfmac_platform_data {\n\tvoid\t(*power_on)(void);\n\tvoid\t(*power_off)(void);\n\tchar\t*fw_alternative_path;\n\tint\tdevice_count;\n\tstruct brcmfmac_pd_device devices[];\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

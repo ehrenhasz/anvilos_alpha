@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c37298fac7104cb67ce641d1584cbc1b765f0cd1430a16d1e8fa42ef1204fa34",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/xilinx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nmenu \"Xilinx SoC drivers\"\n\nconfig ZYNQMP_POWER\n\tbool \"Enable Xilinx Zynq MPSoC Power Management driver\"\n\tdepends on PM && ZYNQMP_FIRMWARE\n\tdefault y\n\tselect MAILBOX\n\tselect ZYNQMP_IPI_MBOX\n\thelp\n\t  Say yes to enable power management support for ZyqnMP SoC.\n\t  This driver uses firmware driver as an interface for power\n\t  management request to firmware. It registers isr to handle\n\t  power management callbacks from firmware. It registers mailbox client\n\t  to handle power management callbacks from firmware.\n\n\t  If in doubt, say N.\n\nconfig ZYNQMP_PM_DOMAINS\n\tbool \"Enable Zynq MPSoC generic PM domains\"\n\tdefault y\n\tdepends on PM && ZYNQMP_FIRMWARE\n\tselect PM_GENERIC_DOMAINS\n\thelp\n\t  Say yes to enable device power management through PM domains\n\t  If in doubt, say N.\n\nconfig XLNX_EVENT_MANAGER\n\tbool \"Enable Xilinx Event Management Driver\"\n\tdepends on ZYNQMP_FIRMWARE\n\tdefault ZYNQMP_FIRMWARE\n\thelp\n\t  Say yes to enable event management support for Xilinx.\n\t  This driver uses firmware driver as an interface for event/power\n\t  management request to firmware.\n\n\t  If in doubt, say N.\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

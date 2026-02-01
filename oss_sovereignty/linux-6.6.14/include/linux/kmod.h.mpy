@@ -1,0 +1,9 @@
+{
+  "module_name": "kmod.h",
+  "hash_id": "3ad4a73ea138dc76c38e83bebb0228e9f5822478b3042baeb4fc37b4e4ca03db",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kmod.h",
+  "human_readable_source": " \n#ifndef __LINUX_KMOD_H__\n#define __LINUX_KMOD_H__\n\n \n\n#include <linux/umh.h>\n#include <linux/gfp.h>\n#include <linux/stddef.h>\n#include <linux/errno.h>\n#include <linux/compiler.h>\n#include <linux/workqueue.h>\n#include <linux/sysctl.h>\n\n#define KMOD_PATH_LEN 256\n\n#ifdef CONFIG_MODULES\nextern char modprobe_path[];  \n \nextern __printf(2, 3)\nint __request_module(bool wait, const char *name, ...);\n#define request_module(mod...) __request_module(true, mod)\n#define request_module_nowait(mod...) __request_module(false, mod)\n#define try_then_request_module(x, mod...) \\\n\t((x) ?: (__request_module(true, mod), (x)))\n#else\nstatic inline int request_module(const char *name, ...) { return -ENOSYS; }\nstatic inline int request_module_nowait(const char *name, ...) { return -ENOSYS; }\n#define try_then_request_module(x, mod...) (x)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

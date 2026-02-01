@@ -1,0 +1,9 @@
+{
+  "module_name": "event_os.c",
+  "hash_id": "7e64fc0bb5a950c60cd7aa2b9bcee99bf9f58746cacd6f1ec90e2fb6be4349ce",
+  "original_prompt": "Ingested from zfs-2.2.2/module/os/freebsd/zfs/event_os.c",
+  "human_readable_source": " \n\n#include <sys/param.h>\n#include <sys/lock.h>\n#include <sys/sx.h>\n#include <sys/event.h>\n\n#include <sys/freebsd_event.h>\n\nstatic void\nknlist_sx_xlock(void *arg)\n{\n\n\tsx_xlock((struct sx *)arg);\n}\n\nstatic void\nknlist_sx_xunlock(void *arg)\n{\n\n\tsx_xunlock((struct sx *)arg);\n}\n\n#if __FreeBSD_version >= 1300128\nstatic void\nknlist_sx_assert_lock(void *arg, int what)\n{\n\n\tif (what == LA_LOCKED)\n\t\tsx_assert((struct sx *)arg, SX_LOCKED);\n\telse\n\t\tsx_assert((struct sx *)arg, SX_UNLOCKED);\n}\n#else\nstatic void\nknlist_sx_assert_locked(void *arg)\n{\n\tsx_assert((struct sx *)arg, SX_LOCKED);\n}\nstatic void\nknlist_sx_assert_unlocked(void *arg)\n{\n\tsx_assert((struct sx *)arg, SX_UNLOCKED);\n}\n#endif\n\nvoid\nknlist_init_sx(struct knlist *knl, struct sx *lock)\n{\n\n#if __FreeBSD_version >= 1300128\n\tknlist_init(knl, lock, knlist_sx_xlock, knlist_sx_xunlock,\n\t    knlist_sx_assert_lock);\n#else\n\tknlist_init(knl, lock, knlist_sx_xlock, knlist_sx_xunlock,\n\t    knlist_sx_assert_locked, knlist_sx_assert_unlocked);\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

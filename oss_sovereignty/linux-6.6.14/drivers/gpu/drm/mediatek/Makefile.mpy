@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cbf389ed56ee50bc1d042bb0a3c873ec1af14c165d3a0c4176a082b37031d0eb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/mediatek/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nmediatek-drm-y := mtk_disp_aal.o \\\n\t\t  mtk_disp_ccorr.o \\\n\t\t  mtk_disp_color.o \\\n\t\t  mtk_disp_gamma.o \\\n\t\t  mtk_disp_merge.o \\\n\t\t  mtk_disp_ovl.o \\\n\t\t  mtk_disp_ovl_adaptor.o \\\n\t\t  mtk_disp_rdma.o \\\n\t\t  mtk_drm_crtc.o \\\n\t\t  mtk_drm_ddp_comp.o \\\n\t\t  mtk_drm_drv.o \\\n\t\t  mtk_drm_gem.o \\\n\t\t  mtk_drm_plane.o \\\n\t\t  mtk_dsi.o \\\n\t\t  mtk_dpi.o \\\n\t\t  mtk_ethdr.o \\\n\t\t  mtk_mdp_rdma.o\n\nobj-$(CONFIG_DRM_MEDIATEK) += mediatek-drm.o\n\nmediatek-drm-hdmi-objs := mtk_cec.o \\\n\t\t\t  mtk_hdmi.o \\\n\t\t\t  mtk_hdmi_ddc.o\n\nobj-$(CONFIG_DRM_MEDIATEK_HDMI) += mediatek-drm-hdmi.o\n\nobj-$(CONFIG_DRM_MEDIATEK_DP) += mtk_dp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

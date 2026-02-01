@@ -1,0 +1,9 @@
+{
+  "module_name": "ext_manifest.h",
+  "hash_id": "93dc8b326a1369a8d3ff4a2e1a4db766e11acdebe7779fb0348416bc773ba72d",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/intel/ext_manifest.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef __INTEL_CAVS_EXT_MANIFEST_H__\n#define __INTEL_CAVS_EXT_MANIFEST_H__\n\n#include <sound/sof/ext_manifest.h>\n\n \nenum sof_cavs_config_elem_type {\n\tSOF_EXT_MAN_CAVS_CONFIG_EMPTY\t\t= 0,\n\tSOF_EXT_MAN_CAVS_CONFIG_CAVS_LPRO\t= 1,\n\tSOF_EXT_MAN_CAVS_CONFIG_OUTBOX_SIZE\t= 2,\n\tSOF_EXT_MAN_CAVS_CONFIG_INBOX_SIZE\t= 3,\n};\n\n \nstruct sof_ext_man_cavs_config_data {\n\tstruct sof_ext_man_elem_header hdr;\n\n\tstruct sof_config_elem elems[];\n} __packed;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

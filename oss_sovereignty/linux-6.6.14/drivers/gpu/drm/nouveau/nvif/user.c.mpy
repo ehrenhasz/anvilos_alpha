@@ -1,0 +1,9 @@
+{
+  "module_name": "user.c",
+  "hash_id": "06eda59566caa0711ed05e607766360d6fbfe1a13424dcd2368fdaf1c0076e9c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvif/user.c",
+  "human_readable_source": " \n#include <nvif/user.h>\n#include <nvif/device.h>\n\n#include <nvif/class.h>\n\nvoid\nnvif_user_dtor(struct nvif_device *device)\n{\n\tif (device->user.func) {\n\t\tnvif_object_dtor(&device->user.object);\n\t\tdevice->user.func = NULL;\n\t}\n}\n\nint\nnvif_user_ctor(struct nvif_device *device, const char *name)\n{\n\tstruct {\n\t\ts32 oclass;\n\t\tint version;\n\t\tconst struct nvif_user_func *func;\n\t} users[] = {\n\t\t{ AMPERE_USERMODE_A, -1, &nvif_userc361 },\n\t\t{ TURING_USERMODE_A, -1, &nvif_userc361 },\n\t\t{  VOLTA_USERMODE_A, -1, &nvif_userc361 },\n\t\t{}\n\t};\n\tint cid, ret;\n\n\tif (device->user.func)\n\t\treturn 0;\n\n\tcid = nvif_mclass(&device->object, users);\n\tif (cid < 0)\n\t\treturn cid;\n\n\tret = nvif_object_ctor(&device->object, name ? name : \"nvifUsermode\",\n\t\t\t       0, users[cid].oclass, NULL, 0,\n\t\t\t       &device->user.object);\n\tif (ret)\n\t\treturn ret;\n\n\tnvif_object_map(&device->user.object, NULL, 0);\n\tdevice->user.func = users[cid].func;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

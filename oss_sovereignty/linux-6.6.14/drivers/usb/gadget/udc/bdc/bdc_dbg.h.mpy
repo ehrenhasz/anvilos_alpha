@@ -1,0 +1,9 @@
+{
+  "module_name": "bdc_dbg.h",
+  "hash_id": "bd8f7b04cb127c69ad1407e6099b4eab94883c8f592a52bec3f2f7df7109700b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/udc/bdc/bdc_dbg.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_BDC_DBG_H__\n#define __LINUX_BDC_DBG_H__\n\n#include \"bdc.h\"\n\n#ifdef CONFIG_USB_GADGET_VERBOSE\nvoid bdc_dbg_bd_list(struct bdc *bdc, struct bdc_ep *ep);\nvoid bdc_dbg_srr(struct bdc *bdc, u32 srr_num);\nvoid bdc_dbg_regs(struct bdc *bdc);\nvoid bdc_dump_epsts(struct bdc *bdc);\n#else\nstatic inline void bdc_dbg_regs(struct bdc *bdc)\n{ }\n\nstatic inline void bdc_dbg_srr(struct bdc *bdc, u32 srr_num)\n{ }\n\nstatic inline void bdc_dbg_bd_list(struct bdc *bdc, struct bdc_ep *ep)\n{ }\n\nstatic inline void bdc_dump_epsts(struct bdc *bdc)\n{ }\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

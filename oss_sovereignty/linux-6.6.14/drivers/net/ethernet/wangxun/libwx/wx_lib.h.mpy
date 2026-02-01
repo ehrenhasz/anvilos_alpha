@@ -1,0 +1,9 @@
+{
+  "module_name": "wx_lib.h",
+  "hash_id": "b62f5df5969ebcc22ff4857c33d7f2a40914b3ce034b2007deb8e85c8cb0fc29",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/wangxun/libwx/wx_lib.h",
+  "human_readable_source": " \n \n\n#ifndef _WX_LIB_H_\n#define _WX_LIB_H_\n\nvoid wx_alloc_rx_buffers(struct wx_ring *rx_ring, u16 cleaned_count);\nu16 wx_desc_unused(struct wx_ring *ring);\nnetdev_tx_t wx_xmit_frame(struct sk_buff *skb,\n\t\t\t  struct net_device *netdev);\nvoid wx_napi_enable_all(struct wx *wx);\nvoid wx_napi_disable_all(struct wx *wx);\nvoid wx_reset_interrupt_capability(struct wx *wx);\nvoid wx_clear_interrupt_scheme(struct wx *wx);\nint wx_init_interrupt_scheme(struct wx *wx);\nirqreturn_t wx_msix_clean_rings(int __always_unused irq, void *data);\nvoid wx_free_irq(struct wx *wx);\nint wx_setup_isb_resources(struct wx *wx);\nvoid wx_free_isb_resources(struct wx *wx);\nu32 wx_misc_isb(struct wx *wx, enum wx_isb_idx idx);\nvoid wx_configure_vectors(struct wx *wx);\nvoid wx_clean_all_rx_rings(struct wx *wx);\nvoid wx_clean_all_tx_rings(struct wx *wx);\nvoid wx_free_resources(struct wx *wx);\nint wx_setup_resources(struct wx *wx);\nvoid wx_get_stats64(struct net_device *netdev,\n\t\t    struct rtnl_link_stats64 *stats);\nint wx_set_features(struct net_device *netdev, netdev_features_t features);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

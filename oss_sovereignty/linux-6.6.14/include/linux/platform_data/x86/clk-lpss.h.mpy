@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-lpss.h",
+  "hash_id": "022d8d49bcc2345c0bdcd774fe8697b2120618bfe1b88034549b9be9ad126474",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/x86/clk-lpss.h",
+  "human_readable_source": " \n \n\n#ifndef __CLK_LPSS_H\n#define __CLK_LPSS_H\n\nstruct lpss_clk_data {\n\tconst char *name;\n\tstruct clk *clk;\n};\n\nextern int lpss_atom_clk_init(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

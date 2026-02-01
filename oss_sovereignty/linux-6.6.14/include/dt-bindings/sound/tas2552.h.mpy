@@ -1,0 +1,9 @@
+{
+  "module_name": "tas2552.h",
+  "hash_id": "389ff140cc8fd00a03bfc6e202534f5166f607c86fd067d25294688f23741761",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/sound/tas2552.h",
+  "human_readable_source": " \n#ifndef __DT_TAS2552_H\n#define __DT_TAS2552_H\n\n#define TAS2552_PLL_CLKIN\t\t(0)\n#define TAS2552_PDM_CLK\t\t\t(1)\n#define TAS2552_CLK_TARGET_MASK\t\t(1)\n\n#define TAS2552_PLL_CLKIN_MCLK\t\t((0 << 1) | TAS2552_PLL_CLKIN)\n#define TAS2552_PLL_CLKIN_BCLK\t\t((1 << 1) | TAS2552_PLL_CLKIN)\n#define TAS2552_PLL_CLKIN_IVCLKIN\t((2 << 1) | TAS2552_PLL_CLKIN)\n#define TAS2552_PLL_CLKIN_1_8_FIXED\t((3 << 1) | TAS2552_PLL_CLKIN)\n\n#define TAS2552_PDM_CLK_PLL\t\t((0 << 1) | TAS2552_PDM_CLK)\n#define TAS2552_PDM_CLK_IVCLKIN\t\t((1 << 1) | TAS2552_PDM_CLK)\n#define TAS2552_PDM_CLK_BCLK\t\t((2 << 1) | TAS2552_PDM_CLK)\n#define TAS2552_PDM_CLK_MCLK\t\t((3 << 1) | TAS2552_PDM_CLK)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

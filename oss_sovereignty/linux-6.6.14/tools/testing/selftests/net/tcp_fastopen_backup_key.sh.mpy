@@ -1,0 +1,9 @@
+{
+  "module_name": "tcp_fastopen_backup_key.sh",
+  "hash_id": "22ede710059bf080aaadca020fd4e933907db22aa6f2dac0832489e498289451",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/tcp_fastopen_backup_key.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n#\n# rotate TFO keys for ipv4/ipv6 and verify that the client does\n# not present an invalid cookie.\n\nset +x\nset -e\n\nreadonly NETNS=\"ns-$(mktemp -u XXXXXX)\"\n\nsetup() {\n\tip netns add \"${NETNS}\"\n\tip -netns \"${NETNS}\" link set lo up\n\tip netns exec \"${NETNS}\" sysctl -w net.ipv4.tcp_fastopen=3 \\\n\t\t>/dev/null 2>&1\n}\n\ncleanup() {\n\tip netns del \"${NETNS}\"\n}\n\ntrap cleanup EXIT\nsetup\n\ndo_test() {\n\t# flush routes before each run, otherwise successive runs can\n\t# initially present an old TFO cookie\n\tip netns exec \"${NETNS}\" ip tcp_metrics flush\n\tip netns exec \"${NETNS}\" ./tcp_fastopen_backup_key \"$1\"\n\tval=$(ip netns exec \"${NETNS}\" nstat -az | \\\n\t\tgrep TcpExtTCPFastOpenPassiveFail | awk '{print $2}')\n\tif [ \"$val\" != 0 ]; then\n\t\techo \"FAIL: TcpExtTCPFastOpenPassiveFail non-zero\"\n\t\treturn 1\n\tfi\n}\n\ndo_test \"-4\"\ndo_test \"-6\"\ndo_test \"-4\"\ndo_test \"-6\"\ndo_test \"-4s\"\ndo_test \"-6s\"\ndo_test \"-4s\"\ndo_test \"-6s\"\ndo_test \"-4r\"\ndo_test \"-6r\"\ndo_test \"-4r\"\ndo_test \"-6r\"\ndo_test \"-4sr\"\ndo_test \"-6sr\"\ndo_test \"-4sr\"\ndo_test \"-6sr\"\necho \"all tests done\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

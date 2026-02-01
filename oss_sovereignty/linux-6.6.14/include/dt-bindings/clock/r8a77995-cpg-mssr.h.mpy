@@ -1,0 +1,9 @@
+{
+  "module_name": "r8a77995-cpg-mssr.h",
+  "hash_id": "026e957d66f89133dcc4dfd2f4b992943fcba4c9010d255fc77eb9b4454ab2b8",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/r8a77995-cpg-mssr.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_CLOCK_R8A77995_CPG_MSSR_H__\n#define __DT_BINDINGS_CLOCK_R8A77995_CPG_MSSR_H__\n\n#include <dt-bindings/clock/renesas-cpg-mssr.h>\n\n \n#define R8A77995_CLK_Z2\t\t\t0\n#define R8A77995_CLK_ZG\t\t\t1\n#define R8A77995_CLK_ZTR\t\t2\n#define R8A77995_CLK_ZT\t\t\t3\n#define R8A77995_CLK_ZX\t\t\t4\n#define R8A77995_CLK_S0D1\t\t5\n#define R8A77995_CLK_S1D1\t\t6\n#define R8A77995_CLK_S1D2\t\t7\n#define R8A77995_CLK_S1D4\t\t8\n#define R8A77995_CLK_S2D1\t\t9\n#define R8A77995_CLK_S2D2\t\t10\n#define R8A77995_CLK_S2D4\t\t11\n#define R8A77995_CLK_S3D1\t\t12\n#define R8A77995_CLK_S3D2\t\t13\n#define R8A77995_CLK_S3D4\t\t14\n#define R8A77995_CLK_S1D4C\t\t15\n#define R8A77995_CLK_S3D1C\t\t16\n#define R8A77995_CLK_S3D2C\t\t17\n#define R8A77995_CLK_S3D4C\t\t18\n#define R8A77995_CLK_LB\t\t\t19\n#define R8A77995_CLK_CL\t\t\t20\n#define R8A77995_CLK_ZB3\t\t21\n#define R8A77995_CLK_ZB3D2\t\t22\n#define R8A77995_CLK_CR\t\t\t23\n#define R8A77995_CLK_CRD2\t\t24\n#define R8A77995_CLK_SD0H\t\t25\n#define R8A77995_CLK_SD0\t\t26\n \n \n#define R8A77995_CLK_RPC\t\t29\n#define R8A77995_CLK_RPCD2\t\t30\n#define R8A77995_CLK_ZA2\t\t31\n#define R8A77995_CLK_ZA8\t\t32\n#define R8A77995_CLK_Z2D\t\t33\n#define R8A77995_CLK_CANFD\t\t34\n#define R8A77995_CLK_MSO\t\t35\n#define R8A77995_CLK_R\t\t\t36\n#define R8A77995_CLK_OSC\t\t37\n#define R8A77995_CLK_LV0\t\t38\n#define R8A77995_CLK_LV1\t\t39\n#define R8A77995_CLK_CP\t\t\t40\n#define R8A77995_CLK_CPEX\t\t41\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

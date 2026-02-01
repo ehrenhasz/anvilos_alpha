@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_random.c",
+  "hash_id": "b398401bd3014dd4650a95ad977321434195df94be8ce35e40b2f5a3c6454741",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/lib/drm_random.c",
+  "human_readable_source": "\n#include <linux/bitops.h>\n#include <linux/kernel.h>\n#include <linux/random.h>\n#include <linux/slab.h>\n#include <linux/types.h>\n\n#include \"drm_random.h\"\n\nu32 drm_prandom_u32_max_state(u32 ep_ro, struct rnd_state *state)\n{\n\treturn upper_32_bits((u64)prandom_u32_state(state) * ep_ro);\n}\nEXPORT_SYMBOL(drm_prandom_u32_max_state);\n\nvoid drm_random_reorder(unsigned int *order, unsigned int count,\n\t\t\tstruct rnd_state *state)\n{\n\tunsigned int i, j;\n\n\tfor (i = 0; i < count; ++i) {\n\t\tBUILD_BUG_ON(sizeof(unsigned int) > sizeof(u32));\n\t\tj = drm_prandom_u32_max_state(count, state);\n\t\tswap(order[i], order[j]);\n\t}\n}\nEXPORT_SYMBOL(drm_random_reorder);\n\nunsigned int *drm_random_order(unsigned int count, struct rnd_state *state)\n{\n\tunsigned int *order, i;\n\n\torder = kmalloc_array(count, sizeof(*order), GFP_KERNEL);\n\tif (!order)\n\t\treturn order;\n\n\tfor (i = 0; i < count; i++)\n\t\torder[i] = i;\n\n\tdrm_random_reorder(order, count, state);\n\treturn order;\n}\nEXPORT_SYMBOL(drm_random_order);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

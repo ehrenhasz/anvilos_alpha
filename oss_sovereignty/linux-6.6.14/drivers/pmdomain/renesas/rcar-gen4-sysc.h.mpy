@@ -1,0 +1,9 @@
+{
+  "module_name": "rcar-gen4-sysc.h",
+  "hash_id": "3d087750de5c16a6c10d69a3f88cd4594d35b10c3f5a1ddae3771965529eb99f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pmdomain/renesas/rcar-gen4-sysc.h",
+  "human_readable_source": " \n \n#ifndef __SOC_RENESAS_RCAR_GEN4_SYSC_H__\n#define __SOC_RENESAS_RCAR_GEN4_SYSC_H__\n\n#include <linux/types.h>\n\n \n#define PD_CPU\t\tBIT(0)\t \n#define PD_SCU\t\tBIT(1)\t \n#define PD_NO_CR\tBIT(2)\t \n\n#define PD_CPU_NOCR\t(PD_CPU | PD_NO_CR)  \n#define PD_ALWAYS_ON\tPD_NO_CR\t   \n\n \nstruct rcar_gen4_sysc_area {\n\tconst char *name;\n\tu8 pdr;\t\t\t \n\ts8 parent;\t\t \n\tu8 flags;\t\t \n};\n\n \nstruct rcar_gen4_sysc_info {\n\tconst struct rcar_gen4_sysc_area *areas;\n\tunsigned int num_areas;\n};\n\nextern const struct rcar_gen4_sysc_info r8a779a0_sysc_info;\nextern const struct rcar_gen4_sysc_info r8a779f0_sysc_info;\nextern const struct rcar_gen4_sysc_info r8a779g0_sysc_info;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

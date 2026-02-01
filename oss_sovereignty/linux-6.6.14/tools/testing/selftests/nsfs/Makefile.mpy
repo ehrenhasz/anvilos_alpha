@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9ea50f5506318ee6e82e5606ca3564e52aa7687f8566df28e83f86d6fae873f2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/nsfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nTEST_GEN_PROGS := owner pidns\n\nCFLAGS := -Wall -Werror\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

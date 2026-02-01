@@ -1,0 +1,9 @@
+{
+  "module_name": "matroxfb_accel.h",
+  "hash_id": "611a8ebe8045a2b33c53c8d9aaa9c73a192236bdd9f55f47cdf2cf39f0175a59",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/matrox/matroxfb_accel.h",
+  "human_readable_source": " \n#ifndef __MATROXFB_ACCEL_H__\n#define __MATROXFB_ACCEL_H__\n\n#include \"matroxfb_base.h\"\n\nvoid matrox_cfbX_init(struct matrox_fb_info *minfo);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

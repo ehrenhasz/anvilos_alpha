@@ -1,0 +1,9 @@
+{
+  "module_name": "locking-selftest-wsem.h",
+  "hash_id": "720097e8e366e9cebc93e3692bfc2f777586e89727b71784183c1ab402f4b673",
+  "original_prompt": "Ingested from linux-6.6.14/lib/locking-selftest-wsem.h",
+  "human_readable_source": " \n#undef LOCK\n#define LOCK\t\tWSL\n\n#undef UNLOCK\n#define UNLOCK\t\tWSU\n\n#undef RLOCK\n#define RLOCK\t\tRSL\n\n#undef WLOCK\n#define WLOCK\t\tWSL\n\n#undef INIT\n#define INIT\t\tRWSI\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

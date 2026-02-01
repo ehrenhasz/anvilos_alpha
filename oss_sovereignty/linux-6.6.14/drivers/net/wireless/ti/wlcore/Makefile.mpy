@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "120a3de1ca570fa9bfb8760f266e992a8211e27cdf3b32e1afbe6c4090d5913f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wlcore/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nwlcore-objs\t\t= main.o cmd.o io.o event.o tx.o rx.o ps.o acx.o \\\n\t\t\t  boot.o init.o debugfs.o scan.o sysfs.o vendor_cmd.o\n\nwlcore_spi-objs \t= spi.o\nwlcore_sdio-objs\t= sdio.o\n\nwlcore-$(CONFIG_NL80211_TESTMODE)\t+= testmode.o\nobj-$(CONFIG_WLCORE)\t\t\t+= wlcore.o\nobj-$(CONFIG_WLCORE_SPI)\t\t+= wlcore_spi.o\nobj-$(CONFIG_WLCORE_SDIO)\t\t+= wlcore_sdio.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

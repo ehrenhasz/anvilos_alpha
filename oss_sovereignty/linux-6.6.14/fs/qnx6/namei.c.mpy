@@ -1,0 +1,9 @@
+{
+  "module_name": "namei.c",
+  "hash_id": "a351eaebd18e0a93491f9ecb39ae6782416882d898f80eda73f9c714617b6e85",
+  "original_prompt": "Ingested from linux-6.6.14/fs/qnx6/namei.c",
+  "human_readable_source": "\n \n\n#include \"qnx6.h\"\n\nstruct dentry *qnx6_lookup(struct inode *dir, struct dentry *dentry,\n\t\t\t\tunsigned int flags)\n{\n\tunsigned ino;\n\tstruct page *page;\n\tstruct inode *foundinode = NULL;\n\tconst char *name = dentry->d_name.name;\n\tint len = dentry->d_name.len;\n\n\tif (len > QNX6_LONG_NAME_MAX)\n\t\treturn ERR_PTR(-ENAMETOOLONG);\n\n\tino = qnx6_find_entry(len, dir, name, &page);\n\tif (ino) {\n\t\tfoundinode = qnx6_iget(dir->i_sb, ino);\n\t\tqnx6_put_page(page);\n\t\tif (IS_ERR(foundinode))\n\t\t\tpr_debug(\"lookup->iget ->  error %ld\\n\",\n\t\t\t\t PTR_ERR(foundinode));\n\t} else {\n\t\tpr_debug(\"%s(): not found %s\\n\", __func__, name);\n\t}\n\treturn d_splice_alias(foundinode, dentry);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

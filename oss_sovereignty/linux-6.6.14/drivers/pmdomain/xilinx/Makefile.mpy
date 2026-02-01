@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "76ecea6e1759c2e1a460ab82ed08eb7ab5856d3ae4358b1186e3b7e5cea8e30d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pmdomain/xilinx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_ZYNQMP_PM_DOMAINS)\t\t+= zynqmp-pm-domains.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "2ef5c26757adc40731b27021a94be42f4539af90d394f84409b6dda2e2e15b68",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/asn1_compiler\n/generate_rust_target\n/insert-sys-cert\n/kallsyms\n/module.lds\n/recordmcount\n/rustdoc_test_builder\n/rustdoc_test_gen\n/sign-file\n/sorttable\n/target.json\n/unifdef\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

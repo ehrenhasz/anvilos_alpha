@@ -1,0 +1,9 @@
+{
+  "module_name": "rng.h",
+  "hash_id": "e84d38e90ea420d8d3582e46ba6262449f97b509bdb7a9a86a9155de0ea7f395",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/internal/rng.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYPTO_INTERNAL_RNG_H\n#define _CRYPTO_INTERNAL_RNG_H\n\n#include <crypto/algapi.h>\n#include <crypto/rng.h>\n\nint crypto_register_rng(struct rng_alg *alg);\nvoid crypto_unregister_rng(struct rng_alg *alg);\nint crypto_register_rngs(struct rng_alg *algs, int count);\nvoid crypto_unregister_rngs(struct rng_alg *algs, int count);\n\n#if defined(CONFIG_CRYPTO_RNG) || defined(CONFIG_CRYPTO_RNG_MODULE)\nint crypto_del_default_rng(void);\n#else\nstatic inline int crypto_del_default_rng(void)\n{\n\treturn 0;\n}\n#endif\n\nstatic inline void *crypto_rng_ctx(struct crypto_rng *tfm)\n{\n\treturn crypto_tfm_ctx(&tfm->base);\n}\n\nstatic inline void crypto_rng_set_entropy(struct crypto_rng *tfm,\n\t\t\t\t\t  const u8 *data, unsigned int len)\n{\n\tcrypto_rng_alg(tfm)->set_ent(tfm, data, len);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "interface.h",
+  "hash_id": "a40b13690a804516b114511a67587884382597cde755136f18bfc98b4aecbd8c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ulpi/interface.h",
+  "human_readable_source": " \n#ifndef __LINUX_ULPI_INTERFACE_H\n#define __LINUX_ULPI_INTERFACE_H\n\n#include <linux/types.h>\n\nstruct ulpi;\nstruct device;\n\n \nstruct ulpi_ops {\n\tint (*read)(struct device *dev, u8 addr);\n\tint (*write)(struct device *dev, u8 addr, u8 val);\n};\n\nstruct ulpi *ulpi_register_interface(struct device *, const struct ulpi_ops *);\nvoid ulpi_unregister_interface(struct ulpi *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

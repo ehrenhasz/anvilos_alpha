@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3ae9fda43149dcbae089104c80071d75500de3e1777ba471b808b626b89f14d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/amd/pds_core/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (c) 2023 Advanced Micro Devices, Inc.\n\nobj-$(CONFIG_PDS_CORE) := pds_core.o\n\npds_core-y := main.o \\\n\t      devlink.o \\\n\t      auxbus.o \\\n\t      dev.o \\\n\t      adminq.o \\\n\t      core.o \\\n\t      debugfs.o \\\n\t      fw.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

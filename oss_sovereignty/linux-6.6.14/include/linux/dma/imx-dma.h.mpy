@@ -1,0 +1,9 @@
+{
+  "module_name": "imx-dma.h",
+  "hash_id": "491bb8496a64ec64cd4ab37ad932328268d6dd537d3afe735f90c8e1657bde9e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dma/imx-dma.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_DMA_IMX_H\n#define __LINUX_DMA_IMX_H\n\n#include <linux/scatterlist.h>\n#include <linux/device.h>\n#include <linux/dmaengine.h>\n\n \nenum sdma_peripheral_type {\n\tIMX_DMATYPE_SSI,\t \n\tIMX_DMATYPE_SSI_SP,\t \n\tIMX_DMATYPE_MMC,\t \n\tIMX_DMATYPE_SDHC,\t \n\tIMX_DMATYPE_UART,\t \n\tIMX_DMATYPE_UART_SP,\t \n\tIMX_DMATYPE_FIRI,\t \n\tIMX_DMATYPE_CSPI,\t \n\tIMX_DMATYPE_CSPI_SP,\t \n\tIMX_DMATYPE_SIM,\t \n\tIMX_DMATYPE_ATA,\t \n\tIMX_DMATYPE_CCM,\t \n\tIMX_DMATYPE_EXT,\t \n\tIMX_DMATYPE_MSHC,\t \n\tIMX_DMATYPE_MSHC_SP,\t \n\tIMX_DMATYPE_DSP,\t \n\tIMX_DMATYPE_MEMORY,\t \n\tIMX_DMATYPE_FIFO_MEMORY, \n\tIMX_DMATYPE_SPDIF,\t \n\tIMX_DMATYPE_IPU_MEMORY,\t \n\tIMX_DMATYPE_ASRC,\t \n\tIMX_DMATYPE_ESAI,\t \n\tIMX_DMATYPE_SSI_DUAL,\t \n\tIMX_DMATYPE_ASRC_SP,\t \n\tIMX_DMATYPE_SAI,\t \n\tIMX_DMATYPE_MULTI_SAI,\t \n\tIMX_DMATYPE_HDMI,        \n};\n\nenum imx_dma_prio {\n\tDMA_PRIO_HIGH = 0,\n\tDMA_PRIO_MEDIUM = 1,\n\tDMA_PRIO_LOW = 2\n};\n\nstruct imx_dma_data {\n\tint dma_request;  \n\tint dma_request2;  \n\tenum sdma_peripheral_type peripheral_type;\n\tint priority;\n};\n\nstatic inline int imx_dma_is_ipu(struct dma_chan *chan)\n{\n\treturn !strcmp(dev_name(chan->device->dev), \"ipu-core\");\n}\n\nstatic inline int imx_dma_is_general_purpose(struct dma_chan *chan)\n{\n\treturn !strcmp(chan->device->dev->driver->name, \"imx-sdma\") ||\n\t\t!strcmp(chan->device->dev->driver->name, \"imx-dma\");\n}\n\n \nstruct sdma_peripheral_config {\n\tint n_fifos_src;\n\tint n_fifos_dst;\n\tint stride_fifos_src;\n\tint stride_fifos_dst;\n\tint words_per_fifo;\n\tbool sw_done;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

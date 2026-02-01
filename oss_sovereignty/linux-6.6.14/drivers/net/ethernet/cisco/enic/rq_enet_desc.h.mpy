@@ -1,0 +1,9 @@
+{
+  "module_name": "rq_enet_desc.h",
+  "hash_id": "4b1f64fa81992c16f1c181b239f4cf4343e2c9a85a79e8c03865b1d18120c0de",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cisco/enic/rq_enet_desc.h",
+  "human_readable_source": " \n \n\n#ifndef _RQ_ENET_DESC_H_\n#define _RQ_ENET_DESC_H_\n\n \nstruct rq_enet_desc {\n\t__le64 address;\n\t__le16 length_type;\n\tu8 reserved[6];\n};\n\nenum rq_enet_type_types {\n\tRQ_ENET_TYPE_ONLY_SOP = 0,\n\tRQ_ENET_TYPE_NOT_SOP = 1,\n\tRQ_ENET_TYPE_RESV2 = 2,\n\tRQ_ENET_TYPE_RESV3 = 3,\n};\n\n#define RQ_ENET_ADDR_BITS\t\t64\n#define RQ_ENET_LEN_BITS\t\t14\n#define RQ_ENET_LEN_MASK\t\t((1 << RQ_ENET_LEN_BITS) - 1)\n#define RQ_ENET_TYPE_BITS\t\t2\n#define RQ_ENET_TYPE_MASK\t\t((1 << RQ_ENET_TYPE_BITS) - 1)\n\nstatic inline void rq_enet_desc_enc(struct rq_enet_desc *desc,\n\tu64 address, u8 type, u16 length)\n{\n\tdesc->address = cpu_to_le64(address);\n\tdesc->length_type = cpu_to_le16((length & RQ_ENET_LEN_MASK) |\n\t\t((type & RQ_ENET_TYPE_MASK) << RQ_ENET_LEN_BITS));\n}\n\nstatic inline void rq_enet_desc_dec(struct rq_enet_desc *desc,\n\tu64 *address, u8 *type, u16 *length)\n{\n\t*address = le64_to_cpu(desc->address);\n\t*length = le16_to_cpu(desc->length_type) & RQ_ENET_LEN_MASK;\n\t*type = (u8)((le16_to_cpu(desc->length_type) >> RQ_ENET_LEN_BITS) &\n\t\tRQ_ENET_TYPE_MASK);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

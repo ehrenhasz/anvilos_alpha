@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fflush2.c",
+  "hash_id": "2923b6b7cded84969c0c77b5209b3c59cdc2f8659831844bb2574f3e732e1093",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fflush2.c",
+  "human_readable_source": " \n  set_binary_mode (0, O_BINARY);\n\n  if (argc > 1)\n    switch (argv[1][0])\n      {\n      case '1':\n         \n\n        c = fgetc (stdin);\n        ASSERT (c == '#');\n\n        c = fgetc (stdin);\n        ASSERT (c == '!');\n\n         \n\n        c = ungetc ('!', stdin);\n        ASSERT (c == '!');\n\n        fflush (stdin);\n\n         \n\n        c = fgetc (stdin);\n        ASSERT (c == '!');\n\n        c = fgetc (stdin);\n        ASSERT (c == '/');\n\n        return 0;\n\n      case '2':\n         \n         \n\n        c = fgetc (stdin);\n        ASSERT (c == '#');\n\n        c = fgetc (stdin);\n        ASSERT (c == '!');\n\n         \n\n        c = ungetc ('@', stdin);\n        ASSERT (c == '@');\n\n        fflush (stdin);\n\n         \n\n        c = fgetc (stdin);\n        ASSERT (c == '!');\n\n        c = fgetc (stdin);\n        ASSERT (c == '/');\n\n        return 0;\n      }\n\n  return 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

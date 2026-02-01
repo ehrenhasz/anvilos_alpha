@@ -1,0 +1,9 @@
+{
+  "module_name": "sxgbe_platform.h",
+  "hash_id": "43dd0043c255a1203f49ebd6074a276eb0dea655387f84c0cb873c80811d58e2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sxgbe_platform.h",
+  "human_readable_source": " \n \n#ifndef __SXGBE_PLATFORM_H__\n#define __SXGBE_PLATFORM_H__\n\n#include <linux/phy.h>\n\n \n#define SXGBE_CSR_100_150M\t0x0\t \n#define SXGBE_CSR_150_250M\t0x1\t \n#define SXGBE_CSR_250_300M\t0x2\t \n#define SXGBE_CSR_300_350M\t0x3\t \n#define SXGBE_CSR_350_400M\t0x4\t \n#define SXGBE_CSR_400_500M\t0x5\t \n\n \nstruct sxgbe_mdio_bus_data {\n\tunsigned int phy_mask;\n\tint *irqs;\n\tint probed_phy_irq;\n};\n\nstruct sxgbe_dma_cfg {\n\tint pbl;\n\tint fixed_burst;\n\tint burst_map;\n\tint adv_addr_mode;\n};\n\nstruct sxgbe_plat_data {\n\tchar *phy_bus_name;\n\tint bus_id;\n\tint phy_addr;\n\tphy_interface_t interface;\n\tstruct sxgbe_mdio_bus_data *mdio_bus_data;\n\tstruct sxgbe_dma_cfg *dma_cfg;\n\tint clk_csr;\n\tint pmt;\n\tint force_sf_dma_mode;\n\tint force_thresh_dma_mode;\n\tint riwt_off;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

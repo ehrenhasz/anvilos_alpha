@@ -1,0 +1,9 @@
+{
+  "module_name": "uidswap.h",
+  "hash_id": "014c72fbecc5e4d93d5fd237e657a1d1a21760e2a8a6585bf1fc217bff92287a",
+  "original_prompt": "Ingested from openssh-9.6p1/uidswap.h",
+  "human_readable_source": " \n\n \n\nvoid\t temporarily_use_uid(struct passwd *);\nvoid\t restore_uid(void);\nvoid\t permanently_set_uid(struct passwd *);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

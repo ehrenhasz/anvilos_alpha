@@ -1,0 +1,9 @@
+{
+  "module_name": "gtp.h",
+  "hash_id": "16afeffff6403ec9d0c142733da7ccf1d60d0d4fd5025e34cc93ff0a56985398",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/gtp.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_GTP_H_\n#define _UAPI_LINUX_GTP_H_\n\n#define GTP_GENL_MCGRP_NAME\t\"gtp\"\n\nenum gtp_genl_cmds {\n\tGTP_CMD_NEWPDP,\n\tGTP_CMD_DELPDP,\n\tGTP_CMD_GETPDP,\n\tGTP_CMD_ECHOREQ,\n\n\tGTP_CMD_MAX,\n};\n\nenum gtp_version {\n\tGTP_V0 = 0,\n\tGTP_V1,\n};\n\nenum gtp_attrs {\n\tGTPA_UNSPEC = 0,\n\tGTPA_LINK,\n\tGTPA_VERSION,\n\tGTPA_TID,\t \n\tGTPA_PEER_ADDRESS,\t \n#define GTPA_SGSN_ADDRESS GTPA_PEER_ADDRESS  \n\tGTPA_MS_ADDRESS,\n\tGTPA_FLOW,\n\tGTPA_NET_NS_FD,\n\tGTPA_I_TEI,\t \n\tGTPA_O_TEI,\t \n\tGTPA_PAD,\n\t__GTPA_MAX,\n};\n#define GTPA_MAX (__GTPA_MAX - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

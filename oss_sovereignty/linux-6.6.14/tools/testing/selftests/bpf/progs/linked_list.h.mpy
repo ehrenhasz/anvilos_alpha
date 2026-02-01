@@ -1,0 +1,9 @@
+{
+  "module_name": "linked_list.h",
+  "hash_id": "f03a53127095fc5e91f7b67e3802ca468b5f886c748d0b85fdc681588ac34e4d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/linked_list.h",
+  "human_readable_source": "\n#ifndef LINKED_LIST_H\n#define LINKED_LIST_H\n\n#include <vmlinux.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_experimental.h\"\n\nstruct bar {\n\tstruct bpf_list_node node;\n\tint data;\n};\n\nstruct foo {\n\tstruct bpf_list_node node;\n\tstruct bpf_list_head head __contains(bar, node);\n\tstruct bpf_spin_lock lock;\n\tint data;\n\tstruct bpf_list_node node2;\n};\n\nstruct map_value {\n\tstruct bpf_spin_lock lock;\n\tint data;\n\tstruct bpf_list_head head __contains(foo, node2);\n};\n\nstruct array_map {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__type(key, int);\n\t__type(value, struct map_value);\n\t__uint(max_entries, 1);\n};\n\nstruct array_map array_map SEC(\".maps\");\nstruct array_map inner_map SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);\n\t__uint(max_entries, 1);\n\t__type(key, int);\n\t__type(value, int);\n\t__array(values, struct array_map);\n} map_of_maps SEC(\".maps\") = {\n\t.values = {\n\t\t[0] = &inner_map,\n\t},\n};\n\n#define private(name) SEC(\".bss.\" #name) __hidden __attribute__((aligned(8)))\n\nprivate(A) struct bpf_spin_lock glock;\nprivate(A) struct bpf_list_head ghead __contains(foo, node2);\nprivate(B) struct bpf_spin_lock glock2;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

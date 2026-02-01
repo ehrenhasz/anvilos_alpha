@@ -1,0 +1,9 @@
+{
+  "module_name": "tailcall_bpf2bpf4.c",
+  "hash_id": "41663bd62b41d0a9e9b3835e5ad4384ee1731838faeaf1c1f41f7da27ed4bab3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/tailcall_bpf2bpf4.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(max_entries, 1);\n\t__uint(key_size, sizeof(__u32));\n\t__uint(value_size, sizeof(__u32));\n} nop_table SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PROG_ARRAY);\n\t__uint(max_entries, 3);\n\t__uint(key_size, sizeof(__u32));\n\t__uint(value_size, sizeof(__u32));\n} jmp_table SEC(\".maps\");\n\nint count = 0;\nint noise = 0;\n\nstatic __always_inline int subprog_noise(void)\n{\n\t__u32 key = 0;\n\n\tbpf_map_lookup_elem(&nop_table, &key);\n\treturn 0;\n}\n\n__noinline\nint subprog_tail_2(struct __sk_buff *skb)\n{\n\tif (noise)\n\t\tsubprog_noise();\n\tbpf_tail_call_static(skb, &jmp_table, 2);\n\treturn skb->len * 3;\n}\n\n__noinline\nint subprog_tail_1(struct __sk_buff *skb)\n{\n\tbpf_tail_call_static(skb, &jmp_table, 1);\n\treturn skb->len * 2;\n}\n\n__noinline\nint subprog_tail(struct __sk_buff *skb)\n{\n\tbpf_tail_call_static(skb, &jmp_table, 0);\n\treturn skb->len;\n}\n\nSEC(\"tc\")\nint classifier_1(struct __sk_buff *skb)\n{\n\treturn subprog_tail_2(skb);\n}\n\nSEC(\"tc\")\nint classifier_2(struct __sk_buff *skb)\n{\n\tcount++;\n\treturn subprog_tail_2(skb);\n}\n\nSEC(\"tc\")\nint classifier_0(struct __sk_buff *skb)\n{\n\treturn subprog_tail_1(skb);\n}\n\nSEC(\"tc\")\nint entry(struct __sk_buff *skb)\n{\n\treturn subprog_tail(skb);\n}\n\nchar __license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

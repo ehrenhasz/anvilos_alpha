@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "cda0869d60d071529c2686d05cc06749100cc891da1351574989fc716c460481",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/cadence/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Phy drivers for Cadence PHYs\n#\n\nconfig PHY_CADENCE_TORRENT\n\ttristate \"Cadence Torrent PHY driver\"\n\tdepends on OF\n\tdepends on HAS_IOMEM\n\tdepends on COMMON_CLK\n\tselect GENERIC_PHY\n\thelp\n\t  Support for Cadence Torrent PHY.\n\nconfig PHY_CADENCE_DPHY\n\ttristate \"Cadence D-PHY Support\"\n\tdepends on HAS_IOMEM && OF\n\tselect GENERIC_PHY\n\tselect GENERIC_PHY_MIPI_DPHY\n\thelp\n\t  Choose this option if you have a Cadence D-PHY in your\n\t  system. If M is selected, the module will be called\n\t  cdns-dphy.\n\nconfig PHY_CADENCE_DPHY_RX\n\ttristate \"Cadence D-PHY Rx Support\"\n\tdepends on HAS_IOMEM && OF\n\tselect GENERIC_PHY\n\tselect GENERIC_PHY_MIPI_DPHY\n\thelp\n\t  Support for Cadence D-PHY in Rx configuration.\n\nconfig PHY_CADENCE_SIERRA\n\ttristate \"Cadence Sierra PHY Driver\"\n\tdepends on OF && HAS_IOMEM && RESET_CONTROLLER\n\tdepends on COMMON_CLK\n\tselect GENERIC_PHY\n\thelp\n\t  Enable this to support the Cadence Sierra PHY driver\n\nconfig PHY_CADENCE_SALVO\n\ttristate \"Cadence Salvo PHY Driver\"\n\tdepends on OF && HAS_IOMEM\n\tselect GENERIC_PHY\n\thelp\n\t  Enable this to support the Cadence SALVO PHY driver,\n\t  this PHY is a legacy PHY, and only are used for USB3\n\t  and USB2.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

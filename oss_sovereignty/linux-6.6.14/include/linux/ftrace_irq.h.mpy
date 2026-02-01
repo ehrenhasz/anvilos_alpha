@@ -1,0 +1,9 @@
+{
+  "module_name": "ftrace_irq.h",
+  "hash_id": "52dccdad97239e88a06d6616d01653928d4305677b53cf85ccb1a955ed158f90",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ftrace_irq.h",
+  "human_readable_source": " \n#ifndef _LINUX_FTRACE_IRQ_H\n#define _LINUX_FTRACE_IRQ_H\n\n#ifdef CONFIG_HWLAT_TRACER\nextern bool trace_hwlat_callback_enabled;\nextern void trace_hwlat_callback(bool enter);\n#endif\n\n#ifdef CONFIG_OSNOISE_TRACER\nextern bool trace_osnoise_callback_enabled;\nextern void trace_osnoise_callback(bool enter);\n#endif\n\nstatic inline void ftrace_nmi_enter(void)\n{\n#ifdef CONFIG_HWLAT_TRACER\n\tif (trace_hwlat_callback_enabled)\n\t\ttrace_hwlat_callback(true);\n#endif\n#ifdef CONFIG_OSNOISE_TRACER\n\tif (trace_osnoise_callback_enabled)\n\t\ttrace_osnoise_callback(true);\n#endif\n}\n\nstatic inline void ftrace_nmi_exit(void)\n{\n#ifdef CONFIG_HWLAT_TRACER\n\tif (trace_hwlat_callback_enabled)\n\t\ttrace_hwlat_callback(false);\n#endif\n#ifdef CONFIG_OSNOISE_TRACER\n\tif (trace_osnoise_callback_enabled)\n\t\ttrace_osnoise_callback(false);\n#endif\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

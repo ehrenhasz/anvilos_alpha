@@ -1,0 +1,9 @@
+{
+  "module_name": "hal_phy.h",
+  "hash_id": "5a96b6831b22e2822d170e035dc10a629f257152f36ea5deaebb952af5bbb8fa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/hal_phy.h",
+  "human_readable_source": " \n \n#ifndef __HAL_PHY_H__\n#define __HAL_PHY_H__\n \n \n \n \n#define ANT_DETECT_BY_SINGLE_TONE\tBIT0\n#define ANT_DETECT_BY_RSSI\t\t\t\tBIT1\n#define IS_ANT_DETECT_SUPPORT_SINGLE_TONE(__Adapter)\t\t((GET_HAL_DATA(__Adapter)->AntDetection) & ANT_DETECT_BY_SINGLE_TONE)\n#define IS_ANT_DETECT_SUPPORT_RSSI(__Adapter)\t\t((GET_HAL_DATA(__Adapter)->AntDetection) & ANT_DETECT_BY_RSSI)\n\n\n \nenum {\n\tRF_TYPE_MIN = 0,\t \n\tRF_8225 = 1,\t\t \n\tRF_8256 = 2,\t\t \n\tRF_8258 = 3,\t\t \n\tRF_6052 = 4,\t\t \n\tRF_PSEUDO_11N = 5,\t \n\tRF_TYPE_MAX\n};\n\nenum rf_path {\n\tRF_PATH_A = 0,\n\tRF_PATH_B,\n\tRF_PATH_MAX\n};\n\n#define\tTX_1S\t\t\t0\n#define\tTX_2S\t\t\t1\n#define\tTX_3S\t\t\t2\n#define\tTX_4S\t\t\t3\n\n#define\tRF_PATH_MAX_92C_88E\t\t2\n#define\tRF_PATH_MAX_90_8812\t\t4\t \n\nenum wireless_mode {\n\tWIRELESS_MODE_UNKNOWN = 0x00,\n\tWIRELESS_MODE_B = 0x02,\n\tWIRELESS_MODE_G = 0x04,\n\tWIRELESS_MODE_AUTO = 0x08,\n\tWIRELESS_MODE_N_24G = 0x10,\n\tWIRELESS_MODE_AC_24G  = 0x80,\n\tWIRELESS_MODE_AC_ONLY  = 0x100,\n};\n\nenum SwChnlCmdID {\n\tCmdID_End,\n\tCmdID_SetTxPowerLevel,\n\tCmdID_BBRegWrite10,\n\tCmdID_WritePortUlong,\n\tCmdID_WritePortUshort,\n\tCmdID_WritePortUchar,\n\tCmdID_RF_WriteReg,\n};\n\nstruct SwChnlCmd {\n\tenum SwChnlCmdID\tCmdID;\n\tu32 \t\t\tPara1;\n\tu32 \t\t\tPara2;\n\tu32 \t\t\tmsDelay;\n};\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

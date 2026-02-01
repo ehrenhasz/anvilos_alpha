@@ -1,0 +1,9 @@
+{
+  "module_name": "emac-phy.h",
+  "hash_id": "2dde3e9703e5c3b7825598c0d057048658fe8f03b0fdfcb5a051c8e8d896967b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qualcomm/emac/emac-phy.h",
+  "human_readable_source": " \n \n\n#ifndef _EMAC_PHY_H_\n#define _EMAC_PHY_H_\n\nstruct emac_adapter;\n\nint emac_phy_config(struct platform_device *pdev, struct emac_adapter *adpt);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

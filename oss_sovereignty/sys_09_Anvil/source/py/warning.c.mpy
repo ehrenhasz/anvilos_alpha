@@ -1,0 +1,9 @@
+{
+  "module_name": "warning.c",
+  "hash_id": "b11fba0b5265a7e2d90e819d7c0393af3838070031af3248c898c8a910507e94",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/warning.c",
+  "human_readable_source": " \n\n#include <stdarg.h>\n#include <stdio.h>\n\n#include \"py/emit.h\"\n#include \"py/runtime.h\"\n\n#if MICROPY_WARNINGS\n\nvoid mp_warning(const char *category, const char *msg, ...) {\n    if (category == NULL) {\n        category = \"Warning\";\n    }\n    mp_print_str(MICROPY_ERROR_PRINTER, category);\n    mp_print_str(MICROPY_ERROR_PRINTER, \": \");\n\n    va_list args;\n    va_start(args, msg);\n    mp_vprintf(MICROPY_ERROR_PRINTER, msg, args);\n    mp_print_str(MICROPY_ERROR_PRINTER, \"\\n\");\n    va_end(args);\n}\n\nvoid mp_emitter_warning(pass_kind_t pass, const char *msg) {\n    if (pass == MP_PASS_CODE_SIZE) {\n        mp_warning(NULL, msg);\n    }\n}\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

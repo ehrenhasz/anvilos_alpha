@@ -1,0 +1,9 @@
+{
+  "module_name": "catalyst.c",
+  "hash_id": "9818b70ef61a533b8e2e5bbaaebcbdbbbb34e2725f47370ee440588224534924",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/spi-nor/catalyst.c",
+  "human_readable_source": "\n \n\n#include <linux/mtd/spi-nor.h>\n\n#include \"core.h\"\n\nstatic const struct flash_info catalyst_nor_parts[] = {\n\t \n\t{ \"cat25c11\", CAT25_INFO(16, 8, 16, 1) },\n\t{ \"cat25c03\", CAT25_INFO(32, 8, 16, 2) },\n\t{ \"cat25c09\", CAT25_INFO(128, 8, 32, 2) },\n\t{ \"cat25c17\", CAT25_INFO(256, 8, 32, 2) },\n\t{ \"cat25128\", CAT25_INFO(2048, 8, 64, 2) },\n};\n\nconst struct spi_nor_manufacturer spi_nor_catalyst = {\n\t.name = \"catalyst\",\n\t.parts = catalyst_nor_parts,\n\t.nparts = ARRAY_SIZE(catalyst_nor_parts),\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

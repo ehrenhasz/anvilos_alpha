@@ -1,0 +1,9 @@
+{
+  "module_name": "cfsrvl.h",
+  "hash_id": "12852b24ea64d117b7966f80fdeb26427103bc115ce44468ed6da1100bc80eb7",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/caif/cfsrvl.h",
+  "human_readable_source": " \n \n\n#ifndef CFSRVL_H_\n#define CFSRVL_H_\n#include <linux/list.h>\n#include <linux/stddef.h>\n#include <linux/types.h>\n#include <linux/kref.h>\n#include <linux/rculist.h>\n\nstruct cfsrvl {\n\tstruct cflayer layer;\n\tbool open;\n\tbool phy_flow_on;\n\tbool modem_flow_on;\n\tbool supports_flowctrl;\n\tvoid (*release)(struct cflayer *layer);\n\tstruct dev_info dev_info;\n\tvoid (*hold)(struct cflayer *lyr);\n\tvoid (*put)(struct cflayer *lyr);\n\tstruct rcu_head rcu;\n};\n\nstruct cflayer *cfvei_create(u8 linkid, struct dev_info *dev_info);\nstruct cflayer *cfdgml_create(u8 linkid, struct dev_info *dev_info);\nstruct cflayer *cfutill_create(u8 linkid, struct dev_info *dev_info);\nstruct cflayer *cfvidl_create(u8 linkid, struct dev_info *dev_info);\nstruct cflayer *cfrfml_create(u8 linkid, struct dev_info *dev_info,\n\t\t\t\tint mtu_size);\nstruct cflayer *cfdbgl_create(u8 linkid, struct dev_info *dev_info);\n\nbool cfsrvl_phyid_match(struct cflayer *layer, int phyid);\n\nvoid cfsrvl_init(struct cfsrvl *service,\n\t\t\tu8 channel_id,\n\t\t\tstruct dev_info *dev_info,\n\t\t\tbool supports_flowctrl);\nbool cfsrvl_ready(struct cfsrvl *service, int *err);\nu8 cfsrvl_getphyid(struct cflayer *layer);\n\nstatic inline void cfsrvl_get(struct cflayer *layr)\n{\n\tstruct cfsrvl *s = container_of(layr, struct cfsrvl, layer);\n\tif (layr == NULL || layr->up == NULL || s->hold == NULL)\n\t\treturn;\n\n\ts->hold(layr->up);\n}\n\nstatic inline void cfsrvl_put(struct cflayer *layr)\n{\n\tstruct cfsrvl *s = container_of(layr, struct cfsrvl, layer);\n\tif (layr == NULL || layr->up == NULL || s->hold == NULL)\n\t\treturn;\n\n\ts->put(layr->up);\n}\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

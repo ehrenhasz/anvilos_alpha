@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_work.h",
+  "hash_id": "de46c5ff92f37fcf6d81acca82f5f2c6de983582c3c2be76298b5c1ed1ab1698",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/irq_work.h",
+  "human_readable_source": " \n#ifndef _ASM_IRQ_WORK_H\n#define _ASM_IRQ_WORK_H\n\n#include <asm/cpufeature.h>\n\n#ifdef CONFIG_X86_LOCAL_APIC\nstatic inline bool arch_irq_work_has_interrupt(void)\n{\n\treturn boot_cpu_has(X86_FEATURE_APIC);\n}\nextern void arch_irq_work_raise(void);\n#else\nstatic inline bool arch_irq_work_has_interrupt(void)\n{\n\treturn false;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "src4xxx-i2c.c",
+  "hash_id": "00fab41a459c420e121da0b88d073891be93d31f81cde016c8a97ade50e144d6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/src4xxx-i2c.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <linux/i2c.h>\n#include <linux/mod_devicetable.h>\n#include <linux/module.h>\n#include <linux/regmap.h>\n\n#include \"src4xxx.h\"\n\nstatic int src4xxx_i2c_probe(struct i2c_client *i2c)\n{\n\treturn src4xxx_probe(&i2c->dev,\n\t\tdevm_regmap_init_i2c(i2c, &src4xxx_regmap_config), NULL);\n}\n\nstatic const struct i2c_device_id src4xxx_i2c_ids[] = {\n\t{ \"src4392\", 0 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, src4xxx_i2c_ids);\n\nstatic const struct of_device_id src4xxx_of_match[] __maybe_unused = {\n\t{ .compatible = \"ti,src4392\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, src4xxx_of_match);\n\n\nstatic struct i2c_driver src4xxx_i2c_driver = {\n\t.driver = {\n\t\t.name = \"src4xxx\",\n\t\t.of_match_table = of_match_ptr(src4xxx_of_match),\n\t},\n\t.probe = src4xxx_i2c_probe,\n\t.id_table = src4xxx_i2c_ids,\n};\nmodule_i2c_driver(src4xxx_i2c_driver);\n\nMODULE_DESCRIPTION(\"ASoC SRC4392 CODEC I2C driver\");\nMODULE_AUTHOR(\"Matt Flax <flatmax@flatmax.com>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

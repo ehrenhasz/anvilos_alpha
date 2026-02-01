@@ -1,0 +1,9 @@
+{
+  "module_name": "uncore-frequency-common.h",
+  "hash_id": "0ec30de9a990c23751533c5a096b4ab157d0dd8f0de4da398fbfcde3214e9f18",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/uncore-frequency/uncore-frequency-common.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_UNCORE_FREQ_COMMON_H\n#define __INTEL_UNCORE_FREQ_COMMON_H\n\n#include <linux/device.h>\n\n \nstruct uncore_data {\n\tu64 stored_uncore_data;\n\tu32 initial_min_freq_khz;\n\tu32 initial_max_freq_khz;\n\tint control_cpu;\n\tbool valid;\n\tint package_id;\n\tint die_id;\n\tint domain_id;\n\tint cluster_id;\n\tint instance_id;\n\tchar name[32];\n\n\tstruct attribute_group uncore_attr_group;\n\tstruct device_attribute max_freq_khz_dev_attr;\n\tstruct device_attribute min_freq_khz_dev_attr;\n\tstruct device_attribute initial_max_freq_khz_dev_attr;\n\tstruct device_attribute initial_min_freq_khz_dev_attr;\n\tstruct device_attribute current_freq_khz_dev_attr;\n\tstruct device_attribute domain_id_dev_attr;\n\tstruct device_attribute fabric_cluster_id_dev_attr;\n\tstruct device_attribute package_id_dev_attr;\n\tstruct attribute *uncore_attrs[9];\n};\n\n#define UNCORE_DOMAIN_ID_INVALID\t-1\n\nint uncore_freq_common_init(int (*read_control_freq)(struct uncore_data *data, unsigned int *min, unsigned int *max),\n\t\t\t     int (*write_control_freq)(struct uncore_data *data, unsigned int input, unsigned int min_max),\n\t\t\t     int (*uncore_read_freq)(struct uncore_data *data, unsigned int *freq));\nvoid uncore_freq_common_exit(void);\nint uncore_freq_add_entry(struct uncore_data *data, int cpu);\nvoid uncore_freq_remove_die_entry(struct uncore_data *data);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

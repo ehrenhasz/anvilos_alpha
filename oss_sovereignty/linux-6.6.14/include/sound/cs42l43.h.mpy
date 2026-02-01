@@ -1,0 +1,9 @@
+{
+  "module_name": "cs42l43.h",
+  "hash_id": "a5631e02c91db575e3a0da712f5223f1ed9efe4a215b5dd7906dce2f80fdd56f",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/cs42l43.h",
+  "human_readable_source": " \n \n\n#ifndef CS42L43_ASOC_EXT_H\n#define CS42L43_ASOC_EXT_H\n\n#define CS42L43_SYSCLK\t\t0\n\n#define CS42L43_SYSCLK_MCLK\t0\n#define CS42L43_SYSCLK_SDW\t1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

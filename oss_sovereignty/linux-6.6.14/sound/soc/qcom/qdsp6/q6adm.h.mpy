@@ -1,0 +1,9 @@
+{
+  "module_name": "q6adm.h",
+  "hash_id": "6bc130b47ec74770394794cfff3450e7cdab4b5571621f6c92b313112c485e83",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/qcom/qdsp6/q6adm.h",
+  "human_readable_source": " \n#ifndef __Q6_ADM_V2_H__\n#define __Q6_ADM_V2_H__\n\n#define ADM_PATH_PLAYBACK\t0x1\n#define ADM_PATH_LIVE_REC\t0x2\n#define MAX_COPPS_PER_PORT\t8\n#define NULL_COPP_TOPOLOGY\t0x00010312\n\n \nstruct route_payload {\n\tint num_copps;\n\tint session_id;\n\tint copp_idx[MAX_COPPS_PER_PORT];\n\tint port_id[MAX_COPPS_PER_PORT];\n};\n\nstruct q6copp;\nstruct q6copp *q6adm_open(struct device *dev, int port_id, int path, int rate,\n\t\t\t   int channel_mode, int topology, int perf_mode,\n\t\t\t   uint16_t bit_width, int app_type, int acdb_id);\nint q6adm_close(struct device *dev, struct q6copp *copp);\nint q6adm_get_copp_id(struct q6copp *copp);\nint q6adm_matrix_map(struct device *dev, int path,\n\t\t     struct route_payload payload_map, int perf_mode);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

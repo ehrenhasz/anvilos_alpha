@@ -1,0 +1,9 @@
+{
+  "module_name": "rwonce.h",
+  "hash_id": "28af187bcebd125f955a5f17b0a6a87f04de141bccc3697bc4acce91587bbf20",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/rwonce.h",
+  "human_readable_source": " \n \n#ifndef __ASM_GENERIC_RWONCE_H\n#define __ASM_GENERIC_RWONCE_H\n\n#ifndef __ASSEMBLY__\n\n#include <linux/compiler_types.h>\n#include <linux/kasan-checks.h>\n#include <linux/kcsan-checks.h>\n\n \n#define compiletime_assert_rwonce_type(t)\t\t\t\t\t\\\n\tcompiletime_assert(__native_word(t) || sizeof(t) == sizeof(long long),\t\\\n\t\t\"Unsupported access size for {READ,WRITE}_ONCE().\")\n\n \n#ifndef __READ_ONCE\n#define __READ_ONCE(x)\t(*(const volatile __unqual_scalar_typeof(x) *)&(x))\n#endif\n\n#define READ_ONCE(x)\t\t\t\t\t\t\t\\\n({\t\t\t\t\t\t\t\t\t\\\n\tcompiletime_assert_rwonce_type(x);\t\t\t\t\\\n\t__READ_ONCE(x);\t\t\t\t\t\t\t\\\n})\n\n#define __WRITE_ONCE(x, val)\t\t\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\t\\\n\t*(volatile typeof(x) *)&(x) = (val);\t\t\t\t\\\n} while (0)\n\n#define WRITE_ONCE(x, val)\t\t\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\t\\\n\tcompiletime_assert_rwonce_type(x);\t\t\t\t\\\n\t__WRITE_ONCE(x, val);\t\t\t\t\t\t\\\n} while (0)\n\nstatic __no_sanitize_or_inline\nunsigned long __read_once_word_nocheck(const void *addr)\n{\n\treturn __READ_ONCE(*(unsigned long *)addr);\n}\n\n \n#define READ_ONCE_NOCHECK(x)\t\t\t\t\t\t\\\n({\t\t\t\t\t\t\t\t\t\\\n\tcompiletime_assert(sizeof(x) == sizeof(unsigned long),\t\t\\\n\t\t\"Unsupported access size for READ_ONCE_NOCHECK().\");\t\\\n\t(typeof(x))__read_once_word_nocheck(&(x));\t\t\t\\\n})\n\nstatic __no_kasan_or_inline\nunsigned long read_word_at_a_time(const void *addr)\n{\n\tkasan_check_read(addr, 1);\n\treturn *(unsigned long *)addr;\n}\n\n#endif  \n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

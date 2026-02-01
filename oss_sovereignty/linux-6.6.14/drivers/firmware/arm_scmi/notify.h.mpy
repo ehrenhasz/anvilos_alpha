@@ -1,0 +1,9 @@
+{
+  "module_name": "notify.h",
+  "hash_id": "51c45a7b90eacb42ecf8274a645f31f19ce796470ca9e76f08585887620c55b2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/arm_scmi/notify.h",
+  "human_readable_source": " \n \n#ifndef _SCMI_NOTIFY_H\n#define _SCMI_NOTIFY_H\n\n#include <linux/device.h>\n#include <linux/ktime.h>\n#include <linux/types.h>\n\n#define SCMI_PROTO_QUEUE_SZ\t4096\n\n \nstruct scmi_event {\n\tu8\tid;\n\tsize_t\tmax_payld_sz;\n\tsize_t\tmax_report_sz;\n};\n\nstruct scmi_protocol_handle;\n\n \nstruct scmi_event_ops {\n\tint (*get_num_sources)(const struct scmi_protocol_handle *ph);\n\tint (*set_notify_enabled)(const struct scmi_protocol_handle *ph,\n\t\t\t\t  u8 evt_id, u32 src_id, bool enabled);\n\tvoid *(*fill_custom_report)(const struct scmi_protocol_handle *ph,\n\t\t\t\t    u8 evt_id, ktime_t timestamp,\n\t\t\t\t    const void *payld, size_t payld_sz,\n\t\t\t\t    void *report, u32 *src_id);\n};\n\n \nstruct scmi_protocol_events {\n\tsize_t\t\t\t\tqueue_sz;\n\tconst struct scmi_event_ops\t*ops;\n\tconst struct scmi_event\t\t*evts;\n\tunsigned int\t\t\tnum_events;\n\tunsigned int\t\t\tnum_sources;\n};\n\nint scmi_notification_init(struct scmi_handle *handle);\nvoid scmi_notification_exit(struct scmi_handle *handle);\nint scmi_register_protocol_events(const struct scmi_handle *handle, u8 proto_id,\n\t\t\t\t  const struct scmi_protocol_handle *ph,\n\t\t\t\t  const struct scmi_protocol_events *ee);\nvoid scmi_deregister_protocol_events(const struct scmi_handle *handle,\n\t\t\t\t     u8 proto_id);\nint scmi_notify(const struct scmi_handle *handle, u8 proto_id, u8 evt_id,\n\t\tconst void *buf, size_t len, ktime_t ts);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "unusual_alauda.h",
+  "hash_id": "7c9f1be171283e9761bc02bbe8cb218d28e321dfd492441d642766cd3359ec09",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/storage/unusual_alauda.h",
+  "human_readable_source": " \n \n\n#if defined(CONFIG_USB_STORAGE_ALAUDA) || \\\n\t\tdefined(CONFIG_USB_STORAGE_ALAUDA_MODULE)\n\nUNUSUAL_DEV(  0x0584, 0x0008, 0x0102, 0x0102,\n\t\t\"Fujifilm\",\n\t\t\"DPC-R1 (Alauda)\",\n\t\tUSB_SC_SCSI, USB_PR_ALAUDA, init_alauda, 0),\n\nUNUSUAL_DEV(  0x07b4, 0x010a, 0x0102, 0x0102,\n\t\t\"Olympus\",\n\t\t\"MAUSB-10 (Alauda)\",\n\t\tUSB_SC_SCSI, USB_PR_ALAUDA, init_alauda, 0),\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

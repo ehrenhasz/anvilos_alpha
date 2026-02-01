@@ -1,0 +1,9 @@
+{
+  "module_name": "rspi.h",
+  "hash_id": "3d339daacf47f5423df5d73e24331a4e16be9bb75e6aaf70a3cbc0436a81ec3b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/rspi.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SPI_RENESAS_SPI_H__\n#define __LINUX_SPI_RENESAS_SPI_H__\n\nstruct rspi_plat_data {\n\tunsigned int dma_tx_id;\n\tunsigned int dma_rx_id;\n\n\tu16 num_chipselect;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

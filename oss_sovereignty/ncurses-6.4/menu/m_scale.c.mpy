@@ -1,0 +1,9 @@
+{
+  "module_name": "m_scale.c",
+  "hash_id": "447b39364a649654dd4f5c9c34dd2607e8952e20fd85257e3ceec3ffce21a9e1",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_scale.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_scale.c,v 1.14 2021/06/17 21:20:30 tom Exp $\")\n\n \nMENU_EXPORT(int)\nscale_menu(const MENU *menu, int *rows, int *cols)\n{\n  T((T_CALLED(\"scale_menu(%p,%p,%p)\"),\n     (const void *)menu,\n     (void *)rows,\n     (void *)cols));\n\n  if (!menu)\n    RETURN(E_BAD_ARGUMENT);\n\n  if (menu->items && *(menu->items))\n    {\n      if (rows)\n\t*rows = menu->height;\n      if (cols)\n\t*cols = menu->width;\n      RETURN(E_OK);\n    }\n  else\n    RETURN(E_NOT_CONNECTED);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

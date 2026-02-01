@@ -1,0 +1,9 @@
+{
+  "module_name": "mcp.h",
+  "hash_id": "3e6efa9c9d47fed0ba82cc57af05e878d5dfadb8004913cbee5569761c93c55f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/mcp.h",
+  "human_readable_source": " \n \n#ifndef MCP_H\n#define MCP_H\n\n#include <linux/device.h>\n\nstruct mcp_ops;\n\nstruct mcp {\n\tstruct module\t*owner;\n\tstruct mcp_ops\t*ops;\n\tspinlock_t\tlock;\n\tint\t\tuse_count;\n\tunsigned int\tsclk_rate;\n\tunsigned int\trw_timeout;\n\tstruct device\tattached_device;\n};\n\nstruct mcp_ops {\n\tvoid\t\t(*set_telecom_divisor)(struct mcp *, unsigned int);\n\tvoid\t\t(*set_audio_divisor)(struct mcp *, unsigned int);\n\tvoid\t\t(*reg_write)(struct mcp *, unsigned int, unsigned int);\n\tunsigned int\t(*reg_read)(struct mcp *, unsigned int);\n\tvoid\t\t(*enable)(struct mcp *);\n\tvoid\t\t(*disable)(struct mcp *);\n};\n\nvoid mcp_set_telecom_divisor(struct mcp *, unsigned int);\nvoid mcp_set_audio_divisor(struct mcp *, unsigned int);\nvoid mcp_reg_write(struct mcp *, unsigned int, unsigned int);\nunsigned int mcp_reg_read(struct mcp *, unsigned int);\nvoid mcp_enable(struct mcp *);\nvoid mcp_disable(struct mcp *);\n#define mcp_get_sclk_rate(mcp)\t((mcp)->sclk_rate)\n\nstruct mcp *mcp_host_alloc(struct device *, size_t);\nint mcp_host_add(struct mcp *, void *);\nvoid mcp_host_del(struct mcp *);\nvoid mcp_host_free(struct mcp *);\n\nstruct mcp_driver {\n\tstruct device_driver drv;\n\tint (*probe)(struct mcp *);\n\tvoid (*remove)(struct mcp *);\n};\n\nint mcp_driver_register(struct mcp_driver *);\nvoid mcp_driver_unregister(struct mcp_driver *);\n\n#define mcp_get_drvdata(mcp)\tdev_get_drvdata(&(mcp)->attached_device)\n#define mcp_set_drvdata(mcp,d)\tdev_set_drvdata(&(mcp)->attached_device, d)\n\nstatic inline void *mcp_priv(struct mcp *mcp)\n{\n\treturn mcp + 1;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

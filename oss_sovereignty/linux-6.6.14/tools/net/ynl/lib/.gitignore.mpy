@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "32dae3052f331ee34d628ef535709b301259a45df7c7522c4d35dcf49873f00b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/net/ynl/lib/.gitignore",
+  "human_readable_source": "__pycache__/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

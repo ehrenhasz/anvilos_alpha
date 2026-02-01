@@ -1,0 +1,9 @@
+{
+  "module_name": "ptrace_user.h",
+  "hash_id": "f3429cd18f29604ba609b3ba316388689694d1ed5dcfe3cefedf3a12edd9421f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/shared/sysdep/ptrace_user.h",
+  "human_readable_source": " \n#include <generated/user_constants.h>\n\n#define PT_OFFSET(r) ((r) * sizeof(long))\n\n#define PT_SYSCALL_NR(regs) ((regs)[HOST_ORIG_AX])\n#define PT_SYSCALL_NR_OFFSET PT_OFFSET(HOST_ORIG_AX)\n\n#define PT_SYSCALL_RET_OFFSET PT_OFFSET(HOST_AX)\n\n#define REGS_IP_INDEX HOST_IP\n#define REGS_SP_INDEX HOST_SP\n\n#ifdef __i386__\n#define FP_SIZE ((HOST_FPX_SIZE > HOST_FP_SIZE) ? HOST_FPX_SIZE : HOST_FP_SIZE)\n#else\n#define FP_SIZE HOST_FP_SIZE\n\n \n#ifndef PTRACE_OLDSETOPTIONS\n#define PTRACE_OLDSETOPTIONS 21\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

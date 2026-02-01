@@ -1,0 +1,9 @@
+{
+  "module_name": "dvb-bt8xx.h",
+  "hash_id": "09af9883516d3afc1abb7a69e6069b25b593ea063fe4119bdcd40e3b7daba5b2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/bt8xx/dvb-bt8xx.h",
+  "human_readable_source": " \n \n\n#ifndef DVB_BT8XX_H\n#define DVB_BT8XX_H\n\n#include <linux/i2c.h>\n#include <linux/mutex.h>\n#include <media/dvbdev.h>\n#include <media/dvb_net.h>\n#include \"bttv.h\"\n#include \"mt352.h\"\n#include \"sp887x.h\"\n#include \"dst_common.h\"\n#include \"nxt6000.h\"\n#include \"cx24110.h\"\n#include \"or51211.h\"\n#include \"lgdt330x.h\"\n#include \"zl10353.h\"\n#include \"tuner-simple.h\"\n\nstruct dvb_bt8xx_card {\n\tstruct mutex lock;\n\tint nfeeds;\n\tchar card_name[32];\n\tstruct dvb_adapter dvb_adapter;\n\tstruct bt878 *bt;\n\tunsigned int bttv_nr;\n\tstruct dvb_demux demux;\n\tstruct dmxdev dmxdev;\n\tstruct dmx_frontend fe_hw;\n\tstruct dmx_frontend fe_mem;\n\tu32 gpio_mode;\n\tu32 op_sync_orin;\n\tu32 irq_err_ignore;\n\tstruct i2c_adapter *i2c_adapter;\n\tstruct dvb_net dvbnet;\n\n\tstruct dvb_frontend* fe;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

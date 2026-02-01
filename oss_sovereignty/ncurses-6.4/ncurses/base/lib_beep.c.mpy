@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_beep.c",
+  "hash_id": "d5941f6ce3fba18a027d490aa1c7c561a80b7191f6e4f8a5980bad417aa26917",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_beep.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\n#ifndef CUR\n#define CUR SP_TERMTYPE\n#endif\n\nMODULE_ID(\"$Id: lib_beep.c,v 1.18 2020/02/02 23:34:34 tom Exp $\")\n\n \n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(beep) (NCURSES_SP_DCL0)\n{\n    int res = ERR;\n\n    T((T_CALLED(\"beep(%p)\"), (void *) SP_PARM));\n\n#ifdef USE_TERM_DRIVER\n    if (SP_PARM != 0)\n\tres = CallDriver_1(SP_PARM, td_doBeepOrFlash, TRUE);\n#else\n     \n    if (cur_term == 0) {\n\tres = ERR;\n    } else if (bell) {\n\tres = NCURSES_PUTP2_FLUSH(\"bell\", bell);\n    } else if (flash_screen) {\n\tres = NCURSES_PUTP2_FLUSH(\"flash_screen\", flash_screen);\n\t_nc_flush();\n    }\n#endif\n\n    returnCode(res);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nbeep(void)\n{\n    return NCURSES_SP_NAME(beep) (CURRENT_SCREEN);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

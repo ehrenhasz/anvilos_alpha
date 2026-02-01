@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_dvs_param.h",
+  "hash_id": "20104855fa0d31819c33d3f3bef07278622803de517b46d80f285f0e58fba614",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/dvs/dvs_1.0/ia_css_dvs_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_DVS_PARAM_H\n#define __IA_CSS_DVS_PARAM_H\n\n#include <type_support.h>\n\n#if !defined(ENABLE_TPROXY) && !defined(ENABLE_CRUN_FOR_TD) && !defined(PARAMBIN_GENERATION)\n#include \"dma.h\"\n#endif  \n\n#include \"uds/uds_1.0/ia_css_uds_param.h\"\n\n \nstruct sh_css_isp_dvs_isp_config {\n\tu32 num_horizontal_blocks;\n\tu32 num_vertical_blocks;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "edid.h",
+  "hash_id": "51a87b3b1704b60d4394cbe78e0c2bf8425597cad30fcef2935b5112e3df41f3",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/video/edid.h",
+  "human_readable_source": " \n#ifndef _UAPI__linux_video_edid_h__\n#define _UAPI__linux_video_edid_h__\n\nstruct edid_info {\n\tunsigned char dummy[128];\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dlg,da9211-regulator.h",
+  "hash_id": "9c6b5c012f62d774496e3410d3c7e1bcde8f317bb36931c727a2291702c6824e",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/regulator/dlg,da9211-regulator.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_REGULATOR_DLG_DA9211_H\n#define _DT_BINDINGS_REGULATOR_DLG_DA9211_H\n\n \n\n#define DA9211_BUCK_MODE_SLEEP\t\t1\n#define DA9211_BUCK_MODE_SYNC\t\t2\n#define DA9211_BUCK_MODE_AUTO\t\t3\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_css_version.c",
+  "hash_id": "845962dab44eb04428494c88111b8a309248be039223809286b664abb125460b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/sh_css_version.c",
+  "human_readable_source": "\n \n\n#include \"../../include/linux/atomisp.h\"\n#include \"../../include/linux/atomisp_platform.h\"\n#include \"ia_css_version.h\"\n#include \"ia_css_version_data.h\"\n#include \"ia_css_err.h\"\n#include \"sh_css_firmware.h\"\n\nint\nia_css_get_version(char *version, int max_size)\n{\n\tchar *css_version;\n\n\tif (!IS_ISP2401)\n\t\tcss_version = ISP2400_CSS_VERSION_STRING;\n\telse\n\t\tcss_version = ISP2401_CSS_VERSION_STRING;\n\n\tif (max_size <= (int)strlen(css_version) + (int)strlen(sh_css_get_fw_version()) + 5)\n\t\treturn -EINVAL;\n\tstrscpy(version, css_version, max_size);\n\tstrcat(version, \"FW:\");\n\tstrcat(version, sh_css_get_fw_version());\n\tstrcat(version, \"; \");\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bperf_u.h",
+  "hash_id": "51e7b8704f0bb12dc2bb1f2277b185bbcfcd2461f16191fb82eb5bab462b173f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/bpf_skel/bperf_u.h",
+  "human_readable_source": "\n\n\n#ifndef __BPERF_STAT_U_H\n#define __BPERF_STAT_U_H\n\nenum bperf_filter_type {\n\tBPERF_FILTER_GLOBAL = 1,\n\tBPERF_FILTER_CPU,\n\tBPERF_FILTER_PID,\n\tBPERF_FILTER_TGID,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "exynos-srom.h",
+  "hash_id": "b6e367c282fba2bf87a8db3784bd0206b18628bedd9c216957797b2195cd0a25",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/memory/samsung/exynos-srom.h",
+  "human_readable_source": " \n \n\n#ifndef __EXYNOS_SROM_H\n#define __EXYNOS_SROM_H __FILE__\n\n#define EXYNOS_SROMREG(x)\t\t(x)\n\n#define EXYNOS_SROM_BW\t\tEXYNOS_SROMREG(0x0)\n#define EXYNOS_SROM_BC0\t\tEXYNOS_SROMREG(0x4)\n#define EXYNOS_SROM_BC1\t\tEXYNOS_SROMREG(0x8)\n#define EXYNOS_SROM_BC2\t\tEXYNOS_SROMREG(0xc)\n#define EXYNOS_SROM_BC3\t\tEXYNOS_SROMREG(0x10)\n#define EXYNOS_SROM_BC4\t\tEXYNOS_SROMREG(0x14)\n#define EXYNOS_SROM_BC5\t\tEXYNOS_SROMREG(0x18)\n\n \n\n#define EXYNOS_SROM_BW__DATAWIDTH__SHIFT\t0\n#define EXYNOS_SROM_BW__ADDRMODE__SHIFT\t\t1\n#define EXYNOS_SROM_BW__WAITENABLE__SHIFT\t2\n#define EXYNOS_SROM_BW__BYTEENABLE__SHIFT\t3\n\n#define EXYNOS_SROM_BW__CS_MASK\t\t\t0xf\n\n#define EXYNOS_SROM_BW__NCS0__SHIFT\t\t0\n#define EXYNOS_SROM_BW__NCS1__SHIFT\t\t4\n#define EXYNOS_SROM_BW__NCS2__SHIFT\t\t8\n#define EXYNOS_SROM_BW__NCS3__SHIFT\t\t12\n#define EXYNOS_SROM_BW__NCS4__SHIFT\t\t16\n#define EXYNOS_SROM_BW__NCS5__SHIFT\t\t20\n\n \n\n#define EXYNOS_SROM_BCX__PMC__SHIFT\t\t0\n#define EXYNOS_SROM_BCX__TACP__SHIFT\t\t4\n#define EXYNOS_SROM_BCX__TCAH__SHIFT\t\t8\n#define EXYNOS_SROM_BCX__TCOH__SHIFT\t\t12\n#define EXYNOS_SROM_BCX__TACC__SHIFT\t\t16\n#define EXYNOS_SROM_BCX__TCOS__SHIFT\t\t24\n#define EXYNOS_SROM_BCX__TACS__SHIFT\t\t28\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "python-ext-sources",
+  "hash_id": "cdbcf42ee00497d268e119e0dd252149f3e6e40059e6a0689c592b12583422ca",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/python-ext-sources",
+  "human_readable_source": "#\n# List of files needed by perf python extension\n#\n# Each source file must be placed on its own line so that it can be\n# processed by Makefile and util/setup.py accordingly.\n#\n\nutil/python.c\n../lib/ctype.c\nutil/cap.c\nutil/evlist.c\nutil/evsel.c\nutil/evsel_fprintf.c\nutil/perf_event_attr_fprintf.c\nutil/cpumap.c\nutil/memswap.c\nutil/mmap.c\nutil/namespaces.c\n../lib/bitmap.c\n../lib/find_bit.c\n../lib/list_sort.c\n../lib/hweight.c\n../lib/string.c\n../lib/vsprintf.c\nutil/thread_map.c\nutil/util.c\nutil/cgroup.c\nutil/parse-branch-options.c\nutil/rblist.c\nutil/counts.c\nutil/print_binary.c\nutil/strlist.c\nutil/trace-event.c\n../lib/rbtree.c\nutil/string.c\nutil/symbol_fprintf.c\nutil/units.c\nutil/affinity.c\nutil/rwsem.c\nutil/hashmap.c\nutil/perf_regs.c\nutil/fncache.c\nutil/perf-regs-arch/perf_regs_aarch64.c\nutil/perf-regs-arch/perf_regs_arm.c\nutil/perf-regs-arch/perf_regs_csky.c\nutil/perf-regs-arch/perf_regs_loongarch.c\nutil/perf-regs-arch/perf_regs_mips.c\nutil/perf-regs-arch/perf_regs_powerpc.c\nutil/perf-regs-arch/perf_regs_riscv.c\nutil/perf-regs-arch/perf_regs_s390.c\nutil/perf-regs-arch/perf_regs_x86.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "b90bfb316a0ebdab5ee785f6ef96a1f129ff3402658d93bc4ba4d9ae3800a92c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath6kl/trace.c",
+  "human_readable_source": " \n\n#include <linux/module.h>\n\n#define CREATE_TRACE_POINTS\n#include \"trace.h\"\n\nEXPORT_TRACEPOINT_SYMBOL(ath6kl_sdio);\nEXPORT_TRACEPOINT_SYMBOL(ath6kl_sdio_scat);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

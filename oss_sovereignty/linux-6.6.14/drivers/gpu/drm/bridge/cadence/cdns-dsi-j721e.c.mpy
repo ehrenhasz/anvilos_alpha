@@ -1,0 +1,9 @@
+{
+  "module_name": "cdns-dsi-j721e.c",
+  "hash_id": "926fb869d246cf121e7811e09692ed20fb0d542d12def124f382c6356c14d021",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/bridge/cadence/cdns-dsi-j721e.c",
+  "human_readable_source": "\n \n\n#include <linux/io.h>\n#include <linux/platform_device.h>\n\n#include \"cdns-dsi-j721e.h\"\n\n#define DSI_WRAP_REVISION\t\t0x0\n#define DSI_WRAP_DPI_CONTROL\t\t0x4\n#define DSI_WRAP_DSC_CONTROL\t\t0x8\n#define DSI_WRAP_DPI_SECURE\t\t0xc\n#define DSI_WRAP_DSI_0_ASF_STATUS\t0x10\n\n#define DSI_WRAP_DPI_0_EN\t\tBIT(0)\n#define DSI_WRAP_DSI2_MUX_SEL\t\tBIT(4)\n\nstatic int cdns_dsi_j721e_init(struct cdns_dsi *dsi)\n{\n\tstruct platform_device *pdev = to_platform_device(dsi->base.dev);\n\n\tdsi->j721e_regs = devm_platform_ioremap_resource(pdev, 1);\n\treturn PTR_ERR_OR_ZERO(dsi->j721e_regs);\n}\n\nstatic void cdns_dsi_j721e_enable(struct cdns_dsi *dsi)\n{\n\t \n\twritel(DSI_WRAP_DPI_0_EN, dsi->j721e_regs + DSI_WRAP_DPI_CONTROL);\n}\n\nstatic void cdns_dsi_j721e_disable(struct cdns_dsi *dsi)\n{\n\t \n\twritel(0, dsi->j721e_regs + DSI_WRAP_DPI_CONTROL);\n}\n\nconst struct cdns_dsi_platform_ops dsi_ti_j721e_ops = {\n\t.init = cdns_dsi_j721e_init,\n\t.enable = cdns_dsi_j721e_enable,\n\t.disable = cdns_dsi_j721e_disable,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "thermocouple.h",
+  "hash_id": "6c9d4a8d61f6b2722e3e6a6101873508124008c43123cb74a3d34ef9d082f16d",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/iio/temperature/thermocouple.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_TEMPERATURE_THERMOCOUPLE_H\n#define _DT_BINDINGS_TEMPERATURE_THERMOCOUPLE_H\n\n\n#define THERMOCOUPLE_TYPE_B\t0x00\n#define THERMOCOUPLE_TYPE_E\t0x01\n#define THERMOCOUPLE_TYPE_J\t0x02\n#define THERMOCOUPLE_TYPE_K\t0x03\n#define THERMOCOUPLE_TYPE_N\t0x04\n#define THERMOCOUPLE_TYPE_R\t0x05\n#define THERMOCOUPLE_TYPE_S\t0x06\n#define THERMOCOUPLE_TYPE_T\t0x07\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c6b1127477682cac56d22dd3f99afdf8ecefa42ae61ed4b2a7309fec159d36e6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Freescale network device drivers.\n#\n\nobj-$(CONFIG_FEC) += fec.o\nfec-objs :=fec_main.o fec_ptp.o\n\nobj-$(CONFIG_FEC_MPC52xx) += fec_mpc52xx.o\nifeq ($(CONFIG_FEC_MPC52xx_MDIO),y)\n\tobj-$(CONFIG_FEC_MPC52xx) += fec_mpc52xx_phy.o\nendif\nobj-$(CONFIG_FS_ENET) += fs_enet/\nobj-$(CONFIG_FSL_PQ_MDIO) += fsl_pq_mdio.o\nobj-$(CONFIG_FSL_XGMAC_MDIO) += xgmac_mdio.o\nobj-$(CONFIG_GIANFAR) += gianfar_driver.o\ngianfar_driver-objs := gianfar.o \\\n\t\tgianfar_ethtool.o\nobj-$(CONFIG_UCC_GETH) += ucc_geth_driver.o\nucc_geth_driver-objs := ucc_geth.o ucc_geth_ethtool.o\n\nobj-$(CONFIG_FSL_FMAN) += fman/\nobj-$(CONFIG_FSL_DPAA_ETH) += dpaa/\n\nobj-$(CONFIG_FSL_DPAA2_ETH) += dpaa2/\n\nobj-y += enetc/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "helpline.c",
+  "hash_id": "c9bc304fbd509e9dcd733665d00355b7560ca444590218075a150a43a25fa384",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/helpline.c",
+  "human_readable_source": "\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\n#include \"helpline.h\"\n#include \"ui.h\"\n\nchar ui_helpline__current[512];\n\nstatic void nop_helpline__pop(void)\n{\n}\n\nstatic void nop_helpline__push(const char *msg __maybe_unused)\n{\n}\n\nstatic int nop_helpline__show(const char *fmt __maybe_unused,\n\t\t\t       va_list ap __maybe_unused)\n{\n\treturn 0;\n}\n\nstatic struct ui_helpline default_helpline_fns = {\n\t.pop\t= nop_helpline__pop,\n\t.push\t= nop_helpline__push,\n\t.show\t= nop_helpline__show,\n};\n\nstruct ui_helpline *helpline_fns = &default_helpline_fns;\n\nvoid ui_helpline__pop(void)\n{\n\thelpline_fns->pop();\n}\n\nvoid ui_helpline__push(const char *msg)\n{\n\thelpline_fns->push(msg);\n}\n\nvoid ui_helpline__vpush(const char *fmt, va_list ap)\n{\n\tchar *s;\n\n\tif (vasprintf(&s, fmt, ap) < 0)\n\t\tvfprintf(stderr, fmt, ap);\n\telse {\n\t\tui_helpline__push(s);\n\t\tfree(s);\n\t}\n}\n\nvoid ui_helpline__fpush(const char *fmt, ...)\n{\n\tva_list ap;\n\n\tva_start(ap, fmt);\n\tui_helpline__vpush(fmt, ap);\n\tva_end(ap);\n}\n\nvoid ui_helpline__puts(const char *msg)\n{\n\tui_helpline__pop();\n\tui_helpline__push(msg);\n}\n\nint ui_helpline__vshow(const char *fmt, va_list ap)\n{\n\treturn helpline_fns->show(fmt, ap);\n}\n\nvoid ui_helpline__printf(const char *fmt, ...)\n{\n\tva_list ap;\n\n\tui_helpline__pop();\n\tva_start(ap, fmt);\n\tui_helpline__vpush(fmt, ap);\n\tva_end(ap);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

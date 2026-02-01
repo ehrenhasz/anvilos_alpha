@@ -1,0 +1,9 @@
+{
+  "module_name": "ac97_bus.c",
+  "hash_id": "56deca9656b6eb2ade116f9fa74e94353e73defece2ebf8144069253bca891af",
+  "original_prompt": "Ingested from linux-6.6.14/sound/ac97_bus.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/device.h>\n#include <linux/string.h>\n#include <sound/ac97_codec.h>\n\n \nstatic bool snd_ac97_check_id(struct snd_ac97 *ac97, unsigned int id,\n\tunsigned int id_mask)\n{\n\tac97->id = ac97->bus->ops->read(ac97, AC97_VENDOR_ID1) << 16;\n\tac97->id |= ac97->bus->ops->read(ac97, AC97_VENDOR_ID2);\n\n\tif (ac97->id == 0x0 || ac97->id == 0xffffffff)\n\t\treturn false;\n\n\tif (id != 0 && id != (ac97->id & id_mask))\n\t\treturn false;\n\n\treturn true;\n}\n\n \nint snd_ac97_reset(struct snd_ac97 *ac97, bool try_warm, unsigned int id,\n\tunsigned int id_mask)\n{\n\tconst struct snd_ac97_bus_ops *ops = ac97->bus->ops;\n\n\tif (try_warm && ops->warm_reset) {\n\t\tops->warm_reset(ac97);\n\t\tif (snd_ac97_check_id(ac97, id, id_mask))\n\t\t\treturn 1;\n\t}\n\n\tif (ops->reset)\n\t\tops->reset(ac97);\n\tif (ops->warm_reset)\n\t\tops->warm_reset(ac97);\n\n\tif (snd_ac97_check_id(ac97, id, id_mask))\n\t\treturn 0;\n\n\treturn -ENODEV;\n}\nEXPORT_SYMBOL_GPL(snd_ac97_reset);\n\nstruct bus_type ac97_bus_type = {\n\t.name\t\t= \"ac97\",\n};\n\nstatic int __init ac97_bus_init(void)\n{\n\treturn bus_register(&ac97_bus_type);\n}\n\nsubsys_initcall(ac97_bus_init);\n\nstatic void __exit ac97_bus_exit(void)\n{\n\tbus_unregister(&ac97_bus_type);\n}\n\nmodule_exit(ac97_bus_exit);\n\nEXPORT_SYMBOL(ac97_bus_type);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "acl_impl.h",
+  "hash_id": "0d56649741bf51b2301f686ae3a5af2dcd70c3f70608de7f6bb79dd9bf673d31",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/acl_impl.h",
+  "human_readable_source": " \n \n\n#ifndef _SYS_ACL_IMPL_H\n#define\t_SYS_ACL_IMPL_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \n#define\tACL_IS_TRIVIAL\t0x10000\n#define\tACL_IS_DIR\t0x20000\n\ntypedef enum acl_type {\n\tACLENT_T = 0,\n\tACE_T = 1\n} zfs_acl_type_t;\n\nstruct acl_info {\n\tzfs_acl_type_t acl_type;\t \n\tint acl_cnt;\t\t\t \n\tint acl_entry_size;\t\t \n\tint acl_flags;\t\t\t \n\tvoid *acl_aclp;\t\t\t \n};\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

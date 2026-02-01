@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-synthetic-event-createremove.tc",
+  "hash_id": "e8c859dacf6e48c31a551a86093a106d4055ff39988bf8a0a7ff134cedfc3df1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/inter-event/trigger-synthetic-event-createremove.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event trigger - test synthetic event create remove\n# requires: set_event synthetic_events\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\necho \"Test create synthetic event\"\n\necho 'wakeup_latency  u64 lat pid_t pid char comm[16]' > synthetic_events\nif [ ! -d events/synthetic/wakeup_latency ]; then\n    fail \"Failed to create wakeup_latency synthetic event\"\nfi\n\nreset_trigger\n\necho \"Test remove synthetic event\"\necho '!wakeup_latency  u64 lat pid_t pid char comm[16]' >> synthetic_events\nif [ -d events/synthetic/wakeup_latency ]; then\n    fail \"Failed to delete wakeup_latency synthetic event\"\nfi\n\nreset_trigger\n\necho \"Test create synthetic event with an error\"\necho 'wakeup_latency  u64 lat pid_t pid char' > synthetic_events > /dev/null\nif [ -d events/synthetic/wakeup_latency ]; then\n    fail \"Created wakeup_latency synthetic event with an invalid format\"\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ax_restore_flags.m4",
+  "hash_id": "d129317f3b7128023609730045da229c5ccf06350863f1d7e88fde0eb330475b",
+  "original_prompt": "Ingested from zfs-2.2.2/config/ax_restore_flags.m4",
+  "human_readable_source": "# ===========================================================================\n#     http://www.gnu.org/software/autoconf-archive/ax_restore_flags.html\n# ===========================================================================\n#\n# SYNOPSIS\n#\n#   AX_RESTORE_FLAGS()\n#\n# DESCRIPTION\n#\n#   Restore common compilation flags from temporary variables\n#\n# LICENSE\n#\n#   Copyright (c) 2009 Filippo Giunchedi <filippo@esaurito.net>\n#\n#   Copying and distribution of this file, with or without modification, are\n#   permitted in any medium without royalty provided the copyright notice\n#   and this notice are preserved. This file is offered as-is, without any\n#   warranty.\n\n#serial 3\n\nAC_DEFUN([AX_RESTORE_FLAGS], [\n  CPPFLAGS=\"${CPPFLAGS_save}\"\n  CFLAGS=\"${CFLAGS_save}\"\n  CXXFLAGS=\"${CXXFLAGS_save}\"\n  OBJCFLAGS=\"${OBJCFLAGS_save}\"\n  LDFLAGS=\"${LDFLAGS_save}\"\n  LIBS=\"${LIBS_save}\"\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

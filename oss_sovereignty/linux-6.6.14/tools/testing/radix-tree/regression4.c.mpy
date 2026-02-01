@@ -1,0 +1,9 @@
+{
+  "module_name": "regression4.c",
+  "hash_id": "699ec87242f43c781efa91b50289f2bd106df8a0cc561d62d8aa6c66e83d4b31",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/radix-tree/regression4.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <linux/gfp.h>\n#include <linux/slab.h>\n#include <linux/radix-tree.h>\n#include <linux/rcupdate.h>\n#include <stdlib.h>\n#include <pthread.h>\n#include <stdio.h>\n#include <assert.h>\n\n#include \"regression.h\"\n\nstatic pthread_barrier_t worker_barrier;\nstatic int obj0, obj1;\nstatic RADIX_TREE(mt_tree, GFP_KERNEL);\n\nstatic void *reader_fn(void *arg)\n{\n\tint i;\n\tvoid *entry;\n\n\trcu_register_thread();\n\tpthread_barrier_wait(&worker_barrier);\n\n\tfor (i = 0; i < 1000000; i++) {\n\t\trcu_read_lock();\n\t\tentry = radix_tree_lookup(&mt_tree, 0);\n\t\trcu_read_unlock();\n\t\tif (entry != &obj0) {\n\t\t\tprintf(\"iteration %d bad entry = %p\\n\", i, entry);\n\t\t\tabort();\n\t\t}\n\t}\n\n\trcu_unregister_thread();\n\n\treturn NULL;\n}\n\nstatic void *writer_fn(void *arg)\n{\n\tint i;\n\n\trcu_register_thread();\n\tpthread_barrier_wait(&worker_barrier);\n\n\tfor (i = 0; i < 1000000; i++) {\n\t\tradix_tree_insert(&mt_tree, 1, &obj1);\n\t\tradix_tree_delete(&mt_tree, 1);\n\t}\n\n\trcu_unregister_thread();\n\n\treturn NULL;\n}\n\nvoid regression4_test(void)\n{\n\tpthread_t reader, writer;\n\n\tprintv(1, \"regression test 4 starting\\n\");\n\n\tradix_tree_insert(&mt_tree, 0, &obj0);\n\tpthread_barrier_init(&worker_barrier, NULL, 2);\n\n\tif (pthread_create(&reader, NULL, reader_fn, NULL) ||\n\t    pthread_create(&writer, NULL, writer_fn, NULL)) {\n\t\tperror(\"pthread_create\");\n\t\texit(1);\n\t}\n\n\tif (pthread_join(reader, NULL) || pthread_join(writer, NULL)) {\n\t\tperror(\"pthread_join\");\n\t\texit(1);\n\t}\n\n\tprintv(1, \"regression test 4 passed\\n\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "iounmap.cocci",
+  "hash_id": "0e701237a207a379246e7007eeed1c4a3807be3cecb4858f2314cf449a1217b6",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/free/iounmap.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0-only\n/// Find missing iounmaps.\n///\n//# This only signals a missing iounmap when there is an iounmap later\n//# in the same function.\n//# False positives can be due to loops.\n//\n// Confidence: Moderate\n// Copyright: (C) 2012 Julia Lawall, INRIA/LIP6.\n// Copyright: (C) 2012 Gilles Muller, INRIA/LiP6.\n// URL: https://coccinelle.gitlabpages.inria.fr/website\n// Comments:\n// Options:\n\nvirtual context\nvirtual org\nvirtual report\n\n@iom@\nexpression e;\nstatement S,S1;\nint ret;\nposition p1,p2,p3;\n@@\n\ne = \\(ioremap@p1\\)(...)\n... when != iounmap(e)\nif (<+...e...+>) S\n... when any\n    when != iounmap(e)\n    when != if (...) { ... iounmap(e); ... }\n(\n if (ret == 0) S1\n|\nif (...)\n   { ...\n     return 0; }\n|\nif (...)\n   { ...\n     return <+...e...+>; }\n|\n*if@p2 (...)\n   { ... when != iounmap(e)\n         when forall\n     return@p3 ...; }\n)\n... when any\niounmap(e);\n\n@script:python depends on org@\np1 << iom.p1;\np2 << iom.p2;\np3 << iom.p3;\n@@\n\ncocci.print_main(\"ioremap\",p1)\ncocci.print_secs(\"if\",p2)\ncocci.print_secs(\"needed iounmap\",p3)\n\n@script:python depends on report@\np1 << iom.p1;\np2 << iom.p2;\np3 << iom.p3;\n@@\n\nmsg = \"ERROR: missing iounmap; ioremap on line %s and execution via conditional on line %s\" % (p1[0].line,p2[0].line)\ncoccilib.report.print_report(p3[0],msg)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

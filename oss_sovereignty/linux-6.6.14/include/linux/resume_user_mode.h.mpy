@@ -1,0 +1,9 @@
+{
+  "module_name": "resume_user_mode.h",
+  "hash_id": "206f1071c1180a5597b4ee3cf5328f202bf29e896668b9e4c7371f29f9abcfe5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/resume_user_mode.h",
+  "human_readable_source": " \n\n#ifndef LINUX_RESUME_USER_MODE_H\n#define LINUX_RESUME_USER_MODE_H\n\n#include <linux/sched.h>\n#include <linux/task_work.h>\n#include <linux/memcontrol.h>\n#include <linux/blk-cgroup.h>\n\n \nstatic inline void set_notify_resume(struct task_struct *task)\n{\n\tif (!test_and_set_tsk_thread_flag(task, TIF_NOTIFY_RESUME))\n\t\tkick_process(task);\n}\n\n\n \nstatic inline void resume_user_mode_work(struct pt_regs *regs)\n{\n\tclear_thread_flag(TIF_NOTIFY_RESUME);\n\t \n\tsmp_mb__after_atomic();\n\tif (unlikely(task_work_pending(current)))\n\t\ttask_work_run();\n\n#ifdef CONFIG_KEYS_REQUEST_CACHE\n\tif (unlikely(current->cached_requested_key)) {\n\t\tkey_put(current->cached_requested_key);\n\t\tcurrent->cached_requested_key = NULL;\n\t}\n#endif\n\n\tmem_cgroup_handle_over_high(GFP_KERNEL);\n\tblkcg_maybe_throttle_current();\n\n\trseq_handle_notify_resume(NULL, regs);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

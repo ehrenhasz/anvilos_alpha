@@ -1,0 +1,9 @@
+{
+  "module_name": "quote.h",
+  "hash_id": "5145194de2a3625b7e176267ef17f2c106ce51b832627a715618b8f54c21affd",
+  "original_prompt": "Ingested from coreutils-9.4/lib/quote.h",
+  "human_readable_source": " \nextern struct quoting_options quote_quoting_options;\n\n \nchar const *quote_n_mem (int n, char const *arg, size_t argsize);\n\n \nchar const *quote_mem (char const *arg, size_t argsize);\n\n \nchar const *quote_n (int n, char const *arg);\n\n \nchar const *quote (char const *arg);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

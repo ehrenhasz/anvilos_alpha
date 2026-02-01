@@ -1,0 +1,9 @@
+{
+  "module_name": "genetlink.h",
+  "hash_id": "14e25359b006a01b9d367195054c126528f2a3cc51f8fa93ead07e1198154e42",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/genetlink.h",
+  "human_readable_source": " \n#ifndef __LINUX_GENERIC_NETLINK_H\n#define __LINUX_GENERIC_NETLINK_H\n\n#include <uapi/linux/genetlink.h>\n\n\n \nextern void genl_lock(void);\nextern void genl_unlock(void);\n\n \nextern atomic_t genl_sk_destructing_cnt;\nextern wait_queue_head_t genl_sk_destructing_waitq;\n\n#define MODULE_ALIAS_GENL_FAMILY(family)\\\n MODULE_ALIAS_NET_PF_PROTO_NAME(PF_NETLINK, NETLINK_GENERIC, \"-family-\" family)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

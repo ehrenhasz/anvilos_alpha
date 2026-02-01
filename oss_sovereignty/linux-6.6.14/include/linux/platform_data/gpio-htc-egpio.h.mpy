@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio-htc-egpio.h",
+  "hash_id": "cb34c9022c26b19ebe3cc2eb54b0bf212bf4f1cafa17150e85dedd41d30b8eab",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/gpio-htc-egpio.h",
+  "human_readable_source": " \n \n\n#ifndef __HTC_EGPIO_H__\n#define __HTC_EGPIO_H__\n\n \n#define HTC_EGPIO_OUTPUT (~0)\n#define HTC_EGPIO_INPUT  0\n\n \nstruct htc_egpio_chip {\n\tint           reg_start;\n\tint           gpio_base;\n\tint           num_gpios;\n\tunsigned long direction;\n\tunsigned long initial_values;\n};\n\n \nstruct htc_egpio_platform_data {\n\tint                   bus_width;\n\tint                   reg_width;\n\n\tint                   irq_base;\n\tint                   num_irqs;\n\tint                   invert_acks;\n\tint                   ack_register;\n\n\tstruct htc_egpio_chip *chip;\n\tint                   num_chips;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

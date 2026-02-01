@@ -1,0 +1,9 @@
+{
+  "module_name": "iscsi_target_datain_values.h",
+  "hash_id": "849204629e58964c6e28876f4c34e7dc57699d6b675393edb36a80d5cf989139",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/iscsi/iscsi_target_datain_values.h",
+  "human_readable_source": " \n#ifndef ISCSI_TARGET_DATAIN_VALUES_H\n#define ISCSI_TARGET_DATAIN_VALUES_H\n\nstruct iscsit_cmd;\nstruct iscsi_datain;\n\nextern struct iscsi_datain_req *iscsit_allocate_datain_req(void);\nextern void iscsit_attach_datain_req(struct iscsit_cmd *, struct iscsi_datain_req *);\nextern void iscsit_free_datain_req(struct iscsit_cmd *, struct iscsi_datain_req *);\nextern void iscsit_free_all_datain_reqs(struct iscsit_cmd *);\nextern struct iscsi_datain_req *iscsit_get_datain_req(struct iscsit_cmd *);\nextern struct iscsi_datain_req *iscsit_get_datain_values(struct iscsit_cmd *,\n\t\t\tstruct iscsi_datain *);\n\n#endif    \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

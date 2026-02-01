@@ -1,0 +1,9 @@
+{
+  "module_name": "gp10b.c",
+  "hash_id": "4f9fbd43362eb8d3eff9726bb0a7325550f8eb59e3bf41d89982f5c001529789",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/ltc/gp10b.c",
+  "human_readable_source": " \n\n#include \"priv.h\"\n\nstatic void\ngp10b_ltc_init(struct nvkm_ltc *ltc)\n{\n\tstruct nvkm_device *device = ltc->subdev.device;\n\tstruct iommu_fwspec *spec;\n\n\tnvkm_wr32(device, 0x17e27c, ltc->ltc_nr);\n\tnvkm_wr32(device, 0x17e000, ltc->ltc_nr);\n\tnvkm_wr32(device, 0x100800, ltc->ltc_nr);\n\n\tspec = dev_iommu_fwspec_get(device->dev);\n\tif (spec) {\n\t\tu32 sid = spec->ids[0] & 0xffff;\n\n\t\t \n\t\tnvkm_wr32(device, 0x160000, sid << 2);\n\t}\n}\n\nstatic const struct nvkm_ltc_func\ngp10b_ltc = {\n\t.oneinit = gp100_ltc_oneinit,\n\t.init = gp10b_ltc_init,\n\t.intr = gp100_ltc_intr,\n\t.cbc_clear = gm107_ltc_cbc_clear,\n\t.cbc_wait = gm107_ltc_cbc_wait,\n\t.zbc_color = 16,\n\t.zbc_depth = 16,\n\t.zbc_clear_color = gm107_ltc_zbc_clear_color,\n\t.zbc_clear_depth = gm107_ltc_zbc_clear_depth,\n\t.zbc_clear_stencil = gp102_ltc_zbc_clear_stencil,\n\t.invalidate = gf100_ltc_invalidate,\n\t.flush = gf100_ltc_flush,\n};\n\nint\ngp10b_ltc_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_ltc **pltc)\n{\n\treturn nvkm_ltc_new_(&gp10b_ltc, device, type, inst, pltc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

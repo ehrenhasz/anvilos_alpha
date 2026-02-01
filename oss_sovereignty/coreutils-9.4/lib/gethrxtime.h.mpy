@@ -1,0 +1,9 @@
+{
+  "module_name": "gethrxtime.h",
+  "hash_id": "91e8baf2cf3f78723138b645dfe08de59cf9ff0260df08b60c30ec67bb917bd8",
+  "original_prompt": "Ingested from coreutils-9.4/lib/gethrxtime.h",
+  "human_readable_source": " \n\n#ifndef GETHRXTIME_H_\n#define GETHRXTIME_H_ 1\n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include \"xtime.h\"\n\n_GL_INLINE_HEADER_BEGIN\n#ifndef GETHRXTIME_INLINE\n# define GETHRXTIME_INLINE _GL_INLINE\n#endif\n\n#ifdef  __cplusplus\nextern \"C\" {\n#endif\n\n \n\n#if HAVE_ARITHMETIC_HRTIME_T && HAVE_DECL_GETHRTIME\n# include <time.h>\nGETHRXTIME_INLINE xtime_t gethrxtime (void) { return gethrtime (); }\n# else\nxtime_t gethrxtime (void);\n#endif\n\n_GL_INLINE_HEADER_END\n\n#ifdef  __cplusplus\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

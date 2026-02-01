@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "17e1ac165ea969eb4e440a1e1c36319ecd7f7e73a94aa1abbe2f47bb6e8f8e2e",
+  "original_prompt": "Ingested from linux-6.6.14/net/nsh/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig NET_NSH\n\ttristate \"Network Service Header (NSH) protocol\"\n\tdefault n\n\thelp\n\t  Network Service Header is an implementation of Service Function\n\t  Chaining (RFC 7665). The current implementation in Linux supports\n\t  only MD type 1 and only with the openvswitch module.\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

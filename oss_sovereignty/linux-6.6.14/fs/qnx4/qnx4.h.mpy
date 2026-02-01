@@ -1,0 +1,9 @@
+{
+  "module_name": "qnx4.h",
+  "hash_id": "c78b37501b785ffe41753c3c00471dbd1e8e29294875f4cad33290667522e8ca",
+  "original_prompt": "Ingested from linux-6.6.14/fs/qnx4/qnx4.h",
+  "human_readable_source": " \n#include <linux/fs.h>\n#include <linux/qnx4_fs.h>\n\n#define QNX4_DEBUG 0\n\n#if QNX4_DEBUG\n#define QNX4DEBUG(X) printk X\n#else\n#define QNX4DEBUG(X) (void) 0\n#endif\n\nstruct qnx4_sb_info {\n\tunsigned int\t\tVersion;\t \n\tstruct qnx4_inode_entry\t*BitMap;\t \n};\n\nstruct qnx4_inode_info {\n\tstruct qnx4_inode_entry raw;\n\tloff_t mmu_private;\n\tstruct inode vfs_inode;\n};\n\nextern struct inode *qnx4_iget(struct super_block *, unsigned long);\nextern struct dentry *qnx4_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags);\nextern unsigned long qnx4_count_free_blocks(struct super_block *sb);\nextern unsigned long qnx4_block_map(struct inode *inode, long iblock);\n\nextern const struct inode_operations qnx4_dir_inode_operations;\nextern const struct file_operations qnx4_dir_operations;\nextern int qnx4_is_free(struct super_block *sb, long block);\n\nstatic inline struct qnx4_sb_info *qnx4_sb(struct super_block *sb)\n{\n\treturn sb->s_fs_info;\n}\n\nstatic inline struct qnx4_inode_info *qnx4_i(struct inode *inode)\n{\n\treturn container_of(inode, struct qnx4_inode_info, vfs_inode);\n}\n\nstatic inline struct qnx4_inode_entry *qnx4_raw_inode(struct inode *inode)\n{\n\treturn &qnx4_i(inode)->raw;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

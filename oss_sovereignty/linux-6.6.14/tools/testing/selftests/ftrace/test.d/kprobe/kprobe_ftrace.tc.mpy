@@ -1,0 +1,9 @@
+{
+  "module_name": "kprobe_ftrace.tc",
+  "hash_id": "38ff273b3a94502a1a1d956860be088c7854cfc7a69e963dcd250444cecb6bc7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_ftrace.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Kprobe dynamic event with function tracer\n# requires: kprobe_events stack_trace_filter function:tracer\n\n# prepare\necho nop > current_tracer\necho $FUNCTION_FORK > set_ftrace_filter\necho \"p:testprobe $FUNCTION_FORK\" > kprobe_events\n\n# kprobe on / ftrace off\necho 1 > events/kprobes/testprobe/enable\necho > trace\n( echo \"forked\")\ngrep testprobe trace\n! grep \"$FUNCTION_FORK <-\" trace\n\n# kprobe on / ftrace on\necho function > current_tracer\necho > trace\n( echo \"forked\")\ngrep testprobe trace\ngrep \"$FUNCTION_FORK <-\" trace\n\n# kprobe off / ftrace on\necho 0 > events/kprobes/testprobe/enable\necho > trace\n( echo \"forked\")\n! grep testprobe trace\ngrep \"$FUNCTION_FORK <-\" trace\n\n# kprobe on / ftrace on\necho 1 > events/kprobes/testprobe/enable\necho function > current_tracer\necho > trace\n( echo \"forked\")\ngrep testprobe trace\ngrep \"$FUNCTION_FORK <-\" trace\n\n# kprobe on / ftrace off\necho nop > current_tracer\necho > trace\n( echo \"forked\")\ngrep testprobe trace\n! grep \"$FUNCTION_FORK <-\" trace\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "spl2sw_int.h",
+  "hash_id": "df25f2c97dfc86fcfbc4e88b88b4234ba78a32344ba290a4f76a2b5775b3e83d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sunplus/spl2sw_int.h",
+  "human_readable_source": " \n \n\n#ifndef __SPL2SW_INT_H__\n#define __SPL2SW_INT_H__\n\nint spl2sw_rx_poll(struct napi_struct *napi, int budget);\nint spl2sw_tx_poll(struct napi_struct *napi, int budget);\nirqreturn_t spl2sw_ethernet_interrupt(int irq, void *dev_id);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

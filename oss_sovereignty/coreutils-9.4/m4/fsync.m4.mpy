@@ -1,0 +1,9 @@
+{
+  "module_name": "fsync.m4",
+  "hash_id": "d7dc981fc7b6d79394223c000965905e13fb4431d72ae6680a1d94f84f62f431",
+  "original_prompt": "Ingested from coreutils-9.4/m4/fsync.m4",
+  "human_readable_source": "# fsync.m4 serial 2\ndnl Copyright (C) 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_FSYNC],\n[\n  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])\n  AC_CHECK_FUNCS_ONCE([fsync])\n  if test $ac_cv_func_fsync = no; then\n    HAVE_FSYNC=0\n  fi\n])\n\n# Prerequisites of lib/fsync.c.\nAC_DEFUN([gl_PREREQ_FSYNC], [:])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

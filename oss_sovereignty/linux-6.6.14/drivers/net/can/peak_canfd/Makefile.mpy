@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c889fa9c8d6f0d274cc258903ca891474a5cb3cdb506bc0c8cb9a72ccef2e916",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/peak_canfd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the PEAK-System CAN-FD IP module drivers\n#\nobj-$(CONFIG_CAN_PEAK_PCIEFD) += peak_pciefd.o\npeak_pciefd-y := peak_pciefd_main.o peak_canfd.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

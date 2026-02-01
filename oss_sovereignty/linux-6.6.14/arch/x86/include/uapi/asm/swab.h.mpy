@@ -1,0 +1,9 @@
+{
+  "module_name": "swab.h",
+  "hash_id": "465b2ac21e8e8f5c430a1386d77d930479f644cbc82710fad5ae89ee4b9fbce9",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/swab.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SWAB_H\n#define _ASM_X86_SWAB_H\n\n#include <linux/types.h>\n#include <linux/compiler.h>\n\nstatic inline __attribute_const__ __u32 __arch_swab32(__u32 val)\n{\n\tasm(\"bswapl %0\" : \"=r\" (val) : \"0\" (val));\n\treturn val;\n}\n#define __arch_swab32 __arch_swab32\n\nstatic inline __attribute_const__ __u64 __arch_swab64(__u64 val)\n{\n#ifdef __i386__\n\tunion {\n\t\tstruct {\n\t\t\t__u32 a;\n\t\t\t__u32 b;\n\t\t} s;\n\t\t__u64 u;\n\t} v;\n\tv.u = val;\n\tasm(\"bswapl %0 ; bswapl %1 ; xchgl %0,%1\"\n\t    : \"=r\" (v.s.a), \"=r\" (v.s.b)\n\t    : \"0\" (v.s.a), \"1\" (v.s.b));\n\treturn v.u;\n#else  \n\tasm(\"bswapq %0\" : \"=r\" (val) : \"0\" (val));\n\treturn val;\n#endif\n}\n#define __arch_swab64 __arch_swab64\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

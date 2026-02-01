@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e2a0a58c2f8ab1a86f24dbe3ac52f5e37daf9e3108268d22522e06232e3a6886",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/mantis/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nmantis_core-objs :=\tmantis_ioc.o\t\\\n\t\t\tmantis_uart.o\t\\\n\t\t\tmantis_dma.o\t\\\n\t\t\tmantis_pci.o\t\\\n\t\t\tmantis_i2c.o\t\\\n\t\t\tmantis_dvb.o\t\\\n\t\t\tmantis_evm.o\t\\\n\t\t\tmantis_hif.o\t\\\n\t\t\tmantis_ca.o\t\\\n\t\t\tmantis_pcmcia.o\t\\\n\t\t\tmantis_input.o\n\nmantis-objs\t:=\tmantis_cards.o\t\\\n\t\t\tmantis_vp1033.o\t\\\n\t\t\tmantis_vp1034.o\t\\\n\t\t\tmantis_vp1041.o\t\\\n\t\t\tmantis_vp2033.o\t\\\n\t\t\tmantis_vp2040.o\t\\\n\t\t\tmantis_vp3030.o\n\nhopper-objs\t:=\thopper_cards.o\t\\\n\t\t\thopper_vp3028.o\n\nobj-$(CONFIG_MANTIS_CORE)\t+= mantis_core.o\nobj-$(CONFIG_DVB_MANTIS)\t+= mantis.o\nobj-$(CONFIG_DVB_HOPPER)\t+= hopper.o\n\nccflags-y += -I $(srctree)/drivers/media/dvb-frontends/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

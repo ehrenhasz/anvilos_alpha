@@ -1,0 +1,9 @@
+{
+  "module_name": "pthread-cond.m4",
+  "hash_id": "01af1adb45b22e3de58f40cfe2f6bfeb084983fd1894ac3ddf5c5d33e3f7e42d",
+  "original_prompt": "Ingested from coreutils-9.4/m4/pthread-cond.m4",
+  "human_readable_source": "# pthread-cond.m4 serial 3\ndnl Copyright (C) 2019-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_PTHREAD_COND],\n[\n  AC_REQUIRE([gl_PTHREAD_H])\n  AC_REQUIRE([AC_CANONICAL_HOST])\n\n  if { case \"$host_os\" in mingw* | windows*) true;; *) false;; esac; } \\\n     && test $gl_threads_api = windows; then\n    dnl Choose function names that don't conflict with the mingw-w64 winpthreads\n    dnl library.\n    REPLACE_PTHREAD_COND_INIT=1\n    REPLACE_PTHREAD_CONDATTR_INIT=1\n    REPLACE_PTHREAD_CONDATTR_DESTROY=1\n    REPLACE_PTHREAD_COND_WAIT=1\n    REPLACE_PTHREAD_COND_TIMEDWAIT=1\n    REPLACE_PTHREAD_COND_SIGNAL=1\n    REPLACE_PTHREAD_COND_BROADCAST=1\n    REPLACE_PTHREAD_COND_DESTROY=1\n  else\n    if test $HAVE_PTHREAD_H = 0; then\n      HAVE_PTHREAD_COND_INIT=0\n      HAVE_PTHREAD_CONDATTR_INIT=0\n      HAVE_PTHREAD_CONDATTR_DESTROY=0\n      HAVE_PTHREAD_COND_WAIT=0\n      HAVE_PTHREAD_COND_TIMEDWAIT=0\n      HAVE_PTHREAD_COND_SIGNAL=0\n      HAVE_PTHREAD_COND_BROADCAST=0\n      HAVE_PTHREAD_COND_DESTROY=0\n    fi\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "chacha.h",
+  "hash_id": "039a22de2139d05752f7c4c2330052e00eb8275cff1e2a3efb61b33db3eafc27",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/internal/chacha.h",
+  "human_readable_source": " \n\n#ifndef _CRYPTO_INTERNAL_CHACHA_H\n#define _CRYPTO_INTERNAL_CHACHA_H\n\n#include <crypto/chacha.h>\n#include <crypto/internal/skcipher.h>\n#include <linux/crypto.h>\n\nstruct chacha_ctx {\n\tu32 key[8];\n\tint nrounds;\n};\n\nstatic inline int chacha_setkey(struct crypto_skcipher *tfm, const u8 *key,\n\t\t\t\tunsigned int keysize, int nrounds)\n{\n\tstruct chacha_ctx *ctx = crypto_skcipher_ctx(tfm);\n\tint i;\n\n\tif (keysize != CHACHA_KEY_SIZE)\n\t\treturn -EINVAL;\n\n\tfor (i = 0; i < ARRAY_SIZE(ctx->key); i++)\n\t\tctx->key[i] = get_unaligned_le32(key + i * sizeof(u32));\n\n\tctx->nrounds = nrounds;\n\treturn 0;\n}\n\nstatic inline int chacha20_setkey(struct crypto_skcipher *tfm, const u8 *key,\n\t\t\t\t  unsigned int keysize)\n{\n\treturn chacha_setkey(tfm, key, keysize, 20);\n}\n\nstatic inline int chacha12_setkey(struct crypto_skcipher *tfm, const u8 *key,\n\t\t\t\t  unsigned int keysize)\n{\n\treturn chacha_setkey(tfm, key, keysize, 12);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

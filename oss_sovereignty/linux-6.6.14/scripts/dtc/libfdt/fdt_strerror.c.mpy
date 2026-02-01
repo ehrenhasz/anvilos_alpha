@@ -1,0 +1,9 @@
+{
+  "module_name": "fdt_strerror.c",
+  "hash_id": "003bf0c177bd25479af43d506a4fd24f63bc773e18ae6bd5596d2477466d213f",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/dtc/libfdt/fdt_strerror.c",
+  "human_readable_source": "\n \n#include \"libfdt_env.h\"\n\n#include <fdt.h>\n#include <libfdt.h>\n\n#include \"libfdt_internal.h\"\n\nstruct fdt_errtabent {\n\tconst char *str;\n};\n\n#define FDT_ERRTABENT(val) \\\n\t[(val)] = { .str = #val, }\n\nstatic struct fdt_errtabent fdt_errtable[] = {\n\tFDT_ERRTABENT(FDT_ERR_NOTFOUND),\n\tFDT_ERRTABENT(FDT_ERR_EXISTS),\n\tFDT_ERRTABENT(FDT_ERR_NOSPACE),\n\n\tFDT_ERRTABENT(FDT_ERR_BADOFFSET),\n\tFDT_ERRTABENT(FDT_ERR_BADPATH),\n\tFDT_ERRTABENT(FDT_ERR_BADPHANDLE),\n\tFDT_ERRTABENT(FDT_ERR_BADSTATE),\n\n\tFDT_ERRTABENT(FDT_ERR_TRUNCATED),\n\tFDT_ERRTABENT(FDT_ERR_BADMAGIC),\n\tFDT_ERRTABENT(FDT_ERR_BADVERSION),\n\tFDT_ERRTABENT(FDT_ERR_BADSTRUCTURE),\n\tFDT_ERRTABENT(FDT_ERR_BADLAYOUT),\n\tFDT_ERRTABENT(FDT_ERR_INTERNAL),\n\tFDT_ERRTABENT(FDT_ERR_BADNCELLS),\n\tFDT_ERRTABENT(FDT_ERR_BADVALUE),\n\tFDT_ERRTABENT(FDT_ERR_BADOVERLAY),\n\tFDT_ERRTABENT(FDT_ERR_NOPHANDLES),\n\tFDT_ERRTABENT(FDT_ERR_BADFLAGS),\n\tFDT_ERRTABENT(FDT_ERR_ALIGNMENT),\n};\n#define FDT_ERRTABSIZE\t((int)(sizeof(fdt_errtable) / sizeof(fdt_errtable[0])))\n\nconst char *fdt_strerror(int errval)\n{\n\tif (errval > 0)\n\t\treturn \"<valid offset/length>\";\n\telse if (errval == 0)\n\t\treturn \"<no error>\";\n\telse if (-errval < FDT_ERRTABSIZE) {\n\t\tconst char *s = fdt_errtable[-errval].str;\n\n\t\tif (s)\n\t\t\treturn s;\n\t}\n\n\treturn \"<unknown error>\";\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

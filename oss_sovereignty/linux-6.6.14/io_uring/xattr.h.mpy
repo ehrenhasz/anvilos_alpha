@@ -1,0 +1,9 @@
+{
+  "module_name": "xattr.h",
+  "hash_id": "9fb55b468037926e47c5b837b495ca2668d09cbb958ce51fde418be7739cee46",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/xattr.h",
+  "human_readable_source": "\n\nvoid io_xattr_cleanup(struct io_kiocb *req);\n\nint io_fsetxattr_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_fsetxattr(struct io_kiocb *req, unsigned int issue_flags);\n\nint io_setxattr_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_setxattr(struct io_kiocb *req, unsigned int issue_flags);\n\nint io_fgetxattr_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_fgetxattr(struct io_kiocb *req, unsigned int issue_flags);\n\nint io_getxattr_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_getxattr(struct io_kiocb *req, unsigned int issue_flags);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

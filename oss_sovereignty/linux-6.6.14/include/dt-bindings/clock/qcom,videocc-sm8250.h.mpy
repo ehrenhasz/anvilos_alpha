@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,videocc-sm8250.h",
+  "hash_id": "5528ad572cb47ec883b988585e7138d7419849eb63afcc2a93d20d8911619000",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,videocc-sm8250.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_QCOM_VIDEO_CC_SM8250_H\n#define _DT_BINDINGS_CLK_QCOM_VIDEO_CC_SM8250_H\n\n \n#define VIDEO_CC_MVS0_CLK_SRC\t\t0\n#define VIDEO_CC_MVS0C_CLK\t\t1\n#define VIDEO_CC_MVS0C_DIV2_DIV_CLK_SRC\t2\n#define VIDEO_CC_MVS1_CLK_SRC\t\t3\n#define VIDEO_CC_MVS1_DIV2_CLK\t\t4\n#define VIDEO_CC_MVS1C_CLK\t\t5\n#define VIDEO_CC_MVS1C_DIV2_DIV_CLK_SRC\t6\n#define VIDEO_CC_PLL0\t\t\t7\n#define VIDEO_CC_PLL1\t\t\t8\n#define VIDEO_CC_MVS0_DIV_CLK_SRC\t9\n#define VIDEO_CC_MVS0_CLK\t\t10\n\n \n#define VIDEO_CC_CVP_INTERFACE_BCR\t0\n#define VIDEO_CC_CVP_MVS0_BCR\t\t1\n#define VIDEO_CC_MVS0C_CLK_ARES\t\t2\n#define VIDEO_CC_CVP_MVS0C_BCR\t\t3\n#define VIDEO_CC_CVP_MVS1_BCR\t\t4\n#define VIDEO_CC_MVS1C_CLK_ARES\t\t5\n#define VIDEO_CC_CVP_MVS1C_BCR\t\t6\n\n#define MVS0C_GDSC\t\t\t0\n#define MVS1C_GDSC\t\t\t1\n#define MVS0_GDSC\t\t\t2\n#define MVS1_GDSC\t\t\t3\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

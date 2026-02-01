@@ -1,0 +1,9 @@
+{
+  "module_name": "data_tx.h",
+  "hash_id": "130358321d2df57b9e84167bcd99ee089e877d70e59c5f9dbb8a3e2856f74247",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/silabs/wfx/data_tx.h",
+  "human_readable_source": " \n \n#ifndef WFX_DATA_TX_H\n#define WFX_DATA_TX_H\n\n#include <linux/list.h>\n#include <net/mac80211.h>\n\n#include \"hif_api_cmd.h\"\n#include \"hif_api_mib.h\"\n\nstruct wfx_tx_priv;\nstruct wfx_dev;\nstruct wfx_vif;\n\nstruct wfx_tx_policy {\n\tstruct list_head link;\n\tint usage_count;\n\tu8 rates[12];\n\tbool uploaded;\n};\n\nstruct wfx_tx_policy_cache {\n\tstruct wfx_tx_policy cache[HIF_TX_RETRY_POLICY_MAX];\n\t \n\tstruct list_head used;\n\tstruct list_head free;\n\tspinlock_t lock;\n};\n\nstruct wfx_tx_priv {\n\tktime_t xmit_timestamp;\n\tunsigned char icv_size;\n};\n\nvoid wfx_tx_policy_init(struct wfx_vif *wvif);\nvoid wfx_tx_policy_upload_work(struct work_struct *work);\n\nvoid wfx_tx(struct ieee80211_hw *hw, struct ieee80211_tx_control *control, struct sk_buff *skb);\nvoid wfx_tx_confirm_cb(struct wfx_dev *wdev, const struct wfx_hif_cnf_tx *arg);\nvoid wfx_flush(struct ieee80211_hw *hw, struct ieee80211_vif *vif, u32 queues, bool drop);\n\nstatic inline struct wfx_tx_priv *wfx_skb_tx_priv(struct sk_buff *skb)\n{\n\tstruct ieee80211_tx_info *tx_info;\n\n\tif (!skb)\n\t\treturn NULL;\n\ttx_info = IEEE80211_SKB_CB(skb);\n\treturn (struct wfx_tx_priv *)tx_info->rate_driver_data;\n}\n\nstatic inline struct wfx_hif_req_tx *wfx_skb_txreq(struct sk_buff *skb)\n{\n\tstruct wfx_hif_msg *hif = (struct wfx_hif_msg *)skb->data;\n\tstruct wfx_hif_req_tx *req = (struct wfx_hif_req_tx *)hif->body;\n\n\treturn req;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

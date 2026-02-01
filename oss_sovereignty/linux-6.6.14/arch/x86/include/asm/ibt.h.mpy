@@ -1,0 +1,9 @@
+{
+  "module_name": "ibt.h",
+  "hash_id": "2f83411ae2a6de3576553e1237a2998f71434ab6e7df085dbf6d0cfa291ed6f4",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/ibt.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_IBT_H\n#define _ASM_X86_IBT_H\n\n#include <linux/types.h>\n\n \n#if defined(CONFIG_X86_KERNEL_IBT) && !defined(__DISABLE_EXPORTS)\n\n#define HAS_KERNEL_IBT\t1\n\n#ifndef __ASSEMBLY__\n\n#ifdef CONFIG_X86_64\n#define ASM_ENDBR\t\"endbr64\\n\\t\"\n#else\n#define ASM_ENDBR\t\"endbr32\\n\\t\"\n#endif\n\n#define __noendbr\t__attribute__((nocf_check))\n\n \n#define IBT_NOSEAL(fname)\t\t\t\t\\\n\t\".pushsection .discard.ibt_endbr_noseal\\n\\t\"\t\\\n\t_ASM_PTR fname \"\\n\\t\"\t\t\t\t\\\n\t\".popsection\\n\\t\"\n\nstatic inline __attribute_const__ u32 gen_endbr(void)\n{\n\tu32 endbr;\n\n\t \n\tasm ( \"mov $~0xfa1e0ff3, %[endbr]\\n\\t\"\n\t      \"not %[endbr]\\n\\t\"\n\t       : [endbr] \"=&r\" (endbr) );\n\n\treturn endbr;\n}\n\nstatic inline __attribute_const__ u32 gen_endbr_poison(void)\n{\n\t \n\treturn 0x001f0f66;  \n}\n\nstatic inline bool is_endbr(u32 val)\n{\n\tif (val == gen_endbr_poison())\n\t\treturn true;\n\n\tval &= ~0x01000000U;  \n\treturn val == gen_endbr();\n}\n\nextern __noendbr u64 ibt_save(bool disable);\nextern __noendbr void ibt_restore(u64 save);\n\n#else  \n\n#ifdef CONFIG_X86_64\n#define ENDBR\tendbr64\n#else\n#define ENDBR\tendbr32\n#endif\n\n#endif  \n\n#else  \n\n#define HAS_KERNEL_IBT\t0\n\n#ifndef __ASSEMBLY__\n\n#define ASM_ENDBR\n#define IBT_NOSEAL(name)\n\n#define __noendbr\n\nstatic inline bool is_endbr(u32 val) { return false; }\n\nstatic inline u64 ibt_save(bool disable) { return 0; }\nstatic inline void ibt_restore(u64 save) { }\n\n#else  \n\n#define ENDBR\n\n#endif  \n\n#endif  \n\n#define ENDBR_INSN_SIZE\t\t(4*HAS_KERNEL_IBT)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

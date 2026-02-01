@@ -1,0 +1,9 @@
+{
+  "module_name": "trap_pf.h",
+  "hash_id": "c39000d8c2b05f3bb203d1a5de6c90e65455eca18607170c0b8315449df34d13",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/trap_pf.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_TRAP_PF_H\n#define _ASM_X86_TRAP_PF_H\n\n \nenum x86_pf_error_code {\n\tX86_PF_PROT\t=\t\t1 << 0,\n\tX86_PF_WRITE\t=\t\t1 << 1,\n\tX86_PF_USER\t=\t\t1 << 2,\n\tX86_PF_RSVD\t=\t\t1 << 3,\n\tX86_PF_INSTR\t=\t\t1 << 4,\n\tX86_PF_PK\t=\t\t1 << 5,\n\tX86_PF_SHSTK\t=\t\t1 << 6,\n\tX86_PF_SGX\t=\t\t1 << 15,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

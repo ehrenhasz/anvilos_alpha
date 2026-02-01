@@ -1,0 +1,9 @@
+{
+  "module_name": "arizona-ldo1.h",
+  "hash_id": "08be5eafd4ed062aee9257e066c5b1b303a3fdcaba6c0216fffa8681cb04d665",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/arizona-ldo1.h",
+  "human_readable_source": " \n \n\n#ifndef ARIZONA_LDO1_H\n#define ARIZONA_LDO1_H\n\nstruct regulator_init_data;\n\nstruct arizona_ldo1_pdata {\n\t \n\tconst struct regulator_init_data *init_data;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

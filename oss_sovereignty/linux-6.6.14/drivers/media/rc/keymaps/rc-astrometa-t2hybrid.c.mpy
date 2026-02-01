@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-astrometa-t2hybrid.c",
+  "hash_id": "0f2ef0665357f5dd9b5520689224afd209198de0589054f92d159515c9ffdd3f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-astrometa-t2hybrid.c",
+  "human_readable_source": "\n \n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\nstatic struct rc_map_table t2hybrid[] = {\n\t{ 0x4d, KEY_POWER2 },\n\t{ 0x54, KEY_VIDEO },  \n\t{ 0x16, KEY_MUTE },\n\n\t{ 0x4c, KEY_RECORD },\n\t{ 0x05, KEY_CHANNELUP },\n\t{ 0x0c, KEY_TIME},  \n\n\t{ 0x0a, KEY_VOLUMEDOWN },\n\t{ 0x40, KEY_ZOOM },  \n\t{ 0x1e, KEY_VOLUMEUP },\n\n\t{ 0x12, KEY_NUMERIC_0 },\n\t{ 0x02, KEY_CHANNELDOWN },\n\t{ 0x1c, KEY_AGAIN },  \n\n\t{ 0x09, KEY_NUMERIC_1 },\n\t{ 0x1d, KEY_NUMERIC_2 },\n\t{ 0x1f, KEY_NUMERIC_3 },\n\n\t{ 0x0d, KEY_NUMERIC_4 },\n\t{ 0x19, KEY_NUMERIC_5 },\n\t{ 0x1b, KEY_NUMERIC_6 },\n\n\t{ 0x11, KEY_NUMERIC_7 },\n\t{ 0x15, KEY_NUMERIC_8 },\n\t{ 0x17, KEY_NUMERIC_9 },\n};\n\nstatic struct rc_map_list t2hybrid_map = {\n\t.map = {\n\t\t.scan     = t2hybrid,\n\t\t.size     = ARRAY_SIZE(t2hybrid),\n\t\t.rc_proto = RC_PROTO_NEC,\n\t\t.name     = RC_MAP_ASTROMETA_T2HYBRID,\n\t}\n};\n\nstatic int __init init_rc_map_t2hybrid(void)\n{\n\treturn rc_map_register(&t2hybrid_map);\n}\n\nstatic void __exit exit_rc_map_t2hybrid(void)\n{\n\trc_map_unregister(&t2hybrid_map);\n}\n\nmodule_init(init_rc_map_t2hybrid)\nmodule_exit(exit_rc_map_t2hybrid)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Oleh Kravchenko <oleg@kaa.org.ua>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

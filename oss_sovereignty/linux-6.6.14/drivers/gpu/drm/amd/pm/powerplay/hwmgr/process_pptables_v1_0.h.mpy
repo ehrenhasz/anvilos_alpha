@@ -1,0 +1,9 @@
+{
+  "module_name": "process_pptables_v1_0.h",
+  "hash_id": "b9ac66ce05a949cf0243203890153d433fcbdd757f49071d4939cbcf8bde02cb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/process_pptables_v1_0.h",
+  "human_readable_source": " \n#ifndef _PROCESSPPTABLES_V1_0_H\n#define _PROCESSPPTABLES_V1_0_H\n\n#include \"hwmgr.h\"\n\nextern const struct pp_table_func pptable_v1_0_funcs;\nextern int get_number_of_powerplay_table_entries_v1_0(struct pp_hwmgr *hwmgr);\nextern int get_powerplay_table_entry_v1_0(struct pp_hwmgr *hwmgr, uint32_t entry_index,\n\t\tstruct pp_power_state *power_state, int (*call_back_func)(struct pp_hwmgr *, void *,\n\t\t\t\tstruct pp_power_state *, void *, uint32_t));\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

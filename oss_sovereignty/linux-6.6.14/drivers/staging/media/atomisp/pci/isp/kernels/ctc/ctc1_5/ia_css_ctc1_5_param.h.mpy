@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_ctc1_5_param.h",
+  "hash_id": "7216c018276f6240f6bf94beebe58213ffb507913d2a2a8673f505bfa09b89fa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ctc/ctc1_5/ia_css_ctc1_5_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_CTC1_5_PARAM_H\n#define __IA_CSS_CTC1_5_PARAM_H\n\n#include \"type_support.h\"\n#include \"ctc/ctc_1.0/ia_css_ctc_param.h\"  \n\n \nstruct sh_css_isp_ctc_params {\n\ts32 y0;\n\ts32 y1;\n\ts32 y2;\n\ts32 y3;\n\ts32 y4;\n\ts32 y5;\n\ts32 ce_gain_exp;\n\ts32 x1;\n\ts32 x2;\n\ts32 x3;\n\ts32 x4;\n\ts32 dydx0;\n\ts32 dydx0_shift;\n\ts32 dydx1;\n\ts32 dydx1_shift;\n\ts32 dydx2;\n\ts32 dydx2_shift;\n\ts32 dydx3;\n\ts32 dydx3_shift;\n\ts32 dydx4;\n\ts32 dydx4_shift;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

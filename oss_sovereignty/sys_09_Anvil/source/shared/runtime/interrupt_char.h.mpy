@@ -1,0 +1,9 @@
+{
+  "module_name": "interrupt_char.h",
+  "hash_id": "ad8d78c8a3b54eed00f9512ca0f3f0c5bc59127a52fb850607f4cfd1eefa4ff5",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/runtime/interrupt_char.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_LIB_UTILS_INTERRUPT_CHAR_H\n#define MICROPY_INCLUDED_LIB_UTILS_INTERRUPT_CHAR_H\n\nextern int mp_interrupt_char;\nvoid mp_hal_set_interrupt_char(int c);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

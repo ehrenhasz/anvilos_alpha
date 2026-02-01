@@ -1,0 +1,9 @@
+{
+  "module_name": "non-atomic.h",
+  "hash_id": "97c6d8924c5a778a5a4057f71eb2be17b5cea0d78bb60b583aaf847303bdf762",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/bitops/non-atomic.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_BITOPS_NON_ATOMIC_H_\n#define _ASM_GENERIC_BITOPS_NON_ATOMIC_H_\n\n#include <asm-generic/bitops/generic-non-atomic.h>\n\n#define arch___set_bit generic___set_bit\n#define arch___clear_bit generic___clear_bit\n#define arch___change_bit generic___change_bit\n\n#define arch___test_and_set_bit generic___test_and_set_bit\n#define arch___test_and_clear_bit generic___test_and_clear_bit\n#define arch___test_and_change_bit generic___test_and_change_bit\n\n#define arch_test_bit generic_test_bit\n#define arch_test_bit_acquire generic_test_bit_acquire\n\n#include <asm-generic/bitops/non-instrumented-non-atomic.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

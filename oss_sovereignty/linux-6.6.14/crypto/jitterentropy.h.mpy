@@ -1,0 +1,9 @@
+{
+  "module_name": "jitterentropy.h",
+  "hash_id": "0b8b14e763036a6db116d9156b540547b267cc9126f61481101ed606a937ddc9",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/jitterentropy.h",
+  "human_readable_source": "\n\nextern void *jent_zalloc(unsigned int len);\nextern void jent_zfree(void *ptr);\nextern void jent_get_nstime(__u64 *out);\nextern int jent_hash_time(void *hash_state, __u64 time, u8 *addtl,\n\t\t\t  unsigned int addtl_len, __u64 hash_loop_cnt,\n\t\t\t  unsigned int stuck);\nint jent_read_random_block(void *hash_state, char *dst, unsigned int dst_len);\n\nstruct rand_data;\nextern int jent_entropy_init(void *hash_state);\nextern int jent_read_entropy(struct rand_data *ec, unsigned char *data,\n\t\t\t     unsigned int len);\n\nextern struct rand_data *jent_entropy_collector_alloc(unsigned int osr,\n\t\t\t\t\t\t      unsigned int flags,\n\t\t\t\t\t\t      void *hash_state);\nextern void jent_entropy_collector_free(struct rand_data *entropy_collector);\n\n#ifdef CONFIG_CRYPTO_JITTERENTROPY_TESTINTERFACE\nint jent_raw_hires_entropy_store(__u32 value);\nvoid jent_testing_init(void);\nvoid jent_testing_exit(void);\n#else  \nstatic inline int jent_raw_hires_entropy_store(__u32 value) { return 0; }\nstatic inline void jent_testing_init(void) { }\nstatic inline void jent_testing_exit(void) { }\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

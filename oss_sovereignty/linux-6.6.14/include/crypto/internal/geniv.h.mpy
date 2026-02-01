@@ -1,0 +1,9 @@
+{
+  "module_name": "geniv.h",
+  "hash_id": "27db023133bd59b820f0466a847265973c23a96febec0eacc8f1cc16292abc92",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/internal/geniv.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYPTO_INTERNAL_GENIV_H\n#define _CRYPTO_INTERNAL_GENIV_H\n\n#include <crypto/internal/aead.h>\n#include <linux/spinlock.h>\n#include <linux/types.h>\n\nstruct aead_geniv_ctx {\n\tspinlock_t lock;\n\tstruct crypto_aead *child;\n\tstruct crypto_sync_skcipher *sknull;\n\tu8 salt[] __attribute__ ((aligned(__alignof__(u32))));\n};\n\nstruct aead_instance *aead_geniv_alloc(struct crypto_template *tmpl,\n\t\t\t\t       struct rtattr **tb);\nint aead_init_geniv(struct crypto_aead *tfm);\nvoid aead_exit_geniv(struct crypto_aead *tfm);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

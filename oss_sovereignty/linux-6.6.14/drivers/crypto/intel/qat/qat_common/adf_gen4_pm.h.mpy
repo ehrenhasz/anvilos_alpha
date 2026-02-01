@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_gen4_pm.h",
+  "hash_id": "9a2f164103d4964529bb8cf6e88039d1193587080a87c86ab6fcbd879ce7001f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/adf_gen4_pm.h",
+  "human_readable_source": " \n \n#ifndef ADF_GEN4_PM_H\n#define ADF_GEN4_PM_H\n\n#include \"adf_accel_devices.h\"\n\n \n#define ADF_GEN4_PM_HOST_MSG (0x50A01C)\n\n \n#define ADF_GEN4_PM_POLL_DELAY_US\t20\n#define ADF_GEN4_PM_POLL_TIMEOUT_US\tUSEC_PER_SEC\n#define ADF_GEN4_PM_MSG_POLL_DELAY_US\t(10 * USEC_PER_MSEC)\n#define ADF_GEN4_PM_STATUS\t\t(0x50A00C)\n#define ADF_GEN4_PM_INTERRUPT\t\t(0x50A028)\n\n \n#define ADF_GEN4_PM_SOU\t\t\tBIT(18)\n\n#define ADF_GEN4_PM_IDLE_INT_EN\t\tBIT(18)\n#define ADF_GEN4_PM_THROTTLE_INT_EN\tBIT(19)\n#define ADF_GEN4_PM_DRV_ACTIVE\t\tBIT(20)\n#define ADF_GEN4_PM_INIT_STATE\t\tBIT(21)\n#define ADF_GEN4_PM_INT_EN_DEFAULT\t(ADF_GEN4_PM_IDLE_INT_EN | \\\n\t\t\t\t\tADF_GEN4_PM_THROTTLE_INT_EN)\n\n#define ADF_GEN4_PM_THR_STS\tBIT(0)\n#define ADF_GEN4_PM_IDLE_STS\tBIT(1)\n#define ADF_GEN4_PM_FW_INT_STS\tBIT(2)\n#define ADF_GEN4_PM_INT_STS_MASK (ADF_GEN4_PM_THR_STS | \\\n\t\t\t\t ADF_GEN4_PM_IDLE_STS | \\\n\t\t\t\t ADF_GEN4_PM_FW_INT_STS)\n\n#define ADF_GEN4_PM_MSG_PENDING\t\t\tBIT(0)\n#define ADF_GEN4_PM_MSG_PAYLOAD_BIT_MASK\tGENMASK(28, 1)\n\n#define ADF_GEN4_PM_DEFAULT_IDLE_FILTER\t\t(0x6)\n#define ADF_GEN4_PM_MAX_IDLE_FILTER\t\t(0x7)\n#define ADF_GEN4_PM_DEFAULT_IDLE_SUPPORT\t(0x1)\n\nint adf_gen4_enable_pm(struct adf_accel_dev *accel_dev);\nbool adf_gen4_handle_pm_interrupt(struct adf_accel_dev *accel_dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

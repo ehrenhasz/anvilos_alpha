@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d3e341cd612a931860c24bbedf3813a0403efd33c875946fbecb2e99fd7f0acc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtl8xxxu/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_RTL8XXXU)\t+= rtl8xxxu.o\n\nrtl8xxxu-y\t:= rtl8xxxu_core.o rtl8xxxu_8192e.o rtl8xxxu_8723b.o \\\n\t\t   rtl8xxxu_8723a.o rtl8xxxu_8192c.o rtl8xxxu_8188f.o \\\n\t\t   rtl8xxxu_8188e.o rtl8xxxu_8710b.o rtl8xxxu_8192f.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

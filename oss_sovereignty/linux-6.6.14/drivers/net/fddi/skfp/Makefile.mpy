@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "caba806996ca78a7e0e1a4fa83249619c63ed1fe9be096c0c234d44146b475de",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/fddi/skfp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the SysKonnect FDDI PCI adapter driver\n#\n\nobj-$(CONFIG_SKFP) += skfp.o\n\nskfp-objs :=  skfddi.o    hwmtm.o    fplustm.o  smt.o      cfm.o     \\\n              ecm.o       pcmplc.o   pmf.o      queue.o    rmt.o     \\\n\t      smtdef.o    smtinit.o  smttimer.o srf.o      hwt.o     \\\n\t      drvfbi.o   ess.o\n\n# NOTE:\n#   Compiling this driver produces some warnings (and some more are \n#   switched off below), but I did not fix this, because the Hardware\n#   Module source (see skfddi.c for details) is used for different\n#   drivers, and fixing it for Linux might bring problems on other\n#   projects. To keep the source common for all those drivers (and\n#   thus simplify fixes to it), please do not clean it up!\n\nccflags-y := -DPCI -DMEM_MAPPED_IO -Wno-strict-prototypes\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

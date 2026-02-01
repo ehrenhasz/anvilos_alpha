@@ -1,0 +1,9 @@
+{
+  "module_name": "inv_mpu_magn.h",
+  "hash_id": "ea181f3b1c175581e8e5da0b2c279fc1341d04570d9285d472969c81359d37fa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/inv_mpu6050/inv_mpu_magn.h",
+  "human_readable_source": " \n \n\n#ifndef INV_MPU_MAGN_H_\n#define INV_MPU_MAGN_H_\n\n#include <linux/kernel.h>\n\n#include \"inv_mpu_iio.h\"\n\n \n#define INV_MPU_MAGN_FREQ_HZ_MAX\t50\n\nint inv_mpu_magn_probe(struct inv_mpu6050_state *st);\n\n \nstatic inline int inv_mpu_magn_get_scale(const struct inv_mpu6050_state *st,\n\t\t\t\t\t const struct iio_chan_spec *chan,\n\t\t\t\t\t int *val, int *val2)\n{\n\t*val = 0;\n\t*val2 = st->magn_raw_to_gauss[chan->address];\n\treturn IIO_VAL_INT_PLUS_MICRO;\n}\n\nint inv_mpu_magn_set_rate(const struct inv_mpu6050_state *st, int fifo_rate);\n\nint inv_mpu_magn_set_orient(struct inv_mpu6050_state *st);\n\nint inv_mpu_magn_read(struct inv_mpu6050_state *st, int axis, int *val);\n\n#endif\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

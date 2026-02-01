@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "fcef4088e1149cf728c4a4816dda3e9226df950bc7d433feea1e46c26f5ed7ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/mips/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# MIPS Platform Specific Drivers\n#\n\nmenuconfig MIPS_PLATFORM_DEVICES\n\tbool \"MIPS Platform Specific Device Drivers\"\n\tdefault y\n\tdepends on MIPS\n\thelp\n\t  Say Y here to get to see options for device drivers of various\n\t  MIPS platforms, including vendor-specific netbook/laptop/desktop\n\t  extension and hardware monitor drivers. This option itself does\n\t  not add any kernel code.\n\n\t  If you say N, all options in this submenu will be skipped and disabled.\n\nif MIPS_PLATFORM_DEVICES\n\nconfig CPU_HWMON\n\tbool \"Loongson-3 CPU HWMon Driver\"\n\tdepends on MACH_LOONGSON64\n\tselect HWMON\n\tdefault y\n\thelp\n\t  Loongson-3A/3B CPU Hwmon (temperature sensor) driver.\n\nconfig RS780E_ACPI\n\tbool \"Loongson RS780E ACPI Controller\"\n\tdepends on MACH_LOONGSON64 || COMPILE_TEST\n\thelp\n\t  Loongson RS780E PCH ACPI Controller driver.\n\nconfig LS2K_RESET\n\tbool \"Loongson-2K1000 Reset Controller\"\n\tdepends on MACH_LOONGSON64 || COMPILE_TEST\n\thelp\n\t  Loongson-2K1000 Reset Controller driver.\n\nendif # MIPS_PLATFORM_DEVICES\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

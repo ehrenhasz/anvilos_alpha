@@ -1,0 +1,9 @@
+{
+  "module_name": "toshiba.h",
+  "hash_id": "b51a14c97f52857b638259f7c7a5c0b9da7a3f05ecfa23b404da50c38bbc421d",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/toshiba.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_TOSHIBA_H\n#define _UAPI_LINUX_TOSHIBA_H\n\n \n\n#define TOSH_PROC\t\t\"/proc/toshiba\"\n#define TOSH_DEVICE\t\t\"/dev/toshiba\"\n#define TOSHIBA_ACPI_PROC\t\"/proc/acpi/toshiba\"\n#define TOSHIBA_ACPI_DEVICE\t\"/dev/toshiba_acpi\"\n\n \n\ntypedef struct {\n\tunsigned int eax;\n\tunsigned int ebx __attribute__ ((packed));\n\tunsigned int ecx __attribute__ ((packed));\n\tunsigned int edx __attribute__ ((packed));\n\tunsigned int esi __attribute__ ((packed));\n\tunsigned int edi __attribute__ ((packed));\n} SMMRegisters;\n\n \n\n#define TOSH_SMM\t\t_IOWR('t', 0x90, SMMRegisters)\n \n#define TOSHIBA_ACPI_SCI\t_IOWR('t', 0x91, SMMRegisters)\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

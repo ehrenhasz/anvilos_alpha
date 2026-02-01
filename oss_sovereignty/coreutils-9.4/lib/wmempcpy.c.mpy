@@ -1,0 +1,9 @@
+{
+  "module_name": "wmempcpy.c",
+  "hash_id": "b901ef149a0032d58b78cf9425c57a3acb9e17076a353f104aa20705e7a3f96b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/wmempcpy.c",
+  "human_readable_source": " \n#include <wchar.h>\n\n \nwchar_t *\nwmempcpy (wchar_t *dest, const wchar_t *src, size_t n)\n{\n  return wmemcpy (dest, src, n) + n;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

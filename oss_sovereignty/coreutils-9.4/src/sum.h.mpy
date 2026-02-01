@@ -1,0 +1,9 @@
+{
+  "module_name": "sum.h",
+  "hash_id": "ad27bf912c4775c3e5f6180486dc440ff41b30e60e8483720677984f1304a163",
+  "original_prompt": "Ingested from coreutils-9.4/src/sum.h",
+  "human_readable_source": "extern int\nbsd_sum_stream (FILE *stream, void *resstream, uintmax_t *length);\n\nextern int\nsysv_sum_stream (FILE *stream, void *resstream, uintmax_t *length);\n\ntypedef int (*sumfn)(FILE *, void *, uintmax_t *);\n\n\nextern void\noutput_bsd (char const *file, int binary_file, void const *digest,\n            bool raw, bool tagged, unsigned char delim, bool args,\n            uintmax_t length);\n\nextern void\noutput_sysv (char const *file, int binary_file, void const *digest,\n             bool raw, bool tagged, unsigned char delim, bool args,\n             uintmax_t length);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

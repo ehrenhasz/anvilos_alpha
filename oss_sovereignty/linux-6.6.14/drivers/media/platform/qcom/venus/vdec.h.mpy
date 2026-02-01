@@ -1,0 +1,9 @@
+{
+  "module_name": "vdec.h",
+  "hash_id": "4972d73aee2c7f17e7f7bd32af7318fae2b375bf44d266cd007e7c81ef7880d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/qcom/venus/vdec.h",
+  "human_readable_source": " \n \n#ifndef __VENUS_VDEC_H__\n#define __VENUS_VDEC_H__\n\nstruct venus_inst;\n\nint vdec_ctrl_init(struct venus_inst *inst);\nvoid vdec_ctrl_deinit(struct venus_inst *inst);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

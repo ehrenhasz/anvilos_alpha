@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom_q6v5.h",
+  "hash_id": "802bde3d5138e7faaf3d90650a44582ee6ba746dbd06e2762aa9b8127ed159b7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/remoteproc/qcom_q6v5.h",
+  "human_readable_source": " \n\n#ifndef __QCOM_Q6V5_H__\n#define __QCOM_Q6V5_H__\n\n#include <linux/kernel.h>\n#include <linux/completion.h>\n#include <linux/soc/qcom/qcom_aoss.h>\n\nstruct icc_path;\nstruct rproc;\nstruct qcom_smem_state;\nstruct qcom_sysmon;\n\nstruct qcom_q6v5 {\n\tstruct device *dev;\n\tstruct rproc *rproc;\n\n\tstruct qcom_smem_state *state;\n\tstruct qmp *qmp;\n\n\tstruct icc_path *path;\n\n\tunsigned stop_bit;\n\n\tint wdog_irq;\n\tint fatal_irq;\n\tint ready_irq;\n\tint handover_irq;\n\tint stop_irq;\n\n\tbool handover_issued;\n\n\tstruct completion start_done;\n\tstruct completion stop_done;\n\n\tint crash_reason;\n\n\tbool running;\n\n\tconst char *load_state;\n\tvoid (*handover)(struct qcom_q6v5 *q6v5);\n};\n\nint qcom_q6v5_init(struct qcom_q6v5 *q6v5, struct platform_device *pdev,\n\t\t   struct rproc *rproc, int crash_reason, const char *load_state,\n\t\t   void (*handover)(struct qcom_q6v5 *q6v5));\nvoid qcom_q6v5_deinit(struct qcom_q6v5 *q6v5);\n\nint qcom_q6v5_prepare(struct qcom_q6v5 *q6v5);\nint qcom_q6v5_unprepare(struct qcom_q6v5 *q6v5);\nint qcom_q6v5_request_stop(struct qcom_q6v5 *q6v5, struct qcom_sysmon *sysmon);\nint qcom_q6v5_wait_for_start(struct qcom_q6v5 *q6v5, int timeout);\nunsigned long qcom_q6v5_panic(struct qcom_q6v5 *q6v5);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

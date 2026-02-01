@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_controller_defs.h",
+  "hash_id": "e86baa72a4076796134204d16f647d79a7ab178193f9a8d26a2f224eb5870b55",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/irq_controller_defs.h",
+  "human_readable_source": " \n \n\n#ifndef _irq_controller_defs_h\n#define _irq_controller_defs_h\n\n#define _HRT_IRQ_CONTROLLER_EDGE_REG_IDX           0\n#define _HRT_IRQ_CONTROLLER_MASK_REG_IDX           1\n#define _HRT_IRQ_CONTROLLER_STATUS_REG_IDX         2\n#define _HRT_IRQ_CONTROLLER_CLEAR_REG_IDX          3\n#define _HRT_IRQ_CONTROLLER_ENABLE_REG_IDX         4\n#define _HRT_IRQ_CONTROLLER_EDGE_NOT_PULSE_REG_IDX 5\n#define _HRT_IRQ_CONTROLLER_STR_OUT_ENABLE_REG_IDX 6\n\n#define _HRT_IRQ_CONTROLLER_REG_ALIGN 4\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

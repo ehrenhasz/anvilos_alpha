@@ -1,0 +1,9 @@
+{
+  "module_name": "common.h",
+  "hash_id": "61eeb0a65e9e3b964bf47f09211ef61ee4c9a0c048c12953e55260cb76544fea",
+  "original_prompt": "Ingested from linux-6.6.14/security/landlock/common.h",
+  "human_readable_source": " \n \n\n#ifndef _SECURITY_LANDLOCK_COMMON_H\n#define _SECURITY_LANDLOCK_COMMON_H\n\n#define LANDLOCK_NAME \"landlock\"\n\n#ifdef pr_fmt\n#undef pr_fmt\n#endif\n\n#define pr_fmt(fmt) LANDLOCK_NAME \": \" fmt\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

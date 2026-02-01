@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1c3735b06c155cc2105b1ac9853ab10dfb4196f744447ba3f7acbda876079d5f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/dpaa2/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig FSL_DPAA2_ETH\n\ttristate \"Freescale DPAA2 Ethernet\"\n\tdepends on FSL_MC_BUS && FSL_MC_DPIO\n\tselect PHYLINK\n\tselect PCS_LYNX\n\tselect FSL_XGMAC_MDIO\n\tselect NET_DEVLINK\n\thelp\n\t  This is the DPAA2 Ethernet driver supporting Freescale SoCs\n\t  with DPAA2 (DataPath Acceleration Architecture v2).\n\t  The driver manages network objects discovered on the Freescale\n\t  MC bus.\n\nif FSL_DPAA2_ETH\nconfig FSL_DPAA2_ETH_DCB\n\tbool \"Data Center Bridging (DCB) Support\"\n\tdefault n\n\tdepends on DCB\n\thelp\n\t  Enable Priority-Based Flow Control (PFC) support for DPAA2 Ethernet\n\t  devices.\nendif\n\nconfig FSL_DPAA2_PTP_CLOCK\n\ttristate \"Freescale DPAA2 PTP Clock\"\n\tdepends on FSL_DPAA2_ETH && PTP_1588_CLOCK_QORIQ\n\tdefault y\n\thelp\n\t  This driver adds support for using the DPAA2 1588 timer module\n\t  as a PTP clock.\n\nconfig FSL_DPAA2_SWITCH\n\ttristate \"Freescale DPAA2 Ethernet Switch\"\n\tdepends on BRIDGE || BRIDGE=n\n\tdepends on NET_SWITCHDEV\n\thelp\n\t  Driver for Freescale DPAA2 Ethernet Switch. This driver manages\n\t  switch objects discovered on the Freeescale MC bus.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

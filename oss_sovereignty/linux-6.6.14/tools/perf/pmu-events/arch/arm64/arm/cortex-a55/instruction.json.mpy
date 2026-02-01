@@ -1,0 +1,9 @@
+{
+  "module_name": "instruction.json",
+  "hash_id": "fdf53417a88da0d5a3b17f025ef5b65b70ce678ef93e5728e146031997d927bb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a55/instruction.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"SW_INCR\"\n    },\n    {\n        \"ArchStdEvent\": \"LD_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"ST_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"INST_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_RETURN\"\n    },\n    {\n        \"ArchStdEvent\": \"CID_WRITE_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"PC_WRITE_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"BR_IMMED_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"BR_RETURN_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"INST_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"TTBR_WRITE_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"BR_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"BR_MIS_PRED_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"LD_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"ST_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"LDST_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"DP_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"ASE_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"VFP_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"PC_WRITE_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"CRYPTO_SPEC\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

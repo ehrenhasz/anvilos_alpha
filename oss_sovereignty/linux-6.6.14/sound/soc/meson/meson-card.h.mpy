@@ -1,0 +1,9 @@
+{
+  "module_name": "meson-card.h",
+  "hash_id": "da90544728f5392ddd6b5fc9635cbf129fbfbaccf8fbbdaa4a67527858e22573",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/meson/meson-card.h",
+  "human_readable_source": " \n \n\n#ifndef _MESON_SND_CARD_H\n#define _MESON_SND_CARD_H\n\nstruct device_node;\nstruct platform_device;\n\nstruct snd_soc_card;\nstruct snd_pcm_substream;\nstruct snd_pcm_hw_params;\n\n#define DT_PREFIX \"amlogic,\"\n\nstruct meson_card_match_data {\n\tint (*add_link)(struct snd_soc_card *card,\n\t\t\tstruct device_node *node,\n\t\t\tint *index);\n};\n\nstruct meson_card {\n\tconst struct meson_card_match_data *match_data;\n\tstruct snd_soc_card card;\n\tvoid **link_data;\n};\n\nunsigned int meson_card_parse_daifmt(struct device_node *node,\n\t\t\t\t     struct device_node *cpu_node);\n\nint meson_card_i2s_set_sysclk(struct snd_pcm_substream *substream,\n\t\t\t      struct snd_pcm_hw_params *params,\n\t\t\t      unsigned int mclk_fs);\n\nint meson_card_reallocate_links(struct snd_soc_card *card,\n\t\t\t\tunsigned int num_links);\nint meson_card_parse_dai(struct snd_soc_card *card,\n\t\t\t struct device_node *node,\n\t\t\t struct snd_soc_dai_link_component *dlc);\nint meson_card_set_be_link(struct snd_soc_card *card,\n\t\t\t   struct snd_soc_dai_link *link,\n\t\t\t   struct device_node *node);\nint meson_card_set_fe_link(struct snd_soc_card *card,\n\t\t\t   struct snd_soc_dai_link *link,\n\t\t\t   struct device_node *node,\n\t\t\t   bool is_playback);\n\nint meson_card_probe(struct platform_device *pdev);\nint meson_card_remove(struct platform_device *pdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

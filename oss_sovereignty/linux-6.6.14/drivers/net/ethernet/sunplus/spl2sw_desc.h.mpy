@@ -1,0 +1,9 @@
+{
+  "module_name": "spl2sw_desc.h",
+  "hash_id": "fee00def02c2aab116665b4121b60916665e561e7740cc0b421d00af62b29851",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sunplus/spl2sw_desc.h",
+  "human_readable_source": " \n \n\n#ifndef __SPL2SW_DESC_H__\n#define __SPL2SW_DESC_H__\n\nvoid spl2sw_rx_descs_flush(struct spl2sw_common *comm);\nvoid spl2sw_tx_descs_clean(struct spl2sw_common *comm);\nvoid spl2sw_rx_descs_clean(struct spl2sw_common *comm);\nvoid spl2sw_descs_clean(struct spl2sw_common *comm);\nvoid spl2sw_descs_free(struct spl2sw_common *comm);\nvoid spl2sw_tx_descs_init(struct spl2sw_common *comm);\nint  spl2sw_rx_descs_init(struct spl2sw_common *comm);\nint  spl2sw_descs_alloc(struct spl2sw_common *comm);\nint  spl2sw_descs_init(struct spl2sw_common *comm);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "termbits-common.h",
+  "hash_id": "5f918b29503e3d782048e9571298c20d95eb8181c3fecde90d945944e5bc9046",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/asm-generic/termbits-common.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_TERMBITS_COMMON_H\n#define __ASM_GENERIC_TERMBITS_COMMON_H\n\ntypedef unsigned char\tcc_t;\ntypedef unsigned int\tspeed_t;\n\n \n#define IGNBRK\t0x001\t\t\t \n#define BRKINT\t0x002\t\t\t \n#define IGNPAR\t0x004\t\t\t \n#define PARMRK\t0x008\t\t\t \n#define INPCK\t0x010\t\t\t \n#define ISTRIP\t0x020\t\t\t \n#define INLCR\t0x040\t\t\t \n#define IGNCR\t0x080\t\t\t \n#define ICRNL\t0x100\t\t\t \n#define IXANY\t0x800\t\t\t \n\n \n#define OPOST\t0x01\t\t\t \n#define OCRNL\t0x08\n#define ONOCR\t0x10\n#define ONLRET\t0x20\n#define OFILL\t0x40\n#define OFDEL\t0x80\n\n \n \n#define     B0\t\t0x00000000\t \n#define    B50\t\t0x00000001\n#define    B75\t\t0x00000002\n#define   B110\t\t0x00000003\n#define   B134\t\t0x00000004\n#define   B150\t\t0x00000005\n#define   B200\t\t0x00000006\n#define   B300\t\t0x00000007\n#define   B600\t\t0x00000008\n#define  B1200\t\t0x00000009\n#define  B1800\t\t0x0000000a\n#define  B2400\t\t0x0000000b\n#define  B4800\t\t0x0000000c\n#define  B9600\t\t0x0000000d\n#define B19200\t\t0x0000000e\n#define B38400\t\t0x0000000f\n#define EXTA\t\tB19200\n#define EXTB\t\tB38400\n\n#define ADDRB\t\t0x20000000\t \n#define CMSPAR\t\t0x40000000\t \n#define CRTSCTS\t\t0x80000000\t \n\n#define IBSHIFT\t\t16\t\t \n\n \n#define TCOOFF\t\t0\t\t \n#define TCOON\t\t1\t\t \n#define TCIOFF\t\t2\t\t \n#define TCION\t\t3\t\t \n\n \n#define TCIFLUSH\t0\t\t \n#define TCOFLUSH\t1\t\t \n#define TCIOFLUSH\t2\t\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

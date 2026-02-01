@@ -1,0 +1,9 @@
+{
+  "module_name": "cryptouser.h",
+  "hash_id": "f5ed69f913eede682929e25caf584362e6bc2fb311dde36f6f6dd033de4e9e20",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/internal/cryptouser.h",
+  "human_readable_source": " \n#include <linux/cryptouser.h>\n#include <net/netlink.h>\n\nstruct crypto_alg *crypto_alg_match(struct crypto_user_alg *p, int exact);\n\n#ifdef CONFIG_CRYPTO_STATS\nint crypto_reportstat(struct sk_buff *in_skb, struct nlmsghdr *in_nlh, struct nlattr **attrs);\n#else\nstatic inline int crypto_reportstat(struct sk_buff *in_skb,\n\t\t\t\t    struct nlmsghdr *in_nlh,\n\t\t\t\t    struct nlattr **attrs)\n{\n\treturn -ENOTSUPP;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

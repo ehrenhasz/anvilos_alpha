@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a08cc7f99671df63d8c65f2c38fb51a9fff86410d25c31ad2a5697965631ca44",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/sw/rdmavt/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig INFINIBAND_RDMAVT\n\ttristate \"RDMA verbs transport library\"\n\tdepends on INFINIBAND_VIRT_DMA\n\tdepends on X86_64\n\tdepends on PCI\n\thelp\n\tThis is a common software verbs provider for RDMA networks.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

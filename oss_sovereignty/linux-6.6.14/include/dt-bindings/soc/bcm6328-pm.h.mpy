@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm6328-pm.h",
+  "hash_id": "1e1ae9b1f31ffe1b42f35d8e678c9b3952526e3476bb43b921bfcc7e2ce0e52e",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/soc/bcm6328-pm.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_BMIPS_BCM6328_PM_H\n#define __DT_BINDINGS_BMIPS_BCM6328_PM_H\n\n#define BCM6328_POWER_DOMAIN_ADSL2_MIPS\t0\n#define BCM6328_POWER_DOMAIN_ADSL2_PHY\t1\n#define BCM6328_POWER_DOMAIN_ADSL2_AFE\t2\n#define BCM6328_POWER_DOMAIN_SAR\t3\n#define BCM6328_POWER_DOMAIN_PCM\t4\n#define BCM6328_POWER_DOMAIN_USBD\t5\n#define BCM6328_POWER_DOMAIN_USBH\t6\n#define BCM6328_POWER_DOMAIN_PCIE\t7\n#define BCM6328_POWER_DOMAIN_ROBOSW\t8\n#define BCM6328_POWER_DOMAIN_EPHY\t9\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

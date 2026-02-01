@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "59a62a65b4b6e36dc4d0c38d53937a8548a0dbf30226a51a78b633d5532596b1",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ecryptfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Linux eCryptfs\n#\n\nobj-$(CONFIG_ECRYPT_FS) += ecryptfs.o\n\necryptfs-y := dentry.o file.o inode.o main.o super.o mmap.o read_write.o \\\n\t      crypto.o keystore.o kthread.o debug.o\n\necryptfs-$(CONFIG_ECRYPT_FS_MESSAGING) += messaging.o miscdev.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "01c0073eb01ddea86de9fccacd11497c80a79d5d6ffea647cc611dbb0cb14314",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/i2c-hid/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the I2C input drivers\n#\n\nobj-$(CONFIG_I2C_HID_CORE)\t\t\t+= i2c-hid.o\n\ni2c-hid-objs\t\t\t\t\t=  i2c-hid-core.o\ni2c-hid-$(CONFIG_DMI)\t\t\t\t+= i2c-hid-dmi-quirks.o\n\nobj-$(CONFIG_I2C_HID_ACPI)\t\t\t+= i2c-hid-acpi.o\nobj-$(CONFIG_I2C_HID_OF)\t\t\t+= i2c-hid-of.o\nobj-$(CONFIG_I2C_HID_OF_ELAN)\t\t\t+= i2c-hid-of-elan.o\nobj-$(CONFIG_I2C_HID_OF_GOODIX)\t\t\t+= i2c-hid-of-goodix.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pmic.h",
+  "hash_id": "4049dc28cef45d28b5f1bef7f0149160fe4b699f39840c3f346a472f7bed2de0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/pmic/intel_pmic.h",
+  "human_readable_source": " \n#ifndef __INTEL_PMIC_H\n#define __INTEL_PMIC_H\n\n#include <acpi/acpi_lpat.h>\n\nstruct pmic_table {\n\tint address;\t \n\tint reg;\t \n\tint bit;\t \n};\n\nstruct intel_pmic_opregion_data {\n\tint (*get_power)(struct regmap *r, int reg, int bit, u64 *value);\n\tint (*update_power)(struct regmap *r, int reg, int bit, bool on);\n\tint (*get_raw_temp)(struct regmap *r, int reg);\n\tint (*update_aux)(struct regmap *r, int reg, int raw_temp);\n\tint (*get_policy)(struct regmap *r, int reg, int bit, u64 *value);\n\tint (*update_policy)(struct regmap *r, int reg, int bit, int enable);\n\tint (*exec_mipi_pmic_seq_element)(struct regmap *r, u16 i2c_address,\n\t\t\t\t\t  u32 reg_address, u32 value, u32 mask);\n\tint (*lpat_raw_to_temp)(struct acpi_lpat_conversion_table *lpat_table,\n\t\t\t\tint raw);\n\tstruct pmic_table *power_table;\n\tint power_table_count;\n\tstruct pmic_table *thermal_table;\n\tint thermal_table_count;\n\t \n\tint pmic_i2c_address;\n};\n\nint intel_pmic_install_opregion_handler(struct device *dev, acpi_handle handle,\n\t\t\t\t\tstruct regmap *regmap,\n\t\t\t\t\tconst struct intel_pmic_opregion_data *d);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

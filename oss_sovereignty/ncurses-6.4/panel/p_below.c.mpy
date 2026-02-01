@@ -1,0 +1,9 @@
+{
+  "module_name": "p_below.c",
+  "hash_id": "124d82965413a36e10c92462669620ad2f2b54c088dbcdfe06d6b0a74b70cb97",
+  "original_prompt": "Ingested from ncurses-6.4/panel/p_below.c",
+  "human_readable_source": " \n\n \n\n \n#include \"panel.priv.h\"\n\nMODULE_ID(\"$Id: p_below.c,v 1.11 2020/05/24 01:40:20 anonymous.maarten Exp $\")\n\n#if NCURSES_SP_FUNCS\nPANEL_EXPORT(PANEL *)\nceiling_panel(SCREEN * sp)\n{\n  T((T_CALLED(\"ceiling_panel(%p)\"), (void *)sp));\n  if (sp)\n    {\n      struct panelhook *ph = NCURSES_SP_NAME(_nc_panelhook) (sp);\n\n       \n      returnPanel(EMPTY_STACK()? (PANEL *) 0 : _nc_top_panel);\n    }\n  else\n    {\n      if (0 == CURRENT_SCREEN)\n\treturnPanel(0);\n      else\n\treturnPanel(ceiling_panel(CURRENT_SCREEN));\n    }\n}\n#endif\n\nPANEL_EXPORT(PANEL *)\npanel_below(const PANEL * pan)\n{\n  PANEL *result;\n\n  T((T_CALLED(\"panel_below(%p)\"), (const void *)pan));\n  if (pan)\n    {\n      GetHook(pan);\n       \n      result = Is_Pseudo(pan->below) ? (PANEL *) 0 : pan->below;\n    }\n  else\n    {\n#if NCURSES_SP_FUNCS\n      result = ceiling_panel(CURRENT_SCREEN);\n#else\n       \n      result = EMPTY_STACK()? (PANEL *) 0 : _nc_top_panel;\n#endif\n    }\n  returnPanel(result);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

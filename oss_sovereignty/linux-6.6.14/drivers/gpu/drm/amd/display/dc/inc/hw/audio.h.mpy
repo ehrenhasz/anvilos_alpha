@@ -1,0 +1,9 @@
+{
+  "module_name": "audio.h",
+  "hash_id": "4c075dbbc221fe845b31dacfd07221d0f9251e8777db1aa9b772f2356ad51a81",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/inc/hw/audio.h",
+  "human_readable_source": " \n\n#ifndef __DAL_AUDIO_H__\n#define __DAL_AUDIO_H__\n\n#include \"audio_types.h\"\n\nstruct audio;\n\nstruct audio_funcs {\n\n\tbool (*endpoint_valid)(struct audio *audio);\n\n\tvoid (*hw_init)(struct audio *audio);\n\n\tvoid (*az_enable)(struct audio *audio);\n\n\tvoid (*az_disable)(struct audio *audio);\n\n\tvoid (*az_configure)(struct audio *audio,\n\t\tenum signal_type signal,\n\t\tconst struct audio_crtc_info *crtc_info,\n\t\tconst struct audio_info *audio_info);\n\n\tvoid (*wall_dto_setup)(struct audio *audio,\n\t\tenum signal_type signal,\n\t\tconst struct audio_crtc_info *crtc_info,\n\t\tconst struct audio_pll_info *pll_info);\n\n\tvoid (*destroy)(struct audio **audio);\n};\n\nstruct audio {\n\tconst struct audio_funcs *funcs;\n\tstruct dc_context *ctx;\n\tunsigned int inst;\n\tbool enabled;\n};\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

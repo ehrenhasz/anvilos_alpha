@@ -1,0 +1,9 @@
+{
+  "module_name": "dice-harman.c",
+  "hash_id": "e7aff89350bbeb593da467e370e6955c1502a26a6286a9af1f28ddf8908cfa7f",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/dice/dice-harman.c",
+  "human_readable_source": "\n\n\n\n\n#include \"dice.h\"\n\nint snd_dice_detect_harman_formats(struct snd_dice *dice)\n{\n\tint i;\n\n\t\n\t\n\t\n\t\n\tfor (i = 0; i < 2; ++i) {\n\t\tdice->tx_pcm_chs[0][i] = 12;\n\t\tdice->tx_midi_ports[0] = 1;\n\t\tdice->rx_pcm_chs[0][i] = 10;\n\t\tdice->rx_midi_ports[0] = 1;\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

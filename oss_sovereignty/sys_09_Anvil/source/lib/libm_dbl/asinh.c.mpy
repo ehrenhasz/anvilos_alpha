@@ -1,0 +1,9 @@
+{
+  "module_name": "asinh.c",
+  "hash_id": "50a2ca1a573081fd53ab6a591222ebff88388d6003262c35a197cc0d5ea915cb",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/asinh.c",
+  "human_readable_source": "#include \"libm.h\"\n\n \ndouble asinh(double x)\n{\n\tunion {double f; uint64_t i;} u = {.f = x};\n\tunsigned e = u.i >> 52 & 0x7ff;\n\tunsigned s = u.i >> 63;\n\n\t \n\tu.i &= (uint64_t)-1/2;\n\tx = u.f;\n\n\tif (e >= 0x3ff + 26) {\n\t\t \n\t\tx = log(x) + 0.693147180559945309417232121458176568;\n\t} else if (e >= 0x3ff + 1) {\n\t\t \n\t\tx = log(2*x + 1/(sqrt(x*x+1)+x));\n\t} else if (e >= 0x3ff - 26) {\n\t\t \n\t\tx = log1p(x + x*x/(sqrt(x*x+1)+1));\n\t} else {\n\t\t \n\t\tFORCE_EVAL(x + 0x1p120f);\n\t}\n\treturn s ? -x : x;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

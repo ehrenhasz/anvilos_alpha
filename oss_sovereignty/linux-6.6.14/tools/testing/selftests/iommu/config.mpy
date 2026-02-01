@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "7f6f07cfe877842acbe8407ec80aa25f9db5656439f6bbb79e33d8127e1ecd27",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/iommu/config",
+  "human_readable_source": "CONFIG_IOMMUFD\nCONFIG_IOMMUFD_TEST\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

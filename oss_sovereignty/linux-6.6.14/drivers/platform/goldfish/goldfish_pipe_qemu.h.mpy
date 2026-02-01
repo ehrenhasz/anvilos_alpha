@@ -1,0 +1,9 @@
+{
+  "module_name": "goldfish_pipe_qemu.h",
+  "hash_id": "a176b0dc3a41f3512f25f44bd16b3edb95dcf2f4f6a136e4dcb911e833ed8e8f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/goldfish/goldfish_pipe_qemu.h",
+  "human_readable_source": " \n \n\n#ifndef GOLDFISH_PIPE_QEMU_H\n#define GOLDFISH_PIPE_QEMU_H\n\n \nenum PipePollFlags {\n\tPIPE_POLL_IN\t= 1 << 0,\n\tPIPE_POLL_OUT\t= 1 << 1,\n\tPIPE_POLL_HUP\t= 1 << 2\n};\n\n \nenum PipeErrors {\n\tPIPE_ERROR_INVAL\t= -1,\n\tPIPE_ERROR_AGAIN\t= -2,\n\tPIPE_ERROR_NOMEM\t= -3,\n\tPIPE_ERROR_IO\t\t= -4\n};\n\n \nenum PipeWakeFlags {\n\t \n\tPIPE_WAKE_CLOSED\t\t= 1 << 0,\n\n\t \n\tPIPE_WAKE_READ\t\t\t= 1 << 1,\n\n\t \n\tPIPE_WAKE_WRITE\t\t\t= 1 << 2,\n\n\t \n\tPIPE_WAKE_UNLOCK_DMA\t\t= 1 << 3,\n\n\t \n\tPIPE_WAKE_UNLOCK_DMA_SHARED\t= 1 << 4,\n};\n\n \nenum PipeCloseReason {\n\t \n\tPIPE_CLOSE_GRACEFUL\t\t= 0,\n\n\t \n\tPIPE_CLOSE_REBOOT\t\t= 1,\n\n\t \n\tPIPE_CLOSE_LOAD_SNAPSHOT\t= 2,\n\n\t \n\tPIPE_CLOSE_ERROR\t\t= 3,\n};\n\n \nenum PipeFlagsBits {\n\tBIT_CLOSED_ON_HOST = 0,   \n\tBIT_WAKE_ON_WRITE  = 1,   \n\tBIT_WAKE_ON_READ   = 2,   \n};\n\nenum PipeRegs {\n\tPIPE_REG_CMD = 0,\n\n\tPIPE_REG_SIGNAL_BUFFER_HIGH = 4,\n\tPIPE_REG_SIGNAL_BUFFER = 8,\n\tPIPE_REG_SIGNAL_BUFFER_COUNT = 12,\n\n\tPIPE_REG_OPEN_BUFFER_HIGH = 20,\n\tPIPE_REG_OPEN_BUFFER = 24,\n\n\tPIPE_REG_VERSION = 36,\n\n\tPIPE_REG_GET_SIGNALLED = 48,\n};\n\nenum PipeCmdCode {\n\t \n\tPIPE_CMD_OPEN\t\t= 1,\n\n\tPIPE_CMD_CLOSE,\n\tPIPE_CMD_POLL,\n\tPIPE_CMD_WRITE,\n\tPIPE_CMD_WAKE_ON_WRITE,\n\tPIPE_CMD_READ,\n\tPIPE_CMD_WAKE_ON_READ,\n\n\t \n\tPIPE_CMD_WAKE_ON_DONE_IO,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

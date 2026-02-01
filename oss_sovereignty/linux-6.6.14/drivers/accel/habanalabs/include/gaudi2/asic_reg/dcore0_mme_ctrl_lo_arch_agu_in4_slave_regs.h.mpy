@@ -1,0 +1,9 @@
+{
+  "module_name": "dcore0_mme_ctrl_lo_arch_agu_in4_slave_regs.h",
+  "hash_id": "0d6a69682b136ee1ab4ecd9654a8ca55d9e62b7b6c2d78adeab4e0c2d9caafb5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/gaudi2/asic_reg/dcore0_mme_ctrl_lo_arch_agu_in4_slave_regs.h",
+  "human_readable_source": " \n\n \n\n#ifndef ASIC_REG_DCORE0_MME_CTRL_LO_ARCH_AGU_IN4_SLAVE_REGS_H_\n#define ASIC_REG_DCORE0_MME_CTRL_LO_ARCH_AGU_IN4_SLAVE_REGS_H_\n\n \n\n#define mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_SLAVE_ROI_BASE_OFFSET_0 0x40CB210\n\n#define mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_SLAVE_ROI_BASE_OFFSET_1 0x40CB214\n\n#define mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_SLAVE_ROI_BASE_OFFSET_2 0x40CB218\n\n#define mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_SLAVE_ROI_BASE_OFFSET_3 0x40CB21C\n\n#define mmDCORE0_MME_CTRL_LO_ARCH_AGU_IN4_SLAVE_ROI_BASE_OFFSET_4 0x40CB220\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

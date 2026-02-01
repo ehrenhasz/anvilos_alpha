@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "33f5a2cc85678d898e92cd61cf0cccc722ea1f5c118f5f58c70c01bf01f6f0db",
+  "original_prompt": "Ingested from linux-6.6.14/net/sunrpc/xprtrdma/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_SUNRPC_XPRT_RDMA) += rpcrdma.o\n\nrpcrdma-y := transport.o rpc_rdma.o verbs.o frwr_ops.o \\\n\tsvc_rdma.o svc_rdma_backchannel.o svc_rdma_transport.o \\\n\tsvc_rdma_sendto.o svc_rdma_recvfrom.o svc_rdma_rw.o \\\n\tsvc_rdma_pcl.o module.o\nrpcrdma-$(CONFIG_SUNRPC_BACKCHANNEL) += backchannel.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pmu.h",
+  "hash_id": "0b66bc361264a9659efba16291b308e6eb217ce18741bd2c5e46a7a7f0574953",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cxl/pmu.h",
+  "human_readable_source": " \n \n#ifndef CXL_PMU_H\n#define CXL_PMU_H\n#include <linux/device.h>\n\nenum cxl_pmu_type {\n\tCXL_PMU_MEMDEV,\n};\n\n#define CXL_PMU_REGMAP_SIZE 0xe00  \nstruct cxl_pmu {\n\tstruct device dev;\n\tvoid __iomem *base;\n\tint assoc_id;\n\tint index;\n\tenum cxl_pmu_type type;\n};\n\n#define to_cxl_pmu(dev) container_of(dev, struct cxl_pmu, dev)\nstruct cxl_pmu_regs;\nint devm_cxl_pmu_add(struct device *parent, struct cxl_pmu_regs *regs,\n\t\t     int assoc_id, int idx, enum cxl_pmu_type type);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dqblk_v1.h",
+  "hash_id": "8fc146928e83ff077192998db200ad2ea36627e8a46026da4e255c322612b367",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dqblk_v1.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_DQBLK_V1_H\n#define _LINUX_DQBLK_V1_H\n\n \n#define V1_INIT_ALLOC 1\n#define V1_INIT_REWRITE 1\n#define V1_DEL_ALLOC 0\n#define V1_DEL_REWRITE 2\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

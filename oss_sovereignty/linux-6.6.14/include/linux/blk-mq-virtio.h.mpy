@@ -1,0 +1,9 @@
+{
+  "module_name": "blk-mq-virtio.h",
+  "hash_id": "c0af82ba9edf506b4d33365df8c277352b23932e939d0053a1a80115867d10df",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/blk-mq-virtio.h",
+  "human_readable_source": " \n#ifndef _LINUX_BLK_MQ_VIRTIO_H\n#define _LINUX_BLK_MQ_VIRTIO_H\n\nstruct blk_mq_queue_map;\nstruct virtio_device;\n\nvoid blk_mq_virtio_map_queues(struct blk_mq_queue_map *qmap,\n\t\tstruct virtio_device *vdev, int first_vec);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

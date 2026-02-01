@@ -1,0 +1,9 @@
+{
+  "module_name": "internal.h",
+  "hash_id": "b4e34435858a329fe297c3a247bc9117844bcbdef89e8c4aeeb5fec5dd05a06d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/perf/internal.h",
+  "human_readable_source": " \n#ifndef __LIBPERF_INTERNAL_H\n#define __LIBPERF_INTERNAL_H\n\n#include <perf/core.h>\n\nvoid libperf_print(enum libperf_print_level level,\n\t\t   const char *format, ...)\n\t__attribute__((format(printf, 2, 3)));\n\n#define __pr(level, fmt, ...)   \\\ndo {                            \\\n\tlibperf_print(level, \"libperf: \" fmt, ##__VA_ARGS__);     \\\n} while (0)\n\n#define pr_err(fmt, ...)        __pr(LIBPERF_ERR, fmt, ##__VA_ARGS__)\n#define pr_warning(fmt, ...)    __pr(LIBPERF_WARN, fmt, ##__VA_ARGS__)\n#define pr_info(fmt, ...)       __pr(LIBPERF_INFO, fmt, ##__VA_ARGS__)\n#define pr_debug(fmt, ...)      __pr(LIBPERF_DEBUG, fmt, ##__VA_ARGS__)\n#define pr_debug2(fmt, ...)     __pr(LIBPERF_DEBUG2, fmt, ##__VA_ARGS__)\n#define pr_debug3(fmt, ...)     __pr(LIBPERF_DEBUG3, fmt, ##__VA_ARGS__)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

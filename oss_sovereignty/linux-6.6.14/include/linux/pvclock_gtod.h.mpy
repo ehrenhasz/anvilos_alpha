@@ -1,0 +1,9 @@
+{
+  "module_name": "pvclock_gtod.h",
+  "hash_id": "a739452d1a9e214ce82f2375818c870681ca4c1cc8ea69709ae8a71bd0b460b8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pvclock_gtod.h",
+  "human_readable_source": " \n#ifndef _PVCLOCK_GTOD_H\n#define _PVCLOCK_GTOD_H\n\n#include <linux/notifier.h>\n\n \nextern int pvclock_gtod_register_notifier(struct notifier_block *nb);\nextern int pvclock_gtod_unregister_notifier(struct notifier_block *nb);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

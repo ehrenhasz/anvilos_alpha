@@ -1,0 +1,9 @@
+{
+  "module_name": "tsl2772.h",
+  "hash_id": "c62cb629e8f04cc9705e5325cfc2c65ba497920dd31889b74920f7540ad231a3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/tsl2772.h",
+  "human_readable_source": " \n \n\n#ifndef __TSL2772_H\n#define __TSL2772_H\n\nstruct tsl2772_lux {\n\tunsigned int ch0;\n\tunsigned int ch1;\n};\n\n \n#define TSL2772_MAX_LUX_TABLE_SIZE\t\t6\n \n#define TSL2772_DEF_LUX_TABLE_SZ\t\t3\n#define TSL2772_DEFAULT_TABLE_BYTES (sizeof(struct tsl2772_lux) * \\\n\t\t\t\t     TSL2772_DEF_LUX_TABLE_SZ)\n\n \n#define TSL2772_DIODE0                  0x01\n#define TSL2772_DIODE1                  0x02\n#define TSL2772_DIODE_BOTH              0x03\n\n \n#define TSL2772_100_mA                  0x00\n#define TSL2772_50_mA                   0x01\n#define TSL2772_25_mA                   0x02\n#define TSL2772_13_mA                   0x03\n\n \nstruct tsl2772_settings {\n\tint als_time;\n\tint als_gain;\n\tint als_gain_trim;\n\tint wait_time;\n\tint prox_time;\n\tint prox_gain;\n\tint als_prox_config;\n\tint als_cal_target;\n\tu8 als_persistence;\n\tbool als_interrupt_en;\n\tint als_thresh_low;\n\tint als_thresh_high;\n\tu8 prox_persistence;\n\tbool prox_interrupt_en;\n\tint prox_thres_low;\n\tint prox_thres_high;\n\tint prox_pulse_count;\n\tint prox_max_samples_cal;\n\tint prox_diode;\n\tint prox_power;\n};\n\n \nstruct tsl2772_platform_data {\n\tstruct tsl2772_lux platform_lux_table[TSL2772_MAX_LUX_TABLE_SIZE];\n\tstruct tsl2772_settings *platform_default_settings;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

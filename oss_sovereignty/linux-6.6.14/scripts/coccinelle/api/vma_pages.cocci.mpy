@@ -1,0 +1,9 @@
+{
+  "module_name": "vma_pages.cocci",
+  "hash_id": "d72e4af14ddac05574f9c172c7bc676d4f3f3b0fcbbaa192a1fe05ece5f0e96a",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/api/vma_pages.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n///\n/// Use vma_pages function on vma object instead of explicit computation.\n///\n//  Confidence: High\n//  Keywords: vma_pages vma\n//  Comment: Based on resource_size.cocci\n\nvirtual context\nvirtual patch\nvirtual org\nvirtual report\n\n//----------------------------------------------------------\n//  For context mode\n//----------------------------------------------------------\n\n@r_context depends on context && !patch && !org && !report@\nstruct vm_area_struct *vma;\n@@\n\n* (vma->vm_end - vma->vm_start) >> PAGE_SHIFT\n\n//----------------------------------------------------------\n//  For patch mode\n//----------------------------------------------------------\n\n@r_patch depends on !context && patch && !org && !report@\nstruct vm_area_struct *vma;\n@@\n\n- ((vma->vm_end - vma->vm_start) >> PAGE_SHIFT)\n+ vma_pages(vma)\n\n//----------------------------------------------------------\n//  For org mode\n//----------------------------------------------------------\n\n@r_org depends on !context && !patch && (org || report)@\nstruct vm_area_struct *vma;\nposition p;\n@@\n\n  (vma->vm_end@p - vma->vm_start) >> PAGE_SHIFT\n\n@script:python depends on report@\np << r_org.p;\nx << r_org.vma;\n@@\n\nmsg=\"WARNING: Consider using vma_pages helper on %s\" % (x)\ncoccilib.report.print_report(p[0], msg)\n\n@script:python depends on org@\np << r_org.p;\nx << r_org.vma;\n@@\n\nmsg=\"WARNING: Consider using vma_pages helper on %s\" % (x)\nmsg_safe=msg.replace(\"[\",\"@(\").replace(\"]\",\")\")\ncoccilib.org.print_todo(p[0], msg_safe)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

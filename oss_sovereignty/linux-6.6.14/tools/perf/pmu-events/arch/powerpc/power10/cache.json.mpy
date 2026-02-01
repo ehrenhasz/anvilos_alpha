@@ -1,0 +1,9 @@
+{
+  "module_name": "cache.json",
+  "hash_id": "7e816163dc83278ee2c771638072d3a749e929fcda195721c4f8786bc5961d55",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/powerpc/power10/cache.json",
+  "human_readable_source": "[\n  {\n    \"EventCode\": \"0x300F4\",\n    \"EventName\": \"PM_RUN_INST_CMPL_CONC\",\n    \"BriefDescription\": \"PowerPC instruction completed by this thread when all threads in the core had the run-latch set.\"\n  },\n  {\n    \"EventCode\": \"0x400F6\",\n    \"EventName\": \"PM_BR_MPRED_CMPL\",\n    \"BriefDescription\": \"A mispredicted branch completed. Includes direction and target.\"\n  }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

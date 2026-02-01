@@ -1,0 +1,9 @@
+{
+  "module_name": "rfkill.h",
+  "hash_id": "b03e4ca3165b7b4faf2cd5bc17e271d8ed10c46630d0cf4bbfe835292208b993",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/b43legacy/rfkill.h",
+  "human_readable_source": " \n#ifndef B43legacy_RFKILL_H_\n#define B43legacy_RFKILL_H_\n\nstruct ieee80211_hw;\nstruct b43legacy_wldev;\n\nvoid b43legacy_rfkill_poll(struct ieee80211_hw *hw);\n\nbool b43legacy_is_hw_radio_enabled(struct b43legacy_wldev *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "226d6837c31e41f4fc1cb66cf16dc960ad566c028908eeccafcfec227039304f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/idxd/Makefile",
+  "human_readable_source": "ccflags-y += -DDEFAULT_SYMBOL_NAMESPACE=IDXD\n\nobj-$(CONFIG_INTEL_IDXD_BUS) += idxd_bus.o\nidxd_bus-y := bus.o\n\nobj-$(CONFIG_INTEL_IDXD) += idxd.o\nidxd-y := init.o irq.o device.o sysfs.o submit.o dma.o cdev.o debugfs.o\n\nidxd-$(CONFIG_INTEL_IDXD_PERFMON) += perfmon.o\n\nobj-$(CONFIG_INTEL_IDXD_COMPAT) += idxd_compat.o\nidxd_compat-y := compat.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

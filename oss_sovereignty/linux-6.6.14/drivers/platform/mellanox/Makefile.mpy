@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cf16d119821df45ea0ac2f8d3c40af67cb1c8ca86786b2fc0e28a5b9f5d67976",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/mellanox/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for linux/drivers/platform/mellanox\n# Mellanox Platform-Specific Drivers\n#\nobj-$(CONFIG_MLXBF_BOOTCTL)\t+= mlxbf-bootctl.o\nobj-$(CONFIG_MLXBF_PMC)\t\t+= mlxbf-pmc.o\nobj-$(CONFIG_MLXBF_TMFIFO)\t+= mlxbf-tmfifo.o\nobj-$(CONFIG_MLXREG_HOTPLUG)\t+= mlxreg-hotplug.o\nobj-$(CONFIG_MLXREG_IO) += mlxreg-io.o\nobj-$(CONFIG_MLXREG_LC) += mlxreg-lc.o\nobj-$(CONFIG_NVSW_SN2201) += nvsw-sn2201.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

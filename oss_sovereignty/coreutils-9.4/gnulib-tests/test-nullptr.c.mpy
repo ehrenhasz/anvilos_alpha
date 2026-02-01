@@ -1,0 +1,9 @@
+{
+  "module_name": "test-nullptr.c",
+  "hash_id": "3f6f83ec82611fa12b8516754461eeeadb702f1049095e9ec6434fe1d3a5a2b1",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-nullptr.c",
+  "human_readable_source": " \n\n#include <config.h>\n\nint *my_null = nullptr;\n\n#if 0  \n \n# include <stddef.h>\n#endif\n\n#include <stdarg.h>\n\n#include \"macros.h\"\n\n#if 0  \n\nstatic void\nsimple_callee (nullptr_t x)\n{\n  ASSERT (x == NULL);\n}\n\n#endif\n\nstatic void\nvarargs_callee (const char *first, ...)\n{\n  va_list args;\n  const char *arg;\n\n  ASSERT (first[0] == 't');\n  va_start (args, first);\n\n  arg = va_arg (args, const char *);\n  ASSERT (arg == NULL);\n\n  arg = va_arg (args, const char *);\n  ASSERT (arg[0] == 'f');\n\n  arg = va_arg (args, const char *);\n  ASSERT (arg == NULL);\n\n  va_end (args);\n}\n\nint\nmain ()\n{\n  varargs_callee (\"type\", nullptr, \"foo\", nullptr);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

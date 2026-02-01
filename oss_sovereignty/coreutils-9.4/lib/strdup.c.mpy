@@ -1,0 +1,9 @@
+{
+  "module_name": "strdup.c",
+  "hash_id": "02c0720a0d2040d098e1781c932cd2e23c9aa60cdd7d054eaab907236b3f74d5",
+  "original_prompt": "Ingested from coreutils-9.4/lib/strdup.c",
+  "human_readable_source": " \n#include <string.h>\n\n#include <stdlib.h>\n\n#undef __strdup\n#ifdef _LIBC\n# undef strdup\n#endif\n\n#ifndef weak_alias\n# define __strdup strdup\n#endif\n\n \nchar *\n__strdup (const char *s)\n{\n  size_t len = strlen (s) + 1;\n  void *new = malloc (len);\n\n  if (new == NULL)\n    return NULL;\n\n  return (char *) memcpy (new, s, len);\n}\n#ifdef libc_hidden_def\nlibc_hidden_def (__strdup)\n#endif\n#ifdef weak_alias\nweak_alias (__strdup, strdup)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

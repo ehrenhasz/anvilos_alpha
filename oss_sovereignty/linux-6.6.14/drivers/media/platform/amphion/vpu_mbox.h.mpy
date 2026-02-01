@@ -1,0 +1,9 @@
+{
+  "module_name": "vpu_mbox.h",
+  "hash_id": "9a8bcfe1097cc110b4f59f108e2d3033d1c5e48efe9edc49aebfdb5a98d2d03d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/amphion/vpu_mbox.h",
+  "human_readable_source": " \n \n\n#ifndef _AMPHION_VPU_MBOX_H\n#define _AMPHION_VPU_MBOX_H\n\nint vpu_mbox_init(struct vpu_core *core);\nint vpu_mbox_request(struct vpu_core *core);\nvoid vpu_mbox_free(struct vpu_core *core);\nvoid vpu_mbox_send_msg(struct vpu_core *core, u32 type, u32 data);\nvoid vpu_mbox_send_type(struct vpu_core *core, u32 type);\nvoid vpu_mbox_enable_rx(struct vpu_dev *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

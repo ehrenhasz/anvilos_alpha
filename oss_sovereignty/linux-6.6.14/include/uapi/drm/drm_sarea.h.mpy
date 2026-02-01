@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_sarea.h",
+  "hash_id": "da5c6453071d3051cb4e77544b52aca97311f02a23a8d2a8c8b90e7b4b05400b",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/drm/drm_sarea.h",
+  "human_readable_source": " \n\n \n\n#ifndef _DRM_SAREA_H_\n#define _DRM_SAREA_H_\n\n#include \"drm.h\"\n\n#if defined(__cplusplus)\nextern \"C\" {\n#endif\n\n \n#if defined(__alpha__)\n#define SAREA_MAX                       0x2000U\n#elif defined(__mips__)\n#define SAREA_MAX                       0x4000U\n#elif defined(__ia64__)\n#define SAREA_MAX                       0x10000U\t \n#else\n \n#define SAREA_MAX                       0x2000U\n#endif\n\n \n#define SAREA_MAX_DRAWABLES\t\t256\n\n#define SAREA_DRAWABLE_CLAIMED_ENTRY    0x80000000\n\n \nstruct drm_sarea_drawable {\n\tunsigned int stamp;\n\tunsigned int flags;\n};\n\n \nstruct drm_sarea_frame {\n\tunsigned int x;\n\tunsigned int y;\n\tunsigned int width;\n\tunsigned int height;\n\tunsigned int fullscreen;\n};\n\n \nstruct drm_sarea {\n     \n\tstruct drm_hw_lock lock;\n     \n\tstruct drm_hw_lock drawable_lock;\n\tstruct drm_sarea_drawable drawableTable[SAREA_MAX_DRAWABLES];\t \n\tstruct drm_sarea_frame frame;\t \n\tdrm_context_t dummy_context;\n};\n\n#ifndef __KERNEL__\ntypedef struct drm_sarea_drawable drm_sarea_drawable_t;\ntypedef struct drm_sarea_frame drm_sarea_frame_t;\ntypedef struct drm_sarea drm_sarea_t;\n#endif\n\n#if defined(__cplusplus)\n}\n#endif\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

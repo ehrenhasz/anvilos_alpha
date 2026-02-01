@@ -1,0 +1,9 @@
+{
+  "module_name": "cx18-fileops.h",
+  "hash_id": "ea4a799e590397c510e0b6513b78d24295e13d0fcd0a83b06fd6306754254e0c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx18/cx18-fileops.h",
+  "human_readable_source": " \n \n\n \nint cx18_v4l2_open(struct file *filp);\nssize_t cx18_v4l2_read(struct file *filp, char __user *buf, size_t count,\n\t\t      loff_t *pos);\nssize_t cx18_v4l2_write(struct file *filp, const char __user *buf, size_t count,\n\t\t       loff_t *pos);\nint cx18_v4l2_close(struct file *filp);\n__poll_t cx18_v4l2_enc_poll(struct file *filp, poll_table *wait);\nint cx18_start_capture(struct cx18_open_id *id);\nvoid cx18_stop_capture(struct cx18_stream *s, int gop_end);\nvoid cx18_mute(struct cx18 *cx);\nvoid cx18_unmute(struct cx18 *cx);\nint cx18_v4l2_mmap(struct file *file, struct vm_area_struct *vma);\nvoid cx18_clear_queue(struct cx18_stream *s, enum vb2_buffer_state state);\nvoid cx18_vb_timeout(struct timer_list *t);\n\n \nint cx18_claim_stream(struct cx18_open_id *id, int type);\nvoid cx18_release_stream(struct cx18_stream *s);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

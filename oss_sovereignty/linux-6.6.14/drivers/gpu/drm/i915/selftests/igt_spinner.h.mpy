@@ -1,0 +1,9 @@
+{
+  "module_name": "igt_spinner.h",
+  "hash_id": "2abc44abd741ce7f58c7d7187e2abb2bb0c3bedfcdf5c0a751bc7146ad98e075",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/igt_spinner.h",
+  "human_readable_source": " \n\n#ifndef __I915_SELFTESTS_IGT_SPINNER_H__\n#define __I915_SELFTESTS_IGT_SPINNER_H__\n\n#include \"gem/i915_gem_context.h\"\n#include \"gt/intel_engine.h\"\n\n#include \"i915_drv.h\"\n#include \"i915_request.h\"\n#include \"i915_selftest.h\"\n\nstruct intel_gt;\n\nstruct igt_spinner {\n\tstruct intel_gt *gt;\n\tstruct drm_i915_gem_object *hws;\n\tstruct drm_i915_gem_object *obj;\n\tstruct intel_context *ce;\n\tstruct i915_vma *hws_vma, *batch_vma;\n\tu32 *batch;\n\tvoid *seqno;\n};\n\nint igt_spinner_init(struct igt_spinner *spin, struct intel_gt *gt);\nint igt_spinner_pin(struct igt_spinner *spin,\n\t\t    struct intel_context *ce,\n\t\t    struct i915_gem_ww_ctx *ww);\nvoid igt_spinner_fini(struct igt_spinner *spin);\n\nstruct i915_request *\nigt_spinner_create_request(struct igt_spinner *spin,\n\t\t\t   struct intel_context *ce,\n\t\t\t   u32 arbitration_command);\nvoid igt_spinner_end(struct igt_spinner *spin);\n\nbool igt_wait_for_spinner(struct igt_spinner *spin, struct i915_request *rq);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

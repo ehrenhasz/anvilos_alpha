@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fopen.c",
+  "hash_id": "f86cc8268819c6c54d64c050b3f51790b529946cf471be43775a6253a0158b34",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fopen.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdio.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (fopen, FILE *, (char const *, char const *));\n\n#define BASE \"test-fopen.t\"\n\n#include \"test-fopen.h\"\n\nint\nmain (void)\n{\n  return test_fopen ();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

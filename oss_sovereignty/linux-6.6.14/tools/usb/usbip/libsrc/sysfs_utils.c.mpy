@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfs_utils.c",
+  "hash_id": "279df9c60b6e8ccdf0e9080bf79c079783d749bcf1f8a5dde068aa238d1dd12a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/usbip/libsrc/sysfs_utils.c",
+  "human_readable_source": "\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <fcntl.h>\n#include <errno.h>\n\n#include \"sysfs_utils.h\"\n#include \"usbip_common.h\"\n\nint write_sysfs_attribute(const char *attr_path, const char *new_value,\n\t\t\t  size_t len)\n{\n\tint fd;\n\tint length;\n\n\tfd = open(attr_path, O_WRONLY);\n\tif (fd < 0) {\n\t\tdbg(\"error opening attribute %s\", attr_path);\n\t\treturn -1;\n\t}\n\n\tlength = write(fd, new_value, len);\n\tif (length < 0) {\n\t\tdbg(\"error writing to attribute %s\", attr_path);\n\t\tclose(fd);\n\t\treturn -1;\n\t}\n\n\tclose(fd);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

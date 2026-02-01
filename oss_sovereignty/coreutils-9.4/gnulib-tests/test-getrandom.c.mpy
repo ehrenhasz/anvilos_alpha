@@ -1,0 +1,9 @@
+{
+  "module_name": "test-getrandom.c",
+  "hash_id": "15ba03a340ff78a3b12bf906ea90f1ca293972f29a9ab10cdda40bd43458e60e",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-getrandom.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/random.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (getrandom, ssize_t, (void *, size_t, unsigned int));\n\n#include <errno.h>\n#include <string.h>\n\n#include \"macros.h\"\n\nint\nmain (void)\n{\n  char buf1[8];\n  char buf2[8];\n  char large_buf[100000];\n  ssize_t ret;\n\n   \n  ret = getrandom (buf1, sizeof (buf1), 0);\n  if (ret < 0)\n    ASSERT (errno == ENOSYS);\n  else\n    {\n      ret = getrandom (buf2, sizeof (buf2), 0);\n      if (ret < 0)\n        ASSERT (errno == ENOSYS);\n      else\n        {\n           \n          ASSERT (memcmp (buf1, buf2, sizeof (buf1)) != 0);\n        }\n    }\n\n   \n  ret = getrandom (buf1, sizeof (buf1), GRND_RANDOM);\n  if (ret < 0)\n    ASSERT (errno == ENOSYS);\n  else\n    {\n      ret = getrandom (buf2, sizeof (buf2), GRND_RANDOM);\n      if (ret < 0)\n        ASSERT (errno == ENOSYS);\n      else\n        {\n           \n          ASSERT (memcmp (buf1, buf2, sizeof (buf1)) != 0);\n        }\n    }\n\n   \n  ret = getrandom (large_buf, sizeof (large_buf), GRND_RANDOM | GRND_NONBLOCK);\n  ASSERT (ret <= (ssize_t) sizeof (large_buf));\n   \n  if (ret < 0)\n    ASSERT (errno == ENOSYS || errno == EAGAIN\n            || errno == EINVAL  );\n  else\n    ASSERT (ret > 0);\n\n  if (getrandom (buf1, 1, 0) < 1)\n    if (getrandom (buf1, 1, GRND_RANDOM) < 1)\n      {\n        fputs (\"Skipping test: getrandom is ineffective\\n\", stderr);\n        return 77;\n      }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

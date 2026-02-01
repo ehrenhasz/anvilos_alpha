@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fdopendir.c",
+  "hash_id": "e0ea39874c366ad530053584c14f417e7cfcb5c1d20bf7f8d7c1ede102f4e471",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fdopendir.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <dirent.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (fdopendir, DIR *, (int));\n\n#include <errno.h>\n#include <fcntl.h>\n#include <unistd.h>\n\n#include \"macros.h\"\n\nint\nmain (_GL_UNUSED int argc, char *argv[])\n{\n  DIR *d;\n  int fd;\n\n   \n  fd = open (\"test-fdopendir.tmp\", O_RDONLY | O_CREAT, 0600);\n  ASSERT (0 <= fd);\n  errno = 0;\n  ASSERT (fdopendir (fd) == NULL);\n  ASSERT (errno == ENOTDIR);\n  ASSERT (close (fd) == 0);\n  ASSERT (unlink (\"test-fdopendir.tmp\") == 0);\n\n   \n  {\n    errno = 0;\n    ASSERT (fdopendir (-1) == NULL);\n    ASSERT (errno == EBADF);\n  }\n  {\n    close (99);\n    errno = 0;\n    ASSERT (fdopendir (99) == NULL);\n    ASSERT (errno == EBADF);\n  }\n\n   \n  fd = open (\".\", O_RDONLY);\n  ASSERT (0 <= fd);\n  d = fdopendir (fd);\n  ASSERT (d);\n   \n  ASSERT (dup2 (fd, fd) == fd);\n\n   \n\n  ASSERT (closedir (d) == 0);\n   \n  errno = 0;\n  ASSERT (dup2 (fd, fd) == -1);\n  ASSERT (errno == EBADF);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

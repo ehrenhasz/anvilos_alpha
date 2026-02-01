@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype_print.c",
+  "hash_id": "d0a9f5849731503cddba24db58f88928be2b5359910fbcf351680dd04f13de63",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unictype/ctype_print.c",
+  "human_readable_source": " \n#include \"unictype.h\"\n\n#include \"bitmap.h\"\n\n \n#include \"ctype_print.h\"\n\nbool\nuc_is_print (ucs4_t uc)\n{\n  return bitmap_lookup (&u_is_print, uc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

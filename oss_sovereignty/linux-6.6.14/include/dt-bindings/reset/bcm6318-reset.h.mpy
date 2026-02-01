@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm6318-reset.h",
+  "hash_id": "72878b9324e0c335f6c36ee99330beac1f9acf05b14f25de7336c1bcab23c4e0",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/bcm6318-reset.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_RESET_BCM6318_H\n#define __DT_BINDINGS_RESET_BCM6318_H\n\n#define BCM6318_RST_SPI\t\t0\n#define BCM6318_RST_EPHY\t1\n#define BCM6318_RST_SAR\t\t2\n#define BCM6318_RST_ENETSW\t3\n#define BCM6318_RST_USBD\t4\n#define BCM6318_RST_USBH\t5\n#define BCM6318_RST_PCIE_CORE\t6\n#define BCM6318_RST_PCIE\t7\n#define BCM6318_RST_PCIE_EXT\t8\n#define BCM6318_RST_PCIE_HARD\t9\n#define BCM6318_RST_ADSL\t10\n#define BCM6318_RST_PHYMIPS\t11\n#define BCM6318_RST_HOSTMIPS\t12\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

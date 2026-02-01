@@ -1,0 +1,9 @@
+{
+  "module_name": "dhry.h",
+  "hash_id": "b09675a7dd58cc7ac141114cdcaef64ac2f0eb100d33593cd8ae4b3e7037faf7",
+  "original_prompt": "Ingested from linux-6.6.14/lib/dhry.h",
+  "human_readable_source": " \n \n\ntypedef enum {\n\tIdent_1,\n\tIdent_2,\n\tIdent_3,\n\tIdent_4,\n\tIdent_5\n} Enumeration;\t \n\n \n\ntypedef int One_Thirty;\ntypedef int One_Fifty;\ntypedef char Capital_Letter;\ntypedef int Boolean;\ntypedef char Str_30[31];\ntypedef int Arr_1_Dim[50];\ntypedef int Arr_2_Dim[50][50];\n\ntypedef struct record {\n\tstruct record *Ptr_Comp;\n\tEnumeration    Discr;\n\tunion {\n\t\tstruct {\n\t\t\tEnumeration Enum_Comp;\n\t\t\tint Int_Comp;\n\t\t\tchar Str_Comp[31];\n\t\t} var_1;\n\t\tstruct {\n\t\t\tEnumeration E_Comp_2;\n\t\t\tchar Str_2_Comp[31];\n\t\t} var_2;\n\t\tstruct {\n\t\t\tchar Ch_1_Comp;\n\t\t\tchar Ch_2_Comp;\n\t\t} var_3;\n\t} variant;\n} Rec_Type, *Rec_Pointer;\n\n\nextern int Int_Glob;\nextern char Ch_1_Glob;\n\nvoid Proc_6(Enumeration  Enum_Val_Par, Enumeration *Enum_Ref_Par);\nvoid Proc_7(One_Fifty Int_1_Par_Val, One_Fifty Int_2_Par_Val,\n\t    One_Fifty *Int_Par_Ref);\nvoid Proc_8(Arr_1_Dim Arr_1_Par_Ref, Arr_2_Dim Arr_2_Par_Ref,\n\t    int Int_1_Par_Val, int Int_2_Par_Val);\nEnumeration Func_1(Capital_Letter Ch_1_Par_Val, Capital_Letter Ch_2_Par_Val);\nBoolean Func_2(Str_30 Str_1_Par_Ref, Str_30 Str_2_Par_Ref);\n\nint dhry(int n);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "qi.h",
+  "hash_id": "cb8055dad32551bc1fbeb9476c2087938a9dfe7319a9964dc649a7d34ffaa109",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/caam/qi.h",
+  "human_readable_source": " \n \n\n#ifndef __QI_H__\n#define __QI_H__\n\n#include <crypto/algapi.h>\n#include <linux/compiler_attributes.h>\n#include <soc/fsl/qman.h>\n#include \"compat.h\"\n#include \"desc.h\"\n#include \"desc_constr.h\"\n\n \n#define CAAM_QI_MEMCACHE_SIZE\t768\n\nextern bool caam_congested __read_mostly;\n\n \nstruct caam_drv_req;\n\n \ntypedef void (*caam_qi_cbk)(struct caam_drv_req *drv_req, u32 status);\n\nenum optype {\n\tENCRYPT,\n\tDECRYPT,\n\tNUM_OP\n};\n\n \nstruct caam_drv_ctx {\n\tstruct {\n\t\tu32 prehdr[2];\n\t\tu32 sh_desc[MAX_SDLEN];\n\t} __aligned(CRYPTO_DMA_ALIGN);\n\tdma_addr_t context_a;\n\tstruct qman_fq *req_fq;\n\tstruct qman_fq *rsp_fq;\n\trefcount_t refcnt;\n\tint cpu;\n\tenum optype op_type;\n\tstruct device *qidev;\n};\n\n \nstruct caam_drv_req {\n\tstruct qm_sg_entry fd_sgt[2];\n\tstruct caam_drv_ctx *drv_ctx;\n\tcaam_qi_cbk cbk;\n\tvoid *app_ctx;\n} __aligned(CRYPTO_DMA_ALIGN);\n\n \nstruct caam_drv_ctx *caam_drv_ctx_init(struct device *qidev, int *cpu,\n\t\t\t\t       u32 *sh_desc);\n\n \nint caam_qi_enqueue(struct device *qidev, struct caam_drv_req *req);\n\n \nbool caam_drv_ctx_busy(struct caam_drv_ctx *drv_ctx);\n\n \nint caam_drv_ctx_update(struct caam_drv_ctx *drv_ctx, u32 *sh_desc);\n\n \nvoid caam_drv_ctx_rel(struct caam_drv_ctx *drv_ctx);\n\nint caam_qi_init(struct platform_device *pdev);\n\n \nvoid *qi_cache_alloc(gfp_t flags);\n\n \nvoid qi_cache_free(void *obj);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

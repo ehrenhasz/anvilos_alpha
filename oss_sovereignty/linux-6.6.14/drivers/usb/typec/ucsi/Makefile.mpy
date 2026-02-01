@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "13f506cbc0824d415abfe931b779d5494383792fe5bc9f78c5eb8a8068390ca6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/typec/ucsi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCFLAGS_trace.o\t\t\t\t:= -I$(src)\n\nobj-$(CONFIG_TYPEC_UCSI)\t\t+= typec_ucsi.o\n\ntypec_ucsi-y\t\t\t\t:= ucsi.o\n\ntypec_ucsi-$(CONFIG_DEBUG_FS)\t\t+= debugfs.o\n\ntypec_ucsi-$(CONFIG_TRACING)\t\t+= trace.o\n\nifneq ($(CONFIG_POWER_SUPPLY),)\n\ttypec_ucsi-y\t\t\t+= psy.o\nendif\n\nifneq ($(CONFIG_TYPEC_DP_ALTMODE),)\n\ttypec_ucsi-y\t\t\t+= displayport.o\nendif\n\nobj-$(CONFIG_UCSI_ACPI)\t\t\t+= ucsi_acpi.o\nobj-$(CONFIG_UCSI_CCG)\t\t\t+= ucsi_ccg.o\nobj-$(CONFIG_UCSI_STM32G0)\t\t+= ucsi_stm32g0.o\nobj-$(CONFIG_UCSI_PMIC_GLINK)\t\t+= ucsi_glink.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sdio.h",
+  "hash_id": "a96c08a27dc0133d961c150b56a6a5683ed895754457552ff71b8ab329059f47",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/b43/sdio.h",
+  "human_readable_source": " \n#ifndef B43_SDIO_H_\n#define B43_SDIO_H_\n\n#include <linux/ssb/ssb.h>\n\nstruct b43_wldev;\n\n\n#ifdef CONFIG_B43_SDIO\n\nstruct b43_sdio {\n\tstruct ssb_bus ssb;\n\tvoid *irq_handler_opaque;\n\tvoid (*irq_handler)(struct b43_wldev *dev);\n};\n\nint b43_sdio_request_irq(struct b43_wldev *dev,\n\t\t\t void (*handler)(struct b43_wldev *dev));\nvoid b43_sdio_free_irq(struct b43_wldev *dev);\n\nint b43_sdio_init(void);\nvoid b43_sdio_exit(void);\n\n\n#else  \n\n\nstatic inline int b43_sdio_request_irq(struct b43_wldev *dev,\n\t\t\t void (*handler)(struct b43_wldev *dev))\n{\n\treturn -ENODEV;\n}\nstatic inline void b43_sdio_free_irq(struct b43_wldev *dev)\n{\n}\nstatic inline int b43_sdio_init(void)\n{\n\treturn 0;\n}\nstatic inline void b43_sdio_exit(void)\n{\n}\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

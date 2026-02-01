@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "5d8c5ee075b9a8c3ff1c967f50bdc6d62e01835429044b9d00089007d32ca610",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/arm/display/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_DRM_KOMEDA) += komeda/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

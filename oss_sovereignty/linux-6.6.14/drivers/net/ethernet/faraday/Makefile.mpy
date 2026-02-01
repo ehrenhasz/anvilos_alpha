@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1ab808c778deca606e8d987f8d363688bb471f6f736778396535e6bb0475c6dc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/faraday/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Faraday device drivers.\n#\n\nobj-$(CONFIG_FTGMAC100) += ftgmac100.o\nobj-$(CONFIG_FTMAC100) += ftmac100.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

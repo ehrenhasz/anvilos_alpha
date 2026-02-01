@@ -1,0 +1,9 @@
+{
+  "module_name": "uio_impl.h",
+  "hash_id": "f041033f495ec8813caa65f5c1c9bb56d67ca21a04bb7d776c72257381217de9",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/uio_impl.h",
+  "human_readable_source": " \n \n\n \n \n\n \n\n#ifndef _SYS_UIO_IMPL_H\n#define\t_SYS_UIO_IMPL_H\n\n#include <sys/uio.h>\n\nextern int zfs_uiomove(void *, size_t, zfs_uio_rw_t, zfs_uio_t *);\nextern int zfs_uiocopy(void *, size_t, zfs_uio_rw_t, zfs_uio_t *, size_t *);\nextern void zfs_uioskip(zfs_uio_t *, size_t);\n\nstatic inline void\nzfs_uio_iov_at_index(zfs_uio_t *uio, uint_t idx, void **base, uint64_t *len)\n{\n\t*base = zfs_uio_iovbase(uio, idx);\n\t*len = zfs_uio_iovlen(uio, idx);\n}\n\nstatic inline offset_t\nzfs_uio_index_at_offset(zfs_uio_t *uio, offset_t off, uint_t *vec_idx)\n{\n\t*vec_idx = 0;\n\twhile (*vec_idx < zfs_uio_iovcnt(uio) &&\n\t    off >= zfs_uio_iovlen(uio, *vec_idx)) {\n\t\toff -= zfs_uio_iovlen(uio, *vec_idx);\n\t\t(*vec_idx)++;\n\t}\n\n\treturn (off);\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

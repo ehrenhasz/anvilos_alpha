@@ -1,0 +1,9 @@
+{
+  "module_name": "patchkey.h",
+  "hash_id": "5bc3a4894b380d2dfb7799a5340f173112bf2390cdb00cd98e6b7e74cd62e6fb",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/patchkey.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_PATCHKEY_H_INDIRECT\n#error \"patchkey.h included directly\"\n#endif\n\n#ifndef _UAPI_LINUX_PATCHKEY_H\n#define _UAPI_LINUX_PATCHKEY_H\n\n \n#ifndef __KERNEL__\n#  include <endian.h>\n#endif\n\n#if !defined(__KERNEL__)\n#if defined(__BYTE_ORDER)\n#  if __BYTE_ORDER == __BIG_ENDIAN\n#    define _PATCHKEY(id) (0xfd00|id)\n#  elif __BYTE_ORDER == __LITTLE_ENDIAN\n#    define _PATCHKEY(id) ((id<<8)|0x00fd)\n#  else\n#    error \"could not determine byte order\"\n#  endif\n#endif\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "ffb1205d1ebbc29801368a50202cbfaf5fd157826899a74d57bb317b0153e699",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/connector/.gitignore",
+  "human_readable_source": "proc_filter\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

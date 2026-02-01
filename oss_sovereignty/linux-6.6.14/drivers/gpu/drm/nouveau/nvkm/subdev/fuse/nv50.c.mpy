@@ -1,0 +1,9 @@
+{
+  "module_name": "nv50.c",
+  "hash_id": "e2d02525a6c79af25ce7e2964db8cac8400393a9669c985fe31b58062f72dadd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fuse/nv50.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic u32\nnv50_fuse_read(struct nvkm_fuse *fuse, u32 addr)\n{\n\tstruct nvkm_device *device = fuse->subdev.device;\n\tunsigned long flags;\n\tu32 fuse_enable, val;\n\n\t \n\tspin_lock_irqsave(&fuse->lock, flags);\n\tfuse_enable = nvkm_mask(device, 0x001084, 0x800, 0x800);\n\tval = nvkm_rd32(device, 0x021000 + addr);\n\tnvkm_wr32(device, 0x001084, fuse_enable);\n\tspin_unlock_irqrestore(&fuse->lock, flags);\n\treturn val;\n}\n\nstatic const struct nvkm_fuse_func\nnv50_fuse = {\n\t.read = &nv50_fuse_read,\n};\n\nint\nnv50_fuse_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_fuse **pfuse)\n{\n\treturn nvkm_fuse_new_(&nv50_fuse, device, type, inst, pfuse);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

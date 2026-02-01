@@ -1,0 +1,9 @@
+{
+  "module_name": "spl_cmn_err.c",
+  "hash_id": "b2ab9a56cf4d169680e8104014a8c5b752a1e95eb21bb71b48f4174c31593228",
+  "original_prompt": "Ingested from zfs-2.2.2/module/os/freebsd/spl/spl_cmn_err.c",
+  "human_readable_source": " \n \n\n#include <sys/cdefs.h>\n#include <sys/param.h>\n#include <sys/systm.h>\n#include <sys/cmn_err.h>\n\nvoid\nvcmn_err(int ce, const char *fmt, va_list adx)\n{\n\tchar buf[256];\n\tconst char *prefix;\n\n\tprefix = NULL;  \n\tswitch (ce) {\n\tcase CE_CONT:\n\t\tprefix = \"Solaris(cont): \";\n\t\tbreak;\n\tcase CE_NOTE:\n\t\tprefix = \"Solaris: NOTICE: \";\n\t\tbreak;\n\tcase CE_WARN:\n\t\tprefix = \"Solaris: WARNING: \";\n\t\tbreak;\n\tcase CE_PANIC:\n\t\tprefix = \"Solaris(panic): \";\n\t\tbreak;\n\tcase CE_IGNORE:\n\t\tbreak;\n\tdefault:\n\t\tpanic(\"Solaris: unknown severity level\");\n\t}\n\tif (ce == CE_PANIC) {\n\t\tvsnprintf(buf, sizeof (buf), fmt, adx);\n\t\tpanic(\"%s%s\", prefix, buf);\n\t}\n\tif (ce != CE_IGNORE) {\n\t\tprintf(\"%s\", prefix);\n\t\tvprintf(fmt, adx);\n\t\tprintf(\"\\n\");\n\t}\n}\n\nvoid\ncmn_err(int type, const char *fmt, ...)\n{\n\tva_list ap;\n\n\tva_start(ap, fmt);\n\tvcmn_err(type, fmt, ap);\n\tva_end(ap);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

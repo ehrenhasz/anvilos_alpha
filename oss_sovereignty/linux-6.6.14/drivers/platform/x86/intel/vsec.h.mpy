@@ -1,0 +1,9 @@
+{
+  "module_name": "vsec.h",
+  "hash_id": "43d80c675d1b150d3e34513e3565634827689e22a330ee12960ea06af4660b8f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/vsec.h",
+  "human_readable_source": " \n#ifndef _VSEC_H\n#define _VSEC_H\n\n#include <linux/auxiliary_bus.h>\n#include <linux/bits.h>\n\n#define VSEC_CAP_TELEMETRY\tBIT(0)\n#define VSEC_CAP_WATCHER\tBIT(1)\n#define VSEC_CAP_CRASHLOG\tBIT(2)\n#define VSEC_CAP_SDSI\t\tBIT(3)\n#define VSEC_CAP_TPMI\t\tBIT(4)\n\nstruct pci_dev;\nstruct resource;\n\nenum intel_vsec_quirks {\n\t \n\tVSEC_QUIRK_NO_WATCHER\t= BIT(0),\n\n\t \n\tVSEC_QUIRK_NO_CRASHLOG\t= BIT(1),\n\n\t \n\tVSEC_QUIRK_TABLE_SHIFT\t= BIT(2),\n\n\t \n\tVSEC_QUIRK_NO_DVSEC\t= BIT(3),\n\n\t \n\tVSEC_QUIRK_EARLY_HW     = BIT(4),\n};\n\n \nstruct intel_vsec_platform_info {\n\tstruct intel_vsec_header **headers;\n\tunsigned long caps;\n\tunsigned long quirks;\n};\n\nstruct intel_vsec_device {\n\tstruct auxiliary_device auxdev;\n\tstruct pci_dev *pcidev;\n\tstruct resource *resource;\n\tstruct ida *ida;\n\tstruct intel_vsec_platform_info *info;\n\tint num_resources;\n\tint id;  \n\tvoid *priv_data;\n\tsize_t priv_data_size;\n};\n\nint intel_vsec_add_aux(struct pci_dev *pdev, struct device *parent,\n\t\t       struct intel_vsec_device *intel_vsec_dev,\n\t\t       const char *name);\n\nstatic inline struct intel_vsec_device *dev_to_ivdev(struct device *dev)\n{\n\treturn container_of(dev, struct intel_vsec_device, auxdev.dev);\n}\n\nstatic inline struct intel_vsec_device *auxdev_to_ivdev(struct auxiliary_device *auxdev)\n{\n\treturn container_of(auxdev, struct intel_vsec_device, auxdev);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

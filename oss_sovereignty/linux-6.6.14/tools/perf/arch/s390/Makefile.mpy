@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "74cb3e0c97e2c9787ff2b6ccbef18c36b695ac859d046e9f854021290c1f92a1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/s390/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nifndef NO_DWARF\nPERF_HAVE_DWARF_REGS := 1\nendif\nHAVE_KVM_STAT_SUPPORT := 1\nPERF_HAVE_ARCH_REGS_QUERY_REGISTER_OFFSET := 1\nPERF_HAVE_JITDUMP := 1\n\n#\n# Syscall table generation for perf\n#\n\nout    := $(OUTPUT)arch/s390/include/generated/asm\nheader := $(out)/syscalls_64.c\nsysprf := $(srctree)/tools/perf/arch/s390/entry/syscalls\nsysdef := $(sysprf)/syscall.tbl\nsystbl := $(sysprf)/mksyscalltbl\n\n# Create output directory if not already present\n_dummy := $(shell [ -d '$(out)' ] || mkdir -p '$(out)')\n\n$(header): $(sysdef) $(systbl)\n\t$(Q)$(SHELL) '$(systbl)' $(sysdef) > $@\n\nclean::\n\t$(call QUIET_CLEAN, s390) $(RM) $(header)\n\narchheaders: $(header)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

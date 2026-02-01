@@ -1,0 +1,9 @@
+{
+  "module_name": "module.c",
+  "hash_id": "d4014ff53d054f864486e1546b0945b2fb691f9cfdd5bcf8c4304b2020e5f436",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/module.c",
+  "human_readable_source": "\n \n\n#include <linux/of.h>\n#include <linux/module.h>\n#include <linux/slab.h>\n#include <linux/string.h>\n\nssize_t of_modalias(const struct device_node *np, char *str, ssize_t len)\n{\n\tconst char *compat;\n\tchar *c;\n\tstruct property *p;\n\tssize_t csize;\n\tssize_t tsize;\n\n\t \n\t \n\tcsize = snprintf(str, len, \"of:N%pOFn%c%s\", np, 'T',\n\t\t\t of_node_get_device_type(np));\n\ttsize = csize;\n\tlen -= csize;\n\tif (str)\n\t\tstr += csize;\n\n\tof_property_for_each_string(np, \"compatible\", p, compat) {\n\t\tcsize = strlen(compat) + 1;\n\t\ttsize += csize;\n\t\tif (csize > len)\n\t\t\tcontinue;\n\n\t\tcsize = snprintf(str, len, \"C%s\", compat);\n\t\tfor (c = str; c; ) {\n\t\t\tc = strchr(c, ' ');\n\t\t\tif (c)\n\t\t\t\t*c++ = '_';\n\t\t}\n\t\tlen -= csize;\n\t\tstr += csize;\n\t}\n\n\treturn tsize;\n}\n\nint of_request_module(const struct device_node *np)\n{\n\tchar *str;\n\tssize_t size;\n\tint ret;\n\n\tif (!np)\n\t\treturn -ENODEV;\n\n\tsize = of_modalias(np, NULL, 0);\n\tif (size < 0)\n\t\treturn size;\n\n\t \n\tsize++;\n\n\tstr = kmalloc(size, GFP_KERNEL);\n\tif (!str)\n\t\treturn -ENOMEM;\n\n\tof_modalias(np, str, size);\n\tstr[size - 1] = '\\0';\n\tret = request_module(str);\n\tkfree(str);\n\n\treturn ret;\n}\nEXPORT_SYMBOL_GPL(of_request_module);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

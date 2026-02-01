@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "09bcdc9b4afd2ba473c041537b635496677f1e1a1243ca61d59545a90ca0791f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/bcache/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_BCACHE)\t+= bcache.o\n\nbcache-y\t\t:= alloc.o bset.o btree.o closure.o debug.o extents.o\\\n\tio.o journal.o movinggc.o request.o stats.o super.o sysfs.o trace.o\\\n\tutil.o writeback.o features.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

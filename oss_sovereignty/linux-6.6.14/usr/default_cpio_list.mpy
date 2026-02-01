@@ -1,0 +1,9 @@
+{
+  "module_name": "default_cpio_list",
+  "hash_id": "551375190400cdc29802acaef58bf6d25499c3cf9e4b6bdf332ecd51213804bf",
+  "original_prompt": "Ingested from linux-6.6.14/usr/default_cpio_list",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# This is a very simple, default initramfs\n\ndir /dev 0755 0 0\nnod /dev/console 0600 0 0 c 5 1\ndir /root 0700 0 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

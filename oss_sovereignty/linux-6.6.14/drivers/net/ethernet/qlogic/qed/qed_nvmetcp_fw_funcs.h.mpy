@@ -1,0 +1,9 @@
+{
+  "module_name": "qed_nvmetcp_fw_funcs.h",
+  "hash_id": "aa16b506506e4c98d403ca3e363080e4071066b4a1a4bba1c5901f3988c6d9b2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qlogic/qed/qed_nvmetcp_fw_funcs.h",
+  "human_readable_source": " \n \n\n#ifndef _QED_NVMETCP_FW_FUNCS_H\n#define _QED_NVMETCP_FW_FUNCS_H\n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/pci.h>\n#include <linux/list.h>\n#include <linux/mm.h>\n#include <linux/types.h>\n#include <asm/byteorder.h>\n#include <linux/qed/common_hsi.h>\n#include <linux/qed/storage_common.h>\n#include <linux/qed/nvmetcp_common.h>\n#include <linux/qed/qed_nvmetcp_if.h>\n\n#if IS_ENABLED(CONFIG_QED_NVMETCP)\n\nvoid init_nvmetcp_host_read_task(struct nvmetcp_task_params *task_params,\n\t\t\t\t struct nvme_tcp_cmd_pdu *cmd_pdu_header,\n\t\t\t\t struct nvme_command *nvme_cmd,\n\t\t\t\t struct storage_sgl_task_params *sgl_task_params);\nvoid init_nvmetcp_host_write_task(struct nvmetcp_task_params *task_params,\n\t\t\t\t  struct nvme_tcp_cmd_pdu *cmd_pdu_header,\n\t\t\t\t  struct nvme_command *nvme_cmd,\n\t\t\t\t  struct storage_sgl_task_params *sgl_task_params);\nvoid init_nvmetcp_init_conn_req_task(struct nvmetcp_task_params *task_params,\n\t\t\t\t     struct nvme_tcp_icreq_pdu *init_conn_req_pdu_hdr,\n\t\t\t\t     struct storage_sgl_task_params *tx_sgl_task_params,\n\t\t\t\t     struct storage_sgl_task_params *rx_sgl_task_params);\nvoid init_cleanup_task_nvmetcp(struct nvmetcp_task_params *task_params);\n\n#else  \n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

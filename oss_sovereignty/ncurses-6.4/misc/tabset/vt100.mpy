@@ -1,0 +1,9 @@
+{
+  "module_name": "vt100",
+  "hash_id": "a1b0deafd3bffc68d6808ce680563503694eccf05bfd8eebb4665410bebe947a",
+  "original_prompt": "Ingested from ncurses-6.4/misc/tabset/vt100",
+  "human_readable_source": "\n\u001b[3g\n\u001bH        \u001bH        \u001bH        \u001bH        \u001bH        \u001bH        \u001bH        \u001bH        \u001bH        \u001bH        \u001bH        \u001bH        \u001bH        \u001bH        \u001bH        \u001bH\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

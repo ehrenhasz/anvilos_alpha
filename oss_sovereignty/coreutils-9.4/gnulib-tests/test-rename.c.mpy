@@ -1,0 +1,9 @@
+{
+  "module_name": "test-rename.c",
+  "hash_id": "f011d0991ab293a11b8240100836cfd61f44b098b3c5e4381641b708439959ac",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-rename.c",
+  "human_readable_source": " \n  ignore_value (system (\"rm -rf \" BASE \"*\"));\n\n  return test_rename (rename, true);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

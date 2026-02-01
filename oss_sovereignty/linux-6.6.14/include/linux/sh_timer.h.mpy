@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_timer.h",
+  "hash_id": "857422449c32331ff664a4454c94aa9fb953b6d123398f3bbbde9e6c26f45f7d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sh_timer.h",
+  "human_readable_source": " \n#ifndef __SH_TIMER_H__\n#define __SH_TIMER_H__\n\nstruct sh_timer_config {\n\tunsigned int channels_mask;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_vsi_vlan_lib.h",
+  "hash_id": "7baf4f1e29621f8db2719f6b2f9430f7170f83896273cab2485a3ff1f1828ad3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_vsi_vlan_lib.h",
+  "human_readable_source": " \n \n\n#ifndef _ICE_VSI_VLAN_LIB_H_\n#define _ICE_VSI_VLAN_LIB_H_\n\n#include <linux/types.h>\n#include \"ice_vlan.h\"\n\nstruct ice_vsi_vlan_info {\n\tu8 sw_flags2;\n\tu8 inner_vlan_flags;\n\tu8 outer_vlan_flags;\n};\n\nstruct ice_vsi;\n\nint ice_vsi_add_vlan(struct ice_vsi *vsi, struct ice_vlan *vlan);\nint ice_vsi_del_vlan(struct ice_vsi *vsi, struct ice_vlan *vlan);\n\nint ice_vsi_ena_inner_stripping(struct ice_vsi *vsi, u16 tpid);\nint ice_vsi_dis_inner_stripping(struct ice_vsi *vsi);\nint ice_vsi_ena_inner_insertion(struct ice_vsi *vsi, u16 tpid);\nint ice_vsi_dis_inner_insertion(struct ice_vsi *vsi);\nint ice_vsi_set_inner_port_vlan(struct ice_vsi *vsi, struct ice_vlan *vlan);\nint ice_vsi_clear_inner_port_vlan(struct ice_vsi *vsi);\n\nint ice_vsi_ena_rx_vlan_filtering(struct ice_vsi *vsi);\nint ice_vsi_dis_rx_vlan_filtering(struct ice_vsi *vsi);\nint ice_vsi_ena_tx_vlan_filtering(struct ice_vsi *vsi);\nint ice_vsi_dis_tx_vlan_filtering(struct ice_vsi *vsi);\n\nint ice_vsi_ena_outer_stripping(struct ice_vsi *vsi, u16 tpid);\nint ice_vsi_dis_outer_stripping(struct ice_vsi *vsi);\nint ice_vsi_ena_outer_insertion(struct ice_vsi *vsi, u16 tpid);\nint ice_vsi_dis_outer_insertion(struct ice_vsi *vsi);\nint ice_vsi_set_outer_port_vlan(struct ice_vsi *vsi, struct ice_vlan *vlan);\nint ice_vsi_clear_outer_port_vlan(struct ice_vsi *vsi);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "loadavg.h",
+  "hash_id": "9d48ad70f78341c37c511841782986591c4fa4897d6b348eab0c199f93dda2ad",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/loadavg.h",
+  "human_readable_source": " \n#ifndef _LINUX_SCHED_LOADAVG_H\n#define _LINUX_SCHED_LOADAVG_H\n\n \nextern unsigned long avenrun[];\t\t \nextern void get_avenrun(unsigned long *loads, unsigned long offset, int shift);\n\n#define FSHIFT\t\t11\t\t \n#define FIXED_1\t\t(1<<FSHIFT)\t \n#define LOAD_FREQ\t(5*HZ+1)\t \n#define EXP_1\t\t1884\t\t \n#define EXP_5\t\t2014\t\t \n#define EXP_15\t\t2037\t\t \n\n \nstatic inline unsigned long\ncalc_load(unsigned long load, unsigned long exp, unsigned long active)\n{\n\tunsigned long newload;\n\n\tnewload = load * exp + active * (FIXED_1 - exp);\n\tif (active >= load)\n\t\tnewload += FIXED_1-1;\n\n\treturn newload / FIXED_1;\n}\n\nextern unsigned long calc_load_n(unsigned long load, unsigned long exp,\n\t\t\t\t unsigned long active, unsigned int n);\n\n#define LOAD_INT(x) ((x) >> FSHIFT)\n#define LOAD_FRAC(x) LOAD_INT(((x) & (FIXED_1-1)) * 100)\n\nextern void calc_global_load(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

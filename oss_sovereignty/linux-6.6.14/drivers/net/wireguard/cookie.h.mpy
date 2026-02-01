@@ -1,0 +1,9 @@
+{
+  "module_name": "cookie.h",
+  "hash_id": "4295b055268d9fc3d86817aad0672fafaa0f5cbb976a634c108105cacabfce20",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireguard/cookie.h",
+  "human_readable_source": " \n \n\n#ifndef _WG_COOKIE_H\n#define _WG_COOKIE_H\n\n#include \"messages.h\"\n#include <linux/rwsem.h>\n\nstruct wg_peer;\n\nstruct cookie_checker {\n\tu8 secret[NOISE_HASH_LEN];\n\tu8 cookie_encryption_key[NOISE_SYMMETRIC_KEY_LEN];\n\tu8 message_mac1_key[NOISE_SYMMETRIC_KEY_LEN];\n\tu64 secret_birthdate;\n\tstruct rw_semaphore secret_lock;\n\tstruct wg_device *device;\n};\n\nstruct cookie {\n\tu64 birthdate;\n\tbool is_valid;\n\tu8 cookie[COOKIE_LEN];\n\tbool have_sent_mac1;\n\tu8 last_mac1_sent[COOKIE_LEN];\n\tu8 cookie_decryption_key[NOISE_SYMMETRIC_KEY_LEN];\n\tu8 message_mac1_key[NOISE_SYMMETRIC_KEY_LEN];\n\tstruct rw_semaphore lock;\n};\n\nenum cookie_mac_state {\n\tINVALID_MAC,\n\tVALID_MAC_BUT_NO_COOKIE,\n\tVALID_MAC_WITH_COOKIE_BUT_RATELIMITED,\n\tVALID_MAC_WITH_COOKIE\n};\n\nvoid wg_cookie_checker_init(struct cookie_checker *checker,\n\t\t\t    struct wg_device *wg);\nvoid wg_cookie_checker_precompute_device_keys(struct cookie_checker *checker);\nvoid wg_cookie_checker_precompute_peer_keys(struct wg_peer *peer);\nvoid wg_cookie_init(struct cookie *cookie);\n\nenum cookie_mac_state wg_cookie_validate_packet(struct cookie_checker *checker,\n\t\t\t\t\t\tstruct sk_buff *skb,\n\t\t\t\t\t\tbool check_cookie);\nvoid wg_cookie_add_mac_to_packet(void *message, size_t len,\n\t\t\t\t struct wg_peer *peer);\n\nvoid wg_cookie_message_create(struct message_handshake_cookie *src,\n\t\t\t      struct sk_buff *skb, __le32 index,\n\t\t\t      struct cookie_checker *checker);\nvoid wg_cookie_message_consume(struct message_handshake_cookie *src,\n\t\t\t       struct wg_device *wg);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

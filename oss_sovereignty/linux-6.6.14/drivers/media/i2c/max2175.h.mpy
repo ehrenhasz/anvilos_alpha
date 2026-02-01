@@ -1,0 +1,9 @@
+{
+  "module_name": "max2175.h",
+  "hash_id": "b4fb64ea6eb123439fa0bcb03c1fddb7a97d7cb4026fa947d00e5a2d76f31633",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/i2c/max2175.h",
+  "human_readable_source": " \n \n\n#ifndef __MAX2175_H__\n#define __MAX2175_H__\n\n#define MAX2175_EU_XTAL_FREQ\t36864000\t \n#define MAX2175_NA_XTAL_FREQ\t40186125\t \n\nenum max2175_region {\n\tMAX2175_REGION_EU = 0,\t \n\tMAX2175_REGION_NA,\t \n};\n\nenum max2175_band {\n\tMAX2175_BAND_AM = 0,\n\tMAX2175_BAND_FM,\n\tMAX2175_BAND_VHF,\n\tMAX2175_BAND_L,\n};\n\nenum max2175_eu_mode {\n\t \n\tMAX2175_EU_FM_1_2 = 0,\n\tMAX2175_DAB_1_2,\n\n\t \n};\n\nenum max2175_na_mode {\n\t \n\tMAX2175_NA_FM_1_0 = 0,\n\tMAX2175_NA_FM_2_0,\n\n\t \n};\n\n \nenum {\n\tMAX2175_I2S_MODE0 = 0,\n\tMAX2175_I2S_MODE1,\n\tMAX2175_I2S_MODE2,\n\tMAX2175_I2S_MODE3,\n\tMAX2175_I2S_MODE4,\n};\n\n \nenum {\n\tMAX2175_CH_MSEL = 0,\n\tMAX2175_EQ_MSEL,\n\tMAX2175_AA_MSEL,\n};\n\n \nenum {\n\tMAX2175_LO_BELOW_DESIRED = 0,\n\tMAX2175_LO_ABOVE_DESIRED,\n};\n\n \nenum max2175_csm_mode {\n\tMAX2175_LOAD_TO_BUFFER = 0,\n\tMAX2175_PRESET_TUNE,\n\tMAX2175_SEARCH,\n\tMAX2175_AF_UPDATE,\n\tMAX2175_JUMP_FAST_TUNE,\n\tMAX2175_CHECK,\n\tMAX2175_LOAD_AND_SWAP,\n\tMAX2175_END,\n\tMAX2175_BUFFER_PLUS_PRESET_TUNE,\n\tMAX2175_BUFFER_PLUS_SEARCH,\n\tMAX2175_BUFFER_PLUS_AF_UPDATE,\n\tMAX2175_BUFFER_PLUS_JUMP_FAST_TUNE,\n\tMAX2175_BUFFER_PLUS_CHECK,\n\tMAX2175_BUFFER_PLUS_LOAD_AND_SWAP,\n\tMAX2175_NO_ACTION\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

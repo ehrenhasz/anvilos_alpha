@@ -1,0 +1,9 @@
+{
+  "module_name": "irqdomain_defs.h",
+  "hash_id": "a010649b353a0c0280007f30d3f07f01b8bc0d5f022fe8eba519a6ceba1c5324",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/irqdomain_defs.h",
+  "human_readable_source": " \n#ifndef _LINUX_IRQDOMAIN_DEFS_H\n#define _LINUX_IRQDOMAIN_DEFS_H\n\n \nenum irq_domain_bus_token {\n\tDOMAIN_BUS_ANY\t\t= 0,\n\tDOMAIN_BUS_WIRED,\n\tDOMAIN_BUS_GENERIC_MSI,\n\tDOMAIN_BUS_PCI_MSI,\n\tDOMAIN_BUS_PLATFORM_MSI,\n\tDOMAIN_BUS_NEXUS,\n\tDOMAIN_BUS_IPI,\n\tDOMAIN_BUS_FSL_MC_MSI,\n\tDOMAIN_BUS_TI_SCI_INTA_MSI,\n\tDOMAIN_BUS_WAKEUP,\n\tDOMAIN_BUS_VMD_MSI,\n\tDOMAIN_BUS_PCI_DEVICE_MSI,\n\tDOMAIN_BUS_PCI_DEVICE_MSIX,\n\tDOMAIN_BUS_DMAR,\n\tDOMAIN_BUS_AMDVI,\n\tDOMAIN_BUS_PCI_DEVICE_IMS,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

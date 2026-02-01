@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "174b4efe7eda0cad44f71a10bfa196cb604d65a0b6b131de90e3f7f331f09c78",
+  "original_prompt": "Ingested from linux-6.6.14/net/6lowpan/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_6LOWPAN) += 6lowpan.o\n\n6lowpan-y := core.o iphc.o nhc.o ndisc.o\n6lowpan-$(CONFIG_6LOWPAN_DEBUGFS) += debugfs.o\n\n#rfc6282 nhcs\nobj-$(CONFIG_6LOWPAN_NHC_DEST) += nhc_dest.o\nobj-$(CONFIG_6LOWPAN_NHC_FRAGMENT) += nhc_fragment.o\nobj-$(CONFIG_6LOWPAN_NHC_HOP) += nhc_hop.o\nobj-$(CONFIG_6LOWPAN_NHC_IPV6) += nhc_ipv6.o\nobj-$(CONFIG_6LOWPAN_NHC_MOBILITY) += nhc_mobility.o\nobj-$(CONFIG_6LOWPAN_NHC_ROUTING) += nhc_routing.o\nobj-$(CONFIG_6LOWPAN_NHC_UDP) += nhc_udp.o\n\n#rfc7400 ghcs\nobj-$(CONFIG_6LOWPAN_GHC_EXT_HDR_HOP) += nhc_ghc_ext_hop.o\nobj-$(CONFIG_6LOWPAN_GHC_UDP) += nhc_ghc_udp.o\nobj-$(CONFIG_6LOWPAN_GHC_ICMPV6) += nhc_ghc_icmpv6.o\nobj-$(CONFIG_6LOWPAN_GHC_EXT_HDR_DEST) += nhc_ghc_ext_dest.o\nobj-$(CONFIG_6LOWPAN_GHC_EXT_HDR_FRAG) += nhc_ghc_ext_frag.o\nobj-$(CONFIG_6LOWPAN_GHC_EXT_HDR_ROUTE) += nhc_ghc_ext_route.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

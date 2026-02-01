@@ -1,0 +1,9 @@
+{
+  "module_name": "timestamp.c",
+  "hash_id": "bb966895442195f730ddd5d55688b1d9842d510235cee0d445ff952ae96115a4",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/timestamp.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <sys/time.h>\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <time.h>\n\nint\nmain(void)\n{\n\tstruct timeval tv;\n\tstruct tm *tm;\n\tchar buf[1024];\n\n\tif (gettimeofday(&tv, NULL) != 0)\n\t\texit(1);\n\tif ((tm = localtime(&tv.tv_sec)) == NULL)\n\t\texit(2);\n\tif (strftime(buf, sizeof buf, \"%Y%m%dT%H%M%S\", tm) <= 0)\n\t\texit(3);\n\tprintf(\"%s.%06d\\n\", buf, (int)tv.tv_usec);\n\texit(0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

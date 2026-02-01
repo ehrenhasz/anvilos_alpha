@@ -1,0 +1,9 @@
+{
+  "module_name": "mn88473.h",
+  "hash_id": "be435a7155a9f0f8f7029894a0e654e98e2ecf482d0671d351067c72211a4287",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/mn88473.h",
+  "human_readable_source": " \n \n\n#ifndef MN88473_H\n#define MN88473_H\n\n#include <linux/dvb/frontend.h>\n\nstruct mn88473_config {\n\t \n\tu16 i2c_wr_max;\n\n\t \n\tu32 xtal;\n\n\n\t \n\n\t \n\tstruct dvb_frontend **fe;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "smp.h",
+  "hash_id": "e553ee44f3c2e6d6672927eb6d1da3fabcb309a060c8c91f982153febe067af5",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/sched/smp.h",
+  "human_readable_source": " \n \n\nextern void sched_ttwu_pending(void *arg);\n\nextern bool call_function_single_prep_ipi(int cpu);\n\n#ifdef CONFIG_SMP\nextern void flush_smp_call_function_queue(void);\n#else\nstatic inline void flush_smp_call_function_queue(void) { }\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

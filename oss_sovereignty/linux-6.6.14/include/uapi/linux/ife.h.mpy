@@ -1,0 +1,9 @@
+{
+  "module_name": "ife.h",
+  "hash_id": "81b556f776862e5191f792abbc4cbbc4170bef0e36c1e84d9e6447eb7da3e588",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/ife.h",
+  "human_readable_source": " \n#ifndef __UAPI_IFE_H\n#define __UAPI_IFE_H\n\n#define IFE_METAHDRLEN 2\n\nenum {\n\tIFE_META_SKBMARK = 1,\n\tIFE_META_HASHID,\n\tIFE_META_PRIO,\n\tIFE_META_QMAP,\n\tIFE_META_TCINDEX,\n\t__IFE_META_MAX\n};\n\n \n#define IFE_META_MAX (__IFE_META_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

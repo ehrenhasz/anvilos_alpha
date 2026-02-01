@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c4288d4aa5d1a8247f02aaec623c7e76c1f59876b39c5847db10200e02394bf6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/radio/si470x/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for radios with Silicon Labs Si470x FM Radio Receivers\n#\n\nobj-$(CONFIG_RADIO_SI470X) += radio-si470x-common.o\nobj-$(CONFIG_USB_SI470X) += radio-si470x-usb.o\nobj-$(CONFIG_I2C_SI470X) += radio-si470x-i2c.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_pvinfo.h",
+  "hash_id": "e18c279275a2f61ad94225241ac2d3c1a4de4e633673a12d86b74ca7a6d61b39",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_pvinfo.h",
+  "human_readable_source": " \n\n#ifndef _I915_PVINFO_H_\n#define _I915_PVINFO_H_\n\n#include <linux/types.h>\n\n \n#define VGT_PVINFO_PAGE\t0x78000\n#define VGT_PVINFO_SIZE\t0x1000\n\n \n#define VGT_MAGIC         0x4776544776544776ULL\t \n#define VGT_VERSION_MAJOR 1\n#define VGT_VERSION_MINOR 0\n\n \nenum vgt_g2v_type {\n\tVGT_G2V_PPGTT_L3_PAGE_TABLE_CREATE = 2,\n\tVGT_G2V_PPGTT_L3_PAGE_TABLE_DESTROY,\n\tVGT_G2V_PPGTT_L4_PAGE_TABLE_CREATE,\n\tVGT_G2V_PPGTT_L4_PAGE_TABLE_DESTROY,\n\tVGT_G2V_EXECLIST_CONTEXT_CREATE,\n\tVGT_G2V_EXECLIST_CONTEXT_DESTROY,\n\tVGT_G2V_MAX,\n};\n\n \n#define VGT_CAPS_FULL_PPGTT\t\tBIT(2)\n#define VGT_CAPS_HWSP_EMULATION\t\tBIT(3)\n#define VGT_CAPS_HUGE_GTT\t\tBIT(4)\n\nstruct vgt_if {\n\tu64 magic;\t\t \n\tu16 version_major;\n\tu16 version_minor;\n\tu32 vgt_id;\t\t \n\tu32 vgt_caps;\t\t \n\tu32 rsv1[11];\t\t \n\t \n\tstruct {\n\t\t \n\t\tstruct {\n\t\t\tu32 base;\n\t\t\tu32 size;\n\t\t} mappable_gmadr;\t \n\t\t \n\t\tstruct {\n\t\t\tu32 base;\n\t\t\tu32 size;\n\t\t} nonmappable_gmadr;\t \n\t\t \n\t\tu32 fence_num;\n\t\tu32 rsv2[3];\n\t} avail_rs;\t\t \n\tu32 rsv3[0x200 - 24];\t \n\t \n\tu32 rsv4;\n\tu32 display_ready;\t \n\n\tu32 rsv5[4];\n\n\tu32 g2v_notify;\n\tu32 rsv6[5];\n\n\tu32 cursor_x_hot;\n\tu32 cursor_y_hot;\n\n\tstruct {\n\t\tu32 lo;\n\t\tu32 hi;\n\t} pdp[4];\n\n\tu32 execlist_context_descriptor_lo;\n\tu32 execlist_context_descriptor_hi;\n\n\tu32  rsv7[0x200 - 24];     \n} __packed;\n\n#define vgtif_offset(x) (offsetof(struct vgt_if, x))\n\n#define vgtif_reg(x) _MMIO(VGT_PVINFO_PAGE + vgtif_offset(x))\n\n \n#define VGT_DRV_DISPLAY_NOT_READY 0\n#define VGT_DRV_DISPLAY_READY     1   \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

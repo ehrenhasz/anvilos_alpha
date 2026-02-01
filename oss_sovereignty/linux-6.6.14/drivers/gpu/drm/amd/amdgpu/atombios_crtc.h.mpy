@@ -1,0 +1,9 @@
+{
+  "module_name": "atombios_crtc.h",
+  "hash_id": "bc06d9370fa31caf82f344763b14bc39374eaac70a363bbe82e5bd722d5abedd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/atombios_crtc.h",
+  "human_readable_source": " \n\n#ifndef __ATOMBIOS_CRTC_H__\n#define __ATOMBIOS_CRTC_H__\n\nvoid amdgpu_atombios_crtc_overscan_setup(struct drm_crtc *crtc,\n\t\t\t\t  struct drm_display_mode *mode,\n\t\t\t\t  struct drm_display_mode *adjusted_mode);\nvoid amdgpu_atombios_crtc_scaler_setup(struct drm_crtc *crtc);\nvoid amdgpu_atombios_crtc_lock(struct drm_crtc *crtc, int lock);\nvoid amdgpu_atombios_crtc_enable(struct drm_crtc *crtc, int state);\nvoid amdgpu_atombios_crtc_blank(struct drm_crtc *crtc, int state);\nvoid amdgpu_atombios_crtc_powergate(struct drm_crtc *crtc, int state);\nvoid amdgpu_atombios_crtc_powergate_init(struct amdgpu_device *adev);\nvoid amdgpu_atombios_crtc_set_dtd_timing(struct drm_crtc *crtc,\n\t\t\t\t  struct drm_display_mode *mode);\nvoid amdgpu_atombios_crtc_set_disp_eng_pll(struct amdgpu_device *adev,\n\t\t\t\t    u32 dispclk);\nu32 amdgpu_atombios_crtc_set_dce_clock(struct amdgpu_device *adev,\n\t\t\t\t       u32 freq, u8 clk_type, u8 clk_src);\nvoid amdgpu_atombios_crtc_program_pll(struct drm_crtc *crtc,\n\t\t\t       u32 crtc_id,\n\t\t\t       int pll_id,\n\t\t\t       u32 encoder_mode,\n\t\t\t       u32 encoder_id,\n\t\t\t       u32 clock,\n\t\t\t       u32 ref_div,\n\t\t\t       u32 fb_div,\n\t\t\t       u32 frac_fb_div,\n\t\t\t       u32 post_div,\n\t\t\t       int bpc,\n\t\t\t       bool ss_enabled,\n\t\t\t       struct amdgpu_atom_ss *ss);\nint amdgpu_atombios_crtc_prepare_pll(struct drm_crtc *crtc,\n\t\t\t      struct drm_display_mode *mode);\nvoid amdgpu_atombios_crtc_set_pll(struct drm_crtc *crtc,\n\t\t\t   struct drm_display_mode *mode);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

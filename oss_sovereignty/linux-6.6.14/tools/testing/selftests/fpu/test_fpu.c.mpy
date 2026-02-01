@@ -1,0 +1,9 @@
+{
+  "module_name": "test_fpu.c",
+  "hash_id": "fa78eb7420198a8945e34848d646b345cbf6b74886994f06f67cc659aeb2e473",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/fpu/test_fpu.c",
+  "human_readable_source": "\n \n\n#define _GNU_SOURCE\n#include <stdio.h>\n#include <errno.h>\n#include <string.h>\n#include <fenv.h>\n#include <unistd.h>\n#include <fcntl.h>\n\nconst char *test_fpu_path = \"/sys/kernel/debug/selftest_helpers/test_fpu\";\n\nint main(void)\n{\n\tchar dummy[1];\n\tint fd = open(test_fpu_path, O_RDONLY);\n\n\tif (fd < 0) {\n\t\tprintf(\"[SKIP]\\tcan't access %s: %s\\n\",\n\t\t       test_fpu_path, strerror(errno));\n\t\treturn 0;\n\t}\n\n\tif (read(fd, dummy, 1) < 0) {\n\t\tprintf(\"[FAIL]\\taccess with default rounding mode failed\\n\");\n\t\treturn 1;\n\t}\n\n\tfesetround(FE_DOWNWARD);\n\tif (read(fd, dummy, 1) < 0) {\n\t\tprintf(\"[FAIL]\\taccess with downward rounding mode failed\\n\");\n\t\treturn 2;\n\t}\n\tif (fegetround() != FE_DOWNWARD) {\n\t\tprintf(\"[FAIL]\\tusermode rounding mode clobbered\\n\");\n\t\treturn 3;\n\t}\n\n\t \n\tfeclearexcept(FE_ALL_EXCEPT);\n\tfeenableexcept(FE_ALL_EXCEPT);\n\tif (read(fd, dummy, 1) < 0) {\n\t\tprintf(\"[FAIL]\\taccess with fpu exceptions unmasked failed\\n\");\n\t\treturn 4;\n\t}\n\tif (fegetexcept() != FE_ALL_EXCEPT) {\n\t\tprintf(\"[FAIL]\\tusermode fpu exception mask clobbered\\n\");\n\t\treturn 5;\n\t}\n\n\tprintf(\"[OK]\\ttest_fpu\\n\");\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

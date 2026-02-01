@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "1accb50f60942f1a84bfe8c951f68d330bb73dec54b5ffd83cd2d06abb1c21da",
+  "original_prompt": "Ingested from linux-6.6.14/samples/fanotify/.gitignore",
+  "human_readable_source": "fs-monitor\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

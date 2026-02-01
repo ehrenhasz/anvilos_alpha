@@ -1,0 +1,9 @@
+{
+  "module_name": "nbd-netlink.h",
+  "hash_id": "7d2dc2b6c1183263920fd99e8a67ae93ea86cc8e5c7cc304f7bd4e98cfd7c450",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/nbd-netlink.h",
+  "human_readable_source": " \n \n#ifndef _UAPILINUX_NBD_NETLINK_H\n#define _UAPILINUX_NBD_NETLINK_H\n\n#define NBD_GENL_FAMILY_NAME\t\t\"nbd\"\n#define NBD_GENL_VERSION\t\t0x1\n#define NBD_GENL_MCAST_GROUP_NAME\t\"nbd_mc_group\"\n\n \nenum {\n\tNBD_ATTR_UNSPEC,\n\tNBD_ATTR_INDEX,\n\tNBD_ATTR_SIZE_BYTES,\n\tNBD_ATTR_BLOCK_SIZE_BYTES,\n\tNBD_ATTR_TIMEOUT,\n\tNBD_ATTR_SERVER_FLAGS,\n\tNBD_ATTR_CLIENT_FLAGS,\n\tNBD_ATTR_SOCKETS,\n\tNBD_ATTR_DEAD_CONN_TIMEOUT,\n\tNBD_ATTR_DEVICE_LIST,\n\tNBD_ATTR_BACKEND_IDENTIFIER,\n\t__NBD_ATTR_MAX,\n};\n#define NBD_ATTR_MAX (__NBD_ATTR_MAX - 1)\n\n \nenum {\n\tNBD_DEVICE_ITEM_UNSPEC,\n\tNBD_DEVICE_ITEM,\n\t__NBD_DEVICE_ITEM_MAX,\n};\n#define NBD_DEVICE_ITEM_MAX (__NBD_DEVICE_ITEM_MAX - 1)\n\nenum {\n\tNBD_DEVICE_UNSPEC,\n\tNBD_DEVICE_INDEX,\n\tNBD_DEVICE_CONNECTED,\n\t__NBD_DEVICE_MAX,\n};\n#define NBD_DEVICE_ATTR_MAX (__NBD_DEVICE_MAX - 1)\n\n \nenum {\n\tNBD_SOCK_ITEM_UNSPEC,\n\tNBD_SOCK_ITEM,\n\t__NBD_SOCK_ITEM_MAX,\n};\n#define NBD_SOCK_ITEM_MAX (__NBD_SOCK_ITEM_MAX - 1)\n\nenum {\n\tNBD_SOCK_UNSPEC,\n\tNBD_SOCK_FD,\n\t__NBD_SOCK_MAX,\n};\n#define NBD_SOCK_MAX (__NBD_SOCK_MAX - 1)\n\nenum {\n\tNBD_CMD_UNSPEC,\n\tNBD_CMD_CONNECT,\n\tNBD_CMD_DISCONNECT,\n\tNBD_CMD_RECONFIGURE,\n\tNBD_CMD_LINK_DEAD,\n\tNBD_CMD_STATUS,\n\t__NBD_CMD_MAX,\n};\n#define NBD_CMD_MAX\t(__NBD_CMD_MAX - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0e4dae43e11fc8ffc0ba8669c2b2609981f42d6d2e1ff5e37cbde077942ba2b6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/nxp/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig LPC_ENET\n\ttristate \"NXP ethernet MAC on LPC devices\"\n\tdepends on ARCH_LPC32XX || COMPILE_TEST\n\tselect PHYLIB\n\tselect CRC32\n\thelp\n\t  Say Y or M here if you want to use the NXP ethernet MAC included on\n\t  some NXP LPC devices. You can safely enable this option for LPC32xx\n\t  SoC. Also available as a module.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

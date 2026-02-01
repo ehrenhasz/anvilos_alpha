@@ -1,0 +1,9 @@
+{
+  "module_name": "wcmd.h",
+  "hash_id": "f9dfc3d7d13d92d7299916166af5c0cdf0e8b4bc5e445440501f31a6fa55b6fe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vt6656/wcmd.h",
+  "human_readable_source": " \n \n\n#ifndef __WCMD_H__\n#define __WCMD_H__\n\n#include \"device.h\"\n\n \nenum vnt_cmd {\n\tWLAN_CMD_INIT_MAC80211,\n\tWLAN_CMD_SETPOWER,\n\tWLAN_CMD_TBTT_WAKEUP,\n\tWLAN_CMD_BECON_SEND,\n\tWLAN_CMD_CHANGE_ANTENNA\n};\n\n#define CMD_Q_SIZE              32\n\n \nenum vnt_cmd_state {\n\tWLAN_CMD_INIT_MAC80211_START,\n\tWLAN_CMD_SETPOWER_START,\n\tWLAN_CMD_TBTT_WAKEUP_START,\n\tWLAN_CMD_BECON_SEND_START,\n\tWLAN_CMD_CHANGE_ANTENNA_START,\n\tWLAN_CMD_IDLE\n};\n\nstruct vnt_private;\n\nvoid vnt_reset_command_timer(struct vnt_private *priv);\n\nint vnt_schedule_command(struct vnt_private *priv, enum vnt_cmd);\n\nvoid vnt_run_command(struct work_struct *work);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

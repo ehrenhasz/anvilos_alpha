@@ -1,0 +1,9 @@
+{
+  "module_name": "trim_finish-notify.sh",
+  "hash_id": "691fb96c17bf98776690c70a51351f8c78a9790c5b217093d2e397d1c4f7cbbe",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zed/zed.d/trim_finish-notify.sh",
+  "human_readable_source": "#!/bin/sh\n# shellcheck disable=SC2154\n#\n# Send notification in response to a TRIM_FINISH. The event\n# will be received for each vdev in the pool which was trimmed.\n#\n# Exit codes:\n#   0: notification sent\n#   1: notification failed\n#   2: notification not configured\n#   9: internal error\n\n[ -f \"${ZED_ZEDLET_DIR}/zed.rc\" ] && . \"${ZED_ZEDLET_DIR}/zed.rc\"\n. \"${ZED_ZEDLET_DIR}/zed-functions.sh\"\n\n[ -n \"${ZEVENT_POOL}\" ] || exit 9\n[ -n \"${ZEVENT_SUBCLASS}\" ] || exit 9\n\nzed_check_cmd \"${ZPOOL}\" || exit 9\n\numask 077\nnote_subject=\"ZFS ${ZEVENT_SUBCLASS} event for ${ZEVENT_POOL} on $(hostname)\"\nnote_pathname=\"$(mktemp)\"\n{\n    echo \"ZFS has finished a trim:\"\n    echo\n    echo \"   eid: ${ZEVENT_EID}\"\n    echo \" class: ${ZEVENT_SUBCLASS}\"\n    echo \"  host: $(hostname)\"\n    echo \"  time: ${ZEVENT_TIME_STRING}\"\n\n    \"${ZPOOL}\" status -t \"${ZEVENT_POOL}\"\n\n} > \"${note_pathname}\"\n\nzed_notify \"${note_subject}\" \"${note_pathname}\"; rv=$?\nrm -f \"${note_pathname}\"\nexit \"${rv}\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

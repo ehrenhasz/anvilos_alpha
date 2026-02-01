@@ -1,0 +1,9 @@
+{
+  "module_name": "kcmp.h",
+  "hash_id": "f63962cb2dd5a30802c766613ae96cae6b70462a75409b9d0e892b9a3d0ce95e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/uapi/linux/kcmp.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_KCMP_H\n#define _UAPI_LINUX_KCMP_H\n\n#include <linux/types.h>\n\n \nenum kcmp_type {\n\tKCMP_FILE,\n\tKCMP_VM,\n\tKCMP_FILES,\n\tKCMP_FS,\n\tKCMP_SIGHAND,\n\tKCMP_IO,\n\tKCMP_SYSVSEM,\n\tKCMP_EPOLL_TFD,\n\n\tKCMP_TYPES,\n};\n\n \nstruct kcmp_epoll_slot {\n\t__u32 efd;\t\t \n\t__u32 tfd;\t\t \n\t__u32 toff;\t\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

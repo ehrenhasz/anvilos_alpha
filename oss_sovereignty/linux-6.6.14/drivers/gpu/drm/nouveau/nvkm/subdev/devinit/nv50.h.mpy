@@ -1,0 +1,9 @@
+{
+  "module_name": "nv50.h",
+  "hash_id": "28f22c8db0ec4123a1bfb4860c1a0c454c96300d01ca0a9af6d23e6b532f944b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/devinit/nv50.h",
+  "human_readable_source": " \n#ifndef __NV50_DEVINIT_H__\n#define __NV50_DEVINIT_H__\n#define nv50_devinit(p) container_of((p), struct nv50_devinit, base)\n#include \"priv.h\"\n\nstruct nv50_devinit {\n\tstruct nvkm_devinit base;\n\tu32 r001540;\n};\n\nint nv50_devinit_new_(const struct nvkm_devinit_func *, struct nvkm_device *, enum nvkm_subdev_type,\n\t\t      int, struct nvkm_devinit **);\nvoid nv50_devinit_preinit(struct nvkm_devinit *);\nvoid nv50_devinit_init(struct nvkm_devinit *);\nint  nv50_devinit_pll_set(struct nvkm_devinit *, u32, u32);\n\nint  gt215_devinit_pll_set(struct nvkm_devinit *, u32, u32);\n\nint  gf100_devinit_ctor(struct nvkm_object *, struct nvkm_object *,\n\t\t\tstruct nvkm_oclass *, void *, u32,\n\t\t\tstruct nvkm_object **);\nint  gf100_devinit_pll_set(struct nvkm_devinit *, u32, u32);\nvoid gf100_devinit_preinit(struct nvkm_devinit *);\n\nvoid  gm107_devinit_disable(struct nvkm_devinit *);\n\nint gm200_devinit_post(struct nvkm_devinit *, bool);\nvoid gm200_devinit_preos(struct nv50_devinit *, bool);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

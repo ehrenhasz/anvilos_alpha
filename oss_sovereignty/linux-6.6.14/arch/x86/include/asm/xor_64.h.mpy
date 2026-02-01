@@ -1,0 +1,9 @@
+{
+  "module_name": "xor_64.h",
+  "hash_id": "d86da132d9829fc8e1d704e844082d54f36c59d99981fb04ace2c4f068f3d8bd",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/xor_64.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_XOR_64_H\n#define _ASM_X86_XOR_64_H\n\nstatic struct xor_block_template xor_block_sse = {\n\t.name = \"generic_sse\",\n\t.do_2 = xor_sse_2,\n\t.do_3 = xor_sse_3,\n\t.do_4 = xor_sse_4,\n\t.do_5 = xor_sse_5,\n};\n\n\n \n#include <asm/xor_avx.h>\n\n \n#undef XOR_TRY_TEMPLATES\n#define XOR_TRY_TEMPLATES\t\t\t\\\ndo {\t\t\t\t\t\t\\\n\tAVX_XOR_SPEED;\t\t\t\t\\\n\txor_speed(&xor_block_sse_pf64);\t\t\\\n\txor_speed(&xor_block_sse);\t\t\\\n} while (0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

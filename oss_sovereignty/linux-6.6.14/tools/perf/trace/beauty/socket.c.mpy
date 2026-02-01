@@ -1,0 +1,9 @@
+{
+  "module_name": "socket.c",
+  "hash_id": "993c9e50b746fefc6490957717723bd3f45c986562e41d8b4e11c76f77f4caed",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/socket.c",
+  "human_readable_source": "\n \n\n#include \"trace/beauty/beauty.h\"\n#include <sys/types.h>\n#include <sys/socket.h>\n\n#include \"trace/beauty/generated/socket.c\"\n\nstatic size_t socket__scnprintf_ipproto(int protocol, char *bf, size_t size, bool show_prefix)\n{\n\tstatic DEFINE_STRARRAY(socket_ipproto, \"IPPROTO_\");\n\n\treturn strarray__scnprintf(&strarray__socket_ipproto, bf, size, \"%d\", show_prefix, protocol);\n}\n\nsize_t syscall_arg__scnprintf_socket_protocol(char *bf, size_t size, struct syscall_arg *arg)\n{\n\tint domain = syscall_arg__val(arg, 0);\n\n\tif (domain == AF_INET || domain == AF_INET6)\n\t\treturn socket__scnprintf_ipproto(arg->val, bf, size, arg->show_string_prefix);\n\n\treturn syscall_arg__scnprintf_int(bf, size, arg);\n}\n\nstatic size_t socket__scnprintf_level(int level, char *bf, size_t size, bool show_prefix)\n{\n#if defined(__alpha__) || defined(__hppa__) || defined(__mips__) || defined(__sparc__)\n\tconst int sol_socket = 0xffff;\n#else\n\tconst int sol_socket = 1;\n#endif\n\tif (level == sol_socket)\n\t\treturn scnprintf(bf, size, \"%sSOCKET\", show_prefix ? \"SOL_\" : \"\");\n\n\treturn strarray__scnprintf(&strarray__socket_level, bf, size, \"%d\", show_prefix, level);\n}\n\nsize_t syscall_arg__scnprintf_socket_level(char *bf, size_t size, struct syscall_arg *arg)\n{\n\treturn socket__scnprintf_level(arg->val, bf, size, arg->show_string_prefix);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

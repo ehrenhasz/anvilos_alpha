@@ -1,0 +1,9 @@
+{
+  "module_name": "xyarray.h",
+  "hash_id": "e6e79d8ea1af1906bc6ad0f0ce2906e813579ee8e391e9daa2bfce7ceaef6a9c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/perf/include/internal/xyarray.h",
+  "human_readable_source": " \n#ifndef __LIBPERF_INTERNAL_XYARRAY_H\n#define __LIBPERF_INTERNAL_XYARRAY_H\n\n#include <linux/compiler.h>\n#include <sys/types.h>\n\nstruct xyarray {\n\tsize_t row_size;\n\tsize_t entry_size;\n\tsize_t entries;\n\tsize_t max_x;\n\tsize_t max_y;\n\tchar contents[] __aligned(8);\n};\n\nstruct xyarray *xyarray__new(int xlen, int ylen, size_t entry_size);\nvoid xyarray__delete(struct xyarray *xy);\nvoid xyarray__reset(struct xyarray *xy);\n\nstatic inline void *__xyarray__entry(struct xyarray *xy, int x, int y)\n{\n\treturn &xy->contents[x * xy->row_size + y * xy->entry_size];\n}\n\nstatic inline void *xyarray__entry(struct xyarray *xy, size_t x, size_t y)\n{\n\tif (x >= xy->max_x || y >= xy->max_y)\n\t\treturn NULL;\n\treturn __xyarray__entry(xy, x, y);\n}\n\nstatic inline int xyarray__max_y(struct xyarray *xy)\n{\n\treturn xy->max_y;\n}\n\nstatic inline int xyarray__max_x(struct xyarray *xy)\n{\n\treturn xy->max_x;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

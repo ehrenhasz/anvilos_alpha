@@ -1,0 +1,9 @@
+{
+  "module_name": "boolconv.cocci",
+  "hash_id": "ef58e0ec6db2ff2f11072d1a53029471aec51fbf17c99d9ae7f724a2a40bf530",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/misc/boolconv.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0-only\n/// Remove unneeded conversion to bool\n///\n//# Relational and logical operators evaluate to bool,\n//# explicit conversion is overly verbose and unneeded.\n//\n// Copyright: (C) 2016 Andrew F. Davis <afd@ti.com>\n\nvirtual patch\nvirtual context\nvirtual org\nvirtual report\n\n//----------------------------------------------------------\n//  For patch mode\n//----------------------------------------------------------\n\n@depends on patch@\nexpression A, B;\nsymbol true, false;\n@@\n\n(\n  A == B\n|\n  A != B\n|\n  A > B\n|\n  A < B\n|\n  A >= B\n|\n  A <= B\n|\n  A && B\n|\n  A || B\n)\n- ? true : false\n\n//----------------------------------------------------------\n//  For context mode\n//----------------------------------------------------------\n\n@r depends on !patch@\nexpression A, B;\nsymbol true, false;\nposition p;\n@@\n\n(\n  A == B\n|\n  A != B\n|\n  A > B\n|\n  A < B\n|\n  A >= B\n|\n  A <= B\n|\n  A && B\n|\n  A || B\n)\n* ? true : false@p\n\n//----------------------------------------------------------\n//  For org mode\n//----------------------------------------------------------\n\n@script:python depends on r&&org@\np << r.p;\n@@\n\nmsg = \"WARNING: conversion to bool not needed here\"\ncoccilib.org.print_todo(p[0], msg)\n\n//----------------------------------------------------------\n//  For report mode\n//----------------------------------------------------------\n\n@script:python depends on r&&report@\np << r.p;\n@@\n\nmsg = \"WARNING: conversion to bool not needed here\"\ncoccilib.report.print_report(p[0], msg)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

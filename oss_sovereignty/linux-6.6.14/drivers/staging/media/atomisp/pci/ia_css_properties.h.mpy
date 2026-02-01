@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_properties.h",
+  "hash_id": "81c2a26887194dc1d05e35cad01648d0005410b7bd27630c130f4ca8e73cecee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/ia_css_properties.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_PROPERTIES_H\n#define __IA_CSS_PROPERTIES_H\n\n \n\n#include <type_support.h>  \n#include <ia_css_types.h>  \n\nstruct ia_css_properties {\n\tint  gdc_coord_one;\n\tbool l1_base_is_index;  \n\tenum ia_css_vamem_type vamem_type;\n};\n\n \nvoid\nia_css_get_properties(struct ia_css_properties *properties);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

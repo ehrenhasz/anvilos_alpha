@@ -1,0 +1,9 @@
+{
+  "module_name": "kdebug.h",
+  "hash_id": "1d074f67696055bc2ac1b9725eb05c008ea19cac61f90ba41948484906c0a23a",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/kdebug.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_KDEBUG_H\n#define _ASM_GENERIC_KDEBUG_H\n\nenum die_val {\n\tDIE_UNUSED,\n\tDIE_OOPS = 1,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

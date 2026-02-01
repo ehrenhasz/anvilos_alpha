@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_wmac_regdef.h",
+  "hash_id": "fcdb7031afdeee3a966c8ff173c79abb20db7fe3fb8b2756eca721bb9bfbb1d1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_wmac_regdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_WMAC_REGDEF_H__\n#define __RTL8712_WMAC_REGDEF_H__\n\n#define NAVCTRL\t\t\t\t(RTL8712_WMAC_ + 0x00)\n#define BWOPMODE\t\t\t(RTL8712_WMAC_ + 0x03)\n#define BACAMCMD\t\t\t(RTL8712_WMAC_ + 0x04)\n#define BACAMCONTENT\t\t\t(RTL8712_WMAC_ + 0x08)\n#define LBDLY\t\t\t\t(RTL8712_WMAC_ + 0x10)\n#define FWDLY\t\t\t\t(RTL8712_WMAC_ + 0x11)\n#define HWPC_RX_CTRL\t\t\t(RTL8712_WMAC_ + 0x18)\n#define MQ\t\t\t\t(RTL8712_WMAC_ + 0x20)\n#define MA\t\t\t\t(RTL8712_WMAC_ + 0x22)\n#define MS\t\t\t\t(RTL8712_WMAC_ + 0x24)\n#define CLM_RESULT\t\t\t(RTL8712_WMAC_ + 0x27)\n#define NHM_RPI_CNT\t\t\t(RTL8712_WMAC_ + 0x28)\n#define RXERR_RPT\t\t\t(RTL8712_WMAC_ + 0x30)\n#define NAV_PROT_LEN\t\t\t(RTL8712_WMAC_ + 0x34)\n#define CFEND_TH\t\t\t(RTL8712_WMAC_ + 0x36)\n#define AMPDU_MIN_SPACE\t\t\t(RTL8712_WMAC_ + 0x37)\n#define\tTXOP_STALL_CTRL\t\t\t(RTL8712_WMAC_ + 0x38)\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

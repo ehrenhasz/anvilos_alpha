@@ -1,0 +1,9 @@
+{
+  "module_name": "pmu.h",
+  "hash_id": "e227fb33952a02896af01fed8a477e95c7d9f84c697b30e4b7bbab1feda84f9a",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/xen/pmu.h",
+  "human_readable_source": " \n#ifndef __XEN_PMU_H\n#define __XEN_PMU_H\n\n#include <xen/interface/xenpmu.h>\n\nextern bool is_xen_pmu;\n\nirqreturn_t xen_pmu_irq_handler(int irq, void *dev_id);\n#ifdef CONFIG_XEN_HAVE_VPMU\nvoid xen_pmu_init(int cpu);\nvoid xen_pmu_finish(int cpu);\n#else\nstatic inline void xen_pmu_init(int cpu) {}\nstatic inline void xen_pmu_finish(int cpu) {}\n#endif\nbool pmu_msr_read(unsigned int msr, uint64_t *val, int *err);\nbool pmu_msr_write(unsigned int msr, uint32_t low, uint32_t high, int *err);\nint pmu_apic_update(uint32_t reg);\nunsigned long long xen_read_pmc(int counter);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

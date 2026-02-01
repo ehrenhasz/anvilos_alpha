@@ -1,0 +1,9 @@
+{
+  "module_name": "freplace_get_constant.c",
+  "hash_id": "aeeb95fce6e1663ff799d81aff4ab4aa7134883fe8615449ccfb5829f99f4df6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/freplace_get_constant.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n\nvolatile __u64 test_get_constant = 0;\nSEC(\"freplace/get_constant\")\nint security_new_get_constant(long val)\n{\n\tif (val != 123)\n\t\treturn 0;\n\ttest_get_constant = 1;\n\treturn test_get_constant;  \n}\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

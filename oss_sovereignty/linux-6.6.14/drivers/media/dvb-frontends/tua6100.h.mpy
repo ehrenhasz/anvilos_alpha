@@ -1,0 +1,9 @@
+{
+  "module_name": "tua6100.h",
+  "hash_id": "ec39cc5de7415bf15c6c85336797d2af9f71e39a990187cfdc1c789bd0c39a95",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/tua6100.h",
+  "human_readable_source": " \n \n\n#ifndef __DVB_TUA6100_H__\n#define __DVB_TUA6100_H__\n\n#include <linux/i2c.h>\n#include <media/dvb_frontend.h>\n\n#if IS_REACHABLE(CONFIG_DVB_TUA6100)\nextern struct dvb_frontend *tua6100_attach(struct dvb_frontend *fe, int addr, struct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend* tua6100_attach(struct dvb_frontend *fe, int addr, struct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

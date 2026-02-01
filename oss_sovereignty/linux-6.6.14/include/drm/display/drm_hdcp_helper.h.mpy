@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_hdcp_helper.h",
+  "hash_id": "53fd8c16615fbbf8df1422039687bd03f294c3d3a477691eb78e98ab6aaea8cf",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/display/drm_hdcp_helper.h",
+  "human_readable_source": " \n \n\n#ifndef _DRM_HDCP_HELPER_H_INCLUDED_\n#define _DRM_HDCP_HELPER_H_INCLUDED_\n\n#include <drm/display/drm_hdcp.h>\n\nstruct drm_device;\nstruct drm_connector;\n\nint drm_hdcp_check_ksvs_revoked(struct drm_device *dev, u8 *ksvs, u32 ksv_count);\nint drm_connector_attach_content_protection_property(struct drm_connector *connector,\n\t\t\t\t\t\t     bool hdcp_content_type);\nvoid drm_hdcp_update_content_protection(struct drm_connector *connector, u64 val);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

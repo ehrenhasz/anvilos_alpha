@@ -1,0 +1,9 @@
+{
+  "module_name": "sysctl.c",
+  "hash_id": "f848bae67024abafd836da82f4bb7c233d9e45df2088d42fc9b609d67270a91f",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfs/sysctl.c",
+  "human_readable_source": "\n \n#include <linux/types.h>\n#include <linux/linkage.h>\n#include <linux/ctype.h>\n#include <linux/fs.h>\n#include <linux/sysctl.h>\n#include <linux/module.h>\n#include <linux/nfs_fs.h>\n\nstatic struct ctl_table_header *nfs_callback_sysctl_table;\n\nstatic struct ctl_table nfs_cb_sysctls[] = {\n\t{\n\t\t.procname\t= \"nfs_mountpoint_timeout\",\n\t\t.data\t\t= &nfs_mountpoint_expiry_timeout,\n\t\t.maxlen\t\t= sizeof(nfs_mountpoint_expiry_timeout),\n\t\t.mode\t\t= 0644,\n\t\t.proc_handler\t= proc_dointvec_jiffies,\n\t},\n\t{\n\t\t.procname\t= \"nfs_congestion_kb\",\n\t\t.data\t\t= &nfs_congestion_kb,\n\t\t.maxlen\t\t= sizeof(nfs_congestion_kb),\n\t\t.mode\t\t= 0644,\n\t\t.proc_handler\t= proc_dointvec,\n\t},\n\t{ }\n};\n\nint nfs_register_sysctl(void)\n{\n\tnfs_callback_sysctl_table = register_sysctl(\"fs/nfs\", nfs_cb_sysctls);\n\tif (nfs_callback_sysctl_table == NULL)\n\t\treturn -ENOMEM;\n\treturn 0;\n}\n\nvoid nfs_unregister_sysctl(void)\n{\n\tunregister_sysctl_table(nfs_callback_sysctl_table);\n\tnfs_callback_sysctl_table = NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

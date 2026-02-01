@@ -1,0 +1,9 @@
+{
+  "module_name": "siginfo.h",
+  "hash_id": "9a49986625d3a5d622694b145864e8ab1b5c04cffdf269458c19ad388505077a",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/siginfo.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SIGINFO_H\n#define _ASM_X86_SIGINFO_H\n\n#ifdef __x86_64__\n# ifdef __ILP32__  \ntypedef long long __kernel_si_clock_t __attribute__((aligned(4)));\n#  define __ARCH_SI_CLOCK_T\t\t__kernel_si_clock_t\n#  define __ARCH_SI_ATTRIBUTES\t\t__attribute__((aligned(8)))\n# endif\n#endif\n\n#include <asm-generic/siginfo.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

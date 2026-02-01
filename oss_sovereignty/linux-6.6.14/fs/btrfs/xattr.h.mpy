@@ -1,0 +1,9 @@
+{
+  "module_name": "xattr.h",
+  "hash_id": "77f398fb429ef2c21920a1b5bc8c23585bef05a7ee628bbb994b4896d6a85a7b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/xattr.h",
+  "human_readable_source": " \n \n\n#ifndef BTRFS_XATTR_H\n#define BTRFS_XATTR_H\n\n#include <linux/xattr.h>\n\nextern const struct xattr_handler *btrfs_xattr_handlers[];\n\nint btrfs_getxattr(struct inode *inode, const char *name,\n\t\tvoid *buffer, size_t size);\nint btrfs_setxattr(struct btrfs_trans_handle *trans, struct inode *inode,\n\t\t   const char *name, const void *value, size_t size, int flags);\nint btrfs_setxattr_trans(struct inode *inode, const char *name,\n\t\t\t const void *value, size_t size, int flags);\nssize_t btrfs_listxattr(struct dentry *dentry, char *buffer, size_t size);\n\nint btrfs_xattr_security_init(struct btrfs_trans_handle *trans,\n\t\t\t\t     struct inode *inode, struct inode *dir,\n\t\t\t\t     const struct qstr *qstr);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

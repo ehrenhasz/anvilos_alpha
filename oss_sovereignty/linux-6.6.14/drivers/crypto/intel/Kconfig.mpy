@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "97b655807ab34a99bc45016b6add653c5f6a7d57d87eb4c3af65e84074ba99cb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nsource \"drivers/crypto/intel/keembay/Kconfig\"\nsource \"drivers/crypto/intel/ixp4xx/Kconfig\"\nsource \"drivers/crypto/intel/qat/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

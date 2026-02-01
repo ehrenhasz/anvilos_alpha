@@ -1,0 +1,9 @@
+{
+  "module_name": "hantro_g2.c",
+  "hash_id": "a3d8cdb7dbd4e4e923438f0988f3332d2a970f40363655879436be3050d8d31d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/verisilicon/hantro_g2.c",
+  "human_readable_source": "\n \n\n#include \"hantro_hw.h\"\n#include \"hantro_g2_regs.h\"\n\nvoid hantro_g2_check_idle(struct hantro_dev *vpu)\n{\n\tint i;\n\n\tfor (i = 0; i < 3; i++) {\n\t\tu32 status;\n\n\t\t \n\t\tstatus = vdpu_read(vpu, G2_REG_INTERRUPT);\n\t\tif (status & G2_REG_INTERRUPT_DEC_E) {\n\t\t\tdev_warn(vpu->dev, \"device still running, aborting\");\n\t\t\tstatus |= G2_REG_INTERRUPT_DEC_ABORT_E | G2_REG_INTERRUPT_DEC_IRQ_DIS;\n\t\t\tvdpu_write(vpu, status, G2_REG_INTERRUPT);\n\t\t}\n\t}\n}\n\nirqreturn_t hantro_g2_irq(int irq, void *dev_id)\n{\n\tstruct hantro_dev *vpu = dev_id;\n\tenum vb2_buffer_state state;\n\tu32 status;\n\n\tstatus = vdpu_read(vpu, G2_REG_INTERRUPT);\n\tstate = (status & G2_REG_INTERRUPT_DEC_RDY_INT) ?\n\t\t VB2_BUF_STATE_DONE : VB2_BUF_STATE_ERROR;\n\n\tvdpu_write(vpu, 0, G2_REG_INTERRUPT);\n\tvdpu_write(vpu, G2_REG_CONFIG_DEC_CLK_GATE_E, G2_REG_CONFIG);\n\n\thantro_irq_done(vpu, state);\n\n\treturn IRQ_HANDLED;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

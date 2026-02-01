@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "eb74263cad81e7d88afdc5af38f3c5b72ee43ee388722c0d5fd6c2720a75bfd7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/Build",
+  "human_readable_source": "perf-y += setup.o\nperf-y += helpline.o\nperf-y += progress.o\nperf-y += util.o\nperf-y += hist.o\nperf-y += stdio/hist.o\n\nCFLAGS_setup.o += -DLIBDIR=\"BUILD_STR($(LIBDIR))\"\n\nperf-$(CONFIG_SLANG) += browser.o\nperf-$(CONFIG_SLANG) += browsers/\nperf-$(CONFIG_SLANG) += tui/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

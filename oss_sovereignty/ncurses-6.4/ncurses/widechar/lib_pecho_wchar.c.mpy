@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_pecho_wchar.c",
+  "hash_id": "1c75aa0618386ea5fa64c4f573495a7ba8bf3e63c7049f819915e3021a759af9",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/widechar/lib_pecho_wchar.c",
+  "human_readable_source": " \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_pecho_wchar.c,v 1.4 2021/10/23 17:07:56 tom Exp $\")\n\nNCURSES_EXPORT(int)\npecho_wchar(WINDOW *pad, const cchar_t *wch)\n{\n    T((T_CALLED(\"pecho_wchar(%p, %s)\"), (void *) pad, _tracech_t(wch)));\n\n    if (pad == 0)\n\treturnCode(ERR);\n\n    if (!IS_PAD(pad))\n\treturnCode(wecho_wchar(pad, wch));\n\n    wadd_wch(pad, wch);\n    prefresh(pad, pad->_pad._pad_y,\n\t     pad->_pad._pad_x,\n\t     pad->_pad._pad_top,\n\t     pad->_pad._pad_left,\n\t     pad->_pad._pad_bottom,\n\t     pad->_pad._pad_right);\n\n    returnCode(OK);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

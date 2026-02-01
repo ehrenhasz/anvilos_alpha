@@ -1,0 +1,9 @@
+{
+  "module_name": "pipeline.json",
+  "hash_id": "3567ed1900b98639b6564fd35288af3f5c1819e18abf9dca34b7885ff2bb9c76",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-x1/pipeline.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"STALL_FRONTEND\"\n    },\n    {\n        \"ArchStdEvent\": \"STALL_BACKEND\"\n    },\n    {\n        \"ArchStdEvent\": \"STALL\"\n    },\n    {\n        \"ArchStdEvent\": \"STALL_SLOT_BACKEND\"\n    },\n    {\n        \"ArchStdEvent\": \"STALL_SLOT_FRONTEND\"\n    },\n    {\n        \"ArchStdEvent\": \"STALL_SLOT\"\n    },\n    {\n        \"ArchStdEvent\": \"STALL_BACKEND_MEM\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

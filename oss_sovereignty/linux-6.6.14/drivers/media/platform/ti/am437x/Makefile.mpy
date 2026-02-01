@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b25b265bf23e376ded76d0c19ba3509036e6e8058d11c08de18aa9c2a5200dff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/ti/am437x/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Makefile for AM437x VPFE driver\n\nobj-$(CONFIG_VIDEO_AM437X_VPFE) += am437x-vpfe.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

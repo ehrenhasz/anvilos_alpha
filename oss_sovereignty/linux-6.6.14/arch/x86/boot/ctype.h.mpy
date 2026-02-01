@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype.h",
+  "hash_id": "a563892dd5275d9bc70a2b0c1da4fd2f058c9df152b527997176dfceab1df289",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/ctype.h",
+  "human_readable_source": " \n#ifndef BOOT_CTYPE_H\n#define BOOT_CTYPE_H\n\nstatic inline int isdigit(int ch)\n{\n\treturn (ch >= '0') && (ch <= '9');\n}\n\nstatic inline int isxdigit(int ch)\n{\n\tif (isdigit(ch))\n\t\treturn true;\n\n\tif ((ch >= 'a') && (ch <= 'f'))\n\t\treturn true;\n\n\treturn (ch >= 'A') && (ch <= 'F');\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

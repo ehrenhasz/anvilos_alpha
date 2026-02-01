@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs-volumes.target.in",
+  "hash_id": "8d4ad63b2a8aeeb3e01361b0cd22440e13b8ebb796f3e313b5c208f0ce04aabe",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/systemd/system/zfs-volumes.target.in",
+  "human_readable_source": "[Unit]\nDescription=ZFS volumes are ready\nAfter=zfs-volume-wait.service\nRequires=zfs-volume-wait.service\n\n[Install]\nWantedBy=zfs.target\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

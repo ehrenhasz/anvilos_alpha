@@ -1,0 +1,9 @@
+{
+  "module_name": "lp8727.h",
+  "hash_id": "db1eede8c0d55679ad83d4d404eff292f7759a57382e3c63d8bd18dbcb5c9ce1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/lp8727.h",
+  "human_readable_source": " \n \n\n#ifndef _LP8727_H\n#define _LP8727_H\n\nenum lp8727_eoc_level {\n\tLP8727_EOC_5P,\n\tLP8727_EOC_10P,\n\tLP8727_EOC_16P,\n\tLP8727_EOC_20P,\n\tLP8727_EOC_25P,\n\tLP8727_EOC_33P,\n\tLP8727_EOC_50P,\n};\n\nenum lp8727_ichg {\n\tLP8727_ICHG_90mA,\n\tLP8727_ICHG_100mA,\n\tLP8727_ICHG_400mA,\n\tLP8727_ICHG_450mA,\n\tLP8727_ICHG_500mA,\n\tLP8727_ICHG_600mA,\n\tLP8727_ICHG_700mA,\n\tLP8727_ICHG_800mA,\n\tLP8727_ICHG_900mA,\n\tLP8727_ICHG_1000mA,\n};\n\n \nstruct lp8727_chg_param {\n\tenum lp8727_eoc_level eoc_level;\n\tenum lp8727_ichg ichg;\n};\n\n \nstruct lp8727_platform_data {\n\tu8 (*get_batt_present)(void);\n\tu16 (*get_batt_level)(void);\n\tu8 (*get_batt_capacity)(void);\n\tu8 (*get_batt_temp)(void);\n\tstruct lp8727_chg_param *ac;\n\tstruct lp8727_chg_param *usb;\n\tunsigned int debounce_msec;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

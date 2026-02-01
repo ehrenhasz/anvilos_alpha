@@ -1,0 +1,9 @@
+{
+  "module_name": "mmp_dma.h",
+  "hash_id": "16f9c12b4dac64089bb7ee8f43683e9d353d578a5e0b9dcb01d40879d979d4d9",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/mmp_dma.h",
+  "human_readable_source": " \n \n\n#ifndef MMP_DMA_H\n#define MMP_DMA_H\n\nstruct dma_slave_map;\n\nstruct mmp_dma_platdata {\n\tint dma_channels;\n\tint nb_requestors;\n\tint slave_map_cnt;\n\tconst struct dma_slave_map *slave_map;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

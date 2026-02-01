@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "aee286794311aaf9c1cc40c8685cdf76689e4c0c50b1e48d4c60486953c90b1a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/controller/mobiveil/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nmenu \"Mobiveil-based PCIe controllers\"\n\tdepends on PCI\n\nconfig PCIE_MOBIVEIL\n\tbool\n\nconfig PCIE_MOBIVEIL_HOST\n\tbool\n\tdepends on PCI_MSI\n\tselect PCIE_MOBIVEIL\n\nconfig PCIE_LAYERSCAPE_GEN4\n\tbool \"Freescale Layerscape Gen4 PCIe controller\"\n\tdepends on ARCH_LAYERSCAPE || COMPILE_TEST\n\tdepends on PCI_MSI\n\tselect PCIE_MOBIVEIL_HOST\n\thelp\n\t  Say Y here if you want PCIe Gen4 controller support on\n\t  Layerscape SoCs.\n\nconfig PCIE_MOBIVEIL_PLAT\n\tbool \"Mobiveil AXI PCIe controller\"\n\tdepends on ARCH_ZYNQMP || COMPILE_TEST\n\tdepends on OF\n\tdepends on PCI_MSI\n\tselect PCIE_MOBIVEIL_HOST\n\thelp\n\t  Say Y here if you want to enable support for the Mobiveil AXI PCIe\n\t  Soft IP. It has up to 8 outbound and inbound windows\n\t  for address translation and it is a PCIe Gen4 IP.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

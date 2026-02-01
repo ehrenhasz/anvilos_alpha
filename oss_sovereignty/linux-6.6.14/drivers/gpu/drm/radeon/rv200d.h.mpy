@@ -1,0 +1,9 @@
+{
+  "module_name": "rv200d.h",
+  "hash_id": "30ea142f2267c8ad54b124007be4b34cfde7f25d837e95cce379b1ecb18355e8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/rv200d.h",
+  "human_readable_source": " \n#ifndef __RV200D_H__\n#define __RV200D_H__\n\n#define R_00015C_AGP_BASE_2                          0x00015C\n#define   S_00015C_AGP_BASE_ADDR_2(x)                  (((x) & 0xF) << 0)\n#define   G_00015C_AGP_BASE_ADDR_2(x)                  (((x) >> 0) & 0xF)\n#define   C_00015C_AGP_BASE_ADDR_2                     0xFFFFFFF0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sched_policy.c",
+  "hash_id": "e178ce6da7dfa0fe09ac1416531eab5f3ea7eb5305520491bd92bc9334ea3f19",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/sched_policy.c",
+  "human_readable_source": "\n#include <sched.h>\n\n \n#define SCHED_POLICY_MASK 0xff\n\n#ifndef SCHED_DEADLINE\n#define SCHED_DEADLINE 6\n#endif\n#ifndef SCHED_RESET_ON_FORK\n#define SCHED_RESET_ON_FORK 0x40000000\n#endif\n\nstatic size_t syscall_arg__scnprintf_sched_policy(char *bf, size_t size,\n\t\t\t\t\t\t  struct syscall_arg *arg)\n{\n\tbool show_prefix = arg->show_string_prefix;\n\tconst char *prefix = \"SCHED_\";\n\tconst char *policies[] = {\n\t\t\"NORMAL\", \"FIFO\", \"RR\", \"BATCH\", \"ISO\", \"IDLE\", \"DEADLINE\",\n\t};\n\tsize_t printed;\n\tint policy = arg->val,\n\t    flags = policy & ~SCHED_POLICY_MASK;\n\n\tpolicy &= SCHED_POLICY_MASK;\n\tif (policy <= SCHED_DEADLINE)\n\t\tprinted = scnprintf(bf, size, \"%s%s\", show_prefix ? prefix : \"\", policies[policy]);\n\telse\n\t\tprinted = scnprintf(bf, size, \"%#x\", policy);\n\n#define\tP_POLICY_FLAG(n) \\\n\tif (flags & SCHED_##n) { \\\n\t\tprinted += scnprintf(bf + printed, size - printed, \"|%s%s\", show_prefix ? prefix : \"\",  #n); \\\n\t\tflags &= ~SCHED_##n; \\\n\t}\n\n\tP_POLICY_FLAG(RESET_ON_FORK);\n#undef P_POLICY_FLAG\n\n\tif (flags)\n\t\tprinted += scnprintf(bf + printed, size - printed, \"|%#x\", flags);\n\n\treturn printed;\n}\n\n#define SCA_SCHED_POLICY syscall_arg__scnprintf_sched_policy\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

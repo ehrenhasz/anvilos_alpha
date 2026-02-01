@@ -1,0 +1,9 @@
+{
+  "module_name": "octeon-wdt-nmi.S",
+  "hash_id": "11c3c764b388a4f8cdd5812c309722c406083506c52d19dabe4aa34c2fc9d81a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/watchdog/octeon-wdt-nmi.S",
+  "human_readable_source": " \n \n#include <asm/asm.h>\n#include <asm/regdef.h>\n\n#define CVMSEG_BASE\t-32768\n#define CVMSEG_SIZE\t6912\n#define SAVE_REG(r)\tsd $r, CVMSEG_BASE + CVMSEG_SIZE - ((32 - r) * 8)($0)\n\n        NESTED(octeon_wdt_nmi_stage2, 0, sp)\n\t.set \tpush\n\t.set \tnoreorder\n\t.set \tnoat\n\t \n\tcache\t1,0($0)\n\t \n\tdmfc0\tk0, $11, 7\n\t \n\tdins\tk0, $0, 0, 6\n\t \n\tori\tk0, k0, 0x1c0 | 54\n\t \n\tdmtc0\tk0, $11, 7\n\t \n\tdmfc0\tk0, $31\n\n\t \n\tSAVE_REG(0)\n\tSAVE_REG(1)\n\tSAVE_REG(2)\n\tSAVE_REG(3)\n\tSAVE_REG(4)\n\tSAVE_REG(5)\n\tSAVE_REG(6)\n\tSAVE_REG(7)\n\tSAVE_REG(8)\n\tSAVE_REG(9)\n\tSAVE_REG(10)\n\tSAVE_REG(11)\n\tSAVE_REG(12)\n\tSAVE_REG(13)\n\tSAVE_REG(14)\n\tSAVE_REG(15)\n\tSAVE_REG(16)\n\tSAVE_REG(17)\n\tSAVE_REG(18)\n\tSAVE_REG(19)\n\tSAVE_REG(20)\n\tSAVE_REG(21)\n\tSAVE_REG(22)\n\tSAVE_REG(23)\n\tSAVE_REG(24)\n\tSAVE_REG(25)\n\tSAVE_REG(26)\n\tSAVE_REG(27)\n\tSAVE_REG(28)\n\tSAVE_REG(29)\n\tSAVE_REG(30)\n\tSAVE_REG(31)\n\t \n\tdli\ta0, CVMSEG_SIZE - (33 * 8)\n1:\tsd\tzero, CVMSEG_BASE(a0)\n\tdaddiu\ta0, a0, -8\n\tbgez\ta0, 1b\n\tnop\n\t \n\tdli\tsp, CVMSEG_BASE + CVMSEG_SIZE - (32 * 8)\n\t \n\tdla\t$25, octeon_wdt_nmi_stage3\n\t \n\tjal\t$25\n\t \n\t move\ta0, sp\n\t \n2:\tb\t2b\n\tnop\n\t.set pop\n\tEND(octeon_wdt_nmi_stage2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

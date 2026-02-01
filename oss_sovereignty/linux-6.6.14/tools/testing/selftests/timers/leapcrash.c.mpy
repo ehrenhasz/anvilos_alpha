@@ -1,0 +1,9 @@
+{
+  "module_name": "leapcrash.c",
+  "hash_id": "7478bfdd67bc66cf48d6b1e4b12074826aaf3b45397ee96b7b93bdf7efc26c03",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/timers/leapcrash.c",
+  "human_readable_source": " \n\n\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <time.h>\n#include <sys/time.h>\n#include <sys/timex.h>\n#include <string.h>\n#include <signal.h>\n#include \"../kselftest.h\"\n\n \nint clear_time_state(void)\n{\n\tstruct timex tx;\n\tint ret;\n\n\t \n\ttx.modes = ADJ_STATUS;\n\ttx.status = STA_PLL;\n\tret = adjtimex(&tx);\n\n\ttx.modes = ADJ_STATUS;\n\ttx.status = 0;\n\tret = adjtimex(&tx);\n\n\treturn ret;\n}\n\n \nvoid handler(int unused)\n{\n\tclear_time_state();\n\texit(0);\n}\n\n\nint main(void)\n{\n\tstruct timex tx;\n\tstruct timespec ts;\n\ttime_t next_leap;\n\tint count = 0;\n\n\tsetbuf(stdout, NULL);\n\n\tsignal(SIGINT, handler);\n\tsignal(SIGKILL, handler);\n\tprintf(\"This runs for a few minutes. Press ctrl-c to stop\\n\");\n\n\tclear_time_state();\n\n\n\t \n\tclock_gettime(CLOCK_REALTIME, &ts);\n\n\t \n\tnext_leap = ts.tv_sec;\n\tnext_leap += 86400 - (next_leap % 86400);\n\n\tfor (count = 0; count < 20; count++) {\n\t\tstruct timeval tv;\n\n\n\t\t \n\t\ttv.tv_sec = next_leap - 2;\n\t\ttv.tv_usec = 0;\n\t\tif (settimeofday(&tv, NULL)) {\n\t\t\tprintf(\"Error: You're likely not running with proper (ie: root) permissions\\n\");\n\t\t\treturn ksft_exit_fail();\n\t\t}\n\t\ttx.modes = 0;\n\t\tadjtimex(&tx);\n\n\t\t \n\t\twhile (tx.time.tv_sec < next_leap + 1) {\n\t\t\t \n\t\t\ttx.modes = ADJ_STATUS;\n\t\t\ttx.status = STA_INS;\n\t\t\tadjtimex(&tx);\n\t\t}\n\t\tclear_time_state();\n\t\tprintf(\".\");\n\t\tfflush(stdout);\n\t}\n\tprintf(\"[OK]\\n\");\n\treturn ksft_exit_pass();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

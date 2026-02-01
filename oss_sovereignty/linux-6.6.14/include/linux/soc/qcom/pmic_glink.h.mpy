@@ -1,0 +1,9 @@
+{
+  "module_name": "pmic_glink.h",
+  "hash_id": "c11e77772b7fa4e44c261954ff6fc37bf19721579ab22e2371e2ba7faa336343",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/qcom/pmic_glink.h",
+  "human_readable_source": " \n \n#ifndef __SOC_QCOM_PMIC_GLINK_H__\n#define __SOC_QCOM_PMIC_GLINK_H__\n\nstruct pmic_glink;\nstruct pmic_glink_client;\n\n#define PMIC_GLINK_OWNER_BATTMGR\t32778\n#define PMIC_GLINK_OWNER_USBC\t\t32779\n#define PMIC_GLINK_OWNER_USBC_PAN\t32780\n\n#define PMIC_GLINK_REQ_RESP\t\t1\n#define PMIC_GLINK_NOTIFY\t\t2\n\nstruct pmic_glink_hdr {\n\t__le32 owner;\n\t__le32 type;\n\t__le32 opcode;\n};\n\nint pmic_glink_send(struct pmic_glink_client *client, void *data, size_t len);\n\nstruct pmic_glink_client *devm_pmic_glink_register_client(struct device *dev,\n\t\t\t\t\t\t\t  unsigned int id,\n\t\t\t\t\t\t\t  void (*cb)(const void *, size_t, void *),\n\t\t\t\t\t\t\t  void (*pdr)(void *, int),\n\t\t\t\t\t\t\t  void *priv);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

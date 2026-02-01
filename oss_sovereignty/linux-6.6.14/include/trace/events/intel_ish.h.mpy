@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_ish.h",
+  "hash_id": "54bf8110137885f0604cb765e6bfd986de157325fe3e809aa7a4d17af04af8f4",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/intel_ish.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM intel_ish\n\n#if !defined(_TRACE_INTEL_ISH_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_INTEL_ISH_H\n\n#include <linux/tracepoint.h>\n\nTRACE_EVENT(ishtp_dump,\n\n\tTP_PROTO(const char *message),\n\n\tTP_ARGS(message),\n\n\tTP_STRUCT__entry(\n\t\t__string(message, message)\n\t),\n\n\tTP_fast_assign(\n\t\t__assign_str(message, message);\n\t),\n\n\tTP_printk(\"%s\", __get_str(message))\n);\n\n\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

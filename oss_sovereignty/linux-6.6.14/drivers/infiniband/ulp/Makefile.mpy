@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "08e96051b1631843f68c9d201ecc033b377f6a82199c178a18ece34ecec728ea",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/ulp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_INFINIBAND_IPOIB)\t\t+= ipoib/\nobj-$(CONFIG_INFINIBAND_SRP)\t\t+= srp/\nobj-$(CONFIG_INFINIBAND_SRPT)\t\t+= srpt/\nobj-$(CONFIG_INFINIBAND_ISER)\t\t+= iser/\nobj-$(CONFIG_INFINIBAND_ISERT)\t\t+= isert/\nobj-$(CONFIG_INFINIBAND_OPA_VNIC)\t+= opa_vnic/\nobj-$(CONFIG_INFINIBAND_RTRS)\t\t+= rtrs/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dvb_usb_common.h",
+  "hash_id": "5630819a226c61527c6b59e85d6e47b2fb192136337b8d1d77eb99fceadd3fad",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/dvb-usb-v2/dvb_usb_common.h",
+  "human_readable_source": " \n \n\n#ifndef DVB_USB_COMMON_H\n#define DVB_USB_COMMON_H\n\n#include \"dvb_usb.h\"\n\n \nextern int usb_urb_initv2(struct usb_data_stream *stream,\n\t\tconst struct usb_data_stream_properties *props);\nextern int usb_urb_exitv2(struct usb_data_stream *stream);\nextern int usb_urb_submitv2(struct usb_data_stream *stream,\n\t\tstruct usb_data_stream_properties *props);\nextern int usb_urb_killv2(struct usb_data_stream *stream);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

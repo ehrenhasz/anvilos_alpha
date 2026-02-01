@@ -1,0 +1,9 @@
+{
+  "module_name": "ad7887.h",
+  "hash_id": "fa0c8f081f43360f024d3391db6e7009c9304dc88b3ede0d4508dcf0a37033d7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/ad7887.h",
+  "human_readable_source": " \n \n#ifndef IIO_ADC_AD7887_H_\n#define IIO_ADC_AD7887_H_\n\n \nstruct ad7887_platform_data {\n\tbool en_dual;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

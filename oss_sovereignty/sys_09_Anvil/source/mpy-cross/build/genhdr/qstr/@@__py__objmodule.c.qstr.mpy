@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__objmodule.c.qstr",
+  "hash_id": "f31d8862607879b598bf4df4d4658cea97e1787d50374f4c9354a85c94badbe0",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__objmodule.c.qstr",
+  "human_readable_source": "Q(__name__)\nQ(__dict__)\nQ(__getattr__)\nQ(__getattr__)\nQ(module)\nQ(__name__)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

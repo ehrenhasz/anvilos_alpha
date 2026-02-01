@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-trace-marker-synthetic.tc",
+  "hash_id": "7a959ef8544ca1f595ec0d9801193e126393421391961b6dc6d8880de3e08ca1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/trigger-trace-marker-synthetic.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: trace_marker trigger - test histogram with synthetic event\n# requires: set_event synthetic_events events/ftrace/print/trigger events/ftrace/print/hist\n# flags:\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\necho \"Test histogram trace_marker to trace_marker latency histogram trigger\"\n\necho 'latency u64 lat' > synthetic_events\necho 'hist:keys=common_pid:ts0=common_timestamp.usecs if buf == \"start\"' > events/ftrace/print/trigger\necho 'hist:keys=common_pid:lat=common_timestamp.usecs-$ts0:onmatch(ftrace.print).latency($lat) if buf == \"end\"' >> events/ftrace/print/trigger\necho 'hist:keys=common_pid,lat:sort=lat' > events/synthetic/latency/trigger\necho -n \"start\" > trace_marker\necho -n \"end\" > trace_marker\n\ncnt=`grep 'hitcount: *1$' events/ftrace/print/hist | wc -l`\n\nif [ $cnt -ne 2 ]; then\n    fail \"hist trace_marker trigger did not trigger correctly\"\nfi\n\ngrep 'hitcount: *1$' events/synthetic/latency/hist > /dev/null || \\\n    fail \"hist trigger did not trigger \"\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

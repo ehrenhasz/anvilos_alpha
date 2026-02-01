@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f6347443c92a00cc8b4191ac8890025b32ac55c2f7914f1ebdfda11621f8c79d",
+  "original_prompt": "Ingested from linux-6.6.14/net/psample/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the psample netlink channel\n#\n\nobj-$(CONFIG_PSAMPLE) += psample.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ni_device_routes.c",
+  "hash_id": "c569a280c446886959ea2538c06d0a2706ae77b3f6c4c480baf35a476c56baa3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/ni_routing/ni_device_routes.c",
+  "human_readable_source": "\n \n\n \n\n#include \"ni_device_routes.h\"\n#include \"ni_device_routes/all.h\"\n\nstruct ni_device_routes *const ni_device_routes_list[] = {\n\t&ni_pxi_6030e_device_routes,\n\t&ni_pci_6070e_device_routes,\n\t&ni_pci_6220_device_routes,\n\t&ni_pci_6221_device_routes,\n\t&ni_pxi_6224_device_routes,\n\t&ni_pxi_6225_device_routes,\n\t&ni_pci_6229_device_routes,\n\t&ni_pci_6251_device_routes,\n\t&ni_pxi_6251_device_routes,\n\t&ni_pxie_6251_device_routes,\n\t&ni_pci_6254_device_routes,\n\t&ni_pci_6259_device_routes,\n\t&ni_pci_6534_device_routes,\n\t&ni_pci_6602_device_routes,\n\t&ni_pci_6713_device_routes,\n\t&ni_pci_6723_device_routes,\n\t&ni_pci_6733_device_routes,\n\t&ni_pxi_6733_device_routes,\n\tNULL,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

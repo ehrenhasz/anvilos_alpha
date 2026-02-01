@@ -1,0 +1,9 @@
+{
+  "module_name": "sum.x",
+  "hash_id": "96950509411f1f0cb97ae72be752dfac6f5a22e8585f9e91b54a423b952f37d8",
+  "original_prompt": "Ingested from coreutils-9.4/man/sum.x",
+  "human_readable_source": "[NAME]\nsum \\- checksum and count the blocks in a file\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

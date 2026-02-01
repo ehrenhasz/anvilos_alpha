@@ -1,0 +1,9 @@
+{
+  "module_name": "oxsemi,ox820.h",
+  "hash_id": "220d1c8002427c0ef68f04185bb58c4e59d30455f3f560273637d6e32ad5eb49",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/oxsemi,ox820.h",
+  "human_readable_source": " \n \n\n#ifndef DT_CLOCK_OXSEMI_OX820_H\n#define DT_CLOCK_OXSEMI_OX820_H\n\n \n#define CLK_820_PLLA\t\t0\n#define CLK_820_PLLB\t\t1\n\n \n#define CLK_820_LEON\t\t2\n#define CLK_820_DMA_SGDMA\t3\n#define CLK_820_CIPHER\t\t4\n#define CLK_820_SD\t\t5\n#define CLK_820_SATA\t\t6\n#define CLK_820_AUDIO\t\t7\n#define CLK_820_USBMPH\t\t8\n#define CLK_820_ETHA\t\t9\n#define CLK_820_PCIEA\t\t10\n#define CLK_820_NAND\t\t11\n#define CLK_820_PCIEB\t\t12\n#define CLK_820_ETHB\t\t13\n#define CLK_820_REF600\t\t14\n#define CLK_820_USBDEV\t\t15\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

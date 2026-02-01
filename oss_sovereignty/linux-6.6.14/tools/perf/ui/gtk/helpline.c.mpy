@@ -1,0 +1,9 @@
+{
+  "module_name": "helpline.c",
+  "hash_id": "6ac90f0a70addf7f062e22bfbffc609906397e615551f948cbe03c874d4a471b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/gtk/helpline.c",
+  "human_readable_source": "\n#include \"gtk.h\"\n#include <stdio.h>\n#include <string.h>\n#include <linux/kernel.h>\n\n#include \"../ui.h\"\n#include \"../helpline.h\"\n\nstatic void gtk_helpline_pop(void)\n{\n\tif (!perf_gtk__is_active_context(pgctx))\n\t\treturn;\n\n\tgtk_statusbar_pop(GTK_STATUSBAR(pgctx->statbar),\n\t\t\t  pgctx->statbar_ctx_id);\n}\n\nstatic void gtk_helpline_push(const char *msg)\n{\n\tif (!perf_gtk__is_active_context(pgctx))\n\t\treturn;\n\n\tgtk_statusbar_push(GTK_STATUSBAR(pgctx->statbar),\n\t\t\t   pgctx->statbar_ctx_id, msg);\n}\n\nstatic int gtk_helpline_show(const char *fmt, va_list ap)\n{\n\tint ret;\n\tchar *ptr;\n\tstatic int backlog;\n\n\tret = vscnprintf(ui_helpline__current + backlog,\n\t\t\t sizeof(ui_helpline__current) - backlog, fmt, ap);\n\tbacklog += ret;\n\n\t \n\tptr = strchr(ui_helpline__current, '\\n');\n\tif (ptr && (ptr - ui_helpline__current) <= backlog) {\n\t\t*ptr = '\\0';\n\t\tui_helpline__puts(ui_helpline__current);\n\t\tbacklog = 0;\n\t}\n\n\treturn ret;\n}\n\nstatic struct ui_helpline gtk_helpline_fns = {\n\t.pop\t= gtk_helpline_pop,\n\t.push\t= gtk_helpline_push,\n\t.show\t= gtk_helpline_show,\n};\n\nvoid perf_gtk__init_helpline(void)\n{\n\thelpline_fns = &gtk_helpline_fns;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

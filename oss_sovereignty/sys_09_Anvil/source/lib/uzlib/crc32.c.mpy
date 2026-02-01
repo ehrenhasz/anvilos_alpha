@@ -1,0 +1,9 @@
+{
+  "module_name": "crc32.c",
+  "hash_id": "072a14eccaf07f5d9869c61a565713437f593511a801234456c24c05b22d184b",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/uzlib/crc32.c",
+  "human_readable_source": " \n\n \n\n#include \"uzlib.h\"\n\nstatic const unsigned int tinf_crc32tab[16] = {\n   0x00000000, 0x1db71064, 0x3b6e20c8, 0x26d930ac, 0x76dc4190,\n   0x6b6b51f4, 0x4db26158, 0x5005713c, 0xedb88320, 0xf00f9344,\n   0xd6d6a3e8, 0xcb61b38c, 0x9b64c2b0, 0x86d3d2d4, 0xa00ae278,\n   0xbdbdf21c\n};\n\n \nuint32_t uzlib_crc32(const void *data, unsigned int length, uint32_t crc)\n{\n   const unsigned char *buf = (const unsigned char *)data;\n   unsigned int i;\n\n   for (i = 0; i < length; ++i)\n   {\n      crc ^= buf[i];\n      crc = tinf_crc32tab[crc & 0x0f] ^ (crc >> 4);\n      crc = tinf_crc32tab[crc & 0x0f] ^ (crc >> 4);\n   }\n\n   \n   return crc ;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

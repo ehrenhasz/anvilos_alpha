@@ -1,0 +1,9 @@
+{
+  "module_name": "r8a7744-cpg-mssr.h",
+  "hash_id": "5bfcc8cf33b56f072257b0f57fcd7662a3439001fd3e2e0d1cb0f6bcde91c927",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/r8a7744-cpg-mssr.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_CLOCK_R8A7744_CPG_MSSR_H__\n#define __DT_BINDINGS_CLOCK_R8A7744_CPG_MSSR_H__\n\n#include <dt-bindings/clock/renesas-cpg-mssr.h>\n\n \n#define R8A7744_CLK_Z\t\t0\n#define R8A7744_CLK_ZG\t\t1\n#define R8A7744_CLK_ZTR\t\t2\n#define R8A7744_CLK_ZTRD2\t3\n#define R8A7744_CLK_ZT\t\t4\n#define R8A7744_CLK_ZX\t\t5\n#define R8A7744_CLK_ZS\t\t6\n#define R8A7744_CLK_HP\t\t7\n#define R8A7744_CLK_B\t\t9\n#define R8A7744_CLK_LB\t\t10\n#define R8A7744_CLK_P\t\t11\n#define R8A7744_CLK_CL\t\t12\n#define R8A7744_CLK_M2\t\t13\n#define R8A7744_CLK_ZB3\t\t15\n#define R8A7744_CLK_ZB3D2\t16\n#define R8A7744_CLK_DDR\t\t17\n#define R8A7744_CLK_SDH\t\t18\n#define R8A7744_CLK_SD0\t\t19\n#define R8A7744_CLK_SD2\t\t20\n#define R8A7744_CLK_SD3\t\t21\n#define R8A7744_CLK_MMC0\t22\n#define R8A7744_CLK_MP\t\t23\n#define R8A7744_CLK_QSPI\t26\n#define R8A7744_CLK_CP\t\t27\n#define R8A7744_CLK_RCAN\t28\n#define R8A7744_CLK_R\t\t29\n#define R8A7744_CLK_OSC\t\t30\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

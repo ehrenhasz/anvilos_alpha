@@ -1,0 +1,9 @@
+{
+  "module_name": "fault-inject-usercopy.h",
+  "hash_id": "73b7f835aae6deace62d64910ffd38f1a16bb4a473eee587c5cddd14712c135e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fault-inject-usercopy.h",
+  "human_readable_source": " \n#ifndef __LINUX_FAULT_INJECT_USERCOPY_H__\n#define __LINUX_FAULT_INJECT_USERCOPY_H__\n\n \n\n#include <linux/types.h>\n\n#ifdef CONFIG_FAULT_INJECTION_USERCOPY\n\nbool should_fail_usercopy(void);\n\n#else\n\nstatic inline bool should_fail_usercopy(void) { return false; }\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "at73c213.h",
+  "hash_id": "95af4fa767e991bb558bb348e1f56b87aac8011f998d14d9b868bb08b0dcef10",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/at73c213.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SPI_AT73C213_H\n#define __LINUX_SPI_AT73C213_H\n\n \nstruct at73c213_board_info {\n\tint\t\tssc_id;\n\tstruct clk\t*dac_clk;\n\tchar\t\tshortname[32];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

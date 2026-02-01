@@ -1,0 +1,9 @@
+{
+  "module_name": "ux500_pcm.h",
+  "hash_id": "5fab01cc1bfff6460ef8fc714d9eb847c3e90956198f745b9bc1f34e2197a45e",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/ux500/ux500_pcm.h",
+  "human_readable_source": " \n \n#ifndef UX500_PCM_H\n#define UX500_PCM_H\n\n#include <asm/page.h>\n\n#include <linux/workqueue.h>\n\nint ux500_pcm_register_platform(struct platform_device *pdev);\nint ux500_pcm_unregister_platform(struct platform_device *pdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

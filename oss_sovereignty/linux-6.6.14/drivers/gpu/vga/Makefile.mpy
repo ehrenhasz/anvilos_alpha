@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "28382b65cfc73b56bc6c154a3193a05cb7d0e19edba468d5079095405f76faed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/vga/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_VGA_SWITCHEROO) += vga_switcheroo.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

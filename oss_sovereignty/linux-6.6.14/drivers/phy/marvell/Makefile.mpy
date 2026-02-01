@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5bd58d0a78c7dfaf94f6a13ad99057cf6434d4fe77ed5cf275da8c2a2702c234",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/marvell/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_ARMADA375_USBCLUSTER_PHY)\t+= phy-armada375-usb2.o\nobj-$(CONFIG_PHY_BERLIN_SATA)\t\t+= phy-berlin-sata.o\nobj-$(CONFIG_PHY_BERLIN_USB)\t\t+= phy-berlin-usb.o\nobj-$(CONFIG_PHY_MMP3_USB)\t\t+= phy-mmp3-usb.o\nobj-$(CONFIG_PHY_MMP3_HSIC)\t\t+= phy-mmp3-hsic.o\nobj-$(CONFIG_PHY_MVEBU_A3700_COMPHY)\t+= phy-mvebu-a3700-comphy.o\nobj-$(CONFIG_PHY_MVEBU_A3700_UTMI)\t+= phy-mvebu-a3700-utmi.o\nobj-$(CONFIG_PHY_MVEBU_A38X_COMPHY)\t+= phy-armada38x-comphy.o\nobj-$(CONFIG_PHY_MVEBU_CP110_COMPHY)\t+= phy-mvebu-cp110-comphy.o\nobj-$(CONFIG_PHY_MVEBU_CP110_UTMI)\t+= phy-mvebu-cp110-utmi.o\nobj-$(CONFIG_PHY_MVEBU_SATA)\t\t+= phy-mvebu-sata.o\nobj-$(CONFIG_PHY_PXA_28NM_HSIC)\t\t+= phy-pxa-28nm-hsic.o\nobj-$(CONFIG_PHY_PXA_28NM_USB2)\t\t+= phy-pxa-28nm-usb2.o\nobj-$(CONFIG_PHY_PXA_USB)\t\t+= phy-pxa-usb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

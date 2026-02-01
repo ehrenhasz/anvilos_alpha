@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0cb5e96e061a05ad766f586d4e2c1c50950eb0df0df5863b0da1cec5f6717c98",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/speed_select_if/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile - Intel Speed Select Interface drivers\n# Copyright (c) 2019, Intel Corporation.\n#\n\nobj-$(CONFIG_INTEL_SPEED_SELECT_INTERFACE) += isst_if_common.o\nobj-$(CONFIG_INTEL_SPEED_SELECT_INTERFACE) += isst_if_mmio.o\nobj-$(CONFIG_INTEL_SPEED_SELECT_INTERFACE) += isst_if_mbox_pci.o\nobj-$(CONFIG_INTEL_SPEED_SELECT_INTERFACE) += isst_if_mbox_msr.o\nobj-$(CONFIG_INTEL_SPEED_SELECT_TPMI) += isst_tpmi_core.o\nobj-$(CONFIG_INTEL_SPEED_SELECT_TPMI) += isst_tpmi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

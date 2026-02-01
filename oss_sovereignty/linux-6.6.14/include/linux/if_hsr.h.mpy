@@ -1,0 +1,9 @@
+{
+  "module_name": "if_hsr.h",
+  "hash_id": "61033b3fe9eaf50948362753149f38a892e8cfe5c5d04e3d8667dd62f9de56fb",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/if_hsr.h",
+  "human_readable_source": " \n#ifndef _LINUX_IF_HSR_H_\n#define _LINUX_IF_HSR_H_\n\n#include <linux/types.h>\n\nstruct net_device;\n\n \nenum hsr_version {\n\tHSR_V0 = 0,\n\tHSR_V1,\n\tPRP_V1,\n};\n\n \nstruct hsr_tag {\n\t__be16\t\tpath_and_LSDU_size;\n\t__be16\t\tsequence_nr;\n\t__be16\t\tencap_proto;\n} __packed;\n\n#define HSR_HLEN\t6\n\n#if IS_ENABLED(CONFIG_HSR)\nextern bool is_hsr_master(struct net_device *dev);\nextern int hsr_get_version(struct net_device *dev, enum hsr_version *ver);\n#else\nstatic inline bool is_hsr_master(struct net_device *dev)\n{\n\treturn false;\n}\nstatic inline int hsr_get_version(struct net_device *dev,\n\t\t\t\t  enum hsr_version *ver)\n{\n\treturn -EINVAL;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

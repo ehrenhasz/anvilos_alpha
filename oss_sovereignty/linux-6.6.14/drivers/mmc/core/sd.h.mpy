@@ -1,0 +1,9 @@
+{
+  "module_name": "sd.h",
+  "hash_id": "b9cdfd9c04e23b659e004bbf709989a55fec54dec03c3d310063bc794bb61802",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/core/sd.h",
+  "human_readable_source": " \n#ifndef _MMC_CORE_SD_H\n#define _MMC_CORE_SD_H\n\n#include <linux/types.h>\n\nextern struct device_type sd_type;\n\nstruct mmc_host;\nstruct mmc_card;\n\nint mmc_sd_get_cid(struct mmc_host *host, u32 ocr, u32 *cid, u32 *rocr);\nint mmc_sd_get_csd(struct mmc_card *card);\nvoid mmc_decode_cid(struct mmc_card *card);\nint mmc_sd_setup_card(struct mmc_host *host, struct mmc_card *card,\n\tbool reinit);\nunsigned mmc_sd_get_max_clock(struct mmc_card *card);\nint mmc_sd_switch_hs(struct mmc_card *card);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

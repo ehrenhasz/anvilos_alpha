@@ -1,0 +1,9 @@
+{
+  "module_name": "lm3639_bl.h",
+  "hash_id": "fb5edbb26227547df4a4b82eb9a7e09606b7fe8d733f5d7b1c74db64b3fefacd",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/lm3639_bl.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_LM3639_H\n#define __LINUX_LM3639_H\n\n#define LM3639_NAME \"lm3639_bl\"\n\nenum lm3639_pwm {\n\tLM3639_PWM_DISABLE = 0x00,\n\tLM3639_PWM_EN_ACTLOW = 0x48,\n\tLM3639_PWM_EN_ACTHIGH = 0x40,\n};\n\nenum lm3639_strobe {\n\tLM3639_STROBE_DISABLE = 0x00,\n\tLM3639_STROBE_EN_ACTLOW = 0x10,\n\tLM3639_STROBE_EN_ACTHIGH = 0x30,\n};\n\nenum lm3639_txpin {\n\tLM3639_TXPIN_DISABLE = 0x00,\n\tLM3639_TXPIN_EN_ACTLOW = 0x04,\n\tLM3639_TXPIN_EN_ACTHIGH = 0x0C,\n};\n\nenum lm3639_fleds {\n\tLM3639_FLED_DIASBLE_ALL = 0x00,\n\tLM3639_FLED_EN_1 = 0x40,\n\tLM3639_FLED_EN_2 = 0x20,\n\tLM3639_FLED_EN_ALL = 0x60,\n};\n\nenum lm3639_bleds {\n\tLM3639_BLED_DIASBLE_ALL = 0x00,\n\tLM3639_BLED_EN_1 = 0x10,\n\tLM3639_BLED_EN_2 = 0x08,\n\tLM3639_BLED_EN_ALL = 0x18,\n};\nenum lm3639_bled_mode {\n\tLM3639_BLED_MODE_EXPONETIAL = 0x00,\n\tLM3639_BLED_MODE_LINEAR = 0x10,\n};\n\nstruct lm3639_platform_data {\n\tunsigned int max_brt_led;\n\tunsigned int init_brt_led;\n\n\t \n\tenum lm3639_pwm pin_pwm;\n\tenum lm3639_strobe pin_strobe;\n\tenum lm3639_txpin pin_tx;\n\n\t \n\tenum lm3639_fleds fled_pins;\n\tenum lm3639_bleds bled_pins;\n\tenum lm3639_bled_mode bled_mode;\n\n\tvoid (*pwm_set_intensity) (int brightness, int max_brightness);\n\tint (*pwm_get_intensity) (void);\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

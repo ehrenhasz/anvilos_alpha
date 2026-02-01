@@ -1,0 +1,9 @@
+{
+  "module_name": "infutil.h",
+  "hash_id": "e7cc03d59e91d2db41597db487fecac47a0a07bda3552e138eaa6741ffb9753f",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zlib_inflate/infutil.h",
+  "human_readable_source": " \n\n \n\n#ifndef _INFUTIL_H\n#define _INFUTIL_H\n\n#include <linux/zlib.h>\n#ifdef CONFIG_ZLIB_DFLTCC\n#include \"../zlib_dfltcc/dfltcc.h\"\n#include <asm/page.h>\n#endif\n\n \n\nstruct inflate_workspace {\n\tstruct inflate_state inflate_state;\n#ifdef CONFIG_ZLIB_DFLTCC\n\tstruct dfltcc_state dfltcc_state;\n\tunsigned char working_window[(1 << MAX_WBITS) + PAGE_SIZE];\n#else\n\tunsigned char working_window[(1 << MAX_WBITS)];\n#endif\n};\n\n#ifdef CONFIG_ZLIB_DFLTCC\n \nstatic_assert(offsetof(struct inflate_workspace, dfltcc_state) % 8 == 0);\n#endif\n\n#define WS(strm) ((struct inflate_workspace *)(strm->workspace))\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

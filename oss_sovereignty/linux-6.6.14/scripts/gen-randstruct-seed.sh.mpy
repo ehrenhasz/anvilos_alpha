@@ -1,0 +1,9 @@
+{
+  "module_name": "gen-randstruct-seed.sh",
+  "hash_id": "b1d35c6787d3484f065604035d70832b1cade39a70be6b996d768fb0d4085379",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/gen-randstruct-seed.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\nSEED=$(od -A n -t x8 -N 32 /dev/urandom | tr -d ' \\n')\necho \"$SEED\" > \"$1\"\nHASH=$(echo -n \"$SEED\" | sha256sum | cut -d\" \" -f1)\necho \"#define RANDSTRUCT_HASHED_SEED \\\"$HASH\\\"\" > \"$2\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

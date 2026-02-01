@@ -1,0 +1,9 @@
+{
+  "module_name": "mkuboot.sh",
+  "hash_id": "89994e6d99bde5f653a74b9f48a4b0a6cdc604a8e4f050890ec96d5e89aa9a32",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/mkuboot.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n#\n# Build U-Boot image when `mkimage' tool is available.\n#\n\nMKIMAGE=$(type -path \"${CROSS_COMPILE}mkimage\")\n\nif [ -z \"${MKIMAGE}\" ]; then\n\tMKIMAGE=$(type -path mkimage)\n\tif [ -z \"${MKIMAGE}\" ]; then\n\t\t# Doesn't exist\n\t\techo '\"mkimage\" command not found - U-Boot images will not be built' >&2\n\t\texit 1;\n\tfi\nfi\n\n# Call \"mkimage\" to create U-Boot image\n${MKIMAGE} \"$@\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

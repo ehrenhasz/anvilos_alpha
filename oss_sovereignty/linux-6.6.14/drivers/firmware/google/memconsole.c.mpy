@@ -1,0 +1,9 @@
+{
+  "module_name": "memconsole.c",
+  "hash_id": "c57a914a9471d3c264b7889c25f5e6b6660d9c8d314f0becbc60e871b38abbe1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/google/memconsole.c",
+  "human_readable_source": "\n \n\n#include <linux/sysfs.h>\n#include <linux/kobject.h>\n#include <linux/module.h>\n\n#include \"memconsole.h\"\n\nstatic ssize_t memconsole_read(struct file *filp, struct kobject *kobp,\n\t\t\t       struct bin_attribute *bin_attr, char *buf,\n\t\t\t       loff_t pos, size_t count)\n{\n\tssize_t (*memconsole_read_func)(char *, loff_t, size_t);\n\n\tmemconsole_read_func = bin_attr->private;\n\tif (WARN_ON_ONCE(!memconsole_read_func))\n\t\treturn -EIO;\n\n\treturn memconsole_read_func(buf, pos, count);\n}\n\nstatic struct bin_attribute memconsole_bin_attr = {\n\t.attr = {.name = \"log\", .mode = 0444},\n\t.read = memconsole_read,\n};\n\nvoid memconsole_setup(ssize_t (*read_func)(char *, loff_t, size_t))\n{\n\tmemconsole_bin_attr.private = read_func;\n}\nEXPORT_SYMBOL(memconsole_setup);\n\nint memconsole_sysfs_init(void)\n{\n\treturn sysfs_create_bin_file(firmware_kobj, &memconsole_bin_attr);\n}\nEXPORT_SYMBOL(memconsole_sysfs_init);\n\nvoid memconsole_exit(void)\n{\n\tsysfs_remove_bin_file(firmware_kobj, &memconsole_bin_attr);\n}\nEXPORT_SYMBOL(memconsole_exit);\n\nMODULE_AUTHOR(\"Google, Inc.\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

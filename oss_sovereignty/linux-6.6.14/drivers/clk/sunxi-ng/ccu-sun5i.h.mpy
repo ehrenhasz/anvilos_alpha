@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu-sun5i.h",
+  "hash_id": "485f9e932d1f018b8f4aefff22db4b19bed537002e706922f2eb4b5bac8d6ba1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu-sun5i.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_SUN5I_H_\n#define _CCU_SUN5I_H_\n\n#include <dt-bindings/clock/sun5i-ccu.h>\n#include <dt-bindings/reset/sun5i-ccu.h>\n\n \n#define CLK_PLL_CORE\t\t2\n#define CLK_PLL_AUDIO_BASE\t3\n#define CLK_PLL_AUDIO\t\t4\n#define CLK_PLL_AUDIO_2X\t5\n#define CLK_PLL_AUDIO_4X\t6\n#define CLK_PLL_AUDIO_8X\t7\n#define CLK_PLL_VIDEO0\t\t8\n\n \n\n#define CLK_PLL_VE\t\t10\n#define CLK_PLL_DDR_BASE\t11\n#define CLK_PLL_DDR\t\t12\n#define CLK_PLL_DDR_OTHER\t13\n#define CLK_PLL_PERIPH\t\t14\n#define CLK_PLL_VIDEO1\t\t15\n\n \n \n\n#define CLK_AXI\t\t\t18\n#define CLK_AHB\t\t\t19\n#define CLK_APB0\t\t20\n#define CLK_APB1\t\t21\n#define CLK_DRAM_AXI\t\t22\n\n \n \n \n \n \n \n \n \n\n#define CLK_TCON_CH1_SCLK\t91\n\n \n\n#define CLK_NUMBER\t\t(CLK_IEP + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

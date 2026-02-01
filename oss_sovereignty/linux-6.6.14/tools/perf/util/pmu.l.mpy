@@ -1,0 +1,9 @@
+{
+  "module_name": "pmu.l",
+  "hash_id": "3783348fc29bc7419c1202060e38bfe81e5d8da11ea76edae593af459b1ba2cf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/pmu.l",
+  "human_readable_source": "%option prefix=\"perf_pmu_\"\n%option reentrant\n%option bison-bridge\n\n%{\n#include <stdlib.h>\n#include <linux/bitops.h>\n#include \"pmu.h\"\n#include \"pmu-bison.h\"\n\nchar *perf_pmu_get_text(yyscan_t yyscanner);\nYYSTYPE *perf_pmu_get_lval(yyscan_t yyscanner);\n\nstatic int value(yyscan_t scanner, int base)\n{\n\tYYSTYPE *yylval = perf_pmu_get_lval(scanner);\n\tchar *text = perf_pmu_get_text(scanner);\n\tlong num;\n\n\terrno = 0;\n\tnum = strtoul(text, NULL, base);\n\tif (errno)\n\t\treturn PP_ERROR;\n\n\tyylval->num = num;\n\treturn PP_VALUE;\n}\n\n%}\n\nnum_dec         [0-9]+\n\n%%\n\n{num_dec}\t{ return value(yyscanner, 10); }\nconfig\t\t{ return PP_CONFIG; }\n-\t\t{ return '-'; }\n:\t\t{ return ':'; }\n,\t\t{ return ','; }\n.\t\t{ ; }\n\\n\t\t{ ; }\n\n%%\n\nint perf_pmu_wrap(void *scanner __maybe_unused)\n{\n\treturn 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

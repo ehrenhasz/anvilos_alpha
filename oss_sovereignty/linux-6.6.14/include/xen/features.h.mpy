@@ -1,0 +1,9 @@
+{
+  "module_name": "features.h",
+  "hash_id": "e4c06c77646ecfe50c040dfc9de1e7fae76e2e590f36dc1f6af3b7ede2a7bfc0",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/features.h",
+  "human_readable_source": " \n \n\n#ifndef __XEN_FEATURES_H__\n#define __XEN_FEATURES_H__\n\n#include <xen/interface/features.h>\n\nvoid xen_setup_features(void);\n\nextern u8 xen_features[XENFEAT_NR_SUBMAPS * 32];\n\nstatic inline int xen_feature(int flag)\n{\n\treturn xen_features[flag];\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

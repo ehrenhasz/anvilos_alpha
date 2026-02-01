@@ -1,0 +1,9 @@
+{
+  "module_name": "net_shared.h",
+  "hash_id": "bcf0d8415631238480dd400a3d366ca8eeb889afbfb5ccde8c0839dd85f6a44e",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/net_shared.h",
+  "human_readable_source": "\n#ifndef _NET_SHARED_H\n#define _NET_SHARED_H\n\n#define AF_INET\t\t2\n#define AF_INET6\t10\n\n#define ETH_ALEN 6\n#define ETH_P_802_3_MIN 0x0600\n#define ETH_P_8021Q 0x8100\n#define ETH_P_8021AD 0x88A8\n#define ETH_P_IP 0x0800\n#define ETH_P_IPV6 0x86DD\n#define ETH_P_ARP 0x0806\n#define IPPROTO_ICMPV6 58\n\n#define TC_ACT_OK\t\t0\n#define TC_ACT_SHOT\t\t2\n\n#define IFNAMSIZ 16\n\n#if defined(__BYTE_ORDER__) && defined(__ORDER_LITTLE_ENDIAN__) && \\\n\t__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__\n#define bpf_ntohs(x)\t\t__builtin_bswap16(x)\n#define bpf_htons(x)\t\t__builtin_bswap16(x)\n#elif defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && \\\n\t__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__\n#define bpf_ntohs(x)\t\t(x)\n#define bpf_htons(x)\t\t(x)\n#else\n# error \"Endianness detection needs to be set up for your compiler?!\"\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

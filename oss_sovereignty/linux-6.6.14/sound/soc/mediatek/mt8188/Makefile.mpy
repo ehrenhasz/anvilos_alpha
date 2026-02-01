@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3b6682a4277cca76362bc63efea50738593eddabd91b81afc62c605f3fef4b70",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/mt8188/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n# platform driver\nsnd-soc-mt8188-afe-objs := \\\n\tmt8188-afe-clk.o \\\n\tmt8188-afe-pcm.o \\\n\tmt8188-audsys-clk.o \\\n\tmt8188-dai-adda.o \\\n\tmt8188-dai-etdm.o \\\n\tmt8188-dai-pcm.o\n\nobj-$(CONFIG_SND_SOC_MT8188) += snd-soc-mt8188-afe.o\n\n# machine driver\nobj-$(CONFIG_SND_SOC_MT8188_MT6359) += mt8188-mt6359.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

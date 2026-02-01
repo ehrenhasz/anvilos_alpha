@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "46195d3388e823d9b00f9ad11cd47f7df31fb379675c828ab778bfa11ca034ee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/lis3lv02d/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# STMicroelectonics LIS3LV02D and similar accelerometers\n#\n\nconfig SENSORS_LIS3_SPI\n\ttristate \"STMicroeletronics LIS3LV02Dx three-axis digital accelerometer (SPI)\"\n\tdepends on !ACPI && SPI_MASTER && INPUT\n\tselect SENSORS_LIS3LV02D\n\thelp\n\t  This driver provides support for the LIS3LV02Dx accelerometer connected\n\t  via SPI. The accelerometer data is readable via\n\t  /sys/devices/platform/lis3lv02d.\n\n\t  This driver also provides an absolute input class device, allowing\n\t  the laptop to act as a pinball machine-esque joystick.\n\n\t  This driver can also be built as modules.  If so, the core module\n\t  will be called lis3lv02d and a specific module for the SPI transport\n\t  is called lis3lv02d_spi.\n\nconfig SENSORS_LIS3_I2C\n\ttristate \"STMicroeletronics LIS3LV02Dx three-axis digital accelerometer (I2C)\"\n\tdepends on I2C && INPUT\n\tselect SENSORS_LIS3LV02D\n\thelp\n\t  This driver provides support for the LIS3LV02Dx accelerometer connected\n\t  via I2C. The accelerometer data is readable via\n\t  /sys/devices/platform/lis3lv02d.\n\n\t  This driver also provides an absolute input class device, allowing\n\t  the device to act as a pinball machine-esque joystick.\n\n\t  This driver can also be built as modules.  If so, the core module\n\t  will be called lis3lv02d and a specific module for the I2C transport\n\t  is called lis3lv02d_i2c.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

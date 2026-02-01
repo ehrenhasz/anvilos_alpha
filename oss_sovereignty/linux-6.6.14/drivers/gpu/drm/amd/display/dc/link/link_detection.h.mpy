@@ -1,0 +1,9 @@
+{
+  "module_name": "link_detection.h",
+  "hash_id": "80d5a6c2018ce9aee26544dd2b97bceaeadf0d29f5cc9952ce2cf991f7e6363a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/link_detection.h",
+  "human_readable_source": " \n\n#ifndef __DC_LINK_DETECTION_H__\n#define __DC_LINK_DETECTION_H__\n#include \"link.h\"\nbool link_detect(struct dc_link *link, enum dc_detect_reason reason);\nbool link_detect_connection_type(struct dc_link *link,\n\t\tenum dc_connection_type *type);\nstruct dc_sink *link_add_remote_sink(\n\t\tstruct dc_link *link,\n\t\tconst uint8_t *edid,\n\t\tint len,\n\t\tstruct dc_sink_init_data *init_data);\nvoid link_remove_remote_sink(struct dc_link *link, struct dc_sink *sink);\nbool link_reset_cur_dp_mst_topology(struct dc_link *link);\nconst struct dc_link_status *link_get_status(const struct dc_link *link);\nbool link_is_hdcp14(struct dc_link *link, enum signal_type signal);\nbool link_is_hdcp22(struct dc_link *link, enum signal_type signal);\nvoid link_clear_dprx_states(struct dc_link *link);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

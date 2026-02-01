@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "42a1b4783e43dc72ac09620077ae2f6a6645b1218b760a82343b4f1b037e3fe8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/most/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nmenuconfig MOST\n\ttristate \"MOST (Media Oriented Systems Transport) support\"\n\tdepends on HAS_DMA && CONFIGFS_FS\n\tdefault n\n\thelp\n\t  Say Y here if you want to enable MOST support.\n\t  This driver needs at least one additional component to enable the\n\t  desired access from userspace (e.g. character devices) and one that\n\t  matches the network controller's hardware interface (e.g. USB).\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called most_core.\n\n\t  If in doubt, say N here.\n\nif MOST\nconfig MOST_USB_HDM\n\ttristate \"USB\"\n\tdepends on USB\n\thelp\n\t  Say Y here if you want to connect via USB to network transceiver.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called most_usb.\n\nconfig MOST_CDEV\n\ttristate \"Cdev\"\n\n\thelp\n\t  Say Y here if you want to commumicate via character devices.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called most_cdev.\n\nconfig MOST_SND\n\ttristate \"Sound\"\n\tdepends on SND\n\tselect SND_PCM\n\thelp\n\t  Say Y here if you want to commumicate via ALSA/sound devices.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called most_sound.\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

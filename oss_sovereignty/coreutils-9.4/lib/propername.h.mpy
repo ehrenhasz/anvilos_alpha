@@ -1,0 +1,9 @@
+{
+  "module_name": "propername.h",
+  "hash_id": "8f10bb831d0c6022fde2b78989456adf1ac26a9aedcb333e990dc3ebd1d82110",
+  "original_prompt": "Ingested from coreutils-9.4/lib/propername.h",
+  "human_readable_source": " \n\n#ifndef _PROPERNAME_H\n#define _PROPERNAME_H\n\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n \nextern const char * proper_name (const char *name)  ;\n\n \nextern const char * proper_name_utf8 (const char *name_ascii,\n                                      const char *name_utf8);\n\n \nextern const char *proper_name_lite (const char *name_ascii,\n                                     const char *name_utf8);\n\n#ifdef __cplusplus\n}\n#endif\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

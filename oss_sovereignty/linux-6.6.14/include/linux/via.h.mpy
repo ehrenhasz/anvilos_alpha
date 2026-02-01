@@ -1,0 +1,9 @@
+{
+  "module_name": "via.h",
+  "hash_id": "fa92cc5a0d251a10b6bf4dbc0f0f621c6e4a4ab915959de996a156456b4e5505",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/via.h",
+  "human_readable_source": " \n \n\n \n#define VIA_FUNCTION_PARPORT_SPP     0x00\n#define VIA_FUNCTION_PARPORT_ECP     0x01\n#define VIA_FUNCTION_PARPORT_EPP     0x02\n#define VIA_FUNCTION_PARPORT_DISABLE 0x03\n#define VIA_FUNCTION_PROBE           0xFF  \n\n \n#define VIA_PARPORT_ECPEPP 0X20\n#define VIA_PARPORT_BIDIR  0x80\n\n \n#define VIA_CONFIG_INDEX 0x3F0\n#define VIA_CONFIG_DATA  0x3F1\n\n \n#define VIA_IRQCONTROL_PARALLEL 0xF0\n \n#define VIA_DMACONTROL_PARALLEL 0x0C\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

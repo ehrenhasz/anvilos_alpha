@@ -1,0 +1,9 @@
+{
+  "module_name": "fc_gs.h",
+  "hash_id": "4dffb5f639fdcad786651afaf72bdc58e1184b4f1c4e024eb34a88d915205f25",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/scsi/fc/fc_gs.h",
+  "human_readable_source": " \n \n\n#ifndef _FC_GS_H_\n#define\t_FC_GS_H_\n\n#include <linux/types.h>\n\n \n\nstruct fc_ct_hdr {\n\t__u8\t\tct_rev;\t\t \n\t__u8\t\tct_in_id[3];\t \n\t__u8\t\tct_fs_type;\t \n\t__u8\t\tct_fs_subtype;\t \n\t__u8\t\tct_options;\n\t__u8\t\t_ct_resvd1;\n\t__be16\t\tct_cmd;\t\t \n\t__be16\t\tct_mr_size;\t \n\t__u8\t\t_ct_resvd2;\n\t__u8\t\tct_reason;\t \n\t__u8\t\tct_explan;\t \n\t__u8\t\tct_vendor;\t \n};\n\n#define\tFC_CT_HDR_LEN\t16\t \n\nenum fc_ct_rev {\n\tFC_CT_REV = 1\t\t \n};\n\n \nenum fc_ct_fs_type {\n\tFC_FST_ALIAS =\t0xf8,\t \n\tFC_FST_MGMT =\t0xfa,\t \n\tFC_FST_TIME =\t0xfb,\t \n\tFC_FST_DIR =\t0xfc,\t \n};\n\n \nenum fc_ct_cmd {\n\tFC_FS_RJT =\t0x8001,\t \n\tFC_FS_ACC =\t0x8002,\t \n};\n\n \nenum fc_ct_reason {\n\tFC_FS_RJT_CMD =\t\t0x01,\t \n\tFC_FS_RJT_VER =\t\t0x02,\t \n\tFC_FS_RJT_LOG =\t\t0x03,\t \n\tFC_FS_RJT_IUSIZ =\t0x04,\t \n\tFC_FS_RJT_BSY =\t\t0x05,\t \n\tFC_FS_RJT_PROTO =\t0x07,\t \n\tFC_FS_RJT_UNABL =\t0x09,\t \n\tFC_FS_RJT_UNSUP =\t0x0b,\t \n};\n\n \nenum fc_ct_explan {\n\tFC_FS_EXP_NONE =\t0x00,\t \n\tFC_FS_EXP_PID =\t\t0x01,\t \n\tFC_FS_EXP_PNAM =\t0x02,\t \n\tFC_FS_EXP_NNAM =\t0x03,\t \n\tFC_FS_EXP_COS =\t\t0x04,\t \n\tFC_FS_EXP_FTNR =\t0x07,\t \n\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

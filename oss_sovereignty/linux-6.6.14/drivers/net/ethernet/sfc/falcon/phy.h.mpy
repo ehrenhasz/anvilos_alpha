@@ -1,0 +1,9 @@
+{
+  "module_name": "phy.h",
+  "hash_id": "892f4601c75078eadeceaa27debf64720caad6eaad6d11657d59685861545cc0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/falcon/phy.h",
+  "human_readable_source": " \n \n\n#ifndef EF4_PHY_H\n#define EF4_PHY_H\n\n \nextern const struct ef4_phy_operations falcon_sfx7101_phy_ops;\n\nvoid tenxpress_set_id_led(struct ef4_nic *efx, enum ef4_led_mode mode);\n\n \nextern const struct ef4_phy_operations falcon_qt202x_phy_ops;\n\n \n#define QUAKE_LED_LINK_INVAL\t(0)\n#define QUAKE_LED_LINK_STAT\t(1)\n#define QUAKE_LED_LINK_ACT\t(2)\n#define QUAKE_LED_LINK_ACTSTAT\t(3)\n#define QUAKE_LED_OFF\t\t(4)\n#define QUAKE_LED_ON\t\t(5)\n#define QUAKE_LED_LINK_INPUT\t(6)\t \n \n#define QUAKE_LED_TXLINK\t(0)\n#define QUAKE_LED_RXLINK\t(8)\n\nvoid falcon_qt202x_set_led(struct ef4_nic *p, int led, int state);\n\n \nextern const struct ef4_phy_operations falcon_txc_phy_ops;\n\n#define TXC_GPIO_DIR_INPUT\t0\n#define TXC_GPIO_DIR_OUTPUT\t1\n\nvoid falcon_txc_set_gpio_dir(struct ef4_nic *efx, int pin, int dir);\nvoid falcon_txc_set_gpio_val(struct ef4_nic *efx, int pin, int val);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

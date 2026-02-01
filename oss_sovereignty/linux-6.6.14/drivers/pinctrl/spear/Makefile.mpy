@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4876836cbcb4fa062ed4b863dcc8d1ae5d6788b30af2a1d92b75fdd2e3c42159",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/spear/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# SPEAr pinmux support\n\nobj-$(CONFIG_PINCTRL_SPEAR_PLGPIO)\t+= pinctrl-plgpio.o\nobj-y\t\t\t\t+= pinctrl-spear.o\nobj-$(CONFIG_PINCTRL_SPEAR3XX)\t+= pinctrl-spear3xx.o\nobj-$(CONFIG_PINCTRL_SPEAR300)\t+= pinctrl-spear300.o\nobj-$(CONFIG_PINCTRL_SPEAR310)\t+= pinctrl-spear310.o\nobj-$(CONFIG_PINCTRL_SPEAR320)\t+= pinctrl-spear320.o\nobj-$(CONFIG_PINCTRL_SPEAR1310)\t+= pinctrl-spear1310.o\nobj-$(CONFIG_PINCTRL_SPEAR1340)\t+= pinctrl-spear1340.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

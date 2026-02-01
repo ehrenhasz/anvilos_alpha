@@ -1,0 +1,9 @@
+{
+  "module_name": "sig.h",
+  "hash_id": "dc2dde9788736d44897d3c32d744787b2aaf3ce199d80333dc474174955b3ba4",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/sig.h",
+  "human_readable_source": " \n\n#ifndef _OPENSOLARIS_SYS_SIG_H_\n#define\t_OPENSOLARIS_SYS_SIG_H_\n\n#ifndef _STANDALONE\n\n#include_next <sys/signal.h>\n#include <sys/param.h>\n#include <sys/lock.h>\n#include <sys/mutex.h>\n#include <sys/proc.h>\n#include <sys/signalvar.h>\n#include <sys/debug.h>\n\n#define\tFORREAL\t\t0\n#define\tJUSTLOOKING\t1\n\nstatic __inline int\nissig(int why)\n{\n\tstruct thread *td = curthread;\n\tstruct proc *p;\n\tint sig;\n\n\tASSERT(why == FORREAL || why == JUSTLOOKING);\n\tif (SIGPENDING(td)) {\n\t\tif (why == JUSTLOOKING)\n\t\t\treturn (1);\n\t\tp = td->td_proc;\n\t\tPROC_LOCK(p);\n\t\tmtx_lock(&p->p_sigacts->ps_mtx);\n\t\tsig = cursig(td);\n\t\tmtx_unlock(&p->p_sigacts->ps_mtx);\n\t\tPROC_UNLOCK(p);\n\t\tif (sig != 0)\n\t\t\treturn (1);\n\t}\n\treturn (0);\n}\n\n#endif  \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

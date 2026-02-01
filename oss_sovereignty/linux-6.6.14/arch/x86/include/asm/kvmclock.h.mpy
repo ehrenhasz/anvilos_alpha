@@ -1,0 +1,9 @@
+{
+  "module_name": "kvmclock.h",
+  "hash_id": "213c50fe8313c1ac3e685c525580ad0f71ace1d79e09b18d28c10c3b36eee2ee",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/kvmclock.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_KVM_CLOCK_H\n#define _ASM_X86_KVM_CLOCK_H\n\n#include <linux/percpu.h>\n\nextern struct clocksource kvm_clock;\n\nDECLARE_PER_CPU(struct pvclock_vsyscall_time_info *, hv_clock_per_cpu);\n\nstatic __always_inline struct pvclock_vcpu_time_info *this_cpu_pvti(void)\n{\n\treturn &this_cpu_read(hv_clock_per_cpu)->pvti;\n}\n\nstatic inline struct pvclock_vsyscall_time_info *this_cpu_hvclock(void)\n{\n\treturn this_cpu_read(hv_clock_per_cpu);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

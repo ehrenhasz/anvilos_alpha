@@ -1,0 +1,9 @@
+{
+  "module_name": "malloca.c",
+  "hash_id": "26600a61d0bfe40ea8795d952fc4d248ed5c6dad36d1fb4b2f3d0094b65afacd",
+  "original_prompt": "Ingested from coreutils-9.4/lib/malloca.c",
+  "human_readable_source": " \n#include \"malloca.h\"\n\n#include <stdckdint.h>\n\n#include \"idx.h\"\n\n \n\n \ntypedef unsigned char small_t;\n \nstatic_assert (2 * sa_alignment_max - 1 <= (small_t) -1);\n\nvoid *\nmmalloca (size_t n)\n{\n#if HAVE_ALLOCA\n   \n  uintptr_t alignment2_mask = 2 * sa_alignment_max - 1;\n  int plus = sizeof (small_t) + alignment2_mask;\n  idx_t nplus;\n  if (!ckd_add (&nplus, n, plus) && !xalloc_oversized (nplus, 1))\n    {\n      char *mem = (char *) malloc (nplus);\n\n      if (mem != NULL)\n        {\n          uintptr_t umem = (uintptr_t)mem, umemplus;\n           \n          ckd_add (&umemplus, umem, sizeof (small_t) + sa_alignment_max - 1);\n          idx_t offset = ((umemplus & ~alignment2_mask)\n                          + sa_alignment_max - umem);\n          void *vp = mem + offset;\n          small_t *p = vp;\n           \n          p[-1] = offset;\n           \n          return p;\n        }\n    }\n   \n  return NULL;\n#else\n# if !MALLOC_0_IS_NONNULL\n  if (n == 0)\n    n = 1;\n# endif\n  return malloc (n);\n#endif\n}\n\n#if HAVE_ALLOCA\nvoid\nfreea (void *p)\n{\n   \n  if ((uintptr_t) p & (sa_alignment_max - 1))\n    {\n       \n      abort ();\n    }\n   \n  if ((uintptr_t) p & sa_alignment_max)\n    {\n      void *mem = (char *) p - ((small_t *) p)[-1];\n      free (mem);\n    }\n}\n#endif\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

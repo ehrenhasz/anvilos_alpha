@@ -1,0 +1,9 @@
+{
+  "module_name": "hash.h",
+  "hash_id": "69358df825ccb28460677403ef0ca530ff098151d573bf7ecc64c955e6f88d1c",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netns/hash.h",
+  "human_readable_source": " \n#ifndef __NET_NS_HASH_H__\n#define __NET_NS_HASH_H__\n\n#include <net/net_namespace.h>\n\nstatic inline u32 net_hash_mix(const struct net *net)\n{\n\treturn net->hash_mix;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "video.rst",
+  "hash_id": "6ed7e532d8cacb6f0a600d38b2715bbe29b1710e66b460fa06ed29bee047f826",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/video.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n\n.. _dvb_video:\n\n#######################\nDigital TV Video Device\n#######################\n\nThe Digital TV video device controls the MPEG2 video decoder of the Digital\nTV hardware. It can be accessed through **/dev/dvb/adapter0/video0**. Data\ntypes and ioctl definitions can be accessed by including\n**linux/dvb/video.h** in your application.\n\nNote that the Digital TV video device only controls decoding of the MPEG video\nstream, not its presentation on the TV or computer screen. On PCs this\nis typically handled by an associated video4linux device, e.g.\n**/dev/video**, which allows scaling and defining output windows.\n\nSome Digital TV cards don't have their own MPEG decoder, which results in the\nomission of the audio and video device as well as the video4linux\ndevice.\n\nThe ioctls that deal with SPUs (sub picture units) and navigation\npackets are only supported on some MPEG decoders made for DVD playback.\n\nThese ioctls were also used by V4L2 to control MPEG decoders implemented\nin V4L2. The use of these ioctls for that purpose has been made obsolete\nand proper V4L2 ioctls or controls have been created to replace that\nfunctionality.\n\n\n.. toctree::\n    :maxdepth: 1\n\n    video_types\n    video_function_calls\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

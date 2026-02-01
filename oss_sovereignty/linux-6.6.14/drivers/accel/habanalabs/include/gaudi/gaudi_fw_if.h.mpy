@@ -1,0 +1,9 @@
+{
+  "module_name": "gaudi_fw_if.h",
+  "hash_id": "ace8202f7bd3d45accf91ba102bbbeab1716754f8a3e873c423ea384aebee606",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/gaudi/gaudi_fw_if.h",
+  "human_readable_source": " \n\n#ifndef GAUDI_FW_IF_H\n#define GAUDI_FW_IF_H\n\n#define GAUDI_EVENT_QUEUE_MSI_IDX\t8\n#define GAUDI_NIC_PORT1_MSI_IDX\t\t10\n#define GAUDI_NIC_PORT3_MSI_IDX\t\t12\n#define GAUDI_NIC_PORT5_MSI_IDX\t\t14\n#define GAUDI_NIC_PORT7_MSI_IDX\t\t16\n#define GAUDI_NIC_PORT9_MSI_IDX\t\t18\n\n#define UBOOT_FW_OFFSET\t\t\t0x100000\t \n#define LINUX_FW_OFFSET\t\t\t0x800000\t \n\n \n#define HBM_TEMP_ADJUST_COEFF\t\t6\n\nenum gaudi_nic_axi_error {\n\tRXB,\n\tRXE,\n\tTXS,\n\tTXE,\n\tQPC_RESP,\n\tNON_AXI_ERR,\n\tTMR,\n};\n\n \nstruct eq_nic_sei_event {\n\t__u8 axi_error_cause;\n\t__u8 id;\n\t__u8 pad[6];\n};\n\n \nstruct gaudi_nic_status {\n\t__u32 port;\n\t__u32 bad_format_cnt;\n\t__u32 responder_out_of_sequence_psn_cnt;\n\t__u32 high_ber_reinit;\n\t__u32 correctable_err_cnt;\n\t__u32 uncorrectable_err_cnt;\n\t__u32 retraining_cnt;\n\t__u8 up;\n\t__u8 pcs_link;\n\t__u8 phy_ready;\n\t__u8 auto_neg;\n\t__u32 timeout_retransmission_cnt;\n\t__u32 high_ber_cnt;\n};\n\nstruct gaudi_cold_rst_data {\n\tunion {\n\t\tstruct {\n\t\t\tu32 spsram_init_done : 1;\n\t\t\tu32 reserved : 31;\n\t\t};\n\t\t__le32 data;\n\t};\n};\n\n#define GAUDI_PLL_FREQ_LOW\t\t200000000  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel_read_file.h",
+  "hash_id": "20983704d74be9af9530ae98a7f02d2c426f9b88bdc666b7b6156ed445c1fc16",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kernel_read_file.h",
+  "human_readable_source": " \n#ifndef _LINUX_KERNEL_READ_FILE_H\n#define _LINUX_KERNEL_READ_FILE_H\n\n#include <linux/file.h>\n#include <linux/types.h>\n\n \n#define __kernel_read_file_id(id) \\\n\tid(UNKNOWN, unknown)\t\t\\\n\tid(FIRMWARE, firmware)\t\t\\\n\tid(MODULE, kernel-module)\t\t\\\n\tid(KEXEC_IMAGE, kexec-image)\t\t\\\n\tid(KEXEC_INITRAMFS, kexec-initramfs)\t\\\n\tid(POLICY, security-policy)\t\t\\\n\tid(X509_CERTIFICATE, x509-certificate)\t\\\n\tid(MAX_ID, )\n\n#define __fid_enumify(ENUM, dummy) READING_ ## ENUM,\n#define __fid_stringify(dummy, str) #str,\n\nenum kernel_read_file_id {\n\t__kernel_read_file_id(__fid_enumify)\n};\n\nstatic const char * const kernel_read_file_str[] = {\n\t__kernel_read_file_id(__fid_stringify)\n};\n\nstatic inline const char *kernel_read_file_id_str(enum kernel_read_file_id id)\n{\n\tif ((unsigned int)id >= READING_MAX_ID)\n\t\treturn kernel_read_file_str[READING_UNKNOWN];\n\n\treturn kernel_read_file_str[id];\n}\n\nssize_t kernel_read_file(struct file *file, loff_t offset,\n\t\t\t void **buf, size_t buf_size,\n\t\t\t size_t *file_size,\n\t\t\t enum kernel_read_file_id id);\nssize_t kernel_read_file_from_path(const char *path, loff_t offset,\n\t\t\t\t   void **buf, size_t buf_size,\n\t\t\t\t   size_t *file_size,\n\t\t\t\t   enum kernel_read_file_id id);\nssize_t kernel_read_file_from_path_initns(const char *path, loff_t offset,\n\t\t\t\t\t  void **buf, size_t buf_size,\n\t\t\t\t\t  size_t *file_size,\n\t\t\t\t\t  enum kernel_read_file_id id);\nssize_t kernel_read_file_from_fd(int fd, loff_t offset,\n\t\t\t\t void **buf, size_t buf_size,\n\t\t\t\t size_t *file_size,\n\t\t\t\t enum kernel_read_file_id id);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

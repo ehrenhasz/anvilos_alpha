@@ -1,0 +1,9 @@
+{
+  "module_name": "nfs.h",
+  "hash_id": "78bcc4e88c6b1b14e452ee780eda3d8e989a01d1a9f73bff7678b6b3b4e42622",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/nfs.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_NFS_H\n#define _LINUX_NFS_H\n\n#include <linux/sunrpc/msg_prot.h>\n#include <linux/string.h>\n#include <linux/crc32.h>\n#include <uapi/linux/nfs.h>\n\n \n#define NFS_MAXFHSIZE\t\t128\nstruct nfs_fh {\n\tunsigned short\t\tsize;\n\tunsigned char\t\tdata[NFS_MAXFHSIZE];\n};\n\n \nstatic inline int nfs_compare_fh(const struct nfs_fh *a, const struct nfs_fh *b)\n{\n\treturn a->size != b->size || memcmp(a->data, b->data, a->size) != 0;\n}\n\nstatic inline void nfs_copy_fh(struct nfs_fh *target, const struct nfs_fh *source)\n{\n\ttarget->size = source->size;\n\tmemcpy(target->data, source->data, source->size);\n}\n\nenum nfs3_stable_how {\n\tNFS_UNSTABLE = 0,\n\tNFS_DATA_SYNC = 1,\n\tNFS_FILE_SYNC = 2,\n\n\t \n\tNFS_INVALID_STABLE_HOW = -1\n};\n\n#ifdef CONFIG_CRC32\n \nstatic inline u32 nfs_fhandle_hash(const struct nfs_fh *fh)\n{\n\treturn ~crc32_le(0xFFFFFFFF, &fh->data[0], fh->size);\n}\n#else  \nstatic inline u32 nfs_fhandle_hash(const struct nfs_fh *fh)\n{\n\treturn 0;\n}\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

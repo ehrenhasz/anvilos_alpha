@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "37086213304cc879644f45cbf7ec170c9e7f24ad238c9f1f9372b5dd254b7e8c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/broadcom/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Broadcom network device drivers.\n#\n\nobj-$(CONFIG_B44) += b44.o\nobj-$(CONFIG_BCM4908_ENET) += bcm4908_enet.o\nobj-$(CONFIG_BCM63XX_ENET) += bcm63xx_enet.o\nobj-$(CONFIG_BCMGENET) += genet/\nobj-$(CONFIG_BNX2) += bnx2.o\nobj-$(CONFIG_CNIC) += cnic.o\nobj-$(CONFIG_BNX2X) += bnx2x/\nobj-$(CONFIG_SB1250_MAC) += sb1250-mac.o\nobj-$(CONFIG_TIGON3) += tg3.o\nobj-$(CONFIG_BGMAC) += bgmac.o\nobj-$(CONFIG_BGMAC_BCMA) += bgmac-bcma.o bgmac-bcma-mdio.o\nobj-$(CONFIG_BGMAC_PLATFORM) += bgmac-platform.o\nobj-$(CONFIG_SYSTEMPORT) += bcmsysport.o\nobj-$(CONFIG_BNXT) += bnxt/\nobj-$(CONFIG_BCMASP) += asp2/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "split.x",
+  "hash_id": "8a28aa28002b260ffa7d4fed115c97706221b222385f56b6c02ba277b1f3742a",
+  "original_prompt": "Ingested from coreutils-9.4/man/split.x",
+  "human_readable_source": "[NAME]\nsplit \\- split a file into pieces\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

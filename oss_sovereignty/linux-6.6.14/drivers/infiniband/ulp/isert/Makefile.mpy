@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a3836b8bd3aad76c4abd4dcb85cc7c4396323fb4b305c8b00792b6284907d0f6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/ulp/isert/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_INFINIBAND_ISERT)\t+= ib_isert.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

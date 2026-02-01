@@ -1,0 +1,9 @@
+{
+  "module_name": "spa_checksum.h",
+  "hash_id": "1c3b9031f67981706428b39807c46d29ac7d8c0d4fe8a1edc6032c5711b62cd6",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/spa_checksum.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SPA_CHECKSUM_H\n#define\t_SPA_CHECKSUM_H\n\n#include <sys/types.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \ntypedef struct zio_cksum {\n\tuint64_t\tzc_word[4];\n} zio_cksum_t;\n\n#define\tZIO_SET_CHECKSUM(zcp, w0, w1, w2, w3)\t\\\n{\t\t\t\t\t\t\\\n\t(zcp)->zc_word[0] = w0;\t\t\t\\\n\t(zcp)->zc_word[1] = w1;\t\t\t\\\n\t(zcp)->zc_word[2] = w2;\t\t\t\\\n\t(zcp)->zc_word[3] = w3;\t\t\t\\\n}\n\n#define\tZIO_CHECKSUM_EQUAL(zc1, zc2) \\\n\t(0 == (((zc1).zc_word[0] - (zc2).zc_word[0]) | \\\n\t((zc1).zc_word[1] - (zc2).zc_word[1]) | \\\n\t((zc1).zc_word[2] - (zc2).zc_word[2]) | \\\n\t((zc1).zc_word[3] - (zc2).zc_word[3])))\n\n#define\tZIO_CHECKSUM_IS_ZERO(zc) \\\n\t(0 == ((zc)->zc_word[0] | (zc)->zc_word[1] | \\\n\t(zc)->zc_word[2] | (zc)->zc_word[3]))\n\n#define\tZIO_CHECKSUM_BSWAP(zcp)\t\t\t\t\t\\\n{\t\t\t\t\t\t\t\t\\\n\t(zcp)->zc_word[0] = BSWAP_64((zcp)->zc_word[0]);\t\\\n\t(zcp)->zc_word[1] = BSWAP_64((zcp)->zc_word[1]);\t\\\n\t(zcp)->zc_word[2] = BSWAP_64((zcp)->zc_word[2]);\t\\\n\t(zcp)->zc_word[3] = BSWAP_64((zcp)->zc_word[3]);\t\\\n}\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

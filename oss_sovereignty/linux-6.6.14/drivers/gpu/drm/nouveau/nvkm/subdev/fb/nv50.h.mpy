@@ -1,0 +1,9 @@
+{
+  "module_name": "nv50.h",
+  "hash_id": "3780932829f11756a9b7d2961c51b3fbe44bda398ddc91ab0a66fab49938f41a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/nv50.h",
+  "human_readable_source": " \n#ifndef __NVKM_FB_NV50_H__\n#define __NVKM_FB_NV50_H__\n#define nv50_fb(p) container_of((p), struct nv50_fb, base)\n#include \"priv.h\"\n\nstruct nv50_fb {\n\tconst struct nv50_fb_func *func;\n\tstruct nvkm_fb base;\n};\n\nstruct nv50_fb_func {\n\tint (*ram_new)(struct nvkm_fb *, struct nvkm_ram **);\n\tu32 (*tags)(struct nvkm_fb *);\n\tu32 trap;\n};\n\nint nv50_fb_new_(const struct nv50_fb_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t struct nvkm_fb **pfb);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ni_route_values.c",
+  "hash_id": "cc5276f82a47a5bbf48cde262de19b1a146b4bc5a8deea8a4b436ed2b2cdabac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/ni_routing/ni_route_values.c",
+  "human_readable_source": "\n \n\n \n\n#include \"ni_route_values.h\"\n#include \"ni_route_values/all.h\"\n\nconst struct family_route_values *const ni_all_route_values[] = {\n\t&ni_660x_route_values,\n\t&ni_eseries_route_values,\n\t&ni_mseries_route_values,\n\tNULL,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

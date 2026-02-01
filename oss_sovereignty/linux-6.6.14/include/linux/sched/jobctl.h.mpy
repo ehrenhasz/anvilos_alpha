@@ -1,0 +1,9 @@
+{
+  "module_name": "jobctl.h",
+  "hash_id": "268e1dac48d51a7b689230737113e6ad392fd9026721a52c5c083a481fe20c97",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/jobctl.h",
+  "human_readable_source": " \n#ifndef _LINUX_SCHED_JOBCTL_H\n#define _LINUX_SCHED_JOBCTL_H\n\n#include <linux/types.h>\n\nstruct task_struct;\n\n \n#define JOBCTL_STOP_SIGMASK\t0xffff\t \n\n#define JOBCTL_STOP_DEQUEUED_BIT 16\t \n#define JOBCTL_STOP_PENDING_BIT\t17\t \n#define JOBCTL_STOP_CONSUME_BIT\t18\t \n#define JOBCTL_TRAP_STOP_BIT\t19\t \n#define JOBCTL_TRAP_NOTIFY_BIT\t20\t \n#define JOBCTL_TRAPPING_BIT\t21\t \n#define JOBCTL_LISTENING_BIT\t22\t \n#define JOBCTL_TRAP_FREEZE_BIT\t23\t \n#define JOBCTL_PTRACE_FROZEN_BIT\t24\t \n\n#define JOBCTL_STOPPED_BIT\t26\t \n#define JOBCTL_TRACED_BIT\t27\t \n\n#define JOBCTL_STOP_DEQUEUED\t(1UL << JOBCTL_STOP_DEQUEUED_BIT)\n#define JOBCTL_STOP_PENDING\t(1UL << JOBCTL_STOP_PENDING_BIT)\n#define JOBCTL_STOP_CONSUME\t(1UL << JOBCTL_STOP_CONSUME_BIT)\n#define JOBCTL_TRAP_STOP\t(1UL << JOBCTL_TRAP_STOP_BIT)\n#define JOBCTL_TRAP_NOTIFY\t(1UL << JOBCTL_TRAP_NOTIFY_BIT)\n#define JOBCTL_TRAPPING\t\t(1UL << JOBCTL_TRAPPING_BIT)\n#define JOBCTL_LISTENING\t(1UL << JOBCTL_LISTENING_BIT)\n#define JOBCTL_TRAP_FREEZE\t(1UL << JOBCTL_TRAP_FREEZE_BIT)\n#define JOBCTL_PTRACE_FROZEN\t(1UL << JOBCTL_PTRACE_FROZEN_BIT)\n\n#define JOBCTL_STOPPED\t\t(1UL << JOBCTL_STOPPED_BIT)\n#define JOBCTL_TRACED\t\t(1UL << JOBCTL_TRACED_BIT)\n\n#define JOBCTL_TRAP_MASK\t(JOBCTL_TRAP_STOP | JOBCTL_TRAP_NOTIFY)\n#define JOBCTL_PENDING_MASK\t(JOBCTL_STOP_PENDING | JOBCTL_TRAP_MASK)\n\nextern bool task_set_jobctl_pending(struct task_struct *task, unsigned long mask);\nextern void task_clear_jobctl_trapping(struct task_struct *task);\nextern void task_clear_jobctl_pending(struct task_struct *task, unsigned long mask);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

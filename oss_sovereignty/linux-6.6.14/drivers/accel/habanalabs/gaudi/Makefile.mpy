@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8fdcca0b8c5a8cdb6490514a898040820d3213c17b2ac014259ec872741ba559",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/gaudi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nHL_GAUDI_FILES := gaudi/gaudi.o gaudi/gaudi_security.o \\\n\tgaudi/gaudi_coresight.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

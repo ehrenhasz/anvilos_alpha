@@ -1,0 +1,9 @@
+{
+  "module_name": "ftell.c",
+  "hash_id": "001a8a2ca7f94766f412a7fca97329a97495d1a7b7bfafeedf5fbf982681c17a",
+  "original_prompt": "Ingested from coreutils-9.4/lib/ftell.c",
+  "human_readable_source": " \n#include <stdio.h>\n\n#include <errno.h>\n#include <limits.h>\n\nlong\nftell (FILE *fp)\n{\n   \n  off_t offset = ftello (fp);\n  if (LONG_MIN <= offset && offset <= LONG_MAX)\n    return   offset;\n  else\n    {\n      errno = EOVERFLOW;\n      return -1;\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

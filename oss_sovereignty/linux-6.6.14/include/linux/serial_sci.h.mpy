@@ -1,0 +1,9 @@
+{
+  "module_name": "serial_sci.h",
+  "hash_id": "5efc3d42cab46f99905f1517510be3f083285a96f9afa0bb44dfa107f7ba1b72",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/serial_sci.h",
+  "human_readable_source": " \n#ifndef __LINUX_SERIAL_SCI_H\n#define __LINUX_SERIAL_SCI_H\n\n#include <linux/bitops.h>\n#include <linux/serial_core.h>\n#include <linux/sh_dma.h>\n\n \n\n \n#define SCSCR_TIE\tBIT(7)\t \n#define SCSCR_RIE\tBIT(6)\t \n#define SCSCR_TE\tBIT(5)\t \n#define SCSCR_RE\tBIT(4)\t \n#define SCSCR_REIE\tBIT(3)\t \n#define SCSCR_TOIE\tBIT(2)\t \n#define SCSCR_CKE1\tBIT(1)\t \n#define SCSCR_CKE0\tBIT(0)\t \n\n\nenum {\n\tSCIx_PROBE_REGTYPE,\n\n\tSCIx_SCI_REGTYPE,\n\tSCIx_IRDA_REGTYPE,\n\tSCIx_SCIFA_REGTYPE,\n\tSCIx_SCIFB_REGTYPE,\n\tSCIx_SH2_SCIF_FIFODATA_REGTYPE,\n\tSCIx_SH3_SCIF_REGTYPE,\n\tSCIx_SH4_SCIF_REGTYPE,\n\tSCIx_SH4_SCIF_BRG_REGTYPE,\n\tSCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,\n\tSCIx_SH4_SCIF_FIFODATA_REGTYPE,\n\tSCIx_SH7705_SCIF_REGTYPE,\n\tSCIx_HSCIF_REGTYPE,\n\tSCIx_RZ_SCIFA_REGTYPE,\n\n\tSCIx_NR_REGTYPES,\n};\n\nstruct plat_sci_port_ops {\n\tvoid (*init_pins)(struct uart_port *, unsigned int cflag);\n};\n\n \nstruct plat_sci_port {\n\tunsigned int\ttype;\t\t\t \n\tupf_t\t\tflags;\t\t\t \n\n\tunsigned int\tsampling_rate;\n\tunsigned int\tscscr;\t\t\t \n\n\t \n\tunsigned char\tregtype;\n\n\tstruct plat_sci_port_ops\t*ops;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

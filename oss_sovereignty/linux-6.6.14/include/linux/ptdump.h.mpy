@@ -1,0 +1,9 @@
+{
+  "module_name": "ptdump.h",
+  "hash_id": "c19733091bca63e9c8a98baaffc343d878a74a3b6a58d953a5b40d1ab38e97a8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ptdump.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_PTDUMP_H\n#define _LINUX_PTDUMP_H\n\n#include <linux/mm_types.h>\n\nstruct ptdump_range {\n\tunsigned long start;\n\tunsigned long end;\n};\n\nstruct ptdump_state {\n\t \n\tvoid (*note_page)(struct ptdump_state *st, unsigned long addr,\n\t\t\t  int level, u64 val);\n\tvoid (*effective_prot)(struct ptdump_state *st, int level, u64 val);\n\tconst struct ptdump_range *range;\n};\n\nvoid ptdump_walk_pgd(struct ptdump_state *st, struct mm_struct *mm, pgd_t *pgd);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

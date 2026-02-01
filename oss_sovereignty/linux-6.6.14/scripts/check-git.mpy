@@ -1,0 +1,9 @@
+{
+  "module_name": "check-git",
+  "hash_id": "110ab6440218168c95a553def8803b9a457b3800d64003c9201d0bbe3c5143e5",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/check-git",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-only\n#\n# succeed if we are in a git repository\n\nsrctree=\"$(dirname $0)/..\"\n\nif ! git -C \"${srctree}\" rev-parse --verify HEAD >/dev/null 2>/dev/null; then\n\texit 1\nfi\n\nif ! test -z $(git -C \"${srctree}\" rev-parse --show-cdup 2>/dev/null); then\n\texit 1\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dynarray_emplace_enlarge.c",
+  "hash_id": "49fbc4010b170d15947c38b7e9cf37069575e572c90ace9a385056b110699ebd",
+  "original_prompt": "Ingested from coreutils-9.4/lib/malloc/dynarray_emplace_enlarge.c",
+  "human_readable_source": " \n      if (element_size < 4)\n        new_allocated = 16;\n      else if (element_size < 8)\n        new_allocated = 8;\n      else\n        new_allocated = 4;\n    }\n  else\n     \n    {\n      new_allocated = list->allocated + list->allocated / 2 + 1;\n      if (new_allocated <= list->allocated)\n        {\n           \n          __set_errno (ENOMEM);\n          return false;\n        }\n    }\n\n  size_t new_size;\n  if (ckd_mul (&new_size, new_allocated, element_size))\n    return false;\n  void *new_array;\n  if (list->array == scratch)\n    {\n       \n      new_array = malloc (new_size);\n      if (new_array != NULL && list->array != NULL)\n        memcpy (new_array, list->array, list->used * element_size);\n    }\n  else\n    new_array = realloc (list->array, new_size);\n  if (new_array == NULL)\n    return false;\n  list->array = new_array;\n  list->allocated = new_allocated;\n  return true;\n}\nlibc_hidden_def (__libc_dynarray_emplace_enlarge)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

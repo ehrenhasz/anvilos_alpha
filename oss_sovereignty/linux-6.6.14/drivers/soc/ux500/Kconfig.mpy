@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "dc7b5a3c74fcb3a6d03f68a8841c35efd3b89d86b780f31870de54b7055a2a95",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/ux500/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig UX500_SOC_ID\n\tbool \"SoC bus for ST-Ericsson ux500\"\n\tdepends on ARCH_U8500 || COMPILE_TEST\n\tdefault ARCH_U8500\n\thelp\n\t  Include support for the SoC bus on the ARM RealView platforms\n\t  providing some sysfs information about the ASIC variant.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

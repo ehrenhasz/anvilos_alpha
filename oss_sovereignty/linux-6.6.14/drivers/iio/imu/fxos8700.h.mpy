@@ -1,0 +1,9 @@
+{
+  "module_name": "fxos8700.h",
+  "hash_id": "8f90573da79de0f16fc2ebdce0b6e2a66e56bac4ad7317a70b6145510d35bcb1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/fxos8700.h",
+  "human_readable_source": " \n#ifndef FXOS8700_H_\n#define FXOS8700_H_\n\nextern const struct regmap_config fxos8700_regmap_config;\n\nint fxos8700_core_probe(struct device *dev, struct regmap *regmap,\n\t\t\tconst char *name, bool use_spi);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

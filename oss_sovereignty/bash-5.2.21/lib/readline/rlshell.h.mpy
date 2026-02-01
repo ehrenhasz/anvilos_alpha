@@ -1,0 +1,9 @@
+{
+  "module_name": "rlshell.h",
+  "hash_id": "3b29cb078529030cf7e2b7d9d2f7f14e0b24b07faf6704ce007a49242261c111",
+  "original_prompt": "Ingested from bash-5.2.21/lib/readline/rlshell.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_RL_SHELL_H_)\n#define _RL_SHELL_H_\n\n#include \"rlstdc.h\"\n\nextern char *sh_single_quote (char *);\nextern void sh_set_lines_and_columns (int, int);\nextern char *sh_get_env_value (const char *);\nextern char *sh_get_home_dir (void);\nextern int sh_unset_nodelay_mode (int);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

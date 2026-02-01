@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a522c9ed4718d03f8f99b9bdb9a079ac7fd6a451cf7570eaa966933cd9240e8e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/nfcmrvl/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NFC_MRVL\n\ttristate\n\thelp\n\t  The core driver to support Marvell NFC devices.\n\n\t  This driver is required if you want to support\n\t  Marvell NFC device 8897.\n\nconfig NFC_MRVL_USB\n\ttristate \"Marvell NFC-over-USB driver\"\n\tdepends on NFC_NCI && USB\n\tselect NFC_MRVL\n\thelp\n\t  Marvell NFC-over-USB driver.\n\n\t  This driver provides support for Marvell NFC-over-USB devices:\n\t  8897.\n\n\t  Say Y here to compile support for Marvell NFC-over-USB driver\n\t  into the kernel or say M to compile it as module.\n\nconfig NFC_MRVL_UART\n\ttristate \"Marvell NFC-over-UART driver\"\n\tdepends on NFC_NCI && NFC_NCI_UART\n\tselect NFC_MRVL\n\thelp\n\t  Marvell NFC-over-UART driver.\n\n\t  This driver provides support for Marvell NFC-over-UART devices\n\n\t  Say Y here to compile support for Marvell NFC-over-UART driver\n\t  into the kernel or say M to compile it as module.\n\nconfig NFC_MRVL_I2C\n\ttristate \"Marvell NFC-over-I2C driver\"\n\tdepends on NFC_MRVL && I2C\n\thelp\n\t  Marvell NFC-over-I2C driver.\n\n\t  This driver provides support for Marvell NFC-over-I2C devices.\n\n\t  Say Y here to compile support for Marvell NFC-over-I2C driver\n\t  into the kernel or say M to compile it as module.\n\nconfig NFC_MRVL_SPI\n\ttristate \"Marvell NFC-over-SPI driver\"\n\tdepends on NFC_MRVL && NFC_NCI_SPI\n\thelp\n\t  Marvell NFC-over-SPI driver.\n\n\t  This driver provides support for Marvell NFC-over-SPI devices.\n\n\t  Say Y here to compile support for Marvell NFC-over-SPI driver\n\t  into the kernel or say M to compile it as module.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

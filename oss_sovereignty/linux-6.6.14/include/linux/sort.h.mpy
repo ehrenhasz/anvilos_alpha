@@ -1,0 +1,9 @@
+{
+  "module_name": "sort.h",
+  "hash_id": "c8a7f38c5344d4c15e2c0d89b725631266abef7719de0a575c94256eda408c97",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sort.h",
+  "human_readable_source": " \n#ifndef _LINUX_SORT_H\n#define _LINUX_SORT_H\n\n#include <linux/types.h>\n\nvoid sort_r(void *base, size_t num, size_t size,\n\t    cmp_r_func_t cmp_func,\n\t    swap_r_func_t swap_func,\n\t    const void *priv);\n\nvoid sort(void *base, size_t num, size_t size,\n\t  cmp_func_t cmp_func,\n\t  swap_func_t swap_func);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

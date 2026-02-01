@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7c3fe70e97018a96684297d5bbf5184b77ebe1dfa7ebe0022651c263b84d61e6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/connector/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nmenuconfig CONNECTOR\n\ttristate \"Connector - unified userspace <-> kernelspace linker\"\n\tdepends on NET\n\thelp\n\t  This is unified userspace <-> kernelspace connector working on top\n\t  of the netlink socket protocol.\n\n\t  Connector support can also be built as a module.  If so, the module\n\t  will be called cn.\n\nif CONNECTOR\n\nconfig PROC_EVENTS\n\tbool \"Report process events to userspace\"\n\tdepends on CONNECTOR=y\n\tdefault y\n\thelp\n\t  Provide a connector that reports process events to userspace. Send\n\t  events such as fork, exec, id change (uid, gid, suid, etc), and exit.\n\nendif # CONNECTOR\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

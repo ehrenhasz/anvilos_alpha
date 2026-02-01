@@ -1,0 +1,9 @@
+{
+  "module_name": "stdarg.h",
+  "hash_id": "ab764a122aa8891e4ff9cad587b60417763a2734297afce56111702017948fd8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/stdarg.h",
+  "human_readable_source": "\n#ifndef _LINUX_STDARG_H\n#define _LINUX_STDARG_H\n\ntypedef __builtin_va_list va_list;\n#define va_start(v, l)\t__builtin_va_start(v, l)\n#define va_end(v)\t__builtin_va_end(v)\n#define va_arg(v, T)\t__builtin_va_arg(v, T)\n#define va_copy(d, s)\t__builtin_va_copy(d, s)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

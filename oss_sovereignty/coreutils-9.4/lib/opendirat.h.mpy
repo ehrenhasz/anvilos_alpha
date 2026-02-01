@@ -1,0 +1,9 @@
+{
+  "module_name": "opendirat.h",
+  "hash_id": "7cacfd80a0758f5f5a009abc7aeaf15ad9a6595b2f40dedfe653a4fcc9d0742a",
+  "original_prompt": "Ingested from coreutils-9.4/lib/opendirat.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <dirent.h>\n\nDIR *opendirat (int, char const *, int, int *)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC (closedir, 1);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

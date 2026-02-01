@@ -1,0 +1,9 @@
+{
+  "module_name": "legacy.c",
+  "hash_id": "274f4bab70a4a19de1f8167a5282f6ee700109ae1e987d6dd1e8c291b2e8be11",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/cpu/mtrr/legacy.c",
+  "human_readable_source": "\n\n#include <linux/types.h>\n#include <linux/slab.h>\n#include <linux/syscore_ops.h>\n#include <asm/cpufeature.h>\n#include <asm/mtrr.h>\n#include <asm/processor.h>\n#include \"mtrr.h\"\n\nvoid mtrr_set_if(void)\n{\n\tswitch (boot_cpu_data.x86_vendor) {\n\tcase X86_VENDOR_AMD:\n\t\t \n\t\tif (cpu_feature_enabled(X86_FEATURE_K6_MTRR))\n\t\t\tmtrr_if = &amd_mtrr_ops;\n\t\tbreak;\n\tcase X86_VENDOR_CENTAUR:\n\t\tif (cpu_feature_enabled(X86_FEATURE_CENTAUR_MCR))\n\t\t\tmtrr_if = &centaur_mtrr_ops;\n\t\tbreak;\n\tcase X86_VENDOR_CYRIX:\n\t\tif (cpu_feature_enabled(X86_FEATURE_CYRIX_ARR))\n\t\t\tmtrr_if = &cyrix_mtrr_ops;\n\t\tbreak;\n\tdefault:\n\t\tbreak;\n\t}\n}\n\n \nstruct mtrr_value {\n\tmtrr_type\tltype;\n\tunsigned long\tlbase;\n\tunsigned long\tlsize;\n};\n\nstatic struct mtrr_value *mtrr_value;\n\nstatic int mtrr_save(void)\n{\n\tint i;\n\n\tif (!mtrr_value)\n\t\treturn -ENOMEM;\n\n\tfor (i = 0; i < num_var_ranges; i++) {\n\t\tmtrr_if->get(i, &mtrr_value[i].lbase,\n\t\t\t\t&mtrr_value[i].lsize,\n\t\t\t\t&mtrr_value[i].ltype);\n\t}\n\treturn 0;\n}\n\nstatic void mtrr_restore(void)\n{\n\tint i;\n\n\tfor (i = 0; i < num_var_ranges; i++) {\n\t\tif (mtrr_value[i].lsize) {\n\t\t\tmtrr_if->set(i, mtrr_value[i].lbase,\n\t\t\t\t     mtrr_value[i].lsize,\n\t\t\t\t     mtrr_value[i].ltype);\n\t\t}\n\t}\n}\n\nstatic struct syscore_ops mtrr_syscore_ops = {\n\t.suspend\t= mtrr_save,\n\t.resume\t\t= mtrr_restore,\n};\n\nvoid mtrr_register_syscore(void)\n{\n\tmtrr_value = kcalloc(num_var_ranges, sizeof(*mtrr_value), GFP_KERNEL);\n\n\t \n\tregister_syscore_ops(&mtrr_syscore_ops);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

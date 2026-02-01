@@ -1,0 +1,9 @@
+{
+  "module_name": "codeset.m4",
+  "hash_id": "8f21cfc6182faab80cf75cb3191d78448e752f508a350e8e599fe1f8c6060d81",
+  "original_prompt": "Ingested from coreutils-9.4/m4/codeset.m4",
+  "human_readable_source": "# codeset.m4 serial 5 (gettext-0.18.2)\ndnl Copyright (C) 2000-2002, 2006, 2008-2014, 2016, 2019-2023 Free Software\ndnl Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl From Bruno Haible.\n\nAC_DEFUN([AM_LANGINFO_CODESET],\n[\n  AC_CACHE_CHECK([for nl_langinfo and CODESET], [am_cv_langinfo_codeset],\n    [AC_LINK_IFELSE(\n       [AC_LANG_PROGRAM(\n          [[#include <langinfo.h>]],\n          [[char* cs = nl_langinfo(CODESET); return !cs;]])],\n       [am_cv_langinfo_codeset=yes],\n       [am_cv_langinfo_codeset=no])\n    ])\n  if test $am_cv_langinfo_codeset = yes; then\n    AC_DEFINE([HAVE_LANGINFO_CODESET], [1],\n      [Define if you have <langinfo.h> and nl_langinfo(CODESET).])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

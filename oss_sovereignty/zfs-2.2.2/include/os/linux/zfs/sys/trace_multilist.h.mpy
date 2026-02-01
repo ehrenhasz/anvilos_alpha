@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_multilist.h",
+  "hash_id": "776d9c63c3f817f7d0bc28b82d503408fce30ccc60bf635a15e10da4aeaa5bb8",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/zfs/sys/trace_multilist.h",
+  "human_readable_source": " \n\n#if defined(_KERNEL)\n#if defined(HAVE_DECLARE_EVENT_CLASS)\n\n#undef TRACE_SYSTEM\n#define\tTRACE_SYSTEM zfs\n\n#undef TRACE_SYSTEM_VAR\n#define\tTRACE_SYSTEM_VAR zfs_multilist\n\n#if !defined(_TRACE_MULTILIST_H) || defined(TRACE_HEADER_MULTI_READ)\n#define\t_TRACE_MULTILIST_H\n\n#include <linux/tracepoint.h>\n#include <sys/types.h>\n\n \n \nDECLARE_EVENT_CLASS(zfs_multilist_insert_remove_class,\n\tTP_PROTO(multilist_t *ml, unsigned sublist_idx, void *obj),\n\tTP_ARGS(ml, sublist_idx, obj),\n\tTP_STRUCT__entry(\n\t    __field(size_t,\t\tml_offset)\n\t    __field(uint64_t,\t\tml_num_sublists)\n\n\t    __field(unsigned int,\tsublist_idx)\n\t),\n\tTP_fast_assign(\n\t    __entry->ml_offset\t\t= ml->ml_offset;\n\t    __entry->ml_num_sublists\t= ml->ml_num_sublists;\n\n\t    __entry->sublist_idx\t= sublist_idx;\n\t),\n\tTP_printk(\"ml { offset %ld numsublists %llu sublistidx %u } \",\n\t    __entry->ml_offset, __entry->ml_num_sublists, __entry->sublist_idx)\n);\n \n\n#define\tDEFINE_MULTILIST_INSERT_REMOVE_EVENT(name) \\\nDEFINE_EVENT(zfs_multilist_insert_remove_class, name, \\\n    TP_PROTO(multilist_t *ml, unsigned int sublist_idx, void *obj), \\\n    TP_ARGS(ml, sublist_idx, obj))\nDEFINE_MULTILIST_INSERT_REMOVE_EVENT(zfs_multilist__insert);\nDEFINE_MULTILIST_INSERT_REMOVE_EVENT(zfs_multilist__remove);\n\n#endif  \n\n#undef TRACE_INCLUDE_PATH\n#undef TRACE_INCLUDE_FILE\n#define\tTRACE_INCLUDE_PATH sys\n#define\tTRACE_INCLUDE_FILE trace_multilist\n#include <trace/define_trace.h>\n\n#else\n\nDEFINE_DTRACE_PROBE3(multilist__insert);\nDEFINE_DTRACE_PROBE3(multilist__remove);\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

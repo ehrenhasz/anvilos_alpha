@@ -1,0 +1,9 @@
+{
+  "module_name": "test_ksyms_module.c",
+  "hash_id": "a9be271e8bc2e6c3ec30c1be99860cdd9c69aacebcac4318f8b6303f69d0ffc4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_ksyms_module.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n\n#define X_0(x)\n#define X_1(x) x X_0(x)\n#define X_2(x) x X_1(x)\n#define X_3(x) x X_2(x)\n#define X_4(x) x X_3(x)\n#define X_5(x) x X_4(x)\n#define X_6(x) x X_5(x)\n#define X_7(x) x X_6(x)\n#define X_8(x) x X_7(x)\n#define X_9(x) x X_8(x)\n#define X_10(x) x X_9(x)\n#define REPEAT_256(Y) X_2(X_10(X_10(Y))) X_5(X_10(Y)) X_6(Y)\n\nextern const int bpf_testmod_ksym_percpu __ksym;\nextern void bpf_testmod_test_mod_kfunc(int i) __ksym;\nextern void bpf_testmod_invalid_mod_kfunc(void) __ksym __weak;\n\nint out_bpf_testmod_ksym = 0;\nconst volatile int x = 0;\n\nSEC(\"tc\")\nint load(struct __sk_buff *skb)\n{\n\t \n\tif (x)\n\t\tbpf_testmod_invalid_mod_kfunc();\n\tbpf_testmod_test_mod_kfunc(42);\n\tout_bpf_testmod_ksym = *(int *)bpf_this_cpu_ptr(&bpf_testmod_ksym_percpu);\n\treturn 0;\n}\n\nSEC(\"tc\")\nint load_256(struct __sk_buff *skb)\n{\n\t \n\tREPEAT_256(bpf_testmod_test_mod_kfunc(42););\n\tbpf_testmod_test_mod_kfunc(42);\n\treturn 0;\n}\n\nchar LICENSE[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

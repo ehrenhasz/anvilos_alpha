@@ -1,0 +1,9 @@
+{
+  "module_name": "limits.h",
+  "hash_id": "caa5efa193e885922d3f5f1e1d67dc3fe852b8948a9f6383d9c1cebee29f1b29",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/include/limits.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_ZSTD_LIMITS_H\n#define\t_ZSTD_LIMITS_H\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n#ifdef _KERNEL\n\n#if defined(__FreeBSD__)\n#include <sys/limits.h>\n#elif defined(__linux__)\n#include <linux/limits.h>\n#include <linux/kernel.h>\n#else\n#error \"Unsupported platform\"\n#endif\n\n#else  \n#include_next <limits.h>\n#endif  \n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

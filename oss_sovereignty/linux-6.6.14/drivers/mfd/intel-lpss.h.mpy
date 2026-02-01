@@ -1,0 +1,9 @@
+{
+  "module_name": "intel-lpss.h",
+  "hash_id": "60a0880c0ff88cf1a7b38bc617676a16b21c58b78491426ef98274356f656d89",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/intel-lpss.h",
+  "human_readable_source": " \n \n\n#ifndef __MFD_INTEL_LPSS_H\n#define __MFD_INTEL_LPSS_H\n\n#include <linux/pm.h>\n\nstruct device;\nstruct resource;\nstruct software_node;\n\nstruct intel_lpss_platform_info {\n\tstruct resource *mem;\n\tbool ignore_resource_conflicts;\n\tint irq;\n\tunsigned long clk_rate;\n\tconst char *clk_con_id;\n\tconst struct software_node *swnode;\n};\n\nint intel_lpss_probe(struct device *dev,\n\t\t     const struct intel_lpss_platform_info *info);\nvoid intel_lpss_remove(struct device *dev);\n\n#ifdef CONFIG_PM\nint intel_lpss_prepare(struct device *dev);\nint intel_lpss_suspend(struct device *dev);\nint intel_lpss_resume(struct device *dev);\n\n#ifdef CONFIG_PM_SLEEP\n#define INTEL_LPSS_SLEEP_PM_OPS\t\t\t\\\n\t.prepare = intel_lpss_prepare,\t\t\\\n\tSET_LATE_SYSTEM_SLEEP_PM_OPS(intel_lpss_suspend, intel_lpss_resume)\n#else\n#define INTEL_LPSS_SLEEP_PM_OPS\n#endif\n\n#define INTEL_LPSS_RUNTIME_PM_OPS\t\t\\\n\t.runtime_suspend = intel_lpss_suspend,\t\\\n\t.runtime_resume = intel_lpss_resume,\n\n#else  \n#define INTEL_LPSS_SLEEP_PM_OPS\n#define INTEL_LPSS_RUNTIME_PM_OPS\n#endif  \n\n#define INTEL_LPSS_PM_OPS(name)\t\t\t\\\nconst struct dev_pm_ops name = {\t\t\\\n\tINTEL_LPSS_SLEEP_PM_OPS\t\t\t\\\n\tINTEL_LPSS_RUNTIME_PM_OPS\t\t\\\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

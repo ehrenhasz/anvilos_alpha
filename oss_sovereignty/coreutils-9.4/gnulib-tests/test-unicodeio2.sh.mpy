@@ -1,0 +1,9 @@
+{
+  "module_name": "test-unicodeio2.sh",
+  "hash_id": "a44fb7370d7bb5d76ca7bfd5ad4cf7131364e0c8bcee763ab040501411c1b03b",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-unicodeio2.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test whether a specific UTF-8 locale is installed.\n: \"${LOCALE_FR_UTF8=fr_FR.UTF-8}\"\nif test $LOCALE_FR_UTF8 = none; then\n  if test -f /usr/bin/localedef; then\n    echo \"Skipping test: no french Unicode locale is installed\"\n  else\n    echo \"Skipping test: no french Unicode locale is supported\"\n  fi\n  exit 77\nfi\n\nLC_ALL=$LOCALE_FR_UTF8 \\\n${CHECKER} ./test-unicodeio${EXEEXT} 2\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

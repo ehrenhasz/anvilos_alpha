@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_repr.h",
+  "hash_id": "dbefcb3d81e4b347349f8efaa194f445a8db2305ed9a7dd7aa6cd1af82a869de",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_repr.h",
+  "human_readable_source": " \n \n\n#ifndef _ICE_REPR_H_\n#define _ICE_REPR_H_\n\n#include <net/dst_metadata.h>\n\nstruct ice_repr {\n\tstruct ice_vsi *src_vsi;\n\tstruct ice_vf *vf;\n\tstruct ice_q_vector *q_vector;\n\tstruct net_device *netdev;\n\tstruct metadata_dst *dst;\n\tstruct ice_esw_br_port *br_port;\n#ifdef CONFIG_ICE_SWITCHDEV\n\t \n\tstruct ice_rule_query_data sp_rule;\n#endif\n};\n\nint ice_repr_add_for_all_vfs(struct ice_pf *pf);\nvoid ice_repr_rem_from_all_vfs(struct ice_pf *pf);\n\nvoid ice_repr_start_tx_queues(struct ice_repr *repr);\nvoid ice_repr_stop_tx_queues(struct ice_repr *repr);\n\nvoid ice_repr_set_traffic_vsi(struct ice_repr *repr, struct ice_vsi *vsi);\n\nstruct ice_repr *ice_netdev_to_repr(struct net_device *netdev);\nbool ice_is_port_repr_netdev(const struct net_device *netdev);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

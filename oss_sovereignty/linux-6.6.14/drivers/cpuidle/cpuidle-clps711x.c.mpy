@@ -1,0 +1,9 @@
+{
+  "module_name": "cpuidle-clps711x.c",
+  "hash_id": "6c6342e72bcc702939addfaffd6365fe0383042c0b7ce2a2280a811e347adfed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpuidle/cpuidle-clps711x.c",
+  "human_readable_source": "\n \n\n#include <linux/cpuidle.h>\n#include <linux/err.h>\n#include <linux/io.h>\n#include <linux/init.h>\n#include <linux/platform_device.h>\n\n#define CLPS711X_CPUIDLE_NAME\t\"clps711x-cpuidle\"\n\nstatic void __iomem *clps711x_halt;\n\nstatic int clps711x_cpuidle_halt(struct cpuidle_device *dev,\n\t\t\t\t struct cpuidle_driver *drv, int index)\n{\n\twritel(0xaa, clps711x_halt);\n\n\treturn index;\n}\n\nstatic struct cpuidle_driver clps711x_idle_driver = {\n\t.name\t\t= CLPS711X_CPUIDLE_NAME,\n\t.owner\t\t= THIS_MODULE,\n\t.states[0]\t= {\n\t\t.name\t\t= \"HALT\",\n\t\t.desc\t\t= \"CLPS711X HALT\",\n\t\t.enter\t\t= clps711x_cpuidle_halt,\n\t\t.exit_latency\t= 1,\n\t},\n\t.state_count\t= 1,\n};\n\nstatic int __init clps711x_cpuidle_probe(struct platform_device *pdev)\n{\n\tclps711x_halt = devm_platform_ioremap_resource(pdev, 0);\n\tif (IS_ERR(clps711x_halt))\n\t\treturn PTR_ERR(clps711x_halt);\n\n\treturn cpuidle_register(&clps711x_idle_driver, NULL);\n}\n\nstatic struct platform_driver clps711x_cpuidle_driver = {\n\t.driver\t= {\n\t\t.name\t= CLPS711X_CPUIDLE_NAME,\n\t},\n};\nbuiltin_platform_driver_probe(clps711x_cpuidle_driver, clps711x_cpuidle_probe);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

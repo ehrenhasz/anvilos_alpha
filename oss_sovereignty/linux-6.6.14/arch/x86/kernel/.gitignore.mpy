@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "322ea01bcabfd8c6e84ebe8d6f8a2e2b5e37efcd3d0beb1eefed6540e3a52754",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nvsyscall.lds\nvsyscall_32.lds\nvmlinux.lds\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "leds-lp55xx.h",
+  "hash_id": "7edeb4b2a72d3efdf31cdad8753bf9b0f47d80f7e7c3a0d2e96d6101f01326ac",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/leds/leds-lp55xx.h",
+  "human_readable_source": " \n#ifndef _DT_BINDINGS_LEDS_LP55XX_H\n#define _DT_BINDINGS_LEDS_LP55XX_H\n\n#define LP55XX_CP_OFF\t\t0\n#define LP55XX_CP_BYPASS\t1\n#define LP55XX_CP_BOOST\t\t2\n#define LP55XX_CP_AUTO\t\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

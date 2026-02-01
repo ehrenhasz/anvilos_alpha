@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-filter.tc",
+  "hash_id": "18f45aa8e4cf0e603e2962d7dfb43bfecc6ec18b9bb107bb3464e3baae9c635e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/trigger-filter.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event trigger - test trigger filter\n# requires: set_event events/sched/sched_process_fork/trigger\n# flags: instance\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\necho \"Test trigger filter\"\necho 1 > tracing_on\necho 'traceoff if child_pid == 0' > events/sched/sched_process_fork/trigger\n( echo \"forked\")\nif [ `cat tracing_on` -ne 1 ]; then\n    fail \"traceoff trigger on sched_process_fork did not work\"\nfi\n\nreset_trigger\n\necho \"Test semantic error for trigger filter\"\n! echo 'traceoff if a' > events/sched/sched_process_fork/trigger\n! echo 'traceoff if common_pid=0' > events/sched/sched_process_fork/trigger\n! echo 'traceoff if common_pid==b' > events/sched/sched_process_fork/trigger\necho 'traceoff if common_pid == 0' > events/sched/sched_process_fork/trigger\necho '!traceoff' > events/sched/sched_process_fork/trigger\n! echo 'traceoff if common_pid == child_pid' > events/sched/sched_process_fork/trigger\necho 'traceoff if common_pid <= 0' > events/sched/sched_process_fork/trigger\necho '!traceoff' > events/sched/sched_process_fork/trigger\necho 'traceoff if common_pid >= 0' > events/sched/sched_process_fork/trigger\necho '!traceoff' > events/sched/sched_process_fork/trigger\necho 'traceoff if parent_pid >= 0 && child_pid >= 0' > events/sched/sched_process_fork/trigger\necho '!traceoff' > events/sched/sched_process_fork/trigger\necho 'traceoff if parent_pid >= 0 || child_pid >= 0' > events/sched/sched_process_fork/trigger\necho '!traceoff' > events/sched/sched_process_fork/trigger\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

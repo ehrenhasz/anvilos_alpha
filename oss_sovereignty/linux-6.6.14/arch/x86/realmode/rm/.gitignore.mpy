@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "c1b957ccdd39f9fbde1958eb1434a6042d998bfecb7b6866a309f19e3296516d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/realmode/rm/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\npasyms.h\nrealmode.lds\nrealmode.relocs\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

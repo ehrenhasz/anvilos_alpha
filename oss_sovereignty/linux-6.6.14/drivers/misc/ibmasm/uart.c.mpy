@@ -1,0 +1,9 @@
+{
+  "module_name": "uart.c",
+  "hash_id": "d9db1acf434f073a85a6a56e01353d7f1696390f0c9bceb864124f46111afad6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/ibmasm/uart.c",
+  "human_readable_source": "\n\n \n\n#include <linux/termios.h>\n#include <linux/tty.h>\n#include <linux/serial_core.h>\n#include <linux/serial_reg.h>\n#include <linux/serial_8250.h>\n#include \"ibmasm.h\"\n#include \"lowlevel.h\"\n\n\nvoid ibmasm_register_uart(struct service_processor *sp)\n{\n\tstruct uart_8250_port uart;\n\tvoid __iomem *iomem_base;\n\n\tiomem_base = sp->base_address + SCOUT_COM_B_BASE;\n\n\t \n\tif (0 == readl(iomem_base + UART_SCR)) {\n\t\tdev_info(sp->dev, \"IBM SP UART not registered, owned by service processor\\n\");\n\t\tsp->serial_line = -1;\n\t\treturn;\n\t}\n\n\tmemset(&uart, 0, sizeof(uart));\n\tuart.port.irq\t\t= sp->irq;\n\tuart.port.uartclk\t= 3686400;\n\tuart.port.flags\t\t= UPF_SHARE_IRQ;\n\tuart.port.iotype\t= UPIO_MEM;\n\tuart.port.membase\t= iomem_base;\n\n\tsp->serial_line = serial8250_register_8250_port(&uart);\n\tif (sp->serial_line < 0) {\n\t\tdev_err(sp->dev, \"Failed to register serial port\\n\");\n\t\treturn;\n\t}\n\tenable_uart_interrupts(sp->base_address);\n}\n\nvoid ibmasm_unregister_uart(struct service_processor *sp)\n{\n\tif (sp->serial_line < 0)\n\t\treturn;\n\n\tdisable_uart_interrupts(sp->base_address);\n\tserial8250_unregister_port(sp->serial_line);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

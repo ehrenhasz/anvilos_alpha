@@ -1,0 +1,9 @@
+{
+  "module_name": "path.h",
+  "hash_id": "19c17671cd2b0de9bc10c44278173646b1713ab0f601cfb35108dea9b377bca8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/path.h",
+  "human_readable_source": " \n#ifndef _PERF_PATH_H\n#define _PERF_PATH_H\n\n#include <stddef.h>\n#include <stdbool.h>\n\nstruct dirent;\n\nint path__join(char *bf, size_t size, const char *path1, const char *path2);\nint path__join3(char *bf, size_t size, const char *path1, const char *path2, const char *path3);\n\nbool is_regular_file(const char *file);\nbool is_directory(const char *base_path, const struct dirent *dent);\nbool is_executable_file(const char *base_path, const struct dirent *dent);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

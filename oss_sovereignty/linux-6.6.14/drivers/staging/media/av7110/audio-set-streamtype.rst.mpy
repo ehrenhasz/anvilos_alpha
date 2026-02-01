@@ -1,0 +1,9 @@
+{
+  "module_name": "audio-set-streamtype.rst",
+  "hash_id": "c1ff748a353bd18c4c77f2a46b6b7f04726dc3a756648077e9672147a4941403",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/audio-set-streamtype.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n.. c:namespace:: DTV.audio\n\n.. _AUDIO_SET_STREAMTYPE:\n\n====================\nAUDIO_SET_STREAMTYPE\n====================\n\nName\n----\n\nAUDIO_SET_STREAMTYPE\n\n.. attention:: This ioctl is deprecated\n\nSynopsis\n--------\n\n.. c:macro:: AUDIO_SET_STREAMTYPE\n\n``int ioctl(fd, AUDIO_SET_STREAMTYPE, int type)``\n\nArguments\n---------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -\n\n       -  int fd\n\n       -  File descriptor returned by a previous call to open().\n\n    -\n\n       -  int type\n\n       -  stream type\n\nDescription\n-----------\n\nThis ioctl tells the driver which kind of audio stream to expect. This\nis useful if the stream offers several audio sub-streams like LPCM and\nAC3.\n\nReturn Value\n------------\n\nOn success 0 is returned, on error -1 and the ``errno`` variable is set\nappropriately. The generic error codes are described at the\n:ref:`Generic Error Codes <gen-errors>` chapter.\n\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -  .. row 1\n\n       -  ``EINVAL``\n\n       -  type is not a valid or supported stream type.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

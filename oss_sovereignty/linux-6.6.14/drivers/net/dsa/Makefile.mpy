@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "639272c4bd2334496e078f03159d8d095fa2ebe809dc4aeb77c597ff007e8d35",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_NET_DSA_BCM_SF2)\t+= bcm-sf2.o\nbcm-sf2-objs\t\t\t:= bcm_sf2.o bcm_sf2_cfp.o\nobj-$(CONFIG_NET_DSA_LOOP)\t+= dsa_loop.o\nifdef CONFIG_NET_DSA_LOOP\nobj-$(CONFIG_FIXED_PHY)\t\t+= dsa_loop_bdinfo.o\nendif\nobj-$(CONFIG_NET_DSA_LANTIQ_GSWIP) += lantiq_gswip.o\nobj-$(CONFIG_NET_DSA_MT7530)\t+= mt7530.o\nobj-$(CONFIG_NET_DSA_MT7530_MDIO) += mt7530-mdio.o\nobj-$(CONFIG_NET_DSA_MT7530_MMIO) += mt7530-mmio.o\nobj-$(CONFIG_NET_DSA_MV88E6060) += mv88e6060.o\nobj-$(CONFIG_NET_DSA_RZN1_A5PSW) += rzn1_a5psw.o\nobj-$(CONFIG_NET_DSA_SMSC_LAN9303) += lan9303-core.o\nobj-$(CONFIG_NET_DSA_SMSC_LAN9303_I2C) += lan9303_i2c.o\nobj-$(CONFIG_NET_DSA_SMSC_LAN9303_MDIO) += lan9303_mdio.o\nobj-$(CONFIG_NET_DSA_VITESSE_VSC73XX) += vitesse-vsc73xx-core.o\nobj-$(CONFIG_NET_DSA_VITESSE_VSC73XX_PLATFORM) += vitesse-vsc73xx-platform.o\nobj-$(CONFIG_NET_DSA_VITESSE_VSC73XX_SPI) += vitesse-vsc73xx-spi.o\nobj-y\t\t\t\t+= b53/\nobj-y\t\t\t\t+= hirschmann/\nobj-y\t\t\t\t+= microchip/\nobj-y\t\t\t\t+= mv88e6xxx/\nobj-y\t\t\t\t+= ocelot/\nobj-y\t\t\t\t+= qca/\nobj-y\t\t\t\t+= realtek/\nobj-y\t\t\t\t+= sja1105/\nobj-y\t\t\t\t+= xrs700x/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "atanh.c",
+  "hash_id": "b9f3a080bddbd1e372311152ba0944c6c229b9200a9f807a3254d623c188dcac",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/atanh.c",
+  "human_readable_source": "#include \"libm.h\"\n\n \ndouble atanh(double x)\n{\n\tunion {double f; uint64_t i;} u = {.f = x};\n\tunsigned e = u.i >> 52 & 0x7ff;\n\tunsigned s = u.i >> 63;\n\tdouble_t y;\n\n\t \n\tu.i &= (uint64_t)-1/2;\n\ty = u.f;\n\n\tif (e < 0x3ff - 1) {\n\t\tif (e < 0x3ff - 32) {\n\t\t\t \n\t\t\tif (e == 0)\n\t\t\t\tFORCE_EVAL((float)y);\n\t\t} else {\n\t\t\t \n\t\t\ty = 0.5*log1p(2*y + 2*y*y/(1-y));\n\t\t}\n\t} else {\n\t\t \n\t\ty = 0.5*log1p(2*(y/(1-y)));\n\t}\n\treturn s ? -y : y;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

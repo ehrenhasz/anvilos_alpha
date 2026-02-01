@@ -1,0 +1,9 @@
+{
+  "module_name": "ad1836.h",
+  "hash_id": "3b9818d8cef1177a8f30d2b2145ffce196368a03d4eebbefec844ad054de8db4",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/ad1836.h",
+  "human_readable_source": " \n \n\n#ifndef __AD1836_H__\n#define __AD1836_H__\n\n#define AD1836_DAC_CTRL1               0\n#define AD1836_DAC_POWERDOWN           2\n#define AD1836_DAC_SERFMT_MASK         0xE0\n#define AD1836_DAC_SERFMT_PCK256       (0x4 << 5)\n#define AD1836_DAC_SERFMT_PCK128       (0x5 << 5)\n#define AD1836_DAC_WORD_LEN_MASK       0x18\n#define AD1836_DAC_WORD_LEN_OFFSET     3\n\n#define AD1836_DAC_CTRL2               1\n\n \n#define AD1836_MUTE_LEFT(x) (((x) * 2) - 2)\n#define AD1836_MUTE_RIGHT(x) (((x) * 2) - 1)\n\n#define AD1836_DAC_L_VOL(x) ((x) * 2)\n#define AD1836_DAC_R_VOL(x) (1 + ((x) * 2))\n\n#define AD1836_ADC_CTRL1               12\n#define AD1836_ADC_POWERDOWN           7\n#define AD1836_ADC_HIGHPASS_FILTER     8\n\n#define AD1836_ADC_CTRL2               13\n#define AD1836_ADC_WORD_LEN_MASK       0x30\n#define AD1836_ADC_WORD_OFFSET         4\n#define AD1836_ADC_SERFMT_MASK         (7 << 6)\n#define AD1836_ADC_SERFMT_PCK256       (0x4 << 6)\n#define AD1836_ADC_SERFMT_PCK128       (0x5 << 6)\n#define AD1836_ADC_AUX                 (0x6 << 6)\n\n#define AD1836_ADC_CTRL3               14\n\n#define AD1836_NUM_REGS                16\n\n#define AD1836_WORD_LEN_24 0x0\n#define AD1836_WORD_LEN_20 0x1\n#define AD1836_WORD_LEN_16 0x2\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

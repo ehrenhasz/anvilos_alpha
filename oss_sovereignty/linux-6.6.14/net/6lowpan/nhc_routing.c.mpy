@@ -1,0 +1,9 @@
+{
+  "module_name": "nhc_routing.c",
+  "hash_id": "87e9451cd8e1264af626b83544ee637adf9a8be6e350134e9a40fc7f944f75e0",
+  "original_prompt": "Ingested from linux-6.6.14/net/6lowpan/nhc_routing.c",
+  "human_readable_source": "\n \n\n#include \"nhc.h\"\n\n#define LOWPAN_NHC_ROUTING_ID_0\t\t0xe2\n#define LOWPAN_NHC_ROUTING_MASK_0\t0xfe\n\nLOWPAN_NHC(nhc_routing, \"RFC6282 Routing\", NEXTHDR_ROUTING, 0,\n\t   LOWPAN_NHC_ROUTING_ID_0, LOWPAN_NHC_ROUTING_MASK_0, NULL, NULL);\n\nmodule_lowpan_nhc(nhc_routing);\nMODULE_DESCRIPTION(\"6LoWPAN next header RFC6282 Routing compression\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "connect4_dropper.c",
+  "hash_id": "870fb78e4fb8cd360f60c4f6ae0630a2e3c727e4b58eba73bd923ceed2d7341a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/connect4_dropper.c",
+  "human_readable_source": "\n\n#include <string.h>\n\n#include <linux/stddef.h>\n#include <linux/bpf.h>\n\n#include <sys/socket.h>\n\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n\n#define VERDICT_REJECT\t0\n#define VERDICT_PROCEED\t1\n\nSEC(\"cgroup/connect4\")\nint connect_v4_dropper(struct bpf_sock_addr *ctx)\n{\n\tif (ctx->type != SOCK_STREAM)\n\t\treturn VERDICT_PROCEED;\n\tif (ctx->user_port == bpf_htons(60120))\n\t\treturn VERDICT_REJECT;\n\treturn VERDICT_PROCEED;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

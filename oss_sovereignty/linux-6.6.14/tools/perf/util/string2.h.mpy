@@ -1,0 +1,9 @@
+{
+  "module_name": "string2.h",
+  "hash_id": "e897201764a35421770c344acb82324920a38d40fbb4122a51e2156fb3783edc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/string2.h",
+  "human_readable_source": " \n#ifndef PERF_STRING_H\n#define PERF_STRING_H\n\n#include <linux/string.h>\n#include <linux/types.h>\n#include <sys/types.h> \n#include <stddef.h>\n#include <string.h>\n\nextern const char *graph_dotted_line;\nextern const char *dots;\n\ns64 perf_atoll(const char *str);\nbool strglobmatch(const char *str, const char *pat);\nbool strglobmatch_nocase(const char *str, const char *pat);\nbool strlazymatch(const char *str, const char *pat);\nstatic inline bool strisglob(const char *str)\n{\n\treturn strpbrk(str, \"*?[\") != NULL;\n}\nint strtailcmp(const char *s1, const char *s2);\n\nchar *asprintf_expr_inout_ints(const char *var, bool in, size_t nints, int *ints);\n\nstatic inline char *asprintf_expr_in_ints(const char *var, size_t nints, int *ints)\n{\n\treturn asprintf_expr_inout_ints(var, true, nints, ints);\n}\n\nstatic inline char *asprintf_expr_not_in_ints(const char *var, size_t nints, int *ints)\n{\n\treturn asprintf_expr_inout_ints(var, false, nints, ints);\n}\n\nchar *asprintf__tp_filter_pids(size_t npids, pid_t *pids);\n\nchar *strpbrk_esc(char *str, const char *stopset);\nchar *strdup_esc(const char *str);\n\nunsigned int hex(char c);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

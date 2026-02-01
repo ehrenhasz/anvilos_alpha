@@ -1,0 +1,9 @@
+{
+  "module_name": "machine.c",
+  "hash_id": "47d18c216329a56d5b1ace81a1e70712df83cdbcc2e8bc686ad5b5d0413d5c83",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/s390/util/machine.c",
+  "human_readable_source": "\n#include <inttypes.h>\n#include <unistd.h>\n#include <stdio.h>\n#include <string.h>\n#include <internal/lib.h> \n#include \"machine.h\"\n#include \"api/fs/fs.h\"\n#include \"debug.h\"\n#include \"symbol.h\"\n\nint arch__fix_module_text_start(u64 *start, u64 *size, const char *name)\n{\n\tu64 m_start = *start;\n\tchar path[PATH_MAX];\n\n\tsnprintf(path, PATH_MAX, \"module/%.*s/sections/.text\",\n\t\t\t\t(int)strlen(name) - 2, name + 1);\n\tif (sysfs__read_ull(path, (unsigned long long *)start) < 0) {\n\t\tpr_debug2(\"Using module %s start:%#lx\\n\", path, m_start);\n\t\t*start = m_start;\n\t} else {\n\t\t \n\t\t*size -= (*start - m_start);\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dpaa_sys.c",
+  "hash_id": "c7517745e7f1101fc131a0ebc562f0315f65af6dcfc2446300f04e68a6650130",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/fsl/qbman/dpaa_sys.c",
+  "human_readable_source": " \n\n#include <linux/dma-mapping.h>\n#include \"dpaa_sys.h\"\n\n \nint qbman_init_private_mem(struct device *dev, int idx, dma_addr_t *addr,\n\t\t\t\tsize_t *size)\n{\n\tstruct device_node *mem_node;\n\tstruct reserved_mem *rmem;\n\tint err;\n\t__be32 *res_array;\n\n\tmem_node = of_parse_phandle(dev->of_node, \"memory-region\", idx);\n\tif (!mem_node) {\n\t\tdev_err(dev, \"No memory-region found for index %d\\n\", idx);\n\t\treturn -ENODEV;\n\t}\n\n\trmem = of_reserved_mem_lookup(mem_node);\n\tif (!rmem) {\n\t\tdev_err(dev, \"of_reserved_mem_lookup() returned NULL\\n\");\n\t\treturn -ENODEV;\n\t}\n\t*addr = rmem->base;\n\t*size = rmem->size;\n\n\t \n\tif (!of_property_present(mem_node, \"reg\")) {\n\t\tstruct property *prop;\n\n\t\tprop = devm_kzalloc(dev, sizeof(*prop), GFP_KERNEL);\n\t\tif (!prop)\n\t\t\treturn -ENOMEM;\n\t\tprop->value = res_array = devm_kzalloc(dev, sizeof(__be32) * 4,\n\t\t\t\t\t\t       GFP_KERNEL);\n\t\tif (!prop->value)\n\t\t\treturn -ENOMEM;\n\t\tres_array[0] = cpu_to_be32(upper_32_bits(*addr));\n\t\tres_array[1] = cpu_to_be32(lower_32_bits(*addr));\n\t\tres_array[2] = cpu_to_be32(upper_32_bits(*size));\n\t\tres_array[3] = cpu_to_be32(lower_32_bits(*size));\n\t\tprop->length = sizeof(__be32) * 4;\n\t\tprop->name = devm_kstrdup(dev, \"reg\", GFP_KERNEL);\n\t\tif (!prop->name)\n\t\t\treturn -ENOMEM;\n\t\terr = of_add_property(mem_node, prop);\n\t\tif (err)\n\t\t\treturn err;\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

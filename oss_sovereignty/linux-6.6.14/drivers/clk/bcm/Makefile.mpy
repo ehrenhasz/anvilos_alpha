@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "041e941bcaccae2efb1d7e6ca65c6b167d2bdba0e8493962ad3c5fbc1965b743",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/bcm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_CLK_BCM_63XX)\t+= clk-bcm63xx.o\nobj-$(CONFIG_CLK_BCM_63XX_GATE)\t+= clk-bcm63xx-gate.o\nobj-$(CONFIG_CLK_BCM63268_TIMER) += clk-bcm63268-timer.o\nobj-$(CONFIG_CLK_BCM_KONA)\t+= clk-kona.o\nobj-$(CONFIG_CLK_BCM_KONA)\t+= clk-kona-setup.o\nobj-$(CONFIG_CLK_BCM_KONA)\t+= clk-bcm281xx.o\nobj-$(CONFIG_CLK_BCM_KONA)\t+= clk-bcm21664.o\nobj-$(CONFIG_COMMON_CLK_IPROC)\t+= clk-iproc-armpll.o clk-iproc-pll.o clk-iproc-asiu.o\nobj-$(CONFIG_CLK_BCM2711_DVP)\t+= clk-bcm2711-dvp.o\nobj-$(CONFIG_CLK_BCM2835)\t+= clk-bcm2835.o\nobj-$(CONFIG_CLK_BCM2835)\t+= clk-bcm2835-aux.o\nobj-$(CONFIG_CLK_RASPBERRYPI)\t+= clk-raspberrypi.o\nobj-$(CONFIG_ARCH_BCM_53573)\t+= clk-bcm53573-ilp.o\nobj-$(CONFIG_CLK_BCM_CYGNUS)\t+= clk-cygnus.o\nobj-$(CONFIG_CLK_BCM_HR2)\t+= clk-hr2.o\nobj-$(CONFIG_CLK_BCM_NSP)\t+= clk-nsp.o\nobj-$(CONFIG_CLK_BCM_NS2)\t+= clk-ns2.o\nobj-$(CONFIG_CLK_BCM_SR)\t+= clk-sr.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

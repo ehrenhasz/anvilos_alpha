@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk-afe-platform-driver.h",
+  "hash_id": "fcb9813351c3dc4105411d114ae9c9de6636d723f23dd681832ad38e1257576b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/common/mtk-afe-platform-driver.h",
+  "human_readable_source": " \n \n\n#ifndef _MTK_AFE_PLATFORM_DRIVER_H_\n#define _MTK_AFE_PLATFORM_DRIVER_H_\n\n#define AFE_PCM_NAME \"mtk-afe-pcm\"\nextern const struct snd_soc_component_driver mtk_afe_pcm_platform;\n\nstruct mtk_base_afe;\nstruct snd_pcm;\nstruct snd_soc_component;\nstruct snd_soc_pcm_runtime;\n\nsnd_pcm_uframes_t mtk_afe_pcm_pointer(struct snd_soc_component *component,\n\t\t\t\t      struct snd_pcm_substream *substream);\nint mtk_afe_pcm_new(struct snd_soc_component *component,\n\t\t    struct snd_soc_pcm_runtime *rtd);\n\nint mtk_afe_combine_sub_dai(struct mtk_base_afe *afe);\nint mtk_afe_add_sub_dai_control(struct snd_soc_component *component);\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

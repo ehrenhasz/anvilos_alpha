@@ -1,0 +1,9 @@
+{
+  "module_name": "types32.h",
+  "hash_id": "c0fcf86dcc1741cc57f7bd999bf13956b5d076eea0ee310729fd28d5a596a5ad",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/types32.h",
+  "human_readable_source": " \n\n#ifndef _SPL_TYPES32_H\n#define\t_SPL_TYPES32_H\n\ntypedef uint32_t\tcaddr32_t;\ntypedef int32_t\tdaddr32_t;\ntypedef int32_t\ttime32_t;\ntypedef uint32_t\tsize32_t;\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

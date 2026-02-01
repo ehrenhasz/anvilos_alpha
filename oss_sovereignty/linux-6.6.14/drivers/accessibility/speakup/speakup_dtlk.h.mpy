@@ -1,0 +1,9 @@
+{
+  "module_name": "speakup_dtlk.h",
+  "hash_id": "36ab138acd46b1de7620582ba3971afb79f6338f8ad6a3e45e6d264ba5c51cf2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accessibility/speakup/speakup_dtlk.h",
+  "human_readable_source": " \n \n\n#define SYNTH_IO_EXTENT\t0x02\n#define SYNTH_CLEAR\t0x18\t\t \n\t \n#define TTS_READABLE\t0x80\t \n#define TTS_SPEAKING\t0x40\t \n#define TTS_SPEAKING2\t0x20\t \n#define TTS_WRITABLE\t0x10\t \n#define TTS_ALMOST_FULL\t0x08\t \n#define TTS_ALMOST_EMPTY 0x04\t \n\n\t\t\t\t \nstruct synth_settings {\n\tu_short serial_number;\t \n\tu_char rom_version[24];  \n\tu_char mode;\t\t \n\tu_char punc_level;\t \n\tu_char formant_freq;\t \n\tu_char pitch;\t\t \n\tu_char speed;\t\t \n\tu_char volume;\t\t \n\tu_char tone;\t\t \n\tu_char expression;\t \n\tu_char ext_dict_loaded;  \n\tu_char ext_dict_status;  \n\tu_char free_ram;\t \n\tu_char articulation;\t \n\tu_char reverb;\t\t \n\tu_char eob;\t\t \n\tu_char has_indexing;\t \n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

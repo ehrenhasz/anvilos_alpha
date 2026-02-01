@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-pmc-atom.h",
+  "hash_id": "c3d1581ee0542cc83a9881a83a859aae01efb8270ec17254d2237a049364c8c5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/x86/clk-pmc-atom.h",
+  "human_readable_source": " \n \n\n#ifndef __PLATFORM_DATA_X86_CLK_PMC_ATOM_H\n#define __PLATFORM_DATA_X86_CLK_PMC_ATOM_H\n\n \nstruct pmc_clk {\n\tconst char *name;\n\tunsigned long freq;\n\tconst char *parent_name;\n};\n\n \nstruct pmc_clk_data {\n\tvoid __iomem *base;\n\tconst struct pmc_clk *clks;\n\tbool critical;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

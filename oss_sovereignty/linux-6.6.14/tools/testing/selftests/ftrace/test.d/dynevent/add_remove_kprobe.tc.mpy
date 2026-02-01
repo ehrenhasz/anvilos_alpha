@@ -1,0 +1,9 @@
+{
+  "module_name": "add_remove_kprobe.tc",
+  "hash_id": "0c8fc6e7348cada02b996e3fdc2dec6277b448909c5d31d011f89cd04611cd4a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/dynevent/add_remove_kprobe.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Generic dynamic event - add/remove kprobe events\n# requires: dynamic_events \"place: [<module>:]<symbol>\":README \"place (kretprobe): [<module>:]<symbol>\":README\n\necho 0 > events/enable\necho > dynamic_events\n\nPLACE=$FUNCTION_FORK\n\necho \"p:myevent1 $PLACE\" >> dynamic_events\necho \"r:myevent2 $PLACE\" >> dynamic_events\n\ngrep -q myevent1 dynamic_events\ngrep -q myevent2 dynamic_events\ntest -d events/kprobes/myevent1\ntest -d events/kprobes/myevent2\n\necho \"-:myevent2\" >> dynamic_events\n\ngrep -q myevent1 dynamic_events\n! grep -q myevent2 dynamic_events\n\necho > dynamic_events\n\nif grep -q \"p\\[:\\[<group>/]\\[<event>]]\" README; then\n\techo \"p:mygroup/ $PLACE\" >> dynamic_events\n\ttest -d events/mygroup\n\techo \"-:mygroup/\" >> dynamic_events\n\t! test -d events/mygroup\nfi\n\nclear_trace\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

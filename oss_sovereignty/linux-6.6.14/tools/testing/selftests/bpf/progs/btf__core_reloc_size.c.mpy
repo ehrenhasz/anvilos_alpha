@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_size.c",
+  "hash_id": "b992ba93d3c6a75bea0c3809c2ac2a640f64910486a55c0df5d71c065fd08e82",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_size.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_size x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

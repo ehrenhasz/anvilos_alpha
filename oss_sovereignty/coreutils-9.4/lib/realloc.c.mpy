@@ -1,0 +1,9 @@
+{
+  "module_name": "realloc.c",
+  "hash_id": "d23fcaf54c7570339aad774baeb13b79f2b8281164f7167f852e596958b7be8c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/realloc.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdlib.h>\n\n#include <errno.h>\n\n#include \"xalloc-oversized.h\"\n\n \n#undef realloc\n\n \n\nvoid *\nrpl_realloc (void *p, size_t n)\n{\n  if (p == NULL)\n    return malloc (n);\n\n  if (n == 0)\n    {\n      free (p);\n      return NULL;\n    }\n\n  if (xalloc_oversized (n, 1))\n    {\n      errno = ENOMEM;\n      return NULL;\n    }\n\n  void *result = realloc (p, n);\n\n#if !HAVE_MALLOC_POSIX\n  if (result == NULL)\n    errno = ENOMEM;\n#endif\n\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

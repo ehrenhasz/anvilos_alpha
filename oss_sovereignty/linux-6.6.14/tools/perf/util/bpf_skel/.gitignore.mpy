@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "93031075de7f5e30fdbd78b00e7ff3091bca08fe047a17985d2652e0e7a8a4a8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/bpf_skel/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n.tmp\n*.skel.h\nvmlinux.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

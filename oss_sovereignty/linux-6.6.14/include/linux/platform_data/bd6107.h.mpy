@@ -1,0 +1,9 @@
+{
+  "module_name": "bd6107.h",
+  "hash_id": "94291f45338e0eb3646d8e42e177310cfeefce366f3c4599d58b951de063ae4a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/bd6107.h",
+  "human_readable_source": " \n \n#ifndef __BD6107_H__\n#define __BD6107_H__\n\nstruct device;\n\nstruct bd6107_platform_data {\n\tstruct device *dev;\n\tunsigned int def_value;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bh.h",
+  "hash_id": "5fe58cdbd83bb602da0fad57688d2d5f42df27431a48e52baa50f5e16305feec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/st/cw1200/bh.h",
+  "human_readable_source": " \n \n\n#ifndef CW1200_BH_H\n#define CW1200_BH_H\n\n  struct cw1200_common;\n\nint cw1200_register_bh(struct cw1200_common *priv);\nvoid cw1200_unregister_bh(struct cw1200_common *priv);\nvoid cw1200_irq_handler(struct cw1200_common *priv);\nvoid cw1200_bh_wakeup(struct cw1200_common *priv);\nint cw1200_bh_suspend(struct cw1200_common *priv);\nint cw1200_bh_resume(struct cw1200_common *priv);\n \nvoid cw1200_enable_powersave(struct cw1200_common *priv,\n\t\t\t     bool enable);\nint wsm_release_tx_buffer(struct cw1200_common *priv, int count);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pmem.c",
+  "hash_id": "264d01ad46017081d22fe4328d8de3fbee7d533b3e09d072ee2c8f2ed67361a0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dax/pmem/pmem.c",
+  "human_readable_source": "\n \n#include <linux/percpu-refcount.h>\n#include <linux/memremap.h>\n#include <linux/module.h>\n#include <linux/pfn_t.h>\n#include <linux/nd.h>\n#include \"../bus.h\"\n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

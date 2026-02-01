@@ -1,0 +1,9 @@
+{
+  "module_name": "vops.h",
+  "hash_id": "a92e7c0b42cfba3ae963f4c2e72976d12141ea5944460e6faad0161d1455a7c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bca/vops.h",
+  "human_readable_source": " \n \n#ifndef _BRCMFMAC_BCA_VOPS_H\n#define _BRCMFMAC_BCA_VOPS_H\n\nextern const struct brcmf_fwvid_ops brcmf_bca_ops;\n#define BCA_VOPS\t(&brcmf_bca_ops)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

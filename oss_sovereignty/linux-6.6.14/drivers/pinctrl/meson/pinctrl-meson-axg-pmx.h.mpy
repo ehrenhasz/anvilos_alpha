@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-meson-axg-pmx.h",
+  "hash_id": "8efdfde4861ed043a2811493aacfead08962fb04802150a7cd1426fe86df9f0b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/meson/pinctrl-meson-axg-pmx.h",
+  "human_readable_source": " \n \n\nstruct meson_pmx_bank {\n\tconst char *name;\n\tunsigned int first;\n\tunsigned int last;\n\tunsigned int reg;\n\tunsigned int offset;\n};\n\nstruct meson_axg_pmx_data {\n\tstruct meson_pmx_bank *pmx_banks;\n\tunsigned int num_pmx_banks;\n};\n\n#define BANK_PMX(n, f, l, r, o)\t\t\t\t\\\n\t{\t\t\t\t\t\t\t\\\n\t\t.name   = n,\t\t\t\t\t\\\n\t\t.first\t= f,\t\t\t\t\t\\\n\t\t.last\t= l,\t\t\t\t\t\\\n\t\t.reg\t= r,\t\t\t\t\t\\\n\t\t.offset = o,\t\t\t\t\t\\\n\t}\n\nstruct meson_pmx_axg_data {\n        unsigned int func;\n};\n\n#define PMX_DATA(f)\t\t\t\t\t\t\t\\\n\t{\t\t\t\t\t\t\t\t\\\n\t\t.func = f,\t\t\t\t\t\t\\\n\t}\n\n#define GROUP(grp, f)\t\t\t\t\t\t\t\\\n\t{\t\t\t\t\t\t\t\t\\\n\t\t.name = #grp,\t\t\t\t\t\t\\\n\t\t.pins = grp ## _pins,                                   \\\n\t\t.num_pins = ARRAY_SIZE(grp ## _pins),\t\t\t\\\n\t\t.data = (const struct meson_pmx_axg_data[]){\t\t\\\n\t\t\tPMX_DATA(f),\t\t\t\t\t\\\n\t\t},\t\t\t\t\t\t\t\\\n\t}\n\n#define GPIO_GROUP(gpio)\t\t\t\t\t\t\\\n\t{\t\t\t\t\t\t\t\t\\\n\t\t.name = #gpio,\t\t\t\t\t\t\\\n\t\t.pins = (const unsigned int[]){ gpio },\t\t\t\\\n\t\t.num_pins = 1,\t\t\t\t\t\t\\\n\t\t.data = (const struct meson_pmx_axg_data[]){\t\t\\\n\t\t\tPMX_DATA(0),\t\t\t\t\t\\\n\t\t},\t\t\t\t\t\t\t\\\n\t}\n\nextern const struct pinmux_ops meson_axg_pmx_ops;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

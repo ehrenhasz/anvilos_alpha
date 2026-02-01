@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_fpn_param.h",
+  "hash_id": "8310ab99c59194913afdc71199ab8373ab6975e055e080a70234448a5cebf61a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/fpn/fpn_1.0/ia_css_fpn_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_FPN_PARAM_H\n#define __IA_CSS_FPN_PARAM_H\n\n#include \"type_support.h\"\n\n#include \"dma.h\"\n\n#define FPN_BITS_PER_PIXEL\t16\n\n \nstruct sh_css_isp_fpn_params {\n\ts32 shift;\n\ts32 enabled;\n};\n\nstruct sh_css_isp_fpn_isp_config {\n\tu32 width_a_over_b;\n\tstruct dma_port_config port_b;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

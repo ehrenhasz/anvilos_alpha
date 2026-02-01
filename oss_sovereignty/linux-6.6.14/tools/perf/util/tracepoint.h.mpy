@@ -1,0 +1,9 @@
+{
+  "module_name": "tracepoint.h",
+  "hash_id": "5d16779c78bd4a1de2ec3e993de39253bbe4f81411301207ea78b67523c44c74",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/tracepoint.h",
+  "human_readable_source": " \n#ifndef __PERF_TRACEPOINT_H\n#define __PERF_TRACEPOINT_H\n\n#include <dirent.h>\n#include <string.h>\n\nint tp_event_has_id(const char *dir_path, struct dirent *evt_dir);\n\n#define for_each_event(dir_path, evt_dir, evt_dirent)\t\t\\\n\twhile ((evt_dirent = readdir(evt_dir)) != NULL)\t\t\\\n\t\tif (evt_dirent->d_type == DT_DIR &&\t\t\\\n\t\t    (strcmp(evt_dirent->d_name, \".\")) &&\t\\\n\t\t    (strcmp(evt_dirent->d_name, \"..\")) &&\t\\\n\t\t    (!tp_event_has_id(dir_path, evt_dirent)))\n\n#define for_each_subsystem(sys_dir, sys_dirent)\t\t\t\\\n\twhile ((sys_dirent = readdir(sys_dir)) != NULL)\t\t\\\n\t\tif (sys_dirent->d_type == DT_DIR &&\t\t\\\n\t\t    (strcmp(sys_dirent->d_name, \".\")) &&\t\\\n\t\t    (strcmp(sys_dirent->d_name, \"..\")))\n\nint is_valid_tracepoint(const char *event_string);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

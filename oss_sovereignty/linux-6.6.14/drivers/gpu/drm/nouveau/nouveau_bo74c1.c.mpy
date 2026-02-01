@@ -1,0 +1,9 @@
+{
+  "module_name": "nouveau_bo74c1.c",
+  "hash_id": "91403f189464a7f6ffd33fdbaddbe3cad99244620c8c4aa9cc5cd4b4b44a24c2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nouveau_bo74c1.c",
+  "human_readable_source": " \n \n#include \"nouveau_bo.h\"\n#include \"nouveau_dma.h\"\n#include \"nouveau_mem.h\"\n\n#include <nvif/push206e.h>\n\nint\nnv84_bo_move_exec(struct nouveau_channel *chan, struct ttm_buffer_object *bo,\n\t\t  struct ttm_resource *old_reg, struct ttm_resource *new_reg)\n{\n\tstruct nouveau_mem *mem = nouveau_mem(old_reg);\n\tstruct nvif_push *push = chan->chan.push;\n\tint ret;\n\n\tret = PUSH_WAIT(push, 7);\n\tif (ret)\n\t\treturn ret;\n\n\tPUSH_NVSQ(push, NV74C1, 0x0304, new_reg->size,\n\t\t\t\t0x0308, upper_32_bits(mem->vma[0].addr),\n\t\t\t\t0x030c, lower_32_bits(mem->vma[0].addr),\n\t\t\t\t0x0310, upper_32_bits(mem->vma[1].addr),\n\t\t\t\t0x0314, lower_32_bits(mem->vma[1].addr),\n\t\t\t\t0x0318, 0x00000000  );\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_atomfirmware.h",
+  "hash_id": "63e7d6b302f706cbf696d15c65153f4daf045ebd6e8b07f08a767aeb18aaf084",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_atomfirmware.h",
+  "human_readable_source": " \n\n#ifndef __AMDGPU_ATOMFIRMWARE_H__\n#define __AMDGPU_ATOMFIRMWARE_H__\n\n#define get_index_into_master_table(master_table, table_name) (offsetof(struct master_table, table_name) / sizeof(uint16_t))\n\nuint32_t amdgpu_atomfirmware_query_firmware_capability(struct amdgpu_device *adev);\nbool amdgpu_atomfirmware_gpu_virtualization_supported(struct amdgpu_device *adev);\nvoid amdgpu_atomfirmware_scratch_regs_init(struct amdgpu_device *adev);\nint amdgpu_atomfirmware_allocate_fb_scratch(struct amdgpu_device *adev);\nint amdgpu_atomfirmware_get_vram_info(struct amdgpu_device *adev,\n\tint *vram_width, int *vram_type, int *vram_vendor);\nint amdgpu_atomfirmware_get_clock_info(struct amdgpu_device *adev);\nint amdgpu_atomfirmware_get_gfx_info(struct amdgpu_device *adev);\nbool amdgpu_atomfirmware_mem_ecc_supported(struct amdgpu_device *adev);\nbool amdgpu_atomfirmware_sram_ecc_supported(struct amdgpu_device *adev);\nbool amdgpu_atomfirmware_ras_rom_addr(struct amdgpu_device *adev, uint8_t* i2c_address);\nbool amdgpu_atomfirmware_mem_training_supported(struct amdgpu_device *adev);\nbool amdgpu_atomfirmware_dynamic_boot_config_supported(struct amdgpu_device *adev);\nint amdgpu_atomfirmware_get_fw_reserved_fb_size(struct amdgpu_device *adev);\nint amdgpu_atomfirmware_asic_init(struct amdgpu_device *adev, bool fb_reset);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

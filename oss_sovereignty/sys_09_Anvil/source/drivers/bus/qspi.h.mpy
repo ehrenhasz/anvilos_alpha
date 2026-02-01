@@ -1,0 +1,9 @@
+{
+  "module_name": "qspi.h",
+  "hash_id": "4e6e796c584f93796d0d84ec937ab31f5642dcf8ef3ae7a6514f8f1eba6a28f2",
+  "original_prompt": "Ingested from sys_09_Anvil/source/drivers/bus/qspi.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_DRIVERS_BUS_QSPI_H\n#define MICROPY_INCLUDED_DRIVERS_BUS_QSPI_H\n\n#include \"py/mphal.h\"\n\n#ifndef MICROPY_HW_SPI_ADDR_IS_32BIT\n#define MICROPY_HW_SPI_ADDR_IS_32BIT(addr) (addr & 0xff000000)\n#endif\n\nenum {\n    MP_QSPI_IOCTL_INIT,\n    MP_QSPI_IOCTL_DEINIT,\n    MP_QSPI_IOCTL_BUS_ACQUIRE,\n    MP_QSPI_IOCTL_BUS_RELEASE,\n};\n\ntypedef struct _mp_qspi_proto_t {\n    int (*ioctl)(void *self, uint32_t cmd);\n    int (*write_cmd_data)(void *self, uint8_t cmd, size_t len, uint32_t data);\n    int (*write_cmd_addr_data)(void *self, uint8_t cmd, uint32_t addr, size_t len, const uint8_t *src);\n    int (*read_cmd)(void *self, uint8_t cmd, size_t len, uint32_t *dest);\n    int (*read_cmd_qaddr_qdata)(void *self, uint8_t cmd, uint32_t addr, size_t len, uint8_t *dest);\n} mp_qspi_proto_t;\n\ntypedef struct _mp_soft_qspi_obj_t {\n    mp_hal_pin_obj_t cs;\n    mp_hal_pin_obj_t clk;\n    mp_hal_pin_obj_t io0;\n    mp_hal_pin_obj_t io1;\n    mp_hal_pin_obj_t io2;\n    mp_hal_pin_obj_t io3;\n} mp_soft_qspi_obj_t;\n\nextern const mp_qspi_proto_t mp_soft_qspi_proto;\n\nstatic inline uint8_t mp_spi_set_addr_buff(uint8_t *buf, uint32_t addr) {\n    if (MICROPY_HW_SPI_ADDR_IS_32BIT(addr)) {\n        buf[0] = addr >> 24;\n        buf[1] = addr >> 16;\n        buf[2] = addr >> 8;\n        buf[3] = addr;\n        return 4;\n    } else {\n        buf[0] = addr >> 16;\n        buf[1] = addr >> 8;\n        buf[2] = addr;\n        return 3;\n    }\n}\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

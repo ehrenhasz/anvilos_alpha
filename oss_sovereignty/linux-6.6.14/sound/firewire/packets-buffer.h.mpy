@@ -1,0 +1,9 @@
+{
+  "module_name": "packets-buffer.h",
+  "hash_id": "31f43fd1c989eb02f544ecd94a691586f3067b0d59cb473f9a52f69d979ab1b9",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/packets-buffer.h",
+  "human_readable_source": " \n#ifndef SOUND_FIREWIRE_PACKETS_BUFFER_H_INCLUDED\n#define SOUND_FIREWIRE_PACKETS_BUFFER_H_INCLUDED\n\n#include <linux/dma-mapping.h>\n#include <linux/firewire.h>\n\n \nstruct iso_packets_buffer {\n\tstruct fw_iso_buffer iso_buffer;\n\tstruct {\n\t\tvoid *buffer;\n\t\tunsigned int offset;\n\t} *packets;\n};\n\nint iso_packets_buffer_init(struct iso_packets_buffer *b, struct fw_unit *unit,\n\t\t\t    unsigned int count, unsigned int packet_size,\n\t\t\t    enum dma_data_direction direction);\nvoid iso_packets_buffer_destroy(struct iso_packets_buffer *b,\n\t\t\t\tstruct fw_unit *unit);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

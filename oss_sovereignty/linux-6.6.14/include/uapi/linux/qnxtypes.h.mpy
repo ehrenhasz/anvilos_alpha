@@ -1,0 +1,9 @@
+{
+  "module_name": "qnxtypes.h",
+  "hash_id": "ea4d0cad51270e3dd09c028e3432f9f5bee63fe261dedc1f5f5ec35e082c63ea",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/qnxtypes.h",
+  "human_readable_source": " \n \n\n#ifndef _QNX4TYPES_H\n#define _QNX4TYPES_H\n\n#include <linux/types.h>\n\ntypedef __le16 qnx4_nxtnt_t;\ntypedef __u8  qnx4_ftype_t;\n\ntypedef struct {\n\t__le32 xtnt_blk;\n\t__le32 xtnt_size;\n} qnx4_xtnt_t;\n\ntypedef __le16 qnx4_mode_t;\ntypedef __le16 qnx4_muid_t;\ntypedef __le16 qnx4_mgid_t;\ntypedef __le32 qnx4_off_t;\ntypedef __le16 qnx4_nlink_t;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

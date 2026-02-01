@@ -1,0 +1,9 @@
+{
+  "module_name": "ga102.c",
+  "hash_id": "29a4c08f94a449dc4459880f1e4a147e8316c5f33519da7458c4cdf8a5b82775",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/nvdec/ga102.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <subdev/mc.h>\n#include <subdev/timer.h>\n\nstatic const struct nvkm_falcon_func\nga102_nvdec_flcn = {\n\t.disable = gm200_flcn_disable,\n\t.enable = gm200_flcn_enable,\n\t.addr2 = 0x1c00,\n\t.reset_pmc = true,\n\t.reset_prep = ga102_flcn_reset_prep,\n\t.reset_wait_mem_scrubbing = ga102_flcn_reset_wait_mem_scrubbing,\n\t.imem_dma = &ga102_flcn_dma,\n\t.dmem_dma = &ga102_flcn_dma,\n};\n\nstatic const struct nvkm_nvdec_func\nga102_nvdec = {\n\t.flcn = &ga102_nvdec_flcn,\n};\n\nstatic int\nga102_nvdec_nofw(struct nvkm_nvdec *nvdec, int ver, const struct nvkm_nvdec_fwif *fwif)\n{\n\treturn 0;\n}\n\nstatic const struct nvkm_nvdec_fwif\nga102_nvdec_fwif[] = {\n\t{ -1, ga102_nvdec_nofw, &ga102_nvdec },\n\t{}\n};\n\nint\nga102_nvdec_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t\tstruct nvkm_nvdec **pnvdec)\n{\n\treturn nvkm_nvdec_new_(ga102_nvdec_fwif, device, type, inst, 0x848000, pnvdec);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "lan9303.h",
+  "hash_id": "82799048079f9d9c9d8f43f22b8bf7de2e82294a24c3339fe94f1c8084d6aed6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/lan9303.h",
+  "human_readable_source": " \n#include <linux/regmap.h>\n#include <linux/device.h>\n#include <net/dsa.h>\n\n#include <linux/dsa/lan9303.h>\n\nextern const struct regmap_access_table lan9303_register_set;\nextern const struct lan9303_phy_ops lan9303_indirect_phy_ops;\n\nint lan9303_probe(struct lan9303 *chip, struct device_node *np);\nint lan9303_remove(struct lan9303 *chip);\nvoid lan9303_shutdown(struct lan9303 *chip);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

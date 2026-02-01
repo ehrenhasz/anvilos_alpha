@@ -1,0 +1,9 @@
+{
+  "module_name": "mbsrtoc32s.c",
+  "hash_id": "56f3cf99fb288c9471075d8ddc0095a097174def2fb9fc5526e5083e2eac9179",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mbsrtoc32s.c",
+  "human_readable_source": " \n#include <uchar.h>\n\n#include <wchar.h>\n\n#if (HAVE_WORKING_MBRTOC32 && !_GL_WCHAR_T_IS_UCS4) || (GL_CHAR32_T_IS_UNICODE && GL_CHAR32_T_VS_WCHAR_T_NEEDS_CONVERSION) || _GL_SMALL_WCHAR_T\n \n\n# include <errno.h>\n# include <limits.h>\n# include <stdlib.h>\n\n# include \"strnlen1.h\"\n\nextern mbstate_t _gl_mbsrtoc32s_state;\n\n# define FUNC mbsrtoc32s\n# define DCHAR_T char32_t\n# define INTERNAL_STATE _gl_mbsrtoc32s_state\n# define MBRTOWC mbrtoc32\n# if GNULIB_MBRTOC32_REGULAR\n    \n#  define USES_C32 0\n# else\n#  define USES_C32 1\n# endif\n# include \"mbsrtowcs-impl.h\"\n\n#else\n \n\nstatic_assert (sizeof (char32_t) == sizeof (wchar_t));\n\n# if _GL_WCHAR_T_IS_UCS4\n_GL_EXTERN_INLINE\n# endif\nsize_t\nmbsrtoc32s (char32_t *dest, const char **srcp, size_t len, mbstate_t *ps)\n{\n  return mbsrtowcs ((wchar_t *) dest, srcp, len, ps);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

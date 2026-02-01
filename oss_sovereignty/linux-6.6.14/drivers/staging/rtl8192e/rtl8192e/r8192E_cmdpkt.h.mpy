@@ -1,0 +1,9 @@
+{
+  "module_name": "r8192E_cmdpkt.h",
+  "hash_id": "958ddbc957a71f9eb16fa678fecc90a8a3d8c9caf0af0516f24df14b745cfd4e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192e/rtl8192e/r8192E_cmdpkt.h",
+  "human_readable_source": " \n \n#ifndef R819XUSB_CMDPKT_H\n#define R819XUSB_CMDPKT_H\n\nbool rtl92e_send_cmd_pkt(struct net_device *dev, u32 type, const void *data,\n\t\t\t u32 len);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

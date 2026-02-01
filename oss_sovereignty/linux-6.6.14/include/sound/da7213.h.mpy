@@ -1,0 +1,9 @@
+{
+  "module_name": "da7213.h",
+  "hash_id": "cd39f3aa5c9bb1c06cab484a79dbc9801c5b150ef9d4bfa86e5aa00c1f3a3194",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/da7213.h",
+  "human_readable_source": " \n \n\n#ifndef _DA7213_PDATA_H\n#define _DA7213_PDATA_H\n\nenum da7213_micbias_voltage {\n\tDA7213_MICBIAS_1_6V = 0,\n\tDA7213_MICBIAS_2_2V = 1,\n\tDA7213_MICBIAS_2_5V = 2,\n\tDA7213_MICBIAS_3_0V = 3,\n};\n\nenum da7213_dmic_data_sel {\n\tDA7213_DMIC_DATA_LRISE_RFALL = 0,\n\tDA7213_DMIC_DATA_LFALL_RRISE = 1,\n};\n\nenum da7213_dmic_samplephase {\n\tDA7213_DMIC_SAMPLE_ON_CLKEDGE = 0,\n\tDA7213_DMIC_SAMPLE_BETWEEN_CLKEDGE = 1,\n};\n\nenum da7213_dmic_clk_rate {\n\tDA7213_DMIC_CLK_3_0MHZ = 0,\n\tDA7213_DMIC_CLK_1_5MHZ = 1,\n};\n\nstruct da7213_platform_data {\n\t \n\tenum da7213_micbias_voltage micbias1_lvl;\n\tenum da7213_micbias_voltage micbias2_lvl;\n\n\t \n\tenum da7213_dmic_data_sel dmic_data_sel;\n\tenum da7213_dmic_samplephase dmic_samplephase;\n\tenum da7213_dmic_clk_rate dmic_clk_rate;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "spdxexclude",
+  "hash_id": "d5255069ef6921536e8e6c4174f5d972ff7e721a177d4af667b3c6514bbef3c0",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/spdxexclude",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Patterns for excluding files and directories\n\n# Ignore the license directory and the licensing documentation which would\n# create lots of noise for no value\nLICENSES/\nlicense-rules.rst\n\n# Ignore config files and snippets. The majority is generated\n# by the Kconfig tools\nkernel/configs/\narch/*/configs/\n\n# Other files without copyrightable content\n/CREDITS\n/MAINTAINERS\n/README\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

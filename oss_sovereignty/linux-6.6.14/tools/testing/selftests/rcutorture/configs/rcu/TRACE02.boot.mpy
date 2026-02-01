@@ -1,0 +1,9 @@
+{
+  "module_name": "TRACE02.boot",
+  "hash_id": "c27671ae2f8f6b203601adfb8c871593237445f8e78347a2724b4e23b4bb8e76",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/TRACE02.boot",
+  "human_readable_source": "rcutorture.torture_type=tasks-tracing\nrcutorture.fwd_progress=2\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

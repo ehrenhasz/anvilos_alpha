@@ -1,0 +1,9 @@
+{
+  "module_name": "hmm.h",
+  "hash_id": "5785d20a8d8b4b41d61dac11eea4664a03e0a9b2018af4cdac38e03a010af0ad",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/hmm.h",
+  "human_readable_source": " \n \n#ifndef LINUX_HMM_H\n#define LINUX_HMM_H\n\n#include <linux/mm.h>\n\nstruct mmu_interval_notifier;\n\n \nenum hmm_pfn_flags {\n\t \n\tHMM_PFN_VALID = 1UL << (BITS_PER_LONG - 1),\n\tHMM_PFN_WRITE = 1UL << (BITS_PER_LONG - 2),\n\tHMM_PFN_ERROR = 1UL << (BITS_PER_LONG - 3),\n\tHMM_PFN_ORDER_SHIFT = (BITS_PER_LONG - 8),\n\n\t \n\tHMM_PFN_REQ_FAULT = HMM_PFN_VALID,\n\tHMM_PFN_REQ_WRITE = HMM_PFN_WRITE,\n\n\tHMM_PFN_FLAGS = 0xFFUL << HMM_PFN_ORDER_SHIFT,\n};\n\n \nstatic inline struct page *hmm_pfn_to_page(unsigned long hmm_pfn)\n{\n\treturn pfn_to_page(hmm_pfn & ~HMM_PFN_FLAGS);\n}\n\n \nstatic inline unsigned int hmm_pfn_to_map_order(unsigned long hmm_pfn)\n{\n\treturn (hmm_pfn >> HMM_PFN_ORDER_SHIFT) & 0x1F;\n}\n\n \nstruct hmm_range {\n\tstruct mmu_interval_notifier *notifier;\n\tunsigned long\t\tnotifier_seq;\n\tunsigned long\t\tstart;\n\tunsigned long\t\tend;\n\tunsigned long\t\t*hmm_pfns;\n\tunsigned long\t\tdefault_flags;\n\tunsigned long\t\tpfn_flags_mask;\n\tvoid\t\t\t*dev_private_owner;\n};\n\n \nint hmm_range_fault(struct hmm_range *range);\n\n \n#define HMM_RANGE_DEFAULT_TIMEOUT 1000\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

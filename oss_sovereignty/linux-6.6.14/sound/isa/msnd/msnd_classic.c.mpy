@@ -1,0 +1,9 @@
+{
+  "module_name": "msnd_classic.c",
+  "hash_id": "5ff9e0101ef9b2afc9e9736e66f15d75153d219cb03c7a4881087e967e7267ca",
+  "original_prompt": "Ingested from linux-6.6.14/sound/isa/msnd/msnd_classic.c",
+  "human_readable_source": " \n#define MSND_CLASSIC\n#include \"msnd_pinnacle.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

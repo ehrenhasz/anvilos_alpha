@@ -1,0 +1,9 @@
+{
+  "module_name": "vport-internal_dev.h",
+  "hash_id": "3931ee3bd200375a7dee554349053c755339ed4168b650abe17c4efe4497b67e",
+  "original_prompt": "Ingested from linux-6.6.14/net/openvswitch/vport-internal_dev.h",
+  "human_readable_source": " \n \n\n#ifndef VPORT_INTERNAL_DEV_H\n#define VPORT_INTERNAL_DEV_H 1\n\n#include \"datapath.h\"\n#include \"vport.h\"\n\nint ovs_is_internal_dev(const struct net_device *);\nstruct vport *ovs_internal_dev_get_vport(struct net_device *);\nint ovs_internal_dev_rtnl_link_register(void);\nvoid ovs_internal_dev_rtnl_link_unregister(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "printenv.x",
+  "hash_id": "79cc2a620df9d27259b486d8a6d85be97619128c9720b4ab36dec7d36cf723ae",
+  "original_prompt": "Ingested from coreutils-9.4/man/printenv.x",
+  "human_readable_source": "[NAME]\nprintenv \\- print all or part of environment\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "manifest.py",
+  "hash_id": "640018b0ce2c155fc6a14d79c7032c8a9bf9de89df90d69daecb0a55b4ad03cd",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/standard/manifest.py",
+  "human_readable_source": "include(\"$(PORT_DIR)/variants/manifest.py\")\n\ninclude(\"$(MPY_DIR)/extmod/asyncio\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-synthetic_event_syntax_errors.tc",
+  "hash_id": "9b7df0c242caf43e58860480099fc240a3d763fb9ecfed37a624a88778922905",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/inter-event/trigger-synthetic_event_syntax_errors.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event trigger - test synthetic_events syntax parser errors\n# requires: synthetic_events error_log \"' >> synthetic_events\":README\n\ncheck_error() { # command-with-error-pos-by-^\n    ftrace_errlog_check 'synthetic_events' \"$1\" 'synthetic_events'\n}\n\ncheck_dyn_error() { # command-with-error-pos-by-^\n    ftrace_errlog_check 'synthetic_events' \"$1\" 'dynamic_events'\n}\n\ncheck_error 'myevent ^chr arg'\t\t\t# INVALID_TYPE\ncheck_error 'myevent ^unsigned arg'\t\t# INCOMPLETE_TYPE\n\ncheck_error 'myevent char ^str]; int v'\t\t# BAD_NAME\ncheck_error '^mye-vent char str[]'\t\t# BAD_NAME\ncheck_error 'myevent char ^st-r[]'\t\t# BAD_NAME\n\ncheck_error 'myevent char str;^[]'\t\t# INVALID_FIELD\ncheck_error 'myevent char str; ^int'\t\t# INVALID_FIELD\n\ncheck_error 'myevent char ^str[; int v'\t\t# INVALID_ARRAY_SPEC\ncheck_error 'myevent char ^str[kdjdk]'\t\t# INVALID_ARRAY_SPEC\ncheck_error 'myevent char ^str[257]'\t\t# INVALID_ARRAY_SPEC\n\ncheck_error '^mye;vent char str[]'\t\t# INVALID_CMD\ncheck_error '^myevent ; char str[]'\t\t# INVALID_CMD\ncheck_error '^myevent; char str[]'\t\t# INVALID_CMD\ncheck_error '^myevent ;char str[]'\t\t# INVALID_CMD\ncheck_error '^; char str[]'\t\t\t# INVALID_CMD\ncheck_error '^;myevent char str[]'\t\t# INVALID_CMD\ncheck_error '^myevent'\t\t\t\t# INVALID_CMD\n\ncheck_dyn_error '^s:junk/myevent char str['\t# INVALID_DYN_CMD\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

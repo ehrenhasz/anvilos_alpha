@@ -1,0 +1,9 @@
+{
+  "module_name": "stub.h",
+  "hash_id": "1b69e8851eeb6cc08e0ab2f251bdf6fe86c5e55f2ffcda6be5efb14f0ea00132",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/shared/sysdep/stub.h",
+  "human_readable_source": " \n#include <asm/unistd.h>\n#include <sys/mman.h>\n#include <signal.h>\n#include <as-layout.h>\n#include <stub-data.h>\n\n#ifdef __i386__\n#include \"stub_32.h\"\n#else\n#include \"stub_64.h\"\n#endif\n\nextern void stub_segv_handler(int, siginfo_t *, void *);\nextern void stub_clone_handler(void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

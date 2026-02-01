@@ -1,0 +1,9 @@
+{
+  "module_name": "luts_1d.h",
+  "hash_id": "cd69d4944df854175ba0aeeb4929f164aec48c2b4470c7ded7921be4b0c184b6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/modules/color/luts_1d.h",
+  "human_readable_source": " \n#ifndef LUTS_1D_H\n#define LUTS_1D_H\n\n#include \"hw_shared.h\"\n\nstruct point_config {\n\tuint32_t custom_float_x;\n\tuint32_t custom_float_y;\n\tuint32_t custom_float_slope;\n};\n\nstruct lut_point {\n\tuint32_t red;\n\tuint32_t green;\n\tuint32_t blue;\n\tuint32_t delta_red;\n\tuint32_t delta_green;\n\tuint32_t delta_blue;\n};\n\nstruct pwl_1dlut_parameter {\n\tstruct gamma_curve\tarr_curve_points[34];\n\tstruct point_config\tarr_points[2];\n\tstruct lut_point rgb_resulted[256];\n\tuint32_t hw_points_num;\n};\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "network.h",
+  "hash_id": "50d3c4c59024de6f773a52f1504db4e7f3e0290157c3509193b20a8ce30c3818",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/ipwireless/network.h",
+  "human_readable_source": " \n \n\n#ifndef _IPWIRELESS_CS_NETWORK_H_\n#define _IPWIRELESS_CS_NETWORK_H_\n\n#include <linux/types.h>\n\nstruct ipw_network;\nstruct ipw_tty;\nstruct ipw_hardware;\n\n \n#define IPW_CHANNEL_RAS      0\n#define IPW_CHANNEL_DIALLER  1\n#define IPW_CHANNEL_CONSOLE  2\n#define NO_OF_IPW_CHANNELS   5\n\nvoid ipwireless_network_notify_control_line_change(struct ipw_network *net,\n\t\tunsigned int channel_idx, unsigned int control_lines,\n\t\tunsigned int control_mask);\nvoid ipwireless_network_packet_received(struct ipw_network *net,\n\t\tunsigned int channel_idx, unsigned char *data,\n\t\tunsigned int length);\nstruct ipw_network *ipwireless_network_create(struct ipw_hardware *hw);\nvoid ipwireless_network_free(struct ipw_network *net);\nvoid ipwireless_associate_network_tty(struct ipw_network *net,\n\t\tunsigned int channel_idx, struct ipw_tty *tty);\nvoid ipwireless_disassociate_network_ttys(struct ipw_network *net,\n\t\tunsigned int channel_idx);\n\nvoid ipwireless_ppp_open(struct ipw_network *net);\n\nvoid ipwireless_ppp_close(struct ipw_network *net);\nint ipwireless_ppp_channel_index(struct ipw_network *net);\nint ipwireless_ppp_unit_number(struct ipw_network *net);\nint ipwireless_ppp_mru(const struct ipw_network *net);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

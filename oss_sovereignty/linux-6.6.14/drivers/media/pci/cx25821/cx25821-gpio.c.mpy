@@ -1,0 +1,9 @@
+{
+  "module_name": "cx25821-gpio.c",
+  "hash_id": "00ed2a0e1951ca1acacadb59253328bb512e0bdb143874484d84271bda08dacd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx25821/cx25821-gpio.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include \"cx25821.h\"\n\n \nvoid cx25821_set_gpiopin_direction(struct cx25821_dev *dev,\n\t\t\t\t   int pin_number, int pin_logic_value)\n{\n\tint bit = pin_number;\n\tu32 gpio_oe_reg = GPIO_LO_OE;\n\tu32 gpio_register = 0;\n\tu32 value = 0;\n\n\t \n\tif (pin_number >= 47)\n\t\treturn;\n\n\tif (pin_number > 31) {\n\t\tbit = pin_number - 31;\n\t\tgpio_oe_reg = GPIO_HI_OE;\n\t}\n\t \n\tgpio_register = cx_read(gpio_oe_reg);\n\n\tif (pin_logic_value == 1)\n\t\tvalue = gpio_register | Set_GPIO_Bit(bit);\n\telse\n\t\tvalue = gpio_register & Clear_GPIO_Bit(bit);\n\n\tcx_write(gpio_oe_reg, value);\n}\nEXPORT_SYMBOL(cx25821_set_gpiopin_direction);\n\nstatic void cx25821_set_gpiopin_logicvalue(struct cx25821_dev *dev,\n\t\t\t\t\t   int pin_number, int pin_logic_value)\n{\n\tint bit = pin_number;\n\tu32 gpio_reg = GPIO_LO;\n\tu32 value = 0;\n\n\t \n\tif (pin_number >= 47)\n\t\treturn;\n\n\t \n\tcx25821_set_gpiopin_direction(dev, pin_number, 0);\n\n\tif (pin_number > 31) {\n\t\tbit = pin_number - 31;\n\t\tgpio_reg = GPIO_HI;\n\t}\n\n\tvalue = cx_read(gpio_reg);\n\n\tif (pin_logic_value == 0)\n\t\tvalue &= Clear_GPIO_Bit(bit);\n\telse\n\t\tvalue |= Set_GPIO_Bit(bit);\n\n\tcx_write(gpio_reg, value);\n}\n\nvoid cx25821_gpio_init(struct cx25821_dev *dev)\n{\n\tif (dev == NULL)\n\t\treturn;\n\n\tswitch (dev->board) {\n\tcase CX25821_BOARD_CONEXANT_ATHENA10:\n\tdefault:\n\t\t \n\t\tcx25821_set_gpiopin_logicvalue(dev, 5, 1);\n\t\tmsleep(20);\n\t\tbreak;\n\t}\n\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

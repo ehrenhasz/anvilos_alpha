@@ -1,0 +1,9 @@
+{
+  "module_name": "diag318_test_handler.c",
+  "hash_id": "9631bf10cd198c70674b463939665589956bbf89f9c7aa47fa1d6020d2d1a6d1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/lib/s390x/diag318_test_handler.c",
+  "human_readable_source": "\n \n\n#include \"test_util.h\"\n#include \"kvm_util.h\"\n\n#define ICPT_INSTRUCTION\t0x04\n#define IPA0_DIAG\t\t0x8300\n\nstatic void guest_code(void)\n{\n\tuint64_t diag318_info = 0x12345678;\n\n\tasm volatile (\"diag %0,0,0x318\\n\" : : \"d\" (diag318_info));\n}\n\n \nstatic uint64_t diag318_handler(void)\n{\n\tstruct kvm_vcpu *vcpu;\n\tstruct kvm_vm *vm;\n\tstruct kvm_run *run;\n\tuint64_t reg;\n\tuint64_t diag318_info;\n\n\tvm = vm_create_with_one_vcpu(&vcpu, guest_code);\n\tvcpu_run(vcpu);\n\trun = vcpu->run;\n\n\tTEST_ASSERT_KVM_EXIT_REASON(vcpu, KVM_EXIT_S390_SIEIC);\n\tTEST_ASSERT(run->s390_sieic.icptcode == ICPT_INSTRUCTION,\n\t\t    \"Unexpected intercept code: 0x%x\", run->s390_sieic.icptcode);\n\tTEST_ASSERT((run->s390_sieic.ipa & 0xff00) == IPA0_DIAG,\n\t\t    \"Unexpected IPA0 code: 0x%x\", (run->s390_sieic.ipa & 0xff00));\n\n\treg = (run->s390_sieic.ipa & 0x00f0) >> 4;\n\tdiag318_info = run->s.regs.gprs[reg];\n\n\tTEST_ASSERT(diag318_info != 0, \"DIAGNOSE 0x0318 info not set\");\n\n\tkvm_vm_free(vm);\n\n\treturn diag318_info;\n}\n\nuint64_t get_diag318_info(void)\n{\n\tstatic uint64_t diag318_info;\n\tstatic bool printed_skip;\n\n\t \n\tif (!kvm_has_cap(KVM_CAP_S390_DIAG318)) {\n\t\tif (!printed_skip) {\n\t\t\tfprintf(stdout, \"KVM_CAP_S390_DIAG318 not supported. \"\n\t\t\t\t\"Skipping diag318 test.\\n\");\n\t\t\tprinted_skip = true;\n\t\t}\n\t\treturn 0;\n\t}\n\n\t \n\tif (!diag318_info)\n\t\tdiag318_info = diag318_handler();\n\n\treturn diag318_info;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

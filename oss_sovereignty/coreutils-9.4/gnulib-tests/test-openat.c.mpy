@@ -1,0 +1,9 @@
+{
+  "module_name": "test-openat.c",
+  "hash_id": "40d07cb996513461b01a8546017aad1bcd5d2fd3c1c05b00b7c053e48c5d7c49",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-openat.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <fcntl.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (openat, int, (int, char const *, int, ...));\n\n#include <errno.h>\n#include <stdarg.h>\n#include <stdio.h>\n#include <unistd.h>\n\n#include \"macros.h\"\n\n#define BASE \"test-openat.t\"\n\n#include \"test-open.h\"\n\nstatic int dfd = AT_FDCWD;\n\n \nstatic int\ndo_open (char const *name, int flags, ...)\n{\n  if (flags & O_CREAT)\n    {\n      mode_t mode = 0;\n      va_list arg;\n      va_start (arg, flags);\n\n       \n      mode = va_arg (arg, PROMOTED_MODE_T);\n\n      va_end (arg);\n      return openat (dfd, name, flags, mode);\n    }\n  return openat (dfd, name, flags);\n}\n\nint\nmain (_GL_UNUSED int argc, char *argv[])\n{\n  int result;\n\n   \n  {\n    errno = 0;\n    ASSERT (openat (-1, \"foo\", O_RDONLY) == -1);\n    ASSERT (errno == EBADF);\n  }\n  {\n    close (99);\n    errno = 0;\n    ASSERT (openat (99, \"foo\", O_RDONLY) == -1);\n    ASSERT (errno == EBADF);\n  }\n\n   \n  result = test_open (do_open, false);\n  dfd = open (\".\", O_RDONLY);\n  ASSERT (0 <= dfd);\n  ASSERT (test_open (do_open, false) == result);\n  ASSERT (close (dfd) == 0);\n\n   \n  ASSERT (close (STDIN_FILENO) == 0);\n  ASSERT (openat (AT_FDCWD, \".\", O_RDONLY) == STDIN_FILENO);\n  {\n    dfd = open (\".\", O_RDONLY);\n    ASSERT (STDIN_FILENO < dfd);\n    ASSERT (chdir (\"..\") == 0);\n    ASSERT (close (STDIN_FILENO) == 0);\n    ASSERT (openat (dfd, \".\", O_RDONLY) == STDIN_FILENO);\n    ASSERT (close (dfd) == 0);\n  }\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

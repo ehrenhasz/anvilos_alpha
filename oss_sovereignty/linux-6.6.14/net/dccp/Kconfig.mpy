@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "abb467aa7c5a4c862df73d874960115be29ddcfd3022583920e085f091424bc9",
+  "original_prompt": "Ingested from linux-6.6.14/net/dccp/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig IP_DCCP\n\ttristate \"The DCCP Protocol\"\n\tdepends on INET\n\thelp\n\t  Datagram Congestion Control Protocol (RFC 4340)\n\n\t  From https://www.ietf.org/rfc/rfc4340.txt:\n\n\t  The Datagram Congestion Control Protocol (DCCP) is a transport\n\t  protocol that implements bidirectional, unicast connections of\n\t  congestion-controlled, unreliable datagrams. It should be suitable\n\t  for use by applications such as streaming media, Internet telephony,\n\t  and on-line games.\n\n\t  To compile this protocol support as a module, choose M here: the\n\t  module will be called dccp.\n\n\t  If in doubt, say N.\n\nif IP_DCCP\n\nconfig INET_DCCP_DIAG\n\tdepends on INET_DIAG\n\tdef_tristate y if (IP_DCCP = y && INET_DIAG = y)\n\tdef_tristate m\n\nsource \"net/dccp/ccids/Kconfig\"\n\nmenu \"DCCP Kernel Hacking\"\n\tdepends on DEBUG_KERNEL=y\n\nconfig IP_DCCP_DEBUG\n\tbool \"DCCP debug messages\"\n\thelp\n\t  Only use this if you're hacking DCCP.\n\n\t  When compiling DCCP as a module, this debugging output can be toggled\n\t  by setting the parameter dccp_debug of the `dccp' module to 0 or 1.\n\n\t  Just say N.\n\n\nendmenu\n\nendif # IP_DDCP\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

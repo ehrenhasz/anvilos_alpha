@@ -1,0 +1,9 @@
+{
+  "module_name": "test_ringbuf.c",
+  "hash_id": "324d76f192a087f6d486cd9dee605e002c18082ee56b312da399648697656282",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_ringbuf.c",
+  "human_readable_source": "\n\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct sample {\n\tint pid;\n\tint seq;\n\tlong value;\n\tchar comm[16];\n};\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_RINGBUF);\n} ringbuf SEC(\".maps\");\n\n \nint pid = 0;\nlong value = 0;\nlong flags = 0;\n\n \nlong total = 0;\nlong discarded = 0;\nlong dropped = 0;\n\nlong avail_data = 0;\nlong ring_size = 0;\nlong cons_pos = 0;\nlong prod_pos = 0;\n\n \nlong seq = 0;\n\nSEC(\"fentry/\" SYS_PREFIX \"sys_getpgid\")\nint test_ringbuf(void *ctx)\n{\n\tint cur_pid = bpf_get_current_pid_tgid() >> 32;\n\tstruct sample *sample;\n\n\tif (cur_pid != pid)\n\t\treturn 0;\n\n\tsample = bpf_ringbuf_reserve(&ringbuf, sizeof(*sample), 0);\n\tif (!sample) {\n\t\t__sync_fetch_and_add(&dropped, 1);\n\t\treturn 0;\n\t}\n\n\tsample->pid = pid;\n\tbpf_get_current_comm(sample->comm, sizeof(sample->comm));\n\tsample->value = value;\n\n\tsample->seq = seq++;\n\t__sync_fetch_and_add(&total, 1);\n\n\tif (sample->seq & 1) {\n\t\t \n\t\tbpf_ringbuf_output(&ringbuf, sample, sizeof(*sample), flags);\n\t\t \n\t\tbpf_ringbuf_discard(sample, flags);\n\t\t__sync_fetch_and_add(&discarded, 1);\n\t} else {\n\t\tbpf_ringbuf_submit(sample, flags);\n\t}\n\n\tavail_data = bpf_ringbuf_query(&ringbuf, BPF_RB_AVAIL_DATA);\n\tring_size = bpf_ringbuf_query(&ringbuf, BPF_RB_RING_SIZE);\n\tcons_pos = bpf_ringbuf_query(&ringbuf, BPF_RB_CONS_POS);\n\tprod_pos = bpf_ringbuf_query(&ringbuf, BPF_RB_PROD_POS);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

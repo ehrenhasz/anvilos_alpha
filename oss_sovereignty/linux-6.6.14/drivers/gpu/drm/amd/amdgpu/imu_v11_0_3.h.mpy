@@ -1,0 +1,9 @@
+{
+  "module_name": "imu_v11_0_3.h",
+  "hash_id": "e8d9c7bc96a1e6f7e3835e34644172bf83a3eba02b48174247085672c841bb82",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/imu_v11_0_3.h",
+  "human_readable_source": " \n\n#ifndef __IMU_V11_0_3_H__\n#define __IMU_V11_0_3_H__\n\nvoid imu_v11_0_3_program_rlc_ram(struct amdgpu_device *adev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

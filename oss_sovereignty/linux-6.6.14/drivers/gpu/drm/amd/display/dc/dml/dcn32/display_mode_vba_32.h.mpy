@@ -1,0 +1,9 @@
+{
+  "module_name": "display_mode_vba_32.h",
+  "hash_id": "f276267178620b1f6f0ffc08a6af92463288bfd37e79132c722d562f6d948558",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_32.h",
+  "human_readable_source": " \n\n#ifndef __DML32_DISPLAY_MODE_VBA_H__\n#define __DML32_DISPLAY_MODE_VBA_H__\n\n#include \"../display_mode_enums.h\"\n\n\n\n\n\n\n\n\n#define __DML_VBA_MIN_VSTARTUP__    9\n\n\n#define __DML_ARB_TO_RET_DELAY__    7 + 95\n\n\n#define __DML_MIN_DCFCLK_FACTOR__   1.15\n\n\n#define __DML_MAX_VRATIO_PRE__ 7.9\n#define __DML_MAX_BW_RATIO_PRE__ 4.0\n\n#define __DML_VBA_MAX_DST_Y_PRE__    63.75\n\n#define BPP_INVALID 0\n#define BPP_BLENDED_PIPE 0xffffffff\n\n#define MEM_STROBE_FREQ_MHZ 1600\n#define DCFCLK_FREQ_EXTRA_PREFETCH_REQ_MHZ 300\n#define MEM_STROBE_MAX_DELIVERY_TIME_US 60.0\n\nstruct display_mode_lib;\n\nvoid dml32_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib);\nvoid dml32_recalculate(struct display_mode_lib *mode_lib);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

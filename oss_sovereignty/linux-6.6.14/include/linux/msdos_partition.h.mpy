@@ -1,0 +1,9 @@
+{
+  "module_name": "msdos_partition.h",
+  "hash_id": "d4ad44aef0b2c15861fc2679559481814e6b64e28220bb39955d223db2e4908b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/msdos_partition.h",
+  "human_readable_source": " \n#ifndef _LINUX_MSDOS_PARTITION_H\n#define _LINUX_MSDOS_PARTITION_H\n\n#define MSDOS_LABEL_MAGIC\t\t0xAA55\n\nstruct msdos_partition {\n\tu8 boot_ind;\t\t \n\tu8 head;\t\t \n\tu8 sector;\t\t \n\tu8 cyl;\t\t\t \n\tu8 sys_ind;\t\t \n\tu8 end_head;\t\t \n\tu8 end_sector;\t\t \n\tu8 end_cyl;\t\t \n\t__le32 start_sect;\t \n\t__le32 nr_sects;\t \n} __packed;\n\nenum msdos_sys_ind {\n\t \n\tDOS_EXTENDED_PARTITION = 5,\n\tLINUX_EXTENDED_PARTITION = 0x85,\n\tWIN98_EXTENDED_PARTITION = 0x0f,\n\n\tLINUX_DATA_PARTITION = 0x83,\n\tLINUX_LVM_PARTITION = 0x8e,\n\tLINUX_RAID_PARTITION = 0xfd,\t \n\n\tSOLARIS_X86_PARTITION =\t0x82,\t \n\tNEW_SOLARIS_X86_PARTITION = 0xbf,\n\n\tDM6_AUX1PARTITION = 0x51,\t \n\tDM6_AUX3PARTITION = 0x53,\t \n\tDM6_PARTITION =\t0x54,\t\t \n\tEZD_PARTITION =\t0x55,\t\t \n\n\tFREEBSD_PARTITION = 0xa5,\t \n\tOPENBSD_PARTITION = 0xa6,\t \n\tNETBSD_PARTITION = 0xa9,\t \n\tBSDI_PARTITION = 0xb7,\t\t \n\tMINIX_PARTITION = 0x81,\t\t \n\tUNIXWARE_PARTITION = 0x63,\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

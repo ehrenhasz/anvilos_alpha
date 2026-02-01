@@ -1,0 +1,9 @@
+{
+  "module_name": "helper.c",
+  "hash_id": "35c09221b41f636a68643bb50365dcfe02bff279f9193711657e2ca74813f680",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/pauth/helper.c",
+  "human_readable_source": "\n\n\n#include \"helper.h\"\n\nsize_t keyia_sign(size_t ptr)\n{\n\tasm volatile(\"paciza %0\" : \"+r\" (ptr));\n\treturn ptr;\n}\n\nsize_t keyib_sign(size_t ptr)\n{\n\tasm volatile(\"pacizb %0\" : \"+r\" (ptr));\n\treturn ptr;\n}\n\nsize_t keyda_sign(size_t ptr)\n{\n\tasm volatile(\"pacdza %0\" : \"+r\" (ptr));\n\treturn ptr;\n}\n\nsize_t keydb_sign(size_t ptr)\n{\n\tasm volatile(\"pacdzb %0\" : \"+r\" (ptr));\n\treturn ptr;\n}\n\nsize_t keyg_sign(size_t ptr)\n{\n\t \n\tsize_t dest = 0;\n\tsize_t modifier = 0;\n\n\tasm volatile(\"pacga %0, %1, %2\" : \"=r\" (dest) : \"r\" (ptr), \"r\" (modifier));\n\n\treturn dest;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

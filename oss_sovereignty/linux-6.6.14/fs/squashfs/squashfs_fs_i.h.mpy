@@ -1,0 +1,9 @@
+{
+  "module_name": "squashfs_fs_i.h",
+  "hash_id": "9180a960a9512dc9e547219e8d2d647ef6be65b01b4084d1d50b227fef2dbc82",
+  "original_prompt": "Ingested from linux-6.6.14/fs/squashfs/squashfs_fs_i.h",
+  "human_readable_source": " \n#ifndef SQUASHFS_FS_I\n#define SQUASHFS_FS_I\n \n\nstruct squashfs_inode_info {\n\tu64\t\tstart;\n\tint\t\toffset;\n\tu64\t\txattr;\n\tunsigned int\txattr_size;\n\tint\t\txattr_count;\n\tunion {\n\t\tstruct {\n\t\t\tu64\t\tfragment_block;\n\t\t\tint\t\tfragment_size;\n\t\t\tint\t\tfragment_offset;\n\t\t\tu64\t\tblock_list_start;\n\t\t};\n\t\tstruct {\n\t\t\tu64\t\tdir_idx_start;\n\t\t\tint\t\tdir_idx_offset;\n\t\t\tint\t\tdir_idx_cnt;\n\t\t\tint\t\tparent;\n\t\t};\n\t};\n\tstruct inode\tvfs_inode;\n};\n\n\nstatic inline struct squashfs_inode_info *squashfs_i(struct inode *inode)\n{\n\treturn container_of(inode, struct squashfs_inode_info, vfs_inode);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

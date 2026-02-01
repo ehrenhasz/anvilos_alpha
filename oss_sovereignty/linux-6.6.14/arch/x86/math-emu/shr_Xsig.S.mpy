@@ -1,0 +1,9 @@
+{
+  "module_name": "shr_Xsig.S",
+  "hash_id": "bc19ae312c263cc439af8e84957ef193ef534ccae4b80388b0fbf07d19eb4371",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/math-emu/shr_Xsig.S",
+  "human_readable_source": " \n\t.file\t\"shr_Xsig.S\"\n \n\n#include \"fpu_emu.h\"\n\n.text\nSYM_FUNC_START(shr_Xsig)\n\tpush\t%ebp\n\tmovl\t%esp,%ebp\n\tpushl\t%esi\n\tmovl\tPARAM2,%ecx\n\tmovl\tPARAM1,%esi\n\tcmpl\t$32,%ecx\t \n\tjnc\tL_more_than_31\n\n \n\tpushl\t%ebx\n\tmovl\t(%esi),%eax\t \n\tmovl\t4(%esi),%ebx\t \n\tmovl\t8(%esi),%edx\t \n\tshrd\t%cl,%ebx,%eax\n\tshrd\t%cl,%edx,%ebx\n\tshr\t%cl,%edx\n\tmovl\t%eax,(%esi)\n\tmovl\t%ebx,4(%esi)\n\tmovl\t%edx,8(%esi)\n\tpopl\t%ebx\n\tpopl\t%esi\n\tleave\n\tRET\n\nL_more_than_31:\n\tcmpl\t$64,%ecx\n\tjnc\tL_more_than_63\n\n\tsubb\t$32,%cl\n\tmovl\t4(%esi),%eax\t \n\tmovl\t8(%esi),%edx\t \n\tshrd\t%cl,%edx,%eax\n\tshr\t%cl,%edx\n\tmovl\t%eax,(%esi)\n\tmovl\t%edx,4(%esi)\n\tmovl\t$0,8(%esi)\n\tpopl\t%esi\n\tleave\n\tRET\n\nL_more_than_63:\n\tcmpl\t$96,%ecx\n\tjnc\tL_more_than_95\n\n\tsubb\t$64,%cl\n\tmovl\t8(%esi),%eax\t \n\tshr\t%cl,%eax\n\txorl\t%edx,%edx\n\tmovl\t%eax,(%esi)\n\tmovl\t%edx,4(%esi)\n\tmovl\t%edx,8(%esi)\n\tpopl\t%esi\n\tleave\n\tRET\n\nL_more_than_95:\n\txorl\t%eax,%eax\n\tmovl\t%eax,(%esi)\n\tmovl\t%eax,4(%esi)\n\tmovl\t%eax,8(%esi)\n\tpopl\t%esi\n\tleave\n\tRET\nSYM_FUNC_END(shr_Xsig)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

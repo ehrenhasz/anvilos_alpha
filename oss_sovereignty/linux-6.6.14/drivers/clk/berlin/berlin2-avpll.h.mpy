@@ -1,0 +1,9 @@
+{
+  "module_name": "berlin2-avpll.h",
+  "hash_id": "8af6348321a2755495ed04bee6e3565503eae59c02dd7826f184d894b188d855",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/berlin/berlin2-avpll.h",
+  "human_readable_source": " \n \n#ifndef __BERLIN2_AVPLL_H\n#define __BERLIN2_AVPLL_H\n\n#define BERLIN2_AVPLL_BIT_QUIRK\t\tBIT(0)\n#define BERLIN2_AVPLL_SCRAMBLE_QUIRK\tBIT(1)\n\nint berlin2_avpll_vco_register(void __iomem *base, const char *name,\n\t   const char *parent_name, u8 vco_flags, unsigned long flags);\n\nint berlin2_avpll_channel_register(void __iomem *base, const char *name,\n\t\t       u8 index, const char *parent_name, u8 ch_flags,\n\t\t       unsigned long flags);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

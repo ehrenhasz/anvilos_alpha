@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-single.h",
+  "hash_id": "67c133ab6254736b0981e838f1f46675fc7eed539bb93d5fa476c1bc3bc9fd25",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/pinctrl-single.h",
+  "human_readable_source": " \n\n#ifndef _PINCTRL_SINGLE_H\n#define _PINCTRL_SINGLE_H\n\n \nstruct pcs_pdata {\n\tint irq;\n\tvoid (*rearm)(void);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

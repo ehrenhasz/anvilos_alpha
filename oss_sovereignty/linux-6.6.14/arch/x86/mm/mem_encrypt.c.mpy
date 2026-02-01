@@ -1,0 +1,9 @@
+{
+  "module_name": "mem_encrypt.c",
+  "hash_id": "517789626d6dc23776c4b8bd96ef0df7d1b25116bc1821c16b922881fae28feb",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/mm/mem_encrypt.c",
+  "human_readable_source": "\n \n\n#include <linux/dma-direct.h>\n#include <linux/dma-mapping.h>\n#include <linux/swiotlb.h>\n#include <linux/cc_platform.h>\n#include <linux/mem_encrypt.h>\n\n \nbool force_dma_unencrypted(struct device *dev)\n{\n\t \n\tif (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))\n\t\treturn true;\n\n\t \n\tif (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT)) {\n\t\tu64 dma_enc_mask = DMA_BIT_MASK(__ffs64(sme_me_mask));\n\t\tu64 dma_dev_mask = min_not_zero(dev->coherent_dma_mask,\n\t\t\t\t\t\tdev->bus_dma_limit);\n\n\t\tif (dma_dev_mask <= dma_enc_mask)\n\t\t\treturn true;\n\t}\n\n\treturn false;\n}\n\nstatic void print_mem_encrypt_feature_info(void)\n{\n\tpr_info(\"Memory Encryption Features active:\");\n\n\tif (cpu_feature_enabled(X86_FEATURE_TDX_GUEST)) {\n\t\tpr_cont(\" Intel TDX\\n\");\n\t\treturn;\n\t}\n\n\tpr_cont(\" AMD\");\n\n\t \n\tif (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT)) {\n\t\t \n\t\tpr_cont(\" SME\\n\");\n\t\treturn;\n\t}\n\n\t \n\tif (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))\n\t\tpr_cont(\" SEV\");\n\n\t \n\tif (cc_platform_has(CC_ATTR_GUEST_STATE_ENCRYPT))\n\t\tpr_cont(\" SEV-ES\");\n\n\t \n\tif (cc_platform_has(CC_ATTR_GUEST_SEV_SNP))\n\t\tpr_cont(\" SEV-SNP\");\n\n\tpr_cont(\"\\n\");\n}\n\n \nvoid __init mem_encrypt_init(void)\n{\n\tif (!cc_platform_has(CC_ATTR_MEM_ENCRYPT))\n\t\treturn;\n\n\t \n\tswiotlb_update_mem_attributes();\n\n\tprint_mem_encrypt_feature_info();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

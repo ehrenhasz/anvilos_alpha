@@ -1,0 +1,9 @@
+{
+  "module_name": "lock.c",
+  "hash_id": "b74347bcfc5d12ed674ae66d69861413e0c46b47064a8a7243f0a87564917c4f",
+  "original_prompt": "Ingested from linux-6.6.14/fs/reiserfs/lock.c",
+  "human_readable_source": "\n#include \"reiserfs.h\"\n#include <linux/mutex.h>\n\n \nvoid reiserfs_write_lock(struct super_block *s)\n{\n\tstruct reiserfs_sb_info *sb_i = REISERFS_SB(s);\n\n\tif (sb_i->lock_owner != current) {\n\t\tmutex_lock(&sb_i->lock);\n\t\tsb_i->lock_owner = current;\n\t}\n\n\t \n\tsb_i->lock_depth++;\n}\n\nvoid reiserfs_write_unlock(struct super_block *s)\n{\n\tstruct reiserfs_sb_info *sb_i = REISERFS_SB(s);\n\n\t \n\tBUG_ON(sb_i->lock_owner != current);\n\n\tif (--sb_i->lock_depth == -1) {\n\t\tsb_i->lock_owner = NULL;\n\t\tmutex_unlock(&sb_i->lock);\n\t}\n}\n\nint __must_check reiserfs_write_unlock_nested(struct super_block *s)\n{\n\tstruct reiserfs_sb_info *sb_i = REISERFS_SB(s);\n\tint depth;\n\n\t \n\tif (sb_i->lock_owner != current)\n\t\treturn -1;\n\n\tdepth = sb_i->lock_depth;\n\n\tsb_i->lock_depth = -1;\n\tsb_i->lock_owner = NULL;\n\tmutex_unlock(&sb_i->lock);\n\n\treturn depth;\n}\n\nvoid reiserfs_write_lock_nested(struct super_block *s, int depth)\n{\n\tstruct reiserfs_sb_info *sb_i = REISERFS_SB(s);\n\n\t \n\tif (depth == -1)\n\t\treturn;\n\n\tmutex_lock(&sb_i->lock);\n\tsb_i->lock_owner = current;\n\tsb_i->lock_depth = depth;\n}\n\n \nvoid reiserfs_check_lock_depth(struct super_block *sb, char *caller)\n{\n\tstruct reiserfs_sb_info *sb_i = REISERFS_SB(sb);\n\n\tWARN_ON(sb_i->lock_depth < 0);\n}\n\n#ifdef CONFIG_REISERFS_CHECK\nvoid reiserfs_lock_check_recursive(struct super_block *sb)\n{\n\tstruct reiserfs_sb_info *sb_i = REISERFS_SB(sb);\n\n\tWARN_ONCE((sb_i->lock_depth > 0), \"Unwanted recursive reiserfs lock!\\n\");\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

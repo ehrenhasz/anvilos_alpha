@@ -1,0 +1,9 @@
+{
+  "module_name": "iswxdigit.c",
+  "hash_id": "1bd1f71cfe29bc611656f4c42300bc20b73d7c94315b27c121227c20247a9c7d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/iswxdigit.c",
+  "human_readable_source": " \n#include <wctype.h>\n\nint\niswxdigit (wint_t wc)\n{\n  return ((wc >= '0' && wc <= '9')\n#if 'A' == 0x41 && 'a' == 0x61\n           \n          || ((wc & ~0x20) >= 'A' && (wc & ~0x20) <= 'F')\n#else\n          || (wc >= 'A' && wc <= 'F') || (wc >= 'a' && wc <= 'f')\n#endif\n         );\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

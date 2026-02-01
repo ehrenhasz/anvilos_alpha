@@ -1,0 +1,9 @@
+{
+  "module_name": "make_blank_csv.py",
+  "hash_id": "9d0aff74889218cb0545c51c0841119d07f2ac046bd2c60e174c8c337c534c57",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/ni_routing/tools/make_blank_csv.py",
+  "human_readable_source": "#!/usr/bin/env python3\n# SPDX-License-Identifier: GPL-2.0+\n\nfrom os import path\nimport os, csv\n\nfrom csv_collection import CSVCollection\nfrom ni_names import value_to_name\n\nCSV_DIR = 'csv'\n\ndef to_csv():\n  try:\n    os.makedirs(CSV_DIR)\n  except:\n    pass\n\n  csv_fname = path.join(CSV_DIR, 'blank_route_table.csv')\n\n  fieldnames = [sig for sig_val, sig in sorted(value_to_name.items())]\n  fieldnames.insert(0, CSVCollection.source_column_name)\n\n  with open(csv_fname, 'w') as F_csv:\n    dR = csv.DictWriter(F_csv, fieldnames, delimiter=';', quotechar='\"')\n    dR.writeheader()\n\n    for sig in fieldnames[1:]:\n      dR.writerow({CSVCollection.source_column_name: sig})\n\nif __name__ == '__main__':\n  to_csv()\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

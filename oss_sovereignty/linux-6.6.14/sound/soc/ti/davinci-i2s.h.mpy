@@ -1,0 +1,9 @@
+{
+  "module_name": "davinci-i2s.h",
+  "hash_id": "d54c4ec2d3af53d893a74f9ab8036b9d3fc792d1873167f45980392698a7d406",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/ti/davinci-i2s.h",
+  "human_readable_source": " \n \n\n#ifndef _DAVINCI_I2S_H\n#define _DAVINCI_I2S_H\n\n \nenum davinci_mcbsp_div {\n\tDAVINCI_MCBSP_CLKGDV,               \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

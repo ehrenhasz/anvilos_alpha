@@ -1,0 +1,9 @@
+{
+  "module_name": "sas_task.c",
+  "hash_id": "eda8fa188a5a3313eb6638b6b77edf0ca8c35df713838215444377d55bd049c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/libsas/sas_task.c",
+  "human_readable_source": "\n\n#include \"sas_internal.h\"\n\n#include <linux/kernel.h>\n#include <linux/export.h>\n#include <scsi/sas.h>\n#include <scsi/libsas.h>\n\n \nvoid sas_ssp_task_response(struct device *dev, struct sas_task *task,\n\t\t\t   struct ssp_response_iu *iu)\n{\n\tstruct task_status_struct *tstat = &task->task_status;\n\n\ttstat->resp = SAS_TASK_COMPLETE;\n\n\tswitch (iu->datapres) {\n\tcase SAS_DATAPRES_NO_DATA:\n\t\ttstat->stat = iu->status;\n\t\tbreak;\n\tcase SAS_DATAPRES_RESPONSE_DATA:\n\t\ttstat->stat = iu->resp_data[3];\n\t\tbreak;\n\tcase SAS_DATAPRES_SENSE_DATA:\n\t\ttstat->stat = SAS_SAM_STAT_CHECK_CONDITION;\n\t\ttstat->buf_valid_size =\n\t\t\tmin_t(int, SAS_STATUS_BUF_SIZE,\n\t\t\t      be32_to_cpu(iu->sense_data_len));\n\t\tmemcpy(tstat->buf, iu->sense_data, tstat->buf_valid_size);\n\n\t\tif (iu->status != SAM_STAT_CHECK_CONDITION)\n\t\t\tdev_warn(dev, \"dev %016llx sent sense data, but stat(0x%x) is not CHECK CONDITION\\n\",\n\t\t\t\t SAS_ADDR(task->dev->sas_addr), iu->status);\n\t\tbreak;\n\tdefault:\n\t\t \n\t\ttstat->stat = SAS_SAM_STAT_CHECK_CONDITION;\n\t}\n}\nEXPORT_SYMBOL_GPL(sas_ssp_task_response);\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

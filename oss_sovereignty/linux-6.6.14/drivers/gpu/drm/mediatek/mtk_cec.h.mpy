@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_cec.h",
+  "hash_id": "295c7d214450cb237f6f218eac00aa5030ae82ef974eb9dcb881701a77bc5178",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/mediatek/mtk_cec.h",
+  "human_readable_source": " \n \n#ifndef _MTK_CEC_H\n#define _MTK_CEC_H\n\n#include <linux/types.h>\n\nstruct device;\n\nvoid mtk_cec_set_hpd_event(struct device *dev,\n\t\t\t   void (*hotplug_event)(bool hpd, struct device *dev),\n\t\t\t   struct device *hdmi_dev);\nbool mtk_cec_hpd_high(struct device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

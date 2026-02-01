@@ -1,0 +1,9 @@
+{
+  "module_name": "extract-stall.sh",
+  "hash_id": "b01911df0e37d9600eaabaa0ea168172c3158c1d7fa142f85f303137c79444d3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/rcu/extract-stall.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0+\n\nusage() {\n\techo Extract any RCU CPU stall warnings present in specified file.\n\techo Filter out clocksource lines.  Note that preceding-lines excludes the\n\techo initial line of the stall warning but trailing-lines includes it.\n\techo\n\techo Usage: $(basename $0) dmesg-file [ preceding-lines [ trailing-lines ] ]\n\techo\n\techo Error: $1\n}\n\n# Terminate the script, if the argument is missing\n\nif test -f \"$1\" && test -r \"$1\"\nthen\n\t:\nelse\n\tusage \"Console log file \\\"$1\\\" missing or unreadable.\"\n\texit 1\nfi\n\necho $1\npreceding_lines=\"${2-3}\"\ntrailing_lines=\"${3-10}\"\n\nawk -v preceding_lines=\"$preceding_lines\" -v trailing_lines=\"$trailing_lines\" '\nsuffix <= 0 {\n\tfor (i = preceding_lines; i > 0; i--)\n\t\tlast[i] = last[i - 1];\n\tlast[0] = $0;\n}\n\nsuffix > 0 {\n\tprint $0;\n\tsuffix--;\n\tif (suffix <= 0)\n\t\tprint \"\";\n}\n\nsuffix <= 0 && /detected stall/ {\n\tfor (i = preceding_lines; i >= 0; i--)\n\t\tif (last[i] != \"\")\n\t\t\tprint last[i];\n\tsuffix = trailing_lines;\n}' < \"$1\" | tr -d '\\015' | grep -v clocksource\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

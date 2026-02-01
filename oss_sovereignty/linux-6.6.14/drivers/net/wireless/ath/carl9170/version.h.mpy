@@ -1,0 +1,9 @@
+{
+  "module_name": "version.h",
+  "hash_id": "bbf1fd8d5b41d00e63b5f510656e4fe4666ce92d0f56e1f022606c0130a8225b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/carl9170/version.h",
+  "human_readable_source": " \n#ifndef __CARL9170_SHARED_VERSION_H\n#define __CARL9170_SHARED_VERSION_H\n#define CARL9170FW_VERSION_YEAR 16\n#define CARL9170FW_VERSION_MONTH 2\n#define CARL9170FW_VERSION_DAY 15\n#define CARL9170FW_VERSION_GIT \"1.9.9\"\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

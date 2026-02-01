@@ -1,0 +1,9 @@
+{
+  "module_name": "phytbl_lcn.h",
+  "hash_id": "5af9c317ae03981e7e0862399ccafcf52431194515bcbaa8b2ed311155845cb1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phytbl_lcn.h",
+  "human_readable_source": "\n \n\n#include <types.h>\n#include \"phy_int.h\"\n\nextern const struct phytbl_info dot11lcnphytbl_rx_gain_info_rev0[];\nextern const u32 dot11lcnphytbl_rx_gain_info_sz_rev0;\nextern const struct phytbl_info dot11lcn_sw_ctrl_tbl_info_4313;\nextern const struct phytbl_info dot11lcn_sw_ctrl_tbl_info_4313_bt_ipa;\nextern const struct phytbl_info dot11lcn_sw_ctrl_tbl_info_4313_epa;\nextern const struct phytbl_info dot11lcn_sw_ctrl_tbl_info_4313_epa_combo;\nextern const struct phytbl_info dot11lcn_sw_ctrl_tbl_info_4313_bt_epa;\nextern const struct phytbl_info dot11lcn_sw_ctrl_tbl_info_4313_bt_epa_p250;\n\nextern const struct phytbl_info dot11lcnphytbl_info_rev0[];\nextern const u32 dot11lcnphytbl_info_sz_rev0;\n\nextern const struct phytbl_info dot11lcnphytbl_rx_gain_info_2G_rev2[];\nextern const u32 dot11lcnphytbl_rx_gain_info_2G_rev2_sz;\n\nextern const struct phytbl_info dot11lcnphytbl_rx_gain_info_5G_rev2[];\nextern const u32 dot11lcnphytbl_rx_gain_info_5G_rev2_sz;\n\nextern const struct phytbl_info dot11lcnphytbl_rx_gain_info_extlna_2G_rev2[];\n\nextern const struct phytbl_info dot11lcnphytbl_rx_gain_info_extlna_5G_rev2[];\n\nstruct lcnphy_tx_gain_tbl_entry {\n\tunsigned char gm;\n\tunsigned char pga;\n\tunsigned char pad;\n\tunsigned char dac;\n\tunsigned char bb_mult;\n};\n\nextern const struct lcnphy_tx_gain_tbl_entry dot11lcnphy_2GHz_gaintable_rev0[];\n\nextern const struct\nlcnphy_tx_gain_tbl_entry dot11lcnphy_2GHz_extPA_gaintable_rev0[];\n\nextern const struct lcnphy_tx_gain_tbl_entry dot11lcnphy_5GHz_gaintable_rev0[];\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

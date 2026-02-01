@@ -1,0 +1,9 @@
+{
+  "module_name": "redir.h",
+  "hash_id": "5e9e84c162f069473d27bea141d5a42de698a124fe6e9b290b2cc4331c48612e",
+  "original_prompt": "Ingested from bash-5.2.21/redir.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_REDIR_H_)\n#define _REDIR_H_\n\n#include \"stdc.h\"\n\n \n#define RX_ACTIVE\t0x01\t \n#define RX_UNDOABLE\t0x02\t \n#define RX_CLEXEC\t0x04\t \n#define RX_INTERNAL\t0x08\n#define RX_USER\t\t0x10\n#define RX_SAVCLEXEC\t0x20\t \n#define RX_SAVEFD\t0x40\t \n\nextern void redirection_error PARAMS((REDIRECT *, int, char *));\nextern int do_redirections PARAMS((REDIRECT *, int));\nextern char *redirection_expand PARAMS((WORD_DESC *));\nextern int stdin_redirects PARAMS((REDIRECT *));\n\n \nextern int open_redir_file PARAMS((REDIRECT *, char **));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

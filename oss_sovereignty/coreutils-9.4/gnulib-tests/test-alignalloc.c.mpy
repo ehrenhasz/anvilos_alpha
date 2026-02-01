@@ -1,0 +1,9 @@
+{
+  "module_name": "test-alignalloc.c",
+  "hash_id": "006c9e4041657cafa6e595b63a26c00c2bd3629fd44874c3a7cafe7d5d984ca3",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-alignalloc.c",
+  "human_readable_source": " \n  for (idx_t alignment = 1; alignment <= 16 * 1024 * 1024; alignment *= 2)\n    for (idx_t size = 1; size <= 1024; size *= 2)\n      {\n        test_alignalloc (alignment, size - 1);\n        test_alignalloc (alignment, size);\n        test_alignalloc (alignment, size + 1);\n      }\n\n   \n  alignfree (NULL);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

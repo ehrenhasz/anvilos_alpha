@@ -1,0 +1,9 @@
+{
+  "module_name": "page_32.h",
+  "hash_id": "011815253c2f31f06bba88acc40131f6e4a162e0544c8a47bc14559c2686573d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/page_32.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PAGE_32_H\n#define _ASM_X86_PAGE_32_H\n\n#include <asm/page_32_types.h>\n\n#ifndef __ASSEMBLY__\n\n#define __phys_addr_nodebug(x)\t((x) - PAGE_OFFSET)\n#ifdef CONFIG_DEBUG_VIRTUAL\nextern unsigned long __phys_addr(unsigned long);\n#else\n#define __phys_addr(x)\t\t__phys_addr_nodebug(x)\n#endif\n#define __phys_addr_symbol(x)\t__phys_addr(x)\n#define __phys_reloc_hide(x)\tRELOC_HIDE((x), 0)\n\n#include <linux/string.h>\n\nstatic inline void clear_page(void *page)\n{\n\tmemset(page, 0, PAGE_SIZE);\n}\n\nstatic inline void copy_page(void *to, void *from)\n{\n\tmemcpy(to, from, PAGE_SIZE);\n}\n#endif\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

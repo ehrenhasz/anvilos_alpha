@@ -1,0 +1,9 @@
+{
+  "module_name": "freplace_connect4.c",
+  "hash_id": "95c9b56c3070864051c3191a3d0f535b40d348b5dd3c5c116a8573fcb8e05a5e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/freplace_connect4.c",
+  "human_readable_source": "#include <linux/stddef.h>\n#include <linux/ipv6.h>\n#include <linux/bpf.h>\n#include <linux/in.h>\n#include <sys/socket.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n\nSEC(\"freplace/do_bind\")\nint new_do_bind(struct bpf_sock_addr *ctx)\n{\n  struct sockaddr_in sa = {};\n\n  bpf_bind(ctx, (struct sockaddr *)&sa, sizeof(sa));\n  return 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

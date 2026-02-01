@@ -1,0 +1,9 @@
+{
+  "module_name": "uncore-interconnect.json",
+  "hash_id": "5051ebbc0e49f594a554b72de001fbaa7fb14ee437ab4fc330a442537975e63d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/meteorlake/uncore-interconnect.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"Number of all coherent Data Read entries. Doesn't include prefetches\",\n        \"EventCode\": \"0x81\",\n        \"EventName\": \"UNC_HAC_ARB_REQ_TRK_REQUEST.DRD\",\n        \"PerPkg\": \"1\",\n        \"UMask\": \"0x2\",\n        \"Unit\": \"HAC_ARB\"\n    },\n    {\n        \"BriefDescription\": \"Number of all CMI transactions\",\n        \"EventCode\": \"0x8a\",\n        \"EventName\": \"UNC_HAC_ARB_TRANSACTIONS.ALL\",\n        \"PerPkg\": \"1\",\n        \"UMask\": \"0x1\",\n        \"Unit\": \"HAC_ARB\"\n    },\n    {\n        \"BriefDescription\": \"Number of all CMI reads\",\n        \"EventCode\": \"0x8a\",\n        \"EventName\": \"UNC_HAC_ARB_TRANSACTIONS.READS\",\n        \"PerPkg\": \"1\",\n        \"UMask\": \"0x2\",\n        \"Unit\": \"HAC_ARB\"\n    },\n    {\n        \"BriefDescription\": \"Number of all CMI writes not including Mflush\",\n        \"EventCode\": \"0x8a\",\n        \"EventName\": \"UNC_HAC_ARB_TRANSACTIONS.WRITES\",\n        \"PerPkg\": \"1\",\n        \"UMask\": \"0x4\",\n        \"Unit\": \"HAC_ARB\"\n    },\n    {\n        \"BriefDescription\": \"Total number of all outgoing entries allocated. Accounts for Coherent and non-coherent traffic.\",\n        \"EventCode\": \"0x81\",\n        \"EventName\": \"UNC_HAC_ARB_TRK_REQUESTS.ALL\",\n        \"PerPkg\": \"1\",\n        \"UMask\": \"0x1\",\n        \"Unit\": \"HAC_ARB\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

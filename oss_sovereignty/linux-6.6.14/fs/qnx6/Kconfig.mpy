@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9ec3967ead00a6a91bab34c3cdb77d0ff017004ffd86c843e3631138253feef9",
+  "original_prompt": "Ingested from linux-6.6.14/fs/qnx6/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig QNX6FS_FS\n\ttristate \"QNX6 file system support (read only)\"\n\tdepends on BLOCK && CRC32\n\tselect BUFFER_HEAD\n\thelp\n\t  This is the file system used by the real-time operating systems\n\t  QNX 6 (also called QNX RTP).\n\t  Further information is available at <http://www.qnx.com/>.\n\t  Say Y if you intend to mount QNX hard disks or floppies formatted\n          with a mkqnx6fs.\n\t  However, keep in mind that this currently is a readonly driver!\n\n\t  To compile this file system support as a module, choose M here: the\n\t  module will be called qnx6.\n\n\t  If you don't know whether you need it, then you don't need it:\n\t  answer N.\n\nconfig QNX6FS_DEBUG\n\tbool \"QNX6 debugging information\"\n\tdepends on QNX6FS_FS\n\thelp\n\t  Turns on extended debugging output.\n\n\t  If you are not a developer working on the QNX6FS, you probably don't\n\t  want this:\n\t  answer N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "archinsn.h",
+  "hash_id": "98b08b0b21498b41e90f95e1797945b6b881cbf565680ce6bb48e27f10c74a4d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/archinsn.h",
+  "human_readable_source": "#ifndef INSN_H\n#define INSN_H 1\n\nstruct perf_sample;\nstruct machine;\nstruct thread;\n\nvoid arch_fetch_insn(struct perf_sample *sample,\n\t\t     struct thread *thread,\n\t\t     struct machine *machine);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

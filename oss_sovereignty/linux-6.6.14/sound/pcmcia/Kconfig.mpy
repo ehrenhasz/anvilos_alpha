@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7509cf3e2b7d15fc863ac7fc2c106ff1be16d8d14123a719834c3594513d8d9c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pcmcia/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# ALSA PCMCIA drivers\n\nmenuconfig SND_PCMCIA\n\tbool \"PCMCIA sound devices\"\n\tdepends on PCMCIA\n\tdepends on HAS_IOPORT\n\tdefault y\n\thelp\n\t  Support for sound devices connected via the PCMCIA bus.\n\nif SND_PCMCIA && PCMCIA\n\nconfig SND_VXPOCKET\n\ttristate \"Digigram VXpocket\"\n\tselect SND_VX_LIB\n\thelp\n\t  Say Y here to include support for Digigram VXpocket and\n\t  VXpocket 440 soundcards.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called snd-vxpocket.\n\nconfig SND_PDAUDIOCF\n\ttristate \"Sound Core PDAudioCF\"\n\tselect SND_PCM\n\thelp\n\t  Say Y here to include support for Sound Core PDAudioCF\n\t  soundcards.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called snd-pdaudiocf.\n\nendif\t# SND_PCMCIA\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

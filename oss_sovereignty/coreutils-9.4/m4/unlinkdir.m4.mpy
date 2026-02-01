@@ -1,0 +1,9 @@
+{
+  "module_name": "unlinkdir.m4",
+  "hash_id": "89e519dab444f9e1fc440e5d2f80a7ae9a06b6900c4489e70a1af433302735d9",
+  "original_prompt": "Ingested from coreutils-9.4/m4/unlinkdir.m4",
+  "human_readable_source": "# serial 8\n\n# Copyright (C) 2005-2007, 2009-2023 Free Software Foundation, Inc.\n#\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\n# Written by Paul Eggert.\n\nAC_DEFUN([gl_UNLINKDIR],\n[\n  AC_REQUIRE([AC_CANONICAL_HOST])\n  AC_CHECK_HEADERS_ONCE([priv.h])\n\n  # The Hurd, the Linux kernel, the FreeBSD kernel version 2.2 and later,\n  # Cygwin, and mingw never let anyone (even root) unlink directories.\n  # If anyone knows of another system for which unlink can never\n  # remove a directory, please report it to <bug-coreutils@gnu.org>.\n  # Unfortunately this is difficult to test for, since it requires root access\n  # and might create garbage in the file system,\n  # so the code below simply relies on the kernel name and version number.\n  case $host_os in\n  gnu[[0-9]]* | \\\n  linux-* | linux | \\\n  freebsd2.2* | freebsd[[3-9]]* | freebsd[[1-9]][[0-9]]* | \\\n  cygwin | \\\n  mingw* | windows*)\n    AC_DEFINE([UNLINK_CANNOT_UNLINK_DIR], [1],\n      [Define to 1 if unlink (dir) cannot possibly succeed.]);;\n  esac\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

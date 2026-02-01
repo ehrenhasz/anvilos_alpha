@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "884d523c1d90c596a0550d2d1187d708ecb401bad5aaa6b760db1f8560fc185d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/qedi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig QEDI\n\ttristate \"QLogic QEDI 25/40/100Gb iSCSI Initiator Driver Support\"\n\tdepends on PCI && SCSI && UIO\n\tdepends on QED\n\tselect SCSI_ISCSI_ATTRS\n\tselect QED_LL2\n\tselect QED_OOO\n\tselect QED_ISCSI\n\tselect ISCSI_BOOT_SYSFS\n\thelp\n\tThis driver supports iSCSI offload for the QLogic FastLinQ\n\t41000 Series Converged Network Adapters.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

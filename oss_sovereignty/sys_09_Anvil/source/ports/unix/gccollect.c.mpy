@@ -1,0 +1,9 @@
+{
+  "module_name": "gccollect.c",
+  "hash_id": "6831bd404052f74b6543db276592206b2ee53e655bb7f36a286d69dc8c0e5ad4",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/gccollect.c",
+  "human_readable_source": " \n\n#include <stdio.h>\n\n#include \"py/mpstate.h\"\n#include \"py/gc.h\"\n\n#include \"shared/runtime/gchelper.h\"\n\n#if MICROPY_ENABLE_GC\n\nvoid gc_collect(void) {\n    gc_collect_start();\n    gc_helper_collect_regs_and_stack();\n    #if MICROPY_PY_THREAD\n    mp_thread_gc_others();\n    #endif\n    #if MICROPY_EMIT_NATIVE\n    mp_unix_mark_exec();\n    #endif\n    gc_collect_end();\n}\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

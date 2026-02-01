@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrlen-4.sh",
+  "hash_id": "43ef9f531797769950a29e05345ae7c5d48cb61c4ae743baef4d930738a7f5c9",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrlen-4.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test whether a specific EUC-JP locale is installed.\n: \"${LOCALE_JA=ja_JP}\"\nif test $LOCALE_JA = none; then\n  if test -f /usr/bin/localedef; then\n    echo \"Skipping test: no traditional japanese locale is installed\"\n  else\n    echo \"Skipping test: no traditional japanese locale is supported\"\n  fi\n  exit 77\nfi\n\nLC_ALL=$LOCALE_JA \\\n${CHECKER} ./test-mbrlen${EXEEXT} 4\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

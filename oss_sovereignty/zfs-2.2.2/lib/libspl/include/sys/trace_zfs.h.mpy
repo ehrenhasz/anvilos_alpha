@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_zfs.h",
+  "hash_id": "2abbd05531687afb6c57bcd62f960e208801d50539b94a7330fdc3ab9d95963f",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/trace_zfs.h",
+  "human_readable_source": " \n\n#ifndef _LIBSPL_ZFS_TRACE_H\n#define\t_LIBSPL_ZFS_TRACE_H\n\n \n#undef SET_ERROR\n#define\tSET_ERROR(err) \\\n\t(__set_error(__FILE__, __func__, __LINE__, err), err)\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

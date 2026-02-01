@@ -1,0 +1,9 @@
+{
+  "module_name": "ssh-sk-helper.0",
+  "hash_id": "54a4ccd4d7f568406df4e8bc0036b844d29d73e3f17c6d3f7ab922cfdc048ae5",
+  "original_prompt": "Ingested from openssh-9.6p1/ssh-sk-helper.0",
+  "human_readable_source": "SSH-SK-HELPER(8)            System Manager's Manual           SSH-SK-HELPER(8)\n\nNAME\n     ssh-sk-helper M-bM-^@M-^S OpenSSH helper for FIDO authenticator support\n\nSYNOPSIS\n     ssh-sk-helper [-v]\n\nDESCRIPTION\n     ssh-sk-helper is used by ssh(1), ssh-agent(1), and ssh-keygen(1) to\n     access keys provided by a FIDO authenticator.\n\n     ssh-sk-helper is not intended to be invoked directly by the user.\n\n     A single option is supported:\n\n     -v      Verbose mode.  Causes ssh-sk-helper to print debugging messages\n             about its progress.  This is helpful in debugging problems.\n             Multiple -v options increase the verbosity.  The maximum is 3.\n\n             Note that ssh(1), ssh-agent(1), and ssh-keygen(1) will\n             automatically pass the -v flag to ssh-sk-helper when they have\n             themselves been placed in debug mode.\n\nSEE ALSO\n     ssh(1), ssh-agent(1), ssh-keygen(1)\n\nHISTORY\n     ssh-sk-helper first appeared in OpenBSD 6.7.\n\nAUTHORS\n     Damien Miller <djm@openbsd.org>\n\nOpenBSD 7.3                     April 29, 2022                     OpenBSD 7.3\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

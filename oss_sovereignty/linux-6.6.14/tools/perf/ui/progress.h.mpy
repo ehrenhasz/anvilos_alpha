@@ -1,0 +1,9 @@
+{
+  "module_name": "progress.h",
+  "hash_id": "469e28eb233c0537f27f696488dfbb22ac76a8b92adb418f4a4dbbaa6b075668",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/progress.h",
+  "human_readable_source": " \n#ifndef _PERF_UI_PROGRESS_H_\n#define _PERF_UI_PROGRESS_H_ 1\n\n#include <linux/types.h>\n\nvoid ui_progress__finish(void);\n\nstruct ui_progress {\n\tconst char *title;\n\tu64 curr, next, step, total;\n\tbool size;\n};\n\nvoid __ui_progress__init(struct ui_progress *p, u64 total,\n\t\t\t const char *title, bool size);\n\n#define ui_progress__init(p, total, title) \\\n\t__ui_progress__init(p, total, title, false)\n\n#define ui_progress__init_size(p, total, title) \\\n\t__ui_progress__init(p, total, title, true)\n\nvoid ui_progress__update(struct ui_progress *p, u64 adv);\n\nstruct ui_progress_ops {\n\tvoid (*init)(struct ui_progress *p);\n\tvoid (*update)(struct ui_progress *p);\n\tvoid (*finish)(void);\n};\n\nextern struct ui_progress_ops *ui_progress__ops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

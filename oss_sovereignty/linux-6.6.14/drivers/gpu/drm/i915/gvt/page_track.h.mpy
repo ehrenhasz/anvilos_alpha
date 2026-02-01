@@ -1,0 +1,9 @@
+{
+  "module_name": "page_track.h",
+  "hash_id": "3535263dfc73de1ac49d6313f68b2695a6fda7642c4fea078a582589985b917a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gvt/page_track.h",
+  "human_readable_source": " \n\n#ifndef _GVT_PAGE_TRACK_H_\n#define _GVT_PAGE_TRACK_H_\n\n#include <linux/types.h>\n\nstruct intel_vgpu;\nstruct intel_vgpu_page_track;\n\ntypedef int (*gvt_page_track_handler_t)(\n\t\t\tstruct intel_vgpu_page_track *page_track,\n\t\t\tu64 gpa, void *data, int bytes);\n\n \nstruct intel_vgpu_page_track {\n\tgvt_page_track_handler_t handler;\n\tbool tracked;\n\tvoid *priv_data;\n};\n\nstruct intel_vgpu_page_track *intel_vgpu_find_page_track(\n\t\tstruct intel_vgpu *vgpu, unsigned long gfn);\n\nint intel_vgpu_register_page_track(struct intel_vgpu *vgpu,\n\t\tunsigned long gfn, gvt_page_track_handler_t handler,\n\t\tvoid *priv);\nvoid intel_vgpu_unregister_page_track(struct intel_vgpu *vgpu,\n\t\tunsigned long gfn);\n\nint intel_vgpu_enable_page_track(struct intel_vgpu *vgpu, unsigned long gfn);\nint intel_vgpu_disable_page_track(struct intel_vgpu *vgpu, unsigned long gfn);\n\nint intel_vgpu_page_track_handler(struct intel_vgpu *vgpu, u64 gpa,\n\t\tvoid *data, unsigned int bytes);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

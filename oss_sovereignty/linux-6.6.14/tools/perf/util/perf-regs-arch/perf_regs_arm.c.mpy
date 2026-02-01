@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_regs_arm.c",
+  "hash_id": "1a735f9e65ff77b2fc8d48d31203b560041189793d8016b643ad846b0917ae78",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/perf-regs-arch/perf_regs_arm.c",
+  "human_readable_source": "\n\n#ifdef HAVE_PERF_REGS_SUPPORT\n\n#include \"../perf_regs.h\"\n#include \"../../../arch/arm/include/uapi/asm/perf_regs.h\"\n\nconst char *__perf_reg_name_arm(int id)\n{\n\tswitch (id) {\n\tcase PERF_REG_ARM_R0:\n\t\treturn \"r0\";\n\tcase PERF_REG_ARM_R1:\n\t\treturn \"r1\";\n\tcase PERF_REG_ARM_R2:\n\t\treturn \"r2\";\n\tcase PERF_REG_ARM_R3:\n\t\treturn \"r3\";\n\tcase PERF_REG_ARM_R4:\n\t\treturn \"r4\";\n\tcase PERF_REG_ARM_R5:\n\t\treturn \"r5\";\n\tcase PERF_REG_ARM_R6:\n\t\treturn \"r6\";\n\tcase PERF_REG_ARM_R7:\n\t\treturn \"r7\";\n\tcase PERF_REG_ARM_R8:\n\t\treturn \"r8\";\n\tcase PERF_REG_ARM_R9:\n\t\treturn \"r9\";\n\tcase PERF_REG_ARM_R10:\n\t\treturn \"r10\";\n\tcase PERF_REG_ARM_FP:\n\t\treturn \"fp\";\n\tcase PERF_REG_ARM_IP:\n\t\treturn \"ip\";\n\tcase PERF_REG_ARM_SP:\n\t\treturn \"sp\";\n\tcase PERF_REG_ARM_LR:\n\t\treturn \"lr\";\n\tcase PERF_REG_ARM_PC:\n\t\treturn \"pc\";\n\tdefault:\n\t\treturn NULL;\n\t}\n\n\treturn NULL;\n}\n\nuint64_t __perf_reg_ip_arm(void)\n{\n\treturn PERF_REG_ARM_PC;\n}\n\nuint64_t __perf_reg_sp_arm(void)\n{\n\treturn PERF_REG_ARM_SP;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

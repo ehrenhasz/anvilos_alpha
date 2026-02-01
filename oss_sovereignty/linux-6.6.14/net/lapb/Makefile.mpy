@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3b0f3bbe89166c42a60529939dc2ab6aa6ff1ba79681a59bbbf85c43034ca095",
+  "original_prompt": "Ingested from linux-6.6.14/net/lapb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Linux LAPB layer.\n#\n\nobj-$(CONFIG_LAPB) += lapb.o\n\nlapb-y := lapb_in.o lapb_out.o lapb_subr.o lapb_timer.o lapb_iface.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

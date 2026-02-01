@@ -1,0 +1,9 @@
+{
+  "module_name": "rmdir.c",
+  "hash_id": "68bc2ad6822e5e49896385fe3628062faeb6d5c65a350572d48c34b5db369325",
+  "original_prompt": "Ingested from coreutils-9.4/lib/rmdir.c",
+  "human_readable_source": " \n\nint\nrpl_rmdir (char const *dir)\n{\n   \n  size_t len = strlen (dir);\n  int result;\n  while (len && ISSLASH (dir[len - 1]))\n    len--;\n  if (len && dir[len - 1] == '.' && (1 == len || ISSLASH (dir[len - 2])))\n    {\n      errno = EINVAL;\n      return -1;\n    }\n  result = rmdir (dir);\n   \n  if (result == -1 && errno == EINVAL)\n    errno = ENOTDIR;\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

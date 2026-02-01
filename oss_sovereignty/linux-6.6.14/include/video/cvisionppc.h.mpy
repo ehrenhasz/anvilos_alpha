@@ -1,0 +1,9 @@
+{
+  "module_name": "cvisionppc.h",
+  "hash_id": "522ed916d52f749901aabc07b91805a82eb12181264bc6b3eb33ebcf227772ac",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/cvisionppc.h",
+  "human_readable_source": " \n\n#ifndef CVISIONPPC_H\n#define CVISIONPPC_H\n\n#ifndef PM2FB_H\n#include \"pm2fb.h\"\n#endif\n\nstruct cvppc_par {\n\tunsigned char* pci_config;\n\tunsigned char* pci_bridge;\n\tu32 user_flags;\n};\n\n#define CSPPC_PCI_BRIDGE\t\t0xfffe0000\n#define CSPPC_BRIDGE_ENDIAN\t\t0x0000\n#define CSPPC_BRIDGE_INT\t\t0x0010\n\n#define\tCVPPC_PCI_CONFIG\t\t0xfffc0000\n#define CVPPC_ROM_ADDRESS\t\t0xe2000001\n#define CVPPC_REGS_REGION\t\t0xef000000\n#define CVPPC_FB_APERTURE_ONE\t\t0xe0000000\n#define CVPPC_FB_APERTURE_TWO\t\t0xe1000000\n#define CVPPC_FB_SIZE\t\t\t0x00800000\n#define CVPPC_MEM_CONFIG_OLD\t\t0xed61fcaa\t \n#define CVPPC_MEM_CONFIG_NEW\t\t0xed41c532\t \n#define CVPPC_MEMCLOCK\t\t\t83000\t\t \n\n \n#define CSPPCF_BRIDGE_BIG_ENDIAN\t0x02\n\n \n#define CSPPCF_BRIDGE_ACTIVE_INT2\t0x01\n\n#endif\t \n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

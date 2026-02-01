@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel_builder.py",
+  "hash_id": "b731ca59c4899003b469afc5865dbe28e699155ba2bd3e646b781e8e19638990",
+  "original_prompt": "Ingested from sys_09_Anvil/kernel_builder.py",
+  "human_readable_source": "# anvil_kernel_builder.py\n# Compiled for the Anvil VM to orchestrate the kernel build.\nimport os\n\ndef build_kernel():\n    # Micro-Chunk 1: Configuration\n    print(\">> ANVIL_CHUNK: KERNEL_CONFIG\")\n    # In Anvil, we avoid shell if possible, but for the legacy kernel build, \n    # we bridge using the Anvil-Shell provider.\n    os.system(\"make -C oss_sovereignty/sys_01_Linux_Kernel/source x86_64_defconfig\")\n    \n    # Micro-Chunk 2: Driver Injection\n    print(\">> ANVIL_CHUNK: DRIVER_INJECTION\")\n    drivers = [\"CONFIG_IWLWIFI\", \"CONFIG_DRM_I915\", \"CONFIG_NVME_CORE\", \"CONFIG_VIRTIO_PCI\"]\n    for d in drivers:\n        os.system(f\"./oss_sovereignty/sys_01_Linux_Kernel/source/scripts/config --enable {d}\")\n\nif __name__ == \"__main__\":\n    build_kernel()\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

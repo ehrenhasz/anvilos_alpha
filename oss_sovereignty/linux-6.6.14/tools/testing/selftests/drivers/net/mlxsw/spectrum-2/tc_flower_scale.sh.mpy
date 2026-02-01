@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_flower_scale.sh",
+  "hash_id": "979d779ab61c8ce65a367bd6ef927edb54004a2789397ed2e33acff3efabaccf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/tc_flower_scale.sh",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsource ../tc_flower_scale.sh\n\ntc_flower_get_target()\n{\n\tlocal should_fail=$1; shift\n\tlocal max_cnts\n\n\t# The driver associates a counter with each tc filter, which means the\n\t# number of supported filters is bounded by the number of available\n\t# counters.\n\tmax_cnts=$(devlink_resource_size_get counters flow)\n\n\t# Remove already allocated counters.\n\t((max_cnts -= $(devlink_resource_occ_get counters flow)))\n\n\t# Each rule uses two counters, for packets and bytes.\n\t((max_cnts /= 2))\n\n\tif ((! should_fail)); then\n\t\techo $max_cnts\n\telse\n\t\techo $((max_cnts + 1))\n\tfi\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

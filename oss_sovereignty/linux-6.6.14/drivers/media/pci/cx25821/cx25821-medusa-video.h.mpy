@@ -1,0 +1,9 @@
+{
+  "module_name": "cx25821-medusa-video.h",
+  "hash_id": "727e633b1f357b0da293e5a24fa603d650dcc2cdd1bc6379f1062f42cf51ef2d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx25821/cx25821-medusa-video.h",
+  "human_readable_source": " \n \n\n#ifndef _MEDUSA_VIDEO_H\n#define _MEDUSA_VIDEO_H\n\n#include \"cx25821-medusa-defines.h\"\n\n \n#define VIDEO_PROCAMP_MIN                 0\n#define VIDEO_PROCAMP_MAX                 10000\n#define UNSIGNED_BYTE_MIN                 0\n#define UNSIGNED_BYTE_MAX                 0xFF\n#define SIGNED_BYTE_MIN                   -128\n#define SIGNED_BYTE_MAX                   127\n\n \n#define SHARPNESS_DEFAULT                 50\n#define SATURATION_DEFAULT              5000\n#define BRIGHTNESS_DEFAULT              6200\n#define CONTRAST_DEFAULT                5000\n#define HUE_DEFAULT                     5000\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

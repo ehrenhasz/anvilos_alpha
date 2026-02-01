@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4bbeac47a20449a434cf14fd11d43507553b432789e00ecb030d3c2b2c6ce9c3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/fddi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Linux FDDI network device drivers.\n#\n\nobj-$(CONFIG_DEFXX) += defxx.o\nobj-$(CONFIG_DEFZA) += defza.o\nobj-$(CONFIG_SKFP) += skfp/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

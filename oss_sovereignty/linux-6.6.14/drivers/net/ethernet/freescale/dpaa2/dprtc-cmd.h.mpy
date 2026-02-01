@@ -1,0 +1,9 @@
+{
+  "module_name": "dprtc-cmd.h",
+  "hash_id": "b1be8d1345174638e5e084b1cc5e64ad7a6d45ab76de84f4c9984336db9a7c25",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/dpaa2/dprtc-cmd.h",
+  "human_readable_source": " \n \n\n#ifndef _FSL_DPRTC_CMD_H\n#define _FSL_DPRTC_CMD_H\n\n \n#define DPRTC_CMD_BASE_VERSION\t\t1\n#define DPRTC_CMD_VERSION_2\t\t2\n#define DPRTC_CMD_ID_OFFSET\t\t4\n\n#define DPRTC_CMD(id)\t(((id) << DPRTC_CMD_ID_OFFSET) | DPRTC_CMD_BASE_VERSION)\n#define DPRTC_CMD_V2(id) (((id) << DPRTC_CMD_ID_OFFSET) | DPRTC_CMD_VERSION_2)\n\n \n#define DPRTC_CMDID_CLOSE\t\t\tDPRTC_CMD(0x800)\n#define DPRTC_CMDID_OPEN\t\t\tDPRTC_CMD(0x810)\n\n#define DPRTC_CMDID_SET_IRQ_ENABLE\t\tDPRTC_CMD(0x012)\n#define DPRTC_CMDID_GET_IRQ_ENABLE\t\tDPRTC_CMD(0x013)\n#define DPRTC_CMDID_SET_IRQ_MASK\t\tDPRTC_CMD_V2(0x014)\n#define DPRTC_CMDID_GET_IRQ_MASK\t\tDPRTC_CMD(0x015)\n#define DPRTC_CMDID_GET_IRQ_STATUS\t\tDPRTC_CMD(0x016)\n#define DPRTC_CMDID_CLEAR_IRQ_STATUS\t\tDPRTC_CMD(0x017)\n\n#pragma pack(push, 1)\nstruct dprtc_cmd_open {\n\t__le32 dprtc_id;\n};\n\nstruct dprtc_cmd_get_irq {\n\t__le32 pad;\n\tu8 irq_index;\n};\n\nstruct dprtc_cmd_set_irq_enable {\n\tu8 en;\n\tu8 pad[3];\n\tu8 irq_index;\n};\n\nstruct dprtc_rsp_get_irq_enable {\n\tu8 en;\n};\n\nstruct dprtc_cmd_set_irq_mask {\n\t__le32 mask;\n\tu8 irq_index;\n};\n\nstruct dprtc_rsp_get_irq_mask {\n\t__le32 mask;\n};\n\nstruct dprtc_cmd_get_irq_status {\n\t__le32 status;\n\tu8 irq_index;\n};\n\nstruct dprtc_rsp_get_irq_status {\n\t__le32 status;\n};\n\nstruct dprtc_cmd_clear_irq_status {\n\t__le32 status;\n\tu8 irq_index;\n};\n\n#pragma pack(pop)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

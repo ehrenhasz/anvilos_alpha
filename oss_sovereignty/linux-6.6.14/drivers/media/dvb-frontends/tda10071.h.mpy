@@ -1,0 +1,9 @@
+{
+  "module_name": "tda10071.h",
+  "hash_id": "7daa0af46e92911eaf368f5b6968a409bb2b8f34beb7907f1f575a506cf2cfc9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/tda10071.h",
+  "human_readable_source": " \n \n\n#ifndef TDA10071_H\n#define TDA10071_H\n\n#include <linux/dvb/frontend.h>\n\n \n\n \nstruct tda10071_platform_data {\n\tu32 clk;\n\tu16 i2c_wr_max;\n#define TDA10071_TS_SERIAL        0\n#define TDA10071_TS_PARALLEL      1\n\tu8 ts_mode;\n\tbool spec_inv;\n\tu8 pll_multiplier;\n\tu8 tuner_i2c_addr;\n\n\tstruct dvb_frontend* (*get_dvb_frontend)(struct i2c_client *);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

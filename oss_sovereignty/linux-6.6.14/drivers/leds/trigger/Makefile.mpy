@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3d4fe40a68bf4ad30c1ee23c8cde44cb118e6fafb8d3a4737b42c3c3e4784c01",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/trigger/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_LEDS_TRIGGER_TIMER)\t+= ledtrig-timer.o\nobj-$(CONFIG_LEDS_TRIGGER_ONESHOT)\t+= ledtrig-oneshot.o\nobj-$(CONFIG_LEDS_TRIGGER_DISK)\t\t+= ledtrig-disk.o\nobj-$(CONFIG_LEDS_TRIGGER_MTD)\t\t+= ledtrig-mtd.o\nobj-$(CONFIG_LEDS_TRIGGER_HEARTBEAT)\t+= ledtrig-heartbeat.o\nobj-$(CONFIG_LEDS_TRIGGER_BACKLIGHT)\t+= ledtrig-backlight.o\nobj-$(CONFIG_LEDS_TRIGGER_GPIO)\t\t+= ledtrig-gpio.o\nobj-$(CONFIG_LEDS_TRIGGER_CPU)\t\t+= ledtrig-cpu.o\nobj-$(CONFIG_LEDS_TRIGGER_ACTIVITY)\t+= ledtrig-activity.o\nobj-$(CONFIG_LEDS_TRIGGER_DEFAULT_ON)\t+= ledtrig-default-on.o\nobj-$(CONFIG_LEDS_TRIGGER_TRANSIENT)\t+= ledtrig-transient.o\nobj-$(CONFIG_LEDS_TRIGGER_CAMERA)\t+= ledtrig-camera.o\nobj-$(CONFIG_LEDS_TRIGGER_PANIC)\t+= ledtrig-panic.o\nobj-$(CONFIG_LEDS_TRIGGER_NETDEV)\t+= ledtrig-netdev.o\nobj-$(CONFIG_LEDS_TRIGGER_PATTERN)\t+= ledtrig-pattern.o\nobj-$(CONFIG_LEDS_TRIGGER_AUDIO)\t+= ledtrig-audio.o\nobj-$(CONFIG_LEDS_TRIGGER_TTY)\t\t+= ledtrig-tty.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

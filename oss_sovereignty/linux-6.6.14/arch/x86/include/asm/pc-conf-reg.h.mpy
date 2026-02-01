@@ -1,0 +1,9 @@
+{
+  "module_name": "pc-conf-reg.h",
+  "hash_id": "0ecc17d7cb71fce952df9478ff86699b008a6ffcf33245cf55f36efef1fc8e8c",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/pc-conf-reg.h",
+  "human_readable_source": " \n \n#ifndef _ASM_X86_PC_CONF_REG_H\n#define _ASM_X86_PC_CONF_REG_H\n\n#include <linux/io.h>\n#include <linux/spinlock.h>\n#include <linux/types.h>\n\n#define PC_CONF_INDEX\t\t0x22\n#define PC_CONF_DATA\t\t0x23\n\n#define PC_CONF_MPS_IMCR\t0x70\n\nextern raw_spinlock_t pc_conf_lock;\n\nstatic inline u8 pc_conf_get(u8 reg)\n{\n\toutb(reg, PC_CONF_INDEX);\n\treturn inb(PC_CONF_DATA);\n}\n\nstatic inline void pc_conf_set(u8 reg, u8 data)\n{\n\toutb(reg, PC_CONF_INDEX);\n\toutb(data, PC_CONF_DATA);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

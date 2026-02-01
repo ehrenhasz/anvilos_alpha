@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_vpu.h",
+  "hash_id": "aad36e66fe069ad4712369a8317f2e6ea7cd026dfa089c4066f650df69ae5484",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/vpu/mtk_vpu.h",
+  "human_readable_source": " \n \n\n#ifndef _MTK_VPU_H\n#define _MTK_VPU_H\n\n#include <linux/platform_device.h>\n\n \n\ntypedef void (*ipi_handler_t) (const void *data,\n\t\t\t       unsigned int len,\n\t\t\t       void *priv);\n\n \n\nenum ipi_id {\n\tIPI_VPU_INIT = 0,\n\tIPI_VDEC_H264,\n\tIPI_VDEC_VP8,\n\tIPI_VDEC_VP9,\n\tIPI_VENC_H264,\n\tIPI_VENC_VP8,\n\tIPI_MDP,\n\tIPI_MAX,\n};\n\n \nenum rst_id {\n\tVPU_RST_ENC,\n\tVPU_RST_DEC,\n\tVPU_RST_MDP,\n\tVPU_RST_MAX,\n};\n\n \nint vpu_ipi_register(struct platform_device *pdev, enum ipi_id id,\n\t\t     ipi_handler_t handler, const char *name, void *priv);\n\n \nint vpu_ipi_send(struct platform_device *pdev,\n\t\t enum ipi_id id, void *buf,\n\t\t unsigned int len);\n\n \nstruct platform_device *vpu_get_plat_device(struct platform_device *pdev);\n\n \nint vpu_wdt_reg_handler(struct platform_device *pdev,\n\t\t\tvoid vpu_wdt_reset_func(void *priv),\n\t\t\tvoid *priv, enum rst_id id);\n\n \nunsigned int vpu_get_vdec_hw_capa(struct platform_device *pdev);\n\n \nunsigned int vpu_get_venc_hw_capa(struct platform_device *pdev);\n\n \nint vpu_load_firmware(struct platform_device *pdev);\n\n \nvoid *vpu_mapping_dm_addr(struct platform_device *pdev,\n\t\t\t  u32 dtcm_dmem_addr);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

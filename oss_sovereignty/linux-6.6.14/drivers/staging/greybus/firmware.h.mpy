@@ -1,0 +1,9 @@
+{
+  "module_name": "firmware.h",
+  "hash_id": "7ed0a4408a0f158f5e45a52778b9711e8847136fa7664d54d9ba8df9063abd41",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/greybus/firmware.h",
+  "human_readable_source": " \n \n\n#ifndef __FIRMWARE_H\n#define __FIRMWARE_H\n\n#include <linux/greybus.h>\n\n#define FW_NAME_PREFIX\t\"gmp_\"\n\n \n#define FW_NAME_SIZE\t\t56\n\n \nint fw_mgmt_init(void);\nvoid fw_mgmt_exit(void);\nstruct gb_connection *to_fw_mgmt_connection(struct device *dev);\nint gb_fw_mgmt_request_handler(struct gb_operation *op);\nint gb_fw_mgmt_connection_init(struct gb_connection *connection);\nvoid gb_fw_mgmt_connection_exit(struct gb_connection *connection);\n\n \nint gb_fw_download_request_handler(struct gb_operation *op);\nint gb_fw_download_connection_init(struct gb_connection *connection);\nvoid gb_fw_download_connection_exit(struct gb_connection *connection);\n\n \nint cap_init(void);\nvoid cap_exit(void);\nint gb_cap_connection_init(struct gb_connection *connection);\nvoid gb_cap_connection_exit(struct gb_connection *connection);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

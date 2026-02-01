@@ -1,0 +1,9 @@
+{
+  "module_name": "hiddev.h",
+  "hash_id": "c4b197dc48131bd951fb67edd087153857fccfc6aa5650742cdd0024f7c4ef46",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/hiddev.h",
+  "human_readable_source": " \n \n \n#ifndef _HIDDEV_H\n#define _HIDDEV_H\n\n#include <uapi/linux/hiddev.h>\n\n\n \n\nstruct hiddev {\n\tint minor;\n\tint exist;\n\tint open;\n\tstruct mutex existancelock;\n\twait_queue_head_t wait;\n\tstruct hid_device *hid;\n\tstruct list_head list;\n\tspinlock_t list_lock;\n\tbool initialized;\n};\n\nstruct hid_device;\nstruct hid_usage;\nstruct hid_field;\nstruct hid_report;\n\n#ifdef CONFIG_USB_HIDDEV\nint hiddev_connect(struct hid_device *hid, unsigned int force);\nvoid hiddev_disconnect(struct hid_device *);\nvoid hiddev_hid_event(struct hid_device *hid, struct hid_field *field,\n\t\t      struct hid_usage *usage, __s32 value);\nvoid hiddev_report_event(struct hid_device *hid, struct hid_report *report);\n#else\nstatic inline int hiddev_connect(struct hid_device *hid,\n\t\tunsigned int force)\n{ return -1; }\nstatic inline void hiddev_disconnect(struct hid_device *hid) { }\nstatic inline void hiddev_hid_event(struct hid_device *hid, struct hid_field *field,\n\t\t      struct hid_usage *usage, __s32 value) { }\nstatic inline void hiddev_report_event(struct hid_device *hid, struct hid_report *report) { }\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

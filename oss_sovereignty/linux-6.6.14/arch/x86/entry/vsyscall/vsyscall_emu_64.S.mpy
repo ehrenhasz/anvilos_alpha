@@ -1,0 +1,9 @@
+{
+  "module_name": "vsyscall_emu_64.S",
+  "hash_id": "2f0b01b56217eff3fa88cb8b8b79f9e588ab6e90f5946da85d4e8dcc635aef9f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/vsyscall/vsyscall_emu_64.S",
+  "human_readable_source": " \n \n\n#include <linux/linkage.h>\n\n#include <asm/irq_vectors.h>\n#include <asm/page_types.h>\n#include <asm/unistd_64.h>\n\n__PAGE_ALIGNED_DATA\n\t.globl __vsyscall_page\n\t.balign PAGE_SIZE, 0xcc\n\t.type __vsyscall_page, @object\n__vsyscall_page:\n\n\tmov $__NR_gettimeofday, %rax\n\tsyscall\n\tret\n\tint3\n\n\t.balign 1024, 0xcc\n\tmov $__NR_time, %rax\n\tsyscall\n\tret\n\tint3\n\n\t.balign 1024, 0xcc\n\tmov $__NR_getcpu, %rax\n\tsyscall\n\tret\n\tint3\n\n\t.balign 4096, 0xcc\n\n\t.size __vsyscall_page, 4096\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

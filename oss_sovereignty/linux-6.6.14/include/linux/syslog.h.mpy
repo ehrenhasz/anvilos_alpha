@@ -1,0 +1,9 @@
+{
+  "module_name": "syslog.h",
+  "hash_id": "9a09c9d72cb436e0714ecd61fd0b5419a6339e072cae41bea47cf413f345203c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/syslog.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_SYSLOG_H\n#define _LINUX_SYSLOG_H\n\n#include <linux/wait.h>\n\n \n#define SYSLOG_ACTION_CLOSE          0\n \n#define SYSLOG_ACTION_OPEN           1\n \n#define SYSLOG_ACTION_READ           2\n \n#define SYSLOG_ACTION_READ_ALL       3\n \n#define SYSLOG_ACTION_READ_CLEAR     4\n \n#define SYSLOG_ACTION_CLEAR          5\n \n#define SYSLOG_ACTION_CONSOLE_OFF    6\n \n#define SYSLOG_ACTION_CONSOLE_ON     7\n \n#define SYSLOG_ACTION_CONSOLE_LEVEL  8\n \n#define SYSLOG_ACTION_SIZE_UNREAD    9\n \n#define SYSLOG_ACTION_SIZE_BUFFER   10\n\n#define SYSLOG_FROM_READER           0\n#define SYSLOG_FROM_PROC             1\n\nint do_syslog(int type, char __user *buf, int count, int source);\nextern wait_queue_head_t log_wait;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "media_device_open.c",
+  "hash_id": "7a4c9b6fa20089facaec83bcd02ab2ba20bb42c57a7c704bc286bf7f27fa3ff4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/media_tests/media_device_open.c",
+  "human_readable_source": "\n\n \n\n \n\n#include <stdio.h>\n#include <unistd.h>\n#include <stdlib.h>\n#include <errno.h>\n#include <string.h>\n#include <fcntl.h>\n#include <sys/ioctl.h>\n#include <sys/stat.h>\n#include <linux/media.h>\n\n#include \"../kselftest.h\"\n\nint main(int argc, char **argv)\n{\n\tint opt;\n\tchar media_device[256];\n\tint count = 0;\n\tstruct media_device_info mdi;\n\tint ret;\n\tint fd;\n\n\tif (argc < 2) {\n\t\tprintf(\"Usage: %s [-d </dev/mediaX>]\\n\", argv[0]);\n\t\texit(-1);\n\t}\n\n\t \n\twhile ((opt = getopt(argc, argv, \"d:\")) != -1) {\n\t\tswitch (opt) {\n\t\tcase 'd':\n\t\t\tstrncpy(media_device, optarg, sizeof(media_device) - 1);\n\t\t\tmedia_device[sizeof(media_device)-1] = '\\0';\n\t\t\tbreak;\n\t\tdefault:\n\t\t\tprintf(\"Usage: %s [-d </dev/mediaX>]\\n\", argv[0]);\n\t\t\texit(-1);\n\t\t}\n\t}\n\n\tif (getuid() != 0)\n\t\tksft_exit_skip(\"Please run the test as root - Exiting.\\n\");\n\n\t \n\tfd = open(media_device, O_RDWR);\n\tif (fd == -1) {\n\t\tprintf(\"Media Device open errno %s\\n\", strerror(errno));\n\t\texit(-1);\n\t}\n\n\tret = ioctl(fd, MEDIA_IOC_DEVICE_INFO, &mdi);\n\tif (ret < 0)\n\t\tprintf(\"Media Device Info errno %s\\n\", strerror(errno));\n\telse\n\t\tprintf(\"Media device model %s driver %s\\n\",\n\t\t\tmdi.model, mdi.driver);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

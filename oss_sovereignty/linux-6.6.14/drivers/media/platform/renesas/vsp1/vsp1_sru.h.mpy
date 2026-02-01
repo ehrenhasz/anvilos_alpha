@@ -1,0 +1,9 @@
+{
+  "module_name": "vsp1_sru.h",
+  "hash_id": "78f7f632468d2e8e1065bd87e8b7b6bbb74b3c86d0305e995c2e11bf854108db",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/renesas/vsp1/vsp1_sru.h",
+  "human_readable_source": " \n \n#ifndef __VSP1_SRU_H__\n#define __VSP1_SRU_H__\n\n#include <media/media-entity.h>\n#include <media/v4l2-ctrls.h>\n#include <media/v4l2-subdev.h>\n\n#include \"vsp1_entity.h\"\n\nstruct vsp1_device;\n\n#define SRU_PAD_SINK\t\t\t\t0\n#define SRU_PAD_SOURCE\t\t\t\t1\n\nstruct vsp1_sru {\n\tstruct vsp1_entity entity;\n\n\tstruct v4l2_ctrl_handler ctrls;\n\n\tunsigned int intensity;\n};\n\nstatic inline struct vsp1_sru *to_sru(struct v4l2_subdev *subdev)\n{\n\treturn container_of(subdev, struct vsp1_sru, entity.subdev);\n}\n\nstruct vsp1_sru *vsp1_sru_create(struct vsp1_device *vsp1);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

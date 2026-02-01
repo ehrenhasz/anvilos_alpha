@@ -1,0 +1,9 @@
+{
+  "module_name": "ipc.h",
+  "hash_id": "8cb5e4ca6af5b9ccdccbe3783d175f84ba290512564c2bbc9c57969b895df8ce",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/syscalls/ipc.h",
+  "human_readable_source": " \n#ifdef __NR_semop\nDO_TEST(semop, __NR_semop)\n#endif\n\n#ifdef __NR_semget\nDO_TEST(semget, __NR_semget)\n#endif\n\n#ifdef __NR_semctl\nDO_TEST(semctl, __NR_semctl)\n#endif\n\n#ifdef __NR_semtimedop\nDO_TEST(semtimedop, __NR_semtimedop)\n#endif\n\n#ifdef __NR_msgsnd\nDO_TEST(msgsnd, __NR_msgsnd)\n#endif\n\n#ifdef __NR_msgrcv\nDO_TEST(msgrcv, __NR_msgrcv)\n#endif\n\n#ifdef __NR_msgget\nDO_TEST(msgget, __NR_msgget)\n#endif\n\n#ifdef __NR_msgctl\nDO_TEST(msgctl, __NR_msgctl)\n#endif\n\n#ifdef __NR_shmat\nDO_TEST(shmat, __NR_shmat)\n#endif\n\n#ifdef __NR_shmdt\nDO_TEST(shmdt, __NR_shmdt)\n#endif\n\n#ifdef __NR_shmget\nDO_TEST(shmget, __NR_shmget)\n#endif\n\n#ifdef __NR_shmctl\nDO_TEST(shmctl, __NR_shmctl)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

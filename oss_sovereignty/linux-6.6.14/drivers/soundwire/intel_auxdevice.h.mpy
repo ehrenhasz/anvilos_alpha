@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_auxdevice.h",
+  "hash_id": "72a4bdb0e685c59526ecc5105896127ebbb3249194293aa8cb809bdfe4a9aa1f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soundwire/intel_auxdevice.h",
+  "human_readable_source": " \n \n\n#ifndef __SDW_INTEL_AUXDEVICE_H\n#define __SDW_INTEL_AUXDEVICE_H\n\nint intel_link_startup(struct auxiliary_device *auxdev);\nint intel_link_process_wakeen_event(struct auxiliary_device *auxdev);\n\nstruct sdw_intel_link_dev {\n\tstruct auxiliary_device auxdev;\n\tstruct sdw_intel_link_res link_res;\n};\n\n#define auxiliary_dev_to_sdw_intel_link_dev(auxiliary_dev) \\\n\tcontainer_of(auxiliary_dev, struct sdw_intel_link_dev, auxdev)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

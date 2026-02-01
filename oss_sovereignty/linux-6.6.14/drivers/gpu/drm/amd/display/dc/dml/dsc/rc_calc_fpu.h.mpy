@@ -1,0 +1,9 @@
+{
+  "module_name": "rc_calc_fpu.h",
+  "hash_id": "c536cb7eb7ed90fac9326ed79ebd2761f9cbabbeae06b429048cf8f57c69ec58",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dml/dsc/rc_calc_fpu.h",
+  "human_readable_source": " \n\n#ifndef __RC_CALC_FPU_H__\n#define __RC_CALC_FPU_H__\n\n#include \"os_types.h\"\n#include <drm/display/drm_dsc.h>\n\n#define QP_SET_SIZE 15\n\ntypedef int qp_set[QP_SET_SIZE];\n\nstruct rc_params {\n\tint      rc_quant_incr_limit0;\n\tint      rc_quant_incr_limit1;\n\tint      initial_fullness_offset;\n\tint      initial_xmit_delay;\n\tint      first_line_bpg_offset;\n\tint      second_line_bpg_offset;\n\tint      flatness_min_qp;\n\tint      flatness_max_qp;\n\tint      flatness_det_thresh;\n\tqp_set   qp_min;\n\tqp_set   qp_max;\n\tqp_set   ofs;\n\tint      rc_model_size;\n\tint      rc_edge_factor;\n\tint      rc_tgt_offset_hi;\n\tint      rc_tgt_offset_lo;\n\tint      rc_buf_thresh[QP_SET_SIZE - 1];\n};\n\nenum colour_mode {\n\tCM_RGB,    \n\tCM_444,    \n\tCM_422,    \n\tCM_420     \n};\n\nenum bits_per_comp {\n\tBPC_8  =  8,\n\tBPC_10 = 10,\n\tBPC_12 = 12\n};\n\nenum max_min {\n\tDAL_MM_MIN = 0,\n\tDAL_MM_MAX = 1\n};\n\nstruct qp_entry {\n\tfloat         bpp;\n\tconst qp_set  qps;\n};\n\ntypedef struct qp_entry qp_table[];\n\nvoid _do_calc_rc_params(struct rc_params *rc,\n\t\tenum colour_mode cm,\n\t\tenum bits_per_comp bpc,\n\t\tu16 drm_bpp,\n\t\tbool is_navite_422_or_420,\n\t\tint slice_width,\n\t\tint slice_height,\n\t\tint minor_version);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

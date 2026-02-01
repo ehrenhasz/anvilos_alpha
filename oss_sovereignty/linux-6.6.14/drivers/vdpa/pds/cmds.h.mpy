@@ -1,0 +1,9 @@
+{
+  "module_name": "cmds.h",
+  "hash_id": "9db10289deba446cf122d959d23d933a8813db1995496265a1d3c2a760867485",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vdpa/pds/cmds.h",
+  "human_readable_source": " \n \n\n#ifndef _VDPA_CMDS_H_\n#define _VDPA_CMDS_H_\n\nint pds_vdpa_init_hw(struct pds_vdpa_device *pdsv);\n\nint pds_vdpa_cmd_reset(struct pds_vdpa_device *pdsv);\nint pds_vdpa_cmd_set_status(struct pds_vdpa_device *pdsv, u8 status);\nint pds_vdpa_cmd_set_mac(struct pds_vdpa_device *pdsv, u8 *mac);\nint pds_vdpa_cmd_set_max_vq_pairs(struct pds_vdpa_device *pdsv, u16 max_vqp);\nint pds_vdpa_cmd_init_vq(struct pds_vdpa_device *pdsv, u16 qid, u16 invert_idx,\n\t\t\t struct pds_vdpa_vq_info *vq_info);\nint pds_vdpa_cmd_reset_vq(struct pds_vdpa_device *pdsv, u16 qid, u16 invert_idx,\n\t\t\t  struct pds_vdpa_vq_info *vq_info);\nint pds_vdpa_cmd_set_features(struct pds_vdpa_device *pdsv, u64 features);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

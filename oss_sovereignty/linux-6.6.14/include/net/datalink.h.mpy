@@ -1,0 +1,9 @@
+{
+  "module_name": "datalink.h",
+  "hash_id": "da5b513a7d80563a5ad0743f58c2c36fea9faad29bccbbedc07b8e5f809a133d",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/datalink.h",
+  "human_readable_source": " \n#ifndef _NET_INET_DATALINK_H_\n#define _NET_INET_DATALINK_H_\n\n#include <linux/list.h>\n\nstruct llc_sap;\nstruct net_device;\nstruct packet_type;\nstruct sk_buff;\n\nstruct datalink_proto {\n        unsigned char   type[8];\n\n\tstruct llc_sap   *sap;\n\n        unsigned short  header_length;\n\n        int     (*rcvfunc)(struct sk_buff *, struct net_device *,\n                                struct packet_type *, struct net_device *);\n\tint     (*request)(struct datalink_proto *, struct sk_buff *,\n\t\t\t   const unsigned char *);\n\tstruct list_head node;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "SYMLINKS",
+  "hash_id": "b57bc298acafbce8084a2273862463040ff8beba37dbe4f71ea9f67b347d9afb",
+  "original_prompt": "Ingested from bash-5.2.21/support/SYMLINKS",
+  "human_readable_source": "#\n# symlink map for bash source tree\n#\n#\tlink name\t\tlink target\n#\nlib/readline/tilde.c\t\t../tilde/tilde.c\nlib/readline/tilde.h\t\t../tilde/tilde.h\n#\nlib/readline/ansi_stdlib.h\t../../include/ansi_stdlib.h\nlib/readline/posixdir.h\t\t../../include/posixdir.h\nlib/readline/posixjmp.h\t\t../../include/posixjmp.h\nlib/readline/posixselect.h\t../../include/posixselect.h\nlib/readline/posixstat.h\t../../include/posixstat.h\n#lib/readline/rlstdc.h\t\t../../include/stdc.h\n#lib/readline/xmalloc.c\t\t../malloc/xmalloc.c\n#\n#lib/tilde/memalloc.h\t\t../../include/memalloc.h\n#\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

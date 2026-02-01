@@ -1,0 +1,9 @@
+{
+  "module_name": "stack.h",
+  "hash_id": "e8b245bb3df9023652684f8b3c6a84d486e782670f52372828a4af43df020eb8",
+  "original_prompt": "Ingested from zfs-2.2.2/module/icp/include/sys/stack.h",
+  "human_readable_source": " \n \n\n#ifndef _SYS_STACK_H\n#define\t_SYS_STACK_H\n\n#if defined(__i386) || defined(__amd64)\n\n#include <sys/ia32/stack.h>\t \n\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

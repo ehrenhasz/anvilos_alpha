@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "f13b4c68c3edc5fbe5f51e863033d88e02c9010c5372efce4748724bff7c5945",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cisco/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Cisco device configuration\n#\n\nconfig NET_VENDOR_CISCO\n\tbool \"Cisco devices\"\n\tdefault y\n\tdepends on PCI\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Cisco cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif NET_VENDOR_CISCO\n\nsource \"drivers/net/ethernet/cisco/enic/Kconfig\"\n\nendif # NET_VENDOR_CISCO\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bplist.c",
+  "hash_id": "35d1a7b2524ee7062fe3c4a66b7873934d4d9524b763528dfa400ae852cea59c",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zfs/bplist.c",
+  "human_readable_source": " \n \n\n#include <sys/bplist.h>\n#include <sys/zfs_context.h>\n\n\nvoid\nbplist_create(bplist_t *bpl)\n{\n\tmutex_init(&bpl->bpl_lock, NULL, MUTEX_DEFAULT, NULL);\n\tlist_create(&bpl->bpl_list, sizeof (bplist_entry_t),\n\t    offsetof(bplist_entry_t, bpe_node));\n}\n\nvoid\nbplist_destroy(bplist_t *bpl)\n{\n\tlist_destroy(&bpl->bpl_list);\n\tmutex_destroy(&bpl->bpl_lock);\n}\n\nvoid\nbplist_append(bplist_t *bpl, const blkptr_t *bp)\n{\n\tbplist_entry_t *bpe = kmem_alloc(sizeof (*bpe), KM_SLEEP);\n\n\tmutex_enter(&bpl->bpl_lock);\n\tbpe->bpe_blk = *bp;\n\tlist_insert_tail(&bpl->bpl_list, bpe);\n\tmutex_exit(&bpl->bpl_lock);\n}\n\n \nstatic bplist_entry_t *bplist_iterate_last_removed;\n\nvoid\nbplist_iterate(bplist_t *bpl, bplist_itor_t *func, void *arg, dmu_tx_t *tx)\n{\n\tbplist_entry_t *bpe;\n\n\tmutex_enter(&bpl->bpl_lock);\n\twhile ((bpe = list_remove_head(&bpl->bpl_list))) {\n\t\tbplist_iterate_last_removed = bpe;\n\t\tmutex_exit(&bpl->bpl_lock);\n\t\tfunc(arg, &bpe->bpe_blk, tx);\n\t\tkmem_free(bpe, sizeof (*bpe));\n\t\tmutex_enter(&bpl->bpl_lock);\n\t}\n\tmutex_exit(&bpl->bpl_lock);\n}\n\nvoid\nbplist_clear(bplist_t *bpl)\n{\n\tbplist_entry_t *bpe;\n\n\tmutex_enter(&bpl->bpl_lock);\n\twhile ((bpe = list_remove_head(&bpl->bpl_list)))\n\t\tkmem_free(bpe, sizeof (*bpe));\n\tmutex_exit(&bpl->bpl_lock);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

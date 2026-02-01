@@ -1,0 +1,9 @@
+{
+  "module_name": "gfp.h",
+  "hash_id": "6c1d7965c68e6c1237a06530c23d26aa7354309bbe95b1290f2948af07d978f9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/linux/gfp.h",
+  "human_readable_source": " \n#ifndef __LINUX_GFP_H\n#define __LINUX_GFP_H\n\n#include <linux/topology.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

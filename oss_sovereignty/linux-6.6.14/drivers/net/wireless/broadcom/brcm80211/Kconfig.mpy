@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0a3e3ef841cac5fa74ea264b290e6edaac22c7124936feff8752a4dedfa9701c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig BRCMUTIL\n\ttristate\n\nconfig BRCMSMAC\n\ttristate \"Broadcom IEEE802.11n PCIe SoftMAC WLAN driver\"\n\tdepends on MAC80211\n\tdepends on BCMA_POSSIBLE\n\tselect BCMA\n\tselect BRCMUTIL\n\tselect FW_LOADER\n\tselect CORDIC\n\thelp\n\t  This module adds support for PCIe wireless adapters based on Broadcom\n\t  IEEE802.11n SoftMAC chipsets. If you choose to build a module, the\n\t  driver will be called brcmsmac.ko.\n\nconfig BRCMSMAC_LEDS\n\tdef_bool BRCMSMAC && BCMA_DRIVER_GPIO && MAC80211_LEDS\n\thelp\n\t  The brcmsmac LED support depends on the presence of the\n\t  BCMA_DRIVER_GPIO driver, and it only works if LED support\n\t  is enabled and reachable from the driver module.\n\nsource \"drivers/net/wireless/broadcom/brcm80211/brcmfmac/Kconfig\"\n\nconfig BRCM_TRACING\n\tbool \"Broadcom device tracing\"\n\tdepends on BRCMSMAC || BRCMFMAC\n\thelp\n\t  If you say Y here, the Broadcom wireless drivers will register\n\t  with ftrace to dump event information into the trace ringbuffer.\n\t  Tracing can be enabled at runtime to aid in debugging wireless\n\t  issues. This option adds a small amount of overhead when tracing\n\t  is disabled. If unsure, say Y to allow developers to better help\n\t  you when wireless problems occur.\n\nconfig BRCMDBG\n\tbool \"Broadcom driver debug functions\"\n\tdepends on BRCMSMAC || BRCMFMAC\n\tselect WANT_DEV_COREDUMP if BRCMFMAC\n\thelp\n\t  Selecting this enables additional code for debug purposes.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

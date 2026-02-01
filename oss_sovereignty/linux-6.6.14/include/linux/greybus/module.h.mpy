@@ -1,0 +1,9 @@
+{
+  "module_name": "module.h",
+  "hash_id": "f4a1ece2c89feebbdec2dc7094d057beb2b81fb84d1fd60c1257376335aef4c1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/greybus/module.h",
+  "human_readable_source": " \n \n\n#ifndef __MODULE_H\n#define __MODULE_H\n\n#include <linux/types.h>\n#include <linux/device.h>\n\nstruct gb_module {\n\tstruct device dev;\n\tstruct gb_host_device *hd;\n\n\tstruct list_head hd_node;\n\n\tu8 module_id;\n\tsize_t num_interfaces;\n\n\tbool disconnected;\n\n\tstruct gb_interface *interfaces[];\n};\n#define to_gb_module(d) container_of(d, struct gb_module, dev)\n\nstruct gb_module *gb_module_create(struct gb_host_device *hd, u8 module_id,\n\t\t\t\t   size_t num_interfaces);\nint gb_module_add(struct gb_module *module);\nvoid gb_module_del(struct gb_module *module);\nvoid gb_module_put(struct gb_module *module);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

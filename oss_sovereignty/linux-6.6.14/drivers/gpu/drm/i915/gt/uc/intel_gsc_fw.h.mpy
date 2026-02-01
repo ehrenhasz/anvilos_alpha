@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_gsc_fw.h",
+  "hash_id": "b9f8acd905abefde51aac92b4715e9bf73c29eb48c6acdf6088360fbef007b81",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/uc/intel_gsc_fw.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_GSC_FW_H_\n#define _INTEL_GSC_FW_H_\n\n#include <linux/types.h>\n\nstruct intel_gsc_uc;\nstruct intel_uc_fw;\nstruct intel_uncore;\n\nint intel_gsc_fw_get_binary_info(struct intel_uc_fw *gsc_fw, const void *data, size_t size);\nint intel_gsc_uc_fw_upload(struct intel_gsc_uc *gsc);\nbool intel_gsc_uc_fw_init_done(struct intel_gsc_uc *gsc);\nbool intel_gsc_uc_fw_proxy_init_done(struct intel_gsc_uc *gsc, bool needs_wakeref);\nint intel_gsc_uc_fw_proxy_get_status(struct intel_gsc_uc *gsc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "processor_64.h",
+  "hash_id": "d2533f390ce99dcfb647e7439206b8739470a0ea9afdb853c19a5a122a6c5fb2",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/asm/processor_64.h",
+  "human_readable_source": " \n\n#ifndef __UM_PROCESSOR_X86_64_H\n#define __UM_PROCESSOR_X86_64_H\n\nstruct arch_thread {\n        unsigned long debugregs[8];\n        int debugregs_seq;\n        unsigned long fs;\n        struct faultinfo faultinfo;\n};\n\n#define INIT_ARCH_THREAD { .debugregs  \t\t= { [ 0 ... 7 ] = 0 }, \\\n\t\t\t   .debugregs_seq\t= 0, \\\n\t\t\t   .fs\t\t\t= 0, \\\n\t\t\t   .faultinfo\t\t= { 0, 0, 0 } }\n\n#define STACKSLOTS_PER_LINE 4\n\nstatic inline void arch_flush_thread(struct arch_thread *thread)\n{\n}\n\nstatic inline void arch_copy_thread(struct arch_thread *from,\n                                    struct arch_thread *to)\n{\n\tto->fs = from->fs;\n}\n\n#define current_sp() ({ void *sp; __asm__(\"movq %%rsp, %0\" : \"=r\" (sp) : ); sp; })\n#define current_bp() ({ unsigned long bp; __asm__(\"movq %%rbp, %0\" : \"=r\" (bp) : ); bp; })\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

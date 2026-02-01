@@ -1,0 +1,9 @@
+{
+  "module_name": "audio_manager_private.h",
+  "hash_id": "8ae55c02658d80b90a8ce3bdeebbc93f8f37981d0adf7cf08cc9e8b551a0e338",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/greybus/audio_manager_private.h",
+  "human_readable_source": " \n \n\n#ifndef _GB_AUDIO_MANAGER_PRIVATE_H_\n#define _GB_AUDIO_MANAGER_PRIVATE_H_\n\n#include <linux/kobject.h>\n\n#include \"audio_manager.h\"\n\nint gb_audio_manager_module_create(\n\tstruct gb_audio_manager_module **module,\n\tstruct kset *manager_kset,\n\tint id, struct gb_audio_manager_module_descriptor *desc);\n\n \n\nvoid gb_audio_manager_module_dump(struct gb_audio_manager_module *module);\n\n \nvoid gb_audio_manager_sysfs_init(struct kobject *kobj);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

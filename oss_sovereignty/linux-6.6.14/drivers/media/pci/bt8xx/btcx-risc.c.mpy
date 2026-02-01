@@ -1,0 +1,9 @@
+{
+  "module_name": "btcx-risc.c",
+  "hash_id": "7f30445a5f2e5e7780db312c70ded55f74d8f9b8490e48ffe86d1793fc732c7d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/bt8xx/btcx-risc.c",
+  "human_readable_source": "\n \n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/pci.h>\n#include <linux/interrupt.h>\n#include <linux/videodev2.h>\n#include <linux/pgtable.h>\n#include <asm/page.h>\n\n#include \"btcx-risc.h\"\n\nstatic unsigned int btcx_debug;\nmodule_param(btcx_debug, int, 0644);\nMODULE_PARM_DESC(btcx_debug,\"debug messages, default is 0 (no)\");\n\n#define dprintk(fmt, arg...) do {\t\t\t\t\\\n\tif (btcx_debug)\t\t\t\t\t\t\\\n\t\tprintk(KERN_DEBUG pr_fmt(\"%s: \" fmt),\t\t\\\n\t\t       __func__, ##arg);\t\t\t\\\n} while (0)\n\n\n \n \n\nstatic int memcnt;\n\nvoid btcx_riscmem_free(struct pci_dev *pci,\n\t\t       struct btcx_riscmem *risc)\n{\n\tif (NULL == risc->cpu)\n\t\treturn;\n\n\tmemcnt--;\n\tdprintk(\"btcx: riscmem free [%d] dma=%lx\\n\",\n\t\tmemcnt, (unsigned long)risc->dma);\n\n\tdma_free_coherent(&pci->dev, risc->size, risc->cpu, risc->dma);\n\tmemset(risc,0,sizeof(*risc));\n}\n\nint btcx_riscmem_alloc(struct pci_dev *pci,\n\t\t       struct btcx_riscmem *risc,\n\t\t       unsigned int size)\n{\n\t__le32 *cpu;\n\tdma_addr_t dma = 0;\n\n\tif (NULL != risc->cpu && risc->size < size)\n\t\tbtcx_riscmem_free(pci,risc);\n\tif (NULL == risc->cpu) {\n\t\tcpu = dma_alloc_coherent(&pci->dev, size, &dma, GFP_KERNEL);\n\t\tif (NULL == cpu)\n\t\t\treturn -ENOMEM;\n\t\trisc->cpu  = cpu;\n\t\trisc->dma  = dma;\n\t\trisc->size = size;\n\n\t\tmemcnt++;\n\t\tdprintk(\"btcx: riscmem alloc [%d] dma=%lx cpu=%p size=%d\\n\",\n\t\t\tmemcnt, (unsigned long)dma, cpu, size);\n\t}\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

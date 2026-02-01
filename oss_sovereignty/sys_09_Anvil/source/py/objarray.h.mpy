@@ -1,0 +1,9 @@
+{
+  "module_name": "objarray.h",
+  "hash_id": "b653f623f06d4f01e4116b48cc5a3053d85e09aa804a8ad59ac57a21fc509146",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/objarray.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_OBJARRAY_H\n#define MICROPY_INCLUDED_PY_OBJARRAY_H\n\n#include \"py/obj.h\"\n\n\n#define MP_OBJ_ARRAY_TYPECODE_FLAG_RW (0x80)\n\n\n#define MP_OBJ_ARRAY_FREE_SIZE_BITS (8 * sizeof(size_t) - 8)\n\n\n\n\ntypedef struct _mp_obj_array_t {\n    mp_obj_base_t base;\n    size_t typecode : 8;\n    \n    \n    \n    \n    \n    \n    size_t free : MP_OBJ_ARRAY_FREE_SIZE_BITS;\n    size_t len; \n    void *items;\n} mp_obj_array_t;\n\n#if MICROPY_PY_BUILTINS_MEMORYVIEW\nstatic inline void mp_obj_memoryview_init(mp_obj_array_t *self, size_t typecode, size_t offset, size_t len, void *items) {\n    self->base.type = &mp_type_memoryview;\n    self->typecode = typecode;\n    self->free = offset;\n    self->len = len;\n    self->items = items;\n}\n#endif\n\n#if MICROPY_PY_ARRAY || MICROPY_PY_BUILTINS_BYTEARRAY\nMP_DECLARE_CONST_FUN_OBJ_2(mp_obj_array_append_obj);\nMP_DECLARE_CONST_FUN_OBJ_2(mp_obj_array_extend_obj);\n#endif\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

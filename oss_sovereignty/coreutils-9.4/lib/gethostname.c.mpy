@@ -1,0 +1,9 @@
+{
+  "module_name": "gethostname.c",
+  "hash_id": "29213c6e88ba8e68b47922992f1f334b0b8f024a54a1d766298b4944e1f10d3e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/gethostname.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#if !(defined _WIN32 && !defined __CYGWIN__)\n \n\n \n#include <unistd.h>\n\n#ifdef HAVE_UNAME\n# include <sys/utsname.h>\n#endif\n\n#include <string.h>\n\n \n\n#include <stddef.h>\n\nint\ngethostname (char *name, size_t len)\n{\n#ifdef HAVE_UNAME\n  struct utsname uts;\n\n  if (uname (&uts) == -1)\n    return -1;\n  if (len > sizeof (uts.nodename))\n    {\n       \n      name[sizeof (uts.nodename)] = '\\0';\n      len = sizeof (uts.nodename);\n    }\n  strncpy (name, uts.nodename, len);\n#else\n  strcpy (name, \"\");             \n#endif\n  return 0;\n}\n\n#else\n \n\n#define WIN32_LEAN_AND_MEAN\n \n#include <unistd.h>\n\n \n#include <limits.h>\n\n \n#include \"w32sock.h\"\n\n#include \"sockets.h\"\n\n#undef gethostname\n\nint\nrpl_gethostname (char *name, size_t len)\n{\n  int r;\n\n  if (len > INT_MAX)\n    len = INT_MAX;\n  gl_sockets_startup (SOCKETS_1_1);\n  r = gethostname (name, (int) len);\n  if (r < 0)\n    set_winsock_errno ();\n\n  return r;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "swap.cocci",
+  "hash_id": "482478a7b08fc93ce008658d818a1222017f30b14c563d8551655726d3f7b710",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/misc/swap.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0-only\n///\n/// Check for opencoded swap() implementation.\n///\n// Confidence: High\n// Copyright: (C) 2021 Denis Efremov ISPRAS\n// Options: --no-includes --include-headers\n//\n// Keywords: swap\n//\n\nvirtual patch\nvirtual org\nvirtual report\nvirtual context\n\n@rvar depends on !patch@\nidentifier tmp;\nexpression a, b;\ntype T;\nposition p;\n@@\n\n(\n* T tmp;\n|\n* T tmp = 0;\n|\n* T *tmp = NULL;\n)\n... when != tmp\n* tmp = a;\n* a = b;@p\n* b = tmp;\n... when != tmp\n\n@r depends on !patch@\nidentifier tmp;\nexpression a, b;\nposition p != rvar.p;\n@@\n\n* tmp = a;\n* a = b;@p\n* b = tmp;\n\n@rpvar depends on patch@\nidentifier tmp;\nexpression a, b;\ntype T;\n@@\n\n(\n- T tmp;\n|\n- T tmp = 0;\n|\n- T *tmp = NULL;\n)\n... when != tmp\n- tmp = a;\n- a = b;\n- b = tmp\n+ swap(a, b)\n  ;\n... when != tmp\n\n@rp depends on patch@\nidentifier tmp;\nexpression a, b;\n@@\n\n- tmp = a;\n- a = b;\n- b = tmp\n+ swap(a, b)\n  ;\n\n@depends on patch && (rpvar || rp)@\n@@\n\n(\n  for (...;...;...)\n- {\n\tswap(...);\n- }\n|\n  while (...)\n- {\n\tswap(...);\n- }\n|\n  if (...)\n- {\n\tswap(...);\n- }\n)\n\n\n@script:python depends on report@\np << r.p;\n@@\n\ncoccilib.report.print_report(p[0], \"WARNING opportunity for swap()\")\n\n@script:python depends on org@\np << r.p;\n@@\n\ncoccilib.org.print_todo(p[0], \"WARNING opportunity for swap()\")\n\n@script:python depends on report@\np << rvar.p;\n@@\n\ncoccilib.report.print_report(p[0], \"WARNING opportunity for swap()\")\n\n@script:python depends on org@\np << rvar.p;\n@@\n\ncoccilib.org.print_todo(p[0], \"WARNING opportunity for swap()\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

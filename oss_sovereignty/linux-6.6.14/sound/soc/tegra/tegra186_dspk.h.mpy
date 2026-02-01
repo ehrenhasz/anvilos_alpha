@@ -1,0 +1,9 @@
+{
+  "module_name": "tegra186_dspk.h",
+  "hash_id": "70033c41bb28b7db6445137920f64184b27597d29d4aa1c97b29512a7ff266b0",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/tegra/tegra186_dspk.h",
+  "human_readable_source": " \n \n\n#ifndef __TEGRA186_DSPK_H__\n#define __TEGRA186_DSPK_H__\n\n \n#define TEGRA186_DSPK_RX_STATUS\t\t\t0x0c\n#define TEGRA186_DSPK_RX_INT_STATUS\t\t0x10\n#define TEGRA186_DSPK_RX_INT_MASK\t\t0x14\n#define TEGRA186_DSPK_RX_INT_SET\t\t0x18\n#define TEGRA186_DSPK_RX_INT_CLEAR\t\t0x1c\n#define TEGRA186_DSPK_RX_CIF_CTRL\t\t0x20\n#define TEGRA186_DSPK_ENABLE\t\t\t0x40\n#define TEGRA186_DSPK_SOFT_RESET\t\t0x44\n#define TEGRA186_DSPK_CG\t\t\t0x48\n#define TEGRA186_DSPK_STATUS\t\t\t0x4c\n#define TEGRA186_DSPK_INT_STATUS\t\t0x50\n#define TEGRA186_DSPK_CORE_CTRL\t\t\t0x60\n#define TEGRA186_DSPK_CODEC_CTRL\t\t0x64\n\n \n#define CH_SEL_SHIFT\t\t\t\t8\n#define TEGRA186_DSPK_CHANNEL_SELECT_MASK\t(0x3 << CH_SEL_SHIFT)\n#define DSPK_OSR_SHIFT\t\t\t\t4\n#define TEGRA186_DSPK_OSR_MASK\t\t\t(0x3 << DSPK_OSR_SHIFT)\n#define LRSEL_POL_SHIFT\t\t\t\t0\n#define TEGRA186_DSPK_CTRL_LRSEL_POLARITY_MASK\t(0x1 << LRSEL_POL_SHIFT)\n#define TEGRA186_DSPK_RX_FIFO_DEPTH\t\t64\n\n#define DSPK_OSR_FACTOR\t\t\t\t32\n\n \n#define DSPK_CLK_RATIO\t\t\t\t4\n\nenum tegra_dspk_osr {\n\tDSPK_OSR_32,\n\tDSPK_OSR_64,\n\tDSPK_OSR_128,\n\tDSPK_OSR_256,\n};\n\nenum tegra_dspk_ch_sel {\n\tDSPK_CH_SELECT_LEFT,\n\tDSPK_CH_SELECT_RIGHT,\n\tDSPK_CH_SELECT_STEREO,\n};\n\nenum tegra_dspk_lrsel {\n\tDSPK_LRSEL_LEFT,\n\tDSPK_LRSEL_RIGHT,\n};\n\nstruct tegra186_dspk {\n\tunsigned int rx_fifo_th;\n\tunsigned int osr_val;\n\tunsigned int lrsel;\n\tunsigned int ch_sel;\n\tunsigned int mono_to_stereo;\n\tunsigned int stereo_to_mono;\n\tstruct clk *clk_dspk;\n\tstruct regmap *regmap;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

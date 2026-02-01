@@ -1,0 +1,9 @@
+{
+  "module_name": "tracepoint.c",
+  "hash_id": "f5f7298cca17568d530de6b188e37b88a8e0dd03b1b8298df11b09b59b78289c",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/tracepoint.c",
+  "human_readable_source": "\n \n#include <linux/jump_label.h>\n#include <linux/atomic.h>\n\n#include <asm/trace/exceptions.h>\n\nDEFINE_STATIC_KEY_FALSE(trace_pagefault_key);\n\nint trace_pagefault_reg(void)\n{\n\tstatic_branch_inc(&trace_pagefault_key);\n\treturn 0;\n}\n\nvoid trace_pagefault_unreg(void)\n{\n\tstatic_branch_dec(&trace_pagefault_key);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_slklab.c",
+  "hash_id": "b02aa26fc5f5df6bed5f392623b912b80799e697a28b1b58d4d75889de7442fa",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_slklab.c",
+  "human_readable_source": " \n\n \n\n \n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_slklab.c,v 1.11 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(char *)\nNCURSES_SP_NAME(slk_label) (NCURSES_SP_DCLx int n)\n{\n    T((T_CALLED(\"slk_label(%p,%d)\"), (void *) SP_PARM, n));\n\n    if (SP_PARM == 0 || SP_PARM->_slk == 0 || n < 1 || n > SP_PARM->_slk->labcnt)\n\treturnPtr(0);\n    returnPtr(SP_PARM->_slk->ent[n - 1].ent_text);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(char *)\nslk_label(int n)\n{\n    return NCURSES_SP_NAME(slk_label) (CURRENT_SCREEN, n);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

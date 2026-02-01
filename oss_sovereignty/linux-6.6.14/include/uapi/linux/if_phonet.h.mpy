@@ -1,0 +1,9 @@
+{
+  "module_name": "if_phonet.h",
+  "hash_id": "c17577ef2a7c3ec7a80a694eaaf4293078fb6f41c62c24e0c91060126be3e13e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/if_phonet.h",
+  "human_readable_source": " \n \n#ifndef _UAPILINUX_IF_PHONET_H\n#define _UAPILINUX_IF_PHONET_H\n\n#define PHONET_MIN_MTU\t\t6\t \n#define PHONET_MAX_MTU\t\t65541\t \n#define PHONET_DEV_MTU\t\tPHONET_MAX_MTU\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

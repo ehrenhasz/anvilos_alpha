@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "36a4328a32d335515ae13e99edfa68f9d0dbcc8d14caab54c600307026d3c050",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/ingenic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_INGENIC_CGU_COMMON)\t+= cgu.o pm.o\nobj-$(CONFIG_INGENIC_CGU_JZ4740)\t+= jz4740-cgu.o\nobj-$(CONFIG_INGENIC_CGU_JZ4755)\t+= jz4755-cgu.o\nobj-$(CONFIG_INGENIC_CGU_JZ4725B)\t+= jz4725b-cgu.o\nobj-$(CONFIG_INGENIC_CGU_JZ4760)\t+= jz4760-cgu.o\nobj-$(CONFIG_INGENIC_CGU_JZ4770)\t+= jz4770-cgu.o\nobj-$(CONFIG_INGENIC_CGU_JZ4780)\t+= jz4780-cgu.o\nobj-$(CONFIG_INGENIC_CGU_X1000)\t\t+= x1000-cgu.o\nobj-$(CONFIG_INGENIC_CGU_X1830)\t\t+= x1830-cgu.o\nobj-$(CONFIG_INGENIC_TCU_CLK)\t\t+= tcu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

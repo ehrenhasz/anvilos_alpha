@@ -1,0 +1,9 @@
+{
+  "module_name": "disp.h",
+  "hash_id": "ec9eb752071157d52561f42dada93732bd6a364561dcc5ef0cfdd3907176ddae",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/disp.h",
+  "human_readable_source": " \n\n#ifndef _OPENSOLARIS_SYS_DISP_H_\n#define\t_OPENSOLARIS_SYS_DISP_H_\n\n#include <sys/proc.h>\n\n#define\tKPREEMPT_SYNC\t\t(-1)\n\n#define\tkpreempt(x)\tkern_yield(PRI_USER)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

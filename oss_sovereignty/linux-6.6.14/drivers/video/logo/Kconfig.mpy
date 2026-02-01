@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "bc60c210fe03ac85ad850a903c7b390f86a36ee1bccbdda32f0184640186dd08",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/logo/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Logo configuration\n#\n\nmenuconfig LOGO\n\tbool \"Bootup logo\"\n\tdepends on FB_CORE || SGI_NEWPORT_CONSOLE\n\thelp\n\t  Enable and select frame buffer bootup logos.\n\nif LOGO\n\nconfig FB_LOGO_EXTRA\n\tbool\n\tdepends on FB=y\n\tdefault y if SPU_BASE\n\nconfig LOGO_LINUX_MONO\n\tbool \"Standard black and white Linux logo\"\n\tdefault y\n\nconfig LOGO_LINUX_VGA16\n\tbool \"Standard 16-color Linux logo\"\n\tdefault y\n\nconfig LOGO_LINUX_CLUT224\n\tbool \"Standard 224-color Linux logo\"\n\tdefault y\n\nconfig LOGO_DEC_CLUT224\n\tbool \"224-color Digital Equipment Corporation Linux logo\"\n\tdepends on MACH_DECSTATION || ALPHA\n\tdefault y\n\nconfig LOGO_MAC_CLUT224\n\tbool \"224-color Macintosh Linux logo\"\n\tdepends on MAC\n\tdefault y\n\nconfig LOGO_PARISC_CLUT224\n\tbool \"224-color PA-RISC Linux logo\"\n\tdepends on PARISC\n\tdefault y\n\nconfig LOGO_SGI_CLUT224\n\tbool \"224-color SGI Linux logo\"\n\tdepends on SGI_IP22 || SGI_IP27 || SGI_IP32\n\tdefault y\n\nconfig LOGO_SUN_CLUT224\n\tbool \"224-color Sun Linux logo\"\n\tdepends on SPARC\n\tdefault y\n\nconfig LOGO_SUPERH_MONO\n\tbool \"Black and white SuperH Linux logo\"\n\tdepends on SUPERH\n\tdefault y\n\nconfig LOGO_SUPERH_VGA16\n\tbool \"16-color SuperH Linux logo\"\n\tdepends on SUPERH\n\tdefault y\n\nconfig LOGO_SUPERH_CLUT224\n\tbool \"224-color SuperH Linux logo\"\n\tdepends on SUPERH\n\tdefault y\n\nendif # LOGO\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

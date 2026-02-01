@@ -1,0 +1,9 @@
+{
+  "module_name": "jvmti_agent.h",
+  "hash_id": "9bd0d713d7c7ea0c6a7dfa335563d2bf64225eab40bff97469cd1bbc9b9b64ce",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/jvmti/jvmti_agent.h",
+  "human_readable_source": " \n#ifndef __JVMTI_AGENT_H__\n#define __JVMTI_AGENT_H__\n\n#include <sys/types.h>\n#include <stdint.h>\n#include <jvmti.h>\n\n#if defined(__cplusplus)\nextern \"C\" {\n#endif\n\ntypedef struct {\n\tunsigned long\tpc;\n\tint\t\tline_number;\n\tint\t\tdiscrim;  \n\tjmethodID\tmethodID;\n} jvmti_line_info_t;\n\nvoid *jvmti_open(void);\nint   jvmti_close(void *agent);\nint   jvmti_write_code(void *agent, char const *symbol_name,\n\t\t       uint64_t vma, void const *code,\n\t\t       const unsigned int code_size);\n\nint   jvmti_write_debug_info(void *agent, uint64_t code, int nr_lines,\n\t\t\t     jvmti_line_info_t *li,\n\t\t\t     const char * const * file_names);\n\n#if defined(__cplusplus)\n}\n\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

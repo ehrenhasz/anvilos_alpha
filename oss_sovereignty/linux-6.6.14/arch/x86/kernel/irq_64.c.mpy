@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_64.c",
+  "hash_id": "3c3f4b6a1ba6cb322432d89b5365d3f5ec992fba83efd82b60d0ef0a5cc11c20",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/irq_64.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel_stat.h>\n#include <linux/interrupt.h>\n#include <linux/irq.h>\n#include <linux/seq_file.h>\n#include <linux/delay.h>\n#include <linux/ftrace.h>\n#include <linux/uaccess.h>\n#include <linux/smp.h>\n#include <linux/sched/task_stack.h>\n\n#include <asm/cpu_entry_area.h>\n#include <asm/softirq_stack.h>\n#include <asm/irq_stack.h>\n#include <asm/io_apic.h>\n#include <asm/apic.h>\n\nDEFINE_PER_CPU_PAGE_ALIGNED(struct irq_stack, irq_stack_backing_store) __visible;\nDECLARE_INIT_PER_CPU(irq_stack_backing_store);\n\n#ifdef CONFIG_VMAP_STACK\n \nstatic int map_irq_stack(unsigned int cpu)\n{\n\tchar *stack = (char *)per_cpu_ptr(&irq_stack_backing_store, cpu);\n\tstruct page *pages[IRQ_STACK_SIZE / PAGE_SIZE];\n\tvoid *va;\n\tint i;\n\n\tfor (i = 0; i < IRQ_STACK_SIZE / PAGE_SIZE; i++) {\n\t\tphys_addr_t pa = per_cpu_ptr_to_phys(stack + (i << PAGE_SHIFT));\n\n\t\tpages[i] = pfn_to_page(pa >> PAGE_SHIFT);\n\t}\n\n\tva = vmap(pages, IRQ_STACK_SIZE / PAGE_SIZE, VM_MAP, PAGE_KERNEL);\n\tif (!va)\n\t\treturn -ENOMEM;\n\n\t \n\tper_cpu(pcpu_hot.hardirq_stack_ptr, cpu) = va + IRQ_STACK_SIZE - 8;\n\treturn 0;\n}\n#else\n \nstatic int map_irq_stack(unsigned int cpu)\n{\n\tvoid *va = per_cpu_ptr(&irq_stack_backing_store, cpu);\n\n\t \n\tper_cpu(pcpu_hot.hardirq_stack_ptr, cpu) = va + IRQ_STACK_SIZE - 8;\n\treturn 0;\n}\n#endif\n\nint irq_init_percpu_irqstack(unsigned int cpu)\n{\n\tif (per_cpu(pcpu_hot.hardirq_stack_ptr, cpu))\n\t\treturn 0;\n\treturn map_irq_stack(cpu);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

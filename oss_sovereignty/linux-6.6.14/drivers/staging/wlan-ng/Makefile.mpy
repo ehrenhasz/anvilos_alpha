@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "35c2865e8387ab55bb4d679cc7558b67fbd259d2225dff0042034679dd74d856",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/wlan-ng/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_PRISM2_USB) += prism2_usb.o\n\nprism2_usb-y := prism2usb.o \\\n\t\tp80211conv.o \\\n\t\tp80211req.o \\\n\t\tp80211wep.o \\\n\t\tp80211netdev.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

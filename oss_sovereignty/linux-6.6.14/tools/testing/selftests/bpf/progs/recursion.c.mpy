@@ -1,0 +1,9 @@
+{
+  "module_name": "recursion.c",
+  "hash_id": "62cf136688fbe54699d5e4b7dd7366b629e365ceeb75c91e4253ab97fa9d2686",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/recursion.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__uint(max_entries, 1);\n\t__type(key, int);\n\t__type(value, long);\n} hash1 SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__uint(max_entries, 1);\n\t__type(key, int);\n\t__type(value, long);\n} hash2 SEC(\".maps\");\n\nint pass1 = 0;\nint pass2 = 0;\n\nSEC(\"fentry/htab_map_delete_elem\")\nint BPF_PROG(on_delete, struct bpf_map *map)\n{\n\tint key = 0;\n\n\tif (map == (void *)&hash1) {\n\t\tpass1++;\n\t\treturn 0;\n\t}\n\tif (map == (void *)&hash2) {\n\t\tpass2++;\n\t\tbpf_map_delete_elem(&hash2, &key);\n\t\treturn 0;\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

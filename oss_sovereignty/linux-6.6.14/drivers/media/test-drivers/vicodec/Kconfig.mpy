@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c98c8e7af71ffae1f2f0039efa7d609503764b225a72ee265e3064c853011a75",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vicodec/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_VICODEC\n\ttristate \"Virtual Codec Driver\"\n\tdepends on VIDEO_DEV\n\tselect VIDEOBUF2_VMALLOC\n\tselect V4L2_MEM2MEM_DEV\n\tselect MEDIA_CONTROLLER\n\tselect MEDIA_CONTROLLER_REQUEST_API\n\thelp\n\t  Driver for a Virtual Codec\n\n\t  This driver can be compared to the vim2m driver for emulating\n\t  a video device node that exposes an emulated hardware codec.\n\n\t  When in doubt, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

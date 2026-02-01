@@ -1,0 +1,9 @@
+{
+  "module_name": "asn1.h",
+  "hash_id": "02b43f3cc9801088556b9ee63f41de00d5c9d8b5e31413999d5c6a6ae2a93900",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/asn1.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_ASN1_H\n#define _LINUX_ASN1_H\n\n \nenum asn1_class {\n\tASN1_UNIV\t= 0,\t \n\tASN1_APPL\t= 1,\t \n\tASN1_CONT\t= 2,\t \n\tASN1_PRIV\t= 3\t \n};\n#define ASN1_CLASS_BITS\t0xc0\n\n\nenum asn1_method {\n\tASN1_PRIM\t= 0,\t \n\tASN1_CONS\t= 1\t \n};\n#define ASN1_CONS_BIT\t0x20\n\n \nenum asn1_tag {\n\tASN1_EOC\t= 0,\t \n\tASN1_BOOL\t= 1,\t \n\tASN1_INT\t= 2,\t \n\tASN1_BTS\t= 3,\t \n\tASN1_OTS\t= 4,\t \n\tASN1_NULL\t= 5,\t \n\tASN1_OID\t= 6,\t \n\tASN1_ODE\t= 7,\t \n\tASN1_EXT\t= 8,\t \n\tASN1_REAL\t= 9,\t \n\tASN1_ENUM\t= 10,\t \n\tASN1_EPDV\t= 11,\t \n\tASN1_UTF8STR\t= 12,\t \n\tASN1_RELOID\t= 13,\t \n\t \n\t \n\tASN1_SEQ\t= 16,\t \n\tASN1_SET\t= 17,\t \n\tASN1_NUMSTR\t= 18,\t \n\tASN1_PRNSTR\t= 19,\t \n\tASN1_TEXSTR\t= 20,\t \n\tASN1_VIDSTR\t= 21,\t \n\tASN1_IA5STR\t= 22,\t \n\tASN1_UNITIM\t= 23,\t \n\tASN1_GENTIM\t= 24,\t \n\tASN1_GRASTR\t= 25,\t \n\tASN1_VISSTR\t= 26,\t \n\tASN1_GENSTR\t= 27,\t \n\tASN1_UNISTR\t= 28,\t \n\tASN1_CHRSTR\t= 29,\t \n\tASN1_BMPSTR\t= 30,\t \n\tASN1_LONG_TAG\t= 31\t \n};\n\n#define ASN1_INDEFINITE_LENGTH 0x80\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

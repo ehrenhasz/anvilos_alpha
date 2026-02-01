@@ -1,0 +1,9 @@
+{
+  "module_name": "cxl.c",
+  "hash_id": "63e09f6d241c49cb01707ce6cace8965daaa40c42127d39a2eca4059ccbcf99c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dax/cxl.c",
+  "human_readable_source": "\n \n#include <linux/module.h>\n#include <linux/dax.h>\n\n#include \"../cxl/cxl.h\"\n#include \"bus.h\"\n\nstatic int cxl_dax_region_probe(struct device *dev)\n{\n\tstruct cxl_dax_region *cxlr_dax = to_cxl_dax_region(dev);\n\tint nid = phys_to_target_node(cxlr_dax->hpa_range.start);\n\tstruct cxl_region *cxlr = cxlr_dax->cxlr;\n\tstruct dax_region *dax_region;\n\tstruct dev_dax_data data;\n\n\tif (nid == NUMA_NO_NODE)\n\t\tnid = memory_add_physaddr_to_nid(cxlr_dax->hpa_range.start);\n\n\tdax_region = alloc_dax_region(dev, cxlr->id, &cxlr_dax->hpa_range, nid,\n\t\t\t\t      PMD_SIZE, IORESOURCE_DAX_KMEM);\n\tif (!dax_region)\n\t\treturn -ENOMEM;\n\n\tdata = (struct dev_dax_data) {\n\t\t.dax_region = dax_region,\n\t\t.id = -1,\n\t\t.size = range_len(&cxlr_dax->hpa_range),\n\t};\n\n\treturn PTR_ERR_OR_ZERO(devm_create_dev_dax(&data));\n}\n\nstatic struct cxl_driver cxl_dax_region_driver = {\n\t.name = \"cxl_dax_region\",\n\t.probe = cxl_dax_region_probe,\n\t.id = CXL_DEVICE_DAX_REGION,\n\t.drv = {\n\t\t.suppress_bind_attrs = true,\n\t},\n};\n\nmodule_cxl_driver(cxl_dax_region_driver);\nMODULE_ALIAS_CXL(CXL_DEVICE_DAX_REGION);\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Intel Corporation\");\nMODULE_IMPORT_NS(CXL);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

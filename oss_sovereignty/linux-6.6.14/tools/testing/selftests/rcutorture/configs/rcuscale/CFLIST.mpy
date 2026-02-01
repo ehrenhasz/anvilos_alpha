@@ -1,0 +1,9 @@
+{
+  "module_name": "CFLIST",
+  "hash_id": "372abf41ae3c3eaa2429d479d7911188b233d2c36d6a5134544e9b182a860f3a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcuscale/CFLIST",
+  "human_readable_source": "TREE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

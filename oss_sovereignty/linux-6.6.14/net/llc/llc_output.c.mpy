@@ -1,0 +1,9 @@
+{
+  "module_name": "llc_output.c",
+  "hash_id": "c4453cd641972a0baf0fc36ecda8aa5f1a57e7b73b6eac785abe072235db1fed",
+  "original_prompt": "Ingested from linux-6.6.14/net/llc/llc_output.c",
+  "human_readable_source": "\n \n\n#include <linux/if_arp.h>\n#include <linux/netdevice.h>\n#include <linux/skbuff.h>\n#include <linux/export.h>\n#include <net/llc.h>\n#include <net/llc_pdu.h>\n\n \nint llc_mac_hdr_init(struct sk_buff *skb,\n\t\t     const unsigned char *sa, const unsigned char *da)\n{\n\tint rc = -EINVAL;\n\n\tswitch (skb->dev->type) {\n\tcase ARPHRD_ETHER:\n\tcase ARPHRD_LOOPBACK:\n\t\trc = dev_hard_header(skb, skb->dev, ETH_P_802_2, da, sa,\n\t\t\t\t     skb->len);\n\t\tif (rc > 0)\n\t\t\trc = 0;\n\t\tbreak;\n\tdefault:\n\t\tbreak;\n\t}\n\treturn rc;\n}\n\n \nint llc_build_and_send_ui_pkt(struct llc_sap *sap, struct sk_buff *skb,\n\t\t\t      const unsigned char *dmac, unsigned char dsap)\n{\n\tint rc;\n\tllc_pdu_header_init(skb, LLC_PDU_TYPE_U, sap->laddr.lsap,\n\t\t\t    dsap, LLC_PDU_CMD);\n\tllc_pdu_init_as_ui_cmd(skb);\n\trc = llc_mac_hdr_init(skb, skb->dev->dev_addr, dmac);\n\tif (likely(!rc))\n\t\trc = dev_queue_xmit(skb);\n\telse\n\t\tkfree_skb(skb);\n\treturn rc;\n}\n\nEXPORT_SYMBOL(llc_mac_hdr_init);\nEXPORT_SYMBOL(llc_build_and_send_ui_pkt);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

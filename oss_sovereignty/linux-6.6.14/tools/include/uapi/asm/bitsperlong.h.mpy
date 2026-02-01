@@ -1,0 +1,9 @@
+{
+  "module_name": "bitsperlong.h",
+  "hash_id": "93c7398143ce36a68207d6fab89c52e79bc3ea8e3b88104df604466131c64a58",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/uapi/asm/bitsperlong.h",
+  "human_readable_source": " \n#if defined(__i386__) || defined(__x86_64__)\n#include \"../../../arch/x86/include/uapi/asm/bitsperlong.h\"\n#elif defined(__powerpc__)\n#include \"../../../arch/powerpc/include/uapi/asm/bitsperlong.h\"\n#elif defined(__s390__)\n#include \"../../../arch/s390/include/uapi/asm/bitsperlong.h\"\n#elif defined(__sparc__)\n#include \"../../../arch/sparc/include/uapi/asm/bitsperlong.h\"\n#elif defined(__mips__)\n#include \"../../../arch/mips/include/uapi/asm/bitsperlong.h\"\n#elif defined(__ia64__)\n#include \"../../../arch/ia64/include/uapi/asm/bitsperlong.h\"\n#elif defined(__alpha__)\n#include \"../../../arch/alpha/include/uapi/asm/bitsperlong.h\"\n#else\n#include <asm-generic/bitsperlong.h>\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

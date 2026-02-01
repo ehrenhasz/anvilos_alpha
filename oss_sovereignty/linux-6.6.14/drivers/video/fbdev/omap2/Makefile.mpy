@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "98a2967478073a864aa4f74e452bf329a9e403adf01ddb7e3c7eeb11318baae6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/omap2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y += omapfb/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3fcfd385a8f09fc6164c3e00ed9213778f6f7f2481cf4f8df1d4e2f8c6b39ef4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/lpddr/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenu \"LPDDR & LPDDR2 PCM memory drivers\"\n\tdepends on MTD\n\nconfig MTD_LPDDR\n\ttristate \"Support for LPDDR flash chips\"\n\tselect MTD_QINFO_PROBE\n\thelp\n\t  This option enables support of LPDDR (Low power double data rate)\n\t  flash chips. Synonymous with Mobile-DDR. It is a new standard for\n\t  DDR memories, intended for battery-operated systems.\n\nconfig MTD_QINFO_PROBE\n\tdepends on MTD_LPDDR\n\ttristate \"Detect flash chips by QINFO probe\"\n\thelp\n\t  Device Information for LPDDR chips is offered through the Overlay\n\t  Window QINFO interface, permits software to be used for entire\n\t  families of devices. This serves similar purpose of CFI on legacy\n\t  Flash products\n\nconfig MTD_LPDDR2_NVM\n\t# ARM dependency is only for writel_relaxed()\n\tdepends on MTD && ARM\n\ttristate \"Support for LPDDR2-NVM flash chips\"\n\thelp\n\t  This option enables support of PCM memories with a LPDDR2-NVM\n\t  (Low power double data rate 2) interface.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

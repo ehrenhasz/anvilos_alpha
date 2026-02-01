@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "f6f24de6043294ee202c0317a09a54c732202f5b5b391a2944ece996cf72f3ea",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ntb/hw/idt/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NTB_IDT\n\ttristate \"IDT PCIe-switch Non-Transparent Bridge support\"\n\tdepends on PCI\n\tselect HWMON\n\thelp\n\t This driver supports NTB of capable IDT PCIe-switches.\n\n\t Some of the pre-initializations must be made before IDT PCIe-switch\n\t exposes its NT-functions correctly. It should be done by either proper\n\t initialization of EEPROM connected to master SMbus of the switch or\n\t by BIOS using slave-SMBus interface changing corresponding registers\n\t value. Evidently it must be done before PCI bus enumeration is\n\t finished in Linux kernel.\n\n\t First of all partitions must be activated and properly assigned to all\n\t the ports with NT-functions intended to be activated (see SWPARTxCTL\n\t and SWPORTxCTL registers). Then all NT-function BARs must be enabled\n\t with chosen valid aperture. For memory windows related BARs the\n\t aperture settings shall determine the maximum size of memory windows\n\t accepted by a BAR. Note that BAR0 must map PCI configuration space\n\t registers.\n\n\t It's worth to note, that since a part of this driver relies on the\n\t BAR settings of peer NT-functions, the BAR setups can't be done over\n\t kernel PCI fixups. That's why the alternative pre-initialization\n\t techniques like BIOS using SMBus interface or EEPROM should be\n\t utilized.\n\n\t If unsure, say N.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "shdma.h",
+  "hash_id": "6aae355cb09dc0e2e1016e480538ed24e53ef46d9aaaf228376cdeabf40ec72d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/sh/shdma.h",
+  "human_readable_source": " \n \n#ifndef __DMA_SHDMA_H\n#define __DMA_SHDMA_H\n\n#include <linux/sh_dma.h>\n#include <linux/shdma-base.h>\n#include <linux/dmaengine.h>\n#include <linux/interrupt.h>\n#include <linux/list.h>\n\n#define SH_DMAE_MAX_CHANNELS 20\n#define SH_DMAE_TCR_MAX 0x00FFFFFF\t \n\nstruct device;\n\nstruct sh_dmae_chan {\n\tstruct shdma_chan shdma_chan;\n\tconst struct sh_dmae_slave_config *config;  \n\tint xmit_shift;\t\t\t \n\tvoid __iomem *base;\n\tchar dev_id[16];\t\t \n\tint pm_error;\n\tdma_addr_t slave_addr;\n};\n\nstruct sh_dmae_device {\n\tstruct shdma_dev shdma_dev;\n\tstruct sh_dmae_chan *chan[SH_DMAE_MAX_CHANNELS];\n\tconst struct sh_dmae_pdata *pdata;\n\tstruct list_head node;\n\tvoid __iomem *chan_reg;\n\tvoid __iomem *dmars;\n\tunsigned int chcr_offset;\n\tu32 chcr_ie_bit;\n};\n\nstruct sh_dmae_regs {\n\tu32 sar;  \n\tu32 dar;  \n\tu32 tcr;  \n};\n\nstruct sh_dmae_desc {\n\tstruct sh_dmae_regs hw;\n\tstruct shdma_desc shdma_desc;\n};\n\n#define to_sh_chan(chan) container_of(chan, struct sh_dmae_chan, shdma_chan)\n#define to_sh_desc(lh) container_of(lh, struct sh_desc, node)\n#define tx_to_sh_desc(tx) container_of(tx, struct sh_desc, async_tx)\n#define to_sh_dev(chan) container_of(chan->shdma_chan.dma_chan.device,\\\n\t\t\t\t     struct sh_dmae_device, shdma_dev.dma_dev)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

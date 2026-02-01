@@ -1,0 +1,9 @@
+{
+  "module_name": "link_dp_trace.h",
+  "hash_id": "808213733fdf6ea5552595892d23c695b37dcb135b535e72bc3ae835c699d9fe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/accessories/link_dp_trace.h",
+  "human_readable_source": " \n#ifndef __LINK_DP_TRACE_H__\n#define __LINK_DP_TRACE_H__\n#include \"link.h\"\n\nvoid dp_trace_init(struct dc_link *link);\nvoid dp_trace_reset(struct dc_link *link);\nbool dp_trace_is_initialized(struct dc_link *link);\nvoid dp_trace_detect_lt_init(struct dc_link *link);\nvoid dp_trace_commit_lt_init(struct dc_link *link);\nvoid dp_trace_link_loss_increment(struct dc_link *link);\nvoid dp_trace_lt_fail_count_update(struct dc_link *link,\n\t\tunsigned int fail_count,\n\t\tbool in_detection);\nvoid dp_trace_lt_total_count_increment(struct dc_link *link,\n\t\tbool in_detection);\nvoid dp_trace_set_is_logged_flag(struct dc_link *link,\n\t\tbool in_detection,\n\t\tbool is_logged);\nbool dp_trace_is_logged(struct dc_link *link,\n\t\tbool in_detection);\nvoid dp_trace_lt_result_update(struct dc_link *link,\n\t\tenum link_training_result result,\n\t\tbool in_detection);\nvoid dp_trace_set_lt_start_timestamp(struct dc_link *link,\n\t\tbool in_detection);\nvoid dp_trace_set_lt_end_timestamp(struct dc_link *link,\n\t\tbool in_detection);\nunsigned long long dp_trace_get_lt_end_timestamp(struct dc_link *link,\n\t\tbool in_detection);\nconst struct dp_trace_lt_counts *dp_trace_get_lt_counts(struct dc_link *link,\n\t\tbool in_detection);\nunsigned int dp_trace_get_link_loss_count(struct dc_link *link);\nvoid dp_trace_set_edp_power_timestamp(struct dc_link *link,\n\t\tbool power_up);\nuint64_t dp_trace_get_edp_poweron_timestamp(struct dc_link *link);\nuint64_t dp_trace_get_edp_poweroff_timestamp(struct dc_link *link);\nvoid dp_trace_source_sequence(struct dc_link *link, uint8_t dp_test_mode);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

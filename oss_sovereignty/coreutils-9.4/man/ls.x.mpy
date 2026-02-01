@@ -1,0 +1,9 @@
+{
+  "module_name": "ls.x",
+  "hash_id": "2302286309480b40c36de773bc7e18e356e126623258ff2a535320c01aeb2135",
+  "original_prompt": "Ingested from coreutils-9.4/man/ls.x",
+  "human_readable_source": "[NAME]\nls \\- list directory contents\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ndircolors(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

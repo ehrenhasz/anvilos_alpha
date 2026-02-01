@@ -1,0 +1,9 @@
+{
+  "module_name": "dma-mcf-edma.h",
+  "hash_id": "e91c46b789a4789de97533c928290e17e7c6f2d489b998af56112ec23569650d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/dma-mcf-edma.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_PLATFORM_DATA_MCF_EDMA_H__\n#define __LINUX_PLATFORM_DATA_MCF_EDMA_H__\n\nstruct dma_slave_map;\n\nbool mcf_edma_filter_fn(struct dma_chan *chan, void *param);\n\n#define MCF_EDMA_FILTER_PARAM(ch)\t((void *)ch)\n\n \nstruct mcf_edma_platform_data {\n\tint dma_channels;\n\tconst struct dma_slave_map *slave_map;\n\tint slavecnt;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

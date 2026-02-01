@@ -1,0 +1,9 @@
+{
+  "module_name": "test_xdp_vlan_mode_native.sh",
+  "hash_id": "de2695b5e3b7de0fc01423613656fb711dd8822dbb9139faf26fea289792ab56",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/test_xdp_vlan_mode_native.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# Exit on failure\nset -e\n\n# Wrapper script to test native-XDP\nexport TESTNAME=xdp_vlan_mode_native\n./test_xdp_vlan.sh --mode=xdpdrv\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

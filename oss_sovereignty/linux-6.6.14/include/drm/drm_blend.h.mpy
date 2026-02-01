@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_blend.h",
+  "hash_id": "ad7a9171cb1a23e523b70ca2b11ed8a7975ffb09bb3f855a1adc385f1b1e86b2",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_blend.h",
+  "human_readable_source": " \n\n#ifndef __DRM_BLEND_H__\n#define __DRM_BLEND_H__\n\n#include <linux/list.h>\n#include <linux/ctype.h>\n#include <drm/drm_mode.h>\n\n#define DRM_MODE_BLEND_PREMULTI\t\t0\n#define DRM_MODE_BLEND_COVERAGE\t\t1\n#define DRM_MODE_BLEND_PIXEL_NONE\t2\n\nstruct drm_device;\nstruct drm_atomic_state;\nstruct drm_plane;\n\nstatic inline bool drm_rotation_90_or_270(unsigned int rotation)\n{\n\treturn rotation & (DRM_MODE_ROTATE_90 | DRM_MODE_ROTATE_270);\n}\n\n#define DRM_BLEND_ALPHA_OPAQUE\t\t0xffff\n\nint drm_plane_create_alpha_property(struct drm_plane *plane);\nint drm_plane_create_rotation_property(struct drm_plane *plane,\n\t\t\t\t       unsigned int rotation,\n\t\t\t\t       unsigned int supported_rotations);\nunsigned int drm_rotation_simplify(unsigned int rotation,\n\t\t\t\t   unsigned int supported_rotations);\n\nint drm_plane_create_zpos_property(struct drm_plane *plane,\n\t\t\t\t   unsigned int zpos,\n\t\t\t\t   unsigned int min, unsigned int max);\nint drm_plane_create_zpos_immutable_property(struct drm_plane *plane,\n\t\t\t\t\t     unsigned int zpos);\nint drm_atomic_normalize_zpos(struct drm_device *dev,\n\t\t\t      struct drm_atomic_state *state);\nint drm_plane_create_blend_mode_property(struct drm_plane *plane,\n\t\t\t\t\t unsigned int supported_modes);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

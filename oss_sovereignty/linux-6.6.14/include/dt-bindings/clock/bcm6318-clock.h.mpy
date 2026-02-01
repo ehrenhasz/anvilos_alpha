@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm6318-clock.h",
+  "hash_id": "5bee917188d74122470c12f44cd34138fdb7b199922a1d21249e61c48d6ad2e3",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/bcm6318-clock.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_CLOCK_BCM6318_H\n#define __DT_BINDINGS_CLOCK_BCM6318_H\n\n#define BCM6318_CLK_ADSL_ASB\t0\n#define BCM6318_CLK_USB_ASB\t1\n#define BCM6318_CLK_MIPS_ASB\t2\n#define BCM6318_CLK_PCIE_ASB\t3\n#define BCM6318_CLK_PHYMIPS_ASB\t4\n#define BCM6318_CLK_ROBOSW_ASB\t5\n#define BCM6318_CLK_SAR_ASB\t6\n#define BCM6318_CLK_SDR_ASB\t7\n#define BCM6318_CLK_SWREG_ASB\t8\n#define BCM6318_CLK_PERIPH_ASB\t9\n#define BCM6318_CLK_CPUBUS160\t10\n#define BCM6318_CLK_ADSL\t11\n#define BCM6318_CLK_SAR125\t12\n#define BCM6318_CLK_MIPS\t13\n#define BCM6318_CLK_PCIE\t14\n#define BCM6318_CLK_ROBOSW250\t16\n#define BCM6318_CLK_ROBOSW025\t17\n#define BCM6318_CLK_SDR\t\t19\n#define BCM6318_CLK_USBD\t20\n#define BCM6318_CLK_HSSPI\t25\n#define BCM6318_CLK_PCIE25\t27\n#define BCM6318_CLK_PHYMIPS\t28\n#define BCM6318_CLK_AFE\t\t29\n#define BCM6318_CLK_QPROC\t30\n\n#define BCM6318_UCLK_ADSL\t0\n#define BCM6318_UCLK_ARB\t1\n#define BCM6318_UCLK_MIPS\t2\n#define BCM6318_UCLK_PCIE\t3\n#define BCM6318_UCLK_PERIPH\t4\n#define BCM6318_UCLK_PHYMIPS\t5\n#define BCM6318_UCLK_ROBOSW\t6\n#define BCM6318_UCLK_SAR\t7\n#define BCM6318_UCLK_SDR\t8\n#define BCM6318_UCLK_USB\t9\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

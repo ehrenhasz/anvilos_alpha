@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "49015c023060e8b1b04ba04a8b837589cead56460c311450e8d0c1e890b07e2a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/memstick/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# MemoryStick subsystem configuration\n#\n\nmenuconfig MEMSTICK\n\ttristate \"Sony MemoryStick card support\"\n\thelp\n\t  Sony MemoryStick is a proprietary storage/extension card protocol.\n\n\t  If you want MemoryStick support, you should say Y here and also\n\t  to the specific driver for your MemoryStick interface.\n\nif MEMSTICK\n\nconfig MEMSTICK_DEBUG\n\tbool \"MemoryStick debugging\"\n\thelp\n\t  This is an option for use by developers; most people should\n\t  say N here.  This enables MemoryStick core and driver debugging.\n\n\nsource \"drivers/memstick/core/Kconfig\"\n\nsource \"drivers/memstick/host/Kconfig\"\n\nendif # MEMSTICK\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

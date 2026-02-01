@@ -1,0 +1,9 @@
+{
+  "module_name": "mksyscalltbl",
+  "hash_id": "313700b6bfe3274f378ebef7567c1a155b8c48a2e8afa24cc6762a8b909bd459",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/powerpc/entry/syscalls/mksyscalltbl",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n#\n# Generate system call table for perf. Derived from\n# s390 script.\n#\n# Copyright IBM Corp. 2017\n# Author(s):  Hendrik Brueckner <brueckner@linux.vnet.ibm.com>\n# Changed by: Ravi Bangoria <ravi.bangoria@linux.vnet.ibm.com>\n\nwordsize=$1\nSYSCALL_TBL=$2\n\nif ! test -r $SYSCALL_TBL; then\n\techo \"Could not read input file\" >&2\n\texit 1\nfi\n\ncreate_table()\n{\n\tlocal wordsize=$1\n\tlocal max_nr nr abi sc discard\n\tmax_nr=-1\n\tnr=0\n\n\techo \"static const char *const syscalltbl_powerpc_${wordsize}[] = {\"\n\twhile read nr abi sc discard; do\n\t\tif [ \"$max_nr\" -lt \"$nr\" ]; then\n\t\t\tprintf '\\t[%d] = \"%s\",\\n' $nr $sc\n\t\t\tmax_nr=$nr\n\t\tfi\n\tdone\n\techo '};'\n\techo \"#define SYSCALLTBL_POWERPC_${wordsize}_MAX_ID $max_nr\"\n}\n\ngrep -E \"^[[:digit:]]+[[:space:]]+(common|spu|nospu|${wordsize})\" $SYSCALL_TBL \\\n\t|sort -k1 -n                                                           \\\n\t|create_table ${wordsize}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

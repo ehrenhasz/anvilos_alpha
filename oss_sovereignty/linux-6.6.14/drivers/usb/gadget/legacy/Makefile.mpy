@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "79e31c418e6219178c1a7171227b248e04f25a0660bd76c5c30115db163167dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/legacy/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# USB gadget drivers\n#\n\nccflags-y\t\t\t:= -I$(srctree)/drivers/usb/gadget/\nccflags-y\t\t\t+= -I$(srctree)/drivers/usb/gadget/udc/\nccflags-y\t\t\t+= -I$(srctree)/drivers/usb/gadget/function/\n\ng_zero-y\t\t\t:= zero.o\ng_audio-y\t\t\t:= audio.o\ng_ether-y\t\t\t:= ether.o\ng_serial-y\t\t\t:= serial.o\ng_midi-y\t\t\t:= gmidi.o\ngadgetfs-y\t\t\t:= inode.o\ng_mass_storage-y\t\t:= mass_storage.o\ng_printer-y\t\t\t:= printer.o\ng_cdc-y\t\t\t\t:= cdc2.o\ng_multi-y\t\t\t:= multi.o\ng_hid-y\t\t\t\t:= hid.o\ng_dbgp-y\t\t\t:= dbgp.o\ng_nokia-y\t\t\t:= nokia.o\ng_webcam-y\t\t\t:= webcam.o\ng_ncm-y\t\t\t\t:= ncm.o\ng_acm_ms-y\t\t\t:= acm_ms.o\ng_tcm_usb_gadget-y\t\t:= tcm_usb_gadget.o\n\nobj-$(CONFIG_USB_ZERO)\t\t+= g_zero.o\nobj-$(CONFIG_USB_AUDIO)\t\t+= g_audio.o\nobj-$(CONFIG_USB_ETH)\t\t+= g_ether.o\nobj-$(CONFIG_USB_GADGETFS)\t+= gadgetfs.o\nobj-$(CONFIG_USB_FUNCTIONFS)\t+= g_ffs.o\nobj-$(CONFIG_USB_MASS_STORAGE)\t+= g_mass_storage.o\nobj-$(CONFIG_USB_G_SERIAL)\t+= g_serial.o\nobj-$(CONFIG_USB_G_PRINTER)\t+= g_printer.o\nobj-$(CONFIG_USB_MIDI_GADGET)\t+= g_midi.o\nobj-$(CONFIG_USB_CDC_COMPOSITE) += g_cdc.o\nobj-$(CONFIG_USB_G_HID)\t\t+= g_hid.o\nobj-$(CONFIG_USB_G_DBGP)\t+= g_dbgp.o\nobj-$(CONFIG_USB_G_MULTI)\t+= g_multi.o\nobj-$(CONFIG_USB_G_NOKIA)\t+= g_nokia.o\nobj-$(CONFIG_USB_G_WEBCAM)\t+= g_webcam.o\nobj-$(CONFIG_USB_G_NCM)\t\t+= g_ncm.o\nobj-$(CONFIG_USB_G_ACM_MS)\t+= g_acm_ms.o\nobj-$(CONFIG_USB_GADGET_TARGET)\t+= tcm_usb_gadget.o\nobj-$(CONFIG_USB_RAW_GADGET)\t+= raw_gadget.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "38adaabe3567cedfe04ba7d3f0bc8aa0747446acf98b349535dc5fc427461b33",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/stm32/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\n# V4L drivers\nconfig VIDEO_STM32_DCMI\n\ttristate \"STM32 Digital Camera Memory Interface (DCMI) support\"\n\tdepends on V4L_PLATFORM_DRIVERS\n\tdepends on VIDEO_DEV && OF\n\tdepends on ARCH_STM32 || COMPILE_TEST\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect MEDIA_CONTROLLER\n\tselect V4L2_FWNODE\n\thelp\n\t  This module makes the STM32 Digital Camera Memory Interface (DCMI)\n\t  available as a v4l2 device.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called stm32-dcmi.\n\n# Mem2mem drivers\nconfig VIDEO_STM32_DMA2D\n\ttristate \"STM32 Chrom-Art Accelerator (DMA2D)\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on VIDEO_DEV\n\tdepends on ARCH_STM32 || COMPILE_TEST\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_MEM2MEM_DEV\n\thelp\n\t  Enables DMA2D hardware support on stm32.\n\n\t  The STM32 DMA2D is a memory-to-memory engine for pixel conversion\n\t  and specialized DMA dedicated to image manipulation.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

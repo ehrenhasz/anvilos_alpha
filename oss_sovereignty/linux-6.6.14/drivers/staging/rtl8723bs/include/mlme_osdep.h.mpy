@@ -1,0 +1,9 @@
+{
+  "module_name": "mlme_osdep.h",
+  "hash_id": "7520d923169a42c519fc9f22f97c87397eabbd45e38021575e79bf44c7cce237",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/mlme_osdep.h",
+  "human_readable_source": " \n \n#ifndef\t__MLME_OSDEP_H_\n#define __MLME_OSDEP_H_\n\n\nextern void rtw_init_mlme_timer(struct adapter *padapter);\nextern void rtw_os_indicate_disconnect(struct adapter *adapter);\nextern void rtw_os_indicate_connect(struct adapter *adapter);\nvoid rtw_os_indicate_scan_done(struct adapter *padapter, bool aborted);\nextern void rtw_report_sec_ie(struct adapter *adapter, u8 authmode, u8 *sec_ie);\n\nvoid rtw_reset_securitypriv(struct adapter *adapter);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

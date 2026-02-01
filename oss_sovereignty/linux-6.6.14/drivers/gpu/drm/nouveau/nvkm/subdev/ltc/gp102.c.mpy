@@ -1,0 +1,9 @@
+{
+  "module_name": "gp102.c",
+  "hash_id": "18c476a975e1387ce497e69fc3f4a8392b4236bb00504ebb4283ad3b8be42d91",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/ltc/gp102.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nvoid\ngp102_ltc_zbc_clear_stencil(struct nvkm_ltc *ltc, int i, const u32 stencil)\n{\n\tstruct nvkm_device *device = ltc->subdev.device;\n\tnvkm_mask(device, 0x17e338, 0x0000000f, i);\n\tnvkm_wr32(device, 0x17e204, stencil);\n}\n\nstatic const struct nvkm_ltc_func\ngp102_ltc = {\n\t.oneinit = gp100_ltc_oneinit,\n\t.init = gp100_ltc_init,\n\t.intr = gp100_ltc_intr,\n\t.cbc_clear = gm107_ltc_cbc_clear,\n\t.cbc_wait = gm107_ltc_cbc_wait,\n\t.zbc_color = 16,\n\t.zbc_depth = 16,\n\t.zbc_clear_color = gm107_ltc_zbc_clear_color,\n\t.zbc_clear_depth = gm107_ltc_zbc_clear_depth,\n\t.zbc_clear_stencil = gp102_ltc_zbc_clear_stencil,\n\t.invalidate = gf100_ltc_invalidate,\n\t.flush = gf100_ltc_flush,\n};\n\nint\ngp102_ltc_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_ltc **pltc)\n{\n\treturn nvkm_ltc_new_(&gp102_ltc, device, type, inst, pltc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

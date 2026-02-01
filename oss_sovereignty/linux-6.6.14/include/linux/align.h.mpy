@@ -1,0 +1,9 @@
+{
+  "module_name": "align.h",
+  "hash_id": "f6d33c0502d8b0f166723da810a440cfa8ee53d5b05c5b8de73a154a1a771df0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/align.h",
+  "human_readable_source": " \n#ifndef _LINUX_ALIGN_H\n#define _LINUX_ALIGN_H\n\n#include <linux/const.h>\n\n \n#define ALIGN(x, a)\t\t__ALIGN_KERNEL((x), (a))\n#define ALIGN_DOWN(x, a)\t__ALIGN_KERNEL((x) - ((a) - 1), (a))\n#define __ALIGN_MASK(x, mask)\t__ALIGN_KERNEL_MASK((x), (mask))\n#define PTR_ALIGN(p, a)\t\t((typeof(p))ALIGN((unsigned long)(p), (a)))\n#define PTR_ALIGN_DOWN(p, a)\t((typeof(p))ALIGN_DOWN((unsigned long)(p), (a)))\n#define IS_ALIGNED(x, a)\t\t(((x) & ((typeof(x))(a) - 1)) == 0)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

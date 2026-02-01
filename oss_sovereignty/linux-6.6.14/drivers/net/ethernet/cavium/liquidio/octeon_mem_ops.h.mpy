@@ -1,0 +1,9 @@
+{
+  "module_name": "octeon_mem_ops.h",
+  "hash_id": "387f77efe47df579bf127d0ee6fbc2f33d056c0ed8ea7ef928d5dfb22887b755",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cavium/liquidio/octeon_mem_ops.h",
+  "human_readable_source": " \n\n \n\n#ifndef __OCTEON_MEM_OPS_H__\n#define __OCTEON_MEM_OPS_H__\n\n \nu64 octeon_read_device_mem64(struct octeon_device *oct, u64 core_addr);\n\n \nu32 octeon_read_device_mem32(struct octeon_device *oct, u64 core_addr);\n\n \nvoid\nocteon_write_device_mem32(struct octeon_device *oct,\n\t\t\t  u64 core_addr,\n\t\t\t  u32 val);\n\n \nvoid\nocteon_pci_read_core_mem(struct octeon_device *oct,\n\t\t\t u64 coreaddr,\n\t\t\t u8 *buf,\n\t\t\t u32 len);\n\n \nvoid\nocteon_pci_write_core_mem(struct octeon_device *oct,\n\t\t\t  u64 coreaddr,\n\t\t\t  const u8 *buf,\n\t\t\t  u32 len);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

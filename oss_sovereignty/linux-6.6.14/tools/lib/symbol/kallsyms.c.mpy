@@ -1,0 +1,9 @@
+{
+  "module_name": "kallsyms.c",
+  "hash_id": "4e01e70054f7cba1b25a0fc70fadcf5d3572e0c847525ab25988fcfad8139211",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/symbol/kallsyms.c",
+  "human_readable_source": "\n#include \"symbol/kallsyms.h\"\n#include \"api/io.h\"\n#include <stdio.h>\n#include <sys/stat.h>\n#include <fcntl.h>\n\nu8 kallsyms2elf_type(char type)\n{\n\ttype = tolower(type);\n\treturn (type == 't' || type == 'w') ? STT_FUNC : STT_OBJECT;\n}\n\nbool kallsyms__is_function(char symbol_type)\n{\n\tsymbol_type = toupper(symbol_type);\n\treturn symbol_type == 'T' || symbol_type == 'W';\n}\n\nstatic void read_to_eol(struct io *io)\n{\n\tint ch;\n\n\tfor (;;) {\n\t\tch = io__get_char(io);\n\t\tif (ch < 0 || ch == '\\n')\n\t\t\treturn;\n\t}\n}\n\nint kallsyms__parse(const char *filename, void *arg,\n\t\t    int (*process_symbol)(void *arg, const char *name,\n\t\t\t\t\t  char type, u64 start))\n{\n\tstruct io io;\n\tchar bf[BUFSIZ];\n\tint err;\n\n\tio.fd = open(filename, O_RDONLY, 0);\n\n\tif (io.fd < 0)\n\t\treturn -1;\n\n\tio__init(&io, io.fd, bf, sizeof(bf));\n\n\terr = 0;\n\twhile (!io.eof) {\n\t\t__u64 start;\n\t\tint ch;\n\t\tsize_t i;\n\t\tchar symbol_type;\n\t\tchar symbol_name[KSYM_NAME_LEN + 1];\n\n\t\tif (io__get_hex(&io, &start) != ' ') {\n\t\t\tread_to_eol(&io);\n\t\t\tcontinue;\n\t\t}\n\t\tsymbol_type = io__get_char(&io);\n\t\tif (io__get_char(&io) != ' ') {\n\t\t\tread_to_eol(&io);\n\t\t\tcontinue;\n\t\t}\n\t\tfor (i = 0; i < sizeof(symbol_name); i++) {\n\t\t\tch = io__get_char(&io);\n\t\t\tif (ch < 0 || ch == '\\n')\n\t\t\t\tbreak;\n\t\t\tsymbol_name[i]  = ch;\n\t\t}\n\t\tsymbol_name[i]  = '\\0';\n\n\t\terr = process_symbol(arg, symbol_name, symbol_type, start);\n\t\tif (err)\n\t\t\tbreak;\n\t}\n\n\tclose(io.fd);\n\treturn err;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

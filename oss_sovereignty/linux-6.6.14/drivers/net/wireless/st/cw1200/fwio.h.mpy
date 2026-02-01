@@ -1,0 +1,9 @@
+{
+  "module_name": "fwio.h",
+  "hash_id": "320f412d2f5fdc2ee3363c5658de0b262f7bb29ec6431301e32ffc50c0270096",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/st/cw1200/fwio.h",
+  "human_readable_source": " \n \n\n#ifndef FWIO_H_INCLUDED\n#define FWIO_H_INCLUDED\n\n#define BOOTLOADER_CW1X60       \"boot_cw1x60.bin\"\n#define FIRMWARE_CW1X60\t\t\"wsm_cw1x60.bin\"\n#define FIRMWARE_CUT22\t\t\"wsm_22.bin\"\n#define FIRMWARE_CUT20\t\t\"wsm_20.bin\"\n#define FIRMWARE_CUT11\t\t\"wsm_11.bin\"\n#define FIRMWARE_CUT10\t\t\"wsm_10.bin\"\n#define SDD_FILE_CW1X60\t\t\"sdd_cw1x60.bin\"\n#define SDD_FILE_22\t\t\"sdd_22.bin\"\n#define SDD_FILE_20\t\t\"sdd_20.bin\"\n#define SDD_FILE_11\t\t\"sdd_11.bin\"\n#define SDD_FILE_10\t\t\"sdd_10.bin\"\n\nint cw1200_load_firmware(struct cw1200_common *priv);\n\n \n#define SDD_PTA_CFG_ELT_ID 0xEB\n#define SDD_REFERENCE_FREQUENCY_ELT_ID 0xc5\nu32 cw1200_dpll_from_clk(u16 clk);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

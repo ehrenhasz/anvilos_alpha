@@ -1,0 +1,9 @@
+{
+  "module_name": "mode-2-recovery-updelay.sh",
+  "hash_id": "caf1f7c4a6764546ae7d7021c1a6dc15e8e8c84e4dea7da9f49e398948b20ea4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/bonding/mode-2-recovery-updelay.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# Regression Test:\n#  When the bond is configured with down/updelay and the link state of\n#  slave members flaps if there are no remaining members up the bond\n#  should immediately select a member to bring up. (from bonding.txt\n#  section 13.1 paragraph 4)\n#\n#  +-------------+       +-----------+\n#  | client      |       | switch    |\n#  |             |       |           |\n#  |    +--------| link1 |-----+     |\n#  |    |        +-------+     |     |\n#  |    |        |       |     |     |\n#  |    |        +-------+     |     |\n#  |    | bond   | link2 | Br0 |     |\n#  +-------------+       +-----------+\n#     172.20.2.1           172.20.2.2\n\n\nREQUIRE_MZ=no\nREQUIRE_JQ=no\nNUM_NETIFS=0\nlib_dir=$(dirname \"$0\")\nsource \"$lib_dir\"/net_forwarding_lib.sh\nsource \"$lib_dir\"/lag_lib.sh\n\ncleanup()\n{\n\tlag_cleanup\n}\n\ntrap cleanup 0 1 2\n\nlag_setup_network\ntest_bond_recovery mode 2 miimon 100 updelay 0\ntest_bond_recovery mode 2 miimon 100 updelay 200\ntest_bond_recovery mode 2 miimon 100 updelay 500\ntest_bond_recovery mode 2 miimon 100 updelay 1000\ntest_bond_recovery mode 2 miimon 100 updelay 2000\ntest_bond_recovery mode 2 miimon 100 updelay 5000\ntest_bond_recovery mode 2 miimon 100 updelay 10000\n\nexit \"$EXIT_STATUS\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "via_i2c.h",
+  "hash_id": "99e13eb8363b2294b6fab84d2de61e84add489860a81af5f49d539afe0268af1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/via_i2c.h",
+  "human_readable_source": " \n \n#ifndef __VIA_I2C_H__\n#define __VIA_I2C_H__\n\n#include <linux/i2c.h>\n#include <linux/i2c-algo-bit.h>\n\nstruct via_i2c_stuff {\n\tu16 i2c_port;\t\t\t \n\tu16 is_active;\t\t\t \n\tstruct i2c_adapter adapter;\n\tstruct i2c_algo_bit_data algo;\n};\n\n\nint viafb_i2c_readbyte(u8 adap, u8 slave_addr, u8 index, u8 *pdata);\nint viafb_i2c_writebyte(u8 adap, u8 slave_addr, u8 index, u8 data);\nint viafb_i2c_readbytes(u8 adap, u8 slave_addr, u8 index, u8 *buff, int buff_len);\nstruct i2c_adapter *viafb_find_i2c_adapter(enum viafb_i2c_adap which);\n\nextern int viafb_i2c_init(void);\nextern void viafb_i2c_exit(void);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

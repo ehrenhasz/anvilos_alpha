@@ -1,0 +1,9 @@
+{
+  "module_name": "snapshot.tc",
+  "hash_id": "d1684251b9ef9781714d093bc4135085f1fb4114b8bc4240bfaed9f81bb50230",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/00basic/snapshot.tc",
+  "human_readable_source": "#!/bin/sh\n# description: Snapshot and tracing setting\n# requires: snapshot\n# flags: instance\n\necho \"Set tracing off\"\necho 0 > tracing_on\n\necho \"Allocate and take a snapshot\"\necho 1 > snapshot\n\n# Since trace buffer is empty, snapshot is also empty, but allocated\ngrep -q \"Snapshot is allocated\" snapshot\n\necho \"Ensure keep tracing off\"\ntest `cat tracing_on` -eq 0\n\necho \"Set tracing on\"\necho 1 > tracing_on\n\necho \"Take a snapshot again\"\necho 1 > snapshot\n\necho \"Ensure keep tracing on\"\ntest `cat tracing_on` -eq 1\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

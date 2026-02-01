@@ -1,0 +1,9 @@
+{
+  "module_name": "test_kmod.sh",
+  "hash_id": "06878ec47fda8643714a9e01dab5c71e075c04c0020ccf0c736318df9b03b9de",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/test_kmod.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\n# Usage:\n# ./test_kmod.sh [module_param]...\n# Ex.: ./test_kmod.sh test_range=1,3\n# All the parameters are passed to the kernel module.\n\n# Kselftest framework requirement - SKIP code is 4.\nksft_skip=4\n\nmsg=\"skip all tests:\"\nif [ \"$(id -u)\" != \"0\" ]; then\n\techo $msg please run this as root >&2\n\texit $ksft_skip\nfi\n\nif [ \"$building_out_of_srctree\" ]; then\n\t# We are in linux-build/kselftest/bpf\n\tOUTPUT=../../\nelse\n\t# We are in linux/tools/testing/selftests/bpf\n\tOUTPUT=../../../../\nfi\n\ntest_run()\n{\n\tsysctl -w net.core.bpf_jit_enable=$1 2>&1 > /dev/null\n\tsysctl -w net.core.bpf_jit_harden=$2 2>&1 > /dev/null\n\n\techo \"[ JIT enabled:$1 hardened:$2 ]\"\n\tshift 2\n\tdmesg -C\n\tif [ -f ${OUTPUT}/lib/test_bpf.ko ]; then\n\t\tinsmod ${OUTPUT}/lib/test_bpf.ko \"$@\" 2> /dev/null\n\t\tif [ $? -ne 0 ]; then\n\t\t\trc=1\n\t\tfi\n\telse\n\t\t# Use modprobe dry run to check for missing test_bpf module\n\t\tif ! /sbin/modprobe -q -n test_bpf \"$@\"; then\n\t\t\techo \"test_bpf: [SKIP]\"\n\t\telif /sbin/modprobe -q test_bpf \"$@\"; then\n\t\t\techo \"test_bpf: ok\"\n\t\telse\n\t\t\techo \"test_bpf: [FAIL]\"\n\t\t\trc=1\n\t\tfi\n\tfi\n\trmmod  test_bpf 2> /dev/null\n\tdmesg | grep FAIL\n}\n\ntest_save()\n{\n\tJE=`sysctl -n net.core.bpf_jit_enable`\n\tJH=`sysctl -n net.core.bpf_jit_harden`\n}\n\ntest_restore()\n{\n\tsysctl -w net.core.bpf_jit_enable=$JE 2>&1 > /dev/null\n\tsysctl -w net.core.bpf_jit_harden=$JH 2>&1 > /dev/null\n}\n\nrc=0\ntest_save\ntest_run 0 0 \"$@\"\ntest_run 1 0 \"$@\"\ntest_run 1 1 \"$@\"\ntest_run 1 2 \"$@\"\ntest_restore\nexit $rc\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

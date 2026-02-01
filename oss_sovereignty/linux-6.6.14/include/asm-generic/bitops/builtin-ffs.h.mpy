@@ -1,0 +1,9 @@
+{
+  "module_name": "builtin-ffs.h",
+  "hash_id": "48f8d67a120763bbaa1c0c6fdb3a901fc42c7386a9f8a99542c8964a52cb1bf8",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/bitops/builtin-ffs.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_BITOPS_BUILTIN_FFS_H_\n#define _ASM_GENERIC_BITOPS_BUILTIN_FFS_H_\n\n \n#define ffs(x) __builtin_ffs(x)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

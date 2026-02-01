@@ -1,0 +1,9 @@
+{
+  "module_name": "whoami.c",
+  "hash_id": "e47b43c0fcbdbd48256b645b34ab80b49d67672313d811b737d587a1f46d7d06",
+  "original_prompt": "Ingested from coreutils-9.4/src/whoami.c",
+  "human_readable_source": " \n \n\n#include <config.h>\n#include <stdio.h>\n#include <sys/types.h>\n#include <pwd.h>\n\n#include \"system.h\"\n#include \"long-options.h\"\n#include \"quote.h\"\n\n \n#define PROGRAM_NAME \"whoami\"\n\n#define AUTHORS proper_name (\"Richard Mlynarik\")\n\nvoid\nusage (int status)\n{\n  if (status != EXIT_SUCCESS)\n    emit_try_help ();\n  else\n    {\n      printf (_(\"Usage: %s [OPTION]...\\n\"), program_name);\n      fputs (_(\"\\\nPrint the user name associated with the current effective user ID.\\n\\\nSame as id -un.\\n\\\n\\n\\\n\"), stdout);\n      fputs (HELP_OPTION_DESCRIPTION, stdout);\n      fputs (VERSION_OPTION_DESCRIPTION, stdout);\n      emit_ancillary_info (PROGRAM_NAME);\n    }\n  exit (status);\n}\n\nint\nmain (int argc, char **argv)\n{\n  struct passwd *pw;\n  uid_t uid;\n  uid_t NO_UID = -1;\n\n  initialize_main (&argc, &argv);\n  set_program_name (argv[0]);\n  setlocale (LC_ALL, \"\");\n  bindtextdomain (PACKAGE, LOCALEDIR);\n  textdomain (PACKAGE);\n\n  atexit (close_stdout);\n\n  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,\n                                   Version, true, usage, AUTHORS,\n                                   (char const *) nullptr);\n\n  if (optind != argc)\n    {\n      error (0, 0, _(\"extra operand %s\"), quote (argv[optind]));\n      usage (EXIT_FAILURE);\n    }\n\n  errno = 0;\n  uid = geteuid ();\n  pw = uid == NO_UID && errno ? nullptr : getpwuid (uid);\n  if (!pw)\n    error (EXIT_FAILURE, errno, _(\"cannot find name for user ID %lu\"),\n           (unsigned long int) uid);\n  puts (pw->pw_name);\n  return EXIT_SUCCESS;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

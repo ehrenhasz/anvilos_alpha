@@ -1,0 +1,9 @@
+{
+  "module_name": "ingenic-tcu.h",
+  "hash_id": "a7b87355dd99989df893a927f199adc7206076d29f17dc8b3e2e8011b6c3a35e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/ingenic-tcu.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_MFD_INGENIC_TCU_H_\n#define __LINUX_MFD_INGENIC_TCU_H_\n\n#include <linux/bitops.h>\n\n#define TCU_REG_WDT_TDR\t\t0x00\n#define TCU_REG_WDT_TCER\t0x04\n#define TCU_REG_WDT_TCNT\t0x08\n#define TCU_REG_WDT_TCSR\t0x0c\n#define TCU_REG_TER\t\t0x10\n#define TCU_REG_TESR\t\t0x14\n#define TCU_REG_TECR\t\t0x18\n#define TCU_REG_TSR\t\t0x1c\n#define TCU_REG_TFR\t\t0x20\n#define TCU_REG_TFSR\t\t0x24\n#define TCU_REG_TFCR\t\t0x28\n#define TCU_REG_TSSR\t\t0x2c\n#define TCU_REG_TMR\t\t0x30\n#define TCU_REG_TMSR\t\t0x34\n#define TCU_REG_TMCR\t\t0x38\n#define TCU_REG_TSCR\t\t0x3c\n#define TCU_REG_TDFR0\t\t0x40\n#define TCU_REG_TDHR0\t\t0x44\n#define TCU_REG_TCNT0\t\t0x48\n#define TCU_REG_TCSR0\t\t0x4c\n#define TCU_REG_OST_DR\t\t0xe0\n#define TCU_REG_OST_CNTL\t0xe4\n#define TCU_REG_OST_CNTH\t0xe8\n#define TCU_REG_OST_TCSR\t0xec\n#define TCU_REG_TSTR\t\t0xf0\n#define TCU_REG_TSTSR\t\t0xf4\n#define TCU_REG_TSTCR\t\t0xf8\n#define TCU_REG_OST_CNTHBUF\t0xfc\n\n#define TCU_TCSR_RESERVED_BITS\t\t0x3f\n#define TCU_TCSR_PARENT_CLOCK_MASK\t0x07\n#define TCU_TCSR_PRESCALE_LSB\t\t3\n#define TCU_TCSR_PRESCALE_MASK\t\t0x38\n\n#define TCU_TCSR_PWM_SD\t\tBIT(9)\t \n#define TCU_TCSR_PWM_INITL_HIGH\tBIT(8)\t \n#define TCU_TCSR_PWM_EN\t\tBIT(7)\t \n\n#define TCU_WDT_TCER_TCEN\tBIT(0)\t \n\n#define TCU_CHANNEL_STRIDE\t0x10\n#define TCU_REG_TDFRc(c)\t(TCU_REG_TDFR0 + ((c) * TCU_CHANNEL_STRIDE))\n#define TCU_REG_TDHRc(c)\t(TCU_REG_TDHR0 + ((c) * TCU_CHANNEL_STRIDE))\n#define TCU_REG_TCNTc(c)\t(TCU_REG_TCNT0 + ((c) * TCU_CHANNEL_STRIDE))\n#define TCU_REG_TCSRc(c)\t(TCU_REG_TCSR0 + ((c) * TCU_CHANNEL_STRIDE))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

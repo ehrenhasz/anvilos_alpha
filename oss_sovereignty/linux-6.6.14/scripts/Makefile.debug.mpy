@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.debug",
+  "hash_id": "0cd3251e3303eb9ef0af68e3ab3fc3d827aa9ca13a0608e6ef424a00140eba4a",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/Makefile.debug",
+  "human_readable_source": "DEBUG_CFLAGS\t:=\nDEBUG_RUSTFLAGS\t:=\n\ndebug-flags-y\t:= -g\n\nifdef CONFIG_DEBUG_INFO_SPLIT\nDEBUG_CFLAGS\t+= -gsplit-dwarf\nendif\n\ndebug-flags-$(CONFIG_DEBUG_INFO_DWARF4)\t+= -gdwarf-4\ndebug-flags-$(CONFIG_DEBUG_INFO_DWARF5)\t+= -gdwarf-5\nifeq ($(CONFIG_CC_IS_CLANG)$(CONFIG_AS_IS_GNU),yy)\n# Clang does not pass -g or -gdwarf-* option down to GAS.\n# Add -Wa, prefix to explicitly specify the flags.\nKBUILD_AFLAGS\t+= $(addprefix -Wa$(comma), $(debug-flags-y))\nendif\nDEBUG_CFLAGS\t+= $(debug-flags-y)\nKBUILD_AFLAGS\t+= $(debug-flags-y)\n\nifdef CONFIG_DEBUG_INFO_REDUCED\nDEBUG_CFLAGS\t+= -fno-var-tracking\nDEBUG_RUSTFLAGS\t+= -Cdebuginfo=1\nifdef CONFIG_CC_IS_GCC\nDEBUG_CFLAGS\t+= -femit-struct-debug-baseonly\nendif\nelse\nDEBUG_RUSTFLAGS\t+= -Cdebuginfo=2\nendif\n\nifdef CONFIG_DEBUG_INFO_COMPRESSED_ZLIB\nDEBUG_CFLAGS\t+= -gz=zlib\nKBUILD_AFLAGS\t+= -gz=zlib\nKBUILD_LDFLAGS\t+= --compress-debug-sections=zlib\nelse ifdef CONFIG_DEBUG_INFO_COMPRESSED_ZSTD\nDEBUG_CFLAGS\t+= -gz=zstd\nKBUILD_AFLAGS\t+= -gz=zstd\nKBUILD_LDFLAGS\t+= --compress-debug-sections=zstd\nendif\n\nKBUILD_CFLAGS\t+= $(DEBUG_CFLAGS)\nexport DEBUG_CFLAGS\n\nKBUILD_RUSTFLAGS += $(DEBUG_RUSTFLAGS)\nexport DEBUG_RUSTFLAGS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

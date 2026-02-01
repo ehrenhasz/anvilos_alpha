@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_devlink.h",
+  "hash_id": "8009b0f214ccca6f23113d9ecb8d7aeee119e2491f0393b82972cf6d6ac76be1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_devlink.h",
+  "human_readable_source": " \n \n\n#ifndef _ICE_DEVLINK_H_\n#define _ICE_DEVLINK_H_\n\nstruct ice_pf *ice_allocate_pf(struct device *dev);\n\nvoid ice_devlink_register(struct ice_pf *pf);\nvoid ice_devlink_unregister(struct ice_pf *pf);\nint ice_devlink_register_params(struct ice_pf *pf);\nvoid ice_devlink_unregister_params(struct ice_pf *pf);\nint ice_devlink_create_pf_port(struct ice_pf *pf);\nvoid ice_devlink_destroy_pf_port(struct ice_pf *pf);\nint ice_devlink_create_vf_port(struct ice_vf *vf);\nvoid ice_devlink_destroy_vf_port(struct ice_vf *vf);\n\nvoid ice_devlink_init_regions(struct ice_pf *pf);\nvoid ice_devlink_destroy_regions(struct ice_pf *pf);\n\nint ice_devlink_rate_init_tx_topology(struct devlink *devlink, struct ice_vsi *vsi);\nvoid ice_tear_down_devlink_rate_tree(struct ice_pf *pf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

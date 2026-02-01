@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c0ab6c7c411991c1d6b09602d37a09fdcf58e6497bd9c8bd0128deb3013db443",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/altera-stapl/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\naltera-stapl-y = altera-jtag.o altera-comp.o altera.o\naltera-stapl-$(CONFIG_HAS_IOPORT) += altera-lpt.o\n\nobj-$(CONFIG_ALTERA_STAPL) += altera-stapl.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

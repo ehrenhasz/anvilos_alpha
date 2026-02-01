@@ -1,0 +1,9 @@
+{
+  "module_name": "thread.c",
+  "hash_id": "5214ab4251b724517122a8c8a6218f2e25223c82ee5868854acb8b9529b716ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accessibility/speakup/thread.c",
+  "human_readable_source": "\n#include <linux/kthread.h>\n#include <linux/wait.h>\n\n#include \"spk_types.h\"\n#include \"speakup.h\"\n#include \"spk_priv.h\"\n\nDECLARE_WAIT_QUEUE_HEAD(speakup_event);\nEXPORT_SYMBOL_GPL(speakup_event);\n\nint speakup_thread(void *data)\n{\n\tunsigned long flags;\n\tint should_break;\n\tstruct bleep our_sound;\n\n\tour_sound.active = 0;\n\tour_sound.freq = 0;\n\tour_sound.jiffies = 0;\n\n\tmutex_lock(&spk_mutex);\n\twhile (1) {\n\t\tDEFINE_WAIT(wait);\n\n\t\twhile (1) {\n\t\t\tspin_lock_irqsave(&speakup_info.spinlock, flags);\n\t\t\tour_sound = spk_unprocessed_sound;\n\t\t\tspk_unprocessed_sound.active = 0;\n\t\t\tprepare_to_wait(&speakup_event, &wait,\n\t\t\t\t\tTASK_INTERRUPTIBLE);\n\t\t\tshould_break = kthread_should_stop() ||\n\t\t\t\tour_sound.active ||\n\t\t\t\t(synth && synth->catch_up && synth->alive &&\n\t\t\t\t\t(speakup_info.flushing ||\n\t\t\t\t\t!synth_buffer_empty()));\n\t\t\tspin_unlock_irqrestore(&speakup_info.spinlock, flags);\n\t\t\tif (should_break)\n\t\t\t\tbreak;\n\t\t\tmutex_unlock(&spk_mutex);\n\t\t\tschedule();\n\t\t\tmutex_lock(&spk_mutex);\n\t\t}\n\t\tfinish_wait(&speakup_event, &wait);\n\t\tif (kthread_should_stop())\n\t\t\tbreak;\n\n\t\tif (our_sound.active)\n\t\t\tkd_mksound(our_sound.freq, our_sound.jiffies);\n\t\tif (synth && synth->catch_up && synth->alive) {\n\t\t\t \n\t\t\tsynth->catch_up(synth);\n\t\t}\n\n\t\tspeakup_start_ttys();\n\t}\n\tmutex_unlock(&spk_mutex);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

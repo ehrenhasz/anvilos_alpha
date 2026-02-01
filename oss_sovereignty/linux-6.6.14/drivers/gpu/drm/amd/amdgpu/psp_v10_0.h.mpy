@@ -1,0 +1,9 @@
+{
+  "module_name": "psp_v10_0.h",
+  "hash_id": "66b9928b02a59b5fb67844cc01866c1ca2aac1d7f3a5b151fb0528964e868e30",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/psp_v10_0.h",
+  "human_readable_source": " \n#ifndef __PSP_V10_0_H__\n#define __PSP_V10_0_H__\n\n#include \"amdgpu_psp.h\"\n\nvoid psp_v10_0_set_psp_funcs(struct psp_context *psp);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

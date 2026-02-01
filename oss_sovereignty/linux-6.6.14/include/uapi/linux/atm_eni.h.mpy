@@ -1,0 +1,9 @@
+{
+  "module_name": "atm_eni.h",
+  "hash_id": "701e91768fb8472c7566700ca5f70842258a839c885a4e95e8533a1cee843fee",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/atm_eni.h",
+  "human_readable_source": " \n \n\n \n\n\n#ifndef LINUX_ATM_ENI_H\n#define LINUX_ATM_ENI_H\n\n#include <linux/atmioc.h>\n\n\nstruct eni_multipliers {\n\tint tx,rx;\t \n};\n\n\n#define ENI_MEMDUMP     _IOW('a',ATMIOC_SARPRV,struct atmif_sioc)\n                                                 \n#define ENI_SETMULT\t_IOW('a',ATMIOC_SARPRV+7,struct atmif_sioc)\n\t\t\t\t\t\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

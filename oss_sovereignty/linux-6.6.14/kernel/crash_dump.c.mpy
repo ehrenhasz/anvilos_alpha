@@ -1,0 +1,9 @@
+{
+  "module_name": "crash_dump.c",
+  "hash_id": "a13cc27c543224e2a2c621233f0fc2e4f988a85e413866a20dfd6fac6aae6e2d",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/crash_dump.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <linux/crash_dump.h>\n#include <linux/init.h>\n#include <linux/errno.h>\n#include <linux/export.h>\n\n \nunsigned long long elfcorehdr_addr = ELFCORE_ADDR_MAX;\nEXPORT_SYMBOL_GPL(elfcorehdr_addr);\n\n \nunsigned long long elfcorehdr_size;\n\n \nstatic int __init setup_elfcorehdr(char *arg)\n{\n\tchar *end;\n\tif (!arg)\n\t\treturn -EINVAL;\n\telfcorehdr_addr = memparse(arg, &end);\n\tif (*end == '@') {\n\t\telfcorehdr_size = elfcorehdr_addr;\n\t\telfcorehdr_addr = memparse(end + 1, &end);\n\t}\n\treturn end > arg ? 0 : -EINVAL;\n}\nearly_param(\"elfcorehdr\", setup_elfcorehdr);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

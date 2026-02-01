@@ -1,0 +1,9 @@
+{
+  "module_name": "test-malloca.c",
+  "hash_id": "211c1f872ed6ebff6309cf67b8aab4b1a30a747f12fec459911ce15662dbcba0",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-malloca.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"malloca.h\"\n\n#include <stdlib.h>\n\nstatic void\ndo_allocation (int n)\n{\n  void *volatile ptr = malloca (n);\n  freea (ptr);\n  safe_alloca (n);\n}\n\nvoid (*func) (int) = do_allocation;\n\nint\nmain ()\n{\n  int i;\n\n   \n  unsetenv (\"MALLOC_PERTURB_\");\n\n   \n  for (i = 0; i < 50000; i++)\n    {\n       \n      func (34);\n      func (134);\n      func (399);\n      func (510823);\n      func (129321);\n      func (0);\n      func (4070);\n      func (4095);\n      func (1);\n      func (16582);\n    }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

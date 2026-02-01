@@ -1,0 +1,9 @@
+{
+  "module_name": "ptrace-tar.h",
+  "hash_id": "dcea3fe028b49688f30ce81865a0192408bfdca53f8fb98fbb0e5b9814a896e9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/ptrace/ptrace-tar.h",
+  "human_readable_source": " \n \n#define TAR_1   10\n#define TAR_2   20\n#define TAR_3   30\n#define TAR_4   40\n#define TAR_5   50\n\n#define DSCR_1  100\n#define DSCR_2  200\n#define DSCR_3  300\n#define DSCR_4  400\n#define DSCR_5  500\n\n#define PPR_1   0x4000000000000          \n#define PPR_2   0x8000000000000          \n#define PPR_3   0xc000000000000          \n#define PPR_4   0x10000000000000         \n\nchar *user_read = \"[User Read (Running)]\";\nchar *user_write = \"[User Write (Running)]\";\nchar *ptrace_read_running = \"[Ptrace Read (Running)]\";\nchar *ptrace_write_running = \"[Ptrace Write (Running)]\";\nchar *ptrace_read_ckpt = \"[Ptrace Read (Checkpointed)]\";\nchar *ptrace_write_ckpt = \"[Ptrace Write (Checkpointed)]\";\n\nint validate_tar_registers(unsigned long *reg, unsigned long tar,\n\t\t\t\tunsigned long ppr, unsigned long dscr)\n{\n\tint match = 1;\n\n\tif (reg[0] != tar)\n\t\tmatch = 0;\n\n\tif (reg[1] != ppr)\n\t\tmatch = 0;\n\n\tif (reg[2] != dscr)\n\t\tmatch = 0;\n\n\tif (!match)\n\t\treturn TEST_FAIL;\n\treturn TEST_PASS;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

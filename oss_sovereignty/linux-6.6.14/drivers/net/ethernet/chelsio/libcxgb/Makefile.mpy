@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e1bb175c95aa5fb15639ce8394a288b223f9fe7afa27649d1c98fb698099fb34",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/libcxgb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nccflags-y := -I $(srctree)/$(src)/../cxgb4\n\nobj-$(CONFIG_CHELSIO_LIB) += libcxgb.o\n\nlibcxgb-y := libcxgb_ppm.o libcxgb_cm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-getentropy.c",
+  "hash_id": "137c23b031c20122fbe73aeb20cf3270320c18d078b6feae0df510e210451d4e",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-getentropy.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#ifndef SSH_RANDOM_DEV\n# define SSH_RANDOM_DEV \"/dev/urandom\"\n#endif  \n\n#include <sys/types.h>\n#ifdef HAVE_SYS_RANDOM_H\n# include <sys/random.h>\n#endif\n\n#include <fcntl.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n#ifdef WITH_OPENSSL\n#include <openssl/rand.h>\n#include <openssl/err.h>\n#endif\n\n#include \"log.h\"\n\nint\n_ssh_compat_getentropy(void *s, size_t len)\n{\n#if defined(WITH_OPENSSL) && defined(OPENSSL_PRNG_ONLY)\n\tif (RAND_bytes(s, len) <= 0)\n\t\tfatal(\"Couldn't obtain random bytes (error 0x%lx)\",\n\t\t    (unsigned long)ERR_get_error());\n#else\n\tint fd, save_errno;\n\tssize_t r;\n\tsize_t o = 0;\n\n#ifdef WITH_OPENSSL\n\tif (RAND_bytes(s, len) == 1)\n\t\treturn 0;\n#endif\n#ifdef HAVE_GETENTROPY\n\tif ((r = getentropy(s, len)) == 0)\n\t\treturn 0;\n#endif  \n#ifdef HAVE_GETRANDOM\n\tif ((r = getrandom(s, len, 0)) > 0 && (size_t)r == len)\n\t\treturn 0;\n#endif  \n\n\tif ((fd = open(SSH_RANDOM_DEV, O_RDONLY)) == -1) {\n\t\tsave_errno = errno;\n\t\t \n\t\tif (seed_from_prngd(s, len) == 0)\n\t\t\treturn 0;\n\t\tfatal(\"Couldn't open %s: %s\", SSH_RANDOM_DEV,\n\t\t    strerror(save_errno));\n\t}\n\twhile (o < len) {\n\t\tr = read(fd, (u_char *)s + o, len - o);\n\t\tif (r < 0) {\n\t\t\tif (errno == EAGAIN || errno == EINTR ||\n\t\t\t    errno == EWOULDBLOCK)\n\t\t\t\tcontinue;\n\t\t\tfatal(\"read %s: %s\", SSH_RANDOM_DEV, strerror(errno));\n\t\t}\n\t\to += r;\n\t}\n\tclose(fd);\n#endif  \n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

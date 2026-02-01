@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d5fc1180508d275c7bd5dbc0a2817c57149f33589ae0393dca4db62880db5f5c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hte/Makefile",
+  "human_readable_source": "obj-$(CONFIG_HTE)\t\t+= hte.o\nobj-$(CONFIG_HTE_TEGRA194)\t+= hte-tegra194.o\nobj-$(CONFIG_HTE_TEGRA194_TEST) += hte-tegra194-test.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

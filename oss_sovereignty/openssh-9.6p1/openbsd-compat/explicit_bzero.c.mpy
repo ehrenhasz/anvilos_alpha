@@ -1,0 +1,9 @@
+{
+  "module_name": "explicit_bzero.c",
+  "hash_id": "c57eb5e747b1b5d55c397309603eda3754f530ec533d67167e4932877071dcad",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/explicit_bzero.c",
+  "human_readable_source": " \n \n \n\n#include \"includes.h\"\n\n#include <string.h>\n\n \n\n#ifndef HAVE_EXPLICIT_BZERO\n\n#ifdef HAVE_EXPLICIT_MEMSET\n\nvoid\nexplicit_bzero(void *p, size_t n)\n{\n\t(void)explicit_memset(p, 0, n);\n}\n\n#elif defined(HAVE_MEMSET_S)\n\nvoid\nexplicit_bzero(void *p, size_t n)\n{\n\tif (n == 0)\n\t\treturn;\n\t(void)memset_s(p, n, 0, n);\n}\n\n#else  \n\n \nstatic void (* volatile ssh_bzero)(void *, size_t) = bzero;\n\nvoid\nexplicit_bzero(void *p, size_t n)\n{\n\tif (n == 0)\n\t\treturn;\n\t \n#if defined(__has_feature)\n# if __has_feature(memory_sanitizer)\n\tmemset(p, 0, n);\n# endif\n#endif\n\n\tssh_bzero(p, n);\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

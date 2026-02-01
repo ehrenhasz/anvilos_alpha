@@ -1,0 +1,9 @@
+{
+  "module_name": "xdr.h",
+  "hash_id": "8375ac0e02a75cdf8a76855ce14266eeb248e9a692ba3b2c3fe1d77f04494510",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/rpc/xdr.h",
+  "human_readable_source": " \n\n#ifndef\t_OPENSOLARIS_RPC_XDR_H_\n#define\t_OPENSOLARIS_RPC_XDR_H_\n\n#include <rpc/types.h>\n#include_next <rpc/xdr.h>\n\n#if !defined(_KERNEL) && !defined(_STANDALONE)\n\n#include <assert.h>\n\n \nstatic __inline bool_t\nxdrmem_control(XDR *xdrs, int request, void *info)\n{\n\txdr_bytesrec *xptr;\n\n\tswitch (request) {\n\tcase XDR_GET_BYTES_AVAIL:\n\t\txptr = (xdr_bytesrec *)info;\n\t\txptr->xc_is_last_record = TRUE;\n\t\txptr->xc_num_avail = xdrs->x_handy;\n\t\treturn (TRUE);\n\tdefault:\n\t\tassert(!\"unexpected request\");\n\t}\n\treturn (FALSE);\n}\n\n#undef XDR_CONTROL\n#define\tXDR_CONTROL(xdrs, req, op)\t\t\t\t\t\\\n\t(((xdrs)->x_ops->x_control == NULL) ?\t\t\t\t\\\n\t    xdrmem_control((xdrs), (req), (op)) :\t\t\t\\\n\t    (*(xdrs)->x_ops->x_control)(xdrs, req, op))\n\n#endif\t \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

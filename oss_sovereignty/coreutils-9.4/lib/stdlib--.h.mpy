@@ -1,0 +1,9 @@
+{
+  "module_name": "stdlib--.h",
+  "hash_id": "3f3b8d9e8ad1050c2133c035a1ab8c2eb6f8f60dfd9b6a77b29f702de7be1996",
+  "original_prompt": "Ingested from coreutils-9.4/lib/stdlib--.h",
+  "human_readable_source": " \n\n#include <stdlib.h>\n#include \"stdlib-safer.h\"\n\n#undef mkstemp\n#define mkstemp mkstemp_safer\n\n#if GNULIB_MKOSTEMP\n# define mkostemp mkostemp_safer\n#endif\n\n#if GNULIB_MKOSTEMPS\n# define mkostemps mkostemps_safer\n#endif\n\n#if GNULIB_MKSTEMPS\n# define mkstemps mkstemps_safer\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "efc_nport.h",
+  "hash_id": "7b415c555c3fe81f50a3080c7189c619813c31ab978fd320b0eb8cad2d39ebe3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/elx/libefc/efc_nport.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef __EFC_NPORT_H__\n#define __EFC_NPORT_H__\n\nstruct efc_nport *\nefc_nport_find(struct efc_domain *domain, u32 d_id);\nstruct efc_nport *\nefc_nport_alloc(struct efc_domain *domain, uint64_t wwpn, uint64_t wwnn,\n\t\tu32 fc_id, bool enable_ini, bool enable_tgt);\nvoid\nefc_nport_free(struct efc_nport *nport);\nint\nefc_nport_attach(struct efc_nport *nport, u32 fc_id);\n\nvoid\n__efc_nport_allocated(struct efc_sm_ctx *ctx,\n\t\t      enum efc_sm_event evt, void *arg);\nvoid\n__efc_nport_wait_shutdown(struct efc_sm_ctx *ctx,\n\t\t\t  enum efc_sm_event evt, void *arg);\nvoid\n__efc_nport_wait_port_free(struct efc_sm_ctx *ctx,\n\t\t\t   enum efc_sm_event evt, void *arg);\nvoid\n__efc_nport_vport_init(struct efc_sm_ctx *ctx,\n\t\t       enum efc_sm_event evt, void *arg);\nvoid\n__efc_nport_vport_wait_alloc(struct efc_sm_ctx *ctx,\n\t\t\t     enum efc_sm_event evt, void *arg);\nvoid\n__efc_nport_vport_allocated(struct efc_sm_ctx *ctx,\n\t\t\t    enum efc_sm_event evt, void *arg);\nvoid\n__efc_nport_attached(struct efc_sm_ctx *ctx,\n\t\t     enum efc_sm_event evt, void *arg);\n\nint\nefc_vport_start(struct efc_domain *domain);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

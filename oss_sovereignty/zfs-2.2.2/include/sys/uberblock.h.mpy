@@ -1,0 +1,9 @@
+{
+  "module_name": "uberblock.h",
+  "hash_id": "7fffbf230d8d9eddcf531529f100fcf5245ea971d3334f09b9487ecd17628450",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/uberblock.h",
+  "human_readable_source": " \n \n \n\n#ifndef _SYS_UBERBLOCK_H\n#define\t_SYS_UBERBLOCK_H\n\n#include <sys/spa.h>\n#include <sys/vdev.h>\n#include <sys/zio.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\ntypedef struct uberblock uberblock_t;\n\nextern int uberblock_verify(uberblock_t *);\nextern boolean_t uberblock_update(uberblock_t *ub, vdev_t *rvd, uint64_t txg,\n    uint64_t mmp_delay);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

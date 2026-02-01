@@ -1,0 +1,9 @@
+{
+  "module_name": "slot-gpio.h",
+  "hash_id": "a444b902934d0bb62479f5483e57e7a8e6e587fae754e995656a7c7ae9a6f2a4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mmc/slot-gpio.h",
+  "human_readable_source": " \n \n\n#ifndef MMC_SLOT_GPIO_H\n#define MMC_SLOT_GPIO_H\n\n#include <linux/types.h>\n#include <linux/irqreturn.h>\n\nstruct mmc_host;\n\nint mmc_gpio_get_ro(struct mmc_host *host);\nint mmc_gpio_get_cd(struct mmc_host *host);\nvoid mmc_gpio_set_cd_irq(struct mmc_host *host, int irq);\nint mmc_gpiod_request_cd(struct mmc_host *host, const char *con_id,\n\t\t\t unsigned int idx, bool override_active_level,\n\t\t\t unsigned int debounce);\nint mmc_gpiod_request_ro(struct mmc_host *host, const char *con_id,\n\t\t\t unsigned int idx, unsigned int debounce);\nvoid mmc_gpio_set_cd_isr(struct mmc_host *host,\n\t\t\t irqreturn_t (*isr)(int irq, void *dev_id));\nint mmc_gpio_set_cd_wake(struct mmc_host *host, bool on);\nvoid mmc_gpiod_request_cd_irq(struct mmc_host *host);\nbool mmc_can_gpio_cd(struct mmc_host *host);\nbool mmc_can_gpio_ro(struct mmc_host *host);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

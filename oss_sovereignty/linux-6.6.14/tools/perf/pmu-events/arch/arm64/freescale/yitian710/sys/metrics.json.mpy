@@ -1,0 +1,9 @@
+{
+  "module_name": "metrics.json",
+  "hash_id": "6df5e69bf3d40230a0542700126e377e4d29b15a7be1eaa21003fda59348b934",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/freescale/yitian710/sys/metrics.json",
+  "human_readable_source": "[\n\t{\n\t\t\"MetricName\": \"ddr_read_bandwidth.all\",\n\t\t\"BriefDescription\": \"The ddr read bandwidth(MB/s).\",\n\t\t\"MetricGroup\": \"ali_drw\",\n\t\t\"MetricExpr\": \"hif_rd * 64 / 1e6 / duration_time\",\n\t\t\"ScaleUnit\": \"1MB/s\",\n\t\t\"Unit\": \"ali_drw\",\n\t\t\"Compat\": \"ali_drw_pmu\"\n\t},\n\t{\n\t\t\"MetricName\": \"ddr_write_bandwidth.all\",\n\t\t\"BriefDescription\": \"The ddr write bandwidth(MB/s).\",\n\t\t\"MetricGroup\": \"ali_drw\",\n\t\t\"MetricExpr\": \"(hif_wr + hif_rmw) * 64 / 1e6 / duration_time\",\n\t\t\"ScaleUnit\": \"1MB/s\",\n\t\t\"Unit\": \"ali_drw\",\n\t\t\"Compat\": \"ali_drw_pmu\"\n\t}\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

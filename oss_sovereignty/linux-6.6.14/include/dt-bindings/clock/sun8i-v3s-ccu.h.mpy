@@ -1,0 +1,9 @@
+{
+  "module_name": "sun8i-v3s-ccu.h",
+  "hash_id": "7d169bbae6c59dbfbfed35a95685e5ee139ec19eda416e0c6ea9b350f0270f22",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/sun8i-v3s-ccu.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_CLK_SUN8I_V3S_H_\n#define _DT_BINDINGS_CLK_SUN8I_V3S_H_\n\n#define CLK_CPU\t\t\t14\n\n#define CLK_BUS_CE\t\t20\n#define CLK_BUS_DMA\t\t21\n#define CLK_BUS_MMC0\t\t22\n#define CLK_BUS_MMC1\t\t23\n#define CLK_BUS_MMC2\t\t24\n#define CLK_BUS_DRAM\t\t25\n#define CLK_BUS_EMAC\t\t26\n#define CLK_BUS_HSTIMER\t\t27\n#define CLK_BUS_SPI0\t\t28\n#define CLK_BUS_OTG\t\t29\n#define CLK_BUS_EHCI0\t\t30\n#define CLK_BUS_OHCI0\t\t31\n#define CLK_BUS_VE\t\t32\n#define CLK_BUS_TCON0\t\t33\n#define CLK_BUS_CSI\t\t34\n#define CLK_BUS_DE\t\t35\n#define CLK_BUS_CODEC\t\t36\n#define CLK_BUS_PIO\t\t37\n#define CLK_BUS_I2C0\t\t38\n#define CLK_BUS_I2C1\t\t39\n#define CLK_BUS_UART0\t\t40\n#define CLK_BUS_UART1\t\t41\n#define CLK_BUS_UART2\t\t42\n#define CLK_BUS_EPHY\t\t43\n#define CLK_BUS_DBG\t\t44\n\n#define CLK_MMC0\t\t45\n#define CLK_MMC0_SAMPLE\t\t46\n#define CLK_MMC0_OUTPUT\t\t47\n#define CLK_MMC1\t\t48\n#define CLK_MMC1_SAMPLE\t\t49\n#define CLK_MMC1_OUTPUT\t\t50\n#define CLK_MMC2\t\t51\n#define CLK_MMC2_SAMPLE\t\t52\n#define CLK_MMC2_OUTPUT\t\t53\n#define CLK_CE\t\t\t54\n#define CLK_SPI0\t\t55\n#define CLK_USB_PHY0\t\t56\n#define CLK_USB_OHCI0\t\t57\n\n#define CLK_DRAM_VE\t\t59\n#define CLK_DRAM_CSI\t\t60\n#define CLK_DRAM_EHCI\t\t61\n#define CLK_DRAM_OHCI\t\t62\n#define CLK_DE\t\t\t63\n#define CLK_TCON0\t\t64\n#define CLK_CSI_MISC\t\t65\n#define CLK_CSI0_MCLK\t\t66\n#define CLK_CSI1_SCLK\t\t67\n#define CLK_CSI1_MCLK\t\t68\n#define CLK_VE\t\t\t69\n#define CLK_AC_DIG\t\t70\n#define CLK_AVS\t\t\t71\n\n#define CLK_MIPI_CSI\t\t73\n\n \n#define CLK_BUS_I2S0\t\t75\n#define CLK_I2S0\t\t76\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

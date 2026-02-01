@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_fsops.h",
+  "hash_id": "66a966a9b188c0ed17bb71f19c8768f0c35594a62689b74cf3a8b3758f4a242d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_fsops.h",
+  "human_readable_source": "\n \n#ifndef __XFS_FSOPS_H__\n#define\t__XFS_FSOPS_H__\n\nextern int xfs_growfs_data(struct xfs_mount *mp, struct xfs_growfs_data *in);\nextern int xfs_growfs_log(struct xfs_mount *mp, struct xfs_growfs_log *in);\nextern void xfs_fs_counts(xfs_mount_t *mp, xfs_fsop_counts_t *cnt);\nextern int xfs_reserve_blocks(xfs_mount_t *mp, uint64_t *inval,\n\t\t\t\txfs_fsop_resblks_t *outval);\nextern int xfs_fs_goingdown(xfs_mount_t *mp, uint32_t inflags);\n\nextern int xfs_fs_reserve_ag_blocks(struct xfs_mount *mp);\nextern int xfs_fs_unreserve_ag_blocks(struct xfs_mount *mp);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sr.h",
+  "hash_id": "818e5970d6409e45ca98f619e17e2825af412223ecf97d64c064ac505bc33ca5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/sr.h",
+  "human_readable_source": " \n \n\n#ifndef _SR_H\n#define _SR_H\n\n#include <linux/mutex.h>\n\n#define MAX_RETRIES\t3\n#define SR_TIMEOUT\t(30 * HZ)\n\nstruct scsi_device;\n\n \n \n#define IOCTL_TIMEOUT 30*HZ\n\n\ntypedef struct scsi_cd {\n\tunsigned capacity;\t \n\tstruct scsi_device *device;\n\tunsigned int vendor;\t \n\tunsigned long ms_offset;\t \n\tunsigned writeable : 1;\n\tunsigned use:1;\t\t \n\tunsigned xa_flag:1;\t \n\tunsigned readcd_known:1;\t \n\tunsigned readcd_cdda:1;\t \n\tunsigned media_present:1;\t \n\n\t \n\tint tur_mismatch;\t\t \n\tbool tur_changed:1;\t\t \n\tbool get_event_changed:1;\t \n\tbool ignore_get_event:1;\t \n\n\tstruct cdrom_device_info cdi;\n\tstruct mutex lock;\n\tstruct gendisk *disk;\n} Scsi_CD;\n\n#define sr_printk(prefix, cd, fmt, a...) \\\n\tsdev_prefix_printk(prefix, (cd)->device, (cd)->cdi.name, fmt, ##a)\n\nint sr_do_ioctl(Scsi_CD *, struct packet_command *);\n\nint sr_lock_door(struct cdrom_device_info *, int);\nint sr_tray_move(struct cdrom_device_info *, int);\nint sr_drive_status(struct cdrom_device_info *, int);\nint sr_disk_status(struct cdrom_device_info *);\nint sr_get_last_session(struct cdrom_device_info *, struct cdrom_multisession *);\nint sr_get_mcn(struct cdrom_device_info *, struct cdrom_mcn *);\nint sr_reset(struct cdrom_device_info *);\nint sr_select_speed(struct cdrom_device_info *cdi, int speed);\nint sr_audio_ioctl(struct cdrom_device_info *, unsigned int, void *);\n\nint sr_is_xa(Scsi_CD *);\n\n \nvoid sr_vendor_init(Scsi_CD *);\nint sr_cd_check(struct cdrom_device_info *);\nint sr_set_blocklength(Scsi_CD *, int blocklength);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

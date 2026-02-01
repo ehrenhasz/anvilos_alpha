@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c1bfe724b5cbea333ac646f3c37f8221acab8b65578a493880f5b91b2b042415",
+  "original_prompt": "Ingested from linux-6.6.14/fs/configfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the configfs virtual filesystem\n#\n\nobj-$(CONFIG_CONFIGFS_FS)\t+= configfs.o\n\nconfigfs-objs\t:= inode.o file.o dir.o symlink.o mount.o item.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

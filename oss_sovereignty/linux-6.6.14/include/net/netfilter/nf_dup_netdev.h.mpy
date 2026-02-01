@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_dup_netdev.h",
+  "hash_id": "bac8d2c1eac5208e020751ac5a2948767451f85f1ad893befe9654e6bebf7496",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nf_dup_netdev.h",
+  "human_readable_source": " \n#ifndef _NF_DUP_NETDEV_H_\n#define _NF_DUP_NETDEV_H_\n\n#include <net/netfilter/nf_tables.h>\n\nvoid nf_dup_netdev_egress(const struct nft_pktinfo *pkt, int oif);\nvoid nf_fwd_netdev_egress(const struct nft_pktinfo *pkt, int oif);\n\nstruct nft_offload_ctx;\nstruct nft_flow_rule;\n\nint nft_fwd_dup_netdev_offload(struct nft_offload_ctx *ctx,\n\t\t\t       struct nft_flow_rule *flow,\n\t\t\t       enum flow_action_id id, int oif);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

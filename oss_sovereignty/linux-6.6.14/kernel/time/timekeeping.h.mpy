@@ -1,0 +1,9 @@
+{
+  "module_name": "timekeeping.h",
+  "hash_id": "8b3c9b2f037618dc4d5328be2cca3a2baaa8aa14c10b4cc85c2c1bf1c53d4942",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/time/timekeeping.h",
+  "human_readable_source": " \n#ifndef _KERNEL_TIME_TIMEKEEPING_H\n#define _KERNEL_TIME_TIMEKEEPING_H\n \nextern ktime_t ktime_get_update_offsets_now(unsigned int *cwsseq,\n\t\t\t\t\t    ktime_t *offs_real,\n\t\t\t\t\t    ktime_t *offs_boot,\n\t\t\t\t\t    ktime_t *offs_tai);\n\nextern int timekeeping_valid_for_hres(void);\nextern u64 timekeeping_max_deferment(void);\nextern void timekeeping_warp_clock(void);\nextern int timekeeping_suspend(void);\nextern void timekeeping_resume(void);\n#ifdef CONFIG_GENERIC_SCHED_CLOCK\nextern int sched_clock_suspend(void);\nextern void sched_clock_resume(void);\n#else\nstatic inline int sched_clock_suspend(void) { return 0; }\nstatic inline void sched_clock_resume(void) { }\n#endif\n\nextern void update_process_times(int user);\nextern void do_timer(unsigned long ticks);\nextern void update_wall_time(void);\n\nextern raw_spinlock_t jiffies_lock;\nextern seqcount_raw_spinlock_t jiffies_seq;\n\n#define CS_NAME_LEN\t32\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

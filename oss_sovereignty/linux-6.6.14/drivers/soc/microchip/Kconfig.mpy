@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "f331ece993a43ed3969dd2cd65a2dcef806f66454e03d0f1ac454d0fdabee3c2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/microchip/Kconfig",
+  "human_readable_source": "config POLARFIRE_SOC_SYS_CTRL\n\ttristate \"POLARFIRE_SOC_SYS_CTRL\"\n\tdepends on POLARFIRE_SOC_MAILBOX\n\thelp\n\t  This driver adds support for the PolarFire SoC (MPFS) system controller.\n\n\t  To compile this driver as a module, choose M here. the\n\t  module will be called mpfs_system_controller.\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

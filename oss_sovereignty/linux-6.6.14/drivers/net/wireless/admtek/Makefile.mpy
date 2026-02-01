@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "162ce762ad6987b05dba7ff3ae989e2bcd21885b966da1cd049a38bf803d0bb4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/admtek/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_ADM8211)\t+= adm8211.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

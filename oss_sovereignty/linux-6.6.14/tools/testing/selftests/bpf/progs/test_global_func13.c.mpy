@@ -1,0 +1,9 @@
+{
+  "module_name": "test_global_func13.c",
+  "hash_id": "3413342e605a5134ef1a87681ffc6ac029530bbc4f6ba8f3927c2d4ab38115b4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_global_func13.c",
+  "human_readable_source": "\n#include <stddef.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nstruct S {\n\tint x;\n};\n\n__noinline int foo(const struct S *s)\n{\n\tif (s)\n\t\treturn bpf_get_prandom_u32() < s->x;\n\n\treturn 0;\n}\n\nSEC(\"cgroup_skb/ingress\")\n__failure __msg(\"Caller passes invalid args into func#1\")\nint global_func13(struct __sk_buff *skb)\n{\n\tconst struct S *s = (const struct S *)(0xbedabeda);\n\n\treturn foo(s);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

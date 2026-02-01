@@ -1,0 +1,9 @@
+{
+  "module_name": "tps68470.h",
+  "hash_id": "cf7801d0b6a96b16aa265e36efa5967a6f6331b51903c231aae1042681786aee",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/tps68470.h",
+  "human_readable_source": " \n \n#ifndef __PDATA_TPS68470_H\n#define __PDATA_TPS68470_H\n\nenum tps68470_regulators {\n\tTPS68470_CORE,\n\tTPS68470_ANA,\n\tTPS68470_VCM,\n\tTPS68470_VIO,\n\tTPS68470_VSIO,\n\tTPS68470_AUX1,\n\tTPS68470_AUX2,\n\tTPS68470_NUM_REGULATORS\n};\n\nstruct regulator_init_data;\n\nstruct tps68470_regulator_platform_data {\n\tconst struct regulator_init_data *reg_init_data[TPS68470_NUM_REGULATORS];\n};\n\nstruct tps68470_clk_consumer {\n\tconst char *consumer_dev_name;\n\tconst char *consumer_con_id;\n};\n\nstruct tps68470_clk_platform_data {\n\tunsigned int n_consumers;\n\tstruct tps68470_clk_consumer consumers[];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

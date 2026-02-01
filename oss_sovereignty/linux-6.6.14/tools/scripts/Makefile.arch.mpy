@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.arch",
+  "hash_id": "e98861d4e7757467dab23f9d15f3c8b80913af910dc5fc82a51ab2c596b1a523",
+  "original_prompt": "Ingested from linux-6.6.14/tools/scripts/Makefile.arch",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nHOSTARCH := $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \\\n                                  -e s/sun4u/sparc/ -e s/sparc64/sparc/ \\\n                                  -e /arm64/!s/arm.*/arm/ -e s/sa110/arm/ \\\n                                  -e s/s390x/s390/ -e s/parisc64/parisc/ \\\n                                  -e s/ppc.*/powerpc/ -e s/mips.*/mips/ \\\n                                  -e s/sh[234].*/sh/ -e s/aarch64.*/arm64/ \\\n                                  -e s/riscv.*/riscv/ -e s/loongarch.*/loongarch/)\n\nifndef ARCH\nARCH := $(HOSTARCH)\nendif\n\nSRCARCH := $(ARCH)\n\n# Additional ARCH settings for x86\nifeq ($(ARCH),i386)\n        SRCARCH := x86\nendif\nifeq ($(ARCH),x86_64)\n        SRCARCH := x86\nendif\n\n# Additional ARCH settings for sparc\nifeq ($(ARCH),sparc32)\n       SRCARCH := sparc\nendif\nifeq ($(ARCH),sparc64)\n       SRCARCH := sparc\nendif\n\n# Additional ARCH settings for loongarch\nifeq ($(ARCH),loongarch32)\n       SRCARCH := loongarch\nendif\n\nifeq ($(ARCH),loongarch64)\n       SRCARCH := loongarch\nendif\n\nLP64 := $(shell echo __LP64__ | ${CC} ${CFLAGS} -E -x c - | tail -n 1)\nifeq ($(LP64), 1)\n  IS_64_BIT := 1\nelse\n  IS_64_BIT := 0\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

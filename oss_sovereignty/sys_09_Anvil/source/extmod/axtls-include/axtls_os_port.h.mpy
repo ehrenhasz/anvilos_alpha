@@ -1,0 +1,9 @@
+{
+  "module_name": "axtls_os_port.h",
+  "hash_id": "b2d5e67ca27f7603b26b94b8ff7d27557490cca71637843db46e7680146c884b",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/axtls-include/axtls_os_port.h",
+  "human_readable_source": " \n#ifndef AXTLS_OS_PORT_H\n#define AXTLS_OS_PORT_H\n\n#ifndef __ets__\n#include <arpa/inet.h>\n#endif\n#include <errno.h>\n#include <sys/time.h>\n#include \"py/stream.h\"\n#include \"lib/crypto-algorithms/sha256.h\"\n\n#define SSL_CTX_MUTEX_INIT(mutex)\n#define SSL_CTX_MUTEX_DESTROY(mutex)\n#define SSL_CTX_LOCK(mutex)\n#define SSL_CTX_UNLOCK(mutex)\n\n#define SOCKET_READ(s, buf, size)       mp_stream_posix_read((void *)s, buf, size)\n#define SOCKET_WRITE(s, buf, size)      mp_stream_posix_write((void *)s, buf, size)\n#define SOCKET_CLOSE(A)                 UNUSED\n#define SOCKET_ERRNO()                  errno\n\n#define SHA256_CTX                      CRYAL_SHA256_CTX\n#define SHA256_Init(ctx)                sha256_init(ctx)\n#define SHA256_Update(ctx, buf, size)   sha256_update(ctx, buf, size)\n#define SHA256_Final(hash, ctx)         sha256_final(ctx, hash)\n\n#define TTY_FLUSH()\n\n#ifdef WDEV_HWRNG\n\n#define PLATFORM_RNG_U8()               (*WDEV_HWRNG)\n#endif\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

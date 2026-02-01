@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "db575407941e33178b31a3d46df6f6f455680675254f4399c5acc05c1edccc56",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/ulp/srp/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig INFINIBAND_SRP\n\ttristate \"InfiniBand SCSI RDMA Protocol\"\n\tdepends on SCSI && INFINIBAND_ADDR_TRANS\n\tselect SCSI_SRP_ATTRS\n\thelp\n\t  Support for the SCSI RDMA Protocol over InfiniBand.  This\n\t  allows you to access storage devices that speak SRP over\n\t  InfiniBand.\n\n\t  The SRP protocol is defined by the INCITS T10 technical\n\t  committee.  See <http://www.t10.org/>.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

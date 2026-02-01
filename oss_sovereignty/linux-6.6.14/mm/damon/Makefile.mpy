@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "daf6e18a44bef4a2c556b4ecb69dfeb2d26525a390c83dd6bedc64e945e358c2",
+  "original_prompt": "Ingested from linux-6.6.14/mm/damon/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-y\t\t\t\t:= core.o\nobj-$(CONFIG_DAMON_VADDR)\t+= ops-common.o vaddr.o\nobj-$(CONFIG_DAMON_PADDR)\t+= ops-common.o paddr.o\nobj-$(CONFIG_DAMON_SYSFS)\t+= sysfs-common.o sysfs-schemes.o sysfs.o\nobj-$(CONFIG_DAMON_DBGFS)\t+= dbgfs.o\nobj-$(CONFIG_DAMON_RECLAIM)\t+= modules-common.o reclaim.o\nobj-$(CONFIG_DAMON_LRU_SORT)\t+= modules-common.o lru_sort.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

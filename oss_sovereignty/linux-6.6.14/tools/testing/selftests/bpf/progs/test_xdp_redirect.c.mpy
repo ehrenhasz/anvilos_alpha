@@ -1,0 +1,9 @@
+{
+  "module_name": "test_xdp_redirect.c",
+  "hash_id": "330eb39f151a3e1355a6f9fdc4994133fc54c60e40630422cd1bbc40cfe84703",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_xdp_redirect.c",
+  "human_readable_source": " \n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nSEC(\"redirect_to_111\")\nint xdp_redirect_to_111(struct xdp_md *xdp)\n{\n\treturn bpf_redirect(111, 0);\n}\nSEC(\"redirect_to_222\")\nint xdp_redirect_to_222(struct xdp_md *xdp)\n{\n\treturn bpf_redirect(222, 0);\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

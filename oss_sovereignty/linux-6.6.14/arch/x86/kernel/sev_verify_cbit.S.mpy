@@ -1,0 +1,9 @@
+{
+  "module_name": "sev_verify_cbit.S",
+  "hash_id": "af2149fb8c63e3e8a96d508987f44c54b8bde8bc4e72857b1bf91092eb900a73",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/sev_verify_cbit.S",
+  "human_readable_source": " \n \nSYM_FUNC_START(sev_verify_cbit)\n#ifdef CONFIG_AMD_MEM_ENCRYPT\n\t \n\tmovq\tsme_me_mask(%rip), %rsi\n\ttestq\t%rsi, %rsi\n\tjz\t3f\n\n\t \n\tmovq\tsev_status(%rip), %rsi\n\ttestq\t%rsi, %rsi\n\tjz\t3f\n\n\t \n\tmovq\t%cr4, %rsi\n\n\t \n\tmovq\t%rsi, %rdx\n\tandq\t$(~X86_CR4_PGE), %rdx\n\tmovq\t%rdx, %cr4\n\n\t \n1:\trdrand\t%rdx\n\tjnc\t1b\n\n\t \n\tmovq\t%rdx, sev_check_data(%rip)\n\n\t \n\tmovq\t%cr3, %rcx\n\n\t \n\tmovq\t%rdi, %cr3\n\n\t \n\tcmpq\t%rdx, sev_check_data(%rip)\n\n\t \n\tmovq\t%rcx, %cr3\n\n\t \n\tmovq\t%rsi, %cr4\n\n\t \n\tje\t3f\n\n\t \n\txorq\t%rsp, %rsp\n\tsubq\t$0x1000, %rsp\n2:\thlt\n\tjmp 2b\n3:\n#endif\n\t \n\tmovq\t%rdi, %rax\n\tRET\nSYM_FUNC_END(sev_verify_cbit)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "strintcmp.c",
+  "hash_id": "e707e51c328848d6b9427b5f33eaaa19af26f1ede12c51b24fb84efccd267f77",
+  "original_prompt": "Ingested from coreutils-9.4/lib/strintcmp.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"strnumcmp-in.h\"\n\n#include <limits.h>\n\n \n\nint\nstrintcmp (char const *a, char const *b)\n{\n  return numcompare (a, b, CHAR_MAX + 1, CHAR_MAX + 1);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

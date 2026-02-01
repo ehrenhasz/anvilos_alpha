@@ -1,0 +1,9 @@
+{
+  "module_name": "fcntl--.h",
+  "hash_id": "3a28d41b01e46beae54ea1a2e63cd878d68a75370775fc5c1d3cc8922985a7db",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fcntl--.h",
+  "human_readable_source": " \n\n#include <fcntl.h>\n#include \"fcntl-safer.h\"\n\n#undef open\n#define open open_safer\n\n#undef creat\n#define creat creat_safer\n\n#if GNULIB_OPENAT_SAFER\n# undef openat\n# define openat openat_safer\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

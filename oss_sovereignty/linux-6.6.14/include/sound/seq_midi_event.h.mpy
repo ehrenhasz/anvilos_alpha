@@ -1,0 +1,9 @@
+{
+  "module_name": "seq_midi_event.h",
+  "hash_id": "17c51fa7c11f43c6422b61ca41c3979d073220512d65155325e99b39c8e198b8",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/seq_midi_event.h",
+  "human_readable_source": " \n#ifndef __SOUND_SEQ_MIDI_EVENT_H\n#define __SOUND_SEQ_MIDI_EVENT_H\n\n \n\n#include <sound/asequencer.h>\n\n#define MAX_MIDI_EVENT_BUF\t256\n\n \nstruct snd_midi_event {\n\tint qlen;\t\t \n\tint read;\t\t \n\tint type;\t\t \n\tunsigned char lastcmd;\t \n\tunsigned char nostat;\t \n\tint bufsize;\t\t \n\tunsigned char *buf;\t \n\tspinlock_t lock;\n};\n\nint snd_midi_event_new(int bufsize, struct snd_midi_event **rdev);\nvoid snd_midi_event_free(struct snd_midi_event *dev);\nvoid snd_midi_event_reset_encode(struct snd_midi_event *dev);\nvoid snd_midi_event_reset_decode(struct snd_midi_event *dev);\nvoid snd_midi_event_no_status(struct snd_midi_event *dev, int on);\nbool snd_midi_event_encode_byte(struct snd_midi_event *dev, unsigned char c,\n\t\t\t\tstruct snd_seq_event *ev);\n \nlong snd_midi_event_decode(struct snd_midi_event *dev, unsigned char *buf, long count,\n\t\t\t   struct snd_seq_event *ev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

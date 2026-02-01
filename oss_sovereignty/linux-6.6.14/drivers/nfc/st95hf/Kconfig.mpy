@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a015cad847758bc9e72a62006cb2ef1de536f53f0a275262a5640af992a21bef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/st95hf/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NFC_ST95HF\n\ttristate \"ST95HF NFC Transceiver driver\"\n\tdepends on SPI && NFC_DIGITAL\n\thelp\n\tThis enables the ST NFC driver for ST95HF NFC transceiver.\n\tThis makes use of SPI framework to communicate with transceiver\n\tand registered with NFC digital core to support Linux NFC framework.\n\n\tSay Y here to compile support for ST NFC transceiver ST95HF\n\tlinux driver into the kernel or say M to compile it as module.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

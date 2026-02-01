@@ -1,0 +1,9 @@
+{
+  "module_name": "esp_hosted_stack.h",
+  "hash_id": "f1cd55f49b8af09956b784a58584d06c322ebce60553eff1a1d8d4fbde2f10fb",
+  "original_prompt": "Ingested from sys_09_Anvil/source/drivers/esp-hosted/esp_hosted_stack.h",
+  "human_readable_source": " \n\n#ifndef MICROPY_INCLUDED_DRIVERS_ESP_HOSTED_STACK_H\n#define MICROPY_INCLUDED_DRIVERS_ESP_HOSTED_STACK_H\n\n#include <stdbool.h>\n#include <stddef.h>\n#include \"esp_hosted_internal.h\"\n\nstatic inline void esp_hosted_stack_init(esp_hosted_stack_t *stack) {\n    stack->capacity = ESP_STACK_CAPACITY;\n    stack->top = 0;\n}\n\nstatic inline bool esp_hosted_stack_empty(esp_hosted_stack_t *stack) {\n    return stack->top == 0;\n}\n\nstatic inline bool esp_hosted_stack_push(esp_hosted_stack_t *stack, void *data) {\n    if (stack->top < stack->capacity) {\n        stack->buff[stack->top++] = data;\n        return true;\n    }\n    return false;\n}\n\nstatic inline void *esp_hosted_stack_pop(esp_hosted_stack_t *stack, bool peek) {\n    void *data = NULL;\n    if (stack->top > 0) {\n        data = stack->buff[stack->top - 1];\n        if (!peek) {\n            stack->top -= 1;\n        }\n    }\n    return data;\n}\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

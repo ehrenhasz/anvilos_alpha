@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrtoc32-w32-8.sh",
+  "hash_id": "5f0ecd800bb2f54ce95163de94f0879c8aaa7759c3d805e063662fef533d629c",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrtoc32-w32-8.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a GB18030 locale.\n${CHECKER} ./test-mbrtoc32-w32${EXEEXT} Chinese_China 54936\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

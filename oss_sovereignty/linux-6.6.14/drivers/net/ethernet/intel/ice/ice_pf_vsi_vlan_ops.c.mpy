@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_pf_vsi_vlan_ops.c",
+  "hash_id": "b73b60320a8b005a4f17dedbd66d48c61b25751215a9e57533c9385054b72179",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_pf_vsi_vlan_ops.c",
+  "human_readable_source": "\n \n\n#include \"ice_vsi_vlan_ops.h\"\n#include \"ice_vsi_vlan_lib.h\"\n#include \"ice_vlan_mode.h\"\n#include \"ice.h\"\n#include \"ice_pf_vsi_vlan_ops.h\"\n\nvoid ice_pf_vsi_init_vlan_ops(struct ice_vsi *vsi)\n{\n\tstruct ice_vsi_vlan_ops *vlan_ops;\n\n\tif (ice_is_dvm_ena(&vsi->back->hw)) {\n\t\tvlan_ops = &vsi->outer_vlan_ops;\n\n\t\tvlan_ops->add_vlan = ice_vsi_add_vlan;\n\t\tvlan_ops->del_vlan = ice_vsi_del_vlan;\n\t\tvlan_ops->ena_stripping = ice_vsi_ena_outer_stripping;\n\t\tvlan_ops->dis_stripping = ice_vsi_dis_outer_stripping;\n\t\tvlan_ops->ena_insertion = ice_vsi_ena_outer_insertion;\n\t\tvlan_ops->dis_insertion = ice_vsi_dis_outer_insertion;\n\t\tvlan_ops->ena_rx_filtering = ice_vsi_ena_rx_vlan_filtering;\n\t\tvlan_ops->dis_rx_filtering = ice_vsi_dis_rx_vlan_filtering;\n\t} else {\n\t\tvlan_ops = &vsi->inner_vlan_ops;\n\n\t\tvlan_ops->add_vlan = ice_vsi_add_vlan;\n\t\tvlan_ops->del_vlan = ice_vsi_del_vlan;\n\t\tvlan_ops->ena_stripping = ice_vsi_ena_inner_stripping;\n\t\tvlan_ops->dis_stripping = ice_vsi_dis_inner_stripping;\n\t\tvlan_ops->ena_insertion = ice_vsi_ena_inner_insertion;\n\t\tvlan_ops->dis_insertion = ice_vsi_dis_inner_insertion;\n\t\tvlan_ops->ena_rx_filtering = ice_vsi_ena_rx_vlan_filtering;\n\t\tvlan_ops->dis_rx_filtering = ice_vsi_dis_rx_vlan_filtering;\n\t}\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

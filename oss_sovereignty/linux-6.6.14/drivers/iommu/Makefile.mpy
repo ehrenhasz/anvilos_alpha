@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bb620bcb28c785c2eb21b7a419364e31b7e03b4c37e5b4f310ffd9f24a4a56bb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y += amd/ intel/ arm/ iommufd/\nobj-$(CONFIG_IOMMU_API) += iommu.o\nobj-$(CONFIG_IOMMU_API) += iommu-traces.o\nobj-$(CONFIG_IOMMU_API) += iommu-sysfs.o\nobj-$(CONFIG_IOMMU_DEBUGFS) += iommu-debugfs.o\nobj-$(CONFIG_IOMMU_DMA) += dma-iommu.o\nobj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o\nobj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o\nobj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o\nobj-$(CONFIG_IOMMU_IO_PGTABLE_DART) += io-pgtable-dart.o\nobj-$(CONFIG_IOMMU_IOVA) += iova.o\nobj-$(CONFIG_OF_IOMMU)\t+= of_iommu.o\nobj-$(CONFIG_MSM_IOMMU) += msm_iommu.o\nobj-$(CONFIG_IPMMU_VMSA) += ipmmu-vmsa.o\nobj-$(CONFIG_IRQ_REMAP) += irq_remapping.o\nobj-$(CONFIG_MTK_IOMMU) += mtk_iommu.o\nobj-$(CONFIG_MTK_IOMMU_V1) += mtk_iommu_v1.o\nobj-$(CONFIG_OMAP_IOMMU) += omap-iommu.o\nobj-$(CONFIG_OMAP_IOMMU_DEBUG) += omap-iommu-debug.o\nobj-$(CONFIG_ROCKCHIP_IOMMU) += rockchip-iommu.o\nobj-$(CONFIG_SUN50I_IOMMU) += sun50i-iommu.o\nobj-$(CONFIG_TEGRA_IOMMU_GART) += tegra-gart.o\nobj-$(CONFIG_TEGRA_IOMMU_SMMU) += tegra-smmu.o\nobj-$(CONFIG_EXYNOS_IOMMU) += exynos-iommu.o\nobj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o\nobj-$(CONFIG_S390_IOMMU) += s390-iommu.o\nobj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o\nobj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o\nobj-$(CONFIG_IOMMU_SVA) += iommu-sva.o io-pgfault.o\nobj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o\nobj-$(CONFIG_APPLE_DART) += apple-dart.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

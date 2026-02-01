@@ -1,0 +1,9 @@
+{
+  "module_name": "compiler_compat.h",
+  "hash_id": "c846498b04c9269cf9642603fb945599a232b429023e10f7db43e2418eaa75dd",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/kernel/linux/compiler_compat.h",
+  "human_readable_source": " \n\n \n\n#ifndef _ZFS_COMPILER_COMPAT_H\n#define\t_ZFS_COMPILER_COMPAT_H\n\n#include <linux/compiler.h>\n\n#if !defined(zfs_fallthrough)\n#if defined(HAVE_IMPLICIT_FALLTHROUGH)\n#define\tzfs_fallthrough\t\t__attribute__((__fallthrough__))\n#else\n#define\tzfs_fallthrough\t\t((void)0)\n#endif\n#endif\n\n#if !defined(READ_ONCE)\n#define\tREAD_ONCE(x)\t\tACCESS_ONCE(x)\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

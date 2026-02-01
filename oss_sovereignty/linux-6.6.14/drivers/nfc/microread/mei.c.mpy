@@ -1,0 +1,9 @@
+{
+  "module_name": "mei.c",
+  "hash_id": "1615c22bb90d4cc0db67681b337ff9ba40d69963475a9743fe601e01f47377a6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/microread/mei.c",
+  "human_readable_source": "\n \n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <linux/module.h>\n#include <linux/mod_devicetable.h>\n#include <linux/nfc.h>\n#include <net/nfc/llc.h>\n\n#include \"../mei_phy.h\"\n#include \"microread.h\"\n\n#define MICROREAD_DRIVER_NAME \"microread\"\n\nstatic int microread_mei_probe(struct mei_cl_device *cldev,\n\t\t\t       const struct mei_cl_device_id *id)\n{\n\tstruct nfc_mei_phy *phy;\n\tint r;\n\n\tphy = nfc_mei_phy_alloc(cldev);\n\tif (!phy)\n\t\treturn -ENOMEM;\n\n\tr = microread_probe(phy, &mei_phy_ops, LLC_NOP_NAME,\n\t\t\t    MEI_NFC_HEADER_SIZE, 0, MEI_NFC_MAX_HCI_PAYLOAD,\n\t\t\t    &phy->hdev);\n\tif (r < 0) {\n\t\tnfc_mei_phy_free(phy);\n\n\t\treturn r;\n\t}\n\n\treturn 0;\n}\n\nstatic void microread_mei_remove(struct mei_cl_device *cldev)\n{\n\tstruct nfc_mei_phy *phy = mei_cldev_get_drvdata(cldev);\n\n\tmicroread_remove(phy->hdev);\n\n\tnfc_mei_phy_free(phy);\n}\n\nstatic struct mei_cl_device_id microread_mei_tbl[] = {\n\t{ MICROREAD_DRIVER_NAME, MEI_NFC_UUID, MEI_CL_VERSION_ANY},\n\n\t \n\t{ }\n};\nMODULE_DEVICE_TABLE(mei, microread_mei_tbl);\n\nstatic struct mei_cl_driver microread_driver = {\n\t.id_table = microread_mei_tbl,\n\t.name = MICROREAD_DRIVER_NAME,\n\n\t.probe = microread_mei_probe,\n\t.remove = microread_mei_remove,\n};\n\nmodule_mei_cl_driver(microread_driver);\n\nMODULE_LICENSE(\"GPL\");\nMODULE_DESCRIPTION(DRIVER_DESC);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

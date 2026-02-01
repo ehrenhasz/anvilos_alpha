@@ -1,0 +1,9 @@
+{
+  "module_name": "tps65912-i2c.c",
+  "hash_id": "7551d2e82d963d448ea78bd1236cfe01f3bc1ce3cee00f5824e4ec8532eb8e11",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/tps65912-i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/i2c.h>\n#include <linux/module.h>\n#include <linux/regmap.h>\n\n#include <linux/mfd/tps65912.h>\n\nstatic const struct of_device_id tps65912_i2c_of_match_table[] = {\n\t{ .compatible = \"ti,tps65912\", },\n\t{   }\n};\nMODULE_DEVICE_TABLE(of, tps65912_i2c_of_match_table);\n\nstatic int tps65912_i2c_probe(struct i2c_client *client)\n{\n\tstruct tps65912 *tps;\n\n\ttps = devm_kzalloc(&client->dev, sizeof(*tps), GFP_KERNEL);\n\tif (!tps)\n\t\treturn -ENOMEM;\n\n\ti2c_set_clientdata(client, tps);\n\ttps->dev = &client->dev;\n\ttps->irq = client->irq;\n\n\ttps->regmap = devm_regmap_init_i2c(client, &tps65912_regmap_config);\n\tif (IS_ERR(tps->regmap)) {\n\t\tdev_err(tps->dev, \"Failed to initialize register map\\n\");\n\t\treturn PTR_ERR(tps->regmap);\n\t}\n\n\treturn tps65912_device_init(tps);\n}\n\nstatic void tps65912_i2c_remove(struct i2c_client *client)\n{\n\tstruct tps65912 *tps = i2c_get_clientdata(client);\n\n\ttps65912_device_exit(tps);\n}\n\nstatic const struct i2c_device_id tps65912_i2c_id_table[] = {\n\t{ \"tps65912\", 0 },\n\t{   }\n};\nMODULE_DEVICE_TABLE(i2c, tps65912_i2c_id_table);\n\nstatic struct i2c_driver tps65912_i2c_driver = {\n\t.driver\t\t= {\n\t\t.name\t= \"tps65912\",\n\t\t.of_match_table = tps65912_i2c_of_match_table,\n\t},\n\t.probe\t\t= tps65912_i2c_probe,\n\t.remove\t\t= tps65912_i2c_remove,\n\t.id_table       = tps65912_i2c_id_table,\n};\nmodule_i2c_driver(tps65912_i2c_driver);\n\nMODULE_AUTHOR(\"Andrew F. Davis <afd@ti.com>\");\nMODULE_DESCRIPTION(\"TPS65912x I2C Interface Driver\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

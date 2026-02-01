@@ -1,0 +1,9 @@
+{
+  "module_name": "spi-loongson-plat.c",
+  "hash_id": "314c0da5fb3f7f9e3e9ad47b633dc0509b083f2fe8c25f3dca96ba83d7cd048c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/spi/spi-loongson-plat.c",
+  "human_readable_source": "\n\n\n\n#include <linux/err.h>\n#include <linux/mod_devicetable.h>\n#include <linux/platform_device.h>\n\n#include \"spi-loongson.h\"\n\nstatic int loongson_spi_platform_probe(struct platform_device *pdev)\n{\n\tint ret;\n\tvoid __iomem *reg_base;\n\tstruct device *dev = &pdev->dev;\n\n\treg_base = devm_platform_ioremap_resource(pdev, 0);\n\tif (IS_ERR(reg_base))\n\t\treturn PTR_ERR(reg_base);\n\n\tret = loongson_spi_init_controller(dev, reg_base);\n\tif (ret)\n\t\treturn dev_err_probe(dev, ret, \"failed to initialize controller\\n\");\n\n\treturn 0;\n}\n\nstatic const struct of_device_id loongson_spi_id_table[] = {\n\t{ .compatible = \"loongson,ls2k1000-spi\" },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, loongson_spi_id_table);\n\nstatic struct platform_driver loongson_spi_plat_driver = {\n\t.probe = loongson_spi_platform_probe,\n\t.driver\t= {\n\t\t.name\t= \"loongson-spi\",\n\t\t.bus = &platform_bus_type,\n\t\t.pm = &loongson_spi_dev_pm_ops,\n\t\t.of_match_table = loongson_spi_id_table,\n\t},\n};\nmodule_platform_driver(loongson_spi_plat_driver);\n\nMODULE_DESCRIPTION(\"Loongson spi platform driver\");\nMODULE_LICENSE(\"GPL\");\nMODULE_IMPORT_NS(SPI_LOONGSON_CORE);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

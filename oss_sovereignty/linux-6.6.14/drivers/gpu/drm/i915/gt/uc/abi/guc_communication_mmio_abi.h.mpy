@@ -1,0 +1,9 @@
+{
+  "module_name": "guc_communication_mmio_abi.h",
+  "hash_id": "1af5802b8990dccdd9682df6e07fc48ed268b6f4f34071ac215f6625049e0502",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/uc/abi/guc_communication_mmio_abi.h",
+  "human_readable_source": " \n \n\n#ifndef _ABI_GUC_COMMUNICATION_MMIO_ABI_H\n#define _ABI_GUC_COMMUNICATION_MMIO_ABI_H\n\n \n\n#define GUC_MAX_MMIO_MSG_LEN\t\t4\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

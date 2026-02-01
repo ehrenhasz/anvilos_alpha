@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "811e041ae24f10f87ab0b7ec7073bb74ceed9cf9e710d09c5fe37fddeaf2bfbf",
+  "original_prompt": "Ingested from linux-6.6.14/fs/quota/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_QUOTA)\t\t+= dquot.o\nobj-$(CONFIG_QFMT_V1)\t\t+= quota_v1.o\nobj-$(CONFIG_QFMT_V2)\t\t+= quota_v2.o\nobj-$(CONFIG_QUOTA_TREE)\t+= quota_tree.o\nobj-$(CONFIG_QUOTACTL)\t\t+= quota.o kqid.o\nobj-$(CONFIG_QUOTA_NETLINK_INTERFACE)\t+= netlink.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

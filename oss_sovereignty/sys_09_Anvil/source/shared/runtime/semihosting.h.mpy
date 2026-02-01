@@ -1,0 +1,9 @@
+{
+  "module_name": "semihosting.h",
+  "hash_id": "739d5f56a1b1444572ddb176c1954ae49869b2b61bd83ad23d0e1093caaf87e5",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/runtime/semihosting.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_LIB_UTILS_SEMIHOSTING_H\n#define MICROPY_INCLUDED_LIB_UTILS_SEMIHOSTING_H\n\n \n\n#include <stddef.h>\n#include <stdint.h>\n\nvoid mp_semihosting_init();\nint mp_semihosting_rx_char();\nuint32_t mp_semihosting_tx_strn(const char *str, size_t len);\nuint32_t mp_semihosting_tx_strn_cooked(const char *str, size_t len);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

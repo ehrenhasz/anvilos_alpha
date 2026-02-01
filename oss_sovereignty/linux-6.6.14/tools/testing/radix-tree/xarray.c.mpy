@@ -1,0 +1,9 @@
+{
+  "module_name": "xarray.c",
+  "hash_id": "50456ac7611f7ab4792593664b51486ad65ca8cd843b0a97b7ed733340f13cbb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/radix-tree/xarray.c",
+  "human_readable_source": "\n \n\n#define XA_DEBUG\n#include \"test.h\"\n\n#define module_init(x)\n#define module_exit(x)\n#define MODULE_AUTHOR(x)\n#define MODULE_LICENSE(x)\n#define dump_stack()\tassert(0)\n\n#include \"../../../lib/xarray.c\"\n#undef XA_DEBUG\n#include \"../../../lib/test_xarray.c\"\n\nvoid xarray_tests(void)\n{\n\txarray_checks();\n\txarray_exit();\n}\n\nint __weak main(void)\n{\n\trcu_register_thread();\n\tradix_tree_init();\n\txarray_tests();\n\tradix_tree_cpu_dead(1);\n\trcu_barrier();\n\tif (nr_allocated)\n\t\tprintf(\"nr_allocated = %d\\n\", nr_allocated);\n\trcu_unregister_thread();\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

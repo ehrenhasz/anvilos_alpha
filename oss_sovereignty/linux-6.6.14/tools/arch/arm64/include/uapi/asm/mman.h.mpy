@@ -1,0 +1,9 @@
+{
+  "module_name": "mman.h",
+  "hash_id": "715477801df4c90add4bc1b1beb4b3763019d2fe705cfde1450b2d107c339bd3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/arm64/include/uapi/asm/mman.h",
+  "human_readable_source": " \n#ifndef TOOLS_ARCH_ARM64_UAPI_ASM_MMAN_FIX_H\n#define TOOLS_ARCH_ARM64_UAPI_ASM_MMAN_FIX_H\n#include <uapi/asm-generic/mman.h>\n \n#define MAP_32BIT\t0\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

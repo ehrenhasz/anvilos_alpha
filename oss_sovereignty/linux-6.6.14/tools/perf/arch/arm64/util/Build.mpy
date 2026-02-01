@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "5bc8f87f833b56f3bad239c4ca0df924b0406a5a56406868205ab02fbaa4260b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arm64/util/Build",
+  "human_readable_source": "perf-y += header.o\nperf-y += machine.o\nperf-y += perf_regs.o\nperf-y += tsc.o\nperf-y += pmu.o\nperf-$(CONFIG_LIBTRACEEVENT) += kvm-stat.o\nperf-$(CONFIG_DWARF)     += dwarf-regs.o\nperf-$(CONFIG_LOCAL_LIBUNWIND) += unwind-libunwind.o\nperf-$(CONFIG_LIBDW_DWARF_UNWIND) += unwind-libdw.o\n\nperf-$(CONFIG_AUXTRACE) += ../../arm/util/pmu.o \\\n\t\t\t      ../../arm/util/auxtrace.o \\\n\t\t\t      ../../arm/util/cs-etm.o \\\n\t\t\t      arm-spe.o mem-events.o hisi-ptt.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

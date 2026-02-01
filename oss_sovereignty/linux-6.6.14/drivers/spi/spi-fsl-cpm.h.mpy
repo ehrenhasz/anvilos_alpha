@@ -1,0 +1,9 @@
+{
+  "module_name": "spi-fsl-cpm.h",
+  "hash_id": "485621c1fbe778084cdd141c3e391d8b52176e1d617cab57d67e2df778eb2d02",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/spi/spi-fsl-cpm.h",
+  "human_readable_source": " \n \n\n#ifndef __SPI_FSL_CPM_H__\n#define __SPI_FSL_CPM_H__\n\n#include \"spi-fsl-lib.h\"\n\n#ifdef CONFIG_FSL_SOC\nextern void fsl_spi_cpm_reinit_txrx(struct mpc8xxx_spi *mspi);\nextern int fsl_spi_cpm_bufs(struct mpc8xxx_spi *mspi,\n\t\t\t    struct spi_transfer *t, bool is_dma_mapped);\nextern void fsl_spi_cpm_bufs_complete(struct mpc8xxx_spi *mspi);\nextern void fsl_spi_cpm_irq(struct mpc8xxx_spi *mspi, u32 events);\nextern int fsl_spi_cpm_init(struct mpc8xxx_spi *mspi);\nextern void fsl_spi_cpm_free(struct mpc8xxx_spi *mspi);\n#else\nstatic inline void fsl_spi_cpm_reinit_txrx(struct mpc8xxx_spi *mspi) { }\nstatic inline int fsl_spi_cpm_bufs(struct mpc8xxx_spi *mspi,\n\t\t\t\t   struct spi_transfer *t,\n\t\t\t\t   bool is_dma_mapped) { return 0; }\nstatic inline void fsl_spi_cpm_bufs_complete(struct mpc8xxx_spi *mspi) { }\nstatic inline void fsl_spi_cpm_irq(struct mpc8xxx_spi *mspi, u32 events) { }\nstatic inline int fsl_spi_cpm_init(struct mpc8xxx_spi *mspi) { return 0; }\nstatic inline void fsl_spi_cpm_free(struct mpc8xxx_spi *mspi) { }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

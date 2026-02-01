@@ -1,0 +1,9 @@
+{
+  "module_name": "c8sectpfe-common.h",
+  "hash_id": "1269388aa83ab24dea29bb05afe995d44dc0c911443789cc3a274a41dd7b641a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/c8sectpfe/c8sectpfe-common.h",
+  "human_readable_source": " \n \n#ifndef _C8SECTPFE_COMMON_H_\n#define _C8SECTPFE_COMMON_H_\n\n#include <linux/dvb/dmx.h>\n#include <linux/dvb/frontend.h>\n#include <linux/gpio.h>\n\n#include <media/dmxdev.h>\n#include <media/dvb_demux.h>\n#include <media/dvb_frontend.h>\n#include <media/dvb_net.h>\n\n \n#define C8SECTPFE_MAXADAPTER (4)\n#define C8SECTPFE_MAXCHANNEL 64\n#define STPTI_MAXCHANNEL 64\n\n#define MAX_INPUTBLOCKS 7\n\nstruct c8sectpfe;\nstruct stdemux;\n\nstruct stdemux {\n\tstruct dvb_demux\tdvb_demux;\n\tstruct dmxdev\t\tdmxdev;\n\tstruct dmx_frontend\thw_frontend;\n\tstruct dmx_frontend\tmem_frontend;\n\tint\t\t\ttsin_index;\n\tint\t\t\trunning_feed_count;\n\tstruct\t\t\tc8sectpfei *c8sectpfei;\n};\n\nstruct c8sectpfe {\n\tstruct stdemux demux[MAX_INPUTBLOCKS];\n\tstruct mutex lock;\n\tstruct dvb_adapter adapter;\n\tstruct device *device;\n\tint mapping;\n\tint num_feeds;\n};\n\n \nint c8sectpfe_tuner_register_frontend(struct c8sectpfe **c8sectpfe,\n\t\t\t\t\tstruct c8sectpfei *fei,\n\t\t\t\t\tvoid *start_feed,\n\t\t\t\t\tvoid *stop_feed);\n\nvoid c8sectpfe_tuner_unregister_frontend(struct c8sectpfe *c8sectpfe,\n\t\t\t\t\t\tstruct c8sectpfei *fei);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ata-pxa.h",
+  "hash_id": "64993b65ea7a8a99df8de2acc4d49ddd0348bba0b2ec2851cdc7f6e824cc4416",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/ata-pxa.h",
+  "human_readable_source": " \n \n\n#ifndef\t__MACH_PATA_PXA_H__\n#define\t__MACH_PATA_PXA_H__\n\nstruct pata_pxa_pdata {\n\t \n\tuint32_t\tdma_dreq;\n\t \n\tuint32_t\treg_shift;\n\t \n\tuint32_t\tirq_flags;\n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

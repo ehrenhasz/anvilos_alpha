@@ -1,0 +1,9 @@
+{
+  "module_name": "set-tai.c",
+  "hash_id": "a3acae7869b7056262bc9322897b8358aff659aa8d8aa2b24ac305b37b536f4a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/timers/set-tai.c",
+  "human_readable_source": " \n\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <time.h>\n#include <sys/time.h>\n#include <sys/timex.h>\n#include <string.h>\n#include <signal.h>\n#include <unistd.h>\n#include \"../kselftest.h\"\n\nint set_tai(int offset)\n{\n\tstruct timex tx;\n\n\tmemset(&tx, 0, sizeof(tx));\n\n\ttx.modes = ADJ_TAI;\n\ttx.constant = offset;\n\n\treturn adjtimex(&tx);\n}\n\nint get_tai(void)\n{\n\tstruct timex tx;\n\n\tmemset(&tx, 0, sizeof(tx));\n\n\tadjtimex(&tx);\n\treturn tx.tai;\n}\n\nint main(int argc, char **argv)\n{\n\tint i, ret;\n\n\tret = get_tai();\n\tprintf(\"tai offset started at %i\\n\", ret);\n\n\tprintf(\"Checking tai offsets can be properly set: \");\n\tfflush(stdout);\n\tfor (i = 1; i <= 60; i++) {\n\t\tret = set_tai(i);\n\t\tret = get_tai();\n\t\tif (ret != i) {\n\t\t\tprintf(\"[FAILED] expected: %i got %i\\n\", i, ret);\n\t\t\treturn ksft_exit_fail();\n\t\t}\n\t}\n\tprintf(\"[OK]\\n\");\n\treturn ksft_exit_pass();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

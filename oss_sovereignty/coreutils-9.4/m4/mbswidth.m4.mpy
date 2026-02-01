@@ -1,0 +1,9 @@
+{
+  "module_name": "mbswidth.m4",
+  "hash_id": "b9541b433db3440e5f741561d8ee9cfdc23a42a5ddd568f41647bb7e82f616c9",
+  "original_prompt": "Ingested from coreutils-9.4/m4/mbswidth.m4",
+  "human_readable_source": "# mbswidth.m4 serial 19\ndnl Copyright (C) 2000-2002, 2004, 2006-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl autoconf tests required for use of mbswidth.c\ndnl From Bruno Haible.\n\nAC_DEFUN([gl_MBSWIDTH],\n[\n  AC_CHECK_HEADERS_ONCE([wchar.h])\n  AC_CHECK_FUNCS_ONCE([isascii mbsinit])\n\n  dnl UnixWare 7.1.1 <wchar.h> has a declaration of a function mbswidth()\n  dnl that clashes with ours.\n  AC_CACHE_CHECK([whether mbswidth is declared in <wchar.h>],\n    [ac_cv_have_decl_mbswidth],\n    [AC_COMPILE_IFELSE(\n       [AC_LANG_PROGRAM(\n          [[#include <wchar.h>\n          ]],\n          [[char *p = (char *) mbswidth;\n            return !p;\n          ]])],\n       [ac_cv_have_decl_mbswidth=yes],\n       [ac_cv_have_decl_mbswidth=no])])\n  if test $ac_cv_have_decl_mbswidth = yes; then\n    ac_val=1\n  else\n    ac_val=0\n  fi\n  AC_DEFINE_UNQUOTED([HAVE_DECL_MBSWIDTH_IN_WCHAR_H], [$ac_val],\n    [Define to 1 if you have a declaration of mbswidth() in <wchar.h>, and to 0 otherwise.])\n\n  AC_TYPE_MBSTATE_T\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

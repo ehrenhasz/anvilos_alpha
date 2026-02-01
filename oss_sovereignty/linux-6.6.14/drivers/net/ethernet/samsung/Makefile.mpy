@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5e531695fe2d013e9370c5c1413ad4f66b9986d731205d3399a26c3ccfd0bde7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/samsung/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Samsung Ethernet device drivers.\n#\n\nobj-$(CONFIG_SXGBE_ETH) += sxgbe/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

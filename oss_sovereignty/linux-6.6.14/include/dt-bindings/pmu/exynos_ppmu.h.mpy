@@ -1,0 +1,9 @@
+{
+  "module_name": "exynos_ppmu.h",
+  "hash_id": "744c47b9c18db322b918a31652f6ec9763f96ddd8224b43601af2cfefcf97620",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pmu/exynos_ppmu.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_PMU_EXYNOS_PPMU_H\n#define __DT_BINDINGS_PMU_EXYNOS_PPMU_H\n\n#define PPMU_RO_BUSY_CYCLE_CNT\t\t0x0\n#define PPMU_WO_BUSY_CYCLE_CNT\t\t0x1\n#define PPMU_RW_BUSY_CYCLE_CNT\t\t0x2\n#define PPMU_RO_REQUEST_CNT\t\t0x3\n#define PPMU_WO_REQUEST_CNT\t\t0x4\n#define PPMU_RO_DATA_CNT\t\t0x5\n#define PPMU_WO_DATA_CNT\t\t0x6\n#define PPMU_RO_LATENCY\t\t\t0x12\n#define PPMU_WO_LATENCY\t\t\t0x16\n#define PPMU_V2_RO_DATA_CNT\t\t0x4\n#define PPMU_V2_WO_DATA_CNT\t\t0x5\n#define PPMU_V2_EVT3_RW_DATA_CNT\t0x22\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

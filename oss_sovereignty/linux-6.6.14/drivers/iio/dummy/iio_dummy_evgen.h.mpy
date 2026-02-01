@@ -1,0 +1,9 @@
+{
+  "module_name": "iio_dummy_evgen.h",
+  "hash_id": "c357070bc0553a0c79ef595c162b276c7b63f2b699663f708b246b897ead7b81",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/dummy/iio_dummy_evgen.h",
+  "human_readable_source": " \n#ifndef _IIO_DUMMY_EVGEN_H_\n#define _IIO_DUMMY_EVGEN_H_\n\nstruct iio_dummy_regs {\n\tu32 reg_id;\n\tu32 reg_data;\n};\n\nstruct iio_dummy_regs *iio_dummy_evgen_get_regs(int irq);\nint iio_dummy_evgen_get_irq(void);\nvoid iio_dummy_evgen_release_irq(int irq);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

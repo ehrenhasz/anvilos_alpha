@@ -1,0 +1,9 @@
+{
+  "module_name": "as3722.h",
+  "hash_id": "8eca53f4006b8bc0c0f66d9bc16126d416bc458de1079d2b2c724a01cd4ebd90",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/mfd/as3722.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_AS3722_H__\n#define __DT_BINDINGS_AS3722_H__\n\n \n#define AS3722_EXT_CONTROL_PIN_ENABLE1 1\n#define AS3722_EXT_CONTROL_PIN_ENABLE2 2\n#define AS3722_EXT_CONTROL_PIN_ENABLE3 3\n\n \n#define AS3722_IRQ_LID\t\t\t0\n#define AS3722_IRQ_ACOK\t\t\t1\n#define AS3722_IRQ_ENABLE1\t\t2\n#define AS3722_IRQ_OCCUR_ALARM_SD0\t3\n#define AS3722_IRQ_ONKEY_LONG_PRESS\t4\n#define AS3722_IRQ_ONKEY\t\t5\n#define AS3722_IRQ_OVTMP\t\t6\n#define AS3722_IRQ_LOWBAT\t\t7\n#define AS3722_IRQ_SD0_LV\t\t8\n#define AS3722_IRQ_SD1_LV\t\t9\n#define AS3722_IRQ_SD2_LV\t\t10\n#define AS3722_IRQ_PWM1_OV_PROT\t\t11\n#define AS3722_IRQ_PWM2_OV_PROT\t\t12\n#define AS3722_IRQ_ENABLE2\t\t13\n#define AS3722_IRQ_SD6_LV\t\t14\n#define AS3722_IRQ_RTC_REP\t\t15\n#define AS3722_IRQ_RTC_ALARM\t\t16\n#define AS3722_IRQ_GPIO1\t\t17\n#define AS3722_IRQ_GPIO2\t\t18\n#define AS3722_IRQ_GPIO3\t\t19\n#define AS3722_IRQ_GPIO4\t\t20\n#define AS3722_IRQ_GPIO5\t\t21\n#define AS3722_IRQ_WATCHDOG\t\t22\n#define AS3722_IRQ_ENABLE3\t\t23\n#define AS3722_IRQ_TEMP_SD0_SHUTDOWN\t24\n#define AS3722_IRQ_TEMP_SD1_SHUTDOWN\t25\n#define AS3722_IRQ_TEMP_SD2_SHUTDOWN\t26\n#define AS3722_IRQ_TEMP_SD0_ALARM\t27\n#define AS3722_IRQ_TEMP_SD1_ALARM\t28\n#define AS3722_IRQ_TEMP_SD6_ALARM\t29\n#define AS3722_IRQ_OCCUR_ALARM_SD6\t30\n#define AS3722_IRQ_ADC\t\t\t31\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

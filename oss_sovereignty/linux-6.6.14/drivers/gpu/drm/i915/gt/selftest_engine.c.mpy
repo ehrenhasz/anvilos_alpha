@@ -1,0 +1,9 @@
+{
+  "module_name": "selftest_engine.c",
+  "hash_id": "b568ec54ceab3318e57f73101d1ecf4e84f0db971fdd34651daaf8a8200e34a6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/selftest_engine.c",
+  "human_readable_source": "\n \n\n#include \"i915_selftest.h\"\n#include \"selftest_engine.h\"\n\nint intel_engine_live_selftests(struct drm_i915_private *i915)\n{\n\tstatic int (* const tests[])(struct intel_gt *) = {\n\t\tlive_engine_pm_selftests,\n\t\tNULL,\n\t};\n\tstruct intel_gt *gt = to_gt(i915);\n\ttypeof(*tests) *fn;\n\n\tfor (fn = tests; *fn; fn++) {\n\t\tint err;\n\n\t\terr = (*fn)(gt);\n\t\tif (err)\n\t\t\treturn err;\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

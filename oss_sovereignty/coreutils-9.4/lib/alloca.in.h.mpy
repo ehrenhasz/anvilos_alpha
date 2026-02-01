@@ -1,0 +1,9 @@
+{
+  "module_name": "alloca.in.h",
+  "hash_id": "28eb51a1395178925e649a74b51e494b9cda6e135032b1fc8b7a6373eedcf1ed",
+  "original_prompt": "Ingested from coreutils-9.4/lib/alloca.in.h",
+  "human_readable_source": " \n#ifndef _GL_ALLOCA_H\n#define _GL_ALLOCA_H\n\n \n\n#ifndef alloca\n   \n# if defined __GNUC__ && (defined _WIN32 && ! defined __CYGWIN__) && @HAVE_ALLOCA_H@\n#  include_next <alloca.h>\n# endif\n#endif\n#ifndef alloca\n# if defined __GNUC__ || (__clang_major__ >= 4)\n#  define alloca __builtin_alloca\n# elif defined _AIX\n#  define alloca __alloca\n# elif defined _MSC_VER\n#  include <malloc.h>\n#  define alloca _alloca\n# elif defined __DECC && defined __VMS\n#  define alloca __ALLOCA\n# elif defined __TANDEM && defined _TNS_E_TARGET\n#  ifdef  __cplusplus\nextern \"C\"\n#  endif\nvoid *_alloca (unsigned short);\n#  pragma intrinsic (_alloca)\n#  define alloca _alloca\n# elif defined __MVS__\n#  include <stdlib.h>\n# else\n#  include <stddef.h>\n#  ifdef  __cplusplus\nextern \"C\"\n#  endif\nvoid *alloca (size_t);\n# endif\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

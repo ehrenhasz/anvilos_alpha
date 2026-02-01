@@ -1,0 +1,9 @@
+{
+  "module_name": "Linux-OpenIB",
+  "hash_id": "8ae20d34c2a74c85ae2760dd0034baf18e44bee3289b9b3a4fe46768b4ea2cd6",
+  "original_prompt": "Ingested from linux-6.6.14/LICENSES/deprecated/Linux-OpenIB",
+  "human_readable_source": "Valid-License-Identifier: Linux-OpenIB\nSPDX-URL: https://spdx.org/licenses/Linux-OpenIB.html\nUsage-Guide:\n  To use the Linux Kernel Variant of OpenIB.org license put the following\n  SPDX tag/value pair into a comment according to the placement guidelines\n  in the licensing rules documentation:\n    SPDX-License-Identifier: Linux-OpenIB\nLicense-Text:\n\nRedistribution and use in source and binary forms, with or without\nmodification, are permitted provided that the following conditions are met:\n\n    - Redistributions of source code must retain the above copyright\n      notice, this list of conditions and the following disclaimer.\n\n    - Redistributions in binary form must reproduce the above copyright\n      notice, this list of conditions and the following disclaimer in the\n      documentation and/or other materials provided with the distribution.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING\nFROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER\nDEALINGS IN THE SOFTWARE.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

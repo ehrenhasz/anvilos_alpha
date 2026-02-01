@@ -1,0 +1,9 @@
+{
+  "module_name": "hooks.c",
+  "hash_id": "322767bf1c166f83d3907a021a5445c04202aaa7a8b97fd0fcafe41048b823dd",
+  "original_prompt": "Ingested from linux-6.6.14/lib/kunit/hooks.c",
+  "human_readable_source": "\n \n\n\n#include <kunit/test-bug.h>\n\nDEFINE_STATIC_KEY_FALSE(kunit_running);\nEXPORT_SYMBOL(kunit_running);\n\n \nstruct kunit_hooks_table kunit_hooks;\nEXPORT_SYMBOL(kunit_hooks);\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

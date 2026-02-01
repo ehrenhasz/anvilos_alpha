@@ -1,0 +1,9 @@
+{
+  "module_name": "faccessat.m4",
+  "hash_id": "a7ff2d98498fded9e3e2c2d4ebec3a3a5e313e92c5ab91bfd9fe19225e63c169",
+  "original_prompt": "Ingested from coreutils-9.4/m4/faccessat.m4",
+  "human_readable_source": "# serial 12\n# See if we need to provide faccessat replacement.\n\ndnl Copyright (C) 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n# Written by Eric Blake.\n\nAC_DEFUN([gl_FUNC_FACCESSAT],\n[\n  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])\n  AC_REQUIRE([gl_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK])\n\n  dnl Persuade glibc <unistd.h> to declare faccessat().\n  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])\n\n  gl_CHECK_FUNCS_ANDROID([faccessat], [[#include <unistd.h>]])\n  if test $ac_cv_func_faccessat = no; then\n    HAVE_FACCESSAT=0\n    case \"$gl_cv_onwards_func_faccessat\" in\n      future*) REPLACE_FACCESSAT=1 ;;\n    esac\n  else\n    case $gl_cv_func_lstat_dereferences_slashed_symlink in\n      *yes) ;;\n      *)    REPLACE_FACCESSAT=1 ;;\n    esac\n  fi\n])\n\n# Prerequisites of lib/faccessat.c.\nAC_DEFUN([gl_PREREQ_FACCESSAT],\n[\n  AC_CHECK_FUNCS([access])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

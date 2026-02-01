@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "919a29ab10cd076bcdde59e287958af97a722177dfc77610f4230b8f657aefd2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/ixp4xx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nif ARCH_IXP4XX || COMPILE_TEST\n\nmenu \"IXP4xx SoC drivers\"\n\nconfig IXP4XX_QMGR\n\ttristate \"IXP4xx Queue Manager support\"\n\thelp\n\t  This driver supports IXP4xx built-in hardware queue manager\n\t  and is automatically selected by Ethernet and HSS drivers.\n\nconfig IXP4XX_NPE\n\ttristate \"IXP4xx Network Processor Engine support\"\n\tselect FW_LOADER\n\tselect MFD_SYSCON\n\thelp\n\t  This driver supports IXP4xx built-in network coprocessors\n\t  and is automatically selected by Ethernet and HSS drivers.\n\nendmenu\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

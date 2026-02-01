@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "856aacf1c053d8199c9fcd82303b6de1ebabcafa129a6b61daaaaefef8935230",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/echo/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_ECHO) += echo.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

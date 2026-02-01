@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e13cef694e4a3ebd7e5e8417f0e6067fff0977868ea8f85b2b0b64d9e7a9ae7f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/tegra/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ntegra-bpmp-y\t\t\t= bpmp.o\ntegra-bpmp-$(CONFIG_ARCH_TEGRA_210_SOC)\t+= bpmp-tegra210.o\ntegra-bpmp-$(CONFIG_ARCH_TEGRA_186_SOC)\t+= bpmp-tegra186.o\ntegra-bpmp-$(CONFIG_ARCH_TEGRA_194_SOC)\t+= bpmp-tegra186.o\ntegra-bpmp-$(CONFIG_ARCH_TEGRA_234_SOC)\t+= bpmp-tegra186.o\ntegra-bpmp-$(CONFIG_DEBUG_FS)\t+= bpmp-debugfs.o\nobj-$(CONFIG_TEGRA_BPMP)\t+= tegra-bpmp.o\nobj-$(CONFIG_TEGRA_IVC)\t\t+= ivc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

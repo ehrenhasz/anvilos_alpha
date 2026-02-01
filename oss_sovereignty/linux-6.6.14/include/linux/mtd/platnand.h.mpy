@@ -1,0 +1,9 @@
+{
+  "module_name": "platnand.h",
+  "hash_id": "0d80a1103460393756f3fe0e977c1207c5eaab905fd1b8959d3b96af7bff4dd0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/platnand.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MTD_PLATNAND_H\n#define __LINUX_MTD_PLATNAND_H\n\n#include <linux/mtd/partitions.h>\n#include <linux/mtd/rawnand.h>\n#include <linux/platform_device.h>\n\n \nstruct platform_nand_chip {\n\tint nr_chips;\n\tint chip_offset;\n\tint nr_partitions;\n\tstruct mtd_partition *partitions;\n\tint chip_delay;\n\tunsigned int options;\n\tunsigned int bbt_options;\n\tconst char **part_probe_types;\n};\n\n \nstruct platform_nand_ctrl {\n\tint (*probe)(struct platform_device *pdev);\n\tvoid (*remove)(struct platform_device *pdev);\n\tint (*dev_ready)(struct nand_chip *chip);\n\tvoid (*select_chip)(struct nand_chip *chip, int cs);\n\tvoid (*cmd_ctrl)(struct nand_chip *chip, int dat, unsigned int ctrl);\n\tvoid (*write_buf)(struct nand_chip *chip, const uint8_t *buf, int len);\n\tvoid (*read_buf)(struct nand_chip *chip, uint8_t *buf, int len);\n\tvoid *priv;\n};\n\n \nstruct platform_nand_data {\n\tstruct platform_nand_chip chip;\n\tstruct platform_nand_ctrl ctrl;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

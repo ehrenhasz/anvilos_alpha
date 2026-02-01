@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu-sun8i-h3.h",
+  "hash_id": "08c85fadb2e1f131447fe014e7acb0c8e437cbbbcf49a73668987333b1cc4308",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu-sun8i-h3.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_SUN8I_H3_H_\n#define _CCU_SUN8I_H3_H_\n\n#include <dt-bindings/clock/sun8i-h3-ccu.h>\n#include <dt-bindings/reset/sun8i-h3-ccu.h>\n\n#define CLK_PLL_CPUX\t\t0\n#define CLK_PLL_AUDIO_BASE\t1\n#define CLK_PLL_AUDIO\t\t2\n#define CLK_PLL_AUDIO_2X\t3\n#define CLK_PLL_AUDIO_4X\t4\n#define CLK_PLL_AUDIO_8X\t5\n\n \n\n#define CLK_PLL_VE\t\t7\n#define CLK_PLL_DDR\t\t8\n\n \n\n#define CLK_PLL_PERIPH0_2X\t10\n#define CLK_PLL_GPU\t\t11\n#define CLK_PLL_PERIPH1\t\t12\n#define CLK_PLL_DE\t\t13\n\n \n\n#define CLK_AXI\t\t\t15\n#define CLK_AHB1\t\t16\n#define CLK_APB1\t\t17\n#define CLK_APB2\t\t18\n#define CLK_AHB2\t\t19\n\n \n\n \n\n \n\n \n\n#define CLK_NUMBER_H3\t\t(CLK_GPU + 1)\n#define CLK_NUMBER_H5\t\t(CLK_BUS_SCR1 + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

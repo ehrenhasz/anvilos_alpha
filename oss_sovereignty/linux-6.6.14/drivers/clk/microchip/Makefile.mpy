@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8ad573e367151bcd0f976b923ad66c8b34f8460a08a6cac07fdb3ccb164a4866",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/microchip/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_COMMON_CLK_PIC32) += clk-core.o\nobj-$(CONFIG_PIC32MZDA) += clk-pic32mzda.o\nobj-$(CONFIG_MCHP_CLK_MPFS) += clk-mpfs.o\nobj-$(CONFIG_MCHP_CLK_MPFS) += clk-mpfs-ccc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

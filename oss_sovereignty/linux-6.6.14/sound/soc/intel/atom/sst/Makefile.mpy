@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8034113f218236587d791f204516536f8d7670f4340f692a3cd34b60efdadec0",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/atom/sst/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-intel-sst-core-objs := sst.o sst_ipc.o sst_stream.o sst_drv_interface.o sst_loader.o sst_pvt.o\nsnd-intel-sst-pci-objs += sst_pci.o\nsnd-intel-sst-acpi-objs += sst_acpi.o\n\nobj-$(CONFIG_SND_SST_ATOM_HIFI2_PLATFORM) += snd-intel-sst-core.o\nobj-$(CONFIG_SND_SST_ATOM_HIFI2_PLATFORM_PCI) += snd-intel-sst-pci.o\nobj-$(CONFIG_SND_SST_ATOM_HIFI2_PLATFORM_ACPI) += snd-intel-sst-acpi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

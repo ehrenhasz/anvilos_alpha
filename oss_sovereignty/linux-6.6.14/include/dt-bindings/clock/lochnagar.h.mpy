@@ -1,0 +1,9 @@
+{
+  "module_name": "lochnagar.h",
+  "hash_id": "75bf572530b6650952ecd61370f372feb4695ad9c12478a4c41196f6852506b0",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/lochnagar.h",
+  "human_readable_source": " \n \n\n#ifndef DT_BINDINGS_CLK_LOCHNAGAR_H\n#define DT_BINDINGS_CLK_LOCHNAGAR_H\n\n#define LOCHNAGAR_CDC_MCLK1\t\t0\n#define LOCHNAGAR_CDC_MCLK2\t\t1\n#define LOCHNAGAR_DSP_CLKIN\t\t2\n#define LOCHNAGAR_GF_CLKOUT1\t\t3\n#define LOCHNAGAR_GF_CLKOUT2\t\t4\n#define LOCHNAGAR_PSIA1_MCLK\t\t5\n#define LOCHNAGAR_PSIA2_MCLK\t\t6\n#define LOCHNAGAR_SPDIF_MCLK\t\t7\n#define LOCHNAGAR_ADAT_MCLK\t\t8\n#define LOCHNAGAR_SOUNDCARD_MCLK\t9\n#define LOCHNAGAR_SPDIF_CLKOUT\t\t10\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

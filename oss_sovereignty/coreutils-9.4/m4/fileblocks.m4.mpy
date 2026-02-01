@@ -1,0 +1,9 @@
+{
+  "module_name": "fileblocks.m4",
+  "hash_id": "0e14d54adec8dc5e6a6bb363dd1c8a5cf64f5843335e290b07cb69095c1db100",
+  "original_prompt": "Ingested from coreutils-9.4/m4/fileblocks.m4",
+  "human_readable_source": "# fileblocks.m4 serial 6\ndnl Copyright (C) 2002, 2005-2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FILEBLOCKS],\n[\n  m4_pushdef([AC_LIBOBJ], [:])\n  dnl Note: AC_STRUCT_ST_BLOCKS does AC_LIBOBJ([fileblocks]).\n  AC_STRUCT_ST_BLOCKS\n  m4_popdef([AC_LIBOBJ])\n  dnl The stat-size module depends on this one and also assumes that\n  dnl HAVE_STRUCT_STAT_ST_BLOCKS is correctly defined.  So if you\n  dnl remove the call above, please make sure that this does not\n  dnl introduce a bug into lib/stat-size.h.\n])\n\n# Prerequisites of lib/fileblocks.c.\nAC_DEFUN([gl_PREREQ_FILEBLOCKS], [\n  AC_CHECK_HEADERS_ONCE([sys/param.h])\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

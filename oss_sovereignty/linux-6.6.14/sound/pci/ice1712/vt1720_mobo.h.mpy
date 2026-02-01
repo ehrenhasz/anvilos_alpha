@@ -1,0 +1,9 @@
+{
+  "module_name": "vt1720_mobo.h",
+  "hash_id": "2faacc38337b1e1fac68328ed937b0f70512aea37b5fa5e522df5fa96ab4d796",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ice1712/vt1720_mobo.h",
+  "human_readable_source": " \n#ifndef __SOUND_VT1720_MOBO_H\n#define __SOUND_VT1720_MOBO_H\n\n       \n\n#define VT1720_MOBO_DEVICE_DESC        \"{Albatron,K8X800 Pro II},\"\\\n\t\t\t\t       \"{Chaintech,ZNF3-150},\"\\\n\t\t\t\t       \"{Chaintech,ZNF3-250},\"\\\n\t\t\t\t       \"{Chaintech,9CJS},\"\\\n\t\t\t\t       \"{Shuttle,SN25P},\"\n\n#define VT1720_SUBDEVICE_K8X800\t\t0xf217052c\n#define VT1720_SUBDEVICE_ZNF3_150\t0x0f2741f6\n#define VT1720_SUBDEVICE_ZNF3_250\t0x0f2745f6\n#define VT1720_SUBDEVICE_9CJS\t\t0x0f272327\n#define VT1720_SUBDEVICE_SN25P\t\t0x97123650\n\nextern struct snd_ice1712_card_info  snd_vt1720_mobo_cards[];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

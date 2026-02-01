@@ -1,0 +1,9 @@
+{
+  "module_name": "test-ignore-value.c",
+  "hash_id": "978e076c5270c850e10cb943599cd05718ec9c744ac35dbca681c20f9c1e2720",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-ignore-value.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"ignore-value.h\"\n\n#include <stdio.h>\n\n#include \"attribute.h\"\n\nstruct s { int i; };\nNODISCARD static char doChar (void);\nNODISCARD static int doInt (void);\nNODISCARD static off_t doOff (void);\nNODISCARD static void *doPtr (void);\nNODISCARD static struct s doStruct (void);\n\nstatic char\ndoChar (void)\n{\n  return 0;\n}\n\nstatic int\ndoInt (void)\n{\n  return 0;\n}\n\nstatic off_t\ndoOff (void)\n{\n  return 0;\n}\n\nstatic void *\ndoPtr (void)\n{\n  return NULL;\n}\n\nstatic struct s\ndoStruct (void)\n{\n  static struct s s1;\n  return s1;\n}\n\nint\nmain (void)\n{\n   \n  ignore_value (doChar ());\n  ignore_value (doInt ());\n  ignore_value (doOff ());\n  ignore_value (doPtr ());\n  ignore_value (doStruct ());\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

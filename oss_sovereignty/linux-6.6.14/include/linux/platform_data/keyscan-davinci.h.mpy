@@ -1,0 +1,9 @@
+{
+  "module_name": "keyscan-davinci.h",
+  "hash_id": "372451b7ecaac98d845cb653d30384189ca8964f0fcad6e6d0fae07b11059f93",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/keyscan-davinci.h",
+  "human_readable_source": " \n \n\n#ifndef DAVINCI_KEYSCAN_H\n#define DAVINCI_KEYSCAN_H\n\n#include <linux/io.h>\n\nenum davinci_matrix_types {\n\tDAVINCI_KEYSCAN_MATRIX_4X4,\n\tDAVINCI_KEYSCAN_MATRIX_5X3,\n};\n\nstruct davinci_ks_platform_data {\n\tint\t\t(*device_enable)(struct device *dev);\n\tunsigned short\t*keymap;\n\tu32\t\tkeymapsize;\n\tu8\t\trep:1;\n\tu8\t\tstrobe;\n\tu8\t\tinterval;\n\tu8\t\tmatrix_type;\n};\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

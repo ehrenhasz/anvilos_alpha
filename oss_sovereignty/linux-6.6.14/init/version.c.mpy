@@ -1,0 +1,9 @@
+{
+  "module_name": "version.c",
+  "hash_id": "328dc58881cc82b54deaed4de0aaadfde2a52b10abb908993bc0d1baf699beb1",
+  "original_prompt": "Ingested from linux-6.6.14/init/version.c",
+  "human_readable_source": "\n \n\n#include <generated/compile.h>\n#include <linux/build-salt.h>\n#include <linux/elfnote-lto.h>\n#include <linux/export.h>\n#include <linux/init.h>\n#include <linux/printk.h>\n#include <linux/uts.h>\n#include <linux/utsname.h>\n#include <linux/proc_ns.h>\n\nstatic int __init early_hostname(char *arg)\n{\n\tsize_t bufsize = sizeof(init_uts_ns.name.nodename);\n\tsize_t maxlen  = bufsize - 1;\n\tsize_t arglen;\n\n\targlen = strlcpy(init_uts_ns.name.nodename, arg, bufsize);\n\tif (arglen > maxlen) {\n\t\tpr_warn(\"hostname parameter exceeds %zd characters and will be truncated\",\n\t\t\tmaxlen);\n\t}\n\treturn 0;\n}\nearly_param(\"hostname\", early_hostname);\n\nconst char linux_proc_banner[] =\n\t\"%s version %s\"\n\t\" (\" LINUX_COMPILE_BY \"@\" LINUX_COMPILE_HOST \")\"\n\t\" (\" LINUX_COMPILER \") %s\\n\";\n\nBUILD_SALT;\nBUILD_LTO_INFO;\n\n \n\nstruct uts_namespace init_uts_ns __weak;\nconst char linux_banner[] __weak;\n\n#include \"version-timestamp.c\"\n\nEXPORT_SYMBOL_GPL(init_uts_ns);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

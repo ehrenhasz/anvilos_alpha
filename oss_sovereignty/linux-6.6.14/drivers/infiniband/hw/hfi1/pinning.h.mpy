@@ -1,0 +1,9 @@
+{
+  "module_name": "pinning.h",
+  "hash_id": "9b1badc8ddb3801ae2fd0e3409974ab42468154d1f5d4806a41a4d66e728506b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/pinning.h",
+  "human_readable_source": " \n \n#ifndef _HFI1_PINNING_H\n#define _HFI1_PINNING_H\n\nstruct hfi1_user_sdma_pkt_q;\nstruct user_sdma_request;\nstruct user_sdma_txreq;\nstruct user_sdma_iovec;\n\nint hfi1_init_system_pinning(struct hfi1_user_sdma_pkt_q *pq);\nvoid hfi1_free_system_pinning(struct hfi1_user_sdma_pkt_q *pq);\nint hfi1_add_pages_to_sdma_packet(struct user_sdma_request *req,\n\t\t\t\t  struct user_sdma_txreq *tx,\n\t\t\t\t  struct user_sdma_iovec *iovec,\n\t\t\t\t  u32 *pkt_data_remaining);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

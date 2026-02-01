@@ -1,0 +1,9 @@
+{
+  "module_name": "arch_errno_names.c",
+  "hash_id": "81a8d0e6c7ea1f4edcd1be4131891984becf739f69abb7f9e925d19ad84133f1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/arch_errno_names.c",
+  "human_readable_source": "#include \"trace/beauty/generated/arch_errno_name_array.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

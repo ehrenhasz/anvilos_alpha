@@ -1,0 +1,9 @@
+{
+  "module_name": "timeriomem-rng.h",
+  "hash_id": "069f685affcbb03f58e61c4b48790c4f19b7891ecedda46ff064aedfa9eecf3c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/timeriomem-rng.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_TIMERIOMEM_RNG_H\n#define _LINUX_TIMERIOMEM_RNG_H\n\nstruct timeriomem_rng_data {\n\tvoid __iomem\t\t*address;\n\n\t \n\tunsigned int\t\tperiod;\n\n\t \n\tunsigned int\t\tquality;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

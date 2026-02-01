@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objtype.c.qstr",
+  "hash_id": "bbd11d1f30cb2b52266f9dfcb77cb812da34fd73fbf3516f0424189cd90c8f86",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objtype.c.qstr",
+  "human_readable_source": "Q(__str__)\nQ(__repr__)\nQ(__repr__)\nQ(__new__)\nQ(__init__)\nQ(__bool__)\nQ(__len__)\nQ(__hash__)\nQ(__int__)\nQ(__eq__)\nQ(__lt__)\nQ(__gt__)\nQ(__eq__)\nQ(__le__)\nQ(__ge__)\nQ(__ne__)\nQ(__contains__)\nQ(__iadd__)\nQ(__isub__)\nQ(__add__)\nQ(__sub__)\nQ(__dict__)\nQ(__getattr__)\nQ(__getattr__)\nQ(__delitem__)\nQ(__getitem__)\nQ(__setitem__)\nQ(__call__)\nQ(__iter__)\nQ(__name__)\nQ(__dict__)\nQ(__bases__)\nQ(type)\nQ(__new__)\nQ(function)\nQ(__init__)\nQ(super)\nQ(staticmethod)\nQ(classmethod)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "spi-fsl-spi.h",
+  "hash_id": "7fa002e1471ae229b17e1a13d1c5cf8aa813692201616329ef48de944be07418",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/spi/spi-fsl-spi.h",
+  "human_readable_source": " \n \n\n#ifndef __SPI_FSL_SPI_H__\n#define __SPI_FSL_SPI_H__\n\n \nstruct fsl_spi_reg {\n\t__be32 cap;  \n\tu8 res1[0x1C];\n\t__be32 mode;\n\t__be32 event;\n\t__be32 mask;\n\t__be32 command;\n\t__be32 transmit;\n\t__be32 receive;\n\t__be32 slvsel;  \n};\n\n \n#define\tSPMODE_LOOP\t\t(1 << 30)\n#define\tSPMODE_CI_INACTIVEHIGH\t(1 << 29)\n#define\tSPMODE_CP_BEGIN_EDGECLK\t(1 << 28)\n#define\tSPMODE_DIV16\t\t(1 << 27)\n#define\tSPMODE_REV\t\t(1 << 26)\n#define\tSPMODE_MS\t\t(1 << 25)\n#define\tSPMODE_ENABLE\t\t(1 << 24)\n#define\tSPMODE_LEN(x)\t\t((x) << 20)\n#define\tSPMODE_PM(x)\t\t((x) << 16)\n#define\tSPMODE_OP\t\t(1 << 14)\n#define\tSPMODE_CG(x)\t\t((x) << 7)\n\n \n#define SPCAP_SSEN(x)\t\t(((x) >> 16) & 0x1)\n#define SPCAP_SSSZ(x)\t\t(((x) >> 24) & 0xff)\n#define SPCAP_MAXWLEN(x)\t(((x) >> 20) & 0xf)\n\n \n#define\tSPMODE_INIT_VAL (SPMODE_CI_INACTIVEHIGH | SPMODE_DIV16 | SPMODE_REV | \\\n\t\t\t SPMODE_MS | SPMODE_LEN(7) | SPMODE_PM(0xf))\n\n \n#define\tSPIE_NE\t\t0x00000200\t \n#define\tSPIE_NF\t\t0x00000100\t \n\n \n#define\tSPIM_NE\t\t0x00000200\t \n#define\tSPIM_NF\t\t0x00000100\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gv100.c",
+  "hash_id": "36a9e10e14173427789fc1900ca07a11df005e86ec36010a9f38f198db045841",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/vfn/gv100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <nvif/class.h>\n\nstatic const struct nvkm_vfn_func\ngv100_vfn = {\n\t.user = { 0x810000, 0x010000, { -1, -1, VOLTA_USERMODE_A } },\n};\n\nint\ngv100_vfn_new(struct nvkm_device *device,\n\t      enum nvkm_subdev_type type, int inst, struct nvkm_vfn **pvfn)\n{\n\treturn nvkm_vfn_new_(&gv100_vfn, device, type, inst, 0, pvfn);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

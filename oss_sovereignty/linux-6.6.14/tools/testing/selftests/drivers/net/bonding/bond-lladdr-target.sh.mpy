@@ -1,0 +1,9 @@
+{
+  "module_name": "bond-lladdr-target.sh",
+  "hash_id": "12613abfd8459f63b03f675e5b8f399d303e410e5f5e4a18b88bae8fddb2bcc2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/bonding/bond-lladdr-target.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# Regression Test:\n#   Verify bond interface could up when set IPv6 link local address target.\n#\n#  +----------------+\n#  |      br0       |\n#  |       |        |    sw\n#  | veth0   veth1  |\n#  +---+-------+----+\n#      |       |\n#  +---+-------+----+\n#  | veth0   veth1  |\n#  |       |        |    host\n#  |     bond0      |\n#  +----------------+\n#\n# We use veths instead of physical interfaces\nsw=\"sw-$(mktemp -u XXXXXX)\"\nhost=\"ns-$(mktemp -u XXXXXX)\"\n\ncleanup()\n{\n\tip netns del $sw\n\tip netns del $host\n}\n\ntrap cleanup 0 1 2\n\nip netns add $sw\nip netns add $host\n\nip -n $host link add veth0 type veth peer name veth0 netns $sw\nip -n $host link add veth1 type veth peer name veth1 netns $sw\n\nip -n $sw link add br0 type bridge\nip -n $sw link set br0 up\nsw_lladdr=$(ip -n $sw addr show br0 | awk '/fe80/{print $2}' | cut -d'/' -f1)\n# sleep some time to make sure bridge lladdr pass DAD\nsleep 2\n\nip -n $host link add bond0 type bond mode 1 ns_ip6_target ${sw_lladdr} \\\n\tarp_validate 3 arp_interval 1000\n# add a lladdr for bond to make sure there is a route to target\nip -n $host addr add fe80::beef/64 dev bond0\nip -n $host link set bond0 up\nip -n $host link set veth0 master bond0\nip -n $host link set veth1 master bond0\n\nip -n $sw link set veth0 master br0\nip -n $sw link set veth1 master br0\nip -n $sw link set veth0 up\nip -n $sw link set veth1 up\n\nsleep 5\n\nrc=0\nif ip -n $host link show bond0 | grep -q LOWER_UP; then\n\techo \"PASS\"\nelse\n\techo \"FAIL\"\n\trc=1\nfi\nexit $rc\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

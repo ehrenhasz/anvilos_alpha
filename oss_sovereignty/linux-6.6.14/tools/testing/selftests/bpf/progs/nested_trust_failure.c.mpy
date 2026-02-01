@@ -1,0 +1,9 @@
+{
+  "module_name": "nested_trust_failure.c",
+  "hash_id": "ebcb63d25e4e66208bbbe2ad5925b64c9007d94572378fbdc7f2d09ac5481391",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/nested_trust_failure.c",
+  "human_readable_source": "\n \n\n#include <vmlinux.h>\n#include <bpf/bpf_tracing.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\n#include \"nested_trust_common.h\"\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SK_STORAGE);\n\t__uint(map_flags, BPF_F_NO_PREALLOC);\n\t__type(key, int);\n\t__type(value, u64);\n} sk_storage_map SEC(\".maps\");\n\n \n\nSEC(\"tp_btf/task_newtask\")\n__failure __msg(\"R2 must be\")\nint BPF_PROG(test_invalid_nested_user_cpus, struct task_struct *task, u64 clone_flags)\n{\n\tbpf_cpumask_test_cpu(0, task->user_cpus_ptr);\n\treturn 0;\n}\n\nSEC(\"tp_btf/task_newtask\")\n__failure __msg(\"R1 must have zero offset when passed to release func or trusted arg to kfunc\")\nint BPF_PROG(test_invalid_nested_offset, struct task_struct *task, u64 clone_flags)\n{\n\tbpf_cpumask_first_zero(&task->cpus_mask);\n\treturn 0;\n}\n\n \nSEC(\"tp_btf/tcp_probe\")\n__failure __msg(\"R2 type=untrusted_ptr_ expected=ptr_, trusted_ptr_, rcu_ptr_\")\nint BPF_PROG(test_invalid_skb_field, struct sock *sk, struct sk_buff *skb)\n{\n\tbpf_sk_storage_get(&sk_storage_map, skb->next, 0, 0);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

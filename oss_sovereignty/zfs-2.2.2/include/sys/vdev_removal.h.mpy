@@ -1,0 +1,9 @@
+{
+  "module_name": "vdev_removal.h",
+  "hash_id": "9ac7c4ea71b7700c70e46795999cce86e72b2109ea36732dcd7fe35fe82895cb",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/vdev_removal.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SYS_VDEV_REMOVAL_H\n#define\t_SYS_VDEV_REMOVAL_H\n\n#include <sys/spa.h>\n#include <sys/bpobj.h>\n#include <sys/vdev_indirect_mapping.h>\n#include <sys/vdev_indirect_births.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\ntypedef struct spa_vdev_removal {\n\tuint64_t\tsvr_vdev_id;\n\tuint64_t\tsvr_max_offset_to_sync[TXG_SIZE];\n\t \n\tkthread_t\t*svr_thread;\n\t \n\trange_tree_t\t*svr_allocd_segs;\n\tkmutex_t\tsvr_lock;\n\tkcondvar_t\tsvr_cv;\n\tboolean_t\tsvr_thread_exit;\n\n\t \n\tlist_t\t\tsvr_new_segments[TXG_SIZE];\n\n\t \n\trange_tree_t\t*svr_frees[TXG_SIZE];\n\n\t \n\tuint64_t\tsvr_bytes_done[TXG_SIZE];\n\n\t \n\tnvlist_t\t*svr_zaplist;\n} spa_vdev_removal_t;\n\ntypedef struct spa_condensing_indirect {\n\t \n\tlist_t\t\tsci_new_mapping_entries[TXG_SIZE];\n\n\tvdev_indirect_mapping_t *sci_new_mapping;\n} spa_condensing_indirect_t;\n\nextern int spa_remove_init(spa_t *);\nextern void spa_restart_removal(spa_t *);\nextern int spa_condense_init(spa_t *);\nextern void spa_condense_fini(spa_t *);\nextern void spa_start_indirect_condensing_thread(spa_t *);\nextern void spa_vdev_condense_suspend(spa_t *);\nextern int spa_vdev_remove(spa_t *, uint64_t, boolean_t);\nextern void free_from_removing_vdev(vdev_t *, uint64_t, uint64_t);\nextern int spa_removal_get_stats(spa_t *, pool_removal_stat_t *);\nextern void svr_sync(spa_t *, dmu_tx_t *);\nextern void spa_vdev_remove_suspend(spa_t *);\nextern int spa_vdev_remove_cancel(spa_t *);\nextern void spa_vdev_removal_destroy(spa_vdev_removal_t *);\nextern uint64_t spa_remove_max_segment(spa_t *);\n\nextern uint_t vdev_removal_max_span;\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

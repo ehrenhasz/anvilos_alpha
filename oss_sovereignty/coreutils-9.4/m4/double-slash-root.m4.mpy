@@ -1,0 +1,9 @@
+{
+  "module_name": "double-slash-root.m4",
+  "hash_id": "c2a11fa8deca9cf94202d59d28d82b78cbb88492510fb0e140d3d8d1f82fff86",
+  "original_prompt": "Ingested from coreutils-9.4/m4/double-slash-root.m4",
+  "human_readable_source": "# double-slash-root.m4 serial 4   -*- Autoconf -*-\ndnl Copyright (C) 2006, 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_DOUBLE_SLASH_ROOT],\n[\n  AC_REQUIRE([AC_CANONICAL_HOST])\n  AC_CACHE_CHECK([whether // is distinct from /], [gl_cv_double_slash_root],\n    [ if test x\"$cross_compiling\" = xyes ; then\n        # When cross-compiling, there is no way to tell whether // is special\n        # short of a list of hosts.  However, the only known hosts to date\n        # that have a distinct // are Apollo DomainOS (too old to port to),\n        # Cygwin, and z/OS.  If anyone knows of another system for which // has\n        # special semantics and is distinct from /, please report it to\n        # <bug-gnulib@gnu.org>.\n        case $host in\n          *-cygwin | i370-ibm-openedition)\n            gl_cv_double_slash_root=yes ;;\n          *)\n            # Be optimistic and assume that / and // are the same when we\n            # don't know.\n            gl_cv_double_slash_root='unknown, assuming no' ;;\n        esac\n      else\n        set x `ls -di / // 2>/dev/null`\n        if test \"$[2]\" = \"$[4]\" && wc //dev/null >/dev/null 2>&1; then\n          gl_cv_double_slash_root=no\n        else\n          gl_cv_double_slash_root=yes\n        fi\n      fi])\n  if test \"$gl_cv_double_slash_root\" = yes; then\n    AC_DEFINE([DOUBLE_SLASH_IS_DISTINCT_ROOT], [1],\n      [Define to 1 if // is a file system root distinct from /.])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

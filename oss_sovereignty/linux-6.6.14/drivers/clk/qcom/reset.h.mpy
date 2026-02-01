@@ -1,0 +1,9 @@
+{
+  "module_name": "reset.h",
+  "hash_id": "b8d4f74a26c170cf7c233d50a717926e448cccf67af714a7bf10a5e2f68c8be9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/qcom/reset.h",
+  "human_readable_source": " \n \n\n#ifndef __QCOM_CLK_RESET_H__\n#define __QCOM_CLK_RESET_H__\n\n#include <linux/reset-controller.h>\n\nstruct qcom_reset_map {\n\tunsigned int reg;\n\tu8 bit;\n\tu8 udelay;\n\tu32 bitmask;\n};\n\nstruct regmap;\n\nstruct qcom_reset_controller {\n\tconst struct qcom_reset_map *reset_map;\n\tstruct regmap *regmap;\n\tstruct reset_controller_dev rcdev;\n};\n\n#define to_qcom_reset_controller(r) \\\n\tcontainer_of(r, struct qcom_reset_controller, rcdev);\n\nextern const struct reset_control_ops qcom_reset_ops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

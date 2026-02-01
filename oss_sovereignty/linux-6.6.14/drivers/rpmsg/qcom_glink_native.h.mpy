@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom_glink_native.h",
+  "hash_id": "13982eec6c1e6fcee1f7ddc5ade559f0b42eb038c594149a6efd604c5eaa6af9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/rpmsg/qcom_glink_native.h",
+  "human_readable_source": " \n \n\n#ifndef __QCOM_GLINK_NATIVE_H__\n#define __QCOM_GLINK_NATIVE_H__\n\n#include <linux/types.h>\n\n#define GLINK_FEATURE_INTENT_REUSE\tBIT(0)\n#define GLINK_FEATURE_MIGRATION\t\tBIT(1)\n#define GLINK_FEATURE_TRACER_PKT\tBIT(2)\n\nstruct qcom_glink_pipe {\n\tsize_t length;\n\n\tsize_t (*avail)(struct qcom_glink_pipe *glink_pipe);\n\n\tvoid (*peek)(struct qcom_glink_pipe *glink_pipe, void *data,\n\t\t     unsigned int offset, size_t count);\n\tvoid (*advance)(struct qcom_glink_pipe *glink_pipe, size_t count);\n\n\tvoid (*write)(struct qcom_glink_pipe *glink_pipe,\n\t\t      const void *hdr, size_t hlen,\n\t\t      const void *data, size_t dlen);\n\tvoid (*kick)(struct qcom_glink_pipe *glink_pipe);\n};\n\nstruct device;\nstruct qcom_glink;\n\nstruct qcom_glink *qcom_glink_native_probe(struct device *dev,\n\t\t\t\t\t   unsigned long features,\n\t\t\t\t\t   struct qcom_glink_pipe *rx,\n\t\t\t\t\t   struct qcom_glink_pipe *tx,\n\t\t\t\t\t   bool intentless);\nvoid qcom_glink_native_remove(struct qcom_glink *glink);\nvoid qcom_glink_native_rx(struct qcom_glink *glink);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cs35l41_hda_i2c.c",
+  "hash_id": "24eb2367424c5654e64fa40d668d49b00a0762974d19ea30cf30fc023bcd6d4b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/hda/cs35l41_hda_i2c.c",
+  "human_readable_source": "\n\n\n\n\n\n\n\n#include <linux/mod_devicetable.h>\n#include <linux/module.h>\n#include <linux/i2c.h>\n\n#include \"cs35l41_hda.h\"\n\nstatic int cs35l41_hda_i2c_probe(struct i2c_client *clt)\n{\n\tconst char *device_name;\n\n\t \n\tif (strstr(dev_name(&clt->dev), \"CLSA0100\"))\n\t\tdevice_name = \"CLSA0100\";\n\telse if (strstr(dev_name(&clt->dev), \"CLSA0101\"))\n\t\tdevice_name = \"CLSA0101\";\n\telse if (strstr(dev_name(&clt->dev), \"CSC3551\"))\n\t\tdevice_name = \"CSC3551\";\n\telse\n\t\treturn -ENODEV;\n\n\treturn cs35l41_hda_probe(&clt->dev, device_name, clt->addr, clt->irq,\n\t\t\t\t devm_regmap_init_i2c(clt, &cs35l41_regmap_i2c));\n}\n\nstatic void cs35l41_hda_i2c_remove(struct i2c_client *clt)\n{\n\tcs35l41_hda_remove(&clt->dev);\n}\n\nstatic const struct i2c_device_id cs35l41_hda_i2c_id[] = {\n\t{ \"cs35l41-hda\", 0 },\n\t{}\n};\n\nstatic const struct acpi_device_id cs35l41_acpi_hda_match[] = {\n\t{\"CLSA0100\", 0 },\n\t{\"CLSA0101\", 0 },\n\t{\"CSC3551\", 0 },\n\t{}\n};\nMODULE_DEVICE_TABLE(acpi, cs35l41_acpi_hda_match);\n\nstatic struct i2c_driver cs35l41_i2c_driver = {\n\t.driver = {\n\t\t.name\t\t= \"cs35l41-hda\",\n\t\t.acpi_match_table = cs35l41_acpi_hda_match,\n\t\t.pm\t\t= &cs35l41_hda_pm_ops,\n\t},\n\t.id_table\t= cs35l41_hda_i2c_id,\n\t.probe\t\t= cs35l41_hda_i2c_probe,\n\t.remove\t\t= cs35l41_hda_i2c_remove,\n};\nmodule_i2c_driver(cs35l41_i2c_driver);\n\nMODULE_DESCRIPTION(\"HDA CS35L41 driver\");\nMODULE_IMPORT_NS(SND_HDA_SCODEC_CS35L41);\nMODULE_AUTHOR(\"Lucas Tanure <tanureal@opensource.cirrus.com>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

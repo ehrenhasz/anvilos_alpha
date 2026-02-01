@@ -1,0 +1,9 @@
+{
+  "module_name": "gdm_lte.h",
+  "hash_id": "ce73db367ccd5e31ad601daa616588204784d82a5168e11d04c2116821093065",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/gdm724x/gdm_lte.h",
+  "human_readable_source": " \n \n\n#ifndef _GDM_LTE_H_\n#define _GDM_LTE_H_\n\n#include <linux/netdevice.h>\n#include <linux/types.h>\n\n#include \"gdm_endian.h\"\n\n#define MAX_NIC_TYPE\t\t4\n#define MAX_RX_SUBMIT_COUNT\t3\n#define DRIVER_VERSION\t\t\"3.7.17.0\"\n\nenum TX_ERROR_CODE {\n\tTX_NO_ERROR = 0,\n\tTX_NO_DEV,\n\tTX_NO_SPC,\n\tTX_NO_BUFFER,\n};\n\nenum CALLBACK_CONTEXT {\n\tKERNEL_THREAD = 0,\n\tUSB_COMPLETE,\n};\n\nstruct pdn_table {\n\tu8 activate;\n\tu32 dft_eps_id;\n\tu32 nic_type;\n} __packed;\n\nstruct nic;\n\nstruct phy_dev {\n\tvoid\t*priv_dev;\n\tstruct net_device *dev[MAX_NIC_TYPE];\n\tint\t(*send_hci_func)(void *priv_dev, void *data, int len,\n\t\t\t\t void (*cb)(void *cb_data), void *cb_data);\n\tint\t(*send_sdu_func)(void *priv_dev, void *data, int len,\n\t\t\t\t unsigned int dft_eps_id, unsigned int eps_id,\n\t\t\t\t void (*cb)(void *cb_data), void *cb_data,\n\t\t\t\t int dev_idx, int nic_type);\n\tint\t(*rcv_func)(void *priv_dev,\n\t\t\t    int (*cb)(void *cb_data, void *data, int len,\n\t\t\t\t      int context),\n\t\t\t    void *cb_data, int context);\n\tu8 (*get_endian)(void *priv_dev);\n};\n\nstruct nic {\n\tstruct net_device *netdev;\n\tstruct phy_dev *phy_dev;\n\tstruct net_device_stats stats;\n\tstruct pdn_table pdn_table;\n\tu8 dest_mac_addr[ETH_ALEN];\n\tu8 src_mac_addr[ETH_ALEN];\n\tu32 nic_id;\n\tu16 vlan_id;\n};\n\nint gdm_lte_event_init(void);\nvoid gdm_lte_event_exit(void);\n\nvoid start_rx_proc(struct phy_dev *phy_dev);\nint register_lte_device(struct phy_dev *phy_dev, struct device *dev,\n\t\t\tu8 *mac_address);\nvoid unregister_lte_device(struct phy_dev *phy_dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

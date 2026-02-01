@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f3ba50bc4c40af1a436ed55bfd5c36df629057eaccbc9df887b3f87c3249defb",
+  "original_prompt": "Ingested from linux-6.6.14/sound/parisc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n#\n\nsnd-harmony-objs := harmony.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_HARMONY) += snd-harmony.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

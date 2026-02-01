@@ -1,0 +1,9 @@
+{
+  "module_name": "cmd_parser.h",
+  "hash_id": "fef5527754e8c25c9dd2acf2a0b705ed7746f13d43a1ffdc18fab36bfe348f5d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gvt/cmd_parser.h",
+  "human_readable_source": " \n#ifndef _GVT_CMD_PARSER_H_\n#define _GVT_CMD_PARSER_H_\n\n#define GVT_CMD_HASH_BITS 7\n\nstruct intel_gvt;\nstruct intel_shadow_wa_ctx;\nstruct intel_vgpu;\nstruct intel_vgpu_workload;\n\nvoid intel_gvt_clean_cmd_parser(struct intel_gvt *gvt);\n\nint intel_gvt_init_cmd_parser(struct intel_gvt *gvt);\n\nint intel_gvt_scan_and_shadow_ringbuffer(struct intel_vgpu_workload *workload);\n\nint intel_gvt_scan_and_shadow_wa_ctx(struct intel_shadow_wa_ctx *wa_ctx);\n\nvoid intel_gvt_update_reg_whitelist(struct intel_vgpu *vgpu);\n\nint intel_gvt_scan_engine_context(struct intel_vgpu_workload *workload);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

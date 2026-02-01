@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0ad8514484d1770a60943e20d8772bc33dab3dd9d0e4dbd33546d10714cff108",
+  "original_prompt": "Ingested from linux-6.6.14/lib/math/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CORDIC\n\ttristate \"CORDIC algorithm\"\n\thelp\n\t  This option provides an implementation of the CORDIC algorithm;\n\t  calculations are in fixed point. Module will be called cordic.\n\nconfig PRIME_NUMBERS\n\ttristate \"Simple prime number generator for testing\"\n\thelp\n\t  This option provides a simple prime number generator for test\n\t  modules.\n\n\t  If unsure, say N.\n\nconfig RATIONAL\n\ttristate\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

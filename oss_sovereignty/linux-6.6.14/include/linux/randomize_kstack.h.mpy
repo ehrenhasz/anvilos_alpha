@@ -1,0 +1,9 @@
+{
+  "module_name": "randomize_kstack.h",
+  "hash_id": "988b1759588173faf7018ac5569a64daed97e1e73461841081d622cf71ef2f4e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/randomize_kstack.h",
+  "human_readable_source": " \n#ifndef _LINUX_RANDOMIZE_KSTACK_H\n#define _LINUX_RANDOMIZE_KSTACK_H\n\n#ifdef CONFIG_RANDOMIZE_KSTACK_OFFSET\n#include <linux/kernel.h>\n#include <linux/jump_label.h>\n#include <linux/percpu-defs.h>\n\nDECLARE_STATIC_KEY_MAYBE(CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT,\n\t\t\t randomize_kstack_offset);\nDECLARE_PER_CPU(u32, kstack_offset);\n\n \n#if __has_builtin(__builtin_alloca_uninitialized)\n#define __kstack_alloca __builtin_alloca_uninitialized\n#else\n#define __kstack_alloca __builtin_alloca\n#endif\n\n \n#define KSTACK_OFFSET_MAX(x)\t((x) & 0x3FF)\n\n \n#define add_random_kstack_offset() do {\t\t\t\t\t\\\n\tif (static_branch_maybe(CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT,\t\\\n\t\t\t\t&randomize_kstack_offset)) {\t\t\\\n\t\tu32 offset = raw_cpu_read(kstack_offset);\t\t\\\n\t\tu8 *ptr = __kstack_alloca(KSTACK_OFFSET_MAX(offset));\t\\\n\t\t \t\\\n\t\tasm volatile(\"\" :: \"r\"(ptr) : \"memory\");\t\t\\\n\t}\t\t\t\t\t\t\t\t\\\n} while (0)\n\n \n#define choose_random_kstack_offset(rand) do {\t\t\t\t\\\n\tif (static_branch_maybe(CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT,\t\\\n\t\t\t\t&randomize_kstack_offset)) {\t\t\\\n\t\tu32 offset = raw_cpu_read(kstack_offset);\t\t\\\n\t\toffset ^= (rand);\t\t\t\t\t\\\n\t\traw_cpu_write(kstack_offset, offset);\t\t\t\\\n\t}\t\t\t\t\t\t\t\t\\\n} while (0)\n#else  \n#define add_random_kstack_offset()\t\tdo { } while (0)\n#define choose_random_kstack_offset(rand)\tdo { } while (0)\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

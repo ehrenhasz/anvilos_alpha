@@ -1,0 +1,9 @@
+{
+  "module_name": "usb.c",
+  "hash_id": "68d0c366c621df7d232dd52c9e064007120d56b5d8b226d77edd23f7c60d166c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/fsl/qe/usb.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/errno.h>\n#include <linux/export.h>\n#include <linux/io.h>\n#include <soc/fsl/qe/immap_qe.h>\n#include <soc/fsl/qe/qe.h>\n\nint qe_usb_clock_set(enum qe_clock clk, int rate)\n{\n\tstruct qe_mux __iomem *mux = &qe_immr->qmx;\n\tunsigned long flags;\n\tu32 val;\n\n\tswitch (clk) {\n\tcase QE_CLK3:  val = QE_CMXGCR_USBCS_CLK3;  break;\n\tcase QE_CLK5:  val = QE_CMXGCR_USBCS_CLK5;  break;\n\tcase QE_CLK7:  val = QE_CMXGCR_USBCS_CLK7;  break;\n\tcase QE_CLK9:  val = QE_CMXGCR_USBCS_CLK9;  break;\n\tcase QE_CLK13: val = QE_CMXGCR_USBCS_CLK13; break;\n\tcase QE_CLK17: val = QE_CMXGCR_USBCS_CLK17; break;\n\tcase QE_CLK19: val = QE_CMXGCR_USBCS_CLK19; break;\n\tcase QE_CLK21: val = QE_CMXGCR_USBCS_CLK21; break;\n\tcase QE_BRG9:  val = QE_CMXGCR_USBCS_BRG9;  break;\n\tcase QE_BRG10: val = QE_CMXGCR_USBCS_BRG10; break;\n\tdefault:\n\t\tpr_err(\"%s: requested unknown clock %d\\n\", __func__, clk);\n\t\treturn -EINVAL;\n\t}\n\n\tif (qe_clock_is_brg(clk))\n\t\tqe_setbrg(clk, rate, 1);\n\n\tspin_lock_irqsave(&cmxgcr_lock, flags);\n\n\tqe_clrsetbits_be32(&mux->cmxgcr, QE_CMXGCR_USBCS, val);\n\n\tspin_unlock_irqrestore(&cmxgcr_lock, flags);\n\n\treturn 0;\n}\nEXPORT_SYMBOL(qe_usb_clock_set);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

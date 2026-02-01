@@ -1,0 +1,9 @@
+{
+  "module_name": "via_clock.h",
+  "hash_id": "18ee5b4840e1c770c78efbed9308e5edf54f5cb7d67f440205599db4b8dc154b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/via/via_clock.h",
+  "human_readable_source": " \n \n \n\n#ifndef __VIA_CLOCK_H__\n#define __VIA_CLOCK_H__\n\n#include <linux/types.h>\n\nenum via_clksrc {\n\tVIA_CLKSRC_X1 = 0,\n\tVIA_CLKSRC_TVX1,\n\tVIA_CLKSRC_TVPLL,\n\tVIA_CLKSRC_DVP1TVCLKR,\n\tVIA_CLKSRC_CAP0,\n\tVIA_CLKSRC_CAP1,\n};\n\nstruct via_pll_config {\n\tu16 multiplier;\n\tu8 divisor;\n\tu8 rshift;\n};\n\nstruct via_clock {\n\tvoid (*set_primary_clock_state)(u8 state);\n\tvoid (*set_primary_clock_source)(enum via_clksrc src, bool use_pll);\n\tvoid (*set_primary_pll_state)(u8 state);\n\tvoid (*set_primary_pll)(struct via_pll_config config);\n\n\tvoid (*set_secondary_clock_state)(u8 state);\n\tvoid (*set_secondary_clock_source)(enum via_clksrc src, bool use_pll);\n\tvoid (*set_secondary_pll_state)(u8 state);\n\tvoid (*set_secondary_pll)(struct via_pll_config config);\n\n\tvoid (*set_engine_pll_state)(u8 state);\n\tvoid (*set_engine_pll)(struct via_pll_config config);\n};\n\n\nstatic inline u32 get_pll_internal_frequency(u32 ref_freq,\n\tstruct via_pll_config pll)\n{\n\treturn ref_freq / pll.divisor * pll.multiplier;\n}\n\nstatic inline u32 get_pll_output_frequency(u32 ref_freq,\n\tstruct via_pll_config pll)\n{\n\treturn get_pll_internal_frequency(ref_freq, pll) >> pll.rshift;\n}\n\nvoid via_clock_init(struct via_clock *clock, int gfx_chip);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

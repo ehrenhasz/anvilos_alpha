@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "55c01f344b5ad89fe5420836e3a1698dff6fec674ea2d3f2c75e93f38e633129",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/int1092/Makefile",
+  "human_readable_source": "obj-$(CONFIG_INTEL_SAR_INT1092)\t\t+= intel_sar.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

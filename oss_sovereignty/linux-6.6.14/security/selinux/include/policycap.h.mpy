@@ -1,0 +1,9 @@
+{
+  "module_name": "policycap.h",
+  "hash_id": "0a240182f6dd3a872b55dd9ea09aa831af3b0f9c93ca78e85bccbe1638802df8",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/include/policycap.h",
+  "human_readable_source": " \n#ifndef _SELINUX_POLICYCAP_H_\n#define _SELINUX_POLICYCAP_H_\n\n \nenum {\n\tPOLICYDB_CAP_NETPEER,\n\tPOLICYDB_CAP_OPENPERM,\n\tPOLICYDB_CAP_EXTSOCKCLASS,\n\tPOLICYDB_CAP_ALWAYSNETWORK,\n\tPOLICYDB_CAP_CGROUPSECLABEL,\n\tPOLICYDB_CAP_NNP_NOSUID_TRANSITION,\n\tPOLICYDB_CAP_GENFS_SECLABEL_SYMLINKS,\n\tPOLICYDB_CAP_IOCTL_SKIP_CLOEXEC,\n\t__POLICYDB_CAP_MAX\n};\n#define POLICYDB_CAP_MAX (__POLICYDB_CAP_MAX - 1)\n\nextern const char *const selinux_policycap_names[__POLICYDB_CAP_MAX];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

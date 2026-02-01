@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bfd1f6f6fc34f5f08091646951e6acb788bb3fd762b02e1094c0ed9b1e06c6d7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/samsung/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Samsung thermal specific Makefile\n#\nobj-$(CONFIG_EXYNOS_THERMAL)\t\t\t+= exynos_thermal.o\nexynos_thermal-y\t\t\t\t:= exynos_tmu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

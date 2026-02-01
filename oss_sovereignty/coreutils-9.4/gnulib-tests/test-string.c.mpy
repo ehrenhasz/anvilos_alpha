@@ -1,0 +1,9 @@
+{
+  "module_name": "test-string.c",
+  "hash_id": "83b4e18d756724a7e06f4664315806e000f699b2b4e1f5c56558e1fb14d19958",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-string.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <string.h>\n\n \nstatic_assert (sizeof NULL == sizeof (void *));\n\nint\nmain (void)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

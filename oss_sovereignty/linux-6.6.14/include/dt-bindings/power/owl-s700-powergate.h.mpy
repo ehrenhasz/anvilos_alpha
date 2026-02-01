@@ -1,0 +1,9 @@
+{
+  "module_name": "owl-s700-powergate.h",
+  "hash_id": "4404b7ec84f1480015e31678d313e1b14d2fe6a9a3447f68ec89e259d4a02dc4",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/owl-s700-powergate.h",
+  "human_readable_source": "\n \n#ifndef DT_BINDINGS_POWER_OWL_S700_POWERGATE_H\n#define DT_BINDINGS_POWER_OWL_S700_POWERGATE_H\n\n#define S700_PD_VDE\t0\n#define S700_PD_VCE_SI\t1\n#define S700_PD_USB2_1\t2\n#define S700_PD_HDE\t3\n#define S700_PD_DMA\t4\n#define S700_PD_DS\t5\n#define S700_PD_USB3\t6\n#define S700_PD_USB2_0\t7\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

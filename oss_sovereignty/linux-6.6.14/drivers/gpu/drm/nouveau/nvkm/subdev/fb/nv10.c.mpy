@@ -1,0 +1,9 @@
+{
+  "module_name": "nv10.c",
+  "hash_id": "41a28f6373d9dc0efb2e5ac7634334512a37f775dc2833d27e0ac8c34fe9ee43",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/nv10.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"ram.h\"\n\nvoid\nnv10_fb_tile_init(struct nvkm_fb *fb, int i, u32 addr, u32 size, u32 pitch,\n\t\t  u32 flags, struct nvkm_fb_tile *tile)\n{\n\ttile->addr  = 0x80000000 | addr;\n\ttile->limit = max(1u, addr + size) - 1;\n\ttile->pitch = pitch;\n}\n\nvoid\nnv10_fb_tile_fini(struct nvkm_fb *fb, int i, struct nvkm_fb_tile *tile)\n{\n\ttile->addr  = 0;\n\ttile->limit = 0;\n\ttile->pitch = 0;\n\ttile->zcomp = 0;\n}\n\nvoid\nnv10_fb_tile_prog(struct nvkm_fb *fb, int i, struct nvkm_fb_tile *tile)\n{\n\tstruct nvkm_device *device = fb->subdev.device;\n\tnvkm_wr32(device, 0x100244 + (i * 0x10), tile->limit);\n\tnvkm_wr32(device, 0x100248 + (i * 0x10), tile->pitch);\n\tnvkm_wr32(device, 0x100240 + (i * 0x10), tile->addr);\n\tnvkm_rd32(device, 0x100240 + (i * 0x10));\n}\n\nstatic const struct nvkm_fb_func\nnv10_fb = {\n\t.tile.regions = 8,\n\t.tile.init = nv10_fb_tile_init,\n\t.tile.fini = nv10_fb_tile_fini,\n\t.tile.prog = nv10_fb_tile_prog,\n\t.ram_new = nv10_ram_new,\n};\n\nint\nnv10_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn nvkm_fb_new_(&nv10_fb, device, type, inst, pfb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

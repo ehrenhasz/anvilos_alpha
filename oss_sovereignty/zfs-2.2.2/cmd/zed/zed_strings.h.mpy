@@ -1,0 +1,9 @@
+{
+  "module_name": "zed_strings.h",
+  "hash_id": "62cf887bc28e61143f0bda0d319c47da431d7659d48cf9243b7e6b6795484b26",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zed/zed_strings.h",
+  "human_readable_source": " \n\n#ifndef\tZED_STRINGS_H\n#define\tZED_STRINGS_H\n\ntypedef struct zed_strings zed_strings_t;\n\nzed_strings_t *zed_strings_create(void);\nvoid zed_strings_destroy(zed_strings_t *zsp);\nint zed_strings_add(zed_strings_t *zsp, const char *key, const char *s);\nconst char *zed_strings_first(zed_strings_t *zsp);\nconst char *zed_strings_next(zed_strings_t *zsp);\nint zed_strings_count(zed_strings_t *zsp);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "reset-starfive-jh71x0.h",
+  "hash_id": "114d629540112ac81830070c2b8c96add2a540167c30f264c9412049448f2f51",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/reset/starfive/reset-starfive-jh71x0.h",
+  "human_readable_source": " \n \n\n#ifndef __RESET_STARFIVE_JH71X0_H\n#define __RESET_STARFIVE_JH71X0_H\n\nint reset_starfive_jh71x0_register(struct device *dev, struct device_node *of_node,\n\t\t\t\t   void __iomem *assert, void __iomem *status,\n\t\t\t\t   const u32 *asserted, unsigned int nr_resets,\n\t\t\t\t   struct module *owner);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

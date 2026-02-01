@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "01d83c28db8584309c0aaf7d0aa3c764552f27d9a1f2a4678c81a39eb40eac41",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dsc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\n#\n# Makefile for the 'dsc' sub-component of DAL.\nDSC = dc_dsc.o rc_calc.o rc_calc_dpi.o\n\nAMD_DAL_DSC = $(addprefix $(AMDDALPATH)/dc/dsc/,$(DSC))\n\nAMD_DISPLAY_FILES += $(AMD_DAL_DSC)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

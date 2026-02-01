@@ -1,0 +1,9 @@
+{
+  "module_name": "rt5660.h",
+  "hash_id": "a7399ecbbd078de6154397ebe36ebe07a3142054d72df6d65a292cd7b0902691",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/rt5660.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SND_RT5660_H\n#define __LINUX_SND_RT5660_H\n\nenum rt5660_dmic1_data_pin {\n\tRT5660_DMIC1_NULL,\n\tRT5660_DMIC1_DATA_GPIO2,\n\tRT5660_DMIC1_DATA_IN1P,\n};\n\nstruct rt5660_platform_data {\n\t \n\tbool in1_diff;\n\tbool in3_diff;\n\tbool use_ldo2;\n\tbool poweroff_codec_in_suspend;\n\n\tenum rt5660_dmic1_data_pin dmic1_data_pin;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

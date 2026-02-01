@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi.h",
+  "hash_id": "82e5f2769d5832b23664ffc4aadd6d879d0ad15f88b6a2ec03d03624ad59d04a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw89/acpi.h",
+  "human_readable_source": " \n \n\n#ifndef __RTW89_ACPI_H__\n#define __RTW89_ACPI_H__\n\n#include \"core.h\"\n\nenum rtw89_acpi_dsm_func {\n\tRTW89_ACPI_DSM_FUNC_IDN_BAND_SUP = 2,\n\tRTW89_ACPI_DSM_FUNC_6G_DIS = 3,\n\tRTW89_ACPI_DSM_FUNC_6G_BP = 4,\n\tRTW89_ACPI_DSM_FUNC_TAS_EN = 5,\n\tRTW89_ACPI_DSM_FUNC_59G_EN = 6,\n};\n\nint rtw89_acpi_evaluate_dsm(struct rtw89_dev *rtwdev,\n\t\t\t    enum rtw89_acpi_dsm_func func, u8 *value);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

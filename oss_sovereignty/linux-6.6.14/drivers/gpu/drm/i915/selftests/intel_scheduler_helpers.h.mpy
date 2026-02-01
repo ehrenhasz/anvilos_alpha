@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_scheduler_helpers.h",
+  "hash_id": "b51c8301e24a38aaeab52775bf1aeafb91b0e27d6e8f4082043f094fcbe998ca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/intel_scheduler_helpers.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_SELFTEST_SCHEDULER_HELPERS_H_\n#define _INTEL_SELFTEST_SCHEDULER_HELPERS_H_\n\n#include <linux/types.h>\n\nstruct i915_request;\nstruct intel_engine_cs;\nstruct intel_gt;\n\nstruct intel_selftest_saved_policy {\n\tu32 flags;\n\tu32 reset;\n\tu64 timeslice;\n\tu64 preempt_timeout;\n};\n\nenum selftest_scheduler_modify {\n\tSELFTEST_SCHEDULER_MODIFY_NO_HANGCHECK = 0,\n\tSELFTEST_SCHEDULER_MODIFY_FAST_RESET,\n};\n\nstruct intel_engine_cs *intel_selftest_find_any_engine(struct intel_gt *gt);\nint intel_selftest_modify_policy(struct intel_engine_cs *engine,\n\t\t\t\t struct intel_selftest_saved_policy *saved,\n\t\t\t\t enum selftest_scheduler_modify modify_type);\nint intel_selftest_restore_policy(struct intel_engine_cs *engine,\n\t\t\t\t  struct intel_selftest_saved_policy *saved);\nint intel_selftest_wait_for_rq(struct i915_request *rq);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

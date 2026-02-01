@@ -1,0 +1,9 @@
+{
+  "module_name": "usb-musb-ux500.h",
+  "hash_id": "5c64adf8576e594420c7ea94e22bdba6c3d9214947bc3f61e9cc7cd45bd7a8aa",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/usb-musb-ux500.h",
+  "human_readable_source": " \n \n#ifndef __ASM_ARCH_USB_H\n#define __ASM_ARCH_USB_H\n\n#include <linux/dmaengine.h>\n\n#define UX500_MUSB_DMA_NUM_RX_TX_CHANNELS 8\n\nstruct ux500_musb_board_data {\n\tvoid\t**dma_rx_param_array;\n\tvoid\t**dma_tx_param_array;\n\tbool (*dma_filter)(struct dma_chan *chan, void *filter_param);\n};\n\nvoid ux500_add_usb(struct device *parent, resource_size_t base,\n\t\t   int irq, int *dma_rx_cfg, int *dma_tx_cfg);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

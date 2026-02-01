@@ -1,0 +1,9 @@
+{
+  "module_name": "phonet.h",
+  "hash_id": "3273721be74afa7943bd0deb02e44a4d5114bff84e730e3c64ae6a8f092c6eac",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/phonet.h",
+  "human_readable_source": " \n \n#ifndef LINUX_PHONET_H\n#define LINUX_PHONET_H\n\n#include <uapi/linux/phonet.h>\n\n#define SIOCPNGAUTOCONF\t\t(SIOCDEVPRIVATE + 0)\n\nstruct if_phonet_autoconf {\n\tuint8_t device;\n};\n\nstruct if_phonet_req {\n\tchar ifr_phonet_name[16];\n\tunion {\n\t\tstruct if_phonet_autoconf ifru_phonet_autoconf;\n\t} ifr_ifru;\n};\n#define ifr_phonet_autoconf ifr_ifru.ifru_phonet_autoconf\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

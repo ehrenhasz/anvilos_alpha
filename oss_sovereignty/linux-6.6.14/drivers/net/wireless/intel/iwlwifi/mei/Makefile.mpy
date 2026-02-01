@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2a5a77c4663fae4873319523f9882bc437c9c67a15d7c19f0fb45dbf3e216e05",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/mei/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_IWLMEI)\t+= iwlmei.o\niwlmei-y += main.o\niwlmei-y += net.o\niwlmei-$(CONFIG_IWLWIFI_DEVICE_TRACING) += trace.o\nCFLAGS_trace.o := -I$(src)\n\nccflags-y += -I $(srctree)/$(src)/../\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

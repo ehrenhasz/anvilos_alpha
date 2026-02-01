@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2dd8c405a6e2fcb7024eec63699a0ff0192ff376b9afaca53cfdb5afbb9f6211",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cxd2880/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig DVB_CXD2880\n\ttristate \"Sony CXD2880 DVB-T2/T tuner + demodulator\"\n\tdepends on DVB_CORE && SPI\n\tdefault m if !MEDIA_SUBDRV_AUTOSELECT\n\thelp\n\t  Say Y when you want to support this frontend.",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

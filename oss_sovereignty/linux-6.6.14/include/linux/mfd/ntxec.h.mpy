@@ -1,0 +1,9 @@
+{
+  "module_name": "ntxec.h",
+  "hash_id": "3a75608be4921021dd38a0d1745dd6702065af888f4a98b8d626bbd4eca6dbee",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/ntxec.h",
+  "human_readable_source": " \n \n\n#ifndef NTXEC_H\n#define NTXEC_H\n\n#include <linux/types.h>\n\nstruct device;\nstruct regmap;\n\nstruct ntxec {\n\tstruct device *dev;\n\tstruct regmap *regmap;\n};\n\n \nstatic inline u16 ntxec_reg8(u8 value)\n{\n\treturn value << 8;\n}\n\n \n#define NTXEC_VERSION_KOBO_AURA\t0xd726\t \n#define NTXEC_VERSION_TOLINO_SHINE2 0xf110  \n#define NTXEC_VERSION_TOLINO_VISION 0xe135  \n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

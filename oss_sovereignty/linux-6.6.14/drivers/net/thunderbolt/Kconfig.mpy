@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "cb3131a7afb510e3bd8d4d754101c9811b56600c51c51a0dffe12671dab36af5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/thunderbolt/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig USB4_NET\n\ttristate \"Networking over USB4 and Thunderbolt cables\"\n\tdepends on USB4 && INET\n\thelp\n\t  Select this if you want to create network between two computers\n\t  over a USB4 and Thunderbolt cables. The driver supports Apple\n\t  ThunderboltIP protocol and allows communication with any host\n\t  supporting the same protocol including Windows and macOS.\n\n\t  To compile this driver a module, choose M here. The module will be\n\t  called thunderbolt_net.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

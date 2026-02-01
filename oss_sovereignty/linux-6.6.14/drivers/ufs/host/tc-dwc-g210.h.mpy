@@ -1,0 +1,9 @@
+{
+  "module_name": "tc-dwc-g210.h",
+  "hash_id": "ed334eb1824c0d4bb83bfbdc1fa4eb5b10fe6a3454069ce2235baea554849adc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ufs/host/tc-dwc-g210.h",
+  "human_readable_source": " \n \n\n#ifndef _TC_DWC_G210_H\n#define _TC_DWC_G210_H\n\nstruct ufs_hba;\n\nint tc_dwc_g210_config_40_bit(struct ufs_hba *hba);\nint tc_dwc_g210_config_20_bit(struct ufs_hba *hba);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

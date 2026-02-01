@@ -1,0 +1,9 @@
+{
+  "module_name": "arcturus_ppt.h",
+  "hash_id": "54fe6c2c378975eeeb32ae9954ec9b628bb4fecc4b99ce43f985fe71f7d72467",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/swsmu/smu11/arcturus_ppt.h",
+  "human_readable_source": " \n#ifndef __ARCTURUS_PPT_H__\n#define __ARCTURUS_PPT_H__\n\n#define ARCTURUS_UMD_PSTATE_GFXCLK_LEVEL         0x3\n#define ARCTURUS_UMD_PSTATE_SOCCLK_LEVEL         0x3\n#define ARCTURUS_UMD_PSTATE_MCLK_LEVEL           0x2\n\n#define MAX_DPM_NUMBER 16\n#define MAX_PCIE_CONF 2\n\nstruct arcturus_dpm_level {\n        bool            enabled;\n        uint32_t        value;\n        uint32_t        param1;\n};\n\nstruct arcturus_dpm_state {\n        uint32_t  soft_min_level;\n        uint32_t  soft_max_level;\n        uint32_t  hard_min_level;\n        uint32_t  hard_max_level;\n};\n\nstruct arcturus_single_dpm_table {\n        uint32_t                count;\n        struct arcturus_dpm_state dpm_state;\n        struct arcturus_dpm_level dpm_levels[MAX_DPM_NUMBER];\n};\n\nstruct arcturus_pcie_table {\n        uint16_t count;\n        uint8_t  pcie_gen[MAX_PCIE_CONF];\n        uint8_t  pcie_lane[MAX_PCIE_CONF];\n        uint32_t lclk[MAX_PCIE_CONF];\n};\n\nstruct arcturus_dpm_table {\n        struct arcturus_single_dpm_table  soc_table;\n        struct arcturus_single_dpm_table  gfx_table;\n        struct arcturus_single_dpm_table  mem_table;\n        struct arcturus_single_dpm_table  eclk_table;\n        struct arcturus_single_dpm_table  vclk_table;\n        struct arcturus_single_dpm_table  dclk_table;\n        struct arcturus_single_dpm_table  fclk_table;\n        struct arcturus_pcie_table        pcie_table;\n};\n\nextern void arcturus_set_ppt_funcs(struct smu_context *smu);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

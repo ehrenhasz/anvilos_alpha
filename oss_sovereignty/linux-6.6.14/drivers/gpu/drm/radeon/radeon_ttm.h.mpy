@@ -1,0 +1,9 @@
+{
+  "module_name": "radeon_ttm.h",
+  "hash_id": "83332368a2f2d4b5e268d8e69e0b3663aa015da0c1e28693abf91c8d108f68af",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/radeon_ttm.h",
+  "human_readable_source": " \n\n#ifndef __RADEON_TTM_H__\n#define __RADEON_TTM_H__\n\nstruct radeon_device;\n\nint radeon_ttm_init(struct radeon_device *rdev);\nvoid radeon_ttm_fini(struct radeon_device *rdev);\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

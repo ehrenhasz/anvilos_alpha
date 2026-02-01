@@ -1,0 +1,9 @@
+{
+  "module_name": "brcms_trace_events.c",
+  "hash_id": "58a2ef58c1abd05adac7b59016d81fc89727fb91c2b9849e49234a82b532c1d1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmsmac/brcms_trace_events.c",
+  "human_readable_source": " \n\n#include <linux/module.h>  \n\n#ifndef __CHECKER__\n#include \"mac80211_if.h\"\n#define CREATE_TRACE_POINTS\n#include \"brcms_trace_events.h\"\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

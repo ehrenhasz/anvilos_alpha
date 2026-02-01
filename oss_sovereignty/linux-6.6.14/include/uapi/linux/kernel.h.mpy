@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel.h",
+  "hash_id": "e8b9ff4d02cc752701dc9c8f2f87c91fbf47c944f6b931b717848f05c33cbe3b",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/kernel.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_KERNEL_H\n#define _UAPI_LINUX_KERNEL_H\n\n#include <linux/sysinfo.h>\n#include <linux/const.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_perf_event.h",
+  "hash_id": "a9ae112411621aa22b048b48dbf7a93b33b508f6d59bdaa42b435208cd9d3656",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/uapi/asm/bpf_perf_event.h",
+  "human_readable_source": "#if defined(__aarch64__)\n#include \"../../arch/arm64/include/uapi/asm/bpf_perf_event.h\"\n#elif defined(__arc__)\n#include \"../../arch/arc/include/uapi/asm/bpf_perf_event.h\"\n#elif defined(__s390__)\n#include \"../../arch/s390/include/uapi/asm/bpf_perf_event.h\"\n#elif defined(__riscv)\n#include \"../../arch/riscv/include/uapi/asm/bpf_perf_event.h\"\n#elif defined(__loongarch__)\n#include \"../../arch/loongarch/include/uapi/asm/bpf_perf_event.h\"\n#else\n#include <uapi/asm-generic/bpf_perf_event.h>\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

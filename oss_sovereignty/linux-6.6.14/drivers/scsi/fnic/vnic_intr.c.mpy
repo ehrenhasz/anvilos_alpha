@@ -1,0 +1,9 @@
+{
+  "module_name": "vnic_intr.c",
+  "hash_id": "5b59f056cfbfa174d7cca347b5ab05fba9a808925ee00e92a60d5beab76e48c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/fnic/vnic_intr.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/errno.h>\n#include <linux/types.h>\n#include <linux/pci.h>\n#include <linux/delay.h>\n#include \"vnic_dev.h\"\n#include \"vnic_intr.h\"\n\nvoid vnic_intr_free(struct vnic_intr *intr)\n{\n\tintr->ctrl = NULL;\n}\n\nint vnic_intr_alloc(struct vnic_dev *vdev, struct vnic_intr *intr,\n\tunsigned int index)\n{\n\tintr->index = index;\n\tintr->vdev = vdev;\n\n\tintr->ctrl = vnic_dev_get_res(vdev, RES_TYPE_INTR_CTRL, index);\n\tif (!intr->ctrl) {\n\t\tprintk(KERN_ERR \"Failed to hook INTR[%d].ctrl resource\\n\",\n\t\t\tindex);\n\t\treturn -EINVAL;\n\t}\n\n\treturn 0;\n}\n\nvoid vnic_intr_init(struct vnic_intr *intr, unsigned int coalescing_timer,\n\tunsigned int coalescing_type, unsigned int mask_on_assertion)\n{\n\tiowrite32(coalescing_timer, &intr->ctrl->coalescing_timer);\n\tiowrite32(coalescing_type, &intr->ctrl->coalescing_type);\n\tiowrite32(mask_on_assertion, &intr->ctrl->mask_on_assertion);\n\tiowrite32(0, &intr->ctrl->int_credits);\n}\n\nvoid vnic_intr_clean(struct vnic_intr *intr)\n{\n\tiowrite32(0, &intr->ctrl->int_credits);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

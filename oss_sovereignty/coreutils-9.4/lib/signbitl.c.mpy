@@ -1,0 +1,9 @@
+{
+  "module_name": "signbitl.c",
+  "hash_id": "58c034308eae980e6856d8261aa890dfa83147d53c4fd3327289c6e291ff5fc8",
+  "original_prompt": "Ingested from coreutils-9.4/lib/signbitl.c",
+  "human_readable_source": " \n#include <math.h>\n\n#include <string.h>\n#include \"isnanl-nolibm.h\"\n#include \"float+.h\"\n\n#ifdef gl_signbitl_OPTIMIZED_MACRO\n# undef gl_signbitl\n#endif\n\nint\ngl_signbitl (long double arg)\n{\n#if defined LDBL_SIGNBIT_WORD && defined LDBL_SIGNBIT_BIT\n   \n# define NWORDS \\\n    ((sizeof (long double) + sizeof (unsigned int) - 1) / sizeof (unsigned int))\n  union { long double value; unsigned int word[NWORDS]; } m;\n  m.value = arg;\n  return (m.word[LDBL_SIGNBIT_WORD] >> LDBL_SIGNBIT_BIT) & 1;\n#elif HAVE_COPYSIGNL_IN_LIBC\n  return copysignl (1.0L, arg) < 0;\n#else\n   \n  if (isnanl (arg))\n    return 0;\n  if (arg < 0.0L)\n    return 1;\n  else if (arg == 0.0L)\n    {\n       \n      static long double plus_zero = 0.0L;\n      long double arg_mem = arg;\n      return (memcmp (&plus_zero, &arg_mem, SIZEOF_LDBL) != 0);\n    }\n  else\n    return 0;\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

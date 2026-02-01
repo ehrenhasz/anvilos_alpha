@@ -1,0 +1,9 @@
+{
+  "module_name": "workarounds.h",
+  "hash_id": "131a18c31a8094161cd1a9aab09eea1d8cd47c1575277697114fbecfebf7a04d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/falcon/workarounds.h",
+  "human_readable_source": " \n \n\n#ifndef EF4_WORKAROUNDS_H\n#define EF4_WORKAROUNDS_H\n\n \n\n#define EF4_WORKAROUND_FALCON_A(efx) (ef4_nic_rev(efx) <= EF4_REV_FALCON_A1)\n#define EF4_WORKAROUND_FALCON_AB(efx) (ef4_nic_rev(efx) <= EF4_REV_FALCON_B0)\n#define EF4_WORKAROUND_10G(efx) 1\n\n \n#define EF4_WORKAROUND_7884 EF4_WORKAROUND_10G\n \n#define EF4_WORKAROUND_15592 EF4_WORKAROUND_FALCON_AB\n\n \n#define EF4_WORKAROUND_5129 EF4_WORKAROUND_FALCON_A\n \n#define EF4_WORKAROUND_5391 EF4_WORKAROUND_FALCON_A\n \n#define EF4_WORKAROUND_5583 EF4_WORKAROUND_FALCON_A\n \n#define EF4_WORKAROUND_5676 EF4_WORKAROUND_FALCON_A\n \n#define EF4_WORKAROUND_6555 EF4_WORKAROUND_FALCON_A\n \n#define EF4_WORKAROUND_7244 EF4_WORKAROUND_FALCON_A\n \n#define EF4_WORKAROUND_7803 EF4_WORKAROUND_FALCON_AB\n \n#define EF4_WORKAROUND_8071 EF4_WORKAROUND_FALCON_A\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

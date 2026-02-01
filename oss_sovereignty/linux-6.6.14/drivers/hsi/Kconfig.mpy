@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7b588d263658e0c611f9806bfff9f0446a5986c8df6ebaff9ccd314343d31b4e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hsi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# HSI driver configuration\n#\nmenuconfig HSI\n\ttristate \"HSI support\"\n\thelp\n\t  The \"High speed synchronous Serial Interface\" is\n\t  synchronous serial interface used mainly to connect\n\t  application engines and cellular modems.\n\nif HSI\n\nconfig HSI_BOARDINFO\n\tbool\n\tdefault y\n\nsource \"drivers/hsi/controllers/Kconfig\"\nsource \"drivers/hsi/clients/Kconfig\"\n\nendif # HSI\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

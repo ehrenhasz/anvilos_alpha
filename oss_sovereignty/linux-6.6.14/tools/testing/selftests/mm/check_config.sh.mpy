@@ -1,0 +1,9 @@
+{
+  "module_name": "check_config.sh",
+  "hash_id": "8b20f3c164591d145020d09828d16205ed4604cc9331039c98a696621f47d43d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/mm/check_config.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n#\n# Probe for libraries and create header files to record the results. Both C\n# header files and Makefile include fragments are created.\n\nOUTPUT_H_FILE=local_config.h\nOUTPUT_MKFILE=local_config.mk\n\ntmpname=$(mktemp)\ntmpfile_c=${tmpname}.c\ntmpfile_o=${tmpname}.o\n\n# liburing\necho \"#include <sys/types.h>\"        > $tmpfile_c\necho \"#include <liburing.h>\"        >> $tmpfile_c\necho \"int func(void) { return 0; }\" >> $tmpfile_c\n\nCC=${1:?\"Usage: $0 <compiler> # example compiler: gcc\"}\n$CC -c $tmpfile_c -o $tmpfile_o >/dev/null 2>&1\n\nif [ -f $tmpfile_o ]; then\n    echo \"#define LOCAL_CONFIG_HAVE_LIBURING 1\"  > $OUTPUT_H_FILE\n    echo \"IOURING_EXTRA_LIBS = -luring\"          > $OUTPUT_MKFILE\nelse\n    echo \"// No liburing support found\"          > $OUTPUT_H_FILE\n    echo \"# No liburing support found, so:\"      > $OUTPUT_MKFILE\n    echo \"IOURING_EXTRA_LIBS = \"                >> $OUTPUT_MKFILE\nfi\n\nrm ${tmpname}.*\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

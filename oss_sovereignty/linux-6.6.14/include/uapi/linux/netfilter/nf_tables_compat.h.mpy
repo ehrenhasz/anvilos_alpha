@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_tables_compat.h",
+  "hash_id": "2f3c17d2cf49aa794355ecc856a4e5714eb520de609bf0441b919828b3ec1a49",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/nf_tables_compat.h",
+  "human_readable_source": " \n#ifndef _NFT_COMPAT_NFNETLINK_H_\n#define _NFT_COMPAT_NFNETLINK_H_\n\nenum nft_target_attributes {\n\tNFTA_TARGET_UNSPEC,\n\tNFTA_TARGET_NAME,\n\tNFTA_TARGET_REV,\n\tNFTA_TARGET_INFO,\n\t__NFTA_TARGET_MAX\n};\n#define NFTA_TARGET_MAX\t\t(__NFTA_TARGET_MAX - 1)\n\nenum nft_match_attributes {\n\tNFTA_MATCH_UNSPEC,\n\tNFTA_MATCH_NAME,\n\tNFTA_MATCH_REV,\n\tNFTA_MATCH_INFO,\n\t__NFTA_MATCH_MAX\n};\n#define NFTA_MATCH_MAX\t\t(__NFTA_MATCH_MAX - 1)\n\n#define NFT_COMPAT_NAME_MAX\t32\n\nenum {\n\tNFNL_MSG_COMPAT_GET,\n\tNFNL_MSG_COMPAT_MAX\n};\n\nenum {\n\tNFTA_COMPAT_UNSPEC = 0,\n\tNFTA_COMPAT_NAME,\n\tNFTA_COMPAT_REV,\n\tNFTA_COMPAT_TYPE,\n\t__NFTA_COMPAT_MAX,\n};\n#define NFTA_COMPAT_MAX (__NFTA_COMPAT_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

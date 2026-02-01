@@ -1,0 +1,9 @@
+{
+  "module_name": "user.h",
+  "hash_id": "570f04e82afcae4203e7c3282e940a980dedbd040b1a879ebb8a93309406b803",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/user.h",
+  "human_readable_source": " \n\n#ifndef _SPL_USER_H\n#define\t_SPL_USER_H\n\n \n\nstruct uf_info;\ntypedef struct uf_info uf_info_t;\n\n#define\tP_FINFO(x) ((uf_info_t *)x)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

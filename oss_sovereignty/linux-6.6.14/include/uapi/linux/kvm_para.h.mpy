@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm_para.h",
+  "hash_id": "e5904010e4fa9df3c0a75316771e59224f11f462b29c04479b1b943e78c5d3c7",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/kvm_para.h",
+  "human_readable_source": " \n#ifndef _UAPI__LINUX_KVM_PARA_H\n#define _UAPI__LINUX_KVM_PARA_H\n\n \n\n \n#define KVM_ENOSYS\t\t1000\n#define KVM_EFAULT\t\tEFAULT\n#define KVM_EINVAL\t\tEINVAL\n#define KVM_E2BIG\t\tE2BIG\n#define KVM_EPERM\t\tEPERM\n#define KVM_EOPNOTSUPP\t\t95\n\n#define KVM_HC_VAPIC_POLL_IRQ\t\t1\n#define KVM_HC_MMU_OP\t\t\t2\n#define KVM_HC_FEATURES\t\t\t3\n#define KVM_HC_PPC_MAP_MAGIC_PAGE\t4\n#define KVM_HC_KICK_CPU\t\t\t5\n#define KVM_HC_MIPS_GET_CLOCK_FREQ\t6\n#define KVM_HC_MIPS_EXIT_VM\t\t7\n#define KVM_HC_MIPS_CONSOLE_OUTPUT\t8\n#define KVM_HC_CLOCK_PAIRING\t\t9\n#define KVM_HC_SEND_IPI\t\t10\n#define KVM_HC_SCHED_YIELD\t\t11\n#define KVM_HC_MAP_GPA_RANGE\t\t12\n\n \n#include <asm/kvm_para.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

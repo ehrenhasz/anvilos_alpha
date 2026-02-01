@@ -1,0 +1,9 @@
+{
+  "module_name": "ftrace.c",
+  "hash_id": "9bd6eb124ac0336543636c785a16dfa9702b1e31ea2807368fd453deaa84382d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/kprobes/ftrace.c",
+  "human_readable_source": "\n \n#include <linux/kprobes.h>\n#include <linux/ptrace.h>\n#include <linux/hardirq.h>\n#include <linux/preempt.h>\n#include <linux/ftrace.h>\n\n#include \"common.h\"\n\n \nvoid kprobe_ftrace_handler(unsigned long ip, unsigned long parent_ip,\n\t\t\t   struct ftrace_ops *ops, struct ftrace_regs *fregs)\n{\n\tstruct pt_regs *regs = ftrace_get_regs(fregs);\n\tstruct kprobe *p;\n\tstruct kprobe_ctlblk *kcb;\n\tint bit;\n\n\tbit = ftrace_test_recursion_trylock(ip, parent_ip);\n\tif (bit < 0)\n\t\treturn;\n\n\tp = get_kprobe((kprobe_opcode_t *)ip);\n\tif (unlikely(!p) || kprobe_disabled(p))\n\t\tgoto out;\n\n\tkcb = get_kprobe_ctlblk();\n\tif (kprobe_running()) {\n\t\tkprobes_inc_nmissed_count(p);\n\t} else {\n\t\tunsigned long orig_ip = regs->ip;\n\t\t \n\t\tregs->ip = ip + sizeof(kprobe_opcode_t);\n\n\t\t__this_cpu_write(current_kprobe, p);\n\t\tkcb->kprobe_status = KPROBE_HIT_ACTIVE;\n\t\tif (!p->pre_handler || !p->pre_handler(p, regs)) {\n\t\t\t \n\t\t\tregs->ip = (unsigned long)p->addr + MCOUNT_INSN_SIZE;\n\t\t\tif (unlikely(p->post_handler)) {\n\t\t\t\tkcb->kprobe_status = KPROBE_HIT_SSDONE;\n\t\t\t\tp->post_handler(p, regs, 0);\n\t\t\t}\n\t\t\tregs->ip = orig_ip;\n\t\t}\n\t\t \n\t\t__this_cpu_write(current_kprobe, NULL);\n\t}\nout:\n\tftrace_test_recursion_unlock(bit);\n}\nNOKPROBE_SYMBOL(kprobe_ftrace_handler);\n\nint arch_prepare_kprobe_ftrace(struct kprobe *p)\n{\n\tp->ainsn.insn = NULL;\n\tp->ainsn.boostable = false;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

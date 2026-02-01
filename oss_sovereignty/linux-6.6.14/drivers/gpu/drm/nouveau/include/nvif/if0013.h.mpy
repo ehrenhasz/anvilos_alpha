@@ -1,0 +1,9 @@
+{
+  "module_name": "if0013.h",
+  "hash_id": "2e9376bf3b7325287b356ed13525321b8824d9a8c7987c245cd66c3b41fa8bd4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/if0013.h",
+  "human_readable_source": " \n#ifndef __NVIF_IF0013_H__\n#define __NVIF_IF0013_H__\n\nunion nvif_head_args {\n\tstruct nvif_head_v0 {\n\t\t__u8 version;\n\t\t__u8 id;\n\t\t__u8 pad02[6];\n\t} v0;\n};\n\nunion nvif_head_event_args {\n\tstruct nvif_head_event_vn {\n\t} vn;\n};\n\n#define NVIF_HEAD_V0_SCANOUTPOS 0x00\n\nunion nvif_head_scanoutpos_args {\n\tstruct nvif_head_scanoutpos_v0 {\n\t\t__u8  version;\n\t\t__u8  pad01[7];\n\t\t__s64 time[2];\n\t\t__u16 vblanks;\n\t\t__u16 vblanke;\n\t\t__u16 vtotal;\n\t\t__u16 vline;\n\t\t__u16 hblanks;\n\t\t__u16 hblanke;\n\t\t__u16 htotal;\n\t\t__u16 hline;\n\t} v0;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hal_sdio.h",
+  "hash_id": "8b3b14bd53be37c2f385557d933d2f0f8a2ba2e59de9820eae15b2a7b12fd8c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/hal_sdio.h",
+  "human_readable_source": " \n \n#ifndef __HAL_SDIO_H_\n#define __HAL_SDIO_H_\n\n#define ffaddr2deviceId(pdvobj, addr)\t(pdvobj->Queue2Pipe[addr])\n\nu8 rtw_hal_sdio_max_txoqt_free_space(struct adapter *padapter);\nu8 rtw_hal_sdio_query_tx_freepage(struct adapter *padapter, u8 PageIdx, u8 RequiredPageNum);\nvoid rtw_hal_sdio_update_tx_freepage(struct adapter *padapter, u8 PageIdx, u8 RequiredPageNum);\nvoid rtw_hal_set_sdio_tx_max_length(struct adapter *padapter, u8 numHQ, u8 numNQ, u8 numLQ, u8 numPubQ);\nu32 rtw_hal_get_sdio_tx_max_length(struct adapter *padapter, u8 queue_idx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

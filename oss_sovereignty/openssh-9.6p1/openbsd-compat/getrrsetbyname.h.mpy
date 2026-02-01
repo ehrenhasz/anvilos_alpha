@@ -1,0 +1,9 @@
+{
+  "module_name": "getrrsetbyname.h",
+  "hash_id": "153439df2635f975b3149a23284bde7cf3fb81802964ebb8cbcd96e3994ceb30",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/getrrsetbyname.h",
+  "human_readable_source": " \n\n \n\n \n\n \n\n#ifndef _GETRRSETBYNAME_H\n#define _GETRRSETBYNAME_H\n\n#include \"includes.h\"\n\n#ifndef HAVE_GETRRSETBYNAME\n\n#include <sys/types.h>\n#include <netinet/in.h>\n#include <arpa/nameser.h>\n#include <netdb.h>\n#include <resolv.h>\n\n#ifndef HFIXEDSZ\n#define HFIXEDSZ 12\n#endif\n\n#ifndef T_RRSIG\n#define T_RRSIG 46\n#endif\n\n \n#ifndef RRSET_VALIDATED\n# define RRSET_VALIDATED\t1\n#endif\n\n \n#ifndef ERRSET_SUCCESS\n# define ERRSET_SUCCESS\t\t0\n# define ERRSET_NOMEMORY\t1\n# define ERRSET_FAIL\t\t2\n# define ERRSET_INVAL\t\t3\n# define ERRSET_NONAME\t\t4\n# define ERRSET_NODATA\t\t5\n#endif\n\nstruct rdatainfo {\n\tunsigned int\t\trdi_length;\t \n\tunsigned char\t\t*rdi_data;\t \n};\n\nstruct rrsetinfo {\n\tunsigned int\t\trri_flags;\t \n\tunsigned int\t\trri_rdclass;\t \n\tunsigned int\t\trri_rdtype;\t \n\tunsigned int\t\trri_ttl;\t \n\tunsigned int\t\trri_nrdatas;\t \n\tunsigned int\t\trri_nsigs;\t \n\tchar\t\t\t*rri_name;\t \n\tstruct rdatainfo\t*rri_rdatas;\t \n\tstruct rdatainfo\t*rri_sigs;\t \n};\n\nint\t\tgetrrsetbyname(const char *, unsigned int, unsigned int, unsigned int, struct rrsetinfo **);\nvoid\t\tfreerrset(struct rrsetinfo *);\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gem_dmabuf.h",
+  "hash_id": "ad5e5d6d3a196b6dc25b3d2cb9bce324af328cf45d0337c8439a6df8792e57b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_GEM_DMABUF_H__\n#define __I915_GEM_DMABUF_H__\n\nstruct drm_gem_object;\nstruct drm_device;\nstruct dma_buf;\n\nstruct drm_gem_object *i915_gem_prime_import(struct drm_device *dev,\n\t\t\t\t\t     struct dma_buf *dma_buf);\n\nstruct dma_buf *i915_gem_prime_export(struct drm_gem_object *gem_obj, int flags);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

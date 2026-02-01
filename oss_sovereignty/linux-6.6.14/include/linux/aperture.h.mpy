@@ -1,0 +1,9 @@
+{
+  "module_name": "aperture.h",
+  "hash_id": "dfbd18ccefd0daa1c5b8b3cce64fd4efbb0933c2dee1e5f33e5781056e51d1e4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/aperture.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_APERTURE_H_\n#define _LINUX_APERTURE_H_\n\n#include <linux/types.h>\n\nstruct pci_dev;\nstruct platform_device;\n\n#if defined(CONFIG_APERTURE_HELPERS)\nint devm_aperture_acquire_for_platform_device(struct platform_device *pdev,\n\t\t\t\t\t      resource_size_t base,\n\t\t\t\t\t      resource_size_t size);\n\nint aperture_remove_conflicting_devices(resource_size_t base, resource_size_t size,\n\t\t\t\t\tconst char *name);\n\nint __aperture_remove_legacy_vga_devices(struct pci_dev *pdev);\n\nint aperture_remove_conflicting_pci_devices(struct pci_dev *pdev, const char *name);\n#else\nstatic inline int devm_aperture_acquire_for_platform_device(struct platform_device *pdev,\n\t\t\t\t\t\t\t    resource_size_t base,\n\t\t\t\t\t\t\t    resource_size_t size)\n{\n\treturn 0;\n}\n\nstatic inline int aperture_remove_conflicting_devices(resource_size_t base, resource_size_t size,\n\t\t\t\t\t\t      const char *name)\n{\n\treturn 0;\n}\n\nstatic inline int __aperture_remove_legacy_vga_devices(struct pci_dev *pdev)\n{\n\treturn 0;\n}\n\nstatic inline int aperture_remove_conflicting_pci_devices(struct pci_dev *pdev, const char *name)\n{\n\treturn 0;\n}\n#endif\n\n \nstatic inline int aperture_remove_all_conflicting_devices(const char *name)\n{\n\treturn aperture_remove_conflicting_devices(0, (resource_size_t)-1, name);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

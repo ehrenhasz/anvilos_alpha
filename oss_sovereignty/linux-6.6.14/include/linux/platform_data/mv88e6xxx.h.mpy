@@ -1,0 +1,9 @@
+{
+  "module_name": "mv88e6xxx.h",
+  "hash_id": "e4f86aa9d75574655f605d9b974f03e83e9ca56e3c54e7633b6a69a0bcfa5318",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/mv88e6xxx.h",
+  "human_readable_source": " \n#ifndef __DSA_MV88E6XXX_H\n#define __DSA_MV88E6XXX_H\n\n#include <linux/platform_data/dsa.h>\n\nstruct dsa_mv88e6xxx_pdata {\n\t \n\tstruct dsa_chip_data cd;\n\tconst char *compatible;\n\tunsigned int enabled_ports;\n\tstruct net_device *netdev;\n\tu32 eeprom_len;\n\tint irq;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

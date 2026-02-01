@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "09f06cd61b32d6cd01ecd9768b23fca920e4a01fbc722f579c2116bb99fae13e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/mincore/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n\nCFLAGS += -Wall\n\nTEST_GEN_PROGS := mincore_selftest\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

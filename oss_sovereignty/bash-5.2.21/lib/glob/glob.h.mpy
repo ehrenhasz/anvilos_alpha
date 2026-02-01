@@ -1,0 +1,9 @@
+{
+  "module_name": "glob.h",
+  "hash_id": "61f9d12d7e30664b23219e20d8a5c537690c499709fa85b1648d17e7a2242afe",
+  "original_prompt": "Ingested from bash-5.2.21/lib/glob/glob.h",
+  "human_readable_source": " \n\n#ifndef\t_GLOB_H_\n#define\t_GLOB_H_\n\n#include \"stdc.h\"\n\n#define GX_MARKDIRS\t0x001\t \n#define GX_NOCASE\t0x002\t \n#define GX_MATCHDOT\t0x004\t \n#define GX_MATCHDIRS\t0x008\t \n#define GX_ALLDIRS\t0x010\t \n#define GX_NULLDIR\t0x100\t \n#define GX_ADDCURDIR\t0x200\t \n#define GX_GLOBSTAR\t0x400\t \n#define GX_RECURSE\t0x800\t \n#define GX_SYMLINK\t0x1000\t \n#define GX_NEGATE\t0x2000\t \n\nextern int glob_pattern_p PARAMS((const char *));\nextern char **glob_vector PARAMS((char *, char *, int));\nextern char **glob_filename PARAMS((char *, int));\n\nextern int extglob_pattern_p PARAMS((const char *));\n\nextern char *glob_error_return;\nextern int noglob_dot_filenames;\nextern int glob_ignore_case;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

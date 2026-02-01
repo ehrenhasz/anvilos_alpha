@@ -1,0 +1,9 @@
+{
+  "module_name": "owl-reset.h",
+  "hash_id": "1bf91335cbda7317c25c7f5c2094ade502e9494c5fc84651d2b486a64f81308b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/actions/owl-reset.h",
+  "human_readable_source": " \n\n\n\n\n\n\n#ifndef _OWL_RESET_H_\n#define _OWL_RESET_H_\n\n#include <linux/reset-controller.h>\n\nstruct owl_reset_map {\n\tu32\treg;\n\tu32\tbit;\n};\n\nstruct owl_reset {\n\tstruct reset_controller_dev\trcdev;\n\tconst struct owl_reset_map\t*reset_map;\n\tstruct regmap\t\t\t*regmap;\n};\n\nstatic inline struct owl_reset *to_owl_reset(struct reset_controller_dev *rcdev)\n{\n\treturn container_of(rcdev, struct owl_reset, rcdev);\n}\n\nextern const struct reset_control_ops owl_reset_ops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

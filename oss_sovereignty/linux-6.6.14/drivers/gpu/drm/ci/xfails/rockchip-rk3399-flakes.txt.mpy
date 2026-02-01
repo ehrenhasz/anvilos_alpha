@@ -1,0 +1,9 @@
+{
+  "module_name": "rockchip-rk3399-flakes.txt",
+  "hash_id": "fef778570d10b9e09dfe01f9d118624a5ab4aa631d045db06d8d922676e1f302",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/rockchip-rk3399-flakes.txt",
+  "human_readable_source": "\nkms_cursor_crc@.*\nkms_flip@dpms-vs-vblank-race-interruptible\nkms_flip@flip-vs-expired-vblank\nkms_flip@modeset-vs-vblank-race-interruptible\nkms_pipe_crc_basic@.*\nkms_pipe_crc_basic@compare-crc-sanitycheck-pipe-A\nkms_pipe_crc_basic@compare-crc-sanitycheck-pipe-B\nkms_plane@plane-position-hole\nkms_plane_multiple@atomic-pipe-A-tiling-none\nkms_plane_multiple@atomic-pipe-B-tiling-none\nkms_sequence@get-forked\nkms_sequence@get-forked-busy\nkms_setmode@basic\nkms_universal_plane@universal-plane-pipe-B-functional,UnexpectedPass\nkms_vblank@pipe-A-accuracy-idle\nkms_vblank@pipe-A-query-busy\nkms_vblank@pipe-A-query-forked-busy\nkms_vblank@pipe-A-wait-idle\nkms_vblank@pipe-B-accuracy-idle\nkms_vblank@pipe-B-query-busy\nkms_vblank@pipe-B-query-forked-busy\nkms_vblank@pipe-B-wait-idle\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

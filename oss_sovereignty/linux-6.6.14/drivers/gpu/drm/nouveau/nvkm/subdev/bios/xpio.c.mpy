@@ -1,0 +1,9 @@
+{
+  "module_name": "xpio.c",
+  "hash_id": "2bcdca6238430f14c753e2b6893f2f686dee1aa466b1948622e70d915339eccd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bios/xpio.c",
+  "human_readable_source": " \n#include <subdev/bios.h>\n#include <subdev/bios/gpio.h>\n#include <subdev/bios/xpio.h>\n\nstatic u16\ndcb_xpiod_table(struct nvkm_bios *bios, u8 *ver, u8 *hdr, u8 *cnt, u8 *len)\n{\n\tu16 data = dcb_gpio_table(bios, ver, hdr, cnt, len);\n\tif (data && *ver >= 0x40 && *hdr >= 0x06) {\n\t\tu16 xpio = nvbios_rd16(bios, data + 0x04);\n\t\tif (xpio) {\n\t\t\t*ver = nvbios_rd08(bios, data + 0x00);\n\t\t\t*hdr = nvbios_rd08(bios, data + 0x01);\n\t\t\t*cnt = nvbios_rd08(bios, data + 0x02);\n\t\t\t*len = nvbios_rd08(bios, data + 0x03);\n\t\t\treturn xpio;\n\t\t}\n\t}\n\treturn 0x0000;\n}\n\nu16\ndcb_xpio_table(struct nvkm_bios *bios, u8 idx,\n\t       u8 *ver, u8 *hdr, u8 *cnt, u8 *len)\n{\n\tu16 data = dcb_xpiod_table(bios, ver, hdr, cnt, len);\n\tif (data && idx < *cnt) {\n\t\tu16 xpio = nvbios_rd16(bios, data + *hdr + (idx * *len));\n\t\tif (xpio) {\n\t\t\t*ver = nvbios_rd08(bios, data + 0x00);\n\t\t\t*hdr = nvbios_rd08(bios, data + 0x01);\n\t\t\t*cnt = nvbios_rd08(bios, data + 0x02);\n\t\t\t*len = nvbios_rd08(bios, data + 0x03);\n\t\t\treturn xpio;\n\t\t}\n\t}\n\treturn 0x0000;\n}\n\nu16\ndcb_xpio_parse(struct nvkm_bios *bios, u8 idx,\n\t       u8 *ver, u8 *hdr, u8 *cnt, u8 *len, struct nvbios_xpio *info)\n{\n\tu16 data = dcb_xpio_table(bios, idx, ver, hdr, cnt, len);\n\tif (data && *len >= 6) {\n\t\tinfo->type = nvbios_rd08(bios, data + 0x04);\n\t\tinfo->addr = nvbios_rd08(bios, data + 0x05);\n\t\tinfo->flags = nvbios_rd08(bios, data + 0x06);\n\t}\n\treturn 0x0000;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

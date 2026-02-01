@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-hr2.c",
+  "hash_id": "56afe3dd3e574377e58fa7e25254357cb923c2e25b3124a6defb427676f5f7c3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/bcm/clk-hr2.c",
+  "human_readable_source": "\n\n\n#include <linux/kernel.h>\n#include <linux/err.h>\n#include <linux/clk-provider.h>\n#include <linux/io.h>\n#include <linux/of.h>\n#include <linux/of_address.h>\n\n#include \"clk-iproc.h\"\n\nstatic void __init hr2_armpll_init(struct device_node *node)\n{\n\tiproc_armpll_setup(node);\n}\nCLK_OF_DECLARE(hr2_armpll, \"brcm,hr2-armpll\", hr2_armpll_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

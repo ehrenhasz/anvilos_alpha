@@ -1,0 +1,9 @@
+{
+  "module_name": "stpcpy.c",
+  "hash_id": "3e6f433c6881573e16e0d5f76ca95e7a63bde823a6d545f0edb9650361197c1e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/stpcpy.c",
+  "human_readable_source": " \nchar *\n__stpcpy (char *dest, const char *src)\n{\n  register char *d = dest;\n  register const char *s = src;\n\n  do\n    *d++ = *s;\n  while (*s++ != '\\0');\n\n  return d - 1;\n}\n#ifdef weak_alias\nweak_alias (__stpcpy, stpcpy)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

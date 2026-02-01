@@ -1,0 +1,9 @@
+{
+  "module_name": "cpuidle-at91.c",
+  "hash_id": "19d4264a78fc357490d1d378bb9f94b45e300d22b61333263dc78b4434085ac4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpuidle/cpuidle-at91.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/init.h>\n#include <linux/platform_device.h>\n#include <linux/cpuidle.h>\n#include <linux/io.h>\n#include <linux/export.h>\n#include <asm/cpuidle.h>\n\n#define AT91_MAX_STATES\t2\n\nstatic void (*at91_standby)(void);\n\n \nstatic int at91_enter_idle(struct cpuidle_device *dev,\n\t\t\tstruct cpuidle_driver *drv,\n\t\t\t       int index)\n{\n\tat91_standby();\n\treturn index;\n}\n\nstatic struct cpuidle_driver at91_idle_driver = {\n\t.name\t\t\t= \"at91_idle\",\n\t.owner\t\t\t= THIS_MODULE,\n\t.states[0]\t\t= ARM_CPUIDLE_WFI_STATE,\n\t.states[1]\t\t= {\n\t\t.enter\t\t\t= at91_enter_idle,\n\t\t.exit_latency\t\t= 10,\n\t\t.target_residency\t= 10000,\n\t\t.name\t\t\t= \"RAM_SR\",\n\t\t.desc\t\t\t= \"WFI and DDR Self Refresh\",\n\t},\n\t.state_count = AT91_MAX_STATES,\n};\n\n \nstatic int at91_cpuidle_probe(struct platform_device *dev)\n{\n\tat91_standby = (void *)(dev->dev.platform_data);\n\t\n\treturn cpuidle_register(&at91_idle_driver, NULL);\n}\n\nstatic struct platform_driver at91_cpuidle_driver = {\n\t.driver = {\n\t\t.name = \"cpuidle-at91\",\n\t},\n\t.probe = at91_cpuidle_probe,\n};\nbuiltin_platform_driver(at91_cpuidle_driver);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

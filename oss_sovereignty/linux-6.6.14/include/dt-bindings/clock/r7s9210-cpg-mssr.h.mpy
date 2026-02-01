@@ -1,0 +1,9 @@
+{
+  "module_name": "r7s9210-cpg-mssr.h",
+  "hash_id": "3e8280353b944cf8e996102c8a6c23a85e7f850838fd3a66b1c3ce4204dcac4c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/r7s9210-cpg-mssr.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_CLOCK_R7S9210_CPG_MSSR_H__\n#define __DT_BINDINGS_CLOCK_R7S9210_CPG_MSSR_H__\n\n#include <dt-bindings/clock/renesas-cpg-mssr.h>\n\n \n#define R7S9210_CLK_I\t\t\t0\n#define R7S9210_CLK_G\t\t\t1\n#define R7S9210_CLK_B\t\t\t2\n#define R7S9210_CLK_P1\t\t\t3\n#define R7S9210_CLK_P1C\t\t\t4\n#define R7S9210_CLK_P0\t\t\t5\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "arm_sdei.h",
+  "hash_id": "2f41a5b469d6f58b079d9d70f2690224c3dfe676b80fe6ab5d20693e009eca2b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/arm_sdei.h",
+  "human_readable_source": "\n\n#ifndef __LINUX_ARM_SDEI_H\n#define __LINUX_ARM_SDEI_H\n\n#include <uapi/linux/arm_sdei.h>\n\n#include <acpi/ghes.h>\n\n#ifdef CONFIG_ARM_SDE_INTERFACE\n#include <asm/sdei.h>\n#endif\n\n \n#ifndef sdei_arch_get_entry_point\n#define sdei_arch_get_entry_point(conduit)\t(0)\n#endif\n\n \ntypedef int (sdei_event_callback)(u32 event, struct pt_regs *regs, void *arg);\n\n \nint sdei_event_register(u32 event_num, sdei_event_callback *cb, void *arg);\n\n \nint sdei_event_unregister(u32 event_num);\n\nint sdei_event_enable(u32 event_num);\nint sdei_event_disable(u32 event_num);\n\n \nint sdei_register_ghes(struct ghes *ghes, sdei_event_callback *normal_cb,\n\t\t       sdei_event_callback *critical_cb);\nint sdei_unregister_ghes(struct ghes *ghes);\n\n#ifdef CONFIG_ARM_SDE_INTERFACE\n \nint sdei_mask_local_cpu(void);\nint sdei_unmask_local_cpu(void);\nvoid __init sdei_init(void);\nvoid sdei_handler_abort(void);\n#else\nstatic inline int sdei_mask_local_cpu(void) { return 0; }\nstatic inline int sdei_unmask_local_cpu(void) { return 0; }\nstatic inline void sdei_init(void) { }\nstatic inline void sdei_handler_abort(void) { }\n#endif  \n\n\n \nstruct sdei_registered_event {\n\t \n\tstruct pt_regs          interrupted_regs;\n\n\tsdei_event_callback\t*callback;\n\tvoid\t\t\t*callback_arg;\n\tu32\t\t\t event_num;\n\tu8\t\t\t priority;\n};\n\n \nint notrace sdei_event_handler(struct pt_regs *regs,\n\t\t\t       struct sdei_registered_event *arg);\n\n \nint sdei_api_event_context(u32 query, u64 *result);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

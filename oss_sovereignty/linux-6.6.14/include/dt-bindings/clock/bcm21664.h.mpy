@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm21664.h",
+  "hash_id": "8e39862f7967ebd8504a9d5deee04673d35f2fb94e68883a8344d47b8090f05c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/bcm21664.h",
+  "human_readable_source": " \n \n\n#ifndef _CLOCK_BCM21664_H\n#define _CLOCK_BCM21664_H\n\n \n\n \n#define BCM21664_DT_ROOT_CCU_COMPAT\t\"brcm,bcm21664-root-ccu\"\n#define BCM21664_DT_AON_CCU_COMPAT\t\"brcm,bcm21664-aon-ccu\"\n#define BCM21664_DT_MASTER_CCU_COMPAT\t\"brcm,bcm21664-master-ccu\"\n#define BCM21664_DT_SLAVE_CCU_COMPAT\t\"brcm,bcm21664-slave-ccu\"\n\n \n\n#define BCM21664_ROOT_CCU_FRAC_1M\t\t0\n#define BCM21664_ROOT_CCU_CLOCK_COUNT\t\t1\n\n \n\n#define BCM21664_AON_CCU_HUB_TIMER\t\t0\n#define BCM21664_AON_CCU_CLOCK_COUNT\t\t1\n\n \n\n#define BCM21664_MASTER_CCU_SDIO1\t\t0\n#define BCM21664_MASTER_CCU_SDIO2\t\t1\n#define BCM21664_MASTER_CCU_SDIO3\t\t2\n#define BCM21664_MASTER_CCU_SDIO4\t\t3\n#define BCM21664_MASTER_CCU_SDIO1_SLEEP\t\t4\n#define BCM21664_MASTER_CCU_SDIO2_SLEEP\t\t5\n#define BCM21664_MASTER_CCU_SDIO3_SLEEP\t\t6\n#define BCM21664_MASTER_CCU_SDIO4_SLEEP\t\t7\n#define BCM21664_MASTER_CCU_CLOCK_COUNT\t\t8\n\n \n\n#define BCM21664_SLAVE_CCU_UARTB\t\t0\n#define BCM21664_SLAVE_CCU_UARTB2\t\t1\n#define BCM21664_SLAVE_CCU_UARTB3\t\t2\n#define BCM21664_SLAVE_CCU_BSC1\t\t\t3\n#define BCM21664_SLAVE_CCU_BSC2\t\t\t4\n#define BCM21664_SLAVE_CCU_BSC3\t\t\t5\n#define BCM21664_SLAVE_CCU_BSC4\t\t\t6\n#define BCM21664_SLAVE_CCU_CLOCK_COUNT\t\t7\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "g84.c",
+  "hash_id": "3ebdacda2ecd9b917e606e17b61defc481108c5b084f8c65bb765f528c102fc5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mc/g84.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic const struct nvkm_mc_map\ng84_mc_reset[] = {\n\t{ 0x04008000, NVKM_ENGINE_BSP },\n\t{ 0x02004000, NVKM_ENGINE_CIPHER },\n\t{ 0x01020000, NVKM_ENGINE_VP },\n\t{ 0x00400002, NVKM_ENGINE_MPEG },\n\t{ 0x00201000, NVKM_ENGINE_GR },\n\t{ 0x00000100, NVKM_ENGINE_FIFO },\n\t{}\n};\n\nstatic const struct nvkm_intr_data\ng84_mc_intrs[] = {\n\t{ NVKM_ENGINE_DISP  , 0, 0, 0x04000000, true },\n\t{ NVKM_ENGINE_VP    , 0, 0, 0x00020000, true },\n\t{ NVKM_ENGINE_BSP   , 0, 0, 0x00008000, true },\n\t{ NVKM_ENGINE_CIPHER, 0, 0, 0x00004000, true },\n\t{ NVKM_ENGINE_GR    , 0, 0, 0x00001000, true },\n\t{ NVKM_ENGINE_FIFO  , 0, 0, 0x00000100 },\n\t{ NVKM_ENGINE_MPEG  , 0, 0, 0x00000001, true },\n\t{ NVKM_SUBDEV_FB    , 0, 0, 0x0002d101, true },\n\t{ NVKM_SUBDEV_BUS   , 0, 0, 0x10000000, true },\n\t{ NVKM_SUBDEV_GPIO  , 0, 0, 0x00200000, true },\n\t{ NVKM_SUBDEV_I2C   , 0, 0, 0x00200000, true },\n\t{ NVKM_SUBDEV_TIMER , 0, 0, 0x00100000, true },\n\t{},\n};\n\nstatic const struct nvkm_mc_func\ng84_mc = {\n\t.init = nv50_mc_init,\n\t.intr = &nv04_mc_intr,\n\t.intrs = g84_mc_intrs,\n\t.device = &nv04_mc_device,\n\t.reset = g84_mc_reset,\n};\n\nint\ng84_mc_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_mc **pmc)\n{\n\treturn nvkm_mc_new_(&g84_mc, device, type, inst, pmc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

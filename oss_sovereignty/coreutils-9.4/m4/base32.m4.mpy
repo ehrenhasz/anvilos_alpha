@@ -1,0 +1,9 @@
+{
+  "module_name": "base32.m4",
+  "hash_id": "43070e2f7b5e3093ccc2cfde7bbf0c959c64468e82c79105fcc9a9cf06457498",
+  "original_prompt": "Ingested from coreutils-9.4/m4/base32.m4",
+  "human_readable_source": "# base32.m4 serial 4\ndnl Copyright (C) 2004, 2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_BASE32],\n[\n  gl_PREREQ_BASE32\n])\n\n# Prerequisites of lib/base32.c.\nAC_DEFUN([gl_PREREQ_BASE32], [\n  AC_REQUIRE([AC_C_RESTRICT])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

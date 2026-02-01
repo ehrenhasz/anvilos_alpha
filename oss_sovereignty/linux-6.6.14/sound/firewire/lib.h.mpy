@@ -1,0 +1,9 @@
+{
+  "module_name": "lib.h",
+  "hash_id": "13c0d66064b5b9c39e15fc030caca24eeaa373b5431341b7695be193d243887c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/lib.h",
+  "human_readable_source": " \n#ifndef SOUND_FIREWIRE_LIB_H_INCLUDED\n#define SOUND_FIREWIRE_LIB_H_INCLUDED\n\n#include <linux/firewire-constants.h>\n#include <linux/types.h>\n#include <linux/sched.h>\n#include <sound/rawmidi.h>\n\nstruct fw_unit;\n\n#define FW_GENERATION_MASK\t0x00ff\n#define FW_FIXED_GENERATION\t0x0100\n#define FW_QUIET\t\t0x0200\n\nint snd_fw_transaction(struct fw_unit *unit, int tcode,\n\t\t       u64 offset, void *buffer, size_t length,\n\t\t       unsigned int flags);\n\n \nstatic inline bool rcode_is_permanent_error(int rcode)\n{\n\treturn rcode == RCODE_TYPE_ERROR || rcode == RCODE_ADDRESS_ERROR;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

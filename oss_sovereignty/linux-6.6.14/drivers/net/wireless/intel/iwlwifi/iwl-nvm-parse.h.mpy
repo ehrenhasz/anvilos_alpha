@@ -1,0 +1,9 @@
+{
+  "module_name": "iwl-nvm-parse.h",
+  "hash_id": "a8d04739c6e643e4c623ea61914dc0f65ba926666106d191a335f45fdd51b672",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.h",
+  "human_readable_source": " \n \n#ifndef __iwl_nvm_parse_h__\n#define __iwl_nvm_parse_h__\n\n#include <net/cfg80211.h>\n#include \"iwl-eeprom-parse.h\"\n#include \"mei/iwl-mei.h\"\n\n \nenum iwl_nvm_sbands_flags {\n\tIWL_NVM_SBANDS_FLAGS_LAR\t\t= BIT(0),\n\tIWL_NVM_SBANDS_FLAGS_NO_WIDE_IN_5GHZ\t= BIT(1),\n};\n\n \nstruct iwl_nvm_data *\niwl_parse_nvm_data(struct iwl_trans *trans, const struct iwl_cfg *cfg,\n\t\t   const struct iwl_fw *fw,\n\t\t   const __be16 *nvm_hw, const __le16 *nvm_sw,\n\t\t   const __le16 *nvm_calib, const __le16 *regulatory,\n\t\t   const __le16 *mac_override, const __le16 *phy_sku,\n\t\t   u8 tx_chains, u8 rx_chains);\n\n \nstruct ieee80211_regdomain *\niwl_parse_nvm_mcc_info(struct device *dev, const struct iwl_cfg *cfg,\n\t\t       int num_of_ch, __le32 *channels, u16 fw_mcc,\n\t\t       u16 geo_info, u32 cap, u8 resp_ver);\n\n \nstruct iwl_nvm_section {\n\tu16 length;\n\tconst u8 *data;\n};\n\n \nint iwl_read_external_nvm(struct iwl_trans *trans,\n\t\t\t  const char *nvm_file_name,\n\t\t\t  struct iwl_nvm_section *nvm_sections);\nvoid iwl_nvm_fixups(u32 hw_id, unsigned int section, u8 *data,\n\t\t    unsigned int len);\n\n \nstruct iwl_nvm_data *iwl_get_nvm(struct iwl_trans *trans,\n\t\t\t\t const struct iwl_fw *fw);\n\n \nstruct iwl_nvm_data *\niwl_parse_mei_nvm_data(struct iwl_trans *trans, const struct iwl_cfg *cfg,\n\t\t       const struct iwl_mei_nvm *mei_nvm,\n\t\t       const struct iwl_fw *fw);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

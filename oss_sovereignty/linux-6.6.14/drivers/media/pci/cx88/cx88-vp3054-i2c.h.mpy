@@ -1,0 +1,9 @@
+{
+  "module_name": "cx88-vp3054-i2c.h",
+  "hash_id": "0c6f2d6652cc533f1e611fcf678e00ff03714e2b504736f173ef9605f9e7b8c3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx88/cx88-vp3054-i2c.h",
+  "human_readable_source": " \n \n\n \nstruct vp3054_i2c_state {\n\tstruct i2c_adapter         adap;\n\tstruct i2c_algo_bit_data   algo;\n\tu32                        state;\n};\n\n \n#if IS_ENABLED(CONFIG_VIDEO_CX88_VP3054)\nint  vp3054_i2c_probe(struct cx8802_dev *dev);\nvoid vp3054_i2c_remove(struct cx8802_dev *dev);\n#else\nstatic inline int  vp3054_i2c_probe(struct cx8802_dev *dev)\n{ return 0; }\nstatic inline void vp3054_i2c_remove(struct cx8802_dev *dev)\n{ }\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrtowc-1.sh",
+  "hash_id": "5c1b9c4146525a2fba44be813316275cf66a06b0a6b29ba0dfd08c317b61c4d6",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrtowc-1.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test whether the POSIX locale has encoding errors.\nLC_ALL=C \\\n${CHECKER} ./test-mbrtowc${EXEEXT} 1 || exit 1\nLC_ALL=POSIX \\\n${CHECKER} ./test-mbrtowc${EXEEXT} 1 || exit 1\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

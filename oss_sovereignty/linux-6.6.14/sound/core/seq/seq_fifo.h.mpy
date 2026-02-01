@@ -1,0 +1,9 @@
+{
+  "module_name": "seq_fifo.h",
+  "hash_id": "3ee59dd3c286487a4e8834942dcd1ec01f9aabd41fbb4a0e07dfd515b3609672",
+  "original_prompt": "Ingested from linux-6.6.14/sound/core/seq/seq_fifo.h",
+  "human_readable_source": " \n \n#ifndef __SND_SEQ_FIFO_H\n#define __SND_SEQ_FIFO_H\n\n#include \"seq_memory.h\"\n#include \"seq_lock.h\"\n\n\n \n\nstruct snd_seq_fifo {\n\tstruct snd_seq_pool *pool;\t\t \n\tstruct snd_seq_event_cell *head;    \t \n\tstruct snd_seq_event_cell *tail;    \t \n\tint cells;\n\tspinlock_t lock;\n\tsnd_use_lock_t use_lock;\n\twait_queue_head_t input_sleep;\n\tatomic_t overflow;\n\n};\n\n \nstruct snd_seq_fifo *snd_seq_fifo_new(int poolsize);\n\n \nvoid snd_seq_fifo_delete(struct snd_seq_fifo **f);\n\n\n \nint snd_seq_fifo_event_in(struct snd_seq_fifo *f, struct snd_seq_event *event);\n\n \n#define snd_seq_fifo_lock(fifo)\t\tsnd_use_lock_use(&(fifo)->use_lock)\n#define snd_seq_fifo_unlock(fifo)\tsnd_use_lock_free(&(fifo)->use_lock)\n\n \nint snd_seq_fifo_cell_out(struct snd_seq_fifo *f, struct snd_seq_event_cell **cellp, int nonblock);\n\n \nvoid snd_seq_fifo_cell_putback(struct snd_seq_fifo *f, struct snd_seq_event_cell *cell);\n\n \nvoid snd_seq_fifo_clear(struct snd_seq_fifo *f);\n\n \nint snd_seq_fifo_poll_wait(struct snd_seq_fifo *f, struct file *file, poll_table *wait);\n\n \nint snd_seq_fifo_resize(struct snd_seq_fifo *f, int poolsize);\n\n \nint snd_seq_fifo_unused_cells(struct snd_seq_fifo *f);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

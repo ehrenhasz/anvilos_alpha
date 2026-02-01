@@ -1,0 +1,9 @@
+{
+  "module_name": "test-ctype_xdigit.c",
+  "hash_id": "404963511819200541e8d8e2492b4a23966cab0f65543a2fce434e2ab22812aa",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/unictype/test-ctype_xdigit.c",
+  "human_readable_source": " \n/* Test the Unicode character type functions.\n   Copyright (C) 2007-2022 Free Software Foundation, Inc.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published\n   by the Free Software Foundation, either version 3 of the License,\n   or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with this program.  If not, see <https:\n\n#include \"test-predicate-part1.h\"\n\n    { 0x0030, 0x0039 },\n    { 0x0041, 0x0046 },\n    { 0x0061, 0x0066 }\n\n#define PREDICATE(c) uc_is_xdigit (c)\n#include \"test-predicate-part2.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

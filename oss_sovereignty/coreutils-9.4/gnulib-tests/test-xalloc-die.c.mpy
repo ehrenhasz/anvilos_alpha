@@ -1,0 +1,9 @@
+{
+  "module_name": "test-xalloc-die.c",
+  "hash_id": "513b55b83953ee0e0fe2edd431db11ac7bc6262bedbc0e423e92c3e1eaf2c7e7",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-xalloc-die.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"xalloc.h\"\n\nint\nmain (_GL_UNUSED int argc, char **argv)\n{\n  xalloc_die ();\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

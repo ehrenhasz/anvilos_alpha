@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_anchor.h",
+  "hash_id": "58921465902569c0b307f6e88878a871d95d64fd94e6be609a818d0f074b94ae",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/virtio_anchor.h",
+  "human_readable_source": " \n#ifndef _LINUX_VIRTIO_ANCHOR_H\n#define _LINUX_VIRTIO_ANCHOR_H\n\n#ifdef CONFIG_VIRTIO_ANCHOR\nstruct virtio_device;\n\nbool virtio_require_restricted_mem_acc(struct virtio_device *dev);\nextern bool (*virtio_check_mem_acc_cb)(struct virtio_device *dev);\n\nstatic inline void virtio_set_mem_acc_cb(bool (*func)(struct virtio_device *))\n{\n\tvirtio_check_mem_acc_cb = func;\n}\n#else\n#define virtio_set_mem_acc_cb(func) do { } while (0)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gk20a.c",
+  "hash_id": "1a395000b76b4bc9d92a605d410483a664f1dce31956318a14e2f2ad053fad76",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/gk20a.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"gf100.h\"\n\n \nstatic const struct nvkm_fb_func\ngk20a_fb = {\n\t.dtor = gf100_fb_dtor,\n\t.oneinit = gf100_fb_oneinit,\n\t.init = gf100_fb_init,\n\t.init_page = gf100_fb_init_page,\n\t.intr = gf100_fb_intr,\n\t.default_bigpage = 17,\n};\n\nint\ngk20a_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn gf100_fb_new_(&gk20a_fb, device, type, inst, pfb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sdt-config.h",
+  "hash_id": "c36f22e7e003575fe338f697dea1562dbb17aba28b936351617261dc98e949cb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/sdt-config.h",
+  "human_readable_source": " \n\n#define _SDT_ASM_SECTION_AUTOGROUP_SUPPORT 1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

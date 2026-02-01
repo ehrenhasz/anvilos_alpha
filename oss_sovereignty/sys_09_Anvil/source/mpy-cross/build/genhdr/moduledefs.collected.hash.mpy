@@ -1,0 +1,9 @@
+{
+  "module_name": "moduledefs.collected.hash",
+  "hash_id": "793096f353bd060325e99c55d612a2eb96f7bff74347cb290fcd2e61e6dee86c",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/moduledefs.collected.hash",
+  "human_readable_source": "31ba7176b2454cf73f893ddd3e8f5d6e",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

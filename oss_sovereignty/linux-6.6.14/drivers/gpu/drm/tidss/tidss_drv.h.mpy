@@ -1,0 +1,9 @@
+{
+  "module_name": "tidss_drv.h",
+  "hash_id": "e34d8a4c22e8cc7c75d5d703160bff7bb1063f4789c8094a9fadcc7a1554e83b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tidss/tidss_drv.h",
+  "human_readable_source": " \n \n\n#ifndef __TIDSS_DRV_H__\n#define __TIDSS_DRV_H__\n\n#include <linux/spinlock.h>\n\n#define TIDSS_MAX_PORTS 4\n#define TIDSS_MAX_PLANES 4\n\ntypedef u32 dispc_irq_t;\n\nstruct tidss_device {\n\tstruct drm_device ddev;\t\t \n\tstruct device *dev;\t\t \n\n\tconst struct dispc_features *feat;\n\tstruct dispc_device *dispc;\n\n\tunsigned int num_crtcs;\n\tstruct drm_crtc *crtcs[TIDSS_MAX_PORTS];\n\n\tunsigned int num_planes;\n\tstruct drm_plane *planes[TIDSS_MAX_PLANES];\n\n\tunsigned int irq;\n\n\tspinlock_t wait_lock;\t \n\tdispc_irq_t irq_mask;\t \n};\n\n#define to_tidss(__dev) container_of(__dev, struct tidss_device, ddev)\n\nint tidss_runtime_get(struct tidss_device *tidss);\nvoid tidss_runtime_put(struct tidss_device *tidss);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

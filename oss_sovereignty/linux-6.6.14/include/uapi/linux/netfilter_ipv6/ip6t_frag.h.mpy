@@ -1,0 +1,9 @@
+{
+  "module_name": "ip6t_frag.h",
+  "hash_id": "5de7b6892cd44250da5149ab4275fdfc6b6a6b208c39dd5d97a2dc8a5064f95e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_ipv6/ip6t_frag.h",
+  "human_readable_source": " \n#ifndef _IP6T_FRAG_H\n#define _IP6T_FRAG_H\n\n#include <linux/types.h>\n\nstruct ip6t_frag {\n\t__u32 ids[2];\t\t\t \n\t__u32 hdrlen;\t\t\t \n\t__u8  flags;\t\t\t \n\t__u8  invflags;\t\t\t \n};\n\n#define IP6T_FRAG_IDS \t\t0x01\n#define IP6T_FRAG_LEN \t\t0x02\n#define IP6T_FRAG_RES \t\t0x04\n#define IP6T_FRAG_FST \t\t0x08\n#define IP6T_FRAG_MF  \t\t0x10\n#define IP6T_FRAG_NMF  \t\t0x20\n\n \n#define IP6T_FRAG_INV_IDS\t0x01\t \n#define IP6T_FRAG_INV_LEN\t0x02\t \n#define IP6T_FRAG_INV_MASK\t0x03\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

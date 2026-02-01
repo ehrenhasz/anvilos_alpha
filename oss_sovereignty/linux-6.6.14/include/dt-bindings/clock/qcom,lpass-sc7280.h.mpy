@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,lpass-sc7280.h",
+  "hash_id": "0dbcf7edbaaac2ff81e1e3640be4396d50f478697bf3d0b8ce36449cd566482c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,lpass-sc7280.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_QCOM_LPASS_SC7280_H\n#define _DT_BINDINGS_CLK_QCOM_LPASS_SC7280_H\n\n#define LPASS_Q6SS_AHBM_CLK\t\t\t\t0\n#define LPASS_Q6SS_AHBS_CLK\t\t\t\t1\n#define LPASS_TOP_CC_LPI_Q6_AXIM_HS_CLK\t\t\t2\n#define LPASS_QDSP6SS_XO_CLK\t\t\t\t3\n#define LPASS_QDSP6SS_SLEEP_CLK\t\t\t\t4\n#define LPASS_QDSP6SS_CORE_CLK\t\t\t\t5\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

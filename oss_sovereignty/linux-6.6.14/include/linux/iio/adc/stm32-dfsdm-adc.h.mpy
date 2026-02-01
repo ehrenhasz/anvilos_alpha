@@ -1,0 +1,9 @@
+{
+  "module_name": "stm32-dfsdm-adc.h",
+  "hash_id": "bb86fa9c2719ed106af6a025de41e00fe665ba1ab4b2caa4217766cf3713b6db",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/adc/stm32-dfsdm-adc.h",
+  "human_readable_source": " \n \n\n#ifndef STM32_DFSDM_ADC_H\n#define STM32_DFSDM_ADC_H\n\n#include <linux/iio/iio.h>\n\nint stm32_dfsdm_get_buff_cb(struct iio_dev *iio_dev,\n\t\t\t    int (*cb)(const void *data, size_t size,\n\t\t\t\t      void *private),\n\t\t\t    void *private);\nint stm32_dfsdm_release_buff_cb(struct iio_dev *iio_dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

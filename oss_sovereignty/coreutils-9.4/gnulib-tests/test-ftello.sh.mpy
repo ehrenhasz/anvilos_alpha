@@ -1,0 +1,9 @@
+{
+  "module_name": "test-ftello.sh",
+  "hash_id": "ab31ddaff06c4a30630ee2d251d897d7d4b33ee6e50c63b83c1c05ed52c1d9ff",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-ftello.sh",
+  "human_readable_source": "#!/bin/sh\n\n${CHECKER} ./test-ftello${EXEEXT} 1 < \"$srcdir/test-ftello.sh\" || exit 1\necho hi | ${CHECKER} ./test-ftello${EXEEXT} || exit 1\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

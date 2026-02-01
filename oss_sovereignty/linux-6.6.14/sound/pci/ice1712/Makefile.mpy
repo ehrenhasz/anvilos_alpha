@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ee8312fcd988d783727380f7fcc11e69b26671890b55cbdff8656f93602835e7",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ice1712/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-ice17xx-ak4xxx-objs := ak4xxx.o\nsnd-ice1712-objs := ice1712.o delta.o hoontech.o ews.o\nsnd-ice1724-objs := ice1724.o amp.o revo.o aureon.o vt1720_mobo.o pontis.o prodigy192.o prodigy_hifi.o juli.o phase.o wtm.o se.o maya44.o quartet.o psc724.o wm8766.o wm8776.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_ICE1712) += snd-ice1712.o snd-ice17xx-ak4xxx.o\nobj-$(CONFIG_SND_ICE1724) += snd-ice1724.o snd-ice17xx-ak4xxx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

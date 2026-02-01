@@ -1,0 +1,9 @@
+{
+  "module_name": "test-thread_create.c",
+  "hash_id": "375f0bda2b105255fcba992b6759e911867ccd8311e2d589994e660d78d00094",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-thread_create.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"glthread/thread.h\"\n\n#include <stdio.h>\n#include <string.h>\n\n#include \"macros.h\"\n\nstatic gl_thread_t main_thread_before;\nstatic gl_thread_t main_thread_after;\nstatic gl_thread_t worker_thread;\n\nstatic int dummy;\nstatic volatile int work_done;\n\nstatic void *\nworker_thread_func (void *arg)\n{\n  work_done = 1;\n  return &dummy;\n}\n\nint\nmain ()\n{\n  main_thread_before = gl_thread_self ();\n\n  if (glthread_create (&worker_thread, worker_thread_func, NULL) == 0)\n    {\n      void *ret;\n\n       \n      main_thread_after = gl_thread_self ();\n      ASSERT (memcmp (&main_thread_before, &main_thread_after,\n                      sizeof (gl_thread_t))\n              == 0);\n\n      gl_thread_join (worker_thread, &ret);\n\n       \n      ASSERT (ret == &dummy);\n\n       \n      ASSERT (work_done);\n\n      return 0;\n    }\n  else\n    {\n#if USE_ISOC_THREADS || USE_POSIX_THREADS || USE_ISOC_AND_POSIX_THREADS || USE_WINDOWS_THREADS\n      fputs (\"glthread_create failed\\n\", stderr);\n      return 1;\n#else\n      fputs (\"Skipping test: multithreading not enabled\\n\", stderr);\n      return 77;\n#endif\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

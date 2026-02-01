@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fbc2140564ebeec945b6569a1a776f2b29be8897847f4043440a16929508862b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/platform/intel-quark/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_INTEL_IMR) += imr.o\nobj-$(CONFIG_DEBUG_IMR_SELFTEST) += imr_selftest.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

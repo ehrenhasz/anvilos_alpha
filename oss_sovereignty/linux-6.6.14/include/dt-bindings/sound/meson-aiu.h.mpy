@@ -1,0 +1,9 @@
+{
+  "module_name": "meson-aiu.h",
+  "hash_id": "9e12fb50ac2bf8c863ae002685f820331831a903d0e7bc09120923d847e4aff9",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/sound/meson-aiu.h",
+  "human_readable_source": " \n#ifndef __DT_MESON_AIU_H\n#define __DT_MESON_AIU_H\n\n#define AIU_CPU\t\t\t0\n#define AIU_HDMI\t\t1\n#define AIU_ACODEC\t\t2\n\n#define CPU_I2S_FIFO\t\t0\n#define CPU_SPDIF_FIFO\t\t1\n#define CPU_I2S_ENCODER\t\t2\n#define CPU_SPDIF_ENCODER\t3\n\n#define CTRL_I2S\t\t0\n#define CTRL_PCM\t\t1\n#define CTRL_OUT\t\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

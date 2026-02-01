@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi_numa.h",
+  "hash_id": "d5d2153aa6097070176674bac22c7fd5a8a4d823cd3a7a48b0d3f58c726f1553",
+  "original_prompt": "Ingested from linux-6.6.14/include/acpi/acpi_numa.h",
+  "human_readable_source": " \n#ifndef __ACPI_NUMA_H\n#define __ACPI_NUMA_H\n\n#ifdef CONFIG_ACPI_NUMA\n#include <linux/numa.h>\n\n \n#if MAX_NUMNODES > 256\n#define MAX_PXM_DOMAINS MAX_NUMNODES\n#else\n#define MAX_PXM_DOMAINS (256)\t \n#endif\n\nextern int pxm_to_node(int);\nextern int node_to_pxm(int);\nextern int acpi_map_pxm_to_node(int);\nextern unsigned char acpi_srat_revision;\nextern void disable_srat(void);\n\nextern void bad_srat(void);\nextern int srat_disabled(void);\n\n#else\t\t\t\t \nstatic inline void disable_srat(void)\n{\n}\nstatic inline int pxm_to_node(int pxm)\n{\n\treturn 0;\n}\nstatic inline int node_to_pxm(int node)\n{\n\treturn 0;\n}\n#endif\t\t\t\t \n\n#ifdef CONFIG_ACPI_HMAT\nextern void disable_hmat(void);\n#else\t\t\t\t \nstatic inline void disable_hmat(void)\n{\n}\n#endif\t\t\t\t \n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

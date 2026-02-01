@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "0d4c0278e93a0b2ce1efbc2d3872fbca69282af3041c1a4985a34c8dac1c4b13",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\ngenerated-y += unistd_32.h\ngenerated-y += unistd_64.h\ngenerated-y += unistd_x32.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

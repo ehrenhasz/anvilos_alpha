@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fc1d1d8d19f5bc4b042cd767b75bda31a7a73a0beba02b6944eed2690863b346",
+  "original_prompt": "Ingested from linux-6.6.14/sound/synth/emux/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-emux-synth-objs := emux.o emux_synth.o emux_seq.o emux_nrpn.o \\\n\t\t       emux_effect.o emux_hwdep.o soundfont.o\nsnd-emux-synth-$(CONFIG_SND_PROC_FS) += emux_proc.o\nifneq ($(CONFIG_SND_SEQUENCER_OSS),)\nsnd-emux-synth-y += emux_oss.o\nendif\n\nobj-$(CONFIG_SND_SYNTH_EMUX) += snd-emux-synth.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

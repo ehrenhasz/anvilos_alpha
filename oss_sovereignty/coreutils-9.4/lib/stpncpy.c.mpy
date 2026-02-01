@@ -1,0 +1,9 @@
+{
+  "module_name": "stpncpy.c",
+  "hash_id": "82092db1957ce49475e8ca7b56a13ae5d5d04d0da8ff5d52062ac9f236ecb42f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/stpncpy.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <string.h>\n\n#ifndef weak_alias\n# define __stpncpy stpncpy\n#endif\n\n \nchar *\n(__stpncpy) (char *dest, const char *src, size_t n)\n{\n  char c;\n  char *s = dest;\n\n  if (n >= 4)\n    {\n      size_t n4 = n >> 2;\n\n      for (;;)\n        {\n          c = *src++;\n          *dest++ = c;\n          if (c == '\\0')\n            break;\n          c = *src++;\n          *dest++ = c;\n          if (c == '\\0')\n            break;\n          c = *src++;\n          *dest++ = c;\n          if (c == '\\0')\n            break;\n          c = *src++;\n          *dest++ = c;\n          if (c == '\\0')\n            break;\n          if (--n4 == 0)\n            goto last_chars;\n        }\n      n -= dest - s;\n      goto zero_fill;\n    }\n\n last_chars:\n  n &= 3;\n  if (n == 0)\n    return dest;\n\n  for (;;)\n    {\n      c = *src++;\n      --n;\n      *dest++ = c;\n      if (c == '\\0')\n        break;\n      if (n == 0)\n        return dest;\n    }\n\n zero_fill:\n  while (n-- > 0)\n    dest[n] = '\\0';\n\n  return dest - 1;\n}\n#ifdef weak_alias\nweak_alias (__stpncpy, stpncpy)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

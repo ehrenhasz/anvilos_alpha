@@ -1,0 +1,9 @@
+{
+  "module_name": "zed.h",
+  "hash_id": "cf2e3bd28ec77c0c311eadd3a6e9d1b0a76bc1ac49673b41467cdb8f4fe9682f",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zed/zed.h",
+  "human_readable_source": " \n\n#ifndef\tZED_H\n#define\tZED_H\n\n \n#define\tZED_PID_FILE\t\tRUNSTATEDIR \"/zed.pid\"\n\n \n#define\tZED_STATE_FILE\t\tRUNSTATEDIR \"/zed.state\"\n\n \n#define\tZED_ZEDLET_DIR\t\tSYSCONFDIR \"/zfs/zed.d\"\n\n \n#define\tZED_VAR_PREFIX\t\t\"ZED_\"\n\n \n#define\tZEVENT_VAR_PREFIX\t\"ZEVENT_\"\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

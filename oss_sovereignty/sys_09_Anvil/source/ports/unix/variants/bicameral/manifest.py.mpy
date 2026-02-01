@@ -1,0 +1,9 @@
+{
+  "module_name": "manifest.py",
+  "hash_id": "312adf9c8f21d949454233007774c6327588bb0ffcfb11323c9e72bceef6721a",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/bicameral/manifest.py",
+  "human_readable_source": "# Minimal Manifest\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "77c73ad54204858a508f7e37225618ad5adf9939463df621dd33b76585b4b772",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bus/fsl-mc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# DPAA2 fsl-mc bus\n#\n# Copyright (C) 2014-2016 Freescale Semiconductor, Inc.\n#\n\nconfig FSL_MC_BUS\n\tbool \"QorIQ DPAA2 fsl-mc bus driver\"\n\tdepends on OF && (ARCH_LAYERSCAPE || (COMPILE_TEST && (ARM || ARM64 || X86_LOCAL_APIC || PPC)))\n\tselect GENERIC_MSI_IRQ\n\thelp\n\t  Driver to enable the bus infrastructure for the QorIQ DPAA2\n\t  architecture.  The fsl-mc bus driver handles discovery of\n\t  DPAA2 objects (which are represented as Linux devices) and\n\t  binding objects to drivers.\n\nconfig FSL_MC_UAPI_SUPPORT\n\tbool \"Management Complex (MC) userspace support\"\n\tdepends on FSL_MC_BUS\n\thelp\n\t  Provides userspace support for interrogating, creating, destroying or\n\t  configuring DPAA2 objects exported by the Management Complex.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pvrusb2-ioread.h",
+  "hash_id": "0c76be25c9500d58629b26d94cacf336f62e738d17261d2b2cd8e86b6f48229a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pvrusb2/pvrusb2-ioread.h",
+  "human_readable_source": " \n \n#ifndef __PVRUSB2_IOREAD_H\n#define __PVRUSB2_IOREAD_H\n\n#include \"pvrusb2-io.h\"\n\nstruct pvr2_ioread;\n\nstruct pvr2_ioread *pvr2_ioread_create(void);\nvoid pvr2_ioread_destroy(struct pvr2_ioread *);\nint pvr2_ioread_setup(struct pvr2_ioread *,struct pvr2_stream *);\nstruct pvr2_stream *pvr2_ioread_get_stream(struct pvr2_ioread *);\nvoid pvr2_ioread_set_sync_key(struct pvr2_ioread *,\n\t\t\t      const char *sync_key_ptr,\n\t\t\t      unsigned int sync_key_len);\nint pvr2_ioread_set_enabled(struct pvr2_ioread *,int fl);\nint pvr2_ioread_read(struct pvr2_ioread *,void __user *buf,unsigned int cnt);\nint pvr2_ioread_avail(struct pvr2_ioread *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

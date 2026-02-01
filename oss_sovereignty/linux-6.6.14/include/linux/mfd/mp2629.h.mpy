@@ -1,0 +1,9 @@
+{
+  "module_name": "mp2629.h",
+  "hash_id": "067b44ab3a3bb73cda45a3fe8a9c392330304c388c75162de28c7ef71a643e2e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/mp2629.h",
+  "human_readable_source": " \n \n\n#ifndef __MP2629_H__\n#define __MP2629_H__\n\n#include <linux/device.h>\n#include <linux/regmap.h>\n\nstruct mp2629_data {\n\tstruct device *dev;\n\tstruct regmap *regmap;\n};\n\nenum mp2629_adc_chan {\n\tMP2629_BATT_VOLT,\n\tMP2629_SYSTEM_VOLT,\n\tMP2629_INPUT_VOLT,\n\tMP2629_BATT_CURRENT,\n\tMP2629_INPUT_CURRENT,\n\tMP2629_ADC_CHAN_END\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

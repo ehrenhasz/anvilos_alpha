@@ -1,0 +1,9 @@
+{
+  "module_name": "iwl-spectrum.h",
+  "hash_id": "0dd0421f3dd539ceb58581b6bbfb313abd2de5b1d65f5eede2981eee8c5e6c24",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlegacy/iwl-spectrum.h",
+  "human_readable_source": " \n \n\n#ifndef __il_spectrum_h__\n#define __il_spectrum_h__\nenum {\t\t\t\t \n\tIEEE80211_BASIC_MAP_BSS = (1 << 0),\n\tIEEE80211_BASIC_MAP_OFDM = (1 << 1),\n\tIEEE80211_BASIC_MAP_UNIDENTIFIED = (1 << 2),\n\tIEEE80211_BASIC_MAP_RADAR = (1 << 3),\n\tIEEE80211_BASIC_MAP_UNMEASURED = (1 << 4),\n\t \n\n};\nstruct ieee80211_basic_report {\n\tu8 channel;\n\t__le64 start_time;\n\t__le16 duration;\n\tu8 map;\n} __packed;\n\nenum {\t\t\t\t \n\t \n\tIEEE80211_MEASUREMENT_ENABLE = (1 << 1),\n\tIEEE80211_MEASUREMENT_REQUEST = (1 << 2),\n\tIEEE80211_MEASUREMENT_REPORT = (1 << 3),\n\t \n};\n\nenum {\n\tIEEE80211_REPORT_BASIC = 0,\t \n\tIEEE80211_REPORT_CCA = 1,\t \n\tIEEE80211_REPORT_RPI = 2,\t \n\t \n};\n\nstruct ieee80211_measurement_params {\n\tu8 channel;\n\t__le64 start_time;\n\t__le16 duration;\n} __packed;\n\nstruct ieee80211_info_element {\n\tu8 id;\n\tu8 len;\n\tu8 data[];\n} __packed;\n\nstruct ieee80211_measurement_request {\n\tstruct ieee80211_info_element ie;\n\tu8 token;\n\tu8 mode;\n\tu8 type;\n\tstruct ieee80211_measurement_params params[];\n} __packed;\n\nstruct ieee80211_measurement_report {\n\tstruct ieee80211_info_element ie;\n\tu8 token;\n\tu8 mode;\n\tu8 type;\n\tunion {\n\t\tstruct ieee80211_basic_report basic[0];\n\t} u;\n} __packed;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

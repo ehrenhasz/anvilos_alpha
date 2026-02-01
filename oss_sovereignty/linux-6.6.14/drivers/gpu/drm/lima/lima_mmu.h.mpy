@@ -1,0 +1,9 @@
+{
+  "module_name": "lima_mmu.h",
+  "hash_id": "fbec2abb78147e5c5de683d698f4f3b397df8bee00431b3978019eef9ecb9806",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/lima/lima_mmu.h",
+  "human_readable_source": " \n \n\n#ifndef __LIMA_MMU_H__\n#define __LIMA_MMU_H__\n\nstruct lima_ip;\nstruct lima_vm;\n\nint lima_mmu_resume(struct lima_ip *ip);\nvoid lima_mmu_suspend(struct lima_ip *ip);\nint lima_mmu_init(struct lima_ip *ip);\nvoid lima_mmu_fini(struct lima_ip *ip);\n\nvoid lima_mmu_flush_tlb(struct lima_ip *ip);\nvoid lima_mmu_switch_vm(struct lima_ip *ip, struct lima_vm *vm);\nvoid lima_mmu_page_fault_resume(struct lima_ip *ip);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

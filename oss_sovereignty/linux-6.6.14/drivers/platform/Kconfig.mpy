@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e929fd2669cb164db9387ee5a43c2137b0ff88a7e0e4a0c13653e935db1b276d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsource \"drivers/platform/mips/Kconfig\"\n\nsource \"drivers/platform/loongarch/Kconfig\"\n\nsource \"drivers/platform/goldfish/Kconfig\"\n\nsource \"drivers/platform/chrome/Kconfig\"\n\nsource \"drivers/platform/mellanox/Kconfig\"\n\nsource \"drivers/platform/olpc/Kconfig\"\n\nsource \"drivers/platform/surface/Kconfig\"\n\nsource \"drivers/platform/x86/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

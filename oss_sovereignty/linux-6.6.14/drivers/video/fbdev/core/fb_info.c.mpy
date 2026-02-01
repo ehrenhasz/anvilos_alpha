@@ -1,0 +1,9 @@
+{
+  "module_name": "fb_info.c",
+  "hash_id": "03d4ada8e9f02419912ebda2f4a283c7b16c20b2e826bc07ff3388a2cfb7c289",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/core/fb_info.c",
+  "human_readable_source": "\n\n#include <linux/export.h>\n#include <linux/fb.h>\n#include <linux/mutex.h>\n#include <linux/slab.h>\n\n \nstruct fb_info *framebuffer_alloc(size_t size, struct device *dev)\n{\n#define BYTES_PER_LONG (BITS_PER_LONG/8)\n#define PADDING (BYTES_PER_LONG - (sizeof(struct fb_info) % BYTES_PER_LONG))\n\tint fb_info_size = sizeof(struct fb_info);\n\tstruct fb_info *info;\n\tchar *p;\n\n\tif (size)\n\t\tfb_info_size += PADDING;\n\n\tp = kzalloc(fb_info_size + size, GFP_KERNEL);\n\n\tif (!p)\n\t\treturn NULL;\n\n\tinfo = (struct fb_info *) p;\n\n\tif (size)\n\t\tinfo->par = p + fb_info_size;\n\n\tinfo->device = dev;\n\tinfo->fbcon_rotate_hint = -1;\n\n#if IS_ENABLED(CONFIG_FB_BACKLIGHT)\n\tmutex_init(&info->bl_curve_mutex);\n#endif\n\n\treturn info;\n#undef PADDING\n#undef BYTES_PER_LONG\n}\nEXPORT_SYMBOL(framebuffer_alloc);\n\n \nvoid framebuffer_release(struct fb_info *info)\n{\n\tif (!info)\n\t\treturn;\n\n\tif (WARN_ON(refcount_read(&info->count)))\n\t\treturn;\n\n#if IS_ENABLED(CONFIG_FB_BACKLIGHT)\n\tmutex_destroy(&info->bl_curve_mutex);\n#endif\n\n\tkfree(info);\n}\nEXPORT_SYMBOL(framebuffer_release);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

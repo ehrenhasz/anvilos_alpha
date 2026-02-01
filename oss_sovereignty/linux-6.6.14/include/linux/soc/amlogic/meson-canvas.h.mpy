@@ -1,0 +1,9 @@
+{
+  "module_name": "meson-canvas.h",
+  "hash_id": "5172f7115b94e5a5f3ce60c09867d4ffe7b7bcf0c21d48dd4691ed152e63f435",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/amlogic/meson-canvas.h",
+  "human_readable_source": " \n \n#ifndef __SOC_MESON_CANVAS_H\n#define __SOC_MESON_CANVAS_H\n\n#include <linux/kernel.h>\n\n#define MESON_CANVAS_WRAP_NONE\t0x00\n#define MESON_CANVAS_WRAP_X\t0x01\n#define MESON_CANVAS_WRAP_Y\t0x02\n\n#define MESON_CANVAS_BLKMODE_LINEAR\t0x00\n#define MESON_CANVAS_BLKMODE_32x32\t0x01\n#define MESON_CANVAS_BLKMODE_64x64\t0x02\n\n#define MESON_CANVAS_ENDIAN_SWAP16\t0x1\n#define MESON_CANVAS_ENDIAN_SWAP32\t0x3\n#define MESON_CANVAS_ENDIAN_SWAP64\t0x7\n#define MESON_CANVAS_ENDIAN_SWAP128\t0xf\n\nstruct device;\nstruct meson_canvas;\n\n \nstruct meson_canvas *meson_canvas_get(struct device *dev);\n\n \nint meson_canvas_alloc(struct meson_canvas *canvas, u8 *canvas_index);\n\n \nint meson_canvas_free(struct meson_canvas *canvas, u8 canvas_index);\n\n \nint meson_canvas_config(struct meson_canvas *canvas, u8 canvas_index,\n\t\t\tu32 addr, u32 stride, u32 height,\n\t\t\tunsigned int wrap, unsigned int blkmode,\n\t\t\tunsigned int endian);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

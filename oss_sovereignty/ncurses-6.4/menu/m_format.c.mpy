@@ -1,0 +1,9 @@
+{
+  "module_name": "m_format.c",
+  "hash_id": "bf821402110ccaea601c6173b7e95323f42df82ec09fa158f7d36d6e4fc12a66",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_format.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_format.c,v 1.22 2021/03/27 23:46:29 tom Exp $\")\n\n#define minimum(a,b) ((a)<(b) ? (a): (b))\n\n \nMENU_EXPORT(int)\nset_menu_format(MENU *menu, int rows, int cols)\n{\n\n  T((T_CALLED(\"set_menu_format(%p,%d,%d)\"), (void *)menu, rows, cols));\n\n  if (rows < 0 || cols < 0)\n    RETURN(E_BAD_ARGUMENT);\n\n  if (menu)\n    {\n      int total_rows, total_cols;\n\n      if (menu->status & _POSTED)\n\tRETURN(E_POSTED);\n\n      if (!(menu->items))\n\tRETURN(E_NOT_CONNECTED);\n\n      if (rows == 0)\n\trows = menu->frows;\n      if (cols == 0)\n\tcols = menu->fcols;\n\n      if (menu->pattern)\n\tReset_Pattern(menu);\n\n      menu->frows = (short)rows;\n      menu->fcols = (short)cols;\n\n      assert(rows > 0 && cols > 0);\n      total_rows = (menu->nitems - 1) / cols + 1;\n      total_cols = (menu->opt & O_ROWMAJOR) ?\n\tminimum(menu->nitems, cols) :\n\t(menu->nitems - 1) / total_rows + 1;\n\n      menu->rows = (short)total_rows;\n      menu->cols = (short)total_cols;\n      menu->arows = (short)minimum(total_rows, rows);\n      menu->toprow = 0;\n      menu->curitem = *(menu->items);\n      assert(menu->curitem);\n      SetStatus(menu, _LINK_NEEDED);\n      _nc_Calculate_Item_Length_and_Width(menu);\n    }\n  else\n    {\n      if (rows > 0)\n\t_nc_Default_Menu.frows = (short)rows;\n      if (cols > 0)\n\t_nc_Default_Menu.fcols = (short)cols;\n    }\n\n  RETURN(E_OK);\n}\n\n \nMENU_EXPORT(void)\nmenu_format(const MENU *menu, int *rows, int *cols)\n{\n  if (rows)\n    *rows = Normalize_Menu(menu)->frows;\n  if (cols)\n    *cols = Normalize_Menu(menu)->fcols;\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mpfs.h",
+  "hash_id": "854f9aed01536f455ecfa794deb536ef8d83544ada385311784ec4b41a28463f",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/microchip/mpfs.h",
+  "human_readable_source": " \n \n\n#ifndef __SOC_MPFS_H__\n#define __SOC_MPFS_H__\n\n#include <linux/types.h>\n#include <linux/of_device.h>\n\nstruct mpfs_sys_controller;\n\nstruct mpfs_mss_msg {\n\tu8 cmd_opcode;\n\tu16 cmd_data_size;\n\tstruct mpfs_mss_response *response;\n\tu8 *cmd_data;\n\tu16 mbox_offset;\n\tu16 resp_offset;\n};\n\nstruct mpfs_mss_response {\n\tu32 resp_status;\n\tu32 *resp_msg;\n\tu16 resp_size;\n};\n\n#if IS_ENABLED(CONFIG_POLARFIRE_SOC_SYS_CTRL)\n\nint mpfs_blocking_transaction(struct mpfs_sys_controller *mpfs_client, struct mpfs_mss_msg *msg);\n\nstruct mpfs_sys_controller *mpfs_sys_controller_get(struct device *dev);\n\n#endif  \n\n#if IS_ENABLED(CONFIG_MCHP_CLK_MPFS)\n\nu32 mpfs_reset_read(struct device *dev);\n\nvoid mpfs_reset_write(struct device *dev, u32 val);\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

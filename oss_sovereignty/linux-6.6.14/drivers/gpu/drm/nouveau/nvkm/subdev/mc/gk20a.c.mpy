@@ -1,0 +1,9 @@
+{
+  "module_name": "gk20a.c",
+  "hash_id": "a90fc2670132895fdef96f70ac2518719bb4b275b7a44ad96d39f18f1c68e801",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mc/gk20a.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic const struct nvkm_mc_func\ngk20a_mc = {\n\t.init = nv50_mc_init,\n\t.intr = &gt215_mc_intr,\n\t.intrs = gk104_mc_intrs,\n\t.intr_nonstall = true,\n\t.device = &nv04_mc_device,\n\t.reset = gk104_mc_reset,\n};\n\nint\ngk20a_mc_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_mc **pmc)\n{\n\treturn nvkm_mc_new_(&gk20a_mc, device, type, inst, pmc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

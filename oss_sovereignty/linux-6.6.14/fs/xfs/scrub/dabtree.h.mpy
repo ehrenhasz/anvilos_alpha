@@ -1,0 +1,9 @@
+{
+  "module_name": "dabtree.h",
+  "hash_id": "6aa0dc1d1a7e3961b6f66c33ee2b7145a35fef86cb35692d5feea1e80c2ec71b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/scrub/dabtree.h",
+  "human_readable_source": "\n \n#ifndef __XFS_SCRUB_DABTREE_H__\n#define __XFS_SCRUB_DABTREE_H__\n\n \n\nstruct xchk_da_btree {\n\tstruct xfs_da_args\tdargs;\n\txfs_dahash_t\t\thashes[XFS_DA_NODE_MAXDEPTH];\n\tint\t\t\tmaxrecs[XFS_DA_NODE_MAXDEPTH];\n\tstruct xfs_da_state\t*state;\n\tstruct xfs_scrub\t*sc;\n\tvoid\t\t\t*private;\n\n\t \n\txfs_dablk_t\t\tlowest;\n\txfs_dablk_t\t\thighest;\n\n\tint\t\t\ttree_level;\n};\n\ntypedef int (*xchk_da_btree_rec_fn)(struct xchk_da_btree *ds, int level);\n\n \nbool xchk_da_process_error(struct xchk_da_btree *ds, int level, int *error);\n\n \nvoid xchk_da_set_corrupt(struct xchk_da_btree *ds, int level);\n\nint xchk_da_btree_hash(struct xchk_da_btree *ds, int level, __be32 *hashp);\nint xchk_da_btree(struct xfs_scrub *sc, int whichfork,\n\t\txchk_da_btree_rec_fn scrub_fn, void *private);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

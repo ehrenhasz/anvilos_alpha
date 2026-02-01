@@ -1,0 +1,9 @@
+{
+  "module_name": "isys_public.h",
+  "hash_id": "72d96b3b3b2cf9c1b10b539d4066f10947a10d9cc48a1b047f1a2454cb158662",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/host/isys_public.h",
+  "human_readable_source": " \n \n\n#ifndef __ISYS_PUBLIC_H_INCLUDED__\n#define __ISYS_PUBLIC_H_INCLUDED__\n\n#ifdef ISP2401\n \nSTORAGE_CLASS_INPUT_SYSTEM_H input_system_err_t input_system_get_state(\n    const input_system_ID_t\tID,\n    input_system_state_t *state);\n \nSTORAGE_CLASS_INPUT_SYSTEM_H void input_system_dump_state(\n    const input_system_ID_t\tID,\n    input_system_state_t *state);\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fd9a19b78bf5702e00ae3763f5e90561666a9b817a01ac993cc739531771bfa7",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sprd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Spreadtrum Audio Support\n\nsnd-soc-sprd-platform-objs := sprd-pcm-dma.o sprd-pcm-compress.o\n\nobj-$(CONFIG_SND_SOC_SPRD) += snd-soc-sprd-platform.o\n\nobj-$(CONFIG_SND_SOC_SPRD_MCDT) += sprd-mcdt.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

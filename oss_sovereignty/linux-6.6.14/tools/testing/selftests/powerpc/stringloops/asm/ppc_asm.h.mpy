@@ -1,0 +1,9 @@
+{
+  "module_name": "ppc_asm.h",
+  "hash_id": "431ac68a49eb2501b31dbc9b52fec8f6cf720416aa8d8351a57023a89c48419d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/stringloops/asm/ppc_asm.h",
+  "human_readable_source": " \n#ifndef _PPC_ASM_H\n#define _PPC_ASM_H\n#include <ppc-asm.h>\n\n#ifndef r1\n#define r1 sp\n#endif\n\n#define _GLOBAL(A) FUNC_START(test_ ## A)\n#define _GLOBAL_TOC(A) FUNC_START(test_ ## A)\n#define CFUNC(name) name\n\n#define CONFIG_ALTIVEC\n\n#define R14 r14\n#define R15 r15\n#define R16 r16\n#define R17 r17\n#define R18 r18\n#define R19 r19\n#define R20 r20\n#define R21 r21\n#define R22 r22\n#define R29 r29\n#define R30 r30\n#define R31 r31\n\n#define STACKFRAMESIZE\t256\n#define STK_REG(i)\t(112 + ((i)-14)*8)\n\n#define BEGIN_FTR_SECTION\n#define END_FTR_SECTION_IFSET(val)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

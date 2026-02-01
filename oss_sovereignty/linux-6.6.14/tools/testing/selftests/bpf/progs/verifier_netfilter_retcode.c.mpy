@@ -1,0 +1,9 @@
+{
+  "module_name": "verifier_netfilter_retcode.c",
+  "hash_id": "faba98ebf1ecb54e05cc52c438ffcdd738f668cb7a88b8294a9fc50a7e2a7700",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/verifier_netfilter_retcode.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nSEC(\"netfilter\")\n__description(\"bpf_exit with invalid return code. test1\")\n__failure __msg(\"R0 is not a known value\")\n__naked void with_invalid_return_code_test1(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr0 = *(u64*)(r1 + 0);\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t::: __clobber_all);\n}\n\nSEC(\"netfilter\")\n__description(\"bpf_exit with valid return code. test2\")\n__success\n__naked void with_valid_return_code_test2(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr0 = 0;\t\t\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t::: __clobber_all);\n}\n\nSEC(\"netfilter\")\n__description(\"bpf_exit with valid return code. test3\")\n__success\n__naked void with_valid_return_code_test3(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr0 = 1;\t\t\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t::: __clobber_all);\n}\n\nSEC(\"netfilter\")\n__description(\"bpf_exit with invalid return code. test4\")\n__failure __msg(\"R0 has value (0x2; 0x0)\")\n__naked void with_invalid_return_code_test4(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr0 = 2;\t\t\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t::: __clobber_all);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

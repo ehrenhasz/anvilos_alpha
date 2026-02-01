@@ -1,0 +1,9 @@
+{
+  "module_name": "emulate_prefix.h",
+  "hash_id": "c958142066201435f307cea5e9313832a832107ff28f3f2520afbbc5528dfe7f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/x86/include/asm/emulate_prefix.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_EMULATE_PREFIX_H\n#define _ASM_X86_EMULATE_PREFIX_H\n\n \n\n#define __XEN_EMULATE_PREFIX  0x0f,0x0b,0x78,0x65,0x6e   \n#define __KVM_EMULATE_PREFIX  0x0f,0x0b,0x6b,0x76,0x6d\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

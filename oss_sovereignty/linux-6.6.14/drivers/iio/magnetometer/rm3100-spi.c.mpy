@@ -1,0 +1,9 @@
+{
+  "module_name": "rm3100-spi.c",
+  "hash_id": "37070e53d2f0bade0254604b7106262c92aa755c81b6425a6b12e06c4cbbacc3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/magnetometer/rm3100-spi.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/spi/spi.h>\n\n#include \"rm3100.h\"\n\nstatic const struct regmap_config rm3100_regmap_config = {\n\t.reg_bits = 8,\n\t.val_bits = 8,\n\n\t.rd_table = &rm3100_readable_table,\n\t.wr_table = &rm3100_writable_table,\n\t.volatile_table = &rm3100_volatile_table,\n\n\t.read_flag_mask = 0x80,\n\n\t.cache_type = REGCACHE_RBTREE,\n};\n\nstatic int rm3100_probe(struct spi_device *spi)\n{\n\tstruct regmap *regmap;\n\tint ret;\n\n\t \n\tspi->mode = SPI_MODE_0;\n\t \n\tspi->max_speed_hz = 1000000;\n\tspi->bits_per_word = 8;\n\tret = spi_setup(spi);\n\tif (ret)\n\t\treturn ret;\n\n\tregmap = devm_regmap_init_spi(spi, &rm3100_regmap_config);\n\tif (IS_ERR(regmap))\n\t\treturn PTR_ERR(regmap);\n\n\treturn rm3100_common_probe(&spi->dev, regmap, spi->irq);\n}\n\nstatic const struct of_device_id rm3100_dt_match[] = {\n\t{ .compatible = \"pni,rm3100\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, rm3100_dt_match);\n\nstatic struct spi_driver rm3100_driver = {\n\t.driver = {\n\t\t.name = \"rm3100-spi\",\n\t\t.of_match_table = rm3100_dt_match,\n\t},\n\t.probe = rm3100_probe,\n};\nmodule_spi_driver(rm3100_driver);\n\nMODULE_AUTHOR(\"Song Qiang <songqiang1304521@gmail.com>\");\nMODULE_DESCRIPTION(\"PNI RM3100 3-axis magnetometer spi driver\");\nMODULE_LICENSE(\"GPL v2\");\nMODULE_IMPORT_NS(IIO_RM3100);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

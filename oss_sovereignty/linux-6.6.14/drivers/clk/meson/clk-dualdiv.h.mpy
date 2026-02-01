@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-dualdiv.h",
+  "hash_id": "6e7aff89f991aa9ce59250a75d37925d6d1ec8d94b21b7c8fb1d5df009fc9780",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/meson/clk-dualdiv.h",
+  "human_readable_source": " \n \n\n#ifndef __MESON_CLK_DUALDIV_H\n#define __MESON_CLK_DUALDIV_H\n\n#include <linux/clk-provider.h>\n#include \"parm.h\"\n\nstruct meson_clk_dualdiv_param {\n\tunsigned int n1;\n\tunsigned int n2;\n\tunsigned int m1;\n\tunsigned int m2;\n\tunsigned int dual;\n};\n\nstruct meson_clk_dualdiv_data {\n\tstruct parm n1;\n\tstruct parm n2;\n\tstruct parm m1;\n\tstruct parm m2;\n\tstruct parm dual;\n\tconst struct meson_clk_dualdiv_param *table;\n};\n\nextern const struct clk_ops meson_clk_dualdiv_ops;\nextern const struct clk_ops meson_clk_dualdiv_ro_ops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

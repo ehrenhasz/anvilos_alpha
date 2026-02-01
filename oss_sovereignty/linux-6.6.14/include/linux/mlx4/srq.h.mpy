@@ -1,0 +1,9 @@
+{
+  "module_name": "srq.h",
+  "hash_id": "6bdd829d5e5bf0f8527c6a9b9bb064ec000207121780a33eb4699867f862d70b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mlx4/srq.h",
+  "human_readable_source": " \n\n#ifndef MLX4_SRQ_H\n#define MLX4_SRQ_H\n\nstruct mlx4_wqe_srq_next_seg {\n\tu16\t\t\treserved1;\n\t__be16\t\t\tnext_wqe_index;\n\tu32\t\t\treserved2[3];\n};\n\nstruct mlx4_srq *mlx4_srq_lookup(struct mlx4_dev *dev, u32 srqn);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

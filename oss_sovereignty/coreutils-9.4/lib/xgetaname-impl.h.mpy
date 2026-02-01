@@ -1,0 +1,9 @@
+{
+  "module_name": "xgetaname-impl.h",
+  "hash_id": "a76e59b766fbd545982afd88ab443cf63ad0067cb082d3c11f51b27f803b980a",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xgetaname-impl.h",
+  "human_readable_source": " \n\n#include <stdlib.h>\n#include <errno.h>\n#include <string.h>\n#include <unistd.h>\n\n#include \"xalloc.h\"\n\n \nchar *\nXGETANAME (void)\n{\n  char buf[100];\n  idx_t size = sizeof buf;\n  char *name = buf;\n  char *alloc = NULL;\n\n  while (1)\n    {\n       \n      idx_t size_1 = size - 1;\n      name[size_1] = '\\0';\n      errno = 0;\n      if (GETANAME (name, size_1) == 0)\n        {\n           \n          idx_t actual_size = strlen (name) + 1;\n          if (actual_size < size_1)\n            return alloc ? alloc : ximemdup (name, actual_size);\n          errno = 0;\n        }\n      free (alloc);\n      if (errno != 0 && errno != ENAMETOOLONG && errno != EINVAL\n           \n          && errno != ENOMEM)\n        return NULL;\n      name = alloc = xpalloc (NULL, &size, 1, -1, 1);\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

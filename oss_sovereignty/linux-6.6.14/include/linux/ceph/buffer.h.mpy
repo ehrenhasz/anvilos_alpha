@@ -1,0 +1,9 @@
+{
+  "module_name": "buffer.h",
+  "hash_id": "c5ac655a500493481d46c7cef5a0968d5427801e1331656e0f91b784dcd06a6b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ceph/buffer.h",
+  "human_readable_source": " \n#ifndef __FS_CEPH_BUFFER_H\n#define __FS_CEPH_BUFFER_H\n\n#include <linux/kref.h>\n#include <linux/mm.h>\n#include <linux/vmalloc.h>\n#include <linux/types.h>\n#include <linux/uio.h>\n\n \nstruct ceph_buffer {\n\tstruct kref kref;\n\tstruct kvec vec;\n\tsize_t alloc_len;\n};\n\nextern struct ceph_buffer *ceph_buffer_new(size_t len, gfp_t gfp);\nextern void ceph_buffer_release(struct kref *kref);\n\nstatic inline struct ceph_buffer *ceph_buffer_get(struct ceph_buffer *b)\n{\n\tkref_get(&b->kref);\n\treturn b;\n}\n\nstatic inline void ceph_buffer_put(struct ceph_buffer *b)\n{\n\tif (b)\n\t\tkref_put(&b->kref, ceph_buffer_release);\n}\n\nextern int ceph_decode_buffer(struct ceph_buffer **b, void **p, void *end);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

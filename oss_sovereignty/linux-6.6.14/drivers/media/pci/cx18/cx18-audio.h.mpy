@@ -1,0 +1,9 @@
+{
+  "module_name": "cx18-audio.h",
+  "hash_id": "6600ec6b9117625c7d75b19dac7b0ac256d726d064479281e6cc10f225d578fc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx18/cx18-audio.h",
+  "human_readable_source": " \n \n\nint cx18_audio_set_io(struct cx18 *cx);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

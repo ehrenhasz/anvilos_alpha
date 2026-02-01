@@ -1,0 +1,9 @@
+{
+  "module_name": "madvise_behavior.sh",
+  "hash_id": "925bc43b81541bac594691f084c5b56e79ee8ca1d22c6600c03a8612e0ff54b9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/madvise_behavior.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n\n[ $# -eq 1 ] && header_dir=$1 || header_dir=tools/include/uapi/asm-generic/\n\nprintf \"static const char *madvise_advices[] = {\\n\"\nregex='^[[:space:]]*#[[:space:]]*define[[:space:]]+MADV_([[:alnum:]_]+)[[:space:]]+([[:digit:]]+)[[:space:]]*.*'\ngrep -E $regex ${header_dir}/mman-common.h | \\\n\tsed -r \"s/$regex/\\2 \\1/g\"\t| \\\n\tsort -n | xargs printf \"\\t[%s] = \\\"%s\\\",\\n\"\nprintf \"};\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

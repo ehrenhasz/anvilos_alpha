@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "181b9f156ec9560d4e28658e97713fe470877d66a303bd800fe4f67e856ebd9a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/thermal/thermometer/Build",
+  "human_readable_source": "thermometer-y += thermometer.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ab9b2a72d91533510e39f629fba4929271e2ae961b30d10f88efc193e62fcb5f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/sunxi/sun8i-a83t-mipi-csi2/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_SUN8I_A83T_MIPI_CSI2\n\ttristate \"Allwinner A83T MIPI CSI-2 Controller and D-PHY Driver\"\n\tdepends on V4L_PLATFORM_DRIVERS && VIDEO_DEV\n\tdepends on ARCH_SUNXI || COMPILE_TEST\n\tdepends on PM && COMMON_CLK && RESET_CONTROLLER\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect V4L2_FWNODE\n\tselect REGMAP_MMIO\n\tselect GENERIC_PHY_MIPI_DPHY\n\thelp\n\t   Support for the Allwinner A83T MIPI CSI-2 controller and D-PHY.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

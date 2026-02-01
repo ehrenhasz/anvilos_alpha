@@ -1,0 +1,9 @@
+{
+  "module_name": "required-features.h",
+  "hash_id": "8982f718d2b8c324fc93315e8609da68290b73a426aab9470a98f198fbf9dc4a",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/asm/required-features.h",
+  "human_readable_source": "#ifndef __UM_REQUIRED_FEATURES_H\n#define __UM_REQUIRED_FEATURES_H\n\n \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

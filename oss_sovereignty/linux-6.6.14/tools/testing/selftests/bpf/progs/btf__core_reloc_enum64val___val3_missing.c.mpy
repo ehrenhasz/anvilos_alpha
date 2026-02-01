@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_enum64val___val3_missing.c",
+  "hash_id": "961fe7541b5c1e283a8a46e0af5b318701f875b9e1a3b2c82a306ec5023b8101",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_enum64val___val3_missing.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_enum64val___val3_missing x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

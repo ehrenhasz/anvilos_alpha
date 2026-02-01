@@ -1,0 +1,9 @@
+{
+  "module_name": "spl-vmem.c",
+  "hash_id": "c551e46155cc288295c82b229c0d1e64378abeeb9f38a1e6edc160d16115cf73",
+  "original_prompt": "Ingested from zfs-2.2.2/module/os/linux/spl/spl-vmem.c",
+  "human_readable_source": " \n\n#include <linux/percpu_compat.h>\n#include <sys/debug.h>\n#include <sys/vmem.h>\n#include <sys/kmem_cache.h>\n#include <sys/shrinker.h>\n#include <linux/module.h>\n\n \nvoid *\nspl_vmem_alloc(size_t size, int flags, const char *func, int line)\n{\n\tASSERT0(flags & ~KM_PUBLIC_MASK);\n\n\tflags |= KM_VMEM;\n\n#if !defined(DEBUG_KMEM)\n\treturn (spl_kmem_alloc_impl(size, flags, NUMA_NO_NODE));\n#elif !defined(DEBUG_KMEM_TRACKING)\n\treturn (spl_kmem_alloc_debug(size, flags, NUMA_NO_NODE));\n#else\n\treturn (spl_kmem_alloc_track(size, flags, func, line, NUMA_NO_NODE));\n#endif\n}\nEXPORT_SYMBOL(spl_vmem_alloc);\n\nvoid *\nspl_vmem_zalloc(size_t size, int flags, const char *func, int line)\n{\n\tASSERT0(flags & ~KM_PUBLIC_MASK);\n\n\tflags |= (KM_VMEM | KM_ZERO);\n\n#if !defined(DEBUG_KMEM)\n\treturn (spl_kmem_alloc_impl(size, flags, NUMA_NO_NODE));\n#elif !defined(DEBUG_KMEM_TRACKING)\n\treturn (spl_kmem_alloc_debug(size, flags, NUMA_NO_NODE));\n#else\n\treturn (spl_kmem_alloc_track(size, flags, func, line, NUMA_NO_NODE));\n#endif\n}\nEXPORT_SYMBOL(spl_vmem_zalloc);\n\nvoid\nspl_vmem_free(const void *buf, size_t size)\n{\n#if !defined(DEBUG_KMEM)\n\treturn (spl_kmem_free_impl(buf, size));\n#elif !defined(DEBUG_KMEM_TRACKING)\n\treturn (spl_kmem_free_debug(buf, size));\n#else\n\treturn (spl_kmem_free_track(buf, size));\n#endif\n}\nEXPORT_SYMBOL(spl_vmem_free);\n\nint\nspl_vmem_init(void)\n{\n\treturn (0);\n}\n\nvoid\nspl_vmem_fini(void)\n{\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

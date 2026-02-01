@@ -1,0 +1,9 @@
+{
+  "module_name": "sp810.h",
+  "hash_id": "e3693a59fd4c025cbc6d159fbfe9e76b0b4d409b439d591e1a006b2cd3f36ed5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/amba/sp810.h",
+  "human_readable_source": " \n\n#ifndef __AMBA_SP810_H\n#define __AMBA_SP810_H\n\n#include <linux/io.h>\n\n \n#define SCCTRL\t\t\t0x000\n#define SCSYSSTAT\t\t0x004\n#define SCIMCTRL\t\t0x008\n#define SCIMSTAT\t\t0x00C\n#define SCXTALCTRL\t\t0x010\n#define SCPLLCTRL\t\t0x014\n#define SCPLLFCTRL\t\t0x018\n#define SCPERCTRL0\t\t0x01C\n#define SCPERCTRL1\t\t0x020\n#define SCPEREN\t\t\t0x024\n#define SCPERDIS\t\t0x028\n#define SCPERCLKEN\t\t0x02C\n#define SCPERSTAT\t\t0x030\n#define SCSYSID0\t\t0xEE0\n#define SCSYSID1\t\t0xEE4\n#define SCSYSID2\t\t0xEE8\n#define SCSYSID3\t\t0xEEC\n#define SCITCR\t\t\t0xF00\n#define SCITIR0\t\t\t0xF04\n#define SCITIR1\t\t\t0xF08\n#define SCITOR\t\t\t0xF0C\n#define SCCNTCTRL\t\t0xF10\n#define SCCNTDATA\t\t0xF14\n#define SCCNTSTEP\t\t0xF18\n#define SCPERIPHID0\t\t0xFE0\n#define SCPERIPHID1\t\t0xFE4\n#define SCPERIPHID2\t\t0xFE8\n#define SCPERIPHID3\t\t0xFEC\n#define SCPCELLID0\t\t0xFF0\n#define SCPCELLID1\t\t0xFF4\n#define SCPCELLID2\t\t0xFF8\n#define SCPCELLID3\t\t0xFFC\n\n#define SCCTRL_TIMERENnSEL_SHIFT(n)\t(15 + ((n) * 2))\n\nstatic inline void sysctl_soft_reset(void __iomem *base)\n{\n\t \n\twritel(0x2, base + SCCTRL);\n\n\t \n\twritel(0, base + SCSYSSTAT);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dpu_hw_dspp.h",
+  "hash_id": "269597e6540fb8cb0599610e0dd1199d2c6343e25255936b31c52679d9247e0f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.h",
+  "human_readable_source": " \n \n\n#ifndef _DPU_HW_DSPP_H\n#define _DPU_HW_DSPP_H\n\nstruct dpu_hw_dspp;\n\n \n\nstruct dpu_hw_pcc_coeff {\n\t__u32 r;\n\t__u32 g;\n\t__u32 b;\n};\n\n \nstruct dpu_hw_pcc_cfg {\n\tstruct dpu_hw_pcc_coeff r;\n\tstruct dpu_hw_pcc_coeff g;\n\tstruct dpu_hw_pcc_coeff b;\n};\n\n \nstruct dpu_hw_dspp_ops {\n\t \n\tvoid (*setup_pcc)(struct dpu_hw_dspp *ctx, struct dpu_hw_pcc_cfg *cfg);\n\n};\n\n \nstruct dpu_hw_dspp {\n\tstruct dpu_hw_blk base;\n\tstruct dpu_hw_blk_reg_map hw;\n\n\t \n\tint idx;\n\tconst struct dpu_dspp_cfg *cap;\n\n\t \n\tstruct dpu_hw_dspp_ops ops;\n};\n\n \nstatic inline struct dpu_hw_dspp *to_dpu_hw_dspp(struct dpu_hw_blk *hw)\n{\n\treturn container_of(hw, struct dpu_hw_dspp, base);\n}\n\n \nstruct dpu_hw_dspp *dpu_hw_dspp_init(const struct dpu_dspp_cfg *cfg,\n\tvoid __iomem *addr);\n\n \nvoid dpu_hw_dspp_destroy(struct dpu_hw_dspp *dspp);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

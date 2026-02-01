@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_cnr2_types.h",
+  "hash_id": "43a56f60dda7b31c455acadfc382b93c08c2ad8ca1496d1af111ca5cd6406ff9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/cnr/cnr_2/ia_css_cnr2_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_CNR2_TYPES_H\n#define __IA_CSS_CNR2_TYPES_H\n\n \n\n \nstruct ia_css_cnr_config {\n\tu16 coring_u;\t \n\tu16 coring_v;\t \n\tu16 sense_gain_vy;\t \n\tu16 sense_gain_vu;\t \n\tu16 sense_gain_vv;\t \n\tu16 sense_gain_hy;\t \n\tu16 sense_gain_hu;\t \n\tu16 sense_gain_hv;\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

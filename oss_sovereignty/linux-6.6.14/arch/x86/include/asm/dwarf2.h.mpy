@@ -1,0 +1,9 @@
+{
+  "module_name": "dwarf2.h",
+  "hash_id": "419ea29328e0322811c1e9773b19742202d62306e0e4d4aa1564eab49227b61d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/dwarf2.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_DWARF2_H\n#define _ASM_X86_DWARF2_H\n\n#ifndef __ASSEMBLY__\n#warning \"asm/dwarf2.h should be only included in pure assembly files\"\n#endif\n\n#define CFI_STARTPROC\t\t.cfi_startproc\n#define CFI_ENDPROC\t\t.cfi_endproc\n#define CFI_DEF_CFA\t\t.cfi_def_cfa\n#define CFI_DEF_CFA_REGISTER\t.cfi_def_cfa_register\n#define CFI_DEF_CFA_OFFSET\t.cfi_def_cfa_offset\n#define CFI_ADJUST_CFA_OFFSET\t.cfi_adjust_cfa_offset\n#define CFI_OFFSET\t\t.cfi_offset\n#define CFI_REL_OFFSET\t\t.cfi_rel_offset\n#define CFI_REGISTER\t\t.cfi_register\n#define CFI_RESTORE\t\t.cfi_restore\n#define CFI_REMEMBER_STATE\t.cfi_remember_state\n#define CFI_RESTORE_STATE\t.cfi_restore_state\n#define CFI_UNDEFINED\t\t.cfi_undefined\n#define CFI_ESCAPE\t\t.cfi_escape\n\n#ifndef BUILD_VDSO\n\t \n\t.cfi_sections .debug_frame\n#else\n\t  \n\t.cfi_sections .eh_frame, .debug_frame\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

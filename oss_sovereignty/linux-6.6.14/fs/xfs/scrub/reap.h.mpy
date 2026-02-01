@@ -1,0 +1,9 @@
+{
+  "module_name": "reap.h",
+  "hash_id": "9406ce6830d1ea496d6a70a231c544ea5c062d963f5387c84c4e8b66fbc0f7af",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/scrub/reap.h",
+  "human_readable_source": "\n \n#ifndef __XFS_SCRUB_REAP_H__\n#define __XFS_SCRUB_REAP_H__\n\nint xrep_reap_agblocks(struct xfs_scrub *sc, struct xagb_bitmap *bitmap,\n\t\tconst struct xfs_owner_info *oinfo, enum xfs_ag_resv_type type);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

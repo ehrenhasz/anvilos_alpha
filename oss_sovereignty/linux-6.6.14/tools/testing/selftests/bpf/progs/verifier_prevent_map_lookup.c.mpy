@@ -1,0 +1,9 @@
+{
+  "module_name": "verifier_prevent_map_lookup.c",
+  "hash_id": "948d664c17b7c21fe39a05fb5fd2021df50da09215e163825b25b30a0860cfdc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/verifier_prevent_map_lookup.c",
+  "human_readable_source": "\n \n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_STACK_TRACE);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} map_stacktrace SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PROG_ARRAY);\n\t__uint(max_entries, 8);\n\t__uint(key_size, sizeof(int));\n\t__array(values, void (void));\n} map_prog2_socket SEC(\".maps\");\n\nSEC(\"perf_event\")\n__description(\"prevent map lookup in stack trace\")\n__failure __msg(\"cannot pass map_type 7 into func bpf_map_lookup_elem\")\n__naked void map_lookup_in_stack_trace(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr1 = 0;\t\t\t\t\t\t\\\n\t*(u64*)(r10 - 8) = r1;\t\t\t\t\\\n\tr2 = r10;\t\t\t\t\t\\\n\tr2 += -8;\t\t\t\t\t\\\n\tr1 = %[map_stacktrace] ll;\t\t\t\\\n\tcall %[bpf_map_lookup_elem];\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t:\n\t: __imm(bpf_map_lookup_elem),\n\t  __imm_addr(map_stacktrace)\n\t: __clobber_all);\n}\n\nSEC(\"socket\")\n__description(\"prevent map lookup in prog array\")\n__failure __msg(\"cannot pass map_type 3 into func bpf_map_lookup_elem\")\n__failure_unpriv\n__naked void map_lookup_in_prog_array(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr1 = 0;\t\t\t\t\t\t\\\n\t*(u64*)(r10 - 8) = r1;\t\t\t\t\\\n\tr2 = r10;\t\t\t\t\t\\\n\tr2 += -8;\t\t\t\t\t\\\n\tr1 = %[map_prog2_socket] ll;\t\t\t\\\n\tcall %[bpf_map_lookup_elem];\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t:\n\t: __imm(bpf_map_lookup_elem),\n\t  __imm_addr(map_prog2_socket)\n\t: __clobber_all);\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

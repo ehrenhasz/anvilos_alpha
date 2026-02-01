@@ -1,0 +1,9 @@
+{
+  "module_name": "leds-netxbig.h",
+  "hash_id": "57b87699fdf4760708cffcc48dab52cf050ae77c03b5100add7235c4b4158571",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/leds/leds-netxbig.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_LEDS_NETXBIG_H\n#define _DT_BINDINGS_LEDS_NETXBIG_H\n\n#define NETXBIG_LED_OFF\t\t0\n#define NETXBIG_LED_ON\t\t1\n#define NETXBIG_LED_SATA\t2\n#define NETXBIG_LED_TIMER1\t3\n#define NETXBIG_LED_TIMER2\t4\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

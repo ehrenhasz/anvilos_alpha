@@ -1,0 +1,9 @@
+{
+  "module_name": "xhci-pci.h",
+  "hash_id": "68b34e12e3a4021c7df1f937d2f628edbe9bc9b4a25d3456231fd566d4bea5f0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/host/xhci-pci.h",
+  "human_readable_source": " \n \n\n#ifndef XHCI_PCI_H\n#define XHCI_PCI_H\n\n#if IS_ENABLED(CONFIG_USB_XHCI_PCI_RENESAS)\nint renesas_xhci_check_request_fw(struct pci_dev *dev,\n\t\t\t\t  const struct pci_device_id *id);\n\n#else\nstatic int renesas_xhci_check_request_fw(struct pci_dev *dev,\n\t\t\t\t\t const struct pci_device_id *id)\n{\n\treturn 0;\n}\n\n#endif\n\nstruct xhci_driver_data {\n\tu64 quirks;\n\tconst char *firmware;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

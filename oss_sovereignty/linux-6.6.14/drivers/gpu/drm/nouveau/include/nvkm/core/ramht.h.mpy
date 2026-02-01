@@ -1,0 +1,9 @@
+{
+  "module_name": "ramht.h",
+  "hash_id": "0508c663b59673b867cc1726678a76335747837daee1596a0c8df42a106fa14a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/core/ramht.h",
+  "human_readable_source": " \n#ifndef __NVKM_RAMHT_H__\n#define __NVKM_RAMHT_H__\n#include <core/gpuobj.h>\nstruct nvkm_object;\n\nstruct nvkm_ramht_data {\n\tstruct nvkm_gpuobj *inst;\n\tint chid;\n\tu32 handle;\n};\n\nstruct nvkm_ramht {\n\tstruct nvkm_device *device;\n\tstruct nvkm_gpuobj *parent;\n\tstruct nvkm_gpuobj *gpuobj;\n\tint size;\n\tint bits;\n\tstruct nvkm_ramht_data data[];\n};\n\nint  nvkm_ramht_new(struct nvkm_device *, u32 size, u32 align,\n\t\t    struct nvkm_gpuobj *, struct nvkm_ramht **);\nvoid nvkm_ramht_del(struct nvkm_ramht **);\nint  nvkm_ramht_insert(struct nvkm_ramht *, struct nvkm_object *,\n\t\t       int chid, int addr, u32 handle, u32 context);\nvoid nvkm_ramht_remove(struct nvkm_ramht *, int cookie);\nstruct nvkm_gpuobj *\nnvkm_ramht_search(struct nvkm_ramht *, int chid, u32 handle);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

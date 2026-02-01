@@ -1,0 +1,9 @@
+{
+  "module_name": "proc-uptime.h",
+  "hash_id": "61e612bee083b0f6740cf7a318b65030ca881e36d7ae60a4046500521f46cf4c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/proc/proc-uptime.h",
+  "human_readable_source": " \n#undef NDEBUG\n#include <assert.h>\n#include <errno.h>\n#include <string.h>\n#include <stdlib.h>\n#include <unistd.h>\n#include <time.h>\n\n#include \"proc.h\"\n\nstatic uint64_t clock_boottime(void)\n{\n\tstruct timespec ts;\n\tint err;\n\n\terr = clock_gettime(CLOCK_BOOTTIME, &ts);\n\tassert(err >= 0);\n\n\treturn (ts.tv_sec * 100) + (ts.tv_nsec / 10000000);\n}\n\nstatic uint64_t proc_uptime(int fd)\n{\n\tuint64_t val1, val2;\n\tchar buf[64], *p;\n\tssize_t rv;\n\n\t \n\tmemset(buf, 0, sizeof(buf));\n\trv = pread(fd, buf, sizeof(buf), 0);\n\tassert(0 <= rv && rv <= sizeof(buf));\n\tbuf[sizeof(buf) - 1] = '\\0';\n\n\tp = buf;\n\n\tval1 = xstrtoull(p, &p);\n\tassert(p[0] == '.');\n\tassert('0' <= p[1] && p[1] <= '9');\n\tassert('0' <= p[2] && p[2] <= '9');\n\tassert(p[3] == ' ');\n\n\tval2 = (p[1] - '0') * 10 + p[2] - '0';\n\n\treturn val1 * 100 + val2;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

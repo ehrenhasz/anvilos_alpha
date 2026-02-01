@@ -1,0 +1,9 @@
+{
+  "module_name": "test_pinning.c",
+  "hash_id": "100d596d1cbf54f2723a968b1147ef9dd6d9e35259447fd38725378fd1cf9c63",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_pinning.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, __u64);\n\t__uint(pinning, LIBBPF_PIN_BY_NAME);\n} pinmap SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} nopinmap SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, __u64);\n\t__uint(pinning, LIBBPF_PIN_NONE);\n} nopinmap2 SEC(\".maps\");\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

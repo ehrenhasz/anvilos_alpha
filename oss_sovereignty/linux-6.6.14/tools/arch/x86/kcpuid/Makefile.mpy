@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b9505aceb9d5267ad3881ce575d10595296f21464009a390bd8b49cb70672cc5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/x86/kcpuid/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Makefile for x86/kcpuid tool\n\nkcpuid : kcpuid.c\n\nCFLAGS = -Wextra\n\nBINDIR ?= /usr/sbin\n\nHWDATADIR ?= /usr/share/misc/\n\noverride CFLAGS += -O2 -Wall -I../../../include\n\n%: %.c\n\t$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)\n\n.PHONY : clean\nclean :\n\t@rm -f kcpuid\n\ninstall : kcpuid\n\tinstall -d  $(DESTDIR)$(BINDIR)\n\tinstall -m 755 -p kcpuid $(DESTDIR)$(BINDIR)/kcpuid\n\tinstall -m 444 -p cpuid.csv $(HWDATADIR)/cpuid.csv\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

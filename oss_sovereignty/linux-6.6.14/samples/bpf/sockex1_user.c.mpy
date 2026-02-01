@@ -1,0 +1,9 @@
+{
+  "module_name": "sockex1_user.c",
+  "hash_id": "74746786c03f028e2c2cf4110f19a504d2202a5a4505d2b9c9b71e6ee11691a4",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/sockex1_user.c",
+  "human_readable_source": "\n#include <stdio.h>\n#include <assert.h>\n#include <linux/bpf.h>\n#include <bpf/bpf.h>\n#include <bpf/libbpf.h>\n#include \"sock_example.h\"\n#include <unistd.h>\n#include <arpa/inet.h>\n\nint main(int ac, char **argv)\n{\n\tstruct bpf_object *obj;\n\tstruct bpf_program *prog;\n\tint map_fd, prog_fd;\n\tchar filename[256];\n\tint i, sock, err;\n\tFILE *f;\n\n\tsnprintf(filename, sizeof(filename), \"%s_kern.o\", argv[0]);\n\n\tobj = bpf_object__open_file(filename, NULL);\n\tif (libbpf_get_error(obj))\n\t\treturn 1;\n\n\tprog = bpf_object__next_program(obj, NULL);\n\tbpf_program__set_type(prog, BPF_PROG_TYPE_SOCKET_FILTER);\n\n\terr = bpf_object__load(obj);\n\tif (err)\n\t\treturn 1;\n\n\tprog_fd = bpf_program__fd(prog);\n\tmap_fd = bpf_object__find_map_fd_by_name(obj, \"my_map\");\n\n\tsock = open_raw_sock(\"lo\");\n\n\tassert(setsockopt(sock, SOL_SOCKET, SO_ATTACH_BPF, &prog_fd,\n\t\t\t  sizeof(prog_fd)) == 0);\n\n\tf = popen(\"ping -4 -c5 localhost\", \"r\");\n\t(void) f;\n\n\tfor (i = 0; i < 5; i++) {\n\t\tlong long tcp_cnt, udp_cnt, icmp_cnt;\n\t\tint key;\n\n\t\tkey = IPPROTO_TCP;\n\t\tassert(bpf_map_lookup_elem(map_fd, &key, &tcp_cnt) == 0);\n\n\t\tkey = IPPROTO_UDP;\n\t\tassert(bpf_map_lookup_elem(map_fd, &key, &udp_cnt) == 0);\n\n\t\tkey = IPPROTO_ICMP;\n\t\tassert(bpf_map_lookup_elem(map_fd, &key, &icmp_cnt) == 0);\n\n\t\tprintf(\"TCP %lld UDP %lld ICMP %lld bytes\\n\",\n\t\t       tcp_cnt, udp_cnt, icmp_cnt);\n\t\tsleep(1);\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

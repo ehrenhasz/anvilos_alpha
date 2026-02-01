@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_immedok.c",
+  "hash_id": "35965a2c640f27c49326a9a68455f81e01d8c7a8286ff6b6bdbad5f091e8d9c5",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_immedok.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_immedok.c,v 1.6 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(void)\nimmedok(WINDOW *win, bool flag)\n{\n    T((T_CALLED(\"immedok(%p,%d)\"), (void *) win, flag));\n\n    if (win)\n\twin->_immed = flag;\n\n    returnVoid;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

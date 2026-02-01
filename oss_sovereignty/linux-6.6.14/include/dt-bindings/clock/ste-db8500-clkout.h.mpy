@@ -1,0 +1,9 @@
+{
+  "module_name": "ste-db8500-clkout.h",
+  "hash_id": "bbf308e1b9edd7ad3974d704297bfbdf848e7d57d705ff24b67a308a9d4184dc",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/ste-db8500-clkout.h",
+  "human_readable_source": " \n#ifndef __STE_CLK_DB8500_CLKOUT_H__\n#define __STE_CLK_DB8500_CLKOUT_H__\n\n#define DB8500_CLKOUT_1\t\t\t0\n#define DB8500_CLKOUT_2\t\t\t1\n\n#define DB8500_CLKOUT_SRC_CLK38M\t0\n#define DB8500_CLKOUT_SRC_ACLK\t\t1\n#define DB8500_CLKOUT_SRC_SYSCLK\t2\n#define DB8500_CLKOUT_SRC_LCDCLK\t3\n#define DB8500_CLKOUT_SRC_SDMMCCLK\t4\n#define DB8500_CLKOUT_SRC_TVCLK\t\t5\n#define DB8500_CLKOUT_SRC_TIMCLK\t6\n#define DB8500_CLKOUT_SRC_CLK009\t7\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

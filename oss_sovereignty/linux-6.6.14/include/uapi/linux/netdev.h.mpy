@@ -1,0 +1,9 @@
+{
+  "module_name": "netdev.h",
+  "hash_id": "bc2bafbb6cd104887fd7f8248eac5fb39d901fd8f216ee782b02444db21a3bc9",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netdev.h",
+  "human_readable_source": " \n \n \n \n\n#ifndef _UAPI_LINUX_NETDEV_H\n#define _UAPI_LINUX_NETDEV_H\n\n#define NETDEV_FAMILY_NAME\t\"netdev\"\n#define NETDEV_FAMILY_VERSION\t1\n\n \nenum netdev_xdp_act {\n\tNETDEV_XDP_ACT_BASIC = 1,\n\tNETDEV_XDP_ACT_REDIRECT = 2,\n\tNETDEV_XDP_ACT_NDO_XMIT = 4,\n\tNETDEV_XDP_ACT_XSK_ZEROCOPY = 8,\n\tNETDEV_XDP_ACT_HW_OFFLOAD = 16,\n\tNETDEV_XDP_ACT_RX_SG = 32,\n\tNETDEV_XDP_ACT_NDO_XMIT_SG = 64,\n\n\t \n\tNETDEV_XDP_ACT_MASK = 127,\n};\n\nenum {\n\tNETDEV_A_DEV_IFINDEX = 1,\n\tNETDEV_A_DEV_PAD,\n\tNETDEV_A_DEV_XDP_FEATURES,\n\tNETDEV_A_DEV_XDP_ZC_MAX_SEGS,\n\n\t__NETDEV_A_DEV_MAX,\n\tNETDEV_A_DEV_MAX = (__NETDEV_A_DEV_MAX - 1)\n};\n\nenum {\n\tNETDEV_CMD_DEV_GET = 1,\n\tNETDEV_CMD_DEV_ADD_NTF,\n\tNETDEV_CMD_DEV_DEL_NTF,\n\tNETDEV_CMD_DEV_CHANGE_NTF,\n\n\t__NETDEV_CMD_MAX,\n\tNETDEV_CMD_MAX = (__NETDEV_CMD_MAX - 1)\n};\n\n#define NETDEV_MCGRP_MGMT\t\"mgmt\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

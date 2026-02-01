@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ee83220f3a5b2251f645fa7d7b2318144eb01be990930c6063a3a58b1c80f0c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/netdevsim/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_NETDEVSIM) += netdevsim.o\n\nnetdevsim-objs := \\\n\tnetdev.o dev.o ethtool.o fib.o bus.o health.o hwstats.o udp_tunnels.o\n\nifeq ($(CONFIG_BPF_SYSCALL),y)\nnetdevsim-objs += \\\n\tbpf.o\nendif\n\nifneq ($(CONFIG_XFRM_OFFLOAD),)\nnetdevsim-objs += ipsec.o\nendif\n\nifneq ($(CONFIG_PSAMPLE),)\nnetdevsim-objs += psample.o\nendif\n\nifneq ($(CONFIG_MACSEC),)\nnetdevsim-objs += macsec.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

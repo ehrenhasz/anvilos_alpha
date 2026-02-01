@@ -1,0 +1,9 @@
+{
+  "module_name": "xip.h",
+  "hash_id": "3d96054fab3c022aaf72fcf4fa6d37d43be7bceb5ad2ba18b4b47e7a33e15f4f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/xip.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MTD_XIP_H__\n#define __LINUX_MTD_XIP_H__\n\n\n#ifdef CONFIG_MTD_XIP\n\n \n#include <linux/compiler.h>\n\n \n#ifdef CONFIG_XIP_KERNEL\n#define __xipram noinline __section(\".xiptext\")\n#endif\n\n \n\n#include <asm/mtd-xip.h>\n\n#ifndef xip_irqpending\n\n#warning \"missing IRQ and timer primitives for XIP MTD support\"\n#warning \"some of the XIP MTD support code will be disabled\"\n#warning \"your system will therefore be unresponsive when writing or erasing flash\"\n\n#define xip_irqpending()\t(0)\n#define xip_currtime()\t\t(0)\n#define xip_elapsed_since(x)\t(0)\n\n#endif\n\n#ifndef xip_iprefetch\n#define xip_iprefetch()\t\tdo { } while (0)\n#endif\n\n \n#ifndef xip_cpu_idle\n#define xip_cpu_idle()  do { } while (0)\n#endif\n\n#endif  \n\n#ifndef __xipram\n#define __xipram\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

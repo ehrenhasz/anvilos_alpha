@@ -1,0 +1,9 @@
+{
+  "module_name": "types.h",
+  "hash_id": "5ad9c21cbc8873f13f2586579a6767c4a8114fb60180eb9ff821be9a943ead57",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/types.h",
+  "human_readable_source": " \n\n#ifndef _SPL_TYPES_H\n#define\t_SPL_TYPES_H\n\n#include <linux/types.h>\n\ntypedef enum {\n\tB_FALSE = 0,\n\tB_TRUE = 1\n} boolean_t;\n\ntypedef unsigned char\t\tuchar_t;\ntypedef unsigned short\t\tushort_t;\ntypedef unsigned int\t\tuint_t;\ntypedef unsigned long\t\tulong_t;\ntypedef unsigned long long\tu_longlong_t;\ntypedef long long\t\tlonglong_t;\n\ntypedef long\t\t\tintptr_t;\ntypedef unsigned long long\trlim64_t;\n\ntypedef struct task_struct\tkthread_t;\ntypedef struct task_struct\tproc_t;\n\ntypedef int\t\t\tid_t;\ntypedef short\t\t\tpri_t;\ntypedef short\t\t\tindex_t;\ntypedef longlong_t\t\toffset_t;\ntypedef u_longlong_t\t\tu_offset_t;\ntypedef ulong_t\t\t\tpgcnt_t;\n\ntypedef int\t\t\tmajor_t;\ntypedef int\t\t\tminor_t;\n\nstruct user_namespace;\n#ifdef HAVE_IOPS_CREATE_IDMAP\n#include <linux/refcount.h>\nstruct mnt_idmap {\n\tstruct user_namespace *owner;\n\trefcount_t count;\n};\ntypedef struct mnt_idmap\tzidmap_t;\n#define\tidmap_owner(p)\t(((struct mnt_idmap *)p)->owner)\n#else\ntypedef struct user_namespace\tzidmap_t;\n#define\tidmap_owner(p)\t((struct user_namespace *)p)\n#endif\n\nextern zidmap_t *zfs_init_idmap;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

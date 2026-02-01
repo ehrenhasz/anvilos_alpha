@@ -1,0 +1,9 @@
+{
+  "module_name": "fs_stack.h",
+  "hash_id": "7f6f6e3e224776079de968a46ccc62f785f10a75bd049952b0cdd03df3228912",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fs_stack.h",
+  "human_readable_source": " \n#ifndef _LINUX_FS_STACK_H\n#define _LINUX_FS_STACK_H\n\n \n\n#include <linux/fs.h>\n\n \nextern void fsstack_copy_attr_all(struct inode *dest, const struct inode *src);\nextern void fsstack_copy_inode_size(struct inode *dst, struct inode *src);\n\n \nstatic inline void fsstack_copy_attr_atime(struct inode *dest,\n\t\t\t\t\t   const struct inode *src)\n{\n\tdest->i_atime = src->i_atime;\n}\n\nstatic inline void fsstack_copy_attr_times(struct inode *dest,\n\t\t\t\t\t   const struct inode *src)\n{\n\tdest->i_atime = src->i_atime;\n\tdest->i_mtime = src->i_mtime;\n\tinode_set_ctime_to_ts(dest, inode_get_ctime(src));\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kasan.h",
+  "hash_id": "70e34042ee0b5fd1615f2db5dbdfee4c989a22ce29fe0671579eac5e7ede96cb",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/kasan.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_KASAN_H\n#define _ASM_X86_KASAN_H\n\n#include <linux/const.h>\n#define KASAN_SHADOW_OFFSET _AC(CONFIG_KASAN_SHADOW_OFFSET, UL)\n#define KASAN_SHADOW_SCALE_SHIFT 3\n\n \n#define KASAN_SHADOW_START      (KASAN_SHADOW_OFFSET + \\\n\t\t\t\t\t((-1UL << __VIRTUAL_MASK_SHIFT) >> \\\n\t\t\t\t\t\tKASAN_SHADOW_SCALE_SHIFT))\n \n#define KASAN_SHADOW_END        (KASAN_SHADOW_START + \\\n\t\t\t\t\t(1ULL << (__VIRTUAL_MASK_SHIFT - \\\n\t\t\t\t\t\t  KASAN_SHADOW_SCALE_SHIFT)))\n\n#ifndef __ASSEMBLY__\n\n#ifdef CONFIG_KASAN\nvoid __init kasan_early_init(void);\nvoid __init kasan_init(void);\nvoid __init kasan_populate_shadow_for_vaddr(void *va, size_t size, int nid);\n#else\nstatic inline void kasan_early_init(void) { }\nstatic inline void kasan_init(void) { }\nstatic inline void kasan_populate_shadow_for_vaddr(void *va, size_t size,\n\t\t\t\t\t\t   int nid) { }\n#endif\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

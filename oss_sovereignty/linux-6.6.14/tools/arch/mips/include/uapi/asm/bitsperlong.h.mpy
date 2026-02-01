@@ -1,0 +1,9 @@
+{
+  "module_name": "bitsperlong.h",
+  "hash_id": "df9ae2af652f21004b8fc8dc98afb13f73dc258b739dd30ac0fbe6d352291576",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/mips/include/uapi/asm/bitsperlong.h",
+  "human_readable_source": " \n#ifndef __ASM_MIPS_BITSPERLONG_H\n#define __ASM_MIPS_BITSPERLONG_H\n\n#define __BITS_PER_LONG _MIPS_SZLONG\n\n#include <asm-generic/bitsperlong.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

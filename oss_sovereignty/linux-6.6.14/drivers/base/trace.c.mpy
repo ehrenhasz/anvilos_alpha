@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "40fd65301db26b2bdb122ee8c9000f05a0fbe03aaab71e067795938826a8d602",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/base/trace.c",
+  "human_readable_source": " \n \n\n#define CREATE_TRACE_POINTS\n#include \"trace.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

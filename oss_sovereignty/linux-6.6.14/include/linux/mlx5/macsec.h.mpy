@@ -1,0 +1,9 @@
+{
+  "module_name": "macsec.h",
+  "hash_id": "4d2b4253a2f00ea87b3f5c47bde445771761934e0a228b2994872d9eeccd1102",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mlx5/macsec.h",
+  "human_readable_source": " \n \n\n#ifndef MLX5_MACSEC_H\n#define MLX5_MACSEC_H\n\n#ifdef CONFIG_MLX5_MACSEC\nstruct mlx5_macsec_event_data {\n\tstruct mlx5_macsec_fs *macsec_fs;\n\tvoid *macdev;\n\tu32 fs_id;\n\tbool is_tx;\n};\n\nint mlx5_macsec_add_roce_rule(void *macdev, const struct sockaddr *addr, u16 gid_idx,\n\t\t\t      struct list_head *tx_rules_list, struct list_head *rx_rules_list,\n\t\t\t      struct mlx5_macsec_fs *macsec_fs);\n\nvoid mlx5_macsec_del_roce_rule(u16 gid_idx, struct mlx5_macsec_fs *macsec_fs,\n\t\t\t       struct list_head *tx_rules_list, struct list_head *rx_rules_list);\n\nvoid mlx5_macsec_add_roce_sa_rules(u32 fs_id, const struct sockaddr *addr, u16 gid_idx,\n\t\t\t\t   struct list_head *tx_rules_list,\n\t\t\t\t   struct list_head *rx_rules_list,\n\t\t\t\t   struct mlx5_macsec_fs *macsec_fs, bool is_tx);\n\nvoid mlx5_macsec_del_roce_sa_rules(u32 fs_id, struct mlx5_macsec_fs *macsec_fs,\n\t\t\t\t   struct list_head *tx_rules_list,\n\t\t\t\t   struct list_head *rx_rules_list, bool is_tx);\n\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

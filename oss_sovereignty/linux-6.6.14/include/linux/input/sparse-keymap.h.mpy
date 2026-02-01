@@ -1,0 +1,9 @@
+{
+  "module_name": "sparse-keymap.h",
+  "hash_id": "28f3c4dcf16a29501fc90e36fffb18712f3fcb48a323381095e61c8008537990",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/input/sparse-keymap.h",
+  "human_readable_source": " \n#ifndef _SPARSE_KEYMAP_H\n#define _SPARSE_KEYMAP_H\n\n \n\n#define KE_END\t\t0\t \n#define KE_KEY\t\t1\t \n#define KE_SW\t\t2\t \n#define KE_VSW\t\t3\t \n#define KE_IGNORE\t4\t \n#define KE_LAST\t\tKE_IGNORE\n\n \nstruct key_entry {\n\tint type;\t\t \n\tu32 code;\n\tunion {\n\t\tu16 keycode;\t\t \n\t\tstruct {\t\t \n\t\t\tu8 code;\n\t\t\tu8 value;\t \n\t\t} sw;\n\t};\n};\n\nstruct key_entry *sparse_keymap_entry_from_scancode(struct input_dev *dev,\n\t\t\t\t\t\t    unsigned int code);\nstruct key_entry *sparse_keymap_entry_from_keycode(struct input_dev *dev,\n\t\t\t\t\t\t   unsigned int code);\nint sparse_keymap_setup(struct input_dev *dev,\n\t\t\tconst struct key_entry *keymap,\n\t\t\tint (*setup)(struct input_dev *, struct key_entry *));\n\nvoid sparse_keymap_report_entry(struct input_dev *dev, const struct key_entry *ke,\n\t\t\t\tunsigned int value, bool autorelease);\n\nbool sparse_keymap_report_event(struct input_dev *dev, unsigned int code,\n\t\t\t\tunsigned int value, bool autorelease);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

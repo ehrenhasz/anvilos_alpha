@@ -1,0 +1,9 @@
+{
+  "module_name": "hv.c",
+  "hash_id": "a7c33fec024509890b33788978af6048b3422f2a0582e8f951fb0ff2822258b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/lib/hv.c",
+  "human_readable_source": "\n\n\n#include <linux/hyperv.h>\n#include \"mlx5_core.h\"\n#include \"lib/hv.h\"\n\nstatic int mlx5_hv_config_common(struct mlx5_core_dev *dev, void *buf, int len,\n\t\t\t\t int offset, bool read)\n{\n\tint rc = -EOPNOTSUPP;\n\tint bytes_returned;\n\tint block_id;\n\n\tif (offset % HV_CONFIG_BLOCK_SIZE_MAX || len != HV_CONFIG_BLOCK_SIZE_MAX)\n\t\treturn -EINVAL;\n\n\tblock_id = offset / HV_CONFIG_BLOCK_SIZE_MAX;\n\n\trc = read ?\n\t     hyperv_read_cfg_blk(dev->pdev, buf,\n\t\t\t\t HV_CONFIG_BLOCK_SIZE_MAX, block_id,\n\t\t\t\t &bytes_returned) :\n\t     hyperv_write_cfg_blk(dev->pdev, buf,\n\t\t\t\t  HV_CONFIG_BLOCK_SIZE_MAX, block_id);\n\n\t \n\tif (read && !rc && len != bytes_returned)\n\t\trc = -EIO;\n\n\tif (rc) {\n\t\tmlx5_core_err(dev, \"Failed to %s hv config, err = %d, len = %d, offset = %d\\n\",\n\t\t\t      read ? \"read\" : \"write\", rc, len,\n\t\t\t      offset);\n\t\treturn rc;\n\t}\n\n\treturn 0;\n}\n\nint mlx5_hv_read_config(struct mlx5_core_dev *dev, void *buf, int len,\n\t\t\tint offset)\n{\n\treturn mlx5_hv_config_common(dev, buf, len, offset, true);\n}\n\nint mlx5_hv_write_config(struct mlx5_core_dev *dev, void *buf, int len,\n\t\t\t int offset)\n{\n\treturn mlx5_hv_config_common(dev, buf, len, offset, false);\n}\n\nint mlx5_hv_register_invalidate(struct mlx5_core_dev *dev, void *context,\n\t\t\t\tvoid (*block_invalidate)(void *context,\n\t\t\t\t\t\t\t u64 block_mask))\n{\n\treturn hyperv_reg_block_invalidate(dev->pdev, context,\n\t\t\t\t\t   block_invalidate);\n}\n\nvoid mlx5_hv_unregister_invalidate(struct mlx5_core_dev *dev)\n{\n\thyperv_reg_block_invalidate(dev->pdev, NULL, NULL);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

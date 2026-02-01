@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,osm-l3.h",
+  "hash_id": "3b1461026691ab92a95c13627a19bb69a57de713c98e41c5a55ab38f90ae4d1a",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/interconnect/qcom,osm-l3.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_INTERCONNECT_QCOM_OSM_L3_H\n#define __DT_BINDINGS_INTERCONNECT_QCOM_OSM_L3_H\n\n#define MASTER_OSM_L3_APPS\t0\n#define SLAVE_OSM_L3\t\t1\n\n#define MASTER_EPSS_L3_APPS\t0\n#define SLAVE_EPSS_L3_SHARED\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

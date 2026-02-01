@@ -1,0 +1,9 @@
+{
+  "module_name": "audio-fclose.rst",
+  "hash_id": "16bebee6067db549454144ab24507dfb7fd091f1fec8aab34a48160fe3c280c9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/audio-fclose.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n.. c:namespace:: DTV.audio\n\n.. _audio_fclose:\n\n========================\nDigital TV audio close()\n========================\n\nName\n----\n\nDigital TV audio close()\n\n.. attention:: This ioctl is deprecated\n\nSynopsis\n--------\n\n.. c:function:: int close(int fd)\n\nArguments\n---------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -  .. row 1\n\n       -  int fd\n\n       -  File descriptor returned by a previous call to open().\n\nDescription\n-----------\n\nThis system call closes a previously opened audio device.\n\nReturn Value\n------------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -  .. row 1\n\n       -  ``EBADF``\n\n       -  fd is not a valid open file descriptor.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

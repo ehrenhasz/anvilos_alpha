@@ -1,0 +1,9 @@
+{
+  "module_name": "sysevent.h",
+  "hash_id": "afa6e3e4f482e4b54cca26c5920aec6688953e51156f5a6adf46d1d0044a4010",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/sysevent.h",
+  "human_readable_source": " \n \n\n#ifndef _SYS_SYSEVENT_H\n#define\t_SYS_SYSEVENT_H\n\n#include <sys/nvpair.h>\n\ntypedef struct sysevent {\n\tnvlist_t *resource;\n} sysevent_t;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

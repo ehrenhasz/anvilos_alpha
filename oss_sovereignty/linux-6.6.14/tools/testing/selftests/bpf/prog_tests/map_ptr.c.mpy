@@ -1,0 +1,9 @@
+{
+  "module_name": "map_ptr.c",
+  "hash_id": "4736f4cf3f98960cfc7489e4234844e61395cd279a1b2958c5da966661986218",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/map_ptr.c",
+  "human_readable_source": "\n\n\n#include <test_progs.h>\n#include <network_helpers.h>\n\n#include \"map_ptr_kern.lskel.h\"\n\nvoid test_map_ptr(void)\n{\n\tstruct map_ptr_kern_lskel *skel;\n\tchar buf[128];\n\tint err;\n\tint page_size = getpagesize();\n\tLIBBPF_OPTS(bpf_test_run_opts, topts,\n\t\t.data_in = &pkt_v4,\n\t\t.data_size_in = sizeof(pkt_v4),\n\t\t.data_out = buf,\n\t\t.data_size_out = sizeof(buf),\n\t\t.repeat = 1,\n\t);\n\n\tskel = map_ptr_kern_lskel__open();\n\tif (!ASSERT_OK_PTR(skel, \"skel_open\"))\n\t\treturn;\n\n\tskel->maps.m_ringbuf.max_entries = page_size;\n\n\terr = map_ptr_kern_lskel__load(skel);\n\tif (!ASSERT_OK(err, \"skel_load\"))\n\t\tgoto cleanup;\n\n\tskel->bss->page_size = page_size;\n\n\terr = bpf_prog_test_run_opts(skel->progs.cg_skb.prog_fd, &topts);\n\n\tif (!ASSERT_OK(err, \"test_run\"))\n\t\tgoto cleanup;\n\n\tif (!ASSERT_NEQ(topts.retval, 0, \"test_run retval\"))\n\t\tgoto cleanup;\n\ncleanup:\n\tmap_ptr_kern_lskel__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

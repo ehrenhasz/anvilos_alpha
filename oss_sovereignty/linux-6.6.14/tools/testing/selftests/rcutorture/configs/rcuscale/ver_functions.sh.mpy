@@ -1,0 +1,9 @@
+{
+  "module_name": "ver_functions.sh",
+  "hash_id": "bfc6a2c4de4b6c4863d3df7e29c3f268c986d35686ae7f159d11d87328e0e275",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcuscale/ver_functions.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Torture-suite-dependent shell functions for the rest of the scripts.\n#\n# Copyright (C) IBM Corporation, 2015\n#\n# Authors: Paul E. McKenney <paulmck@linux.ibm.com>\n\n# per_version_boot_params bootparam-string config-file seconds\n#\n# Adds per-version torture-module parameters to kernels supporting them.\nper_version_boot_params () {\n\techo\trcuscale.shutdown=1 \\\n\t\trcuscale.verbose=0 \\\n\t\t$1\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ucs2_string.h",
+  "hash_id": "da7e4ff32a88c322ac109f0974ec2d035f6c03c6d88f85d1f0d948edc659fad4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ucs2_string.h",
+  "human_readable_source": " \n#ifndef _LINUX_UCS2_STRING_H_\n#define _LINUX_UCS2_STRING_H_\n\n#include <linux/types.h>\t \n#include <linux/stddef.h>\t \n\ntypedef u16 ucs2_char_t;\n\nunsigned long ucs2_strnlen(const ucs2_char_t *s, size_t maxlength);\nunsigned long ucs2_strlen(const ucs2_char_t *s);\nunsigned long ucs2_strsize(const ucs2_char_t *data, unsigned long maxlength);\nint ucs2_strncmp(const ucs2_char_t *a, const ucs2_char_t *b, size_t len);\n\nunsigned long ucs2_utf8size(const ucs2_char_t *src);\nunsigned long ucs2_as_utf8(u8 *dest, const ucs2_char_t *src,\n\t\t\t   unsigned long maxlength);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "80f4920404629e28c9897feec9a33687fd892659134e7e3c0fd247d5f0a1bc59",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/atheros/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Atheros network device drivers.\n#\n\nobj-$(CONFIG_AG71XX) += ag71xx.o\nobj-$(CONFIG_ATL1) += atlx/\nobj-$(CONFIG_ATL2) += atlx/\nobj-$(CONFIG_ATL1E) += atl1e/\nobj-$(CONFIG_ATL1C) += atl1c/\nobj-$(CONFIG_ALX) += alx/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

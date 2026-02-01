@@ -1,0 +1,9 @@
+{
+  "module_name": "bmc150_magn.h",
+  "hash_id": "1b52bfe247743c2cb41e2c24a6a77775add245e3cd897adf761a7d15a085bc92",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/magnetometer/bmc150_magn.h",
+  "human_readable_source": " \n#ifndef _BMC150_MAGN_H_\n#define _BMC150_MAGN_H_\n\nextern const struct regmap_config bmc150_magn_regmap_config;\nextern const struct dev_pm_ops bmc150_magn_pm_ops;\n\nint bmc150_magn_probe(struct device *dev, struct regmap *regmap, int irq,\n\t\t      const char *name);\nvoid bmc150_magn_remove(struct device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

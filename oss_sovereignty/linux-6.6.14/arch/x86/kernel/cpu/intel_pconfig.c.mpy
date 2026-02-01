@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pconfig.c",
+  "hash_id": "eb40c508069ddc4ea83ea645ca6ff06259160f3c28ee8c43b668b5d3f176b978",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/cpu/intel_pconfig.c",
+  "human_readable_source": "\n \n\n#include <asm/cpufeature.h>\n#include <asm/intel_pconfig.h>\n\n#define\tPCONFIG_CPUID\t\t\t0x1b\n\n#define PCONFIG_CPUID_SUBLEAF_MASK\t((1 << 12) - 1)\n\n \nenum {\n\tPCONFIG_CPUID_SUBLEAF_INVALID\t= 0,\n\tPCONFIG_CPUID_SUBLEAF_TARGETID\t= 1,\n};\n\n \nstatic u64 targets_supported __read_mostly;\n\nint pconfig_target_supported(enum pconfig_target target)\n{\n\t \n\tBUILD_BUG_ON(PCONFIG_TARGET_NR >= 64);\n\n\tif (WARN_ON_ONCE(target >= 64))\n\t\treturn 0;\n\treturn targets_supported & (1ULL << target);\n}\n\nstatic int __init intel_pconfig_init(void)\n{\n\tint subleaf;\n\n\tif (!boot_cpu_has(X86_FEATURE_PCONFIG))\n\t\treturn 0;\n\n\t \n\tfor (subleaf = 0; subleaf < INT_MAX; subleaf++) {\n\t\tstruct cpuid_regs regs;\n\n\t\tcpuid_count(PCONFIG_CPUID, subleaf,\n\t\t\t\t&regs.eax, &regs.ebx, &regs.ecx, &regs.edx);\n\n\t\tswitch (regs.eax & PCONFIG_CPUID_SUBLEAF_MASK) {\n\t\tcase PCONFIG_CPUID_SUBLEAF_INVALID:\n\t\t\t \n\t\t\tgoto out;\n\t\tcase PCONFIG_CPUID_SUBLEAF_TARGETID:\n\t\t\t \n\t\t\tif (regs.ebx < 64)\n\t\t\t\ttargets_supported |= (1ULL << regs.ebx);\n\t\t\tif (regs.ecx < 64)\n\t\t\t\ttargets_supported |= (1ULL << regs.ecx);\n\t\t\tif (regs.edx < 64)\n\t\t\t\ttargets_supported |= (1ULL << regs.edx);\n\t\t\tbreak;\n\t\tdefault:\n\t\t\t \n\t\t\tbreak;\n\t\t}\n\t}\nout:\n\treturn 0;\n}\narch_initcall(intel_pconfig_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

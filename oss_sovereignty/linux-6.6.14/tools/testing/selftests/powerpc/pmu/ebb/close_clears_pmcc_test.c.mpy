@@ -1,0 +1,9 @@
+{
+  "module_name": "close_clears_pmcc_test.c",
+  "hash_id": "5b9616be5d5597dd17f0f18b1b6f245d236014c0fbb9bba7b0b196bd5f76be6b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/ebb/close_clears_pmcc_test.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <stdlib.h>\n#include <setjmp.h>\n#include <signal.h>\n\n#include \"ebb.h\"\n\n\n \n\nint close_clears_pmcc(void)\n{\n\tstruct event event;\n\n\tSKIP_IF(!ebb_is_supported());\n\n\tevent_init_named(&event, 0x1001e, \"cycles\");\n\tevent_leader_ebb_init(&event);\n\n\tFAIL_IF(event_open(&event));\n\n\tebb_enable_pmc_counting(1);\n\tsetup_ebb_handler(standard_ebb_callee);\n\tebb_global_enable();\n\tFAIL_IF(ebb_event_enable(&event));\n\n\tmtspr(SPRN_PMC1, pmc_sample_period(sample_period));\n\n\twhile (ebb_state.stats.ebb_count < 1)\n\t\tFAIL_IF(core_busy_loop());\n\n\tebb_global_disable();\n\tevent_close(&event);\n\n\tFAIL_IF(ebb_state.stats.ebb_count == 0);\n\n\t \n\n\tFAIL_IF(catch_sigill(write_pmc1));\n\n\t \n\tmfspr(SPRN_EBBHR);\n\tmfspr(SPRN_EBBRR);\n\tmfspr(SPRN_BESCR);\n\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(close_clears_pmcc, \"close_clears_pmcc\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

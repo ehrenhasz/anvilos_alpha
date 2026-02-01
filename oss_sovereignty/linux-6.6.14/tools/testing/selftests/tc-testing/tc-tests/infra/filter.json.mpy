@@ -1,0 +1,9 @@
+{
+  "module_name": "filter.json",
+  "hash_id": "30ea81734f7dbe9d626fd97a4eb56291278ea60ab13d0db86fd20451e1bbe910",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tc-testing/tc-tests/infra/filter.json",
+  "human_readable_source": "[\n    {\n        \"id\": \"c2b4\",\n        \"name\": \"soft lockup alarm will be not generated after delete the prio 0 filter of the chain\",\n        \"category\": [\n            \"filter\",\n            \"chain\"\n        ],\n        \"setup\": [\n            \"$IP link add dev $DUMMY type dummy || /bin/true\",\n            \"$TC qdisc add dev $DUMMY root handle 1: htb default 1\",\n            \"$TC chain add dev $DUMMY\",\n            \"$TC filter del dev $DUMMY chain 0 parent 1: prio 0\"\n        ],\n        \"cmdUnderTest\": \"$TC filter add dev $DUMMY chain 0 parent 1:\",\n        \"expExitCode\": \"2\",\n        \"verifyCmd\": \"$TC chain ls dev $DUMMY\",\n        \"matchPattern\": \"chain parent 1: chain 0\",\n        \"matchCount\": \"1\",\n        \"teardown\": [\n            \"$TC qdisc del dev $DUMMY root handle 1: htb default 1\",\n            \"$IP link del dev $DUMMY type dummy\"\n        ]\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

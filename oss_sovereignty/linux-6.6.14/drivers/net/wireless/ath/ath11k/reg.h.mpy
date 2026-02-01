@@ -1,0 +1,9 @@
+{
+  "module_name": "reg.h",
+  "hash_id": "d5f13fa5e8f15a83e627907c5fa5cbe24bef08c937bf18a20f1ee2c2d8226aac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath11k/reg.h",
+  "human_readable_source": " \n \n\n#ifndef ATH11K_REG_H\n#define ATH11K_REG_H\n\n#include <linux/kernel.h>\n#include <net/regulatory.h>\n\nstruct ath11k_base;\nstruct ath11k;\n\n \nenum ath11k_dfs_region {\n\tATH11K_DFS_REG_UNSET,\n\tATH11K_DFS_REG_FCC,\n\tATH11K_DFS_REG_ETSI,\n\tATH11K_DFS_REG_MKK,\n\tATH11K_DFS_REG_CN,\n\tATH11K_DFS_REG_KR,\n\tATH11K_DFS_REG_MKK_N,\n\tATH11K_DFS_REG_UNDEF,\n};\n\n \nvoid ath11k_reg_init(struct ath11k *ar);\nvoid ath11k_reg_free(struct ath11k_base *ab);\nvoid ath11k_regd_update_work(struct work_struct *work);\nstruct ieee80211_regdomain *\nath11k_reg_build_regd(struct ath11k_base *ab,\n\t\t      struct cur_regulatory_info *reg_info, bool intersect);\nint ath11k_regd_update(struct ath11k *ar);\nint ath11k_reg_update_chan_list(struct ath11k *ar, bool wait);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "group_constraint_thresh_ctl_test.c",
+  "hash_id": "51bfb10009e4fbd393cc5a67cf0bb210e947e947e7cb9f6d365a98e5019e962e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/event_code_tests/group_constraint_thresh_ctl_test.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <stdlib.h>\n\n#include \"../event.h\"\n#include \"utils.h\"\n#include \"../sampling_tests/misc.h\"\n\n \n#define EventCode_1 0x35340401e0\n#define EventCode_2 0x34340101ec\n#define EventCode_3 0x35340101ec\n\n \nstatic int group_constraint_thresh_ctl(void)\n{\n\tstruct event event, leader;\n\n\t \n\tSKIP_IF(platform_check_for_tests());\n\n\t \n\tevent_init(&leader, EventCode_1);\n\tFAIL_IF(event_open(&leader));\n\n\tevent_init(&event, EventCode_2);\n\n\t \n\tFAIL_IF(!event_open_with_group(&event, leader.fd));\n\n\tevent_close(&event);\n\n\t \n\tevent_init(&event, EventCode_3);\n\n\t  \n\tFAIL_IF(event_open_with_group(&event, leader.fd));\n\n\tevent_close(&leader);\n\tevent_close(&event);\n\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(group_constraint_thresh_ctl, \"group_constraint_thresh_ctl\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

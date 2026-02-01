@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b61d381b2476ed7dc684e5af5926fb4d4fd95b03aa58e344d2084633789182cb",
+  "original_prompt": "Ingested from linux-6.6.14/samples/binderfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nuserprogs-always-y += binderfs_example\n\nuserccflags += -I usr/include\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

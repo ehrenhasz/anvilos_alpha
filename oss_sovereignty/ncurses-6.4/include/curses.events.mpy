@@ -1,0 +1,9 @@
+{
+  "module_name": "curses.events",
+  "hash_id": "42faec03eb7bfa5dfe1f611c3533e54c6f6326c353f5c9fc013dc8de647bb339",
+  "original_prompt": "Ingested from ncurses-6.4/include/curses.events",
+  "human_readable_source": "/* $Id*/\n/*\n * vile:cmode:\n * This file is part of ncurses, designed to be appended after curses.h.in\n * (see that file for the relevant copyright).\n */\n\n/*\n * This is an extension to support events...\n */\n#ifdef NCURSES_WGETCH_EVENTS\n#if !defined(__BEOS__) || defined(__HAIKU__)\n   /* Fix _nc_timed_wait() on BEOS... */\n#  define NCURSES_EVENT_VERSION\t1\n#endif\t/* !defined(__BEOS__) */\n\n/*\n * Bits to set in _nc_event.data.flags\n */\n#  define _NC_EVENT_TIMEOUT_MSEC\t1\n#  define _NC_EVENT_FILE\t\t2\n#  define _NC_EVENT_FILE_READABLE\t2\n#  if 0\t\t\t\t\t/* Not supported yet... */\n#    define _NC_EVENT_FILE_WRITABLE\t4\n#    define _NC_EVENT_FILE_EXCEPTION\t8\n#  endif\n\ntypedef struct\n{\n    int type;\n    union\n    {\n\tlong timeout_msec;\t/* _NC_EVENT_TIMEOUT_MSEC */\n\tstruct\n\t{\n\t    unsigned int flags;\n\t    int fd;\n\t    unsigned int result;\n\t} fev;\t\t\t\t/* _NC_EVENT_FILE */\n    } data;\n} _nc_event;\n\ntypedef struct\n{\n    int count;\n    int result_flags;\t/* _NC_EVENT_TIMEOUT_MSEC or _NC_EVENT_FILE_READABLE */\n    _nc_event *events[1];\n} _nc_eventlist;\n\nextern NCURSES_EXPORT(int) wgetch_events (WINDOW *, _nc_eventlist *) GCC_DEPRECATED(experimental option); /* experimental */\nextern NCURSES_EXPORT(int) wgetnstr_events (WINDOW *,char *,int,_nc_eventlist *) GCC_DEPRECATED(experimental option); /* experimental */\n\n#define KEY_EVENT\t0633\t\t/* We were interrupted by an event */\n\n#endif /* NCURSES_WGETCH_EVENTS */\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

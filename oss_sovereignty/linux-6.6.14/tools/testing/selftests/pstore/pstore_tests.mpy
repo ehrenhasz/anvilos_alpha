@@ -1,0 +1,9 @@
+{
+  "module_name": "pstore_tests",
+  "hash_id": "6fd85ff04de8dfddc1593beb080fa82464533aabae1f3cffcd1316ed5c77ba33",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/pstore/pstore_tests",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-only\n\n# pstore_tests - Check pstore's behavior before crash/reboot\n#\n# Copyright (C) Hitachi Ltd., 2015\n#  Written by Hiraku Toyooka <hiraku.toyooka.gu@hitachi.com>\n#\n\n. ./common_tests\n\nprlog -n \"Checking pstore console is registered ... \"\ndmesg | grep -Eq \"console \\[(pstore|${backend})\"\nshow_result $?\n\nprlog -n \"Checking /dev/pmsg0 exists ... \"\ntest -e /dev/pmsg0\nshow_result $?\n\nprlog -n \"Writing unique string to /dev/pmsg0 ... \"\nif [ -e \"/dev/pmsg0\" ]; then\n    echo \"${TEST_STRING_PATTERN}\"\"$UUID\" > /dev/pmsg0\n    show_result $?\n    echo \"$UUID\" > $TOP_DIR/uuid\nelse\n    prlog \"FAIL\"\n    rc=1\nfi\n\nexit $rc\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

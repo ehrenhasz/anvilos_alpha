@@ -1,0 +1,9 @@
+{
+  "module_name": "video-interfaces.h",
+  "hash_id": "abd859aeccb0b41d26bcbfc67a617d1d3bddc4b27f8544c09e1ab00b769340c3",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/media/video-interfaces.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_MEDIA_VIDEO_INTERFACES_H__\n#define __DT_BINDINGS_MEDIA_VIDEO_INTERFACES_H__\n\n#define MEDIA_BUS_TYPE_CSI2_CPHY\t\t1\n#define MEDIA_BUS_TYPE_CSI1\t\t\t2\n#define MEDIA_BUS_TYPE_CCP2\t\t\t3\n#define MEDIA_BUS_TYPE_CSI2_DPHY\t\t4\n#define MEDIA_BUS_TYPE_PARALLEL\t\t\t5\n#define MEDIA_BUS_TYPE_BT656\t\t\t6\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

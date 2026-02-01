@@ -1,0 +1,9 @@
+{
+  "module_name": "pdata.h",
+  "hash_id": "393a1f1de4b261c6a224257b878741b97ae60d104935483b132b15124d90cf20",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/da9052/pdata.h",
+  "human_readable_source": " \n \n\n#ifndef __MFD_DA9052_PDATA_H__\n#define __MFD_DA9052_PDATA_H__\n\n#define DA9052_MAX_REGULATORS\t14\n\nstruct da9052;\n\nstruct da9052_pdata {\n\tstruct led_platform_data *pled;\n\tint (*init) (struct da9052 *da9052);\n\tint irq_base;\n\tint gpio_base;\n\tint use_for_apm;\n\tstruct regulator_init_data *regulators[DA9052_MAX_REGULATORS];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

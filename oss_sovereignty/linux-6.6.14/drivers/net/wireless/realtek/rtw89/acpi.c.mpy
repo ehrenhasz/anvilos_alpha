@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi.c",
+  "hash_id": "e4f71b1dbeaec81db55444be8fef6a8ec5d246dfc86ede8c1eba06771b2bed53",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw89/acpi.c",
+  "human_readable_source": "\n \n\n#include <linux/acpi.h>\n#include <linux/uuid.h>\n\n#include \"acpi.h\"\n#include \"debug.h\"\n\nstatic const guid_t rtw89_guid = GUID_INIT(0xD2A8C3E8, 0x4B69, 0x4F00,\n\t\t\t\t\t   0x82, 0xBD, 0xFE, 0x86,\n\t\t\t\t\t   0x07, 0x80, 0x3A, 0xA7);\n\nstatic int rtw89_acpi_dsm_get(struct rtw89_dev *rtwdev, union acpi_object *obj,\n\t\t\t      u8 *value)\n{\n\tswitch (obj->type) {\n\tcase ACPI_TYPE_INTEGER:\n\t\t*value = (u8)obj->integer.value;\n\t\tbreak;\n\tcase ACPI_TYPE_BUFFER:\n\t\t*value = obj->buffer.pointer[0];\n\t\tbreak;\n\tdefault:\n\t\trtw89_debug(rtwdev, RTW89_DBG_UNEXP,\n\t\t\t    \"acpi dsm return unhandled type: %d\\n\", obj->type);\n\t\treturn -EINVAL;\n\t}\n\n\treturn 0;\n}\n\nint rtw89_acpi_evaluate_dsm(struct rtw89_dev *rtwdev,\n\t\t\t    enum rtw89_acpi_dsm_func func, u8 *value)\n{\n\tunion acpi_object *obj;\n\tint ret;\n\n\tobj = acpi_evaluate_dsm(ACPI_HANDLE(rtwdev->dev), &rtw89_guid,\n\t\t\t\t0, func, NULL);\n\tif (!obj) {\n\t\trtw89_debug(rtwdev, RTW89_DBG_UNEXP,\n\t\t\t    \"acpi dsm fail to evaluate func: %d\\n\", func);\n\t\treturn -ENOENT;\n\t}\n\n\tret = rtw89_acpi_dsm_get(rtwdev, obj, value);\n\n\tACPI_FREE(obj);\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

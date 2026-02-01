@@ -1,0 +1,9 @@
+{
+  "module_name": "cxgb4_ptp.h",
+  "hash_id": "c0720a73a10aff5576fc44a0d07b53a061838b09ff034ddd708f1c1803942609",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ptp.h",
+  "human_readable_source": " \n\n#ifndef __CXGB4_PTP_H__\n#define __CXGB4_PTP_H__\n\n \n#define MAX_PTP_FREQ_ADJ\t\t1000000\n#define PTP_CLOCK_MAX_ADJTIME\t\t10000000  \n\n#define PTP_MIN_LENGTH\t\t\t63\n#define PTP_IN_TRANSMIT_PACKET_MAXNUM\t240\n#define PTP_EVENT_PORT\t\t\t319\n\nenum ptp_rx_filter_mode {\n\tPTP_TS_NONE = 0,\n\tPTP_TS_L2,\n\tPTP_TS_L4,\n\tPTP_TS_L2_L4\n};\n\nstruct port_info;\n\nstatic inline bool cxgb4_xmit_with_hwtstamp(struct sk_buff *skb)\n{\n\treturn skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP;\n}\n\nstatic inline void cxgb4_xmit_hwtstamp_pending(struct sk_buff *skb)\n{\n\tskb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;\n}\n\nvoid cxgb4_ptp_init(struct adapter *adap);\nvoid cxgb4_ptp_stop(struct adapter *adap);\nbool cxgb4_ptp_is_ptp_tx(struct sk_buff *skb);\nbool cxgb4_ptp_is_ptp_rx(struct sk_buff *skb);\nint cxgb4_ptprx_timestamping(struct port_info *pi, u8 port, u16 mode);\nint cxgb4_ptp_redirect_rx_packet(struct adapter *adap, struct port_info *pi);\nint cxgb4_ptp_txtype(struct adapter *adap, u8 port_id);\nvoid cxgb4_ptp_read_hwstamp(struct adapter *adap, struct port_info *pi);\nbool is_ptp_enabled(struct sk_buff *skb, struct net_device *dev);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

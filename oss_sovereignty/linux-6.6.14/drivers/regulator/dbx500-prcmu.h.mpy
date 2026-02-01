@@ -1,0 +1,9 @@
+{
+  "module_name": "dbx500-prcmu.h",
+  "hash_id": "01f81b3f3038c8a4206d42e5c0d7b60a17bcd193dddaa81634760f047c572710",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/regulator/dbx500-prcmu.h",
+  "human_readable_source": " \n \n\n#ifndef DBX500_REGULATOR_H\n#define DBX500_REGULATOR_H\n\n#include <linux/platform_device.h>\n\n \nstruct dbx500_regulator_info {\n\tstruct regulator_desc desc;\n\tbool is_enabled;\n\tu16 epod_id;\n\tbool is_ramret;\n\tbool exclude_from_power_state;\n};\n\nvoid power_state_active_enable(void);\nint power_state_active_disable(void);\n\n\n#ifdef CONFIG_REGULATOR_DEBUG\nint ux500_regulator_debug_init(struct platform_device *pdev,\n\t\t\t       struct dbx500_regulator_info *regulator_info,\n\t\t\t       int num_regulators);\n\nint ux500_regulator_debug_exit(void);\n#else\n\nstatic inline int ux500_regulator_debug_init(struct platform_device *pdev,\n\t\t\t     struct dbx500_regulator_info *regulator_info,\n\t\t\t     int num_regulators)\n{\n\treturn 0;\n}\n\nstatic inline int ux500_regulator_debug_exit(void)\n{\n\treturn 0;\n}\n\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

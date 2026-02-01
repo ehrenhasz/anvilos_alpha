@@ -1,0 +1,9 @@
+{
+  "module_name": "device_cfg.h",
+  "hash_id": "8753f0e4d44c13fecc6de8480bfc9e269a9c874d1b18496000d10a392dce4f2c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vt6655/device_cfg.h",
+  "human_readable_source": " \n \n\n#ifndef __DEVICE_CONFIG_H\n#define __DEVICE_CONFIG_H\n\n#include <linux/types.h>\n\n#define VID_TABLE_SIZE      64\n#define MCAST_TABLE_SIZE    64\n#define MCAM_SIZE           32\n#define VCAM_SIZE           32\n#define TX_QUEUE_NO         8\n\n#define DEVICE_NAME         \"vt6655\"\n#define DEVICE_FULL_DRV_NAM \"VIA Networking Solomon-A/B/G Wireless LAN Adapter Driver\"\n\n#ifndef MAJOR_VERSION\n#define MAJOR_VERSION       1\n#endif\n\n#ifndef MINOR_VERSION\n#define MINOR_VERSION       17\n#endif\n\n#ifndef DEVICE_VERSION\n#define DEVICE_VERSION       \"1.19.12\"\n#endif\n\n#include <linux/fs.h>\n#include <linux/fcntl.h>\n\n#define PKT_BUF_SZ          2390\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

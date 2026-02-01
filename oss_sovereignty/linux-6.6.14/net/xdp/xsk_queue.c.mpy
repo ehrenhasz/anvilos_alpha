@@ -1,0 +1,9 @@
+{
+  "module_name": "xsk_queue.c",
+  "hash_id": "5d60d754a270b15460db222b1b26ac664d016670a900a4b90a4b1d04b4c2c195",
+  "original_prompt": "Ingested from linux-6.6.14/net/xdp/xsk_queue.c",
+  "human_readable_source": "\n \n\n#include <linux/log2.h>\n#include <linux/slab.h>\n#include <linux/overflow.h>\n#include <linux/vmalloc.h>\n#include <net/xdp_sock_drv.h>\n\n#include \"xsk_queue.h\"\n\nstatic size_t xskq_get_ring_size(struct xsk_queue *q, bool umem_queue)\n{\n\tstruct xdp_umem_ring *umem_ring;\n\tstruct xdp_rxtx_ring *rxtx_ring;\n\n\tif (umem_queue)\n\t\treturn struct_size(umem_ring, desc, q->nentries);\n\treturn struct_size(rxtx_ring, desc, q->nentries);\n}\n\nstruct xsk_queue *xskq_create(u32 nentries, bool umem_queue)\n{\n\tstruct xsk_queue *q;\n\tsize_t size;\n\n\tq = kzalloc(sizeof(*q), GFP_KERNEL);\n\tif (!q)\n\t\treturn NULL;\n\n\tq->nentries = nentries;\n\tq->ring_mask = nentries - 1;\n\n\tsize = xskq_get_ring_size(q, umem_queue);\n\n\t \n\tif (unlikely(size == SIZE_MAX)) {\n\t\tkfree(q);\n\t\treturn NULL;\n\t}\n\n\tsize = PAGE_ALIGN(size);\n\n\tq->ring = vmalloc_user(size);\n\tif (!q->ring) {\n\t\tkfree(q);\n\t\treturn NULL;\n\t}\n\n\tq->ring_vmalloc_size = size;\n\treturn q;\n}\n\nvoid xskq_destroy(struct xsk_queue *q)\n{\n\tif (!q)\n\t\treturn;\n\n\tvfree(q->ring);\n\tkfree(q);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

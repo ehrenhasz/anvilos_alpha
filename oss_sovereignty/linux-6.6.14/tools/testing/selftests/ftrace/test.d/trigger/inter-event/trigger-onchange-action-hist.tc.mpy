@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-onchange-action-hist.tc",
+  "hash_id": "90b619853332aa360a543e528a484bda3c77c6b2284281d895e16fc6f4934c93",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/inter-event/trigger-onchange-action-hist.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event trigger - test inter-event histogram trigger onchange action\n# requires: set_event \"onchange(var)\":README ping:program\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\necho \"Test onchange action\"\n\necho 'hist:keys=comm:newprio=prio:onchange($newprio).save(comm,prio) if comm==\"ping\"' >> events/sched/sched_waking/trigger\n\nping $LOCALHOST -c 3\nnice -n 1 ping $LOCALHOST -c 3\n\nif ! grep -q \"changed:\" events/sched/sched_waking/hist; then\n    fail \"Failed to create onchange action inter-event histogram\"\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

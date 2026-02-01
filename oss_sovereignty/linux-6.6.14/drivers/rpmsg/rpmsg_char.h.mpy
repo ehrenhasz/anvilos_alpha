@@ -1,0 +1,9 @@
+{
+  "module_name": "rpmsg_char.h",
+  "hash_id": "c541a6f11b07a0210e47a6fde935ca1827ca10d4e161477158614ac200603f6a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/rpmsg/rpmsg_char.h",
+  "human_readable_source": " \n \n\n#ifndef __RPMSG_CHRDEV_H__\n#define __RPMSG_CHRDEV_H__\n\n#if IS_ENABLED(CONFIG_RPMSG_CHAR)\n \nint rpmsg_chrdev_eptdev_create(struct rpmsg_device *rpdev, struct device *parent,\n\t\t\t       struct rpmsg_channel_info chinfo);\n\n \nint rpmsg_chrdev_eptdev_destroy(struct device *dev, void *data);\n\n#else   \n\nstatic inline int rpmsg_chrdev_eptdev_create(struct rpmsg_device *rpdev, struct device *parent,\n\t\t\t\t\t     struct rpmsg_channel_info chinfo)\n{\n\treturn -ENXIO;\n}\n\nstatic inline int rpmsg_chrdev_eptdev_destroy(struct device *dev, void *data)\n{\n\treturn -ENXIO;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

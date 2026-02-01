@@ -1,0 +1,9 @@
+{
+  "module_name": "dsp_biquad.h",
+  "hash_id": "504adedd35de82af4451899c97438d58958b861ddaa355991fa88030053f1f80",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/isdn/mISDN/dsp_biquad.h",
+  "human_readable_source": " \n \n\nstruct biquad2_state {\n\tint32_t gain;\n\tint32_t a1;\n\tint32_t a2;\n\tint32_t b1;\n\tint32_t b2;\n\n\tint32_t z1;\n\tint32_t z2;\n};\n\nstatic inline void biquad2_init(struct biquad2_state *bq,\n\t\t\t\tint32_t gain, int32_t a1, int32_t a2, int32_t b1, int32_t b2)\n{\n\tbq->gain = gain;\n\tbq->a1 = a1;\n\tbq->a2 = a2;\n\tbq->b1 = b1;\n\tbq->b2 = b2;\n\n\tbq->z1 = 0;\n\tbq->z2 = 0;\n}\n\nstatic inline int16_t biquad2(struct biquad2_state *bq, int16_t sample)\n{\n\tint32_t y;\n\tint32_t z0;\n\n\tz0 = sample * bq->gain + bq->z1 * bq->a1 + bq->z2 * bq->a2;\n\ty = z0 + bq->z1 * bq->b1 + bq->z2 * bq->b2;\n\n\tbq->z2 = bq->z1;\n\tbq->z1 = z0 >> 15;\n\ty >>= 15;\n\treturn  y;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

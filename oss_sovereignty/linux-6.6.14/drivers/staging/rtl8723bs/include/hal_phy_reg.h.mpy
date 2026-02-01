@@ -1,0 +1,9 @@
+{
+  "module_name": "hal_phy_reg.h",
+  "hash_id": "dc83b6aeabfbb2418c91ee9fd6c6021c81fa3f5d38336bd67439843dc6ac89c7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/hal_phy_reg.h",
+  "human_readable_source": " \n \n#ifndef __HAL_PHY_REG_H__\n#define __HAL_PHY_REG_H__\n\n \n \n \n \n#define\t\t\tbRFRegOffsetMask\t0xfffff\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

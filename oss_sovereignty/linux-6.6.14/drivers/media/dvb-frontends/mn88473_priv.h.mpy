@@ -1,0 +1,9 @@
+{
+  "module_name": "mn88473_priv.h",
+  "hash_id": "ba127247258094557928923affe99c4017d4713f42fce6eb396f4ca21a9bd845",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/mn88473_priv.h",
+  "human_readable_source": " \n \n\n#ifndef MN88473_PRIV_H\n#define MN88473_PRIV_H\n\n#include <media/dvb_frontend.h>\n#include <linux/int_log.h>\n#include \"mn88473.h\"\n#include <linux/math64.h>\n#include <linux/firmware.h>\n#include <linux/regmap.h>\n\n#define MN88473_FIRMWARE \"dvb-demod-mn88473-01.fw\"\n\nstruct mn88473_dev {\n\tstruct i2c_client *client[3];\n\tstruct regmap *regmap[3];\n\tstruct dvb_frontend frontend;\n\tu16 i2c_wr_max;\n\tbool active;\n\tu32 clk;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

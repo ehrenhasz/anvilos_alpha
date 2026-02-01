@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8df115d80a1c6df32d515b3e08cc9e8be2b51ae7c6dc0b38c40505195354b1fe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/sunxi/sun8i-rotate/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig VIDEO_SUN8I_ROTATE\n\ttristate \"Allwinner DE2 rotation driver\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on VIDEO_DEV\n\tdepends on ARCH_SUNXI || COMPILE_TEST\n\tdepends on COMMON_CLK && RESET_CONTROLLER && OF\n\tdepends on PM\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_MEM2MEM_DEV\n\thelp\n\t   Support for the Allwinner DE2 rotation unit.\n\t   To compile this driver as a module choose m here.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

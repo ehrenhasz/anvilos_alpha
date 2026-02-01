@@ -1,0 +1,9 @@
+{
+  "module_name": "power.h",
+  "hash_id": "f987b6c1381b706c799356c96692b26a36c630a5e24c35020e08f46ac9666eaa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vt6655/power.h",
+  "human_readable_source": " \n \n\n#ifndef __POWER_H__\n#define __POWER_H__\n\n#include \"device.h\"\n\n#define C_PWBT                   1000     \n#define PS_FAST_INTERVAL         1        \n#define PS_MAX_INTERVAL          4        \n\nvoid PSvDisablePowerSaving(struct vnt_private *priv);\n\nvoid PSvEnablePowerSaving(struct vnt_private *priv, unsigned short wListenInterval);\n\nbool PSbIsNextTBTTWakeUp(struct vnt_private *priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

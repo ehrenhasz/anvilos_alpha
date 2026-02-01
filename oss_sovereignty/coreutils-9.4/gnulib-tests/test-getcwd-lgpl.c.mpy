@@ -1,0 +1,9 @@
+{
+  "module_name": "test-getcwd-lgpl.c",
+  "hash_id": "ca62107e7e3bc58f644da02114c0cf2fe4a7a88a855d7bd82b4351b2639cac6b",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-getcwd-lgpl.c",
+  "human_readable_source": " \n  if (1 < argc)\n    {\n      if (chdir (argv[1]) == 0)\n        printf (\"changed to directory %s\\n\", argv[1]);\n    }\n\n  pwd1 = getcwd (NULL, 0);\n  ASSERT (pwd1 && *pwd1);\n  if (1 < argc)\n    printf (\"cwd=%s\\n\", pwd1);\n\n   \n  ASSERT (chdir (pwd1) == 0);\n  ASSERT (chdir (\".//./.\") == 0);\n\n   \n  pwd2 = getcwd (NULL, 0);\n  ASSERT (pwd2);\n  ASSERT (strcmp (pwd1, pwd2) == 0);\n  free (pwd2);\n  {\n    size_t len = strlen (pwd1);\n    ssize_t i = len - 10;\n    if (i < 1)\n      i = 1;\n    pwd2 = getcwd (NULL, len + 1);\n    ASSERT (pwd2);\n    free (pwd2);\n    pwd2 = malloc (len + 2);\n    for ( ; i <= len; i++)\n      {\n        char *tmp;\n        errno = 0;\n        ASSERT (getcwd (pwd2, i) == NULL);\n        ASSERT (errno == ERANGE);\n         \n        errno = 0;\n        tmp = getcwd (NULL, i);\n        if (tmp)\n          {\n            ASSERT (strcmp (pwd1, tmp) == 0);\n            free (tmp);\n          }\n        else\n          {\n            ASSERT (errno == ERANGE);\n          }\n      }\n    ASSERT (getcwd (pwd2, len + 1) == pwd2);\n    pwd2[len] = '/';\n    pwd2[len + 1] = '\\0';\n  }\n  ASSERT (strstr (pwd2, \"/./\") == NULL);\n  ASSERT (strstr (pwd2, \"/../\") == NULL);\n  ASSERT (strstr (pwd2 + 1 + (pwd2[1] == '/'), \"//\") == NULL);\n\n   \n  errno = 0;\n  ASSERT (getcwd(pwd2, 0) == NULL);\n  ASSERT (errno == EINVAL);\n\n  free (pwd1);\n  free (pwd2);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

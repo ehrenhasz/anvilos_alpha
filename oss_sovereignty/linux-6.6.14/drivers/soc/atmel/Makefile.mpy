@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1354c895856762e9ad6881c8861463f1eb86b71dd33f9d52e62a029462dd9236",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/atmel/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_AT91_SOC_ID) += soc.o\nobj-$(CONFIG_AT91_SOC_SFR) += sfr.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

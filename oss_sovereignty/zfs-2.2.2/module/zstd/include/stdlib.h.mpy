@@ -1,0 +1,9 @@
+{
+  "module_name": "stdlib.h",
+  "hash_id": "08e2cd14d82d1169b7cfce694b6e321fe60e82d2893f9fa24a35b482cd5abaa5",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/include/stdlib.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_ZSTD_STDLIB_H\n#define\t_ZSTD_STDLIB_H\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n#undef\tGCC_VERSION\n\n \n#define\tcalloc(n, sz)\tNULL\n#define\tmalloc(sz)\tNULL\n#define\tfree(ptr)\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

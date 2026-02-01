@@ -1,0 +1,9 @@
+{
+  "module_name": "mitigation-patching.sh",
+  "hash_id": "d78c35e02f74f26563b2410d20ddadf06d62b8d2dcca603e58802d14046a22fa",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/security/mitigation-patching.sh",
+  "human_readable_source": "#!/usr/bin/env bash\n\nset -euo pipefail\n\nTIMEOUT=10\n\nfunction do_one\n{\n    local mitigation=\"$1\"\n    local orig\n    local start\n    local now\n\n    orig=$(cat \"$mitigation\")\n\n    start=$(date +%s)\n    now=$start\n\n    while [[ $((now-start)) -lt \"$TIMEOUT\" ]]\n    do\n        echo 0 > \"$mitigation\"\n        echo 1 > \"$mitigation\"\n\n        now=$(date +%s)\n    done\n\n    echo \"$orig\" > \"$mitigation\"\n}\n\nrc=0\ncd /sys/kernel/debug/powerpc || rc=1\nif [[ \"$rc\" -ne 0 ]]; then\n    echo \"Error: couldn't cd to /sys/kernel/debug/powerpc\" >&2\n    exit 1\nfi\n\ntainted=$(cat /proc/sys/kernel/tainted)\nif [[ \"$tainted\" -ne 0 ]]; then\n    echo \"Error: kernel already tainted!\" >&2\n    exit 1\nfi\n\nmitigations=\"barrier_nospec stf_barrier count_cache_flush rfi_flush entry_flush uaccess_flush\"\n\nfor m in $mitigations\ndo\n    if [[ -f /sys/kernel/debug/powerpc/$m ]]\n    then\n        do_one \"$m\" &\n    fi\ndone\n\necho \"Spawned threads enabling/disabling mitigations ...\"\n\nif stress-ng > /dev/null 2>&1; then\n    stress=\"stress-ng\"\nelif stress > /dev/null 2>&1; then\n    stress=\"stress\"\nelse\n    stress=\"\"\nfi\n\nif [[ -n \"$stress\" ]]; then\n    \"$stress\" -m \"$(nproc)\" -t \"$TIMEOUT\" &\n    echo \"Spawned VM stressors ...\"\nfi\n\necho \"Waiting for timeout ...\"\nwait\n\ntainted=$(cat /proc/sys/kernel/tainted)\nif [[ \"$tainted\" -ne 0 ]]; then\n    echo \"Error: kernel became tainted!\" >&2\n    exit 1\nfi\n\necho \"OK\"\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

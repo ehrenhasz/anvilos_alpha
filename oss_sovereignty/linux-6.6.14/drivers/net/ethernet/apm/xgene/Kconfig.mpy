@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "35575d4c2ed465684f5227c18cab2163d123d64bea118cdaa4d6d67ed3237080",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/apm/xgene/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NET_XGENE\n\ttristate \"APM X-Gene SoC Ethernet Driver\"\n\tdepends on ARCH_XGENE || COMPILE_TEST\n\tselect PHYLIB\n\tselect MDIO_XGENE\n\tselect GPIOLIB\n\thelp\n\t  This is the Ethernet driver for the on-chip ethernet interface on the\n\t  APM X-Gene SoC.\n\n\t  To compile this driver as a module, choose M here. This module will\n\t  be called xgene_enet.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

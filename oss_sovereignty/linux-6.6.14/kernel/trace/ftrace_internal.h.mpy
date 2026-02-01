@@ -1,0 +1,9 @@
+{
+  "module_name": "ftrace_internal.h",
+  "hash_id": "d395a279d38fcdb065af39b866661eaf926d0728fe87a2209ac217408a23ac84",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/trace/ftrace_internal.h",
+  "human_readable_source": " \n#ifndef _LINUX_KERNEL_FTRACE_INTERNAL_H\n#define  _LINUX_KERNEL_FTRACE_INTERNAL_H\n\nint __register_ftrace_function(struct ftrace_ops *ops);\nint __unregister_ftrace_function(struct ftrace_ops *ops);\n\n#ifdef CONFIG_FUNCTION_TRACER\n\nextern struct mutex ftrace_lock;\nextern struct ftrace_ops global_ops;\n\n#ifdef CONFIG_DYNAMIC_FTRACE\n\nint ftrace_startup(struct ftrace_ops *ops, int command);\nint ftrace_shutdown(struct ftrace_ops *ops, int command);\nint ftrace_ops_test(struct ftrace_ops *ops, unsigned long ip, void *regs);\n\n#else  \n\n \n# define ftrace_startup(ops, command)\t\t\t\t\t\\\n\t({\t\t\t\t\t\t\t\t\\\n\t\tint ___ret = __register_ftrace_function(ops);\t\t\\\n\t\tif (!___ret)\t\t\t\t\t\t\\\n\t\t\t(ops)->flags |= FTRACE_OPS_FL_ENABLED;\t\t\\\n\t\t___ret;\t\t\t\t\t\t\t\\\n\t})\n# define ftrace_shutdown(ops, command)\t\t\t\t\t\\\n\t({\t\t\t\t\t\t\t\t\\\n\t\tint ___ret = __unregister_ftrace_function(ops);\t\t\\\n\t\tif (!___ret)\t\t\t\t\t\t\\\n\t\t\t(ops)->flags &= ~FTRACE_OPS_FL_ENABLED;\t\t\\\n\t\t___ret;\t\t\t\t\t\t\t\\\n\t})\nstatic inline int\nftrace_ops_test(struct ftrace_ops *ops, unsigned long ip, void *regs)\n{\n\treturn 1;\n}\n#endif  \n\n#ifdef CONFIG_FUNCTION_GRAPH_TRACER\nextern int ftrace_graph_active;\nvoid update_function_graph_func(void);\n#else  \n# define ftrace_graph_active 0\nstatic inline void update_function_graph_func(void) { }\n#endif  \n\n#else  \n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "signal.c",
+  "hash_id": "135a56406a454f678af6d6c6d45c67732cac188e5940ef56d931c75a94a7dfdd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/bti/signal.c",
+  "human_readable_source": "\n \n\n#include \"system.h\"\n#include \"signal.h\"\n\nint sigemptyset(sigset_t *s)\n{\n\tunsigned int i;\n\n\tfor (i = 0; i < _NSIG_WORDS; ++i)\n\t\ts->sig[i] = 0;\n\n\treturn 0;\n}\n\nint sigaddset(sigset_t *s, int n)\n{\n\tif (n < 1 || n > _NSIG)\n\t\treturn -EINVAL;\n\n\ts->sig[(n - 1) / _NSIG_BPW] |= 1UL << (n - 1) % _NSIG_BPW;\n\treturn 0;\n}\n\nint sigaction(int n, struct sigaction *sa, const struct sigaction *old)\n{\n\treturn syscall(__NR_rt_sigaction, n, sa, old, sizeof(sa->sa_mask));\n}\n\nint sigprocmask(int how, const sigset_t *mask, sigset_t *old)\n{\n\treturn syscall(__NR_rt_sigprocmask, how, mask, old, sizeof(*mask));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

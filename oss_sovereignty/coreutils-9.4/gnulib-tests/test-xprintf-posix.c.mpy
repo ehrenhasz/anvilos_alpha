@@ -1,0 +1,9 @@
+{
+  "module_name": "test-xprintf-posix.c",
+  "hash_id": "0ebd233cfb541ac80196529ef3ae14e3490d7e03f5ec8de3c109c806cfacb6ae",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-xprintf-posix.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"xprintf.h\"\n\n#include <stddef.h>\n#include <stdint.h>\n#include <string.h>\n\n#include \"macros.h\"\n\n#include \"test-printf-posix.h\"\n\nint\nmain (_GL_UNUSED int argc, char *argv[])\n{\n  test_function (xprintf);\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

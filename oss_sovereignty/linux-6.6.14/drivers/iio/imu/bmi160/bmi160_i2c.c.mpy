@@ -1,0 +1,9 @@
+{
+  "module_name": "bmi160_i2c.c",
+  "hash_id": "6c095735e4aa95ac382791ddc3d2506711e91ced4341c1745361c5420588f540",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/bmi160/bmi160_i2c.c",
+  "human_readable_source": "\n \n#include <linux/i2c.h>\n#include <linux/mod_devicetable.h>\n#include <linux/module.h>\n#include <linux/regmap.h>\n\n#include \"bmi160.h\"\n\nstatic int bmi160_i2c_probe(struct i2c_client *client)\n{\n\tconst struct i2c_device_id *id = i2c_client_get_device_id(client);\n\tstruct regmap *regmap;\n\tconst char *name;\n\n\tregmap = devm_regmap_init_i2c(client, &bmi160_regmap_config);\n\tif (IS_ERR(regmap)) {\n\t\tdev_err(&client->dev, \"Failed to register i2c regmap: %pe\\n\",\n\t\t\tregmap);\n\t\treturn PTR_ERR(regmap);\n\t}\n\n\tif (id)\n\t\tname = id->name;\n\telse\n\t\tname = dev_name(&client->dev);\n\n\treturn bmi160_core_probe(&client->dev, regmap, name, false);\n}\n\nstatic const struct i2c_device_id bmi160_i2c_id[] = {\n\t{\"bmi160\", 0},\n\t{}\n};\nMODULE_DEVICE_TABLE(i2c, bmi160_i2c_id);\n\nstatic const struct acpi_device_id bmi160_acpi_match[] = {\n\t{\"BMI0160\", 0},\n\t{ },\n};\nMODULE_DEVICE_TABLE(acpi, bmi160_acpi_match);\n\nstatic const struct of_device_id bmi160_of_match[] = {\n\t{ .compatible = \"bosch,bmi160\" },\n\t{ },\n};\nMODULE_DEVICE_TABLE(of, bmi160_of_match);\n\nstatic struct i2c_driver bmi160_i2c_driver = {\n\t.driver = {\n\t\t.name\t\t\t= \"bmi160_i2c\",\n\t\t.acpi_match_table\t= bmi160_acpi_match,\n\t\t.of_match_table\t\t= bmi160_of_match,\n\t},\n\t.probe\t\t= bmi160_i2c_probe,\n\t.id_table\t= bmi160_i2c_id,\n};\nmodule_i2c_driver(bmi160_i2c_driver);\n\nMODULE_AUTHOR(\"Daniel Baluta <daniel.baluta@intel.com>\");\nMODULE_DESCRIPTION(\"BMI160 I2C driver\");\nMODULE_LICENSE(\"GPL v2\");\nMODULE_IMPORT_NS(IIO_BMI160);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

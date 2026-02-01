@@ -1,0 +1,9 @@
+{
+  "module_name": "cypress_m8.h",
+  "hash_id": "d27f60409a6258c8849780a6b5f4e55c139ef02b3d63eb0f517e6ed408293947",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/serial/cypress_m8.h",
+  "human_readable_source": " \n#ifndef CYPRESS_M8_H\n#define CYPRESS_M8_H\n\n \n\n \n#define HID_REQ_GET_REPORT\t0x01\n#define HID_REQ_SET_REPORT\t0x09\n\n \n\n \n#define VENDOR_ID_DELORME\t\t0x1163\n#define PRODUCT_ID_EARTHMATEUSB\t\t0x0100\n#define PRODUCT_ID_EARTHMATEUSB_LT20\t0x0200\n\n \n#define VENDOR_ID_CYPRESS\t\t0x04b4\n#define PRODUCT_ID_CYPHIDCOM\t\t0x5500\n\n \n#define VENDOR_ID_SAI\t\t\t0x17dd\n\n \n#define VENDOR_ID_FRWD\t\t\t0x6737\n#define PRODUCT_ID_CYPHIDCOM_FRWD\t0x0001\n\n \n#define VENDOR_ID_POWERCOM\t\t0x0d9f\n#define PRODUCT_ID_UPS\t\t\t0x0002\n\n \n#define VENDOR_ID_DAZZLE\t\t0x07d0\n#define PRODUCT_ID_CA42\t\t\t0x4101\n \n\n \n#define CYPRESS_SET_CONFIG\t0x01\n#define CYPRESS_GET_CONFIG\t0x02\n\n \n#define THROTTLED\t\t0x1\n#define ACTUALLY_THROTTLED\t0x2\n\n \n#define CT_EARTHMATE\t0x01\n#define CT_CYPHIDCOM\t0x02\n#define CT_CA42V2\t0x03\n#define CT_GENERIC\t0x0F\n \n\n \n\n#define CONTROL_DTR\t0x20\t \n#define CONTROL_RTS\t0x10\t \n#define CONTROL_RESET\t0x08\t \n\n#define UART_MSR_MASK\t0xf0\n#define UART_RI\t\t0x80\t \n#define UART_CD\t\t0x40\t \n#define UART_DSR\t0x20\t \n#define UART_CTS\t0x10\t \n#define CYP_ERROR\t0x08\t \n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

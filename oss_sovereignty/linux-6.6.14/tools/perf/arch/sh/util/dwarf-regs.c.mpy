@@ -1,0 +1,9 @@
+{
+  "module_name": "dwarf-regs.c",
+  "hash_id": "b934151dfccf53cce3f8a484f9c5075fcd92c642884d4428044de38de0f82b4c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/sh/util/dwarf-regs.c",
+  "human_readable_source": "\n \n\n#include <stddef.h>\n#include <dwarf-regs.h>\n\n \n\n#define SH_MAX_REGS 18\nconst char *sh_regs_table[SH_MAX_REGS] = {\n\t\"r0\",\n\t\"r1\",\n\t\"r2\",\n\t\"r3\",\n\t\"r4\",\n\t\"r5\",\n\t\"r6\",\n\t\"r7\",\n\t\"r8\",\n\t\"r9\",\n\t\"r10\",\n\t\"r11\",\n\t\"r12\",\n\t\"r13\",\n\t\"r14\",\n\t\"r15\",\n\t\"pc\",\n\t\"pr\",\n};\n\n \nconst char *get_arch_regstr(unsigned int n)\n{\n\treturn (n < SH_MAX_REGS) ? sh_regs_table[n] : NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

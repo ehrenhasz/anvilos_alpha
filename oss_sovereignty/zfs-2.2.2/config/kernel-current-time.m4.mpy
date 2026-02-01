@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-current-time.m4",
+  "hash_id": "18524fd9a9c82718bf01358870bf58a7cb73db67b85e8a019c0c9c197d5b4697",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-current-time.m4",
+  "human_readable_source": "dnl #\ndnl # 4.9, current_time() added\ndnl # 4.18, return type changed from timespec to timespec64\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_CURRENT_TIME], [\n\tZFS_LINUX_TEST_SRC([current_time], [\n\t\t#include <linux/fs.h>\n\t], [\n\t\tstruct inode ip __attribute__ ((unused));\n\t\tip.i_atime = current_time(&ip);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_CURRENT_TIME], [\n\tAC_MSG_CHECKING([whether current_time() exists])\n\tZFS_LINUX_TEST_RESULT_SYMBOL([current_time],\n\t    [current_time], [fs/inode.c], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_CURRENT_TIME, 1, [current_time() exists])\n\t], [\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "freadahead.h",
+  "hash_id": "c80d400cdf16d1ed22456b5b37bcce3a6c3bd887a6dbdcbdaacfcbabc5cc9f8b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/freadahead.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stddef.h>\n#include <stdio.h>\n\n \n\n#if HAVE___FREADAHEAD  \n\n# include <stdio_ext.h>\n# define freadahead(stream) __freadahead (stream)\n\n#else\n\n# ifdef __cplusplus\nextern \"C\" {\n# endif\n\nextern size_t freadahead (FILE *stream) _GL_ATTRIBUTE_PURE;\n\n# ifdef __cplusplus\n}\n# endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

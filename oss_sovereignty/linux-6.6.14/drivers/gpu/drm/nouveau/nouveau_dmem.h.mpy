@@ -1,0 +1,9 @@
+{
+  "module_name": "nouveau_dmem.h",
+  "hash_id": "04c511942db70d2f58d6319f2462678e97fb48a0fd31d71d43bbac663fa0c4b7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nouveau_dmem.h",
+  "human_readable_source": " \n#ifndef __NOUVEAU_DMEM_H__\n#define __NOUVEAU_DMEM_H__\n#include <nvif/os.h>\nstruct drm_device;\nstruct drm_file;\nstruct nouveau_drm;\nstruct nouveau_svmm;\nstruct hmm_range;\n\n#if IS_ENABLED(CONFIG_DRM_NOUVEAU_SVM)\nvoid nouveau_dmem_init(struct nouveau_drm *);\nvoid nouveau_dmem_fini(struct nouveau_drm *);\nvoid nouveau_dmem_suspend(struct nouveau_drm *);\nvoid nouveau_dmem_resume(struct nouveau_drm *);\n\nint nouveau_dmem_migrate_vma(struct nouveau_drm *drm,\n\t\t\t     struct nouveau_svmm *svmm,\n\t\t\t     struct vm_area_struct *vma,\n\t\t\t     unsigned long start,\n\t\t\t     unsigned long end);\nunsigned long nouveau_dmem_page_addr(struct page *page);\n\n#else  \nstatic inline void nouveau_dmem_init(struct nouveau_drm *drm) {}\nstatic inline void nouveau_dmem_fini(struct nouveau_drm *drm) {}\nstatic inline void nouveau_dmem_suspend(struct nouveau_drm *drm) {}\nstatic inline void nouveau_dmem_resume(struct nouveau_drm *drm) {}\n#endif  \n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

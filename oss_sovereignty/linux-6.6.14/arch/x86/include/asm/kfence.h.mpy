@@ -1,0 +1,9 @@
+{
+  "module_name": "kfence.h",
+  "hash_id": "92bd46fc401b2305132273a4288d6671c7dd9b61d57142cb1c4c39ad524501b5",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/kfence.h",
+  "human_readable_source": " \n \n\n#ifndef _ASM_X86_KFENCE_H\n#define _ASM_X86_KFENCE_H\n\n#ifndef MODULE\n\n#include <linux/bug.h>\n#include <linux/kfence.h>\n\n#include <asm/pgalloc.h>\n#include <asm/pgtable.h>\n#include <asm/set_memory.h>\n#include <asm/tlbflush.h>\n\n \nstatic inline bool arch_kfence_init_pool(void)\n{\n\tunsigned long addr;\n\n\tfor (addr = (unsigned long)__kfence_pool; is_kfence_address((void *)addr);\n\t     addr += PAGE_SIZE) {\n\t\tunsigned int level;\n\n\t\tif (!lookup_address(addr, &level))\n\t\t\treturn false;\n\n\t\tif (level != PG_LEVEL_4K)\n\t\t\tset_memory_4k(addr, 1);\n\t}\n\n\treturn true;\n}\n\n \nstatic inline bool kfence_protect_page(unsigned long addr, bool protect)\n{\n\tunsigned int level;\n\tpte_t *pte = lookup_address(addr, &level);\n\n\tif (WARN_ON(!pte || level != PG_LEVEL_4K))\n\t\treturn false;\n\n\t \n\n\tif (protect)\n\t\tset_pte(pte, __pte(pte_val(*pte) & ~_PAGE_PRESENT));\n\telse\n\t\tset_pte(pte, __pte(pte_val(*pte) | _PAGE_PRESENT));\n\n\t \n\tpreempt_disable();\n\tflush_tlb_one_kernel(addr);\n\tpreempt_enable();\n\treturn true;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

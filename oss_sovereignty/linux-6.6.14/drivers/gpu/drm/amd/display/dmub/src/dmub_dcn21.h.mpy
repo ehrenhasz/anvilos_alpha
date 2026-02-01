@@ -1,0 +1,9 @@
+{
+  "module_name": "dmub_dcn21.h",
+  "hash_id": "e64fe7895505cf0439f9a282d8f8eea4d104bf63a1ff8115f935f2b6e4feb9e6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dmub/src/dmub_dcn21.h",
+  "human_readable_source": " \n\n#ifndef _DMUB_DCN21_H_\n#define _DMUB_DCN21_H_\n\n#include \"dmub_dcn20.h\"\n\n \n\nextern const struct dmub_srv_common_regs dmub_srv_dcn21_regs;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

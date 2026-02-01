@@ -1,0 +1,9 @@
+{
+  "module_name": "relocation.h",
+  "hash_id": "3709749d8e8c86da492822b061a15e26066a6113b39af8a0324e2fbc1199a31a",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/relocation.h",
+  "human_readable_source": " \n\n#ifndef BTRFS_RELOCATION_H\n#define BTRFS_RELOCATION_H\n\nint btrfs_relocate_block_group(struct btrfs_fs_info *fs_info, u64 group_start);\nint btrfs_init_reloc_root(struct btrfs_trans_handle *trans, struct btrfs_root *root);\nint btrfs_update_reloc_root(struct btrfs_trans_handle *trans,\n\t\t\t    struct btrfs_root *root);\nint btrfs_recover_relocation(struct btrfs_fs_info *fs_info);\nint btrfs_reloc_clone_csums(struct btrfs_ordered_extent *ordered);\nint btrfs_reloc_cow_block(struct btrfs_trans_handle *trans,\n\t\t\t  struct btrfs_root *root, struct extent_buffer *buf,\n\t\t\t  struct extent_buffer *cow);\nvoid btrfs_reloc_pre_snapshot(struct btrfs_pending_snapshot *pending,\n\t\t\t      u64 *bytes_to_reserve);\nint btrfs_reloc_post_snapshot(struct btrfs_trans_handle *trans,\n\t\t\t      struct btrfs_pending_snapshot *pending);\nint btrfs_should_cancel_balance(struct btrfs_fs_info *fs_info);\nstruct btrfs_root *find_reloc_root(struct btrfs_fs_info *fs_info, u64 bytenr);\nint btrfs_should_ignore_reloc_root(struct btrfs_root *root);\nu64 btrfs_get_reloc_bg_bytenr(struct btrfs_fs_info *fs_info);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

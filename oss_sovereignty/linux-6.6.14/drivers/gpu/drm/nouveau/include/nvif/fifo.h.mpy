@@ -1,0 +1,9 @@
+{
+  "module_name": "fifo.h",
+  "hash_id": "9345aa205e6360051319a14a1cc90a8dd74703daeb115d94a2e01bb277e1e5c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/fifo.h",
+  "human_readable_source": "#ifndef __NVIF_FIFO_H__\n#define __NVIF_FIFO_H__\n#include <nvif/device.h>\n\n \nu64 nvif_fifo_runlist(struct nvif_device *, u64 engine);\n\n \nstatic inline u64\nnvif_fifo_runlist_ce(struct nvif_device *device)\n{\n\tu64 runmgr = nvif_fifo_runlist(device, NV_DEVICE_HOST_RUNLIST_ENGINES_GR);\n\tu64 runmce = nvif_fifo_runlist(device, NV_DEVICE_HOST_RUNLIST_ENGINES_CE);\n\tif (runmce && !(runmce &= ~runmgr))\n\t\trunmce = runmgr;\n\treturn runmce;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

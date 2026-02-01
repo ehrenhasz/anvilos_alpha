@@ -1,0 +1,9 @@
+{
+  "module_name": "zrlock.h",
+  "hash_id": "adf941db0ebc4e4a2b7f5e2b9214d1de3c647384190b9ee79cc4dfcdc1452f87",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zrlock.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_ZRLOCK_H\n#define\t_SYS_ZRLOCK_H\n\n#include <sys/zfs_context.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\ntypedef struct zrlock {\n\tkmutex_t zr_mtx;\n\tkcondvar_t zr_cv;\n\tvolatile int32_t zr_refcount;\n#ifdef\tZFS_DEBUG\n\tkthread_t *zr_owner;\n\tconst char *zr_caller;\n#endif\n} zrlock_t;\n\nextern void zrl_init(zrlock_t *);\nextern void zrl_destroy(zrlock_t *);\n#define\tzrl_add(_z)\tzrl_add_impl((_z), __func__)\nextern void zrl_add_impl(zrlock_t *, const char *);\nextern void zrl_remove(zrlock_t *);\nextern int zrl_tryenter(zrlock_t *);\nextern void zrl_exit(zrlock_t *);\nextern int zrl_is_zero(zrlock_t *);\nextern int zrl_is_locked(zrlock_t *);\n#ifdef\tZFS_DEBUG\nextern kthread_t *zrl_owner(zrlock_t *);\n#endif\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

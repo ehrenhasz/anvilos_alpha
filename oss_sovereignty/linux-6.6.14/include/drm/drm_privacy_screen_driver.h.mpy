@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_privacy_screen_driver.h",
+  "hash_id": "d967d9308006e05c62b41e8854a01186509b4af4aec679ed6df5d60342645b2b",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_privacy_screen_driver.h",
+  "human_readable_source": " \n \n\n#ifndef __DRM_PRIVACY_SCREEN_DRIVER_H__\n#define __DRM_PRIVACY_SCREEN_DRIVER_H__\n\n#include <linux/device.h>\n#include <linux/list.h>\n#include <linux/mutex.h>\n#include <drm/drm_connector.h>\n\nstruct drm_privacy_screen;\n\n \nstruct drm_privacy_screen_ops {\n\t \n\tint (*set_sw_state)(struct drm_privacy_screen *priv,\n\t\t\t    enum drm_privacy_screen_status sw_state);\n\t \n\tvoid (*get_hw_state)(struct drm_privacy_screen *priv);\n};\n\n \nstruct drm_privacy_screen {\n\t \n\tstruct device dev;\n\t \n\tstruct mutex lock;\n\t \n\tstruct list_head list;\n\t \n\tstruct blocking_notifier_head notifier_head;\n\t \n\tconst struct drm_privacy_screen_ops *ops;\n\t \n\tenum drm_privacy_screen_status sw_state;\n\t \n\tenum drm_privacy_screen_status hw_state;\n\t \n\tvoid *drvdata;\n};\n\nstatic inline\nvoid *drm_privacy_screen_get_drvdata(struct drm_privacy_screen *priv)\n{\n\treturn priv->drvdata;\n}\n\nstruct drm_privacy_screen *drm_privacy_screen_register(\n\tstruct device *parent, const struct drm_privacy_screen_ops *ops,\n\tvoid *data);\nvoid drm_privacy_screen_unregister(struct drm_privacy_screen *priv);\n\nvoid drm_privacy_screen_call_notifier_chain(struct drm_privacy_screen *priv);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

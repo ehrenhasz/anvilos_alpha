@@ -1,0 +1,9 @@
+{
+  "module_name": "xfrm4_state.c",
+  "hash_id": "fadffacdfbee5c2427fa1024ba45aafdf1ee2c24aadefecbfd73b12bda8070d3",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv4/xfrm4_state.c",
+  "human_readable_source": "\n \n\n#include <net/xfrm.h>\n\nstatic struct xfrm_state_afinfo xfrm4_state_afinfo = {\n\t.family\t\t\t= AF_INET,\n\t.proto\t\t\t= IPPROTO_IPIP,\n\t.output\t\t\t= xfrm4_output,\n\t.transport_finish\t= xfrm4_transport_finish,\n\t.local_error\t\t= xfrm4_local_error,\n};\n\nvoid __init xfrm4_state_init(void)\n{\n\txfrm_state_register_afinfo(&xfrm4_state_afinfo);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

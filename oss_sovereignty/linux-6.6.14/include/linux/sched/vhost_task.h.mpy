@@ -1,0 +1,9 @@
+{
+  "module_name": "vhost_task.h",
+  "hash_id": "096ffd385b0e94768b023b64cc53f0e172ecba0589261f40e2834f87ad371ecb",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/vhost_task.h",
+  "human_readable_source": " \n#ifndef _LINUX_VHOST_TASK_H\n#define _LINUX_VHOST_TASK_H\n\n\nstruct vhost_task;\n\nstruct vhost_task *vhost_task_create(bool (*fn)(void *), void *arg,\n\t\t\t\t     const char *name);\nvoid vhost_task_start(struct vhost_task *vtsk);\nvoid vhost_task_stop(struct vhost_task *vtsk);\nvoid vhost_task_wake(struct vhost_task *vtsk);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

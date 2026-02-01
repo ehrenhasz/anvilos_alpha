@@ -1,0 +1,9 @@
+{
+  "module_name": "cnt32_to_63.h",
+  "hash_id": "edf4dae3a45547bddb6730bb7918524b1403ccac37505313c9d15df79f3aa1f0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cnt32_to_63.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_CNT32_TO_63_H__\n#define __LINUX_CNT32_TO_63_H__\n\n#include <linux/compiler.h>\n#include <linux/types.h>\n#include <asm/byteorder.h>\n\n \nunion cnt32_to_63 {\n\tstruct {\n#if defined(__LITTLE_ENDIAN)\n\t\tu32 lo, hi;\n#elif defined(__BIG_ENDIAN)\n\t\tu32 hi, lo;\n#endif\n\t};\n\tu64 val;\n};\n\n\n \n#define cnt32_to_63(cnt_lo) \\\n({ \\\n\tstatic u32 __m_cnt_hi; \\\n\tunion cnt32_to_63 __x; \\\n\t__x.hi = __m_cnt_hi; \\\n \tsmp_rmb(); \\\n\t__x.lo = (cnt_lo); \\\n\tif (unlikely((s32)(__x.hi ^ __x.lo) < 0)) \\\n\t\t__m_cnt_hi = __x.hi = (__x.hi ^ 0x80000000) + (__x.hi >> 31); \\\n\t__x.val; \\\n})\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

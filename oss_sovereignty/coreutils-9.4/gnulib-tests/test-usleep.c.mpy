@@ -1,0 +1,9 @@
+{
+  "module_name": "test-usleep.c",
+  "hash_id": "6c61734de324152e6d79901586bfc63b93a38152492e9445761c5665d1ac4e20",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-usleep.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <unistd.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (usleep, int, (useconds_t));\n\n#include <time.h>\n\n#include \"macros.h\"\n\nint\nmain (void)\n{\n  time_t start = time (NULL);\n  ASSERT (usleep (1000000) == 0);\n  ASSERT (start < time (NULL));\n\n  ASSERT (usleep (0) == 0);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

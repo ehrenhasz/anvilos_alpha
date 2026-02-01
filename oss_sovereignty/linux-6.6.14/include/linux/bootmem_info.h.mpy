@@ -1,0 +1,9 @@
+{
+  "module_name": "bootmem_info.h",
+  "hash_id": "1778f84037ece08129613ad4c48df8fdbbde62aa311ccd0aa37334983997c263",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bootmem_info.h",
+  "human_readable_source": " \n#ifndef __LINUX_BOOTMEM_INFO_H\n#define __LINUX_BOOTMEM_INFO_H\n\n#include <linux/mm.h>\n#include <linux/kmemleak.h>\n\n \nenum {\n\tMEMORY_HOTPLUG_MIN_BOOTMEM_TYPE = 12,\n\tSECTION_INFO = MEMORY_HOTPLUG_MIN_BOOTMEM_TYPE,\n\tMIX_SECTION_INFO,\n\tNODE_INFO,\n\tMEMORY_HOTPLUG_MAX_BOOTMEM_TYPE = NODE_INFO,\n};\n\n#ifdef CONFIG_HAVE_BOOTMEM_INFO_NODE\nvoid __init register_page_bootmem_info_node(struct pglist_data *pgdat);\n\nvoid get_page_bootmem(unsigned long info, struct page *page,\n\t\t      unsigned long type);\nvoid put_page_bootmem(struct page *page);\n\n \nstatic inline void free_bootmem_page(struct page *page)\n{\n\tunsigned long magic = page->index;\n\n\t \n\tVM_BUG_ON_PAGE(page_ref_count(page) != 2, page);\n\n\tif (magic == SECTION_INFO || magic == MIX_SECTION_INFO)\n\t\tput_page_bootmem(page);\n\telse\n\t\tVM_BUG_ON_PAGE(1, page);\n}\n#else\nstatic inline void register_page_bootmem_info_node(struct pglist_data *pgdat)\n{\n}\n\nstatic inline void put_page_bootmem(struct page *page)\n{\n}\n\nstatic inline void get_page_bootmem(unsigned long info, struct page *page,\n\t\t\t\t    unsigned long type)\n{\n}\n\nstatic inline void free_bootmem_page(struct page *page)\n{\n\tkmemleak_free_part(page_to_virt(page), PAGE_SIZE);\n\tfree_reserved_page(page);\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

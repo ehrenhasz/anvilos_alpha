@@ -1,0 +1,9 @@
+{
+  "module_name": "netfilter_bridge.h",
+  "hash_id": "114d635a01cc628e2191a9c3a19dd6dc3b169faba7ada37a6879c4284589d194",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_bridge.h",
+  "human_readable_source": " \n#ifndef _UAPI__LINUX_BRIDGE_NETFILTER_H\n#define _UAPI__LINUX_BRIDGE_NETFILTER_H\n\n \n\n#include <linux/in.h>\n#include <linux/netfilter.h>\n#include <linux/if_ether.h>\n#include <linux/if_vlan.h>\n#include <linux/if_pppox.h>\n\n#ifndef __KERNEL__\n#include <limits.h>  \n#endif\n\n \n \n#define NF_BR_PRE_ROUTING\t0\n \n#define NF_BR_LOCAL_IN\t\t1\n \n#define NF_BR_FORWARD\t\t2\n \n#define NF_BR_LOCAL_OUT\t\t3\n \n#define NF_BR_POST_ROUTING\t4\n \n#define NF_BR_BROUTING\t\t5\n#define NF_BR_NUMHOOKS\t\t6\n\nenum nf_br_hook_priorities {\n\tNF_BR_PRI_FIRST = INT_MIN,\n\tNF_BR_PRI_NAT_DST_BRIDGED = -300,\n\tNF_BR_PRI_FILTER_BRIDGED = -200,\n\tNF_BR_PRI_BRNF = 0,\n\tNF_BR_PRI_NAT_DST_OTHER = 100,\n\tNF_BR_PRI_FILTER_OTHER = 200,\n\tNF_BR_PRI_NAT_SRC = 300,\n\tNF_BR_PRI_LAST = INT_MAX,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

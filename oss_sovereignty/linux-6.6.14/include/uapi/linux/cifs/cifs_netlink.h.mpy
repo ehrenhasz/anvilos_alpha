@@ -1,0 +1,9 @@
+{
+  "module_name": "cifs_netlink.h",
+  "hash_id": "3a5b1b6474938467ca6c0d38d095bc5aa0eacc9e9f419aabdcb7cdab75ff0567",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/cifs/cifs_netlink.h",
+  "human_readable_source": " \n \n\n\n#ifndef _UAPILINUX_CIFS_NETLINK_H\n#define _UAPILINUX_CIFS_NETLINK_H\n\n#define CIFS_GENL_NAME\t\t\t\"cifs\"\n#define CIFS_GENL_VERSION\t\t0x1\n\n#define CIFS_GENL_MCGRP_SWN_NAME\t\"cifs_mcgrp_swn\"\n\nenum cifs_genl_multicast_groups {\n\tCIFS_GENL_MCGRP_SWN,\n};\n\nenum cifs_genl_attributes {\n\tCIFS_GENL_ATTR_UNSPEC,\n\tCIFS_GENL_ATTR_SWN_REGISTRATION_ID,\n\tCIFS_GENL_ATTR_SWN_NET_NAME,\n\tCIFS_GENL_ATTR_SWN_SHARE_NAME,\n\tCIFS_GENL_ATTR_SWN_IP,\n\tCIFS_GENL_ATTR_SWN_NET_NAME_NOTIFY,\n\tCIFS_GENL_ATTR_SWN_SHARE_NAME_NOTIFY,\n\tCIFS_GENL_ATTR_SWN_IP_NOTIFY,\n\tCIFS_GENL_ATTR_SWN_KRB_AUTH,\n\tCIFS_GENL_ATTR_SWN_USER_NAME,\n\tCIFS_GENL_ATTR_SWN_PASSWORD,\n\tCIFS_GENL_ATTR_SWN_DOMAIN_NAME,\n\tCIFS_GENL_ATTR_SWN_NOTIFICATION_TYPE,\n\tCIFS_GENL_ATTR_SWN_RESOURCE_STATE,\n\tCIFS_GENL_ATTR_SWN_RESOURCE_NAME,\n\t__CIFS_GENL_ATTR_MAX,\n};\n#define CIFS_GENL_ATTR_MAX (__CIFS_GENL_ATTR_MAX - 1)\n\nenum cifs_genl_commands {\n\tCIFS_GENL_CMD_UNSPEC,\n\tCIFS_GENL_CMD_SWN_REGISTER,\n\tCIFS_GENL_CMD_SWN_UNREGISTER,\n\tCIFS_GENL_CMD_SWN_NOTIFY,\n\t__CIFS_GENL_CMD_MAX\n};\n#define CIFS_GENL_CMD_MAX (__CIFS_GENL_CMD_MAX - 1)\n\nenum cifs_swn_notification_type {\n\tCIFS_SWN_NOTIFICATION_RESOURCE_CHANGE = 0x01,\n\tCIFS_SWN_NOTIFICATION_CLIENT_MOVE\t = 0x02,\n\tCIFS_SWN_NOTIFICATION_SHARE_MOVE\t = 0x03,\n\tCIFS_SWN_NOTIFICATION_IP_CHANGE\t = 0x04,\n};\n\nenum cifs_swn_resource_state {\n\tCIFS_SWN_RESOURCE_STATE_UNKNOWN     = 0x00,\n\tCIFS_SWN_RESOURCE_STATE_AVAILABLE   = 0x01,\n\tCIFS_SWN_RESOURCE_STATE_UNAVAILABLE = 0xFF\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

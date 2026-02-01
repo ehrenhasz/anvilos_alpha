@@ -1,0 +1,9 @@
+{
+  "module_name": "zconf.h",
+  "hash_id": "e45c6e8fad647457aab7ae1e6329672e1b7b4a6c9c356452454de81505178b80",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/zconf.h",
+  "human_readable_source": " \n\n \n\n#ifndef _ZCONF_H\n#define _ZCONF_H\n\n \n\n \n#ifndef MAX_MEM_LEVEL\n#  define MAX_MEM_LEVEL 8\n#endif\n\n \n#ifndef MAX_WBITS\n#  define MAX_WBITS   15  \n#endif\n\n \n#ifndef DEF_WBITS\n#  define DEF_WBITS MAX_WBITS\n#endif\n\n \n#if MAX_MEM_LEVEL >= 8\n#  define DEF_MEM_LEVEL 8\n#else\n#  define DEF_MEM_LEVEL  MAX_MEM_LEVEL\n#endif\n\n                         \n\ntypedef unsigned char  Byte;   \ntypedef unsigned int   uInt;   \ntypedef unsigned long  uLong;  \ntypedef void     *voidp;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

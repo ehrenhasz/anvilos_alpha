@@ -1,0 +1,9 @@
+{
+  "module_name": "trap.h",
+  "hash_id": "2742ecd8c22b843dcea19dea6a44d97246b0ffe522d0ddcd475e849836ba4b30",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/trap.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5E_TRAP_H__\n#define __MLX5E_TRAP_H__\n\n#include \"../en.h\"\n#include \"../devlink.h\"\n\nstruct mlx5e_trap {\n\t \n\tstruct mlx5e_rq            rq;\n\tstruct mlx5e_tir           tir;\n\tstruct napi_struct         napi;\n\tstruct device             *pdev;\n\tstruct net_device         *netdev;\n\t__be32                     mkey_be;\n\n\t \n\tstruct mlx5e_ch_stats     *stats;\n\n\t \n\tstruct mlx5e_priv         *priv;\n\tstruct mlx5_core_dev      *mdev;\n\tstruct hwtstamp_config    *tstamp;\n\tDECLARE_BITMAP(state, MLX5E_CHANNEL_NUM_STATES);\n\n\tstruct mlx5e_params        params;\n\tstruct mlx5e_rq_param      rq_param;\n};\n\nvoid mlx5e_close_trap(struct mlx5e_trap *trap);\nvoid mlx5e_deactivate_trap(struct mlx5e_priv *priv);\nint mlx5e_handle_trap_event(struct mlx5e_priv *priv, struct mlx5_trap_ctx *trap_ctx);\nint mlx5e_apply_traps(struct mlx5e_priv *priv, bool enable);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

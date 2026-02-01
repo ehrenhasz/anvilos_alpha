@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ae172543023eb240e3fb7fff84c42ab276dbb0355f1cfd6bdd1f0401b34e33f9",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/platform/olpc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_OLPC)\t\t+= olpc.o olpc_ofw.o olpc_dt.o\nobj-$(CONFIG_OLPC_XO1_PM)\t\t+= olpc-xo1-pm.o xo1-wakeup.o\nobj-$(CONFIG_OLPC_XO1_RTC)\t+= olpc-xo1-rtc.o\nobj-$(CONFIG_OLPC_XO1_SCI)\t+= olpc-xo1-sci.o\nobj-$(CONFIG_OLPC_XO15_SCI)\t+= olpc-xo15-sci.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

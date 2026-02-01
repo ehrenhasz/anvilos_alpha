@@ -1,0 +1,9 @@
+{
+  "module_name": "dpmcp.c",
+  "hash_id": "8b05606add211058b1098bacc03c12d065f394065dae37f2831d469ff544e23f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bus/fsl-mc/dpmcp.c",
+  "human_readable_source": "\n \n#include <linux/kernel.h>\n#include <linux/fsl/mc.h>\n\n#include \"fsl-mc-private.h\"\n\n \nint dpmcp_open(struct fsl_mc_io *mc_io,\n\t       u32 cmd_flags,\n\t       int dpmcp_id,\n\t       u16 *token)\n{\n\tstruct fsl_mc_command cmd = { 0 };\n\tstruct dpmcp_cmd_open *cmd_params;\n\tint err;\n\n\t \n\tcmd.header = mc_encode_cmd_header(DPMCP_CMDID_OPEN,\n\t\t\t\t\t  cmd_flags, 0);\n\tcmd_params = (struct dpmcp_cmd_open *)cmd.params;\n\tcmd_params->dpmcp_id = cpu_to_le32(dpmcp_id);\n\n\t \n\terr = mc_send_command(mc_io, &cmd);\n\tif (err)\n\t\treturn err;\n\n\t \n\t*token = mc_cmd_hdr_read_token(&cmd);\n\n\treturn err;\n}\n\n \nint dpmcp_close(struct fsl_mc_io *mc_io,\n\t\tu32 cmd_flags,\n\t\tu16 token)\n{\n\tstruct fsl_mc_command cmd = { 0 };\n\n\t \n\tcmd.header = mc_encode_cmd_header(DPMCP_CMDID_CLOSE,\n\t\t\t\t\t  cmd_flags, token);\n\n\t \n\treturn mc_send_command(mc_io, &cmd);\n}\n\n \nint dpmcp_reset(struct fsl_mc_io *mc_io,\n\t\tu32 cmd_flags,\n\t\tu16 token)\n{\n\tstruct fsl_mc_command cmd = { 0 };\n\n\t \n\tcmd.header = mc_encode_cmd_header(DPMCP_CMDID_RESET,\n\t\t\t\t\t  cmd_flags, token);\n\n\t \n\treturn mc_send_command(mc_io, &cmd);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

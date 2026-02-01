@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "33f9a799bb9248fec0eef3f1c9d1976675454bc59d2359d6138e99b750c222df",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/tegra/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig PINCTRL_TEGRA\n\tbool\n\tselect PINMUX\n\tselect PINCONF\n\nconfig PINCTRL_TEGRA20\n\tbool\n\tselect PINCTRL_TEGRA\n\nconfig PINCTRL_TEGRA30\n\tbool\n\tselect PINCTRL_TEGRA\n\nconfig PINCTRL_TEGRA114\n\tbool\n\tselect PINCTRL_TEGRA\n\nconfig PINCTRL_TEGRA124\n\tbool\n\tselect PINCTRL_TEGRA\n\nconfig PINCTRL_TEGRA210\n\tbool\n\tselect PINCTRL_TEGRA\n\nconfig PINCTRL_TEGRA194\n\tbool\n\tselect PINCTRL_TEGRA\n\nconfig PINCTRL_TEGRA234\n\tbool\n\tselect PINCTRL_TEGRA\n\nconfig PINCTRL_TEGRA_XUSB\n\tdef_bool y if ARCH_TEGRA\n\tselect GENERIC_PHY\n\tselect PINCONF\n\tselect PINMUX\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

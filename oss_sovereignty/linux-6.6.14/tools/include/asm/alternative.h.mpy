@@ -1,0 +1,9 @@
+{
+  "module_name": "alternative.h",
+  "hash_id": "ad79f424a4322131d662a3f6337361b330be695d8de9bf324f85a8ff2e7c9e37",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/asm/alternative.h",
+  "human_readable_source": " \n#ifndef _TOOLS_ASM_ALTERNATIVE_ASM_H\n#define _TOOLS_ASM_ALTERNATIVE_ASM_H\n\n \n\n#define ALTERNATIVE #\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

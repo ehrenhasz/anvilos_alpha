@@ -1,0 +1,9 @@
+{
+  "module_name": "sp2.h",
+  "hash_id": "319ecab1e2cb1e118d7bda96e66017b9147cb9b1eb324cbd2fec547ab292366e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/sp2.h",
+  "human_readable_source": " \n \n\n#ifndef SP2_H\n#define SP2_H\n\n#include <media/dvb_ca_en50221.h>\n\n \nstruct sp2_config {\n\t \n\tstruct dvb_adapter *dvb_adap;\n\n\t \n\tvoid *ci_control;\n\n\t \n\tvoid *priv;\n};\n\nextern int sp2_ci_read_attribute_mem(struct dvb_ca_en50221 *en50221,\n\t\t\t\t\tint slot, int addr);\nextern int sp2_ci_write_attribute_mem(struct dvb_ca_en50221 *en50221,\n\t\t\t\t\tint slot, int addr, u8 data);\nextern int sp2_ci_read_cam_control(struct dvb_ca_en50221 *en50221,\n\t\t\t\t\tint slot, u8 addr);\nextern int sp2_ci_write_cam_control(struct dvb_ca_en50221 *en50221,\n\t\t\t\t\tint slot, u8 addr, u8 data);\nextern int sp2_ci_slot_reset(struct dvb_ca_en50221 *en50221, int slot);\nextern int sp2_ci_slot_shutdown(struct dvb_ca_en50221 *en50221, int slot);\nextern int sp2_ci_slot_ts_enable(struct dvb_ca_en50221 *en50221, int slot);\nextern int sp2_ci_poll_slot_status(struct dvb_ca_en50221 *en50221,\n\t\t\t\t\tint slot, int open);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

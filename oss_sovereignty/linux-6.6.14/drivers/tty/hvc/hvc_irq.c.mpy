@@ -1,0 +1,9 @@
+{
+  "module_name": "hvc_irq.c",
+  "hash_id": "813ca6bcc35c31956ae076838d1b4b9aafe0da762db874ebe110d38c7a3c9339",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/hvc/hvc_irq.c",
+  "human_readable_source": "\n \n\n#include <linux/interrupt.h>\n\n#include \"hvc_console.h\"\n\nstatic irqreturn_t hvc_handle_interrupt(int irq, void *dev_instance)\n{\n\t \n\tif (hvc_poll(dev_instance))\n\t\thvc_kick();\n\n\t \n\treturn IRQ_HANDLED;\n}\n\n \nint notifier_add_irq(struct hvc_struct *hp, int irq)\n{\n\tint rc;\n\n\tif (!irq) {\n\t\thp->irq_requested = 0;\n\t\treturn 0;\n\t}\n\trc = request_irq(irq, hvc_handle_interrupt, hp->flags,\n\t\t\t\"hvc_console\", hp);\n\tif (!rc)\n\t\thp->irq_requested = 1;\n\treturn rc;\n}\n\nvoid notifier_del_irq(struct hvc_struct *hp, int irq)\n{\n\tif (!hp->irq_requested)\n\t\treturn;\n\tfree_irq(irq, hp);\n\thp->irq_requested = 0;\n}\n\nvoid notifier_hangup_irq(struct hvc_struct *hp, int irq)\n{\n\tnotifier_del_irq(hp, irq);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

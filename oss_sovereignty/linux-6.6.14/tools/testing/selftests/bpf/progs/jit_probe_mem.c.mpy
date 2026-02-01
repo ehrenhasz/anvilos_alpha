@@ -1,0 +1,9 @@
+{
+  "module_name": "jit_probe_mem.c",
+  "hash_id": "60094df14bcb36cb2504cb54e6bba53caddaf28cf4d1b9f49fb282e00413d334",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/jit_probe_mem.c",
+  "human_readable_source": "\n \n#include <vmlinux.h>\n#include <bpf/bpf_tracing.h>\n#include <bpf/bpf_helpers.h>\n#include \"../bpf_testmod/bpf_testmod_kfunc.h\"\n\nstatic struct prog_test_ref_kfunc __kptr *v;\nlong total_sum = -1;\n\nSEC(\"tc\")\nint test_jit_probe_mem(struct __sk_buff *ctx)\n{\n\tstruct prog_test_ref_kfunc *p;\n\tunsigned long zero = 0, sum;\n\n\tp = bpf_kfunc_call_test_acquire(&zero);\n\tif (!p)\n\t\treturn 1;\n\n\tp = bpf_kptr_xchg(&v, p);\n\tif (p)\n\t\tgoto release_out;\n\n\t \n\tp = v;\n\tif (!p)\n\t\treturn 1;\n\n\tasm volatile (\n\t\t\"r9 = %[p];\"\n\t\t\"%[sum] = 0;\"\n\n\t\t \n\t\t\"r8 = *(u32 *)(r9 + 0);\"\n\t\t\"%[sum] += r8;\"\n\n\t\t \n\t\t\"r8 = *(u32 *)(r9 + 4);\"\n\t\t\"%[sum] += r8;\"\n\n\t\t\"r9 += 8;\"\n\t\t \n\t\t\"r9 = *(u32 *)(r9 - 8);\"\n\t\t\"%[sum] += r9;\"\n\n\t\t: [sum] \"=r\"(sum)\n\t\t: [p] \"r\"(p)\n\t\t: \"r8\", \"r9\"\n\t);\n\n\ttotal_sum = sum;\n\treturn 0;\nrelease_out:\n\tbpf_kfunc_call_test_release(p);\n\treturn 1;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

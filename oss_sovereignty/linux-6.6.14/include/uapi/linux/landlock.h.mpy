@@ -1,0 +1,9 @@
+{
+  "module_name": "landlock.h",
+  "hash_id": "f415f2f51a33a8f19be3b96d3c24a19eacf68ed53bcc2f066ee70c624b2e93e7",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/landlock.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_LANDLOCK_H\n#define _UAPI_LINUX_LANDLOCK_H\n\n#include <linux/types.h>\n\n \nstruct landlock_ruleset_attr {\n\t \n\t__u64 handled_access_fs;\n};\n\n \n \n#define LANDLOCK_CREATE_RULESET_VERSION\t\t\t(1U << 0)\n \n\n \nenum landlock_rule_type {\n\t \n\tLANDLOCK_RULE_PATH_BENEATH = 1,\n};\n\n \nstruct landlock_path_beneath_attr {\n\t \n\t__u64 allowed_access;\n\t \n\t__s32 parent_fd;\n\t \n} __attribute__((packed));\n\n \n \n#define LANDLOCK_ACCESS_FS_EXECUTE\t\t\t(1ULL << 0)\n#define LANDLOCK_ACCESS_FS_WRITE_FILE\t\t\t(1ULL << 1)\n#define LANDLOCK_ACCESS_FS_READ_FILE\t\t\t(1ULL << 2)\n#define LANDLOCK_ACCESS_FS_READ_DIR\t\t\t(1ULL << 3)\n#define LANDLOCK_ACCESS_FS_REMOVE_DIR\t\t\t(1ULL << 4)\n#define LANDLOCK_ACCESS_FS_REMOVE_FILE\t\t\t(1ULL << 5)\n#define LANDLOCK_ACCESS_FS_MAKE_CHAR\t\t\t(1ULL << 6)\n#define LANDLOCK_ACCESS_FS_MAKE_DIR\t\t\t(1ULL << 7)\n#define LANDLOCK_ACCESS_FS_MAKE_REG\t\t\t(1ULL << 8)\n#define LANDLOCK_ACCESS_FS_MAKE_SOCK\t\t\t(1ULL << 9)\n#define LANDLOCK_ACCESS_FS_MAKE_FIFO\t\t\t(1ULL << 10)\n#define LANDLOCK_ACCESS_FS_MAKE_BLOCK\t\t\t(1ULL << 11)\n#define LANDLOCK_ACCESS_FS_MAKE_SYM\t\t\t(1ULL << 12)\n#define LANDLOCK_ACCESS_FS_REFER\t\t\t(1ULL << 13)\n#define LANDLOCK_ACCESS_FS_TRUNCATE\t\t\t(1ULL << 14)\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

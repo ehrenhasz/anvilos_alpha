@@ -1,0 +1,9 @@
+{
+  "module_name": "igc_phy.h",
+  "hash_id": "a97edcadf42b858d0a7de2472b22f204326fc1d95070627a2fde57a0a109d3b6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/igc/igc_phy.h",
+  "human_readable_source": " \n \n\n#ifndef _IGC_PHY_H_\n#define _IGC_PHY_H_\n\n#include \"igc_mac.h\"\n\ns32 igc_check_reset_block(struct igc_hw *hw);\ns32 igc_phy_hw_reset(struct igc_hw *hw);\ns32 igc_get_phy_id(struct igc_hw *hw);\ns32 igc_phy_has_link(struct igc_hw *hw, u32 iterations,\n\t\t     u32 usec_interval, bool *success);\nvoid igc_check_downshift(struct igc_hw *hw);\ns32 igc_setup_copper_link(struct igc_hw *hw);\nvoid igc_power_up_phy_copper(struct igc_hw *hw);\nvoid igc_power_down_phy_copper(struct igc_hw *hw);\ns32 igc_write_phy_reg_gpy(struct igc_hw *hw, u32 offset, u16 data);\ns32 igc_read_phy_reg_gpy(struct igc_hw *hw, u32 offset, u16 *data);\nu16 igc_read_phy_fw_version(struct igc_hw *hw);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

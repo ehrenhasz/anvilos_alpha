@@ -1,0 +1,9 @@
+{
+  "module_name": "lio_vf_rep.h",
+  "hash_id": "5e186504c3e6fd5f768e355b4c5015d145e0c0304a1b1ff6eb971e3289e7638e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cavium/liquidio/lio_vf_rep.h",
+  "human_readable_source": " \n\n \n#ifndef __LIO_VF_REP_H__\n#define __LIO_VF_REP_H__\n#define LIO_VF_REP_REQ_TMO_MS 5000\n#define LIO_VF_REP_STATS_POLL_TIME_MS 200\n\nstruct lio_vf_rep_desc {\n\tstruct net_device *parent_ndev;\n\tstruct net_device *ndev;\n\tstruct octeon_device *oct;\n\tstruct lio_vf_rep_stats stats;\n\tstruct cavium_wk stats_wk;\n\tatomic_t ifstate;\n\tint ifidx;\n};\n\nstruct lio_vf_rep_sc_ctx {\n\tstruct completion complete;\n};\n\nint lio_vf_rep_create(struct octeon_device *oct);\nvoid lio_vf_rep_destroy(struct octeon_device *oct);\nint lio_vf_rep_modinit(void);\nvoid lio_vf_rep_modexit(void);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

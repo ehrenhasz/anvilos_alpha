@@ -1,0 +1,9 @@
+{
+  "module_name": "irq-davinci-cp-intc.h",
+  "hash_id": "56e35882105d8c4e309609c271828d9e86466ed134dacf1e18a45bd42e97d815",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/irqchip/irq-davinci-cp-intc.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_IRQ_DAVINCI_CP_INTC_\n#define _LINUX_IRQ_DAVINCI_CP_INTC_\n\n#include <linux/ioport.h>\n\n \nstruct davinci_cp_intc_config {\n\tstruct resource reg;\n\tunsigned int num_irqs;\n};\n\nint davinci_cp_intc_init(const struct davinci_cp_intc_config *config);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

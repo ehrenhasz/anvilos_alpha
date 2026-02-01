@@ -1,0 +1,9 @@
+{
+  "module_name": "xbinary-io.c",
+  "hash_id": "0284693eea57d9cb2dc20446b3964ba87c1388d0866d7c757d24858e35299ce1",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xbinary-io.c",
+  "human_readable_source": "/* Binary mode I/O with checking\n   Copyright 2017-2023 Free Software Foundation, Inc.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU Lesser General Public License as\n   published by the Free Software Foundation, either version 3 of the\n   License, or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU Lesser General Public License for more details.\n\n   You should have received a copy of the GNU Lesser General Public License\n   along with this program.  If not, see <https:\n\n#include <config.h>\n\n#define XBINARY_IO_INLINE _GL_EXTERN_INLINE\n#include \"xbinary-io.h\"\n\n#include <errno.h>\n#include <error.h>\n#include \"exitfail.h\"\n#include \"verify.h\"\n\n#include \"gettext.h\"\n#define _(msgid) gettext (msgid)\n\n#if O_BINARY\n\n_Noreturn void\nxset_binary_mode_error (void)\n{\n  error (exit_failure, errno,\n         _(\"failed to set file descriptor text/binary mode\"));\n  assume (false);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

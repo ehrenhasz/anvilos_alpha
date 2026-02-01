@@ -1,0 +1,9 @@
+{
+  "module_name": "host1x06.c",
+  "hash_id": "a04d77857620b85473d57be2aac29bcaf1ed3411846c6b81bb4535dfdb4efafb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/hw/host1x06.c",
+  "human_readable_source": "\n \n\n \n#include \"host1x06.h\"\n#include \"host1x06_hardware.h\"\n\n \n#define HOST1X_HW 6\n\n#include \"cdma_hw.c\"\n#include \"channel_hw.c\"\n#include \"debug_hw.c\"\n#include \"intr_hw.c\"\n#include \"syncpt_hw.c\"\n\n#include \"../dev.h\"\n\nint host1x06_init(struct host1x *host)\n{\n\thost->channel_op = &host1x_channel_ops;\n\thost->cdma_op = &host1x_cdma_ops;\n\thost->cdma_pb_op = &host1x_pushbuffer_ops;\n\thost->syncpt_op = &host1x_syncpt_ops;\n\thost->intr_op = &host1x_intr_ops;\n\thost->debug_op = &host1x_debug_ops;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

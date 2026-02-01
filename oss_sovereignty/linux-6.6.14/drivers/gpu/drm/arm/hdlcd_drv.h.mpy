@@ -1,0 +1,9 @@
+{
+  "module_name": "hdlcd_drv.h",
+  "hash_id": "50eccb5c6d48f1c5354831a715602558fb2e8155a3e7f3f423cc4e8fe85bb62f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/arm/hdlcd_drv.h",
+  "human_readable_source": " \n \n\n#ifndef __HDLCD_DRV_H__\n#define __HDLCD_DRV_H__\n\nstruct hdlcd_drm_private {\n\tstruct drm_device\t\tbase;\n\tvoid __iomem\t\t\t*mmio;\n\tstruct clk\t\t\t*clk;\n\tstruct drm_crtc\t\t\tcrtc;\n\tstruct drm_plane\t\t*plane;\n\tunsigned int\t\t\tirq;\n#ifdef CONFIG_DEBUG_FS\n\tatomic_t buffer_underrun_count;\n\tatomic_t bus_error_count;\n\tatomic_t vsync_count;\n\tatomic_t dma_end_count;\n#endif\n};\n\n#define drm_to_hdlcd_priv(x)\tcontainer_of(x, struct hdlcd_drm_private, base)\n#define crtc_to_hdlcd_priv(x)\tcontainer_of(x, struct hdlcd_drm_private, crtc)\n\nstatic inline void hdlcd_write(struct hdlcd_drm_private *hdlcd,\n\t\t\t       unsigned int reg, u32 value)\n{\n\twritel(value, hdlcd->mmio + reg);\n}\n\nstatic inline u32 hdlcd_read(struct hdlcd_drm_private *hdlcd, unsigned int reg)\n{\n\treturn readl(hdlcd->mmio + reg);\n}\n\nint hdlcd_setup_crtc(struct drm_device *dev);\nvoid hdlcd_set_scanout(struct hdlcd_drm_private *hdlcd);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

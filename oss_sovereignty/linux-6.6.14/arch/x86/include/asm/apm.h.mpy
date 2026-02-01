@@ -1,0 +1,9 @@
+{
+  "module_name": "apm.h",
+  "hash_id": "9cbdedc9e9dae34e978bfb2e2261ef18261a7593c1872faec51426d8f0ea9542",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/apm.h",
+  "human_readable_source": " \n \n\n#ifndef _ASM_X86_MACH_DEFAULT_APM_H\n#define _ASM_X86_MACH_DEFAULT_APM_H\n\n#ifdef APM_ZERO_SEGS\n#\tdefine APM_DO_ZERO_SEGS \\\n\t\t\"pushl %%ds\\n\\t\" \\\n\t\t\"pushl %%es\\n\\t\" \\\n\t\t\"xorl %%edx, %%edx\\n\\t\" \\\n\t\t\"mov %%dx, %%ds\\n\\t\" \\\n\t\t\"mov %%dx, %%es\\n\\t\" \\\n\t\t\"mov %%dx, %%fs\\n\\t\" \\\n\t\t\"mov %%dx, %%gs\\n\\t\"\n#\tdefine APM_DO_POP_SEGS \\\n\t\t\"popl %%es\\n\\t\" \\\n\t\t\"popl %%ds\\n\\t\"\n#else\n#\tdefine APM_DO_ZERO_SEGS\n#\tdefine APM_DO_POP_SEGS\n#endif\n\nstatic inline void apm_bios_call_asm(u32 func, u32 ebx_in, u32 ecx_in,\n\t\t\t\t\tu32 *eax, u32 *ebx, u32 *ecx,\n\t\t\t\t\tu32 *edx, u32 *esi)\n{\n\t \n\t__asm__ __volatile__(APM_DO_ZERO_SEGS\n\t\t\"pushl %%edi\\n\\t\"\n\t\t\"pushl %%ebp\\n\\t\"\n\t\t\"lcall *%%cs:apm_bios_entry\\n\\t\"\n\t\t\"setc %%al\\n\\t\"\n\t\t\"popl %%ebp\\n\\t\"\n\t\t\"popl %%edi\\n\\t\"\n\t\tAPM_DO_POP_SEGS\n\t\t: \"=a\" (*eax), \"=b\" (*ebx), \"=c\" (*ecx), \"=d\" (*edx),\n\t\t  \"=S\" (*esi)\n\t\t: \"a\" (func), \"b\" (ebx_in), \"c\" (ecx_in)\n\t\t: \"memory\", \"cc\");\n}\n\nstatic inline bool apm_bios_call_simple_asm(u32 func, u32 ebx_in,\n\t\t\t\t\t    u32 ecx_in, u32 *eax)\n{\n\tint\tcx, dx, si;\n\tbool\terror;\n\n\t \n\t__asm__ __volatile__(APM_DO_ZERO_SEGS\n\t\t\"pushl %%edi\\n\\t\"\n\t\t\"pushl %%ebp\\n\\t\"\n\t\t\"lcall *%%cs:apm_bios_entry\\n\\t\"\n\t\t\"setc %%bl\\n\\t\"\n\t\t\"popl %%ebp\\n\\t\"\n\t\t\"popl %%edi\\n\\t\"\n\t\tAPM_DO_POP_SEGS\n\t\t: \"=a\" (*eax), \"=b\" (error), \"=c\" (cx), \"=d\" (dx),\n\t\t  \"=S\" (si)\n\t\t: \"a\" (func), \"b\" (ebx_in), \"c\" (ecx_in)\n\t\t: \"memory\", \"cc\");\n\treturn error;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

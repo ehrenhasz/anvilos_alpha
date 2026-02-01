@@ -1,0 +1,9 @@
+{
+  "module_name": "mdio-gpio.h",
+  "hash_id": "a148217d90a025837e2baf8398ca1d5a5613c9bc5a8bbfe99d5d3c660c6aff7e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mdio-gpio.h",
+  "human_readable_source": " \n#ifndef __LINUX_MDIO_GPIO_H\n#define __LINUX_MDIO_GPIO_H\n\n#define MDIO_GPIO_MDC\t0\n#define MDIO_GPIO_MDIO\t1\n#define MDIO_GPIO_MDO\t2\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

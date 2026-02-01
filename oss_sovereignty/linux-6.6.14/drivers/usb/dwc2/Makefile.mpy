@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "be2bb8f92371dc052507ed5b16c18ae722323c0075356438e9f59d21c8193cf2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/dwc2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nccflags-$(CONFIG_USB_DWC2_DEBUG)\t+= -DDEBUG\nccflags-$(CONFIG_USB_DWC2_VERBOSE)\t+= -DVERBOSE_DEBUG\n\nobj-$(CONFIG_USB_DWC2)\t\t\t+= dwc2.o\ndwc2-y\t\t\t\t\t:= core.o core_intr.o platform.o drd.o\ndwc2-y\t\t\t\t\t+= params.o\n\nifneq ($(filter y,$(CONFIG_USB_DWC2_HOST) $(CONFIG_USB_DWC2_DUAL_ROLE)),)\n\tdwc2-y\t\t\t\t+= hcd.o hcd_intr.o\n\tdwc2-y\t\t\t\t+= hcd_queue.o hcd_ddma.o\nendif\n\nifneq ($(filter y,$(CONFIG_USB_DWC2_PERIPHERAL) $(CONFIG_USB_DWC2_DUAL_ROLE)),)\n\tdwc2-y       \t\t\t+= gadget.o\nendif\n\nifneq ($(CONFIG_DEBUG_FS),)\n\tdwc2-y\t\t\t\t+= debugfs.o\nendif\n\n# NOTE: The previous s3c-hsotg peripheral mode only driver has been moved to\n# this location and renamed gadget.c. When building for dynamically linked\n# modules, dwc2.ko will get built for host mode, peripheral mode, and dual-role\n# mode. The PCI bus interface module will called dwc2_pci.ko and the platform\n# interface module will be called dwc2_platform.ko.\n\nobj-$(CONFIG_USB_DWC2_PCI)\t\t+= dwc2_pci.o\ndwc2_pci-y\t\t\t\t:= pci.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

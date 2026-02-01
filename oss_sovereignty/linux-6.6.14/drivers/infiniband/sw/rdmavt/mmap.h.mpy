@@ -1,0 +1,9 @@
+{
+  "module_name": "mmap.h",
+  "hash_id": "e1444c5416e33a6fe12d00905ec800d23b4cbaefd065a1948a83b9b27c454876",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/sw/rdmavt/mmap.h",
+  "human_readable_source": " \n \n\n#ifndef DEF_RDMAVTMMAP_H\n#define DEF_RDMAVTMMAP_H\n\n#include <rdma/rdma_vt.h>\n\nvoid rvt_mmap_init(struct rvt_dev_info *rdi);\nvoid rvt_release_mmap_info(struct kref *ref);\nint rvt_mmap(struct ib_ucontext *context, struct vm_area_struct *vma);\nstruct rvt_mmap_info *rvt_create_mmap_info(struct rvt_dev_info *rdi, u32 size,\n\t\t\t\t\t   struct ib_udata *udata, void *obj);\nvoid rvt_update_mmap_info(struct rvt_dev_info *rdi, struct rvt_mmap_info *ip,\n\t\t\t  u32 size, void *obj);\n\n#endif           \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

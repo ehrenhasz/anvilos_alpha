@@ -1,0 +1,9 @@
+{
+  "module_name": "mem-phys-addr-report",
+  "hash_id": "5c3944d6138688e448668ae027f52b796f5ea57d79b63f0cb29e6465a82eb08c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/mem-phys-addr-report",
+  "human_readable_source": "#!/bin/bash\n# description: resolve physical address samples\nperf script $@ -s \"$PERF_EXEC_PATH\"/scripts/python/mem-phys-addr.py\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

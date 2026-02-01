@@ -1,0 +1,9 @@
+{
+  "module_name": "x25device.h",
+  "hash_id": "3a1b42d09890e04bf1df2e554dc8a001f170ec66bb37bb24ecb630b42b71ac3a",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/x25device.h",
+  "human_readable_source": " \n#ifndef _X25DEVICE_H\n#define _X25DEVICE_H\n\n#include <linux/if_ether.h>\n#include <linux/if_packet.h>\n#include <linux/if_x25.h>\n#include <linux/skbuff.h>\n\nstatic inline __be16 x25_type_trans(struct sk_buff *skb, struct net_device *dev)\n{\n\tskb->dev = dev;\n\tskb_reset_mac_header(skb);\n\tskb->pkt_type = PACKET_HOST;\n\t\n\treturn htons(ETH_P_X25);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

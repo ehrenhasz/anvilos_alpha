@@ -1,0 +1,9 @@
+{
+  "module_name": "bsearch.c",
+  "hash_id": "45332fe2a987daf417df7c2c14d4df008be8cae24ada9d8fad4181ba5e7a7f83",
+  "original_prompt": "Ingested from linux-6.6.14/lib/bsearch.c",
+  "human_readable_source": "\n \n\n#include <linux/export.h>\n#include <linux/bsearch.h>\n#include <linux/kprobes.h>\n\n \nvoid *bsearch(const void *key, const void *base, size_t num, size_t size, cmp_func_t cmp)\n{\n\treturn __inline_bsearch(key, base, num, size, cmp);\n}\nEXPORT_SYMBOL(bsearch);\nNOKPROBE_SYMBOL(bsearch);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

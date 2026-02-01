@@ -1,0 +1,9 @@
+{
+  "module_name": "ca_midi.h",
+  "hash_id": "1cb9300a60b2641a5c2c9d96eeead840df67c49483b6675c93fac5150cad4ea4",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ca0106/ca_midi.h",
+  "human_readable_source": " \n \n\n#include <linux/spinlock.h>\n#include <sound/rawmidi.h>\n#include <sound/mpu401.h>\n\n#define CA_MIDI_MODE_INPUT\tMPU401_MODE_INPUT\n#define CA_MIDI_MODE_OUTPUT\tMPU401_MODE_OUTPUT\n\nstruct snd_ca_midi {\n\n\tstruct snd_rawmidi *rmidi;\n\tstruct snd_rawmidi_substream *substream_input;\n\tstruct snd_rawmidi_substream *substream_output;\n\n\tvoid *dev_id;\n\n\tspinlock_t input_lock;\n\tspinlock_t output_lock;\n\tspinlock_t open_lock;\n\n\tunsigned int channel;\n\n\tunsigned int midi_mode;\n\tint port;\n\tint tx_enable, rx_enable;\n\tint ipr_tx, ipr_rx;            \n\t\n\tint input_avail, output_ready;\n\tint ack, reset, enter_uart;\n\n\tvoid (*interrupt)(struct snd_ca_midi *midi, unsigned int status);\n\tvoid (*interrupt_enable)(struct snd_ca_midi *midi, int intr);\n\tvoid (*interrupt_disable)(struct snd_ca_midi *midi, int intr);\n\n\tunsigned char (*read)(struct snd_ca_midi *midi, int idx);\n\tvoid (*write)(struct snd_ca_midi *midi, int data, int idx);\n\n\t \n\tstruct snd_card *(*get_dev_id_card)(void *dev_id);\n\tint (*get_dev_id_port)(void *dev_id);\n};\n\nint ca_midi_init(void *card, struct snd_ca_midi *midi, int device, char *name);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

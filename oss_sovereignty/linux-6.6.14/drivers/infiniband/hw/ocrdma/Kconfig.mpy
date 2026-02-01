@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "f8f8b5cd385b4161e0df586d800cd78f6cac36bdb73fe93175e07abac3cc35dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/ocrdma/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig INFINIBAND_OCRDMA\n\ttristate \"Emulex One Connect HCA support\"\n\tdepends on ETHERNET && NETDEVICES && PCI && INET && (IPV6 || IPV6=n)\n\tselect NET_VENDOR_EMULEX\n\tselect BE2NET\n\thelp\n\t  This driver provides low-level InfiniBand over Ethernet\n\t  support for Emulex One Connect host channel adapters (HCAs).\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

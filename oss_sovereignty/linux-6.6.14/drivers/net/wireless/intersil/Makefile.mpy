@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9375edd2209efdaf9125b69ad349007eefb83313bf72c9011bd69e67008e7f07",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intersil/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_HOSTAP)\t\t+= hostap/\nobj-$(CONFIG_HERMES)\t\t+= orinoco/\nobj-$(CONFIG_P54_COMMON)\t+= p54/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

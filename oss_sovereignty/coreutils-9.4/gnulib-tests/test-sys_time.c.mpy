@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sys_time.c",
+  "hash_id": "82d9268830f14665787bffef200830056f0d238031044712ea45402380790770",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sys_time.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/time.h>\n\n \nstruct timeval a;\n\n \ntypedef int verify_tv_sec_type[sizeof (time_t) <= sizeof (a.tv_sec) ? 1 : -1];\n\nint\nmain (void)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

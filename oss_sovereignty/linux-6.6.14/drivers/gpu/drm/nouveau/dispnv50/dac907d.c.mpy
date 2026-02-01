@@ -1,0 +1,9 @@
+{
+  "module_name": "dac907d.c",
+  "hash_id": "f614472ac8f6e00b9287adee69e4f0dc7686e8cea3ec0f5fc792acdd0c34120e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/dac907d.c",
+  "human_readable_source": " \n#include \"core.h\"\n\n#include <nvif/push507c.h>\n\n#include <nvhw/class/cl907d.h>\n\nstatic int\ndac907d_ctrl(struct nv50_core *core, int or, u32 ctrl,\n\t     struct nv50_head_atom *asyh)\n{\n\tstruct nvif_push *push = core->chan.push;\n\tint ret;\n\n\tif ((ret = PUSH_WAIT(push, 2)))\n\t\treturn ret;\n\n\tPUSH_MTHD(push, NV907D, DAC_SET_CONTROL(or), ctrl);\n\treturn 0;\n}\n\nconst struct nv50_outp_func\ndac907d = {\n\t.ctrl = dac907d_ctrl,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

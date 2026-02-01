@@ -1,0 +1,9 @@
+{
+  "module_name": "fpsimd-stress",
+  "hash_id": "ca77d260fc180937229bc07bb534d28413fa1409c918f691d9fcd3a5871738fb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/fp/fpsimd-stress",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0-only\n# Copyright (C) 2015-2019 ARM Limited.\n# Original author: Dave Martin <Dave.Martin@arm.com>\n\nset -ue\n\nNR_CPUS=`nproc`\n\npids=\nlogs=\n\ncleanup () {\n\ttrap - INT TERM CHLD\n\tset +e\n\n\tif [ -n \"$pids\" ]; then\n\t\tkill $pids\n\t\twait $pids\n\t\tpids=\n\tfi\n\n\tif [ -n \"$logs\" ]; then\n\t\tcat $logs\n\t\trm $logs\n\t\tlogs=\n\tfi\n}\n\ninterrupt () {\n\tcleanup\n\texit 0\n}\n\nchild_died () {\n\tcleanup\n\texit 1\n}\n\ntrap interrupt INT TERM EXIT\ntrap child_died CHLD\n\nfor x in `seq 0 $((NR_CPUS * 4))`; do\n\tlog=`mktemp`\n\tlogs=$logs\\ $log\n\t./fpsimd-test >$log &\n\tpids=$pids\\ $!\ndone\n\n# Wait for all child processes to be created:\nsleep 10\n\nwhile :; do\n\tkill -USR1 $pids\ndone &\npids=$pids\\ $!\n\nwait\n\nexit 1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

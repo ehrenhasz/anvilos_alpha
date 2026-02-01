@@ -1,0 +1,9 @@
+{
+  "module_name": "pwc-dec1.h",
+  "hash_id": "f13b4fb9271e793e1c983e668fa57cf9a6a1f90063947ee5ac3e05755423f075",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pwc/pwc-dec1.h",
+  "human_readable_source": " \n \n\n#ifndef PWC_DEC1_H\n#define PWC_DEC1_H\n\n#include <linux/mutex.h>\n\nstruct pwc_device;\n\nstruct pwc_dec1_private\n{\n\tint version;\n};\n\nvoid pwc_dec1_init(struct pwc_device *pdev, const unsigned char *cmd);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "init-mm.c",
+  "hash_id": "e8ebc08bd2f2a5739631d4ef7b210ed3845b2f8c3b9d897ddff3204dfc87ac07",
+  "original_prompt": "Ingested from linux-6.6.14/mm/init-mm.c",
+  "human_readable_source": "\n#include <linux/mm_types.h>\n#include <linux/maple_tree.h>\n#include <linux/rwsem.h>\n#include <linux/spinlock.h>\n#include <linux/list.h>\n#include <linux/cpumask.h>\n#include <linux/mman.h>\n#include <linux/pgtable.h>\n\n#include <linux/atomic.h>\n#include <linux/user_namespace.h>\n#include <linux/iommu.h>\n#include <asm/mmu.h>\n\n#ifndef INIT_MM_CONTEXT\n#define INIT_MM_CONTEXT(name)\n#endif\n\nconst struct vm_operations_struct vma_dummy_vm_ops;\n\n \nstruct mm_struct init_mm = {\n\t.mm_mt\t\t= MTREE_INIT_EXT(mm_mt, MM_MT_FLAGS, init_mm.mmap_lock),\n\t.pgd\t\t= swapper_pg_dir,\n\t.mm_users\t= ATOMIC_INIT(2),\n\t.mm_count\t= ATOMIC_INIT(1),\n\t.write_protect_seq = SEQCNT_ZERO(init_mm.write_protect_seq),\n\tMMAP_LOCK_INITIALIZER(init_mm)\n\t.page_table_lock =  __SPIN_LOCK_UNLOCKED(init_mm.page_table_lock),\n\t.arg_lock\t=  __SPIN_LOCK_UNLOCKED(init_mm.arg_lock),\n\t.mmlist\t\t= LIST_HEAD_INIT(init_mm.mmlist),\n#ifdef CONFIG_PER_VMA_LOCK\n\t.mm_lock_seq\t= 0,\n#endif\n\t.user_ns\t= &init_user_ns,\n\t.cpu_bitmap\t= CPU_BITS_NONE,\n#ifdef CONFIG_IOMMU_SVA\n\t.pasid\t\t= IOMMU_PASID_INVALID,\n#endif\n\tINIT_MM_CONTEXT(init_mm)\n};\n\nvoid setup_initial_init_mm(void *start_code, void *end_code,\n\t\t\t   void *end_data, void *brk)\n{\n\tinit_mm.start_code = (unsigned long)start_code;\n\tinit_mm.end_code = (unsigned long)end_code;\n\tinit_mm.end_data = (unsigned long)end_data;\n\tinit_mm.brk = (unsigned long)brk;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

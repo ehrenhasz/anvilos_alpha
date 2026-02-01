@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_factory_dce80.h",
+  "hash_id": "a0f891c38dbe2eae571cbab8b10d1c88a93719b4e46075cc73a5e6fee78b3962",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/dce80/hw_factory_dce80.h",
+  "human_readable_source": " \n\n#ifndef __DAL_HW_FACTORY_DCE80_H__\n#define __DAL_HW_FACTORY_DCE80_H__\n\nvoid dal_hw_factory_dce80_init(\n\tstruct hw_factory *factory);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

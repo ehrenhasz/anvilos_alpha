@@ -1,0 +1,9 @@
+{
+  "module_name": "fsi-sbefifo.h",
+  "hash_id": "abed4a81d0542381b477036197d06ffa1e5c3d883b901902ebddd59bd2e151e2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fsi-sbefifo.h",
+  "human_readable_source": " \n \n\n#ifndef LINUX_FSI_SBEFIFO_H\n#define LINUX_FSI_SBEFIFO_H\n\n#define SBEFIFO_CMD_PUT_OCC_SRAM\t0xa404\n#define SBEFIFO_CMD_GET_OCC_SRAM\t0xa403\n#define SBEFIFO_CMD_GET_SBE_FFDC\t0xa801\n\n#define SBEFIFO_MAX_FFDC_SIZE\t\t0x2000\n\nstruct device;\n\nint sbefifo_submit(struct device *dev, const __be32 *command, size_t cmd_len,\n\t\t   __be32 *response, size_t *resp_len);\n\nint sbefifo_parse_status(struct device *dev, u16 cmd, __be32 *response,\n\t\t\t size_t resp_len, size_t *data_len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

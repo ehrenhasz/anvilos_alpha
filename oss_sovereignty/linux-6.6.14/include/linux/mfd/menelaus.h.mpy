@@ -1,0 +1,9 @@
+{
+  "module_name": "menelaus.h",
+  "hash_id": "19c77a6b02ada1558203bbc6a98ad20b789ddd0a19ba50ce25757990743e9ce6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/menelaus.h",
+  "human_readable_source": " \n \n\n#ifndef __ASM_ARCH_MENELAUS_H\n#define __ASM_ARCH_MENELAUS_H\n\nstruct device;\n\nstruct menelaus_platform_data {\n\tint (* late_init)(struct device *dev);\n};\n\nextern int menelaus_register_mmc_callback(void (*callback)(void *data, u8 card_mask),\n\t\t\t\t\t  void *data);\nextern void menelaus_unregister_mmc_callback(void);\nextern int menelaus_set_mmc_opendrain(int slot, int enable);\nextern int menelaus_set_mmc_slot(int slot, int enable, int power, int cd_on);\n\nextern int menelaus_set_vmem(unsigned int mV);\nextern int menelaus_set_vio(unsigned int mV);\nextern int menelaus_set_vmmc(unsigned int mV);\nextern int menelaus_set_vaux(unsigned int mV);\nextern int menelaus_set_vdcdc(int dcdc, unsigned int mV);\nextern int menelaus_set_slot_sel(int enable);\nextern int menelaus_get_slot_pin_states(void);\nextern int menelaus_set_vcore_hw(unsigned int roof_mV, unsigned int floor_mV);\n\n#define EN_VPLL_SLEEP\t(1 << 7)\n#define EN_VMMC_SLEEP\t(1 << 6)\n#define EN_VAUX_SLEEP\t(1 << 5)\n#define EN_VIO_SLEEP\t(1 << 4)\n#define EN_VMEM_SLEEP\t(1 << 3)\n#define EN_DC3_SLEEP\t(1 << 2)\n#define EN_DC2_SLEEP\t(1 << 1)\n#define EN_VC_SLEEP\t(1 << 0)\n\nextern int menelaus_set_regulator_sleep(int enable, u32 val);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

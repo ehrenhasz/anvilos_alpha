@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_type_id___missing_targets.c",
+  "hash_id": "0ee34687d3be3bf04a5cbe891e04f550984aa786ea483ea6694cbe7eceded5b9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_type_id___missing_targets.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_type_id___missing_targets x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

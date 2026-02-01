@@ -1,0 +1,9 @@
+{
+  "module_name": "broken-pipe.sh",
+  "hash_id": "697cbee0df80293c1bda06bf938668a4f20ff6e3892edbbabab168272b1d8be1",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/broken-pipe.sh",
+  "human_readable_source": "#\t$OpenBSD: broken-pipe.sh,v 1.6 2017/04/30 23:34:55 djm Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"broken pipe test\"\n\nfor i in 1 2 3 4; do\n\t${SSH} -F $OBJ/ssh_config_config nexthost echo $i 2> /dev/null | true\n\tr=$?\n\tif [ $r -ne 0 ]; then\n\t\tfail \"broken pipe returns $r\"\n\tfi\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gk208.c",
+  "hash_id": "1081312ab9df01bb9ad44696a0f7132bbb1dc10080092449c00437b06de72997",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/fifo/gk208.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"runq.h\"\n\n#include <nvif/class.h>\n\nvoid\ngk208_runq_init(struct nvkm_runq *runq)\n{\n\tgk104_runq_init(runq);\n\n\tnvkm_wr32(runq->fifo->engine.subdev.device, 0x04012c + (runq->id * 0x2000), 0x000f4240);\n}\n\nconst struct nvkm_runq_func\ngk208_runq = {\n\t.init = gk208_runq_init,\n\t.intr = gk104_runq_intr,\n\t.intr_0_names = gk104_runq_intr_0_names,\n\t.idle = gk104_runq_idle,\n};\n\nstatic int\ngk208_fifo_chid_nr(struct nvkm_fifo *fifo)\n{\n\treturn 1024;\n}\n\nstatic const struct nvkm_fifo_func\ngk208_fifo = {\n\t.chid_nr = gk208_fifo_chid_nr,\n\t.chid_ctor = gk110_fifo_chid_ctor,\n\t.runq_nr = gf100_fifo_runq_nr,\n\t.runl_ctor = gk104_fifo_runl_ctor,\n\t.init = gk104_fifo_init,\n\t.init_pbdmas = gk104_fifo_init_pbdmas,\n\t.intr = gk104_fifo_intr,\n\t.intr_mmu_fault_unit = gf100_fifo_intr_mmu_fault_unit,\n\t.intr_ctxsw_timeout = gf100_fifo_intr_ctxsw_timeout,\n\t.mmu_fault = &gk104_fifo_mmu_fault,\n\t.nonstall = &gf100_fifo_nonstall,\n\t.runl = &gk110_runl,\n\t.runq = &gk208_runq,\n\t.engn = &gk104_engn,\n\t.engn_ce = &gk104_engn_ce,\n\t.cgrp = {{ 0, 0, KEPLER_CHANNEL_GROUP_A  }, &gk110_cgrp },\n\t.chan = {{ 0, 0, KEPLER_CHANNEL_GPFIFO_A }, &gk110_chan },\n};\n\nint\ngk208_fifo_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t       struct nvkm_fifo **pfifo)\n{\n\treturn nvkm_fifo_new_(&gk208_fifo, device, type, inst, pfifo);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-krait.h",
+  "hash_id": "86d29bf339ea18be50d621f910370f834a9721c989e9ce1dae70b35bb72d0ef2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/qcom/clk-krait.h",
+  "human_readable_source": " \n\n#ifndef __QCOM_CLK_KRAIT_H\n#define __QCOM_CLK_KRAIT_H\n\n#include <linux/clk-provider.h>\n\nstruct krait_mux_clk {\n\tunsigned int\t*parent_map;\n\tu32\t\toffset;\n\tu32\t\tmask;\n\tu32\t\tshift;\n\tu32\t\ten_mask;\n\tbool\t\tlpl;\n\tu8\t\tsafe_sel;\n\tu8\t\told_index;\n\tbool\t\treparent;\n\tbool\t\tdisable_sec_src_gating;\n\n\tstruct clk_hw\thw;\n\tstruct notifier_block   clk_nb;\n};\n\n#define to_krait_mux_clk(_hw) container_of(_hw, struct krait_mux_clk, hw)\n\nextern const struct clk_ops krait_mux_clk_ops;\n\nstruct krait_div2_clk {\n\tu32\t\toffset;\n\tu8\t\twidth;\n\tu32\t\tshift;\n\tbool\t\tlpl;\n\n\tstruct clk_hw\thw;\n};\n\n#define to_krait_div2_clk(_hw) container_of(_hw, struct krait_div2_clk, hw)\n\nextern const struct clk_ops krait_div2_clk_ops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

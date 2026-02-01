@@ -1,0 +1,9 @@
+{
+  "module_name": "gpuobj.h",
+  "hash_id": "682d1360a41282755e3fea31df43640ed34fd2a847764f4411fb2ee42446d3f4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/core/gpuobj.h",
+  "human_readable_source": " \n#ifndef __NVKM_GPUOBJ_H__\n#define __NVKM_GPUOBJ_H__\n#include <core/memory.h>\n#include <core/mm.h>\n\n#define NVOBJ_FLAG_ZERO_ALLOC 0x00000001\n#define NVOBJ_FLAG_HEAP       0x00000004\n\nstruct nvkm_gpuobj {\n\tunion {\n\t\tconst struct nvkm_gpuobj_func *func;\n\t\tconst struct nvkm_gpuobj_func *ptrs;\n\t};\n\tstruct nvkm_gpuobj *parent;\n\tstruct nvkm_memory *memory;\n\tstruct nvkm_mm_node *node;\n\n\tu64 addr;\n\tu32 size;\n\tstruct nvkm_mm heap;\n\n\tvoid __iomem *map;\n};\n\nstruct nvkm_gpuobj_func {\n\tvoid *(*acquire)(struct nvkm_gpuobj *);\n\tvoid (*release)(struct nvkm_gpuobj *);\n\tu32 (*rd32)(struct nvkm_gpuobj *, u32 offset);\n\tvoid (*wr32)(struct nvkm_gpuobj *, u32 offset, u32 data);\n\tint (*map)(struct nvkm_gpuobj *, u64 offset, struct nvkm_vmm *,\n\t\t   struct nvkm_vma *, void *argv, u32 argc);\n};\n\nint nvkm_gpuobj_new(struct nvkm_device *, u32 size, int align, bool zero,\n\t\t    struct nvkm_gpuobj *parent, struct nvkm_gpuobj **);\nvoid nvkm_gpuobj_del(struct nvkm_gpuobj **);\nint nvkm_gpuobj_wrap(struct nvkm_memory *, struct nvkm_gpuobj **);\nvoid nvkm_gpuobj_memcpy_to(struct nvkm_gpuobj *dst, u32 dstoffset, void *src,\n\t\t\t   u32 length);\nvoid nvkm_gpuobj_memcpy_from(void *dst, struct nvkm_gpuobj *src, u32 srcoffset,\n\t\t\t     u32 length);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

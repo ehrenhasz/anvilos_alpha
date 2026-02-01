@@ -1,0 +1,9 @@
+{
+  "module_name": "msm-sc7180-skips.txt",
+  "hash_id": "c13276cdde218fc0e85feb3b4ea89d11b13992d3e47ded8f54fa08d9f133a53a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/msm-sc7180-skips.txt",
+  "human_readable_source": "# Suspend to RAM seems to be broken on this machine\n.*suspend.*\n\n# Test incorrectly assumes that CTM support implies gamma/degamma\n# LUT support.  None of the subtests handle the case of only having\n# CTM support\nkms_color.*\n\n# 4k@60 is not supported on this hw, but driver doesn't handle it\n# too gracefully.. https://gitlab.freedesktop.org/drm/msm/-/issues/15\nkms_bw@linear-tiling-.*-displays-3840x2160p\n\n# Until igt fix lands: https://patchwork.freedesktop.org/patch/493175/\nkms_bw@linear-tiling-2.*\nkms_bw@linear-tiling-3.*\nkms_bw@linear-tiling-4.*\nkms_bw@linear-tiling-5.*\nkms_bw@linear-tiling-6.*\n\n# igt fix posted: https://patchwork.freedesktop.org/patch/499926/\n# failure mode is flakey due to randomization but fails frequently\n# enough to be detected as a Crash or occasionally UnexpectedPass.\nkms_plane_multiple@atomic-pipe-A-tiling-none\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

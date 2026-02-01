@@ -1,0 +1,9 @@
+{
+  "module_name": "shmparam.h",
+  "hash_id": "47fcb9cc8533cebb62f31260db26b0102114d75c4522b88a7a33649cc6a6daec",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/shmparam.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SHMPARAM_H\n#define _ASM_X86_SHMPARAM_H\n\n#define SHMLBA PAGE_SIZE\t  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

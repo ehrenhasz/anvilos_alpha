@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9957c5122904cd26fee73a8f3e8934600f978ead26aa27a16e2ed6882e6a512b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/overlayfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the overlay filesystem.\n#\n\nobj-$(CONFIG_OVERLAY_FS) += overlay.o\n\noverlay-objs := super.o namei.o util.o inode.o file.o dir.o readdir.o \\\n\t\tcopy_up.o export.o params.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

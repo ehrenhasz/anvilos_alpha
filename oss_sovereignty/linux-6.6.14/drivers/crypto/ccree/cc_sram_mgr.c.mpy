@@ -1,0 +1,9 @@
+{
+  "module_name": "cc_sram_mgr.c",
+  "hash_id": "d63c76f8c0137d2d1eae6c5fdd2cb84e44c325ab6b7cf32e9fb575a893c8133b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/ccree/cc_sram_mgr.c",
+  "human_readable_source": "\n \n\n#include \"cc_driver.h\"\n#include \"cc_sram_mgr.h\"\n\n \nint cc_sram_mgr_init(struct cc_drvdata *drvdata)\n{\n\tu32 start = 0;\n\tstruct device *dev = drvdata_to_dev(drvdata);\n\n\tif (drvdata->hw_rev < CC_HW_REV_712) {\n\t\t \n\t\tstart = cc_ioread(drvdata, CC_REG(HOST_SEP_SRAM_THRESHOLD));\n\t\tif ((start & 0x3) != 0) {\n\t\t\tdev_err(dev, \"Invalid SRAM offset 0x%x\\n\", start);\n\t\t\treturn -EINVAL;\n\t\t}\n\t}\n\n\tdrvdata->sram_free_offset = start;\n\treturn 0;\n}\n\n \nu32 cc_sram_alloc(struct cc_drvdata *drvdata, u32 size)\n{\n\tstruct device *dev = drvdata_to_dev(drvdata);\n\tu32 p;\n\n\tif ((size & 0x3)) {\n\t\tdev_err(dev, \"Requested buffer size (%u) is not multiple of 4\",\n\t\t\tsize);\n\t\treturn NULL_SRAM_ADDR;\n\t}\n\tif (size > (CC_CC_SRAM_SIZE - drvdata->sram_free_offset)) {\n\t\tdev_err(dev, \"Not enough space to allocate %u B (at offset %u)\\n\",\n\t\t\tsize, drvdata->sram_free_offset);\n\t\treturn NULL_SRAM_ADDR;\n\t}\n\n\tp = drvdata->sram_free_offset;\n\tdrvdata->sram_free_offset += size;\n\tdev_dbg(dev, \"Allocated %u B @ %u\\n\", size, p);\n\treturn p;\n}\n\n \nvoid cc_set_sram_desc(const u32 *src, u32 dst, unsigned int nelement,\n\t\t      struct cc_hw_desc *seq, unsigned int *seq_len)\n{\n\tu32 i;\n\tunsigned int idx = *seq_len;\n\n\tfor (i = 0; i < nelement; i++, idx++) {\n\t\thw_desc_init(&seq[idx]);\n\t\tset_din_const(&seq[idx], src[i], sizeof(u32));\n\t\tset_dout_sram(&seq[idx], dst + (i * sizeof(u32)), sizeof(u32));\n\t\tset_flow_mode(&seq[idx], BYPASS);\n\t}\n\n\t*seq_len = idx;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

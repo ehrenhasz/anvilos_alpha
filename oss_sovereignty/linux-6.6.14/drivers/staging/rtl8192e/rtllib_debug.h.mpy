@@ -1,0 +1,9 @@
+{
+  "module_name": "rtllib_debug.h",
+  "hash_id": "ae58d833c8f6eb7e11cb034b5034b796466c2dd0ef8b9821e485322636c70e77",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192e/rtllib_debug.h",
+  "human_readable_source": " \n \n#ifndef _RTL_DEBUG_H\n#define _RTL_DEBUG_H\n\n#include <linux/bits.h>\n\n \n#ifndef DRV_NAME\n#define DRV_NAME \"rtllib_92e\"\n#endif\n\nextern u32 rt_global_debug_component;\n\n \nenum RTL_DEBUG {\n\tCOMP_TRACE\t\t= BIT(0),\n\tCOMP_DBG\t\t= BIT(1),\n\tCOMP_INIT\t\t= BIT(2),\n\tCOMP_RECV\t\t= BIT(3),\n\tCOMP_POWER\t\t= BIT(6),\n\tCOMP_SWBW\t\t= BIT(8),\n\tCOMP_SEC\t\t= BIT(9),\n\tCOMP_LPS\t\t= BIT(10),\n\tCOMP_QOS\t\t= BIT(11),\n\tCOMP_RATE\t\t= BIT(12),\n\tCOMP_RXDESC\t\t= BIT(13),\n\tCOMP_PHY\t\t= BIT(14),\n\tCOMP_DIG\t\t= BIT(15),\n\tCOMP_TXAGC\t\t= BIT(16),\n\tCOMP_HALDM\t\t= BIT(17),\n\tCOMP_POWER_TRACKING\t= BIT(18),\n\tCOMP_CH\t\t\t= BIT(19),\n\tCOMP_RF\t\t\t= BIT(20),\n\tCOMP_FIRMWARE\t\t= BIT(21),\n\tCOMP_RESET\t\t= BIT(23),\n\tCOMP_CMDPKT\t\t= BIT(24),\n\tCOMP_SCAN\t\t= BIT(25),\n\tCOMP_PS\t\t\t= BIT(26),\n\tCOMP_DOWN\t\t= BIT(27),\n\tCOMP_INTR\t\t= BIT(28),\n\tCOMP_ERR\t\t= BIT(31)\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

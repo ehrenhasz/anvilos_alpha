@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs2zol-patch.sed",
+  "hash_id": "a7a91cb7bc68ecab7be5dd0009f3df1a4a79f9d39b659afe5edb4e51b1681c7e",
+  "original_prompt": "Ingested from zfs-2.2.2/scripts/zfs2zol-patch.sed",
+  "human_readable_source": "#!/bin/sed -f\n\ns:usr/src/uts/common/fs/zfs/sys:include/sys:g\ns:usr/src/uts/common/fs/zfs:module/zfs:g\ns:usr/src/lib/libzpool:lib/libzpool:g\ns:usr/src/cmd:cmd:g\ns:usr/src/common/nvpair:module/nvpair:g\ns:usr/src/lib/libzfs/common/libzfs.h:include/libzfs.h:g\ns:usr/src/man/man1m/zfs.1m:man/man8/zfs.8:g\ns:usr/src/uts/common/sys:include/sys:g\ns:usr/src/lib/libzfs_core/common/libzfs_core.h:include/libzfs_core.h:g\ns:usr/src/lib/libzfs/common:lib/libzfs:g\ns:usr/src/lib/libzfs_core/common:lib/libzfs_core:g\ns:lib/libzpool/common/sys:include/sys:g\ns:lib/libzpool/common:lib/libzpool:g\n\ns:usr/src/test/zfs-tests/include:tests/zfs-tests/include:g\ns:usr/src/test/zfs-tests/runfiles:tests/runfiles:g\ns:usr/src/test/zfs-tests/tests/functional:tests/zfs-tests/tests/functional:g\ns:usr/src/test/zfs-tests/tests/perf:tests/zfs-tests/tests/perf:g\ns:usr/src/test/test-runner/cmd/run.py:tests/test-runner/cmd/test-runner.py:g\ns:usr/src/common/zfs/\\(.*\\)\\.c:module/zcommon/\\1.c:g\n\n# crypto framework\ns:usr/src/common/crypto:module/icp/algs:g\ns:usr/src/uts/common/crypto/io:module/icp/io:g\n\n# Headers\ns:usr/src/common/zfs/\\(.*\\)\\.h:include/\\1.h:g\n\n# Man pages\ns:usr/src/man:man:g\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "LB+unlocklockonceonce+poacquireonce.litmus",
+  "hash_id": "64311b20cb36803f2adbf2a013e8887a8439ea22fea08eafdcf6c9864630133c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/LB+unlocklockonceonce+poacquireonce.litmus",
+  "human_readable_source": "C LB+unlocklockonceonce+poacquireonce\n\n(*\n * Result: Never\n *\n * If two locked critical sections execute on the same CPU, all accesses\n * in the first must execute before any accesses in the second, even if the\n * critical sections are protected by different locks.  Note: Even when a\n * write executes before a read, their memory effects can be reordered from\n * the viewpoint of another CPU (the kind of reordering allowed by TSO).\n *)\n\n{}\n\nP0(spinlock_t *s, spinlock_t *t, int *x, int *y)\n{\n\tint r1;\n\n\tspin_lock(s);\n\tr1 = READ_ONCE(*x);\n\tspin_unlock(s);\n\tspin_lock(t);\n\tWRITE_ONCE(*y, 1);\n\tspin_unlock(t);\n}\n\nP1(int *x, int *y)\n{\n\tint r2;\n\n\tr2 = smp_load_acquire(y);\n\tWRITE_ONCE(*x, 1);\n}\n\nexists (0:r1=1 /\\ 1:r2=1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

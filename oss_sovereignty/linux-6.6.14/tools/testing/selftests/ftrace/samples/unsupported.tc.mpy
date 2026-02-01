@@ -1,0 +1,9 @@
+{
+  "module_name": "unsupported.tc",
+  "hash_id": "e445b737bb6a1f291157c54d411cd30b11f3e930c5a2488dc4b5aa66e83e75ba",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/samples/unsupported.tc",
+  "human_readable_source": "#!/bin/sh\n# description: unsupported-case example\nexit_unsupported\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

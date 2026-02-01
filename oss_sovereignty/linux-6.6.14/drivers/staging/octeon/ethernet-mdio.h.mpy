@@ -1,0 +1,9 @@
+{
+  "module_name": "ethernet-mdio.h",
+  "hash_id": "6ef483066f102e9096e7c61323d4f0e09c2b7613113b51147fbe0fae21ccc137",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/octeon/ethernet-mdio.h",
+  "human_readable_source": " \n \n\n#include <linux/module.h>\n#include <linux/kernel.h>\n#include <linux/netdevice.h>\n#include <linux/etherdevice.h>\n#include <linux/ip.h>\n#include <linux/string.h>\n#include <linux/ethtool.h>\n#include <linux/seq_file.h>\n#include <linux/proc_fs.h>\n#include <net/dst.h>\n#ifdef CONFIG_XFRM\n#include <linux/xfrm.h>\n#include <net/xfrm.h>\n#endif  \n\nextern const struct ethtool_ops cvm_oct_ethtool_ops;\n\nint cvm_oct_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);\nint cvm_oct_phy_setup_device(struct net_device *dev);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "extcon-intel.h",
+  "hash_id": "940772a345855184d2f028fb064c0a4abfe0df2a25141adc4cddf8dc177d9613",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/extcon/extcon-intel.h",
+  "human_readable_source": " \n \n\n#ifndef __EXTCON_INTEL_H__\n#define __EXTCON_INTEL_H__\n\nenum extcon_intel_usb_id {\n\tINTEL_USB_ID_OTG,\n\tINTEL_USB_ID_GND,\n\tINTEL_USB_ID_FLOAT,\n\tINTEL_USB_RID_A,\n\tINTEL_USB_RID_B,\n\tINTEL_USB_RID_C,\n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

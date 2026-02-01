@@ -1,0 +1,9 @@
+{
+  "module_name": "run_mmap.sh",
+  "hash_id": "ac0e263b0e80f9279d34d7ddadfd8c038438130c548e347dd6eaed890cb2b798",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/riscv/mm/run_mmap.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\noriginal_stack_limit=$(ulimit -s)\n\n./mmap_default\n\n# Force mmap_bottomup to be ran with bottomup memory due to\n# the unlimited stack\nulimit -s unlimited\n./mmap_bottomup\nulimit -s $original_stack_limit\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

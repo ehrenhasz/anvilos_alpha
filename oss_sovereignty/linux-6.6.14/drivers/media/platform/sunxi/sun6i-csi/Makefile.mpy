@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d874267e05b297d9c5c7b05079e7e08fd9bf9f98c49296aaea1ebe532dd33b37",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/sunxi/sun6i-csi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsun6i-csi-y += sun6i_csi.o sun6i_csi_bridge.o sun6i_csi_capture.o\n\nobj-$(CONFIG_VIDEO_SUN6I_CSI) += sun6i-csi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

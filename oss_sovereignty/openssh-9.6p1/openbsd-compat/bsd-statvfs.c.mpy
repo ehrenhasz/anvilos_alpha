@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-statvfs.c",
+  "hash_id": "114e87a9f2785c64417d6428c45c17defe3abd852154e8c0e3a470f1242233f9",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-statvfs.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#if !defined(HAVE_STATVFS) || !defined(HAVE_FSTATVFS)\n\n#ifdef HAVE_SYS_MOUNT_H\n# include <sys/mount.h>\n#endif\n\n#include <errno.h>\n\n#ifndef MNAMELEN\n# define MNAMELEN 32\n#endif\n\n#ifdef HAVE_STRUCT_STATFS_F_FILES\n# define HAVE_STRUCT_STATFS\n#endif\n\n#ifdef HAVE_STRUCT_STATFS\nstatic void\ncopy_statfs_to_statvfs(struct statvfs *to, struct statfs *from)\n{\n\tto->f_bsize = from->f_bsize;\n\tto->f_frsize = from->f_bsize;\t \n\tto->f_blocks = from->f_blocks;\n\tto->f_bfree = from->f_bfree;\n\tto->f_bavail = from->f_bavail;\n\tto->f_files = from->f_files;\n\tto->f_ffree = from->f_ffree;\n\tto->f_favail = from->f_ffree;\t \n\tto->f_fsid = 0;\t\t\t \n#ifdef HAVE_STRUCT_STATFS_F_FLAGS\n\tto->f_flag = from->f_flags;\n#else\n\tto->f_flag = 0;\n#endif\n\tto->f_namemax = MNAMELEN;\n}\n#endif\n\n# ifndef HAVE_STATVFS\nint statvfs(const char *path, struct statvfs *buf)\n{\n#  if defined(HAVE_STATFS) && defined(HAVE_STRUCT_STATFS)\n\tstruct statfs fs;\n\n\tmemset(&fs, 0, sizeof(fs));\n\tif (statfs(path, &fs) == -1)\n\t\treturn -1;\n\tcopy_statfs_to_statvfs(buf, &fs);\n\treturn 0;\n#  else\n\terrno = ENOSYS;\n\treturn -1;\n#  endif\n}\n# endif\n\n# ifndef HAVE_FSTATVFS\nint fstatvfs(int fd, struct statvfs *buf)\n{\n#  if defined(HAVE_FSTATFS) && defined(HAVE_STRUCT_STATFS)\n\tstruct statfs fs;\n\n\tmemset(&fs, 0, sizeof(fs));\n\tif (fstatfs(fd, &fs) == -1)\n\t\treturn -1;\n\tcopy_statfs_to_statvfs(buf, &fs);\n\treturn 0;\n#  else\n\terrno = ENOSYS;\n\treturn -1;\n#  endif\n}\n# endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

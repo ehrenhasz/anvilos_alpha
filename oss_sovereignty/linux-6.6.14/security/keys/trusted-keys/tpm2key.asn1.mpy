@@ -1,0 +1,9 @@
+{
+  "module_name": "tpm2key.asn1",
+  "hash_id": "df4eed727994336fdda95c12f6945cdcb44aefe51d9643b2727f4ffc5415cc6e",
+  "original_prompt": "Ingested from linux-6.6.14/security/keys/trusted-keys/tpm2key.asn1",
+  "human_readable_source": "---\n--- ASN.1 for TPM 2.0 keys\n---\n\nTPMKey ::= SEQUENCE {\n\ttype\t\tOBJECT IDENTIFIER ({tpm2_key_type}),\n\temptyAuth\t[0] EXPLICIT BOOLEAN OPTIONAL,\n\tparent\t\tINTEGER ({tpm2_key_parent}),\n\tpubkey\t\tOCTET STRING ({tpm2_key_pub}),\n\tprivkey\t\tOCTET STRING ({tpm2_key_priv})\n\t}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

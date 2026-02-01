@@ -1,0 +1,9 @@
+{
+  "module_name": "tda998x.h",
+  "hash_id": "2badfea85ee0201d2a0fd2f32b5bfcc12bbdd508c7af968a6b84b0824ab9852c",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/i2c/tda998x.h",
+  "human_readable_source": " \n#ifndef __DRM_I2C_TDA998X_H__\n#define __DRM_I2C_TDA998X_H__\n\n#include <linux/hdmi.h>\n#include <dt-bindings/display/tda998x.h>\n\nenum {\n\tAFMT_UNUSED =\t0,\n\tAFMT_SPDIF =\tTDA998x_SPDIF,\n\tAFMT_I2S =\tTDA998x_I2S,\n};\n\nstruct tda998x_audio_params {\n\tu8 config;\n\tu8 format;\n\tunsigned sample_width;\n\tunsigned sample_rate;\n\tstruct hdmi_audio_infoframe cea;\n\tu8 status[5];\n};\n\nstruct tda998x_encoder_params {\n\tu8 swap_b:3;\n\tu8 mirr_b:1;\n\tu8 swap_a:3;\n\tu8 mirr_a:1;\n\tu8 swap_d:3;\n\tu8 mirr_d:1;\n\tu8 swap_c:3;\n\tu8 mirr_c:1;\n\tu8 swap_f:3;\n\tu8 mirr_f:1;\n\tu8 swap_e:3;\n\tu8 mirr_e:1;\n\n\tstruct tda998x_audio_params audio_params;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

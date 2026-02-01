@@ -1,0 +1,9 @@
+{
+  "module_name": "dce100_resource.h",
+  "hash_id": "66547aa9a3d6826f17685e1960b3ff57dc8f4eedac08fe2b0e9445324ae550be",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce100/dce100_resource.h",
+  "human_readable_source": " \n \n\n#ifndef DCE100_RESOURCE_H_\n#define DCE100_RESOURCE_H_\n\nstruct dc;\nstruct resource_pool;\nstruct dc_validation_set;\n\nstruct resource_pool *dce100_create_resource_pool(\n\tuint8_t num_virtual_links,\n\tstruct dc *dc);\n\nenum dc_status dce100_validate_plane(const struct dc_plane_state *plane_state, struct dc_caps *caps);\n\nenum dc_status dce100_add_stream_to_ctx(\n\t\tstruct dc *dc,\n\t\tstruct dc_state *new_ctx,\n\t\tstruct dc_stream_state *dc_stream);\n\nstruct stream_encoder *dce100_find_first_free_match_stream_enc_for_link(\n\t\tstruct resource_context *res_ctx,\n\t\tconst struct resource_pool *pool,\n\t\tstruct dc_stream_state *stream);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

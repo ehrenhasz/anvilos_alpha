@@ -1,0 +1,9 @@
+{
+  "module_name": "snprintf.c",
+  "hash_id": "e4e416860cee9ce82062eb356e017eaf1a671594d0a994fc0264d30e2642686c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/snprintf.c",
+  "human_readable_source": " \n#include <stdio.h>\n\n#include <errno.h>\n#include <limits.h>\n#include <stdarg.h>\n#include <stdlib.h>\n#include <string.h>\n\n#include \"vasnprintf.h\"\n\n \nint\nsnprintf (char *str, size_t size, const char *format, ...)\n{\n  char *output;\n  size_t len;\n  size_t lenbuf = size;\n  va_list args;\n\n  va_start (args, format);\n  output = vasnprintf (str, &lenbuf, format, args);\n  len = lenbuf;\n  va_end (args);\n\n  if (!output)\n    return -1;\n\n  if (output != str)\n    {\n      if (size)\n        {\n          size_t pruned_len = (len < size ? len : size - 1);\n          memcpy (str, output, pruned_len);\n          str[pruned_len] = '\\0';\n        }\n\n      free (output);\n    }\n\n  if (INT_MAX < len)\n    {\n      errno = EOVERFLOW;\n      return -1;\n    }\n\n  return len;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

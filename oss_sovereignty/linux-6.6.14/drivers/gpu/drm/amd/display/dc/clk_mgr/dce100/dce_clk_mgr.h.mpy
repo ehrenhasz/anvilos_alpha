@@ -1,0 +1,9 @@
+{
+  "module_name": "dce_clk_mgr.h",
+  "hash_id": "73d6bf4df34425bcff30bdd1ab88bf30588f00f7bfe1e7cc3bd5d5b586daedce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/clk_mgr/dce100/dce_clk_mgr.h",
+  "human_readable_source": " \n\n\n#ifndef _DCE_CLK_MGR_H_\n#define _DCE_CLK_MGR_H_\n\n#include \"dc.h\"\n\n \nint dce_adjust_dp_ref_freq_for_ss(struct clk_mgr_internal *clk_mgr_dce, int dp_ref_clk_khz);\nint dce_get_dp_ref_freq_khz(struct clk_mgr *clk_mgr_base);\nenum dm_pp_clocks_state dce_get_required_clocks_state(\n\tstruct clk_mgr *clk_mgr_base,\n\tstruct dc_state *context);\n\nuint32_t dce_get_max_pixel_clock_for_all_paths(struct dc_state *context);\n\n\nvoid dce_clk_mgr_construct(\n\t\tstruct dc_context *ctx,\n\t\tstruct clk_mgr_internal *clk_mgr_dce);\n\nvoid dce_clock_read_ss_info(struct clk_mgr_internal *dccg_dce);\n\nint dce12_get_dp_ref_freq_khz(struct clk_mgr *dccg);\n\nint dce_set_clock(\n\tstruct clk_mgr *clk_mgr_base,\n\tint requested_clk_khz);\n\n\nvoid dce_clk_mgr_destroy(struct clk_mgr **clk_mgr);\n\nint dentist_get_divider_from_did(int did);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

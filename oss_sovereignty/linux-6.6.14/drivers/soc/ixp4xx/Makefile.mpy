@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2f768204806172ed85a1a0e74a7578a25595141c669275286caa45e7cc5eed0c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/ixp4xx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_IXP4XX_QMGR)\t+= ixp4xx-qmgr.o\nobj-$(CONFIG_IXP4XX_NPE)\t+= ixp4xx-npe.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

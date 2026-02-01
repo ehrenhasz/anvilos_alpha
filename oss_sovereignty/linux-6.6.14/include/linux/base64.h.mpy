@@ -1,0 +1,9 @@
+{
+  "module_name": "base64.h",
+  "hash_id": "ea3e2b6c58d49a6fff1d835322d95aeb932be3a452ea9964c800c62c14659a3c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/base64.h",
+  "human_readable_source": "\n \n\n#ifndef _LINUX_BASE64_H\n#define _LINUX_BASE64_H\n\n#include <linux/types.h>\n\n#define BASE64_CHARS(nbytes)   DIV_ROUND_UP((nbytes) * 4, 3)\n\nint base64_encode(const u8 *src, int len, char *dst);\nint base64_decode(const char *src, int len, u8 *dst);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

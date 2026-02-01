@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "061f931d7d64a529a452cc665ea8a198b664e0da025d8e0d8af2e7f7b8abe7cd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/logo/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n*_mono.c\n*_vga16.c\n*_clut224.c\n*_gray256.c\npnmtologo\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "lpfc_compat.h",
+  "hash_id": "e5614a7cc5a53c00a5b50aa45279812147445724c9cbc924e109518a08eecc62",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/lpfc/lpfc_compat.h",
+  "human_readable_source": " \n\n \n\n \n#include <asm/byteorder.h>\n\n#ifdef __BIG_ENDIAN\n\nstatic inline void\nlpfc_memcpy_to_slim(void __iomem *dest, void *src, unsigned int bytes)\n{\n\tuint32_t __iomem *dest32;\n\tuint32_t *src32;\n\tunsigned int four_bytes;\n\n\n\tdest32  = (uint32_t __iomem *) dest;\n\tsrc32  = (uint32_t *) src;\n\n\t \n\tfor (four_bytes = bytes /4; four_bytes > 0; four_bytes--) {\n\t\twritel( *src32, dest32);\n\t\treadl(dest32);  \n\t\tdest32++;\n\t\tsrc32++;\n\t}\n\n\treturn;\n}\n\nstatic inline void\nlpfc_memcpy_from_slim( void *dest, void __iomem *src, unsigned int bytes)\n{\n\tuint32_t *dest32;\n\tuint32_t __iomem *src32;\n\tunsigned int four_bytes;\n\n\n\tdest32  = (uint32_t *) dest;\n\tsrc32  = (uint32_t __iomem *) src;\n\n\t \n\tfor (four_bytes = bytes /4; four_bytes > 0; four_bytes--) {\n\t\t*dest32 = readl( src32);\n\t\tdest32++;\n\t\tsrc32++;\n\t}\n\n\treturn;\n}\n\n#else\n\nstatic inline void\nlpfc_memcpy_to_slim( void __iomem *dest, void *src, unsigned int bytes)\n{\n\t \n\t__iowrite32_copy(dest, src, bytes / sizeof(uint32_t));\n}\n\nstatic inline void\nlpfc_memcpy_from_slim( void *dest, void __iomem *src, unsigned int bytes)\n{\n\t \n\tmemcpy_fromio( dest, src, bytes);\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

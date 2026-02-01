@@ -1,0 +1,9 @@
+{
+  "module_name": "pyproject.toml",
+  "hash_id": "f4c88b346982d8f0a846b46154a55701bc5e5a135be6dfc110c3da3b60d5c02f",
+  "original_prompt": "Ingested from sys_09_Anvil/source/pyproject.toml",
+  "human_readable_source": "[tool.codespell]\ncount = \"\"\nignore-regex = '\\b[A-Z]{3}\\b'\nignore-words-list = \"ans,asend,deques,dout,extint,hsi,iput,mis,numer,shft,technic,ure\"\nquiet-level = 3\nskip = \"\"\"\n*/build*,\\\n./.git,\\\n./drivers/cc3100,\\\n./lib,\\\n./ports/cc3200/FreeRTOS,\\\n./ports/cc3200/bootmgr/sl,\\\n./ports/cc3200/hal,\\\n./ports/cc3200/simplelink,\\\n./ports/cc3200/telnet,\\\n./ports/esp32/managed_components,\\\n./ports/nrf/drivers/bluetooth/s1*,\\\n./ports/stm32/usbhost,\\\n./tests,\\\nACKNOWLEDGEMENTS,\\\n\"\"\"\n\n[tool.ruff]\n# Exclude third-party code from linting and formatting\nextend-exclude = [\"lib\"]\nline-length = 99\ntarget-version = \"py37\"\n\n[tool.ruff.lint]\nextend-select = [\"C9\", \"PLC\"]\nignore = [\n  \"E401\",\n  \"E402\",\n  \"E722\",\n  \"E731\",\n  \"E741\",\n  \"F401\",\n  \"F403\",\n  \"F405\",\n  \"PLC1901\",\n]\n\n[tool.ruff.mccabe]\nmax-complexity = 40\n\n[tool.ruff.per-file-ignores]\n# Exclude all tests from linting (does not apply to formatting).\n\"tests/**/*.py\" = [\"ALL\"]\n\"ports/cc3200/tools/uniflash.py\" = [\"E711\"]\n# manifest.py files are evaluated with some global names pre-defined\n\"**/manifest.py\" = [\"F821\"]\n\"ports/**/boards/**/manifest_*.py\" = [\"F821\"]\n\n[tool.ruff.format]\n# Exclude third-party code, and exclude the following tests:\n#   basics: needs careful attention before applying automatic formatting\n#   repl_: not real python files\n#   viper_args: uses f(*)\nexclude = [\"tests/basics/*.py\", \"tests/*/repl_*.py\", \"tests/micropython/viper_args.py\"]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hsr_forward.h",
+  "hash_id": "4c54e44d0b1506e12d4295e5f0b8d90abac2453f6f5e21e73c5cf09355318bd4",
+  "original_prompt": "Ingested from linux-6.6.14/net/hsr/hsr_forward.h",
+  "human_readable_source": " \n \n\n#ifndef __HSR_FORWARD_H\n#define __HSR_FORWARD_H\n\n#include <linux/netdevice.h>\n#include \"hsr_main.h\"\n\nvoid hsr_forward_skb(struct sk_buff *skb, struct hsr_port *port);\nstruct sk_buff *prp_create_tagged_frame(struct hsr_frame_info *frame,\n\t\t\t\t\tstruct hsr_port *port);\nstruct sk_buff *hsr_create_tagged_frame(struct hsr_frame_info *frame,\n\t\t\t\t\tstruct hsr_port *port);\nstruct sk_buff *hsr_get_untagged_frame(struct hsr_frame_info *frame,\n\t\t\t\t       struct hsr_port *port);\nstruct sk_buff *prp_get_untagged_frame(struct hsr_frame_info *frame,\n\t\t\t\t       struct hsr_port *port);\nbool prp_drop_frame(struct hsr_frame_info *frame, struct hsr_port *port);\nbool hsr_drop_frame(struct hsr_frame_info *frame, struct hsr_port *port);\nint prp_fill_frame_info(__be16 proto, struct sk_buff *skb,\n\t\t\tstruct hsr_frame_info *frame);\nint hsr_fill_frame_info(__be16 proto, struct sk_buff *skb,\n\t\t\tstruct hsr_frame_info *frame);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

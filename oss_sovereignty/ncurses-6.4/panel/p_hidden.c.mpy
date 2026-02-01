@@ -1,0 +1,9 @@
+{
+  "module_name": "p_hidden.c",
+  "hash_id": "8da4a0d4cc5ac329d3661df90ce223a090f4b78d5a48614d366ae67640096c23",
+  "original_prompt": "Ingested from ncurses-6.4/panel/p_hidden.c",
+  "human_readable_source": " \n\n \n\n \n#include \"panel.priv.h\"\n\nMODULE_ID(\"$Id: p_hidden.c,v 1.11 2020/05/24 01:40:20 anonymous.maarten Exp $\")\n\nPANEL_EXPORT(int)\npanel_hidden(const PANEL * pan)\n{\n  int rc = ERR;\n\n  T((T_CALLED(\"panel_hidden(%p)\"), (const void *)pan));\n  if (pan)\n    {\n      GetHook(pan);\n      rc = (IS_LINKED(pan) ? FALSE : TRUE);\n    }\n  returnCode(rc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

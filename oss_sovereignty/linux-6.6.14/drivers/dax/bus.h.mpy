@@ -1,0 +1,9 @@
+{
+  "module_name": "bus.h",
+  "hash_id": "86becb811da29ba7dd404c5891b8b03e5b196c72795425155c5d96f621cc7e6f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dax/bus.h",
+  "human_readable_source": "\n \n#ifndef __DAX_BUS_H__\n#define __DAX_BUS_H__\n#include <linux/device.h>\n#include <linux/range.h>\n\nstruct dev_dax;\nstruct resource;\nstruct dax_device;\nstruct dax_region;\n\n \n#define IORESOURCE_DAX_STATIC BIT(0)\n#define IORESOURCE_DAX_KMEM BIT(1)\n\nstruct dax_region *alloc_dax_region(struct device *parent, int region_id,\n\t\tstruct range *range, int target_node, unsigned int align,\n\t\tunsigned long flags);\n\nstruct dev_dax_data {\n\tstruct dax_region *dax_region;\n\tstruct dev_pagemap *pgmap;\n\tresource_size_t size;\n\tint id;\n};\n\nstruct dev_dax *devm_create_dev_dax(struct dev_dax_data *data);\n\nenum dax_driver_type {\n\tDAXDRV_KMEM_TYPE,\n\tDAXDRV_DEVICE_TYPE,\n};\n\nstruct dax_device_driver {\n\tstruct device_driver drv;\n\tstruct list_head ids;\n\tenum dax_driver_type type;\n\tint (*probe)(struct dev_dax *dev);\n\tvoid (*remove)(struct dev_dax *dev);\n};\n\nint __dax_driver_register(struct dax_device_driver *dax_drv,\n\t\tstruct module *module, const char *mod_name);\n#define dax_driver_register(driver) \\\n\t__dax_driver_register(driver, THIS_MODULE, KBUILD_MODNAME)\nvoid dax_driver_unregister(struct dax_device_driver *dax_drv);\nvoid kill_dev_dax(struct dev_dax *dev_dax);\nbool static_dev_dax(struct dev_dax *dev_dax);\n\n#define MODULE_ALIAS_DAX_DEVICE(type) \\\n\tMODULE_ALIAS(\"dax:t\" __stringify(type) \"*\")\n#define DAX_DEVICE_MODALIAS_FMT \"dax:t%d\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

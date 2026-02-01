@@ -1,0 +1,9 @@
+{
+  "module_name": "test-assert.c",
+  "hash_id": "72c349e9fb2cb59f2f0517eaf33f71fb9ff899bac272c1c3d8064edd52cf559d",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-assert.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#define STATIC_ASSERT_TESTS \\\n  static_assert (2 + 2 == 4, \"arithmetic does not work\"); \\\n  static_assert (2 + 2 == 4); \\\n  static_assert (sizeof (char) == 1, \"sizeof does not work\"); \\\n  static_assert (sizeof (char) == 1)\n\nSTATIC_ASSERT_TESTS;\n\nstatic char const *\nassert (char const *p, int i)\n{\n  return p + i;\n}\n\nstatic char const *\nf (char const *p)\n{\n  return assert (p, 0);\n}\n\n#include <assert.h>\n\nSTATIC_ASSERT_TESTS;\n\nstatic int\ng (void)\n{\n  assert (f (\"this should work\"));\n  return 0;\n}\n\n#define NDEBUG 1\n#include <assert.h>\n\nSTATIC_ASSERT_TESTS;\n\nstatic int\nh (void)\n{\n  assert (f (\"this should work\"));\n  return 0;\n}\n\nint\nmain (void)\n{\n  STATIC_ASSERT_TESTS;\n  f (\"\");\n  g ();\n  h ();\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

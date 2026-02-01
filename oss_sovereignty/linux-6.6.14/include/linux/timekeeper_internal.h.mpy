@@ -1,0 +1,9 @@
+{
+  "module_name": "timekeeper_internal.h",
+  "hash_id": "544eebfce60b44baf6ef88b19b1c2702bfe2be75097b389fb1e7205d5177f573",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/timekeeper_internal.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_TIMEKEEPER_INTERNAL_H\n#define _LINUX_TIMEKEEPER_INTERNAL_H\n\n#include <linux/clocksource.h>\n#include <linux/jiffies.h>\n#include <linux/time.h>\n\n \nstruct tk_read_base {\n\tstruct clocksource\t*clock;\n\tu64\t\t\tmask;\n\tu64\t\t\tcycle_last;\n\tu32\t\t\tmult;\n\tu32\t\t\tshift;\n\tu64\t\t\txtime_nsec;\n\tktime_t\t\t\tbase;\n\tu64\t\t\tbase_real;\n};\n\n \nstruct timekeeper {\n\tstruct tk_read_base\ttkr_mono;\n\tstruct tk_read_base\ttkr_raw;\n\tu64\t\t\txtime_sec;\n\tunsigned long\t\tktime_sec;\n\tstruct timespec64\twall_to_monotonic;\n\tktime_t\t\t\toffs_real;\n\tktime_t\t\t\toffs_boot;\n\tktime_t\t\t\toffs_tai;\n\ts32\t\t\ttai_offset;\n\tunsigned int\t\tclock_was_set_seq;\n\tu8\t\t\tcs_was_changed_seq;\n\tktime_t\t\t\tnext_leap_ktime;\n\tu64\t\t\traw_sec;\n\tstruct timespec64\tmonotonic_to_boot;\n\n\t \n\tu64\t\t\tcycle_interval;\n\tu64\t\t\txtime_interval;\n\ts64\t\t\txtime_remainder;\n\tu64\t\t\traw_interval;\n\t \n\tu64\t\t\tntp_tick;\n\t \n\ts64\t\t\tntp_error;\n\tu32\t\t\tntp_error_shift;\n\tu32\t\t\tntp_err_mult;\n\t \n\tu32\t\t\tskip_second_overflow;\n#ifdef CONFIG_DEBUG_TIMEKEEPING\n\tlong\t\t\tlast_warning;\n\t \n\tint\t\t\tunderflow_seen;\n\tint\t\t\toverflow_seen;\n#endif\n};\n\n#ifdef CONFIG_GENERIC_TIME_VSYSCALL\n\nextern void update_vsyscall(struct timekeeper *tk);\nextern void update_vsyscall_tz(void);\n\n#else\n\nstatic inline void update_vsyscall(struct timekeeper *tk)\n{\n}\nstatic inline void update_vsyscall_tz(void)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

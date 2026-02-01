@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "63dd0da72851df73f24d54c58d3b40dbea9469af80ab6e72fbaa371720f30165",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/nuvoton/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# common clock support for Nuvoton SoC family.\n\nconfig COMMON_CLK_NUVOTON\n\tbool \"Nuvoton clock controller common support\"\n\tdepends on ARCH_MA35 || COMPILE_TEST\n\tdefault y\n\thelp\n\t  Say y here to enable common clock controller for Nuvoton platforms.\n\nif COMMON_CLK_NUVOTON\n\nconfig CLK_MA35D1\n\tbool \"Nuvoton MA35D1 clock controller support\"\n\tdefault y\n\thelp\n\t  Build the clock controller driver for MA35D1 SoC.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

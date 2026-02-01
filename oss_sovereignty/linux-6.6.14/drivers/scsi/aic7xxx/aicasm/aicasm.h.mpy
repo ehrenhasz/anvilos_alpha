@@ -1,0 +1,9 @@
+{
+  "module_name": "aicasm.h",
+  "hash_id": "155edde349727e69a4ee73df2bde4a55698ea7467f9cccc0ce8921e54a53c087",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/aic7xxx/aicasm/aicasm.h",
+  "human_readable_source": " \n\n#include \"../queue.h\"\n\n#ifndef TRUE\n#define TRUE 1\n#endif\n\n#ifndef FALSE\n#define FALSE 0\n#endif\n\ntypedef struct path_entry {\n\tchar\t*directory;\n\tint\tquoted_includes_only;\n\tSLIST_ENTRY(path_entry) links;\n} *path_entry_t;\n\ntypedef enum {  \n\tQUOTED_INCLUDE,\n\tBRACKETED_INCLUDE,\n\tSOURCE_FILE\n} include_type;\n\nSLIST_HEAD(path_list, path_entry);\n\nextern struct path_list search_path;\nextern struct cs_tailq cs_tailq;\nextern struct scope_list scope_stack;\nextern struct symlist patch_functions;\nextern int includes_search_curdir;\t\t \nextern char *appname;\nextern char *stock_include_file;\nextern int yylineno;\nextern char *yyfilename;\nextern char *prefix;\nextern char *patch_arg_list;\nextern char *versions;\nextern int   src_mode;\nextern int   dst_mode;\nstruct symbol;\n\nvoid stop(const char *errstring, int err_code);\nvoid include_file(char *file_name, include_type type);\nvoid expand_macro(struct symbol *macro_symbol);\nstruct instruction *seq_alloc(void);\nstruct critical_section *cs_alloc(void);\nstruct scope *scope_alloc(void);\nvoid process_scope(struct scope *);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

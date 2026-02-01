@@ -1,0 +1,9 @@
+{
+  "module_name": "ttm_execbuf_util.h",
+  "hash_id": "d1c7513e90d78f6bfbedb2882ac95792e8fbc5477eb46ad7656de66aa6e0013c",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/ttm/ttm_execbuf_util.h",
+  "human_readable_source": " \n \n\n#ifndef _TTM_EXECBUF_UTIL_H_\n#define _TTM_EXECBUF_UTIL_H_\n\n#include <linux/list.h>\n\nstruct ww_acquire_ctx;\nstruct dma_fence;\nstruct ttm_buffer_object;\n\n \n\nstruct ttm_validate_buffer {\n\tstruct list_head head;\n\tstruct ttm_buffer_object *bo;\n\tunsigned int num_shared;\n};\n\n \nvoid ttm_eu_backoff_reservation(struct ww_acquire_ctx *ticket,\n\t\t\t\tstruct list_head *list);\n\n \nint ttm_eu_reserve_buffers(struct ww_acquire_ctx *ticket,\n\t\t\t   struct list_head *list, bool intr,\n\t\t\t   struct list_head *dups);\n\n \nvoid ttm_eu_fence_buffer_objects(struct ww_acquire_ctx *ticket,\n\t\t\t\t struct list_head *list,\n\t\t\t\t struct dma_fence *fence);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

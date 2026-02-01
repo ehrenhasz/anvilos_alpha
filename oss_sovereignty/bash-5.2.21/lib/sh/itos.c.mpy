@@ -1,0 +1,9 @@
+{
+  "module_name": "itos.c",
+  "hash_id": "ebcc741190e72c9ad0758d0c40fb2ecfeae9cc9b5c2e99d1a1bdf6c85b65e600",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/itos.c",
+  "human_readable_source": " \n\n \n\n#ifdef HAVE_CONFIG_H\n#  include <config.h>\n#endif\n\n#if defined (HAVE_UNISTD_H)\n#  include <unistd.h>\n#endif\n\n#include <bashansi.h>\n#include \"shell.h\"\n\nchar *\ninttostr (i, buf, len)\n     intmax_t i;\n     char *buf;\n     size_t len;\n{\n  return (fmtumax (i, 10, buf, len, 0));\n}\n\n \nchar *\nitos (i)\n     intmax_t i;\n{\n  char *p, lbuf[INT_STRLEN_BOUND(intmax_t) + 1];\n\n  p = fmtumax (i, 10, lbuf, sizeof(lbuf), 0);\n  return (savestring (p));\n}\n\n \nchar *\nmitos (i)\n     intmax_t i;\n{\n  char *p, lbuf[INT_STRLEN_BOUND(intmax_t) + 1];\n\n  p = fmtumax (i, 10, lbuf, sizeof(lbuf), 0);\n  return (strdup (p));\n}\n\nchar *\nuinttostr (i, buf, len)\n     uintmax_t i;\n     char *buf;\n     size_t len;\n{\n  return (fmtumax (i, 10, buf, len, FL_UNSIGNED));\n}\n\n \nchar *\nuitos (i)\n     uintmax_t i;\n{\n  char *p, lbuf[INT_STRLEN_BOUND(uintmax_t) + 1];\n\n  p = fmtumax (i, 10, lbuf, sizeof(lbuf), FL_UNSIGNED);\n  return (savestring (p));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

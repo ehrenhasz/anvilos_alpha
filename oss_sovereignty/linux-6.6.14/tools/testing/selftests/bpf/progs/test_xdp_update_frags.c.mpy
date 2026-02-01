@@ -1,0 +1,9 @@
+{
+  "module_name": "test_xdp_update_frags.c",
+  "hash_id": "ed968571cfae52c6a28001598053ebd8bd4b63a13226a43ad5d656e4e95ed17b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_xdp_update_frags.c",
+  "human_readable_source": "\n \n#include <linux/bpf.h>\n#include <linux/if_ether.h>\n#include <bpf/bpf_helpers.h>\n\nint _version SEC(\"version\") = 1;\n\nSEC(\"xdp.frags\")\nint xdp_adjust_frags(struct xdp_md *xdp)\n{\n\t__u8 *data_end = (void *)(long)xdp->data_end;\n\t__u8 *data = (void *)(long)xdp->data;\n\t__u8 val[16] = {};\n\t__u32 offset;\n\tint err;\n\n\tif (data + sizeof(__u32) > data_end)\n\t\treturn XDP_DROP;\n\n\toffset = *(__u32 *)data;\n\terr = bpf_xdp_load_bytes(xdp, offset, val, sizeof(val));\n\tif (err < 0)\n\t\treturn XDP_DROP;\n\n\tif (val[0] != 0xaa || val[15] != 0xaa)  \n\t\treturn XDP_DROP;\n\n\tval[0] = 0xbb;  \n\tval[15] = 0xbb;\n\terr = bpf_xdp_store_bytes(xdp, offset, val, sizeof(val));\n\tif (err < 0)\n\t\treturn XDP_DROP;\n\n\treturn XDP_PASS;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

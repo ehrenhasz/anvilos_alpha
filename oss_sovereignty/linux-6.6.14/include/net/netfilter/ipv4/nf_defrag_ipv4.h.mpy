@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_defrag_ipv4.h",
+  "hash_id": "b632eb1595862ad93e7077b83ca227b8c2ffb97805818a7926c07f142be6b7f0",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/ipv4/nf_defrag_ipv4.h",
+  "human_readable_source": " \n#ifndef _NF_DEFRAG_IPV4_H\n#define _NF_DEFRAG_IPV4_H\n\nstruct net;\nint nf_defrag_ipv4_enable(struct net *net);\nvoid nf_defrag_ipv4_disable(struct net *net);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

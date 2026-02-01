@@ -1,0 +1,9 @@
+{
+  "module_name": "link_dpcd.h",
+  "hash_id": "c4e602216fe3986b37281cca9dd1d3b4ccbcecbdda752cf3462480bb14f2ac5e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/protocols/link_dpcd.h",
+  "human_readable_source": " \n\n#ifndef __LINK_DPCD_H__\n#define __LINK_DPCD_H__\n#include \"link.h\"\n#include \"dpcd_defs.h\"\n\nenum dc_status core_link_read_dpcd(\n\t\tstruct dc_link *link,\n\t\tuint32_t address,\n\t\tuint8_t *data,\n\t\tuint32_t size);\n\nenum dc_status core_link_write_dpcd(\n\t\tstruct dc_link *link,\n\t\tuint32_t address,\n\t\tconst uint8_t *data,\n\t\tuint32_t size);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

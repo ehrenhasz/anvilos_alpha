@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7d8ec492582e45b908c32a5d04fae099bb9758a2ade21ef0ad0ac5dbe632740a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/starfive/Kconfig",
+  "human_readable_source": "#\n# StarFive crypto drivers configuration\n#\n\nconfig CRYPTO_DEV_JH7110\n\ttristate \"StarFive JH7110 cryptographic engine driver\"\n\tdepends on SOC_STARFIVE || AMBA_PL08X || COMPILE_TEST\n\tdepends on HAS_DMA\n\tselect CRYPTO_ENGINE\n\tselect CRYPTO_HMAC\n\tselect CRYPTO_SHA256\n\tselect CRYPTO_SHA512\n\tselect CRYPTO_SM3_GENERIC\n\tselect CRYPTO_RSA\n\tselect CRYPTO_AES\n\tselect CRYPTO_CCM\n\thelp\n\t  Support for StarFive JH7110 crypto hardware acceleration engine.\n\t  This module provides acceleration for public key algo,\n\t  skciphers, AEAD and hash functions.\n\n\t  If you choose 'M' here, this module will be called jh7110-crypto.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

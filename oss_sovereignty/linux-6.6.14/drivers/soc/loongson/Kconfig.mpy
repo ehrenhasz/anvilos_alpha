@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9016783647a9334c3a228339fa17bbf61401574e5b7aae56437ec70a3048ece5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/loongson/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n#\n# Loongson-2 series SoC drivers\n#\n\nconfig LOONGSON2_GUTS\n\ttristate \"Loongson-2 SoC Global UtiliTieS (GUTS) register block\"\n\tdepends on LOONGARCH || COMPILE_TEST\n\tselect SOC_BUS\n\thelp\n\t The global utilities block controls PCIE device enabling, alternate\n\t function selection for multiplexed signals, consistency of HDA, USB\n\t and PCIE, configuration of memory controller, rtc controller, lio\n\t controller, and clock control. This patch adds a driver to manage\n\t and access global utilities block for LoongArch architecture Loongson-2\n\t SoCs. Initially only reading SVR and registering soc device are\n\t supported. Other guts accesses, such as reading firmware configuration\n\t by default, should eventually be added into this driver as well.\n\nconfig LOONGSON2_PM\n\tbool \"Loongson-2 SoC Power Management Controller Driver\"\n\tdepends on LOONGARCH && OF\n\tdepends on INPUT=y\n\thelp\n\t  The Loongson-2's power management controller was ACPI, supports ACPI\n\t  S2Idle (Suspend To Idle), ACPI S3 (Suspend To RAM), ACPI S4 (Suspend To\n\t  Disk), ACPI S5 (Soft Shutdown) and supports multiple wake-up methods\n\t  (USB, GMAC, PWRBTN, etc.). This driver was to add power management\n\t  controller support that base on dts for Loongson-2 series SoCs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

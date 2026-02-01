@@ -1,0 +1,9 @@
+{
+  "module_name": "vfs_lfs.h",
+  "hash_id": "00a818005d2680a9ca4f91a00790eee961292ec406f9504b7f5e753f07af6239",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/vfs_lfs.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_EXTMOD_VFS_LFS_H\n#define MICROPY_INCLUDED_EXTMOD_VFS_LFS_H\n\n#include \"py/obj.h\"\n\nextern const mp_obj_type_t mp_type_vfs_lfs1;\nextern const mp_obj_type_t mp_type_vfs_lfs1_fileio;\nextern const mp_obj_type_t mp_type_vfs_lfs1_textio;\n\nextern const mp_obj_type_t mp_type_vfs_lfs2;\nextern const mp_obj_type_t mp_type_vfs_lfs2_fileio;\nextern const mp_obj_type_t mp_type_vfs_lfs2_textio;\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

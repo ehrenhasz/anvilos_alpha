@@ -1,0 +1,9 @@
+{
+  "module_name": "jitterstart.sh",
+  "hash_id": "961acbcdefa9a7dc137e57d0ba0e918f78dade1901094855efa2e38c630a9c22",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/bin/jitterstart.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Start up the specified number of jitter.sh scripts in the background.\n#\n# Usage: . jitterstart.sh n jittering-dir duration [ sleepmax [ spinmax ] ]\n#\n# n: Number of jitter.sh scripts to start up.\n# jittering-dir: Directory in which to put \"jittering\" file.\n# duration: Time to run in seconds.\n# sleepmax: Maximum microseconds to sleep, defaults to one second.\n# spinmax: Maximum microseconds to spin, defaults to one millisecond.\n#\n# Copyright (C) 2021 Facebook, Inc.\n#\n# Authors: Paul E. McKenney <paulmck@kernel.org>\n\njitter_n=$1\nif test -z \"$jitter_n\"\nthen\n\techo jitterstart.sh: Missing count of jitter.sh scripts to start.\n\texit 33\nfi\njittering_dir=$2\nif test -z \"$jittering_dir\"\nthen\n\techo jitterstart.sh: Missing directory in which to place jittering file.\n\texit 34\nfi\nshift\nshift\n\ntouch ${jittering_dir}/jittering\nfor ((jitter_i = 1; jitter_i <= $jitter_n; jitter_i++))\ndo\n\tjitter.sh $jitter_i \"${jittering_dir}/jittering\" \"$@\" &\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

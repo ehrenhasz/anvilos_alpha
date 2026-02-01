@@ -1,0 +1,9 @@
+{
+  "module_name": "fallback.h",
+  "hash_id": "f732530794a69a021839b3e3fb2d7da24094bb98e638e3124c21577b2716695b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/base/firmware_loader/fallback.h",
+  "human_readable_source": " \n#ifndef __FIRMWARE_FALLBACK_H\n#define __FIRMWARE_FALLBACK_H\n\n#include <linux/firmware.h>\n#include <linux/device.h>\n\n#include \"firmware.h\"\n#include \"sysfs.h\"\n\n#ifdef CONFIG_FW_LOADER_USER_HELPER\nint firmware_fallback_sysfs(struct firmware *fw, const char *name,\n\t\t\t    struct device *device,\n\t\t\t    u32 opt_flags,\n\t\t\t    int ret);\nvoid kill_pending_fw_fallback_reqs(bool only_kill_custom);\n\nvoid fw_fallback_set_cache_timeout(void);\nvoid fw_fallback_set_default_timeout(void);\n\n#else  \nstatic inline int firmware_fallback_sysfs(struct firmware *fw, const char *name,\n\t\t\t\t\t  struct device *device,\n\t\t\t\t\t  u32 opt_flags,\n\t\t\t\t\t  int ret)\n{\n\t \n\treturn ret;\n}\n\nstatic inline void kill_pending_fw_fallback_reqs(bool only_kill_custom) { }\nstatic inline void fw_fallback_set_cache_timeout(void) { }\nstatic inline void fw_fallback_set_default_timeout(void) { }\n#endif  \n\n#ifdef CONFIG_EFI_EMBEDDED_FIRMWARE\nint firmware_fallback_platform(struct fw_priv *fw_priv);\n#else\nstatic inline int firmware_fallback_platform(struct fw_priv *fw_priv)\n{\n\treturn -ENOENT;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "unwind_prot.h",
+  "hash_id": "d813b9e572fb17b1433593ba6be801b418f9c9df13a46c0115ffce81d1c9b4db",
+  "original_prompt": "Ingested from bash-5.2.21/unwind_prot.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_UNWIND_PROT_H)\n#define _UNWIND_PROT_H\n\nextern void uwp_init PARAMS((void));\n\n \nextern void begin_unwind_frame PARAMS((char *));\nextern void discard_unwind_frame PARAMS((char *));\nextern void run_unwind_frame PARAMS((char *));\nextern void add_unwind_protect ();  \nextern void remove_unwind_protect PARAMS((void));\nextern void run_unwind_protects PARAMS((void));\nextern void clear_unwind_protect_list PARAMS((int));\nextern int have_unwind_protects PARAMS((void));\nextern int unwind_protect_tag_on_stack PARAMS((const char *));\nextern void uwp_init PARAMS((void));\n\n \n#define end_unwind_frame()\n\n \n#define unwind_protect_var(X) unwind_protect_mem ((char *)&(X), sizeof (X))\nextern void unwind_protect_mem PARAMS((char *, int));\n\n \n#define unwind_protect_int\tunwind_protect_var\n#define unwind_protect_short\tunwind_protect_var\n#define unwind_protect_string\tunwind_protect_var\n#define unwind_protect_pointer\tunwind_protect_var\n#define unwind_protect_jmp_buf\tunwind_protect_var\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rt2x00mmio.h",
+  "hash_id": "56624a4e6adf96951f9f999f4cb5d3f71de285a90a25695d1e1772a46e95ffeb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ralink/rt2x00/rt2x00mmio.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef RT2X00MMIO_H\n#define RT2X00MMIO_H\n\n#include <linux/io.h>\n\n \nstatic inline u32 rt2x00mmio_register_read(struct rt2x00_dev *rt2x00dev,\n\t\t\t\t\t   const unsigned int offset)\n{\n\treturn readl(rt2x00dev->csr.base + offset);\n}\n\nstatic inline void rt2x00mmio_register_multiread(struct rt2x00_dev *rt2x00dev,\n\t\t\t\t\t\t const unsigned int offset,\n\t\t\t\t\t\t void *value, const u32 length)\n{\n\tmemcpy_fromio(value, rt2x00dev->csr.base + offset, length);\n}\n\nstatic inline void rt2x00mmio_register_write(struct rt2x00_dev *rt2x00dev,\n\t\t\t\t\t     const unsigned int offset,\n\t\t\t\t\t     u32 value)\n{\n\twritel(value, rt2x00dev->csr.base + offset);\n}\n\nstatic inline void rt2x00mmio_register_multiwrite(struct rt2x00_dev *rt2x00dev,\n\t\t\t\t\t\t  const unsigned int offset,\n\t\t\t\t\t\t  const void *value,\n\t\t\t\t\t\t  const u32 length)\n{\n\t__iowrite32_copy(rt2x00dev->csr.base + offset, value, length >> 2);\n}\n\n \nint rt2x00mmio_regbusy_read(struct rt2x00_dev *rt2x00dev,\n\t\t\t    const unsigned int offset,\n\t\t\t    const struct rt2x00_field32 field,\n\t\t\t    u32 *reg);\n\n \nstruct queue_entry_priv_mmio {\n\t__le32 *desc;\n\tdma_addr_t desc_dma;\n};\n\n \nbool rt2x00mmio_rxdone(struct rt2x00_dev *rt2x00dev);\n\n \nvoid rt2x00mmio_flush_queue(struct data_queue *queue, bool drop);\n\n \nint rt2x00mmio_initialize(struct rt2x00_dev *rt2x00dev);\nvoid rt2x00mmio_uninitialize(struct rt2x00_dev *rt2x00dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

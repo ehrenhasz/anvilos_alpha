@@ -1,0 +1,9 @@
+{
+  "module_name": "vmem.h",
+  "hash_id": "a729bee0e9dd1c75ca363ce8fd856b3a685a9106a9ea6fa89ff26db9bbadb6b5",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/vmem.h",
+  "human_readable_source": " \n\n#ifndef _SPL_VMEM_H\n#define\t_SPL_VMEM_H\n\n#include <sys/kmem.h>\n#include <linux/sched.h>\n#include <linux/vmalloc.h>\n\ntypedef struct vmem { } vmem_t;\n\n \n#define\tVMEM_ALLOC\t0x01\n#define\tVMEM_FREE\t0x02\n\n#ifndef VMALLOC_TOTAL\n#define\tVMALLOC_TOTAL\t(VMALLOC_END - VMALLOC_START)\n#endif\n\n \n\n#define\tvmem_alloc(sz, fl)\tspl_vmem_alloc((sz), (fl), __func__, __LINE__)\n#define\tvmem_zalloc(sz, fl)\tspl_vmem_zalloc((sz), (fl), __func__, __LINE__)\n#define\tvmem_free(ptr, sz)\tspl_vmem_free((ptr), (sz))\n\nextern void *spl_vmem_alloc(size_t sz, int fl, const char *func, int line)\n    __attribute__((malloc, alloc_size(1)));\nextern void *spl_vmem_zalloc(size_t sz, int fl, const char *func, int line)\n    __attribute__((malloc, alloc_size(1)));\nextern void spl_vmem_free(const void *ptr, size_t sz);\n\nint spl_vmem_init(void);\nvoid spl_vmem_fini(void);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

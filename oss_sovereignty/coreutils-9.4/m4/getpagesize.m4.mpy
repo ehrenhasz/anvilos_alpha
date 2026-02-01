@@ -1,0 +1,9 @@
+{
+  "module_name": "getpagesize.m4",
+  "hash_id": "8780197be27bc9b54db37fbf5e38802b68ff6bef0f6d0fc6c5df2c5b3450180f",
+  "original_prompt": "Ingested from coreutils-9.4/m4/getpagesize.m4",
+  "human_readable_source": "# getpagesize.m4 serial 11\ndnl Copyright (C) 2002, 2004-2005, 2007, 2009-2023 Free Software Foundation,\ndnl Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_GETPAGESIZE],\n[\n  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])\n  AC_REQUIRE([AC_CANONICAL_HOST])\n  gl_CHECK_FUNC_GETPAGESIZE\n  if test $gl_cv_func_getpagesize = no; then\n    HAVE_GETPAGESIZE=0\n    AC_CHECK_HEADERS([OS.h])\n    if test $ac_cv_header_OS_h = yes; then\n      HAVE_OS_H=1\n    fi\n    AC_CHECK_HEADERS([sys/param.h])\n    if test $ac_cv_header_sys_param_h = yes; then\n      HAVE_SYS_PARAM_H=1\n    fi\n  fi\n  case \"$host_os\" in\n    mingw* | windows*)\n      REPLACE_GETPAGESIZE=1\n      ;;\n  esac\n  dnl Also check whether it's declared.\n  dnl mingw has getpagesize() in libgcc.a but doesn't declare it.\n  AC_CHECK_DECL([getpagesize], , [HAVE_DECL_GETPAGESIZE=0])\n])\n\ndnl Tests whether the function getpagesize() exists.\ndnl Sets gl_cv_func_getpagesize.\nAC_DEFUN([gl_CHECK_FUNC_GETPAGESIZE],\n[\n  dnl We can't use AC_CHECK_FUNC here, because getpagesize() is defined as a\n  dnl static inline function when compiling for Android 4.4 or older.\n  AC_CACHE_CHECK([for getpagesize], [gl_cv_func_getpagesize],\n    [AC_LINK_IFELSE(\n       [AC_LANG_PROGRAM(\n          [[#include <unistd.h>]],\n          [[return getpagesize();]])\n       ],\n       [gl_cv_func_getpagesize=yes],\n       [gl_cv_func_getpagesize=no])\n    ])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

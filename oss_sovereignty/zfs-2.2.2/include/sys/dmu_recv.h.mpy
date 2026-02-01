@@ -1,0 +1,9 @@
+{
+  "module_name": "dmu_recv.h",
+  "hash_id": "e0771574b06f42aee0350674b8763b73bdd7fff7ea81ff39efa886cec7aa296f",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/dmu_recv.h",
+  "human_readable_source": " \n\n \n\n#ifndef _DMU_RECV_H\n#define\t_DMU_RECV_H\n\n#include <sys/inttypes.h>\n#include <sys/dsl_bookmark.h>\n#include <sys/dsl_dataset.h>\n#include <sys/spa.h>\n#include <sys/objlist.h>\n\nextern const char *const recv_clone_name;\n\ntypedef struct dmu_recv_cookie {\n\tstruct dsl_dataset *drc_ds;\n\tstruct dmu_replay_record *drc_drr_begin;\n\tstruct drr_begin *drc_drrb;\n\tconst char *drc_tofs;\n\tconst char *drc_tosnap;\n\tboolean_t drc_newfs;\n\tboolean_t drc_byteswap;\n\tuint64_t drc_featureflags;\n\tboolean_t drc_force;\n\tboolean_t drc_heal;\n\tboolean_t drc_resumable;\n\tboolean_t drc_should_save;\n\tboolean_t drc_raw;\n\tboolean_t drc_clone;\n\tboolean_t drc_spill;\n\tnvlist_t *drc_keynvl;\n\tuint64_t drc_fromsnapobj;\n\tuint64_t drc_ivset_guid;\n\tvoid *drc_owner;\n\tcred_t *drc_cred;\n\tproc_t *drc_proc;\n\tnvlist_t *drc_begin_nvl;\n\n\tobjset_t *drc_os;\n\tzfs_file_t *drc_fp;  \n\tuint64_t drc_voff;  \n\tuint64_t drc_bytes_read;\n\t \n\tstruct receive_record_arg *drc_rrd;\n\t \n\tstruct receive_record_arg *drc_next_rrd;\n\tzio_cksum_t drc_cksum;\n\tzio_cksum_t drc_prev_cksum;\n\t \n\tobjlist_t *drc_ignore_objlist;\n} dmu_recv_cookie_t;\n\nint dmu_recv_begin(const char *, const char *, dmu_replay_record_t *,\n    boolean_t, boolean_t, boolean_t, nvlist_t *, nvlist_t *, const char *,\n    dmu_recv_cookie_t *, zfs_file_t *, offset_t *);\nint dmu_recv_stream(dmu_recv_cookie_t *, offset_t *);\nint dmu_recv_end(dmu_recv_cookie_t *, void *);\nboolean_t dmu_objset_is_receiving(objset_t *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

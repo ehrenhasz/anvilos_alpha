@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "56da173783e03c218b05e6cae87fe73f578124db651ec7f4b275da1857493d9c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/falcon/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SFC_FALCON\n\ttristate \"Solarflare SFC4000 support\"\n\tdepends on PCI\n\tselect MDIO\n\tselect CRC32\n\tselect I2C\n\tselect I2C_ALGOBIT\n\thelp\n\t  This driver supports 10-gigabit Ethernet cards based on\n\t  the Solarflare SFC4000 controller.\n\n\t  To compile this driver as a module, choose M here.  The module\n\t  will be called sfc-falcon.\nconfig SFC_FALCON_MTD\n\tbool \"Solarflare SFC4000 MTD support\"\n\tdepends on SFC_FALCON && MTD && !(SFC_FALCON=y && MTD=m)\n\tdefault y\n\thelp\n\t  This exposes the on-board flash and/or EEPROM as MTD devices\n\t  (e.g. /dev/mtd1).  This is required to update the boot\n\t  configuration under Linux.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

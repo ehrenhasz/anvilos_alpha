@@ -1,0 +1,9 @@
+{
+  "module_name": ".kunitconfig",
+  "hash_id": "575e75838325b04cd48c0a4a60f24c8e78aac82d9405eb24ab912f7d932da331",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/.kunitconfig",
+  "human_readable_source": "CONFIG_KUNIT=y\nCONFIG_COMMON_CLK=y\nCONFIG_CLK_KUNIT_TEST=y\nCONFIG_CLK_GATE_KUNIT_TEST=y\nCONFIG_UML_PCI_OVER_VIRTIO=n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

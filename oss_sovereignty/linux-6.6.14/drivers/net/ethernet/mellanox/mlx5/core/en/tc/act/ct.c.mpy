@@ -1,0 +1,9 @@
+{
+  "module_name": "ct.c",
+  "hash_id": "8191869ea895080877d3663522da56380a2533a6e3ee1884e42ab11b9ebc36b6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c",
+  "human_readable_source": "\n\n\n#include \"act.h\"\n#include \"en/tc_priv.h\"\n#include \"en/tc_ct.h\"\n\nstatic int\ntc_act_parse_ct(struct mlx5e_tc_act_parse_state *parse_state,\n\t\tconst struct flow_action_entry *act,\n\t\tstruct mlx5e_priv *priv,\n\t\tstruct mlx5_flow_attr *attr)\n{\n\tint err;\n\n\terr = mlx5_tc_ct_parse_action(parse_state->ct_priv, attr, act, parse_state->extack);\n\tif (err)\n\t\treturn err;\n\n\tif (mlx5e_is_eswitch_flow(parse_state->flow)) {\n\t\tattr->esw_attr->split_count = attr->esw_attr->out_count;\n\t\tparse_state->if_count = 0;\n\t}\n\n\tattr->flags |= MLX5_ATTR_FLAG_CT;\n\n\treturn 0;\n}\n\nstatic int\ntc_act_post_parse_ct(struct mlx5e_tc_act_parse_state *parse_state,\n\t\t     struct mlx5e_priv *priv,\n\t\t     struct mlx5_flow_attr *attr)\n{\n\tif (!(attr->flags & MLX5_ATTR_FLAG_CT))\n\t\treturn 0;\n\n\treturn mlx5_tc_ct_flow_offload(parse_state->ct_priv, attr);\n}\n\nstatic bool\ntc_act_is_multi_table_act_ct(struct mlx5e_priv *priv,\n\t\t\t     const struct flow_action_entry *act,\n\t\t\t     struct mlx5_flow_attr *attr)\n{\n\tif (act->ct.action & TCA_CT_ACT_CLEAR)\n\t\treturn false;\n\n\treturn true;\n}\n\nstatic bool\ntc_act_is_missable_ct(const struct flow_action_entry *act)\n{\n\treturn !(act->ct.action & TCA_CT_ACT_CLEAR);\n}\n\nstruct mlx5e_tc_act mlx5e_tc_act_ct = {\n\t.parse_action = tc_act_parse_ct,\n\t.post_parse = tc_act_post_parse_ct,\n\t.is_multi_table_act = tc_act_is_multi_table_act_ct,\n\t.is_missable = tc_act_is_missable_ct,\n};\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

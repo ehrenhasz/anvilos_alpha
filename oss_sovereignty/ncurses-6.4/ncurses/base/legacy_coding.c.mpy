@@ -1,0 +1,9 @@
+{
+  "module_name": "legacy_coding.c",
+  "hash_id": "537c3d218cb9fbe98dbc8fbccf1c1685a1efd0dcd744417fe284057be140dd4c",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/legacy_coding.c",
+  "human_readable_source": " \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: legacy_coding.c,v 1.6 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(use_legacy_coding) (NCURSES_SP_DCLx int level)\n{\n    int result = ERR;\n\n    T((T_CALLED(\"use_legacy_coding(%p,%d)\"), (void *) SP_PARM, level));\n    if (level >= 0 && level <= 2 && SP_PARM != 0) {\n\tresult = SP_PARM->_legacy_coding;\n\tSP_PARM->_legacy_coding = level;\n    }\n    returnCode(result);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nuse_legacy_coding(int level)\n{\n    return NCURSES_SP_NAME(use_legacy_coding) (CURRENT_SCREEN, level);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

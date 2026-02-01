@@ -1,0 +1,9 @@
+{
+  "module_name": "bench_uprobe.bpf.c",
+  "hash_id": "32f7fc8d697aefc8efa817b512c30f6334c820209afc1f48f9276bc4a774305a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/bpf_skel/bench_uprobe.bpf.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_tracing.h>\n\nunsigned int nr_uprobes;\n\nSEC(\"uprobe\")\nint BPF_UPROBE(empty)\n{\n       return 0;\n}\n\nSEC(\"uprobe\")\nint BPF_UPROBE(trace_printk)\n{\n\tchar fmt[] = \"perf bench uprobe %u\";\n\n\tbpf_trace_printk(fmt, sizeof(fmt), ++nr_uprobes);\n\treturn 0;\n}\n\nchar LICENSE[] SEC(\"license\") = \"Dual BSD/GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

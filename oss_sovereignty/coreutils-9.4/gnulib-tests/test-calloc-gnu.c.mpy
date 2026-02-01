@@ -1,0 +1,9 @@
+{
+  "module_name": "test-calloc-gnu.c",
+  "hash_id": "0e4e62900b0dab912e2c02fa7452e9528c84b23cf88760d61666d73379d8f0e7",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-calloc-gnu.c",
+  "human_readable_source": " \n#include <stdlib.h>\n\n#include <errno.h>\n#include <stdint.h>\n\n#include \"macros.h\"\n\n \nstatic size_t\nidentity (size_t n)\n{\n  unsigned int x = rand ();\n  unsigned int y = x * x * x * x;\n  x++; y |= x * x * x * x;\n  x++; y |= x * x * x * x;\n  x++; y |= x * x * x * x;\n  y = y >> 1;\n  y &= -y;\n  y -= 8;\n   \n  return n + y;\n}\n\nint\nmain ()\n{\n   \n  {\n    void * volatile p = calloc (0, 0);\n    ASSERT (p != NULL);\n    free (p);\n  }\n\n  /* Check that calloc fails when requested to allocate a block of memory\n     larger than PTRDIFF_MAX or SIZE_MAX bytes.\n     Use 'identity' to avoid a compiler warning from GCC 7.\n     'volatile' is needed to defeat an incorrect optimization by clang 10,\n     see <https:\n  {\n    for (size_t n = 2; n != 0; n <<= 1)\n      {\n        void *volatile p = calloc (PTRDIFF_MAX / n + 1, identity (n));\n        ASSERT (p == NULL);\n        ASSERT (errno == ENOMEM);\n\n        p = calloc (SIZE_MAX / n + 1, identity (n));\n        ASSERT (p == NULL);\n        ASSERT (errno == ENOMEM);\n      }\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

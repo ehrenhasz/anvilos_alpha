@@ -1,0 +1,9 @@
+{
+  "module_name": "test_trace_ext.c",
+  "hash_id": "193ae71c81202e0927bfee37344d3ac64b1b22093168988fc8a48ff67279fc77",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_trace_ext.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <stdbool.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n#include <bpf/bpf_tracing.h>\n\n__u64 ext_called = 0;\n\nSEC(\"freplace/test_pkt_md_access\")\nint test_pkt_md_access_new(struct __sk_buff *skb)\n{\n\text_called = skb->len;\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

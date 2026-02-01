@@ -1,0 +1,9 @@
+{
+  "module_name": "msr.c",
+  "hash_id": "3deb04d90ec3c29c7f3945793795ffa9f7c90b622ae48fc31c7186d53687c3b8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/intel_pstate/msr.c",
+  "human_readable_source": "\n#include <math.h>\n#include <unistd.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <fcntl.h>\n#include <sys/timeb.h>\n#include <sched.h>\n#include <errno.h>\n\n\nint main(int argc, char **argv) {\n\tint cpu, fd;\n\tlong long msr;\n\tchar msr_file_name[64];\n\n\tif (argc != 2)\n\t\treturn 1;\n\n\terrno = 0;\n\tcpu = strtol(argv[1], (char **) NULL, 10);\n\n\tif (errno)\n\t\treturn 1;\n\n\tsprintf(msr_file_name, \"/dev/cpu/%d/msr\", cpu);\n\tfd = open(msr_file_name, O_RDONLY);\n\n\tif (fd == -1) {\n\t\tperror(\"Failed to open\");\n\t\treturn 1;\n\t}\n\n\tpread(fd, &msr,  sizeof(msr), 0x199);\n\n\tprintf(\"msr 0x199: 0x%llx\\n\", msr);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

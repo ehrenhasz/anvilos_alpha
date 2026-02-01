@@ -1,0 +1,9 @@
+{
+  "module_name": "errqueue.h",
+  "hash_id": "81247108284a0591ec85abbef6b1bba98c36e4dd45cc1c441c80d73f5c50e8a2",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/errqueue.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_ERRQUEUE_H\n#define _UAPI_LINUX_ERRQUEUE_H\n\n#include <linux/types.h>\n#include <linux/time_types.h>\n\n \nstruct sock_ee_data_rfc4884 {\n\t__u16\tlen;\n\t__u8\tflags;\n\t__u8\treserved;\n};\n\nstruct sock_extended_err {\n\t__u32\tee_errno;\t\n\t__u8\tee_origin;\n\t__u8\tee_type;\n\t__u8\tee_code;\n\t__u8\tee_pad;\n\t__u32   ee_info;\n\tunion\t{\n\t\t__u32   ee_data;\n\t\tstruct sock_ee_data_rfc4884 ee_rfc4884;\n\t};\n};\n\n#define SO_EE_ORIGIN_NONE\t0\n#define SO_EE_ORIGIN_LOCAL\t1\n#define SO_EE_ORIGIN_ICMP\t2\n#define SO_EE_ORIGIN_ICMP6\t3\n#define SO_EE_ORIGIN_TXSTATUS\t4\n#define SO_EE_ORIGIN_ZEROCOPY\t5\n#define SO_EE_ORIGIN_TXTIME\t6\n#define SO_EE_ORIGIN_TIMESTAMPING SO_EE_ORIGIN_TXSTATUS\n\n#define SO_EE_OFFENDER(ee)\t((struct sockaddr*)((ee)+1))\n\n#define SO_EE_CODE_ZEROCOPY_COPIED\t1\n\n#define SO_EE_CODE_TXTIME_INVALID_PARAM\t1\n#define SO_EE_CODE_TXTIME_MISSED\t2\n\n#define SO_EE_RFC4884_FLAG_INVALID\t1\n\n \nstruct scm_timestamping {\n#ifdef __KERNEL__\n\tstruct __kernel_old_timespec ts[3];\n#else\n\tstruct timespec ts[3];\n#endif\n};\n\nstruct scm_timestamping64 {\n\tstruct __kernel_timespec ts[3];\n};\n\n \nenum {\n\tSCM_TSTAMP_SND,\t\t \n\tSCM_TSTAMP_SCHED,\t \n\tSCM_TSTAMP_ACK,\t\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

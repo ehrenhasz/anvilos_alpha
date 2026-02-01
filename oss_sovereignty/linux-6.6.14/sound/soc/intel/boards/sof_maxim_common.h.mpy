@@ -1,0 +1,9 @@
+{
+  "module_name": "sof_maxim_common.h",
+  "hash_id": "bed615f954d8660499e7272c91884783d1f9e5bf70002aea11bd4517781d95c5",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/boards/sof_maxim_common.h",
+  "human_readable_source": " \n \n\n \n#ifndef __SOF_MAXIM_COMMON_H\n#define __SOF_MAXIM_COMMON_H\n\n#include <sound/soc.h>\n\n#define MAX_98373_CODEC_DAI\t\"max98373-aif1\"\n#define MAX_98373_DEV0_NAME\t\"i2c-MX98373:00\"\n#define MAX_98373_DEV1_NAME\t\"i2c-MX98373:01\"\n\nextern struct snd_soc_dai_link_component max_98373_components[2];\nextern struct snd_soc_ops max_98373_ops;\nextern const struct snd_soc_dapm_route max_98373_dapm_routes[];\n\nint max_98373_spk_codec_init(struct snd_soc_pcm_runtime *rtd);\nvoid max_98373_set_codec_conf(struct snd_soc_card *card);\nint max_98373_trigger(struct snd_pcm_substream *substream, int cmd);\n\n \n#define MAX_98390_ACPI_HID\t\"MX98390\"\n#define MAX_98390_CODEC_DAI\t\"max98390-aif1\"\n#define MAX_98390_DEV0_NAME\t\"i2c-\" MAX_98390_ACPI_HID \":00\"\n#define MAX_98390_DEV1_NAME\t\"i2c-\" MAX_98390_ACPI_HID \":01\"\n#define MAX_98390_DEV2_NAME\t\"i2c-\" MAX_98390_ACPI_HID \":02\"\n#define MAX_98390_DEV3_NAME\t\"i2c-\" MAX_98390_ACPI_HID \":03\"\n\nvoid max_98390_dai_link(struct device *dev, struct snd_soc_dai_link *link);\nvoid max_98390_set_codec_conf(struct device *dev, struct snd_soc_card *card);\n\n \n#define MAX_98357A_CODEC_DAI\t\"HiFi\"\n#define MAX_98357A_DEV0_NAME\t\"MX98357A:00\"\n#define MAX_98360A_DEV0_NAME\t\"MX98360A:00\"\n\nvoid max_98357a_dai_link(struct snd_soc_dai_link *link);\nvoid max_98360a_dai_link(struct snd_soc_dai_link *link);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

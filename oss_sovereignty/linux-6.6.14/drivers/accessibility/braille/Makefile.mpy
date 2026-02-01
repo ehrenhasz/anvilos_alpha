@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e2b5f12c2f028f280a67d127dd92bcb7432c2ff9e8adfb18965865ec11f37f8f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accessibility/braille/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_A11Y_BRAILLE_CONSOLE)\t\t+= braille_console.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

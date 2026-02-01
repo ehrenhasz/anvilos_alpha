@@ -1,0 +1,9 @@
+{
+  "module_name": "raw_syscall_helper_32.S",
+  "hash_id": "ef603c34b21e695d3097977ca0389363cc92d55d636249529e84944e8ec82ca3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/x86/raw_syscall_helper_32.S",
+  "human_readable_source": " \n.global sys32_helper\nsys32_helper:\n\t \n\tpushl\t%ebp\n\tpushl\t%ebx\n\tpushl\t%esi\n\tpushl\t%edi\n\tmovl\t5*4(%esp), %eax\t \n\n\tmovl\t1*4(%eax), %ebx\n\tmovl\t2*4(%eax), %ecx\n\tmovl\t3*4(%eax), %edx\n\tmovl\t4*4(%eax), %esi\n\tmovl\t5*4(%eax), %edi\n\tmovl\t6*4(%eax), %ebp\n\tmovl\t0*4(%eax), %eax\n\n\tcall\t*(6*4)(%esp)\t \n\n\t \n\tpushl\t%eax\n\tmovl\t6*4(%esp), %eax\n\tpopl\t0*4(%eax)\n\tmovl\t%ebx, 1*4(%eax)\n\tmovl\t%ecx, 2*4(%eax)\n\tmovl\t%edx, 3*4(%eax)\n\tmovl\t%esi, 4*4(%eax)\n\tmovl\t%edi, 5*4(%eax)\n\tmovl\t%ebp, 6*4(%eax)\n\n\tpopl\t%edi\n\tpopl\t%esi\n\tpopl\t%ebx\n\tpopl\t%ebp\n\tret\n\n\t.type sys32_helper, @function\n\t.size sys32_helper, .-sys32_helper\n\n.global int80_and_ret\nint80_and_ret:\n\tint\t$0x80\n\tret\n\n\t.type int80_and_ret, @function\n\t.size int80_and_ret, .-int80_and_ret\n\n.section .note.GNU-stack,\"\",%progbits\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

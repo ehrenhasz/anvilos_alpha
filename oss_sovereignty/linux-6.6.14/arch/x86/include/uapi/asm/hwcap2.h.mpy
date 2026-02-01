@@ -1,0 +1,9 @@
+{
+  "module_name": "hwcap2.h",
+  "hash_id": "4b48ed7499cb9157f99747b68fde2c2df5bbf770677ccb4f95693c64f8903af0",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/hwcap2.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_HWCAP2_H\n#define _ASM_X86_HWCAP2_H\n\n#include <linux/const.h>\n\n \n#define HWCAP2_RING3MWAIT\t\t_BITUL(0)\n\n \n#define HWCAP2_FSGSBASE\t\t\t_BITUL(1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

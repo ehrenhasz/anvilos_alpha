@@ -1,0 +1,9 @@
+{
+  "module_name": "usb-davinci.h",
+  "hash_id": "c37762fea15a565a92257c059006e1664c78e2311e4b1ee7141fe207e269256e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/usb-davinci.h",
+  "human_readable_source": " \n\n#ifndef __ASM_ARCH_USB_H\n#define __ASM_ARCH_USB_H\n\n \nstruct\tda8xx_ohci_root_hub {\n\t \n\tu8\tpotpgt;\n};\n\nvoid davinci_setup_usb(unsigned mA, unsigned potpgt_ms);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

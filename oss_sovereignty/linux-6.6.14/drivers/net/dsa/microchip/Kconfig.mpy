@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9576caa397eb37145a7e9b0cb34a4e7bffe5498edbc109f3c3b89ce31b3d5c68",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/microchip/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig NET_DSA_MICROCHIP_KSZ_COMMON\n\ttristate \"Microchip KSZ8795/KSZ9477/LAN937x series switch support\"\n\tdepends on NET_DSA\n\tselect NET_DSA_TAG_KSZ\n\tselect NET_DSA_TAG_NONE\n\thelp\n\t  This driver adds support for Microchip KSZ9477 series switch and\n\t  KSZ8795/KSZ88x3 switch chips.\n\nconfig NET_DSA_MICROCHIP_KSZ9477_I2C\n\ttristate \"KSZ series I2C connected switch driver\"\n\tdepends on NET_DSA_MICROCHIP_KSZ_COMMON && I2C\n\tselect REGMAP_I2C\n\thelp\n\t  Select to enable support for registering switches configured through I2C.\n\nconfig NET_DSA_MICROCHIP_KSZ_SPI\n\ttristate \"KSZ series SPI connected switch driver\"\n\tdepends on NET_DSA_MICROCHIP_KSZ_COMMON && SPI\n\tselect REGMAP_SPI\n\thelp\n\t  Select to enable support for registering switches configured through SPI.\n\nconfig NET_DSA_MICROCHIP_KSZ_PTP\n\tbool \"Support for the PTP clock on the KSZ9563/LAN937x Ethernet Switch\"\n\tdepends on NET_DSA_MICROCHIP_KSZ_COMMON && PTP_1588_CLOCK\n\tdepends on NET_DSA_MICROCHIP_KSZ_COMMON=m || PTP_1588_CLOCK=y\n\thelp\n\t  Select to enable support for timestamping & PTP clock manipulation in\n\t  KSZ8563/KSZ9563/LAN937x series of switches. KSZ9563/KSZ8563 supports\n\t  only one step timestamping. LAN937x switch supports both one step and\n\t  two step timestamping.\n\nconfig NET_DSA_MICROCHIP_KSZ8863_SMI\n\ttristate \"KSZ series SMI connected switch driver\"\n\tdepends on NET_DSA_MICROCHIP_KSZ_COMMON\n\tselect MDIO_BITBANG\n\thelp\n\t  Select to enable support for registering switches configured through\n\t  Microchip SMI. It supports the KSZ8863 and KSZ8873 switch.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

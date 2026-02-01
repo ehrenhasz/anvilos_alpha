@@ -1,0 +1,9 @@
+{
+  "module_name": "wm8731.h",
+  "hash_id": "b372f1bcb9f451508e5079396fd74720843134a18283d731c2c43714f9df59e0",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/wm8731.h",
+  "human_readable_source": " \n \n\n#ifndef _WM8731_H\n#define _WM8731_H\n\n#include <linux/mutex.h>\n#include <linux/regmap.h>\n#include <linux/regulator/consumer.h>\n\nstruct clk;\nstruct snd_pcm_hw_constraint_list;\n\n \n\n#define WM8731_LINVOL   0x00\n#define WM8731_RINVOL   0x01\n#define WM8731_LOUT1V   0x02\n#define WM8731_ROUT1V   0x03\n#define WM8731_APANA    0x04\n#define WM8731_APDIGI   0x05\n#define WM8731_PWR      0x06\n#define WM8731_IFACE    0x07\n#define WM8731_SRATE    0x08\n#define WM8731_ACTIVE   0x09\n#define WM8731_RESET\t0x0f\n\n#define WM8731_CACHEREGNUM \t10\n\n#define WM8731_SYSCLK_MCLK 0\n#define WM8731_SYSCLK_XTAL 1\n\n#define WM8731_DAI\t\t0\n\n#define WM8731_NUM_SUPPLIES 4\n\n \nstruct wm8731_priv {\n\tstruct regmap *regmap;\n\tstruct clk *mclk;\n\tstruct regulator_bulk_data supplies[WM8731_NUM_SUPPLIES];\n\tconst struct snd_pcm_hw_constraint_list *constraints;\n\tunsigned int sysclk;\n\tint sysclk_type;\n\tint playback_fs;\n\tbool deemph;\n\n\tstruct mutex lock;\n};\n\nextern const struct regmap_config wm8731_regmap;\n\nint wm8731_init(struct device *dev, struct wm8731_priv *wm8731);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

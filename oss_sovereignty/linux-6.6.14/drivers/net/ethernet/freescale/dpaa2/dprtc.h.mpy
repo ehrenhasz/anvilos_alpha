@@ -1,0 +1,9 @@
+{
+  "module_name": "dprtc.h",
+  "hash_id": "13c526c08344b6a16bacbf6e37702a31d01d63ff7f0051c2d1358975dc597977",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/dpaa2/dprtc.h",
+  "human_readable_source": " \n \n\n#ifndef __FSL_DPRTC_H\n#define __FSL_DPRTC_H\n\n \n\nstruct fsl_mc_io;\n\n#define DPRTC_MAX_IRQ_NUM\t1\n#define DPRTC_IRQ_INDEX\t\t0\n\n#define DPRTC_EVENT_PPS\t\t0x08000000\n#define DPRTC_EVENT_ETS1\t0x00800000\n#define DPRTC_EVENT_ETS2\t0x00400000\n\nint dprtc_open(struct fsl_mc_io *mc_io,\n\t       u32 cmd_flags,\n\t       int dprtc_id,\n\t       u16 *token);\n\nint dprtc_close(struct fsl_mc_io *mc_io,\n\t\tu32 cmd_flags,\n\t\tu16 token);\n\nint dprtc_set_irq_enable(struct fsl_mc_io *mc_io,\n\t\t\t u32 cmd_flags,\n\t\t\t u16 token,\n\t\t\t u8 irq_index,\n\t\t\t u8 en);\n\nint dprtc_get_irq_enable(struct fsl_mc_io *mc_io,\n\t\t\t u32 cmd_flags,\n\t\t\t u16 token,\n\t\t\t u8 irq_index,\n\t\t\t u8 *en);\n\nint dprtc_set_irq_mask(struct fsl_mc_io *mc_io,\n\t\t       u32 cmd_flags,\n\t\t       u16 token,\n\t\t       u8 irq_index,\n\t\t       u32 mask);\n\nint dprtc_get_irq_mask(struct fsl_mc_io *mc_io,\n\t\t       u32 cmd_flags,\n\t\t       u16 token,\n\t\t       u8 irq_index,\n\t\t       u32 *mask);\n\nint dprtc_get_irq_status(struct fsl_mc_io *mc_io,\n\t\t\t u32 cmd_flags,\n\t\t\t u16 token,\n\t\t\t u8 irq_index,\n\t\t\t u32 *status);\n\nint dprtc_clear_irq_status(struct fsl_mc_io *mc_io,\n\t\t\t   u32 cmd_flags,\n\t\t\t   u16 token,\n\t\t\t   u8 irq_index,\n\t\t\t   u32 status);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

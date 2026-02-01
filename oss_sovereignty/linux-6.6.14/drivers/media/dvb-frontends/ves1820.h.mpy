@@ -1,0 +1,9 @@
+{
+  "module_name": "ves1820.h",
+  "hash_id": "b509cfe060531dd045e6e3873dcc8d7cf70d6471e6d68f064e292ba84544016c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/ves1820.h",
+  "human_readable_source": " \n \n\n#ifndef VES1820_H\n#define VES1820_H\n\n#include <linux/dvb/frontend.h>\n\n#define VES1820_SELAGC_PWM 0\n#define VES1820_SELAGC_SIGNAMPERR 1\n\nstruct ves1820_config\n{\n\t \n\tu8 demod_address;\n\n\t \n\tu32 xin;\n\n\t \n\tu8 invert:1;\n\n\t \n\tu8 selagc:1;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_VES1820)\nextern struct dvb_frontend* ves1820_attach(const struct ves1820_config* config,\n\t\t\t\t\t   struct i2c_adapter* i2c, u8 pwm);\n#else\nstatic inline struct dvb_frontend* ves1820_attach(const struct ves1820_config* config,\n\t\t\t\t\t   struct i2c_adapter* i2c, u8 pwm)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif \n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

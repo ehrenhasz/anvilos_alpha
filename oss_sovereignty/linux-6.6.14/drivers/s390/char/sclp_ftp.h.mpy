@@ -1,0 +1,9 @@
+{
+  "module_name": "sclp_ftp.h",
+  "hash_id": "99d53c0a22e43f60c30780a69f4516382726e14d577ac8c647c0f5e991957f8f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/char/sclp_ftp.h",
+  "human_readable_source": " \n \n\n#ifndef __SCLP_FTP_H__\n#define __SCLP_FTP_H__\n\n#include \"hmcdrv_ftp.h\"\n\nint sclp_ftp_startup(void);\nvoid sclp_ftp_shutdown(void);\nssize_t sclp_ftp_cmd(const struct hmcdrv_ftp_cmdspec *ftp, size_t *fsize);\n\n#endif\t  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

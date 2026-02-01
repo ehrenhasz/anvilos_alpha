@@ -1,0 +1,9 @@
+{
+  "module_name": "fld_max.c",
+  "hash_id": "ff3e68b4526eec7f462b91af00c9c1a45616d7a4ba14a984a6a86947b9b42245",
+  "original_prompt": "Ingested from ncurses-6.4/form/fld_max.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: fld_max.c,v 1.18 2021/06/17 21:26:02 tom Exp $\")\n\n \nFORM_EXPORT(int)\nset_max_field(FIELD *field, int maxgrow)\n{\n  T((T_CALLED(\"set_max_field(%p,%d)\"), (void *)field, maxgrow));\n\n  if (!field || (maxgrow < 0))\n    RETURN(E_BAD_ARGUMENT);\n  else\n    {\n      bool single_line_field = Single_Line_Field(field);\n\n      if (maxgrow > 0)\n\t{\n\t  if (((single_line_field && (maxgrow < field->dcols)) ||\n\t       (!single_line_field && (maxgrow < field->drows))) &&\n\t      !Field_Has_Option(field, O_INPUT_LIMIT))\n\t    RETURN(E_BAD_ARGUMENT);\n\t}\n      field->maxgrow = maxgrow;\n       \n      if (maxgrow > 0 && Field_Has_Option(field, O_INPUT_LIMIT) &&\n\t  field->dcols > maxgrow)\n\tfield->dcols = maxgrow;\n      ClrStatus(field, _MAY_GROW);\n      if (!((unsigned)field->opts & O_STATIC))\n\t{\n\t  if ((maxgrow == 0) ||\n\t      (single_line_field && (field->dcols < maxgrow)) ||\n\t      (!single_line_field && (field->drows < maxgrow)))\n\t    SetStatus(field, _MAY_GROW);\n\t}\n    }\n  RETURN(E_OK);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

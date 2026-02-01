@@ -1,0 +1,9 @@
+{
+  "module_name": "generic_mpih-rshift.c",
+  "hash_id": "f2d441fb415b62463c6bf7c8c5489f03279d15b8721f544eb667be31fab5bbb6",
+  "original_prompt": "Ingested from linux-6.6.14/lib/crypto/mpi/generic_mpih-rshift.c",
+  "human_readable_source": "\n \n\n#include \"mpi-internal.h\"\n\n \n\nmpi_limb_t\nmpihelp_rshift(mpi_ptr_t wp, mpi_ptr_t up, mpi_size_t usize, unsigned cnt)\n{\n\tmpi_limb_t high_limb, low_limb;\n\tunsigned sh_1, sh_2;\n\tmpi_size_t i;\n\tmpi_limb_t retval;\n\n\tsh_1 = cnt;\n\twp -= 1;\n\tsh_2 = BITS_PER_MPI_LIMB - sh_1;\n\thigh_limb = up[0];\n\tretval = high_limb << sh_2;\n\tlow_limb = high_limb;\n\tfor (i = 1; i < usize; i++) {\n\t\thigh_limb = up[i];\n\t\twp[i] = (low_limb >> sh_1) | (high_limb << sh_2);\n\t\tlow_limb = high_limb;\n\t}\n\twp[i] = low_limb >> sh_1;\n\n\treturn retval;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

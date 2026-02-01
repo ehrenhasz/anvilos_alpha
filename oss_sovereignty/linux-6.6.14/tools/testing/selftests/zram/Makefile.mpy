@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f587fd88674ac330d034a9c4ec63c198549226d745eddd979e3696e085489daf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/zram/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nall:\n\nTEST_PROGS := zram.sh\nTEST_FILES := zram01.sh zram02.sh zram_lib.sh\nEXTRA_CLEAN := err.log\n\ninclude ../lib.mk\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

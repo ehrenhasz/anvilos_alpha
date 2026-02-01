@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig.riscv",
+  "hash_id": "49d9aa2299ae8e0e9c9c9c44c0125b179b48409e6bb649f06700cca0558376fb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpuidle/Kconfig.riscv",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# RISC-V CPU Idle drivers\n#\n\nconfig RISCV_SBI_CPUIDLE\n\tbool \"RISC-V SBI CPU idle Driver\"\n\tdepends on RISCV_SBI\n\tselect DT_IDLE_STATES\n\tselect CPU_IDLE_MULTIPLE_DRIVERS\n\tselect DT_IDLE_GENPD if PM_GENERIC_DOMAINS_OF\n\thelp\n\t  Select this option to enable RISC-V SBI firmware based CPU idle\n\t  driver for RISC-V systems. This drivers also supports hierarchical\n\t  DT based layout of the idle state.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

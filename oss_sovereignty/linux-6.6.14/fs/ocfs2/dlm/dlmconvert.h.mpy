@@ -1,0 +1,9 @@
+{
+  "module_name": "dlmconvert.h",
+  "hash_id": "8707cb0f8f2a8676b9cb16c7908c6f6b6dc768c8874db58385df1967306a8874",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/dlm/dlmconvert.h",
+  "human_readable_source": " \n \n\n#ifndef DLMCONVERT_H\n#define DLMCONVERT_H\n\nenum dlm_status dlmconvert_master(struct dlm_ctxt *dlm,\n\t\t\t\t  struct dlm_lock_resource *res,\n\t\t\t\t  struct dlm_lock *lock, int flags, int type);\nenum dlm_status dlmconvert_remote(struct dlm_ctxt *dlm,\n\t\t\t\t  struct dlm_lock_resource *res,\n\t\t\t\t  struct dlm_lock *lock, int flags, int type);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "helper.h",
+  "hash_id": "fdd2de7f5579abd71c1a57b55a9273bd2bd169ab8e00b5b07f06447c839e9352",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/pauth/helper.h",
+  "human_readable_source": " \n \n\n#ifndef _HELPER_H_\n#define _HELPER_H_\n\n#include <stdlib.h>\n\n#define NKEYS 5\n\nstruct signatures {\n\tsize_t keyia;\n\tsize_t keyib;\n\tsize_t keyda;\n\tsize_t keydb;\n\tsize_t keyg;\n};\n\nvoid pac_corruptor(void);\n\n \nsize_t keyia_sign(size_t val);\nsize_t keyib_sign(size_t val);\nsize_t keyda_sign(size_t val);\nsize_t keydb_sign(size_t val);\nsize_t keyg_sign(size_t val);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

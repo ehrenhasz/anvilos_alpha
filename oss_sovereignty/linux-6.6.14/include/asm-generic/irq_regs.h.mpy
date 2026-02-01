@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_regs.h",
+  "hash_id": "9ff702a9729763ca160bae140331bedf7c88f3bd650aa24fedb37d401ea1afe0",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/irq_regs.h",
+  "human_readable_source": " \n \n\n#ifndef _ASM_GENERIC_IRQ_REGS_H\n#define _ASM_GENERIC_IRQ_REGS_H\n\n#include <linux/percpu.h>\n\n \nDECLARE_PER_CPU(struct pt_regs *, __irq_regs);\n\nstatic inline struct pt_regs *get_irq_regs(void)\n{\n\treturn __this_cpu_read(__irq_regs);\n}\n\nstatic inline struct pt_regs *set_irq_regs(struct pt_regs *new_regs)\n{\n\tstruct pt_regs *old_regs;\n\n\told_regs = __this_cpu_read(__irq_regs);\n\t__this_cpu_write(__irq_regs, new_regs);\n\treturn old_regs;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

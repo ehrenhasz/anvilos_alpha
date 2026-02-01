@@ -1,0 +1,9 @@
+{
+  "module_name": "sja1000.h",
+  "hash_id": "439be796b7aa6ebaa2332bc32ccc417cdd3d88e98d16ffa1398675f50d04aaac",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/can/platform/sja1000.h",
+  "human_readable_source": " \n#ifndef _CAN_PLATFORM_SJA1000_H\n#define _CAN_PLATFORM_SJA1000_H\n\n \n#define CDR_CLKOUT_MASK 0x07\n#define CDR_CLK_OFF\t0x08  \n#define CDR_RXINPEN\t0x20  \n#define CDR_CBP\t\t0x40  \n#define CDR_PELICAN\t0x80  \n\n \n#define OCR_MODE_BIPHASE  0x00\n#define OCR_MODE_TEST     0x01\n#define OCR_MODE_NORMAL   0x02\n#define OCR_MODE_CLOCK    0x03\n#define OCR_MODE_MASK     0x03\n#define OCR_TX0_INVERT    0x04\n#define OCR_TX0_PULLDOWN  0x08\n#define OCR_TX0_PULLUP    0x10\n#define OCR_TX0_PUSHPULL  0x18\n#define OCR_TX1_INVERT    0x20\n#define OCR_TX1_PULLDOWN  0x40\n#define OCR_TX1_PULLUP    0x80\n#define OCR_TX1_PUSHPULL  0xc0\n#define OCR_TX_MASK       0xfc\n#define OCR_TX_SHIFT      2\n\nstruct sja1000_platform_data {\n\tu32 osc_freq;\t \n\n\tu8 ocr;\t\t \n\tu8 cdr;\t\t \n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

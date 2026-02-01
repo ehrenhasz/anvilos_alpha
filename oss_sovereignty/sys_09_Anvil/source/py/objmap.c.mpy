@@ -1,0 +1,9 @@
+{
+  "module_name": "objmap.c",
+  "hash_id": "f5ff249127175a91f666a4af16d7e7b06625af4177664e3eed3913c3fc272b8d",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/objmap.c",
+  "human_readable_source": " \n\n#include <stdlib.h>\n#include <assert.h>\n\n#include \"py/runtime.h\"\n\ntypedef struct _mp_obj_map_t {\n    mp_obj_base_t base;\n    size_t n_iters;\n    mp_obj_t fun;\n    mp_obj_t iters[];\n} mp_obj_map_t;\n\nstatic mp_obj_t map_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {\n    mp_arg_check_num(n_args, n_kw, 2, MP_OBJ_FUN_ARGS_MAX, false);\n    mp_obj_map_t *o = mp_obj_malloc_var(mp_obj_map_t, iters, mp_obj_t, n_args - 1, type);\n    o->n_iters = n_args - 1;\n    o->fun = args[0];\n    for (size_t i = 0; i < n_args - 1; i++) {\n        o->iters[i] = mp_getiter(args[i + 1], NULL);\n    }\n    return MP_OBJ_FROM_PTR(o);\n}\n\nstatic mp_obj_t map_iternext(mp_obj_t self_in) {\n    mp_check_self(mp_obj_is_type(self_in, &mp_type_map));\n    mp_obj_map_t *self = MP_OBJ_TO_PTR(self_in);\n    mp_obj_t *nextses = m_new(mp_obj_t, self->n_iters);\n\n    for (size_t i = 0; i < self->n_iters; i++) {\n        mp_obj_t next = mp_iternext(self->iters[i]);\n        if (next == MP_OBJ_STOP_ITERATION) {\n            m_del(mp_obj_t, nextses, self->n_iters);\n            return MP_OBJ_STOP_ITERATION;\n        }\n        nextses[i] = next;\n    }\n    return mp_call_function_n_kw(self->fun, self->n_iters, 0, nextses);\n}\n\nMP_DEFINE_CONST_OBJ_TYPE(\n    mp_type_map,\n    MP_QSTR_map,\n    MP_TYPE_FLAG_ITER_IS_ITERNEXT,\n    make_new, map_make_new,\n    iter, map_iternext\n    );\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

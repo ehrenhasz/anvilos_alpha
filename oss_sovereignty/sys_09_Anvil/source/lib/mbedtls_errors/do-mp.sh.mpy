@@ -1,0 +1,9 @@
+{
+  "module_name": "do-mp.sh",
+  "hash_id": "021899c9596beada6ccadb41e64b345aa2dc3e90b845c1852913262f3363d115",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/mbedtls_errors/do-mp.sh",
+  "human_readable_source": "#! /bin/bash -e\n# Generate mp_mbedtls_errors.c for inclusion in ports that use $MPY/lib/mbedtls\npatch -o mp_generate_errors.pl ../mbedtls/scripts/generate_errors.pl <generate_errors.diff\nperl ./mp_generate_errors.pl ../mbedtls/include/mbedtls . mp_mbedtls_errors.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

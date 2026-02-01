@@ -1,0 +1,9 @@
+{
+  "module_name": "ebt_arpreply.h",
+  "hash_id": "a308dbaaf395aa1bf13cced13492cc72cda099a85cee72845bdc5c7bff6461c7",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_bridge/ebt_arpreply.h",
+  "human_readable_source": " \n#ifndef __LINUX_BRIDGE_EBT_ARPREPLY_H\n#define __LINUX_BRIDGE_EBT_ARPREPLY_H\n\n#include <linux/if_ether.h>\n\nstruct ebt_arpreply_info {\n\tunsigned char mac[ETH_ALEN];\n\tint target;\n};\n#define EBT_ARPREPLY_TARGET \"arpreply\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

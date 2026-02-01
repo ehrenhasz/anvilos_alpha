@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "54130b65176efdeab851dbaa81c5d0225c144193ef626bbf320f763c7dedecf5",
+  "original_prompt": "Ingested from linux-6.6.14/fs/notify/fanotify/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig FANOTIFY\n\tbool \"Filesystem wide access notification\"\n\tselect FSNOTIFY\n\tselect EXPORTFS\n\tdefault n\n\thelp\n\t   Say Y here to enable fanotify support.  fanotify is a file access\n\t   notification system which differs from inotify in that it sends\n\t   an open file descriptor to the userspace listener along with\n\t   the event.\n\n\t   If unsure, say Y.\n\nconfig FANOTIFY_ACCESS_PERMISSIONS\n\tbool \"fanotify permissions checking\"\n\tdepends on FANOTIFY\n\tdepends on SECURITY\n\tdefault n\n\thelp\n\t   Say Y here is you want fanotify listeners to be able to make permissions\n\t   decisions concerning filesystem events.  This is used by some fanotify\n\t   listeners which need to scan files before allowing the system access to\n\t   use those files.  This is used by some anti-malware vendors and by some\n\t   hierarchical storage management systems.\n\n\t   If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

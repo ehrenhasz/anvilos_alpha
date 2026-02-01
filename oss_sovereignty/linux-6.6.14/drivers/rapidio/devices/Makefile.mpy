@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "455793b9bd77b898ebe857fc1e122e06a4260cef0d41099b41ace60c75d14d71",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/rapidio/devices/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for RapidIO devices\n#\n\nobj-$(CONFIG_RAPIDIO_TSI721)\t+= tsi721_mport.o\ntsi721_mport-y\t\t\t:= tsi721.o\ntsi721_mport-$(CONFIG_RAPIDIO_DMA_ENGINE) += tsi721_dma.o\nobj-$(CONFIG_RAPIDIO_MPORT_CDEV) += rio_mport_cdev.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "syscall.h",
+  "hash_id": "284c15c7244f7589f2815be29566b26bea8532a4aa59595de0cae596fe05b82a",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/syscall.h",
+  "human_readable_source": " \n#ifndef _TRACE_SYSCALL_H\n#define _TRACE_SYSCALL_H\n\n#include <linux/tracepoint.h>\n#include <linux/unistd.h>\n#include <linux/trace_events.h>\n#include <linux/thread_info.h>\n\n#include <asm/ptrace.h>\n\n\n \nstruct syscall_metadata {\n\tconst char\t*name;\n\tint\t\tsyscall_nr;\n\tint\t\tnb_args;\n\tconst char\t**types;\n\tconst char\t**args;\n\tstruct list_head enter_fields;\n\n\tstruct trace_event_call *enter_event;\n\tstruct trace_event_call *exit_event;\n};\n\n#if defined(CONFIG_TRACEPOINTS) && defined(CONFIG_HAVE_SYSCALL_TRACEPOINTS)\nstatic inline void syscall_tracepoint_update(struct task_struct *p)\n{\n\tif (test_syscall_work(SYSCALL_TRACEPOINT))\n\t\tset_task_syscall_work(p, SYSCALL_TRACEPOINT);\n\telse\n\t\tclear_task_syscall_work(p, SYSCALL_TRACEPOINT);\n}\n#else\nstatic inline void syscall_tracepoint_update(struct task_struct *p)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

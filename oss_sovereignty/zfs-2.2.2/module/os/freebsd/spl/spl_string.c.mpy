@@ -1,0 +1,9 @@
+{
+  "module_name": "spl_string.c",
+  "hash_id": "e3a66ae0880e64d087475cc794df48c06c47d6c44ce2ffa3946f2d7817ca52b1",
+  "original_prompt": "Ingested from zfs-2.2.2/module/os/freebsd/spl/spl_string.c",
+  "human_readable_source": " \n \n\n#include <sys/types.h>\n#include <sys/param.h>\n#include <sys/string.h>\n#include <sys/kmem.h>\n#include <machine/stdarg.h>\n\n#define\tIS_DIGIT(c)\t((c) >= '0' && (c) <= '9')\n\n#define\tIS_ALPHA(c)\t\\\n\t(((c) >= 'a' && (c) <= 'z') || ((c) >= 'A' && (c) <= 'Z'))\n\nchar *\nstrpbrk(const char *s, const char *b)\n{\n\tconst char *p;\n\n\tdo {\n\t\tfor (p = b; *p != '\\0' && *p != *s; ++p)\n\t\t\t;\n\t\tif (*p != '\\0')\n\t\t\treturn ((char *)s);\n\t} while (*s++);\n\n\treturn (NULL);\n}\n\n \nvoid\nstrident_canon(char *s, size_t n)\n{\n\tchar c;\n\tchar *end = s + n - 1;\n\n\tif ((c = *s) == 0)\n\t\treturn;\n\n\tif (!IS_ALPHA(c) && c != '_')\n\t\t*s = '_';\n\n\twhile (s < end && ((c = *(++s)) != 0)) {\n\t\tif (!IS_ALPHA(c) && !IS_DIGIT(c) && c != '_')\n\t\t\t*s = '_';\n\t}\n\t*s = 0;\n}\n\n \nchar *\nkmem_asprintf(const char *fmt, ...)\n{\n\tint size;\n\tva_list adx;\n\tchar *buf;\n\n\tva_start(adx, fmt);\n\tsize = vsnprintf(NULL, 0, fmt, adx) + 1;\n\tva_end(adx);\n\n\tbuf = kmem_alloc(size, KM_SLEEP);\n\n\tva_start(adx, fmt);\n\t(void) vsnprintf(buf, size, fmt, adx);\n\tva_end(adx);\n\n\treturn (buf);\n}\n\nvoid\nkmem_strfree(char *str)\n{\n\tASSERT3P(str, !=, NULL);\n\tkmem_free(str, strlen(str) + 1);\n}\n\n \n\nint\nkmem_scnprintf(char *restrict str, size_t size, const char *restrict fmt, ...)\n{\n\tint n;\n\tva_list ap;\n\n\t \n\tif (size == 0)\n\t\treturn (0);\n\n\tva_start(ap, fmt);\n\tn = vsnprintf(str, size, fmt, ap);\n\tva_end(ap);\n\n\tif (n >= size)\n\t\tn = size - 1;\n\n\treturn (n);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

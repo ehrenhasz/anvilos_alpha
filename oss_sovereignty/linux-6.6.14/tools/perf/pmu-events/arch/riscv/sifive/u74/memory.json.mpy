@@ -1,0 +1,9 @@
+{
+  "module_name": "memory.json",
+  "hash_id": "36e3dcfd29f435c1e346eb5c978c2a02e8b14c607cc889089da4ed4daaf5fd07",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/riscv/sifive/u74/memory.json",
+  "human_readable_source": "[\n  {\n    \"EventName\": \"ICACHE_RETIRED\",\n    \"EventCode\": \"0x0000102\",\n    \"BriefDescription\": \"Instruction cache miss\"\n  },\n  {\n    \"EventName\": \"DCACHE_MISS_MMIO_ACCESSES\",\n    \"EventCode\": \"0x0000202\",\n    \"BriefDescription\": \"Data cache miss or memory-mapped I/O access\"\n  },\n  {\n    \"EventName\": \"DCACHE_WRITEBACK\",\n    \"EventCode\": \"0x0000402\",\n    \"BriefDescription\": \"Data cache write-back\"\n  },\n  {\n    \"EventName\": \"INST_TLB_MISS\",\n    \"EventCode\": \"0x0000802\",\n    \"BriefDescription\": \"Instruction TLB miss\"\n  },\n  {\n    \"EventName\": \"DATA_TLB_MISS\",\n    \"EventCode\": \"0x0001002\",\n    \"BriefDescription\": \"Data TLB miss\"\n  },\n  {\n    \"EventName\": \"UTLB_MISS\",\n    \"EventCode\": \"0x0002002\",\n    \"BriefDescription\": \"UTLB miss\"\n  }\n]",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

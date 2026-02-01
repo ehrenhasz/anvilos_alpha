@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "8dd5b2590593306926a90ff6ad7372876031919a78bdd3816341d73c5d72fbeb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/x86/kcpuid/.gitignore",
+  "human_readable_source": "kcpuid\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a86297a81c95dbe732adb4fa5742cfcd73eae2cfe0e269997d6dc2ec3241cd5b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/starfive/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Phy drivers for StarFive platforms\n#\n\nif ARCH_STARFIVE || COMPILE_TEST\n\nconfig PHY_STARFIVE_JH7110_DPHY_RX\n\ttristate \"StarFive JH7110 D-PHY RX support\"\n\tdepends on HAS_IOMEM\n\tselect GENERIC_PHY\n\tselect GENERIC_PHY_MIPI_DPHY\n\thelp\n\t  Choose this option if you have a StarFive D-PHY in your\n\t  system. If M is selected, the module will be called\n\t  phy-jh7110-dphy-rx.ko.\n\nconfig PHY_STARFIVE_JH7110_PCIE\n\ttristate \"Starfive JH7110 PCIE 2.0/USB 3.0 PHY support\"\n\tdepends on HAS_IOMEM\n\tselect GENERIC_PHY\n\thelp\n\t  Enable this to support the StarFive PCIe 2.0 PHY,\n\t  or used as USB 3.0 PHY.\n\t  If M is selected, the module will be called\n\t  phy-jh7110-pcie.ko.\n\nconfig PHY_STARFIVE_JH7110_USB\n\ttristate \"Starfive JH7110 USB 2.0 PHY support\"\n\tdepends on USB_SUPPORT\n\tselect GENERIC_PHY\n\thelp\n\t  Enable this to support the StarFive USB 2.0 PHY,\n\t  used with the Cadence USB controller.\n\t  If M is selected, the module will be called\n\t  phy-jh7110-usb.ko.\n\nendif # ARCH_STARFIVE || COMPILE_TEST\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

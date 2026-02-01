@@ -1,0 +1,9 @@
+{
+  "module_name": "counts.c",
+  "hash_id": "544c878ecc52cb51db391a259de77ec58bdccf19f71243d19540f63716780445",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/counts.c",
+  "human_readable_source": "\n#include <errno.h>\n#include <stdlib.h>\n#include <string.h>\n#include \"evsel.h\"\n#include \"counts.h\"\n#include <perf/threadmap.h>\n#include <linux/zalloc.h>\n\nstruct perf_counts *perf_counts__new(int ncpus, int nthreads)\n{\n\tstruct perf_counts *counts = zalloc(sizeof(*counts));\n\n\tif (counts) {\n\t\tstruct xyarray *values;\n\n\t\tvalues = xyarray__new(ncpus, nthreads, sizeof(struct perf_counts_values));\n\t\tif (!values) {\n\t\t\tfree(counts);\n\t\t\treturn NULL;\n\t\t}\n\n\t\tcounts->values = values;\n\n\t\tvalues = xyarray__new(ncpus, nthreads, sizeof(bool));\n\t\tif (!values) {\n\t\t\txyarray__delete(counts->values);\n\t\t\tfree(counts);\n\t\t\treturn NULL;\n\t\t}\n\n\t\tcounts->loaded = values;\n\t}\n\n\treturn counts;\n}\n\nvoid perf_counts__delete(struct perf_counts *counts)\n{\n\tif (counts) {\n\t\txyarray__delete(counts->loaded);\n\t\txyarray__delete(counts->values);\n\t\tfree(counts);\n\t}\n}\n\nvoid perf_counts__reset(struct perf_counts *counts)\n{\n\txyarray__reset(counts->loaded);\n\txyarray__reset(counts->values);\n}\n\nvoid evsel__reset_counts(struct evsel *evsel)\n{\n\tperf_counts__reset(evsel->counts);\n}\n\nint evsel__alloc_counts(struct evsel *evsel)\n{\n\tstruct perf_cpu_map *cpus = evsel__cpus(evsel);\n\tint nthreads = perf_thread_map__nr(evsel->core.threads);\n\n\tevsel->counts = perf_counts__new(perf_cpu_map__nr(cpus), nthreads);\n\treturn evsel->counts != NULL ? 0 : -ENOMEM;\n}\n\nvoid evsel__free_counts(struct evsel *evsel)\n{\n\tperf_counts__delete(evsel->counts);\n\tevsel->counts = NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

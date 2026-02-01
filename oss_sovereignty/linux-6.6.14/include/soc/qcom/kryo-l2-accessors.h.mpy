@@ -1,0 +1,9 @@
+{
+  "module_name": "kryo-l2-accessors.h",
+  "hash_id": "4038f4962b95e89bd2b2ba12df3c676fb5ed6fdeda8b53a12383cda198b15025",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/qcom/kryo-l2-accessors.h",
+  "human_readable_source": " \n \n\n#ifndef __SOC_ARCH_QCOM_KRYO_L2_ACCESSORS_H\n#define __SOC_ARCH_QCOM_KRYO_L2_ACCESSORS_H\n\nvoid kryo_l2_set_indirect_reg(u64 reg, u64 val);\nu64 kryo_l2_get_indirect_reg(u64 reg);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

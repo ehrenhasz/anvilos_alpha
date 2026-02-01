@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "0d6008271dc535daa1bb9abd5c0594fa46bf17d309c11368f5d80fa5c62d3683",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/usbip/src/Makefile.am",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nAM_CPPFLAGS = -I$(top_srcdir)/libsrc -DUSBIDS_FILE='\"@USBIDS_DIR@/usb.ids\"'\nAM_CFLAGS   = @EXTRA_CFLAGS@\nLDADD       = $(top_builddir)/libsrc/libusbip.la\n\nsbin_PROGRAMS := usbip usbipd\n\nusbip_SOURCES := usbip.h utils.h usbip.c utils.c usbip_network.c \\\n\t\t usbip_attach.c usbip_detach.c usbip_list.c \\\n\t\t usbip_bind.c usbip_unbind.c usbip_port.c\n\nusbipd_SOURCES := usbip_network.h usbipd.c usbip_network.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

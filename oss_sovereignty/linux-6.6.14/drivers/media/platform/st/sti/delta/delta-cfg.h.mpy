@@ -1,0 +1,9 @@
+{
+  "module_name": "delta-cfg.h",
+  "hash_id": "dc100639bb7761081f9a13823c199e44f4523ed8373084b6e6b02148d63cfcd3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/delta/delta-cfg.h",
+  "human_readable_source": " \n \n\n#ifndef DELTA_CFG_H\n#define DELTA_CFG_H\n\n#define DELTA_FW_VERSION \"21.1-3\"\n\n#define DELTA_MIN_WIDTH  32\n#define DELTA_MAX_WIDTH  4096\n#define DELTA_MIN_HEIGHT 32\n#define DELTA_MAX_HEIGHT 2400\n\n \n#define DELTA_WIDTH_ALIGNMENT    32\n#define DELTA_HEIGHT_ALIGNMENT   32\n\n#define DELTA_DEFAULT_WIDTH  DELTA_MIN_WIDTH\n#define DELTA_DEFAULT_HEIGHT DELTA_MIN_HEIGHT\n#define DELTA_DEFAULT_FRAMEFORMAT  V4L2_PIX_FMT_NV12\n#define DELTA_DEFAULT_STREAMFORMAT V4L2_PIX_FMT_MJPEG\n\n#define DELTA_MAX_RESO (DELTA_MAX_WIDTH * DELTA_MAX_HEIGHT)\n\n \n#define DELTA_MAX_AUS 10\n\n \n#define DELTA_PEAK_FRAME_SMOOTHING 2\n\n \n#define DELTA_MIN_FRAME_USER    1\n#define DELTA_MAX_DPB           16\n#define DELTA_MAX_FRAME_USER    3  \n#define DELTA_MAX_FRAMES (DELTA_MAX_DPB + DELTA_PEAK_FRAME_SMOOTHING +\\\n\t\t\t  DELTA_MAX_FRAME_USER)\n\n#if DELTA_MAX_FRAMES > VIDEO_MAX_FRAME\n#undef DELTA_MAX_FRAMES\n#define DELTA_MAX_FRAMES (VIDEO_MAX_FRAME)\n#endif\n\n \n#define DELTA_MAX_FRAME_PRIV_SIZE 100\n\n \n#define DELTA_HW_AUTOSUSPEND_DELAY_MS 5\n\n#define DELTA_MAX_DECODERS 10\n#ifdef CONFIG_VIDEO_STI_DELTA_MJPEG\nextern const struct delta_dec mjpegdec;\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

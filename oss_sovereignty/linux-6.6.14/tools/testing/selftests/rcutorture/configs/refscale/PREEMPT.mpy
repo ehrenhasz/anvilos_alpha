@@ -1,0 +1,9 @@
+{
+  "module_name": "PREEMPT",
+  "hash_id": "91dcce5bf167c9c7610c7443244adfa3aad2a93736fe51eb463afadca6cd91b1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/refscale/PREEMPT",
+  "human_readable_source": "CONFIG_SMP=y\nCONFIG_PREEMPT_NONE=n\nCONFIG_PREEMPT_VOLUNTARY=n\nCONFIG_PREEMPT=y\n#CHECK#CONFIG_PREEMPT_RCU=y\nCONFIG_HZ_PERIODIC=n\nCONFIG_NO_HZ_IDLE=y\nCONFIG_NO_HZ_FULL=n\nCONFIG_HOTPLUG_CPU=y\nCONFIG_SUSPEND=n\nCONFIG_HIBERNATION=n\nCONFIG_RCU_NOCB_CPU=n\nCONFIG_DEBUG_LOCK_ALLOC=n\nCONFIG_PROVE_LOCKING=n\nCONFIG_RCU_BOOST=n\nCONFIG_DEBUG_OBJECTS_RCU_HEAD=n\nCONFIG_RCU_EXPERT=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

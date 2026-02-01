@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "ce46bea7737e73658e084b56f01d6a080cc3e5015589e9eeb4e943c82cbd7cf2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/vsock/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n*.d\nvsock_test\nvsock_diag_test\nvsock_perf\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

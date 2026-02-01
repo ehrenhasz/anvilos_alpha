@@ -1,0 +1,9 @@
+{
+  "module_name": "mbslen.m4",
+  "hash_id": "c3e850b4bfe4f8f2ed5bdfdaef85198ab1c901544da76006d320a272724305bd",
+  "original_prompt": "Ingested from coreutils-9.4/m4/mbslen.m4",
+  "human_readable_source": "# mbslen.m4 serial 3\ndnl Copyright (C) 2010-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_MBSLEN],\n[\n  AC_REQUIRE([gl_STRING_H_DEFAULTS])\n  AC_CHECK_FUNCS_ONCE([mbslen])\n  if test $ac_cv_func_mbslen = yes; then\n    HAVE_MBSLEN=1\n  else\n    HAVE_MBSLEN=0\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1dd305dfe7052bd9afde2051a18cdba808be99d3c9bd595a0ee36e71a724fbe2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/rockchip/rkisp1/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nrockchip-isp1-y := rkisp1-capture.o \\\n\t\t   rkisp1-common.o \\\n\t\t   rkisp1-csi.o \\\n\t\t   rkisp1-dev.o \\\n\t\t   rkisp1-isp.o \\\n\t\t   rkisp1-resizer.o \\\n\t\t   rkisp1-stats.o \\\n\t\t   rkisp1-params.o\n\nrockchip-isp1-$(CONFIG_DEBUG_FS) += rkisp1-debug.o\n\nobj-$(CONFIG_VIDEO_ROCKCHIP_ISP1) += rockchip-isp1.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

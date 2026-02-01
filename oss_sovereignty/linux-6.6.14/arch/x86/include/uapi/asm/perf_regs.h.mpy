@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_regs.h",
+  "hash_id": "3b8198baf4b67207a0be971c63cc24ce3cf0036a8a576f88ea9f58fd25dc65ab",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/perf_regs.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PERF_REGS_H\n#define _ASM_X86_PERF_REGS_H\n\nenum perf_event_x86_regs {\n\tPERF_REG_X86_AX,\n\tPERF_REG_X86_BX,\n\tPERF_REG_X86_CX,\n\tPERF_REG_X86_DX,\n\tPERF_REG_X86_SI,\n\tPERF_REG_X86_DI,\n\tPERF_REG_X86_BP,\n\tPERF_REG_X86_SP,\n\tPERF_REG_X86_IP,\n\tPERF_REG_X86_FLAGS,\n\tPERF_REG_X86_CS,\n\tPERF_REG_X86_SS,\n\tPERF_REG_X86_DS,\n\tPERF_REG_X86_ES,\n\tPERF_REG_X86_FS,\n\tPERF_REG_X86_GS,\n\tPERF_REG_X86_R8,\n\tPERF_REG_X86_R9,\n\tPERF_REG_X86_R10,\n\tPERF_REG_X86_R11,\n\tPERF_REG_X86_R12,\n\tPERF_REG_X86_R13,\n\tPERF_REG_X86_R14,\n\tPERF_REG_X86_R15,\n\t \n\tPERF_REG_X86_32_MAX = PERF_REG_X86_GS + 1,\n\tPERF_REG_X86_64_MAX = PERF_REG_X86_R15 + 1,\n\n\t \n\tPERF_REG_X86_XMM0  = 32,\n\tPERF_REG_X86_XMM1  = 34,\n\tPERF_REG_X86_XMM2  = 36,\n\tPERF_REG_X86_XMM3  = 38,\n\tPERF_REG_X86_XMM4  = 40,\n\tPERF_REG_X86_XMM5  = 42,\n\tPERF_REG_X86_XMM6  = 44,\n\tPERF_REG_X86_XMM7  = 46,\n\tPERF_REG_X86_XMM8  = 48,\n\tPERF_REG_X86_XMM9  = 50,\n\tPERF_REG_X86_XMM10 = 52,\n\tPERF_REG_X86_XMM11 = 54,\n\tPERF_REG_X86_XMM12 = 56,\n\tPERF_REG_X86_XMM13 = 58,\n\tPERF_REG_X86_XMM14 = 60,\n\tPERF_REG_X86_XMM15 = 62,\n\n\t \n\tPERF_REG_X86_XMM_MAX = PERF_REG_X86_XMM15 + 2,\n};\n\n#define PERF_REG_EXTENDED_MASK\t(~((1ULL << PERF_REG_X86_XMM0) - 1))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

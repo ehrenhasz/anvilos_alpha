@@ -1,0 +1,9 @@
+{
+  "module_name": "numfmt.x",
+  "hash_id": "d9fe437cd26c64dd0ce461b2bcf0c2ca3dc41285e0b69dbb8f016892038df588",
+  "original_prompt": "Ingested from coreutils-9.4/man/numfmt.x",
+  "human_readable_source": "[NAME]\nnumfmt \\- Convert numbers from/to human-readable strings\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

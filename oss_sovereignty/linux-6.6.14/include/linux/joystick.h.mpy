@@ -1,0 +1,9 @@
+{
+  "module_name": "joystick.h",
+  "hash_id": "65718c99b046fca13b94f520333116073ecf030a08274b94fb89cdd5fb20b3fa",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/joystick.h",
+  "human_readable_source": " \n \n \n#ifndef _LINUX_JOYSTICK_H\n#define _LINUX_JOYSTICK_H\n\n#include <uapi/linux/joystick.h>\n\n#if BITS_PER_LONG == 64\n#define JS_DATA_SAVE_TYPE JS_DATA_SAVE_TYPE_64\n#elif BITS_PER_LONG == 32\n#define JS_DATA_SAVE_TYPE JS_DATA_SAVE_TYPE_32\n#else\n#error Unexpected BITS_PER_LONG\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

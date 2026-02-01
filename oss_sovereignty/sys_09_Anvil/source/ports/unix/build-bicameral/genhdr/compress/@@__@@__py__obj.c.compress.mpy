@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__obj.c.compress",
+  "hash_id": "e3636d14199a6186db15f1611fcb277df7b8a26e291783677e25ebf89c4d7c42",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__obj.c.compress",
+  "human_readable_source": "object '%s' isn't a tuple or list\nrequested length %d but object has length %d\n%q indices must be integers, not %s\n%q index out of range\nobject of type '%s' has no len()\n'%s' object doesn't support item deletion\n'%s' object isn't subscriptable\n'%s' object doesn't support item assignment\nobject with buffer protocol required\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

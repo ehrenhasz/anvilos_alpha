@@ -1,0 +1,9 @@
+{
+  "module_name": "bmc150_magn_spi.c",
+  "hash_id": "aa59d93af3e436d3e4d3a5a2ccfa13a40283b942329ec81364e736e8d5ee0242",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/magnetometer/bmc150_magn_spi.c",
+  "human_readable_source": "\n \n#include <linux/module.h>\n#include <linux/mod_devicetable.h>\n#include <linux/spi/spi.h>\n#include <linux/acpi.h>\n#include <linux/regmap.h>\n\n#include \"bmc150_magn.h\"\n\nstatic int bmc150_magn_spi_probe(struct spi_device *spi)\n{\n\tstruct regmap *regmap;\n\tconst struct spi_device_id *id = spi_get_device_id(spi);\n\n\tregmap = devm_regmap_init_spi(spi, &bmc150_magn_regmap_config);\n\tif (IS_ERR(regmap)) {\n\t\tdev_err(&spi->dev, \"Failed to register spi regmap: %pe\\n\",\n\t\t\tregmap);\n\t\treturn PTR_ERR(regmap);\n\t}\n\treturn bmc150_magn_probe(&spi->dev, regmap, spi->irq, id->name);\n}\n\nstatic void bmc150_magn_spi_remove(struct spi_device *spi)\n{\n\tbmc150_magn_remove(&spi->dev);\n}\n\nstatic const struct spi_device_id bmc150_magn_spi_id[] = {\n\t{\"bmc150_magn\", 0},\n\t{\"bmc156_magn\", 0},\n\t{\"bmm150_magn\", 0},\n\t{}\n};\nMODULE_DEVICE_TABLE(spi, bmc150_magn_spi_id);\n\nstatic const struct acpi_device_id bmc150_magn_acpi_match[] = {\n\t{\"BMC150B\", 0},\n\t{\"BMC156B\", 0},\n\t{\"BMM150B\", 0},\n\t{},\n};\nMODULE_DEVICE_TABLE(acpi, bmc150_magn_acpi_match);\n\nstatic struct spi_driver bmc150_magn_spi_driver = {\n\t.probe\t\t= bmc150_magn_spi_probe,\n\t.remove\t\t= bmc150_magn_spi_remove,\n\t.id_table\t= bmc150_magn_spi_id,\n\t.driver = {\n\t\t.acpi_match_table = ACPI_PTR(bmc150_magn_acpi_match),\n\t\t.name\t= \"bmc150_magn_spi\",\n\t},\n};\nmodule_spi_driver(bmc150_magn_spi_driver);\n\nMODULE_AUTHOR(\"Daniel Baluta <daniel.baluta@intel.com\");\nMODULE_DESCRIPTION(\"BMC150 magnetometer SPI driver\");\nMODULE_LICENSE(\"GPL v2\");\nMODULE_IMPORT_NS(IIO_BMC150_MAGN);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "i8237.c",
+  "hash_id": "530eb3f53402c17fc6bf07f1cd9dd66425a19a468bca058aca2c284a2a35062c",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/i8237.c",
+  "human_readable_source": "\n \n\n#include <linux/dmi.h>\n#include <linux/init.h>\n#include <linux/syscore_ops.h>\n\n#include <asm/dma.h>\n#include <asm/x86_init.h>\n\n \n\nstatic void i8237A_resume(void)\n{\n\tunsigned long flags;\n\tint i;\n\n\tflags = claim_dma_lock();\n\n\tdma_outb(0, DMA1_RESET_REG);\n\tdma_outb(0, DMA2_RESET_REG);\n\n\tfor (i = 0; i < 8; i++) {\n\t\tset_dma_addr(i, 0x000000);\n\t\t \n\t\tset_dma_count(i, 1);\n\t}\n\n\t \n\tenable_dma(4);\n\n\trelease_dma_lock(flags);\n}\n\nstatic struct syscore_ops i8237_syscore_ops = {\n\t.resume\t\t= i8237A_resume,\n};\n\nstatic int __init i8237A_init_ops(void)\n{\n\t \n\tif (dma_inb(DMA_PAGE_0) == 0xFF)\n\t\treturn -ENODEV;\n\n\t \n\tif (x86_pnpbios_disabled() && dmi_get_bios_year() >= 2017)\n\t\treturn -ENODEV;\n\n\tregister_syscore_ops(&i8237_syscore_ops);\n\treturn 0;\n}\ndevice_initcall(i8237A_init_ops);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

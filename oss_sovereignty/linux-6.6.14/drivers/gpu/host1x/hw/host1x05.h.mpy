@@ -1,0 +1,9 @@
+{
+  "module_name": "host1x05.h",
+  "hash_id": "fb947cc69d89947e09ac527195e4d92545c85470965634c2365bb9aeced4bfda",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/hw/host1x05.h",
+  "human_readable_source": " \n \n\n#ifndef HOST1X_HOST1X05_H\n#define HOST1X_HOST1X05_H\n\nstruct host1x;\n\nint host1x05_init(struct host1x *host);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

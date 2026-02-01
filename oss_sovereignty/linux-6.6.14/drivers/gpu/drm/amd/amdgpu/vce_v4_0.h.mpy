@@ -1,0 +1,9 @@
+{
+  "module_name": "vce_v4_0.h",
+  "hash_id": "c33464d9a266386415a18240d405b8d17db27f8fb475c07bbea2445206820026",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/vce_v4_0.h",
+  "human_readable_source": " \n\n#ifndef __VCE_V4_0_H__\n#define __VCE_V4_0_H__\n\nextern const struct amdgpu_ip_block_version vce_v4_0_ip_block;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

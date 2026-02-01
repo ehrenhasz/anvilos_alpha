@@ -1,0 +1,9 @@
+{
+  "module_name": "vfs.h",
+  "hash_id": "cc2036ce074e4a64ee6859130f68406f18e169107fdc9340775eddeacd566c3f",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/vfs.h",
+  "human_readable_source": " \n\n#ifndef _SPL_ZFS_H\n#define\t_SPL_ZFS_H\n\n#include <linux/mount.h>\n#include <linux/fs.h>\n#include <linux/dcache.h>\n#include <linux/statfs.h>\n#include <linux/xattr.h>\n#include <linux/security.h>\n#include <linux/seq_file.h>\n\n#define\tMAXFIDSZ\t64\n\ntypedef struct spl_fid {\n\tunion {\n\t\tlong fid_pad;\n\t\tstruct {\n\t\t\tushort_t len;\t\t \n\t\t\tchar data[MAXFIDSZ];\t \n\t\t} _fid;\n\t} un;\n} fid_t;\n\n#define\tfid_len\t\tun._fid.len\n#define\tfid_data\tun._fid.data\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

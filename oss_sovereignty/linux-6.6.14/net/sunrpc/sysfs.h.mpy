@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfs.h",
+  "hash_id": "49e6e244705b538d95a9892e1da887b1244695c8047b7a16d13871b3de392dd3",
+  "original_prompt": "Ingested from linux-6.6.14/net/sunrpc/sysfs.h",
+  "human_readable_source": "\n \n#ifndef __SUNRPC_SYSFS_H\n#define __SUNRPC_SYSFS_H\n\nstruct rpc_sysfs_xprt_switch {\n\tstruct kobject kobject;\n\tstruct net *net;\n\tstruct rpc_xprt_switch *xprt_switch;\n\tstruct rpc_xprt *xprt;\n};\n\nstruct rpc_sysfs_xprt {\n\tstruct kobject kobject;\n\tstruct rpc_xprt *xprt;\n\tstruct rpc_xprt_switch *xprt_switch;\n};\n\nint rpc_sysfs_init(void);\nvoid rpc_sysfs_exit(void);\n\nvoid rpc_sysfs_client_setup(struct rpc_clnt *clnt,\n\t\t\t    struct rpc_xprt_switch *xprt_switch,\n\t\t\t    struct net *net);\nvoid rpc_sysfs_client_destroy(struct rpc_clnt *clnt);\nvoid rpc_sysfs_xprt_switch_setup(struct rpc_xprt_switch *xprt_switch,\n\t\t\t\t struct rpc_xprt *xprt, gfp_t gfp_flags);\nvoid rpc_sysfs_xprt_switch_destroy(struct rpc_xprt_switch *xprt);\nvoid rpc_sysfs_xprt_setup(struct rpc_xprt_switch *xprt_switch,\n\t\t\t  struct rpc_xprt *xprt, gfp_t gfp_flags);\nvoid rpc_sysfs_xprt_destroy(struct rpc_xprt *xprt);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

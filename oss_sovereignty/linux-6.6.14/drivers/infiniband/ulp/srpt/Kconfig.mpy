@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "223abff81f8b60e9ddf5947ee4cb375574e3f41c9c7c90c4d7534e82560245b5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/ulp/srpt/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig INFINIBAND_SRPT\n\ttristate \"InfiniBand SCSI RDMA Protocol target support\"\n\tdepends on INFINIBAND && INFINIBAND_ADDR_TRANS && TARGET_CORE\n\thelp\n\n\t  Support for the SCSI RDMA Protocol (SRP) Target driver. The\n\t  SRP protocol is a protocol that allows an initiator to access\n\t  a block storage device on another host (target) over a network\n\t  that supports the RDMA protocol. Currently the RDMA protocol is\n\t  supported by InfiniBand and by iWarp network hardware. More\n\t  information about the SRP protocol can be found on the website\n\t  of the INCITS T10 technical committee (http://www.t10.org/).\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

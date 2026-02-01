@@ -1,0 +1,9 @@
+{
+  "module_name": "com9026.h",
+  "hash_id": "aef7132474da29e6c00e65c12b759436af63950a8aac24124cd6698c70c3da4f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/arcnet/com9026.h",
+  "human_readable_source": " \n#ifndef __COM9026_H\n#define __COM9026_H\n\n \n\n#define COM9026_REG_W_INTMASK\t0\t \n#define COM9026_REG_R_STATUS\t0\t \n#define COM9026_REG_W_COMMAND\t1\t \n#define COM9026_REG_RW_CONFIG\t2\t \n#define COM9026_REG_R_RESET\t8\t \n#define COM9026_REG_RW_MEMDATA\t12\t \n#define COM9026_REG_W_ADDR_LO\t14\t \n#define COM9026_REG_W_ADDR_HI\t15\n\n#define COM9026_REG_R_STATION\t1\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

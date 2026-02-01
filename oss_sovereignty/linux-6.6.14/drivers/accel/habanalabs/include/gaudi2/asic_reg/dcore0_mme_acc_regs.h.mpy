@@ -1,0 +1,9 @@
+{
+  "module_name": "dcore0_mme_acc_regs.h",
+  "hash_id": "1ce4db3ac19e2a3e903cd1e77d3f15bf662509490ff9176716152f8079c1282b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/gaudi2/asic_reg/dcore0_mme_acc_regs.h",
+  "human_readable_source": " \n\n \n\n#ifndef ASIC_REG_DCORE0_MME_ACC_REGS_H_\n#define ASIC_REG_DCORE0_MME_ACC_REGS_H_\n\n \n\n#define mmDCORE0_MME_ACC_WBC0_AXI 0x40F8000\n\n#define mmDCORE0_MME_ACC_WBC1_AXI 0x40F8004\n\n#define mmDCORE0_MME_ACC_WBC0_RL 0x40F8008\n\n#define mmDCORE0_MME_ACC_WBC1_RL 0x40F800C\n\n#define mmDCORE0_MME_ACC_WBC_STALL 0x40F8010\n\n#define mmDCORE0_MME_ACC_AWCACHE 0x40F8014\n\n#define mmDCORE0_MME_ACC_AWPROT 0x40F8018\n\n#define mmDCORE0_MME_ACC_AP_LFSR_POLY 0x40F801C\n\n#define mmDCORE0_MME_ACC_AP_LFSR_SEED_WDATA 0x40F8020\n\n#define mmDCORE0_MME_ACC_AP_LFSR_SEED_SEL 0x40F8024\n\n#define mmDCORE0_MME_ACC_AP_LFSR_SEED_RDATA 0x40F8028\n\n#define mmDCORE0_MME_ACC_AP_LFSR_CLOSE_CGATE_DLY 0x40F802C\n\n#define mmDCORE0_MME_ACC_WBC_SRC_BP 0x40F8030\n\n#define mmDCORE0_MME_ACC_CLK_GATE_EN 0x40F8034\n\n#define mmDCORE0_MME_ACC_WBC_INFLIGHTS 0x40F8038\n\n#define mmDCORE0_MME_ACC_HBW_CLK_ENABLER_DIS 0x40F803C\n\n#define mmDCORE0_MME_ACC_E2E_CRDT_TOP0 0x40F8040\n\n#define mmDCORE0_MME_ACC_E2E_CRDT_TOP1 0x40F8044\n\n#define mmDCORE0_MME_ACC_INTR_CAUSE 0x40F8048\n\n#define mmDCORE0_MME_ACC_INTR_MASK 0x40F804C\n\n#define mmDCORE0_MME_ACC_INTR_CLEAR 0x40F8050\n\n#define mmDCORE0_MME_ACC_WR_AXI_AGG_COUT0 0x40F8054\n\n#define mmDCORE0_MME_ACC_WR_AXI_AGG_COUT1 0x40F8058\n\n#define mmDCORE0_MME_ACC_BIST 0x40F805C\n\n#define mmDCORE0_MME_ACC_WR_AXI_AGG_2P_BVALID 0x40F8060\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

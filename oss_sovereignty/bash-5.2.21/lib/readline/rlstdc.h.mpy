@@ -1,0 +1,9 @@
+{
+  "module_name": "rlstdc.h",
+  "hash_id": "813df245e59fbb3b58b8a7aa0702502c6a6c2bd8fcd9e8554ccd51a84439fbee",
+  "original_prompt": "Ingested from bash-5.2.21/lib/readline/rlstdc.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_RL_STDC_H_)\n#define _RL_STDC_H_\n\n \n\n \n\n#if !defined (PARAMS)\n#  if defined (__STDC__) || defined (__GNUC__) || defined (__cplusplus)\n#    define PARAMS(protos) protos\n#  else\n#    define PARAMS(protos) ()\n#  endif\n#endif\n\n#ifndef __attribute__\n#  if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 8)\n#    define __attribute__(x)\n#  endif\n#endif\n\n \n#if defined (__STDC__) && defined (HAVE_STDARG_H)\n#  define PREFER_STDARG\n#  define USE_VARARGS\n#else\n#  if defined (HAVE_VARARGS_H)\n#    define PREFER_VARARGS\n#    define USE_VARARGS\n#  endif\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

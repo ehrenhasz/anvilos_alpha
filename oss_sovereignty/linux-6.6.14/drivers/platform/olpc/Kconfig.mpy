@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e697c05940201a4e0bf81342764b266eee6c4231909c0c7ee476054fa935e033",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/olpc/Kconfig",
+  "human_readable_source": "config OLPC_EC\n\tselect REGULATOR\n\tbool\n\nmenuconfig OLPC_XO175\n\tbool \"Platform support for OLPC XO 1.75 hardware\"\n\tdepends on ARCH_MMP || COMPILE_TEST\n\thelp\n\t  Say Y here to get to see options for the ARM-based OLPC platform.\n\t  This option alone does not add any kernel code.\n\n\t  Unless you have an OLPC XO laptop, you will want to say N.\n\nif OLPC_XO175\n\nconfig OLPC_XO175_EC\n\ttristate \"OLPC XO 1.75 Embedded Controller\"\n\tdepends on SPI_SLAVE\n\tdepends on INPUT\n\tdepends on POWER_SUPPLY\n\tselect OLPC_EC\n\thelp\n\t  Include support for the OLPC XO Embedded Controller (EC). The EC\n\t  provides various platform services, including support for the power,\n\t  button, restart, shutdown and battery charging status.\n\n\t  Unless you have an OLPC XO laptop, you will want to say N.\n\nendif # OLPC_XO175\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

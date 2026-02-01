@@ -1,0 +1,9 @@
+{
+  "module_name": "meson-sm1-power.h",
+  "hash_id": "409c89dbf9bca64a13bacfe3600a50088aedef7629fff96ed5015a3ca46fef95",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/meson-sm1-power.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_MESON_SM1_POWER_H\n#define _DT_BINDINGS_MESON_SM1_POWER_H\n\n#define PWRC_SM1_VPU_ID\t\t0\n#define PWRC_SM1_NNA_ID\t\t1\n#define PWRC_SM1_USB_ID\t\t2\n#define PWRC_SM1_PCIE_ID\t3\n#define PWRC_SM1_GE2D_ID\t4\n#define PWRC_SM1_AUDIO_ID\t5\n#define PWRC_SM1_ETH_ID\t\t6\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

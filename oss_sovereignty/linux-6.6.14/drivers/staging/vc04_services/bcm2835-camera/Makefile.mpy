@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4b617f6b3237c2436b86312156ecd11176891df35460ecac9fd511f4e2d82a96",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vc04_services/bcm2835-camera/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nbcm2835-v4l2-$(CONFIG_VIDEO_BCM2835) := \\\n\tbcm2835-camera.o \\\n\tcontrols.o\n\nobj-$(CONFIG_VIDEO_BCM2835) += bcm2835-v4l2.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

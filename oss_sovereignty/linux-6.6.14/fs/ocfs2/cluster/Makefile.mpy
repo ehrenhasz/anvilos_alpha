@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5559d7111e43fcc2b338278b23b68c70dc1ea5d4109c3903cf531897a404a279",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/cluster/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_OCFS2_FS) += ocfs2_nodemanager.o\n\nocfs2_nodemanager-objs := heartbeat.o masklog.o sys.o nodemanager.o \\\n\tquorum.o tcp.o netdebug.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

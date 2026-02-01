@@ -1,0 +1,9 @@
+{
+  "module_name": "export-to-postgresql-report",
+  "hash_id": "b1e5d7b5b537c288069239602d8d59f46e41349305d335514eb488ac921ff7e6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/export-to-postgresql-report",
+  "human_readable_source": "#!/bin/bash\n# description: export perf data to a postgresql database\n# args: [database name] [columns] [calls]\nn_args=0\nfor i in \"$@\"\ndo\n    if expr match \"$i\" \"-\" > /dev/null ; then\n\tbreak\n    fi\n    n_args=$(( $n_args + 1 ))\ndone\nif [ \"$n_args\" -gt 3 ] ; then\n    echo \"usage: export-to-postgresql-report [database name] [columns] [calls]\"\n    exit\nfi\nif [ \"$n_args\" -gt 2 ] ; then\n    dbname=$1\n    columns=$2\n    calls=$3\n    shift 3\nelif [ \"$n_args\" -gt 1 ] ; then\n    dbname=$1\n    columns=$2\n    shift 2\nelif [ \"$n_args\" -gt 0 ] ; then\n    dbname=$1\n    shift\nfi\nperf script $@ -s \"$PERF_EXEC_PATH\"/scripts/python/export-to-postgresql.py $dbname $columns $calls\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

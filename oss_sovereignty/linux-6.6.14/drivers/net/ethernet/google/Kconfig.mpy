@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e4bc4e001c8e5e0ea8ac4e435260c2f11155f2bea33885ad1270f3bdfa4b6553",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/google/Kconfig",
+  "human_readable_source": "#\n# Google network device configuration\n#\n\nconfig NET_VENDOR_GOOGLE\n\tbool \"Google Devices\"\n\tdefault y\n\thelp\n\t  If you have a network (Ethernet) device belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Google devices. If you say Y, you will be asked\n\t  for your specific device in the following questions.\n\nif NET_VENDOR_GOOGLE\n\nconfig GVE\n\ttristate \"Google Virtual NIC (gVNIC) support\"\n\tdepends on (PCI_MSI && (X86 || CPU_LITTLE_ENDIAN))\n\thelp\n\t  This driver supports Google Virtual NIC (gVNIC)\"\n\n\t  To compile this driver as a module, choose M here.\n\t  The module will be called gve.\n\nendif #NET_VENDOR_GOOGLE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

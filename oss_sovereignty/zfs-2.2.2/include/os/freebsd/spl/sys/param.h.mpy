@@ -1,0 +1,9 @@
+{
+  "module_name": "param.h",
+  "hash_id": "d5e36a782bf9da4c5f264d2be73521abc902be3fd80437c02bdcd6c1d102d032",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/param.h",
+  "human_readable_source": " \n\n#ifndef _COMPAT_OPENSOLARIS_SYS_PARAM_H_\n#define\t_COMPAT_OPENSOLARIS_SYS_PARAM_H_\n\n#include <sys/types.h>\n#include_next <sys/param.h>\n#define\tPAGESIZE\tPAGE_SIZE\n#define\tptob(x)\t\t((uint64_t)(x) << PAGE_SHIFT)\n#ifdef _KERNEL\n#include <sys/systm.h>\n#include <sys/libkern.h>\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

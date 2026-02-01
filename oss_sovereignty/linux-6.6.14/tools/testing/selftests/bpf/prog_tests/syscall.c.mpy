@@ -1,0 +1,9 @@
+{
+  "module_name": "syscall.c",
+  "hash_id": "655b2ff1bb06d4574c0ac39961d14acd48513e9b456329ba460d801ac3fe9c36",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/syscall.c",
+  "human_readable_source": "\n \n#include <test_progs.h>\n#include \"syscall.skel.h\"\n\nstruct args {\n\t__u64 log_buf;\n\t__u32 log_size;\n\tint max_entries;\n\tint map_fd;\n\tint prog_fd;\n\tint btf_fd;\n};\n\nvoid test_syscall(void)\n{\n\tstatic char verifier_log[8192];\n\tstruct args ctx = {\n\t\t.max_entries = 1024,\n\t\t.log_buf = (uintptr_t) verifier_log,\n\t\t.log_size = sizeof(verifier_log),\n\t};\n\tLIBBPF_OPTS(bpf_test_run_opts, tattr,\n\t\t.ctx_in = &ctx,\n\t\t.ctx_size_in = sizeof(ctx),\n\t);\n\tstruct syscall *skel = NULL;\n\t__u64 key = 12, value = 0;\n\tint err, prog_fd;\n\n\tskel = syscall__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"skel_load\"))\n\t\tgoto cleanup;\n\n\tprog_fd = bpf_program__fd(skel->progs.bpf_prog);\n\terr = bpf_prog_test_run_opts(prog_fd, &tattr);\n\tASSERT_EQ(err, 0, \"err\");\n\tASSERT_EQ(tattr.retval, 1, \"retval\");\n\tASSERT_GT(ctx.map_fd, 0, \"ctx.map_fd\");\n\tASSERT_GT(ctx.prog_fd, 0, \"ctx.prog_fd\");\n\tASSERT_OK(memcmp(verifier_log, \"processed\", sizeof(\"processed\") - 1),\n\t\t  \"verifier_log\");\n\n\terr = bpf_map_lookup_elem(ctx.map_fd, &key, &value);\n\tASSERT_EQ(err, 0, \"map_lookup\");\n\tASSERT_EQ(value, 34, \"map lookup value\");\ncleanup:\n\tsyscall__destroy(skel);\n\tif (ctx.prog_fd > 0)\n\t\tclose(ctx.prog_fd);\n\tif (ctx.map_fd > 0)\n\t\tclose(ctx.map_fd);\n\tif (ctx.btf_fd > 0)\n\t\tclose(ctx.btf_fd);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

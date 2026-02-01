@@ -1,0 +1,9 @@
+{
+  "module_name": "heartbeat.h",
+  "hash_id": "9f8e3de216401f4847ff2d1b04e17be7e63f622ea1a7eba74ad1e929c8586b3c",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/heartbeat.h",
+  "human_readable_source": " \n \n\n#ifndef OCFS2_HEARTBEAT_H\n#define OCFS2_HEARTBEAT_H\n\nvoid ocfs2_init_node_maps(struct ocfs2_super *osb);\n\nvoid ocfs2_do_node_down(int node_num, void *data);\n\n \nvoid ocfs2_node_map_set_bit(struct ocfs2_super *osb,\n\t\t\t    struct ocfs2_node_map *map,\n\t\t\t    int bit);\nvoid ocfs2_node_map_clear_bit(struct ocfs2_super *osb,\n\t\t\t      struct ocfs2_node_map *map,\n\t\t\t      int bit);\nint ocfs2_node_map_test_bit(struct ocfs2_super *osb,\n\t\t\t    struct ocfs2_node_map *map,\n\t\t\t    int bit);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

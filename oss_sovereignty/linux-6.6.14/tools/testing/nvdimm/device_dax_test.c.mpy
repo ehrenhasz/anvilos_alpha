@@ -1,0 +1,9 @@
+{
+  "module_name": "device_dax_test.c",
+  "hash_id": "7cb7038a9461a26a3160fe30da56f8dd6a662679a20ff63e92830c0644617517",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/nvdimm/device_dax_test.c",
+  "human_readable_source": "\n\n\n#include <linux/module.h>\n#include <linux/printk.h>\n#include \"watermark.h\"\n\nnfit_test_watermark(device_dax);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

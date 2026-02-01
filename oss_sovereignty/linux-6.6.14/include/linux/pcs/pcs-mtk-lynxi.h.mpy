@@ -1,0 +1,9 @@
+{
+  "module_name": "pcs-mtk-lynxi.h",
+  "hash_id": "e9ee92131517d93f3afb6775d1c1692a913c27737b0b451ddb92f3649e7620b3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pcs/pcs-mtk-lynxi.h",
+  "human_readable_source": " \n#ifndef __LINUX_PCS_MTK_LYNXI_H\n#define __LINUX_PCS_MTK_LYNXI_H\n\n#include <linux/phylink.h>\n#include <linux/regmap.h>\n\n#define MTK_SGMII_FLAG_PN_SWAP BIT(0)\nstruct phylink_pcs *mtk_pcs_lynxi_create(struct device *dev,\n\t\t\t\t\t struct regmap *regmap,\n\t\t\t\t\t u32 ana_rgc3, u32 flags);\nvoid mtk_pcs_lynxi_destroy(struct phylink_pcs *pcs);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

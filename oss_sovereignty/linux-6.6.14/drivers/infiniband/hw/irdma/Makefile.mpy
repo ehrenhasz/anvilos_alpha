@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9523fc1e06242be9dac35efef082d7217b5fa54808626e1d3b8b97e3506c01b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/irdma/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB\n# Copyright (c) 2019, Intel Corporation.\n\n#\n# Makefile for the Intel(R) Ethernet Connection RDMA Linux Driver\n#\n\nobj-$(CONFIG_INFINIBAND_IRDMA) += irdma.o\n\nirdma-objs := cm.o        \\\n              ctrl.o      \\\n              hmc.o       \\\n              hw.o        \\\n              i40iw_hw.o  \\\n              i40iw_if.o  \\\n              icrdma_hw.o \\\n              main.o      \\\n              pble.o      \\\n              puda.o      \\\n              trace.o     \\\n              uda.o       \\\n              uk.o        \\\n              utils.o     \\\n              verbs.o     \\\n              ws.o        \\\n\nCFLAGS_trace.o = -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

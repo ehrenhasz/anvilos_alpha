@@ -1,0 +1,9 @@
+{
+  "module_name": "tda18271c2dd.h",
+  "hash_id": "e493c46ccf28b2ad3a47d408caa9a251b6a6c99b3f7a0d229ae1bfa3123beb28",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/tda18271c2dd.h",
+  "human_readable_source": " \n#ifndef _TDA18271C2DD_H_\n#define _TDA18271C2DD_H_\n\n#if IS_REACHABLE(CONFIG_DVB_TDA18271C2DD)\nstruct dvb_frontend *tda18271c2dd_attach(struct dvb_frontend *fe,\n\t\t\t\t\t struct i2c_adapter *i2c, u8 adr);\n#else\nstatic inline struct dvb_frontend *tda18271c2dd_attach(struct dvb_frontend *fe,\n\t\t\t\t\t struct i2c_adapter *i2c, u8 adr)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

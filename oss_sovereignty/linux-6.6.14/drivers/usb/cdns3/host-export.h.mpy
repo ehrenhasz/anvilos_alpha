@@ -1,0 +1,9 @@
+{
+  "module_name": "host-export.h",
+  "hash_id": "fdc078977c0b8664c63ece0a29601ceebc0974abe65af70c5d6d2216e404555a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/cdns3/host-export.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_CDNS3_HOST_EXPORT\n#define __LINUX_CDNS3_HOST_EXPORT\n\n#if IS_ENABLED(CONFIG_USB_CDNS_HOST)\n\nint cdns_host_init(struct cdns *cdns);\n\n#else\n\nstatic inline int cdns_host_init(struct cdns *cdns)\n{\n\treturn -ENXIO;\n}\n\nstatic inline void cdns_host_exit(struct cdns *cdns) { }\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

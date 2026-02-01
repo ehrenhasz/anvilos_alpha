@@ -1,0 +1,9 @@
+{
+  "module_name": "rif_mac_profile_scale.sh",
+  "hash_id": "73a25585887ac0c8f4a6f8702d116c641f9771e8c1e73604b8a8a73e614cb8fc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/spectrum/rif_mac_profile_scale.sh",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsource ../rif_mac_profile_scale.sh\n\nrif_mac_profile_get_target()\n{\n\tlocal should_fail=$1\n\tlocal target\n\n\ttarget=$(devlink_resource_size_get rif_mac_profiles)\n\n\tif ((! should_fail)); then\n\t\techo $target\n\telse\n\t\techo $((target + 1))\n\tfi\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ngbe_mdio.h",
+  "hash_id": "da53ee595951d00cbb3a8c85d5bf75263f3502ba7b6855797d3fa7ebfa7cde3a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/wangxun/ngbe/ngbe_mdio.h",
+  "human_readable_source": " \n \n\n#ifndef _NGBE_MDIO_H_\n#define _NGBE_MDIO_H_\n\nint ngbe_phy_connect(struct wx *wx);\nint ngbe_mdio_init(struct wx *wx);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

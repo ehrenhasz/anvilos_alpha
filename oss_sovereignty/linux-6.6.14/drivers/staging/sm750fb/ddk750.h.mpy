@@ -1,0 +1,9 @@
+{
+  "module_name": "ddk750.h",
+  "hash_id": "b9aa362e9ecef2419d47048d4ca5b779ca3f35cf3baac5d23bddf2d0084fcbc4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/sm750fb/ddk750.h",
+  "human_readable_source": " \n \n\n#ifndef DDK750_H__\n#define DDK750_H__\n\n#include \"ddk750_reg.h\"\n#include \"ddk750_mode.h\"\n#include \"ddk750_chip.h\"\n#include \"ddk750_display.h\"\n#include \"ddk750_power.h\"\n#ifdef USE_HW_I2C\n#include \"ddk750_hwi2c.h\"\n#endif\n#include \"ddk750_swi2c.h\"\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

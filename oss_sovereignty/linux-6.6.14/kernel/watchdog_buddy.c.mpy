@@ -1,0 +1,9 @@
+{
+  "module_name": "watchdog_buddy.c",
+  "hash_id": "ce1ae927a2a004cd37c0b7fa674f2e62156607223f19e66ff566f6aa6bd55e98",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/watchdog_buddy.c",
+  "human_readable_source": "\n\n#include <linux/cpu.h>\n#include <linux/cpumask.h>\n#include <linux/kernel.h>\n#include <linux/nmi.h>\n#include <linux/percpu-defs.h>\n\nstatic cpumask_t __read_mostly watchdog_cpus;\n\nstatic unsigned int watchdog_next_cpu(unsigned int cpu)\n{\n\tunsigned int next_cpu;\n\n\tnext_cpu = cpumask_next(cpu, &watchdog_cpus);\n\tif (next_cpu >= nr_cpu_ids)\n\t\tnext_cpu = cpumask_first(&watchdog_cpus);\n\n\tif (next_cpu == cpu)\n\t\treturn nr_cpu_ids;\n\n\treturn next_cpu;\n}\n\nint __init watchdog_hardlockup_probe(void)\n{\n\treturn 0;\n}\n\nvoid watchdog_hardlockup_enable(unsigned int cpu)\n{\n\tunsigned int next_cpu;\n\n\t \n\twatchdog_hardlockup_touch_cpu(cpu);\n\n\t \n\tnext_cpu = watchdog_next_cpu(cpu);\n\tif (next_cpu < nr_cpu_ids)\n\t\twatchdog_hardlockup_touch_cpu(next_cpu);\n\n\t \n\tsmp_wmb();\n\n\tcpumask_set_cpu(cpu, &watchdog_cpus);\n}\n\nvoid watchdog_hardlockup_disable(unsigned int cpu)\n{\n\tunsigned int next_cpu = watchdog_next_cpu(cpu);\n\n\t \n\tif (next_cpu < nr_cpu_ids)\n\t\twatchdog_hardlockup_touch_cpu(next_cpu);\n\n\t \n\tsmp_wmb();\n\n\tcpumask_clear_cpu(cpu, &watchdog_cpus);\n}\n\nvoid watchdog_buddy_check_hardlockup(int hrtimer_interrupts)\n{\n\tunsigned int next_cpu;\n\n\t \n\tif (hrtimer_interrupts % 3 != 0)\n\t\treturn;\n\n\t \n\tnext_cpu = watchdog_next_cpu(smp_processor_id());\n\tif (next_cpu >= nr_cpu_ids)\n\t\treturn;\n\n\t \n\tsmp_rmb();\n\n\twatchdog_hardlockup_check(next_cpu, NULL);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

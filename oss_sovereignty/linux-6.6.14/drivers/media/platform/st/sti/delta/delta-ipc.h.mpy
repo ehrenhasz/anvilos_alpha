@@ -1,0 +1,9 @@
+{
+  "module_name": "delta-ipc.h",
+  "hash_id": "4b1e43b794254eb3aaa3332fb8d74230fc7da3710c43158ce90f8f53832099e6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/delta/delta-ipc.h",
+  "human_readable_source": " \n \n\n#ifndef DELTA_IPC_H\n#define DELTA_IPC_H\n\nint delta_ipc_init(struct delta_dev *delta);\nvoid delta_ipc_exit(struct delta_dev *delta);\n\n \n\nint delta_ipc_open(struct delta_ctx *ctx, const char *name,\n\t\t   struct delta_ipc_param *param, u32 ipc_buf_size,\n\t\t   struct delta_buf **ipc_buf, void **hdl);\n\n \nint delta_ipc_set_stream(void *hdl, struct delta_ipc_param *param);\n\n \nint delta_ipc_decode(void *hdl, struct delta_ipc_param *param,\n\t\t     struct delta_ipc_param *status);\n\n \nvoid delta_ipc_close(void *hdl);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

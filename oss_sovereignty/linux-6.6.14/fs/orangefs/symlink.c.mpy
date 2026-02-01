@@ -1,0 +1,9 @@
+{
+  "module_name": "symlink.c",
+  "hash_id": "ef0b5e3a6867fa28a1cbaa9c22034bd329f92904c8444c954ece8fe635ced5b8",
+  "original_prompt": "Ingested from linux-6.6.14/fs/orangefs/symlink.c",
+  "human_readable_source": "\n \n\n#include \"protocol.h\"\n#include \"orangefs-kernel.h\"\n#include \"orangefs-bufmap.h\"\n\nconst struct inode_operations orangefs_symlink_inode_operations = {\n\t.get_link = simple_get_link,\n\t.setattr = orangefs_setattr,\n\t.getattr = orangefs_getattr,\n\t.listxattr = orangefs_listxattr,\n\t.permission = orangefs_permission,\n\t.update_time = orangefs_update_time,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

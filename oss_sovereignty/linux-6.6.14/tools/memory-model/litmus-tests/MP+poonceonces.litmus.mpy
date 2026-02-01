@@ -1,0 +1,9 @@
+{
+  "module_name": "MP+poonceonces.litmus",
+  "hash_id": "15f94aa6220215d31f238a9f9713aea53a396186f17be7a3a0f7ed8ba4724456",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/MP+poonceonces.litmus",
+  "human_readable_source": "C MP+poonceonces\n\n(*\n * Result: Sometimes\n *\n * Can the counter-intuitive message-passing outcome be prevented with\n * no ordering at all?\n *)\n\n{}\n\nP0(int *buf, int *flag) // Producer\n{\n\tWRITE_ONCE(*buf, 1);\n\tWRITE_ONCE(*flag, 1);\n}\n\nP1(int *buf, int *flag) // Consumer\n{\n\tint r0;\n\tint r1;\n\n\tr0 = READ_ONCE(*flag);\n\tr1 = READ_ONCE(*buf);\n}\n\nexists (1:r0=1 /\\ 1:r1=0) (* Bad outcome. *)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

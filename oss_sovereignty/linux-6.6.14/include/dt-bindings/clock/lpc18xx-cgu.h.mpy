@@ -1,0 +1,9 @@
+{
+  "module_name": "lpc18xx-cgu.h",
+  "hash_id": "ce69bac821f729f29ea823d31baf693927983d0a2c66ac594c6ac6eda7994fd0",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/lpc18xx-cgu.h",
+  "human_readable_source": " \n\n \n#define BASE_SAFE_CLK\t\t0\n#define BASE_USB0_CLK\t\t1\n#define BASE_PERIPH_CLK\t\t2\n#define BASE_USB1_CLK\t\t3\n#define BASE_CPU_CLK\t\t4\n#define BASE_SPIFI_CLK\t\t5\n#define BASE_SPI_CLK\t\t6\n#define BASE_PHY_RX_CLK\t\t7\n#define BASE_PHY_TX_CLK\t\t8\n#define BASE_APB1_CLK\t\t9\n#define BASE_APB3_CLK\t\t10\n#define BASE_LCD_CLK\t\t11\n#define BASE_ADCHS_CLK\t\t12\n#define BASE_SDIO_CLK\t\t13\n#define BASE_SSP0_CLK\t\t14\n#define BASE_SSP1_CLK\t\t15\n#define BASE_UART0_CLK\t\t16\n#define BASE_UART1_CLK\t\t17\n#define BASE_UART2_CLK\t\t18\n#define BASE_UART3_CLK\t\t19\n#define BASE_OUT_CLK\t\t20\n#define BASE_RES1_CLK\t\t21\n#define BASE_RES2_CLK\t\t22\n#define BASE_RES3_CLK\t\t23\n#define BASE_RES4_CLK\t\t24\n#define BASE_AUDIO_CLK\t\t25\n#define BASE_CGU_OUT0_CLK\t26\n#define BASE_CGU_OUT1_CLK\t27\n#define BASE_CLK_MAX\t\t(BASE_CGU_OUT1_CLK + 1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

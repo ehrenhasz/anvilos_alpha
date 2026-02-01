@@ -1,0 +1,9 @@
+{
+  "module_name": "mmc_hsq.h",
+  "hash_id": "4103f1eb691cccc05ae12e0356e27929db7a57efb9fe092a5d5b5ed8adb93670",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/host/mmc_hsq.h",
+  "human_readable_source": " \n#ifndef LINUX_MMC_HSQ_H\n#define LINUX_MMC_HSQ_H\n\n#define HSQ_NUM_SLOTS\t64\n#define HSQ_INVALID_TAG\tHSQ_NUM_SLOTS\n\nstruct hsq_slot {\n\tstruct mmc_request *mrq;\n};\n\nstruct mmc_hsq {\n\tstruct mmc_host *mmc;\n\tstruct mmc_request *mrq;\n\twait_queue_head_t wait_queue;\n\tstruct hsq_slot *slot;\n\tspinlock_t lock;\n\tstruct work_struct retry_work;\n\n\tint next_tag;\n\tint num_slots;\n\tint qcnt;\n\tint tail_tag;\n\tint tag_slot[HSQ_NUM_SLOTS];\n\n\tbool enabled;\n\tbool waiting_for_idle;\n\tbool recovery_halt;\n};\n\nint mmc_hsq_init(struct mmc_hsq *hsq, struct mmc_host *mmc);\nvoid mmc_hsq_suspend(struct mmc_host *mmc);\nint mmc_hsq_resume(struct mmc_host *mmc);\nbool mmc_hsq_finalize_request(struct mmc_host *mmc, struct mmc_request *mrq);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

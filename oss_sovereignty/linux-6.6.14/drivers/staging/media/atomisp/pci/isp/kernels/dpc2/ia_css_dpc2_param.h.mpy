@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_dpc2_param.h",
+  "hash_id": "f141631aaee1222f713cf75682d872d958e3496f2dab133205e71b420fb2c5d5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/dpc2/ia_css_dpc2_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_DPC2_PARAM_H\n#define __IA_CSS_DPC2_PARAM_H\n\n#include \"type_support.h\"\n#include \"vmem.h\"  \n\n \n#define NUM_PLANES\t\t4\n\n \n#define MAX_FRAME_SIMDWIDTH\t30\n\n \n#define DPC2_STATE_INPUT_BUFFER_HEIGHT\t(3 * NUM_PLANES)\n \n#define DPC2_STATE_INPUT_BUFFER_WIDTH\tCEIL_DIV(MAX_FRAME_SIMDWIDTH, 2)\n\n \n#define DPC2_STATE_LOCAL_DEVIATION_BUFFER_HEIGHT\t(1 * NUM_PLANES)\n \n#define DPC2_STATE_LOCAL_DEVIATION_BUFFER_WIDTH\t\tCEIL_DIV(MAX_FRAME_SIMDWIDTH, 2)\n\n \n#define DPC2_STATE_SECOND_MINMAX_BUFFER_HEIGHT\t1\n#define DPC2_STATE_SECOND_MINMAX_BUFFER_WIDTH\tMAX_FRAME_SIMDWIDTH\n\nstruct ia_css_isp_dpc2_params {\n\ts32 metric1;\n\ts32 metric2;\n\ts32 metric3;\n\ts32 wb_gain_gr;\n\ts32 wb_gain_r;\n\ts32 wb_gain_b;\n\ts32 wb_gain_gb;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

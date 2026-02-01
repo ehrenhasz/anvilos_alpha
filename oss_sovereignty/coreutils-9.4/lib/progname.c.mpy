@@ -1,0 +1,9 @@
+{
+  "module_name": "progname.c",
+  "hash_id": "42012282016358d6ad9c262907a525a0be4f3166743c20de3c6d459f6c1aa0cc",
+  "original_prompt": "Ingested from coreutils-9.4/lib/progname.c",
+  "human_readable_source": " \n#undef ENABLE_RELOCATABLE  \n#include \"progname.h\"\n\n#include <errno.h>  \n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\n\n \nconst char *program_name = NULL;\n\n \nvoid\nset_program_name (const char *argv0)\n{\n   \n  const char *slash;\n  const char *base;\n\n   \n  if (argv0 == NULL)\n    {\n       \n      fputs (\"A NULL argv[0] was passed through an exec system call.\\n\",\n             stderr);\n      abort ();\n    }\n\n  slash = strrchr (argv0, '/');\n  base = (slash != NULL ? slash + 1 : argv0);\n  if (base - argv0 >= 7 && strncmp (base - 7, \"/.libs/\", 7) == 0)\n    {\n      argv0 = base;\n      if (strncmp (base, \"lt-\", 3) == 0)\n        {\n          argv0 = base + 3;\n           \n#if HAVE_DECL_PROGRAM_INVOCATION_SHORT_NAME\n          program_invocation_short_name = (char *) argv0;\n#endif\n        }\n    }\n\n   \n\n  program_name = argv0;\n\n   \n#if HAVE_DECL_PROGRAM_INVOCATION_NAME\n  program_invocation_name = (char *) argv0;\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

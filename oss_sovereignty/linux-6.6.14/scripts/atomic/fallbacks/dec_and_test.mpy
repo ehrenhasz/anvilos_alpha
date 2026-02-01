@@ -1,0 +1,9 @@
+{
+  "module_name": "dec_and_test",
+  "hash_id": "6670c0cd7f1a3c72aeb914928bbaea4e29da1e52ad35683da87927006590b407",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/fallbacks/dec_and_test",
+  "human_readable_source": "cat <<EOF\n\treturn raw_${atomic}_dec_return(v) == 0;\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

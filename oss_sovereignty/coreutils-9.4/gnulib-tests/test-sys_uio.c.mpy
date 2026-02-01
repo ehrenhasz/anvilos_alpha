@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sys_uio.c",
+  "hash_id": "7f328949c74733afa6fd4267af718b17aa012fde47251346df3d85d0e4f24ce5",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sys_uio.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/uio.h>\n\n \nsize_t a;\nssize_t b;\nstruct iovec c;\n\nint\nmain (void)\n{\n  return a + b + !!c.iov_base + c.iov_len;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

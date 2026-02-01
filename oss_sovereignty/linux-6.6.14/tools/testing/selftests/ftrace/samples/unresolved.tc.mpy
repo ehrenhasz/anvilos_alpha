@@ -1,0 +1,9 @@
+{
+  "module_name": "unresolved.tc",
+  "hash_id": "a88ca16e1d4fe546a9c02fa0eb536092f7ab12925be256d14769c7560f671371",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/samples/unresolved.tc",
+  "human_readable_source": "#!/bin/sh\n# description: unresolved-case example\ntrap exit_unresolved INT\nkill -INT $PID\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

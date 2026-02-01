@@ -1,0 +1,9 @@
+{
+  "module_name": "dw-hdma-v0-debugfs.h",
+  "hash_id": "6a3e6dd8b3cdc85c143bd4793c0db1294d92be919b6ff71a89302854c107b68e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/dw-edma/dw-hdma-v0-debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef _DW_HDMA_V0_DEBUG_FS_H\n#define _DW_HDMA_V0_DEBUG_FS_H\n\n#include <linux/dma/edma.h>\n\n#ifdef CONFIG_DEBUG_FS\nvoid dw_hdma_v0_debugfs_on(struct dw_edma *dw);\n#else\nstatic inline void dw_hdma_v0_debugfs_on(struct dw_edma *dw)\n{\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

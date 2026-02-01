@@ -1,0 +1,9 @@
+{
+  "module_name": "otx2_devlink.h",
+  "hash_id": "efedbd6a409aa6d0139a2cab0674b60f1c53ac96acf257f3fbd2e9ea44372ddc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/octeontx2/nic/otx2_devlink.h",
+  "human_readable_source": " \n \n\n#ifndef\tOTX2_DEVLINK_H\n#define\tOTX2_DEVLINK_H\n\nstruct otx2_devlink {\n\tstruct devlink *dl;\n\tstruct otx2_nic *pfvf;\n};\n\n \nint otx2_register_dl(struct otx2_nic *pfvf);\nvoid otx2_unregister_dl(struct otx2_nic *pfvf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

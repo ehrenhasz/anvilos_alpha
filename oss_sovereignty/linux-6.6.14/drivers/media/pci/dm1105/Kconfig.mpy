@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "babc70b44adb2b567f574b0198803f391b40dce89fbcd7cf917f6c8c570bf8ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/dm1105/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DVB_DM1105\n\ttristate \"SDMC DM1105 based PCI cards\"\n\tdepends on DVB_CORE && PCI && I2C && I2C_ALGOBIT && HAS_IOPORT\n\tselect DVB_PLL if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_STV0299 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_STV0288 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_STB6000 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_CX24116 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_SI21XX if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_DS3000 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_TS2020 if MEDIA_SUBDRV_AUTOSELECT\n\tdepends on RC_CORE\n\thelp\n\t  Support for cards based on the SDMC DM1105 PCI chip like\n\t  DvbWorld 2002\n\n\t  Since these cards have no MPEG decoder onboard, they transmit\n\t  only compressed MPEG data over the PCI bus, so you need\n\t  an external software decoder to watch TV on your computer.\n\n\t  Say Y or M if you own such a device and want to use it.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

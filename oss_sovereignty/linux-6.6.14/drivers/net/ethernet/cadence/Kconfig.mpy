@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b322fb3f0ed927db2cd8a5cf4c5779fd8e2465c93153a968d30648b342e27379",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cadence/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Cadence device configuration\n#\n\nconfig NET_VENDOR_CADENCE\n\tbool \"Cadence devices\"\n\tdepends on HAS_IOMEM\n\tdefault y\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  If unsure, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all the\n\t  remaining Cadence network card questions. If you say Y, you will be\n\t  asked for your specific card in the following questions.\n\nif NET_VENDOR_CADENCE\n\nconfig MACB\n\ttristate \"Cadence MACB/GEM support\"\n\tdepends on HAS_DMA && COMMON_CLK\n\tdepends on PTP_1588_CLOCK_OPTIONAL\n\tselect PHYLINK\n\tselect CRC32\n\thelp\n\t  The Cadence MACB ethernet interface is found on many Atmel AT32 and\n\t  AT91 parts.  This driver also supports the Cadence GEM (Gigabit\n\t  Ethernet MAC found in some ARM SoC devices).  Say Y to include\n\t  support for the MACB/GEM chip.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be macb.\n\nconfig MACB_USE_HWSTAMP\n\tbool \"Use IEEE 1588 hwstamp\"\n\tdepends on MACB\n\tdepends on PTP_1588_CLOCK\n\tdefault y\n\thelp\n\t  Enable IEEE 1588 Precision Time Protocol (PTP) support for MACB.\n\nconfig MACB_PCI\n\ttristate \"Cadence PCI MACB/GEM support\"\n\tdepends on MACB && PCI\n\thelp\n\t  This is PCI wrapper for MACB driver.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called macb_pci.\n\nendif # NET_VENDOR_CADENCE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

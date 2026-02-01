@@ -1,0 +1,9 @@
+{
+  "module_name": "xattr_user.c",
+  "hash_id": "6194e12bb7f80be05280ba2a69516ba8962629cba63dbf78dcd4cb6593408484",
+  "original_prompt": "Ingested from linux-6.6.14/fs/hfsplus/xattr_user.c",
+  "human_readable_source": "\n \n\n#include <linux/nls.h>\n\n#include \"hfsplus_fs.h\"\n#include \"xattr.h\"\n\nstatic int hfsplus_user_getxattr(const struct xattr_handler *handler,\n\t\t\t\t struct dentry *unused, struct inode *inode,\n\t\t\t\t const char *name, void *buffer, size_t size)\n{\n\n\treturn hfsplus_getxattr(inode, name, buffer, size,\n\t\t\t\tXATTR_USER_PREFIX, XATTR_USER_PREFIX_LEN);\n}\n\nstatic int hfsplus_user_setxattr(const struct xattr_handler *handler,\n\t\t\t\t struct mnt_idmap *idmap,\n\t\t\t\t struct dentry *unused, struct inode *inode,\n\t\t\t\t const char *name, const void *buffer,\n\t\t\t\t size_t size, int flags)\n{\n\treturn hfsplus_setxattr(inode, name, buffer, size, flags,\n\t\t\t\tXATTR_USER_PREFIX, XATTR_USER_PREFIX_LEN);\n}\n\nconst struct xattr_handler hfsplus_xattr_user_handler = {\n\t.prefix\t= XATTR_USER_PREFIX,\n\t.get\t= hfsplus_user_getxattr,\n\t.set\t= hfsplus_user_setxattr,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

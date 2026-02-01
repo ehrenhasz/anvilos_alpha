@@ -1,0 +1,9 @@
+{
+  "module_name": "asoc-ti-mcbsp.h",
+  "hash_id": "2bd68274d9e27d99276d94a992fc653cc0083904fcbadc35b287c3d3d12388b3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/asoc-ti-mcbsp.h",
+  "human_readable_source": " \n \n#ifndef __ASOC_TI_MCBSP_H\n#define __ASOC_TI_MCBSP_H\n\n#include <linux/spinlock.h>\n#include <linux/clk.h>\n\n \nstruct omap_mcbsp_ops {\n\tvoid (*request)(unsigned int);\n\tvoid (*free)(unsigned int);\n};\n\nstruct omap_mcbsp_platform_data {\n\tstruct omap_mcbsp_ops *ops;\n\tu16 buffer_size;\n\tu8 reg_size;\n\tu8 reg_step;\n\n\t \n\tbool has_wakeup;  \n\tbool has_ccr;  \n\tint (*force_ick_on)(struct clk *clk, bool force_on);\n};\n\nvoid omap3_mcbsp_init_pdata_callback(struct omap_mcbsp_platform_data *pdata);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

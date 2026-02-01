@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-log-userspace-transfer.h",
+  "hash_id": "1a17e828aec6a9908115762aa60a059ae0fa35117d9bd6b30d02f7f55999e0f0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/dm-log-userspace-transfer.h",
+  "human_readable_source": " \n \n\n#ifndef __DM_LOG_USERSPACE_TRANSFER_H__\n#define __DM_LOG_USERSPACE_TRANSFER_H__\n\n#define DM_MSG_PREFIX \"dm-log-userspace\"\n\nint dm_ulog_tfr_init(void);\nvoid dm_ulog_tfr_exit(void);\nint dm_consult_userspace(const char *uuid, uint64_t luid, int request_type,\n\t\t\t char *data, size_t data_size,\n\t\t\t char *rdata, size_t *rdata_size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

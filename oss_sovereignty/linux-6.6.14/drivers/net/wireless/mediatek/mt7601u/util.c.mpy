@@ -1,0 +1,9 @@
+{
+  "module_name": "util.c",
+  "hash_id": "6df0225a4e6657d1681c27a39e45fc28f09a676b57f3a263e05d7cca25fd05d1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt7601u/util.c",
+  "human_readable_source": "\n \n\n#include \"mt7601u.h\"\n\nvoid mt76_remove_hdr_pad(struct sk_buff *skb)\n{\n\tint len = ieee80211_get_hdrlen_from_skb(skb);\n\n\tmemmove(skb->data + 2, skb->data, len);\n\tskb_pull(skb, 2);\n}\n\nint mt76_insert_hdr_pad(struct sk_buff *skb)\n{\n\tint len = ieee80211_get_hdrlen_from_skb(skb);\n\tint ret;\n\n\tif (len % 4 == 0)\n\t\treturn 0;\n\n\tret = skb_cow(skb, 2);\n\tif (ret)\n\t\treturn ret;\n\n\tskb_push(skb, 2);\n\tmemmove(skb->data, skb->data + 2, len);\n\n\tskb->data[len] = 0;\n\tskb->data[len + 1] = 0;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

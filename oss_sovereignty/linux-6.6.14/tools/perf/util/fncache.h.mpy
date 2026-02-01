@@ -1,0 +1,9 @@
+{
+  "module_name": "fncache.h",
+  "hash_id": "429081a4a2b74db2fe30fcb247a29d525daed901a1e81198fe10625fb194ce97",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/fncache.h",
+  "human_readable_source": "#ifndef _FCACHE_H\n#define _FCACHE_H 1\n\nunsigned shash(const unsigned char *s);\nbool file_available(const char *name);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

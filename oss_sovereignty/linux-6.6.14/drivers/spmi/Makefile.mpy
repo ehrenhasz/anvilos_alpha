@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0309882b3dc3db45ec993e65643b0c39a0cd60f6b8f9eb93c5325462d03fd3b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/spmi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for kernel SPMI framework.\n#\nobj-$(CONFIG_SPMI)\t+= spmi.o\n\nobj-$(CONFIG_SPMI_HISI3670)\t+= hisi-spmi-controller.o\nobj-$(CONFIG_SPMI_MSM_PMIC_ARB)\t+= spmi-pmic-arb.o\nobj-$(CONFIG_SPMI_MTK_PMIF)\t+= spmi-mtk-pmif.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

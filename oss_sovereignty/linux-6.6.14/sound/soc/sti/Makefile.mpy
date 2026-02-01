@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "19a4370ce54be3b588877b17fa929e58925b52d36aae8e8eda135053438a43a9",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sti/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# STI platform support\nsnd-soc-sti-objs := sti_uniperif.o uniperif_player.o uniperif_reader.o\n\nobj-$(CONFIG_SND_SOC_STI) += snd-soc-sti.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

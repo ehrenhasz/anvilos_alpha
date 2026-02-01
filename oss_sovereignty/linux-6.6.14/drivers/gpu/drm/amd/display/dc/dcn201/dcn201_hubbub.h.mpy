@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn201_hubbub.h",
+  "hash_id": "a197665a5817c50de1fcd2e2872a716b0002d5fbc37a2a5ef5f9998da6341d83",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn201/dcn201_hubbub.h",
+  "human_readable_source": " \n#ifndef DAL_DC_DCN201_DCN201_HUBBUB_H_\n#define DAL_DC_DCN201_DCN201_HUBBUB_H_\n\n#include \"dcn20/dcn20_hubbub.h\"\n\n#define HUBBUB_REG_LIST_DCN201(id)\\\n\tHUBBUB_REG_LIST_DCN_COMMON(), \\\n\tHUBBUB_VM_REG_LIST(), \\\n\tSR(DCHUBBUB_CRC_CTRL)\n\n#define HUBBUB_MASK_SH_LIST_DCN201(mask_sh)\\\n\tHUBBUB_MASK_SH_LIST_DCN_COMMON(mask_sh), \\\n\tHUBBUB_SF(DCHUBBUB_GLOBAL_TIMER_CNTL, DCHUBBUB_GLOBAL_TIMER_REFDIV, mask_sh)\n\nvoid hubbub201_construct(struct dcn20_hubbub *hubbub,\n\tstruct dc_context *ctx,\n\tconst struct dcn_hubbub_registers *hubbub_regs,\n\tconst struct dcn_hubbub_shift *hubbub_shift,\n\tconst struct dcn_hubbub_mask *hubbub_mask);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

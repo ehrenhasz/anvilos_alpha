@@ -1,0 +1,9 @@
+{
+  "module_name": "const_structs.checkpatch",
+  "hash_id": "347ed1b1c94e448c268edc8dae0ce69a0a281a3000e4953ec3ab08b2e9a5f3a2",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/const_structs.checkpatch",
+  "human_readable_source": "acpi_dock_ops\naddress_space_operations\nbacklight_ops\nblock_device_operations\nclk_ops\ncomedi_lrange\ncomponent_ops\ndentry_operations\ndev_pm_ops\ndma_map_ops\ndriver_info\ndrm_connector_funcs\ndrm_encoder_funcs\ndrm_encoder_helper_funcs\ndvb_frontend_ops\ndvb_tuner_ops\nethtool_ops\nextent_io_ops\nfb_ops\nfile_lock_operations\nfile_operations\nhv_ops\nhwmon_ops\nib_device_ops\nide_dma_ops\nide_port_ops\nieee80211_ops\niio_buffer_setup_ops\ninode_operations\nintel_dvo_dev_ops\nirq_domain_ops\nitem_operations\niwl_cfg\niwl_ops\nkernel_param_ops\nkgdb_arch\nkgdb_io\nkobj_type\nkset_uevent_ops\nlock_manager_operations\nmachine_desc\nmicrocode_ops\nmlxsw_reg_info\nmtd_ooblayout_ops\nmtrr_ops\nnand_controller_ops\nneigh_ops\nnet_device_ops\nnft_expr_ops\nnlmsvc_binding\nnvkm_device_chip\nof_device_id\npci_raw_ops\nphy_ops\npinconf_ops\npinctrl_ops\npinmux_ops\npipe_buf_operations\nplatform_hibernation_ops\nplatform_suspend_ops\nproc_ops\nproto_ops\npwm_ops\nregmap_access_table\nregulator_ops\nreset_control_ops\nrpc_pipe_ops\nrtc_class_ops\nsd_desc\nsdhci_ops\nseq_operations\nsirfsoc_padmux\nsnd_ac97_build_ops\nsnd_pcm_ops\nsnd_rawmidi_ops\nsnd_soc_component_driver\nsnd_soc_dai_ops\nsnd_soc_ops\nsoc_pcmcia_socket_ops\nstacktrace_ops\nsysfs_ops\ntty_operations\nuart_ops\nusb_mon_operations\nv4l2_ctrl_ops\nv4l2_ioctl_ops\nv4l2_subdev_core_ops\nv4l2_subdev_internal_ops\nv4l2_subdev_ops\nv4l2_subdev_pad_ops\nv4l2_subdev_video_ops\nvb2_ops\nvm_operations_struct\nwacom_features\nwatchdog_ops\nwd_ops\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

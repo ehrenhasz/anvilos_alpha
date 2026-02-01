@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_css_legacy.h",
+  "hash_id": "ca043fdd0d4a4074edf53e043d4bdf751a9878197fd97289fca9422bebdfa519",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/sh_css_legacy.h",
+  "human_readable_source": " \n \n\n#ifndef _SH_CSS_LEGACY_H_\n#define _SH_CSS_LEGACY_H_\n\n#include <type_support.h>\n#include <ia_css_err.h>\n#include <ia_css_types.h>\n#include <ia_css_frame_public.h>\n#include <ia_css_pipe_public.h>\n#include <ia_css_stream_public.h>\n\n \nenum ia_css_pipe_id {\n\tIA_CSS_PIPE_ID_PREVIEW,\n\tIA_CSS_PIPE_ID_COPY,\n\tIA_CSS_PIPE_ID_VIDEO,\n\tIA_CSS_PIPE_ID_CAPTURE,\n\tIA_CSS_PIPE_ID_YUVPP,\n\tIA_CSS_PIPE_ID_NUM\n};\n\nstruct ia_css_pipe_extra_config {\n\tbool enable_raw_binning;\n\tbool enable_yuv_ds;\n\tbool enable_high_speed;\n\tbool enable_dvs_6axis;\n\tbool enable_reduced_pipe;\n\tbool enable_fractional_ds;\n\tbool disable_vf_pp;\n};\n\nint\nia_css_pipe_create_extra(const struct ia_css_pipe_config *config,\n\t\t\t const struct ia_css_pipe_extra_config *extra_config,\n\t\t\t struct ia_css_pipe **pipe);\n\nvoid\nia_css_pipe_extra_config_defaults(struct ia_css_pipe_extra_config\n\t\t\t\t  *extra_config);\n\nint\nia_css_temp_pipe_to_pipe_id(const struct ia_css_pipe *pipe,\n\t\t\t    enum ia_css_pipe_id *pipe_id);\n\n \nint\nsh_css_set_black_frame(struct ia_css_stream *stream,\n\t\t       const struct ia_css_frame *raw_black_frame);\n\n \nvoid\nsh_css_enable_cont_capt(bool enable, bool stop_copy_preview);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

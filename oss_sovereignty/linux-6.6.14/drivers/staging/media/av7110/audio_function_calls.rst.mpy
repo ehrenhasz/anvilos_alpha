@@ -1,0 +1,9 @@
+{
+  "module_name": "audio_function_calls.rst",
+  "hash_id": "f61c8d68ccd2371e58974e35f350b56f1423e374e2c0a3dcecc76d372c8bf3c0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/audio_function_calls.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n\n.. _audio_function_calls:\n\n********************\nAudio Function Calls\n********************\n\n.. toctree::\n    :maxdepth: 1\n\n    audio-fopen\n    audio-fclose\n    audio-fwrite\n    audio-stop\n    audio-play\n    audio-pause\n    audio-continue\n    audio-select-source\n    audio-set-mute\n    audio-set-av-sync\n    audio-set-bypass-mode\n    audio-channel-select\n    audio-bilingual-channel-select\n    audio-get-status\n    audio-get-capabilities\n    audio-clear-buffer\n    audio-set-id\n    audio-set-mixer\n    audio-set-streamtype\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

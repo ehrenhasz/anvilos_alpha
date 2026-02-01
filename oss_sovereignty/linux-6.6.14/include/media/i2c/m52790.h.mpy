@@ -1,0 +1,9 @@
+{
+  "module_name": "m52790.h",
+  "hash_id": "d19e30873152c8430879fc03ad5dbe514f61b4984dbd080817dac8eec6de583e",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/m52790.h",
+  "human_readable_source": " \n \n\n#ifndef _M52790_H_\n#define _M52790_H_\n\n \n\n#define M52790_SW1_IN_MASK\t0x0003\n#define M52790_SW1_IN_TUNER\t0x0000\n#define M52790_SW1_IN_V2\t0x0001\n#define M52790_SW1_IN_V3\t0x0002\n#define M52790_SW1_IN_V4\t0x0003\n\n \n#define M52790_SW1_YCMIX\t0x0004\n\n\n \n\n#define M52790_SW2_IN_MASK\t0x0300\n#define M52790_SW2_IN_TUNER\t0x0000\n#define M52790_SW2_IN_V2\t0x0100\n#define M52790_SW2_IN_V3\t0x0200\n#define M52790_SW2_IN_V4\t0x0300\n\n \n#define M52790_SW2_YCMIX\t0x0400\n\n\n \n\n \n#define M52790_SW1_V_AMP\t0x0008\n\n \n#define M52790_SW1_YC_AMP\t0x0010\n\n \n#define M52790_SW1_AUDIO_MASK\t0x00c0\n#define M52790_SW1_AUDIO_MUTE\t0x0000\n#define M52790_SW1_AUDIO_R\t0x0040\n#define M52790_SW1_AUDIO_L\t0x0080\n#define M52790_SW1_AUDIO_STEREO 0x00c0\n\n\n \n\n \n#define M52790_SW2_V_AMP\t0x0800\n\n \n#define M52790_SW2_YC_AMP\t0x1000\n\n \n#define M52790_SW2_AUDIO_MASK\t0xc000\n#define M52790_SW2_AUDIO_MUTE\t0x0000\n#define M52790_SW2_AUDIO_R\t0x4000\n#define M52790_SW2_AUDIO_L\t0x8000\n#define M52790_SW2_AUDIO_STEREO 0xc000\n\n\n \n#define M52790_IN_TUNER (M52790_SW1_IN_TUNER | M52790_SW2_IN_TUNER)\n#define M52790_IN_V2    (M52790_SW1_IN_V2 | M52790_SW2_IN_V2)\n#define M52790_IN_V3    (M52790_SW1_IN_V3 | M52790_SW2_IN_V3)\n#define M52790_IN_V4    (M52790_SW1_IN_V4 | M52790_SW2_IN_V4)\n\n#define M52790_OUT_STEREO\t(M52790_SW1_AUDIO_STEREO | \\\n\t\t\t\t M52790_SW2_AUDIO_STEREO)\n#define M52790_OUT_AMP_STEREO\t(M52790_SW1_AUDIO_STEREO | \\\n\t\t\t\t M52790_SW1_V_AMP | \\\n\t\t\t\t M52790_SW2_AUDIO_STEREO | \\\n\t\t\t\t M52790_SW2_V_AMP)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

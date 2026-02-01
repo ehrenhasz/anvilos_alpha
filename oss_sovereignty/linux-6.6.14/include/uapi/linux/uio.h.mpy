@@ -1,0 +1,9 @@
+{
+  "module_name": "uio.h",
+  "hash_id": "01bf5f3c09274d920c32e4a65f2b3cba858572bdf034e49e16ffdeeee0a1a3e1",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/uio.h",
+  "human_readable_source": " \n \n#ifndef _UAPI__LINUX_UIO_H\n#define _UAPI__LINUX_UIO_H\n\n#include <linux/compiler.h>\n#include <linux/types.h>\n\n\nstruct iovec\n{\n\tvoid __user *iov_base;\t \n\t__kernel_size_t iov_len;  \n};\n\n \n \n#define UIO_FASTIOV\t8\n#define UIO_MAXIOV\t1024\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

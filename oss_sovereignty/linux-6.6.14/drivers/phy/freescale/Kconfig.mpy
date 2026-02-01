@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9be68f71f7fa1a93639fdd48100e50f17b009e8dedd407c5283d7060468cc242",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/freescale/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nif (ARCH_MXC && ARM64) || COMPILE_TEST\n\nconfig PHY_FSL_IMX8MQ_USB\n\ttristate \"Freescale i.MX8M USB3 PHY\"\n\tdepends on OF && HAS_IOMEM\n\tselect GENERIC_PHY\n\tdefault ARCH_MXC && ARM64\n\nconfig PHY_MIXEL_LVDS_PHY\n\ttristate \"Mixel LVDS PHY support\"\n\tdepends on OF\n\tselect GENERIC_PHY\n\tselect REGMAP_MMIO\n\thelp\n\t  Enable this to add support for the Mixel LVDS PHY as found\n\t  on NXP's i.MX8qm SoC.\n\nconfig PHY_MIXEL_MIPI_DPHY\n\ttristate \"Mixel MIPI DSI PHY support\"\n\tdepends on OF && HAS_IOMEM\n\tselect GENERIC_PHY\n\tselect GENERIC_PHY_MIPI_DPHY\n\tselect REGMAP_MMIO\n\thelp\n\t  Enable this to add support for the Mixel DSI PHY as found\n\t  on NXP's i.MX8 family of SOCs.\n\nconfig PHY_FSL_IMX8M_PCIE\n\ttristate \"Freescale i.MX8M PCIE PHY\"\n\tdepends on OF && HAS_IOMEM\n\tselect GENERIC_PHY\n\thelp\n\t  Enable this to add support for the PCIE PHY as found on\n\t  i.MX8M family of SOCs.\n\nendif\n\nconfig PHY_FSL_LYNX_28G\n\ttristate \"Freescale Layerscape Lynx 28G SerDes PHY support\"\n\tdepends on OF\n\tdepends on ARCH_LAYERSCAPE || COMPILE_TEST\n\tselect GENERIC_PHY\n\thelp\n\t  Enable this to add support for the Lynx SerDes 28G PHY as\n\t  found on NXP's Layerscape platforms such as LX2160A.\n\t  Used to change the protocol running on SerDes lanes at runtime.\n\t  Only useful for a restricted set of Ethernet protocols.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

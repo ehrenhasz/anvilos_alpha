@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c17f4787c4e12b809460c84aed8ff786cc6af6711bd421c5988a0a5dd101b914",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/spi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nccflags-y += -I $(srctree)/drivers/media/dvb-frontends/cxd2880\n\n# Please keep it alphabetically sorted by Kconfig name\n# (e. g. LC_ALL=C sort Makefile)\nobj-$(CONFIG_CXD2880_SPI_DRV) += cxd2880-spi.o\nobj-$(CONFIG_VIDEO_GS1662) += gs1662.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

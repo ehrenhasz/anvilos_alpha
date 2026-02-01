@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "330aa685f981bf6a7323abda6ae93befe18fb4d854dc3ec1b8f06bd085a13f91",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/power/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsource \"drivers/power/reset/Kconfig\"\nsource \"drivers/power/supply/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

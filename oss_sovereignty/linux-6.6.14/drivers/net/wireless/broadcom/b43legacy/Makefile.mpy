@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5f6208486a55d847735e0d351e374a9f94646916fd132e72e4f994cbd57fa6bd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/b43legacy/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# b43legacy core\nb43legacy-y\t\t\t\t+= main.o\nb43legacy-y\t\t\t\t+= ilt.o\nb43legacy-y\t\t\t\t+= phy.o\nb43legacy-y\t\t\t\t+= radio.o\nb43legacy-y\t\t\t\t+= sysfs.o\nb43legacy-y\t\t\t\t+= xmit.o\n# b43 RFKILL button support\nb43legacy-y\t\t\t\t+= rfkill.o\n# b43legacy LED support\nb43legacy-$(CONFIG_B43LEGACY_LEDS)\t+= leds.o\n# b43legacy debugging\nb43legacy-$(CONFIG_B43LEGACY_DEBUG)\t+= debugfs.o\n# b43legacy DMA and PIO\nb43legacy-$(CONFIG_B43LEGACY_DMA)\t+= dma.o\nb43legacy-$(CONFIG_B43LEGACY_PIO)\t+= pio.o\n\nobj-$(CONFIG_B43LEGACY)\t\t\t+= b43legacy.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

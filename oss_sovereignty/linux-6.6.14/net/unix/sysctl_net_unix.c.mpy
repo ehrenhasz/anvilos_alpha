@@ -1,0 +1,9 @@
+{
+  "module_name": "sysctl_net_unix.c",
+  "hash_id": "26691df063171c0d979003f94adbdf112068698b80512e55efb84b706598a69a",
+  "original_prompt": "Ingested from linux-6.6.14/net/unix/sysctl_net_unix.c",
+  "human_readable_source": "\n \n\n#include <linux/mm.h>\n#include <linux/slab.h>\n#include <linux/sysctl.h>\n\n#include <net/af_unix.h>\n\nstatic struct ctl_table unix_table[] = {\n\t{\n\t\t.procname\t= \"max_dgram_qlen\",\n\t\t.data\t\t= &init_net.unx.sysctl_max_dgram_qlen,\n\t\t.maxlen\t\t= sizeof(int),\n\t\t.mode\t\t= 0644,\n\t\t.proc_handler\t= proc_dointvec\n\t},\n\t{ }\n};\n\nint __net_init unix_sysctl_register(struct net *net)\n{\n\tstruct ctl_table *table;\n\n\tif (net_eq(net, &init_net)) {\n\t\ttable = unix_table;\n\t} else {\n\t\ttable = kmemdup(unix_table, sizeof(unix_table), GFP_KERNEL);\n\t\tif (!table)\n\t\t\tgoto err_alloc;\n\n\t\ttable[0].data = &net->unx.sysctl_max_dgram_qlen;\n\t}\n\n\tnet->unx.ctl = register_net_sysctl_sz(net, \"net/unix\", table,\n\t\t\t\t\t      ARRAY_SIZE(unix_table));\n\tif (net->unx.ctl == NULL)\n\t\tgoto err_reg;\n\n\treturn 0;\n\nerr_reg:\n\tif (!net_eq(net, &init_net))\n\t\tkfree(table);\nerr_alloc:\n\treturn -ENOMEM;\n}\n\nvoid unix_sysctl_unregister(struct net *net)\n{\n\tstruct ctl_table *table;\n\n\ttable = net->unx.ctl->ctl_table_arg;\n\tunregister_net_sysctl_table(net->unx.ctl);\n\tif (!net_eq(net, &init_net))\n\t\tkfree(table);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

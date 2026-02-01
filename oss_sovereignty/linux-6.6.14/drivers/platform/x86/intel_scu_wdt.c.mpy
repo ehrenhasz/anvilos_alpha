@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_scu_wdt.c",
+  "hash_id": "b14165d840932b561baf47500737bdb3f0ba346645bbfe4ec1fb47eee7b51e42",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel_scu_wdt.c",
+  "human_readable_source": "\n \n\n#include <linux/init.h>\n#include <linux/interrupt.h>\n#include <linux/platform_device.h>\n#include <linux/platform_data/intel-mid_wdt.h>\n\n#include <asm/cpu_device_id.h>\n#include <asm/intel-family.h>\n#include <asm/intel-mid.h>\n#include <asm/io_apic.h>\n#include <asm/hw_irq.h>\n\n#define TANGIER_EXT_TIMER0_MSI 12\n\nstatic struct platform_device wdt_dev = {\n\t.name = \"intel_mid_wdt\",\n\t.id = -1,\n};\n\nstatic int tangier_probe(struct platform_device *pdev)\n{\n\tstruct irq_alloc_info info;\n\tstruct intel_mid_wdt_pdata *pdata = pdev->dev.platform_data;\n\tint gsi = TANGIER_EXT_TIMER0_MSI;\n\tint irq;\n\n\tif (!pdata)\n\t\treturn -EINVAL;\n\n\t \n\tioapic_set_alloc_attr(&info, cpu_to_node(0), 1, 0);\n\tirq = mp_map_gsi_to_irq(gsi, IOAPIC_MAP_ALLOC, &info);\n\tif (irq < 0) {\n\t\tdev_warn(&pdev->dev, \"cannot find interrupt %d in ioapic\\n\", gsi);\n\t\treturn irq;\n\t}\n\n\tpdata->irq = irq;\n\treturn 0;\n}\n\nstatic struct intel_mid_wdt_pdata tangier_pdata = {\n\t.probe = tangier_probe,\n};\n\nstatic const struct x86_cpu_id intel_mid_cpu_ids[] = {\n\tX86_MATCH_INTEL_FAM6_MODEL(ATOM_SILVERMONT_MID, &tangier_pdata),\n\t{}\n};\n\nstatic int __init register_mid_wdt(void)\n{\n\tconst struct x86_cpu_id *id;\n\n\tid = x86_match_cpu(intel_mid_cpu_ids);\n\tif (!id)\n\t\treturn -ENODEV;\n\n\twdt_dev.dev.platform_data = (struct intel_mid_wdt_pdata *)id->driver_data;\n\treturn platform_device_register(&wdt_dev);\n}\narch_initcall(register_mid_wdt);\n\nstatic void __exit unregister_mid_wdt(void)\n{\n\tplatform_device_unregister(&wdt_dev);\n}\n__exitcall(unregister_mid_wdt);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

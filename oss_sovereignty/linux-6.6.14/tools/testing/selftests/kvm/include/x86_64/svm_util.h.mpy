@@ -1,0 +1,9 @@
+{
+  "module_name": "svm_util.h",
+  "hash_id": "298a5e3da6354fb2254a5e8bacbaf93b4405de085a534e4f72efd28335376ec4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/include/x86_64/svm_util.h",
+  "human_readable_source": " \n \n\n#ifndef SELFTEST_KVM_SVM_UTILS_H\n#define SELFTEST_KVM_SVM_UTILS_H\n\n#include <asm/svm.h>\n\n#include <stdint.h>\n#include \"svm.h\"\n#include \"processor.h\"\n\nstruct svm_test_data {\n\t \n\tstruct vmcb *vmcb;  \n\tvoid *vmcb_hva;\n\tuint64_t vmcb_gpa;\n\n\t \n\tstruct vmcb_save_area *save_area;  \n\tvoid *save_area_hva;\n\tuint64_t save_area_gpa;\n\n\t \n\tvoid *msr;  \n\tvoid *msr_hva;\n\tuint64_t msr_gpa;\n};\n\nstatic inline void vmmcall(void)\n{\n\t \n\t__asm__ __volatile__(\"push %%rbp; vmmcall; pop %%rbp\"\n\t\t\t     : : \"a\"(0xdeadbeef), \"c\"(0xbeefdead)\n\t\t\t     : \"rbx\", \"rdx\", \"rsi\", \"rdi\", \"r8\", \"r9\",\n\t\t\t       \"r10\", \"r11\", \"r12\", \"r13\", \"r14\", \"r15\");\n}\n\n#define stgi()\t\t\t\\\n\t__asm__ __volatile__(\t\\\n\t\t\"stgi\\n\"\t\\\n\t\t)\n\n#define clgi()\t\t\t\\\n\t__asm__ __volatile__(\t\\\n\t\t\"clgi\\n\"\t\\\n\t\t)\n\nstruct svm_test_data *vcpu_alloc_svm(struct kvm_vm *vm, vm_vaddr_t *p_svm_gva);\nvoid generic_svm_setup(struct svm_test_data *svm, void *guest_rip, void *guest_rsp);\nvoid run_guest(struct vmcb *vmcb, uint64_t vmcb_gpa);\n\nint open_sev_dev_path_or_exit(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

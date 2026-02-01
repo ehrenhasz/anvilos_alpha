@@ -1,0 +1,9 @@
+{
+  "module_name": "setup.ld",
+  "hash_id": "481979dfc0de0b872d060cad19468b83b6c9e3942d614258ac9c0ddcf967e91d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/setup.ld",
+  "human_readable_source": "/*\n * setup.ld\n *\n * Linker script for the i386 setup code\n */\nOUTPUT_FORMAT(\"elf32-i386\")\nOUTPUT_ARCH(i386)\nENTRY(_start)\n\nSECTIONS\n{\n\t. = 0;\n\t.bstext\t\t: { *(.bstext) }\n\t.bsdata\t\t: { *(.bsdata) }\n\n\t. = 495;\n\t.header\t\t: { *(.header) }\n\t.entrytext\t: { *(.entrytext) }\n\t.inittext\t: { *(.inittext) }\n\t.initdata\t: { *(.initdata) }\n\t__end_init = .;\n\n\t.text\t\t: { *(.text .text.*) }\n\t.text32\t\t: { *(.text32) }\n\n\t. = ALIGN(16);\n\t.rodata\t\t: { *(.rodata*) }\n\n\t.videocards\t: {\n\t\tvideo_cards = .;\n\t\t*(.videocards)\n\t\tvideo_cards_end = .;\n\t}\n\n\t. = ALIGN(16);\n\t.data\t\t: { *(.data*) }\n\n\t.signature\t: {\n\t\tsetup_sig = .;\n\t\tLONG(0x5a5aaa55)\n\t}\n\n\n\t. = ALIGN(16);\n\t.bss\t\t:\n\t{\n\t\t__bss_start = .;\n\t\t*(.bss)\n\t\t__bss_end = .;\n\t}\n\t. = ALIGN(16);\n\t_end = .;\n\n\t/DISCARD/\t: {\n\t\t*(.note*)\n\t}\n\n\t/*\n\t * The ASSERT() sink to . is intentional, for binutils 2.14 compatibility:\n\t */\n\t. = ASSERT(_end <= 0x8000, \"Setup too big!\");\n\t. = ASSERT(hdr == 0x1f1, \"The setup header has the wrong offset!\");\n\t/* Necessary for the very-old-loader check to work... */\n\t. = ASSERT(__end_init <= 5*512, \"init sections too big!\");\n\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

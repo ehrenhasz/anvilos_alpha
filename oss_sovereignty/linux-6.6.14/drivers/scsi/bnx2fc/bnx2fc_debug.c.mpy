@@ -1,0 +1,9 @@
+{
+  "module_name": "bnx2fc_debug.c",
+  "hash_id": "d286b9b83a4a1726dfc458ad45e5d4b90883efe0494a0bf602d16e7b0d3194c7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/bnx2fc/bnx2fc_debug.c",
+  "human_readable_source": " \n\n#include \"bnx2fc.h\"\n\nvoid BNX2FC_IO_DBG(const struct bnx2fc_cmd *io_req, const char *fmt, ...)\n{\n\tstruct va_format vaf;\n\tva_list args;\n\n\tif (likely(!(bnx2fc_debug_level & LOG_IO)))\n\t\treturn;\n\n\tva_start(args, fmt);\n\n\tvaf.fmt = fmt;\n\tvaf.va = &args;\n\n\tif (io_req && io_req->port && io_req->port->lport &&\n\t    io_req->port->lport->host)\n\t\tshost_printk(KERN_INFO, io_req->port->lport->host,\n\t\t\t     PFX \"xid:0x%x %pV\",\n\t\t\t     io_req->xid, &vaf);\n\telse\n\t\tpr_info(\"NULL %pV\", &vaf);\n\n\tva_end(args);\n}\n\nvoid BNX2FC_TGT_DBG(const struct bnx2fc_rport *tgt, const char *fmt, ...)\n{\n\tstruct va_format vaf;\n\tva_list args;\n\n\tif (likely(!(bnx2fc_debug_level & LOG_TGT)))\n\t\treturn;\n\n\tva_start(args, fmt);\n\n\tvaf.fmt = fmt;\n\tvaf.va = &args;\n\n\tif (tgt && tgt->port && tgt->port->lport && tgt->port->lport->host &&\n\t    tgt->rport)\n\t\tshost_printk(KERN_INFO, tgt->port->lport->host,\n\t\t\t     PFX \"port:%x %pV\",\n\t\t\t     tgt->rport->port_id, &vaf);\n\telse\n\t\tpr_info(\"NULL %pV\", &vaf);\n\n\tva_end(args);\n}\n\nvoid BNX2FC_HBA_DBG(const struct fc_lport *lport, const char *fmt, ...)\n{\n\tstruct va_format vaf;\n\tva_list args;\n\n\tif (likely(!(bnx2fc_debug_level & LOG_HBA)))\n\t\treturn;\n\n\tva_start(args, fmt);\n\n\tvaf.fmt = fmt;\n\tvaf.va = &args;\n\n\tif (lport && lport->host)\n\t\tshost_printk(KERN_INFO, lport->host, PFX \"%pV\", &vaf);\n\telse\n\t\tpr_info(\"NULL %pV\", &vaf);\n\n\tva_end(args);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

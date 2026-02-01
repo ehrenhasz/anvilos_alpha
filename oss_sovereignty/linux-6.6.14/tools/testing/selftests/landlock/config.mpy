@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "de432b7f202b429629accc5b597532d04b32d9c947ab2e3557401696670e142d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/landlock/config",
+  "human_readable_source": "CONFIG_CGROUPS=y\nCONFIG_CGROUP_SCHED=y\nCONFIG_OVERLAY_FS=y\nCONFIG_PROC_FS=y\nCONFIG_SECURITY=y\nCONFIG_SECURITY_LANDLOCK=y\nCONFIG_SHMEM=y\nCONFIG_SYSFS=y\nCONFIG_TMPFS=y\nCONFIG_TMPFS_XATTR=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

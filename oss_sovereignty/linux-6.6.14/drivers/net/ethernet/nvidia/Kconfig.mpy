@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "651a88a69eefd44263bca9d4e7dae4ef040bc88e022364838a92d3920a9b91fe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/nvidia/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# NVIDIA network device configuration\n#\n\nconfig NET_VENDOR_NVIDIA\n\tbool \"NVIDIA devices\"\n\tdefault y\n\tdepends on PCI\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about NVIDIA cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif NET_VENDOR_NVIDIA\n\nconfig FORCEDETH\n\ttristate \"nForce Ethernet support\"\n\tdepends on PCI\n\thelp\n\t  If you have a network (Ethernet) controller of this type, say Y here.\n\n\t  To compile this driver as a module, choose M here. The module\n\t  will be called forcedeth.\n\nendif # NET_VENDOR_NVIDIA\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

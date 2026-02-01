@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu_frac.h",
+  "hash_id": "57306db6ac004c651e35b1f31fb2eb44357bce83c14b49636093ef3c816a31dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu_frac.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_FRAC_H_\n#define _CCU_FRAC_H_\n\n#include <linux/clk-provider.h>\n\n#include \"ccu_common.h\"\n\nstruct ccu_frac_internal {\n\tu32\t\tenable;\n\tu32\t\tselect;\n\n\tunsigned long\trates[2];\n};\n\n#define _SUNXI_CCU_FRAC(_enable, _select, _rate1, _rate2)\t\t\\\n\t{\t\t\t\t\t\t\t\t\\\n\t\t.enable\t= _enable,\t\t\t\t\t\\\n\t\t.select\t= _select,\t\t\t\t\t\\\n\t\t.rates = { _rate1, _rate2 },\t\t\t\t\\\n\t}\n\nbool ccu_frac_helper_is_enabled(struct ccu_common *common,\n\t\t\t\tstruct ccu_frac_internal *cf);\nvoid ccu_frac_helper_enable(struct ccu_common *common,\n\t\t\t    struct ccu_frac_internal *cf);\nvoid ccu_frac_helper_disable(struct ccu_common *common,\n\t\t\t     struct ccu_frac_internal *cf);\n\nbool ccu_frac_helper_has_rate(struct ccu_common *common,\n\t\t\t      struct ccu_frac_internal *cf,\n\t\t\t      unsigned long rate);\n\nunsigned long ccu_frac_helper_read_rate(struct ccu_common *common,\n\t\t\t\t\tstruct ccu_frac_internal *cf);\n\nint ccu_frac_helper_set_rate(struct ccu_common *common,\n\t\t\t     struct ccu_frac_internal *cf,\n\t\t\t     unsigned long rate, u32 lock);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

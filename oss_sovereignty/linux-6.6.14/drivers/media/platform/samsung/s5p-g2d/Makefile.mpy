@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8255c9ad2b2c5355413b298db0506d2d58d15933cfaf28e3b156901ad593e9eb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/s5p-g2d/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ns5p-g2d-objs := g2d.o g2d-hw.o\n\nobj-$(CONFIG_VIDEO_SAMSUNG_S5P_G2D)\t+= s5p-g2d.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

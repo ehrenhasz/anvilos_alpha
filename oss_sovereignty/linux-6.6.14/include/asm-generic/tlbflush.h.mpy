@@ -1,0 +1,9 @@
+{
+  "module_name": "tlbflush.h",
+  "hash_id": "6ed8b9432581e8660cd279a8798e3c62910faba2d2ff569998071e8608ac9acf",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/tlbflush.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_TLBFLUSH_H\n#define __ASM_GENERIC_TLBFLUSH_H\n \n#ifdef CONFIG_MMU\n#error need to implement an architecture specific asm/tlbflush.h\n#endif\n\n#include <linux/bug.h>\n\nstatic inline void flush_tlb_mm(struct mm_struct *mm)\n{\n\tBUG();\n}\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "443c05c319406dd8d5007e23af47834fdb4e57b98f21c22990006bdf6675705a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/bcache/debug.h",
+  "human_readable_source": " \n#ifndef _BCACHE_DEBUG_H\n#define _BCACHE_DEBUG_H\n\nstruct bio;\nstruct cached_dev;\nstruct cache_set;\n\n#ifdef CONFIG_BCACHE_DEBUG\n\nvoid bch_btree_verify(struct btree *b);\nvoid bch_data_verify(struct cached_dev *dc, struct bio *bio);\n\n#define expensive_debug_checks(c)\t((c)->expensive_debug_checks)\n#define key_merging_disabled(c)\t\t((c)->key_merging_disabled)\n#define bypass_torture_test(d)\t\t((d)->bypass_torture_test)\n\n#else  \n\nstatic inline void bch_btree_verify(struct btree *b) {}\nstatic inline void bch_data_verify(struct cached_dev *dc, struct bio *bio) {}\n\n#define expensive_debug_checks(c)\t0\n#define key_merging_disabled(c)\t\t0\n#define bypass_torture_test(d)\t\t0\n\n#endif\n\n#ifdef CONFIG_DEBUG_FS\nvoid bch_debug_init_cache_set(struct cache_set *c);\n#else\nstatic inline void bch_debug_init_cache_set(struct cache_set *c) {}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

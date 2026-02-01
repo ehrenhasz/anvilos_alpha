@@ -1,0 +1,9 @@
+{
+  "module_name": "atoll.c",
+  "hash_id": "ffc85eef5b7973ce329cacba92ec54859b9aba4f631ec3b2035c0ccc337ce5c8",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/atoll.c",
+  "human_readable_source": " \n#include <stdlib.h>\n\n#if _LIBC\n# undef atoll\n#endif\n\n\n \nlong long int\natoll (const char *nptr)\n{\n  return strtoll (nptr, (char **) NULL, 10);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

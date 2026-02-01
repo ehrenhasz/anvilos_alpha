@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_nat_redirect.h",
+  "hash_id": "63327f51e6759775a04db74c409214071193af919d925ac06d268067e5a9280d",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nf_nat_redirect.h",
+  "human_readable_source": " \n#ifndef _NF_NAT_REDIRECT_H_\n#define _NF_NAT_REDIRECT_H_\n\n#include <linux/skbuff.h>\n#include <uapi/linux/netfilter/nf_nat.h>\n\nunsigned int\nnf_nat_redirect_ipv4(struct sk_buff *skb, const struct nf_nat_range2 *range,\n\t\t     unsigned int hooknum);\nunsigned int\nnf_nat_redirect_ipv6(struct sk_buff *skb, const struct nf_nat_range2 *range,\n\t\t     unsigned int hooknum);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

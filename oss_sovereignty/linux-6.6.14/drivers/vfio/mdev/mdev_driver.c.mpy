@@ -1,0 +1,9 @@
+{
+  "module_name": "mdev_driver.c",
+  "hash_id": "397c0a34004f62e92350a0109379807c4d77151e74a7de8537446b824eaae2f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/mdev/mdev_driver.c",
+  "human_readable_source": "\n \n\n#include <linux/iommu.h>\n#include <linux/mdev.h>\n\n#include \"mdev_private.h\"\n\nstatic int mdev_probe(struct device *dev)\n{\n\tstruct mdev_driver *drv =\n\t\tcontainer_of(dev->driver, struct mdev_driver, driver);\n\n\tif (!drv->probe)\n\t\treturn 0;\n\treturn drv->probe(to_mdev_device(dev));\n}\n\nstatic void mdev_remove(struct device *dev)\n{\n\tstruct mdev_driver *drv =\n\t\tcontainer_of(dev->driver, struct mdev_driver, driver);\n\n\tif (drv->remove)\n\t\tdrv->remove(to_mdev_device(dev));\n}\n\nstatic int mdev_match(struct device *dev, struct device_driver *drv)\n{\n\t \n\treturn 0;\n}\n\nstruct bus_type mdev_bus_type = {\n\t.name\t\t= \"mdev\",\n\t.probe\t\t= mdev_probe,\n\t.remove\t\t= mdev_remove,\n\t.match\t\t= mdev_match,\n};\n\n \nint mdev_register_driver(struct mdev_driver *drv)\n{\n\tif (!drv->device_api)\n\t\treturn -EINVAL;\n\n\t \n\tdrv->driver.bus = &mdev_bus_type;\n\treturn driver_register(&drv->driver);\n}\nEXPORT_SYMBOL(mdev_register_driver);\n\n \nvoid mdev_unregister_driver(struct mdev_driver *drv)\n{\n\tdriver_unregister(&drv->driver);\n}\nEXPORT_SYMBOL(mdev_unregister_driver);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

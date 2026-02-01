@@ -1,0 +1,9 @@
+{
+  "module_name": "spe.json",
+  "hash_id": "8e0371327e7ba1f6bd9728e9222a8dc813c898867e1a6ba2987507a43bcdd510",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/neoverse-n1/spe.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"SAMPLE_POP\",\n        \"PublicDescription\": \"Counts statistical profiling sample population, the count of all operations that could be sampled but may or may not be chosen for sampling.\"\n    },\n    {\n        \"ArchStdEvent\": \"SAMPLE_FEED\",\n        \"PublicDescription\": \"Counts statistical profiling samples taken for sampling.\"\n    },\n    {\n        \"ArchStdEvent\": \"SAMPLE_FILTRATE\",\n        \"PublicDescription\": \"Counts statistical profiling samples taken which are not removed by filtering.\"\n    },\n    {\n        \"ArchStdEvent\": \"SAMPLE_COLLISION\",\n        \"PublicDescription\": \"Counts statistical profiling samples that have collided with a previous sample and so therefore not taken.\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

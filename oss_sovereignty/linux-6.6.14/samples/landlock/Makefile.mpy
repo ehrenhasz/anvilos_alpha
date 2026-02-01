@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "05bb5331260cdabb6f45740a1aa99773c1d3bf756cb9135a206eae886ebabe35",
+  "original_prompt": "Ingested from linux-6.6.14/samples/landlock/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: BSD-3-Clause\n\nuserprogs-always-y := sandboxer\n\nuserccflags += -I usr/include\n\n.PHONY: all clean\n\nall:\n\t$(MAKE) -C ../.. samples/landlock/\n\nclean:\n\t$(MAKE) -C ../.. M=samples/landlock/ clean\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

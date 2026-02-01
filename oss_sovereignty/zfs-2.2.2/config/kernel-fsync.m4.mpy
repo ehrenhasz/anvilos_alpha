@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-fsync.m4",
+  "hash_id": "b4dd2c9cef8044ae97db25c5bccb987953bd6f041fc1bfff45c2279ed9de3388",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-fsync.m4",
+  "human_readable_source": "dnl #\ndnl # Check file_operations->fsync interface.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_FSYNC], [\n\tZFS_LINUX_TEST_SRC([fsync_without_dentry], [\n\t\t#include <linux/fs.h>\n\n\t\tint test_fsync(struct file *f, int x) { return 0; }\n\n\t\tstatic const struct file_operations\n\t\t    fops __attribute__ ((unused)) = {\n\t\t\t.fsync = test_fsync,\n\t\t};\n\t],[])\n\n\tZFS_LINUX_TEST_SRC([fsync_range], [\n\t\t#include <linux/fs.h>\n\n\t\tint test_fsync(struct file *f, loff_t a, loff_t b, int c)\n\t\t    { return 0; }\n\n\t\tstatic const struct file_operations\n\t\t    fops __attribute__ ((unused)) = {\n\t\t\t.fsync = test_fsync,\n\t\t};\n\t],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_FSYNC], [\n\tdnl #\n\tdnl # Linux 2.6.35 - Linux 3.0 API\n\tdnl #\n\tAC_MSG_CHECKING([whether fops->fsync() wants no dentry])\n\tZFS_LINUX_TEST_RESULT([fsync_without_dentry], [\n\t\tAC_MSG_RESULT([yes])\n\t\tAC_DEFINE(HAVE_FSYNC_WITHOUT_DENTRY, 1,\n\t\t    [fops->fsync() without dentry])\n\t],[\n\t\tAC_MSG_RESULT([no])\n\n\t\tdnl #\n\t\tdnl # Linux 3.1 - 3.x API\n\t\tdnl #\n\t\tAC_MSG_CHECKING([whether fops->fsync() wants range])\n\t\tZFS_LINUX_TEST_RESULT([fsync_range], [\n\t\t\tAC_MSG_RESULT([range])\n\t\t\tAC_DEFINE(HAVE_FSYNC_RANGE, 1,\n\t\t\t    [fops->fsync() with range])\n\t\t],[\n\t\t\tZFS_LINUX_TEST_ERROR([fops->fsync])\n\t\t])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

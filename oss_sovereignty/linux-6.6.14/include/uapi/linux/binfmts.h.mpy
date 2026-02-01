@@ -1,0 +1,9 @@
+{
+  "module_name": "binfmts.h",
+  "hash_id": "43dbeb22b9568a663b176d9addc2e1fbf7935aacc681e70f7052041e4fa082d2",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/binfmts.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_BINFMTS_H\n#define _UAPI_LINUX_BINFMTS_H\n\n#include <linux/capability.h>\n\nstruct pt_regs;\n\n \n#define MAX_ARG_STRLEN (PAGE_SIZE * 32)\n#define MAX_ARG_STRINGS 0x7FFFFFFF\n\n \n#define BINPRM_BUF_SIZE 256\n\n \n#define AT_FLAGS_PRESERVE_ARGV0_BIT 0\n#define AT_FLAGS_PRESERVE_ARGV0 (1 << AT_FLAGS_PRESERVE_ARGV0_BIT)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

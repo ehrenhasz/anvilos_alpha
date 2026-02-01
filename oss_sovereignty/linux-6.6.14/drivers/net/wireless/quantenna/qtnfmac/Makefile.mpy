@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "953539459147078711f1a939702fcc4ec4260df6a02475efec2ff5d66625c5bc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/quantenna/qtnfmac/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Copyright (c) 2015-2016 Quantenna Communications, Inc.\n# All rights reserved.\n#\n\nccflags-y += \\\n\t-Idrivers/net/wireless/quantenna/qtnfmac\n\nobj-$(CONFIG_QTNFMAC) += qtnfmac.o\nqtnfmac-objs += \\\n\tcore.o \\\n\tcommands.o \\\n\ttrans.o \\\n\tcfg80211.o \\\n\tevent.o \\\n\tutil.o \\\n\tqlink_util.o\n\n#\n\nobj-$(CONFIG_QTNFMAC_PCIE) += qtnfmac_pcie.o\n\nqtnfmac_pcie-objs += \\\n\tshm_ipc.o \\\n\tpcie/pcie.o \\\n\tpcie/pearl_pcie.o \\\n\tpcie/topaz_pcie.o\n\nqtnfmac_pcie-$(CONFIG_DEBUG_FS) += debug.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

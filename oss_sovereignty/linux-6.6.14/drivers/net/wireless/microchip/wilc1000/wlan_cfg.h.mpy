@@ -1,0 +1,9 @@
+{
+  "module_name": "wlan_cfg.h",
+  "hash_id": "b99a5ef6d1ad07df991d3f6ade498b4846f53143ac9f830dcf7d74f2403776b1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/microchip/wilc1000/wlan_cfg.h",
+  "human_readable_source": " \n \n\n#ifndef WILC_WLAN_CFG_H\n#define WILC_WLAN_CFG_H\n\nstruct wilc_cfg_byte {\n\tu16 id;\n\tu8 val;\n};\n\nstruct wilc_cfg_hword {\n\tu16 id;\n\tu16 val;\n};\n\nstruct wilc_cfg_word {\n\tu16 id;\n\tu32 val;\n};\n\nstruct wilc_cfg_str {\n\tu16 id;\n\tu8 *str;\n};\n\nstruct wilc_cfg_str_vals {\n\tu8 mac_address[7];\n\tu8 firmware_version[129];\n\tu8 assoc_rsp[WILC_MAX_ASSOC_RESP_FRAME_SIZE];\n};\n\nstruct wilc_cfg {\n\tstruct wilc_cfg_byte *b;\n\tstruct wilc_cfg_hword *hw;\n\tstruct wilc_cfg_word *w;\n\tstruct wilc_cfg_str *s;\n\tstruct wilc_cfg_str_vals *str_vals;\n};\n\nstruct wilc;\nint wilc_wlan_cfg_set_wid(u8 *frame, u32 offset, u16 id, u8 *buf, int size);\nint wilc_wlan_cfg_get_wid(u8 *frame, u32 offset, u16 id);\nint wilc_wlan_cfg_get_val(struct wilc *wl, u16 wid, u8 *buffer,\n\t\t\t  u32 buffer_size);\nvoid wilc_wlan_cfg_indicate_rx(struct wilc *wilc, u8 *frame, int size,\n\t\t\t       struct wilc_cfg_rsp *rsp);\nint wilc_wlan_cfg_init(struct wilc *wl);\nvoid wilc_wlan_cfg_deinit(struct wilc *wl);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

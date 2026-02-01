@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6488ce2637490c6839bf7deeb5115b7ea0cd21af4dea1bbd8a57262e31b147f7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pmdomain/amlogic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_MESON_GX_PM_DOMAINS) += meson-gx-pwrc-vpu.o\nobj-$(CONFIG_MESON_EE_PM_DOMAINS) += meson-ee-pwrc.o\nobj-$(CONFIG_MESON_SECURE_PM_DOMAINS) += meson-secure-pwrc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

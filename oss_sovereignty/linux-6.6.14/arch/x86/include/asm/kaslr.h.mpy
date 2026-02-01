@@ -1,0 +1,9 @@
+{
+  "module_name": "kaslr.h",
+  "hash_id": "b257c6a6effbed6ee7a7b7ee713d44704fbe0f335515b7ee900b973ddbd93e3d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/kaslr.h",
+  "human_readable_source": " \n#ifndef _ASM_KASLR_H_\n#define _ASM_KASLR_H_\n\nunsigned long kaslr_get_random_long(const char *purpose);\n\n#ifdef CONFIG_RANDOMIZE_MEMORY\nvoid kernel_randomize_memory(void);\nvoid init_trampoline_kaslr(void);\n#else\nstatic inline void kernel_randomize_memory(void) { }\nstatic inline void init_trampoline_kaslr(void) {}\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

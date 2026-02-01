@@ -1,0 +1,9 @@
+{
+  "module_name": "mxms.h",
+  "hash_id": "373802503bc13455cdabc4520103c3baa94c33a8a318e23b6f78c8e53818ae3d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mxm/mxms.h",
+  "human_readable_source": " \n#ifndef __NVMXM_MXMS_H__\n#define __NVMXM_MXMS_H__\n#include \"priv.h\"\n\nstruct mxms_odev {\n\tu8 outp_type;\n\tu8 conn_type;\n\tu8 ddc_port;\n\tu8 dig_conn;\n};\n\nvoid mxms_output_device(struct nvkm_mxm *, u8 *, struct mxms_odev *);\n\nu16  mxms_version(struct nvkm_mxm *);\nu16  mxms_headerlen(struct nvkm_mxm *);\nu16  mxms_structlen(struct nvkm_mxm *);\nbool mxms_checksum(struct nvkm_mxm *);\nbool mxms_valid(struct nvkm_mxm *);\n\nbool mxms_foreach(struct nvkm_mxm *, u8,\n\t\t  bool (*)(struct nvkm_mxm *, u8 *, void *), void *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

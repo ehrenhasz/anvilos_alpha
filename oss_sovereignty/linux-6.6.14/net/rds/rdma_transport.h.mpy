@@ -1,0 +1,9 @@
+{
+  "module_name": "rdma_transport.h",
+  "hash_id": "1e208ec6662df8449622a09b7719a9373ea31e56d242e6ebfc6c6ee63763e1c6",
+  "original_prompt": "Ingested from linux-6.6.14/net/rds/rdma_transport.h",
+  "human_readable_source": " \n#ifndef _RDMA_TRANSPORT_H\n#define _RDMA_TRANSPORT_H\n\n#include <rdma/ib_verbs.h>\n#include <rdma/rdma_cm.h>\n#include \"rds.h\"\n\n \n#define RDS_CM_PORT\t16385\n\n#define RDS_RDMA_RESOLVE_TIMEOUT_MS     5000\n\n \n#define RDS_RDMA_REJ_INCOMPAT\t\t1\n\nint rds_rdma_cm_event_handler(struct rdma_cm_id *cm_id,\n\t\t\t      struct rdma_cm_event *event);\nint rds6_rdma_cm_event_handler(struct rdma_cm_id *cm_id,\n\t\t\t       struct rdma_cm_event *event);\n\n \nextern struct rds_transport rds_ib_transport;\nint rds_ib_init(void);\nvoid rds_ib_exit(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

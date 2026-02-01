@@ -1,0 +1,9 @@
+{
+  "module_name": "trace-agent.h",
+  "hash_id": "d1005bd816f49696ab1adecf292534d19c3c7362cd3927305c826ffa97d03e8b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/virtio-trace/trace-agent.h",
+  "human_readable_source": " \n#ifndef __TRACE_AGENT_H__\n#define __TRACE_AGENT_H__\n#include <pthread.h>\n#include <stdbool.h>\n\n#define MAX_CPUS\t256\n#define PIPE_INIT       (1024*1024)\n\n \nstruct agent_info {\n\tunsigned long pipe_size;\n\tbool use_stdout;\n\tint cpus;\n\tint ctl_fd;\n\tstruct rw_thread_info *rw_ti[MAX_CPUS];\n};\n\n \nstruct rw_thread_info {\n\tint cpu_num;\n\tint in_fd;\n\tint out_fd;\n\tint read_pipe;\n\tint write_pipe;\n\tunsigned long pipe_size;\n};\n\n \nextern bool global_sig_receive;\n\n \nextern bool global_run_operation;\nextern pthread_mutex_t mutex_notify;\nextern pthread_cond_t cond_wakeup;\n\n \nextern int rw_ctl_init(const char *ctl_path);\nextern void *rw_ctl_loop(int ctl_fd);\n\n \nextern void *rw_thread_info_new(void);\nextern void *rw_thread_init(int cpu, const char *in_path, const char *out_path,\n\t\t\tbool stdout_flag, unsigned long pipe_size,\n\t\t\tstruct rw_thread_info *rw_ti);\nextern pthread_t rw_thread_run(struct rw_thread_info *rw_ti);\n\nstatic inline void *zalloc(size_t size)\n{\n\treturn calloc(1, size);\n}\n\n#define pr_err(format, ...) fprintf(stderr, format, ## __VA_ARGS__)\n#define pr_info(format, ...) fprintf(stdout, format, ## __VA_ARGS__)\n#ifdef DEBUG\n#define pr_debug(format, ...) fprintf(stderr, format, ## __VA_ARGS__)\n#else\n#define pr_debug(format, ...) do {} while (0)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

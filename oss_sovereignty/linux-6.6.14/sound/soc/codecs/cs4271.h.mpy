@@ -1,0 +1,9 @@
+{
+  "module_name": "cs4271.h",
+  "hash_id": "620866faf77e2c306e10ff909c4cc54d21e07bbee674521d168fa952ebb84a6e",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/cs4271.h",
+  "human_readable_source": " \n#ifndef _CS4271_PRIV_H\n#define _CS4271_PRIV_H\n\n#include <linux/regmap.h>\n\nextern const struct of_device_id cs4271_dt_ids[];\nextern const struct regmap_config cs4271_regmap_config;\n\nint cs4271_probe(struct device *dev, struct regmap *regmap);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

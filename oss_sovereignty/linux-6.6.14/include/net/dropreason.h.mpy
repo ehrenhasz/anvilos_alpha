@@ -1,0 +1,9 @@
+{
+  "module_name": "dropreason.h",
+  "hash_id": "455aef4c06925ece99ce2dffe63395c2afd410689c02bc2e256f9bb97bf9ebde",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/dropreason.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_DROPREASON_H\n#define _LINUX_DROPREASON_H\n#include <net/dropreason-core.h>\n\n \nenum skb_drop_reason_subsys {\n\t \n\tSKB_DROP_REASON_SUBSYS_CORE,\n\n\t \n\tSKB_DROP_REASON_SUBSYS_MAC80211_UNUSABLE,\n\n\t \n\tSKB_DROP_REASON_SUBSYS_MAC80211_MONITOR,\n\n\t \n\tSKB_DROP_REASON_SUBSYS_OPENVSWITCH,\n\n\t \n\tSKB_DROP_REASON_SUBSYS_NUM\n};\n\nstruct drop_reason_list {\n\tconst char * const *reasons;\n\tsize_t n_reasons;\n};\n\n \nextern const struct drop_reason_list __rcu *\ndrop_reasons_by_subsys[SKB_DROP_REASON_SUBSYS_NUM];\n\nvoid drop_reasons_register_subsys(enum skb_drop_reason_subsys subsys,\n\t\t\t\t  const struct drop_reason_list *list);\nvoid drop_reasons_unregister_subsys(enum skb_drop_reason_subsys subsys);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

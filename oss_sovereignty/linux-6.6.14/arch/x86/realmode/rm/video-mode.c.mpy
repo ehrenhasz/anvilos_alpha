@@ -1,0 +1,9 @@
+{
+  "module_name": "video-mode.c",
+  "hash_id": "643b31517e24acc1b08ab3bbc27ccd9950e0018039177a9eff67a3b974d84215",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/realmode/rm/video-mode.c",
+  "human_readable_source": "#include \"../../boot/video-mode.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

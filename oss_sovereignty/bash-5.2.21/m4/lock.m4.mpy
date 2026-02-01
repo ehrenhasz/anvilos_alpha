@@ -1,0 +1,9 @@
+{
+  "module_name": "lock.m4",
+  "hash_id": "d6ba4a398ca116f112291e66f5f75309d462798fa023e138f3400667adb9bd39",
+  "original_prompt": "Ingested from bash-5.2.21/m4/lock.m4",
+  "human_readable_source": "# lock.m4 serial 14\ndnl Copyright (C) 2005-2019 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl From Bruno Haible.\n\nAC_DEFUN([gl_LOCK],\n[\n  AC_REQUIRE([gl_THREADLIB])\n  if test \"$gl_threads_api\" = posix; then\n    # OSF/1 4.0 and Mac OS X 10.1 lack the pthread_rwlock_t type and the\n    # pthread_rwlock_* functions.\n    has_rwlock=false\n    AC_CHECK_TYPE([pthread_rwlock_t],\n      [has_rwlock=true\n       AC_DEFINE([HAVE_PTHREAD_RWLOCK], [1],\n         [Define if the POSIX multithreading library has read/write locks.])],\n      [],\n      [#include <pthread.h>])\n    if $has_rwlock; then\n      gl_PTHREAD_RWLOCK_RDLOCK_PREFER_WRITER\n    fi\n    # glibc defines PTHREAD_MUTEX_RECURSIVE as enum, not as a macro.\n    AC_COMPILE_IFELSE([\n      AC_LANG_PROGRAM(\n        [[#include <pthread.h>]],\n        [[\n#if __FreeBSD__ == 4\nerror \"No, in FreeBSD 4.0 recursive mutexes actually don't work.\"\n#elif (defined __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ \\\n       && __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1070)\nerror \"No, in Mac OS X < 10.7 recursive mutexes actually don't work.\"\n#else\nint x = (int)PTHREAD_MUTEX_RECURSIVE;\nreturn !x;\n#endif\n        ]])],\n      [AC_DEFINE([HAVE_PTHREAD_MUTEX_RECURSIVE], [1],\n         [Define if the <pthread.h> defines PTHREAD_MUTEX_RECURSIVE.])])\n  fi\n  gl_PREREQ_LOCK\n])\n\n# Prerequisites of lib/glthread/lock.c.\nAC_DEFUN([gl_PREREQ_LOCK], [:])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "max6639.h",
+  "hash_id": "d659fa7e7aa4ed8979a9d2801e19bda9d2433b2455747d589fab8dfa64f9e1ea",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/max6639.h",
+  "human_readable_source": " \n#ifndef _LINUX_MAX6639_H\n#define _LINUX_MAX6639_H\n\n#include <linux/types.h>\n\n \n\nstruct max6639_platform_data {\n\tbool pwm_polarity;\t \n\tint ppr;\t\t \n\tint rpm_range;\t\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

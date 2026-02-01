@@ -1,0 +1,9 @@
+{
+  "module_name": "alc5623.h",
+  "hash_id": "2a6dad0ad95fd73b171832669ce161e4cb81cd0469e68b8eb06e2615f0baaedd",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/alc5623.h",
+  "human_readable_source": " \n#ifndef _INCLUDE_SOUND_ALC5623_H\n#define _INCLUDE_SOUND_ALC5623_H\nstruct alc5623_platform_data {\n\t \n\t \n\t \n\tunsigned int add_ctrl;\n\t \n\t \n\t \n\t \n\tunsigned int jack_det_ctrl;\n};\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

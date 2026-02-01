@@ -1,0 +1,9 @@
+{
+  "module_name": "test-chown.c",
+  "hash_id": "19167def78297b67125d036f34dc78ed9cc574d0085734caf715f075412954e7",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-chown.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <unistd.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (chown, int, (char const *, uid_t, gid_t));\n\n#include <fcntl.h>\n#include <errno.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/stat.h>\n\n#include \"mgetgroups.h\"\n#include \"stat-time.h\"\n#include \"ignore-value.h\"\n#include \"macros.h\"\n\n#define BASE \"test-chown.t\"\n\n#include \"test-chown.h\"\n\nint\nmain (void)\n{\n   \n  ignore_value (system (\"rm -rf \" BASE \"*\"));\n\n  return test_chown (chown, true);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

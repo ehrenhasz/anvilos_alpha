@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b5c0753b137469688de8442ebac22913bcbcfe4f53a91d4d4f9385a385a3636c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/apple/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nif ARCH_APPLE || COMPILE_TEST\n\nmenu \"Apple SoC drivers\"\n\nconfig APPLE_PMGR_PWRSTATE\n\tbool \"Apple SoC PMGR power state control\"\n\tdepends on PM\n\tselect REGMAP\n\tselect MFD_SYSCON\n\tselect PM_GENERIC_DOMAINS\n\tselect RESET_CONTROLLER\n\tdefault ARCH_APPLE\n\thelp\n\t  The PMGR block in Apple SoCs provides high-level power state\n\t  controls for SoC devices. This driver manages them through the\n\t  generic power domain framework, and also provides reset support.\n\nconfig APPLE_RTKIT\n\ttristate \"Apple RTKit co-processor IPC protocol\"\n\tdepends on MAILBOX\n\tdepends on ARCH_APPLE || COMPILE_TEST\n\tdefault ARCH_APPLE\n\thelp\n\t  Apple SoCs such as the M1 come with various co-processors running\n\t  their proprietary RTKit operating system. This option enables support\n\t  for the protocol library used to communicate with those. It is used\n\t  by various client drivers.\n\n\t  Say 'y' here if you have an Apple SoC.\n\nconfig APPLE_SART\n\ttristate \"Apple SART DMA address filter\"\n\tdepends on ARCH_APPLE || COMPILE_TEST\n\tdefault ARCH_APPLE\n\thelp\n\t  Apple SART is a simple DMA address filter used on Apple SoCs such\n\t  as the M1. It is usually required for the NVMe coprocessor which does\n\t  not use a proper IOMMU.\n\n\t  Say 'y' here if you have an Apple SoC.\n\nendmenu\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

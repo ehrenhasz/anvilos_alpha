@@ -1,0 +1,9 @@
+{
+  "module_name": "mdsmap.h",
+  "hash_id": "a15dc362dcfa30769c458c738ce832d078bb373aa050f619fedeaecd516521fa",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ceph/mdsmap.h",
+  "human_readable_source": " \n#ifndef _FS_CEPH_MDSMAP_H\n#define _FS_CEPH_MDSMAP_H\n\n#include <linux/bug.h>\n#include <linux/ceph/types.h>\n\n \nstruct ceph_mds_info {\n\tu64 global_id;\n\tstruct ceph_entity_addr addr;\n\ts32 state;\n\tint num_export_targets;\n\tbool laggy;\n\tu32 *export_targets;\n};\n\nstruct ceph_mdsmap {\n\tu32 m_epoch, m_client_epoch, m_last_failure;\n\tu32 m_root;\n\tu32 m_session_timeout;           \n\tu32 m_session_autoclose;         \n\tu64 m_max_file_size;\n\tu64 m_max_xattr_size;\t\t \n\tu32 m_max_mds;\t\t\t \n\tu32 m_num_active_mds;\t\t \n\tu32 possible_max_rank;\t\t \n\tstruct ceph_mds_info *m_info;\n\n\t \n\tint m_num_data_pg_pools;\n\tu64 *m_data_pg_pools;\n\tu64 m_cas_pg_pool;\n\n\tbool m_enabled;\n\tbool m_damaged;\n\tint m_num_laggy;\n};\n\nstatic inline struct ceph_entity_addr *\nceph_mdsmap_get_addr(struct ceph_mdsmap *m, int w)\n{\n\tif (w >= m->possible_max_rank)\n\t\treturn NULL;\n\treturn &m->m_info[w].addr;\n}\n\nstatic inline int ceph_mdsmap_get_state(struct ceph_mdsmap *m, int w)\n{\n\tBUG_ON(w < 0);\n\tif (w >= m->possible_max_rank)\n\t\treturn CEPH_MDS_STATE_DNE;\n\treturn m->m_info[w].state;\n}\n\nstatic inline bool ceph_mdsmap_is_laggy(struct ceph_mdsmap *m, int w)\n{\n\tif (w >= 0 && w < m->possible_max_rank)\n\t\treturn m->m_info[w].laggy;\n\treturn false;\n}\n\nextern int ceph_mdsmap_get_random_mds(struct ceph_mdsmap *m);\nstruct ceph_mdsmap *ceph_mdsmap_decode(void **p, void *end, bool msgr2);\nextern void ceph_mdsmap_destroy(struct ceph_mdsmap *m);\nextern bool ceph_mdsmap_is_cluster_available(struct ceph_mdsmap *m);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "63f1fffced9c498efc0fb66297a0f3a0d38027a1ef20b053019c642f7fc6a03c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/isdn/hardware/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Makefile for the CAPI hardware drivers\n\n# Object files in subdirectories\n\nobj-$(CONFIG_MISDN)\t\t+= mISDN/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

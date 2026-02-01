@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f79353f686b66b791e156c744fa99859d32e137f1747a2b03e77bfa79cf39422",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/loongarch/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nifndef NO_DWARF\nPERF_HAVE_DWARF_REGS := 1\nendif\nPERF_HAVE_ARCH_REGS_QUERY_REGISTER_OFFSET := 1\nPERF_HAVE_JITDUMP := 1\n\n#\n# Syscall table generation for perf\n#\n\nout    := $(OUTPUT)arch/loongarch/include/generated/asm\nheader := $(out)/syscalls.c\nincpath := $(srctree)/tools\nsysdef := $(srctree)/tools/arch/loongarch/include/uapi/asm/unistd.h\nsysprf := $(srctree)/tools/perf/arch/loongarch/entry/syscalls/\nsystbl := $(sysprf)/mksyscalltbl\n\n# Create output directory if not already present\n_dummy := $(shell [ -d '$(out)' ] || mkdir -p '$(out)')\n\n$(header): $(sysdef) $(systbl)\n\t$(Q)$(SHELL) '$(systbl)' '$(CC)' '$(HOSTCC)' $(incpath) $(sysdef) > $@\n\nclean::\n\t$(call QUIET_CLEAN, loongarch) $(RM) $(header)\n\narchheaders: $(header)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

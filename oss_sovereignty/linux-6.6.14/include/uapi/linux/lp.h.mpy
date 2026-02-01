@@ -1,0 +1,9 @@
+{
+  "module_name": "lp.h",
+  "hash_id": "f9def29ac09515a2ba950264c86b1618651e668f71e86df73b5d9b900d8721ab",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/lp.h",
+  "human_readable_source": " \n \n#ifndef _UAPI_LINUX_LP_H\n#define _UAPI_LINUX_LP_H\n\n#include <linux/types.h>\n#include <linux/ioctl.h>\n\n \n#define LP_EXIST 0x0001\n#define LP_SELEC 0x0002\n#define LP_BUSY\t 0x0004\n#define LP_BUSY_BIT_POS 2\n#define LP_OFFL\t 0x0008\n#define LP_NOPA  0x0010\n#define LP_ERR   0x0020\n#define LP_ABORT 0x0040\n#define LP_CAREFUL 0x0080  \n#define LP_ABORTOPEN 0x0100\n\n#define LP_TRUST_IRQ_  0x0200  \n#define LP_NO_REVERSE  0x0400  \n#define LP_DATA_AVAIL  0x0800  \n\n \n#define LP_PBUSY\t0x80   \n#define LP_PACK\t\t0x40   \n#define LP_POUTPA\t0x20   \n#define LP_PSELECD\t0x10   \n#define LP_PERRORP\t0x08   \n\n \n\n#define LP_INIT_CHAR 1000\n\n \n\n#define LP_INIT_WAIT 1\n\n \n\n#define LP_INIT_TIME 2\n\n \n#define LPCHAR   0x0601   \n#define LPTIME   0x0602   \n#define LPABORT  0x0604   \n#define LPSETIRQ 0x0605   \n#define LPGETIRQ 0x0606   \n#define LPWAIT   0x0608   \n \n#define LPCAREFUL   0x0609   \n#define LPABORTOPEN 0x060a   \n#define LPGETSTATUS 0x060b   \n#define LPRESET     0x060c   \n#ifdef LP_STATS\n#define LPGETSTATS  0x060d   \n#endif\n#define LPGETFLAGS  0x060e   \n#define LPSETTIMEOUT_OLD 0x060f  \n#define LPSETTIMEOUT_NEW \\\n\t_IOW(0x6, 0xf, __s64[2])  \n#if __BITS_PER_LONG == 64\n#define LPSETTIMEOUT LPSETTIMEOUT_OLD\n#else\n#define LPSETTIMEOUT (sizeof(time_t) > sizeof(__kernel_long_t) ? \\\n\tLPSETTIMEOUT_NEW : LPSETTIMEOUT_OLD)\n#endif\n\n \n\n#define LP_TIMEOUT_INTERRUPT\t(60 * HZ)\n#define LP_TIMEOUT_POLLED\t(10 * HZ)\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

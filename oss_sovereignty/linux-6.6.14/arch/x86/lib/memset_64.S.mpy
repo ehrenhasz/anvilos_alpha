@@ -1,0 +1,9 @@
+{
+  "module_name": "memset_64.S",
+  "hash_id": "262065322c4d1c644a4ae1412a37aa47cb0fa8eb136d292da03c9bbcea81c234",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/lib/memset_64.S",
+  "human_readable_source": " \n \n\n#include <linux/linkage.h>\n#include <asm/cpufeatures.h>\n#include <asm/alternative.h>\n#include <asm/export.h>\n\n.section .noinstr.text, \"ax\"\n\n \nSYM_FUNC_START(__memset)\n\tALTERNATIVE \"jmp memset_orig\", \"\", X86_FEATURE_FSRS\n\n\tmovq %rdi,%r9\n\tmovb %sil,%al\n\tmovq %rdx,%rcx\n\trep stosb\n\tmovq %r9,%rax\n\tRET\nSYM_FUNC_END(__memset)\nEXPORT_SYMBOL(__memset)\n\nSYM_FUNC_ALIAS_MEMFUNC(memset, __memset)\nEXPORT_SYMBOL(memset)\n\nSYM_FUNC_START_LOCAL(memset_orig)\n\tmovq %rdi,%r10\n\n\t \n\tmovzbl %sil,%ecx\n\tmovabs $0x0101010101010101,%rax\n\timulq  %rcx,%rax\n\n\t \n\tmovl  %edi,%r9d\n\tandl  $7,%r9d\n\tjnz  .Lbad_alignment\n.Lafter_bad_alignment:\n\n\tmovq  %rdx,%rcx\n\tshrq  $6,%rcx\n\tjz\t .Lhandle_tail\n\n\t.p2align 4\n.Lloop_64:\n\tdecq  %rcx\n\tmovq  %rax,(%rdi)\n\tmovq  %rax,8(%rdi)\n\tmovq  %rax,16(%rdi)\n\tmovq  %rax,24(%rdi)\n\tmovq  %rax,32(%rdi)\n\tmovq  %rax,40(%rdi)\n\tmovq  %rax,48(%rdi)\n\tmovq  %rax,56(%rdi)\n\tleaq  64(%rdi),%rdi\n\tjnz    .Lloop_64\n\n\t \n\t.p2align 4\n.Lhandle_tail:\n\tmovl\t%edx,%ecx\n\tandl    $63&(~7),%ecx\n\tjz \t\t.Lhandle_7\n\tshrl\t$3,%ecx\n\t.p2align 4\n.Lloop_8:\n\tdecl   %ecx\n\tmovq  %rax,(%rdi)\n\tleaq  8(%rdi),%rdi\n\tjnz    .Lloop_8\n\n.Lhandle_7:\n\tandl\t$7,%edx\n\tjz      .Lende\n\t.p2align 4\n.Lloop_1:\n\tdecl    %edx\n\tmovb \t%al,(%rdi)\n\tleaq\t1(%rdi),%rdi\n\tjnz     .Lloop_1\n\n.Lende:\n\tmovq\t%r10,%rax\n\tRET\n\n.Lbad_alignment:\n\tcmpq $7,%rdx\n\tjbe\t.Lhandle_7\n\tmovq %rax,(%rdi)\t \n\tmovq $8,%r8\n\tsubq %r9,%r8\n\taddq %r8,%rdi\n\tsubq %r8,%rdx\n\tjmp .Lafter_bad_alignment\n.Lfinal:\nSYM_FUNC_END(memset_orig)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

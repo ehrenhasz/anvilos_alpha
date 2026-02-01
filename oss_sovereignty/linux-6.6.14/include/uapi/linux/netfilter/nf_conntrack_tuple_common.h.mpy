@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_tuple_common.h",
+  "hash_id": "09ea95f15a71624f4bf90cbc2defeaaf56a49b1885e605e8890132fac2db50ac",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/nf_conntrack_tuple_common.h",
+  "human_readable_source": " \n#ifndef _NF_CONNTRACK_TUPLE_COMMON_H\n#define _NF_CONNTRACK_TUPLE_COMMON_H\n\n#include <linux/types.h>\n#ifndef __KERNEL__\n#include <linux/netfilter.h>\n#endif\n#include <linux/netfilter/nf_conntrack_common.h>  \n\nenum ip_conntrack_dir {\n\tIP_CT_DIR_ORIGINAL,\n\tIP_CT_DIR_REPLY,\n\tIP_CT_DIR_MAX\n};\n\n \nunion nf_conntrack_man_proto {\n\t \n\t__be16 all;\n\n\tstruct {\n\t\t__be16 port;\n\t} tcp;\n\tstruct {\n\t\t__be16 port;\n\t} udp;\n\tstruct {\n\t\t__be16 id;\n\t} icmp;\n\tstruct {\n\t\t__be16 port;\n\t} dccp;\n\tstruct {\n\t\t__be16 port;\n\t} sctp;\n\tstruct {\n\t\t__be16 key;\t \n\t} gre;\n};\n\n#define CTINFO2DIR(ctinfo) ((ctinfo) >= IP_CT_IS_REPLY ? IP_CT_DIR_REPLY : IP_CT_DIR_ORIGINAL)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

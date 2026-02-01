@@ -1,0 +1,9 @@
+{
+  "module_name": "gdm_endian.h",
+  "hash_id": "13f0e856fbd23b3d140cecff69c5a8af97fc5153cfd313062e84a191276fd8c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/gdm724x/gdm_endian.h",
+  "human_readable_source": " \n \n\n#ifndef __GDM_ENDIAN_H__\n#define __GDM_ENDIAN_H__\n\n#include <linux/types.h>\n\n \ntypedef __u32 __bitwise __dev32;\ntypedef __u16 __bitwise __dev16;\n\nenum {\n\tENDIANNESS_MIN = 0,\n\tENDIANNESS_UNKNOWN,\n\tENDIANNESS_LITTLE,\n\tENDIANNESS_BIG,\n\tENDIANNESS_MIDDLE,\n\tENDIANNESS_MAX\n};\n\n__dev16 gdm_cpu_to_dev16(u8 dev_ed, u16 x);\nu16 gdm_dev16_to_cpu(u8 dev_ed, __dev16 x);\n__dev32 gdm_cpu_to_dev32(u8 dev_ed, u32 x);\nu32 gdm_dev32_to_cpu(u8 dev_ed, __dev32 x);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

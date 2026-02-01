@@ -1,0 +1,9 @@
+{
+  "module_name": "dpu.json",
+  "hash_id": "2340058108eca3796b9a9ad1a7f55e2531209886da91d11aa560634c602bcf94",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a65-e1/dpu.json",
+  "human_readable_source": "[\n    {\n        \"PublicDescription\": \"Instruction retired, indirect branch, mispredicted\",\n        \"EventCode\": \"0xE9\",\n        \"EventName\": \"DPU_BR_IND_MIS\",\n        \"BriefDescription\": \"Instruction retired, indirect branch, mispredicted\"\n    },\n    {\n        \"PublicDescription\": \"Instruction retired, conditional branch, mispredicted\",\n        \"EventCode\": \"0xEA\",\n        \"EventName\": \"DPU_BR_COND_MIS\",\n        \"BriefDescription\": \"Instruction retired, conditional branch, mispredicted\"\n    },\n    {\n        \"PublicDescription\": \"Memory error (any type) from IFU\",\n        \"EventCode\": \"0xEB\",\n        \"EventName\": \"DPU_MEM_ERR_IFU\",\n        \"BriefDescription\": \"Memory error (any type) from IFU\"\n    },\n    {\n        \"PublicDescription\": \"Memory error (any type) from DCU\",\n        \"EventCode\": \"0xEC\",\n        \"EventName\": \"DPU_MEM_ERR_DCU\",\n        \"BriefDescription\": \"Memory error (any type) from DCU\"\n    },\n    {\n        \"PublicDescription\": \"Memory error (any type) from TLB\",\n        \"EventCode\": \"0xED\",\n        \"EventName\": \"DPU_MEM_ERR_TLB\",\n        \"BriefDescription\": \"Memory error (any type) from TLB\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

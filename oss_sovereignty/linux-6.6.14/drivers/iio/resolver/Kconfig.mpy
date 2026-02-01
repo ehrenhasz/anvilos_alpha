@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e1335571b37c3e3a3a6a350da8ec53c1ca087fac95a7367fa8fcb0668aa0f2dc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/resolver/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Resolver/Synchro drivers\n#\nmenu \"Resolver to digital converters\"\n\nconfig AD2S90\n\ttristate \"Analog Devices ad2s90 driver\"\n\tdepends on SPI\n\thelp\n\t  Say yes here to build support for Analog Devices spi resolver\n\t  to digital converters, ad2s90, provides direct access via sysfs.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called ad2s90.\n\nconfig AD2S1200\n\ttristate \"Analog Devices ad2s1200/ad2s1205 driver\"\n\tdepends on SPI\n\tdepends on GPIOLIB || COMPILE_TEST\n\thelp\n\t  Say yes here to build support for Analog Devices spi resolver\n\t  to digital converters, ad2s1200 and ad2s1205, provides direct access\n\t  via sysfs.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called ad2s1200.\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

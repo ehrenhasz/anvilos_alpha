@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8570dc02802d4327437b0d2ba13bc729cf2c19712fee9462940b10f6deb0e70e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/mlx5/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_MLX5_INFINIBAND) += mlx5_ib.o\n\nmlx5_ib-y := ah.o \\\n\t     cmd.o \\\n\t     cong.o \\\n\t     counters.o \\\n\t     cq.o \\\n\t     dm.o \\\n\t     doorbell.o \\\n\t     gsi.o \\\n\t     ib_virt.o \\\n\t     mad.o \\\n\t     main.o \\\n\t     mem.o \\\n\t     mr.o \\\n\t     qp.o \\\n\t     qpc.o \\\n\t     restrack.o \\\n\t     srq.o \\\n\t     srq_cmd.o \\\n\t     umr.o \\\n\t     wr.o\n\nmlx5_ib-$(CONFIG_INFINIBAND_ON_DEMAND_PAGING) += odp.o\nmlx5_ib-$(CONFIG_MLX5_ESWITCH) += ib_rep.o\nmlx5_ib-$(CONFIG_INFINIBAND_USER_ACCESS) += devx.o \\\n\t\t\t\t\t    fs.o \\\n\t\t\t\t\t    qos.o \\\n\t\t\t\t\t    std_types.o\nmlx5_ib-$(CONFIG_MLX5_MACSEC) += macsec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

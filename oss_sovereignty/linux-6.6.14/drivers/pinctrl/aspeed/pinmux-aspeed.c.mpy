@@ -1,0 +1,9 @@
+{
+  "module_name": "pinmux-aspeed.c",
+  "hash_id": "34c3034f505c47818c98803d391f21825d6d3427ef708a422b9be0cfe9fb2f9f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/aspeed/pinmux-aspeed.c",
+  "human_readable_source": "\n \n\n \n\n#include \"pinmux-aspeed.h\"\n\nstatic const char *const aspeed_pinmux_ips[] = {\n\t[ASPEED_IP_SCU] = \"SCU\",\n\t[ASPEED_IP_GFX] = \"GFX\",\n\t[ASPEED_IP_LPC] = \"LPC\",\n};\n\nstatic inline void aspeed_sig_desc_print_val(\n\t\tconst struct aspeed_sig_desc *desc, bool enable, u32 rv)\n{\n\tpr_debug(\"Want %s%X[0x%08X]=0x%X, got 0x%X from 0x%08X\\n\",\n\t\t\taspeed_pinmux_ips[desc->ip], desc->reg,\n\t\t\tdesc->mask, enable ? desc->enable : desc->disable,\n\t\t\t(rv & desc->mask) >> __ffs(desc->mask), rv);\n}\n\n \nint aspeed_sig_desc_eval(const struct aspeed_sig_desc *desc,\n\t\t\t bool enabled, struct regmap *map)\n{\n\tint ret;\n\tunsigned int raw;\n\tu32 want;\n\n\tif (!map)\n\t\treturn -ENODEV;\n\n\tret = regmap_read(map, desc->reg, &raw);\n\tif (ret)\n\t\treturn ret;\n\n\taspeed_sig_desc_print_val(desc, enabled, raw);\n\twant = enabled ? desc->enable : desc->disable;\n\n\treturn ((raw & desc->mask) >> __ffs(desc->mask)) == want;\n}\n\n \nint aspeed_sig_expr_eval(struct aspeed_pinmux_data *ctx,\n\t\t\t const struct aspeed_sig_expr *expr, bool enabled)\n{\n\tint ret;\n\tint i;\n\n\tif (ctx->ops->eval)\n\t\treturn ctx->ops->eval(ctx, expr, enabled);\n\n\tfor (i = 0; i < expr->ndescs; i++) {\n\t\tconst struct aspeed_sig_desc *desc = &expr->descs[i];\n\n\t\tret = aspeed_sig_desc_eval(desc, enabled, ctx->maps[desc->ip]);\n\t\tif (ret <= 0)\n\t\t\treturn ret;\n\t}\n\n\treturn 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

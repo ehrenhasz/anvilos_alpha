@@ -1,0 +1,9 @@
+{
+  "module_name": "extable.h",
+  "hash_id": "9aae7aee511dddd4444283b8328a21a3fe8428a3573b051158a5ce661925c9bd",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/extable.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_EXTABLE_H\n#define _ASM_X86_EXTABLE_H\n\n#include <asm/extable_fixup_types.h>\n\n \n\nstruct exception_table_entry {\n\tint insn, fixup, data;\n};\nstruct pt_regs;\n\n#define ARCH_HAS_RELATIVE_EXTABLE\n\n#define swap_ex_entry_fixup(a, b, tmp, delta)\t\t\t\\\n\tdo {\t\t\t\t\t\t\t\\\n\t\t(a)->fixup = (b)->fixup + (delta);\t\t\\\n\t\t(b)->fixup = (tmp).fixup - (delta);\t\t\\\n\t\t(a)->data = (b)->data;\t\t\t\t\\\n\t\t(b)->data = (tmp).data;\t\t\t\t\\\n\t} while (0)\n\nextern int fixup_exception(struct pt_regs *regs, int trapnr,\n\t\t\t   unsigned long error_code, unsigned long fault_addr);\nextern int fixup_bug(struct pt_regs *regs, int trapnr);\nextern int ex_get_fixup_type(unsigned long ip);\nextern void early_fixup_exception(struct pt_regs *regs, int trapnr);\n\n#ifdef CONFIG_X86_MCE\nextern void __noreturn ex_handler_msr_mce(struct pt_regs *regs, bool wrmsr);\n#else\nstatic inline void __noreturn ex_handler_msr_mce(struct pt_regs *regs, bool wrmsr)\n{\n\tfor (;;)\n\t\tcpu_relax();\n}\n#endif\n\n#if defined(CONFIG_BPF_JIT) && defined(CONFIG_X86_64)\nbool ex_handler_bpf(const struct exception_table_entry *x, struct pt_regs *regs);\n#else\nstatic inline bool ex_handler_bpf(const struct exception_table_entry *x,\n\t\t\t\t  struct pt_regs *regs) { return false; }\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

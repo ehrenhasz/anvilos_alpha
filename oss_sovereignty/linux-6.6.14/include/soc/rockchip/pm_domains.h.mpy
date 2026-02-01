@@ -1,0 +1,9 @@
+{
+  "module_name": "pm_domains.h",
+  "hash_id": "5017162ff31a3133b6646ce4ecec2c32f8280a94b48d7fdfc4db39711456e7fa",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/rockchip/pm_domains.h",
+  "human_readable_source": " \n \n\n#ifndef __SOC_ROCKCHIP_PM_DOMAINS_H__\n#define __SOC_ROCKCHIP_PM_DOMAINS_H__\n\n#ifdef CONFIG_ROCKCHIP_PM_DOMAINS\n\nint rockchip_pmu_block(void);\nvoid rockchip_pmu_unblock(void);\n\n#else  \n\nstatic inline int rockchip_pmu_block(void)\n{\n\treturn 0;\n}\n\nstatic inline void rockchip_pmu_unblock(void) { }\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

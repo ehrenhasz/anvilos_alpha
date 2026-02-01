@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ea7b569def7df865fb69f8a28c13b5856e3a54792cd5ba32d19cecd62e034cee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/s2255/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_USB_S2255)\t\t+= s2255drv.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

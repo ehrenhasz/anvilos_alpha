@@ -1,0 +1,9 @@
+{
+  "module_name": "netup-init.h",
+  "hash_id": "83081998b412733109857ce87510aecb7e683263c3d2ed2420b0a6d5422237aa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx23885/netup-init.h",
+  "human_readable_source": " \n \nextern void netup_initialize(struct cx23885_dev *dev);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

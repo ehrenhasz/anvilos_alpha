@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi.c",
+  "hash_id": "698df647dcb35772a6e0098e4e7cb10b54c59aa638f9bb3ad92a1c950a358c6f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/dw/acpi.c",
+  "human_readable_source": "\n\n\n#include <linux/acpi.h>\n#include <linux/acpi_dma.h>\n\n#include \"internal.h\"\n\nstatic bool dw_dma_acpi_filter(struct dma_chan *chan, void *param)\n{\n\tstruct acpi_dma_spec *dma_spec = param;\n\tstruct dw_dma_slave slave = {\n\t\t.dma_dev = dma_spec->dev,\n\t\t.src_id = dma_spec->slave_id,\n\t\t.dst_id = dma_spec->slave_id,\n\t\t.m_master = 0,\n\t\t.p_master = 1,\n\t};\n\n\treturn dw_dma_filter(chan, &slave);\n}\n\nvoid dw_dma_acpi_controller_register(struct dw_dma *dw)\n{\n\tstruct device *dev = dw->dma.dev;\n\tstruct acpi_dma_filter_info *info;\n\tint ret;\n\n\tif (!has_acpi_companion(dev))\n\t\treturn;\n\n\tinfo = devm_kzalloc(dev, sizeof(*info), GFP_KERNEL);\n\tif (!info)\n\t\treturn;\n\n\tdma_cap_zero(info->dma_cap);\n\tdma_cap_set(DMA_SLAVE, info->dma_cap);\n\tinfo->filter_fn = dw_dma_acpi_filter;\n\n\tret = acpi_dma_controller_register(dev, acpi_dma_simple_xlate, info);\n\tif (ret)\n\t\tdev_err(dev, \"could not register acpi_dma_controller\\n\");\n}\nEXPORT_SYMBOL_GPL(dw_dma_acpi_controller_register);\n\nvoid dw_dma_acpi_controller_free(struct dw_dma *dw)\n{\n\tstruct device *dev = dw->dma.dev;\n\n\tif (!has_acpi_companion(dev))\n\t\treturn;\n\n\tacpi_dma_controller_free(dev);\n}\nEXPORT_SYMBOL_GPL(dw_dma_acpi_controller_free);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "p_delete.c",
+  "hash_id": "88ae29201859191d3e3b62ab76bbd014de542efda7f861582af41342430130a2",
+  "original_prompt": "Ingested from ncurses-6.4/panel/p_delete.c",
+  "human_readable_source": " \n\n \n\n \n#include \"panel.priv.h\"\n\nMODULE_ID(\"$Id: p_delete.c,v 1.17 2020/12/26 18:25:34 tom Exp $\")\n\nPANEL_EXPORT(int)\ndel_panel(PANEL *pan)\n{\n  int err = OK;\n\n  T((T_CALLED(\"del_panel(%p)\"), (void *)pan));\n  if (pan)\n    {\n      GetHook(pan);\n      HIDE_PANEL(pan, err, OK);\n      dBug((\"...discard ptr=%s\", USER_PTR(pan->user, 1)));\n      dBug((\"...deleted pan=%p\", (void *)pan));\n      free((void *)pan);\n    }\n  else\n    err = ERR;\n\n  returnCode(err);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

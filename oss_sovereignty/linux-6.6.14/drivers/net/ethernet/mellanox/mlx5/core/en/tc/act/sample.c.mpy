@@ -1,0 +1,9 @@
+{
+  "module_name": "sample.c",
+  "hash_id": "bd010cd61f6f6e433eae27a2cba23f4f17285ebdc64d253087f59a8f79174028",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/sample.c",
+  "human_readable_source": "\n\n\n#include <net/psample.h>\n#include \"act.h\"\n#include \"en/tc_priv.h\"\n#include \"en/tc/act/sample.h\"\n\nstatic int\ntc_act_parse_sample(struct mlx5e_tc_act_parse_state *parse_state,\n\t\t    const struct flow_action_entry *act,\n\t\t    struct mlx5e_priv *priv,\n\t\t    struct mlx5_flow_attr *attr)\n{\n\tstruct mlx5e_sample_attr *sample_attr = &attr->sample_attr;\n\n\tsample_attr->rate = act->sample.rate;\n\tsample_attr->group_num = act->sample.psample_group->group_num;\n\n\tif (act->sample.truncate)\n\t\tsample_attr->trunc_size = act->sample.trunc_size;\n\n\tattr->flags |= MLX5_ATTR_FLAG_SAMPLE;\n\tflow_flag_set(parse_state->flow, SAMPLE);\n\n\treturn 0;\n}\n\nbool\nmlx5e_tc_act_sample_is_multi_table(struct mlx5_core_dev *mdev,\n\t\t\t\t   struct mlx5_flow_attr *attr)\n{\n\tif (MLX5_CAP_GEN(mdev, reg_c_preserve) ||\n\t    attr->action & MLX5_FLOW_CONTEXT_ACTION_DECAP)\n\t\treturn true;\n\n\treturn false;\n}\n\nstatic bool\ntc_act_is_multi_table_act_sample(struct mlx5e_priv *priv,\n\t\t\t\t const struct flow_action_entry *act,\n\t\t\t\t struct mlx5_flow_attr *attr)\n{\n\treturn mlx5e_tc_act_sample_is_multi_table(priv->mdev, attr);\n}\n\nstruct mlx5e_tc_act mlx5e_tc_act_sample = {\n\t.parse_action = tc_act_parse_sample,\n\t.is_multi_table_act = tc_act_is_multi_table_act_sample,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

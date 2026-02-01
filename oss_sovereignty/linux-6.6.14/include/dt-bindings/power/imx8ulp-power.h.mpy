@@ -1,0 +1,9 @@
+{
+  "module_name": "imx8ulp-power.h",
+  "hash_id": "8248496e18e41372c89b7f56853c980e5c9e26e2f51b92c7f7e12494799c2c5b",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/imx8ulp-power.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_IMX8ULP_POWER_H__\n#define __DT_BINDINGS_IMX8ULP_POWER_H__\n\n#define IMX8ULP_PD_DMA1\t\t0\n#define IMX8ULP_PD_FLEXSPI2\t1\n#define IMX8ULP_PD_USB0\t\t2\n#define IMX8ULP_PD_USDHC0\t3\n#define IMX8ULP_PD_USDHC1\t4\n#define IMX8ULP_PD_USDHC2_USB1\t5\n#define IMX8ULP_PD_DCNANO\t6\n#define IMX8ULP_PD_EPDC\t\t7\n#define IMX8ULP_PD_DMA2\t\t8\n#define IMX8ULP_PD_GPU2D\t9\n#define IMX8ULP_PD_GPU3D\t10\n#define IMX8ULP_PD_HIFI4\t11\n#define IMX8ULP_PD_ISI\t\t12\n#define IMX8ULP_PD_MIPI_CSI\t13\n#define IMX8ULP_PD_MIPI_DSI\t14\n#define IMX8ULP_PD_PXP\t\t15\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

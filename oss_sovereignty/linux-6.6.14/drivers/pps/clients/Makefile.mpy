@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a6b6e5242b96b59d00362b184e49ee6fe0ff295063eda30a24b3eae57c2220e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pps/clients/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for PPS clients.\n#\n\nobj-$(CONFIG_PPS_CLIENT_KTIMER)\t+= pps-ktimer.o\nobj-$(CONFIG_PPS_CLIENT_LDISC)\t+= pps-ldisc.o\nobj-$(CONFIG_PPS_CLIENT_PARPORT) += pps_parport.o\nobj-$(CONFIG_PPS_CLIENT_GPIO)\t+= pps-gpio.o\n\nccflags-$(CONFIG_PPS_DEBUG) := -DDEBUG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

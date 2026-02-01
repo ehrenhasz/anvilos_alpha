@@ -1,0 +1,9 @@
+{
+  "module_name": "wme.h",
+  "hash_id": "e7639191fef65a8a115fdc85eed1f73231b370cfce972cd2bbd582383162204e",
+  "original_prompt": "Ingested from linux-6.6.14/net/mac80211/wme.h",
+  "human_readable_source": " \n \n\n#ifndef _WME_H\n#define _WME_H\n\n#include <linux/netdevice.h>\n#include \"ieee80211_i.h\"\n\nu16 ieee80211_select_queue_80211(struct ieee80211_sub_if_data *sdata,\n\t\t\t\t struct sk_buff *skb,\n\t\t\t\t struct ieee80211_hdr *hdr);\nu16 ieee80211_select_queue(struct ieee80211_sub_if_data *sdata,\n\t\t\t   struct sta_info *sta, struct sk_buff *skb);\nvoid ieee80211_set_qos_hdr(struct ieee80211_sub_if_data *sdata,\n\t\t\t   struct sk_buff *skb);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rsa_n_pw",
+  "hash_id": "4d6d2c306ed3a6c959650f922a664abac3221e48b16a5d2ef96a8ffd25c3e77b",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshkey/testdata/rsa_n_pw",
+  "human_readable_source": "-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAACmFlczI1Ni1jYmMAAAAGYmNyeXB0AAAAGAAAABAFw/Wg/V\nI5SAXWj/HJr9qeAAAAEAAAAAEAAACXAAAAB3NzaC1yc2EAAAADAQABAAAAgQDLV5lUTt7F\nrADseB/CGhEZzpoojjEW5y8+ePvLppmK3MmMI18ud6vxzpK3bwZLYkVSyfJYI0HmIuGhdu\n7yMrW6wb84gbq8C31Xoe9EORcIUuGSvDKdNSM1SjlhDquRblDFB8kToqXyx1lqrXecXylx\nIUOL0jE+u0rU1967pDJx+wAAAgD1iSGiMlMJt2VH4kx5yr0wCJS+4UOmX0bxKO7UH5Jcul\nK5eaSe5ZoKE7hTYBaz0K5dRF/0fqLsvVZlE4quDjFLN6Hyavgn2W/QM7SUqBHgRMal9pgH\nLnxX6mFNWJ+4yb7f3bcbVIdgmMm3sT9Xjwaf5xgzNlR2mkUWtFwjyQh6FxUo5apNzqNBwO\nl2Q4xfmyZTp1s++pStQ/su6obXpxnE2Nx5G/D84ZL5iWl+njUy/MvJTazHRbiTSyihU+UA\nmUr5ZNuP3WUYY+h3KVlHpYHJYB7l3AMTKuPMFLhY9V7BJ+DuKPaqBgX4hvRzY0eVQiFr61\novjWjvfu1ulx550JqdYCgH2PpP0E89OQne35Cxs9QPThfe8DKojC9YquYh9zmVTvr7kNiE\nSoluk/7oKpQIDaC+/SRk7AJ2e3Cbt1lXyGNn37PuqaaC/apaF/DOD6Yig9aClS7jOUrT96\n56trFAYfHEIKbRCUSMCiM1+x6HOLYf5ROrGE9KxT3kUD9XMsMpTva+cPpHUpbGpXcYE10N\nMyYDz+V5M2/ZoIdEhscJNQ3UnhaZpeEaqcOyNyo90n3Dnaw/WpMDD/kNMGfm8daTaYInnQ\nQnwA2gwlYfpTAqxE71oXgOuGmtA0yqJB4778Xq26Pb+B7/mZZZe6n0FVmiNC+ZG37ZGOw/\niGL9e2Sxzw==\n-----END OPENSSH PRIVATE KEY-----\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

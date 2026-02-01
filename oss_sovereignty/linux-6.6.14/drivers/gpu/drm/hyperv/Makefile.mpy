@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f483331aabd63cb97ece323e9bd9c3f8cb3b198a73ce66777dfdcb415b9ed8ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/hyperv/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nhyperv_drm-y := \\\n\thyperv_drm_drv.o \\\n\thyperv_drm_modeset.o \\\n\thyperv_drm_proto.o\n\nobj-$(CONFIG_DRM_HYPERV) += hyperv_drm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

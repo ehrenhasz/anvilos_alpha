@@ -1,0 +1,9 @@
+{
+  "module_name": "mkspec",
+  "hash_id": "ddd80b0822b3b1426868144a5f5de4d7c4b1e33aec2ed9c0526484e3c5ee38d4",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/package/mkspec",
+  "human_readable_source": "#!/bin/sh\n#\n#\tOutput a simple RPM spec file.\n#\tThis version assumes a minimum of RPM 4.13\n#\n#\tThe only gothic bit here is redefining install_post to avoid\n#\tstripping the symbols from files in the kernel which we want\n#\n#\tPatched for non-x86 by Opencon (L) 2002 <opencon@rio.skydome.net>\n#\n\nif grep -q CONFIG_MODULES=y include/config/auto.conf; then\necho '%define with_devel %{?_without_devel: 0} %{?!_without_devel: 1}'\nelse\necho '%define with_devel 0'\nfi\n\ncat<<EOF\n%define ARCH ${ARCH}\n%define KERNELRELEASE ${KERNELRELEASE}\n%define pkg_release $(\"${srctree}/init/build-version\")\nEOF\n\ncat \"${srctree}/scripts/package/kernel.spec\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

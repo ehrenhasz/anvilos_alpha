@@ -1,0 +1,9 @@
+{
+  "module_name": "user.h",
+  "hash_id": "8caf27123c902a5e628858b20a3a20d22d90bea925ec302be26f474586a22b90",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/user.h",
+  "human_readable_source": "#ifndef __NVIF_USER_H__\n#define __NVIF_USER_H__\n#include <nvif/object.h>\nstruct nvif_device;\n\nstruct nvif_user {\n\tconst struct nvif_user_func *func;\n\tstruct nvif_object object;\n};\n\nstruct nvif_user_func {\n\tvoid (*doorbell)(struct nvif_user *, u32 token);\n\tu64 (*time)(struct nvif_user *);\n};\n\nint nvif_user_ctor(struct nvif_device *, const char *name);\nvoid nvif_user_dtor(struct nvif_device *);\n\nextern const struct nvif_user_func nvif_userc361;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

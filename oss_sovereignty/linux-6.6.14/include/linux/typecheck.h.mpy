@@ -1,0 +1,9 @@
+{
+  "module_name": "typecheck.h",
+  "hash_id": "72ddf844f5307970e8d4ee524954fe89c666acd4efc1a54cf6640ca03abb5967",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/typecheck.h",
+  "human_readable_source": " \n#ifndef TYPECHECK_H_INCLUDED\n#define TYPECHECK_H_INCLUDED\n\n \n#define typecheck(type,x) \\\n({\ttype __dummy; \\\n\ttypeof(x) __dummy2; \\\n\t(void)(&__dummy == &__dummy2); \\\n\t1; \\\n})\n\n \n#define typecheck_fn(type,function) \\\n({\ttypeof(type) __tmp = function; \\\n\t(void)__tmp; \\\n})\n\n \n#define typecheck_pointer(x) \\\n({\ttypeof(x) __dummy; \\\n\t(void)sizeof(*__dummy); \\\n\t1; \\\n})\n\n#endif\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

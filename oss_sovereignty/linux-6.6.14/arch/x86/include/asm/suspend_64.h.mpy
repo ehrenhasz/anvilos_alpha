@@ -1,0 +1,9 @@
+{
+  "module_name": "suspend_64.h",
+  "hash_id": "b35c1c1e5a732bffe8e4ecc0d1cb384c5d1b9a17a7c418ac1bb0d3338d6a1386",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/suspend_64.h",
+  "human_readable_source": " \n \n#ifndef _ASM_X86_SUSPEND_64_H\n#define _ASM_X86_SUSPEND_64_H\n\n#include <asm/desc.h>\n#include <asm/fpu/api.h>\n\n \nstruct saved_context {\n\tstruct pt_regs regs;\n\n\t \n\tu16 ds, es, fs, gs;\n\n\t \n\tunsigned long kernelmode_gs_base, usermode_gs_base, fs_base;\n\n\tunsigned long cr0, cr2, cr3, cr4;\n\tu64 misc_enable;\n\tstruct saved_msrs saved_msrs;\n\tunsigned long efer;\n\tu16 gdt_pad;  \n\tstruct desc_ptr gdt_desc;\n\tu16 idt_pad;\n\tstruct desc_ptr idt;\n\tu16 ldt;\n\tu16 tss;\n\tunsigned long tr;\n\tunsigned long safety;\n\tunsigned long return_address;\n\tbool misc_enable_saved;\n} __attribute__((packed));\n\n#define loaddebug(thread,register) \\\n\tset_debugreg((thread)->debugreg##register, register)\n\n \nextern char core_restore_code[];\nextern char restore_registers[];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

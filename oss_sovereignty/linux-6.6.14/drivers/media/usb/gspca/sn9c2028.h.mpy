@@ -1,0 +1,9 @@
+{
+  "module_name": "sn9c2028.h",
+  "hash_id": "c836e5f2659f8c7e3ef78ccd177b586ec97e12ed4f9534fe7b0763d56e518026",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/gspca/sn9c2028.h",
+  "human_readable_source": " \n \n\nstatic const unsigned char sn9c2028_sof_marker[] = {\n\t0xff, 0xff, 0x00, 0xc4, 0xc4, 0x96,\n\t0x00,\n\t0x00,  \n\t0x00,\n\t0x00,\n\t0x00,  \n\t0x00,  \n};\n\nstatic unsigned char *sn9c2028_find_sof(struct gspca_dev *gspca_dev,\n\t\t\t\t\tunsigned char *m, int len)\n{\n\tstruct sd *sd = (struct sd *) gspca_dev;\n\tint i;\n\n\t \n\tfor (i = 0; i < len; i++) {\n\t\tif ((m[i] == sn9c2028_sof_marker[sd->sof_read]) ||\n\t\t    (sd->sof_read > 5)) {\n\t\t\tsd->sof_read++;\n\t\t\tif (sd->sof_read == 11)\n\t\t\t\tsd->avg_lum_l = m[i];\n\t\t\tif (sd->sof_read == 12)\n\t\t\t\tsd->avg_lum = (m[i] << 8) + sd->avg_lum_l;\n\t\t\tif (sd->sof_read == sizeof(sn9c2028_sof_marker)) {\n\t\t\t\tgspca_dbg(gspca_dev, D_FRAM,\n\t\t\t\t\t  \"SOF found, bytes to analyze: %u - Frame starts at byte #%u\\n\",\n\t\t\t\t\t  len, i + 1);\n\t\t\t\tsd->sof_read = 0;\n\t\t\t\treturn m + i + 1;\n\t\t\t}\n\t\t} else {\n\t\t\tsd->sof_read = 0;\n\t\t}\n\t}\n\n\treturn NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "builtins.h",
+  "hash_id": "05789a7bfb09c719f20e5476461fb5aed86c683a099402ffd91d7f291bfe31fc",
+  "original_prompt": "Ingested from bash-5.2.21/builtins.h",
+  "human_readable_source": " \n\n \n\n#ifndef BUILTINS_H\n#define BUILTINS_H\n\n#include \"config.h\"\n\n#if defined (HAVE_UNISTD_H)\n#  ifdef _MINIX\n#    include <sys/types.h>\n#  endif\n#  include <unistd.h>\n#endif\n\n#include \"command.h\"\n#include \"general.h\"\n\n#if defined (ALIAS)\n#include \"alias.h\"\n#endif\n\n \n#define BUILTIN_ENABLED 0x01\t \n#define BUILTIN_DELETED 0x02\t \n#define STATIC_BUILTIN  0x04\t \n#define SPECIAL_BUILTIN 0x08\t \n#define ASSIGNMENT_BUILTIN 0x10\t \n#define POSIX_BUILTIN\t0x20\t \n#define LOCALVAR_BUILTIN   0x40\t \n#define ARRAYREF_BUILTIN 0x80\t \n\n#define BASE_INDENT\t4\n\n \nstruct builtin {\n  char *name;\t\t\t \n  sh_builtin_func_t *function;\t \n  int flags;\t\t\t \n  char * const *long_doc;\t \n  const char *short_doc;\t \n  char *handle;\t\t\t \n};\n\n \nextern int num_shell_builtins;\t \nextern struct builtin static_shell_builtins[];\nextern struct builtin *shell_builtins;\nextern struct builtin *current_builtin;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

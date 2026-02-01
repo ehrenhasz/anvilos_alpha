@@ -1,0 +1,9 @@
+{
+  "module_name": "objzip.c",
+  "hash_id": "54289c43c2c5170803bbc4d0af60bfc3b5f12315d0989848cd256a17d9a6f794",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/objzip.c",
+  "human_readable_source": " \n\n#include <stdlib.h>\n#include <assert.h>\n\n#include \"py/objtuple.h\"\n#include \"py/runtime.h\"\n\ntypedef struct _mp_obj_zip_t {\n    mp_obj_base_t base;\n    size_t n_iters;\n    mp_obj_t iters[];\n} mp_obj_zip_t;\n\nstatic mp_obj_t zip_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {\n    mp_arg_check_num(n_args, n_kw, 0, MP_OBJ_FUN_ARGS_MAX, false);\n\n    mp_obj_zip_t *o = mp_obj_malloc_var(mp_obj_zip_t, iters, mp_obj_t, n_args, type);\n    o->n_iters = n_args;\n    for (size_t i = 0; i < n_args; i++) {\n        o->iters[i] = mp_getiter(args[i], NULL);\n    }\n    return MP_OBJ_FROM_PTR(o);\n}\n\nstatic mp_obj_t zip_iternext(mp_obj_t self_in) {\n    mp_check_self(mp_obj_is_type(self_in, &mp_type_zip));\n    mp_obj_zip_t *self = MP_OBJ_TO_PTR(self_in);\n    if (self->n_iters == 0) {\n        return MP_OBJ_STOP_ITERATION;\n    }\n    mp_obj_tuple_t *tuple = MP_OBJ_TO_PTR(mp_obj_new_tuple(self->n_iters, NULL));\n\n    for (size_t i = 0; i < self->n_iters; i++) {\n        mp_obj_t next = mp_iternext(self->iters[i]);\n        if (next == MP_OBJ_STOP_ITERATION) {\n            mp_obj_tuple_del(MP_OBJ_FROM_PTR(tuple));\n            return MP_OBJ_STOP_ITERATION;\n        }\n        tuple->items[i] = next;\n    }\n    return MP_OBJ_FROM_PTR(tuple);\n}\n\nMP_DEFINE_CONST_OBJ_TYPE(\n    mp_type_zip,\n    MP_QSTR_zip,\n    MP_TYPE_FLAG_ITER_IS_ITERNEXT,\n    make_new, zip_make_new,\n    iter, zip_iternext\n    );\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

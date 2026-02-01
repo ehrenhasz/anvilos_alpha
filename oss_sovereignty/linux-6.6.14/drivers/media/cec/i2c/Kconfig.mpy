@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9eef762adf413660f3155e0527284301e4461b08c8afb998e6bbe9646dbf92ef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/cec/i2c/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# I2C drivers\n\nconfig CEC_CH7322\n\ttristate \"Chrontel CH7322 CEC controller\"\n\tdepends on I2C\n\tselect REGMAP\n\tselect REGMAP_I2C\n\tselect CEC_CORE\n\thelp\n\t  This is a driver for the Chrontel CH7322 CEC controller. It uses the\n\t  generic CEC framework interface.\n\t  CEC bus is present in the HDMI connector and enables communication\n\t  between compatible devices.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

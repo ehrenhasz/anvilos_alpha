@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1a30798b4fece2db35f2d1b4d4c4a9396f9c6b5431600c9b3698af1d28b2c3d2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/pxa/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nif (ARCH_PXA || COMPILE_TEST)\n\nconfig PINCTRL_PXA\n\tbool\n\tselect PINMUX\n\tselect PINCONF\n\tselect GENERIC_PINCONF\n\nconfig PINCTRL_PXA25X\n\ttristate \"Marvell PXA25x pin controller driver\"\n\tselect PINCTRL_PXA\n\tdefault y if PXA25x\n\thelp\n\t  This is the pinctrl, pinmux, pinconf driver for the Marvell\n\t  PXA2xx block found in the pxa25x platforms.\n\nconfig PINCTRL_PXA27X\n\ttristate \"Marvell PXA27x pin controller driver\"\n\tselect PINCTRL_PXA\n\tdefault y if PXA27x\n\thelp\n\t  This is the pinctrl, pinmux, pinconf driver for the Marvell\n\t  PXA2xx block found in the pxa27x platforms.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "via_modesetting.h",
+  "hash_id": "7239d079eeff7a227cd3ed2b5a1454fdfd13bab9c48ee2bc7dcba2ee7a18955f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/via/via_modesetting.h",
+  "human_readable_source": " \n \n \n\n#ifndef __VIA_MODESETTING_H__\n#define __VIA_MODESETTING_H__\n\n#include <linux/types.h>\n\n\n#define VIA_PITCH_SIZE\t(1<<3)\n#define VIA_PITCH_MAX\t0x3FF8\n\n\nstruct via_display_timing {\n\tu16 hor_total;\n\tu16 hor_addr;\n\tu16 hor_blank_start;\n\tu16 hor_blank_end;\n\tu16 hor_sync_start;\n\tu16 hor_sync_end;\n\tu16 ver_total;\n\tu16 ver_addr;\n\tu16 ver_blank_start;\n\tu16 ver_blank_end;\n\tu16 ver_sync_start;\n\tu16 ver_sync_end;\n};\n\n\nvoid via_set_primary_timing(const struct via_display_timing *timing);\nvoid via_set_secondary_timing(const struct via_display_timing *timing);\nvoid via_set_primary_address(u32 addr);\nvoid via_set_secondary_address(u32 addr);\nvoid via_set_primary_pitch(u32 pitch);\nvoid via_set_secondary_pitch(u32 pitch);\nvoid via_set_primary_color_depth(u8 depth);\nvoid via_set_secondary_color_depth(u8 depth);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

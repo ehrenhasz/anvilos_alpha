@@ -1,0 +1,9 @@
+{
+  "module_name": "funeth_ktls.h",
+  "hash_id": "917392d0948975ae2867c889b916de0648c72a5c42250c7c91307d2e71ed71d5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/fungible/funeth/funeth_ktls.h",
+  "human_readable_source": " \n\n#ifndef _FUN_KTLS_H\n#define _FUN_KTLS_H\n\n#include <net/tls.h>\n\nstruct funeth_priv;\n\nstruct fun_ktls_tx_ctx {\n\t__be64 tlsid;\n\tu32 next_seq;\n};\n\n#if IS_ENABLED(CONFIG_TLS_DEVICE)\nint fun_ktls_init(struct net_device *netdev);\nvoid fun_ktls_cleanup(struct funeth_priv *fp);\n\n#else\n\nstatic inline void fun_ktls_init(struct net_device *netdev)\n{\n}\n\nstatic inline void fun_ktls_cleanup(struct funeth_priv *fp)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

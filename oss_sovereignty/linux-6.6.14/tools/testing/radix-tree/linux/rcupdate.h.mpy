@@ -1,0 +1,9 @@
+{
+  "module_name": "rcupdate.h",
+  "hash_id": "051999fe817c777faff870016fee651c71622670ab40f10fe5a400c458f6ad69",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/radix-tree/linux/rcupdate.h",
+  "human_readable_source": " \n#ifndef _RCUPDATE_H\n#define _RCUPDATE_H\n\n#include <urcu.h>\n\n#define rcu_dereference_raw(p) rcu_dereference(p)\n#define rcu_dereference_protected(p, cond) rcu_dereference(p)\n#define rcu_dereference_check(p, cond) rcu_dereference(p)\n#define RCU_INIT_POINTER(p, v)\tdo { (p) = (v); } while (0)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

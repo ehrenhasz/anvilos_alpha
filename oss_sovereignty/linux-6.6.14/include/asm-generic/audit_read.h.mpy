@@ -1,0 +1,9 @@
+{
+  "module_name": "audit_read.h",
+  "hash_id": "d0cd7389b30162bb3bf38abd9630003b0fe4b57c5e294e2214f7f49fe39888c2",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/audit_read.h",
+  "human_readable_source": " \n#ifdef __NR_readlink\n__NR_readlink,\n#endif\n__NR_quotactl,\n__NR_listxattr,\n__NR_llistxattr,\n__NR_flistxattr,\n__NR_getxattr,\n__NR_lgetxattr,\n__NR_fgetxattr,\n#ifdef __NR_readlinkat\n__NR_readlinkat,\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

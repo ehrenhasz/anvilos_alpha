@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "faf57ad7f9447421dc3df5638f287e53d3b61dc4aba6300f9d7cc79d36376937",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/cgroup/config",
+  "human_readable_source": "CONFIG_CGROUPS=y\nCONFIG_CGROUP_CPUACCT=y\nCONFIG_CGROUP_FREEZER=y\nCONFIG_CGROUP_SCHED=y\nCONFIG_MEMCG=y\nCONFIG_MEMCG_KMEM=y\nCONFIG_PAGE_COUNTER=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

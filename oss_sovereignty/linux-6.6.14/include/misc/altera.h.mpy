@@ -1,0 +1,9 @@
+{
+  "module_name": "altera.h",
+  "hash_id": "350d3f749556785402f269f6119d58e9de1604a512cc5346ee3b67e25ab1f9ab",
+  "original_prompt": "Ingested from linux-6.6.14/include/misc/altera.h",
+  "human_readable_source": " \n \n\n#ifndef _ALTERA_H_\n#define _ALTERA_H_\n\nstruct altera_config {\n\tvoid *dev;\n\tu8 *action;\n\tint (*jtag_io) (void *dev, int tms, int tdi, int tdo);\n};\n\n#if defined(CONFIG_ALTERA_STAPL) || \\\n\t\t(defined(CONFIG_ALTERA_STAPL_MODULE) && defined(MODULE))\n\nextern int altera_init(struct altera_config *config, const struct firmware *fw);\n#else\n\nstatic inline int altera_init(struct altera_config *config,\n\t\t\t\t\t\tconst struct firmware *fw)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn 0;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

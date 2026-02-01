@@ -1,0 +1,9 @@
+{
+  "module_name": "ndis.h",
+  "hash_id": "fe012d00f1f0eb5884272ee09156f1f5a7ea29323f71e1256f14f60e7d144f9d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/function/ndis.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_NDIS_H\n#define _LINUX_NDIS_H\n\nenum NDIS_DEVICE_POWER_STATE {\n\tNdisDeviceStateUnspecified = 0,\n\tNdisDeviceStateD0,\n\tNdisDeviceStateD1,\n\tNdisDeviceStateD2,\n\tNdisDeviceStateD3,\n\tNdisDeviceStateMaximum\n};\n\nstruct NDIS_PM_WAKE_UP_CAPABILITIES {\n\tenum NDIS_DEVICE_POWER_STATE  MinMagicPacketWakeUp;\n\tenum NDIS_DEVICE_POWER_STATE  MinPatternWakeUp;\n\tenum NDIS_DEVICE_POWER_STATE  MinLinkChangeWakeUp;\n};\n\nstruct NDIS_PNP_CAPABILITIES {\n\t__le32\t\t\t\t\tFlags;\n\tstruct NDIS_PM_WAKE_UP_CAPABILITIES\tWakeUpCapabilities;\n};\n\nstruct NDIS_PM_PACKET_PATTERN {\n\t__le32\tPriority;\n\t__le32\tReserved;\n\t__le32\tMaskSize;\n\t__le32\tPatternOffset;\n\t__le32\tPatternSize;\n\t__le32\tPatternFlags;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

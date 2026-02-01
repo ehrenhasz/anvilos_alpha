@@ -1,0 +1,9 @@
+{
+  "module_name": "error.h",
+  "hash_id": "ef8d83d058f197bd27c6ee828e84b12dbc3f1a9b88cbd270ed1bb71170526fcb",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/compressed/error.h",
+  "human_readable_source": " \n#ifndef BOOT_COMPRESSED_ERROR_H\n#define BOOT_COMPRESSED_ERROR_H\n\n#include <linux/compiler.h>\n\nvoid warn(const char *m);\nvoid error(char *m) __noreturn;\nvoid panic(const char *fmt, ...) __noreturn __cold;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

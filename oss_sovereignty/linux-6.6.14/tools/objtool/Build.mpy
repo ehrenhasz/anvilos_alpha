@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "e177d1ad7b2e6af856543c1e10cc20dfecfeac9c6abdd3662d27cece66a86984",
+  "original_prompt": "Ingested from linux-6.6.14/tools/objtool/Build",
+  "human_readable_source": "objtool-y += arch/$(SRCARCH)/\n\nobjtool-y += weak.o\n\nobjtool-y += check.o\nobjtool-y += special.o\nobjtool-y += builtin-check.o\nobjtool-y += elf.o\nobjtool-y += objtool.o\n\nobjtool-$(BUILD_ORC) += orc_gen.o\nobjtool-$(BUILD_ORC) += orc_dump.o\n\nobjtool-y += libstring.o\nobjtool-y += libctype.o\nobjtool-y += str_error_r.o\nobjtool-y += librbtree.o\n\n$(OUTPUT)libstring.o: ../lib/string.c FORCE\n\t$(call rule_mkdir)\n\t$(call if_changed_dep,cc_o_c)\n\n$(OUTPUT)libctype.o: ../lib/ctype.c FORCE\n\t$(call rule_mkdir)\n\t$(call if_changed_dep,cc_o_c)\n\n$(OUTPUT)str_error_r.o: ../lib/str_error_r.c FORCE\n\t$(call rule_mkdir)\n\t$(call if_changed_dep,cc_o_c)\n\n$(OUTPUT)librbtree.o: ../lib/rbtree.c FORCE\n\t$(call rule_mkdir)\n\t$(call if_changed_dep,cc_o_c)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

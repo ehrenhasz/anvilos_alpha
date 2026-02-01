@@ -1,0 +1,9 @@
+{
+  "module_name": "page.c",
+  "hash_id": "c249061050884278bb90f9de6c88f15638950c0902a896188c96e1284ddbe372",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/page.c",
+  "human_readable_source": " \n\n#include <unistd.h>\n#include <sys/param.h>\n\nstatic size_t pagesize = 0;\n\nsize_t\nspl_pagesize(void)\n{\n\tif (pagesize == 0)\n\t\tpagesize = sysconf(_SC_PAGESIZE);\n\n\treturn (pagesize);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

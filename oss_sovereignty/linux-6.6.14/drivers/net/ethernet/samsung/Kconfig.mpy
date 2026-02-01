@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c39e19706a08ed36490b763c0ef16974fad8c644921dde863c067e8316149040",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/samsung/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Samsung Ethernet device configuration\n#\n\nconfig NET_VENDOR_SAMSUNG\n\tbool \"Samsung Ethernet devices\"\n\tdefault y\n\thelp\n\t  If you have a network (Ethernet) chipset belonging to this class,\n\t  say Y.\n\n\t  Note that the answer to this question does not directly affect\n\t  the kernel: saying N will just cause the configurator to skip all\n\t  the questions about Samsung chipsets. If you say Y, you will be asked\n\t  for your specific chipset/driver in the following questions.\n\nif NET_VENDOR_SAMSUNG\n\nconfig SXGBE_ETH\n\ttristate \"Samsung 10G/2.5G/1G SXGBE Ethernet driver\"\n\tdepends on HAS_IOMEM && HAS_DMA\n\tdepends on PTP_1588_CLOCK_OPTIONAL\n\tselect PHYLIB\n\tselect CRC32\n\thelp\n\t  This is the driver for the SXGBE 10G Ethernet IP block found on\n\t  Samsung platforms.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called samsung-sxgbe.\n\nendif # NET_VENDOR_SAMSUNG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

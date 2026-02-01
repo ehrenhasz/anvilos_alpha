@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_ungetch.c",
+  "hash_id": "deccb99cf6c020f26875c10a255000d28e03fb879af06c96a637a42bdddfd6d9",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_ungetch.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_ungetch.c,v 1.17 2020/02/02 23:34:34 tom Exp $\")\n\n#include <fifo_defs.h>\n\n#ifdef TRACE\nNCURSES_EXPORT(void)\n_nc_fifo_dump(SCREEN *sp)\n{\n    int i;\n    T((\"head = %d, tail = %d, peek = %d\", head, tail, peek));\n    for (i = 0; i < 10; i++)\n\tT((\"char %d = %s\", i, _nc_tracechar(sp, sp->_fifo[i])));\n}\n#endif  \n\nNCURSES_EXPORT(int)\nsafe_ungetch(SCREEN *sp, int ch)\n{\n    int rc = ERR;\n\n    T((T_CALLED(\"ungetch(%p,%s)\"), (void *) sp, _nc_tracechar(sp, ch)));\n\n    if (sp != 0 && tail >= 0) {\n\tif (head < 0) {\n\t    head = 0;\n\t    t_inc();\n\t    peek = tail;\t \n\t} else {\n\t    h_dec();\n\t}\n\n\tsp->_fifo[head] = ch;\n\tT((\"ungetch %s ok\", _nc_tracechar(sp, ch)));\n#ifdef TRACE\n\tif (USE_TRACEF(TRACE_IEVENT)) {\n\t    _nc_fifo_dump(sp);\n\t    _nc_unlock_global(tracef);\n\t}\n#endif\n\trc = OK;\n    }\n    returnCode(rc);\n}\n\nNCURSES_EXPORT(int)\nungetch(int ch)\n{\n    return safe_ungetch(CURRENT_SCREEN, ch);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_public.h",
+  "hash_id": "fa72399a7ce731f2cc304843cf6cf5b95371f29d587dfe0c8ec4e1bc6de5953f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/host/irq_public.h",
+  "human_readable_source": " \n \n\n#ifndef __IRQ_PUBLIC_H_INCLUDED__\n#define __IRQ_PUBLIC_H_INCLUDED__\n\n#include <type_support.h>\n#include \"system_local.h\"\n\n \nvoid irq_controller_get_state(const irq_ID_t ID,\n\t\t\t      struct irq_controller_state *state);\n\n \nSTORAGE_CLASS_IRQ_H void irq_reg_store(\n    const irq_ID_t\t\tID,\n    const unsigned int\treg,\n    const hrt_data\t\tvalue);\n\n \nSTORAGE_CLASS_IRQ_H hrt_data irq_reg_load(\n    const irq_ID_t\t\tID,\n    const unsigned int\treg);\n\n \nvoid irq_enable_channel(\n    const irq_ID_t\t\t\t\tID,\n    const unsigned int\t\t\tirq_ID);\n\n \nvoid irq_enable_pulse(\n    const irq_ID_t\tID,\n    bool\t\t\tpulse);\n\n \nvoid irq_disable_channel(\n    const irq_ID_t\t\t\t\tID,\n    const unsigned int\t\t\tirq);\n\n \nvoid irq_clear_all(\n    const irq_ID_t\t\t\t\tID);\n\n \nenum hrt_isp_css_irq_status irq_get_channel_id(\n    const irq_ID_t\t\t\t\tID,\n    unsigned int\t\t\t\t*irq_id);\n\n \nvoid irq_raise(\n    const irq_ID_t\t\t\t\tID,\n    const irq_sw_channel_id_t\tirq_id);\n\n \nbool any_virq_signal(void);\n\n \nvoid cnd_virq_enable_channel(\n    const enum virq_id\t\t\t\tirq_ID,\n    const bool\t\t\t\t\ten);\n\n \nvoid virq_clear_all(void);\n\n \nvoid virq_clear_info(struct virq_info *irq_info);\n\n \nenum hrt_isp_css_irq_status virq_get_channel_id(\n    enum virq_id\t\t\t\t\t*irq_id);\n\n \nenum hrt_isp_css_irq_status\nvirq_get_channel_signals(struct virq_info *irq_info);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

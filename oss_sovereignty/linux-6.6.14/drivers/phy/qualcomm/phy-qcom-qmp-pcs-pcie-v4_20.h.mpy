@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-qcom-qmp-pcs-pcie-v4_20.h",
+  "hash_id": "2f617249fd4282d0eb71c50666e61f566f987b98351456bc6402a2a447867284",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/qualcomm/phy-qcom-qmp-pcs-pcie-v4_20.h",
+  "human_readable_source": " \n \n\n#ifndef QCOM_PHY_QMP_PCS_PCIE_V4_20_H_\n#define QCOM_PHY_QMP_PCS_PCIE_V4_20_H_\n\n#define QPHY_V4_20_PCS_PCIE_ENDPOINT_REFCLK_DRIVE\t0x01c\n#define QPHY_V4_20_PCS_PCIE_OSC_DTCT_ACTIONS\t\t0x090\n#define QPHY_V4_20_PCS_PCIE_EQ_CONFIG1\t\t\t0x0a0\n#define QPHY_V4_20_PCS_PCIE_G3_RXEQEVAL_TIME\t\t0x0f0\n#define QPHY_V4_20_PCS_PCIE_G4_RXEQEVAL_TIME\t\t0x0f4\n#define QPHY_V4_20_PCS_PCIE_G4_EQ_CONFIG2\t\t0x0fc\n#define QPHY_V4_20_PCS_PCIE_G4_EQ_CONFIG5\t\t0x108\n#define QPHY_V4_20_PCS_LANE1_INSIG_SW_CTRL2\t\t0x824\n#define QPHY_V4_20_PCS_LANE1_INSIG_MX_CTRL2\t\t0x828\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

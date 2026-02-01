@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8192-resets.h",
+  "hash_id": "0d3e2118f7ebe6628813cbec5a8badcd4ea59283cbc50e0743cabc2ea0c1f6a7",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/mt8192-resets.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_RESET_CONTROLLER_MT8192\n#define _DT_BINDINGS_RESET_CONTROLLER_MT8192\n\n \n#define MT8192_TOPRGU_MM_SW_RST\t\t\t\t\t1\n#define MT8192_TOPRGU_MFG_SW_RST\t\t\t\t2\n#define MT8192_TOPRGU_VENC_SW_RST\t\t\t\t3\n#define MT8192_TOPRGU_VDEC_SW_RST\t\t\t\t4\n#define MT8192_TOPRGU_IMG_SW_RST\t\t\t\t5\n#define MT8192_TOPRGU_MD_SW_RST\t\t\t\t\t7\n#define MT8192_TOPRGU_CONN_SW_RST\t\t\t\t9\n#define MT8192_TOPRGU_CONN_MCU_SW_RST\t\t\t12\n#define MT8192_TOPRGU_IPU0_SW_RST\t\t\t\t14\n#define MT8192_TOPRGU_IPU1_SW_RST\t\t\t\t15\n#define MT8192_TOPRGU_AUDIO_SW_RST\t\t\t\t17\n#define MT8192_TOPRGU_CAMSYS_SW_RST\t\t\t\t18\n#define MT8192_TOPRGU_MJC_SW_RST\t\t\t\t19\n#define MT8192_TOPRGU_C2K_S2_SW_RST\t\t\t\t20\n#define MT8192_TOPRGU_C2K_SW_RST\t\t\t\t21\n#define MT8192_TOPRGU_PERI_SW_RST\t\t\t\t22\n#define MT8192_TOPRGU_PERI_AO_SW_RST\t\t\t23\n\n#define MT8192_TOPRGU_SW_RST_NUM\t\t\t\t23\n\n \n#define MT8192_MMSYS_SW0_RST_B_DISP_DSI0\t\t\t15\n\n \n#define MT8192_INFRA_RST0_THERM_CTRL_SWRST\t\t0\n#define MT8192_INFRA_RST2_PEXTP_PHY_SWRST\t\t1\n#define MT8192_INFRA_RST3_THERM_CTRL_PTP_SWRST\t2\n#define MT8192_INFRA_RST4_PCIE_TOP_SWRST\t\t3\n#define MT8192_INFRA_RST4_THERM_CTRL_MCU_SWRST\t4\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

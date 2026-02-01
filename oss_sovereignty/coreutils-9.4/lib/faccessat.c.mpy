@@ -1,0 +1,9 @@
+{
+  "module_name": "faccessat.c",
+  "hash_id": "724e4c090f1ac86a371849ae720cf8a478703869366264408c45addfd86c67da",
+  "original_prompt": "Ingested from coreutils-9.4/lib/faccessat.c",
+  "human_readable_source": " \n\n \n#define _GL_INCLUDING_UNISTD_H\n#include <config.h>\n\n \n#include <unistd.h>\n\n#include <errno.h>\n#include <fcntl.h>\n#include <stdlib.h>\n#include <string.h>\n#include <sys/stat.h>\n#undef _GL_INCLUDING_UNISTD_H\n\n#if HAVE_FACCESSAT\nstatic int\norig_faccessat (int fd, char const *name, int mode, int flag)\n{\n  return faccessat (fd, name, mode, flag);\n}\n#endif\n\n \n#include \"unistd.h\"\n\n#ifndef HAVE_ACCESS\n \n# undef access\n# define access euidaccess\n#endif\n\n#if HAVE_FACCESSAT\n\nint\nrpl_faccessat (int fd, char const *file, int mode, int flag)\n{\n  int result = orig_faccessat (fd, file, mode, flag);\n\n  if (result == 0 && file[strlen (file) - 1] == '/')\n    {\n      struct stat st;\n      result = fstatat (fd, file, &st, 0);\n      if (result == 0 && !S_ISDIR (st.st_mode))\n        {\n          errno = ENOTDIR;\n          return -1;\n        }\n    }\n\n  return result;\n}\n\n#else  \n\n \n\n# define AT_FUNC_NAME faccessat\n# define AT_FUNC_F1 euidaccess\n# define AT_FUNC_F2 access\n# define AT_FUNC_USE_F1_COND AT_EACCESS\n# define AT_FUNC_POST_FILE_PARAM_DECLS , int mode, int flag\n# define AT_FUNC_POST_FILE_ARGS        , mode\n# include \"at-func.c\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

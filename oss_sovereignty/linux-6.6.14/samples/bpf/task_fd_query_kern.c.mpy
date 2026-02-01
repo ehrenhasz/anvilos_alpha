@@ -1,0 +1,9 @@
+{
+  "module_name": "task_fd_query_kern.c",
+  "hash_id": "adb9872960d6d13630eb4bc4adb73e48bddd9cf1c968f2a65724eb867d4597a6",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/task_fd_query_kern.c",
+  "human_readable_source": "\n#include <linux/version.h>\n#include <linux/ptrace.h>\n#include <uapi/linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nSEC(\"kprobe/blk_mq_start_request\")\nint bpf_prog1(struct pt_regs *ctx)\n{\n\treturn 0;\n}\n\nSEC(\"kretprobe/__blk_account_io_done\")\nint bpf_prog2(struct pt_regs *ctx)\n{\n\treturn 0;\n}\nchar _license[] SEC(\"license\") = \"GPL\";\nu32 _version SEC(\"version\") = LINUX_VERSION_CODE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

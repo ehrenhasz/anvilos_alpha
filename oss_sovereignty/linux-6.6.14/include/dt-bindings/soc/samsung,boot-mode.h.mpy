@@ -1,0 +1,9 @@
+{
+  "module_name": "samsung,boot-mode.h",
+  "hash_id": "d16371858c61e4d6287282a20985bfd2684a8872774e78a5c54cca544f44ba3f",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/soc/samsung,boot-mode.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_SAMSUNG_BOOT_MODE_H\n#define __DT_BINDINGS_SAMSUNG_BOOT_MODE_H\n\n \n\n#define EXYNOSAUTOV9_BOOT_FASTBOOT\t0xfa\n#define EXYNOSAUTOV9_BOOT_BOOTLOADER\t0xfc\n#define EXYNOSAUTOV9_BOOT_RECOVERY\t0xff\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

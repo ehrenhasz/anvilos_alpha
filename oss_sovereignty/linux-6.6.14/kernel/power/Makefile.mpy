@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "85e3f6f0ad7090fd940c02ef9d7cc959a1df494679c5f73c400a144690744613",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/power/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nifeq ($(CONFIG_DYNAMIC_DEBUG), y)\nCFLAGS_swap.o                   := -DDEBUG\nCFLAGS_snapshot.o               := -DDEBUG\nCFLAGS_energy_model.o           := -DDEBUG\nendif\n\nKASAN_SANITIZE_snapshot.o\t:= n\n\nobj-y\t\t\t\t+= qos.o\nobj-$(CONFIG_PM)\t\t+= main.o\nobj-$(CONFIG_VT_CONSOLE_SLEEP)\t+= console.o\nobj-$(CONFIG_FREEZER)\t\t+= process.o\nobj-$(CONFIG_SUSPEND)\t\t+= suspend.o\nobj-$(CONFIG_PM_TEST_SUSPEND)\t+= suspend_test.o\nobj-$(CONFIG_HIBERNATION)\t+= hibernate.o snapshot.o swap.o\nobj-$(CONFIG_HIBERNATION_SNAPSHOT_DEV) += user.o\nobj-$(CONFIG_PM_AUTOSLEEP)\t+= autosleep.o\nobj-$(CONFIG_PM_WAKELOCKS)\t+= wakelock.o\n\nobj-$(CONFIG_MAGIC_SYSRQ)\t+= poweroff.o\n\nobj-$(CONFIG_ENERGY_MODEL)\t+= energy_model.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

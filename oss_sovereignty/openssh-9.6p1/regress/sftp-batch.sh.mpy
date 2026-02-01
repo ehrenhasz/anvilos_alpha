@@ -1,0 +1,9 @@
+{
+  "module_name": "sftp-batch.sh",
+  "hash_id": "e32013123b60b5e614a9f060e6e2c27886d41ededfd018bb9661d2c11a3d1976",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/sftp-batch.sh",
+  "human_readable_source": "#\t$OpenBSD: sftp-batch.sh,v 1.5 2013/05/17 04:29:14 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"sftp batchfile\"\n\nBATCH=${OBJ}/sftp.bb\n\nrm -rf ${COPY} ${COPY}.1 ${COPY}.2 ${COPY}.dd ${BATCH}.*\n\ncat << EOF > ${BATCH}.pass.1\n\tget $DATA $COPY\n\tput ${COPY} ${COPY}.1\n\trm ${COPY}\n\t-put ${COPY} ${COPY}.2\nEOF\n\ncat << EOF > ${BATCH}.pass.2\n\t# This is a comment\n\n\t# That was a blank line\n\tls\nEOF\n\ncat << EOF > ${BATCH}.fail.1\n\tget $DATA $COPY\n\tput ${COPY} ${COPY}.3\n\trm ${COPY}.*\n\t# The next command should fail\n\tput ${COPY}.3 ${COPY}.4\nEOF\n\ncat << EOF > ${BATCH}.fail.2\n\t# The next command should fail\n\tjajajajaja\nEOF\n\nverbose \"$tid: good commands\"\n${SFTP} -b ${BATCH}.pass.1 -D ${SFTPSERVER} >/dev/null 2>&1 \\\n\t|| fail \"good commands failed\"\n\nverbose \"$tid: bad commands\"\n${SFTP} -b ${BATCH}.fail.1 -D ${SFTPSERVER} >/dev/null 2>&1 \\\n\t&& fail \"bad commands succeeded\"\n\nverbose \"$tid: comments and blanks\"\n${SFTP} -b ${BATCH}.pass.2 -D ${SFTPSERVER} >/dev/null 2>&1 \\\n\t|| fail \"comments & blanks failed\"\n\nverbose \"$tid: junk command\"\n${SFTP} -b ${BATCH}.fail.2 -D ${SFTPSERVER} >/dev/null 2>&1 \\\n\t&& fail \"junk command succeeded\"\n\nrm -rf ${COPY} ${COPY}.1 ${COPY}.2 ${COPY}.dd ${BATCH}.*\n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

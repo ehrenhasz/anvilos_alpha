@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f423dac54e2b00b5207dbc8af684723dc6cc19a875e95a0c8b52be2f60f8ec8a",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/amd/raven/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n# Raven Ridge platform Support\nsnd-pci-acp3x-objs\t:= pci-acp3x.o\nsnd-acp3x-pcm-dma-objs\t:= acp3x-pcm-dma.o\nsnd-acp3x-i2s-objs\t:= acp3x-i2s.o\nobj-$(CONFIG_SND_SOC_AMD_ACP3x)\t += snd-pci-acp3x.o\nobj-$(CONFIG_SND_SOC_AMD_ACP3x)\t += snd-acp3x-pcm-dma.o\nobj-$(CONFIG_SND_SOC_AMD_ACP3x)\t += snd-acp3x-i2s.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

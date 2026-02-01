@@ -1,0 +1,9 @@
+{
+  "module_name": "kobj_map.h",
+  "hash_id": "8d89c0050683ce849bc20557a698b2349a3c0fa4660a31716801a79916a5e617",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kobj_map.h",
+  "human_readable_source": " \n \n\n#ifndef _KOBJ_MAP_H_\n#define _KOBJ_MAP_H_\n\n#include <linux/mutex.h>\n\ntypedef struct kobject *kobj_probe_t(dev_t, int *, void *);\nstruct kobj_map;\n\nint kobj_map(struct kobj_map *, dev_t, unsigned long, struct module *,\n\t     kobj_probe_t *, int (*)(dev_t, void *), void *);\nvoid kobj_unmap(struct kobj_map *, dev_t, unsigned long);\nstruct kobject *kobj_lookup(struct kobj_map *, dev_t, int *);\nstruct kobj_map *kobj_map_init(kobj_probe_t *, struct mutex *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

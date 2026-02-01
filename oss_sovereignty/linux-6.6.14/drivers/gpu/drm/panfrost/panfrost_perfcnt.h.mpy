@@ -1,0 +1,9 @@
+{
+  "module_name": "panfrost_perfcnt.h",
+  "hash_id": "e26bd599e465e6ac886189eb6eac8316d61b084b2272242562fec546afc8c2f7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/panfrost/panfrost_perfcnt.h",
+  "human_readable_source": " \n \n#ifndef __PANFROST_PERFCNT_H__\n#define __PANFROST_PERFCNT_H__\n\n#include \"panfrost_device.h\"\n\nvoid panfrost_perfcnt_sample_done(struct panfrost_device *pfdev);\nvoid panfrost_perfcnt_clean_cache_done(struct panfrost_device *pfdev);\nint panfrost_perfcnt_init(struct panfrost_device *pfdev);\nvoid panfrost_perfcnt_fini(struct panfrost_device *pfdev);\nvoid panfrost_perfcnt_close(struct drm_file *file_priv);\nint panfrost_ioctl_perfcnt_enable(struct drm_device *dev, void *data,\n\t\t\t\t  struct drm_file *file_priv);\nint panfrost_ioctl_perfcnt_dump(struct drm_device *dev, void *data,\n\t\t\t\tstruct drm_file *file_priv);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "module.h",
+  "hash_id": "300aae64c3877781c8e395214696272d50995e7cf37ea65b94cd15ff6bafe9ae",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/module.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_MODULE_H\n#define __ASM_GENERIC_MODULE_H\n\n \n#ifndef CONFIG_HAVE_MOD_ARCH_SPECIFIC\nstruct mod_arch_specific\n{\n};\n#endif\n\n#ifdef CONFIG_64BIT\n#define Elf_Shdr\tElf64_Shdr\n#define Elf_Phdr\tElf64_Phdr\n#define Elf_Sym\t\tElf64_Sym\n#define Elf_Dyn\t\tElf64_Dyn\n#define Elf_Ehdr\tElf64_Ehdr\n#define Elf_Addr\tElf64_Addr\n#ifdef CONFIG_MODULES_USE_ELF_REL\n#define Elf_Rel\t\tElf64_Rel\n#endif\n#ifdef CONFIG_MODULES_USE_ELF_RELA\n#define Elf_Rela\tElf64_Rela\n#endif\n#define ELF_R_TYPE(X)\tELF64_R_TYPE(X)\n#define ELF_R_SYM(X)\tELF64_R_SYM(X)\n\n#else  \n\n#define Elf_Shdr\tElf32_Shdr\n#define Elf_Phdr\tElf32_Phdr\n#define Elf_Sym\t\tElf32_Sym\n#define Elf_Dyn\t\tElf32_Dyn\n#define Elf_Ehdr\tElf32_Ehdr\n#define Elf_Addr\tElf32_Addr\n#ifdef CONFIG_MODULES_USE_ELF_REL\n#define Elf_Rel\t\tElf32_Rel\n#endif\n#ifdef CONFIG_MODULES_USE_ELF_RELA\n#define Elf_Rela\tElf32_Rela\n#endif\n#define ELF_R_TYPE(X)\tELF32_R_TYPE(X)\n#define ELF_R_SYM(X)\tELF32_R_SYM(X)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

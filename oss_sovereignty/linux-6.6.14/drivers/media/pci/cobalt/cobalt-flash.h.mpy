@@ -1,0 +1,9 @@
+{
+  "module_name": "cobalt-flash.h",
+  "hash_id": "f5a69fefb0fe37f90b16136fed46b2c76e93adc8a75dd6869b670da9b99508b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cobalt/cobalt-flash.h",
+  "human_readable_source": " \n \n\n#ifndef COBALT_FLASH_H\n#define COBALT_FLASH_H\n\n#include \"cobalt-driver.h\"\n\nint cobalt_flash_probe(struct cobalt *cobalt);\nvoid cobalt_flash_remove(struct cobalt *cobalt);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

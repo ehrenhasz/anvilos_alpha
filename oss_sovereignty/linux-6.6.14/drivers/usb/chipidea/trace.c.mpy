@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "9d14a15b07642989ea526dfce99747024f305a525b0101132e78070ddb8a6979",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/chipidea/trace.c",
+  "human_readable_source": "\n \n\n#define CREATE_TRACE_POINTS\n#include \"trace.h\"\n\nvoid ci_log(struct ci_hdrc *ci, const char *fmt, ...)\n{\n\tstruct va_format vaf;\n\tva_list args;\n\n\tva_start(args, fmt);\n\tvaf.fmt = fmt;\n\tvaf.va = &args;\n\ttrace_ci_log(ci, &vaf);\n\tva_end(args);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

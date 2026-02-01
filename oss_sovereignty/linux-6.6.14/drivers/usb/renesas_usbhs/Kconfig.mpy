@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b4e52892029eec3f5e9eb9e8030278ddad126799b329d430c8fd338856ce0afc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/renesas_usbhs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Renesas USBHS Controller Drivers\n#\n\nconfig USB_RENESAS_USBHS\n\ttristate 'Renesas USBHS controller'\n\tdepends on USB_GADGET\n\tdepends on ARCH_RENESAS || SUPERH || COMPILE_TEST\n\tdepends on EXTCON || !EXTCON # if EXTCON=m, USBHS cannot be built-in\n\thelp\n\t  Renesas USBHS is a discrete USB host and peripheral controller chip\n\t  that supports both full and high speed USB 2.0 data transfers.\n\t  It has nine or more configurable endpoints, and endpoint zero.\n\n\t  Say \"y\" to link the driver statically, or \"m\" to build a\n\t  dynamically linked module called \"renesas_usbhs\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

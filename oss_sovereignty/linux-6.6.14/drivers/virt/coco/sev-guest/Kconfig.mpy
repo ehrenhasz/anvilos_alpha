@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "948fd0b157e07065cc82b93c41965cbf24394950ed7dd55eb7314665a5165b22",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/virt/coco/sev-guest/Kconfig",
+  "human_readable_source": "config SEV_GUEST\n\ttristate \"AMD SEV Guest driver\"\n\tdefault m\n\tdepends on AMD_MEM_ENCRYPT\n\tselect CRYPTO\n\tselect CRYPTO_AEAD2\n\tselect CRYPTO_GCM\n\thelp\n\t  SEV-SNP firmware provides the guest a mechanism to communicate with\n\t  the PSP without risk from a malicious hypervisor who wishes to read,\n\t  alter, drop or replay the messages sent. The driver provides\n\t  userspace interface to communicate with the PSP to request the\n\t  attestation report and more.\n\n\t  If you choose 'M' here, this module will be called sev-guest.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

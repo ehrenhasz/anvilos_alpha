@@ -1,0 +1,9 @@
+{
+  "module_name": "rdma_common.h",
+  "hash_id": "70ab2036d7e0b045caf7c8c7fff9a87d5a01f5be264c0ca8db1b3393ea710f78",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/qed/rdma_common.h",
+  "human_readable_source": " \n \n\n#ifndef __RDMA_COMMON__\n#define __RDMA_COMMON__\n\n \n \n \n\n#define RDMA_RESERVED_LKEY\t\t(0)\n#define RDMA_RING_PAGE_SIZE\t\t(0x1000)\n\n#define RDMA_MAX_SGE_PER_SQ_WQE\t\t(4)\n#define RDMA_MAX_SGE_PER_RQ_WQE\t\t(4)\n\n#define RDMA_MAX_DATA_SIZE_IN_WQE\t(0x80000000)\n\n#define RDMA_REQ_RD_ATOMIC_ELM_SIZE\t(0x50)\n#define RDMA_RESP_RD_ATOMIC_ELM_SIZE\t(0x20)\n\n#define RDMA_MAX_CQS\t\t\t(64 * 1024)\n#define RDMA_MAX_TIDS\t\t\t(128 * 1024 - 1)\n#define RDMA_MAX_PDS\t\t\t(64 * 1024)\n#define RDMA_MAX_XRC_SRQS                       (1024)\n#define RDMA_MAX_SRQS                           (32 * 1024)\n#define RDMA_MAX_IRQ_ELEMS_IN_PAGE      (128)\n\n#define RDMA_NUM_STATISTIC_COUNTERS\tMAX_NUM_VPORTS\n#define RDMA_NUM_STATISTIC_COUNTERS_K2\tMAX_NUM_VPORTS_K2\n#define RDMA_NUM_STATISTIC_COUNTERS_BB\tMAX_NUM_VPORTS_BB\n\n#define RDMA_TASK_TYPE (PROTOCOLID_ROCE)\n\nstruct rdma_srq_id {\n\t__le16 srq_idx;\n\t__le16 opaque_fid;\n};\n\nstruct rdma_srq_producers {\n\t__le32 sge_prod;\n\t__le32 wqe_prod;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

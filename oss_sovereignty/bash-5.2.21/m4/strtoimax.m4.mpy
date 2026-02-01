@@ -1,0 +1,9 @@
+{
+  "module_name": "strtoimax.m4",
+  "hash_id": "3806f484589dd23cdaf5d17206fd5e884711985c67a5841cf1be5c76825ced21",
+  "original_prompt": "Ingested from bash-5.2.21/m4/strtoimax.m4",
+  "human_readable_source": "dnl Copyright (C) 2022 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl Make sure we replace strtoimax if we don't have a declaration\ndnl We can use this as a template for future function checks\n\nAC_DEFUN([BASH_FUNC_STRTOIMAX], [\nAC_MSG_CHECKING([for usable strtoimax])\nAC_CACHE_VAL(bash_cv_func_strtoimax,\n[\n  HAVE_STRTOIMAX=0 HAVE_DECL_STRTOIMAX=0\n\n  AC_CHECK_FUNCS([strtoimax])\n  AC_CHECK_DECLS([strtoimax])\n\n  if test \"$ac_cv_func_strtoimax\" = \"yes\" ; then\n    HAVE_STRTOIMAX=1\n  fi\n  if test \"$ac_cv_have_decl_strtoimax\" = \"yes\" ; then\n    HAVE_DECL_STRTOIMAX=1\n  fi\n\n  if test \"$HAVE_STRTOIMAX\" = 0 || test \"$HAVE_DECL_STRTOIMAX\" = 0 ; then\n    bash_cv_func_strtoimax=no REPLACE_STRTOIMAX=1\n  else\n    bash_cv_func_strtoimax=yes\n  fi\n])\nAC_MSG_RESULT($bash_cv_func_strtoimax)\nif test $bash_cv_func_strtoimax = yes; then\nAC_LIBOBJ(strtoimax)\nfi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

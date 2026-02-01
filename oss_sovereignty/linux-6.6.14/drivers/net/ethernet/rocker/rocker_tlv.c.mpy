@@ -1,0 +1,9 @@
+{
+  "module_name": "rocker_tlv.c",
+  "hash_id": "4b6a4dec2961ae648a675865e7173f153a636f36b7256fe10c5f33f4377b726a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/rocker/rocker_tlv.c",
+  "human_readable_source": "\n \n\n#include <linux/types.h>\n#include <linux/string.h>\n#include <linux/errno.h>\n\n#include \"rocker_hw.h\"\n#include \"rocker_tlv.h\"\n\nvoid rocker_tlv_parse(const struct rocker_tlv **tb, int maxtype,\n\t\t      const char *buf, int buf_len)\n{\n\tconst struct rocker_tlv *tlv;\n\tconst struct rocker_tlv *head = (const struct rocker_tlv *) buf;\n\tint rem;\n\n\tmemset(tb, 0, sizeof(struct rocker_tlv *) * (maxtype + 1));\n\n\trocker_tlv_for_each(tlv, head, buf_len, rem) {\n\t\tu32 type = rocker_tlv_type(tlv);\n\n\t\tif (type > 0 && type <= maxtype)\n\t\t\ttb[type] = tlv;\n\t}\n}\n\nint rocker_tlv_put(struct rocker_desc_info *desc_info,\n\t\t   int attrtype, int attrlen, const void *data)\n{\n\tint tail_room = desc_info->data_size - desc_info->tlv_size;\n\tint total_size = rocker_tlv_total_size(attrlen);\n\tstruct rocker_tlv *tlv;\n\n\tif (unlikely(tail_room < total_size))\n\t\treturn -EMSGSIZE;\n\n\ttlv = rocker_tlv_start(desc_info);\n\tdesc_info->tlv_size += total_size;\n\ttlv->type = attrtype;\n\ttlv->len = rocker_tlv_attr_size(attrlen);\n\tmemcpy(rocker_tlv_data(tlv), data, attrlen);\n\tmemset((char *) tlv + tlv->len, 0, rocker_tlv_padlen(attrlen));\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

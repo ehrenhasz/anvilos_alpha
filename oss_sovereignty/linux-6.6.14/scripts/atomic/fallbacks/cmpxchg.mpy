@@ -1,0 +1,9 @@
+{
+  "module_name": "cmpxchg",
+  "hash_id": "21ae5fb0f5d45a3c6a33bcb873a297cb352e412115bb896d2031de5fdd94bfef",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/fallbacks/cmpxchg",
+  "human_readable_source": "cat <<EOF\n\treturn raw_cmpxchg${order}(&v->counter, old, new);\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

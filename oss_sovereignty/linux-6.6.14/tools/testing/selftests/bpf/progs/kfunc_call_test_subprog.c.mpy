@@ -1,0 +1,9 @@
+{
+  "module_name": "kfunc_call_test_subprog.c",
+  "hash_id": "cfaca30bb43bfaab91e015e17269e9ff7cd1297fb88a9447553c7a3075468c50",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/kfunc_call_test_subprog.c",
+  "human_readable_source": "\n \n#include \"../bpf_testmod/bpf_testmod_kfunc.h\"\n\nextern const int bpf_prog_active __ksym;\nint active_res = -1;\nint sk_state_res = -1;\n\nint __noinline f1(struct __sk_buff *skb)\n{\n\tstruct bpf_sock *sk = skb->sk;\n\tint *active;\n\n\tif (!sk)\n\t\treturn -1;\n\n\tsk = bpf_sk_fullsock(sk);\n\tif (!sk)\n\t\treturn -1;\n\n\tactive = (int *)bpf_per_cpu_ptr(&bpf_prog_active,\n\t\t\t\t\tbpf_get_smp_processor_id());\n\tif (active)\n\t\tactive_res = *active;\n\n\tsk_state_res = bpf_kfunc_call_test3((struct sock *)sk)->__sk_common.skc_state;\n\n\treturn (__u32)bpf_kfunc_call_test1((struct sock *)sk, 1, 2, 3, 4);\n}\n\nSEC(\"tc\")\nint kfunc_call_test1(struct __sk_buff *skb)\n{\n\treturn f1(skb);\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

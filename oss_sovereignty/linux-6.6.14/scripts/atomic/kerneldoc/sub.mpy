@@ -1,0 +1,9 @@
+{
+  "module_name": "sub",
+  "hash_id": "ee70df7a8c44d9e6a20b3c7bc4a858b1a91fc88251e036f4b867fba6d3759c0e",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/kerneldoc/sub",
+  "human_readable_source": "cat <<EOF\n/**\n * ${class}${atomicname}() - atomic subtract with ${desc_order} ordering\n * @i: ${int} value to subtract\n * @v: pointer to ${atomic}_t\n *\n * Atomically updates @v to (@v - @i) with ${desc_order} ordering.\n *\n * ${desc_noinstr}\n *\n * ${desc_return}\n */\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

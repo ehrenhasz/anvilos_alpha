@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "8038e665e7b7551a0745058f3b6a1eade114219d8a010be487ae89f9fd58646f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/i2c/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_I2C_PRIV_H__\n#define __NVKM_I2C_PRIV_H__\n#define nvkm_i2c(p) container_of((p), struct nvkm_i2c, subdev)\n#include <subdev/i2c.h>\n\nint nvkm_i2c_new_(const struct nvkm_i2c_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t  struct nvkm_i2c **);\n\nstruct nvkm_i2c_func {\n\tint (*pad_x_new)(struct nvkm_i2c *, int id, struct nvkm_i2c_pad **);\n\tint (*pad_s_new)(struct nvkm_i2c *, int id, struct nvkm_i2c_pad **);\n\n\t \n\tint aux;\n\n\t \n\tvoid (*aux_stat)(struct nvkm_i2c *, u32 *, u32 *, u32 *, u32 *);\n\n\t \n\tvoid (*aux_mask)(struct nvkm_i2c *, u32, u32, u32);\n\n\t \n\tvoid (*aux_autodpcd)(struct nvkm_i2c *, int aux, bool enable);\n};\n\nvoid g94_aux_stat(struct nvkm_i2c *, u32 *, u32 *, u32 *, u32 *);\nvoid g94_aux_mask(struct nvkm_i2c *, u32, u32, u32);\n\nvoid gk104_aux_stat(struct nvkm_i2c *, u32 *, u32 *, u32 *, u32 *);\nvoid gk104_aux_mask(struct nvkm_i2c *, u32, u32, u32);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

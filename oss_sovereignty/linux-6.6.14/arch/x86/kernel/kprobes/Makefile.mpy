@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "dd850588aef0449c2456de9320235a260f60f5302bb42bff2f719e97e2da5c17",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/kprobes/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for kernel probes\n#\n\nobj-$(CONFIG_KPROBES)\t\t+= core.o\nobj-$(CONFIG_OPTPROBES)\t\t+= opt.o\nobj-$(CONFIG_KPROBES_ON_FTRACE)\t+= ftrace.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

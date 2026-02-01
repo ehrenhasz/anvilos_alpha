@@ -1,0 +1,9 @@
+{
+  "module_name": "rtnh.h",
+  "hash_id": "f65c7bbf8996c8bf87ac25e2f701e15ea98cea746cc545f55643ca2ccce75190",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/rtnh.h",
+  "human_readable_source": " \n#ifndef __NET_RTNH_H\n#define __NET_RTNH_H\n\n#include <linux/rtnetlink.h>\n#include <net/netlink.h>\n\nstatic inline int rtnh_ok(const struct rtnexthop *rtnh, int remaining)\n{\n\treturn remaining >= (int)sizeof(*rtnh) &&\n\t       rtnh->rtnh_len >= sizeof(*rtnh) &&\n\t       rtnh->rtnh_len <= remaining;\n}\n\nstatic inline struct rtnexthop *rtnh_next(const struct rtnexthop *rtnh,\n                                         int *remaining)\n{\n\tint totlen = NLA_ALIGN(rtnh->rtnh_len);\n\n\t*remaining -= totlen;\n\treturn (struct rtnexthop *) ((char *) rtnh + totlen);\n}\n\nstatic inline struct nlattr *rtnh_attrs(const struct rtnexthop *rtnh)\n{\n\treturn (struct nlattr *) ((char *) rtnh + NLA_ALIGN(sizeof(*rtnh)));\n}\n\nstatic inline int rtnh_attrlen(const struct rtnexthop *rtnh)\n{\n\treturn rtnh->rtnh_len - NLA_ALIGN(sizeof(*rtnh));\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

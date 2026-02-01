@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4768ba09b0d4a875cd502a4e4e3b776b92fbe18da440ad530a096a6d689b5437",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/elx/Makefile",
+  "human_readable_source": "#// SPDX-License-Identifier: GPL-2.0\n#/*\n# * Copyright (C) 2021 Broadcom. All Rights Reserved. The term\n# * \u201cBroadcom\u201d refers to Broadcom Inc. and/or its subsidiaries.\n# */\n\n\nobj-$(CONFIG_SCSI_EFCT) := efct.o\n\nefct-objs := efct/efct_driver.o efct/efct_io.o efct/efct_scsi.o \\\n\t     efct/efct_xport.o efct/efct_hw.o efct/efct_hw_queues.o \\\n\t     efct/efct_lio.o efct/efct_unsol.o\n\nefct-objs += libefc/efc_cmds.o libefc/efc_domain.o libefc/efc_fabric.o \\\n\t     libefc/efc_node.o libefc/efc_nport.o libefc/efc_device.o \\\n\t     libefc/efclib.o libefc/efc_sm.o libefc/efc_els.o\n\nefct-objs += libefc_sli/sli4.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

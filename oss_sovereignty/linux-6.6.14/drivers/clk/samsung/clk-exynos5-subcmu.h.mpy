@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-exynos5-subcmu.h",
+  "hash_id": "452bb28c8dcbccfdba9675502dc8726909caf3a540ef02d2a5c2633e4a8c1fc4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/samsung/clk-exynos5-subcmu.h",
+  "human_readable_source": " \n\n#ifndef __CLK_EXYNOS5_SUBCMU_H\n#define __CLK_EXYNOS5_SUBCMU_H\n\nstruct exynos5_subcmu_reg_dump {\n\tu32 offset;\n\tu32 value;\n\tu32 mask;\n\tu32 save;\n};\n\nstruct exynos5_subcmu_info {\n\tconst struct samsung_div_clock *div_clks;\n\tunsigned int nr_div_clks;\n\tconst struct samsung_gate_clock *gate_clks;\n\tunsigned int nr_gate_clks;\n\tstruct exynos5_subcmu_reg_dump *suspend_regs;\n\tunsigned int nr_suspend_regs;\n\tconst char *pd_name;\n};\n\nvoid exynos5_subcmus_init(struct samsung_clk_provider *ctx, int nr_cmus,\n\t\t\t  const struct exynos5_subcmu_info **cmu);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

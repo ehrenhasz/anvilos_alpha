@@ -1,0 +1,9 @@
+{
+  "module_name": "compaction-times-record",
+  "hash_id": "0519d71609e353652738919c7178f05919320364e83c1b22924f4b942c30555e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/compaction-times-record",
+  "human_readable_source": "#!/bin/bash\nperf record -e compaction:mm_compaction_begin -e compaction:mm_compaction_end -e compaction:mm_compaction_migratepages -e compaction:mm_compaction_isolate_migratepages -e compaction:mm_compaction_isolate_freepages $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

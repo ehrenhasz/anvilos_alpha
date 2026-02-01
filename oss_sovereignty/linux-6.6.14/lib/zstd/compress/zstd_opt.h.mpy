@@ -1,0 +1,9 @@
+{
+  "module_name": "zstd_opt.h",
+  "hash_id": "f2bc3df3e09f776e097cfc0de906c689328415d85353c108d3e3c7ca336d5124",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zstd/compress/zstd_opt.h",
+  "human_readable_source": " \n\n#ifndef ZSTD_OPT_H\n#define ZSTD_OPT_H\n\n\n#include \"zstd_compress_internal.h\"\n\n \nvoid ZSTD_updateTree(ZSTD_matchState_t* ms, const BYTE* ip, const BYTE* iend);\n\nsize_t ZSTD_compressBlock_btopt(\n        ZSTD_matchState_t* ms, seqStore_t* seqStore, U32 rep[ZSTD_REP_NUM],\n        void const* src, size_t srcSize);\nsize_t ZSTD_compressBlock_btultra(\n        ZSTD_matchState_t* ms, seqStore_t* seqStore, U32 rep[ZSTD_REP_NUM],\n        void const* src, size_t srcSize);\nsize_t ZSTD_compressBlock_btultra2(\n        ZSTD_matchState_t* ms, seqStore_t* seqStore, U32 rep[ZSTD_REP_NUM],\n        void const* src, size_t srcSize);\n\n\nsize_t ZSTD_compressBlock_btopt_dictMatchState(\n        ZSTD_matchState_t* ms, seqStore_t* seqStore, U32 rep[ZSTD_REP_NUM],\n        void const* src, size_t srcSize);\nsize_t ZSTD_compressBlock_btultra_dictMatchState(\n        ZSTD_matchState_t* ms, seqStore_t* seqStore, U32 rep[ZSTD_REP_NUM],\n        void const* src, size_t srcSize);\n\nsize_t ZSTD_compressBlock_btopt_extDict(\n        ZSTD_matchState_t* ms, seqStore_t* seqStore, U32 rep[ZSTD_REP_NUM],\n        void const* src, size_t srcSize);\nsize_t ZSTD_compressBlock_btultra_extDict(\n        ZSTD_matchState_t* ms, seqStore_t* seqStore, U32 rep[ZSTD_REP_NUM],\n        void const* src, size_t srcSize);\n\n         \n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

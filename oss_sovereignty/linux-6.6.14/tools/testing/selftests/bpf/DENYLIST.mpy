@@ -1,0 +1,9 @@
+{
+  "module_name": "DENYLIST",
+  "hash_id": "3a98048cd96e1d79b5990ecd6c385c3d32d24304473688eb31ed25077c06d7c9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/DENYLIST",
+  "human_readable_source": "# TEMPORARY\n# Alphabetical order\nget_stack_raw_tp    # spams with kernel warnings until next bpf -> bpf-next merge\nstacktrace_build_id\nstacktrace_build_id_nmi\ntask_fd_query_rawtp\nvarlen\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

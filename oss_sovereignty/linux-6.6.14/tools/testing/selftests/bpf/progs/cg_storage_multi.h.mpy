@@ -1,0 +1,9 @@
+{
+  "module_name": "cg_storage_multi.h",
+  "hash_id": "66a0633ce4338ab2baee970451687ef1200f738223f544c5b866510727dd0b8a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/cg_storage_multi.h",
+  "human_readable_source": " \n\n#ifndef __PROGS_CG_STORAGE_MULTI_H\n#define __PROGS_CG_STORAGE_MULTI_H\n\n#include <asm/types.h>\n\nstruct cgroup_value {\n\t__u32 egress_pkts;\n\t__u32 ingress_pkts;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

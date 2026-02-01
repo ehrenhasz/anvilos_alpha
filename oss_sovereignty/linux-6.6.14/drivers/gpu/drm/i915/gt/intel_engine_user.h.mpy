@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_engine_user.h",
+  "hash_id": "4194d052950a067554011c40748d84dd0330016f9dee7410d6e972e310b5b3cc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_engine_user.h",
+  "human_readable_source": " \n \n\n#ifndef INTEL_ENGINE_USER_H\n#define INTEL_ENGINE_USER_H\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\nstruct intel_engine_cs;\n\nstruct intel_engine_cs *\nintel_engine_lookup_user(struct drm_i915_private *i915, u8 class, u8 instance);\n\nunsigned int intel_engines_has_context_isolation(struct drm_i915_private *i915);\n\nvoid intel_engine_add_user(struct intel_engine_cs *engine);\nvoid intel_engines_driver_register(struct drm_i915_private *i915);\n\nconst char *intel_engine_class_repr(u8 class);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

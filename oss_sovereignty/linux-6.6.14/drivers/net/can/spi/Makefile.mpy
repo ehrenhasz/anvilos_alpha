@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "deee5d13d491a3cc5494e67b83f564d246975b37b97530531c9c909484d79cd3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/spi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n#  Makefile for the Linux Controller Area Network SPI drivers.\n#\n\n\nobj-$(CONFIG_CAN_HI311X)\t+= hi311x.o\nobj-$(CONFIG_CAN_MCP251X)\t+= mcp251x.o\nobj-y\t\t\t\t+= mcp251xfd/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

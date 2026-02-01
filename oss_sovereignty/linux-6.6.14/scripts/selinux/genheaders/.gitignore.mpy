@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "eb7c2071a6654d060d8b846dfdf6c8abb754ae3244b4fbb3eb88e65d26b088e6",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/selinux/genheaders/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ngenheaders\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

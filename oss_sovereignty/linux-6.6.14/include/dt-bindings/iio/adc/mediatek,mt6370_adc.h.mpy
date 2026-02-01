@@ -1,0 +1,9 @@
+{
+  "module_name": "mediatek,mt6370_adc.h",
+  "hash_id": "eb8c7326c84d642f9ac4a31a3e17e1f8b6891671b81a96a182f0b27d63509a2b",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/iio/adc/mediatek,mt6370_adc.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_MEDIATEK_MT6370_ADC_H__\n#define __DT_BINDINGS_MEDIATEK_MT6370_ADC_H__\n\n \n#define MT6370_CHAN_VBUSDIV5\t0\n#define MT6370_CHAN_VBUSDIV2\t1\n#define MT6370_CHAN_VSYS\t2\n#define MT6370_CHAN_VBAT\t3\n#define MT6370_CHAN_TS_BAT\t4\n#define MT6370_CHAN_IBUS\t5\n#define MT6370_CHAN_IBAT\t6\n#define MT6370_CHAN_CHG_VDDP\t7\n#define MT6370_CHAN_TEMP_JC\t8\n#define MT6370_CHAN_MAX\t\t9\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

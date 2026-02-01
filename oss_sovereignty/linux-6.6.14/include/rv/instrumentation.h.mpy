@@ -1,0 +1,9 @@
+{
+  "module_name": "instrumentation.h",
+  "hash_id": "aad97567c3a7d9cbd86f90c95b045fe2f197c01a75f444f4beb6c209ef6368af",
+  "original_prompt": "Ingested from linux-6.6.14/include/rv/instrumentation.h",
+  "human_readable_source": " \n \n\n#include <linux/ftrace.h>\n\n \n#define rv_attach_trace_probe(monitor, tp, rv_handler)\t\t\t\t\t\\\n\tdo {\t\t\t\t\t\t\t\t\t\t\\\n\t\tcheck_trace_callback_type_##tp(rv_handler);\t\t\t\t\\\n\t\tWARN_ONCE(register_trace_##tp(rv_handler, NULL),\t\t\t\\\n\t\t\t\t\"fail attaching \" #monitor \" \" #tp \"handler\");\t\t\\\n\t} while (0)\n\n \n#define rv_detach_trace_probe(monitor, tp, rv_handler)\t\t\t\t\t\\\n\tdo {\t\t\t\t\t\t\t\t\t\t\\\n\t\tunregister_trace_##tp(rv_handler, NULL);\t\t\t\t\\\n\t} while (0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

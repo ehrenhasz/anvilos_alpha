@@ -1,0 +1,9 @@
+{
+  "module_name": "m_pattern.c",
+  "hash_id": "1cf68645d8416a851fb19ad3c522157de99bdb94ae6f1d0440ef5bb235121890",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_pattern.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_pattern.c,v 1.20 2021/06/17 21:20:30 tom Exp $\")\n\n \nMENU_EXPORT(char *)\nmenu_pattern(const MENU *menu)\n{\n  static char empty[] = \"\";\n\n  T((T_CALLED(\"menu_pattern(%p)\"), (const void *)menu));\n  returnPtr(menu ? (menu->pattern ? menu->pattern : empty) : 0);\n}\n\n \nMENU_EXPORT(int)\nset_menu_pattern(MENU *menu, const char *p)\n{\n  ITEM *matchitem;\n  int matchpos;\n\n  T((T_CALLED(\"set_menu_pattern(%p,%s)\"), (void *)menu, _nc_visbuf(p)));\n\n  if (!menu || !p)\n    RETURN(E_BAD_ARGUMENT);\n\n  if (!(menu->items))\n    RETURN(E_NOT_CONNECTED);\n\n  if (menu->status & _IN_DRIVER)\n    RETURN(E_BAD_STATE);\n\n  Reset_Pattern(menu);\n\n  if (!(*p))\n    {\n      pos_menu_cursor(menu);\n      RETURN(E_OK);\n    }\n\n  if (menu->status & _LINK_NEEDED)\n    _nc_Link_Items(menu);\n\n  matchpos = menu->toprow;\n  matchitem = menu->curitem;\n  assert(matchitem);\n\n  while (*p)\n    {\n      if (!isprint(UChar(*p)) ||\n\t  (_nc_Match_Next_Character_In_Item_Name(menu, *p, &matchitem) != E_OK))\n\t{\n\t  Reset_Pattern(menu);\n\t  pos_menu_cursor(menu);\n\t  RETURN(E_NO_MATCH);\n\t}\n      p++;\n    }\n\n   \n  Adjust_Current_Item(menu, matchpos, matchitem);\n  RETURN(E_OK);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

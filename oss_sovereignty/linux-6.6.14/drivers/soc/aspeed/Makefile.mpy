@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ce057a29bbdf458bcf2e0002b713785a081b058b47f6b97384d00acf27785cc0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/aspeed/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_ASPEED_LPC_CTRL)\t\t+= aspeed-lpc-ctrl.o\nobj-$(CONFIG_ASPEED_LPC_SNOOP)\t\t+= aspeed-lpc-snoop.o\nobj-$(CONFIG_ASPEED_UART_ROUTING)\t+= aspeed-uart-routing.o\nobj-$(CONFIG_ASPEED_P2A_CTRL)\t\t+= aspeed-p2a-ctrl.o\nobj-$(CONFIG_ASPEED_SOCINFO)\t\t+= aspeed-socinfo.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "asm-prototypes.h",
+  "hash_id": "df3dd5bd732c4aff7d29f20f27081a01eb872706c2d6e4038d2cdc42b532f8a8",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/asm-prototypes.h",
+  "human_readable_source": " \n#include <linux/bitops.h>\n#undef __memset\nextern void *__memset(void *, int, __kernel_size_t);\n#undef __memcpy\nextern void *__memcpy(void *, const void *, __kernel_size_t);\n#undef __memmove\nextern void *__memmove(void *, const void *, __kernel_size_t);\n#undef memset\nextern void *memset(void *, int, __kernel_size_t);\n#undef memcpy\nextern void *memcpy(void *, const void *, __kernel_size_t);\n#undef memmove\nextern void *memmove(void *, const void *, __kernel_size_t);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

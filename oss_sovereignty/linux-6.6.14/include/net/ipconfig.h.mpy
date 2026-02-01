@@ -1,0 +1,9 @@
+{
+  "module_name": "ipconfig.h",
+  "hash_id": "747eace281c625ae628ab282851b4a3d296fdaf236ca671b3518519861925a2e",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/ipconfig.h",
+  "human_readable_source": " \n \n\n \n\n#include <linux/types.h>\n\nextern int ic_proto_enabled;\t \nextern int ic_set_manually;\t \n\nextern __be32 ic_myaddr;\t\t \nextern __be32 ic_gateway;\t\t \n\nextern __be32 ic_servaddr;\t\t \n\nextern __be32 root_server_addr;\t \nextern u8 root_server_path[];\t \n\n\n \n#define IC_PROTO\t0xFF\t \n#define IC_BOOTP\t0x01\t \n#define IC_RARP\t\t0x02\t \n#define IC_USE_DHCP    0x100\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

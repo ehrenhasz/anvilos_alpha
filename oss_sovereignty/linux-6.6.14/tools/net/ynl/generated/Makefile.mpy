@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8d21d2a875d091c2f96c3a932d67308edcb2ec09feedac14985b1436d6c7f46a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/net/ynl/generated/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nCC=gcc\nCFLAGS=-std=gnu11 -O2 -W -Wall -Wextra -Wno-unused-parameter -Wshadow \\\n\t-I../lib/ -idirafter $(UAPI_PATH)\nifeq (\"$(DEBUG)\",\"1\")\n  CFLAGS += -g -fsanitize=address -fsanitize=leak -static-libasan\nendif\n\ninclude ../Makefile.deps\n\nYNL_GEN_ARG_ethtool:=--user-header linux/ethtool_netlink.h \\\n\t--exclude-op stats-get\n\nTOOL:=../ynl-gen-c.py\n\nGENS:=ethtool devlink handshake fou netdev\nSRCS=$(patsubst %,%-user.c,${GENS})\nHDRS=$(patsubst %,%-user.h,${GENS})\nOBJS=$(patsubst %,%-user.o,${GENS})\n\nall: protos.a $(HDRS) $(SRCS) $(KHDRS) $(KSRCS) $(UAPI) regen\n\nprotos.a: $(OBJS)\n\t@echo -e \"\\tAR $@\"\n\t@ar rcs $@ $(OBJS)\n\n%-user.h: ../../../../Documentation/netlink/specs/%.yaml $(TOOL)\n\t@echo -e \"\\tGEN $@\"\n\t@$(TOOL) --mode user --header --spec $< $(YNL_GEN_ARG_$*) > $@\n\n%-user.c: ../../../../Documentation/netlink/specs/%.yaml $(TOOL)\n\t@echo -e \"\\tGEN $@\"\n\t@$(TOOL) --mode user --source --spec $< $(YNL_GEN_ARG_$*) > $@\n\n%-user.o: %-user.c %-user.h\n\t@echo -e \"\\tCC $@\"\n\t@$(COMPILE.c) $(CFLAGS_$*) -o $@ $<\n\nclean:\n\trm -f *.o\n\nhardclean: clean\n\trm -f *.c *.h *.a\n\nregen:\n\t@../ynl-regen.sh\n\n.PHONY: all clean hardclean regen\n.DEFAULT_GOAL: all\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

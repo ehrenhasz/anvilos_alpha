@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f7b7eb7cb8f093d596df1be24abd24c6a30841202457d95ea3e48225292095ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tiny/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nobj-$(CONFIG_DRM_ARCPGU)\t\t+= arcpgu.o\nobj-$(CONFIG_DRM_BOCHS)\t\t\t+= bochs.o\nobj-$(CONFIG_DRM_CIRRUS_QEMU)\t\t+= cirrus.o\nobj-$(CONFIG_DRM_GM12U320)\t\t+= gm12u320.o\nobj-$(CONFIG_DRM_OFDRM)\t\t\t+= ofdrm.o\nobj-$(CONFIG_DRM_PANEL_MIPI_DBI)\t+= panel-mipi-dbi.o\nobj-$(CONFIG_DRM_SIMPLEDRM)\t\t+= simpledrm.o\nobj-$(CONFIG_TINYDRM_HX8357D)\t\t+= hx8357d.o\nobj-$(CONFIG_TINYDRM_ILI9163)\t\t+= ili9163.o\nobj-$(CONFIG_TINYDRM_ILI9225)\t\t+= ili9225.o\nobj-$(CONFIG_TINYDRM_ILI9341)\t\t+= ili9341.o\nobj-$(CONFIG_TINYDRM_ILI9486)\t\t+= ili9486.o\nobj-$(CONFIG_TINYDRM_MI0283QT)\t\t+= mi0283qt.o\nobj-$(CONFIG_TINYDRM_REPAPER)\t\t+= repaper.o\nobj-$(CONFIG_TINYDRM_ST7586)\t\t+= st7586.o\nobj-$(CONFIG_TINYDRM_ST7735R)\t\t+= st7735r.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

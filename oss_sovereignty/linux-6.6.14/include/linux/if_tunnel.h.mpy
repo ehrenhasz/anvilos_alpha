@@ -1,0 +1,9 @@
+{
+  "module_name": "if_tunnel.h",
+  "hash_id": "1eda61d8cefbe274897c8452e4e82a9b048e61bf270dc9185475dd064cc40abc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/if_tunnel.h",
+  "human_readable_source": " \n#ifndef _IF_TUNNEL_H_\n#define _IF_TUNNEL_H_\n\n#include <linux/ip.h>\n#include <linux/in6.h>\n#include <uapi/linux/if_tunnel.h>\n#include <linux/u64_stats_sync.h>\n\n \n\n#define for_each_ip_tunnel_rcu(pos, start) \\\n\tfor (pos = rcu_dereference(start); pos; pos = rcu_dereference(pos->next))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

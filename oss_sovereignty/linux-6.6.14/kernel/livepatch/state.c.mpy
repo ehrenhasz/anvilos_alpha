@@ -1,0 +1,9 @@
+{
+  "module_name": "state.c",
+  "hash_id": "012972552cfe9c34e64cf042b7b2a980f424c6cbed9cb851d5371e6f0b0b2236",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/livepatch/state.c",
+  "human_readable_source": "\n \n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <linux/livepatch.h>\n#include \"core.h\"\n#include \"state.h\"\n#include \"transition.h\"\n\n#define klp_for_each_state(patch, state)\t\t\\\n\tfor (state = patch->states; state && state->id; state++)\n\n \nstruct klp_state *klp_get_state(struct klp_patch *patch, unsigned long id)\n{\n\tstruct klp_state *state;\n\n\tklp_for_each_state(patch, state) {\n\t\tif (state->id == id)\n\t\t\treturn state;\n\t}\n\n\treturn NULL;\n}\nEXPORT_SYMBOL_GPL(klp_get_state);\n\n \nstruct klp_state *klp_get_prev_state(unsigned long id)\n{\n\tstruct klp_patch *patch;\n\tstruct klp_state *state, *last_state = NULL;\n\n\tif (WARN_ON_ONCE(!klp_transition_patch))\n\t\treturn NULL;\n\n\tklp_for_each_patch(patch) {\n\t\tif (patch == klp_transition_patch)\n\t\t\tgoto out;\n\n\t\tstate = klp_get_state(patch, id);\n\t\tif (state)\n\t\t\tlast_state = state;\n\t}\n\nout:\n\treturn last_state;\n}\nEXPORT_SYMBOL_GPL(klp_get_prev_state);\n\n \nstatic bool klp_is_state_compatible(struct klp_patch *patch,\n\t\t\t\t    struct klp_state *old_state)\n{\n\tstruct klp_state *state;\n\n\tstate = klp_get_state(patch, old_state->id);\n\n\t \n\tif (!state)\n\t\treturn !patch->replace;\n\n\treturn state->version >= old_state->version;\n}\n\n \nbool klp_is_patch_compatible(struct klp_patch *patch)\n{\n\tstruct klp_patch *old_patch;\n\tstruct klp_state *old_state;\n\n\tklp_for_each_patch(old_patch) {\n\t\tklp_for_each_state(old_patch, old_state) {\n\t\t\tif (!klp_is_state_compatible(patch, old_state))\n\t\t\t\treturn false;\n\t\t}\n\t}\n\n\treturn true;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

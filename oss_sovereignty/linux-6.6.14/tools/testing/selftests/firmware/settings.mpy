@@ -1,0 +1,9 @@
+{
+  "module_name": "settings",
+  "hash_id": "e5ad0f47ec772f67cd2798a46aca1b82780ca9dd678d499e8799613bdcd4f4cc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/firmware/settings",
+  "human_readable_source": "# The async firmware timeout is set to 1 second (but ends up being effectively\n# 2 seconds). There are 3 test configs, each done with and without firmware\n# present, each with 2 \"nowait\" functions tested 5 times. Expected time for a\n# normal execution should be 2 * 3 * 2 * 2 * 5 = 120 seconds for those alone.\n# Additionally, fw_fallback may take 5 seconds for internal timeouts in each\n# of the 3 configs, so at least another 15 seconds are needed. Add another\n# 10 seconds for each testing config: 120 + 15 + 30\ntimeout=165\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

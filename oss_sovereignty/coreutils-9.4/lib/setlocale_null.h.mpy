@@ -1,0 +1,9 @@
+{
+  "module_name": "setlocale_null.h",
+  "hash_id": "cdf8b1f293a4b950f1e6704fab45ab8a9f2faf1dd3a45188cc9b5ab183f8aaaa",
+  "original_prompt": "Ingested from coreutils-9.4/lib/setlocale_null.h",
+  "human_readable_source": " \n\n#ifndef _SETLOCALE_NULL_H\n#define _SETLOCALE_NULL_H\n\n#include <stddef.h>\n\n#include \"arg-nonnull.h\"\n\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n\n \n#define SETLOCALE_NULL_MAX (256+1)\n\n \n#define SETLOCALE_NULL_ALL_MAX (148+12*256+1)\n\n \nextern int setlocale_null_r (int category, char *buf, size_t bufsize)\n  _GL_ARG_NONNULL ((2));\n\n \nextern const char *setlocale_null (int category);\n\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

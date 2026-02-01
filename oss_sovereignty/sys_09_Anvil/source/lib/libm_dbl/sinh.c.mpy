@@ -1,0 +1,9 @@
+{
+  "module_name": "sinh.c",
+  "hash_id": "5051af5f219fc3f8597e16f8d81abc1a035b1675d83e56bdee814094f7e325b6",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/sinh.c",
+  "human_readable_source": "#include \"libm.h\"\n\n \ndouble sinh(double x)\n{\n\tunion {double f; uint64_t i;} u = {.f = x};\n\tuint32_t w;\n\tdouble t, h, absx;\n\n\th = 0.5;\n\tif (u.i >> 63)\n\t\th = -h;\n\t \n\tu.i &= (uint64_t)-1/2;\n\tabsx = u.f;\n\tw = u.i >> 32;\n\n\t \n\tif (w < 0x40862e42) {\n\t\tt = expm1(absx);\n\t\tif (w < 0x3ff00000) {\n\t\t\tif (w < 0x3ff00000 - (26<<20))\n\t\t\t\t \n\t\t\t\t \n\t\t\t\treturn x;\n\t\t\treturn h*(2*t - t*t/(t+1));\n\t\t}\n\t\t \n\t\treturn h*(t + t/(t+1));\n\t}\n\n\t \n\t \n\tt = 2*h*__expo2(absx);\n\treturn t;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

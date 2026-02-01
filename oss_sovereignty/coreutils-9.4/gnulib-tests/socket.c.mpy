@@ -1,0 +1,9 @@
+{
+  "module_name": "socket.c",
+  "hash_id": "d0df5b34d8ba15a2e2f5272d09510946b51e1d9deef2cb3da619b5eeb605c611",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/socket.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#define WIN32_LEAN_AND_MEAN\n \n#include <sys/socket.h>\n\n \n#include \"w32sock.h\"\n\n#include \"sockets.h\"\n\n \n#undef WSASocket\n#define WSASocket WSASocketW\n\nint\nrpl_socket (int domain, int type, int protocol)\n{\n  SOCKET fh;\n\n  gl_sockets_startup (SOCKETS_1_1);\n\n   \n  fh = WSASocket (domain, type, protocol, NULL, 0, 0);\n\n  if (fh == INVALID_SOCKET)\n    {\n      set_winsock_errno ();\n      return -1;\n    }\n  else\n    return SOCKET_TO_FD (fh);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

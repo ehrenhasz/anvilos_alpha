@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfs-common.h",
+  "hash_id": "c896b06e3258e1f341cc708dc593feaf88428507e7f171cb35c65e22ddacc0da",
+  "original_prompt": "Ingested from linux-6.6.14/mm/damon/sysfs-common.h",
+  "human_readable_source": " \n \n\n#include <linux/damon.h>\n#include <linux/kobject.h>\n\nextern struct mutex damon_sysfs_lock;\n\nstruct damon_sysfs_ul_range {\n\tstruct kobject kobj;\n\tunsigned long min;\n\tunsigned long max;\n};\n\nstruct damon_sysfs_ul_range *damon_sysfs_ul_range_alloc(\n\t\tunsigned long min,\n\t\tunsigned long max);\nvoid damon_sysfs_ul_range_release(struct kobject *kobj);\n\nextern const struct kobj_type damon_sysfs_ul_range_ktype;\n\n \n\nstruct damon_sysfs_schemes {\n\tstruct kobject kobj;\n\tstruct damon_sysfs_scheme **schemes_arr;\n\tint nr;\n};\n\nstruct damon_sysfs_schemes *damon_sysfs_schemes_alloc(void);\nvoid damon_sysfs_schemes_rm_dirs(struct damon_sysfs_schemes *schemes);\n\nextern const struct kobj_type damon_sysfs_schemes_ktype;\n\nint damon_sysfs_set_schemes(struct damon_ctx *ctx,\n\t\tstruct damon_sysfs_schemes *sysfs_schemes);\n\nvoid damon_sysfs_schemes_update_stats(\n\t\tstruct damon_sysfs_schemes *sysfs_schemes,\n\t\tstruct damon_ctx *ctx);\n\nint damon_sysfs_schemes_update_regions_start(\n\t\tstruct damon_sysfs_schemes *sysfs_schemes,\n\t\tstruct damon_ctx *ctx, bool total_bytes_only);\n\nint damon_sysfs_schemes_update_regions_stop(struct damon_ctx *ctx);\n\nint damon_sysfs_schemes_clear_regions(\n\t\tstruct damon_sysfs_schemes *sysfs_schemes,\n\t\tstruct damon_ctx *ctx);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

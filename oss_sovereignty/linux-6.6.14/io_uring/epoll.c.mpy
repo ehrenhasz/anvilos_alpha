@@ -1,0 +1,9 @@
+{
+  "module_name": "epoll.c",
+  "hash_id": "ce93207f729172198cbffa1d7593c3331b9c9fb2d0b7d21a459b185822a04712",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/epoll.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <linux/errno.h>\n#include <linux/file.h>\n#include <linux/fs.h>\n#include <linux/uaccess.h>\n#include <linux/io_uring.h>\n#include <linux/eventpoll.h>\n\n#include <uapi/linux/io_uring.h>\n\n#include \"io_uring.h\"\n#include \"epoll.h\"\n\n#if defined(CONFIG_EPOLL)\nstruct io_epoll {\n\tstruct file\t\t\t*file;\n\tint\t\t\t\tepfd;\n\tint\t\t\t\top;\n\tint\t\t\t\tfd;\n\tstruct epoll_event\t\tevent;\n};\n\nint io_epoll_ctl_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)\n{\n\tstruct io_epoll *epoll = io_kiocb_to_cmd(req, struct io_epoll);\n\n\tif (sqe->buf_index || sqe->splice_fd_in)\n\t\treturn -EINVAL;\n\n\tepoll->epfd = READ_ONCE(sqe->fd);\n\tepoll->op = READ_ONCE(sqe->len);\n\tepoll->fd = READ_ONCE(sqe->off);\n\n\tif (ep_op_has_event(epoll->op)) {\n\t\tstruct epoll_event __user *ev;\n\n\t\tev = u64_to_user_ptr(READ_ONCE(sqe->addr));\n\t\tif (copy_from_user(&epoll->event, ev, sizeof(*ev)))\n\t\t\treturn -EFAULT;\n\t}\n\n\treturn 0;\n}\n\nint io_epoll_ctl(struct io_kiocb *req, unsigned int issue_flags)\n{\n\tstruct io_epoll *ie = io_kiocb_to_cmd(req, struct io_epoll);\n\tint ret;\n\tbool force_nonblock = issue_flags & IO_URING_F_NONBLOCK;\n\n\tret = do_epoll_ctl(ie->epfd, ie->op, ie->fd, &ie->event, force_nonblock);\n\tif (force_nonblock && ret == -EAGAIN)\n\t\treturn -EAGAIN;\n\n\tif (ret < 0)\n\t\treq_set_fail(req);\n\tio_req_set_res(req, ret, 0);\n\treturn IOU_OK;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

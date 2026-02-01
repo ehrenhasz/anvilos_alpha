@@ -1,0 +1,9 @@
+{
+  "module_name": "uzlib_conf.h",
+  "hash_id": "d4807efc694d647d2b5499b8be15ed9fb63557a792e8c69e888b90d2940505d8",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/uzlib/uzlib_conf.h",
+  "human_readable_source": " \n\n#ifndef UZLIB_CONF_H_INCLUDED\n#define UZLIB_CONF_H_INCLUDED\n\n#ifndef UZLIB_CONF_DEBUG_LOG\n \n#define UZLIB_CONF_DEBUG_LOG 0\n#endif\n\n#ifndef UZLIB_CONF_PARANOID_CHECKS\n \n#define UZLIB_CONF_PARANOID_CHECKS 0\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

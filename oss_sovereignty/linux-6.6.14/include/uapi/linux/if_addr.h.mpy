@@ -1,0 +1,9 @@
+{
+  "module_name": "if_addr.h",
+  "hash_id": "8db55047c304e4532c408709b78f14a76540dd0ccc8fee38eb780c8bd9feb3ea",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/if_addr.h",
+  "human_readable_source": " \n#ifndef __LINUX_IF_ADDR_H\n#define __LINUX_IF_ADDR_H\n\n#include <linux/types.h>\n#include <linux/netlink.h>\n\nstruct ifaddrmsg {\n\t__u8\t\tifa_family;\n\t__u8\t\tifa_prefixlen;\t \n\t__u8\t\tifa_flags;\t \n\t__u8\t\tifa_scope;\t \n\t__u32\t\tifa_index;\t \n};\n\n \nenum {\n\tIFA_UNSPEC,\n\tIFA_ADDRESS,\n\tIFA_LOCAL,\n\tIFA_LABEL,\n\tIFA_BROADCAST,\n\tIFA_ANYCAST,\n\tIFA_CACHEINFO,\n\tIFA_MULTICAST,\n\tIFA_FLAGS,\n\tIFA_RT_PRIORITY,\t \n\tIFA_TARGET_NETNSID,\n\tIFA_PROTO,\t\t \n\t__IFA_MAX,\n};\n\n#define IFA_MAX (__IFA_MAX - 1)\n\n \n#define IFA_F_SECONDARY\t\t0x01\n#define IFA_F_TEMPORARY\t\tIFA_F_SECONDARY\n\n#define\tIFA_F_NODAD\t\t0x02\n#define IFA_F_OPTIMISTIC\t0x04\n#define IFA_F_DADFAILED\t\t0x08\n#define\tIFA_F_HOMEADDRESS\t0x10\n#define IFA_F_DEPRECATED\t0x20\n#define IFA_F_TENTATIVE\t\t0x40\n#define IFA_F_PERMANENT\t\t0x80\n#define IFA_F_MANAGETEMPADDR\t0x100\n#define IFA_F_NOPREFIXROUTE\t0x200\n#define IFA_F_MCAUTOJOIN\t0x400\n#define IFA_F_STABLE_PRIVACY\t0x800\n\nstruct ifa_cacheinfo {\n\t__u32\tifa_prefered;\n\t__u32\tifa_valid;\n\t__u32\tcstamp;  \n\t__u32\ttstamp;  \n};\n\n \n#ifndef __KERNEL__\n#define IFA_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct ifaddrmsg))))\n#define IFA_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct ifaddrmsg))\n#endif\n\n \n#define IFAPROT_UNSPEC\t\t0\n#define IFAPROT_KERNEL_LO\t1\t \n#define IFAPROT_KERNEL_RA\t2\t \n#define IFAPROT_KERNEL_LL\t3\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

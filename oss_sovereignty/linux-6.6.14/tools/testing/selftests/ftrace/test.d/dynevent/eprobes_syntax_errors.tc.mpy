@@ -1,0 +1,9 @@
+{
+  "module_name": "eprobes_syntax_errors.tc",
+  "hash_id": "dab2c31299673d2f20c7beaa737eea059c53ca6b4ea87b5aed8fb5ae1bb58cc7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/dynevent/eprobes_syntax_errors.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Event probe event parser error log check\n# requires: dynamic_events events/syscalls/sys_enter_openat \"<attached-group>.<attached-event> [<args>]\":README error_log\n\ncheck_error() { # command-with-error-pos-by-^\n    ftrace_errlog_check 'event_probe' \"$1\" 'dynamic_events'\n}\n\ncheck_error 'e ^a.'\t\t\t# NO_EVENT_INFO\ncheck_error 'e ^.b'\t\t\t# NO_EVENT_INFO\ncheck_error 'e ^a.b'\t\t\t# BAD_ATTACH_EVENT\ncheck_error 'e syscalls/sys_enter_openat ^foo'\t# BAD_ATTACH_ARG\ncheck_error 'e:^/bar syscalls/sys_enter_openat'\t# NO_GROUP_NAME\ncheck_error 'e:^12345678901234567890123456789012345678901234567890123456789012345/bar syscalls/sys_enter_openat'\t# GROUP_TOO_LONG\n\ncheck_error 'e:^foo.1/bar syscalls/sys_enter_openat'\t# BAD_GROUP_NAME\ncheck_error 'e:^ syscalls/sys_enter_openat'\t\t# NO_EVENT_NAME\ncheck_error 'e:foo/^12345678901234567890123456789012345678901234567890123456789012345 syscalls/sys_enter_openat'\t# EVENT_TOO_LONG\ncheck_error 'e:foo/^bar.1 syscalls/sys_enter_openat'\t# BAD_EVENT_NAME\n\ncheck_error 'e:foo/bar syscalls/sys_enter_openat arg=^dfd'\t# BAD_FETCH_ARG\ncheck_error 'e:foo/bar syscalls/sys_enter_openat ^arg=$foo'\t# BAD_ATTACH_ARG\n\nif grep -q '<attached-group>\\.<attached-event>.*\\[if <filter>\\]' README; then\n  check_error 'e:foo/bar syscalls/sys_enter_openat if ^'\t# NO_EP_FILTER\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

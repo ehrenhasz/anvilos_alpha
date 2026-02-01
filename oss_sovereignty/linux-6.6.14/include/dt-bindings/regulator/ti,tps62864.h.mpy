@@ -1,0 +1,9 @@
+{
+  "module_name": "ti,tps62864.h",
+  "hash_id": "8c553bd96ab64549cca4569cb6661c6ab90d489ad2a60fabbb3a63639db73aea",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/regulator/ti,tps62864.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_REGULATOR_TI_TPS62864_H\n#define _DT_BINDINGS_REGULATOR_TI_TPS62864_H\n\n#define TPS62864_MODE_NORMAL\t\t\t0\n#define TPS62864_MODE_FPWM\t\t\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

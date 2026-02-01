@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_hooks_lwtunnel.h",
+  "hash_id": "f74942ae53ae2ae793c10c94bb021b39417a4e6512bc8c51d18d0cc5bcd8623f",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nf_hooks_lwtunnel.h",
+  "human_readable_source": "#include <linux/sysctl.h>\n#include <linux/types.h>\n\n#ifdef CONFIG_SYSCTL\nint nf_hooks_lwtunnel_sysctl_handler(struct ctl_table *table, int write,\n\t\t\t\t     void *buffer, size_t *lenp, loff_t *ppos);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

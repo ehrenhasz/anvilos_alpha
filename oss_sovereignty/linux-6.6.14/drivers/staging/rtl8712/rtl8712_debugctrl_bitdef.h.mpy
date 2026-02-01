@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_debugctrl_bitdef.h",
+  "hash_id": "2989cb72ab8551c0144b5ef08c49af4efdc81e3a618e19f834b5f08ea9c1d554",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_debugctrl_bitdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_DEBUGCTRL_BITDEF_H__\n#define __RTL8712_DEBUGCTRL_BITDEF_H__\n\n \n#define\t_BIST_RST\t\t\tBIT(0)\n\n \n#define\t_LMS_MSK\t\t\t0x03\n\n \n#define\t_OVSEL_MSK\t\t\t0x0600\n#define\t_OVSEL_SHT\t\t\t9\n#define\t_WDGCLR\t\t\t\tBIT(8)\n#define\t_WDGEN_MSK\t\t\t0x00FF\n#define\t_WDGEN_SHT\t\t\t0\n\n \n#define\t_TXTIMER_MSK\t\t0xF000\n#define\t_TXTIMER_SHT\t\t12\n#define\t_TXNUM_MSK\t\t\t0x0F00\n#define\t_TXNUM_SHT\t\t\t8\n#define\t_RXTIMER_MSK\t\t0x00F0\n#define\t_RXTIMER_SHT\t\t4\n#define\t_RXNUM_MSK\t\t\t0x000F\n#define\t_RXNUM_SHT\t\t\t0\n\n \n \n#define\t_TURN1\t\t\t\tBIT(0)\n\n \n \n#define\t_LOCKFLAG1_MSK\t\t0x03\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

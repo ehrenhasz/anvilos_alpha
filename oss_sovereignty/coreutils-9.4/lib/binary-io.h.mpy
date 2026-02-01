@@ -1,0 +1,9 @@
+{
+  "module_name": "binary-io.h",
+  "hash_id": "5f8db45c47941ba7a7106ec4e6833dac0728e386b7937cf7eeeaae9b2e0398df",
+  "original_prompt": "Ingested from coreutils-9.4/lib/binary-io.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n#include <fcntl.h>\n\n \n#include <stdio.h>\n\n_GL_INLINE_HEADER_BEGIN\n#ifndef BINARY_IO_INLINE\n# define BINARY_IO_INLINE _GL_INLINE\n#endif\n\n#if O_BINARY\n# if defined __EMX__ || defined __DJGPP__ || defined __CYGWIN__\n#  include <io.h>  \n#  define __gl_setmode setmode\n# else\n#  define __gl_setmode _setmode\n#  undef fileno\n#  define fileno _fileno\n# endif\n#else\n   \n   \nBINARY_IO_INLINE int\n__gl_setmode (_GL_UNUSED int fd, _GL_UNUSED int mode)\n{\n  return O_BINARY;\n}\n#endif\n\n \n\n#if defined __DJGPP__ || defined __EMX__\nextern int set_binary_mode (int fd, int mode);\n#else\nBINARY_IO_INLINE int\nset_binary_mode (int fd, int mode)\n{\n  return __gl_setmode (fd, mode);\n}\n#endif\n\n \n#define SET_BINARY(fd) ((void) set_binary_mode (fd, O_BINARY))\n\n_GL_INLINE_HEADER_END\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nfs.h",
+  "hash_id": "babfd90c3500febda729a7485a6ae9e2f30605ad73c716133a9e6adfd395817d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfs/nfs.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_INTERNAL_NFS_H\n#define __LINUX_INTERNAL_NFS_H\n\n#include <linux/fs.h>\n#include <linux/sunrpc/sched.h>\n#include <linux/nfs_xdr.h>\n\nstruct nfs_subversion {\n\tstruct module *owner;\t \n\tstruct file_system_type *nfs_fs;\t \n\tconst struct rpc_version *rpc_vers;\t \n\tconst struct nfs_rpc_ops *rpc_ops;\t \n\tconst struct super_operations *sops;\t \n\tconst struct xattr_handler **xattr;\t \n\tstruct list_head list;\t\t \n};\n\nstruct nfs_subversion *get_nfs_version(unsigned int);\nvoid put_nfs_version(struct nfs_subversion *);\nvoid register_nfs_version(struct nfs_subversion *);\nvoid unregister_nfs_version(struct nfs_subversion *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3163485eb8600d25553d0a2270b417f4d1b85cead0734ccf4c2e707671c99807",
+  "original_prompt": "Ingested from linux-6.6.14/sound/sparc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# ALSA Sparc drivers\n\nmenuconfig SND_SPARC\n\tbool \"Sparc sound devices\"\n\tdepends on SPARC\n\tdefault y\n\thelp\n\t  Support for sound devices specific to Sun SPARC architectures.\n\nif SND_SPARC\n\nconfig SND_SUN_AMD7930\n\ttristate \"Sun AMD7930\"\n\tdepends on SBUS\n\tselect SND_PCM\n\thelp\n\t  Say Y here to include support for AMD7930 sound device on Sun.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called snd-sun-amd7930.\n\nconfig SND_SUN_CS4231\n\ttristate \"Sun CS4231\"\n\tselect SND_PCM\n\tselect SND_TIMER\n\thelp\n\t  Say Y here to include support for CS4231 sound device on Sun.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called snd-sun-cs4231.\n\nconfig SND_SUN_DBRI\n\ttristate \"Sun DBRI\"\n\tdepends on SBUS\n\tselect SND_PCM\n\thelp\n\t  Say Y here to include support for DBRI sound device on Sun.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called snd-sun-dbri.\n\nendif\t# SND_SPARC\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

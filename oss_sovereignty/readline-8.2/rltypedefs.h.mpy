@@ -1,0 +1,9 @@
+{
+  "module_name": "rltypedefs.h",
+  "hash_id": "c39fa79a843717c1e0430689bd54f47db9c749c88870719c9f1bc12fbad0f349",
+  "original_prompt": "Ingested from readline-8.2/rltypedefs.h",
+  "human_readable_source": " \n\n \n\n#ifndef _RL_TYPEDEFS_H_\n#define _RL_TYPEDEFS_H_\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n \n\n#if !defined (_FUNCTION_DEF)\n#  define _FUNCTION_DEF\n\n#if defined(__GNUC__) || defined(__clang__)\ntypedef int Function () __attribute__((deprecated));\ntypedef void VFunction () __attribute__((deprecated));\ntypedef char *CPFunction () __attribute__((deprecated));\ntypedef char **CPPFunction () __attribute__((deprecated));\n#else\ntypedef int Function ();\ntypedef void VFunction ();\ntypedef char *CPFunction ();\ntypedef char **CPPFunction ();\n#endif\n\n#endif  \n\n \n\n#if !defined (_RL_FUNCTION_TYPEDEF)\n#  define _RL_FUNCTION_TYPEDEF\n\n \ntypedef int rl_command_func_t (int, int);\n\n \ntypedef char *rl_compentry_func_t (const char *, int);\ntypedef char **rl_completion_func_t (const char *, int, int);\n\ntypedef char *rl_quote_func_t (char *, int, char *);\ntypedef char *rl_dequote_func_t (char *, int);\n\ntypedef int rl_compignore_func_t (char **);\n\ntypedef void rl_compdisp_func_t (char **, int, int);\n\n \ntypedef int rl_hook_func_t (void);\n\n \ntypedef int rl_getc_func_t (FILE *);\n\n \ntypedef int rl_linebuf_func_t (char *, int);\n\n \ntypedef int rl_intfunc_t (int);\n#define rl_ivoidfunc_t rl_hook_func_t\ntypedef int rl_icpfunc_t (char *);\ntypedef int rl_icppfunc_t (char **);\n\ntypedef void rl_voidfunc_t (void);\ntypedef void rl_vintfunc_t (int);\ntypedef void rl_vcpfunc_t (char *);\ntypedef void rl_vcppfunc_t (char **);\n\ntypedef char *rl_cpvfunc_t (void);\ntypedef char *rl_cpifunc_t (int);\ntypedef char *rl_cpcpfunc_t (char  *);\ntypedef char *rl_cpcppfunc_t (char  **);\n\n#endif  \n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "063ce23a7fa5dce7e3976ed04c9f622b975949ad8818f0214b39e1cf89c30a6d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/xscale/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Intel XScale IXP device drivers.\n#\n\n# Keep this link order to avoid deferred probing\nifdef CONFIG_PTP_1588_CLOCK_IXP46X\nobj-$(CONFIG_IXP4XX_ETH)\t\t+= ptp_ixp46x.o\nendif\n\nobj-$(CONFIG_IXP4XX_ETH)\t\t+= ixp4xx_eth.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vidtv_demod.h",
+  "hash_id": "73956b6d142aa5a23ab9f00aa0309ff4f3b7599774a73be5cc3a0ce08506d95e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vidtv/vidtv_demod.h",
+  "human_readable_source": " \n \n\n#ifndef VIDTV_DEMOD_H\n#define VIDTV_DEMOD_H\n\n#include <linux/dvb/frontend.h>\n\n#include <media/dvb_frontend.h>\n\n \nstruct vidtv_demod_cnr_to_qual_s {\n\tu32 modulation;\n\tu32 fec;\n\tu32 cnr_ok;\n\tu32 cnr_good;\n};\n\n \nstruct vidtv_demod_config {\n\tu8 drop_tslock_prob_on_low_snr;\n\tu8 recover_tslock_prob_on_good_snr;\n};\n\n \nstruct vidtv_demod_state {\n\tstruct dvb_frontend frontend;\n\tstruct vidtv_demod_config config;\n\tenum fe_status status;\n\tu16 tuner_cnr;\n};\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

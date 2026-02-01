@@ -1,0 +1,9 @@
+{
+  "module_name": "acl.h",
+  "hash_id": "6a6a6f5e58ce1ce112dd87541010474a0d0e9c4f3ecd491dca207499123acc6a",
+  "original_prompt": "Ingested from linux-6.6.14/fs/9p/acl.h",
+  "human_readable_source": " \n \n#ifndef FS_9P_ACL_H\n#define FS_9P_ACL_H\n\n#ifdef CONFIG_9P_FS_POSIX_ACL\nint v9fs_get_acl(struct inode *inode, struct p9_fid *fid);\nstruct posix_acl *v9fs_iop_get_inode_acl(struct inode *inode, int type,\n\t\t\t\t   bool rcu);\nstruct posix_acl *v9fs_iop_get_acl(struct mnt_idmap *idmap,\n\t\t\t\t\t  struct dentry *dentry, int type);\nint v9fs_iop_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,\n\t\t     struct posix_acl *acl, int type);\nint v9fs_acl_chmod(struct inode *inode, struct p9_fid *fid);\nint v9fs_set_create_acl(struct inode *inode, struct p9_fid *fid,\n\t\t\tstruct posix_acl *dacl, struct posix_acl *acl);\nint v9fs_acl_mode(struct inode *dir, umode_t *modep,\n\t\t  struct posix_acl **dpacl, struct posix_acl **pacl);\nvoid v9fs_put_acl(struct posix_acl *dacl, struct posix_acl *acl);\n#else\n#define v9fs_iop_get_inode_acl\tNULL\n#define v9fs_iop_get_acl NULL\n#define v9fs_iop_set_acl NULL\nstatic inline int v9fs_get_acl(struct inode *inode, struct p9_fid *fid)\n{\n\treturn 0;\n}\nstatic inline int v9fs_acl_chmod(struct inode *inode, struct p9_fid *fid)\n{\n\treturn 0;\n}\nstatic inline int v9fs_set_create_acl(struct inode *inode,\n\t\t\t\t      struct p9_fid *fid,\n\t\t\t\t      struct posix_acl *dacl,\n\t\t\t\t      struct posix_acl *acl)\n{\n\treturn 0;\n}\nstatic inline void v9fs_put_acl(struct posix_acl *dacl,\n\t\t\t\tstruct posix_acl *acl)\n{\n}\nstatic inline int v9fs_acl_mode(struct inode *dir, umode_t *modep,\n\t\t\t\tstruct posix_acl **dpacl,\n\t\t\t\tstruct posix_acl **pacl)\n{\n\treturn 0;\n}\n\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

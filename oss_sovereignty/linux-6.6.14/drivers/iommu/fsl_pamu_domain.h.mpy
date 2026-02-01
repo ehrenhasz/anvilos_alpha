@@ -1,0 +1,9 @@
+{
+  "module_name": "fsl_pamu_domain.h",
+  "hash_id": "86641f08883cd73ad4d619e09a5bb44cd5cbc52cb514763feb9994c9d4b91d40",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/fsl_pamu_domain.h",
+  "human_readable_source": " \n \n\n#ifndef __FSL_PAMU_DOMAIN_H\n#define __FSL_PAMU_DOMAIN_H\n\n#include \"fsl_pamu.h\"\n\nstruct fsl_dma_domain {\n\t \n\tstruct list_head\t\tdevices;\n\tu32\t\t\t\tstash_id;\n\tstruct iommu_domain\t\tiommu_domain;\n\tspinlock_t\t\t\tdomain_lock;\n};\n\n \nstruct device_domain_info {\n\tstruct list_head link;\t \n\tstruct device *dev;\n\tu32 liodn;\n\tstruct fsl_dma_domain *domain;  \n};\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

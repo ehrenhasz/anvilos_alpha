@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "74967cc79b07f116dfb5f0df30993258310ae8c87b698d164248c81428906c12",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/debug/x86_64/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nOUTPUT=./\nifeq (\"$(origin O)\", \"command line\")\n\tOUTPUT := $(O)/\nendif\n\nDESTDIR =\nbindir  = /usr/bin\n\nINSTALL = /usr/bin/install\n\n\ndefault: all\n\n$(OUTPUT)centrino-decode: ../i386/centrino-decode.c\n\t$(CC) $(CFLAGS) -o $@ $(LDFLAGS) $<\n\n$(OUTPUT)powernow-k8-decode: ../i386/powernow-k8-decode.c\n\t$(CC) $(CFLAGS) -o $@ $(LDFLAGS) $<\n\nall: $(OUTPUT)centrino-decode $(OUTPUT)powernow-k8-decode\n\nclean:\n\trm -rf $(OUTPUT)centrino-decode $(OUTPUT)powernow-k8-decode\n\ninstall:\n\t$(INSTALL) -d $(DESTDIR)${bindir}\n\t$(INSTALL) $(OUTPUT)centrino-decode $(DESTDIR)${bindir}\n\t$(INSTALL) $(OUTPUT)powernow-k8-decode $(DESTDIR)${bindir}\n\n.PHONY: all default clean install\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

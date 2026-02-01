@@ -1,0 +1,9 @@
+{
+  "module_name": "ddbridge-ci.h",
+  "hash_id": "fb0c86b0454a89dbbb43054c74ea5e24acc9e6df1aec958478eeb51c537d01cb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ddbridge/ddbridge-ci.h",
+  "human_readable_source": " \n \n\n#ifndef __DDBRIDGE_CI_H__\n#define __DDBRIDGE_CI_H__\n\n#include \"ddbridge.h\"\n\n \n\nint ddb_ci_attach(struct ddb_port *port, u32 bitrate);\nvoid ddb_ci_detach(struct ddb_port *port);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

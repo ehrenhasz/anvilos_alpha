@@ -1,0 +1,9 @@
+{
+  "module_name": "timed_ctrl_private.h",
+  "hash_id": "ae62bf0a5be193d50d4edaddfdb6b7d85527e12aab3be69dda5822c3ca03b60d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/host/timed_ctrl_private.h",
+  "human_readable_source": " \n \n\n#ifndef __TIMED_CTRL_PRIVATE_H_INCLUDED__\n#define __TIMED_CTRL_PRIVATE_H_INCLUDED__\n\n#include \"timed_ctrl_public.h\"\n\n#include \"device_access.h\"\n\n#include \"assert_support.h\"\n\nSTORAGE_CLASS_TIMED_CTRL_C void timed_ctrl_reg_store(\n    const timed_ctrl_ID_t\tID,\n    const unsigned int\t\treg,\n    const hrt_data\t\t\tvalue)\n{\n\tOP___assert(ID < N_TIMED_CTRL_ID);\n\tOP___assert(TIMED_CTRL_BASE[ID] != (hrt_address) - 1);\n\tia_css_device_store_uint32(TIMED_CTRL_BASE[ID] + reg * sizeof(hrt_data), value);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

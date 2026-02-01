@@ -1,0 +1,9 @@
+{
+  "module_name": "timer.h",
+  "hash_id": "94511b63e605392d36ed6b1aaf4b89021f772ffe66828b6ce866925a2e35d2c1",
+  "original_prompt": "Ingested from bash-5.2.21/include/timer.h",
+  "human_readable_source": " \n\n \n\n#ifdef HAVE_CONFIG_H\n#include \"config.h\"\n#endif\n\n#include \"bashjmp.h\"\ntypedef struct _shtimer\n{\n  struct timeval tmout;\n\n  int fd;\n  int flags;\n\n  int alrmflag;\t\t\t\t\t \n\n  SigHandler *alrm_handler;\n  SigHandler *old_handler;\n\n  procenv_t jmpenv;\n\n  int (*tm_handler) (struct _shtimer *);\t \n  PTR_T\t*data;\t\t\t\t\t \n} sh_timer;\n\n#define SHTIMER_ALARM\t0x01\t\t\t \n#define SHTIMER_SELECT\t0x02\n#define SHTIMER_LONGJMP\t0x04\n\n#define SHTIMER_SIGSET\t0x100\n#define SHTIMER_ALRMSET\t0x200\n\nextern sh_timer *shtimer_alloc (void);\nextern void shtimer_flush (sh_timer *);\nextern void shtimer_dispose (sh_timer *);\n\nextern void shtimer_set (sh_timer *, time_t, long);\nextern void shtimer_unset (sh_timer *);\n\nextern void shtimer_cleanup (sh_timer *);\nextern void shtimer_clear (sh_timer *);\n\nextern int shtimer_chktimeout (sh_timer *);\n\nextern int shtimer_select (sh_timer *);\nextern int shtimer_alrm (sh_timer *);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

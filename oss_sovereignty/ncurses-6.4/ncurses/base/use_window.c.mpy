@@ -1,0 +1,9 @@
+{
+  "module_name": "use_window.c",
+  "hash_id": "ec775ba4d59d81afe1f36fbcde19365ebbff9ec5d2097ec28769ac81129658c4",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/use_window.c",
+  "human_readable_source": " \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: use_window.c,v 1.13 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nuse_window(WINDOW *win, NCURSES_WINDOW_CB func, void *data)\n{\n    int code = OK;\n    TR_FUNC_BFR(1);\n\n    T((T_CALLED(\"use_window(%p,%s,%p)\"),\n       (void *) win,\n       TR_FUNC_ARG(0, func),\n       data));\n\n    _nc_lock_global(curses);\n    code = func(win, data);\n    _nc_unlock_global(curses);\n\n    returnCode(code);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

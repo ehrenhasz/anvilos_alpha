@@ -1,0 +1,9 @@
+{
+  "module_name": "port_range_scale.sh",
+  "hash_id": "dc0a987cacd8c3f45c33e15458cfa1a47a22a82c227ff74682f73ff66a65f1a7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/port_range_scale.sh",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsource ../port_range_scale.sh\n\nport_range_get_target()\n{\n\tlocal should_fail=$1; shift\n\tlocal target\n\n\ttarget=$(devlink_resource_size_get port_range_registers)\n\n\tif ((! should_fail)); then\n\t\techo $target\n\telse\n\t\techo $((target + 1))\n\tfi\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

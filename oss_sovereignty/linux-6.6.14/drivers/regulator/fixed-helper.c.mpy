@@ -1,0 +1,9 @@
+{
+  "module_name": "fixed-helper.c",
+  "hash_id": "3d28b81589211449dbf24e59a7a5cc0732ee4eafba3253c5152429572f4b8d0a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/regulator/fixed-helper.c",
+  "human_readable_source": "\n#include <linux/slab.h>\n#include <linux/string.h>\n#include <linux/platform_device.h>\n#include <linux/regulator/machine.h>\n#include <linux/regulator/fixed.h>\n\nstruct fixed_regulator_data {\n\tstruct fixed_voltage_config cfg;\n\tstruct regulator_init_data init_data;\n\tstruct platform_device pdev;\n};\n\nstatic void regulator_fixed_release(struct device *dev)\n{\n\tstruct fixed_regulator_data *data = container_of(dev,\n\t\t\tstruct fixed_regulator_data, pdev.dev);\n\tkfree(data->cfg.supply_name);\n\tkfree(data);\n}\n\n \nstruct platform_device *regulator_register_always_on(int id, const char *name,\n\tstruct regulator_consumer_supply *supplies, int num_supplies, int uv)\n{\n\tstruct fixed_regulator_data *data;\n\n\tdata = kzalloc(sizeof(*data), GFP_KERNEL);\n\tif (!data)\n\t\treturn NULL;\n\n\tdata->cfg.supply_name = kstrdup(name, GFP_KERNEL);\n\tif (!data->cfg.supply_name) {\n\t\tkfree(data);\n\t\treturn NULL;\n\t}\n\n\tdata->cfg.microvolts = uv;\n\tdata->cfg.enabled_at_boot = 1;\n\tdata->cfg.init_data = &data->init_data;\n\n\tdata->init_data.constraints.always_on = 1;\n\tdata->init_data.consumer_supplies = supplies;\n\tdata->init_data.num_consumer_supplies = num_supplies;\n\n\tdata->pdev.name = \"reg-fixed-voltage\";\n\tdata->pdev.id = id;\n\tdata->pdev.dev.platform_data = &data->cfg;\n\tdata->pdev.dev.release = regulator_fixed_release;\n\n\tplatform_device_register(&data->pdev);\n\n\treturn &data->pdev;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

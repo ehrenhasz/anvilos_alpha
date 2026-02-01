@@ -1,0 +1,9 @@
+{
+  "module_name": "lru_cache.h",
+  "hash_id": "46ba6ab28b8af52de2a488580a656e9fbaa2efd0d4fe6649de6c191863278c9b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/lru_cache.h",
+  "human_readable_source": " \n\n#ifndef BTRFS_LRU_CACHE_H\n#define BTRFS_LRU_CACHE_H\n\n#include <linux/maple_tree.h>\n#include <linux/list.h>\n\n \nstruct btrfs_lru_cache_entry {\n\tstruct list_head lru_list;\n\tu64 key;\n\t \n\tu64 gen;\n\t \n\tstruct list_head list;\n};\n\nstruct btrfs_lru_cache {\n\tstruct list_head lru_list;\n\tstruct maple_tree entries;\n\t \n\tunsigned int size;\n\t \n\tunsigned int max_size;\n};\n\n#define btrfs_lru_cache_for_each_entry_safe(cache, entry, tmp)\t\t\\\n\tlist_for_each_entry_safe_reverse((entry), (tmp), &(cache)->lru_list, lru_list)\n\nstatic inline unsigned int btrfs_lru_cache_size(const struct btrfs_lru_cache *cache)\n{\n\treturn cache->size;\n}\n\nstatic inline struct btrfs_lru_cache_entry *btrfs_lru_cache_lru_entry(\n\t\t\t\t\t      struct btrfs_lru_cache *cache)\n{\n\treturn list_first_entry_or_null(&cache->lru_list,\n\t\t\t\t\tstruct btrfs_lru_cache_entry, lru_list);\n}\n\nvoid btrfs_lru_cache_init(struct btrfs_lru_cache *cache, unsigned int max_size);\nstruct btrfs_lru_cache_entry *btrfs_lru_cache_lookup(struct btrfs_lru_cache *cache,\n\t\t\t\t\t\t     u64 key, u64 gen);\nint btrfs_lru_cache_store(struct btrfs_lru_cache *cache,\n\t\t\t  struct btrfs_lru_cache_entry *new_entry,\n\t\t\t  gfp_t gfp);\nvoid btrfs_lru_cache_remove(struct btrfs_lru_cache *cache,\n\t\t\t    struct btrfs_lru_cache_entry *entry);\nvoid btrfs_lru_cache_clear(struct btrfs_lru_cache *cache);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

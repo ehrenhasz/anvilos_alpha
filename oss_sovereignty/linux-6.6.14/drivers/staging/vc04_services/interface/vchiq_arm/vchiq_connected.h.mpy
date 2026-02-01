@@ -1,0 +1,9 @@
+{
+  "module_name": "vchiq_connected.h",
+  "hash_id": "8d0b161647ffc96cb40403304293b9a83b2a1061feceaa12fce482341e112943",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_connected.h",
+  "human_readable_source": " \n \n\n#ifndef VCHIQ_CONNECTED_H\n#define VCHIQ_CONNECTED_H\n\nvoid vchiq_add_connected_callback(void (*callback)(void));\nvoid vchiq_call_connected_callbacks(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

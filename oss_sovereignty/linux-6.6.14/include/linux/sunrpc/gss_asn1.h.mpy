@@ -1,0 +1,9 @@
+{
+  "module_name": "gss_asn1.h",
+  "hash_id": "54c40e4267c73dc28fe6463d336203093593e0e96e6423e98c4afaa8ce85c00d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sunrpc/gss_asn1.h",
+  "human_readable_source": " \n\n \n\n\n#include <linux/sunrpc/gss_api.h>\n\n#define SIZEOF_INT 4\n\n \n#define G_BAD_SERVICE_NAME                       (-2045022976L)\n#define G_BAD_STRING_UID                         (-2045022975L)\n#define G_NOUSER                                 (-2045022974L)\n#define G_VALIDATE_FAILED                        (-2045022973L)\n#define G_BUFFER_ALLOC                           (-2045022972L)\n#define G_BAD_MSG_CTX                            (-2045022971L)\n#define G_WRONG_SIZE                             (-2045022970L)\n#define G_BAD_USAGE                              (-2045022969L)\n#define G_UNKNOWN_QOP                            (-2045022968L)\n#define G_NO_HOSTNAME                            (-2045022967L)\n#define G_BAD_HOSTNAME                           (-2045022966L)\n#define G_WRONG_MECH                             (-2045022965L)\n#define G_BAD_TOK_HEADER                         (-2045022964L)\n#define G_BAD_DIRECTION                          (-2045022963L)\n#define G_TOK_TRUNC                              (-2045022962L)\n#define G_REFLECT                                (-2045022961L)\n#define G_WRONG_TOKID                            (-2045022960L)\n\n#define g_OID_equal(o1,o2) \\\n   (((o1)->len == (o2)->len) && \\\n    (memcmp((o1)->data,(o2)->data,(int) (o1)->len) == 0))\n\nu32 g_verify_token_header(\n     struct xdr_netobj *mech,\n     int *body_size,\n     unsigned char **buf_in,\n     int toksize);\n\nint g_token_size(\n     struct xdr_netobj *mech,\n     unsigned int body_size);\n\nvoid g_make_token_header(\n     struct xdr_netobj *mech,\n     int body_size,\n     unsigned char **buf);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

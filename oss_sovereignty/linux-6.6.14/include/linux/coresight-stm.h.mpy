@@ -1,0 +1,9 @@
+{
+  "module_name": "coresight-stm.h",
+  "hash_id": "435d00b4db6e5a034f21279e00988aa67bf6814623a704b72d80cc92acef0e87",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/coresight-stm.h",
+  "human_readable_source": " \n#ifndef __LINUX_CORESIGHT_STM_H_\n#define __LINUX_CORESIGHT_STM_H_\n\n#include <uapi/linux/coresight-stm.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

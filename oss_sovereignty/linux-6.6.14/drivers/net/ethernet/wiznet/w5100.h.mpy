@@ -1,0 +1,9 @@
+{
+  "module_name": "w5100.h",
+  "hash_id": "e055c455782fde59c42d82ea4c7fd61262495ee45ebea7beb281a111892a9079",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/wiznet/w5100.h",
+  "human_readable_source": " \n \n\nenum {\n\tW5100,\n\tW5200,\n\tW5500,\n};\n\nstruct w5100_ops {\n\tbool may_sleep;\n\tint chip_id;\n\tint (*read)(struct net_device *ndev, u32 addr);\n\tint (*write)(struct net_device *ndev, u32 addr, u8 data);\n\tint (*read16)(struct net_device *ndev, u32 addr);\n\tint (*write16)(struct net_device *ndev, u32 addr, u16 data);\n\tint (*readbulk)(struct net_device *ndev, u32 addr, u8 *buf, int len);\n\tint (*writebulk)(struct net_device *ndev, u32 addr, const u8 *buf,\n\t\t\t int len);\n\tint (*reset)(struct net_device *ndev);\n\tint (*init)(struct net_device *ndev);\n};\n\nvoid *w5100_ops_priv(const struct net_device *ndev);\n\nint w5100_probe(struct device *dev, const struct w5100_ops *ops,\n\t\tint sizeof_ops_priv, const void *mac_addr, int irq,\n\t\tint link_gpio);\nvoid w5100_remove(struct device *dev);\n\nextern const struct dev_pm_ops w5100_pm_ops;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

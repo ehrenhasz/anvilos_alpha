@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "11d0f548c135f10cdd62a71b93e7f459405dd066dd1184f08ab8b4041c9e8665",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/vic/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\n#nvkm-y += nvkm/engine/vic/base.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

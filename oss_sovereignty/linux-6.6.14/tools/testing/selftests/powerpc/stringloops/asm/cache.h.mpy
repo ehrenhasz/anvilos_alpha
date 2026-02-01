@@ -1,0 +1,9 @@
+{
+  "module_name": "cache.h",
+  "hash_id": "ab8ed2691a1a228405c569fab76697a58cde2e08f093e8ef9bd32772295bc422",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/stringloops/asm/cache.h",
+  "human_readable_source": "#define\tIFETCH_ALIGN_BYTES 4\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

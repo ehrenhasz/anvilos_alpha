@@ -1,0 +1,9 @@
+{
+  "module_name": "perl.m4",
+  "hash_id": "e8866a1cc1137b93b29db5abe81187a015f8b3a7fbe6e3d93f948e23be712b30",
+  "original_prompt": "Ingested from coreutils-9.4/m4/perl.m4",
+  "human_readable_source": "# serial 11\n\ndnl From Jim Meyering.\ndnl Find a new-enough version of Perl.\n\n# Copyright (C) 1998-2001, 2003-2004, 2007, 2009-2023 Free Software Foundation,\n# Inc.\n#\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_PERL],\n[\n  dnl FIXME: don't hard-code 5.005\nAC_CACHE_CHECK([for Perl 5.005 or newer],\n [gl_cv_prog_perl],\n [\n  if test \"${PERL+set}\" = set; then\n    # 'PERL' is set in the user's environment.\n    candidate_perl_names=\"$PERL\"\n    perl_specified=yes\n  else\n    candidate_perl_names='perl perl5'\n    perl_specified=no\n  fi\n\n  gl_cv_prog_perl=no\n  for perl in $candidate_perl_names; do\n    # Run test in a subshell; some versions of sh will print an error if\n    # an executable is not found, even if stderr is redirected.\n    if ( $perl -e 'require 5.005; use File::Compare; use warnings;' ) > /dev/null 2>&1; then\n      gl_cv_prog_perl=$perl\n      break\n    fi\n  done\n ])\n\nif test \"$gl_cv_prog_perl\" != no; then\n  PERL=$gl_cv_prog_perl\nelse\n  PERL=\"$am_missing_run perl\"\n  AC_MSG_WARN([\nWARNING: You don't seem to have perl5.005 or newer installed, or you lack\n         a usable version of the Perl File::Compare module.  As a result,\n         you may be unable to run a few tests or to regenerate certain\n         files if you modify the sources from which they are derived.\n] )\nfi\n\nAC_SUBST([PERL])\n\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

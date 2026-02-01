@@ -1,0 +1,9 @@
+{
+  "module_name": "seq_oss_readq.h",
+  "hash_id": "8b763326e975a2377cd6455c479ca2c55d6f386046ee1e979a16ab57976c61c9",
+  "original_prompt": "Ingested from linux-6.6.14/sound/core/seq/oss/seq_oss_readq.h",
+  "human_readable_source": " \n \n\n#ifndef __SEQ_OSS_READQ_H\n#define __SEQ_OSS_READQ_H\n\n#include \"seq_oss_device.h\"\n\n\n \nstruct seq_oss_readq {\n\tunion evrec *q;\n\tint qlen;\n\tint maxlen;\n\tint head, tail;\n\tunsigned long pre_event_timeout;\n\tunsigned long input_time;\n\twait_queue_head_t midi_sleep;\n\tspinlock_t lock;\n};\n\nstruct seq_oss_readq *snd_seq_oss_readq_new(struct seq_oss_devinfo *dp, int maxlen);\nvoid snd_seq_oss_readq_delete(struct seq_oss_readq *q);\nvoid snd_seq_oss_readq_clear(struct seq_oss_readq *readq);\nunsigned int snd_seq_oss_readq_poll(struct seq_oss_readq *readq, struct file *file, poll_table *wait);\nint snd_seq_oss_readq_puts(struct seq_oss_readq *readq, int dev, unsigned char *data, int len);\nint snd_seq_oss_readq_sysex(struct seq_oss_readq *q, int dev,\n\t\t\t    struct snd_seq_event *ev);\nint snd_seq_oss_readq_put_event(struct seq_oss_readq *readq, union evrec *ev);\nint snd_seq_oss_readq_put_timestamp(struct seq_oss_readq *readq, unsigned long curt, int seq_mode);\nint snd_seq_oss_readq_pick(struct seq_oss_readq *q, union evrec *rec);\nvoid snd_seq_oss_readq_wait(struct seq_oss_readq *q);\nvoid snd_seq_oss_readq_free(struct seq_oss_readq *q);\n\n#define snd_seq_oss_readq_lock(q, flags) spin_lock_irqsave(&(q)->lock, flags)\n#define snd_seq_oss_readq_unlock(q, flags) spin_unlock_irqrestore(&(q)->lock, flags)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

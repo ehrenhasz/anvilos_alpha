@@ -1,0 +1,9 @@
+{
+  "module_name": "kmsan_types.h",
+  "hash_id": "4ccbdf3bbceac89948229acd64ce6465a904e6cc0330033c970cd3da0baa2ac0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kmsan_types.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_KMSAN_TYPES_H\n#define _LINUX_KMSAN_TYPES_H\n\n \n#define KMSAN_RETVAL_SIZE 800\n#define KMSAN_PARAM_SIZE 800\n\nstruct kmsan_context_state {\n\tchar param_tls[KMSAN_PARAM_SIZE];\n\tchar retval_tls[KMSAN_RETVAL_SIZE];\n\tchar va_arg_tls[KMSAN_PARAM_SIZE];\n\tchar va_arg_origin_tls[KMSAN_PARAM_SIZE];\n\tu64 va_arg_overflow_size_tls;\n\tchar param_origin_tls[KMSAN_PARAM_SIZE];\n\tu32 retval_origin_tls;\n};\n\n#undef KMSAN_PARAM_SIZE\n#undef KMSAN_RETVAL_SIZE\n\nstruct kmsan_ctx {\n\tstruct kmsan_context_state cstate;\n\tint kmsan_in_runtime;\n\tbool allow_reporting;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

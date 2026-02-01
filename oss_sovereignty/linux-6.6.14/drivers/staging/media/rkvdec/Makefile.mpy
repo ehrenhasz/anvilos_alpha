@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9157230bfe2c19266cf6a11f9f4f8f2686dbb61d070c5a6cb74bf8e8f79b23a8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/rkvdec/Makefile",
+  "human_readable_source": "obj-$(CONFIG_VIDEO_ROCKCHIP_VDEC) += rockchip-vdec.o\n\nrockchip-vdec-y += rkvdec.o rkvdec-h264.o rkvdec-vp9.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

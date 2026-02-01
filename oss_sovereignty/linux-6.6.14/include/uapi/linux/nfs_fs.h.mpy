@@ -1,0 +1,9 @@
+{
+  "module_name": "nfs_fs.h",
+  "hash_id": "f7f07b8cb7cd2b62662e76c80043c65f5e69ccd1fbf535aa8ceec5ef48e6a289",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/nfs_fs.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_NFS_FS_H\n#define _UAPI_LINUX_NFS_FS_H\n\n#include <linux/magic.h>\n\n \n#define NFS_DEF_UDP_TIMEO\t(11)\n#define NFS_DEF_UDP_RETRANS\t(3)\n#define NFS_DEF_TCP_TIMEO\t(600)\n#define NFS_DEF_TCP_RETRANS\t(2)\n\n#define NFS_MAX_UDP_TIMEOUT\t(60*HZ)\n#define NFS_MAX_TCP_TIMEOUT\t(600*HZ)\n\n#define NFS_DEF_ACREGMIN\t(3)\n#define NFS_DEF_ACREGMAX\t(60)\n#define NFS_DEF_ACDIRMIN\t(30)\n#define NFS_DEF_ACDIRMAX\t(60)\n\n \n#define FLUSH_SYNC\t\t1\t \n#define FLUSH_STABLE\t\t4\t \n#define FLUSH_LOWPRI\t\t8\t \n#define FLUSH_HIGHPRI\t\t16\t \n#define FLUSH_COND_STABLE\t32\t \n\n\n \n#define NFSDBG_VFS\t\t0x0001\n#define NFSDBG_DIRCACHE\t\t0x0002\n#define NFSDBG_LOOKUPCACHE\t0x0004\n#define NFSDBG_PAGECACHE\t0x0008\n#define NFSDBG_PROC\t\t0x0010\n#define NFSDBG_XDR\t\t0x0020\n#define NFSDBG_FILE\t\t0x0040\n#define NFSDBG_ROOT\t\t0x0080\n#define NFSDBG_CALLBACK\t\t0x0100\n#define NFSDBG_CLIENT\t\t0x0200\n#define NFSDBG_MOUNT\t\t0x0400\n#define NFSDBG_FSCACHE\t\t0x0800  \n#define NFSDBG_PNFS\t\t0x1000\n#define NFSDBG_PNFS_LD\t\t0x2000\n#define NFSDBG_STATE\t\t0x4000\n#define NFSDBG_XATTRCACHE\t0x8000\n#define NFSDBG_ALL\t\t0xFFFF\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

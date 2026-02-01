@@ -1,0 +1,9 @@
+{
+  "module_name": "thread_map.h",
+  "hash_id": "f2bfd11134f9c22481236fc23ee4814baaab8c2f3c026acc614346f725a7ec4b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/thread_map.h",
+  "human_readable_source": " \n#ifndef __PERF_THREAD_MAP_H\n#define __PERF_THREAD_MAP_H\n\n#include <sys/types.h>\n#include <stdio.h>\n#include <perf/threadmap.h>\n\nstruct perf_record_thread_map;\n\nstruct perf_thread_map *thread_map__new_dummy(void);\nstruct perf_thread_map *thread_map__new_by_pid(pid_t pid);\nstruct perf_thread_map *thread_map__new_by_tid(pid_t tid);\nstruct perf_thread_map *thread_map__new_by_uid(uid_t uid);\nstruct perf_thread_map *thread_map__new_all_cpus(void);\nstruct perf_thread_map *thread_map__new(pid_t pid, pid_t tid, uid_t uid);\nstruct perf_thread_map *thread_map__new_event(struct perf_record_thread_map *event);\n\nstruct perf_thread_map *thread_map__new_str(const char *pid,\n\t\tconst char *tid, uid_t uid, bool all_threads);\n\nstruct perf_thread_map *thread_map__new_by_tid_str(const char *tid_str);\n\nsize_t thread_map__fprintf(struct perf_thread_map *threads, FILE *fp);\n\nvoid thread_map__read_comms(struct perf_thread_map *threads);\nbool thread_map__has(struct perf_thread_map *threads, pid_t pid);\nint thread_map__remove(struct perf_thread_map *threads, int idx);\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

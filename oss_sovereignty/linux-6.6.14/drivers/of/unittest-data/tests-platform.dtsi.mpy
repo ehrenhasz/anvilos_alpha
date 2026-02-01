@@ -1,0 +1,9 @@
+{
+  "module_name": "tests-platform.dtsi",
+  "hash_id": "5085b2c161a8183120842a1b19ae0f70935411bd6392f24c36a54b8da2c9bb8e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/tests-platform.dtsi",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n\n/ {\n\ttestcase-data {\n\t\tplatform-tests {\n\t\t\t#address-cells = <1>;\n\t\t\t#size-cells = <0>;\n\n\t\t\ttest-device@0 {\n\t\t\t\tcompatible = \"test-device\";\n\t\t\t\treg = <0x0>;\n\n\t\t\t\t#address-cells = <1>;\n\t\t\t\t#size-cells = <0>;\n\n\t\t\t\tdev@100 {\n\t\t\t\t\tcompatible = \"test-sub-device\";\n\t\t\t\t\treg = <0x100>;\n\t\t\t\t};\n\t\t\t};\n\n\t\t\ttest-device@1 {\n\t\t\t\tcompatible = \"test-device\";\n\t\t\t\treg = <0x1>;\n\n\t\t\t\t#address-cells = <1>;\n\t\t\t\t#size-cells = <0>;\n\n\t\t\t\tdev@100 {\n\t\t\t\t\tcompatible = \"test-sub-device\",\n\t\t\t\t\t\t     \"test-compat2\",\n\t\t\t\t\t\t     \"test-compat3\";\n\t\t\t\t\treg = <0x100>;\n\t\t\t\t};\n\t\t\t};\n\t\t};\n\t};\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

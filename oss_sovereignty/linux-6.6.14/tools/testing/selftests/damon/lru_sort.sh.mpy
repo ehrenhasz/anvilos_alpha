@@ -1,0 +1,9 @@
+{
+  "module_name": "lru_sort.sh",
+  "hash_id": "8ff97cc3e2ae082402265c62eccc0bdce5f26d12a9dc84b4ed11536c548fdbfb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/damon/lru_sort.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# Kselftest framework requirement - SKIP code is 4.\nksft_skip=4\n\nif [ $EUID -ne 0 ]\nthen\n\techo \"Run as root\"\n\texit $ksft_skip\nfi\n\ndamon_lru_sort_enabled=\"/sys/module/damon_lru_sort/parameters/enabled\"\nif [ ! -f \"$damon_lru_sort_enabled\" ]\nthen\n\techo \"No 'enabled' file.  Maybe DAMON_LRU_SORT not built\"\n\texit $ksft_skip\nfi\n\nnr_kdamonds=$(pgrep kdamond | wc -l)\nif [ \"$nr_kdamonds\" -ne 0 ]\nthen\n\techo \"Another kdamond is running\"\n\texit $ksft_skip\nfi\n\necho Y > \"$damon_lru_sort_enabled\"\nnr_kdamonds=$(pgrep kdamond | wc -l)\nif [ \"$nr_kdamonds\" -ne 1 ]\nthen\n\techo \"kdamond is not turned on\"\n\texit 1\nfi\n\necho N > \"$damon_lru_sort_enabled\"\nnr_kdamonds=$(pgrep kdamond | wc -l)\nif [ \"$nr_kdamonds\" -ne 0 ]\nthen\n\techo \"kdamond is not turned off\"\n\texit 1\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

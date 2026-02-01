@@ -1,0 +1,9 @@
+{
+  "module_name": "espintcp.h",
+  "hash_id": "12126bf15107135e4e03000e8dba843218bf0908b006868758be06d0b6581bb3",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/espintcp.h",
+  "human_readable_source": " \n#ifndef _NET_ESPINTCP_H\n#define _NET_ESPINTCP_H\n\n#include <net/strparser.h>\n#include <linux/skmsg.h>\n\nvoid __init espintcp_init(void);\n\nint espintcp_push_skb(struct sock *sk, struct sk_buff *skb);\nint espintcp_queue_out(struct sock *sk, struct sk_buff *skb);\nbool tcp_is_ulp_esp(struct sock *sk);\n\nstruct espintcp_msg {\n\tstruct sk_buff *skb;\n\tstruct sk_msg skmsg;\n\tint offset;\n\tint len;\n};\n\nstruct espintcp_ctx {\n\tstruct strparser strp;\n\tstruct sk_buff_head ike_queue;\n\tstruct sk_buff_head out_queue;\n\tstruct espintcp_msg partial;\n\tvoid (*saved_data_ready)(struct sock *sk);\n\tvoid (*saved_write_space)(struct sock *sk);\n\tvoid (*saved_destruct)(struct sock *sk);\n\tstruct work_struct work;\n\tbool tx_running;\n};\n\nstatic inline struct espintcp_ctx *espintcp_getctx(const struct sock *sk)\n{\n\tstruct inet_connection_sock *icsk = inet_csk(sk);\n\n\t \n\treturn (__force void *)icsk->icsk_ulp_data;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

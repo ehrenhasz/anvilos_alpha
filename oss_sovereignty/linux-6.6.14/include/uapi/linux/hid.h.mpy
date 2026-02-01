@@ -1,0 +1,9 @@
+{
+  "module_name": "hid.h",
+  "hash_id": "3f09edd5e6851650fb15808f02cf3ef30df627dfa1bab52f7cf2c3a9b0155c02",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/hid.h",
+  "human_readable_source": " \n \n \n#ifndef _UAPI__HID_H\n#define _UAPI__HID_H\n\n\n\n \n\n#define USB_INTERFACE_CLASS_HID\t\t3\n\n \n\n#define USB_INTERFACE_SUBCLASS_BOOT\t1\n#define USB_INTERFACE_PROTOCOL_KEYBOARD\t1\n#define USB_INTERFACE_PROTOCOL_MOUSE\t2\n\n \n\nenum hid_report_type {\n\tHID_INPUT_REPORT\t\t= 0,\n\tHID_OUTPUT_REPORT\t\t= 1,\n\tHID_FEATURE_REPORT\t\t= 2,\n\n\tHID_REPORT_TYPES,\n};\n\n \n\nenum hid_class_request {\n\tHID_REQ_GET_REPORT\t\t= 0x01,\n\tHID_REQ_GET_IDLE\t\t= 0x02,\n\tHID_REQ_GET_PROTOCOL\t\t= 0x03,\n\tHID_REQ_SET_REPORT\t\t= 0x09,\n\tHID_REQ_SET_IDLE\t\t= 0x0A,\n\tHID_REQ_SET_PROTOCOL\t\t= 0x0B,\n};\n\n \n\n#define HID_DT_HID\t\t\t(USB_TYPE_CLASS | 0x01)\n#define HID_DT_REPORT\t\t\t(USB_TYPE_CLASS | 0x02)\n#define HID_DT_PHYSICAL\t\t\t(USB_TYPE_CLASS | 0x03)\n\n#define HID_MAX_DESCRIPTOR_SIZE\t\t4096\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "j1939.h",
+  "hash_id": "fb2387408b5e1d8c75cdf3e94eb84becec850e178ce2da67c5fa8f21477bdcfc",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/can/j1939.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_CAN_J1939_H_\n#define _UAPI_CAN_J1939_H_\n\n#include <linux/types.h>\n#include <linux/socket.h>\n#include <linux/can.h>\n\n#define J1939_MAX_UNICAST_ADDR 0xfd\n#define J1939_IDLE_ADDR 0xfe\n#define J1939_NO_ADDR 0xff\t\t \n#define J1939_NO_NAME 0\n#define J1939_PGN_REQUEST 0x0ea00\t\t \n#define J1939_PGN_ADDRESS_CLAIMED 0x0ee00\t \n#define J1939_PGN_ADDRESS_COMMANDED 0x0fed8\t \n#define J1939_PGN_PDU1_MAX 0x3ff00\n#define J1939_PGN_MAX 0x3ffff\n#define J1939_NO_PGN 0x40000\n\n \ntypedef __u32 pgn_t;\n\n \ntypedef __u8 priority_t;\n\n \ntypedef __u64 name_t;\n\n \n#define SOL_CAN_J1939 (SOL_CAN_BASE + CAN_J1939)\nenum {\n\tSO_J1939_FILTER = 1,\t \n\tSO_J1939_PROMISC = 2,\t \n\tSO_J1939_SEND_PRIO = 3,\n\tSO_J1939_ERRQUEUE = 4,\n};\n\nenum {\n\tSCM_J1939_DEST_ADDR = 1,\n\tSCM_J1939_DEST_NAME = 2,\n\tSCM_J1939_PRIO = 3,\n\tSCM_J1939_ERRQUEUE = 4,\n};\n\nenum {\n\tJ1939_NLA_PAD,\n\tJ1939_NLA_BYTES_ACKED,\n\tJ1939_NLA_TOTAL_SIZE,\n\tJ1939_NLA_PGN,\n\tJ1939_NLA_SRC_NAME,\n\tJ1939_NLA_DEST_NAME,\n\tJ1939_NLA_SRC_ADDR,\n\tJ1939_NLA_DEST_ADDR,\n};\n\nenum {\n\tJ1939_EE_INFO_NONE,\n\tJ1939_EE_INFO_TX_ABORT,\n\tJ1939_EE_INFO_RX_RTS,\n\tJ1939_EE_INFO_RX_DPO,\n\tJ1939_EE_INFO_RX_ABORT,\n};\n\nstruct j1939_filter {\n\tname_t name;\n\tname_t name_mask;\n\tpgn_t pgn;\n\tpgn_t pgn_mask;\n\t__u8 addr;\n\t__u8 addr_mask;\n};\n\n#define J1939_FILTER_MAX 512  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

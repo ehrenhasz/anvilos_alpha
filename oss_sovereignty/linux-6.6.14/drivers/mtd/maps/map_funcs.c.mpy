@@ -1,0 +1,9 @@
+{
+  "module_name": "map_funcs.c",
+  "hash_id": "1b9f83db2871f9c653d6e5c14cfc22fcd64c82ed4d24f79f8c2f9e76a3c3a9cf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/maps/map_funcs.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/module.h>\n\n#include <linux/mtd/map.h>\n#include <linux/mtd/xip.h>\n\nstatic map_word __xipram simple_map_read(struct map_info *map, unsigned long ofs)\n{\n\treturn inline_map_read(map, ofs);\n}\n\nstatic void __xipram simple_map_write(struct map_info *map, const map_word datum, unsigned long ofs)\n{\n\tinline_map_write(map, datum, ofs);\n}\n\nstatic void __xipram simple_map_copy_from(struct map_info *map, void *to, unsigned long from, ssize_t len)\n{\n\tinline_map_copy_from(map, to, from, len);\n}\n\nstatic void __xipram simple_map_copy_to(struct map_info *map, unsigned long to, const void *from, ssize_t len)\n{\n\tinline_map_copy_to(map, to, from, len);\n}\n\nvoid simple_map_init(struct map_info *map)\n{\n\tBUG_ON(!map_bankwidth_supported(map->bankwidth));\n\n\tmap->read = simple_map_read;\n\tmap->write = simple_map_write;\n\tmap->copy_from = simple_map_copy_from;\n\tmap->copy_to = simple_map_copy_to;\n}\n\nEXPORT_SYMBOL(simple_map_init);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

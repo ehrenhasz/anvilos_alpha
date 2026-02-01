@@ -1,0 +1,9 @@
+{
+  "module_name": "meson-eeclk.h",
+  "hash_id": "5dc05c28ceafe0b66432d14068f195a05caf9ba5e06faf68f77313038cf68e3d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/meson/meson-eeclk.h",
+  "human_readable_source": " \n \n\n#ifndef __MESON_CLKC_H\n#define __MESON_CLKC_H\n\n#include <linux/clk-provider.h>\n#include \"clk-regmap.h\"\n#include \"meson-clkc-utils.h\"\n\nstruct platform_device;\n\nstruct meson_eeclkc_data {\n\tstruct clk_regmap *const\t*regmap_clks;\n\tunsigned int\t\t\tregmap_clk_num;\n\tconst struct reg_sequence\t*init_regs;\n\tunsigned int\t\t\tinit_count;\n\tstruct meson_clk_hw_data\thw_clks;\n};\n\nint meson_eeclkc_probe(struct platform_device *pdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

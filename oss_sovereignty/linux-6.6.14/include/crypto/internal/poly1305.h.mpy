@@ -1,0 +1,9 @@
+{
+  "module_name": "poly1305.h",
+  "hash_id": "b12a99a26dc950793e8f1f0d34d5160aa17113470c972603b6312c2839153dd4",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/internal/poly1305.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYPTO_INTERNAL_POLY1305_H\n#define _CRYPTO_INTERNAL_POLY1305_H\n\n#include <asm/unaligned.h>\n#include <linux/types.h>\n#include <crypto/poly1305.h>\n\n \n\nvoid poly1305_core_setkey(struct poly1305_core_key *key,\n\t\t\t  const u8 raw_key[POLY1305_BLOCK_SIZE]);\nstatic inline void poly1305_core_init(struct poly1305_state *state)\n{\n\t*state = (struct poly1305_state){};\n}\n\nvoid poly1305_core_blocks(struct poly1305_state *state,\n\t\t\t  const struct poly1305_core_key *key, const void *src,\n\t\t\t  unsigned int nblocks, u32 hibit);\nvoid poly1305_core_emit(const struct poly1305_state *state, const u32 nonce[4],\n\t\t\tvoid *dst);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

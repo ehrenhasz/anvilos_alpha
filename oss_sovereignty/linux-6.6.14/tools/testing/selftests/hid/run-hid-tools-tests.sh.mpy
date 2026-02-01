@@ -1,0 +1,9 @@
+{
+  "module_name": "run-hid-tools-tests.sh",
+  "hash_id": "54cd4e4f4246da47d45555f0fd5364d2b33c80b66194037e77ba10998b7f8368",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/hid/run-hid-tools-tests.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# Runs tests for the HID subsystem\n\nif ! command -v python3 > /dev/null 2>&1; then\n\techo \"hid-tools: [SKIP] python3 not installed\"\n\texit 77\nfi\n\nif ! python3 -c \"import pytest\" > /dev/null 2>&1; then\n\techo \"hid: [SKIP/ pytest module not installed\"\n\texit 77\nfi\n\nif ! python3 -c \"import pytest_tap\" > /dev/null 2>&1; then\n\techo \"hid: [SKIP/ pytest_tap module not installed\"\n\texit 77\nfi\n\nif ! python3 -c \"import hidtools\" > /dev/null 2>&1; then\n\techo \"hid: [SKIP/ hid-tools module not installed\"\n\texit 77\nfi\n\nTARGET=${TARGET:=.}\n\necho TAP version 13\npython3 -u -m pytest $PYTEST_XDIST ./tests/$TARGET --tap-stream --udevd\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

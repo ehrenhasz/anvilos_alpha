@@ -1,0 +1,9 @@
+{
+  "module_name": "rcar-fcp.h",
+  "hash_id": "756bd465ebd45a83930e4722c0292f83e4f62855fd1da7b86f16b47ad65469d1",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/rcar-fcp.h",
+  "human_readable_source": " \n \n#ifndef __MEDIA_RCAR_FCP_H__\n#define __MEDIA_RCAR_FCP_H__\n\nstruct device_node;\nstruct rcar_fcp_device;\n\n#if IS_ENABLED(CONFIG_VIDEO_RENESAS_FCP)\nstruct rcar_fcp_device *rcar_fcp_get(const struct device_node *np);\nvoid rcar_fcp_put(struct rcar_fcp_device *fcp);\nstruct device *rcar_fcp_get_device(struct rcar_fcp_device *fcp);\nint rcar_fcp_enable(struct rcar_fcp_device *fcp);\nvoid rcar_fcp_disable(struct rcar_fcp_device *fcp);\n#else\nstatic inline struct rcar_fcp_device *rcar_fcp_get(const struct device_node *np)\n{\n\treturn ERR_PTR(-ENOENT);\n}\nstatic inline void rcar_fcp_put(struct rcar_fcp_device *fcp) { }\nstatic inline struct device *rcar_fcp_get_device(struct rcar_fcp_device *fcp)\n{\n\treturn NULL;\n}\nstatic inline int rcar_fcp_enable(struct rcar_fcp_device *fcp)\n{\n\treturn 0;\n}\nstatic inline void rcar_fcp_disable(struct rcar_fcp_device *fcp) { }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

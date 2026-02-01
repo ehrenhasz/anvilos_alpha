@@ -1,0 +1,9 @@
+{
+  "module_name": "memset.c",
+  "hash_id": "280d3de8c542aa1868db2121e13c5cc55580c86d71604135b2afc2d89ecccb79",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/memset.c",
+  "human_readable_source": " \n\n \n\nchar *\nmemset (char *str, int c, unsigned int len)\n{\n  register char *st = str;\n\n  while (len-- > 0)\n    *st++ = c;\n  return str;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

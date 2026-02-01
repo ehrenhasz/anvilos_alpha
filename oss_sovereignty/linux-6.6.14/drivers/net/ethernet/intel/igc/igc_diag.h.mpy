@@ -1,0 +1,9 @@
+{
+  "module_name": "igc_diag.h",
+  "hash_id": "aaa293cca30cd33f1804a7b9d6743e1dc96f3bb7d8dbb99b95cdabc1f5e25bdf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/igc/igc_diag.h",
+  "human_readable_source": " \n \n\nbool igc_reg_test(struct igc_adapter *adapter, u64 *data);\nbool igc_eeprom_test(struct igc_adapter *adapter, u64 *data);\nbool igc_link_test(struct igc_adapter *adapter, u64 *data);\n\nstruct igc_reg_test {\n\tu16 reg;\n\tu8 array_len;\n\tu8 test_type;\n\tu32 mask;\n\tu32 write;\n};\n\n \n\n#define PATTERN_TEST\t1\n#define SET_READ_TEST\t2\n#define TABLE32_TEST\t3\n#define TABLE64_TEST_LO\t4\n#define TABLE64_TEST_HI\t5\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

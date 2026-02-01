@@ -1,0 +1,9 @@
+{
+  "module_name": "gpiolib-sysfs.h",
+  "hash_id": "4f8c32b527aaf57f196bc39af332e0ccbfb06a77a0112490a4984ce429d96583",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpio/gpiolib-sysfs.h",
+  "human_readable_source": " \n\n#ifndef GPIOLIB_SYSFS_H\n#define GPIOLIB_SYSFS_H\n\n#ifdef CONFIG_GPIO_SYSFS\n\nstruct gpio_device;\n\nint gpiochip_sysfs_register(struct gpio_device *gdev);\nvoid gpiochip_sysfs_unregister(struct gpio_device *gdev);\n\n#else\n\nstatic inline int gpiochip_sysfs_register(struct gpio_device *gdev)\n{\n\treturn 0;\n}\n\nstatic inline void gpiochip_sysfs_unregister(struct gpio_device *gdev)\n{\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

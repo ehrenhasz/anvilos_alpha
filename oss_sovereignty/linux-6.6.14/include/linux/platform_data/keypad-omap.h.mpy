@@ -1,0 +1,9 @@
+{
+  "module_name": "keypad-omap.h",
+  "hash_id": "3ecdd1009eaf31ba293b86e5ee94a0edf395876c1c6e7c335fe0eb72584314a0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/keypad-omap.h",
+  "human_readable_source": " \n \n#ifndef __KEYPAD_OMAP_H\n#define __KEYPAD_OMAP_H\n\n#ifndef CONFIG_ARCH_OMAP1\n#warning Please update the board to use matrix-keypad driver\n#define omap_readw(reg)\t\t0\n#define omap_writew(val, reg)\tdo {} while (0)\n#endif\n#include <linux/input/matrix_keypad.h>\n\nstruct omap_kp_platform_data {\n\tint rows;\n\tint cols;\n\tconst struct matrix_keymap_data *keymap_data;\n\tbool rep;\n\tunsigned long delay;\n\tbool dbounce;\n\t \n\tunsigned int *row_gpios;\n\tunsigned int *col_gpios;\n};\n\n \n#define GROUP_SHIFT\t14\n#define GROUP_0\t\t(0 << GROUP_SHIFT)\n#define GROUP_1\t\t(1 << GROUP_SHIFT)\n#define GROUP_2\t\t(2 << GROUP_SHIFT)\n#define GROUP_3\t\t(3 << GROUP_SHIFT)\n#define GROUP_MASK\tGROUP_3\n#if KEY_MAX & GROUP_MASK\n#error Group bits in conflict with keynum bits\n#endif\n\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

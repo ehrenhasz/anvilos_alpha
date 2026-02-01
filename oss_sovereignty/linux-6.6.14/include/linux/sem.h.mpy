@@ -1,0 +1,9 @@
+{
+  "module_name": "sem.h",
+  "hash_id": "173b7df6b37f16f123fe94424d06abe7f21adeaba42b8bbd1d75b15fc185e0ca",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sem.h",
+  "human_readable_source": " \n#ifndef _LINUX_SEM_H\n#define _LINUX_SEM_H\n\n#include <uapi/linux/sem.h>\n\nstruct task_struct;\nstruct sem_undo_list;\n\n#ifdef CONFIG_SYSVIPC\n\nstruct sysv_sem {\n\tstruct sem_undo_list *undo_list;\n};\n\nextern int copy_semundo(unsigned long clone_flags, struct task_struct *tsk);\nextern void exit_sem(struct task_struct *tsk);\n\n#else\n\nstruct sysv_sem {\n\t \n};\n\nstatic inline int copy_semundo(unsigned long clone_flags, struct task_struct *tsk)\n{\n\treturn 0;\n}\n\nstatic inline void exit_sem(struct task_struct *tsk)\n{\n\treturn;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_helper.h",
+  "hash_id": "8f51d0e3c8d1e2436bc02adb2ed9b9165f25f4cdb110d8ca64c4169f12a28a7a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_helper.h",
+  "human_readable_source": " \n#ifndef _XT_HELPER_H\n#define _XT_HELPER_H\n\nstruct xt_helper_info {\n\tint invert;\n\tchar name[30];\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

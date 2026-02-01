@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-commit-metadata.m4",
+  "hash_id": "1ef717b4b2ef9c2c2b09a09a79ce05adffb84fc71990c5af426995382a1fadee",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-commit-metadata.m4",
+  "human_readable_source": "dnl #\ndnl # 2.6.33 API change\ndnl # Added eops->commit_metadata() callback to allow the underlying\ndnl # filesystem to determine the most efficient way to commit the inode.\ndnl # Prior to this the nfs server would issue an explicit fsync().\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_COMMIT_METADATA], [\n\tZFS_LINUX_TEST_SRC([export_operations_commit_metadata], [\n\t\t#include <linux/exportfs.h>\n\t\tint commit_metadata(struct inode *inode) { return 0; }\n\t\tstatic struct export_operations eops __attribute__ ((unused))={\n\t\t\t.commit_metadata = commit_metadata,\n\t\t};\n\t],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_COMMIT_METADATA], [\n\tAC_MSG_CHECKING([whether eops->commit_metadata() exists])\n\tZFS_LINUX_TEST_RESULT([export_operations_commit_metadata], [\n\t\tAC_MSG_RESULT(yes)\n\t],[\n\t\tZFS_LINUX_TEST_ERROR([eops->commit_metadata()])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

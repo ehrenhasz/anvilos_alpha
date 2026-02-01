@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.randstruct",
+  "hash_id": "2fada2abd11fda6e2ebcab84679449d48fd508d3e87426c822daa62f8c26b2a1",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/Makefile.randstruct",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nrandstruct-cflags-y += -DRANDSTRUCT\n\nifdef CONFIG_GCC_PLUGIN_RANDSTRUCT\nrandstruct-cflags-y\t\\\n\t+= -fplugin=$(objtree)/scripts/gcc-plugins/randomize_layout_plugin.so\nrandstruct-cflags-$(CONFIG_RANDSTRUCT_PERFORMANCE)\t\t\\\n\t+= -fplugin-arg-randomize_layout_plugin-performance-mode\nelse\nrandstruct-cflags-y\t\\\n\t+= -frandomize-layout-seed-file=$(objtree)/scripts/basic/randstruct.seed\nendif\n\nexport RANDSTRUCT_CFLAGS := $(randstruct-cflags-y)\n\nKBUILD_CFLAGS\t+= $(RANDSTRUCT_CFLAGS)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

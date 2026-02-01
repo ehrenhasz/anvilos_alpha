@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "4f4d922f6e3ed521d33249d91a80acd3cdfad7697a6446e4a7afee91468364c8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/memfd/config",
+  "human_readable_source": "CONFIG_FUSE_FS=m\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

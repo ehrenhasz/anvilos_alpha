@@ -1,0 +1,9 @@
+{
+  "module_name": "hid_bpf_helpers.h",
+  "hash_id": "af11268987dc22bd26317f2547986d3a0e98dc4ecab5a63001b12f763e1b51b2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/hid/progs/hid_bpf_helpers.h",
+  "human_readable_source": " \n \n\n#ifndef __HID_BPF_HELPERS_H\n#define __HID_BPF_HELPERS_H\n\n \nextern __u8 *hid_bpf_get_data(struct hid_bpf_ctx *ctx,\n\t\t\t      unsigned int offset,\n\t\t\t      const size_t __sz) __ksym;\nextern int hid_bpf_attach_prog(unsigned int hid_id, int prog_fd, u32 flags) __ksym;\nextern struct hid_bpf_ctx *hid_bpf_allocate_context(unsigned int hid_id) __ksym;\nextern void hid_bpf_release_context(struct hid_bpf_ctx *ctx) __ksym;\nextern int hid_bpf_hw_request(struct hid_bpf_ctx *ctx,\n\t\t\t      __u8 *data,\n\t\t\t      size_t buf__sz,\n\t\t\t      enum hid_report_type type,\n\t\t\t      enum hid_class_request reqtype) __ksym;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

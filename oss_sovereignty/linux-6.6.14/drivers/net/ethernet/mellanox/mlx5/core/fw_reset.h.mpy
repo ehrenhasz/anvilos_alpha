@@ -1,0 +1,9 @@
+{
+  "module_name": "fw_reset.h",
+  "hash_id": "fdeb827ac6f488b7a798e0f1266022bbf1f260df85a7216687e000fefee39a90",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_FW_RESET_H\n#define __MLX5_FW_RESET_H\n\n#include \"mlx5_core.h\"\n\nint mlx5_fw_reset_query(struct mlx5_core_dev *dev, u8 *reset_level, u8 *reset_type);\nint mlx5_fw_reset_set_reset_sync(struct mlx5_core_dev *dev, u8 reset_type_sel,\n\t\t\t\t struct netlink_ext_ack *extack);\nint mlx5_fw_reset_set_live_patch(struct mlx5_core_dev *dev);\n\nint mlx5_fw_reset_wait_reset_done(struct mlx5_core_dev *dev);\nint mlx5_fw_reset_verify_fw_complete(struct mlx5_core_dev *dev,\n\t\t\t\t     struct netlink_ext_ack *extack);\nvoid mlx5_fw_reset_events_start(struct mlx5_core_dev *dev);\nvoid mlx5_fw_reset_events_stop(struct mlx5_core_dev *dev);\nvoid mlx5_drain_fw_reset(struct mlx5_core_dev *dev);\nint mlx5_fw_reset_init(struct mlx5_core_dev *dev);\nvoid mlx5_fw_reset_cleanup(struct mlx5_core_dev *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

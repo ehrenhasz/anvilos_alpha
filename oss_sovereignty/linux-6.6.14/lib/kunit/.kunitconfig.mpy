@@ -1,0 +1,9 @@
+{
+  "module_name": ".kunitconfig",
+  "hash_id": "8633c6bbb5283393699437e42e3aa04c5bf1b58e7790c35c817be2cccc87e116",
+  "original_prompt": "Ingested from linux-6.6.14/lib/kunit/.kunitconfig",
+  "human_readable_source": "CONFIG_KUNIT=y\nCONFIG_KUNIT_TEST=y\nCONFIG_KUNIT_EXAMPLE_TEST=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

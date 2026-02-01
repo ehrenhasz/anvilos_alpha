@@ -1,0 +1,9 @@
+{
+  "module_name": "blacklist_hashes.c",
+  "hash_id": "99261c77aa16786530efea991b9dc9920a58db7ba3caecd94ab79b5131fd66a6",
+  "original_prompt": "Ingested from linux-6.6.14/certs/blacklist_hashes.c",
+  "human_readable_source": "\n#include \"blacklist.h\"\n\nconst char __initconst *const blacklist_hashes[] = {\n#include \"blacklist_hash_list\"\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

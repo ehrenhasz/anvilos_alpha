@@ -1,0 +1,9 @@
+{
+  "module_name": "log.c",
+  "hash_id": "992af10186990516c496bd6ed04980260d5cdcee157c8df69f5149fec49b1bbd",
+  "original_prompt": "Ingested from linux-6.6.14/net/batman-adv/log.c",
+  "human_readable_source": "\n \n\n#include \"log.h\"\n#include \"main.h\"\n\n#include <linux/stdarg.h>\n\n#include \"trace.h\"\n\n \nint batadv_debug_log(struct batadv_priv *bat_priv, const char *fmt, ...)\n{\n\tstruct va_format vaf;\n\tva_list args;\n\n\tva_start(args, fmt);\n\n\tvaf.fmt = fmt;\n\tvaf.va = &args;\n\n\ttrace_batadv_dbg(bat_priv, &vaf);\n\n\tva_end(args);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

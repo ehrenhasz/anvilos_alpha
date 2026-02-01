@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8a336d5b779c90ee4066ef9ee2057674313ffc758b8f9c6fe43a300e2246a799",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ni/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_NI_XGE_MANAGEMENT_ENET) += nixge.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

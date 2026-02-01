@@ -1,0 +1,9 @@
+{
+  "module_name": "tea6330t.h",
+  "hash_id": "16cdc0fdf57ff638b75e0a43df83b01e9936749df76f3b226c9db70fb519d082",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/tea6330t.h",
+  "human_readable_source": " \n#ifndef __SOUND_TEA6330T_H\n#define __SOUND_TEA6330T_H\n\n \n\n#include <sound/i2c.h>\t\t \n\nint snd_tea6330t_detect(struct snd_i2c_bus *bus, int equalizer);\nint snd_tea6330t_update_mixer(struct snd_card *card, struct snd_i2c_bus *bus,\n\t\t\t      int equalizer, int fader);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mkcompile_h",
+  "hash_id": "90168d5d196c13754ce9ee3ad6abdd258ec4cab3fd2b70993f74b60308bd79fd",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/mkcompile_h",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\nUTS_MACHINE=$1\nCC_VERSION=\"$2\"\nLD=$3\n\nif test -z \"$KBUILD_BUILD_USER\"; then\n\tLINUX_COMPILE_BY=$(whoami | sed 's/\\\\/\\\\\\\\/')\nelse\n\tLINUX_COMPILE_BY=$KBUILD_BUILD_USER\nfi\nif test -z \"$KBUILD_BUILD_HOST\"; then\n\tLINUX_COMPILE_HOST=`uname -n`\nelse\n\tLINUX_COMPILE_HOST=$KBUILD_BUILD_HOST\nfi\n\nLD_VERSION=$(LC_ALL=C $LD -v | head -n1 |\n\t\tsed -e 's/(compatible with [^)]*)//' -e 's/[[:space:]]*$//')\n\ncat <<EOF\n#define UTS_MACHINE\t\t\"${UTS_MACHINE}\"\n#define LINUX_COMPILE_BY\t\"${LINUX_COMPILE_BY}\"\n#define LINUX_COMPILE_HOST\t\"${LINUX_COMPILE_HOST}\"\n#define LINUX_COMPILER\t\t\"${CC_VERSION}, ${LD_VERSION}\"\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

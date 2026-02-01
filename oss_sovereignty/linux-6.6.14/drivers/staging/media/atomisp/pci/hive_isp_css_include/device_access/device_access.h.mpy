@@ -1,0 +1,9 @@
+{
+  "module_name": "device_access.h",
+  "hash_id": "2b679768316e6db03712fc4e58cff4e24416f7e02c035a7b07aa4faa4df88969",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/device_access/device_access.h",
+  "human_readable_source": " \n \n\n#ifndef __DEVICE_ACCESS_H_INCLUDED__\n#define __DEVICE_ACCESS_H_INCLUDED__\n\n \n\n#include <type_support.h>\n\n \n#include \"system_local.h\"\n \n\n \ntypedef\thrt_address\t\tsys_address;\n\n \nvoid device_set_base_address(\n    const sys_address\t\tbase_addr);\n\n \nsys_address device_get_base_address(void);\n\n \nuint8_t ia_css_device_load_uint8(\n    const hrt_address\t\taddr);\n\n \nuint16_t ia_css_device_load_uint16(\n    const hrt_address\t\taddr);\n\n \nuint32_t ia_css_device_load_uint32(\n    const hrt_address\t\taddr);\n\n \nuint64_t ia_css_device_load_uint64(\n    const hrt_address\t\taddr);\n\n \nvoid ia_css_device_store_uint8(\n    const hrt_address\t\taddr,\n    const uint8_t\t\t\tdata);\n\n \nvoid ia_css_device_store_uint16(\n    const hrt_address\t\taddr,\n    const uint16_t\t\t\tdata);\n\n \nvoid ia_css_device_store_uint32(\n    const hrt_address\t\taddr,\n    const uint32_t\t\t\tdata);\n\n \nvoid ia_css_device_store_uint64(\n    const hrt_address\t\taddr,\n    const uint64_t\t\t\tdata);\n\n \nvoid ia_css_device_load(\n    const hrt_address\t\taddr,\n    void\t\t\t\t\t*data,\n    const size_t\t\t\tsize);\n\n \nvoid ia_css_device_store(\n    const hrt_address\t\taddr,\n    const void\t\t\t\t*data,\n    const size_t\t\t\tsize);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

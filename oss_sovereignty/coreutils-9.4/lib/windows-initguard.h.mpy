@@ -1,0 +1,9 @@
+{
+  "module_name": "windows-initguard.h",
+  "hash_id": "941b7359e439b53ca297ead0514697f777ac3fb05c75e9eff2baf162dcac673e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/windows-initguard.h",
+  "human_readable_source": " \n\n#ifndef _WINDOWS_INITGUARD_H\n#define _WINDOWS_INITGUARD_H\n\n#define WIN32_LEAN_AND_MEAN   \n#include <windows.h>\n\ntypedef struct\n        {\n          volatile int done;\n          volatile LONG started;\n        }\n        glwthread_initguard_t;\n\n#define GLWTHREAD_INITGUARD_INIT { 0, -1 }\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

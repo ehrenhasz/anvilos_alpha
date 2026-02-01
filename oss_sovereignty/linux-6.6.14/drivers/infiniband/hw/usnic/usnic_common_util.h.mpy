@@ -1,0 +1,9 @@
+{
+  "module_name": "usnic_common_util.h",
+  "hash_id": "d35df3e758d0ebacc9b943b59754d2bf9116c2e3661ff69a80e460838a95dbe7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/usnic/usnic_common_util.h",
+  "human_readable_source": " \n\n#ifndef USNIC_CMN_UTIL_H\n#define USNIC_CMN_UTIL_H\n\n#include <net/addrconf.h>\n\nstatic inline void\nusnic_mac_ip_to_gid(const char *const mac, const __be32 inaddr, char *raw_gid)\n{\n\traw_gid[0] = 0xfe;\n\traw_gid[1] = 0x80;\n\tmemset(&raw_gid[2], 0, 2);\n\tmemcpy(&raw_gid[4], &inaddr, 4);\n\taddrconf_addr_eui48(&raw_gid[8], mac);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bacd0fc134b489d88acc160605402ad3ce22cddf741546b3b86dcdb940042463",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/aquantia/atlantic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n################################################################################\n#\n# aQuantia Ethernet Controller AQtion Linux Driver\n# Copyright(c) 2014-2017 aQuantia Corporation.\n#\n################################################################################\n\nobj-$(CONFIG_AQTION) += atlantic.o\n\nccflags-y += -I$(srctree)/$(src)\n\natlantic-objs := aq_main.o \\\n\taq_nic.o \\\n\taq_pci_func.o \\\n\taq_vec.o \\\n\taq_ring.o \\\n\taq_hw_utils.o \\\n\taq_ethtool.o \\\n\taq_drvinfo.o \\\n\taq_filters.o \\\n\taq_phy.o \\\n\thw_atl/hw_atl_a0.o \\\n\thw_atl/hw_atl_b0.o \\\n\thw_atl/hw_atl_utils.o \\\n\thw_atl/hw_atl_utils_fw2x.o \\\n\thw_atl/hw_atl_llh.o \\\n\thw_atl2/hw_atl2.o \\\n\thw_atl2/hw_atl2_utils.o \\\n\thw_atl2/hw_atl2_utils_fw.o \\\n\thw_atl2/hw_atl2_llh.o \\\n\tmacsec/macsec_api.o\n\natlantic-$(CONFIG_MACSEC) += aq_macsec.o\n\natlantic-$(CONFIG_PTP_1588_CLOCK) += aq_ptp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

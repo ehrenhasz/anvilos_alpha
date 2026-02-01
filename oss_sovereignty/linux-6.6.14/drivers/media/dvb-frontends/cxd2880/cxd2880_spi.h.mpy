@@ -1,0 +1,9 @@
+{
+  "module_name": "cxd2880_spi.h",
+  "hash_id": "d23784505c772cb7c9432bce90f73bba8c9621be56b197bc298c6a9cb78c3b83",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cxd2880/cxd2880_spi.h",
+  "human_readable_source": " \n \n\n#ifndef CXD2880_SPI_H\n#define CXD2880_SPI_H\n\n#include \"cxd2880_common.h\"\n\nenum cxd2880_spi_mode {\n\tCXD2880_SPI_MODE_0,\n\tCXD2880_SPI_MODE_1,\n\tCXD2880_SPI_MODE_2,\n\tCXD2880_SPI_MODE_3\n};\n\nstruct cxd2880_spi {\n\tint (*read)(struct cxd2880_spi *spi, u8 *data,\n\t\t    u32 size);\n\tint (*write)(struct cxd2880_spi *spi, const u8 *data,\n\t\t     u32 size);\n\tint (*write_read)(struct cxd2880_spi *spi,\n\t\t\t  const u8 *tx_data, u32 tx_size,\n\t\t\t  u8 *rx_data, u32 rx_size);\n\tu32 flags;\n\tvoid *user;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hidraw.h",
+  "hash_id": "c08f4a15162dca672dc4f263d06c26d2b7d35385ab617f6e42d28ca6483d1086",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/hidraw.h",
+  "human_readable_source": " \n \n#ifndef _HIDRAW_H\n#define _HIDRAW_H\n\n#include <uapi/linux/hidraw.h>\n\n\nstruct hidraw {\n\tunsigned int minor;\n\tint exist;\n\tint open;\n\twait_queue_head_t wait;\n\tstruct hid_device *hid;\n\tstruct device *dev;\n\tspinlock_t list_lock;\n\tstruct list_head list;\n};\n\nstruct hidraw_report {\n\t__u8 *value;\n\tint len;\n};\n\nstruct hidraw_list {\n\tstruct hidraw_report buffer[HIDRAW_BUFFER_SIZE];\n\tint head;\n\tint tail;\n\tstruct fasync_struct *fasync;\n\tstruct hidraw *hidraw;\n\tstruct list_head node;\n\tstruct mutex read_mutex;\n};\n\n#ifdef CONFIG_HIDRAW\nint hidraw_init(void);\nvoid hidraw_exit(void);\nint hidraw_report_event(struct hid_device *, u8 *, int);\nint hidraw_connect(struct hid_device *);\nvoid hidraw_disconnect(struct hid_device *);\n#else\nstatic inline int hidraw_init(void) { return 0; }\nstatic inline void hidraw_exit(void) { }\nstatic inline int hidraw_report_event(struct hid_device *hid, u8 *data, int len) { return 0; }\nstatic inline int hidraw_connect(struct hid_device *hid) { return -1; }\nstatic inline void hidraw_disconnect(struct hid_device *hid) { }\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

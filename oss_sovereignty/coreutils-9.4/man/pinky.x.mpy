@@ -1,0 +1,9 @@
+{
+  "module_name": "pinky.x",
+  "hash_id": "9a667e2f614a15bb52577e1c9441e768cbfa1976bf87619d9167cde6dd9eff1b",
+  "original_prompt": "Ingested from coreutils-9.4/man/pinky.x",
+  "human_readable_source": "[NAME]\npinky \\- lightweight finger\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

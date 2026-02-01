@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio.h",
+  "hash_id": "97c6f4014be0ba4e61232441365b283f29d48eae505d7fe36a153d678df6ae53",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/gpio.h",
+  "human_readable_source": " \n#ifndef __NVKM_GPIO_H__\n#define __NVKM_GPIO_H__\n#include <core/subdev.h>\n#include <core/event.h>\n\n#include <subdev/bios.h>\n#include <subdev/bios/gpio.h>\n\nstruct nvkm_gpio_ntfy_req {\n\tu8 mask;\n\tu8 line;\n};\n\nstruct nvkm_gpio_ntfy_rep {\n\tu8 mask;\n};\n\nstruct nvkm_gpio {\n\tconst struct nvkm_gpio_func *func;\n\tstruct nvkm_subdev subdev;\n\n#define NVKM_GPIO_HI       BIT(0)\n#define NVKM_GPIO_LO       BIT(1)\n#define NVKM_GPIO_TOGGLED (NVKM_GPIO_HI | NVKM_GPIO_LO)\n\tstruct nvkm_event event;\n};\n\nvoid nvkm_gpio_reset(struct nvkm_gpio *, u8 func);\nint nvkm_gpio_find(struct nvkm_gpio *, int idx, u8 tag, u8 line,\n\t\t   struct dcb_gpio_func *);\nint nvkm_gpio_set(struct nvkm_gpio *, int idx, u8 tag, u8 line, int state);\nint nvkm_gpio_get(struct nvkm_gpio *, int idx, u8 tag, u8 line);\n\nint nv10_gpio_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_gpio **);\nint nv50_gpio_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_gpio **);\nint g94_gpio_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_gpio **);\nint gf119_gpio_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_gpio **);\nint gk104_gpio_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_gpio **);\nint ga102_gpio_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_gpio **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

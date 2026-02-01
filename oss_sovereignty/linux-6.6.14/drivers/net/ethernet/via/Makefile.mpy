@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "02fa2e146f6bcd4cc9e071a38d9f0d42452eb31f2f0116c5405f3d673a4db2f6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/via/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the VIA device drivers.\n#\n\nobj-$(CONFIG_VIA_RHINE) += via-rhine.o\nobj-$(CONFIG_VIA_VELOCITY) += via-velocity.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

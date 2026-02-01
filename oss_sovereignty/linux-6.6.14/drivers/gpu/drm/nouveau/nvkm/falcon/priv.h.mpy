@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "e6ed5502b7d4acce018386d16ec2e0e1b9aa23cfc38fd1d36030bf31759b909a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/falcon/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_FALCON_PRIV_H__\n#define __NVKM_FALCON_PRIV_H__\n#include <core/falcon.h>\n\nstatic inline int\nnvkm_falcon_enable(struct nvkm_falcon *falcon)\n{\n\tif (falcon->func->enable)\n\t\treturn falcon->func->enable(falcon);\n\treturn 0;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

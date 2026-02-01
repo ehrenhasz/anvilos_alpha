@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "797f23663944c771edacbf8d3ef954a60c59887ff1dd2aa51ae6b6f50451f1d0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/interconnect/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nCFLAGS_core.o\t\t\t\t:= -I$(src)\nicc-core-objs\t\t\t\t:= core.o bulk.o debugfs-client.o\n\nobj-$(CONFIG_INTERCONNECT)\t\t+= icc-core.o\nobj-$(CONFIG_INTERCONNECT_IMX)\t\t+= imx/\nobj-$(CONFIG_INTERCONNECT_QCOM)\t\t+= qcom/\nobj-$(CONFIG_INTERCONNECT_SAMSUNG)\t+= samsung/\n\nobj-$(CONFIG_INTERCONNECT_CLK)\t\t+= icc-clk.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

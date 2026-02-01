@@ -1,0 +1,9 @@
+{
+  "module_name": "create-agent-corpus.sh",
+  "hash_id": "6065486bc8a3752963ea10e105fda6c4b85a2fa3440c04b7ca46e32da5c2a9dc",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/misc/fuzz-harness/testdata/create-agent-corpus.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Exercise ssh-agent to generate fuzzing corpus\n\n# XXX assumes agent hacked up with sk-dummy.o and ssh-sk.o linked directly\n#     and dumping of e->request for each message.\n\nset -xe\nSSH_AUTH_SOCK=$PWD/sock\nrm -f agent-[0-9]* $SSH_AUTH_SOCK\nexport SSH_AUTH_SOCK\n../../../../ssh-agent -D -a $SSH_AUTH_SOCK &\nsleep 1\nAGENT_PID=$!\ntrap \"kill $AGENT_PID\" EXIT\n\nPRIV=\"id_dsa id_ecdsa id_ecdsa_sk id_ed25519 id_ed25519_sk id_rsa\"\n\n# add keys\nssh-add $PRIV\n\n# sign\nssh-add -T *.pub\n\n# list\nssh-add -l\n\n# remove individually\nssh-add -d $PRIV\n\n# re-add with constraints\nssh-add -c -t 3h $PRIV\n\n# delete all\nssh-add -D\n\n# attempt to add a PKCS#11 token\nssh-add -s /fake || :\n\n# attempt to delete PKCS#11\nssh-add -e /fake || :\n\nssh-add -L\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

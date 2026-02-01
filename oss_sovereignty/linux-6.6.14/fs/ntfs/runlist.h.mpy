@@ -1,0 +1,9 @@
+{
+  "module_name": "runlist.h",
+  "hash_id": "5f765e142694373e6ff3ffe632572a951f198e0cfdec478a3d7ef257eee0a9f7",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ntfs/runlist.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_NTFS_RUNLIST_H\n#define _LINUX_NTFS_RUNLIST_H\n\n#include \"types.h\"\n#include \"layout.h\"\n#include \"volume.h\"\n\n \ntypedef struct {\t \n\tVCN vcn;\t \n\tLCN lcn;\t \n\ts64 length;\t \n} runlist_element;\n\n \ntypedef struct {\n\trunlist_element *rl;\n\tstruct rw_semaphore lock;\n} runlist;\n\nstatic inline void ntfs_init_runlist(runlist *rl)\n{\n\trl->rl = NULL;\n\tinit_rwsem(&rl->lock);\n}\n\ntypedef enum {\n\tLCN_HOLE\t\t= -1,\t \n\tLCN_RL_NOT_MAPPED\t= -2,\n\tLCN_ENOENT\t\t= -3,\n\tLCN_ENOMEM\t\t= -4,\n\tLCN_EIO\t\t\t= -5,\n} LCN_SPECIAL_VALUES;\n\nextern runlist_element *ntfs_runlists_merge(runlist_element *drl,\n\t\trunlist_element *srl);\n\nextern runlist_element *ntfs_mapping_pairs_decompress(const ntfs_volume *vol,\n\t\tconst ATTR_RECORD *attr, runlist_element *old_rl);\n\nextern LCN ntfs_rl_vcn_to_lcn(const runlist_element *rl, const VCN vcn);\n\n#ifdef NTFS_RW\n\nextern runlist_element *ntfs_rl_find_vcn_nolock(runlist_element *rl,\n\t\tconst VCN vcn);\n\nextern int ntfs_get_size_for_mapping_pairs(const ntfs_volume *vol,\n\t\tconst runlist_element *rl, const VCN first_vcn,\n\t\tconst VCN last_vcn);\n\nextern int ntfs_mapping_pairs_build(const ntfs_volume *vol, s8 *dst,\n\t\tconst int dst_len, const runlist_element *rl,\n\t\tconst VCN first_vcn, const VCN last_vcn, VCN *const stop_vcn);\n\nextern int ntfs_rl_truncate_nolock(const ntfs_volume *vol,\n\t\trunlist *const runlist, const s64 new_length);\n\nint ntfs_rl_punch_nolock(const ntfs_volume *vol, runlist *const runlist,\n\t\tconst VCN start, const s64 length);\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

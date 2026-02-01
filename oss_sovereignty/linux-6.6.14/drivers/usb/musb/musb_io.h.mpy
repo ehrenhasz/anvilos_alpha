@@ -1,0 +1,9 @@
+{
+  "module_name": "musb_io.h",
+  "hash_id": "0eb965bf9fda743a1b209e16ba7897840a6ce16b8e3bd9570e57e2c727a38fb2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/musb/musb_io.h",
+  "human_readable_source": " \n \n\n#ifndef __MUSB_LINUX_PLATFORM_ARCH_H__\n#define __MUSB_LINUX_PLATFORM_ARCH_H__\n\n#include <linux/io.h>\n\n#define musb_ep_select(_mbase, _epnum)\tmusb->io.ep_select((_mbase), (_epnum))\n\n \nstruct musb_io {\n\tu32\t(*ep_offset)(u8 epnum, u16 offset);\n\tvoid\t(*ep_select)(void __iomem *mbase, u8 epnum);\n\tu32\t(*fifo_offset)(u8 epnum);\n\tvoid\t(*read_fifo)(struct musb_hw_ep *hw_ep, u16 len, u8 *buf);\n\tvoid\t(*write_fifo)(struct musb_hw_ep *hw_ep, u16 len, const u8 *buf);\n\tu32\t(*busctl_offset)(u8 epnum, u16 offset);\n\tu16\t(*get_toggle)(struct musb_qh *qh, int is_out);\n\tu16\t(*set_toggle)(struct musb_qh *qh, int is_out, struct urb *urb);\n};\n\n \nextern u8 (*musb_readb)(void __iomem *addr, u32 offset);\nextern void (*musb_writeb)(void __iomem *addr, u32 offset, u8 data);\nextern u8 (*musb_clearb)(void __iomem *addr, u32 offset);\nextern u16 (*musb_readw)(void __iomem *addr, u32 offset);\nextern void (*musb_writew)(void __iomem *addr, u32 offset, u16 data);\nextern u16 (*musb_clearw)(void __iomem *addr, u32 offset);\nextern u32 musb_readl(void __iomem *addr, u32 offset);\nextern void musb_writel(void __iomem *addr, u32 offset, u32 data);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

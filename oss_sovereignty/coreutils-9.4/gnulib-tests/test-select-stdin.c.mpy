@@ -1,0 +1,9 @@
+{
+  "module_name": "test-select-stdin.c",
+  "hash_id": "1d7df33bd4665694312c65409239f8646bf33209eb7f9a134a60a53ecbbc7e5f",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-select-stdin.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/select.h>\n#include <sys/time.h>\n#include <unistd.h>\n\n#include \"macros.h\"\n\nint\nmain (void)\n{\n  printf (\"Applying select() from standard input. Press Ctrl-C to abort.\\n\");\n  for (;;)\n    {\n      struct timeval before;\n      struct timeval after;\n      unsigned long spent_usec;\n      fd_set readfds;\n      struct timeval timeout;\n      int ret;\n\n      gettimeofday (&before, NULL);\n\n      FD_ZERO (&readfds);\n      FD_SET (0, &readfds);\n      timeout.tv_sec = 0;\n      timeout.tv_usec = 500000;\n      ret = select (1, &readfds, NULL, NULL, &timeout);\n\n      gettimeofday (&after, NULL);\n      spent_usec = (after.tv_sec - before.tv_sec) * 1000000\n                   + after.tv_usec - before.tv_usec;\n\n      if (ret < 0)\n        {\n          perror (\"select failed\");\n          exit (1);\n        }\n      if ((ret == 0) != ! FD_ISSET (0, &readfds))\n        {\n          fprintf (stderr, \"incorrect return value\\n\");\n          exit (1);\n        }\n      if (ret == 0)\n        {\n          if (spent_usec < 250000)\n            {\n              fprintf (stderr, \"returned too early\\n\");\n              exit (1);\n            }\n           \n          printf (\".\");\n          ASSERT (fflush (stdout) == 0);\n        }\n      else\n        {\n          char c;\n\n          printf (\"Input available! Trying to read 1 byte...\\n\");\n          ASSERT (read (0, &c, 1) == 1);\n        }\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

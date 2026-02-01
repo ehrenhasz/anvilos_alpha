@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mknod.c",
+  "hash_id": "46071ff087249e9d243f1ae74f0fa6e7c2e98769e2357ebca2425fb02888bf71",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mknod.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/stat.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (mknod, int, (char const *, mode_t, dev_t));\n\n#include <fcntl.h>\n#include <errno.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n\n#include \"ignore-value.h\"\n#include \"macros.h\"\n\n#define BASE \"test-mknod.t\"\n\n#include \"test-mkfifo.h\"\n\n \nstatic int\ndo_mknod (char const *name, mode_t mode)\n{\n  return mknod (name, mode | S_IFIFO, 0);\n}\n\nint\nmain (void)\n{\n   \n  ignore_value (system (\"rm -rf \" BASE \"*\"));\n\n   \n  return test_mkfifo (do_mknod, true);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

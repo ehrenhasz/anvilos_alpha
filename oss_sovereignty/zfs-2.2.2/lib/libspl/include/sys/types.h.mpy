@@ -1,0 +1,9 @@
+{
+  "module_name": "types.h",
+  "hash_id": "0922ae8ce40470e3221c5a0c25f6a11b2d225078f7c04bd0071c136429d6bf53",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/types.h",
+  "human_readable_source": " \n \n\n#ifndef _LIBSPL_SYS_TYPES_H\n#define\t_LIBSPL_SYS_TYPES_H\n\n#if defined(HAVE_MAKEDEV_IN_SYSMACROS)\n#include <sys/sysmacros.h>\n#elif defined(HAVE_MAKEDEV_IN_MKDEV)\n#include <sys/mkdev.h>\n#endif\n\n#include <sys/isa_defs.h>\n#include <sys/feature_tests.h>\n#include_next <sys/types.h>\n#include <sys/types32.h>\n#include <stdarg.h>\n#include <sys/stdtypes.h>\n\n#ifndef HAVE_INTTYPES\n#include <inttypes.h>\n#endif  \n\ntypedef uint_t\t\tzoneid_t;\ntypedef int\t\tprojid_t;\n\n#include <sys/param.h>  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

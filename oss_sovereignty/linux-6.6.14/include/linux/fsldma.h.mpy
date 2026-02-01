@@ -1,0 +1,9 @@
+{
+  "module_name": "fsldma.h",
+  "hash_id": "c50f08d23eb6a47332f4812e7741dba4669c50895f2fed4466bb31ffa8933b9e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fsldma.h",
+  "human_readable_source": " \n \n\n#ifndef FSL_DMA_H\n#define FSL_DMA_H\n \nint fsl_dma_external_start(struct dma_chan *dchan, int enable);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

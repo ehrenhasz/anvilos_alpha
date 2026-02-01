@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_rmgr_vbuf.h",
+  "hash_id": "eb0d548bddb89b6196fdacc92d19acaa979259ca070f9342876e5de429b2241f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/rmgr/interface/ia_css_rmgr_vbuf.h",
+  "human_readable_source": " \n \n\n#ifndef _IA_CSS_RMGR_VBUF_H\n#define _IA_CSS_RMGR_VBUF_H\n\n#include \"ia_css_rmgr.h\"\n#include <type_support.h>\n#include <ia_css_types.h>\n#include <system_local.h>\n\n \nstruct ia_css_rmgr_vbuf_handle {\n\tia_css_ptr vptr;\n\tu8 count;\n\tu32 size;\n};\n\n \nstruct ia_css_rmgr_vbuf_pool {\n\tu8 copy_on_write;\n\tu8 recycle;\n\tu32 size;\n\tu32 index;\n\tstruct ia_css_rmgr_vbuf_handle **handles;\n};\n\n \nextern struct ia_css_rmgr_vbuf_pool *vbuf_ref;\nextern struct ia_css_rmgr_vbuf_pool *vbuf_write;\nextern struct ia_css_rmgr_vbuf_pool *hmm_buffer_pool;\n\n \nSTORAGE_CLASS_RMGR_H int ia_css_rmgr_init_vbuf(\n    struct ia_css_rmgr_vbuf_pool *pool);\n\n \nSTORAGE_CLASS_RMGR_H void ia_css_rmgr_uninit_vbuf(\n    struct ia_css_rmgr_vbuf_pool *pool);\n\n \nSTORAGE_CLASS_RMGR_H void ia_css_rmgr_acq_vbuf(\n    struct ia_css_rmgr_vbuf_pool *pool,\n    struct ia_css_rmgr_vbuf_handle **handle);\n\n \nSTORAGE_CLASS_RMGR_H void ia_css_rmgr_rel_vbuf(\n    struct ia_css_rmgr_vbuf_pool *pool,\n    struct ia_css_rmgr_vbuf_handle **handle);\n\n \nvoid ia_css_rmgr_refcount_retain_vbuf(struct ia_css_rmgr_vbuf_handle **handle);\n\n \nvoid ia_css_rmgr_refcount_release_vbuf(struct ia_css_rmgr_vbuf_handle **handle);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

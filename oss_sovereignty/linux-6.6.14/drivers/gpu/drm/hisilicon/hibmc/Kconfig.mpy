@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0b321a9ffc3bf7d2f746938276b58eb00e19954c4c81b5231a6d5038d377f27b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/hisilicon/hibmc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_HISI_HIBMC\n\ttristate \"DRM Support for Hisilicon Hibmc\"\n\tdepends on DRM && PCI && (ARM64 || COMPILE_TEST)\n\tdepends on MMU\n\tselect DRM_KMS_HELPER\n\tselect DRM_VRAM_HELPER\n\tselect DRM_TTM\n\tselect DRM_TTM_HELPER\n\tselect I2C\n\tselect I2C_ALGOBIT\n\thelp\n\t  Choose this option if you have a Hisilicon Hibmc soc chipset.\n\t  If M is selected the module will be called hibmc-drm.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

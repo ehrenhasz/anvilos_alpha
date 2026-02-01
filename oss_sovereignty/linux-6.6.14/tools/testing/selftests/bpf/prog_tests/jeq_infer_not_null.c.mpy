@@ -1,0 +1,9 @@
+{
+  "module_name": "jeq_infer_not_null.c",
+  "hash_id": "8ead767cb4208e60568d70cdb88fff6aa720e8d8fffb365d51451b373e25f9dd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/jeq_infer_not_null.c",
+  "human_readable_source": "\n\n#include <test_progs.h>\n#include \"jeq_infer_not_null_fail.skel.h\"\n\nvoid test_jeq_infer_not_null(void)\n{\n\tRUN_TESTS(jeq_infer_not_null_fail);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

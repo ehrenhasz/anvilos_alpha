@@ -1,0 +1,9 @@
+{
+  "module_name": "test_task_under_cgroup.c",
+  "hash_id": "58c24e5b60bb81ff67165f48b49d064187bafd43cabfc49cfea7f31320e79a49",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_task_under_cgroup.c",
+  "human_readable_source": "\n \n\n#include <vmlinux.h>\n#include <bpf/bpf_tracing.h>\n#include <bpf/bpf_helpers.h>\n\n#include \"bpf_misc.h\"\n\nstruct cgroup *bpf_cgroup_from_id(u64 cgid) __ksym;\nlong bpf_task_under_cgroup(struct task_struct *task, struct cgroup *ancestor) __ksym;\nvoid bpf_cgroup_release(struct cgroup *p) __ksym;\nstruct task_struct *bpf_task_acquire(struct task_struct *p) __ksym;\nvoid bpf_task_release(struct task_struct *p) __ksym;\n\nconst volatile int local_pid;\nconst volatile __u64 cgid;\nint remote_pid;\n\nSEC(\"tp_btf/task_newtask\")\nint BPF_PROG(handle__task_newtask, struct task_struct *task, u64 clone_flags)\n{\n\tstruct cgroup *cgrp = NULL;\n\tstruct task_struct *acquired;\n\n\tif (local_pid != (bpf_get_current_pid_tgid() >> 32))\n\t\treturn 0;\n\n\tacquired = bpf_task_acquire(task);\n\tif (!acquired)\n\t\treturn 0;\n\n\tif (local_pid == acquired->tgid)\n\t\tgoto out;\n\n\tcgrp = bpf_cgroup_from_id(cgid);\n\tif (!cgrp)\n\t\tgoto out;\n\n\tif (bpf_task_under_cgroup(acquired, cgrp))\n\t\tremote_pid = acquired->tgid;\n\nout:\n\tif (cgrp)\n\t\tbpf_cgroup_release(cgrp);\n\tbpf_task_release(acquired);\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

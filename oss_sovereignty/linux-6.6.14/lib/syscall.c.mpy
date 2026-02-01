@@ -1,0 +1,9 @@
+{
+  "module_name": "syscall.c",
+  "hash_id": "3d3673e8c4c323e5bc1de347372d2729a89166dba6fd13a689a84889641a63e0",
+  "original_prompt": "Ingested from linux-6.6.14/lib/syscall.c",
+  "human_readable_source": "\n#include <linux/ptrace.h>\n#include <linux/sched.h>\n#include <linux/sched/task_stack.h>\n#include <linux/export.h>\n#include <asm/syscall.h>\n\nstatic int collect_syscall(struct task_struct *target, struct syscall_info *info)\n{\n\tunsigned long args[6] = { };\n\tstruct pt_regs *regs;\n\n\tif (!try_get_task_stack(target)) {\n\t\t \n\t\tmemset(info, 0, sizeof(*info));\n\t\tinfo->data.nr = -1;\n\t\treturn 0;\n\t}\n\n\tregs = task_pt_regs(target);\n\tif (unlikely(!regs)) {\n\t\tput_task_stack(target);\n\t\treturn -EAGAIN;\n\t}\n\n\tinfo->sp = user_stack_pointer(regs);\n\tinfo->data.instruction_pointer = instruction_pointer(regs);\n\n\tinfo->data.nr = syscall_get_nr(target, regs);\n\tif (info->data.nr != -1L)\n\t\tsyscall_get_arguments(target, regs, args);\n\n\tinfo->data.args[0] = args[0];\n\tinfo->data.args[1] = args[1];\n\tinfo->data.args[2] = args[2];\n\tinfo->data.args[3] = args[3];\n\tinfo->data.args[4] = args[4];\n\tinfo->data.args[5] = args[5];\n\n\tput_task_stack(target);\n\treturn 0;\n}\n\n \nint task_current_syscall(struct task_struct *target, struct syscall_info *info)\n{\n\tunsigned long ncsw;\n\tunsigned int state;\n\n\tif (target == current)\n\t\treturn collect_syscall(target, info);\n\n\tstate = READ_ONCE(target->__state);\n\tif (unlikely(!state))\n\t\treturn -EAGAIN;\n\n\tncsw = wait_task_inactive(target, state);\n\tif (unlikely(!ncsw) ||\n\t    unlikely(collect_syscall(target, info)) ||\n\t    unlikely(wait_task_inactive(target, state) != ncsw))\n\t\treturn -EAGAIN;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "c32_apply_type_test.c",
+  "hash_id": "5c176600f85908bb1414274c98819934e0f581b4223dd65929daec414eb084dc",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c32_apply_type_test.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#define IN_C32_APPLY_TYPE_TEST\n \n#include <uchar.h>\n\n#include <string.h>\n#include <wctype.h>\n\n#if _GL_WCHAR_T_IS_UCS4\n_GL_EXTERN_INLINE\n#endif\nint\nc32_apply_type_test (wint_t wc, c32_type_test_t property)\n{\n#if _GL_WCHAR_T_IS_UCS4\n  return iswctype (wc, property);\n#else\n  return property (wc);\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test_map_in_map_invalid.c",
+  "hash_id": "abaf738fea38f4835f5bcaf19849a241a0ffc31705b69352459db65550f1215f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_map_in_map_invalid.c",
+  "human_readable_source": "\n \n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nstruct inner {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__type(key, __u32);\n\t__type(value, int);\n\t__uint(max_entries, 4);\n};\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);\n\t__uint(max_entries, 0);  \n\t__type(key, __u32);\n\t__array(values, struct inner);\n} mim SEC(\".maps\");\n\nSEC(\"xdp\")\nint xdp_noop0(struct xdp_md *ctx)\n{\n\treturn XDP_PASS;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

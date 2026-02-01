@@ -1,0 +1,9 @@
+{
+  "module_name": "espfix.h",
+  "hash_id": "95e864eb674b04081cc12862365c9b3e81b41c544927182e53a5c6462f59c24b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/espfix.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_ESPFIX_H\n#define _ASM_X86_ESPFIX_H\n\n#ifdef CONFIG_X86_ESPFIX64\n\n#include <asm/percpu.h>\n\nDECLARE_PER_CPU_READ_MOSTLY(unsigned long, espfix_stack);\nDECLARE_PER_CPU_READ_MOSTLY(unsigned long, espfix_waddr);\n\nextern void init_espfix_bsp(void);\nextern void init_espfix_ap(int cpu);\n#else\nstatic inline void init_espfix_ap(int cpu) { }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

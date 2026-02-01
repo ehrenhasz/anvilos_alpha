@@ -1,0 +1,9 @@
+{
+  "module_name": "isys_stream2mmio_global.h",
+  "hash_id": "2a9360f7b62886f2813253960ee0cab81dfca50587fefe4218a96bdc67ca7a11",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/css_2401_system/isys_stream2mmio_global.h",
+  "human_readable_source": " \n \n\n#ifndef __ISYS_STREAM2MMIO_GLOBAL_H_INCLUDED__\n#define __ISYS_STREAM2MMIO_GLOBAL_H_INCLUDED__\n\n#include <type_support.h>\n\ntypedef struct stream2mmio_cfg_s stream2mmio_cfg_t;\nstruct stream2mmio_cfg_s {\n\tu32\t\t\t\tbits_per_pixel;\n\tu32\t\t\t\tenable_blocking;\n};\n\n \n \nextern const stream2mmio_sid_ID_t N_STREAM2MMIO_SID_PROCS[N_STREAM2MMIO_ID];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

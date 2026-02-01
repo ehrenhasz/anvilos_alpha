@@ -1,0 +1,9 @@
+{
+  "module_name": "smap.h",
+  "hash_id": "04cfe4ad78a2aa41f8ec2893b48e0d20cef4fb53a6ae05293a99ebadd7568117",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/smap.h",
+  "human_readable_source": " \n \n\n#ifndef _ASM_X86_SMAP_H\n#define _ASM_X86_SMAP_H\n\n#include <asm/nops.h>\n#include <asm/cpufeatures.h>\n#include <asm/alternative.h>\n\n \n#define __ASM_CLAC\t\".byte 0x0f,0x01,0xca\"\n#define __ASM_STAC\t\".byte 0x0f,0x01,0xcb\"\n\n#ifdef __ASSEMBLY__\n\n#define ASM_CLAC \\\n\tALTERNATIVE \"\", __ASM_CLAC, X86_FEATURE_SMAP\n\n#define ASM_STAC \\\n\tALTERNATIVE \"\", __ASM_STAC, X86_FEATURE_SMAP\n\n#else  \n\nstatic __always_inline void clac(void)\n{\n\t \n\talternative(\"\", __ASM_CLAC, X86_FEATURE_SMAP);\n}\n\nstatic __always_inline void stac(void)\n{\n\t \n\talternative(\"\", __ASM_STAC, X86_FEATURE_SMAP);\n}\n\nstatic __always_inline unsigned long smap_save(void)\n{\n\tunsigned long flags;\n\n\tasm volatile (\"# smap_save\\n\\t\"\n\t\t      ALTERNATIVE(\"\", \"pushf; pop %0; \" __ASM_CLAC \"\\n\\t\",\n\t\t\t\t  X86_FEATURE_SMAP)\n\t\t      : \"=rm\" (flags) : : \"memory\", \"cc\");\n\n\treturn flags;\n}\n\nstatic __always_inline void smap_restore(unsigned long flags)\n{\n\tasm volatile (\"# smap_restore\\n\\t\"\n\t\t      ALTERNATIVE(\"\", \"push %0; popf\\n\\t\",\n\t\t\t\t  X86_FEATURE_SMAP)\n\t\t      : : \"g\" (flags) : \"memory\", \"cc\");\n}\n\n \n#define ASM_CLAC \\\n\tALTERNATIVE(\"\", __ASM_CLAC, X86_FEATURE_SMAP)\n#define ASM_STAC \\\n\tALTERNATIVE(\"\", __ASM_STAC, X86_FEATURE_SMAP)\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

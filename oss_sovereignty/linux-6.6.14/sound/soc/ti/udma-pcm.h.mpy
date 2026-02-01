@@ -1,0 +1,9 @@
+{
+  "module_name": "udma-pcm.h",
+  "hash_id": "462cb13338fb2697d426523c8b9f9bcc769dbbb9e4acc75a7d92522483a1bb0b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/ti/udma-pcm.h",
+  "human_readable_source": " \n \n\n#ifndef __UDMA_PCM_H__\n#define __UDMA_PCM_H__\n\n#if IS_ENABLED(CONFIG_SND_SOC_TI_UDMA_PCM)\nint udma_pcm_platform_register(struct device *dev);\n#else\nstatic inline int udma_pcm_platform_register(struct device *dev)\n{\n\treturn 0;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

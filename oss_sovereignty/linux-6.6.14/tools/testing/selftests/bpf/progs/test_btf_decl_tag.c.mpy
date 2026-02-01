@@ -1,0 +1,9 @@
+{
+  "module_name": "test_btf_decl_tag.c",
+  "hash_id": "29ea7ba2ffd77af570424271b82c6254d0f43d41fa12081bb2b65bc903682ed7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_btf_decl_tag.c",
+  "human_readable_source": "\n \n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\n#if __has_attribute(btf_decl_tag)\n#define __tag1 __attribute__((btf_decl_tag(\"tag1\")))\n#define __tag2 __attribute__((btf_decl_tag(\"tag2\")))\nvolatile const bool skip_tests __tag1 __tag2 = false;\n#else\n#define __tag1\n#define __tag2\nvolatile const bool skip_tests = true;\n#endif\n\nstruct key_t {\n\tint a;\n\tint b __tag1 __tag2;\n\tint c;\n} __tag1 __tag2;\n\ntypedef struct {\n\tint a;\n\tint b;\n} value_t __tag1 __tag2;\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__uint(max_entries, 3);\n\t__type(key, struct key_t);\n\t__type(value, value_t);\n} hashmap1 SEC(\".maps\");\n\n\nstatic __noinline int foo(int x __tag1 __tag2) __tag1 __tag2\n{\n\tstruct key_t key;\n\tvalue_t val = {};\n\n\tkey.a = key.b = key.c = x;\n\tbpf_map_update_elem(&hashmap1, &key, &val, 0);\n\treturn 0;\n}\n\nSEC(\"fentry/bpf_fentry_test1\")\nint BPF_PROG(sub, int x)\n{\n\treturn foo(x);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

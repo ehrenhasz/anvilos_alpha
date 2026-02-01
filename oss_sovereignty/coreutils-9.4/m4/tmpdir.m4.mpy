@@ -1,0 +1,9 @@
+{
+  "module_name": "tmpdir.m4",
+  "hash_id": "32b276a00fc22566b3c2112c346f55610c35d1326bf9d9582e37b7126a8c392a",
+  "original_prompt": "Ingested from coreutils-9.4/m4/tmpdir.m4",
+  "human_readable_source": "# tmpdir.m4 serial 4\ndnl Copyright (C) 2001-2002, 2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n# Prerequisites for lib/tmpdir.c\n\nAC_DEFUN([gt_TMPDIR], [:])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

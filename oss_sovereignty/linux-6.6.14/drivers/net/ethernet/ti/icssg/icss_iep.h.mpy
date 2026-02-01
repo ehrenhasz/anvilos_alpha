@@ -1,0 +1,9 @@
+{
+  "module_name": "icss_iep.h",
+  "hash_id": "ac29e3e72b17c035d6258b4388000dbe6375c79c70e3460f77dfaca16ddfecf3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ti/icssg/icss_iep.h",
+  "human_readable_source": " \n \n\n#ifndef __NET_TI_ICSS_IEP_H\n#define __NET_TI_ICSS_IEP_H\n\n#include <linux/mutex.h>\n#include <linux/ptp_clock_kernel.h>\n#include <linux/regmap.h>\n\nstruct icss_iep;\nextern const struct icss_iep_clockops prueth_iep_clockops;\n\n \nstruct icss_iep_clockops {\n\tvoid (*settime)(void *clockops_data, u64 ns);\n\tvoid (*adjtime)(void *clockops_data, s64 delta);\n\tu64 (*gettime)(void *clockops_data, struct ptp_system_timestamp *sts);\n\tint (*perout_enable)(void *clockops_data,\n\t\t\t     struct ptp_perout_request *req, int on,\n\t\t\t     u64 *cmp);\n\tint (*extts_enable)(void *clockops_data, u32 index, int on);\n};\n\nstruct icss_iep *icss_iep_get(struct device_node *np);\nstruct icss_iep *icss_iep_get_idx(struct device_node *np, int idx);\nvoid icss_iep_put(struct icss_iep *iep);\nint icss_iep_init(struct icss_iep *iep, const struct icss_iep_clockops *clkops,\n\t\t  void *clockops_data, u32 cycle_time_ns);\nint icss_iep_exit(struct icss_iep *iep);\nint icss_iep_get_count_low(struct icss_iep *iep);\nint icss_iep_get_count_hi(struct icss_iep *iep);\nint icss_iep_get_ptp_clock_idx(struct icss_iep *iep);\nvoid icss_iep_init_fw(struct icss_iep *iep);\nvoid icss_iep_exit_fw(struct icss_iep *iep);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

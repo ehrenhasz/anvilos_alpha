@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_iter_ipv6_route.c",
+  "hash_id": "3404f44b26bc9ac55f482577f87d6fa80dbe61419b44e45112d688a3d7b5c42f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_iter_ipv6_route.c",
+  "human_readable_source": "\n \n#include \"bpf_iter.h\"\n#include \"bpf_tracing_net.h\"\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nextern bool CONFIG_IPV6_SUBTREES __kconfig __weak;\n\nSEC(\"iter/ipv6_route\")\nint dump_ipv6_route(struct bpf_iter__ipv6_route *ctx)\n{\n\tstruct seq_file *seq = ctx->meta->seq;\n\tstruct fib6_info *rt = ctx->rt;\n\tconst struct net_device *dev;\n\tstruct fib6_nh *fib6_nh;\n\tunsigned int flags;\n\tstruct nexthop *nh;\n\n\tif (rt == (void *)0)\n\t\treturn 0;\n\n\tfib6_nh = &rt->fib6_nh[0];\n\tflags = rt->fib6_flags;\n\n\t \n\tnh = rt->nh;\n\tif (rt->nh)\n\t\tfib6_nh = &nh->nh_info->fib6_nh;\n\n\tBPF_SEQ_PRINTF(seq, \"%pi6 %02x \", &rt->fib6_dst.addr, rt->fib6_dst.plen);\n\n\tif (CONFIG_IPV6_SUBTREES)\n\t\tBPF_SEQ_PRINTF(seq, \"%pi6 %02x \", &rt->fib6_src.addr,\n\t\t\t       rt->fib6_src.plen);\n\telse\n\t\tBPF_SEQ_PRINTF(seq, \"00000000000000000000000000000000 00 \");\n\n\tif (fib6_nh->fib_nh_gw_family) {\n\t\tflags |= RTF_GATEWAY;\n\t\tBPF_SEQ_PRINTF(seq, \"%pi6 \", &fib6_nh->fib_nh_gw6);\n\t} else {\n\t\tBPF_SEQ_PRINTF(seq, \"00000000000000000000000000000000 \");\n\t}\n\n\tdev = fib6_nh->fib_nh_dev;\n\tif (dev)\n\t\tBPF_SEQ_PRINTF(seq, \"%08x %08x %08x %08x %8s\\n\", rt->fib6_metric,\n\t\t\t       rt->fib6_ref.refs.counter, 0, flags, dev->name);\n\telse\n\t\tBPF_SEQ_PRINTF(seq, \"%08x %08x %08x %08x\\n\", rt->fib6_metric,\n\t\t\t       rt->fib6_ref.refs.counter, 0, flags);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

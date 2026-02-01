@@ -1,0 +1,9 @@
+{
+  "module_name": "rtc-ps3.c",
+  "hash_id": "cdc36d041fa2a79877d862f4b74f3c3d59f8724757445946b953471f3b422ec3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/rtc/rtc-ps3.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/platform_device.h>\n#include <linux/rtc.h>\n\n#include <asm/lv1call.h>\n#include <asm/ps3.h>\n\n\nstatic u64 read_rtc(void)\n{\n\tint result;\n\tu64 rtc_val;\n\tu64 tb_val;\n\n\tresult = lv1_get_rtc(&rtc_val, &tb_val);\n\tBUG_ON(result);\n\n\treturn rtc_val;\n}\n\nstatic int ps3_get_time(struct device *dev, struct rtc_time *tm)\n{\n\trtc_time64_to_tm(read_rtc() + ps3_os_area_get_rtc_diff(), tm);\n\treturn 0;\n}\n\nstatic int ps3_set_time(struct device *dev, struct rtc_time *tm)\n{\n\tps3_os_area_set_rtc_diff(rtc_tm_to_time64(tm) - read_rtc());\n\treturn 0;\n}\n\nstatic const struct rtc_class_ops ps3_rtc_ops = {\n\t.read_time = ps3_get_time,\n\t.set_time = ps3_set_time,\n};\n\nstatic int __init ps3_rtc_probe(struct platform_device *dev)\n{\n\tstruct rtc_device *rtc;\n\n\trtc = devm_rtc_allocate_device(&dev->dev);\n\tif (IS_ERR(rtc))\n\t\treturn PTR_ERR(rtc);\n\n\trtc->ops = &ps3_rtc_ops;\n\trtc->range_max = U64_MAX;\n\n\tplatform_set_drvdata(dev, rtc);\n\n\treturn devm_rtc_register_device(rtc);\n}\n\nstatic struct platform_driver ps3_rtc_driver = {\n\t.driver = {\n\t\t.name = \"rtc-ps3\",\n\t},\n};\n\nmodule_platform_driver_probe(ps3_rtc_driver, ps3_rtc_probe);\n\nMODULE_AUTHOR(\"Sony Corporation\");\nMODULE_LICENSE(\"GPL\");\nMODULE_DESCRIPTION(\"ps3 RTC driver\");\nMODULE_ALIAS(\"platform:rtc-ps3\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

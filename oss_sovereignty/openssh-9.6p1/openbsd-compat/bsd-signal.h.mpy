@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-signal.h",
+  "hash_id": "ad50015c8fa142a55eb2559cd7ceaebfc2f930ae05a87b45e9451bff7c48babc",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-signal.h",
+  "human_readable_source": " \n\n#ifndef _BSD_SIGNAL_H\n#define _BSD_SIGNAL_H\n\n#include \"includes.h\"\n\n#include <signal.h>\n\n#ifndef _NSIG\n# ifdef NSIG\n#  define _NSIG NSIG\n# else\n#  define _NSIG 128\n# endif\n#endif\n\n#if !defined(HAVE_STRSIGNAL)\nchar *strsignal(int);\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

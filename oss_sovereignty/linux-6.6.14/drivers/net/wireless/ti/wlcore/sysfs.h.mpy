@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfs.h",
+  "hash_id": "27a25fabd1db62c3163bf53ecabd73926b7ba2f8c40ce7f3aa3dd6e36e43f847",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wlcore/sysfs.h",
+  "human_readable_source": " \n \n\n#ifndef __SYSFS_H__\n#define __SYSFS_H__\n\nint wlcore_sysfs_init(struct wl1271 *wl);\nvoid wlcore_sysfs_free(struct wl1271 *wl);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

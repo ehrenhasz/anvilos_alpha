@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_csc.host.h",
+  "hash_id": "e5ef4acf6918d820d5786b1013501f1e72947db4b8ab1f2c2996586d50c7ef88",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/csc/csc_1.0/ia_css_csc.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_CSC_HOST_H\n#define __IA_CSS_CSC_HOST_H\n\n#include \"ia_css_csc_types.h\"\n#include \"ia_css_csc_param.h\"\n\nextern const struct ia_css_cc_config default_cc_config;\n\nvoid\nia_css_encode_cc(\n    struct sh_css_isp_csc_params *to,\n    const struct ia_css_cc_config *from,\n    unsigned int size);\n\nvoid\nia_css_csc_encode(\n    struct sh_css_isp_csc_params *to,\n    const struct ia_css_cc_config *from,\n    unsigned int size);\n\n#ifndef IA_CSS_NO_DEBUG\nvoid\nia_css_cc_dump(\n    const struct sh_css_isp_csc_params *csc, unsigned int level,\n    const char *name);\n\nvoid\nia_css_csc_dump(\n    const struct sh_css_isp_csc_params *csc,\n    unsigned int level);\n\nvoid\nia_css_cc_config_debug_dtrace(\n    const struct ia_css_cc_config *config,\n    unsigned int level);\n\n#define ia_css_csc_debug_dtrace ia_css_cc_config_debug_dtrace\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

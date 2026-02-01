@@ -1,0 +1,9 @@
+{
+  "module_name": "extable.h",
+  "hash_id": "23f19d4fe6da3421bb0ab1f6a10a59eee4013f32251225089e2540a8b1209c6d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/vdso/extable.h",
+  "human_readable_source": " \n#ifndef __VDSO_EXTABLE_H\n#define __VDSO_EXTABLE_H\n\n \n#ifdef __ASSEMBLY__\n#define _ASM_VDSO_EXTABLE_HANDLE(from, to)\t\\\n\tASM_VDSO_EXTABLE_HANDLE from to\n\n.macro ASM_VDSO_EXTABLE_HANDLE from:req to:req\n\t.pushsection __ex_table, \"a\"\n\t.long (\\from) - __ex_table\n\t.long (\\to) - __ex_table\n\t.popsection\n.endm\n#else\n#define _ASM_VDSO_EXTABLE_HANDLE(from, to)\t\\\n\t\".pushsection __ex_table, \\\"a\\\"\\n\"      \\\n\t\".long (\" #from \") - __ex_table\\n\"      \\\n\t\".long (\" #to \") - __ex_table\\n\"        \\\n\t\".popsection\\n\"\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

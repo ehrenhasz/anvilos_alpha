@@ -1,0 +1,9 @@
+{
+  "module_name": "translation.json",
+  "hash_id": "85c41823e686c65fa6114b7d74149c539dd8f842c3dc11114c26b64a8f205419",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/powerpc/power10/translation.json",
+  "human_readable_source": "[\n  {\n    \"EventCode\": \"0x20018\",\n    \"EventName\": \"PM_ST_FWD\",\n    \"BriefDescription\": \"Store forwards that finished.\"\n  },\n  {\n    \"EventCode\": \"0x200F0\",\n    \"EventName\": \"PM_ST_CMPL\",\n    \"BriefDescription\": \"Stores completed from S2Q (2nd-level store queue). This event includes regular stores, stcx and cache inhibited stores. The following operations are excluded (pteupdate, snoop tlbie complete, store atomics, miso, load atomic payloads, tlbie, tlbsync, slbieg, isync, msgsnd, slbiag, cpabort, copy, tcheck, tend, stsync, dcbst, icbi, dcbf, hwsync, lwsync, ptesync, eieio, msgsync).\"\n  },\n  {\n    \"EventCode\": \"0x200FE\",\n    \"EventName\": \"PM_DATA_FROM_L2MISS\",\n    \"BriefDescription\": \"The processor's L1 data cache was reloaded from a source beyond the local core's L2 due to a demand miss.\"\n  },\n  {\n    \"EventCode\": \"0x300F0\",\n    \"EventName\": \"PM_ST_MISS_L1\",\n    \"BriefDescription\": \"Store Missed L1.\"\n  }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

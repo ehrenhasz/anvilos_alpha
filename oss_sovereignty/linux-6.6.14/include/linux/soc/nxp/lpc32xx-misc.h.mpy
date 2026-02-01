@@ -1,0 +1,9 @@
+{
+  "module_name": "lpc32xx-misc.h",
+  "hash_id": "566210b93412cab4b9db868b03477380a0e339a161bbbaa1249b286b4940ec21",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/nxp/lpc32xx-misc.h",
+  "human_readable_source": " \n \n\n#ifndef __SOC_LPC32XX_MISC_H\n#define __SOC_LPC32XX_MISC_H\n\n#include <linux/types.h>\n#include <linux/phy.h>\n\n#ifdef CONFIG_ARCH_LPC32XX\nextern u32 lpc32xx_return_iram(void __iomem **mapbase, dma_addr_t *dmaaddr);\nextern void lpc32xx_set_phy_interface_mode(phy_interface_t mode);\nextern void lpc32xx_loopback_set(resource_size_t mapbase, int state);\n#else\nstatic inline u32 lpc32xx_return_iram(void __iomem **mapbase, dma_addr_t *dmaaddr)\n{\n\t*mapbase = NULL;\n\t*dmaaddr = 0;\n\treturn 0;\n}\nstatic inline void lpc32xx_set_phy_interface_mode(phy_interface_t mode)\n{\n}\nstatic inline void lpc32xx_loopback_set(resource_size_t mapbase, int state)\n{\n}\n#endif\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

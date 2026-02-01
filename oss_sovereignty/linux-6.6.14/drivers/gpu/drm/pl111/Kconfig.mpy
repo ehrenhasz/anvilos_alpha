@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8599fd39867bcc881bd48c87d45f6577a28384bcb5d094757b4a66afd62ff2a6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/pl111/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_PL111\n\ttristate \"DRM Support for PL111 CLCD Controller\"\n\tdepends on DRM\n\tdepends on ARM || ARM64 || COMPILE_TEST\n\tdepends on VEXPRESS_CONFIG || VEXPRESS_CONFIG=n\n\tdepends on COMMON_CLK\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect DRM_BRIDGE\n\tselect DRM_PANEL_BRIDGE\n\tselect VT_HW_CONSOLE_BINDING if FRAMEBUFFER_CONSOLE\n\thelp\n\t  Choose this option for DRM support for the PL111 CLCD controller.\n\t  If M is selected the module will be called pl111_drm.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

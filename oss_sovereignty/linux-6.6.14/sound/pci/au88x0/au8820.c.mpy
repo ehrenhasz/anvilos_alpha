@@ -1,0 +1,9 @@
+{
+  "module_name": "au8820.c",
+  "hash_id": "57fcbfd002eb2785131600e59851a0d9468b1ac2f0a7641dbf3a57e617c3bb82",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/au88x0/au8820.c",
+  "human_readable_source": "\n#include \"au8820.h\"\n#include \"au88x0.h\"\nstatic const struct pci_device_id snd_vortex_ids[] = {\n\t{PCI_VDEVICE(AUREAL, PCI_DEVICE_ID_AUREAL_VORTEX_1), 0,},\n\t{0,}\n};\n\n#include \"au88x0_synth.c\"\n#include \"au88x0_core.c\"\n#include \"au88x0_pcm.c\"\n#include \"au88x0_mpu401.c\"\n#include \"au88x0_game.c\"\n#include \"au88x0_mixer.c\"\n#include \"au88x0.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

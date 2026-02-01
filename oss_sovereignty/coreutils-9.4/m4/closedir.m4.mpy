@@ -1,0 +1,9 @@
+{
+  "module_name": "closedir.m4",
+  "hash_id": "191d4233c72ee26a8ec0f56b2f393acc69fc2fc615a5582f32d4ee94fa670068",
+  "original_prompt": "Ingested from coreutils-9.4/m4/closedir.m4",
+  "human_readable_source": "# closedir.m4 serial 7\ndnl Copyright (C) 2011-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_CLOSEDIR],\n[\n  AC_REQUIRE([gl_DIRENT_H_DEFAULTS])\n  AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles\n\n  AC_CHECK_FUNCS([closedir])\n  if test $ac_cv_func_closedir = no; then\n    HAVE_CLOSEDIR=0\n  else\n    dnl Replace closedir() on native Windows, to support fdopendir().\n    AC_REQUIRE([gl_DIRENT_DIR])\n    if test $DIR_HAS_FD_MEMBER = 0; then\n      REPLACE_CLOSEDIR=1\n    fi\n    dnl Replace closedir() for supporting the gnulib-defined dirfd() function.\n    case $host_os in\n      os2*) REPLACE_CLOSEDIR=1 ;;\n    esac\n    dnl Replace closedir() for supporting the gnulib-defined fchdir() function,\n    dnl to keep fchdir's bookkeeping up-to-date.\n    m4_ifdef([gl_FUNC_FCHDIR], [\n      gl_TEST_FCHDIR\n      if test $HAVE_FCHDIR = 0; then\n        REPLACE_CLOSEDIR=1\n      fi\n    ])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "40d901012c83fd352a71daad1ca2480bd248aa6d06f9cdb0eef4c2a46d8fd390",
+  "original_prompt": "Ingested from linux-6.6.14/fs/hfsplus/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig HFSPLUS_FS\n\ttristate \"Apple Extended HFS file system support\"\n\tdepends on BLOCK\n\tselect BUFFER_HEAD\n\tselect NLS\n\tselect NLS_UTF8\n\tselect LEGACY_DIRECT_IO\n\thelp\n\t  If you say Y here, you will be able to mount extended format\n\t  Macintosh-formatted hard drive partitions with full read-write access.\n\n\t  This file system is often called HFS+ and was introduced with\n\t  MacOS 8. It includes all Mac specific filesystem data such as\n\t  data forks and creator codes, but it also has several UNIX\n\t  style features such as file ownership and permissions.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

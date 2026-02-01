@@ -1,0 +1,9 @@
+{
+  "module_name": "pid_list.h",
+  "hash_id": "50dcbedc9c97e3bb41bfc8e01aa399bdbeaaca9241413a22162fa1078642d9a7",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/trace/pid_list.h",
+  "human_readable_source": "\n\n \n\n#ifndef _TRACE_INTERNAL_PID_LIST_H\n#define _TRACE_INTERNAL_PID_LIST_H\n\n \n\n#define UPPER_BITS\t8\n#define UPPER_MAX\t(1 << UPPER_BITS)\n#define UPPER1_SIZE\t(1 << UPPER_BITS)\n#define UPPER2_SIZE\t(1 << UPPER_BITS)\n\n#define LOWER_BITS\t14\n#define LOWER_MAX\t(1 << LOWER_BITS)\n#define LOWER_SIZE\t(LOWER_MAX / BITS_PER_LONG)\n\n#define UPPER1_SHIFT\t(LOWER_BITS + UPPER_BITS)\n#define UPPER2_SHIFT\tLOWER_BITS\n#define LOWER_MASK\t(LOWER_MAX - 1)\n\n#define UPPER_MASK\t(UPPER_MAX - 1)\n\n \n#define MAX_PID\t\t(1 << 30)\n\n \n#define CHUNK_ALLOC 6\n\n \n#define CHUNK_REALLOC 2\n\nunion lower_chunk {\n\tunion lower_chunk\t\t*next;\n\tunsigned long\t\t\tdata[LOWER_SIZE]; \n};\n\nunion upper_chunk {\n\tunion upper_chunk\t\t*next;\n\tunion lower_chunk\t\t*data[UPPER2_SIZE]; \n};\n\nstruct trace_pid_list {\n\traw_spinlock_t\t\t\tlock;\n\tstruct irq_work\t\t\trefill_irqwork;\n\tunion upper_chunk\t\t*upper[UPPER1_SIZE]; \n\tunion upper_chunk\t\t*upper_list;\n\tunion lower_chunk\t\t*lower_list;\n\tint\t\t\t\tfree_upper_chunks;\n\tint\t\t\t\tfree_lower_chunks;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

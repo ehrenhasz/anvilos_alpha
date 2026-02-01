@@ -1,0 +1,9 @@
+{
+  "module_name": "msm-sc7180-flakes.txt",
+  "hash_id": "9115538f4d1c40b44cab4ab0b83bcd5f1f39ae27e462002acf961d9d5001dbfb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/msm-sc7180-flakes.txt",
+  "human_readable_source": "\n# Test ends up reading CRC from frame before cursor update\n# bug\n# sometimes.. tbd if this is a kernel CRC bug or a test\nkms_cursor_crc@.*\nkms_plane_multiple@atomic-pipe-A-tiling-none\nkms_atomic_transition@modeset-transition-nonblocking-fencing,Fail",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

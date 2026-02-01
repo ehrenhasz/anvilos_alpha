@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitattributes",
+  "hash_id": "a342ff0b9239c5d9116e6538329aaabdff325c61d46454c531ee32340caf9e2f",
+  "original_prompt": "Ingested from sys_09_Anvil/source/.gitattributes",
+  "human_readable_source": "# Per default everything gets normalized and gets LF line endings on checkout.\n* text eol=lf\n\n# These will always have CRLF line endings on checkout.\n*.vcxproj text eol=crlf\n*.props text eol=crlf\n*.bat text eol=crlf\n\n# These are binary so should never be modified by git.\n*.a binary\n*.ico binary\n*.png binary\n*.jpg binary\n*.dxf binary\n*.mpy binary\n*.der binary\n\n# These should also not be modified by git.\ntests/basics/string_cr_conversion.py -text\ntests/basics/string_crlf_conversion.py -text\nports/stm32/pybcdc.inf_template -text\nports/stm32/usbhost/** -text\nports/cc3200/hal/aes.c -text\nports/cc3200/hal/aes.h -text\nports/cc3200/hal/des.c -text\nports/cc3200/hal/i2s.c -text\nports/cc3200/hal/i2s.h -text\nports/cc3200/version.h -text\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e2e9671d59bd10f7a3fdb399dd22fcc9d0b0631d2d0e3e731c3f9170bcc918b2",
+  "original_prompt": "Ingested from linux-6.6.14/net/unix/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux unix domain socket layer.\n#\n\nobj-$(CONFIG_UNIX)\t+= unix.o\n\nunix-y\t\t\t:= af_unix.o garbage.o\nunix-$(CONFIG_SYSCTL)\t+= sysctl_net_unix.o\nunix-$(CONFIG_BPF_SYSCALL) += unix_bpf.o\n\nobj-$(CONFIG_UNIX_DIAG)\t+= unix_diag.o\nunix_diag-y\t\t:= diag.o\n\nobj-$(CONFIG_UNIX_SCM)\t+= scm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

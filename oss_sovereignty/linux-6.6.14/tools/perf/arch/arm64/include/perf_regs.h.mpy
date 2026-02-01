@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_regs.h",
+  "hash_id": "4e9986cb74ffd5dee1ec9c7086f8b1f6f723d0f9a37804e919b8238025b00e22",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arm64/include/perf_regs.h",
+  "human_readable_source": " \n#ifndef ARCH_PERF_REGS_H\n#define ARCH_PERF_REGS_H\n\n#include <stdlib.h>\n#include <linux/types.h>\n#define perf_event_arm_regs perf_event_arm64_regs\n#include <asm/perf_regs.h>\n#undef perf_event_arm_regs\n\nvoid perf_regs_load(u64 *regs);\n\n#define PERF_REGS_MASK\t((1ULL << PERF_REG_ARM64_MAX) - 1)\n#define PERF_REGS_MAX\tPERF_REG_ARM64_MAX\n#define PERF_SAMPLE_REGS_ABI\tPERF_SAMPLE_REGS_ABI_64\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

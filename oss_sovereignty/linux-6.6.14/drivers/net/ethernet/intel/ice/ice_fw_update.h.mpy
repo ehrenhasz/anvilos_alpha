@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_fw_update.h",
+  "hash_id": "a126bc3346af8d095e28afce9e144cf9c0c6db8da1f26d9a66ddadff445c21d4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_fw_update.h",
+  "human_readable_source": " \n \n\n#ifndef _ICE_FW_UPDATE_H_\n#define _ICE_FW_UPDATE_H_\n\nint ice_devlink_flash_update(struct devlink *devlink,\n\t\t\t     struct devlink_flash_update_params *params,\n\t\t\t     struct netlink_ext_ack *extack);\nint ice_get_pending_updates(struct ice_pf *pf, u8 *pending,\n\t\t\t    struct netlink_ext_ack *extack);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

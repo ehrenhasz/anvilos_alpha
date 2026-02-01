@@ -1,0 +1,9 @@
+{
+  "module_name": "tls.c",
+  "hash_id": "d70ed87a76059291e1714dc8d68e63500e3ed5e15928f409823447d935fcd54a",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/os-Linux/tls.c",
+  "human_readable_source": "\n#include <errno.h>\n#include <linux/unistd.h>\n\n#include <sys/ptrace.h>\n#include <sys/syscall.h>\n#include <unistd.h>\n\n#include <sysdep/tls.h>\n\n#ifndef PTRACE_GET_THREAD_AREA\n#define PTRACE_GET_THREAD_AREA 25\n#endif\n\n#ifndef PTRACE_SET_THREAD_AREA\n#define PTRACE_SET_THREAD_AREA 26\n#endif\n\n \nvoid check_host_supports_tls(int *supports_tls, int *tls_min)\n{\n\t \n\tint val[] = {GDT_ENTRY_TLS_MIN_I386, GDT_ENTRY_TLS_MIN_X86_64};\n\tint i;\n\n\tfor (i = 0; i < ARRAY_SIZE(val); i++) {\n\t\tuser_desc_t info;\n\t\tinfo.entry_number = val[i];\n\n\t\tif (syscall(__NR_get_thread_area, &info) == 0) {\n\t\t\t*tls_min = val[i];\n\t\t\t*supports_tls = 1;\n\t\t\treturn;\n\t\t} else {\n\t\t\tif (errno == EINVAL)\n\t\t\t\tcontinue;\n\t\t\telse if (errno == ENOSYS)\n\t\t\t\t*supports_tls = 0;\n\t\t\treturn;\n\t\t}\n\t}\n\n\t*supports_tls = 0;\n}\n\nint os_set_thread_area(user_desc_t *info, int pid)\n{\n\tint ret;\n\n\tret = ptrace(PTRACE_SET_THREAD_AREA, pid, info->entry_number,\n\t\t     (unsigned long) info);\n\tif (ret < 0)\n\t\tret = -errno;\n\treturn ret;\n}\n\nint os_get_thread_area(user_desc_t *info, int pid)\n{\n\tint ret;\n\n\tret = ptrace(PTRACE_GET_THREAD_AREA, pid, info->entry_number,\n\t\t     (unsigned long) info);\n\tif (ret < 0)\n\t\tret = -errno;\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

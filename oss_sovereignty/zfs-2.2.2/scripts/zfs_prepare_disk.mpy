@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_prepare_disk",
+  "hash_id": "4736e56c5dfd97c2f9d78b4063da864ae67c80c580355a8edd47bd775f39d1f5",
+  "original_prompt": "Ingested from zfs-2.2.2/scripts/zfs_prepare_disk",
+  "human_readable_source": "#!/bin/sh\n#\n# This is an optional helper script that is automatically called by libzfs\n# before a disk is about to be added into the pool.  It can be modified by\n# the user to run whatever commands are necessary to prepare a disk for\n# inclusion into the pool.  For example, users can add lines to this\n# script to do things like update the drive's firmware or check the drive's\n# health.  The script is optional and can be removed if it is not needed.\n#\n# See the zfs_prepare_disk(8) man page for details.\n#\n# Example:\n#\n# echo \"Prepare disk $VDEV_PATH ($VDEV_UPATH) for $VDEV_PREPARE in $POOL_NAME\"\n#\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

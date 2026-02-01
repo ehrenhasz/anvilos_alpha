@@ -1,0 +1,9 @@
+{
+  "module_name": "zl10039.h",
+  "hash_id": "25bdfe335858f8ee8a6f182c3c46bcb9dc82db8420de30aa9649024f5f505291",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/zl10039.h",
+  "human_readable_source": " \n \n\n#ifndef ZL10039_H\n#define ZL10039_H\n\n#if IS_REACHABLE(CONFIG_DVB_ZL10039)\nstruct dvb_frontend *zl10039_attach(struct dvb_frontend *fe,\n\t\t\t\t\tu8 i2c_addr,\n\t\t\t\t\tstruct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *zl10039_attach(struct dvb_frontend *fe,\n\t\t\t\t\tu8 i2c_addr,\n\t\t\t\t\tstruct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

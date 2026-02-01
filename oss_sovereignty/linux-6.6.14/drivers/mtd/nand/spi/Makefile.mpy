@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9cc122bec0e58049d359946f018deac3d92227743b102ba6612fa8f8fc9ad3e7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/nand/spi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nspinand-objs := core.o alliancememory.o ato.o esmt.o gigadevice.o macronix.o\nspinand-objs += micron.o paragon.o toshiba.o winbond.o xtx.o\nobj-$(CONFIG_MTD_SPI_NAND) += spinand.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

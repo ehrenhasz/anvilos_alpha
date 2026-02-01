@@ -1,0 +1,9 @@
+{
+  "module_name": "HalPhyRf_8723B.h",
+  "hash_id": "be69949c93d61b76f325c124b6ac37b029ed4c4fdfe93602fd183a9164f92197",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/hal/HalPhyRf_8723B.h",
+  "human_readable_source": " \n \n\n#ifndef __HAL_PHY_RF_8723B_H__\n#define __HAL_PHY_RF_8723B_H__\n\n \n#define\tIQK_DELAY_TIME_8723B\t\t20\t\t \n#define IQK_DEFERRED_TIME_8723B\t\t4\n#define\tindex_mapping_NUM_8723B\t\t15\n#define AVG_THERMAL_NUM_8723B\t\t4\n#define\tRF_T_METER_8723B\t\t\t\t\t0x42\t \n\n\nvoid ConfigureTxpowerTrack_8723B(struct txpwrtrack_cfg *pConfig);\n\nvoid DoIQK_8723B(\n\tstruct dm_odm_t *pDM_Odm,\n\tu8 DeltaThermalIndex,\n\tu8 ThermalValue,\n\tu8 Threshold\n);\n\nvoid ODM_TxPwrTrackSetPwr_8723B(\n\tstruct dm_odm_t *pDM_Odm,\n\tenum pwrtrack_method Method,\n\tu8 RFPath,\n\tu8 ChannelMappedIndex\n);\n\n \nvoid PHY_IQCalibrate_8723B(\n\tstruct adapter *Adapter,\n\tbool bReCovery,\n\tbool bRestore,\n\tbool Is2ant,\n\tu8 RF_Path\n);\n\nvoid ODM_SetIQCbyRFpath(struct dm_odm_t *pDM_Odm, u32 RFpath);\n\n \n \n \nvoid PHY_LCCalibrate_8723B(struct dm_odm_t *pDM_Odm);\n\n \n \n \nvoid PHY_DigitalPredistortion_8723B(struct adapter *padapter);\n\n\nvoid _PHY_SaveADDARegisters_8723B(\n\tstruct adapter *padapter,\n\tu32 *ADDAReg,\n\tu32 *ADDABackup,\n\tu32 RegisterNum\n);\n\nvoid _PHY_PathADDAOn_8723B(\n\tstruct adapter *padapter,\n\tu32 *ADDAReg,\n\tbool isPathAOn,\n\tbool is2T\n);\n\nvoid _PHY_MACSettingCalibration_8723B(\n\tstruct adapter *padapter, u32 *MACReg, u32 *MACBackup\n);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

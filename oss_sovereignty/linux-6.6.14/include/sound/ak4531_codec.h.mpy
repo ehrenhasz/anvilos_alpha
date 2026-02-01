@@ -1,0 +1,9 @@
+{
+  "module_name": "ak4531_codec.h",
+  "hash_id": "86d26a14cb0e1aa5fd7b4e31303d8d75af180f9289b45b59c876f1905e819afb",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/ak4531_codec.h",
+  "human_readable_source": " \n#ifndef __SOUND_AK4531_CODEC_H\n#define __SOUND_AK4531_CODEC_H\n\n \n\n#include <sound/info.h>\n#include <sound/control.h>\n\n \n\n \n\n#define AK4531_LMASTER  0x00\t \n#define AK4531_RMASTER  0x01\t \n#define AK4531_LVOICE   0x02\t \n#define AK4531_RVOICE   0x03\t \n#define AK4531_LFM      0x04\t \n#define AK4531_RFM      0x05\t \n#define AK4531_LCD      0x06\t \n#define AK4531_RCD      0x07\t \n#define AK4531_LLINE    0x08\t \n#define AK4531_RLINE    0x09\t \n#define AK4531_LAUXA    0x0a\t \n#define AK4531_RAUXA    0x0b\t \n#define AK4531_MONO1    0x0c\t \n#define AK4531_MONO2    0x0d\t \n#define AK4531_MIC      0x0e\t \n#define AK4531_MONO_OUT 0x0f\t \n#define AK4531_OUT_SW1  0x10\t \n#define AK4531_OUT_SW2  0x11\t \n#define AK4531_LIN_SW1  0x12\t \n#define AK4531_RIN_SW1  0x13\t \n#define AK4531_LIN_SW2  0x14\t \n#define AK4531_RIN_SW2  0x15\t \n#define AK4531_RESET    0x16\t \n#define AK4531_CLOCK    0x17\t \n#define AK4531_AD_IN    0x18\t \n#define AK4531_MIC_GAIN 0x19\t \n\nstruct snd_ak4531 {\n\tvoid (*write) (struct snd_ak4531 *ak4531, unsigned short reg,\n\t\t       unsigned short val);\n\tvoid *private_data;\n\tvoid (*private_free) (struct snd_ak4531 *ak4531);\n\t \n\tunsigned char regs[0x20];\n\tstruct mutex reg_mutex;\n};\n\nint snd_ak4531_mixer(struct snd_card *card, struct snd_ak4531 *_ak4531,\n\t\t     struct snd_ak4531 **rak4531);\n\n#ifdef CONFIG_PM\nvoid snd_ak4531_suspend(struct snd_ak4531 *ak4531);\nvoid snd_ak4531_resume(struct snd_ak4531 *ak4531);\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

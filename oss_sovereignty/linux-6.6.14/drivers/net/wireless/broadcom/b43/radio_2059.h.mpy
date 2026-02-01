@@ -1,0 +1,9 @@
+{
+  "module_name": "radio_2059.h",
+  "hash_id": "37c0785c1c7dc6cadc1a73e0eec0f22edbfa60d71336765dead62bb0d6f6c771",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/b43/radio_2059.h",
+  "human_readable_source": " \n#ifndef B43_RADIO_2059_H_\n#define B43_RADIO_2059_H_\n\n#include <linux/types.h>\n\n#include \"phy_ht.h\"\n\n#define R2059_C1\t\t\t0x000\n#define R2059_C2\t\t\t0x400\n#define R2059_C3\t\t\t0x800\n#define R2059_ALL\t\t\t0xC00\n\n#define R2059_RCAL_CONFIG\t\t\t0x004\n#define R2059_RFPLL_MASTER\t\t\t0x011\n#define R2059_RFPLL_MISC_EN\t\t\t0x02b\n#define R2059_RFPLL_MISC_CAL_RESETN\t\t0x02e\n#define R2059_XTAL_CONFIG2\t\t\t0x0c0\n#define R2059_RCCAL_START_R1_Q1_P1\t\t0x13c\n#define R2059_RCCAL_X1\t\t\t\t0x13d\n#define R2059_RCCAL_TRC0\t\t\t0x13e\n#define R2059_RCCAL_DONE_OSCCAP\t\t\t0x140\n#define R2059_RCAL_STATUS\t\t\t0x145\n#define R2059_RCCAL_MASTER\t\t\t0x17f\n\n \nstruct b43_phy_ht_channeltab_e_radio2059 {\n\t \n\tu16 freq;\n\t \n\tu8 radio_syn16;\n\tu8 radio_syn17;\n\tu8 radio_syn22;\n\tu8 radio_syn25;\n\tu8 radio_syn27;\n\tu8 radio_syn28;\n\tu8 radio_syn29;\n\tu8 radio_syn2c;\n\tu8 radio_syn2d;\n\tu8 radio_syn37;\n\tu8 radio_syn41;\n\tu8 radio_syn43;\n\tu8 radio_syn47;\n\tu8 radio_rxtx4a;\n\tu8 radio_rxtx58;\n\tu8 radio_rxtx5a;\n\tu8 radio_rxtx6a;\n\tu8 radio_rxtx6d;\n\tu8 radio_rxtx6e;\n\tu8 radio_rxtx92;\n\tu8 radio_rxtx98;\n\t \n\tstruct b43_phy_ht_channeltab_e_phy phy_regs;\n};\n\nvoid r2059_upload_inittabs(struct b43_wldev *dev);\n\nconst struct b43_phy_ht_channeltab_e_radio2059\n*b43_phy_ht_get_channeltab_e_r2059(struct b43_wldev *dev, u16 freq);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

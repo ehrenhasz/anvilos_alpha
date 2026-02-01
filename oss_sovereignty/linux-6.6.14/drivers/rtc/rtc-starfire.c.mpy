@@ -1,0 +1,9 @@
+{
+  "module_name": "rtc-starfire.c",
+  "hash_id": "37404a8556885c77c3ffcd039c83b28afbe583163aa4640f179c519db50a4dca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/rtc/rtc-starfire.c",
+  "human_readable_source": " \n\n#include <linux/kernel.h>\n#include <linux/init.h>\n#include <linux/rtc.h>\n#include <linux/platform_device.h>\n\n#include <asm/oplib.h>\n\nstatic u32 starfire_get_time(void)\n{\n\tstatic char obp_gettod[32];\n\tstatic u32 unix_tod;\n\n\tsprintf(obp_gettod, \"h# %08x unix-gettod\",\n\t\t(unsigned int) (long) &unix_tod);\n\tprom_feval(obp_gettod);\n\n\treturn unix_tod;\n}\n\nstatic int starfire_read_time(struct device *dev, struct rtc_time *tm)\n{\n\trtc_time64_to_tm(starfire_get_time(), tm);\n\treturn 0;\n}\n\nstatic const struct rtc_class_ops starfire_rtc_ops = {\n\t.read_time\t= starfire_read_time,\n};\n\nstatic int __init starfire_rtc_probe(struct platform_device *pdev)\n{\n\tstruct rtc_device *rtc;\n\n\trtc = devm_rtc_allocate_device(&pdev->dev);\n\tif (IS_ERR(rtc))\n\t\treturn PTR_ERR(rtc);\n\n\trtc->ops = &starfire_rtc_ops;\n\trtc->range_max = U32_MAX;\n\n\tplatform_set_drvdata(pdev, rtc);\n\n\treturn devm_rtc_register_device(rtc);\n}\n\nstatic struct platform_driver starfire_rtc_driver = {\n\t.driver\t\t= {\n\t\t.name\t= \"rtc-starfire\",\n\t},\n};\n\nbuiltin_platform_driver_probe(starfire_rtc_driver, starfire_rtc_probe);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

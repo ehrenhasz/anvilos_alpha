@@ -1,0 +1,9 @@
+{
+  "module_name": "power.c",
+  "hash_id": "71691ca7fb47106f5ff8af189f6bf528708edb6eec4dfbdc56b5cb79b16be56c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vt6656/power.c",
+  "human_readable_source": "\n \n\n#include \"mac.h\"\n#include \"device.h\"\n#include \"power.h\"\n#include \"wcmd.h\"\n#include \"rxtx.h\"\n#include \"card.h\"\n#include \"usbpipe.h\"\n\n \n\nvoid vnt_enable_power_saving(struct vnt_private *priv, u16 listen_interval)\n{\n\tu16 aid = priv->current_aid | BIT(14) | BIT(15);\n\n\t \n\tvnt_mac_write_word(priv, MAC_REG_PWBT, C_PWBT);\n\n\tif (priv->op_mode != NL80211_IFTYPE_ADHOC)\n\t\t \n\t\tvnt_mac_write_word(priv, MAC_REG_AIDATIM, aid);\n\n\t \n\t \n\tvnt_mac_reg_bits_on(priv, MAC_REG_PSCTL, PSCTL_PSEN);\n\n\t \n\tvnt_mac_reg_bits_on(priv, MAC_REG_PSCFG, PSCFG_AUTOSLEEP);\n\n\t \n\tvnt_mac_reg_bits_on(priv, MAC_REG_PSCTL, PSCTL_GO2DOZE);\n\n\t \n\tvnt_mac_reg_bits_on(priv, MAC_REG_PSCTL, PSCTL_ALBCN);\n\n\tdev_dbg(&priv->usb->dev,  \"PS:Power Saving Mode Enable...\\n\");\n}\n\nint vnt_disable_power_saving(struct vnt_private *priv)\n{\n\tint ret;\n\n\t \n\tret = vnt_control_out(priv, MESSAGE_TYPE_DISABLE_PS, 0,\n\t\t\t      0, 0, NULL);\n\tif (ret)\n\t\treturn ret;\n\n\t \n\tvnt_mac_reg_bits_off(priv, MAC_REG_PSCFG, PSCFG_AUTOSLEEP);\n\n\t \n\tvnt_mac_reg_bits_on(priv, MAC_REG_PSCTL, PSCTL_ALBCN);\n\n\treturn 0;\n}\n\n \n\nint vnt_next_tbtt_wakeup(struct vnt_private *priv)\n{\n\tstruct ieee80211_hw *hw = priv->hw;\n\tstruct ieee80211_conf *conf = &hw->conf;\n\tint wake_up = false;\n\n\tif (conf->listen_interval > 1) {\n\t\t \n\t\tvnt_mac_reg_bits_on(priv, MAC_REG_PSCTL, PSCTL_LNBCN);\n\t\twake_up = true;\n\t}\n\n\treturn wake_up;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ad5421.h",
+  "hash_id": "3c3163181806d094f973f6dbf3ba1c0cded2cbe54d3910bddbda379ec66b0da4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/dac/ad5421.h",
+  "human_readable_source": " \n#ifndef __IIO_DAC_AD5421_H__\n#define __IIO_DAC_AD5421_H__\n\n \n\nenum ad5421_current_range {\n\tAD5421_CURRENT_RANGE_4mA_20mA,\n\tAD5421_CURRENT_RANGE_3mA8_21mA,\n\tAD5421_CURRENT_RANGE_3mA2_24mA,\n};\n\n \n\nstruct ad5421_platform_data {\n\tbool external_vref;\n\tenum ad5421_current_range current_range;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

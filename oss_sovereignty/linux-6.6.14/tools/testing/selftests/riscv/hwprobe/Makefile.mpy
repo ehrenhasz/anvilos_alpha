@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "51160e73226bf44f12949d0fe444d6d083d9ff3c0c6e278eb5d75c93bc0152b7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/riscv/hwprobe/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (C) 2021 ARM Limited\n# Originally tools/testing/arm64/abi/Makefile\n\nTEST_GEN_PROGS := hwprobe\n\ninclude ../../lib.mk\n\n$(OUTPUT)/hwprobe: hwprobe.c sys_hwprobe.S\n\t$(CC) -o$@ $(CFLAGS) $(LDFLAGS) $^\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

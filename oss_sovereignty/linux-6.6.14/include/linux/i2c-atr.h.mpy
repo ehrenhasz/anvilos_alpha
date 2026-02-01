@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-atr.h",
+  "hash_id": "b5619fc6a968ca1d1f0e8cca80a28390c188864ddbd6b79e25f49e5d423d6e94",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/i2c-atr.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_I2C_ATR_H\n#define _LINUX_I2C_ATR_H\n\n#include <linux/i2c.h>\n#include <linux/types.h>\n\nstruct device;\nstruct fwnode_handle;\nstruct i2c_atr;\n\n \nstruct i2c_atr_ops {\n\tint (*attach_client)(struct i2c_atr *atr, u32 chan_id,\n\t\t\t     const struct i2c_client *client, u16 alias);\n\tvoid (*detach_client)(struct i2c_atr *atr, u32 chan_id,\n\t\t\t      const struct i2c_client *client);\n};\n\n \nstruct i2c_atr *i2c_atr_new(struct i2c_adapter *parent, struct device *dev,\n\t\t\t    const struct i2c_atr_ops *ops, int max_adapters);\n\n \nvoid i2c_atr_delete(struct i2c_atr *atr);\n\n \nint i2c_atr_add_adapter(struct i2c_atr *atr, u32 chan_id,\n\t\t\tstruct device *adapter_parent,\n\t\t\tstruct fwnode_handle *bus_handle);\n\n \nvoid i2c_atr_del_adapter(struct i2c_atr *atr, u32 chan_id);\n\n \nvoid i2c_atr_set_driver_data(struct i2c_atr *atr, void *data);\n\n \nvoid *i2c_atr_get_driver_data(struct i2c_atr *atr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

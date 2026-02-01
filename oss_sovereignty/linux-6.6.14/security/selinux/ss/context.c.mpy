@@ -1,0 +1,9 @@
+{
+  "module_name": "context.c",
+  "hash_id": "4421f9cec796cc32ee070aa86fda5b2f1787891bb42a967f625a76386b9bc5ff",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/ss/context.c",
+  "human_readable_source": "\n \n\n#include <linux/jhash.h>\n\n#include \"context.h\"\n#include \"mls.h\"\n\nu32 context_compute_hash(const struct context *c)\n{\n\tu32 hash = 0;\n\n\t \n\tif (c->len)\n\t\treturn full_name_hash(NULL, c->str, c->len);\n\n\thash = jhash_3words(c->user, c->role, c->type, hash);\n\thash = mls_range_hash(&c->range, hash);\n\treturn hash;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

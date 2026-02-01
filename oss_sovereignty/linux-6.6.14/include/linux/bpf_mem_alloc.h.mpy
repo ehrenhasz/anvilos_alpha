@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_mem_alloc.h",
+  "hash_id": "d2e015c78e1a8794968352da8d3205b888d806587ee5b1376bf1f341f6aafe67",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bpf_mem_alloc.h",
+  "human_readable_source": " \n \n#ifndef _BPF_MEM_ALLOC_H\n#define _BPF_MEM_ALLOC_H\n#include <linux/compiler_types.h>\n#include <linux/workqueue.h>\n\nstruct bpf_mem_cache;\nstruct bpf_mem_caches;\n\nstruct bpf_mem_alloc {\n\tstruct bpf_mem_caches __percpu *caches;\n\tstruct bpf_mem_cache __percpu *cache;\n\tbool percpu;\n\tstruct work_struct work;\n};\n\n \nint bpf_mem_alloc_init(struct bpf_mem_alloc *ma, int size, bool percpu);\nvoid bpf_mem_alloc_destroy(struct bpf_mem_alloc *ma);\n\n \nvoid *bpf_mem_alloc(struct bpf_mem_alloc *ma, size_t size);\nvoid bpf_mem_free(struct bpf_mem_alloc *ma, void *ptr);\nvoid bpf_mem_free_rcu(struct bpf_mem_alloc *ma, void *ptr);\n\n \nvoid *bpf_mem_cache_alloc(struct bpf_mem_alloc *ma);\nvoid bpf_mem_cache_free(struct bpf_mem_alloc *ma, void *ptr);\nvoid bpf_mem_cache_free_rcu(struct bpf_mem_alloc *ma, void *ptr);\nvoid bpf_mem_cache_raw_free(void *ptr);\nvoid *bpf_mem_cache_alloc_flags(struct bpf_mem_alloc *ma, gfp_t flags);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-copy-acl.c",
+  "hash_id": "29c25930eee4510f049aebf76dd92423c4d26d960fbe6cbe8e3d39e3a13b78a4",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-copy-acl.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"acl.h\"\n\n#include <fcntl.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n\n#include \"macros.h\"\n\nint\nmain (int argc, char *argv[])\n{\n  const char *file1;\n  const char *file2;\n  int fd1;\n  struct stat statbuf;\n  int mode;\n  int fd2;\n\n  ASSERT (argc == 3);\n\n  file1 = argv[1];\n  file2 = argv[2];\n\n  fd1 = open (file1, O_RDONLY);\n  if (fd1 < 0 || fstat (fd1, &statbuf) < 0)\n    {\n      fprintf (stderr, \"could not open file \\\"%s\\\"\\n\", file1);\n      exit (EXIT_FAILURE);\n    }\n  mode = statbuf.st_mode & 07777;\n\n  fd2 = open (file2, O_WRONLY, 0600);\n  if (fd2 < 0)\n    {\n      fprintf (stderr, \"could not open file \\\"%s\\\"\\n\", file2);\n      exit (EXIT_FAILURE);\n    }\n\n#if USE_ACL\n  if (copy_acl (file1, fd1, file2, fd2, mode))\n    exit (EXIT_FAILURE);\n#else\n  chmod (file2, mode);\n#endif\n\n  close (fd2);\n  close (fd1);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

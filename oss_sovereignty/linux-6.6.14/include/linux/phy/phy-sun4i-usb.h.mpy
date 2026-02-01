@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-sun4i-usb.h",
+  "hash_id": "6e25bfe594eafd9bb9c97e193a9de85e5bbda1683f04d3b3c8eb07a7fd7cb19a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/phy/phy-sun4i-usb.h",
+  "human_readable_source": " \n \n\n#ifndef PHY_SUN4I_USB_H_\n#define PHY_SUN4I_USB_H_\n\n#include \"phy.h\"\n\n \nvoid sun4i_usb_phy_set_squelch_detect(struct phy *phy, bool enabled);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

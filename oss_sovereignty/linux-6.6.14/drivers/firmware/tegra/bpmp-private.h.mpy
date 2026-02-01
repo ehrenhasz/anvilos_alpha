@@ -1,0 +1,9 @@
+{
+  "module_name": "bpmp-private.h",
+  "hash_id": "bcee26f1eed1b0c864afab86ba22a975e2ae1f6e4289bfcd4d8125c00b34f975",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/tegra/bpmp-private.h",
+  "human_readable_source": " \n \n\n#ifndef __FIRMWARE_TEGRA_BPMP_PRIVATE_H\n#define __FIRMWARE_TEGRA_BPMP_PRIVATE_H\n\n#include <soc/tegra/bpmp.h>\n\nstruct tegra_bpmp_ops {\n\tint (*init)(struct tegra_bpmp *bpmp);\n\tvoid (*deinit)(struct tegra_bpmp *bpmp);\n\tbool (*is_response_ready)(struct tegra_bpmp_channel *channel);\n\tbool (*is_request_ready)(struct tegra_bpmp_channel *channel);\n\tint (*ack_response)(struct tegra_bpmp_channel *channel);\n\tint (*ack_request)(struct tegra_bpmp_channel *channel);\n\tbool (*is_response_channel_free)(struct tegra_bpmp_channel *channel);\n\tbool (*is_request_channel_free)(struct tegra_bpmp_channel *channel);\n\tint (*post_response)(struct tegra_bpmp_channel *channel);\n\tint (*post_request)(struct tegra_bpmp_channel *channel);\n\tint (*ring_doorbell)(struct tegra_bpmp *bpmp);\n\tint (*resume)(struct tegra_bpmp *bpmp);\n};\n\n#if IS_ENABLED(CONFIG_ARCH_TEGRA_186_SOC) || \\\n    IS_ENABLED(CONFIG_ARCH_TEGRA_194_SOC) || \\\n    IS_ENABLED(CONFIG_ARCH_TEGRA_234_SOC)\nextern const struct tegra_bpmp_ops tegra186_bpmp_ops;\n#endif\n#if IS_ENABLED(CONFIG_ARCH_TEGRA_210_SOC)\nextern const struct tegra_bpmp_ops tegra210_bpmp_ops;\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "igc_i225.h",
+  "hash_id": "c4db200332dbb0b5fc6133fb15bc263118343fc625b6cabf716933defb339c85",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/igc/igc_i225.h",
+  "human_readable_source": " \n \n\n#ifndef _IGC_I225_H_\n#define _IGC_I225_H_\n\ns32 igc_acquire_swfw_sync_i225(struct igc_hw *hw, u16 mask);\nvoid igc_release_swfw_sync_i225(struct igc_hw *hw, u16 mask);\n\ns32 igc_init_nvm_params_i225(struct igc_hw *hw);\nbool igc_get_flash_presence_i225(struct igc_hw *hw);\ns32 igc_set_eee_i225(struct igc_hw *hw, bool adv2p5G, bool adv1G,\n\t\t     bool adv100M);\ns32 igc_set_ltr_i225(struct igc_hw *hw, bool link);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

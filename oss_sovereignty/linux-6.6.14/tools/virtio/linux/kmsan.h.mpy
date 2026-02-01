@@ -1,0 +1,9 @@
+{
+  "module_name": "kmsan.h",
+  "hash_id": "4947b001a59efe37647190f639731d6e56a94bd90eb43ef4cf8d1e2f2d228d00",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/linux/kmsan.h",
+  "human_readable_source": " \n#ifndef _LINUX_KMSAN_H\n#define _LINUX_KMSAN_H\n\n#include <linux/gfp.h>\n\ninline void kmsan_handle_dma(struct page *page, size_t offset, size_t size,\n\t\t\t     enum dma_data_direction dir)\n{\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "simpletest.sh",
+  "hash_id": "562a6ccf42c9483cf7426e016e55815ff1d102b45b67f13fe696727c0b38a9af",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/scripts/simpletest.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Give zero status if this is a simple test and non-zero otherwise.\n# Simple tests do not contain locking, RCU, or SRCU.\n#\n# Usage:\n#\tsimpletest.sh file.litmus\n#\n# Copyright IBM Corporation, 2019\n#\n# Author: Paul E. McKenney <paulmck@linux.ibm.com>\n\n\nlitmus=$1\n\nif test -f \"$litmus\" -a -r \"$litmus\"\nthen\n\t:\nelse\n\techo ' --- ' error: \\\"$litmus\\\" is not a readable file\n\texit 255\nfi\nexclude=\"^[[:space:]]*\\(\"\nexclude=\"${exclude}spin_lock(\\|spin_unlock(\\|spin_trylock(\\|spin_is_locked(\"\nexclude=\"${exclude}\\|rcu_read_lock(\\|rcu_read_unlock(\"\nexclude=\"${exclude}\\|synchronize_rcu(\\|synchronize_rcu_expedited(\"\nexclude=\"${exclude}\\|srcu_read_lock(\\|srcu_read_unlock(\"\nexclude=\"${exclude}\\|synchronize_srcu(\\|synchronize_srcu_expedited(\"\nexclude=\"${exclude}\\)\"\nif grep -q $exclude $litmus\nthen\n\texit 255\nfi\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

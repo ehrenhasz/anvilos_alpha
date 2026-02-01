@@ -1,0 +1,9 @@
+{
+  "module_name": "floating-point.json",
+  "hash_id": "751f58f269d2481addc3d63a6ae67428041a381c3a91c1fb8a440064448dab60",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/powerpc/power8/floating-point.json",
+  "human_readable_source": "[\n  {\n    \"EventCode\": \"0x2000e\",\n    \"EventName\": \"PM_FXU_BUSY\",\n    \"BriefDescription\": \"fxu0 busy and fxu1 busy\",\n    \"PublicDescription\": \"\"\n  },\n  {\n    \"EventCode\": \"0x1000e\",\n    \"EventName\": \"PM_FXU_IDLE\",\n    \"BriefDescription\": \"fxu0 idle and fxu1 idle\",\n    \"PublicDescription\": \"\"\n  }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

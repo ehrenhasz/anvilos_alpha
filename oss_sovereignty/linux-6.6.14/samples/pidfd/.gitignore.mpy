@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "1cd39be09cc20ad24e7e7f226454f17297f4ac0aab00569f8d9ebfc89079b6c4",
+  "original_prompt": "Ingested from linux-6.6.14/samples/pidfd/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/pidfd-metadata\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

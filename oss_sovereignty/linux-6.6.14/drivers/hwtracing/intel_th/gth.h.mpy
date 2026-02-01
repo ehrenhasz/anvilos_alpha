@@ -1,0 +1,9 @@
+{
+  "module_name": "gth.h",
+  "hash_id": "e00e818f3f363311da75bc4c76d16195457ccad5092a3819eea44baab18605c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwtracing/intel_th/gth.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_TH_GTH_H__\n#define __INTEL_TH_GTH_H__\n\n \n#define TH_OUTPUT_PARM(name)\t\t\t\\\n\tTH_OUTPUT_ ## name\n\nenum intel_th_output_parm {\n\t \n\tTH_OUTPUT_PARM(port),\n\t \n\tTH_OUTPUT_PARM(null),\n\t \n\tTH_OUTPUT_PARM(drop),\n\t \n\tTH_OUTPUT_PARM(reset),\n\t \n\tTH_OUTPUT_PARM(flush),\n\t \n\tTH_OUTPUT_PARM(smcfreq),\n};\n\n \nenum {\n\tREG_GTH_GTHOPT0\t\t= 0x00,  \n\tREG_GTH_GTHOPT1\t\t= 0x04,  \n\tREG_GTH_SWDEST0\t\t= 0x08,  \n\tREG_GTH_GSWTDEST\t= 0x88,  \n\tREG_GTH_SMCR0\t\t= 0x9c,  \n\tREG_GTH_SMCR1\t\t= 0xa0,  \n\tREG_GTH_SMCR2\t\t= 0xa4,  \n\tREG_GTH_SMCR3\t\t= 0xa8,  \n\tREG_GTH_SCR\t\t= 0xc8,  \n\tREG_GTH_STAT\t\t= 0xd4,  \n\tREG_GTH_SCR2\t\t= 0xd8,  \n\tREG_GTH_DESTOVR\t\t= 0xdc,  \n\tREG_GTH_SCRPD0\t\t= 0xe0,  \n\tREG_GTH_SCRPD1\t\t= 0xe4,  \n\tREG_GTH_SCRPD2\t\t= 0xe8,  \n\tREG_GTH_SCRPD3\t\t= 0xec,  \n\tREG_TSCU_TSUCTRL\t= 0x2000,  \n\tREG_TSCU_TSCUSTAT\t= 0x2004,  \n\n\t \n\tREG_CTS_C0S0_EN\t\t= 0x30c0,  \n\tREG_CTS_C0S0_ACT\t= 0x3180,  \n\tREG_CTS_STAT\t\t= 0x32a0,  \n\tREG_CTS_CTL\t\t= 0x32a4,  \n};\n\n \n#define GTH_PLE_WAITLOOP_DEPTH\t10000\n\n#define TSUCTRL_CTCRESYNC\tBIT(0)\n#define TSCUSTAT_CTCSYNCING\tBIT(1)\n\n \n#define CTS_TRIG_WAITLOOP_DEPTH\t10000\n\n#define CTS_EVENT_ENABLE_IF_ANYTHING\tBIT(31)\n#define CTS_ACTION_CONTROL_STATE_OFF\t27\n#define CTS_ACTION_CONTROL_SET_STATE(x)\t\\\n\t(((x) & 0x1f) << CTS_ACTION_CONTROL_STATE_OFF)\n#define CTS_ACTION_CONTROL_TRIGGER\tBIT(4)\n\n#define CTS_STATE_IDLE\t\t\t0x10u\n\n#define CTS_CTL_SEQUENCER_ENABLE\tBIT(0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

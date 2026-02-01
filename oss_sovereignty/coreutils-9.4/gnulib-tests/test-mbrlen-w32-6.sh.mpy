@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrlen-w32-6.sh",
+  "hash_id": "f8bf01bfcf0f8df83f63f28ac2840f6ebe4a1e2e8bde9dcd05515d4e8870e4fa",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrlen-w32-6.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a CP950 locale.\n${CHECKER} ./test-mbrlen-w32${EXEEXT} Chinese_Taiwan 950\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

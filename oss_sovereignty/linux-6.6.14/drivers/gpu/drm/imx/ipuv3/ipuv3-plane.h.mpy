@@ -1,0 +1,9 @@
+{
+  "module_name": "ipuv3-plane.h",
+  "hash_id": "cbed078b1db44e1ec2ba4209e511a95781b747008dfac40007a3c7074fe79bc4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/imx/ipuv3/ipuv3-plane.h",
+  "human_readable_source": " \n#ifndef __IPUV3_PLANE_H__\n#define __IPUV3_PLANE_H__\n\n#include <drm/drm_crtc.h>  \n\nstruct drm_plane;\nstruct drm_device;\nstruct ipu_soc;\nstruct drm_crtc;\nstruct drm_framebuffer;\n\nstruct ipuv3_channel;\nstruct dmfc_channel;\nstruct ipu_dp;\n\nstruct ipu_plane {\n\tstruct drm_plane\tbase;\n\n\tstruct ipu_soc\t\t*ipu;\n\tstruct ipuv3_channel\t*ipu_ch;\n\tstruct ipuv3_channel\t*alpha_ch;\n\tstruct dmfc_channel\t*dmfc;\n\tstruct ipu_dp\t\t*dp;\n\n\tint\t\t\tdma;\n\tint\t\t\tdp_flow;\n\n\tbool\t\t\tdisabling;\n};\n\nstruct ipu_plane *ipu_plane_init(struct drm_device *dev, struct ipu_soc *ipu,\n\t\t\t\t int dma, int dp, unsigned int possible_crtcs,\n\t\t\t\t enum drm_plane_type type);\n\n \nint ipu_plane_mode_set(struct ipu_plane *plane, struct drm_crtc *crtc,\n\t\t       struct drm_display_mode *mode,\n\t\t       struct drm_framebuffer *fb, int crtc_x, int crtc_y,\n\t\t       unsigned int crtc_w, unsigned int crtc_h,\n\t\t       uint32_t src_x, uint32_t src_y, uint32_t src_w,\n\t\t       uint32_t src_h, bool interlaced);\n\nint ipu_plane_irq(struct ipu_plane *plane);\n\nvoid ipu_plane_disable(struct ipu_plane *ipu_plane, bool disable_dp_channel);\nvoid ipu_plane_disable_deferred(struct drm_plane *plane);\nbool ipu_plane_atomic_update_pending(struct drm_plane *plane);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

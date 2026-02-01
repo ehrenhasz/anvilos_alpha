@@ -1,0 +1,9 @@
+{
+  "module_name": "test_tc_peer.c",
+  "hash_id": "e553a0a84d53126ce9fde0a55094ecf3e7105ae137ccb6fc82e1e9b6740f1e8c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_tc_peer.c",
+  "human_readable_source": "\n#include <stdint.h>\n#include <stdbool.h>\n\n#include <linux/bpf.h>\n#include <linux/stddef.h>\n#include <linux/pkt_cls.h>\n#include <linux/if_ether.h>\n#include <linux/ip.h>\n\n#include <bpf/bpf_helpers.h>\n\nvolatile const __u32 IFINDEX_SRC;\nvolatile const __u32 IFINDEX_DST;\n\nstatic const __u8 src_mac[] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55};\nstatic const __u8 dst_mac[] = {0x00, 0x22, 0x33, 0x44, 0x55, 0x66};\n\nSEC(\"tc\")\nint tc_chk(struct __sk_buff *skb)\n{\n\treturn TC_ACT_SHOT;\n}\n\nSEC(\"tc\")\nint tc_dst(struct __sk_buff *skb)\n{\n\treturn bpf_redirect_peer(IFINDEX_SRC, 0);\n}\n\nSEC(\"tc\")\nint tc_src(struct __sk_buff *skb)\n{\n\treturn bpf_redirect_peer(IFINDEX_DST, 0);\n}\n\nSEC(\"tc\")\nint tc_dst_l3(struct __sk_buff *skb)\n{\n\treturn bpf_redirect(IFINDEX_SRC, 0);\n}\n\nSEC(\"tc\")\nint tc_src_l3(struct __sk_buff *skb)\n{\n\t__u16 proto = skb->protocol;\n\n\tif (bpf_skb_change_head(skb, ETH_HLEN, 0) != 0)\n\t\treturn TC_ACT_SHOT;\n\n\tif (bpf_skb_store_bytes(skb, 0, &src_mac, ETH_ALEN, 0) != 0)\n\t\treturn TC_ACT_SHOT;\n\n\tif (bpf_skb_store_bytes(skb, ETH_ALEN, &dst_mac, ETH_ALEN, 0) != 0)\n\t\treturn TC_ACT_SHOT;\n\n\tif (bpf_skb_store_bytes(skb, ETH_ALEN + ETH_ALEN, &proto, sizeof(__u16), 0) != 0)\n\t\treturn TC_ACT_SHOT;\n\n\treturn bpf_redirect_peer(IFINDEX_DST, 0);\n}\n\nchar __license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

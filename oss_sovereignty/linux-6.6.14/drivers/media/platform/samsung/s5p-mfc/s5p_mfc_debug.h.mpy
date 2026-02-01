@@ -1,0 +1,9 @@
+{
+  "module_name": "s5p_mfc_debug.h",
+  "hash_id": "35c42f64fc73874fa6e84f65de51128a289d42fd22697db80d6462016c020d76",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/s5p-mfc/s5p_mfc_debug.h",
+  "human_readable_source": " \n \n\n#ifndef S5P_MFC_DEBUG_H_\n#define S5P_MFC_DEBUG_H_\n\n#define DEBUG\n\n#ifdef DEBUG\nextern int mfc_debug_level;\n\n#define mfc_debug(level, fmt, args...)\t\t\t\t\\\n\tdo {\t\t\t\t\t\t\t\\\n\t\tif (mfc_debug_level >= level)\t\t\t\\\n\t\t\tprintk(KERN_DEBUG \"%s:%d: \" fmt,\t\\\n\t\t\t\t__func__, __LINE__, ##args);\t\\\n\t} while (0)\n#else\n#define mfc_debug(level, fmt, args...)\n#endif\n\n#define mfc_debug_enter() mfc_debug(5, \"enter\\n\")\n#define mfc_debug_leave() mfc_debug(5, \"leave\\n\")\n\n#define mfc_err(fmt, args...)\t\t\t\t\\\n\tdo {\t\t\t\t\t\t\\\n\t\tprintk(KERN_ERR \"%s:%d: \" fmt,\t\t\\\n\t\t       __func__, __LINE__, ##args);\t\\\n\t} while (0)\n\n#define mfc_err_limited(fmt, args...)\t\t\t\\\n\tdo {\t\t\t\t\t\t\\\n\t\tprintk_ratelimited(KERN_ERR \"%s:%d: \" fmt,\t\\\n\t\t       __func__, __LINE__, ##args);\t\\\n\t} while (0)\n\n#define mfc_info(fmt, args...)\t\t\t\t\\\n\tdo {\t\t\t\t\t\t\\\n\t\tprintk(KERN_INFO \"%s:%d: \" fmt,\t\t\\\n\t\t       __func__, __LINE__, ##args);\t\\\n\t} while (0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

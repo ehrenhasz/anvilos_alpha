@@ -1,0 +1,9 @@
+{
+  "module_name": "rtw8822cs.c",
+  "hash_id": "d2b0635d5d7d186c1455d3b949c78582f3329bd5e1d50b276539aa2b3312a3fc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw88/rtw8822cs.c",
+  "human_readable_source": "\n \n\n#include <linux/mmc/sdio_func.h>\n#include <linux/mmc/sdio_ids.h>\n#include <linux/module.h>\n#include \"main.h\"\n#include \"rtw8822c.h\"\n#include \"sdio.h\"\n\nstatic const struct sdio_device_id rtw_8822cs_id_table[] =  {\n\t{\n\t\tSDIO_DEVICE(SDIO_VENDOR_ID_REALTEK,\n\t\t\t    SDIO_DEVICE_ID_REALTEK_RTW8822CS),\n\t\t.driver_data = (kernel_ulong_t)&rtw8822c_hw_spec,\n\t},\n\t{}\n};\nMODULE_DEVICE_TABLE(sdio, rtw_8822cs_id_table);\n\nstatic struct sdio_driver rtw_8822cs_driver = {\n\t.name = \"rtw_8822cs\",\n\t.probe = rtw_sdio_probe,\n\t.remove = rtw_sdio_remove,\n\t.id_table = rtw_8822cs_id_table,\n\t.drv = {\n\t\t.pm = &rtw_sdio_pm_ops,\n\t\t.shutdown = rtw_sdio_shutdown,\n\t}\n};\nmodule_sdio_driver(rtw_8822cs_driver);\n\nMODULE_AUTHOR(\"Martin Blumenstingl <martin.blumenstingl@googlemail.com>\");\nMODULE_DESCRIPTION(\"Realtek 802.11ac wireless 8822cs driver\");\nMODULE_LICENSE(\"Dual BSD/GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

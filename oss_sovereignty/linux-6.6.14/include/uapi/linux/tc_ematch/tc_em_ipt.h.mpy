@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_em_ipt.h",
+  "hash_id": "65c79f561d061927696e2406326c7f4991f17090bde2f2214c3903aeff7cd27b",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_ematch/tc_em_ipt.h",
+  "human_readable_source": " \n#ifndef __LINUX_TC_EM_IPT_H\n#define __LINUX_TC_EM_IPT_H\n\n#include <linux/types.h>\n#include <linux/pkt_cls.h>\n\nenum {\n\tTCA_EM_IPT_UNSPEC,\n\tTCA_EM_IPT_HOOK,\n\tTCA_EM_IPT_MATCH_NAME,\n\tTCA_EM_IPT_MATCH_REVISION,\n\tTCA_EM_IPT_NFPROTO,\n\tTCA_EM_IPT_MATCH_DATA,\n\t__TCA_EM_IPT_MAX\n};\n\n#define TCA_EM_IPT_MAX (__TCA_EM_IPT_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

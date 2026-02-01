@@ -1,0 +1,9 @@
+{
+  "module_name": "verify_pefile.h",
+  "hash_id": "8074cf3b0945f828f2d3e9afd6d316e8aab3d73833259a5bb0472592dc66d5f0",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/asymmetric_keys/verify_pefile.h",
+  "human_readable_source": " \n \n\n#include <crypto/pkcs7.h>\n#include <crypto/hash_info.h>\n\nstruct pefile_context {\n\tunsigned\theader_size;\n\tunsigned\timage_checksum_offset;\n\tunsigned\tcert_dirent_offset;\n\tunsigned\tn_data_dirents;\n\tunsigned\tn_sections;\n\tunsigned\tcerts_size;\n\tunsigned\tsig_offset;\n\tunsigned\tsig_len;\n\tconst struct section_header *secs;\n\n\t \n\tconst void\t*digest;\t\t \n\tunsigned\tdigest_len;\t\t \n\tconst char\t*digest_algo;\t\t \n};\n\n#define kenter(FMT, ...)\t\t\t\t\t\\\n\tpr_devel(\"==> %s(\"FMT\")\\n\", __func__, ##__VA_ARGS__)\n#define kleave(FMT, ...) \\\n\tpr_devel(\"<== %s()\"FMT\"\\n\", __func__, ##__VA_ARGS__)\n\n \nextern int mscode_parse(void *_ctx, const void *content_data, size_t data_len,\n\t\t\tsize_t asn1hdrlen);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

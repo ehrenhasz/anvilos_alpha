@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__objslice.c.qstr",
+  "hash_id": "3b687d93088838cc12fd8e1f8e59fba17873ab39b14423d757994819b6209874",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__objslice.c.qstr",
+  "human_readable_source": "Q(slice)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

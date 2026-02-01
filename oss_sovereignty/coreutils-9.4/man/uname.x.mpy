@@ -1,0 +1,9 @@
+{
+  "module_name": "uname.x",
+  "hash_id": "d88304ee291e2b93c07d4e224b2eecaf04431d2253ca8cdd6787ef90cc0581e6",
+  "original_prompt": "Ingested from coreutils-9.4/man/uname.x",
+  "human_readable_source": "[NAME]\nuname \\- print system information\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\narch(1), uname(2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

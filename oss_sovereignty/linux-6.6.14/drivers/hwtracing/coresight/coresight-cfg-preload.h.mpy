@@ -1,0 +1,9 @@
+{
+  "module_name": "coresight-cfg-preload.h",
+  "hash_id": "5ac5ea2f5e12f1fda6acc4482038e18b6d60c2e9830653645162f83dc67de3cb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwtracing/coresight/coresight-cfg-preload.h",
+  "human_readable_source": " \n \n\n \n\n \n#if IS_ENABLED(CONFIG_CORESIGHT_SOURCE_ETM4X)\nextern struct cscfg_feature_desc strobe_etm4x;\nextern struct cscfg_config_desc afdo_etm4x;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e2e7e3778f2e307c14e85d4d9482dc444f075627dfca85ee19edf31963ee0231",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/socfpga/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_CLK_INTEL_SOCFPGA32) += clk.o clk-gate.o clk-pll.o clk-periph.o \\\n\t\t\t\t     clk-pll-a10.o clk-periph-a10.o clk-gate-a10.o\nobj-$(CONFIG_CLK_INTEL_SOCFPGA64) += clk-s10.o \\\n\t\t\t\t     clk-pll-s10.o clk-periph-s10.o clk-gate-s10.o \\\n\t\t\t\t     clk-agilex.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

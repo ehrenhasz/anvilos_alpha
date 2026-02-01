@@ -1,0 +1,9 @@
+{
+  "module_name": "asm-prototypes.h",
+  "hash_id": "ab4a9008ece91cd91eb21c767bbe9b17da28458e141a44bce278d4e79c234a90",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/asm-prototypes.h",
+  "human_readable_source": " \n#include <asm/ftrace.h>\n#include <linux/uaccess.h>\n#include <linux/pgtable.h>\n#include <asm/string.h>\n#include <asm/page.h>\n#include <asm/checksum.h>\n#include <asm/mce.h>\n\n#include <asm-generic/asm-prototypes.h>\n\n#include <asm/special_insns.h>\n#include <asm/preempt.h>\n#include <asm/asm.h>\n#include <asm/gsseg.h>\n\n#ifndef CONFIG_X86_CMPXCHG64\nextern void cmpxchg8b_emu(void);\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

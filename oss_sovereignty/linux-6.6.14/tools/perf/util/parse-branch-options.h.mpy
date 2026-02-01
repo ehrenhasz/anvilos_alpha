@@ -1,0 +1,9 @@
+{
+  "module_name": "parse-branch-options.h",
+  "hash_id": "9122e0f930d77ad815e4e70c4bc0ecc4ef356e2786c0324d745cedbfecc705f7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/parse-branch-options.h",
+  "human_readable_source": " \n#ifndef _PERF_PARSE_BRANCH_OPTIONS_H\n#define _PERF_PARSE_BRANCH_OPTIONS_H 1\n#include <stdint.h>\nint parse_branch_stack(const struct option *opt, const char *str, int unset);\nint parse_branch_str(const char *str, __u64 *mode);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

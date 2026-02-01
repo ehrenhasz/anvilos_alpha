@@ -1,0 +1,9 @@
+{
+  "module_name": "test_get_stack_rawtp_err.c",
+  "hash_id": "cc612084ff83704af4502039ce6f3808b49cdd96cdf590bd76473f8994021992",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_get_stack_rawtp_err.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\n#define MAX_STACK_RAWTP 10\n\nSEC(\"raw_tracepoint/sys_enter\")\nint bpf_prog2(void *ctx)\n{\n\t__u64 stack[MAX_STACK_RAWTP];\n\tint error;\n\n\t \n\terror = bpf_get_stack(ctx, stack, 0, -1);\n\tif (error < 0)\n\t\tgoto loop;\n\n\treturn error;\nloop:\n\twhile (1) {\n\t\terror++;\n\t}\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

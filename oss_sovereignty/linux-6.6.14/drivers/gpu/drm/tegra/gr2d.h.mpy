@@ -1,0 +1,9 @@
+{
+  "module_name": "gr2d.h",
+  "hash_id": "d8d995900b825bb11307c6b9c7d6e87b3be142437cd0ba6a1ad9d303bdd89696",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tegra/gr2d.h",
+  "human_readable_source": " \n \n\n#ifndef TEGRA_GR2D_H\n#define TEGRA_GR2D_H\n\n#define GR2D_UA_BASE_ADDR\t\t0x1a\n#define GR2D_VA_BASE_ADDR\t\t0x1b\n#define GR2D_PAT_BASE_ADDR\t\t0x26\n#define GR2D_DSTA_BASE_ADDR\t\t0x2b\n#define GR2D_DSTB_BASE_ADDR\t\t0x2c\n#define GR2D_DSTC_BASE_ADDR\t\t0x2d\n#define GR2D_SRCA_BASE_ADDR\t\t0x31\n#define GR2D_SRCB_BASE_ADDR\t\t0x32\n#define GR2D_PATBASE_ADDR\t\t0x47\n#define GR2D_SRC_BASE_ADDR_SB\t\t0x48\n#define GR2D_DSTA_BASE_ADDR_SB\t\t0x49\n#define GR2D_DSTB_BASE_ADDR_SB\t\t0x4a\n#define GR2D_UA_BASE_ADDR_SB\t\t0x4b\n#define GR2D_VA_BASE_ADDR_SB\t\t0x4c\n\n#define GR2D_NUM_REGS\t\t\t0x4d\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

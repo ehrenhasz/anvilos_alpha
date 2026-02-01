@@ -1,0 +1,9 @@
+{
+  "module_name": "cordic.h",
+  "hash_id": "d118ceef0bd25e5bbdbbd1e6a3ee310f27ae771c78d4536a257659f66b74f27f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cordic.h",
+  "human_readable_source": " \n#ifndef __CORDIC_H_\n#define __CORDIC_H_\n\n#include <linux/types.h>\n\n#define CORDIC_ANGLE_GEN\t39797\n#define CORDIC_PRECISION_SHIFT\t16\n#define CORDIC_NUM_ITER\t(CORDIC_PRECISION_SHIFT + 2)\n\n#define CORDIC_FIXED(X)\t((s32)((X) << CORDIC_PRECISION_SHIFT))\n#define CORDIC_FLOAT(X)\t(((X) >= 0) \\\n\t\t? ((((X) >> (CORDIC_PRECISION_SHIFT - 1)) + 1) >> 1) \\\n\t\t: -((((-(X)) >> (CORDIC_PRECISION_SHIFT - 1)) + 1) >> 1))\n\n \nstruct cordic_iq {\n\ts32 i;\n\ts32 q;\n};\n\n \nstruct cordic_iq cordic_calc_iq(s32 theta);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

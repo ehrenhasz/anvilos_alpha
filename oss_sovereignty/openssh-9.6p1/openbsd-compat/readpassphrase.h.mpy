@@ -1,0 +1,9 @@
+{
+  "module_name": "readpassphrase.h",
+  "hash_id": "bbc0075faa804fb754d7aceafca6f0d9f386f96f89f1931a598471d318edc57a",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/readpassphrase.h",
+  "human_readable_source": " \n\n \n\n \n\n#ifndef _READPASSPHRASE_H_\n#define _READPASSPHRASE_H_\n\n#include \"includes.h\"\n\n#ifndef HAVE_READPASSPHRASE\n\n#define RPP_ECHO_OFF    0x00\t\t \n#define RPP_ECHO_ON     0x01\t\t \n#define RPP_REQUIRE_TTY 0x02\t\t \n#define RPP_FORCELOWER  0x04\t\t \n#define RPP_FORCEUPPER  0x08\t\t \n#define RPP_SEVENBIT    0x10\t\t \n#define RPP_STDIN       0x20\t\t \n\nchar * readpassphrase(const char *, char *, size_t, int);\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

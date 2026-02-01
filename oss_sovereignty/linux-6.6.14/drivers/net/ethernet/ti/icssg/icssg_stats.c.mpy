@@ -1,0 +1,9 @@
+{
+  "module_name": "icssg_stats.c",
+  "hash_id": "a47563d9fad259226834dd620eaf85d7008233f8f00567aa5afb2aa1281a2d56",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ti/icssg/icssg_stats.c",
+  "human_readable_source": "\n \n\n#include \"icssg_prueth.h\"\n#include \"icssg_stats.h\"\n#include <linux/regmap.h>\n\n#define ICSSG_TX_PACKET_OFFSET\t0xA0\n#define ICSSG_TX_BYTE_OFFSET\t0xEC\n\nstatic u32 stats_base[] = {\t0x54c,\t \n\t\t\t\t0xb18,\t \n};\n\nvoid emac_update_hardware_stats(struct prueth_emac *emac)\n{\n\tstruct prueth *prueth = emac->prueth;\n\tint slice = prueth_emac_slice(emac);\n\tu32 base = stats_base[slice];\n\tu32 tx_pkt_cnt = 0;\n\tu32 val;\n\tint i;\n\n\tfor (i = 0; i < ARRAY_SIZE(icssg_all_stats); i++) {\n\t\tregmap_read(prueth->miig_rt,\n\t\t\t    base + icssg_all_stats[i].offset,\n\t\t\t    &val);\n\t\tregmap_write(prueth->miig_rt,\n\t\t\t     base + icssg_all_stats[i].offset,\n\t\t\t     val);\n\n\t\tif (icssg_all_stats[i].offset == ICSSG_TX_PACKET_OFFSET)\n\t\t\ttx_pkt_cnt = val;\n\n\t\temac->stats[i] += val;\n\t\tif (icssg_all_stats[i].offset == ICSSG_TX_BYTE_OFFSET)\n\t\t\temac->stats[i] -= tx_pkt_cnt * 8;\n\t}\n}\n\nvoid emac_stats_work_handler(struct work_struct *work)\n{\n\tstruct prueth_emac *emac = container_of(work, struct prueth_emac,\n\t\t\t\t\t\tstats_work.work);\n\temac_update_hardware_stats(emac);\n\n\tqueue_delayed_work(system_long_wq, &emac->stats_work,\n\t\t\t   msecs_to_jiffies((STATS_TIME_LIMIT_1G_MS * 1000) / emac->speed));\n}\n\nint emac_get_stat_by_name(struct prueth_emac *emac, char *stat_name)\n{\n\tint i;\n\n\tfor (i = 0; i < ARRAY_SIZE(icssg_all_stats); i++) {\n\t\tif (!strcmp(icssg_all_stats[i].name, stat_name))\n\t\t\treturn emac->stats[icssg_all_stats[i].offset / sizeof(u32)];\n\t}\n\n\tnetdev_err(emac->ndev, \"Invalid stats %s\\n\", stat_name);\n\treturn -EINVAL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

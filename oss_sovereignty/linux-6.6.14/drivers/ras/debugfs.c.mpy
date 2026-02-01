@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs.c",
+  "hash_id": "57abf891dda68bc3ce3218493f80814cf50aa2fbfa3e6707e6c964a714d906e4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ras/debugfs.c",
+  "human_readable_source": "\n#include <linux/debugfs.h>\n#include <linux/ras.h>\n#include \"debugfs.h\"\n\nstruct dentry *ras_debugfs_dir;\n\nstatic atomic_t trace_count = ATOMIC_INIT(0);\n\nint ras_userspace_consumers(void)\n{\n\treturn atomic_read(&trace_count);\n}\nEXPORT_SYMBOL_GPL(ras_userspace_consumers);\n\nstatic int trace_show(struct seq_file *m, void *v)\n{\n\treturn 0;\n}\n\nstatic int trace_open(struct inode *inode, struct file *file)\n{\n\tatomic_inc(&trace_count);\n\treturn single_open(file, trace_show, NULL);\n}\n\nstatic int trace_release(struct inode *inode, struct file *file)\n{\n\tatomic_dec(&trace_count);\n\treturn single_release(inode, file);\n}\n\nstatic const struct file_operations trace_fops = {\n\t.open    = trace_open,\n\t.read    = seq_read,\n\t.llseek  = seq_lseek,\n\t.release = trace_release,\n};\n\nint __init ras_add_daemon_trace(void)\n{\n\tstruct dentry *fentry;\n\n\tif (!ras_debugfs_dir)\n\t\treturn -ENOENT;\n\n\tfentry = debugfs_create_file(\"daemon_active\", S_IRUSR, ras_debugfs_dir,\n\t\t\t\t     NULL, &trace_fops);\n\tif (IS_ERR(fentry))\n\t\treturn -ENODEV;\n\n\treturn 0;\n\n}\n\nvoid __init ras_debugfs_init(void)\n{\n\tras_debugfs_dir = debugfs_create_dir(\"ras\", NULL);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

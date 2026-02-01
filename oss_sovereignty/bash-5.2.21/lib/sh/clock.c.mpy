@@ -1,0 +1,9 @@
+{
+  "module_name": "clock.c",
+  "hash_id": "954d7890499d22095dbbd4a118a613c92b5756c3f8f7756a4a8a2149844a45c7",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/clock.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#if defined (HAVE_TIMES)\n\n#include <sys/types.h>\n#include <posixtime.h>\n\n#if defined (HAVE_SYS_TIMES_H)\n#  include <sys/times.h>\n#endif\n\n#include <stdio.h>\n#include <stdc.h>\n\n#include <bashintl.h>\n\n#ifndef locale_decpoint\nextern int locale_decpoint PARAMS((void));\n#endif\n\nextern long get_clk_tck PARAMS((void));\n\nvoid\nclock_t_to_secs (t, sp, sfp)\n     clock_t t;\n     time_t *sp;\n     int *sfp;\n{\n  static long clk_tck = -1;\n\n  if (clk_tck == -1)\n    clk_tck = get_clk_tck ();\n\n  *sfp = t % clk_tck;\n  *sfp = (*sfp * 1000) / clk_tck;\n\n  *sp = t / clk_tck;\n\n   \n  if (*sfp >= 1000)\n    {\n      *sp += 1;\n      *sfp -= 1000;\n    }\n}\n\n \nvoid\nprint_clock_t (fp, t)\n     FILE *fp;\n     clock_t t;\n{\n  time_t timestamp;\n  long minutes;\n  int seconds, seconds_fraction;\n\n  clock_t_to_secs (t, &timestamp, &seconds_fraction);\n\n  minutes = timestamp / 60;\n  seconds = timestamp % 60;\n\n  fprintf (fp, \"%ldm%d%c%03ds\",  minutes, seconds, locale_decpoint(), seconds_fraction);\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

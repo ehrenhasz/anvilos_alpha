@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3845b2583115b1a5414a4dbe13469be58cb33af07d30b5ab69b74fb77d177d4b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/hisilicon/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for hisilicon drm drivers.\n# Please keep this list sorted alphabetically\n\nobj-$(CONFIG_DRM_HISI_HIBMC) += hibmc/\nobj-$(CONFIG_DRM_HISI_KIRIN) += kirin/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

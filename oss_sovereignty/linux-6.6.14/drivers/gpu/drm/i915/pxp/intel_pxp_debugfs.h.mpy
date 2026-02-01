@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pxp_debugfs.h",
+  "hash_id": "885f564719307b130f0aad6b6ae508075f491a9fb0cfeeb0779c615f6cc3c5af",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/pxp/intel_pxp_debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_PXP_DEBUGFS_H__\n#define __INTEL_PXP_DEBUGFS_H__\n\nstruct intel_pxp;\nstruct dentry;\n\n#ifdef CONFIG_DRM_I915_PXP\nvoid intel_pxp_debugfs_register(struct intel_pxp *pxp);\n#else\nstatic inline void\nintel_pxp_debugfs_register(struct intel_pxp *pxp)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

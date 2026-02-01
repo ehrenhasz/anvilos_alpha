@@ -1,0 +1,9 @@
+{
+  "module_name": "CoWW+poonceonce.litmus",
+  "hash_id": "598a2abf88a946bf998fe4c1bcb6ee6f110bb173e5c252e7cec7a82a4af9c317",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/CoWW+poonceonce.litmus",
+  "human_readable_source": "C CoWW+poonceonce\n\n(*\n * Result: Never\n *\n * Test of write-write coherence, that is, whether or not two successive\n * writes to the same variable are ordered.\n *)\n\n{}\n\nP0(int *x)\n{\n\tWRITE_ONCE(*x, 1);\n\tWRITE_ONCE(*x, 2);\n}\n\nexists (x=1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

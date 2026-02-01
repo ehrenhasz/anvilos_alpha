@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "08968ce7e5d5a249b4b0d7b5b25916fa2736917b22d35ecd8267c3b125ae1096",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/dw-edma/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig DW_EDMA\n\ttristate \"Synopsys DesignWare eDMA controller driver\"\n\tdepends on PCI && PCI_MSI\n\tselect DMA_ENGINE\n\tselect DMA_VIRTUAL_CHANNELS\n\thelp\n\t  Support the Synopsys DesignWare eDMA controller, normally\n\t  implemented on endpoints SoCs.\n\nif DW_EDMA\n\nconfig DW_EDMA_PCIE\n\ttristate \"Synopsys DesignWare eDMA PCIe driver\"\n\tdepends on PCI && PCI_MSI\n\thelp\n\t  Provides a glue-logic between the Synopsys DesignWare\n\t  eDMA controller and an endpoint PCIe device. This also serves\n\t  as a reference design to whom desires to use this IP.\n\nendif # DW_EDMA\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

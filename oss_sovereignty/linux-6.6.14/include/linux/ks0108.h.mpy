@@ -1,0 +1,9 @@
+{
+  "module_name": "ks0108.h",
+  "hash_id": "0f6977cc7c589a7e6165e3952d78d396eb612cc65c6e78f21f5d4553bd75d37e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ks0108.h",
+  "human_readable_source": " \n \n\n#ifndef _KS0108_H_\n#define _KS0108_H_\n\n \nextern void ks0108_writedata(unsigned char byte);\n\n \nextern void ks0108_writecontrol(unsigned char byte);\n\n \nextern void ks0108_displaystate(unsigned char state);\n\n \nextern void ks0108_startline(unsigned char startline);\n\n \nextern void ks0108_address(unsigned char address);\n\n \nextern void ks0108_page(unsigned char page);\n\n \nextern unsigned char ks0108_isinited(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "util_mem.h",
+  "hash_id": "97cc733c3ab5dccc564efe110f95c702f3da5a94ceb9e97d8e6b3947e16458b4",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/util_mem.h",
+  "human_readable_source": " \n#ifndef __SOUND_UTIL_MEM_H\n#define __SOUND_UTIL_MEM_H\n\n#include <linux/mutex.h>\n \n\n \nstruct snd_util_memblk {\n\tunsigned int size;\t\t \n\tunsigned int offset;\t\t \n\tstruct list_head list;\t\t \n};\n\n#define snd_util_memblk_argptr(blk)\t(void*)((char*)(blk) + sizeof(struct snd_util_memblk))\n\n \nstruct snd_util_memhdr {\n\tunsigned int size;\t\t \n\tstruct list_head block;\t\t \n\tint nblocks;\t\t\t \n\tunsigned int used;\t\t \n\tint block_extra_size;\t\t \n\tstruct mutex block_mutex;\t \n};\n\n \nstruct snd_util_memhdr *snd_util_memhdr_new(int memsize);\nvoid snd_util_memhdr_free(struct snd_util_memhdr *hdr);\nstruct snd_util_memblk *snd_util_mem_alloc(struct snd_util_memhdr *hdr, int size);\nint snd_util_mem_free(struct snd_util_memhdr *hdr, struct snd_util_memblk *blk);\nint snd_util_mem_avail(struct snd_util_memhdr *hdr);\n\n \nstruct snd_util_memblk *__snd_util_mem_alloc(struct snd_util_memhdr *hdr, int size);\nvoid __snd_util_mem_free(struct snd_util_memhdr *hdr, struct snd_util_memblk *blk);\nstruct snd_util_memblk *__snd_util_memblk_new(struct snd_util_memhdr *hdr,\n\t\t\t\t\t      unsigned int units,\n\t\t\t\t\t      struct list_head *prev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "omap-mcbsp.h",
+  "hash_id": "bf080a63626f9b6284697d0affbbc40195d5972ebc2066689bdfaa2582b0a4f7",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/ti/omap-mcbsp.h",
+  "human_readable_source": " \n \n\n#ifndef __OMAP_MCBSP_H__\n#define __OMAP_MCBSP_H__\n\n#include <sound/dmaengine_pcm.h>\n\n \nenum omap_mcbsp_clksrg_clk {\n\tOMAP_MCBSP_SYSCLK_CLKS_FCLK,\t \n\tOMAP_MCBSP_SYSCLK_CLKS_EXT,\t \n\tOMAP_MCBSP_SYSCLK_CLK,\t\t \n\tOMAP_MCBSP_SYSCLK_CLKX_EXT,\t \n\tOMAP_MCBSP_SYSCLK_CLKR_EXT,\t \n};\n\n \nenum omap_mcbsp_div {\n\tOMAP_MCBSP_CLKGDV,\t\t \n};\n\nint omap_mcbsp_st_add_controls(struct snd_soc_pcm_runtime *rtd, int port_id);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

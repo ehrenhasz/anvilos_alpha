@@ -1,0 +1,9 @@
+{
+  "module_name": "sw_device.h",
+  "hash_id": "6a6d80574072f753d61b44daffb98eb058b6bba8c8536b1e6ae1309bd9b5b581",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/sw_device.h",
+  "human_readable_source": " \n \n\n#ifndef __IIO_SW_DEVICE\n#define __IIO_SW_DEVICE\n\n#include <linux/module.h>\n#include <linux/device.h>\n#include <linux/iio/iio.h>\n#include <linux/configfs.h>\n\n#define module_iio_sw_device_driver(__iio_sw_device_type) \\\n\tmodule_driver(__iio_sw_device_type, iio_register_sw_device_type, \\\n\t\t      iio_unregister_sw_device_type)\n\nstruct iio_sw_device_ops;\n\nstruct iio_sw_device_type {\n\tconst char *name;\n\tstruct module *owner;\n\tconst struct iio_sw_device_ops *ops;\n\tstruct list_head list;\n\tstruct config_group *group;\n};\n\nstruct iio_sw_device {\n\tstruct iio_dev *device;\n\tstruct iio_sw_device_type *device_type;\n\tstruct config_group group;\n};\n\nstruct iio_sw_device_ops {\n\tstruct iio_sw_device* (*probe)(const char *);\n\tint (*remove)(struct iio_sw_device *);\n};\n\nstatic inline\nstruct iio_sw_device *to_iio_sw_device(struct config_item *item)\n{\n\treturn container_of(to_config_group(item), struct iio_sw_device,\n\t\t\t    group);\n}\n\nint iio_register_sw_device_type(struct iio_sw_device_type *dt);\nvoid iio_unregister_sw_device_type(struct iio_sw_device_type *dt);\n\nstruct iio_sw_device *iio_sw_device_create(const char *, const char *);\nvoid iio_sw_device_destroy(struct iio_sw_device *);\n\nint iio_sw_device_type_configfs_register(struct iio_sw_device_type *dt);\nvoid iio_sw_device_type_configfs_unregister(struct iio_sw_device_type *dt);\n\nstatic inline\nvoid iio_swd_group_init_type_name(struct iio_sw_device *d,\n\t\t\t\t  const char *name,\n\t\t\t\t  const struct config_item_type *type)\n{\n#if IS_ENABLED(CONFIG_CONFIGFS_FS)\n\tconfig_group_init_type_name(&d->group, name, type);\n#endif\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

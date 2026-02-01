@@ -1,0 +1,9 @@
+{
+  "module_name": "TRACE01",
+  "hash_id": "29ee231e169cce20de6f43e3a5baae6abd32146ed80300862077dfe7977f9769",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/TRACE01",
+  "human_readable_source": "CONFIG_SMP=y\nCONFIG_NR_CPUS=5\nCONFIG_HOTPLUG_CPU=y\nCONFIG_PREEMPT_NONE=y\nCONFIG_PREEMPT_VOLUNTARY=n\nCONFIG_PREEMPT=n\nCONFIG_PREEMPT_DYNAMIC=n\nCONFIG_DEBUG_LOCK_ALLOC=n\nCONFIG_PROVE_LOCKING=n\n#CHECK#CONFIG_PROVE_RCU=n\nCONFIG_FORCE_TASKS_TRACE_RCU=y\n#CHECK#CONFIG_TASKS_TRACE_RCU=y\nCONFIG_TASKS_TRACE_RCU_READ_MB=y\nCONFIG_RCU_EXPERT=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

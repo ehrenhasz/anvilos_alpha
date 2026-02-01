@@ -1,0 +1,9 @@
+{
+  "module_name": "audit_write.h",
+  "hash_id": "3ca201ee3163bf1b1ca57c2382d7496ec6024519136b5fb46d4fc6d3d8ffd233",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/audit_write.h",
+  "human_readable_source": " \n#include <asm-generic/audit_dir_write.h>\n__NR_acct,\n#ifdef __NR_swapon\n__NR_swapon,\n#endif\n__NR_quotactl,\n#ifdef __NR_truncate\n__NR_truncate,\n#endif\n#ifdef __NR_truncate64\n__NR_truncate64,\n#endif\n#ifdef __NR_ftruncate\n__NR_ftruncate,\n#endif\n#ifdef __NR_ftruncate64\n__NR_ftruncate64,\n#endif\n#ifdef __NR_bind\n__NR_bind,\t\t \n#endif\n#ifdef __NR_fallocate\n__NR_fallocate,\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ncurses6.lintian-overrides",
+  "hash_id": "3a3b75b1e782f933d053cafc141a0d71a35599497987dd0e810d8ff4bdf7004d",
+  "original_prompt": "Ingested from ncurses-6.4/package/debian/ncurses6.lintian-overrides",
+  "human_readable_source": "# This is intentional.\nncurses6: package-name-doesnt-match-sonames libformw6-6 libmenuw6-6 libncurses++w6-6 libncursesw6-6 libpanelw6-6 libticw6-6 libtinfow6-6\n\n# This worked around a bug in Debian's build-scripts.\n#ncurses6: latest-debian-changelog-entry-changed-to-native\n\nncurses6: hardening-no-fortify-functions usr/lib/libncurses++w6.so.6.1\n#ncurses6: hardening-no-fortify-functions usr/lib/libformw6.so.6.1\nncurses6: hardening-no-fortify-functions usr/lib/libmenuw6.so.6.1\n\n# This is intentional.\nncurses6: binary-without-manpage\nncurses6: non-dev-pkg-with-shlib-symlink\nncurses6: embedded-library ncurses usr/lib/libtinfow6.so.6.1\n#ncurses6: postinst-must-call-ldconfig usr/lib/libtinfow6.so.6.1\n\n# vile: confmode\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

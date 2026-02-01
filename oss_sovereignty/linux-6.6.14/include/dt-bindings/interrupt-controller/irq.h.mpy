@@ -1,0 +1,9 @@
+{
+  "module_name": "irq.h",
+  "hash_id": "72b05d3ba2db374982c8a99ac636497fa4c7d434c02608b8529e8ed67224cee2",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/interrupt-controller/irq.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_INTERRUPT_CONTROLLER_IRQ_H\n#define _DT_BINDINGS_INTERRUPT_CONTROLLER_IRQ_H\n\n#define IRQ_TYPE_NONE\t\t0\n#define IRQ_TYPE_EDGE_RISING\t1\n#define IRQ_TYPE_EDGE_FALLING\t2\n#define IRQ_TYPE_EDGE_BOTH\t(IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING)\n#define IRQ_TYPE_LEVEL_HIGH\t4\n#define IRQ_TYPE_LEVEL_LOW\t8\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

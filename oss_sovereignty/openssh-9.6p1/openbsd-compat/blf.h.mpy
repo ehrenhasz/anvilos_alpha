@@ -1,0 +1,9 @@
+{
+  "module_name": "blf.h",
+  "hash_id": "3694f2d08fce3f15b2d914dec5e2435c4e4f9e303c6ce7a675da81e30b7dc15c",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/blf.h",
+  "human_readable_source": " \n \n\n#ifndef _BLF_H_\n#define _BLF_H_\n\n#include \"includes.h\"\n\n#if !defined(HAVE_BCRYPT_PBKDF) && !defined(HAVE_BLH_H)\n\n \n\n#define BLF_N\t16\t\t\t \n#define BLF_MAXKEYLEN ((BLF_N-2)*4)\t \n#define BLF_MAXUTILIZED ((BLF_N+2)*4)\t \n\n \ntypedef struct BlowfishContext {\n\tu_int32_t S[4][256];\t \n\tu_int32_t P[BLF_N + 2];\t \n} blf_ctx;\n\n \n\nvoid Blowfish_encipher(blf_ctx *, u_int32_t *, u_int32_t *);\nvoid Blowfish_decipher(blf_ctx *, u_int32_t *, u_int32_t *);\nvoid Blowfish_initstate(blf_ctx *);\nvoid Blowfish_expand0state(blf_ctx *, const u_int8_t *, u_int16_t);\nvoid Blowfish_expandstate\n(blf_ctx *, const u_int8_t *, u_int16_t, const u_int8_t *, u_int16_t);\n\n \n\nvoid blf_key(blf_ctx *, const u_int8_t *, u_int16_t);\nvoid blf_enc(blf_ctx *, u_int32_t *, u_int16_t);\nvoid blf_dec(blf_ctx *, u_int32_t *, u_int16_t);\n\nvoid blf_ecb_encrypt(blf_ctx *, u_int8_t *, u_int32_t);\nvoid blf_ecb_decrypt(blf_ctx *, u_int8_t *, u_int32_t);\n\nvoid blf_cbc_encrypt(blf_ctx *, u_int8_t *, u_int8_t *, u_int32_t);\nvoid blf_cbc_decrypt(blf_ctx *, u_int8_t *, u_int8_t *, u_int32_t);\n\n \nu_int32_t Blowfish_stream2word(const u_int8_t *, u_int16_t , u_int16_t *);\n\n#endif  \n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

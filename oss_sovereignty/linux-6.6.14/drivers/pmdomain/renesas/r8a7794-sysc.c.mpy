@@ -1,0 +1,9 @@
+{
+  "module_name": "r8a7794-sysc.c",
+  "hash_id": "563661e4eb21199eb5b773c8b7d2792b606db4821aa44cedacb1edc8a1ea36f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pmdomain/renesas/r8a7794-sysc.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n\n#include <dt-bindings/power/r8a7794-sysc.h>\n\n#include \"rcar-sysc.h\"\n\nstatic const struct rcar_sysc_area r8a7794_areas[] __initconst = {\n\t{ \"always-on\",\t    0, 0, R8A7794_PD_ALWAYS_ON,\t-1, PD_ALWAYS_ON },\n\t{ \"ca7-scu\",\t0x100, 0, R8A7794_PD_CA7_SCU,\tR8A7794_PD_ALWAYS_ON,\n\t  PD_SCU },\n\t{ \"ca7-cpu0\",\t0x1c0, 0, R8A7794_PD_CA7_CPU0,\tR8A7794_PD_CA7_SCU,\n\t  PD_CPU_NOCR },\n\t{ \"ca7-cpu1\",\t0x1c0, 1, R8A7794_PD_CA7_CPU1,\tR8A7794_PD_CA7_SCU,\n\t  PD_CPU_NOCR },\n\t{ \"sh-4a\",\t 0x80, 0, R8A7794_PD_SH_4A,\tR8A7794_PD_ALWAYS_ON },\n\t{ \"sgx\",\t 0xc0, 0, R8A7794_PD_SGX,\tR8A7794_PD_ALWAYS_ON },\n};\n\nconst struct rcar_sysc_info r8a7794_sysc_info __initconst = {\n\t.areas = r8a7794_areas,\n\t.num_areas = ARRAY_SIZE(r8a7794_areas),\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

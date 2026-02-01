@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a51110fd55428166fdada66f3ee0a1e09d1e87f9049f7fdd15678c76c5f18e35",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rts5208/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig RTS5208\n\ttristate \"Realtek PCI-E Card Reader RTS5208/5288 support\"\n\tdepends on PCI && SCSI\n\thelp\n\t  Say Y here to include driver code to support the Realtek\n\t  PCI-E card reader rts5208/rts5288.\n\n\t  If this driver is compiled as a module, it will be named rts5208.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

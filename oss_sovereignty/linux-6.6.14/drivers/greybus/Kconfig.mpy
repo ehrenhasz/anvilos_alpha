@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "19b927c6f0f1692ad7c0c10ee315d9b865ec9631a8fcc5ec330a67014b26621d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/greybus/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nmenuconfig GREYBUS\n\ttristate \"Greybus support\"\n\tdepends on SYSFS\n\thelp\n\t  This option enables the Greybus driver core.  Greybus is a\n\t  hardware protocol that was designed to provide Unipro with a\n\t  sane application layer.  It was originally designed for the\n\t  ARA project, a module phone system, but has shown up in other\n\t  phones, and can be tunneled over other busses in order to\n\t  control hardware devices.\n\n\t  Say Y here to enable support for these types of drivers.\n\n\t  To compile this code as a module, choose M here: the module\n\t  will be called greybus.ko\n\nif GREYBUS\n\nconfig GREYBUS_ES2\n\ttristate \"Greybus ES3 USB host controller\"\n\tdepends on USB\n\thelp\n\t  Select this option if you have a Toshiba ES3 USB device that\n\t  acts as a Greybus \"host controller\".  This device is a bridge\n\t  from a USB device to a Unipro network.\n\n\t  To compile this code as a module, choose M here: the module\n\t  will be called gb-es2.ko\n\nendif\t# GREYBUS\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

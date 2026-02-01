@@ -1,0 +1,9 @@
+{
+  "module_name": "iscsi_target_device.h",
+  "hash_id": "9403797f67abedff3a8aa326a41b3e4778f532c1490a9b22cad73ab778957e78",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/iscsi/iscsi_target_device.h",
+  "human_readable_source": " \n#ifndef ISCSI_TARGET_DEVICE_H\n#define ISCSI_TARGET_DEVICE_H\n\nstruct iscsit_cmd;\nstruct iscsit_session;\n\nextern void iscsit_determine_maxcmdsn(struct iscsit_session *);\nextern void iscsit_increment_maxcmdsn(struct iscsit_cmd *, struct iscsit_session *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

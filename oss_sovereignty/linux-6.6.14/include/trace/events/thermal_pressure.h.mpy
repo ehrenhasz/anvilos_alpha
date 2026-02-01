@@ -1,0 +1,9 @@
+{
+  "module_name": "thermal_pressure.h",
+  "hash_id": "7ed060134a73fefe7b2b6a3b3118fd8ac26507dad520cf8c0933b91206b889c7",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/thermal_pressure.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM thermal_pressure\n\n#if !defined(_TRACE_THERMAL_PRESSURE_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_THERMAL_PRESSURE_H\n\n#include <linux/tracepoint.h>\n\nTRACE_EVENT(thermal_pressure_update,\n\tTP_PROTO(int cpu, unsigned long thermal_pressure),\n\tTP_ARGS(cpu, thermal_pressure),\n\n\tTP_STRUCT__entry(\n\t\t__field(unsigned long, thermal_pressure)\n\t\t__field(int, cpu)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->thermal_pressure = thermal_pressure;\n\t\t__entry->cpu = cpu;\n\t),\n\n\tTP_printk(\"cpu=%d thermal_pressure=%lu\", __entry->cpu, __entry->thermal_pressure)\n);\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

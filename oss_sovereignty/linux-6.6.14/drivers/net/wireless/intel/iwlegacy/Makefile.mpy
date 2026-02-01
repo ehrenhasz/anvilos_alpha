@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fce7471975ac8049b4ce00c6ceb616cee6713d3d4a321e5532f7d554f5c60746",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlegacy/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_IWLEGACY)\t+= iwlegacy.o\niwlegacy-objs \t\t:= common.o\niwlegacy-$(CONFIG_IWLEGACY_DEBUGFS) += debug.o\n\niwlegacy-objs += $(iwlegacy-m)\n\n# 4965\nobj-$(CONFIG_IWL4965)\t+= iwl4965.o\niwl4965-objs\t\t:= 4965.o 4965-mac.o 4965-rs.o 4965-calib.o\niwl4965-$(CONFIG_IWLEGACY_DEBUGFS) += 4965-debug.o\n\n# 3945\nobj-$(CONFIG_IWL3945)\t+= iwl3945.o\niwl3945-objs\t\t:= 3945-mac.o 3945.o 3945-rs.o\niwl3945-$(CONFIG_IWLEGACY_DEBUGFS) += 3945-debug.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

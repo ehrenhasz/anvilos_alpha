@@ -1,0 +1,9 @@
+{
+  "module_name": "tests-match.dtsi",
+  "hash_id": "bdee13076a3a79dc3b19e396e52b43a0d09caf9c5115ce4ad7654f727d13a653",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/tests-match.dtsi",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n\n/ {\n\ttestcase-data {\n\t\tmatch-node {\n\t\t\tname0 { };\n\t\t\tname1 { device_type = \"type1\"; };\n\t\t\ta { name2 { device_type = \"type1\"; }; };\n\t\t\tb { name2 { }; };\n\t\t\tc { name2 { device_type = \"type2\"; }; };\n\t\t\tname3 { compatible = \"compat3\"; };\n\t\t\tname4 { compatible = \"compat2\", \"compat3\"; };\n\t\t\tname5 { compatible = \"compat2\", \"compat3\"; };\n\t\t\tname6 { compatible = \"compat1\", \"compat2\", \"compat3\"; };\n\t\t\tname7 { compatible = \"compat2\"; device_type = \"type1\"; };\n\t\t\tname8 { compatible = \"compat2\"; device_type = \"type1\"; };\n\t\t\tname9 { compatible = \"compat2\"; };\n\t\t};\n\t};\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

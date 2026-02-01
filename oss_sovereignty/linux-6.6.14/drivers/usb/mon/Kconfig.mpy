@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8557ee255a03844f9a7a5e5def1b87f3aea3166cffba33a1da9b09c0aed08298",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/mon/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# USB Monitor configuration\n#\n\nconfig USB_MON\n\ttristate \"USB Monitor\"\n\thelp\n\t  If you select this option, a component which captures the USB traffic\n\t  between peripheral-specific drivers and HC drivers will be built.\n\t  For more information, see <file:Documentation/usb/usbmon.rst>.\n\n\t  If unsure, say Y, if allowed, otherwise M.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c134d3824325986c8d9c95f4ea32078bce6b3071dcf82d1eef8ac13044777d21",
+  "original_prompt": "Ingested from linux-6.6.14/sound/synth/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-util-mem-objs := util_mem.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_EMU10K1) += snd-util-mem.o\nobj-$(CONFIG_SND_TRIDENT) += snd-util-mem.o\nobj-$(CONFIG_SND_SBAWE_SEQ) += snd-util-mem.o\nobj-$(CONFIG_SND_SEQUENCER) += emux/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a2f1f5d661177bc13663dc83621a47b3d864d99854179426ddb84e9b951bfbf6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/console/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Makefile for the Linux graphics to console drivers.\n# 5 Aug 1999, James Simmons, <mailto:jsimmons@users.sf.net>\n# Rewritten to use lists instead of if-statements.\n\nobj-$(CONFIG_DUMMY_CONSOLE)       += dummycon.o\nobj-$(CONFIG_SGI_NEWPORT_CONSOLE) += newport_con.o\nobj-$(CONFIG_STI_CONSOLE)         += sticon.o\nobj-$(CONFIG_VGA_CONSOLE)         += vgacon.o\nobj-$(CONFIG_MDA_CONSOLE)         += mdacon.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

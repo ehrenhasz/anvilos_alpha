@@ -1,0 +1,9 @@
+{
+  "module_name": "fls64.h",
+  "hash_id": "0c700e3e0e9666e4946332c030c91b43be94295c971106f96f4845a557ceef6a",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/bitops/fls64.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_BITOPS_FLS64_H_\n#define _ASM_GENERIC_BITOPS_FLS64_H_\n\n#include <asm/types.h>\n\n \n#if BITS_PER_LONG == 32\nstatic __always_inline int fls64(__u64 x)\n{\n\t__u32 h = x >> 32;\n\tif (h)\n\t\treturn fls(h) + 32;\n\treturn fls(x);\n}\n#elif BITS_PER_LONG == 64\nstatic __always_inline int fls64(__u64 x)\n{\n\tif (x == 0)\n\t\treturn 0;\n\treturn __fls(x) + 1;\n}\n#else\n#error BITS_PER_LONG not 32 or 64\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

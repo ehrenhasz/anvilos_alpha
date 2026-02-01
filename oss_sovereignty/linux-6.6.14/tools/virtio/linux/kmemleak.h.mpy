@@ -1,0 +1,9 @@
+{
+  "module_name": "kmemleak.h",
+  "hash_id": "22a6e3db90eafb095ebd41d348734c786c1c943a4ac12589fbf3aead6630e84b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/linux/kmemleak.h",
+  "human_readable_source": "static inline void kmemleak_ignore(const void *ptr)\n{\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

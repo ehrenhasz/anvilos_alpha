@@ -1,0 +1,9 @@
+{
+  "module_name": "fld_ftlink.c",
+  "hash_id": "4ed09b1ac98f65af90111d0699b45871a111a768a77c0e5cc19a0b67726b39fd",
+  "original_prompt": "Ingested from ncurses-6.4/form/fld_ftlink.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: fld_ftlink.c,v 1.18 2021/06/17 21:20:30 tom Exp $\")\n\n \nFORM_EXPORT(FIELDTYPE *)\nlink_fieldtype(FIELDTYPE *type1, FIELDTYPE *type2)\n{\n  FIELDTYPE *nftyp = (FIELDTYPE *)0;\n\n  T((T_CALLED(\"link_fieldtype(%p,%p)\"), (void *)type1, (void *)type2));\n  if (type1 && type2)\n    {\n      nftyp = typeMalloc(FIELDTYPE, 1);\n\n      if (nftyp)\n\t{\n\t  T((T_CREATE(\"fieldtype %p\"), (void *)nftyp));\n\t  *nftyp = *_nc_Default_FieldType;\n\t  SetStatus(nftyp, _LINKED_TYPE);\n\t  if ((type1->status & _HAS_ARGS) || (type2->status & _HAS_ARGS))\n\t    SetStatus(nftyp, _HAS_ARGS);\n\t  if ((type1->status & _HAS_CHOICE) || (type2->status & _HAS_CHOICE))\n\t    SetStatus(nftyp, _HAS_CHOICE);\n\t  nftyp->left = type1;\n\t  nftyp->right = type2;\n\t  type1->ref++;\n\t  type2->ref++;\n\t}\n      else\n\t{\n\t  SET_ERROR(E_SYSTEM_ERROR);\n\t}\n    }\n  else\n    {\n      SET_ERROR(E_BAD_ARGUMENT);\n    }\n  returnFieldType(nftyp);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

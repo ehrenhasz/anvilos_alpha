@@ -1,0 +1,9 @@
+{
+  "module_name": "ratelimit.c",
+  "hash_id": "f3de23789a075650e458eddc9a9d2ccf64e6172463e6e3b3319a482c94ec899e",
+  "original_prompt": "Ingested from linux-6.6.14/lib/ratelimit.c",
+  "human_readable_source": "\n \n\n#include <linux/ratelimit.h>\n#include <linux/jiffies.h>\n#include <linux/export.h>\n\n \nint ___ratelimit(struct ratelimit_state *rs, const char *func)\n{\n\t \n\tint interval = READ_ONCE(rs->interval);\n\tint burst = READ_ONCE(rs->burst);\n\tunsigned long flags;\n\tint ret;\n\n\tif (!interval)\n\t\treturn 1;\n\n\t \n\tif (!raw_spin_trylock_irqsave(&rs->lock, flags))\n\t\treturn 0;\n\n\tif (!rs->begin)\n\t\trs->begin = jiffies;\n\n\tif (time_is_before_jiffies(rs->begin + interval)) {\n\t\tif (rs->missed) {\n\t\t\tif (!(rs->flags & RATELIMIT_MSG_ON_RELEASE)) {\n\t\t\t\tprintk_deferred(KERN_WARNING\n\t\t\t\t\t\t\"%s: %d callbacks suppressed\\n\",\n\t\t\t\t\t\tfunc, rs->missed);\n\t\t\t\trs->missed = 0;\n\t\t\t}\n\t\t}\n\t\trs->begin   = jiffies;\n\t\trs->printed = 0;\n\t}\n\tif (burst && burst > rs->printed) {\n\t\trs->printed++;\n\t\tret = 1;\n\t} else {\n\t\trs->missed++;\n\t\tret = 0;\n\t}\n\traw_spin_unlock_irqrestore(&rs->lock, flags);\n\n\treturn ret;\n}\nEXPORT_SYMBOL(___ratelimit);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

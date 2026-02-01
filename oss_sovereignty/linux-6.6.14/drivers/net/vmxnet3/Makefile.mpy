@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "18045fd9c938b6fa7c8d77b7621963c09c04f6ef9d8c4c909809320b8421869b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/vmxnet3/Makefile",
+  "human_readable_source": "################################################################################\n#\n# Linux driver for VMware's vmxnet3 ethernet NIC.\n#\n# Copyright (C) 2007-2022, VMware, Inc. All Rights Reserved.\n#\n# This program is free software; you can redistribute it and/or modify it\n# under the terms of the GNU General Public License as published by the\n# Free Software Foundation; version 2 of the License and no later version.\n#\n# This program is distributed in the hope that it will be useful, but\n# WITHOUT ANY WARRANTY; without even the implied warranty of\n# MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or\n# NON INFRINGEMENT.  See the GNU General Public License for more\n# details.\n#\n# You should have received a copy of the GNU General Public License\n# along with this program; if not, write to the Free Software\n# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.\n#\n# The full GNU General Public License is included in this distribution in\n# the file called \"COPYING\".\n#\n# Maintained by: pv-drivers@vmware.com\n#\n#\n################################################################################\n\n#\n# Makefile for the VMware vmxnet3 ethernet NIC driver\n#\n\nobj-$(CONFIG_VMXNET3) += vmxnet3.o\n\nvmxnet3-objs := vmxnet3_drv.o vmxnet3_ethtool.o vmxnet3_xdp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

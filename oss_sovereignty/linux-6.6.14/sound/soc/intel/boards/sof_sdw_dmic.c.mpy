@@ -1,0 +1,9 @@
+{
+  "module_name": "sof_sdw_dmic.c",
+  "hash_id": "cdb67972f13f268f52f617e6a1a79127deb71063a2d5dd90fdfff00b77ad72c3",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/boards/sof_sdw_dmic.c",
+  "human_readable_source": "\n\n\n \n\n#include <sound/soc.h>\n#include <sound/soc-acpi.h>\n#include <sound/soc-dapm.h>\n#include \"sof_sdw_common.h\"\n\nstatic const struct snd_soc_dapm_widget dmic_widgets[] = {\n\tSND_SOC_DAPM_MIC(\"SoC DMIC\", NULL),\n};\n\nstatic const struct snd_soc_dapm_route dmic_map[] = {\n\t \n\t{\"DMic\", NULL, \"SoC DMIC\"},\n};\n\nint sof_sdw_dmic_init(struct snd_soc_pcm_runtime *rtd)\n{\n\tstruct snd_soc_card *card = rtd->card;\n\tint ret;\n\n\tret = snd_soc_dapm_new_controls(&card->dapm, dmic_widgets,\n\t\t\t\t\tARRAY_SIZE(dmic_widgets));\n\tif (ret) {\n\t\tdev_err(card->dev, \"DMic widget addition failed: %d\\n\", ret);\n\t\t \n\t\treturn ret;\n\t}\n\n\tret = snd_soc_dapm_add_routes(&card->dapm, dmic_map,\n\t\t\t\t      ARRAY_SIZE(dmic_map));\n\n\tif (ret)\n\t\tdev_err(card->dev, \"DMic map addition failed: %d\\n\", ret);\n\n\treturn ret;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "alphascale_asm9260-icoll.h",
+  "hash_id": "ffc81b235add970ea935fbbb6a1283f8fe5edcfdf4511233448b407476a5be8a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/irqchip/alphascale_asm9260-icoll.h",
+  "human_readable_source": " \n \n\n#ifndef _ALPHASCALE_ASM9260_ICOLL_H\n#define _ALPHASCALE_ASM9260_ICOLL_H\n\n#define ASM9260_NUM_IRQS\t\t64\n \n\n#define ASM9260_HW_ICOLL_VECTOR\t\t\t\t0x0000\n \n\n \n#define ASM9260_HW_ICOLL_LEVELACK\t\t\t0x0010\n#define ASM9260_BM_LEVELn(nr)\t\t\t\tBIT(nr)\n\n#define ASM9260_HW_ICOLL_CTRL\t\t\t\t0x0020\n \n#define ASM9260_BM_CTRL_SFTRST\t\t\t\tBIT(31)\n#define ASM9260_BM_CTRL_CLKGATE\t\t\t\tBIT(30)\n \n#define ASM9260_BM_CTRL_NO_NESTING\t\t\tBIT(19)\n \n#define ASM9260_BM_CTRL_ARM_RSE_MODE\t\t\tBIT(18)\n#define ASM9260_BM_CTRL_IRQ_ENABLE\t\t\tBIT(16)\n\n#define ASM9260_HW_ICOLL_STAT_OFFSET\t\t\t0x0030\n \n\n \n#define ASM9260_HW_ICOLL_RAW0\t\t\t\t0x0040\n#define ASM9260_HW_ICOLL_RAW1\t\t\t\t0x0050\n\n#define ASM9260_HW_ICOLL_INTERRUPT0\t\t\t0x0060\n#define ASM9260_HW_ICOLL_INTERRUPTn(n)\t\t(0x0060 + ((n) >> 2) * 0x10)\n \n#define ASM9260_BM_INT_PRIORITY_MASK\t\t\t0x3\n#define ASM9260_BM_INT_ENABLE\t\t\t\tBIT(2)\n#define ASM9260_BM_INT_SOFTIRQ\t\t\t\tBIT(3)\n\n#define ASM9260_BM_ICOLL_INTERRUPTn_SHIFT(n)\t\t(((n) & 0x3) << 3)\n#define ASM9260_BM_ICOLL_INTERRUPTn_ENABLE(n)\t\t(1 << (2 + \\\n\t\t\tASM9260_BM_ICOLL_INTERRUPTn_SHIFT(n)))\n\n#define ASM9260_HW_ICOLL_VBASE\t\t\t\t0x0160\n \n\n#define ASM9260_HW_ICOLL_CLEAR0\t\t\t\t0x01d0\n#define ASM9260_HW_ICOLL_CLEAR1\t\t\t\t0x01e0\n#define ASM9260_HW_ICOLL_CLEARn(n)\t\t\t(((n >> 5) * 0x10) \\\n\t\t\t\t\t\t\t+ SET_REG)\n#define ASM9260_BM_CLEAR_BIT(n)\t\t\t\tBIT(n & 0x1f)\n\n \n#define ASM9260_HW_ICOLL_UNDEF_VECTOR\t\t\t0x01f0\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pmagb-b-fb.h",
+  "hash_id": "0892249e18a1c78f55ba3d8d49a0fbbf1727a10594e04c5136360d2295026522",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/pmagb-b-fb.h",
+  "human_readable_source": " \n\n \n#define PMAGB_B_ROM\t\t0x000000\t \n#define PMAGB_B_SFB\t\t0x100000\t \n#define PMAGB_B_GP0\t\t0x140000\t \n#define PMAGB_B_GP1\t\t0x180000\t \n#define PMAGB_B_BT459\t\t0x1c0000\t \n#define PMAGB_B_FBMEM\t\t0x200000\t \n#define PMAGB_B_SIZE\t\t0x400000\t \n\n \n#define SFB_REG_VID_HOR\t\t0x64\t\t \n#define SFB_REG_VID_VER\t\t0x68\t\t \n#define SFB_REG_VID_BASE\t0x6c\t\t \n#define SFB_REG_TCCLK_COUNT\t0x78\t\t \n#define SFB_REG_VIDCLK_COUNT\t0x7c\t\t \n\n \n#define SFB_VID_HOR_BP_SHIFT\t0x15\t\t \n#define SFB_VID_HOR_BP_MASK\t0x7f\n#define SFB_VID_HOR_SYN_SHIFT\t0x0e\t\t \n#define SFB_VID_HOR_SYN_MASK\t0x7f\n#define SFB_VID_HOR_FP_SHIFT\t0x09\t\t \n#define SFB_VID_HOR_FP_MASK\t0x1f\n#define SFB_VID_HOR_PIX_SHIFT\t0x00\t\t \n#define SFB_VID_HOR_PIX_MASK\t0x1ff\n\n \n#define SFB_VID_VER_BP_SHIFT\t0x16\t\t \n#define SFB_VID_VER_BP_MASK\t0x3f\n#define SFB_VID_VER_SYN_SHIFT\t0x10\t\t \n#define SFB_VID_VER_SYN_MASK\t0x3f\n#define SFB_VID_VER_FP_SHIFT\t0x0b\t\t \n#define SFB_VID_VER_FP_MASK\t0x1f\n#define SFB_VID_VER_SL_SHIFT\t0x00\t\t \n#define SFB_VID_VER_SL_MASK\t0x7ff\n\n \n#define SFB_VID_BASE_MASK\t0x1ff\t\t \n\n \n#define BT459_ADDR_LO\t\t0x0\t\t \n#define BT459_ADDR_HI\t\t0x4\t\t \n#define BT459_DATA\t\t0x8\t\t \n#define BT459_CMAP\t\t0xc\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

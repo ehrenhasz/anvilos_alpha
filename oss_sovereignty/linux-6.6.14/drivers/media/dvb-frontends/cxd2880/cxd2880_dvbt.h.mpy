@@ -1,0 +1,9 @@
+{
+  "module_name": "cxd2880_dvbt.h",
+  "hash_id": "058ad9c5db37f546fe355447c3fbcef64dc33d0f0652ed68ec6315b952912b31",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cxd2880/cxd2880_dvbt.h",
+  "human_readable_source": " \n \n\n#ifndef CXD2880_DVBT_H\n#define CXD2880_DVBT_H\n\n#include \"cxd2880_common.h\"\n\nenum cxd2880_dvbt_constellation {\n\tCXD2880_DVBT_CONSTELLATION_QPSK,\n\tCXD2880_DVBT_CONSTELLATION_16QAM,\n\tCXD2880_DVBT_CONSTELLATION_64QAM,\n\tCXD2880_DVBT_CONSTELLATION_RESERVED_3\n};\n\nenum cxd2880_dvbt_hierarchy {\n\tCXD2880_DVBT_HIERARCHY_NON,\n\tCXD2880_DVBT_HIERARCHY_1,\n\tCXD2880_DVBT_HIERARCHY_2,\n\tCXD2880_DVBT_HIERARCHY_4\n};\n\nenum cxd2880_dvbt_coderate {\n\tCXD2880_DVBT_CODERATE_1_2,\n\tCXD2880_DVBT_CODERATE_2_3,\n\tCXD2880_DVBT_CODERATE_3_4,\n\tCXD2880_DVBT_CODERATE_5_6,\n\tCXD2880_DVBT_CODERATE_7_8,\n\tCXD2880_DVBT_CODERATE_RESERVED_5,\n\tCXD2880_DVBT_CODERATE_RESERVED_6,\n\tCXD2880_DVBT_CODERATE_RESERVED_7\n};\n\nenum cxd2880_dvbt_guard {\n\tCXD2880_DVBT_GUARD_1_32,\n\tCXD2880_DVBT_GUARD_1_16,\n\tCXD2880_DVBT_GUARD_1_8,\n\tCXD2880_DVBT_GUARD_1_4\n};\n\nenum cxd2880_dvbt_mode {\n\tCXD2880_DVBT_MODE_2K,\n\tCXD2880_DVBT_MODE_8K,\n\tCXD2880_DVBT_MODE_RESERVED_2,\n\tCXD2880_DVBT_MODE_RESERVED_3\n};\n\nenum cxd2880_dvbt_profile {\n\tCXD2880_DVBT_PROFILE_HP = 0,\n\tCXD2880_DVBT_PROFILE_LP\n};\n\nstruct cxd2880_dvbt_tpsinfo {\n\tenum cxd2880_dvbt_constellation constellation;\n\tenum cxd2880_dvbt_hierarchy hierarchy;\n\tenum cxd2880_dvbt_coderate rate_hp;\n\tenum cxd2880_dvbt_coderate rate_lp;\n\tenum cxd2880_dvbt_guard guard;\n\tenum cxd2880_dvbt_mode mode;\n\tu8 fnum;\n\tu8 length_indicator;\n\tu16 cell_id;\n\tu8 cell_id_ok;\n\tu8 reserved_even;\n\tu8 reserved_odd;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

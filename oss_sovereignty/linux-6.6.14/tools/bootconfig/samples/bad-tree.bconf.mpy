@@ -1,0 +1,9 @@
+{
+  "module_name": "bad-tree.bconf",
+  "hash_id": "cae0e4fb507c6fbf07cfc2b073e3bc6e6a5275cc90bc9411abf8d69fc4cd94a0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bootconfig/samples/bad-tree.bconf",
+  "human_readable_source": "# brace is not closing\ntree {\n  node {\n    value = 1\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

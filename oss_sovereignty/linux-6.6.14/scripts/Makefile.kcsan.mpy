@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.kcsan",
+  "hash_id": "3a9a18e26106da61386774a5747b6bc95ecab99a9eef18099a6f2c0a887ae6b6",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/Makefile.kcsan",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# GCC and Clang accept backend options differently. Do not wrap in cc-option,\n# because Clang accepts \"--param\" even if it is unused.\nifdef CONFIG_CC_IS_CLANG\ncc-param = -mllvm -$(1)\nelse\ncc-param = --param $(1)\nendif\n\n# Keep most options here optional, to allow enabling more compilers if absence\n# of some options does not break KCSAN nor causes false positive reports.\nkcsan-cflags := -fsanitize=thread -fno-optimize-sibling-calls \\\n\t$(call cc-option,$(call cc-param,tsan-compound-read-before-write=1),$(call cc-option,$(call cc-param,tsan-instrument-read-before-write=1))) \\\n\t$(call cc-param,tsan-distinguish-volatile=1)\n\nifdef CONFIG_CC_IS_GCC\n# GCC started warning about operations unsupported by the TSan runtime. But\n# KCSAN != TSan, so just ignore these warnings.\nkcsan-cflags += -Wno-tsan\nendif\n\nifndef CONFIG_KCSAN_WEAK_MEMORY\nkcsan-cflags += $(call cc-option,$(call cc-param,tsan-instrument-func-entry-exit=0))\nendif\n\nexport CFLAGS_KCSAN := $(kcsan-cflags)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

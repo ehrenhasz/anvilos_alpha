@@ -1,0 +1,9 @@
+{
+  "module_name": "color_table.h",
+  "hash_id": "bc56f3a3464bed98c656f61ee0894bd2f34a835e835d5b4e8a984e5a931aad8b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/modules/color/color_table.h",
+  "human_readable_source": " \n\n\n#ifndef COLOR_MOD_COLOR_TABLE_H_\n#define COLOR_MOD_COLOR_TABLE_H_\n\n#include \"dc_types.h\"\n\n#define NUM_PTS_IN_REGION 16\n#define NUM_REGIONS 32\n#define MAX_HW_POINTS (NUM_PTS_IN_REGION*NUM_REGIONS)\n\nenum table_type {\n\ttype_pq_table,\n\ttype_de_pq_table\n};\n\nbool mod_color_is_table_init(enum table_type type);\n\nstruct fixed31_32 *mod_color_get_table(enum table_type type);\n\nvoid mod_color_set_table_init_state(enum table_type type, bool state);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

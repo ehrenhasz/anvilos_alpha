@@ -1,0 +1,9 @@
+{
+  "module_name": "chown.x",
+  "hash_id": "ae387f6ac8f46e85cab53d40084c6801fba8cdf8ef6ad03964dc049e3ba55e2f",
+  "original_prompt": "Ingested from coreutils-9.4/man/chown.x",
+  "human_readable_source": "'\\\" Copyright (C) 1998-2023 Free Software Foundation, Inc.\n'\\\"\n'\\\" This is free software.  You may redistribute copies of it under the terms\n'\\\" of the GNU General Public License <https://www.gnu.org/licenses/gpl.html>.\n'\\\" There is NO WARRANTY, to the extent permitted by law.\n[NAME]\nchown \\- change file owner and group\n[DESCRIPTION]\nThis manual page\ndocuments the GNU version of\n.BR chown .\n.B chown\nchanges the user and/or group ownership of each given file.  If\nonly an owner (a user name or numeric user ID) is given, that user is made the\nowner of each given file, and the files' group is not changed.  If the\nowner is followed by a colon and a group name (or numeric group ID),\nwith no spaces between them, the group ownership of the files is\nchanged as well.  If a colon but no group name follows the user name,\nthat user is made the owner of the files and the group of the files is\nchanged to that user's login group.  If the colon and group are given,\nbut the owner is omitted, only the group of the files is changed;\nin this case,\n.B chown\nperforms the same function as\n.BR chgrp .\nIf only a colon is given, or if the entire operand is empty, neither the\nowner nor the group is changed.\n.SH OPTIONS\n[SEE ALSO]\nchown(2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

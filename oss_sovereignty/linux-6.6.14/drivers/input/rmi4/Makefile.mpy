@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3718a541a0cf902d5571b2980692fb3bd1fd24bdf098ce1158c104e9fc858415",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/rmi4/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_RMI4_CORE) += rmi_core.o\nrmi_core-y := rmi_bus.o rmi_driver.o rmi_f01.o\n\nrmi_core-$(CONFIG_RMI4_2D_SENSOR) += rmi_2d_sensor.o\n\n# Function drivers\nrmi_core-$(CONFIG_RMI4_F03) += rmi_f03.o\nrmi_core-$(CONFIG_RMI4_F11) += rmi_f11.o\nrmi_core-$(CONFIG_RMI4_F12) += rmi_f12.o\nrmi_core-$(CONFIG_RMI4_F30) += rmi_f30.o\nrmi_core-$(CONFIG_RMI4_F34) += rmi_f34.o rmi_f34v7.o\nrmi_core-$(CONFIG_RMI4_F3A) += rmi_f3a.o\nrmi_core-$(CONFIG_RMI4_F54) += rmi_f54.o\nrmi_core-$(CONFIG_RMI4_F55) += rmi_f55.o\n\n# Transports\nobj-$(CONFIG_RMI4_I2C) += rmi_i2c.o\nobj-$(CONFIG_RMI4_SPI) += rmi_spi.o\nobj-$(CONFIG_RMI4_SMB) += rmi_smbus.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

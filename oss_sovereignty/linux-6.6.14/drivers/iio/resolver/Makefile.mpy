@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6a10132f0331957af5b40b8f5add3707363f1ce87f83e5bdcbac4e0de046cc17",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/resolver/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for Resolver/Synchro drivers\n#\n\nobj-$(CONFIG_AD2S90) += ad2s90.o\nobj-$(CONFIG_AD2S1200) += ad2s1200.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

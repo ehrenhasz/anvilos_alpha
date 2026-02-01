@@ -1,0 +1,9 @@
+{
+  "module_name": "pl111_nomadik.c",
+  "hash_id": "13cff1e7b4086ba464775f283b9f5e65f3462c4288aaaeecab21b5a559202f39",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/pl111/pl111_nomadik.c",
+  "human_readable_source": "\n#include <linux/device.h>\n#include <linux/regmap.h>\n#include <linux/mfd/syscon.h>\n#include <linux/bitops.h>\n#include <linux/module.h>\n#include \"pl111_nomadik.h\"\n\n#define PMU_CTRL_OFFSET 0x0000\n#define PMU_CTRL_LCDNDIF BIT(26)\n\nvoid pl111_nomadik_init(struct device *dev)\n{\n\tstruct regmap *pmu_regmap;\n\n\t \n\tpmu_regmap =\n\t\tsyscon_regmap_lookup_by_compatible(\"stericsson,nomadik-pmu\");\n\tif (IS_ERR(pmu_regmap))\n\t\treturn;\n\n\t \n\tregmap_update_bits(pmu_regmap,\n\t\t\t   PMU_CTRL_OFFSET,\n\t\t\t   PMU_CTRL_LCDNDIF,\n\t\t\t   0);\n\tdev_info(dev, \"set Nomadik PMU mux to CLCD mode\\n\");\n}\nEXPORT_SYMBOL_GPL(pl111_nomadik_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-mt8183-ipu1.c",
+  "hash_id": "bed4a1b65742fcc4738dd94326c98fcf85f2de0ed44cf3309343d6503a4d3b14",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mediatek/clk-mt8183-ipu1.c",
+  "human_readable_source": "\n\n\n\n\n#include <linux/clk-provider.h>\n#include <linux/platform_device.h>\n\n#include \"clk-mtk.h\"\n#include \"clk-gate.h\"\n\n#include <dt-bindings/clock/mt8183-clk.h>\n\nstatic const struct mtk_gate_regs ipu_core1_cg_regs = {\n\t.set_ofs = 0x4,\n\t.clr_ofs = 0x8,\n\t.sta_ofs = 0x0,\n};\n\n#define GATE_IPU_CORE1(_id, _name, _parent, _shift)\t\t\t\\\n\tGATE_MTK(_id, _name, _parent, &ipu_core1_cg_regs, _shift,\t\\\n\t\t&mtk_clk_gate_ops_setclr)\n\nstatic const struct mtk_gate ipu_core1_clks[] = {\n\tGATE_IPU_CORE1(CLK_IPU_CORE1_JTAG, \"ipu_core1_jtag\", \"dsp_sel\", 0),\n\tGATE_IPU_CORE1(CLK_IPU_CORE1_AXI, \"ipu_core1_axi\", \"dsp_sel\", 1),\n\tGATE_IPU_CORE1(CLK_IPU_CORE1_IPU, \"ipu_core1_ipu\", \"dsp_sel\", 2),\n};\n\nstatic const struct mtk_clk_desc ipu_core1_desc = {\n\t.clks = ipu_core1_clks,\n\t.num_clks = ARRAY_SIZE(ipu_core1_clks),\n};\n\nstatic const struct of_device_id of_match_clk_mt8183_ipu_core1[] = {\n\t{\n\t\t.compatible = \"mediatek,mt8183-ipu_core1\",\n\t\t.data = &ipu_core1_desc,\n\t}, {\n\t\t \n\t}\n};\nMODULE_DEVICE_TABLE(of, of_match_clk_mt8183_ipu_core1);\n\nstatic struct platform_driver clk_mt8183_ipu_core1_drv = {\n\t.probe = mtk_clk_simple_probe,\n\t.remove_new = mtk_clk_simple_remove,\n\t.driver = {\n\t\t.name = \"clk-mt8183-ipu_core1\",\n\t\t.of_match_table = of_match_clk_mt8183_ipu_core1,\n\t},\n};\nmodule_platform_driver(clk_mt8183_ipu_core1_drv);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

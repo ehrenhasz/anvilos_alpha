@@ -1,0 +1,9 @@
+{
+  "module_name": "emitnarm.c",
+  "hash_id": "72e476a423fd177d9cb090a795162e7a7f158ebcb8bd499ed2a102f9fb73e06b",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/emitnarm.c",
+  "human_readable_source": "\n\n#include \"py/mpconfig.h\"\n\n#if MICROPY_EMIT_ARM\n\n\n#define GENERIC_ASM_API (1)\n#include \"py/asmarm.h\"\n\n\n#define NLR_BUF_IDX_LOCAL_1 (3) \n\n#define N_ARM (1)\n#define EXPORT_FUN(name) emit_native_arm_##name\n#include \"py/emitnative.c\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

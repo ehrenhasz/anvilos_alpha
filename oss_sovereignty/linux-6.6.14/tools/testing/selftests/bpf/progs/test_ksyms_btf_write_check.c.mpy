@@ -1,0 +1,9 @@
+{
+  "module_name": "test_ksyms_btf_write_check.c",
+  "hash_id": "c280e061bec1d7550ad1518a80bca56140cbffd9f77705583fc7e3ab75da9760",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_ksyms_btf_write_check.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n\n#include <bpf/bpf_helpers.h>\n\nextern const int bpf_prog_active __ksym;  \n\nSEC(\"raw_tp/sys_enter\")\nint handler1(const void *ctx)\n{\n\tint *active;\n\t__u32 cpu;\n\n\tcpu = bpf_get_smp_processor_id();\n\tactive = (int *)bpf_per_cpu_ptr(&bpf_prog_active, cpu);\n\tif (active) {\n\t\t \n\t\t \n\t\t*(volatile int *)active = -1;\n\t}\n\n\treturn 0;\n}\n\n__noinline int write_active(int *p)\n{\n\treturn p ? (*p = 42) : 0;\n}\n\nSEC(\"raw_tp/sys_enter\")\nint handler2(const void *ctx)\n{\n\tint *active;\n\n\tactive = bpf_this_cpu_ptr(&bpf_prog_active);\n\twrite_active(active);\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xilinx-vipp.h",
+  "hash_id": "1bd1e2b4e4ebbdda9937dea5111422d0c81d7e24bddcccbfe4ef01bd9ad4ef00",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/xilinx/xilinx-vipp.h",
+  "human_readable_source": " \n \n\n#ifndef __XILINX_VIPP_H__\n#define __XILINX_VIPP_H__\n\n#include <linux/list.h>\n#include <linux/mutex.h>\n#include <media/media-device.h>\n#include <media/v4l2-async.h>\n#include <media/v4l2-ctrls.h>\n#include <media/v4l2-device.h>\n\n \nstruct xvip_composite_device {\n\tstruct v4l2_device v4l2_dev;\n\tstruct media_device media_dev;\n\tstruct device *dev;\n\n\tstruct v4l2_async_notifier notifier;\n\n\tstruct list_head dmas;\n\tu32 v4l2_caps;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "utils.h",
+  "hash_id": "624632f704c3fba16fa694087c9328b0933275980852115aafc091c891accb30",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/utils.h",
+  "human_readable_source": " \n \n#ifndef _CRYPTO_UTILS_H\n#define _CRYPTO_UTILS_H\n\n#include <asm/unaligned.h>\n#include <linux/compiler_attributes.h>\n#include <linux/types.h>\n\nvoid __crypto_xor(u8 *dst, const u8 *src1, const u8 *src2, unsigned int size);\n\nstatic inline void crypto_xor(u8 *dst, const u8 *src, unsigned int size)\n{\n\tif (IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) &&\n\t    __builtin_constant_p(size) &&\n\t    (size % sizeof(unsigned long)) == 0) {\n\t\tunsigned long *d = (unsigned long *)dst;\n\t\tunsigned long *s = (unsigned long *)src;\n\t\tunsigned long l;\n\n\t\twhile (size > 0) {\n\t\t\tl = get_unaligned(d) ^ get_unaligned(s++);\n\t\t\tput_unaligned(l, d++);\n\t\t\tsize -= sizeof(unsigned long);\n\t\t}\n\t} else {\n\t\t__crypto_xor(dst, dst, src, size);\n\t}\n}\n\nstatic inline void crypto_xor_cpy(u8 *dst, const u8 *src1, const u8 *src2,\n\t\t\t\t  unsigned int size)\n{\n\tif (IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) &&\n\t    __builtin_constant_p(size) &&\n\t    (size % sizeof(unsigned long)) == 0) {\n\t\tunsigned long *d = (unsigned long *)dst;\n\t\tunsigned long *s1 = (unsigned long *)src1;\n\t\tunsigned long *s2 = (unsigned long *)src2;\n\t\tunsigned long l;\n\n\t\twhile (size > 0) {\n\t\t\tl = get_unaligned(s1++) ^ get_unaligned(s2++);\n\t\t\tput_unaligned(l, d++);\n\t\t\tsize -= sizeof(unsigned long);\n\t\t}\n\t} else {\n\t\t__crypto_xor(dst, src1, src2, size);\n\t}\n}\n\nnoinline unsigned long __crypto_memneq(const void *a, const void *b, size_t size);\n\n \nstatic inline int crypto_memneq(const void *a, const void *b, size_t size)\n{\n\treturn __crypto_memneq(a, b, size) != 0UL ? 1 : 0;\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

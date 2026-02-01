@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_nfacct.h",
+  "hash_id": "111c161675af4f33905e5096a5a15c15dc4aca7e8c87fff68c7636db69511f2a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_nfacct.h",
+  "human_readable_source": " \n#ifndef _XT_NFACCT_MATCH_H\n#define _XT_NFACCT_MATCH_H\n\n#include <linux/netfilter/nfnetlink_acct.h>\n\nstruct nf_acct;\n\nstruct xt_nfacct_match_info {\n\tchar\t\tname[NFACCT_NAME_MAX];\n\tstruct nf_acct\t*nfacct;\n};\n\nstruct xt_nfacct_match_info_v1 {\n\tchar\t\tname[NFACCT_NAME_MAX];\n\tstruct nf_acct\t*nfacct __attribute__((aligned(8)));\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "f6aa6acb152812934ae842970fe7a9c56a1e991534b8964ebb106750180e163e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/vpu/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig VIDEO_MEDIATEK_VPU\n\ttristate \"Mediatek Video Processor Unit\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on VIDEO_DEV\n\tdepends on ARCH_MEDIATEK || COMPILE_TEST\n\thelp\n\t    This driver provides downloading VPU firmware and\n\t    communicating with VPU. This driver for hw video\n\t    codec embedded in Mediatek's MT8173 SOCs. It is able\n\t    to handle video decoding/encoding in a range of formats.\n\n\t    To compile this driver as a module, choose M here: the\n\t    module will be called mtk-vpu.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

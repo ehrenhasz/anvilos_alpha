@@ -1,0 +1,9 @@
+{
+  "module_name": "vdev_rebuild.h",
+  "hash_id": "60482ae1247a81d807c4144fa7bfe4cf3065d3616cc07d5d7873ef401cf02bfa",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/vdev_rebuild.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_VDEV_REBUILD_H\n#define\t_SYS_VDEV_REBUILD_H\n\n#include <sys/spa.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \n#define\tREBUILD_PHYS_ENTRIES\t12\n\n \ntypedef struct vdev_rebuild_phys {\n\tuint64_t\tvrp_rebuild_state;\t \n\tuint64_t\tvrp_last_offset;\t \n\tuint64_t\tvrp_min_txg;\t\t \n\tuint64_t\tvrp_max_txg;\t\t \n\tuint64_t\tvrp_start_time;\t\t \n\tuint64_t\tvrp_end_time;\t\t \n\tuint64_t\tvrp_scan_time_ms;\t \n\tuint64_t\tvrp_bytes_scanned;\t \n\tuint64_t\tvrp_bytes_issued;\t \n\tuint64_t\tvrp_bytes_rebuilt;\t \n\tuint64_t\tvrp_bytes_est;\t\t \n\tuint64_t\tvrp_errors;\t\t \n} vdev_rebuild_phys_t;\n\n \ntypedef struct vdev_rebuild {\n\tvdev_t\t\t*vr_top_vdev;\t\t \n\tmetaslab_t\t*vr_scan_msp;\t\t \n\trange_tree_t\t*vr_scan_tree;\t\t \n\tkmutex_t\tvr_io_lock;\t\t \n\tkcondvar_t\tvr_io_cv;\t\t \n\n\t \n\tuint64_t\tvr_scan_offset[TXG_SIZE];\n\tuint64_t\tvr_prev_scan_time_ms;\t \n\tuint64_t\tvr_bytes_inflight_max;\t \n\tuint64_t\tvr_bytes_inflight;\t \n\n\t \n\tuint64_t\tvr_pass_start_time;\n\tuint64_t\tvr_pass_bytes_scanned;\n\tuint64_t\tvr_pass_bytes_issued;\n\tuint64_t\tvr_pass_bytes_skipped;\n\n\t \n\tvdev_rebuild_phys_t vr_rebuild_phys;\n} vdev_rebuild_t;\n\nboolean_t vdev_rebuild_active(vdev_t *);\n\nint vdev_rebuild_load(vdev_t *);\nvoid vdev_rebuild(vdev_t *);\nvoid vdev_rebuild_stop_wait(vdev_t *);\nvoid vdev_rebuild_stop_all(spa_t *);\nvoid vdev_rebuild_restart(spa_t *);\nvoid vdev_rebuild_clear_sync(void *, dmu_tx_t *);\nint vdev_rebuild_get_stats(vdev_t *, vdev_rebuild_stat_t *);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

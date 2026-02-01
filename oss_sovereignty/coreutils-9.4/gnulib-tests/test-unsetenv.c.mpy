@@ -1,0 +1,9 @@
+{
+  "module_name": "test-unsetenv.c",
+  "hash_id": "9828344d3fb6dc3e7d8c4b9cd3b350c51e7faeff358d461226f03435be04f610",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-unsetenv.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdlib.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (unsetenv, int, (char const *));\n\n#include <errno.h>\n#include <string.h>\n#include <unistd.h>\n\n#include \"macros.h\"\n\nint\nmain (void)\n{\n   \n  static char entry[] = \"b=2\";\n\n   \n  ASSERT (putenv ((char *) \"a=1\") == 0);\n  ASSERT (putenv (entry) == 0);\n  entry[0] = 'a';  \n  ASSERT (unsetenv (\"a\") == 0);  \n  ASSERT (getenv (\"a\") == NULL);\n  ASSERT (unsetenv (\"a\") == 0);\n\n   \n  errno = 0;\n  ASSERT (unsetenv (\"\") == -1);\n  ASSERT (errno == EINVAL);\n  errno = 0;\n  ASSERT (unsetenv (\"a=b\") == -1);\n  ASSERT (errno == EINVAL);\n#if 0\n  /* glibc and gnulib's implementation guarantee this, but POSIX no\n     longer requires it: http:\n  errno = 0;\n  ASSERT (unsetenv (NULL) == -1);\n  ASSERT (errno == EINVAL);\n#endif\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

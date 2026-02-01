@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "772ff33fe27faeca9cc64b247beb87485c5283c9856ba98c2016c894ad0facd7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/debug.h",
+  "human_readable_source": " \n \n#ifndef __HOST1X_DEBUG_H\n#define __HOST1X_DEBUG_H\n\n#include <linux/debugfs.h>\n#include <linux/seq_file.h>\n\nstruct host1x;\n\nstruct output {\n\tvoid (*fn)(void *ctx, const char *str, size_t len, bool cont);\n\tvoid *ctx;\n\tchar buf[256];\n};\n\nstatic inline void write_to_seqfile(void *ctx, const char *str, size_t len,\n\t\t\t\t    bool cont)\n{\n\tseq_write((struct seq_file *)ctx, str, len);\n}\n\nstatic inline void write_to_printk(void *ctx, const char *str, size_t len,\n\t\t\t\t   bool cont)\n{\n\tif (cont)\n\t\tpr_cont(\"%s\", str);\n\telse\n\t\tpr_info(\"%s\", str);\n}\n\nvoid __printf(2, 3) host1x_debug_output(struct output *o, const char *fmt, ...);\nvoid __printf(2, 3) host1x_debug_cont(struct output *o, const char *fmt, ...);\n\nextern unsigned int host1x_debug_trace_cmdbuf;\n\nvoid host1x_debug_init(struct host1x *host1x);\nvoid host1x_debug_deinit(struct host1x *host1x);\nvoid host1x_debug_dump(struct host1x *host1x);\nvoid host1x_debug_dump_syncpts(struct host1x *host1x);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fc_frame.c",
+  "hash_id": "c391d091544a494a6e746c2e7fd4b4fd1d139b91c0ed9f0620069030f6dd15e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/libfc/fc_frame.c",
+  "human_readable_source": "\n \n\n \n#include <linux/module.h>\n#include <linux/kernel.h>\n#include <linux/skbuff.h>\n#include <linux/crc32.h>\n#include <linux/gfp.h>\n\n#include <scsi/fc_frame.h>\n\n \nu32 fc_frame_crc_check(struct fc_frame *fp)\n{\n\tu32 crc;\n\tu32 error;\n\tconst u8 *bp;\n\tunsigned int len;\n\n\tWARN_ON(!fc_frame_is_linear(fp));\n\tfr_flags(fp) &= ~FCPHF_CRC_UNCHECKED;\n\tlen = (fr_len(fp) + 3) & ~3;\t \n\tbp = (const u8 *) fr_hdr(fp);\n\tcrc = ~crc32(~0, bp, len);\n\terror = crc ^ fr_crc(fp);\n\treturn error;\n}\nEXPORT_SYMBOL(fc_frame_crc_check);\n\n \nstruct fc_frame *_fc_frame_alloc(size_t len)\n{\n\tstruct fc_frame *fp;\n\tstruct sk_buff *skb;\n\n\tWARN_ON((len % sizeof(u32)) != 0);\n\tlen += sizeof(struct fc_frame_header);\n\tskb = alloc_skb_fclone(len + FC_FRAME_HEADROOM + FC_FRAME_TAILROOM +\n\t\t\t       NET_SKB_PAD, GFP_ATOMIC);\n\tif (!skb)\n\t\treturn NULL;\n\tskb_reserve(skb, NET_SKB_PAD + FC_FRAME_HEADROOM);\n\tfp = (struct fc_frame *) skb;\n\tfc_frame_init(fp);\n\tskb_put(skb, len);\n\treturn fp;\n}\nEXPORT_SYMBOL(_fc_frame_alloc);\n\nstruct fc_frame *fc_frame_alloc_fill(struct fc_lport *lp, size_t payload_len)\n{\n\tstruct fc_frame *fp;\n\tsize_t fill;\n\n\tfill = payload_len % 4;\n\tif (fill != 0)\n\t\tfill = 4 - fill;\n\tfp = _fc_frame_alloc(payload_len + fill);\n\tif (fp) {\n\t\tmemset((char *) fr_hdr(fp) + payload_len, 0, fill);\n\t\t \n\t\tskb_trim(fp_skb(fp),\n\t\t\t payload_len + sizeof(struct fc_frame_header));\n\t}\n\treturn fp;\n}\nEXPORT_SYMBOL(fc_frame_alloc_fill);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

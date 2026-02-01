@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fd4c4bab8e66c21b4e2d5b216d9bb64992a8583e785a1a017ceef541d5997fc6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/xilinx_hwicap/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Xilinx OPB hwicap driver\n#\n\nobj-$(CONFIG_XILINX_HWICAP) += xilinx_hwicap_m.o \n \nxilinx_hwicap_m-y := xilinx_hwicap.o fifo_icap.o buffer_icap.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

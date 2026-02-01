@@ -1,0 +1,9 @@
+{
+  "module_name": "ioctl.h",
+  "hash_id": "682f176f2a700cb8ccf46a719080579be2f27c9acd8bd9ba0f822f4aec394e6b",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/ioctl.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_IOCTL_H\n#define _ASM_GENERIC_IOCTL_H\n\n#include <uapi/asm-generic/ioctl.h>\n\n#ifdef __CHECKER__\n#define _IOC_TYPECHECK(t) (sizeof(t))\n#else\n \nextern unsigned int __invalid_size_argument_for_IOC;\n#define _IOC_TYPECHECK(t) \\\n\t((sizeof(t) == sizeof(t[1]) && \\\n\t  sizeof(t) < (1 << _IOC_SIZEBITS)) ? \\\n\t  sizeof(t) : __invalid_size_argument_for_IOC)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

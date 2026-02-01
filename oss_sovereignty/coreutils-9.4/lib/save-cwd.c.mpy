@@ -1,0 +1,9 @@
+{
+  "module_name": "save-cwd.c",
+  "hash_id": "2d22676f0803d960347c630556dd96dcba0614bcacf7020fbddd759b5dd9ccd2",
+  "original_prompt": "Ingested from coreutils-9.4/lib/save-cwd.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"save-cwd.h\"\n\n#include <errno.h>\n#include <fcntl.h>\n#include <stdio.h>\n#include <stdlib.h>\n\n#include \"chdir-long.h\"\n#include \"unistd--.h\"\n\n#if GNULIB_FCNTL_SAFER\n# include \"fcntl--.h\"\n#else\n# define GNULIB_FCNTL_SAFER 0\n#endif\n\n \n\nint\nsave_cwd (struct saved_cwd *cwd)\n{\n  cwd->name = NULL;\n\n  cwd->desc = open (\".\", O_SEARCH | O_CLOEXEC);\n  if (!GNULIB_FCNTL_SAFER)\n    cwd->desc = fd_safer_flag (cwd->desc, O_CLOEXEC);\n  if (cwd->desc < 0)\n    {\n      cwd->name = getcwd (NULL, 0);\n      return cwd->name ? 0 : -1;\n    }\n\n  return 0;\n}\n\n \n\nint\nrestore_cwd (const struct saved_cwd *cwd)\n{\n  if (0 <= cwd->desc)\n    return fchdir (cwd->desc);\n  else\n    return chdir_long (cwd->name);\n}\n\nvoid\nfree_cwd (struct saved_cwd *cwd)\n{\n  if (cwd->desc >= 0)\n    close (cwd->desc);\n  free (cwd->name);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

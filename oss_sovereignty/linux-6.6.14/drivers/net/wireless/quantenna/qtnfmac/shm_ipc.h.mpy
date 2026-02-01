@@ -1,0 +1,9 @@
+{
+  "module_name": "shm_ipc.h",
+  "hash_id": "35a71138861c5640706a490202e2d2273c6e823ba7aa112905ea5d5785637af5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/quantenna/qtnfmac/shm_ipc.h",
+  "human_readable_source": " \n \n\n#ifndef _QTN_FMAC_SHM_IPC_H_\n#define _QTN_FMAC_SHM_IPC_H_\n\n#include <linux/workqueue.h>\n#include <linux/completion.h>\n#include <linux/mutex.h>\n#include <linux/spinlock.h>\n\n#include \"shm_ipc_defs.h\"\n\n#define QTN_SHM_IPC_ACK_TIMEOUT\t\t(2 * HZ)\n\nstruct qtnf_shm_ipc_int {\n\tvoid (*fn)(void *arg);\n\tvoid *arg;\n};\n\nstruct qtnf_shm_ipc_rx_callback {\n\tvoid (*fn)(void *arg, const u8 __iomem *buf, size_t len);\n\tvoid *arg;\n};\n\nenum qtnf_shm_ipc_direction {\n\tQTNF_SHM_IPC_OUTBOUND\t\t= BIT(0),\n\tQTNF_SHM_IPC_INBOUND\t\t= BIT(1),\n};\n\nstruct qtnf_shm_ipc {\n\tstruct qtnf_shm_ipc_region __iomem *shm_region;\n\tenum qtnf_shm_ipc_direction direction;\n\tsize_t tx_packet_count;\n\tsize_t rx_packet_count;\n\n\tsize_t tx_timeout_count;\n\n\tu8 waiting_for_ack;\n\n\tstruct qtnf_shm_ipc_int interrupt;\n\tstruct qtnf_shm_ipc_rx_callback rx_callback;\n\n\tvoid (*irq_handler)(struct qtnf_shm_ipc *ipc);\n\n\tstruct workqueue_struct *workqueue;\n\tstruct work_struct irq_work;\n\tstruct completion tx_completion;\n};\n\nint qtnf_shm_ipc_init(struct qtnf_shm_ipc *ipc,\n\t\t      enum qtnf_shm_ipc_direction direction,\n\t\t      struct qtnf_shm_ipc_region __iomem *shm_region,\n\t\t      struct workqueue_struct *workqueue,\n\t\t      const struct qtnf_shm_ipc_int *interrupt,\n\t\t      const struct qtnf_shm_ipc_rx_callback *rx_callback);\nvoid qtnf_shm_ipc_free(struct qtnf_shm_ipc *ipc);\nint qtnf_shm_ipc_send(struct qtnf_shm_ipc *ipc, const u8 *buf, size_t size);\n\nstatic inline void qtnf_shm_ipc_irq_handler(struct qtnf_shm_ipc *ipc)\n{\n\tipc->irq_handler(ipc);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

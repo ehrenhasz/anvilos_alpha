@@ -1,0 +1,9 @@
+{
+  "module_name": "test-yesno.c",
+  "hash_id": "89615361e8122363f785d67776249eebe0ba99bd271ab01c03ccbb6ac6035e55",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-yesno.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include \"yesno.h\"\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n\n#include \"closein.h\"\n#include \"binary-io.h\"\n\n \nint\nmain (int argc, char **argv)\n{\n  int i = 1;\n\n   \n  atexit (close_stdin);\n   \n  set_binary_mode (0, O_BINARY);\n\n  if (1 < argc)\n    i = atoi (argv[1]);\n  if (!i)\n    {\n      i = 1;\n      close (0);\n    }\n  while (i--)\n    puts (yesno () ? \"Y\" : \"N\");\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

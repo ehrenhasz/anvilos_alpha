@@ -1,0 +1,9 @@
+{
+  "module_name": "tdx.c",
+  "hash_id": "50e2cf3a69753d9a25fd877fad0832ce28a754a8a6ff152f1f0d30d1c372f412",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/compressed/tdx.c",
+  "human_readable_source": "\n\n#include \"../cpuflags.h\"\n#include \"../string.h\"\n#include \"../io.h\"\n#include \"error.h\"\n\n#include <vdso/limits.h>\n#include <uapi/asm/vmx.h>\n\n#include <asm/shared/tdx.h>\n\n \nvoid __tdx_hypercall_failed(void)\n{\n\terror(\"TDVMCALL failed. TDX module bug?\");\n}\n\nstatic inline unsigned int tdx_io_in(int size, u16 port)\n{\n\tstruct tdx_hypercall_args args = {\n\t\t.r10 = TDX_HYPERCALL_STANDARD,\n\t\t.r11 = hcall_func(EXIT_REASON_IO_INSTRUCTION),\n\t\t.r12 = size,\n\t\t.r13 = 0,\n\t\t.r14 = port,\n\t};\n\n\tif (__tdx_hypercall_ret(&args))\n\t\treturn UINT_MAX;\n\n\treturn args.r11;\n}\n\nstatic inline void tdx_io_out(int size, u16 port, u32 value)\n{\n\tstruct tdx_hypercall_args args = {\n\t\t.r10 = TDX_HYPERCALL_STANDARD,\n\t\t.r11 = hcall_func(EXIT_REASON_IO_INSTRUCTION),\n\t\t.r12 = size,\n\t\t.r13 = 1,\n\t\t.r14 = port,\n\t\t.r15 = value,\n\t};\n\n\t__tdx_hypercall(&args);\n}\n\nstatic inline u8 tdx_inb(u16 port)\n{\n\treturn tdx_io_in(1, port);\n}\n\nstatic inline void tdx_outb(u8 value, u16 port)\n{\n\ttdx_io_out(1, port, value);\n}\n\nstatic inline void tdx_outw(u16 value, u16 port)\n{\n\ttdx_io_out(2, port, value);\n}\n\nvoid early_tdx_detect(void)\n{\n\tu32 eax, sig[3];\n\n\tcpuid_count(TDX_CPUID_LEAF_ID, 0, &eax, &sig[0], &sig[2],  &sig[1]);\n\n\tif (memcmp(TDX_IDENT, sig, sizeof(sig)))\n\t\treturn;\n\n\t \n\tpio_ops.f_inb  = tdx_inb;\n\tpio_ops.f_outb = tdx_outb;\n\tpio_ops.f_outw = tdx_outw;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

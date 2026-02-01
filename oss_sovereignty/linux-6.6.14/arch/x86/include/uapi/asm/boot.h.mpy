@@ -1,0 +1,9 @@
+{
+  "module_name": "boot.h",
+  "hash_id": "01bee9866d74883b35b8507ff02e8273d9a24b1cd2382c5625eb4ce6c9edae5d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/boot.h",
+  "human_readable_source": " \n#ifndef _UAPI_ASM_X86_BOOT_H\n#define _UAPI_ASM_X86_BOOT_H\n\n \n#define NORMAL_VGA\t0xffff\t\t \n#define EXTENDED_VGA\t0xfffe\t\t \n#define ASK_VGA\t\t0xfffd\t\t \n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

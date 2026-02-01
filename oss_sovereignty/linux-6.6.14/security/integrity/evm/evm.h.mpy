@@ -1,0 +1,9 @@
+{
+  "module_name": "evm.h",
+  "hash_id": "938713bc07c593d3c7abd82a0e42e2bc87896d3ea341508235650981172559c6",
+  "original_prompt": "Ingested from linux-6.6.14/security/integrity/evm/evm.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEGRITY_EVM_H\n#define __INTEGRITY_EVM_H\n\n#include <linux/xattr.h>\n#include <linux/security.h>\n\n#include \"../integrity.h\"\n\n#define EVM_INIT_HMAC\t0x0001\n#define EVM_INIT_X509\t0x0002\n#define EVM_ALLOW_METADATA_WRITES\t0x0004\n#define EVM_SETUP_COMPLETE 0x80000000  \n\n#define EVM_KEY_MASK (EVM_INIT_HMAC | EVM_INIT_X509)\n#define EVM_INIT_MASK (EVM_INIT_HMAC | EVM_INIT_X509 | EVM_SETUP_COMPLETE | \\\n\t\t       EVM_ALLOW_METADATA_WRITES)\n\nstruct xattr_list {\n\tstruct list_head list;\n\tchar *name;\n\tbool enabled;\n};\n\nextern int evm_initialized;\n\n#define EVM_ATTR_FSUUID\t\t0x0001\n\nextern int evm_hmac_attrs;\n\n \nextern struct list_head evm_config_xattrnames;\n\nstruct evm_digest {\n\tstruct ima_digest_data hdr;\n\tchar digest[IMA_MAX_DIGEST_SIZE];\n} __packed;\n\nint evm_protected_xattr(const char *req_xattr_name);\n\nint evm_init_key(void);\nint evm_update_evmxattr(struct dentry *dentry,\n\t\t\tconst char *req_xattr_name,\n\t\t\tconst char *req_xattr_value,\n\t\t\tsize_t req_xattr_value_len);\nint evm_calc_hmac(struct dentry *dentry, const char *req_xattr_name,\n\t\t  const char *req_xattr_value,\n\t\t  size_t req_xattr_value_len, struct evm_digest *data);\nint evm_calc_hash(struct dentry *dentry, const char *req_xattr_name,\n\t\t  const char *req_xattr_value,\n\t\t  size_t req_xattr_value_len, char type,\n\t\t  struct evm_digest *data);\nint evm_init_hmac(struct inode *inode, const struct xattr *xattrs,\n\t\t  char *hmac_val);\nint evm_init_secfs(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

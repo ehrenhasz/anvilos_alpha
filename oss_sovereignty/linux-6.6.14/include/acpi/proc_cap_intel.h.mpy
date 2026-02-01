@@ -1,0 +1,9 @@
+{
+  "module_name": "proc_cap_intel.h",
+  "hash_id": "99cc522532b42a96f4f72810a645044dd0a43b2c27c5b499cfe07cf2862fa90a",
+  "original_prompt": "Ingested from linux-6.6.14/include/acpi/proc_cap_intel.h",
+  "human_readable_source": " \n\n \n\n#ifndef __PROC_CAP_INTEL_H__\n#define __PROC_CAP_INTEL_H__\n\n#define ACPI_PROC_CAP_P_FFH\t\t\t(0x0001)\n#define ACPI_PROC_CAP_C_C1_HALT\t\t\t(0x0002)\n#define ACPI_PROC_CAP_T_FFH\t\t\t(0x0004)\n#define ACPI_PROC_CAP_SMP_C1PT\t\t\t(0x0008)\n#define ACPI_PROC_CAP_SMP_C2C3\t\t\t(0x0010)\n#define ACPI_PROC_CAP_SMP_P_SWCOORD\t\t(0x0020)\n#define ACPI_PROC_CAP_SMP_C_SWCOORD\t\t(0x0040)\n#define ACPI_PROC_CAP_SMP_T_SWCOORD\t\t(0x0080)\n#define ACPI_PROC_CAP_C_C1_FFH\t\t\t(0x0100)\n#define ACPI_PROC_CAP_C_C2C3_FFH\t\t(0x0200)\n#define ACPI_PROC_CAP_SMP_P_HWCOORD\t\t(0x0800)\n#define ACPI_PROC_CAP_COLLAB_PROC_PERF\t\t(0x1000)\n\n#define ACPI_PROC_CAP_EST_CAPABILITY_SMP\t(ACPI_PROC_CAP_SMP_C1PT | \\\n\t\t\t\t\t\t ACPI_PROC_CAP_C_C1_HALT | \\\n\t\t\t\t\t\t ACPI_PROC_CAP_P_FFH)\n\n#define ACPI_PROC_CAP_EST_CAPABILITY_SWSMP\t(ACPI_PROC_CAP_SMP_C1PT | \\\n\t\t\t\t\t\t ACPI_PROC_CAP_C_C1_HALT | \\\n\t\t\t\t\t\t ACPI_PROC_CAP_SMP_P_SWCOORD | \\\n\t\t\t\t\t\t ACPI_PROC_CAP_SMP_P_HWCOORD | \\\n\t\t\t\t\t\t ACPI_PROC_CAP_P_FFH)\n\n#define ACPI_PROC_CAP_C_CAPABILITY_SMP\t\t(ACPI_PROC_CAP_SMP_C2C3  | \\\n\t\t\t\t\t\t ACPI_PROC_CAP_SMP_C1PT  | \\\n\t\t\t\t\t\t ACPI_PROC_CAP_C_C1_HALT | \\\n\t\t\t\t\t\t ACPI_PROC_CAP_C_C1_FFH  | \\\n\t\t\t\t\t\t ACPI_PROC_CAP_C_C2C3_FFH)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

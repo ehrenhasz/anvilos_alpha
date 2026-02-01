@@ -1,0 +1,9 @@
+{
+  "module_name": "fork_cleanup_test.c",
+  "hash_id": "2dd4f0f2cb1d2978bcdea3d8f0c082d8d42d21c67ad78110ff420147a716e8e8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/ebb/fork_cleanup_test.c",
+  "human_readable_source": "\n \n\n#include <signal.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <stdbool.h>\n#include <sys/types.h>\n#include <sys/wait.h>\n#include <unistd.h>\n#include <setjmp.h>\n\n#include \"ebb.h\"\n\n\n \n\nstatic struct event event;\n\nstatic int child(void)\n{\n\t \n\tFAIL_IF(mfspr(SPRN_BESCR) != 0);\n\tFAIL_IF(mfspr(SPRN_EBBHR) != 0);\n\tFAIL_IF(mfspr(SPRN_EBBRR) != 0);\n\n\tFAIL_IF(catch_sigill(write_pmc1));\n\n\t \n\tFAIL_IF(event_read(&event));\n\n\treturn 0;\n}\n\n \nint fork_cleanup(void)\n{\n\tpid_t pid;\n\n\tSKIP_IF(!ebb_is_supported());\n\n\tevent_init_named(&event, 0x1001e, \"cycles\");\n\tevent_leader_ebb_init(&event);\n\n\tFAIL_IF(event_open(&event));\n\n\tebb_enable_pmc_counting(1);\n\tsetup_ebb_handler(standard_ebb_callee);\n\tebb_global_enable();\n\n\tFAIL_IF(ebb_event_enable(&event));\n\n\tmtspr(SPRN_MMCR0, MMCR0_FC);\n\tmtspr(SPRN_PMC1, pmc_sample_period(sample_period));\n\n\t \n\n\tpid = fork();\n\tif (pid == 0)\n\t\texit(child());\n\n\t \n\tFAIL_IF(wait_for_child(pid));\n\n\t \n\tevent_close(&event);\n\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(fork_cleanup, \"fork_cleanup\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

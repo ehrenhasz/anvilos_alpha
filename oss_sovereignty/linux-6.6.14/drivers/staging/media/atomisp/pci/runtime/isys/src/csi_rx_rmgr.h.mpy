@@ -1,0 +1,9 @@
+{
+  "module_name": "csi_rx_rmgr.h",
+  "hash_id": "5fa8cd3b13f1efd61da6da8c9d8a89de9cc6a08d295662d19ad852c77036b9f7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/isys/src/csi_rx_rmgr.h",
+  "human_readable_source": " \n \n\n#ifndef __CSI_RX_RMGR_H_INCLUDED__\n#define __CSI_RX_RMGR_H_INCLUDED__\n\ntypedef struct isys_csi_rx_rsrc_s isys_csi_rx_rsrc_t;\nstruct isys_csi_rx_rsrc_s {\n\tu32\tactive_table;\n\tu32        num_active;\n\tu16\tnum_long_packets;\n\tu16\tnum_short_packets;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sockets.c",
+  "hash_id": "b4dd18097e17ad304c3213816c56c3f7330517f73c3dab89b4fbfb6ac0d25766",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sockets.c",
+  "human_readable_source": "/*\n * Copyright (C) 2008-2023 Free Software Foundation, Inc.\n * Written by Simon Josefsson.\n *\n * This program is free software: you can redistribute it and/or modify\n * it under the terms of the GNU General Public License as published by\n * the Free Software Foundation, either version 3 of the License, or\n * (at your option) any later version.\n *\n * This program is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n * GNU General Public License for more details.\n *\n * You should have received a copy of the GNU General Public License\n * along with this program.  If not, see <https:\n\n#include <config.h>\n\n#include <stdio.h>\n\n#include \"sockets.h\"\n\nint\nmain (void)\n{\n  int err;\n\n  err = gl_sockets_startup (SOCKETS_1_1);\n  if (err != 0)\n    {\n      printf (\"wsastartup failed %d\\n\", err);\n      return 1;\n    }\n\n  err = gl_sockets_cleanup ();\n  if (err != 0)\n    {\n      printf (\"wsacleanup failed %d\\n\", err);\n      return 1;\n    }\n\n  (void) gl_fd_to_handle (0);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

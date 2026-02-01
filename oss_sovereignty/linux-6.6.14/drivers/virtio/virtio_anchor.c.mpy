@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_anchor.c",
+  "hash_id": "9b76e0f1d8cf799e999fbedeee7e911ac58fedf6e3239fd374510b9cda4b3dbc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/virtio/virtio_anchor.c",
+  "human_readable_source": "\n#include <linux/virtio.h>\n#include <linux/virtio_anchor.h>\n\nbool virtio_require_restricted_mem_acc(struct virtio_device *dev)\n{\n\treturn true;\n}\nEXPORT_SYMBOL_GPL(virtio_require_restricted_mem_acc);\n\nstatic bool virtio_no_restricted_mem_acc(struct virtio_device *dev)\n{\n\treturn false;\n}\n\nbool (*virtio_check_mem_acc_cb)(struct virtio_device *dev) =\n\tvirtio_no_restricted_mem_acc;\nEXPORT_SYMBOL_GPL(virtio_check_mem_acc_cb);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

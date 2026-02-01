@@ -1,0 +1,9 @@
+{
+  "module_name": "fd-002-posix-eq.c",
+  "hash_id": "ab6b0a4fdb2002f6fb447323a941c971cfc3ae2f91f4dc104898ad36e5a9db00",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/proc/fd-002-posix-eq.c",
+  "human_readable_source": " \n\n#undef NDEBUG\n#include <assert.h>\n#include <stdio.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <fcntl.h>\n#include <unistd.h>\n\nint main(void)\n{\n\tint fd0, fd1, fd2;\n\tstruct stat st0, st1, st2;\n\tchar buf[64];\n\tint rv;\n\n\tfd0 = open(\"/\", O_DIRECTORY|O_RDONLY);\n\tassert(fd0 >= 0);\n\n\tsnprintf(buf, sizeof(buf), \"/proc/self/fd/%u\", fd0);\n\tfd1 = open(buf, O_RDONLY);\n\tassert(fd1 >= 0);\n\n\tsnprintf(buf, sizeof(buf), \"/proc/thread-self/fd/%u\", fd0);\n\tfd2 = open(buf, O_RDONLY);\n\tassert(fd2 >= 0);\n\n\trv = fstat(fd0, &st0);\n\tassert(rv == 0);\n\trv = fstat(fd1, &st1);\n\tassert(rv == 0);\n\trv = fstat(fd2, &st2);\n\tassert(rv == 0);\n\n\tassert(st0.st_dev == st1.st_dev);\n\tassert(st0.st_ino == st1.st_ino);\n\n\tassert(st0.st_dev == st2.st_dev);\n\tassert(st0.st_ino == st2.st_ino);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

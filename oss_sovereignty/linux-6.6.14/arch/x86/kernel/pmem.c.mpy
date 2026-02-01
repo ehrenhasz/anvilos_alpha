@@ -1,0 +1,9 @@
+{
+  "module_name": "pmem.c",
+  "hash_id": "68351ede18de2e3cdee054806e1dc96ddb5bfdaec2efb92f11d18f4d09b32e15",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/pmem.c",
+  "human_readable_source": "\n \n#include <linux/platform_device.h>\n#include <linux/init.h>\n#include <linux/ioport.h>\n\nstatic int found(struct resource *res, void *data)\n{\n\treturn 1;\n}\n\nstatic __init int register_e820_pmem(void)\n{\n\tstruct platform_device *pdev;\n\tint rc;\n\n\trc = walk_iomem_res_desc(IORES_DESC_PERSISTENT_MEMORY_LEGACY,\n\t\t\t\t IORESOURCE_MEM, 0, -1, NULL, found);\n\tif (rc <= 0)\n\t\treturn 0;\n\n\t \n\tpdev = platform_device_alloc(\"e820_pmem\", -1);\n\n\trc = platform_device_add(pdev);\n\tif (rc)\n\t\tplatform_device_put(pdev);\n\n\treturn rc;\n}\ndevice_initcall(register_e820_pmem);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

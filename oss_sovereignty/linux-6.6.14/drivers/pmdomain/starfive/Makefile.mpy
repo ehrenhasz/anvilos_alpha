@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e0e8ce6a06e0b07b9b8ac3e2370e1bcf437461d534b966fbbe340be4683a4496",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pmdomain/starfive/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_JH71XX_PMU)\t\t+= jh71xx-pmu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tea5767.h",
+  "hash_id": "f87a52b4ece7a774f7a059c75f2cc2a284de44e334d6bbdf070cbc2f04426fac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/tea5767.h",
+  "human_readable_source": " \n \n\n#ifndef __TEA5767_H__\n#define __TEA5767_H__\n\n#include <linux/i2c.h>\n#include <media/dvb_frontend.h>\n\nenum tea5767_xtal {\n\tTEA5767_LOW_LO_32768    = 0,\n\tTEA5767_HIGH_LO_32768   = 1,\n\tTEA5767_LOW_LO_13MHz    = 2,\n\tTEA5767_HIGH_LO_13MHz   = 3,\n};\n\nstruct tea5767_ctrl {\n\tunsigned int\t\tport1:1;\n\tunsigned int\t\tport2:1;\n\tunsigned int\t\thigh_cut:1;\n\tunsigned int\t\tst_noise:1;\n\tunsigned int\t\tsoft_mute:1;\n\tunsigned int\t\tjapan_band:1;\n\tunsigned int\t\tdeemph_75:1;\n\tunsigned int\t\tpllref:1;\n\tenum tea5767_xtal\txtal_freq;\n};\n\n#if IS_REACHABLE(CONFIG_MEDIA_TUNER_TEA5767)\nextern int tea5767_autodetection(struct i2c_adapter* i2c_adap, u8 i2c_addr);\n\nextern struct dvb_frontend *tea5767_attach(struct dvb_frontend *fe,\n\t\t\t\t\t   struct i2c_adapter* i2c_adap,\n\t\t\t\t\t   u8 i2c_addr);\n#else\nstatic inline int tea5767_autodetection(struct i2c_adapter* i2c_adap,\n\t\t\t\t\tu8 i2c_addr)\n{\n\tprintk(KERN_INFO \"%s: not probed - driver disabled by Kconfig\\n\",\n\t       __func__);\n\treturn -EINVAL;\n}\n\nstatic inline struct dvb_frontend *tea5767_attach(struct dvb_frontend *fe,\n\t\t\t\t\t\t   struct i2c_adapter* i2c_adap,\n\t\t\t\t\t\t   u8 i2c_addr)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

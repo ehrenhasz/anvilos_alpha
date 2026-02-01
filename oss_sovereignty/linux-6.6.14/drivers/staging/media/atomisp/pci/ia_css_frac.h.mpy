@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_frac.h",
+  "hash_id": "1751d598c39bce3d077b9a608cd4875aac6953be6bce185b605b73ae16007d11",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/ia_css_frac.h",
+  "human_readable_source": " \n \n\n#ifndef _IA_CSS_FRAC_H\n#define _IA_CSS_FRAC_H\n\n \n\n#include <type_support.h>\n\n \n \ntypedef u32 ia_css_u0_16;\n \ntypedef u32 ia_css_u5_11;\n \ntypedef u32 ia_css_u8_8;\n \ntypedef s32 ia_css_s0_15;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

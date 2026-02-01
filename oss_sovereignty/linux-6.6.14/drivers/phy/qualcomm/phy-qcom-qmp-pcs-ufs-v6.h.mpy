@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-qcom-qmp-pcs-ufs-v6.h",
+  "hash_id": "73287b7e5c5bc0063b764eda64a0df7a49270dc277c15feba9dddb2aba7f0a2a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/qualcomm/phy-qcom-qmp-pcs-ufs-v6.h",
+  "human_readable_source": " \n \n\n#ifndef QCOM_PHY_QMP_PCS_UFS_V6_H_\n#define QCOM_PHY_QMP_PCS_UFS_V6_H_\n\n \n#define QPHY_V6_PCS_UFS_PHY_START\t\t\t0x000\n#define QPHY_V6_PCS_UFS_POWER_DOWN_CONTROL\t\t0x004\n#define QPHY_V6_PCS_UFS_SW_RESET\t\t\t0x008\n#define QPHY_V6_PCS_UFS_TIMER_20US_CORECLK_STEPS_MSB\t0x00c\n#define QPHY_V6_PCS_UFS_TIMER_20US_CORECLK_STEPS_LSB\t0x010\n#define QPHY_V6_PCS_UFS_PLL_CNTL\t\t\t0x02c\n#define QPHY_V6_PCS_UFS_TX_LARGE_AMP_DRV_LVL\t\t0x030\n#define QPHY_V6_PCS_UFS_TX_SMALL_AMP_DRV_LVL\t\t0x038\n#define QPHY_V6_PCS_UFS_BIST_FIXED_PAT_CTRL\t\t0x060\n#define QPHY_V6_PCS_UFS_TX_HSGEAR_CAPABILITY\t\t0x074\n#define QPHY_V6_PCS_UFS_RX_HSGEAR_CAPABILITY\t\t0x0bc\n#define QPHY_V6_PCS_UFS_DEBUG_BUS_CLKSEL\t\t0x158\n#define QPHY_V6_PCS_UFS_LINECFG_DISABLE\t\t\t0x17c\n#define QPHY_V6_PCS_UFS_RX_MIN_HIBERN8_TIME\t\t0x184\n#define QPHY_V6_PCS_UFS_RX_SIGDET_CTRL2\t\t\t0x18c\n#define QPHY_V6_PCS_UFS_TX_PWM_GEAR_BAND\t\t0x178\n#define QPHY_V6_PCS_UFS_TX_HS_GEAR_BAND\t\t\t0x174\n#define QPHY_V6_PCS_UFS_READY_STATUS\t\t\t0x1a8\n#define QPHY_V6_PCS_UFS_TX_MID_TERM_CTRL1\t\t0x1f4\n#define QPHY_V6_PCS_UFS_MULTI_LANE_CTRL1\t\t0x1fc\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

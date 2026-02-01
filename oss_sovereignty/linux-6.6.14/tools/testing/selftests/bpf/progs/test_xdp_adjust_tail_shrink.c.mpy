@@ -1,0 +1,9 @@
+{
+  "module_name": "test_xdp_adjust_tail_shrink.c",
+  "hash_id": "cc4b4032b40d873bc67856be9af681c34909832afc8c37c86bc85beeb2603676",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_xdp_adjust_tail_shrink.c",
+  "human_readable_source": "\n \n#include <linux/bpf.h>\n#include <linux/if_ether.h>\n#include <bpf/bpf_helpers.h>\n\nSEC(\"xdp\")\nint _xdp_adjust_tail_shrink(struct xdp_md *xdp)\n{\n\t__u8 *data_end = (void *)(long)xdp->data_end;\n\t__u8 *data = (void *)(long)xdp->data;\n\tint offset = 0;\n\n\tswitch (bpf_xdp_get_buff_len(xdp)) {\n\tcase 54:\n\t\t \n\t\toffset = 256;  \n\t\tbreak;\n\tcase 9000:\n\t\t \n\t\tif (data + 1 > data_end)\n\t\t\treturn XDP_DROP;\n\n\t\tswitch (data[0]) {\n\t\tcase 0:\n\t\t\toffset = 10;\n\t\t\tbreak;\n\t\tcase 1:\n\t\t\toffset = 4100;\n\t\t\tbreak;\n\t\tcase 2:\n\t\t\toffset = 8200;\n\t\t\tbreak;\n\t\tdefault:\n\t\t\treturn XDP_DROP;\n\t\t}\n\t\tbreak;\n\tdefault:\n\t\toffset = 20;\n\t\tbreak;\n\t}\n\tif (bpf_xdp_adjust_tail(xdp, 0 - offset))\n\t\treturn XDP_DROP;\n\treturn XDP_TX;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

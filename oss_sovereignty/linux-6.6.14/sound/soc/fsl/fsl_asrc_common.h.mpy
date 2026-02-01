@@ -1,0 +1,9 @@
+{
+  "module_name": "fsl_asrc_common.h",
+  "hash_id": "217501f66776b3d40b8f93f8f7c20a762ef52104621e6d530856b30e5fe806a2",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/fsl/fsl_asrc_common.h",
+  "human_readable_source": " \n \n\n#ifndef _FSL_ASRC_COMMON_H\n#define _FSL_ASRC_COMMON_H\n\n \n#define IN\t0\n#define OUT\t1\n\nenum asrc_pair_index {\n\tASRC_INVALID_PAIR = -1,\n\tASRC_PAIR_A = 0,\n\tASRC_PAIR_B = 1,\n\tASRC_PAIR_C = 2,\n\tASRC_PAIR_D = 3,\n};\n\n#define PAIR_CTX_NUM  0x4\n\n \nstruct fsl_asrc_pair {\n\tstruct fsl_asrc *asrc;\n\tunsigned int error;\n\n\tenum asrc_pair_index index;\n\tunsigned int channels;\n\n\tstruct dma_async_tx_descriptor *desc[2];\n\tstruct dma_chan *dma_chan[2];\n\tstruct imx_dma_data dma_data;\n\tunsigned int pos;\n\tbool req_dma_chan;\n\n\tvoid *private;\n};\n\n \nstruct fsl_asrc {\n\tstruct snd_dmaengine_dai_dma_data dma_params_rx;\n\tstruct snd_dmaengine_dai_dma_data dma_params_tx;\n\tstruct platform_device *pdev;\n\tstruct regmap *regmap;\n\tunsigned long paddr;\n\tstruct clk *mem_clk;\n\tstruct clk *ipg_clk;\n\tstruct clk *spba_clk;\n\tspinlock_t lock;       \n\n\tstruct fsl_asrc_pair *pair[PAIR_CTX_NUM];\n\tunsigned int channel_avail;\n\n\tint asrc_rate;\n\tsnd_pcm_format_t asrc_format;\n\tbool use_edma;\n\n\tstruct dma_chan *(*get_dma_channel)(struct fsl_asrc_pair *pair, bool dir);\n\tint (*request_pair)(int channels, struct fsl_asrc_pair *pair);\n\tvoid (*release_pair)(struct fsl_asrc_pair *pair);\n\tint (*get_fifo_addr)(u8 dir, enum asrc_pair_index index);\n\tsize_t pair_priv_size;\n\n\tvoid *private;\n};\n\n#define DRV_NAME \"fsl-asrc-dai\"\nextern struct snd_soc_component_driver fsl_asrc_component;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

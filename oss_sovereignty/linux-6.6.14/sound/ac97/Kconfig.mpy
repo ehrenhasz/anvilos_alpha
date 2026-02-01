@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1c6d8efc9f3fe71c21bdff004d52f87fc2bdfebe58ec76f5ce90ecd697b3f7e9",
+  "original_prompt": "Ingested from linux-6.6.14/sound/ac97/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# AC97 configuration\n#\n\n\nconfig AC97_BUS_NEW\n\ttristate\n\thelp\n\t  This is the new AC97 bus type, successor of AC97_BUS. The ported\n\t  drivers which benefit from the AC97 automatic probing should \"select\"\n\t  this instead of the AC97_BUS.\n\t  Say Y here if you want to have AC97 devices, which are sound oriented\n\t  devices around an AC-Link.\n\nconfig AC97_BUS_COMPAT\n\tbool\n\tdepends on AC97_BUS_NEW\n\tdepends on !AC97_BUS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

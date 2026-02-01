@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "58f024cae77d57dc627a054d785a6225b47983f75d2c92f75bcf7f00a4b3fa63",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/allwinner/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Allwinner device drivers.\n#\n\nobj-$(CONFIG_SUN4I_EMAC) += sun4i-emac.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

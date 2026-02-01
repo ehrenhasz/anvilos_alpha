@@ -1,0 +1,9 @@
+{
+  "module_name": "rcu-string.h",
+  "hash_id": "9ee85f29263bd8badef872d2175e44423ab2e58dd086ba57d4302ce4c9715918",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/rcu-string.h",
+  "human_readable_source": " \n \n\n#ifndef BTRFS_RCU_STRING_H\n#define BTRFS_RCU_STRING_H\n\nstruct rcu_string {\n\tstruct rcu_head rcu;\n\tchar str[];\n};\n\nstatic inline struct rcu_string *rcu_string_strdup(const char *src, gfp_t mask)\n{\n\tsize_t len = strlen(src) + 1;\n\tstruct rcu_string *ret = kzalloc(sizeof(struct rcu_string) +\n\t\t\t\t\t (len * sizeof(char)), mask);\n\tif (!ret)\n\t\treturn ret;\n\t \n\tif (WARN_ON(strscpy(ret->str, src, len) < 0)) {\n\t\tkfree(ret);\n\t\treturn NULL;\n\t}\n\treturn ret;\n}\n\nstatic inline void rcu_string_free(struct rcu_string *str)\n{\n\tif (str)\n\t\tkfree_rcu(str, rcu);\n}\n\n#define printk_in_rcu(fmt, ...) do {\t\\\n\trcu_read_lock();\t\t\\\n\tprintk(fmt, __VA_ARGS__);\t\\\n\trcu_read_unlock();\t\t\\\n} while (0)\n\n#define printk_ratelimited_in_rcu(fmt, ...) do {\t\\\n\trcu_read_lock();\t\t\t\t\\\n\tprintk_ratelimited(fmt, __VA_ARGS__);\t\t\\\n\trcu_read_unlock();\t\t\t\t\\\n} while (0)\n\n#define rcu_str_deref(rcu_str) ({\t\t\t\t\\\n\tstruct rcu_string *__str = rcu_dereference(rcu_str);\t\\\n\t__str->str;\t\t\t\t\t\t\\\n})\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tvp514x.h",
+  "hash_id": "b384480663c4ec902e0977ba5d1595b60fe7bfb8057bcde3348501dd12f6c75e",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/tvp514x.h",
+  "human_readable_source": " \n \n\n#ifndef _TVP514X_H\n#define _TVP514X_H\n\n \n#define TVP514X_MODULE_NAME\t\t\"tvp514x\"\n\n#define TVP514X_XCLK_BT656\t\t(27000000)\n\n \n#define NTSC_NUM_ACTIVE_PIXELS\t\t(720)\n#define NTSC_NUM_ACTIVE_LINES\t\t(480)\n#define PAL_NUM_ACTIVE_PIXELS\t\t(720)\n#define PAL_NUM_ACTIVE_LINES\t\t(576)\n\n \nenum tvp514x_input {\n\t \n\tINPUT_CVBS_VI1A = 0x0,\n\tINPUT_CVBS_VI1B,\n\tINPUT_CVBS_VI1C,\n\tINPUT_CVBS_VI2A = 0x04,\n\tINPUT_CVBS_VI2B,\n\tINPUT_CVBS_VI2C,\n\tINPUT_CVBS_VI3A = 0x08,\n\tINPUT_CVBS_VI3B,\n\tINPUT_CVBS_VI3C,\n\tINPUT_CVBS_VI4A = 0x0C,\n\t \n\tINPUT_SVIDEO_VI2A_VI1A = 0x44,\n\tINPUT_SVIDEO_VI2B_VI1B,\n\tINPUT_SVIDEO_VI2C_VI1C,\n\tINPUT_SVIDEO_VI2A_VI3A = 0x54,\n\tINPUT_SVIDEO_VI2B_VI3B,\n\tINPUT_SVIDEO_VI2C_VI3C,\n\tINPUT_SVIDEO_VI4A_VI1A = 0x4C,\n\tINPUT_SVIDEO_VI4A_VI1B,\n\tINPUT_SVIDEO_VI4A_VI1C,\n\tINPUT_SVIDEO_VI4A_VI3A = 0x5C,\n\tINPUT_SVIDEO_VI4A_VI3B,\n\tINPUT_SVIDEO_VI4A_VI3C,\n\n\t \n\tINPUT_INVALID\n};\n\n \nenum tvp514x_output {\n\tOUTPUT_10BIT_422_EMBEDDED_SYNC = 0,\n\tOUTPUT_20BIT_422_SEPERATE_SYNC,\n\tOUTPUT_10BIT_422_SEPERATE_SYNC = 3,\n\tOUTPUT_INVALID\n};\n\n \nstruct tvp514x_platform_data {\n\t \n\tbool clk_polarity;\n\tbool hs_polarity;\n\tbool vs_polarity;\n};\n\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

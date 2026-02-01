@@ -1,0 +1,9 @@
+{
+  "module_name": "control.h",
+  "hash_id": "801993bc1a25a9adb6067c7ddca5c817683d87d7592c9e84f9072b8cab2cfcd7",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/caiaq/control.h",
+  "human_readable_source": " \n#ifndef CAIAQ_CONTROL_H\n#define CAIAQ_CONTROL_H\n\nint snd_usb_caiaq_control_init(struct snd_usb_caiaqdev *cdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

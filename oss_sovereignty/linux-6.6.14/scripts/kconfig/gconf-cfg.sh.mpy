@@ -1,0 +1,9 @@
+{
+  "module_name": "gconf-cfg.sh",
+  "hash_id": "3a34771c9346fb85e216c10e943cb4c86cf8b9bb6b45a143b186e6fcc66018ad",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/kconfig/gconf-cfg.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\ncflags=$1\nlibs=$2\n\nPKG=\"gtk+-2.0 gmodule-2.0 libglade-2.0\"\n\nif [ -z \"$(command -v ${HOSTPKG_CONFIG})\" ]; then\n\techo >&2 \"*\"\n\techo >&2 \"* 'make gconfig' requires '${HOSTPKG_CONFIG}'. Please install it.\"\n\techo >&2 \"*\"\n\texit 1\nfi\n\nif ! ${HOSTPKG_CONFIG} --exists $PKG; then\n\techo >&2 \"*\"\n\techo >&2 \"* Unable to find the GTK+ installation. Please make sure that\"\n\techo >&2 \"* the GTK+ 2.0 development package is correctly installed.\"\n\techo >&2 \"* You need $PKG\"\n\techo >&2 \"*\"\n\texit 1\nfi\n\nif ! ${HOSTPKG_CONFIG} --atleast-version=2.0.0 gtk+-2.0; then\n\techo >&2 \"*\"\n\techo >&2 \"* GTK+ is present but version >= 2.0.0 is required.\"\n\techo >&2 \"*\"\n\texit 1\nfi\n\n${HOSTPKG_CONFIG} --cflags ${PKG} > ${cflags}\n${HOSTPKG_CONFIG} --libs ${PKG} > ${libs}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

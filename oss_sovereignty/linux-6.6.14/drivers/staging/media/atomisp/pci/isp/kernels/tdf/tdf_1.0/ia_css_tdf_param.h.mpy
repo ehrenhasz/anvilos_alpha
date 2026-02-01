@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_tdf_param.h",
+  "hash_id": "a58caa12dbf4b7fec9e2125a5cf6c41eaa3a8c2878a51290f174a9dbeac7d1d8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/tdf/tdf_1.0/ia_css_tdf_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_TDF_PARAM_H\n#define __IA_CSS_TDF_PARAM_H\n\n#include \"type_support.h\"\n#include \"vmem.h\"  \n\nstruct ia_css_isp_tdf_vmem_params {\n\tVMEM_ARRAY(pyramid, ISP_VEC_NELEMS);\n\tVMEM_ARRAY(threshold_flat, ISP_VEC_NELEMS);\n\tVMEM_ARRAY(threshold_detail, ISP_VEC_NELEMS);\n};\n\nstruct ia_css_isp_tdf_dmem_params {\n\ts32 Epsilon_0;\n\ts32 Epsilon_1;\n\ts32 EpsScaleText;\n\ts32 EpsScaleEdge;\n\ts32 Sepa_flat;\n\ts32 Sepa_Edge;\n\ts32 Blend_Flat;\n\ts32 Blend_Text;\n\ts32 Blend_Edge;\n\ts32 Shading_Gain;\n\ts32 Shading_baseGain;\n\ts32 LocalY_Gain;\n\ts32 LocalY_baseGain;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

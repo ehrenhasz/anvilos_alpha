@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_impl.h",
+  "hash_id": "9dd6dc56fa5de7d04c966cbc2d48b663930f7d3b702856e8a784f25fa400b977",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zfs_impl.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_SYS_ZFS_IMPL_H\n#define\t_SYS_ZFS_IMPL_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \ntypedef struct\n{\n\t \n\tconst char *name;\n\n\t \n\tuint32_t (*getcnt)(void);\n\n\t \n\tuint32_t (*getid)(void);\n\n\t \n\tconst char *(*getname)(void);\n\n\t \n\tvoid (*set_fastest)(uint32_t id);\n\n\t \n\tvoid (*setid)(uint32_t id);\n\n\t \n\tint (*setname)(const char *val);\n} zfs_impl_t;\n\n \nextern const zfs_impl_t *zfs_impl_get_ops(const char *algo);\n\nextern const zfs_impl_t zfs_blake3_ops;\nextern const zfs_impl_t zfs_sha256_ops;\nextern const zfs_impl_t zfs_sha512_ops;\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

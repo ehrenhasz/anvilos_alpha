@@ -1,0 +1,9 @@
+{
+  "module_name": "test_send_signal_kern.c",
+  "hash_id": "b787091f6ec6238703119c5a40467646d16d0ad4da37e0e6d3681c2bd7f03df9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_send_signal_kern.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <linux/version.h>\n#include <bpf/bpf_helpers.h>\n\n__u32 sig = 0, pid = 0, status = 0, signal_thread = 0;\n\nstatic __always_inline int bpf_send_signal_test(void *ctx)\n{\n\tint ret;\n\n\tif (status != 0 || pid == 0)\n\t\treturn 0;\n\n\tif ((bpf_get_current_pid_tgid() >> 32) == pid) {\n\t\tif (signal_thread)\n\t\t\tret = bpf_send_signal_thread(sig);\n\t\telse\n\t\t\tret = bpf_send_signal(sig);\n\t\tif (ret == 0)\n\t\t\tstatus = 1;\n\t}\n\n\treturn 0;\n}\n\nSEC(\"tracepoint/syscalls/sys_enter_nanosleep\")\nint send_signal_tp(void *ctx)\n{\n\treturn bpf_send_signal_test(ctx);\n}\n\nSEC(\"tracepoint/sched/sched_switch\")\nint send_signal_tp_sched(void *ctx)\n{\n\treturn bpf_send_signal_test(ctx);\n}\n\nSEC(\"perf_event\")\nint send_signal_perf(void *ctx)\n{\n\treturn bpf_send_signal_test(ctx);\n}\n\nchar __license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

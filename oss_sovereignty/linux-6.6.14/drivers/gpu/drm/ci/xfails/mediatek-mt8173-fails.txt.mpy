@@ -1,0 +1,9 @@
+{
+  "module_name": "mediatek-mt8173-fails.txt",
+  "hash_id": "53877f120fe35e681e63607de8583bbbed60ec196a54cb222b4bd9045a459b67",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/mediatek-mt8173-fails.txt",
+  "human_readable_source": "kms_3d,Fail\nkms_addfb_basic@addfb25-bad-modifier,Fail\nkms_bw@linear-tiling-1-displays-1920x1080p,Fail\nkms_bw@linear-tiling-1-displays-2560x1440p,Fail\nkms_bw@linear-tiling-1-displays-3840x2160p,Fail\nkms_bw@linear-tiling-2-displays-1920x1080p,Fail\nkms_bw@linear-tiling-2-displays-2560x1440p,Fail\nkms_bw@linear-tiling-2-displays-3840x2160p,Fail\nkms_bw@linear-tiling-3-displays-1920x1080p,Fail\nkms_bw@linear-tiling-3-displays-2560x1440p,Fail\nkms_bw@linear-tiling-3-displays-3840x2160p,Fail\nkms_color@pipe-A-invalid-gamma-lut-sizes,Fail\nkms_color@pipe-B-invalid-gamma-lut-sizes,Fail\nkms_force_connector_basic@force-connector-state,Fail\nkms_force_connector_basic@force-edid,Fail\nkms_force_connector_basic@force-load-detect,Fail\nkms_force_connector_basic@prune-stale-modes,Fail\nkms_invalid_mode@int-max-clock,Fail\nkms_plane_scaling@planes-upscale-20x20,Fail\nkms_plane_scaling@planes-upscale-20x20-downscale-factor-0-25,Fail\nkms_plane_scaling@planes-upscale-20x20-downscale-factor-0-5,Fail\nkms_plane_scaling@planes-upscale-20x20-downscale-factor-0-75,Fail\nkms_plane_scaling@upscale-with-modifier-20x20,Fail\nkms_plane_scaling@upscale-with-pixel-format-20x20,Fail\nkms_plane_scaling@upscale-with-rotation-20x20,Fail\nkms_properties@get_properties-sanity-atomic,Fail\nkms_properties@plane-properties-atomic,Fail\nkms_properties@plane-properties-legacy,Fail\nkms_rmfb@close-fd,Fail\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

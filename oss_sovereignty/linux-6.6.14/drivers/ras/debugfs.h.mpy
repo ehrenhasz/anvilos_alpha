@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs.h",
+  "hash_id": "cdd0f83762e19632a7e74c8de8b2d858e616fc84c814b3617375f2a99823734d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ras/debugfs.h",
+  "human_readable_source": " \n#ifndef __RAS_DEBUGFS_H__\n#define __RAS_DEBUGFS_H__\n\n#include <linux/debugfs.h>\n\nextern struct dentry *ras_debugfs_dir;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

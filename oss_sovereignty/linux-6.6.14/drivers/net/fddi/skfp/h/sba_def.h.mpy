@@ -1,0 +1,9 @@
+{
+  "module_name": "sba_def.h",
+  "hash_id": "fdd67ba4c083ac56ff731a6aba79625136f5cbdb92ba911a07ac10889798bc66",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/fddi/skfp/h/sba_def.h",
+  "human_readable_source": " \n \n\n#define PHYS\t\t\t0\t\t \n#define PERM_ADDR\t\t0x80\t\t \n#define SB_STATIC\t\t0x00000001\n#define MAX_PAYLOAD\t\t1562\n#define PRIMARY_RING\t\t0x00000001\n#ifndef NULL\n#define NULL\t\t\t0x00\n#endif\n\n \n \n\n#define UNKNOWN_SYNC_SOURCE\t0x0001\n#define REQ_ALLOCATION\t\t0x0002\n#define REPORT_RESP\t\t0x0003\n#define CHANGE_RESP\t\t0x0004\n#define TNEG\t\t\t0x0005\n#define NIF\t\t\t0x0006\n#define SB_STOP\t\t\t0x0007\n#define SB_START\t\t0x0008\n#define REPORT_TIMER\t\t0x0009\n#define CHANGE_REQUIRED\t\t0x000A\n\n#define DEFAULT_OV\t\t50\n\n#ifdef SBA\n \n\n#define SBA_STANDBY\t\t0x00000000\n#define SBA_ACTIVE\t\t0x00000001\n#define SBA_RECOVERY\t\t0x00000002\n#define SBA_REPORT\t\t0x00000003\n#define SBA_CHANGE\t\t0x00000004\n\n \n\n#define FIFTY_PERCENT\t\t50\t\t \n#define MAX_SESSIONS\t\t150\t\n#define TWO_MINUTES\t\t13079\t\t \n#define FIFTY_BYTES\t\t50\n#define SBA_DENIED\t\t0x0000000D\n#define I_NEED_ONE\t\t0x00000000\n#define MAX_NODES\t\t50\n \t \n#define\tTWO_MIN\t\t\t120\t\t \n#define SBA_ST_UNKNOWN\t\t0x00000002\n#define SBA_ST_ACTIVE\t\t0x00000001\n#define S_CLEAR\t\t\t0x00000000L\n#define ZERO\t\t\t0x00000000\n#define FULL\t\t\t0x00000000\t \n#define S_SET\t\t\t0x00000001L\n#define LOW_PRIO\t\t0x02\t\t \n#define OK\t\t\t0x01\t\t \n#define NOT_OK\t\t\t0x00\t\t \n\n \n \n \n#define TX_CHANGE\t\t0X00000001L\n#define PENDING\t\t\t0x00000002L\n#define NONE\t\t\t0X00000000L\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

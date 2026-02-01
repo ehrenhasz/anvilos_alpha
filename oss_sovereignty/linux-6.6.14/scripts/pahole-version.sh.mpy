@@ -1,0 +1,9 @@
+{
+  "module_name": "pahole-version.sh",
+  "hash_id": "7640978c9f22186f8305f7574c5713a731ce5ad9dca6dc2e762f214208208ecc",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/pahole-version.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n#\n# Usage: $ ./pahole-version.sh pahole\n#\n# Prints pahole's version in a 3-digit form, such as 119 for v1.19.\n\nif [ ! -x \"$(command -v \"$@\")\" ]; then\n\techo 0\n\texit 1\nfi\n\n\"$@\" --version | sed -E 's/v([0-9]+)\\.([0-9]+)/\\1\\2/'\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

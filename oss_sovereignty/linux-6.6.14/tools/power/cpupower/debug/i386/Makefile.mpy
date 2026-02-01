@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a627a0af554b97ca19127b8fd4a395feea57a22e3a481bb74132c30f7a4c4cb3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/debug/i386/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nOUTPUT=./\nifeq (\"$(origin O)\", \"command line\")\n\tOUTPUT := $(O)/\nendif\n\nDESTDIR =\nbindir  = /usr/bin\n\nINSTALL = /usr/bin/install\n\n\ndefault: all\n\n$(OUTPUT)centrino-decode: centrino-decode.c\n\t$(CC) $(CFLAGS) -o $@ centrino-decode.c\n\n$(OUTPUT)dump_psb: dump_psb.c\n\t$(CC) $(CFLAGS) -o $@ dump_psb.c\n\n$(OUTPUT)intel_gsic: intel_gsic.c\n\t$(CC) $(CFLAGS) -o $@ -llrmi intel_gsic.c\n\n$(OUTPUT)powernow-k8-decode: powernow-k8-decode.c\n\t$(CC) $(CFLAGS) -o $@ powernow-k8-decode.c\n\nall: $(OUTPUT)centrino-decode $(OUTPUT)dump_psb $(OUTPUT)intel_gsic $(OUTPUT)powernow-k8-decode\n\nclean:\n\trm -rf $(OUTPUT)centrino-decode\n\trm -rf $(OUTPUT)dump_psb\n\trm -rf $(OUTPUT)intel_gsic\n\trm -rf $(OUTPUT)powernow-k8-decode\n\ninstall:\n\t$(INSTALL) -d $(DESTDIR)${bindir}\n\t$(INSTALL) $(OUTPUT)centrino-decode $(DESTDIR)${bindir}\n\t$(INSTALL) $(OUTPUT)powernow-k8-decode $(DESTDIR)${bindir}\n\t$(INSTALL) $(OUTPUT)dump_psb $(DESTDIR)${bindir}\n\t$(INSTALL) $(OUTPUT)intel_gsic $(DESTDIR)${bindir}\n\n.PHONY: all default clean install\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

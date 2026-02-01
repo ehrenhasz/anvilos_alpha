@@ -1,0 +1,9 @@
+{
+  "module_name": "fifo_defs.h",
+  "hash_id": "72499495c28a3065a173cfd2de6306969413066bf37736679801c0c7bca3375e",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/fifo_defs.h",
+  "human_readable_source": " \n\n \n\n \n\n#ifndef FIFO_DEFS_H\n#define FIFO_DEFS_H 1\n\n#define head\tsp->_fifohead\n#define tail\tsp->_fifotail\n \n#define peek\tsp->_fifopeek\n\n#define h_inc() { \\\n\t    (head >= FIFO_SIZE-1) \\\n\t\t? head = 0 \\\n\t\t: head++; \\\n\t    if (head == tail) \\\n\t\thead = -1, tail = 0; \\\n\t}\n#define h_dec() { \\\n\t    (head <= 0) \\\n\t\t? head = FIFO_SIZE-1 \\\n\t\t: head--; \\\n\t    if (head == tail) \\\n\t\ttail = -1; \\\n\t}\n#define t_inc() { \\\n\t    (tail >= FIFO_SIZE-1) \\\n\t\t? tail = 0 \\\n\t\t: tail++; \\\n\t    if (tail == head) \\\n\t\ttail = -1; \\\n\t    }\n#define t_dec() { \\\n\t    (tail <= 0) \\\n\t\t? tail = FIFO_SIZE-1 \\\n\t\t: tail--; \\\n\t    if (head == tail) \\\n\t\tfifo_clear(sp); \\\n\t    }\n#define p_inc() { \\\n\t    (peek >= FIFO_SIZE-1) \\\n\t\t? peek = 0 \\\n\t\t: peek++; \\\n\t    }\n\n#define cooked_key_in_fifo()\t((head >= 0) && (peek != head))\n#define raw_key_in_fifo()\t((head >= 0) && (peek != tail))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

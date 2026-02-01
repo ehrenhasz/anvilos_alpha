@@ -1,0 +1,9 @@
+{
+  "module_name": "mkdirat.m4",
+  "hash_id": "0c2030ac3eee0123f5737c128b7ca1e65988e6c66e2e31b75d72b6447bd205ec",
+  "original_prompt": "Ingested from coreutils-9.4/m4/mkdirat.m4",
+  "human_readable_source": "# mkdirat.m4 serial 1\ndnl Copyright (C) 2004-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n# Written by Jim Meyering.\n\nAC_DEFUN([gl_FUNC_MKDIRAT],\n[\n  AC_REQUIRE([gl_SYS_STAT_H_DEFAULTS])\n  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])\n  AC_CHECK_FUNCS_ONCE([mkdirat])\n  if test $ac_cv_func_mkdirat != yes; then\n    HAVE_MKDIRAT=0\n  fi\n])\n\n# Prerequisite of mkdirat's declaration and of lib/mkdirat.c.\nAC_DEFUN([gl_PREREQ_MKDIRAT],\n[\n  AC_REQUIRE([AC_TYPE_MODE_T])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

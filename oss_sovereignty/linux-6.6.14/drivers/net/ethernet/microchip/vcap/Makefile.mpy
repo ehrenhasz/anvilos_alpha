@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "af8d065eaa1fc61fea320084dba5fafeced7ec4d552d4cca0e9a30eb76002438",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/microchip/vcap/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Microchip VCAP API\n#\n\nobj-$(CONFIG_VCAP) += vcap.o\nobj-$(CONFIG_VCAP_KUNIT_TEST) +=  vcap_model_kunit.o\nvcap-$(CONFIG_DEBUG_FS) += vcap_api_debugfs.o\n\nvcap-y += vcap_api.o vcap_tc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

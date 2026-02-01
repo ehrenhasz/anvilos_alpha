@@ -1,0 +1,9 @@
+{
+  "module_name": "xcr.h",
+  "hash_id": "995159be45c3a985ad02a6dae5dcc565470be2977eb7e29ef72e08fb853efe84",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/fpu/xcr.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_FPU_XCR_H\n#define _ASM_X86_FPU_XCR_H\n\n#define XCR_XFEATURE_ENABLED_MASK\t0x00000000\n#define XCR_XFEATURE_IN_USE_MASK\t0x00000001\n\nstatic __always_inline u64 xgetbv(u32 index)\n{\n\tu32 eax, edx;\n\n\tasm volatile(\"xgetbv\" : \"=a\" (eax), \"=d\" (edx) : \"c\" (index));\n\treturn eax + ((u64)edx << 32);\n}\n\nstatic inline void xsetbv(u32 index, u64 value)\n{\n\tu32 eax = value;\n\tu32 edx = value >> 32;\n\n\tasm volatile(\"xsetbv\" :: \"a\" (eax), \"d\" (edx), \"c\" (index));\n}\n\n \nstatic __always_inline u64 xfeatures_in_use(void)\n{\n\treturn xgetbv(XCR_XFEATURE_IN_USE_MASK);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

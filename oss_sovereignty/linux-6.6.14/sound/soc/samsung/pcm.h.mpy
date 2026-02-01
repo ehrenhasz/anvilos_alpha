@@ -1,0 +1,9 @@
+{
+  "module_name": "pcm.h",
+  "hash_id": "7025bd3a0c5a87c9e95115f7c436ce980095be99c50ac03fc1ca01e13e6dc9c7",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/samsung/pcm.h",
+  "human_readable_source": " \n\n#ifndef __S3C_PCM_H\n#define __S3C_PCM_H __FILE__\n\n#define S3C_PCM_CLKSRC_PCLK\t0\n#define S3C_PCM_CLKSRC_MUX\t1\n\n#define S3C_PCM_SCLK_PER_FS\t0\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

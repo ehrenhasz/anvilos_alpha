@@ -1,0 +1,9 @@
+{
+  "module_name": "rawmemchr.c",
+  "hash_id": "42ea5f6072fc5da2e23fba7a4a03569c5a59de860b99bd0e2dcd5943a8f3e3b3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/rawmemchr.c",
+  "human_readable_source": " \n#include <string.h>\n\n \n#if !HAVE_RAWMEMCHR\n\n# include <limits.h>\n# include <stdint.h>\n\n\n \nvoid *\nrawmemchr (const void *s, int c_in)\n{\n   \n  typedef uintptr_t longword;\n   \n  static_assert (UINTPTR_WIDTH == UCHAR_WIDTH * sizeof (longword));\n\n  const unsigned char *char_ptr;\n  unsigned char c = c_in;\n\n   \n  for (char_ptr = (const unsigned char *) s;\n       (uintptr_t) char_ptr % alignof (longword) != 0;\n       ++char_ptr)\n    if (*char_ptr == c)\n      return (void *) char_ptr;\n\n  longword const *longword_ptr = s = char_ptr;\n\n   \n  longword repeated_one = (longword) -1 / UCHAR_MAX;\n  longword repeated_c = repeated_one * c;\n  longword repeated_hibit = repeated_one * (UCHAR_MAX / 2 + 1);\n\n   \n\n  while (1)\n    {\n      longword longword1 = *longword_ptr ^ repeated_c;\n\n      if ((((longword1 - repeated_one) & ~longword1) & repeated_hibit) != 0)\n        break;\n      longword_ptr++;\n    }\n\n  char_ptr = s = longword_ptr;\n\n   \n\n  while (*char_ptr != c)\n    char_ptr++;\n  return (void *) char_ptr;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

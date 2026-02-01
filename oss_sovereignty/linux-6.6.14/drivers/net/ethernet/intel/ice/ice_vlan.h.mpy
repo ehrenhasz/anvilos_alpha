@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_vlan.h",
+  "hash_id": "16353c0bea3feb4553ac508e6937db6a04b5e93ed540fab444d3741ffc0e656f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_vlan.h",
+  "human_readable_source": " \n \n\n#ifndef _ICE_VLAN_H_\n#define _ICE_VLAN_H_\n\n#include <linux/types.h>\n#include \"ice_type.h\"\n\nstruct ice_vlan {\n\tu16 tpid;\n\tu16 vid;\n\tu8 prio;\n};\n\n#define ICE_VLAN(tpid, vid, prio) ((struct ice_vlan){ tpid, vid, prio })\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

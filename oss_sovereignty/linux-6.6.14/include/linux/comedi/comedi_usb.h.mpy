@@ -1,0 +1,9 @@
+{
+  "module_name": "comedi_usb.h",
+  "hash_id": "547d149b432067e9c0f9774c8e31e6190f9e92300d58c07dc0bd26e666978886",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/comedi/comedi_usb.h",
+  "human_readable_source": " \n \n\n#ifndef _COMEDI_USB_H\n#define _COMEDI_USB_H\n\n#include <linux/usb.h>\n#include <linux/comedi/comedidev.h>\n\nstruct usb_interface *comedi_to_usb_interface(struct comedi_device *dev);\nstruct usb_device *comedi_to_usb_dev(struct comedi_device *dev);\n\nint comedi_usb_auto_config(struct usb_interface *intf,\n\t\t\t   struct comedi_driver *driver, unsigned long context);\nvoid comedi_usb_auto_unconfig(struct usb_interface *intf);\n\nint comedi_usb_driver_register(struct comedi_driver *comedi_driver,\n\t\t\t       struct usb_driver *usb_driver);\nvoid comedi_usb_driver_unregister(struct comedi_driver *comedi_driver,\n\t\t\t\t  struct usb_driver *usb_driver);\n\n \n#define module_comedi_usb_driver(__comedi_driver, __usb_driver) \\\n\tmodule_driver(__comedi_driver, comedi_usb_driver_register, \\\n\t\t\tcomedi_usb_driver_unregister, &(__usb_driver))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

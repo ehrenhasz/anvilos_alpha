@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "917826b54c131c4de7a3537f13076438fd0d7ef56af7e86df7ee6c0a5e827e69",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/bcm/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SND_BCM2835_SOC_I2S\n\ttristate \"SoC Audio support for the Broadcom BCM2835 I2S module\"\n\tdepends on ARCH_BCM2835 || COMPILE_TEST\n\tselect SND_SOC_GENERIC_DMAENGINE_PCM\n\tselect REGMAP_MMIO\n\thelp\n\t  Say Y or M if you want to add support for codecs attached to\n\t  the BCM2835 I2S interface. You will also need\n\t  to select the audio interfaces to support below.\n\nconfig SND_SOC_CYGNUS\n\ttristate \"SoC platform audio for Broadcom Cygnus chips\"\n\tdepends on ARCH_BCM_CYGNUS || COMPILE_TEST\n\thelp\n\t  Say Y if you want to add support for ASoC audio on Broadcom\n\t  Cygnus chips (bcm958300, bcm958305, bcm911360)\n\n\t  If you don't know what to do here, say N.\n\nconfig SND_BCM63XX_I2S_WHISTLER\n\ttristate \"SoC Audio support for the Broadcom BCM63XX I2S module\"\n\tselect REGMAP_MMIO\n\thelp\n\t  Say Y if you want to add support for ASoC audio on Broadcom\n\t  DSL/PON chips (bcm63158, bcm63178)\n\n\t  If you don't know what to do here, say N\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

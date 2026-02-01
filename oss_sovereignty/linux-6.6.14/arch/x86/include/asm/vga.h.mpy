@@ -1,0 +1,9 @@
+{
+  "module_name": "vga.h",
+  "hash_id": "c04456b457dc7c99d5398b89d879eb5c7927bfd9fcf6250a591967fbd5510605",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/vga.h",
+  "human_readable_source": " \n \n\n#ifndef _ASM_X86_VGA_H\n#define _ASM_X86_VGA_H\n\n#include <asm/set_memory.h>\n\n \n\n#define VGA_MAP_MEM(x, s)\t\t\t\t\t\\\n({\t\t\t\t\t\t\t\t\\\n\tunsigned long start = (unsigned long)phys_to_virt(x);\t\\\n\t\t\t\t\t\t\t\t\\\n\tif (IS_ENABLED(CONFIG_AMD_MEM_ENCRYPT))\t\t\t\\\n\t\tset_memory_decrypted(start, (s) >> PAGE_SHIFT);\t\\\n\t\t\t\t\t\t\t\t\\\n\tstart;\t\t\t\t\t\t\t\\\n})\n\n#define vga_readb(x) (*(x))\n#define vga_writeb(x, y) (*(y) = (x))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

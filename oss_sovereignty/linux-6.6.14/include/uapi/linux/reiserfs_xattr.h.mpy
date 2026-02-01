@@ -1,0 +1,9 @@
+{
+  "module_name": "reiserfs_xattr.h",
+  "hash_id": "fde8ff1c126c77b6190904900e611320309726b19b4ce1ff96aac8e57a057502",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/reiserfs_xattr.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_REISERFS_XATTR_H\n#define _LINUX_REISERFS_XATTR_H\n\n#include <linux/types.h>\n\n \n#define REISERFS_XATTR_MAGIC 0x52465841\t \n\nstruct reiserfs_xattr_header {\n\t__le32 h_magic;\t\t \n\t__le32 h_hash;\t\t \n};\n\nstruct reiserfs_security_handle {\n\tconst char *name;\n\tvoid *value;\n\t__kernel_size_t length;\n};\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

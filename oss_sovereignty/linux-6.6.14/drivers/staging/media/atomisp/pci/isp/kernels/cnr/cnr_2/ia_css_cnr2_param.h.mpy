@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_cnr2_param.h",
+  "hash_id": "fdace974ee380939dbea58d1512c62d65eed5c042d5ce05423eda81897727c4b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/cnr/cnr_2/ia_css_cnr2_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_CNR2_PARAM_H\n#define __IA_CSS_CNR2_PARAM_H\n\n#include \"type_support.h\"\n\n \nstruct sh_css_isp_cnr_params {\n\ts32 coring_u;\n\ts32 coring_v;\n\ts32 sense_gain_vy;\n\ts32 sense_gain_vu;\n\ts32 sense_gain_vv;\n\ts32 sense_gain_hy;\n\ts32 sense_gain_hu;\n\ts32 sense_gain_hv;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_user_extensions.h",
+  "hash_id": "ee1932c7dac57901e4641c1a483077ef1c7d9ed0df6ed24e742ed3c88ebba28f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_user_extensions.h",
+  "human_readable_source": " \n\n#ifndef I915_USER_EXTENSIONS_H\n#define I915_USER_EXTENSIONS_H\n\nstruct i915_user_extension;\n\ntypedef int (*i915_user_extension_fn)(struct i915_user_extension __user *ext,\n\t\t\t\t      void *data);\n\nint i915_user_extensions(struct i915_user_extension __user *ext,\n\t\t\t const i915_user_extension_fn *tbl,\n\t\t\t unsigned int count,\n\t\t\t void *data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4fabcba324dc8d67abbdf8a55b349a763e6e87531cf882c77d978adac4749a81",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/display/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\n\nobj-$(CONFIG_DRM_DP_AUX_BUS) += drm_dp_aux_bus.o\n\ndrm_display_helper-y := drm_display_helper_mod.o\ndrm_display_helper-$(CONFIG_DRM_DISPLAY_DP_HELPER) += \\\n\tdrm_dp_dual_mode_helper.o \\\n\tdrm_dp_helper.o \\\n\tdrm_dp_mst_topology.o \\\n\tdrm_dsc_helper.o\ndrm_display_helper-$(CONFIG_DRM_DISPLAY_HDCP_HELPER) += drm_hdcp_helper.o\ndrm_display_helper-$(CONFIG_DRM_DISPLAY_HDMI_HELPER) += \\\n\tdrm_hdmi_helper.o \\\n\tdrm_scdc_helper.o\ndrm_display_helper-$(CONFIG_DRM_DP_AUX_CHARDEV) += drm_dp_aux_dev.o\ndrm_display_helper-$(CONFIG_DRM_DP_CEC) += drm_dp_cec.o\n\nobj-$(CONFIG_DRM_DISPLAY_HELPER) += drm_display_helper.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

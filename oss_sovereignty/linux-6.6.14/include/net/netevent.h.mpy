@@ -1,0 +1,9 @@
+{
+  "module_name": "netevent.h",
+  "hash_id": "87aec1aecb4e428a66cfe2f69c66c347e060b74c253cb1b5de08ce32a84372bf",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netevent.h",
+  "human_readable_source": " \n#ifndef _NET_EVENT_H\n#define _NET_EVENT_H\n\n \n\nstruct dst_entry;\nstruct neighbour;\nstruct notifier_block ;\n\nstruct netevent_redirect {\n\tstruct dst_entry *old;\n\tstruct dst_entry *new;\n\tstruct neighbour *neigh;\n\tconst void *daddr;\n};\n\nenum netevent_notif_type {\n\tNETEVENT_NEIGH_UPDATE = 1,  \n\tNETEVENT_REDIRECT,\t    \n\tNETEVENT_DELAY_PROBE_TIME_UPDATE,  \n\tNETEVENT_IPV4_MPATH_HASH_UPDATE,  \n\tNETEVENT_IPV6_MPATH_HASH_UPDATE,  \n\tNETEVENT_IPV4_FWD_UPDATE_PRIORITY_UPDATE,  \n};\n\nint register_netevent_notifier(struct notifier_block *nb);\nint unregister_netevent_notifier(struct notifier_block *nb);\nint call_netevent_notifiers(unsigned long val, void *v);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

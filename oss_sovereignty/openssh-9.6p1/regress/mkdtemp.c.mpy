@@ -1,0 +1,9 @@
+{
+  "module_name": "mkdtemp.c",
+  "hash_id": "ec005e8e05d3431bafc3636cef3953d7448613664da1052adb465888f6c886df",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/mkdtemp.c",
+  "human_readable_source": " \n\n \n\n#include \"includes.h\"\n\n#include <limits.h>\n#include <stdarg.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n\n#include \"log.h\"\n\nstatic void\nusage(void)\n{\n\tfprintf(stderr, \"mkdtemp template\\n\");\n\texit(1);\n}\n\nint\nmain(int argc, char **argv)\n{\n\tconst char *base;\n\tconst char *tmpdir;\n\tchar template[PATH_MAX];\n\tint r;\n\tchar *dir;\n\n\tif (argc != 2)\n\t\tusage();\n\tbase = argv[1];\n\n\tif ((tmpdir = getenv(\"TMPDIR\")) == NULL)\n\t\ttmpdir = \"/tmp\";\n\tr = snprintf(template, sizeof(template), \"%s/%s\", tmpdir, base);\n\tif (r < 0 || (size_t)r >= sizeof(template))\n\t\tfatal(\"template string too long\");\n\tdir = mkdtemp(template);\n\tif (dir == NULL) {\n\t\tperror(\"mkdtemp\");\n\t\texit(1);\n\t}\n\tputs(dir);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

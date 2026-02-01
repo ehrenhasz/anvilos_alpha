@@ -1,0 +1,9 @@
+{
+  "module_name": "unusual_jumpshot.h",
+  "hash_id": "f192d533315c8138fa84d777e224321b83476ca664741d7c71af97df8d55ab91",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/storage/unusual_jumpshot.h",
+  "human_readable_source": " \n \n\n#if defined(CONFIG_USB_STORAGE_JUMPSHOT) || \\\n\t\tdefined(CONFIG_USB_STORAGE_JUMPSHOT_MODULE)\n\nUNUSUAL_DEV(  0x05dc, 0x0001, 0x0000, 0x0001,\n\t\t\"Lexar\",\n\t\t\"Jumpshot USB CF Reader\",\n\t\tUSB_SC_SCSI, USB_PR_JUMPSHOT, NULL,\n\t\tUS_FL_NEED_OVERRIDE),\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

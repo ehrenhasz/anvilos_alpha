@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype_punct.c",
+  "hash_id": "de65864080581c4221b57347bf03916bc22b6a8b0dcb7b46f77f24db5c9f6750",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unictype/ctype_punct.c",
+  "human_readable_source": " \n#include \"unictype.h\"\n\n#include \"bitmap.h\"\n\n \n#include \"ctype_punct.h\"\n\nbool\nuc_is_punct (ucs4_t uc)\n{\n  return bitmap_lookup (&u_is_punct, uc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

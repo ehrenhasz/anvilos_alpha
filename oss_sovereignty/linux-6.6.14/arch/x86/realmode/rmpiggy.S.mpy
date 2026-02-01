@@ -1,0 +1,9 @@
+{
+  "module_name": "rmpiggy.S",
+  "hash_id": "eaec6b1f8e9976a4e32ddc1064fb3c5d48682969c2060abf4a49bafd31f67933",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/realmode/rmpiggy.S",
+  "human_readable_source": " \n \n#include <linux/linkage.h>\n#include <asm/page_types.h>\n\n\t.section \".init.data\",\"aw\"\n\n\t.balign PAGE_SIZE\n\nSYM_DATA_START(real_mode_blob)\n\t.incbin\t\"arch/x86/realmode/rm/realmode.bin\"\nSYM_DATA_END_LABEL(real_mode_blob, SYM_L_GLOBAL, real_mode_blob_end)\n\nSYM_DATA_START(real_mode_relocs)\n\t.incbin\t\"arch/x86/realmode/rm/realmode.relocs\"\nSYM_DATA_END(real_mode_relocs)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

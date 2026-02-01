@@ -1,0 +1,9 @@
+{
+  "module_name": "x86_arch_prctl.sh",
+  "hash_id": "9dbfb5d8788914d92948440bb4761372b3528f6f696cbe321a93908fb3a6d184",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/x86_arch_prctl.sh",
+  "human_readable_source": "#!/bin/sh\n# Copyright (C) 2018, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>\n# SPDX-License-Identifier: LGPL-2.1\n\n[ $# -eq 1 ] && x86_header_dir=$1 || x86_header_dir=tools/arch/x86/include/uapi/asm/\n\nprctl_arch_header=${x86_header_dir}/prctl.h\n\nprint_range () {\n\tidx=$1\n\tprefix=$2\n\tfirst_entry=$3\n\n\tprintf \"#define x86_arch_prctl_codes_%d_offset %s\\n\" $idx $first_entry\n\tprintf \"static const char *x86_arch_prctl_codes_%d[] = {\\n\" $idx\n\tregex=`printf '^[[:space:]]*#[[:space:]]*define[[:space:]]+ARCH_([[:alnum:]_]+)[[:space:]]+(%s[[:xdigit:]]+).*' ${prefix}`\n\tfmt=\"\\t[%#x - ${first_entry}]= \\\"%s\\\",\\n\"\n\tgrep -E -q $regex ${prctl_arch_header} && \\\n\t(grep -E $regex ${prctl_arch_header} | \\\n\t\tsed -r \"s/$regex/\\2 \\1/g\"\t| \\\n\t\txargs printf \"$fmt\")\n\tprintf \"};\\n\\n\"\n}\n\nprint_range 1 0x1 0x1001\nprint_range 2 0x2 0x2001\nprint_range 3 0x4 0x4001\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

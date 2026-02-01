@@ -1,0 +1,9 @@
+{
+  "module_name": "strmatch.c",
+  "hash_id": "8fa10de31cc916dbf1b379c72c56f1bfffc404b4fc912e82f5d2acf2a077bc57",
+  "original_prompt": "Ingested from bash-5.2.21/lib/glob/strmatch.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#include \"stdc.h\"\n#include \"strmatch.h\"\n\nextern int xstrmatch PARAMS((char *, char *, int));\n#if defined (HANDLE_MULTIBYTE)\nextern int internal_wstrmatch PARAMS((wchar_t *, wchar_t *, int));\n#endif\n\nint\nstrmatch (pattern, string, flags)\n     char *pattern;\n     char *string;\n     int flags;\n{\n  if (string == 0 || pattern == 0)\n    return FNM_NOMATCH;\n\n  return (xstrmatch (pattern, string, flags));\n}\n\n#if defined (HANDLE_MULTIBYTE)\nint\nwcsmatch (wpattern, wstring, flags)\n     wchar_t *wpattern;\n     wchar_t *wstring;\n     int flags;\n{\n  if (wstring == 0 || wpattern == 0)\n    return (FNM_NOMATCH);\n\n  return (internal_wstrmatch (wpattern, wstring, flags));\n}\n#endif\n\n#ifdef TEST\nmain (c, v)\n     int c;\n     char **v;\n{\n  char *string, *pat;\n\n  string = v[1];\n  pat = v[2];\n\n  if (strmatch (pat, string, 0) == 0)\n    {\n      printf (\"%s matches %s\\n\", string, pat);\n      exit (0);\n    }\n  else\n    {\n      printf (\"%s does not match %s\\n\", string, pat);\n      exit (1);\n    }\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_host1x08_vm.h",
+  "hash_id": "ec2709f2fd01c9a7ed17d48224f79f8c8c52982fa36400e6aa95d5ace838d562",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/hw/hw_host1x08_vm.h",
+  "human_readable_source": " \n \n\n#define HOST1X_CHANNEL_DMASTART\t\t\t\t0x0000\n#define HOST1X_CHANNEL_DMASTART_HI\t\t\t0x0004\n#define HOST1X_CHANNEL_DMAPUT\t\t\t\t0x0008\n#define HOST1X_CHANNEL_DMAPUT_HI\t\t\t0x000c\n#define HOST1X_CHANNEL_DMAGET\t\t\t\t0x0010\n#define HOST1X_CHANNEL_DMAGET_HI\t\t\t0x0014\n#define HOST1X_CHANNEL_DMAEND\t\t\t\t0x0018\n#define HOST1X_CHANNEL_DMAEND_HI\t\t\t0x001c\n#define HOST1X_CHANNEL_DMACTRL\t\t\t\t0x0020\n#define HOST1X_CHANNEL_DMACTRL_DMASTOP\t\t\tBIT(0)\n#define HOST1X_CHANNEL_DMACTRL_DMAGETRST\t\tBIT(1)\n#define HOST1X_CHANNEL_DMACTRL_DMAINITGET\t\tBIT(2)\n#define HOST1X_CHANNEL_CMDFIFO_STAT\t\t\t0x0024\n#define HOST1X_CHANNEL_CMDFIFO_STAT_EMPTY\t\tBIT(13)\n#define HOST1X_CHANNEL_CMDFIFO_RDATA\t\t\t0x0028\n#define HOST1X_CHANNEL_CMDP_OFFSET\t\t\t0x0030\n#define HOST1X_CHANNEL_CMDP_CLASS\t\t\t0x0034\n#define HOST1X_CHANNEL_CHANNELSTAT\t\t\t0x0038\n#define HOST1X_CHANNEL_CMDPROC_STOP\t\t\t0x0048\n#define HOST1X_CHANNEL_TEARDOWN\t\t\t\t0x004c\n#define HOST1X_CHANNEL_SMMU_STREAMID\t\t\t0x0084\n\n#define HOST1X_SYNC_SYNCPT_CPU_INCR(x)\t\t\t(0x6400 + 4 * (x))\n#define HOST1X_SYNC_SYNCPT_THRESH_CPU0_INT_STATUS(x)\t(0x6600 + 4 * (x))\n#define HOST1X_SYNC_SYNCPT_INTR_DEST(x)\t\t\t(0x6684 + 4 * (x))\n#define HOST1X_SYNC_SYNCPT_THRESH_INT_ENABLE_CPU0(x)\t(0x770c + 4 * (x))\n#define HOST1X_SYNC_SYNCPT_THRESH_INT_DISABLE(x)\t(0x7790 + 4 * (x))\n#define HOST1X_SYNC_SYNCPT(x)\t\t\t\t(0x8080 + 4 * (x))\n#define HOST1X_SYNC_SYNCPT_INT_THRESH(x)\t\t(0xa088 + 4 * (x))\n#define HOST1X_SYNC_SYNCPT_CH_APP(x)\t\t\t(0xb090 + 4 * (x))\n#define HOST1X_SYNC_SYNCPT_CH_APP_CH(v)\t\t\t(((v) & 0x3f) << 8)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

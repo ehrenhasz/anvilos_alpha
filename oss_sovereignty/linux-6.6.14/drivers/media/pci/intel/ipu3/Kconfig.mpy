@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "90bbd2d43d9bab8a6c181c02cb6e93da3c1eec169b8c9a994839da4782653f7a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/intel/ipu3/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_IPU3_CIO2\n\ttristate \"Intel ipu3-cio2 driver\"\n\tdepends on VIDEO_DEV && PCI\n\tdepends on IPU_BRIDGE || !IPU_BRIDGE\n\tdepends on ACPI || COMPILE_TEST\n\tdepends on X86\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect V4L2_FWNODE\n\tselect VIDEOBUF2_DMA_SG\n\n\thelp\n\t  This is the Intel IPU3 CIO2 CSI-2 receiver unit, found in Intel\n\t  Skylake and Kaby Lake SoCs and used for capturing images and\n\t  video from a camera sensor.\n\n\t  Say Y or M here if you have a Skylake/Kaby Lake SoC with MIPI CSI-2\n\t  connected camera.\n\t  The module will be called ipu3-cio2.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

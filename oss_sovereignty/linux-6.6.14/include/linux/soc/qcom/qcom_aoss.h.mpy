@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom_aoss.h",
+  "hash_id": "93f9e7619366a002a3df3b09b3e9e3b866ec8264e2105f8e7bbe4f411a12ae1e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/qcom/qcom_aoss.h",
+  "human_readable_source": " \n \n\n#ifndef __QCOM_AOSS_H__\n#define __QCOM_AOSS_H__\n\n#include <linux/err.h>\n#include <linux/device.h>\n\nstruct qmp;\n\n#if IS_ENABLED(CONFIG_QCOM_AOSS_QMP)\n\nint qmp_send(struct qmp *qmp, const char *fmt, ...);\nstruct qmp *qmp_get(struct device *dev);\nvoid qmp_put(struct qmp *qmp);\n\n#else\n\nstatic inline int qmp_send(struct qmp *qmp, const char *fmt, ...)\n{\n\treturn -ENODEV;\n}\n\nstatic inline struct qmp *qmp_get(struct device *dev)\n{\n\treturn ERR_PTR(-ENODEV);\n}\n\nstatic inline void qmp_put(struct qmp *qmp)\n{\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

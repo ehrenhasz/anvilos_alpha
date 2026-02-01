@@ -1,0 +1,9 @@
+{
+  "module_name": "errno-base.h",
+  "hash_id": "3e3e1b2356b7864c9cf6a803ef5da41aff19a81e22ae74938fec8a995229f38c",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/asm-generic/errno-base.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_ERRNO_BASE_H\n#define _ASM_GENERIC_ERRNO_BASE_H\n\n#define\tEPERM\t\t 1\t \n#define\tENOENT\t\t 2\t \n#define\tESRCH\t\t 3\t \n#define\tEINTR\t\t 4\t \n#define\tEIO\t\t 5\t \n#define\tENXIO\t\t 6\t \n#define\tE2BIG\t\t 7\t \n#define\tENOEXEC\t\t 8\t \n#define\tEBADF\t\t 9\t \n#define\tECHILD\t\t10\t \n#define\tEAGAIN\t\t11\t \n#define\tENOMEM\t\t12\t \n#define\tEACCES\t\t13\t \n#define\tEFAULT\t\t14\t \n#define\tENOTBLK\t\t15\t \n#define\tEBUSY\t\t16\t \n#define\tEEXIST\t\t17\t \n#define\tEXDEV\t\t18\t \n#define\tENODEV\t\t19\t \n#define\tENOTDIR\t\t20\t \n#define\tEISDIR\t\t21\t \n#define\tEINVAL\t\t22\t \n#define\tENFILE\t\t23\t \n#define\tEMFILE\t\t24\t \n#define\tENOTTY\t\t25\t \n#define\tETXTBSY\t\t26\t \n#define\tEFBIG\t\t27\t \n#define\tENOSPC\t\t28\t \n#define\tESPIPE\t\t29\t \n#define\tEROFS\t\t30\t \n#define\tEMLINK\t\t31\t \n#define\tEPIPE\t\t32\t \n#define\tEDOM\t\t33\t \n#define\tERANGE\t\t34\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

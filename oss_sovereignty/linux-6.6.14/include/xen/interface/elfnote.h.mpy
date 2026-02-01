@@ -1,0 +1,9 @@
+{
+  "module_name": "elfnote.h",
+  "hash_id": "771f802a14be925e551b36b4d81dbb1dabd6caae20d9531b4041f900a083ea7a",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/interface/elfnote.h",
+  "human_readable_source": " \n \n\n#ifndef __XEN_PUBLIC_ELFNOTE_H__\n#define __XEN_PUBLIC_ELFNOTE_H__\n\n \n\n \n#define XEN_ELFNOTE_INFO           0\n\n \n#define XEN_ELFNOTE_ENTRY          1\n\n \n#define XEN_ELFNOTE_HYPERCALL_PAGE 2\n\n \n#define XEN_ELFNOTE_VIRT_BASE      3\n\n \n#define XEN_ELFNOTE_PADDR_OFFSET   4\n\n \n#define XEN_ELFNOTE_XEN_VERSION    5\n\n \n#define XEN_ELFNOTE_GUEST_OS       6\n\n \n#define XEN_ELFNOTE_GUEST_VERSION  7\n\n \n#define XEN_ELFNOTE_LOADER         8\n\n \n#define XEN_ELFNOTE_PAE_MODE       9\n\n \n#define XEN_ELFNOTE_FEATURES      10\n\n \n#define XEN_ELFNOTE_BSD_SYMTAB    11\n\n \n#define XEN_ELFNOTE_HV_START_LOW  12\n\n \n#define XEN_ELFNOTE_L1_MFN_VALID  13\n\n \n#define XEN_ELFNOTE_SUSPEND_CANCEL 14\n\n \n#define XEN_ELFNOTE_INIT_P2M      15\n\n \n#define XEN_ELFNOTE_MOD_START_PFN 16\n\n \n#define XEN_ELFNOTE_SUPPORTED_FEATURES 17\n\n \n#define XEN_ELFNOTE_PHYS32_ENTRY 18\n\n \n#define XEN_ELFNOTE_MAX XEN_ELFNOTE_PHYS32_ENTRY\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

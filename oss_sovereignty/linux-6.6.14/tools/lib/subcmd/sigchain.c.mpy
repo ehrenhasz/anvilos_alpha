@@ -1,0 +1,9 @@
+{
+  "module_name": "sigchain.c",
+  "hash_id": "e11fb07160fcf16ab031976d45894b410c4445323334beb6b97595dd3630a9ee",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/subcmd/sigchain.c",
+  "human_readable_source": "\n#include <signal.h>\n#include \"subcmd-util.h\"\n#include \"sigchain.h\"\n\n#define SIGCHAIN_MAX_SIGNALS 32\n\nstruct sigchain_signal {\n\tsigchain_fun *old;\n\tint n;\n\tint alloc;\n};\nstatic struct sigchain_signal signals[SIGCHAIN_MAX_SIGNALS];\n\nstatic void check_signum(int sig)\n{\n\tif (sig < 1 || sig >= SIGCHAIN_MAX_SIGNALS)\n\t\tdie(\"BUG: signal out of range: %d\", sig);\n}\n\nstatic int sigchain_push(int sig, sigchain_fun f)\n{\n\tstruct sigchain_signal *s = signals + sig;\n\tcheck_signum(sig);\n\n\tALLOC_GROW(s->old, s->n + 1, s->alloc);\n\ts->old[s->n] = signal(sig, f);\n\tif (s->old[s->n] == SIG_ERR)\n\t\treturn -1;\n\ts->n++;\n\treturn 0;\n}\n\nint sigchain_pop(int sig)\n{\n\tstruct sigchain_signal *s = signals + sig;\n\tcheck_signum(sig);\n\tif (s->n < 1)\n\t\treturn 0;\n\n\tif (signal(sig, s->old[s->n - 1]) == SIG_ERR)\n\t\treturn -1;\n\ts->n--;\n\treturn 0;\n}\n\nvoid sigchain_push_common(sigchain_fun f)\n{\n\tsigchain_push(SIGINT, f);\n\tsigchain_push(SIGHUP, f);\n\tsigchain_push(SIGTERM, f);\n\tsigchain_push(SIGQUIT, f);\n\tsigchain_push(SIGPIPE, f);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

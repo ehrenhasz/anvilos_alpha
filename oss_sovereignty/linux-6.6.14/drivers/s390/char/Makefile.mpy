@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5b3bb5c77992723ae8544c7d107d5e54d450abc326d92127b4023d9917d1856e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/char/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# S/390 character devices\n#\n\nifdef CONFIG_FUNCTION_TRACER\n# Do not trace early setup code\nCFLAGS_REMOVE_sclp_early_core.o\t= $(CC_FLAGS_FTRACE)\nendif\n\nGCOV_PROFILE_sclp_early_core.o\t\t:= n\nKCOV_INSTRUMENT_sclp_early_core.o\t:= n\nUBSAN_SANITIZE_sclp_early_core.o\t:= n\nKASAN_SANITIZE_sclp_early_core.o\t:= n\n\nCFLAGS_sclp_early_core.o\t\t+= -D__NO_FORTIFY\n\nCFLAGS_REMOVE_sclp_early_core.o\t+= $(CC_FLAGS_EXPOLINE)\n\nobj-y += ctrlchar.o keyboard.o defkeymap.o sclp.o sclp_rw.o sclp_quiesce.o \\\n\t sclp_cmd.o sclp_config.o sclp_cpi_sys.o sclp_ocf.o sclp_ctl.o \\\n\t sclp_early.o sclp_early_core.o sclp_sd.o\n\nobj-$(CONFIG_TN3270) += raw3270.o con3270.o\nobj-$(CONFIG_TN3270_FS) += fs3270.o\n\nobj-$(CONFIG_TN3215) += con3215.o\n\nobj-$(CONFIG_SCLP_TTY) += sclp_tty.o\nobj-$(CONFIG_SCLP_CONSOLE) += sclp_con.o\nobj-$(CONFIG_SCLP_VT220_TTY) += sclp_vt220.o\n\nobj-$(CONFIG_PCI) += sclp_pci.o\n\nobj-$(subst m,y,$(CONFIG_ZCRYPT)) += sclp_ap.o\n\nobj-$(CONFIG_VMLOGRDR) += vmlogrdr.o\nobj-$(CONFIG_VMCP) += vmcp.o\n\ntape-$(CONFIG_PROC_FS) += tape_proc.o\ntape-objs := tape_core.o tape_std.o tape_char.o $(tape-y)\nobj-$(CONFIG_S390_TAPE) += tape.o tape_class.o\nobj-$(CONFIG_S390_TAPE_34XX) += tape_34xx.o\nobj-$(CONFIG_S390_TAPE_3590) += tape_3590.o\nobj-$(CONFIG_MONREADER) += monreader.o\nobj-$(CONFIG_MONWRITER) += monwriter.o\nobj-$(CONFIG_S390_VMUR) += vmur.o\nobj-$(CONFIG_CRASH_DUMP) += sclp_sdias.o zcore.o\nobj-$(CONFIG_S390_UV_UAPI) += uvdevice.o\n\nhmcdrv-objs := hmcdrv_mod.o hmcdrv_dev.o hmcdrv_ftp.o hmcdrv_cache.o diag_ftp.o sclp_ftp.o\nobj-$(CONFIG_HMC_DRV) += hmcdrv.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

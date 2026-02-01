@@ -1,0 +1,9 @@
+{
+  "module_name": "rm.x",
+  "hash_id": "a48a0948be5c68e19b30beb403df215abc44c001ac49b2eb1d212943fddb59a0",
+  "original_prompt": "Ingested from coreutils-9.4/man/rm.x",
+  "human_readable_source": "'\\\" Copyright (C) 1998-2023 Free Software Foundation, Inc.\n'\\\"\n'\\\" This is free software.  You may redistribute copies of it under the terms\n'\\\" of the GNU General Public License <https://www.gnu.org/licenses/gpl.html>.\n'\\\" There is NO WARRANTY, to the extent permitted by law.\n[NAME]\nrm \\- remove files or directories\n[DESCRIPTION]\nThis manual page\ndocuments the GNU version of\n.BR rm .\n.B rm\nremoves each specified file.  By default, it does not remove\ndirectories.\n.P\nIf the \\fI\\-I\\fR or \\fI\\-\\-interactive=once\\fR option is given,\nand there are more than three files or the \\fI\\-r\\fR, \\fI\\-R\\fR,\nor \\fI\\-\\-recursive\\fR are given, then\n.B rm\nprompts the user for whether to proceed with the entire operation.  If\nthe response is not affirmative, the entire command is aborted.\n.P\nOtherwise, if a file is unwritable, standard input is a terminal, and\nthe \\fI\\-f\\fR or \\fI\\-\\-force\\fR option is not given, or the\n\\fI\\-i\\fR or \\fI\\-\\-interactive=always\\fR option is given,\n.B rm\nprompts the user for whether to remove the file.  If the response is\nnot affirmative, the file is skipped.\n.SH OPTIONS\n[SEE ALSO]\nunlink(1), unlink(2), chattr(1), shred(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

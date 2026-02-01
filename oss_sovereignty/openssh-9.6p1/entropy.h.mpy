@@ -1,0 +1,9 @@
+{
+  "module_name": "entropy.h",
+  "hash_id": "dcdfb264d7d5ee7a7f739f3f4150d618c607feb8ac02ef1ee09b2b552405f771",
+  "original_prompt": "Ingested from openssh-9.6p1/entropy.h",
+  "human_readable_source": " \n\n#ifndef _RANDOMS_H\n#define _RANDOMS_H\n\nstruct sshbuf;\n\nvoid seed_rng(void);\nvoid rexec_send_rng_seed(struct sshbuf *);\nvoid rexec_recv_rng_seed(struct sshbuf *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

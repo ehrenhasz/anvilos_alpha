@@ -1,0 +1,9 @@
+{
+  "module_name": "xdp_diag.h",
+  "hash_id": "dae2966ff9d3451b28056175506e5071cf18cb0796ef80b22ec6d135afd3d325",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/xdp_diag.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_XDP_DIAG_H\n#define _LINUX_XDP_DIAG_H\n\n#include <linux/types.h>\n\nstruct xdp_diag_req {\n\t__u8\tsdiag_family;\n\t__u8\tsdiag_protocol;\n\t__u16\tpad;\n\t__u32\txdiag_ino;\n\t__u32\txdiag_show;\n\t__u32\txdiag_cookie[2];\n};\n\nstruct xdp_diag_msg {\n\t__u8\txdiag_family;\n\t__u8\txdiag_type;\n\t__u16\tpad;\n\t__u32\txdiag_ino;\n\t__u32\txdiag_cookie[2];\n};\n\n#define XDP_SHOW_INFO\t\t(1 << 0)  \n#define XDP_SHOW_RING_CFG\t(1 << 1)\n#define XDP_SHOW_UMEM\t\t(1 << 2)\n#define XDP_SHOW_MEMINFO\t(1 << 3)\n#define XDP_SHOW_STATS\t\t(1 << 4)\n\nenum {\n\tXDP_DIAG_NONE,\n\tXDP_DIAG_INFO,\n\tXDP_DIAG_UID,\n\tXDP_DIAG_RX_RING,\n\tXDP_DIAG_TX_RING,\n\tXDP_DIAG_UMEM,\n\tXDP_DIAG_UMEM_FILL_RING,\n\tXDP_DIAG_UMEM_COMPLETION_RING,\n\tXDP_DIAG_MEMINFO,\n\tXDP_DIAG_STATS,\n\t__XDP_DIAG_MAX,\n};\n\n#define XDP_DIAG_MAX (__XDP_DIAG_MAX - 1)\n\nstruct xdp_diag_info {\n\t__u32\tifindex;\n\t__u32\tqueue_id;\n};\n\nstruct xdp_diag_ring {\n\t__u32\tentries;  \n};\n\n#define XDP_DU_F_ZEROCOPY (1 << 0)\n\nstruct xdp_diag_umem {\n\t__u64\tsize;\n\t__u32\tid;\n\t__u32\tnum_pages;\n\t__u32\tchunk_size;\n\t__u32\theadroom;\n\t__u32\tifindex;\n\t__u32\tqueue_id;\n\t__u32\tflags;\n\t__u32\trefs;\n};\n\nstruct xdp_diag_stats {\n\t__u64\tn_rx_dropped;\n\t__u64\tn_rx_invalid;\n\t__u64\tn_rx_full;\n\t__u64\tn_fill_ring_empty;\n\t__u64\tn_tx_invalid;\n\t__u64\tn_tx_ring_empty;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

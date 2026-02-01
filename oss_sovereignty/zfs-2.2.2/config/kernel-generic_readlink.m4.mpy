@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-generic_readlink.m4",
+  "hash_id": "31befe99d13045f7a35b59ae71f10090e34971adfb8bf60342afd031c5988444",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-generic_readlink.m4",
+  "human_readable_source": "dnl #\ndnl # 4.10 API\ndnl #\ndnl # NULL inode_operations.readlink implies generic_readlink(), which\ndnl # has been made static.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_GENERIC_READLINK_GLOBAL], [\n\tZFS_LINUX_TEST_SRC([generic_readlink_global], [\n\t\t#include <linux/fs.h>\n\t],[\n\t\tint i __attribute__ ((unused));\n\t\ti = generic_readlink(NULL, NULL, 0);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_GENERIC_READLINK_GLOBAL], [\n\tAC_MSG_CHECKING([whether generic_readlink is global])\n\tZFS_LINUX_TEST_RESULT([generic_readlink_global], [\n\t\tAC_MSG_RESULT([yes])\n\t\tAC_DEFINE(HAVE_GENERIC_READLINK, 1,\n\t\t    [generic_readlink is global])\n\t],[\n\t\tAC_MSG_RESULT([no])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

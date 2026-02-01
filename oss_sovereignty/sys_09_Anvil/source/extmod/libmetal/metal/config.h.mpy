@@ -1,0 +1,9 @@
+{
+  "module_name": "config.h",
+  "hash_id": "9725dff97d46bef730aad0f16395bc0142250090461c3b623d2eb369895308d2",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/libmetal/metal/config.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_METAL_MICROPYTHON_H\n#define MICROPY_INCLUDED_METAL_MICROPYTHON_H\n\n#include <stdlib.h>\n\n\n#include \"mpmetalport.h\"\n\n\n#define METAL_VER_MAJOR     1\n\n\n#define METAL_VER_MINOR     5\n\n\n#define METAL_VER_PATCH     0\n\n\n#define METAL_VER           \"1.5.0\"\n\n#if METAL_HAVE_STDATOMIC_H\n#define HAVE_STDATOMIC_H\n#endif\n\n#if METAL_HAVE_FUTEX_H\n#define HAVE_FUTEX_H\n#endif\n\n#ifndef METAL_MAX_DEVICE_REGIONS\n#define METAL_MAX_DEVICE_REGIONS 1\n#endif\n\nstatic inline void *__metal_allocate_memory(unsigned int size) {\n    return m_tracked_calloc(1, size);\n}\n\nstatic inline void __metal_free_memory(void *ptr) {\n    m_tracked_free(ptr);\n}\n\n\nint __metal_sleep_usec(unsigned int usec);\nvoid sys_irq_enable(unsigned int vector);\nvoid sys_irq_disable(unsigned int vector);\nvoid sys_irq_restore_enable(unsigned int flags);\nunsigned int sys_irq_save_disable(void);\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

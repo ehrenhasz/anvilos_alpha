@@ -1,0 +1,9 @@
+{
+  "module_name": "ll_cache.json",
+  "hash_id": "19701f60983aba770a57ace983018e7397377fcca761712fb3840a4983aa65fd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/neoverse-n1/ll_cache.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"LL_CACHE_RD\",\n        \"PublicDescription\": \"Counts read transactions that were returned from outside the core cluster. This event counts when the system register CPUECTLR.EXTLLC bit is set. This event counts read transactions returned from outside the core if those transactions are either hit in the system level cache or missed in the SLC and are returned from any other external sources.\"\n    },\n    {\n        \"ArchStdEvent\": \"LL_CACHE_MISS_RD\",\n        \"PublicDescription\": \"Counts read transactions that were returned from outside the core cluster but missed in the system level cache. This event counts when the system register CPUECTLR.EXTLLC bit is set. This event counts read transactions returned from outside the core if those transactions are missed in the System level Cache. The data source of the transaction is indicated by a field in the CHI transaction returning to the CPU. This event does not count reads caused by cache maintenance operations.\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

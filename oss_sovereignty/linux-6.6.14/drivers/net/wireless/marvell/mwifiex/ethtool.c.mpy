@@ -1,0 +1,9 @@
+{
+  "module_name": "ethtool.c",
+  "hash_id": "9201f3ea93b9e60f55ab9827a1e345d519c56cbf9fd6e6a595ce70b97a44df1f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/marvell/mwifiex/ethtool.c",
+  "human_readable_source": "\n \n\n#include \"main.h\"\n\nstatic void mwifiex_ethtool_get_wol(struct net_device *dev,\n\t\t\t\t    struct ethtool_wolinfo *wol)\n{\n\tstruct mwifiex_private *priv = mwifiex_netdev_get_priv(dev);\n\tu32 conditions = le32_to_cpu(priv->adapter->hs_cfg.conditions);\n\n\twol->supported = WAKE_UCAST|WAKE_MCAST|WAKE_BCAST|WAKE_PHY;\n\n\tif (conditions == HS_CFG_COND_DEF)\n\t\treturn;\n\n\tif (conditions & HS_CFG_COND_UNICAST_DATA)\n\t\twol->wolopts |= WAKE_UCAST;\n\tif (conditions & HS_CFG_COND_MULTICAST_DATA)\n\t\twol->wolopts |= WAKE_MCAST;\n\tif (conditions & HS_CFG_COND_BROADCAST_DATA)\n\t\twol->wolopts |= WAKE_BCAST;\n\tif (conditions & HS_CFG_COND_MAC_EVENT)\n\t\twol->wolopts |= WAKE_PHY;\n}\n\nstatic int mwifiex_ethtool_set_wol(struct net_device *dev,\n\t\t\t\t   struct ethtool_wolinfo *wol)\n{\n\tstruct mwifiex_private *priv = mwifiex_netdev_get_priv(dev);\n\tu32 conditions = 0;\n\n\tif (wol->wolopts & ~(WAKE_UCAST|WAKE_MCAST|WAKE_BCAST|WAKE_PHY))\n\t\treturn -EOPNOTSUPP;\n\n\tif (wol->wolopts & WAKE_UCAST)\n\t\tconditions |= HS_CFG_COND_UNICAST_DATA;\n\tif (wol->wolopts & WAKE_MCAST)\n\t\tconditions |= HS_CFG_COND_MULTICAST_DATA;\n\tif (wol->wolopts & WAKE_BCAST)\n\t\tconditions |= HS_CFG_COND_BROADCAST_DATA;\n\tif (wol->wolopts & WAKE_PHY)\n\t\tconditions |= HS_CFG_COND_MAC_EVENT;\n\tif (wol->wolopts == 0)\n\t\tconditions |= HS_CFG_COND_DEF;\n\tpriv->adapter->hs_cfg.conditions = cpu_to_le32(conditions);\n\n\treturn 0;\n}\n\nconst struct ethtool_ops mwifiex_ethtool_ops = {\n\t.get_wol = mwifiex_ethtool_get_wol,\n\t.set_wol = mwifiex_ethtool_set_wol,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

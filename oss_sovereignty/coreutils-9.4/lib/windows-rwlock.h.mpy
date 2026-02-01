@@ -1,0 +1,9 @@
+{
+  "module_name": "windows-rwlock.h",
+  "hash_id": "fef78ad91b507f6239504bd59e08d90edeede4264b8028b2c1977016eda09dff",
+  "original_prompt": "Ingested from coreutils-9.4/lib/windows-rwlock.h",
+  "human_readable_source": " \n\n#ifndef _WINDOWS_RWLOCK_H\n#define _WINDOWS_RWLOCK_H\n\n#define WIN32_LEAN_AND_MEAN   \n#include <windows.h>\n\n#include \"windows-initguard.h\"\n\n \n\ntypedef struct\n        {\n          HANDLE *array;  \n          unsigned int count;  \n          unsigned int alloc;  \n          unsigned int offset;  \n        }\n        glwthread_carray_waitqueue_t;\ntypedef struct\n        {\n          glwthread_initguard_t guard;  \n          CRITICAL_SECTION lock;  \n          glwthread_carray_waitqueue_t waiting_readers;  \n          glwthread_carray_waitqueue_t waiting_writers;  \n          int runcount;  \n        }\n        glwthread_rwlock_t;\n\n#define GLWTHREAD_RWLOCK_INIT { GLWTHREAD_INITGUARD_INIT }\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\nextern void glwthread_rwlock_init (glwthread_rwlock_t *lock);\nextern int glwthread_rwlock_rdlock (glwthread_rwlock_t *lock);\nextern int glwthread_rwlock_wrlock (glwthread_rwlock_t *lock);\nextern int glwthread_rwlock_tryrdlock (glwthread_rwlock_t *lock);\nextern int glwthread_rwlock_trywrlock (glwthread_rwlock_t *lock);\nextern int glwthread_rwlock_unlock (glwthread_rwlock_t *lock);\nextern int glwthread_rwlock_destroy (glwthread_rwlock_t *lock);\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

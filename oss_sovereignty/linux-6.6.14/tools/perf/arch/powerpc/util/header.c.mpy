@@ -1,0 +1,9 @@
+{
+  "module_name": "header.c",
+  "hash_id": "51470b42264d1eccab5e3028a71e5ee7ae80884d58da0f55d0c8187efb861781",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/powerpc/util/header.c",
+  "human_readable_source": "\n#include <sys/types.h>\n#include <errno.h>\n#include <unistd.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <linux/stringify.h>\n#include \"header.h\"\n#include \"utils_header.h\"\n#include \"metricgroup.h\"\n#include <api/fs/fs.h>\n\nint\nget_cpuid(char *buffer, size_t sz)\n{\n\tunsigned long pvr;\n\tint nb;\n\n\tpvr = mfspr(SPRN_PVR);\n\n\tnb = scnprintf(buffer, sz, \"%lu,%lu$\", PVR_VER(pvr), PVR_REV(pvr));\n\n\t \n\tif (strchr(buffer, '$')) {\n\t\tbuffer[nb-1] = '\\0';\n\t\treturn 0;\n\t}\n\treturn ENOBUFS;\n}\n\nchar *\nget_cpuid_str(struct perf_pmu *pmu __maybe_unused)\n{\n\tchar *bufp;\n\n\tif (asprintf(&bufp, \"%.8lx\", mfspr(SPRN_PVR)) < 0)\n\t\tbufp = NULL;\n\n\treturn bufp;\n}\n\nint arch_get_runtimeparam(const struct pmu_metric *pm)\n{\n\tint count;\n\tchar path[PATH_MAX] = \"/devices/hv_24x7/interface/\";\n\n\tstrcat(path, pm->aggr_mode == PerChip ? \"sockets\" : \"coresperchip\");\n\treturn sysfs__read_int(path, &count) < 0 ? 1 : count;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

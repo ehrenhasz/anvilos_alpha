@@ -1,0 +1,9 @@
+{
+  "module_name": "hooks.c",
+  "hash_id": "93ed08d34feb10aea8e8bc537dab8ab243f0055e884ab019ad394b5492aa6a73",
+  "original_prompt": "Ingested from linux-6.6.14/security/bpf/hooks.c",
+  "human_readable_source": "\n\n \n#include <linux/lsm_hooks.h>\n#include <linux/bpf_lsm.h>\n\nstatic struct security_hook_list bpf_lsm_hooks[] __ro_after_init = {\n\t#define LSM_HOOK(RET, DEFAULT, NAME, ...) \\\n\tLSM_HOOK_INIT(NAME, bpf_lsm_##NAME),\n\t#include <linux/lsm_hook_defs.h>\n\t#undef LSM_HOOK\n\tLSM_HOOK_INIT(inode_free_security, bpf_inode_storage_free),\n\tLSM_HOOK_INIT(task_free, bpf_task_storage_free),\n};\n\nstatic int __init bpf_lsm_init(void)\n{\n\tsecurity_add_hooks(bpf_lsm_hooks, ARRAY_SIZE(bpf_lsm_hooks), \"bpf\");\n\tpr_info(\"LSM support for eBPF active\\n\");\n\treturn 0;\n}\n\nstruct lsm_blob_sizes bpf_lsm_blob_sizes __ro_after_init = {\n\t.lbs_inode = sizeof(struct bpf_storage_blob),\n\t.lbs_task = sizeof(struct bpf_storage_blob),\n};\n\nDEFINE_LSM(bpf) = {\n\t.name = \"bpf\",\n\t.init = bpf_lsm_init,\n\t.blobs = &bpf_lsm_blob_sizes\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

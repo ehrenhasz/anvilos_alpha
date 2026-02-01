@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1864f6bd632fc057053f4e1d2b789e15f66f4505bf37e31adf9ecfe9c5566036",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/renesas/vsp1/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nvsp1-y\t\t\t\t\t:= vsp1_drv.o vsp1_entity.o vsp1_pipe.o\nvsp1-y\t\t\t\t\t+= vsp1_dl.o vsp1_drm.o vsp1_video.o\nvsp1-y\t\t\t\t\t+= vsp1_rpf.o vsp1_rwpf.o vsp1_wpf.o\nvsp1-y\t\t\t\t\t+= vsp1_clu.o vsp1_hsit.o vsp1_lut.o\nvsp1-y\t\t\t\t\t+= vsp1_brx.o vsp1_sru.o vsp1_uds.o\nvsp1-y\t\t\t\t\t+= vsp1_hgo.o vsp1_hgt.o vsp1_histo.o\nvsp1-y\t\t\t\t\t+= vsp1_lif.o vsp1_uif.o\n\nobj-$(CONFIG_VIDEO_RENESAS_VSP1)\t+= vsp1.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gchelper_thumb2.s",
+  "hash_id": "0e36114ed582808ebad58587c50560ded59c95fc008c035d23289a7402dc6b10",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/runtime/gchelper_thumb2.s",
+  "human_readable_source": " \n\n    .syntax unified\n    .thumb\n\n    .section .text\n    .align  2\n\n    .global gc_helper_get_regs_and_sp\n    .type gc_helper_get_regs_and_sp, %function\n\n@ This function requires Thumb-2 instruction support, e.g. Cortex M3/M4.\n\n@ uint gc_helper_get_regs_and_sp(r0=uint regs[10])\ngc_helper_get_regs_and_sp:\n    @ store registers into given array\n    str     r4, [r0], #4\n    str     r5, [r0], #4\n    str     r6, [r0], #4\n    str     r7, [r0], #4\n    str     r8, [r0], #4\n    str     r9, [r0], #4\n    str     r10, [r0], #4\n    str     r11, [r0], #4\n    str     r12, [r0], #4\n    str     r13, [r0], #4\n\n    @ return the sp\n    mov     r0, sp\n    bx      lr\n\n    .size gc_helper_get_regs_and_sp, .-gc_helper_get_regs_and_sp\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

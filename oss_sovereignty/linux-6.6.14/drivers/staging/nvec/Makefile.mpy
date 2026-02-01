@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a4c3e7d21aa01573131414629ace92f153b5ce6ea4dd7bd83f949a755992799c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/nvec/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_SERIO_NVEC_PS2)\t+= nvec_ps2.o\nobj-$(CONFIG_MFD_NVEC)\t\t+= nvec.o\nobj-$(CONFIG_NVEC_POWER) \t+= nvec_power.o\nobj-$(CONFIG_KEYBOARD_NVEC) \t+= nvec_kbd.o\nobj-$(CONFIG_NVEC_PAZ00) \t+= nvec_paz00.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

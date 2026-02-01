@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "234208b4e1cf400c6ea930891d8433666c96cc18dfb00456d8508aad617c6374",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/hsu/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_HSU_DMA)\t\t+= hsu_dma.o\nhsu_dma-objs\t\t:= hsu.o\n\nobj-$(CONFIG_HSU_DMA_PCI)\t+= hsu_dma_pci.o\nhsu_dma_pci-objs\t:= pci.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

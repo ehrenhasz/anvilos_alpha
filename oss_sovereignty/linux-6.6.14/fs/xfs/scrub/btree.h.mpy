@@ -1,0 +1,9 @@
+{
+  "module_name": "btree.h",
+  "hash_id": "d66ed3246653bc43b03b1354d84be2410b010e9bdaa765d0ab00d14c75d10c9d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/scrub/btree.h",
+  "human_readable_source": "\n \n#ifndef __XFS_SCRUB_BTREE_H__\n#define __XFS_SCRUB_BTREE_H__\n\n \n\n \nbool xchk_btree_process_error(struct xfs_scrub *sc,\n\t\tstruct xfs_btree_cur *cur, int level, int *error);\n\n \nbool xchk_btree_xref_process_error(struct xfs_scrub *sc,\n\t\tstruct xfs_btree_cur *cur, int level, int *error);\n\n \nvoid xchk_btree_set_corrupt(struct xfs_scrub *sc,\n\t\tstruct xfs_btree_cur *cur, int level);\nvoid xchk_btree_set_preen(struct xfs_scrub *sc, struct xfs_btree_cur *cur,\n\t\tint level);\n\n \nvoid xchk_btree_xref_set_corrupt(struct xfs_scrub *sc,\n\t\tstruct xfs_btree_cur *cur, int level);\n\nstruct xchk_btree;\ntypedef int (*xchk_btree_rec_fn)(\n\tstruct xchk_btree\t\t*bs,\n\tconst union xfs_btree_rec\t*rec);\n\nstruct xchk_btree_key {\n\tunion xfs_btree_key\t\tkey;\n\tbool\t\t\t\tvalid;\n};\n\nstruct xchk_btree {\n\t \n\tstruct xfs_scrub\t\t*sc;\n\tstruct xfs_btree_cur\t\t*cur;\n\txchk_btree_rec_fn\t\tscrub_rec;\n\tconst struct xfs_owner_info\t*oinfo;\n\tvoid\t\t\t\t*private;\n\n\t \n\tbool\t\t\t\tlastrec_valid;\n\tunion xfs_btree_rec\t\tlastrec;\n\tstruct list_head\t\tto_check;\n\n\t \n\tstruct xchk_btree_key\t\tlastkey[];\n};\n\n \nstatic inline size_t\nxchk_btree_sizeof(unsigned int nlevels)\n{\n\treturn struct_size_t(struct xchk_btree, lastkey, nlevels - 1);\n}\n\nint xchk_btree(struct xfs_scrub *sc, struct xfs_btree_cur *cur,\n\t\txchk_btree_rec_fn scrub_fn, const struct xfs_owner_info *oinfo,\n\t\tvoid *private);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

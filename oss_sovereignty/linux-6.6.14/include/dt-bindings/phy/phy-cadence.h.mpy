@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-cadence.h",
+  "hash_id": "3f730fd8d5f4e129ce7175527d6f5d3779d854315f9f4225a885010fc1b2bc9f",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/phy/phy-cadence.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CADENCE_SERDES_H\n#define _DT_BINDINGS_CADENCE_SERDES_H\n\n#define CDNS_SERDES_NO_SSC\t\t0\n#define CDNS_SERDES_EXTERNAL_SSC\t1\n#define CDNS_SERDES_INTERNAL_SSC\t2\n\n \n#define CDNS_TORRENT_REFCLK_DRIVER      0\n#define CDNS_TORRENT_DERIVED_REFCLK\t1\n#define CDNS_TORRENT_RECEIVED_REFCLK\t2\n\n \n#define CDNS_SIERRA_PLL_CMNLC\t\t0\n#define CDNS_SIERRA_PLL_CMNLC1\t\t1\n#define CDNS_SIERRA_DERIVED_REFCLK\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

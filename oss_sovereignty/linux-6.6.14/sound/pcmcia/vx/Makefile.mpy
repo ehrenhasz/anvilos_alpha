@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4994dcf0c6c101c5d022b2ba32f9f55531bdab85f18b9c048a6f4a8f13a87913",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pcmcia/vx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-vxpocket-objs := vxpocket.o vxp_ops.o vxp_mixer.o\n\nobj-$(CONFIG_SND_VXPOCKET) += snd-vxpocket.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

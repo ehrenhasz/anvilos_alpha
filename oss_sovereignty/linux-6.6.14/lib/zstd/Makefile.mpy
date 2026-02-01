@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4b051ba3779ef2300e6477d8516ed86f515d0f925f19b231ec31777d45680fb9",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zstd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause\n# ################################################################\n# Copyright (c) Facebook, Inc.\n# All rights reserved.\n#\n# This source code is licensed under both the BSD-style license (found in the\n# LICENSE file in the root directory of this source tree) and the GPLv2 (found\n# in the COPYING file in the root directory of this source tree).\n# You may select, at your option, one of the above-listed licenses.\n# ################################################################\nobj-$(CONFIG_ZSTD_COMPRESS) += zstd_compress.o\nobj-$(CONFIG_ZSTD_DECOMPRESS) += zstd_decompress.o\nobj-$(CONFIG_ZSTD_COMMON) += zstd_common.o\n\nzstd_compress-y := \\\n\t\tzstd_compress_module.o \\\n\t\tcompress/fse_compress.o \\\n\t\tcompress/hist.o \\\n\t\tcompress/huf_compress.o \\\n\t\tcompress/zstd_compress.o \\\n\t\tcompress/zstd_compress_literals.o \\\n\t\tcompress/zstd_compress_sequences.o \\\n\t\tcompress/zstd_compress_superblock.o \\\n\t\tcompress/zstd_double_fast.o \\\n\t\tcompress/zstd_fast.o \\\n\t\tcompress/zstd_lazy.o \\\n\t\tcompress/zstd_ldm.o \\\n\t\tcompress/zstd_opt.o \\\n\nzstd_decompress-y := \\\n\t\tzstd_decompress_module.o \\\n\t\tdecompress/huf_decompress.o \\\n\t\tdecompress/zstd_ddict.o \\\n\t\tdecompress/zstd_decompress.o \\\n\t\tdecompress/zstd_decompress_block.o \\\n\nzstd_common-y := \\\n\t\tzstd_common_module.o \\\n\t\tcommon/debug.o \\\n\t\tcommon/entropy_common.o \\\n\t\tcommon/error_private.o \\\n\t\tcommon/fse_decompress.o \\\n\t\tcommon/zstd_common.o \\\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

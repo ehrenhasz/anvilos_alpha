@@ -1,0 +1,9 @@
+{
+  "module_name": "gp100.c",
+  "hash_id": "958f4705044e14ac83d735a2baed611f2f8098930b631039bbe5b3a407d3aede",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/gp100.c",
+  "human_readable_source": " \n#include \"gf100.h\"\n#include \"ram.h\"\n\n#include <core/memory.h>\n\nvoid\ngp100_fb_init_unkn(struct nvkm_fb *base)\n{\n\tstruct nvkm_device *device = gf100_fb(base)->base.subdev.device;\n\tnvkm_wr32(device, 0x1fac80, nvkm_rd32(device, 0x100c80));\n\tnvkm_wr32(device, 0x1facc4, nvkm_rd32(device, 0x100cc4));\n\tnvkm_wr32(device, 0x1facc8, nvkm_rd32(device, 0x100cc8));\n\tnvkm_wr32(device, 0x1faccc, nvkm_rd32(device, 0x100ccc));\n}\n\nvoid\ngp100_fb_init_remapper(struct nvkm_fb *fb)\n{\n\tstruct nvkm_device *device = fb->subdev.device;\n\t \n\tnvkm_mask(device, 0x100c14, 0x00040000, 0x00000000);\n}\n\nstatic const struct nvkm_fb_func\ngp100_fb = {\n\t.dtor = gf100_fb_dtor,\n\t.oneinit = gf100_fb_oneinit,\n\t.init = gm200_fb_init,\n\t.init_remapper = gp100_fb_init_remapper,\n\t.init_page = gm200_fb_init_page,\n\t.init_unkn = gp100_fb_init_unkn,\n\t.sysmem.flush_page_init = gf100_fb_sysmem_flush_page_init,\n\t.ram_new = gp100_ram_new,\n};\n\nint\ngp100_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn gf100_fb_new_(&gp100_fb, device, type, inst, pfb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

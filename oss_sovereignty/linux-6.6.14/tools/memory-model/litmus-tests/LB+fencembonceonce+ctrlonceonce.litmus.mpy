@@ -1,0 +1,9 @@
+{
+  "module_name": "LB+fencembonceonce+ctrlonceonce.litmus",
+  "hash_id": "609edf9f69b883f625b80df7c45b197f88c1829ff6002a461c12d33b1c80697b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/LB+fencembonceonce+ctrlonceonce.litmus",
+  "human_readable_source": "C LB+fencembonceonce+ctrlonceonce\n\n(*\n * Result: Never\n *\n * This litmus test demonstrates that lightweight ordering suffices for\n * the load-buffering pattern, in other words, preventing all processes\n * reading from the preceding process's write.  In this example, the\n * combination of a control dependency and a full memory barrier are enough\n * to do the trick.  (But the full memory barrier could be replaced with\n * another control dependency and order would still be maintained.)\n *)\n\n{}\n\nP0(int *x, int *y)\n{\n\tint r0;\n\n\tr0 = READ_ONCE(*x);\n\tif (r0)\n\t\tWRITE_ONCE(*y, 1);\n}\n\nP1(int *x, int *y)\n{\n\tint r0;\n\n\tr0 = READ_ONCE(*y);\n\tsmp_mb();\n\tWRITE_ONCE(*x, 1);\n}\n\nexists (0:r0=1 /\\ 1:r0=1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

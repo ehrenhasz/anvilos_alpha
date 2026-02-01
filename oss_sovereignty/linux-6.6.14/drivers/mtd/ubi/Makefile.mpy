@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4a2ccd6f7269b250778a835ce936ddcd6da001778a0487cfd83d3b4b3ca8a972",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/ubi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_MTD_UBI) += ubi.o\n\nubi-y += vtbl.o vmt.o upd.o build.o cdev.o kapi.o eba.o io.o wl.o attach.o\nubi-y += misc.o debug.o\nubi-$(CONFIG_MTD_UBI_FASTMAP) += fastmap.o\nubi-$(CONFIG_MTD_UBI_BLOCK) += block.o\n\nobj-$(CONFIG_MTD_UBI_GLUEBI) += gluebi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

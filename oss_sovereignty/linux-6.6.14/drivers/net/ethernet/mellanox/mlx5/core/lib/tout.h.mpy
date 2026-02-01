@@ -1,0 +1,9 @@
+{
+  "module_name": "tout.h",
+  "hash_id": "544d78248b38a13aafade24e1d09e3accb04c45e73268d9a77c0a0629c3badcd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h",
+  "human_readable_source": " \n \n\n#ifndef MLX5_TIMEOUTS_H\n#define MLX5_TIMEOUTS_H\n\nenum mlx5_timeouts_types {\n\t \n\tMLX5_TO_FW_PRE_INIT_TIMEOUT_MS,\n\tMLX5_TO_FW_PRE_INIT_ON_RECOVERY_TIMEOUT_MS,\n\tMLX5_TO_FW_PRE_INIT_WARN_MESSAGE_INTERVAL_MS,\n\tMLX5_TO_FW_PRE_INIT_WAIT_MS,\n\n\t \n\tMLX5_TO_FW_INIT_MS,\n\tMLX5_TO_CMD_MS,\n\n\t \n\tMLX5_TO_PCI_TOGGLE_MS,\n\tMLX5_TO_HEALTH_POLL_INTERVAL_MS,\n\tMLX5_TO_FULL_CRDUMP_MS,\n\tMLX5_TO_FW_RESET_MS,\n\tMLX5_TO_FLUSH_ON_ERROR_MS,\n\tMLX5_TO_PCI_SYNC_UPDATE_MS,\n\tMLX5_TO_TEARDOWN_MS,\n\tMLX5_TO_FSM_REACTIVATE_MS,\n\tMLX5_TO_RECLAIM_PAGES_MS,\n\tMLX5_TO_RECLAIM_VFS_PAGES_MS,\n\tMLX5_TO_RESET_UNLOAD_MS,\n\n\tMAX_TIMEOUT_TYPES\n};\n\nstruct mlx5_core_dev;\nint mlx5_tout_init(struct mlx5_core_dev *dev);\nvoid mlx5_tout_cleanup(struct mlx5_core_dev *dev);\nvoid mlx5_tout_query_iseg(struct mlx5_core_dev *dev);\nint mlx5_tout_query_dtor(struct mlx5_core_dev *dev);\nu64 _mlx5_tout_ms(struct mlx5_core_dev *dev, enum mlx5_timeouts_types type);\n\n#define mlx5_tout_ms(dev, type) _mlx5_tout_ms(dev, MLX5_TO_##type##_MS)\n\n# endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_regs.h",
+  "hash_id": "40fe3048d0b93bc6ab27af80f284ea2e15aba9b1ece93f9c6fbad880cca8f1d7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/s390/include/perf_regs.h",
+  "human_readable_source": "#ifndef ARCH_PERF_REGS_H\n#define ARCH_PERF_REGS_H\n\n#include <stdlib.h>\n#include <linux/types.h>\n#include <asm/perf_regs.h>\n\nvoid perf_regs_load(u64 *regs);\n\n#define PERF_REGS_MASK ((1ULL << PERF_REG_S390_MAX) - 1)\n#define PERF_REGS_MAX PERF_REG_S390_MAX\n#define PERF_SAMPLE_REGS_ABI PERF_SAMPLE_REGS_ABI_64\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

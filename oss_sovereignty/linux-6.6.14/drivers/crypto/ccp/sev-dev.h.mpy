@@ -1,0 +1,9 @@
+{
+  "module_name": "sev-dev.h",
+  "hash_id": "3f37d48c8bb0b89b3dacc3c95230e591bebaef72c80f060f80c267b9f1987a4d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/ccp/sev-dev.h",
+  "human_readable_source": " \n \n\n#ifndef __SEV_DEV_H__\n#define __SEV_DEV_H__\n\n#include <linux/device.h>\n#include <linux/spinlock.h>\n#include <linux/mutex.h>\n#include <linux/list.h>\n#include <linux/wait.h>\n#include <linux/dmapool.h>\n#include <linux/hw_random.h>\n#include <linux/bitops.h>\n#include <linux/interrupt.h>\n#include <linux/irqreturn.h>\n#include <linux/dmaengine.h>\n#include <linux/psp-sev.h>\n#include <linux/miscdevice.h>\n#include <linux/capability.h>\n\n#define SEV_CMDRESP_CMD\t\t\tGENMASK(26, 16)\n#define SEV_CMD_COMPLETE\t\tBIT(1)\n#define SEV_CMDRESP_IOC\t\t\tBIT(0)\n\nstruct sev_misc_dev {\n\tstruct kref refcount;\n\tstruct miscdevice misc;\n};\n\nstruct sev_device {\n\tstruct device *dev;\n\tstruct psp_device *psp;\n\n\tvoid __iomem *io_regs;\n\n\tstruct sev_vdata *vdata;\n\n\tint state;\n\tunsigned int int_rcvd;\n\twait_queue_head_t int_queue;\n\tstruct sev_misc_dev *misc;\n\n\tu8 api_major;\n\tu8 api_minor;\n\tu8 build;\n\n\tvoid *cmd_buf;\n};\n\nint sev_dev_init(struct psp_device *psp);\nvoid sev_dev_destroy(struct psp_device *psp);\n\nvoid sev_pci_init(void);\nvoid sev_pci_exit(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

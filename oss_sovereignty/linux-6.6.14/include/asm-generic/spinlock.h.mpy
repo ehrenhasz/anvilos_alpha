@@ -1,0 +1,9 @@
+{
+  "module_name": "spinlock.h",
+  "hash_id": "836abbddd4062f7e3520150152b9978fcfea194cc5f349c16387bf28e2cc9b94",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/spinlock.h",
+  "human_readable_source": " \n\n \n\n#ifndef __ASM_GENERIC_SPINLOCK_H\n#define __ASM_GENERIC_SPINLOCK_H\n\n#include <linux/atomic.h>\n#include <asm-generic/spinlock_types.h>\n\nstatic __always_inline void arch_spin_lock(arch_spinlock_t *lock)\n{\n\tu32 val = atomic_fetch_add(1<<16, lock);\n\tu16 ticket = val >> 16;\n\n\tif (ticket == (u16)val)\n\t\treturn;\n\n\t \n\tatomic_cond_read_acquire(lock, ticket == (u16)VAL);\n\tsmp_mb();\n}\n\nstatic __always_inline bool arch_spin_trylock(arch_spinlock_t *lock)\n{\n\tu32 old = atomic_read(lock);\n\n\tif ((old >> 16) != (old & 0xffff))\n\t\treturn false;\n\n\treturn atomic_try_cmpxchg(lock, &old, old + (1<<16));  \n}\n\nstatic __always_inline void arch_spin_unlock(arch_spinlock_t *lock)\n{\n\tu16 *ptr = (u16 *)lock + IS_ENABLED(CONFIG_CPU_BIG_ENDIAN);\n\tu32 val = atomic_read(lock);\n\n\tsmp_store_release(ptr, (u16)val + 1);\n}\n\nstatic __always_inline int arch_spin_is_locked(arch_spinlock_t *lock)\n{\n\tu32 val = atomic_read(lock);\n\n\treturn ((val >> 16) != (val & 0xffff));\n}\n\nstatic __always_inline int arch_spin_is_contended(arch_spinlock_t *lock)\n{\n\tu32 val = atomic_read(lock);\n\n\treturn (s16)((val >> 16) - (val & 0xffff)) > 1;\n}\n\nstatic __always_inline int arch_spin_value_unlocked(arch_spinlock_t lock)\n{\n\treturn !arch_spin_is_locked(&lock);\n}\n\n#include <asm/qrwlock.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "p_win.c",
+  "hash_id": "7ec73eded43355bca3e100fe2007b6ccee41544616551a2e2f387a0565bd7552",
+  "original_prompt": "Ingested from ncurses-6.4/panel/p_win.c",
+  "human_readable_source": " \n\n \n\n \n#include \"panel.priv.h\"\n\nMODULE_ID(\"$Id: p_win.c,v 1.8 2020/05/24 01:40:20 anonymous.maarten Exp $\")\n\nPANEL_EXPORT(WINDOW *)\npanel_window(const PANEL * pan)\n{\n  T((T_CALLED(\"panel_window(%p)\"), (const void *)pan));\n  returnWin(pan ? pan->win : (WINDOW *)0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

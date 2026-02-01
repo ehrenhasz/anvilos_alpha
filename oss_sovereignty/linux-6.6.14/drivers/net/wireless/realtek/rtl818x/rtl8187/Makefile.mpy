@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f3a5405d4b439c6b648785cbbdd0b0960e9df228b39248a00c76f2cf20568bc1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtl818x/rtl8187/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nrtl8187-objs\t\t:= dev.o rtl8225.o leds.o rfkill.o\n\nobj-$(CONFIG_RTL8187)\t+= rtl8187.o\n\nccflags-y += -I $(srctree)/$(src)/..\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

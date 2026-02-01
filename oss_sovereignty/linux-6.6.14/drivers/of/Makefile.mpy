@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "296d3387a8741f03f839f023afc7db37330583c4dac035184a50fb3373287aa2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y = base.o cpu.o device.o module.o platform.o property.o\nobj-$(CONFIG_OF_KOBJ) += kobj.o\nobj-$(CONFIG_OF_DYNAMIC) += dynamic.o\nobj-$(CONFIG_OF_FLATTREE) += fdt.o\nobj-$(CONFIG_OF_EARLY_FLATTREE) += fdt_address.o\nobj-$(CONFIG_OF_PROMTREE) += pdt.o\nobj-$(CONFIG_OF_ADDRESS)  += address.o\nobj-$(CONFIG_OF_IRQ)    += irq.o\nobj-$(CONFIG_OF_UNITTEST) += unittest.o\nobj-$(CONFIG_OF_RESERVED_MEM) += of_reserved_mem.o\nobj-$(CONFIG_OF_RESOLVE)  += resolver.o\nobj-$(CONFIG_OF_OVERLAY) += overlay.o\nobj-$(CONFIG_OF_NUMA) += of_numa.o\n\nifdef CONFIG_KEXEC_FILE\nifdef CONFIG_OF_FLATTREE\nobj-y\t+= kexec.o\nendif\nendif\n\nobj-$(CONFIG_OF_UNITTEST) += unittest-data/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

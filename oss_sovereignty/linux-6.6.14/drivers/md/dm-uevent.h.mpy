@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-uevent.h",
+  "hash_id": "59400dedc8f1ad57dcfb455e68c3c889976409f30a25559265e2916f1932f482",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/dm-uevent.h",
+  "human_readable_source": " \n \n#ifndef DM_UEVENT_H\n#define DM_UEVENT_H\n\nenum dm_uevent_type {\n\tDM_UEVENT_PATH_FAILED,\n\tDM_UEVENT_PATH_REINSTATED,\n};\n\n#ifdef CONFIG_DM_UEVENT\n\nextern int dm_uevent_init(void);\nextern void dm_uevent_exit(void);\nextern void dm_send_uevents(struct list_head *events, struct kobject *kobj);\nextern void dm_path_uevent(enum dm_uevent_type event_type,\n\t\t\t   struct dm_target *ti, const char *path,\n\t\t\t   unsigned int nr_valid_paths);\n\n#else\n\nstatic inline int dm_uevent_init(void)\n{\n\treturn 0;\n}\nstatic inline void dm_uevent_exit(void)\n{\n}\nstatic inline void dm_send_uevents(struct list_head *events,\n\t\t\t\t   struct kobject *kobj)\n{\n}\nstatic inline void dm_path_uevent(enum dm_uevent_type event_type,\n\t\t\t\t  struct dm_target *ti, const char *path,\n\t\t\t\t  unsigned int nr_valid_paths)\n{\n}\n\n#endif\t \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

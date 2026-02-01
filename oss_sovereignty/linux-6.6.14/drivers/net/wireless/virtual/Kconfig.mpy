@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c5f66cf360fb52dd204ac801fe392cfa26c470ab9dd3a08e569e4c29b59270dc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/virtual/Kconfig",
+  "human_readable_source": "config MAC80211_HWSIM\n\ttristate \"Simulated radio testing tool for mac80211\"\n\tdepends on MAC80211\n\thelp\n\t  This driver is a developer testing tool that can be used to test\n\t  IEEE 802.11 networking stack (mac80211) functionality. This is not\n\t  needed for normal wireless LAN usage and is only for testing. See\n\t  Documentation/networking/mac80211_hwsim for more information on how\n\t  to use this tool.\n\n\t  To compile this driver as a module, choose M here: the module will be\n\t  called mac80211_hwsim.  If unsure, say N.\n\nconfig VIRT_WIFI\n\ttristate \"Wifi wrapper for ethernet drivers\"\n\tdepends on CFG80211\n\thelp\n\t  This option adds support for ethernet connections to appear as if they\n\t  are wifi connections through a special rtnetlink device.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "st33zp24.h",
+  "hash_id": "d94d21eb5371f64fe0a21cb6a31d77c154e4f8b903b2b6158d08bcb340679c39",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/tpm/st33zp24/st33zp24.h",
+  "human_readable_source": " \n \n\n#ifndef __LOCAL_ST33ZP24_H__\n#define __LOCAL_ST33ZP24_H__\n\n#define TPM_ST33_I2C\t\t\"st33zp24-i2c\"\n#define TPM_ST33_SPI\t\t\"st33zp24-spi\"\n\n#define TPM_WRITE_DIRECTION\t0x80\n#define ST33ZP24_BUFSIZE\t2048\n\nstruct st33zp24_dev {\n\tstruct tpm_chip *chip;\n\tvoid *phy_id;\n\tconst struct st33zp24_phy_ops *ops;\n\tint locality;\n\tint irq;\n\tu32 intrs;\n\tstruct gpio_desc *io_lpcpd;\n\twait_queue_head_t read_queue;\n};\n\n\nstruct st33zp24_phy_ops {\n\tint (*send)(void *phy_id, u8 tpm_register, u8 *tpm_data, int tpm_size);\n\tint (*recv)(void *phy_id, u8 tpm_register, u8 *tpm_data, int tpm_size);\n};\n\n#ifdef CONFIG_PM_SLEEP\nint st33zp24_pm_suspend(struct device *dev);\nint st33zp24_pm_resume(struct device *dev);\n#endif\n\nint st33zp24_probe(void *phy_id, const struct st33zp24_phy_ops *ops,\n\t\t   struct device *dev, int irq);\nvoid st33zp24_remove(struct tpm_chip *chip);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

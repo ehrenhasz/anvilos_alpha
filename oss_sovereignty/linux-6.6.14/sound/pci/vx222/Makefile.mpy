@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "63b9377d5dc130182998898a0aaa521c4ee626028755084097568d88797fde2b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/vx222/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-vx222-objs := vx222.o vx222_ops.o\n\nobj-$(CONFIG_SND_VX222) += snd-vx222.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

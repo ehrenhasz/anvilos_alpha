@@ -1,0 +1,9 @@
+{
+  "module_name": "vega10_smumgr.h",
+  "hash_id": "df9b219036adc74a07b286c7ef71962ccb56def7a3d015b3346181dfb0078030",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/smumgr/vega10_smumgr.h",
+  "human_readable_source": " \n#ifndef _VEGA10_SMUMANAGER_H_\n#define _VEGA10_SMUMANAGER_H_\n\n#define MAX_SMU_TABLE 5\n\nstruct smu_table_entry {\n\tuint32_t version;\n\tuint32_t size;\n\tuint32_t table_id;\n\tuint64_t mc_addr;\n\tvoid *table;\n\tstruct amdgpu_bo *handle;\n};\n\nstruct smu_table_array {\n\tstruct smu_table_entry entry[MAX_SMU_TABLE];\n};\n\nstruct vega10_smumgr {\n\tstruct smu_table_array            smu_tables;\n};\n\nint vega10_enable_smc_features(struct pp_hwmgr *hwmgr,\n\t\t\t       bool enable, uint32_t feature_mask);\nint vega10_get_enabled_smc_features(struct pp_hwmgr *hwmgr,\n\t\t\t\t    uint64_t *features_enabled);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

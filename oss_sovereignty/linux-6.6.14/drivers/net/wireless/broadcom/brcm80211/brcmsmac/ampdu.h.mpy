@@ -1,0 +1,9 @@
+{
+  "module_name": "ampdu.h",
+  "hash_id": "e6895f4c1975e2fbd3629472228638e6aaefed99939e03713997ebea3f1d2ae9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmsmac/ampdu.h",
+  "human_readable_source": " \n\n#ifndef _BRCM_AMPDU_H_\n#define _BRCM_AMPDU_H_\n\n \nstruct brcms_ampdu_session {\n\tstruct brcms_c_info *wlc;\n\tstruct sk_buff_head skb_list;\n\tunsigned max_ampdu_len;\n\tu16 max_ampdu_frames;\n\tu16 ampdu_len;\n\tu16 dma_len;\n};\n\nvoid brcms_c_ampdu_reset_session(struct brcms_ampdu_session *session,\n\t\t\t\t struct brcms_c_info *wlc);\nint brcms_c_ampdu_add_frame(struct brcms_ampdu_session *session,\n\t\t\t    struct sk_buff *p);\nvoid brcms_c_ampdu_finalize(struct brcms_ampdu_session *session);\n\nstruct ampdu_info *brcms_c_ampdu_attach(struct brcms_c_info *wlc);\nvoid brcms_c_ampdu_detach(struct ampdu_info *ampdu);\nvoid brcms_c_ampdu_dotxstatus(struct ampdu_info *ampdu, struct scb *scb,\n\t\t\t      struct sk_buff *p, struct tx_status *txs);\nvoid brcms_c_ampdu_macaddr_upd(struct brcms_c_info *wlc);\nvoid brcms_c_ampdu_shm_upd(struct ampdu_info *ampdu);\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

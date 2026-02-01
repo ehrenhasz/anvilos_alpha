@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "54ab3dd71c2638d6821fd1e17252a95d3ca109e0cc18587116ccfa2f7f6fd7b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\nmkregtable\n*_reg_safe.h\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

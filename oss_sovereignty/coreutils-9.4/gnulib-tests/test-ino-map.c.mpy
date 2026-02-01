@@ -1,0 +1,9 @@
+{
+  "module_name": "test-ino-map.c",
+  "hash_id": "917b334bc4221bf2bd5306cbf494139f41d690cd25c8baca19ef893dbb52e11b",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-ino-map.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"ino-map.h\"\n\n#include \"macros.h\"\n\nint\nmain ()\n{\n  enum { INO_MAP_INIT = 123 };\n  struct ino_map *ino_map = ino_map_alloc (INO_MAP_INIT);\n  ASSERT (ino_map != NULL);\n\n  ASSERT (ino_map_insert (ino_map, 42) == INO_MAP_INIT);\n  ASSERT (ino_map_insert (ino_map, 42) == INO_MAP_INIT);\n  ASSERT (ino_map_insert (ino_map, 398) == INO_MAP_INIT + 1);\n  ASSERT (ino_map_insert (ino_map, 398) == INO_MAP_INIT + 1);\n  ASSERT (ino_map_insert (ino_map, 0) == INO_MAP_INIT + 2);\n  ASSERT (ino_map_insert (ino_map, 0) == INO_MAP_INIT + 2);\n\n  {\n    int i;\n    for (i = 0; i < 100; i++)\n      {\n        ASSERT (ino_map_insert (ino_map, 10000 + i) == INO_MAP_INIT + 3 + i);\n      }\n  }\n\n  ino_map_free (ino_map);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

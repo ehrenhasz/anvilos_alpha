@@ -1,0 +1,9 @@
+{
+  "module_name": "via-pmu-event.h",
+  "hash_id": "36a582a30c359f040dd292117a0c55b36f525e7f576d6b15032709accbbb7f9f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/macintosh/via-pmu-event.h",
+  "human_readable_source": " \n#ifndef __VIA_PMU_EVENT_H\n#define __VIA_PMU_EVENT_H\n\n#define PMU_EVT_POWER\t0\n#define PMU_EVT_LID\t1\nextern void via_pmu_event(int key, int down);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

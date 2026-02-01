@@ -1,0 +1,9 @@
+{
+  "module_name": "numachip.h",
+  "hash_id": "2aebcee09c8a66527a2345589fb86d7e665e2f5ae1802675c9fda9ffc8820820",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/numachip/numachip.h",
+  "human_readable_source": " \n\n#ifndef _ASM_X86_NUMACHIP_NUMACHIP_H\n#define _ASM_X86_NUMACHIP_NUMACHIP_H\n\nextern u8 numachip_system;\nextern int __init pci_numachip_init(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

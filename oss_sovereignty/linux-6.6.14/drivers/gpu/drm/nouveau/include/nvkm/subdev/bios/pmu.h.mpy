@@ -1,0 +1,9 @@
+{
+  "module_name": "pmu.h",
+  "hash_id": "7536012db801a72c88436238d4bb896cc76d6a9dae6365cb73d3154df2b0463e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/pmu.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_PMU_H__\n#define __NVBIOS_PMU_H__\nstruct nvbios_pmuT {\n};\n\nu32 nvbios_pmuTe(struct nvkm_bios *, u8 *ver, u8 *hdr, u8 *cnt, u8 *len);\n\nstruct nvbios_pmuE {\n\tu8  type;\n\tu32 data;\n};\n\nu32 nvbios_pmuEe(struct nvkm_bios *, int idx, u8 *ver, u8 *hdr);\nu32 nvbios_pmuEp(struct nvkm_bios *, int idx, u8 *ver, u8 *hdr,\n\t\t struct nvbios_pmuE *);\n\nstruct nvbios_pmuR {\n\tu32 boot_addr_pmu;\n\tu32 boot_addr;\n\tu32 boot_size;\n\tu32 code_addr_pmu;\n\tu32 code_addr;\n\tu32 code_size;\n\tu32 init_addr_pmu;\n\n\tu32 data_addr_pmu;\n\tu32 data_addr;\n\tu32 data_size;\n\tu32 args_addr_pmu;\n};\n\nbool nvbios_pmuRm(struct nvkm_bios *, u8 type, struct nvbios_pmuR *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

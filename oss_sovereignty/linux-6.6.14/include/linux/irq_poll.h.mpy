@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_poll.h",
+  "hash_id": "9f4ab8627bbf83b8f83813cb849872709fe0f37ae632e4c27cf672fa2b720b60",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/irq_poll.h",
+  "human_readable_source": " \n#ifndef IRQ_POLL_H\n#define IRQ_POLL_H\n\nstruct irq_poll;\ntypedef int (irq_poll_fn)(struct irq_poll *, int);\n\nstruct irq_poll {\n\tstruct list_head list;\n\tunsigned long state;\n\tint weight;\n\tirq_poll_fn *poll;\n};\n\nenum {\n\tIRQ_POLL_F_SCHED\t= 0,\n\tIRQ_POLL_F_DISABLE\t= 1,\n};\n\nextern void irq_poll_sched(struct irq_poll *);\nextern void irq_poll_init(struct irq_poll *, int, irq_poll_fn *);\nextern void irq_poll_complete(struct irq_poll *);\nextern void irq_poll_enable(struct irq_poll *);\nextern void irq_poll_disable(struct irq_poll *);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

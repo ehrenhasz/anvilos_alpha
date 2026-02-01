@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9a368bd0af040967632f43dd3ad9ec70d6aafdfc332e126fc551fdddc0822866",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/most/video/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# MOST V4L2 configuration\n#\n\nconfig MOST_VIDEO\n\ttristate \"Video\"\n\tdepends on VIDEO_DEV\n\thelp\n\t  Say Y here if you want to commumicate via Video 4 Linux.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called most_video.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "geode.h",
+  "hash_id": "44a8b6b232382ea1c53e06306ac4ea511e168e103301816a056007c9e04f390e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/geode.h",
+  "human_readable_source": " \n \n\n#ifndef _ASM_X86_GEODE_H\n#define _ASM_X86_GEODE_H\n\n#include <asm/processor.h>\n#include <linux/io.h>\n#include <linux/cs5535.h>\n\nstatic inline int is_geode_gx(void)\n{\n\treturn ((boot_cpu_data.x86_vendor == X86_VENDOR_NSC) &&\n\t\t(boot_cpu_data.x86 == 5) &&\n\t\t(boot_cpu_data.x86_model == 5));\n}\n\nstatic inline int is_geode_lx(void)\n{\n\treturn ((boot_cpu_data.x86_vendor == X86_VENDOR_AMD) &&\n\t\t(boot_cpu_data.x86 == 5) &&\n\t\t(boot_cpu_data.x86_model == 10));\n}\n\nstatic inline int is_geode(void)\n{\n\treturn (is_geode_gx() || is_geode_lx());\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

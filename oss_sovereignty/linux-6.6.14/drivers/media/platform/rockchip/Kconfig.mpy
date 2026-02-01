@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "f70f5495c69c9469acbb4fa96389d9358f61e83e20a41217807b3b7a0ec7cd5a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/rockchip/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\ncomment \"Rockchip media platform drivers\"\n\nsource \"drivers/media/platform/rockchip/rga/Kconfig\"\nsource \"drivers/media/platform/rockchip/rkisp1/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

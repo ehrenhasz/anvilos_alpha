@@ -1,0 +1,9 @@
+{
+  "module_name": "cycle-check.h",
+  "hash_id": "f117aee98d137c89011029408f9fb4f613a1aae80babc05f42fdb40a2c623ae9",
+  "original_prompt": "Ingested from coreutils-9.4/lib/cycle-check.h",
+  "human_readable_source": " \n\n#ifndef CYCLE_CHECK_H\n# define CYCLE_CHECK_H 1\n\n# include <stdint.h>\n# include \"dev-ino.h\"\n# include \"same-inode.h\"\n\nstruct cycle_check_state\n{\n  struct dev_ino dev_ino;\n  uintmax_t chdir_counter;\n  int magic;\n};\n\nvoid cycle_check_init (struct cycle_check_state *state);\nbool cycle_check (struct cycle_check_state *state, struct stat const *sb);\n\n# define CYCLE_CHECK_REFLECT_CHDIR_UP(State, SB_dir, SB_subdir) \\\n  do                                                            \\\n    {                                                           \\\n        \\\n      if ((State)->chdir_counter == 0)                          \\\n        abort ();                                               \\\n      if (SAME_INODE ((State)->dev_ino, SB_subdir))             \\\n        {                                                       \\\n          (State)->dev_ino.st_dev = (SB_dir).st_dev;            \\\n          (State)->dev_ino.st_ino = (SB_dir).st_ino;            \\\n        }                                                       \\\n    }                                                           \\\n  while (0)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

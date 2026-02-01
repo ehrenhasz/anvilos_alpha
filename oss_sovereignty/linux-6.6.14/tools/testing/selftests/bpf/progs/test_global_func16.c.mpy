@@ -1,0 +1,9 @@
+{
+  "module_name": "test_global_func16.c",
+  "hash_id": "fe0eb3a7ede0daf90cfe0034ef4298af07eefdb2b742dbd687d58d763261d4b3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_global_func16.c",
+  "human_readable_source": "\n#include <stddef.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\n__noinline int foo(int (*arr)[10])\n{\n\tif (arr)\n\t\treturn (*arr)[9];\n\n\treturn 0;\n}\n\nSEC(\"cgroup_skb/ingress\")\n__success\nint global_func16(struct __sk_buff *skb)\n{\n\tint array[10];\n\n\tconst int rv = foo(&array);\n\n\treturn rv ? 1 : 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

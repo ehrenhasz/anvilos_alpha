@@ -1,0 +1,9 @@
+{
+  "module_name": "evswitch.c",
+  "hash_id": "d4990b264c2538f769c362bbd88bb22117efa92489da25b4ca81080b88ed19ac",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/evswitch.c",
+  "human_readable_source": "\n\n\n#include \"evswitch.h\"\n#include \"evlist.h\"\n\nbool evswitch__discard(struct evswitch *evswitch, struct evsel *evsel)\n{\n\tif (evswitch->on && evswitch->discarding) {\n\t\tif (evswitch->on != evsel)\n\t\t\treturn true;\n\n\t\tevswitch->discarding = false;\n\n\t\tif (!evswitch->show_on_off_events)\n\t\t\treturn true;\n\n\t\treturn false;\n\t}\n\n\tif (evswitch->off && !evswitch->discarding) {\n\t\tif (evswitch->off != evsel)\n\t\t\treturn false;\n\n\t\tevswitch->discarding = true;\n\n\t\tif (!evswitch->show_on_off_events)\n\t\t\treturn true;\n\t}\n\n\treturn false;\n}\n\nstatic int evswitch__fprintf_enoent(FILE *fp, const char *evtype, const char *evname)\n{\n\tint printed = fprintf(fp, \"ERROR: switch-%s event not found (%s)\\n\", evtype, evname);\n\n\treturn printed += fprintf(fp, \"HINT:  use 'perf evlist' to see the available event names\\n\");\n}\n\nint evswitch__init(struct evswitch *evswitch, struct evlist *evlist, FILE *fp)\n{\n\tif (evswitch->on_name) {\n\t\tevswitch->on = evlist__find_evsel_by_str(evlist, evswitch->on_name);\n\t\tif (evswitch->on == NULL) {\n\t\t\tevswitch__fprintf_enoent(fp, \"on\", evswitch->on_name);\n\t\t\treturn -ENOENT;\n\t\t}\n\t\tevswitch->discarding = true;\n\t}\n\n\tif (evswitch->off_name) {\n\t\tevswitch->off = evlist__find_evsel_by_str(evlist, evswitch->off_name);\n\t\tif (evswitch->off == NULL) {\n\t\t\tevswitch__fprintf_enoent(fp, \"off\", evswitch->off_name);\n\t\t\treturn -ENOENT;\n\t\t}\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

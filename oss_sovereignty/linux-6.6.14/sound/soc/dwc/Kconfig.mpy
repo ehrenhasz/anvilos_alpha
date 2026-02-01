@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "abaf7e5395668f62ed195f925f3b06393a4224c6c350d43dabb2431ee2e84e2f",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/dwc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SND_DESIGNWARE_I2S\n\ttristate \"Synopsys I2S Device Driver\"\n\tdepends on HAVE_CLK\n\tselect SND_SOC_GENERIC_DMAENGINE_PCM\n\thelp\n\t Say Y or M if you want to add support for I2S driver for\n\t Synopsys designware I2S device. The device supports up to\n\t a maximum of 8 channels each for play and record.\n\nconfig SND_DESIGNWARE_PCM\n\tbool \"PCM PIO extension for I2S driver\"\n\tdepends on SND_DESIGNWARE_I2S\n\thelp\n\t Say Y or N if you want to add a custom ALSA extension that registers\n\t a PCM and uses PIO to transfer data.\n\n\t This functionality is specially suited for I2S devices that don't have\n\t DMA support.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

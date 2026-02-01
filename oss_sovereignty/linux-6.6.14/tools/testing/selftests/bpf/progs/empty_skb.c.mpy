@@ -1,0 +1,9 @@
+{
+  "module_name": "empty_skb.c",
+  "hash_id": "d013ac970a698458ddd51e59c2eea844eb5875c3f2c0921eebca2a37d60afb0a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/empty_skb.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nint ifindex;\nint ret;\n\nSEC(\"lwt_xmit\")\nint redirect_ingress(struct __sk_buff *skb)\n{\n\tret = bpf_clone_redirect(skb, ifindex, BPF_F_INGRESS);\n\treturn 0;\n}\n\nSEC(\"lwt_xmit\")\nint redirect_egress(struct __sk_buff *skb)\n{\n\tret = bpf_clone_redirect(skb, ifindex, 0);\n\treturn 0;\n}\n\nSEC(\"tc\")\nint tc_redirect_ingress(struct __sk_buff *skb)\n{\n\tret = bpf_clone_redirect(skb, ifindex, BPF_F_INGRESS);\n\treturn 0;\n}\n\nSEC(\"tc\")\nint tc_redirect_egress(struct __sk_buff *skb)\n{\n\tret = bpf_clone_redirect(skb, ifindex, 0);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

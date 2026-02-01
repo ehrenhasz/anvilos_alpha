@@ -1,0 +1,9 @@
+{
+  "module_name": "ti-drv260x.h",
+  "hash_id": "797aa542c3ecaaca1938da563d4b50f55840da4cb9ae039c71a75f4d49804a28",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/input/ti-drv260x.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_TI_DRV260X_H\n#define _DT_BINDINGS_TI_DRV260X_H\n\n \n#define DRV260X_LRA_MODE\t\t0x00\n#define DRV260X_LRA_NO_CAL_MODE\t0x01\n#define DRV260X_ERM_MODE\t\t0x02\n\n \n#define DRV260X_LIB_EMPTY\t\t\t0x00\n#define DRV260X_ERM_LIB_A\t\t\t0x01\n#define DRV260X_ERM_LIB_B\t\t\t0x02\n#define DRV260X_ERM_LIB_C\t\t\t0x03\n#define DRV260X_ERM_LIB_D\t\t\t0x04\n#define DRV260X_ERM_LIB_E\t\t\t0x05\n#define DRV260X_LIB_LRA\t\t\t0x06\n#define DRV260X_ERM_LIB_F\t\t\t0x07\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

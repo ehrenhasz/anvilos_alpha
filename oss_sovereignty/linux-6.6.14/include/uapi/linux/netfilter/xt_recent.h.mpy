@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_recent.h",
+  "hash_id": "617c95479bdfd6b8703a423d84ec86bf6015cf852349022b26690a31576ab3d2",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_recent.h",
+  "human_readable_source": " \n#ifndef _LINUX_NETFILTER_XT_RECENT_H\n#define _LINUX_NETFILTER_XT_RECENT_H 1\n\n#include <linux/types.h>\n#include <linux/netfilter.h>\n\nenum {\n\tXT_RECENT_CHECK    = 1 << 0,\n\tXT_RECENT_SET      = 1 << 1,\n\tXT_RECENT_UPDATE   = 1 << 2,\n\tXT_RECENT_REMOVE   = 1 << 3,\n\tXT_RECENT_TTL      = 1 << 4,\n\tXT_RECENT_REAP     = 1 << 5,\n\n\tXT_RECENT_SOURCE   = 0,\n\tXT_RECENT_DEST     = 1,\n\n\tXT_RECENT_NAME_LEN = 200,\n};\n\n \n#define XT_RECENT_MODIFIERS (XT_RECENT_TTL|XT_RECENT_REAP)\n\n#define XT_RECENT_VALID_FLAGS (XT_RECENT_CHECK|XT_RECENT_SET|XT_RECENT_UPDATE|\\\n\t\t\t       XT_RECENT_REMOVE|XT_RECENT_TTL|XT_RECENT_REAP)\n\nstruct xt_recent_mtinfo {\n\t__u32 seconds;\n\t__u32 hit_count;\n\t__u8 check_set;\n\t__u8 invert;\n\tchar name[XT_RECENT_NAME_LEN];\n\t__u8 side;\n};\n\nstruct xt_recent_mtinfo_v1 {\n\t__u32 seconds;\n\t__u32 hit_count;\n\t__u8 check_set;\n\t__u8 invert;\n\tchar name[XT_RECENT_NAME_LEN];\n\t__u8 side;\n\tunion nf_inet_addr mask;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

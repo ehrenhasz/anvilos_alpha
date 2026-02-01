@@ -1,0 +1,9 @@
+{
+  "module_name": "test.h",
+  "hash_id": "0d9d85abb132f9f8bba2e9956036a6e162f791b4121a89162b91e4e1d8df9f21",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vhost/test.h",
+  "human_readable_source": " \n#ifndef LINUX_VHOST_TEST_H\n#define LINUX_VHOST_TEST_H\n\n \n#define VHOST_TEST_RUN _IOW(VHOST_VIRTIO, 0x31, int)\n#define VHOST_TEST_SET_BACKEND _IOW(VHOST_VIRTIO, 0x32, int)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

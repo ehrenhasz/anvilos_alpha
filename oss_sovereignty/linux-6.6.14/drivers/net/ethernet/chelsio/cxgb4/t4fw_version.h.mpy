@@ -1,0 +1,9 @@
+{
+  "module_name": "t4fw_version.h",
+  "hash_id": "6db2457561ebefc87d49d655d0c9a75c082d553d5866ae67b4882f00cbe1c7e4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4/t4fw_version.h",
+  "human_readable_source": " \n\n#ifndef __T4FW_VERSION_H__\n#define __T4FW_VERSION_H__\n\n#define T4FW_VERSION_MAJOR 0x01\n#define T4FW_VERSION_MINOR 0x17\n#define T4FW_VERSION_MICRO 0x03\n#define T4FW_VERSION_BUILD 0x00\n\n#define T4FW_MIN_VERSION_MAJOR 0x01\n#define T4FW_MIN_VERSION_MINOR 0x04\n#define T4FW_MIN_VERSION_MICRO 0x00\n\n#define T5FW_VERSION_MAJOR 0x01\n#define T5FW_VERSION_MINOR 0x17\n#define T5FW_VERSION_MICRO 0x03\n#define T5FW_VERSION_BUILD 0x00\n\n#define T5FW_MIN_VERSION_MAJOR 0x00\n#define T5FW_MIN_VERSION_MINOR 0x00\n#define T5FW_MIN_VERSION_MICRO 0x00\n\n#define T6FW_VERSION_MAJOR 0x01\n#define T6FW_VERSION_MINOR 0x17\n#define T6FW_VERSION_MICRO 0x03\n#define T6FW_VERSION_BUILD 0x00\n\n#define T6FW_MIN_VERSION_MAJOR 0x00\n#define T6FW_MIN_VERSION_MINOR 0x00\n#define T6FW_MIN_VERSION_MICRO 0x00\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

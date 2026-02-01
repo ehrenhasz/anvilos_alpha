@@ -1,0 +1,9 @@
+{
+  "module_name": "hmem_global.h",
+  "hash_id": "eb516f1a34f71c48d503cd7894afd010bcb0dcd6ede43165a666dfe262b95516",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/hmem_global.h",
+  "human_readable_source": " \n \n\n#ifndef __HMEM_GLOBAL_H_INCLUDED__\n#define __HMEM_GLOBAL_H_INCLUDED__\n\n#include <type_support.h>\n\n#define IS_HMEM_VERSION_1\n\n#include \"isp.h\"\n\n \n#define ISP_HIST_ALIGNMENT_LOG2\t\t2\n\n#define HMEM_SIZE_LOG2\t\t(ISP_HIST_ADDRESS_BITS - ISP_HIST_ALIGNMENT_LOG2)\n#define HMEM_SIZE\t\t\tISP_HIST_DEPTH\n\n#define HMEM_UNIT_SIZE\t\t(HMEM_SIZE / ISP_HIST_COMPONENTS)\n#define HMEM_UNIT_COUNT\t\tISP_HIST_COMPONENTS\n\n#define HMEM_RANGE_LOG2\t\tISP_HIST_WIDTH\n#define HMEM_RANGE\t\t\tBIT(HMEM_RANGE_LOG2)\n\ntypedef u32\t\t\thmem_data_t;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

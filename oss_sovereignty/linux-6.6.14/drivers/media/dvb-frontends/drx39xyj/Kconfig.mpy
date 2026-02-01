@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "aabcd08eaf6ac27c8d0997d380b9f9c8271371120923ee615b409918a2e6202c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/drx39xyj/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DVB_DRX39XYJ\n\ttristate \"Micronas DRX-J demodulator\"\n\tdepends on DVB_CORE && I2C\n\tdefault m if !MEDIA_SUBDRV_AUTOSELECT\n\thelp\n\t  An ATSC 8VSB and QAM64/256 tuner module. Say Y when you want\n\t  to support this frontend.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

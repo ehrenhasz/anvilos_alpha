@@ -1,0 +1,9 @@
+{
+  "module_name": "mach_traps.h",
+  "hash_id": "0045f86bd83f918621a59b2cab248981c1d9c930e8e58b69290ba66a2fb7ff05",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/mach_traps.h",
+  "human_readable_source": " \n \n#ifndef _ASM_X86_MACH_DEFAULT_MACH_TRAPS_H\n#define _ASM_X86_MACH_DEFAULT_MACH_TRAPS_H\n\n#include <asm/mc146818rtc.h>\n\n#define NMI_REASON_PORT\t\t0x61\n\n#define NMI_REASON_SERR\t\t0x80\n#define NMI_REASON_IOCHK\t0x40\n#define NMI_REASON_MASK\t\t(NMI_REASON_SERR | NMI_REASON_IOCHK)\n\n#define NMI_REASON_CLEAR_SERR\t0x04\n#define NMI_REASON_CLEAR_IOCHK\t0x08\n#define NMI_REASON_CLEAR_MASK\t0x0f\n\nstatic inline unsigned char default_get_nmi_reason(void)\n{\n\treturn inb(NMI_REASON_PORT);\n}\n\nstatic inline void reassert_nmi(void)\n{\n\tint old_reg = -1;\n\n\tif (do_i_have_lock_cmos())\n\t\told_reg = current_lock_cmos_reg();\n\telse\n\t\tlock_cmos(0);  \n\toutb(0x8f, 0x70);\n\tinb(0x71);\t\t \n\toutb(0x0f, 0x70);\n\tinb(0x71);\t\t \n\tif (old_reg >= 0)\n\t\toutb(old_reg, 0x70);\n\telse\n\t\tunlock_cmos();\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

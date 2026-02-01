@@ -1,0 +1,9 @@
+{
+  "module_name": "bridge_sticky_fdb.sh",
+  "hash_id": "26172f9449a0bf6b022e375eeebd73c6bd533101eb428ad706c018527b1abd35",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nALL_TESTS=\"sticky\"\nNUM_NETIFS=4\nTEST_MAC=de:ad:be:ef:13:37\nsource lib.sh\n\nswitch_create()\n{\n\tip link add dev br0 type bridge\n\n\tip link set dev $swp1 master br0\n\tip link set dev $swp2 master br0\n\n\tip link set dev br0 up\n\tip link set dev $h1 up\n\tip link set dev $swp1 up\n\tip link set dev $h2 up\n\tip link set dev $swp2 up\n}\n\nswitch_destroy()\n{\n\tip link set dev $swp2 down\n\tip link set dev $h2 down\n\tip link set dev $swp1 down\n\tip link set dev $h1 down\n\n\tip link del dev br0\n}\n\nsetup_prepare()\n{\n\th1=${NETIFS[p1]}\n\tswp1=${NETIFS[p2]}\n\th2=${NETIFS[p3]}\n\tswp2=${NETIFS[p4]}\n\n\tswitch_create\n}\n\ncleanup()\n{\n\tpre_cleanup\n\tswitch_destroy\n}\n\nsticky()\n{\n\tbridge fdb add $TEST_MAC dev $swp1 master static sticky\n\tcheck_err $? \"Could not add fdb entry\"\n\tbridge fdb del $TEST_MAC dev $swp1 vlan 1 master static sticky\n\t$MZ $h2 -c 1 -a $TEST_MAC -t arp \"request\" -q\n\tbridge -j fdb show br br0 brport $swp1\\\n\t\t| jq -e \".[] | select(.mac == \\\"$TEST_MAC\\\")\" &> /dev/null\n\tcheck_err $? \"Did not find FDB record when should\"\n\n\tlog_test \"Sticky fdb entry\"\n}\n\ntrap cleanup EXIT\n\nsetup_prepare\nsetup_wait\n\ntests_run\n\nexit $EXIT_STATUS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

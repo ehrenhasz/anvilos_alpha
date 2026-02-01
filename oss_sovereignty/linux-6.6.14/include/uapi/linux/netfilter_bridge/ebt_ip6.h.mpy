@@ -1,0 +1,9 @@
+{
+  "module_name": "ebt_ip6.h",
+  "hash_id": "07995ac5d716ec81db7d7be767a71d2550f2f51484f29f6be3037bd12c046faa",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_bridge/ebt_ip6.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_BRIDGE_EBT_IP6_H\n#define __LINUX_BRIDGE_EBT_IP6_H\n\n#include <linux/types.h>\n#include <linux/in6.h>\n\n#define EBT_IP6_SOURCE 0x01\n#define EBT_IP6_DEST 0x02\n#define EBT_IP6_TCLASS 0x04\n#define EBT_IP6_PROTO 0x08\n#define EBT_IP6_SPORT 0x10\n#define EBT_IP6_DPORT 0x20\n#define EBT_IP6_ICMP6 0x40\n\n#define EBT_IP6_MASK (EBT_IP6_SOURCE | EBT_IP6_DEST | EBT_IP6_TCLASS |\\\n\t\t      EBT_IP6_PROTO | EBT_IP6_SPORT | EBT_IP6_DPORT | \\\n\t\t      EBT_IP6_ICMP6)\n#define EBT_IP6_MATCH \"ip6\"\n\n \nstruct ebt_ip6_info {\n\tstruct in6_addr saddr;\n\tstruct in6_addr daddr;\n\tstruct in6_addr smsk;\n\tstruct in6_addr dmsk;\n\t__u8  tclass;\n\t__u8  protocol;\n\t__u8  bitmask;\n\t__u8  invflags;\n\tunion {\n\t\t__u16 sport[2];\n\t\t__u8 icmpv6_type[2];\n\t};\n\tunion {\n\t\t__u16 dport[2];\n\t\t__u8 icmpv6_code[2];\n\t};\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

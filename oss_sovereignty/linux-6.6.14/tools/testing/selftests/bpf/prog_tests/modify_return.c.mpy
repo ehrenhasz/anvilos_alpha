@@ -1,0 +1,9 @@
+{
+  "module_name": "modify_return.c",
+  "hash_id": "39d5082ad244847861851011c18489f6ce07f3984fa2f0d8c6a575d3579a7b7a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/modify_return.c",
+  "human_readable_source": "\n\n \n\n#include <test_progs.h>\n#include \"modify_return.skel.h\"\n\n#define LOWER(x) ((x) & 0xffff)\n#define UPPER(x) ((x) >> 16)\n\n\nstatic void run_test(__u32 input_retval, __u16 want_side_effect, __s16 want_ret)\n{\n\tstruct modify_return *skel = NULL;\n\tint err, prog_fd;\n\t__u16 side_effect;\n\t__s16 ret;\n\tLIBBPF_OPTS(bpf_test_run_opts, topts);\n\n\tskel = modify_return__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"skel_load\"))\n\t\tgoto cleanup;\n\n\terr = modify_return__attach(skel);\n\tif (!ASSERT_OK(err, \"modify_return__attach failed\"))\n\t\tgoto cleanup;\n\n\tskel->bss->input_retval = input_retval;\n\tprog_fd = bpf_program__fd(skel->progs.fmod_ret_test);\n\terr = bpf_prog_test_run_opts(prog_fd, &topts);\n\tASSERT_OK(err, \"test_run\");\n\n\tside_effect = UPPER(topts.retval);\n\tret = LOWER(topts.retval);\n\n\tASSERT_EQ(ret, want_ret, \"test_run ret\");\n\tASSERT_EQ(side_effect, want_side_effect, \"modify_return side_effect\");\n\tASSERT_EQ(skel->bss->fentry_result, 1, \"modify_return fentry_result\");\n\tASSERT_EQ(skel->bss->fexit_result, 1, \"modify_return fexit_result\");\n\tASSERT_EQ(skel->bss->fmod_ret_result, 1, \"modify_return fmod_ret_result\");\n\n\tASSERT_EQ(skel->bss->fentry_result2, 1, \"modify_return fentry_result2\");\n\tASSERT_EQ(skel->bss->fexit_result2, 1, \"modify_return fexit_result2\");\n\tASSERT_EQ(skel->bss->fmod_ret_result2, 1, \"modify_return fmod_ret_result2\");\n\ncleanup:\n\tmodify_return__destroy(skel);\n}\n\n \nvoid serial_test_modify_return(void)\n{\n\trun_test(0  ,\n\t\t 2  ,\n\t\t 33  );\n\trun_test(-EINVAL  ,\n\t\t 0  ,\n\t\t -EINVAL * 2  );\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

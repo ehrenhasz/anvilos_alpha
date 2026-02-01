@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_inode_buf.h",
+  "hash_id": "e6abb04303f620b376ded188099174c22ce446aa19365937517dfaeb70c367b9",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/libxfs/xfs_inode_buf.h",
+  "human_readable_source": "\n \n#ifndef\t__XFS_INODE_BUF_H__\n#define\t__XFS_INODE_BUF_H__\n\nstruct xfs_inode;\nstruct xfs_dinode;\n\n \nstruct xfs_imap {\n\txfs_daddr_t\tim_blkno;\t \n\tunsigned short\tim_len;\t\t \n\tunsigned short\tim_boffset;\t \n};\n\nint\txfs_imap_to_bp(struct xfs_mount *mp, struct xfs_trans *tp,\n\t\t       struct xfs_imap *imap, struct xfs_buf **bpp);\nvoid\txfs_dinode_calc_crc(struct xfs_mount *mp, struct xfs_dinode *dip);\nvoid\txfs_inode_to_disk(struct xfs_inode *ip, struct xfs_dinode *to,\n\t\t\t  xfs_lsn_t lsn);\nint\txfs_inode_from_disk(struct xfs_inode *ip, struct xfs_dinode *from);\n\nxfs_failaddr_t xfs_dinode_verify(struct xfs_mount *mp, xfs_ino_t ino,\n\t\t\t   struct xfs_dinode *dip);\nxfs_failaddr_t xfs_inode_validate_extsize(struct xfs_mount *mp,\n\t\tuint32_t extsize, uint16_t mode, uint16_t flags);\nxfs_failaddr_t xfs_inode_validate_cowextsize(struct xfs_mount *mp,\n\t\tuint32_t cowextsize, uint16_t mode, uint16_t flags,\n\t\tuint64_t flags2);\n\nstatic inline uint64_t xfs_inode_encode_bigtime(struct timespec64 tv)\n{\n\treturn xfs_unix_to_bigtime(tv.tv_sec) * NSEC_PER_SEC + tv.tv_nsec;\n}\n\nstruct timespec64 xfs_inode_from_disk_ts(struct xfs_dinode *dip,\n\t\tconst xfs_timestamp_t ts);\n\nstatic inline bool\nxfs_dinode_good_version(struct xfs_mount *mp, uint8_t version)\n{\n\tif (xfs_has_v3inodes(mp))\n\t\treturn version == 3;\n\treturn version == 1 || version == 2;\n}\n\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

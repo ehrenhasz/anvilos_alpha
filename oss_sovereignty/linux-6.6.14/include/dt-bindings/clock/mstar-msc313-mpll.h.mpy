@@ -1,0 +1,9 @@
+{
+  "module_name": "mstar-msc313-mpll.h",
+  "hash_id": "466df6d0563ad7efd463f145695e09d351ec1dbcb3c4809516dd5b3002dc6188",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/mstar-msc313-mpll.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLOCK_MSTAR_MSC313_MPLL_H\n#define _DT_BINDINGS_CLOCK_MSTAR_MSC313_MPLL_H\n\n#define MSTAR_MSC313_MPLL_DIV2\t1\n#define MSTAR_MSC313_MPLL_DIV3\t2\n#define MSTAR_MSC313_MPLL_DIV4\t3\n#define MSTAR_MSC313_MPLL_DIV5\t4\n#define MSTAR_MSC313_MPLL_DIV6\t5\n#define MSTAR_MSC313_MPLL_DIV7\t6\n#define MSTAR_MSC313_MPLL_DIV10\t7\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

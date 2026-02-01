@@ -1,0 +1,9 @@
+{
+  "module_name": "mantis_dma.h",
+  "hash_id": "b6c0a81f5f90941633d79d3fd26f60832fa565e6c124c835082ac7d2f0ea838e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/mantis/mantis_dma.h",
+  "human_readable_source": " \n \n\n#ifndef __MANTIS_DMA_H\n#define __MANTIS_DMA_H\n\nextern int mantis_dma_init(struct mantis_pci *mantis);\nextern int mantis_dma_exit(struct mantis_pci *mantis);\nextern void mantis_dma_start(struct mantis_pci *mantis);\nextern void mantis_dma_stop(struct mantis_pci *mantis);\nextern void mantis_dma_xfer(struct tasklet_struct *t);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

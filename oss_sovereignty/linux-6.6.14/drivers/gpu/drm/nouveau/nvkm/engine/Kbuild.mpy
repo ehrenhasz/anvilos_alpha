@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "ed8c7ea9cb7309ffa9beb69e763c95c93fe103359d09e4c0a725da6a084d542d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\nnvkm-y += nvkm/engine/falcon.o\nnvkm-y += nvkm/engine/xtensa.o\n\ninclude $(src)/nvkm/engine/bsp/Kbuild\ninclude $(src)/nvkm/engine/ce/Kbuild\ninclude $(src)/nvkm/engine/cipher/Kbuild\ninclude $(src)/nvkm/engine/device/Kbuild\ninclude $(src)/nvkm/engine/disp/Kbuild\ninclude $(src)/nvkm/engine/dma/Kbuild\ninclude $(src)/nvkm/engine/fifo/Kbuild\ninclude $(src)/nvkm/engine/gr/Kbuild\ninclude $(src)/nvkm/engine/mpeg/Kbuild\ninclude $(src)/nvkm/engine/msenc/Kbuild\ninclude $(src)/nvkm/engine/mspdec/Kbuild\ninclude $(src)/nvkm/engine/msppp/Kbuild\ninclude $(src)/nvkm/engine/msvld/Kbuild\ninclude $(src)/nvkm/engine/nvenc/Kbuild\ninclude $(src)/nvkm/engine/nvdec/Kbuild\ninclude $(src)/nvkm/engine/pm/Kbuild\ninclude $(src)/nvkm/engine/sec/Kbuild\ninclude $(src)/nvkm/engine/sec2/Kbuild\ninclude $(src)/nvkm/engine/sw/Kbuild\ninclude $(src)/nvkm/engine/vic/Kbuild\ninclude $(src)/nvkm/engine/vp/Kbuild\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

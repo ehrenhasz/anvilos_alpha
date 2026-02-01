@@ -1,0 +1,9 @@
+{
+  "module_name": "serial.h",
+  "hash_id": "0304c778e22f66b71f2bd5de025723ddff90e804fa1ac8fe2f8d4a351f47d76d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gnss/serial.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_GNSS_SERIAL_H\n#define _LINUX_GNSS_SERIAL_H\n\n#include <asm/termbits.h>\n#include <linux/pm.h>\n\nstruct gnss_serial {\n\tstruct serdev_device *serdev;\n\tstruct gnss_device *gdev;\n\tspeed_t\tspeed;\n\tconst struct gnss_serial_ops *ops;\n\tunsigned long drvdata[];\n};\n\nenum gnss_serial_pm_state {\n\tGNSS_SERIAL_OFF,\n\tGNSS_SERIAL_ACTIVE,\n\tGNSS_SERIAL_STANDBY,\n};\n\nstruct gnss_serial_ops {\n\tint (*set_power)(struct gnss_serial *gserial,\n\t\t\t\tenum gnss_serial_pm_state state);\n};\n\nextern const struct dev_pm_ops gnss_serial_pm_ops;\n\nstruct gnss_serial *gnss_serial_allocate(struct serdev_device *gserial,\n\t\t\t\t\t\tsize_t data_size);\nvoid gnss_serial_free(struct gnss_serial *gserial);\n\nint gnss_serial_register(struct gnss_serial *gserial);\nvoid gnss_serial_deregister(struct gnss_serial *gserial);\n\nstatic inline void *gnss_serial_get_drvdata(struct gnss_serial *gserial)\n{\n\treturn gserial->drvdata;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

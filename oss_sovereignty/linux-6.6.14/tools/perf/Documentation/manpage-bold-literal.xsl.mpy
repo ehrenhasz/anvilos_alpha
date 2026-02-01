@@ -1,0 +1,9 @@
+{
+  "module_name": "manpage-bold-literal.xsl",
+  "hash_id": "26cc6187871a84384fe755a2c274b3166d3c32780b7eb1525b71edfbaacef4c1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/manpage-bold-literal.xsl",
+  "human_readable_source": "<!-- manpage-bold-literal.xsl:\n     special formatting for manpages rendered from asciidoc+docbook -->\n<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n\t\tversion=\"1.0\">\n\n<!-- render literal text as bold (instead of plain or monospace);\n     this makes literal text easier to distinguish in manpages\n     viewed on a tty -->\n<xsl:template match=\"literal\">\n\t<xsl:value-of select=\"$git.docbook.backslash\"/>\n\t<xsl:text>fB</xsl:text>\n\t<xsl:apply-templates/>\n\t<xsl:value-of select=\"$git.docbook.backslash\"/>\n\t<xsl:text>fR</xsl:text>\n</xsl:template>\n\n</xsl:stylesheet>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

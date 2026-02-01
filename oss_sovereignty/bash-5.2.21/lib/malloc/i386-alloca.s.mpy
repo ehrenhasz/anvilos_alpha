@@ -1,0 +1,9 @@
+{
+  "module_name": "i386-alloca.s",
+  "hash_id": "467947541195a7076a325991b64f3355f71bcd4755bd3194e678ede1e22a5c31",
+  "original_prompt": "Ingested from bash-5.2.21/lib/malloc/i386-alloca.s",
+  "human_readable_source": "\t.file \"alloca.s\"\n\t.text\n\t.align 4\n\t.def alloca; .val alloca; .scl 2; .type 044; .endef\n\t.globl alloca\nalloca:\n\tpopl %edx\n\tpopl %eax\n\taddl $3,%eax\n\tandl $0xfffffffc,%eax\n\tsubl %eax,%esp\n\tmovl %esp,%eax\n\tpushl %eax\n\tpushl %edx\n\tret\n\t.def alloca; .val .; .scl -1; .endef\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

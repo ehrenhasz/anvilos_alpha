@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_gvt.h",
+  "hash_id": "77e52d1ee50fa8beeec7b262a9d6af9b7178ef654d60ce4051c1e03026b375c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/intel_gvt.h",
+  "human_readable_source": " \n\n#ifndef _INTEL_GVT_H_\n#define _INTEL_GVT_H_\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\n\n#ifdef CONFIG_DRM_I915_GVT\n\nstruct intel_gvt_mmio_table_iter {\n\tstruct drm_i915_private *i915;\n\tvoid *data;\n\tint (*handle_mmio_cb)(struct intel_gvt_mmio_table_iter *iter,\n\t\t\t      u32 offset, u32 size);\n};\n\nint intel_gvt_init(struct drm_i915_private *dev_priv);\nvoid intel_gvt_driver_remove(struct drm_i915_private *dev_priv);\nint intel_gvt_init_host(void);\nvoid intel_gvt_resume(struct drm_i915_private *dev_priv);\nint intel_gvt_iterate_mmio_table(struct intel_gvt_mmio_table_iter *iter);\n\nstruct intel_vgpu_ops {\n\tint (*init_device)(struct drm_i915_private *dev_priv);\n\tvoid (*clean_device)(struct drm_i915_private *dev_priv);\n\tvoid (*pm_resume)(struct drm_i915_private *i915);\n};\n\nint intel_gvt_set_ops(const struct intel_vgpu_ops *ops);\nvoid intel_gvt_clear_ops(const struct intel_vgpu_ops *ops);\n\n#else\nstatic inline int intel_gvt_init(struct drm_i915_private *dev_priv)\n{\n\treturn 0;\n}\n\nstatic inline void intel_gvt_driver_remove(struct drm_i915_private *dev_priv)\n{\n}\n\nstatic inline void intel_gvt_resume(struct drm_i915_private *dev_priv)\n{\n}\n\nstruct intel_gvt_mmio_table_iter {\n};\n\nstatic inline int intel_gvt_iterate_mmio_table(struct intel_gvt_mmio_table_iter *iter)\n{\n\treturn 0;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

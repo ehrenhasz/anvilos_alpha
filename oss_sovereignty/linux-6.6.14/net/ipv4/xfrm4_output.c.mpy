@@ -1,0 +1,9 @@
+{
+  "module_name": "xfrm4_output.c",
+  "hash_id": "c1feb31ab2e79b4326b969755ddeabe4174c1c7ed3c9915c53052d7080a10c93",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv4/xfrm4_output.c",
+  "human_readable_source": "\n \n\n#include <linux/if_ether.h>\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/skbuff.h>\n#include <linux/netfilter_ipv4.h>\n#include <net/dst.h>\n#include <net/ip.h>\n#include <net/xfrm.h>\n#include <net/icmp.h>\n\nstatic int __xfrm4_output(struct net *net, struct sock *sk, struct sk_buff *skb)\n{\n#ifdef CONFIG_NETFILTER\n\tstruct xfrm_state *x = skb_dst(skb)->xfrm;\n\n\tif (!x) {\n\t\tIPCB(skb)->flags |= IPSKB_REROUTED;\n\t\treturn dst_output(net, sk, skb);\n\t}\n#endif\n\n\treturn xfrm_output(sk, skb);\n}\n\nint xfrm4_output(struct net *net, struct sock *sk, struct sk_buff *skb)\n{\n\treturn NF_HOOK_COND(NFPROTO_IPV4, NF_INET_POST_ROUTING,\n\t\t\t    net, sk, skb, skb->dev, skb_dst(skb)->dev,\n\t\t\t    __xfrm4_output,\n\t\t\t    !(IPCB(skb)->flags & IPSKB_REROUTED));\n}\n\nvoid xfrm4_local_error(struct sk_buff *skb, u32 mtu)\n{\n\tstruct iphdr *hdr;\n\n\thdr = skb->encapsulation ? inner_ip_hdr(skb) : ip_hdr(skb);\n\tip_local_error(skb->sk, EMSGSIZE, hdr->daddr,\n\t\t       inet_sk(skb->sk)->inet_dport, mtu);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

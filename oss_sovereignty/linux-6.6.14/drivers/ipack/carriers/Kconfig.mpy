@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ad4ce1e4733fb0ad80fcbe1da706d30aa6f375b977819393c0ebc6444ea04de6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ipack/carriers/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig BOARD_TPCI200\n\ttristate \"Support for the TEWS TPCI-200 IndustryPack carrier board\"\n\tdepends on IPACK_BUS\n\tdepends on PCI\n\thelp\n\t  This driver adds support for the TEWS TPCI200 IndustryPack carrier board.\n\tdefault n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

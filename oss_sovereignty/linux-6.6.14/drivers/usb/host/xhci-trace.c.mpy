@@ -1,0 +1,9 @@
+{
+  "module_name": "xhci-trace.c",
+  "hash_id": "b789ac50aa52b4ed238cc955ca7497dbc1abbd23b958b35983780d2ee7b5e124",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/host/xhci-trace.c",
+  "human_readable_source": "\n \n\n#define CREATE_TRACE_POINTS\n#include \"xhci-trace.h\"\n\nEXPORT_TRACEPOINT_SYMBOL_GPL(xhci_dbg_quirks);\nEXPORT_TRACEPOINT_SYMBOL_GPL(xhci_dbg_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

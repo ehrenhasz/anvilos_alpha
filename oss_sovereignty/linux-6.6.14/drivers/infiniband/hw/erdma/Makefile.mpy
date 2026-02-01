@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "616c39d7fe55396e081186a2ed5cce9b6e7b761ba4534d73aa1ac6caaa9bc0b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/erdma/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_INFINIBAND_ERDMA) := erdma.o\n\nerdma-y := erdma_cm.o erdma_main.o erdma_cmdq.o erdma_cq.o erdma_verbs.o erdma_qp.o erdma_eq.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

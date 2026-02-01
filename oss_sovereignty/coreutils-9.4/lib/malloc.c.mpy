@@ -1,0 +1,9 @@
+{
+  "module_name": "malloc.c",
+  "hash_id": "e2de5ac92e00ddbc14aac40c1a607a746c9650ebfa02aa63148f063d3243c6f5",
+  "original_prompt": "Ingested from coreutils-9.4/lib/malloc.c",
+  "human_readable_source": " \n\n#define _GL_USE_STDLIB_ALLOC 1\n#include <config.h>\n\n#include <stdlib.h>\n\n#include <errno.h>\n\n#include \"xalloc-oversized.h\"\n\n \n\nvoid *\nrpl_malloc (size_t n)\n{\n  if (n == 0)\n    n = 1;\n\n  if (xalloc_oversized (n, 1))\n    {\n      errno = ENOMEM;\n      return NULL;\n    }\n\n  void *result = malloc (n);\n\n#if !HAVE_MALLOC_POSIX\n  if (result == NULL)\n    errno = ENOMEM;\n#endif\n\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

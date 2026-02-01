@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "66efe745cc75b5182ffc6b78d02113c8b88c9f0d2b7c48c5f7651c28d3c0afc9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pps/generators/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# PPS generators configuration\n#\n\ncomment \"PPS generators support\"\n\nconfig PPS_GENERATOR_PARPORT\n\ttristate \"Parallel port PPS signal generator\"\n\tdepends on PARPORT && BROKEN\n\thelp\n\t  If you say yes here you get support for a PPS signal generator which\n\t  utilizes STROBE pin of a parallel port to send PPS signals. It uses\n\t  parport abstraction layer and hrtimers to precisely control the signal.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "61256c1d021d30ba10eaed1f6e62605ed346c143c4066e7d34a1cdde208173bd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/hackrf/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig USB_HACKRF\n\ttristate \"HackRF\"\n\tdepends on VIDEO_DEV\n\tselect VIDEOBUF2_VMALLOC\n\thelp\n\t  This is a video4linux2 driver for HackRF SDR device.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called hackrf\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

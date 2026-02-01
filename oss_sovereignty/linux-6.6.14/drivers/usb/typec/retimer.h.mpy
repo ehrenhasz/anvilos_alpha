@@ -1,0 +1,9 @@
+{
+  "module_name": "retimer.h",
+  "hash_id": "ef4cc00c0dc3111d1183070be44530bd2db25ff934272a04f2c8d919023012e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/typec/retimer.h",
+  "human_readable_source": " \n\n#ifndef __USB_TYPEC_RETIMER__\n#define __USB_TYPEC_RETIMER__\n\n#include <linux/usb/typec_retimer.h>\n\nstruct typec_retimer {\n\tstruct device dev;\n\ttypec_retimer_set_fn_t set;\n};\n\n#define to_typec_retimer(_dev_) container_of(_dev_, struct typec_retimer, dev)\n\nextern const struct device_type typec_retimer_dev_type;\n\n#define is_typec_retimer(dev) ((dev)->type == &typec_retimer_dev_type)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

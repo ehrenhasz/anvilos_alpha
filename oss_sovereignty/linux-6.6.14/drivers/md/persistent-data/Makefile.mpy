@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2e331754998c7cabe66151d67168736545d191ca7b023e185f18beb700ae4e0a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/persistent-data/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_DM_PERSISTENT_DATA) += dm-persistent-data.o\ndm-persistent-data-objs := \\\n\tdm-array.o \\\n\tdm-bitset.o \\\n\tdm-block-manager.o \\\n\tdm-space-map-common.o \\\n\tdm-space-map-disk.o \\\n\tdm-space-map-metadata.o \\\n\tdm-transaction-manager.o \\\n\tdm-btree.o \\\n\tdm-btree-remove.o \\\n\tdm-btree-spine.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

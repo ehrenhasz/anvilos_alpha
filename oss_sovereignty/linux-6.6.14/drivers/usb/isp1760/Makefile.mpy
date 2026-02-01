@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "756f1fcf56e3c00bea6137ab50cc98dbf222704e32956d3d09f98b67be0d01d2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/isp1760/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nisp1760-y := isp1760-core.o isp1760-if.o\nisp1760-$(CONFIG_USB_ISP1760_HCD) += isp1760-hcd.o\nisp1760-$(CONFIG_USB_ISP1761_UDC) += isp1760-udc.o\n\nobj-$(CONFIG_USB_ISP1760)\t+= isp1760.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

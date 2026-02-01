@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7db748235fb7fb9d7f9e49ff570f36dafd3489e1ba63aeb4ddec2c3c2d045a55",
+  "original_prompt": "Ingested from linux-6.6.14/net/tls/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# TLS configuration\n#\nconfig TLS\n\ttristate \"Transport Layer Security support\"\n\tdepends on INET\n\tselect CRYPTO\n\tselect CRYPTO_AES\n\tselect CRYPTO_GCM\n\tselect STREAM_PARSER\n\tselect NET_SOCK_MSG\n\tdefault n\n\thelp\n\tEnable kernel support for TLS protocol. This allows symmetric\n\tencryption handling of the TLS protocol to be done in-kernel.\n\n\tIf unsure, say N.\n\nconfig TLS_DEVICE\n\tbool \"Transport Layer Security HW offload\"\n\tdepends on TLS\n\tselect SOCK_VALIDATE_XMIT\n\tselect SOCK_RX_QUEUE_MAPPING\n\tdefault n\n\thelp\n\tEnable kernel support for HW offload of the TLS protocol.\n\n\tIf unsure, say N.\n\nconfig TLS_TOE\n\tbool \"Transport Layer Security TCP stack bypass\"\n\tdepends on TLS\n\tdefault n\n\thelp\n\tEnable kernel support for legacy HW offload of the TLS protocol,\n\twhich is incompatible with the Linux networking stack semantics.\n\n\tIf unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

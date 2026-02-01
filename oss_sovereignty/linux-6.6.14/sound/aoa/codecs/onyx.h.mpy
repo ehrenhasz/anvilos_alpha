@@ -1,0 +1,9 @@
+{
+  "module_name": "onyx.h",
+  "hash_id": "a555a3956464032b72108bdd1339bd6763679fc5a34b5fe176d2fd5868bf32b9",
+  "original_prompt": "Ingested from linux-6.6.14/sound/aoa/codecs/onyx.h",
+  "human_readable_source": " \n \n#ifndef __SND_AOA_CODEC_ONYX_H\n#define __SND_AOA_CODEC_ONYX_H\n#include <linux/i2c.h>\n#include <asm/pmac_low_i2c.h>\n#include <asm/prom.h>\n\n \n\n \n#define ONYX_REG_DAC_ATTEN_LEFT\t\t65\n#define FIRSTREGISTER\t\t\tONYX_REG_DAC_ATTEN_LEFT\n#define ONYX_REG_DAC_ATTEN_RIGHT\t66\n\n#define ONYX_REG_CONTROL\t\t67\n#\tdefine ONYX_MRST\t\t(1<<7)\n#\tdefine ONYX_SRST\t\t(1<<6)\n#\tdefine ONYX_ADPSV\t\t(1<<5)\n#\tdefine ONYX_DAPSV\t\t(1<<4)\n#\tdefine ONYX_SILICONVERSION\t(1<<0)\n \n\n#define ONYX_REG_DAC_CONTROL\t\t68\n#\tdefine ONYX_OVR1\t\t(1<<6)\n#\tdefine ONYX_MUTE_RIGHT\t\t(1<<1)\n#\tdefine ONYX_MUTE_LEFT\t\t(1<<0)\n\n#define ONYX_REG_DAC_DEEMPH\t\t69\n#\tdefine ONYX_DIGDEEMPH_SHIFT\t5\n#\tdefine ONYX_DIGDEEMPH_MASK\t(3<<ONYX_DIGDEEMPH_SHIFT)\n#\tdefine ONYX_DIGDEEMPH_CTRL\t(1<<4)\n\n#define ONYX_REG_DAC_FILTER\t\t70\n#\tdefine ONYX_ROLLOFF_FAST\t(1<<5)\n#\tdefine ONYX_DAC_FILTER_ALWAYS\t(1<<2)\n\n#define\tONYX_REG_DAC_OUTPHASE\t\t71\n#\tdefine ONYX_OUTPHASE_INVERTED\t(1<<0)\n\n#define ONYX_REG_ADC_CONTROL\t\t72\n#\tdefine ONYX_ADC_INPUT_MIC\t(1<<5)\n \n#\tdefine ONYX_ADC_PGA_GAIN_MASK\t0x1f\n\n#define ONYX_REG_ADC_HPF_BYPASS\t\t75\n#\tdefine ONYX_HPF_DISABLE\t\t(1<<3)\n#\tdefine ONYX_ADC_HPF_ALWAYS\t(1<<2)\n\n#define ONYX_REG_DIG_INFO1\t\t77\n#\tdefine ONYX_MASK_DIN_TO_BPZ\t(1<<7)\n \n#\tdefine ONYX_DIGOUT_DISABLE\t(1<<0)\n\n#define ONYX_REG_DIG_INFO2\t\t78\n \n\n#define ONYX_REG_DIG_INFO3\t\t79\n \n\n#define ONYX_REG_DIG_INFO4\t\t80\n#\tdefine ONYX_VALIDL\t\t(1<<7)\n#\tdefine ONYX_VALIDR\t\t(1<<6)\n#\tdefine ONYX_SPDIF_ENABLE\t(1<<5)\n \n#\tdefine ONYX_WORDLEN_MASK\t(0xF)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "net-sysfs.h",
+  "hash_id": "ac29a2634cded322ebe7b2dc247598f1e29f73d11c6be31f6394cf32aeb6ae32",
+  "original_prompt": "Ingested from linux-6.6.14/net/core/net-sysfs.h",
+  "human_readable_source": " \n#ifndef __NET_SYSFS_H__\n#define __NET_SYSFS_H__\n\nint __init netdev_kobject_init(void);\nint netdev_register_kobject(struct net_device *);\nvoid netdev_unregister_kobject(struct net_device *);\nint net_rx_queue_update_kobjects(struct net_device *, int old_num, int new_num);\nint netdev_queue_update_kobjects(struct net_device *net,\n\t\t\t\t int old_num, int new_num);\nint netdev_change_owner(struct net_device *, const struct net *net_old,\n\t\t\tconst struct net *net_new);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

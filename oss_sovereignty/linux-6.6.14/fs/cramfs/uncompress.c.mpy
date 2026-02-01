@@ -1,0 +1,9 @@
+{
+  "module_name": "uncompress.c",
+  "hash_id": "356aab1963b79efb87b8ce4437c228112714a1e7b994892e55b284c9c2b43f78",
+  "original_prompt": "Ingested from linux-6.6.14/fs/cramfs/uncompress.c",
+  "human_readable_source": "\n \n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <linux/kernel.h>\n#include <linux/errno.h>\n#include <linux/vmalloc.h>\n#include <linux/zlib.h>\n#include \"internal.h\"\n\nstatic z_stream stream;\nstatic int initialized;\n\n \nint cramfs_uncompress_block(void *dst, int dstlen, void *src, int srclen)\n{\n\tint err;\n\n\tstream.next_in = src;\n\tstream.avail_in = srclen;\n\n\tstream.next_out = dst;\n\tstream.avail_out = dstlen;\n\n\terr = zlib_inflateReset(&stream);\n\tif (err != Z_OK) {\n\t\tpr_err(\"zlib_inflateReset error %d\\n\", err);\n\t\tzlib_inflateEnd(&stream);\n\t\tzlib_inflateInit(&stream);\n\t}\n\n\terr = zlib_inflate(&stream, Z_FINISH);\n\tif (err != Z_STREAM_END)\n\t\tgoto err;\n\treturn stream.total_out;\n\nerr:\n\tpr_err(\"Error %d while decompressing!\\n\", err);\n\tpr_err(\"%p(%d)->%p(%d)\\n\", src, srclen, dst, dstlen);\n\treturn -EIO;\n}\n\nint cramfs_uncompress_init(void)\n{\n\tif (!initialized++) {\n\t\tstream.workspace = vmalloc(zlib_inflate_workspacesize());\n\t\tif (!stream.workspace) {\n\t\t\tinitialized = 0;\n\t\t\treturn -ENOMEM;\n\t\t}\n\t\tstream.next_in = NULL;\n\t\tstream.avail_in = 0;\n\t\tzlib_inflateInit(&stream);\n\t}\n\treturn 0;\n}\n\nvoid cramfs_uncompress_exit(void)\n{\n\tif (!--initialized) {\n\t\tzlib_inflateEnd(&stream);\n\t\tvfree(stream.workspace);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

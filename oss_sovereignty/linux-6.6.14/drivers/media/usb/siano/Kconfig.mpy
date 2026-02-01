@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d9c54544a07c28725ad075af65f93c75a8462a30ae5aa609d1840856bb0f11a8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/siano/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Siano Mobile Silicon Digital TV device configuration\n#\n\nconfig SMS_USB_DRV\n\ttristate \"Siano SMS1xxx based MDTV receiver\"\n\tdepends on DVB_CORE && HAS_DMA\n\tdepends on !RC_CORE || RC_CORE\n\tselect MEDIA_COMMON_OPTIONS\n\tselect SMS_SIANO_MDTV\n\thelp\n\t  Choose if you would like to have Siano's support for USB interface\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

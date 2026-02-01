@@ -1,0 +1,9 @@
+{
+  "module_name": "exp.c",
+  "hash_id": "f7bba25fe93c0b55c6813a448e2f926b5d9d41fa70e1f32011ae620f66fd1f70",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/exp.c",
+  "human_readable_source": " \n \n \n\n#include \"libm.h\"\n\nstatic const double\nhalf[2] = {0.5,-0.5},\nln2hi = 6.93147180369123816490e-01,  \nln2lo = 1.90821492927058770002e-10,  \ninvln2 = 1.44269504088896338700e+00,  \nP1   =  1.66666666666666019037e-01,  \nP2   = -2.77777777770155933842e-03,  \nP3   =  6.61375632143793436117e-05,  \nP4   = -1.65339022054652515390e-06,  \nP5   =  4.13813679705723846039e-08;  \n\ndouble exp(double x)\n{\n\tdouble_t hi, lo, c, xx, y;\n\tint k, sign;\n\tuint32_t hx;\n\n\tGET_HIGH_WORD(hx, x);\n\tsign = hx>>31;\n\thx &= 0x7fffffff;   \n\n\t \n\tif (hx >= 0x4086232b) {   \n\t\tif (isnan(x))\n\t\t\treturn x;\n\t\tif (x > 709.782712893383973096) {\n\t\t\t \n\t\t\tx *= 0x1p1023;\n\t\t\treturn x;\n\t\t}\n\t\tif (x < -708.39641853226410622) {\n\t\t\t \n\t\t\tFORCE_EVAL((float)(-0x1p-149/x));\n\t\t\tif (x < -745.13321910194110842)\n\t\t\t\treturn 0;\n\t\t}\n\t}\n\n\t \n\tif (hx > 0x3fd62e42) {   \n\t\tif (hx >= 0x3ff0a2b2)   \n\t\t\tk = (int)(invln2*x + half[sign]);\n\t\telse\n\t\t\tk = 1 - sign - sign;\n\t\thi = x - k*ln2hi;   \n\t\tlo = k*ln2lo;\n\t\tx = hi - lo;\n\t} else if (hx > 0x3e300000)  {   \n\t\tk = 0;\n\t\thi = x;\n\t\tlo = 0;\n\t} else {\n\t\t \n\t\tFORCE_EVAL(0x1p1023 + x);\n\t\treturn 1 + x;\n\t}\n\n\t \n\txx = x*x;\n\tc = x - xx*(P1+xx*(P2+xx*(P3+xx*(P4+xx*P5))));\n\ty = 1 + (x*c/(2-c) - lo + hi);\n\tif (k == 0)\n\t\treturn y;\n\treturn scalbn(y, k);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

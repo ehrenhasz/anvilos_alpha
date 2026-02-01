@@ -1,0 +1,9 @@
+{
+  "module_name": "rename_flags.sh",
+  "hash_id": "3cacecf836248f7ea8de46199d2d7550910d84a4b458ff0d3bee9f6554934ea3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/rename_flags.sh",
+  "human_readable_source": "#!/bin/sh\n# Copyright (C) 2018, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>\n# SPDX-License-Identifier: LGPL-2.1\n\n[ $# -eq 1 ] && header_dir=$1 || header_dir=tools/include/uapi/linux/\n\nfs_header=${header_dir}/fs.h\n\nprintf \"static const char *rename_flags[] = {\\n\"\nregex='^[[:space:]]*#[[:space:]]*define[[:space:]]+RENAME_([[:alnum:]_]+)[[:space:]]+\\(1[[:space:]]*<<[[:space:]]*([[:xdigit:]]+)[[:space:]]*\\)[[:space:]]*.*'\ngrep -E -q $regex ${fs_header} && \\\n(grep -E $regex ${fs_header} | \\\n\tsed -r \"s/$regex/\\2 \\1/g\"\t| \\\n\txargs printf \"\\t[%d + 1] = \\\"%s\\\",\\n\")\nprintf \"};\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

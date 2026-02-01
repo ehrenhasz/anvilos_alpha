@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "fae55bdcfd329cc49eb3f9e5cfa065bca8d7194eb48b1e412976dc23a4ac5d81",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/ingenic/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Phy drivers for Ingenic platforms\n#\nconfig PHY_INGENIC_USB\n\ttristate \"Ingenic SoCs USB PHY Driver\"\n\tdepends on MIPS || COMPILE_TEST\n\tdepends on USB_SUPPORT\n\tdepends on HAS_IOMEM\n\tselect GENERIC_PHY\n\thelp\n\t  This driver provides USB PHY support for the USB controller found\n\t  on the JZ-series and X-series SoCs from Ingenic.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

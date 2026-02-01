@@ -1,0 +1,9 @@
+{
+  "module_name": "sunxi.h",
+  "hash_id": "91b77ccaca393be37bc1e4a9857575e29485a02dd55032d8aa2db788bf861581",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/reset/sunxi.h",
+  "human_readable_source": " \n#ifndef __LINUX_RESET_SUNXI_H__\n#define __LINUX_RESET_SUNXI_H__\n\nvoid __init sun6i_reset_init(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-mipi-dphy.h",
+  "hash_id": "681c26c0cf1038a04a4130fd3e9447cabf00304bda008aaa7382aab11768edd7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/phy/phy-mipi-dphy.h",
+  "human_readable_source": " \n \n\n#ifndef __PHY_MIPI_DPHY_H_\n#define __PHY_MIPI_DPHY_H_\n\n \nstruct phy_configure_opts_mipi_dphy {\n\t \n\tunsigned int\t\tclk_miss;\n\n\t \n\tunsigned int\t\tclk_post;\n\n\t \n\tunsigned int\t\tclk_pre;\n\n\t \n\tunsigned int\t\tclk_prepare;\n\n\t \n\tunsigned int\t\tclk_settle;\n\n\t \n\tunsigned int\t\tclk_term_en;\n\n\t \n\tunsigned int\t\tclk_trail;\n\n\t \n\tunsigned int\t\tclk_zero;\n\n\t \n\tunsigned int\t\td_term_en;\n\n\t \n\tunsigned int\t\teot;\n\n\t \n\tunsigned int\t\ths_exit;\n\n\t \n\tunsigned int\t\ths_prepare;\n\n\t \n\tunsigned int\t\ths_settle;\n\n\t \n\tunsigned int\t\ths_skip;\n\n\t \n\tunsigned int\t\ths_trail;\n\n\t \n\tunsigned int\t\ths_zero;\n\n\t \n\tunsigned int\t\tinit;\n\n\t \n\tunsigned int\t\tlpx;\n\n\t \n\tunsigned int\t\tta_get;\n\n\t \n\tunsigned int\t\tta_go;\n\n\t \n\tunsigned int\t\tta_sure;\n\n\t \n\tunsigned int\t\twakeup;\n\n\t \n\tunsigned long\t\ths_clk_rate;\n\n\t \n\tunsigned long\t\tlp_clk_rate;\n\n\t \n\tunsigned char\t\tlanes;\n};\n\nint phy_mipi_dphy_get_default_config(unsigned long pixel_clock,\n\t\t\t\t     unsigned int bpp,\n\t\t\t\t     unsigned int lanes,\n\t\t\t\t     struct phy_configure_opts_mipi_dphy *cfg);\nint phy_mipi_dphy_get_default_config_for_hsclk(unsigned long long hs_clk_rate,\n\t\t\t\t\t       unsigned int lanes,\n\t\t\t\t\t       struct phy_configure_opts_mipi_dphy *cfg);\nint phy_mipi_dphy_config_validate(struct phy_configure_opts_mipi_dphy *cfg);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

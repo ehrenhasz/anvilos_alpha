@@ -1,0 +1,9 @@
+{
+  "module_name": "gcd.h",
+  "hash_id": "770f0890941187d16901275926a8cbb0906e90fbec3598427380d2467702201e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/gcd.h",
+  "human_readable_source": " \n#ifndef _GCD_H\n#define _GCD_H\n\n#include <linux/compiler.h>\n\nunsigned long gcd(unsigned long a, unsigned long b) __attribute_const__;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "25a6ddbcb240d01e3a8ab9093eb36da803da2b2ad7e1b3e6be454d246ea0ca93",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ibm/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# IBM device configuration.\n#\n\nconfig NET_VENDOR_IBM\n\tbool \"IBM devices\"\n\tdefault y\n\tdepends on PPC_PSERIES || PPC_DCR || (IBMEBUS && SPARSEMEM)\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about IBM devices. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif NET_VENDOR_IBM\n\nconfig IBMVETH\n\ttristate \"IBM LAN Virtual Ethernet support\"\n\tdepends on PPC_PSERIES\n\thelp\n\t  This driver supports virtual ethernet adapters on newer IBM iSeries\n\t  and pSeries systems.\n\n\t  To compile this driver as a module, choose M here. The module will\n\t  be called ibmveth.\n\nsource \"drivers/net/ethernet/ibm/emac/Kconfig\"\n\nconfig EHEA\n\ttristate \"eHEA Ethernet support\"\n\tdepends on IBMEBUS && SPARSEMEM\n\thelp\n\t  This driver supports the IBM pSeries eHEA ethernet adapter.\n\n\t  To compile the driver as a module, choose M here. The module\n\t  will be called ehea.\n\nconfig IBMVNIC\n\ttristate \"IBM Virtual NIC support\"\n\tdepends on PPC_PSERIES\n\thelp\n\t  This driver supports Virtual NIC adapters on IBM i and IBM System p\n\t  systems.\n\n\t  To compile this driver as a module, choose M here. The module will\n\t  be called ibmvnic.\n\nendif # NET_VENDOR_IBM\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

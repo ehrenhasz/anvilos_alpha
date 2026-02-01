@@ -1,0 +1,9 @@
+{
+  "module_name": "test-gtk2.c",
+  "hash_id": "214c7d31f52677b049f41c8f962fcbcf1827fadb10cf4cc49a92e9a6cabcf38b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-gtk2.c",
+  "human_readable_source": "\n#pragma GCC diagnostic ignored \"-Wstrict-prototypes\"\n#include <gtk/gtk.h>\n#pragma GCC diagnostic error \"-Wstrict-prototypes\"\n\nint main(int argc, char *argv[])\n{\n\tgtk_init(&argc, &argv);\n\n        return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

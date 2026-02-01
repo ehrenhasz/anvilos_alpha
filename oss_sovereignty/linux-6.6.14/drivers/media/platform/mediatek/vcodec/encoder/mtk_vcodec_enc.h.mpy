@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_vcodec_enc.h",
+  "hash_id": "4a8ff2e9c9cb26573ff23e164e1468f9f009e9d7b2f9a9f5318d3518ae4133ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/vcodec/encoder/mtk_vcodec_enc.h",
+  "human_readable_source": " \n \n\n#ifndef _MTK_VCODEC_ENC_H_\n#define _MTK_VCODEC_ENC_H_\n\n#include <media/videobuf2-core.h>\n#include <media/v4l2-mem2mem.h>\n\n#include \"mtk_vcodec_enc_drv.h\"\n\n#define MTK_VENC_IRQ_STATUS_SPS\t0x1\n#define MTK_VENC_IRQ_STATUS_PPS\t0x2\n#define MTK_VENC_IRQ_STATUS_FRM\t0x4\n#define MTK_VENC_IRQ_STATUS_DRAM\t0x8\n#define MTK_VENC_IRQ_STATUS_PAUSE\t0x10\n#define MTK_VENC_IRQ_STATUS_SWITCH\t0x20\n\n#define MTK_VENC_IRQ_STATUS_OFFSET\t0x05C\n#define MTK_VENC_IRQ_ACK_OFFSET\t0x060\n\n \nstruct mtk_video_enc_buf {\n\tstruct v4l2_m2m_buffer m2m_buf;\n\n\tu32 param_change;\n\tstruct mtk_enc_params enc_params;\n};\n\nextern const struct v4l2_ioctl_ops mtk_venc_ioctl_ops;\nextern const struct v4l2_m2m_ops mtk_venc_m2m_ops;\n\nint mtk_venc_unlock(struct mtk_vcodec_enc_ctx *ctx);\nint mtk_venc_lock(struct mtk_vcodec_enc_ctx *ctx);\nint mtk_vcodec_enc_queue_init(void *priv, struct vb2_queue *src_vq,\n\t\t\t      struct vb2_queue *dst_vq);\nvoid mtk_vcodec_enc_release(struct mtk_vcodec_enc_ctx *ctx);\nint mtk_vcodec_enc_ctrls_setup(struct mtk_vcodec_enc_ctx *ctx);\nvoid mtk_vcodec_enc_set_default_params(struct mtk_vcodec_enc_ctx *ctx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

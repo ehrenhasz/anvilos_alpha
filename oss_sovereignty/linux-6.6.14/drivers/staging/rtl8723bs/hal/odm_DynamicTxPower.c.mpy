@@ -1,0 +1,9 @@
+{
+  "module_name": "odm_DynamicTxPower.c",
+  "hash_id": "eaa0bdd0096af2ae61549f135ed0284f7d9dd0d1bfbf758689f949fcaa59b5d3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/hal/odm_DynamicTxPower.c",
+  "human_readable_source": "\n \n\n#include \"odm_precomp.h\"\n\nvoid odm_DynamicTxPowerInit(void *pDM_VOID)\n{\n\tstruct dm_odm_t *pDM_Odm = (struct dm_odm_t *)pDM_VOID;\n\n\tstruct adapter *Adapter = pDM_Odm->Adapter;\n\tstruct hal_com_data *pHalData = GET_HAL_DATA(Adapter);\n\tstruct dm_priv *pdmpriv = &pHalData->dmpriv;\n\n\tpdmpriv->bDynamicTxPowerEnable = false;\n\n\tpdmpriv->LastDTPLvl = TxHighPwrLevel_Normal;\n\tpdmpriv->DynamicTxHighPowerLvl = TxHighPwrLevel_Normal;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

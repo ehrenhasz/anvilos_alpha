@@ -1,0 +1,9 @@
+{
+  "module_name": "fsconfig.sh",
+  "hash_id": "e390234a75f656c348f4a3d89e64731f21bcff127f4f744eabbc5a8e54ee5aba",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/fsconfig.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n\nif [ $# -ne 1 ] ; then\n\tlinux_header_dir=tools/include/uapi/linux\nelse\n\tlinux_header_dir=$1\nfi\n\nlinux_mount=${linux_header_dir}/mount.h\n\nprintf \"static const char *fsconfig_cmds[] = {\\n\"\nms='[[:space:]]*'\nsed -nr \"s/^${ms}FSCONFIG_([[:alnum:]_]+)${ms}=${ms}([[:digit:]]+)${ms},.*/\\t[\\2] = \\\"\\1\\\",/p\" \\\n\t${linux_mount}\nprintf \"};\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

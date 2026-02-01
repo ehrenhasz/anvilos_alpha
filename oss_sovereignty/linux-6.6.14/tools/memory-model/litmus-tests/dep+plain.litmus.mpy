@@ -1,0 +1,9 @@
+{
+  "module_name": "dep+plain.litmus",
+  "hash_id": "3fbc8c0147814b7e0a2d539d8b889c04800d7ea50b2b30b58ccc51e08375faf4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/dep+plain.litmus",
+  "human_readable_source": "C dep+plain\n\n(*\n * Result: Never\n *\n * This litmus test demonstrates that in LKMM, plain accesses\n * carry dependencies much like accesses to registers:\n * The data stored to *z1 and *z2 by P0() originates from P0()'s\n * READ_ONCE(), and therefore using that data to compute the\n * conditional of P0()'s if-statement creates a control dependency\n * from that READ_ONCE() to P0()'s WRITE_ONCE().\n *)\n\n{}\n\nP0(int *x, int *y, int *z1, int *z2)\n{\n\tint a = READ_ONCE(*x);\n\t*z1 = a;\n\t*z2 = *z1;\n\tif (*z2 == 1)\n\t\tWRITE_ONCE(*y, 1);\n}\n\nP1(int *x, int *y)\n{\n\tint r = smp_load_acquire(y);\n\tsmp_store_release(x, r);\n}\n\nexists (x=1 /\\ y=1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

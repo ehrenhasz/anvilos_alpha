@@ -1,0 +1,9 @@
+{
+  "module_name": "groups.x",
+  "hash_id": "8d97a629d64cf753458a3ef058b8646f4eb73ca277cca6ffae9242179524fe09",
+  "original_prompt": "Ingested from coreutils-9.4/man/groups.x",
+  "human_readable_source": "[NAME]\ngroups \\- print the groups a user is in\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ngetent(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

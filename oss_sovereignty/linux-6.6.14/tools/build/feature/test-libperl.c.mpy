@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libperl.c",
+  "hash_id": "4ce8c412c1dfc1270f3c5da0d6bbbde11fa4b1e07e01d79ef52a0c8ebdfe27e6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libperl.c",
+  "human_readable_source": "\n#include <EXTERN.h>\n#include <perl.h>\n\nint main(void)\n{\n\tperl_alloc();\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

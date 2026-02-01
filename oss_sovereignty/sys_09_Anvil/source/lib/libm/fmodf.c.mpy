@@ -1,0 +1,9 @@
+{
+  "module_name": "fmodf.c",
+  "hash_id": "8283c4c4a9d52471e71919cd3c762163252eb2e8f21d28cd05268773a602dcea",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/fmodf.c",
+  "human_readable_source": " \n \n\n \n \n\n#include \"libm.h\"\n\nfloat fmodf(float x, float y)\n{\n\tunion {float f; uint32_t i;} ux = {x}, uy = {y};\n\tint ex = ux.i>>23 & 0xff;\n\tint ey = uy.i>>23 & 0xff;\n\tuint32_t sx = ux.i & 0x80000000;\n\tuint32_t i;\n\tuint32_t uxi = ux.i;\n\n\tif (uy.i<<1 == 0 || isnan(y) || ex == 0xff)\n\t\treturn (x*y)/(x*y);\n\tif (uxi<<1 <= uy.i<<1) {\n\t\tif (uxi<<1 == uy.i<<1)\n\t\t\treturn 0*x;\n\t\treturn x;\n\t}\n\n\t \n\tif (!ex) {\n\t\tfor (i = uxi<<9; i>>31 == 0; ex--, i <<= 1);\n\t\tuxi <<= -ex + 1;\n\t} else {\n\t\tuxi &= -1U >> 9;\n\t\tuxi |= 1U << 23;\n\t}\n\tif (!ey) {\n\t\tfor (i = uy.i<<9; i>>31 == 0; ey--, i <<= 1);\n\t\tuy.i <<= -ey + 1;\n\t} else {\n\t\tuy.i &= -1U >> 9;\n\t\tuy.i |= 1U << 23;\n\t}\n\n\t \n\tfor (; ex > ey; ex--) {\n\t\ti = uxi - uy.i;\n\t\tif (i >> 31 == 0) {\n\t\t\tif (i == 0)\n\t\t\t\treturn 0*x;\n\t\t\tuxi = i;\n\t\t}\n\t\tuxi <<= 1;\n\t}\n\ti = uxi - uy.i;\n\tif (i >> 31 == 0) {\n\t\tif (i == 0)\n\t\t\treturn 0*x;\n\t\tuxi = i;\n\t}\n\tfor (; uxi>>23 == 0; uxi <<= 1, ex--);\n\n\t \n\tif (ex > 0) {\n\t\tuxi -= 1U << 23;\n\t\tuxi |= (uint32_t)ex << 23;\n\t} else {\n\t\tuxi >>= -ex + 1;\n\t}\n\tuxi |= sx;\n\tux.i = uxi;\n\treturn ux.f;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

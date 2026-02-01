@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b85a841808fe6aa6fe2ffaec151462a38b6b6edcdd53072935be7710bab2b12e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwmon/peci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\npeci-cputemp-y := cputemp.o\npeci-dimmtemp-y := dimmtemp.o\n\nobj-$(CONFIG_SENSORS_PECI_CPUTEMP)\t+= peci-cputemp.o\nobj-$(CONFIG_SENSORS_PECI_DIMMTEMP)\t+= peci-dimmtemp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

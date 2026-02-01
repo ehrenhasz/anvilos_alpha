@@ -1,0 +1,9 @@
+{
+  "module_name": "mmal-msg-port.h",
+  "hash_id": "9affecae61dda77d2162cc0d47ce93ee7c5e9944bcc6ac3f413a158b6f9f729a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vc04_services/vchiq-mmal/mmal-msg-port.h",
+  "human_readable_source": " \n \n\n \nenum mmal_port_type {\n\tMMAL_PORT_TYPE_UNKNOWN = 0,\t \n\tMMAL_PORT_TYPE_CONTROL,\t\t \n\tMMAL_PORT_TYPE_INPUT,\t\t \n\tMMAL_PORT_TYPE_OUTPUT,\t\t \n\tMMAL_PORT_TYPE_CLOCK,\t\t \n};\n\n \n#define MMAL_PORT_CAPABILITY_PASSTHROUGH                       0x01\n \n#define MMAL_PORT_CAPABILITY_ALLOCATION                        0x02\n \n#define MMAL_PORT_CAPABILITY_SUPPORTS_EVENT_FORMAT_CHANGE      0x04\n\n \nstruct mmal_port {\n\tu32 priv;\t \n\tu32 name;\t \n\n\tu32 type;\t \n\tu16 index;\t \n\tu16 index_all;\t \n\n\tu32 is_enabled;\t \n\tu32 format;\t \n\n\tu32 buffer_num_min;\t \n\n\tu32 buffer_size_min;\t \n\n\tu32 buffer_alignment_min; \n\n\tu32 buffer_num_recommended;\t \n\n\tu32 buffer_size_recommended;\t \n\n\tu32 buffer_num;\t \n\n\tu32 buffer_size;  \n\n\tu32 component;\t \n\n\tu32 userdata;\t \n\n\tu32 capabilities;\t \n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

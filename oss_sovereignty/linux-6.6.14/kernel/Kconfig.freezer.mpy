@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig.freezer",
+  "hash_id": "a72f2629203f764123feef14e550885a260fffcdf52deed3ff2decf2996e449f",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/Kconfig.freezer",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig FREEZER\n\tdef_bool PM_SLEEP || CGROUP_FREEZER\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

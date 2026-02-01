@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_auth.h",
+  "hash_id": "111a14f773fffbed916ab9d76696c0455702f4d3d984b7bd1ff36ee4ee2fccc9",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_auth.h",
+  "human_readable_source": "#ifndef _DRM_AUTH_H_\n#define _DRM_AUTH_H_\n\n \n\n#include <linux/idr.h>\n#include <linux/kref.h>\n#include <linux/wait.h>\n\nstruct drm_file;\nstruct drm_hw_lock;\n\n \nstruct drm_lock_data {\n\tstruct drm_hw_lock *hw_lock;\n\tstruct drm_file *file_priv;\n\twait_queue_head_t lock_queue;\n\tunsigned long lock_time;\n\tspinlock_t spinlock;\n\tuint32_t kernel_waiters;\n\tuint32_t user_waiters;\n\tint idle_has_lock;\n};\n\n \nstruct drm_master {\n\tstruct kref refcount;\n\tstruct drm_device *dev;\n\t \n\tchar *unique;\n\t \n\tint unique_len;\n\t \n\tstruct idr magic_map;\n\tvoid *driver_priv;\n\n\t \n\tstruct drm_master *lessor;\n\n\t \n\tint\tlessee_id;\n\n\t \n\tstruct list_head lessee_list;\n\n\t \n\tstruct list_head lessees;\n\n\t \n\tstruct idr leases;\n\n\t \n\tstruct idr lessee_idr;\n\t \n#if IS_ENABLED(CONFIG_DRM_LEGACY)\n\tstruct drm_lock_data lock;\n#endif\n};\n\nstruct drm_master *drm_master_get(struct drm_master *master);\nstruct drm_master *drm_file_get_master(struct drm_file *file_priv);\nvoid drm_master_put(struct drm_master **master);\nbool drm_is_current_master(struct drm_file *fpriv);\n\nstruct drm_master *drm_master_create(struct drm_device *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

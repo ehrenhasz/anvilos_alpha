@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_ttm_buddy_manager.h",
+  "hash_id": "36d9cee872997cf4358759a0c44bc9d9dd8893de80eef8ed8b628e3747d2e1a8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_ttm_buddy_manager.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_TTM_BUDDY_MANAGER_H__\n#define __I915_TTM_BUDDY_MANAGER_H__\n\n#include <linux/list.h>\n#include <linux/types.h>\n\n#include <drm/ttm/ttm_resource.h>\n\nstruct ttm_device;\nstruct ttm_resource_manager;\nstruct drm_buddy;\n\n \nstruct i915_ttm_buddy_resource {\n\tstruct ttm_resource base;\n\tstruct list_head blocks;\n\tunsigned long flags;\n\tunsigned long used_visible_size;\n\tstruct drm_buddy *mm;\n};\n\n \nstatic inline struct i915_ttm_buddy_resource *\nto_ttm_buddy_resource(struct ttm_resource *res)\n{\n\treturn container_of(res, struct i915_ttm_buddy_resource, base);\n}\n\nint i915_ttm_buddy_man_init(struct ttm_device *bdev,\n\t\t\t    unsigned type, bool use_tt,\n\t\t\t    u64 size, u64 visible_size,\n\t\t\t    u64 default_page_size, u64 chunk_size);\nint i915_ttm_buddy_man_fini(struct ttm_device *bdev,\n\t\t\t    unsigned int type);\n\nint i915_ttm_buddy_man_reserve(struct ttm_resource_manager *man,\n\t\t\t       u64 start, u64 size);\n\nu64 i915_ttm_buddy_man_visible_size(struct ttm_resource_manager *man);\n\nvoid i915_ttm_buddy_man_avail(struct ttm_resource_manager *man,\n\t\t\t      u64 *avail, u64 *avail_visible);\n\n#if IS_ENABLED(CONFIG_DRM_I915_SELFTEST)\nvoid i915_ttm_buddy_man_force_visible_size(struct ttm_resource_manager *man,\n\t\t\t\t\t   u64 size);\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

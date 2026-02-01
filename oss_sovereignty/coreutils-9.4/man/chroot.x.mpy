@@ -1,0 +1,9 @@
+{
+  "module_name": "chroot.x",
+  "hash_id": "c052b39f2b71bc08e41a8148213ae08b7f7c3b4c75af4c6164ee86f62db51398",
+  "original_prompt": "Ingested from coreutils-9.4/man/chroot.x",
+  "human_readable_source": "[NAME]\nchroot \\- run command or interactive shell with special root directory\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nchroot(2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

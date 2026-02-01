@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "19c67590a50e77eac72b23d1ed54f38d782e2f9d48d06d4b58611d9d7c915278",
+  "original_prompt": "Ingested from linux-6.6.14/fs/notify/inotify/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig INOTIFY_USER\n\tbool \"Inotify support for userspace\"\n\tselect FSNOTIFY\n\tdefault y\n\thelp\n\t  Say Y here to enable inotify support for userspace, including the\n\t  associated system calls.  Inotify allows monitoring of both files and\n\t  directories via a single open fd.  Events are read from the file\n\t  descriptor, which is also select()- and poll()-able.\n\t  Inotify fixes numerous shortcomings in dnotify and introduces several\n\t  new features including multiple file events, one-shot support, and\n\t  unmount notification.\n\n\t  For more information, see <file:Documentation/filesystems/inotify.rst>\n\n\t  If unsure, say Y.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "instructions.c",
+  "hash_id": "88d440e0585e8cf685138a14e8fd81d86655d25e047e936c206288900695f91d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arm/annotate/instructions.c",
+  "human_readable_source": "\n#include <linux/compiler.h>\n#include <linux/zalloc.h>\n#include <sys/types.h>\n#include <regex.h>\n#include <stdlib.h>\n\nstruct arm_annotate {\n\tregex_t call_insn,\n\t\tjump_insn;\n};\n\nstatic struct ins_ops *arm__associate_instruction_ops(struct arch *arch, const char *name)\n{\n\tstruct arm_annotate *arm = arch->priv;\n\tstruct ins_ops *ops;\n\tregmatch_t match[2];\n\n\tif (!regexec(&arm->call_insn, name, 2, match, 0))\n\t\tops = &call_ops;\n\telse if (!regexec(&arm->jump_insn, name, 2, match, 0))\n\t\tops = &jump_ops;\n\telse\n\t\treturn NULL;\n\n\tarch__associate_ins_ops(arch, name, ops);\n\treturn ops;\n}\n\nstatic int arm__annotate_init(struct arch *arch, char *cpuid __maybe_unused)\n{\n\tstruct arm_annotate *arm;\n\tint err;\n\n\tif (arch->initialized)\n\t\treturn 0;\n\n\tarm = zalloc(sizeof(*arm));\n\tif (!arm)\n\t\treturn ENOMEM;\n\n#define ARM_CONDS \"(cc|cs|eq|ge|gt|hi|le|ls|lt|mi|ne|pl|vc|vs)\"\n\terr = regcomp(&arm->call_insn, \"^blx?\" ARM_CONDS \"?$\", REG_EXTENDED);\n\tif (err)\n\t\tgoto out_free_arm;\n\terr = regcomp(&arm->jump_insn, \"^bx?\" ARM_CONDS \"?$\", REG_EXTENDED);\n\tif (err)\n\t\tgoto out_free_call;\n#undef ARM_CONDS\n\n\tarch->initialized = true;\n\tarch->priv\t  = arm;\n\tarch->associate_instruction_ops   = arm__associate_instruction_ops;\n\tarch->objdump.comment_char\t  = ';';\n\tarch->objdump.skip_functions_char = '+';\n\treturn 0;\n\nout_free_call:\n\tregfree(&arm->call_insn);\nout_free_arm:\n\tfree(arm);\n\treturn SYMBOL_ANNOTATE_ERRNO__ARCH_INIT_REGEXP;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

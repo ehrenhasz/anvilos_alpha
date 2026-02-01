@@ -1,0 +1,9 @@
+{
+  "module_name": "iscsi_target_tmr.h",
+  "hash_id": "9336f26cc61454f741bfaeee38aa4f0e01100f7437ae38e498a3924fa23c7131",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/iscsi/iscsi_target_tmr.h",
+  "human_readable_source": " \n#ifndef ISCSI_TARGET_TMR_H\n#define ISCSI_TARGET_TMR_H\n\n#include <linux/types.h>\n\nstruct iscsit_cmd;\nstruct iscsit_conn;\nstruct iscsi_tmr_req;\n\nextern u8 iscsit_tmr_abort_task(struct iscsit_cmd *, unsigned char *);\nextern int iscsit_tmr_task_warm_reset(struct iscsit_conn *, struct iscsi_tmr_req *,\n\t\t\tunsigned char *);\nextern int iscsit_tmr_task_cold_reset(struct iscsit_conn *, struct iscsi_tmr_req *,\n\t\t\tunsigned char *);\nextern u8 iscsit_tmr_task_reassign(struct iscsit_cmd *, unsigned char *);\nextern int iscsit_tmr_post_handler(struct iscsit_cmd *, struct iscsit_conn *);\nextern int iscsit_check_task_reassign_expdatasn(struct iscsi_tmr_req *,\n\t\t\tstruct iscsit_conn *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

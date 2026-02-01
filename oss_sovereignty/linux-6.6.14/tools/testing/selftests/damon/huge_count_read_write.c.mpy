@@ -1,0 +1,9 @@
+{
+  "module_name": "huge_count_read_write.c",
+  "hash_id": "76f37de4dede3edbaaf2bc71a1937d225879c6404998fdf828fe7dc580b39853",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/damon/huge_count_read_write.c",
+  "human_readable_source": "\n \n\n#include <fcntl.h>\n#include <stdlib.h>\n#include <unistd.h>\n#include <stdio.h>\n\n#pragma GCC diagnostic push\n#if __GNUC__ >= 11 && __GNUC_MINOR__ >= 1\n \n#pragma GCC diagnostic ignored \"-Wstringop-overread\"\n#pragma GCC diagnostic ignored \"-Wstringop-overflow\"\n#endif\n\nvoid write_read_with_huge_count(char *file)\n{\n\tint filedesc = open(file, O_RDWR);\n\tchar buf[25];\n\tint ret;\n\n\tprintf(\"%s %s\\n\", __func__, file);\n\tif (filedesc < 0) {\n\t\tfprintf(stderr, \"failed opening %s\\n\", file);\n\t\texit(1);\n\t}\n\n\twrite(filedesc, \"\", 0xfffffffful);\n\tperror(\"after write: \");\n\tret = read(filedesc, buf, 0xfffffffful);\n\tperror(\"after read: \");\n\tclose(filedesc);\n}\n\n#pragma GCC diagnostic pop\n\nint main(int argc, char *argv[])\n{\n\tif (argc != 2) {\n\t\tfprintf(stderr, \"Usage: %s <file>\\n\", argv[0]);\n\t\texit(1);\n\t}\n\twrite_read_with_huge_count(argv[1]);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "llc_if.h",
+  "hash_id": "e51949b14b03d6af7af28787162de12873ca0df24ca90d3399410fcfab735c0e",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/llc_if.h",
+  "human_readable_source": "#ifndef LLC_IF_H\n#define LLC_IF_H\n \n \n \n#include <linux/if.h>\n#include <linux/if_arp.h>\n#include <linux/llc.h>\n#include <linux/etherdevice.h>\n#include <net/llc.h>\n\n#define LLC_DATAUNIT_PRIM\t1\n#define LLC_CONN_PRIM\t\t2\n#define LLC_DATA_PRIM\t\t3\n#define LLC_DISC_PRIM\t\t4\n#define LLC_RESET_PRIM\t\t5\n#define LLC_FLOWCONTROL_PRIM\t6  \n#define LLC_DISABLE_PRIM\t7\n#define LLC_XID_PRIM\t\t8\n#define LLC_TEST_PRIM\t\t9\n#define LLC_SAP_ACTIVATION     10\n#define LLC_SAP_DEACTIVATION   11\n\n#define LLC_NBR_PRIMITIVES     11\n\n#define LLC_IND\t\t\t1\n#define LLC_CONFIRM\t\t2\n\n \n#define LLC_PRIM_TYPE_REQ\t1\n#define LLC_PRIM_TYPE_IND\t2\n#define LLC_PRIM_TYPE_RESP\t3\n#define LLC_PRIM_TYPE_CONFIRM\t4\n\n \n#define LLC_RESET_REASON_REMOTE\t1\n#define LLC_RESET_REASON_LOCAL\t2\n\n \n#define LLC_DISC_REASON_RX_DM_RSP_PDU\t0\n#define LLC_DISC_REASON_RX_DISC_CMD_PDU\t1\n#define LLC_DISC_REASON_ACK_TMR_EXP\t2\n\n \n#define LLC_STATUS_CONN\t\t0  \n#define LLC_STATUS_DISC\t\t1  \n#define LLC_STATUS_FAILED\t2  \n#define LLC_STATUS_IMPOSSIBLE\t3  \n#define LLC_STATUS_RECEIVED\t4  \n#define LLC_STATUS_REMOTE_BUSY\t5  \n#define LLC_STATUS_REFUSE\t6  \n#define LLC_STATUS_CONFLICT\t7  \n#define LLC_STATUS_RESET_DONE\t8  \n\nint llc_establish_connection(struct sock *sk, const u8 *lmac, u8 *dmac,\n\t\t\t     u8 dsap);\nint llc_build_and_send_pkt(struct sock *sk, struct sk_buff *skb);\nint llc_send_disc(struct sock *sk);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

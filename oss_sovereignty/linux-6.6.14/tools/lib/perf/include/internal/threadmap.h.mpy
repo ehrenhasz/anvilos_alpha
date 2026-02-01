@@ -1,0 +1,9 @@
+{
+  "module_name": "threadmap.h",
+  "hash_id": "05035675755727365a3cec36e4156210a7fd83ddcdc64e97ad0974d84ff87164",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/perf/include/internal/threadmap.h",
+  "human_readable_source": " \n#ifndef __LIBPERF_INTERNAL_THREADMAP_H\n#define __LIBPERF_INTERNAL_THREADMAP_H\n\n#include <linux/refcount.h>\n#include <sys/types.h>\n#include <unistd.h>\n\nstruct thread_map_data {\n\tpid_t\t pid;\n\tchar\t*comm;\n};\n\nstruct perf_thread_map {\n\trefcount_t\trefcnt;\n\tint\t\tnr;\n\tint\t\terr_thread;\n\tstruct thread_map_data map[];\n};\n\nstruct perf_thread_map *perf_thread_map__realloc(struct perf_thread_map *map, int nr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

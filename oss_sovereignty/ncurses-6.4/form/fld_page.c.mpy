@@ -1,0 +1,9 @@
+{
+  "module_name": "fld_page.c",
+  "hash_id": "6800009d2e8a78e7b220d50e556c680ae055ed0ba0fd292cfabacb83a321acf1",
+  "original_prompt": "Ingested from ncurses-6.4/form/fld_page.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: fld_page.c,v 1.16 2021/06/17 21:20:30 tom Exp $\")\n\n \nFORM_EXPORT(int)\nset_new_page(FIELD *field, bool new_page_flag)\n{\n  T((T_CALLED(\"set_new_page(%p,%d)\"), (void *)field, new_page_flag));\n\n  Normalize_Field(field);\n  if (field->form)\n    RETURN(E_CONNECTED);\n\n  if (new_page_flag)\n    SetStatus(field, _NEWPAGE);\n  else\n    ClrStatus(field, _NEWPAGE);\n\n  RETURN(E_OK);\n}\n\n \nFORM_EXPORT(bool)\nnew_page(const FIELD *field)\n{\n  T((T_CALLED(\"new_page(%p)\"), (const void *)field));\n\n  returnBool((Normalize_Field(field)->status & _NEWPAGE) ? TRUE : FALSE);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

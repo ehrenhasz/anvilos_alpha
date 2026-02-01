@@ -1,0 +1,9 @@
+{
+  "module_name": "hsr_netlink.h",
+  "hash_id": "ea5bc1537f38b0d2513ee3a3fcc0581e6b5d66d4dfc7a0948045ae262542d8b7",
+  "original_prompt": "Ingested from linux-6.6.14/net/hsr/hsr_netlink.h",
+  "human_readable_source": " \n \n\n#ifndef __HSR_NETLINK_H\n#define __HSR_NETLINK_H\n\n#include <linux/if_ether.h>\n#include <linux/module.h>\n#include <uapi/linux/hsr_netlink.h>\n\nstruct hsr_priv;\nstruct hsr_port;\n\nint __init hsr_netlink_init(void);\nvoid __exit hsr_netlink_exit(void);\n\nvoid hsr_nl_ringerror(struct hsr_priv *hsr, unsigned char addr[ETH_ALEN],\n\t\t      struct hsr_port *port);\nvoid hsr_nl_nodedown(struct hsr_priv *hsr, unsigned char addr[ETH_ALEN]);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

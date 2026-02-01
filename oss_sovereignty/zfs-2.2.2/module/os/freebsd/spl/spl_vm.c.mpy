@@ -1,0 +1,9 @@
+{
+  "module_name": "spl_vm.c",
+  "hash_id": "e48fa57c7beec26b4f6cc49f5854c525d4a253328fc9f2cc1f6b71fed0761fc2",
+  "original_prompt": "Ingested from zfs-2.2.2/module/os/freebsd/spl/spl_vm.c",
+  "human_readable_source": " \n\n#include <sys/cdefs.h>\n__FBSDID(\"$FreeBSD$\");\n\n#include <sys/types.h>\n#include <sys/param.h>\n#include <sys/counter.h>\n\n#include <sys/byteorder.h>\n#include <sys/lock.h>\n#include <sys/freebsd_rwlock.h>\n#include <sys/vm.h>\n\n#include <vm/vm.h>\n#include <vm/vm_param.h>\n#include <vm/vm_object.h>\n#include <vm/vm_page.h>\n#include <vm/vm_pager.h>\n\nconst int zfs_vm_pagerret_bad = VM_PAGER_BAD;\nconst int zfs_vm_pagerret_error = VM_PAGER_ERROR;\nconst int zfs_vm_pagerret_ok = VM_PAGER_OK;\nconst int zfs_vm_pagerput_sync = VM_PAGER_PUT_SYNC;\nconst int zfs_vm_pagerput_inval = VM_PAGER_PUT_INVAL;\n\nvoid\nzfs_vmobject_assert_wlocked(vm_object_t object)\n{\n\n\t \n\tVM_OBJECT_ASSERT_WLOCKED(object);\n}\n\nvoid\nzfs_vmobject_wlock(vm_object_t object)\n{\n\n\tVM_OBJECT_WLOCK(object);\n}\n\nvoid\nzfs_vmobject_wunlock(vm_object_t object)\n{\n\n\tVM_OBJECT_WUNLOCK(object);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

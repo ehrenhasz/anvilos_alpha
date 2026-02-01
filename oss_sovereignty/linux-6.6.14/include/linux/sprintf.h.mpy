@@ -1,0 +1,9 @@
+{
+  "module_name": "sprintf.h",
+  "hash_id": "ecb3d4bbfaf28cd4dcd409978f7747889928efcd7f05eebb530232b271dab21a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sprintf.h",
+  "human_readable_source": " \n#ifndef _LINUX_KERNEL_SPRINTF_H_\n#define _LINUX_KERNEL_SPRINTF_H_\n\n#include <linux/compiler_attributes.h>\n#include <linux/types.h>\n\nint num_to_str(char *buf, int size, unsigned long long num, unsigned int width);\n\n__printf(2, 3) int sprintf(char *buf, const char * fmt, ...);\n__printf(2, 0) int vsprintf(char *buf, const char *, va_list);\n__printf(3, 4) int snprintf(char *buf, size_t size, const char *fmt, ...);\n__printf(3, 0) int vsnprintf(char *buf, size_t size, const char *fmt, va_list args);\n__printf(3, 4) int scnprintf(char *buf, size_t size, const char *fmt, ...);\n__printf(3, 0) int vscnprintf(char *buf, size_t size, const char *fmt, va_list args);\n__printf(2, 3) __malloc char *kasprintf(gfp_t gfp, const char *fmt, ...);\n__printf(2, 0) __malloc char *kvasprintf(gfp_t gfp, const char *fmt, va_list args);\n__printf(2, 0) const char *kvasprintf_const(gfp_t gfp, const char *fmt, va_list args);\n\n__scanf(2, 3) int sscanf(const char *, const char *, ...);\n__scanf(2, 0) int vsscanf(const char *, const char *, va_list);\n\n \nextern bool no_hash_pointers;\nint no_hash_pointers_enable(char *str);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

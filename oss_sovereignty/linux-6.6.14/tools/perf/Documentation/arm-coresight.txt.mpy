@@ -1,0 +1,9 @@
+{
+  "module_name": "arm-coresight.txt",
+  "hash_id": "96ddbf4de7c5ed768bd2554342c3ea5834229c0ef751815c5cf27fdd80ad117e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/arm-coresight.txt",
+  "human_readable_source": "Arm CoreSight Support\n=====================\n\nFor full documentation, see Documentation/trace/coresight/coresight-perf.rst\nin the kernel tree.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

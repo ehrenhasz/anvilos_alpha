@@ -1,0 +1,9 @@
+{
+  "module_name": "assert.c",
+  "hash_id": "8ea55465def3407beeac5179b8839556bd3999517353def36bc32c448347e637",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/assert.c",
+  "human_readable_source": " \n \n\n#include <assert.h>\n\nstatic boolean_t libspl_assert_ok = B_FALSE;\n\nvoid\nlibspl_set_assert_ok(boolean_t val)\n{\n\tlibspl_assert_ok = val;\n}\n\n \nvoid\nlibspl_assertf(const char *file, const char *func, int line,\n    const char *format, ...)\n{\n\tva_list args;\n\n\tva_start(args, format);\n\tvfprintf(stderr, format, args);\n\tfprintf(stderr, \"\\n\");\n\tfprintf(stderr, \"ASSERT at %s:%d:%s()\", file, line, func);\n\tva_end(args);\n\n#if !__has_feature(attribute_analyzer_noreturn) && !defined(__COVERITY__)\n\tif (libspl_assert_ok) {\n\t\treturn;\n\t}\n#endif\n\tabort();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

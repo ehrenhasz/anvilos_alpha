@@ -1,0 +1,9 @@
+{
+  "module_name": "aes_impl_x86-64.c",
+  "hash_id": "25b47ea5a73db32b9479dc6d8f5b3f4e69839ebc7a9b0cc7e027113cf735131e",
+  "original_prompt": "Ingested from zfs-2.2.2/module/icp/algs/aes/aes_impl_x86-64.c",
+  "human_readable_source": " \n \n\n#if defined(__x86_64)\n\n#include <sys/simd.h>\n#include <aes/aes_impl.h>\n\n \nstatic void\naes_x86_64_generate(aes_key_t *key, const uint32_t *keyarr32, int keybits)\n{\n\tkey->nr = rijndael_key_setup_enc_amd64(&(key->encr_ks.ks32[0]),\n\t    keyarr32, keybits);\n\tkey->nr = rijndael_key_setup_dec_amd64(&(key->decr_ks.ks32[0]),\n\t    keyarr32, keybits);\n}\n\nstatic boolean_t\naes_x86_64_will_work(void)\n{\n\treturn (B_TRUE);\n}\n\nconst aes_impl_ops_t aes_x86_64_impl = {\n\t.generate = &aes_x86_64_generate,\n\t.encrypt = &aes_encrypt_amd64,\n\t.decrypt = &aes_decrypt_amd64,\n\t.is_supported = &aes_x86_64_will_work,\n\t.needs_byteswap = B_FALSE,\n\t.name = \"x86_64\"\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

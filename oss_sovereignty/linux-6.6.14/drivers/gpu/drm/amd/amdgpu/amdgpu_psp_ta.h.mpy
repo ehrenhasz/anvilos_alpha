@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_psp_ta.h",
+  "hash_id": "a54b47a585101610485a88d76672eca3fc60dc9dd30e361daed8472eef9c63b8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_psp_ta.h",
+  "human_readable_source": " \n\n#ifndef __AMDGPU_PSP_TA_H__\n#define __AMDGPU_PSP_TA_H__\n\n \n#define psp_fn_ta_initialize(psp) ((psp)->ta_funcs->fn_ta_initialize((psp)))\n#define psp_fn_ta_invoke(psp, ta_cmd_id) ((psp)->ta_funcs->fn_ta_invoke((psp), (ta_cmd_id)))\n#define psp_fn_ta_terminate(psp) ((psp)->ta_funcs->fn_ta_terminate((psp)))\n\nvoid amdgpu_ta_if_debugfs_init(struct amdgpu_device *adev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

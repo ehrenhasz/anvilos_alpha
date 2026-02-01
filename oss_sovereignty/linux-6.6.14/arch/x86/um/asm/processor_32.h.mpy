@@ -1,0 +1,9 @@
+{
+  "module_name": "processor_32.h",
+  "hash_id": "256de788aa3f80430047608f3fc3fab568544273c6355cb5725e35580399609b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/asm/processor_32.h",
+  "human_readable_source": " \n\n#ifndef __UM_PROCESSOR_I386_H\n#define __UM_PROCESSOR_I386_H\n\n#include <linux/string.h>\n#include <asm/segment.h>\n#include <asm/ldt.h>\n\nextern int host_has_cmov;\n\nstruct uml_tls_struct {\n\tstruct user_desc tls;\n\tunsigned flushed:1;\n\tunsigned present:1;\n};\n\nstruct arch_thread {\n\tstruct uml_tls_struct tls_array[GDT_ENTRY_TLS_ENTRIES];\n\tunsigned long debugregs[8];\n\tint debugregs_seq;\n\tstruct faultinfo faultinfo;\n};\n\n#define INIT_ARCH_THREAD { \\\n\t.tls_array  \t\t= { [ 0 ... GDT_ENTRY_TLS_ENTRIES - 1 ] = \\\n\t\t\t\t    { .present = 0, .flushed = 0 } }, \\\n\t.debugregs  \t\t= { [ 0 ... 7 ] = 0 }, \\\n\t.debugregs_seq\t\t= 0, \\\n\t.faultinfo\t\t= { 0, 0, 0 } \\\n}\n\n#define STACKSLOTS_PER_LINE 8\n\nstatic inline void arch_flush_thread(struct arch_thread *thread)\n{\n\t \n\tmemset(&thread->tls_array, 0, sizeof(thread->tls_array));\n}\n\nstatic inline void arch_copy_thread(struct arch_thread *from,\n                                    struct arch_thread *to)\n{\n        memcpy(&to->tls_array, &from->tls_array, sizeof(from->tls_array));\n}\n\n#define current_sp() ({ void *sp; __asm__(\"movl %%esp, %0\" : \"=r\" (sp) : ); sp; })\n#define current_bp() ({ unsigned long bp; __asm__(\"movl %%ebp, %0\" : \"=r\" (bp) : ); bp; })\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

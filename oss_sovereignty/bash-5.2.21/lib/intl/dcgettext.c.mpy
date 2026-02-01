@@ -1,0 +1,9 @@
+{
+  "module_name": "dcgettext.c",
+  "hash_id": "265a394a293322ca1a5645fb6767cf442ad7a6741667cc05711e5bb5119706a5",
+  "original_prompt": "Ingested from bash-5.2.21/lib/intl/dcgettext.c",
+  "human_readable_source": " \n\n \n\n#ifdef HAVE_CONFIG_H\n# include <config.h>\n#endif\n\n#include \"gettextP.h\"\n#ifdef _LIBC\n# include <libintl.h>\n#else\n# include \"libgnuintl.h\"\n#endif\n\n \n\n \n#ifdef _LIBC\n# define DCGETTEXT __dcgettext\n# define DCIGETTEXT __dcigettext\n#else\n# define DCGETTEXT libintl_dcgettext\n# define DCIGETTEXT libintl_dcigettext\n#endif\n\n \nchar *\nDCGETTEXT (domainname, msgid, category)\n     const char *domainname;\n     const char *msgid;\n     int category;\n{\n  return DCIGETTEXT (domainname, msgid, NULL, 0, 0, category);\n}\n\n#ifdef _LIBC\n \nINTDEF(__dcgettext)\nweak_alias (__dcgettext, dcgettext);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

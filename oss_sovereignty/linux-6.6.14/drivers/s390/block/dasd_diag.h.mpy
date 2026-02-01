@@ -1,0 +1,9 @@
+{
+  "module_name": "dasd_diag.h",
+  "hash_id": "40ed17691061a77919dccf1bb2b97ba9e67b9244f27001a6f655f808690f13b7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/block/dasd_diag.h",
+  "human_readable_source": " \n \n\n#define MDSK_WRITE_REQ 0x01\n#define MDSK_READ_REQ  0x02\n\n#define INIT_BIO\t0x00\n#define RW_BIO\t\t0x01\n#define TERM_BIO\t0x02\n\n#define DEV_CLASS_FBA\t0x01\n#define DEV_CLASS_ECKD\t0x04\n\n#define DASD_DIAG_CODE_31BIT\t\t0x03\n#define DASD_DIAG_CODE_64BIT\t\t0x07\n\n#define DASD_DIAG_RWFLAG_ASYNC\t\t0x02\n#define DASD_DIAG_RWFLAG_NOCACHE\t0x01\n\n#define DASD_DIAG_FLAGA_FORMAT_64BIT\t0x80\n\nstruct dasd_diag_characteristics {\n\tu16 dev_nr;\n\tu16 rdc_len;\n\tu8 vdev_class;\n\tu8 vdev_type;\n\tu8 vdev_status;\n\tu8 vdev_flags;\n\tu8 rdev_class;\n\tu8 rdev_type;\n\tu8 rdev_model;\n\tu8 rdev_features;\n} __attribute__ ((packed, aligned(4)));\n\n#define DASD_DIAG_FLAGA_DEFAULT\t\tDASD_DIAG_FLAGA_FORMAT_64BIT\n\ntypedef u64 blocknum_t;\ntypedef s64 sblocknum_t;\n\nstruct dasd_diag_bio {\n\tu8 type;\n\tu8 status;\n\tu8 spare1[2];\n\tu32 alet;\n\tblocknum_t block_number;\n\tvoid *buffer;\n} __attribute__ ((packed, aligned(8)));\n\nstruct dasd_diag_init_io {\n\tu16 dev_nr;\n\tu8 flaga;\n\tu8 spare1[21];\n\tu32 block_size;\n\tu8 spare2[4];\n\tblocknum_t offset;\n\tsblocknum_t start_block;\n\tblocknum_t end_block;\n\tu8  spare3[8];\n} __attribute__ ((packed, aligned(8)));\n\nstruct dasd_diag_rw_io {\n\tu16 dev_nr;\n\tu8  flaga;\n\tu8  spare1[21];\n\tu8  key;\n\tu8  flags;\n\tu8  spare2[2];\n\tu32 block_count;\n\tu32 alet;\n\tu8  spare3[4];\n\tu64 interrupt_params;\n\tstruct dasd_diag_bio *bio_list;\n\tu8  spare4[8];\n} __attribute__ ((packed, aligned(8)));\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

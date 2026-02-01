@@ -1,0 +1,9 @@
+{
+  "module_name": "stm32-lptimer.h",
+  "hash_id": "ffb82e4e695fd487e181c42e1a4cbe7c3a8db3078b71934e3d0bad16af704f5a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/stm32-lptimer.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_STM32_LPTIMER_H_\n#define _LINUX_STM32_LPTIMER_H_\n\n#include <linux/clk.h>\n#include <linux/regmap.h>\n\n#define STM32_LPTIM_ISR\t\t0x00\t \n#define STM32_LPTIM_ICR\t\t0x04\t \n#define STM32_LPTIM_IER\t\t0x08\t \n#define STM32_LPTIM_CFGR\t0x0C\t \n#define STM32_LPTIM_CR\t\t0x10\t \n#define STM32_LPTIM_CMP\t\t0x14\t \n#define STM32_LPTIM_ARR\t\t0x18\t \n#define STM32_LPTIM_CNT\t\t0x1C\t \n\n \n#define STM32_LPTIM_CMPOK_ARROK\t\tGENMASK(4, 3)\n#define STM32_LPTIM_ARROK\t\tBIT(4)\n#define STM32_LPTIM_CMPOK\t\tBIT(3)\n\n \n#define STM32_LPTIM_ARRMCF\t\tBIT(1)\n#define STM32_LPTIM_CMPOKCF_ARROKCF\tGENMASK(4, 3)\n\n \n#define STM32_LPTIM_ARRMIE\tBIT(1)\n\n \n#define STM32_LPTIM_CNTSTRT\tBIT(2)\n#define STM32_LPTIM_SNGSTRT\tBIT(1)\n#define STM32_LPTIM_ENABLE\tBIT(0)\n\n \n#define STM32_LPTIM_ENC\t\tBIT(24)\n#define STM32_LPTIM_COUNTMODE\tBIT(23)\n#define STM32_LPTIM_WAVPOL\tBIT(21)\n#define STM32_LPTIM_PRESC\tGENMASK(11, 9)\n#define STM32_LPTIM_CKPOL\tGENMASK(2, 1)\n\n \n#define STM32_LPTIM_CKPOL_RISING_EDGE\t0\n#define STM32_LPTIM_CKPOL_FALLING_EDGE\t1\n#define STM32_LPTIM_CKPOL_BOTH_EDGES\t2\n\n \n#define STM32_LPTIM_MAX_ARR\t0xFFFF\n\n \nstruct stm32_lptimer {\n\tstruct clk *clk;\n\tstruct regmap *regmap;\n\tbool has_encoder;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

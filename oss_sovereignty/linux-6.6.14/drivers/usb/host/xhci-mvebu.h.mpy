@@ -1,0 +1,9 @@
+{
+  "module_name": "xhci-mvebu.h",
+  "hash_id": "42ea6e05f2cd7793e6f99e09aba28d716acf0f7acc859982f26a87cf06475263",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/host/xhci-mvebu.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_XHCI_MVEBU_H\n#define __LINUX_XHCI_MVEBU_H\n\nstruct usb_hcd;\n\n#if IS_ENABLED(CONFIG_USB_XHCI_MVEBU)\nint xhci_mvebu_mbus_init_quirk(struct usb_hcd *hcd);\nint xhci_mvebu_a3700_init_quirk(struct usb_hcd *hcd);\n#else\nstatic inline int xhci_mvebu_mbus_init_quirk(struct usb_hcd *hcd)\n{\n\treturn 0;\n}\n\nstatic inline int xhci_mvebu_a3700_init_quirk(struct usb_hcd *hcd)\n{\n\treturn 0;\n}\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

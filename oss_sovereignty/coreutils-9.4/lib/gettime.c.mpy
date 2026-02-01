@@ -1,0 +1,9 @@
+{
+  "module_name": "gettime.c",
+  "hash_id": "fd0572177ab07e3f111bdf9ec7e5d05e20b60b8b87e57cfa4c0c80eee62fd6a3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/gettime.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"timespec.h\"\n\n#include <sys/time.h>\n\n \n\nvoid\ngettime (struct timespec *ts)\n{\n#if defined CLOCK_REALTIME && HAVE_CLOCK_GETTIME\n  clock_gettime (CLOCK_REALTIME, ts);\n#elif defined HAVE_TIMESPEC_GET\n  timespec_get (ts, TIME_UTC);\n#else\n  struct timeval tv;\n  gettimeofday (&tv, NULL);\n  *ts = (struct timespec) { .tv_sec  = tv.tv_sec,\n                            .tv_nsec = tv.tv_usec * 1000 };\n#endif\n}\n\n \n\nstruct timespec\ncurrent_timespec (void)\n{\n  struct timespec ts;\n  gettime (&ts);\n  return ts;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

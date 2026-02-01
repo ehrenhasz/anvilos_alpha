@@ -1,0 +1,9 @@
+{
+  "module_name": "usbip_port.c",
+  "hash_id": "83b07601994e8604122bd0ab0f1a9cdcb96cb2fe30cedb54c065e7354a1354bf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/usbip/src/usbip_port.c",
+  "human_readable_source": "\n \n\n#include \"vhci_driver.h\"\n#include \"usbip_common.h\"\n\nstatic int list_imported_devices(void)\n{\n\tint i;\n\tstruct usbip_imported_device *idev;\n\tint ret;\n\n\tif (usbip_names_init(USBIDS_FILE))\n\t\terr(\"failed to open %s\", USBIDS_FILE);\n\n\tret = usbip_vhci_driver_open();\n\tif (ret < 0) {\n\t\terr(\"open vhci_driver (is vhci_hcd loaded?)\");\n\t\tgoto err_names_free;\n\t}\n\n\tprintf(\"Imported USB devices\\n\");\n\tprintf(\"====================\\n\");\n\n\tfor (i = 0; i < vhci_driver->nports; i++) {\n\t\tidev = &vhci_driver->idev[i];\n\n\t\tif (usbip_vhci_imported_device_dump(idev) < 0)\n\t\t\tgoto err_driver_close;\n\t}\n\n\tusbip_vhci_driver_close();\n\tusbip_names_free();\n\n\treturn ret;\n\nerr_driver_close:\n\tusbip_vhci_driver_close();\nerr_names_free:\n\tusbip_names_free();\n\treturn -1;\n}\n\nint usbip_port_show(__attribute__((unused)) int argc,\n\t\t    __attribute__((unused)) char *argv[])\n{\n\tint ret;\n\n\tret = list_imported_devices();\n\tif (ret < 0)\n\t\terr(\"list imported devices\");\n\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

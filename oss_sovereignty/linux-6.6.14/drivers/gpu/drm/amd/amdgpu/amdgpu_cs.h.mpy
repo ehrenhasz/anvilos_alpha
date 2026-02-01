@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_cs.h",
+  "hash_id": "78dcc31665efcbbadd7e46881490f8d484525f5c39740ac9dba5ce38c1ed186c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.h",
+  "human_readable_source": " \n#ifndef __AMDGPU_CS_H__\n#define __AMDGPU_CS_H__\n\n#include <linux/ww_mutex.h>\n#include <drm/drm_exec.h>\n\n#include \"amdgpu_job.h\"\n#include \"amdgpu_bo_list.h\"\n#include \"amdgpu_ring.h\"\n\n#define AMDGPU_CS_GANG_SIZE\t4\n\nstruct amdgpu_bo_va_mapping;\n\nstruct amdgpu_cs_chunk {\n\tuint32_t\t\tchunk_id;\n\tuint32_t\t\tlength_dw;\n\tvoid\t\t\t*kdata;\n};\n\nstruct amdgpu_cs_post_dep {\n\tstruct drm_syncobj *syncobj;\n\tstruct dma_fence_chain *chain;\n\tu64 point;\n};\n\nstruct amdgpu_cs_parser {\n\tstruct amdgpu_device\t*adev;\n\tstruct drm_file\t\t*filp;\n\tstruct amdgpu_ctx\t*ctx;\n\n\t \n\tunsigned\t\tnchunks;\n\tstruct amdgpu_cs_chunk\t*chunks;\n\n\t \n\tunsigned int\t\tgang_size;\n\tunsigned int\t\tgang_leader_idx;\n\tstruct drm_sched_entity\t*entities[AMDGPU_CS_GANG_SIZE];\n\tstruct amdgpu_job\t*jobs[AMDGPU_CS_GANG_SIZE];\n\tstruct amdgpu_job\t*gang_leader;\n\n\t \n\tstruct drm_exec\t\t\texec;\n\tstruct amdgpu_bo_list\t\t*bo_list;\n\tstruct amdgpu_mn\t\t*mn;\n\tstruct dma_fence\t\t*fence;\n\tuint64_t\t\t\tbytes_moved_threshold;\n\tuint64_t\t\t\tbytes_moved_vis_threshold;\n\tuint64_t\t\t\tbytes_moved;\n\tuint64_t\t\t\tbytes_moved_vis;\n\n\t \n\tstruct amdgpu_bo\t\t*uf_bo;\n\n\tunsigned\t\t\tnum_post_deps;\n\tstruct amdgpu_cs_post_dep\t*post_deps;\n\n\tstruct amdgpu_sync\t\tsync;\n};\n\nint amdgpu_cs_find_mapping(struct amdgpu_cs_parser *parser,\n\t\t\t   uint64_t addr, struct amdgpu_bo **bo,\n\t\t\t   struct amdgpu_bo_va_mapping **mapping);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

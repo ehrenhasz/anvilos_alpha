@@ -1,0 +1,9 @@
+{
+  "module_name": "vc_vchi_audioserv_defs.h",
+  "hash_id": "fe2afc91f7af5da186faa76e3a35cf357719d6cd7a970da80cec36219a6f1b0e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vc04_services/bcm2835-audio/vc_vchi_audioserv_defs.h",
+  "human_readable_source": " \n \n\n#ifndef _VC_AUDIO_DEFS_H_\n#define _VC_AUDIO_DEFS_H_\n\n#define VC_AUDIOSERV_MIN_VER 1\n#define VC_AUDIOSERV_VER 2\n\n \n#define VC_AUDIO_WRITE_COOKIE1 VCHIQ_MAKE_FOURCC('B', 'C', 'M', 'A')\n#define VC_AUDIO_WRITE_COOKIE2 VCHIQ_MAKE_FOURCC('D', 'A', 'T', 'A')\n\n \n\nenum vc_audio_msg_type {\n\tVC_AUDIO_MSG_TYPE_RESULT, \n\tVC_AUDIO_MSG_TYPE_COMPLETE, \n\tVC_AUDIO_MSG_TYPE_CONFIG, \n\tVC_AUDIO_MSG_TYPE_CONTROL, \n\tVC_AUDIO_MSG_TYPE_OPEN, \n\tVC_AUDIO_MSG_TYPE_CLOSE, \n\tVC_AUDIO_MSG_TYPE_START, \n\tVC_AUDIO_MSG_TYPE_STOP, \n\tVC_AUDIO_MSG_TYPE_WRITE, \n\tVC_AUDIO_MSG_TYPE_MAX\n};\n\n \n\nstruct vc_audio_config {\n\tu32 channels;\n\tu32 samplerate;\n\tu32 bps;\n};\n\nstruct vc_audio_control {\n\tu32 volume;\n\tu32 dest;\n};\n\nstruct vc_audio_open {\n\tu32 dummy;\n};\n\nstruct vc_audio_close {\n\tu32 dummy;\n};\n\nstruct vc_audio_start {\n\tu32 dummy;\n};\n\nstruct vc_audio_stop {\n\tu32 draining;\n};\n\n \nstruct vc_audio_write {\n\tu32 count; \n\tu32 cookie1;\n\tu32 cookie2;\n\ts16 silence;\n\ts16 max_packet;\n};\n\n \nstruct vc_audio_result {\n\ts32 success; \n};\n\n \nstruct vc_audio_complete {\n\ts32 count; \n\tu32 cookie1;\n\tu32 cookie2;\n};\n\n \nstruct vc_audio_msg {\n\ts32 type;  \n\tunion {\n\t\tstruct vc_audio_config config;\n\t\tstruct vc_audio_control control;\n\t\tstruct vc_audio_open open;\n\t\tstruct vc_audio_close close;\n\t\tstruct vc_audio_start start;\n\t\tstruct vc_audio_stop stop;\n\t\tstruct vc_audio_write write;\n\t\tstruct vc_audio_result result;\n\t\tstruct vc_audio_complete complete;\n\t};\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_mdp_rdma.h",
+  "hash_id": "9e411abc1366235c2f1052b5bf8e18cd47a5af24429e71b4038fb88dc36e79ce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/mediatek/mtk_mdp_rdma.h",
+  "human_readable_source": " \n \n\n#ifndef __MTK_MDP_RDMA_H__\n#define __MTK_MDP_RDMA_H__\n\nstruct mtk_mdp_rdma_cfg {\n\tunsigned int\tpitch;\n\tunsigned int\taddr0;\n\tunsigned int\twidth;\n\tunsigned int\theight;\n\tunsigned int\tx_left;\n\tunsigned int\ty_top;\n\tint\t\tfmt;\n\tint\t\tcolor_encoding;\n};\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

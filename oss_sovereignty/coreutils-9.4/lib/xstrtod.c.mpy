@@ -1,0 +1,9 @@
+{
+  "module_name": "xstrtod.c",
+  "hash_id": "e7831830707fb8181f16122fd958e40b417d64089af61340764062308b3b0c8d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xstrtod.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"xstrtod.h\"\n\n#include <errno.h>\n#include <limits.h>\n#include <stdio.h>\n\n#if LONG\n# define XSTRTOD xstrtold\n# define DOUBLE long double\n#else\n# define XSTRTOD xstrtod\n# define DOUBLE double\n#endif\n\n \n\nbool\nXSTRTOD (char const *str, char const **ptr, DOUBLE *result,\n         DOUBLE (*convert) (char const *, char **))\n{\n  DOUBLE val;\n  char *terminator;\n  bool ok = true;\n\n  errno = 0;\n  val = convert (str, &terminator);\n\n   \n  if (terminator == str || (ptr == NULL && *terminator != '\\0'))\n    ok = false;\n  else\n    {\n       \n      if (val != 0 && errno == ERANGE)\n        ok = false;\n    }\n\n  if (ptr != NULL)\n    *ptr = terminator;\n\n  *result = val;\n  return ok;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

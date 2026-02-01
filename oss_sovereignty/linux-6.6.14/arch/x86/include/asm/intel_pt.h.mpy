@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pt.h",
+  "hash_id": "7bc1ea41e833da39290ed59d1f64e7dcac3a2aa33ac412ce4148f320030c6d98",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/intel_pt.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_INTEL_PT_H\n#define _ASM_X86_INTEL_PT_H\n\n#define PT_CPUID_LEAVES\t\t2\n#define PT_CPUID_REGS_NUM\t4  \n\nenum pt_capabilities {\n\tPT_CAP_max_subleaf = 0,\n\tPT_CAP_cr3_filtering,\n\tPT_CAP_psb_cyc,\n\tPT_CAP_ip_filtering,\n\tPT_CAP_mtc,\n\tPT_CAP_ptwrite,\n\tPT_CAP_power_event_trace,\n\tPT_CAP_event_trace,\n\tPT_CAP_tnt_disable,\n\tPT_CAP_topa_output,\n\tPT_CAP_topa_multiple_entries,\n\tPT_CAP_single_range_output,\n\tPT_CAP_output_subsys,\n\tPT_CAP_payloads_lip,\n\tPT_CAP_num_address_ranges,\n\tPT_CAP_mtc_periods,\n\tPT_CAP_cycle_thresholds,\n\tPT_CAP_psb_periods,\n};\n\n#if defined(CONFIG_PERF_EVENTS) && defined(CONFIG_CPU_SUP_INTEL)\nvoid cpu_emergency_stop_pt(void);\nextern u32 intel_pt_validate_hw_cap(enum pt_capabilities cap);\nextern u32 intel_pt_validate_cap(u32 *caps, enum pt_capabilities cap);\nextern int is_intel_pt_event(struct perf_event *event);\n#else\nstatic inline void cpu_emergency_stop_pt(void) {}\nstatic inline u32 intel_pt_validate_hw_cap(enum pt_capabilities cap) { return 0; }\nstatic inline u32 intel_pt_validate_cap(u32 *caps, enum pt_capabilities capability) { return 0; }\nstatic inline int is_intel_pt_event(struct perf_event *event) { return 0; }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

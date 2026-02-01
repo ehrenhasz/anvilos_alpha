@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_ref_param.h",
+  "hash_id": "312a83b9511515571c50531ddcffe1416c34c7dcb62ea684a8f10b004d6a4667",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ref/ref_1.0/ia_css_ref_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_REF_PARAM_H\n#define __IA_CSS_REF_PARAM_H\n\n#include <type_support.h>\n#include \"sh_css_defs.h\"\n#include \"dma.h\"\n\n \nstruct ia_css_ref_configuration {\n\tconst struct ia_css_frame *ref_frames[MAX_NUM_VIDEO_DELAY_FRAMES];\n\tu32 dvs_frame_delay;\n};\n\nstruct sh_css_isp_ref_isp_config {\n\tu32 width_a_over_b;\n\tstruct dma_port_config port_b;\n\tia_css_ptr ref_frame_addr_y[MAX_NUM_VIDEO_DELAY_FRAMES];\n\tia_css_ptr ref_frame_addr_c[MAX_NUM_VIDEO_DELAY_FRAMES];\n\tu32 dvs_frame_delay;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

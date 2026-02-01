@@ -1,0 +1,9 @@
+{
+  "module_name": "rt5663.h",
+  "hash_id": "52b94a5dbf985e52006bfdceee23ccc4c1800652343f58edf6033ec560954249",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/rt5663.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SND_RT5663_H\n#define __LINUX_SND_RT5663_H\n\nstruct rt5663_platform_data {\n\tunsigned int dc_offset_l_manual;\n\tunsigned int dc_offset_r_manual;\n\tunsigned int dc_offset_l_manual_mic;\n\tunsigned int dc_offset_r_manual_mic;\n\n\tunsigned int impedance_sensing_num;\n\tunsigned int *impedance_sensing_table;\n};\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

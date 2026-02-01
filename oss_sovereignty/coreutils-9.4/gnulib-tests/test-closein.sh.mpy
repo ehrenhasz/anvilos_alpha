@@ -1,0 +1,9 @@
+{
+  "module_name": "test-closein.sh",
+  "hash_id": "5faf113a820ad97231a3b1139e6de2b0cd169a73fd1a59e8d6e0e09718bd4df0",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-closein.sh",
+  "human_readable_source": "#!/bin/sh\n: \"${srcdir=.}\"\n. \"$srcdir/init.sh\"; path_prepend_ .\n\necho Hello world > in.tmp\necho world > xout.tmp\n\nfail=0\n# Test with seekable stdin; follow-on process must see remaining data\n(${CHECKER} test-closein; cat) < in.tmp > out1.tmp || fail=1\ncmp out1.tmp in.tmp || fail=1\n\n(${CHECKER} test-closein consume; cat) < in.tmp > out2.tmp || fail=1\ncmp out2.tmp xout.tmp || fail=1\n\n# Test for lack of error on pipe.  Ignore any EPIPE failures from cat.\ncat in.tmp 2>/dev/null | ${CHECKER} test-closein || fail=1\n\ncat in.tmp 2>/dev/null | ${CHECKER} test-closein consume || fail=1\n\n# Test for lack of error when nothing is read\n${CHECKER} test-closein </dev/null || fail=1\n\n${CHECKER} test-closein <&- || fail=1\n\n# Test for no error when EOF is read early\n${CHECKER} test-closein consume </dev/null || fail=1\n\n# Test for error when read fails because no file available\n${CHECKER} test-closein consume close <&- 2>/dev/null && fail=1\n\nExit $fail\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

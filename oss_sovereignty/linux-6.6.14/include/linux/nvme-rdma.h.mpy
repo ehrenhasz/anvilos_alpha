@@ -1,0 +1,9 @@
+{
+  "module_name": "nvme-rdma.h",
+  "hash_id": "7b251c74e4cabc18eeebb07a1f022bc74011c61c31517468900e290cbd250df4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/nvme-rdma.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_NVME_RDMA_H\n#define _LINUX_NVME_RDMA_H\n\n#define NVME_RDMA_MAX_QUEUE_SIZE\t128\n\nenum nvme_rdma_cm_fmt {\n\tNVME_RDMA_CM_FMT_1_0 = 0x0,\n};\n\nenum nvme_rdma_cm_status {\n\tNVME_RDMA_CM_INVALID_LEN\t= 0x01,\n\tNVME_RDMA_CM_INVALID_RECFMT\t= 0x02,\n\tNVME_RDMA_CM_INVALID_QID\t= 0x03,\n\tNVME_RDMA_CM_INVALID_HSQSIZE\t= 0x04,\n\tNVME_RDMA_CM_INVALID_HRQSIZE\t= 0x05,\n\tNVME_RDMA_CM_NO_RSC\t\t= 0x06,\n\tNVME_RDMA_CM_INVALID_IRD\t= 0x07,\n\tNVME_RDMA_CM_INVALID_ORD\t= 0x08,\n};\n\nstatic inline const char *nvme_rdma_cm_msg(enum nvme_rdma_cm_status status)\n{\n\tswitch (status) {\n\tcase NVME_RDMA_CM_INVALID_LEN:\n\t\treturn \"invalid length\";\n\tcase NVME_RDMA_CM_INVALID_RECFMT:\n\t\treturn \"invalid record format\";\n\tcase NVME_RDMA_CM_INVALID_QID:\n\t\treturn \"invalid queue ID\";\n\tcase NVME_RDMA_CM_INVALID_HSQSIZE:\n\t\treturn \"invalid host SQ size\";\n\tcase NVME_RDMA_CM_INVALID_HRQSIZE:\n\t\treturn \"invalid host RQ size\";\n\tcase NVME_RDMA_CM_NO_RSC:\n\t\treturn \"resource not found\";\n\tcase NVME_RDMA_CM_INVALID_IRD:\n\t\treturn \"invalid IRD\";\n\tcase NVME_RDMA_CM_INVALID_ORD:\n\t\treturn \"Invalid ORD\";\n\tdefault:\n\t\treturn \"unrecognized reason\";\n\t}\n}\n\n \nstruct nvme_rdma_cm_req {\n\t__le16\t\trecfmt;\n\t__le16\t\tqid;\n\t__le16\t\thrqsize;\n\t__le16\t\thsqsize;\n\tu8\t\trsvd[24];\n};\n\n \nstruct nvme_rdma_cm_rep {\n\t__le16\t\trecfmt;\n\t__le16\t\tcrqsize;\n\tu8\t\trsvd[28];\n};\n\n \nstruct nvme_rdma_cm_rej {\n\t__le16\t\trecfmt;\n\t__le16\t\tsts;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "apic.c",
+  "hash_id": "7130e4b549e7692da108bd131a04354f83925803c10442ca6cf7ac8a16568a11",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/lib/x86_64/apic.c",
+  "human_readable_source": "\n \n\n#include \"apic.h\"\n\nvoid apic_disable(void)\n{\n\twrmsr(MSR_IA32_APICBASE,\n\t      rdmsr(MSR_IA32_APICBASE) &\n\t\t~(MSR_IA32_APICBASE_ENABLE | MSR_IA32_APICBASE_EXTD));\n}\n\nvoid xapic_enable(void)\n{\n\tuint64_t val = rdmsr(MSR_IA32_APICBASE);\n\n\t \n\tif (val & MSR_IA32_APICBASE_EXTD) {\n\t\tapic_disable();\n\t\twrmsr(MSR_IA32_APICBASE,\n\t\t      rdmsr(MSR_IA32_APICBASE) | MSR_IA32_APICBASE_ENABLE);\n\t} else if (!(val & MSR_IA32_APICBASE_ENABLE)) {\n\t\twrmsr(MSR_IA32_APICBASE, val | MSR_IA32_APICBASE_ENABLE);\n\t}\n\n\t \n\tval = xapic_read_reg(APIC_SPIV) | APIC_SPIV_APIC_ENABLED;\n\txapic_write_reg(APIC_SPIV, val);\n}\n\nvoid x2apic_enable(void)\n{\n\twrmsr(MSR_IA32_APICBASE, rdmsr(MSR_IA32_APICBASE) |\n\t      MSR_IA32_APICBASE_ENABLE | MSR_IA32_APICBASE_EXTD);\n\tx2apic_write_reg(APIC_SPIV,\n\t\t\t x2apic_read_reg(APIC_SPIV) | APIC_SPIV_APIC_ENABLED);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

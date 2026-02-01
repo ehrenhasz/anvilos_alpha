@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.ubsan",
+  "hash_id": "496704ebe05e5206cee0aecef985ad3720cce898608897030ebd79b474ec5607",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/Makefile.ubsan",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n# Enable available and selected UBSAN features.\nubsan-cflags-$(CONFIG_UBSAN_ALIGNMENT)\t\t+= -fsanitize=alignment\nubsan-cflags-$(CONFIG_UBSAN_BOUNDS_STRICT)\t+= -fsanitize=bounds-strict\nubsan-cflags-$(CONFIG_UBSAN_ARRAY_BOUNDS)\t+= -fsanitize=array-bounds\nubsan-cflags-$(CONFIG_UBSAN_LOCAL_BOUNDS)\t+= -fsanitize=local-bounds\nubsan-cflags-$(CONFIG_UBSAN_SHIFT)\t\t+= -fsanitize=shift\nubsan-cflags-$(CONFIG_UBSAN_DIV_ZERO)\t\t+= -fsanitize=integer-divide-by-zero\nubsan-cflags-$(CONFIG_UBSAN_UNREACHABLE)\t+= -fsanitize=unreachable\nubsan-cflags-$(CONFIG_UBSAN_BOOL)\t\t+= -fsanitize=bool\nubsan-cflags-$(CONFIG_UBSAN_ENUM)\t\t+= -fsanitize=enum\nubsan-cflags-$(CONFIG_UBSAN_TRAP)\t\t+= -fsanitize-undefined-trap-on-error\n\nexport CFLAGS_UBSAN := $(ubsan-cflags-y)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

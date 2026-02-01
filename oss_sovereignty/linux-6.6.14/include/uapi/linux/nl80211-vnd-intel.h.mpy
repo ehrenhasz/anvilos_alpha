@@ -1,0 +1,9 @@
+{
+  "module_name": "nl80211-vnd-intel.h",
+  "hash_id": "92251ec522f1860faeca7a01b90d5e341be2d52b61a8551f05b559ddae5287b2",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/nl80211-vnd-intel.h",
+  "human_readable_source": " \n \n#ifndef __VENDOR_CMD_INTEL_H__\n#define __VENDOR_CMD_INTEL_H__\n\n#define INTEL_OUI\t0x001735\n\n \n\nenum iwl_mvm_vendor_cmd {\n\tIWL_MVM_VENDOR_CMD_GET_CSME_CONN_INFO\t\t\t= 0x2d,\n\tIWL_MVM_VENDOR_CMD_HOST_GET_OWNERSHIP\t\t\t= 0x30,\n\tIWL_MVM_VENDOR_CMD_ROAMING_FORBIDDEN_EVENT\t\t= 0x32,\n};\n\nenum iwl_vendor_auth_akm_mode {\n\tIWL_VENDOR_AUTH_OPEN,\n\tIWL_VENDOR_AUTH_RSNA = 0x6,\n\tIWL_VENDOR_AUTH_RSNA_PSK,\n\tIWL_VENDOR_AUTH_SAE = 0x9,\n\tIWL_VENDOR_AUTH_MAX,\n};\n\n \nenum iwl_mvm_vendor_attr {\n\t__IWL_MVM_VENDOR_ATTR_INVALID\t\t\t\t= 0x00,\n\tIWL_MVM_VENDOR_ATTR_VIF_ADDR\t\t\t\t= 0x02,\n\tIWL_MVM_VENDOR_ATTR_ADDR\t\t\t\t= 0x0a,\n\tIWL_MVM_VENDOR_ATTR_SSID\t\t\t\t= 0x3d,\n\tIWL_MVM_VENDOR_ATTR_STA_CIPHER\t\t\t\t= 0x51,\n\tIWL_MVM_VENDOR_ATTR_ROAMING_FORBIDDEN\t\t\t= 0x64,\n\tIWL_MVM_VENDOR_ATTR_AUTH_MODE\t\t\t\t= 0x65,\n\tIWL_MVM_VENDOR_ATTR_CHANNEL_NUM\t\t\t\t= 0x66,\n\tIWL_MVM_VENDOR_ATTR_BAND\t\t\t\t= 0x69,\n\tIWL_MVM_VENDOR_ATTR_COLLOC_CHANNEL\t\t\t= 0x70,\n\tIWL_MVM_VENDOR_ATTR_COLLOC_ADDR\t\t\t\t= 0x71,\n\n\tNUM_IWL_MVM_VENDOR_ATTR,\n\tMAX_IWL_MVM_VENDOR_ATTR = NUM_IWL_MVM_VENDOR_ATTR - 1,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

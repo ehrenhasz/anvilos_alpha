@@ -1,0 +1,9 @@
+{
+  "module_name": "__init__.py",
+  "hash_id": "bd6ba34f366680083c23357fff7d49f3194cdff51bcf8c6f2e8c36eaf3b37e9c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/net/ynl/lib/__init__.py",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause\n\nfrom .nlspec import SpecAttr, SpecAttrSet, SpecEnumEntry, SpecEnumSet, \\\n    SpecFamily, SpecOperation\nfrom .ynl import YnlFamily, Netlink\n\n__all__ = [\"SpecAttr\", \"SpecAttrSet\", \"SpecEnumEntry\", \"SpecEnumSet\",\n           \"SpecFamily\", \"SpecOperation\", \"YnlFamily\", \"Netlink\"]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

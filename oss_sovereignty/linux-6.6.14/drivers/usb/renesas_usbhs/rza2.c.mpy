@@ -1,0 +1,9 @@
+{
+  "module_name": "rza2.c",
+  "hash_id": "7a5ec68e6e0924f716b7b62d9039e67a56e7cee2156cc762fb9a5cacd89aaaf9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/renesas_usbhs/rza2.c",
+  "human_readable_source": "\n \n\n#include <linux/delay.h>\n#include <linux/io.h>\n#include <linux/phy/phy.h>\n#include \"common.h\"\n#include \"rza.h\"\n\nstatic int usbhs_rza2_hardware_init(struct platform_device *pdev)\n{\n\tstruct usbhs_priv *priv = usbhs_pdev_to_priv(pdev);\n\tstruct phy *phy = phy_get(&pdev->dev, \"usb\");\n\n\tif (IS_ERR(phy))\n\t\treturn PTR_ERR(phy);\n\n\tpriv->phy = phy;\n\treturn 0;\n}\n\nstatic int usbhs_rza2_hardware_exit(struct platform_device *pdev)\n{\n\tstruct usbhs_priv *priv = usbhs_pdev_to_priv(pdev);\n\n\tphy_put(&pdev->dev, priv->phy);\n\tpriv->phy = NULL;\n\n\treturn 0;\n}\n\nstatic int usbhs_rza2_power_ctrl(struct platform_device *pdev,\n\t\t\t\tvoid __iomem *base, int enable)\n{\n\tstruct usbhs_priv *priv = usbhs_pdev_to_priv(pdev);\n\tint retval = 0;\n\n\tif (!priv->phy)\n\t\treturn -ENODEV;\n\n\tif (enable) {\n\t\tretval = phy_init(priv->phy);\n\t\tusbhs_bset(priv, SUSPMODE, SUSPM, SUSPM);\n\t\tudelay(100);\t \n\t\tif (!retval)\n\t\t\tretval = phy_power_on(priv->phy);\n\t} else {\n\t\tusbhs_bset(priv, SUSPMODE, SUSPM, 0);\n\t\tphy_power_off(priv->phy);\n\t\tphy_exit(priv->phy);\n\t}\n\n\treturn retval;\n}\n\nconst struct renesas_usbhs_platform_info usbhs_rza2_plat_info = {\n\t.platform_callback = {\n\t\t.hardware_init = usbhs_rza2_hardware_init,\n\t\t.hardware_exit = usbhs_rza2_hardware_exit,\n\t\t.power_ctrl = usbhs_rza2_power_ctrl,\n\t\t.get_id = usbhs_get_id_as_gadget,\n\t},\n\t.driver_param = {\n\t\t.has_cnen = 1,\n\t\t.cfifo_byte_addr = 1,\n\t\t.has_new_pipe_configs = 1,\n\t},\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_in_wchnstr.c",
+  "hash_id": "fcd6dcbc650e184a8e82b58bb413b3c80fb56cbab4fff0b88f383118ac63576c",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/widechar/lib_in_wchnstr.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_in_wchnstr.c,v 1.9 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwin_wchnstr(WINDOW *win, cchar_t *wchstr, int n)\n{\n    int code = OK;\n\n    T((T_CALLED(\"win_wchnstr(%p,%p,%d)\"), (void *) win, (void *) wchstr, n));\n    if (win != 0\n\t&& wchstr != 0) {\n\tNCURSES_CH_T *src;\n\tint row, col;\n\tint j, k, limit;\n\n\tgetyx(win, row, col);\n\tlimit = getmaxx(win) - col;\n\tsrc = &(win->_line[row].text[col]);\n\n\tif (n < 0) {\n\t    n = limit;\n\t} else if (n > limit) {\n\t    n = limit;\n\t}\n\tfor (j = k = 0; j < n; ++j) {\n\t    if (j == 0 || !WidecExt(src[j]) || isWidecBase(src[j])) {\n\t\twchstr[k++] = src[j];\n\t    }\n\t}\n\tmemset(&(wchstr[k]), 0, sizeof(*wchstr));\n\tT((\"result = %s\", _nc_viscbuf(wchstr, n)));\n    } else {\n\tcode = ERR;\n    }\n    returnCode(code);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

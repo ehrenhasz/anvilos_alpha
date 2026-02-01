@@ -1,0 +1,9 @@
+{
+  "module_name": "exthdrs_offload.c",
+  "hash_id": "28e2d705c8768c524a49973ae3e6733563401fd03572177a294a05f9601ec39d",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv6/exthdrs_offload.c",
+  "human_readable_source": "\n \n#include <net/protocol.h>\n#include \"ip6_offload.h\"\n\nstatic const struct net_offload rthdr_offload = {\n\t.flags\t\t=\tINET6_PROTO_GSO_EXTHDR,\n};\n\nstatic const struct net_offload dstopt_offload = {\n\t.flags\t\t=\tINET6_PROTO_GSO_EXTHDR,\n};\n\nint __init ipv6_exthdrs_offload_init(void)\n{\n\tint ret;\n\n\tret = inet6_add_offload(&rthdr_offload, IPPROTO_ROUTING);\n\tif (ret)\n\t\tgoto out;\n\n\tret = inet6_add_offload(&dstopt_offload, IPPROTO_DSTOPTS);\n\tif (ret)\n\t\tgoto out_rt;\n\nout:\n\treturn ret;\n\nout_rt:\n\tinet6_del_offload(&rthdr_offload, IPPROTO_ROUTING);\n\tgoto out;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

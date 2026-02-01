@@ -1,0 +1,9 @@
+{
+  "module_name": "u_tcm.h",
+  "hash_id": "80c5baf36905bf2cd871e68b286e623362a05f371dcc862a2817549946ae2c28",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/function/u_tcm.h",
+  "human_readable_source": " \n \n\n#ifndef U_TCM_H\n#define U_TCM_H\n\n#include <linux/usb/composite.h>\n\n \nstruct f_tcm_opts {\n\tstruct usb_function_instance\tfunc_inst;\n\tstruct module\t\t\t*dependent;\n\tstruct mutex\t\t\tdep_lock;\n\tbool\t\t\t\tready;\n\tbool\t\t\t\tcan_attach;\n\tbool\t\t\t\thas_dep;\n\n\t \n\tint (*tcm_register_callback)(struct usb_function_instance *);\n\tvoid (*tcm_unregister_callback)(struct usb_function_instance *);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

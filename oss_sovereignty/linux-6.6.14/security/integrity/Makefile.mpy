@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "34843db773be4aa6a933435bfbd19432645d47a06de91ba31d892a36087e115b",
+  "original_prompt": "Ingested from linux-6.6.14/security/integrity/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for caching inode integrity data (iint)\n#\n\nobj-$(CONFIG_INTEGRITY) += integrity.o\n\nintegrity-y := iint.o\nintegrity-$(CONFIG_INTEGRITY_AUDIT) += integrity_audit.o\nintegrity-$(CONFIG_INTEGRITY_SIGNATURE) += digsig.o\nintegrity-$(CONFIG_INTEGRITY_ASYMMETRIC_KEYS) += digsig_asymmetric.o\nintegrity-$(CONFIG_INTEGRITY_PLATFORM_KEYRING) += platform_certs/platform_keyring.o\nintegrity-$(CONFIG_INTEGRITY_MACHINE_KEYRING) += platform_certs/machine_keyring.o\nintegrity-$(CONFIG_LOAD_UEFI_KEYS) += platform_certs/efi_parser.o \\\n\t\t\t\t      platform_certs/load_uefi.o \\\n\t\t\t\t      platform_certs/keyring_handler.o\nintegrity-$(CONFIG_LOAD_IPL_KEYS) += platform_certs/load_ipl_s390.o\nintegrity-$(CONFIG_LOAD_PPC_KEYS) += platform_certs/efi_parser.o \\\n                                     platform_certs/load_powerpc.o \\\n                                     platform_certs/keyring_handler.o\nobj-$(CONFIG_IMA)\t\t\t+= ima/\nobj-$(CONFIG_EVM)\t\t\t+= evm/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

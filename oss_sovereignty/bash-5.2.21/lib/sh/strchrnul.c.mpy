@@ -1,0 +1,9 @@
+{
+  "module_name": "strchrnul.c",
+  "hash_id": "199ccf9f51a108b87d352c54248928dd86bf7a0a846dd967f16dae1a9feed6af",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/strchrnul.c",
+  "human_readable_source": " \n#include <string.h>\n\n \nchar *\nstrchrnul (s, c_in)\n     const char *s;\n     int c_in;\n{\n  char c;\n  register char *s1;\n\n  for (c = c_in, s1 = (char *)s; s1 && *s1 && *s1 != c; s1++)\n    ;\n  return (s1);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

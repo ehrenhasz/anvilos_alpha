@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_ynr2_param.h",
+  "hash_id": "bf5324c33f19382194127b125ee903d26e5ae8d7fd181019b36b6e841224ab2e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ynr/ynr_2/ia_css_ynr2_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_YNR2_PARAM_H\n#define __IA_CSS_YNR2_PARAM_H\n\n#include \"type_support.h\"\n\n \nstruct sh_css_isp_yee2_params {\n\ts32 edge_sense_gain_0;\n\ts32 edge_sense_gain_1;\n\ts32 corner_sense_gain_0;\n\ts32 corner_sense_gain_1;\n};\n\n \nstruct sh_css_isp_fc_params {\n\ts32 gain_exp;\n\tu16 coring_pos_0;\n\tu16 coring_pos_1;\n\tu16 coring_neg_0;\n\tu16 coring_neg_1;\n\ts32 gain_pos_0;\n\ts32 gain_pos_1;\n\ts32 gain_neg_0;\n\ts32 gain_neg_1;\n\ts32 crop_pos_0;\n\ts32 crop_pos_1;\n\ts32 crop_neg_0;\n\ts32 crop_neg_1;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

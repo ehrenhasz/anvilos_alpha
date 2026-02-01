@@ -1,0 +1,9 @@
+{
+  "module_name": "relocs_check.sh",
+  "hash_id": "5ac544bdd7ccd5304c2e4301cff89dcbd517e6e57b6791f469731185873c78f0",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/relocs_check.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-or-later\n\n# Get a list of all the relocations, remove from it the relocations\n# that are known to be legitimate and return this list to arch specific\n# script that will look for suspicious relocations.\n\nobjdump=\"$1\"\nnm=\"$2\"\nvmlinux=\"$3\"\n\n# Remove from the possible bad relocations those that match an undefined\n#\u00a0weak symbol which will result in an absolute relocation to 0.\n# Weak unresolved symbols are of that form in nm output:\n# \"                  w _binary__btf_vmlinux_bin_end\"\nundef_weak_symbols=$($nm \"$vmlinux\" | awk '$1 ~ /w/ { print $2 }')\n\n$objdump -R \"$vmlinux\" |\n\tgrep -E '\\<R_' |\n\t([ \"$undef_weak_symbols\" ] && grep -F -w -v \"$undef_weak_symbols\" || cat)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

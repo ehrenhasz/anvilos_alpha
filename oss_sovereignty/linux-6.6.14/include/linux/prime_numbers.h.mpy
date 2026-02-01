@@ -1,0 +1,9 @@
+{
+  "module_name": "prime_numbers.h",
+  "hash_id": "0278a6817ccbc5c4a5a9e3b99d7db0aad71e54688711e0935904f486463faf6b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/prime_numbers.h",
+  "human_readable_source": " \n#ifndef __LINUX_PRIME_NUMBERS_H\n#define __LINUX_PRIME_NUMBERS_H\n\n#include <linux/types.h>\n\nbool is_prime_number(unsigned long x);\nunsigned long next_prime_number(unsigned long x);\n\n \n#define for_each_prime_number(prime, max) \\\n\tfor_each_prime_number_from((prime), 2, (max))\n\n \n#define for_each_prime_number_from(prime, from, max) \\\n\tfor (prime = (from); prime <= (max); prime = next_prime_number(prime))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

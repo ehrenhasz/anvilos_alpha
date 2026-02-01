@@ -1,0 +1,9 @@
+{
+  "module_name": "owl-mux.h",
+  "hash_id": "4e2912ba89104ac431ac87d3c17a97e8dcefad8a36fc8b1adb3a918a8f46b407",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/actions/owl-mux.h",
+  "human_readable_source": " \n\n\n\n\n\n\n\n\n\n#ifndef _OWL_MUX_H_\n#define _OWL_MUX_H_\n\n#include \"owl-common.h\"\n\nstruct owl_mux_hw {\n\tu32\t\t\treg;\n\tu8\t\t\tshift;\n\tu8\t\t\twidth;\n};\n\nstruct owl_mux {\n\tstruct owl_mux_hw\tmux_hw;\n\tstruct owl_clk_common\tcommon;\n};\n\n#define OWL_MUX_HW(_reg, _shift, _width)\t\t\\\n\t{\t\t\t\t\t\t\\\n\t\t.reg\t= _reg,\t\t\t\t\\\n\t\t.shift\t= _shift,\t\t\t\\\n\t\t.width\t= _width,\t\t\t\\\n\t}\n\n#define OWL_MUX(_struct, _name, _parents, _reg,\t\t\t\t\\\n\t\t_shift, _width, _flags)\t\t\t\t\t\\\n\tstruct owl_mux _struct = {\t\t\t\t\t\\\n\t\t.mux_hw\t= OWL_MUX_HW(_reg, _shift, _width),\t\t\\\n\t\t.common = {\t\t\t\t\t\t\\\n\t\t\t.regmap = NULL,\t\t\t\t\t\\\n\t\t\t.hw.init = CLK_HW_INIT_PARENTS(_name,\t\t\\\n\t\t\t\t\t\t       _parents,\t\\\n\t\t\t\t\t\t       &owl_mux_ops,\t\\\n\t\t\t\t\t\t       _flags),\t\t\\\n\t\t},\t\t\t\t\t\t\t\\\n\t}\n\nstatic inline struct owl_mux *hw_to_owl_mux(const struct clk_hw *hw)\n{\n\tstruct owl_clk_common *common = hw_to_owl_clk_common(hw);\n\n\treturn container_of(common, struct owl_mux, common);\n}\n\nu8 owl_mux_helper_get_parent(const struct owl_clk_common *common,\n\t\t\t     const struct owl_mux_hw *mux_hw);\nint owl_mux_helper_set_parent(const struct owl_clk_common *common,\n\t\t\t      struct owl_mux_hw *mux_hw, u8 index);\n\nextern const struct clk_ops owl_mux_ops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

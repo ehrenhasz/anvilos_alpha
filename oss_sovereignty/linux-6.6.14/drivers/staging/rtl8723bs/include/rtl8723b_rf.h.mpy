@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8723b_rf.h",
+  "hash_id": "aeec3493eb9522aac346552b6e20f739991454c4defb6ce8a28a031eae9c095a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/rtl8723b_rf.h",
+  "human_readable_source": " \n \n#ifndef __RTL8723B_RF_H__\n#define __RTL8723B_RF_H__\n\n\nint\tPHY_RF6052_Config8723B(struct adapter *Adapter);\n\nvoid\nPHY_RF6052SetBandwidth8723B(struct adapter *Adapter,\n\tenum channel_width\t\tBandwidth);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d96fc361264e7268b26ddf7f8122bbc0db52f098a9b6d9b5b143019a5759168d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/memory/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for memory devices\n#\n\nobj-$(CONFIG_DDR)\t\t+= jedec_ddr_data.o\nifeq ($(CONFIG_DDR),y)\nobj-$(CONFIG_OF)\t\t+= of_memory.o\nendif\nobj-$(CONFIG_ARM_PL172_MPMC)\t+= pl172.o\nobj-$(CONFIG_ATMEL_EBI)\t\t+= atmel-ebi.o\nobj-$(CONFIG_BRCMSTB_DPFE)\t+= brcmstb_dpfe.o\nobj-$(CONFIG_BRCMSTB_MEMC)\t+= brcmstb_memc.o\nobj-$(CONFIG_BT1_L2_CTL)\t+= bt1-l2-ctl.o\nobj-$(CONFIG_TI_AEMIF)\t\t+= ti-aemif.o\nobj-$(CONFIG_TI_EMIF)\t\t+= emif.o\nobj-$(CONFIG_OMAP_GPMC)\t\t+= omap-gpmc.o\nobj-$(CONFIG_FSL_CORENET_CF)\t+= fsl-corenet-cf.o\nobj-$(CONFIG_FSL_IFC)\t\t+= fsl_ifc.o\nobj-$(CONFIG_MVEBU_DEVBUS)\t+= mvebu-devbus.o\nobj-$(CONFIG_JZ4780_NEMC)\t+= jz4780-nemc.o\nobj-$(CONFIG_MTK_SMI)\t\t+= mtk-smi.o\nobj-$(CONFIG_DA8XX_DDRCTL)\t+= da8xx-ddrctl.o\nobj-$(CONFIG_PL353_SMC)\t\t+= pl353-smc.o\nobj-$(CONFIG_RENESAS_RPCIF)\t+= renesas-rpc-if.o\nobj-$(CONFIG_STM32_FMC2_EBI)\t+= stm32-fmc2-ebi.o\n\nobj-$(CONFIG_SAMSUNG_MC)\t+= samsung/\nobj-$(CONFIG_TEGRA_MC)\t\t+= tegra/\nobj-$(CONFIG_TI_EMIF_SRAM)\t+= ti-emif-sram.o\nobj-$(CONFIG_FPGA_DFL_EMIF)\t+= dfl-emif.o\n\nti-emif-sram-objs\t\t:= ti-emif-pm.o ti-emif-sram-pm.o\n\n$(obj)/ti-emif-sram-pm.o: $(obj)/ti-emif-asm-offsets.h\n\n$(obj)/ti-emif-asm-offsets.h: $(obj)/emif-asm-offsets.s FORCE\n\t$(call filechk,offsets,__TI_EMIF_ASM_OFFSETS_H__)\n\ntargets += emif-asm-offsets.s\nclean-files += ti-emif-asm-offsets.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

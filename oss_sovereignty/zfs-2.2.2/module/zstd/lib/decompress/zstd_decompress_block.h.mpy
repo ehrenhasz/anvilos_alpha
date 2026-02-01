@@ -1,0 +1,9 @@
+{
+  "module_name": "zstd_decompress_block.h",
+  "hash_id": "11332cb41d4ca4556bcabebd1087251914b2e9bd410fecb5832288b959fb24dc",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/lib/decompress/zstd_decompress_block.h",
+  "human_readable_source": " \n\n\n#ifndef ZSTD_DEC_BLOCK_H\n#define ZSTD_DEC_BLOCK_H\n\n \n#include <stddef.h>    \n#include \"../zstd.h\"     \n#include \"../common/zstd_internal.h\"   \n#include \"zstd_decompress_internal.h\"   \n\n\n \n\n \n\n \n\n\n \nsize_t ZSTD_decompressBlock_internal(ZSTD_DCtx* dctx,\n                               void* dst, size_t dstCapacity,\n                         const void* src, size_t srcSize, const int frame);\n\n \nvoid ZSTD_buildFSETable(ZSTD_seqSymbol* dt,\n             const short* normalizedCounter, unsigned maxSymbolValue,\n             const U32* baseValue, const U32* nbAdditionalBits,\n                   unsigned tableLog);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "df_4_3_offset.h",
+  "hash_id": "985a3aecb87930ac511abbdfc95cb85cbd8b8aeed673fdcb8d3ecc0c6d8a21db",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/asic_reg/df/df_4_3_offset.h",
+  "human_readable_source": " \n\n#ifndef _df_4_3_OFFSET_HEADER\n#define _df_4_3_OFFSET_HEADER\n\n#define regDF_CS_UMC_AON0_HardwareAssertMaskLow                     0x0e3e\n#define regDF_CS_UMC_AON0_HardwareAssertMaskLow_BASE_IDX            4\n#define regDF_NCS_PG0_HardwareAssertMaskHigh                        0x0e3f\n#define regDF_NCS_PG0_HardwareAssertMaskHigh_BASE_IDX               4\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

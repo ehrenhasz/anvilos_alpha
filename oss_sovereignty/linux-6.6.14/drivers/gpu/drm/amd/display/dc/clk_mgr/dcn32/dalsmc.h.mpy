@@ -1,0 +1,9 @@
+{
+  "module_name": "dalsmc.h",
+  "hash_id": "f860848ddf669d33408728e48b28cc42edbcab4925894961ceee244a1c7d856a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn32/dalsmc.h",
+  "human_readable_source": " \n \n#ifndef DALSMC_H\n#define DALSMC_H\n\n#define DALSMC_VERSION 0x1\n\n\n#define DALSMC_Result_OK                   0x1\n#define DALSMC_Result_Failed               0xFF\n#define DALSMC_Result_UnknownCmd           0xFE\n#define DALSMC_Result_CmdRejectedPrereq    0xFD\n#define DALSMC_Result_CmdRejectedBusy      0xFC\n\n\n#define DALSMC_MSG_TestMessage                    0x1\n#define DALSMC_MSG_GetSmuVersion                  0x2\n#define DALSMC_MSG_GetDriverIfVersion             0x3\n#define DALSMC_MSG_GetMsgHeaderVersion            0x4\n#define DALSMC_MSG_SetDalDramAddrHigh             0x5\n#define DALSMC_MSG_SetDalDramAddrLow              0x6\n#define DALSMC_MSG_TransferTableSmu2Dram          0x7\n#define DALSMC_MSG_TransferTableDram2Smu          0x8\n#define DALSMC_MSG_SetHardMinByFreq               0x9\n#define DALSMC_MSG_SetHardMaxByFreq               0xA\n#define DALSMC_MSG_GetDpmFreqByIndex              0xB\n#define DALSMC_MSG_GetDcModeMaxDpmFreq            0xC\n#define DALSMC_MSG_SetMinDeepSleepDcfclk          0xD\n#define DALSMC_MSG_NumOfDisplays                  0xE\n#define DALSMC_MSG_SetExternalClientDfCstateAllow 0xF\n#define DALSMC_MSG_BacoAudioD3PME                 0x10\n#define DALSMC_MSG_SetFclkSwitchAllow             0x11\n#define DALSMC_MSG_SetCabForUclkPstate            0x12\n#define DALSMC_MSG_SetWorstCaseUclkLatency        0x13\n#define DALSMC_Message_Count                      0x14\n\ntypedef enum {\n\tFCLK_SWITCH_DISALLOW,\n\tFCLK_SWITCH_ALLOW,\n} FclkSwitchAllow_e;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

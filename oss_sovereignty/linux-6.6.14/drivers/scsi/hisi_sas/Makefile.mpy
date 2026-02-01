@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "220ac6facffebcf6698a0491355bc088682861c11c1ab388cd9ae68c97308b06",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/hisi_sas/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SCSI_HISI_SAS)\t\t+= hisi_sas_main.o\nobj-$(CONFIG_SCSI_HISI_SAS)\t\t+= hisi_sas_v1_hw.o hisi_sas_v2_hw.o\nobj-$(CONFIG_SCSI_HISI_SAS_PCI)\t\t+= hisi_sas_v3_hw.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

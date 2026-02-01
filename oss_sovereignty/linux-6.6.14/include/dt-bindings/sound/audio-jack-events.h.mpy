@@ -1,0 +1,9 @@
+{
+  "module_name": "audio-jack-events.h",
+  "hash_id": "71b980e8c250ea03237b397d6cfb93056dd79b8cb8a1518202c3768b1f9ab809",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/sound/audio-jack-events.h",
+  "human_readable_source": " \n#ifndef __AUDIO_JACK_EVENTS_H\n#define __AUDIO_JACK_EVENTS_H\n\n#define JACK_HEADPHONE\t\t1\n#define JACK_MICROPHONE\t\t2\n#define JACK_LINEOUT\t\t3\n#define JACK_LINEIN\t\t4\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ixgbe_ipsec.h",
+  "hash_id": "a678fe080e7d5a052f080c8b112787901a0883b8d7dae935477126fd7c7679f5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.h",
+  "human_readable_source": " \n \n\n#ifndef _IXGBE_IPSEC_H_\n#define _IXGBE_IPSEC_H_\n\n#define IXGBE_IPSEC_MAX_SA_COUNT\t1024\n#define IXGBE_IPSEC_MAX_RX_IP_COUNT\t128\n#define IXGBE_IPSEC_BASE_RX_INDEX\t0\n#define IXGBE_IPSEC_BASE_TX_INDEX\tIXGBE_IPSEC_MAX_SA_COUNT\n#define IXGBE_IPSEC_AUTH_BITS\t\t128\n\n#define IXGBE_RXTXIDX_IPS_EN\t\t0x00000001\n#define IXGBE_RXIDX_TBL_SHIFT\t\t1\nenum ixgbe_ipsec_tbl_sel {\n\tips_rx_ip_tbl\t=\t0x01,\n\tips_rx_spi_tbl\t=\t0x02,\n\tips_rx_key_tbl\t=\t0x03,\n};\n\n#define IXGBE_RXTXIDX_IDX_SHIFT\t\t3\n#define IXGBE_RXTXIDX_READ\t\t0x40000000\n#define IXGBE_RXTXIDX_WRITE\t\t0x80000000\n\n#define IXGBE_RXMOD_VALID\t\t0x00000001\n#define IXGBE_RXMOD_PROTO_ESP\t\t0x00000004\n#define IXGBE_RXMOD_DECRYPT\t\t0x00000008\n#define IXGBE_RXMOD_IPV6\t\t0x00000010\n#define IXGBE_RXTXMOD_VF\t\t0x00000020\n\nstruct rx_sa {\n\tstruct hlist_node hlist;\n\tstruct xfrm_state *xs;\n\t__be32 ipaddr[4];\n\tu32 key[4];\n\tu32 salt;\n\tu32 mode;\n\tu8  iptbl_ind;\n\tbool used;\n\tbool decrypt;\n\tu32 vf;\n};\n\nstruct rx_ip_sa {\n\t__be32 ipaddr[4];\n\tu32 ref_cnt;\n\tbool used;\n};\n\nstruct tx_sa {\n\tstruct xfrm_state *xs;\n\tu32 key[4];\n\tu32 salt;\n\tu32 mode;\n\tbool encrypt;\n\tbool used;\n\tu32 vf;\n};\n\nstruct ixgbe_ipsec_tx_data {\n\tu32 flags;\n\tu16 trailer_len;\n\tu16 sa_idx;\n};\n\nstruct ixgbe_ipsec {\n\tu16 num_rx_sa;\n\tu16 num_tx_sa;\n\tstruct rx_ip_sa *ip_tbl;\n\tstruct rx_sa *rx_tbl;\n\tstruct tx_sa *tx_tbl;\n\tDECLARE_HASHTABLE(rx_sa_list, 10);\n};\n\nstruct sa_mbx_msg {\n\t__be32 spi;\n\tu8 dir;\n\tu8 proto;\n\tu16 family;\n\t__be32 addr[4];\n\tu32 key[5];\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

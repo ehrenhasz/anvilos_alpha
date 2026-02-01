@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_3.dtso",
+  "hash_id": "09a099f574dd9fbf26d6205a0090581a5a3e45a03607a7de93575eb8bf4969c2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_3.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n/* overlay_3 - disable using label */\n\n&unittest3 {\n\tstatus = \"disabled\";\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

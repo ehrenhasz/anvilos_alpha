@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_ctc1_5.host.h",
+  "hash_id": "3c0b050c0aa44033dc556985699882f7a986e1eb97f143c9c20adbf6d5e7bd2e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ctc/ctc1_5/ia_css_ctc1_5.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_CTC1_5_HOST_H\n#define __IA_CSS_CTC1_5_HOST_H\n\n#include \"sh_css_params.h\"\n\n#include \"ia_css_ctc1_5_param.h\"\n\nvoid\nia_css_ctc_encode(\n    struct sh_css_isp_ctc_params *to,\n    const struct ia_css_ctc_config *from,\n    unsigned int size);\n\nvoid\nia_css_ctc_dump(\n    const struct sh_css_isp_ctc_params *ctc,\n    unsigned int level);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

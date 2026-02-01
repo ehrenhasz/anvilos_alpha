@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm_vcpu_regs.h",
+  "hash_id": "975a1eb47076cbec9b4b233c7eeda3a1ca9e8508cd388ba6b5312f676ddaa2b5",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/kvm_vcpu_regs.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_KVM_VCPU_REGS_H\n#define _ASM_X86_KVM_VCPU_REGS_H\n\n#define __VCPU_REGS_RAX  0\n#define __VCPU_REGS_RCX  1\n#define __VCPU_REGS_RDX  2\n#define __VCPU_REGS_RBX  3\n#define __VCPU_REGS_RSP  4\n#define __VCPU_REGS_RBP  5\n#define __VCPU_REGS_RSI  6\n#define __VCPU_REGS_RDI  7\n\n#ifdef CONFIG_X86_64\n#define __VCPU_REGS_R8   8\n#define __VCPU_REGS_R9   9\n#define __VCPU_REGS_R10 10\n#define __VCPU_REGS_R11 11\n#define __VCPU_REGS_R12 12\n#define __VCPU_REGS_R13 13\n#define __VCPU_REGS_R14 14\n#define __VCPU_REGS_R15 15\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

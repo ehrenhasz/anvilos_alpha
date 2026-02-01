@@ -1,0 +1,9 @@
+{
+  "module_name": "nfnetlink_acct.h",
+  "hash_id": "e4e8da50037246c907553436d65f4d062b1b3da80f13dd213f20c20e4254df5f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter/nfnetlink_acct.h",
+  "human_readable_source": " \n#ifndef _NFNL_ACCT_H_\n#define _NFNL_ACCT_H_\n\n#include <uapi/linux/netfilter/nfnetlink_acct.h>\n#include <net/net_namespace.h>\n\nenum {\n\tNFACCT_NO_QUOTA\t\t= -1,\n\tNFACCT_UNDERQUOTA,\n\tNFACCT_OVERQUOTA,\n};\n\nstruct nf_acct;\n\nstruct nf_acct *nfnl_acct_find_get(struct net *net, const char *filter_name);\nvoid nfnl_acct_put(struct nf_acct *acct);\nvoid nfnl_acct_update(const struct sk_buff *skb, struct nf_acct *nfacct);\nint nfnl_acct_overquota(struct net *net, struct nf_acct *nfacct);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

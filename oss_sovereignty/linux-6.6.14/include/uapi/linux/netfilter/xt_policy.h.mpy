@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_policy.h",
+  "hash_id": "7c977706b2a3e2b167d4a62a51555a81efd983772bcacb1c0d45bec506fe4201",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_policy.h",
+  "human_readable_source": " \n#ifndef _XT_POLICY_H\n#define _XT_POLICY_H\n\n#include <linux/netfilter.h>\n#include <linux/types.h>\n#include <linux/in.h>\n#include <linux/in6.h>\n\n#define XT_POLICY_MAX_ELEM\t4\n\nenum xt_policy_flags {\n\tXT_POLICY_MATCH_IN\t= 0x1,\n\tXT_POLICY_MATCH_OUT\t= 0x2,\n\tXT_POLICY_MATCH_NONE\t= 0x4,\n\tXT_POLICY_MATCH_STRICT\t= 0x8,\n};\n\nenum xt_policy_modes {\n\tXT_POLICY_MODE_TRANSPORT,\n\tXT_POLICY_MODE_TUNNEL\n};\n\nstruct xt_policy_spec {\n\t__u8\tsaddr:1,\n\t\t\tdaddr:1,\n\t\t\tproto:1,\n\t\t\tmode:1,\n\t\t\tspi:1,\n\t\t\treqid:1;\n};\n\n#ifndef __KERNEL__\nunion xt_policy_addr {\n\tstruct in_addr\ta4;\n\tstruct in6_addr\ta6;\n};\n#endif\n\nstruct xt_policy_elem {\n\tunion {\n#ifdef __KERNEL__\n\t\tstruct {\n\t\t\tunion nf_inet_addr saddr;\n\t\t\tunion nf_inet_addr smask;\n\t\t\tunion nf_inet_addr daddr;\n\t\t\tunion nf_inet_addr dmask;\n\t\t};\n#else\n\t\tstruct {\n\t\t\tunion xt_policy_addr saddr;\n\t\t\tunion xt_policy_addr smask;\n\t\t\tunion xt_policy_addr daddr;\n\t\t\tunion xt_policy_addr dmask;\n\t\t};\n#endif\n\t};\n\t__be32\t\t\tspi;\n\t__u32\t\treqid;\n\t__u8\t\tproto;\n\t__u8\t\tmode;\n\n\tstruct xt_policy_spec\tmatch;\n\tstruct xt_policy_spec\tinvert;\n};\n\nstruct xt_policy_info {\n\tstruct xt_policy_elem pol[XT_POLICY_MAX_ELEM];\n\t__u16 flags;\n\t__u16 len;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "reader.h",
+  "hash_id": "48f0c37f912ae20b3ad952e5010be0f2c06753d2b1867359cb3cc81f6fbcd6fb",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/reader.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_READER_H\n#define MICROPY_INCLUDED_PY_READER_H\n\n#include \"py/obj.h\"\n\n\n\n\n#define MP_READER_EOF ((mp_uint_t)(-1))\n\ntypedef struct _mp_reader_t {\n    void *data;\n    mp_uint_t (*readbyte)(void *data);\n    void (*close)(void *data);\n} mp_reader_t;\n\nvoid mp_reader_new_mem(mp_reader_t *reader, const byte *buf, size_t len, size_t free_len);\nvoid mp_reader_new_file(mp_reader_t *reader, qstr filename);\nvoid mp_reader_new_file_from_fd(mp_reader_t *reader, int fd, bool close_fd);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1683e6167a6c58fd65716f77d29f6c01ad85bb9a692f1ef4af6848e585118f67",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ntb/hw/epf/Makefile",
+  "human_readable_source": "obj-$(CONFIG_NTB_EPF) += ntb_hw_epf.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

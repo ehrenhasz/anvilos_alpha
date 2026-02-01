@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8186-mt6366-common.c",
+  "hash_id": "94dabfcca2f11bc44884108bc075205c2f603ed6dfce2ee1355b18b9ddb9350c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/mt8186/mt8186-mt6366-common.c",
+  "human_readable_source": "\n\n\n\n\n\n\n\n#include <sound/soc.h>\n\n#include \"../../codecs/mt6358.h\"\n#include \"../common/mtk-afe-platform-driver.h\"\n#include \"mt8186-afe-common.h\"\n#include \"mt8186-mt6366-common.h\"\n\nint mt8186_mt6366_init(struct snd_soc_pcm_runtime *rtd)\n{\n\tstruct snd_soc_component *cmpnt_afe =\n\t\tsnd_soc_rtdcom_lookup(rtd, AFE_PCM_NAME);\n\tstruct snd_soc_component *cmpnt_codec =\n\t\tasoc_rtd_to_codec(rtd, 0)->component;\n\tstruct mtk_base_afe *afe = snd_soc_component_get_drvdata(cmpnt_afe);\n\tstruct mt8186_afe_private *afe_priv = afe->platform_priv;\n\tstruct snd_soc_dapm_context *dapm = &rtd->card->dapm;\n\tint ret;\n\n\t \n\tmt6358_set_mtkaif_protocol(cmpnt_codec,\n\t\t\t\t   MT6358_MTKAIF_PROTOCOL_1);\n\tafe_priv->mtkaif_protocol = MT6358_MTKAIF_PROTOCOL_1;\n\n\tret = snd_soc_dapm_sync(dapm);\n\tif (ret) {\n\t\tdev_err(rtd->dev, \"failed to snd_soc_dapm_sync\\n\");\n\t\treturn ret;\n\t}\n\n\treturn 0;\n}\nEXPORT_SYMBOL_GPL(mt8186_mt6366_init);\n\nint mt8186_mt6366_card_set_be_link(struct snd_soc_card *card,\n\t\t\t\t   struct snd_soc_dai_link *link,\n\t\t\t\t   struct device_node *node,\n\t\t\t\t   char *link_name)\n{\n\tint ret;\n\n\tif (node && strcmp(link->name, link_name) == 0) {\n\t\tret = snd_soc_of_get_dai_link_codecs(card->dev, node, link);\n\t\tif (ret < 0)\n\t\t\treturn dev_err_probe(card->dev, ret, \"get dai link codecs fail\\n\");\n\t}\n\n\treturn 0;\n}\nEXPORT_SYMBOL_GPL(mt8186_mt6366_card_set_be_link);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

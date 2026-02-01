@@ -1,0 +1,9 @@
+{
+  "module_name": "tls_toe.h",
+  "hash_id": "84dc174aed47f7d2b70342db7a2894bf84b1be59b2d0a65e5e4b28311ca8b28c",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/tls_toe.h",
+  "human_readable_source": " \n\n#include <linux/kref.h>\n#include <linux/list.h>\n\nstruct sock;\n\n#define TLS_TOE_DEVICE_NAME_MAX\t\t32\n\n \nstruct tls_toe_device {\n\tchar name[TLS_TOE_DEVICE_NAME_MAX];\n\tstruct list_head dev_list;\n\tint  (*feature)(struct tls_toe_device *device);\n\tint  (*hash)(struct tls_toe_device *device, struct sock *sk);\n\tvoid (*unhash)(struct tls_toe_device *device, struct sock *sk);\n\tvoid (*release)(struct kref *kref);\n\tstruct kref kref;\n};\n\nint tls_toe_bypass(struct sock *sk);\nint tls_toe_hash(struct sock *sk);\nvoid tls_toe_unhash(struct sock *sk);\n\nvoid tls_toe_register_device(struct tls_toe_device *device);\nvoid tls_toe_unregister_device(struct tls_toe_device *device);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

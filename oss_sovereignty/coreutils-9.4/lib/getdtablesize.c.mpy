@@ -1,0 +1,9 @@
+{
+  "module_name": "getdtablesize.c",
+  "hash_id": "bfeb1cf82f3fd775b55a4150d0c0da48f2e6a593b270600ea54d72a92e5bfa30",
+  "original_prompt": "Ingested from coreutils-9.4/lib/getdtablesize.c",
+  "human_readable_source": " \n#include <unistd.h>\n\n#if defined _WIN32 && ! defined __CYGWIN__\n\n# include <stdio.h>\n\n# if HAVE_MSVC_INVALID_PARAMETER_HANDLER\n#  include \"msvc-inval.h\"\n# endif\n\n# if HAVE_MSVC_INVALID_PARAMETER_HANDLER\nstatic int\n_setmaxstdio_nothrow (int newmax)\n{\n  int result;\n\n  TRY_MSVC_INVAL\n    {\n      result = _setmaxstdio (newmax);\n    }\n  CATCH_MSVC_INVAL\n    {\n      result = -1;\n    }\n  DONE_MSVC_INVAL;\n\n  return result;\n}\n# else\n#  define _setmaxstdio_nothrow _setmaxstdio\n# endif\n\n \nstatic int dtablesize;\n\nint\ngetdtablesize (void)\n{\n  if (dtablesize == 0)\n    {\n       \n      int orig_max_stdio = _getmaxstdio ();\n      unsigned int bound;\n      for (bound = 0x10000; _setmaxstdio_nothrow (bound) < 0; bound = bound / 2)\n        ;\n      _setmaxstdio_nothrow (orig_max_stdio);\n      dtablesize = bound;\n    }\n  return dtablesize;\n}\n\n#else\n\n# include <limits.h>\n# include <sys/resource.h>\n\n# ifndef RLIM_SAVED_CUR\n#  define RLIM_SAVED_CUR RLIM_INFINITY\n# endif\n# ifndef RLIM_SAVED_MAX\n#  define RLIM_SAVED_MAX RLIM_INFINITY\n# endif\n\n# ifdef __CYGWIN__\n   \n#  define rlim_cur rlim_max\n# endif\n\nint\ngetdtablesize (void)\n{\n  struct rlimit lim;\n\n  if (getrlimit (RLIMIT_NOFILE, &lim) == 0\n      && 0 <= lim.rlim_cur && lim.rlim_cur <= INT_MAX\n      && lim.rlim_cur != RLIM_INFINITY\n      && lim.rlim_cur != RLIM_SAVED_CUR\n      && lim.rlim_cur != RLIM_SAVED_MAX)\n    return lim.rlim_cur;\n\n  return INT_MAX;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

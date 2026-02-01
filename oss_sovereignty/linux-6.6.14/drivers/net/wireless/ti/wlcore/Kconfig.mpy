@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "320f571bc7c32dcf0c93ab1686669d06d7e2c418b33fb94ce04923a3eb449c76",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wlcore/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig WLCORE\n\ttristate \"TI wlcore support\"\n\tdepends on MAC80211\n\tselect FW_LOADER\n\thelp\n\t  This module contains the main code for TI WLAN chips.  It abstracts\n\t  hardware-specific differences among different chipset families.\n\t  Each chipset family needs to implement its own lower-level module\n\t  that will depend on this module for the common code.\n\n\t  If you choose to build a module, it will be called wlcore. Say N if\n\t  unsure.\n\nconfig WLCORE_SPI\n\ttristate \"TI wlcore SPI support\"\n\tdepends on WLCORE && SPI_MASTER && OF\n\tselect CRC7\n\thelp\n\t  This module adds support for the SPI interface of adapters using\n\t  TI WLAN chipsets.  Select this if your platform is using\n\t  the SPI bus.\n\n\t  If you choose to build a module, it'll be called wlcore_spi.\n\t  Say N if unsure.\n\nconfig WLCORE_SDIO\n\ttristate \"TI wlcore SDIO support\"\n\tdepends on WLCORE && MMC\n\thelp\n\t  This module adds support for the SDIO interface of adapters using\n\t  TI WLAN chipsets.  Select this if your platform is using\n\t  the SDIO bus.\n\n\t  If you choose to build a module, it'll be called wlcore_sdio.\n\t  Say N if unsure.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

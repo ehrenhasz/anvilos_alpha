@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_vnops.h",
+  "hash_id": "86fb7eee4840e8fe5801f0759e53378242678136a8bd35001819744fdb1a95bd",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zfs_vnops.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_FS_ZFS_VNOPS_H\n#define\t_SYS_FS_ZFS_VNOPS_H\n#include <sys/zfs_vnops_os.h>\n\nextern int zfs_fsync(znode_t *, int, cred_t *);\nextern int zfs_read(znode_t *, zfs_uio_t *, int, cred_t *);\nextern int zfs_write(znode_t *, zfs_uio_t *, int, cred_t *);\nextern int zfs_holey(znode_t *, ulong_t, loff_t *);\nextern int zfs_access(znode_t *, int, int, cred_t *);\nextern int zfs_clone_range(znode_t *, uint64_t *, znode_t *, uint64_t *,\n    uint64_t *, cred_t *);\nextern int zfs_clone_range_replay(znode_t *, uint64_t, uint64_t, uint64_t,\n    const blkptr_t *, size_t);\n\nextern int zfs_getsecattr(znode_t *, vsecattr_t *, int, cred_t *);\nextern int zfs_setsecattr(znode_t *, vsecattr_t *, int, cred_t *);\n\nextern int mappedread(znode_t *, int, zfs_uio_t *);\nextern int mappedread_sf(znode_t *, int, zfs_uio_t *);\nextern void update_pages(znode_t *, int64_t, int, objset_t *);\n\n \nextern void zfs_zrele_async(znode_t *zp);\n\nextern zil_get_data_t zfs_get_data;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "access_ok.h",
+  "hash_id": "524a74a00f36367b1668332a485e9bc2d030bbc707e70678008be7a02b739c1f",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/access_ok.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_ACCESS_OK_H__\n#define __ASM_GENERIC_ACCESS_OK_H__\n\n \n\n \n#ifndef TASK_SIZE_MAX\n#define TASK_SIZE_MAX\t\t\tTASK_SIZE\n#endif\n\n#ifndef __access_ok\n \nstatic inline int __access_ok(const void __user *ptr, unsigned long size)\n{\n\tunsigned long limit = TASK_SIZE_MAX;\n\tunsigned long addr = (unsigned long)ptr;\n\n\tif (IS_ENABLED(CONFIG_ALTERNATE_USER_ADDRESS_SPACE) ||\n\t    !IS_ENABLED(CONFIG_MMU))\n\t\treturn true;\n\n\treturn (size <= limit) && (addr <= (limit - size));\n}\n#endif\n\n#ifndef access_ok\n#define access_ok(addr, size) likely(__access_ok(addr, size))\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

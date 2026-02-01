@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bd570ad03346474930019fe466f9903cd337424f065dc6f3eb80be97ff078291",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/amba/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_ARM_AMBA)\t\t+= bus.o\nobj-$(CONFIG_TEGRA_AHB)\t\t+= tegra-ahb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

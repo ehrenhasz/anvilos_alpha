@@ -1,0 +1,9 @@
+{
+  "module_name": "bman.h",
+  "hash_id": "93b8485426ca8f6f9eb1b40401f2d14375ca509a76e3c23834e974f451cfa077",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/fsl/bman.h",
+  "human_readable_source": " \n\n#ifndef __FSL_BMAN_H\n#define __FSL_BMAN_H\n\n \nstruct bm_buffer {\n\tunion {\n\t\tstruct {\n\t\t\t__be16 bpid;  \n\t\t\t__be16 hi;  \n\t\t\t__be32 lo;  \n\t\t};\n\t\t__be64 data;\n\t};\n} __aligned(8);\n \nstatic inline dma_addr_t bm_buf_addr(const struct bm_buffer *buf)\n{\n\treturn be64_to_cpu(buf->data) & 0xffffffffffffLLU;\n}\n\nstatic inline u64 bm_buffer_get64(const struct bm_buffer *buf)\n{\n\treturn be64_to_cpu(buf->data) & 0xffffffffffffLLU;\n}\n\nstatic inline void bm_buffer_set64(struct bm_buffer *buf, u64 addr)\n{\n\tbuf->hi = cpu_to_be16(upper_32_bits(addr));\n\tbuf->lo = cpu_to_be32(lower_32_bits(addr));\n}\n\nstatic inline u8 bm_buffer_get_bpid(const struct bm_buffer *buf)\n{\n\treturn be16_to_cpu(buf->bpid) & 0xff;\n}\n\nstatic inline void bm_buffer_set_bpid(struct bm_buffer *buf, int bpid)\n{\n\tbuf->bpid = cpu_to_be16(bpid & 0xff);\n}\n\n \n\n \nstruct bman_portal;\nstruct bman_pool;\n\n#define BM_POOL_MAX\t\t64  \n\n \nstruct bman_pool *bman_new_pool(void);\n\n \nvoid bman_free_pool(struct bman_pool *pool);\n\n \nint bman_get_bpid(const struct bman_pool *pool);\n\n \nint bman_release(struct bman_pool *pool, const struct bm_buffer *bufs, u8 num);\n\n \nint bman_acquire(struct bman_pool *pool, struct bm_buffer *bufs, u8 num);\n\n \nint bman_is_probed(void);\n \nint bman_portals_probed(void);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

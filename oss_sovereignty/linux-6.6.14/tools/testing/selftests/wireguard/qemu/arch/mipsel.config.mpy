@@ -1,0 +1,9 @@
+{
+  "module_name": "mipsel.config",
+  "hash_id": "8f8f21b515d199698bd00647cd3ca41c10b8e23c1778263bc95362516586ceec",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/wireguard/qemu/arch/mipsel.config",
+  "human_readable_source": "CONFIG_CPU_MIPS32_R2=y\nCONFIG_MIPS_MALTA=y\nCONFIG_CPU_LITTLE_ENDIAN=y\nCONFIG_MIPS_CPS=y\nCONFIG_MIPS_FP_SUPPORT=y\nCONFIG_POWER_RESET=y\nCONFIG_POWER_RESET_SYSCON=y\nCONFIG_SERIAL_8250=y\nCONFIG_SERIAL_8250_CONSOLE=y\nCONFIG_COMPAT_32BIT_TIME=y\nCONFIG_CMDLINE_BOOL=y\nCONFIG_CMDLINE=\"console=ttyS0 wg.success=ttyS1 panic_on_warn=1\"\nCONFIG_FRAME_WARN=1024\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

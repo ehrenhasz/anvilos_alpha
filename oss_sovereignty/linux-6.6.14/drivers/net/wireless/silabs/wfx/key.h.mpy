@@ -1,0 +1,9 @@
+{
+  "module_name": "key.h",
+  "hash_id": "c656e3eaa5095fd735bb2ba0bf87a9b6855b8671929ba44af7b2ec612056a8bd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/silabs/wfx/key.h",
+  "human_readable_source": " \n \n#ifndef WFX_KEY_H\n#define WFX_KEY_H\n\n#include <net/mac80211.h>\n\nstruct wfx_dev;\nstruct wfx_vif;\n\nint wfx_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd, struct ieee80211_vif *vif,\n\t\tstruct ieee80211_sta *sta, struct ieee80211_key_conf *key);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

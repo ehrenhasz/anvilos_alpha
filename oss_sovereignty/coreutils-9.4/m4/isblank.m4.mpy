@@ -1,0 +1,9 @@
+{
+  "module_name": "isblank.m4",
+  "hash_id": "0fbe8419f88add32feda35034f0a080c003ca89810dc3e35612a77ec8f16a016",
+  "original_prompt": "Ingested from coreutils-9.4/m4/isblank.m4",
+  "human_readable_source": "# isblank.m4 serial 3\ndnl Copyright (C) 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_ISBLANK],\n[\n  dnl Persuade glibc <ctype.h> to declare isblank().\n  AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])\n\n  AC_REQUIRE([gl_CTYPE_H_DEFAULTS])\n  AC_CHECK_FUNCS_ONCE([isblank])\n  if test $ac_cv_func_isblank = no; then\n    HAVE_ISBLANK=0\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

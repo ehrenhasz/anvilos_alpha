@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a439b0d74852ef2b22e5fdb7e7880784c0482fe555158b8acae0455b138d4804",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/usb/kvaser_usb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CAN_KVASER_USB) += kvaser_usb.o\nkvaser_usb-y = kvaser_usb_core.o kvaser_usb_leaf.o kvaser_usb_hydra.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

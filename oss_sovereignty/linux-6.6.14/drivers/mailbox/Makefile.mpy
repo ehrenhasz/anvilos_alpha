@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bb4e0b1df7a451ce45c526455e378efa6bab5c47a12eb7a240e354f9ad9ced53",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mailbox/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Generic MAILBOX API\n\nobj-$(CONFIG_MAILBOX)\t\t+= mailbox.o\n\nobj-$(CONFIG_MAILBOX_TEST)\t+= mailbox-test.o\n\nobj-$(CONFIG_ARM_MHU)\t+= arm_mhu.o arm_mhu_db.o\n\nobj-$(CONFIG_ARM_MHU_V2)\t+= arm_mhuv2.o\n\nobj-$(CONFIG_IMX_MBOX)\t+= imx-mailbox.o\n\nobj-$(CONFIG_ARMADA_37XX_RWTM_MBOX)\t+= armada-37xx-rwtm-mailbox.o\n\nobj-$(CONFIG_PLATFORM_MHU)\t+= platform_mhu.o\n\nobj-$(CONFIG_PL320_MBOX)\t+= pl320-ipc.o\n\nobj-$(CONFIG_OMAP2PLUS_MBOX)\t+= omap-mailbox.o\n\nobj-$(CONFIG_ROCKCHIP_MBOX)\t+= rockchip-mailbox.o\n\nobj-$(CONFIG_PCC)\t\t+= pcc.o\n\nobj-$(CONFIG_ALTERA_MBOX)\t+= mailbox-altera.o\n\nobj-$(CONFIG_BCM2835_MBOX)\t+= bcm2835-mailbox.o\n\nobj-$(CONFIG_STI_MBOX)\t\t+= mailbox-sti.o\n\nobj-$(CONFIG_TI_MESSAGE_MANAGER) += ti-msgmgr.o\n\nobj-$(CONFIG_XGENE_SLIMPRO_MBOX) += mailbox-xgene-slimpro.o\n\nobj-$(CONFIG_HI3660_MBOX)\t+= hi3660-mailbox.o\n\nobj-$(CONFIG_HI6220_MBOX)\t+= hi6220-mailbox.o\n\nobj-$(CONFIG_BCM_PDC_MBOX)\t+= bcm-pdc-mailbox.o\n\nobj-$(CONFIG_BCM_FLEXRM_MBOX)\t+= bcm-flexrm-mailbox.o\n\nobj-$(CONFIG_POLARFIRE_SOC_MAILBOX)\t+= mailbox-mpfs.o\n\nobj-$(CONFIG_QCOM_APCS_IPC)\t+= qcom-apcs-ipc-mailbox.o\n\nobj-$(CONFIG_TEGRA_HSP_MBOX)\t+= tegra-hsp.o\n\nobj-$(CONFIG_STM32_IPCC) \t+= stm32-ipcc.o\n\nobj-$(CONFIG_MTK_ADSP_MBOX)\t+= mtk-adsp-mailbox.o\n\nobj-$(CONFIG_MTK_CMDQ_MBOX)\t+= mtk-cmdq-mailbox.o\n\nobj-$(CONFIG_ZYNQMP_IPI_MBOX)\t+= zynqmp-ipi-mailbox.o\n\nobj-$(CONFIG_SUN6I_MSGBOX)\t+= sun6i-msgbox.o\n\nobj-$(CONFIG_SPRD_MBOX)\t\t+= sprd-mailbox.o\n\nobj-$(CONFIG_QCOM_IPCC)\t\t+= qcom-ipcc.o\n\nobj-$(CONFIG_APPLE_MAILBOX)\t+= apple-mailbox.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

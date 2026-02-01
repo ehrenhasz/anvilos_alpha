@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7703b6ddc075c05c8bd823c08fd7619458aa7041e350f4937636ad5bf3699759",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/i2c/muxes/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for multiplexer I2C chip drivers.\n\nobj-$(CONFIG_I2C_ARB_GPIO_CHALLENGE)\t+= i2c-arb-gpio-challenge.o\n\nobj-$(CONFIG_I2C_DEMUX_PINCTRL)\t\t+= i2c-demux-pinctrl.o\n\nobj-$(CONFIG_I2C_MUX_GPIO)\t+= i2c-mux-gpio.o\nobj-$(CONFIG_I2C_MUX_GPMUX)\t+= i2c-mux-gpmux.o\nobj-$(CONFIG_I2C_MUX_LTC4306)\t+= i2c-mux-ltc4306.o\nobj-$(CONFIG_I2C_MUX_MLXCPLD)\t+= i2c-mux-mlxcpld.o\nobj-$(CONFIG_I2C_MUX_PCA9541)\t+= i2c-mux-pca9541.o\nobj-$(CONFIG_I2C_MUX_PCA954x)\t+= i2c-mux-pca954x.o\nobj-$(CONFIG_I2C_MUX_PINCTRL)\t+= i2c-mux-pinctrl.o\nobj-$(CONFIG_I2C_MUX_REG)\t+= i2c-mux-reg.o\n\nccflags-$(CONFIG_I2C_DEBUG_BUS) := -DDEBUG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

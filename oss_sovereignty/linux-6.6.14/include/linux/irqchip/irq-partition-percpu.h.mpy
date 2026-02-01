@@ -1,0 +1,9 @@
+{
+  "module_name": "irq-partition-percpu.h",
+  "hash_id": "c62d0413d6f2594f07fefc10cb75718c68d038376f8e15e3a02dbd21d2e72ac4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/irqchip/irq-partition-percpu.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_IRQCHIP_IRQ_PARTITION_PERCPU_H\n#define __LINUX_IRQCHIP_IRQ_PARTITION_PERCPU_H\n\n#include <linux/fwnode.h>\n#include <linux/cpumask.h>\n#include <linux/irqdomain.h>\n\nstruct partition_affinity {\n\tcpumask_t\t\t\tmask;\n\tvoid\t\t\t\t*partition_id;\n};\n\nstruct partition_desc;\n\n#ifdef CONFIG_PARTITION_PERCPU\nint partition_translate_id(struct partition_desc *desc, void *partition_id);\nstruct partition_desc *partition_create_desc(struct fwnode_handle *fwnode,\n\t\t\t\t\t     struct partition_affinity *parts,\n\t\t\t\t\t     int nr_parts,\n\t\t\t\t\t     int chained_irq,\n\t\t\t\t\t     const struct irq_domain_ops *ops);\nstruct irq_domain *partition_get_domain(struct partition_desc *dsc);\n#else\nstatic inline int partition_translate_id(struct partition_desc *desc,\n\t\t\t\t\t void *partition_id)\n{\n\treturn -EINVAL;\n}\n\nstatic inline\nstruct partition_desc *partition_create_desc(struct fwnode_handle *fwnode,\n\t\t\t\t\t     struct partition_affinity *parts,\n\t\t\t\t\t     int nr_parts,\n\t\t\t\t\t     int chained_irq,\n\t\t\t\t\t     const struct irq_domain_ops *ops)\n{\n\treturn NULL;\n}\n\nstatic inline\nstruct irq_domain *partition_get_domain(struct partition_desc *dsc)\n{\n\treturn NULL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

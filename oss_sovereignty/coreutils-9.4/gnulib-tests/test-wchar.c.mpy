@@ -1,0 +1,9 @@
+{
+  "module_name": "test-wchar.c",
+  "hash_id": "58ae05ce137b0724a6a7743a9243b393bdf3e494b8ab427a8a47c2a9536927c3",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-wchar.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <wchar.h>\n\n \nwchar_t a = 'c';\nwint_t b = 'x';\n\n \nstatic_assert (sizeof NULL == sizeof (void *));\n\nint\nmain (void)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

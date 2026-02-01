@@ -1,0 +1,9 @@
+{
+  "module_name": "array.h",
+  "hash_id": "52d00a47998cfd3527667e7e773c3a7bba0c810ac575580e2214981d705bac11",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/api/fd/array.h",
+  "human_readable_source": " \n#ifndef __API_FD_ARRAY__\n#define __API_FD_ARRAY__\n\n#include <stdio.h>\n\nstruct pollfd;\n\n \nstruct fdarray {\n\tint\t       nr;\n\tint\t       nr_alloc;\n\tint\t       nr_autogrow;\n\tstruct pollfd *entries;\n\tstruct priv {\n\t\tunion {\n\t\t\tint    idx;\n\t\t\tvoid   *ptr;\n\t\t};\n\t\tunsigned int flags;\n\t} *priv;\n};\n\nenum fdarray_flags {\n\tfdarray_flag__default\t\t= 0x00000000,\n\tfdarray_flag__nonfilterable\t= 0x00000001,\n\tfdarray_flag__non_perf_event\t= 0x00000002,\n};\n\nvoid fdarray__init(struct fdarray *fda, int nr_autogrow);\nvoid fdarray__exit(struct fdarray *fda);\n\nstruct fdarray *fdarray__new(int nr_alloc, int nr_autogrow);\nvoid fdarray__delete(struct fdarray *fda);\n\nint fdarray__add(struct fdarray *fda, int fd, short revents, enum fdarray_flags flags);\nint fdarray__dup_entry_from(struct fdarray *fda, int pos, struct fdarray *from);\nint fdarray__poll(struct fdarray *fda, int timeout);\nint fdarray__filter(struct fdarray *fda, short revents,\n\t\t    void (*entry_destructor)(struct fdarray *fda, int fd, void *arg),\n\t\t    void *arg);\nint fdarray__grow(struct fdarray *fda, int extra);\nint fdarray__fprintf(struct fdarray *fda, FILE *fp);\n\nstatic inline int fdarray__available_entries(struct fdarray *fda)\n{\n\treturn fda->nr_alloc - fda->nr;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

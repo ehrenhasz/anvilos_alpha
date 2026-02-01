@@ -1,0 +1,9 @@
+{
+  "module_name": "doalloc.c",
+  "hash_id": "286d0ce392c92807dbf8fad84f0bc044a1ac70ac6cb2307b14e07057ffc9f651",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/tinfo/doalloc.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: doalloc.c,v 1.14 2021/04/24 23:43:39 tom Exp $\")\n\nvoid *\n_nc_doalloc(void *oldp, size_t amount)\n{\n    void *newp;\n\n    if (oldp != NULL) {\n\tif (amount == 0) {\n\t    free(oldp);\n\t    newp = NULL;\n\t} else if ((newp = realloc(oldp, amount)) == 0) {\n\t    free(oldp);\n\t    errno = ENOMEM;\t \n\t}\n    } else {\n\tnewp = malloc(amount);\n    }\n    return newp;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

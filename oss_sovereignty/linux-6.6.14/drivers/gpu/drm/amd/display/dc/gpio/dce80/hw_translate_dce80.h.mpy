@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_translate_dce80.h",
+  "hash_id": "4a132159f965b89698d67e89ac8cca11e7511e398251d392ef7422ece4e49e20",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/dce80/hw_translate_dce80.h",
+  "human_readable_source": " \n\n#ifndef __DAL_HW_TRANSLATE_DCE80_H__\n#define __DAL_HW_TRANSLATE_DCE80_H__\n\nvoid dal_hw_translate_dce80_init(\n\tstruct hw_translate *tr);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

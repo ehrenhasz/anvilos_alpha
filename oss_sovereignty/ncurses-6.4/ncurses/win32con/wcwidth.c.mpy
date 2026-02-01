@@ -1,0 +1,9 @@
+{
+  "module_name": "wcwidth.c",
+  "hash_id": "71c029d7070812181cdb558688ac46fcaa71f5fbe9927d8f4ea00cc348d334de",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/win32con/wcwidth.c",
+  "human_readable_source": " \n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: wcwidth.c,v 1.4 2020/07/11 21:02:10 tom Exp $\")\n\n#if USE_WIDEC_SUPPORT\n#define mk_wcwidth(ucs)          _nc_wcwidth(ucs)\n#define mk_wcswidth(pwcs, n)     _nc_wcswidth(pwcs, n)\n#define mk_wcwidth_cjk(ucs)      _nc_wcwidth_cjk(ucs)\n#define mk_wcswidth_cjk(pwcs, n) _nc_wcswidth_cjk(pwcs, n)\n\nNCURSES_EXPORT(int) mk_wcwidth(wchar_t);\nNCURSES_EXPORT(int) mk_wcswidth(const wchar_t *, size_t);\nNCURSES_EXPORT(int) mk_wcwidth_cjk(wchar_t);\nNCURSES_EXPORT(int) mk_wcswidth_cjk(const wchar_t *, size_t);\n\n#include <wcwidth.h>\n#else\nvoid _nc_empty_wcwidth(void);\nvoid\n_nc_empty_wcwidth(void)\n{\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "smc91x.h",
+  "hash_id": "e22550ab8f36c4fcb54ee79164a0c28655c7f071fc89527fdbd53f39d8f4664d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/smc91x.h",
+  "human_readable_source": " \n#ifndef __SMC91X_H__\n#define __SMC91X_H__\n\n \n#define SMC91X_USE_8BIT (1 << 0)\n#define SMC91X_USE_16BIT (1 << 1)\n#define SMC91X_USE_32BIT (1 << 2)\n\n#define SMC91X_NOWAIT\t\t(1 << 3)\n\n \n#define SMC91X_IO_SHIFT_0\t(0 << 4)\n#define SMC91X_IO_SHIFT_1\t(1 << 4)\n#define SMC91X_IO_SHIFT_2\t(2 << 4)\n#define SMC91X_IO_SHIFT_3\t(3 << 4)\n#define SMC91X_IO_SHIFT(x)\t(((x) >> 4) & 0x3)\n\n#define SMC91X_USE_DMA\t\t(1 << 6)\n\n#define RPC_LED_100_10\t(0x00)\t \n#define RPC_LED_RES\t(0x01)\t \n#define RPC_LED_10\t(0x02)\t \n#define RPC_LED_FD\t(0x03)\t \n#define RPC_LED_TX_RX\t(0x04)\t \n#define RPC_LED_100\t(0x05)\t \n#define RPC_LED_TX\t(0x06)\t \n#define RPC_LED_RX\t(0x07)\t \n\nstruct smc91x_platdata {\n\tunsigned long flags;\n\tunsigned char leda;\n\tunsigned char ledb;\n\tbool pxa_u16_align4;\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

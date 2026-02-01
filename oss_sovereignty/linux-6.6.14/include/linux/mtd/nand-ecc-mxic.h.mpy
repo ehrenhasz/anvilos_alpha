@@ -1,0 +1,9 @@
+{
+  "module_name": "nand-ecc-mxic.h",
+  "hash_id": "75943bf0300e457e8e178764e2173d4133c8900bec9c98d7db0294e387f168bd",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/nand-ecc-mxic.h",
+  "human_readable_source": " \n \n\n#ifndef __MTD_NAND_ECC_MXIC_H__\n#define __MTD_NAND_ECC_MXIC_H__\n\n#include <linux/platform_device.h>\n#include <linux/device.h>\n\nstruct mxic_ecc_engine;\n\n#if IS_ENABLED(CONFIG_MTD_NAND_ECC_MXIC) && IS_REACHABLE(CONFIG_MTD_NAND_CORE)\n\nstruct nand_ecc_engine_ops *mxic_ecc_get_pipelined_ops(void);\nstruct nand_ecc_engine *mxic_ecc_get_pipelined_engine(struct platform_device *spi_pdev);\nvoid mxic_ecc_put_pipelined_engine(struct nand_ecc_engine *eng);\nint mxic_ecc_process_data_pipelined(struct nand_ecc_engine *eng,\n\t\t\t\t    unsigned int direction, dma_addr_t dirmap);\n\n#else  \n\nstatic inline struct nand_ecc_engine_ops *mxic_ecc_get_pipelined_ops(void)\n{\n\treturn NULL;\n}\n\nstatic inline struct nand_ecc_engine *\nmxic_ecc_get_pipelined_engine(struct platform_device *spi_pdev)\n{\n\treturn ERR_PTR(-EOPNOTSUPP);\n}\n\nstatic inline void mxic_ecc_put_pipelined_engine(struct nand_ecc_engine *eng) {}\n\nstatic inline int mxic_ecc_process_data_pipelined(struct nand_ecc_engine *eng,\n\t\t\t\t\t\t  unsigned int direction,\n\t\t\t\t\t\t  dma_addr_t dirmap)\n{\n\treturn -EOPNOTSUPP;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

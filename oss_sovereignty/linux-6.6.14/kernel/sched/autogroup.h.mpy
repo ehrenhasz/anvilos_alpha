@@ -1,0 +1,9 @@
+{
+  "module_name": "autogroup.h",
+  "hash_id": "ac0062183a553e5780ccf1412be65ba61ee9aace8b1f154cd32ab43e8c55ce79",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/sched/autogroup.h",
+  "human_readable_source": " \n#ifndef _KERNEL_SCHED_AUTOGROUP_H\n#define _KERNEL_SCHED_AUTOGROUP_H\n\n#ifdef CONFIG_SCHED_AUTOGROUP\n\nstruct autogroup {\n\t \n\tstruct kref\t\tkref;\n\tstruct task_group\t*tg;\n\tstruct rw_semaphore\tlock;\n\tunsigned long\t\tid;\n\tint\t\t\tnice;\n};\n\nextern void autogroup_init(struct task_struct *init_task);\nextern void autogroup_free(struct task_group *tg);\n\nstatic inline bool task_group_is_autogroup(struct task_group *tg)\n{\n\treturn !!tg->autogroup;\n}\n\nextern bool task_wants_autogroup(struct task_struct *p, struct task_group *tg);\n\nstatic inline struct task_group *\nautogroup_task_group(struct task_struct *p, struct task_group *tg)\n{\n\textern unsigned int sysctl_sched_autogroup_enabled;\n\tint enabled = READ_ONCE(sysctl_sched_autogroup_enabled);\n\n\tif (enabled && task_wants_autogroup(p, tg))\n\t\treturn p->signal->autogroup->tg;\n\n\treturn tg;\n}\n\nextern int autogroup_path(struct task_group *tg, char *buf, int buflen);\n\n#else  \n\nstatic inline void autogroup_init(struct task_struct *init_task) {  }\nstatic inline void autogroup_free(struct task_group *tg) { }\nstatic inline bool task_group_is_autogroup(struct task_group *tg)\n{\n\treturn 0;\n}\n\nstatic inline struct task_group *\nautogroup_task_group(struct task_struct *p, struct task_group *tg)\n{\n\treturn tg;\n}\n\nstatic inline int autogroup_path(struct task_group *tg, char *buf, int buflen)\n{\n\treturn 0;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mbrlen.c",
+  "hash_id": "0c10a5f0f1f6ade2caaeea9a8c07b977b8a33cc10b91be55f80f8a380bb47a41",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mbrlen.c",
+  "human_readable_source": " \n#include <wchar.h>\n\n\nstatic mbstate_t internal_state;\n\nsize_t\nmbrlen (const char *s, size_t n, mbstate_t *ps)\n{\n  if (ps == NULL)\n    ps = &internal_state;\n  return mbrtowc (NULL, s, n, ps);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

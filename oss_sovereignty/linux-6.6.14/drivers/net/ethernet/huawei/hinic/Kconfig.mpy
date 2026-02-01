@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4d86990a6a5b4e5de31860b0caa3fd38fb79155ee1ab0e24652cfa418523b162",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/huawei/hinic/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Huawei driver configuration\n#\n\nconfig HINIC\n\ttristate \"Huawei Intelligent PCIE Network Interface Card\"\n\tdepends on (PCI_MSI && (X86 || ARM64))\n\tselect NET_DEVLINK\n\thelp\n\t  This driver supports HiNIC PCIE Ethernet cards.\n\t  To compile this driver as part of the kernel, choose Y here.\n\t  If unsure, choose N.\n\t  The default is compiled as module.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

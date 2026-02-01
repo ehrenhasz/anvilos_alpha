@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-signal-stop.m4",
+  "hash_id": "a952c603e438a35cd14b013bbc1853bdf3394679384f8bef86c09925cda705c0",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-signal-stop.m4",
+  "human_readable_source": "dnl #\ndnl # 4.4 API change\ndnl # Added kernel_signal_stop\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_SIGNAL_STOP], [\n\tZFS_LINUX_TEST_SRC([signal_stop], [\n\t\t#include <linux/sched/signal.h>\n\t],[\n\t\tkernel_signal_stop();\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_SIGNAL_STOP], [\n\tAC_MSG_CHECKING([whether signal_stop() exists])\n\tZFS_LINUX_TEST_RESULT([signal_stop], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_SIGNAL_STOP, 1, [signal_stop() exists])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

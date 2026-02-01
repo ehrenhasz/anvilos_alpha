@@ -1,0 +1,9 @@
+{
+  "module_name": "unlzma.h",
+  "hash_id": "b2119560b65b8e461fab6bf46d4f28b75fd011f32e835fa8abcf64f94db45c2d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/decompress/unlzma.h",
+  "human_readable_source": " \n#ifndef DECOMPRESS_UNLZMA_H\n#define DECOMPRESS_UNLZMA_H\n\nint unlzma(unsigned char *, long,\n\t   long (*fill)(void*, unsigned long),\n\t   long (*flush)(void*, unsigned long),\n\t   unsigned char *output,\n\t   long *posp,\n\t   void(*error)(char *x)\n\t);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

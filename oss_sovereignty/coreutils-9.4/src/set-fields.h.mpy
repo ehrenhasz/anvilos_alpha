@@ -1,0 +1,9 @@
+{
+  "module_name": "set-fields.h",
+  "hash_id": "ebcec925cc77885f2a095ac9270a024602cf08d3609bfceed8a1b40aefd286cf",
+  "original_prompt": "Ingested from coreutils-9.4/src/set-fields.h",
+  "human_readable_source": " \nextern struct field_range_pair *frp;\n\n \nextern size_t n_frp;\n\n \nenum\n{\n  SETFLD_ALLOW_DASH = 0x01,      \n  SETFLD_COMPLEMENT = 0x02,      \n  SETFLD_ERRMSG_USE_POS = 0x04   \n};\n\n \nextern void set_fields (char const *fieldstr, unsigned int options);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

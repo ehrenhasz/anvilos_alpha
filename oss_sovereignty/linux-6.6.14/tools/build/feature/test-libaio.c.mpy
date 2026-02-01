@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libaio.c",
+  "hash_id": "e903c301ae93e5341e9b4b6af5cb2f53d75848873cf3b0f41f0dbc8eabdbc601",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libaio.c",
+  "human_readable_source": "\n#include <aio.h>\n\nint main(void)\n{\n\tstruct aiocb aiocb;\n\n\taiocb.aio_fildes  = 0;\n\taiocb.aio_offset  = 0;\n\taiocb.aio_buf     = 0;\n\taiocb.aio_nbytes  = 0;\n\taiocb.aio_reqprio = 0;\n\taiocb.aio_sigevent.sigev_notify = 1  ;\n\n\treturn (int)aio_return(&aiocb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

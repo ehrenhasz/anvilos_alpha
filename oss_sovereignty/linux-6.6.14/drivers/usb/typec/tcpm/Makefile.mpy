@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6e5fbedc4fe6e81345d72e120d623f70a7599f743fe23131cf1fffc4361386b0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/typec/tcpm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_TYPEC_TCPM)\t\t+= tcpm.o\nobj-$(CONFIG_TYPEC_FUSB302)\t\t+= fusb302.o\nobj-$(CONFIG_TYPEC_WCOVE)\t\t+= typec_wcove.o\ntypec_wcove-y\t\t\t\t:= wcove.o\nobj-$(CONFIG_TYPEC_TCPCI)\t\t+= tcpci.o\nobj-$(CONFIG_TYPEC_RT1711H)\t\t+= tcpci_rt1711h.o\nobj-$(CONFIG_TYPEC_MT6360)\t\t+= tcpci_mt6360.o\nobj-$(CONFIG_TYPEC_TCPCI_MT6370)\t+= tcpci_mt6370.o\nobj-$(CONFIG_TYPEC_TCPCI_MAXIM)\t\t+= tcpci_maxim.o\ntcpci_maxim-y\t\t\t\t+= tcpci_maxim_core.o maxim_contaminant.o\nobj-$(CONFIG_TYPEC_QCOM_PMIC)\t\t+= qcom/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

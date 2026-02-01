@@ -1,0 +1,9 @@
+{
+  "module_name": "test-arpa_inet.c",
+  "hash_id": "09c942e93801a23f34f10331b5f5450de47ba8c358e8a3b8caaf603bb5c2c2b0",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-arpa_inet.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <arpa/inet.h>\n\nint\nmain (void)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

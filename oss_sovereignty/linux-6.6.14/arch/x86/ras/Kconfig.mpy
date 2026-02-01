@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "57b5079dac6b861ad08528a18337e4b6bd977597c3afc4dcfa962917963a736b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/ras/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig RAS_CEC\n\tbool \"Correctable Errors Collector\"\n\tdepends on X86_MCE && MEMORY_FAILURE && DEBUG_FS\n\thelp\n\t  This is a small cache which collects correctable memory errors per 4K\n\t  page PFN and counts their repeated occurrence. Once the counter for a\n\t  PFN overflows, we try to soft-offline that page as we take it to mean\n\t  that it has reached a relatively high error count and would probably\n\t  be best if we don't use it anymore.\n\n\t  Bear in mind that this is absolutely useless if your platform doesn't\n\t  have ECC DIMMs and doesn't have DRAM ECC checking enabled in the BIOS.\n\nconfig RAS_CEC_DEBUG\n\tbool \"CEC debugging machinery\"\n\tdefault n\n\tdepends on RAS_CEC\n\thelp\n\t  Add extra files to (debugfs)/ras/cec to test the correctable error\n\t  collector feature. \"pfn\" is a writable file that allows user to\n\t  simulate an error in a particular page frame. \"array\" is a read-only\n\t  file that dumps out the current state of all pages logged so far.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

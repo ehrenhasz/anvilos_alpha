@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "3a5a52fc109fecd4b067c5e3b8f2b24e5e6c6efe0f0964a637efcdfa1dd04c9a",
+  "original_prompt": "Ingested from linux-6.6.14/lib/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/crc32table.h\n/crc64table.h\n/default.bconf\n/gen_crc32table\n/gen_crc64table\n/oid_registry_data.c\n/test_fortify.log\n/test_fortify/*.log\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

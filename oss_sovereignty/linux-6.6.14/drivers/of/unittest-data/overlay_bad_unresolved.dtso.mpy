@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_bad_unresolved.dtso",
+  "hash_id": "0ff3c92b547be787b805c8363c6dc82e0d2682a1e844df798312bd183a497b44",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_bad_unresolved.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n&this_label_does_not_exist {\n\tstatus = \"ok\";\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

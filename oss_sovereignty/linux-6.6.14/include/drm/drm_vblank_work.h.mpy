@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_vblank_work.h",
+  "hash_id": "01a44c31ed6285ca6acb4eb32b8a2075384a358da84ffd0ae161436db9fd9e79",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_vblank_work.h",
+  "human_readable_source": " \n\n#ifndef _DRM_VBLANK_WORK_H_\n#define _DRM_VBLANK_WORK_H_\n\n#include <linux/kthread.h>\n\nstruct drm_crtc;\n\n \nstruct drm_vblank_work {\n\t \n\tstruct kthread_work base;\n\n\t \n\tstruct drm_vblank_crtc *vblank;\n\n\t \n\tu64 count;\n\n\t \n\tint cancelling;\n\n\t \n\tstruct list_head node;\n};\n\n \n#define to_drm_vblank_work(_work) \\\n\tcontainer_of((_work), struct drm_vblank_work, base)\n\nint drm_vblank_work_schedule(struct drm_vblank_work *work,\n\t\t\t     u64 count, bool nextonmiss);\nvoid drm_vblank_work_init(struct drm_vblank_work *work, struct drm_crtc *crtc,\n\t\t\t  void (*func)(struct kthread_work *work));\nbool drm_vblank_work_cancel_sync(struct drm_vblank_work *work);\nvoid drm_vblank_work_flush(struct drm_vblank_work *work);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

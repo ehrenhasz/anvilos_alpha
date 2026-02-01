@@ -1,0 +1,9 @@
+{
+  "module_name": "vega12_smumgr.h",
+  "hash_id": "bd68fba74b65324731554715a4034d1fb72c8e0570f1cf6812ebf32674d7d172",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/smumgr/vega12_smumgr.h",
+  "human_readable_source": " \n#ifndef _VEGA12_SMUMANAGER_H_\n#define _VEGA12_SMUMANAGER_H_\n\n#include \"hwmgr.h\"\n#include \"vega12/smu9_driver_if.h\"\n#include \"vega12_hwmgr.h\"\n\nstruct smu_table_entry {\n\tuint32_t version;\n\tuint32_t size;\n\tuint64_t mc_addr;\n\tvoid *table;\n\tstruct amdgpu_bo *handle;\n};\n\nstruct smu_table_array {\n\tstruct smu_table_entry entry[TABLE_COUNT];\n};\n\nstruct vega12_smumgr {\n\tstruct smu_table_array            smu_tables;\n};\n\n#define SMU_FEATURES_LOW_MASK        0x00000000FFFFFFFF\n#define SMU_FEATURES_LOW_SHIFT       0\n#define SMU_FEATURES_HIGH_MASK       0xFFFFFFFF00000000\n#define SMU_FEATURES_HIGH_SHIFT      32\n\nint vega12_enable_smc_features(struct pp_hwmgr *hwmgr,\n\t\tbool enable, uint64_t feature_mask);\nint vega12_get_enabled_smc_features(struct pp_hwmgr *hwmgr,\n\t\tuint64_t *features_enabled);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

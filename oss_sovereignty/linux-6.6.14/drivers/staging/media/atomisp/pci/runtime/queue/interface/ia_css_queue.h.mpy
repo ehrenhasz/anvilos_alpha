@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_queue.h",
+  "hash_id": "98159983eae1b388fc716ebdecaa3cedb00250a087971d3ff7f1b0d165271634",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/queue/interface/ia_css_queue.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_QUEUE_H\n#define __IA_CSS_QUEUE_H\n\n#include <platform_support.h>\n#include <type_support.h>\n\n#include \"ia_css_queue_comm.h\"\n#include \"../src/queue_access.h\"\n\n \nstruct ia_css_queue_local {\n\tia_css_circbuf_desc_t *cb_desc;  \n\tia_css_circbuf_elem_t *cb_elems;  \n};\n\ntypedef struct ia_css_queue_local ia_css_queue_local_t;\n\n \ntypedef struct ia_css_queue ia_css_queue_t;\n\n \n \nint ia_css_queue_local_init(\n    ia_css_queue_t *qhandle,\n    ia_css_queue_local_t *desc);\n\n \nint ia_css_queue_remote_init(\n    ia_css_queue_t *qhandle,\n    ia_css_queue_remote_t *desc);\n\n \nint ia_css_queue_uninit(\n    ia_css_queue_t *qhandle);\n\n \nint ia_css_queue_enqueue(\n    ia_css_queue_t *qhandle,\n    uint32_t item);\n\n \nint ia_css_queue_dequeue(\n    ia_css_queue_t *qhandle,\n    uint32_t *item);\n\n \nint ia_css_queue_is_empty(\n    ia_css_queue_t *qhandle,\n    bool *is_empty);\n\n \nint ia_css_queue_is_full(\n    ia_css_queue_t *qhandle,\n    bool *is_full);\n\n \nint ia_css_queue_get_used_space(\n    ia_css_queue_t *qhandle,\n    uint32_t *size);\n\n \nint ia_css_queue_get_free_space(\n    ia_css_queue_t *qhandle,\n    uint32_t *size);\n\n \nint ia_css_queue_peek(\n    ia_css_queue_t *qhandle,\n    u32 offset,\n    uint32_t *element);\n\n \nint ia_css_queue_get_size(\n    ia_css_queue_t *qhandle,\n    uint32_t *size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

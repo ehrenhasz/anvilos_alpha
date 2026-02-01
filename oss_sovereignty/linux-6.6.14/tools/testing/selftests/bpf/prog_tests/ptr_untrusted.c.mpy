@@ -1,0 +1,9 @@
+{
+  "module_name": "ptr_untrusted.c",
+  "hash_id": "855096867c163f5f780ae14d499055da1d4a1ed57f6b14bad9b105f832a4cd29",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/ptr_untrusted.c",
+  "human_readable_source": "\n \n\n#include <string.h>\n#include <linux/bpf.h>\n#include <test_progs.h>\n#include \"test_ptr_untrusted.skel.h\"\n\n#define TP_NAME \"sched_switch\"\n\nvoid serial_test_ptr_untrusted(void)\n{\n\tstruct test_ptr_untrusted *skel;\n\tint err;\n\n\tskel = test_ptr_untrusted__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"skel_open\"))\n\t\tgoto cleanup;\n\n\t \n\tskel->links.lsm_run = bpf_program__attach_lsm(skel->progs.lsm_run);\n\tif (!ASSERT_OK_PTR(skel->links.lsm_run, \"lsm_attach\"))\n\t\tgoto cleanup;\n\n\t \n\tskel->links.raw_tp_run = bpf_program__attach_raw_tracepoint(skel->progs.raw_tp_run,\n\t\t\t\t\t\t\t\t    TP_NAME);\n\tif (!ASSERT_OK_PTR(skel->links.raw_tp_run, \"raw_tp_attach\"))\n\t\tgoto cleanup;\n\n\terr = strncmp(skel->bss->tp_name, TP_NAME, strlen(TP_NAME));\n\tASSERT_EQ(err, 0, \"cmp_tp_name\");\n\ncleanup:\n\ttest_ptr_untrusted__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

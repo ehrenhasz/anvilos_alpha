@@ -1,0 +1,9 @@
+{
+  "module_name": "test-alignof.c",
+  "hash_id": "30bf00ed84a99b8f2a6d22389aa6013a5ddacbe59ffbad0026ff4d735e4214b8",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-alignof.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <alignof.h>\n\n#include <stddef.h>\n#include <stdint.h>\n\ntypedef long double longdouble;\ntypedef struct { char a[1]; } struct1;\ntypedef struct { char a[2]; } struct2;\ntypedef struct { char a[3]; } struct3;\ntypedef struct { char a[4]; } struct4;\n\n#define CHECK(type) \\\n  typedef struct { char slot1; type slot2; } type##_helper; \\\n  static_assert (alignof_slot (type) == offsetof (type##_helper, slot2)); \\\n  const int type##_slot_alignment = alignof_slot (type); \\\n  const int type##_type_alignment = alignof_type (type);\n\nCHECK (char)\nCHECK (short)\nCHECK (int)\nCHECK (long)\nCHECK (float)\nCHECK (double)\nCHECK (longdouble)\n#ifdef INT64_MAX\nCHECK (int64_t)\n#endif\nCHECK (struct1)\nCHECK (struct2)\nCHECK (struct3)\nCHECK (struct4)\n\nint\nmain ()\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

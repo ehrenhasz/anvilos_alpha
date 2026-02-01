@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-persistent-data-internal.h",
+  "hash_id": "b1015f2cfac7259a5beea83ed13426084452db8512f6cf91ab64518e70c67f12",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/persistent-data/dm-persistent-data-internal.h",
+  "human_readable_source": " \n \n\n#ifndef _DM_PERSISTENT_DATA_INTERNAL_H\n#define _DM_PERSISTENT_DATA_INTERNAL_H\n\n#include \"dm-block-manager.h\"\n\nstatic inline unsigned int dm_hash_block(dm_block_t b, unsigned int hash_mask)\n{\n\tconst unsigned int BIG_PRIME = 4294967291UL;\n\n\treturn (((unsigned int) b) * BIG_PRIME) & hash_mask;\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

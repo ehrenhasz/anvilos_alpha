@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5ae0733f25d5b1065270bb4f401bc321ae38dad78b6d260e524ef6d868e3cac2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/atm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for USB ATM/xDSL drivers\n#\nobj-$(CONFIG_USB_CXACRU)\t+= cxacru.o\nobj-$(CONFIG_USB_SPEEDTOUCH)\t+= speedtch.o\nobj-$(CONFIG_USB_UEAGLEATM)\t+= ueagle-atm.o\nobj-$(CONFIG_USB_ATM)\t\t+= usbatm.o\nobj-$(CONFIG_USB_XUSBATM)\t+= xusbatm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

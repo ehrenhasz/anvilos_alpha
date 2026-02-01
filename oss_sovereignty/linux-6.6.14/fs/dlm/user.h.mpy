@@ -1,0 +1,9 @@
+{
+  "module_name": "user.h",
+  "hash_id": "869b327d507506cc2ff7ce36bfeab8b64bb01f12a7f0f9444ee0fe7d5d7b501f",
+  "original_prompt": "Ingested from linux-6.6.14/fs/dlm/user.h",
+  "human_readable_source": " \n \n\n#ifndef __USER_DOT_H__\n#define __USER_DOT_H__\n\nvoid dlm_purge_lkb_callbacks(struct dlm_lkb *lkb);\nvoid dlm_user_add_ast(struct dlm_lkb *lkb, uint32_t flags, int mode,\n\t\t      int status, uint32_t sbflags);\nint dlm_user_init(void);\nvoid dlm_user_exit(void);\nint dlm_device_deregister(struct dlm_ls *ls);\nint dlm_user_daemon_available(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gm107.c",
+  "hash_id": "da2491f1f8468cd1b922d9fef8b2be5895f900c07138c7cfe72fd3583813b05b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bar/gm107.c",
+  "human_readable_source": " \n#include \"gf100.h\"\n\n#include <subdev/timer.h>\n\nvoid\ngm107_bar_bar1_wait(struct nvkm_bar *bar)\n{\n\tstruct nvkm_device *device = bar->subdev.device;\n\tnvkm_msec(device, 2000,\n\t\tif (!(nvkm_rd32(device, 0x001710) & 0x00000003))\n\t\t\tbreak;\n\t);\n}\n\nstatic void\ngm107_bar_bar2_wait(struct nvkm_bar *bar)\n{\n\tstruct nvkm_device *device = bar->subdev.device;\n\tnvkm_msec(device, 2000,\n\t\tif (!(nvkm_rd32(device, 0x001710) & 0x0000000c))\n\t\t\tbreak;\n\t);\n}\n\nstatic const struct nvkm_bar_func\ngm107_bar_func = {\n\t.dtor = gf100_bar_dtor,\n\t.oneinit = gf100_bar_oneinit,\n\t.bar1.init = gf100_bar_bar1_init,\n\t.bar1.fini = gf100_bar_bar1_fini,\n\t.bar1.wait = gm107_bar_bar1_wait,\n\t.bar1.vmm = gf100_bar_bar1_vmm,\n\t.bar2.init = gf100_bar_bar2_init,\n\t.bar2.fini = gf100_bar_bar2_fini,\n\t.bar2.wait = gm107_bar_bar2_wait,\n\t.bar2.vmm = gf100_bar_bar2_vmm,\n\t.flush = g84_bar_flush,\n};\n\nint\ngm107_bar_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_bar **pbar)\n{\n\treturn gf100_bar_new_(&gm107_bar_func, device, type, inst, pbar);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

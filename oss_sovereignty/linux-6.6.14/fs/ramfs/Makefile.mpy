@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c7a2c47655792559c07adc129914270e570352d36e76a0886e2a2d1a87632afd",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ramfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the linux ramfs routines.\n#\n\nobj-y += ramfs.o\n\nfile-mmu-y := file-nommu.o\nfile-mmu-$(CONFIG_MMU) := file-mmu.o\nramfs-objs += inode.o $(file-mmu-y)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

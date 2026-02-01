@@ -1,0 +1,9 @@
+{
+  "module_name": "t7xx_pcie_mac.h",
+  "hash_id": "c52fc310b9237ca357987ed297b59e59b50b0a69db61e91edd8058ed2557ad44",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wwan/t7xx/t7xx_pcie_mac.h",
+  "human_readable_source": " \n\n#ifndef __T7XX_PCIE_MAC_H__\n#define __T7XX_PCIE_MAC_H__\n\n#include \"t7xx_pci.h\"\n#include \"t7xx_reg.h\"\n\n#define IREG_BASE(t7xx_dev)\t((t7xx_dev)->base_addr.pcie_mac_ireg_base)\n\nvoid t7xx_pcie_mac_interrupts_en(struct t7xx_pci_dev *t7xx_dev);\nvoid t7xx_pcie_mac_interrupts_dis(struct t7xx_pci_dev *t7xx_dev);\nvoid t7xx_pcie_mac_atr_init(struct t7xx_pci_dev *t7xx_dev);\nvoid t7xx_pcie_mac_clear_int(struct t7xx_pci_dev *t7xx_dev, enum t7xx_int int_type);\nvoid t7xx_pcie_mac_set_int(struct t7xx_pci_dev *t7xx_dev, enum t7xx_int int_type);\nvoid t7xx_pcie_mac_clear_int_status(struct t7xx_pci_dev *t7xx_dev, enum t7xx_int int_type);\nvoid t7xx_pcie_set_mac_msix_cfg(struct t7xx_pci_dev *t7xx_dev, unsigned int irq_count);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

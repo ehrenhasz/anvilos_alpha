@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_regs.h",
+  "hash_id": "046840c246720d1f74e6ce4a0089a7effd8b20da34f20fc617ee37631e95b604",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/x86/include/perf_regs.h",
+  "human_readable_source": " \n#ifndef ARCH_PERF_REGS_H\n#define ARCH_PERF_REGS_H\n\n#include <stdlib.h>\n#include <linux/types.h>\n#include <asm/perf_regs.h>\n\nvoid perf_regs_load(u64 *regs);\n\n#define PERF_REGS_MAX PERF_REG_X86_XMM_MAX\n#ifndef HAVE_ARCH_X86_64_SUPPORT\n#define PERF_REGS_MASK ((1ULL << PERF_REG_X86_32_MAX) - 1)\n#define PERF_SAMPLE_REGS_ABI PERF_SAMPLE_REGS_ABI_32\n#else\n#define REG_NOSUPPORT ((1ULL << PERF_REG_X86_DS) | \\\n\t\t       (1ULL << PERF_REG_X86_ES) | \\\n\t\t       (1ULL << PERF_REG_X86_FS) | \\\n\t\t       (1ULL << PERF_REG_X86_GS))\n#define PERF_REGS_MASK (((1ULL << PERF_REG_X86_64_MAX) - 1) & ~REG_NOSUPPORT)\n#define PERF_SAMPLE_REGS_ABI PERF_SAMPLE_REGS_ABI_64\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

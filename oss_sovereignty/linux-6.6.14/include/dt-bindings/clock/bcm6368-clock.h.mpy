@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm6368-clock.h",
+  "hash_id": "f0d49023ef52608ae9b3d1b9209db4eee7434f781fee31a475bdc0ad95575409",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/bcm6368-clock.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_CLOCK_BCM6368_H\n#define __DT_BINDINGS_CLOCK_BCM6368_H\n\n#define BCM6368_CLK_VDSL_QPROC\t\t2\n#define BCM6368_CLK_VDSL_AFE\t\t3\n#define BCM6368_CLK_VDSL_BONDING\t4\n#define BCM6368_CLK_VDSL\t\t5\n#define BCM6368_CLK_PHYMIPS\t\t6\n#define BCM6368_CLK_SWPKT_USB\t\t7\n#define BCM6368_CLK_SWPKT_SAR\t\t8\n#define BCM6368_CLK_SPI\t\t\t9\n#define BCM6368_CLK_USBD\t\t10\n#define BCM6368_CLK_SAR\t\t\t11\n#define BCM6368_CLK_ROBOSW\t\t12\n#define BCM6368_CLK_UTOPIA\t\t13\n#define BCM6368_CLK_PCM\t\t\t14\n#define BCM6368_CLK_USBH\t\t15\n#define BCM6368_CLK_DIS_GLESS\t\t16\n#define BCM6368_CLK_NAND\t\t17\n#define BCM6368_CLK_IPSEC\t\t18\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

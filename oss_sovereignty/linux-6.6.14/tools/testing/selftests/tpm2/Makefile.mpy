@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cc96e68bd36e807f200c94df8150215eb2885000df0d7ff98fa8d94df7f9d12e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tpm2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)\ninclude ../lib.mk\n\nTEST_PROGS := test_smoke.sh test_space.sh test_async.sh\nTEST_PROGS_EXTENDED := tpm2.py tpm2_tests.py\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

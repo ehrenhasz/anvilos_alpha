@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "5d39dea6286773b635a282f82d258e65faaddf8ed9b2797a248254934df1aefe",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/xen/trace.c",
+  "human_readable_source": "\n#include <linux/ftrace.h>\n#include <xen/interface/xen.h>\n#include <xen/interface/xen-mca.h>\n\n#define HYPERCALL(x)\t[__HYPERVISOR_##x] = \"(\"#x\")\",\nstatic const char *xen_hypercall_names[] = {\n#include <asm/xen-hypercalls.h>\n};\n#undef HYPERCALL\n\nstatic const char *xen_hypercall_name(unsigned op)\n{\n\tif (op < ARRAY_SIZE(xen_hypercall_names) && xen_hypercall_names[op] != NULL)\n\t\treturn xen_hypercall_names[op];\n\n\treturn \"\";\n}\n\n#define CREATE_TRACE_POINTS\n#include <trace/events/xen.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

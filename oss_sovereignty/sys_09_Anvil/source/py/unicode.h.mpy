@@ -1,0 +1,9 @@
+{
+  "module_name": "unicode.h",
+  "hash_id": "21653700ae79446f103bcc8dca5b88507a46f586eced41f804044c8c39bc2140",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/unicode.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_UNICODE_H\n#define MICROPY_INCLUDED_PY_UNICODE_H\n\n#include \"py/mpconfig.h\"\n#include \"py/misc.h\"\n\nmp_uint_t utf8_ptr_to_index(const byte *s, const byte *ptr);\nbool utf8_check(const byte *p, size_t len);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

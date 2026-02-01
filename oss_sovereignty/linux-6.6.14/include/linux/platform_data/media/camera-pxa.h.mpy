@@ -1,0 +1,9 @@
+{
+  "module_name": "camera-pxa.h",
+  "hash_id": "5aae07a1f619b108b26cfc4ebdf5132d7519ac5cb4135f6e7ef6ce7574fd24f4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/media/camera-pxa.h",
+  "human_readable_source": " \n \n\n#ifndef __ASM_ARCH_CAMERA_H_\n#define __ASM_ARCH_CAMERA_H_\n\n#define PXA_CAMERA_MASTER\t1\n#define PXA_CAMERA_DATAWIDTH_4\t2\n#define PXA_CAMERA_DATAWIDTH_5\t4\n#define PXA_CAMERA_DATAWIDTH_8\t8\n#define PXA_CAMERA_DATAWIDTH_9\t0x10\n#define PXA_CAMERA_DATAWIDTH_10\t0x20\n#define PXA_CAMERA_PCLK_EN\t0x40\n#define PXA_CAMERA_MCLK_EN\t0x80\n#define PXA_CAMERA_PCP\t\t0x100\n#define PXA_CAMERA_HSP\t\t0x200\n#define PXA_CAMERA_VSP\t\t0x400\n\nstruct pxacamera_platform_data {\n\tunsigned long flags;\n\tunsigned long mclk_10khz;\n\tint sensor_i2c_adapter_id;\n\tint sensor_i2c_address;\n};\n\nextern void pxa_set_camera_info(struct pxacamera_platform_data *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

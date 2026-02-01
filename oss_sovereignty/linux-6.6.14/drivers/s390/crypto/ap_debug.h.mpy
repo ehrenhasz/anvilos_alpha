@@ -1,0 +1,9 @@
+{
+  "module_name": "ap_debug.h",
+  "hash_id": "11671c4fe5bdfcffced81c482a39f7c56ab453441915228c9ce6984a2700cec6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/crypto/ap_debug.h",
+  "human_readable_source": " \n \n#ifndef AP_DEBUG_H\n#define AP_DEBUG_H\n\n#include <asm/debug.h>\n\n#define DBF_ERR\t\t3\t \n#define DBF_WARN\t4\t \n#define DBF_INFO\t5\t \n#define DBF_DEBUG\t6\t \n\n#define RC2ERR(rc) ((rc) ? DBF_ERR : DBF_INFO)\n#define RC2WARN(rc) ((rc) ? DBF_WARN : DBF_INFO)\n\n#define DBF_MAX_SPRINTF_ARGS 6\n\n#define AP_DBF(...)\t\t\t\t\t\\\n\tdebug_sprintf_event(ap_dbf_info, ##__VA_ARGS__)\n#define AP_DBF_ERR(...)\t\t\t\t\t\\\n\tdebug_sprintf_event(ap_dbf_info, DBF_ERR, ##__VA_ARGS__)\n#define AP_DBF_WARN(...)\t\t\t\t\t\\\n\tdebug_sprintf_event(ap_dbf_info, DBF_WARN, ##__VA_ARGS__)\n#define AP_DBF_INFO(...)\t\t\t\t\t\\\n\tdebug_sprintf_event(ap_dbf_info, DBF_INFO, ##__VA_ARGS__)\n#define AP_DBF_DBG(...)\t\t\t\t\t\\\n\tdebug_sprintf_event(ap_dbf_info, DBF_DEBUG, ##__VA_ARGS__)\n\nextern debug_info_t *ap_dbf_info;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

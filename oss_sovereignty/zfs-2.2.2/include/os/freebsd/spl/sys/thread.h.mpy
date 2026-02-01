@@ -1,0 +1,9 @@
+{
+  "module_name": "thread.h",
+  "hash_id": "15005c056436c0b2f572480bf6304c5e4562d76d53281f00a0c90e069da7d765",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/thread.h",
+  "human_readable_source": " \n\n#ifndef _SPL_THREAD_H_\n#define\t_SPL_THREAD_H_\n\n#define\tgetcomm() curthread->td_name\n#define\tgetpid() curthread->td_tid\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

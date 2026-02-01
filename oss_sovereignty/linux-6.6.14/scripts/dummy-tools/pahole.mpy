@@ -1,0 +1,9 @@
+{
+  "module_name": "pahole",
+  "hash_id": "8ccc888e1da7c811ae364f42e16ec2822f490d13a27f9e501a238450f68c2b59",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/dummy-tools/pahole",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-only\n\necho v99.99\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

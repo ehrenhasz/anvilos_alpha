@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-mt8365-cam.c",
+  "hash_id": "bd2625ea5048cd19b8ff2f6d005f24e471ceddc5b29c616567f3aa3b3c590ca5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mediatek/clk-mt8365-cam.c",
+  "human_readable_source": "\n \n\n#include <dt-bindings/clock/mediatek,mt8365-clk.h>\n#include <linux/clk-provider.h>\n#include <linux/platform_device.h>\n\n#include \"clk-gate.h\"\n#include \"clk-mtk.h\"\n\nstatic const struct mtk_gate_regs cam_cg_regs = {\n\t.set_ofs = 0x4,\n\t.clr_ofs = 0x8,\n\t.sta_ofs = 0x0,\n};\n\n#define GATE_CAM(_id, _name, _parent, _shift) \\\n\t\tGATE_MTK(_id, _name, _parent, &cam_cg_regs, _shift, \\\n\t\t\t &mtk_clk_gate_ops_setclr)\n\nstatic const struct mtk_gate cam_clks[] = {\n\tGATE_CAM(CLK_CAM_LARB2, \"cam_larb2\", \"mm_sel\", 0),\n\tGATE_CAM(CLK_CAM, \"cam\", \"mm_sel\", 6),\n\tGATE_CAM(CLK_CAMTG, \"camtg\", \"mm_sel\", 7),\n\tGATE_CAM(CLK_CAM_SENIF, \"cam_senif\", \"mm_sel\", 8),\n\tGATE_CAM(CLK_CAMSV0, \"camsv0\", \"mm_sel\", 9),\n\tGATE_CAM(CLK_CAMSV1, \"camsv1\", \"mm_sel\", 10),\n\tGATE_CAM(CLK_CAM_FDVT, \"cam_fdvt\", \"mm_sel\", 11),\n\tGATE_CAM(CLK_CAM_WPE, \"cam_wpe\", \"mm_sel\", 12),\n};\n\nstatic const struct mtk_clk_desc cam_desc = {\n\t.clks = cam_clks,\n\t.num_clks = ARRAY_SIZE(cam_clks),\n};\n\nstatic const struct of_device_id of_match_clk_mt8365_cam[] = {\n\t{\n\t\t.compatible = \"mediatek,mt8365-imgsys\",\n\t\t.data = &cam_desc,\n\t}, {\n\t\t \n\t}\n};\nMODULE_DEVICE_TABLE(of, of_match_clk_mt8365_cam);\n\nstatic struct platform_driver clk_mt8365_cam_drv = {\n\t.probe = mtk_clk_simple_probe,\n\t.remove_new = mtk_clk_simple_remove,\n\t.driver = {\n\t\t.name = \"clk-mt8365-cam\",\n\t\t.of_match_table = of_match_clk_mt8365_cam,\n\t},\n};\nmodule_platform_driver(clk_mt8365_cam_drv);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "89310aa9337eb3fd5da8d531099e66dcb749630ddf11e5073a2d92f94af51d34",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma-buf/heaps/Kconfig",
+  "human_readable_source": "config DMABUF_HEAPS_SYSTEM\n\tbool \"DMA-BUF System Heap\"\n\tdepends on DMABUF_HEAPS\n\thelp\n\t  Choose this option to enable the system dmabuf heap. The system heap\n\t  is backed by pages from the buddy allocator. If in doubt, say Y.\n\nconfig DMABUF_HEAPS_CMA\n\tbool \"DMA-BUF CMA Heap\"\n\tdepends on DMABUF_HEAPS && DMA_CMA\n\thelp\n\t  Choose this option to enable dma-buf CMA heap. This heap is backed\n\t  by the Contiguous Memory Allocator (CMA). If your system has these\n\t  regions, you should say Y here.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

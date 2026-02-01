@@ -1,0 +1,9 @@
+{
+  "module_name": "arc4random_uniform.c",
+  "hash_id": "2ef10a00dd5f852ae26454974915aba6c35e331bc6f8b57e13c4b08ccb06b1bc",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/arc4random_uniform.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"includes.h\"\n\n#ifdef HAVE_STDINT_H\n# include <stdint.h>\n#endif\n#include <stdlib.h>\n\n#ifndef HAVE_ARC4RANDOM_UNIFORM\n \nuint32_t\narc4random_uniform(uint32_t upper_bound)\n{\n\tuint32_t r, min;\n\n\tif (upper_bound < 2)\n\t\treturn 0;\n\n\t \n\tmin = -upper_bound % upper_bound;\n\n\t \n\tfor (;;) {\n\t\tr = arc4random();\n\t\tif (r >= min)\n\t\t\tbreak;\n\t}\n\n\treturn r % upper_bound;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

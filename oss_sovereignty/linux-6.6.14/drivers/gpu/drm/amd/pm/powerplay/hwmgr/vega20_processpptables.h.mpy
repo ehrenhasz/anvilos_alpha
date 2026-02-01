@@ -1,0 +1,9 @@
+{
+  "module_name": "vega20_processpptables.h",
+  "hash_id": "1e8328f6570661eb46c46ba55022be6fc054f0dd791007faf64380483b39577d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega20_processpptables.h",
+  "human_readable_source": " \n\n#ifndef VEGA20_PROCESSPPTABLES_H\n#define VEGA20_PROCESSPPTABLES_H\n\n#include \"hwmgr.h\"\n\nextern const struct pp_table_func vega20_pptable_funcs;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

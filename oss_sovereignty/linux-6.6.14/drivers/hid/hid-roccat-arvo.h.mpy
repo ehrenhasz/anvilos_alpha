@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-roccat-arvo.h",
+  "hash_id": "4aef8058975da9664219273d5743813dd4643f11b99c6385a6b666f65164f746",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-roccat-arvo.h",
+  "human_readable_source": " \n#ifndef __HID_ROCCAT_ARVO_H\n#define __HID_ROCCAT_ARVO_H\n\n \n\n \n\n#include <linux/types.h>\n\nstruct arvo_mode_key {  \n\tuint8_t command;  \n\tuint8_t state;\n} __packed;\n\nstruct arvo_button {\n\tuint8_t unknown[24];\n} __packed;\n\nstruct arvo_info {\n\tuint8_t unknown[8];\n} __packed;\n\nstruct arvo_key_mask {  \n\tuint8_t command;  \n\tuint8_t key_mask;\n} __packed;\n\n \nstruct arvo_actual_profile {  \n\tuint8_t command;  \n\tuint8_t actual_profile;\n} __packed;\n\nenum arvo_commands {\n\tARVO_COMMAND_MODE_KEY = 0x3,\n\tARVO_COMMAND_BUTTON = 0x4,\n\tARVO_COMMAND_INFO = 0x5,\n\tARVO_COMMAND_KEY_MASK = 0x6,\n\tARVO_COMMAND_ACTUAL_PROFILE = 0x7,\n};\n\nstruct arvo_special_report {\n\tuint8_t unknown1;  \n\tuint8_t event;\n\tuint8_t unknown2;  \n} __packed;\n\nenum arvo_special_report_events {\n\tARVO_SPECIAL_REPORT_EVENT_ACTION_PRESS = 0x10,\n\tARVO_SPECIAL_REPORT_EVENT_ACTION_RELEASE = 0x0,\n};\n\nenum arvo_special_report_event_masks {\n\tARVO_SPECIAL_REPORT_EVENT_MASK_ACTION = 0xf0,\n\tARVO_SPECIAL_REPORT_EVENT_MASK_BUTTON = 0x0f,\n};\n\nstruct arvo_roccat_report {\n\tuint8_t profile;\n\tuint8_t button;\n\tuint8_t action;\n} __packed;\n\nenum arvo_roccat_report_action {\n\tARVO_ROCCAT_REPORT_ACTION_RELEASE = 0,\n\tARVO_ROCCAT_REPORT_ACTION_PRESS = 1,\n};\n\nstruct arvo_device {\n\tint roccat_claimed;\n\tint chrdev_minor;\n\n\tstruct mutex arvo_lock;\n\n\tint actual_profile;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

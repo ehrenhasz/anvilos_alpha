@@ -1,0 +1,9 @@
+{
+  "module_name": "prcc.h",
+  "hash_id": "a3ed16828fab21265e0402a1ae70611d5fab1fddcedc47cc5f9f4857e7110098",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/ux500/prcc.h",
+  "human_readable_source": " \n\n#ifndef __PRCC_H\n#define __PRCC_H\n\n#define PRCC_NUM_PERIPH_CLUSTERS 6\n#define PRCC_PERIPHS_PER_CLUSTER 32\n\n \nenum clkrst_index {\n\tCLKRST1_INDEX = 0,\n\tCLKRST2_INDEX,\n\tCLKRST3_INDEX,\n\tCLKRST5_INDEX,\n\tCLKRST6_INDEX,\n\tCLKRST_MAX,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

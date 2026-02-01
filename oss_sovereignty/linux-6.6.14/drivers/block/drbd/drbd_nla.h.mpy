@@ -1,0 +1,9 @@
+{
+  "module_name": "drbd_nla.h",
+  "hash_id": "9d823eab6c53bf81e136dea82cb7c83a0c1efe8f2f8b6301dfc2df9305ae8b5b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/block/drbd/drbd_nla.h",
+  "human_readable_source": " \n#ifndef __DRBD_NLA_H\n#define __DRBD_NLA_H\n\nextern int drbd_nla_parse_nested(struct nlattr *tb[], int maxtype, struct nlattr *nla,\n\t\t\t\t const struct nla_policy *policy);\nextern struct nlattr *drbd_nla_find_nested(int maxtype, struct nlattr *nla, int attrtype);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

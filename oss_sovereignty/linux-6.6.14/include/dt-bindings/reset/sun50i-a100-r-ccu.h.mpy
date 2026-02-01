@@ -1,0 +1,9 @@
+{
+  "module_name": "sun50i-a100-r-ccu.h",
+  "hash_id": "91db5bc59c301cfe3dab09966e2080684dd91d5ceda262cf8e957e942290e2e8",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/sun50i-a100-r-ccu.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_RST_SUN50I_A100_R_CCU_H_\n#define _DT_BINDINGS_RST_SUN50I_A100_R_CCU_H_\n\n#define RST_R_APB1_TIMER\t0\n#define RST_R_APB1_BUS_PWM\t1\n#define RST_R_APB1_PPU\t\t2\n#define RST_R_APB2_UART\t\t3\n#define RST_R_APB2_I2C0\t\t4\n#define RST_R_APB2_I2C1\t\t5\n#define RST_R_APB1_BUS_IR\t6\n#define RST_R_AHB_BUS_RTC\t7\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

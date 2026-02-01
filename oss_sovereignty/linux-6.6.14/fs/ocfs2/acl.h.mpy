@@ -1,0 +1,9 @@
+{
+  "module_name": "acl.h",
+  "hash_id": "e79c600ea137ad03ac62a83a86e7999468ed8aad92e1b872179d74dc4e0d1772",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/acl.h",
+  "human_readable_source": " \n \n\n#ifndef OCFS2_ACL_H\n#define OCFS2_ACL_H\n\n#include <linux/posix_acl_xattr.h>\n\nstruct ocfs2_acl_entry {\n\t__le16 e_tag;\n\t__le16 e_perm;\n\t__le32 e_id;\n};\n\nstruct posix_acl *ocfs2_iop_get_acl(struct inode *inode, int type, bool rcu);\nint ocfs2_iop_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,\n\t\t      struct posix_acl *acl, int type);\nextern int ocfs2_acl_chmod(struct inode *, struct buffer_head *);\nextern int ocfs2_init_acl(handle_t *, struct inode *, struct inode *,\n\t\t\t  struct buffer_head *, struct buffer_head *,\n\t\t\t  struct ocfs2_alloc_context *,\n\t\t\t  struct ocfs2_alloc_context *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "netconf.h",
+  "hash_id": "3ef56a687eb410e15815222e50be92bb1226457a422ea09da490e9cae3743182",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netconf.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_NETCONF_H_\n#define _UAPI_LINUX_NETCONF_H_\n\n#include <linux/types.h>\n#include <linux/netlink.h>\n\nstruct netconfmsg {\n\t__u8\tncm_family;\n};\n\nenum {\n\tNETCONFA_UNSPEC,\n\tNETCONFA_IFINDEX,\n\tNETCONFA_FORWARDING,\n\tNETCONFA_RP_FILTER,\n\tNETCONFA_MC_FORWARDING,\n\tNETCONFA_PROXY_NEIGH,\n\tNETCONFA_IGNORE_ROUTES_WITH_LINKDOWN,\n\tNETCONFA_INPUT,\n\tNETCONFA_BC_FORWARDING,\n\t__NETCONFA_MAX\n};\n#define NETCONFA_MAX\t(__NETCONFA_MAX - 1)\n#define NETCONFA_ALL\t-1\n\n#define NETCONFA_IFINDEX_ALL\t\t-1\n#define NETCONFA_IFINDEX_DEFAULT\t-2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

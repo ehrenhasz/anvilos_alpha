@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_mmhub.c",
+  "hash_id": "049980402534d2eacb397cfca86257b3532711a167d63abcb2f683d76b46ffbe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_mmhub.c",
+  "human_readable_source": " \n#include \"amdgpu.h\"\n#include \"amdgpu_ras.h\"\n\nint amdgpu_mmhub_ras_sw_init(struct amdgpu_device *adev)\n{\n\tint err;\n\tstruct amdgpu_mmhub_ras *ras;\n\n\tif (!adev->mmhub.ras)\n\t\treturn 0;\n\n\tras = adev->mmhub.ras;\n\terr = amdgpu_ras_register_ras_block(adev, &ras->ras_block);\n\tif (err) {\n\t\tdev_err(adev->dev, \"Failed to register mmhub ras block!\\n\");\n\t\treturn err;\n\t}\n\n\tstrcpy(ras->ras_block.ras_comm.name, \"mmhub\");\n\tras->ras_block.ras_comm.block = AMDGPU_RAS_BLOCK__MMHUB;\n\tras->ras_block.ras_comm.type = AMDGPU_RAS_ERROR__MULTI_UNCORRECTABLE;\n\tadev->mmhub.ras_if = &ras->ras_block.ras_comm;\n\n\t \n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

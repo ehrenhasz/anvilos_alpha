@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_powersave_bitdef.h",
+  "hash_id": "8042b42a886ea6f45fe29256a621c6bdc609bf633755272b86a89d76511f56c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_powersave_bitdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_POWERSAVE_BITDEF_H__\n#define __RTL8712_POWERSAVE_BITDEF_H__\n\n \n#define\t_UWF\t\t\tBIT(3)\n#define\t_MAGIC\t\t\tBIT(2)\n#define\t_WOW_EN\t\t\tBIT(1)\n#define\t_PMEN\t\t\tBIT(0)\n\n \n#define\t_PSSTATUS_SEL_MSK\t\t0x0F\n\n \n#define\t_PSSWITCH_ACT\t\t\tBIT(7)\n#define\t_PSSWITCH_SEL_MSK\t\t0x0F\n#define\t_PSSWITCH_SEL_SHT\t\t0\n\n \n#define\t_LPNAV_EN\t\t\tBIT(31)\n#define\t_LPNAV_EARLY_MSK\t\t0x7FFF0000\n#define\t_LPNAV_EARLY_SHT\t\t16\n#define\t_LPNAV_TH_MSK\t\t\t0x0000FFFF\n#define\t_LPNAV_TH_SHT\t\t\t0\n\n \n \n#define\t_TOGGLING\t\t\tBIT(7)\n#define\t_WWLAN\t\t\t\tBIT(3)\n#define\t_RPS_ST\t\t\t\tBIT(2)\n#define\t_WLAN_TRX\t\t\tBIT(1)\n#define\t_SYS_CLK\t\t\tBIT(0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

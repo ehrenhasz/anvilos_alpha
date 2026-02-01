@@ -1,0 +1,9 @@
+{
+  "module_name": "netprio_cgroup.h",
+  "hash_id": "0699de2ad5be5893b05817f88cdccc16f13a98f9aaf27c089b7319f92a7d2800",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netprio_cgroup.h",
+  "human_readable_source": " \n \n\n#ifndef _NETPRIO_CGROUP_H\n#define _NETPRIO_CGROUP_H\n\n#include <linux/cgroup.h>\n#include <linux/hardirq.h>\n#include <linux/rcupdate.h>\n\n#if IS_ENABLED(CONFIG_CGROUP_NET_PRIO)\nstruct netprio_map {\n\tstruct rcu_head rcu;\n\tu32 priomap_len;\n\tu32 priomap[];\n};\n\nstatic inline u32 task_netprioidx(struct task_struct *p)\n{\n\tstruct cgroup_subsys_state *css;\n\tu32 idx;\n\n\trcu_read_lock();\n\tcss = task_css(p, net_prio_cgrp_id);\n\tidx = css->id;\n\trcu_read_unlock();\n\treturn idx;\n}\n\nstatic inline void sock_update_netprioidx(struct sock_cgroup_data *skcd)\n{\n\tif (in_interrupt())\n\t\treturn;\n\n\tsock_cgroup_set_prioidx(skcd, task_netprioidx(current));\n}\n\n#else  \n\nstatic inline u32 task_netprioidx(struct task_struct *p)\n{\n\treturn 0;\n}\n\nstatic inline void sock_update_netprioidx(struct sock_cgroup_data *skcd)\n{\n}\n\n#endif  \n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "usbip.h",
+  "hash_id": "3cd385cc42b61e12bcfcae2ad231022c058ffd3eae1b1c9d912a5c5580e38a82",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/usbip/src/usbip.h",
+  "human_readable_source": " \n \n\n#ifndef __USBIP_H\n#define __USBIP_H\n\n#ifdef HAVE_CONFIG_H\n#include \"../config.h\"\n#endif\n\n \nint usbip_attach(int argc, char *argv[]);\nint usbip_detach(int argc, char *argv[]);\nint usbip_list(int argc, char *argv[]);\nint usbip_bind(int argc, char *argv[]);\nint usbip_unbind(int argc, char *argv[]);\nint usbip_port_show(int argc, char *argv[]);\n\nvoid usbip_attach_usage(void);\nvoid usbip_detach_usage(void);\nvoid usbip_list_usage(void);\nvoid usbip_bind_usage(void);\nvoid usbip_unbind_usage(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

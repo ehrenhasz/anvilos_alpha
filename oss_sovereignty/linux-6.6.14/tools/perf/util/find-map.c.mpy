@@ -1,0 +1,9 @@
+{
+  "module_name": "find-map.c",
+  "hash_id": "44be2ea71109a16d8ebdad62eb5b739f2eff2880cd8f491847a4e1249650d6d4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/find-map.c",
+  "human_readable_source": "\nstatic int find_map(void **start, void **end, const char *name)\n{\n\tFILE *maps;\n\tchar line[128];\n\tint found = 0;\n\n\tmaps = fopen(\"/proc/self/maps\", \"r\");\n\tif (!maps) {\n\t\tfprintf(stderr, \"cannot open maps\\n\");\n\t\treturn -1;\n\t}\n\n\twhile (!found && fgets(line, sizeof(line), maps)) {\n\t\tint m = -1;\n\n\t\t \n\t\tif (2 != sscanf(line, \"%p-%p r-xp %*x %*x:%*x %*u %n\",\n\t\t\t\tstart, end, &m))\n\t\t\tcontinue;\n\t\tif (m < 0)\n\t\t\tcontinue;\n\n\t\tif (!strncmp(&line[m], name, strlen(name)))\n\t\t\tfound = 1;\n\t}\n\n\tfclose(maps);\n\treturn !found;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

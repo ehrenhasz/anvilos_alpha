@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b330f3ccaec243303bde1e42f3357523e2a916028281c0c79a2de0e2e3b065d8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vdpa/vdpa_user/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nvduse-y := vduse_dev.o iova_domain.o\n\nobj-$(CONFIG_VDPA_USER) += vduse.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

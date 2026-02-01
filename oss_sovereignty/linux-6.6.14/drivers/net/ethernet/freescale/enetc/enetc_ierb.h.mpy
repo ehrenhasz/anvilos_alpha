@@ -1,0 +1,9 @@
+{
+  "module_name": "enetc_ierb.h",
+  "hash_id": "cb3168fb992ab1b34275d870a9e51a617e6b05096e1ace461fca7c01ce747947",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/enetc/enetc_ierb.h",
+  "human_readable_source": " \n \n\n#include <linux/pci.h>\n#include <linux/platform_device.h>\n\n#if IS_ENABLED(CONFIG_FSL_ENETC_IERB)\n\nint enetc_ierb_register_pf(struct platform_device *pdev,\n\t\t\t   struct pci_dev *pf_pdev);\n\n#else\n\nstatic inline int enetc_ierb_register_pf(struct platform_device *pdev,\n\t\t\t\t\t struct pci_dev *pf_pdev)\n{\n\treturn -EOPNOTSUPP;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs.conf",
+  "hash_id": "80cfdb314cfe3d927db44e6c76942d9b21ca4ff42d3765a3cb6e4eed514b26f9",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/modules-load.d/zfs.conf",
+  "human_readable_source": "# The default behavior is to allow udev to load the kernel modules on demand.\n# Uncomment the following line to unconditionally load them at boot.\n#zfs\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

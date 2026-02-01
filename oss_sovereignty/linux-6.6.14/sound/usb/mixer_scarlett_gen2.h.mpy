@@ -1,0 +1,9 @@
+{
+  "module_name": "mixer_scarlett_gen2.h",
+  "hash_id": "d6cd6d9b4fa9cab4692556d3ca15bec97d23a07d05c43a263674d7fc4830bb51",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/mixer_scarlett_gen2.h",
+  "human_readable_source": " \n#ifndef __USB_MIXER_SCARLETT_GEN2_H\n#define __USB_MIXER_SCARLETT_GEN2_H\n\nint snd_scarlett_gen2_init(struct usb_mixer_interface *mixer);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

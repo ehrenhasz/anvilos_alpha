@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objgetitemiter.c.qstr",
+  "hash_id": "ad33784f2de56dd3a87983604598a2893cd661bbe87556f0e87ea7a3df3db833",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objgetitemiter.c.qstr",
+  "human_readable_source": "Q(iterator)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

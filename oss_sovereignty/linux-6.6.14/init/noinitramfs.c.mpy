@@ -1,0 +1,9 @@
+{
+  "module_name": "noinitramfs.c",
+  "hash_id": "d37c6a8a0296ca9618846680b6983872faa5446931dec2ce00e004dc4732e34f",
+  "original_prompt": "Ingested from linux-6.6.14/init/noinitramfs.c",
+  "human_readable_source": "\n \n#include <linux/init.h>\n#include <linux/stat.h>\n#include <linux/kdev_t.h>\n#include <linux/syscalls.h>\n#include <linux/init_syscalls.h>\n#include <linux/umh.h>\n\n \nstatic int __init default_rootfs(void)\n{\n\tint err;\n\n\tusermodehelper_enable();\n\terr = init_mkdir(\"/dev\", 0755);\n\tif (err < 0)\n\t\tgoto out;\n\n\terr = init_mknod(\"/dev/console\", S_IFCHR | S_IRUSR | S_IWUSR,\n\t\t\tnew_encode_dev(MKDEV(5, 1)));\n\tif (err < 0)\n\t\tgoto out;\n\n\terr = init_mkdir(\"/root\", 0700);\n\tif (err < 0)\n\t\tgoto out;\n\n\treturn 0;\n\nout:\n\tprintk(KERN_WARNING \"Failed to create a rootfs\\n\");\n\treturn err;\n}\nrootfs_initcall(default_rootfs);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

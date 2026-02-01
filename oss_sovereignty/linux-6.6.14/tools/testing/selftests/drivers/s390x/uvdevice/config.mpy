@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "fceb1c8cd721dbf5cb1fa5aca7f0184c72f38df6c3319866425211273ac06257",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/s390x/uvdevice/config",
+  "human_readable_source": "CONFIG_S390_UV_UAPI=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

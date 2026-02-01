@@ -1,0 +1,9 @@
+{
+  "module_name": "symtab.h",
+  "hash_id": "50f80c6dab7f9d4fe296d644b52c693779503eb15817369d2d6e748f8dbc2042",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/ss/symtab.h",
+  "human_readable_source": " \n \n#ifndef _SS_SYMTAB_H_\n#define _SS_SYMTAB_H_\n\n#include \"hashtab.h\"\n\nstruct symtab {\n\tstruct hashtab table;\t \n\tu32 nprim;\t\t \n};\n\nint symtab_init(struct symtab *s, u32 size);\n\nint symtab_insert(struct symtab *s, char *name, void *datum);\nvoid *symtab_search(struct symtab *s, const char *name);\n\n#endif\t \n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

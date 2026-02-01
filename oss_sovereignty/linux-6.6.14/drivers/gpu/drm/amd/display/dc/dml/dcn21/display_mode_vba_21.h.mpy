@@ -1,0 +1,9 @@
+{
+  "module_name": "display_mode_vba_21.h",
+  "hash_id": "c52c7918c38b8b20a91ab39f196dad4072d70d49fe4f1313ecb89d1341d9a26d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dml/dcn21/display_mode_vba_21.h",
+  "human_readable_source": " \n\n#ifndef __DML21_DISPLAY_MODE_VBA_H__\n#define __DML21_DISPLAY_MODE_VBA_H__\n\nvoid dml21_recalculate(struct display_mode_lib *mode_lib);\nvoid dml21_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

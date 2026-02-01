@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3b6e1ca0f0f11649c4b689b7a563f6cf82ac0d608708175515b1a568c4c52346",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/x86/turbostat/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCC\t\t= $(CROSS_COMPILE)gcc\nBUILD_OUTPUT\t:= $(CURDIR)\nPREFIX\t\t?= /usr\nDESTDIR\t\t?=\n\nifeq (\"$(origin O)\", \"command line\")\n\tBUILD_OUTPUT := $(O)\nendif\n\nturbostat : turbostat.c\noverride CFLAGS +=\t-O2 -Wall -Wextra -I../../../include\noverride CFLAGS +=\t-DMSRHEADER='\"../../../../arch/x86/include/asm/msr-index.h\"'\noverride CFLAGS +=\t-DINTEL_FAMILY_HEADER='\"../../../../arch/x86/include/asm/intel-family.h\"'\noverride CFLAGS +=\t-D_FILE_OFFSET_BITS=64\noverride CFLAGS +=\t-D_FORTIFY_SOURCE=2\n\n%: %.c\n\t@mkdir -p $(BUILD_OUTPUT)\n\t$(CC) $(CFLAGS) $< -o $(BUILD_OUTPUT)/$@ $(LDFLAGS) -lcap -lrt\n\n.PHONY : clean\nclean :\n\t@rm -f $(BUILD_OUTPUT)/turbostat\n\ninstall : turbostat\n\tinstall -d  $(DESTDIR)$(PREFIX)/bin\n\tinstall $(BUILD_OUTPUT)/turbostat $(DESTDIR)$(PREFIX)/bin/turbostat\n\tinstall -d  $(DESTDIR)$(PREFIX)/share/man/man8\n\tinstall -m 644 turbostat.8 $(DESTDIR)$(PREFIX)/share/man/man8\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

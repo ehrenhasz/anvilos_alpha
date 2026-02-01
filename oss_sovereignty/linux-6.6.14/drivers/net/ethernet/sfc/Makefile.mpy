@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b30763333efa12b3a61740e9493fd8d43d24e17a0bf1f6873e7dbbd67e2fccb0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsfc-y\t\t\t+= efx.o efx_common.o efx_channels.o nic.o \\\n\t\t\t   ef10.o \\\n\t\t\t   tx.o tx_common.o tx_tso.o rx.o rx_common.o \\\n\t\t\t   selftest.o ethtool.o ethtool_common.o ptp.o \\\n\t\t\t   mcdi.o mcdi_port.o mcdi_port_common.o \\\n\t\t\t   mcdi_functions.o mcdi_filters.o mcdi_mon.o \\\n\t\t\t   ef100.o ef100_nic.o ef100_netdev.o \\\n\t\t\t   ef100_ethtool.o ef100_rx.o ef100_tx.o \\\n\t\t\t   efx_devlink.o\nsfc-$(CONFIG_SFC_MTD)\t+= mtd.o\nsfc-$(CONFIG_SFC_SRIOV)\t+= sriov.o ef10_sriov.o ef100_sriov.o ef100_rep.o \\\n                           mae.o tc.o tc_bindings.o tc_counters.o \\\n                           tc_encap_actions.o tc_conntrack.o\n\nobj-$(CONFIG_SFC)\t+= sfc.o\n\nobj-$(CONFIG_SFC_FALCON) += falcon/\nobj-$(CONFIG_SFC_SIENA) += siena/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

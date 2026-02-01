@@ -1,0 +1,9 @@
+{
+  "module_name": "vmsystm.h",
+  "hash_id": "d85a5d2d7b450089c61f21a32b00a330821263ea2091df8f07d4b5f173f85c17",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/vmsystm.h",
+  "human_readable_source": " \n\n#ifndef _SPL_VMSYSTM_H_\n#define\t_SPL_VMSYSTM_H_\n\n#define\txcopyout copyout\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

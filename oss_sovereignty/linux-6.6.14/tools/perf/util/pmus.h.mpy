@@ -1,0 +1,9 @@
+{
+  "module_name": "pmus.h",
+  "hash_id": "645df224347dd66c9fc1ed6b7d9cba0809bd99c804b9bf6edffabf5c3f0992df",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/pmus.h",
+  "human_readable_source": " \n#ifndef __PMUS_H\n#define __PMUS_H\n\nstruct perf_pmu;\nstruct print_callbacks;\n\nint pmu_name_len_no_suffix(const char *str, unsigned long *num);\n\nvoid perf_pmus__destroy(void);\n\nstruct perf_pmu *perf_pmus__find(const char *name);\nstruct perf_pmu *perf_pmus__find_by_type(unsigned int type);\n\nstruct perf_pmu *perf_pmus__scan(struct perf_pmu *pmu);\nstruct perf_pmu *perf_pmus__scan_core(struct perf_pmu *pmu);\n\nconst struct perf_pmu *perf_pmus__pmu_for_pmu_filter(const char *str);\n\nint perf_pmus__num_mem_pmus(void);\nvoid perf_pmus__print_pmu_events(const struct print_callbacks *print_cb, void *print_state);\nbool perf_pmus__have_event(const char *pname, const char *name);\nint perf_pmus__num_core_pmus(void);\nbool perf_pmus__supports_extended_type(void);\nchar *perf_pmus__default_pmu_name(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

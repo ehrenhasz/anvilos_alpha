@@ -1,0 +1,9 @@
+{
+  "module_name": "scc.h",
+  "hash_id": "6154e6c7269dd45f53546abb0b0dd4822130a3f3231d49978e326a0aea8e80bd",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/scc.h",
+  "human_readable_source": " \n \n#ifndef\t_SCC_H\n#define\t_SCC_H\n\n#include <uapi/linux/scc.h>\n\n\nenum {TX_OFF, TX_ON};\t \n\n \n\n#define VECTOR_MASK\t0x06\n#define TXINT\t\t0x00\n#define EXINT\t\t0x02\n#define RXINT\t\t0x04\n#define SPINT\t\t0x06\n\n#ifdef CONFIG_SCC_DELAY\n#define Inb(port)\tinb_p(port)\n#define Outb(port, val)\toutb_p(val, port)\n#else\n#define Inb(port)\tinb(port)\n#define Outb(port, val)\toutb(val, port)\n#endif\n\n \n\nstruct scc_kiss {\n\tunsigned char txdelay;\t\t \n\tunsigned char persist;\t\t \n\tunsigned char slottime;\t\t \n\tunsigned char tailtime;\t\t \n\tunsigned char fulldup;\t\t \n\tunsigned char waittime;\t\t \n\tunsigned int  maxkeyup;\t\t \n\tunsigned int  mintime;\t\t \n\tunsigned int  idletime;\t\t \n\tunsigned int  maxdefer;\t\t \n\tunsigned char tx_inhibit;\t \t\n\tunsigned char group;\t\t \n\tunsigned char mode;\t\t \n\tunsigned char softdcd;\t\t \n};\n\n\n \n\nstruct scc_channel {\n\tint init;\t\t\t \n\n\tstruct net_device *dev;\t\t \n\tstruct net_device_stats dev_stat; \n\n\tchar brand;\t\t\t \n\tlong clock;\t\t\t \n\n\tio_port ctrl;\t\t\t \n\tio_port\tdata;\t\t\t \n\tio_port special;\t\t \n\tint irq;\t\t\t \n\n\tchar option;\n\tchar enhanced;\t\t\t \n\n\tunsigned char wreg[16]; \t \n\tunsigned char status;\t\t \n\tunsigned char dcd;\t\t \n\n        struct scc_kiss kiss;\t\t \n        struct scc_stat stat;\t\t \n        struct scc_modem modem; \t \n\n        struct sk_buff_head tx_queue;\t \n        struct sk_buff *rx_buff;\t \n        struct sk_buff *tx_buff;\t \n\n\t \n\tstruct timer_list tx_t;\t\t \n\tstruct timer_list tx_wdog;\t \n\t\n\t \n\tspinlock_t\tlock;\t\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

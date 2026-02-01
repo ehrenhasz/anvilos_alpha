@@ -1,0 +1,9 @@
+{
+  "module_name": "curs.c",
+  "hash_id": "e474d596db9bbfd6d603ab4216c77bd2e4bf5a326d71092d99815ec60e70fb77",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/curs.c",
+  "human_readable_source": " \n#include \"curs.h\"\n\n#include <nvif/class.h>\n\nint\nnv50_curs_new(struct nouveau_drm *drm, int head, struct nv50_wndw **pwndw)\n{\n\tstruct {\n\t\ts32 oclass;\n\t\tint version;\n\t\tint (*new)(struct nouveau_drm *, int, s32, struct nv50_wndw **);\n\t} curses[] = {\n\t\t{ GA102_DISP_CURSOR, 0, cursc37a_new },\n\t\t{ TU102_DISP_CURSOR, 0, cursc37a_new },\n\t\t{ GV100_DISP_CURSOR, 0, cursc37a_new },\n\t\t{ GK104_DISP_CURSOR, 0, curs907a_new },\n\t\t{ GF110_DISP_CURSOR, 0, curs907a_new },\n\t\t{ GT214_DISP_CURSOR, 0, curs507a_new },\n\t\t{   G82_DISP_CURSOR, 0, curs507a_new },\n\t\t{  NV50_DISP_CURSOR, 0, curs507a_new },\n\t\t{}\n\t};\n\tstruct nv50_disp *disp = nv50_disp(drm->dev);\n\tint cid;\n\n\tcid = nvif_mclass(&disp->disp->object, curses);\n\tif (cid < 0) {\n\t\tNV_ERROR(drm, \"No supported cursor immediate class\\n\");\n\t\treturn cid;\n\t}\n\n\treturn curses[cid].new(drm, head, curses[cid].oclass, pwndw);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sdio_ops.h",
+  "hash_id": "1a294f976a351510919c64234c3d428c755d9be08f5640d2d5196e0675c0c00b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/core/sdio_ops.h",
+  "human_readable_source": " \n \n\n#ifndef _MMC_SDIO_OPS_H\n#define _MMC_SDIO_OPS_H\n\n#include <linux/types.h>\n#include <linux/mmc/sdio.h>\n\nstruct mmc_host;\nstruct mmc_card;\nstruct work_struct;\n\nint mmc_send_io_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr);\nint mmc_io_rw_direct(struct mmc_card *card, int write, unsigned fn,\n\tunsigned addr, u8 in, u8* out);\nint mmc_io_rw_extended(struct mmc_card *card, int write, unsigned fn,\n\tunsigned addr, int incr_addr, u8 *buf, unsigned blocks, unsigned blksz);\nint sdio_reset(struct mmc_host *host);\nvoid sdio_irq_work(struct work_struct *work);\n\nstatic inline bool sdio_is_io_busy(u32 opcode, u32 arg)\n{\n\tu32 addr;\n\n\taddr = (arg >> 9) & 0x1FFFF;\n\n\treturn (opcode == SD_IO_RW_EXTENDED ||\n\t\t(opcode == SD_IO_RW_DIRECT &&\n\t\t!(addr == SDIO_CCCR_ABORT || addr == SDIO_CCCR_SUSPEND)));\n}\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

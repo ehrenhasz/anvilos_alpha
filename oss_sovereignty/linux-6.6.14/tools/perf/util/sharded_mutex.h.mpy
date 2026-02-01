@@ -1,0 +1,9 @@
+{
+  "module_name": "sharded_mutex.h",
+  "hash_id": "7feae16c3d6ecc37c05af91c20a6ea1579c36843ec66f7d6cfee9cff99abb78a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/sharded_mutex.h",
+  "human_readable_source": " \n#ifndef PERF_SHARDED_MUTEX_H\n#define PERF_SHARDED_MUTEX_H\n\n#include \"mutex.h\"\n#include \"hashmap.h\"\n\n \nstruct sharded_mutex {\n\t \n\tunsigned int cap_bits;\n\tstruct mutex mutexes[];\n};\n\nstruct sharded_mutex *sharded_mutex__new(size_t num_shards);\nvoid sharded_mutex__delete(struct sharded_mutex *sm);\n\nstatic inline struct mutex *sharded_mutex__get_mutex(struct sharded_mutex *sm, size_t hash)\n{\n\treturn &sm->mutexes[hash_bits(hash, sm->cap_bits)];\n}\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

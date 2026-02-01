@@ -1,0 +1,9 @@
+{
+  "module_name": "stm32-pinfunc.h",
+  "hash_id": "3fd007b81fd62f0df9e3ae408ac00bdee285e3af5a9052b29ed7b36e360d5721",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/stm32-pinfunc.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_STM32_PINFUNC_H\n#define _DT_BINDINGS_STM32_PINFUNC_H\n\n \n#define GPIO\t0x0\n#define AF0\t0x1\n#define AF1\t0x2\n#define AF2\t0x3\n#define AF3\t0x4\n#define AF4\t0x5\n#define AF5\t0x6\n#define AF6\t0x7\n#define AF7\t0x8\n#define AF8\t0x9\n#define AF9\t0xa\n#define AF10\t0xb\n#define AF11\t0xc\n#define AF12\t0xd\n#define AF13\t0xe\n#define AF14\t0xf\n#define AF15\t0x10\n#define ANALOG\t0x11\n\n \n#define PIN_NO(port, line)\t(((port) - 'A') * 0x10 + (line))\n\n#define STM32_PINMUX(port, line, mode) (((PIN_NO(port, line)) << 8) | (mode))\n\n \n#define STM32MP_PKG_AA\t0x1\n#define STM32MP_PKG_AB\t0x2\n#define STM32MP_PKG_AC\t0x4\n#define STM32MP_PKG_AD\t0x8\n#define STM32MP_PKG_AI\t0x100\n#define STM32MP_PKG_AK\t0x400\n#define STM32MP_PKG_AL\t0x800\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

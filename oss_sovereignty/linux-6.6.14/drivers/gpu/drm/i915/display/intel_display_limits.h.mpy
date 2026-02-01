@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_display_limits.h",
+  "hash_id": "9cdc30f1197060b1cbb56c5bac36afe09aa30e0580e857449a69b46a3777dfb2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_display_limits.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_DISPLAY_LIMITS_H__\n#define __INTEL_DISPLAY_LIMITS_H__\n\n \nenum pipe {\n\tINVALID_PIPE = -1,\n\n\tPIPE_A = 0,\n\tPIPE_B,\n\tPIPE_C,\n\tPIPE_D,\n\t_PIPE_EDP,\n\n\tI915_MAX_PIPES = _PIPE_EDP\n};\n\nenum transcoder {\n\tINVALID_TRANSCODER = -1,\n\t \n\tTRANSCODER_A = PIPE_A,\n\tTRANSCODER_B = PIPE_B,\n\tTRANSCODER_C = PIPE_C,\n\tTRANSCODER_D = PIPE_D,\n\n\t \n\tTRANSCODER_EDP,\n\tTRANSCODER_DSI_0,\n\tTRANSCODER_DSI_1,\n\tTRANSCODER_DSI_A = TRANSCODER_DSI_0,\t \n\tTRANSCODER_DSI_C = TRANSCODER_DSI_1,\t \n\n\tI915_MAX_TRANSCODERS\n};\n\n \nenum plane_id {\n\tPLANE_PRIMARY,\n\tPLANE_SPRITE0,\n\tPLANE_SPRITE1,\n\tPLANE_SPRITE2,\n\tPLANE_SPRITE3,\n\tPLANE_SPRITE4,\n\tPLANE_SPRITE5,\n\tPLANE_CURSOR,\n\n\tI915_MAX_PLANES,\n};\n\nenum port {\n\tPORT_NONE = -1,\n\n\tPORT_A = 0,\n\tPORT_B,\n\tPORT_C,\n\tPORT_D,\n\tPORT_E,\n\tPORT_F,\n\tPORT_G,\n\tPORT_H,\n\tPORT_I,\n\n\t \n\tPORT_TC1 = PORT_D,\n\tPORT_TC2,\n\tPORT_TC3,\n\tPORT_TC4,\n\tPORT_TC5,\n\tPORT_TC6,\n\n\t \n\tPORT_D_XELPD = PORT_TC5,\n\tPORT_E_XELPD,\n\n\tI915_MAX_PORTS\n};\n\nenum hpd_pin {\n\tHPD_NONE = 0,\n\tHPD_TV = HPD_NONE,      \n\tHPD_CRT,\n\tHPD_SDVO_B,\n\tHPD_SDVO_C,\n\tHPD_PORT_A,\n\tHPD_PORT_B,\n\tHPD_PORT_C,\n\tHPD_PORT_D,\n\tHPD_PORT_E,\n\tHPD_PORT_TC1,\n\tHPD_PORT_TC2,\n\tHPD_PORT_TC3,\n\tHPD_PORT_TC4,\n\tHPD_PORT_TC5,\n\tHPD_PORT_TC6,\n\n\tHPD_NUM_PINS\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

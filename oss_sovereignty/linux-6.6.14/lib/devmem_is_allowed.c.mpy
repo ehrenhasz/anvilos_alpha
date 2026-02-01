@@ -1,0 +1,9 @@
+{
+  "module_name": "devmem_is_allowed.c",
+  "hash_id": "a328a8b5892f0c8aa2091a1640df871d588cc36f74f0a8109c657957adffe9f1",
+  "original_prompt": "Ingested from linux-6.6.14/lib/devmem_is_allowed.c",
+  "human_readable_source": "\n \n\n#include <linux/mm.h>\n#include <linux/ioport.h>\n#include <linux/io.h>\n\n \nint devmem_is_allowed(unsigned long pfn)\n{\n\tif (iomem_is_exclusive(PFN_PHYS(pfn)))\n\t\treturn 0;\n\tif (!page_is_ram(pfn))\n\t\treturn 1;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

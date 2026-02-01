@@ -1,0 +1,9 @@
+{
+  "module_name": "scsi_message.h",
+  "hash_id": "ef7e14df16be54c2a9d0b16ace5c820c435787fc01e575c6eb15566e7c6e9352",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/aic7xxx/scsi_message.h",
+  "human_readable_source": " \n\n \t\t      \n#define MSG_SAVEDATAPOINTER\t0x02  \n#define MSG_RESTOREPOINTERS\t0x03  \n#define MSG_DISCONNECT\t\t0x04  \n#define MSG_MESSAGE_REJECT\t0x07  \n#define MSG_NOOP\t\t0x08  \n\n \n#define MSG_SIMPLE_Q_TAG\t0x20  \n#define MSG_IGN_WIDE_RESIDUE\t0x23  \n\n \t\t      \t\n#define MSG_IDENTIFYFLAG\t0x80 \n#define MSG_IDENTIFY_DISCFLAG\t0x40 \n#define MSG_IDENTIFY(lun, disc)\t(((disc) ? 0xc0 : MSG_IDENTIFYFLAG) | (lun))\n#define MSG_ISIDENTIFY(m)\t((m) & MSG_IDENTIFYFLAG)\n#define MSG_IDENTIFY_LUNMASK\t0x3F \n\n \n#define MSG_EXT_SDTR_LEN\t0x03\n\n#define MSG_EXT_WDTR_LEN\t0x02\n#define MSG_EXT_WDTR_BUS_8_BIT\t0x00\n#define MSG_EXT_WDTR_BUS_16_BIT\t0x01\n#define MSG_EXT_WDTR_BUS_32_BIT\t0x02  \n\n#define MSG_EXT_PPR_LEN\t\t0x06\n#define\tMSG_EXT_PPR_PCOMP_EN\t0x80\n#define\tMSG_EXT_PPR_RTI\t\t0x40\n#define\tMSG_EXT_PPR_RD_STRM\t0x20\n#define\tMSG_EXT_PPR_WR_FLOW\t0x10\n#define\tMSG_EXT_PPR_HOLD_MCS\t0x08\n#define\tMSG_EXT_PPR_QAS_REQ\t0x04\n#define\tMSG_EXT_PPR_DT_REQ\t0x02\n#define MSG_EXT_PPR_IU_REQ\t0x01\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

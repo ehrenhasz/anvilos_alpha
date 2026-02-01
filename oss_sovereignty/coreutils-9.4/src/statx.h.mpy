@@ -1,0 +1,9 @@
+{
+  "module_name": "statx.h",
+  "hash_id": "3ce5d7df4a143c7979b201be066e5668fc1e218214efcd4fa87e6ec1fd9bfcc1",
+  "original_prompt": "Ingested from coreutils-9.4/src/statx.h",
+  "human_readable_source": " \nstatic inline struct timespec\nstatx_timestamp_to_timespec (struct statx_timestamp tsx)\n{\n  struct timespec ts;\n\n  ts.tv_sec = tsx.tv_sec;\n  ts.tv_nsec = tsx.tv_nsec;\n  return ts;\n}\n\nstatic inline void\nstatx_to_stat (struct statx *stx, struct stat *stat)\n{\n  stat->st_dev = makedev (stx->stx_dev_major, stx->stx_dev_minor);\n  stat->st_ino = stx->stx_ino;\n  stat->st_mode = stx->stx_mode;\n  stat->st_nlink = stx->stx_nlink;\n  stat->st_uid = stx->stx_uid;\n  stat->st_gid = stx->stx_gid;\n  stat->st_rdev = makedev (stx->stx_rdev_major, stx->stx_rdev_minor);\n  stat->st_size = stx->stx_size;\n  stat->st_blksize = stx->stx_blksize;\n \n#  define SC_ST_BLOCKS st_blocks\n  stat->SC_ST_BLOCKS = stx->stx_blocks;\n  stat->st_atim = statx_timestamp_to_timespec (stx->stx_atime);\n  stat->st_mtim = statx_timestamp_to_timespec (stx->stx_mtime);\n  stat->st_ctim = statx_timestamp_to_timespec (stx->stx_ctime);\n}\n# endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

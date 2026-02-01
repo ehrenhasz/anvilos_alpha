@@ -1,0 +1,9 @@
+{
+  "module_name": "header.S",
+  "hash_id": "73fbb464041ba6941518f2700552c0c2420bb925e7c3fa1d7bdc564dbdecc0e4",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/realmode/rm/header.S",
+  "human_readable_source": " \n \n\n#include <linux/linkage.h>\n#include <asm/page_types.h>\n#include <asm/segment.h>\n\n#include \"realmode.h\"\n\t\n\t.section \".header\", \"a\"\n\n\t.balign\t16\nSYM_DATA_START(real_mode_header)\n\t.long\tpa_text_start\n\t.long\tpa_ro_end\n\t \n\t.long\tpa_trampoline_start\n\t.long\tpa_trampoline_header\n#ifdef CONFIG_AMD_MEM_ENCRYPT\n\t.long\tpa_sev_es_trampoline_start\n#endif\n#ifdef CONFIG_X86_64\n\t.long\tpa_trampoline_start64\n\t.long\tpa_trampoline_pgd;\n#endif\n\t \n#ifdef CONFIG_ACPI_SLEEP\n\t.long\tpa_wakeup_start\n\t.long\tpa_wakeup_header\n#endif\n\t \n\t.long\tpa_machine_real_restart_asm\n#ifdef CONFIG_X86_64\n\t.long\t__KERNEL32_CS\n#endif\nSYM_DATA_END(real_mode_header)\n\n\t \n\t.section \".signature\",\"a\"\n\t.balign 4\nSYM_DATA(end_signature, .long REALMODE_END_SIGNATURE)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

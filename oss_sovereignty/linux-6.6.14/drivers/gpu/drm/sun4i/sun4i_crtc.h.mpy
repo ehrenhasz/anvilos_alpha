@@ -1,0 +1,9 @@
+{
+  "module_name": "sun4i_crtc.h",
+  "hash_id": "879d22f2c7fdf03ae335191fbb1eff9f31a2c69c2308bb64eba713e0e3f8002a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sun4i/sun4i_crtc.h",
+  "human_readable_source": " \n \n\n#ifndef _SUN4I_CRTC_H_\n#define _SUN4I_CRTC_H_\n\nstruct sun4i_crtc {\n\tstruct drm_crtc\t\t\tcrtc;\n\tstruct drm_pending_vblank_event\t*event;\n\n\tstruct sunxi_engine\t\t*engine;\n\tstruct sun4i_tcon\t\t*tcon;\n};\n\nstatic inline struct sun4i_crtc *drm_crtc_to_sun4i_crtc(struct drm_crtc *crtc)\n{\n\treturn container_of(crtc, struct sun4i_crtc, crtc);\n}\n\nstruct sun4i_crtc *sun4i_crtc_init(struct drm_device *drm,\n\t\t\t\t   struct sunxi_engine *engine,\n\t\t\t\t   struct sun4i_tcon *tcon);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

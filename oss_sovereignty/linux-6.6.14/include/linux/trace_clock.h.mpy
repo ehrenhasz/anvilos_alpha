@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_clock.h",
+  "hash_id": "95d6796a725ce5b93238ec13958d35d2ade95941b696d18eaaed61aa2a91d76f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/trace_clock.h",
+  "human_readable_source": " \n#ifndef _LINUX_TRACE_CLOCK_H\n#define _LINUX_TRACE_CLOCK_H\n\n \n#include <linux/compiler.h>\n#include <linux/types.h>\n\n#include <asm/trace_clock.h>\n\nextern u64 notrace trace_clock_local(void);\nextern u64 notrace trace_clock(void);\nextern u64 notrace trace_clock_jiffies(void);\nextern u64 notrace trace_clock_global(void);\nextern u64 notrace trace_clock_counter(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

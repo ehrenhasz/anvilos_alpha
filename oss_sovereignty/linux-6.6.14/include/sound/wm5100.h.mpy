@@ -1,0 +1,9 @@
+{
+  "module_name": "wm5100.h",
+  "hash_id": "844ab2befe4fbe8782f8e37430f5bc2b304ce2ed39480293a08ccbcdb97e7adc",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/wm5100.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SND_WM5100_H\n#define __LINUX_SND_WM5100_H\n\nenum wm5100_in_mode {\n\tWM5100_IN_SE = 0,\n\tWM5100_IN_DIFF = 1,\n\tWM5100_IN_DMIC = 2,\n};\n\nenum wm5100_dmic_sup {\n\tWM5100_DMIC_SUP_MICVDD = 0,\n\tWM5100_DMIC_SUP_MICBIAS1 = 1,\n\tWM5100_DMIC_SUP_MICBIAS2 = 2,\n\tWM5100_DMIC_SUP_MICBIAS3 = 3,\n};\n\nenum wm5100_micdet_bias {\n\tWM5100_MICDET_MICBIAS1 = 0,\n\tWM5100_MICDET_MICBIAS2 = 1,\n\tWM5100_MICDET_MICBIAS3 = 2,\n};\n\nstruct wm5100_jack_mode {\n\tenum wm5100_micdet_bias bias;\n\tint hp_pol;\n\tint micd_src;\n};\n\n#define WM5100_GPIO_SET 0x10000\n\nstruct wm5100_pdata {\n\tint reset;       \n\tint ldo_ena;     \n\tint hp_pol;      \n\tint irq_flags;\n\tint gpio_base;\n\n\tstruct wm5100_jack_mode jack_modes[2];\n\n\t \n\tenum wm5100_in_mode in_mode[4];\n\n\t \n\tenum wm5100_dmic_sup dmic_sup[4];\n\n\tint gpio_defaults[6];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

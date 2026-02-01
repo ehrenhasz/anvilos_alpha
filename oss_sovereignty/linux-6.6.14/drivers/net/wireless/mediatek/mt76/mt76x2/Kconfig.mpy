@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "99d8a6a16e9926483f90dbf3f5c6127b0d031c31d86b757a583e1b5d17a90544",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt76x2/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig MT76x2_COMMON\n\ttristate\n\tselect MT76x02_LIB\n\nconfig MT76x2E\n\ttristate \"MediaTek MT76x2E (PCIe) support\"\n\tselect MT76x2_COMMON\n\tdepends on MAC80211\n\tdepends on PCI\n\thelp\n\t  This adds support for MT7612/MT7602/MT7662-based PCIe wireless\n\t  devices, which comply with IEEE 802.11ac standards and support\n\t  2SS to 866Mbit/s PHY rate.\n\n\t  To compile this driver as a module, choose M here.\n\nconfig MT76x2U\n\ttristate \"MediaTek MT76x2U (USB) support\"\n\tselect MT76x2_COMMON\n\tselect MT76x02_USB\n\tdepends on MAC80211\n\tdepends on USB\n\thelp\n\t  This adds support for MT7612U-based USB 3.0 wireless dongles,\n\t  which comply with IEEE 802.11ac standards and support 2SS to\n\t  866Mbit/s PHY rate.\n\n\t  To compile this driver as a module, choose M here.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

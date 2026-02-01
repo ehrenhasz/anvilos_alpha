@@ -1,0 +1,9 @@
+{
+  "module_name": "fc0012.h",
+  "hash_id": "ed60cba163295ee903ba0553a7110e24f1ed6f61cfcddb3ea541e65a2a20da11",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/fc0012.h",
+  "human_readable_source": " \n \n\n#ifndef _FC0012_H_\n#define _FC0012_H_\n\n#include <media/dvb_frontend.h>\n#include \"fc001x-common.h\"\n\nstruct fc0012_config {\n\t \n\tu8 i2c_address;\n\n\t \n\tenum fc001x_xtal_freq xtal_freq;\n\n\tbool dual_master;\n\n\t \n\tbool loop_through;\n\n\t \n\tbool clock_out;\n};\n\n#if IS_REACHABLE(CONFIG_MEDIA_TUNER_FC0012)\nextern struct dvb_frontend *fc0012_attach(struct dvb_frontend *fe,\n\t\t\t\t\tstruct i2c_adapter *i2c,\n\t\t\t\t\tconst struct fc0012_config *cfg);\n#else\nstatic inline struct dvb_frontend *fc0012_attach(struct dvb_frontend *fe,\n\t\t\t\t\tstruct i2c_adapter *i2c,\n\t\t\t\t\tconst struct fc0012_config *cfg)\n{\n\tpr_warn(\"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

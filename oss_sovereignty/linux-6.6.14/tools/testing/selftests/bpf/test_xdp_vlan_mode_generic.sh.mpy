@@ -1,0 +1,9 @@
+{
+  "module_name": "test_xdp_vlan_mode_generic.sh",
+  "hash_id": "f54ea58f98da042c589dc295d4212e0aeac14b13385040839fe663bab2bcb63a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/test_xdp_vlan_mode_generic.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# Exit on failure\nset -e\n\n# Wrapper script to test generic-XDP\nexport TESTNAME=xdp_vlan_mode_generic\n./test_xdp_vlan.sh --mode=xdpgeneric\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

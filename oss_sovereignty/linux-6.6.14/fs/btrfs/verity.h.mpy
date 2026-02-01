@@ -1,0 +1,9 @@
+{
+  "module_name": "verity.h",
+  "hash_id": "e944351c127091cdd80883a1ae7fbc84ef4ba55e49551bbe2668e84d60c689bb",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/verity.h",
+  "human_readable_source": " \n\n#ifndef BTRFS_VERITY_H\n#define BTRFS_VERITY_H\n\n#ifdef CONFIG_FS_VERITY\n\nextern const struct fsverity_operations btrfs_verityops;\n\nint btrfs_drop_verity_items(struct btrfs_inode *inode);\nint btrfs_get_verity_descriptor(struct inode *inode, void *buf, size_t buf_size);\n\n#else\n\nstatic inline int btrfs_drop_verity_items(struct btrfs_inode *inode)\n{\n\treturn 0;\n}\n\nstatic inline int btrfs_get_verity_descriptor(struct inode *inode, void *buf,\n\t\t\t\t\t      size_t buf_size)\n{\n\treturn -EPERM;\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

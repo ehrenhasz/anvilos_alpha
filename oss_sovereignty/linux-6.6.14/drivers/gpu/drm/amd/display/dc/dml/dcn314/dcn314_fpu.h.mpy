@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn314_fpu.h",
+  "hash_id": "828f88d8089a3680e3be5894607adccc0cbf2383a979a6333ff44466cb2ee113",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dml/dcn314/dcn314_fpu.h",
+  "human_readable_source": " \n \n\n#ifndef __DCN314_FPU_H__\n#define __DCN314_FPU_H__\n\n#define DCN3_14_DEFAULT_DET_SIZE 384\n#define DCN3_14_MAX_DET_SIZE 384\n#define DCN3_14_MIN_COMPBUF_SIZE_KB 128\n#define DCN3_14_CRB_SEGMENT_SIZE_KB 64\n\nvoid dcn314_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_params);\nint dcn314_populate_dml_pipes_from_context_fpu(struct dc *dc, struct dc_state *context,\n\t\t\t\t\t       display_e2e_pipe_params_st *pipes,\n\t\t\t\t\t       bool fast_validate);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

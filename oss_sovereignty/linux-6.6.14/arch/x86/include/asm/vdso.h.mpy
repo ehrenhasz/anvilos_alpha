@@ -1,0 +1,9 @@
+{
+  "module_name": "vdso.h",
+  "hash_id": "08a5e63de1ae880f12b9310cb18987348cdfae3c57a1807534959b7fa16ebc56",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/vdso.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_VDSO_H\n#define _ASM_X86_VDSO_H\n\n#include <asm/page_types.h>\n#include <linux/linkage.h>\n#include <linux/init.h>\n\n#ifndef __ASSEMBLER__\n\n#include <linux/mm_types.h>\n\nstruct vdso_image {\n\tvoid *data;\n\tunsigned long size;    \n\n\tunsigned long alt, alt_len;\n\tunsigned long extable_base, extable_len;\n\tconst void *extable;\n\n\tlong sym_vvar_start;   \n\n\tlong sym_vvar_page;\n\tlong sym_pvclock_page;\n\tlong sym_hvclock_page;\n\tlong sym_timens_page;\n\tlong sym_VDSO32_NOTE_MASK;\n\tlong sym___kernel_sigreturn;\n\tlong sym___kernel_rt_sigreturn;\n\tlong sym___kernel_vsyscall;\n\tlong sym_int80_landing_pad;\n\tlong sym_vdso32_sigreturn_landing_pad;\n\tlong sym_vdso32_rt_sigreturn_landing_pad;\n};\n\n#ifdef CONFIG_X86_64\nextern const struct vdso_image vdso_image_64;\n#endif\n\n#ifdef CONFIG_X86_X32_ABI\nextern const struct vdso_image vdso_image_x32;\n#endif\n\n#if defined CONFIG_X86_32 || defined CONFIG_COMPAT\nextern const struct vdso_image vdso_image_32;\n#endif\n\nextern int __init init_vdso_image(const struct vdso_image *image);\n\nextern int map_vdso_once(const struct vdso_image *image, unsigned long addr);\n\nextern bool fixup_vdso_exception(struct pt_regs *regs, int trapnr,\n\t\t\t\t unsigned long error_code,\n\t\t\t\t unsigned long fault_addr);\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

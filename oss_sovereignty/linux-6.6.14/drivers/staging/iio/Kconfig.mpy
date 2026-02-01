@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a9c1c53aa19c2fe380fcf4cd741323bed943e5681a41cbbb17deb6240a61f353",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/iio/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Industrial I/O subsystem configuration\n#\nmenu \"IIO staging drivers\"\n\tdepends on IIO\n\nsource \"drivers/staging/iio/accel/Kconfig\"\nsource \"drivers/staging/iio/adc/Kconfig\"\nsource \"drivers/staging/iio/addac/Kconfig\"\nsource \"drivers/staging/iio/frequency/Kconfig\"\nsource \"drivers/staging/iio/impedance-analyzer/Kconfig\"\nsource \"drivers/staging/iio/resolver/Kconfig\"\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

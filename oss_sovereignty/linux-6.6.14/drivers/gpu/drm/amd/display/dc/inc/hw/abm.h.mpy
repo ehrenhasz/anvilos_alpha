@@ -1,0 +1,9 @@
+{
+  "module_name": "abm.h",
+  "hash_id": "381102e6c272791fc3c2ba48b38f2abf22f94205e309def46b2c21ae9848e9d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/inc/hw/abm.h",
+  "human_readable_source": " \n\n#ifndef __DC_ABM_H__\n#define __DC_ABM_H__\n\n#include \"dm_services_types.h\"\n\nstruct abm_save_restore;\n\nstruct abm {\n\tstruct dc_context *ctx;\n\tconst struct abm_funcs *funcs;\n\tbool dmcu_is_running;\n};\n\nstruct abm_funcs {\n\tvoid (*abm_init)(struct abm *abm, uint32_t back_light);\n\tbool (*set_abm_level)(struct abm *abm, unsigned int abm_level);\n\tbool (*set_abm_immediate_disable)(struct abm *abm, unsigned int panel_inst);\n\tbool (*set_pipe)(struct abm *abm, unsigned int controller_id, unsigned int panel_inst);\n\n\t \n\tbool (*set_backlight_level_pwm)(struct abm *abm,\n\t\t\tunsigned int backlight_pwm_u16_16,\n\t\t\tunsigned int frame_ramp,\n\t\t\tunsigned int controller_id,\n\t\t\tunsigned int panel_inst);\n\n\tunsigned int (*get_current_backlight)(struct abm *abm);\n\tunsigned int (*get_target_backlight)(struct abm *abm);\n\tbool (*init_abm_config)(struct abm *abm,\n\t\t\tconst char *src,\n\t\t\tunsigned int bytes,\n\t\t\tunsigned int inst);\n\tbool (*set_abm_pause)(struct abm *abm, bool pause, unsigned int panel_inst, unsigned int otg_inst);\n\tbool (*save_restore)(\n\t\t\tstruct abm *abm,\n\t\t\tunsigned int panel_inst,\n\t\t\tstruct abm_save_restore *pData);\n\tbool (*set_pipe_ex)(struct abm *abm,\n\t\t\tunsigned int otg_inst,\n\t\t\tunsigned int option,\n\t\t\tunsigned int panel_inst,\n\t\t\tunsigned int pwrseq_inst);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

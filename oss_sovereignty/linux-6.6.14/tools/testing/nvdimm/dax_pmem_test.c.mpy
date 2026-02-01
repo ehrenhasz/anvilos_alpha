@@ -1,0 +1,9 @@
+{
+  "module_name": "dax_pmem_test.c",
+  "hash_id": "6c0bf3673e7002a2b9865187fe62bb162bc306f2b2395862b99e4df90faee115",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/nvdimm/dax_pmem_test.c",
+  "human_readable_source": "\n\n\n#include <linux/module.h>\n#include <linux/printk.h>\n#include \"watermark.h\"\n\nnfit_test_watermark(dax_pmem);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

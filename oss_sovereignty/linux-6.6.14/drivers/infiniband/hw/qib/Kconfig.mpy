@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "df697821b370b562d3cd2a1a570fd8d3d65c411887c70e61320a75e19537fb94",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/qib/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig INFINIBAND_QIB\n\ttristate \"Intel PCIe HCA support\"\n\tdepends on 64BIT && INFINIBAND_RDMAVT\n\tdepends on PCI\n\thelp\n\tThis is a low-level driver for Intel PCIe QLE InfiniBand host\n\tchannel adapters.  This driver does not support the Intel\n\tHyperTransport card (model QHT7140).\n\nconfig INFINIBAND_QIB_DCA\n\tbool \"QIB DCA support\"\n\tdepends on INFINIBAND_QIB && DCA && SMP && !(INFINIBAND_QIB=y && DCA=m)\n\tdefault y\n\thelp\n\tSetting this enables DCA support on some Intel chip sets\n\twith the iba7322 HCA.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

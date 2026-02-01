@@ -1,0 +1,9 @@
+{
+  "module_name": "pmbus.h",
+  "hash_id": "4e60635c16f8764e7e0ca12b52213ec7d57b07129aa1322568b6bcae8ae21c54",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pmbus.h",
+  "human_readable_source": " \n \n\n#ifndef _PMBUS_H_\n#define _PMBUS_H_\n\n#include <linux/bits.h>\n\n \n\n \n#define PMBUS_SKIP_STATUS_CHECK\tBIT(0)\n\n \n#define PMBUS_WRITE_PROTECTED\tBIT(1)\n\n \n#define PMBUS_NO_CAPABILITY\t\t\tBIT(2)\n\n \n#define PMBUS_READ_STATUS_AFTER_FAILED_CHECK\tBIT(3)\n\n \n#define PMBUS_NO_WRITE_PROTECT\t\t\tBIT(4)\n\n \n#define PMBUS_USE_COEFFICIENTS_CMD\t\tBIT(5)\n\nstruct pmbus_platform_data {\n\tu32 flags;\t\t \n\n\t \n\tint num_regulators;\n\tstruct regulator_init_data *reg_init_data;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

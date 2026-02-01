@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_bit.h",
+  "hash_id": "544845be4be34d9669cf3eb7f14b5835af2b661b21130f168e4cf05fc4d5d4b4",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/libxfs/xfs_bit.h",
+  "human_readable_source": " \n \n#ifndef __XFS_BIT_H__\n#define\t__XFS_BIT_H__\n\n \n\n \nstatic inline uint64_t xfs_mask64hi(int n)\n{\n\treturn (uint64_t)-1 << (64 - (n));\n}\nstatic inline uint32_t xfs_mask32lo(int n)\n{\n\treturn ((uint32_t)1 << (n)) - 1;\n}\nstatic inline uint64_t xfs_mask64lo(int n)\n{\n\treturn ((uint64_t)1 << (n)) - 1;\n}\n\n \nstatic inline int xfs_highbit32(uint32_t v)\n{\n\treturn fls(v) - 1;\n}\n\n \nstatic inline int xfs_highbit64(uint64_t v)\n{\n\treturn fls64(v) - 1;\n}\n\n \nstatic inline int xfs_lowbit32(uint32_t v)\n{\n\treturn ffs(v) - 1;\n}\n\n \nstatic inline int xfs_lowbit64(uint64_t v)\n{\n\tuint32_t\tw = (uint32_t)v;\n\tint\t\tn = 0;\n\n\tif (w) {\t \n\t\tn = ffs(w);\n\t} else {\t \n\t\tw = (uint32_t)(v >> 32);\n\t\tif (w) {\n\t\t\tn = ffs(w);\n\t\t\tif (n)\n\t\t\t\tn += 32;\n\t\t}\n\t}\n\treturn n - 1;\n}\n\n \nextern int xfs_bitmap_empty(uint *map, uint size);\n\n \nextern int xfs_contig_bits(uint *map, uint size, uint start_bit);\n\n \nextern int xfs_next_bit(uint *map, uint size, uint start_bit);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

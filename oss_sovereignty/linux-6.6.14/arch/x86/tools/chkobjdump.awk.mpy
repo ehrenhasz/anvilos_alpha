@@ -1,0 +1,9 @@
+{
+  "module_name": "chkobjdump.awk",
+  "hash_id": "e6d88a26f5ac5b28d60be6bfed979dedce48512579792dbf80018d50223fe45a",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/tools/chkobjdump.awk",
+  "human_readable_source": "# GNU objdump version checker\n#\n# Usage:\n# objdump -v | awk -f chkobjdump.awk\nBEGIN {\n\t# objdump version 2.19 or later is OK for the test.\n\tod_ver = 2;\n\tod_sver = 19;\n}\n\n/^GNU objdump/ {\n\tverstr = \"\"\n\tgsub(/\\(.*\\)/, \"\");\n\tfor (i = 3; i <= NF; i++)\n\t\tif (match($(i), \"^[0-9]\")) {\n\t\t\tverstr = $(i);\n\t\t\tbreak;\n\t\t}\n\tif (verstr == \"\") {\n\t\tprintf(\"Warning: Failed to find objdump version number.\\n\");\n\t\texit 0;\n\t}\n\tsplit(verstr, ver, \".\");\n\tif (ver[1] > od_ver ||\n\t    (ver[1] == od_ver && ver[2] >= od_sver)) {\n\t\texit 1;\n\t} else {\n\t\tprintf(\"Warning: objdump version %s is older than %d.%d\\n\",\n\t\t       verstr, od_ver, od_sver);\n\t\tprint(\"Warning: Skipping posttest.\");\n\t\t# Logic is inverted, because we just skip test without error.\n\t\texit 0;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

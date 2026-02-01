@@ -1,0 +1,9 @@
+{
+  "module_name": "fec.h",
+  "hash_id": "34f420d3ccc5b27e94acba2968e2f00643f4b57f95b9d8a118abbe89655ae0c2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fec.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_FEC_H__\n#define __LINUX_FEC_H__\n\n#include <linux/phy.h>\n\nstruct fec_platform_data {\n\tphy_interface_t phy;\n\tunsigned char mac[ETH_ALEN];\n\tvoid (*sleep_mode_enable)(int enabled);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

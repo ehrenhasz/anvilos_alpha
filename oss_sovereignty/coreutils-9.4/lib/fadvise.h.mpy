@@ -1,0 +1,9 @@
+{
+  "module_name": "fadvise.h",
+  "hash_id": "6c5e68e5621c73e6d701880f8b07ade887c1e2c580f495968960050164e7ba80",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fadvise.h",
+  "human_readable_source": " \n\n#if HAVE_POSIX_FADVISE\ntypedef enum {\n  FADVISE_NORMAL =     POSIX_FADV_NORMAL,\n  FADVISE_SEQUENTIAL = POSIX_FADV_SEQUENTIAL,\n  FADVISE_NOREUSE =    POSIX_FADV_NOREUSE,\n  FADVISE_DONTNEED =   POSIX_FADV_DONTNEED,\n  FADVISE_WILLNEED =   POSIX_FADV_WILLNEED,\n  FADVISE_RANDOM =     POSIX_FADV_RANDOM\n} fadvice_t;\n#else\ntypedef enum {\n  FADVISE_NORMAL,\n  FADVISE_SEQUENTIAL,\n  FADVISE_NOREUSE,\n  FADVISE_DONTNEED,\n  FADVISE_WILLNEED,\n  FADVISE_RANDOM\n} fadvice_t;\n#endif\n\n \n\nvoid fdadvise (int fd, off_t offset, off_t len, fadvice_t advice);\nvoid fadvise (FILE *fp, fadvice_t advice);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

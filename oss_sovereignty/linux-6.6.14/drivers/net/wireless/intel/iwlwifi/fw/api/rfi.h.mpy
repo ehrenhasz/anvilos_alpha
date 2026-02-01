@@ -1,0 +1,9 @@
+{
+  "module_name": "rfi.h",
+  "hash_id": "955986f3afe0d52b1ae75f9f09ab34981000fcdcd6181eb231da9892f2958bd4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/fw/api/rfi.h",
+  "human_readable_source": " \n \n#ifndef __iwl_fw_api_rfi_h__\n#define __iwl_fw_api_rfi_h__\n\n#define IWL_RFI_LUT_ENTRY_CHANNELS_NUM 15\n#define IWL_RFI_LUT_SIZE 24\n#define IWL_RFI_LUT_INSTALLED_SIZE 4\n\n \nstruct iwl_rfi_lut_entry {\n\t__le16 freq;\n\tu8 channels[IWL_RFI_LUT_ENTRY_CHANNELS_NUM];\n\tu8 bands[IWL_RFI_LUT_ENTRY_CHANNELS_NUM];\n} __packed;\n\n \nstruct iwl_rfi_config_cmd {\n\tstruct iwl_rfi_lut_entry table[IWL_RFI_LUT_SIZE];\n\tu8 oem;\n\tu8 reserved[3];\n} __packed;  \n\n \nenum iwl_rfi_freq_table_status {\n\tRFI_FREQ_TABLE_OK,\n\tRFI_FREQ_TABLE_DVFS_NOT_READY,\n\tRFI_FREQ_TABLE_DISABLED,\n};\n\n \nstruct iwl_rfi_freq_table_resp_cmd {\n\tstruct iwl_rfi_lut_entry table[IWL_RFI_LUT_INSTALLED_SIZE];\n\t__le32 status;\n} __packed;  \n\n \nstruct iwl_rfi_deactivate_notif {\n\t__le32 reason;\n} __packed;  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

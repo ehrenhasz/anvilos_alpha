@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8c86192cb30a98afe0fd0caab884017d871de3aeef9460f79617ee0b40740d9a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/amd/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# AMD IOMMU support\nconfig AMD_IOMMU\n\tbool \"AMD IOMMU support\"\n\tselect SWIOTLB\n\tselect PCI_MSI\n\tselect PCI_ATS\n\tselect PCI_PRI\n\tselect PCI_PASID\n\tselect IOMMU_API\n\tselect IOMMU_IOVA\n\tselect IOMMU_IO_PGTABLE\n\tdepends on X86_64 && PCI && ACPI && HAVE_CMPXCHG_DOUBLE\n\thelp\n\t  With this option you can enable support for AMD IOMMU hardware in\n\t  your system. An IOMMU is a hardware component which provides\n\t  remapping of DMA memory accesses from devices. With an AMD IOMMU you\n\t  can isolate the DMA memory of different devices and protect the\n\t  system from misbehaving device drivers or hardware.\n\n\t  You can find out if your system has an AMD IOMMU if you look into\n\t  your BIOS for an option to enable it or if you have an IVRS ACPI\n\t  table.\n\nconfig AMD_IOMMU_V2\n\ttristate \"AMD IOMMU Version 2 driver\"\n\tdepends on AMD_IOMMU\n\tselect MMU_NOTIFIER\n\thelp\n\t  This option enables support for the AMD IOMMUv2 features of the IOMMU\n\t  hardware. Select this option if you want to use devices that support\n\t  the PCI PRI and PASID interface.\n\nconfig AMD_IOMMU_DEBUGFS\n\tbool \"Enable AMD IOMMU internals in DebugFS\"\n\tdepends on AMD_IOMMU && IOMMU_DEBUGFS\n\thelp\n\t  !!!WARNING!!!  !!!WARNING!!!  !!!WARNING!!!  !!!WARNING!!!\n\n\t  DO NOT ENABLE THIS OPTION UNLESS YOU REALLY, -REALLY- KNOW WHAT YOU ARE DOING!!!\n\t  Exposes AMD IOMMU device internals in DebugFS.\n\n\t  This option is -NOT- intended for production environments, and should\n\t  not generally be enabled.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

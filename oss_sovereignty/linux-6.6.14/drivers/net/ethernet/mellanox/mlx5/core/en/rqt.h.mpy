@@ -1,0 +1,9 @@
+{
+  "module_name": "rqt.h",
+  "hash_id": "3c3c39e18ca4a4d04d852f7b455f473139842ae867f893a0dea1ee23328a7fa1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/rqt.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_EN_RQT_H__\n#define __MLX5_EN_RQT_H__\n\n#include <linux/kernel.h>\n\n#define MLX5E_INDIR_RQT_SIZE (1 << 8)\n\nstruct mlx5_core_dev;\n\nstruct mlx5e_rss_params_indir {\n\tu32 table[MLX5E_INDIR_RQT_SIZE];\n};\n\nvoid mlx5e_rss_params_indir_init_uniform(struct mlx5e_rss_params_indir *indir,\n\t\t\t\t\t unsigned int num_channels);\n\nstruct mlx5e_rqt {\n\tstruct mlx5_core_dev *mdev;\n\tu32 rqtn;\n\tu16 size;\n};\n\nint mlx5e_rqt_init_direct(struct mlx5e_rqt *rqt, struct mlx5_core_dev *mdev,\n\t\t\t  bool indir_enabled, u32 init_rqn);\nint mlx5e_rqt_init_indir(struct mlx5e_rqt *rqt, struct mlx5_core_dev *mdev,\n\t\t\t u32 *rqns, unsigned int num_rqns,\n\t\t\t u8 hfunc, struct mlx5e_rss_params_indir *indir);\nvoid mlx5e_rqt_destroy(struct mlx5e_rqt *rqt);\n\nstatic inline u32 mlx5e_rqt_get_rqtn(struct mlx5e_rqt *rqt)\n{\n\treturn rqt->rqtn;\n}\n\nint mlx5e_rqt_redirect_direct(struct mlx5e_rqt *rqt, u32 rqn);\nint mlx5e_rqt_redirect_indir(struct mlx5e_rqt *rqt, u32 *rqns, unsigned int num_rqns,\n\t\t\t     u8 hfunc, struct mlx5e_rss_params_indir *indir);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

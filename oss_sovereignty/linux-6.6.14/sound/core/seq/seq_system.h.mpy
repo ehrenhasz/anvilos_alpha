@@ -1,0 +1,9 @@
+{
+  "module_name": "seq_system.h",
+  "hash_id": "6dc411f8883b4d319b855a8b1e31061c8860bc2a99af068d1bd120260aa80798",
+  "original_prompt": "Ingested from linux-6.6.14/sound/core/seq/seq_system.h",
+  "human_readable_source": " \n \n#ifndef __SND_SEQ_SYSTEM_H\n#define __SND_SEQ_SYSTEM_H\n\n#include <sound/seq_kernel.h>\n\n\n \nvoid snd_seq_system_broadcast(int client, int port, int type);\n\n#define snd_seq_system_client_ev_client_start(client) snd_seq_system_broadcast(client, 0, SNDRV_SEQ_EVENT_CLIENT_START)\n#define snd_seq_system_client_ev_client_exit(client) snd_seq_system_broadcast(client, 0, SNDRV_SEQ_EVENT_CLIENT_EXIT)\n#define snd_seq_system_client_ev_client_change(client) snd_seq_system_broadcast(client, 0, SNDRV_SEQ_EVENT_CLIENT_CHANGE)\n#define snd_seq_system_client_ev_port_start(client, port) snd_seq_system_broadcast(client, port, SNDRV_SEQ_EVENT_PORT_START)\n#define snd_seq_system_client_ev_port_exit(client, port) snd_seq_system_broadcast(client, port, SNDRV_SEQ_EVENT_PORT_EXIT)\n#define snd_seq_system_client_ev_port_change(client, port) snd_seq_system_broadcast(client, port, SNDRV_SEQ_EVENT_PORT_CHANGE)\n\nint snd_seq_system_notify(int client, int port, struct snd_seq_event *ev);\n\n \nint snd_seq_system_client_init(void);\n\n \nvoid snd_seq_system_client_done(void);\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ovly.h",
+  "hash_id": "63e0ff1190a91c530ec689d66aaf4a7f7e29d13ae418bb49f2c30ba173ec3b00",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/ovly.h",
+  "human_readable_source": "#ifndef __NV50_KMS_OVLY_H__\n#define __NV50_KMS_OVLY_H__\n#include \"wndw.h\"\n\nint ovly507e_new(struct nouveau_drm *, int, s32, struct nv50_wndw **);\nint ovly507e_new_(const struct nv50_wndw_func *, const u32 *format,\n\t\t  struct nouveau_drm *, int head, s32 oclass,\n\t\t  u32 interlock_data, struct nv50_wndw **);\nint ovly507e_acquire(struct nv50_wndw *, struct nv50_wndw_atom *,\n\t\t     struct nv50_head_atom *);\nvoid ovly507e_release(struct nv50_wndw *, struct nv50_wndw_atom *,\n\t\t      struct nv50_head_atom *);\nint ovly507e_scale_set(struct nv50_wndw *, struct nv50_wndw_atom *);\n\nextern const u32 ovly827e_format[];\nvoid ovly827e_ntfy_reset(struct nouveau_bo *, u32);\nint ovly827e_ntfy_wait_begun(struct nouveau_bo *, u32, struct nvif_device *);\n\nextern const struct nv50_wndw_func ovly907e;\n\nint ovly827e_new(struct nouveau_drm *, int, s32, struct nv50_wndw **);\nint ovly907e_new(struct nouveau_drm *, int, s32, struct nv50_wndw **);\nint ovly917e_new(struct nouveau_drm *, int, s32, struct nv50_wndw **);\n\nint nv50_ovly_new(struct nouveau_drm *, int head, struct nv50_wndw **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

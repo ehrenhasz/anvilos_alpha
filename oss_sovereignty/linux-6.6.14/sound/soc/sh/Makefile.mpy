@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "26195d4ff6b6c5b5cb6bc02268b946382ee6972be936301bcdba1006d50de383",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sh/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n## DMA engines\nsnd-soc-dma-sh7760-objs\t:= dma-sh7760.o\nobj-$(CONFIG_SND_SOC_PCM_SH7760)\t+= snd-soc-dma-sh7760.o\n\n## audio units found on some SH-4\nsnd-soc-hac-objs\t:= hac.o\nsnd-soc-ssi-objs\t:= ssi.o\nsnd-soc-fsi-objs\t:= fsi.o\nsnd-soc-siu-objs\t:= siu_pcm.o siu_dai.o\nobj-$(CONFIG_SND_SOC_SH4_HAC)\t+= snd-soc-hac.o\nobj-$(CONFIG_SND_SOC_SH4_SSI)\t+= snd-soc-ssi.o\nobj-$(CONFIG_SND_SOC_SH4_FSI)\t+= snd-soc-fsi.o\nobj-$(CONFIG_SND_SOC_SH4_SIU)\t+= snd-soc-siu.o\n\n## audio units for R-Car\nobj-$(CONFIG_SND_SOC_RCAR)\t+= rcar/\n\n## boards\nsnd-soc-sh7760-ac97-objs\t:= sh7760-ac97.o\nsnd-soc-migor-objs\t\t:= migor.o\n\nobj-$(CONFIG_SND_SH7760_AC97)\t+= snd-soc-sh7760-ac97.o\nobj-$(CONFIG_SND_SIU_MIGOR)\t+= snd-soc-migor.o\n\n# RZ/G2L\nsnd-soc-rz-ssi-objs\t\t:= rz-ssi.o\nobj-$(CONFIG_SND_SOC_RZ)\t+= snd-soc-rz-ssi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

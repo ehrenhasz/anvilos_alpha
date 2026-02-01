@@ -1,0 +1,9 @@
+{
+  "module_name": "qed_init_ops.h",
+  "hash_id": "e9c68c572300d5af67d1caacc58f80178565a20a1bfe9df837d86c7d2f9a75a8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qlogic/qed/qed_init_ops.h",
+  "human_readable_source": " \n \n\n#ifndef _QED_INIT_OPS_H\n#define _QED_INIT_OPS_H\n\n#include <linux/types.h>\n#include <linux/slab.h>\n#include \"qed.h\"\n\n \nvoid qed_init_iro_array(struct qed_dev *cdev);\n\n \nint qed_init_run(struct qed_hwfn *p_hwfn,\n\t\t struct qed_ptt *p_ptt,\n\t\t int phase,\n\t\t int phase_id,\n\t\t int modes);\n\n \nint qed_init_alloc(struct qed_hwfn *p_hwfn);\n\n \nvoid qed_init_free(struct qed_hwfn *p_hwfn);\n\n \nvoid qed_init_store_rt_reg(struct qed_hwfn *p_hwfn,\n\t\t\t   u32 rt_offset,\n\t\t\t   u32 val);\n\n#define STORE_RT_REG(hwfn, offset, val)\t\\\n\tqed_init_store_rt_reg(hwfn, offset, val)\n\n#define OVERWRITE_RT_REG(hwfn, offset, val) \\\n\tqed_init_store_rt_reg(hwfn, offset, val)\n\nvoid qed_init_store_rt_agg(struct qed_hwfn *p_hwfn,\n\t\t\t   u32 rt_offset,\n\t\t\t   u32 *val,\n\t\t\t   size_t size);\n\n#define STORE_RT_REG_AGG(hwfn, offset, val) \\\n\tqed_init_store_rt_agg(hwfn, offset, (u32 *)&(val), sizeof(val))\n\n \nvoid qed_gtt_init(struct qed_hwfn *p_hwfn);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mbsrtoc32s-state.c",
+  "hash_id": "55ad532012c45dbdf59e17d6320931ab9a3c5e6117fc2746c660acb1537b16f9",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mbsrtoc32s-state.c",
+  "human_readable_source": " \nmbstate_t _gl_mbsrtoc32s_state\n \n#if defined __ELF__\n   \n#else\n   \n  = { 0 }\n#endif\n  ;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

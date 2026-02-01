@@ -1,0 +1,9 @@
+{
+  "module_name": "gp_timer_defs.h",
+  "hash_id": "57f5118957edebddd3d1f26392ba287c75c8199cca15819dc7cfc93d1c5fa2f7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/gp_timer_defs.h",
+  "human_readable_source": " \n \n\n#ifndef _gp_timer_defs_h\n#define _gp_timer_defs_h\n\n#define _HRT_GP_TIMER_REG_ALIGN 4\n\n#define HIVE_GP_TIMER_RESET_REG_IDX                              0\n#define HIVE_GP_TIMER_OVERALL_ENABLE_REG_IDX                     1\n#define HIVE_GP_TIMER_ENABLE_REG_IDX(timer)                     (HIVE_GP_TIMER_OVERALL_ENABLE_REG_IDX + 1 + timer)\n#define HIVE_GP_TIMER_VALUE_REG_IDX(timer, timers)               (HIVE_GP_TIMER_ENABLE_REG_IDX(timers) + timer)\n#define HIVE_GP_TIMER_COUNT_TYPE_REG_IDX(timer, timers)          (HIVE_GP_TIMER_VALUE_REG_IDX(timers, timers) + timer)\n#define HIVE_GP_TIMER_SIGNAL_SELECT_REG_IDX(timer, timers)       (HIVE_GP_TIMER_COUNT_TYPE_REG_IDX(timers, timers) + timer)\n#define HIVE_GP_TIMER_IRQ_TRIGGER_VALUE_REG_IDX(irq, timers)     (HIVE_GP_TIMER_SIGNAL_SELECT_REG_IDX(timers, timers) + irq)\n#define HIVE_GP_TIMER_IRQ_TIMER_SELECT_REG_IDX(irq, timers, irqs) (HIVE_GP_TIMER_IRQ_TRIGGER_VALUE_REG_IDX(irqs, timers) + irq)\n#define HIVE_GP_TIMER_IRQ_ENABLE_REG_IDX(irq, timers, irqs)       (HIVE_GP_TIMER_IRQ_TIMER_SELECT_REG_IDX(irqs, timers, irqs) + irq)\n\n#define HIVE_GP_TIMER_COUNT_TYPE_HIGH                            0\n#define HIVE_GP_TIMER_COUNT_TYPE_LOW                             1\n#define HIVE_GP_TIMER_COUNT_TYPE_POSEDGE                         2\n#define HIVE_GP_TIMER_COUNT_TYPE_NEGEDGE                         3\n#define HIVE_GP_TIMER_COUNT_TYPES                                4\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

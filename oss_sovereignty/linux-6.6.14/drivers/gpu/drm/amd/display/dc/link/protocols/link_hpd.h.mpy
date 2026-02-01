@@ -1,0 +1,9 @@
+{
+  "module_name": "link_hpd.h",
+  "hash_id": "7b9a09a81c597880d25493168f313c02f568f3464dccf9d76539b5a7a536af5e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/protocols/link_hpd.h",
+  "human_readable_source": " \n\n\n#ifndef __DC_LINK_HPD_H__\n#define __DC_LINK_HPD_H__\n#include \"link.h\"\n\nenum hpd_source_id get_hpd_line(struct dc_link *link);\n \nbool program_hpd_filter(const struct dc_link *link);\n \nbool dpia_query_hpd_status(struct dc_link *link);\nbool query_hpd_status(struct dc_link *link, uint32_t *is_hpd_high);\nbool link_get_hpd_state(struct dc_link *link);\nstruct gpio *link_get_hpd_gpio(struct dc_bios *dcb,\n\t\tstruct graphics_object_id link_id,\n\t\tstruct gpio_service *gpio_service);\nvoid link_enable_hpd(const struct dc_link *link);\nvoid link_disable_hpd(const struct dc_link *link);\nvoid link_enable_hpd_filter(struct dc_link *link, bool enable);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

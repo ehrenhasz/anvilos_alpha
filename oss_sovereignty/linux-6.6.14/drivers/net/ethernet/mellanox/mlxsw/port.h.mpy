@@ -1,0 +1,9 @@
+{
+  "module_name": "port.h",
+  "hash_id": "fb1b8d8514ed19ecaa953c97227ff532c78b2a0c05b9fddc924245e1cec5c3e8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlxsw/port.h",
+  "human_readable_source": " \n \n\n#ifndef _MLXSW_PORT_H\n#define _MLXSW_PORT_H\n\n#include <linux/types.h>\n\n#define MLXSW_PORT_MAX_MTU\t\t10000\n\n#define MLXSW_PORT_DEFAULT_VID\t\t1\n\n#define MLXSW_PORT_SWID_DISABLED_PORT\t255\n#define MLXSW_PORT_SWID_ALL_SWIDS\t254\n#define MLXSW_PORT_SWID_TYPE_IB\t\t1\n#define MLXSW_PORT_SWID_TYPE_ETH\t2\n\n#define MLXSW_PORT_MAX_IB_PHY_PORTS\t36\n#define MLXSW_PORT_MAX_IB_PORTS\t\t(MLXSW_PORT_MAX_IB_PHY_PORTS + 1)\n\n#define MLXSW_PORT_CPU_PORT\t\t0x0\n\n#define MLXSW_PORT_DONT_CARE\t\t0xFF\n\nenum mlxsw_port_admin_status {\n\tMLXSW_PORT_ADMIN_STATUS_UP = 1,\n\tMLXSW_PORT_ADMIN_STATUS_DOWN = 2,\n\tMLXSW_PORT_ADMIN_STATUS_UP_ONCE = 3,\n\tMLXSW_PORT_ADMIN_STATUS_DISABLED = 4,\n};\n\nenum mlxsw_reg_pude_oper_status {\n\tMLXSW_PORT_OPER_STATUS_UP = 1,\n\tMLXSW_PORT_OPER_STATUS_DOWN = 2,\n\tMLXSW_PORT_OPER_STATUS_FAILURE = 4,\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

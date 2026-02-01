@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "044ca1eb674be7e24fbcdef06da0daec790a113f22049b37524b4a323aa6597c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pmdomain/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y\t\t\t\t\t+= actions/\nobj-y\t\t\t\t\t+= amlogic/\nobj-y\t\t\t\t\t+= apple/\nobj-y\t\t\t\t\t+= bcm/\nobj-y\t\t\t\t\t+= imx/\nobj-y\t\t\t\t\t+= mediatek/\nobj-y\t\t\t\t\t+= qcom/\nobj-y\t\t\t\t\t+= renesas/\nobj-y\t\t\t\t\t+= rockchip/\nobj-y\t\t\t\t\t+= samsung/\nobj-y\t\t\t\t\t+= st/\nobj-y\t\t\t\t\t+= starfive/\nobj-y\t\t\t\t\t+= sunxi/\nobj-y\t\t\t\t\t+= tegra/\nobj-y\t\t\t\t\t+= ti/\nobj-y\t\t\t\t\t+= xilinx/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

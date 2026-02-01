@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a438f6bd8de545e897f140b775d72d7c0cfbd5602b93c92bd9ef1f7a07e0682c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/st/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# STMicroelectronics thermal drivers configuration\n#\n\nconfig ST_THERMAL\n\ttristate \"Thermal sensors on STMicroelectronics STi series of SoCs\"\n\thelp\n\t  Support for thermal sensors on STMicroelectronics STi series of SoCs.\n\nconfig ST_THERMAL_MEMMAP\n\tselect ST_THERMAL\n\ttristate \"STi series memory mapped access based thermal sensors\"\n\nconfig STM32_THERMAL\n\ttristate \"Thermal framework support on STMicroelectronics STM32 series of SoCs\"\n\tdepends on MACH_STM32MP157\n\tdefault y\n\thelp\n\t  Support for thermal framework on STMicroelectronics STM32 series of\n\t  SoCs. This thermal driver allows to access to general thermal framework\n\t  functionalities and to access to SoC sensor functionalities. This\n\t  configuration is fully dependent of MACH_STM32MP157.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

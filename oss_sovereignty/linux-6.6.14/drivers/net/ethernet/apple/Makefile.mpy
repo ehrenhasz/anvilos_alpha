@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1477b7df80a8cb05c207f515fe9bb5432311b00e4ac4af5b2358f38e09675432",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/apple/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Apple network device drivers.\n#\n\nobj-$(CONFIG_MACE) += mace.o\nobj-$(CONFIG_BMAC) += bmac.o\nobj-$(CONFIG_MACMACE) += macmace.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

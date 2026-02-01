@@ -1,0 +1,9 @@
+{
+  "module_name": "util.h",
+  "hash_id": "bda3dccb78aad539efe86a58cf58a4f41f26ec1340049e2baa4dae90dbf73688",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/util.h",
+  "human_readable_source": " \n#ifndef _PERF_UI_UTIL_H_\n#define _PERF_UI_UTIL_H_ 1\n\n#include <stdarg.h>\n\nint ui__getch(int delay_secs);\nint ui__popup_menu(int argc, char * const argv[], int *keyp);\nint ui__help_window(const char *text);\nint ui__dialog_yesno(const char *msg);\nvoid __ui__info_window(const char *title, const char *text, const char *exit_msg);\nvoid ui__info_window(const char *title, const char *text);\nint ui__question_window(const char *title, const char *text,\n\t\t\tconst char *exit_msg, int delay_secs);\n\nstruct perf_error_ops {\n\tint (*error)(const char *format, va_list args);\n\tint (*warning)(const char *format, va_list args);\n};\n\nint perf_error__register(struct perf_error_ops *eops);\nint perf_error__unregister(struct perf_error_ops *eops);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

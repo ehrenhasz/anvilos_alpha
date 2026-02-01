@@ -1,0 +1,9 @@
+{
+  "module_name": "nv49.c",
+  "hash_id": "e27e7c1a9aea34b3da4d5400ef3c0b5e1875c55c38d43fe083334c559213ee93",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/nv49.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"ram.h\"\n\nstatic const struct nvkm_fb_func\nnv49_fb = {\n\t.tags = nv20_fb_tags,\n\t.init = nv41_fb_init,\n\t.tile.regions = 15,\n\t.tile.init = nv30_fb_tile_init,\n\t.tile.comp = nv40_fb_tile_comp,\n\t.tile.fini = nv20_fb_tile_fini,\n\t.tile.prog = nv41_fb_tile_prog,\n\t.ram_new = nv49_ram_new,\n};\n\nint\nnv49_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn nvkm_fb_new_(&nv49_fb, device, type, inst, pfb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

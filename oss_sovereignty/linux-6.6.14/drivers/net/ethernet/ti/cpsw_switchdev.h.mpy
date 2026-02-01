@@ -1,0 +1,9 @@
+{
+  "module_name": "cpsw_switchdev.h",
+  "hash_id": "e2f9a77b66e08b5397a7ade182b97ed5b87e2a54ad63b3d72da6531e0643b03d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ti/cpsw_switchdev.h",
+  "human_readable_source": " \n \n\n#ifndef DRIVERS_NET_ETHERNET_TI_CPSW_SWITCHDEV_H_\n#define DRIVERS_NET_ETHERNET_TI_CPSW_SWITCHDEV_H_\n\n#include <net/switchdev.h>\n\nbool cpsw_port_dev_check(const struct net_device *dev);\nint cpsw_switchdev_register_notifiers(struct cpsw_common *cpsw);\nvoid cpsw_switchdev_unregister_notifiers(struct cpsw_common *cpsw);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

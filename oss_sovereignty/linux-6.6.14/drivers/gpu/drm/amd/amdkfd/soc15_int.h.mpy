@@ -1,0 +1,9 @@
+{
+  "module_name": "soc15_int.h",
+  "hash_id": "1c34718608f61eccb5e7afe34a81615c9d9d0c1d212109daececde5fa8031b69",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdkfd/soc15_int.h",
+  "human_readable_source": " \n\n#ifndef HSA_SOC15_INT_H_INCLUDED\n#define HSA_SOC15_INT_H_INCLUDED\n\n#include \"soc15_ih_clientid.h\"\n\n#define SOC15_INTSRC_CP_END_OF_PIPE\t181\n#define SOC15_INTSRC_CP_BAD_OPCODE\t183\n#define SOC15_INTSRC_SQ_INTERRUPT_MSG\t239\n#define SOC15_INTSRC_VMC_FAULT\t\t0\n#define SOC15_INTSRC_SDMA_TRAP\t\t224\n#define SOC15_INTSRC_SDMA_ECC\t\t220\n#define SOC21_INTSRC_SDMA_TRAP\t\t49\n#define SOC21_INTSRC_SDMA_ECC\t\t62\n\n#define SOC15_CLIENT_ID_FROM_IH_ENTRY(entry) (le32_to_cpu(entry[0]) & 0xff)\n#define SOC15_SOURCE_ID_FROM_IH_ENTRY(entry) (le32_to_cpu(entry[0]) >> 8 & 0xff)\n#define SOC15_RING_ID_FROM_IH_ENTRY(entry) (le32_to_cpu(entry[0]) >> 16 & 0xff)\n#define SOC15_VMID_FROM_IH_ENTRY(entry) (le32_to_cpu(entry[0]) >> 24 & 0xf)\n#define SOC15_VMID_TYPE_FROM_IH_ENTRY(entry) (le32_to_cpu(entry[0]) >> 31 & 0x1)\n#define SOC15_PASID_FROM_IH_ENTRY(entry) (le32_to_cpu(entry[3]) & 0xffff)\n#define SOC15_NODEID_FROM_IH_ENTRY(entry) (le32_to_cpu(entry[3]) >> 16 & 0xff)\n#define SOC15_CONTEXT_ID0_FROM_IH_ENTRY(entry) (le32_to_cpu(entry[4]))\n#define SOC15_CONTEXT_ID1_FROM_IH_ENTRY(entry) (le32_to_cpu(entry[5]))\n#define SOC15_CONTEXT_ID2_FROM_IH_ENTRY(entry) (le32_to_cpu(entry[6]))\n#define SOC15_CONTEXT_ID3_FROM_IH_ENTRY(entry) (le32_to_cpu(entry[7]))\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

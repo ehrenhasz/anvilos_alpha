@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "182de35b81a36b17c50031b900575a0164ce19c77d1329b3e73d7e48fcf79d47",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/fman/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsubdir-ccflags-y +=  -I$(srctree)/drivers/net/ethernet/freescale/fman\n\nobj-$(CONFIG_FSL_FMAN) += fsl_dpaa_fman.o\nobj-$(CONFIG_FSL_FMAN) += fsl_dpaa_fman_port.o\nobj-$(CONFIG_FSL_FMAN) += fsl_dpaa_mac.o\n\nfsl_dpaa_fman-objs\t:= fman_muram.o fman.o fman_sp.o fman_keygen.o\nfsl_dpaa_fman_port-objs := fman_port.o\nfsl_dpaa_mac-objs:= mac.o fman_dtsec.o fman_memac.o fman_tgec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

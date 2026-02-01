@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bbb77e19208660c2ffb06b22df56b8afa6b19e400f11b450a732e1df7ae53761",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/virtio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_CRYPTO_DEV_VIRTIO) += virtio_crypto.o\nvirtio_crypto-objs := \\\n\tvirtio_crypto_skcipher_algs.o \\\n\tvirtio_crypto_akcipher_algs.o \\\n\tvirtio_crypto_mgr.o \\\n\tvirtio_crypto_core.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

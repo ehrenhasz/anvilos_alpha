@@ -1,0 +1,9 @@
+{
+  "module_name": "tag_private.h",
+  "hash_id": "f87bd6a1bd5e0e9a7724d21a3e1df6aca940944f56507f11d7877932c2c3afe2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_shared/host/tag_private.h",
+  "human_readable_source": " \n \n\n#ifndef __TAG_PRIVATE_H_INCLUDED__\n#define __TAG_PRIVATE_H_INCLUDED__\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

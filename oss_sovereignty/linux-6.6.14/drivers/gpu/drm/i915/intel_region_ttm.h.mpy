@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_region_ttm.h",
+  "hash_id": "58a40e64f4772cdb2d6938324209f5d7cf44d5650dedc51d1928c50d579f81be",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/intel_region_ttm.h",
+  "human_readable_source": " \n \n#ifndef _INTEL_REGION_TTM_H_\n#define _INTEL_REGION_TTM_H_\n\n#include <linux/types.h>\n\n#include \"i915_selftest.h\"\n\nstruct drm_i915_private;\nstruct intel_memory_region;\nstruct ttm_resource;\nstruct ttm_device_funcs;\n\nint intel_region_ttm_device_init(struct drm_i915_private *dev_priv);\n\nvoid intel_region_ttm_device_fini(struct drm_i915_private *dev_priv);\n\nint intel_region_ttm_init(struct intel_memory_region *mem);\n\nint intel_region_ttm_fini(struct intel_memory_region *mem);\n\nstruct i915_refct_sgt *\nintel_region_ttm_resource_to_rsgt(struct intel_memory_region *mem,\n\t\t\t\t  struct ttm_resource *res,\n\t\t\t\t  u32 page_alignment);\n\nvoid intel_region_ttm_resource_free(struct intel_memory_region *mem,\n\t\t\t\t    struct ttm_resource *res);\n\nint intel_region_to_ttm_type(const struct intel_memory_region *mem);\n\nstruct ttm_device_funcs *i915_ttm_driver(void);\n\n#ifdef CONFIG_DRM_I915_SELFTEST\nstruct ttm_resource *\nintel_region_ttm_resource_alloc(struct intel_memory_region *mem,\n\t\t\t\tresource_size_t offset,\n\t\t\t\tresource_size_t size,\n\t\t\t\tunsigned int flags);\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

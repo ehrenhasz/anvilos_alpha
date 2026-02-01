@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_ctc_types.h",
+  "hash_id": "6c3866c9020172c1c8a85f40c5c1d2be97e470814be0be4bace79066fea79476",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ctc/ctc_1.0/ia_css_ctc_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_CTC_TYPES_H\n#define __IA_CSS_CTC_TYPES_H\n\n#include <linux/bitops.h>\n\n \n\n \n#define IA_CSS_CTC_COEF_SHIFT          13\n\n \n#define IA_CSS_VAMEM_1_CTC_TABLE_SIZE_LOG2      10\n \n#define IA_CSS_VAMEM_1_CTC_TABLE_SIZE           BIT(IA_CSS_VAMEM_1_CTC_TABLE_SIZE_LOG2)\n\n \n#define IA_CSS_VAMEM_2_CTC_TABLE_SIZE_LOG2      8\n \n#define IA_CSS_VAMEM_2_CTC_TABLE_SIZE           ((1U << IA_CSS_VAMEM_2_CTC_TABLE_SIZE_LOG2) + 1)\n\nenum ia_css_vamem_type {\n\tIA_CSS_VAMEM_TYPE_1,\n\tIA_CSS_VAMEM_TYPE_2\n};\n\n \nstruct ia_css_ctc_config {\n\tu16 y0;\t \n\tu16 y1;\t \n\tu16 y2;\t \n\tu16 y3;\t \n\tu16 y4;\t \n\tu16 y5;\t \n\tu16 ce_gain_exp;\t \n\tu16 x1;\t \n\tu16 x2;\t \n\tu16 x3;\t \n\tu16 x4;\t \n};\n\nunion ia_css_ctc_data {\n\tu16 vamem_1[IA_CSS_VAMEM_1_CTC_TABLE_SIZE];\n\tu16 vamem_2[IA_CSS_VAMEM_2_CTC_TABLE_SIZE];\n};\n\n \nstruct ia_css_ctc_table {\n\tenum ia_css_vamem_type vamem_type;\n\tunion ia_css_ctc_data data;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

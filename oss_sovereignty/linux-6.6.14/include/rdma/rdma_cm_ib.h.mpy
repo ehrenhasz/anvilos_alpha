@@ -1,0 +1,9 @@
+{
+  "module_name": "rdma_cm_ib.h",
+  "hash_id": "cb0776d9ae1ccefbd33986acd13892e649f506b383ce257a4bb1ade3b73077ef",
+  "original_prompt": "Ingested from linux-6.6.14/include/rdma/rdma_cm_ib.h",
+  "human_readable_source": " \n \n\n#ifndef RDMA_CM_IB_H\n#define RDMA_CM_IB_H\n\n#include <rdma/rdma_cm.h>\n\n \nint rdma_set_ib_path(struct rdma_cm_id *id,\n\t\t     struct sa_path_rec *path_rec);\n\n \n#define RDMA_UDP_QKEY 0x01234567\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

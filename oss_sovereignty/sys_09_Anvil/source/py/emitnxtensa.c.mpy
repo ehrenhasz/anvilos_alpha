@@ -1,0 +1,9 @@
+{
+  "module_name": "emitnxtensa.c",
+  "hash_id": "751be4c6a471ad2c2bd2ff0b4a1659563bec1303832a4f80e8e0a7cddddb7fd1",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/emitnxtensa.c",
+  "human_readable_source": "\n\n#include \"py/mpconfig.h\"\n\n#if MICROPY_EMIT_XTENSA\n\n\n#define GENERIC_ASM_API (1)\n#include \"py/asmxtensa.h\"\n\n\n#define NLR_BUF_IDX_LOCAL_1 (8) \n\n#define N_XTENSA (1)\n#define EXPORT_FUN(name) emit_native_xtensa_##name\n#include \"py/emitnative.c\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

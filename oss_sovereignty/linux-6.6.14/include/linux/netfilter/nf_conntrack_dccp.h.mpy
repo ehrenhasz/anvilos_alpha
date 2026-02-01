@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_dccp.h",
+  "hash_id": "6c37e12ad310fbed8f4ed4f6664b6872e5f2a83d6954d9baae7ef2717b2136db",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter/nf_conntrack_dccp.h",
+  "human_readable_source": " \n#ifndef _NF_CONNTRACK_DCCP_H\n#define _NF_CONNTRACK_DCCP_H\n\n \nenum ct_dccp_states {\n\tCT_DCCP_NONE,\n\tCT_DCCP_REQUEST,\n\tCT_DCCP_RESPOND,\n\tCT_DCCP_PARTOPEN,\n\tCT_DCCP_OPEN,\n\tCT_DCCP_CLOSEREQ,\n\tCT_DCCP_CLOSING,\n\tCT_DCCP_TIMEWAIT,\n\tCT_DCCP_IGNORE,\n\tCT_DCCP_INVALID,\n\t__CT_DCCP_MAX\n};\n#define CT_DCCP_MAX\t\t(__CT_DCCP_MAX - 1)\n\nenum ct_dccp_roles {\n\tCT_DCCP_ROLE_CLIENT,\n\tCT_DCCP_ROLE_SERVER,\n\t__CT_DCCP_ROLE_MAX\n};\n#define CT_DCCP_ROLE_MAX\t(__CT_DCCP_ROLE_MAX - 1)\n\n#include <linux/netfilter/nf_conntrack_tuple_common.h>\n\nstruct nf_ct_dccp {\n\tu_int8_t\trole[IP_CT_DIR_MAX];\n\tu_int8_t\tstate;\n\tu_int8_t\tlast_pkt;\n\tu_int8_t\tlast_dir;\n\tu_int64_t\thandshake_seq;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

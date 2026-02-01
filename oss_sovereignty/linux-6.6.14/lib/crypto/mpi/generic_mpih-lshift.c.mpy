@@ -1,0 +1,9 @@
+{
+  "module_name": "generic_mpih-lshift.c",
+  "hash_id": "8ccbcbe92f421f51b40f759e26e8f53ff76835ec63312a8c167b9562191eaa9d",
+  "original_prompt": "Ingested from linux-6.6.14/lib/crypto/mpi/generic_mpih-lshift.c",
+  "human_readable_source": "\n \n\n#include \"mpi-internal.h\"\n\n \n\nmpi_limb_t\nmpihelp_lshift(mpi_ptr_t wp, mpi_ptr_t up, mpi_size_t usize, unsigned int cnt)\n{\n\tmpi_limb_t high_limb, low_limb;\n\tunsigned sh_1, sh_2;\n\tmpi_size_t i;\n\tmpi_limb_t retval;\n\n\tsh_1 = cnt;\n\twp += 1;\n\tsh_2 = BITS_PER_MPI_LIMB - sh_1;\n\ti = usize - 1;\n\tlow_limb = up[i];\n\tretval = low_limb >> sh_2;\n\thigh_limb = low_limb;\n\twhile (--i >= 0) {\n\t\tlow_limb = up[i];\n\t\twp[i] = (high_limb << sh_1) | (low_limb >> sh_2);\n\t\thigh_limb = low_limb;\n\t}\n\twp[i] = high_limb << sh_1;\n\n\treturn retval;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

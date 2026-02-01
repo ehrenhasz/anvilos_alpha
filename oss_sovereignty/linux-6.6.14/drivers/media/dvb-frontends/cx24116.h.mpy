@@ -1,0 +1,9 @@
+{
+  "module_name": "cx24116.h",
+  "hash_id": "6e76f18855d6a3ad63045928a8c2ac6ccc686df2dba172c9360cffccb679a9a5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cx24116.h",
+  "human_readable_source": " \n \n\n#ifndef CX24116_H\n#define CX24116_H\n\n#include <linux/dvb/frontend.h>\n\nstruct cx24116_config {\n\t \n\tu8 demod_address;\n\n\t \n\tint (*set_ts_params)(struct dvb_frontend *fe, int is_punctured);\n\n\t \n\tint (*reset_device)(struct dvb_frontend *fe);\n\n\t \n\tu8 mpg_clk_pos_pol:0x02;\n\n\t \n\tu16 i2c_wr_max;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_CX24116)\nextern struct dvb_frontend *cx24116_attach(\n\tconst struct cx24116_config *config,\n\tstruct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *cx24116_attach(\n\tconst struct cx24116_config *config,\n\tstruct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

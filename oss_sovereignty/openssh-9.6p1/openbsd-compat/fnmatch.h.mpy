@@ -1,0 +1,9 @@
+{
+  "module_name": "fnmatch.h",
+  "hash_id": "a89a31b98f2c0387a7c0e4223de7a0425b4268793fc260f1615802787c074507",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/fnmatch.h",
+  "human_readable_source": " \n \n\n \n\n \n\n#ifndef HAVE_FNMATCH_H\n \n#define __BSD_VISIBLE 1\n\n#ifndef\t_FNMATCH_H_\n#define\t_FNMATCH_H_\n\n#ifdef HAVE_SYS_CDEFS_H\n#include <sys/cdefs.h>\n#endif\n\n#define\tFNM_NOMATCH\t1\t \n#define\tFNM_NOSYS\t2\t \n\n#define\tFNM_NOESCAPE\t0x01\t \n#define\tFNM_PATHNAME\t0x02\t \n#define\tFNM_PERIOD\t0x04\t \n#if __BSD_VISIBLE\n#define\tFNM_LEADING_DIR\t0x08\t \n#define\tFNM_CASEFOLD\t0x10\t \n#define\tFNM_IGNORECASE\tFNM_CASEFOLD\n#define\tFNM_FILE_NAME\tFNM_PATHNAME\n#endif\n\n \nint\t fnmatch(const char *, const char *, int);\n \n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

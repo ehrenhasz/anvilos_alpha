@@ -1,0 +1,9 @@
+{
+  "module_name": "numa_internal.h",
+  "hash_id": "668f03b7cae2517479a2c0185de61f827a513296be06e4581522470a68cbd212",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/mm/numa_internal.h",
+  "human_readable_source": " \n#ifndef __X86_MM_NUMA_INTERNAL_H\n#define __X86_MM_NUMA_INTERNAL_H\n\n#include <linux/types.h>\n#include <asm/numa.h>\n\nstruct numa_memblk {\n\tu64\t\t\tstart;\n\tu64\t\t\tend;\n\tint\t\t\tnid;\n};\n\nstruct numa_meminfo {\n\tint\t\t\tnr_blks;\n\tstruct numa_memblk\tblk[NR_NODE_MEMBLKS];\n};\n\nvoid __init numa_remove_memblk_from(int idx, struct numa_meminfo *mi);\nint __init numa_cleanup_meminfo(struct numa_meminfo *mi);\nvoid __init numa_reset_distance(void);\n\nvoid __init x86_numa_init(void);\n\n#ifdef CONFIG_NUMA_EMU\nvoid __init numa_emulation(struct numa_meminfo *numa_meminfo,\n\t\t\t   int numa_dist_cnt);\n#else\nstatic inline void numa_emulation(struct numa_meminfo *numa_meminfo,\n\t\t\t\t  int numa_dist_cnt)\n{ }\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

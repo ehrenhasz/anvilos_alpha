@@ -1,0 +1,9 @@
+{
+  "module_name": "sev-guest.h",
+  "hash_id": "9edd3a264f7cbcb306e6959c57977914e2e27bd58197dae4dec6ab730dc447e8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/virt/coco/sev-guest/sev-guest.h",
+  "human_readable_source": " \n \n\n#ifndef __VIRT_SEVGUEST_H__\n#define __VIRT_SEVGUEST_H__\n\n#include <linux/types.h>\n\n#define MAX_AUTHTAG_LEN\t\t32\n\n \nenum msg_type {\n\tSNP_MSG_TYPE_INVALID = 0,\n\tSNP_MSG_CPUID_REQ,\n\tSNP_MSG_CPUID_RSP,\n\tSNP_MSG_KEY_REQ,\n\tSNP_MSG_KEY_RSP,\n\tSNP_MSG_REPORT_REQ,\n\tSNP_MSG_REPORT_RSP,\n\tSNP_MSG_EXPORT_REQ,\n\tSNP_MSG_EXPORT_RSP,\n\tSNP_MSG_IMPORT_REQ,\n\tSNP_MSG_IMPORT_RSP,\n\tSNP_MSG_ABSORB_REQ,\n\tSNP_MSG_ABSORB_RSP,\n\tSNP_MSG_VMRK_REQ,\n\tSNP_MSG_VMRK_RSP,\n\n\tSNP_MSG_TYPE_MAX\n};\n\nenum aead_algo {\n\tSNP_AEAD_INVALID,\n\tSNP_AEAD_AES_256_GCM,\n};\n\nstruct snp_guest_msg_hdr {\n\tu8 authtag[MAX_AUTHTAG_LEN];\n\tu64 msg_seqno;\n\tu8 rsvd1[8];\n\tu8 algo;\n\tu8 hdr_version;\n\tu16 hdr_sz;\n\tu8 msg_type;\n\tu8 msg_version;\n\tu16 msg_sz;\n\tu32 rsvd2;\n\tu8 msg_vmpck;\n\tu8 rsvd3[35];\n} __packed;\n\nstruct snp_guest_msg {\n\tstruct snp_guest_msg_hdr hdr;\n\tu8 payload[4000];\n} __packed;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

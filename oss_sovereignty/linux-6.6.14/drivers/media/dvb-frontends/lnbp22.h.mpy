@@ -1,0 +1,9 @@
+{
+  "module_name": "lnbp22.h",
+  "hash_id": "d08564ec6f620e6b311e338f190a82d5931f0b1a71ed91cd29ef0b9355a8e497",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/lnbp22.h",
+  "human_readable_source": " \n \n\n#ifndef _LNBP22_H\n#define _LNBP22_H\n\n \n#define LNBP22_EN\t  0x10\n \n#define LNBP22_VSEL\t0x02\n \n#define LNBP22_LLC\t0x01\n\n#include <linux/dvb/frontend.h>\n\n#if IS_REACHABLE(CONFIG_DVB_LNBP22)\n \nextern struct dvb_frontend *lnbp22_attach(struct dvb_frontend *fe,\n\t\t\t\t\t\tstruct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *lnbp22_attach(struct dvb_frontend *fe,\n\t\t\t\t\t\tstruct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

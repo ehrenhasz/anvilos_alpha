@@ -1,0 +1,9 @@
+{
+  "module_name": "fman_sp.h",
+  "hash_id": "44320e81264e350a5d60ac104aad8f996a4d2a444ecd2e77520ea073f51b650e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/fman/fman_sp.h",
+  "human_readable_source": " \n \n\n#ifndef __FM_SP_H\n#define __FM_SP_H\n\n#include \"fman.h\"\n#include <linux/types.h>\n\n#define ILLEGAL_BASE    (~0)\n\n \n#define DFLT_FM_SP_BUFFER_PREFIX_CONTEXT_DATA_ALIGN\t64\n\n \n#define FMAN_SP_EXT_BUF_POOL_EN_COUNTER\t\t0x40000000\n#define FMAN_SP_EXT_BUF_POOL_VALID\t\t\t0x80000000\n#define FMAN_SP_EXT_BUF_POOL_BACKUP\t\t\t0x20000000\n#define FMAN_SP_DMA_ATTR_WRITE_OPTIMIZE\t\t0x00100000\n#define FMAN_SP_SG_DISABLE\t\t\t\t0x80000000\n\n \n#define FMAN_SP_EXT_BUF_MARG_START_SHIFT\t\t16\n#define FMAN_SP_DMA_ATTR_SWP_SHIFT\t\t\t30\n#define FMAN_SP_IC_TO_EXT_SHIFT\t\t\t16\n#define FMAN_SP_IC_FROM_INT_SHIFT\t\t\t8\n\n \nstruct fman_sp_int_context_data_copy {\n\t \n\tu16 ext_buf_offset;\n\t \n\tu8 int_context_offset;\n\t \n\tu16 size;\n};\n\n \nstruct fman_sp_buf_margins {\n\t \n\tu16 start_margins;\n\t \n\tu16 end_margins;\n};\n\nstruct fman_sp_buffer_offsets {\n\tu32 data_offset;\n\tu32 prs_result_offset;\n\tu32 time_stamp_offset;\n\tu32 hash_result_offset;\n};\n\nint fman_sp_build_buffer_struct(struct fman_sp_int_context_data_copy\n\t\t\t\t*int_context_data_copy,\n\t\t\t\tstruct fman_buffer_prefix_content\n\t\t\t\t*buffer_prefix_content,\n\t\t\t\tstruct fman_sp_buf_margins *buf_margins,\n\t\t\t\tstruct fman_sp_buffer_offsets\n\t\t\t\t*buffer_offsets,\n\t\t\t\tu8 *internal_buf_offset);\n\nvoid fman_sp_set_buf_pools_in_asc_order_of_buf_sizes(struct fman_ext_pools\n\t\t\t\t\t\t     *fm_ext_pools,\n\t\t\t\t\t\t     u8 *ordered_array,\n\t\t\t\t\t\t     u16 *sizes_array);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rpl_iptunnel.h",
+  "hash_id": "efbf0b14c29c4ed8716d4e072292ce166e58b97fd85029db4a6a8061270bcf72",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/rpl_iptunnel.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_RPL_IPTUNNEL_H\n#define _UAPI_LINUX_RPL_IPTUNNEL_H\n\nenum {\n\tRPL_IPTUNNEL_UNSPEC,\n\tRPL_IPTUNNEL_SRH,\n\t__RPL_IPTUNNEL_MAX,\n};\n#define RPL_IPTUNNEL_MAX (__RPL_IPTUNNEL_MAX - 1)\n\n#define RPL_IPTUNNEL_SRH_SIZE(srh) (((srh)->hdrlen + 1) << 3)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "init_syscalls.h",
+  "hash_id": "d6d61652f53671982c86f5f9f0d18b36f9c91e7c6d291edee1a624c61bcaa697",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/init_syscalls.h",
+  "human_readable_source": " \n\nint __init init_mount(const char *dev_name, const char *dir_name,\n\t\tconst char *type_page, unsigned long flags, void *data_page);\nint __init init_umount(const char *name, int flags);\nint __init init_chdir(const char *filename);\nint __init init_chroot(const char *filename);\nint __init init_chown(const char *filename, uid_t user, gid_t group, int flags);\nint __init init_chmod(const char *filename, umode_t mode);\nint __init init_eaccess(const char *filename);\nint __init init_stat(const char *filename, struct kstat *stat, int flags);\nint __init init_mknod(const char *filename, umode_t mode, unsigned int dev);\nint __init init_link(const char *oldname, const char *newname);\nint __init init_symlink(const char *oldname, const char *newname);\nint __init init_unlink(const char *pathname);\nint __init init_mkdir(const char *pathname, umode_t mode);\nint __init init_rmdir(const char *pathname);\nint __init init_utimes(char *filename, struct timespec64 *ts);\nint __init init_dup(struct file *file);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

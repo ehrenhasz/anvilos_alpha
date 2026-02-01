@@ -1,0 +1,9 @@
+{
+  "module_name": "kheaders.c",
+  "hash_id": "c19cc7006a98ece645480a58a269a58c765e99e779fb92d6c9e94a705f58ff18",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/kheaders.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/kobject.h>\n#include <linux/init.h>\n\n \n\nasm (\n\"\t.pushsection .rodata, \\\"a\\\"\t\t\\n\"\n\"\t.global kernel_headers_data\t\t\\n\"\n\"kernel_headers_data:\t\t\t\t\\n\"\n\"\t.incbin \\\"kernel/kheaders_data.tar.xz\\\"\t\\n\"\n\"\t.global kernel_headers_data_end\t\t\\n\"\n\"kernel_headers_data_end:\t\t\t\\n\"\n\"\t.popsection\t\t\t\t\\n\"\n);\n\nextern char kernel_headers_data[];\nextern char kernel_headers_data_end[];\n\nstatic ssize_t\nikheaders_read(struct file *file,  struct kobject *kobj,\n\t       struct bin_attribute *bin_attr,\n\t       char *buf, loff_t off, size_t len)\n{\n\tmemcpy(buf, &kernel_headers_data[off], len);\n\treturn len;\n}\n\nstatic struct bin_attribute kheaders_attr __ro_after_init = {\n\t.attr = {\n\t\t.name = \"kheaders.tar.xz\",\n\t\t.mode = 0444,\n\t},\n\t.read = &ikheaders_read,\n};\n\nstatic int __init ikheaders_init(void)\n{\n\tkheaders_attr.size = (kernel_headers_data_end -\n\t\t\t      kernel_headers_data);\n\treturn sysfs_create_bin_file(kernel_kobj, &kheaders_attr);\n}\n\nstatic void __exit ikheaders_cleanup(void)\n{\n\tsysfs_remove_bin_file(kernel_kobj, &kheaders_attr);\n}\n\nmodule_init(ikheaders_init);\nmodule_exit(ikheaders_cleanup);\n\nMODULE_LICENSE(\"GPL v2\");\nMODULE_AUTHOR(\"Joel Fernandes\");\nMODULE_DESCRIPTION(\"Echo the kernel header artifacts used to build the kernel\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

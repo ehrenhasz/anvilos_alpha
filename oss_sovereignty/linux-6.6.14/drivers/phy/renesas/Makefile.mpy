@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f5c6393e10a0f3bcd5f561aa4b43e95b509c2a7a4547c7b592338fdd84742f44",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/renesas/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_PHY_R8A779F0_ETHERNET_SERDES)\t+= r8a779f0-ether-serdes.o\nobj-$(CONFIG_PHY_RCAR_GEN2)\t\t+= phy-rcar-gen2.o\nobj-$(CONFIG_PHY_RCAR_GEN3_PCIE)\t+= phy-rcar-gen3-pcie.o\nobj-$(CONFIG_PHY_RCAR_GEN3_USB2)\t+= phy-rcar-gen3-usb2.o\nobj-$(CONFIG_PHY_RCAR_GEN3_USB3)\t+= phy-rcar-gen3-usb3.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

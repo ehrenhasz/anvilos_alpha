@@ -1,0 +1,9 @@
+{
+  "module_name": "freading.h",
+  "hash_id": "a152522e152a166baa8ae91739755cc85910332291551016a4dd0f7b12d2f242",
+  "original_prompt": "Ingested from coreutils-9.4/lib/freading.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stdio.h>\n\n \n\n#if HAVE___FREADING && (!defined __GLIBC__ || defined __UCLIBC__ || __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 7))\n \n\n# if HAVE_STDIO_EXT_H\n#  include <stdio_ext.h>\n# endif\n# define freading(stream) (__freading (stream) != 0)\n\n#else\n\n# ifdef __cplusplus\nextern \"C\" {\n# endif\n\nextern bool freading (FILE *stream) _GL_ATTRIBUTE_PURE;\n\n# ifdef __cplusplus\n}\n# endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

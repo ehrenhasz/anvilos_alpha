@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_pmem.h",
+  "hash_id": "86e90401bd195551233588c20fb2538ff00006324f4fd116a148517008465a49",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/virtio_pmem.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_VIRTIO_PMEM_H\n#define _UAPI_LINUX_VIRTIO_PMEM_H\n\n#include <linux/types.h>\n#include <linux/virtio_ids.h>\n#include <linux/virtio_config.h>\n\nstruct virtio_pmem_config {\n\t__le64 start;\n\t__le64 size;\n};\n\n#define VIRTIO_PMEM_REQ_TYPE_FLUSH      0\n\nstruct virtio_pmem_resp {\n\t \n\t__le32 ret;\n};\n\nstruct virtio_pmem_req {\n\t \n\t__le32 type;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

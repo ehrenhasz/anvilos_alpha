@@ -1,0 +1,9 @@
+{
+  "module_name": "auxvec.h",
+  "hash_id": "a685105a09e071f42685bf1bf367fc791e91080e6e513f65cb72dad8a249cc85",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/auxvec.h",
+  "human_readable_source": " \n#ifndef _LINUX_AUXVEC_H\n#define _LINUX_AUXVEC_H\n\n#include <uapi/linux/auxvec.h>\n\n#define AT_VECTOR_SIZE_BASE 22  \n   \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

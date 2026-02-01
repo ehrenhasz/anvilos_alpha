@@ -1,0 +1,9 @@
+{
+  "module_name": "test-nl_langinfo1.sh",
+  "hash_id": "d66ccd8f98c3fa3416360cf1eaf3960bc08ae7a0e18b471be3eb32b729da1078",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-nl_langinfo1.sh",
+  "human_readable_source": "#!/bin/sh\n\nLC_ALL=C ${CHECKER} ./test-nl_langinfo1${EXEEXT} 0 || exit 1\n\n# Test whether a specific traditional locale is installed.\n: \"${LOCALE_FR=fr_FR}\"\nif test $LOCALE_FR != none; then\n  LC_ALL=$LOCALE_FR ${CHECKER} ./test-nl_langinfo1${EXEEXT} 1 || exit 1\nfi\n\n# Test whether a specific UTF-8 locale is installed.\n: \"${LOCALE_FR_UTF8=fr_FR.UTF-8}\"\nif test $LOCALE_FR_UTF8 != none; then\n  LC_ALL=$LOCALE_FR_UTF8 ${CHECKER} ./test-nl_langinfo1${EXEEXT} 2 || exit 1\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

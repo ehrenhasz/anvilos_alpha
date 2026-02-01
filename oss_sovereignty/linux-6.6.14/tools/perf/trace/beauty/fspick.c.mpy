@@ -1,0 +1,9 @@
+{
+  "module_name": "fspick.c",
+  "hash_id": "a9fb359b5a51960117f4b663458e4e27e7433ce0be013780812e78ae0f7dd0a0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/fspick.c",
+  "human_readable_source": "\n \n\n#include \"trace/beauty/beauty.h\"\n#include <linux/log2.h>\n\nstatic size_t fspick__scnprintf_flags(unsigned long flags, char *bf, size_t size, bool show_prefix)\n{\n#include \"trace/beauty/generated/fspick_arrays.c\"\n       static DEFINE_STRARRAY(fspick_flags, \"FSPICK_\");\n\n       return strarray__scnprintf_flags(&strarray__fspick_flags, bf, size, show_prefix, flags);\n}\n\nsize_t syscall_arg__scnprintf_fspick_flags(char *bf, size_t size, struct syscall_arg *arg)\n{\n\tunsigned long flags = arg->val;\n\n\treturn fspick__scnprintf_flags(flags, bf, size, arg->show_string_prefix);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

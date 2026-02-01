@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs.h",
+  "hash_id": "103e201bfe06fa062a26ef825f4e6064256e947761308a5e247c482b4286550d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ceph/debugfs.h",
+  "human_readable_source": " \n#ifndef _FS_CEPH_DEBUGFS_H\n#define _FS_CEPH_DEBUGFS_H\n\n#include <linux/ceph/types.h>\n\n \nextern void ceph_debugfs_init(void);\nextern void ceph_debugfs_cleanup(void);\nextern void ceph_debugfs_client_init(struct ceph_client *client);\nextern void ceph_debugfs_client_cleanup(struct ceph_client *client);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "charable.c",
+  "hash_id": "c3e96b896dd994e6febc7cad2b38bd19ac540f72ac979e3acebe96110bd6ce99",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/widechar/charable.c",
+  "human_readable_source": " \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: charable.c,v 1.8 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(bool) _nc_is_charable(wchar_t ch)\n{\n    bool result;\n#if HAVE_WCTOB\n    result = (wctob((wint_t) ch) == (int) ch);\n#else\n    result = (_nc_to_char(ch) >= 0);\n#endif\n    return result;\n}\n\nNCURSES_EXPORT(int) _nc_to_char(wint_t ch)\n{\n    int result;\n#if HAVE_WCTOB\n    result = wctob(ch);\n#elif HAVE_WCTOMB\n    char temp[MB_LEN_MAX];\n    result = wctomb(temp, ch);\n    if (strlen(temp) == 1)\n\tresult = UChar(temp[0]);\n    else\n\tresult = -1;\n#else\n#error expected either wctob/wctomb\n#endif\n    return result;\n}\n\nNCURSES_EXPORT(wint_t) _nc_to_widechar(int ch)\n{\n    wint_t result;\n#if HAVE_BTOWC\n    result = btowc(ch);\n#elif HAVE_MBTOWC\n    wchar_t convert;\n    char temp[2];\n    temp[0] = ch;\n    temp[1] = '\\0';\n    if (mbtowc(&convert, temp, 1) >= 0)\n\tresult = convert;\n    else\n\tresult = WEOF;\n#else\n#error expected either btowc/mbtowc\n#endif\n    return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cpu.c",
+  "hash_id": "4442ab037d97262df6dabad67190bb22ff5af87f3e5f0c2ae7aa0a5e20887cc6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/api/cpu.c",
+  "human_readable_source": "\n#include <stdio.h>\n\n#include \"cpu.h\"\n#include \"fs/fs.h\"\n\nint cpu__get_max_freq(unsigned long long *freq)\n{\n\tchar entry[PATH_MAX];\n\tint cpu;\n\n\tif (sysfs__read_int(\"devices/system/cpu/online\", &cpu) < 0)\n\t\treturn -1;\n\n\tsnprintf(entry, sizeof(entry),\n\t\t \"devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq\", cpu);\n\n\treturn sysfs__read_ull(entry, freq);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "camss-csid-gen2.h",
+  "hash_id": "b34c100d2116b47f290a36abce33e26f59d8be166ea966392216f5aec777d77e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/qcom/camss/camss-csid-gen2.h",
+  "human_readable_source": " \n \n#ifndef QC_MSM_CAMSS_CSID_GEN2_H\n#define QC_MSM_CAMSS_CSID_GEN2_H\n\n#define DECODE_FORMAT_UNCOMPRESSED_6_BIT\t0x0\n#define DECODE_FORMAT_UNCOMPRESSED_8_BIT\t0x1\n#define DECODE_FORMAT_UNCOMPRESSED_10_BIT\t0x2\n#define DECODE_FORMAT_UNCOMPRESSED_12_BIT\t0x3\n#define DECODE_FORMAT_UNCOMPRESSED_14_BIT\t0x4\n#define DECODE_FORMAT_UNCOMPRESSED_16_BIT\t0x5\n#define DECODE_FORMAT_UNCOMPRESSED_20_BIT\t0x6\n#define DECODE_FORMAT_DPCM_10_6_10\t\t0x7\n#define DECODE_FORMAT_DPCM_10_8_10\t\t0x8\n#define DECODE_FORMAT_DPCM_12_6_12\t\t0x9\n#define DECODE_FORMAT_DPCM_12_8_12\t\t0xa\n#define DECODE_FORMAT_DPCM_14_8_14\t\t0xb\n#define DECODE_FORMAT_DPCM_14_10_14\t\t0xc\n#define DECODE_FORMAT_DPCM_12_10_12\t\t0xd\n#define DECODE_FORMAT_USER_DEFINED\t\t0xe\n#define DECODE_FORMAT_PAYLOAD_ONLY\t\t0xf\n\n#define ENCODE_FORMAT_RAW_8_BIT\t\t0x1\n#define ENCODE_FORMAT_RAW_10_BIT\t0x2\n#define ENCODE_FORMAT_RAW_12_BIT\t0x3\n#define ENCODE_FORMAT_RAW_14_BIT\t0x4\n#define ENCODE_FORMAT_RAW_16_BIT\t0x5\n\n#define PLAIN_FORMAT_PLAIN8\t0x0  \n#define PLAIN_FORMAT_PLAIN16\t0x1  \n#define PLAIN_FORMAT_PLAIN32\t0x2  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

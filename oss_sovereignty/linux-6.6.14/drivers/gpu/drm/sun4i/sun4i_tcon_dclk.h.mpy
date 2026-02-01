@@ -1,0 +1,9 @@
+{
+  "module_name": "sun4i_tcon_dclk.h",
+  "hash_id": "bf15c78440d3d977dc771df45d4e909efaa4b6608c8ac9f4766ca616e606f89b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sun4i/sun4i_tcon_dclk.h",
+  "human_readable_source": " \n \n\n#ifndef _SUN4I_DOTCLOCK_H_\n#define _SUN4I_DOTCLOCK_H_\n\nstruct sun4i_tcon;\n\nint sun4i_dclk_create(struct device *dev, struct sun4i_tcon *tcon);\nint sun4i_dclk_free(struct sun4i_tcon *tcon);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

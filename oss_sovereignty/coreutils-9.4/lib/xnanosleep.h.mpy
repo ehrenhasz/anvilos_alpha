@@ -1,0 +1,9 @@
+{
+  "module_name": "xnanosleep.h",
+  "hash_id": "f8ceb2a0ef4d2cd3bbac8f8d9125965fc0b6cc1dc1e6422e9a749d390f85d299",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xnanosleep.h",
+  "human_readable_source": "/* A variant of nanosleep that takes a 'double' argument and handles EINTR.\n   Copyright (C) 2004-2023 Free Software Foundation, Inc.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published\n   by the Free Software Foundation, either version 3 of the License,\n   or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with this program.  If not, see <https:\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\nint xnanosleep (double);\n\n#ifdef __cplusplus\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

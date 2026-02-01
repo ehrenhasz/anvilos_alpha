@@ -1,0 +1,9 @@
+{
+  "module_name": "mapfile.csv",
+  "hash_id": "735589ecd4989a6dc56f267fab82aabbd11b85efb16cb0b197233a4321982498",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/powerpc/mapfile.csv",
+  "human_readable_source": "# Format:\n# \tPVR,Version,JSON/file/pathname,Type\n#\n# where\n# \tPVR\tProcessor version\n# \tVersion could be used to track version of of JSON file\n# \t\tbut currently unused.\n# \tJSON/file/pathname is the path to JSON file, relative\n# \t\tto tools/perf/pmu-events/arch/powerpc/.\n# \tType is core, uncore etc\n#\n# Multiple PVRs could map to a single JSON file.\n#\n\n# Power8 entries\n004[bcd][[:xdigit:]]{4},1,power8,core\n004e[[:xdigit:]]{4},1,power9,core\n0080[[:xdigit:]]{4},1,power10,core\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

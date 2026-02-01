@@ -1,0 +1,9 @@
+{
+  "module_name": "nan.h",
+  "hash_id": "fca8d5624265935656813ac30348880eeda08ada862cdea949dc90711ca31947",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/nan.h",
+  "human_readable_source": " \n#if defined __MVS__ && defined __IBMC__ && !defined __BFP__\n# error \"NaN is not supported with IBM's hexadecimal floating-point format; please re-compile with -qfloat=ieee\"\n#endif\n\n \n\n \n#if (defined __DECC || defined _MSC_VER \\\n     || (defined __MVS__ && defined __IBMC__)   \\\n     || defined __PGI)\nstatic float\nNaNf ()\n{\n  static float zero = 0.0f;\n  return zero / zero;\n}\n#else\n# define NaNf() (0.0f / 0.0f)\n#endif\n\n\n \n\n \n#if (defined __DECC || defined _MSC_VER \\\n     || (defined __MVS__ && defined __IBMC__)   \\\n     || defined __PGI)\nstatic double\nNaNd ()\n{\n  static double zero = 0.0;\n  return zero / zero;\n}\n#else\n# define NaNd() (0.0 / 0.0)\n#endif\n\n\n \n\n \n#ifdef __sgi\nstatic long double NaNl ()\n{\n  double zero = 0.0;\n  return zero / zero;\n}\n#elif defined _MSC_VER || (defined __MVS__ && defined __IBMC__) || defined __PGI\nstatic long double\nNaNl ()\n{\n  static long double zero = 0.0L;\n  return zero / zero;\n}\n#else\n# define NaNl() (0.0L / 0.0L)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

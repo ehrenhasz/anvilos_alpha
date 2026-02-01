@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_trace.c",
+  "hash_id": "e6f8f8680bc1a561fd34fe4b8e7031e81cdcb0abc23c46a892e39d92321166e3",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_trace.c",
+  "human_readable_source": "\n \n#include \"xfs.h\"\n#include \"xfs_fs.h\"\n#include \"xfs_shared.h\"\n#include \"xfs_bit.h\"\n#include \"xfs_format.h\"\n#include \"xfs_log_format.h\"\n#include \"xfs_trans_resv.h\"\n#include \"xfs_mount.h\"\n#include \"xfs_defer.h\"\n#include \"xfs_da_format.h\"\n#include \"xfs_inode.h\"\n#include \"xfs_btree.h\"\n#include \"xfs_da_btree.h\"\n#include \"xfs_alloc.h\"\n#include \"xfs_bmap.h\"\n#include \"xfs_attr.h\"\n#include \"xfs_trans.h\"\n#include \"xfs_log.h\"\n#include \"xfs_log_priv.h\"\n#include \"xfs_buf_item.h\"\n#include \"xfs_quota.h\"\n#include \"xfs_dquot_item.h\"\n#include \"xfs_dquot.h\"\n#include \"xfs_log_recover.h\"\n#include \"xfs_filestream.h\"\n#include \"xfs_fsmap.h\"\n#include \"xfs_btree_staging.h\"\n#include \"xfs_icache.h\"\n#include \"xfs_ag.h\"\n#include \"xfs_ag_resv.h\"\n#include \"xfs_error.h\"\n#include <linux/iomap.h>\n#include \"xfs_iomap.h\"\n\n \n#define CREATE_TRACE_POINTS\n#include \"xfs_trace.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

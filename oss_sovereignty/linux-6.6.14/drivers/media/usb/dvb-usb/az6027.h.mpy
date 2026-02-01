@@ -1,0 +1,9 @@
+{
+  "module_name": "az6027.h",
+  "hash_id": "5748092c70d8640c0593ee9512228804c8acd42a0d19488245a8607a945ef63a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/dvb-usb/az6027.h",
+  "human_readable_source": " \n#ifndef _DVB_USB_VP6027_H_\n#define _DVB_USB_VP6027_H_\n\n#define DVB_USB_LOG_PREFIX \"az6027\"\n#include \"dvb-usb.h\"\n\n\nextern int dvb_usb_az6027_debug;\n#define deb_info(args...) dprintk(dvb_usb_az6027_debug, 0x01, args)\n#define deb_xfer(args...) dprintk(dvb_usb_az6027_debug, 0x02, args)\n#define deb_rc(args...)   dprintk(dvb_usb_az6027_debug, 0x04, args)\n#define deb_fe(args...)   dprintk(dvb_usb_az6027_debug, 0x08, args)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

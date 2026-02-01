@@ -1,0 +1,9 @@
+{
+  "module_name": "rockchip-rk3288-flakes.txt",
+  "hash_id": "bf100a43276fbd52b9c9500e73f6b75a7c34df9d692a1e6a20152171d096fd7f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/rockchip-rk3288-flakes.txt",
+  "human_readable_source": "kms_addfb_basic@addfb25-bad-modifier\nkms_cursor_crc@.*\nkms_flip@basic-flip-vs-wf_vblank\nkms_invalid_mode@int-max-clock,Crash\nkms_pipe_crc_basic@.*\nkms_properties@connector-properties-atomic,Crash\nkms_properties@get_properties-sanity-atomic,Crash\nkms_properties@get_properties-sanity-non-atomic,Crash\nkms_rmfb@close-fd\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

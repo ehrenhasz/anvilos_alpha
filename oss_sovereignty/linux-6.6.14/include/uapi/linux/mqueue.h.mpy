@@ -1,0 +1,9 @@
+{
+  "module_name": "mqueue.h",
+  "hash_id": "d07ff6da8b09bf53e80f310a27d8df4cc3982fed47ee899f87803ec84272f5f9",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/mqueue.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_MQUEUE_H\n#define _LINUX_MQUEUE_H\n\n#include <linux/types.h>\n\n#define MQ_PRIO_MAX \t32768\n \n#define MQ_BYTES_MAX\t819200\n\nstruct mq_attr {\n\t__kernel_long_t\tmq_flags;\t \n\t__kernel_long_t\tmq_maxmsg;\t \n\t__kernel_long_t\tmq_msgsize;\t \n\t__kernel_long_t\tmq_curmsgs;\t \n\t__kernel_long_t\t__reserved[4];\t \n};\n\n \n#define NOTIFY_NONE\t0\n#define NOTIFY_WOKENUP\t1\n#define NOTIFY_REMOVED\t2\n\n#define NOTIFY_COOKIE_LEN\t32\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

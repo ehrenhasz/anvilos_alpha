@@ -1,0 +1,9 @@
+{
+  "module_name": "keyboard.h",
+  "hash_id": "9b83b8a7b31453796b5edf9bf3302162fd63dfdd5edfd539c4b5d7a63eae6676",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/char/keyboard.h",
+  "human_readable_source": " \n \n\n#include <linux/tty.h>\n#include <linux/tty_flip.h>\n#include <linux/keyboard.h>\n\n#define NR_FN_HANDLER\t20\n\nstruct kbd_data;\n\nextern int ebc_funcbufsize, ebc_funcbufleft;\nextern char *ebc_func_table[MAX_NR_FUNC];\nextern char ebc_func_buf[];\nextern char *ebc_funcbufptr;\nextern unsigned int ebc_keymap_count;\n\nextern struct kbdiacruc ebc_accent_table[];\nextern unsigned int ebc_accent_table_size;\nextern unsigned short *ebc_key_maps[MAX_NR_KEYMAPS];\nextern unsigned short ebc_plain_map[NR_KEYS];\n\ntypedef void (fn_handler_fn)(struct kbd_data *);\n\n \n\nstruct kbd_data {\n\tstruct tty_port *port;\n\tunsigned short **key_maps;\n\tchar **func_table;\n\tfn_handler_fn **fn_handler;\n\tstruct kbdiacruc *accent_table;\n\tunsigned int accent_table_size;\n\tunsigned int diacr;\n\tunsigned short sysrq;\n};\n\nstruct kbd_data *kbd_alloc(void);\nvoid kbd_free(struct kbd_data *);\nvoid kbd_ascebc(struct kbd_data *, unsigned char *);\n\nvoid kbd_keycode(struct kbd_data *, unsigned int);\nint kbd_ioctl(struct kbd_data *, unsigned int, unsigned long);\n\n \nstatic inline void\nkbd_put_queue(struct tty_port *port, int ch)\n{\n\ttty_insert_flip_char(port, ch, 0);\n\ttty_flip_buffer_push(port);\n}\n\nstatic inline void\nkbd_puts_queue(struct tty_port *port, char *cp)\n{\n\twhile (*cp)\n\t\ttty_insert_flip_char(port, *cp++, 0);\n\ttty_flip_buffer_push(port);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

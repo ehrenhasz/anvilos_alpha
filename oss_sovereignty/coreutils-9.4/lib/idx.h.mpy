@@ -1,0 +1,9 @@
+{
+  "module_name": "idx.h",
+  "hash_id": "eff9db231b7503320fb5769a94b77915821ace2adb9af797b5d8a67856dcc2e9",
+  "original_prompt": "Ingested from coreutils-9.4/lib/idx.h",
+  "human_readable_source": " \n#include <stddef.h>\n\n \n#include <stdint.h>\n\n \n\n \n\n \n \ntypedef ptrdiff_t idx_t;\n\n \n#define IDX_MAX PTRDIFF_MAX\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

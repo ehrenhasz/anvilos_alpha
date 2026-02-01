@@ -1,0 +1,9 @@
+{
+  "module_name": "g98.c",
+  "hash_id": "93e5995da9fe4685a240244f869d9a6ba8e3f238102e8f9e39f897bc721a7bd8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/msppp/g98.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <nvif/class.h>\n\nvoid\ng98_msppp_init(struct nvkm_falcon *msppp)\n{\n\tstruct nvkm_device *device = msppp->engine.subdev.device;\n\tnvkm_wr32(device, 0x086010, 0x0000ffd2);\n\tnvkm_wr32(device, 0x08601c, 0x0000fff2);\n}\n\nstatic const struct nvkm_falcon_func\ng98_msppp = {\n\t.init = g98_msppp_init,\n\t.sclass = {\n\t\t{ -1, -1, G98_MSPPP },\n\t\t{}\n\t}\n};\n\nint\ng98_msppp_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_engine **pengine)\n{\n\treturn nvkm_msppp_new_(&g98_msppp, device, type, inst, pengine);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

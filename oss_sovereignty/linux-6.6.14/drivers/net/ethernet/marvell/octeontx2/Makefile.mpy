@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "741f4fde25a2c7c638b3c49b98d5ed7b265c58c4b087ae422f1f7f1473b974ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/octeontx2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Marvell OcteonTX2 device drivers.\n#\n\nobj-$(CONFIG_OCTEONTX2_MBOX) += af/\nobj-$(CONFIG_OCTEONTX2_AF) += af/\nobj-$(CONFIG_OCTEONTX2_PF) += nic/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

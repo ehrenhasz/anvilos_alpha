@@ -1,0 +1,9 @@
+{
+  "module_name": "cat-texi.perl",
+  "hash_id": "760ed1f9d68f4ecde9246d54e749575cf85b17d751bf884f605241f9406ace58",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/cat-texi.perl",
+  "human_readable_source": "#!/usr/bin/perl -w\n\nuse strict;\nuse warnings;\n\nmy @menu = ();\nmy $output = $ARGV[0];\n\nopen my $tmp, '>', \"$output.tmp\";\n\nwhile (<STDIN>) {\n\tnext if (/^\\\\input texinfo/../\\@node Top/);\n\tnext if (/^\\@bye/ || /^\\.ft/);\n\tif (s/^\\@top (.*)/\\@node $1,,,Top/) {\n\t\tpush @menu, $1;\n\t}\n\ts/\\(\\@pxref\\{\\[(URLS|REMOTES)\\]}\\)//;\n\ts/\\@anchor\\{[^{}]*\\}//g;\n\tprint $tmp $_;\n}\nclose $tmp;\n\nprint '\\input texinfo\n@setfilename gitman.info\n@documentencoding UTF-8\n@dircategory Development\n@direntry\n* Git Man Pages: (gitman).  Manual pages for Git revision control system\n@end direntry\n@node Top,,, (dir)\n@top Git Manual Pages\n@documentlanguage en\n@menu\n';\n\nfor (@menu) {\n\tprint \"* ${_}::\\n\";\n}\nprint \"\\@end menu\\n\";\nopen $tmp, '<', \"$output.tmp\";\nwhile (<$tmp>) {\n\tprint;\n}\nclose $tmp;\nprint \"\\@bye\\n\";\nunlink \"$output.tmp\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

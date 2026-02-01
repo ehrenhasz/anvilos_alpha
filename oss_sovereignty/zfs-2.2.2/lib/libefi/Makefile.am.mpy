@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "3609df51a9e0854d861b1b470cd6705c0f80f8a55d6f5f9443448d932004f755",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libefi/Makefile.am",
+  "human_readable_source": "libefi_la_CFLAGS  = $(AM_CFLAGS) $(LIBRARY_CFLAGS)\nlibefi_la_CFLAGS += $(LIBUUID_CFLAGS) $(ZLIB_CFLAGS)\nlibefi_la_CFLAGS += -fvisibility=hidden\n\nnoinst_LTLIBRARIES += libefi.la\nCPPCHECKTARGETS    += libefi.la\n\nlibefi_la_SOURCES = \\\n\t%D%/rdwr_efi.c\n\nlibefi_la_LIBADD = $(LIBUUID_LIBS) $(ZLIB_LIBS)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

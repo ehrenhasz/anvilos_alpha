@@ -1,0 +1,9 @@
+{
+  "module_name": "hypervisor.c",
+  "hash_id": "00c845ade037bf3507cd2063e79ed6821d7ddee95f6f9fd96d71ef69fb4fcc04",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/base/hypervisor.c",
+  "human_readable_source": "\n \n\n#include <linux/kobject.h>\n#include <linux/device.h>\n#include <linux/export.h>\n#include \"base.h\"\n\nstruct kobject *hypervisor_kobj;\nEXPORT_SYMBOL_GPL(hypervisor_kobj);\n\nint __init hypervisor_init(void)\n{\n\thypervisor_kobj = kobject_create_and_add(\"hypervisor\", NULL);\n\tif (!hypervisor_kobj)\n\t\treturn -ENOMEM;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d82ec184a6dd8f1edaef34e7a74fb40d573f6319697d07bec1233f47dce0cddc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vme_user/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the VME device drivers.\n#\n\nobj-$(CONFIG_VME_BUS)\t\t+= vme.o\nobj-$(CONFIG_VME_USER)\t\t+= vme_user.o\nobj-$(CONFIG_VME_TSI148)\t+= vme_tsi148.o\nobj-$(CONFIG_VME_FAKE)\t\t+= vme_fake.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

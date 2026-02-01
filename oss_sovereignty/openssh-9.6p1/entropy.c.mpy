@@ -1,0 +1,9 @@
+{
+  "module_name": "entropy.c",
+  "hash_id": "4682a4be9e4d7c27508644e136b97fdfb5e5ca0d5a3da866fcf02ba18689f92a",
+  "original_prompt": "Ingested from openssh-9.6p1/entropy.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#define RANDOM_SEED_SIZE 48\n\n#ifdef WITH_OPENSSL\n\n#include <sys/types.h>\n\n#include <errno.h>\n#include <signal.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n\n#include <openssl/rand.h>\n#include <openssl/crypto.h>\n#include <openssl/err.h>\n\n#include \"openbsd-compat/openssl-compat.h\"\n\n#include \"ssh.h\"\n#include \"misc.h\"\n#include \"xmalloc.h\"\n#include \"atomicio.h\"\n#include \"pathnames.h\"\n#include \"log.h\"\n#include \"sshbuf.h\"\n#include \"ssherr.h\"\n\n \n\nvoid\nseed_rng(void)\n{\n\tunsigned char buf[RANDOM_SEED_SIZE];\n\n\t \n\tssh_libcrypto_init();\n\n\tif (!ssh_compatible_openssl(OPENSSL_VERSION_NUMBER,\n\t    OpenSSL_version_num()))\n\t\tfatal(\"OpenSSL version mismatch. Built against %lx, you \"\n\t\t    \"have %lx\", (u_long)OPENSSL_VERSION_NUMBER,\n\t\t    OpenSSL_version_num());\n\n#ifndef OPENSSL_PRNG_ONLY\n\tif (RAND_status() == 1)\n\t\tdebug3(\"RNG is ready, skipping seeding\");\n\telse {\n\t\tif (seed_from_prngd(buf, sizeof(buf)) == -1)\n\t\t\tfatal(\"Could not obtain seed from PRNGd\");\n\t\tRAND_add(buf, sizeof(buf), sizeof(buf));\n\t}\n#endif  \n\n\tif (RAND_status() != 1)\n\t\tfatal(\"PRNG is not seeded\");\n\n\t \n\tarc4random_buf(buf, sizeof(buf));\n\texplicit_bzero(buf, sizeof(buf));\n}\n\n#else  \n\n#include <stdlib.h>\n#include <string.h>\n\n \nvoid\nseed_rng(void)\n{\n\tunsigned char buf[RANDOM_SEED_SIZE];\n\n\t \n\tarc4random_buf(buf, sizeof(buf));\n\texplicit_bzero(buf, sizeof(buf));\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

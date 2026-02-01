@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "dcb82639f43788cfb82aaa349784eea7496f135ad5ee1449d66be93722307678",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arm/util/Build",
+  "human_readable_source": "perf-y += perf_regs.o\n\nperf-$(CONFIG_DWARF) += dwarf-regs.o\n\nperf-$(CONFIG_LOCAL_LIBUNWIND)    += unwind-libunwind.o\nperf-$(CONFIG_LIBDW_DWARF_UNWIND) += unwind-libdw.o\n\nperf-$(CONFIG_AUXTRACE) += pmu.o auxtrace.o cs-etm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

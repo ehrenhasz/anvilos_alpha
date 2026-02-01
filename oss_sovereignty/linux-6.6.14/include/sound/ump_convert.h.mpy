@@ -1,0 +1,9 @@
+{
+  "module_name": "ump_convert.h",
+  "hash_id": "0744df200cc874cb9c41b318ad982117a3dcf93d4cdf83a0ecf00e30d62ebeb7",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/ump_convert.h",
+  "human_readable_source": "\n#ifndef __SOUND_UMP_CONVERT_H\n#define __SOUND_UMP_CONVERT_H\n\n#include <sound/ump_msg.h>\n\n \nstruct ump_cvt_to_ump_bank {\n\tbool rpn_set;\n\tbool nrpn_set;\n\tbool bank_set;\n\tunsigned char cc_rpn_msb, cc_rpn_lsb;\n\tunsigned char cc_nrpn_msb, cc_nrpn_lsb;\n\tunsigned char cc_data_msb, cc_data_lsb;\n\tunsigned char cc_bank_msb, cc_bank_lsb;\n};\n\n \nstruct ump_cvt_to_ump {\n\t \n\tunsigned char buf[4];\n\tint len;\n\tint cmd_bytes;\n\n\t \n\tu32 ump[4];\n\tint ump_bytes;\n\n\t \n\tunsigned int in_sysex;\n\tstruct ump_cvt_to_ump_bank bank[16];\t \n};\n\nint snd_ump_convert_from_ump(const u32 *data, unsigned char *dst,\n\t\t\t     unsigned char *group_ret);\nvoid snd_ump_convert_to_ump(struct ump_cvt_to_ump *cvt, unsigned char group,\n\t\t\t    unsigned int protocol, unsigned char c);\n\n \nstatic inline void snd_ump_convert_reset(struct ump_cvt_to_ump *ctx)\n{\n\tmemset(ctx, 0, sizeof(*ctx));\n\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6772acd1a8b5faa224f6554597167405271774d69e231a4cf8164e5b05f5aab6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/mcde/Makefile",
+  "human_readable_source": "mcde_drm-y +=\tmcde_drv.o mcde_dsi.o mcde_clk_div.o mcde_display.o\n\nobj-$(CONFIG_DRM_MCDE) += mcde_drm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

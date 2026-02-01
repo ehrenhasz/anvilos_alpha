@@ -1,0 +1,9 @@
+{
+  "module_name": "inftrees.h",
+  "hash_id": "3b55166dcd44bda347fad315f7cdb1601156c038e605149aff2be5a2e8ac8cce",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zlib_inflate/inftrees.h",
+  "human_readable_source": "#ifndef INFTREES_H\n#define INFTREES_H\n\n \n\n \n\n \ntypedef struct {\n    unsigned char op;            \n    unsigned char bits;          \n    unsigned short val;          \n} code;\n\n \n\n \n#define ENOUGH 2048\n#define MAXD 592\n\n \ntypedef enum {\n    CODES,\n    LENS,\n    DISTS\n} codetype;\n\nextern int zlib_inflate_table (codetype type, unsigned short *lens,\n                             unsigned codes, code **table,\n                             unsigned *bits, unsigned short *work);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

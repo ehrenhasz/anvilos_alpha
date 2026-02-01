@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ede8881238062ebb73b130108498936cc9bb9f8dd53ae1b37cd23f26e0dc7442",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/iio/impedance-analyzer/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Impedance Converter, Network Analyzer drivers\n#\nmenu \"Network Analyzer, Impedance Converters\"\n\nconfig AD5933\n\ttristate \"Analog Devices AD5933, AD5934 driver\"\n\tdepends on I2C\n\tselect IIO_BUFFER\n\tselect IIO_KFIFO_BUF\n\thelp\n\t  Say yes here to build support for Analog Devices Impedance Converter,\n\t  Network Analyzer, AD5933/4.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called ad5933.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

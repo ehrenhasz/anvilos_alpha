@@ -1,0 +1,9 @@
+{
+  "module_name": "xmss_wots.h",
+  "hash_id": "776df2b018a04e4c7abc534098447c83996adb6cd4ca6cfcdd009884ad1a250e",
+  "original_prompt": "Ingested from openssh-9.6p1/xmss_wots.h",
+  "human_readable_source": "#ifdef WITH_XMSS\n \n \n\n#ifndef WOTS_H\n#define WOTS_H\n\n#ifdef HAVE_STDINT_H\n#include \"stdint.h\"\n#endif\n\n \ntypedef struct {\n  uint32_t len_1;\n  uint32_t len_2;\n  uint32_t len;\n  uint32_t n;\n  uint32_t w;\n  uint32_t log_w;\n  uint32_t keysize;\n} wots_params;\n\n \nvoid wots_set_params(wots_params *params, int n, int w);\n\n \nvoid wots_pkgen(unsigned char *pk, const unsigned char *sk, const wots_params *params, const unsigned char *pub_seed, uint32_t addr[8]);\n\n \nint wots_sign(unsigned char *sig, const unsigned char *msg, const unsigned char *sk, const wots_params *params, const unsigned char *pub_seed, uint32_t addr[8]);\n\n \nint wots_pkFromSig(unsigned char *pk, const unsigned char *sig, const unsigned char *msg, const wots_params *params, const unsigned char *pub_seed, uint32_t addr[8]);\n\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

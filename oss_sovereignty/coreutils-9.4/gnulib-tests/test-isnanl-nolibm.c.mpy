@@ -1,0 +1,9 @@
+{
+  "module_name": "test-isnanl-nolibm.c",
+  "hash_id": "1328b7f7926a3ed03194d8b50a7a2f3692b78f84f6631c58893b86ea73dc40f3",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-isnanl-nolibm.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"isnanl-nolibm.h\"\n\n#include \"test-isnanl.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

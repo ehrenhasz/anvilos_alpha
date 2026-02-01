@@ -1,0 +1,9 @@
+{
+  "module_name": "iccsense.h",
+  "hash_id": "70d76a7d9d2214fd99aed0e1a5199db35a76e4b474c97d5362803ff893c688ef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/iccsense.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_ICCSENSE_H__\n#define __NVBIOS_ICCSENSE_H__\nstruct pwr_rail_resistor_t {\n\tu8 mohm;\n\tbool enabled;\n};\n\nstruct pwr_rail_t {\n\tu8 mode;\n\tu8 extdev_id;\n\tu8 resistor_count;\n\tstruct pwr_rail_resistor_t resistors[3];\n\tu16 config;\n};\n\nstruct nvbios_iccsense {\n\tint nr_entry;\n\tstruct pwr_rail_t *rail;\n};\n\nint nvbios_iccsense_parse(struct nvkm_bios *, struct nvbios_iccsense *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

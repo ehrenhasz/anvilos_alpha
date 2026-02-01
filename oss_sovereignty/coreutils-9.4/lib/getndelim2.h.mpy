@@ -1,0 +1,9 @@
+{
+  "module_name": "getndelim2.h",
+  "hash_id": "70009422f63a9ba19a225215febc3e435fa72432babbdd20cd428f7689a59dc2",
+  "original_prompt": "Ingested from coreutils-9.4/lib/getndelim2.h",
+  "human_readable_source": " \nextern ssize_t getndelim2 (char **lineptr, size_t *linesize, size_t offset,\n                           size_t nmax, int delim1, int delim2,\n                           FILE *stream);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

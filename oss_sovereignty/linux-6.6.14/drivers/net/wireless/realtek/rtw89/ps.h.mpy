@@ -1,0 +1,9 @@
+{
+  "module_name": "ps.h",
+  "hash_id": "a0e5a0d7787df51751d55029bb558ee6afd06dccba6e29032f672950f21741ae",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw89/ps.h",
+  "human_readable_source": " \n \n\n#ifndef __RTW89_PS_H_\n#define __RTW89_PS_H_\n\nvoid rtw89_enter_lps(struct rtw89_dev *rtwdev, struct rtw89_vif *rtwvif,\n\t\t     bool ps_mode);\nvoid rtw89_leave_lps(struct rtw89_dev *rtwdev);\nvoid __rtw89_leave_ps_mode(struct rtw89_dev *rtwdev);\nvoid __rtw89_enter_ps_mode(struct rtw89_dev *rtwdev, struct rtw89_vif *rtwvif);\nvoid rtw89_leave_ps_mode(struct rtw89_dev *rtwdev);\nvoid rtw89_enter_ips(struct rtw89_dev *rtwdev);\nvoid rtw89_leave_ips(struct rtw89_dev *rtwdev);\nvoid rtw89_set_coex_ctrl_lps(struct rtw89_dev *rtwdev, bool btc_ctrl);\nvoid rtw89_process_p2p_ps(struct rtw89_dev *rtwdev, struct ieee80211_vif *vif);\nvoid rtw89_recalc_lps(struct rtw89_dev *rtwdev);\nvoid rtw89_p2p_noa_renew(struct rtw89_vif *rtwvif);\nvoid rtw89_p2p_noa_append(struct rtw89_vif *rtwvif,\n\t\t\t  const struct ieee80211_p2p_noa_desc *desc);\nu8 rtw89_p2p_noa_fetch(struct rtw89_vif *rtwvif, void **data);\n\nstatic inline void rtw89_leave_ips_by_hwflags(struct rtw89_dev *rtwdev)\n{\n\tstruct ieee80211_hw *hw = rtwdev->hw;\n\n\tif (hw->conf.flags & IEEE80211_CONF_IDLE)\n\t\trtw89_leave_ips(rtwdev);\n}\n\nstatic inline void rtw89_enter_ips_by_hwflags(struct rtw89_dev *rtwdev)\n{\n\tstruct ieee80211_hw *hw = rtwdev->hw;\n\n\tif (hw->conf.flags & IEEE80211_CONF_IDLE)\n\t\trtw89_enter_ips(rtwdev);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

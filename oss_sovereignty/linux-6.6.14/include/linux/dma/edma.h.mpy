@@ -1,0 +1,9 @@
+{
+  "module_name": "edma.h",
+  "hash_id": "31e2bb98a65ed13c40269bbd8694cff942e5217e207186f64210edf2e562128f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dma/edma.h",
+  "human_readable_source": " \n \n\n#ifndef _DW_EDMA_H\n#define _DW_EDMA_H\n\n#include <linux/device.h>\n#include <linux/dmaengine.h>\n\n#define EDMA_MAX_WR_CH                                  8\n#define EDMA_MAX_RD_CH                                  8\n\nstruct dw_edma;\n\nstruct dw_edma_region {\n\tu64\t\tpaddr;\n\tunion {\n\t\tvoid\t\t*mem;\n\t\tvoid __iomem\t*io;\n\t} vaddr;\n\tsize_t\t\tsz;\n};\n\n \nstruct dw_edma_plat_ops {\n\tint (*irq_vector)(struct device *dev, unsigned int nr);\n\tu64 (*pci_address)(struct device *dev, phys_addr_t cpu_addr);\n};\n\nenum dw_edma_map_format {\n\tEDMA_MF_EDMA_LEGACY = 0x0,\n\tEDMA_MF_EDMA_UNROLL = 0x1,\n\tEDMA_MF_HDMA_COMPAT = 0x5,\n\tEDMA_MF_HDMA_NATIVE = 0x7,\n};\n\n \nenum dw_edma_chip_flags {\n\tDW_EDMA_CHIP_LOCAL\t= BIT(0),\n};\n\n \nstruct dw_edma_chip {\n\tstruct device\t\t*dev;\n\tint\t\t\tnr_irqs;\n\tconst struct dw_edma_plat_ops\t*ops;\n\tu32\t\t\tflags;\n\n\tvoid __iomem\t\t*reg_base;\n\n\tu16\t\t\tll_wr_cnt;\n\tu16\t\t\tll_rd_cnt;\n\t \n\tstruct dw_edma_region\tll_region_wr[EDMA_MAX_WR_CH];\n\tstruct dw_edma_region\tll_region_rd[EDMA_MAX_RD_CH];\n\n\t \n\tstruct dw_edma_region\tdt_region_wr[EDMA_MAX_WR_CH];\n\tstruct dw_edma_region\tdt_region_rd[EDMA_MAX_RD_CH];\n\n\tenum dw_edma_map_format\tmf;\n\n\tstruct dw_edma\t\t*dw;\n};\n\n \n#if IS_REACHABLE(CONFIG_DW_EDMA)\nint dw_edma_probe(struct dw_edma_chip *chip);\nint dw_edma_remove(struct dw_edma_chip *chip);\n#else\nstatic inline int dw_edma_probe(struct dw_edma_chip *chip)\n{\n\treturn -ENODEV;\n}\n\nstatic inline int dw_edma_remove(struct dw_edma_chip *chip)\n{\n\treturn 0;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

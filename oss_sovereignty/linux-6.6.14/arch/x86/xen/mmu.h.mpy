@@ -1,0 +1,9 @@
+{
+  "module_name": "mmu.h",
+  "hash_id": "768ad4e7e832aa02b56680dcc19c44e686a99a16da22cfb66d5d605fc1750f78",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/xen/mmu.h",
+  "human_readable_source": " \n#ifndef _XEN_MMU_H\n\n#include <linux/linkage.h>\n#include <asm/page.h>\n\nenum pt_level {\n\tPT_PGD,\n\tPT_P4D,\n\tPT_PUD,\n\tPT_PMD,\n\tPT_PTE\n};\n\n\nbool __set_phys_to_machine(unsigned long pfn, unsigned long mfn);\n\nvoid set_pte_mfn(unsigned long vaddr, unsigned long pfn, pgprot_t flags);\n\npte_t xen_ptep_modify_prot_start(struct vm_area_struct *vma, unsigned long addr, pte_t *ptep);\nvoid  xen_ptep_modify_prot_commit(struct vm_area_struct *vma, unsigned long addr,\n\t\t\t\t  pte_t *ptep, pte_t pte);\n\nunsigned long xen_read_cr2_direct(void);\n\nextern void xen_init_mmu_ops(void);\nextern void xen_hvm_init_mmu_ops(void);\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

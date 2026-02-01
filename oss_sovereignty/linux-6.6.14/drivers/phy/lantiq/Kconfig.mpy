@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "bbe615a17a4b97444d7981b540458b9216ae31b488d28a44a1523d8fbdbf089d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/lantiq/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Phy drivers for Lantiq / Intel platforms\n#\nconfig PHY_LANTIQ_VRX200_PCIE\n\ttristate \"Lantiq VRX200/ARX300 PCIe PHY\"\n\tdepends on SOC_TYPE_XWAY || COMPILE_TEST\n\tdepends on OF && HAS_IOMEM\n\tselect GENERIC_PHY\n\tselect REGMAP_MMIO\n\thelp\n\t  Support for the PCIe PHY(s) on the Lantiq / Intel VRX200 and ARX300\n\t  family SoCs.\n\t  If unsure, say N.\n\nconfig PHY_LANTIQ_RCU_USB2\n\ttristate \"Lantiq XWAY SoC RCU based USB PHY\"\n\tdepends on OF && (SOC_TYPE_XWAY || COMPILE_TEST)\n\tselect GENERIC_PHY\n\thelp\n\t  Support for the USB PHY(s) on the Lantiq / Intel XWAY family SoCs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

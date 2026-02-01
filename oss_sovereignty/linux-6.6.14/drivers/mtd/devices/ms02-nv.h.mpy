@@ -1,0 +1,9 @@
+{
+  "module_name": "ms02-nv.h",
+  "hash_id": "bd4c4d83eefc5d9aa8a2f4ac818019c157ef612aafa351d8d83206ec0626281a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/devices/ms02-nv.h",
+  "human_readable_source": " \n \n\n#include <linux/ioport.h>\n#include <linux/mtd/mtd.h>\n\n \n\n \n#define MS02NV_CSR\t\t0x400000\t \n\n \n#define MS02NV_CSR_BATT_OK\t0x01\t\t \n#define MS02NV_CSR_BATT_OFF\t0x02\t\t \n\n\n \n#define MS02NV_DIAG\t\t0x0003f8\t \n#define MS02NV_MAGIC\t\t0x0003fc\t \n#define MS02NV_VALID\t\t0x000400\t \n#define MS02NV_RAM\t\t0x001000\t \n\n \n#define MS02NV_DIAG_TEST\t0x01\t\t \n#define MS02NV_DIAG_RO\t\t0x02\t\t \n#define MS02NV_DIAG_RW\t\t0x04\t\t \n#define MS02NV_DIAG_FAIL\t0x08\t\t \n#define MS02NV_DIAG_SIZE_MASK\t0xf0\t\t \n#define MS02NV_DIAG_SIZE_SHIFT\t0x10\t\t \n\n \n#define MS02NV_ID\t\t0x03021966\t \n#define MS02NV_VALID_ID\t\t0xbd100248\t \n#define MS02NV_SLOT_SIZE\t0x800000\t \n\n\ntypedef volatile u32 ms02nv_uint;\n\nstruct ms02nv_private {\n\tstruct mtd_info *next;\n\tstruct {\n\t\tstruct resource *module;\n\t\tstruct resource *diag_ram;\n\t\tstruct resource *user_ram;\n\t\tstruct resource *csr;\n\t} resource;\n\tu_char *addr;\n\tsize_t size;\n\tu_char *uaddr;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

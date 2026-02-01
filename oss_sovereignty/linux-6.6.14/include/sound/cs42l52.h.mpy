@@ -1,0 +1,9 @@
+{
+  "module_name": "cs42l52.h",
+  "hash_id": "e110197e0849b25b0bf624f5e2954069203e9f729f0d513f606ba6ca0a8de7f1",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/cs42l52.h",
+  "human_readable_source": " \n \n\n#ifndef __CS42L52_H\n#define __CS42L52_H\n\nstruct cs42l52_platform_data {\n\n\t \n\tunsigned int micbias_lvl;\n\n\t \n\tbool mica_diff_cfg;\n\n\t \n\tbool micb_diff_cfg;\n\n\t \n\tunsigned int chgfreq;\n\n\t \n\tunsigned int reset_gpio;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

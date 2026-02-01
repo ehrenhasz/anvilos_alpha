@@ -1,0 +1,9 @@
+{
+  "module_name": "tz_context.h",
+  "hash_id": "f8759d110f23f73a76fb4328bd5b2f587b43d47cd3d8cec7a562890777a3bb05",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/cmsis/inc/tz_context.h",
+  "human_readable_source": " \n \n\n#if   defined ( __ICCARM__ )\n  #pragma system_include          \n#elif defined (__clang__)\n  #pragma clang system_header    \n#endif\n\n#ifndef TZ_CONTEXT_H\n#define TZ_CONTEXT_H\n \n#include <stdint.h>\n \n#ifndef TZ_MODULEID_T\n#define TZ_MODULEID_T\n\ntypedef uint32_t TZ_ModuleId_t;\n#endif\n \n\ntypedef uint32_t TZ_MemoryId_t;\n  \n\n\nuint32_t TZ_InitContextSystem_S (void);\n \n\n\n\n\nTZ_MemoryId_t TZ_AllocModuleContext_S (TZ_ModuleId_t module);\n \n\n\n\nuint32_t TZ_FreeModuleContext_S (TZ_MemoryId_t id);\n \n\n\n\nuint32_t TZ_LoadContext_S (TZ_MemoryId_t id);\n \n\n\n\nuint32_t TZ_StoreContext_S (TZ_MemoryId_t id);\n \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

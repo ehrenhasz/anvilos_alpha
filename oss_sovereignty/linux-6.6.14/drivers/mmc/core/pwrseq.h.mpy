@@ -1,0 +1,9 @@
+{
+  "module_name": "pwrseq.h",
+  "hash_id": "739b50a78926f5a0e3a41f5d3083cc0eb1db79c0ed74f540063a335fe077b744",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/core/pwrseq.h",
+  "human_readable_source": " \n \n#ifndef _MMC_CORE_PWRSEQ_H\n#define _MMC_CORE_PWRSEQ_H\n\n#include <linux/types.h>\n\nstruct mmc_host;\nstruct device;\nstruct module;\n\nstruct mmc_pwrseq_ops {\n\tvoid (*pre_power_on)(struct mmc_host *host);\n\tvoid (*post_power_on)(struct mmc_host *host);\n\tvoid (*power_off)(struct mmc_host *host);\n\tvoid (*reset)(struct mmc_host *host);\n};\n\nstruct mmc_pwrseq {\n\tconst struct mmc_pwrseq_ops *ops;\n\tstruct device *dev;\n\tstruct list_head pwrseq_node;\n\tstruct module *owner;\n};\n\n#ifdef CONFIG_OF\n\nint mmc_pwrseq_register(struct mmc_pwrseq *pwrseq);\nvoid mmc_pwrseq_unregister(struct mmc_pwrseq *pwrseq);\n\nint mmc_pwrseq_alloc(struct mmc_host *host);\nvoid mmc_pwrseq_pre_power_on(struct mmc_host *host);\nvoid mmc_pwrseq_post_power_on(struct mmc_host *host);\nvoid mmc_pwrseq_power_off(struct mmc_host *host);\nvoid mmc_pwrseq_reset(struct mmc_host *host);\nvoid mmc_pwrseq_free(struct mmc_host *host);\n\n#else\n\nstatic inline int mmc_pwrseq_register(struct mmc_pwrseq *pwrseq)\n{\n\treturn -ENOSYS;\n}\nstatic inline void mmc_pwrseq_unregister(struct mmc_pwrseq *pwrseq) {}\nstatic inline int mmc_pwrseq_alloc(struct mmc_host *host) { return 0; }\nstatic inline void mmc_pwrseq_pre_power_on(struct mmc_host *host) {}\nstatic inline void mmc_pwrseq_post_power_on(struct mmc_host *host) {}\nstatic inline void mmc_pwrseq_power_off(struct mmc_host *host) {}\nstatic inline void mmc_pwrseq_reset(struct mmc_host *host) {}\nstatic inline void mmc_pwrseq_free(struct mmc_host *host) {}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

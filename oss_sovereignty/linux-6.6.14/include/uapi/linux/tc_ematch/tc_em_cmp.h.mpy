@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_em_cmp.h",
+  "hash_id": "849fb30bf8b8f79922e8adad2e3436a507238b2b881d9e7341336264e93e58e8",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_ematch/tc_em_cmp.h",
+  "human_readable_source": " \n#ifndef __LINUX_TC_EM_CMP_H\n#define __LINUX_TC_EM_CMP_H\n\n#include <linux/types.h>\n#include <linux/pkt_cls.h>\n\nstruct tcf_em_cmp {\n\t__u32\t\tval;\n\t__u32\t\tmask;\n\t__u16\t\toff;\n\t__u8\t\talign:4;\n\t__u8\t\tflags:4;\n\t__u8\t\tlayer:4;\n\t__u8\t\topnd:4;\n};\n\nenum {\n\tTCF_EM_ALIGN_U8  = 1,\n\tTCF_EM_ALIGN_U16 = 2,\n\tTCF_EM_ALIGN_U32 = 4\n};\n\n#define TCF_EM_CMP_TRANS\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

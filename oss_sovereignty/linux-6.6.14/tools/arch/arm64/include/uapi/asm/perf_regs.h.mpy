@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_regs.h",
+  "hash_id": "7c1e727239a25042e3292b088b23428bdf91bfb7385d8e1c15186ab586fb2bdb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/arm64/include/uapi/asm/perf_regs.h",
+  "human_readable_source": " \n#ifndef _ASM_ARM64_PERF_REGS_H\n#define _ASM_ARM64_PERF_REGS_H\n\nenum perf_event_arm_regs {\n\tPERF_REG_ARM64_X0,\n\tPERF_REG_ARM64_X1,\n\tPERF_REG_ARM64_X2,\n\tPERF_REG_ARM64_X3,\n\tPERF_REG_ARM64_X4,\n\tPERF_REG_ARM64_X5,\n\tPERF_REG_ARM64_X6,\n\tPERF_REG_ARM64_X7,\n\tPERF_REG_ARM64_X8,\n\tPERF_REG_ARM64_X9,\n\tPERF_REG_ARM64_X10,\n\tPERF_REG_ARM64_X11,\n\tPERF_REG_ARM64_X12,\n\tPERF_REG_ARM64_X13,\n\tPERF_REG_ARM64_X14,\n\tPERF_REG_ARM64_X15,\n\tPERF_REG_ARM64_X16,\n\tPERF_REG_ARM64_X17,\n\tPERF_REG_ARM64_X18,\n\tPERF_REG_ARM64_X19,\n\tPERF_REG_ARM64_X20,\n\tPERF_REG_ARM64_X21,\n\tPERF_REG_ARM64_X22,\n\tPERF_REG_ARM64_X23,\n\tPERF_REG_ARM64_X24,\n\tPERF_REG_ARM64_X25,\n\tPERF_REG_ARM64_X26,\n\tPERF_REG_ARM64_X27,\n\tPERF_REG_ARM64_X28,\n\tPERF_REG_ARM64_X29,\n\tPERF_REG_ARM64_LR,\n\tPERF_REG_ARM64_SP,\n\tPERF_REG_ARM64_PC,\n\n\t \n\tPERF_REG_ARM64_VG = 46, \n\n\tPERF_REG_ARM64_MAX = PERF_REG_ARM64_PC + 1,\n\tPERF_REG_ARM64_EXTENDED_MAX = PERF_REG_ARM64_VG + 1\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

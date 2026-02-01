@@ -1,0 +1,9 @@
+{
+  "module_name": "ktls_stats.c",
+  "hash_id": "fb4ee461d4fd0f205ead362a4d39590cfe5dc6dfecd03d1f60a1cbd1305e2f10",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_stats.c",
+  "human_readable_source": " \n\n#include <linux/ethtool.h>\n#include <net/sock.h>\n\n#include \"en.h\"\n#include \"fpga/sdk.h\"\n#include \"en_accel/ktls.h\"\n\nstatic const struct counter_desc mlx5e_ktls_sw_stats_desc[] = {\n\t{ MLX5E_DECLARE_STAT(struct mlx5e_tls_sw_stats, tx_tls_ctx) },\n\t{ MLX5E_DECLARE_STAT(struct mlx5e_tls_sw_stats, tx_tls_del) },\n\t{ MLX5E_DECLARE_STAT(struct mlx5e_tls_sw_stats, tx_tls_pool_alloc) },\n\t{ MLX5E_DECLARE_STAT(struct mlx5e_tls_sw_stats, tx_tls_pool_free) },\n\t{ MLX5E_DECLARE_STAT(struct mlx5e_tls_sw_stats, rx_tls_ctx) },\n\t{ MLX5E_DECLARE_STAT(struct mlx5e_tls_sw_stats, rx_tls_del) },\n};\n\n#define MLX5E_READ_CTR_ATOMIC64(ptr, dsc, i) \\\n\tatomic64_read((atomic64_t *)((char *)(ptr) + (dsc)[i].offset))\n\nint mlx5e_ktls_get_count(struct mlx5e_priv *priv)\n{\n\tif (!priv->tls)\n\t\treturn 0;\n\n\treturn ARRAY_SIZE(mlx5e_ktls_sw_stats_desc);\n}\n\nint mlx5e_ktls_get_strings(struct mlx5e_priv *priv, uint8_t *data)\n{\n\tunsigned int i, n, idx = 0;\n\n\tif (!priv->tls)\n\t\treturn 0;\n\n\tn = mlx5e_ktls_get_count(priv);\n\n\tfor (i = 0; i < n; i++)\n\t\tstrcpy(data + (idx++) * ETH_GSTRING_LEN,\n\t\t       mlx5e_ktls_sw_stats_desc[i].format);\n\n\treturn n;\n}\n\nint mlx5e_ktls_get_stats(struct mlx5e_priv *priv, u64 *data)\n{\n\tunsigned int i, n, idx = 0;\n\n\tif (!priv->tls)\n\t\treturn 0;\n\n\tn = mlx5e_ktls_get_count(priv);\n\n\tfor (i = 0; i < n; i++)\n\t\tdata[idx++] = MLX5E_READ_CTR_ATOMIC64(&priv->tls->sw_stats,\n\t\t\t\t\t\t      mlx5e_ktls_sw_stats_desc,\n\t\t\t\t\t\t      i);\n\n\treturn n;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

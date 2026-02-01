@@ -1,0 +1,9 @@
+{
+  "module_name": "amd_hsmp.h",
+  "hash_id": "1fb4ebf21aadcc266e309c0608e553c76f569757f565fb4a9e76a4c4a602cf99",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/amd_hsmp.h",
+  "human_readable_source": " \n\n#ifndef _ASM_X86_AMD_HSMP_H_\n#define _ASM_X86_AMD_HSMP_H_\n\n#include <uapi/asm/amd_hsmp.h>\n\n#if IS_ENABLED(CONFIG_AMD_HSMP)\nint hsmp_send_message(struct hsmp_message *msg);\n#else\nstatic inline int hsmp_send_message(struct hsmp_message *msg)\n{\n\treturn -ENODEV;\n}\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

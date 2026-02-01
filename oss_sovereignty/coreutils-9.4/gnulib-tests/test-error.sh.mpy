@@ -1,0 +1,9 @@
+{
+  "module_name": "test-error.sh",
+  "hash_id": "e4424d3b606eb6468590cd44c40c61c2068ec73bb3e4c01a95bbf35184711dcd",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-error.sh",
+  "human_readable_source": "#!/bin/sh\n# Test of the 'error' module.\n\n. \"${srcdir=.}/init.sh\"; path_prepend_ .\n\n${CHECKER} test-error${EXEEXT} > out 2> err\n# Verify the exit code.\ncase $? in\n  4) ;;\n  *) Exit 1;;\nesac\n\n# Normalize the stderr output on Windows platforms.\ntr -d '\\015' < err | sed 's,.*test-error[.ex]*:,test-error:,' > err2 || Exit 1\n\n# Verify the stderr output.\ncompare - err2 <<\\EOF || Exit 1\ntest-error: bummer\ntest-error: Zonk 123 is too large\ntest-error: Pok\u00e9mon started\ntest-error:d1/foo.c:10: invalid blub\ntest-error:d1/foo.c:10: invalid blarn\ntest-error:d1/foo.c:10: unsupported glink\ntest-error:d1/foo.c:13: invalid brump\ntest-error:d2/foo.c:13: unsupported flinge\nhammer\nboing 123 is too large\nd2/bar.c:11: bark too loud\ntest-error: can't steal: Permission denied\ntest-error: fatal error\nEOF\n\n# Verify the stdout output.\ntest -s out && Exit 1\n\nExit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

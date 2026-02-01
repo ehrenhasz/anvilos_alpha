@@ -1,0 +1,9 @@
+{
+  "module_name": "ak4641.h",
+  "hash_id": "8672824cb1440a51d5cc163efc020ac94f57f9f9944c62851c999a4957a38d3e",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/ak4641.h",
+  "human_readable_source": " \n \n\n#ifndef __AK4641_H\n#define __AK4641_H\n\n \nstruct ak4641_platform_data {\n\tint gpio_power;\n\tint gpio_npdn;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

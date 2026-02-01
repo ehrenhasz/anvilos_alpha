@@ -1,0 +1,9 @@
+{
+  "module_name": "memory_model.h",
+  "hash_id": "d7457565eb7e556badcd73a9a7a1586fdc0c092c9ab666d92bd8bcf1ede39dfa",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/memory_model.h",
+  "human_readable_source": " \n#ifndef __ASM_MEMORY_MODEL_H\n#define __ASM_MEMORY_MODEL_H\n\n#include <linux/pfn.h>\n\n#ifndef __ASSEMBLY__\n\n \n#if defined(CONFIG_FLATMEM)\n\n#ifndef ARCH_PFN_OFFSET\n#define ARCH_PFN_OFFSET\t\t(0UL)\n#endif\n\n#define __pfn_to_page(pfn)\t(mem_map + ((pfn) - ARCH_PFN_OFFSET))\n#define __page_to_pfn(page)\t((unsigned long)((page) - mem_map) + \\\n\t\t\t\t ARCH_PFN_OFFSET)\n\n#ifndef pfn_valid\nstatic inline int pfn_valid(unsigned long pfn)\n{\n\t \n\textern unsigned long max_mapnr;\n\tunsigned long pfn_offset = ARCH_PFN_OFFSET;\n\n\treturn pfn >= pfn_offset && (pfn - pfn_offset) < max_mapnr;\n}\n#define pfn_valid pfn_valid\n#endif\n\n#elif defined(CONFIG_SPARSEMEM_VMEMMAP)\n\n \n#define __pfn_to_page(pfn)\t(vmemmap + (pfn))\n#define __page_to_pfn(page)\t(unsigned long)((page) - vmemmap)\n\n#elif defined(CONFIG_SPARSEMEM)\n \n#define __page_to_pfn(pg)\t\t\t\t\t\\\n({\tconst struct page *__pg = (pg);\t\t\t\t\\\n\tint __sec = page_to_section(__pg);\t\t\t\\\n\t(unsigned long)(__pg - __section_mem_map_addr(__nr_to_section(__sec)));\t\\\n})\n\n#define __pfn_to_page(pfn)\t\t\t\t\\\n({\tunsigned long __pfn = (pfn);\t\t\t\\\n\tstruct mem_section *__sec = __pfn_to_section(__pfn);\t\\\n\t__section_mem_map_addr(__sec) + __pfn;\t\t\\\n})\n#endif  \n\n \n#define\t__phys_to_pfn(paddr)\tPHYS_PFN(paddr)\n#define\t__pfn_to_phys(pfn)\tPFN_PHYS(pfn)\n\n#define page_to_pfn __page_to_pfn\n#define pfn_to_page __pfn_to_page\n\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

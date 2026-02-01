@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "31e5c43cb4a70c9d003fe355e51516206de9970add1057706632b2628bf2b6cd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/block/drbd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ndrbd-y := drbd_buildtag.o drbd_bitmap.o drbd_proc.o\ndrbd-y += drbd_worker.o drbd_receiver.o drbd_req.o drbd_actlog.o\ndrbd-y += drbd_main.o drbd_strings.o drbd_nl.o\ndrbd-y += drbd_interval.o drbd_state.o\ndrbd-y += drbd_nla.o\ndrbd-$(CONFIG_DEBUG_FS) += drbd_debugfs.o\n\nobj-$(CONFIG_BLK_DEV_DRBD)     += drbd.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

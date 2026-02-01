@@ -1,0 +1,9 @@
+{
+  "module_name": "cycle-check.c",
+  "hash_id": "8ebb49cca84ad8581e61b6f27d33d965422fe4479e728d31b5946980e6d4947d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/cycle-check.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"cycle-check.h\"\n\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <stdio.h>\n#include <stdlib.h>\n\n#include \"assure.h\"\n\n#define CC_MAGIC 9827862\n\n \n\nstatic bool\nis_zero_or_power_of_two (uintmax_t i)\n{\n  return (i & (i - 1)) == 0;\n}\n\nvoid\ncycle_check_init (struct cycle_check_state *state)\n{\n  state->chdir_counter = 0;\n  state->magic = CC_MAGIC;\n}\n\n \n\nbool\ncycle_check (struct cycle_check_state *state, struct stat const *sb)\n{\n  assure (state->magic == CC_MAGIC);\n\n   \n  if (state->chdir_counter && SAME_INODE (*sb, state->dev_ino))\n    return true;\n\n   \n  if (is_zero_or_power_of_two (++(state->chdir_counter)))\n    {\n       \n      if (state->chdir_counter == 0)\n        return true;\n\n      state->dev_ino.st_dev = sb->st_dev;\n      state->dev_ino.st_ino = sb->st_ino;\n    }\n\n  return false;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

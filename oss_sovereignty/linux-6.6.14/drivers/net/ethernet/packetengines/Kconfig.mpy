@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a6e147bb390b93ac4bd8c3467794ea68475e096424d18802e4d21bc8ef0911bb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/packetengines/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Packet Engines device configuration\n#\n\nconfig NET_VENDOR_PACKET_ENGINES\n\tbool \"Packet Engines devices\"\n\tdefault y\n\tdepends on PCI\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Packet Engines devices. If you say Y, you will\n\t  be asked for your specific card in the following questions.\n\nif NET_VENDOR_PACKET_ENGINES\n\nconfig HAMACHI\n\ttristate \"Packet Engines Hamachi GNIC-II support\"\n\tdepends on PCI\n\tselect MII\n\thelp\n\t  If you have a Gigabit Ethernet card of this type, say Y here.\n\n\t  To compile this driver as a module, choose M here. The module will be\n\t  called hamachi.\n\nconfig YELLOWFIN\n\ttristate \"Packet Engines Yellowfin Gigabit-NIC support\"\n\tdepends on PCI\n\tselect CRC32\n\thelp\n\t  Say Y here if you have a Packet Engines G-NIC PCI Gigabit Ethernet\n\t  adapter or the SYM53C885 Ethernet controller. The Gigabit adapter is\n\t  used by the Beowulf Linux cluster project.  See\n\t  <http://cesdis.gsfc.nasa.gov/linux/drivers/yellowfin.html> for more\n\t  information about this driver in particular and Beowulf in general.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called yellowfin.  This is recommended.\n\nendif # NET_VENDOR_PACKET_ENGINES\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

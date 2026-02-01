@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "d6e516df586bcbebcacc884e917faef71d02f71a33f34215c1b2146f0c3cc1aa",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/memblock/.gitignore",
+  "human_readable_source": "main\nmemblock.c\nlinux/memblock.h\nasm/asm.h\nasm/cmpxchg.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nwbutton.h",
+  "hash_id": "96476777347d5c2a185f965a4395a97cd22451e20f448c0991818a291e8a1740",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/nwbutton.h",
+  "human_readable_source": " \n#ifndef __NWBUTTON_H\n#define __NWBUTTON_H\n\n \n\n#ifdef __NWBUTTON_C\t \n\n \n\n#define NUM_PRESSES_REBOOT 2\t \n#define BUTTON_DELAY 30 \t \n#define VERSION \"0.3\"\t\t \n\n \n\nstruct button_callback {\n\tvoid (*callback) (void);\n\tint count;\n};\n\n \n\nstatic void button_sequence_finished(struct timer_list *unused);\nstatic irqreturn_t button_handler (int irq, void *dev_id);\nint button_init (void);\nint button_add_callback (void (*callback) (void), int count);\nint button_del_callback (void (*callback) (void));\nstatic void button_consume_callbacks (int bpcount);\n\n#else  \n\nextern int button_add_callback (void (*callback) (void), int count);\nextern int button_del_callback (void (*callback) (void));\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

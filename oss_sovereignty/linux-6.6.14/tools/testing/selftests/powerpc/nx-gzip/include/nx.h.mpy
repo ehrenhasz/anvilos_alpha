@@ -1,0 +1,9 @@
+{
+  "module_name": "nx.h",
+  "hash_id": "fc859a3a0a2f0ce9fccaf15ef9af5d98c497dd640eb79800179fc3219ae5343d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/nx-gzip/include/nx.h",
+  "human_readable_source": " \n \n#ifndef _NX_H\n#define _NX_H\n\n#include <stdbool.h>\n\n#define\tNX_FUNC_COMP_842\t1\n#define NX_FUNC_COMP_GZIP\t2\n\n#ifndef __aligned\n#define __aligned(x)\t__attribute__((aligned(x)))\n#endif\n\nstruct nx842_func_args {\n\tbool use_crc;\n\tbool decompress;\t\t \n\tbool move_data;\n\tint timeout;\t\t\t \n};\n\nstruct nxbuf_t {\n\tint len;\n\tchar *buf;\n};\n\n \nvoid *nx_function_begin(int function, int pri);\n\nint nx_function(void *handle, struct nxbuf_t *in, struct nxbuf_t *out,\n\t\tvoid *arg);\n\nint nx_function_end(void *handle);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

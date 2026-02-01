@@ -1,0 +1,9 @@
+{
+  "module_name": "s390-cpumsf-kernel.h",
+  "hash_id": "d241165eb3da8e30ba33ddcddb3c01b229cd29bdea110f41ea4d097ddf339e48",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/s390-cpumsf-kernel.h",
+  "human_readable_source": " \n \n#ifndef S390_CPUMSF_KERNEL_H\n#define S390_CPUMSF_KERNEL_H\n\n#define\tS390_CPUMSF_PAGESZ\t4096\t \n#define\tS390_CPUMSF_DIAG_DEF_FIRST\t0x8001\t \n\nstruct hws_basic_entry {\n\tunsigned int def:16;\t     \n\tunsigned int R:4;\t     \n\tunsigned int U:4;\t     \n\tunsigned int z:2;\t     \n\tunsigned int T:1;\t     \n\tunsigned int W:1;\t     \n\tunsigned int P:1;\t     \n\tunsigned int AS:2;\t     \n\tunsigned int I:1;\t     \n\tunsigned int CL:2;\t     \n\tunsigned int:14;\n\tunsigned int prim_asn:16;    \n\tunsigned long long ia;\t     \n\tunsigned long long gpp;      \n\tunsigned long long hpp;      \n};\n\nstruct hws_diag_entry {\n\tunsigned int def:16;\t     \n\tunsigned int R:15;\t     \n\tunsigned int I:1;\t     \n\tu8\t     data[];\t     \n};\n\nstruct hws_combined_entry {\n\tstruct hws_basic_entry\tbasic;\t \n\tstruct hws_diag_entry\tdiag;\t \n};\n\nstruct hws_trailer_entry {\n\tunion {\n\t\tstruct {\n\t\t\tunsigned int f:1;\t \n\t\t\tunsigned int a:1;\t \n\t\t\tunsigned int t:1;\t \n\t\t\tunsigned int:29;\t \n\t\t\tunsigned int bsdes:16;\t \n\t\t\tunsigned int dsdes:16;\t \n\t\t};\n\t\tunsigned long long flags;\t \n\t};\n\tunsigned long long overflow;\t  \n\tunsigned char timestamp[16];\t  \n\tunsigned long long reserved1;\t  \n\tunsigned long long reserved2;\t  \n\tunion {\t\t\t\t  \n\t\tstruct {\n\t\t\tunsigned long long clock_base:1;  \n\t\t\tunsigned long long progusage1:63;\n\t\t\tunsigned long long progusage2;\n\t\t};\n\t\tunsigned long long progusage[2];\n\t};\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

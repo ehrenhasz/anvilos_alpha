@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7c760e775280cc0a1c7adc98c33696ff90cbd0cb53b7e9096f8112baf6ac4100",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# smbfs configuration\n\nsource \"fs/smb/client/Kconfig\"\nsource \"fs/smb/server/Kconfig\"\n\nconfig SMBFS\n\ttristate\n\tdefault y if CIFS=y || SMB_SERVER=y\n\tdefault m if CIFS=m || SMB_SERVER=m\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

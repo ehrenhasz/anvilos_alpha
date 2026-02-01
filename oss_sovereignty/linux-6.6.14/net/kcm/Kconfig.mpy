@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "84ad562ef409dcfa6cbd87471439ea17b56275633891ed15b525ad2ba5f847bf",
+  "original_prompt": "Ingested from linux-6.6.14/net/kcm/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig AF_KCM\n\ttristate \"KCM sockets\"\n\tdepends on INET\n\tselect BPF_SYSCALL\n\tselect STREAM_PARSER\n\thelp\n\t  KCM (Kernel Connection Multiplexor) sockets provide a method\n\t  for multiplexing messages of a message based application\n\t  protocol over kernel connectons (e.g. TCP connections).\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

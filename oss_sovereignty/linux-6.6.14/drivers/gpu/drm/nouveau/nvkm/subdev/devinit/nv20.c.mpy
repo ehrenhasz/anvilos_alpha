@@ -1,0 +1,9 @@
+{
+  "module_name": "nv20.c",
+  "hash_id": "dad54093c77a9ed5a4e783e63a1ca5e8833475ddbff06b9bc45bd8f32287fd86",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/devinit/nv20.c",
+  "human_readable_source": " \n#include \"nv04.h\"\n#include \"fbmem.h\"\n\n#include <subdev/bios.h>\n#include <subdev/bios/init.h>\n\nstatic void\nnv20_devinit_meminit(struct nvkm_devinit *init)\n{\n\tstruct nvkm_subdev *subdev = &init->subdev;\n\tstruct nvkm_device *device = subdev->device;\n\tuint32_t mask = (device->chipset >= 0x25 ? 0x300 : 0x900);\n\tuint32_t amount, off;\n\tstruct io_mapping *fb;\n\n\t \n\tfb = fbmem_init(device);\n\tif (!fb) {\n\t\tnvkm_error(subdev, \"failed to map fb\\n\");\n\t\treturn;\n\t}\n\n\tnvkm_wr32(device, NV10_PFB_REFCTRL, NV10_PFB_REFCTRL_VALID_1);\n\n\t \n\tnvkm_mask(device, NV04_PFB_CFG0, 0, mask);\n\n\tamount = nvkm_rd32(device, 0x10020c);\n\tfor (off = amount; off > 0x2000000; off -= 0x2000000)\n\t\tfbmem_poke(fb, off - 4, off);\n\n\tamount = nvkm_rd32(device, 0x10020c);\n\tif (amount != fbmem_peek(fb, amount - 4))\n\t\t \n\t\tnvkm_mask(device, NV04_PFB_CFG0, mask, 0);\n\n\tfbmem_fini(fb);\n}\n\nstatic const struct nvkm_devinit_func\nnv20_devinit = {\n\t.dtor = nv04_devinit_dtor,\n\t.preinit = nv04_devinit_preinit,\n\t.post = nv04_devinit_post,\n\t.meminit = nv20_devinit_meminit,\n\t.pll_set = nv04_devinit_pll_set,\n};\n\nint\nnv20_devinit_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t\t struct nvkm_devinit **pinit)\n{\n\treturn nv04_devinit_new_(&nv20_devinit, device, type, inst, pinit);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

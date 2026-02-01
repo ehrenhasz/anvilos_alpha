@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e746cda04f1f217004d81939fd5f2fc5a68c7734877b5ab84494b448b0e23a8d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ipack/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# IPACK configuration.\n#\n\nmenuconfig IPACK_BUS\n\ttristate \"IndustryPack bus support\"\n\tdepends on HAS_IOMEM\n\thelp\n\t  This option provides support for the IndustryPack framework.  There\n\t  are IndustryPack carrier boards, which interface another bus (such as\n\t  PCI) to an IndustryPack bus, and IndustryPack modules, that are\n\t  hosted on these buses.  While IndustryPack modules can provide a\n\t  large variety of functionality, they are most often found in\n\t  industrial control applications.\n\n\t  Say N if unsure.\n\nif IPACK_BUS\n\nsource \"drivers/ipack/carriers/Kconfig\"\n\nsource \"drivers/ipack/devices/Kconfig\"\n\nendif # IPACK\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

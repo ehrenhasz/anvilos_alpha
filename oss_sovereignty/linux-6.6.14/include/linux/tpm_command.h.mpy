@@ -1,0 +1,9 @@
+{
+  "module_name": "tpm_command.h",
+  "hash_id": "d3e5c7f7be7acde65fdf0ca5de76853c723b079aee03ab6a826176e23485b77e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/tpm_command.h",
+  "human_readable_source": " \n#ifndef __LINUX_TPM_COMMAND_H__\n#define __LINUX_TPM_COMMAND_H__\n\n \n\n \n#define TPM_TAG_RQU_COMMAND             193\n#define TPM_TAG_RQU_AUTH1_COMMAND       194\n#define TPM_TAG_RQU_AUTH2_COMMAND       195\n#define TPM_TAG_RSP_COMMAND             196\n#define TPM_TAG_RSP_AUTH1_COMMAND       197\n#define TPM_TAG_RSP_AUTH2_COMMAND       198\n\n \n#define TPM_ORD_GETRANDOM               70\n#define TPM_ORD_OSAP                    11\n#define TPM_ORD_OIAP                    10\n#define TPM_ORD_SEAL                    23\n#define TPM_ORD_UNSEAL                  24\n\n \n#define SRKHANDLE                       0x40000000\n#define TPM_NONCE_SIZE                  20\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "166adaf877c0abcf75affaa2bdd78e7ffe4aa5878436e7f0cf2ebd0f58a7c53a",
+  "original_prompt": "Ingested from linux-6.6.14/fs/netfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nnetfs-y := \\\n\tbuffered_read.o \\\n\tio.o \\\n\titerator.o \\\n\tmain.o \\\n\tobjects.o\n\nnetfs-$(CONFIG_NETFS_STATS) += stats.o\n\nobj-$(CONFIG_NETFS_SUPPORT) := netfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

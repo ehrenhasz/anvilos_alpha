@@ -1,0 +1,9 @@
+{
+  "module_name": "mr.h",
+  "hash_id": "8491a5d714060ed050324ecd3c29e4a29b5e12383a31120bb8082daa3296e5f4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/sw/rdmavt/mr.h",
+  "human_readable_source": " \n \n\n#ifndef DEF_RVTMR_H\n#define DEF_RVTMR_H\n\n#include <rdma/rdma_vt.h>\n\nstruct rvt_mr {\n\tstruct ib_mr ibmr;\n\tstruct ib_umem *umem;\n\tstruct rvt_mregion mr;   \n};\n\nstatic inline struct rvt_mr *to_imr(struct ib_mr *ibmr)\n{\n\treturn container_of(ibmr, struct rvt_mr, ibmr);\n}\n\nint rvt_driver_mr_init(struct rvt_dev_info *rdi);\nvoid rvt_mr_exit(struct rvt_dev_info *rdi);\n\n \nstruct ib_mr *rvt_get_dma_mr(struct ib_pd *pd, int acc);\nstruct ib_mr *rvt_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,\n\t\t\t      u64 virt_addr, int mr_access_flags,\n\t\t\t      struct ib_udata *udata);\nint rvt_dereg_mr(struct ib_mr *ibmr, struct ib_udata *udata);\nstruct ib_mr *rvt_alloc_mr(struct ib_pd *pd, enum ib_mr_type mr_type,\n\t\t\t   u32 max_num_sg);\nint rvt_map_mr_sg(struct ib_mr *ibmr, struct scatterlist *sg,\n\t\t  int sg_nents, unsigned int *sg_offset);\n\n#endif           \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

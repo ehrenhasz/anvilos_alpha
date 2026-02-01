@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_random.h",
+  "hash_id": "ea73a7b1d8a8412ec10468feb4fa6c1c5611612db107c0e11964039282899de7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/i915_random.h",
+  "human_readable_source": " \n\n#ifndef __I915_SELFTESTS_RANDOM_H__\n#define __I915_SELFTESTS_RANDOM_H__\n\n#include <linux/math64.h>\n#include <linux/random.h>\n\n#include \"../i915_selftest.h\"\n\n#define I915_RND_STATE_INITIALIZER(x) ({\t\t\t\t\\\n\tstruct rnd_state state__;\t\t\t\t\t\\\n\tprandom_seed_state(&state__, (x));\t\t\t\t\\\n\tstate__;\t\t\t\t\t\t\t\\\n})\n\n#define I915_RND_STATE(name__) \\\n\tstruct rnd_state name__ = I915_RND_STATE_INITIALIZER(i915_selftest.random_seed)\n\n#define I915_RND_SUBSTATE(name__, parent__) \\\n\tstruct rnd_state name__ = I915_RND_STATE_INITIALIZER(prandom_u32_state(&(parent__)))\n\nu64 i915_prandom_u64_state(struct rnd_state *rnd);\n\nstatic inline u32 i915_prandom_u32_max_state(u32 ep_ro, struct rnd_state *state)\n{\n\treturn upper_32_bits(mul_u32_u32(prandom_u32_state(state), ep_ro));\n}\n\nunsigned int *i915_random_order(unsigned int count,\n\t\t\t\tstruct rnd_state *state);\nvoid i915_random_reorder(unsigned int *order,\n\t\t\t unsigned int count,\n\t\t\t struct rnd_state *state);\n\nvoid i915_prandom_shuffle(void *arr, size_t elsz, size_t count,\n\t\t\t  struct rnd_state *state);\n\nu64 igt_random_offset(struct rnd_state *state,\n\t\t      u64 start, u64 end,\n\t\t      u64 len, u64 align);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

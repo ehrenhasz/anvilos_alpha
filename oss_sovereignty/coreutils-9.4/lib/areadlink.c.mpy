@@ -1,0 +1,9 @@
+{
+  "module_name": "areadlink.c",
+  "hash_id": "bc878d3df0be43b858e195f8ebb52bfe710e73e2215e49cc1ee04941ed9a32d2",
+  "original_prompt": "Ingested from coreutils-9.4/lib/areadlink.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include \"areadlink.h\"\n\n#include \"careadlinkat.h\"\n\n#include <stdlib.h>\n#include <unistd.h>\n\n \nstatic ssize_t\ncareadlinkatcwd (int fd, char const *filename, char *buffer,\n                 size_t buffer_size)\n{\n   \n  if (fd != AT_FDCWD)\n    abort ();\n  return readlink (filename, buffer, buffer_size);\n}\n\n \n\nchar *\nareadlink (char const *filename)\n{\n  return careadlinkat (AT_FDCWD, filename, NULL, 0, NULL, careadlinkatcwd);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

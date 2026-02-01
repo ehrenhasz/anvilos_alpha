@@ -1,0 +1,9 @@
+{
+  "module_name": "hwfnseg.sh",
+  "hash_id": "72f09b6bfa34c617f27124fff9713793f705be3c38b4bf90e23864b15d1b2072",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/scripts/hwfnseg.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Generate the hardware extension to the litmus-test filename, or the\n# empty string if this is an LKMM run.  The extension is placed in\n# the shell variable hwfnseg.\n#\n# Usage:\n#\t. hwfnseg.sh\n#\n# Copyright IBM Corporation, 2019\n#\n# Author: Paul E. McKenney <paulmck@linux.ibm.com>\n\nif test -z \"$LKMM_HW_MAP_FILE\"\nthen\n\thwfnseg=\nelse\n\thwfnseg=\".$LKMM_HW_MAP_FILE\"\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

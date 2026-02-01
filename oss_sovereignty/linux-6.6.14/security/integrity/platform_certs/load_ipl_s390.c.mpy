@@ -1,0 +1,9 @@
+{
+  "module_name": "load_ipl_s390.c",
+  "hash_id": "0b07bc7ae1045f4e279d0578bb18dd2d29dcfc4f88cd2478c7bd5c5dd227e44b",
+  "original_prompt": "Ingested from linux-6.6.14/security/integrity/platform_certs/load_ipl_s390.c",
+  "human_readable_source": "\n\n#include <linux/kernel.h>\n#include <linux/sched.h>\n#include <linux/cred.h>\n#include <linux/err.h>\n#include <linux/efi.h>\n#include <linux/slab.h>\n#include <keys/asymmetric-type.h>\n#include <keys/system_keyring.h>\n#include <asm/boot_data.h>\n#include \"../integrity.h\"\n\n \nstatic int __init load_ipl_certs(void)\n{\n\tvoid *ptr, *end;\n\tunsigned int len;\n\n\tif (!ipl_cert_list_addr)\n\t\treturn 0;\n\t \n\tptr = __va(ipl_cert_list_addr);\n\tend = ptr + ipl_cert_list_size;\n\twhile ((void *) ptr < end) {\n\t\tlen = *(unsigned int *) ptr;\n\t\tptr += sizeof(unsigned int);\n\t\tadd_to_platform_keyring(\"IPL:db\", ptr, len);\n\t\tptr += len;\n\t}\n\treturn 0;\n}\nlate_initcall(load_ipl_certs);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

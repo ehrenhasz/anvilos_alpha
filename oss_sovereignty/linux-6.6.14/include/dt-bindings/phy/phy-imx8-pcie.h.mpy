@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-imx8-pcie.h",
+  "hash_id": "ae9798b410d844efafbfbe278f619e5053a3ce48925f9b360b21a8a7da3d4785",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/phy/phy-imx8-pcie.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_IMX8_PCIE_H\n#define _DT_BINDINGS_IMX8_PCIE_H\n\n \n#define IMX8_PCIE_REFCLK_PAD_UNUSED\t0\n#define IMX8_PCIE_REFCLK_PAD_INPUT\t1\n#define IMX8_PCIE_REFCLK_PAD_OUTPUT\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

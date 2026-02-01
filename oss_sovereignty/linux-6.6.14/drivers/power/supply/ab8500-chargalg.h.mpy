@@ -1,0 +1,9 @@
+{
+  "module_name": "ab8500-chargalg.h",
+  "hash_id": "7d0645937a0b3ae52d619a25caa765948c319022d4037f73f8159071a039f080",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/power/supply/ab8500-chargalg.h",
+  "human_readable_source": " \n \n\n#ifndef _AB8500_CHARGALG_H_\n#define _AB8500_CHARGALG_H_\n\n#include <linux/power_supply.h>\n\n \n#define psy_to_ux500_charger(x) power_supply_get_drvdata(x)\n\n \nstruct ux500_charger;\n\nstruct ux500_charger_ops {\n\tint (*enable) (struct ux500_charger *, int, int, int);\n\tint (*check_enable) (struct ux500_charger *, int, int);\n\tint (*kick_wd) (struct ux500_charger *);\n\tint (*update_curr) (struct ux500_charger *, int);\n};\n\n \nstruct ux500_charger {\n\tstruct power_supply *psy;\n\tstruct ux500_charger_ops ops;\n\tint max_out_volt_uv;\n\tint max_out_curr_ua;\n\tint wdt_refresh;\n\tbool enabled;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

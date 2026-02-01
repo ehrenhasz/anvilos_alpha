@@ -1,0 +1,9 @@
+{
+  "module_name": "ga100.c",
+  "hash_id": "178cd0cc46e482195f3e466740b8463fd0bc1747befc3cdcb722ee2caa235051",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/acr/ga100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nvoid\nga100_acr_wpr_check(struct nvkm_acr *acr, u64 *start, u64 *limit)\n{\n\tstruct nvkm_device *device = acr->subdev.device;\n\n\t*start = (u64)(nvkm_rd32(device, 0x1fa81c) & 0xffffff00) << 8;\n\t*limit = (u64)(nvkm_rd32(device, 0x1fa820) & 0xffffff00) << 8;\n\t*limit = *limit + 0x20000;\n}\n\nint\nga100_acr_hsfw_ctor(struct nvkm_acr *acr, const char *bl, const char *fw,\n\t\t    const char *name, int ver, const struct nvkm_acr_hsf_fwif *fwif)\n{\n\tstruct nvkm_acr_hsfw *hsfw;\n\n\tif (!(hsfw = kzalloc(sizeof(*hsfw), GFP_KERNEL)))\n\t\treturn -ENOMEM;\n\n\thsfw->falcon_id = fwif->falcon_id;\n\thsfw->boot_mbox0 = fwif->boot_mbox0;\n\thsfw->intr_clear = fwif->intr_clear;\n\tlist_add_tail(&hsfw->head, &acr->hsfw);\n\n\treturn nvkm_falcon_fw_ctor_hs_v2(fwif->func, name, &acr->subdev, fw, ver, NULL, &hsfw->fw);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

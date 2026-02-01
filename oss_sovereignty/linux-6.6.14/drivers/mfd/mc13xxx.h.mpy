@@ -1,0 +1,9 @@
+{
+  "module_name": "mc13xxx.h",
+  "hash_id": "f739369ba4a2f314e89d8b82d4d03a8d5118679ecd357584a85fab9441b4adda",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/mc13xxx.h",
+  "human_readable_source": " \n \n#ifndef __DRIVERS_MFD_MC13XXX_H\n#define __DRIVERS_MFD_MC13XXX_H\n\n#include <linux/mutex.h>\n#include <linux/regmap.h>\n#include <linux/mfd/mc13xxx.h>\n\n#define MC13XXX_NUMREGS\t\t0x3f\n#define MC13XXX_IRQ_REG_CNT\t2\n#define MC13XXX_IRQ_PER_REG\t24\n\nstruct mc13xxx;\n\nstruct mc13xxx_variant {\n\tconst char *name;\n\tvoid (*print_revision)(struct mc13xxx *mc13xxx, u32 revision);\n};\n\nextern struct mc13xxx_variant\n\t\tmc13xxx_variant_mc13783,\n\t\tmc13xxx_variant_mc13892,\n\t\tmc13xxx_variant_mc34708;\n\nstruct mc13xxx {\n\tstruct regmap *regmap;\n\n\tstruct device *dev;\n\tconst struct mc13xxx_variant *variant;\n\n\tstruct regmap_irq irqs[MC13XXX_IRQ_PER_REG * MC13XXX_IRQ_REG_CNT];\n\tstruct regmap_irq_chip irq_chip;\n\tstruct regmap_irq_chip_data *irq_data;\n\n\tstruct mutex lock;\n\tint irq;\n\tint flags;\n\n\tint adcflags;\n};\n\nint mc13xxx_common_init(struct device *dev);\nvoid mc13xxx_common_exit(struct device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

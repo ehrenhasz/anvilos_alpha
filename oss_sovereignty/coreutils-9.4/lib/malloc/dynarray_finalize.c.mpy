@@ -1,0 +1,9 @@
+{
+  "module_name": "dynarray_finalize.c",
+  "hash_id": "c5405534049564781b4aaeab0801aa82c05828632b7092af17cba3b033ddd1ea",
+  "original_prompt": "Ingested from coreutils-9.4/lib/malloc/dynarray_finalize.c",
+  "human_readable_source": " \n    return false;\n\n  size_t used = list->used;\n\n   \n  if (used == 0)\n    {\n       \n      if (list->array != scratch)\n        free (list->array);\n      *result = (struct dynarray_finalize_result) { NULL, 0 };\n      return true;\n    }\n\n  size_t allocation_size = used * element_size;\n  void *heap_array = malloc (allocation_size);\n  if (heap_array != NULL)\n    {\n       \n      if (list->array != NULL)\n        memcpy (heap_array, list->array, allocation_size);\n      if (list->array != scratch)\n        free (list->array);\n      *result = (struct dynarray_finalize_result)\n        { .array = heap_array, .length = used };\n      return true;\n    }\n  else\n     \n    return false;\n}\nlibc_hidden_def (__libc_dynarray_finalize)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

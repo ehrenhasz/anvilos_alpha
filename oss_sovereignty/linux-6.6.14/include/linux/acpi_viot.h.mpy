@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi_viot.h",
+  "hash_id": "3353a173c30df7aa11c7403fb3ceb631263ecda0841160be02a63fb7897c718c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/acpi_viot.h",
+  "human_readable_source": " \n\n#ifndef __ACPI_VIOT_H__\n#define __ACPI_VIOT_H__\n\n#include <linux/acpi.h>\n\n#ifdef CONFIG_ACPI_VIOT\nvoid __init acpi_viot_early_init(void);\nvoid __init acpi_viot_init(void);\nint viot_iommu_configure(struct device *dev);\n#else\nstatic inline void acpi_viot_early_init(void) {}\nstatic inline void acpi_viot_init(void) {}\nstatic inline int viot_iommu_configure(struct device *dev)\n{\n\treturn -ENODEV;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

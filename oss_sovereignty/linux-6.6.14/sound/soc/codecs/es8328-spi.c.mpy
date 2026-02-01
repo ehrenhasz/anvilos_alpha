@@ -1,0 +1,9 @@
+{
+  "module_name": "es8328-spi.c",
+  "hash_id": "4e20d41340ac1ef882a4fde5c5972c7460a3f3cbd0bbb5b360526b6593417991",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/es8328-spi.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/regmap.h>\n#include <linux/spi/spi.h>\n#include <sound/soc.h>\n#include \"es8328.h\"\n\nstatic const struct of_device_id es8328_of_match[] = {\n\t{ .compatible = \"everest,es8328\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, es8328_of_match);\n\nstatic int es8328_spi_probe(struct spi_device *spi)\n{\n\treturn es8328_probe(&spi->dev,\n\t\t\tdevm_regmap_init_spi(spi, &es8328_regmap_config));\n}\n\nstatic struct spi_driver es8328_spi_driver = {\n\t.driver = {\n\t\t.name\t\t= \"es8328\",\n\t\t.of_match_table\t= es8328_of_match,\n\t},\n\t.probe\t= es8328_spi_probe,\n};\n\nmodule_spi_driver(es8328_spi_driver);\nMODULE_DESCRIPTION(\"ASoC ES8328 audio CODEC SPI driver\");\nMODULE_AUTHOR(\"Sean Cross <xobs@kosagi.com>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

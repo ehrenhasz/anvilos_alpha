@@ -1,0 +1,9 @@
+{
+  "module_name": "timer.h",
+  "hash_id": "3ae90d2f5d2c9e9561b6a915528fece76556cf196f77c0233e0c38371b746762",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/timer.h",
+  "human_readable_source": "#ifndef __NVIF_TIMER_H__\n#define __NVIF_TIMER_H__\n#include <nvif/os.h>\n\nstruct nvif_timer_wait {\n\tstruct nvif_device *device;\n\tu64 limit;\n\tu64 time0;\n\tu64 time1;\n\tint reads;\n};\n\nvoid nvif_timer_wait_init(struct nvif_device *, u64 nsec,\n\t\t\t  struct nvif_timer_wait *);\ns64 nvif_timer_wait_test(struct nvif_timer_wait *);\n\n \n#define nvif_nsec(d,n,cond...) ({                                              \\\n\tstruct nvif_timer_wait _wait;                                          \\\n\ts64 _taken = 0;                                                        \\\n                                                                               \\\n\tnvif_timer_wait_init((d), (n), &_wait);                                \\\n\tdo {                                                                   \\\n\t\tcond                                                           \\\n\t} while ((_taken = nvif_timer_wait_test(&_wait)) >= 0);                \\\n                                                                               \\\n\t_taken;                                                                \\\n})\n#define nvif_usec(d,u,cond...) nvif_nsec((d), (u) * 1000, ##cond)\n#define nvif_msec(d,m,cond...) nvif_usec((d), (m) * 1000, ##cond)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6f7a64a899500f6fa3684d7ef46dcca573334ba17d784112507ed95f75039293",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/livepatch/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nTEST_PROGS_EXTENDED := functions.sh\nTEST_PROGS := \\\n\ttest-livepatch.sh \\\n\ttest-callbacks.sh \\\n\ttest-shadow-vars.sh \\\n\ttest-state.sh \\\n\ttest-ftrace.sh \\\n\ttest-sysfs.sh\n\nTEST_FILES := settings\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

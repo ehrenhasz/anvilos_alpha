@@ -1,0 +1,9 @@
+{
+  "module_name": "r8a7779-sysc.c",
+  "hash_id": "2d223600ec2d150557015ca6e913da4726793c2d3eb8373b0cfef7598ea4f9c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pmdomain/renesas/r8a7779-sysc.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n\n#include <dt-bindings/power/r8a7779-sysc.h>\n\n#include \"rcar-sysc.h\"\n\nstatic const struct rcar_sysc_area r8a7779_areas[] __initconst = {\n\t{ \"always-on\",\t    0, 0, R8A7779_PD_ALWAYS_ON,\t-1, PD_ALWAYS_ON },\n\t{ \"arm1\",\t 0x40, 1, R8A7779_PD_ARM1,\tR8A7779_PD_ALWAYS_ON,\n\t  PD_CPU_CR },\n\t{ \"arm2\",\t 0x40, 2, R8A7779_PD_ARM2,\tR8A7779_PD_ALWAYS_ON,\n\t  PD_CPU_CR },\n\t{ \"arm3\",\t 0x40, 3, R8A7779_PD_ARM3,\tR8A7779_PD_ALWAYS_ON,\n\t  PD_CPU_CR },\n\t{ \"sgx\",\t 0xc0, 0, R8A7779_PD_SGX,\tR8A7779_PD_ALWAYS_ON },\n\t{ \"vdp\",\t0x100, 0, R8A7779_PD_VDP,\tR8A7779_PD_ALWAYS_ON },\n\t{ \"imp\",\t0x140, 0, R8A7779_PD_IMP,\tR8A7779_PD_ALWAYS_ON },\n};\n\nconst struct rcar_sysc_info r8a7779_sysc_info __initconst = {\n\t.areas = r8a7779_areas,\n\t.num_areas = ARRAY_SIZE(r8a7779_areas),\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

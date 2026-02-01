@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3515d8b14ebbeaeb933f90a6b34f636167d4ef4c9615220edabafa93741a0e68",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/samsung/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_PHY_EXYNOS_DP_VIDEO)\t+= phy-exynos-dp-video.o\nobj-$(CONFIG_PHY_EXYNOS_MIPI_VIDEO)\t+= phy-exynos-mipi-video.o\nobj-$(CONFIG_PHY_EXYNOS_PCIE)\t\t+= phy-exynos-pcie.o\nobj-$(CONFIG_PHY_SAMSUNG_UFS)\t\t+= phy-exynos-ufs.o\nphy-exynos-ufs-y\t\t\t+= phy-samsung-ufs.o\nphy-exynos-ufs-y\t\t\t+= phy-exynos7-ufs.o\nphy-exynos-ufs-y\t\t\t+= phy-exynosautov9-ufs.o\nphy-exynos-ufs-y\t\t\t+= phy-fsd-ufs.o\nobj-$(CONFIG_PHY_SAMSUNG_USB2)\t\t+= phy-exynos-usb2.o\nphy-exynos-usb2-y\t\t\t+= phy-samsung-usb2.o\nphy-exynos-usb2-$(CONFIG_PHY_EXYNOS4210_USB2)\t+= phy-exynos4210-usb2.o\nphy-exynos-usb2-$(CONFIG_PHY_EXYNOS4X12_USB2)\t+= phy-exynos4x12-usb2.o\nphy-exynos-usb2-$(CONFIG_PHY_EXYNOS5250_USB2)\t+= phy-exynos5250-usb2.o\nphy-exynos-usb2-$(CONFIG_PHY_S5PV210_USB2)\t+= phy-s5pv210-usb2.o\nobj-$(CONFIG_PHY_EXYNOS5_USBDRD)\t+= phy-exynos5-usbdrd.o\nobj-$(CONFIG_PHY_EXYNOS5250_SATA)\t+= phy-exynos5250-sata.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

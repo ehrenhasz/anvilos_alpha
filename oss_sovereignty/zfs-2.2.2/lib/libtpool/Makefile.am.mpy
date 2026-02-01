@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "90e8998ad164358d546dc77b1661ef9eea3a3a7d6dfd859a8206875180502579",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libtpool/Makefile.am",
+  "human_readable_source": "libtpool_la_CFLAGS  = $(AM_CFLAGS) $(LIBRARY_CFLAGS)\nlibtpool_la_CFLAGS += -fvisibility=hidden\n# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61118\nlibtpool_la_CFLAGS += $(NO_CLOBBERED)\n\nnoinst_LTLIBRARIES += libtpool.la\nCPPCHECKTARGETS    += libtpool.la\n\nlibtpool_la_SOURCES = \\\n\t%D%/thread_pool.c \\\n\t%D%/thread_pool_impl.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

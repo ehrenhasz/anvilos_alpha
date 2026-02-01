@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "957f2a15793888fbfbdfb73a3a22d2193aeacc78d915c1726e0ae494d9371315",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/bmi160/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# BMI160 IMU driver\n#\n\nconfig BMI160\n\ttristate\n\tselect IIO_BUFFER\n\tselect IIO_TRIGGERED_BUFFER\n\nconfig BMI160_I2C\n\ttristate \"Bosch BMI160 I2C driver\"\n\tdepends on I2C\n\tselect BMI160\n\tselect REGMAP_I2C\n\thelp\n\t  If you say yes here you get support for BMI160 IMU on I2C with\n\t  accelerometer, gyroscope and external BMG160 magnetometer.\n\n\t  This driver can also be built as a module. If so, the module will be\n\t  called bmi160_i2c.\n\nconfig BMI160_SPI\n\ttristate \"Bosch BMI160 SPI driver\"\n\tdepends on SPI\n\tselect BMI160\n\tselect REGMAP_SPI\n\thelp\n\t  If you say yes here you get support for BMI160 IMU on SPI with\n\t  accelerometer, gyroscope and external BMG160 magnetometer.\n\n\t  This driver can also be built as a module. If so, the module will be\n\t  called bmi160_spi.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

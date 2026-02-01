@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "cef93545f71ab3bf9717ce136da22f28779734bc8965c889087c3a29e6ba6f5d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/common/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Used by common drivers, when they need to ask questions\nconfig MEDIA_COMMON_OPTIONS\n\tbool\n\ncomment \"common driver options\"\n\tdepends on MEDIA_COMMON_OPTIONS\n\nconfig CYPRESS_FIRMWARE\n\ttristate\n\tdepends on USB\n\nconfig TTPCI_EEPROM\n        tristate\n        depends on I2C\n\nconfig UVC_COMMON\n\ttristate\n\nconfig VIDEO_CX2341X\n\ttristate\n\nconfig VIDEO_TVEEPROM\n\ttristate\n\tdepends on I2C\n\nsource \"drivers/media/common/b2c2/Kconfig\"\nsource \"drivers/media/common/saa7146/Kconfig\"\nsource \"drivers/media/common/siano/Kconfig\"\nsource \"drivers/media/common/v4l2-tpg/Kconfig\"\nsource \"drivers/media/common/videobuf2/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

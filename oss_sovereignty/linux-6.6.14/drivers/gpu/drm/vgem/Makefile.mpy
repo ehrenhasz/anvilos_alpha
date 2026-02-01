@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4e97c8dd8752b003af16dc92e92dfd2054d4eaead81d6e01eb085acc30b947b8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/vgem/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nvgem-y := vgem_drv.o vgem_fence.o\n\nobj-$(CONFIG_DRM_VGEM)\t+= vgem.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

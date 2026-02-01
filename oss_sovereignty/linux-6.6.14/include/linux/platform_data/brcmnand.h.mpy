@@ -1,0 +1,9 @@
+{
+  "module_name": "brcmnand.h",
+  "hash_id": "43d46d54c39e31f1ce8ca10f4d3a17d90680aca6e210423f90fabe0dc68a560c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/brcmnand.h",
+  "human_readable_source": " \n#ifndef BRCMNAND_PLAT_DATA_H\n#define BRCMNAND_PLAT_DATA_H\n\nstruct brcmnand_platform_data {\n\tint\tchip_select;\n\tconst char * const *part_probe_types;\n\tunsigned int ecc_stepsize;\n\tunsigned int ecc_strength;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

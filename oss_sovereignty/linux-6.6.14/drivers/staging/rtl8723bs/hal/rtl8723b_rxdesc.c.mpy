@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8723b_rxdesc.c",
+  "hash_id": "cd861f05c745421622d4f645a6bb4230818f32e68249272afb95b7a59a3e4624",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/hal/rtl8723b_rxdesc.c",
+  "human_readable_source": "\n \n\n#include <rtl8723b_hal.h>\n\nstatic void process_rssi(struct adapter *padapter, union recv_frame *prframe)\n{\n\tstruct rx_pkt_attrib *pattrib = &prframe->u.hdr.attrib;\n\tstruct signal_stat *signal_stat = &padapter->recvpriv.signal_strength_data;\n\n\t \n\t{\n\t\tif (signal_stat->update_req) {\n\t\t\tsignal_stat->total_num = 0;\n\t\t\tsignal_stat->total_val = 0;\n\t\t\tsignal_stat->update_req = 0;\n\t\t}\n\n\t\tsignal_stat->total_num++;\n\t\tsignal_stat->total_val  += pattrib->phy_info.SignalStrength;\n\t\tsignal_stat->avg_val = signal_stat->total_val / signal_stat->total_num;\n\t}\n\n}  \n\nstatic void process_link_qual(struct adapter *padapter, union recv_frame *prframe)\n{\n\tstruct rx_pkt_attrib *pattrib;\n\tstruct signal_stat *signal_stat;\n\n\tif (!prframe || !padapter)\n\t\treturn;\n\n\tpattrib = &prframe->u.hdr.attrib;\n\tsignal_stat = &padapter->recvpriv.signal_qual_data;\n\n\tif (signal_stat->update_req) {\n\t\tsignal_stat->total_num = 0;\n\t\tsignal_stat->total_val = 0;\n\t\tsignal_stat->update_req = 0;\n\t}\n\n\tsignal_stat->total_num++;\n\tsignal_stat->total_val  += pattrib->phy_info.SignalQuality;\n\tsignal_stat->avg_val = signal_stat->total_val / signal_stat->total_num;\n}  \n\n\nvoid rtl8723b_process_phy_info(struct adapter *padapter, void *prframe)\n{\n\tunion recv_frame *precvframe = prframe;\n\t \n\t \n\t \n\tprocess_rssi(padapter, precvframe);\n\t \n\t \n\t \n\t \n\n\t \n\t \n\t \n\t \n\tprocess_link_qual(padapter,  precvframe);\n\t#ifdef DBG_RX_SIGNAL_DISPLAY_RAW_DATA\n\trtw_store_phy_info(padapter, prframe);\n\t#endif\n\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

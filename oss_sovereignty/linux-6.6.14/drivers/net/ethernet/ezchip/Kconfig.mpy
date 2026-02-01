@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "fd0f822b4b64eca136b29db0268bd7c9b49c5dc98ee561828f57356dfa16cf97",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ezchip/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# EZchip network device configuration\n#\n\nconfig NET_VENDOR_EZCHIP\n\tbool \"EZchip devices\"\n\tdefault y\n\thelp\n\t  If you have a network (Ethernet) device belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about EZchip devices. If you say Y, you will be asked for\n\t  your specific device in the following questions.\n\nif NET_VENDOR_EZCHIP\n\nconfig EZCHIP_NPS_MANAGEMENT_ENET\n\ttristate \"EZchip NPS management enet support\"\n\tdepends on OF_IRQ\n\tdepends on HAS_IOMEM\n\thelp\n\t  Simple LAN device for debug or management purposes.\n\t  Device supports interrupts for RX and TX(completion).\n\t  Device does not have DMA ability.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

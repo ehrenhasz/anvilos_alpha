@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "82ba6a924f34bdc4b10ecf203a5c94385f41424d2d8397a1c3ec0ac01e500433",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/lis3lv02d/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# STMicroelectonics LIS3LV02D and similar accelerometers\n#\n\nobj-$(CONFIG_SENSORS_LIS3LV02D) += lis3lv02d.o\nobj-$(CONFIG_SENSORS_LIS3_SPI)\t+= lis3lv02d_spi.o\nobj-$(CONFIG_SENSORS_LIS3_I2C)\t+= lis3lv02d_i2c.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

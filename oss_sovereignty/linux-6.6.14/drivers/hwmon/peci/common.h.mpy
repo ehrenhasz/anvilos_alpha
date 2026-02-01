@@ -1,0 +1,9 @@
+{
+  "module_name": "common.h",
+  "hash_id": "7d947c03ec6d3c273bbc90235a8586f69a9240df3bd59f48d31c825fad952e40",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwmon/peci/common.h",
+  "human_readable_source": " \n \n\n#include <linux/mutex.h>\n#include <linux/types.h>\n\n#ifndef __PECI_HWMON_COMMON_H\n#define __PECI_HWMON_COMMON_H\n\n#define PECI_HWMON_UPDATE_INTERVAL\tHZ\n\n \nstruct peci_sensor_state {\n\tbool valid;\n\tunsigned long last_updated;\n\tstruct mutex lock;  \n};\n\n \n\nstruct peci_sensor_data {\n\ts32 value;\n\tstruct peci_sensor_state state;\n};\n\n \n\nstatic inline bool peci_sensor_need_update(struct peci_sensor_state *state)\n{\n\treturn !state->valid ||\n\t       time_after(jiffies, state->last_updated + PECI_HWMON_UPDATE_INTERVAL);\n}\n\n \nstatic inline void peci_sensor_mark_updated(struct peci_sensor_state *state)\n{\n\tstate->valid = true;\n\tstate->last_updated = jiffies;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

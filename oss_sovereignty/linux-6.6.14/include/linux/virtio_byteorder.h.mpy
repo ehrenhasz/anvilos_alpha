@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_byteorder.h",
+  "hash_id": "014b604abe1f30a037741991574e956dd196f250dc0ffc793337ad240ebc9477",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/virtio_byteorder.h",
+  "human_readable_source": " \n#ifndef _LINUX_VIRTIO_BYTEORDER_H\n#define _LINUX_VIRTIO_BYTEORDER_H\n#include <linux/types.h>\n#include <uapi/linux/virtio_types.h>\n\nstatic inline bool virtio_legacy_is_little_endian(void)\n{\n#ifdef __LITTLE_ENDIAN\n\treturn true;\n#else\n\treturn false;\n#endif\n}\n\nstatic inline u16 __virtio16_to_cpu(bool little_endian, __virtio16 val)\n{\n\tif (little_endian)\n\t\treturn le16_to_cpu((__force __le16)val);\n\telse\n\t\treturn be16_to_cpu((__force __be16)val);\n}\n\nstatic inline __virtio16 __cpu_to_virtio16(bool little_endian, u16 val)\n{\n\tif (little_endian)\n\t\treturn (__force __virtio16)cpu_to_le16(val);\n\telse\n\t\treturn (__force __virtio16)cpu_to_be16(val);\n}\n\nstatic inline u32 __virtio32_to_cpu(bool little_endian, __virtio32 val)\n{\n\tif (little_endian)\n\t\treturn le32_to_cpu((__force __le32)val);\n\telse\n\t\treturn be32_to_cpu((__force __be32)val);\n}\n\nstatic inline __virtio32 __cpu_to_virtio32(bool little_endian, u32 val)\n{\n\tif (little_endian)\n\t\treturn (__force __virtio32)cpu_to_le32(val);\n\telse\n\t\treturn (__force __virtio32)cpu_to_be32(val);\n}\n\nstatic inline u64 __virtio64_to_cpu(bool little_endian, __virtio64 val)\n{\n\tif (little_endian)\n\t\treturn le64_to_cpu((__force __le64)val);\n\telse\n\t\treturn be64_to_cpu((__force __be64)val);\n}\n\nstatic inline __virtio64 __cpu_to_virtio64(bool little_endian, u64 val)\n{\n\tif (little_endian)\n\t\treturn (__force __virtio64)cpu_to_le64(val);\n\telse\n\t\treturn (__force __virtio64)cpu_to_be64(val);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

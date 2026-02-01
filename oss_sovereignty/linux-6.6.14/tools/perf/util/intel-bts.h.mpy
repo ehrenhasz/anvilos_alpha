@@ -1,0 +1,9 @@
+{
+  "module_name": "intel-bts.h",
+  "hash_id": "a111f47c8ef8fe092eb2bda65a82db05a6ea97c8e9e1c10e0bee42a48c87c309",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/intel-bts.h",
+  "human_readable_source": " \n \n\n#ifndef INCLUDE__PERF_INTEL_BTS_H__\n#define INCLUDE__PERF_INTEL_BTS_H__\n\n#define INTEL_BTS_PMU_NAME \"intel_bts\"\n\nenum {\n\tINTEL_BTS_PMU_TYPE,\n\tINTEL_BTS_TIME_SHIFT,\n\tINTEL_BTS_TIME_MULT,\n\tINTEL_BTS_TIME_ZERO,\n\tINTEL_BTS_CAP_USER_TIME_ZERO,\n\tINTEL_BTS_SNAPSHOT_MODE,\n\tINTEL_BTS_AUXTRACE_PRIV_MAX,\n};\n\n#define INTEL_BTS_AUXTRACE_PRIV_SIZE (INTEL_BTS_AUXTRACE_PRIV_MAX * sizeof(u64))\n\nstruct auxtrace_record;\nstruct perf_tool;\nunion perf_event;\nstruct perf_session;\n\nstruct auxtrace_record *intel_bts_recording_init(int *err);\n\nint intel_bts_process_auxtrace_info(union perf_event *event,\n\t\t\t\t    struct perf_session *session);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

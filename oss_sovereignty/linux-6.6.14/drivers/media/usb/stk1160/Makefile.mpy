@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8a5d3db18134f0b4cedbc75467abc62960d01b2b8d3e9441ffa9361fe28ca9ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/stk1160/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nstk1160-y :=\tstk1160-core.o \\\n\t\tstk1160-v4l.o \\\n\t\tstk1160-video.o \\\n\t\tstk1160-i2c.o \\\n\t\tstk1160-ac97.o\n\nobj-$(CONFIG_VIDEO_STK1160) += stk1160.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

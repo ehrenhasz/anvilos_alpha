@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4adfcfdb9893765d7c7ec621ed32d37b32be2d6cf4251d630b1f048ce5a7ad8f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hns/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Hisilicon RoCE drivers.\n#\n\nccflags-y :=  -I $(srctree)/drivers/net/ethernet/hisilicon/hns3\n\nhns-roce-objs := hns_roce_main.o hns_roce_cmd.o hns_roce_pd.o \\\n\thns_roce_ah.o hns_roce_hem.o hns_roce_mr.o hns_roce_qp.o \\\n\thns_roce_cq.o hns_roce_alloc.o hns_roce_db.o hns_roce_srq.o hns_roce_restrack.o\n\nifdef CONFIG_INFINIBAND_HNS_HIP08\nhns-roce-hw-v2-objs := hns_roce_hw_v2.o $(hns-roce-objs)\nobj-$(CONFIG_INFINIBAND_HNS) += hns-roce-hw-v2.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

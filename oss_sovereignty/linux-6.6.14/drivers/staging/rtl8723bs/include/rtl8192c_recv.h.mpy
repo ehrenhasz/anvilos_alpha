@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8192c_recv.h",
+  "hash_id": "e32f36d8e9358225fd9958b66073a1aa3c4e58a07e251e97323e099a71cb58ef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/rtl8192c_recv.h",
+  "human_readable_source": " \n \n#ifndef _RTL8192C_RECV_H_\n#define _RTL8192C_RECV_H_\n\n#define RECV_BLK_SZ 512\n#define RECV_BLK_CNT 16\n#define RECV_BLK_TH RECV_BLK_CNT\n\n#define MAX_RECVBUF_SZ (10240)\n\nstruct phy_stat {\n\tunsigned int phydw0;\n\n\tunsigned int phydw1;\n\n\tunsigned int phydw2;\n\n\tunsigned int phydw3;\n\n\tunsigned int phydw4;\n\n\tunsigned int phydw5;\n\n\tunsigned int phydw6;\n\n\tunsigned int phydw7;\n};\n\n \n#define\tRx_Smooth_Factor (20)\n\n\nvoid rtl8192c_translate_rx_signal_stuff(union recv_frame *precvframe, struct phy_stat *pphy_status);\nvoid rtl8192c_query_rx_desc_status(union recv_frame *precvframe, struct recv_stat *pdesc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

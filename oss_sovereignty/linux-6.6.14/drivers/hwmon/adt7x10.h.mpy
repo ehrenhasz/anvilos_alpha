@@ -1,0 +1,9 @@
+{
+  "module_name": "adt7x10.h",
+  "hash_id": "c6a5cc68a35aab38b188ea93ca0319db1a5aacc0a28d18f757ebc741c75ca457",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwmon/adt7x10.h",
+  "human_readable_source": " \n#ifndef __HWMON_ADT7X10_H__\n#define __HWMON_ADT7X10_H__\n\n#include <linux/types.h>\n#include <linux/pm.h>\n\n \n#define ADT7X10_TEMPERATURE\t\t0\n#define ADT7X10_STATUS\t\t\t2\n#define ADT7X10_CONFIG\t\t\t3\n#define ADT7X10_T_ALARM_HIGH\t\t4\n#define ADT7X10_T_ALARM_LOW\t\t6\n#define ADT7X10_T_CRIT\t\t\t8\n#define ADT7X10_T_HYST\t\t\t0xA\n#define ADT7X10_ID\t\t\t0xB\n\nstruct device;\n\nint adt7x10_probe(struct device *dev, const char *name, int irq,\n\t\t  struct regmap *regmap);\n\nextern const struct dev_pm_ops adt7x10_dev_pm_ops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

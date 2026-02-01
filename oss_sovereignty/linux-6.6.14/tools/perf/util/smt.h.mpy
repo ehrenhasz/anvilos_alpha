@@ -1,0 +1,9 @@
+{
+  "module_name": "smt.h",
+  "hash_id": "9000bb774110df8706641646c442dd42abd16bc72e9528e6583dd205766e7303",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/smt.h",
+  "human_readable_source": " \n#ifndef __SMT_H\n#define __SMT_H 1\n\n \nbool smt_on(void);\n\n \nbool core_wide(bool system_wide, const char *user_requested_cpu_list);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

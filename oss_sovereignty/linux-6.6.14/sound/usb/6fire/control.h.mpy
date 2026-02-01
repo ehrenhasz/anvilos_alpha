@@ -1,0 +1,9 @@
+{
+  "module_name": "control.h",
+  "hash_id": "df9ececd0a8573275a9ced0df6e0649d42afc7dbd548084f28b589c93e8b2a41",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/6fire/control.h",
+  "human_readable_source": " \n \n\n#ifndef USB6FIRE_CONTROL_H\n#define USB6FIRE_CONTROL_H\n\n#include \"common.h\"\n\nenum {\n\tCONTROL_MAX_ELEMENTS = 32\n};\n\nenum {\n\tCONTROL_RATE_44KHZ,\n\tCONTROL_RATE_48KHZ,\n\tCONTROL_RATE_88KHZ,\n\tCONTROL_RATE_96KHZ,\n\tCONTROL_RATE_176KHZ,\n\tCONTROL_RATE_192KHZ,\n\tCONTROL_N_RATES\n};\n\nstruct control_runtime {\n\tint (*update_streaming)(struct control_runtime *rt);\n\tint (*set_rate)(struct control_runtime *rt, int rate);\n\tint (*set_channels)(struct control_runtime *rt, int n_analog_out,\n\t\tint n_analog_in, bool spdif_out, bool spdif_in);\n\n\tstruct sfire_chip *chip;\n\n\tstruct snd_kcontrol *element[CONTROL_MAX_ELEMENTS];\n\tbool opt_coax_switch;\n\tbool line_phono_switch;\n\tbool digital_thru_switch;\n\tbool usb_streaming;\n\tu8 output_vol[6];\n\tu8 ovol_updated;\n\tu8 output_mute;\n\ts8 input_vol[2];\n\tu8 ivol_updated;\n};\n\nint usb6fire_control_init(struct sfire_chip *chip);\nvoid usb6fire_control_abort(struct sfire_chip *chip);\nvoid usb6fire_control_destroy(struct sfire_chip *chip);\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

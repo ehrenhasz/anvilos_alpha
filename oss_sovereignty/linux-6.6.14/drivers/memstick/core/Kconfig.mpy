@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "6aab0442cbdb8e5bf82387dcc3ddd98bc63db15d77430e43fe5520603165e36e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/memstick/core/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# MemoryStick core configuration\n#\n\ncomment \"MemoryStick drivers\"\n\nconfig MEMSTICK_UNSAFE_RESUME\n\tbool \"Allow unsafe resume (DANGEROUS)\"\n\thelp\n\t  If you say Y here, the MemoryStick layer will assume that all\n\t  cards stayed in their respective slots during the suspend. The\n\t  normal behaviour is to remove them at suspend and\n\t  redetecting them at resume. Breaking this assumption will\n\t  in most cases result in data corruption.\n\n\t  This option is usually just for embedded systems which use\n\t  a MemoryStick card for rootfs. Most people should say N here.\n\nconfig MSPRO_BLOCK\n\ttristate \"MemoryStick Pro block device driver\"\n\tdepends on BLOCK\n\timply IOSCHED_BFQ\n\thelp\n\t  Say Y here to enable the MemoryStick Pro block device driver\n\t  support. This provides a block device driver, which you can use\n\t  to mount the filesystem. Almost everyone wishing MemoryStick\n\t  support should say Y or M here.\n\nconfig MS_BLOCK\n\ttristate \"MemoryStick Standard device driver\"\n\tdepends on BLOCK\n\timply IOSCHED_BFQ\n\thelp\n\t  Say Y here to enable the MemoryStick Standard device driver\n\t  support. This provides a block device driver, which you can use\n\t  to mount the filesystem.\n\t  This driver works with old (bulky) MemoryStick and MemoryStick Duo\n\t  but not PRO. Say Y if you have such card.\n\t  Driver is new and not yet well tested, thus it can damage your card\n\t  (even permanently)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

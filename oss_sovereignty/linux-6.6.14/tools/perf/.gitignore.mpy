@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "8ce64cf9ee6ef5f91d072258c9d006b12cafadd5d9c5ba8f053ca63ade7eb7b2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nPERF-CFLAGS\nPERF-GUI-VARS\nPERF-VERSION-FILE\nFEATURE-DUMP\nperf\n!include/perf/\nperf-read-vdso32\nperf-read-vdsox32\nperf-help\nperf-record\nperf-report\nperf-stat\nperf-top\nperf*.1\nperf*.xml\nperf*.html\ncommon-cmds.h\nperf*.data\nperf*.data.old\noutput.svg\nperf-archive\nperf-iostat\ntags\nTAGS\nstats-*.csv\ncscope*\nconfig.mak\nconfig.mak.autogen\n*-bison.*\n*-flex.*\n*.pyc\n*.pyo\n*.stdout\n.config-detected\nutil/intel-pt-decoder/inat-tables.c\narch/*/include/generated/\ntrace/beauty/generated/\npmu-events/pmu-events.c\npmu-events/jevents\npmu-events/metric_test.log\nfeature/\nlibapi/\nlibbpf/\nlibperf/\nlibsubcmd/\nlibsymbol/\nlibtraceevent/\nlibtraceevent_plugins/\nfixdep\nDocumentation/doc.dep\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

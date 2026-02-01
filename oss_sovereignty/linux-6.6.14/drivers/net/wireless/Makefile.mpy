@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "642468dc65c8003a1f53300e71dd5e16e467100bb0f4df65ce924249069e8fc1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux Wireless network device drivers.\n#\n\nobj-$(CONFIG_WLAN_VENDOR_ADMTEK) += admtek/\nobj-$(CONFIG_WLAN_VENDOR_ATH) += ath/\nobj-$(CONFIG_WLAN_VENDOR_ATMEL) += atmel/\nobj-$(CONFIG_WLAN_VENDOR_BROADCOM) += broadcom/\nobj-$(CONFIG_WLAN_VENDOR_CISCO) += cisco/\nobj-$(CONFIG_WLAN_VENDOR_INTEL) += intel/\nobj-$(CONFIG_WLAN_VENDOR_INTERSIL) += intersil/\nobj-$(CONFIG_WLAN_VENDOR_MARVELL) += marvell/\nobj-$(CONFIG_WLAN_VENDOR_MEDIATEK) += mediatek/\nobj-$(CONFIG_WLAN_VENDOR_MICROCHIP) += microchip/\nobj-$(CONFIG_WLAN_VENDOR_PURELIFI) += purelifi/\nobj-$(CONFIG_WLAN_VENDOR_QUANTENNA) += quantenna/\nobj-$(CONFIG_WLAN_VENDOR_RALINK) += ralink/\nobj-$(CONFIG_WLAN_VENDOR_REALTEK) += realtek/\nobj-$(CONFIG_WLAN_VENDOR_RSI) += rsi/\nobj-$(CONFIG_WLAN_VENDOR_SILABS) += silabs/\nobj-$(CONFIG_WLAN_VENDOR_ST) += st/\nobj-$(CONFIG_WLAN_VENDOR_TI) += ti/\nobj-$(CONFIG_WLAN_VENDOR_ZYDAS) += zydas/\n\nobj-$(CONFIG_WLAN) += legacy/\nobj-$(CONFIG_WLAN) += virtual/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

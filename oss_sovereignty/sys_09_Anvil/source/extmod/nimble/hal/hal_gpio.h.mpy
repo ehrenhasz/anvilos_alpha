@@ -1,0 +1,9 @@
+{
+  "module_name": "hal_gpio.h",
+  "hash_id": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/nimble/hal/hal_gpio.h",
+  "human_readable_source": "\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

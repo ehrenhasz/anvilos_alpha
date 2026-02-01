@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "39d57d28b94722b4bd04d93cfdce9570c9ec214f03ba827b459d665ac4c50ce3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/mmp/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig MMP_DISP\n\ttristate \"Marvell MMP Display Subsystem support\"\n\tdepends on CPU_PXA910 || CPU_MMP2 || COMPILE_TEST\n\thelp\n\t  Marvell Display Subsystem support.\n\nif MMP_DISP\nsource \"drivers/video/fbdev/mmp/hw/Kconfig\"\nsource \"drivers/video/fbdev/mmp/panel/Kconfig\"\nsource \"drivers/video/fbdev/mmp/fb/Kconfig\"\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

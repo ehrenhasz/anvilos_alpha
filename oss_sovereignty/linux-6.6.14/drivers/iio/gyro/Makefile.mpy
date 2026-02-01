@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "53f4f5aacc5e8c5ec0dbc63ee941185ef81d3227c5d1e37b2d0f762181bbef63",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/gyro/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for industrial I/O gyroscope sensor drivers\n#\n\n# When adding new entries keep the list in alphabetical order\nobj-$(CONFIG_ADIS16080) += adis16080.o\nobj-$(CONFIG_ADIS16130) += adis16130.o\nobj-$(CONFIG_ADIS16136) += adis16136.o\nobj-$(CONFIG_ADIS16260) += adis16260.o\nobj-$(CONFIG_ADXRS290) += adxrs290.o\nobj-$(CONFIG_ADXRS450) += adxrs450.o\nobj-$(CONFIG_BMG160) += bmg160_core.o\nobj-$(CONFIG_BMG160_I2C) += bmg160_i2c.o\nobj-$(CONFIG_BMG160_SPI) += bmg160_spi.o\nobj-$(CONFIG_FXAS21002C) += fxas21002c_core.o\nobj-$(CONFIG_FXAS21002C_I2C) += fxas21002c_i2c.o\nobj-$(CONFIG_FXAS21002C_SPI) += fxas21002c_spi.o\n\nobj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o\n\n# Currently this is rolled into one module, split it if\n# we ever create a separate SPI interface for MPU-3050\nobj-$(CONFIG_MPU3050) += mpu3050.o\nmpu3050-objs := mpu3050-core.o mpu3050-i2c.o\n\nitg3200-y               := itg3200_core.o\nitg3200-$(CONFIG_IIO_BUFFER) += itg3200_buffer.o\nobj-$(CONFIG_ITG3200)   += itg3200.o\n\nobj-$(CONFIG_IIO_SSP_SENSORS_COMMONS) += ssp_gyro_sensor.o\n\nobj-$(CONFIG_IIO_ST_GYRO_3AXIS) += st_gyro.o\nst_gyro-y := st_gyro_core.o\nst_gyro-$(CONFIG_IIO_BUFFER) += st_gyro_buffer.o\n\nobj-$(CONFIG_IIO_ST_GYRO_I2C_3AXIS) += st_gyro_i2c.o\nobj-$(CONFIG_IIO_ST_GYRO_SPI_3AXIS) += st_gyro_spi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

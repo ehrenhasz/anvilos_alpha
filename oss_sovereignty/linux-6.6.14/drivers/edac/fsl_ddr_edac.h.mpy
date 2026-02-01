@@ -1,0 +1,9 @@
+{
+  "module_name": "fsl_ddr_edac.h",
+  "hash_id": "a5e552e86d5766dc895f97db76f3b2adad85aae0d72f4fee62f103cdd64178dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/edac/fsl_ddr_edac.h",
+  "human_readable_source": " \n \n#ifndef _FSL_DDR_EDAC_H_\n#define _FSL_DDR_EDAC_H_\n\n#define fsl_mc_printk(mci, level, fmt, arg...) \\\n\tedac_mc_chipset_printk(mci, level, \"FSL_DDR\", fmt, ##arg)\n\n \n\n \n#define FSL_MC_DDR_SDRAM_CFG\t0x0110\n#define FSL_MC_CS_BNDS_0\t\t0x0000\n#define FSL_MC_CS_BNDS_OFS\t\t0x0008\n\n#define FSL_MC_DATA_ERR_INJECT_HI\t0x0e00\n#define FSL_MC_DATA_ERR_INJECT_LO\t0x0e04\n#define FSL_MC_ECC_ERR_INJECT\t0x0e08\n#define FSL_MC_CAPTURE_DATA_HI\t0x0e20\n#define FSL_MC_CAPTURE_DATA_LO\t0x0e24\n#define FSL_MC_CAPTURE_ECC\t\t0x0e28\n#define FSL_MC_ERR_DETECT\t\t0x0e40\n#define FSL_MC_ERR_DISABLE\t\t0x0e44\n#define FSL_MC_ERR_INT_EN\t\t0x0e48\n#define FSL_MC_CAPTURE_ATRIBUTES\t0x0e4c\n#define FSL_MC_CAPTURE_ADDRESS\t0x0e50\n#define FSL_MC_CAPTURE_EXT_ADDRESS\t0x0e54\n#define FSL_MC_ERR_SBE\t\t0x0e58\n\n#define DSC_MEM_EN\t0x80000000\n#define DSC_ECC_EN\t0x20000000\n#define DSC_RD_EN\t0x10000000\n#define DSC_DBW_MASK\t0x00180000\n#define DSC_DBW_32\t0x00080000\n#define DSC_DBW_64\t0x00000000\n\n#define DSC_SDTYPE_MASK\t\t0x07000000\n#define DSC_X32_EN\t0x00000020\n\n \n#define DDR_EIE_MSEE\t0x1\t \n#define DDR_EIE_SBEE\t0x4\t \n#define DDR_EIE_MBEE\t0x8\t \n\n \n#define DDR_EDE_MSE\t\t0x1\t \n#define DDR_EDE_SBE\t\t0x4\t \n#define DDR_EDE_MBE\t\t0x8\t \n#define DDR_EDE_MME\t\t0x80000000\t \n\n \n#define DDR_EDI_MSED\t0x1\t \n#define\tDDR_EDI_SBED\t0x4\t \n#define\tDDR_EDI_MBED\t0x8\t \n\nstruct fsl_mc_pdata {\n\tchar *name;\n\tint edac_idx;\n\tvoid __iomem *mc_vbase;\n\tint irq;\n};\nint fsl_mc_err_probe(struct platform_device *op);\nint fsl_mc_err_remove(struct platform_device *op);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

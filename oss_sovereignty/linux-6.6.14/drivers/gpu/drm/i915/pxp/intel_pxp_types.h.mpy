@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pxp_types.h",
+  "hash_id": "ce082874feaaeecfc6218198f0c0e139908df71e81b1fe85246ad9077e052621",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/pxp/intel_pxp_types.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_PXP_TYPES_H__\n#define __INTEL_PXP_TYPES_H__\n\n#include <linux/completion.h>\n#include <linux/mutex.h>\n#include <linux/types.h>\n#include <linux/workqueue.h>\n\nstruct intel_context;\nstruct intel_gt;\nstruct i915_pxp_component;\nstruct drm_i915_private;\n\n \nstruct intel_pxp {\n\t \n\tstruct intel_gt *ctrl_gt;\n\n\t \n\tu32 kcr_base;\n\n\t \n\tstruct gsccs_session_resources {\n\t\tu64 host_session_handle;  \n\t\tstruct intel_context *ce;  \n\n\t\tstruct i915_vma *pkt_vma;  \n\t\tvoid *pkt_vaddr;   \n\n\t\tstruct i915_vma *bb_vma;  \n\t\tvoid *bb_vaddr;  \n\t} gsccs_res;\n\n\t \n\tstruct i915_pxp_component *pxp_component;\n\n\t \n\tstruct device_link *dev_link;\n\t \n\tbool pxp_component_added;\n\n\t \n\tstruct intel_context *ce;\n\n\t \n\tstruct mutex arb_mutex;\n\t \n\tbool arb_is_valid;\n\n\t \n\tu32 key_instance;\n\n\t \n\tstruct mutex tee_mutex;\n\n\t \n\tstruct {\n\t\tstruct drm_i915_gem_object *obj;  \n\t\tvoid *vaddr;  \n\t} stream_cmd;\n\n\t \n\tbool hw_state_invalidated;\n\n\t \n\tbool irq_enabled;\n\t \n\tstruct completion termination;\n\n\t \n\tstruct work_struct session_work;\n\t \n\tu32 session_events;\n#define PXP_TERMINATION_REQUEST  BIT(0)\n#define PXP_TERMINATION_COMPLETE BIT(1)\n#define PXP_INVAL_REQUIRED       BIT(2)\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

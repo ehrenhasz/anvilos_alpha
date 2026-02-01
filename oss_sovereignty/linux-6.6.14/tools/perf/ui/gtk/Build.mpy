@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "4bcd969aa222316ca474177094b9bb999b70b294de498f19db129547ef293156",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/gtk/Build",
+  "human_readable_source": "CFLAGS_gtk += -fPIC $(GTK_CFLAGS) -Wno-deprecated-declarations\n\ngtk-y += browser.o\ngtk-y += hists.o\ngtk-y += setup.o\ngtk-y += util.o\ngtk-y += helpline.o\ngtk-y += progress.o\ngtk-y += annotate.o\ngtk-y += zalloc.o\n\n$(OUTPUT)ui/gtk/zalloc.o: ../lib/zalloc.c FORCE\n\t$(call rule_mkdir)\n\t$(call if_changed_dep,cc_o_c)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

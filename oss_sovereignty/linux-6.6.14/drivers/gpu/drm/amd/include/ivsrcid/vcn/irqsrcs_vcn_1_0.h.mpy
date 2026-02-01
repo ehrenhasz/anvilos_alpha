@@ -1,0 +1,9 @@
+{
+  "module_name": "irqsrcs_vcn_1_0.h",
+  "hash_id": "48c035003f95c71f4a25242ed3dd43adc8e637a7bdc234a87491260563dfb789",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/ivsrcid/vcn/irqsrcs_vcn_1_0.h",
+  "human_readable_source": " \n\n#ifndef __IRQSRCS_VCN_1_0_H__\n#define __IRQSRCS_VCN_1_0_H__\n\n#define VCN_1_0__SRCID__UVD_ENC_GENERAL_PURPOSE                 119      \n#define VCN_1_0__SRCID__UVD_ENC_LOW_LATENCY                     120      \n#define VCN_1_0__SRCID__UVD_SYSTEM_MESSAGE_INTERRUPT\t        124\t\t \n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

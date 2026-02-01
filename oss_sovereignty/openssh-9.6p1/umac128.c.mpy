@@ -1,0 +1,9 @@
+{
+  "module_name": "umac128.c",
+  "hash_id": "8269d8f2f09c820605b743e992f65175080948ae04aaaf665cf33dd1ce12d4de",
+  "original_prompt": "Ingested from openssh-9.6p1/umac128.c",
+  "human_readable_source": " \n\n#define UMAC_OUTPUT_LEN\t16\n#define umac_new\tumac128_new\n#define umac_update\tumac128_update\n#define umac_final\tumac128_final\n#define umac_delete\tumac128_delete\n#define umac_ctx\tumac128_ctx\n\n#include \"umac.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

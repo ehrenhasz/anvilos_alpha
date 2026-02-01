@@ -1,0 +1,9 @@
+{
+  "module_name": "if0000.h",
+  "hash_id": "5af94d06d54317823d7fff66755abf7e51b6a640a810f1b5e4c24dca51568658",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/if0000.h",
+  "human_readable_source": " \n#ifndef __NVIF_IF0000_H__\n#define __NVIF_IF0000_H__\n\nstruct nvif_client_v0 {\n\t__u8  version;\n\t__u8  pad01[7];\n\t__u64 device;\n\tchar  name[32];\n};\n\n#define NVIF_CLIENT_V0_DEVLIST                                             0x00\n\nstruct nvif_client_devlist_v0 {\n\t__u8  version;\n\t__u8  count;\n\t__u8  pad02[6];\n\t__u64 device[];\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

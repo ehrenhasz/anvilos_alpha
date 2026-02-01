@@ -1,0 +1,9 @@
+{
+  "module_name": "relocatable.h",
+  "hash_id": "d54477484a7ee498fb2115a9ddb4c6d4361c32504f7bf185158187f5eaca4488",
+  "original_prompt": "Ingested from bash-5.2.21/lib/intl/relocatable.h",
+  "human_readable_source": " \n\n \n\n#ifndef _RELOCATABLE_H\n#define _RELOCATABLE_H\n\n \n#if ENABLE_RELOCATABLE\n\n \n#if defined _MSC_VER && BUILDING_DLL\n# define RELOCATABLE_DLL_EXPORTED __declspec(dllexport)\n#else\n# define RELOCATABLE_DLL_EXPORTED\n#endif\n\n \nextern RELOCATABLE_DLL_EXPORTED void\n       set_relocation_prefix (const char *orig_prefix,\n\t\t\t      const char *curr_prefix);\n\n \nextern const char * relocate (const char *pathname);\n\n \n\n \nextern const char * compute_curr_prefix (const char *orig_installprefix,\n\t\t\t\t\t const char *orig_installdir,\n\t\t\t\t\t const char *curr_pathname);\n\n#else\n\n \n#define relocate(pathname) (pathname)\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

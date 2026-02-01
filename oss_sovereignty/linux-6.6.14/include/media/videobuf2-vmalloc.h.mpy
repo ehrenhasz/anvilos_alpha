@@ -1,0 +1,9 @@
+{
+  "module_name": "videobuf2-vmalloc.h",
+  "hash_id": "c7daf8f869b99d2e07fffd5721cd1f951dda05e69851c0f801a4c8f3ba86082f",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/videobuf2-vmalloc.h",
+  "human_readable_source": " \n\n#ifndef _MEDIA_VIDEOBUF2_VMALLOC_H\n#define _MEDIA_VIDEOBUF2_VMALLOC_H\n\n#include <media/videobuf2-v4l2.h>\n\nextern const struct vb2_mem_ops vb2_vmalloc_memops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

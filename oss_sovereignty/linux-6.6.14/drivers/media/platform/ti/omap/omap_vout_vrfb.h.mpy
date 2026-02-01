@@ -1,0 +1,9 @@
+{
+  "module_name": "omap_vout_vrfb.h",
+  "hash_id": "fd0657e8ceccde7ce8ee07f27069868894a4dd4a27ebe86b5d5e99f984efd1e7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/ti/omap/omap_vout_vrfb.h",
+  "human_readable_source": " \n\n#ifndef OMAP_VOUT_VRFB_H\n#define OMAP_VOUT_VRFB_H\n\n#ifdef CONFIG_VIDEO_OMAP2_VOUT_VRFB\nvoid omap_vout_free_vrfb_buffers(struct omap_vout_device *vout);\nint omap_vout_setup_vrfb_bufs(struct platform_device *pdev, int vid_num,\n\t\t\tbool static_vrfb_allocation);\nvoid omap_vout_release_vrfb(struct omap_vout_device *vout);\nint omap_vout_vrfb_buffer_setup(struct omap_vout_device *vout,\n\t\t\tunsigned int *count, unsigned int startindex);\nint omap_vout_prepare_vrfb(struct omap_vout_device *vout,\n\t\t\tstruct vb2_buffer *vb);\nvoid omap_vout_calculate_vrfb_offset(struct omap_vout_device *vout);\n#else\nstatic inline void omap_vout_free_vrfb_buffers(struct omap_vout_device *vout) { };\nstatic inline int omap_vout_setup_vrfb_bufs(struct platform_device *pdev, int vid_num,\n\t\t\tbool static_vrfb_allocation)\n\t\t{ return 0; };\nstatic inline void omap_vout_release_vrfb(struct omap_vout_device *vout) { };\nstatic inline int omap_vout_vrfb_buffer_setup(struct omap_vout_device *vout,\n\t\t\tunsigned int *count, unsigned int startindex)\n\t\t{ return 0; };\nstatic inline int omap_vout_prepare_vrfb(struct omap_vout_device *vout,\n\t\t\tstruct vb2_buffer *vb)\n\t\t{ return 0; };\nstatic inline void omap_vout_calculate_vrfb_offset(struct omap_vout_device *vout) { };\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

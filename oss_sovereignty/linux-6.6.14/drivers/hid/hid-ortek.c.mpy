@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-ortek.c",
+  "hash_id": "1cbd257206ce726da7fb4c631268e2131f92363239c5c60a72f35ca9519f1460",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-ortek.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/device.h>\n#include <linux/hid.h>\n#include <linux/module.h>\n\n#include \"hid-ids.h\"\n\nstatic __u8 *ortek_report_fixup(struct hid_device *hdev, __u8 *rdesc,\n\t\tunsigned int *rsize)\n{\n\tif (*rsize >= 56 && rdesc[54] == 0x25 && rdesc[55] == 0x01) {\n\t\thid_info(hdev, \"Fixing up logical maximum in report descriptor (Ortek)\\n\");\n\t\trdesc[55] = 0x92;\n\t} else if (*rsize >= 54 && rdesc[52] == 0x25 && rdesc[53] == 0x01) {\n\t\thid_info(hdev, \"Fixing up logical maximum in report descriptor (Skycable)\\n\");\n\t\trdesc[53] = 0x65;\n\t}\n\treturn rdesc;\n}\n\nstatic const struct hid_device_id ortek_devices[] = {\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_ORTEK, USB_DEVICE_ID_ORTEK_PKB1700) },\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_ORTEK, USB_DEVICE_ID_ORTEK_WKB2000) },\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_ORTEK, USB_DEVICE_ID_ORTEK_IHOME_IMAC_A210S) },\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_SKYCABLE, USB_DEVICE_ID_SKYCABLE_WIRELESS_PRESENTER) },\n\t{ }\n};\nMODULE_DEVICE_TABLE(hid, ortek_devices);\n\nstatic struct hid_driver ortek_driver = {\n\t.name = \"ortek\",\n\t.id_table = ortek_devices,\n\t.report_fixup = ortek_report_fixup\n};\nmodule_hid_driver(ortek_driver);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

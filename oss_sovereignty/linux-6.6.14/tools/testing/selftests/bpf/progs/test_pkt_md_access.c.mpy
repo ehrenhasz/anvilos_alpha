@@ -1,0 +1,9 @@
+{
+  "module_name": "test_pkt_md_access.c",
+  "hash_id": "a0425ef6cc9a1819463a12ed4fca18b9dc5233a255a4134a4a71049dc6c16ce0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_pkt_md_access.c",
+  "human_readable_source": "\n \n#include <stddef.h>\n#include <string.h>\n#include <linux/bpf.h>\n#include <linux/pkt_cls.h>\n#include <bpf/bpf_helpers.h>\n\n#if  __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__\n#define TEST_FIELD(TYPE, FIELD, MASK)\t\t\t\t\t\\\n\t{\t\t\t\t\t\t\t\t\\\n\t\tTYPE tmp = *(volatile TYPE *)&skb->FIELD;\t\t\\\n\t\tif (tmp != ((*(volatile __u32 *)&skb->FIELD) & MASK))\t\\\n\t\t\treturn TC_ACT_SHOT;\t\t\t\t\\\n\t}\n#else\n#define TEST_FIELD_OFFSET(a, b)\t((sizeof(a) - sizeof(b)) / sizeof(b))\n#define TEST_FIELD(TYPE, FIELD, MASK)\t\t\t\t\t\\\n\t{\t\t\t\t\t\t\t\t\\\n\t\tTYPE tmp = *((volatile TYPE *)&skb->FIELD +\t\t\\\n\t\t\t      TEST_FIELD_OFFSET(skb->FIELD, TYPE));\t\\\n\t\tif (tmp != ((*(volatile __u32 *)&skb->FIELD) & MASK))\t\\\n\t\t\treturn TC_ACT_SHOT;\t\t\t\t\\\n\t}\n#endif\n\nSEC(\"tc\")\nint test_pkt_md_access(struct __sk_buff *skb)\n{\n\tTEST_FIELD(__u8,  len, 0xFF);\n\tTEST_FIELD(__u16, len, 0xFFFF);\n\tTEST_FIELD(__u32, len, 0xFFFFFFFF);\n\tTEST_FIELD(__u16, protocol, 0xFFFF);\n\tTEST_FIELD(__u32, protocol, 0xFFFFFFFF);\n\tTEST_FIELD(__u8,  hash, 0xFF);\n\tTEST_FIELD(__u16, hash, 0xFFFF);\n\tTEST_FIELD(__u32, hash, 0xFFFFFFFF);\n\n\treturn TC_ACT_OK;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

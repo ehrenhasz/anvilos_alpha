@@ -1,0 +1,9 @@
+{
+  "module_name": "99-nx-gzip.rules",
+  "hash_id": "6f95136af9d5a6b98f2b4bc1b3f0e7aa7c90f8774e79bba185b5c691e36ffe6a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/nx-gzip/99-nx-gzip.rules",
+  "human_readable_source": "SUBSYSTEM==\"nxgzip\", KERNEL==\"nx-gzip\", MODE=\"0666\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

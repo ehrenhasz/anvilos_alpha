@@ -1,0 +1,9 @@
+{
+  "module_name": "mei_pxp.h",
+  "hash_id": "1fbaa5953ff294e3b52c66fc8d348ead378dd0f551bb837457675713ecfa5276",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/mei/pxp/mei_pxp.h",
+  "human_readable_source": " \n \n\n#ifndef __MEI_PXP_H__\n#define __MEI_PXP_H__\n\n \nenum me_pxp_status {\n\tME_PXP_STATUS_SUCCESS\t\t\t= 0x0000,\n\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "41d383b79abe06ab852b11292860bb80ba037d1bd10267092a55583a66ffbb6f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/gma500/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n#\tKMS driver for the GMA500\n#\n\ngma500_gfx-y += \\\n\t  backlight.o \\\n\t  cdv_device.o \\\n\t  cdv_intel_crt.o \\\n\t  cdv_intel_display.o \\\n\t  cdv_intel_dp.o \\\n\t  cdv_intel_hdmi.o \\\n\t  cdv_intel_lvds.o \\\n\t  framebuffer.o \\\n\t  gem.o \\\n\t  gma_device.o \\\n\t  gma_display.o \\\n\t  gtt.o \\\n\t  intel_bios.o \\\n\t  intel_gmbus.o \\\n\t  intel_i2c.o \\\n\t  mid_bios.o \\\n\t  mmu.o \\\n\t  oaktrail_device.o \\\n\t  oaktrail_crtc.o \\\n\t  oaktrail_hdmi.o \\\n\t  oaktrail_hdmi_i2c.o \\\n\t  oaktrail_lvds.o \\\n\t  oaktrail_lvds_i2c.o \\\n\t  power.o \\\n\t  psb_device.o \\\n\t  psb_drv.o \\\n\t  psb_intel_display.o \\\n\t  psb_intel_lvds.o \\\n\t  psb_intel_modes.o \\\n\t  psb_intel_sdvo.o \\\n\t  psb_lid.o \\\n\t  psb_irq.o\n\ngma500_gfx-$(CONFIG_ACPI) +=  opregion.o\ngma500_gfx-$(CONFIG_DRM_FBDEV_EMULATION) +=  fbdev.o\n\nobj-$(CONFIG_DRM_GMA500) += gma500_gfx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

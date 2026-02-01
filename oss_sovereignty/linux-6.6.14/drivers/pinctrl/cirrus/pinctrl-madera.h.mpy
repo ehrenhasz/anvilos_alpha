@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-madera.h",
+  "hash_id": "b11646d75705218f851326b5de6490fabb42578ba930b718bdecf01b08847b3a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/cirrus/pinctrl-madera.h",
+  "human_readable_source": " \n \n\n#ifndef PINCTRL_MADERA_H\n#define PINCTRL_MADERA_H\n\nstruct madera_pin_groups {\n\tconst char *name;\n\tconst unsigned int *pins;\n\tunsigned int n_pins;\n};\n\nstruct madera_pin_chip {\n\tunsigned int n_pins;\n\n\tconst struct madera_pin_groups *pin_groups;\n\tunsigned int n_pin_groups;\n};\n\nstruct madera_pin_private {\n\tstruct madera *madera;\n\n\tconst struct madera_pin_chip *chip;  \n\n\tstruct device *dev;\n\tstruct pinctrl_dev *pctl;\n};\n\nextern const struct madera_pin_chip cs47l15_pin_chip;\nextern const struct madera_pin_chip cs47l35_pin_chip;\nextern const struct madera_pin_chip cs47l85_pin_chip;\nextern const struct madera_pin_chip cs47l90_pin_chip;\nextern const struct madera_pin_chip cs47l92_pin_chip;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

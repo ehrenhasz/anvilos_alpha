@@ -1,0 +1,9 @@
+{
+  "module_name": "signal-defs.h",
+  "hash_id": "be88f299a573dec1bf8dace008ce8234d7de8ba730e6ae2130e04082105c3f93",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/asm-generic/signal-defs.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_SIGNAL_DEFS_H\n#define __ASM_GENERIC_SIGNAL_DEFS_H\n\n#include <linux/compiler.h>\n\n \n#ifndef SA_NOCLDSTOP\n#define SA_NOCLDSTOP\t0x00000001\n#endif\n#ifndef SA_NOCLDWAIT\n#define SA_NOCLDWAIT\t0x00000002\n#endif\n#ifndef SA_SIGINFO\n#define SA_SIGINFO\t0x00000004\n#endif\n \n \n \n \n \n \n \n#define SA_UNSUPPORTED\t0x00000400\n#define SA_EXPOSE_TAGBITS\t0x00000800\n \n \n \n \n \n#ifndef SA_ONSTACK\n#define SA_ONSTACK\t0x08000000\n#endif\n#ifndef SA_RESTART\n#define SA_RESTART\t0x10000000\n#endif\n#ifndef SA_NODEFER\n#define SA_NODEFER\t0x40000000\n#endif\n#ifndef SA_RESETHAND\n#define SA_RESETHAND\t0x80000000\n#endif\n\n#define SA_NOMASK\tSA_NODEFER\n#define SA_ONESHOT\tSA_RESETHAND\n\n#ifndef SIG_BLOCK\n#define SIG_BLOCK          0\t \n#endif\n#ifndef SIG_UNBLOCK\n#define SIG_UNBLOCK        1\t \n#endif\n#ifndef SIG_SETMASK\n#define SIG_SETMASK        2\t \n#endif\n\n#ifndef __ASSEMBLY__\ntypedef void __signalfn_t(int);\ntypedef __signalfn_t __user *__sighandler_t;\n\ntypedef void __restorefn_t(void);\ntypedef __restorefn_t __user *__sigrestore_t;\n\n#define SIG_DFL\t((__force __sighandler_t)0)\t \n#define SIG_IGN\t((__force __sighandler_t)1)\t \n#define SIG_ERR\t((__force __sighandler_t)-1)\t \n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "once_lite.h",
+  "hash_id": "7eaf7faddb88bdded1267722bc2a86ef2542188ba28c4081346a5305ccf708e5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/once_lite.h",
+  "human_readable_source": " \n#ifndef _LINUX_ONCE_LITE_H\n#define _LINUX_ONCE_LITE_H\n\n#include <linux/types.h>\n\n \n#define DO_ONCE_LITE(func, ...)\t\t\t\t\t\t\\\n\tDO_ONCE_LITE_IF(true, func, ##__VA_ARGS__)\n\n#define __ONCE_LITE_IF(condition)\t\t\t\t\t\\\n\t({\t\t\t\t\t\t\t\t\\\n\t\tstatic bool __section(\".data.once\") __already_done;\t\\\n\t\tbool __ret_cond = !!(condition);\t\t\t\\\n\t\tbool __ret_once = false;\t\t\t\t\\\n\t\t\t\t\t\t\t\t\t\\\n\t\tif (unlikely(__ret_cond && !__already_done)) {\t\t\\\n\t\t\t__already_done = true;\t\t\t\t\\\n\t\t\t__ret_once = true;\t\t\t\t\\\n\t\t}\t\t\t\t\t\t\t\\\n\t\tunlikely(__ret_once);\t\t\t\t\t\\\n\t})\n\n#define DO_ONCE_LITE_IF(condition, func, ...)\t\t\t\t\\\n\t({\t\t\t\t\t\t\t\t\\\n\t\tbool __ret_do_once = !!(condition);\t\t\t\\\n\t\t\t\t\t\t\t\t\t\\\n\t\tif (__ONCE_LITE_IF(__ret_do_once))\t\t\t\\\n\t\t\tfunc(__VA_ARGS__);\t\t\t\t\\\n\t\t\t\t\t\t\t\t\t\\\n\t\tunlikely(__ret_do_once);\t\t\t\t\\\n\t})\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

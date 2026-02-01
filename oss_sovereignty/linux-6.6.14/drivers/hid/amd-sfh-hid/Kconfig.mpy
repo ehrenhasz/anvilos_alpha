@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c164c863cb697c931154975d342544657fdfc3992e8447faf3d01d9ce9be1727",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/amd-sfh-hid/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-or-later\nmenu \"AMD SFH HID Support\"\n\tdepends on X86_64 || COMPILE_TEST\n\tdepends on PCI\n\nconfig AMD_SFH_HID\n\ttristate \"AMD Sensor Fusion Hub\"\n\tdepends on HID\n\thelp\n\t  If you say yes to this option, support will be included for the\n\t  AMD Sensor Fusion Hub.\n\t  This driver will enable sensors functionality on AMD platforms\n\t  starting from 17h family of RYZEN parts.\n\n\t  This driver can also be built as a module. If so, the module will\n\t  be called amd-sfh.\n\t  Say Y or M here if you want to support AMD SFH. If unsure, say N.\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "events.h",
+  "hash_id": "17aeececcd6f546e09458b0f96121ab5cdb394ba8505e419bb29eb39cad3732e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/iio/events.h",
+  "human_readable_source": " \n \n#ifndef _UAPI_IIO_EVENTS_H_\n#define _UAPI_IIO_EVENTS_H_\n\n#include <linux/ioctl.h>\n#include <linux/types.h>\n\n \nstruct iio_event_data {\n\t__u64\tid;\n\t__s64\ttimestamp;\n};\n\n#define IIO_GET_EVENT_FD_IOCTL _IOR('i', 0x90, int)\n\n#define IIO_EVENT_CODE_EXTRACT_TYPE(mask) ((mask >> 56) & 0xFF)\n\n#define IIO_EVENT_CODE_EXTRACT_DIR(mask) ((mask >> 48) & 0x7F)\n\n#define IIO_EVENT_CODE_EXTRACT_CHAN_TYPE(mask) ((mask >> 32) & 0xFF)\n\n \n#define IIO_EVENT_CODE_EXTRACT_CHAN(mask) ((__s16)(mask & 0xFFFF))\n#define IIO_EVENT_CODE_EXTRACT_CHAN2(mask) ((__s16)(((mask) >> 16) & 0xFFFF))\n\n#define IIO_EVENT_CODE_EXTRACT_MODIFIER(mask) ((mask >> 40) & 0xFF)\n#define IIO_EVENT_CODE_EXTRACT_DIFF(mask) (((mask) >> 55) & 0x1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

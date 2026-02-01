@@ -1,0 +1,9 @@
+{
+  "module_name": "ivpu_job.h",
+  "hash_id": "bd31e7aca9579167d0bf32a3c623167029ad2a85633f4f32dd640d4992882159",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/ivpu/ivpu_job.h",
+  "human_readable_source": " \n \n\n#ifndef __IVPU_JOB_H__\n#define __IVPU_JOB_H__\n\n#include <linux/kref.h>\n#include <linux/idr.h>\n\n#include \"ivpu_gem.h\"\n\nstruct ivpu_device;\nstruct ivpu_file_priv;\n\n \nstruct ivpu_cmdq {\n\tstruct vpu_job_queue *jobq;\n\tstruct ivpu_bo *mem;\n\tu32 entry_count;\n\tu32 db_id;\n\tbool db_registered;\n};\n\n \nstruct ivpu_job {\n\tstruct kref ref;\n\tstruct ivpu_device *vdev;\n\tstruct ivpu_file_priv *file_priv;\n\tstruct dma_fence *done_fence;\n\tu64 cmd_buf_vpu_addr;\n\tu32 job_id;\n\tu32 engine_idx;\n\tsize_t bo_count;\n\tstruct ivpu_bo *bos[];\n};\n\nint ivpu_submit_ioctl(struct drm_device *dev, void *data, struct drm_file *file);\n\nvoid ivpu_cmdq_release_all(struct ivpu_file_priv *file_priv);\nvoid ivpu_cmdq_reset_all_contexts(struct ivpu_device *vdev);\n\nint ivpu_job_done_thread_init(struct ivpu_device *vdev);\nvoid ivpu_job_done_thread_fini(struct ivpu_device *vdev);\n\nvoid ivpu_jobs_abort_all(struct ivpu_device *vdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

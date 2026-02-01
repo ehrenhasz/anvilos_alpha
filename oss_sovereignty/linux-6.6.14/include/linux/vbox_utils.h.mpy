@@ -1,0 +1,9 @@
+{
+  "module_name": "vbox_utils.h",
+  "hash_id": "b8ee40306dd2c430463a8aa6f88a99d8fb008f668242a0fb61fbc2db9d8fa501",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/vbox_utils.h",
+  "human_readable_source": " \n \n\n#ifndef __VBOX_UTILS_H__\n#define __VBOX_UTILS_H__\n\n#include <linux/printk.h>\n#include <linux/vbox_vmmdev_types.h>\n\nstruct vbg_dev;\n\n \n__printf(1, 2) void vbg_info(const char *fmt, ...);\n__printf(1, 2) void vbg_warn(const char *fmt, ...);\n__printf(1, 2) void vbg_err(const char *fmt, ...);\n__printf(1, 2) void vbg_err_ratelimited(const char *fmt, ...);\n\n \n#if defined(DEBUG) && !defined(CONFIG_DYNAMIC_DEBUG)\n__printf(1, 2) void vbg_debug(const char *fmt, ...);\n#else\n#define vbg_debug pr_debug\n#endif\n\nint vbg_hgcm_connect(struct vbg_dev *gdev, u32 requestor,\n\t\t     struct vmmdev_hgcm_service_location *loc,\n\t\t     u32 *client_id, int *vbox_status);\n\nint vbg_hgcm_disconnect(struct vbg_dev *gdev, u32 requestor,\n\t\t\tu32 client_id, int *vbox_status);\n\nint vbg_hgcm_call(struct vbg_dev *gdev, u32 requestor, u32 client_id,\n\t\t  u32 function, u32 timeout_ms,\n\t\t  struct vmmdev_hgcm_function_parameter *parms, u32 parm_count,\n\t\t  int *vbox_status);\n\n \nint vbg_status_code_to_errno(int rc);\n\n \nstruct vbg_dev *vbg_get_gdev(void);\n\n \nvoid vbg_put_gdev(struct vbg_dev *gdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

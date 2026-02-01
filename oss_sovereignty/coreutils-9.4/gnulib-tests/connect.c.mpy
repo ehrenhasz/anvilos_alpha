@@ -1,0 +1,9 @@
+{
+  "module_name": "connect.c",
+  "hash_id": "fae95c4909b7d718bc2d097167f03ba33f3bb3da51cb00a6b28dbb56aa70771e",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/connect.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#define WIN32_LEAN_AND_MEAN\n \n#include <sys/socket.h>\n\n \n#include \"w32sock.h\"\n\n#undef connect\n\nint\nrpl_connect (int fd, const struct sockaddr *sockaddr, socklen_t len)\n{\n  SOCKET sock = FD_TO_SOCKET (fd);\n\n  if (sock == INVALID_SOCKET)\n    {\n      errno = EBADF;\n      return -1;\n    }\n  else\n    {\n      int r = connect (sock, sockaddr, len);\n      if (r < 0)\n        {\n           \n          if (WSAGetLastError () == WSAEWOULDBLOCK)\n            WSASetLastError (WSAEINPROGRESS);\n\n          set_winsock_errno ();\n        }\n\n      return r;\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

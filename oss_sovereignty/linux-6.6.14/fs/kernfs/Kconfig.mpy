@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "80263e238366d2c96c93c09ad3956f13a5977069cc58ab14558e2b0f3b3b72d9",
+  "original_prompt": "Ingested from linux-6.6.14/fs/kernfs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# KERNFS should be selected by its users\n#\n\nconfig KERNFS\n\tbool\n\tdefault n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hwdep_compat.c",
+  "hash_id": "5e22ebe955f8da36dc7aec73b6370342ad47b18740b5ca34327c37ee93e51d27",
+  "original_prompt": "Ingested from linux-6.6.14/sound/core/hwdep_compat.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/compat.h>\n\nstruct snd_hwdep_dsp_image32 {\n\tu32 index;\n\tunsigned char name[64];\n\tu32 image;\t \n\tu32 length;\n\tu32 driver_data;\n}  ;\n\nstatic int snd_hwdep_dsp_load_compat(struct snd_hwdep *hw,\n\t\t\t\t     struct snd_hwdep_dsp_image32 __user *src)\n{\n\tstruct snd_hwdep_dsp_image info = {};\n\tcompat_caddr_t ptr;\n\n\tif (copy_from_user(&info, src, 4 + 64) ||\n\t    get_user(ptr, &src->image) ||\n\t    get_user(info.length, &src->length) ||\n\t    get_user(info.driver_data, &src->driver_data))\n\t\treturn -EFAULT;\n\tinfo.image = compat_ptr(ptr);\n\n\treturn snd_hwdep_dsp_load(hw, &info);\n}\n\nenum {\n\tSNDRV_HWDEP_IOCTL_DSP_LOAD32   = _IOW('H', 0x03, struct snd_hwdep_dsp_image32)\n};\n\nstatic long snd_hwdep_ioctl_compat(struct file * file, unsigned int cmd,\n\t\t\t\t   unsigned long arg)\n{\n\tstruct snd_hwdep *hw = file->private_data;\n\tvoid __user *argp = compat_ptr(arg);\n\tswitch (cmd) {\n\tcase SNDRV_HWDEP_IOCTL_PVERSION:\n\tcase SNDRV_HWDEP_IOCTL_INFO:\n\tcase SNDRV_HWDEP_IOCTL_DSP_STATUS:\n\t\treturn snd_hwdep_ioctl(file, cmd, (unsigned long)argp);\n\tcase SNDRV_HWDEP_IOCTL_DSP_LOAD32:\n\t\treturn snd_hwdep_dsp_load_compat(hw, argp);\n\t}\n\tif (hw->ops.ioctl_compat)\n\t\treturn hw->ops.ioctl_compat(hw, file, cmd, arg);\n\treturn -ENOIOCTLCMD;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

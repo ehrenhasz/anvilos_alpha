@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "456d6d54f9628227da5d6b4a1c5a79608b30c467b646ada916d3b41227901f98",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nccflags-y := -I$(src)\n\nobj-$(CONFIG_OCFS2_FS) += \t\\\n\tocfs2.o\t\t\t\\\n\tocfs2_stackglue.o\n\nobj-$(CONFIG_OCFS2_FS_O2CB) += ocfs2_stack_o2cb.o\nobj-$(CONFIG_OCFS2_FS_USERSPACE_CLUSTER) += ocfs2_stack_user.o\n\nocfs2-objs := \\\n\talloc.o \t\t\\\n\taops.o \t\t\t\\\n\tblockcheck.o\t\t\\\n\tbuffer_head_io.o\t\\\n\tdcache.o \t\t\\\n\tdir.o \t\t\t\\\n\tdlmglue.o \t\t\\\n\texport.o \t\t\\\n\textent_map.o \t\t\\\n\tfile.o \t\t\t\\\n\theartbeat.o \t\t\\\n\tinode.o \t\t\\\n\tioctl.o \t\t\\\n\tjournal.o \t\t\\\n\tlocalalloc.o \t\t\\\n\tlocks.o\t\t\t\\\n\tmmap.o \t\t\t\\\n\tnamei.o \t\t\\\n\trefcounttree.o\t\t\\\n\treservations.o\t\t\\\n\tmove_extents.o\t\t\\\n\tresize.o\t\t\\\n\tslot_map.o \t\t\\\n\tsuballoc.o \t\t\\\n\tsuper.o \t\t\\\n\tsymlink.o \t\t\\\n\tsysfile.o \t\t\\\n\tuptodate.o\t\t\\\n\tquota_local.o\t\t\\\n\tquota_global.o\t\t\\\n\txattr.o\t\t\t\\\n\tacl.o\t\\\n\tfilecheck.o\n\nocfs2_stackglue-objs := stackglue.o\nocfs2_stack_o2cb-objs := stack_o2cb.o\nocfs2_stack_user-objs := stack_user.o\n\nobj-$(CONFIG_OCFS2_FS) += dlmfs/\n# cluster/ is always needed when OCFS2_FS for masklog support\nobj-$(CONFIG_OCFS2_FS) += cluster/\nobj-$(CONFIG_OCFS2_FS_O2CB) += dlm/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

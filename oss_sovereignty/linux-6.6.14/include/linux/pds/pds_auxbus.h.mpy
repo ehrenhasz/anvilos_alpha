@@ -1,0 +1,9 @@
+{
+  "module_name": "pds_auxbus.h",
+  "hash_id": "61c2e85e3f97c5b96c2807dba35c5d2bc97985070ae09c4a748c7b78b834772f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pds/pds_auxbus.h",
+  "human_readable_source": " \n \n\n#ifndef _PDSC_AUXBUS_H_\n#define _PDSC_AUXBUS_H_\n\n#include <linux/auxiliary_bus.h>\n\nstruct pds_auxiliary_dev {\n\tstruct auxiliary_device aux_dev;\n\tstruct pci_dev *vf_pdev;\n\tu16 client_id;\n};\n\nint pds_client_adminq_cmd(struct pds_auxiliary_dev *padev,\n\t\t\t  union pds_core_adminq_cmd *req,\n\t\t\t  size_t req_len,\n\t\t\t  union pds_core_adminq_comp *resp,\n\t\t\t  u64 flags);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

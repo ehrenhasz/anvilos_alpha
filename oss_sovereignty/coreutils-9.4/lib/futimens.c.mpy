@@ -1,0 +1,9 @@
+{
+  "module_name": "futimens.c",
+  "hash_id": "8fbf847bc6131117c8f8b037b1006c775632afaa5216bd4ec6179cb3e26426f9",
+  "original_prompt": "Ingested from coreutils-9.4/lib/futimens.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/stat.h>\n\n#include \"utimens.h\"\n\n \nint\nfutimens (int fd, struct timespec const times[2])\n{\n   \n  return fdutimens (fd, NULL, times);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

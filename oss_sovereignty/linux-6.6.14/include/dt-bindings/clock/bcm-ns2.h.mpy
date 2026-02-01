@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm-ns2.h",
+  "hash_id": "e11438d07ca69715a004d80fb765dec72af19f4021d814a4c4c41d9ae43d6e29",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/bcm-ns2.h",
+  "human_readable_source": " \n\n#ifndef _CLOCK_BCM_NS2_H\n#define _CLOCK_BCM_NS2_H\n\n \n#define BCM_NS2_GENPLL_SCR\t\t0\n#define BCM_NS2_GENPLL_SCR_SCR_CLK\t1\n#define BCM_NS2_GENPLL_SCR_FS_CLK\t2\n#define BCM_NS2_GENPLL_SCR_AUDIO_CLK\t3\n#define BCM_NS2_GENPLL_SCR_CH3_UNUSED\t4\n#define BCM_NS2_GENPLL_SCR_CH4_UNUSED\t5\n#define BCM_NS2_GENPLL_SCR_CH5_UNUSED\t6\n\n \n#define BCM_NS2_GENPLL_SW\t\t0\n#define BCM_NS2_GENPLL_SW_RPE_CLK\t1\n#define BCM_NS2_GENPLL_SW_250_CLK\t2\n#define BCM_NS2_GENPLL_SW_NIC_CLK\t3\n#define BCM_NS2_GENPLL_SW_CHIMP_CLK\t4\n#define BCM_NS2_GENPLL_SW_PORT_CLK\t5\n#define BCM_NS2_GENPLL_SW_SDIO_CLK\t6\n\n \n#define BCM_NS2_LCPLL_DDR\t\t0\n#define BCM_NS2_LCPLL_DDR_PCIE_SATA_USB_CLK\t1\n#define BCM_NS2_LCPLL_DDR_DDR_CLK\t2\n#define BCM_NS2_LCPLL_DDR_CH2_UNUSED\t3\n#define BCM_NS2_LCPLL_DDR_CH3_UNUSED\t4\n#define BCM_NS2_LCPLL_DDR_CH4_UNUSED\t5\n#define BCM_NS2_LCPLL_DDR_CH5_UNUSED\t6\n\n \n#define BCM_NS2_LCPLL_PORTS\t\t0\n#define BCM_NS2_LCPLL_PORTS_WAN_CLK\t1\n#define BCM_NS2_LCPLL_PORTS_RGMII_CLK\t2\n#define BCM_NS2_LCPLL_PORTS_CH2_UNUSED\t3\n#define BCM_NS2_LCPLL_PORTS_CH3_UNUSED\t4\n#define BCM_NS2_LCPLL_PORTS_CH4_UNUSED\t5\n#define BCM_NS2_LCPLL_PORTS_CH5_UNUSED\t6\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

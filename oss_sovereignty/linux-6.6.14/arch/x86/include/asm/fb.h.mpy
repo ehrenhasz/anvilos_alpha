@@ -1,0 +1,9 @@
+{
+  "module_name": "fb.h",
+  "hash_id": "0e4c07b1960362490960439255f7ed7138e9d565b663825a750e0738389f2e37",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/fb.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_FB_H\n#define _ASM_X86_FB_H\n\nstruct fb_info;\nstruct file;\nstruct vm_area_struct;\n\nvoid fb_pgprotect(struct file *file, struct vm_area_struct *vma, unsigned long off);\n#define fb_pgprotect fb_pgprotect\n\nint fb_is_primary_device(struct fb_info *info);\n#define fb_is_primary_device fb_is_primary_device\n\n#include <asm-generic/fb.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

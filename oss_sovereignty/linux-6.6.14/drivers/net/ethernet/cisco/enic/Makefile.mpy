@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "363151d06e55e7bb469a6281253406b08f898761eeb663e4b904635edc3601dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cisco/enic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_ENIC) := enic.o\n\nenic-y := enic_main.o vnic_cq.o vnic_intr.o vnic_wq.o \\\n\tenic_res.o enic_dev.o enic_pp.o vnic_dev.o vnic_rq.o vnic_vic.o \\\n\tenic_ethtool.o enic_api.o enic_clsf.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

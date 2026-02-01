@@ -1,0 +1,9 @@
+{
+  "module_name": "usnic_ib_sysfs.h",
+  "hash_id": "4dbae0c0801a7aac223ddf71cd668eb21fdb58fb1377a504f108226a7e018dc1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/usnic/usnic_ib_sysfs.h",
+  "human_readable_source": " \n\n#ifndef USNIC_IB_SYSFS_H_\n#define USNIC_IB_SYSFS_H_\n\n#include \"usnic_ib.h\"\n\nint usnic_ib_sysfs_register_usdev(struct usnic_ib_dev *us_ibdev);\nvoid usnic_ib_sysfs_unregister_usdev(struct usnic_ib_dev *us_ibdev);\nvoid usnic_ib_sysfs_qpn_add(struct usnic_ib_qp_grp *qp_grp);\nvoid usnic_ib_sysfs_qpn_remove(struct usnic_ib_qp_grp *qp_grp);\n\nextern const struct attribute_group usnic_attr_group;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Z6.0+pooncerelease+poacquirerelease+fencembonceonce.litmus",
+  "hash_id": "ba07aab683e751dc2e97b6f1038972263c35df2945ab0e3c2ae4d47dd5205ecf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/Z6.0+pooncerelease+poacquirerelease+fencembonceonce.litmus",
+  "human_readable_source": "C Z6.0+pooncerelease+poacquirerelease+fencembonceonce\n\n(*\n * Result: Sometimes\n *\n * This litmus test shows that a release-acquire chain, while sufficient\n * when there is but one non-reads-from (AKA non-rf) link, does not suffice\n * if there is more than one.  Of the three processes, only P1() reads from\n * P0's write, which means that there are two non-rf links: P1() to P2()\n * is a write-to-write link (AKA a \"coherence\" or just \"co\" link) and P2()\n * to P0() is a read-to-write link (AKA a \"from-reads\" or just \"fr\" link).\n * When there are two or more non-rf links, you typically will need one\n * full barrier for each non-rf link.  (Exceptions include some cases\n * involving locking.)\n *)\n\n{}\n\nP0(int *x, int *y)\n{\n\tWRITE_ONCE(*x, 1);\n\tsmp_store_release(y, 1);\n}\n\nP1(int *y, int *z)\n{\n\tint r0;\n\n\tr0 = smp_load_acquire(y);\n\tsmp_store_release(z, 1);\n}\n\nP2(int *x, int *z)\n{\n\tint r1;\n\n\tWRITE_ONCE(*z, 2);\n\tsmp_mb();\n\tr1 = READ_ONCE(*x);\n}\n\nexists (1:r0=1 /\\ z=2 /\\ 2:r1=0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

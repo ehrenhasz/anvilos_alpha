@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__stream.c.compress",
+  "hash_id": "81e9dd19c756ae8745eff39f99b9bb21aae70276f188dec4b364b8314543fca9",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__stream.c.compress",
+  "human_readable_source": "stream operation not supported\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test.h",
+  "hash_id": "b686678f03aadbe5d39a27af5c82da928646f53cf9c923f36998f720bcc214fa",
+  "original_prompt": "Ingested from bash-5.2.21/test.h",
+  "human_readable_source": " \n\n \n\n#ifndef _TEST_H_\n#define _TEST_H_\n\n#include \"stdc.h\"\n\n \n#define TEST_PATMATCH\t0x01\n#define TEST_ARITHEXP\t0x02\n#define TEST_LOCALE\t0x04\n#define TEST_ARRAYEXP\t0x08\t\t \n\nextern int test_unop PARAMS((char *));\nextern int test_binop PARAMS((char *));\n\nextern int unary_test PARAMS((char *, char *, int));\nextern int binary_test PARAMS((char *, char *, char *, int));\n\nextern int test_command PARAMS((int, char **));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

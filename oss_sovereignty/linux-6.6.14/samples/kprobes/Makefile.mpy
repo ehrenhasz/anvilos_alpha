@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f8c10ea8f67edbcc18651b666b6755d5ebf4845347421c870c1803eecf0dcb9c",
+  "original_prompt": "Ingested from linux-6.6.14/samples/kprobes/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# builds the kprobes example kernel modules;\n# then to use one (as root):  insmod <module_name.ko>\n\nobj-$(CONFIG_SAMPLE_KPROBES) += kprobe_example.o\nobj-$(CONFIG_SAMPLE_KRETPROBES) += kretprobe_example.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

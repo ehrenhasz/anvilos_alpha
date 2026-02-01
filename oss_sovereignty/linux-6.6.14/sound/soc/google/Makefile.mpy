@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6c4a87f9aec5f3d91d7676a63cb804cebf44ea98aa702b4ccb57e8b5f899470e",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/google/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SND_SOC_CHV3_I2S) += chv3-i2s.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

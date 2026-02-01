@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a3cb1073cb410668f9d40d8487953a50665e47d897967dd0a3eb7dcf81cb5e0c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/aspeed/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nif ARCH_ASPEED || COMPILE_TEST\n\nmenu \"ASPEED SoC drivers\"\n\nconfig ASPEED_LPC_CTRL\n\ttristate \"ASPEED LPC firmware cycle control\"\n\tselect REGMAP\n\tselect MFD_SYSCON\n\tdefault ARCH_ASPEED\n\thelp\n\t  Control LPC firmware cycle mappings through ioctl()s. The driver\n\t  also provides a read/write interface to a BMC ram region where the\n\t  host LPC read/write region can be buffered.\n\nconfig ASPEED_LPC_SNOOP\n\ttristate \"ASPEED LPC snoop support\"\n\tselect REGMAP\n\tselect MFD_SYSCON\n\tdefault ARCH_ASPEED\n\thelp\n\t  Provides a driver to control the LPC snoop interface which\n\t  allows the BMC to listen on and save the data written by\n\t  the host to an arbitrary LPC I/O port.\n\nconfig ASPEED_UART_ROUTING\n\ttristate \"ASPEED uart routing control\"\n\tselect REGMAP\n\tselect MFD_SYSCON\n\tdefault ARCH_ASPEED\n\thelp\n\t  Provides a driver to control the UART routing paths, allowing\n\t  users to perform runtime configuration of the RX muxes among\n\t  the UART controllers and I/O pins.\n\nconfig ASPEED_P2A_CTRL\n\ttristate \"ASPEED P2A (VGA MMIO to BMC) bridge control\"\n\tselect REGMAP\n\tselect MFD_SYSCON\n\tdefault ARCH_ASPEED\n\thelp\n\t  Control ASPEED P2A VGA MMIO to BMC mappings through ioctl()s.  The\n\t  driver also provides an interface for userspace mappings to a\n\t  pre-defined region.\n\nconfig ASPEED_SOCINFO\n\tbool \"ASPEED SoC Information driver\"\n\tdefault ARCH_ASPEED\n\tselect SOC_BUS\n\tdefault ARCH_ASPEED\n\thelp\n\t  Say yes to support decoding of ASPEED BMC information.\n\nendmenu\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

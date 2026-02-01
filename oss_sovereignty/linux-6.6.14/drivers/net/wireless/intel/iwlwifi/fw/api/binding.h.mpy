@@ -1,0 +1,9 @@
+{
+  "module_name": "binding.h",
+  "hash_id": "8f1859dcd8a0509804d626eeec0af38035afd882de27cad92e8e14405a482d92",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/fw/api/binding.h",
+  "human_readable_source": " \n \n#ifndef __iwl_fw_api_binding_h__\n#define __iwl_fw_api_binding_h__\n\n#include <fw/file.h>\n#include <fw/img.h>\n\n#define MAX_MACS_IN_BINDING\t(3)\n#define MAX_BINDINGS\t\t(4)\n\n \nstruct iwl_binding_cmd_v1 {\n\t \n\t__le32 id_and_color;\n\t__le32 action;\n\t \n\t__le32 macs[MAX_MACS_IN_BINDING];\n\t__le32 phy;\n} __packed;  \n\n \nstruct iwl_binding_cmd {\n\t \n\t__le32 id_and_color;\n\t__le32 action;\n\t \n\t__le32 macs[MAX_MACS_IN_BINDING];\n\t__le32 phy;\n\t__le32 lmac_id;\n} __packed;  \n\n#define IWL_BINDING_CMD_SIZE_V1\tsizeof(struct iwl_binding_cmd_v1)\n#define IWL_LMAC_24G_INDEX\t\t0\n#define IWL_LMAC_5G_INDEX\t\t1\n\n \n#define IWL_MVM_MAX_QUOTA 128\n\n \nstruct iwl_time_quota_data_v1 {\n\t__le32 id_and_color;\n\t__le32 quota;\n\t__le32 max_duration;\n} __packed;  \n\n \nstruct iwl_time_quota_cmd_v1 {\n\tstruct iwl_time_quota_data_v1 quotas[MAX_BINDINGS];\n} __packed;  \n\nenum iwl_quota_low_latency {\n\tIWL_QUOTA_LOW_LATENCY_NONE = 0,\n\tIWL_QUOTA_LOW_LATENCY_TX = BIT(0),\n\tIWL_QUOTA_LOW_LATENCY_RX = BIT(1),\n\tIWL_QUOTA_LOW_LATENCY_TX_RX =\n\t\tIWL_QUOTA_LOW_LATENCY_TX | IWL_QUOTA_LOW_LATENCY_RX,\n};\n\n \nstruct iwl_time_quota_data {\n\t__le32 id_and_color;\n\t__le32 quota;\n\t__le32 max_duration;\n\t__le32 low_latency;\n} __packed;  \n\n \nstruct iwl_time_quota_cmd {\n\tstruct iwl_time_quota_data quotas[MAX_BINDINGS];\n} __packed;  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

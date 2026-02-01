@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "59bb1f8754b479f336ed98b94bfefccc39e65d4eee91ca5c8300f399891da4c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the USB media device drivers\n#\n\n# DVB USB-only drivers. Please keep it alphabetically sorted by directory name\n# (e. g. LC_ALL=C sort Makefile)\nobj-y += b2c2/\nobj-y += dvb-usb/\nobj-y += dvb-usb-v2/\nobj-y += s2255/\nobj-y += siano/\nobj-y += ttusb-budget/\nobj-y += ttusb-dec/\n\n# Please keep it alphabetically sorted by Kconfig name\n# (e. g. LC_ALL=C sort Makefile)\nobj-$(CONFIG_DVB_AS102) += as102/\nobj-$(CONFIG_USB_AIRSPY) += airspy/\nobj-$(CONFIG_USB_GSPCA) += gspca/\nobj-$(CONFIG_USB_HACKRF) += hackrf/\nobj-$(CONFIG_USB_MSI2500) += msi2500/\nobj-$(CONFIG_USB_PWC) += pwc/\nobj-$(CONFIG_USB_VIDEO_CLASS) += uvc/\nobj-$(CONFIG_VIDEO_AU0828) += au0828/\nobj-$(CONFIG_VIDEO_CX231XX) += cx231xx/\nobj-$(CONFIG_VIDEO_EM28XX) += em28xx/\nobj-$(CONFIG_VIDEO_GO7007) += go7007/\nobj-$(CONFIG_VIDEO_HDPVR) += hdpvr/\nobj-$(CONFIG_VIDEO_PVRUSB2) += pvrusb2/\nobj-$(CONFIG_VIDEO_STK1160) += stk1160/\nobj-$(CONFIG_VIDEO_USBTV) += usbtv/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

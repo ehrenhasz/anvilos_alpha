@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_overlay.h",
+  "hash_id": "4038a8d8fc2d811731c7486158202511fc7be5e8e5dfae9a0d3369c091cd0883",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_overlay.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_OVERLAY_H__\n#define __INTEL_OVERLAY_H__\n\nstruct drm_device;\nstruct drm_file;\nstruct drm_i915_error_state_buf;\nstruct drm_i915_private;\nstruct intel_overlay;\nstruct intel_overlay_error_state;\n\nvoid intel_overlay_setup(struct drm_i915_private *dev_priv);\nvoid intel_overlay_cleanup(struct drm_i915_private *dev_priv);\nint intel_overlay_switch_off(struct intel_overlay *overlay);\nint intel_overlay_put_image_ioctl(struct drm_device *dev, void *data,\n\t\t\t\t  struct drm_file *file_priv);\nint intel_overlay_attrs_ioctl(struct drm_device *dev, void *data,\n\t\t\t      struct drm_file *file_priv);\nvoid intel_overlay_reset(struct drm_i915_private *dev_priv);\nstruct intel_overlay_error_state *\nintel_overlay_capture_error_state(struct drm_i915_private *dev_priv);\nvoid intel_overlay_print_error_state(struct drm_i915_error_state_buf *e,\n\t\t\t\t     struct intel_overlay_error_state *error);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

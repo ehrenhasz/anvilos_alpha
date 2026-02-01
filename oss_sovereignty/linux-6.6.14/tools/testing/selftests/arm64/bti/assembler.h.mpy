@@ -1,0 +1,9 @@
+{
+  "module_name": "assembler.h",
+  "hash_id": "5fce555737888983217d39e02dd823887212475477a42953c4dc097e661bd587",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/bti/assembler.h",
+  "human_readable_source": " \n \n\n#ifndef ASSEMBLER_H\n#define ASSEMBLER_H\n\n#define NT_GNU_PROPERTY_TYPE_0\t5\n#define GNU_PROPERTY_AARCH64_FEATURE_1_AND\t0xc0000000\n\n \n#define GNU_PROPERTY_AARCH64_FEATURE_1_BTI\t(1U << 0)\n#define GNU_PROPERTY_AARCH64_FEATURE_1_PAC\t(1U << 1)\n\n\n.macro startfn name:req\n\t.globl \\name\n\\name:\n\t.macro endfn\n\t\t.size \\name, . - \\name\n\t\t.type \\name, @function\n\t\t.purgem endfn\n\t.endm\n.endm\n\n.macro emit_aarch64_feature_1_and\n\t.pushsection .note.gnu.property, \"a\"\n\t.align\t3\n\t.long\t2f - 1f\n\t.long\t6f - 3f\n\t.long\tNT_GNU_PROPERTY_TYPE_0\n1:\t.string\t\"GNU\"\n2:\n\t.align\t3\n3:\t.long\tGNU_PROPERTY_AARCH64_FEATURE_1_AND\n\t.long\t5f - 4f\n4:\n#if BTI\n\t.long\tGNU_PROPERTY_AARCH64_FEATURE_1_PAC | \\\n\t\tGNU_PROPERTY_AARCH64_FEATURE_1_BTI\n#else\n\t.long\t0\n#endif\n5:\n\t.align\t3\n6:\n\t.popsection\n.endm\n\n.macro paciasp\n\thint\t0x19\n.endm\n\n.macro autiasp\n\thint\t0x1d\n.endm\n\n.macro __bti_\n\thint\t0x20\n.endm\n\n.macro __bti_c\n\thint\t0x22\n.endm\n\n.macro __bti_j\n\thint\t0x24\n.endm\n\n.macro __bti_jc\n\thint\t0x26\n.endm\n\n.macro bti what=\n\t__bti_\\what\n.endm\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

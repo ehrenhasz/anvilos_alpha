@@ -1,0 +1,9 @@
+{
+  "module_name": "crypto_api.h",
+  "hash_id": "8ef2710b792b275c4a3fff10c64847940e1a24c9517eafb1126b1b461b211862",
+  "original_prompt": "Ingested from openssh-9.6p1/crypto_api.h",
+  "human_readable_source": " \n\n \n\n#ifndef crypto_api_h\n#define crypto_api_h\n\n#include \"includes.h\"\n\n#ifdef HAVE_STDINT_H\n# include <stdint.h>\n#endif\n#include <stdlib.h>\n\ntypedef int8_t crypto_int8;\ntypedef uint8_t crypto_uint8;\ntypedef int16_t crypto_int16;\ntypedef uint16_t crypto_uint16;\ntypedef int32_t crypto_int32;\ntypedef uint32_t crypto_uint32;\ntypedef int64_t crypto_int64;\ntypedef uint64_t crypto_uint64;\n\n#define randombytes(buf, buf_len) arc4random_buf((buf), (buf_len))\n#define small_random32() arc4random()\n\n#define crypto_hash_sha512_BYTES 64U\n\nint\tcrypto_hash_sha512(unsigned char *, const unsigned char *,\n    unsigned long long);\n\n#define crypto_sign_ed25519_SECRETKEYBYTES 64U\n#define crypto_sign_ed25519_PUBLICKEYBYTES 32U\n#define crypto_sign_ed25519_BYTES 64U\n\nint\tcrypto_sign_ed25519(unsigned char *, unsigned long long *,\n    const unsigned char *, unsigned long long, const unsigned char *);\nint\tcrypto_sign_ed25519_open(unsigned char *, unsigned long long *,\n    const unsigned char *, unsigned long long, const unsigned char *);\nint\tcrypto_sign_ed25519_keypair(unsigned char *, unsigned char *);\n\n#define crypto_kem_sntrup761_PUBLICKEYBYTES 1158\n#define crypto_kem_sntrup761_SECRETKEYBYTES 1763\n#define crypto_kem_sntrup761_CIPHERTEXTBYTES 1039\n#define crypto_kem_sntrup761_BYTES 32\n\nint\tcrypto_kem_sntrup761_enc(unsigned char *cstr, unsigned char *k,\n    const unsigned char *pk);\nint\tcrypto_kem_sntrup761_dec(unsigned char *k,\n    const unsigned char *cstr, const unsigned char *sk);\nint\tcrypto_kem_sntrup761_keypair(unsigned char *pk, unsigned char *sk);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

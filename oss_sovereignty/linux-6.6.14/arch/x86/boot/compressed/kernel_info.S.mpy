@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel_info.S",
+  "hash_id": "0818df46ca25bcbb59e4aa2997a97e3914f4c7a73102d053e9e7d42f56f84a6c",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/compressed/kernel_info.S",
+  "human_readable_source": " \n\n#include <asm/bootparam.h>\n\n\t.section \".rodata.kernel_info\", \"a\"\n\n\t.global kernel_info\n\nkernel_info:\n\t \n\t.ascii\t\"LToP\"\n\t \n\t.long\tkernel_info_var_len_data - kernel_info\n\t \n\t.long\tkernel_info_end - kernel_info\n\n\t \n\t.long\tSETUP_TYPE_MAX\n\nkernel_info_var_len_data:\n\t \nkernel_info_end:\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

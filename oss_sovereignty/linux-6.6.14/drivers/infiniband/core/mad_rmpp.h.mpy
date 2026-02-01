@@ -1,0 +1,9 @@
+{
+  "module_name": "mad_rmpp.h",
+  "hash_id": "6d82c43904181dd16033fc781fc901f1b71bed5e544cde10c40bcf85c11a00f9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/core/mad_rmpp.h",
+  "human_readable_source": " \n\n#ifndef __MAD_RMPP_H__\n#define __MAD_RMPP_H__\n\nenum {\n\tIB_RMPP_RESULT_PROCESSED,\n\tIB_RMPP_RESULT_CONSUMED,\n\tIB_RMPP_RESULT_INTERNAL,\n\tIB_RMPP_RESULT_UNHANDLED\n};\n\nint ib_send_rmpp_mad(struct ib_mad_send_wr_private *mad_send_wr);\n\nstruct ib_mad_recv_wc *\nib_process_rmpp_recv_wc(struct ib_mad_agent_private *agent,\n\t\t\tstruct ib_mad_recv_wc *mad_recv_wc);\n\nint ib_process_rmpp_send_wc(struct ib_mad_send_wr_private *mad_send_wr,\n\t\t\t    struct ib_mad_send_wc *mad_send_wc);\n\nvoid ib_rmpp_send_handler(struct ib_mad_send_wc *mad_send_wc);\n\nvoid ib_cancel_rmpp_recvs(struct ib_mad_agent_private *agent);\n\nint ib_retry_rmpp(struct ib_mad_send_wr_private *mad_send_wr);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

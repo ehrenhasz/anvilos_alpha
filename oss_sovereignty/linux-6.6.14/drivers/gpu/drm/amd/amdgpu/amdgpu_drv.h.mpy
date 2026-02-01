@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_drv.h",
+  "hash_id": "cefd2c7a00672d6b3f9801e93a03fb40985a1c66eb994fac43d267a610da8308",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.h",
+  "human_readable_source": " \n\n#ifndef __AMDGPU_DRV_H__\n#define __AMDGPU_DRV_H__\n\n#include <linux/firmware.h>\n#include <linux/platform_device.h>\n\n#include \"amd_shared.h\"\n\n \n\n#define DRIVER_AUTHOR\t\t\"AMD linux driver team\"\n\n#define DRIVER_NAME\t\t\"amdgpu\"\n#define DRIVER_DESC\t\t\"AMD GPU\"\n#define DRIVER_DATE\t\t\"20150101\"\n\nextern const struct drm_driver amdgpu_partition_driver;\n\nlong amdgpu_drm_ioctl(struct file *filp,\n\t\t      unsigned int cmd, unsigned long arg);\n\nlong amdgpu_kms_compat_ioctl(struct file *filp,\n\t\t\t     unsigned int cmd, unsigned long arg);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c20a7216a6061d30c1fbc1ad6ee32bc9972bc14e453e8ae15f47f126efaaae59",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/acpi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# tools/power/acpi/Makefile - ACPI tool Makefile\n#\n# Copyright (c) 2013, Intel Corporation\n#   Author: Lv Zheng <lv.zheng@intel.com>\n#\n\ninclude ../../scripts/Makefile.include\n\n.NOTPARALLEL:\n\nall: acpidbg acpidump ec pfrut\nclean: acpidbg_clean acpidump_clean ec_clean pfrut_clean\ninstall: acpidbg_install acpidump_install ec_install pfrut_install\nuninstall: acpidbg_uninstall acpidump_uninstall ec_uninstall pfrut_uninstall\n\nacpidbg acpidump ec pfrut: FORCE\n\t$(call descend,tools/$@,all)\nacpidbg_clean acpidump_clean ec_clean pfrut_clean:\n\t$(call descend,tools/$(@:_clean=),clean)\nacpidbg_install acpidump_install ec_install pfrut_install:\n\t$(call descend,tools/$(@:_install=),install)\nacpidbg_uninstall acpidump_uninstall ec_uninstall pfrut_uninstall:\n\t$(call descend,tools/$(@:_uninstall=),uninstall)\n\n.PHONY: FORCE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

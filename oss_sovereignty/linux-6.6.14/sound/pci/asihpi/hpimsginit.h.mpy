@@ -1,0 +1,9 @@
+{
+  "module_name": "hpimsginit.h",
+  "hash_id": "218e85bf5147579a21ffd1eda52b66fe6309bb22352dcbb55c9a85b6c18ca7c3",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/asihpi/hpimsginit.h",
+  "human_readable_source": " \n \n \n\n#ifndef _HPIMSGINIT_H_\n#define _HPIMSGINIT_H_\n\nvoid hpi_init_response(struct hpi_response *phr, u16 object, u16 function,\n\tu16 error);\n\nvoid hpi_init_message_response(struct hpi_message *phm,\n\tstruct hpi_response *phr, u16 object, u16 function);\n\nvoid hpi_init_responseV1(struct hpi_response_header *phr, u16 size,\n\tu16 object, u16 function);\n\nvoid hpi_init_message_responseV1(struct hpi_message_header *phm, u16 msg_size,\n\tstruct hpi_response_header *phr, u16 res_size, u16 object,\n\tu16 function);\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

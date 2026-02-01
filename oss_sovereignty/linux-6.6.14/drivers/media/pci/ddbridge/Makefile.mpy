@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "001ac501ca78b299460f062eb85dd99c7eade6ede68d6d58b1e7e3b67a401308",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ddbridge/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the ddbridge device driver\n#\n\nddbridge-objs := ddbridge-main.o ddbridge-core.o ddbridge-ci.o \\\n\t\tddbridge-hw.o ddbridge-i2c.o ddbridge-max.o ddbridge-mci.o \\\n\t\tddbridge-sx8.o\n\nobj-$(CONFIG_DVB_DDBRIDGE) += ddbridge.o ddbridge-dummy-fe.o\n\nccflags-y += -I $(srctree)/drivers/media/dvb-frontends/\nccflags-y += -I $(srctree)/drivers/media/tuners/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-memrchr.c",
+  "hash_id": "a6626068dd59d23b6f2a0930058278cf50739a288ed0250a3373332d0c80150f",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-memrchr.c",
+  "human_readable_source": " \n#if 4 < __GNUC__ + (7 <= __GNUC_MINOR__) && __GNUC__ < 12\n# pragma GCC diagnostic ignored \"-Wmaybe-uninitialized\"\n#endif\n\n \n#define MEMRCHR (char *) memrchr\n\nint\nmain (void)\n{\n  size_t n = 0x100000;\n  char *input = malloc (n);\n  ASSERT (input);\n\n  input[n - 1] = 'a';\n  input[n - 2] = 'b';\n  memset (input + n - 1026, 'c', 1024);\n  memset (input + 2, 'd', n - 1028);\n  input[1] = 'e';\n  input[0] = 'a';\n\n   \n  ASSERT (MEMRCHR (input, 'a', n) == input + n - 1);\n\n  ASSERT (MEMRCHR (input, 'a', 0) == NULL);\n  void *page_boundary = zerosize_ptr ();\n  if (page_boundary)\n    ASSERT (MEMRCHR (page_boundary, 'a', 0) == NULL);\n\n  ASSERT (MEMRCHR (input, 'b', n) == input + n - 2);\n  ASSERT (MEMRCHR (input, 'c', n) == input + n - 3);\n  ASSERT (MEMRCHR (input, 'd', n) == input + n - 1027);\n\n  ASSERT (MEMRCHR (input, 'a', n - 1) == input);\n  ASSERT (MEMRCHR (input, 'e', n - 1) == input + 1);\n\n  ASSERT (MEMRCHR (input, 'f', n) == NULL);\n  ASSERT (MEMRCHR (input, '\\0', n) == NULL);\n\n   \n  {\n    size_t repeat = 10000;\n    for (; repeat > 0; repeat--)\n      {\n        ASSERT (MEMRCHR (input, 'c', n) == input + n - 3);\n      }\n  }\n\n   \n  {\n    int i, j;\n    for (i = 0; i < 32; i++)\n      {\n        for (j = 0; j < 256; j++)\n          input[i + j] = j;\n        for (j = 0; j < 256; j++)\n          {\n            ASSERT (MEMRCHR (input + i, j, 256) == input + i + j);\n          }\n      }\n  }\n\n  free (input);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

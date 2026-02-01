@@ -1,0 +1,9 @@
+{
+  "module_name": "suspend_ioctls.h",
+  "hash_id": "fd63c5beb43296261758ca28f6657e3d751665bacea91a8129efb3d8a7e8e8d8",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/suspend_ioctls.h",
+  "human_readable_source": " \n#ifndef _LINUX_SUSPEND_IOCTLS_H\n#define _LINUX_SUSPEND_IOCTLS_H\n\n#include <linux/types.h>\n \nstruct resume_swap_area {\n\t__kernel_loff_t offset;\n\t__u32 dev;\n} __attribute__((packed));\n\n#define SNAPSHOT_IOC_MAGIC\t'3'\n#define SNAPSHOT_FREEZE\t\t\t_IO(SNAPSHOT_IOC_MAGIC, 1)\n#define SNAPSHOT_UNFREEZE\t\t_IO(SNAPSHOT_IOC_MAGIC, 2)\n#define SNAPSHOT_ATOMIC_RESTORE\t\t_IO(SNAPSHOT_IOC_MAGIC, 4)\n#define SNAPSHOT_FREE\t\t\t_IO(SNAPSHOT_IOC_MAGIC, 5)\n#define SNAPSHOT_FREE_SWAP_PAGES\t_IO(SNAPSHOT_IOC_MAGIC, 9)\n#define SNAPSHOT_S2RAM\t\t\t_IO(SNAPSHOT_IOC_MAGIC, 11)\n#define SNAPSHOT_SET_SWAP_AREA\t\t_IOW(SNAPSHOT_IOC_MAGIC, 13, \\\n\t\t\t\t\t\t\tstruct resume_swap_area)\n#define SNAPSHOT_GET_IMAGE_SIZE\t\t_IOR(SNAPSHOT_IOC_MAGIC, 14, __kernel_loff_t)\n#define SNAPSHOT_PLATFORM_SUPPORT\t_IO(SNAPSHOT_IOC_MAGIC, 15)\n#define SNAPSHOT_POWER_OFF\t\t_IO(SNAPSHOT_IOC_MAGIC, 16)\n#define SNAPSHOT_CREATE_IMAGE\t\t_IOW(SNAPSHOT_IOC_MAGIC, 17, int)\n#define SNAPSHOT_PREF_IMAGE_SIZE\t_IO(SNAPSHOT_IOC_MAGIC, 18)\n#define SNAPSHOT_AVAIL_SWAP_SIZE\t_IOR(SNAPSHOT_IOC_MAGIC, 19, __kernel_loff_t)\n#define SNAPSHOT_ALLOC_SWAP_PAGE\t_IOR(SNAPSHOT_IOC_MAGIC, 20, __kernel_loff_t)\n#define SNAPSHOT_IOC_MAXNR\t20\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

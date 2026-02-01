@@ -1,0 +1,9 @@
+{
+  "module_name": "sin.c",
+  "hash_id": "c53d5fe7b55dcd39283a6607d5e9bd4e570cfe88ef0fa41daab6aaca72af5539",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/sin.c",
+  "human_readable_source": " \n \n \n\n#include \"libm.h\"\n\ndouble sin(double x)\n{\n\tdouble y[2];\n\tuint32_t ix;\n\tunsigned n;\n\n\t \n\tGET_HIGH_WORD(ix, x);\n\tix &= 0x7fffffff;\n\n\t \n\tif (ix <= 0x3fe921fb) {\n\t\tif (ix < 0x3e500000) {   \n\t\t\t \n\t\t\tFORCE_EVAL(ix < 0x00100000 ? x/0x1p120f : x+0x1p120f);\n\t\t\treturn x;\n\t\t}\n\t\treturn __sin(x, 0.0, 0);\n\t}\n\n\t \n\tif (ix >= 0x7ff00000)\n\t\treturn x - x;\n\n\t \n\tn = __rem_pio2(x, y);\n\tswitch (n&3) {\n\tcase 0: return  __sin(y[0], y[1], 1);\n\tcase 1: return  __cos(y[0], y[1]);\n\tcase 2: return -__sin(y[0], y[1], 1);\n\tdefault:\n\t\treturn -__cos(y[0], y[1]);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "root_pointers.collected.hash",
+  "hash_id": "1127d7bf25b7f1b7d2513c5885188d52c184ddae1fb782fbe3ec1bd26c24feba",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/root_pointers.collected.hash",
+  "human_readable_source": "d3d5177e1d540d54432ffd56c077e860",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

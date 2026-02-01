@@ -1,0 +1,9 @@
+{
+  "module_name": "revocation_certificates.S",
+  "hash_id": "7bafacd118764492d39ca76dd58719878f554093029c641e7e527c20e5264aeb",
+  "original_prompt": "Ingested from linux-6.6.14/certs/revocation_certificates.S",
+  "human_readable_source": " \n#include <linux/export.h>\n#include <linux/init.h>\n\n\t__INITRODATA\n\n\t.align 8\n\t.globl revocation_certificate_list\nrevocation_certificate_list:\n__revocation_list_start:\n\t.incbin \"certs/x509_revocation_list\"\n__revocation_list_end:\n\n\t.align 8\n\t.globl revocation_certificate_list_size\nrevocation_certificate_list_size:\n#ifdef CONFIG_64BIT\n\t.quad __revocation_list_end - __revocation_list_start\n#else\n\t.long __revocation_list_end - __revocation_list_start\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

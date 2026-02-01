@@ -1,0 +1,9 @@
+{
+  "module_name": "pyperf_global.c",
+  "hash_id": "a6ba4cd5fd9c020110adeddb51ce138c70c2f5af9db40844553c631cc130494c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/pyperf_global.c",
+  "human_readable_source": "\n \n#define STACK_MAX_LEN 50\n#define GLOBAL_FUNC\n#include \"pyperf.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

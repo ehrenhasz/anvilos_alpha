@@ -1,0 +1,9 @@
+{
+  "module_name": "rtw8822ce.c",
+  "hash_id": "aaa592b4c0d8e171e11fe4932e55b0c514c7853ec3b7a959d8e30cd63aadc362",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw88/rtw8822ce.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/pci.h>\n#include \"pci.h\"\n#include \"rtw8822c.h\"\n\nstatic const struct pci_device_id rtw_8822ce_id_table[] = {\n\t{\n\t\tPCI_DEVICE(PCI_VENDOR_ID_REALTEK, 0xC822),\n\t\t.driver_data = (kernel_ulong_t)&rtw8822c_hw_spec\n\t},\n\t{\n\t\tPCI_DEVICE(PCI_VENDOR_ID_REALTEK, 0xC82F),\n\t\t.driver_data = (kernel_ulong_t)&rtw8822c_hw_spec\n\t},\n\t{}\n};\nMODULE_DEVICE_TABLE(pci, rtw_8822ce_id_table);\n\nstatic struct pci_driver rtw_8822ce_driver = {\n\t.name = \"rtw_8822ce\",\n\t.id_table = rtw_8822ce_id_table,\n\t.probe = rtw_pci_probe,\n\t.remove = rtw_pci_remove,\n\t.driver.pm = &rtw_pm_ops,\n\t.shutdown = rtw_pci_shutdown,\n};\nmodule_pci_driver(rtw_8822ce_driver);\n\nMODULE_AUTHOR(\"Realtek Corporation\");\nMODULE_DESCRIPTION(\"Realtek 802.11ac wireless 8822ce driver\");\nMODULE_LICENSE(\"Dual BSD/GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

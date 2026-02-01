@@ -1,0 +1,9 @@
+{
+  "module_name": "gtp.h",
+  "hash_id": "36ed35c3278d77345d85c3dbcff8a820d741614712f91e0abcff56defe38cf22",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/gtp.h",
+  "human_readable_source": " \n#ifndef _GTP_H_\n#define _GTP_H_\n\n#include <linux/netdevice.h>\n#include <linux/types.h>\n#include <net/rtnetlink.h>\n\n \n\n#define GTP0_PORT\t3386\n#define GTP1U_PORT\t2152\n\n \n#define GTP_ECHO_REQ\t1\t \n#define GTP_ECHO_RSP\t2\t \n#define GTP_TPDU\t255\n\n#define GTPIE_RECOVERY\t14\n\nstruct gtp0_header {\t \n\t__u8\tflags;\n\t__u8\ttype;\n\t__be16\tlength;\n\t__be16\tseq;\n\t__be16\tflow;\n\t__u8\tnumber;\n\t__u8\tspare[3];\n\t__be64\ttid;\n} __attribute__ ((packed));\n\nstruct gtp1_header {\t \n\t__u8\tflags;\n\t__u8\ttype;\n\t__be16\tlength;\n\t__be32\ttid;\n} __attribute__ ((packed));\n\nstruct gtp1_header_long {\t \n\t__u8\tflags;\n\t__u8\ttype;\n\t__be16\tlength;\n\t__be32\ttid;\n\t__be16\tseq;\n\t__u8\tnpdu;\n\t__u8\tnext;\n} __packed;\n\n \nstruct gtp_ie {\n\t__u8\ttag;\n\t__u8\tval;\n} __packed;\n\nstruct gtp0_packet {\n\tstruct gtp0_header gtp0_h;\n\tstruct gtp_ie ie;\n} __packed;\n\nstruct gtp1u_packet {\n\tstruct gtp1_header_long gtp1u_h;\n\tstruct gtp_ie ie;\n} __packed;\n\nstruct gtp_pdu_session_info {\t \n\tu8\tpdu_type;\n\tu8\tqfi;\n};\n\nstatic inline bool netif_is_gtp(const struct net_device *dev)\n{\n\treturn dev->rtnl_link_ops &&\n\t\t!strcmp(dev->rtnl_link_ops->kind, \"gtp\");\n}\n\n#define GTP1_F_NPDU\t0x01\n#define GTP1_F_SEQ\t0x02\n#define GTP1_F_EXTHDR\t0x04\n#define GTP1_F_MASK\t0x07\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

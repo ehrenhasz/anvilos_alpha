@@ -1,0 +1,9 @@
+{
+  "module_name": "fd-reopen.h",
+  "hash_id": "e24d46ed144b54f5db2274d3bfda1a67fde4ccd6a3e78bff096f7ca75838f8ad",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fd-reopen.h",
+  "human_readable_source": " \n\n#include <sys/types.h>\n\nint fd_reopen (int, char const *, int, mode_t) _GL_ATTRIBUTE_NONNULL ();\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

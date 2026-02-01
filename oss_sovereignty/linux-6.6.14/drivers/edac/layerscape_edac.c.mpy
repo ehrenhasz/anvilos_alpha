@@ -1,0 +1,9 @@
+{
+  "module_name": "layerscape_edac.c",
+  "hash_id": "903132804029865601c1ae5e526adefd2400f4d3c8dc2087b2ed5874838c811b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/edac/layerscape_edac.c",
+  "human_readable_source": " \n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include \"edac_module.h\"\n#include \"fsl_ddr_edac.h\"\n\nstatic const struct of_device_id fsl_ddr_mc_err_of_match[] = {\n\t{ .compatible = \"fsl,qoriq-memory-controller\", },\n\t{},\n};\nMODULE_DEVICE_TABLE(of, fsl_ddr_mc_err_of_match);\n\nstatic struct platform_driver fsl_ddr_mc_err_driver = {\n\t.probe = fsl_mc_err_probe,\n\t.remove = fsl_mc_err_remove,\n\t.driver = {\n\t\t.name = \"fsl_ddr_mc_err\",\n\t\t.of_match_table = fsl_ddr_mc_err_of_match,\n\t},\n};\n\nstatic int __init fsl_ddr_mc_init(void)\n{\n\tint res;\n\n\tif (ghes_get_devices())\n\t\treturn -EBUSY;\n\n\t \n\tswitch (edac_op_state) {\n\tcase EDAC_OPSTATE_POLL:\n\tcase EDAC_OPSTATE_INT:\n\t\tbreak;\n\tdefault:\n\t\tedac_op_state = EDAC_OPSTATE_INT;\n\t\tbreak;\n\t}\n\n\tres = platform_driver_register(&fsl_ddr_mc_err_driver);\n\tif (res) {\n\t\tpr_err(\"MC fails to register\\n\");\n\t\treturn res;\n\t}\n\n\treturn 0;\n}\n\nmodule_init(fsl_ddr_mc_init);\n\nstatic void __exit fsl_ddr_mc_exit(void)\n{\n\tplatform_driver_unregister(&fsl_ddr_mc_err_driver);\n}\n\nmodule_exit(fsl_ddr_mc_exit);\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"NXP Semiconductor\");\nmodule_param(edac_op_state, int, 0444);\nMODULE_PARM_DESC(edac_op_state, \"EDAC Error Reporting state: 0=Poll, 2=Interrupt\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

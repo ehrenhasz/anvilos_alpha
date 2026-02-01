@@ -1,0 +1,9 @@
+{
+  "module_name": "config_check.c",
+  "hash_id": "a9b8e0f2741614d401d86f3af8f27729ee420bd30f05e1776515400873474cea",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/cxl/config_check.c",
+  "human_readable_source": "\n#include <linux/bug.h>\n\nvoid check(void)\n{\n\t \n\tBUILD_BUG_ON(!IS_ENABLED(CONFIG_64BIT));\n\tBUILD_BUG_ON(!IS_MODULE(CONFIG_CXL_BUS));\n\tBUILD_BUG_ON(!IS_MODULE(CONFIG_CXL_ACPI));\n\tBUILD_BUG_ON(!IS_MODULE(CONFIG_CXL_PMEM));\n\tBUILD_BUG_ON(!IS_ENABLED(CONFIG_CXL_REGION_INVALIDATION_TEST));\n\tBUILD_BUG_ON(!IS_ENABLED(CONFIG_NVDIMM_SECURITY_TEST));\n\tBUILD_BUG_ON(!IS_ENABLED(CONFIG_DEBUG_FS));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "misc.c",
+  "hash_id": "4a7a9ddfc54f75e7a4739cef594ec1dc9025032891b5dc940d918ecb899689b8",
+  "original_prompt": "Ingested from linux-6.6.14/net/rxrpc/misc.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <net/sock.h>\n#include <net/af_rxrpc.h>\n#include \"ar-internal.h\"\n\n \nunsigned int rxrpc_max_backlog __read_mostly = 10;\n\n \nunsigned long rxrpc_soft_ack_delay = HZ;\n\n \nunsigned long rxrpc_idle_ack_delay = HZ / 2;\n\n \nunsigned int rxrpc_rx_window_size = 255;\n\n \nunsigned int rxrpc_rx_mtu = 5692;\n\n \nunsigned int rxrpc_rx_jumbo_max = 4;\n\n#ifdef CONFIG_AF_RXRPC_INJECT_RX_DELAY\n \nunsigned long rxrpc_inject_rx_delay;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

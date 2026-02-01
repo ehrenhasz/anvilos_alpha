@@ -1,0 +1,9 @@
+{
+  "module_name": "tpidr2_restore.c",
+  "hash_id": "b0b0359b9a404a4230de062e9b8c693e24bc9cc5fb11ce90aa5c140d258622fe",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/signal/testcases/tpidr2_restore.c",
+  "human_readable_source": "\n \n\n#include <signal.h>\n#include <ucontext.h>\n#include <sys/auxv.h>\n#include <sys/prctl.h>\n#include <unistd.h>\n#include <asm/sigcontext.h>\n\n#include \"test_signals_utils.h\"\n#include \"testcases.h\"\n\n#define SYS_TPIDR2 \"S3_3_C13_C0_5\"\n\nstatic uint64_t get_tpidr2(void)\n{\n\tuint64_t val;\n\n\tasm volatile (\n\t\t\"mrs\t%0, \" SYS_TPIDR2 \"\\n\"\n\t\t: \"=r\"(val)\n\t\t:\n\t\t: \"cc\");\n\n\treturn val;\n}\n\nstatic void set_tpidr2(uint64_t val)\n{\n\tasm volatile (\n\t\t\"msr\t\" SYS_TPIDR2 \", %0\\n\"\n\t\t:\n\t\t: \"r\"(val)\n\t\t: \"cc\");\n}\n\n\nstatic uint64_t initial_tpidr2;\n\nstatic bool save_tpidr2(struct tdescr *td)\n{\n\tinitial_tpidr2 = get_tpidr2();\n\tfprintf(stderr, \"Initial TPIDR2: %lx\\n\", initial_tpidr2);\n\n\treturn true;\n}\n\nstatic int modify_tpidr2(struct tdescr *td, siginfo_t *si, ucontext_t *uc)\n{\n\tuint64_t my_tpidr2 = get_tpidr2();\n\n\tmy_tpidr2++;\n\tfprintf(stderr, \"Setting TPIDR2 to %lx\\n\", my_tpidr2);\n\tset_tpidr2(my_tpidr2);\n\n\treturn 0;\n}\n\nstatic void check_tpidr2(struct tdescr *td)\n{\n\tuint64_t tpidr2 = get_tpidr2();\n\n\ttd->pass = tpidr2 == initial_tpidr2;\n\n\tif (td->pass)\n\t\tfprintf(stderr, \"TPIDR2 restored\\n\");\n\telse\n\t\tfprintf(stderr, \"TPIDR2 was %lx but is now %lx\\n\",\n\t\t\tinitial_tpidr2, tpidr2);\n}\n\nstruct tdescr tde = {\n\t.name = \"TPIDR2 restore\",\n\t.descr = \"Validate that TPIDR2 is restored from the sigframe\",\n\t.feats_required = FEAT_SME,\n\t.timeout = 3,\n\t.sig_trig = SIGUSR1,\n\t.init = save_tpidr2,\n\t.run = modify_tpidr2,\n\t.check_result = check_tpidr2,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ad714x.h",
+  "hash_id": "bbf5f2ca5681eec2c7deada041b25eebd7663f3285ebdaebaec0761677e0d0d9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/misc/ad714x.h",
+  "human_readable_source": " \n \n\n#ifndef _AD714X_H_\n#define _AD714X_H_\n\n#include <linux/pm.h>\n#include <linux/types.h>\n\n#define STAGE_NUM              12\n\nstruct device;\nstruct ad714x_platform_data;\nstruct ad714x_driver_data;\nstruct ad714x_chip;\n\ntypedef int (*ad714x_read_t)(struct ad714x_chip *, unsigned short, unsigned short *, size_t);\ntypedef int (*ad714x_write_t)(struct ad714x_chip *, unsigned short, unsigned short);\n\nstruct ad714x_chip {\n\tunsigned short l_state;\n\tunsigned short h_state;\n\tunsigned short c_state;\n\tunsigned short adc_reg[STAGE_NUM];\n\tunsigned short amb_reg[STAGE_NUM];\n\tunsigned short sensor_val[STAGE_NUM];\n\n\tstruct ad714x_platform_data *hw;\n\tstruct ad714x_driver_data *sw;\n\n\tint irq;\n\tstruct device *dev;\n\tad714x_read_t read;\n\tad714x_write_t write;\n\n\tstruct mutex mutex;\n\n\tunsigned product;\n\tunsigned version;\n\n\t__be16 xfer_buf[16] ____cacheline_aligned;\n\n};\n\nextern const struct dev_pm_ops ad714x_pm;\nstruct ad714x_chip *ad714x_probe(struct device *dev, u16 bus_type, int irq,\n\t\t\t\t ad714x_read_t read, ad714x_write_t write);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

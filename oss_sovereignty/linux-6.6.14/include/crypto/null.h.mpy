@@ -1,0 +1,9 @@
+{
+  "module_name": "null.h",
+  "hash_id": "103f9b217d6a6c4d66af14bc1ab1048a242a63f0906337608bc857b93819ee04",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/null.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYPTO_NULL_H\n#define _CRYPTO_NULL_H\n\n#define NULL_KEY_SIZE\t\t0\n#define NULL_BLOCK_SIZE\t\t1\n#define NULL_DIGEST_SIZE\t0\n#define NULL_IV_SIZE\t\t0\n\nstruct crypto_sync_skcipher *crypto_get_default_null_skcipher(void);\nvoid crypto_put_default_null_skcipher(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

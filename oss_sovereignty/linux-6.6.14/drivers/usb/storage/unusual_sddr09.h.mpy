@@ -1,0 +1,9 @@
+{
+  "module_name": "unusual_sddr09.h",
+  "hash_id": "0c8d569fd245e6cd93cf43138b8a6da8b2ea25a9dd2a7eb707d5c357ad2d443b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/storage/unusual_sddr09.h",
+  "human_readable_source": " \n \n\n#if defined(CONFIG_USB_STORAGE_SDDR09) || \\\n\t\tdefined(CONFIG_USB_STORAGE_SDDR09_MODULE)\n\nUNUSUAL_DEV(  0x0436, 0x0005, 0x0100, 0x0100,\n\t\t\"Microtech\",\n\t\t\"CameraMate (DPCM_USB)\",\n\t\tUSB_SC_SCSI, USB_PR_DPCM_USB, NULL, 0),\n\nUNUSUAL_DEV(  0x04e6, 0x0003, 0x0000, 0x9999,\n\t\t\"Sandisk\",\n\t\t\"ImageMate SDDR09\",\n\t\tUSB_SC_SCSI, USB_PR_EUSB_SDDR09, usb_stor_sddr09_init,\n\t\t0),\n\n \nUNUSUAL_DEV(  0x04e6, 0x0005, 0x0100, 0x0208,\n\t\t\"SCM Microsystems\",\n\t\t\"eUSB SmartMedia / CompactFlash Adapter\",\n\t\tUSB_SC_SCSI, USB_PR_DPCM_USB, usb_stor_sddr09_dpcm_init,\n\t\t0),\n\nUNUSUAL_DEV(  0x066b, 0x0105, 0x0100, 0x0100,\n\t\t\"Olympus\",\n\t\t\"Camedia MAUSB-2\",\n\t\tUSB_SC_SCSI, USB_PR_EUSB_SDDR09, usb_stor_sddr09_init,\n\t\t0),\n\nUNUSUAL_DEV(  0x0781, 0x0200, 0x0000, 0x9999,\n\t\t\"Sandisk\",\n\t\t\"ImageMate SDDR-09\",\n\t\tUSB_SC_SCSI, USB_PR_EUSB_SDDR09, usb_stor_sddr09_init,\n\t\t0),\n\nUNUSUAL_DEV(  0x07af, 0x0006, 0x0100, 0x0100,\n\t\t\"Microtech\",\n\t\t\"CameraMate (DPCM_USB)\",\n\t\tUSB_SC_SCSI, USB_PR_DPCM_USB, NULL, 0),\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

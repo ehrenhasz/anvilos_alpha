@@ -1,0 +1,9 @@
+{
+  "module_name": "purgatory.h",
+  "hash_id": "466f1ed8aef64feee6b86d2cb5968255e53634db1bf78f0a12695117e2f163a2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/purgatory.h",
+  "human_readable_source": " \n#ifndef _LINUX_PURGATORY_H\n#define _LINUX_PURGATORY_H\n\n#include <linux/types.h>\n#include <crypto/sha2.h>\n#include <uapi/linux/kexec.h>\n\nstruct kexec_sha_region {\n\tunsigned long start;\n\tunsigned long len;\n};\n\n \nextern struct kexec_sha_region purgatory_sha_regions[KEXEC_SEGMENT_MAX];\nextern u8 purgatory_sha256_digest[SHA256_DIGEST_SIZE];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ring_buffer.h",
+  "hash_id": "da02f464c2238d476ddff5febf2a1a0a4ce18e2e4ebd225e474615c96fb43190",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/ring_buffer.h",
+  "human_readable_source": "#ifndef _TOOLS_LINUX_RING_BUFFER_H_\n#define _TOOLS_LINUX_RING_BUFFER_H_\n\n#include <asm/barrier.h>\n#include <linux/perf_event.h>\n\n \n\nstatic inline u64 ring_buffer_read_head(struct perf_event_mmap_page *base)\n{\n \n#if defined(__x86_64__) || defined(__aarch64__) || defined(__powerpc64__) || \\\n    defined(__ia64__) || defined(__sparc__) && defined(__arch64__)\n\treturn smp_load_acquire(&base->data_head);\n#else\n\tu64 head = READ_ONCE(base->data_head);\n\n\tsmp_rmb();\n\treturn head;\n#endif\n}\n\nstatic inline void ring_buffer_write_tail(struct perf_event_mmap_page *base,\n\t\t\t\t\t  u64 tail)\n{\n\tsmp_store_release(&base->data_tail, tail);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

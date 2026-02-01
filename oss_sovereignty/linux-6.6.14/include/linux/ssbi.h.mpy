@@ -1,0 +1,9 @@
+{
+  "module_name": "ssbi.h",
+  "hash_id": "f149934b6189104212bff7fd14587b206a2f7c8d11d863857367ea0d24208222",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ssbi.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_SSBI_H\n#define _LINUX_SSBI_H\n\n#include <linux/types.h>\n\nint ssbi_write(struct device *dev, u16 addr, const u8 *buf, int len);\nint ssbi_read(struct device *dev, u16 addr, u8 *buf, int len);\n\nstatic inline int\nssbi_reg_read(void *context, unsigned int reg, unsigned int *val)\n{\n\tint ret;\n\tu8 v;\n\n\tret = ssbi_read(context, reg, &v, 1);\n\tif (!ret)\n\t\t*val = v;\n\n\treturn ret;\n}\n\nstatic inline int\nssbi_reg_write(void *context, unsigned int reg, unsigned int val)\n{\n\tu8 v = val;\n\treturn ssbi_write(context, reg, &v, 1);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

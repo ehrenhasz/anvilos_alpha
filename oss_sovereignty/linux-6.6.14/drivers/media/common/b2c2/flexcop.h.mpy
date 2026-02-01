@@ -1,0 +1,9 @@
+{
+  "module_name": "flexcop.h",
+  "hash_id": "ab2f3ed165acdfe31b53a628c97e9a32037dadcee14687051ad2f2f10b243bc4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/common/b2c2/flexcop.h",
+  "human_readable_source": " \n \n#ifndef __FLEXCOP_H__\n#define __FLEXCOP_H__\n\n#define FC_LOG_PREFIX \"b2c2-flexcop\"\n#include \"flexcop-common.h\"\n\nextern int b2c2_flexcop_debug;\n\n \n#ifdef CONFIG_DVB_B2C2_FLEXCOP_DEBUG\n#define dprintk(level, args...) \\\n\tdo { if ((b2c2_flexcop_debug & (level))) printk(args); } while (0)\n#else\n#define dprintk(level, args...) no_printk(args)\n#endif\n\n#define deb_info(args...) dprintk(0x01, args)\n#define deb_tuner(args...) dprintk(0x02, args)\n#define deb_i2c(args...) dprintk(0x04, args)\n#define deb_ts(args...) dprintk(0x08, args)\n#define deb_sram(args...) dprintk(0x10, args)\n#define deb_rdump(args...) dprintk(0x20, args)\n#define deb_i2c_dump(args...) dprintk(0x40, args)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

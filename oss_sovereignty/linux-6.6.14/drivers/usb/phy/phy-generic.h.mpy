@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-generic.h",
+  "hash_id": "2ca22fee3ab5a25928f9d8045c3a9dc67f7a1d24c21a15259b440078065906f4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/phy/phy-generic.h",
+  "human_readable_source": " \n#ifndef _PHY_GENERIC_H_\n#define _PHY_GENERIC_H_\n\n#include <linux/usb/usb_phy_generic.h>\n#include <linux/gpio/consumer.h>\n#include <linux/regulator/consumer.h>\n\nstruct usb_phy_generic {\n\tstruct usb_phy phy;\n\tstruct device *dev;\n\tstruct clk *clk;\n\tstruct regulator *vcc;\n\tstruct gpio_desc *gpiod_reset;\n\tstruct gpio_desc *gpiod_vbus;\n\tstruct regulator *vbus_draw;\n\tbool vbus_draw_enabled;\n\tunsigned long mA;\n\tunsigned int vbus;\n};\n\nint usb_gen_phy_init(struct usb_phy *phy);\nvoid usb_gen_phy_shutdown(struct usb_phy *phy);\n\nint usb_phy_gen_create_phy(struct device *dev, struct usb_phy_generic *nop);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

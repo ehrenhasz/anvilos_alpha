@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c13a35b4b24017d213a195e546110356f7ef81ddda8400dbf1402fb162091438",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/usbhid/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the USB input drivers\n#\n\nusbhid-y\t:= hid-core.o\nusbhid-$(CONFIG_USB_HIDDEV)\t+= hiddev.o\nusbhid-$(CONFIG_HID_PID)\t+= hid-pidff.o\n\nobj-$(CONFIG_USB_HID)\t\t+= usbhid.o\nobj-$(CONFIG_USB_KBD)\t\t+= usbkbd.o\nobj-$(CONFIG_USB_MOUSE)\t\t+= usbmouse.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

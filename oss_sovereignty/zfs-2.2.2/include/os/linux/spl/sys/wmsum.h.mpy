@@ -1,0 +1,9 @@
+{
+  "module_name": "wmsum.h",
+  "hash_id": "e4bc398e908ad20c1d8a14c975d6dc4b38e3d28ac5ed5c02bc871f01fb4f6eb9",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/wmsum.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_SYS_WMSUM_H\n#define\t_SYS_WMSUM_H\n\n#include <linux/percpu_counter.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\ntypedef struct percpu_counter\twmsum_t;\n\nstatic inline void\nwmsum_init(wmsum_t *ws, uint64_t value)\n{\n\n#ifdef HAVE_PERCPU_COUNTER_INIT_WITH_GFP\n\tpercpu_counter_init(ws, value, GFP_KERNEL);\n#else\n\tpercpu_counter_init(ws, value);\n#endif\n}\n\nstatic inline void\nwmsum_fini(wmsum_t *ws)\n{\n\n\tpercpu_counter_destroy(ws);\n}\n\nstatic inline uint64_t\nwmsum_value(wmsum_t *ws)\n{\n\n\treturn (percpu_counter_sum(ws));\n}\n\nstatic inline void\nwmsum_add(wmsum_t *ws, int64_t delta)\n{\n\n#ifdef HAVE_PERCPU_COUNTER_ADD_BATCH\n\tpercpu_counter_add_batch(ws, delta, INT_MAX / 2);\n#else\n\t__percpu_counter_add(ws, delta, INT_MAX / 2);\n#endif\n}\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

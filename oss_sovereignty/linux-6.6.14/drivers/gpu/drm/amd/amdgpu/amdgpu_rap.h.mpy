@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_rap.h",
+  "hash_id": "be7eacb097373cd1d486958d2e04cde8f79abc1bdafbfedeb760b1225e79ddd1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_rap.h",
+  "human_readable_source": " \n#ifndef _AMDGPU_RAP_H\n#define _AMDGPU_RAP_H\n\n#include \"amdgpu.h\"\n\nvoid amdgpu_rap_debugfs_init(struct amdgpu_device *adev);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

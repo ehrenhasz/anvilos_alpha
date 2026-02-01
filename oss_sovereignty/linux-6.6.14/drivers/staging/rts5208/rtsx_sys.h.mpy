@@ -1,0 +1,9 @@
+{
+  "module_name": "rtsx_sys.h",
+  "hash_id": "7c61c54d6e315272787d8b3cccb9005bc025488d224c9ae4b5e66524af662f0a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rts5208/rtsx_sys.h",
+  "human_readable_source": " \n \n\n#ifndef __RTSX_SYS_H\n#define __RTSX_SYS_H\n\n#include \"rtsx.h\"\n#include \"rtsx_chip.h\"\n#include \"rtsx_card.h\"\n\nstatic inline void rtsx_exclusive_enter_ss(struct rtsx_chip *chip)\n{\n\tstruct rtsx_dev *dev = chip->rtsx;\n\n\tspin_lock(&dev->reg_lock);\n\trtsx_enter_ss(chip);\n\tspin_unlock(&dev->reg_lock);\n}\n\nstatic inline void rtsx_reset_detected_cards(struct rtsx_chip *chip, int flag)\n{\n\trtsx_reset_cards(chip);\n}\n\n#define RTSX_MSG_IN_INT(x)\n\n#endif   \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

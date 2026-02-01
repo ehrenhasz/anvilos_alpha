@@ -1,0 +1,9 @@
+{
+  "module_name": "asn1.h",
+  "hash_id": "2e13dc607a46f0be0a68e121b071abeef79a2a11af93ad659e96150485fcf76e",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/server/asn1.h",
+  "human_readable_source": " \n \n\n#ifndef __ASN1_H__\n#define __ASN1_H__\n\nint ksmbd_decode_negTokenInit(unsigned char *security_blob, int length,\n\t\t\t      struct ksmbd_conn *conn);\nint ksmbd_decode_negTokenTarg(unsigned char *security_blob, int length,\n\t\t\t      struct ksmbd_conn *conn);\nint build_spnego_ntlmssp_neg_blob(unsigned char **pbuffer, u16 *buflen,\n\t\t\t\t  char *ntlm_blob, int ntlm_blob_len);\nint build_spnego_ntlmssp_auth_blob(unsigned char **pbuffer, u16 *buflen,\n\t\t\t\t   int neg_result);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

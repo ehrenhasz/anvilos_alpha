@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "35d01c6a4656bb96b3cbe424f21ef1b61d9ab25be3048e13c4c5a3d3b36836c2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/block/aoe/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ATA over Ethernet\n#\n\nobj-$(CONFIG_ATA_OVER_ETH)\t+= aoe.o\naoe-y := aoeblk.o aoechr.o aoecmd.o aoedev.o aoemain.o aoenet.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

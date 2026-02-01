@@ -1,0 +1,9 @@
+{
+  "module_name": "atbm8830.h",
+  "hash_id": "bb129941bc8b47f3df1436af829fc2e3f601847366df5ae53b41cf736ddf97dc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/atbm8830.h",
+  "human_readable_source": " \n \n\n#ifndef __ATBM8830_H__\n#define __ATBM8830_H__\n\n#include <linux/dvb/frontend.h>\n#include <linux/i2c.h>\n\n#define ATBM8830_PROD_8830 0\n#define ATBM8830_PROD_8831 1\n\nstruct atbm8830_config {\n\n\t \n\tu8 prod;\n\n\t \n\tu8 demod_address;\n\n\t \n\tu8 serial_ts;\n\n\t \n\tu8 ts_clk_gated;\n\n\t \n\tu8 ts_sampling_edge;\n\n\t \n\tu32 osc_clk_freq;  \n\n\t \n\tu32 if_freq;  \n\n\t \n\tu8 zif_swap_iq;\n\n\t \n\tu8 agc_min;\n\tu8 agc_max;\n\tu8 agc_hold_loop;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_ATBM8830)\nextern struct dvb_frontend *atbm8830_attach(const struct atbm8830_config *config,\n\t\tstruct i2c_adapter *i2c);\n#else\nstatic inline\nstruct dvb_frontend *atbm8830_attach(const struct atbm8830_config *config,\n\t\tstruct i2c_adapter *i2c) {\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

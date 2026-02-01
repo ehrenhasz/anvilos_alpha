@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "95177607ca62458a7d0203b022097bcc13d9bc3c02122ab86d40a72d57438d3b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/ux500/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_UX500_SOC_ID) += ux500-soc-id.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

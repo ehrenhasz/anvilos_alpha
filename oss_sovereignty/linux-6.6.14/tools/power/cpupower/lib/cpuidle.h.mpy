@@ -1,0 +1,9 @@
+{
+  "module_name": "cpuidle.h",
+  "hash_id": "c91e9332a01d47d80b31001861587508dc7c875e47c90b9ef7a5654d70ee219a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/lib/cpuidle.h",
+  "human_readable_source": " \n#ifndef __CPUPOWER_CPUIDLE_H__\n#define __CPUPOWER_CPUIDLE_H__\n\nint cpuidle_is_state_disabled(unsigned int cpu,\n\t\t\t\t       unsigned int idlestate);\nint cpuidle_state_disable(unsigned int cpu, unsigned int idlestate,\n\t\t\t\t   unsigned int disable);\nunsigned long cpuidle_state_latency(unsigned int cpu,\n\t\t\t\t\t\tunsigned int idlestate);\nunsigned long cpuidle_state_usage(unsigned int cpu,\n\t\t\t\t\tunsigned int idlestate);\nunsigned long long cpuidle_state_time(unsigned int cpu,\n\t\t\t\t\t\tunsigned int idlestate);\nchar *cpuidle_state_name(unsigned int cpu,\n\t\t\t\tunsigned int idlestate);\nchar *cpuidle_state_desc(unsigned int cpu,\n\t\t\t\tunsigned int idlestate);\nunsigned int cpuidle_state_count(unsigned int cpu);\n\nchar *cpuidle_get_governor(void);\nchar *cpuidle_get_driver(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

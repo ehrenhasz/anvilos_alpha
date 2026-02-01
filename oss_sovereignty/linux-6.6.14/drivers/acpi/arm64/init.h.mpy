@@ -1,0 +1,9 @@
+{
+  "module_name": "init.h",
+  "hash_id": "a0bab40715787ae68c2c1cb4024c46a356919f2eff99778d781265233ab4030a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/arm64/init.h",
+  "human_readable_source": " \n#include <linux/init.h>\n\nvoid __init acpi_agdi_init(void);\nvoid __init acpi_apmt_init(void);\nvoid __init acpi_iort_init(void);\nvoid __init acpi_amba_init(void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

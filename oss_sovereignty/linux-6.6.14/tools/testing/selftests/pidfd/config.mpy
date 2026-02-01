@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "bce2b8aa0bc94b835117054b1e9726aa9ba8fd92fccb5b74ea268d7d7c4cd4d1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/pidfd/config",
+  "human_readable_source": "CONFIG_UTS_NS=y\nCONFIG_IPC_NS=y\nCONFIG_USER_NS=y\nCONFIG_PID_NS=y\nCONFIG_NET_NS=y\nCONFIG_CGROUPS=y\nCONFIG_CHECKPOINT_RESTORE=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

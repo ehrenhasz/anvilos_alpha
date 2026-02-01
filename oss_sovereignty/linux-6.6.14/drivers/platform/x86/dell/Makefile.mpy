@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "85ff749f616dc4755a5f117a7aaf1321d9f895eaeda0c1fa314423b3b4efe95f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/dell/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for linux/drivers/platform/x86/dell\n# Dell x86 Platform-Specific Drivers\n#\n\nobj-$(CONFIG_ALIENWARE_WMI)\t\t+= alienware-wmi.o\nobj-$(CONFIG_DCDBAS)\t\t\t+= dcdbas.o\nobj-$(CONFIG_DELL_LAPTOP)\t\t+= dell-laptop.o\nobj-$(CONFIG_DELL_RBTN)\t\t\t+= dell-rbtn.o\nobj-$(CONFIG_DELL_RBU)\t\t\t+= dell_rbu.o\nobj-$(CONFIG_DELL_SMBIOS)\t\t+= dell-smbios.o\ndell-smbios-objs\t\t\t:= dell-smbios-base.o\ndell-smbios-$(CONFIG_DELL_SMBIOS_WMI)\t+= dell-smbios-wmi.o\ndell-smbios-$(CONFIG_DELL_SMBIOS_SMM)\t+= dell-smbios-smm.o\nobj-$(CONFIG_DELL_SMO8800)\t\t+= dell-smo8800.o\nobj-$(CONFIG_DELL_WMI)\t\t\t+= dell-wmi.o\ndell-wmi-objs\t\t\t\t:= dell-wmi-base.o\ndell-wmi-$(CONFIG_DELL_WMI_PRIVACY)\t+= dell-wmi-privacy.o\nobj-$(CONFIG_DELL_WMI_AIO)\t\t+= dell-wmi-aio.o\nobj-$(CONFIG_DELL_WMI_DESCRIPTOR)\t+= dell-wmi-descriptor.o\nobj-$(CONFIG_DELL_WMI_DDV)\t\t+= dell-wmi-ddv.o\nobj-$(CONFIG_DELL_WMI_LED)\t\t+= dell-wmi-led.o\nobj-$(CONFIG_DELL_WMI_SYSMAN)\t\t+= dell-wmi-sysman/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

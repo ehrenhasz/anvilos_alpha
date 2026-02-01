@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "85aa1b12bcfc91fbdf5931dbe2496bd1702a2bbe25fe1468bf574594d5d10ef0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/dpaa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Freescale DPAA Ethernet controllers\n#\n\n# Include FMan headers\nFMAN        = $(srctree)/drivers/net/ethernet/freescale/fman\nccflags-y += -I$(FMAN)\n\nobj-$(CONFIG_FSL_DPAA_ETH) += fsl_dpa.o\n\nfsl_dpa-objs += dpaa_eth.o dpaa_ethtool.o dpaa_eth_sysfs.o\nCFLAGS_dpaa_eth.o := -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

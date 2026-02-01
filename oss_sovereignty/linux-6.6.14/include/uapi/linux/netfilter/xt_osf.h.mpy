@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_osf.h",
+  "hash_id": "a2856767e617d2b342eacde2e59d7c60c8ca26f75789ee6307135e489668681e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_osf.h",
+  "human_readable_source": " \n \n\n#ifndef _XT_OSF_H\n#define _XT_OSF_H\n\n#include <linux/types.h>\n#include <linux/netfilter/nfnetlink_osf.h>\n\n#define XT_OSF_GENRE\t\tNF_OSF_GENRE\n#define XT_OSF_INVERT\t\tNF_OSF_INVERT\n\n#define XT_OSF_TTL\t\tNF_OSF_TTL\n#define XT_OSF_LOG\t\tNF_OSF_LOG\n\n#define XT_OSF_LOGLEVEL_ALL\t\tNF_OSF_LOGLEVEL_ALL\n#define XT_OSF_LOGLEVEL_FIRST\t\tNF_OSF_LOGLEVEL_FIRST\n#define XT_OSF_LOGLEVEL_ALL_KNOWN\tNF_OSF_LOGLEVEL_ALL_KNOWN\n\n#define XT_OSF_TTL_TRUE\t\tNF_OSF_TTL_TRUE\n#define XT_OSF_TTL_NOCHECK\tNF_OSF_TTL_NOCHECK\n#define XT_OSF_TTL_LESS\t\tNF_OSF_TTL_LESS\n\n#define xt_osf_wc\t\tnf_osf_wc\n#define xt_osf_opt\t\tnf_osf_opt\n#define xt_osf_info\t\tnf_osf_info\n#define xt_osf_user_finger\tnf_osf_user_finger\n#define xt_osf_finger\t\tnf_osf_finger\n#define xt_osf_nlmsg\t\tnf_osf_nlmsg\n\n#define xt_osf_window_size_options\tnf_osf_window_size_options\n#define xt_osf_attr_type\tnf_osf_attr_type\n#define xt_osf_msg_types\tnf_osf_msg_types\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

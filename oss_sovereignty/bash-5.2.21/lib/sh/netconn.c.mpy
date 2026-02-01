@@ -1,0 +1,9 @@
+{
+  "module_name": "netconn.c",
+  "hash_id": "14e58893e18216b39307b35c3014237095f6e6dce1bcfe2cbb0b18e1468467ab",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/netconn.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#include <bashtypes.h>\n#if ! defined(_MINIX) && defined (HAVE_SYS_FILE_H)\n#  include <sys/file.h>\n#endif\n#include <posixstat.h>\n#include <filecntl.h>\n\n#include <errno.h>\n\n#if defined (HAVE_UNISTD_H)\n#  include <unistd.h>\n#endif\n\n \n#if defined (HAVE_SYS_SOCKET_H) && defined (HAVE_GETPEERNAME) && !defined (SVR4_2)\n#  include <sys/socket.h>\n#endif\n\n \nint\nisnetconn (fd)\n     int fd;\n{\n#if defined (HAVE_SYS_SOCKET_H) && defined (HAVE_GETPEERNAME) && !defined (SVR4_2) && !defined (__BEOS__)\n  int rv;\n  socklen_t l;\n  struct sockaddr sa;\n\n  l = sizeof(sa);\n  rv = getpeername(fd, &sa, &l);\n   \n  return ((rv < 0 && (errno == ENOTSOCK || errno == ENOTCONN || errno == EINVAL || errno == EBADF)) ? 0 : 1);\n#else  \n#  if defined (SVR4) || defined (SVR4_2)\n   \n  struct stat sb;\n\n  if (isatty (fd))\n    return (0);\n  if (fstat (fd, &sb) < 0)\n    return (0);\n#    if defined (S_ISFIFO)\n  if (S_ISFIFO (sb.st_mode))\n    return (0);\n#    endif  \n  return (S_ISCHR (sb.st_mode));\n#  else  \n#    if defined (S_ISSOCK) && !defined (__BEOS__)\n  struct stat sb;\n\n  if (fstat (fd, &sb) < 0)\n    return (0);\n  return (S_ISSOCK (sb.st_mode));\n#    else  \n  return (0);\n#    endif  \n#  endif  \n#endif  \n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

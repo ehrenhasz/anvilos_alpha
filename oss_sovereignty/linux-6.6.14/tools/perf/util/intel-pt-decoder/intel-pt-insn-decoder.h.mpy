@@ -1,0 +1,9 @@
+{
+  "module_name": "intel-pt-insn-decoder.h",
+  "hash_id": "ef811ad1a49cc51ccc05cb556db8d38e3d4fa5aaa33f757ba8ab2d3ec13c2250",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/intel-pt-decoder/intel-pt-insn-decoder.h",
+  "human_readable_source": " \n \n\n#ifndef INCLUDE__INTEL_PT_INSN_DECODER_H__\n#define INCLUDE__INTEL_PT_INSN_DECODER_H__\n\n#include <stddef.h>\n#include <stdint.h>\n\n#define INTEL_PT_INSN_DESC_MAX\t\t32\n#define INTEL_PT_INSN_BUF_SZ\t\t16\n\nenum intel_pt_insn_op {\n\tINTEL_PT_OP_OTHER,\n\tINTEL_PT_OP_CALL,\n\tINTEL_PT_OP_RET,\n\tINTEL_PT_OP_JCC,\n\tINTEL_PT_OP_JMP,\n\tINTEL_PT_OP_LOOP,\n\tINTEL_PT_OP_IRET,\n\tINTEL_PT_OP_INT,\n\tINTEL_PT_OP_SYSCALL,\n\tINTEL_PT_OP_SYSRET,\n\tINTEL_PT_OP_VMENTRY,\n\tINTEL_PT_OP_ERETS,\n\tINTEL_PT_OP_ERETU,\n};\n\nenum intel_pt_insn_branch {\n\tINTEL_PT_BR_NO_BRANCH,\n\tINTEL_PT_BR_INDIRECT,\n\tINTEL_PT_BR_CONDITIONAL,\n\tINTEL_PT_BR_UNCONDITIONAL,\n};\n\nstruct intel_pt_insn {\n\tenum intel_pt_insn_op\t\top;\n\tenum intel_pt_insn_branch\tbranch;\n\tbool\t\t\t\temulated_ptwrite;\n\tint\t\t\t\tlength;\n\tint32_t\t\t\t\trel;\n\tunsigned char\t\t\tbuf[INTEL_PT_INSN_BUF_SZ];\n};\n\nint intel_pt_get_insn(const unsigned char *buf, size_t len, int x86_64,\n\t\t      struct intel_pt_insn *intel_pt_insn);\n\nconst char *intel_pt_insn_name(enum intel_pt_insn_op op);\n\nint intel_pt_insn_desc(const struct intel_pt_insn *intel_pt_insn, char *buf,\n\t\t       size_t buf_len);\n\nint intel_pt_insn_type(enum intel_pt_insn_op op);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

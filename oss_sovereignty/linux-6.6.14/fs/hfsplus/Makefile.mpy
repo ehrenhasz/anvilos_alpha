@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0330fb0502d7763608404fc8c6e4f8962bd9b061a86b0092e533c1d57e86c4d6",
+  "original_prompt": "Ingested from linux-6.6.14/fs/hfsplus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n## Makefile for the linux hfsplus filesystem routines.\n#\n\nobj-$(CONFIG_HFSPLUS_FS) += hfsplus.o\n\nhfsplus-objs := super.o options.o inode.o ioctl.o extents.o catalog.o dir.o btree.o \\\n\t\tbnode.o brec.o bfind.o tables.o unicode.o wrapper.o bitmap.o part_tbl.o \\\n\t\tattributes.o xattr.o xattr_user.o xattr_security.o xattr_trusted.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

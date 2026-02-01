@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs.h",
+  "hash_id": "ef9ec0fc78301cbc1955aa906ea44a65e93925fab43f1a77df51a349692c475d",
+  "original_prompt": "Ingested from linux-6.6.14/net/wireless/debugfs.h",
+  "human_readable_source": " \n#ifndef __CFG80211_DEBUGFS_H\n#define __CFG80211_DEBUGFS_H\n\n#ifdef CONFIG_CFG80211_DEBUGFS\nvoid cfg80211_debugfs_rdev_add(struct cfg80211_registered_device *rdev);\n#else\nstatic inline\nvoid cfg80211_debugfs_rdev_add(struct cfg80211_registered_device *rdev) {}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xz_crc32.c",
+  "hash_id": "75f1734099d89dfb1de61844f95e3c2de005842e76585e8f8781c8c7acdacfa1",
+  "original_prompt": "Ingested from linux-6.6.14/lib/xz/xz_crc32.c",
+  "human_readable_source": " \n\n \n\n#include \"xz_private.h\"\n\n \n#ifndef STATIC_RW_DATA\n#\tdefine STATIC_RW_DATA static\n#endif\n\nSTATIC_RW_DATA uint32_t xz_crc32_table[256];\n\nXZ_EXTERN void xz_crc32_init(void)\n{\n\tconst uint32_t poly = CRC32_POLY_LE;\n\n\tuint32_t i;\n\tuint32_t j;\n\tuint32_t r;\n\n\tfor (i = 0; i < 256; ++i) {\n\t\tr = i;\n\t\tfor (j = 0; j < 8; ++j)\n\t\t\tr = (r >> 1) ^ (poly & ~((r & 1) - 1));\n\n\t\txz_crc32_table[i] = r;\n\t}\n\n\treturn;\n}\n\nXZ_EXTERN uint32_t xz_crc32(const uint8_t *buf, size_t size, uint32_t crc)\n{\n\tcrc = ~crc;\n\n\twhile (size != 0) {\n\t\tcrc = xz_crc32_table[*buf++ ^ (crc & 0xFF)] ^ (crc >> 8);\n\t\t--size;\n\t}\n\n\treturn ~crc;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

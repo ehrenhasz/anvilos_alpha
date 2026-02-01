@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0503e63e3c744ab52e1af7d073cbdd97eca5a2e512125c9db379bce0619139f3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/ivpu/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Copyright (C) 2023 Intel Corporation\n\nintel_vpu-y := \\\n\tivpu_debugfs.o \\\n\tivpu_drv.o \\\n\tivpu_fw.o \\\n\tivpu_fw_log.o \\\n\tivpu_gem.o \\\n\tivpu_hw_37xx.o \\\n\tivpu_hw_40xx.o \\\n\tivpu_ipc.o \\\n\tivpu_job.o \\\n\tivpu_jsm_msg.o \\\n\tivpu_mmu.o \\\n\tivpu_mmu_context.o \\\n\tivpu_pm.o\n\nobj-$(CONFIG_DRM_ACCEL_IVPU) += intel_vpu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

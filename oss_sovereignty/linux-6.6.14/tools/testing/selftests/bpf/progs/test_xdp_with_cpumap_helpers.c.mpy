@@ -1,0 +1,9 @@
+{
+  "module_name": "test_xdp_with_cpumap_helpers.c",
+  "hash_id": "4c3f02038324f93a110ea8920c686f914f5914106c91d0fb62398f1d88ce5755",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_xdp_with_cpumap_helpers.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\n#define IFINDEX_LO\t1\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_CPUMAP);\n\t__uint(key_size, sizeof(__u32));\n\t__uint(value_size, sizeof(struct bpf_cpumap_val));\n\t__uint(max_entries, 4);\n} cpu_map SEC(\".maps\");\n\nSEC(\"xdp\")\nint xdp_redir_prog(struct xdp_md *ctx)\n{\n\treturn bpf_redirect_map(&cpu_map, 1, 0);\n}\n\nSEC(\"xdp\")\nint xdp_dummy_prog(struct xdp_md *ctx)\n{\n\treturn XDP_PASS;\n}\n\nSEC(\"xdp/cpumap\")\nint xdp_dummy_cm(struct xdp_md *ctx)\n{\n\tif (ctx->ingress_ifindex == IFINDEX_LO)\n\t\treturn XDP_DROP;\n\n\treturn XDP_PASS;\n}\n\nSEC(\"xdp.frags/cpumap\")\nint xdp_dummy_cm_frags(struct xdp_md *ctx)\n{\n\treturn XDP_PASS;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

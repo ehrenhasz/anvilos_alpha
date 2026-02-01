@@ -1,0 +1,9 @@
+{
+  "module_name": "functionfs.h",
+  "hash_id": "d78b2ff09d7f43e9b1db97f4053e9971b6d1484b7d3819de79a7cc408cdb1d2c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/functionfs.h",
+  "human_readable_source": " \n#ifndef __LINUX_FUNCTIONFS_H__\n#define __LINUX_FUNCTIONFS_H__ 1\n\n#include <uapi/linux/usb/functionfs.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

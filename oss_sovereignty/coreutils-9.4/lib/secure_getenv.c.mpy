@@ -1,0 +1,9 @@
+{
+  "module_name": "secure_getenv.c",
+  "hash_id": "58736171f30b80fa404f4226b337b44f8d79d702047bf53bca90fa9f1cd50a56",
+  "original_prompt": "Ingested from coreutils-9.4/lib/secure_getenv.c",
+  "human_readable_source": " \n  return __secure_getenv (name);\n#elif HAVE_ISSETUGID  \n  if (issetugid ())\n    return NULL;\n  return getenv (name);\n#elif HAVE_GETUID && HAVE_GETEUID && HAVE_GETGID && HAVE_GETEGID  \n  if (geteuid () != getuid () || getegid () != getgid ())\n    return NULL;\n  return getenv (name);\n#elif defined _WIN32 && ! defined __CYGWIN__  \n   \n  return getenv (name);\n#else\n  return NULL;\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

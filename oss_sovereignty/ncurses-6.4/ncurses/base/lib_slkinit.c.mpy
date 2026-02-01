@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_slkinit.c",
+  "hash_id": "1d2049a0d2a29a4106de38b82729cf9dc8eb73553a7c6f07251144274650a313",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_slkinit.c",
+  "human_readable_source": " \n\n \n\n \n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_slkinit.c,v 1.16 2022/07/09 18:58:58 tom Exp $\")\n\n#ifdef USE_SP_RIPOFF\n#define SoftkeyFormat SP_PARM->slk_format\n#else\n#define SoftkeyFormat _nc_globals.slk_format\n#endif\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(slk_init) (NCURSES_SP_DCLx int format)\n{\n    int code = ERR;\n\n    START_TRACE();\n    T((T_CALLED(\"slk_init(%p,%d)\"), (void *) SP_PARM, format));\n\n    if (format >= 0\n\t&& format <= 3\n#ifdef USE_SP_RIPOFF\n\t&& SP_PARM\n\t&& SP_PARM->_prescreen\n#endif\n\t&& !SoftkeyFormat) {\n\tSoftkeyFormat = 1 + format;\n\tcode = NCURSES_SP_NAME(_nc_ripoffline) (NCURSES_SP_ARGx\n\t\t\t\t\t\t-SLK_LINES(SoftkeyFormat),\n\t\t\t\t\t\t_nc_slk_initialize);\n    }\n    returnCode(code);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nslk_init(int format)\n{\n    int rc;\n\n    _nc_init_pthreads();\n    _nc_lock_global(prescreen);\n    START_TRACE();\n    rc = NCURSES_SP_NAME(slk_init) (CURRENT_SCREEN_PRE, format);\n    _nc_unlock_global(prescreen);\n\n    return rc;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

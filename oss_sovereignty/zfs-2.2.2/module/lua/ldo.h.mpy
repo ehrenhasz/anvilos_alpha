@@ -1,0 +1,9 @@
+{
+  "module_name": "ldo.h",
+  "hash_id": "efdaeef883b2881ff71cf5eb56357b3065219a7b38cb17d18f6fc9e0fb06a911",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/ldo.h",
+  "human_readable_source": " \n\n#ifndef ldo_h\n#define ldo_h\n\n\n#include \"lobject.h\"\n#include \"lstate.h\"\n#include \"lzio.h\"\n\n\n#define luaD_checkstack(L,n)\tif (L->stack_last - L->top <= (n)) \\\n\t\t\t\t    luaD_growstack(L, n); else condmovestack(L);\n\n\n#define incr_top(L) {L->top++; luaD_checkstack(L,0);}\n\n#define savestack(L,p)\t\t((char *)(p) - (char *)L->stack)\n#define restorestack(L,n)\t((TValue *)((char *)L->stack + (n)))\n\n\n \ntypedef void (*Pfunc) (lua_State *L, void *ud);\n\nLUAI_FUNC int luaD_protectedparser (lua_State *L, ZIO *z, const char *name,\n                                                  const char *mode);\nLUAI_FUNC void luaD_hook (lua_State *L, int event, int line);\nLUAI_FUNC int luaD_precall (lua_State *L, StkId func, int nresults);\nLUAI_FUNC void luaD_call (lua_State *L, StkId func, int nResults,\n                                        int allowyield);\nLUAI_FUNC int luaD_pcall (lua_State *L, Pfunc func, void *u,\n                                        ptrdiff_t oldtop, ptrdiff_t ef);\nLUAI_FUNC int luaD_poscall (lua_State *L, StkId firstResult);\nLUAI_FUNC void luaD_reallocstack (lua_State *L, int newsize);\nLUAI_FUNC void luaD_growstack (lua_State *L, int n);\nLUAI_FUNC void luaD_shrinkstack (lua_State *L);\n\nLUAI_FUNC l_noret luaD_throw (lua_State *L, int errcode);\nLUAI_FUNC int luaD_rawrunprotected (lua_State *L, Pfunc f, void *ud);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

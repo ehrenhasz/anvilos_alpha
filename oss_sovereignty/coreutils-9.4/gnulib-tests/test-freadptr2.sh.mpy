@@ -1,0 +1,9 @@
+{
+  "module_name": "test-freadptr2.sh",
+  "hash_id": "e8d13c443e7069bbf377cbcc39f28b96093e2fece69d77198b70bf73728d20bd",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-freadptr2.sh",
+  "human_readable_source": "#!/bin/sh\n\n${CHECKER} ./test-freadptr2${EXEEXT} 0 < \"$srcdir/test-freadptr2.sh\" || exit 1\n${CHECKER} ./test-freadptr2${EXEEXT} 5 < \"$srcdir/test-freadptr2.sh\" || exit 1\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

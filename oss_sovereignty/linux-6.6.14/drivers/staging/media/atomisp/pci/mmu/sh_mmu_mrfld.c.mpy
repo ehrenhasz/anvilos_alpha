@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_mmu_mrfld.c",
+  "hash_id": "701c4082a98eeece0b7f1d28a4657fe93ff25e29d82c3f131a13e97caf313658",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/mmu/sh_mmu_mrfld.c",
+  "human_readable_source": "\n \n#include \"type_support.h\"\n#include \"mmu/isp_mmu.h\"\n#include \"mmu/sh_mmu_mrfld.h\"\n#include \"atomisp_compat.h\"\n\n#define MERR_VALID_PTE_MASK\t0x80000000\n\n \n\nstatic unsigned int sh_phys_to_pte(struct isp_mmu *mmu,\n\t\t\t\t   phys_addr_t phys)\n{\n\treturn phys >> ISP_PAGE_OFFSET;\n}\n\nstatic phys_addr_t sh_pte_to_phys(struct isp_mmu *mmu,\n\t\t\t\t  unsigned int pte)\n{\n\tunsigned int mask = mmu->driver->pte_valid_mask;\n\n\treturn (phys_addr_t)((pte & ~mask) << ISP_PAGE_OFFSET);\n}\n\nstatic unsigned int sh_get_pd_base(struct isp_mmu *mmu,\n\t\t\t\t   phys_addr_t phys)\n{\n\tunsigned int pte = sh_phys_to_pte(mmu, phys);\n\n\treturn HOST_ADDRESS(pte);\n}\n\n \nstatic void sh_tlb_flush(struct isp_mmu *mmu)\n{\n\tia_css_mmu_invalidate_cache();\n}\n\nstruct isp_mmu_client sh_mmu_mrfld = {\n\t.name = \"Silicon Hive ISP3000 MMU\",\n\t.pte_valid_mask = MERR_VALID_PTE_MASK,\n\t.null_pte = ~MERR_VALID_PTE_MASK,\n\t.get_pd_base = sh_get_pd_base,\n\t.tlb_flush_all = sh_tlb_flush,\n\t.phys_to_pte = sh_phys_to_pte,\n\t.pte_to_phys = sh_pte_to_phys,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

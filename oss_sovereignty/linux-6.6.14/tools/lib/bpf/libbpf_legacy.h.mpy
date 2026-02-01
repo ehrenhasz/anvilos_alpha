@@ -1,0 +1,9 @@
+{
+  "module_name": "libbpf_legacy.h",
+  "hash_id": "4a428e4b99ca1b71cde42d6b78c23b9d9565194818c0bf41685be76d323021b2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/bpf/libbpf_legacy.h",
+  "human_readable_source": " \n\n \n#ifndef __LIBBPF_LEGACY_BPF_H\n#define __LIBBPF_LEGACY_BPF_H\n\n#include <linux/bpf.h>\n#include <stdbool.h>\n#include <stddef.h>\n#include <stdint.h>\n#include \"libbpf_common.h\"\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n \nenum libbpf_strict_mode {\n\t \n\tLIBBPF_STRICT_ALL = 0xffffffff,\n\n\t \n\tLIBBPF_STRICT_NONE = 0x00,\n\t \n\tLIBBPF_STRICT_CLEAN_PTRS = 0x01,\n\t \n\tLIBBPF_STRICT_DIRECT_ERRS = 0x02,\n\t \n\tLIBBPF_STRICT_SEC_NAME = 0x04,\n\t \n\tLIBBPF_STRICT_NO_OBJECT_LIST = 0x08,\n\t \n\tLIBBPF_STRICT_AUTO_RLIMIT_MEMLOCK = 0x10,\n\t \n\tLIBBPF_STRICT_MAP_DEFINITIONS = 0x20,\n\n\t__LIBBPF_STRICT_LAST,\n};\n\nLIBBPF_API int libbpf_set_strict_mode(enum libbpf_strict_mode mode);\n\n \nLIBBPF_API long libbpf_get_error(const void *ptr);\n\n#define DECLARE_LIBBPF_OPTS LIBBPF_OPTS\n\n \n\nstruct bpf_program;\nstruct bpf_map;\nstruct btf;\nstruct btf_ext;\n\nLIBBPF_API struct btf *libbpf_find_kernel_btf(void);\n\nLIBBPF_API enum bpf_prog_type bpf_program__get_type(const struct bpf_program *prog);\nLIBBPF_API enum bpf_attach_type bpf_program__get_expected_attach_type(const struct bpf_program *prog);\nLIBBPF_API const char *bpf_map__get_pin_path(const struct bpf_map *map);\nLIBBPF_API const void *btf__get_raw_data(const struct btf *btf, __u32 *size);\nLIBBPF_API const void *btf_ext__get_raw_data(const struct btf_ext *btf_ext, __u32 *size);\n\n#ifdef __cplusplus\n}  \n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

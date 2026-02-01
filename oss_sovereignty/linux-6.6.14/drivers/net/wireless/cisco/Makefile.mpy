@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5d2be32c39a11d41326f3a0efbdc370e1eb34fcf0207e9dc6893547dda4b3740",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/cisco/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_AIRO)\t\t+= airo.o\nobj-$(CONFIG_AIRO_CS)\t\t+= airo_cs.o airo.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

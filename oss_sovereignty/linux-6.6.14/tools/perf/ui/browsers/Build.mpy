@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "118462b479708b0b1b45b49fa09ff60a3b2d551048605772f4526becebfe351b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/browsers/Build",
+  "human_readable_source": "perf-y += annotate.o\nperf-y += hists.o\nperf-y += map.o\nperf-y += scripts.o\nperf-y += header.o\nperf-y += res_sample.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

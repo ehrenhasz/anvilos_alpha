@@ -1,0 +1,9 @@
+{
+  "module_name": "start_info.h",
+  "hash_id": "872e410e3b613a4fa769b482e1dfd6300192ee30549a340a1a84c2f99c0fe052",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/interface/hvm/start_info.h",
+  "human_readable_source": " \n \n\n#ifndef __XEN_PUBLIC_ARCH_X86_HVM_START_INFO_H__\n#define __XEN_PUBLIC_ARCH_X86_HVM_START_INFO_H__\n\n \n#define XEN_HVM_START_MAGIC_VALUE 0x336ec578\n\n \n#define XEN_HVM_MEMMAP_TYPE_RAM       1\n#define XEN_HVM_MEMMAP_TYPE_RESERVED  2\n#define XEN_HVM_MEMMAP_TYPE_ACPI      3\n#define XEN_HVM_MEMMAP_TYPE_NVS       4\n#define XEN_HVM_MEMMAP_TYPE_UNUSABLE  5\n#define XEN_HVM_MEMMAP_TYPE_DISABLED  6\n#define XEN_HVM_MEMMAP_TYPE_PMEM      7\n\n \nstruct hvm_start_info {\n    uint32_t magic;              \n                                 \n    uint32_t version;            \n    uint32_t flags;              \n    uint32_t nr_modules;         \n    uint64_t modlist_paddr;      \n                                 \n    uint64_t cmdline_paddr;      \n    uint64_t rsdp_paddr;         \n                                 \n     \n    uint64_t memmap_paddr;       \n                                 \n    uint32_t memmap_entries;     \n                                 \n                                 \n    uint32_t reserved;           \n};\n\nstruct hvm_modlist_entry {\n    uint64_t paddr;              \n    uint64_t size;               \n    uint64_t cmdline_paddr;      \n    uint64_t reserved;\n};\n\nstruct hvm_memmap_table_entry {\n    uint64_t addr;               \n    uint64_t size;               \n    uint32_t type;               \n    uint32_t reserved;           \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

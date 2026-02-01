@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e3945247642ea59a39f3618a5a60cbb5a10b9cb5f3ef3ed8a2f66fedc09d2a23",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/qla2xxx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SCSI_QLA_FC\n\ttristate \"QLogic QLA2XXX Fibre Channel Support\"\n\tdepends on PCI && HAS_IOPORT && SCSI\n\tdepends on SCSI_FC_ATTRS\n\tdepends on NVME_FC || !NVME_FC\n\tselect FW_LOADER\n\tselect BTREE\n\thelp\n\tThis qla2xxx driver supports all QLogic Fibre Channel\n\tPCI and PCIe host adapters.\n\n\tBy default, firmware for the ISP parts will be loaded\n\tvia the Firmware Loader interface.\n\n\tISP               Firmware Filename\n\t----------        -----------------\n\t21xx              ql2100_fw.bin\n\t22xx              ql2200_fw.bin\n\t2300, 2312, 6312  ql2300_fw.bin\n\t2322, 6322        ql2322_fw.bin\n\t24xx, 54xx        ql2400_fw.bin\n\t25xx              ql2500_fw.bin\n\n\tUpon request, the driver caches the firmware image until\n\tthe driver is unloaded.\n\n\tFirmware images can be retrieved from:\n\n\t\thttp://ldriver.qlogic.com/firmware/\n\n\tThey are also included in the linux-firmware tree as well.\n\nconfig TCM_QLA2XXX\n\ttristate \"TCM_QLA2XXX fabric module for QLogic 24xx+ series target mode HBAs\"\n\tdepends on SCSI_QLA_FC && TARGET_CORE\n\tdepends on LIBFC\n\tselect BTREE\n\tdefault n\n\thelp\n\tSay Y here to enable the TCM_QLA2XXX fabric module for QLogic 24xx+ series target mode HBAs\n\nif TCM_QLA2XXX\nconfig TCM_QLA2XXX_DEBUG\n\tbool \"TCM_QLA2XXX fabric module DEBUG mode for QLogic 24xx+ series target mode HBAs\"\n\tdefault n\n\thelp\n\tSay Y here to enable the TCM_QLA2XXX fabric module DEBUG for QLogic 24xx+ series target mode HBAs\n\tThis will include code to enable the SCSI command jammer\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

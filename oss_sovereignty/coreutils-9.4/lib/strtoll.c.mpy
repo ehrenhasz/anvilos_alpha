@@ -1,0 +1,9 @@
+{
+  "module_name": "strtoll.c",
+  "hash_id": "0175c7feae3f4205eb2b7c6125b08d883f8e201f7f2152ae4194c0246f7e538c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/strtoll.c",
+  "human_readable_source": "/* Function to parse a 'long long int' from text.\n   Copyright (C) 1995-1997, 1999, 2001, 2009-2023 Free Software Foundation,\n   Inc.\n   This file is part of the GNU C Library.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU Lesser General Public License as\n   published by the Free Software Foundation, either version 3 of the\n   License, or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU Lesser General Public License for more details.\n\n   You should have received a copy of the GNU Lesser General Public License\n   along with this program.  If not, see <https:\n\n#define QUAD    1\n\n#include <strtol.c>\n\n#ifdef _LIBC\n# ifdef SHARED\n#  include <shlib-compat.h>\n\n#  if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_2)\ncompat_symbol (libc, __strtoll_internal, __strtoq_internal, GLIBC_2_0);\n#  endif\n\n# endif\nweak_alias (strtoll, strtoq)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

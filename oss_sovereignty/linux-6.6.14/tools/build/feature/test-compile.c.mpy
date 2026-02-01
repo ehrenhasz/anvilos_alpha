@@ -1,0 +1,9 @@
+{
+  "module_name": "test-compile.c",
+  "hash_id": "8474d9af017cf506f2c787c87c54411503d029029db0cb5cd99b2084dd527c46",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-compile.c",
+  "human_readable_source": "\n#include <stdio.h>\nint main(void)\n{\n\tprintf(\"Hello World!\\n\");\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

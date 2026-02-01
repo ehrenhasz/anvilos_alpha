@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7a782d29fca081eef162eddfb8e71b27221b094e26de646fc6a278308f6079dd",
+  "original_prompt": "Ingested from linux-6.6.14/net/netrom/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Linux NET/ROM layer.\n#\n\nobj-$(CONFIG_NETROM) += netrom.o\n\nnetrom-y\t\t:= af_netrom.o nr_dev.o nr_in.o nr_loopback.o \\\n\t\t\t   nr_out.o nr_route.o nr_subr.o nr_timer.o\nnetrom-$(CONFIG_SYSCTL)\t+= sysctl_net_netrom.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

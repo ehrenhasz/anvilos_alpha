@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f89d37bb522268212d75cc9c798f643a95b18cb146802267338d37e8843e9c95",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bus/mhi/ep/Makefile",
+  "human_readable_source": "obj-$(CONFIG_MHI_BUS_EP) += mhi_ep.o\nmhi_ep-y := main.o mmio.o ring.o sm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

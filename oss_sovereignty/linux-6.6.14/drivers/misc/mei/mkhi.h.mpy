@@ -1,0 +1,9 @@
+{
+  "module_name": "mkhi.h",
+  "hash_id": "257c874d76a40f82a3d1713f74f682e052e41f29e4716f30b81af7373e54d0c2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/mei/mkhi.h",
+  "human_readable_source": " \n \n\n#ifndef _MEI_MKHI_H_\n#define _MEI_MKHI_H_\n\n#include <linux/types.h>\n\n#define MKHI_FEATURE_PTT 0x10\n\n#define MKHI_FWCAPS_GROUP_ID 0x3\n#define MKHI_FWCAPS_SET_OS_VER_APP_RULE_CMD 6\n#define MKHI_GEN_GROUP_ID 0xFF\n#define MKHI_GEN_GET_FW_VERSION_CMD 0x2\n\n#define MKHI_GROUP_ID_GFX              0x30\n#define MKHI_GFX_RESET_WARN_CMD_REQ    0x0\n#define MKHI_GFX_MEMORY_READY_CMD_REQ  0x1\n\n \n#define MKHI_GFX_MEM_READY_PXP_ALLOWED  0x1\n\nstruct mkhi_rule_id {\n\t__le16 rule_type;\n\tu8 feature_id;\n\tu8 reserved;\n} __packed;\n\nstruct mkhi_fwcaps {\n\tstruct mkhi_rule_id id;\n\tu8 len;\n\tu8 data[];\n} __packed;\n\nstruct mkhi_msg_hdr {\n\tu8  group_id;\n\tu8  command;\n\tu8  reserved;\n\tu8  result;\n} __packed;\n\nstruct mkhi_msg {\n\tstruct mkhi_msg_hdr hdr;\n\tu8 data[];\n} __packed;\n\nstruct mkhi_gfx_mem_ready {\n\tstruct mkhi_msg_hdr hdr;\n\tu32    flags;\n} __packed;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

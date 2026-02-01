@@ -1,0 +1,9 @@
+{
+  "module_name": "IRIW+poonceonces+OnceOnce.litmus",
+  "hash_id": "8ed7f00727489aa5e362bc7dee26e0861cd3a486e9bd010c2b6060d46b2c23e1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/IRIW+poonceonces+OnceOnce.litmus",
+  "human_readable_source": "C IRIW+poonceonces+OnceOnce\n\n(*\n * Result: Sometimes\n *\n * Test of independent reads from independent writes with nothing\n * between each pairs of reads.  In other words, is anything at all\n * needed to cause two different reading processes to agree on the order\n * of a pair of writes, where each write is to a different variable by a\n * different process?\n *)\n\n{}\n\nP0(int *x)\n{\n\tWRITE_ONCE(*x, 1);\n}\n\nP1(int *x, int *y)\n{\n\tint r0;\n\tint r1;\n\n\tr0 = READ_ONCE(*x);\n\tr1 = READ_ONCE(*y);\n}\n\nP2(int *y)\n{\n\tWRITE_ONCE(*y, 1);\n}\n\nP3(int *x, int *y)\n{\n\tint r0;\n\tint r1;\n\n\tr0 = READ_ONCE(*y);\n\tr1 = READ_ONCE(*x);\n}\n\nexists (1:r0=1 /\\ 1:r1=0 /\\ 3:r0=1 /\\ 3:r1=0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

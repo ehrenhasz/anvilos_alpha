@@ -1,0 +1,9 @@
+{
+  "module_name": "vivid-meta-out.h",
+  "hash_id": "0d67fc0bd20ae377d2b80771b9e97b3fd519fd69f33fac4660533e7d7569421d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vivid/vivid-meta-out.h",
+  "human_readable_source": " \n \n#ifndef _VIVID_META_OUT_H_\n#define _VIVID_META_OUT_H_\n\nstruct vivid_meta_out_buf {\n\tu16\tbrightness;\n\tu16\tcontrast;\n\tu16\tsaturation;\n\ts16\thue;\n};\n\nvoid vivid_meta_out_process(struct vivid_dev *dev, struct vivid_buffer *buf);\nint vidioc_enum_fmt_meta_out(struct file *file, void  *priv,\n\t\t\t     struct v4l2_fmtdesc *f);\nint vidioc_g_fmt_meta_out(struct file *file, void *priv,\n\t\t\t  struct v4l2_format *f);\nint vidioc_s_fmt_meta_out(struct file *file, void *priv,\n\t\t\t  struct v4l2_format *f);\n\nextern const struct vb2_ops vivid_meta_out_qops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

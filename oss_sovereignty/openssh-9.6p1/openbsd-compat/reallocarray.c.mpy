@@ -1,0 +1,9 @@
+{
+  "module_name": "reallocarray.c",
+  "hash_id": "3b53648f1818de46b45cab77086d8a89c193620477e4ffd1e83c613fa694ee6c",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/reallocarray.c",
+  "human_readable_source": " \n \n\n \n\n#include \"includes.h\"\n#ifndef HAVE_REALLOCARRAY\n\n#include <sys/types.h>\n#include <errno.h>\n#ifdef HAVE_STDINT_H\n#include <stdint.h>\n#endif\n#include <stdlib.h>\n\n \n#define MUL_NO_OVERFLOW\t((size_t)1 << (sizeof(size_t) * 4))\n\nvoid *\nreallocarray(void *optr, size_t nmemb, size_t size)\n{\n\tif ((nmemb >= MUL_NO_OVERFLOW || size >= MUL_NO_OVERFLOW) &&\n\t    nmemb > 0 && SIZE_MAX / nmemb < size) {\n\t\terrno = ENOMEM;\n\t\treturn NULL;\n\t}\n\treturn realloc(optr, size * nmemb);\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

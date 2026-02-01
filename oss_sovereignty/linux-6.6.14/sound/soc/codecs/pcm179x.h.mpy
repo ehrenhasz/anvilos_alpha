@@ -1,0 +1,9 @@
+{
+  "module_name": "pcm179x.h",
+  "hash_id": "d9e52003a3f9f3c86cd3617051018a6bca2cc6f45ac1c8479cb9cc8b7fb14f8c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/pcm179x.h",
+  "human_readable_source": " \n \n\n#ifndef __PCM179X_H__\n#define __PCM179X_H__\n\n#define PCM1792A_FORMATS (SNDRV_PCM_FMTBIT_S32_LE | SNDRV_PCM_FMTBIT_S24_LE | \\\n\t\t\t  SNDRV_PCM_FMTBIT_S16_LE)\n\nextern const struct regmap_config pcm179x_regmap_config;\n\nint pcm179x_common_init(struct device *dev, struct regmap *regmap);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "PREEMPT",
+  "hash_id": "08e6bff8cf1b90968a5c2a6085945134a5d06ec2b325e03e4875473d83c1b7a2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/scf/PREEMPT",
+  "human_readable_source": "CONFIG_SMP=y\nCONFIG_PREEMPT_NONE=n\nCONFIG_PREEMPT_VOLUNTARY=n\nCONFIG_PREEMPT=y\nCONFIG_HZ_PERIODIC=n\nCONFIG_NO_HZ_IDLE=y\nCONFIG_NO_HZ_FULL=n\nCONFIG_DEBUG_LOCK_ALLOC=y\nCONFIG_PROVE_LOCKING=y\nCONFIG_RCU_EXPERT=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_common.sh",
+  "hash_id": "9b0744f9cef29931212a53ec10910c73890108fcd7261c580b6f3bb5da178671",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/dsa/tc_common.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nCHECK_TC=\"yes\"\n\n# Can be overridden by the configuration file. See lib.sh\nTC_HIT_TIMEOUT=${TC_HIT_TIMEOUT:=1000} # ms\n\ntc_check_packets()\n{\n\tlocal id=$1\n\tlocal handle=$2\n\tlocal count=$3\n\n\tbusywait \"$TC_HIT_TIMEOUT\" until_counter_is \"== $count\" \\\n\t\t tc_rule_handle_stats_get \"$id\" \"$handle\" > /dev/null\n}\n\ntc_check_at_least_x_packets()\n{\n\tlocal id=$1\n\tlocal handle=$2\n\tlocal count=$3\n\n\tbusywait \"$TC_HIT_TIMEOUT\" until_counter_is \">= $count\" \\\n\t\t tc_rule_handle_stats_get \"$id\" \"$handle\" > /dev/null\n}\n\ntc_check_packets_hitting()\n{\n\tlocal id=$1\n\tlocal handle=$2\n\n\tbusywait \"$TC_HIT_TIMEOUT\" until_counter_is \"> 0\" \\\n\t\t tc_rule_handle_stats_get \"$id\" \"$handle\" > /dev/null\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

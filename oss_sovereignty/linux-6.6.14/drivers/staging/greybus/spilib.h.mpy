@@ -1,0 +1,9 @@
+{
+  "module_name": "spilib.h",
+  "hash_id": "3b4982261e68fa77750890985f5166a19aa64fe294d0afea1cdb69c1bef056f7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/greybus/spilib.h",
+  "human_readable_source": " \n \n\n#ifndef __SPILIB_H\n#define __SPILIB_H\n\nstruct device;\nstruct gb_connection;\n\nstruct spilib_ops {\n\tint (*prepare_transfer_hardware)(struct device *dev);\n\tvoid (*unprepare_transfer_hardware)(struct device *dev);\n};\n\nint gb_spilib_master_init(struct gb_connection *connection,\n\t\t\t  struct device *dev, struct spilib_ops *ops);\nvoid gb_spilib_master_exit(struct gb_connection *connection);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

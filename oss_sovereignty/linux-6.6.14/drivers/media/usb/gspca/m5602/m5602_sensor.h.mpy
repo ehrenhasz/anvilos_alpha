@@ -1,0 +1,9 @@
+{
+  "module_name": "m5602_sensor.h",
+  "hash_id": "439946790b7738225418e3ff77a04e8198a03f8dbd13aa332574bd0f9339340a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/gspca/m5602/m5602_sensor.h",
+  "human_readable_source": " \n \n\n#ifndef M5602_SENSOR_H_\n#define M5602_SENSOR_H_\n\n#include \"m5602_bridge.h\"\n\n#define M5602_V4L2_CID_GREEN_BALANCE\t(V4L2_CID_PRIVATE_BASE + 0)\n#define M5602_V4L2_CID_NOISE_SUPPRESION\t(V4L2_CID_PRIVATE_BASE + 1)\n\n \nenum sensors {\n\tOV9650_SENSOR\t= 1,\n\tS5K83A_SENSOR\t= 2,\n\tS5K4AA_SENSOR\t= 3,\n\tMT9M111_SENSOR\t= 4,\n\tPO1030_SENSOR\t= 5,\n\tOV7660_SENSOR   = 6,\n};\n\n \nenum instruction {\n\tBRIDGE,\n\tSENSOR,\n\tSENSOR_LONG\n};\n\nstruct m5602_sensor {\n\t \n\tchar name[32];\n\n\t \n\tu8 i2c_slave_id;\n\n\t \n\tu8 i2c_regW;\n\n\t \n\tint (*probe)(struct sd *sd);\n\n\t \n\tint (*init)(struct sd *sd);\n\n\t \n\tint (*init_controls)(struct sd *sd);\n\n\t \n\tint (*start)(struct sd *sd);\n\n\t \n\tint (*stop)(struct sd *sd);\n\n\t \n\tvoid (*disconnect)(struct sd *sd);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hinic_common.c",
+  "hash_id": "ec1beffa79be9b897153feeda5b43823b5bb95359a70ddee86316829b110ea63",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/huawei/hinic/hinic_common.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/types.h>\n#include <asm/byteorder.h>\n\n#include \"hinic_common.h\"\n\n \nvoid hinic_cpu_to_be32(void *data, int len)\n{\n\tu32 *mem = data;\n\tint i;\n\n\tlen = len / sizeof(u32);\n\n\tfor (i = 0; i < len; i++) {\n\t\t*mem = cpu_to_be32(*mem);\n\t\tmem++;\n\t}\n}\n\n \nvoid hinic_be32_to_cpu(void *data, int len)\n{\n\tu32 *mem = data;\n\tint i;\n\n\tlen = len / sizeof(u32);\n\n\tfor (i = 0; i < len; i++) {\n\t\t*mem = be32_to_cpu(*mem);\n\t\tmem++;\n\t}\n}\n\n \nvoid hinic_set_sge(struct hinic_sge *sge, dma_addr_t addr, int len)\n{\n\tsge->hi_addr = upper_32_bits(addr);\n\tsge->lo_addr = lower_32_bits(addr);\n\tsge->len  = len;\n}\n\n \ndma_addr_t hinic_sge_to_dma(struct hinic_sge *sge)\n{\n\treturn (dma_addr_t)((((u64)sge->hi_addr) << 32) | sge->lo_addr);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

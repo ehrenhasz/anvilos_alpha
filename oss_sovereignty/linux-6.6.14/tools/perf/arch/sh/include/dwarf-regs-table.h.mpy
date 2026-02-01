@@ -1,0 +1,9 @@
+{
+  "module_name": "dwarf-regs-table.h",
+  "hash_id": "d9c465fe9416bbe58fddd07f17e94b5a51abf8bb1e9f359b13223de44caaf9b7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/sh/include/dwarf-regs-table.h",
+  "human_readable_source": " \n#ifdef DEFINE_DWARF_REGSTR_TABLE\n \n\nconst char * const sh_regstr_tbl[] = {\n\t\"r0\",\n\t\"r1\",\n\t\"r2\",\n\t\"r3\",\n\t\"r4\",\n\t\"r5\",\n\t\"r6\",\n\t\"r7\",\n\t\"r8\",\n\t\"r9\",\n\t\"r10\",\n\t\"r11\",\n\t\"r12\",\n\t\"r13\",\n\t\"r14\",\n\t\"r15\",\n\t\"pc\",\n\t\"pr\",\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

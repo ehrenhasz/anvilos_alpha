@@ -1,0 +1,9 @@
+{
+  "module_name": "bttv-audio-hook.h",
+  "hash_id": "8a5c78dd2644ae469fcc24f1568544de326699050a0108c67932671da501b75f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/bt8xx/bttv-audio-hook.h",
+  "human_readable_source": " \n\n#include \"bttvp.h\"\n\nvoid winview_volume (struct bttv *btv, __u16 volume);\n\nvoid lt9415_audio(struct bttv *btv, struct v4l2_tuner *tuner, int set);\nvoid avermedia_tvphone_audio(struct bttv *btv, struct v4l2_tuner *tuner, int set);\nvoid avermedia_tv_stereo_audio(struct bttv *btv, struct v4l2_tuner *tuner, int set);\nvoid terratv_audio(struct bttv *btv,  struct v4l2_tuner *tuner, int set);\nvoid gvbctv3pci_audio(struct bttv *btv, struct v4l2_tuner *tuner, int set);\nvoid gvbctv5pci_audio(struct bttv *btv, struct v4l2_tuner *tuner, int set);\nvoid winfast2000_audio(struct bttv *btv, struct v4l2_tuner *tuner, int set);\nvoid pvbt878p9b_audio(struct bttv *btv, struct v4l2_tuner *tuner, int set);\nvoid fv2000s_audio(struct bttv *btv, struct v4l2_tuner *tuner, int set);\nvoid windvr_audio(struct bttv *btv, struct v4l2_tuner *tuner, int set);\nvoid adtvk503_audio(struct bttv *btv, struct v4l2_tuner *tuner, int set);\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

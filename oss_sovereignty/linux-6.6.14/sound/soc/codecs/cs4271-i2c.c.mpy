@@ -1,0 +1,9 @@
+{
+  "module_name": "cs4271-i2c.c",
+  "hash_id": "0dfec5bb976c0b3c2b4b31aa8609d8b398fd2cc4b72a7c2a95a9670b06435513",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/cs4271-i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/i2c.h>\n#include <linux/regmap.h>\n#include <sound/soc.h>\n#include \"cs4271.h\"\n\nstatic int cs4271_i2c_probe(struct i2c_client *client)\n{\n\tstruct regmap_config config;\n\n\tconfig = cs4271_regmap_config;\n\tconfig.reg_bits = 8;\n\n\treturn cs4271_probe(&client->dev,\n\t\t\t    devm_regmap_init_i2c(client, &config));\n}\n\nstatic const struct i2c_device_id cs4271_i2c_id[] = {\n\t{ \"cs4271\", 0 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, cs4271_i2c_id);\n\nstatic struct i2c_driver cs4271_i2c_driver = {\n\t.driver = {\n\t\t.name = \"cs4271\",\n\t\t.of_match_table = of_match_ptr(cs4271_dt_ids),\n\t},\n\t.probe = cs4271_i2c_probe,\n\t.id_table = cs4271_i2c_id,\n};\nmodule_i2c_driver(cs4271_i2c_driver);\n\nMODULE_DESCRIPTION(\"ASoC CS4271 I2C Driver\");\nMODULE_AUTHOR(\"Alexander Sverdlin <subaparts@yandex.ru>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

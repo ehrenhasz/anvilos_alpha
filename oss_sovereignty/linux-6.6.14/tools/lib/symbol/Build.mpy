@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "ab1870bb532f5cab216a795bff5895247df980cc9e949b424f4057ea30e19e30",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/symbol/Build",
+  "human_readable_source": "libsymbol-y += kallsyms.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

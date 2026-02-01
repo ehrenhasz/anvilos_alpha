@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio_regs.h",
+  "hash_id": "5e7b63afcba0e47e17f671a336675fe4cd52843642ea39ed0a469e7806b7059e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/gpio_regs.h",
+  "human_readable_source": " \n\n#ifndef DRIVERS_GPU_DRM_AMD_DC_DEV_DC_GPIO_GPIO_REGS_H_\n#define DRIVERS_GPU_DRM_AMD_DC_DEV_DC_GPIO_GPIO_REGS_H_\n\nstruct gpio_registers {\n\tuint32_t MASK_reg;\n\tuint32_t MASK_mask;\n\tuint32_t MASK_shift;\n\tuint32_t A_reg;\n\tuint32_t A_mask;\n\tuint32_t A_shift;\n\tuint32_t EN_reg;\n\tuint32_t EN_mask;\n\tuint32_t EN_shift;\n\tuint32_t Y_reg;\n\tuint32_t Y_mask;\n\tuint32_t Y_shift;\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

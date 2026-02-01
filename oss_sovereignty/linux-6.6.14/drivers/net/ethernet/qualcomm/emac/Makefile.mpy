@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "063a6560cdf858695ca2328735e688b0257ab23d4ea6aa3ae46406aa665122fc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qualcomm/emac/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Qualcomm Technologies, Inc. EMAC Gigabit Ethernet driver\n#\n\nobj-$(CONFIG_QCOM_EMAC) += qcom-emac.o\n\nqcom-emac-objs := emac.o emac-mac.o emac-phy.o emac-sgmii.o emac-ethtool.o \\\n\t\t  emac-sgmii-fsm9900.o emac-sgmii-qdf2432.o \\\n\t\t  emac-sgmii-qdf2400.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tm-resched-dscr.c",
+  "hash_id": "5f1467038ccf59a4b5125874c33b988b7404a1852c13c004f3d4db6dc17c3c35",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/tm/tm-resched-dscr.c",
+  "human_readable_source": "\n \n\n#include <inttypes.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <assert.h>\n#include <asm/tm.h>\n\n#include \"utils.h\"\n#include \"tm.h\"\n#include \"../pmu/lib.h\"\n\n#define SPRN_DSCR       0x03\n\nint test_body(void)\n{\n\tuint64_t rv, dscr1 = 1, dscr2, texasr;\n\n\tSKIP_IF(!have_htm());\n\tSKIP_IF(htm_is_synthetic());\n\n\tprintf(\"Check DSCR TM context switch: \");\n\tfflush(stdout);\n\tfor (;;) {\n\t\tasm __volatile__ (\n\t\t\t \n\t\t\t\"ld      3, %[dscr1];\"\n\t\t\t\"mtspr   %[sprn_dscr], 3;\"\n\n\t\t\t\"li      %[rv], 1;\"\n\t\t\t \n\t\t\t\"tbegin.;\"\n\t\t\t\"beq     1f;\"\n\t\t\t\"tsuspend.;\"\n\n\t\t\t \n\t\t\t\"2: ;\"\n\t\t\t\"tcheck 0;\"\n\t\t\t\"bc      4, 0, 2b;\"\n\n\t\t\t \n\t\t\t\"mfspr   3, %[sprn_dscr];\"\n\t\t\t\"std     3, %[dscr2];\"\n\t\t\t\"mfspr   3, %[sprn_texasr];\"\n\t\t\t\"std     3, %[texasr];\"\n\n\t\t\t\"tresume.;\"\n\t\t\t\"tend.;\"\n\t\t\t\"li      %[rv], 0;\"\n\t\t\t\"1: ;\"\n\t\t\t: [rv]\"=r\"(rv), [dscr2]\"=m\"(dscr2), [texasr]\"=m\"(texasr)\n\t\t\t: [dscr1]\"m\"(dscr1)\n\t\t\t, [sprn_dscr]\"i\"(SPRN_DSCR), [sprn_texasr]\"i\"(SPRN_TEXASR)\n\t\t\t: \"memory\", \"r3\"\n\t\t);\n\t\tassert(rv);  \n\t\tif ((texasr >> 56) != TM_CAUSE_RESCHED) {\n\t\t\tcontinue;\n\t\t}\n\t\tif (dscr2 != dscr1) {\n\t\t\tprintf(\" FAIL\\n\");\n\t\t\treturn 1;\n\t\t} else {\n\t\t\tprintf(\" OK\\n\");\n\t\t\treturn 0;\n\t\t}\n\t}\n}\n\nstatic int tm_resched_dscr(void)\n{\n\treturn eat_cpu(test_body);\n}\n\nint main(int argc, const char *argv[])\n{\n\treturn test_harness(tm_resched_dscr, \"tm_resched_dscr\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

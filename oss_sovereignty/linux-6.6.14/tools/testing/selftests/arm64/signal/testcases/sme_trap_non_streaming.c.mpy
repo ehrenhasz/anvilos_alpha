@@ -1,0 +1,9 @@
+{
+  "module_name": "sme_trap_non_streaming.c",
+  "hash_id": "0341edf16e5eefa3cc8f2e40d89b7132387dd3ac6eecf0ed80e77a0ff760f353",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/signal/testcases/sme_trap_non_streaming.c",
+  "human_readable_source": "\n \n\n#include <signal.h>\n#include <ucontext.h>\n#include <sys/prctl.h>\n\n#include \"test_signals_utils.h\"\n#include \"testcases.h\"\n\nint sme_trap_non_streaming_trigger(struct tdescr *td)\n{\n\t \n\tasm volatile(\".inst 0xd503437f;   \\\n\t\t      cnt v0.16b, v0.16b; \\\n                      .inst 0xd503447f   \");\n\n\treturn 0;\n}\n\nint sme_trap_non_streaming_run(struct tdescr *td, siginfo_t *si, ucontext_t *uc)\n{\n\treturn 1;\n}\n\nstruct tdescr tde = {\n\t.name = \"SME SM trap unsupported instruction\",\n\t.descr = \"Check that we get a SIGILL if we use an unsupported instruction in streaming mode\",\n\t.feats_required = FEAT_SME,\n\t.feats_incompatible = FEAT_SME_FA64,\n\t.timeout = 3,\n\t.sanity_disabled = true,\n\t.trigger = sme_trap_non_streaming_trigger,\n\t.run = sme_trap_non_streaming_run,\n\t.sig_ok = SIGILL,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a496d1aa0f486fd9c064862bc5018bebfaa463b76e50d3f9a58303d695686a30",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/cavium/nitrox/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Cavium NITROX Crypto Device configuration\n#\nconfig CRYPTO_DEV_NITROX\n\ttristate\n\tselect CRYPTO_SKCIPHER\n\tselect CRYPTO_AES\n\tselect CRYPTO_LIB_DES\n\tselect FW_LOADER\n\nconfig CRYPTO_DEV_NITROX_CNN55XX\n\ttristate \"Support for Cavium CNN55XX driver\"\n\tdepends on PCI_MSI && 64BIT\n\tselect CRYPTO_DEV_NITROX\n\thelp\n\t  Support for Cavium NITROX family CNN55XX driver\n\t  for accelerating crypto workloads.\n\n\t  To compile this as a module, choose M here: the module\n\t  will be called n5pf.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "termios.h",
+  "hash_id": "447e4e60e8d4739b1be150ba82e9a1b2536ce714172c3a08c760303a646af35e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/termios.h",
+  "human_readable_source": " \n#ifndef _LINUX_TERMIOS_H\n#define _LINUX_TERMIOS_H\n\n#include <linux/types.h>\n#include <asm/termios.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

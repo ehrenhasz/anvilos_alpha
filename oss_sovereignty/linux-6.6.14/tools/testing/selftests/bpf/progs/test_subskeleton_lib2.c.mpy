@@ -1,0 +1,9 @@
+{
+  "module_name": "test_subskeleton_lib2.c",
+  "hash_id": "02cb645d7d77d0ea12427e1cf7a8e362ab1b306bc4d09af708e9368c7db6ca4c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_subskeleton_lib2.c",
+  "human_readable_source": "\n \n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nint var6 = 6;\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__type(key, __u32);\n\t__type(value, __u32);\n\t__uint(max_entries, 16);\n} map2 SEC(\".maps\");\n\nchar LICENSE[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

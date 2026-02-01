@@ -1,0 +1,9 @@
+{
+  "module_name": "leds-regulator.h",
+  "hash_id": "4b66376555824a6652cc89464781a58276f346295e5c21dc4448ea04d865cd80",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/leds-regulator.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_LEDS_REGULATOR_H\n#define __LINUX_LEDS_REGULATOR_H\n\n \n\n#include <linux/leds.h>\n\nstruct led_regulator_platform_data {\n\tchar *name;                      \n\tenum led_brightness brightness;  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

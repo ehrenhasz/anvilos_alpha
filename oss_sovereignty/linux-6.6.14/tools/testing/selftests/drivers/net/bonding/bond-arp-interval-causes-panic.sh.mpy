@@ -1,0 +1,9 @@
+{
+  "module_name": "bond-arp-interval-causes-panic.sh",
+  "hash_id": "59df683d20d379c9a5f668d63c1d6d4fc90c5c6cadec01d3eed89f641da20c65",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/bonding/bond-arp-interval-causes-panic.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n#\n# cause kernel oops in bond_rr_gen_slave_id\nDEBUG=${DEBUG:-0}\n\nset -e\ntest ${DEBUG} -ne 0 && set -x\n\nfinish()\n{\n\tip netns delete server || true\n\tip netns delete client || true\n}\n\ntrap finish EXIT\n\nclient_ip4=192.168.1.198\nserver_ip4=192.168.1.254\n\n# setup kernel so it reboots after causing the panic\necho 180 >/proc/sys/kernel/panic\n\n# build namespaces\nip netns add \"server\"\nip netns add \"client\"\nip -n client link add eth0 type veth peer name eth0 netns server\nip netns exec server ip link set dev eth0 up\nip netns exec server ip addr add ${server_ip4}/24 dev eth0\n\nip netns exec client ip link add dev bond0 down type bond mode 1 \\\n\tmiimon 100 all_slaves_active 1\nip netns exec client ip link set dev eth0 master bond0\nip netns exec client ip link set dev bond0 up\nip netns exec client ip addr add ${client_ip4}/24 dev bond0\nip netns exec client ping -c 5 $server_ip4 >/dev/null\n\nip netns exec client ip link set dev eth0 nomaster\nip netns exec client ip link set dev bond0 down\nip netns exec client ip link set dev bond0 type bond mode 0 \\\n\tarp_interval 1000 arp_ip_target \"+${server_ip4}\"\nip netns exec client ip link set dev eth0 master bond0\nip netns exec client ip link set dev bond0 up\nip netns exec client ping -c 5 $server_ip4 >/dev/null\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

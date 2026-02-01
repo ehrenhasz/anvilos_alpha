@@ -1,0 +1,9 @@
+{
+  "module_name": "suspend.c",
+  "hash_id": "293e816c4e2205d677caad8a967be1f65556dcc6ebc52ea52992569abec414b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cxl/core/suspend.c",
+  "human_readable_source": "\n \n#include <linux/atomic.h>\n#include <linux/export.h>\n#include \"cxlmem.h\"\n\nstatic atomic_t mem_active;\n\nbool cxl_mem_active(void)\n{\n\treturn atomic_read(&mem_active) != 0;\n}\n\nvoid cxl_mem_active_inc(void)\n{\n\tatomic_inc(&mem_active);\n}\nEXPORT_SYMBOL_NS_GPL(cxl_mem_active_inc, CXL);\n\nvoid cxl_mem_active_dec(void)\n{\n\tatomic_dec(&mem_active);\n}\nEXPORT_SYMBOL_NS_GPL(cxl_mem_active_dec, CXL);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "10feed257763efa1f1042c6c7922def1722c09fdbc537736f7c8adde8acc8bec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sun4i/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsun4i-backend-y\t\t\t+= sun4i_backend.o sun4i_layer.o\nsun4i-frontend-y\t\t+= sun4i_frontend.o\n\nsun4i-drm-y\t\t\t+= sun4i_drv.o\nsun4i-drm-y\t\t\t+= sun4i_framebuffer.o\n\nsun4i-drm-hdmi-y\t\t+= sun4i_hdmi_ddc_clk.o\nsun4i-drm-hdmi-y\t\t+= sun4i_hdmi_enc.o\nsun4i-drm-hdmi-y\t\t+= sun4i_hdmi_i2c.o\nsun4i-drm-hdmi-y\t\t+= sun4i_hdmi_tmds_clk.o\n\nsun8i-drm-hdmi-y\t\t+= sun8i_dw_hdmi.o\nsun8i-drm-hdmi-y\t\t+= sun8i_hdmi_phy.o\nsun8i-drm-hdmi-y\t\t+= sun8i_hdmi_phy_clk.o\n\nsun8i-mixer-y\t\t\t+= sun8i_mixer.o sun8i_ui_layer.o \\\n\t\t\t\t   sun8i_vi_layer.o sun8i_ui_scaler.o \\\n\t\t\t\t   sun8i_vi_scaler.o sun8i_csc.o\n\nsun4i-tcon-y\t\t\t+= sun4i_crtc.o\nsun4i-tcon-y\t\t\t+= sun4i_tcon_dclk.o\nsun4i-tcon-y\t\t\t+= sun4i_lvds.o\nsun4i-tcon-y\t\t\t+= sun4i_tcon.o\nsun4i-tcon-y\t\t\t+= sun4i_rgb.o\n\nobj-$(CONFIG_DRM_SUN4I)\t\t+= sun4i-drm.o\nobj-$(CONFIG_DRM_SUN4I)\t\t+= sun4i-tcon.o\nobj-$(CONFIG_DRM_SUN4I)\t\t+= sun4i_tv.o\nobj-$(CONFIG_DRM_SUN4I)\t\t+= sun6i_drc.o\n\nobj-$(CONFIG_DRM_SUN4I_BACKEND)\t+= sun4i-backend.o\nifdef CONFIG_DRM_SUN4I_BACKEND\nobj-$(CONFIG_DRM_SUN4I)\t\t+= sun4i-frontend.o\nendif\nobj-$(CONFIG_DRM_SUN4I_HDMI)\t+= sun4i-drm-hdmi.o\nobj-$(CONFIG_DRM_SUN6I_DSI)\t+= sun6i_mipi_dsi.o\nobj-$(CONFIG_DRM_SUN8I_DW_HDMI)\t+= sun8i-drm-hdmi.o\nobj-$(CONFIG_DRM_SUN8I_MIXER)\t+= sun8i-mixer.o\nobj-$(CONFIG_DRM_SUN8I_TCON_TOP) += sun8i_tcon_top.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

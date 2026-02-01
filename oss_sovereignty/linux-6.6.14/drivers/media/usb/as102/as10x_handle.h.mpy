@@ -1,0 +1,9 @@
+{
+  "module_name": "as10x_handle.h",
+  "hash_id": "081793fd13acf1f66cf26a761ed52b96e95060df9a12d4db959181c52751ca20",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/as102/as10x_handle.h",
+  "human_readable_source": " \n \n#ifndef _AS10X_HANDLE_H\n#define _AS10X_HANDLE_H\nstruct as10x_bus_adapter_t;\nstruct as102_dev_t;\n\n#include \"as10x_cmd.h\"\n\n \n#define REGMODE8\t8\n#define REGMODE16\t16\n#define REGMODE32\t32\n\nstruct as102_priv_ops_t {\n\tint (*upload_fw_pkt)(struct as10x_bus_adapter_t *bus_adap,\n\t\t\t      unsigned char *buf, int buflen, int swap32);\n\n\tint (*send_cmd)(struct as10x_bus_adapter_t *bus_adap,\n\t\t\t unsigned char *buf, int buflen);\n\n\tint (*xfer_cmd)(struct as10x_bus_adapter_t *bus_adap,\n\t\t\t unsigned char *send_buf, int send_buf_len,\n\t\t\t unsigned char *recv_buf, int recv_buf_len);\n\n\tint (*start_stream)(struct as102_dev_t *dev);\n\tvoid (*stop_stream)(struct as102_dev_t *dev);\n\n\tint (*reset_target)(struct as10x_bus_adapter_t *bus_adap);\n\n\tint (*read_write)(struct as10x_bus_adapter_t *bus_adap, uint8_t mode,\n\t\t\t  uint32_t rd_addr, uint16_t rd_len,\n\t\t\t  uint32_t wr_addr, uint16_t wr_len);\n\n\tint (*as102_read_ep2)(struct as10x_bus_adapter_t *bus_adap,\n\t\t\t       unsigned char *recv_buf,\n\t\t\t       int recv_buf_len);\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

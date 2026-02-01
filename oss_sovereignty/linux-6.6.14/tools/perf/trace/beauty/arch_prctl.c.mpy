@@ -1,0 +1,9 @@
+{
+  "module_name": "arch_prctl.c",
+  "hash_id": "5a7fe86ae5746a66c539ee9d7c57dd55bf24acb24f5a0d767461d8d10cf8507a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/arch_prctl.c",
+  "human_readable_source": "\n \n\n#include \"trace/beauty/beauty.h\"\n#include <linux/kernel.h>\n\n#include \"trace/beauty/generated/x86_arch_prctl_code_array.c\"\n\nstatic DEFINE_STRARRAY_OFFSET(x86_arch_prctl_codes_1, \"ARCH_\", x86_arch_prctl_codes_1_offset);\nstatic DEFINE_STRARRAY_OFFSET(x86_arch_prctl_codes_2, \"ARCH_\", x86_arch_prctl_codes_2_offset);\nstatic DEFINE_STRARRAY_OFFSET(x86_arch_prctl_codes_3, \"ARCH_\", x86_arch_prctl_codes_3_offset);\n\nstatic struct strarray *x86_arch_prctl_codes[] = {\n\t&strarray__x86_arch_prctl_codes_1,\n\t&strarray__x86_arch_prctl_codes_2,\n\t&strarray__x86_arch_prctl_codes_3,\n};\n\nstatic DEFINE_STRARRAYS(x86_arch_prctl_codes);\n\nstatic size_t x86_arch_prctl__scnprintf_code(int option, char *bf, size_t size, bool show_prefix)\n{\n\treturn strarrays__scnprintf(&strarrays__x86_arch_prctl_codes, bf, size, \"%#x\", show_prefix, option);\n}\n\nsize_t syscall_arg__scnprintf_x86_arch_prctl_code(char *bf, size_t size, struct syscall_arg *arg)\n{\n\tunsigned long code = arg->val;\n\n\treturn x86_arch_prctl__scnprintf_code(code, bf, size, arg->show_string_prefix);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

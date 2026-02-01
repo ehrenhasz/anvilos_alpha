@@ -1,0 +1,9 @@
+{
+  "module_name": "verifier_d_path.c",
+  "hash_id": "7d3c0c88127e60e3ae66b48a4d1ddbb00991fc183f9bb78c5cb8fc2c5de74141",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/verifier_d_path.c",
+  "human_readable_source": "\n \n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nSEC(\"fentry/dentry_open\")\n__description(\"d_path accept\")\n__success __retval(0)\n__naked void d_path_accept(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr1 = *(u32*)(r1 + 0);\t\t\t\t\\\n\tr2 = r10;\t\t\t\t\t\\\n\tr2 += -8;\t\t\t\t\t\\\n\tr6 = 0;\t\t\t\t\t\t\\\n\t*(u64*)(r2 + 0) = r6;\t\t\t\t\\\n\tr3 = 8 ll;\t\t\t\t\t\\\n\tcall %[bpf_d_path];\t\t\t\t\\\n\tr0 = 0;\t\t\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t:\n\t: __imm(bpf_d_path)\n\t: __clobber_all);\n}\n\nSEC(\"fentry/d_path\")\n__description(\"d_path reject\")\n__failure __msg(\"helper call is not allowed in probe\")\n__naked void d_path_reject(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr1 = *(u32*)(r1 + 0);\t\t\t\t\\\n\tr2 = r10;\t\t\t\t\t\\\n\tr2 += -8;\t\t\t\t\t\\\n\tr6 = 0;\t\t\t\t\t\t\\\n\t*(u64*)(r2 + 0) = r6;\t\t\t\t\\\n\tr3 = 8 ll;\t\t\t\t\t\\\n\tcall %[bpf_d_path];\t\t\t\t\\\n\tr0 = 0;\t\t\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t:\n\t: __imm(bpf_d_path)\n\t: __clobber_all);\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

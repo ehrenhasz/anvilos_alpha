@@ -1,0 +1,9 @@
+{
+  "module_name": "link_dp_phy.h",
+  "hash_id": "067425ba1b41a437d14be6876d220731cb6ec403fd50d7155233f3a21c8fdb45",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/protocols/link_dp_phy.h",
+  "human_readable_source": " \n\n#ifndef __DC_LINK_DP_PHY_H__\n#define __DC_LINK_DP_PHY_H__\n\n#include \"link.h\"\nvoid dp_enable_link_phy(\n\tstruct dc_link *link,\n\tconst struct link_resource *link_res,\n\tenum signal_type signal,\n\tenum clock_source_id clock_source,\n\tconst struct dc_link_settings *link_settings);\n\nvoid dp_disable_link_phy(struct dc_link *link,\n\t\tconst struct link_resource *link_res,\n\t\tenum signal_type signal);\n\nvoid dp_set_hw_lane_settings(\n\t\tstruct dc_link *link,\n\t\tconst struct link_resource *link_res,\n\t\tconst struct link_training_settings *link_settings,\n\t\tuint32_t offset);\n\nvoid dp_set_drive_settings(\n\tstruct dc_link *link,\n\tconst struct link_resource *link_res,\n\tstruct link_training_settings *lt_settings);\n\nenum dc_status dp_set_fec_ready(struct dc_link *link,\n\t\tconst struct link_resource *link_res, bool ready);\n\nvoid dp_set_fec_enable(struct dc_link *link, bool enable);\n\nvoid dpcd_write_rx_power_ctrl(struct dc_link *link, bool on);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

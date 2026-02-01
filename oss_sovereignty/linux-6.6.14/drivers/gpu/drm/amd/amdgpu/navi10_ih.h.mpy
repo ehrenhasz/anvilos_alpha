@@ -1,0 +1,9 @@
+{
+  "module_name": "navi10_ih.h",
+  "hash_id": "32206bfdb828dbf8e0125a09f9f04275d9466ea11c9218c980026cfed166ea1c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/navi10_ih.h",
+  "human_readable_source": " \n\n#ifndef __NAVI10_IH_H__\n#define __NAVI10_IH_H__\n\nextern const struct amdgpu_ip_block_version navi10_ih_ip_block;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

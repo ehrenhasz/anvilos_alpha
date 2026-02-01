@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "112161ef4c4e608c600d3a197297eeae93283b8bf731c6f264b41edca313ae68",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/cpu-hotplug/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nall:\n\nTEST_PROGS := cpu-on-off-test.sh\n\ninclude ../lib.mk\n\nrun_full_test:\n\t@/bin/bash ./cpu-on-off-test.sh -a && echo \"cpu-hotplug selftests: [PASS]\" || echo \"cpu-hotplug selftests: [FAIL]\"\n\nclean:\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

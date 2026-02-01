@@ -1,0 +1,9 @@
+{
+  "module_name": "spinlock.h",
+  "hash_id": "f3c801a0a0cb71d9fcedb59ad2168aa42ecda3cef439b9956a6303978dbb41ad",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/spinlock.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SPINLOCK_H\n#define _ASM_X86_SPINLOCK_H\n\n#include <linux/jump_label.h>\n#include <linux/atomic.h>\n#include <asm/page.h>\n#include <asm/processor.h>\n#include <linux/compiler.h>\n#include <asm/paravirt.h>\n#include <asm/bitops.h>\n\n \n\n \n#define SPIN_THRESHOLD\t(1 << 15)\n\n#include <asm/qspinlock.h>\n\n \n\n#include <asm/qrwlock.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

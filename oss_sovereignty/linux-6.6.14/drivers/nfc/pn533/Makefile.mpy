@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "79b676adc181eccc0af5f0e8aa5fc4aeafd06aa58378ddfc36d553122bb06c2a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/pn533/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for PN533 NFC driver\n#\npn533_usb-objs  = usb.o\npn533_i2c-objs  = i2c.o\npn532_uart-objs  = uart.o\n\nobj-$(CONFIG_NFC_PN533)     += pn533.o\nobj-$(CONFIG_NFC_PN533_USB) += pn533_usb.o\nobj-$(CONFIG_NFC_PN533_I2C) += pn533_i2c.o\nobj-$(CONFIG_NFC_PN532_UART) += pn532_uart.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hyperv.h",
+  "hash_id": "0ec79efd6b5bfd679da857f49674fa3ae642e011e28ef0e9e96a8d6ba13b0b6f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kvm/svm/hyperv.h",
+  "human_readable_source": " \n \n\n#ifndef __ARCH_X86_KVM_SVM_HYPERV_H__\n#define __ARCH_X86_KVM_SVM_HYPERV_H__\n\n#include <asm/mshyperv.h>\n\n#include \"../hyperv.h\"\n#include \"svm.h\"\n\nstatic inline void nested_svm_hv_update_vm_vp_ids(struct kvm_vcpu *vcpu)\n{\n\tstruct vcpu_svm *svm = to_svm(vcpu);\n\tstruct hv_vmcb_enlightenments *hve = &svm->nested.ctl.hv_enlightenments;\n\tstruct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);\n\n\tif (!hv_vcpu)\n\t\treturn;\n\n\thv_vcpu->nested.pa_page_gpa = hve->partition_assist_page;\n\thv_vcpu->nested.vm_id = hve->hv_vm_id;\n\thv_vcpu->nested.vp_id = hve->hv_vp_id;\n}\n\nstatic inline bool nested_svm_l2_tlb_flush_enabled(struct kvm_vcpu *vcpu)\n{\n\tstruct vcpu_svm *svm = to_svm(vcpu);\n\tstruct hv_vmcb_enlightenments *hve = &svm->nested.ctl.hv_enlightenments;\n\tstruct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);\n\n\tif (!hv_vcpu)\n\t\treturn false;\n\n\tif (!hve->hv_enlightenments_control.nested_flush_hypercall)\n\t\treturn false;\n\n\treturn hv_vcpu->vp_assist_page.nested_control.features.directhypercall;\n}\n\nvoid svm_hv_inject_synthetic_vmexit_post_tlb_flush(struct kvm_vcpu *vcpu);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

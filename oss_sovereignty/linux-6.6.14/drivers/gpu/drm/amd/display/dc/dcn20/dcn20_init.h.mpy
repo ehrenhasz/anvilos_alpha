@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn20_init.h",
+  "hash_id": "3159a310437eeb1db3f2acfc2ffddc658733e9135b8222c49735e42855e3c6d8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_init.h",
+  "human_readable_source": " \n\n#ifndef __DC_DCN20_INIT_H__\n#define __DC_DCN20_INIT_H__\n\nstruct dc;\n\nvoid dcn20_hw_sequencer_construct(struct dc *dc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

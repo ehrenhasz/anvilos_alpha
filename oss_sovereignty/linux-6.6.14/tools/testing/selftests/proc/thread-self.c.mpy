@@ -1,0 +1,9 @@
+{
+  "module_name": "thread-self.c",
+  "hash_id": "b3805b71ca069fe505c577eeb354600ab290cec40f96fbcabed464a99ad01373",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/proc/thread-self.c",
+  "human_readable_source": " \n\n#undef NDEBUG\n#include <assert.h>\n#include <sched.h>\n#include <stdio.h>\n#include <unistd.h>\n#include <sys/mman.h>\n#include <sys/wait.h>\n\n#include \"proc.h\"\n\nint f(void *arg)\n{\n\tchar buf1[64], buf2[64];\n\tpid_t pid, tid;\n\tssize_t rv;\n\n\tpid = sys_getpid();\n\ttid = sys_gettid();\n\tsnprintf(buf1, sizeof(buf1), \"%u/task/%u\", pid, tid);\n\n\trv = readlink(\"/proc/thread-self\", buf2, sizeof(buf2));\n\tassert(rv == strlen(buf1));\n\tbuf2[rv] = '\\0';\n\tassert(streq(buf1, buf2));\n\n\tif (arg)\n\t\texit(0);\n\treturn 0;\n}\n\nint main(void)\n{\n\tconst int PAGE_SIZE = sysconf(_SC_PAGESIZE);\n\tpid_t pid;\n\tvoid *stack;\n\n\t \n\tf((void *)0);\n\n\tstack = mmap(NULL, 2 * PAGE_SIZE, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);\n\tassert(stack != MAP_FAILED);\n\t \n\tpid = clone(f, stack + PAGE_SIZE, CLONE_THREAD|CLONE_SIGHAND|CLONE_VM, (void *)1);\n\tassert(pid > 0);\n\tpause();\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

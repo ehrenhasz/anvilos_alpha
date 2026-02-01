@@ -1,0 +1,9 @@
+{
+  "module_name": "sftp-usergroup.h",
+  "hash_id": "1b9d5dddd7c0b68fd8623e6e9940c0a61019bb79164324a0c37e0a544f7b2960",
+  "original_prompt": "Ingested from openssh-9.6p1/sftp-usergroup.h",
+  "human_readable_source": " \n\n \n\n \nvoid get_remote_user_groups_from_glob(struct sftp_conn *conn, glob_t *g);\nvoid get_remote_user_groups_from_dirents(struct sftp_conn *conn, SFTP_DIRENT **d);\n\n \nconst char *ruser_name(uid_t uid);\nconst char *rgroup_name(uid_t gid);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

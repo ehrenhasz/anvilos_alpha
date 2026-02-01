@@ -1,0 +1,9 @@
+{
+  "module_name": "noise_filter_table.h",
+  "hash_id": "97222558d6ed709234d30f54e5902f5a32d87eac6c0ed7474acb23896e4ec0db",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/ti/omap3isp/noise_filter_table.h",
+  "human_readable_source": " \n \n\n16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,\n16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,\n31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,\n31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

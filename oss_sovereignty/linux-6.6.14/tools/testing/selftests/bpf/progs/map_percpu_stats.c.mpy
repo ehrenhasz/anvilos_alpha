@@ -1,0 +1,9 @@
+{
+  "module_name": "map_percpu_stats.c",
+  "hash_id": "40482077a7256603df7cd2bb9e2269d5e59e5963c5084a859a875a0aea32900c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/map_percpu_stats.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\n__u32 target_id;\n\n__s64 bpf_map_sum_elem_count(struct bpf_map *map) __ksym;\n\nSEC(\"iter/bpf_map\")\nint dump_bpf_map(struct bpf_iter__bpf_map *ctx)\n{\n\tstruct seq_file *seq = ctx->meta->seq;\n\tstruct bpf_map *map = ctx->map;\n\n\tif (map && map->id == target_id)\n\t\tBPF_SEQ_PRINTF(seq, \"%lld\", bpf_map_sum_elem_count(map));\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

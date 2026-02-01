@@ -1,0 +1,9 @@
+{
+  "module_name": "libcrc32c.c",
+  "hash_id": "c70d1c5615e7d5636f631b0408ea15c109967ae2eb82f1a801c30105b522d39e",
+  "original_prompt": "Ingested from linux-6.6.14/lib/libcrc32c.c",
+  "human_readable_source": "\n \n\n#include <crypto/hash.h>\n#include <linux/err.h>\n#include <linux/init.h>\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/crc32c.h>\n\nstatic struct crypto_shash *tfm;\n\nu32 crc32c(u32 crc, const void *address, unsigned int length)\n{\n\tSHASH_DESC_ON_STACK(shash, tfm);\n\tu32 ret, *ctx = (u32 *)shash_desc_ctx(shash);\n\tint err;\n\n\tshash->tfm = tfm;\n\t*ctx = crc;\n\n\terr = crypto_shash_update(shash, address, length);\n\tBUG_ON(err);\n\n\tret = *ctx;\n\tbarrier_data(ctx);\n\treturn ret;\n}\n\nEXPORT_SYMBOL(crc32c);\n\nstatic int __init libcrc32c_mod_init(void)\n{\n\ttfm = crypto_alloc_shash(\"crc32c\", 0, 0);\n\treturn PTR_ERR_OR_ZERO(tfm);\n}\n\nstatic void __exit libcrc32c_mod_fini(void)\n{\n\tcrypto_free_shash(tfm);\n}\n\nmodule_init(libcrc32c_mod_init);\nmodule_exit(libcrc32c_mod_fini);\n\nMODULE_AUTHOR(\"Clay Haapala <chaapala@cisco.com>\");\nMODULE_DESCRIPTION(\"CRC32c (Castagnoli) calculations\");\nMODULE_LICENSE(\"GPL\");\nMODULE_SOFTDEP(\"pre: crc32c\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

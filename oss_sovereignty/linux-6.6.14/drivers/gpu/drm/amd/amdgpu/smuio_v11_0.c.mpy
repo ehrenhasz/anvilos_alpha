@@ -1,0 +1,9 @@
+{
+  "module_name": "smuio_v11_0.c",
+  "hash_id": "110e752f7ebafdb327cedb4f26cd8f97428b361f2c9fed786cab9777fb077e56",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/smuio_v11_0.c",
+  "human_readable_source": " \n#include \"amdgpu.h\"\n#include \"smuio_v11_0.h\"\n#include \"smuio/smuio_11_0_0_offset.h\"\n#include \"smuio/smuio_11_0_0_sh_mask.h\"\n\nstatic u32 smuio_v11_0_get_rom_index_offset(struct amdgpu_device *adev)\n{\n\treturn SOC15_REG_OFFSET(SMUIO, 0, mmROM_INDEX);\n}\n\nstatic u32 smuio_v11_0_get_rom_data_offset(struct amdgpu_device *adev)\n{\n\treturn SOC15_REG_OFFSET(SMUIO, 0, mmROM_DATA);\n}\n\nstatic void smuio_v11_0_update_rom_clock_gating(struct amdgpu_device *adev, bool enable)\n{\n\tu32 def, data;\n\n\t \n\tif (adev->flags & AMD_IS_APU)\n\t\treturn;\n\n\tif (!(adev->cg_flags & AMD_CG_SUPPORT_ROM_MGCG))\n\t\treturn;\n\n\tdef = data = RREG32_SOC15(SMUIO, 0, mmCGTT_ROM_CLK_CTRL0);\n\n\tif (enable)\n\t\tdata &= ~(CGTT_ROM_CLK_CTRL0__SOFT_OVERRIDE0_MASK |\n\t\t\tCGTT_ROM_CLK_CTRL0__SOFT_OVERRIDE1_MASK);\n\telse\n\t\tdata |= CGTT_ROM_CLK_CTRL0__SOFT_OVERRIDE0_MASK |\n\t\t\tCGTT_ROM_CLK_CTRL0__SOFT_OVERRIDE1_MASK;\n\n\tif (def != data)\n\t\tWREG32_SOC15(SMUIO, 0, mmCGTT_ROM_CLK_CTRL0, data);\n}\n\nstatic void smuio_v11_0_get_clock_gating_state(struct amdgpu_device *adev, u64 *flags)\n{\n\tu32 data;\n\n\t \n\tif (adev->flags & AMD_IS_APU)\n\t\treturn;\n\n\tdata = RREG32_SOC15(SMUIO, 0, mmCGTT_ROM_CLK_CTRL0);\n\tif (!(data & CGTT_ROM_CLK_CTRL0__SOFT_OVERRIDE0_MASK))\n\t\t*flags |= AMD_CG_SUPPORT_ROM_MGCG;\n}\n\nconst struct amdgpu_smuio_funcs smuio_v11_0_funcs = {\n\t.get_rom_index_offset = smuio_v11_0_get_rom_index_offset,\n\t.get_rom_data_offset = smuio_v11_0_get_rom_data_offset,\n\t.update_rom_clock_gating = smuio_v11_0_update_rom_clock_gating,\n\t.get_clock_gating_state = smuio_v11_0_get_clock_gating_state,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

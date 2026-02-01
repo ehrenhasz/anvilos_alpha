@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "33d1dbac64907fb74628faa3aa03a8deec616cf500b2421c1771688480bb02e7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/vmx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CRYPTO_DEV_VMX_ENCRYPT\n\ttristate \"Encryption acceleration support on P8 CPU\"\n\tdepends on CRYPTO_DEV_VMX\n\tselect CRYPTO_AES\n\tselect CRYPTO_CBC\n\tselect CRYPTO_CTR\n\tselect CRYPTO_GHASH\n\tselect CRYPTO_XTS\n\tdefault m\n\thelp\n\t  Support for VMX cryptographic acceleration instructions on Power8 CPU.\n\t  This module supports acceleration for AES and GHASH in hardware. If you\n\t  choose 'M' here, this module will be called vmx-crypto.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e2362b006866155bd89c381c6b9db6b5beec77bbe37c3d3f70e923221fce0b50",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/typec/tipd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCFLAGS_trace.o\t\t\t:= -I$(src)\n\nobj-$(CONFIG_TYPEC_TPS6598X)\t+= tps6598x.o\ntps6598x-y\t\t\t:= core.o\ntps6598x-$(CONFIG_TRACING)\t+= trace.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

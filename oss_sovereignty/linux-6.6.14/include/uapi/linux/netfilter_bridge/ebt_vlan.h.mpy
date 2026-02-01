@@ -1,0 +1,9 @@
+{
+  "module_name": "ebt_vlan.h",
+  "hash_id": "6d3d98128df587f420fb7fdb8311dc4c8eb94962045224173d86e6883b7770f4",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_bridge/ebt_vlan.h",
+  "human_readable_source": " \n#ifndef __LINUX_BRIDGE_EBT_VLAN_H\n#define __LINUX_BRIDGE_EBT_VLAN_H\n\n#include <linux/types.h>\n\n#define EBT_VLAN_ID\t0x01\n#define EBT_VLAN_PRIO\t0x02\n#define EBT_VLAN_ENCAP\t0x04\n#define EBT_VLAN_MASK (EBT_VLAN_ID | EBT_VLAN_PRIO | EBT_VLAN_ENCAP)\n#define EBT_VLAN_MATCH \"vlan\"\n\nstruct ebt_vlan_info {\n\t__u16 id;\t\t \n\t__u8 prio;\t\t \n\t__be16 encap;\t\t \n\t__u8 bitmask;\t\t \n\t__u8 invflags;\t\t \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

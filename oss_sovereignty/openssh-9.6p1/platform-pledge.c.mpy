@@ -1,0 +1,9 @@
+{
+  "module_name": "platform-pledge.c",
+  "hash_id": "6cb5182b261e0ce517990d96f1b3295665418dd9ced68372266ec5aacbe1926f",
+  "original_prompt": "Ingested from openssh-9.6p1/platform-pledge.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#include <sys/types.h>\n\n#include <stdarg.h>\n#include <unistd.h>\n\n#include \"platform.h\"\n\n#include \"openbsd-compat/openbsd-compat.h\"\n\n \nvoid\nplatform_pledge_agent(void)\n{\n#ifdef USE_SOLARIS_PRIVS\n\t \n\tsolaris_drop_privs_root_pinfo_net();\n#endif\n}\n\n \nvoid\nplatform_pledge_sftp_server(void)\n{\n#ifdef USE_SOLARIS_PRIVS\n\tsolaris_drop_privs_pinfo_net_fork_exec();\n#endif\n}\n\n \nvoid\nplatform_pledge_mux(void)\n{\n#ifdef USE_SOLARIS_PRIVS\n\tsolaris_drop_privs_root_pinfo_net_exec();\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

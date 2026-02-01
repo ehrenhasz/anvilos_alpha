@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9c25fd6c7d0133530f4f8f266484c49917326f762ff9fab2e6b9174ed91f0b77",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/xen/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0 OR MIT\n\ndrm_xen_front-objs := xen_drm_front.o \\\n\t\t      xen_drm_front_kms.o \\\n\t\t      xen_drm_front_conn.o \\\n\t\t      xen_drm_front_evtchnl.o \\\n\t\t      xen_drm_front_cfg.o \\\n\t\t      xen_drm_front_gem.o\n\nobj-$(CONFIG_DRM_XEN_FRONTEND) += drm_xen_front.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

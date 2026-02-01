@@ -1,0 +1,9 @@
+{
+  "module_name": "msm-sc7180-fails.txt",
+  "hash_id": "2af73ae724b8b676e79e835372459130c46105e5a4262821e63ef3b0d637676c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/msm-sc7180-fails.txt",
+  "human_readable_source": "kms_cursor_legacy@cursor-vs-flip-toggle,Fail\nkms_cursor_legacy@cursor-vs-flip-varying-size,Fail\nkms_cursor_legacy@cursorA-vs-flipA-atomic-transitions,Crash\nkms_pipe_crc_basic@compare-crc-sanitycheck-nv12,Fail\nkms_plane@pixel-format,Fail\nkms_plane@pixel-format-source-clamping,Fail\nkms_plane@plane-position-covered,Fail\nkms_plane@plane-position-hole,Fail\nkms_plane@plane-position-hole-dpms,Fail\nkms_plane_alpha_blend@alpha-7efc,Fail\nkms_plane_alpha_blend@coverage-7efc,Fail\nkms_plane_alpha_blend@coverage-vs-premult-vs-constant,Fail\nkms_plane_alpha_blend@pipe-A-alpha-7efc,Fail\nkms_plane_alpha_blend@pipe-A-coverage-7efc,Fail\nkms_plane_alpha_blend@pipe-A-coverage-vs-premult-vs-constant,Fail\nkms_plane_alpha_blend@pipe-B-alpha-7efc,Fail\nkms_plane_alpha_blend@pipe-B-alpha-basic,Fail\nkms_plane_alpha_blend@pipe-B-alpha-opaque-fb,Fail\nkms_plane_alpha_blend@pipe-B-constant-alpha-max,Fail\nkms_plane_alpha_blend@pipe-B-constant-alpha-mid,Fail\nkms_plane_alpha_blend@pipe-B-coverage-7efc,Fail\nkms_plane_alpha_blend@pipe-B-coverage-vs-premult-vs-constant,Fail\nkms_rmfb@close-fd,Fail\nkms_universal_plane@disable-primary-vs-flip-pipe-b,Fail\nkms_universal_plane@universal-plane-pipe-B-sanity,Fail\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

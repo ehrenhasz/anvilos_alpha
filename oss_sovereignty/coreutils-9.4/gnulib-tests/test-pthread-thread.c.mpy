@@ -1,0 +1,9 @@
+{
+  "module_name": "test-pthread-thread.c",
+  "hash_id": "a7a7bf873dddef3896f353cf228622a96bd23be732277eaab253f6da4be01306",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-pthread-thread.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <pthread.h>\n\n#include <stdio.h>\n#include <string.h>\n\n#include \"macros.h\"\n\nstatic pthread_t main_thread_before;\nstatic pthread_t main_thread_after;\nstatic pthread_t worker_thread;\n\n#define MAGIC ((void *) 1266074729)\nstatic volatile int work_done;\n\nstatic void *\nworker_thread_func (void *arg)\n{\n  work_done = 1;\n  return MAGIC;\n}\n\nint\nmain ()\n{\n  main_thread_before = pthread_self ();\n\n  if (pthread_create (&worker_thread, NULL, worker_thread_func, NULL) == 0)\n    {\n      void *ret;\n\n       \n      main_thread_after = pthread_self ();\n      ASSERT (memcmp (&main_thread_before, &main_thread_after,\n                      sizeof (pthread_t))\n              == 0);\n\n      ASSERT (pthread_join (worker_thread, &ret) == 0);\n\n       \n      ASSERT (ret == MAGIC);\n\n       \n      ASSERT (work_done);\n\n      return 0;\n    }\n  else\n    {\n      fputs (\"pthread_create failed\\n\", stderr);\n      return 1;\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

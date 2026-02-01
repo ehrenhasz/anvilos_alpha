@@ -1,0 +1,9 @@
+{
+  "module_name": "rsa.h",
+  "hash_id": "dc011f0e31fc2cc4e7c5e50a1b5cbb3eedecc46be3981c216a4b2f7607afc7db",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/internal/rsa.h",
+  "human_readable_source": " \n \n#ifndef _RSA_HELPER_\n#define _RSA_HELPER_\n#include <linux/types.h>\n\n \nstruct rsa_key {\n\tconst u8 *n;\n\tconst u8 *e;\n\tconst u8 *d;\n\tconst u8 *p;\n\tconst u8 *q;\n\tconst u8 *dp;\n\tconst u8 *dq;\n\tconst u8 *qinv;\n\tsize_t n_sz;\n\tsize_t e_sz;\n\tsize_t d_sz;\n\tsize_t p_sz;\n\tsize_t q_sz;\n\tsize_t dp_sz;\n\tsize_t dq_sz;\n\tsize_t qinv_sz;\n};\n\nint rsa_parse_pub_key(struct rsa_key *rsa_key, const void *key,\n\t\t      unsigned int key_len);\n\nint rsa_parse_priv_key(struct rsa_key *rsa_key, const void *key,\n\t\t       unsigned int key_len);\n\nextern struct crypto_template rsa_pkcs1pad_tmpl;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

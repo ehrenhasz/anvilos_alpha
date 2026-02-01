@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_key_name.c",
+  "hash_id": "b5dc82f654d22bdf3c6f8057a44a80aa74ddf0842b291f74ae65cb13ef6e10f2",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/widechar/lib_key_name.c",
+  "human_readable_source": " \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_key_name.c,v 1.5 2020/02/02 23:34:34 tom Exp $\")\n\n#define MyData _nc_globals.key_name\n\nNCURSES_EXPORT(NCURSES_CONST char *)\nkey_name(wchar_t c)\n{\n    cchar_t my_cchar;\n    wchar_t *my_wchars;\n    size_t len;\n\n    memset(&my_cchar, 0, sizeof(my_cchar));\n    my_cchar.chars[0] = c;\n    my_cchar.chars[1] = L'\\0';\n\n    my_wchars = wunctrl(&my_cchar);\n    len = wcstombs(MyData, my_wchars, sizeof(MyData) - 1);\n    if (isEILSEQ(len) || (len == 0)) {\n\treturn 0;\n    }\n\n    MyData[len] = '\\0';\n    return MyData;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

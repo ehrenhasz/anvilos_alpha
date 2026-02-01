@@ -1,0 +1,9 @@
+{
+  "module_name": "sm3.h",
+  "hash_id": "48dd7e7be5df3ac15025ef1e7e072fb2830737654aed779ab202d84cc6082348",
+  "original_prompt": "Ingested from coreutils-9.4/lib/sm3.h",
+  "human_readable_source": " \n# if !_GL_CONFIG_H_INCLUDED\n#  error \"Please include config.h first.\"\n# endif\n\n# include <stdio.h>\n# include <stdint.h>\n\n# if HAVE_OPENSSL_SM3\n#  ifndef OPENSSL_API_COMPAT\n#   define OPENSSL_API_COMPAT 0x10101000L  \n#  endif\n \n#  include <openssl/configuration.h>\n#  if (OPENSSL_CONFIGURED_API \\\n       < (OPENSSL_API_COMPAT < 0x900000L ? OPENSSL_API_COMPAT : \\\n          ((OPENSSL_API_COMPAT >> 28) & 0xF) * 10000 \\\n          + ((OPENSSL_API_COMPAT >> 20) & 0xFF) * 100 \\\n          + ((OPENSSL_API_COMPAT >> 12) & 0xFF)))\n#   undef HAVE_OPENSSL_SM3\n#  else\n#   include <openssl/sm3.h>\n#  endif\n# endif\n\n# ifdef __cplusplus\nextern \"C\" {\n# endif\n\nenum { SM3_DIGEST_SIZE = 256 / 8 };\n\n# if HAVE_OPENSSL_SM3\n#  define GL_OPENSSL_NAME 3\n#  include \"gl_openssl.h\"\n# else\n \nstruct sm3_ctx\n{\n  uint32_t state[8];\n\n  uint32_t total[2];\n  size_t buflen;        \n  uint32_t buffer[32];  \n};\n\n \nextern void sm3_init_ctx (struct sm3_ctx *ctx);\n\n \nextern void sm3_process_block (const void *buffer, size_t len,\n                               struct sm3_ctx *ctx);\n\n \nextern void sm3_process_bytes (const void *buffer, size_t len,\n                               struct sm3_ctx *ctx);\n\n \nextern void *sm3_finish_ctx (struct sm3_ctx *ctx, void *restrict resbuf);\n\n \nextern void *sm3_read_ctx (const struct sm3_ctx *ctx, void *restrict resbuf);\n\n \nextern void *sm3_buffer (const char *buffer, size_t len,\n                         void *restrict resblock);\n\n# endif\n\n \nextern int sm3_stream (FILE *stream, void *resblock);\n\n\n# ifdef __cplusplus\n}\n# endif\n\n#endif\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

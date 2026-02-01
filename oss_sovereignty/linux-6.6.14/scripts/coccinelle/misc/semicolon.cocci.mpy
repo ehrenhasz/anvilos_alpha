@@ -1,0 +1,9 @@
+{
+  "module_name": "semicolon.cocci",
+  "hash_id": "f8bd380886ac74491653fb9de138789c4dd655b476ec3a19b372fe3de3643f5b",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/misc/semicolon.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0-only\n///\n/// Remove unneeded semicolon.\n///\n// Confidence: Moderate\n// Copyright: (C) 2012 Peter Senna Tschudin, INRIA/LIP6.\n// URL: https://coccinelle.gitlabpages.inria.fr/website\n// Comments: Some false positives on empty default cases in switch statements.\n// Options: --no-includes --include-headers\n\nvirtual patch\nvirtual report\nvirtual context\nvirtual org\n\n@r_default@\nposition p;\n@@\nswitch (...)\n{\ndefault: ...;@p\n}\n\n@r_case@\nposition p;\n@@\n(\nswitch (...)\n{\ncase ...:;@p\n}\n|\nswitch (...)\n{\ncase ...:...\ncase ...:;@p\n}\n|\nswitch (...)\n{\ncase ...:...\ncase ...:\ncase ...:;@p\n}\n)\n\n@r1@\nstatement S;\nposition p1;\nposition p != {r_default.p, r_case.p};\nidentifier label;\n@@\n(\nlabel:;\n|\nS@p1;@p\n)\n\n@script:python@\np << r1.p;\np1 << r1.p1;\n@@\nif p[0].line != p1[0].line_end:\n\tcocci.include_match(False)\n\n@depends on patch@\nposition r1.p;\n@@\n-;@p\n\n@script:python depends on report@\np << r1.p;\n@@\ncoccilib.report.print_report(p[0],\"Unneeded semicolon\")\n\n@depends on context@\nposition r1.p;\n@@\n*;@p\n\n@script:python depends on org@\np << r1.p;\n@@\ncocci.print_main(\"Unneeded semicolon\",p)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

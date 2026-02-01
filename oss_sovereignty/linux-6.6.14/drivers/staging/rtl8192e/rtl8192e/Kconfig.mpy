@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "521f49b339c58f7403ab70755dc81f22b905e5dc97ebcb3eda55aeb486b80538",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192e/rtl8192e/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig RTL8192E\n\ttristate \"RealTek RTL8192E Wireless LAN NIC driver\"\n\tdepends on PCI && WLAN && RTLLIB\n\tdepends on m\n\tselect CFG80211\n\tselect WIRELESS_EXT\n\tselect WEXT_PRIV\n\tselect CRYPTO\n\tselect FW_LOADER\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "poison.h",
+  "hash_id": "91ed62101f21ccdeb6429c13c78638f4a9d813927fe87198f72aca41b4015f13",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/poison.h",
+  "human_readable_source": " \n#ifndef _LINUX_POISON_H\n#define _LINUX_POISON_H\n\n \n\n \n#ifdef CONFIG_ILLEGAL_POINTER_VALUE\n# define POISON_POINTER_DELTA _AC(CONFIG_ILLEGAL_POINTER_VALUE, UL)\n#else\n# define POISON_POINTER_DELTA 0\n#endif\n\n#ifdef __cplusplus\n#define LIST_POISON1  NULL\n#define LIST_POISON2  NULL\n#else\n \n#define LIST_POISON1  ((void *) 0x100 + POISON_POINTER_DELTA)\n#define LIST_POISON2  ((void *) 0x200 + POISON_POINTER_DELTA)\n#endif\n\n \n \n#define TIMER_ENTRY_STATIC\t((void *) 0x300 + POISON_POINTER_DELTA)\n\n \n#define PAGE_POISON 0xaa\n\n \n\n#define TAIL_MAPPING\t((void *) 0x400 + POISON_POINTER_DELTA)\n\n \n \n#define\tRED_INACTIVE\t0x09F911029D74E35BULL\t \n#define\tRED_ACTIVE\t0xD84156C5635688C0ULL\t \n\n#define SLUB_RED_INACTIVE\t0xbb\n#define SLUB_RED_ACTIVE\t\t0xcc\n\n \n#define\tPOISON_INUSE\t0x5a\t \n#define POISON_FREE\t0x6b\t \n#define\tPOISON_END\t0xa5\t \n\n \n#define POISON_FREE_INITMEM\t0xcc\n\n \n \n\n \n#define JBD_POISON_FREE\t\t0x5b\n#define JBD2_POISON_FREE\t0x5c\n\n \n#define\tPOOL_POISON_FREED\t0xa7\t \n#define\tPOOL_POISON_ALLOCATED\t0xa9\t \n\n \n#define ATM_POISON_FREE\t\t0x12\n#define ATM_POISON\t\t0xdeadbeef\n\n \n#define MUTEX_DEBUG_INIT\t0x11\n#define MUTEX_DEBUG_FREE\t0x22\n\n \n#define KEY_DESTROY\t\t0xbd\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "zcatfd.c",
+  "hash_id": "07683ccf706a28ae9e6a72b0af4f1431981c86c11230c5eac6d0e7342ffe87f0",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/zcatfd.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#include <sys/types.h>\n\n#if defined (HAVE_UNISTD_H)\n#  include <unistd.h>\n#endif\n\n#include <errno.h>\n\n#include <stdc.h>\n\n#if !defined (errno)\nextern int errno;\n#endif\n\n#ifndef ZBUFSIZ\n#  define ZBUFSIZ 4096\n#endif\n\nextern ssize_t zread PARAMS((int, char *, size_t));\nextern int zwrite PARAMS((int, char *, ssize_t));\n\n \nint\nzcatfd (fd, ofd, fn)\n     int fd, ofd;\n     char *fn;\n{\n  ssize_t nr;\n  int rval;\n  char lbuf[ZBUFSIZ];\n\n  rval = 0;\n  while (1)\n    {\n      nr = zread (fd, lbuf, sizeof (lbuf));\n      if (nr == 0)\n\tbreak;\n      else if (nr < 0)\n\t{\n\t  rval = -1;\n\t  break;\n\t}\n      else if (zwrite (ofd, lbuf, nr) < 0)\n\t{\n\t  rval = -1;\n\t  break;\n\t}\n    }\n\n  return rval;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

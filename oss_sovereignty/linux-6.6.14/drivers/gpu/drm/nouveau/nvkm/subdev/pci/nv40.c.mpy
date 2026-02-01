@@ -1,0 +1,9 @@
+{
+  "module_name": "nv40.c",
+  "hash_id": "7c01f812fe779908fb9ac77fe4da4735e0a939048e8c13cd9256bf645c07c451",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/pci/nv40.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nu32\nnv40_pci_rd32(struct nvkm_pci *pci, u16 addr)\n{\n\tstruct nvkm_device *device = pci->subdev.device;\n\treturn nvkm_rd32(device, 0x088000 + addr);\n}\n\nvoid\nnv40_pci_wr08(struct nvkm_pci *pci, u16 addr, u8 data)\n{\n\tstruct nvkm_device *device = pci->subdev.device;\n\tnvkm_wr08(device, 0x088000 + addr, data);\n}\n\nvoid\nnv40_pci_wr32(struct nvkm_pci *pci, u16 addr, u32 data)\n{\n\tstruct nvkm_device *device = pci->subdev.device;\n\tnvkm_wr32(device, 0x088000 + addr, data);\n}\n\nvoid\nnv40_pci_msi_rearm(struct nvkm_pci *pci)\n{\n\tnvkm_pci_wr08(pci, 0x0068, 0xff);\n}\n\nstatic const struct nvkm_pci_func\nnv40_pci_func = {\n\t.rd32 = nv40_pci_rd32,\n\t.wr08 = nv40_pci_wr08,\n\t.wr32 = nv40_pci_wr32,\n\t.msi_rearm = nv40_pci_msi_rearm,\n};\n\nint\nnv40_pci_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t     struct nvkm_pci **ppci)\n{\n\treturn nvkm_pci_new_(&nv40_pci_func, device, type, inst, ppci);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

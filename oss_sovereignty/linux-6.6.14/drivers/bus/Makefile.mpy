@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9f95b05a3eab548e9da16bbbfb485be484314454f6b47a7766f15eb321439cef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the bus drivers.\n#\n\n# Interconnect bus drivers for ARM platforms\nobj-$(CONFIG_ARM_CCI)\t\t+= arm-cci.o\nobj-$(CONFIG_ARM_INTEGRATOR_LM)\t+= arm-integrator-lm.o\nobj-$(CONFIG_HISILICON_LPC)\t+= hisi_lpc.o\nobj-$(CONFIG_BRCMSTB_GISB_ARB)\t+= brcmstb_gisb.o\nobj-$(CONFIG_MOXTET)\t\t+= moxtet.o\n\n# DPAA2 fsl-mc bus\nobj-$(CONFIG_FSL_MC_BUS)\t+= fsl-mc/\n\nobj-$(CONFIG_BT1_APB)\t\t+= bt1-apb.o\nobj-$(CONFIG_BT1_AXI)\t\t+= bt1-axi.o\nobj-$(CONFIG_IMX_WEIM)\t\t+= imx-weim.o\nobj-$(CONFIG_INTEL_IXP4XX_EB)\t+= intel-ixp4xx-eb.o\nobj-$(CONFIG_MIPS_CDMM)\t\t+= mips_cdmm.o\nobj-$(CONFIG_MVEBU_MBUS) \t+= mvebu-mbus.o\n\n# Interconnect bus driver for OMAP SoCs.\nobj-$(CONFIG_OMAP_INTERCONNECT)\t+= omap_l3_smx.o omap_l3_noc.o\n\nobj-$(CONFIG_OMAP_OCP2SCP)\t+= omap-ocp2scp.o\nobj-$(CONFIG_QCOM_EBI2)\t\t+= qcom-ebi2.o\nobj-$(CONFIG_QCOM_SSC_BLOCK_BUS)\t+= qcom-ssc-block-bus.o\nobj-$(CONFIG_SUN50I_DE2_BUS)\t+= sun50i-de2.o\nobj-$(CONFIG_SUNXI_RSB)\t\t+= sunxi-rsb.o\nobj-$(CONFIG_OF)\t\t+= simple-pm-bus.o\nobj-$(CONFIG_TEGRA_ACONNECT)\t+= tegra-aconnect.o\nobj-$(CONFIG_TEGRA_GMI)\t\t+= tegra-gmi.o\nobj-$(CONFIG_TI_PWMSS)\t\t+= ti-pwmss.o\nobj-$(CONFIG_TI_SYSC)\t\t+= ti-sysc.o\nobj-$(CONFIG_TS_NBUS)\t\t+= ts-nbus.o\nobj-$(CONFIG_UNIPHIER_SYSTEM_BUS)\t+= uniphier-system-bus.o\nobj-$(CONFIG_VEXPRESS_CONFIG)\t+= vexpress-config.o\n\nobj-$(CONFIG_DA8XX_MSTPRI)\t+= da8xx-mstpri.o\n\n# MHI\nobj-y\t\t\t\t+= mhi/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

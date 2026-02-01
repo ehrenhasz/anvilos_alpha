@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d37833095662ed8d38ae71bbee93ddd5ea5de6d7c4e8f3ef7be902f658436464",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sgx/Makefile",
+  "human_readable_source": "top_srcdir = ../../../..\n\ninclude ../lib.mk\n\n.PHONY: all clean\n\nCAN_BUILD_X86_64 := $(shell ../x86/check_cc.sh \"$(CC)\" \\\n\t\t\t    ../x86/trivial_64bit_program.c)\n\nifndef OBJCOPY\nOBJCOPY := $(CROSS_COMPILE)objcopy\nendif\n\nINCLUDES := -I$(top_srcdir)/tools/include\nHOST_CFLAGS := -Wall -Werror -g $(INCLUDES) -fPIC -z noexecstack\nENCL_CFLAGS := -Wall -Werror -static -nostdlib -nostartfiles -fPIC \\\n\t       -fno-stack-protector -mrdrnd $(INCLUDES)\n\nifeq ($(CAN_BUILD_X86_64), 1)\nTEST_CUSTOM_PROGS := $(OUTPUT)/test_sgx\nTEST_FILES := $(OUTPUT)/test_encl.elf\n\nall: $(TEST_CUSTOM_PROGS) $(OUTPUT)/test_encl.elf\nendif\n\n$(OUTPUT)/test_sgx: $(OUTPUT)/main.o \\\n\t\t    $(OUTPUT)/load.o \\\n\t\t    $(OUTPUT)/sigstruct.o \\\n\t\t    $(OUTPUT)/call.o \\\n\t\t    $(OUTPUT)/sign_key.o\n\t$(CC) $(HOST_CFLAGS) -o $@ $^ -lcrypto\n\n$(OUTPUT)/main.o: main.c\n\t$(CC) $(HOST_CFLAGS) -c $< -o $@\n\n$(OUTPUT)/load.o: load.c\n\t$(CC) $(HOST_CFLAGS) -c $< -o $@\n\n$(OUTPUT)/sigstruct.o: sigstruct.c\n\t$(CC) $(HOST_CFLAGS) -c $< -o $@\n\n$(OUTPUT)/call.o: call.S\n\t$(CC) $(HOST_CFLAGS) -c $< -o $@\n\n$(OUTPUT)/sign_key.o: sign_key.S\n\t$(CC) $(HOST_CFLAGS) -c $< -o $@\n\n$(OUTPUT)/test_encl.elf: test_encl.lds test_encl.c test_encl_bootstrap.S\n\t$(CC) $(ENCL_CFLAGS) -T $^ -o $@ -Wl,--build-id=none\n\nEXTRA_CLEAN := \\\n\t$(OUTPUT)/test_encl.elf \\\n\t$(OUTPUT)/load.o \\\n\t$(OUTPUT)/call.o \\\n\t$(OUTPUT)/main.o \\\n\t$(OUTPUT)/sigstruct.o \\\n\t$(OUTPUT)/test_sgx \\\n\t$(OUTPUT)/test_sgx.o \\\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

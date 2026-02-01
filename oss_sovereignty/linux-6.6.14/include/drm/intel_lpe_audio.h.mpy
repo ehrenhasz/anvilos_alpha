@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_lpe_audio.h",
+  "hash_id": "a4ed7984b7890b5d7230ccbdfc192f4d4d9d48eef9ceab61393e9df8e0a1f36c",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/intel_lpe_audio.h",
+  "human_readable_source": " \n\n#ifndef _INTEL_LPE_AUDIO_H_\n#define _INTEL_LPE_AUDIO_H_\n\n#include <linux/types.h>\n#include <linux/spinlock_types.h>\n\nstruct platform_device;\n\n#define HDMI_MAX_ELD_BYTES\t128\n\nstruct intel_hdmi_lpe_audio_port_pdata {\n\tu8 eld[HDMI_MAX_ELD_BYTES];\n\tint port;\n\tint pipe;\n\tint ls_clock;\n\tbool dp_output;\n};\n\nstruct intel_hdmi_lpe_audio_pdata {\n\tstruct intel_hdmi_lpe_audio_port_pdata port[3];  \n\tint num_ports;\n\tint num_pipes;\n\n\tvoid (*notify_audio_lpe)(struct platform_device *pdev, int port);  \n\tspinlock_t lpe_audio_slock;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

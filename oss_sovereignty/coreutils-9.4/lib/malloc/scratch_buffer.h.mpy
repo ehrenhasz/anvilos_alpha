@@ -1,0 +1,9 @@
+{
+  "module_name": "scratch_buffer.h",
+  "hash_id": "e5d55769d83b3968ae2865783bad7f92d83404e95422886f6f458f82fe800fe5",
+  "original_prompt": "Ingested from coreutils-9.4/lib/malloc/scratch_buffer.h",
+  "human_readable_source": " \n\n#include <stdbool.h>\n#include <stddef.h>\n#include <stdlib.h>\n\n \nstruct scratch_buffer {\n  void *data;     \n  size_t length;  \n  union { max_align_t __align; char __c[1024]; } __space;\n};\n\n \nstatic inline void\nscratch_buffer_init (struct scratch_buffer *buffer)\n{\n  buffer->data = buffer->__space.__c;\n  buffer->length = sizeof (buffer->__space);\n}\n\n \nstatic inline void\nscratch_buffer_free (struct scratch_buffer *buffer)\n{\n  if (buffer->data != buffer->__space.__c)\n    free (buffer->data);\n}\n\n \nbool __libc_scratch_buffer_grow (struct scratch_buffer *buffer);\nlibc_hidden_proto (__libc_scratch_buffer_grow)\n\n \nstatic __always_inline bool\nscratch_buffer_grow (struct scratch_buffer *buffer)\n{\n  return __glibc_likely (__libc_scratch_buffer_grow (buffer));\n}\n\n \nbool __libc_scratch_buffer_grow_preserve (struct scratch_buffer *buffer);\nlibc_hidden_proto (__libc_scratch_buffer_grow_preserve)\n\n \nstatic __always_inline bool\nscratch_buffer_grow_preserve (struct scratch_buffer *buffer)\n{\n  return __glibc_likely (__libc_scratch_buffer_grow_preserve (buffer));\n}\n\n \nbool __libc_scratch_buffer_set_array_size (struct scratch_buffer *buffer,\n\t\t\t\t\t   size_t nelem, size_t size);\nlibc_hidden_proto (__libc_scratch_buffer_set_array_size)\n\n \nstatic __always_inline bool\nscratch_buffer_set_array_size (struct scratch_buffer *buffer,\n\t\t\t       size_t nelem, size_t size)\n{\n  return __glibc_likely (__libc_scratch_buffer_set_array_size\n\t\t\t (buffer, nelem, size));\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

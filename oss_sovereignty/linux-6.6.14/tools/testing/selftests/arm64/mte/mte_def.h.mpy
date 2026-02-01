@@ -1,0 +1,9 @@
+{
+  "module_name": "mte_def.h",
+  "hash_id": "72c83615bd311956a9819b80f9de8a96b8d2be01dc27818234d57ffb0c17fa3e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/mte/mte_def.h",
+  "human_readable_source": " \n \n\n \n#ifndef SEGV_MTEAERR\n#define\tSEGV_MTEAERR\t8\n#endif\n#ifndef SEGV_MTESERR\n#define\tSEGV_MTESERR\t9\n#endif\n#ifndef PROT_MTE\n#define PROT_MTE\t 0x20\n#endif\n#ifndef HWCAP2_MTE\n#define HWCAP2_MTE\t(1 << 18)\n#endif\n\n#ifndef PR_MTE_TCF_SHIFT\n#define PR_MTE_TCF_SHIFT\t1\n#endif\n#ifndef PR_MTE_TCF_NONE\n#define PR_MTE_TCF_NONE\t\t(0UL << PR_MTE_TCF_SHIFT)\n#endif\n#ifndef PR_MTE_TCF_SYNC\n#define\tPR_MTE_TCF_SYNC\t\t(1UL << PR_MTE_TCF_SHIFT)\n#endif\n#ifndef PR_MTE_TCF_ASYNC\n#define PR_MTE_TCF_ASYNC\t(2UL << PR_MTE_TCF_SHIFT)\n#endif\n#ifndef PR_MTE_TAG_SHIFT\n#define\tPR_MTE_TAG_SHIFT\t3\n#endif\n\n \n#define MT_TAG_SHIFT\t\t56\n#define MT_TAG_MASK\t\t0xFUL\n#define MT_FREE_TAG\t\t0x0UL\n#define MT_GRANULE_SIZE         16\n#define MT_TAG_COUNT\t\t16\n#define MT_INCLUDE_TAG_MASK\t0xFFFF\n#define MT_EXCLUDE_TAG_MASK\t0x0\n\n#define MT_ALIGN_GRANULE\t(MT_GRANULE_SIZE - 1)\n#define MT_CLEAR_TAG(x)\t\t((x) & ~(MT_TAG_MASK << MT_TAG_SHIFT))\n#define MT_SET_TAG(x, y)\t((x) | (y << MT_TAG_SHIFT))\n#define MT_FETCH_TAG(x)\t\t((x >> MT_TAG_SHIFT) & (MT_TAG_MASK))\n#define MT_ALIGN_UP(x)\t\t((x + MT_ALIGN_GRANULE) & ~(MT_ALIGN_GRANULE))\n\n#define MT_PSTATE_TCO_SHIFT\t25\n#define MT_PSTATE_TCO_MASK\t~(0x1 << MT_PSTATE_TCO_SHIFT)\n#define MT_PSTATE_TCO_EN\t1\n#define MT_PSTATE_TCO_DIS\t0\n\n#define MT_EXCLUDE_TAG(x)\t\t(1 << (x))\n#define MT_INCLUDE_VALID_TAG(x)\t\t(MT_INCLUDE_TAG_MASK ^ MT_EXCLUDE_TAG(x))\n#define MT_INCLUDE_VALID_TAGS(x)\t(MT_INCLUDE_TAG_MASK ^ (x))\n#define MTE_ALLOW_NON_ZERO_TAG\t\tMT_INCLUDE_VALID_TAG(0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

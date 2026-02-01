@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "dd23a3d8c5f71bb52479ac2fa641579a7d39e3212b3e0e15124c4ebd784f58cf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/spi-nor/controllers/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SPI_HISI_SFC\n\ttristate \"Hisilicon FMC SPI NOR Flash Controller(SFC)\"\n\tdepends on ARCH_HISI || COMPILE_TEST\n\tdepends on HAS_IOMEM\n\thelp\n\t  This enables support for HiSilicon FMC SPI NOR flash controller.\n\nconfig SPI_NXP_SPIFI\n\ttristate \"NXP SPI Flash Interface (SPIFI)\"\n\tdepends on OF && (ARCH_LPC18XX || COMPILE_TEST)\n\tdepends on HAS_IOMEM\n\thelp\n\t  Enable support for the NXP LPC SPI Flash Interface controller.\n\n\t  SPIFI is a specialized controller for connecting serial SPI\n\t  Flash. Enable this option if you have a device with a SPIFI\n\t  controller and want to access the Flash as a mtd device.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

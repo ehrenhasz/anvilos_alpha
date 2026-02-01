@@ -1,0 +1,9 @@
+{
+  "module_name": "asm-offsets_32.c",
+  "hash_id": "1d2673b20b2e794a102c03ee0efbf9585e8d2b3486bd72f049f9264e4ec00a28",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/asm-offsets_32.c",
+  "human_readable_source": "\n#ifndef __LINUX_KBUILD_H\n# error \"Please do not build this file directly, build asm-offsets.c instead\"\n#endif\n\n#include <linux/efi.h>\n\n#include <asm/ucontext.h>\n\n \nvoid foo(void);\n\nvoid foo(void)\n{\n\tOFFSET(CPUINFO_x86, cpuinfo_x86, x86);\n\tOFFSET(CPUINFO_x86_vendor, cpuinfo_x86, x86_vendor);\n\tOFFSET(CPUINFO_x86_model, cpuinfo_x86, x86_model);\n\tOFFSET(CPUINFO_x86_stepping, cpuinfo_x86, x86_stepping);\n\tOFFSET(CPUINFO_cpuid_level, cpuinfo_x86, cpuid_level);\n\tOFFSET(CPUINFO_x86_capability, cpuinfo_x86, x86_capability);\n\tOFFSET(CPUINFO_x86_vendor_id, cpuinfo_x86, x86_vendor_id);\n\tBLANK();\n\n\tOFFSET(PT_EBX, pt_regs, bx);\n\tOFFSET(PT_ECX, pt_regs, cx);\n\tOFFSET(PT_EDX, pt_regs, dx);\n\tOFFSET(PT_ESI, pt_regs, si);\n\tOFFSET(PT_EDI, pt_regs, di);\n\tOFFSET(PT_EBP, pt_regs, bp);\n\tOFFSET(PT_EAX, pt_regs, ax);\n\tOFFSET(PT_DS,  pt_regs, ds);\n\tOFFSET(PT_ES,  pt_regs, es);\n\tOFFSET(PT_FS,  pt_regs, fs);\n\tOFFSET(PT_GS,  pt_regs, gs);\n\tOFFSET(PT_ORIG_EAX, pt_regs, orig_ax);\n\tOFFSET(PT_EIP, pt_regs, ip);\n\tOFFSET(PT_CS,  pt_regs, cs);\n\tOFFSET(PT_EFLAGS, pt_regs, flags);\n\tOFFSET(PT_OLDESP, pt_regs, sp);\n\tOFFSET(PT_OLDSS,  pt_regs, ss);\n\tBLANK();\n\n\tOFFSET(saved_context_gdt_desc, saved_context, gdt_desc);\n\tBLANK();\n\n\t \n\tDEFINE(TSS_entry2task_stack,\n\t       offsetof(struct cpu_entry_area, tss.x86_tss.sp1) -\n\t       offsetofend(struct cpu_entry_area, entry_stack_page.stack));\n\n\tBLANK();\n\tDEFINE(EFI_svam, offsetof(efi_runtime_services_t, set_virtual_address_map));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

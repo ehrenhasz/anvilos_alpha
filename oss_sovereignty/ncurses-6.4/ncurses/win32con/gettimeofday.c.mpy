@@ -1,0 +1,9 @@
+{
+  "module_name": "gettimeofday.c",
+  "hash_id": "5c551256b3205bb642b902cdc4bd9ba7630c1ed15fa713e835a61c4e0ddfe73e",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/win32con/gettimeofday.c",
+  "human_readable_source": " \n\n#ifdef WINVER\n#  undef WINVER\n#endif\n#define WINVER 0x0501\n\n#include <curses.priv.h>\n\n#include <windows.h>\n\nMODULE_ID(\"$Id: gettimeofday.c,v 1.6 2020/07/11 21:03:53 tom Exp $\")\n\n#define JAN1970 116444736000000000LL\t \n\nNCURSES_EXPORT(int)\ngettimeofday(struct timeval *tv, void *tz GCC_UNUSED)\n{\n    union {\n\tFILETIME ft;\n\tlong long since1601;\t \n    } data;\n\n    GetSystemTimeAsFileTime(&data.ft);\n    tv->tv_usec = (long) ((data.since1601 / 10LL) % 1000000LL);\n    tv->tv_sec = (long) ((data.since1601 - JAN1970) / 10000000LL);\n    return (0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

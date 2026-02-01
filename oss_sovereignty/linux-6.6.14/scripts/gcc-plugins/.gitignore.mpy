@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "c714c17ad3cc22df47099f1ba2c4292c6d0d30356673ce33635ac1f922a1b9bf",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/gcc-plugins/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/randomize_layout_seed.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

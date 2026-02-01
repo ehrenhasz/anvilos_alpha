@@ -1,0 +1,9 @@
+{
+  "module_name": "probe.h",
+  "hash_id": "3ab6bd21d7ca2dff36e9c7309a214afd2f77be461248522412dfa678f6be2a68",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/events/probe.h",
+  "human_readable_source": " \n#ifndef __ARCH_X86_EVENTS_PROBE_H__\n#define __ARCH_X86_EVENTS_PROBE_H__\n#include <linux/sysfs.h>\n\nstruct perf_msr {\n\tu64\t\t\tmsr;\n\tstruct attribute_group\t*grp;\n\tbool\t\t\t(*test)(int idx, void *data);\n\tbool\t\t\tno_check;\n\tu64\t\t\tmask;\n};\n\nunsigned long\nperf_msr_probe(struct perf_msr *msr, int cnt, bool no_zero, void *data);\n\n#define __PMU_EVENT_GROUP(_name)\t\t\t\\\nstatic struct attribute *attrs_##_name[] = {\t\t\\\n\t&attr_##_name.attr.attr,\t\t\t\\\n\tNULL,\t\t\t\t\t\t\\\n}\n\n#define PMU_EVENT_GROUP(_grp, _name)\t\t\t\\\n__PMU_EVENT_GROUP(_name);\t\t\t\t\\\nstatic struct attribute_group group_##_name = {\t\t\\\n\t.name  = #_grp,\t\t\t\t\t\\\n\t.attrs = attrs_##_name,\t\t\t\t\\\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

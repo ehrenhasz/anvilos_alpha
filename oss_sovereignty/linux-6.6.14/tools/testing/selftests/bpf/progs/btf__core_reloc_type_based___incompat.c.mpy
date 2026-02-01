@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_type_based___incompat.c",
+  "hash_id": "f759ecff032e4623d8b88626147d4927c07ece67a4edee05825cd84157b4d119",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_type_based___incompat.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_type_based___incompat x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

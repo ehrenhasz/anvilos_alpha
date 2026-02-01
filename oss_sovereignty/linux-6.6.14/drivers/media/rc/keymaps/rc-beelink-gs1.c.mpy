@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-beelink-gs1.c",
+  "hash_id": "22e04af859c3a06e0418ed112e9f8d2ccfb9722c9ff0026d45d4c5558736688e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-beelink-gs1.c",
+  "human_readable_source": "\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n\nstatic struct rc_map_table beelink_gs1_table[] = {\n\t \n\n\t{ 0x8051, KEY_POWER },\n\t{ 0x804d, KEY_MUTE },\n\t{ 0x8040, KEY_CONFIG },\n\n\t{ 0x8026, KEY_UP },\n\t{ 0x8028, KEY_DOWN },\n\t{ 0x8025, KEY_LEFT },\n\t{ 0x8027, KEY_RIGHT },\n\t{ 0x800d, KEY_OK },\n\n\t{ 0x8053, KEY_HOME },\n\t{ 0x80bc, KEY_MEDIA },\n\t{ 0x801b, KEY_BACK },\n\t{ 0x8049, KEY_MENU },\n\n\t{ 0x804e, KEY_VOLUMEUP },\n\t{ 0x8056, KEY_VOLUMEDOWN },\n\n\t{ 0x8054, KEY_SUBTITLE },  \n\t{ 0x8052, KEY_EPG },  \n\n\t{ 0x8041, KEY_CHANNELUP },\n\t{ 0x8042, KEY_CHANNELDOWN },\n\n\t{ 0x8031, KEY_1 },\n\t{ 0x8032, KEY_2 },\n\t{ 0x8033, KEY_3 },\n\n\t{ 0x8034, KEY_4 },\n\t{ 0x8035, KEY_5 },\n\t{ 0x8036, KEY_6 },\n\n\t{ 0x8037, KEY_7 },\n\t{ 0x8038, KEY_8 },\n\t{ 0x8039, KEY_9 },\n\n\t{ 0x8044, KEY_DELETE },\n\t{ 0x8030, KEY_0 },\n\t{ 0x8058, KEY_MODE },  \n};\n\nstatic struct rc_map_list beelink_gs1_map = {\n\t.map = {\n\t\t.scan     = beelink_gs1_table,\n\t\t.size     = ARRAY_SIZE(beelink_gs1_table),\n\t\t.rc_proto = RC_PROTO_NEC,\n\t\t.name     = RC_MAP_BEELINK_GS1,\n\t}\n};\n\nstatic int __init init_rc_map_beelink_gs1(void)\n{\n\treturn rc_map_register(&beelink_gs1_map);\n}\n\nstatic void __exit exit_rc_map_beelink_gs1(void)\n{\n\trc_map_unregister(&beelink_gs1_map);\n}\n\nmodule_init(init_rc_map_beelink_gs1)\nmodule_exit(exit_rc_map_beelink_gs1)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Cl\u00e9ment P\u00e9ron <peron.clem@gmail.com>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pll.h",
+  "hash_id": "36070971d57054de7d86205078dadbb56c3b66091fb41649ae50dd219ba5cf7e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/pll.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_PLL_H__\n#define __NVBIOS_PLL_H__\n \nstruct nvkm_pll_vals {\n\tunion {\n\t\tstruct {\n#ifdef __BIG_ENDIAN\n\t\t\tuint8_t N1, M1, N2, M2;\n#else\n\t\t\tuint8_t M1, N1, M2, N2;\n#endif\n\t\t};\n\t\tstruct {\n\t\t\tuint16_t NM1, NM2;\n\t\t} __attribute__((packed));\n\t};\n\tint log2P;\n\n\tint refclk;\n};\n\n \nenum nvbios_pll_type {\n\tPLL_CORE   = 0x01,\n\tPLL_SHADER = 0x02,\n\tPLL_UNK03  = 0x03,\n\tPLL_MEMORY = 0x04,\n\tPLL_VDEC   = 0x05,\n\tPLL_UNK40  = 0x40,\n\tPLL_UNK41  = 0x41,\n\tPLL_UNK42  = 0x42,\n\tPLL_VPLL0  = 0x80,\n\tPLL_VPLL1  = 0x81,\n\tPLL_VPLL2  = 0x82,\n\tPLL_VPLL3  = 0x83,\n\tPLL_MAX    = 0xff\n};\n\nstruct nvbios_pll {\n\tenum nvbios_pll_type type;\n\tu32 reg;\n\tu32 refclk;\n\n\tu8 min_p;\n\tu8 max_p;\n\tu8 bias_p;\n\n\t \n\tu8 max_p_usable;\n\n\tstruct {\n\t\tu32 min_freq;\n\t\tu32 max_freq;\n\t\tu32 min_inputfreq;\n\t\tu32 max_inputfreq;\n\t\tu8  min_m;\n\t\tu8  max_m;\n\t\tu8  min_n;\n\t\tu8  max_n;\n\t} vco1, vco2;\n};\n\nint nvbios_pll_parse(struct nvkm_bios *, u32 type, struct nvbios_pll *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

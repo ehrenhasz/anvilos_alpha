@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "004039778d63169bdb8e83c02cb78d09ad020c41116079c83565067fb7cc4884",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/atmel/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nobj-$(CONFIG_VIDEO_ATMEL_ISI) += atmel-isi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

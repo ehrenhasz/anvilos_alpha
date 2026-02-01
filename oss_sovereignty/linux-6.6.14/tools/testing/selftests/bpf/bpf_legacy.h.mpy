@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_legacy.h",
+  "hash_id": "c8d6476a8fbe4cea224ff3840b433464af13812beb3129d22973e1ec6287b363",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/bpf_legacy.h",
+  "human_readable_source": " \n#ifndef __BPF_LEGACY__\n#define __BPF_LEGACY__\n\n#if __GNUC__ && !__clang__\n \n#define load_byte(skb, off) __builtin_bpf_load_byte(off)\n#define load_half(skb, off) __builtin_bpf_load_half(off)\n#define load_word(skb, off) __builtin_bpf_load_word(off)\n#else\n \nunsigned long long load_byte(void *skb, unsigned long long off) asm(\"llvm.bpf.load.byte\");\nunsigned long long load_half(void *skb, unsigned long long off) asm(\"llvm.bpf.load.half\");\nunsigned long long load_word(void *skb, unsigned long long off) asm(\"llvm.bpf.load.word\");\n#endif\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test_sk_assign_libbpf.c",
+  "hash_id": "5a4ef159a5b635dacd65369783dcbb1d5abd9d6c713bcca207438b8ad6e063aa",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_sk_assign_libbpf.c",
+  "human_readable_source": "\n#define IPROUTE2_HAVE_LIBBPF\n#include \"test_sk_assign.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

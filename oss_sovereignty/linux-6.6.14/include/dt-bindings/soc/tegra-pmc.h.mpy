@@ -1,0 +1,9 @@
+{
+  "module_name": "tegra-pmc.h",
+  "hash_id": "3d7b816ce490f6646f2aeac1a52576dba8a95c6be485d0430f8bf5ef14ee6e80",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/soc/tegra-pmc.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_SOC_TEGRA_PMC_H\n#define _DT_BINDINGS_SOC_TEGRA_PMC_H\n\n#define TEGRA_PMC_CLK_OUT_1\t\t0\n#define TEGRA_PMC_CLK_OUT_2\t\t1\n#define TEGRA_PMC_CLK_OUT_3\t\t2\n#define TEGRA_PMC_CLK_BLINK\t\t3\n\n#define TEGRA_PMC_CLK_MAX\t\t4\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

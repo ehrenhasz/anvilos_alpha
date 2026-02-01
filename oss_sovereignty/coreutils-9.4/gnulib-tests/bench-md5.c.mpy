@@ -1,0 +1,9 @@
+{
+  "module_name": "bench-md5.c",
+  "hash_id": "930f3b12e32f8e672a8d34525ea4499d23af575479365458dac74a2c77314287",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/bench-md5.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"md5.h\"\n\n#define FUNC md5_buffer\n#include \"bench-digest.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

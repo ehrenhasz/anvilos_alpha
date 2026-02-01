@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "153163b5fe3a3716e8d1fc7aead311c8da4ffe9d16a115fdbdba59f88cb2a9d9",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/compressed/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nrelocs\nvmlinux.bin.all\nvmlinux.relocs\nvmlinux.lds\nmkpiggy\npiggy.S\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

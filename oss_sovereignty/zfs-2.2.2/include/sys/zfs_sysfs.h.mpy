@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_sysfs.h",
+  "hash_id": "705a03da411aa687f8277016383df6e29edf67c2ebce7fc46bbb2a9b5cdff111",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zfs_sysfs.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_ZFS_SYSFS_H\n#define\t_SYS_ZFS_SYSFS_H extern __attribute__((visibility(\"default\")))\n\nstruct zfs_mod_supported_features;\nstruct zfs_mod_supported_features *zfs_mod_list_supported(const char *scope);\nvoid zfs_mod_list_supported_free(struct zfs_mod_supported_features *);\n\n#ifdef _KERNEL\n\nvoid zfs_sysfs_init(void);\nvoid zfs_sysfs_fini(void);\n\n#else\n\n#define\tzfs_sysfs_init()\n#define\tzfs_sysfs_fini()\n\n_SYS_ZFS_SYSFS_H boolean_t zfs_mod_supported(const char *, const char *,\n    const struct zfs_mod_supported_features *);\n#endif\n\n#define\tZFS_SYSFS_POOL_PROPERTIES\t\"properties.pool\"\n#define\tZFS_SYSFS_VDEV_PROPERTIES\t\"properties.vdev\"\n#define\tZFS_SYSFS_DATASET_PROPERTIES\t\"properties.dataset\"\n#define\tZFS_SYSFS_KERNEL_FEATURES\t\"features.kernel\"\n#define\tZFS_SYSFS_POOL_FEATURES\t\t\"features.pool\"\n\n#define\tZFS_SYSFS_DIR\t\t\t\"/sys/module/zfs\"\n \n#define\tZFS_SYSFS_ALT_DIR\t\t\"/sys/fs/zfs\"\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

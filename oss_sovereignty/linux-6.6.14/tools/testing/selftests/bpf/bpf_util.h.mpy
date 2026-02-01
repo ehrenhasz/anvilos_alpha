@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_util.h",
+  "hash_id": "2fc1e619f4aca4a208366b9ec721d07c4a76913a91a77d3df85a5af3d7416b45",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/bpf_util.h",
+  "human_readable_source": " \n#ifndef __BPF_UTIL__\n#define __BPF_UTIL__\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <errno.h>\n#include <bpf/libbpf.h>  \n\nstatic inline unsigned int bpf_num_possible_cpus(void)\n{\n\tint possible_cpus = libbpf_num_possible_cpus();\n\n\tif (possible_cpus < 0) {\n\t\tprintf(\"Failed to get # of possible cpus: '%s'!\\n\",\n\t\t       strerror(-possible_cpus));\n\t\texit(1);\n\t}\n\treturn possible_cpus;\n}\n\n \nstatic inline void bpf_strlcpy(char *dst, const char *src, size_t sz)\n{\n\tsize_t i;\n\n\tif (sz == 0)\n\t\treturn;\n\n\tsz--;\n\tfor (i = 0; i < sz && src[i]; i++)\n\t\tdst[i] = src[i];\n\tdst[i] = '\\0';\n}\n\n#define __bpf_percpu_val_align\t__attribute__((__aligned__(8)))\n\n#define BPF_DECLARE_PERCPU(type, name)\t\t\t\t\\\n\tstruct { type v;   } __bpf_percpu_val_align\t\\\n\t\tname[bpf_num_possible_cpus()]\n#define bpf_percpu(name, cpu) name[(cpu)].v\n\n#ifndef ARRAY_SIZE\n# define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))\n#endif\n\n#ifndef sizeof_field\n#define sizeof_field(TYPE, MEMBER) sizeof((((TYPE *)0)->MEMBER))\n#endif\n\n#ifndef offsetofend\n#define offsetofend(TYPE, MEMBER) \\\n\t(offsetof(TYPE, MEMBER)\t+ sizeof_field(TYPE, MEMBER))\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

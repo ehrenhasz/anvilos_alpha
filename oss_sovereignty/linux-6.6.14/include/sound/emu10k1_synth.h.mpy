@@ -1,0 +1,9 @@
+{
+  "module_name": "emu10k1_synth.h",
+  "hash_id": "386d34f8ca47cdbc07cb10843586b6bf3bb40ef8973ce57450942cfff6b254f7",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/emu10k1_synth.h",
+  "human_readable_source": " \n#ifndef __EMU10K1_SYNTH_H\n#define __EMU10K1_SYNTH_H\n \n\n#include <sound/emu10k1.h>\n#include <sound/emux_synth.h>\n\n \n#define SNDRV_SEQ_DEV_ID_EMU10K1_SYNTH\t\"emu10k1-synth\"\n\n \nstruct snd_emu10k1_synth_arg {\n\tstruct snd_emu10k1 *hwptr;\t \n\tint index;\t\t \n\tint seq_ports;\t\t \n\tint max_voices;\t\t \n};\n\n#define EMU10K1_MAX_MEMSIZE\t(32 * 1024 * 1024)  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test_override_return.sh",
+  "hash_id": "947b234fb981d8b594a1d4c6543597e1d1b09bd62048d8a183c22be35d138bcd",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/test_override_return.sh",
+  "human_readable_source": "#!/bin/bash\n\nrm -r tmpmnt\nrm -f testfile.img\ndd if=/dev/zero of=testfile.img bs=1M seek=1000 count=1\nDEVICE=$(losetup --show -f testfile.img)\nmkfs.btrfs -f $DEVICE\nmkdir tmpmnt\n./tracex7 $DEVICE\nif [ $? -eq 0 ]\nthen\n\techo \"SUCCESS!\"\nelse\n\techo \"FAILED!\"\nfi\nlosetup -d $DEVICE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

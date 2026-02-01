@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_racct.c",
+  "hash_id": "5bfd3ecb404a2da4beedf8a929589438096f1145ed730679e27f3440276b5930",
+  "original_prompt": "Ingested from zfs-2.2.2/module/os/linux/zfs/zfs_racct.c",
+  "human_readable_source": " \n\n#include <sys/zfs_racct.h>\n\nvoid\nzfs_racct_read(uint64_t size, uint64_t iops)\n{\n\t(void) size, (void) iops;\n}\n\nvoid\nzfs_racct_write(uint64_t size, uint64_t iops)\n{\n\t(void) size, (void) iops;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

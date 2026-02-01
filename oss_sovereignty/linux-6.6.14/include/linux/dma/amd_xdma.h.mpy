@@ -1,0 +1,9 @@
+{
+  "module_name": "amd_xdma.h",
+  "hash_id": "41575a2f21b43cc12abdee6f197687b3a229328ebc1d75dcbd6c89e562d9ec1f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dma/amd_xdma.h",
+  "human_readable_source": " \n \n\n#ifndef _DMAENGINE_AMD_XDMA_H\n#define _DMAENGINE_AMD_XDMA_H\n\n#include <linux/interrupt.h>\n#include <linux/platform_device.h>\n\nint xdma_enable_user_irq(struct platform_device *pdev, u32 irq_num);\nvoid xdma_disable_user_irq(struct platform_device *pdev, u32 irq_num);\nint xdma_get_user_irq(struct platform_device *pdev, u32 user_irq_index);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

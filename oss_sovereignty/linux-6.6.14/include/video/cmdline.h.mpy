@@ -1,0 +1,9 @@
+{
+  "module_name": "cmdline.h",
+  "hash_id": "98c34bb5e6c806fb21a0a4f2e5c011b2df79466a830c9f16c2e74af942e3d665",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/cmdline.h",
+  "human_readable_source": " \n\n#ifndef VIDEO_CMDLINE_H\n#define VIDEO_CMDLINE_H\n\n#include <linux/types.h>\n\n#if defined(CONFIG_VIDEO_CMDLINE)\nconst char *video_get_options(const char *name);\n\n \nbool __video_get_options(const char *name, const char **option, bool is_of);\n#else\nstatic inline const char *video_get_options(const char *name)\n{\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

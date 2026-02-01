@@ -1,0 +1,9 @@
+{
+  "module_name": "uio.h",
+  "hash_id": "649cc7f45b7fbd8da261ebb09698cdd242e405e77252cdc0ebd72a80a662ee90",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/uapi/linux/uio.h",
+  "human_readable_source": "#include <sys/uio.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

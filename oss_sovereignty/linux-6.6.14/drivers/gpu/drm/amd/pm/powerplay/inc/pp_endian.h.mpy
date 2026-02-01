@@ -1,0 +1,9 @@
+{
+  "module_name": "pp_endian.h",
+  "hash_id": "f10a12436721bbf9bd2eed11727d9fcdf1c66a6e147308436f47d836b20e5928",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/inc/pp_endian.h",
+  "human_readable_source": " \n\n#ifndef _PP_ENDIAN_H_\n#define _PP_ENDIAN_H_\n\n#define PP_HOST_TO_SMC_UL(X) cpu_to_be32(X)\n#define PP_SMC_TO_HOST_UL(X) be32_to_cpu(X)\n\n#define PP_HOST_TO_SMC_US(X) cpu_to_be16(X)\n#define PP_SMC_TO_HOST_US(X) be16_to_cpu(X)\n\n#define CONVERT_FROM_HOST_TO_SMC_UL(X) ((X) = PP_HOST_TO_SMC_UL(X))\n#define CONVERT_FROM_SMC_TO_HOST_UL(X) ((X) = PP_SMC_TO_HOST_UL(X))\n\n#define CONVERT_FROM_HOST_TO_SMC_US(X) ((X) = PP_HOST_TO_SMC_US(X))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

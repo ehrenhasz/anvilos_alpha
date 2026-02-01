@@ -1,0 +1,9 @@
+{
+  "module_name": "jit_probe_mem.c",
+  "hash_id": "2aba1cbc0db473783ddb5ae5f8808c98dbeaee38f2e93bb18aa2cf81e4ce938a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/jit_probe_mem.c",
+  "human_readable_source": "\n \n#include <test_progs.h>\n#include <network_helpers.h>\n\n#include \"jit_probe_mem.skel.h\"\n\nvoid test_jit_probe_mem(void)\n{\n\tLIBBPF_OPTS(bpf_test_run_opts, opts,\n\t\t.data_in = &pkt_v4,\n\t\t.data_size_in = sizeof(pkt_v4),\n\t\t.repeat = 1,\n\t);\n\tstruct jit_probe_mem *skel;\n\tint ret;\n\n\tskel = jit_probe_mem__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"jit_probe_mem__open_and_load\"))\n\t\treturn;\n\n\tret = bpf_prog_test_run_opts(bpf_program__fd(skel->progs.test_jit_probe_mem), &opts);\n\tASSERT_OK(ret, \"jit_probe_mem ret\");\n\tASSERT_OK(opts.retval, \"jit_probe_mem opts.retval\");\n\tASSERT_EQ(skel->data->total_sum, 192, \"jit_probe_mem total_sum\");\n\n\tjit_probe_mem__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

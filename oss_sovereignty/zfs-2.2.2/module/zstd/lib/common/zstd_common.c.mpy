@@ -1,0 +1,9 @@
+{
+  "module_name": "zstd_common.c",
+  "hash_id": "22a5a76152598168e056b651529893b885f3bd83cc8e0465d1697f493defe80a",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/lib/common/zstd_common.c",
+  "human_readable_source": " \n\n\n\n \n#include <stdlib.h>       \n#include <string.h>       \n#include \"error_private.h\"\n#include \"zstd_internal.h\"\n\n\n \nunsigned ZSTD_versionNumber(void) { return ZSTD_VERSION_NUMBER; }\n\nconst char* ZSTD_versionString(void) { return ZSTD_VERSION_STRING; }\n\n\n \n\n \nunsigned ZSTD_isError(size_t code) { return ERR_isError(code); }\n\n \nconst char* ZSTD_getErrorName(size_t code) { return ERR_getErrorName(code); }\n\n \nZSTD_ErrorCode ZSTD_getErrorCode(size_t code) { return ERR_getErrorCode(code); }\n\n \nconst char* ZSTD_getErrorString(ZSTD_ErrorCode code) { return ERR_getErrorString(code); }\n\n\n\n \nvoid* ZSTD_malloc(size_t size, ZSTD_customMem customMem)\n{\n    if (customMem.customAlloc)\n        return customMem.customAlloc(customMem.opaque, size);\n    return malloc(size);\n}\n\nvoid* ZSTD_calloc(size_t size, ZSTD_customMem customMem)\n{\n    if (customMem.customAlloc) {\n         \n        void* const ptr = customMem.customAlloc(customMem.opaque, size);\n        memset(ptr, 0, size);\n        return ptr;\n    }\n    return calloc(1, size);\n}\n\nvoid ZSTD_free(void* ptr, ZSTD_customMem customMem)\n{\n    if (ptr!=NULL) {\n        if (customMem.customFree)\n            customMem.customFree(customMem.opaque, ptr);\n        else\n            free(ptr);\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

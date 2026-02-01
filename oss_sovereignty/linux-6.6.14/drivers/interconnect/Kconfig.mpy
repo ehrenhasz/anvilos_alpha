@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "059d97528c108856b9545431cb602723a3630f8eceb49fb0670e26f00cd78141",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/interconnect/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig INTERCONNECT\n\tbool \"On-Chip Interconnect management support\"\n\thelp\n\t  Support for management of the on-chip interconnects.\n\n\t  This framework is designed to provide a generic interface for\n\t  managing the interconnects in a SoC.\n\n\t  If unsure, say no.\n\nif INTERCONNECT\n\nsource \"drivers/interconnect/imx/Kconfig\"\nsource \"drivers/interconnect/qcom/Kconfig\"\nsource \"drivers/interconnect/samsung/Kconfig\"\n\nconfig INTERCONNECT_CLK\n\ttristate\n\tdepends on COMMON_CLK\n\thelp\n\t  Support for wrapping clocks into the interconnect nodes.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

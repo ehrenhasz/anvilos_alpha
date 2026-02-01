@@ -1,0 +1,9 @@
+{
+  "module_name": "always-arch.m4",
+  "hash_id": "f93f4920bda37530fd266079406f615fee8e626d703b2f0d728e1b2d84b48962",
+  "original_prompt": "Ingested from zfs-2.2.2/config/always-arch.m4",
+  "human_readable_source": "dnl #\ndnl # Set the target cpu architecture.  This allows the\ndnl # following syntax to be used in a Makefile.am.\ndnl #\ndnl # if TARGET_CPU_POWERPC\ndnl # ...\ndnl # else\ndnl # ...\ndnl # endif\ndnl #\nAC_DEFUN([ZFS_AC_CONFIG_ALWAYS_ARCH], [\n\tcase $target_cpu in\n\ti?86)\n\t\tTARGET_CPU=i386\n\t\t;;\n\tamd64|x86_64)\n\t\tTARGET_CPU=x86_64\n\t\t;;\n\tpowerpc*)\n\t\tTARGET_CPU=powerpc\n\t\t;;\n\taarch64*)\n\t\tTARGET_CPU=aarch64\n\t\t;;\n\tarmv*)\n\t\tTARGET_CPU=arm\n\t\t;;\n\tsparc64)\n\t\tTARGET_CPU=sparc64\n\t\t;;\n\t*)\n\t\tTARGET_CPU=$target_cpu\n\t\t;;\n\tesac\n\n\tAM_CONDITIONAL([TARGET_CPU_AARCH64], test $TARGET_CPU = aarch64)\n\tAM_CONDITIONAL([TARGET_CPU_X86_64],  test $TARGET_CPU = x86_64)\n\tAM_CONDITIONAL([TARGET_CPU_POWERPC], test $TARGET_CPU = powerpc)\n\tAM_CONDITIONAL([TARGET_CPU_SPARC64], test $TARGET_CPU = sparc64)\n\tAM_CONDITIONAL([TARGET_CPU_ARM],     test $TARGET_CPU = arm)\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

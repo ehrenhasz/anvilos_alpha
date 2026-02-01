@@ -1,0 +1,9 @@
+{
+  "module_name": "ndir.h",
+  "hash_id": "2d4c097e4732f80c982d114f4dbaa2330d555df4cdc5b01ab74f58a31a476065",
+  "original_prompt": "Ingested from bash-5.2.21/lib/glob/ndir.h",
+  "human_readable_source": " \n\n#if defined (VMS)\n#  if !defined (FAB$C_BID)\n#    include <fab.h>\n#  endif\n#  if !defined (NAM$C_BID)\n#    include <nam.h>\n#  endif\n#  if !defined (RMS$_SUC)\n#    include <rmsdef.h>\n#  endif\n#  include \"dir.h\"\n#endif  \n\n \n#define DIRBLKSIZ 512\n\n \n\n#if defined (VMS)\n#  define MAXNAMLEN (DIR$S_NAME + 7)\t \n#  define MAXFULLSPEC NAM$C_MAXRSS\t \n#else\n#  define MAXNAMLEN 15\t\t\t \n#endif  \n\n \nstruct direct {\n  long d_ino;\t\t\t \n  unsigned short d_reclen;\t \n  unsigned short d_namlen;\t \n  char d_name[MAXNAMLEN + 1];\t \n};\n\n \ntypedef struct {\n  int dd_fd;\t\t\t \n  int dd_loc;\t\t\t \n  int dd_size;\t\t\t \n  char\tdd_buf[DIRBLKSIZ];\t \n} DIR;\n\nextern DIR *opendir ();\nextern struct direct *readdir ();\nextern long telldir ();\nextern void seekdir (), closedir ();\n\n#define rewinddir(dirp) seekdir (dirp, 0L)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

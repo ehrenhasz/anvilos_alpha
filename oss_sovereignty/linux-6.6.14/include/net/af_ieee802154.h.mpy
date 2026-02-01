@@ -1,0 +1,9 @@
+{
+  "module_name": "af_ieee802154.h",
+  "hash_id": "b5d2788ce0bc30356f7bbb379df28c2aa09f4f0afc5ba10df3cf83231fadb640",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/af_ieee802154.h",
+  "human_readable_source": " \n \n\n#ifndef _AF_IEEE802154_H\n#define _AF_IEEE802154_H\n\n#include <linux/socket.h>  \n\nenum {\n\tIEEE802154_ADDR_NONE = 0x0,\n\t \n\tIEEE802154_ADDR_SHORT = 0x2,  \n\tIEEE802154_ADDR_LONG = 0x3,  \n};\n\n \n#define IEEE802154_ADDR_LEN\t8\n\nstruct ieee802154_addr_sa {\n\tint addr_type;\n\tu16 pan_id;\n\tunion {\n\t\tu8 hwaddr[IEEE802154_ADDR_LEN];\n\t\tu16 short_addr;\n\t};\n};\n\n#define IEEE802154_PANID_BROADCAST\t0xffff\n#define IEEE802154_ADDR_BROADCAST\t0xffff\n#define IEEE802154_ADDR_UNDEF\t\t0xfffe\n\nstruct sockaddr_ieee802154 {\n\tsa_family_t family;  \n\tstruct ieee802154_addr_sa addr;\n};\n\n \n#define SOL_IEEE802154\t0\n\n#define WPAN_WANTACK\t\t0\n#define WPAN_SECURITY\t\t1\n#define WPAN_SECURITY_LEVEL\t2\n#define WPAN_WANTLQI\t\t3\n\n#define WPAN_SECURITY_DEFAULT\t0\n#define WPAN_SECURITY_OFF\t1\n#define WPAN_SECURITY_ON\t2\n\n#define WPAN_SECURITY_LEVEL_DEFAULT\t(-1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

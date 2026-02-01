@@ -1,0 +1,9 @@
+{
+  "module_name": "rockchip_rgb.h",
+  "hash_id": "601514ceb2a6ff7c0dc67fdb62c674fcdca53c2047a981562a66c9f0639826b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/rockchip/rockchip_rgb.h",
+  "human_readable_source": " \n \n\n#ifdef CONFIG_ROCKCHIP_RGB\nstruct rockchip_rgb *rockchip_rgb_init(struct device *dev,\n\t\t\t\t       struct drm_crtc *crtc,\n\t\t\t\t       struct drm_device *drm_dev,\n\t\t\t\t       int video_port);\nvoid rockchip_rgb_fini(struct rockchip_rgb *rgb);\n#else\nstatic inline struct rockchip_rgb *rockchip_rgb_init(struct device *dev,\n\t\t\t\t\t\t     struct drm_crtc *crtc,\n\t\t\t\t\t\t     struct drm_device *drm_dev,\n\t\t\t\t\t\t     int video_port)\n{\n\treturn NULL;\n}\n\nstatic inline void rockchip_rgb_fini(struct rockchip_rgb *rgb)\n{\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

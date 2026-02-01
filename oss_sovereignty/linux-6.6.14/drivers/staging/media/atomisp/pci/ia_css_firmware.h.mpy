@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_firmware.h",
+  "hash_id": "c377649620636e80750b6b75bf015cfe835a5f7e903e2dfabc927c4bc9188d90",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/ia_css_firmware.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_FIRMWARE_H\n#define __IA_CSS_FIRMWARE_H\n\n \n\n#include <linux/device.h>\n#include \"ia_css_err.h\"\n#include \"ia_css_env.h\"\n\n \nstruct ia_css_fw {\n\tvoid\t    *data;   \n\tunsigned int bytes;  \n};\n\nstruct device;\n\n \nint\nia_css_load_firmware(struct device *dev, const struct ia_css_env *env,\n\t\t     const struct ia_css_fw  *fw);\n\n \nvoid\nia_css_unload_firmware(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "905032227a993ea3dcfff3b123c6c8294ac41734a5db830c1e8c63a5e6857023",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/sprd/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Spreadtrum pin control drivers\n#\n\nconfig PINCTRL_SPRD\n\ttristate\n\tselect PINMUX\n\tselect PINCONF\n\tselect GENERIC_PINCONF\n\tselect GENERIC_PINMUX_FUNCTIONS\n\thelp\n\t  Say Y here to enable Spreadtrum pinctrl driver\n\nconfig PINCTRL_SPRD_SC9860\n\ttristate \"Spreadtrum SC9860 pinctrl driver\"\n\tdepends on OF\n\tdepends on ARCH_SPRD || COMPILE_TEST\n\tselect PINCTRL_SPRD\n\thelp\n\t  Say Y here to enable Spreadtrum SC9860 pinctrl driver\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

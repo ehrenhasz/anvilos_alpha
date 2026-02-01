@@ -1,0 +1,9 @@
+{
+  "module_name": "charclass.h",
+  "hash_id": "86f7d41667836cfa0cd304afce1222ae58e91a59bbbeaa189ee2d9a805dfb765",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/charclass.h",
+  "human_readable_source": " \n\n \n\n \nstatic struct cclass {\n\tconst char *name;\n\tint (*isctype)(int);\n} cclasses[] = {\n\t{ \"alnum\",\tisalnum },\n\t{ \"alpha\",\tisalpha },\n\t{ \"blank\",\tisblank },\n\t{ \"cntrl\",\tiscntrl },\n\t{ \"digit\",\tisdigit },\n\t{ \"graph\",\tisgraph },\n\t{ \"lower\",\tislower },\n\t{ \"print\",\tisprint },\n\t{ \"punct\",\tispunct },\n\t{ \"space\",\tisspace },\n\t{ \"upper\",\tisupper },\n\t{ \"xdigit\",\tisxdigit },\n\t{ NULL,\t\tNULL }\n};\n\n#define NCCLASSES\t(sizeof(cclasses) / sizeof(cclasses[0]) - 1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

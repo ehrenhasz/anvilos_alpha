@@ -1,0 +1,9 @@
+{
+  "module_name": "ucall.h",
+  "hash_id": "b03e7d60c8c7a80cf3fd6bb1f8a943a67fed3b2c06f4e906530eefc8e9a6d8b4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/include/x86_64/ucall.h",
+  "human_readable_source": " \n#ifndef SELFTEST_KVM_UCALL_H\n#define SELFTEST_KVM_UCALL_H\n\n#include \"kvm_util_base.h\"\n\n#define UCALL_EXIT_REASON       KVM_EXIT_IO\n\nstatic inline void ucall_arch_init(struct kvm_vm *vm, vm_paddr_t mmio_gpa)\n{\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

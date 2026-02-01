@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d3adfa3cfd4e4f9d05d31e361d59a82b0bfd6b7342118e4622e02e9a5bfddcb5",
+  "original_prompt": "Ingested from linux-6.6.14/samples/seccomp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nuserprogs-always-y += bpf-fancy dropper bpf-direct user-trap\n\nbpf-fancy-objs := bpf-fancy.o bpf-helper.o\n\nuserccflags += -I usr/include\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

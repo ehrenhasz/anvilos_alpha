@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_ggtt_fencing.h",
+  "hash_id": "0547a2879963044d93e7de89c2eeaba155d2c714ea38449d59a928dd4474901b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_ggtt_fencing.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_GGTT_FENCING_H__\n#define __INTEL_GGTT_FENCING_H__\n\n#include <linux/list.h>\n#include <linux/types.h>\n\n#include \"i915_active.h\"\n\nstruct drm_i915_gem_object;\nstruct i915_ggtt;\nstruct i915_vma;\nstruct intel_gt;\nstruct sg_table;\n\n#define I965_FENCE_PAGE 4096UL\n\nstruct i915_fence_reg {\n\tstruct list_head link;\n\tstruct i915_ggtt *ggtt;\n\tstruct i915_vma *vma;\n\tatomic_t pin_count;\n\tstruct i915_active active;\n\tint id;\n\t \n\tbool dirty;\n\tu32 start;\n\tu32 size;\n\tu32 tiling;\n\tu32 stride;\n};\n\nstruct i915_fence_reg *i915_reserve_fence(struct i915_ggtt *ggtt);\nvoid i915_unreserve_fence(struct i915_fence_reg *fence);\n\nvoid intel_ggtt_restore_fences(struct i915_ggtt *ggtt);\n\nvoid i915_gem_object_do_bit_17_swizzle(struct drm_i915_gem_object *obj,\n\t\t\t\t       struct sg_table *pages);\nvoid i915_gem_object_save_bit_17_swizzle(struct drm_i915_gem_object *obj,\n\t\t\t\t\t struct sg_table *pages);\n\nvoid intel_ggtt_init_fences(struct i915_ggtt *ggtt);\nvoid intel_ggtt_fini_fences(struct i915_ggtt *ggtt);\n\nvoid intel_gt_init_swizzling(struct intel_gt *gt);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

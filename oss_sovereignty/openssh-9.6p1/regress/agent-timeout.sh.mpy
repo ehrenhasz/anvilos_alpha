@@ -1,0 +1,9 @@
+{
+  "module_name": "agent-timeout.sh",
+  "hash_id": "6116fc9292caaea79b48f3ac84cd8b96eb8ae2586088d76e230f4a3a1a873230",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/agent-timeout.sh",
+  "human_readable_source": "#\t$OpenBSD: agent-timeout.sh,v 1.6 2019/11/26 23:43:10 djm Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"agent timeout test\"\n\nSSHAGENT_TIMEOUT=10\n\ntrace \"start agent\"\neval `${SSHAGENT} -s ${EXTRA_AGENT_ARGS}` > /dev/null\nr=$?\nif [ $r -ne 0 ]; then\n\tfail \"could not start ssh-agent: exit code $r\"\nelse\n\ttrace \"add keys with timeout\"\n\tkeys=0\n\tfor t in ${SSH_KEYTYPES}; do\n\t\t${SSHADD} -kt ${SSHAGENT_TIMEOUT} $OBJ/$t > /dev/null 2>&1\n\t\tif [ $? -ne 0 ]; then\n\t\t\tfail \"ssh-add did succeed exit code 0\"\n\t\tfi\n\t\tkeys=$((${keys} + 1))\n\tdone\n\tn=`${SSHADD} -l 2> /dev/null | wc -l`\n\ttrace \"agent has $n keys\"\n\tif [ $n -ne $keys ]; then\n\t\tfail \"ssh-add -l did not return $keys keys: $n\"\n\tfi\n\ttrace \"sleeping 2*${SSHAGENT_TIMEOUT} seconds\"\n\tsleep ${SSHAGENT_TIMEOUT}\n\tsleep ${SSHAGENT_TIMEOUT}\n\t${SSHADD} -l 2> /dev/null | grep 'The agent has no identities.' >/dev/null\n\tif [ $? -ne 0 ]; then\n\t\tfail \"ssh-add -l still returns keys after timeout\"\n\tfi\n\n\ttrace \"kill agent\"\n\t${SSHAGENT} -k > /dev/null\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

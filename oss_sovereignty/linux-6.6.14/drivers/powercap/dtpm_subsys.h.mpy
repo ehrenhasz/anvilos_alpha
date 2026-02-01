@@ -1,0 +1,9 @@
+{
+  "module_name": "dtpm_subsys.h",
+  "hash_id": "75e9fda8a0040e82c4c51c9b8b50d8fec2734435e47488836edc153899d56b08",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/powercap/dtpm_subsys.h",
+  "human_readable_source": " \n \n#ifndef ___DTPM_SUBSYS_H__\n#define ___DTPM_SUBSYS_H__\n\nextern struct dtpm_subsys_ops dtpm_cpu_ops;\nextern struct dtpm_subsys_ops dtpm_devfreq_ops;\n\nstruct dtpm_subsys_ops *dtpm_subsys[] = {\n#ifdef CONFIG_DTPM_CPU\n\t&dtpm_cpu_ops,\n#endif\n#ifdef CONFIG_DTPM_DEVFREQ\n\t&dtpm_devfreq_ops,\n#endif\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

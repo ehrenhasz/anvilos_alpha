@@ -1,0 +1,9 @@
+{
+  "module_name": "read.m4",
+  "hash_id": "03ae3fd545a6d1e01c82a83304ec3b8e57cc87e11d5f905c3ac4f85c5e5a25de",
+  "original_prompt": "Ingested from coreutils-9.4/m4/read.m4",
+  "human_readable_source": "# read.m4 serial 5\ndnl Copyright (C) 2011-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_READ],\n[\n  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])\n  m4_ifdef([gl_MSVC_INVAL], [\n    AC_REQUIRE([gl_MSVC_INVAL])\n    if test $HAVE_MSVC_INVALID_PARAMETER_HANDLER = 1; then\n      REPLACE_READ=1\n    fi\n  ])\n  dnl This ifdef is just an optimization, to avoid performing a configure\n  dnl check whose result is not used. It does not make the test of\n  dnl GNULIB_UNISTD_H_NONBLOCKING or GNULIB_NONBLOCKING redundant.\n  m4_ifdef([gl_NONBLOCKING_IO], [\n    gl_NONBLOCKING_IO\n    if test $gl_cv_have_nonblocking != yes; then\n      REPLACE_READ=1\n    fi\n  ])\n])\n\n# Prerequisites of lib/read.c.\nAC_DEFUN([gl_PREREQ_READ], [:])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

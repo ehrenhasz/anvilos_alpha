@@ -1,0 +1,9 @@
+{
+  "module_name": "ltm.c",
+  "hash_id": "fe077b50f72a1b02095269f97bf6409ab93ade3d285c52d13cebbf14ef4300f8",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/ltm.c",
+  "human_readable_source": " \n\n\n#define ltm_c\n#define LUA_CORE\n\n#include <sys/lua/lua.h>\n\n#include \"lobject.h\"\n#include \"lstate.h\"\n#include \"lstring.h\"\n#include \"ltable.h\"\n#include \"ltm.h\"\n\n\nstatic const char udatatypename[] = \"userdata\";\n\nLUAI_DDEF const char *const luaT_typenames_[LUA_TOTALTAGS] = {\n  \"no value\",\n  \"nil\", \"boolean\", udatatypename, \"number\",\n  \"string\", \"table\", \"function\", udatatypename, \"thread\",\n  \"proto\", \"upval\"   \n};\n\n\nvoid luaT_init (lua_State *L) {\n  static const char *const luaT_eventname[] = {   \n    \"__index\", \"__newindex\",\n    \"__gc\", \"__mode\", \"__len\", \"__eq\",\n    \"__add\", \"__sub\", \"__mul\", \"__div\", \"__mod\",\n    \"__pow\", \"__unm\", \"__lt\", \"__le\",\n    \"__concat\", \"__call\"\n  };\n  int i;\n  for (i=0; i<TM_N; i++) {\n    G(L)->tmname[i] = luaS_new(L, luaT_eventname[i]);\n    luaS_fix(G(L)->tmname[i]);   \n  }\n}\n\n\n \nconst TValue *luaT_gettm (Table *events, TMS event, TString *ename) {\n  const TValue *tm = luaH_getstr(events, ename);\n  lua_assert(event <= TM_EQ);\n  if (ttisnil(tm)) {   \n    events->flags |= cast_byte(1u<<event);   \n    return NULL;\n  }\n  else return tm;\n}\n\n\nconst TValue *luaT_gettmbyobj (lua_State *L, const TValue *o, TMS event) {\n  Table *mt;\n  switch (ttypenv(o)) {\n    case LUA_TTABLE:\n      mt = hvalue(o)->metatable;\n      break;\n    case LUA_TUSERDATA:\n      mt = uvalue(o)->metatable;\n      break;\n    default:\n      mt = G(L)->mt[ttypenv(o)];\n  }\n  return (mt ? luaH_getstr(mt, G(L)->tmname[event]) : luaO_nilobject);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

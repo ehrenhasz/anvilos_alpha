@@ -1,0 +1,9 @@
+{
+  "module_name": "nvmem.c",
+  "hash_id": "f3232c3c77f1539c5dfd2762226cb028b5b0034f3026f3c10cf3018ebd65f8e4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/rtc/nvmem.c",
+  "human_readable_source": "\n \n\n#include <linux/err.h>\n#include <linux/types.h>\n#include <linux/nvmem-consumer.h>\n#include <linux/rtc.h>\n\nint devm_rtc_nvmem_register(struct rtc_device *rtc,\n\t\t       struct nvmem_config *nvmem_config)\n{\n\tstruct device *dev = rtc->dev.parent;\n\tstruct nvmem_device *nvmem;\n\n\tif (!nvmem_config)\n\t\treturn -ENODEV;\n\n\tnvmem_config->dev = dev;\n\tnvmem_config->owner = rtc->owner;\n\tnvmem = devm_nvmem_register(dev, nvmem_config);\n\tif (IS_ERR(nvmem))\n\t\tdev_err(dev, \"failed to register nvmem device for RTC\\n\");\n\n\treturn PTR_ERR_OR_ZERO(nvmem);\n}\nEXPORT_SYMBOL_GPL(devm_rtc_nvmem_register);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

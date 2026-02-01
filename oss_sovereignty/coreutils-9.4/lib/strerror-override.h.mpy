@@ -1,0 +1,9 @@
+{
+  "module_name": "strerror-override.h",
+  "hash_id": "8ca764f192aa264f5bbcc2468ee708fecaaf1f4635bb58998d37ae01b85c1379",
+  "original_prompt": "Ingested from coreutils-9.4/lib/strerror-override.h",
+  "human_readable_source": " \n# if !_GL_CONFIG_H_INCLUDED\n#  error \"Please include config.h first.\"\n# endif\n\n# include <errno.h>\n# include <stddef.h>\n\n \n# define STACKBUF_LEN 256\n\n \n# if REPLACE_STRERROR_0 \\\n     || GNULIB_defined_ESOCK \\\n     || GNULIB_defined_ESTREAMS \\\n     || GNULIB_defined_EWINSOCK \\\n     || GNULIB_defined_ENOMSG \\\n     || GNULIB_defined_EIDRM \\\n     || GNULIB_defined_ENOLINK \\\n     || GNULIB_defined_EPROTO \\\n     || GNULIB_defined_EMULTIHOP \\\n     || GNULIB_defined_EBADMSG \\\n     || GNULIB_defined_EOVERFLOW \\\n     || GNULIB_defined_ENOTSUP \\\n     || GNULIB_defined_ENETRESET \\\n     || GNULIB_defined_ECONNABORTED \\\n     || GNULIB_defined_ESTALE \\\n     || GNULIB_defined_EDQUOT \\\n     || GNULIB_defined_ECANCELED \\\n     || GNULIB_defined_EOWNERDEAD \\\n     || GNULIB_defined_ENOTRECOVERABLE \\\n     || GNULIB_defined_EILSEQ\nextern const char *strerror_override (int errnum) _GL_ATTRIBUTE_CONST;\n# else\n#  define strerror_override(ignored) NULL\n#  define GNULIB_defined_strerror_override_macro 1\n# endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

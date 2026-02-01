@@ -1,0 +1,9 @@
+{
+  "module_name": "fuse.h",
+  "hash_id": "66ea9f8d9e2a8a46b0ad5023fff9844d899bef7b202badcdb2f93544815bbb29",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/fuse.h",
+  "human_readable_source": " \n#ifndef __NVKM_FUSE_H__\n#define __NVKM_FUSE_H__\n#include <core/subdev.h>\n\nstruct nvkm_fuse {\n\tconst struct nvkm_fuse_func *func;\n\tstruct nvkm_subdev subdev;\n\tspinlock_t lock;\n};\n\nu32 nvkm_fuse_read(struct nvkm_fuse *, u32 addr);\n\nint nv50_fuse_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_fuse **);\nint gf100_fuse_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_fuse **);\nint gm107_fuse_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_fuse **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

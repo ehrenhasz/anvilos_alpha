@@ -1,0 +1,9 @@
+{
+  "module_name": "dmub_dcn314.h",
+  "hash_id": "88dcc9ea124876d541393426001097ee6f047fd506429e05e474671a29c2a01a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dmub/src/dmub_dcn314.h",
+  "human_readable_source": " \n\n#ifndef _DMUB_DCN314_H_\n#define _DMUB_DCN314_H_\n\n#include \"dmub_dcn31.h\"\n\nextern const struct dmub_srv_dcn31_regs dmub_srv_dcn314_regs;\n\nbool dmub_dcn314_is_psrsu_supported(struct dmub_srv *dmub);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

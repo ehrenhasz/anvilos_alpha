@@ -1,0 +1,9 @@
+{
+  "module_name": "ipa_gsi.c",
+  "hash_id": "8bd386fdd6cfed77179d1898fd48648b4b2b35e0fa3d8228958670b60d6cbadb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ipa/ipa_gsi.c",
+  "human_readable_source": "\n\n \n\n#include <linux/types.h>\n\n#include \"ipa_gsi.h\"\n#include \"gsi_trans.h\"\n#include \"ipa.h\"\n#include \"ipa_endpoint.h\"\n#include \"ipa_data.h\"\n\nvoid ipa_gsi_trans_complete(struct gsi_trans *trans)\n{\n\tstruct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);\n\n\tipa_endpoint_trans_complete(ipa->channel_map[trans->channel_id], trans);\n}\n\nvoid ipa_gsi_trans_release(struct gsi_trans *trans)\n{\n\tstruct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);\n\n\tipa_endpoint_trans_release(ipa->channel_map[trans->channel_id], trans);\n}\n\nvoid ipa_gsi_channel_tx_queued(struct gsi *gsi, u32 channel_id, u32 count,\n\t\t\t       u32 byte_count)\n{\n\tstruct ipa *ipa = container_of(gsi, struct ipa, gsi);\n\tstruct ipa_endpoint *endpoint;\n\n\tendpoint = ipa->channel_map[channel_id];\n\tif (endpoint->netdev)\n\t\tnetdev_sent_queue(endpoint->netdev, byte_count);\n}\n\nvoid ipa_gsi_channel_tx_completed(struct gsi *gsi, u32 channel_id, u32 count,\n\t\t\t\t  u32 byte_count)\n{\n\tstruct ipa *ipa = container_of(gsi, struct ipa, gsi);\n\tstruct ipa_endpoint *endpoint;\n\n\tendpoint = ipa->channel_map[channel_id];\n\tif (endpoint->netdev)\n\t\tnetdev_completed_queue(endpoint->netdev, count, byte_count);\n}\n\n \nbool ipa_gsi_endpoint_data_empty(const struct ipa_gsi_endpoint_data *data)\n{\n\treturn data->ee_id == GSI_EE_AP && !data->channel.tlv_count;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs_rm_non_contexts.sh",
+  "hash_id": "7728bb886480e63fe79fd8a5f82a53f246141332d252ed256f56022009062368",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/damon/debugfs_rm_non_contexts.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nsource _debugfs_common.sh\n\n# Test putting non-ctx files/dirs to rm_contexts file\n# ===================================================\n\ndmesg -C\n\nfor file in \"$DBGFS/\"*\ndo\n\t(echo \"$(basename \"$f\")\" > \"$DBGFS/rm_contexts\") &> /dev/null\n\tif dmesg | grep -q BUG\n\tthen\n\t\tdmesg\n\t\texit 1\n\tfi\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

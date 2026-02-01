@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "72e2586c4d3901189447aa8ad645c9871167ac672fdea315053529b98b146404",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/rcar/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig CAN_RCAR\n\ttristate \"Renesas R-Car and RZ/G CAN controller\"\n\tdepends on ARCH_RENESAS || COMPILE_TEST\n\thelp\n\t  Say Y here if you want to use CAN controller found on Renesas R-Car\n\t  or RZ/G SoCs.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called rcar_can.\n\nconfig CAN_RCAR_CANFD\n\ttristate \"Renesas R-Car CAN FD controller\"\n\tdepends on ARCH_RENESAS || COMPILE_TEST\n\thelp\n\t  Say Y here if you want to use CAN FD controller found on\n\t  Renesas R-Car SoCs. The driver puts the controller in CAN FD only\n\t  mode, which can interoperate with CAN2.0 nodes but does not support\n\t  dedicated CAN 2.0 mode.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called rcar_canfd.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

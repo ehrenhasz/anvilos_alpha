@@ -1,0 +1,9 @@
+{
+  "module_name": "rseq_api.h",
+  "hash_id": "44a68ea435912ab87927a46dcbb1a02518efbe6c289aa97cf29c2cf8d7f8053f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/rseq_api.h",
+  "human_readable_source": "#include <linux/rseq.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

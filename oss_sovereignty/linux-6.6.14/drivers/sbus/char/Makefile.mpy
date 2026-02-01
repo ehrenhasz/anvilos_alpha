@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4f9b93270a352210bb626f165d556493856e0ab6e5e57e176bf8bd23f69ce2fc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/sbus/char/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the kernel miscellaneous SPARC device drivers.\n#\n# Dave Redman Frame Buffer tuning support.\n#\n# 7 October 2000, Bartlomiej Zolnierkiewicz <bkz@linux-ide.org>\n# Rewritten to use lists instead of if-statements.\n#\n\nbbc-objs := bbc_i2c.o bbc_envctrl.o\n\nobj-$(CONFIG_ENVCTRL)\t\t\t+= envctrl.o\nobj-$(CONFIG_DISPLAY7SEG)\t\t+= display7seg.o\nobj-$(CONFIG_OBP_FLASH)\t\t\t+= flash.o\nobj-$(CONFIG_SUN_OPENPROMIO)\t\t+= openprom.o\nobj-$(CONFIG_TADPOLE_TS102_UCTRL)\t+= uctrl.o\nobj-$(CONFIG_BBC_I2C)\t\t\t+= bbc.o\nobj-$(CONFIG_ORACLE_DAX) \t\t+= oradax.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

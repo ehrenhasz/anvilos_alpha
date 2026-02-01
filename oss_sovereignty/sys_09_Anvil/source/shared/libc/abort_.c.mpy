@@ -1,0 +1,9 @@
+{
+  "module_name": "abort_.c",
+  "hash_id": "bfc24fd160a2fd7c63e843449f591a6c40658f38b6f0c3d88c2f7484b394f3e0",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/libc/abort_.c",
+  "human_readable_source": "#include <py/runtime.h>\n\nNORETURN void abort_(void);\n\nNORETURN void abort_(void) {\n    mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT(\"abort() called\"));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

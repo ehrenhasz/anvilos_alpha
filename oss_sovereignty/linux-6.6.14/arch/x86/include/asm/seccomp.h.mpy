@@ -1,0 +1,9 @@
+{
+  "module_name": "seccomp.h",
+  "hash_id": "0085eabc5c3d11c13028f86b48f012b4a5c93d8a0d909b16d8fda9264699d1fc",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/seccomp.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SECCOMP_H\n#define _ASM_X86_SECCOMP_H\n\n#include <asm/unistd.h>\n\n#ifdef CONFIG_X86_32\n#define __NR_seccomp_sigreturn\t\t__NR_sigreturn\n#endif\n\n#ifdef CONFIG_COMPAT\n#include <asm/ia32_unistd.h>\n#define __NR_seccomp_read_32\t\t__NR_ia32_read\n#define __NR_seccomp_write_32\t\t__NR_ia32_write\n#define __NR_seccomp_exit_32\t\t__NR_ia32_exit\n#define __NR_seccomp_sigreturn_32\t__NR_ia32_sigreturn\n#endif\n\n#ifdef CONFIG_X86_64\n# define SECCOMP_ARCH_NATIVE\t\tAUDIT_ARCH_X86_64\n# define SECCOMP_ARCH_NATIVE_NR\t\tNR_syscalls\n# define SECCOMP_ARCH_NATIVE_NAME\t\"x86_64\"\n# ifdef CONFIG_COMPAT\n#  define SECCOMP_ARCH_COMPAT\t\tAUDIT_ARCH_I386\n#  define SECCOMP_ARCH_COMPAT_NR\tIA32_NR_syscalls\n#  define SECCOMP_ARCH_COMPAT_NAME\t\"ia32\"\n# endif\n \n#else  \n# define SECCOMP_ARCH_NATIVE\t\tAUDIT_ARCH_I386\n# define SECCOMP_ARCH_NATIVE_NR\t        NR_syscalls\n# define SECCOMP_ARCH_NATIVE_NAME\t\"ia32\"\n#endif\n\n#include <asm-generic/seccomp.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

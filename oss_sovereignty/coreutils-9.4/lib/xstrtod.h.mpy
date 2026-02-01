@@ -1,0 +1,9 @@
+{
+  "module_name": "xstrtod.h",
+  "hash_id": "90d90785a999d4dc6ebd1d695049eac15faf64476c29fd9bc1359a88dabaa8d2",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xstrtod.h",
+  "human_readable_source": " \n\n#ifndef XSTRTOD_H\n# define XSTRTOD_H 1\n\nbool xstrtod (const char *str, const char **ptr, double *result,\n              double (*convert) (char const *, char **));\nbool xstrtold (const char *str, const char **ptr, long double *result,\n               long double (*convert) (char const *, char **));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

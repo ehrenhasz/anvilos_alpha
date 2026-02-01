@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "6eaf24148763fa2c665dd43e06a30a86ca035f7a43a0e7eca88bcaa7e396a196",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/tegra/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CLK_TEGRA_BPMP\n\tdef_bool y\n\tdepends on TEGRA_BPMP\n\nconfig TEGRA_CLK_DFLL\n\tdepends on ARCH_TEGRA_124_SOC || ARCH_TEGRA_210_SOC\n\tselect PM_OPP\n\tdef_bool y\n\nconfig TEGRA124_CLK_EMC\n\tbool\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "btf_dump_test_case_namespacing.c",
+  "hash_id": "85e3a2341312360dda29fc266d25d259bb6c3b37e7d200fa298888082e91a6d6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf_dump_test_case_namespacing.c",
+  "human_readable_source": "\n\n \n \nstruct S {\n\tint S;\n\tint U;\n};\n\ntypedef struct S S;\n\nunion U {\n\tint S;\n\tint U;\n};\n\ntypedef union U U;\n\nenum E {\n\tV = 0,\n};\n\ntypedef enum E E;\n\nstruct A {};\n\nunion B {};\n\nenum C {\n\tA = 1,\n\tB = 2,\n\tC = 3,\n};\n\nstruct X {};\n\nunion Y {};\n\nenum Z;\n\ntypedef int X;\n\ntypedef int Y;\n\ntypedef int Z;\n\n \n\nint f(struct {\n\tstruct S _1;\n\tS _2;\n\tunion U _3;\n\tU _4;\n\tenum E _5;\n\tE _6;\n\tstruct A a;\n\tunion B b;\n\tenum C c;\n\tstruct X x;\n\tunion Y y;\n\tenum Z *z;\n\tX xx;\n\tY yy;\n\tZ zz;\n} *_)\n{\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "owl-gate.c",
+  "hash_id": "1205336af56b919f2ae72211729046b8de592e612776170435760b9568ab0988",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/actions/owl-gate.c",
+  "human_readable_source": "\n\n\n\n\n\n\n\n\n\n#include <linux/clk-provider.h>\n#include <linux/regmap.h>\n\n#include \"owl-gate.h\"\n\nvoid owl_gate_set(const struct owl_clk_common *common,\n\t\t const struct owl_gate_hw *gate_hw, bool enable)\n{\n\tint set = gate_hw->gate_flags & CLK_GATE_SET_TO_DISABLE ? 1 : 0;\n\tu32 reg;\n\n\tset ^= enable;\n\n\tregmap_read(common->regmap, gate_hw->reg, &reg);\n\n\tif (set)\n\t\treg |= BIT(gate_hw->bit_idx);\n\telse\n\t\treg &= ~BIT(gate_hw->bit_idx);\n\n\tregmap_write(common->regmap, gate_hw->reg, reg);\n}\n\nstatic void owl_gate_disable(struct clk_hw *hw)\n{\n\tstruct owl_gate *gate = hw_to_owl_gate(hw);\n\tstruct owl_clk_common *common = &gate->common;\n\n\towl_gate_set(common, &gate->gate_hw, false);\n}\n\nstatic int owl_gate_enable(struct clk_hw *hw)\n{\n\tstruct owl_gate *gate = hw_to_owl_gate(hw);\n\tstruct owl_clk_common *common = &gate->common;\n\n\towl_gate_set(common, &gate->gate_hw, true);\n\n\treturn 0;\n}\n\nint owl_gate_clk_is_enabled(const struct owl_clk_common *common,\n\t\t   const struct owl_gate_hw *gate_hw)\n{\n\tu32 reg;\n\n\tregmap_read(common->regmap, gate_hw->reg, &reg);\n\n\tif (gate_hw->gate_flags & CLK_GATE_SET_TO_DISABLE)\n\t\treg ^= BIT(gate_hw->bit_idx);\n\n\treturn !!(reg & BIT(gate_hw->bit_idx));\n}\n\nstatic int owl_gate_is_enabled(struct clk_hw *hw)\n{\n\tstruct owl_gate *gate = hw_to_owl_gate(hw);\n\tstruct owl_clk_common *common = &gate->common;\n\n\treturn owl_gate_clk_is_enabled(common, &gate->gate_hw);\n}\n\nconst struct clk_ops owl_gate_ops = {\n\t.disable\t= owl_gate_disable,\n\t.enable\t\t= owl_gate_enable,\n\t.is_enabled\t= owl_gate_is_enabled,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

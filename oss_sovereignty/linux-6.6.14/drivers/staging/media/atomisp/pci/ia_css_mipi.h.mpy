@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_mipi.h",
+  "hash_id": "31654dcdff5d08885df068427cd24181f163be742a14ba729623350ec71a0459",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/ia_css_mipi.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_MIPI_H\n#define __IA_CSS_MIPI_H\n\n \n\n#include <type_support.h>\n#include \"ia_css_err.h\"\n#include \"ia_css_stream_format.h\"\n#include \"ia_css_input_port.h\"\n\n \nint\nia_css_mipi_frame_enable_check_on_size(const enum mipi_port_id port,\n\t\t\t\t       const unsigned int\tsize_mem_words);\n\n \nint\nia_css_mipi_frame_calculate_size(const unsigned int width,\n\t\t\t\t const unsigned int height,\n\t\t\t\t const enum atomisp_input_format format,\n\t\t\t\t const bool hasSOLandEOL,\n\t\t\t\t const unsigned int embedded_data_size_words,\n\t\t\t\t unsigned int *size_mem_words);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

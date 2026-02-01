@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfs.h",
+  "hash_id": "51919b2167637f8f1a51dcd8f8d3d5d3c524d17e783d0c432865c02a2ce92adb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/most/dim2/sysfs.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef DIM2_SYSFS_H\n#define\tDIM2_SYSFS_H\n\n#include <linux/kobject.h>\n\nstruct medialb_bus {\n\tstruct kobject kobj_group;\n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

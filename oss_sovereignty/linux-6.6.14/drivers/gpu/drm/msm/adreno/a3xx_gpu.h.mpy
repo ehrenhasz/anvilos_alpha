@@ -1,0 +1,9 @@
+{
+  "module_name": "a3xx_gpu.h",
+  "hash_id": "3ceee892e30b3c401b86e87f24afde23e0ae56f8bb04413cf59c7bd0ed66dcaa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/adreno/a3xx_gpu.h",
+  "human_readable_source": " \n \n\n#ifndef __A3XX_GPU_H__\n#define __A3XX_GPU_H__\n\n#include \"adreno_gpu.h\"\n\n \n#undef ROP_COPY\n#undef ROP_XOR\n\n#include \"a3xx.xml.h\"\n\nstruct a3xx_gpu {\n\tstruct adreno_gpu base;\n\n\t \n\tstruct adreno_ocmem ocmem;\n};\n#define to_a3xx_gpu(x) container_of(x, struct a3xx_gpu, base)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

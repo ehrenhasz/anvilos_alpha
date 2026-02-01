@@ -1,0 +1,9 @@
+{
+  "module_name": "affinity.h",
+  "hash_id": "c65fa10bfb726223f970c94a940da74c3f53db456fc7706de2e6f80a1c115a90",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/affinity.h",
+  "human_readable_source": "\n#ifndef PERF_AFFINITY_H\n#define PERF_AFFINITY_H 1\n\n#include <stdbool.h>\n\nstruct affinity {\n\tunsigned long *orig_cpus;\n\tunsigned long *sched_cpus;\n\tbool changed;\n};\n\nvoid affinity__cleanup(struct affinity *a);\nvoid affinity__set(struct affinity *a, int cpu);\nint affinity__setup(struct affinity *a);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

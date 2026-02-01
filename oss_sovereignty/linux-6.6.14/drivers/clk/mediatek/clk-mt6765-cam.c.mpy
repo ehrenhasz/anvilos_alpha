@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-mt6765-cam.c",
+  "hash_id": "ca4fc00f67fec8de73545c6b8645f949c07b995f02c948e4cd4412c8e3c9795f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mediatek/clk-mt6765-cam.c",
+  "human_readable_source": "\n \n\n#include <linux/clk-provider.h>\n#include <linux/platform_device.h>\n\n#include \"clk-mtk.h\"\n#include \"clk-gate.h\"\n\n#include <dt-bindings/clock/mt6765-clk.h>\n\nstatic const struct mtk_gate_regs cam_cg_regs = {\n\t.set_ofs = 0x4,\n\t.clr_ofs = 0x8,\n\t.sta_ofs = 0x0,\n};\n\n#define GATE_CAM(_id, _name, _parent, _shift)\t\t\t\t\\\n\tGATE_MTK(_id, _name, _parent, &cam_cg_regs, _shift, &mtk_clk_gate_ops_setclr)\n\nstatic const struct mtk_gate cam_clks[] = {\n\tGATE_CAM(CLK_CAM_LARB3, \"cam_larb3\", \"mm_ck\", 0),\n\tGATE_CAM(CLK_CAM_DFP_VAD, \"cam_dfp_vad\", \"mm_ck\", 1),\n\tGATE_CAM(CLK_CAM, \"cam\", \"mm_ck\", 6),\n\tGATE_CAM(CLK_CAMTG, \"camtg\", \"mm_ck\", 7),\n\tGATE_CAM(CLK_CAM_SENINF, \"cam_seninf\", \"mm_ck\", 8),\n\tGATE_CAM(CLK_CAMSV0, \"camsv0\", \"mm_ck\", 9),\n\tGATE_CAM(CLK_CAMSV1, \"camsv1\", \"mm_ck\", 10),\n\tGATE_CAM(CLK_CAMSV2, \"camsv2\", \"mm_ck\", 11),\n\tGATE_CAM(CLK_CAM_CCU, \"cam_ccu\", \"mm_ck\", 12),\n};\n\nstatic const struct mtk_clk_desc cam_desc = {\n\t.clks = cam_clks,\n\t.num_clks = ARRAY_SIZE(cam_clks),\n};\n\nstatic const struct of_device_id of_match_clk_mt6765_cam[] = {\n\t{\n\t\t.compatible = \"mediatek,mt6765-camsys\",\n\t\t.data = &cam_desc,\n\t}, {\n\t\t \n\t}\n};\nMODULE_DEVICE_TABLE(of, of_match_clk_mt6765_cam);\n\nstatic struct platform_driver clk_mt6765_cam_drv = {\n\t.probe = mtk_clk_simple_probe,\n\t.remove_new = mtk_clk_simple_remove,\n\t.driver = {\n\t\t.name = \"clk-mt6765-cam\",\n\t\t.of_match_table = of_match_clk_mt6765_cam,\n\t},\n};\nmodule_platform_driver(clk_mt6765_cam_drv);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

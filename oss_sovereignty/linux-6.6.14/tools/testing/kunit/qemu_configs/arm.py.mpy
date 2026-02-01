@@ -1,0 +1,9 @@
+{
+  "module_name": "arm.py",
+  "hash_id": "d305a18b592a6b938075fe5e193f4a3945d08b60f81f19e3de290040e69acb57",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/qemu_configs/arm.py",
+  "human_readable_source": "from ..qemu_config import QemuArchParams\n\nQEMU_ARCH = QemuArchParams(linux_arch='arm',\n\t\t\t   kconfig='''\nCONFIG_ARCH_VIRT=y\nCONFIG_SERIAL_AMBA_PL010=y\nCONFIG_SERIAL_AMBA_PL010_CONSOLE=y\nCONFIG_SERIAL_AMBA_PL011=y\nCONFIG_SERIAL_AMBA_PL011_CONSOLE=y''',\n\t\t\t   qemu_arch='arm',\n\t\t\t   kernel_path='arch/arm/boot/zImage',\n\t\t\t   kernel_command_line='console=ttyAMA0',\n\t\t\t   extra_qemu_params=['-machine', 'virt'])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

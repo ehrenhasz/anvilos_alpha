@@ -1,0 +1,9 @@
+{
+  "module_name": "common.sh.in",
+  "hash_id": "6dd72ee42837fe85e18bd54c680a2cc1a72b16b0169e342ca03ee9dad294a634",
+  "original_prompt": "Ingested from zfs-2.2.2/scripts/common.sh.in",
+  "human_readable_source": "#!/bin/sh\n\n# Directories\nexport BIN_DIR=\nexport SBIN_DIR=\nexport LIBEXEC_DIR=\nexport ZTS_DIR=\nexport SCRIPT_DIR=\n\n# General commands\nexport ZDB=\"${ZDB:-$SBIN_DIR/zdb}\"\nexport ZFS=\"${ZFS:-$SBIN_DIR/zfs}\"\nexport ZPOOL=\"${ZPOOL:-$SBIN_DIR/zpool}\"\nexport ZTEST=\"${ZTEST:-$SBIN_DIR/ztest}\"\nexport ZFS_SH=\"${ZFS_SH:-$SCRIPT_DIR/zfs.sh}\"\n\n# Test Suite\nexport RUNFILE_DIR=\"${RUNFILE_DIR:-$ZTS_DIR/runfiles}\"\nexport TEST_RUNNER=\"${TEST_RUNNER:-$ZTS_DIR/test-runner/bin/test-runner.py}\"\nexport ZTS_REPORT=\"${ZTS_REPORT:-$ZTS_DIR/test-runner/bin/zts-report.py}\"\nexport STF_TOOLS=\"${STF_TOOLS:-$ZTS_DIR/test-runner}\"\nexport STF_SUITE=\"${STF_SUITE:-$ZTS_DIR/zfs-tests}\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "599d377aeeb7345efdf40d31407fea6a2f50419e3fc792da40cdffeef3cc8692",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/iscsi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\niscsi_target_mod-y +=\t\tiscsi_target_parameters.o \\\n\t\t\t\tiscsi_target_seq_pdu_list.o \\\n\t\t\t\tiscsi_target_auth.o \\\n\t\t\t\tiscsi_target_datain_values.o \\\n\t\t\t\tiscsi_target_device.o \\\n\t\t\t\tiscsi_target_erl0.o \\\n\t\t\t\tiscsi_target_erl1.o \\\n\t\t\t\tiscsi_target_erl2.o \\\n\t\t\t\tiscsi_target_login.o \\\n\t\t\t\tiscsi_target_nego.o \\\n\t\t\t\tiscsi_target_nodeattrib.o \\\n\t\t\t\tiscsi_target_tmr.o \\\n\t\t\t\tiscsi_target_tpg.o \\\n\t\t\t\tiscsi_target_util.o \\\n\t\t\t\tiscsi_target.o \\\n\t\t\t\tiscsi_target_configfs.o \\\n\t\t\t\tiscsi_target_stat.o \\\n\t\t\t\tiscsi_target_transport.o\n\nobj-$(CONFIG_ISCSI_TARGET)\t+= iscsi_target_mod.o\nobj-$(CONFIG_ISCSI_TARGET_CXGB4) += cxgbit/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

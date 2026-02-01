@@ -1,0 +1,9 @@
+{
+  "module_name": "cfi.h",
+  "hash_id": "fd9fe70b5741897404172287fa9deb5a497db0dced92bead51447165aab39d7a",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/cfi.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_CFI_H\n#define _ASM_X86_CFI_H\n\n \n\n#include <linux/cfi.h>\n\n#ifdef CONFIG_CFI_CLANG\nenum bug_trap_type handle_cfi_failure(struct pt_regs *regs);\n#else\nstatic inline enum bug_trap_type handle_cfi_failure(struct pt_regs *regs)\n{\n\treturn BUG_TRAP_TYPE_NONE;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

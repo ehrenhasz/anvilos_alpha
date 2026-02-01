@@ -1,0 +1,9 @@
+{
+  "module_name": "list.h",
+  "hash_id": "13a1a4d01dee995191c4c0cbba74e65247b8e13654eb3496d8221e5c8781ae88",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/list.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_LIST_H\n#define\t_SYS_LIST_H\n\n#include <sys/list_impl.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\ntypedef struct list_node list_node_t;\ntypedef struct list list_t;\n\nvoid list_create(list_t *, size_t, size_t);\nvoid list_destroy(list_t *);\n\nvoid list_insert_after(list_t *, void *, void *);\nvoid list_insert_before(list_t *, void *, void *);\nvoid list_insert_head(list_t *, void *);\nvoid list_insert_tail(list_t *, void *);\nvoid list_remove(list_t *, void *);\nvoid *list_remove_head(list_t *);\nvoid *list_remove_tail(list_t *);\nvoid list_move_tail(list_t *, list_t *);\n\nvoid *list_head(list_t *);\nvoid *list_tail(list_t *);\nvoid *list_next(list_t *, void *);\nvoid *list_prev(list_t *, void *);\nint list_is_empty(list_t *);\n\nvoid list_link_init(list_node_t *);\nvoid list_link_replace(list_node_t *, list_node_t *);\n\nint list_link_active(list_node_t *);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "udma-pcm.c",
+  "hash_id": "ef30909a20ba621e4eca522744a82402523d1a1ae1d28cc7977bfcd725828ac6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/ti/udma-pcm.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <sound/core.h>\n#include <sound/pcm.h>\n#include <sound/pcm_params.h>\n#include <sound/soc.h>\n#include <sound/dmaengine_pcm.h>\n\n#include \"udma-pcm.h\"\n\nstatic const struct snd_pcm_hardware udma_pcm_hardware = {\n\t.info\t\t\t= SNDRV_PCM_INFO_MMAP |\n\t\t\t\t  SNDRV_PCM_INFO_MMAP_VALID |\n\t\t\t\t  SNDRV_PCM_INFO_PAUSE | SNDRV_PCM_INFO_RESUME |\n\t\t\t\t  SNDRV_PCM_INFO_NO_PERIOD_WAKEUP |\n\t\t\t\t  SNDRV_PCM_INFO_INTERLEAVED,\n\t.buffer_bytes_max\t= SIZE_MAX,\n\t.period_bytes_min\t= 32,\n\t.period_bytes_max\t= SZ_64K,\n\t.periods_min\t\t= 2,\n\t.periods_max\t\t= UINT_MAX,\n};\n\nstatic const struct snd_dmaengine_pcm_config udma_dmaengine_pcm_config = {\n\t.pcm_hardware = &udma_pcm_hardware,\n\t.prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config,\n};\n\nint udma_pcm_platform_register(struct device *dev)\n{\n\treturn devm_snd_dmaengine_pcm_register(dev, &udma_dmaengine_pcm_config,\n\t\t\t\t\t       0);\n}\nEXPORT_SYMBOL_GPL(udma_pcm_platform_register);\n\nMODULE_AUTHOR(\"Peter Ujfalusi <peter.ujfalusi@ti.com>\");\nMODULE_DESCRIPTION(\"UDMA PCM ASoC platform driver\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

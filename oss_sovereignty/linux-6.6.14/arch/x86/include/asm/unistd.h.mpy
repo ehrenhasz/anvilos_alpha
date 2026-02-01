@@ -1,0 +1,9 @@
+{
+  "module_name": "unistd.h",
+  "hash_id": "591b990b17b98b13e46118889c171d4d1d62c83017adf17a8e797202fb81a636",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/unistd.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_UNISTD_H\n#define _ASM_X86_UNISTD_H 1\n\n#include <uapi/asm/unistd.h>\n\n\n# ifdef CONFIG_X86_32\n\n#  include <asm/unistd_32.h>\n#  define __ARCH_WANT_STAT64\n#  define __ARCH_WANT_SYS_IPC\n#  define __ARCH_WANT_SYS_OLD_MMAP\n#  define __ARCH_WANT_SYS_OLD_SELECT\n\n#  define IA32_NR_syscalls (__NR_syscalls)\n\n# else\n\n#  include <asm/unistd_64.h>\n#  include <asm/unistd_64_x32.h>\n#  include <asm/unistd_32_ia32.h>\n#  define __ARCH_WANT_SYS_TIME\n#  define __ARCH_WANT_SYS_UTIME\n#  define __ARCH_WANT_COMPAT_STAT\n#  define __ARCH_WANT_COMPAT_SYS_PREADV64\n#  define __ARCH_WANT_COMPAT_SYS_PWRITEV64\n#  define __ARCH_WANT_COMPAT_SYS_PREADV64V2\n#  define __ARCH_WANT_COMPAT_SYS_PWRITEV64V2\n#  define X32_NR_syscalls (__NR_x32_syscalls)\n#  define IA32_NR_syscalls (__NR_ia32_syscalls)\n\n# endif\n\n# define NR_syscalls (__NR_syscalls)\n\n# define __ARCH_WANT_NEW_STAT\n# define __ARCH_WANT_OLD_READDIR\n# define __ARCH_WANT_OLD_STAT\n# define __ARCH_WANT_SYS_ALARM\n# define __ARCH_WANT_SYS_FADVISE64\n# define __ARCH_WANT_SYS_GETHOSTNAME\n# define __ARCH_WANT_SYS_GETPGRP\n# define __ARCH_WANT_SYS_NICE\n# define __ARCH_WANT_SYS_OLDUMOUNT\n# define __ARCH_WANT_SYS_OLD_GETRLIMIT\n# define __ARCH_WANT_SYS_OLD_UNAME\n# define __ARCH_WANT_SYS_PAUSE\n# define __ARCH_WANT_SYS_SIGNAL\n# define __ARCH_WANT_SYS_SIGPENDING\n# define __ARCH_WANT_SYS_SIGPROCMASK\n# define __ARCH_WANT_SYS_SOCKETCALL\n# define __ARCH_WANT_SYS_TIME32\n# define __ARCH_WANT_SYS_UTIME32\n# define __ARCH_WANT_SYS_WAITPID\n# define __ARCH_WANT_SYS_FORK\n# define __ARCH_WANT_SYS_VFORK\n# define __ARCH_WANT_SYS_CLONE\n# define __ARCH_WANT_SYS_CLONE3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

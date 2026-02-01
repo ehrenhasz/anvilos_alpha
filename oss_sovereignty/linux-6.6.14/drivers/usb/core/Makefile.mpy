@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6c81be5d86052f7bdb2666bf8ab24f76b2ec9c7cf07bc043604521ff8a505d54",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/core/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for USB Core files and filesystem\n#\n\nusbcore-y := usb.o hub.o hcd.o urb.o message.o driver.o\nusbcore-y += config.o file.o buffer.o sysfs.o endpoint.o\nusbcore-y += devio.o notify.o generic.o quirks.o devices.o\nusbcore-y += phy.o port.o\n\nusbcore-$(CONFIG_OF)\t\t+= of.o\nusbcore-$(CONFIG_USB_PCI)\t\t+= hcd-pci.o\nusbcore-$(CONFIG_ACPI)\t\t+= usb-acpi.o\n\nifdef CONFIG_USB_ONBOARD_HUB\nusbcore-y\t\t\t+= ../misc/onboard_usb_hub_pdevs.o\nendif\n\nobj-$(CONFIG_USB)\t\t+= usbcore.o\n\nobj-$(CONFIG_USB_LEDS_TRIGGER_USBPORT)\t+= ledtrig-usbport.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

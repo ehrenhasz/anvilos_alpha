@@ -1,0 +1,9 @@
+{
+  "module_name": "gm107.c",
+  "hash_id": "9c5c480a937c71b517562ffb73605b538cdff41a4268ddf0c511f428f06c85d8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/nvenc/gm107.c",
+  "human_readable_source": " \n\n#include \"priv.h\"\n\nstatic const struct nvkm_falcon_func\ngm107_nvenc_flcn = {\n};\n\nstatic const struct nvkm_nvenc_func\ngm107_nvenc = {\n\t.flcn = &gm107_nvenc_flcn,\n};\n\nstatic int\ngm107_nvenc_nofw(struct nvkm_nvenc *nvenc, int ver,\n\t\t const struct nvkm_nvenc_fwif *fwif)\n{\n\treturn 0;\n}\n\nstatic const struct nvkm_nvenc_fwif\ngm107_nvenc_fwif[] = {\n\t{ -1, gm107_nvenc_nofw, &gm107_nvenc },\n\t{}\n};\n\nint\ngm107_nvenc_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t\tstruct nvkm_nvenc **pnvenc)\n{\n\treturn nvkm_nvenc_new_(gm107_nvenc_fwif, device, type, inst, pnvenc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

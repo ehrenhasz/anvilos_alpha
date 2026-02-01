@@ -1,0 +1,9 @@
+{
+  "module_name": "hgsmi_ch_setup.h",
+  "hash_id": "0b4efe40753c454cfa04aee0e4c243ee813d46f0a775a3cf7db963cdae85febe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/vboxvideo/hgsmi_ch_setup.h",
+  "human_readable_source": " \n \n\n#ifndef __HGSMI_CH_SETUP_H__\n#define __HGSMI_CH_SETUP_H__\n\n \n#define HGSMI_CC_HOST_FLAGS_LOCATION 0\n\nstruct hgsmi_buffer_location {\n\tu32 buf_location;\n\tu32 buf_len;\n} __packed;\n\n \n\n#define HGSMIHOSTFLAGS_COMMANDS_PENDING    0x01u\n#define HGSMIHOSTFLAGS_IRQ                 0x02u\n#define HGSMIHOSTFLAGS_VSYNC               0x10u\n#define HGSMIHOSTFLAGS_HOTPLUG             0x20u\n#define HGSMIHOSTFLAGS_CURSOR_CAPABILITIES 0x40u\n\nstruct hgsmi_host_flags {\n\tu32 host_flags;\n\tu32 reserved[3];\n} __packed;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

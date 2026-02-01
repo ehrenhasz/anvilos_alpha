@@ -1,0 +1,9 @@
+{
+  "module_name": "meson-aoclk.h",
+  "hash_id": "980b56ecce64f197a2b8a5adbf913dac756ef98a88960331845e6bff128ced96",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/meson/meson-aoclk.h",
+  "human_readable_source": " \n \n\n#ifndef __MESON_AOCLK_H__\n#define __MESON_AOCLK_H__\n\n#include <linux/clk-provider.h>\n#include <linux/platform_device.h>\n#include <linux/regmap.h>\n#include <linux/reset-controller.h>\n\n#include \"clk-regmap.h\"\n#include \"meson-clkc-utils.h\"\n\nstruct meson_aoclk_data {\n\tconst unsigned int\t\t\treset_reg;\n\tconst int\t\t\t\tnum_reset;\n\tconst unsigned int\t\t\t*reset;\n\tconst int\t\t\t\tnum_clks;\n\tstruct clk_regmap\t\t\t**clks;\n\tstruct meson_clk_hw_data\t\thw_clks;\n};\n\nstruct meson_aoclk_reset_controller {\n\tstruct reset_controller_dev\t\treset;\n\tconst struct meson_aoclk_data\t\t*data;\n\tstruct regmap\t\t\t\t*regmap;\n};\n\nint meson_aoclkc_probe(struct platform_device *pdev);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

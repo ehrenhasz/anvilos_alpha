@@ -1,0 +1,9 @@
+{
+  "module_name": "pthread_mutex_timedlock.m4",
+  "hash_id": "a36362d67f85c92e24dae6a4782b6376465311350f5def960916a1b582a79bd4",
+  "original_prompt": "Ingested from coreutils-9.4/m4/pthread_mutex_timedlock.m4",
+  "human_readable_source": "# pthread_mutex_timedlock.m4 serial 2\ndnl Copyright (C) 2019-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_PTHREAD_MUTEX_TIMEDLOCK],\n[\n  AC_REQUIRE([gl_PTHREAD_H_DEFAULTS])\n\n  AC_CHECK_DECL([pthread_mutex_timedlock], , [HAVE_PTHREAD_MUTEX_TIMEDLOCK=0],\n    [[#include <pthread.h>]])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

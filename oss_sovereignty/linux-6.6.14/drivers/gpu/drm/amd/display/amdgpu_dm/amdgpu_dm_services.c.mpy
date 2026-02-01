@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_dm_services.c",
+  "hash_id": "370139c004c5983c30cdf579ec84369566798b773d31b5ffe52e9214de26613a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_services.c",
+  "human_readable_source": " \n\n#include <linux/string.h>\n#include <linux/acpi.h>\n\n#include <drm/drm_probe_helper.h>\n#include <drm/amdgpu_drm.h>\n#include \"dm_services.h\"\n#include \"amdgpu.h\"\n#include \"amdgpu_dm.h\"\n#include \"amdgpu_dm_irq.h\"\n#include \"amdgpu_pm.h\"\n#include \"amdgpu_dm_trace.h\"\n\n\tunsigned long long\n\tdm_get_elapse_time_in_ns(struct dc_context *ctx,\n\t\t\t\t unsigned long long current_time_stamp,\n\t\t\t\t unsigned long long last_time_stamp)\n{\n\treturn current_time_stamp - last_time_stamp;\n}\n\nvoid dm_perf_trace_timestamp(const char *func_name, unsigned int line, struct dc_context *ctx)\n{\n\ttrace_amdgpu_dc_performance(ctx->perf_trace->read_count,\n\t\t\t\t    ctx->perf_trace->write_count,\n\t\t\t\t    &ctx->perf_trace->last_entry_read,\n\t\t\t\t    &ctx->perf_trace->last_entry_write,\n\t\t\t\t    func_name, line);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

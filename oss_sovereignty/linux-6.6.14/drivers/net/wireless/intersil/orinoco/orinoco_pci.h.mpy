@@ -1,0 +1,9 @@
+{
+  "module_name": "orinoco_pci.h",
+  "hash_id": "85a0f5e156ee895d7e2e88f2a51ea48eb910d291f8217b8f3625df3db96023ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intersil/orinoco/orinoco_pci.h",
+  "human_readable_source": " \n\n#ifndef _ORINOCO_PCI_H\n#define _ORINOCO_PCI_H\n\n#include <linux/netdevice.h>\n\n \nstruct orinoco_pci_card {\n\tvoid __iomem *bridge_io;\n\tvoid __iomem *attr_io;\n};\n\nstatic int __maybe_unused orinoco_pci_suspend(struct device *dev_d)\n{\n\tstruct pci_dev *pdev = to_pci_dev(dev_d);\n\tstruct orinoco_private *priv = pci_get_drvdata(pdev);\n\n\torinoco_down(priv);\n\tfree_irq(pdev->irq, priv);\n\n\treturn 0;\n}\n\nstatic int __maybe_unused orinoco_pci_resume(struct device *dev_d)\n{\n\tstruct pci_dev *pdev = to_pci_dev(dev_d);\n\tstruct orinoco_private *priv = pci_get_drvdata(pdev);\n\tstruct net_device *dev = priv->ndev;\n\tint err;\n\n\terr = request_irq(pdev->irq, orinoco_interrupt, IRQF_SHARED,\n\t\t\t  dev->name, priv);\n\tif (err) {\n\t\tprintk(KERN_ERR \"%s: cannot re-allocate IRQ on resume\\n\",\n\t\t       dev->name);\n\t\treturn -EBUSY;\n\t}\n\n\treturn orinoco_up(priv);\n}\n\nstatic SIMPLE_DEV_PM_OPS(orinoco_pci_pm_ops,\n\t\t\t orinoco_pci_suspend,\n\t\t\t orinoco_pci_resume);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "seq_lock.h",
+  "hash_id": "ef84f2feaa32efe628d532be9d65856bb3a5d9b64b9e6dff48f1df53d51bcbcf",
+  "original_prompt": "Ingested from linux-6.6.14/sound/core/seq/seq_lock.h",
+  "human_readable_source": " \n#ifndef __SND_SEQ_LOCK_H\n#define __SND_SEQ_LOCK_H\n\n#include <linux/sched.h>\n\ntypedef atomic_t snd_use_lock_t;\n\n \n#define snd_use_lock_init(lockp) atomic_set(lockp, 0)\n\n \n#define snd_use_lock_use(lockp) atomic_inc(lockp)\n\n \n#define snd_use_lock_free(lockp) atomic_dec(lockp)\n\n \nvoid snd_use_lock_sync_helper(snd_use_lock_t *lock, const char *file, int line);\n#define snd_use_lock_sync(lockp) snd_use_lock_sync_helper(lockp, __BASE_FILE__, __LINE__)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

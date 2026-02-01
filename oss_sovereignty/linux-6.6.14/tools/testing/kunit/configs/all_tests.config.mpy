@@ -1,0 +1,9 @@
+{
+  "module_name": "all_tests.config",
+  "hash_id": "002790f8aaac0f789426087e4ce2313176d188ce863cc58ccae605a55492c509",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/configs/all_tests.config",
+  "human_readable_source": "# This config enables as many tests as possible under UML.\n# It is intended for use in continuous integration systems and similar for\n# automated testing of as much as possible.\n# The config is manually maintained, though it uses KUNIT_ALL_TESTS=y to enable\n# any tests whose dependencies are already satisfied. Please feel free to add\n# more options if they any new tests.\n\nCONFIG_KUNIT=y\nCONFIG_KUNIT_EXAMPLE_TEST=y\nCONFIG_KUNIT_ALL_TESTS=y\n\nCONFIG_FORTIFY_SOURCE=y\n\nCONFIG_IIO=y\n\nCONFIG_EXT4_FS=y\n\nCONFIG_MSDOS_FS=y\nCONFIG_VFAT_FS=y\n\nCONFIG_PCI=y\nCONFIG_USB4=y\n\nCONFIG_NET=y\nCONFIG_MCTP=y\n\nCONFIG_INET=y\nCONFIG_MPTCP=y\n\nCONFIG_DAMON=y\nCONFIG_DAMON_VADDR=y\nCONFIG_DAMON_PADDR=y\nCONFIG_DEBUG_FS=y\nCONFIG_DAMON_DBGFS=y\n\nCONFIG_REGMAP_BUILD=y\n\nCONFIG_SECURITY=y\nCONFIG_SECURITY_APPARMOR=y\n\nCONFIG_SOUND=y\nCONFIG_SND=y\nCONFIG_SND_SOC=y\nCONFIG_SND_SOC_TOPOLOGY_BUILD=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

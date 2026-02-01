@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fadvise.c",
+  "hash_id": "769f15a0283118081c7b5251bd61049354db715488d6bc210ba9d14eced802e8",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fadvise.c",
+  "human_readable_source": " \n\n#include <config.h>\n#include <stdio.h>\n\n#include \"fadvise.h\"\n\n \n\nint\nmain (void)\n{\n   \n  fadvise (stdin, FADVISE_SEQUENTIAL);\n  fdadvise (fileno (stdin), 0, 0, FADVISE_RANDOM);\n\n   \n  fadvise (nullptr, FADVISE_RANDOM);\n\n   \n  fdadvise (42, 0, 0, FADVISE_RANDOM);\n   \n  fadvise (stdin, FADVISE_SEQUENTIAL + FADVISE_RANDOM);\n  fadvise (stdin, 4242);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

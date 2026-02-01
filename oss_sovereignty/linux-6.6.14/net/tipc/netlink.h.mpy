@@ -1,0 +1,9 @@
+{
+  "module_name": "netlink.h",
+  "hash_id": "43a8deb34238f1b4feb347fcca1cf80534ad1fee965058205a64dbe87332e969",
+  "original_prompt": "Ingested from linux-6.6.14/net/tipc/netlink.h",
+  "human_readable_source": " \n\n#ifndef _TIPC_NETLINK_H\n#define _TIPC_NETLINK_H\n#include <net/netlink.h>\n\nextern struct genl_family tipc_genl_family;\n\nstruct tipc_nl_msg {\n\tstruct sk_buff *skb;\n\tu32 portid;\n\tu32 seq;\n};\n\nextern const struct nla_policy tipc_nl_name_table_policy[];\nextern const struct nla_policy tipc_nl_sock_policy[];\nextern const struct nla_policy tipc_nl_net_policy[];\nextern const struct nla_policy tipc_nl_link_policy[];\nextern const struct nla_policy tipc_nl_node_policy[];\nextern const struct nla_policy tipc_nl_prop_policy[];\nextern const struct nla_policy tipc_nl_bearer_policy[];\nextern const struct nla_policy tipc_nl_media_policy[];\nextern const struct nla_policy tipc_nl_udp_policy[];\nextern const struct nla_policy tipc_nl_monitor_policy[];\n\nint tipc_netlink_start(void);\nint tipc_netlink_compat_start(void);\nvoid tipc_netlink_stop(void);\nvoid tipc_netlink_compat_stop(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-am654-serdes.h",
+  "hash_id": "e1f3f0884a8da18bba0906292ac94f270486436381daa89265a9c4ef879b24ee",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/phy/phy-am654-serdes.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_AM654_SERDES\n#define _DT_BINDINGS_AM654_SERDES\n\n#define AM654_SERDES_CMU_REFCLK\t0\n#define AM654_SERDES_LO_REFCLK\t1\n#define AM654_SERDES_RO_REFCLK\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

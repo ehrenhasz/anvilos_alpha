@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gem_ttm_move.h",
+  "hash_id": "7562b6f6e0506fba513df1426fba36f364380684802f7e5eab969cf3f5af1fd1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.h",
+  "human_readable_source": " \n \n#ifndef _I915_GEM_TTM_MOVE_H_\n#define _I915_GEM_TTM_MOVE_H_\n\n#include <linux/types.h>\n\n#include \"i915_selftest.h\"\n\nstruct ttm_buffer_object;\nstruct ttm_operation_ctx;\nstruct ttm_place;\nstruct ttm_resource;\nstruct ttm_tt;\n\nstruct drm_i915_gem_object;\nstruct i915_refct_sgt;\n\nint i915_ttm_move_notify(struct ttm_buffer_object *bo);\n\nI915_SELFTEST_DECLARE(void i915_ttm_migrate_set_failure_modes(bool gpu_migration,\n\t\t\t\t\t\t\t      bool work_allocation));\nI915_SELFTEST_DECLARE(void i915_ttm_migrate_set_ban_memcpy(bool ban));\n\nint i915_gem_obj_copy_ttm(struct drm_i915_gem_object *dst,\n\t\t\t  struct drm_i915_gem_object *src,\n\t\t\t  bool allow_accel, bool intr);\n\n \n\nint i915_ttm_move(struct ttm_buffer_object *bo, bool evict,\n\t\t  struct ttm_operation_ctx *ctx,\n\t\t  struct ttm_resource *dst_mem,\n\t\t  struct ttm_place *hop);\n\nvoid i915_ttm_adjust_domains_after_move(struct drm_i915_gem_object *obj);\n\nvoid i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

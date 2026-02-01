@@ -1,0 +1,9 @@
+{
+  "module_name": "xonar.h",
+  "hash_id": "195bf14768cbf358ed8bde9eebad6c815a986d8f5cc38be7834d580958058cb3",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/oxygen/xonar.h",
+  "human_readable_source": " \n#ifndef XONAR_H_INCLUDED\n#define XONAR_H_INCLUDED\n\n#include \"oxygen.h\"\n\nstruct xonar_generic {\n\tunsigned int anti_pop_delay;\n\tu16 output_enable_bit;\n\tu8 ext_power_reg;\n\tu8 ext_power_int_reg;\n\tu8 ext_power_bit;\n\tu8 has_power;\n};\n\nstruct xonar_hdmi {\n\tu8 params[5];\n};\n\n \n\nvoid xonar_enable_output(struct oxygen *chip);\nvoid xonar_disable_output(struct oxygen *chip);\nvoid xonar_init_ext_power(struct oxygen *chip);\nvoid xonar_init_cs53x1(struct oxygen *chip);\nvoid xonar_set_cs53x1_params(struct oxygen *chip,\n\t\t\t     struct snd_pcm_hw_params *params);\n\n#define XONAR_GPIO_BIT_INVERT\t(1 << 16)\nint xonar_gpio_bit_switch_get(struct snd_kcontrol *ctl,\n\t\t\t      struct snd_ctl_elem_value *value);\nint xonar_gpio_bit_switch_put(struct snd_kcontrol *ctl,\n\t\t\t      struct snd_ctl_elem_value *value);\n\n \n\nint get_xonar_pcm179x_model(struct oxygen *chip,\n\t\t\t    const struct pci_device_id *id);\nint get_xonar_cs43xx_model(struct oxygen *chip,\n\t\t\t   const struct pci_device_id *id);\nint get_xonar_wm87x6_model(struct oxygen *chip,\n\t\t\t   const struct pci_device_id *id);\n\n \n\nvoid xonar_hdmi_init(struct oxygen *chip, struct xonar_hdmi *data);\nvoid xonar_hdmi_cleanup(struct oxygen *chip);\nvoid xonar_hdmi_resume(struct oxygen *chip, struct xonar_hdmi *hdmi);\nvoid xonar_hdmi_pcm_hardware_filter(unsigned int channel,\n\t\t\t\t    struct snd_pcm_hardware *hardware);\nvoid xonar_set_hdmi_params(struct oxygen *chip, struct xonar_hdmi *hdmi,\n\t\t\t   struct snd_pcm_hw_params *params);\nvoid xonar_hdmi_uart_input(struct oxygen *chip);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

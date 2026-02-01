@@ -1,0 +1,9 @@
+{
+  "module_name": "mmap.h",
+  "hash_id": "d08cac1d02e2ff990107922bb3edc8eee2a301fadec653abe836af6f802958c1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/perf/include/internal/mmap.h",
+  "human_readable_source": " \n#ifndef __LIBPERF_INTERNAL_MMAP_H\n#define __LIBPERF_INTERNAL_MMAP_H\n\n#include <linux/compiler.h>\n#include <linux/refcount.h>\n#include <linux/types.h>\n#include <stdbool.h>\n#include <internal/cpumap.h>\n\n \n#define PERF_SAMPLE_MAX_SIZE (1 << 16)\n\nstruct perf_mmap;\nstruct perf_counts_values;\n\ntypedef void (*libperf_unmap_cb_t)(struct perf_mmap *map);\n\n \nstruct perf_mmap {\n\tvoid\t\t\t*base;\n\tint\t\t\t mask;\n\tint\t\t\t fd;\n\tstruct perf_cpu\t\t cpu;\n\trefcount_t\t\t refcnt;\n\tu64\t\t\t prev;\n\tu64\t\t\t start;\n\tu64\t\t\t end;\n\tbool\t\t\t overwrite;\n\tu64\t\t\t flush;\n\tlibperf_unmap_cb_t\t unmap_cb;\n\tchar\t\t\t event_copy[PERF_SAMPLE_MAX_SIZE] __aligned(8);\n\tstruct perf_mmap\t*next;\n};\n\nstruct perf_mmap_param {\n\tint\tprot;\n\tint\tmask;\n};\n\nsize_t perf_mmap__mmap_len(struct perf_mmap *map);\n\nvoid perf_mmap__init(struct perf_mmap *map, struct perf_mmap *prev,\n\t\t     bool overwrite, libperf_unmap_cb_t unmap_cb);\nint perf_mmap__mmap(struct perf_mmap *map, struct perf_mmap_param *mp,\n\t\t    int fd, struct perf_cpu cpu);\nvoid perf_mmap__munmap(struct perf_mmap *map);\nvoid perf_mmap__get(struct perf_mmap *map);\nvoid perf_mmap__put(struct perf_mmap *map);\n\nu64 perf_mmap__read_head(struct perf_mmap *map);\n\nint perf_mmap__read_self(struct perf_mmap *map, struct perf_counts_values *count);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

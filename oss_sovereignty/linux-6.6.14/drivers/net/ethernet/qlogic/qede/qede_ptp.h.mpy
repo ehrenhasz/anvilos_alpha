@@ -1,0 +1,9 @@
+{
+  "module_name": "qede_ptp.h",
+  "hash_id": "d4aed73d988441d9a7aece5346cc8ad8f966da042f92f67ccdd5070a3e6cdf09",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qlogic/qede/qede_ptp.h",
+  "human_readable_source": " \n \n\n#ifndef _QEDE_PTP_H_\n#define _QEDE_PTP_H_\n\n#include <linux/ptp_clock_kernel.h>\n#include <linux/net_tstamp.h>\n#include <linux/timecounter.h>\n#include \"qede.h\"\n\nvoid qede_ptp_rx_ts(struct qede_dev *edev, struct sk_buff *skb);\nvoid qede_ptp_tx_ts(struct qede_dev *edev, struct sk_buff *skb);\nint qede_ptp_hw_ts(struct qede_dev *edev, struct ifreq *req);\nvoid qede_ptp_disable(struct qede_dev *edev);\nint qede_ptp_enable(struct qede_dev *edev);\nint qede_ptp_get_ts_info(struct qede_dev *edev, struct ethtool_ts_info *ts);\n\nstatic inline void qede_ptp_record_rx_ts(struct qede_dev *edev,\n\t\t\t\t\t union eth_rx_cqe *cqe,\n\t\t\t\t\t struct sk_buff *skb)\n{\n\t \n\tif (unlikely(le16_to_cpu(cqe->fast_path_regular.pars_flags.flags) &\n\t\t     (1 << PARSING_AND_ERR_FLAGS_TIMESTAMPRECORDED_SHIFT))) {\n\t\tif (likely(le16_to_cpu(cqe->fast_path_regular.pars_flags.flags)\n\t\t    & (1 << PARSING_AND_ERR_FLAGS_TIMESYNCPKT_SHIFT))) {\n\t\t\tqede_ptp_rx_ts(edev, skb);\n\t\t} else {\n\t\t\tDP_INFO(edev,\n\t\t\t\t\"Timestamp recorded for non PTP packets\\n\");\n\t\t}\n\t}\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

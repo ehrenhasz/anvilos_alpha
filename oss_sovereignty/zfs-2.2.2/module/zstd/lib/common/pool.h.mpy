@@ -1,0 +1,9 @@
+{
+  "module_name": "pool.h",
+  "hash_id": "c274b9bc939bedb619c1e2270cf75555de4e4ae44e521507a95204da43d79128",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/lib/common/pool.h",
+  "human_readable_source": " \n\n#ifndef POOL_H\n#define POOL_H\n\n#if defined (__cplusplus)\nextern \"C\" {\n#endif\n\n\n#include <stddef.h>    \n#define ZSTD_STATIC_LINKING_ONLY    \n#include \"../zstd.h\"\n\ntypedef struct POOL_ctx_s POOL_ctx;\n\n \nPOOL_ctx* POOL_create(size_t numThreads, size_t queueSize);\n\nPOOL_ctx* POOL_create_advanced(size_t numThreads, size_t queueSize,\n                               ZSTD_customMem customMem);\n\n \nvoid POOL_free(POOL_ctx* ctx);\n\n \nint POOL_resize(POOL_ctx* ctx, size_t numThreads);\n\n \nsize_t POOL_sizeof(POOL_ctx* ctx);\n\n \ntypedef void (*POOL_function)(void*);\n\n \nvoid POOL_add(POOL_ctx* ctx, POOL_function function, void* opaque);\n\n\n \nint POOL_tryAdd(POOL_ctx* ctx, POOL_function function, void* opaque);\n\n\n#if defined (__cplusplus)\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

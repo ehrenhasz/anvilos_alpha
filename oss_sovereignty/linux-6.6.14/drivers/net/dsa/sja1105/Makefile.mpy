@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7f41b1936826aa19ef24a97f4fef9ab2563af8ce7fa6d0f3bfed2648fca6b1be",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/sja1105/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_NET_DSA_SJA1105) += sja1105.o\n\nsja1105-objs := \\\n    sja1105_spi.o \\\n    sja1105_main.o \\\n    sja1105_mdio.o \\\n    sja1105_flower.o \\\n    sja1105_ethtool.o \\\n    sja1105_devlink.o \\\n    sja1105_clocking.o \\\n    sja1105_static_config.o \\\n    sja1105_dynamic_config.o \\\n\nifdef CONFIG_NET_DSA_SJA1105_PTP\nsja1105-objs += sja1105_ptp.o\nendif\n\nifdef CONFIG_NET_DSA_SJA1105_TAS\nsja1105-objs += sja1105_tas.o\nendif\n\nifdef CONFIG_NET_DSA_SJA1105_VL\nsja1105-objs += sja1105_vl.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

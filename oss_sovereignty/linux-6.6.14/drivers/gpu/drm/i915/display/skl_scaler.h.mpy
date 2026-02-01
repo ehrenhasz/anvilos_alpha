@@ -1,0 +1,9 @@
+{
+  "module_name": "skl_scaler.h",
+  "hash_id": "b1f548f50a45537833d24865aa0aa1b60f332e358c8ba3d78b91a07bcb197602",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/skl_scaler.h",
+  "human_readable_source": " \n \n#ifndef INTEL_SCALER_H\n#define INTEL_SCALER_H\n\n#include <linux/types.h>\n\nenum drm_scaling_filter;\nenum pipe;\nstruct drm_i915_private;\nstruct intel_crtc;\nstruct intel_crtc_state;\nstruct intel_plane;\nstruct intel_plane_state;\n\nint skl_update_scaler_crtc(struct intel_crtc_state *crtc_state);\n\nint skl_update_scaler_plane(struct intel_crtc_state *crtc_state,\n\t\t\t    struct intel_plane_state *plane_state);\n\nint intel_atomic_setup_scalers(struct drm_i915_private *dev_priv,\n\t\t\t       struct intel_crtc *intel_crtc,\n\t\t\t       struct intel_crtc_state *crtc_state);\n\nvoid skl_pfit_enable(const struct intel_crtc_state *crtc_state);\n\nvoid skl_program_plane_scaler(struct intel_plane *plane,\n\t\t\t      const struct intel_crtc_state *crtc_state,\n\t\t\t      const struct intel_plane_state *plane_state);\nvoid skl_detach_scalers(const struct intel_crtc_state *crtc_state);\nvoid skl_scaler_disable(const struct intel_crtc_state *old_crtc_state);\n\nvoid skl_scaler_get_config(struct intel_crtc_state *crtc_state);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

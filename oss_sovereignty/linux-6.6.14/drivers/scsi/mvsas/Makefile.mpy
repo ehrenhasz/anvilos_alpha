@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "513c418472f1e1fd468207cc255d4b7e7b082b1bcd705ca18864690ad436c3ae",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/mvsas/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for Marvell 88SE64xx/88SE84xx SAS/SATA driver.\n#\n# Copyright 2007 Red Hat, Inc.\n# Copyright 2008 Marvell. <kewei@marvell.com>\n# Copyright 2009-2011 Marvell. <yuxiangl@marvell.com>\n#\n\nccflags-$(CONFIG_SCSI_MVSAS_DEBUG) := -DMV_DEBUG\n\nobj-$(CONFIG_SCSI_MVSAS) += mvsas.o\nmvsas-y +=  mv_init.o  \\\n           mv_sas.o   \\\n           mv_64xx.o  \\\n           mv_94xx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "smtstate.h",
+  "hash_id": "fa85ad80daf8b73767dedc288d0c4a2d91fb900fa80c46a9599014406272fe94",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/fddi/skfp/h/smtstate.h",
+  "human_readable_source": " \n \n\n#ifndef _SKFP_H_SMTSTATE_H_\n#define _SKFP_H_SMTSTATE_H_\n\n \n\n#ifndef\tKERNEL\n \n#define PC0_OFF\t\t\t0\n#define PC1_BREAK\t\t1\n#define PC2_TRACE\t\t2\n#define PC3_CONNECT\t\t3\n#define PC4_NEXT\t\t4\n#define PC5_SIGNAL\t\t5\n#define PC6_JOIN\t\t6\n#define PC7_VERIFY\t\t7\n#define PC8_ACTIVE\t\t8\n#define PC9_MAINT\t\t9\n\n \n#define PM_NONE\t\t\t0\n#define PM_PEER\t\t\t1\n#define PM_TREE\t\t\t2\n\n \n#define TA\t\t\t0\n#define TB\t\t\t1\n#define TS\t\t\t2\n#define TM\t\t\t3\n#define TNONE\t\t\t4\n\n \n#define SC0_ISOLATED\t0\t\t \n#define SC1_WRAP_A\t5\t\t \n#define SC2_WRAP_B\t6\t\t \n#define SC4_THRU_A\t12\t\t \n#define SC5_THRU_B\t7\t\t \n#define SC7_WRAP_S\t8\t\t \n\n \n#define EC0_OUT\t\t0\n#define EC1_IN\t\t1\n#define EC2_TRACE\t2\n#define EC3_LEAVE\t3\n#define EC4_PATH_TEST\t4\n#define EC5_INSERT\t5\n#define EC6_CHECK\t6\n#define EC7_DEINSERT\t7\n\n \n#define RM0_ISOLATED\t0\n#define RM1_NON_OP\t1\t\t \n#define RM2_RING_OP\t2\t\t \n#define RM3_DETECT\t3\t\t \n#define RM4_NON_OP_DUP\t4\t\t \n#define RM5_RING_OP_DUP\t5\t\t \n#define RM6_DIRECTED\t6\t\t \n#define RM7_TRACE\t7\t\t \n#endif\n\nstruct pcm_state {\n\tunsigned char\tpcm_type ;\t\t \n\tunsigned char\tpcm_state ;\t\t \n\tunsigned char\tpcm_mode ;\t\t \n\tunsigned char\tpcm_neighbor ;\t\t \n\tunsigned char\tpcm_bsf ;\t\t \n\tunsigned char\tpcm_lsf ;\t\t \n\tunsigned char\tpcm_lct_fail ;\t\t \n\tunsigned char\tpcm_ls_rx ;\t\t \n\tshort\t\tpcm_r_val ;\t\t \n\tshort\t\tpcm_t_val ;\t\t \n} ;\n\nstruct smt_state {\n\tstruct pcm_state pcm_state[NUMPHYS] ;\t \n} ;\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

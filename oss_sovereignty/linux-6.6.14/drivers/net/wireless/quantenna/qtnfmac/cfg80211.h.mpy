@@ -1,0 +1,9 @@
+{
+  "module_name": "cfg80211.h",
+  "hash_id": "b4f12a790670f4d62ad6d5e079bde641675f8e54e264e4e8030bc4a78fb829ef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/quantenna/qtnfmac/cfg80211.h",
+  "human_readable_source": " \n \n\n#ifndef _QTN_FMAC_CFG80211_H_\n#define _QTN_FMAC_CFG80211_H_\n\n#include <net/cfg80211.h>\n\n#include \"core.h\"\n\nint qtnf_wiphy_register(struct qtnf_hw_info *hw_info, struct qtnf_wmac *mac);\nint qtnf_del_virtual_intf(struct wiphy *wiphy, struct wireless_dev *wdev);\nvoid qtnf_cfg80211_vif_reset(struct qtnf_vif *vif);\nvoid qtnf_band_init_rates(struct ieee80211_supported_band *band);\nvoid qtnf_band_setup_htvht_caps(struct qtnf_mac_info *macinfo,\n\t\t\t\tstruct ieee80211_supported_band *band);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs_target_ids.sh",
+  "hash_id": "238f2d2469b984ad78a4067eb3318868d7f16793dff76fd9fd6f477d0392b4af",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/damon/debugfs_target_ids.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nsource _debugfs_common.sh\n\n# Test target_ids file\n# ====================\n\nfile=\"$DBGFS/target_ids\"\norig_content=$(cat \"$file\")\n\ntest_write_succ \"$file\" \"1 2 3 4\" \"$orig_content\" \"valid input\"\ntest_write_succ \"$file\" \"1 2 abc 4\" \"$orig_content\" \"still valid input\"\ntest_content \"$file\" \"$orig_content\" \"1 2\" \"non-integer was there\"\ntest_write_succ \"$file\" \"abc 2 3\" \"$orig_content\" \"the file allows wrong input\"\ntest_content \"$file\" \"$orig_content\" \"\" \"wrong input written\"\ntest_write_succ \"$file\" \"\" \"$orig_content\" \"empty input\"\ntest_content \"$file\" \"$orig_content\" \"\" \"empty input written\"\necho \"$orig_content\" > \"$file\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

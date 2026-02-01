@@ -1,0 +1,9 @@
+{
+  "module_name": "sunddi.h",
+  "hash_id": "e7afb5b9a817f1c1df78af0932e82b9423d15d2a78ce09dfb72fffc494ec8fa0",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/sunddi.h",
+  "human_readable_source": " \n\n#ifndef _SPL_SUNDDI_H\n#define\t_SPL_SUNDDI_H\n\n#include <sys/cred.h>\n#include <sys/uio.h>\n#include <sys/mutex.h>\n#include <sys/u8_textprep.h>\n#include <sys/vnode.h>\n\ntypedef int ddi_devid_t;\n\n#define\tDDI_DEV_T_NONE\t\t\t\t((dev_t)-1)\n#define\tDDI_DEV_T_ANY\t\t\t\t((dev_t)-2)\n#define\tDI_MAJOR_T_UNKNOWN\t\t\t((major_t)0)\n\n#define\tDDI_PROP_DONTPASS\t\t\t0x0001\n#define\tDDI_PROP_CANSLEEP\t\t\t0x0002\n\n#define\tDDI_SUCCESS\t\t\t\t0\n#define\tDDI_FAILURE\t\t\t\t-1\n\n#define\tddi_prop_lookup_string(x1, x2, x3, x4, x5)\t(*x5 = NULL)\n#define\tddi_prop_free(x)\t\t\t\t(void)0\n#define\tddi_root_node()\t\t\t\t\t(void)0\n\nextern int ddi_strtol(const char *, char **, int, long *);\nextern int ddi_strtoull(const char *, char **, int, unsigned long long *);\nextern int ddi_strtoll(const char *, char **, int, long long *);\n\nextern int ddi_copyin(const void *from, void *to, size_t len, int flags);\nextern int ddi_copyout(const void *from, void *to, size_t len, int flags);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

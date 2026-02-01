@@ -1,0 +1,9 @@
+{
+  "module_name": "adreno-smmu-priv.h",
+  "hash_id": "50954a004cd321137b8eda29066222b19a1bc4957eeb8a016ef286882e496efd",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/adreno-smmu-priv.h",
+  "human_readable_source": "\n \n\n#ifndef __ADRENO_SMMU_PRIV_H\n#define __ADRENO_SMMU_PRIV_H\n\n#include <linux/io-pgtable.h>\n\n \nstruct adreno_smmu_fault_info {\n\tu64 far;\n\tu64 ttbr0;\n\tu32 contextidr;\n\tu32 fsr;\n\tu32 fsynr0;\n\tu32 fsynr1;\n\tu32 cbfrsynra;\n};\n\n \nstruct adreno_smmu_priv {\n    const void *cookie;\n    const struct io_pgtable_cfg *(*get_ttbr1_cfg)(const void *cookie);\n    int (*set_ttbr0_cfg)(const void *cookie, const struct io_pgtable_cfg *cfg);\n    void (*get_fault_info)(const void *cookie, struct adreno_smmu_fault_info *info);\n    void (*set_stall)(const void *cookie, bool enabled);\n    void (*resume_translation)(const void *cookie, bool terminate);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

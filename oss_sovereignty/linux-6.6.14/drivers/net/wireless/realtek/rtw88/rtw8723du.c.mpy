@@ -1,0 +1,9 @@
+{
+  "module_name": "rtw8723du.c",
+  "hash_id": "6e4ac531d068c9f92c41b31676568474aad191a34b366b3f7f0193a2dc778456",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw88/rtw8723du.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/usb.h>\n#include \"main.h\"\n#include \"rtw8723d.h\"\n#include \"usb.h\"\n\nstatic const struct usb_device_id rtw_8723du_id_table[] = {\n\t{ USB_DEVICE_AND_INTERFACE_INFO(RTW_USB_VENDOR_ID_REALTEK, 0xd723, 0xff, 0xff, 0xff),\n\t  .driver_info = (kernel_ulong_t)&(rtw8723d_hw_spec) },  \n\t{ USB_DEVICE_AND_INTERFACE_INFO(0x7392, 0xd611, 0xff, 0xff, 0xff),\n\t  .driver_info = (kernel_ulong_t)&(rtw8723d_hw_spec) },  \n\t{ },\n};\nMODULE_DEVICE_TABLE(usb, rtw_8723du_id_table);\n\nstatic int rtw8723du_probe(struct usb_interface *intf,\n\t\t\t   const struct usb_device_id *id)\n{\n\treturn rtw_usb_probe(intf, id);\n}\n\nstatic struct usb_driver rtw_8723du_driver = {\n\t.name = \"rtw_8723du\",\n\t.id_table = rtw_8723du_id_table,\n\t.probe = rtw8723du_probe,\n\t.disconnect = rtw_usb_disconnect,\n};\nmodule_usb_driver(rtw_8723du_driver);\n\nMODULE_AUTHOR(\"Hans Ulli Kroll <linux@ulli-kroll.de>\");\nMODULE_DESCRIPTION(\"Realtek 802.11n wireless 8723du driver\");\nMODULE_LICENSE(\"Dual BSD/GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xfer_mode_rate.h",
+  "hash_id": "61ef02b43122387a26013797075f2dc6b281e4e1ac6b6d8b7629218ce3288d6f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/i3c/master/mipi-i3c-hci/xfer_mode_rate.h",
+  "human_readable_source": " \n \n\n#ifndef XFER_MODE_RATE_H\n#define XFER_MODE_RATE_H\n\n \n#define XFERMODE_IDX_I3C_SDR\t\t0x00\t \n#define XFERMODE_IDX_I3C_HDR_DDR\t0x01\t \n#define XFERMODE_IDX_I3C_HDR_T\t\t0x02\t \n#define XFERMODE_IDX_I3C_HDR_BT\t\t0x03\t \n#define XFERMODE_IDX_I2C\t\t0x08\t \n\n \n#define XFERMODE_VALID_XFER_ADD_FUNC\tGENMASK(21, 16)\n#define XFERMODE_ML_DATA_XFER_CODING\tGENMASK(15, 11)\n#define XFERMODE_ML_ADDL_LANES\t\tGENMASK(10, 8)\n#define XFERMODE_SUPPORTED\t\tBIT(7)\n#define XFERMODE_MODE\t\t\tGENMASK(3, 0)\n\n \n#define XFERRATE_I3C_SDR0\t\t0x00\t \n#define XFERRATE_I3C_SDR1\t\t0x01\t \n#define XFERRATE_I3C_SDR2\t\t0x02\t \n#define XFERRATE_I3C_SDR3\t\t0x03\t \n#define XFERRATE_I3C_SDR4\t\t0x04\t \n#define XFERRATE_I3C_SDR_FM_FMP\t\t0x05\t \n#define XFERRATE_I3C_SDR_USER6\t\t0x06\t \n#define XFERRATE_I3C_SDR_USER7\t\t0x07\t \n\n#define XFERRATE_I2C_FM\t\t\t0x00\t \n#define XFERRATE_I2C_FMP\t\t0x01\t \n#define XFERRATE_I2C_USER2\t\t0x02\t \n#define XFERRATE_I2C_USER3\t\t0x03\t \n#define XFERRATE_I2C_USER4\t\t0x04\t \n#define XFERRATE_I2C_USER5\t\t0x05\t \n#define XFERRATE_I2C_USER6\t\t0x06\t \n#define XFERRATE_I2C_USER7\t\t0x07\t \n\n \n#define XFERRATE_MODE_I3C\t\t0x00\n#define XFERRATE_MODE_I2C\t\t0x08\n\n \n#define XFERRATE_MODE_ID\t\tGENMASK(31, 28)\n#define XFERRATE_RATE_ID\t\tGENMASK(22, 20)\n#define XFERRATE_ACTUAL_RATE_KHZ\tGENMASK(19, 0)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

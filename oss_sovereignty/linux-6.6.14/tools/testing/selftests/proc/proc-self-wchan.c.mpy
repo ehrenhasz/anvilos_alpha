@@ -1,0 +1,9 @@
+{
+  "module_name": "proc-self-wchan.c",
+  "hash_id": "00292c11e2df4bc9a6a1fcfb27a19bd811ab8d7c944ccd47255e8162f40586a5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/proc/proc-self-wchan.c",
+  "human_readable_source": " \n#include <sys/types.h>\n#include <sys/stat.h>\n#include <fcntl.h>\n#include <errno.h>\n#include <unistd.h>\n\nint main(void)\n{\n\tchar buf[64];\n\tint fd;\n\n\tfd = open(\"/proc/self/wchan\", O_RDONLY);\n\tif (fd == -1) {\n\t\tif (errno == ENOENT)\n\t\t\treturn 4;\n\t\treturn 1;\n\t}\n\n\tbuf[0] = '\\0';\n\tif (read(fd, buf, sizeof(buf)) != 1)\n\t\treturn 1;\n\tif (buf[0] != '0')\n\t\treturn 1;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

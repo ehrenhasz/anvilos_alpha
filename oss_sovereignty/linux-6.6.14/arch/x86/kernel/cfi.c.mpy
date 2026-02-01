@@ -1,0 +1,9 @@
+{
+  "module_name": "cfi.c",
+  "hash_id": "7e785dd04c436118862a9bf82360ca3daccc70b295e4dd3731214a78fdb85deb",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/cfi.c",
+  "human_readable_source": "\n \n#include <asm/cfi.h>\n#include <asm/insn.h>\n#include <asm/insn-eval.h>\n#include <linux/string.h>\n\n \nstatic bool decode_cfi_insn(struct pt_regs *regs, unsigned long *target,\n\t\t\t    u32 *type)\n{\n\tchar buffer[MAX_INSN_SIZE];\n\tstruct insn insn;\n\tint offset = 0;\n\n\t*target = *type = 0;\n\n\t \n\tif (copy_from_kernel_nofault(buffer, (void *)regs->ip - 12, MAX_INSN_SIZE))\n\t\treturn false;\n\tif (insn_decode_kernel(&insn, &buffer[offset]))\n\t\treturn false;\n\tif (insn.opcode.value != 0xBA)\n\t\treturn false;\n\n\t*type = -(u32)insn.immediate.value;\n\n\tif (copy_from_kernel_nofault(buffer, (void *)regs->ip - 6, MAX_INSN_SIZE))\n\t\treturn false;\n\tif (insn_decode_kernel(&insn, &buffer[offset]))\n\t\treturn false;\n\tif (insn.opcode.value != 0x3)\n\t\treturn false;\n\n\t \n\toffset = insn_get_modrm_rm_off(&insn, regs);\n\tif (offset < 0)\n\t\treturn false;\n\n\t*target = *(unsigned long *)((void *)regs + offset);\n\n\treturn true;\n}\n\n \nenum bug_trap_type handle_cfi_failure(struct pt_regs *regs)\n{\n\tunsigned long target;\n\tu32 type;\n\n\tif (!is_cfi_trap(regs->ip))\n\t\treturn BUG_TRAP_TYPE_NONE;\n\n\tif (!decode_cfi_insn(regs, &target, &type))\n\t\treturn report_cfi_failure_noaddr(regs, regs->ip);\n\n\treturn report_cfi_failure(regs, regs->ip, &target, type);\n}\n\n \n__ADDRESSABLE(__memcpy)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

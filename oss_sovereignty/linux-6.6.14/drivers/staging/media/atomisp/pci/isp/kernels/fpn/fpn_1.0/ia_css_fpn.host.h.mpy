@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_fpn.host.h",
+  "hash_id": "4152724888d886699d13504a5299bf94285b5e04a39f9fa7fa1342731514dd17",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/fpn/fpn_1.0/ia_css_fpn.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_FPN_HOST_H\n#define __IA_CSS_FPN_HOST_H\n\n#include \"ia_css_binary.h\"\n#include \"ia_css_fpn_types.h\"\n#include \"ia_css_fpn_param.h\"\n\nvoid\nia_css_fpn_encode(\n    struct sh_css_isp_fpn_params *to,\n    const struct ia_css_fpn_table *from,\n    unsigned int size);\n\nvoid\nia_css_fpn_dump(\n    const struct sh_css_isp_fpn_params *fpn,\n    unsigned int level);\n\nint ia_css_fpn_config(struct sh_css_isp_fpn_isp_config      *to,\n\t\t      const struct ia_css_fpn_configuration *from,\n\t\t      unsigned int size);\n\nint ia_css_fpn_configure(const struct ia_css_binary     *binary,\n\t\t\t const struct ia_css_frame_info *from);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

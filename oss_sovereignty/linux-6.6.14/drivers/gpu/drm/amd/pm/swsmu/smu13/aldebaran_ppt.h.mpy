@@ -1,0 +1,9 @@
+{
+  "module_name": "aldebaran_ppt.h",
+  "hash_id": "930427a9679f0a6ddb9a732487a0e3d4873dd7a7780e2ee81bab0e9ab9bfddd8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.h",
+  "human_readable_source": " \n#ifndef __ALDEBARAN_PPT_H__\n#define __ALDEBARAN_PPT_H__\n\n#define ALDEBARAN_UMD_PSTATE_GFXCLK_LEVEL         0x3\n#define ALDEBARAN_UMD_PSTATE_SOCCLK_LEVEL         0x3\n#define ALDEBARAN_UMD_PSTATE_MCLK_LEVEL           0x2\n\n#define MAX_DPM_NUMBER 16\n#define ALDEBARAN_MAX_PCIE_CONF 2\n\nstruct aldebaran_dpm_level {\n\tbool            enabled;\n\tuint32_t        value;\n\tuint32_t        param1;\n};\n\nstruct aldebaran_dpm_state {\n\tuint32_t  soft_min_level;\n\tuint32_t  soft_max_level;\n\tuint32_t  hard_min_level;\n\tuint32_t  hard_max_level;\n};\n\nstruct aldebaran_single_dpm_table {\n\tuint32_t                count;\n\tstruct aldebaran_dpm_state dpm_state;\n\tstruct aldebaran_dpm_level dpm_levels[MAX_DPM_NUMBER];\n};\n\nstruct aldebaran_pcie_table {\n\tuint16_t count;\n\tuint8_t  pcie_gen[ALDEBARAN_MAX_PCIE_CONF];\n\tuint8_t  pcie_lane[ALDEBARAN_MAX_PCIE_CONF];\n\tuint32_t lclk[ALDEBARAN_MAX_PCIE_CONF];\n};\n\nstruct aldebaran_dpm_table {\n\tstruct aldebaran_single_dpm_table  soc_table;\n\tstruct aldebaran_single_dpm_table  gfx_table;\n\tstruct aldebaran_single_dpm_table  mem_table;\n\tstruct aldebaran_single_dpm_table  eclk_table;\n\tstruct aldebaran_single_dpm_table  vclk_table;\n\tstruct aldebaran_single_dpm_table  dclk_table;\n\tstruct aldebaran_single_dpm_table  fclk_table;\n\tstruct aldebaran_pcie_table        pcie_table;\n};\n\nextern void aldebaran_set_ppt_funcs(struct smu_context *smu);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

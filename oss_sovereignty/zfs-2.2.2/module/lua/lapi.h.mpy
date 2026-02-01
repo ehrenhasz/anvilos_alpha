@@ -1,0 +1,9 @@
+{
+  "module_name": "lapi.h",
+  "hash_id": "ae50437490162c7faa3d7778058c39b50d65919ef023cd91052767cc18da45f5",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/lapi.h",
+  "human_readable_source": " \n\n#ifndef lapi_h\n#define lapi_h\n\n\n#include \"llimits.h\"\n#include \"lstate.h\"\n\n#define api_incr_top(L)   {L->top++; api_check(L, L->top <= L->ci->top, \\\n\t\t\t\t\"stack overflow\");}\n\n#define adjustresults(L,nres) \\\n    { if ((nres) == LUA_MULTRET && L->ci->top < L->top) L->ci->top = L->top; }\n\n#define api_checknelems(L,n)\tapi_check(L, (n) < (L->top - L->ci->func), \\\n\t\t\t\t  \"not enough elements in the stack\")\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

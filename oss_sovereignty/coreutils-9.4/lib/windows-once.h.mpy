@@ -1,0 +1,9 @@
+{
+  "module_name": "windows-once.h",
+  "hash_id": "050a6e442c2018934e2d825bcee00bf7f72561d1e4ca7f48c4c4ca0ede6ffc1c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/windows-once.h",
+  "human_readable_source": " \n\n#ifndef _WINDOWS_ONCE_H\n#define _WINDOWS_ONCE_H\n\n#define WIN32_LEAN_AND_MEAN   \n#include <windows.h>\n\ntypedef struct\n        {\n          volatile int inited;\n          volatile LONG started;\n          CRITICAL_SECTION lock;\n        }\n        glwthread_once_t;\n\n#define GLWTHREAD_ONCE_INIT { -1, -1 }\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\nextern void glwthread_once (glwthread_once_t *once_control,\n                            void (*initfunction) (void));\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

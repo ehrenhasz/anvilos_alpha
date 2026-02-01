@@ -1,0 +1,9 @@
+{
+  "module_name": "rust_minimal.rs",
+  "hash_id": "f316827c3b29932d2e38eec9b79c09322ce0536285644c2ed86856cc46c78c3b",
+  "original_prompt": "Ingested from linux-6.6.14/samples/rust/rust_minimal.rs",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n\n//! Rust minimal sample.\n\nuse kernel::prelude::*;\n\nmodule! {\n    type: RustMinimal,\n    name: \"rust_minimal\",\n    author: \"Rust for Linux Contributors\",\n    description: \"Rust minimal sample\",\n    license: \"GPL\",\n}\n\nstruct RustMinimal {\n    numbers: Vec<i32>,\n}\n\nimpl kernel::Module for RustMinimal {\n    fn init(_module: &'static ThisModule) -> Result<Self> {\n        pr_info!(\"Rust minimal sample (init)\\n\");\n        pr_info!(\"Am I built-in? {}\\n\", !cfg!(MODULE));\n\n        let mut numbers = Vec::new();\n        numbers.try_push(72)?;\n        numbers.try_push(108)?;\n        numbers.try_push(200)?;\n\n        Ok(RustMinimal { numbers })\n    }\n}\n\nimpl Drop for RustMinimal {\n    fn drop(&mut self) {\n        pr_info!(\"My numbers are {:?}\\n\", self.numbers);\n        pr_info!(\"Rust minimal sample (exit)\\n\");\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

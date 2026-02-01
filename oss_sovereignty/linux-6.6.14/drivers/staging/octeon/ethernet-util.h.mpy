@@ -1,0 +1,9 @@
+{
+  "module_name": "ethernet-util.h",
+  "hash_id": "a7f3c2222d04a248a0c16f6201639c791e665a3bfeeab9317d1692e4b0581eca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/octeon/ethernet-util.h",
+  "human_readable_source": " \n \n\n \nstatic inline void *cvm_oct_get_buffer_ptr(union cvmx_buf_ptr packet_ptr)\n{\n\treturn cvmx_phys_to_ptr(((packet_ptr.s.addr >> 7) - packet_ptr.s.back)\n\t\t\t\t<< 7);\n}\n\n \nstatic inline int INTERFACE(int ipd_port)\n{\n\tint interface;\n\n\tif (ipd_port == CVMX_PIP_NUM_INPUT_PORTS)\n\t\treturn 10;\n\tinterface = cvmx_helper_get_interface_num(ipd_port);\n\tif (interface >= 0)\n\t\treturn interface;\n\tpanic(\"Illegal ipd_port %d passed to %s\\n\", ipd_port, __func__);\n}\n\n \nstatic inline int INDEX(int ipd_port)\n{\n\treturn cvmx_helper_get_interface_index_num(ipd_port);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

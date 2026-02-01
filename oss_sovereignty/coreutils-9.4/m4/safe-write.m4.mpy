@@ -1,0 +1,9 @@
+{
+  "module_name": "safe-write.m4",
+  "hash_id": "714ca4f435b176deb470cd02137c27cab32da0432dc769a7ae1ba9324f86ebef",
+  "original_prompt": "Ingested from coreutils-9.4/m4/safe-write.m4",
+  "human_readable_source": "# safe-write.m4 serial 4\ndnl Copyright (C) 2002, 2005-2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n# Prerequisites of lib/safe-write.c.\nAC_DEFUN([gl_PREREQ_SAFE_WRITE],\n[\n  gl_PREREQ_SAFE_READ\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

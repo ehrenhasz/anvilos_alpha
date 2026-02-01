@@ -1,0 +1,9 @@
+{
+  "module_name": "m_item_nam.c",
+  "hash_id": "f0c547f36feaf1de37aacda3627bc2bcb113dde0c39905b0f90d02095af18fe0",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_item_nam.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_item_nam.c,v 1.19 2021/06/17 21:20:30 tom Exp $\")\n\n \nMENU_EXPORT(const char *)\nitem_name(const ITEM *item)\n{\n  T((T_CALLED(\"item_name(%p)\"), (const void *)item));\n  returnCPtr((item) ? item->name.str : (char *)0);\n}\n\n \nMENU_EXPORT(const char *)\nitem_description(const ITEM *item)\n{\n  T((T_CALLED(\"item_description(%p)\"), (const void *)item));\n  returnCPtr((item) ? item->description.str : (char *)0);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

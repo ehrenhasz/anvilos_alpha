@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio-amd-fch.h",
+  "hash_id": "3b8071f6837612664342724cbfa7a56558073159d1d9094e60919c85b4f3a8a0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/gpio/gpio-amd-fch.h",
+  "human_readable_source": " \n\n \n\n#ifndef __LINUX_PLATFORM_DATA_GPIO_AMD_FCH_H\n#define __LINUX_PLATFORM_DATA_GPIO_AMD_FCH_H\n\n#define AMD_FCH_GPIO_DRIVER_NAME \"gpio_amd_fch\"\n\n \n#define AMD_FCH_GPIO_REG_GPIO49\t\t0x40\n#define AMD_FCH_GPIO_REG_GPIO50\t\t0x41\n#define AMD_FCH_GPIO_REG_GPIO51\t\t0x42\n#define AMD_FCH_GPIO_REG_GPIO55_DEVSLP0\t0x43\n#define AMD_FCH_GPIO_REG_GPIO57\t\t0x44\n#define AMD_FCH_GPIO_REG_GPIO58\t\t0x45\n#define AMD_FCH_GPIO_REG_GPIO59_DEVSLP1\t0x46\n#define AMD_FCH_GPIO_REG_GPIO64\t\t0x47\n#define AMD_FCH_GPIO_REG_GPIO68\t\t0x48\n#define AMD_FCH_GPIO_REG_GPIO66_SPKR\t0x5B\n#define AMD_FCH_GPIO_REG_GPIO71\t\t0x4D\n#define AMD_FCH_GPIO_REG_GPIO32_GE1\t0x59\n#define AMD_FCH_GPIO_REG_GPIO33_GE2\t0x5A\n#define AMT_FCH_GPIO_REG_GEVT22\t\t0x09\n\n \nstruct amd_fch_gpio_pdata {\n\tint\t\t\tgpio_num;\n\tint\t\t\t*gpio_reg;\n\tconst char * const\t*gpio_names;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

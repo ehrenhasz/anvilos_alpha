@@ -1,0 +1,9 @@
+{
+  "module_name": "za-fork-asm.S",
+  "hash_id": "c991d3cd0b5d95ebcaae267eb3db48ce80fed49d8e2a9807a32df1a10a9d0167",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/fp/za-fork-asm.S",
+  "human_readable_source": " \n \n\n#include \"sme-inst.h\"\n\n.arch_extension sve\n\n#define MAGIC     42\n\n#define MAXVL     2048\n#define MAXVL_B   (MAXVL / 8)\n\n.pushsection .text\n.data\n.align 4\nscratch:\n\t.space\tMAXVL_B\n.popsection\n\n.globl fork_test\nfork_test:\n\tsmstart_za\n\n\t \n\t \n\tldr\tx0, =scratch\n\tmov\tx1, #MAGIC\n\tstr\tx1, [x0]\n\tmov\tw12, wzr\n\t_ldr_za 12, 0\t\t\t \n\n\t \n\tb\tfork_test_c\n\n.globl verify_fork\nverify_fork:\n\t \n\tmrs\tx0, S3_3_C4_C2_2\n\tand\tx1, x0, #3\n\tcmp\tx1, #2\n\tbeq\t1f\n\tmov\tx0, xzr\n\tb\t100f\n1:\n\n\t \n\tldr\tx0, =scratch\n\tmov\tw12, wzr\n\t_str_za 12, 0\t\t\t \n\tldr\tx1, [x0]\n\tcmp\tx1, #MAGIC\n\tbeq\t2f\n\tmov\tx0, xzr\n\tb\t100f\n\n2:\n\t \n\tmov\tx0, #1\n100:\n\tret\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

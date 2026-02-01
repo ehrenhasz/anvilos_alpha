@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn31_vpg.c",
+  "hash_id": "ea91decc42bd2d2ca0cb2246017ad5810e7df3eb767986ba8ca854a65a54fb32",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_vpg.c",
+  "human_readable_source": " \n\n#include \"dc_bios_types.h\"\n#include \"dcn30/dcn30_vpg.h\"\n#include \"dcn31_vpg.h\"\n#include \"reg_helper.h\"\n#include \"dc/dc.h\"\n\n#define DC_LOGGER \\\n\t\tvpg31->base.ctx->logger\n\n#define REG(reg)\\\n\t(vpg31->regs->reg)\n\n#undef FN\n#define FN(reg_name, field_name) \\\n\tvpg31->vpg_shift->field_name, vpg31->vpg_mask->field_name\n\n\n#define CTX \\\n\tvpg31->base.ctx\n\nstatic struct vpg_funcs dcn31_vpg_funcs = {\n\t.update_generic_info_packet\t= vpg3_update_generic_info_packet,\n\t.vpg_poweron = vpg31_poweron,\n\t.vpg_powerdown = vpg31_powerdown,\n};\n\nvoid vpg31_powerdown(struct vpg *vpg)\n{\n\tstruct dcn31_vpg *vpg31 = DCN31_VPG_FROM_VPG(vpg);\n\n\tif (vpg->ctx->dc->debug.enable_mem_low_power.bits.vpg == false)\n\t\treturn;\n\n\tREG_UPDATE_2(VPG_MEM_PWR, VPG_GSP_MEM_LIGHT_SLEEP_DIS, 0, VPG_GSP_LIGHT_SLEEP_FORCE, 1);\n}\n\nvoid vpg31_poweron(struct vpg *vpg)\n{\n\tstruct dcn31_vpg *vpg31 = DCN31_VPG_FROM_VPG(vpg);\n\n\tif (vpg->ctx->dc->debug.enable_mem_low_power.bits.vpg == false)\n\t\treturn;\n\n\tREG_UPDATE_2(VPG_MEM_PWR, VPG_GSP_MEM_LIGHT_SLEEP_DIS, 1, VPG_GSP_LIGHT_SLEEP_FORCE, 0);\n}\n\nvoid vpg31_construct(struct dcn31_vpg *vpg31,\n\tstruct dc_context *ctx,\n\tuint32_t inst,\n\tconst struct dcn31_vpg_registers *vpg_regs,\n\tconst struct dcn31_vpg_shift *vpg_shift,\n\tconst struct dcn31_vpg_mask *vpg_mask)\n{\n\tvpg31->base.ctx = ctx;\n\n\tvpg31->base.inst = inst;\n\tvpg31->base.funcs = &dcn31_vpg_funcs;\n\n\tvpg31->regs = vpg_regs;\n\tvpg31->vpg_shift = vpg_shift;\n\tvpg31->vpg_mask = vpg_mask;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

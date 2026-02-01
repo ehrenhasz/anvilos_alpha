@@ -1,0 +1,9 @@
+{
+  "module_name": "timespec.h",
+  "hash_id": "df10cfdf2497fac53b62007051c85cb4d0aac4bc877be0a9179ac8ce009159a6",
+  "original_prompt": "Ingested from coreutils-9.4/lib/timespec.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <time.h>\n\n_GL_INLINE_HEADER_BEGIN\n#ifndef _GL_TIMESPEC_INLINE\n# define _GL_TIMESPEC_INLINE _GL_INLINE\n#endif\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n#include \"arg-nonnull.h\"\n\n \n\nenum { TIMESPEC_HZ = 1000000000 };\nenum { LOG10_TIMESPEC_HZ = 9 };\n\n \n\nenum { TIMESPEC_RESOLUTION = TIMESPEC_HZ };\nenum { LOG10_TIMESPEC_RESOLUTION = LOG10_TIMESPEC_HZ };\n\n \n\n_GL_TIMESPEC_INLINE struct timespec\nmake_timespec (time_t s, long int ns)\n{\n  return (struct timespec) { .tv_sec = s, .tv_nsec = ns };\n}\n\n \n\n_GL_TIMESPEC_INLINE int _GL_ATTRIBUTE_PURE\ntimespec_cmp (struct timespec a, struct timespec b)\n{\n  return 2 * _GL_CMP (a.tv_sec, b.tv_sec) + _GL_CMP (a.tv_nsec, b.tv_nsec);\n}\n\n \n_GL_TIMESPEC_INLINE int _GL_ATTRIBUTE_PURE\ntimespec_sign (struct timespec a)\n{\n  return _GL_CMP (a.tv_sec, 0) + (!a.tv_sec & !!a.tv_nsec);\n}\n\nstruct timespec timespec_add (struct timespec, struct timespec)\n  _GL_ATTRIBUTE_CONST;\nstruct timespec timespec_sub (struct timespec, struct timespec)\n  _GL_ATTRIBUTE_CONST;\nstruct timespec dtotimespec (double)\n  _GL_ATTRIBUTE_CONST;\n\n \n_GL_TIMESPEC_INLINE double\ntimespectod (struct timespec a)\n{\n  return a.tv_sec + a.tv_nsec / 1e9;\n}\n\nlong int gettime_res (void);\nstruct timespec current_timespec (void);\nvoid gettime (struct timespec *) _GL_ARG_NONNULL ((1));\nint settime (struct timespec const *) _GL_ARG_NONNULL ((1));\n\n#ifdef __cplusplus\n}\n#endif\n\n_GL_INLINE_HEADER_END\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

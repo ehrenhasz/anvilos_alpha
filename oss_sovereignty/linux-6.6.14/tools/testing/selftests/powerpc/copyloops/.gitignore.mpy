@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "1f7144cf355c0faf290255a7d973fcef20532f5cb06347e58a0fe6df44a678c9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/copyloops/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ncopyuser_64_t0\ncopyuser_64_t1\ncopyuser_64_t2\ncopyuser_p7_t0\ncopyuser_p7_t1\nmemcpy_64_t0\nmemcpy_64_t1\nmemcpy_64_t2\nmemcpy_p7_t0\nmemcpy_p7_t1\ncopyuser_64_exc_t0\ncopyuser_64_exc_t1\ncopyuser_64_exc_t2\ncopy_mc_64\nmemmove_64\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

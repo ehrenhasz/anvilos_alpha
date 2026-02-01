@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d59618c6af6817b5510449ceb5316fa2618384423336db574553657378255a66",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/amd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)\n# This file is provided under a dual BSD/GPLv2 license. When using or\n# redistributing this file, you may do so under either license.\n#\n# Copyright(c) 2021, 2023 Advanced Micro Devices, Inc. All rights reserved.\n\nsnd-sof-amd-acp-objs := acp.o acp-loader.o acp-ipc.o acp-pcm.o acp-stream.o acp-trace.o acp-common.o\nsnd-sof-amd-acp-$(CONFIG_SND_SOC_SOF_ACP_PROBES) = acp-probes.o\nsnd-sof-amd-renoir-objs := pci-rn.o renoir.o\nsnd-sof-amd-rembrandt-objs := pci-rmb.o rembrandt.o\nsnd-sof-amd-vangogh-objs := pci-vangogh.o vangogh.o\n\nobj-$(CONFIG_SND_SOC_SOF_AMD_COMMON) += snd-sof-amd-acp.o\nobj-$(CONFIG_SND_SOC_SOF_AMD_RENOIR) +=snd-sof-amd-renoir.o\nobj-$(CONFIG_SND_SOC_SOF_AMD_REMBRANDT) +=snd-sof-amd-rembrandt.o\nobj-$(CONFIG_SND_SOC_SOF_AMD_VANGOGH) +=snd-sof-amd-vangogh.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

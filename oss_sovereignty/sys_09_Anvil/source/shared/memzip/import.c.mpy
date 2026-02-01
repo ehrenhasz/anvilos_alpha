@@ -1,0 +1,9 @@
+{
+  "module_name": "import.c",
+  "hash_id": "f0895325e4734411d909291e017a1086c4444b4987855673946ec2502d638697",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/memzip/import.c",
+  "human_readable_source": "#include <stdio.h>\n\n#include \"py/lexer.h\"\n#include \"memzip.h\"\n\nmp_import_stat_t mp_import_stat(const char *path) {\n    MEMZIP_FILE_INFO info;\n\n    if (memzip_stat(path, &info) != MZ_OK) {\n        return MP_IMPORT_STAT_NO_EXIST;\n    }\n\n    if (info.is_dir) {\n        return MP_IMPORT_STAT_DIR;\n    }\n    return MP_IMPORT_STAT_FILE;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

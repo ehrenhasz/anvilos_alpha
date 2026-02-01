@@ -1,0 +1,9 @@
+{
+  "module_name": "meter.h",
+  "hash_id": "b8c76e196d719a149c61832cc44ad0a19c8d6f8c8f78d7fe98363c75512ff00c",
+  "original_prompt": "Ingested from linux-6.6.14/net/openvswitch/meter.h",
+  "human_readable_source": " \n \n\n#ifndef METER_H\n#define METER_H 1\n\n#include <linux/init.h>\n#include <linux/module.h>\n#include <linux/kernel.h>\n#include <linux/netlink.h>\n#include <linux/openvswitch.h>\n#include <linux/genetlink.h>\n#include <linux/skbuff.h>\n#include <linux/bits.h>\n\n#include \"flow.h\"\nstruct datapath;\n\n#define DP_MAX_BANDS\t\t1\n#define DP_METER_ARRAY_SIZE_MIN\tBIT_ULL(10)\n#define DP_METER_NUM_MAX\t(200000UL)\n\nstruct dp_meter_band {\n\tu32 type;\n\tu32 rate;\n\tu32 burst_size;\n\tu64 bucket;  \n\tstruct ovs_flow_stats stats;\n};\n\nstruct dp_meter {\n\tspinlock_t lock;     \n\tstruct rcu_head rcu;\n\tu32 id;\n\tu16 kbps:1, keep_stats:1;\n\tu16 n_bands;\n\tu32 max_delta_t;\n\tu64 used;\n\tstruct ovs_flow_stats stats;\n\tstruct dp_meter_band bands[];\n};\n\nstruct dp_meter_instance {\n\tstruct rcu_head rcu;\n\tu32 n_meters;\n\tstruct dp_meter __rcu *dp_meters[];\n};\n\nstruct dp_meter_table {\n\tstruct dp_meter_instance __rcu *ti;\n\tu32 count;\n\tu32 max_meters_allowed;\n};\n\nextern struct genl_family dp_meter_genl_family;\nint ovs_meters_init(struct datapath *dp);\nvoid ovs_meters_exit(struct datapath *dp);\nbool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,\n\t\t       struct sw_flow_key *key, u32 meter_id);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

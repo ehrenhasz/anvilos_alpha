@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "111e2258b78082850a282f23affa152b201a798f3b05969bd9ec9d5b06ce801a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/vpu/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmtk-vpu-y += mtk_vpu.o\n\nobj-$(CONFIG_VIDEO_MEDIATEK_VPU) += mtk-vpu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

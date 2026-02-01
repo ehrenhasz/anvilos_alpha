@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_connmark.h",
+  "hash_id": "15fa8fbf5130860c0c9ff1912ca457442826e70b45cf15dd3e8023236850b5cf",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_act/tc_connmark.h",
+  "human_readable_source": " \n#ifndef __UAPI_TC_CONNMARK_H\n#define __UAPI_TC_CONNMARK_H\n\n#include <linux/types.h>\n#include <linux/pkt_cls.h>\n\nstruct tc_connmark {\n\ttc_gen;\n\t__u16 zone;\n};\n\nenum {\n\tTCA_CONNMARK_UNSPEC,\n\tTCA_CONNMARK_PARMS,\n\tTCA_CONNMARK_TM,\n\tTCA_CONNMARK_PAD,\n\t__TCA_CONNMARK_MAX\n};\n#define TCA_CONNMARK_MAX (__TCA_CONNMARK_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

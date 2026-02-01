@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs",
+  "hash_id": "cb410be0685c3870929455ddb6da46faab05f94d3c1abf5fc5f40f6ee141b241",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/sudoers.d/zfs",
+  "human_readable_source": "##\n## Allow any user to run `zpool iostat/status -c smart` in order\n## to read basic SMART health statistics for a pool.\n##\n## CAUTION: Any syntax error introduced here will break sudo.\n## Editing with 'visudo' is recommended: visudo -f  /etc/sudoers.d/zfs \n##\n\n# ALL ALL = (root) NOPASSWD: /usr/sbin/smartctl -a /dev/[hsv]d[a-z0-9]*\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

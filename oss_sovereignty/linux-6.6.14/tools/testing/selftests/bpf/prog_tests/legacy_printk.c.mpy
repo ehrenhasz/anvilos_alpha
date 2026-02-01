@@ -1,0 +1,9 @@
+{
+  "module_name": "legacy_printk.c",
+  "hash_id": "4f14511b0c3838120a804d2c59a42b671db578cd76f28458adafb8028711e179",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/legacy_printk.c",
+  "human_readable_source": "\n \n#include <test_progs.h>\n#include \"test_legacy_printk.skel.h\"\n\nstatic int execute_one_variant(bool legacy)\n{\n\tstruct test_legacy_printk *skel;\n\tint err, zero = 0, my_pid = getpid(), res, map_fd;\n\n\tskel = test_legacy_printk__open();\n\tif (!ASSERT_OK_PTR(skel, \"skel_open\"))\n\t\treturn -errno;\n\n\tbpf_program__set_autoload(skel->progs.handle_legacy, legacy);\n\tbpf_program__set_autoload(skel->progs.handle_modern, !legacy);\n\n\terr = test_legacy_printk__load(skel);\n\t \n\tif (err)\n\t\tgoto err_out;\n\n\tif (legacy) {\n\t\tmap_fd = bpf_map__fd(skel->maps.my_pid_map);\n\t\terr = bpf_map_update_elem(map_fd, &zero, &my_pid, BPF_ANY);\n\t\tif (!ASSERT_OK(err, \"my_pid_map_update\"))\n\t\t\tgoto err_out;\n\t\terr = bpf_map_lookup_elem(map_fd, &zero, &res);\n\t} else {\n\t\tskel->bss->my_pid_var = my_pid;\n\t}\n\n\terr = test_legacy_printk__attach(skel);\n\tif (!ASSERT_OK(err, \"skel_attach\"))\n\t\tgoto err_out;\n\n\tusleep(1);  \n\n\tif (legacy) {\n\t\tmap_fd = bpf_map__fd(skel->maps.res_map);\n\t\terr = bpf_map_lookup_elem(map_fd, &zero, &res);\n\t\tif (!ASSERT_OK(err, \"res_map_lookup\"))\n\t\t\tgoto err_out;\n\t} else {\n\t\tres = skel->bss->res_var;\n\t}\n\n\tif (!ASSERT_GT(res, 0, \"res\")) {\n\t\terr = -EINVAL;\n\t\tgoto err_out;\n\t}\n\nerr_out:\n\ttest_legacy_printk__destroy(skel);\n\treturn err;\n}\n\nvoid test_legacy_printk(void)\n{\n\t \n\tASSERT_OK(execute_one_variant(true  ), \"legacy_case\");\n\n\t \n\texecute_one_variant(false);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

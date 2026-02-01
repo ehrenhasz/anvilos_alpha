@@ -1,0 +1,9 @@
+{
+  "module_name": "recho.c",
+  "hash_id": "590aa98ff26d715c4f12c47d2ef3d53171d425b113647f8733dbbfd6c5f15f4f",
+  "original_prompt": "Ingested from bash-5.2.21/support/recho.c",
+  "human_readable_source": " \n\n \n\n#if defined (HAVE_CONFIG_H)\n#  include  <config.h>\n#endif\n\n#include \"bashansi.h\"\n#include <stdio.h>\n\nvoid strprint();\n\nint\nmain(argc, argv)\nint\targc;\nchar\t**argv;\n{\n\tregister int\ti;\n\n\tfor (i = 1; i < argc; i++) {\n\t\tprintf(\"argv[%d] = <\", i);\n\t\tstrprint(argv[i]);\n\t\tprintf(\">\\n\");\n\t}\n\texit(0);\n}\n\nvoid\nstrprint(str)\nchar\t*str;\n{\n\tregister unsigned char *s;\n\n\tfor (s = (unsigned char *)str; s && *s; s++) {\n\t\tif (*s < ' ') {\n\t\t\tputchar('^');\n\t\t\tputchar(*s+64);\n\t\t} else if (*s == 127) {\n\t\t\tputchar('^');\n\t\t\tputchar('?');\n\t\t} else\n\t\t\tputchar(*s);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

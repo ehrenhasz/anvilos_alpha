@@ -1,0 +1,9 @@
+{
+  "module_name": "intel-gtt.h",
+  "hash_id": "664c6120b31384aeb9a13603296e4b8d6c7a05296b4442867c4f80c33883bd52",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/intel-gtt.h",
+  "human_readable_source": " \n \n\n#ifndef _DRM_INTEL_GTT_H\n#define\t_DRM_INTEL_GTT_H\n\n#include <linux/types.h>\n\nstruct agp_bridge_data;\nstruct pci_dev;\nstruct sg_table;\n\nvoid intel_gmch_gtt_get(u64 *gtt_total,\n\t\t\tphys_addr_t *mappable_base,\n\t\t\tresource_size_t *mappable_end);\n\nint intel_gmch_probe(struct pci_dev *bridge_pdev, struct pci_dev *gpu_pdev,\n\t\t     struct agp_bridge_data *bridge);\nvoid intel_gmch_remove(void);\n\nbool intel_gmch_enable_gtt(void);\n\nvoid intel_gmch_gtt_flush(void);\nvoid intel_gmch_gtt_insert_page(dma_addr_t addr,\n\t\t\t\tunsigned int pg,\n\t\t\t\tunsigned int flags);\nvoid intel_gmch_gtt_insert_sg_entries(struct sg_table *st,\n\t\t\t\t      unsigned int pg_start,\n\t\t\t\t      unsigned int flags);\nvoid intel_gmch_gtt_clear_range(unsigned int first_entry, unsigned int num_entries);\n\n \n#define AGP_DCACHE_MEMORY\t1\n#define AGP_PHYS_MEMORY\t\t2\n\n \n#define AGP_USER_CACHED_MEMORY_GFDT (1 << 3)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

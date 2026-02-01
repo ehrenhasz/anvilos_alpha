@@ -1,0 +1,9 @@
+{
+  "module_name": "endian.h",
+  "hash_id": "50875ce7a0db7debb522a97c12ef312b77719739cfdee9f33f72cf3d947460b3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/tools/endian.h",
+  "human_readable_source": " \n#ifndef _TOOLS_ENDIAN_H\n#define _TOOLS_ENDIAN_H\n\n#include <byteswap.h>\n\n#if __BYTE_ORDER == __LITTLE_ENDIAN\n\n#ifndef htole16\n#define htole16(x) (x)\n#endif\n#ifndef htole32\n#define htole32(x) (x)\n#endif\n#ifndef htole64\n#define htole64(x) (x)\n#endif\n\n#ifndef le16toh\n#define le16toh(x) (x)\n#endif\n\n#ifndef le32toh\n#define le32toh(x) (x)\n#endif\n\n#ifndef le64toh\n#define le64toh(x) (x)\n#endif\n\n#else  \n\n#ifndef htole16\n#define htole16(x) __bswap_16(x)\n#endif\n#ifndef htole32\n#define htole32(x) __bswap_32(x)\n#endif\n#ifndef htole64\n#define htole64(x) __bswap_64(x)\n#endif\n\n#ifndef le16toh\n#define le16toh(x) __bswap_16(x)\n#endif\n\n#ifndef le32toh\n#define le32toh(x) __bswap_32(x)\n#endif\n\n#ifndef le64toh\n#define le64toh(x) __bswap_64(x)\n#endif\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "input_formatter_public.h",
+  "hash_id": "c5517eef996132a985024bd8ecb03c411d31d865c3db50444200547afd6200e7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/host/input_formatter_public.h",
+  "human_readable_source": " \n \n\n#ifndef __INPUT_FORMATTER_PUBLIC_H_INCLUDED__\n#define __INPUT_FORMATTER_PUBLIC_H_INCLUDED__\n\n#include <type_support.h>\n#include \"system_local.h\"\n\n \nvoid input_formatter_rst(\n    const input_formatter_ID_t\t\tID);\n\n \nvoid input_formatter_set_fifo_blocking_mode(\n    const input_formatter_ID_t\t\tID,\n    const bool\t\t\t\t\t\tenable);\n\n \nunsigned int input_formatter_get_alignment(\n    const input_formatter_ID_t\t\tID);\n\n \nvoid input_formatter_get_switch_state(\n    const input_formatter_ID_t\t\tID,\n    input_formatter_switch_state_t\t*state);\n\n \nvoid input_formatter_get_state(\n    const input_formatter_ID_t\t\tID,\n    input_formatter_state_t\t\t\t*state);\n\n \nvoid input_formatter_bin_get_state(\n    const input_formatter_ID_t\t\tID,\n    input_formatter_bin_state_t\t\t*state);\n\n \nSTORAGE_CLASS_INPUT_FORMATTER_H void input_formatter_reg_store(\n    const input_formatter_ID_t\tID,\n    const hrt_address\t\treg_addr,\n    const hrt_data\t\t\t\tvalue);\n\n \nSTORAGE_CLASS_INPUT_FORMATTER_H hrt_data input_formatter_reg_load(\n    const input_formatter_ID_t\tID,\n    const unsigned int\t\t\treg_addr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

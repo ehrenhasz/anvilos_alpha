@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "48a761d5214c03c3eed521eda72a210a8bbd993f5569f1cc8b7bf2ff7b6cc8ec",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/riscv/mm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (C) 2021 ARM Limited\n# Originally tools/testing/arm64/abi/Makefile\n\n# Additional include paths needed by kselftest.h and local headers\nCFLAGS += -D_GNU_SOURCE -std=gnu99 -I.\n\nTEST_GEN_FILES := mmap_default mmap_bottomup\n\nTEST_PROGS := run_mmap.sh\n\ninclude ../../lib.mk\n\n$(OUTPUT)/mm: mmap_default.c mmap_bottomup.c mmap_tests.h\n\t$(CC) -o$@ $(CFLAGS) $(LDFLAGS) $^\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

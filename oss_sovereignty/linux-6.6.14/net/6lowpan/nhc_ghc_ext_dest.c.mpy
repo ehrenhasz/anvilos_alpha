@@ -1,0 +1,9 @@
+{
+  "module_name": "nhc_ghc_ext_dest.c",
+  "hash_id": "b438e9686cd52d3b7f02d427ccbb7a0b884265e79c0a6dafde3094057822f70d",
+  "original_prompt": "Ingested from linux-6.6.14/net/6lowpan/nhc_ghc_ext_dest.c",
+  "human_readable_source": "\n \n\n#include \"nhc.h\"\n\n#define LOWPAN_GHC_EXT_DEST_ID_0\t0xb6\n#define LOWPAN_GHC_EXT_DEST_MASK_0\t0xfe\n\nLOWPAN_NHC(ghc_ext_dest, \"RFC7400 Destination Extension Header\", NEXTHDR_DEST,\n\t   0, LOWPAN_GHC_EXT_DEST_ID_0, LOWPAN_GHC_EXT_DEST_MASK_0, NULL, NULL);\n\nmodule_lowpan_nhc(ghc_ext_dest);\nMODULE_DESCRIPTION(\"6LoWPAN generic header destination extension compression\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

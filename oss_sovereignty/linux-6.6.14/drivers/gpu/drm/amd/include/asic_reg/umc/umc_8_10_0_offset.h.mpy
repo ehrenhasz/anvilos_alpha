@@ -1,0 +1,9 @@
+{
+  "module_name": "umc_8_10_0_offset.h",
+  "hash_id": "b627ba261dd404293441d27b714fa4ab7aae14294f4f397f8d6af26c4ca6aeb6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/asic_reg/umc/umc_8_10_0_offset.h",
+  "human_readable_source": " \n#ifndef _umc_8_10_0_OFFSET_HEADER\n#define _umc_8_10_0_OFFSET_HEADER\n\n#define regUMCCH0_0_GeccErrCntSel                0x0328\n#define regUMCCH0_0_GeccErrCntSel_BASE_IDX       2\n#define regUMCCH0_0_GeccErrCnt                   0x0329\n#define regUMCCH0_0_GeccErrCnt_BASE_IDX          2\n#define regMCA_UMC_UMC0_MCUMC_STATUST0           0x03c2\n#define regMCA_UMC_UMC0_MCUMC_STATUST0_BASE_IDX  2\n#define regMCA_UMC_UMC0_MCUMC_ADDRT0             0x03c4\n#define regMCA_UMC_UMC0_MCUMC_ADDRT0_BASE_IDX    2\n#define regUMCCH0_0_GeccCtrl                     0x0053\n#define regUMCCH0_0_GeccCtrl_BASE_IDX            2\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

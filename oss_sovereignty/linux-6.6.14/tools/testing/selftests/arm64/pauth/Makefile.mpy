@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "627c2799edfa43860a512a2ef39b5d0bff20e11fc7efb3ea5231d639ab0c7ed9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/pauth/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (C) 2020 ARM Limited\n\n# preserve CC value from top level Makefile\nifeq ($(CC),cc)\nCC := $(CROSS_COMPILE)gcc\nendif\n\nCFLAGS += -mbranch-protection=pac-ret\n# check if the compiler supports ARMv8.3 and branch protection with PAuth\npauth_cc_support := $(shell if ($(CC) $(CFLAGS) -march=armv8.3-a -E -x c /dev/null -o /dev/null 2>&1) then echo \"1\"; fi)\n\nifeq ($(pauth_cc_support),1)\nTEST_GEN_PROGS := pac\nTEST_GEN_FILES := pac_corruptor.o helper.o\nTEST_GEN_PROGS_EXTENDED := exec_target\nendif\n\ninclude ../../lib.mk\n\nifeq ($(pauth_cc_support),1)\n# pac* and aut* instructions are not available on architectures berfore\n# ARMv8.3. Therefore target ARMv8.3 wherever they are used directly\n$(OUTPUT)/pac_corruptor.o: pac_corruptor.S\n\t$(CC) -c $^ -o $@ $(CFLAGS) -march=armv8.3-a\n\n$(OUTPUT)/helper.o: helper.c\n\t$(CC) -c $^ -o $@ $(CFLAGS) -march=armv8.3-a\n\n# when -mbranch-protection is enabled and the target architecture is ARMv8.3 or\n# greater, gcc emits pac* instructions which are not in HINT NOP space,\n# preventing the tests from occurring at all. Compile for ARMv8.2 so tests can\n# run on earlier targets and print a meaningful error messages\n$(OUTPUT)/exec_target: exec_target.c $(OUTPUT)/helper.o\n\t$(CC) $^ -o $@ $(CFLAGS) -march=armv8.2-a\n\n$(OUTPUT)/pac: pac.c $(OUTPUT)/pac_corruptor.o $(OUTPUT)/helper.o\n\t$(CC) $^ -o $@ $(CFLAGS) -march=armv8.2-a\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

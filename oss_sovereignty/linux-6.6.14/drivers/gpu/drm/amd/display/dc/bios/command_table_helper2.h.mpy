@@ -1,0 +1,9 @@
+{
+  "module_name": "command_table_helper2.h",
+  "hash_id": "a940d336b9a255c0872d152033375421d890b6b3dd57d188be56be91c59ff611",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/bios/command_table_helper2.h",
+  "human_readable_source": " \n\n#ifndef __DAL_COMMAND_TABLE_HELPER2_H__\n#define __DAL_COMMAND_TABLE_HELPER2_H__\n\n#if defined(CONFIG_DRM_AMD_DC_SI)\n#include \"dce60/command_table_helper_dce60.h\"\n#endif\n#include \"dce80/command_table_helper_dce80.h\"\n#include \"dce110/command_table_helper_dce110.h\"\n#include \"dce112/command_table_helper2_dce112.h\"\n#include \"command_table_helper_struct.h\"\n\nbool dal_bios_parser_init_cmd_tbl_helper2(const struct command_table_helper **h,\n\tenum dce_version dce);\n\nbool dal_cmd_table_helper_controller_id_to_atom2(\n\tenum controller_id id,\n\tuint8_t *atom_id);\n\nuint32_t dal_cmd_table_helper_encoder_mode_bp_to_atom2(\n\tenum signal_type s,\n\tbool enable_dp_audio);\n\nbool dal_cmd_table_helper_clock_source_id_to_ref_clk_src2(\n\tenum clock_source_id id,\n\tuint32_t *ref_clk_src_id);\n\nuint8_t dal_cmd_table_helper_transmitter_bp_to_atom2(\n\tenum transmitter t);\n\nuint8_t dal_cmd_table_helper_encoder_id_to_atom2(\n\tenum encoder_id id);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

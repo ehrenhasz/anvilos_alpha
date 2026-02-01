@@ -1,0 +1,9 @@
+{
+  "module_name": "little_endian.h",
+  "hash_id": "69aa073d94c5d3113bf18ec9c00e2f50762b7b92b1c5c26fa6424f44b9f8c572",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/byteorder/little_endian.h",
+  "human_readable_source": " \n#ifndef _LINUX_BYTEORDER_LITTLE_ENDIAN_H\n#define _LINUX_BYTEORDER_LITTLE_ENDIAN_H\n\n#include <uapi/linux/byteorder/little_endian.h>\n\n#ifdef CONFIG_CPU_BIG_ENDIAN\n#warning inconsistent configuration, CONFIG_CPU_BIG_ENDIAN is set\n#endif\n\n#include <linux/byteorder/generic.h>\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "word-at-a-time.h",
+  "hash_id": "19575383f6ea3d260fba064ce46d3e9a66a20aba2613fb4e235beffeb729e262",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/word-at-a-time.h",
+  "human_readable_source": " \n#ifndef _ASM_WORD_AT_A_TIME_H\n#define _ASM_WORD_AT_A_TIME_H\n\n#include <linux/kernel.h>\n\n \nstruct word_at_a_time {\n\tconst unsigned long one_bits, high_bits;\n};\n\n#define WORD_AT_A_TIME_CONSTANTS { REPEAT_BYTE(0x01), REPEAT_BYTE(0x80) }\n\n#ifdef CONFIG_64BIT\n\n \nstatic inline long count_masked_bytes(unsigned long mask)\n{\n\treturn mask*0x0001020304050608ul >> 56;\n}\n\n#else\t \n\n \nstatic inline long count_masked_bytes(long mask)\n{\n\t \n\tlong a = (0x0ff0001+mask) >> 23;\n\t \n\treturn a & mask;\n}\n\n#endif\n\n \nstatic inline unsigned long has_zero(unsigned long a, unsigned long *bits, const struct word_at_a_time *c)\n{\n\tunsigned long mask = ((a - c->one_bits) & ~a) & c->high_bits;\n\t*bits = mask;\n\treturn mask;\n}\n\nstatic inline unsigned long prep_zero_mask(unsigned long a, unsigned long bits, const struct word_at_a_time *c)\n{\n\treturn bits;\n}\n\nstatic inline unsigned long create_zero_mask(unsigned long bits)\n{\n\tbits = (bits - 1) & ~bits;\n\treturn bits >> 7;\n}\n\n \n#define zero_bytemask(mask) (mask)\n\nstatic inline unsigned long find_zero(unsigned long mask)\n{\n\treturn count_masked_bytes(mask);\n}\n\n \nstatic inline unsigned long load_unaligned_zeropad(const void *addr)\n{\n\tunsigned long ret;\n\n\tasm volatile(\n\t\t\"1:\tmov %[mem], %[ret]\\n\"\n\t\t\"2:\\n\"\n\t\t_ASM_EXTABLE_TYPE(1b, 2b, EX_TYPE_ZEROPAD)\n\t\t: [ret] \"=r\" (ret)\n\t\t: [mem] \"m\" (*(unsigned long *)addr));\n\n\treturn ret;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

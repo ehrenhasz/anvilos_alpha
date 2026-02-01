@@ -1,0 +1,9 @@
+{
+  "module_name": "mhi.h",
+  "hash_id": "4d77f184c6be40971dd746ed8f9ae37824a13cb2c8994acc69c8be8aa249705f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath12k/mhi.h",
+  "human_readable_source": " \n \n#ifndef _ATH12K_MHI_H\n#define _ATH12K_MHI_H\n\n#include \"pci.h\"\n\n#define PCIE_TXVECDB\t\t\t\t0x360\n#define PCIE_TXVECSTATUS\t\t\t0x368\n#define PCIE_RXVECDB\t\t\t\t0x394\n#define PCIE_RXVECSTATUS\t\t\t0x39C\n\n#define MHISTATUS\t\t\t\t0x48\n#define MHICTRL\t\t\t\t\t0x38\n#define MHICTRL_RESET_MASK\t\t\t0x2\n\nenum ath12k_mhi_state {\n\tATH12K_MHI_INIT,\n\tATH12K_MHI_DEINIT,\n\tATH12K_MHI_POWER_ON,\n\tATH12K_MHI_POWER_OFF,\n\tATH12K_MHI_FORCE_POWER_OFF,\n\tATH12K_MHI_SUSPEND,\n\tATH12K_MHI_RESUME,\n\tATH12K_MHI_TRIGGER_RDDM,\n\tATH12K_MHI_RDDM,\n\tATH12K_MHI_RDDM_DONE,\n};\n\nextern const struct mhi_controller_config ath12k_mhi_config_qcn9274;\nextern const struct mhi_controller_config ath12k_mhi_config_wcn7850;\n\nint ath12k_mhi_start(struct ath12k_pci *ar_pci);\nvoid ath12k_mhi_stop(struct ath12k_pci *ar_pci);\nint ath12k_mhi_register(struct ath12k_pci *ar_pci);\nvoid ath12k_mhi_unregister(struct ath12k_pci *ar_pci);\nvoid ath12k_mhi_set_mhictrl_reset(struct ath12k_base *ab);\nvoid ath12k_mhi_clear_vector(struct ath12k_base *ab);\n\nvoid ath12k_mhi_suspend(struct ath12k_pci *ar_pci);\nvoid ath12k_mhi_resume(struct ath12k_pci *ar_pci);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

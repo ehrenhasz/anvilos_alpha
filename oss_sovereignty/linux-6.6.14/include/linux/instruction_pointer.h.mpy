@@ -1,0 +1,9 @@
+{
+  "module_name": "instruction_pointer.h",
+  "hash_id": "3bc1cb7a989cc3a9590be2c88b1c91690ac01ad199205c413985858813d5ac8f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/instruction_pointer.h",
+  "human_readable_source": " \n#ifndef _LINUX_INSTRUCTION_POINTER_H\n#define _LINUX_INSTRUCTION_POINTER_H\n\n#include <asm/linkage.h>\n\n#define _RET_IP_\t\t(unsigned long)__builtin_return_address(0)\n\n#ifndef _THIS_IP_\n#define _THIS_IP_  ({ __label__ __here; __here: (unsigned long)&&__here; })\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

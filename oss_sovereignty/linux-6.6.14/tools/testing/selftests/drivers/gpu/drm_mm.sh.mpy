@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_mm.sh",
+  "hash_id": "8b77bdfa636cb0ca6532895f29470ab8544bef2db57f1ac4659d25e1200293a0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/gpu/drm_mm.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# Runs API tests for struct drm_mm (DRM range manager)\n\nif ! /sbin/modprobe -n -q test-drm_mm; then\n       echo \"drivers/gpu/drm_mm: module test-drm_mm is not found in /lib/modules/`uname -r` [skip]\"\n       exit 77\nfi\n\nif /sbin/modprobe -q test-drm_mm; then\n       /sbin/modprobe -q -r test-drm_mm\n       echo \"drivers/gpu/drm_mm: ok\"\nelse\n       echo \"drivers/gpu/drm_mm: module test-drm_mm could not be removed [FAIL]\"\n       exit 1\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

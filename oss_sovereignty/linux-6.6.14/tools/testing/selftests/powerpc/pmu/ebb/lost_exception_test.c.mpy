@@ -1,0 +1,9 @@
+{
+  "module_name": "lost_exception_test.c",
+  "hash_id": "301433f7e750befa54c9778ef2e36257a34940abf386ce58d896a9e9209267f7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/ebb/lost_exception_test.c",
+  "human_readable_source": "\n \n\n#include <sched.h>\n#include <signal.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/mman.h>\n\n#include \"ebb.h\"\n\n\n \n\nstatic int test_body(void)\n{\n\tint i, orig_period, max_period;\n\tstruct event event;\n\n\tSKIP_IF(!ebb_is_supported());\n\n\t \n\tevent_init_named(&event, 0x40002, \"instructions\");\n\tevent_leader_ebb_init(&event);\n\n\tevent.attr.exclude_kernel = 1;\n\tevent.attr.exclude_hv = 1;\n\tevent.attr.exclude_idle = 1;\n\n\tFAIL_IF(event_open(&event));\n\n\tebb_enable_pmc_counting(4);\n\tsetup_ebb_handler(standard_ebb_callee);\n\tebb_global_enable();\n\tFAIL_IF(ebb_event_enable(&event));\n\n\t \n\torig_period = max_period = sample_period = 400;\n\n\tmtspr(SPRN_PMC4, pmc_sample_period(sample_period));\n\n\twhile (ebb_state.stats.ebb_count < 1000000) {\n\t\t \n\n\t\tfor (i = 0; i < 100000; i++)\n\t\t\tsched_yield();\n\n\t\t \n\t\tif (sample_period >= (orig_period + 200))\n\t\t\tsample_period = orig_period;\n\t\telse\n\t\t\tsample_period++;\n\n\t\tif (sample_period > max_period)\n\t\t\tmax_period = sample_period;\n\t}\n\n\tebb_freeze_pmcs();\n\tebb_global_disable();\n\n\tmtspr(SPRN_PMC4, 0xdead);\n\n\tdump_summary_ebb_state();\n\tdump_ebb_hw_state();\n\n\tevent_close(&event);\n\n\tFAIL_IF(ebb_state.stats.ebb_count == 0);\n\n\t \n\tFAIL_IF(!ebb_check_count(4, orig_period, 2 * (max_period - orig_period)));\n\n\treturn 0;\n}\n\nstatic int lost_exception(void)\n{\n\treturn eat_cpu(test_body);\n}\n\nint main(void)\n{\n\ttest_harness_set_timeout(300);\n\treturn test_harness(lost_exception, \"lost_exception\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

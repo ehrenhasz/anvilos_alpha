@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_formats_param.h",
+  "hash_id": "4a2e07bfaaf6e324eac09d5001fb8c055373d1a07d0e5559b2e4d0d045ef0fb9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/fc/fc_1.0/ia_css_formats_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_FORMATS_PARAM_H\n#define __IA_CSS_FORMATS_PARAM_H\n\n#include \"type_support.h\"\n\n \nstruct sh_css_isp_formats_params {\n\ts32 video_full_range_flag;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

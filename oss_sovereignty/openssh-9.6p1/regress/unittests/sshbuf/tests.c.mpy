@@ -1,0 +1,9 @@
+{
+  "module_name": "tests.c",
+  "hash_id": "35a2eab865158a30434d942ce8e329f483672bcbb2a6dfe0f6e16b0b8c931376",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshbuf/tests.c",
+  "human_readable_source": " \n \n\n#include \"../test_helper/test_helper.h\"\n\nvoid sshbuf_tests(void);\nvoid sshbuf_getput_basic_tests(void);\nvoid sshbuf_getput_crypto_tests(void);\nvoid sshbuf_misc_tests(void);\nvoid sshbuf_fuzz_tests(void);\nvoid sshbuf_getput_fuzz_tests(void);\nvoid sshbuf_fixed(void);\n\nvoid\ntests(void)\n{\n\tsshbuf_tests();\n\tsshbuf_getput_basic_tests();\n#ifdef WITH_OPENSSL\n\tsshbuf_getput_crypto_tests();\n#endif\n\tsshbuf_misc_tests();\n\tsshbuf_fuzz_tests();\n\tsshbuf_getput_fuzz_tests();\n\tsshbuf_fixed();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

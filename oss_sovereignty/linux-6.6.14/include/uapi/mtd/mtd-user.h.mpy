@@ -1,0 +1,9 @@
+{
+  "module_name": "mtd-user.h",
+  "hash_id": "c04422301470163f934034fc0e57a7f058e2631d2b3170e52583fea84e5cbaa5",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/mtd/mtd-user.h",
+  "human_readable_source": " \n \n\n#ifndef __MTD_USER_H__\n#define __MTD_USER_H__\n\n \n#include <mtd/mtd-abi.h>\n\ntypedef struct mtd_info_user mtd_info_t;\ntypedef struct erase_info_user erase_info_t;\ntypedef struct region_info_user region_info_t;\ntypedef struct nand_oobinfo nand_oobinfo_t;\ntypedef struct nand_ecclayout_user nand_ecclayout_t;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

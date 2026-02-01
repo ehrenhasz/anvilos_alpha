@@ -1,0 +1,9 @@
+{
+  "module_name": "dmu_traverse.h",
+  "hash_id": "9495e7789640b01b4a07cea161ae89aac81dcd575a55b28009d0485791ef1972",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/dmu_traverse.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_DMU_TRAVERSE_H\n#define\t_SYS_DMU_TRAVERSE_H\n\n#include <sys/zfs_context.h>\n#include <sys/spa.h>\n#include <sys/zio.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\nstruct dnode_phys;\nstruct dsl_dataset;\nstruct zilog;\nstruct arc_buf;\n\ntypedef int (blkptr_cb_t)(spa_t *spa, zilog_t *zilog, const blkptr_t *bp,\n    const zbookmark_phys_t *zb, const struct dnode_phys *dnp, void *arg);\n\n#define\tTRAVERSE_PRE\t\t\t(1<<0)\n#define\tTRAVERSE_POST\t\t\t(1<<1)\n#define\tTRAVERSE_PREFETCH_METADATA\t(1<<2)\n#define\tTRAVERSE_PREFETCH_DATA\t\t(1<<3)\n#define\tTRAVERSE_PREFETCH (TRAVERSE_PREFETCH_METADATA | TRAVERSE_PREFETCH_DATA)\n#define\tTRAVERSE_HARD\t\t\t(1<<4)\n\n \n#define\tTRAVERSE_NO_DECRYPT\t\t(1<<5)\n\n \n#define\tTRAVERSE_VISIT_NO_CHILDREN\t-1\n\nint traverse_dataset(struct dsl_dataset *ds,\n    uint64_t txg_start, int flags, blkptr_cb_t func, void *arg);\nint traverse_dataset_resume(struct dsl_dataset *ds, uint64_t txg_start,\n    zbookmark_phys_t *resume, int flags, blkptr_cb_t func, void *arg);\nint traverse_dataset_destroyed(spa_t *spa, blkptr_t *blkptr,\n    uint64_t txg_start, zbookmark_phys_t *resume, int flags,\n    blkptr_cb_t func, void *arg);\nint traverse_pool(spa_t *spa,\n    uint64_t txg_start, int flags, blkptr_cb_t func, void *arg);\n\n \nstatic inline uint64_t\nbp_span_in_blocks(uint8_t indblkshift, uint64_t level)\n{\n\tunsigned int shift = level * (indblkshift - SPA_BLKPTRSHIFT);\n\tASSERT3U(shift, <, 64);\n\treturn (1ULL << shift);\n}\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

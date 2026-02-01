@@ -1,0 +1,9 @@
+{
+  "module_name": "CoRR+poonceonce+Once.litmus",
+  "hash_id": "480af1c8ffdab7edad33f482bd8b4281cbeef603f33ad6a0ab52ee6fc4456d48",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/CoRR+poonceonce+Once.litmus",
+  "human_readable_source": "C CoRR+poonceonce+Once\n\n(*\n * Result: Never\n *\n * Test of read-read coherence, that is, whether or not two successive\n * reads from the same variable are ordered.\n *)\n\n{}\n\nP0(int *x)\n{\n\tWRITE_ONCE(*x, 1);\n}\n\nP1(int *x)\n{\n\tint r0;\n\tint r1;\n\n\tr0 = READ_ONCE(*x);\n\tr1 = READ_ONCE(*x);\n}\n\nexists (1:r0=1 /\\ 1:r1=0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

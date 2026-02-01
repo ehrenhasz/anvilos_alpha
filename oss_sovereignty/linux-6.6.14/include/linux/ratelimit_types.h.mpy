@@ -1,0 +1,9 @@
+{
+  "module_name": "ratelimit_types.h",
+  "hash_id": "8e22360bed5256f7754b72a1beb72dae8093356267899603c126b8cacb91cc57",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ratelimit_types.h",
+  "human_readable_source": " \n#ifndef _LINUX_RATELIMIT_TYPES_H\n#define _LINUX_RATELIMIT_TYPES_H\n\n#include <linux/bits.h>\n#include <linux/param.h>\n#include <linux/spinlock_types_raw.h>\n\n#define DEFAULT_RATELIMIT_INTERVAL\t(5 * HZ)\n#define DEFAULT_RATELIMIT_BURST\t\t10\n\n \n#define RATELIMIT_MSG_ON_RELEASE\tBIT(0)\n\nstruct ratelimit_state {\n\traw_spinlock_t\tlock;\t\t \n\n\tint\t\tinterval;\n\tint\t\tburst;\n\tint\t\tprinted;\n\tint\t\tmissed;\n\tunsigned long\tbegin;\n\tunsigned long\tflags;\n};\n\n#define RATELIMIT_STATE_INIT_FLAGS(name, interval_init, burst_init, flags_init) { \\\n\t\t.lock\t\t= __RAW_SPIN_LOCK_UNLOCKED(name.lock),\t\t  \\\n\t\t.interval\t= interval_init,\t\t\t\t  \\\n\t\t.burst\t\t= burst_init,\t\t\t\t\t  \\\n\t\t.flags\t\t= flags_init,\t\t\t\t\t  \\\n\t}\n\n#define RATELIMIT_STATE_INIT(name, interval_init, burst_init) \\\n\tRATELIMIT_STATE_INIT_FLAGS(name, interval_init, burst_init, 0)\n\n#define RATELIMIT_STATE_INIT_DISABLED\t\t\t\t\t\\\n\tRATELIMIT_STATE_INIT(ratelimit_state, 0, DEFAULT_RATELIMIT_BURST)\n\n#define DEFINE_RATELIMIT_STATE(name, interval_init, burst_init)\t\t\\\n\t\t\t\t\t\t\t\t\t\\\n\tstruct ratelimit_state name =\t\t\t\t\t\\\n\t\tRATELIMIT_STATE_INIT(name, interval_init, burst_init)\t\\\n\nextern int ___ratelimit(struct ratelimit_state *rs, const char *func);\n#define __ratelimit(state) ___ratelimit(state, __func__)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

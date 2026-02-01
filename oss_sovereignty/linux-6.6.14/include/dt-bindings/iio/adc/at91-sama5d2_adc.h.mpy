@@ -1,0 +1,9 @@
+{
+  "module_name": "at91-sama5d2_adc.h",
+  "hash_id": "795ca8a151efb7388f472220fdec7d7773b547144f9565db3dcc70e355fe51a3",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/iio/adc/at91-sama5d2_adc.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_IIO_ADC_AT91_SAMA5D2_ADC_H\n#define _DT_BINDINGS_IIO_ADC_AT91_SAMA5D2_ADC_H\n\n \n#define AT91_SAMA5D2_ADC_X_CHANNEL\t\t24\n \n#define AT91_SAMA5D2_ADC_Y_CHANNEL\t\t25\n \n#define AT91_SAMA5D2_ADC_P_CHANNEL\t\t26\n\n \n#define AT91_SAMA7G5_ADC_TEMP_CHANNEL\t\t31\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8186-resets.h",
+  "hash_id": "645eadab24f375def0cebf7d058ef2a1d371a408a9d75378bccab1fcdb094bf7",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/mt8186-resets.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_RESET_CONTROLLER_MT8186\n#define _DT_BINDINGS_RESET_CONTROLLER_MT8186\n\n \n#define MT8186_TOPRGU_INFRA_SW_RST\t\t\t\t0\n#define MT8186_TOPRGU_MM_SW_RST\t\t\t\t\t1\n#define MT8186_TOPRGU_MFG_SW_RST\t\t\t\t2\n#define MT8186_TOPRGU_VENC_SW_RST\t\t\t\t3\n#define MT8186_TOPRGU_VDEC_SW_RST\t\t\t\t4\n#define MT8186_TOPRGU_IMG_SW_RST\t\t\t\t5\n#define MT8186_TOPRGU_DDR_SW_RST\t\t\t\t6\n#define MT8186_TOPRGU_INFRA_AO_SW_RST\t\t\t\t8\n#define MT8186_TOPRGU_CONNSYS_SW_RST\t\t\t\t9\n#define MT8186_TOPRGU_APMIXED_SW_RST\t\t\t\t10\n#define MT8186_TOPRGU_PWRAP_SW_RST\t\t\t\t11\n#define MT8186_TOPRGU_CONN_MCU_SW_RST\t\t\t\t12\n#define MT8186_TOPRGU_IPNNA_SW_RST\t\t\t\t13\n#define MT8186_TOPRGU_WPE_SW_RST\t\t\t\t14\n#define MT8186_TOPRGU_ADSP_SW_RST\t\t\t\t15\n#define MT8186_TOPRGU_AUDIO_SW_RST\t\t\t\t17\n#define MT8186_TOPRGU_CAM_MAIN_SW_RST\t\t\t\t18\n#define MT8186_TOPRGU_CAM_RAWA_SW_RST\t\t\t\t19\n#define MT8186_TOPRGU_CAM_RAWB_SW_RST\t\t\t\t20\n#define MT8186_TOPRGU_IPE_SW_RST\t\t\t\t21\n#define MT8186_TOPRGU_IMG2_SW_RST\t\t\t\t22\n#define MT8186_TOPRGU_SW_RST_NUM\t\t\t\t23\n\n \n#define MT8186_MMSYS_SW0_RST_B_DISP_DSI0\t\t\t19\n\n \n#define MT8186_INFRA_THERMAL_CTRL_RST\t\t\t0\n#define MT8186_INFRA_PTP_CTRL_RST\t\t\t\t1\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

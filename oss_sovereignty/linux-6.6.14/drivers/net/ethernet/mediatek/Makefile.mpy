@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "54c06bc05e4a5dd5df87af84b894bef4b4b1e3aca2f93b8c5dbb57c531607c07",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mediatek/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Mediatek SoCs built-in ethernet macs\n#\n\nobj-$(CONFIG_NET_MEDIATEK_SOC) += mtk_eth.o\nmtk_eth-y := mtk_eth_soc.o mtk_eth_path.o mtk_ppe.o mtk_ppe_debugfs.o mtk_ppe_offload.o\nmtk_eth-$(CONFIG_NET_MEDIATEK_SOC_WED) += mtk_wed.o mtk_wed_mcu.o mtk_wed_wo.o\nifdef CONFIG_DEBUG_FS\nmtk_eth-$(CONFIG_NET_MEDIATEK_SOC_WED) += mtk_wed_debugfs.o\nendif\nobj-$(CONFIG_NET_MEDIATEK_SOC_WED) += mtk_wed_ops.o\nobj-$(CONFIG_NET_MEDIATEK_STAR_EMAC) += mtk_star_emac.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

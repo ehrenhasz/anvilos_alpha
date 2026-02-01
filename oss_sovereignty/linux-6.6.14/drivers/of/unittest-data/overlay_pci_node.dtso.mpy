@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_pci_node.dtso",
+  "hash_id": "ed8f49ccab61060cd6982e2626281e1428da4ac66e4dd6a4b487f588832507bc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_pci_node.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/ {\n\tfragment@0 {\n\t\ttarget-path=\"\";\n\t\t__overlay__ {\n\t\t\t#address-cells = <3>;\n\t\t\t#size-cells = <2>;\n\t\t\tpci-ep-bus@0 {\n\t\t\t\tcompatible = \"simple-bus\";\n\t\t\t\t#address-cells = <1>;\n\t\t\t\t#size-cells = <1>;\n\t\t\t\tranges = <0x0 0x0 0x0 0x0 0x1000>;\n\t\t\t\treg = <0 0 0 0 0>;\n\t\t\t\tunittest-pci@100 {\n\t\t\t\t\tcompatible = \"unittest-pci\";\n\t\t\t\t\treg = <0x100 0x200>;\n\t\t\t\t};\n\t\t\t};\n\t\t};\n\t};\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

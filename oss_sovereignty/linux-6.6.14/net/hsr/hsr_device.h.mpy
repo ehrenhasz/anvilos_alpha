@@ -1,0 +1,9 @@
+{
+  "module_name": "hsr_device.h",
+  "hash_id": "8b0c962633d24891a9594de5db0d2aef66434059edbf8be71beb27431c286908",
+  "original_prompt": "Ingested from linux-6.6.14/net/hsr/hsr_device.h",
+  "human_readable_source": " \n \n\n#ifndef __HSR_DEVICE_H\n#define __HSR_DEVICE_H\n\n#include <linux/netdevice.h>\n#include \"hsr_main.h\"\n\nvoid hsr_del_ports(struct hsr_priv *hsr);\nvoid hsr_dev_setup(struct net_device *dev);\nint hsr_dev_finalize(struct net_device *hsr_dev, struct net_device *slave[2],\n\t\t     unsigned char multicast_spec, u8 protocol_version,\n\t\t     struct netlink_ext_ack *extack);\nvoid hsr_check_carrier_and_operstate(struct hsr_priv *hsr);\nint hsr_get_max_mtu(struct hsr_priv *hsr);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

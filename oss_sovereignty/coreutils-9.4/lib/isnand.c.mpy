@@ -1,0 +1,9 @@
+{
+  "module_name": "isnand.c",
+  "hash_id": "9e976dfc66a7bff55168eabfee0f03c4349405477e3299efd26d42cb52723a60",
+  "original_prompt": "Ingested from coreutils-9.4/lib/isnand.c",
+  "human_readable_source": " \n\n#include \"isnan.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

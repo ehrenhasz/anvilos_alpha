@@ -1,0 +1,9 @@
+{
+  "module_name": "ibuf_ctrl_global.h",
+  "hash_id": "4472a6fb13342ae209b9d44858d1d6181ee3746ad1f58d2270309e71854c8d2f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/css_2401_system/ibuf_ctrl_global.h",
+  "human_readable_source": " \n \n\n#ifndef __IBUF_CTRL_GLOBAL_H_INCLUDED__\n#define __IBUF_CTRL_GLOBAL_H_INCLUDED__\n\n#include <type_support.h>\n\n#include <ibuf_cntrl_defs.h>\t \n\n \n#define _IBUF_CNTRL_MAIN_CNTRL_FSM_MASK\t\t\t0xf\n#define _IBUF_CNTRL_MAIN_CNTRL_FSM_NEXT_COMMAND_CHECK\t0x9\n#define _IBUF_CNTRL_MAIN_CNTRL_MEM_INP_BUF_ALLOC\tBIT(8)\n#define _IBUF_CNTRL_DMA_SYNC_WAIT_FOR_SYNC\t\t1\n#define _IBUF_CNTRL_DMA_SYNC_FSM_WAIT_FOR_ACK\t\t(0x3 << 1)\n\nstruct\tisp2401_ib_buffer_s {\n\tu32\tstart_addr;\t \n\n\tu32\tstride;\t\t \n\tu32\tlines;\t\t \n};\ntypedef struct isp2401_ib_buffer_s\tisp2401_ib_buffer_t;\n\ntypedef struct ibuf_ctrl_cfg_s ibuf_ctrl_cfg_t;\nstruct ibuf_ctrl_cfg_s {\n\tbool online;\n\n\tstruct {\n\t\t \n\t\tu32 channel;\n\t\tu32 cmd;  \n\n\t\t \n\t\tu32 shift_returned_items;\n\t\tu32 elems_per_word_in_ibuf;\n\t\tu32 elems_per_word_in_dest;\n\t} dma_cfg;\n\n\tisp2401_ib_buffer_t ib_buffer;\n\n\tstruct {\n\t\tu32 stride;\n\t\tu32 start_addr;\n\t\tu32 lines;\n\t} dest_buf_cfg;\n\n\tu32 items_per_store;\n\tu32 stores_per_frame;\n\n\tstruct {\n\t\tu32 sync_cmd;\t \n\t\tu32 store_cmd;\t \n\t} stream2mmio_cfg;\n};\n\nextern const u32 N_IBUF_CTRL_PROCS[N_IBUF_CTRL_ID];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mcs.h",
+  "hash_id": "e32616714b6dd46bc241479c9e841698003d05cd2cdcb2fbfdf127d44bbc1473",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/mcs.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MCS_H\n#define __LINUX_MCS_H\n\n#define MCS_KEY_MAP(v, c)\t((((v) & 0xff) << 16) | ((c) & 0xffff))\n#define MCS_KEY_VAL(v)\t\t(((v) >> 16) & 0xff)\n#define MCS_KEY_CODE(v)\t\t((v) & 0xffff)\n\nstruct mcs_platform_data {\n\tvoid (*poweron)(bool);\n\tvoid (*cfg_pin)(void);\n\n\t \n\tunsigned int x_size;\n\tunsigned int y_size;\n\n\t \n\tconst u32 *keymap;\n\tunsigned int keymap_size;\n\tunsigned int key_maxval;\n\tbool no_autorepeat;\n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

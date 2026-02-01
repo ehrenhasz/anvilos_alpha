@@ -1,0 +1,9 @@
+{
+  "module_name": "ad5449.h",
+  "hash_id": "150f3d83031b3b6114d4cdb9b29874129d4dc73f79ec868f2b6ce1089cd6f39b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/ad5449.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_PLATFORM_DATA_AD5449_H__\n#define __LINUX_PLATFORM_DATA_AD5449_H__\n\n \nenum ad5449_sdo_mode {\n\tAD5449_SDO_DRIVE_FULL = 0x0,\n\tAD5449_SDO_DRIVE_WEAK = 0x1,\n\tAD5449_SDO_OPEN_DRAIN = 0x2,\n\tAD5449_SDO_DISABLED = 0x3,\n};\n\n \nstruct ad5449_platform_data {\n\tenum ad5449_sdo_mode sdo_mode;\n\tbool hardware_clear_to_midscale;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

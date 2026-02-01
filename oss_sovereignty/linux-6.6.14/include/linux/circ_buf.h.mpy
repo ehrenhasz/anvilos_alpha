@@ -1,0 +1,9 @@
+{
+  "module_name": "circ_buf.h",
+  "hash_id": "aaa6d0ac1ac41af97c822fcec48a5875b78bea67876086f4268c34147a6e7db8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/circ_buf.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_CIRC_BUF_H\n#define _LINUX_CIRC_BUF_H 1\n\nstruct circ_buf {\n\tchar *buf;\n\tint head;\n\tint tail;\n};\n\n \n#define CIRC_CNT(head,tail,size) (((head) - (tail)) & ((size)-1))\n\n \n#define CIRC_SPACE(head,tail,size) CIRC_CNT((tail),((head)+1),(size))\n\n \n#define CIRC_CNT_TO_END(head,tail,size) \\\n\t({int end = (size) - (tail); \\\n\t  int n = ((head) + end) & ((size)-1); \\\n\t  n < end ? n : end;})\n\n \n#define CIRC_SPACE_TO_END(head,tail,size) \\\n\t({int end = (size) - 1 - (head); \\\n\t  int n = (end + (tail)) & ((size)-1); \\\n\t  n <= end ? n : end+1;})\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

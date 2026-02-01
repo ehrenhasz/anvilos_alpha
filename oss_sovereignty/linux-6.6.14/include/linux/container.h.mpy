@@ -1,0 +1,9 @@
+{
+  "module_name": "container.h",
+  "hash_id": "0b7d786c649321e2d4af98caa933f0dcc1b5a76e0ff2e4bd4b454fed05bc262a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/container.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_CONTAINER_H\n#define _LINUX_CONTAINER_H\n\n#include <linux/device.h>\n\n \nextern struct bus_type container_subsys;\n\nstruct container_dev {\n\tstruct device dev;\n\tint (*offline)(struct container_dev *cdev);\n};\n\nstatic inline struct container_dev *to_container_dev(struct device *dev)\n{\n\treturn container_of(dev, struct container_dev, dev);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

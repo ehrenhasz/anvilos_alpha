@@ -1,0 +1,9 @@
+{
+  "module_name": "build-docdep.perl",
+  "hash_id": "02ff329ee57266f118c02d1175b91045d7a4f7e7273d5dc34d2ee6e9b6e81094",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/build-docdep.perl",
+  "human_readable_source": "#!/usr/bin/perl\n\nmy %include = ();\nmy %included = ();\n\nfor my $text (<*.txt>) {\n    open I, '<', $text || die \"cannot read: $text\";\n    while (<I>) {\n\tif (/^include::/) {\n\t    chomp;\n\t    s/^include::\\s*//;\n\t    s/\\[\\]//;\n\t    $include{$text}{$_} = 1;\n\t    $included{$_} = 1;\n\t}\n    }\n    close I;\n}\n\n# Do we care about chained includes???\nmy $changed = 1;\nwhile ($changed) {\n    $changed = 0;\n    while (my ($text, $included) = each %include) {\n\tfor my $i (keys %$included) {\n\t    # $text has include::$i; if $i includes $j\n\t    # $text indirectly includes $j.\n\t    if (exists $include{$i}) {\n\t\tfor my $j (keys %{$include{$i}}) {\n\t\t    if (!exists $include{$text}{$j}) {\n\t\t\t$include{$text}{$j} = 1;\n\t\t\t$included{$j} = 1;\n\t\t\t$changed = 1;\n\t\t    }\n\t\t}\n\t    }\n\t}\n    }\n}\n\nwhile (my ($text, $included) = each %include) {\n    if (! exists $included{$text} &&\n\t(my $base = $text) =~ s/\\.txt$//) {\n\tprint \"$base.html $base.xml : \", join(\" \", keys %$included), \"\\n\";\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

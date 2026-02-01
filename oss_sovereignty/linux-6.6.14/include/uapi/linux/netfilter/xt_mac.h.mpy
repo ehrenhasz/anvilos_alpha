@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_mac.h",
+  "hash_id": "70056c775e6c8c3a155384b699aefb66a379e897258541f303b1abe5e34f476a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_mac.h",
+  "human_readable_source": " \n#ifndef _XT_MAC_H\n#define _XT_MAC_H\n\n#include <linux/if_ether.h>\n\nstruct xt_mac_info {\n    unsigned char srcaddr[ETH_ALEN];\n    int invert;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_formats.host.c",
+  "hash_id": "33a4bd981161b92a44534527d1dc6ab3453216f37d35f024310f88de6728082a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/fc/fc_1.0/ia_css_formats.host.c",
+  "human_readable_source": "\n \n\n#include \"ia_css_formats.host.h\"\n#include \"ia_css_types.h\"\n#include \"sh_css_defs.h\"\n\n \n#ifndef IA_CSS_NO_DEBUG\n \n#include \"ia_css_debug.h\"\n#endif\n\nconst struct ia_css_formats_config default_formats_config = {\n\t1\n};\n\nvoid\nia_css_formats_encode(\n    struct sh_css_isp_formats_params *to,\n    const struct ia_css_formats_config *from,\n    unsigned int size)\n{\n\t(void)size;\n\tto->video_full_range_flag = from->video_full_range_flag;\n}\n\n#ifndef IA_CSS_NO_DEBUG\n \nvoid\nia_css_formats_dump(\n    const struct sh_css_isp_formats_params *formats,\n    unsigned int level)\n{\n\tif (!formats) return;\n\tia_css_debug_dtrace(level, \"\\t%-32s = %d\\n\",\n\t\t\t    \"video_full_range_flag\", formats->video_full_range_flag);\n}\n#endif\n\n#ifndef IA_CSS_NO_DEBUG\n \nvoid\nia_css_formats_debug_dtrace(\n    const struct ia_css_formats_config *config,\n    unsigned int level)\n{\n\tia_css_debug_dtrace(level,\n\t\t\t    \"config.video_full_range_flag=%d\\n\",\n\t\t\t    config->video_full_range_flag);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

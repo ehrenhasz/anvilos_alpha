@@ -1,0 +1,9 @@
+{
+  "module_name": "cache.h",
+  "hash_id": "4bc27111c5f339280ab9b168ecdf257474b8c711f86a7ecc424170f564cada7b",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/cache.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_CACHE_H\n#define __ASM_GENERIC_CACHE_H\n \n\n#define L1_CACHE_SHIFT\t\t5\n#define L1_CACHE_BYTES\t\t(1 << L1_CACHE_SHIFT)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

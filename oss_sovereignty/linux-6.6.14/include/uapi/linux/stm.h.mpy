@@ -1,0 +1,9 @@
+{
+  "module_name": "stm.h",
+  "hash_id": "f01d29136e49e59f99fadbf60756947ca527b5381df2400e4ec56fc91ed570fe",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/stm.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_STM_H\n#define _UAPI_LINUX_STM_H\n\n#include <linux/types.h>\n\n \n#define STP_MASTER_MAX\t0xffff\n#define STP_CHANNEL_MAX\t0xffff\n\n \nstruct stp_policy_id {\n\t__u32\t\tsize;\n\t__u16\t\tmaster;\n\t__u16\t\tchannel;\n\t__u16\t\twidth;\n\t \n\t__u16\t\t__reserved_0;\n\t__u32\t\t__reserved_1;\n\tchar\t\tid[];\n};\n\n#define STP_POLICY_ID_SET\t_IOWR('%', 0, struct stp_policy_id)\n#define STP_POLICY_ID_GET\t_IOR('%', 1, struct stp_policy_id)\n#define STP_SET_OPTIONS\t\t_IOW('%', 2, __u64)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

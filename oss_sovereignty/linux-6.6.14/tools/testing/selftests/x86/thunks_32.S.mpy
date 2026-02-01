@@ -1,0 +1,9 @@
+{
+  "module_name": "thunks_32.S",
+  "hash_id": "6ebf78302b135bda676452082bcce6897787c02c49d01922a94f537077c9f017",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/x86/thunks_32.S",
+  "human_readable_source": " \n \n\n\t.text\n\t.code32\n\n\t.global call64_from_32\n\t.type call32_from_64, @function\n\n\t \ncall64_from_32:\n\t \n\tmov\t4(%esp), %eax\n\n\t \n\tpush\t%ecx\n\tpush\t%edx\n\tpush\t%esi\n\tpush\t%edi\n\n\t \n\tjmp\t$0x33,$1f\n1:\t.code64\n\n\t \n\tcall\t*%rax\n\n\t \n\tpush\t$0x23   \n\t.code32; push $1f; .code64  \n\tlretq\n1:\t.code32\n\n\tpop\t%edi\n\tpop\t%esi\n\tpop\t%edx\n\tpop\t%ecx\n\n\tret\n\n.size call64_from_32, .-call64_from_32\n\n.section .note.GNU-stack,\"\",%progbits\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

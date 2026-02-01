@@ -1,0 +1,9 @@
+{
+  "module_name": "acos.c",
+  "hash_id": "39ee82cb9b521f2a6321bfc92c99d0329c907fa77c1932da1cdd4ce05774df7b",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/acos.c",
+  "human_readable_source": " \n \n \n\n#include \"libm.h\"\n\nstatic const double\npio2_hi = 1.57079632679489655800e+00,  \npio2_lo = 6.12323399573676603587e-17,  \npS0 =  1.66666666666666657415e-01,  \npS1 = -3.25565818622400915405e-01,  \npS2 =  2.01212532134862925881e-01,  \npS3 = -4.00555345006794114027e-02,  \npS4 =  7.91534994289814532176e-04,  \npS5 =  3.47933107596021167570e-05,  \nqS1 = -2.40339491173441421878e+00,  \nqS2 =  2.02094576023350569471e+00,  \nqS3 = -6.88283971605453293030e-01,  \nqS4 =  7.70381505559019352791e-02;  \n\nstatic double R(double z)\n{\n\tdouble_t p, q;\n\tp = z*(pS0+z*(pS1+z*(pS2+z*(pS3+z*(pS4+z*pS5)))));\n\tq = 1.0+z*(qS1+z*(qS2+z*(qS3+z*qS4)));\n\treturn p/q;\n}\n\ndouble acos(double x)\n{\n\tdouble z,w,s,c,df;\n\tuint32_t hx,ix;\n\n\tGET_HIGH_WORD(hx, x);\n\tix = hx & 0x7fffffff;\n\t \n\tif (ix >= 0x3ff00000) {\n\t\tuint32_t lx;\n\n\t\tGET_LOW_WORD(lx,x);\n\t\tif (((ix-0x3ff00000) | lx) == 0) {\n\t\t\t \n\t\t\tif (hx >> 31)\n\t\t\t\treturn 2*pio2_hi + 0x1p-120f;\n\t\t\treturn 0;\n\t\t}\n\t\treturn 0/(x-x);\n\t}\n\t \n\tif (ix < 0x3fe00000) {\n\t\tif (ix <= 0x3c600000)   \n\t\t\treturn pio2_hi + 0x1p-120f;\n\t\treturn pio2_hi - (x - (pio2_lo-x*R(x*x)));\n\t}\n\t \n\tif (hx >> 31) {\n\t\tz = (1.0+x)*0.5;\n\t\ts = sqrt(z);\n\t\tw = R(z)*s-pio2_lo;\n\t\treturn 2*(pio2_hi - (s+w));\n\t}\n\t \n\tz = (1.0-x)*0.5;\n\ts = sqrt(z);\n\tdf = s;\n\tSET_LOW_WORD(df,0);\n\tc = (z-df*df)/(s+df);\n\tw = R(z)*s+c;\n\treturn 2*(df+w);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

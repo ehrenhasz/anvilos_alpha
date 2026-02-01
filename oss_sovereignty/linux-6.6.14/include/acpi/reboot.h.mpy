@@ -1,0 +1,9 @@
+{
+  "module_name": "reboot.h",
+  "hash_id": "0b0b4e63af64b8f04caa351816cac23cf90adbc5e79b619fcc86ff33913bc3ee",
+  "original_prompt": "Ingested from linux-6.6.14/include/acpi/reboot.h",
+  "human_readable_source": " \n#ifndef __ACPI_REBOOT_H\n#define __ACPI_REBOOT_H\n\n#ifdef CONFIG_ACPI\nextern void acpi_reboot(void);\n#else\nstatic inline void acpi_reboot(void) { }\n#endif\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

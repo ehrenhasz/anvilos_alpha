@@ -1,0 +1,9 @@
+{
+  "module_name": "en_rep_tracepoint.h",
+  "hash_id": "76605dfe9fa4510cd06a25e5020f2c7d065a1d6e58776f10ad091faa811ead95",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/diag/en_rep_tracepoint.h",
+  "human_readable_source": " \n \n\n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM mlx5\n\n#if !defined(_MLX5_EN_REP_TP_) || defined(TRACE_HEADER_MULTI_READ)\n#define _MLX5_EN_REP_TP_\n\n#include <linux/tracepoint.h>\n#include <linux/trace_seq.h>\n#include \"en_rep.h\"\n\nTRACE_EVENT(mlx5e_rep_neigh_update,\n\t    TP_PROTO(const struct mlx5e_neigh_hash_entry *nhe, const u8 *ha,\n\t\t     bool neigh_connected),\n\t    TP_ARGS(nhe, ha, neigh_connected),\n\t    TP_STRUCT__entry(__string(devname, nhe->neigh_dev->name)\n\t\t\t     __array(u8, ha, ETH_ALEN)\n\t\t\t     __array(u8, v4, 4)\n\t\t\t     __array(u8, v6, 16)\n\t\t\t     __field(bool, neigh_connected)\n\t\t\t     ),\n\t    TP_fast_assign(const struct mlx5e_neigh *mn = &nhe->m_neigh;\n\t\t\tstruct in6_addr *pin6;\n\t\t\t__be32 *p32;\n\n\t\t\t__assign_str(devname, nhe->neigh_dev->name);\n\t\t\t__entry->neigh_connected = neigh_connected;\n\t\t\tmemcpy(__entry->ha, ha, ETH_ALEN);\n\n\t\t\tp32 = (__be32 *)__entry->v4;\n\t\t\tpin6 = (struct in6_addr *)__entry->v6;\n\t\t\tif (mn->family == AF_INET) {\n\t\t\t\t*p32 = mn->dst_ip.v4;\n\t\t\t\tipv6_addr_set_v4mapped(*p32, pin6);\n\t\t\t} else if (mn->family == AF_INET6) {\n\t\t\t\t*pin6 = mn->dst_ip.v6;\n\t\t\t}\n\t\t\t),\n\t    TP_printk(\"netdev: %s MAC: %pM IPv4: %pI4 IPv6: %pI6c neigh_connected=%d\\n\",\n\t\t      __get_str(devname), __entry->ha,\n\t\t      __entry->v4, __entry->v6, __entry->neigh_connected\n\t\t      )\n);\n\n#endif  \n\n \n#undef TRACE_INCLUDE_PATH\n#define TRACE_INCLUDE_PATH ./diag\n#undef TRACE_INCLUDE_FILE\n#define TRACE_INCLUDE_FILE en_rep_tracepoint\n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

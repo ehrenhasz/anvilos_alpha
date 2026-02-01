@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e1f4a29488966d759d4261346d3ea7cdd485ff6df22d2345893003eebe92e85c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/fsl-dpaa2-qdma/Kconfig",
+  "human_readable_source": "menuconfig FSL_DPAA2_QDMA\n\ttristate \"NXP DPAA2 QDMA\"\n\tdepends on ARM64\n\tdepends on FSL_MC_BUS && FSL_MC_DPIO\n\tselect DMA_ENGINE\n\tselect DMA_VIRTUAL_CHANNELS\n\thelp\n\t  NXP Data Path Acceleration Architecture 2 QDMA driver,\n\t  using the NXP MC bus driver.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objdict.c.compress",
+  "hash_id": "f456e7b2562bce5580d439fb4f4e7d4808c7dd76a126e38a28fc247f807f459f",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__objdict.c.compress",
+  "human_readable_source": "popitem(): dictionary is empty\ndict update sequence has wrong length\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

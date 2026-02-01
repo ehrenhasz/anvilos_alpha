@@ -1,0 +1,9 @@
+{
+  "module_name": "pseudo_fs.h",
+  "hash_id": "373bf2f8097d2a323330caf8f67c1e77a7b924434955fda33b908057c78b8fd2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pseudo_fs.h",
+  "human_readable_source": "#ifndef __LINUX_PSEUDO_FS__\n#define __LINUX_PSEUDO_FS__\n\n#include <linux/fs_context.h>\n\nstruct pseudo_fs_context {\n\tconst struct super_operations *ops;\n\tconst struct xattr_handler **xattr;\n\tconst struct dentry_operations *dops;\n\tunsigned long magic;\n};\n\nstruct pseudo_fs_context *init_pseudo(struct fs_context *fc,\n\t\t\t\t      unsigned long magic);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

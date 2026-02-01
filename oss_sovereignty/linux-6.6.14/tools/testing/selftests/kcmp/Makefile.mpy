@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6a82944c05b0b11c59041fad395bc5295fc359c1872854f8c0fa60b81cfc6f7c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kcmp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nCFLAGS += $(KHDR_INCLUDES)\n\nTEST_GEN_PROGS := kcmp_test\n\nEXTRA_CLEAN := $(OUTPUT)/kcmp-test-file\n\ninclude ../lib.mk\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

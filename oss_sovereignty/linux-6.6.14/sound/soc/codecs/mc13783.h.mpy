@@ -1,0 +1,9 @@
+{
+  "module_name": "mc13783.h",
+  "hash_id": "42ebd83c1520fa8495488dcac0e92d4a4ac45fa58b7958512e33f35d40541c3b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/mc13783.h",
+  "human_readable_source": " \n \n\n#ifndef MC13783_MIXER_H\n#define MC13783_MIXER_H\n\n#define MC13783_CLK_CLIA\t1\n#define MC13783_CLK_CLIB\t2\n\n#define MC13783_ID_STEREO_DAC\t1\n#define MC13783_ID_STEREO_CODEC\t2\n#define MC13783_ID_SYNC\t\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

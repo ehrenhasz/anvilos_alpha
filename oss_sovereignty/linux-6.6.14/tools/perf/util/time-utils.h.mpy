@@ -1,0 +1,9 @@
+{
+  "module_name": "time-utils.h",
+  "hash_id": "902c7387ea36f96f9956bfb52f72319101977a8eb6443c31cc777582c8717401",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/time-utils.h",
+  "human_readable_source": " \n#ifndef _TIME_UTILS_H_\n#define _TIME_UTILS_H_\n\n#include <stddef.h>\n#include <time.h>\n#include <linux/types.h>\n\nstruct perf_time_interval {\n\tu64 start, end;\n};\n\nint parse_nsec_time(const char *str, u64 *ptime);\n\nint perf_time__parse_str(struct perf_time_interval *ptime, const char *ostr);\n\nint perf_time__percent_parse_str(struct perf_time_interval *ptime_buf, int num,\n\t\t\t\t const char *ostr, u64 start, u64 end);\n\nstruct perf_time_interval *perf_time__range_alloc(const char *ostr, int *size);\n\nbool perf_time__skip_sample(struct perf_time_interval *ptime, u64 timestamp);\n\nbool perf_time__ranges_skip_sample(struct perf_time_interval *ptime_buf,\n\t\t\t\t   int num, u64 timestamp);\n\nstruct perf_session;\n\nint perf_time__parse_for_ranges_reltime(const char *str, struct perf_session *session,\n\t\t\t\tstruct perf_time_interval **ranges,\n\t\t\t\tint *range_size, int *range_num,\n\t\t\t\tbool reltime);\n\nint perf_time__parse_for_ranges(const char *str, struct perf_session *session,\n\t\t\t\tstruct perf_time_interval **ranges,\n\t\t\t\tint *range_size, int *range_num);\n\nint timestamp__scnprintf_usec(u64 timestamp, char *buf, size_t sz);\nint timestamp__scnprintf_nsec(u64 timestamp, char *buf, size_t sz);\n\nint fetch_current_timestamp(char *buf, size_t sz);\n\nstatic inline unsigned long long rdclock(void)\n{\n\tstruct timespec ts;\n\n\tclock_gettime(CLOCK_MONOTONIC, &ts);\n\treturn ts.tv_sec * 1000000000ULL + ts.tv_nsec;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

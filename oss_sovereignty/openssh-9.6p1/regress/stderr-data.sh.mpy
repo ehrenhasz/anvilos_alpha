@@ -1,0 +1,9 @@
+{
+  "module_name": "stderr-data.sh",
+  "hash_id": "1b0dcedd26e9283181073487e9b1e501b17dc412315b216526184fa8db379caf",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/stderr-data.sh",
+  "human_readable_source": "#\t$OpenBSD: stderr-data.sh,v 1.5 2017/04/30 23:34:55 djm Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"stderr data transfer\"\n\nfor n in '' -n; do\n\tverbose \"test $tid: ($n)\"\n\t${SSH} $n -F $OBJ/ssh_proxy otherhost exec \\\n\t    sh -c \\'\"exec > /dev/null; sleep 3; cat ${DATA} 1>&2 $s\"\\' \\\n\t\t2> ${COPY}\n\tr=$?\n\tif [ $r -ne 0 ]; then\n\t\tfail \"ssh failed with exit code $r\"\n\tfi\n\tcmp ${DATA} ${COPY}\t|| fail \"stderr corrupt\"\n\trm -f ${COPY}\n\n\t${SSH} $n -F $OBJ/ssh_proxy otherhost exec \\\n\t    sh -c \\'\"echo a; exec > /dev/null; sleep 3; cat ${DATA} 1>&2 $s\"\\' \\\n\t\t> /dev/null 2> ${COPY}\n\tr=$?\n\tif [ $r -ne 0 ]; then\n\t\tfail \"ssh failed with exit code $r\"\n\tfi\n\tcmp ${DATA} ${COPY}\t|| fail \"stderr corrupt\"\n\trm -f ${COPY}\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sha384sum.x",
+  "hash_id": "f0cfe9c63175a8739f2f3d3973dbf5b87a2e7173ba5e0febecb0ff4d7b5d55a1",
+  "original_prompt": "Ingested from coreutils-9.4/man/sha384sum.x",
+  "human_readable_source": "[NAME]\nsha384sum \\- compute and check SHA384 message digest\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ncksum(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

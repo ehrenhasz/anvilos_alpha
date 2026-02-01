@@ -1,0 +1,9 @@
+{
+  "module_name": "static-checks.yml",
+  "hash_id": "9ef551f9725d7919d0f35054f1f6d2632e14516612b6f76250d1fa18b611a601",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/static-checks.yml",
+  "human_readable_source": "check-patch:\n  extends:\n    - .build\n    - .use-debian/x86_64_build\n  script:\n    - drivers/gpu/drm/ci/check-patch.py\n  variables:\n    CHECKPATCH_TYPES: \"BAD_SIGN_OFF,BAD_STABLE_ADDRESS_STYLE,COMMIT_COMMENT_SYMBOL,COMMIT_MESSAGE,EMAIL_SUBJECT,FROM_SIGN_OFF_MISMATCH,MISSING_SIGN_OFF,NO_AUTHOR_SIGN_OFF,DIFF_IN_COMMIT_MSG,GERRIT_CHANGE_ID,GIT_COMMIT_ID,UNKNOWN_COMMIT_ID,CODE_INDENT,BIT_MACRO,DOS_LINE_ENDINGS\"\n  rules:\n    - if: '$CI_PIPELINE_SOURCE == \"merge_request_event\"'\n      when: on_success\n    # Other cases default to never\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

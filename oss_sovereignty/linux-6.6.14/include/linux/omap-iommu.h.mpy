@@ -1,0 +1,9 @@
+{
+  "module_name": "omap-iommu.h",
+  "hash_id": "276776e2ff5638d402f25b759213b5f76fc2eae0816dc55455c9122e556de48d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/omap-iommu.h",
+  "human_readable_source": " \n \n\n#ifndef _OMAP_IOMMU_H_\n#define _OMAP_IOMMU_H_\n\nstruct iommu_domain;\n\n#ifdef CONFIG_OMAP_IOMMU\nextern void omap_iommu_save_ctx(struct device *dev);\nextern void omap_iommu_restore_ctx(struct device *dev);\n\nint omap_iommu_domain_deactivate(struct iommu_domain *domain);\nint omap_iommu_domain_activate(struct iommu_domain *domain);\n#else\nstatic inline void omap_iommu_save_ctx(struct device *dev) {}\nstatic inline void omap_iommu_restore_ctx(struct device *dev) {}\n\nstatic inline int omap_iommu_domain_deactivate(struct iommu_domain *domain)\n{\n\treturn -ENODEV;\n}\n\nstatic inline int omap_iommu_domain_activate(struct iommu_domain *domain)\n{\n\treturn -ENODEV;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cfg.h",
+  "hash_id": "62496a79d303c02fab7e7809022f40838269c46fec131143518bd319028ae1e6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/marvell/libertas/cfg.h",
+  "human_readable_source": " \n#ifndef __LBS_CFG80211_H__\n#define __LBS_CFG80211_H__\n\nstruct device;\nstruct lbs_private;\nstruct regulatory_request;\nstruct wiphy;\n\nstruct wireless_dev *lbs_cfg_alloc(struct device *dev);\nint lbs_cfg_register(struct lbs_private *priv);\nvoid lbs_cfg_free(struct lbs_private *priv);\n\nvoid lbs_send_disconnect_notification(struct lbs_private *priv,\n\t\t\t\t      bool locally_generated);\nvoid lbs_send_mic_failureevent(struct lbs_private *priv, u32 event);\n\nvoid lbs_scan_done(struct lbs_private *priv);\nvoid lbs_scan_deinit(struct lbs_private *priv);\nint lbs_disconnect(struct lbs_private *priv, u16 reason);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

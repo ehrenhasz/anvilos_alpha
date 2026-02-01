@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "b8d7dddf03ee851041590787cc3c48d5442173a3379a84fc1a716445fba937a9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/loongarch/util/Build",
+  "human_readable_source": "perf-y += perf_regs.o\n\nperf-$(CONFIG_DWARF)     += dwarf-regs.o\nperf-$(CONFIG_LOCAL_LIBUNWIND) += unwind-libunwind.o\nperf-$(CONFIG_LIBDW_DWARF_UNWIND) += unwind-libdw.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

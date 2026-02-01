@@ -1,0 +1,9 @@
+{
+  "module_name": "gfp_api.h",
+  "hash_id": "f8783da916b6b5eb4b6150670152240dbdf186c27fddf62b78d1d2906bb2bcd4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/gfp_api.h",
+  "human_readable_source": "#include <linux/gfp.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "P0260.h",
+  "hash_id": "b95a881d2f8d37bb3a67c0c5ed70f484a3bab3e9fe48d8d2c045c11c4abd40a1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/P0260.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_P0260_H__\n#define __NVBIOS_P0260_H__\nu32 nvbios_P0260Te(struct nvkm_bios *,\n\t\t   u8 *ver, u8 *hdr, u8 *cnt, u8 *len, u8 *xnr, u8 *xsz);\n\nstruct nvbios_P0260E {\n\tu32 data;\n};\n\nu32 nvbios_P0260Ee(struct nvkm_bios *, int idx, u8 *ver, u8 *hdr);\nu32 nvbios_P0260Ep(struct nvkm_bios *, int idx, u8 *ver, u8 *hdr,\n\t\t   struct nvbios_P0260E *);\n\nstruct nvbios_P0260X {\n\tu32 data;\n};\n\nu32 nvbios_P0260Xe(struct nvkm_bios *, int idx, u8 *ver, u8 *hdr);\nu32 nvbios_P0260Xp(struct nvkm_bios *, int idx, u8 *ver, u8 *hdr,\n\t\t   struct nvbios_P0260X *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

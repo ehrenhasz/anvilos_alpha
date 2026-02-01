@@ -1,0 +1,9 @@
+{
+  "module_name": "intel-pt-events-report",
+  "hash_id": "6edcf2a315ed3df9cbeedbabe310526596616d84afa6c1d4a922469fe94ac666",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/intel-pt-events-report",
+  "human_readable_source": "#!/bin/bash\n# description: print Intel PT Events including Power Events and PTWRITE\nperf script $@ -s \"$PERF_EXEC_PATH\"/scripts/python/intel-pt-events.py\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "top.h",
+  "hash_id": "41b64392257154078c0c6c89c88dea4f0cc92f742a5391881cb89194b2545cf7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/top.h",
+  "human_readable_source": " \n#ifndef __PERF_TOP_H\n#define __PERF_TOP_H 1\n\n#include \"tool.h\"\n#include \"evswitch.h\"\n#include \"annotate.h\"\n#include \"mutex.h\"\n#include \"ordered-events.h\"\n#include \"record.h\"\n#include <linux/types.h>\n#include <stddef.h>\n#include <stdbool.h>\n#include <sys/ioctl.h>\n\nstruct evlist;\nstruct evsel;\nstruct perf_session;\n\nstruct perf_top {\n\tstruct perf_tool   tool;\n\tstruct evlist *evlist, *sb_evlist;\n\tstruct record_opts record_opts;\n\tstruct annotation_options annotation_opts;\n\tstruct evswitch\t   evswitch;\n\t \n\tu64\t\t   samples, lost, lost_total, drop, drop_total;\n\tu64\t\t   kernel_samples, us_samples;\n\tu64\t\t   exact_samples;\n\tu64\t\t   guest_us_samples, guest_kernel_samples;\n\tint\t\t   print_entries, count_filter, delay_secs;\n\tint\t\t   max_stack;\n\tbool\t\t   hide_kernel_symbols, hide_user_symbols, zero;\n#ifdef HAVE_SLANG_SUPPORT\n\tbool\t\t   use_tui;\n#endif\n\tbool\t\t   use_stdio;\n\tbool\t\t   vmlinux_warned;\n\tbool\t\t   dump_symtab;\n\tbool\t\t   stitch_lbr;\n\tstruct hist_entry  *sym_filter_entry;\n\tstruct evsel \t   *sym_evsel;\n\tstruct perf_session *session;\n\tstruct winsize\t   winsize;\n\tint\t\t   realtime_prio;\n\tconst char\t   *sym_filter;\n\tfloat\t\t   min_percent;\n\tunsigned int\t   nr_threads_synthesize;\n\n\tstruct {\n\t\tstruct ordered_events\t*in;\n\t\tstruct ordered_events\t data[2];\n\t\tbool\t\t\t rotate;\n\t\tstruct mutex mutex;\n\t\tstruct cond cond;\n\t} qe;\n};\n\n#define CONSOLE_CLEAR \"\u001b[H\u001b[2J\"\n\nsize_t perf_top__header_snprintf(struct perf_top *top, char *bf, size_t size);\nvoid perf_top__reset_sample_counters(struct perf_top *top);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

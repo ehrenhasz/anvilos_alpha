@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "3700ae985fd884648992e267573e74842b508536b3fdb99c1f7ed59363708604",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/top/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_TOP_PRIV_H__\n#define __NVKM_TOP_PRIV_H__\n#define nvkm_top(p) container_of((p), struct nvkm_top, subdev)\n#include <subdev/top.h>\n\nstruct nvkm_top_func {\n\tint (*parse)(struct nvkm_top *);\n};\n\nint nvkm_top_new_(const struct nvkm_top_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t  struct nvkm_top **);\n\nstruct nvkm_top_device *nvkm_top_device_new(struct nvkm_top *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

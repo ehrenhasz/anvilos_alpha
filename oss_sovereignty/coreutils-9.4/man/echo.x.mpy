@@ -1,0 +1,9 @@
+{
+  "module_name": "echo.x",
+  "hash_id": "aaa782cecb42a7bf328d5ecc32c4efa86ba2486571b885748aa6b6aafd5b455c",
+  "original_prompt": "Ingested from coreutils-9.4/man/echo.x",
+  "human_readable_source": "[NAME]\necho \\- display a line of text\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nprintf(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

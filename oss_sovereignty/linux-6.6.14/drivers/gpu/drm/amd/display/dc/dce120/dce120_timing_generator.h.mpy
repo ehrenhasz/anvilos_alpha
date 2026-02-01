@@ -1,0 +1,9 @@
+{
+  "module_name": "dce120_timing_generator.h",
+  "hash_id": "7cace8720b6866e6bf303b7dec4100d92f07493d4dcb73c7cc4495766d0548ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.h",
+  "human_readable_source": " \n\n#ifndef __DC_TIMING_GENERATOR_DCE120_H__\n#define __DC_TIMING_GENERATOR_DCE120_H__\n\n#include \"timing_generator.h\"\n#include \"../include/grph_object_id.h\"\n#include \"dce110/dce110_timing_generator.h\"\n\n\nvoid dce120_timing_generator_construct(\n\tstruct dce110_timing_generator *tg110,\n\tstruct dc_context *ctx,\n\tuint32_t instance,\n\tconst struct dce110_timing_generator_offsets *offsets);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

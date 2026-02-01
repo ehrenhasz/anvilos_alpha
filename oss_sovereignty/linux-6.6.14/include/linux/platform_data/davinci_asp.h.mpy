@@ -1,0 +1,9 @@
+{
+  "module_name": "davinci_asp.h",
+  "hash_id": "047d36f41046d4ea8f09797d1c23cfc81ce819334ba445ab72fcf1131420c985",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/davinci_asp.h",
+  "human_readable_source": " \n \n\n#ifndef __DAVINCI_ASP_H\n#define __DAVINCI_ASP_H\n\n#include <linux/genalloc.h>\n\nstruct davinci_mcasp_pdata {\n\tu32 tx_dma_offset;\n\tu32 rx_dma_offset;\n\tint asp_chan_q;\t \n\tint ram_chan_q;\t \n\t \n\tunsigned enable_channel_combine:1;\n\tunsigned sram_size_playback;\n\tunsigned sram_size_capture;\n\tstruct gen_pool *sram_pool;\n\n\t \n\tint clk_input_pin;\n\n\t \n\tbool i2s_accurate_sck;\n\n\t \n\tint tdm_slots;\n\tu8 op_mode;\n\tu8 dismod;\n\tu8 num_serializer;\n\tu8 *serial_dir;\n\tu8 version;\n\tu8 txnumevt;\n\tu8 rxnumevt;\n\tint tx_dma_channel;\n\tint rx_dma_channel;\n};\n \n#define snd_platform_data davinci_mcasp_pdata\n\nenum {\n\tMCASP_VERSION_1 = 0,\t \n\tMCASP_VERSION_2,\t \n\tMCASP_VERSION_3,         \n\tMCASP_VERSION_4,\t \n\tMCASP_VERSION_OMAP,\t \n};\n\nenum mcbsp_clk_input_pin {\n\tMCBSP_CLKR = 0,\t\t \n\tMCBSP_CLKS,\n};\n\n#define INACTIVE_MODE\t0\n#define TX_MODE\t\t1\n#define RX_MODE\t\t2\n\n#define DAVINCI_MCASP_IIS_MODE\t0\n#define DAVINCI_MCASP_DIT_MODE\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

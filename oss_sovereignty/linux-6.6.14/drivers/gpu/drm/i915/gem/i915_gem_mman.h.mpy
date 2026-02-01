@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gem_mman.h",
+  "hash_id": "795ae90abfddf8e1e13551abb9ec7ad57dbd316ecbf30d428bce89cf81a213d3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gem/i915_gem_mman.h",
+  "human_readable_source": " \n\n#ifndef __I915_GEM_MMAN_H__\n#define __I915_GEM_MMAN_H__\n\n#include <linux/mm_types.h>\n#include <linux/types.h>\n\nstruct drm_device;\nstruct drm_file;\nstruct drm_i915_gem_object;\nstruct file;\nstruct i915_mmap_offset;\nstruct mutex;\n\nint i915_gem_mmap_gtt_version(void);\nint i915_gem_mmap(struct file *filp, struct vm_area_struct *vma);\n\nint i915_gem_dumb_mmap_offset(struct drm_file *file_priv,\n\t\t\t      struct drm_device *dev,\n\t\t\t      u32 handle, u64 *offset);\n\nvoid __i915_gem_object_release_mmap_gtt(struct drm_i915_gem_object *obj);\nvoid i915_gem_object_release_mmap_gtt(struct drm_i915_gem_object *obj);\n\nvoid i915_gem_object_runtime_pm_release_mmap_offset(struct drm_i915_gem_object *obj);\nvoid i915_gem_object_release_mmap_offset(struct drm_i915_gem_object *obj);\nint i915_gem_fb_mmap(struct drm_i915_gem_object *obj, struct vm_area_struct *vma);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

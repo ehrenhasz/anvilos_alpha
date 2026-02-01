@@ -1,0 +1,9 @@
+{
+  "module_name": "true.c",
+  "hash_id": "15419fe977c0a3f174791425cd035c86f7896de87dd65ba95fda1046436b6596",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/landlock/true.c",
+  "human_readable_source": "\nint main(void)\n{\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kdf_selftest.h",
+  "hash_id": "4cc262a0894e4dd9a8d99a5ff8cf39b89a36f3366ba53bcb4ba9da3450517f21",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/internal/kdf_selftest.h",
+  "human_readable_source": " \n\n \n\n#ifndef _CRYPTO_KDF_SELFTEST_H\n#define _CRYPTO_KDF_SELFTEST_H\n\n#include <crypto/hash.h>\n#include <linux/uio.h>\n\nstruct kdf_testvec {\n\tunsigned char *key;\n\tsize_t keylen;\n\tunsigned char *ikm;\n\tsize_t ikmlen;\n\tstruct kvec info;\n\tunsigned char *expected;\n\tsize_t expectedlen;\n};\n\nstatic inline int\nkdf_test(const struct kdf_testvec *test, const char *name,\n\t int (*crypto_kdf_setkey)(struct crypto_shash *kmd,\n\t\t\t\t  const u8 *key, size_t keylen,\n\t\t\t\t  const u8 *ikm, size_t ikmlen),\n\t int (*crypto_kdf_generate)(struct crypto_shash *kmd,\n\t\t\t\t    const struct kvec *info,\n\t\t\t\t    unsigned int info_nvec,\n\t\t\t\t    u8 *dst, unsigned int dlen))\n{\n\tstruct crypto_shash *kmd;\n\tint ret;\n\tu8 *buf = kzalloc(test->expectedlen, GFP_KERNEL);\n\n\tif (!buf)\n\t\treturn -ENOMEM;\n\n\tkmd = crypto_alloc_shash(name, 0, 0);\n\tif (IS_ERR(kmd)) {\n\t\tpr_err(\"alg: kdf: could not allocate hash handle for %s\\n\",\n\t\t       name);\n\t\tkfree(buf);\n\t\treturn -ENOMEM;\n\t}\n\n\tret = crypto_kdf_setkey(kmd, test->key, test->keylen,\n\t\t\t\ttest->ikm, test->ikmlen);\n\tif (ret) {\n\t\tpr_err(\"alg: kdf: could not set key derivation key\\n\");\n\t\tgoto err;\n\t}\n\n\tret = crypto_kdf_generate(kmd, &test->info, 1, buf, test->expectedlen);\n\tif (ret) {\n\t\tpr_err(\"alg: kdf: could not obtain key data\\n\");\n\t\tgoto err;\n\t}\n\n\tret = memcmp(test->expected, buf, test->expectedlen);\n\tif (ret)\n\t\tret = -EINVAL;\n\nerr:\n\tcrypto_free_shash(kmd);\n\tkfree(buf);\n\treturn ret;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

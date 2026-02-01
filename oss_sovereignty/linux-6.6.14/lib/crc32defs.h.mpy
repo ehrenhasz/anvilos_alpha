@@ -1,0 +1,9 @@
+{
+  "module_name": "crc32defs.h",
+  "hash_id": "61210a927cabb4e62216c69cf0a455700cc4858c02e1db6e740756f0a87c5f75",
+  "original_prompt": "Ingested from linux-6.6.14/lib/crc32defs.h",
+  "human_readable_source": " \n\n \n#ifdef CONFIG_CRC32_SLICEBY8\n# define CRC_LE_BITS 64\n# define CRC_BE_BITS 64\n#endif\n#ifdef CONFIG_CRC32_SLICEBY4\n# define CRC_LE_BITS 32\n# define CRC_BE_BITS 32\n#endif\n#ifdef CONFIG_CRC32_SARWATE\n# define CRC_LE_BITS 8\n# define CRC_BE_BITS 8\n#endif\n#ifdef CONFIG_CRC32_BIT\n# define CRC_LE_BITS 1\n# define CRC_BE_BITS 1\n#endif\n\n \n#ifndef CRC_LE_BITS\n#  ifdef CONFIG_64BIT\n#  define CRC_LE_BITS 64\n#  else\n#  define CRC_LE_BITS 32\n#  endif\n#endif\n#ifndef CRC_BE_BITS\n#  ifdef CONFIG_64BIT\n#  define CRC_BE_BITS 64\n#  else\n#  define CRC_BE_BITS 32\n#  endif\n#endif\n\n \n#if CRC_LE_BITS > 64 || CRC_LE_BITS < 1 || CRC_LE_BITS == 16 || \\\n\tCRC_LE_BITS & CRC_LE_BITS-1\n# error \"CRC_LE_BITS must be one of {1, 2, 4, 8, 32, 64}\"\n#endif\n\n \n#if CRC_BE_BITS > 64 || CRC_BE_BITS < 1 || CRC_BE_BITS == 16 || \\\n\tCRC_BE_BITS & CRC_BE_BITS-1\n# error \"CRC_BE_BITS must be one of {1, 2, 4, 8, 32, 64}\"\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

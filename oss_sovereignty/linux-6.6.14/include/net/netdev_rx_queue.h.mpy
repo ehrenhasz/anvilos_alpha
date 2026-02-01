@@ -1,0 +1,9 @@
+{
+  "module_name": "netdev_rx_queue.h",
+  "hash_id": "71484b2809c0238ef98205f80594b0cc0644a7cfd9a2efeec38d3e8055c73e02",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netdev_rx_queue.h",
+  "human_readable_source": " \n#ifndef _LINUX_NETDEV_RX_QUEUE_H\n#define _LINUX_NETDEV_RX_QUEUE_H\n\n#include <linux/kobject.h>\n#include <linux/netdevice.h>\n#include <linux/sysfs.h>\n#include <net/xdp.h>\n\n \nstruct netdev_rx_queue {\n\tstruct xdp_rxq_info\t\txdp_rxq;\n#ifdef CONFIG_RPS\n\tstruct rps_map __rcu\t\t*rps_map;\n\tstruct rps_dev_flow_table __rcu\t*rps_flow_table;\n#endif\n\tstruct kobject\t\t\tkobj;\n\tstruct net_device\t\t*dev;\n\tnetdevice_tracker\t\tdev_tracker;\n\n#ifdef CONFIG_XDP_SOCKETS\n\tstruct xsk_buff_pool            *pool;\n#endif\n} ____cacheline_aligned_in_smp;\n\n \nstruct rx_queue_attribute {\n\tstruct attribute attr;\n\tssize_t (*show)(struct netdev_rx_queue *queue, char *buf);\n\tssize_t (*store)(struct netdev_rx_queue *queue,\n\t\t\t const char *buf, size_t len);\n};\n\nstatic inline struct netdev_rx_queue *\n__netif_get_rx_queue(struct net_device *dev, unsigned int rxq)\n{\n\treturn dev->_rx + rxq;\n}\n\n#ifdef CONFIG_SYSFS\nstatic inline unsigned int\nget_netdev_rx_queue_index(struct netdev_rx_queue *queue)\n{\n\tstruct net_device *dev = queue->dev;\n\tint index = queue - dev->_rx;\n\n\tBUG_ON(index >= dev->num_rx_queues);\n\treturn index;\n}\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

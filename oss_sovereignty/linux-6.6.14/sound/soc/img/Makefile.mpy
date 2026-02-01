@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "581545d5d3c229449164ac0135629435fe67b5ff1481bf1f262a22eb866dea77",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/img/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_SND_SOC_IMG_I2S_IN) += img-i2s-in.o\nobj-$(CONFIG_SND_SOC_IMG_I2S_OUT) += img-i2s-out.o\nobj-$(CONFIG_SND_SOC_IMG_PARALLEL_OUT) += img-parallel-out.o\nobj-$(CONFIG_SND_SOC_IMG_SPDIF_IN) += img-spdif-in.o\nobj-$(CONFIG_SND_SOC_IMG_SPDIF_OUT) += img-spdif-out.o\n\nobj-$(CONFIG_SND_SOC_IMG_PISTACHIO_INTERNAL_DAC) += pistachio-internal-dac.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

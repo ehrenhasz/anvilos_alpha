@@ -1,0 +1,9 @@
+{
+  "module_name": "midi.h",
+  "hash_id": "523ae8e4d65854125891606bdd64295c5a55cf6b129a870980cbd58f161d0c48",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/caiaq/midi.h",
+  "human_readable_source": " \n#ifndef CAIAQ_MIDI_H\n#define CAIAQ_MIDI_H\n\nint snd_usb_caiaq_midi_init(struct snd_usb_caiaqdev *cdev);\nvoid snd_usb_caiaq_midi_handle_input(struct snd_usb_caiaqdev *cdev,\n\t\t\t\t     int port, const char *buf, int len);\nvoid snd_usb_caiaq_midi_output_done(struct urb *urb);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

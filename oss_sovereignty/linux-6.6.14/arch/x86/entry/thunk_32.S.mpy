@@ -1,0 +1,9 @@
+{
+  "module_name": "thunk_32.S",
+  "hash_id": "4f92490eb3e65576ac10100cff418e12bc975d45106c1956d4bc57dd3f722d6e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/thunk_32.S",
+  "human_readable_source": " \n \n\t#include <linux/linkage.h>\n\t#include <asm/asm.h>\n\t#include <asm/export.h>\n\n\t \n\t.macro THUNK name, func, put_ret_addr_in_eax=0\nSYM_CODE_START_NOALIGN(\\name)\n\tpushl %eax\n\tpushl %ecx\n\tpushl %edx\n\n\t.if \\put_ret_addr_in_eax\n\t \n\tmovl 3*4(%esp), %eax\n\t.endif\n\n\tcall \\func\n\tpopl %edx\n\tpopl %ecx\n\tpopl %eax\n\tRET\n\t_ASM_NOKPROBE(\\name)\nSYM_CODE_END(\\name)\n\t.endm\n\n\tTHUNK preempt_schedule_thunk, preempt_schedule\n\tTHUNK preempt_schedule_notrace_thunk, preempt_schedule_notrace\n\tEXPORT_SYMBOL(preempt_schedule_thunk)\n\tEXPORT_SYMBOL(preempt_schedule_notrace_thunk)\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

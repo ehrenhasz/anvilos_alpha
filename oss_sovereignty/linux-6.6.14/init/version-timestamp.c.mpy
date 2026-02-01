@@ -1,0 +1,9 @@
+{
+  "module_name": "version-timestamp.c",
+  "hash_id": "eac4cb367d6cbb222e6235724a4a3e5e9f8a8f8a0a6d3a6af42efa988d50f13e",
+  "original_prompt": "Ingested from linux-6.6.14/init/version-timestamp.c",
+  "human_readable_source": "\n\n#include <generated/compile.h>\n#include <generated/utsrelease.h>\n#include <linux/proc_ns.h>\n#include <linux/refcount.h>\n#include <linux/uts.h>\n#include <linux/utsname.h>\n\nstruct uts_namespace init_uts_ns = {\n\t.ns.count = REFCOUNT_INIT(2),\n\t.name = {\n\t\t.sysname\t= UTS_SYSNAME,\n\t\t.nodename\t= UTS_NODENAME,\n\t\t.release\t= UTS_RELEASE,\n\t\t.version\t= UTS_VERSION,\n\t\t.machine\t= UTS_MACHINE,\n\t\t.domainname\t= UTS_DOMAINNAME,\n\t},\n\t.user_ns = &init_user_ns,\n\t.ns.inum = PROC_UTS_INIT_INO,\n#ifdef CONFIG_UTS_NS\n\t.ns.ops = &utsns_operations,\n#endif\n};\n\n \nconst char linux_banner[] =\n\t\"Linux version \" UTS_RELEASE \" (\" LINUX_COMPILE_BY \"@\"\n\tLINUX_COMPILE_HOST \") (\" LINUX_COMPILER \") \" UTS_VERSION \"\\n\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

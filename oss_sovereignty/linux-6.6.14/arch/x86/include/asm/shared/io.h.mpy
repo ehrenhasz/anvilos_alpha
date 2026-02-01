@@ -1,0 +1,9 @@
+{
+  "module_name": "io.h",
+  "hash_id": "268ceef32791e698a8807a50daf82b6e9bab12c7ce559a2275b3464a3bf22c7e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/shared/io.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SHARED_IO_H\n#define _ASM_X86_SHARED_IO_H\n\n#include <linux/types.h>\n\n#define BUILDIO(bwl, bw, type)\t\t\t\t\t\t\\\nstatic __always_inline void __out##bwl(type value, u16 port)\t\t\\\n{\t\t\t\t\t\t\t\t\t\\\n\tasm volatile(\"out\" #bwl \" %\" #bw \"0, %w1\"\t\t\t\\\n\t\t     : : \"a\"(value), \"Nd\"(port));\t\t\t\\\n}\t\t\t\t\t\t\t\t\t\\\n\t\t\t\t\t\t\t\t\t\\\nstatic __always_inline type __in##bwl(u16 port)\t\t\t\t\\\n{\t\t\t\t\t\t\t\t\t\\\n\ttype value;\t\t\t\t\t\t\t\\\n\tasm volatile(\"in\" #bwl \" %w1, %\" #bw \"0\"\t\t\t\\\n\t\t     : \"=a\"(value) : \"Nd\"(port));\t\t\t\\\n\treturn value;\t\t\t\t\t\t\t\\\n}\n\nBUILDIO(b, b, u8)\nBUILDIO(w, w, u16)\nBUILDIO(l,  , u32)\n#undef BUILDIO\n\n#define inb __inb\n#define inw __inw\n#define inl __inl\n#define outb __outb\n#define outw __outw\n#define outl __outl\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

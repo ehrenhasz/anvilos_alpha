@@ -1,0 +1,9 @@
+{
+  "module_name": "triggered_buffer.h",
+  "hash_id": "e728b6571a5db8671f4ecb579cc6cb49b8c18e57241ab4e208ab453bbe5c8fac",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/triggered_buffer.h",
+  "human_readable_source": " \n#ifndef _LINUX_IIO_TRIGGERED_BUFFER_H_\n#define _LINUX_IIO_TRIGGERED_BUFFER_H_\n\n#include <linux/iio/buffer.h>\n#include <linux/interrupt.h>\n\nstruct iio_dev;\nstruct iio_dev_attr;\nstruct iio_buffer_setup_ops;\n\nint iio_triggered_buffer_setup_ext(struct iio_dev *indio_dev,\n\tirqreturn_t (*h)(int irq, void *p),\n\tirqreturn_t (*thread)(int irq, void *p),\n\tenum iio_buffer_direction direction,\n\tconst struct iio_buffer_setup_ops *setup_ops,\n\tconst struct iio_dev_attr **buffer_attrs);\nvoid iio_triggered_buffer_cleanup(struct iio_dev *indio_dev);\n\n#define iio_triggered_buffer_setup(indio_dev, h, thread, setup_ops)\t\t\\\n\tiio_triggered_buffer_setup_ext((indio_dev), (h), (thread),\t\t\\\n\t\t\t\t\tIIO_BUFFER_DIRECTION_IN, (setup_ops),\t\\\n\t\t\t\t\tNULL)\n\nint devm_iio_triggered_buffer_setup_ext(struct device *dev,\n\t\t\t\t\tstruct iio_dev *indio_dev,\n\t\t\t\t\tirqreturn_t (*h)(int irq, void *p),\n\t\t\t\t\tirqreturn_t (*thread)(int irq, void *p),\n\t\t\t\t\tenum iio_buffer_direction direction,\n\t\t\t\t\tconst struct iio_buffer_setup_ops *ops,\n\t\t\t\t\tconst struct iio_dev_attr **buffer_attrs);\n\n#define devm_iio_triggered_buffer_setup(dev, indio_dev, h, thread, setup_ops)\t\\\n\tdevm_iio_triggered_buffer_setup_ext((dev), (indio_dev), (h), (thread),\t\\\n\t\t\t\t\t    IIO_BUFFER_DIRECTION_IN,\t\t\\\n\t\t\t\t\t    (setup_ops), NULL)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

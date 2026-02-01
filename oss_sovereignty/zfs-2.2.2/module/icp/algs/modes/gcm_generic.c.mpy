@@ -1,0 +1,9 @@
+{
+  "module_name": "gcm_generic.c",
+  "hash_id": "11a72e5711715d5475d0b08aabfc8e171c48c1d08d2c191b3eaf3fd77cbe141a",
+  "original_prompt": "Ingested from zfs-2.2.2/module/icp/algs/modes/gcm_generic.c",
+  "human_readable_source": " \n \n\n#include <modes/gcm_impl.h>\n\nstruct aes_block {\n\tuint64_t a;\n\tuint64_t b;\n};\n\n \nstatic void\ngcm_generic_mul(uint64_t *x_in, uint64_t *y, uint64_t *res)\n{\n\tstatic const uint64_t R = 0xe100000000000000ULL;\n\tstruct aes_block z = {0, 0};\n\tstruct aes_block v;\n\tuint64_t x;\n\tint i, j;\n\n\tv.a = ntohll(y[0]);\n\tv.b = ntohll(y[1]);\n\n\tfor (j = 0; j < 2; j++) {\n\t\tx = ntohll(x_in[j]);\n\t\tfor (i = 0; i < 64; i++, x <<= 1) {\n\t\t\tif (x & 0x8000000000000000ULL) {\n\t\t\t\tz.a ^= v.a;\n\t\t\t\tz.b ^= v.b;\n\t\t\t}\n\t\t\tif (v.b & 1ULL) {\n\t\t\t\tv.b = (v.a << 63)|(v.b >> 1);\n\t\t\t\tv.a = (v.a >> 1) ^ R;\n\t\t\t} else {\n\t\t\t\tv.b = (v.a << 63)|(v.b >> 1);\n\t\t\t\tv.a = v.a >> 1;\n\t\t\t}\n\t\t}\n\t}\n\tres[0] = htonll(z.a);\n\tres[1] = htonll(z.b);\n}\n\nstatic boolean_t\ngcm_generic_will_work(void)\n{\n\treturn (B_TRUE);\n}\n\nconst gcm_impl_ops_t gcm_generic_impl = {\n\t.mul = &gcm_generic_mul,\n\t.is_supported = &gcm_generic_will_work,\n\t.name = \"generic\"\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

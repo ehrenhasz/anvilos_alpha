@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f5d02d2777da73a30c64e988aee6528567fa2725554efddf6f93802eaf4d92f8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/peci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\n# Core functionality\npeci-y := core.o request.o device.o sysfs.o\nobj-$(CONFIG_PECI) += peci.o\npeci-cpu-y := cpu.o\nobj-$(CONFIG_PECI_CPU) += peci-cpu.o\n\n# Hardware specific bus drivers\nobj-y += controller/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

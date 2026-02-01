@@ -1,0 +1,9 @@
+{
+  "module_name": "madera.h",
+  "hash_id": "2a47cdeaa219e45380283b4b26a95e19003fb1d86c1f23cce5c46bb602c1f67a",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/sound/madera.h",
+  "human_readable_source": " \n \n\n#ifndef DT_BINDINGS_SOUND_MADERA_H\n#define DT_BINDINGS_SOUND_MADERA_H\n\n#define MADERA_INMODE_DIFF\t\t0\n#define MADERA_INMODE_SE\t\t1\n#define MADERA_INMODE_DMIC\t\t2\n\n#define MADERA_DMIC_REF_MICVDD\t\t0\n#define MADERA_DMIC_REF_MICBIAS1\t1\n#define MADERA_DMIC_REF_MICBIAS2\t2\n#define MADERA_DMIC_REF_MICBIAS3\t3\n\n#define CS47L35_DMIC_REF_MICBIAS1B\t1\n#define CS47L35_DMIC_REF_MICBIAS2A\t2\n#define CS47L35_DMIC_REF_MICBIAS2B\t3\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

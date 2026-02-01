@@ -1,0 +1,9 @@
+{
+  "module_name": "pmu.c",
+  "hash_id": "78e0bc3377a0f695e3482ff9319c3de70c8a09610115cd37c40dedd0b60aa684",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arm64/util/pmu.c",
+  "human_readable_source": "\n\n#include <internal/cpumap.h>\n#include \"../../../util/cpumap.h\"\n#include \"../../../util/header.h\"\n#include \"../../../util/pmu.h\"\n#include \"../../../util/pmus.h\"\n#include <api/fs/fs.h>\n#include <math.h>\n\nconst struct pmu_metrics_table *pmu_metrics_table__find(void)\n{\n\tstruct perf_pmu *pmu = pmu__find_core_pmu();\n\n\tif (pmu)\n\t\treturn perf_pmu__find_metrics_table(pmu);\n\n\treturn NULL;\n}\n\nconst struct pmu_events_table *pmu_events_table__find(void)\n{\n\tstruct perf_pmu *pmu = pmu__find_core_pmu();\n\n\tif (pmu)\n\t\treturn perf_pmu__find_events_table(pmu);\n\n\treturn NULL;\n}\n\ndouble perf_pmu__cpu_slots_per_cycle(void)\n{\n\tchar path[PATH_MAX];\n\tunsigned long long slots = 0;\n\tstruct perf_pmu *pmu = pmu__find_core_pmu();\n\n\tif (pmu) {\n\t\tperf_pmu__pathname_scnprintf(path, sizeof(path),\n\t\t\t\t\t     pmu->name, \"caps/slots\");\n\t\t \n\t\tfilename__read_ull(path, &slots);\n\t}\n\n\treturn slots ? (double)slots : NAN;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

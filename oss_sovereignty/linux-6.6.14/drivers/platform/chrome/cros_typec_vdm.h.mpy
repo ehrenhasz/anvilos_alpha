@@ -1,0 +1,9 @@
+{
+  "module_name": "cros_typec_vdm.h",
+  "hash_id": "5b1e9f99ee369e7233ac38c43eb61b47eeee17465b2db5ba45f8b812ea384eb7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/chrome/cros_typec_vdm.h",
+  "human_readable_source": " \n\n#ifndef __CROS_TYPEC_VDM__\n#define __CROS_TYPEC_VDM__\n\n#include <linux/usb/typec_altmode.h>\n\nextern struct typec_altmode_ops port_amode_ops;\n\nvoid cros_typec_handle_vdm_attention(struct cros_typec_data *typec, int port_num);\nvoid cros_typec_handle_vdm_response(struct cros_typec_data *typec, int port_num);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

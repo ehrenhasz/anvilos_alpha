@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9cc69ed349d2f091a9e198c1ef9d4108b244a5750eedd77a93f55eb82e78b4ac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath5k/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: ISC\nath5k-y\t\t\t\t+= caps.o\nath5k-y\t\t\t\t+= initvals.o\nath5k-y\t\t\t\t+= eeprom.o\nath5k-y\t\t\t\t+= gpio.o\nath5k-y\t\t\t\t+= desc.o\nath5k-y\t\t\t\t+= dma.o\nath5k-y\t\t\t\t+= qcu.o\nath5k-y\t\t\t\t+= pcu.o\nath5k-y\t\t\t\t+= phy.o\nath5k-y\t\t\t\t+= reset.o\nath5k-y\t\t\t\t+= attach.o\nath5k-y\t\t\t\t+= base.o\nCFLAGS_base.o\t\t\t+= -I$(src)\nath5k-y\t\t\t\t+= led.o\nath5k-y\t\t\t\t+= rfkill.o\nath5k-y\t\t\t\t+= ani.o\nath5k-y\t\t\t\t+= sysfs.o\nath5k-y\t\t\t\t+= mac80211-ops.o\nath5k-$(CONFIG_ATH5K_DEBUG)\t+= debug.o\nath5k-$(CONFIG_ATH5K_AHB)\t+= ahb.o\nath5k-$(CONFIG_ATH5K_PCI)\t+= pci.o\nobj-$(CONFIG_ATH5K)\t\t+= ath5k.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

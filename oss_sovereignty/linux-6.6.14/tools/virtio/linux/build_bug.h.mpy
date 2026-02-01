@@ -1,0 +1,9 @@
+{
+  "module_name": "build_bug.h",
+  "hash_id": "6a7f9729af25c96b054e7d4dd996e4835e7548dc8aa07d3c79678f92f1c01916",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/linux/build_bug.h",
+  "human_readable_source": " \n#ifndef _LINUX_BUILD_BUG_H\n#define _LINUX_BUILD_BUG_H\n\n#define BUILD_BUG_ON(x)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

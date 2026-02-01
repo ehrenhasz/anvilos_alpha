@@ -1,0 +1,9 @@
+{
+  "module_name": "scsi_bsg_iscsi.h",
+  "hash_id": "4529bdbb4a3c19c065ec1596374c1e4188533665f81804af44592683ec95d9e2",
+  "original_prompt": "Ingested from linux-6.6.14/include/scsi/scsi_bsg_iscsi.h",
+  "human_readable_source": " \n \n\n#ifndef SCSI_BSG_ISCSI_H\n#define SCSI_BSG_ISCSI_H\n\n \n\n#include <scsi/scsi.h>\n\n \n\n \n#define ISCSI_DEFAULT_BSG_TIMEOUT      (10 * HZ)\n\n\n \n\n \n#define ISCSI_BSG_CLS_MASK     0xF0000000       \n#define ISCSI_BSG_HST_MASK     0x80000000       \n\n \n#define ISCSI_BSG_HST_VENDOR           (ISCSI_BSG_HST_MASK | 0x000000FF)\n\n\n \n\n \n\n \nstruct iscsi_bsg_host_vendor {\n\t \n\tuint64_t vendor_id;\n\n\t \n\tuint32_t vendor_cmd[];\n};\n\n \nstruct iscsi_bsg_host_vendor_reply {\n\t \n\tuint32_t vendor_rsp[0];\n};\n\n\n \nstruct iscsi_bsg_request {\n\tuint32_t msgcode;\n\tunion {\n\t\tstruct iscsi_bsg_host_vendor    h_vendor;\n\t} rqst_data;\n} __attribute__((packed));\n\n\n \nstruct iscsi_bsg_reply {\n\t \n\tuint32_t result;\n\n\t \n\tuint32_t reply_payload_rcv_len;\n\n\tunion {\n\t\tstruct iscsi_bsg_host_vendor_reply      vendor_reply;\n\t} reply_data;\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

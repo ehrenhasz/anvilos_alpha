@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objstringio.c.compress",
+  "hash_id": "f1cf5d5ed6aaf036105f3acdb2b500227413908df55a1cca4e5a4e6c5cad0346",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__objstringio.c.compress",
+  "human_readable_source": "I/O operation on closed file\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

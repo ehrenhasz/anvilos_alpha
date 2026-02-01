@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pconfig.h",
+  "hash_id": "cd73f008cd0d3fd678580b8855adebcc70d233d0464175d16c2eb462a0f97681",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/intel_pconfig.h",
+  "human_readable_source": "#ifndef\t_ASM_X86_INTEL_PCONFIG_H\n#define\t_ASM_X86_INTEL_PCONFIG_H\n\n#include <asm/asm.h>\n#include <asm/processor.h>\n\nenum pconfig_target {\n\tINVALID_TARGET\t= 0,\n\tMKTME_TARGET\t= 1,\n\tPCONFIG_TARGET_NR\n};\n\nint pconfig_target_supported(enum pconfig_target target);\n\nenum pconfig_leaf {\n\tMKTME_KEY_PROGRAM\t= 0,\n\tPCONFIG_LEAF_INVALID,\n};\n\n#define PCONFIG \".byte 0x0f, 0x01, 0xc5\"\n\n \n\n \n#define MKTME_KEYID_SET_KEY_DIRECT\t0\n#define MKTME_KEYID_SET_KEY_RANDOM\t1\n#define MKTME_KEYID_CLEAR_KEY\t\t2\n#define MKTME_KEYID_NO_ENCRYPT\t\t3\n\n \n#define MKTME_AES_XTS_128\t(1 << 8)\n\n \n#define MKTME_PROG_SUCCESS\t0\n#define MKTME_INVALID_PROG_CMD\t1\n#define MKTME_ENTROPY_ERROR\t2\n#define MKTME_INVALID_KEYID\t3\n#define MKTME_INVALID_ENC_ALG\t4\n#define MKTME_DEVICE_BUSY\t5\n\n \nstruct mktme_key_program {\n\tu16 keyid;\n\tu32 keyid_ctrl;\n\tu8 __rsvd[58];\n\tu8 key_field_1[64];\n\tu8 key_field_2[64];\n} __packed __aligned(256);\n\nstatic inline int mktme_key_program(struct mktme_key_program *key_program)\n{\n\tunsigned long rax = MKTME_KEY_PROGRAM;\n\n\tif (!pconfig_target_supported(MKTME_TARGET))\n\t\treturn -ENXIO;\n\n\tasm volatile(PCONFIG\n\t\t: \"=a\" (rax), \"=b\" (key_program)\n\t\t: \"0\" (rax), \"1\" (key_program)\n\t\t: \"memory\", \"cc\");\n\n\treturn rax;\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

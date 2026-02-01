@@ -1,0 +1,9 @@
+{
+  "module_name": "xattr_hurd.c",
+  "hash_id": "939cc307ae2070d65c3812a68ab7a3173caadbcffeecded85e54d9321e1e7b70",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ext4/xattr_hurd.c",
+  "human_readable_source": "\n \n\n#include <linux/init.h>\n#include <linux/string.h>\n#include \"ext4.h\"\n#include \"xattr.h\"\n\nstatic bool\next4_xattr_hurd_list(struct dentry *dentry)\n{\n\treturn test_opt(dentry->d_sb, XATTR_USER);\n}\n\nstatic int\next4_xattr_hurd_get(const struct xattr_handler *handler,\n\t\t    struct dentry *unused, struct inode *inode,\n\t\t    const char *name, void *buffer, size_t size)\n{\n\tif (!test_opt(inode->i_sb, XATTR_USER))\n\t\treturn -EOPNOTSUPP;\n\n\treturn ext4_xattr_get(inode, EXT4_XATTR_INDEX_HURD,\n\t\t\t      name, buffer, size);\n}\n\nstatic int\next4_xattr_hurd_set(const struct xattr_handler *handler,\n\t\t    struct mnt_idmap *idmap,\n\t\t    struct dentry *unused, struct inode *inode,\n\t\t    const char *name, const void *value,\n\t\t    size_t size, int flags)\n{\n\tif (!test_opt(inode->i_sb, XATTR_USER))\n\t\treturn -EOPNOTSUPP;\n\n\treturn ext4_xattr_set(inode, EXT4_XATTR_INDEX_HURD,\n\t\t\t      name, value, size, flags);\n}\n\nconst struct xattr_handler ext4_xattr_hurd_handler = {\n\t.prefix\t= XATTR_HURD_PREFIX,\n\t.list\t= ext4_xattr_hurd_list,\n\t.get\t= ext4_xattr_hurd_get,\n\t.set\t= ext4_xattr_hurd_set,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

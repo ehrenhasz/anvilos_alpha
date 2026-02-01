@@ -1,0 +1,9 @@
+{
+  "module_name": "smsc911x.h",
+  "hash_id": "438e5c8f6d242b4d875b9fdde6f1546b9332e65e3116e195b5c81ccdad31f6bc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/smsc911x.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_SMSC911X_H__\n#define __LINUX_SMSC911X_H__\n\n#include <linux/phy.h>\n#include <linux/if_ether.h>\n\n \nstruct smsc911x_platform_config {\n\tunsigned int irq_polarity;\n\tunsigned int irq_type;\n\tunsigned int flags;\n\tunsigned int shift;\n\tphy_interface_t phy_interface;\n\tunsigned char mac[ETH_ALEN];\n};\n\n \n#define SMSC911X_IRQ_POLARITY_ACTIVE_LOW\t0\n#define SMSC911X_IRQ_POLARITY_ACTIVE_HIGH\t1\n\n \n#define SMSC911X_IRQ_TYPE_OPEN_DRAIN\t\t0\n#define SMSC911X_IRQ_TYPE_PUSH_PULL\t\t1\n\n \n#define SMSC911X_USE_16BIT \t\t\t(BIT(0))\n#define SMSC911X_USE_32BIT \t\t\t(BIT(1))\n#define SMSC911X_FORCE_INTERNAL_PHY\t\t(BIT(2))\n#define SMSC911X_FORCE_EXTERNAL_PHY \t\t(BIT(3))\n#define SMSC911X_SAVE_MAC_ADDRESS\t\t(BIT(4))\n\n \n#define SMSC911X_SWAP_FIFO\t\t\t(BIT(5))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gdc_public.h",
+  "hash_id": "5cd1cdc68f4fcc1258a757425b5bfee04d2dd54753b9b5ec01c13871cfa84c3c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/host/gdc_public.h",
+  "human_readable_source": " \n \n\n#ifndef __GDC_PUBLIC_H_INCLUDED__\n#define __GDC_PUBLIC_H_INCLUDED__\n\n \nvoid gdc_lut_store(\n    const gdc_ID_t\t\tID,\n    const int\t\t\tdata[4][HRT_GDC_N]);\n\n \nvoid gdc_lut_convert_to_isp_format(\n    const int in_lut[4][HRT_GDC_N],\n    int out_lut[4][HRT_GDC_N]);\n\n \nint gdc_get_unity(\n    const gdc_ID_t\t\tID);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

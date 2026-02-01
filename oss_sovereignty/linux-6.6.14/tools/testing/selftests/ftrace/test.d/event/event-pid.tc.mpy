@@ -1,0 +1,9 @@
+{
+  "module_name": "event-pid.tc",
+  "hash_id": "a17586640b9808ffaff273916a3f128ce2b630d07f36d79993a45f2170c6ec17",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/event/event-pid.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event tracing - restricts events based on pid\n# requires: set_event set_event_pid events/sched\n# flags: instance\n\ndo_reset() {\n    echo > set_event\n    echo > set_event_pid\n    echo 0 > options/event-fork\n    clear_trace\n}\n\nfail() { #msg\n    do_reset\n    echo $1\n    exit_fail\n}\n\necho 0 > options/event-fork\n\necho 1 > events/sched/sched_switch/enable\n\nyield\n\ncount=`cat trace | grep sched_switch | wc -l`\nif [ $count -eq 0 ]; then\n    fail \"sched_switch events are not recorded\"\nfi\n\ndo_reset\n\nread mypid rest < /proc/self/stat\n\necho $mypid > set_event_pid\ngrep -q $mypid set_event_pid\necho 'sched:sched_switch' > set_event\n\nyield\n\ncount=`cat trace | grep sched_switch | grep -v \"pid=$mypid\" | wc -l`\nif [ $count -ne 0 ]; then\n    fail \"sched_switch events from other task are recorded\"\nfi\n\ndo_reset\n\necho $mypid > set_event_pid\necho 1 > options/event-fork\necho 1 > events/sched/sched_switch/enable\n\nyield\n\ncount=`cat trace | grep sched_switch | grep -v \"pid=$mypid\" | wc -l`\nif [ $count -eq 0 ]; then\n    fail \"sched_switch events from other task are not recorded\"\nfi\n\ndo_reset\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dc_common.h",
+  "hash_id": "c38d4296e75ec53b144c22287f7258afe217ef2a45e7e8d8a0b19fb886fce18b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/basics/dc_common.h",
+  "human_readable_source": " \n\n#ifndef __DAL_DC_COMMON_H__\n#define __DAL_DC_COMMON_H__\n\n#include \"core_types.h\"\n\nbool is_rgb_cspace(enum dc_color_space output_color_space);\n\nbool is_lower_pipe_tree_visible(struct pipe_ctx *pipe_ctx);\n\nbool is_upper_pipe_tree_visible(struct pipe_ctx *pipe_ctx);\n\nbool is_pipe_tree_visible(struct pipe_ctx *pipe_ctx);\n\nvoid build_prescale_params(struct  dc_bias_and_scale *bias_and_scale,\n\t\tconst struct dc_plane_state *plane_state);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

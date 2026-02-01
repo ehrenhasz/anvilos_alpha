@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "36205ad965950857cf2dd13a15dbdc62cda85f37ab01493ff7ebe7dc84e3ce77",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/visconti/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig COMMON_CLK_VISCONTI\n\tbool \"Support for Toshiba Visconti5 ARM SoC clock controllers\"\n\tdepends on ARCH_VISCONTI || COMPILE_TEST\n\tdefault ARCH_VISCONTI\n\thelp\n\t  Support for the Toshiba Visconti5 ARM SoC clock controller.\n\t  Say Y if you want to include clock support.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "seq_file_net.h",
+  "hash_id": "4830c8a4398866a1856a81e634d9c91dbb4538aa04809dd9a37e744bb4bd0dee",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/seq_file_net.h",
+  "human_readable_source": " \n#ifndef __SEQ_FILE_NET_H__\n#define __SEQ_FILE_NET_H__\n\n#include <linux/seq_file.h>\n#include <net/net_trackers.h>\n\nstruct net;\nextern struct net init_net;\n\nstruct seq_net_private {\n#ifdef CONFIG_NET_NS\n\tstruct net\t*net;\n\tnetns_tracker\tns_tracker;\n#endif\n};\n\nstatic inline struct net *seq_file_net(struct seq_file *seq)\n{\n#ifdef CONFIG_NET_NS\n\treturn ((struct seq_net_private *)seq->private)->net;\n#else\n\treturn &init_net;\n#endif\n}\n\n \nstatic inline struct net *seq_file_single_net(struct seq_file *seq)\n{\n#ifdef CONFIG_NET_NS\n\treturn (struct net *)seq->private;\n#else\n\treturn &init_net;\n#endif\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

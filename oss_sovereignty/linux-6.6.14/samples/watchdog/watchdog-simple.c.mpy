@@ -1,0 +1,9 @@
+{
+  "module_name": "watchdog-simple.c",
+  "hash_id": "50bde25c28e719a7d2c0bb207d34b9951fbf7b137a7cd1564f913cf67b1d24b9",
+  "original_prompt": "Ingested from linux-6.6.14/samples/watchdog/watchdog-simple.c",
+  "human_readable_source": "\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n#include <fcntl.h>\n\nint main(void)\n{\n\tint fd = open(\"/dev/watchdog\", O_WRONLY);\n\tint ret = 0;\n\tif (fd == -1) {\n\t\tperror(\"watchdog\");\n\t\texit(EXIT_FAILURE);\n\t}\n\twhile (1) {\n\t\tret = write(fd, \"\\0\", 1);\n\t\tif (ret != 1) {\n\t\t\tret = -1;\n\t\t\tbreak;\n\t\t}\n\t\tsleep(10);\n\t}\n\tclose(fd);\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

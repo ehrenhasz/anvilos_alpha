@@ -1,0 +1,9 @@
+{
+  "module_name": "vringh.h",
+  "hash_id": "f8faa645a0c728224da0ef53d459250c0b0494301acd10f79109daf28eb0436c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/linux/vringh.h",
+  "human_readable_source": "#include <limits.h>\n#include \"../../../include/linux/vringh.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

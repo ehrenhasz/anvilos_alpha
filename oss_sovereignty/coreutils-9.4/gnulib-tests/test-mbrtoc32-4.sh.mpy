@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrtoc32-4.sh",
+  "hash_id": "4d8d5d4b2f33f757a540107fc5ca30e31554a33ac47741ea0a6101b1b3d4f7b5",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrtoc32-4.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test whether a specific EUC-JP locale is installed.\n: \"${LOCALE_JA=ja_JP}\"\nif test $LOCALE_JA = none; then\n  if test -f /usr/bin/localedef; then\n    echo \"Skipping test: no traditional japanese locale is installed\"\n  else\n    echo \"Skipping test: no traditional japanese locale is supported\"\n  fi\n  exit 77\nfi\n\nLC_ALL=$LOCALE_JA \\\n${CHECKER} ./test-mbrtoc32${EXEEXT} 4\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

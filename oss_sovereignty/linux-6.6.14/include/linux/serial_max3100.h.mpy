@@ -1,0 +1,9 @@
+{
+  "module_name": "serial_max3100.h",
+  "hash_id": "487d4f7058fdc56dcad0a1be68cdcd1309c6fc5e2fc2879b3bd1525e433d4b0d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/serial_max3100.h",
+  "human_readable_source": " \n \n\n\n#ifndef _LINUX_SERIAL_MAX3100_H\n#define _LINUX_SERIAL_MAX3100_H 1\n\n\n \nstruct plat_max3100 {\n\tint loopback;\n\tint crystal;\n\tvoid (*max3100_hw_suspend) (int suspend);\n\tint poll_time;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dai-amd.h",
+  "hash_id": "9074d61a9d8cdc0ed595a80444c85bca2856d5a230b93a3fc34673e8caa3c0ea",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/sof/dai-amd.h",
+  "human_readable_source": " \n \n\n#ifndef __INCLUDE_SOUND_SOF_DAI_AMD_H__\n#define __INCLUDE_SOUND_SOF_DAI_AMD_H__\n\n#include <sound/sof/header.h>\n\n \nstruct sof_ipc_dai_acp_params {\n\tstruct sof_ipc_hdr hdr;\n\n\tuint32_t fsync_rate;     \n\tuint32_t tdm_slots;\n\tuint32_t tdm_mode;\n} __packed;\n\n \nstruct sof_ipc_dai_acpdmic_params {\n\tuint32_t pdm_rate;\n\tuint32_t pdm_ch;\n} __packed;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bac91723bc8108ee89ddb1f95c8bd931665f3d03f9dd84a8718c7708267ea5f8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ntb/hw/mscc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_NTB_SWITCHTEC) += ntb_hw_switchtec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-moore.h",
+  "hash_id": "524c74b0f2a5e3129829d7edf300ea1212e15d9f989857ff8ab3a81eede92ef0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/mediatek/pinctrl-moore.h",
+  "human_readable_source": " \n \n#ifndef __PINCTRL_MOORE_H\n#define __PINCTRL_MOORE_H\n\n#include <linux/io.h>\n#include <linux/init.h>\n#include <linux/of.h>\n#include <linux/of_platform.h>\n#include <linux/platform_device.h>\n#include <linux/pinctrl/pinctrl.h>\n#include <linux/pinctrl/pinmux.h>\n#include <linux/pinctrl/pinconf.h>\n#include <linux/pinctrl/pinconf-generic.h>\n\n#include \"../core.h\"\n#include \"../pinconf.h\"\n#include \"../pinmux.h\"\n#include \"mtk-eint.h\"\n#include \"pinctrl-mtk-common-v2.h\"\n\n#define MTK_RANGE(_a)\t\t{ .range = (_a), .nranges = ARRAY_SIZE(_a), }\n\n#define MTK_PIN(_number, _name, _eint_m, _eint_n, _drv_n) {\t\\\n\t\t.number = _number,\t\t\t\\\n\t\t.name = _name,\t\t\t\t\\\n\t\t.eint = {\t\t\t\t\\\n\t\t\t.eint_m = _eint_m,\t\t\\\n\t\t\t.eint_n = _eint_n,\t\t\\\n\t\t},\t\t\t\t\t\\\n\t\t.drv_n = _drv_n,\t\t\t\\\n\t\t.funcs = NULL,\t\t\t\t\\\n\t}\n\n#define PINCTRL_PIN_GROUP(name, id)\t\t\t\\\n\t{\t\t\t\t\t\t\\\n\t\tname,\t\t\t\t\t\\\n\t\tid##_pins,\t\t\t\t\\\n\t\tARRAY_SIZE(id##_pins),\t\t\t\\\n\t\tid##_funcs,\t\t\t\t\\\n\t}\n\nint mtk_moore_pinctrl_probe(struct platform_device *pdev,\n\t\t\t    const struct mtk_pin_soc *soc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

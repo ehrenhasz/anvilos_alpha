@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_struct_ops_types.h",
+  "hash_id": "0e918b4c809fedc9fd5944046ff5f84950c15289fa454ad4d83ea55510504dc8",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/bpf/bpf_struct_ops_types.h",
+  "human_readable_source": " \n \n\n#ifdef CONFIG_BPF_JIT\n#ifdef CONFIG_NET\nBPF_STRUCT_OPS_TYPE(bpf_dummy_ops)\n#endif\n#ifdef CONFIG_INET\n#include <net/tcp.h>\nBPF_STRUCT_OPS_TYPE(tcp_congestion_ops)\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

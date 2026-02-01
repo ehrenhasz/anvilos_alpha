@@ -1,0 +1,9 @@
+{
+  "module_name": "mt7986-afe-common.h",
+  "hash_id": "0a936d76f455a8fd7947281db116bd523aaabdefad33322f16066e312bf482a0",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/mt7986/mt7986-afe-common.h",
+  "human_readable_source": " \n \n\n#ifndef _MT_7986_AFE_COMMON_H_\n#define _MT_7986_AFE_COMMON_H_\n\n#include <sound/soc.h>\n#include <linux/clk.h>\n#include <linux/list.h>\n#include <linux/regmap.h>\n#include \"../common/mtk-base-afe.h\"\n\nenum {\n\tMT7986_MEMIF_DL1,\n\tMT7986_MEMIF_VUL12,\n\tMT7986_MEMIF_NUM,\n\tMT7986_DAI_ETDM = MT7986_MEMIF_NUM,\n\tMT7986_DAI_NUM,\n};\n\nenum {\n\tMT7986_IRQ_0,\n\tMT7986_IRQ_1,\n\tMT7986_IRQ_2,\n\tMT7986_IRQ_NUM,\n};\n\nstruct mt7986_afe_private {\n\tstruct clk_bulk_data *clks;\n\tint num_clks;\n\n\tint pm_runtime_bypass_reg_ctl;\n\n\t \n\tvoid *dai_priv[MT7986_DAI_NUM];\n};\n\nunsigned int mt7986_afe_rate_transform(struct device *dev,\n\t\t\t\t       unsigned int rate);\n\n \nint mt7986_dai_etdm_register(struct mtk_base_afe *afe);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

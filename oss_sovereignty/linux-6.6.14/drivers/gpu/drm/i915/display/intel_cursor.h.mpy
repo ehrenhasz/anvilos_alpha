@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_cursor.h",
+  "hash_id": "ae66ab2cca7b451cebd32f30174b39ce06651e7ff472cad4847ced10e477f1ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_cursor.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_CURSOR_H_\n#define _INTEL_CURSOR_H_\n\nenum pipe;\nstruct drm_i915_private;\nstruct intel_plane;\n\nstruct intel_plane *\nintel_cursor_plane_create(struct drm_i915_private *dev_priv,\n\t\t\t  enum pipe pipe);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

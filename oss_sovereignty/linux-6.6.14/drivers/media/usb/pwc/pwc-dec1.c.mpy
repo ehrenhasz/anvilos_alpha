@@ -1,0 +1,9 @@
+{
+  "module_name": "pwc-dec1.c",
+  "hash_id": "9eea2d157789206260194a1e6d16ee908b9aca39a1a655ac806198998edff98f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pwc/pwc-dec1.c",
+  "human_readable_source": "\n \n#include \"pwc.h\"\n\nvoid pwc_dec1_init(struct pwc_device *pdev, const unsigned char *cmd)\n{\n\tstruct pwc_dec1_private *pdec = &pdev->dec1;\n\n\tpdec->version = pdev->release;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

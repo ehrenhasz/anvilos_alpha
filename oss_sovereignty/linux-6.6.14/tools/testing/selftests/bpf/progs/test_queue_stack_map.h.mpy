@@ -1,0 +1,9 @@
+{
+  "module_name": "test_queue_stack_map.h",
+  "hash_id": "1dc0b6d64c6f7f00bdbc6d05b76c5e2a497ccabae5f86205abc6e7bd65678448",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_queue_stack_map.h",
+  "human_readable_source": " \n\n#include <stddef.h>\n#include <string.h>\n#include <linux/bpf.h>\n#include <linux/if_ether.h>\n#include <linux/ip.h>\n#include <linux/pkt_cls.h>\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, MAP_TYPE);\n\t__uint(max_entries, 32);\n\t__uint(map_flags, 0);\n\t__uint(key_size, 0);\n\t__uint(value_size, sizeof(__u32));\n} map_in SEC(\".maps\");\n\nstruct {\n\t__uint(type, MAP_TYPE);\n\t__uint(max_entries, 32);\n\t__uint(map_flags, 0);\n\t__uint(key_size, 0);\n\t__uint(value_size, sizeof(__u32));\n} map_out SEC(\".maps\");\n\nSEC(\"tc\")\nint _test(struct __sk_buff *skb)\n{\n\tvoid *data_end = (void *)(long)skb->data_end;\n\tvoid *data = (void *)(long)skb->data;\n\tstruct ethhdr *eth = (struct ethhdr *)(data);\n\t__u32 value;\n\tint err;\n\n\tif (eth + 1 > data_end)\n\t\treturn TC_ACT_SHOT;\n\n\tstruct iphdr *iph = (struct iphdr *)(eth + 1);\n\n\tif (iph + 1 > data_end)\n\t\treturn TC_ACT_SHOT;\n\n\terr = bpf_map_pop_elem(&map_in, &value);\n\tif (err)\n\t\treturn TC_ACT_SHOT;\n\n\tiph->daddr = value;\n\n\terr = bpf_map_push_elem(&map_out, &iph->saddr, 0);\n\tif (err)\n\t\treturn TC_ACT_SHOT;\n\n\treturn TC_ACT_OK;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

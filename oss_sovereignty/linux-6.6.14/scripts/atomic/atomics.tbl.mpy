@@ -1,0 +1,9 @@
+{
+  "module_name": "atomics.tbl",
+  "hash_id": "3b6077f9a4a108b1a70433f93d7c9b9888062142103ff5a6acc8858970b71343",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/atomics.tbl",
+  "human_readable_source": "# name\tmeta\targs...\n#\n# Where meta contains a string of variants to generate.\n# Upper-case implies _{acquire,release,relaxed} variants.\n# Valid meta values are:\n# * B/b\t- bool: returns bool\n# * v\t- void: returns void\n# * I/i\t- int: returns base type\n# * R\t- return: returns base type (has _return variants)\n# * F/f\t- fetch: returns base type (has fetch_ variants)\n# * l\t- load: returns base type (has _acquire order variant)\n# * s\t- store: returns void (has _release order variant)\n#\n# Where args contains list of type[:name], where type is:\n# * cv\t- const pointer to atomic base type (atomic_t/atomic64_t/atomic_long_t)\n# * v\t- pointer to atomic base type (atomic_t/atomic64_t/atomic_long_t)\n# * i\t- base type (int/s64/long)\n# * p\t- pointer to base type (int/s64/long)\n#\nread\t\t\tl\tcv\nset\t\t\ts\tv\ti\nadd\t\t\tvRF\ti\tv\nsub\t\t\tvRF\ti\tv\ninc\t\t\tvRF\tv\ndec\t\t\tvRF\tv\nand\t\t\tvF\ti\tv\nandnot\t\t\tvF\ti\tv\nor\t\t\tvF\ti\tv\nxor\t\t\tvF\ti\tv\nxchg\t\t\tI\tv\ti:new\ncmpxchg\t\t\tI\tv\ti:old\ti:new\ntry_cmpxchg\t\tB\tv\tp:old\ti:new\nsub_and_test\t\tb\ti\tv\ndec_and_test\t\tb\tv\ninc_and_test\t\tb\tv\nadd_negative\t\tB\ti\tv\nadd_unless\t\tfb\tv\ti:a\ti:u\ninc_not_zero\t\tb\tv\ninc_unless_negative\tb\tv\ndec_unless_positive\tb\tv\ndec_if_positive\t\ti\tv\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

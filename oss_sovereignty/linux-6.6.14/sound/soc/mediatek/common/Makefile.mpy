@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d7a412c9f9b1baf5c92af63658a21a7dc4113fe05c815a38e2b4cd22fbeca042",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/common/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# platform driver\nsnd-soc-mtk-common-objs := mtk-afe-platform-driver.o mtk-afe-fe-dai.o mtk-dsp-sof-common.o mtk-soundcard-driver.o\nobj-$(CONFIG_SND_SOC_MEDIATEK) += snd-soc-mtk-common.o\n\nobj-$(CONFIG_SND_SOC_MTK_BTCVSD) += mtk-btcvsd.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

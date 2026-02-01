@@ -1,0 +1,9 @@
+{
+  "module_name": "swap.h",
+  "hash_id": "966d69144b67cfeb9c54f3a563ddc401a163d70c1e87ee8a77ebf24f026acb85",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath10k/swap.h",
+  "human_readable_source": " \n \n\n#ifndef _SWAP_H_\n#define _SWAP_H_\n\n#define ATH10K_SWAP_CODE_SEG_BIN_LEN_MAX\t(512 * 1024)\n#define ATH10K_SWAP_CODE_SEG_MAGIC_BYTES_SZ\t12\n#define ATH10K_SWAP_CODE_SEG_NUM_MAX\t\t16\n \n#define ATH10K_SWAP_CODE_SEG_NUM_SUPPORTED\t1\n\nstruct ath10k_fw_file;\n\nstruct ath10k_swap_code_seg_tlv {\n\t__le32 address;\n\t__le32 length;\n\tu8 data[];\n} __packed;\n\nstruct ath10k_swap_code_seg_tail {\n\tu8 magic_signature[ATH10K_SWAP_CODE_SEG_MAGIC_BYTES_SZ];\n\t__le32 bmi_write_addr;\n} __packed;\n\nunion ath10k_swap_code_seg_item {\n\tstruct ath10k_swap_code_seg_tlv tlv;\n\tstruct ath10k_swap_code_seg_tail tail;\n} __packed;\n\nstruct ath10k_swap_code_seg_hw_info {\n\t \n\t__le32 swap_size;\n\t__le32 num_segs;\n\n\t \n\t__le32 size;\n\t__le32 size_log2;\n\t__le32 bus_addr[ATH10K_SWAP_CODE_SEG_NUM_MAX];\n\t__le64 reserved[ATH10K_SWAP_CODE_SEG_NUM_MAX];\n} __packed;\n\nstruct ath10k_swap_code_seg_info {\n\tstruct ath10k_swap_code_seg_hw_info seg_hw_info;\n\tvoid *virt_address[ATH10K_SWAP_CODE_SEG_NUM_SUPPORTED];\n\tu32 target_addr;\n\tdma_addr_t paddr[ATH10K_SWAP_CODE_SEG_NUM_SUPPORTED];\n};\n\nint ath10k_swap_code_seg_configure(struct ath10k *ar,\n\t\t\t\t   const struct ath10k_fw_file *fw_file);\nvoid ath10k_swap_code_seg_release(struct ath10k *ar,\n\t\t\t\t  struct ath10k_fw_file *fw_file);\nint ath10k_swap_code_seg_init(struct ath10k *ar,\n\t\t\t      struct ath10k_fw_file *fw_file);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

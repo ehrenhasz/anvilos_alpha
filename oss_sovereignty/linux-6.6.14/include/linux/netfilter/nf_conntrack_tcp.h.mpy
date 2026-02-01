@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_tcp.h",
+  "hash_id": "008279bfec9a14451d653e8fe9f004f194ff102d0e36ae073d1ba1b7e82dba96",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter/nf_conntrack_tcp.h",
+  "human_readable_source": " \n#ifndef _NF_CONNTRACK_TCP_H\n#define _NF_CONNTRACK_TCP_H\n\n#include <uapi/linux/netfilter/nf_conntrack_tcp.h>\n\n\nstruct ip_ct_tcp_state {\n\tu_int32_t\ttd_end;\t\t \n\tu_int32_t\ttd_maxend;\t \n\tu_int32_t\ttd_maxwin;\t \n\tu_int32_t\ttd_maxack;\t \n\tu_int8_t\ttd_scale;\t \n\tu_int8_t\tflags;\t\t \n};\n\nstruct ip_ct_tcp {\n\tstruct ip_ct_tcp_state seen[2];\t \n\tu_int8_t\tstate;\t\t \n\t \n\tu_int8_t\tlast_dir;\t \n\tu_int8_t\tretrans;\t \n\tu_int8_t\tlast_index;\t \n\tu_int32_t\tlast_seq;\t \n\tu_int32_t\tlast_ack;\t \n\tu_int32_t\tlast_end;\t \n\tu_int16_t\tlast_win;\t \n\t \n\tu_int8_t\tlast_wscale;\t \n\tu_int8_t\tlast_flags;\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

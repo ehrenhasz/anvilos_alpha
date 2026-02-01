@@ -1,0 +1,9 @@
+{
+  "module_name": "wm8994.h",
+  "hash_id": "d19d1cc930d809ffa2686ac88bbfba622a8db49d2f477dbfddb1fe82d6a2c3b7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/wm8994.h",
+  "human_readable_source": " \n \n\n#ifndef __MFD_WM8994_H__\n#define __MFD_WM8994_H__\n\n#include <linux/regmap.h>\n\nextern struct regmap_config wm1811_regmap_config;\nextern struct regmap_config wm8994_regmap_config;\nextern struct regmap_config wm8958_regmap_config;\nextern struct regmap_config wm8994_base_regmap_config;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

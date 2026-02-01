@@ -1,0 +1,9 @@
+{
+  "module_name": "rt2800usb.h",
+  "hash_id": "8ce220a57ceef191cae701b94c6e61929263b91a0175b64fb57506251d7e47f6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ralink/rt2x00/rt2800usb.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef RT2800USB_H\n#define RT2800USB_H\n\n \n#define FIRMWARE_RT2870\t\t\t\"rt2870.bin\"\n#define FIRMWARE_IMAGE_BASE\t\t0x3000\n\n \n#define TXINFO_DESC_SIZE\t\t(1 * sizeof(__le32))\n#define RXINFO_DESC_SIZE\t\t(1 * sizeof(__le32))\n\n \n\n \n#define TXINFO_W0_USB_DMA_TX_PKT_LEN\tFIELD32(0x0000ffff)\n#define TXINFO_W0_WIV\t\t\tFIELD32(0x01000000)\n#define TXINFO_W0_QSEL\t\t\tFIELD32(0x06000000)\n#define TXINFO_W0_SW_USE_LAST_ROUND\tFIELD32(0x08000000)\n#define TXINFO_W0_USB_DMA_NEXT_VALID\tFIELD32(0x40000000)\n#define TXINFO_W0_USB_DMA_TX_BURST\tFIELD32(0x80000000)\n\n \n\n \n\n#define RXINFO_W0_USB_DMA_RX_PKT_LEN\tFIELD32(0x0000ffff)\n\n \n\n \n\n#define RXD_W0_BA\t\t\tFIELD32(0x00000001)\n#define RXD_W0_DATA\t\t\tFIELD32(0x00000002)\n#define RXD_W0_NULLDATA\t\t\tFIELD32(0x00000004)\n#define RXD_W0_FRAG\t\t\tFIELD32(0x00000008)\n#define RXD_W0_UNICAST_TO_ME\t\tFIELD32(0x00000010)\n#define RXD_W0_MULTICAST\t\tFIELD32(0x00000020)\n#define RXD_W0_BROADCAST\t\tFIELD32(0x00000040)\n#define RXD_W0_MY_BSS\t\t\tFIELD32(0x00000080)\n#define RXD_W0_CRC_ERROR\t\tFIELD32(0x00000100)\n#define RXD_W0_CIPHER_ERROR\t\tFIELD32(0x00000600)\n#define RXD_W0_AMSDU\t\t\tFIELD32(0x00000800)\n#define RXD_W0_HTC\t\t\tFIELD32(0x00001000)\n#define RXD_W0_RSSI\t\t\tFIELD32(0x00002000)\n#define RXD_W0_L2PAD\t\t\tFIELD32(0x00004000)\n#define RXD_W0_AMPDU\t\t\tFIELD32(0x00008000)\n#define RXD_W0_DECRYPTED\t\tFIELD32(0x00010000)\n#define RXD_W0_PLCP_RSSI\t\tFIELD32(0x00020000)\n#define RXD_W0_CIPHER_ALG\t\tFIELD32(0x00040000)\n#define RXD_W0_LAST_AMSDU\t\tFIELD32(0x00080000)\n#define RXD_W0_PLCP_SIGNAL\t\tFIELD32(0xfff00000)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

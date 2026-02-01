@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "ecae635f9285743b6021eaa18fa4505e9b6fc954b716732cbe582ff8444238fb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/cpufreq/config",
+  "human_readable_source": "CONFIG_CPU_FREQ=y\nCONFIG_CPU_FREQ_STAT=y\nCONFIG_CPU_FREQ_GOV_POWERSAVE=y\nCONFIG_CPU_FREQ_GOV_USERSPACE=y\nCONFIG_CPU_FREQ_GOV_ONDEMAND=y\nCONFIG_CPU_FREQ_GOV_CONSERVATIVE=y\nCONFIG_CPU_FREQ_GOV_SCHEDUTIL=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bus.h",
+  "hash_id": "b22eeb5be47596e6ed69838d8da74b87edf5721ca2b01d09c44c80ebaf9a0b12",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/typec/bus.h",
+  "human_readable_source": " \n\n#ifndef __USB_TYPEC_ALTMODE_H__\n#define __USB_TYPEC_ALTMODE_H__\n\n#include <linux/usb/typec_altmode.h>\n\nstruct bus_type;\nstruct typec_mux;\nstruct typec_retimer;\n\nstruct altmode {\n\tunsigned int\t\t\tid;\n\tstruct typec_altmode\t\tadev;\n\tstruct typec_mux\t\t*mux;\n\tstruct typec_retimer\t\t*retimer;\n\n\tenum typec_port_data\t\troles;\n\n\tstruct attribute\t\t*attrs[5];\n\tchar\t\t\t\tgroup_name[8];\n\tstruct attribute_group\t\tgroup;\n\tconst struct attribute_group\t*groups[2];\n\n\tstruct altmode\t\t\t*partner;\n\tstruct altmode\t\t\t*plug[2];\n};\n\n#define to_altmode(d) container_of(d, struct altmode, adev)\n\nextern const struct bus_type typec_bus;\nextern const struct device_type typec_altmode_dev_type;\n\n#define is_typec_altmode(_dev_) (_dev_->type == &typec_altmode_dev_type)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

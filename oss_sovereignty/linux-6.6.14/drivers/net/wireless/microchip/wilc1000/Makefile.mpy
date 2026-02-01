@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "499fc02b88d8c64045d8adb7a596d104fdeafe91523f5dda285940a8aab2a2a7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/microchip/wilc1000/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_WILC1000) += wilc1000.o\n\nwilc1000-objs := cfg80211.o netdev.o mon.o \\\n\t\t\thif.o wlan_cfg.o wlan.o\n\nobj-$(CONFIG_WILC1000_SDIO) += wilc1000-sdio.o\nwilc1000-sdio-objs += sdio.o\n\nobj-$(CONFIG_WILC1000_SPI) += wilc1000-spi.o\nwilc1000-spi-objs += spi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

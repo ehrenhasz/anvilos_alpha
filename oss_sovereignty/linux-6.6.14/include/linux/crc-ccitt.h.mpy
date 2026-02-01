@@ -1,0 +1,9 @@
+{
+  "module_name": "crc-ccitt.h",
+  "hash_id": "ced857c9e89b51936106ba0b19ed96c1e3b49e748a62e53d21ab46fc79aefffe",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/crc-ccitt.h",
+  "human_readable_source": " \n#ifndef _LINUX_CRC_CCITT_H\n#define _LINUX_CRC_CCITT_H\n\n#include <linux/types.h>\n\nextern u16 const crc_ccitt_table[256];\nextern u16 const crc_ccitt_false_table[256];\n\nextern u16 crc_ccitt(u16 crc, const u8 *buffer, size_t len);\nextern u16 crc_ccitt_false(u16 crc, const u8 *buffer, size_t len);\n\nstatic inline u16 crc_ccitt_byte(u16 crc, const u8 c)\n{\n\treturn (crc >> 8) ^ crc_ccitt_table[(crc ^ c) & 0xff];\n}\n\nstatic inline u16 crc_ccitt_false_byte(u16 crc, const u8 c)\n{\n    return (crc << 8) ^ crc_ccitt_false_table[(crc >> 8) ^ c];\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mthca_profile.h",
+  "hash_id": "eaf1053de6eab0b6f3561e6f1074d96720b4c72ecdc35b563c5599d68aa1eb34",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/mthca/mthca_profile.h",
+  "human_readable_source": " \n\n#ifndef MTHCA_PROFILE_H\n#define MTHCA_PROFILE_H\n\n#include \"mthca_dev.h\"\n#include \"mthca_cmd.h\"\n\nstruct mthca_profile {\n\tint num_qp;\n\tint rdb_per_qp;\n\tint num_srq;\n\tint num_cq;\n\tint num_mcg;\n\tint num_mpt;\n\tint num_mtt;\n\tint num_udav;\n\tint num_uar;\n\tint uarc_size;\n\tint fmr_reserved_mtts;\n};\n\ns64 mthca_make_profile(struct mthca_dev *mdev,\n\t\t       struct mthca_profile *request,\n\t\t       struct mthca_dev_lim *dev_lim,\n\t\t       struct mthca_init_hca_param *init_hca);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

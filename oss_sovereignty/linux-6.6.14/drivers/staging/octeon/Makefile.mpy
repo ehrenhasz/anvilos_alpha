@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cef561b3466dc748dd0f3d1e9417d49675db62d190948c5d578a3f980d2c1f86",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/octeon/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Copyright (C) 2005-2009 Cavium Networks\n#\n\n#\n# Makefile for Cavium OCTEON on-board ethernet driver\n#\n\nobj-${CONFIG_OCTEON_ETHERNET} :=  octeon-ethernet.o\n\nocteon-ethernet-y := ethernet.o\nocteon-ethernet-y += ethernet-mdio.o\nocteon-ethernet-y += ethernet-mem.o\nocteon-ethernet-y += ethernet-rgmii.o\nocteon-ethernet-y += ethernet-rx.o\nocteon-ethernet-y += ethernet-sgmii.o\nocteon-ethernet-y += ethernet-spi.o\nocteon-ethernet-y += ethernet-tx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

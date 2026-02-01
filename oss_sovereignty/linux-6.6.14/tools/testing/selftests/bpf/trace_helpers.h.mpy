@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_helpers.h",
+  "hash_id": "09b7d573550b6c0909d2bf2cc366b33d070640193a37cb68d2e8a63c917c3093",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/trace_helpers.h",
+  "human_readable_source": " \n#ifndef __TRACE_HELPER_H\n#define __TRACE_HELPER_H\n\n#include <bpf/libbpf.h>\n\n#define __ALIGN_MASK(x, mask)\t(((x)+(mask))&~(mask))\n#define ALIGN(x, a)\t\t__ALIGN_MASK(x, (typeof(x))(a)-1)\n\nstruct ksym {\n\tlong addr;\n\tchar *name;\n};\n\nint load_kallsyms(void);\nint load_kallsyms_refresh(void);\n\nstruct ksym *ksym_search(long key);\nlong ksym_get_addr(const char *name);\n\n \nint kallsyms_find(const char *sym, unsigned long long *addr);\n\nvoid read_trace_pipe(void);\n\nssize_t get_uprobe_offset(const void *addr);\nssize_t get_rel_offset(uintptr_t addr);\n\nint read_build_id(const char *path, char *build_id, size_t size);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

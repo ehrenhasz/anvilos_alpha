@@ -1,0 +1,9 @@
+{
+  "module_name": "lifebook.h",
+  "hash_id": "d2b8cc494692e28b3a119cc6a48b02698f25fdb3c373f0d3ef579fab86522401",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/mouse/lifebook.h",
+  "human_readable_source": " \n \n\n#ifndef _LIFEBOOK_H\n#define _LIFEBOOK_H\n\nint lifebook_detect(struct psmouse *psmouse, bool set_properties);\nint lifebook_init(struct psmouse *psmouse);\n\n#ifdef CONFIG_MOUSE_PS2_LIFEBOOK\nvoid lifebook_module_init(void);\n#else\nstatic inline void lifebook_module_init(void)\n{\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

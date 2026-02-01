@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_ipt.h",
+  "hash_id": "46f9c69383007dc8f4933da70d5f1437caacd39251a86cb20456e4c3434b28da",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_act/tc_ipt.h",
+  "human_readable_source": " \n#ifndef __LINUX_TC_IPT_H\n#define __LINUX_TC_IPT_H\n\n#include <linux/pkt_cls.h>\n\nenum {\n\tTCA_IPT_UNSPEC,\n\tTCA_IPT_TABLE,\n\tTCA_IPT_HOOK,\n\tTCA_IPT_INDEX,\n\tTCA_IPT_CNT,\n\tTCA_IPT_TM,\n\tTCA_IPT_TARG,\n\tTCA_IPT_PAD,\n\t__TCA_IPT_MAX\n};\n#define TCA_IPT_MAX (__TCA_IPT_MAX - 1)\n                                                                                \n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

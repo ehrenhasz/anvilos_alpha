@@ -1,0 +1,9 @@
+{
+  "module_name": "memset_explicit.c",
+  "hash_id": "cf67661e9816b1758c5d2bdc9034b864ff2a4280a6215bead0bde749b3262af1",
+  "original_prompt": "Ingested from coreutils-9.4/lib/memset_explicit.c",
+  "human_readable_source": " \n#if HAVE_MEMSET_S\n# define __STDC_WANT_LIB_EXT1__ 1\n#endif\n\n#include <string.h>\n\n \nvoid *\nmemset_explicit (void *s, int c, size_t len)\n{\n#if HAVE_EXPLICIT_MEMSET\n  return explicit_memset (s, c, len);\n#elif HAVE_MEMSET_S\n  (void) memset_s (s, len, c, len);\n  return s;\n#elif defined __GNUC__ && !defined __clang__\n  memset (s, c, len);\n   \n  __asm__ volatile (\"\" ::: \"memory\");\n  return s;\n#elif defined __clang__\n  memset (s, c, len);\n   \n   \n  void * (* const volatile volatile_memset) (void *, int, size_t) = memset;\n  return volatile_memset (s, c, len);\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

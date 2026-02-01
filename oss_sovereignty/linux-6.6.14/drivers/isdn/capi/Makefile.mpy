@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3c000f6cf89d517017b6c7f998ee5ccc6ab131941eb5b2f0656cc0cdd3847a14",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/isdn/capi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Makefile for the CAPI subsystem used by BT_CMTP\n\nobj-$(CONFIG_BT_CMTP)\t\t\t+= kernelcapi.o\nkernelcapi-y\t\t\t\t:= kcapi.o capiutil.o capi.o kcapi_proc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

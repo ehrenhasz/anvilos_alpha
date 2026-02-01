@@ -1,0 +1,9 @@
+{
+  "module_name": "test_lirc_mode2_kern.c",
+  "hash_id": "ec01ae8fe6b4824a817fe4245c23e410a6e84315a74e78ce09c550bf9e385df2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_lirc_mode2_kern.c",
+  "human_readable_source": "\n\n\n\n\n#include <linux/bpf.h>\n#include <linux/lirc.h>\n#include <bpf/bpf_helpers.h>\n\nSEC(\"lirc_mode2\")\nint bpf_decoder(unsigned int *sample)\n{\n\tif (LIRC_IS_PULSE(*sample)) {\n\t\tunsigned int duration = LIRC_VALUE(*sample);\n\n\t\tif (duration & 0x10000)\n\t\t\tbpf_rc_keydown(sample, 0x40, duration & 0xffff, 0);\n\t\tif (duration & 0x20000)\n\t\t\tbpf_rc_pointer_rel(sample, (duration >> 8) & 0xff,\n\t\t\t\t\t   duration & 0xff);\n\t}\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

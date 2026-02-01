@@ -1,0 +1,9 @@
+{
+  "module_name": "mkstemp.c",
+  "hash_id": "780fb6695679c50cc0dabe0619fb651b07b6de64e00232d418332d02d1a9d03e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mkstemp.c",
+  "human_readable_source": " \nint\nmkstemp (char *xtemplate)\n{\n  return __gen_tempname (xtemplate, 0, 0, __GT_FILE);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

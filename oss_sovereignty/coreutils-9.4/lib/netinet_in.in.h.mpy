@@ -1,0 +1,9 @@
+{
+  "module_name": "netinet_in.in.h",
+  "hash_id": "d4a7ee9ba605098d145e1bac3a36c3da2ad5962f6e26bb8831ca76003a33aaf8",
+  "original_prompt": "Ingested from coreutils-9.4/lib/netinet_in.in.h",
+  "human_readable_source": " \n# include <sys/types.h>\n\n \n# @INCLUDE_NEXT@ @NEXT_NETINET_IN_H@\n\n#endif\n\n#ifndef _@GUARD_PREFIX@_NETINET_IN_H\n#define _@GUARD_PREFIX@_NETINET_IN_H\n\n#if !@HAVE_NETINET_IN_H@\n\n \n\n# include <sys/socket.h>\n\n#endif\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

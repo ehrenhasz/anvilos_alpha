@@ -1,0 +1,9 @@
+{
+  "module_name": "dev.h",
+  "hash_id": "fff9802bd059e9cbab06e588b564f946d971481ec84c654b9ae3b2197b04e35e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_SF_DEV_H__\n#define __MLX5_SF_DEV_H__\n\n#ifdef CONFIG_MLX5_SF\n\n#include <linux/auxiliary_bus.h>\n\n#define MLX5_SF_DEV_ID_NAME \"sf\"\n\nstruct mlx5_sf_dev {\n\tstruct auxiliary_device adev;\n\tstruct mlx5_core_dev *parent_mdev;\n\tstruct mlx5_core_dev *mdev;\n\tphys_addr_t bar_base_addr;\n\tu32 sfnum;\n\tu16 fn_id;\n};\n\nvoid mlx5_sf_dev_table_create(struct mlx5_core_dev *dev);\nvoid mlx5_sf_dev_table_destroy(struct mlx5_core_dev *dev);\n\nint mlx5_sf_driver_register(void);\nvoid mlx5_sf_driver_unregister(void);\n\nbool mlx5_sf_dev_allocated(const struct mlx5_core_dev *dev);\n\n#else\n\nstatic inline void mlx5_sf_dev_table_create(struct mlx5_core_dev *dev)\n{\n}\n\nstatic inline void mlx5_sf_dev_table_destroy(struct mlx5_core_dev *dev)\n{\n}\n\nstatic inline int mlx5_sf_driver_register(void)\n{\n\treturn 0;\n}\n\nstatic inline void mlx5_sf_driver_unregister(void)\n{\n}\n\nstatic inline bool mlx5_sf_dev_allocated(const struct mlx5_core_dev *dev)\n{\n\treturn false;\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "d6d7c83c2961d1057a72678ee4c6d998d1cc32cb784125d5728e2ded012a1414",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/thermal/Build",
+  "human_readable_source": "libthermal-y += commands.o\nlibthermal-y += events.o\nlibthermal-y += thermal_nl.o\nlibthermal-y += sampling.o\nlibthermal-y += thermal.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

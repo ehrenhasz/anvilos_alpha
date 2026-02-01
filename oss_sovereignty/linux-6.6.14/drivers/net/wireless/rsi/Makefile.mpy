@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8114900b89254c8ac0b1745b3a144bee4e85157a6174129f6cf96c1bfcd40788",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/rsi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nrsi_91x-y\t\t\t+= rsi_91x_main.o\nrsi_91x-y\t\t\t+= rsi_91x_core.o\nrsi_91x-y\t\t\t+= rsi_91x_mac80211.o\nrsi_91x-y\t\t\t+= rsi_91x_mgmt.o\nrsi_91x-y\t\t\t+= rsi_91x_hal.o\nrsi_91x-y\t\t\t+= rsi_91x_ps.o\nrsi_91x-$(CONFIG_RSI_COEX)\t+= rsi_91x_coex.o\nrsi_91x-$(CONFIG_RSI_DEBUGFS)\t+= rsi_91x_debugfs.o\n\nrsi_usb-y\t\t\t+= rsi_91x_usb.o rsi_91x_usb_ops.o\nrsi_sdio-y\t\t\t+= rsi_91x_sdio.o rsi_91x_sdio_ops.o\nobj-$(CONFIG_RSI_91X) \t\t+= rsi_91x.o\nobj-$(CONFIG_RSI_SDIO)\t\t+= rsi_sdio.o\nobj-$(CONFIG_RSI_USB)\t\t+= rsi_usb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

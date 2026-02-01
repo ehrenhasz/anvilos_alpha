@@ -1,0 +1,9 @@
+{
+  "module_name": "m_item_cur.c",
+  "hash_id": "6207cdc9484e0b1e45f3103f6e92742e1847f5ea0ca1ddd062615d5c92c602b6",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_item_cur.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_item_cur.c,v 1.22 2021/06/17 21:20:30 tom Exp $\")\n\n \nMENU_EXPORT(int)\nset_current_item(MENU *menu, ITEM *item)\n{\n  T((T_CALLED(\"set_current_item(%p,%p)\"), (void *)menu, (void *)item));\n\n  if (menu && item && (item->imenu == menu))\n    {\n      if (menu->status & _IN_DRIVER)\n\tRETURN(E_BAD_STATE);\n\n      assert(menu->curitem);\n      if (item != menu->curitem)\n\t{\n\t  if (menu->status & _LINK_NEEDED)\n\t    {\n\t       \n\t      _nc_Link_Items(menu);\n\t    }\n\t  assert(menu->pattern);\n\t  Reset_Pattern(menu);\n\t   \n\t  Adjust_Current_Item(menu, menu->toprow, item);\n\t}\n    }\n  else\n    RETURN(E_BAD_ARGUMENT);\n\n  RETURN(E_OK);\n}\n\n \nMENU_EXPORT(ITEM *)\ncurrent_item(const MENU *menu)\n{\n  T((T_CALLED(\"current_item(%p)\"), (const void *)menu));\n  returnItem((menu && menu->items) ? menu->curitem : (ITEM *)0);\n}\n\n \nMENU_EXPORT(int)\nitem_index(const ITEM *item)\n{\n  T((T_CALLED(\"item_index(%p)\"), (const void *)item));\n  returnCode((item && item->imenu) ? item->index : ERR);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

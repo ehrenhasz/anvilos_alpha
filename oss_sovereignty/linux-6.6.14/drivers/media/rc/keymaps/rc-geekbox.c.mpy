@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-geekbox.c",
+  "hash_id": "da38f9ec72ffa69bc035c01f5727295f7b0e5e15bc9c3fcd1a21f15e0ff60fc6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-geekbox.c",
+  "human_readable_source": "\n \n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\nstatic struct rc_map_table geekbox[] = {\n\t{ 0x01, KEY_BACK },\n\t{ 0x02, KEY_DOWN },\n\t{ 0x03, KEY_UP },\n\t{ 0x07, KEY_OK },\n\t{ 0x0b, KEY_VOLUMEUP },\n\t{ 0x0e, KEY_LEFT },\n\t{ 0x13, KEY_MENU },\n\t{ 0x14, KEY_POWER },\n\t{ 0x1a, KEY_RIGHT },\n\t{ 0x48, KEY_HOME },\n\t{ 0x58, KEY_VOLUMEDOWN },\n\t{ 0x5c, KEY_SCREEN },\n};\n\nstatic struct rc_map_list geekbox_map = {\n\t.map = {\n\t\t.scan     = geekbox,\n\t\t.size     = ARRAY_SIZE(geekbox),\n\t\t.rc_proto = RC_PROTO_NEC,\n\t\t.name     = RC_MAP_GEEKBOX,\n\t}\n};\n\nstatic int __init init_rc_map_geekbox(void)\n{\n\treturn rc_map_register(&geekbox_map);\n}\n\nstatic void __exit exit_rc_map_geekbox(void)\n{\n\trc_map_unregister(&geekbox_map);\n}\n\nmodule_init(init_rc_map_geekbox)\nmodule_exit(exit_rc_map_geekbox)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Martin Blumenstingl <martin.blumenstingl@googlemail.com>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

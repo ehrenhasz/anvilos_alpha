@@ -1,0 +1,9 @@
+{
+  "module_name": "unix.h",
+  "hash_id": "88b809f6aff434751c66e8cd863a7889781daba4c47daede63949a475f70b316",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netns/unix.h",
+  "human_readable_source": " \n \n#ifndef __NETNS_UNIX_H__\n#define __NETNS_UNIX_H__\n\n#include <linux/spinlock.h>\n\nstruct unix_table {\n\tspinlock_t\t\t*locks;\n\tstruct hlist_head\t*buckets;\n};\n\nstruct ctl_table_header;\nstruct netns_unix {\n\tstruct unix_table\ttable;\n\tint\t\t\tsysctl_max_dgram_qlen;\n\tstruct ctl_table_header\t*ctl;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

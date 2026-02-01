@@ -1,0 +1,9 @@
+{
+  "module_name": "sor907d.c",
+  "hash_id": "2d0fbbef905124f0fe91dcf1dd8285cc13b4eab9ddc15ef8331afcc38040dc20",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/sor907d.c",
+  "human_readable_source": " \n#include \"core.h\"\n\n#include <nvif/class.h>\n#include <nvif/push507c.h>\n\n#include <nvhw/class/cl907d.h>\n\n#include <nouveau_bo.h>\n\nstatic int\nsor907d_ctrl(struct nv50_core *core, int or, u32 ctrl,\n\t     struct nv50_head_atom *asyh)\n{\n\tstruct nvif_push *push = core->chan.push;\n\tint ret;\n\n\tif ((ret = PUSH_WAIT(push, 2)))\n\t\treturn ret;\n\n\tPUSH_MTHD(push, NV907D, SOR_SET_CONTROL(or), ctrl);\n\treturn 0;\n}\n\nstatic void\nsor907d_get_caps(struct nv50_disp *disp, struct nouveau_encoder *outp, int or)\n{\n\tstruct nouveau_bo *bo = disp->sync;\n\tconst int off = or * 2;\n\toutp->caps.dp_interlace =\n\t\tNVBO_RV32(bo, off, NV907D_CORE_NOTIFIER_3, CAPABILITIES_CAP_SOR0_20, DP_INTERLACE);\n}\n\nconst struct nv50_outp_func\nsor907d = {\n\t.ctrl = sor907d_ctrl,\n\t.get_caps = sor907d_get_caps,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

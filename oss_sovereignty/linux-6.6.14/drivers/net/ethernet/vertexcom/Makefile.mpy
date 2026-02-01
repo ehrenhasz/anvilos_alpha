@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4bdd044c49422c3868ff06f4eec21049509d1e085035e2cd9217c0f798f8191e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/vertexcom/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Vertexcom network device drivers.\n#\n\nobj-$(CONFIG_MSE102X) += mse102x.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

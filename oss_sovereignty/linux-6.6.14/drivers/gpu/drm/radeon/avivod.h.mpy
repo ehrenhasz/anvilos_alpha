@@ -1,0 +1,9 @@
+{
+  "module_name": "avivod.h",
+  "hash_id": "b9f98974a5a9ea5737082add4dcc1328d604976b1f24a4c45796d6a545bc051b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/avivod.h",
+  "human_readable_source": " \n#ifndef AVIVOD_H\n#define AVIVOD_H\n\n\n#define\tD1CRTC_CONTROL\t\t\t\t\t0x6080\n#define\t\tCRTC_EN\t\t\t\t\t\t(1 << 0)\n#define\tD1CRTC_STATUS\t\t\t\t\t0x609c\n#define\tD1CRTC_UPDATE_LOCK\t\t\t\t0x60E8\n#define\tD1GRPH_PRIMARY_SURFACE_ADDRESS\t\t\t0x6110\n#define\tD1GRPH_SECONDARY_SURFACE_ADDRESS\t\t0x6118\n\n#define\tD2CRTC_CONTROL\t\t\t\t\t0x6880\n#define\tD2CRTC_STATUS\t\t\t\t\t0x689c\n#define\tD2CRTC_UPDATE_LOCK\t\t\t\t0x68E8\n#define\tD2GRPH_PRIMARY_SURFACE_ADDRESS\t\t\t0x6910\n#define\tD2GRPH_SECONDARY_SURFACE_ADDRESS\t\t0x6918\n\n#define\tD1VGA_CONTROL\t\t\t\t\t0x0330\n#define\t\tDVGA_CONTROL_MODE_ENABLE\t\t\t(1 << 0)\n#define\t\tDVGA_CONTROL_TIMING_SELECT\t\t\t(1 << 8)\n#define\t\tDVGA_CONTROL_SYNC_POLARITY_SELECT\t\t(1 << 9)\n#define\t\tDVGA_CONTROL_OVERSCAN_TIMING_SELECT\t\t(1 << 10)\n#define\t\tDVGA_CONTROL_OVERSCAN_COLOR_EN\t\t\t(1 << 16)\n#define\t\tDVGA_CONTROL_ROTATE\t\t\t\t(1 << 24)\n#define D2VGA_CONTROL\t\t\t\t\t0x0338\n\n#define\tVGA_HDP_CONTROL\t\t\t\t\t0x328\n#define\t\tVGA_MEM_PAGE_SELECT_EN\t\t\t\t(1 << 0)\n#define\t\tVGA_MEMORY_DISABLE\t\t\t\t(1 << 4)\n#define\t\tVGA_RBBM_LOCK_DISABLE\t\t\t\t(1 << 8)\n#define\t\tVGA_SOFT_RESET\t\t\t\t\t(1 << 16)\n#define\tVGA_MEMORY_BASE_ADDRESS\t\t\t\t0x0310\n#define\tVGA_RENDER_CONTROL\t\t\t\t0x0300\n#define\t\tVGA_VSTATUS_CNTL_MASK\t\t\t\t0x00030000\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

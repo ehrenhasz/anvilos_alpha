@@ -1,0 +1,9 @@
+{
+  "module_name": "key.h",
+  "hash_id": "0d70bbab7dd21da83d9a1a400bd0c026d04a907f27f995be67f567eadf2c7161",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vt6656/key.h",
+  "human_readable_source": " \n \n\n#ifndef __KEY_H__\n#define __KEY_H__\n\n#include \"device.h\"\n\n#define MAX_KEY_TABLE       11\n\n#define KEY_CTL_WEP         0x00\n#define KEY_CTL_NONE        0x01\n#define KEY_CTL_TKIP        0x02\n#define KEY_CTL_CCMP        0x03\n\n#define VNT_KEY_ONFLY_ALL\t0x4000\n#define VNT_KEY_ONFLY\t\t0x8000\n#define VNT_KEY_ALLGROUP\t0x04\n#define VNT_KEY_GROUP\t\t0x40\n#define VNT_KEY_PAIRWISE\tVNT_KEY_ONFLY\n#define VNT_KEY_GROUP_ADDRESS\t(VNT_KEY_ALLGROUP | VNT_KEY_GROUP)\n#define VNT_KEY_DEFAULTKEY\t(VNT_KEY_GROUP_ADDRESS | VNT_KEY_ONFLY |\\\n\t\t\t\tVNT_KEY_ONFLY_ALL)\n\nint vnt_key_init_table(struct vnt_private *priv);\n\nint vnt_set_keys(struct ieee80211_hw *hw, struct ieee80211_sta *sta,\n\t\t struct ieee80211_vif *vif, struct ieee80211_key_conf *key);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

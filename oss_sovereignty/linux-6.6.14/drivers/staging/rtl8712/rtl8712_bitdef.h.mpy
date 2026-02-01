@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_bitdef.h",
+  "hash_id": "b45aa9cb96a127c3f946c9fa29f53cdaef33ba6db170ecd546d37cc47d8a592f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_bitdef.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL8712_BITDEF_H__\n#define __RTL8712_BITDEF_H__\n\n#include \"rtl8712_cmdctrl_bitdef.h\"\n#include \"rtl8712_syscfg_bitdef.h\"\n#include \"rtl8712_macsetting_bitdef.h\"\n#include \"rtl8712_timectrl_bitdef.h\"\n#include \"rtl8712_fifoctrl_bitdef.h\"\n#include \"rtl8712_ratectrl_bitdef.h\"\n#include \"rtl8712_edcasetting_bitdef.h\"\n#include \"rtl8712_wmac_bitdef.h\"\n#include \"rtl8712_security_bitdef.h\"\n#include \"rtl8712_powersave_bitdef.h\"\n#include \"rtl8712_gp_bitdef.h\"\n#include \"rtl8712_interrupt_bitdef.h\"\n#include \"rtl8712_debugctrl_bitdef.h\"\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

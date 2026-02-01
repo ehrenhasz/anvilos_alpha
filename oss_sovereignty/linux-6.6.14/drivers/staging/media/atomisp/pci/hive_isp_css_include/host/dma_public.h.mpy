@@ -1,0 +1,9 @@
+{
+  "module_name": "dma_public.h",
+  "hash_id": "52b4aef0d204f836a4113ce25203b306c1514fde65d9ad4555ca315499facd20",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/host/dma_public.h",
+  "human_readable_source": " \n \n\n#ifndef __DMA_PUBLIC_H_INCLUDED__\n#define __DMA_PUBLIC_H_INCLUDED__\n\n#include \"system_local.h\"\n\ntypedef struct dma_state_s\t\tdma_state_t;\n\n \nvoid dma_get_state(\n    const dma_ID_t\t\tID,\n    dma_state_t\t\t\t*state);\n\n \nSTORAGE_CLASS_DMA_H void dma_reg_store(\n    const dma_ID_t\t\tID,\n    const unsigned int\treg,\n    const hrt_data\t\tvalue);\n\n \nSTORAGE_CLASS_DMA_H hrt_data dma_reg_load(\n    const dma_ID_t\t\tID,\n    const unsigned int\treg);\n\n \nvoid\ndma_set_max_burst_size(\n    dma_ID_t\t\tID,\n    dma_connection\t\tconn,\n    uint32_t\t\tmax_burst_size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

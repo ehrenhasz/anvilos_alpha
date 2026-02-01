@@ -1,0 +1,9 @@
+{
+  "module_name": "pci.h",
+  "hash_id": "6b57cac2563aacca2017470308ed8e9f097742284e7c33b2f576bcee7c4c2241",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/pci.h",
+  "human_readable_source": " \n\n#ifndef __ASM_GENERIC_PCI_H\n#define __ASM_GENERIC_PCI_H\n\n#ifndef PCIBIOS_MIN_IO\n#define PCIBIOS_MIN_IO\t\t0\n#endif\n\n#ifndef PCIBIOS_MIN_MEM\n#define PCIBIOS_MIN_MEM\t\t0\n#endif\n\n#ifndef pcibios_assign_all_busses\n \n#define pcibios_assign_all_busses() 1\n#endif\n\n \n#define ARCH_GENERIC_PCI_MMAP_RESOURCE\n\n#ifdef CONFIG_PCI_DOMAINS\nstatic inline int pci_proc_domain(struct pci_bus *bus)\n{\n\t \n\treturn 1;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

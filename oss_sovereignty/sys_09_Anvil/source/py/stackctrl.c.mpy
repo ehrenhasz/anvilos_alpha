@@ -1,0 +1,9 @@
+{
+  "module_name": "stackctrl.c",
+  "hash_id": "976b0919aeeef8ca2d2ae1d887241fad72b3d9f28d32b2aaa64e503b62b3363a",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/stackctrl.c",
+  "human_readable_source": " \n\n#include \"py/runtime.h\"\n#include \"py/stackctrl.h\"\n\nvoid mp_stack_ctrl_init(void) {\n    #if __GNUC__ >= 13\n    #pragma GCC diagnostic push\n    #pragma GCC diagnostic ignored \"-Wdangling-pointer\"\n    #endif\n    volatile int stack_dummy;\n    MP_STATE_THREAD(stack_top) = (char *)&stack_dummy;\n    #if __GNUC__ >= 13\n    #pragma GCC diagnostic pop\n    #endif\n}\n\nvoid mp_stack_set_top(void *top) {\n    MP_STATE_THREAD(stack_top) = top;\n}\n\nmp_uint_t mp_stack_usage(void) {\n    \n    volatile int stack_dummy;\n    return MP_STATE_THREAD(stack_top) - (char *)&stack_dummy;\n}\n\n#if MICROPY_STACK_CHECK\n\nvoid mp_stack_set_limit(mp_uint_t limit) {\n    MP_STATE_THREAD(stack_limit) = limit;\n}\n\nvoid mp_stack_check(void) {\n    if (mp_stack_usage() >= MP_STATE_THREAD(stack_limit)) {\n        mp_raise_recursion_depth();\n    }\n}\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

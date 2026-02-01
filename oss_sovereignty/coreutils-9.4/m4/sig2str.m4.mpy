@@ -1,0 +1,9 @@
+{
+  "module_name": "sig2str.m4",
+  "hash_id": "a4e0b835726cc9f9888dcf2f6b438b1c3b0656ea82699ef4ffad8e2627fd39b6",
+  "original_prompt": "Ingested from coreutils-9.4/m4/sig2str.m4",
+  "human_readable_source": "# serial 7\ndnl Copyright (C) 2002, 2005-2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_SIG2STR],\n[\n  AC_CHECK_FUNCS([sig2str])\n])\n\n# Prerequisites of lib/sig2str.c.\nAC_DEFUN([gl_PREREQ_SIG2STR], [\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

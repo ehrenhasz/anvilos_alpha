@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6f0c126eadcb71bace44f21ea701f19869492a06f2851af0dc7cee287f0cc5ae",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/ipmi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the ipmi drivers.\n#\n\nipmi_si-y := ipmi_si_intf.o ipmi_kcs_sm.o ipmi_smic_sm.o ipmi_bt_sm.o \\\n\tipmi_si_hotmod.o ipmi_si_hardcode.o ipmi_si_platform.o \\\n\tipmi_si_port_io.o ipmi_si_mem_io.o\nifdef CONFIG_PCI\nipmi_si-y += ipmi_si_pci.o\nendif\nifdef CONFIG_PARISC\nipmi_si-y += ipmi_si_parisc.o\nendif\n\nobj-$(CONFIG_IPMI_HANDLER) += ipmi_msghandler.o\nobj-$(CONFIG_IPMI_DEVICE_INTERFACE) += ipmi_devintf.o\nobj-$(CONFIG_IPMI_SI) += ipmi_si.o\nobj-$(CONFIG_IPMI_DMI_DECODE) += ipmi_dmi.o\nobj-$(CONFIG_IPMI_PLAT_DATA) += ipmi_plat_data.o\nobj-$(CONFIG_IPMI_SSIF) += ipmi_ssif.o\nobj-$(CONFIG_IPMI_IPMB) += ipmi_ipmb.o\nobj-$(CONFIG_IPMI_POWERNV) += ipmi_powernv.o\nobj-$(CONFIG_IPMI_WATCHDOG) += ipmi_watchdog.o\nobj-$(CONFIG_IPMI_POWEROFF) += ipmi_poweroff.o\nobj-$(CONFIG_IPMI_KCS_BMC) += kcs_bmc.o\nobj-$(CONFIG_IPMI_KCS_BMC_SERIO) += kcs_bmc_serio.o\nobj-$(CONFIG_IPMI_KCS_BMC_CDEV_IPMI) += kcs_bmc_cdev_ipmi.o\nobj-$(CONFIG_ASPEED_BT_IPMI_BMC) += bt-bmc.o\nobj-$(CONFIG_ASPEED_KCS_IPMI_BMC) += kcs_bmc_aspeed.o\nobj-$(CONFIG_NPCM7XX_KCS_IPMI_BMC) += kcs_bmc_npcm7xx.o\nobj-$(CONFIG_IPMB_DEVICE_INTERFACE) += ipmb_dev_int.o\nobj-$(CONFIG_SSIF_IPMI_BMC) += ssif_bmc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

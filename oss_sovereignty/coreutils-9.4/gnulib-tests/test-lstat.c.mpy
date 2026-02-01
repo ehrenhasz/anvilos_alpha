@@ -1,0 +1,9 @@
+{
+  "module_name": "test-lstat.c",
+  "hash_id": "4bb713d8f467ca7871e42108146a66fe631e8c9515bc182312c7fa8ad2b56b92",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-lstat.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/stat.h>\n\n \n#include \"signature.h\"\nSIGNATURE_CHECK (lstat, int, (char const *, struct stat *));\n\n#include <fcntl.h>\n#include <errno.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n\n#include \"same-inode.h\"\n#include \"ignore-value.h\"\n#include \"macros.h\"\n\n#define BASE \"test-lstat.t\"\n\n#include \"test-lstat.h\"\n\n \nstatic int\ndo_lstat (char const *name, struct stat *st)\n{\n  return lstat (name, st);\n}\n\nint\nmain (void)\n{\n   \n  ignore_value (system (\"rm -rf \" BASE \"*\"));\n\n  return test_lstat_func (do_lstat, true);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

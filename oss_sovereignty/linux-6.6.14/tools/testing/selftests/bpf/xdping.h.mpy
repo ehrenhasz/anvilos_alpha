@@ -1,0 +1,9 @@
+{
+  "module_name": "xdping.h",
+  "hash_id": "87b81be1120f1c194d81a8f2e8e11358ae9e988da6073aea920ac78666936144",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/xdping.h",
+  "human_readable_source": " \n \n\n#define\tXDPING_MAX_COUNT\t10\n#define\tXDPING_DEFAULT_COUNT\t4\n\nstruct pinginfo {\n\t__u64\tstart;\n\t__be16\tseq;\n\t__u16\tcount;\n\t__u32\tpad;\n\t__u64\ttimes[XDPING_MAX_COUNT];\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

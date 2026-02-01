@@ -1,0 +1,9 @@
+{
+  "module_name": "if_defs.h",
+  "hash_id": "c6029f98303c7889d5901745c5850154fd931efbeb16dc8aa179791615c25c6d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/if_defs.h",
+  "human_readable_source": " \n \n\n#ifndef _IF_DEFS_H\n#define _IF_DEFS_H\n\n#define HIVE_IF_FRAME_REQUEST        0xA000\n#define HIVE_IF_LINES_REQUEST        0xB000\n#define HIVE_IF_VECTORS_REQUEST      0xC000\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

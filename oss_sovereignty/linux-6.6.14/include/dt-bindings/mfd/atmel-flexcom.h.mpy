@@ -1,0 +1,9 @@
+{
+  "module_name": "atmel-flexcom.h",
+  "hash_id": "86b6887eaf1a104c4c6bae95c3ac0af320d8e30ab81c09db2352bbaaef1b6c49",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/mfd/atmel-flexcom.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_ATMEL_FLEXCOM_H__\n#define __DT_BINDINGS_ATMEL_FLEXCOM_H__\n\n#define ATMEL_FLEXCOM_MODE_USART\t1\n#define ATMEL_FLEXCOM_MODE_SPI\t\t2\n#define ATMEL_FLEXCOM_MODE_TWI\t\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

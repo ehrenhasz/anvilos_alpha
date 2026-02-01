@@ -1,0 +1,9 @@
+{
+  "module_name": "ad5624r.h",
+  "hash_id": "7e4e5aeccd25eddf1ec1e962ff1d76665ca90205fb8467e78a0e7929a0ea960a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/dac/ad5624r.h",
+  "human_readable_source": " \n \n#ifndef SPI_AD5624R_H_\n#define SPI_AD5624R_H_\n\n#define AD5624R_DAC_CHANNELS\t\t\t4\n\n#define AD5624R_ADDR_DAC0\t\t\t0x0\n#define AD5624R_ADDR_DAC1\t\t\t0x1\n#define AD5624R_ADDR_DAC2\t\t\t0x2\n#define AD5624R_ADDR_DAC3\t\t\t0x3\n#define AD5624R_ADDR_ALL_DAC\t\t\t0x7\n\n#define AD5624R_CMD_WRITE_INPUT_N\t\t0x0\n#define AD5624R_CMD_UPDATE_DAC_N\t\t0x1\n#define AD5624R_CMD_WRITE_INPUT_N_UPDATE_ALL\t0x2\n#define AD5624R_CMD_WRITE_INPUT_N_UPDATE_N\t0x3\n#define AD5624R_CMD_POWERDOWN_DAC\t\t0x4\n#define AD5624R_CMD_RESET\t\t\t0x5\n#define AD5624R_CMD_LDAC_SETUP\t\t\t0x6\n#define AD5624R_CMD_INTERNAL_REFER_SETUP\t0x7\n\n#define AD5624R_LDAC_PWRDN_NONE\t\t\t0x0\n#define AD5624R_LDAC_PWRDN_1K\t\t\t0x1\n#define AD5624R_LDAC_PWRDN_100K\t\t\t0x2\n#define AD5624R_LDAC_PWRDN_3STATE\t\t0x3\n\n \n\nstruct ad5624r_chip_info {\n\tconst struct iio_chan_spec\t*channels;\n\tu16\t\t\t\tint_vref_mv;\n};\n\n \n\nstruct ad5624r_state {\n\tstruct spi_device\t\t*us;\n\tconst struct ad5624r_chip_info\t*chip_info;\n\tstruct regulator\t\t*reg;\n\tunsigned short\t\t\tvref_mv;\n\tunsigned\t\t\tpwr_down_mask;\n\tunsigned\t\t\tpwr_down_mode;\n};\n\n \n\nenum ad5624r_supported_device_ids {\n\tID_AD5624R3,\n\tID_AD5644R3,\n\tID_AD5664R3,\n\tID_AD5624R5,\n\tID_AD5644R5,\n\tID_AD5664R5,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

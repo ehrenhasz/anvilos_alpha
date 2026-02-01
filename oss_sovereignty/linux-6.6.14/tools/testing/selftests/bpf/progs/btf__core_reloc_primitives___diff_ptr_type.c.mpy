@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_primitives___diff_ptr_type.c",
+  "hash_id": "b4f1ea606855e3b65ba471877c2f1e7369bd881ae11d660caf821a13a48cb0d3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___diff_ptr_type.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_primitives___diff_ptr_type x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

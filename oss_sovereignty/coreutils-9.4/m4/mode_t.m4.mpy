@@ -1,0 +1,9 @@
+{
+  "module_name": "mode_t.m4",
+  "hash_id": "62c302be7569f2ec4783fd1c698f58e3d0125450085b76ac474442adfe3f0e71",
+  "original_prompt": "Ingested from coreutils-9.4/m4/mode_t.m4",
+  "human_readable_source": "# mode_t.m4 serial 2\ndnl Copyright (C) 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n# For using mode_t, it's sufficient to use AC_TYPE_MODE_T and\n# include <sys/types.h>.\n\n# Define PROMOTED_MODE_T to the type that is the result of \"default argument\n# promotion\" (ISO C 6.5.2.2.(6)) of the type mode_t.\nAC_DEFUN([gl_PROMOTED_TYPE_MODE_T],\n[\n  AC_REQUIRE([AC_TYPE_MODE_T])\n  AC_CACHE_CHECK([for promoted mode_t type], [gl_cv_promoted_mode_t], [\n    dnl Assume mode_t promotes to 'int' if and only if it is smaller than 'int',\n    dnl and to itself otherwise. This assumption is not guaranteed by the ISO C\n    dnl standard, but we don't know of any real-world counterexamples.\n    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>]],\n      [[typedef int array[2 * (sizeof (mode_t) < sizeof (int)) - 1];]])],\n      [gl_cv_promoted_mode_t='int'],\n      [gl_cv_promoted_mode_t='mode_t'])\n  ])\n  AC_DEFINE_UNQUOTED([PROMOTED_MODE_T], [$gl_cv_promoted_mode_t],\n    [Define to the type that is the result of default argument promotions of type mode_t.])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

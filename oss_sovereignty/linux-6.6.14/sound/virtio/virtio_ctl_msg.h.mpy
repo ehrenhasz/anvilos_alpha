@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_ctl_msg.h",
+  "hash_id": "6092c4f2b914f152f9508b3649dd2dc2c5db02b642744ca2af217206ab86ed5b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/virtio/virtio_ctl_msg.h",
+  "human_readable_source": " \n \n#ifndef VIRTIO_SND_MSG_H\n#define VIRTIO_SND_MSG_H\n\n#include <linux/atomic.h>\n#include <linux/virtio.h>\n\nstruct virtio_snd;\nstruct virtio_snd_msg;\n\nvoid virtsnd_ctl_msg_ref(struct virtio_snd_msg *msg);\n\nvoid virtsnd_ctl_msg_unref(struct virtio_snd_msg *msg);\n\nvoid *virtsnd_ctl_msg_request(struct virtio_snd_msg *msg);\n\nvoid *virtsnd_ctl_msg_response(struct virtio_snd_msg *msg);\n\nstruct virtio_snd_msg *virtsnd_ctl_msg_alloc(size_t request_size,\n\t\t\t\t\t     size_t response_size, gfp_t gfp);\n\nint virtsnd_ctl_msg_send(struct virtio_snd *snd, struct virtio_snd_msg *msg,\n\t\t\t struct scatterlist *out_sgs,\n\t\t\t struct scatterlist *in_sgs, bool nowait);\n\n \nstatic inline int virtsnd_ctl_msg_send_sync(struct virtio_snd *snd,\n\t\t\t\t\t    struct virtio_snd_msg *msg)\n{\n\treturn virtsnd_ctl_msg_send(snd, msg, NULL, NULL, false);\n}\n\n \nstatic inline int virtsnd_ctl_msg_send_async(struct virtio_snd *snd,\n\t\t\t\t\t     struct virtio_snd_msg *msg)\n{\n\treturn virtsnd_ctl_msg_send(snd, msg, NULL, NULL, true);\n}\n\nvoid virtsnd_ctl_msg_cancel_all(struct virtio_snd *snd);\n\nvoid virtsnd_ctl_msg_complete(struct virtio_snd_msg *msg);\n\nint virtsnd_ctl_query_info(struct virtio_snd *snd, int command, int start_id,\n\t\t\t   int count, size_t size, void *info);\n\nvoid virtsnd_ctl_notify_cb(struct virtqueue *vqueue);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

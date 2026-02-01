@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e5dc24f40174e4178f568e27db8f3f4e9567bcdbef81afb74a7770343d6fcf3d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/hyperbus/Kconfig",
+  "human_readable_source": "menuconfig MTD_HYPERBUS\n\ttristate \"HyperBus support\"\n\tdepends on HAS_IOMEM\n\tselect MTD_CFI\n\tselect MTD_MAP_BANK_WIDTH_2\n\tselect MTD_CFI_AMDSTD\n\tselect MTD_COMPLEX_MAPPINGS\n\thelp\n\t  This is the framework for the HyperBus which can be used by\n\t  the HyperBus Controller driver to communicate with\n\t  HyperFlash. See Cypress HyperBus specification for more\n\t  details\n\nif MTD_HYPERBUS\n\nconfig HBMC_AM654\n\ttristate \"HyperBus controller driver for AM65x SoC\"\n\tdepends on ARCH_K3 || COMPILE_TEST\n\tselect MULTIPLEXER\n\timply MUX_MMIO\n\thelp\n\t This is the driver for HyperBus controller on TI's AM65x and\n\t other SoCs\n\nconfig RPCIF_HYPERBUS\n\ttristate \"Renesas RPC-IF HyperBus driver\"\n\tdepends on RENESAS_RPCIF\n\tdepends on MTD_CFI_BE_BYTE_SWAP\n\thelp\n\t  This option includes Renesas RPC-IF HyperBus support.\n\nendif # MTD_HYPERBUS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hv_utils_transport.h",
+  "hash_id": "f18c3bfea6d9822499123407232b2fb35326a02cb3cdb0d8a284f65b6c723f44",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hv/hv_utils_transport.h",
+  "human_readable_source": " \n \n\n#ifndef _HV_UTILS_TRANSPORT_H\n#define _HV_UTILS_TRANSPORT_H\n\n#include <linux/connector.h>\n#include <linux/miscdevice.h>\n\nenum hvutil_transport_mode {\n\tHVUTIL_TRANSPORT_INIT = 0,\n\tHVUTIL_TRANSPORT_NETLINK,\n\tHVUTIL_TRANSPORT_CHARDEV,\n\tHVUTIL_TRANSPORT_DESTROY,\n};\n\nstruct hvutil_transport {\n\tint mode;                            \n\tstruct file_operations fops;         \n\tstruct miscdevice mdev;              \n\tstruct cb_id cn_id;                  \n\tstruct list_head list;               \n\tint (*on_msg)(void *, int);          \n\tvoid (*on_reset)(void);              \n\tvoid (*on_read)(void);               \n\tu8 *outmsg;                          \n\tint outmsg_len;                      \n\twait_queue_head_t outmsg_q;          \n\tstruct mutex lock;                   \n\tstruct completion release;           \n};\n\nstruct hvutil_transport *hvutil_transport_init(const char *name,\n\t\t\t\t\t       u32 cn_idx, u32 cn_val,\n\t\t\t\t\t       int (*on_msg)(void *, int),\n\t\t\t\t\t       void (*on_reset)(void));\nint hvutil_transport_send(struct hvutil_transport *hvt, void *msg, int len,\n\t\t\t  void (*on_read_cb)(void));\nvoid hvutil_transport_destroy(struct hvutil_transport *hvt);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

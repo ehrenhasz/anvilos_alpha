@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_police_scale.sh",
+  "hash_id": "19cc2954b54c596a815ec03fe2e9d7bb123d36d517a3b0dbd426b93e8ad3b8e7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/tc_police_scale.sh",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsource ../tc_police_scale.sh\n\ntc_police_get_target()\n{\n\tlocal should_fail=$1; shift\n\tlocal target\n\n\ttarget=$(devlink_resource_size_get global_policers single_rate_policers)\n\n\tif ((! should_fail)); then\n\t\techo $target\n\telse\n\t\techo $((target + 1))\n\tfi\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

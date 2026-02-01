@@ -1,0 +1,9 @@
+{
+  "module_name": "term.c",
+  "hash_id": "76dfd9c2984a1014aa1f6211cc40d4218f1da02b1d9a062b1c1b4a32ff6f3ee7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/term.c",
+  "human_readable_source": "\n#include \"term.h\"\n#include <stdlib.h>\n#include <termios.h>\n#include <unistd.h>\n#include <sys/ioctl.h>\n\nvoid get_term_dimensions(struct winsize *ws)\n{\n\tchar *s = getenv(\"LINES\");\n\n\tif (s != NULL) {\n\t\tws->ws_row = atoi(s);\n\t\ts = getenv(\"COLUMNS\");\n\t\tif (s != NULL) {\n\t\t\tws->ws_col = atoi(s);\n\t\t\tif (ws->ws_row && ws->ws_col)\n\t\t\t\treturn;\n\t\t}\n\t}\n#ifdef TIOCGWINSZ\n\tif (ioctl(1, TIOCGWINSZ, ws) == 0 &&\n\t    ws->ws_row && ws->ws_col)\n\t\treturn;\n#endif\n\tws->ws_row = 25;\n\tws->ws_col = 80;\n}\n\nvoid set_term_quiet_input(struct termios *old)\n{\n\tstruct termios tc;\n\n\ttcgetattr(0, old);\n\ttc = *old;\n\ttc.c_lflag &= ~(ICANON | ECHO);\n\ttc.c_cc[VMIN] = 0;\n\ttc.c_cc[VTIME] = 0;\n\ttcsetattr(0, TCSANOW, &tc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

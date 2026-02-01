@@ -1,0 +1,9 @@
+{
+  "module_name": "jedec.h",
+  "hash_id": "58e2871de6372f7cfc06aa7751d88e8f1e7b571b93ab680bb4f3471642e500a3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/jedec.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MTD_JEDEC_H\n#define __LINUX_MTD_JEDEC_H\n\nstruct jedec_ecc_info {\n\tu8 ecc_bits;\n\tu8 codeword_size;\n\t__le16 bb_per_lun;\n\t__le16 block_endurance;\n\tu8 reserved[2];\n} __packed;\n\n \n#define JEDEC_FEATURE_16_BIT_BUS\t(1 << 0)\n\n \n#define JEDEC_OPT_CMD_READ_CACHE\tBIT(1)\n\nstruct nand_jedec_params {\n\t \n\t \n\tu8 sig[4];\n\t__le16 revision;\n\t__le16 features;\n\tu8 opt_cmd[3];\n\t__le16 sec_cmd;\n\tu8 num_of_param_pages;\n\tu8 reserved0[18];\n\n\t \n\tchar manufacturer[12];\n\tchar model[20];\n\tu8 jedec_id[6];\n\tu8 reserved1[10];\n\n\t \n\t__le32 byte_per_page;\n\t__le16 spare_bytes_per_page;\n\tu8 reserved2[6];\n\t__le32 pages_per_block;\n\t__le32 blocks_per_lun;\n\tu8 lun_count;\n\tu8 addr_cycles;\n\tu8 bits_per_cell;\n\tu8 programs_per_page;\n\tu8 multi_plane_addr;\n\tu8 multi_plane_op_attr;\n\tu8 reserved3[38];\n\n\t \n\t__le16 async_sdr_speed_grade;\n\t__le16 toggle_ddr_speed_grade;\n\t__le16 sync_ddr_speed_grade;\n\tu8 async_sdr_features;\n\tu8 toggle_ddr_features;\n\tu8 sync_ddr_features;\n\t__le16 t_prog;\n\t__le16 t_bers;\n\t__le16 t_r;\n\t__le16 t_r_multi_plane;\n\t__le16 t_ccs;\n\t__le16 io_pin_capacitance_typ;\n\t__le16 input_pin_capacitance_typ;\n\t__le16 clk_pin_capacitance_typ;\n\tu8 driver_strength_support;\n\t__le16 t_adl;\n\tu8 reserved4[36];\n\n\t \n\tu8 guaranteed_good_blocks;\n\t__le16 guaranteed_block_endurance;\n\tstruct jedec_ecc_info ecc_info[4];\n\tu8 reserved5[29];\n\n\t \n\tu8 reserved6[148];\n\n\t \n\t__le16 vendor_rev_num;\n\tu8 reserved7[88];\n\n\t \n\t__le16 crc;\n} __packed;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

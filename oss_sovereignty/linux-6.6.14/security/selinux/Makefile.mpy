@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "67d254f20b5d4a2476d11451a06fb520b4f0768d211c06c43df3e230a120977d",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for building the SELinux module as part of the kernel tree.\n#\n\n# NOTE: There are a number of improvements that can be made to this Makefile\n# once the kernel requires make v4.3 or greater; the most important feature\n# lacking in older versions of make is support for grouped targets.  These\n# improvements are noted inline in the Makefile below ...\n\nobj-$(CONFIG_SECURITY_SELINUX) := selinux.o\n\nccflags-y := -I$(srctree)/security/selinux -I$(srctree)/security/selinux/include\n\nselinux-y := avc.o hooks.o selinuxfs.o netlink.o nlmsgtab.o netif.o \\\n\t     netnode.o netport.o status.o \\\n\t     ss/ebitmap.o ss/hashtab.o ss/symtab.o ss/sidtab.o ss/avtab.o \\\n\t     ss/policydb.o ss/services.o ss/conditional.o ss/mls.o ss/context.o\n\nselinux-$(CONFIG_SECURITY_NETWORK_XFRM) += xfrm.o\nselinux-$(CONFIG_NETLABEL) += netlabel.o\nselinux-$(CONFIG_SECURITY_INFINIBAND) += ibpkey.o\nselinux-$(CONFIG_IMA) += ima.o\n\ngenhdrs := flask.h av_permissions.h\n\n# see the note above, replace the dependency rule with the one below:\n#  $(addprefix $(obj)/,$(selinux-y)): $(addprefix $(obj)/,$(genhdrs))\n$(addprefix $(obj)/,$(selinux-y)): $(obj)/flask.h\n\nquiet_cmd_genhdrs = GEN     $(addprefix $(obj)/,$(genhdrs))\n      cmd_genhdrs = $< $(addprefix $(obj)/,$(genhdrs))\n\n# see the note above, replace the $targets and 'flask.h' rule with the lines\n# below:\n#  targets += $(genhdrs)\n#  $(addprefix $(obj)/,$(genhdrs)) &: scripts/selinux/...\ntargets += flask.h\n$(obj)/flask.h: scripts/selinux/genheaders/genheaders FORCE\n\t$(call if_changed,genhdrs)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

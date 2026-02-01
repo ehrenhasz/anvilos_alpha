@@ -1,0 +1,9 @@
+{
+  "module_name": "xalloc-die.c",
+  "hash_id": "39a21963bcfb3d58f740cb16ec0f373ebf4b306a3e4aa5857cf5c6c0afd205ed",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xalloc-die.c",
+  "human_readable_source": " \n  abort ();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

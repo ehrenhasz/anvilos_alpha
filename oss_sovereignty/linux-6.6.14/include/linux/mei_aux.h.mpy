@@ -1,0 +1,9 @@
+{
+  "module_name": "mei_aux.h",
+  "hash_id": "09b6959080c71c7662f952cb9af83ad27553fa3d03cf5400558a68871ddf4b22",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mei_aux.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_MEI_AUX_H\n#define _LINUX_MEI_AUX_H\n\n#include <linux/auxiliary_bus.h>\n\n \nstruct mei_aux_device {\n\tstruct auxiliary_device aux_dev;\n\tint irq;\n\tstruct resource bar;\n\tstruct resource ext_op_mem;\n\tbool slow_firmware;\n};\n\n#define auxiliary_dev_to_mei_aux_dev(auxiliary_dev) \\\n\tcontainer_of(auxiliary_dev, struct mei_aux_device, aux_dev)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

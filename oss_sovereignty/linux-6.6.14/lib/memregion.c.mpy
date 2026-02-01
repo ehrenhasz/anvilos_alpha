@@ -1,0 +1,9 @@
+{
+  "module_name": "memregion.c",
+  "hash_id": "f64754ed130eba91c4d6269a14a8550bee0084a88434725005ef1a3255e491f3",
+  "original_prompt": "Ingested from linux-6.6.14/lib/memregion.c",
+  "human_readable_source": "\n \n#include <linux/idr.h>\n#include <linux/types.h>\n#include <linux/memregion.h>\n\nstatic DEFINE_IDA(memregion_ids);\n\nint memregion_alloc(gfp_t gfp)\n{\n\treturn ida_alloc(&memregion_ids, gfp);\n}\nEXPORT_SYMBOL(memregion_alloc);\n\nvoid memregion_free(int id)\n{\n\tida_free(&memregion_ids, id);\n}\nEXPORT_SYMBOL(memregion_free);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

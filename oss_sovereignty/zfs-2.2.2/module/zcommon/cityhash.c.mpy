@@ -1,0 +1,9 @@
+{
+  "module_name": "cityhash.c",
+  "hash_id": "5abafae2dd7aed16eb3008a473d87b1b016297b578585f498adaa6a794574a20",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zcommon/cityhash.c",
+  "human_readable_source": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n \n\n#include <cityhash.h>\n\n#define\tHASH_K1 0xb492b66fbe98f273ULL\n#define\tHASH_K2 0x9ae16a3b2f90404fULL\n\n \nstatic inline uint64_t\nrotate(uint64_t val, int shift)\n{\n\t\n\treturn (shift == 0 ? val : (val >> shift) | (val << (64 - shift)));\n}\n\nstatic inline uint64_t\ncityhash_helper(uint64_t u, uint64_t v, uint64_t mul)\n{\n\tuint64_t a = (u ^ v) * mul;\n\ta ^= (a >> 47);\n\tuint64_t b = (v ^ a) * mul;\n\tb ^= (b >> 47);\n\tb *= mul;\n\treturn (b);\n}\n\nuint64_t\ncityhash4(uint64_t w1, uint64_t w2, uint64_t w3, uint64_t w4)\n{\n\tuint64_t mul = HASH_K2 + 64;\n\tuint64_t a = w1 * HASH_K1;\n\tuint64_t b = w2;\n\tuint64_t c = w4 * mul;\n\tuint64_t d = w3 * HASH_K2;\n\treturn (cityhash_helper(rotate(a + b, 43) + rotate(c, 30) + d,\n\t    a + rotate(b + HASH_K2, 18) + c, mul));\n\n}\n\n#if defined(_KERNEL)\nEXPORT_SYMBOL(cityhash4);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

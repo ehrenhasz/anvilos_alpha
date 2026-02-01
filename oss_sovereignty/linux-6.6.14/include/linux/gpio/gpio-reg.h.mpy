@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio-reg.h",
+  "hash_id": "f0cd4831189a0ab82f9ba2fe0afee2fd0adc0c54771aec0d899b70e3da723580",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/gpio/gpio-reg.h",
+  "human_readable_source": " \n#ifndef GPIO_REG_H\n#define GPIO_REG_H\n\n#include <linux/types.h>\n\nstruct device;\nstruct irq_domain;\n\nstruct gpio_chip;\n\nstruct gpio_chip *gpio_reg_init(struct device *dev, void __iomem *reg,\n\tint base, int num, const char *label, u32 direction, u32 def_out,\n\tconst char *const *names, struct irq_domain *irqdom, const int *irqs);\n\nint gpio_reg_resume(struct gpio_chip *gc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

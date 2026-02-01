@@ -1,0 +1,9 @@
+{
+  "module_name": "dmub_dcn303.c",
+  "hash_id": "c8e455e001439faab94df5435ed5f542975b91ec11a2861487a37b648fc8b333",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dmub/src/dmub_dcn303.c",
+  "human_readable_source": "\n \n\n#include \"../dmub_srv.h\"\n#include \"dmub_reg.h\"\n#include \"dmub_dcn303.h\"\n\n#include \"sienna_cichlid_ip_offset.h\"\n#include \"dcn/dcn_3_0_3_offset.h\"\n#include \"dcn/dcn_3_0_3_sh_mask.h\"\n\n#define BASE_INNER(seg) DCN_BASE__INST0_SEG##seg\n#define CTX dmub\n#define REGS dmub->regs\n\n \n\nconst struct dmub_srv_common_regs dmub_srv_dcn303_regs = {\n#define DMUB_SR(reg) REG_OFFSET(reg),\n\t{\n\t\tDMUB_COMMON_REGS()\n\t\tDMCUB_INTERNAL_REGS()\n\t},\n#undef DMUB_SR\n\n#define DMUB_SF(reg, field) FD_MASK(reg, field),\n\t{ DMUB_COMMON_FIELDS() },\n#undef DMUB_SF\n\n#define DMUB_SF(reg, field) FD_SHIFT(reg, field),\n\t{ DMUB_COMMON_FIELDS() },\n#undef DMUB_SF\n};\n\n \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

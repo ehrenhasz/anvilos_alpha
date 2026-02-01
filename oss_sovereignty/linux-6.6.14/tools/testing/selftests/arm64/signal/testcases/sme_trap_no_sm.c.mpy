@@ -1,0 +1,9 @@
+{
+  "module_name": "sme_trap_no_sm.c",
+  "hash_id": "65d3b91c00cc9568fb1a706da9ac80cc972be3f50688ac69479b5783dfd11fc3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/signal/testcases/sme_trap_no_sm.c",
+  "human_readable_source": "\n \n\n#include <signal.h>\n#include <ucontext.h>\n#include <sys/prctl.h>\n\n#include \"test_signals_utils.h\"\n#include \"testcases.h\"\n\nint sme_trap_no_sm_trigger(struct tdescr *td)\n{\n\t \n\tasm volatile(\".inst 0xd503457f ; .inst 0xc0900000\");\n\n\treturn 0;\n}\n\nint sme_trap_no_sm_run(struct tdescr *td, siginfo_t *si, ucontext_t *uc)\n{\n\treturn 1;\n}\n\nstruct tdescr tde = {\n\t.name = \"SME trap without SM\",\n\t.descr = \"Check that we get a SIGILL if we use streaming mode without enabling it\",\n\t.timeout = 3,\n\t.feats_required = FEAT_SME,    \n\t.sanity_disabled = true,\n\t.trigger = sme_trap_no_sm_trigger,\n\t.run = sme_trap_no_sm_run,\n\t.sig_ok = SIGILL,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

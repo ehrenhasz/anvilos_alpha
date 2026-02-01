@@ -1,0 +1,9 @@
+{
+  "module_name": "spi-loongson.h",
+  "hash_id": "8133777f24a697494882f5b2966d0a441c0e87e03ebb222be37868eb873efd45",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/spi/spi-loongson.h",
+  "human_readable_source": " \n \n \n\n#ifndef __LINUX_SPI_LOONGSON_H\n#define __LINUX_SPI_LOONGSON_H\n\n#include <linux/bits.h>\n#include <linux/pm.h>\n#include <linux/types.h>\n\n#define\tLOONGSON_SPI_SPCR_REG\t0x00\n#define\tLOONGSON_SPI_SPSR_REG\t0x01\n#define\tLOONGSON_SPI_FIFO_REG\t0x02\n#define\tLOONGSON_SPI_SPER_REG\t0x03\n#define\tLOONGSON_SPI_PARA_REG\t0x04\n#define\tLOONGSON_SPI_SFCS_REG\t0x05\n#define\tLOONGSON_SPI_TIMI_REG\t0x06\n\n \n#define\tLOONGSON_SPI_PARA_MEM_EN\tBIT(0)\n#define\tLOONGSON_SPI_SPCR_CPHA\tBIT(2)\n#define\tLOONGSON_SPI_SPCR_CPOL\tBIT(3)\n#define\tLOONGSON_SPI_SPCR_SPE\tBIT(6)\n#define\tLOONGSON_SPI_SPSR_RFEMPTY\tBIT(0)\n#define\tLOONGSON_SPI_SPSR_WCOL\tBIT(6)\n#define\tLOONGSON_SPI_SPSR_SPIF\tBIT(7)\n\nstruct device;\nstruct spi_controller;\n\nstruct loongson_spi {\n\tstruct\tspi_controller\t*controller;\n\tvoid __iomem\t\t*base;\n\tint\t\t\tcs_active;\n\tunsigned int\t\thz;\n\tunsigned char\t\tspcr;\n\tunsigned char\t\tsper;\n\tunsigned char\t\tspsr;\n\tunsigned char\t\tpara;\n\tunsigned char\t\tsfcs;\n\tunsigned char\t\ttimi;\n\tunsigned int\t\tmode;\n\tu64\t\t\tclk_rate;\n};\n\nint loongson_spi_init_controller(struct device *dev, void __iomem *reg);\nextern const struct dev_pm_ops loongson_spi_dev_pm_ops;\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "347befd4f9c7b1c0c6000470067e949cca56d18acf8d2e6dd013bebe18d5389c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/xrs700x/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NET_DSA_XRS700X\n\ttristate\n\tdepends on NET_DSA\n\tselect NET_DSA_TAG_XRS700X\n\tselect REGMAP\n\thelp\n\t  This enables support for Arrow SpeedChips XRS7003/7004 gigabit\n\t  Ethernet switches.\n\nconfig NET_DSA_XRS700X_I2C\n\ttristate \"Arrow XRS7000X series switch in I2C mode\"\n\tdepends on NET_DSA && I2C\n\tselect NET_DSA_XRS700X\n\tselect REGMAP_I2C\n\thelp\n\t  Enable I2C support for Arrow SpeedChips XRS7003/7004 gigabit Ethernet\n\t  switches.\n\nconfig NET_DSA_XRS700X_MDIO\n\ttristate \"Arrow XRS7000X series switch in MDIO mode\"\n\tdepends on NET_DSA\n\tselect NET_DSA_XRS700X\n\thelp\n\t  Enable MDIO support for Arrow SpeedChips XRS7003/7004 gigabit Ethernet\n\t  switches.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

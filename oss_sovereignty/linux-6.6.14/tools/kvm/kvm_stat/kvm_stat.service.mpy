@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm_stat.service",
+  "hash_id": "3ce29ba70962fe211f5722164cc82264c0c4ce53f44489729e6c7ce2169aee7d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/kvm/kvm_stat/kvm_stat.service",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\n[Unit]\nDescription=Service that logs KVM kernel module trace events\nBefore=qemu-kvm.service\n\n[Service]\nType=simple\nExecStart=/usr/bin/kvm_stat -dtcz -s 10 -L /var/log/kvm_stat.csv\nExecReload=/bin/kill -HUP $MAINPID\nRestart=always\nRestartSec=60s\nSyslogIdentifier=kvm_stat\nSyslogLevel=debug\n\n[Install]\nWantedBy=multi-user.target\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fld_arg.c",
+  "hash_id": "34c41fa15ce17a3a6cc5a5f5d273637f2bfbfb105db942a47d48b0e591202581",
+  "original_prompt": "Ingested from ncurses-6.4/form/fld_arg.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: fld_arg.c,v 1.18 2020/12/11 22:05:24 tom Exp $\")\n\n \nFORM_EXPORT(int)\nset_fieldtype_arg(FIELDTYPE *typ,\n\t\t  void *(*const make_arg)(va_list *),\n\t\t  void *(*const copy_arg)(const void *),\n\t\t  void (*const free_arg) (void *))\n{\n  TR_FUNC_BFR(3);\n\n  T((T_CALLED(\"set_fieldtype_arg(%p,%s,%s,%s)\"),\n     (void *)typ,\n     TR_FUNC_ARG(0, make_arg),\n     TR_FUNC_ARG(1, copy_arg),\n     TR_FUNC_ARG(2, free_arg)));\n\n  if (typ != 0 && make_arg != (void *)0)\n    {\n      SetStatus(typ, _HAS_ARGS);\n      typ->makearg = make_arg;\n      typ->copyarg = copy_arg;\n      typ->freearg = free_arg;\n      RETURN(E_OK);\n    }\n  RETURN(E_BAD_ARGUMENT);\n}\n\n \nFORM_EXPORT(void *)\nfield_arg(const FIELD *field)\n{\n  T((T_CALLED(\"field_arg(%p)\"), (const void *)field));\n  returnVoidPtr(Normalize_Field(field)->arg);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

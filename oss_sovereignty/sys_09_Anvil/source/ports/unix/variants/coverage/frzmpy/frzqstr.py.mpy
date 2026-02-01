@@ -1,0 +1,9 @@
+{
+  "module_name": "frzqstr.py",
+  "hash_id": "eca339c8234e248c81f9da3a2b1bd9788839cd3f1c8e816de1b03fe3082253ae",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/coverage/frzmpy/frzqstr.py",
+  "human_readable_source": "# Checks for regression on MP_QSTR_NULL\ndef returns_NULL():\n    return \"NULL\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

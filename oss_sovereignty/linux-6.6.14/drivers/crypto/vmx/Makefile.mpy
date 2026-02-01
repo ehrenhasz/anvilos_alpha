@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4c596574e0278d913bf5c8e6683705325e90d19c6416d12a105e262dc5b842e5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/vmx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_CRYPTO_DEV_VMX_ENCRYPT) += vmx-crypto.o\nvmx-crypto-objs := vmx.o aesp8-ppc.o ghashp8-ppc.o aes.o aes_cbc.o aes_ctr.o aes_xts.o ghash.o\n\nifeq ($(CONFIG_CPU_LITTLE_ENDIAN),y)\noverride flavour := linux-ppc64le\nelse\nifdef CONFIG_PPC64_ELF_ABI_V2\noverride flavour := linux-ppc64-elfv2\nelse\noverride flavour := linux-ppc64\nendif\nendif\n\nquiet_cmd_perl = PERL    $@\n      cmd_perl = $(PERL) $< $(flavour) > $@\n\ntargets += aesp8-ppc.S ghashp8-ppc.S\n\n$(obj)/aesp8-ppc.S $(obj)/ghashp8-ppc.S: $(obj)/%.S: $(src)/%.pl FORCE\n\t$(call if_changed,perl)\n\nOBJECT_FILES_NON_STANDARD_aesp8-ppc.o := y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

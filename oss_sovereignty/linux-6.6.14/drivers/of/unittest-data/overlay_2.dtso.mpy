@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_2.dtso",
+  "hash_id": "dfebcde548fa281769c522572d82ecb01cc0ced8b8e5ed344cc893c3debdffa7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_2.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n/* overlay_2 -  enable using label */\n\n&unittest2 {\n\tstatus = \"okay\";\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

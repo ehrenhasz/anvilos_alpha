@@ -1,0 +1,9 @@
+{
+  "module_name": "hdmi.h",
+  "hash_id": "5b7112d2a5a342caeb0099020f849fbbcd9dbb4f0e4f4d0266bb4056ae6ed8c2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/disp/hdmi.h",
+  "human_readable_source": " \n#ifndef __NVKM_DISP_HDMI_H__\n#define __NVKM_DISP_HDMI_H__\n#include \"ior.h\"\n\nstruct packed_hdmi_infoframe {\n\tu32 header;\n\tu32 subpack0_low;\n\tu32 subpack0_high;\n\tu32 subpack1_low;\n\tu32 subpack1_high;\n};\n\nvoid pack_hdmi_infoframe(struct packed_hdmi_infoframe *packed_frame,\n\t\t\t u8 *raw_frame, ssize_t len);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

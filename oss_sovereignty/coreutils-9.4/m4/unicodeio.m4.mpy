@@ -1,0 +1,9 @@
+{
+  "module_name": "unicodeio.m4",
+  "hash_id": "72f4df4c0b0078cbbd5e6fc6c96a1da63deb48aefd03e9c68924eb84759fe704",
+  "original_prompt": "Ingested from coreutils-9.4/m4/unicodeio.m4",
+  "human_readable_source": "# unicodeio.m4 serial 3\ndnl Copyright (C) 2002-2003, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_UNICODEIO],\n[\n  dnl Prerequisites of lib/unicodeio.c.\n  gl_MUSL_LIBC\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

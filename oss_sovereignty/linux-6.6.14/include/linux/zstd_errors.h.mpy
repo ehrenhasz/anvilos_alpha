@@ -1,0 +1,9 @@
+{
+  "module_name": "zstd_errors.h",
+  "hash_id": "19e3f9c58f5f7cdf0c224bc636c97c36377ab72e30b9c9ed6a6eb4b22ae2e33f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/zstd_errors.h",
+  "human_readable_source": " \n\n#ifndef ZSTD_ERRORS_H_398273423\n#define ZSTD_ERRORS_H_398273423\n\n\n \n#include <linux/types.h>    \n\n\n \n#define ZSTDERRORLIB_VISIBILITY \n#define ZSTDERRORLIB_API ZSTDERRORLIB_VISIBILITY\n\n \ntypedef enum {\n  ZSTD_error_no_error = 0,\n  ZSTD_error_GENERIC  = 1,\n  ZSTD_error_prefix_unknown                = 10,\n  ZSTD_error_version_unsupported           = 12,\n  ZSTD_error_frameParameter_unsupported    = 14,\n  ZSTD_error_frameParameter_windowTooLarge = 16,\n  ZSTD_error_corruption_detected = 20,\n  ZSTD_error_checksum_wrong      = 22,\n  ZSTD_error_dictionary_corrupted      = 30,\n  ZSTD_error_dictionary_wrong          = 32,\n  ZSTD_error_dictionaryCreation_failed = 34,\n  ZSTD_error_parameter_unsupported   = 40,\n  ZSTD_error_parameter_outOfBound    = 42,\n  ZSTD_error_tableLog_tooLarge       = 44,\n  ZSTD_error_maxSymbolValue_tooLarge = 46,\n  ZSTD_error_maxSymbolValue_tooSmall = 48,\n  ZSTD_error_stage_wrong       = 60,\n  ZSTD_error_init_missing      = 62,\n  ZSTD_error_memory_allocation = 64,\n  ZSTD_error_workSpace_tooSmall= 66,\n  ZSTD_error_dstSize_tooSmall = 70,\n  ZSTD_error_srcSize_wrong    = 72,\n  ZSTD_error_dstBuffer_null   = 74,\n   \n  ZSTD_error_frameIndex_tooLarge = 100,\n  ZSTD_error_seekableIO          = 102,\n  ZSTD_error_dstBuffer_wrong     = 104,\n  ZSTD_error_srcBuffer_wrong     = 105,\n  ZSTD_error_maxCode = 120   \n} ZSTD_ErrorCode;\n\n \nZSTDERRORLIB_API ZSTD_ErrorCode ZSTD_getErrorCode(size_t functionResult);\nZSTDERRORLIB_API const char* ZSTD_getErrorString(ZSTD_ErrorCode code);    \n\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

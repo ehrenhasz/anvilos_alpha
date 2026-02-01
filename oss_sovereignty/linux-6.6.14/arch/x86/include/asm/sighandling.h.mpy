@@ -1,0 +1,9 @@
+{
+  "module_name": "sighandling.h",
+  "hash_id": "cea7cee7d322cd594c070f1bb209ebff5d35ff6d95ffd1ef7998a45d1d065dbc",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/sighandling.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SIGHANDLING_H\n#define _ASM_X86_SIGHANDLING_H\n\n#include <linux/compiler.h>\n#include <linux/ptrace.h>\n#include <linux/signal.h>\n\n#include <asm/processor-flags.h>\n\n#define FIX_EFLAGS\t(X86_EFLAGS_AC | X86_EFLAGS_OF | \\\n\t\t\t X86_EFLAGS_DF | X86_EFLAGS_TF | X86_EFLAGS_SF | \\\n\t\t\t X86_EFLAGS_ZF | X86_EFLAGS_AF | X86_EFLAGS_PF | \\\n\t\t\t X86_EFLAGS_CF | X86_EFLAGS_RF)\n\nvoid signal_fault(struct pt_regs *regs, void __user *frame, char *where);\n\nvoid __user *\nget_sigframe(struct ksignal *ksig, struct pt_regs *regs, size_t frame_size,\n\t     void __user **fpstate);\n\nint ia32_setup_frame(struct ksignal *ksig, struct pt_regs *regs);\nint ia32_setup_rt_frame(struct ksignal *ksig, struct pt_regs *regs);\nint x64_setup_rt_frame(struct ksignal *ksig, struct pt_regs *regs);\nint x32_setup_rt_frame(struct ksignal *ksig, struct pt_regs *regs);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

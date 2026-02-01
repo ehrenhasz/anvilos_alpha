@@ -1,0 +1,9 @@
+{
+  "module_name": "hvc_riscv_sbi.c",
+  "hash_id": "981a6c8b4641f81a46a4d11b7de1d17bff4179e98e911380b587449ffdd64ad9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/hvc/hvc_riscv_sbi.c",
+  "human_readable_source": " \n \n\n#include <linux/console.h>\n#include <linux/err.h>\n#include <linux/init.h>\n#include <linux/moduleparam.h>\n#include <linux/types.h>\n\n#include <asm/sbi.h>\n\n#include \"hvc_console.h\"\n\nstatic int hvc_sbi_tty_put(uint32_t vtermno, const char *buf, int count)\n{\n\tint i;\n\n\tfor (i = 0; i < count; i++)\n\t\tsbi_console_putchar(buf[i]);\n\n\treturn i;\n}\n\nstatic int hvc_sbi_tty_get(uint32_t vtermno, char *buf, int count)\n{\n\tint i, c;\n\n\tfor (i = 0; i < count; i++) {\n\t\tc = sbi_console_getchar();\n\t\tif (c < 0)\n\t\t\tbreak;\n\t\tbuf[i] = c;\n\t}\n\n\treturn i;\n}\n\nstatic const struct hv_ops hvc_sbi_ops = {\n\t.get_chars = hvc_sbi_tty_get,\n\t.put_chars = hvc_sbi_tty_put,\n};\n\nstatic int __init hvc_sbi_init(void)\n{\n\treturn PTR_ERR_OR_ZERO(hvc_alloc(0, 0, &hvc_sbi_ops, 16));\n}\ndevice_initcall(hvc_sbi_init);\n\nstatic int __init hvc_sbi_console_init(void)\n{\n\thvc_instantiate(0, 0, &hvc_sbi_ops);\n\n\treturn 0;\n}\nconsole_initcall(hvc_sbi_console_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

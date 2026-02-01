@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-usleep_range.m4",
+  "hash_id": "d42637cc3cdc0fc8aa255bc61b1ecc64c3d67a3b0cf82aec241a97029f4142b3",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-usleep_range.m4",
+  "human_readable_source": "dnl #\ndnl # 2.6.36 API compatibility- Added usleep_range timer.\ndnl #\ndnl # usleep_range is a finer precision implementation of msleep\ndnl # designed to be a drop-in replacement for udelay where a precise\ndnl # sleep / busy-wait is unnecessary.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_USLEEP_RANGE], [\n\tZFS_LINUX_TEST_SRC([usleep_range], [\n\t\t#include <linux/delay.h>\n\t],[\n\t\tusleep_range(0, 0);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_USLEEP_RANGE], [\n\tAC_MSG_CHECKING([whether usleep_range() is available])\n\tZFS_LINUX_TEST_RESULT([usleep_range], [\n\t\tAC_MSG_RESULT(yes)\n\t],[\n\t\tZFS_LINUX_TEST_ERROR([usleep_range()])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

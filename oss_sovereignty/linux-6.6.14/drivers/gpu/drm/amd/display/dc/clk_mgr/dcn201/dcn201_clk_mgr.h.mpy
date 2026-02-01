@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn201_clk_mgr.h",
+  "hash_id": "23688e25e2b1815ca462f5bc31daf7918bea5dc47751c419eb429f4298112774",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn201/dcn201_clk_mgr.h",
+  "human_readable_source": " \n\n#ifndef __DCN201_CLK_MGR_H__\n#define __DCN201_CLK_MGR_H__\n\nvoid dcn201_clk_mgr_construct(struct dc_context *ctx,\n\t\tstruct clk_mgr_internal *clk_mgr,\n\t\tstruct pp_smu_funcs *pp_smu,\n\t\tstruct dccg *dccg);\n\n#endif ",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

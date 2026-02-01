@@ -1,0 +1,9 @@
+{
+  "module_name": "test-ftruncate.sh",
+  "hash_id": "78f51f9fdec0d1c902b2e3577bb6bfc1c0680cd051519e33f2e4a0b50771e522",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-ftruncate.sh",
+  "human_readable_source": "#!/bin/sh\n\nexec ${CHECKER} ./test-ftruncate${EXEEXT} \"$srcdir/test-ftruncate.sh\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

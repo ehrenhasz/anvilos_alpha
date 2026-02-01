@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_AUDIT.h",
+  "hash_id": "8d5fadc9e960e59694d8923af8a8d4d1aa04d9374e984888c56752b06c5f023c",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_AUDIT.h",
+  "human_readable_source": " \n \n\n#ifndef _XT_AUDIT_TARGET_H\n#define _XT_AUDIT_TARGET_H\n\n#include <linux/types.h>\n\nenum {\n\tXT_AUDIT_TYPE_ACCEPT = 0,\n\tXT_AUDIT_TYPE_DROP,\n\tXT_AUDIT_TYPE_REJECT,\n\t__XT_AUDIT_TYPE_MAX,\n};\n\n#define XT_AUDIT_TYPE_MAX (__XT_AUDIT_TYPE_MAX - 1)\n\nstruct xt_audit_info {\n\t__u8 type;  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

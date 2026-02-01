@@ -1,0 +1,9 @@
+{
+  "module_name": "ltc4245.h",
+  "hash_id": "1758361664bbada61b63f851f2a8e3131ebc775128ec2a66cb7c85223a0445fc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/ltc4245.h",
+  "human_readable_source": " \n \n\n#ifndef LINUX_LTC4245_H\n#define LINUX_LTC4245_H\n\n#include <linux/types.h>\n\nstruct ltc4245_platform_data {\n\tbool use_extra_gpios;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

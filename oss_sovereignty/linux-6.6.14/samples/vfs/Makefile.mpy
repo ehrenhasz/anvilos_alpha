@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "267619fa8fb01f626914293b101acf9d5b2008dd1f2ac486b755a2ec61a9d79a",
+  "original_prompt": "Ingested from linux-6.6.14/samples/vfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nuserprogs-always-y += test-fsmount test-statx\n\nuserccflags += -I usr/include\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

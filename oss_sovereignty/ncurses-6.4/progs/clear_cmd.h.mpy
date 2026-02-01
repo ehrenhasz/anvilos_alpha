@@ -1,0 +1,9 @@
+{
+  "module_name": "clear_cmd.h",
+  "hash_id": "61106d01633febebbbde62fae16e907d32f7da7630c2a6a960f7ebcd3f847f04",
+  "original_prompt": "Ingested from ncurses-6.4/progs/clear_cmd.h",
+  "human_readable_source": " \n\n \n\n \n#ifndef CLEAR_CMD_H\n#define CLEAR_CMD_H 1\n\n#include <progs.priv.h>\nextern int clear_cmd(bool);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

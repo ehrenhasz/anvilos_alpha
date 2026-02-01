@@ -1,0 +1,9 @@
+{
+  "module_name": "mem2node.h",
+  "hash_id": "42caa3868263d378643ae9a21c9b7204f495471351cba86bf8e64d4430717358",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/mem2node.h",
+  "human_readable_source": "#ifndef __MEM2NODE_H\n#define __MEM2NODE_H\n\n#include <linux/rbtree.h>\n#include <linux/types.h>\n\nstruct perf_env;\nstruct phys_entry;\n\nstruct mem2node {\n\tstruct rb_root\t\t root;\n\tstruct phys_entry\t*entries;\n\tint\t\t\t cnt;\n};\n\nint  mem2node__init(struct mem2node *map, struct perf_env *env);\nvoid mem2node__exit(struct mem2node *map);\nint  mem2node__node(struct mem2node *map, u64 addr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

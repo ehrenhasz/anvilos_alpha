@@ -1,0 +1,9 @@
+{
+  "module_name": "context.h",
+  "hash_id": "8588d4e10c435806caed3c92e0744f74c5a024394d1db52f423889eeb4ac88a8",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/fpu/context.h",
+  "human_readable_source": " \n#ifndef __X86_KERNEL_FPU_CONTEXT_H\n#define __X86_KERNEL_FPU_CONTEXT_H\n\n#include <asm/fpu/xstate.h>\n#include <asm/trace/fpu.h>\n\n \n\n \nstatic inline void __cpu_invalidate_fpregs_state(void)\n{\n\t__this_cpu_write(fpu_fpregs_owner_ctx, NULL);\n}\n\nstatic inline void __fpu_invalidate_fpregs_state(struct fpu *fpu)\n{\n\tfpu->last_cpu = -1;\n}\n\nstatic inline int fpregs_state_valid(struct fpu *fpu, unsigned int cpu)\n{\n\treturn fpu == this_cpu_read(fpu_fpregs_owner_ctx) && cpu == fpu->last_cpu;\n}\n\nstatic inline void fpregs_deactivate(struct fpu *fpu)\n{\n\t__this_cpu_write(fpu_fpregs_owner_ctx, NULL);\n\ttrace_x86_fpu_regs_deactivated(fpu);\n}\n\nstatic inline void fpregs_activate(struct fpu *fpu)\n{\n\t__this_cpu_write(fpu_fpregs_owner_ctx, fpu);\n\ttrace_x86_fpu_regs_activated(fpu);\n}\n\n \nstatic inline void fpregs_restore_userregs(void)\n{\n\tstruct fpu *fpu = &current->thread.fpu;\n\tint cpu = smp_processor_id();\n\n\tif (WARN_ON_ONCE(current->flags & (PF_KTHREAD | PF_USER_WORKER)))\n\t\treturn;\n\n\tif (!fpregs_state_valid(fpu, cpu)) {\n\t\t \n\t\trestore_fpregs_from_fpstate(fpu->fpstate, XFEATURE_MASK_FPSTATE);\n\n\t\tfpregs_activate(fpu);\n\t\tfpu->last_cpu = cpu;\n\t}\n\tclear_thread_flag(TIF_NEED_FPU_LOAD);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

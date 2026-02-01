@@ -1,0 +1,9 @@
+{
+  "module_name": "ast.h",
+  "hash_id": "08d47edeaf23e8be0c2bd530fe624ecda1ca31f975b4dc0ee9438c1c043a02c2",
+  "original_prompt": "Ingested from linux-6.6.14/fs/dlm/ast.h",
+  "human_readable_source": " \n \n\n#ifndef __ASTD_DOT_H__\n#define __ASTD_DOT_H__\n\n#define DLM_ENQUEUE_CALLBACK_NEED_SCHED\t1\n#define DLM_ENQUEUE_CALLBACK_SUCCESS\t0\n#define DLM_ENQUEUE_CALLBACK_FAILURE\t-1\nint dlm_enqueue_lkb_callback(struct dlm_lkb *lkb, uint32_t flags, int mode,\n\t\t\t     int status, uint32_t sbflags);\n#define DLM_DEQUEUE_CALLBACK_EMPTY\t2\n#define DLM_DEQUEUE_CALLBACK_LAST\t1\n#define DLM_DEQUEUE_CALLBACK_SUCCESS\t0\nint dlm_dequeue_lkb_callback(struct dlm_lkb *lkb, struct dlm_callback **cb);\nvoid dlm_add_cb(struct dlm_lkb *lkb, uint32_t flags, int mode, int status,\n                uint32_t sbflags);\nvoid dlm_callback_set_last_ptr(struct dlm_callback **from,\n\t\t\t       struct dlm_callback *to);\n\nvoid dlm_release_callback(struct kref *ref);\nvoid dlm_callback_work(struct work_struct *work);\nint dlm_callback_start(struct dlm_ls *ls);\nvoid dlm_callback_stop(struct dlm_ls *ls);\nvoid dlm_callback_suspend(struct dlm_ls *ls);\nvoid dlm_callback_resume(struct dlm_ls *ls);\n\n#endif\n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

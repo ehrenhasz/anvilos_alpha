@@ -1,0 +1,9 @@
+{
+  "module_name": "dma-ep93xx.h",
+  "hash_id": "cc754b4d8e3d21c35932951d6ece0e05dffed05595c45b6acc7691b8dbc64de5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/dma-ep93xx.h",
+  "human_readable_source": " \n#ifndef __ASM_ARCH_DMA_H\n#define __ASM_ARCH_DMA_H\n\n#include <linux/types.h>\n#include <linux/dmaengine.h>\n#include <linux/dma-mapping.h>\n\n \n#define EP93XX_DMA_I2S1\t\t0\n#define EP93XX_DMA_I2S2\t\t1\n#define EP93XX_DMA_AAC1\t\t2\n#define EP93XX_DMA_AAC2\t\t3\n#define EP93XX_DMA_AAC3\t\t4\n#define EP93XX_DMA_I2S3\t\t5\n#define EP93XX_DMA_UART1\t6\n#define EP93XX_DMA_UART2\t7\n#define EP93XX_DMA_UART3\t8\n#define EP93XX_DMA_IRDA\t\t9\n \n#define EP93XX_DMA_SSP\t\t10\n#define EP93XX_DMA_IDE\t\t11\n\n \nstruct ep93xx_dma_data {\n\tint\t\t\t\tport;\n\tenum dma_transfer_direction\tdirection;\n\tconst char\t\t\t*name;\n};\n\n \nstruct ep93xx_dma_chan_data {\n\tconst char\t\t\t*name;\n\tvoid __iomem\t\t\t*base;\n\tint\t\t\t\tirq;\n};\n\n \nstruct ep93xx_dma_platform_data {\n\tstruct ep93xx_dma_chan_data\t*channels;\n\tsize_t\t\t\t\tnum_channels;\n};\n\nstatic inline bool ep93xx_dma_chan_is_m2p(struct dma_chan *chan)\n{\n\treturn !strcmp(dev_name(chan->device->dev), \"ep93xx-dma-m2p\");\n}\n\n \nstatic inline enum dma_transfer_direction\nep93xx_dma_chan_direction(struct dma_chan *chan)\n{\n\tif (!ep93xx_dma_chan_is_m2p(chan))\n\t\treturn DMA_TRANS_NONE;\n\n\t \n\treturn (chan->chan_id % 2 == 0) ? DMA_MEM_TO_DEV : DMA_DEV_TO_MEM;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

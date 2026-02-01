@@ -1,0 +1,9 @@
+{
+  "module_name": "loongson,ls2k-clk.h",
+  "hash_id": "a8f264496bc3943256d511272efec26686f1f9ba3ed00efdc374a7f2a8e4ddd2",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/loongson,ls2k-clk.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_CLOCK_LOONGSON2_H\n#define __DT_BINDINGS_CLOCK_LOONGSON2_H\n\n#define LOONGSON2_REF_100M\t\t\t\t0\n#define LOONGSON2_NODE_PLL\t\t\t\t1\n#define LOONGSON2_DDR_PLL\t\t\t\t2\n#define LOONGSON2_DC_PLL\t\t\t\t3\n#define LOONGSON2_PIX0_PLL\t\t\t\t4\n#define LOONGSON2_PIX1_PLL\t\t\t\t5\n#define LOONGSON2_NODE_CLK\t\t\t\t6\n#define LOONGSON2_HDA_CLK\t\t\t\t7\n#define LOONGSON2_GPU_CLK\t\t\t\t8\n#define LOONGSON2_DDR_CLK\t\t\t\t9\n#define LOONGSON2_GMAC_CLK\t\t\t\t10\n#define LOONGSON2_DC_CLK\t\t\t\t11\n#define LOONGSON2_APB_CLK\t\t\t\t12\n#define LOONGSON2_USB_CLK\t\t\t\t13\n#define LOONGSON2_SATA_CLK\t\t\t\t14\n#define LOONGSON2_PIX0_CLK\t\t\t\t15\n#define LOONGSON2_PIX1_CLK\t\t\t\t16\n#define LOONGSON2_BOOT_CLK\t\t\t\t17\n#define LOONGSON2_CLK_END\t\t\t\t18\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

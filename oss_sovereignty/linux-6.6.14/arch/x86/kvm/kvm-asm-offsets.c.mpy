@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm-asm-offsets.c",
+  "hash_id": "0fd0b631d9dc4eccab7864e2887c72434d34f5dd1ece0afd80a54af9cb75d5a0",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kvm/kvm-asm-offsets.c",
+  "human_readable_source": "\n \n#define COMPILE_OFFSETS\n\n#include <linux/kbuild.h>\n#include \"vmx/vmx.h\"\n#include \"svm/svm.h\"\n\nstatic void __used common(void)\n{\n\tif (IS_ENABLED(CONFIG_KVM_AMD)) {\n\t\tBLANK();\n\t\tOFFSET(SVM_vcpu_arch_regs, vcpu_svm, vcpu.arch.regs);\n\t\tOFFSET(SVM_current_vmcb, vcpu_svm, current_vmcb);\n\t\tOFFSET(SVM_spec_ctrl, vcpu_svm, spec_ctrl);\n\t\tOFFSET(SVM_vmcb01, vcpu_svm, vmcb01);\n\t\tOFFSET(KVM_VMCB_pa, kvm_vmcb_info, pa);\n\t\tOFFSET(SD_save_area_pa, svm_cpu_data, save_area_pa);\n\t}\n\n\tif (IS_ENABLED(CONFIG_KVM_INTEL)) {\n\t\tBLANK();\n\t\tOFFSET(VMX_spec_ctrl, vcpu_vmx, spec_ctrl);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

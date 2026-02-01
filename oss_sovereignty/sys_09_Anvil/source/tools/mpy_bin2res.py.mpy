@@ -1,0 +1,9 @@
+{
+  "module_name": "mpy_bin2res.py",
+  "hash_id": "fce5f6459dd26aa5894e8d50ca4df7c68cd0c859b89f6807b177b230e4487cb7",
+  "original_prompt": "Ingested from sys_09_Anvil/source/tools/mpy_bin2res.py",
+  "human_readable_source": "#!/usr/bin/env python3\n#\n# This tool converts binary resource files passed on the command line\n# into a Python source file containing data from these files, which can\n# be accessed using standard pkg_resources.resource_stream() function\n# from micropython-lib:\n# https://github.com/micropython/micropython-lib/tree/master/pkg_resources\n#\nimport sys\n\nprint(\"R = {\")\n\nfor fname in sys.argv[1:]:\n    with open(fname, \"rb\") as f:\n        b = f.read()\n        print(\"%r: %r,\" % (fname, b))\n\nprint(\"}\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

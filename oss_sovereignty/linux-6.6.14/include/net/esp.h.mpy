@@ -1,0 +1,9 @@
+{
+  "module_name": "esp.h",
+  "hash_id": "dace97660d5d7e37819f6e61fde95a31d8d4dca36901a9a047783da7cdb39ab5",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/esp.h",
+  "human_readable_source": " \n#ifndef _NET_ESP_H\n#define _NET_ESP_H\n\n#include <linux/skbuff.h>\n\nstruct ip_esp_hdr;\nstruct xfrm_state;\n\nstatic inline struct ip_esp_hdr *ip_esp_hdr(const struct sk_buff *skb)\n{\n\treturn (struct ip_esp_hdr *)skb_transport_header(skb);\n}\n\nstatic inline void esp_output_fill_trailer(u8 *tail, int tfclen, int plen, __u8 proto)\n{\n\t \n\tif (tfclen) {\n\t\tmemset(tail, 0, tfclen);\n\t\ttail += tfclen;\n\t}\n\tdo {\n\t\tint i;\n\t\tfor (i = 0; i < plen - 2; i++)\n\t\t\ttail[i] = i + 1;\n\t} while (0);\n\ttail[plen - 2] = plen - 2;\n\ttail[plen - 1] = proto;\n}\n\nstruct esp_info {\n\tstruct\tip_esp_hdr *esph;\n\t__be64\tseqno;\n\tint\ttfclen;\n\tint\ttailen;\n\tint\tplen;\n\tint\tclen;\n\tint \tlen;\n\tint \tnfrags;\n\t__u8\tproto;\n\tbool\tinplace;\n};\n\nint esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp);\nint esp_output_tail(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp);\nint esp_input_done2(struct sk_buff *skb, int err);\nint esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp);\nint esp6_output_tail(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *esp);\nint esp6_input_done2(struct sk_buff *skb, int err);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

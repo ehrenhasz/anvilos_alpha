@@ -1,0 +1,9 @@
+{
+  "module_name": "config.h",
+  "hash_id": "9f26f6a96d04e70cbd7bb1de9c84c8be0523650a15130e1dbbeaa1c10f9eb02e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/bench/config.h",
+  "human_readable_source": " \n \n\n \n#define GAUGECOUNT\t1500\n\n \n#define SCHEDULER\tSCHED_OTHER\n\n#define PRIORITY_DEFAULT 0\n#define PRIORITY_HIGH\t sched_get_priority_max(SCHEDULER)\n#define PRIORITY_LOW\t sched_get_priority_min(SCHEDULER)\n\n \n#ifdef DEBUG\n#define dprintf printf\n#else\n#define dprintf(...) do { } while (0)\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

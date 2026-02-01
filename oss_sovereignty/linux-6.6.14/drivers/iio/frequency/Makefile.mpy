@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "67c545ae021455b01b5f2c29eb8cc7fb06fcbde46197feb7e560baac1ad71f5c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/frequency/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile iio/frequency\n#\n\n# When adding new entries keep the list in alphabetical order\nobj-$(CONFIG_AD9523) += ad9523.o\nobj-$(CONFIG_ADF4350) += adf4350.o\nobj-$(CONFIG_ADF4371) += adf4371.o\nobj-$(CONFIG_ADF4377) += adf4377.o\nobj-$(CONFIG_ADMV1013) += admv1013.o\nobj-$(CONFIG_ADMV1014) += admv1014.o\nobj-$(CONFIG_ADMV4420) += admv4420.o\nobj-$(CONFIG_ADRF6780) += adrf6780.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pl08x.h",
+  "hash_id": "e851306338e95203e1f552c31119de3f97a0fb1ca289a414c3617f0d50ab4acd",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/amba/pl08x.h",
+  "human_readable_source": " \n \n\n#ifndef AMBA_PL08X_H\n#define AMBA_PL08X_H\n\n \n#include <linux/dmaengine.h>\n#include <linux/interrupt.h>\n\nstruct pl08x_driver_data;\nstruct pl08x_phy_chan;\nstruct pl08x_txd;\n\n \nenum {\n\tPL08X_AHB1 = (1 << 0),\n\tPL08X_AHB2 = (1 << 1)\n};\n\n \nstruct pl08x_channel_data {\n\tconst char *bus_id;\n\tint min_signal;\n\tint max_signal;\n\tu32 muxval;\n\tdma_addr_t addr;\n\tbool single;\n\tu8 periph_buses;\n};\n\nenum pl08x_burst_size {\n\tPL08X_BURST_SZ_1,\n\tPL08X_BURST_SZ_4,\n\tPL08X_BURST_SZ_8,\n\tPL08X_BURST_SZ_16,\n\tPL08X_BURST_SZ_32,\n\tPL08X_BURST_SZ_64,\n\tPL08X_BURST_SZ_128,\n\tPL08X_BURST_SZ_256,\n};\n\nenum pl08x_bus_width {\n\tPL08X_BUS_WIDTH_8_BITS,\n\tPL08X_BUS_WIDTH_16_BITS,\n\tPL08X_BUS_WIDTH_32_BITS,\n};\n\n \nstruct pl08x_platform_data {\n\tstruct pl08x_channel_data *slave_channels;\n\tunsigned int num_slave_channels;\n\tenum pl08x_burst_size memcpy_burst_size;\n\tenum pl08x_bus_width memcpy_bus_width;\n\tbool memcpy_prot_buff;\n\tbool memcpy_prot_cache;\n\tint (*get_xfer_signal)(const struct pl08x_channel_data *);\n\tvoid (*put_xfer_signal)(const struct pl08x_channel_data *, int);\n\tu8 lli_buses;\n\tu8 mem_buses;\n\tconst struct dma_slave_map *slave_map;\n\tint slave_map_len;\n};\n\n#ifdef CONFIG_AMBA_PL08X\nbool pl08x_filter_id(struct dma_chan *chan, void *chan_id);\n#else\nstatic inline bool pl08x_filter_id(struct dma_chan *chan, void *chan_id)\n{\n\treturn false;\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dmu_impl.h",
+  "hash_id": "f81a1cc5d79bc9e59cd9cbad9c701f5ea7389c982b356b350c0eda2f6d853b1e",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/dmu_impl.h",
+  "human_readable_source": " \n \n \n\n#ifndef _SYS_DMU_IMPL_H\n#define\t_SYS_DMU_IMPL_H\n\n#include <sys/txg_impl.h>\n#include <sys/zio.h>\n#include <sys/dnode.h>\n#include <sys/zfs_context.h>\n#include <sys/zfs_ioctl.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \n\nstruct objset;\nstruct dmu_pool;\n\ntypedef struct dmu_sendstatus {\n\tlist_node_t dss_link;\n\tint dss_outfd;\n\tproc_t *dss_proc;\n\toffset_t *dss_off;\n\tuint64_t dss_blocks;  \n} dmu_sendstatus_t;\n\nvoid dmu_object_zapify(objset_t *, uint64_t, dmu_object_type_t, dmu_tx_t *);\nvoid dmu_object_free_zapified(objset_t *, uint64_t, dmu_tx_t *);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "2f130daf09ee65363d47fccee31e5ebaee9ffa81b96164e22fcba5ed9a9d341e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/user_events/config",
+  "human_readable_source": "CONFIG_USER_EVENTS=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

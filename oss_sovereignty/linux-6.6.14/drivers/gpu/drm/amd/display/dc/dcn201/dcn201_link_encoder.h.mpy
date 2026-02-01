@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn201_link_encoder.h",
+  "hash_id": "50b0930f186f5dae989f9b267ec8d890b1025bea625433ebbe5387d5c3dc7656",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn201/dcn201_link_encoder.h",
+  "human_readable_source": " \n\n#ifndef __DC_LINK_ENCODER__DCN201_H__\n#define __DC_LINK_ENCODER__DCN201_H__\n\n#include \"dcn20/dcn20_link_encoder.h\"\n\n#define DPCS_DCN201_MASK_SH_LIST(mask_sh)\\\n\tDPCS_MASK_SH_LIST(mask_sh),\\\n\tLE_SF(RDPCSTX0_RDPCSTX_PHY_CNTL2, RDPCS_PHY_DPALT_DISABLE_ACK, mask_sh),\\\n\tLE_SF(RDPCSTX0_RDPCSTX_PHY_CNTL2, RDPCS_PHY_DPALT_DISABLE, mask_sh),\\\n\tLE_SF(RDPCSTX0_RDPCSTX_PHY_CNTL2, RDPCS_PHY_DPALT_DP4, mask_sh),\\\n\tLE_SF(RDPCSTX0_RDPCSTX_PHY_CNTL5, RDPCS_PHY_DP_TX0_PSTATE, mask_sh),\\\n\tLE_SF(RDPCSTX0_RDPCSTX_PHY_CNTL5, RDPCS_PHY_DP_TX1_PSTATE, mask_sh),\\\n\tLE_SF(RDPCSTX0_RDPCSTX_PHY_CNTL5, RDPCS_PHY_DP_TX0_MPLL_EN, mask_sh),\\\n\tLE_SF(RDPCSTX0_RDPCSTX_PHY_CNTL5, RDPCS_PHY_DP_TX1_MPLL_EN, mask_sh),\\\n\tLE_SF(RDPCSTX0_RDPCSTX_PHY_CNTL6, RDPCS_PHY_DP_TX2_WIDTH, mask_sh),\\\n\tLE_SF(RDPCSTX0_RDPCSTX_PHY_CNTL6, RDPCS_PHY_DP_TX2_RATE, mask_sh),\\\n\tLE_SF(RDPCSTX0_RDPCSTX_PHY_CNTL6, RDPCS_PHY_DP_TX3_WIDTH, mask_sh),\\\n\tLE_SF(RDPCSTX0_RDPCSTX_PHY_CNTL6, RDPCS_PHY_DP_TX3_RATE, mask_sh),\\\n\tLE_SF(RDPCSTX0_RDPCSTX_PHY_CNTL11, RDPCS_PHY_DP_REF_CLK_EN, mask_sh)\n\n#define DPCS_DCN201_REG_LIST(id) \\\n\tDPCS_DCN2_CMN_REG_LIST(id)\n\nvoid dcn201_link_encoder_construct(\n\tstruct dcn20_link_encoder *enc20,\n\tconst struct encoder_init_data *init_data,\n\tconst struct encoder_feature_support *enc_features,\n\tconst struct dcn10_link_enc_registers *link_regs,\n\tconst struct dcn10_link_enc_aux_registers *aux_regs,\n\tconst struct dcn10_link_enc_hpd_registers *hpd_regs,\n\tconst struct dcn10_link_enc_shift *link_shift,\n\tconst struct dcn10_link_enc_mask *link_mask);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

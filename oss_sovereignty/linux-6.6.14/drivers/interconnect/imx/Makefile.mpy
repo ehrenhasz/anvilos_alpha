@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8ad87aba933f2b234437b1443b433deefa0a221a598210b4ecc3f5627dfc54c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/interconnect/imx/Makefile",
+  "human_readable_source": "imx-interconnect-objs\t\t\t:= imx.o\nimx8mm-interconnect-objs       \t\t:= imx8mm.o\nimx8mq-interconnect-objs       \t\t:= imx8mq.o\nimx8mn-interconnect-objs       \t\t:= imx8mn.o\nimx8mp-interconnect-objs       \t\t:= imx8mp.o\n\nobj-$(CONFIG_INTERCONNECT_IMX)\t\t+= imx-interconnect.o\nobj-$(CONFIG_INTERCONNECT_IMX8MM)\t+= imx8mm-interconnect.o\nobj-$(CONFIG_INTERCONNECT_IMX8MQ)\t+= imx8mq-interconnect.o\nobj-$(CONFIG_INTERCONNECT_IMX8MN)\t+= imx8mn-interconnect.o\nobj-$(CONFIG_INTERCONNECT_IMX8MP)\t+= imx8mp-interconnect.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

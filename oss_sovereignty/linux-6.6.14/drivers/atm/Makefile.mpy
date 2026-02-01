@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ce409e89b01ff16ab61c1e7677b673b95a6b2b0d0364642b8bb31f9989da7ae8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/atm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux network (ATM) device drivers.\n#\n\nfore_200e-y\t:= fore200e.o\n\nobj-$(CONFIG_ATM_NICSTAR)\t+= nicstar.o\nobj-$(CONFIG_ATM_IA)\t\t+= iphase.o suni.o\nobj-$(CONFIG_ATM_FORE200E)\t+= fore_200e.o\nobj-$(CONFIG_ATM_ENI)\t\t+= eni.o suni.o\nobj-$(CONFIG_ATM_IDT77252)\t+= idt77252.o\nobj-$(CONFIG_ATM_SOLOS)\t\t+= solos-pci.o\n\nifeq ($(CONFIG_ATM_NICSTAR_USE_SUNI),y)\n  obj-$(CONFIG_ATM_NICSTAR)\t+= suni.o\nendif\nifeq ($(CONFIG_ATM_NICSTAR_USE_IDT77105),y)\n  obj-$(CONFIG_ATM_NICSTAR)\t+= idt77105.o\nendif\nifeq ($(CONFIG_ATM_IDT77252_USE_SUNI),y)\n  obj-$(CONFIG_ATM_IDT77252)\t+= suni.o\nendif\n\nobj-$(CONFIG_ATM_DUMMY)\t\t+= adummy.o\nobj-$(CONFIG_ATM_TCP)\t\t+= atmtcp.o\nobj-$(CONFIG_ATM_LANAI)\t\t+= lanai.o\n\nobj-$(CONFIG_ATM_HE)\t\t+= he.o\nifeq ($(CONFIG_ATM_HE_USE_SUNI),y)\n  obj-$(CONFIG_ATM_HE)\t\t+= suni.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

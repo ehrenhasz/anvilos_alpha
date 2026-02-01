@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn301_hwseq.c",
+  "hash_id": "4d35a5d72421ccabfcf73c164f57357fb7083227e48ff70c88cd42ee963d1d62",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_hwseq.c",
+  "human_readable_source": " \n\n#include \"core_types.h\"\n#include \"dce/dce_hwseq.h\"\n#include \"dcn301_hwseq.h\"\n#include \"reg_helper.h\"\n\n#define DC_LOGGER_INIT(logger)\n\n#define CTX \\\n\thws->ctx\n#define REG(reg)\\\n\thws->regs->reg\n\n#undef FN\n#define FN(reg_name, field_name) \\\n\thws->shifts->field_name, hws->masks->field_name\n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

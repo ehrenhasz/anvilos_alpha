@@ -1,0 +1,9 @@
+{
+  "module_name": "owl-sps.h",
+  "hash_id": "30875864147c952f57bd195d039066bc1e55ea7683ff87978b9f752ddfc57fd8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/actions/owl-sps.h",
+  "human_readable_source": " \n#ifndef SOC_ACTIONS_OWL_SPS_H\n#define SOC_ACTIONS_OWL_SPS_H\n\nint owl_sps_set_pg(void __iomem *base, u32 pwr_mask, u32 ack_mask, bool enable);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

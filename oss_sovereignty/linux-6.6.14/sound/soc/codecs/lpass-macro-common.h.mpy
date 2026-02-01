@@ -1,0 +1,9 @@
+{
+  "module_name": "lpass-macro-common.h",
+  "hash_id": "484497da9014446e5a8efcd6eb731ef1df582bf91f388e0df0c90aea48d9fdb4",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/lpass-macro-common.h",
+  "human_readable_source": " \n \n\n#ifndef __LPASS_MACRO_COMMON_H__\n#define __LPASS_MACRO_COMMON_H__\n\n \n#define LPASS_MACRO_FLAG_HAS_NPL_CLOCK\t\tBIT(0)\n\nstruct lpass_macro {\n\tstruct device *macro_pd;\n\tstruct device *dcodec_pd;\n};\n\nstruct lpass_macro *lpass_macro_pds_init(struct device *dev);\nvoid lpass_macro_pds_exit(struct lpass_macro *pds);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

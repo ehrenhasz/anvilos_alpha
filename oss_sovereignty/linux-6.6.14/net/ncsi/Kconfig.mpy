@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "146963e444c66fecf29da2e6c9f59e0bd04a2b94a1f35a91d125a4215cb9a88e",
+  "original_prompt": "Ingested from linux-6.6.14/net/ncsi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Configuration for NCSI support\n#\n\nconfig NET_NCSI\n\tbool \"NCSI interface support\"\n\tdepends on INET\n\thelp\n\t  This module provides NCSI (Network Controller Sideband Interface)\n\t  support. Enable this only if your system connects to a network\n\t  device via NCSI and the ethernet driver you're using supports\n\t  the protocol explicitly.\nconfig NCSI_OEM_CMD_GET_MAC\n\tbool \"Get NCSI OEM MAC Address\"\n\tdepends on NET_NCSI\n\thelp\n\t  This allows to get MAC address from NCSI firmware and set them back to\n\t\tcontroller.\nconfig NCSI_OEM_CMD_KEEP_PHY\n\tbool \"Keep PHY Link up\"\n\tdepends on NET_NCSI\n\thelp\n\t  This allows to keep PHY link up and prevents any channel resets during\n\t  the host load.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

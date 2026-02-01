@@ -1,0 +1,9 @@
+{
+  "module_name": "zynqmp_dpsub.h",
+  "hash_id": "f868028f8467948d761fb7f6c1f732c699a6c36173100ffed0214391fa428110",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/xlnx/zynqmp_dpsub.h",
+  "human_readable_source": " \n \n\n#ifndef _ZYNQMP_DPSUB_H_\n#define _ZYNQMP_DPSUB_H_\n\nstruct clk;\nstruct device;\nstruct drm_bridge;\nstruct zynqmp_disp;\nstruct zynqmp_disp_layer;\nstruct zynqmp_dp;\nstruct zynqmp_dpsub_drm;\n\n#define ZYNQMP_DPSUB_NUM_LAYERS\t\t\t\t2\n\nenum zynqmp_dpsub_port {\n\tZYNQMP_DPSUB_PORT_LIVE_VIDEO,\n\tZYNQMP_DPSUB_PORT_LIVE_GFX,\n\tZYNQMP_DPSUB_PORT_LIVE_AUDIO,\n\tZYNQMP_DPSUB_PORT_OUT_VIDEO,\n\tZYNQMP_DPSUB_PORT_OUT_AUDIO,\n\tZYNQMP_DPSUB_PORT_OUT_DP,\n\tZYNQMP_DPSUB_NUM_PORTS,\n};\n\nenum zynqmp_dpsub_format {\n\tZYNQMP_DPSUB_FORMAT_RGB,\n\tZYNQMP_DPSUB_FORMAT_YCRCB444,\n\tZYNQMP_DPSUB_FORMAT_YCRCB422,\n\tZYNQMP_DPSUB_FORMAT_YONLY,\n};\n\n \nstruct zynqmp_dpsub {\n\tstruct device *dev;\n\n\tstruct clk *apb_clk;\n\tstruct clk *vid_clk;\n\tbool vid_clk_from_ps;\n\tstruct clk *aud_clk;\n\tbool aud_clk_from_ps;\n\n\tunsigned int connected_ports;\n\tbool dma_enabled;\n\n\tstruct zynqmp_dpsub_drm *drm;\n\tstruct drm_bridge *bridge;\n\n\tstruct zynqmp_disp *disp;\n\tstruct zynqmp_disp_layer *layers[ZYNQMP_DPSUB_NUM_LAYERS];\n\tstruct zynqmp_dp *dp;\n\n\tunsigned int dma_align;\n};\n\nbool zynqmp_dpsub_audio_enabled(struct zynqmp_dpsub *dpsub);\nunsigned int zynqmp_dpsub_get_audio_clk_rate(struct zynqmp_dpsub *dpsub);\n\nvoid zynqmp_dpsub_release(struct zynqmp_dpsub *dpsub);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

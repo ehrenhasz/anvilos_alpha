@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_socket.h",
+  "hash_id": "562e21a7bd092074394c0eb58f43de1682220d43aaf82e54210ea4791da7be11",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_socket.h",
+  "human_readable_source": " \n#ifndef _XT_SOCKET_H\n#define _XT_SOCKET_H\n\n#include <linux/types.h>\n\nenum {\n\tXT_SOCKET_TRANSPARENT = 1 << 0,\n\tXT_SOCKET_NOWILDCARD = 1 << 1,\n\tXT_SOCKET_RESTORESKMARK = 1 << 2,\n};\n\nstruct xt_socket_mtinfo1 {\n\t__u8 flags;\n};\n#define XT_SOCKET_FLAGS_V1 XT_SOCKET_TRANSPARENT\n\nstruct xt_socket_mtinfo2 {\n\t__u8 flags;\n};\n#define XT_SOCKET_FLAGS_V2 (XT_SOCKET_TRANSPARENT | XT_SOCKET_NOWILDCARD)\n\nstruct xt_socket_mtinfo3 {\n\t__u8 flags;\n};\n#define XT_SOCKET_FLAGS_V3 (XT_SOCKET_TRANSPARENT \\\n\t\t\t   | XT_SOCKET_NOWILDCARD \\\n\t\t\t   | XT_SOCKET_RESTORESKMARK)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

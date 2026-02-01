@@ -1,0 +1,9 @@
+{
+  "module_name": "test-strncat.c",
+  "hash_id": "7bb6131bdcaf9ef5cf879d63e6130e0a9a6b04a12675d89c696f8df9ee3988c1",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-strncat.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <string.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (strncat, char *, (char *, const char *, size_t));\n\n#include <stdlib.h>\n\n#include \"zerosize-ptr.h\"\n#include \"macros.h\"\n\n#define UNIT char\n#define U_STRNCAT strncat\n#define MAGIC ((char) 0xBA)\n#include \"unistr/test-strncat.h\"\n\nint\nmain ()\n{\n   \n  {  \n    static const char input[] =\n      { 'G', 'r', (char) 0xC3, (char) 0xBC, (char) 0xC3, (char) 0x9F, ' ',\n        'G', 'o', 't', 't', '.', ' ', (char) 0xD0, (char) 0x97, (char) 0xD0,\n        (char) 0xB4, (char) 0xD1, (char) 0x80, (char) 0xD0, (char) 0xB0,\n        (char) 0xD0, (char) 0xB2, (char) 0xD1, (char) 0x81, (char) 0xD1,\n        (char) 0x82, (char) 0xD0, (char) 0xB2, (char) 0xD1, (char) 0x83,\n        (char) 0xD0, (char) 0xB9, (char) 0xD1, (char) 0x82, (char) 0xD0,\n        (char) 0xB5, '!', ' ', 'x', '=', '(', '-', 'b', (char) 0xC2,\n        (char) 0xB1, 's', 'q', 'r', 't', '(', 'b', (char) 0xC2, (char) 0xB2,\n        '-', '4', 'a', 'c', ')', ')', '/', '(', '2', 'a', ')', ' ', ' ',\n        (char) 0xE6, (char) 0x97, (char) 0xA5, (char) 0xE6, (char) 0x9C,\n        (char) 0xAC, (char) 0xE8, (char) 0xAA, (char) 0x9E, ',', (char) 0xE4,\n        (char) 0xB8, (char) 0xAD, (char) 0xE6, (char) 0x96, (char) 0x87, ',',\n        (char) 0xED, (char) 0x95, (char) 0x9C, (char) 0xEA, (char) 0xB8,\n        (char) 0x80, '\\0'\n      };\n    check (input, SIZEOF (input));\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

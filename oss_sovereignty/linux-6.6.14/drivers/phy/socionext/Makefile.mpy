@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5ec608e89e69a0cbd3af54401ea1e6e212af75c85309a03d4d35481e16b52585",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/socionext/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the phy drivers.\n#\n\nobj-$(CONFIG_PHY_UNIPHIER_USB2)\t+= phy-uniphier-usb2.o\nobj-$(CONFIG_PHY_UNIPHIER_USB3)\t+= phy-uniphier-usb3hs.o phy-uniphier-usb3ss.o\nobj-$(CONFIG_PHY_UNIPHIER_PCIE)\t+= phy-uniphier-pcie.o\nobj-$(CONFIG_PHY_UNIPHIER_AHCI)\t+= phy-uniphier-ahci.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

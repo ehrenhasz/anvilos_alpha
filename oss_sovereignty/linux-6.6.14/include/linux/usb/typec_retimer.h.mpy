@@ -1,0 +1,9 @@
+{
+  "module_name": "typec_retimer.h",
+  "hash_id": "54cc15f994dacad5d7d7b050cd5a199f2da923e82678a0d62fcb8d08c4527ded",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/typec_retimer.h",
+  "human_readable_source": " \n\n#ifndef __USB_TYPEC_RETIMER\n#define __USB_TYPEC_RETIMER\n\n#include <linux/property.h>\n#include <linux/usb/typec.h>\n\nstruct device;\nstruct typec_retimer;\nstruct typec_altmode;\nstruct fwnode_handle;\n\nstruct typec_retimer_state {\n\tstruct typec_altmode *alt;\n\tunsigned long mode;\n\tvoid *data;\n};\n\ntypedef int (*typec_retimer_set_fn_t)(struct typec_retimer *retimer,\n\t\t\t\t      struct typec_retimer_state *state);\n\nstruct typec_retimer_desc {\n\tstruct fwnode_handle *fwnode;\n\ttypec_retimer_set_fn_t set;\n\tconst char *name;\n\tvoid *drvdata;\n};\n\nstruct typec_retimer *fwnode_typec_retimer_get(struct fwnode_handle *fwnode);\nvoid typec_retimer_put(struct typec_retimer *retimer);\nint typec_retimer_set(struct typec_retimer *retimer, struct typec_retimer_state *state);\n\nstatic inline struct typec_retimer *typec_retimer_get(struct device *dev)\n{\n\treturn fwnode_typec_retimer_get(dev_fwnode(dev));\n}\n\nstruct typec_retimer *\ntypec_retimer_register(struct device *parent, const struct typec_retimer_desc *desc);\nvoid typec_retimer_unregister(struct typec_retimer *retimer);\n\nvoid *typec_retimer_get_drvdata(struct typec_retimer *retimer);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "md5.m4",
+  "hash_id": "4ac46723ec038b80b341ef25456dea716303d418fbe55450a4d54b880fe9b92e",
+  "original_prompt": "Ingested from coreutils-9.4/m4/md5.m4",
+  "human_readable_source": "# md5.m4 serial 14\ndnl Copyright (C) 2002-2006, 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_MD5],\n[\n  dnl Prerequisites of lib/md5.c.\n  AC_REQUIRE([gl_BIGENDIAN])\n\n  dnl Determine HAVE_OPENSSL_MD5 and LIB_CRYPTO\n  gl_CRYPTO_CHECK([MD5])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

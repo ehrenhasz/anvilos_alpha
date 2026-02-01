@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "5c9949756fc49b3d8e462e3627d0454878f9f05b0b315a8dc0a1c930bcc57745",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n.libs\nlibcpupower.so\nlibcpupower.so.*\nbuild/ccdv\ncpufreq-info\ncpufreq-set\ncpufreq-aperf\nlib/.libs\nlib/cpufreq.lo\nlib/cpufreq.o\nlib/proc.lo\nlib/proc.o\nlib/sysfs.lo\nlib/sysfs.o\npo/cpupowerutils.pot\npo/*.gmo\nutils/cpufreq-info.o\nutils/cpufreq-set.o\nutils/cpufreq-aperf.o\ncpupower\nbench/cpufreq-bench\ndebug/kernel/Module.symvers\ndebug/i386/centrino-decode\ndebug/i386/dump_psb\ndebug/i386/intel_gsic\ndebug/i386/powernow-k8-decode\ndebug/x86_64/centrino-decode\ndebug/x86_64/powernow-k8-decode\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "delta-mem.h",
+  "hash_id": "a0f7e041224b52412cb23769277854e4bc8ffa0fcf38dc8400e21227a8f71951",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/delta/delta-mem.h",
+  "human_readable_source": " \n \n\n#ifndef DELTA_MEM_H\n#define DELTA_MEM_H\n\nint hw_alloc(struct delta_ctx *ctx, u32 size, const char *name,\n\t     struct delta_buf *buf);\nvoid hw_free(struct delta_ctx *ctx, struct delta_buf *buf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

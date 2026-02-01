@@ -1,0 +1,9 @@
+{
+  "module_name": "soc.c",
+  "hash_id": "418f6774b8e0e86d483728dd8efb5c77f97a760566b4f10b8a35d491812e4d9f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt7615/soc.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/platform_device.h>\n#include <linux/regmap.h>\n#include <linux/mfd/syscon.h>\n#include <linux/of.h>\n#include \"mt7615.h\"\n\nint mt7622_wmac_init(struct mt7615_dev *dev)\n{\n\tstruct device_node *np = dev->mt76.dev->of_node;\n\n\tif (!is_mt7622(&dev->mt76))\n\t\treturn 0;\n\n\tdev->infracfg = syscon_regmap_lookup_by_phandle(np, \"mediatek,infracfg\");\n\tif (IS_ERR(dev->infracfg)) {\n\t\tdev_err(dev->mt76.dev, \"Cannot find infracfg controller\\n\");\n\t\treturn PTR_ERR(dev->infracfg);\n\t}\n\n\treturn 0;\n}\n\nstatic int mt7622_wmac_probe(struct platform_device *pdev)\n{\n\tvoid __iomem *mem_base;\n\tint irq;\n\n\tirq = platform_get_irq(pdev, 0);\n\tif (irq < 0)\n\t\treturn irq;\n\n\tmem_base = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);\n\tif (IS_ERR(mem_base))\n\t\treturn PTR_ERR(mem_base);\n\n\treturn mt7615_mmio_probe(&pdev->dev, mem_base, irq, mt7615e_reg_map);\n}\n\nstatic int mt7622_wmac_remove(struct platform_device *pdev)\n{\n\tstruct mt7615_dev *dev = platform_get_drvdata(pdev);\n\n\tmt7615_unregister_device(dev);\n\n\treturn 0;\n}\n\nstatic const struct of_device_id mt7622_wmac_of_match[] = {\n\t{ .compatible = \"mediatek,mt7622-wmac\" },\n\t{},\n};\n\nstruct platform_driver mt7622_wmac_driver = {\n\t.driver = {\n\t\t.name = \"mt7622-wmac\",\n\t\t.of_match_table = mt7622_wmac_of_match,\n\t},\n\t.probe = mt7622_wmac_probe,\n\t.remove = mt7622_wmac_remove,\n};\n\nMODULE_FIRMWARE(MT7622_FIRMWARE_N9);\nMODULE_FIRMWARE(MT7622_ROM_PATCH);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

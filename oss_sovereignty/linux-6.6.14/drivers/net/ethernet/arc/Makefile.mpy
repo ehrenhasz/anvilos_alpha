@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "97756b4df4892909c846188cee7ee68333247ce8cb52b9ad6355207ab28732eb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/arc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the ARC network device drivers.\n#\n\narc_emac-objs := emac_main.o emac_mdio.o\nobj-$(CONFIG_ARC_EMAC_CORE) += arc_emac.o\nobj-$(CONFIG_ARC_EMAC) += emac_arc.o\nobj-$(CONFIG_EMAC_ROCKCHIP) += emac_rockchip.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

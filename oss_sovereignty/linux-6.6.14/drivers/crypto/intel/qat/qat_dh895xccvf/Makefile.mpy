@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "05d98f7dbdd1a8a54c5d9385f9bd189c12f6f5d79c146e3bcd290fa6c7791e76",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_dh895xccvf/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nccflags-y := -I $(srctree)/$(src)/../qat_common\nobj-$(CONFIG_CRYPTO_DEV_QAT_DH895xCCVF) += qat_dh895xccvf.o\nqat_dh895xccvf-objs := adf_drv.o adf_dh895xccvf_hw_data.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

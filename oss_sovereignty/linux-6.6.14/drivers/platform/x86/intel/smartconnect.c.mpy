@@ -1,0 +1,9 @@
+{
+  "module_name": "smartconnect.c",
+  "hash_id": "78bb862a978eb0466092a4b3fa49bfc710530d9d739a1fde8b07c05dc3c4419d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/smartconnect.c",
+  "human_readable_source": "\n \n\n#include <linux/acpi.h>\n#include <linux/module.h>\n\nMODULE_LICENSE(\"GPL\");\n\nstatic int smartconnect_acpi_init(struct acpi_device *acpi)\n{\n\tunsigned long long value;\n\tacpi_status status;\n\n\tstatus = acpi_evaluate_integer(acpi->handle, \"GAOS\", NULL, &value);\n\tif (ACPI_FAILURE(status))\n\t\treturn -EINVAL;\n\n\tif (value & 0x1) {\n\t\tdev_info(&acpi->dev, \"Disabling Intel Smart Connect\\n\");\n\t\tstatus = acpi_execute_simple_method(acpi->handle, \"SAOS\", 0);\n\t}\n\n\treturn 0;\n}\n\nstatic const struct acpi_device_id smartconnect_ids[] = {\n\t{\"INT33A0\", 0},\n\t{\"\", 0}\n};\nMODULE_DEVICE_TABLE(acpi, smartconnect_ids);\n\nstatic struct acpi_driver smartconnect_driver = {\n\t.owner = THIS_MODULE,\n\t.name = \"intel_smart_connect\",\n\t.class = \"intel_smart_connect\",\n\t.ids = smartconnect_ids,\n\t.ops = {\n\t\t.add = smartconnect_acpi_init,\n\t},\n};\n\nmodule_acpi_driver(smartconnect_driver);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

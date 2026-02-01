@@ -1,0 +1,9 @@
+{
+  "module_name": "swait_api.h",
+  "hash_id": "fdc9eba5b8dcd128c333abda2bc7ec742c251c37045b5a8c77cf5704df4caedf",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/swait_api.h",
+  "human_readable_source": "#include <linux/swait.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

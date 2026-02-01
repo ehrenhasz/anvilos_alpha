@@ -1,0 +1,9 @@
+{
+  "module_name": "vxfs_dir.h",
+  "hash_id": "cd1ea30f3fa75d303345efd299123ad72769ae4801cf9a2c771996d184058c23",
+  "original_prompt": "Ingested from linux-6.6.14/fs/freevxfs/vxfs_dir.h",
+  "human_readable_source": " \n \n#ifndef _VXFS_DIR_H_\n#define _VXFS_DIR_H_\n\n \n\n\n \nstruct vxfs_dirblk {\n\t__fs16\t\td_free;\t\t \n\t__fs16\t\td_nhash;\t \n\t__fs16\t\td_hash[1];\t \n};\n\n \n#define VXFS_NAMELEN\t256\n\n \nstruct vxfs_direct {\n\t__fs32\t\td_ino;\t\t\t \n\t__fs16\t\td_reclen;\t\t \n\t__fs16\t\td_namelen;\t\t \n\t__fs16\t\td_hashnext;\t\t \n\tchar\t\td_name[VXFS_NAMELEN];\t \n};\n\n \n#define VXFS_DIRPAD\t\t4\n#define VXFS_NAMEMIN\t\toffsetof(struct vxfs_direct, d_name)\n#define VXFS_DIRROUND(len)\t((VXFS_DIRPAD + (len) - 1) & ~(VXFS_DIRPAD -1))\n#define VXFS_DIRLEN(len)\t(VXFS_DIRROUND(VXFS_NAMEMIN + (len)))\n\n \n#define VXFS_DIRBLKOV(sbi, dbp)\t\\\n\t((sizeof(short) * fs16_to_cpu(sbi, dbp->d_nhash)) + 4)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

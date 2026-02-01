@@ -1,0 +1,9 @@
+{
+  "module_name": "feature.h",
+  "hash_id": "2e3a0a5514ed93e69606947934748c54c493a2d16c8360d598ee6516b62534d3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/feature.h",
+  "human_readable_source": "\n \n#ifndef _BRCMF_FEATURE_H\n#define _BRCMF_FEATURE_H\n\n \n#define BRCMF_FEAT_LIST \\\n\tBRCMF_FEAT_DEF(MBSS) \\\n\tBRCMF_FEAT_DEF(MCHAN) \\\n\tBRCMF_FEAT_DEF(PNO) \\\n\tBRCMF_FEAT_DEF(WOWL) \\\n\tBRCMF_FEAT_DEF(P2P) \\\n\tBRCMF_FEAT_DEF(RSDB) \\\n\tBRCMF_FEAT_DEF(TDLS) \\\n\tBRCMF_FEAT_DEF(SCAN_RANDOM_MAC) \\\n\tBRCMF_FEAT_DEF(WOWL_ND) \\\n\tBRCMF_FEAT_DEF(WOWL_GTK) \\\n\tBRCMF_FEAT_DEF(WOWL_ARP_ND) \\\n\tBRCMF_FEAT_DEF(MFP) \\\n\tBRCMF_FEAT_DEF(GSCAN) \\\n\tBRCMF_FEAT_DEF(FWSUP) \\\n\tBRCMF_FEAT_DEF(MONITOR) \\\n\tBRCMF_FEAT_DEF(MONITOR_FLAG) \\\n\tBRCMF_FEAT_DEF(MONITOR_FMT_RADIOTAP) \\\n\tBRCMF_FEAT_DEF(MONITOR_FMT_HW_RX_HDR) \\\n\tBRCMF_FEAT_DEF(DOT11H) \\\n\tBRCMF_FEAT_DEF(SAE) \\\n\tBRCMF_FEAT_DEF(FWAUTH) \\\n\tBRCMF_FEAT_DEF(DUMP_OBSS) \\\n\tBRCMF_FEAT_DEF(SCAN_V2) \\\n\tBRCMF_FEAT_DEF(PMKID_V2) \\\n\tBRCMF_FEAT_DEF(PMKID_V3)\n\n \n#define BRCMF_QUIRK_LIST \\\n\tBRCMF_QUIRK_DEF(AUTO_AUTH) \\\n\tBRCMF_QUIRK_DEF(NEED_MPC)\n\n#define BRCMF_FEAT_DEF(_f) \\\n\tBRCMF_FEAT_ ## _f,\n \nenum brcmf_feat_id {\n\tBRCMF_FEAT_LIST\n\tBRCMF_FEAT_LAST\n};\n#undef BRCMF_FEAT_DEF\n\n#define BRCMF_QUIRK_DEF(_q) \\\n\tBRCMF_FEAT_QUIRK_ ## _q,\n \nenum brcmf_feat_quirk {\n\tBRCMF_QUIRK_LIST\n\tBRCMF_FEAT_QUIRK_LAST\n};\n#undef BRCMF_QUIRK_DEF\n\n \nvoid brcmf_feat_attach(struct brcmf_pub *drvr);\n\n \nvoid brcmf_feat_debugfs_create(struct brcmf_pub *drvr);\n\n \nbool brcmf_feat_is_enabled(struct brcmf_if *ifp, enum brcmf_feat_id id);\n\n \nbool brcmf_feat_is_quirk_enabled(struct brcmf_if *ifp,\n\t\t\t\t enum brcmf_feat_quirk quirk);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

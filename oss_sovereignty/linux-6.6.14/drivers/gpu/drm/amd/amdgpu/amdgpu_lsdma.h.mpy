@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_lsdma.h",
+  "hash_id": "2c3e4a7e99128960b456be4eac14231f90d4c06be9a837c973f757946458f255",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_lsdma.h",
+  "human_readable_source": " \n\n#ifndef __AMDGPU_LSDMA_H__\n#define __AMDGPU_LSDMA_H__\n\nstruct amdgpu_lsdma {\n\tconst struct amdgpu_lsdma_funcs      *funcs;\n};\n\nstruct amdgpu_lsdma_funcs {\n\tint (*copy_mem)(struct amdgpu_device *adev, uint64_t src_addr,\n\t\t\tuint64_t dst_addr, uint64_t size);\n\tint (*fill_mem)(struct amdgpu_device *adev, uint64_t dst_addr,\n\t\t\tuint32_t data, uint64_t size);\n\tvoid (*update_memory_power_gating)(struct amdgpu_device *adev, bool enable);\n};\n\nint amdgpu_lsdma_copy_mem(struct amdgpu_device *adev, uint64_t src_addr,\n\t\t\t  uint64_t dst_addr, uint64_t mem_size);\nint amdgpu_lsdma_fill_mem(struct amdgpu_device *adev, uint64_t dst_addr,\n\t\t\t  uint32_t data, uint64_t mem_size);\nint amdgpu_lsdma_wait_for(struct amdgpu_device *adev, uint32_t reg_index,\n\t\t\t  uint32_t reg_val, uint32_t mask);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

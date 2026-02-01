@@ -1,0 +1,9 @@
+{
+  "module_name": "adi,adau1977.h",
+  "hash_id": "fbc9b27364673a36f6e55c7b139e6c0cf0ab084ed93fb21d37d3d1558f100bb8",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/sound/adi,adau1977.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_ADI_ADAU1977_H__\n#define __DT_BINDINGS_ADI_ADAU1977_H__\n\n#define ADAU1977_MICBIAS_5V0\t0x0\n#define ADAU1977_MICBIAS_5V5\t0x1\n#define ADAU1977_MICBIAS_6V0\t0x2\n#define ADAU1977_MICBIAS_6V5\t0x3\n#define ADAU1977_MICBIAS_7V0\t0x4\n#define ADAU1977_MICBIAS_7V5\t0x5\n#define ADAU1977_MICBIAS_8V0\t0x6\n#define ADAU1977_MICBIAS_8V5\t0x7\n#define ADAU1977_MICBIAS_9V0\t0x8\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

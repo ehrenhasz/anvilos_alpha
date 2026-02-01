@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_reject.h",
+  "hash_id": "15443f98ba37d0dd172a117086893c126ac03bfbe337af1c7ef9d37be68e8987",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nf_reject.h",
+  "human_readable_source": " \n#ifndef _NF_REJECT_H\n#define _NF_REJECT_H\n\n#include <linux/types.h>\n#include <uapi/linux/in.h>\n\nstatic inline bool nf_reject_verify_csum(struct sk_buff *skb, int dataoff,\n\t\t\t\t\t  __u8 proto)\n{\n\t \n\tswitch (proto) {\n\t\t \n\t\tcase IPPROTO_UDP: {\n\t\t\tconst struct udphdr *udp_hdr;\n\t\t\tstruct udphdr _udp_hdr;\n\n\t\t\tudp_hdr = skb_header_pointer(skb, dataoff,\n\t\t\t\t\t\t     sizeof(_udp_hdr),\n\t\t\t\t\t\t     &_udp_hdr);\n\t\t\tif (!udp_hdr || udp_hdr->check)\n\t\t\t\treturn true;\n\n\t\t\treturn false;\n\t\t}\n\t\tcase IPPROTO_GRE:\n\n\t\t \n\t\tcase IPPROTO_AH:\n\t\tcase IPPROTO_ESP:\n\t\tcase IPPROTO_SCTP:\n\n\t\t \n\t\tcase IPPROTO_UDPLITE:\n\t\tcase IPPROTO_DCCP:\n\t\t\treturn false;\n\t}\n\treturn true;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

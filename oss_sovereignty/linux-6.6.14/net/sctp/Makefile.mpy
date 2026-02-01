@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9adeb3018e875611dd4f003fab058bb13ebf1bdfb8f0feeb51bac6f68affe45f",
+  "original_prompt": "Ingested from linux-6.6.14/net/sctp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for SCTP support code.\n#\n\nobj-$(CONFIG_IP_SCTP) += sctp.o\nobj-$(CONFIG_INET_SCTP_DIAG) += sctp_diag.o\n\nsctp-y := sm_statetable.o sm_statefuns.o sm_sideeffect.o \\\n\t  protocol.o endpointola.o associola.o \\\n\t  transport.o chunk.o sm_make_chunk.o ulpevent.o \\\n\t  inqueue.o outqueue.o ulpqueue.o \\\n\t  tsnmap.o bind_addr.o socket.o primitive.o \\\n\t  output.o input.o debug.o stream.o auth.o \\\n\t  offload.o stream_sched.o stream_sched_prio.o \\\n\t  stream_sched_rr.o stream_sched_fc.o \\\n\t  stream_interleave.o\n\nsctp_diag-y := diag.o\n\nsctp-$(CONFIG_SCTP_DBG_OBJCNT) += objcnt.o\nsctp-$(CONFIG_PROC_FS) += proc.o\nsctp-$(CONFIG_SYSCTL) += sysctl.o\n\nsctp-$(subst m,y,$(CONFIG_IPV6))\t+= ipv6.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

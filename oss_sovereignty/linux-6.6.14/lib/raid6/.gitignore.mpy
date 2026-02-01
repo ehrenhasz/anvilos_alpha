@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "622d41cab657652e0555693dfd9a688d90edd1426054bc68739b8a03b473db0b",
+  "original_prompt": "Ingested from linux-6.6.14/lib/raid6/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmktables\naltivec*.c\nint*.c\ntables.c\nneon?.c\ns390vx?.c\nvpermxor*.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

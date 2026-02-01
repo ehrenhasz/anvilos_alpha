@@ -1,0 +1,9 @@
+{
+  "module_name": "sys_call_table_64.c",
+  "hash_id": "e34b770897b64d57c75284fc2fbea8921441b9cf36e1af4cfd16a17806359c30",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/sys_call_table_64.c",
+  "human_readable_source": "\n \n\n#include <linux/linkage.h>\n#include <linux/sys.h>\n#include <linux/cache.h>\n#include <asm/syscall.h>\n\n \n\n \n#define sys_iopl sys_ni_syscall\n#define sys_ioperm sys_ni_syscall\n\n#define __SYSCALL(nr, sym) extern asmlinkage long sym(unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long);\n#include <asm/syscalls_64.h>\n\n#undef __SYSCALL\n#define __SYSCALL(nr, sym) sym,\n\nextern asmlinkage long sys_ni_syscall(unsigned long, unsigned long, unsigned long, unsigned long, unsigned long, unsigned long);\n\nconst sys_call_ptr_t sys_call_table[] ____cacheline_aligned = {\n#include <asm/syscalls_64.h>\n};\n\nint syscall_table_size = sizeof(sys_call_table);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

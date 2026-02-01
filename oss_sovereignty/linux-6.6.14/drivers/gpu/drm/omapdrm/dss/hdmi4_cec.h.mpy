@@ -1,0 +1,9 @@
+{
+  "module_name": "hdmi4_cec.h",
+  "hash_id": "7213ff73ce748f70fa904138bf180c26b13b37ca9c88a751ad143cbadf6cbb38",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/omapdrm/dss/hdmi4_cec.h",
+  "human_readable_source": " \n \n\n#ifndef _HDMI4_CEC_H_\n#define _HDMI4_CEC_H_\n\nstruct hdmi_core_data;\nstruct hdmi_wp_data;\nstruct platform_device;\n\n \n#ifdef CONFIG_OMAP4_DSS_HDMI_CEC\nvoid hdmi4_cec_set_phys_addr(struct hdmi_core_data *core, u16 pa);\nvoid hdmi4_cec_irq(struct hdmi_core_data *core);\nint hdmi4_cec_init(struct platform_device *pdev, struct hdmi_core_data *core,\n\t\t  struct hdmi_wp_data *wp);\nvoid hdmi4_cec_uninit(struct hdmi_core_data *core);\n#else\nstatic inline void hdmi4_cec_set_phys_addr(struct hdmi_core_data *core, u16 pa)\n{\n}\n\nstatic inline void hdmi4_cec_irq(struct hdmi_core_data *core)\n{\n}\n\nstatic inline int hdmi4_cec_init(struct platform_device *pdev,\n\t\t\t\tstruct hdmi_core_data *core,\n\t\t\t\tstruct hdmi_wp_data *wp)\n{\n\treturn 0;\n}\n\nstatic inline void hdmi4_cec_uninit(struct hdmi_core_data *core)\n{\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

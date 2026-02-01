@@ -1,0 +1,9 @@
+{
+  "module_name": "xor.h",
+  "hash_id": "282b5b15b128528c7bf692d86989403d1108125dc46fda9e398fa89ed4e40f9e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/raid/xor.h",
+  "human_readable_source": " \n#ifndef _XOR_H\n#define _XOR_H\n\n#define MAX_XOR_BLOCKS 4\n\nextern void xor_blocks(unsigned int count, unsigned int bytes,\n\tvoid *dest, void **srcs);\n\nstruct xor_block_template {\n        struct xor_block_template *next;\n        const char *name;\n        int speed;\n\tvoid (*do_2)(unsigned long, unsigned long * __restrict,\n\t\t     const unsigned long * __restrict);\n\tvoid (*do_3)(unsigned long, unsigned long * __restrict,\n\t\t     const unsigned long * __restrict,\n\t\t     const unsigned long * __restrict);\n\tvoid (*do_4)(unsigned long, unsigned long * __restrict,\n\t\t     const unsigned long * __restrict,\n\t\t     const unsigned long * __restrict,\n\t\t     const unsigned long * __restrict);\n\tvoid (*do_5)(unsigned long, unsigned long * __restrict,\n\t\t     const unsigned long * __restrict,\n\t\t     const unsigned long * __restrict,\n\t\t     const unsigned long * __restrict,\n\t\t     const unsigned long * __restrict);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

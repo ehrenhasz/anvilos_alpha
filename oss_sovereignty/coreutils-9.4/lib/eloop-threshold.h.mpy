@@ -1,0 +1,9 @@
+{
+  "module_name": "eloop-threshold.h",
+  "hash_id": "4b7a1cc4a2586c7f7b9085b7b9656886178b7b1c549bdf4c56b8f3c7e8a8de9c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/eloop-threshold.h",
+  "human_readable_source": " \n#if !_LIBC && !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <limits.h>\n#ifdef _LIBC\n# include <sys/param.h>\n# define _GL_ATTRIBUTE_CONST __attribute__ ((const))\n#else\n# include <unistd.h>\n# include \"minmax.h\"\n# define __sysconf sysconf\n# if (!defined SYMLOOP_MAX \\\n      && ! (defined _SC_SYMLOOP_MAX && defined _POSIX_SYMLOOP_MAX))\n#  define SYMLOOP_MAX 8\n# endif\n#endif\n\n \n\n#ifndef MIN_ELOOP_THRESHOLD\n# define MIN_ELOOP_THRESHOLD    40\n#endif\n\n \nstatic inline unsigned int _GL_ATTRIBUTE_CONST\n__eloop_threshold (void)\n{\n#ifdef SYMLOOP_MAX\n  const int symloop_max = SYMLOOP_MAX;\n#else\n   \n  static long int sysconf_symloop_max;\n  if (sysconf_symloop_max == 0)\n    sysconf_symloop_max = __sysconf (_SC_SYMLOOP_MAX);\n  const unsigned int symloop_max = (sysconf_symloop_max <= 0\n                                    ? _POSIX_SYMLOOP_MAX\n                                    : sysconf_symloop_max);\n#endif\n\n  return MAX (symloop_max, MIN_ELOOP_THRESHOLD);\n}\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

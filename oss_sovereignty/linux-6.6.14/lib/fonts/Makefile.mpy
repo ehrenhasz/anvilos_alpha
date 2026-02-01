@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a131cca7180a040b6f44cdef22113205866ef5ac57a1b3d26de9705965c438f3",
+  "original_prompt": "Ingested from linux-6.6.14/lib/fonts/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Font handling\n\nfont-objs := fonts.o\n\nfont-objs-$(CONFIG_FONT_SUN8x16)   += font_sun8x16.o\nfont-objs-$(CONFIG_FONT_SUN12x22)  += font_sun12x22.o\nfont-objs-$(CONFIG_FONT_8x8)       += font_8x8.o\nfont-objs-$(CONFIG_FONT_8x16)      += font_8x16.o\nfont-objs-$(CONFIG_FONT_6x11)      += font_6x11.o\nfont-objs-$(CONFIG_FONT_7x14)      += font_7x14.o\nfont-objs-$(CONFIG_FONT_10x18)     += font_10x18.o\nfont-objs-$(CONFIG_FONT_PEARL_8x8) += font_pearl_8x8.o\nfont-objs-$(CONFIG_FONT_ACORN_8x8) += font_acorn_8x8.o\nfont-objs-$(CONFIG_FONT_MINI_4x6)  += font_mini_4x6.o\nfont-objs-$(CONFIG_FONT_6x10)      += font_6x10.o\nfont-objs-$(CONFIG_FONT_TER16x32)  += font_ter16x32.o\nfont-objs-$(CONFIG_FONT_6x8)       += font_6x8.o\n\nfont-objs += $(font-objs-y)\n\nobj-$(CONFIG_FONT_SUPPORT)         += font.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gem_shrinker.h",
+  "hash_id": "4bdf4ab142cf777a82b9d90ce3e1b20bf57547b2df74a6c2cfd26987b4b9efd6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gem/i915_gem_shrinker.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_GEM_SHRINKER_H__\n#define __I915_GEM_SHRINKER_H__\n\n#include <linux/bits.h>\n\nstruct drm_i915_private;\nstruct i915_gem_ww_ctx;\nstruct mutex;\n\n \nunsigned long i915_gem_shrink(struct i915_gem_ww_ctx *ww,\n\t\t\t      struct drm_i915_private *i915,\n\t\t\t      unsigned long target,\n\t\t\t      unsigned long *nr_scanned,\n\t\t\t      unsigned flags);\n#define I915_SHRINK_UNBOUND\tBIT(0)\n#define I915_SHRINK_BOUND\tBIT(1)\n#define I915_SHRINK_ACTIVE\tBIT(2)\n#define I915_SHRINK_VMAPS\tBIT(3)\n#define I915_SHRINK_WRITEBACK\tBIT(4)\n\nunsigned long i915_gem_shrink_all(struct drm_i915_private *i915);\nvoid i915_gem_driver_register__shrinker(struct drm_i915_private *i915);\nvoid i915_gem_driver_unregister__shrinker(struct drm_i915_private *i915);\nvoid i915_gem_shrinker_taints_mutex(struct drm_i915_private *i915,\n\t\t\t\t    struct mutex *mutex);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "50ba87f4e4e3ba6682b7ebb175b2b06c1539101f01987ddc22cd818d7073809a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/google/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_GOOGLE_SMI)\t\t+= gsmi.o\nobj-$(CONFIG_GOOGLE_COREBOOT_TABLE)        += coreboot_table.o\nobj-$(CONFIG_GOOGLE_FRAMEBUFFER_COREBOOT)  += framebuffer-coreboot.o\nobj-$(CONFIG_GOOGLE_MEMCONSOLE)            += memconsole.o\nobj-$(CONFIG_GOOGLE_MEMCONSOLE_COREBOOT)   += memconsole-coreboot.o\nobj-$(CONFIG_GOOGLE_MEMCONSOLE_X86_LEGACY) += memconsole-x86-legacy.o\n\n# Must come after coreboot_table.o, as this driver depends on that bus type.\nobj-$(CONFIG_GOOGLE_CBMEM)\t\t+= cbmem.o\n\nvpd-sysfs-y := vpd.o vpd_decode.o\nobj-$(CONFIG_GOOGLE_VPD)\t\t+= vpd-sysfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

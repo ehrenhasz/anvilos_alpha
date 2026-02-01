@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ffd5aa20d39db503de2ee2f3bae28ee43c80428110c1a869ebe83b536e827d87",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/agere/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Agere device configuration\n#\n\nconfig NET_VENDOR_AGERE\n\tbool \"Agere devices\"\n\tdefault y\n\tdepends on PCI\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Agere devices. If you say Y, you will be asked\n\t  for your specific card in the following questions.\n\nif NET_VENDOR_AGERE\n\nconfig ET131X\n\ttristate \"Agere ET-1310 Gigabit Ethernet support\"\n\tdepends on PCI\n\tselect PHYLIB\n\tselect CRC32\n\thelp\n\t  This driver supports Agere ET-1310 ethernet adapters.\n\n\t  To compile this driver as a module, choose M here. The module\n\t  will be called et131x.\n\nendif # NET_VENDOR_AGERE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,gpucc-sm8350.h",
+  "hash_id": "4f3cabea0095fb3997300759e2c5623ea89a2c8e793aba76f6d3618b4d1083e4",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,gpucc-sm8350.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_QCOM_GPU_CC_SM8350_H\n#define _DT_BINDINGS_CLK_QCOM_GPU_CC_SM8350_H\n\n \n#define GPU_CC_AHB_CLK\t\t\t0\n#define GPU_CC_CB_CLK\t\t\t1\n#define GPU_CC_CRC_AHB_CLK\t\t2\n#define GPU_CC_CX_APB_CLK\t\t3\n#define GPU_CC_CX_GMU_CLK\t\t4\n#define GPU_CC_CX_QDSS_AT_CLK\t\t5\n#define GPU_CC_CX_QDSS_TRIG_CLK\t\t6\n#define GPU_CC_CX_QDSS_TSCTR_CLK\t7\n#define GPU_CC_CX_SNOC_DVM_CLK\t\t8\n#define GPU_CC_CXO_AON_CLK\t\t9\n#define GPU_CC_CXO_CLK\t\t\t10\n#define GPU_CC_FREQ_MEASURE_CLK\t\t11\n#define GPU_CC_GMU_CLK_SRC\t\t12\n#define GPU_CC_GX_GMU_CLK\t\t13\n#define GPU_CC_GX_QDSS_TSCTR_CLK\t14\n#define GPU_CC_GX_VSENSE_CLK\t\t15\n#define GPU_CC_HLOS1_VOTE_GPU_SMMU_CLK\t16\n#define GPU_CC_HUB_AHB_DIV_CLK_SRC\t17\n#define GPU_CC_HUB_AON_CLK\t\t18\n#define GPU_CC_HUB_CLK_SRC\t\t19\n#define GPU_CC_HUB_CX_INT_CLK\t\t20\n#define GPU_CC_HUB_CX_INT_DIV_CLK_SRC\t21\n#define GPU_CC_MND1X_0_GFX3D_CLK\t22\n#define GPU_CC_MND1X_1_GFX3D_CLK\t23\n#define GPU_CC_PLL0\t\t\t24\n#define GPU_CC_PLL1\t\t\t25\n#define GPU_CC_SLEEP_CLK\t\t26\n\n \n#define GPUCC_GPU_CC_ACD_BCR\t\t0\n#define GPUCC_GPU_CC_CB_BCR\t\t1\n#define GPUCC_GPU_CC_CX_BCR\t\t2\n#define GPUCC_GPU_CC_FAST_HUB_BCR\t3\n#define GPUCC_GPU_CC_GFX3D_AON_BCR\t4\n#define GPUCC_GPU_CC_GMU_BCR\t\t5\n#define GPUCC_GPU_CC_GX_BCR\t\t6\n#define GPUCC_GPU_CC_XO_BCR\t\t7\n\n \n#define GPU_CX_GDSC\t\t\t0\n#define GPU_GX_GDSC\t\t\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

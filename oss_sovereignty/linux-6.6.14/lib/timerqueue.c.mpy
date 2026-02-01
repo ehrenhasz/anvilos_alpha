@@ -1,0 +1,9 @@
+{
+  "module_name": "timerqueue.c",
+  "hash_id": "800137291d5cf865ae67f81235182ed789165b5847db1929310431f381077e6f",
+  "original_prompt": "Ingested from linux-6.6.14/lib/timerqueue.c",
+  "human_readable_source": "\n \n\n#include <linux/bug.h>\n#include <linux/timerqueue.h>\n#include <linux/rbtree.h>\n#include <linux/export.h>\n\n#define __node_2_tq(_n) \\\n\trb_entry((_n), struct timerqueue_node, node)\n\nstatic inline bool __timerqueue_less(struct rb_node *a, const struct rb_node *b)\n{\n\treturn __node_2_tq(a)->expires < __node_2_tq(b)->expires;\n}\n\n \nbool timerqueue_add(struct timerqueue_head *head, struct timerqueue_node *node)\n{\n\t \n\tWARN_ON_ONCE(!RB_EMPTY_NODE(&node->node));\n\n\treturn rb_add_cached(&node->node, &head->rb_root, __timerqueue_less);\n}\nEXPORT_SYMBOL_GPL(timerqueue_add);\n\n \nbool timerqueue_del(struct timerqueue_head *head, struct timerqueue_node *node)\n{\n\tWARN_ON_ONCE(RB_EMPTY_NODE(&node->node));\n\n\trb_erase_cached(&node->node, &head->rb_root);\n\tRB_CLEAR_NODE(&node->node);\n\n\treturn !RB_EMPTY_ROOT(&head->rb_root.rb_root);\n}\nEXPORT_SYMBOL_GPL(timerqueue_del);\n\n \nstruct timerqueue_node *timerqueue_iterate_next(struct timerqueue_node *node)\n{\n\tstruct rb_node *next;\n\n\tif (!node)\n\t\treturn NULL;\n\tnext = rb_next(&node->node);\n\tif (!next)\n\t\treturn NULL;\n\treturn container_of(next, struct timerqueue_node, node);\n}\nEXPORT_SYMBOL_GPL(timerqueue_iterate_next);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

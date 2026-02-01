@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4674f3184ab451d23def78f611854f27ec49325fe835d3a109260651e6170fb6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ibm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for th IBM network device drivers.\n#\n\nobj-$(CONFIG_IBMVETH) += ibmveth.o\nobj-$(CONFIG_IBMVNIC) += ibmvnic.o\nobj-$(CONFIG_IBM_EMAC) += emac/\nobj-$(CONFIG_EHEA) += ehea/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

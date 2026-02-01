@@ -1,0 +1,9 @@
+{
+  "module_name": "cobalt-i2c.h",
+  "hash_id": "f4ea49a878352e0d27337d62e1ebd264b04349215f317be3cc30bd1db0bcd247",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cobalt/cobalt-i2c.h",
+  "human_readable_source": " \n \n\n \nint cobalt_i2c_init(struct cobalt *cobalt);\nvoid cobalt_i2c_exit(struct cobalt *cobalt);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

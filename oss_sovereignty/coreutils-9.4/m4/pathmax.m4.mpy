@@ -1,0 +1,9 @@
+{
+  "module_name": "pathmax.m4",
+  "hash_id": "342b925f60bce780f12efb51e245e8083ce200430cb84d20a700c2b02dede8f0",
+  "original_prompt": "Ingested from coreutils-9.4/m4/pathmax.m4",
+  "human_readable_source": "# pathmax.m4 serial 11\ndnl Copyright (C) 2002-2003, 2005-2006, 2009-2023 Free Software Foundation,\ndnl Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_PATHMAX],\n[\n  dnl Prerequisites of lib/pathmax.h.\n  AC_CHECK_HEADERS_ONCE([sys/param.h])\n])\n\n# Expands to a piece of C program that defines PATH_MAX in the same way as\n# \"pathmax.h\" will do.\nAC_DEFUN([gl_PATHMAX_SNIPPET], [[\n/* Arrange to define PATH_MAX, like \"pathmax.h\" does. */\n#if HAVE_UNISTD_H\n# include <unistd.h>\n#endif\n#include <limits.h>\n#if defined HAVE_SYS_PARAM_H && !defined PATH_MAX && !defined MAXPATHLEN\n# include <sys/param.h>\n#endif\n#if !defined PATH_MAX && defined MAXPATHLEN\n# define PATH_MAX MAXPATHLEN\n#endif\n#ifdef __hpux\n# undef PATH_MAX\n# define PATH_MAX 1024\n#endif\n#if defined _WIN32 && ! defined __CYGWIN__\n# undef PATH_MAX\n# define PATH_MAX 260\n#endif\n]])\n\n# Prerequisites of gl_PATHMAX_SNIPPET.\nAC_DEFUN([gl_PATHMAX_SNIPPET_PREREQ],\n[\n  AC_CHECK_HEADERS_ONCE([unistd.h sys/param.h])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

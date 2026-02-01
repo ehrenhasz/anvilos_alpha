@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a2d11c97600d86c93e0855f9c07a485221f37fc0c3441d6bf3e56f584353affa",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/firmware/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Makefile for firmware loading selftests\nCFLAGS = -Wall \\\n         -O2\n\nTEST_PROGS := fw_run_tests.sh\nTEST_FILES := fw_fallback.sh fw_filesystem.sh fw_upload.sh fw_lib.sh\nTEST_GEN_FILES := fw_namespace\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

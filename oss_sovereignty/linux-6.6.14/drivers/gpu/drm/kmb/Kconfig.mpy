@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "6637d9da4323c82f9958044163ff8516d1c03a6364c1eb30a10140d4760c4ca3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/kmb/Kconfig",
+  "human_readable_source": "config DRM_KMB_DISPLAY\n\ttristate \"Intel Keembay Display\"\n\tdepends on DRM\n\tdepends on ARCH_KEEMBAY || COMPILE_TEST\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect DRM_MIPI_DSI\n\thelp\n\tChoose this option if you have Intel's KeemBay SOC which integrates\n\tan ARM Cortex A53 CPU with an Intel Movidius VPU.\n\n\tIf M is selected the module will be called kmb-drm.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

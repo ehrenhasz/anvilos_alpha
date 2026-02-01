@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3fdee005c0dfbff6875e074f51c81c52108b568f0f5fee1787ff852bd1b0952a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/hisilicon/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# hisilicon drm device configuration.\n# Please keep this list sorted alphabetically\n\nsource \"drivers/gpu/drm/hisilicon/hibmc/Kconfig\"\nsource \"drivers/gpu/drm/hisilicon/kirin/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

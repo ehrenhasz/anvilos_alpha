@@ -1,0 +1,9 @@
+{
+  "module_name": "ndctl.h",
+  "hash_id": "be1fe9954c12ee5c8f9e1f5550081ec25364f622fb31e2866955693521bd4951",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ndctl.h",
+  "human_readable_source": " \n#ifndef _LINUX_NDCTL_H\n#define _LINUX_NDCTL_H\n\n#include <uapi/linux/ndctl.h>\n\nenum {\n\tND_MIN_NAMESPACE_SIZE = PAGE_SIZE,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

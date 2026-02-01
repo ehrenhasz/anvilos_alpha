@@ -1,0 +1,9 @@
+{
+  "module_name": "hsr_slave.h",
+  "hash_id": "968048a9784e89797d4afec8025c2e42716eaaec4eb1aba513c30f84dee13b7f",
+  "original_prompt": "Ingested from linux-6.6.14/net/hsr/hsr_slave.h",
+  "human_readable_source": " \n \n\n#ifndef __HSR_SLAVE_H\n#define __HSR_SLAVE_H\n\n#include <linux/skbuff.h>\n#include <linux/netdevice.h>\n#include <linux/rtnetlink.h>\n#include \"hsr_main.h\"\n\nint hsr_add_port(struct hsr_priv *hsr, struct net_device *dev,\n\t\t enum hsr_port_type pt, struct netlink_ext_ack *extack);\nvoid hsr_del_port(struct hsr_port *port);\nbool hsr_port_exists(const struct net_device *dev);\n\nstatic inline struct hsr_port *hsr_port_get_rtnl(const struct net_device *dev)\n{\n\tASSERT_RTNL();\n\treturn hsr_port_exists(dev) ?\n\t\t\t\trtnl_dereference(dev->rx_handler_data) : NULL;\n}\n\nstatic inline struct hsr_port *hsr_port_get_rcu(const struct net_device *dev)\n{\n\treturn hsr_port_exists(dev) ?\n\t\t\t\trcu_dereference(dev->rx_handler_data) : NULL;\n}\n\nbool hsr_invalid_dan_ingress_frame(__be16 protocol);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

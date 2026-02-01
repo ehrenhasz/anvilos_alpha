@@ -1,0 +1,9 @@
+{
+  "module_name": "test_vxlan_fdb_changelink.sh",
+  "hash_id": "4369fc3125ed70170eb7e4935c97e669ac6c1cfbfef05ce57ca7b2507f6144ae",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/test_vxlan_fdb_changelink.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# Check FDB default-remote handling across \"ip link set\".\n\ncheck_remotes()\n{\n\tlocal what=$1; shift\n\tlocal N=$(bridge fdb sh dev vx | grep 00:00:00:00:00:00 | wc -l)\n\n\techo -ne \"expected two remotes after $what\\t\"\n\tif [[ $N != 2 ]]; then\n\t\techo \"[FAIL]\"\n\t\tEXIT_STATUS=1\n\telse\n\t\techo \"[ OK ]\"\n\tfi\n}\n\nip link add name vx up type vxlan id 2000 dstport 4789\nbridge fdb ap dev vx 00:00:00:00:00:00 dst 192.0.2.20 self permanent\nbridge fdb ap dev vx 00:00:00:00:00:00 dst 192.0.2.30 self permanent\ncheck_remotes \"fdb append\"\n\nip link set dev vx type vxlan remote 192.0.2.30\ncheck_remotes \"link set\"\n\nip link del dev vx\nexit $EXIT_STATUS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

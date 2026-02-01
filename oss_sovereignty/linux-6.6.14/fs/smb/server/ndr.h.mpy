@@ -1,0 +1,9 @@
+{
+  "module_name": "ndr.h",
+  "hash_id": "8ded94967d92bc6bd40c0dda448a32ce70789e4ca78a55d508a9a755e43192d7",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/server/ndr.h",
+  "human_readable_source": " \n \n\nstruct ndr {\n\tchar\t*data;\n\tint\toffset;\n\tint\tlength;\n};\n\n#define NDR_NTSD_OFFSETOF\t0xA0\n\nint ndr_encode_dos_attr(struct ndr *n, struct xattr_dos_attrib *da);\nint ndr_decode_dos_attr(struct ndr *n, struct xattr_dos_attrib *da);\nint ndr_encode_posix_acl(struct ndr *n, struct mnt_idmap *idmap,\n\t\t\t struct inode *inode, struct xattr_smb_acl *acl,\n\t\t\t struct xattr_smb_acl *def_acl);\nint ndr_encode_v4_ntacl(struct ndr *n, struct xattr_ntacl *acl);\nint ndr_encode_v3_ntacl(struct ndr *n, struct xattr_ntacl *acl);\nint ndr_decode_v4_ntacl(struct ndr *n, struct xattr_ntacl *acl);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

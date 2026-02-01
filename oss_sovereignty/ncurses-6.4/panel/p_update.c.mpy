@@ -1,0 +1,9 @@
+{
+  "module_name": "p_update.c",
+  "hash_id": "bfe856db55874af83fce5e0b2340fb4bc7b82555ed04d74a580f9c5cedb457cd",
+  "original_prompt": "Ingested from ncurses-6.4/panel/p_update.c",
+  "human_readable_source": " \n\n \n\n \n#include \"panel.priv.h\"\n\nMODULE_ID(\"$Id: p_update.c,v 1.13 2020/05/24 01:40:20 anonymous.maarten Exp $\")\n\nPANEL_EXPORT(void)\nNCURSES_SP_NAME(update_panels) (NCURSES_SP_DCL0)\n{\n  PANEL *pan;\n\n  T((T_CALLED(\"update_panels(%p)\"), (void *)SP_PARM));\n  dBug((\"--> update_panels\"));\n\n  if (SP_PARM)\n    {\n      GetScreenHook(SP_PARM);\n\n      pan = _nc_bottom_panel;\n      while (pan && pan->above)\n\t{\n\t  PANEL_UPDATE(pan, pan->above);\n\t  pan = pan->above;\n\t}\n\n      pan = _nc_bottom_panel;\n      while (pan)\n\t{\n\t  Wnoutrefresh(pan);\n\t  pan = pan->above;\n\t}\n    }\n\n  returnVoid;\n}\n\n#if NCURSES_SP_FUNCS\nPANEL_EXPORT(void)\nupdate_panels(void)\n{\n  NCURSES_SP_NAME(update_panels) (CURRENT_SCREEN);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

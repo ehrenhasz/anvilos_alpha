@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "091a5826f213c8b297e83068c785712a0f288d2f1a6fbdda89f0213abca256ad",
+  "original_prompt": "Ingested from linux-6.6.14/sound/x86/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig SND_X86\n\tbool \"X86 sound devices\"\n\tdepends on X86\n\tdefault y\n\thelp\n\t  X86 sound devices that don't fall under SoC or PCI categories\n\nif SND_X86\n\nconfig HDMI_LPE_AUDIO\n\ttristate \"HDMI audio without HDAudio on Intel Atom platforms\"\n\tdepends on DRM_I915\n\tselect SND_PCM\n\thelp\n\t Choose this option to support HDMI LPE Audio mode\n\nendif\t# SND_X86\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

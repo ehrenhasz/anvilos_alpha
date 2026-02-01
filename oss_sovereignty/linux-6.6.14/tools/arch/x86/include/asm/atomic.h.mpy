@@ -1,0 +1,9 @@
+{
+  "module_name": "atomic.h",
+  "hash_id": "a433681f31a0e1d7f4240ef1616178efedc5bd9c2b526437de4c95f9cd4eedb3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/x86/include/asm/atomic.h",
+  "human_readable_source": " \n#ifndef _TOOLS_LINUX_ASM_X86_ATOMIC_H\n#define _TOOLS_LINUX_ASM_X86_ATOMIC_H\n\n#include <linux/compiler.h>\n#include <linux/types.h>\n#include \"rmwcc.h\"\n\n#define LOCK_PREFIX \"\\n\\tlock; \"\n\n#include <asm/asm.h>\n#include <asm/cmpxchg.h>\n\n \n\n#define ATOMIC_INIT(i)\t{ (i) }\n\n \nstatic inline int atomic_read(const atomic_t *v)\n{\n\treturn READ_ONCE((v)->counter);\n}\n\n \nstatic inline void atomic_set(atomic_t *v, int i)\n{\n\tv->counter = i;\n}\n\n \nstatic inline void atomic_inc(atomic_t *v)\n{\n\tasm volatile(LOCK_PREFIX \"incl %0\"\n\t\t     : \"+m\" (v->counter));\n}\n\n \nstatic inline int atomic_dec_and_test(atomic_t *v)\n{\n\tGEN_UNARY_RMWcc(LOCK_PREFIX \"decl\", v->counter, \"%0\", \"e\");\n}\n\nstatic __always_inline int atomic_cmpxchg(atomic_t *v, int old, int new)\n{\n\treturn cmpxchg(&v->counter, old, new);\n}\n\nstatic inline int test_and_set_bit(long nr, unsigned long *addr)\n{\n\tGEN_BINARY_RMWcc(LOCK_PREFIX __ASM_SIZE(bts), *addr, \"Ir\", nr, \"%0\", \"c\");\n}\n\nstatic inline int test_and_clear_bit(long nr, unsigned long *addr)\n{\n\tGEN_BINARY_RMWcc(LOCK_PREFIX __ASM_SIZE(btc), *addr, \"Ir\", nr, \"%0\", \"c\");\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

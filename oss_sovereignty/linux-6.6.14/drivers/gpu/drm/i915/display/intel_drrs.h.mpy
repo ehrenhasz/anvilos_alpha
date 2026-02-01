@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_drrs.h",
+  "hash_id": "4e5c758f3acf91660a382d574b4264dc5d71acfc8923a50f6a69c52ddb768c4c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_drrs.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_DRRS_H__\n#define __INTEL_DRRS_H__\n\n#include <linux/types.h>\n\nenum drrs_type;\nstruct drm_i915_private;\nstruct intel_atomic_state;\nstruct intel_crtc;\nstruct intel_crtc_state;\nstruct intel_connector;\n\nconst char *intel_drrs_type_str(enum drrs_type drrs_type);\nbool intel_drrs_is_active(struct intel_crtc *crtc);\nvoid intel_drrs_activate(const struct intel_crtc_state *crtc_state);\nvoid intel_drrs_deactivate(const struct intel_crtc_state *crtc_state);\nvoid intel_drrs_invalidate(struct drm_i915_private *dev_priv,\n\t\t\t   unsigned int frontbuffer_bits);\nvoid intel_drrs_flush(struct drm_i915_private *dev_priv,\n\t\t      unsigned int frontbuffer_bits);\nvoid intel_drrs_crtc_init(struct intel_crtc *crtc);\nvoid intel_drrs_crtc_debugfs_add(struct intel_crtc *crtc);\nvoid intel_drrs_connector_debugfs_add(struct intel_connector *connector);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

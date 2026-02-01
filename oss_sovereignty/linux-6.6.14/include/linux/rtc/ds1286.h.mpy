@@ -1,0 +1,9 @@
+{
+  "module_name": "ds1286.h",
+  "hash_id": "bcbd9b8346760e63e13048bebd59f2963945383ad38fcc31514a3057620257fa",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rtc/ds1286.h",
+  "human_readable_source": " \n#ifndef __LINUX_DS1286_H\n#define __LINUX_DS1286_H\n\n \n#define RTC_HUNDREDTH_SECOND\t0\n#define RTC_SECONDS\t\t1\n#define RTC_MINUTES\t\t2\n#define RTC_MINUTES_ALARM\t3\n#define RTC_HOURS\t\t4\n#define RTC_HOURS_ALARM\t\t5\n#define RTC_DAY\t\t\t6\n#define RTC_DAY_ALARM\t\t7\n#define RTC_DATE\t\t8\n#define RTC_MONTH\t\t9\n#define RTC_YEAR\t\t10\n#define RTC_CMD\t\t\t11\n#define RTC_WHSEC\t\t12\n#define RTC_WSEC\t\t13\n#define RTC_UNUSED\t\t14\n\n \n# define RTC_ALARM_DONT_CARE \t0xC0\n\n\n \n#define RTC_EOSC\t\t0x80\n#define RTC_ESQW\t\t0x40\n\n \n#define RTC_TDF\t\t\t0x01\n#define RTC_WAF\t\t\t0x02\n#define RTC_TDM\t\t\t0x04\n#define RTC_WAM\t\t\t0x08\n#define RTC_PU_LVL\t\t0x10\n#define RTC_IBH_LO\t\t0x20\n#define RTC_IPSW\t\t0x40\n#define RTC_TE\t\t\t0x80\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

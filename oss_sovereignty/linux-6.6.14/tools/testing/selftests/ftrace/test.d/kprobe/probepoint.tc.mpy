@@ -1,0 +1,9 @@
+{
+  "module_name": "probepoint.tc",
+  "hash_id": "5a582022848c3a3b2ee3022c4990c0af8246bf1db06eccb753ac2d9320829260",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/probepoint.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Kprobe events - probe points\n# requires: kprobe_events\n\nTARGET_FUNC=tracefs_create_dir\n\ndec_addr() { # hexaddr\n  printf \"%d\" \"0x\"`echo $1 | tail -c 8`\n}\n\nset_offs() { # prev target next\n  A1=`dec_addr $1`\n  A2=`dec_addr $2`\n  A3=`dec_addr $3`\n  TARGET=\"0x$2\" # an address\n  PREV=`expr $A1 - $A2` # offset to previous symbol\n  NEXT=+`expr $A3 - $A2` # offset to next symbol\n  OVERFLOW=+`printf \"0x%x\" ${PREV}` # overflow offset to previous symbol\n}\n\n# We have to decode symbol addresses to get correct offsets.\n# If the offset is not an instruction boundary, it cause -EILSEQ.\nset_offs `grep -v __pfx_ /proc/kallsyms | grep -A1 -B1 ${TARGET_FUNC} | cut -f 1 -d \" \" | xargs`\n\nUINT_TEST=no\n# printf \"%x\" -1 returns (unsigned long)-1.\nif [ `printf \"%x\" -1 | wc -c` != 9 ]; then\n  UINT_TEST=yes\nfi\n\necho \"p:testprobe ${TARGET_FUNC}\" > kprobe_events\necho \"p:testprobe ${TARGET}\" > kprobe_events\necho \"p:testprobe ${TARGET_FUNC}${NEXT}\" > kprobe_events\n! echo \"p:testprobe ${TARGET_FUNC}${PREV}\" > kprobe_events\nif [ \"${UINT_TEST}\" = yes ]; then\n! echo \"p:testprobe ${TARGET_FUNC}${OVERFLOW}\" > kprobe_events\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

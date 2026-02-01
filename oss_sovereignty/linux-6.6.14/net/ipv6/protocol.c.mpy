@@ -1,0 +1,9 @@
+{
+  "module_name": "protocol.c",
+  "hash_id": "72536131e38d233de18d456a31a6abe7ed2c6b64ce95aec8c7c38be5e24f537c",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv6/protocol.c",
+  "human_readable_source": "\n \n\n \n#include <linux/module.h>\n#include <linux/netdevice.h>\n#include <linux/spinlock.h>\n#include <net/protocol.h>\n\n#if IS_ENABLED(CONFIG_IPV6)\nstruct inet6_protocol __rcu *inet6_protos[MAX_INET_PROTOS] __read_mostly;\nEXPORT_SYMBOL(inet6_protos);\n\nint inet6_add_protocol(const struct inet6_protocol *prot, unsigned char protocol)\n{\n\treturn !cmpxchg((const struct inet6_protocol **)&inet6_protos[protocol],\n\t\t\tNULL, prot) ? 0 : -1;\n}\nEXPORT_SYMBOL(inet6_add_protocol);\n\nint inet6_del_protocol(const struct inet6_protocol *prot, unsigned char protocol)\n{\n\tint ret;\n\n\tret = (cmpxchg((const struct inet6_protocol **)&inet6_protos[protocol],\n\t\t       prot, NULL) == prot) ? 0 : -1;\n\n\tsynchronize_net();\n\n\treturn ret;\n}\nEXPORT_SYMBOL(inet6_del_protocol);\n#endif\n\nconst struct net_offload __rcu *inet6_offloads[MAX_INET_PROTOS] __read_mostly;\nEXPORT_SYMBOL(inet6_offloads);\n\nint inet6_add_offload(const struct net_offload *prot, unsigned char protocol)\n{\n\treturn !cmpxchg((const struct net_offload **)&inet6_offloads[protocol],\n\t\t\tNULL, prot) ? 0 : -1;\n}\nEXPORT_SYMBOL(inet6_add_offload);\n\nint inet6_del_offload(const struct net_offload *prot, unsigned char protocol)\n{\n\tint ret;\n\n\tret = (cmpxchg((const struct net_offload **)&inet6_offloads[protocol],\n\t\t       prot, NULL) == prot) ? 0 : -1;\n\n\tsynchronize_net();\n\n\treturn ret;\n}\nEXPORT_SYMBOL(inet6_del_offload);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

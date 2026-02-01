@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_aa2.host.c",
+  "hash_id": "8dcfe58cd0d5ceee3b98d6d0552e55636ced5f7f30268aa75b20051e907c1cf4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/aa/aa_2/ia_css_aa2.host.c",
+  "human_readable_source": "\n \n\n#include \"ia_css_types.h\"\n#include \"sh_css_defs.h\"\n#ifndef IA_CSS_NO_DEBUG\n#include \"ia_css_debug.h\"\n#endif\n\n#include \"ia_css_aa2.host.h\"\n\n \nconst struct ia_css_aa_config default_aa_config = {\n\t8191  \n};\n\n \nconst struct ia_css_aa_config default_baa_config = {\n\t8191  \n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

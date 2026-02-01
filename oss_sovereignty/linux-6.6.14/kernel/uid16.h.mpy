@@ -1,0 +1,9 @@
+{
+  "module_name": "uid16.h",
+  "hash_id": "5ff554ababdafa5c6e031a8f5ed37895dfe2ca3ce069fe1c5a16552dea233501",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/uid16.h",
+  "human_readable_source": " \n#ifndef LINUX_UID16_H\n#define LINUX_UID16_H\n\nlong __sys_setuid(uid_t uid);\nlong __sys_setgid(gid_t gid);\nlong __sys_setreuid(uid_t ruid, uid_t euid);\nlong __sys_setregid(gid_t rgid, gid_t egid);\nlong __sys_setresuid(uid_t ruid, uid_t euid, uid_t suid);\nlong __sys_setresgid(gid_t rgid, gid_t egid, gid_t sgid);\nlong __sys_setfsuid(uid_t uid);\nlong __sys_setfsgid(gid_t gid);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

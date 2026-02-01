@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "54024f07ccd30709b14254289df5b9bf1fa53842ea9fe576ca37210b4a50e541",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/virt/vboxguest/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VBOXGUEST\n\ttristate \"Virtual Box Guest integration support\"\n\tdepends on X86 && PCI && INPUT\n\thelp\n\t  This is a driver for the Virtual Box Guest PCI device used in\n\t  Virtual Box virtual machines. Enabling this driver will add\n\t  support for Virtual Box Guest integration features such as\n\t  copy-and-paste, seamless mode and OpenGL pass-through.\n\n\t  This driver also offers vboxguest IPC functionality which is needed\n\t  for the vboxfs driver which offers folder sharing support.\n\n\t  If you enable this driver you should also enable the VBOXVIDEO option.\n\n\t  Although it is possible to build this module in, it is advised\n\t  to build this driver as a module, so that it can be updated\n\t  independently of the kernel. Select M to build this driver as a\n\t  module.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

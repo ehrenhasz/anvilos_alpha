@@ -1,0 +1,9 @@
+{
+  "module_name": "all.h",
+  "hash_id": "dcd0edd9eac15063493dd2469901ee90bf6be6ab2d13d5429b61047b7872e3f4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/ni_routing/ni_device_routes/all.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _COMEDI_DRIVERS_NI_ROUTING_NI_DEVICE_ROUTES_EXTERN_H\n#define _COMEDI_DRIVERS_NI_ROUTING_NI_DEVICE_ROUTES_EXTERN_H\n\n#include \"../ni_device_routes.h\"\n\nextern struct ni_device_routes ni_pxi_6030e_device_routes;\nextern struct ni_device_routes ni_pci_6070e_device_routes;\nextern struct ni_device_routes ni_pci_6220_device_routes;\nextern struct ni_device_routes ni_pci_6221_device_routes;\nextern struct ni_device_routes ni_pxi_6224_device_routes;\nextern struct ni_device_routes ni_pxi_6225_device_routes;\nextern struct ni_device_routes ni_pci_6229_device_routes;\nextern struct ni_device_routes ni_pci_6251_device_routes;\nextern struct ni_device_routes ni_pxi_6251_device_routes;\nextern struct ni_device_routes ni_pxie_6251_device_routes;\nextern struct ni_device_routes ni_pci_6254_device_routes;\nextern struct ni_device_routes ni_pci_6259_device_routes;\nextern struct ni_device_routes ni_pci_6534_device_routes;\nextern struct ni_device_routes ni_pxie_6535_device_routes;\nextern struct ni_device_routes ni_pci_6602_device_routes;\nextern struct ni_device_routes ni_pci_6713_device_routes;\nextern struct ni_device_routes ni_pci_6723_device_routes;\nextern struct ni_device_routes ni_pci_6733_device_routes;\nextern struct ni_device_routes ni_pxi_6733_device_routes;\nextern struct ni_device_routes ni_pxie_6738_device_routes;\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

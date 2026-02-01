@@ -1,0 +1,9 @@
+{
+  "module_name": "test-c32rtomb-w32-3.sh",
+  "hash_id": "75bf465eeb9c1cabb4c0a84fba5d88088deefb088f49ae796d69bc8e378c2a54",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-c32rtomb-w32-3.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a CP1256 locale.\n${CHECKER} ./test-c32rtomb-w32${EXEEXT} \"Arabic_Saudi Arabia\" 1256\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

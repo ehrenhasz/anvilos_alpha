@@ -1,0 +1,9 @@
+{
+  "module_name": "zstd_decompress_block.h",
+  "hash_id": "cce6779bee3e8085d06868aebafa64e435f0ba7c061838fbb8e2e8013b49b2df",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zstd/decompress/zstd_decompress_block.h",
+  "human_readable_source": " \n\n\n#ifndef ZSTD_DEC_BLOCK_H\n#define ZSTD_DEC_BLOCK_H\n\n \n#include \"../common/zstd_deps.h\"    \n#include <linux/zstd.h>     \n#include \"../common/zstd_internal.h\"   \n#include \"zstd_decompress_internal.h\"   \n\n\n \n\n \n\n \n\n\n  \ntypedef enum {\n    not_streaming = 0,\n    is_streaming = 1\n} streaming_operation;\n\n \nsize_t ZSTD_decompressBlock_internal(ZSTD_DCtx* dctx,\n                               void* dst, size_t dstCapacity,\n                         const void* src, size_t srcSize, const int frame, const streaming_operation streaming);\n\n \nvoid ZSTD_buildFSETable(ZSTD_seqSymbol* dt,\n             const short* normalizedCounter, unsigned maxSymbolValue,\n             const U32* baseValue, const U8* nbAdditionalBits,\n                   unsigned tableLog, void* wksp, size_t wkspSize,\n                   int bmi2);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

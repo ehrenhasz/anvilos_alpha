@@ -1,0 +1,9 @@
+{
+  "module_name": "vivid-radio-common.h",
+  "hash_id": "1dc332bc1d806525c9b7f2bae2f178a505fa200e07a45af79d1e7bfddd424518",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vivid/vivid-radio-common.h",
+  "human_readable_source": " \n \n\n#ifndef _VIVID_RADIO_COMMON_H_\n#define _VIVID_RADIO_COMMON_H_\n\n \n#define FM_FREQ_RANGE_LOW       (64000U * 16U)\n#define FM_FREQ_RANGE_HIGH      (108000U * 16U)\n#define AM_FREQ_RANGE_LOW       (520U * 16U)\n#define AM_FREQ_RANGE_HIGH      (1710U * 16U)\n#define SW_FREQ_RANGE_LOW       (2300U * 16U)\n#define SW_FREQ_RANGE_HIGH      (26100U * 16U)\n\nenum { BAND_FM, BAND_AM, BAND_SW, TOT_BANDS };\n\nextern const struct v4l2_frequency_band vivid_radio_bands[TOT_BANDS];\n\nint vivid_radio_g_frequency(struct file *file, const unsigned *freq, struct v4l2_frequency *vf);\nint vivid_radio_s_frequency(struct file *file, unsigned *freq, const struct v4l2_frequency *vf);\n\nvoid vivid_radio_rds_init(struct vivid_dev *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

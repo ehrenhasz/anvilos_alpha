@@ -1,0 +1,9 @@
+{
+  "module_name": "libps2.h",
+  "hash_id": "e7d3ba7ef2ad2b09a3648f56effb8677e10fcdeb34a8363a209d5bc122bafd15",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/libps2.h",
+  "human_readable_source": " \n#ifndef _LIBPS2_H\n#define _LIBPS2_H\n\n \n\n#include <linux/bitops.h>\n#include <linux/interrupt.h>\n#include <linux/mutex.h>\n#include <linux/types.h>\n#include <linux/wait.h>\n\nstruct ps2dev;\n\n \nenum ps2_disposition {\n\tPS2_PROCESS,\n\tPS2_IGNORE,\n\tPS2_ERROR,\n};\n\ntypedef enum ps2_disposition (*ps2_pre_receive_handler_t)(struct ps2dev *, u8,\n\t\t\t\t\t\t\t  unsigned int);\ntypedef void (*ps2_receive_handler_t)(struct ps2dev *, u8);\n\n \nstruct ps2dev {\n\tstruct serio *serio;\n\tstruct mutex cmd_mutex;\n\twait_queue_head_t wait;\n\tunsigned long flags;\n\tu8 cmdbuf[8];\n\tu8 cmdcnt;\n\tu8 nak;\n\n\tps2_pre_receive_handler_t pre_receive_handler;\n\tps2_receive_handler_t receive_handler;\n};\n\nvoid ps2_init(struct ps2dev *ps2dev, struct serio *serio,\n\t      ps2_pre_receive_handler_t pre_receive_handler,\n\t      ps2_receive_handler_t receive_handler);\nint ps2_sendbyte(struct ps2dev *ps2dev, u8 byte, unsigned int timeout);\nvoid ps2_drain(struct ps2dev *ps2dev, size_t maxbytes, unsigned int timeout);\nvoid ps2_begin_command(struct ps2dev *ps2dev);\nvoid ps2_end_command(struct ps2dev *ps2dev);\nint __ps2_command(struct ps2dev *ps2dev, u8 *param, unsigned int command);\nint ps2_command(struct ps2dev *ps2dev, u8 *param, unsigned int command);\nint ps2_sliced_command(struct ps2dev *ps2dev, u8 command);\nbool ps2_is_keyboard_id(u8 id);\n\nirqreturn_t ps2_interrupt(struct serio *serio, u8 data, unsigned int flags);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

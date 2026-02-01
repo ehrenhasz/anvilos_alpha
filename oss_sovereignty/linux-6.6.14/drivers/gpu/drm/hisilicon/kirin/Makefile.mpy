@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1181759df3d9390d64b8647b4601b5ad3065318de37708cb7655bb4b0a307043",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/hisilicon/kirin/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nkirin-drm-y := kirin_drm_drv.o \\\n\t       kirin_drm_ade.o\n\nobj-$(CONFIG_DRM_HISI_KIRIN) += kirin-drm.o dw_drm_dsi.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "argv_split.c",
+  "hash_id": "84f10c62abf1d457ee6041a1c593703fb0da0e9c2aca13b421f89dc6f0716d65",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/argv_split.c",
+  "human_readable_source": "\n \n\n#include <stdlib.h>\n#include <linux/kernel.h>\n#include <linux/ctype.h>\n#include <linux/string.h>\n\nstatic const char *skip_arg(const char *cp)\n{\n\twhile (*cp && !isspace(*cp))\n\t\tcp++;\n\n\treturn cp;\n}\n\nstatic int count_argc(const char *str)\n{\n\tint count = 0;\n\n\twhile (*str) {\n\t\tstr = skip_spaces(str);\n\t\tif (*str) {\n\t\t\tcount++;\n\t\t\tstr = skip_arg(str);\n\t\t}\n\t}\n\n\treturn count;\n}\n\n \nvoid argv_free(char **argv)\n{\n\tchar **p;\n\tfor (p = argv; *p; p++) {\n\t\tfree(*p);\n\t\t*p = NULL;\n\t}\n\n\tfree(argv);\n}\n\n \nchar **argv_split(const char *str, int *argcp)\n{\n\tint argc = count_argc(str);\n\tchar **argv = calloc(argc + 1, sizeof(*argv));\n\tchar **argvp;\n\n\tif (argv == NULL)\n\t\tgoto out;\n\n\tif (argcp)\n\t\t*argcp = argc;\n\n\targvp = argv;\n\n\twhile (*str) {\n\t\tstr = skip_spaces(str);\n\n\t\tif (*str) {\n\t\t\tconst char *p = str;\n\t\t\tchar *t;\n\n\t\t\tstr = skip_arg(str);\n\n\t\t\tt = strndup(p, str-p);\n\t\t\tif (t == NULL)\n\t\t\t\tgoto fail;\n\t\t\t*argvp++ = t;\n\t\t}\n\t}\n\t*argvp = NULL;\n\nout:\n\treturn argv;\n\nfail:\n\targv_free(argv);\n\treturn NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

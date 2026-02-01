@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bc8d7bcb0e4568b9b3249f241de9029849095d7971c74a84d8446969baa9708b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intersil/hostap/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nhostap-y := hostap_80211_rx.o hostap_80211_tx.o hostap_ap.o hostap_info.o \\\n            hostap_ioctl.o hostap_main.o hostap_proc.o \nobj-$(CONFIG_HOSTAP) += hostap.o\n\nobj-$(CONFIG_HOSTAP_CS) += hostap_cs.o\nobj-$(CONFIG_HOSTAP_PLX) += hostap_plx.o\nobj-$(CONFIG_HOSTAP_PCI) += hostap_pci.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

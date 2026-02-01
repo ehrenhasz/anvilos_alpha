@@ -1,0 +1,9 @@
+{
+  "module_name": "pci-ats.h",
+  "hash_id": "86a55d2920fd94a50f713bfec0c77b9772d7c98f985acb8295e910c3afff5069",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pci-ats.h",
+  "human_readable_source": " \n#ifndef LINUX_PCI_ATS_H\n#define LINUX_PCI_ATS_H\n\n#include <linux/pci.h>\n\n#ifdef CONFIG_PCI_ATS\n \nbool pci_ats_supported(struct pci_dev *dev);\nint pci_enable_ats(struct pci_dev *dev, int ps);\nvoid pci_disable_ats(struct pci_dev *dev);\nint pci_ats_queue_depth(struct pci_dev *dev);\nint pci_ats_page_aligned(struct pci_dev *dev);\n#else  \nstatic inline bool pci_ats_supported(struct pci_dev *d)\n{ return false; }\nstatic inline int pci_enable_ats(struct pci_dev *d, int ps)\n{ return -ENODEV; }\nstatic inline void pci_disable_ats(struct pci_dev *d) { }\nstatic inline int pci_ats_queue_depth(struct pci_dev *d)\n{ return -ENODEV; }\nstatic inline int pci_ats_page_aligned(struct pci_dev *dev)\n{ return 0; }\n#endif  \n\n#ifdef CONFIG_PCI_PRI\nint pci_enable_pri(struct pci_dev *pdev, u32 reqs);\nvoid pci_disable_pri(struct pci_dev *pdev);\nint pci_reset_pri(struct pci_dev *pdev);\nint pci_prg_resp_pasid_required(struct pci_dev *pdev);\nbool pci_pri_supported(struct pci_dev *pdev);\n#else\nstatic inline bool pci_pri_supported(struct pci_dev *pdev)\n{ return false; }\n#endif  \n\n#ifdef CONFIG_PCI_PASID\nint pci_enable_pasid(struct pci_dev *pdev, int features);\nvoid pci_disable_pasid(struct pci_dev *pdev);\nint pci_pasid_features(struct pci_dev *pdev);\nint pci_max_pasids(struct pci_dev *pdev);\n#else  \nstatic inline int pci_enable_pasid(struct pci_dev *pdev, int features)\n{ return -EINVAL; }\nstatic inline void pci_disable_pasid(struct pci_dev *pdev) { }\nstatic inline int pci_pasid_features(struct pci_dev *pdev)\n{ return -EINVAL; }\nstatic inline int pci_max_pasids(struct pci_dev *pdev)\n{ return -EINVAL; }\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

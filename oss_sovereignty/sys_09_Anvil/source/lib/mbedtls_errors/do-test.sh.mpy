@@ -1,0 +1,9 @@
+{
+  "module_name": "do-test.sh",
+  "hash_id": "abec41d9a605e6b29ebfd8fc9ef8bb3346d2b888e5ffd7e0b2c2ba4c59b609ce",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/mbedtls_errors/do-test.sh",
+  "human_readable_source": "#! /bin/bash -e\n# Generate mp_mbedtls_errors.c and build the tester app\n./do-mp.sh\ncc -o tester -I../mbedtls/include/ mp_mbedtls_errors.c tester.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

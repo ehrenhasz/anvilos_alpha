@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn321_dio_link_encoder.h",
+  "hash_id": "26d0667cba57af188b0e54d889e9ef99fcbd140418beae67de53ac4badd0add4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn321/dcn321_dio_link_encoder.h",
+  "human_readable_source": " \n\n#ifndef __DC_LINK_ENCODER__DCN321_H__\n#define __DC_LINK_ENCODER__DCN321_H__\n\n#include \"dcn32/dcn32_dio_link_encoder.h\"\n\nvoid dcn321_link_encoder_construct(\n\tstruct dcn20_link_encoder *enc20,\n\tconst struct encoder_init_data *init_data,\n\tconst struct encoder_feature_support *enc_features,\n\tconst struct dcn10_link_enc_registers *link_regs,\n\tconst struct dcn10_link_enc_aux_registers *aux_regs,\n\tconst struct dcn10_link_enc_hpd_registers *hpd_regs,\n\tconst struct dcn10_link_enc_shift *link_shift,\n\tconst struct dcn10_link_enc_mask *link_mask);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "input.h",
+  "hash_id": "5593d7a955df7ddaadd424e7f9a4476d9e61be1d9a9b66f130d9f5dc8d9c94ae",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/caiaq/input.h",
+  "human_readable_source": " \n#ifndef CAIAQ_INPUT_H\n#define CAIAQ_INPUT_H\n\nvoid snd_usb_caiaq_input_dispatch(struct snd_usb_caiaqdev *cdev, char *buf, unsigned int len);\nint snd_usb_caiaq_input_init(struct snd_usb_caiaqdev *cdev);\nvoid snd_usb_caiaq_input_free(struct snd_usb_caiaqdev *cdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

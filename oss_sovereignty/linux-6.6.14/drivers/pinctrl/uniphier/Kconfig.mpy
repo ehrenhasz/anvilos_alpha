@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5274d94e3f4b6375af1c39f7e77a01560285a6b4ca52c988b00b4d35f4767a8b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/uniphier/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig PINCTRL_UNIPHIER\n\tbool \"UniPhier SoC pinctrl drivers\"\n\tdepends on ARCH_UNIPHIER || COMPILE_TEST\n\tdepends on OF && MFD_SYSCON\n\tdefault y\n\tselect PINMUX\n\tselect GENERIC_PINCONF\n\nif PINCTRL_UNIPHIER\n\nconfig PINCTRL_UNIPHIER_LD4\n\tbool \"UniPhier LD4 SoC pinctrl driver\"\n\tdefault ARM\n\nconfig PINCTRL_UNIPHIER_PRO4\n\tbool \"UniPhier Pro4 SoC pinctrl driver\"\n\tdefault ARM\n\nconfig PINCTRL_UNIPHIER_SLD8\n\tbool \"UniPhier sLD8 SoC pinctrl driver\"\n\tdefault ARM\n\nconfig PINCTRL_UNIPHIER_PRO5\n\tbool \"UniPhier Pro5 SoC pinctrl driver\"\n\tdefault ARM\n\nconfig PINCTRL_UNIPHIER_PXS2\n\tbool \"UniPhier PXs2 SoC pinctrl driver\"\n\tdefault ARM\n\nconfig PINCTRL_UNIPHIER_LD6B\n\tbool \"UniPhier LD6b SoC pinctrl driver\"\n\tdefault ARM\n\nconfig PINCTRL_UNIPHIER_LD11\n\tbool \"UniPhier LD11 SoC pinctrl driver\"\n\tdefault ARM64\n\nconfig PINCTRL_UNIPHIER_LD20\n\tbool \"UniPhier LD20 SoC pinctrl driver\"\n\tdefault ARM64\n\nconfig PINCTRL_UNIPHIER_PXS3\n\tbool \"UniPhier PXs3 SoC pinctrl driver\"\n\tdefault ARM64\n\nconfig PINCTRL_UNIPHIER_NX1\n\tbool \"UniPhier NX1 SoC pinctrl driver\"\n\tdefault ARM64\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

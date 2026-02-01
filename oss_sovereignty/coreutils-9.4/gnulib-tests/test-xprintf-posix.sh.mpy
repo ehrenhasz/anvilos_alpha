@@ -1,0 +1,9 @@
+{
+  "module_name": "test-xprintf-posix.sh",
+  "hash_id": "7733684073ce20af7232a9196a0c90b3bb5534e2409c8fefc3e7c6dacd216566",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-xprintf-posix.sh",
+  "human_readable_source": "#!/bin/sh\n\ntmpfiles=\"\"\ntrap 'rm -fr $tmpfiles' HUP INT QUIT TERM\n\ntmpfiles=\"$tmpfiles t-xprintf-posix.tmp t-xprintf-posix.out\"\n${CHECKER} ./test-xprintf-posix${EXEEXT} > t-xprintf-posix.tmp || exit 1\nLC_ALL=C tr -d '\\r' < t-xprintf-posix.tmp > t-xprintf-posix.out || exit 1\n\n: \"${DIFF=diff}\"\n${DIFF} \"${srcdir}/test-printf-posix.output\" t-xprintf-posix.out\ntest $? = 0 || { rm -fr $tmpfiles; exit 1; }\n\ntmpfiles=\"$tmpfiles t-xfprintf-posix.tmp t-xfprintf-posix.out\"\n${CHECKER} ./test-xfprintf-posix${EXEEXT} > t-xfprintf-posix.tmp || exit 1\nLC_ALL=C tr -d '\\r' < t-xfprintf-posix.tmp > t-xfprintf-posix.out || exit 1\n\n: \"${DIFF=diff}\"\n${DIFF} \"${srcdir}/test-printf-posix.output\" t-xfprintf-posix.out\ntest $? = 0 || { rm -fr $tmpfiles; exit 1; }\n\nrm -fr $tmpfiles\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

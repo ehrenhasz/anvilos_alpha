@@ -1,0 +1,9 @@
+{
+  "module_name": "sch_mqprio_lib.h",
+  "hash_id": "015d87cefd69d4cc9d8c8b79514b1412636b03066884332906461a050a6bb37a",
+  "original_prompt": "Ingested from linux-6.6.14/net/sched/sch_mqprio_lib.h",
+  "human_readable_source": " \n#ifndef __SCH_MQPRIO_LIB_H\n#define __SCH_MQPRIO_LIB_H\n\n#include <linux/types.h>\n\nstruct net_device;\nstruct netlink_ext_ack;\nstruct tc_mqprio_qopt;\n\nint mqprio_validate_qopt(struct net_device *dev, struct tc_mqprio_qopt *qopt,\n\t\t\t bool validate_queue_counts,\n\t\t\t bool allow_overlapping_txqs,\n\t\t\t struct netlink_ext_ack *extack);\nvoid mqprio_qopt_reconstruct(struct net_device *dev,\n\t\t\t     struct tc_mqprio_qopt *qopt);\nvoid mqprio_fp_to_offload(u32 fp[TC_QOPT_MAX_QUEUE],\n\t\t\t  struct tc_mqprio_qopt_offload *mqprio);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

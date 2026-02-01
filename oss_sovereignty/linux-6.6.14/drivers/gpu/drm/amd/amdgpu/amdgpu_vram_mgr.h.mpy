@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_vram_mgr.h",
+  "hash_id": "eb6f32f9604bce9928be5766ee919b97a492fe969e8d3cd4cb8c34c0839ed589",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_vram_mgr.h",
+  "human_readable_source": " \n\n#ifndef __AMDGPU_VRAM_MGR_H__\n#define __AMDGPU_VRAM_MGR_H__\n\n#include <drm/drm_buddy.h>\n\nstruct amdgpu_vram_mgr {\n\tstruct ttm_resource_manager manager;\n\tstruct drm_buddy mm;\n\t \n\tstruct mutex lock;\n\tstruct list_head reservations_pending;\n\tstruct list_head reserved_pages;\n\tatomic64_t vis_usage;\n\tu64 default_page_size;\n};\n\nstruct amdgpu_vram_mgr_resource {\n\tstruct ttm_resource base;\n\tstruct list_head blocks;\n\tunsigned long flags;\n};\n\nstatic inline u64 amdgpu_vram_mgr_block_start(struct drm_buddy_block *block)\n{\n\treturn drm_buddy_block_offset(block);\n}\n\nstatic inline u64 amdgpu_vram_mgr_block_size(struct drm_buddy_block *block)\n{\n\treturn (u64)PAGE_SIZE << drm_buddy_block_order(block);\n}\n\nstatic inline struct amdgpu_vram_mgr_resource *\nto_amdgpu_vram_mgr_resource(struct ttm_resource *res)\n{\n\treturn container_of(res, struct amdgpu_vram_mgr_resource, base);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

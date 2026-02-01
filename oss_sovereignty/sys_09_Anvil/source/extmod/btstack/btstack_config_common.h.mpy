@@ -1,0 +1,9 @@
+{
+  "module_name": "btstack_config_common.h",
+  "hash_id": "536cff610d062a46db7b046f5a64604d145e1472951bc57eeae2c8774eb9ca6d",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/btstack/btstack_config_common.h",
+  "human_readable_source": "#ifndef MICROPY_INCLUDED_EXTMOD_BTSTACK_BTSTACK_CONFIG_COMMON_H\n#define MICROPY_INCLUDED_EXTMOD_BTSTACK_BTSTACK_CONFIG_COMMON_H\n\n\n#define ENABLE_BLE\n#define ENABLE_LE_PERIPHERAL\n#define ENABLE_LE_CENTRAL\n\n#define ENABLE_L2CAP_LE_CREDIT_BASED_FLOW_CONTROL_MODE\n#define ENABLE_PRINTF_HEXDUMP\n\n\n#define ENABLE_LOG_ERROR\n\n\n#define HCI_ACL_PAYLOAD_SIZE 1021\n#define MAX_NR_GATT_CLIENTS 1\n#define MAX_NR_HCI_CONNECTIONS 1\n#define MAX_NR_L2CAP_SERVICES  3\n#define MAX_NR_L2CAP_CHANNELS  3\n#define MAX_NR_RFCOMM_MULTIPLEXERS 1\n#define MAX_NR_RFCOMM_SERVICES 1\n#define MAX_NR_RFCOMM_CHANNELS 1\n#define MAX_NR_BTSTACK_LINK_KEY_DB_MEMORY_ENTRIES  2\n#define MAX_NR_BNEP_SERVICES 1\n#define MAX_NR_BNEP_CHANNELS 1\n#define MAX_NR_HFP_CONNECTIONS 1\n#define MAX_NR_WHITELIST_ENTRIES 1\n#define MAX_NR_SM_LOOKUP_ENTRIES 3\n#define MAX_NR_SERVICE_RECORD_ITEMS 1\n#define MAX_NR_AVDTP_STREAM_ENDPOINTS 1\n#define MAX_NR_AVDTP_CONNECTIONS 1\n#define MAX_NR_AVRCP_CONNECTIONS 1\n\n#define MAX_NR_LE_DEVICE_DB_ENTRIES 4\n\n\n\n\n\n#define MAX_ATT_DB_SIZE 512\n\n\n#define HAVE_EMBEDDED_TIME_MS\n\n\n#define HCI_RESET_RESEND_TIMEOUT_MS 1000\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

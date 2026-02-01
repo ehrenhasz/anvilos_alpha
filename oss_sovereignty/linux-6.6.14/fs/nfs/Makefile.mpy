@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9d1670ed1f0ab648e9f94f209d06eef11cdb6ae2cd4d3ae781aee9b2c3f8e75d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux nfs filesystem routines.\n#\n\nobj-$(CONFIG_NFS_FS) += nfs.o\n\nCFLAGS_nfstrace.o += -I$(src)\nnfs-y \t\t\t:= client.o dir.o file.o getroot.o inode.o super.o \\\n\t\t\t   io.o direct.o pagelist.o read.o symlink.o unlink.o \\\n\t\t\t   write.o namespace.o mount_clnt.o nfstrace.o \\\n\t\t\t   export.o sysfs.o fs_context.o\nnfs-$(CONFIG_ROOT_NFS)\t+= nfsroot.o\nnfs-$(CONFIG_SYSCTL)\t+= sysctl.o\nnfs-$(CONFIG_NFS_FSCACHE) += fscache.o\n\nobj-$(CONFIG_NFS_V2) += nfsv2.o\nnfsv2-y := nfs2super.o proc.o nfs2xdr.o\n\nobj-$(CONFIG_NFS_V3) += nfsv3.o\nnfsv3-y := nfs3super.o nfs3client.o nfs3proc.o nfs3xdr.o\nnfsv3-$(CONFIG_NFS_V3_ACL) += nfs3acl.o\n\nobj-$(CONFIG_NFS_V4) += nfsv4.o\nCFLAGS_nfs4trace.o += -I$(src)\nnfsv4-y := nfs4proc.o nfs4xdr.o nfs4state.o nfs4renewd.o nfs4super.o nfs4file.o \\\n\t  delegation.o nfs4idmap.o callback.o callback_xdr.o callback_proc.o \\\n\t  nfs4namespace.o nfs4getroot.o nfs4client.o nfs4session.o \\\n\t  dns_resolve.o nfs4trace.o\nnfsv4-$(CONFIG_NFS_USE_LEGACY_DNS) += cache_lib.o\nnfsv4-$(CONFIG_SYSCTL)\t+= nfs4sysctl.o\nnfsv4-$(CONFIG_NFS_V4_1)\t+= pnfs.o pnfs_dev.o pnfs_nfs.o\nnfsv4-$(CONFIG_NFS_V4_2)\t+= nfs42proc.o nfs42xattr.o\n\nobj-$(CONFIG_PNFS_FILE_LAYOUT) += filelayout/\nobj-$(CONFIG_PNFS_BLOCK) += blocklayout/\nobj-$(CONFIG_PNFS_FLEXFILE_LAYOUT) += flexfilelayout/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

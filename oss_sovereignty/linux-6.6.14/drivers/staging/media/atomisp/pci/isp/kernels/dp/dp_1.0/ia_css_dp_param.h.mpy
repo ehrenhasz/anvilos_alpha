@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_dp_param.h",
+  "hash_id": "de8f7c473bc6ea2cdd0c9dd07a5577bd1fa4c4c4d0acfb35058db9c079050c52",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/dp/dp_1.0/ia_css_dp_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_DP_PARAM_H\n#define __IA_CSS_DP_PARAM_H\n\n#include \"type_support.h\"\n#include \"bnr/bnr_1.0/ia_css_bnr_param.h\"\n\n \nstruct sh_css_isp_dp_params {\n\ts32 threshold_single;\n\ts32 threshold_2adjacent;\n\ts32 gain;\n\ts32 coef_rr_gr;\n\ts32 coef_rr_gb;\n\ts32 coef_bb_gb;\n\ts32 coef_bb_gr;\n\ts32 coef_gr_rr;\n\ts32 coef_gr_bb;\n\ts32 coef_gb_bb;\n\ts32 coef_gb_rr;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

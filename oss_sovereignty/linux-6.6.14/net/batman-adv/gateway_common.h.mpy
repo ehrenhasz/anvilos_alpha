@@ -1,0 +1,9 @@
+{
+  "module_name": "gateway_common.h",
+  "hash_id": "67c0dfbc0f49e49799394caedfb7ac00e9cb31e601946a52068a6c3d33f8bb90",
+  "original_prompt": "Ingested from linux-6.6.14/net/batman-adv/gateway_common.h",
+  "human_readable_source": " \n \n\n#ifndef _NET_BATMAN_ADV_GATEWAY_COMMON_H_\n#define _NET_BATMAN_ADV_GATEWAY_COMMON_H_\n\n#include \"main.h\"\n\n \nenum batadv_bandwidth_units {\n\t \n\tBATADV_BW_UNIT_KBIT,\n\n\t \n\tBATADV_BW_UNIT_MBIT,\n};\n\n#define BATADV_GW_MODE_OFF_NAME\t\"off\"\n#define BATADV_GW_MODE_CLIENT_NAME\t\"client\"\n#define BATADV_GW_MODE_SERVER_NAME\t\"server\"\n\nvoid batadv_gw_tvlv_container_update(struct batadv_priv *bat_priv);\nvoid batadv_gw_init(struct batadv_priv *bat_priv);\nvoid batadv_gw_free(struct batadv_priv *bat_priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

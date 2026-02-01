@@ -1,0 +1,9 @@
+{
+  "module_name": "rn_clk_mgr.h",
+  "hash_id": "829f2cb069bdeb80cb4938113cca8615b15540e0f88729bc6efa57ef7dd4e6c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn21/rn_clk_mgr.h",
+  "human_readable_source": " \n\n#ifndef __RN_CLK_MGR_H__\n#define __RN_CLK_MGR_H__\n\n#include \"clk_mgr.h\"\n#include \"dm_pp_smu.h\"\n#include \"clk_mgr_internal.h\"\n\nextern struct wm_table ddr4_wm_table_gs;\nextern struct wm_table lpddr4_wm_table_gs;\nextern struct wm_table lpddr4_wm_table_with_disabled_ppt;\nextern struct wm_table ddr4_wm_table_rn;\nextern struct wm_table ddr4_1R_wm_table_rn;\nextern struct wm_table lpddr4_wm_table_rn;\n\nstruct rn_clk_registers {\n\tuint32_t CLK1_CLK0_CURRENT_CNT;  \n};\n\nvoid rn_clk_mgr_construct(struct dc_context *ctx,\n\t\tstruct clk_mgr_internal *clk_mgr,\n\t\tstruct pp_smu_funcs *pp_smu,\n\t\tstruct dccg *dccg);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

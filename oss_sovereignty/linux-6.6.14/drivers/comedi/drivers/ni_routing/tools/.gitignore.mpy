@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "132dd71e1584ce13f75a932a8c3511cf1ee2706f94b0f1638d86fffcff2777a3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/ni_routing/tools/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ncomedi_h.py\n*.pyc\nni_values.py\nconvert_c_to_py\nc/\ncsv/\nlinux/\nall_cfiles.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

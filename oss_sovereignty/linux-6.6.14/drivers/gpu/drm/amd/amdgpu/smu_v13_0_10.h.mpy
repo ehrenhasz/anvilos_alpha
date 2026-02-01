@@ -1,0 +1,9 @@
+{
+  "module_name": "smu_v13_0_10.h",
+  "hash_id": "cc0acffb3585017d142d290eab8db231f829c84bd807dbae28e0768eca5d0e81",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/smu_v13_0_10.h",
+  "human_readable_source": " \n\n#ifndef __SMU_V13_0_10_H__\n#define __SMU_V13_0_10_H__\n\n#include \"amdgpu.h\"\n\nint smu_v13_0_10_reset_init(struct amdgpu_device *adev);\nint smu_v13_0_10_reset_fini(struct amdgpu_device *adev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

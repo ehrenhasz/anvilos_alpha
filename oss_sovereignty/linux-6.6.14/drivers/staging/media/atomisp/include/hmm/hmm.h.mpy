@@ -1,0 +1,9 @@
+{
+  "module_name": "hmm.h",
+  "hash_id": "4195233bda863d6b80c9225d0707dea5b9441ef066d63c62f794fc1d7755aa70",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/include/hmm/hmm.h",
+  "human_readable_source": " \n \n\n#ifndef\t__HMM_H__\n#define\t__HMM_H__\n\n#include <linux/kernel.h>\n#include <linux/types.h>\n#include <linux/slab.h>\n#include <linux/mm.h>\n\n#include \"hmm_common.h\"\n#include \"hmm/hmm_bo.h\"\n#include \"ia_css_types.h\"\n\n#define mmgr_NULL              ((ia_css_ptr)0)\n#define mmgr_EXCEPTION         ((ia_css_ptr) - 1)\n\nint hmm_init(void);\nvoid hmm_cleanup(void);\n\nia_css_ptr hmm_alloc(size_t bytes);\nia_css_ptr hmm_create_from_vmalloc_buf(size_t bytes, void *vmalloc_addr);\n\nvoid hmm_free(ia_css_ptr ptr);\nint hmm_load(ia_css_ptr virt, void *data, unsigned int bytes);\nint hmm_store(ia_css_ptr virt, const void *data, unsigned int bytes);\nint hmm_set(ia_css_ptr virt, int c, unsigned int bytes);\nint hmm_flush(ia_css_ptr virt, unsigned int bytes);\n\n \nphys_addr_t hmm_virt_to_phys(ia_css_ptr virt);\n\n \nvoid *hmm_vmap(ia_css_ptr virt, bool cached);\nvoid hmm_vunmap(ia_css_ptr virt);\n\n \nvoid hmm_flush_vmap(ia_css_ptr virt);\n\n \nint hmm_mmap(struct vm_area_struct *vma, ia_css_ptr virt);\n\nextern struct hmm_bo_device bo_device;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

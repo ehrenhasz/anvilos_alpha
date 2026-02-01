@@ -1,0 +1,9 @@
+{
+  "module_name": "user-libexec.m4",
+  "hash_id": "1bf77666559dd6f9636333cbb0a0219555d1405bc12702bd08d22e86de29f542",
+  "original_prompt": "Ingested from zfs-2.2.2/config/user-libexec.m4",
+  "human_readable_source": "AC_DEFUN([ZFS_AC_CONFIG_USER_ZFSEXEC], [\n\tAC_ARG_WITH(zfsexecdir,\n\t\tAS_HELP_STRING([--with-zfsexecdir=DIR],\n\t\t[install scripts [[@<:@libexecdir@:>@/zfs]]]),\n\t\t[zfsexecdir=$withval],\n\t\t[zfsexecdir=\"${libexecdir}/zfs\"])\n\n\tAC_SUBST([zfsexecdir])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

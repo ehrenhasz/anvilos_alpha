@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-eventonoff.tc",
+  "hash_id": "8f66bd3307395b67ad9af8a57db3951d550fb4d1095a43f624d826b53de294e1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/trigger-eventonoff.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event trigger - test event enable/disable trigger\n# requires: set_event events/sched/sched_process_fork/trigger\n# flags: instance\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\nFEATURE=`grep enable_event events/sched/sched_process_fork/trigger`\nif [ -z \"$FEATURE\" ]; then\n    echo \"event enable/disable trigger is not supported\"\n    exit_unsupported\nfi\n\necho \"Test enable_event trigger\"\necho 0 > events/sched/sched_switch/enable\necho 'enable_event:sched:sched_switch' > events/sched/sched_process_fork/trigger\n( echo \"forked\")\nif [ `cat events/sched/sched_switch/enable` != '1*' ]; then\n    fail \"enable_event trigger on sched_process_fork did not work\"\nfi\n\nreset_trigger\n\necho \"Test disable_event trigger\"\necho 1 > events/sched/sched_switch/enable\necho 'disable_event:sched:sched_switch' > events/sched/sched_process_fork/trigger\n( echo \"forked\")\nif [ `cat events/sched/sched_switch/enable` != '0*' ]; then\n    fail \"disable_event trigger on sched_process_fork did not work\"\nfi\n\nreset_trigger\n\necho \"Test semantic error for event enable/disable trigger\"\n! echo 'enable_event:nogroup:noevent' > events/sched/sched_process_fork/trigger\n! echo 'disable_event+1' > events/sched/sched_process_fork/trigger\necho 'enable_event:sched:sched_switch' > events/sched/sched_process_fork/trigger\n! echo 'enable_event:sched:sched_switch' > events/sched/sched_process_fork/trigger\n! echo 'disable_event:sched:sched_switch' > events/sched/sched_process_fork/trigger\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

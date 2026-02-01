@@ -1,0 +1,9 @@
+{
+  "module_name": "dvi.h",
+  "hash_id": "70003ea440f32d6661373e507956df65f77119c74e5b8f469be9485033e89814",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/via/dvi.h",
+  "human_readable_source": " \n \n\n#ifndef __DVI_H__\n#define __DVI_H__\n\n \n#define     VT1632_DEVICE_ID_REG        0x02\n#define     VT1632_DEVICE_ID            0x92\n\n#define     GET_DVI_SIZE_BY_SYSTEM_BIOS     0x01\n#define     GET_DVI_SIZE_BY_VGA_BIOS        0x02\n#define     GET_DVI_SZIE_BY_HW_STRAPPING    0x03\n\n \n \n#define     DVI_PANEL_ID0_640X480       0x00\n \n#define     DVI_PANEL_ID1_800x600       0x01\n \n#define     DVI_PANEL_ID1_1024x768      0x02\n \n#define     DVI_PANEL_ID1_1280x768      0x03\n \n#define     DVI_PANEL_ID1_1280x1024     0x04\n \n#define     DVI_PANEL_ID1_1400x1050     0x05\n \n#define     DVI_PANEL_ID1_1600x1200     0x06\n\n \n#define     EDID_VERSION_1      1\n#define     EDID_VERSION_2      2\n\n#define     DEV_CONNECT_DVI     0x01\n#define     DEV_CONNECT_HDMI    0x02\n\nint viafb_dvi_sense(void);\nvoid viafb_dvi_disable(void);\nvoid viafb_dvi_enable(void);\nbool viafb_tmds_trasmitter_identify(void);\nvoid viafb_init_dvi_size(struct tmds_chip_information *tmds_chip,\n\tstruct tmds_setting_information *tmds_setting);\nvoid viafb_dvi_set_mode(const struct fb_var_screeninfo *var,\n\tu16 cxres, u16 cyres, int iga);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "machine_keyring.c",
+  "hash_id": "13e8cc6ce9ac34f00666fbc36756133df2536bb4195a429e10987c4914b75920",
+  "original_prompt": "Ingested from linux-6.6.14/security/integrity/platform_certs/machine_keyring.c",
+  "human_readable_source": "\n \n\n#include <linux/efi.h>\n#include \"../integrity.h\"\n\nstatic __init int machine_keyring_init(void)\n{\n\tint rc;\n\n\trc = integrity_init_keyring(INTEGRITY_KEYRING_MACHINE);\n\tif (rc)\n\t\treturn rc;\n\n\tpr_notice(\"Machine keyring initialized\\n\");\n\treturn 0;\n}\ndevice_initcall(machine_keyring_init);\n\nvoid __init add_to_machine_keyring(const char *source, const void *data, size_t len)\n{\n\tkey_perm_t perm;\n\tint rc;\n\n\tperm = (KEY_POS_ALL & ~KEY_POS_SETATTR) | KEY_USR_VIEW;\n\trc = integrity_load_cert(INTEGRITY_KEYRING_MACHINE, source, data, len, perm);\n\n\t \n\tif (rc && efi_enabled(EFI_BOOT) &&\n\t    IS_ENABLED(CONFIG_INTEGRITY_PLATFORM_KEYRING))\n\t\trc = integrity_load_cert(INTEGRITY_KEYRING_PLATFORM, source,\n\t\t\t\t\t data, len, perm);\n\n\tif (rc)\n\t\tpr_info(\"Error adding keys to machine keyring %s\\n\", source);\n}\n\n \nstatic __init bool uefi_check_trust_mok_keys(void)\n{\n\tstruct efi_mokvar_table_entry *mokvar_entry;\n\n\tmokvar_entry = efi_mokvar_entry_find(\"MokListTrustedRT\");\n\n\tif (mokvar_entry)\n\t\treturn true;\n\n\treturn false;\n}\n\nstatic bool __init trust_moklist(void)\n{\n\tstatic bool initialized;\n\tstatic bool trust_mok;\n\n\tif (!initialized) {\n\t\tinitialized = true;\n\t\ttrust_mok = false;\n\n\t\tif (uefi_check_trust_mok_keys())\n\t\t\ttrust_mok = true;\n\t}\n\n\treturn trust_mok;\n}\n\n \nbool __init imputed_trust_enabled(void)\n{\n\tif (efi_enabled(EFI_BOOT))\n\t\treturn trust_moklist();\n\n\treturn true;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

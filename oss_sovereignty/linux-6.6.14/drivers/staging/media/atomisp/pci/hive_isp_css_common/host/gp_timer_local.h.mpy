@@ -1,0 +1,9 @@
+{
+  "module_name": "gp_timer_local.h",
+  "hash_id": "b4e28a9fc72e2e32018300022789c6c4b51d202af165946dc64119b1b840fed5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/host/gp_timer_local.h",
+  "human_readable_source": " \n \n\n#ifndef __GP_TIMER_LOCAL_H_INCLUDED__\n#define  __GP_TIMER_LOCAL_H_INCLUDED__\n\n#include \"gp_timer_global.h\"  \n\n#include \"gp_timer_defs.h\"     \n#include \"hive_isp_css_defs.h\"  \n\n#define _REG_GP_TIMER_RESET_REG HIVE_GP_TIMER_RESET_REG_IDX\n#define _REG_GP_TIMER_OVERALL_ENABLE HIVE_GP_TIMER_OVERALL_ENABLE_REG_IDX\n\n \n#define _REG_GP_TIMER_ENABLE_ID(timer_id)        HIVE_GP_TIMER_ENABLE_REG_IDX(timer_id)\n#define _REG_GP_TIMER_VALUE_ID(timer_id)\t HIVE_GP_TIMER_VALUE_REG_IDX(timer_id, HIVE_GP_TIMER_NUM_COUNTERS)\n#define _REG_GP_TIMER_COUNT_TYPE_ID(timer_id)    HIVE_GP_TIMER_COUNT_TYPE_REG_IDX(timer_id, HIVE_GP_TIMER_NUM_COUNTERS)\n#define _REG_GP_TIMER_SIGNAL_SELECT_ID(timer_id) HIVE_GP_TIMER_SIGNAL_SELECT_REG_IDX(timer_id, HIVE_GP_TIMER_NUM_COUNTERS)\n\n#define _REG_GP_TIMER_IRQ_TRIGGER_VALUE_ID(irq_id) HIVE_GP_TIMER_IRQ_TRIGGER_VALUE_REG_IDX(irq_id, HIVE_GP_TIMER_NUM_COUNTERS)\n\n#define _REG_GP_TIMER_IRQ_TIMER_SELECT_ID(irq_id)   \\\n\tHIVE_GP_TIMER_IRQ_TIMER_SELECT_REG_IDX(irq_id, HIVE_GP_TIMER_NUM_COUNTERS, HIVE_GP_TIMER_NUM_IRQS)\n\n#define _REG_GP_TIMER_IRQ_ENABLE_ID(irq_id) \\\n\tHIVE_GP_TIMER_IRQ_ENABLE_REG_IDX(irq_id, HIVE_GP_TIMER_NUM_COUNTERS, HIVE_GP_TIMER_NUM_IRQS)\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

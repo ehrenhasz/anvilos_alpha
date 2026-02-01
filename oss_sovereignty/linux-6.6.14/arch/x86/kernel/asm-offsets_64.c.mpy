@@ -1,0 +1,9 @@
+{
+  "module_name": "asm-offsets_64.c",
+  "hash_id": "9600396aca0d3a6475c5fc0574404f3579ef570156c6715ae2bcb05866ddd8ea",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/asm-offsets_64.c",
+  "human_readable_source": "\n#ifndef __LINUX_KBUILD_H\n# error \"Please do not build this file directly, build asm-offsets.c instead\"\n#endif\n\n#include <asm/ia32.h>\n\n#if defined(CONFIG_KVM_GUEST)\n#include <asm/kvm_para.h>\n#endif\n\nint main(void)\n{\n#ifdef CONFIG_PARAVIRT\n#ifdef CONFIG_PARAVIRT_XXL\n#ifdef CONFIG_DEBUG_ENTRY\n\tOFFSET(PV_IRQ_save_fl, paravirt_patch_template, irq.save_fl);\n#endif\n#endif\n\tBLANK();\n#endif\n\n#if defined(CONFIG_KVM_GUEST)\n\tOFFSET(KVM_STEAL_TIME_preempted, kvm_steal_time, preempted);\n\tBLANK();\n#endif\n\n#define ENTRY(entry) OFFSET(pt_regs_ ## entry, pt_regs, entry)\n\tENTRY(bx);\n\tENTRY(cx);\n\tENTRY(dx);\n\tENTRY(sp);\n\tENTRY(bp);\n\tENTRY(si);\n\tENTRY(di);\n\tENTRY(r8);\n\tENTRY(r9);\n\tENTRY(r10);\n\tENTRY(r11);\n\tENTRY(r12);\n\tENTRY(r13);\n\tENTRY(r14);\n\tENTRY(r15);\n\tENTRY(flags);\n\tBLANK();\n#undef ENTRY\n\n#define ENTRY(entry) OFFSET(saved_context_ ## entry, saved_context, entry)\n\tENTRY(cr0);\n\tENTRY(cr2);\n\tENTRY(cr3);\n\tENTRY(cr4);\n\tENTRY(gdt_desc);\n\tBLANK();\n#undef ENTRY\n\n\tBLANK();\n\n#ifdef CONFIG_STACKPROTECTOR\n\tOFFSET(FIXED_stack_canary, fixed_percpu_data, stack_canary);\n\tBLANK();\n#endif\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

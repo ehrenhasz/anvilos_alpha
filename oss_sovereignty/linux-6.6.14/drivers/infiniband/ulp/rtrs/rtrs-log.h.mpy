@@ -1,0 +1,9 @@
+{
+  "module_name": "rtrs-log.h",
+  "hash_id": "25ab5a71065f2bbddb73d133b257954256da6e18b17e811d43f893204f47d92d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/ulp/rtrs/rtrs-log.h",
+  "human_readable_source": " \n \n#ifndef RTRS_LOG_H\n#define RTRS_LOG_H\n\n#define rtrs_log(fn, obj, fmt, ...)\t\t\t\t\\\n\tfn(\"<%s>: \" fmt, obj->sessname, ##__VA_ARGS__)\n\n#define rtrs_err(obj, fmt, ...)\t\\\n\trtrs_log(pr_err, obj, fmt, ##__VA_ARGS__)\n#define rtrs_err_rl(obj, fmt, ...)\t\\\n\trtrs_log(pr_err_ratelimited, obj, fmt, ##__VA_ARGS__)\n#define rtrs_wrn(obj, fmt, ...)\t\\\n\trtrs_log(pr_warn, obj, fmt, ##__VA_ARGS__)\n#define rtrs_wrn_rl(obj, fmt, ...) \\\n\trtrs_log(pr_warn_ratelimited, obj, fmt, ##__VA_ARGS__)\n#define rtrs_info(obj, fmt, ...) \\\n\trtrs_log(pr_info, obj, fmt, ##__VA_ARGS__)\n#define rtrs_info_rl(obj, fmt, ...) \\\n\trtrs_log(pr_info_ratelimited, obj, fmt, ##__VA_ARGS__)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

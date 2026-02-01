@@ -1,0 +1,9 @@
+{
+  "module_name": "console_cmdline.h",
+  "hash_id": "cfe3fb6a404998d90578a2fe1f23fac13a7bcb30117abf64c9f8424386f01c36",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/printk/console_cmdline.h",
+  "human_readable_source": " \n#ifndef _CONSOLE_CMDLINE_H\n#define _CONSOLE_CMDLINE_H\n\nstruct console_cmdline\n{\n\tchar\tname[16];\t\t\t \n\tint\tindex;\t\t\t\t \n\tbool\tuser_specified;\t\t\t \n\tchar\t*options;\t\t\t \n#ifdef CONFIG_A11Y_BRAILLE_CONSOLE\n\tchar\t*brl_options;\t\t\t \n#endif\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

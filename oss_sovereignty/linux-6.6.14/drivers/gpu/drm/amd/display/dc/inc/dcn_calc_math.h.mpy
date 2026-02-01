@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn_calc_math.h",
+  "hash_id": "fd982514fc2de3e1848da647fff5805d5f5858dd60fa4b22833ca327e6ac95d7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/inc/dcn_calc_math.h",
+  "human_readable_source": " \n\n#ifndef _DCN_CALC_MATH_H_\n#define _DCN_CALC_MATH_H_\n\nfloat dcn_bw_mod(const float arg1, const float arg2);\nfloat dcn_bw_min2(const float arg1, const float arg2);\nunsigned int dcn_bw_max(const unsigned int arg1, const unsigned int arg2);\nfloat dcn_bw_max2(const float arg1, const float arg2);\nfloat dcn_bw_floor2(const float arg, const float significance);\nfloat dcn_bw_floor(const float arg);\nfloat dcn_bw_ceil2(const float arg, const float significance);\nfloat dcn_bw_ceil(const float arg);\nfloat dcn_bw_max3(float v1, float v2, float v3);\nfloat dcn_bw_max5(float v1, float v2, float v3, float v4, float v5);\nfloat dcn_bw_pow(float a, float exp);\nfloat dcn_bw_log(float a, float b);\ndouble dcn_bw_fabs(double a);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "bfdea81d34eb1f8be64fae8f544ac985cbde2025c57e5f03bcc3fc6d951f7610",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/imx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)\n\nconfig SND_SOC_SOF_IMX_TOPLEVEL\n\tbool \"SOF support for NXP i.MX audio DSPs\"\n\tdepends on ARM64|| COMPILE_TEST\n\tdepends on SND_SOC_SOF_OF\n\thelp\n\t  This adds support for Sound Open Firmware for NXP i.MX platforms.\n\t  Say Y if you have such a device.\n\t  If unsure select \"N\".\n\nif SND_SOC_SOF_IMX_TOPLEVEL\n\nconfig SND_SOC_SOF_IMX_COMMON\n\ttristate\n\tselect SND_SOC_SOF_OF_DEV\n\tselect SND_SOC_SOF\n\tselect SND_SOC_SOF_IPC3\n\tselect SND_SOC_SOF_XTENSA\n\tselect SND_SOC_SOF_COMPRESS\n\thelp\n\t  This option is not user-selectable but automagically handled by\n\t  'select' statements at a higher level.\n\nconfig SND_SOC_SOF_IMX8\n\ttristate \"SOF support for i.MX8\"\n\tdepends on IMX_SCU\n\tdepends on IMX_DSP\n\tselect SND_SOC_SOF_IMX_COMMON\n\thelp\n\t  This adds support for Sound Open Firmware for NXP i.MX8 platforms.\n\t  Say Y if you have such a device.\n\t  If unsure select \"N\".\n\nconfig SND_SOC_SOF_IMX8M\n\ttristate \"SOF support for i.MX8M\"\n\tdepends on IMX_DSP\n\tselect SND_SOC_SOF_IMX_COMMON\n\thelp\n\t  This adds support for Sound Open Firmware for NXP i.MX8M platforms.\n\t  Say Y if you have such a device.\n\t  If unsure select \"N\".\n\nconfig SND_SOC_SOF_IMX8ULP\n\ttristate \"SOF support for i.MX8ULP\"\n\tdepends on IMX_DSP\n\tselect SND_SOC_SOF_IMX_COMMON\n\thelp\n\t  This adds support for Sound Open Firmware for NXP i.MX8ULP platforms.\n\t  Say Y if you have such a device.\n\t  If unsure select \"N\".\n\nendif ## SND_SOC_SOF_IMX_TOPLEVEL\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

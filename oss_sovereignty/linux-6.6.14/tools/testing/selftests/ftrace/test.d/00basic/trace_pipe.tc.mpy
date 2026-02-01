@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_pipe.tc",
+  "hash_id": "b6a6655b65225c57845b997e25516ce2b9d4fdb5f2d325a3ff12f10983ac9fb7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/00basic/trace_pipe.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: trace_pipe and trace_marker\n# requires: trace_marker\n# flags: instance\n\necho \"test input 1\" > trace_marker\n\n: \"trace interface never consume the ring buffer\"\ngrep -q \"test input 1\" trace\ngrep -q \"test input 1\" trace\n\n: \"trace interface never consume the ring buffer\"\nhead -n 1 trace_pipe | grep -q \"test input 1\"\n! grep -q \"test input 1\" trace\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

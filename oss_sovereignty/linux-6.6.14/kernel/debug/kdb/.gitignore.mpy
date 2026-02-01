@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "b14f911e87c590f23bba5d2edd597dcc49e600610ef9cfac180937458ee1c7cf",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/debug/kdb/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ngen-kdb_cmds.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

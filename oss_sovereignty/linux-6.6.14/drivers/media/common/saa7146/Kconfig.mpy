@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "6d07c8fcbe30e7539ca402d2d58fb4b69b63cb5b8e3ae3120075d7d42067f070",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/common/saa7146/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_SAA7146\n\ttristate\n\tdepends on I2C && PCI\n\nconfig VIDEO_SAA7146_VV\n\ttristate\n\tdepends on VIDEO_DEV\n\tselect VIDEOBUF2_DMA_SG\n\tselect VIDEO_SAA7146\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

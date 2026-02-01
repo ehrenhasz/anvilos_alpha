@@ -1,0 +1,9 @@
+{
+  "module_name": "dwarf2.h",
+  "hash_id": "cf7d179e95c535e19a758284c031bc590d0542117cde22fc4992c276fae99b54",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/include/asm/dwarf2.h",
+  "human_readable_source": " \n\n#ifndef PERF_DWARF2_H\n#define PERF_DWARF2_H\n\n \n\n#define CFI_STARTPROC\n#define CFI_ENDPROC\n#define CFI_REMEMBER_STATE\n#define CFI_RESTORE_STATE\n\n#endif\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

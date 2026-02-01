@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-inode-set-flags.m4",
+  "hash_id": "b41d414dae1552f0823f9a186fde89bd388cdba40546b3c060172c190335ebb0",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-inode-set-flags.m4",
+  "human_readable_source": "dnl #\ndnl # 3.15 API change\ndnl # inode_set_flags introduced to set i_flags\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_INODE_SET_FLAGS], [\n\tZFS_LINUX_TEST_SRC([inode_set_flags], [\n\t\t#include <linux/fs.h>\n\t],[\n\t\tstruct inode inode;\n\t\tinode_set_flags(&inode, S_IMMUTABLE, S_IMMUTABLE);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_INODE_SET_FLAGS], [\n\tAC_MSG_CHECKING([whether inode_set_flags() exists])\n\tZFS_LINUX_TEST_RESULT([inode_set_flags], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_INODE_SET_FLAGS, 1, [inode_set_flags() exists])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

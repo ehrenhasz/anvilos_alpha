@@ -1,0 +1,9 @@
+{
+  "module_name": "signalfd.h",
+  "hash_id": "0f66e2093d34ac3db9d14e35291c74d0717c703242468d48f23acda49b5661d6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/signalfd.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_SIGNALFD_H\n#define _LINUX_SIGNALFD_H\n\n#include <uapi/linux/signalfd.h>\n#include <linux/sched/signal.h>\n\n#ifdef CONFIG_SIGNALFD\n\n \nstatic inline void signalfd_notify(struct task_struct *tsk, int sig)\n{\n\tif (unlikely(waitqueue_active(&tsk->sighand->signalfd_wqh)))\n\t\twake_up(&tsk->sighand->signalfd_wqh);\n}\n\nextern void signalfd_cleanup(struct sighand_struct *sighand);\n\n#else  \n\nstatic inline void signalfd_notify(struct task_struct *tsk, int sig) { }\n\nstatic inline void signalfd_cleanup(struct sighand_struct *sighand) { }\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

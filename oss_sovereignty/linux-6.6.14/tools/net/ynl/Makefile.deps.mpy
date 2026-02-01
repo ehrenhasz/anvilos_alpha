@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.deps",
+  "hash_id": "4b38b17638263cfaaf97f2ce42fb914e680b4820839be5930f134c102cad83eb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/net/ynl/Makefile.deps",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n# Try to include uAPI headers from the kernel uapi/ path.\n# Most code under tools/ requires the respective kernel uAPI headers\n# to be copied to tools/include. The duplication is annoying.\n# All the family headers should be self-contained. We avoid the copying\n# by selectively including just the uAPI header of the family directly\n# from the kernel sources.\n\nUAPI_PATH:=../../../../include/uapi/\n\n# scripts/headers_install.sh strips \"_UAPI\" from header guards so we\n# need the explicit -D matching what's in /usr, to avoid multiple definitions.\n\nget_hdr_inc=-D$(1) -include $(UAPI_PATH)/linux/$(2)\n\nCFLAGS_devlink:=$(call get_hdr_inc,_LINUX_DEVLINK_H_,devlink.h)\nCFLAGS_ethtool:=$(call get_hdr_inc,_LINUX_ETHTOOL_NETLINK_H_,ethtool_netlink.h)\nCFLAGS_handshake:=$(call get_hdr_inc,_LINUX_HANDSHAKE_H,handshake.h)\nCFLAGS_netdev:=$(call get_hdr_inc,_LINUX_NETDEV_H,netdev.h)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

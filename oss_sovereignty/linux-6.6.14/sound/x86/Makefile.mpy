@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "04a9cea3f692387760c83cfdae697f11ad88b8a41a07cc63aa331e8ea2b15cb0",
+  "original_prompt": "Ingested from linux-6.6.14/sound/x86/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-hdmi-lpe-audio-objs += \\\n\tintel_hdmi_audio.o\n\nobj-$(CONFIG_HDMI_LPE_AUDIO) += snd-hdmi-lpe-audio.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

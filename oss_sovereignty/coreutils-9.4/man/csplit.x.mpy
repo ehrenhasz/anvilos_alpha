@@ -1,0 +1,9 @@
+{
+  "module_name": "csplit.x",
+  "hash_id": "8c7b5d726fb19176ba3cf33d7b08eb886d0d6f175bc4f5035b42d2e360e30d31",
+  "original_prompt": "Ingested from coreutils-9.4/man/csplit.x",
+  "human_readable_source": "[NAME]\ncsplit \\- split a file into sections determined by context lines\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

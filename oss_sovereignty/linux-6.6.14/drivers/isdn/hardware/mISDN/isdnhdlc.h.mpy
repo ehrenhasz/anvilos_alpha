@@ -1,0 +1,9 @@
+{
+  "module_name": "isdnhdlc.h",
+  "hash_id": "491d28226161c291727b023626ae0696a8e15a3e51daa88c1d12be57809a8667",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/isdn/hardware/mISDN/isdnhdlc.h",
+  "human_readable_source": " \n \n\n#ifndef __ISDNHDLC_H__\n#define __ISDNHDLC_H__\n\nstruct isdnhdlc_vars {\n\tint bit_shift;\n\tint hdlc_bits1;\n\tint data_bits;\n\tint ffbit_shift;\t \n\tint state;\n\tint dstpos;\n\n\tu16 crc;\n\n\tu8 cbin;\n\tu8 shift_reg;\n\tu8 ffvalue;\n\n\t \n\tu32 data_received:1;\n\t \n\tu32 dchannel:1;\n\t \n\tu32 do_adapt56:1;\n\t \n\tu32 do_closing:1;\n\t \n\tu32 do_bitreverse:1;\n};\n\n \n#define HDLC_56KBIT\t0x01\n#define HDLC_DCHANNEL\t0x02\n#define HDLC_BITREVERSE\t0x04\n\n \n#define HDLC_FRAMING_ERROR     1\n#define HDLC_CRC_ERROR         2\n#define HDLC_LENGTH_ERROR      3\n\nextern void\tisdnhdlc_rcv_init(struct isdnhdlc_vars *hdlc, u32 features);\n\nextern int\tisdnhdlc_decode(struct isdnhdlc_vars *hdlc, const u8 *src,\n\t\t\tint slen, int *count, u8 *dst, int dsize);\n\nextern void\tisdnhdlc_out_init(struct isdnhdlc_vars *hdlc, u32 features);\n\nextern int\tisdnhdlc_encode(struct isdnhdlc_vars *hdlc, const u8 *src,\n\t\t\tu16 slen, int *count, u8 *dst, int dsize);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

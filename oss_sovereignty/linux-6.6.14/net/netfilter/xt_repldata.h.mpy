@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_repldata.h",
+  "hash_id": "4638ae089eca9df34ef7e16634c7256671042cd1f333d609a36955691056f3f7",
+  "original_prompt": "Ingested from linux-6.6.14/net/netfilter/xt_repldata.h",
+  "human_readable_source": " \n \n\n \n\n#define xt_alloc_initial_table(type, typ2) ({ \\\n\tunsigned int hook_mask = info->valid_hooks; \\\n\tunsigned int nhooks = hweight32(hook_mask); \\\n\tunsigned int bytes = 0, hooknum = 0, i = 0; \\\n\tstruct { \\\n\t\tstruct type##_replace repl; \\\n\t\tstruct type##_standard entries[]; \\\n\t} *tbl; \\\n\tstruct type##_error *term; \\\n\tsize_t term_offset = (offsetof(typeof(*tbl), entries[nhooks]) + \\\n\t\t__alignof__(*term) - 1) & ~(__alignof__(*term) - 1); \\\n\ttbl = kzalloc(term_offset + sizeof(*term), GFP_KERNEL); \\\n\tif (tbl == NULL) \\\n\t\treturn NULL; \\\n\tterm = (struct type##_error *)&(((char *)tbl)[term_offset]); \\\n\tstrscpy_pad(tbl->repl.name, info->name, sizeof(tbl->repl.name)); \\\n\t*term = (struct type##_error)typ2##_ERROR_INIT;  \\\n\ttbl->repl.valid_hooks = hook_mask; \\\n\ttbl->repl.num_entries = nhooks + 1; \\\n\ttbl->repl.size = nhooks * sizeof(struct type##_standard) + \\\n\t\t\t sizeof(struct type##_error); \\\n\tfor (; hook_mask != 0; hook_mask >>= 1, ++hooknum) { \\\n\t\tif (!(hook_mask & 1)) \\\n\t\t\tcontinue; \\\n\t\ttbl->repl.hook_entry[hooknum] = bytes; \\\n\t\ttbl->repl.underflow[hooknum]  = bytes; \\\n\t\ttbl->entries[i++] = (struct type##_standard) \\\n\t\t\ttyp2##_STANDARD_INIT(NF_ACCEPT); \\\n\t\tbytes += sizeof(struct type##_standard); \\\n\t} \\\n\ttbl; \\\n})\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

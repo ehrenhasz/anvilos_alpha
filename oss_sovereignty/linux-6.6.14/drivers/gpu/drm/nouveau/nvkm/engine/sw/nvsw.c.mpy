@@ -1,0 +1,9 @@
+{
+  "module_name": "nvsw.c",
+  "hash_id": "2d73dfc01bba01d8539de04ad93fe1446f2af5da80dde5fdde2d66b5768ba07a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/sw/nvsw.c",
+  "human_readable_source": " \n#include \"nvsw.h\"\n#include \"chan.h\"\n\n#include <nvif/if0004.h>\n\nstatic int\nnvkm_nvsw_uevent(struct nvkm_object *object, void *argv, u32 argc, struct nvkm_uevent *uevent)\n{\n\tunion nv04_nvsw_event_args *args = argv;\n\n\tif (!uevent)\n\t\treturn 0;\n\tif (argc != sizeof(args->vn))\n\t\treturn -ENOSYS;\n\n\treturn nvkm_uevent_add(uevent, &nvkm_nvsw(object)->chan->event, 0,\n\t\t\t       NVKM_SW_CHAN_EVENT_PAGE_FLIP, NULL);\n}\n\nstatic int\nnvkm_nvsw_mthd(struct nvkm_object *object, u32 mthd, void *data, u32 size)\n{\n\tstruct nvkm_nvsw *nvsw = nvkm_nvsw(object);\n\n\tif (nvsw->func->mthd)\n\t\treturn nvsw->func->mthd(nvsw, mthd, data, size);\n\n\treturn -ENODEV;\n}\n\nstatic const struct nvkm_object_func\nnvkm_nvsw_ = {\n\t.mthd = nvkm_nvsw_mthd,\n\t.uevent = nvkm_nvsw_uevent,\n};\n\nint\nnvkm_nvsw_new_(const struct nvkm_nvsw_func *func, struct nvkm_sw_chan *chan,\n\t       const struct nvkm_oclass *oclass, void *data, u32 size,\n\t       struct nvkm_object **pobject)\n{\n\tstruct nvkm_nvsw *nvsw;\n\n\tif (!(nvsw = kzalloc(sizeof(*nvsw), GFP_KERNEL)))\n\t\treturn -ENOMEM;\n\t*pobject = &nvsw->object;\n\n\tnvkm_object_ctor(&nvkm_nvsw_, oclass, &nvsw->object);\n\tnvsw->func = func;\n\tnvsw->chan = chan;\n\treturn 0;\n}\n\nstatic const struct nvkm_nvsw_func\nnvkm_nvsw = {\n};\n\nint\nnvkm_nvsw_new(struct nvkm_sw_chan *chan, const struct nvkm_oclass *oclass,\n\t      void *data, u32 size, struct nvkm_object **pobject)\n{\n\treturn nvkm_nvsw_new_(&nvkm_nvsw, chan, oclass, data, size, pobject);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

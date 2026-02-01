@@ -1,0 +1,9 @@
+{
+  "module_name": "vpu_codec.h",
+  "hash_id": "2219d6fe14e1dfd054c3a2ee5c4f7d4fe8284c5b8c5b37df3160e382e446c398",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/amphion/vpu_codec.h",
+  "human_readable_source": " \n \n\n#ifndef _AMPHION_VPU_CODEC_H\n#define _AMPHION_VPU_CODEC_H\n\nstruct vpu_encode_params {\n\tu32 input_format;\n\tu32 codec_format;\n\tu32 profile;\n\tu32 tier;\n\tu32 level;\n\tstruct v4l2_fract frame_rate;\n\tu32 src_stride;\n\tu32 src_width;\n\tu32 src_height;\n\tstruct v4l2_rect crop;\n\tu32 out_width;\n\tu32 out_height;\n\n\tu32 gop_length;\n\tu32 bframes;\n\n\tu32 rc_enable;\n\tu32 rc_mode;\n\tu32 bitrate;\n\tu32 bitrate_min;\n\tu32 bitrate_max;\n\n\tu32 i_frame_qp;\n\tu32 p_frame_qp;\n\tu32 b_frame_qp;\n\tu32 qp_min;\n\tu32 qp_max;\n\tu32 qp_min_i;\n\tu32 qp_max_i;\n\n\tstruct {\n\t\tu32 enable;\n\t\tu32 idc;\n\t\tu32 width;\n\t\tu32 height;\n\t} sar;\n\n\tstruct {\n\t\tu32 primaries;\n\t\tu32 transfer;\n\t\tu32 matrix;\n\t\tu32 full_range;\n\t} color;\n};\n\nstruct vpu_decode_params {\n\tu32 codec_format;\n\tu32 output_format;\n\tu32 display_delay_enable;\n\tu32 display_delay;\n\tu32 b_non_frame;\n\tu32 frame_count;\n\tu32 end_flag;\n\tstruct {\n\t\tu32 base;\n\t\tu32 size;\n\t} udata;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

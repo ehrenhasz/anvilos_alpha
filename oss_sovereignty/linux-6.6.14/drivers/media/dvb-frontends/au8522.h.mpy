@@ -1,0 +1,9 @@
+{
+  "module_name": "au8522.h",
+  "hash_id": "60978b13fe2970de09cda5eaa3edb54222d2c007d8c1b90ff3b4dca309279536",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/au8522.h",
+  "human_readable_source": " \n \n\n#ifndef __AU8522_H__\n#define __AU8522_H__\n\n#include <linux/dvb/frontend.h>\n\nenum au8522_if_freq {\n\tAU8522_IF_6MHZ = 0,\n\tAU8522_IF_4MHZ,\n\tAU8522_IF_3_25MHZ,\n};\n\nstruct au8522_led_config {\n\tu16 vsb8_strong;\n\tu16 qam64_strong;\n\tu16 qam256_strong;\n\n\tu16 gpio_output;\n\t \n\tu16 gpio_output_enable;\n\tu16 gpio_output_disable;\n\n\tu16 gpio_leds;\n\tu8 *led_states;\n\tunsigned int num_led_states;\n};\n\nstruct au8522_config {\n\t \n\tu8 demod_address;\n\n\t \n#define AU8522_TUNERLOCKING 0\n#define AU8522_DEMODLOCKING 1\n\tu8 status_mode;\n\n\tstruct au8522_led_config *led_cfg;\n\n\tenum au8522_if_freq vsb_if;\n\tenum au8522_if_freq qam_if;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_AU8522_DTV)\nextern struct dvb_frontend *au8522_attach(const struct au8522_config *config,\n\t\t\t\t\t  struct i2c_adapter *i2c);\n#else\nstatic inline\nstruct dvb_frontend *au8522_attach(const struct au8522_config *config,\n\t\t\t\t   struct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif  \n\n \nenum au8522_video_input {\n\tAU8522_COMPOSITE_CH1 = 1,\n\tAU8522_COMPOSITE_CH2,\n\tAU8522_COMPOSITE_CH3,\n\tAU8522_COMPOSITE_CH4,\n\tAU8522_COMPOSITE_CH4_SIF,\n\tAU8522_SVIDEO_CH13,\n\tAU8522_SVIDEO_CH24,\n};\n\nenum au8522_audio_input {\n\tAU8522_AUDIO_NONE,\n\tAU8522_AUDIO_SIF,\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

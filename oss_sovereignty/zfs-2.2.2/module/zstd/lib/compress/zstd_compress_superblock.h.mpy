@@ -1,0 +1,9 @@
+{
+  "module_name": "zstd_compress_superblock.h",
+  "hash_id": "21c019a632850bbdd0bd68a2255322a1d8a0d837a4f53695339af9b92e7e02a8",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/lib/compress/zstd_compress_superblock.h",
+  "human_readable_source": " \n\n#ifndef ZSTD_COMPRESS_ADVANCED_H\n#define ZSTD_COMPRESS_ADVANCED_H\n\n \n\n#include \"../zstd.h\"  \n\n \n\n \nsize_t ZSTD_compressSuperBlock(ZSTD_CCtx* zc,\n                               void* dst, size_t dstCapacity,\n                               void const* src, size_t srcSize,\n                               unsigned lastBlock);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

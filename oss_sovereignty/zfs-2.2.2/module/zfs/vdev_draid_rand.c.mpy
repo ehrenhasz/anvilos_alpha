@@ -1,0 +1,9 @@
+{
+  "module_name": "vdev_draid_rand.c",
+  "hash_id": "308ab470195bea53f586a9f98c70f4f297b230979901bfcea514f64b693046d1",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zfs/vdev_draid_rand.c",
+  "human_readable_source": " \n\n#include <sys/vdev_draid.h>\n\nstatic inline uint64_t rotl(const uint64_t x, int k)\n{\n\treturn (x << k) | (x >> (64 - k));\n}\n\nuint64_t\nvdev_draid_rand(uint64_t *s)\n{\n\tconst uint64_t s0 = s[0];\n\tuint64_t s1 = s[1];\n\tconst uint64_t result = rotl(s0 + s1, 17) + s0;\n\n\ts1 ^= s0;\n\ts[0] = rotl(s0, 49) ^ s1 ^ (s1 << 21); \n\ts[1] = rotl(s1, 28); \n\n\treturn (result);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

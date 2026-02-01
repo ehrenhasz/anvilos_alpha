@@ -1,0 +1,9 @@
+{
+  "module_name": "branch.json",
+  "hash_id": "1893c89b6590894728fe7a0d1092b7613e44f80a91e147e40ed41016e562772f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/neoverse-v1/branch.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"BR_MIS_PRED\"\n    },\n    {\n        \"ArchStdEvent\": \"BR_PRED\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "seq_oss_timer.h",
+  "hash_id": "560380b3bbe848243dbf2f24d9d7c1b794415f5b1b61c83c22792650b0ace7ed",
+  "original_prompt": "Ingested from linux-6.6.14/sound/core/seq/oss/seq_oss_timer.h",
+  "human_readable_source": " \n \n\n#ifndef __SEQ_OSS_TIMER_H\n#define __SEQ_OSS_TIMER_H\n\n#include \"seq_oss_device.h\"\n\n \nstruct seq_oss_timer {\n\tstruct seq_oss_devinfo *dp;\n\treltime_t cur_tick;\n\tint realtime;\n\tint running;\n\tint tempo, ppq;\t \n\tint oss_tempo, oss_timebase;\n};\t\n\n\nstruct seq_oss_timer *snd_seq_oss_timer_new(struct seq_oss_devinfo *dp);\nvoid snd_seq_oss_timer_delete(struct seq_oss_timer *dp);\n\nint snd_seq_oss_timer_start(struct seq_oss_timer *timer);\nint snd_seq_oss_timer_stop(struct seq_oss_timer *timer);\nint snd_seq_oss_timer_continue(struct seq_oss_timer *timer);\nint snd_seq_oss_timer_tempo(struct seq_oss_timer *timer, int value);\n#define snd_seq_oss_timer_reset  snd_seq_oss_timer_start\n\nint snd_seq_oss_timer_ioctl(struct seq_oss_timer *timer, unsigned int cmd, int __user *arg);\n\n \nstatic inline abstime_t\nsnd_seq_oss_timer_cur_tick(struct seq_oss_timer *timer)\n{\n\treturn timer->cur_tick;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

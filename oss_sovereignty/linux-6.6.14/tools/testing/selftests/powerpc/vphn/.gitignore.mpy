@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "98600c8fc6070f9aef75dd2bcc216cfc5bd47c0e6f6eebba28bea5eb77740507",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/vphn/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ntest-vphn\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

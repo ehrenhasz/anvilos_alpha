@@ -1,0 +1,9 @@
+{
+  "module_name": "fotg210.h",
+  "hash_id": "53e9c75f7ffad5c99af9899c6ecea84201b71603736054c4b5c0b32949af0437",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/fotg210/fotg210.h",
+  "human_readable_source": " \n#ifndef __FOTG210_H\n#define __FOTG210_H\n\nenum gemini_port {\n\tGEMINI_PORT_NONE = 0,\n\tGEMINI_PORT_0,\n\tGEMINI_PORT_1,\n};\n\nstruct fotg210 {\n\tstruct device *dev;\n\tstruct resource *res;\n\tvoid __iomem *base;\n\tstruct clk *pclk;\n\tstruct regmap *map;\n\tenum gemini_port port;\n};\n\nvoid fotg210_vbus(struct fotg210 *fotg, bool enable);\n\n#ifdef CONFIG_USB_FOTG210_HCD\nint fotg210_hcd_probe(struct platform_device *pdev, struct fotg210 *fotg);\nint fotg210_hcd_remove(struct platform_device *pdev);\nint fotg210_hcd_init(void);\nvoid fotg210_hcd_cleanup(void);\n#else\nstatic inline int fotg210_hcd_probe(struct platform_device *pdev,\n\t\t\t\t    struct fotg210 *fotg)\n{\n\treturn 0;\n}\nstatic inline int fotg210_hcd_remove(struct platform_device *pdev)\n{\n\treturn 0;\n}\nstatic inline int fotg210_hcd_init(void)\n{\n\treturn 0;\n}\nstatic inline void fotg210_hcd_cleanup(void)\n{\n}\n#endif\n\n#ifdef CONFIG_USB_FOTG210_UDC\nint fotg210_udc_probe(struct platform_device *pdev, struct fotg210 *fotg);\nint fotg210_udc_remove(struct platform_device *pdev);\n#else\nstatic inline int fotg210_udc_probe(struct platform_device *pdev,\n\t\t\t\t    struct fotg210 *fotg)\n{\n\treturn 0;\n}\nstatic inline int fotg210_udc_remove(struct platform_device *pdev)\n{\n\treturn 0;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

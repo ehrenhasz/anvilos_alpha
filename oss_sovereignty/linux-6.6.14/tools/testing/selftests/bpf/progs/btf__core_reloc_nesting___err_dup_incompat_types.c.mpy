@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_nesting___err_dup_incompat_types.c",
+  "hash_id": "5d16007c94b7d68f7d06e62f316e82541a6c92fbeba80e778f3e13a9ef92f836",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_dup_incompat_types.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f1(struct core_reloc_nesting___err_dup_incompat_types__1 x) {}\nvoid f2(struct core_reloc_nesting___err_dup_incompat_types__2 x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

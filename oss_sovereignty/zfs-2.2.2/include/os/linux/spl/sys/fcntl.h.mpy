@@ -1,0 +1,9 @@
+{
+  "module_name": "fcntl.h",
+  "hash_id": "c4409e1d282511e4e0b2fa136f14dad2f2cf906310298be28fc8199629e62c49",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/fcntl.h",
+  "human_readable_source": " \n\n#ifndef _SPL_FCNTL_H\n#define\t_SPL_FCNTL_H\n\n#include <asm/fcntl.h>\n\n#define\tF_FREESP 11\n\n#ifdef CONFIG_64BIT\ntypedef struct flock flock64_t;\n#else\ntypedef struct flock64 flock64_t;\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

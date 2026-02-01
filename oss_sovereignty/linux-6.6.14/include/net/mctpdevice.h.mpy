@@ -1,0 +1,9 @@
+{
+  "module_name": "mctpdevice.h",
+  "hash_id": "5dfa6494f6f3246ceb72c7693bf52d70fa43124b4e1ed36f1649b973fe1f69c1",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/mctpdevice.h",
+  "human_readable_source": " \n \n\n#ifndef __NET_MCTPDEVICE_H\n#define __NET_MCTPDEVICE_H\n\n#include <linux/list.h>\n#include <linux/types.h>\n#include <linux/refcount.h>\n\nstruct mctp_sk_key;\n\nstruct mctp_dev {\n\tstruct net_device\t*dev;\n\n\trefcount_t\t\trefs;\n\n\tunsigned int\t\tnet;\n\n\tconst struct mctp_netdev_ops *ops;\n\n\t \n\tu8\t\t\t*addrs;\n\tsize_t\t\t\tnum_addrs;\n\tspinlock_t\t\taddrs_lock;\n\n\tstruct rcu_head\t\trcu;\n};\n\nstruct mctp_netdev_ops {\n\tvoid\t\t\t(*release_flow)(struct mctp_dev *dev,\n\t\t\t\t\t\tstruct mctp_sk_key *key);\n};\n\n#define MCTP_INITIAL_DEFAULT_NET\t1\n\nstruct mctp_dev *mctp_dev_get_rtnl(const struct net_device *dev);\nstruct mctp_dev *__mctp_dev_get(const struct net_device *dev);\n\nint mctp_register_netdev(struct net_device *dev,\n\t\t\t const struct mctp_netdev_ops *ops);\nvoid mctp_unregister_netdev(struct net_device *dev);\n\nvoid mctp_dev_hold(struct mctp_dev *mdev);\nvoid mctp_dev_put(struct mctp_dev *mdev);\n\nvoid mctp_dev_set_key(struct mctp_dev *dev, struct mctp_sk_key *key);\nvoid mctp_dev_release_key(struct mctp_dev *dev, struct mctp_sk_key *key);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

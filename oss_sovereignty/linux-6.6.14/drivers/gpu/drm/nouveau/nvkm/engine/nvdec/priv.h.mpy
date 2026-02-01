@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "6de891c0cf3592d5a77fa08095eb63456dd47723f06e1cdc11c4899c910a0b53",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/nvdec/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_NVDEC_PRIV_H__\n#define __NVKM_NVDEC_PRIV_H__\n#include <engine/nvdec.h>\n\nstruct nvkm_nvdec_func {\n\tconst struct nvkm_falcon_func *flcn;\n};\n\nstruct nvkm_nvdec_fwif {\n\tint version;\n\tint (*load)(struct nvkm_nvdec *, int ver,\n\t\t    const struct nvkm_nvdec_fwif *);\n\tconst struct nvkm_nvdec_func *func;\n};\n\nint nvkm_nvdec_new_(const struct nvkm_nvdec_fwif *fwif, struct nvkm_device *,\n\t\t    enum nvkm_subdev_type, int, u32 addr, struct nvkm_nvdec **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

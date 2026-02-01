@@ -1,0 +1,9 @@
+{
+  "module_name": "objpolyiter.c",
+  "hash_id": "e44e1688f19f138c707b898e9ec506c553ec27c86e5a5b0b109418e9d3851c66",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/objpolyiter.c",
+  "human_readable_source": " \n\n#include <stdlib.h>\n\n#include \"py/runtime.h\"\n\n\n\n\n\n\n\ntypedef struct _mp_obj_polymorph_iter_t {\n    mp_obj_base_t base;\n    mp_fun_1_t iternext;\n} mp_obj_polymorph_iter_t;\n\nstatic mp_obj_t polymorph_it_iternext(mp_obj_t self_in) {\n    mp_obj_polymorph_iter_t *self = MP_OBJ_TO_PTR(self_in);\n    \n    return self->iternext(self_in);\n}\n\nMP_DEFINE_CONST_OBJ_TYPE(\n    mp_type_polymorph_iter,\n    MP_QSTR_iterator,\n    MP_TYPE_FLAG_ITER_IS_ITERNEXT,\n    iter, polymorph_it_iternext\n    );\n\n#if MICROPY_ENABLE_FINALISER\n\n\n\n\n\ntypedef struct _mp_obj_polymorph_iter_with_finaliser_t {\n    mp_obj_base_t base;\n    mp_fun_1_t iternext;\n    mp_fun_1_t finaliser;\n} mp_obj_polymorph_with_finaliser_iter_t;\n\nstatic mp_obj_t mp_obj_polymorph_iter_del(mp_obj_t self_in) {\n    mp_obj_polymorph_with_finaliser_iter_t *self = MP_OBJ_TO_PTR(self_in);\n    \n    return self->finaliser(self_in);\n}\nstatic MP_DEFINE_CONST_FUN_OBJ_1(mp_obj_polymorph_iter_del_obj, mp_obj_polymorph_iter_del);\n\nstatic const mp_rom_map_elem_t mp_obj_polymorph_iter_locals_dict_table[] = {\n    { MP_ROM_QSTR(MP_QSTR___del__), MP_ROM_PTR(&mp_obj_polymorph_iter_del_obj) },\n};\nstatic MP_DEFINE_CONST_DICT(mp_obj_polymorph_iter_locals_dict, mp_obj_polymorph_iter_locals_dict_table);\n\nMP_DEFINE_CONST_OBJ_TYPE(\n    mp_type_polymorph_iter_with_finaliser,\n    MP_QSTR_iterator,\n    MP_TYPE_FLAG_ITER_IS_ITERNEXT,\n    iter, polymorph_it_iternext,\n    locals_dict, &mp_obj_polymorph_iter_locals_dict\n    );\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

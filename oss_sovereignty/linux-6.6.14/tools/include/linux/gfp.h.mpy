@@ -1,0 +1,9 @@
+{
+  "module_name": "gfp.h",
+  "hash_id": "2e0b4e851067169c5f8c790585a5077acaa126dbbaeb6509f06e04cfaf6db8ca",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/gfp.h",
+  "human_readable_source": " \n#ifndef _TOOLS_INCLUDE_LINUX_GFP_H\n#define _TOOLS_INCLUDE_LINUX_GFP_H\n\n#include <linux/types.h>\n#include <linux/gfp_types.h>\n\nstatic inline bool gfpflags_allow_blocking(const gfp_t gfp_flags)\n{\n\treturn !!(gfp_flags & __GFP_DIRECT_RECLAIM);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

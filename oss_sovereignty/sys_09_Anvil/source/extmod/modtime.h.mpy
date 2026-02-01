@@ -1,0 +1,9 @@
+{
+  "module_name": "modtime.h",
+  "hash_id": "6f229f28a332f42a0bebbf3afabb6eef17c549a07b8b3ed49d94eff7e1640adf",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/modtime.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_EXTMOD_MODUTIME_H\n#define MICROPY_INCLUDED_EXTMOD_MODUTIME_H\n\n#include \"py/obj.h\"\n\nMP_DECLARE_CONST_FUN_OBJ_1(mp_time_mktime_obj);\nMP_DECLARE_CONST_FUN_OBJ_1(mp_time_sleep_obj);\nMP_DECLARE_CONST_FUN_OBJ_1(mp_time_sleep_ms_obj);\nMP_DECLARE_CONST_FUN_OBJ_1(mp_time_sleep_us_obj);\nMP_DECLARE_CONST_FUN_OBJ_0(mp_time_ticks_ms_obj);\nMP_DECLARE_CONST_FUN_OBJ_0(mp_time_ticks_us_obj);\nMP_DECLARE_CONST_FUN_OBJ_0(mp_time_ticks_cpu_obj);\nMP_DECLARE_CONST_FUN_OBJ_2(mp_time_ticks_diff_obj);\nMP_DECLARE_CONST_FUN_OBJ_2(mp_time_ticks_add_obj);\nMP_DECLARE_CONST_FUN_OBJ_0(mp_time_time_ns_obj);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_virtchnl_fdir.h",
+  "hash_id": "aef41d2e6278ba5aef13bdd3402a0a42b310a5111b7b321186de83031051c301",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.h",
+  "human_readable_source": " \n \n\n#ifndef _ICE_VIRTCHNL_FDIR_H_\n#define _ICE_VIRTCHNL_FDIR_H_\n\nstruct ice_vf;\nstruct ice_pf;\nstruct ice_vsi;\n\nenum ice_fdir_ctx_stat {\n\tICE_FDIR_CTX_READY,\n\tICE_FDIR_CTX_IRQ,\n\tICE_FDIR_CTX_TIMEOUT,\n};\n\nstruct ice_vf_fdir_ctx {\n\tstruct timer_list rx_tmr;\n\tenum virtchnl_ops v_opcode;\n\tenum ice_fdir_ctx_stat stat;\n\tunion ice_32b_rx_flex_desc rx_desc;\n#define ICE_VF_FDIR_CTX_VALID\t\tBIT(0)\n\tu32 flags;\n\n\tvoid *conf;\n};\n\n \nstruct ice_vf_fdir {\n\tu16 fdir_fltr_cnt[ICE_FLTR_PTYPE_MAX][ICE_FD_HW_SEG_MAX];\n\tint prof_entry_cnt[ICE_FLTR_PTYPE_MAX][ICE_FD_HW_SEG_MAX];\n\tstruct ice_fd_hw_prof **fdir_prof;\n\n\tstruct idr fdir_rule_idr;\n\tstruct list_head fdir_rule_list;\n\n\tspinlock_t ctx_lock;  \n\tstruct ice_vf_fdir_ctx ctx_irq;\n\tstruct ice_vf_fdir_ctx ctx_done;\n};\n\n#ifdef CONFIG_PCI_IOV\nint ice_vc_add_fdir_fltr(struct ice_vf *vf, u8 *msg);\nint ice_vc_del_fdir_fltr(struct ice_vf *vf, u8 *msg);\nvoid ice_vf_fdir_init(struct ice_vf *vf);\nvoid ice_vf_fdir_exit(struct ice_vf *vf);\nvoid\nice_vc_fdir_irq_handler(struct ice_vsi *ctrl_vsi,\n\t\t\tunion ice_32b_rx_flex_desc *rx_desc);\nvoid ice_flush_fdir_ctx(struct ice_pf *pf);\n#else\nstatic inline void\nice_vc_fdir_irq_handler(struct ice_vsi *ctrl_vsi, union ice_32b_rx_flex_desc *rx_desc) { }\nstatic inline void ice_flush_fdir_ctx(struct ice_pf *pf) { }\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7517ef3a51e631752f75c4ba2dc1f7056ec9585fc6834372ca6ccc0e010be7df",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)\n#\n\nifeq ($(CONFIG_X86_32),y)\n\tBITS := 32\nelse\n\tBITS := 64\nendif\n\nobj-y = bugs_$(BITS).o delay.o fault.o ldt.o \\\n\tptrace_$(BITS).o ptrace_user.o setjmp_$(BITS).o signal.o \\\n\tstub_$(BITS).o stub_segv.o \\\n\tsys_call_table_$(BITS).o sysrq_$(BITS).o tls_$(BITS).o \\\n\tmem_$(BITS).o subarch.o os-Linux/\n\nifeq ($(CONFIG_X86_32),y)\n\nobj-y += syscalls_32.o\nobj-$(CONFIG_ELF_CORE) += elfcore.o\n\nsubarch-y = ../lib/string_32.o ../lib/atomic64_32.o ../lib/atomic64_cx8_32.o\nsubarch-y += ../lib/cmpxchg8b_emu.o ../lib/atomic64_386_32.o\nsubarch-y += ../lib/checksum_32.o\nsubarch-y += ../kernel/sys_ia32.o\n\nelse\n\nobj-y += syscalls_64.o vdso/\n\nsubarch-y = ../lib/csum-partial_64.o ../lib/memcpy_64.o \\\n\t../lib/memmove_64.o ../lib/memset_64.o\nsubarch-$(CONFIG_PREEMPTION) += ../entry/thunk_64.o\n\nendif\n\nsubarch-$(CONFIG_MODULES) += ../kernel/module.o\n\nUSER_OBJS := bugs_$(BITS).o ptrace_user.o fault.o\n\n$(obj)/user-offsets.s: c_flags = -Wp,-MD,$(depfile) $(USER_CFLAGS) \\\n\t-Iarch/x86/include/generated\ntargets += user-offsets.s\n\ninclude/generated/user_constants.h: $(obj)/user-offsets.s FORCE\n\t$(call filechk,offsets,__USER_CONSTANT_H__)\n\nUNPROFILE_OBJS := stub_segv.o\nCFLAGS_stub_segv.o := $(CFLAGS_NO_HARDENING)\n\ninclude $(srctree)/arch/um/scripts/Makefile.rules\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

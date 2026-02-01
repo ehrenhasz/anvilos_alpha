@@ -1,0 +1,9 @@
+{
+  "module_name": "tables.h",
+  "hash_id": "9797cc372832be3ebf5683f7d9b8b76ddc71db07a9227bb43105ce31e971db35",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/b43/tables.h",
+  "human_readable_source": " \n#ifndef B43_TABLES_H_\n#define B43_TABLES_H_\n\n#define B43_TAB_ROTOR_SIZE\t53\nextern const u32 b43_tab_rotor[];\n#define B43_TAB_RETARD_SIZE\t53\nextern const u32 b43_tab_retard[];\n#define B43_TAB_FINEFREQA_SIZE\t256\nextern const u16 b43_tab_finefreqa[];\n#define B43_TAB_FINEFREQG_SIZE\t256\nextern const u16 b43_tab_finefreqg[];\n#define B43_TAB_NOISEA2_SIZE\t8\nextern const u16 b43_tab_noisea2[];\n#define B43_TAB_NOISEA3_SIZE\t8\nextern const u16 b43_tab_noisea3[];\n#define B43_TAB_NOISEG1_SIZE\t8\nextern const u16 b43_tab_noiseg1[];\n#define B43_TAB_NOISEG2_SIZE\t8\nextern const u16 b43_tab_noiseg2[];\n#define B43_TAB_NOISESCALE_SIZE\t27\nextern const u16 b43_tab_noisescalea2[];\nextern const u16 b43_tab_noisescalea3[];\nextern const u16 b43_tab_noisescaleg1[];\nextern const u16 b43_tab_noisescaleg2[];\nextern const u16 b43_tab_noisescaleg3[];\n#define B43_TAB_SIGMASQR_SIZE\t53\nextern const u16 b43_tab_sigmasqr1[];\nextern const u16 b43_tab_sigmasqr2[];\n#define B43_TAB_RSSIAGC1_SIZE\t16\nextern const u16 b43_tab_rssiagc1[];\n#define B43_TAB_RSSIAGC2_SIZE\t48\nextern const u16 b43_tab_rssiagc2[];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

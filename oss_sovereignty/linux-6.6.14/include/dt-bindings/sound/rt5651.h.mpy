@@ -1,0 +1,9 @@
+{
+  "module_name": "rt5651.h",
+  "hash_id": "819aa894a6a2c6cb1a088b306cf5f2d0a71abcd42123cd4bffa1f46457c7393b",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/sound/rt5651.h",
+  "human_readable_source": " \n#ifndef __DT_RT5651_H\n#define __DT_RT5651_H\n\n#define RT5651_JD_NULL\t\t\t0\n#define RT5651_JD1_1\t\t\t1\n#define RT5651_JD1_2\t\t\t2\n#define RT5651_JD2\t\t\t3\n\n#define RT5651_OVCD_SF_0P5\t\t0\n#define RT5651_OVCD_SF_0P75\t\t1\n#define RT5651_OVCD_SF_1P0\t\t2\n#define RT5651_OVCD_SF_1P5\t\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

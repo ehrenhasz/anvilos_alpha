@@ -1,0 +1,9 @@
+{
+  "module_name": "fls.h",
+  "hash_id": "405ad2667f1903f90ce95f2570bee6c711d1b6b51b9b4066a268731a491ed8d9",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/bitops/fls.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_BITOPS_FLS_H_\n#define _ASM_GENERIC_BITOPS_FLS_H_\n\n \n\nstatic __always_inline int fls(unsigned int x)\n{\n\tint r = 32;\n\n\tif (!x)\n\t\treturn 0;\n\tif (!(x & 0xffff0000u)) {\n\t\tx <<= 16;\n\t\tr -= 16;\n\t}\n\tif (!(x & 0xff000000u)) {\n\t\tx <<= 8;\n\t\tr -= 8;\n\t}\n\tif (!(x & 0xf0000000u)) {\n\t\tx <<= 4;\n\t\tr -= 4;\n\t}\n\tif (!(x & 0xc0000000u)) {\n\t\tx <<= 2;\n\t\tr -= 2;\n\t}\n\tif (!(x & 0x80000000u)) {\n\t\tx <<= 1;\n\t\tr -= 1;\n\t}\n\treturn r;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

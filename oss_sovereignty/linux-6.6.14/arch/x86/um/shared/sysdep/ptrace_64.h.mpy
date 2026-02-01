@@ -1,0 +1,9 @@
+{
+  "module_name": "ptrace_64.h",
+  "hash_id": "db1b9b2f7f5e1ea0291f14d5a58f045633f3ee529bd39b222437032f03e87226",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/shared/sysdep/ptrace_64.h",
+  "human_readable_source": " \n\n#ifndef __SYSDEP_X86_64_PTRACE_H\n#define __SYSDEP_X86_64_PTRACE_H\n\n#define MAX_FP_NR HOST_FP_SIZE\n\n#define REGS_R8(r) ((r)[HOST_R8])\n#define REGS_R9(r) ((r)[HOST_R9])\n#define REGS_R10(r) ((r)[HOST_R10])\n#define REGS_R11(r) ((r)[HOST_R11])\n#define REGS_R12(r) ((r)[HOST_R12])\n#define REGS_R13(r) ((r)[HOST_R13])\n#define REGS_R14(r) ((r)[HOST_R14])\n#define REGS_R15(r) ((r)[HOST_R15])\n\n#define HOST_FS_BASE 21\n#define HOST_GS_BASE 22\n#define HOST_DS 23\n#define HOST_ES 24\n#define HOST_FS 25\n#define HOST_GS 26\n\n \n#ifndef FS_BASE\n \n#define FS_BASE (HOST_FS_BASE * sizeof(long))\n#define GS_BASE (HOST_GS_BASE * sizeof(long))\n#define DS (HOST_DS * sizeof(long))\n#define ES (HOST_ES * sizeof(long))\n#define FS (HOST_FS * sizeof(long))\n#define GS (HOST_GS * sizeof(long))\n#endif\n\n#define UPT_R8(r) REGS_R8((r)->gp)\n#define UPT_R9(r) REGS_R9((r)->gp)\n#define UPT_R10(r) REGS_R10((r)->gp)\n#define UPT_R11(r) REGS_R11((r)->gp)\n#define UPT_R12(r) REGS_R12((r)->gp)\n#define UPT_R13(r) REGS_R13((r)->gp)\n#define UPT_R14(r) REGS_R14((r)->gp)\n#define UPT_R15(r) REGS_R15((r)->gp)\n\n#define UPT_SYSCALL_ARG1(r) UPT_DI(r)\n#define UPT_SYSCALL_ARG2(r) UPT_SI(r)\n#define UPT_SYSCALL_ARG3(r) UPT_DX(r)\n#define UPT_SYSCALL_ARG4(r) UPT_R10(r)\n#define UPT_SYSCALL_ARG5(r) UPT_R8(r)\n#define UPT_SYSCALL_ARG6(r) UPT_R9(r)\n\nextern void arch_init_registers(int pid);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

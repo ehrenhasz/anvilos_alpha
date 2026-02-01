@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8bbdeb93a0d3f7fc2174e54371c5b9199c4bf955910597af027c80c4b01efc8f",
+  "original_prompt": "Ingested from linux-6.6.14/net/nfc/nci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux NFC NCI layer.\n#\n\nobj-$(CONFIG_NFC_NCI) += nci.o\n\nnci-objs := core.o data.o lib.o ntf.o rsp.o hci.o\n\nnci_spi-y += spi.o\nobj-$(CONFIG_NFC_NCI_SPI) += nci_spi.o\n\nnci_uart-y += uart.o\nobj-$(CONFIG_NFC_NCI_UART) += nci_uart.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

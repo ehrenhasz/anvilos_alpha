@@ -1,0 +1,9 @@
+{
+  "module_name": "core.h",
+  "hash_id": "edfb04ade03cfdcd7ff2cd3d6b862a8cfae039731291cbe6141504a7adf206fc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/mt6397/core.h",
+  "human_readable_source": " \n \n\n#ifndef __MFD_MT6397_CORE_H__\n#define __MFD_MT6397_CORE_H__\n\n#include <linux/mutex.h>\n#include <linux/notifier.h>\n\nenum chip_id {\n\tMT6323_CHIP_ID = 0x23,\n\tMT6331_CHIP_ID = 0x20,\n\tMT6332_CHIP_ID = 0x20,\n\tMT6357_CHIP_ID = 0x57,\n\tMT6358_CHIP_ID = 0x58,\n\tMT6359_CHIP_ID = 0x59,\n\tMT6366_CHIP_ID = 0x66,\n\tMT6391_CHIP_ID = 0x91,\n\tMT6397_CHIP_ID = 0x97,\n};\n\nenum mt6397_irq_numbers {\n\tMT6397_IRQ_SPKL_AB = 0,\n\tMT6397_IRQ_SPKR_AB,\n\tMT6397_IRQ_SPKL,\n\tMT6397_IRQ_SPKR,\n\tMT6397_IRQ_BAT_L,\n\tMT6397_IRQ_BAT_H,\n\tMT6397_IRQ_FG_BAT_L,\n\tMT6397_IRQ_FG_BAT_H,\n\tMT6397_IRQ_WATCHDOG,\n\tMT6397_IRQ_PWRKEY,\n\tMT6397_IRQ_THR_L,\n\tMT6397_IRQ_THR_H,\n\tMT6397_IRQ_VBATON_UNDET,\n\tMT6397_IRQ_BVALID_DET,\n\tMT6397_IRQ_CHRDET,\n\tMT6397_IRQ_OV,\n\tMT6397_IRQ_LDO,\n\tMT6397_IRQ_HOMEKEY,\n\tMT6397_IRQ_ACCDET,\n\tMT6397_IRQ_AUDIO,\n\tMT6397_IRQ_RTC,\n\tMT6397_IRQ_PWRKEY_RSTB,\n\tMT6397_IRQ_HDMI_SIFM,\n\tMT6397_IRQ_HDMI_CEC,\n\tMT6397_IRQ_VCA15,\n\tMT6397_IRQ_VSRMCA15,\n\tMT6397_IRQ_VCORE,\n\tMT6397_IRQ_VGPU,\n\tMT6397_IRQ_VIO18,\n\tMT6397_IRQ_VPCA7,\n\tMT6397_IRQ_VSRMCA7,\n\tMT6397_IRQ_VDRM,\n\tMT6397_IRQ_NR,\n};\n\nstruct mt6397_chip {\n\tstruct device *dev;\n\tstruct regmap *regmap;\n\tstruct notifier_block pm_nb;\n\tint irq;\n\tstruct irq_domain *irq_domain;\n\tstruct mutex irqlock;\n\tu16 wake_mask[2];\n\tu16 irq_masks_cur[2];\n\tu16 irq_masks_cache[2];\n\tu16 int_con[2];\n\tu16 int_status[2];\n\tu16 chip_id;\n\tvoid *irq_data;\n};\n\nint mt6358_irq_init(struct mt6397_chip *chip);\nint mt6397_irq_init(struct mt6397_chip *chip);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

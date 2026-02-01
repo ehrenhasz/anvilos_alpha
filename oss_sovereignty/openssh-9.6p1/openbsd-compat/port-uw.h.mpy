@@ -1,0 +1,9 @@
+{
+  "module_name": "port-uw.h",
+  "hash_id": "83bd6718d194b8a950f3605edf76600bf2da9434f7667face1dfa2301cb5212b",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/port-uw.h",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#ifdef USE_LIBIAF\nchar * get_iaf_password(struct passwd *pw);\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

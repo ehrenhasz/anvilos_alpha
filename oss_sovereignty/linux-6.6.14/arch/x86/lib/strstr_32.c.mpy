@@ -1,0 +1,9 @@
+{
+  "module_name": "strstr_32.c",
+  "hash_id": "99065d26327f1d53524462362164c465c8299103a754b140915b8acc15998de1",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/lib/strstr_32.c",
+  "human_readable_source": "\n#include <linux/string.h>\n#include <linux/export.h>\n\nchar *strstr(const char *cs, const char *ct)\n{\nint\td0, d1;\nregister char *__res;\n__asm__ __volatile__(\n\t\"movl %6,%%edi\\n\\t\"\n\t\"repne\\n\\t\"\n\t\"scasb\\n\\t\"\n\t\"notl %%ecx\\n\\t\"\n\t\"decl %%ecx\\n\\t\"\t \n\t\"movl %%ecx,%%edx\\n\"\n\t\"1:\\tmovl %6,%%edi\\n\\t\"\n\t\"movl %%esi,%%eax\\n\\t\"\n\t\"movl %%edx,%%ecx\\n\\t\"\n\t\"repe\\n\\t\"\n\t\"cmpsb\\n\\t\"\n\t\"je 2f\\n\\t\"\t\t \n\t\"xchgl %%eax,%%esi\\n\\t\"\n\t\"incl %%esi\\n\\t\"\n\t\"cmpb $0,-1(%%eax)\\n\\t\"\n\t\"jne 1b\\n\\t\"\n\t\"xorl %%eax,%%eax\\n\\t\"\n\t\"2:\"\n\t: \"=a\" (__res), \"=&c\" (d0), \"=&S\" (d1)\n\t: \"0\" (0), \"1\" (0xffffffff), \"2\" (cs), \"g\" (ct)\n\t: \"dx\", \"di\");\nreturn __res;\n}\nEXPORT_SYMBOL(strstr);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

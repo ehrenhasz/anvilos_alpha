@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_hti.h",
+  "hash_id": "e0f0500750369ec2739d0b2d9bff2f8685e8c06cc2210bc41bc343a02e6bec28",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_hti.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_HTI_H__\n#define __INTEL_HTI_H__\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\nenum phy;\n\nvoid intel_hti_init(struct drm_i915_private *i915);\nbool intel_hti_uses_phy(struct drm_i915_private *i915, enum phy phy);\nu32 intel_hti_dpll_mask(struct drm_i915_private *i915);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

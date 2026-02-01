@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5d77c195004c135312301d95592006d8156755647990516b274b9dfad9cf57a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/psci/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig ARM_PSCI_FW\n\tbool\n\nconfig ARM_PSCI_CHECKER\n\tbool \"ARM PSCI checker\"\n\tdepends on ARM_PSCI_FW && HOTPLUG_CPU && CPU_IDLE && !TORTURE_TEST\n\thelp\n\t  Run the PSCI checker during startup. This checks that hotplug and\n\t  suspend operations work correctly when using PSCI.\n\n\t  The torture tests may interfere with the PSCI checker by turning CPUs\n\t  on and off through hotplug, so for now torture tests and PSCI checker\n\t  are mutually exclusive.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

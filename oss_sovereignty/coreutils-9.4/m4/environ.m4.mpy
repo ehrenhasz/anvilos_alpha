@@ -1,0 +1,9 @@
+{
+  "module_name": "environ.m4",
+  "hash_id": "ad896687f0986f997d4f05f421291b66de33aae99a3bae16bb3fb2a2db016c58",
+  "original_prompt": "Ingested from coreutils-9.4/m4/environ.m4",
+  "human_readable_source": "# environ.m4 serial 8\ndnl Copyright (C) 2001-2004, 2006-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN_ONCE([gl_ENVIRON],\n[\n  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])\n  dnl Persuade glibc <unistd.h> to declare environ.\n  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])\n\n  AC_CHECK_HEADERS_ONCE([unistd.h])\n  gt_CHECK_VAR_DECL(\n    [#if HAVE_UNISTD_H\n     #include <unistd.h>\n     #endif\n     /* mingw, BeOS, Haiku declare environ in <stdlib.h>, not in <unistd.h>.  */\n     #include <stdlib.h>\n    ],\n    [environ])\n  if test $gt_cv_var_environ_declaration != yes; then\n    HAVE_DECL_ENVIRON=0\n  fi\n])\n\n# Check if a variable is properly declared.\n# gt_CHECK_VAR_DECL(includes,variable)\nAC_DEFUN([gt_CHECK_VAR_DECL],\n[\n  define([gt_cv_var], [gt_cv_var_]$2[_declaration])\n  AC_CACHE_CHECK([if $2 is properly declared], [gt_cv_var],\n    [AC_COMPILE_IFELSE(\n       [AC_LANG_PROGRAM(\n          [[$1\n            typedef struct { int foo; } foo_t;\n            extern foo_t $2;]],\n          [[$2.foo = 1;]])],\n       [gt_cv_var=no],\n       [gt_cv_var=yes])])\n  if test $gt_cv_var = yes; then\n    AC_DEFINE([HAVE_]m4_translit($2, [a-z], [A-Z])[_DECL], 1,\n              [Define if you have the declaration of $2.])\n  fi\n  undefine([gt_cv_var])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

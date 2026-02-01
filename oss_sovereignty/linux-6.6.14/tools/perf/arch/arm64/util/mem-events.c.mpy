@@ -1,0 +1,9 @@
+{
+  "module_name": "mem-events.c",
+  "hash_id": "a72f4553505daf5b0772d4a7b7f82121a4aae329cb708b61a68ee7d2ef8af093",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arm64/util/mem-events.c",
+  "human_readable_source": "\n#include \"map_symbol.h\"\n#include \"mem-events.h\"\n\n#define E(t, n, s) { .tag = t, .name = n, .sysfs_name = s }\n\nstatic struct perf_mem_event perf_mem_events[PERF_MEM_EVENTS__MAX] = {\n\tE(\"spe-load\",\t\"arm_spe_0/ts_enable=1,pa_enable=1,load_filter=1,store_filter=0,min_latency=%u/\",\t\"arm_spe_0\"),\n\tE(\"spe-store\",\t\"arm_spe_0/ts_enable=1,pa_enable=1,load_filter=0,store_filter=1/\",\t\t\t\"arm_spe_0\"),\n\tE(\"spe-ldst\",\t\"arm_spe_0/ts_enable=1,pa_enable=1,load_filter=1,store_filter=1,min_latency=%u/\",\t\"arm_spe_0\"),\n};\n\nstatic char mem_ev_name[100];\n\nstruct perf_mem_event *perf_mem_events__ptr(int i)\n{\n\tif (i >= PERF_MEM_EVENTS__MAX)\n\t\treturn NULL;\n\n\treturn &perf_mem_events[i];\n}\n\nconst char *perf_mem_events__name(int i, const char *pmu_name __maybe_unused)\n{\n\tstruct perf_mem_event *e = perf_mem_events__ptr(i);\n\n\tif (i >= PERF_MEM_EVENTS__MAX)\n\t\treturn NULL;\n\n\tif (i == PERF_MEM_EVENTS__LOAD || i == PERF_MEM_EVENTS__LOAD_STORE)\n\t\tscnprintf(mem_ev_name, sizeof(mem_ev_name),\n\t\t\t  e->name, perf_mem_events__loads_ldlat);\n\telse  \n\t\tscnprintf(mem_ev_name, sizeof(mem_ev_name), e->name);\n\n\treturn mem_ev_name;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "25662d8dd2b8eddaacd52d8ff1569491e6c1b486b9aeffc854e2a2510e9175f8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sprd/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SPRD_COMMON_CLK\n\ttristate \"Clock support for Spreadtrum SoCs\"\n\tdepends on ARCH_SPRD || COMPILE_TEST\n\tdefault ARCH_SPRD\n\tselect REGMAP_MMIO\n\nif SPRD_COMMON_CLK\n\n# SoC Drivers\n\nconfig SPRD_SC9860_CLK\n\ttristate \"Support for the Spreadtrum SC9860 clocks\"\n\tdepends on (ARM64 && ARCH_SPRD) || COMPILE_TEST\n\tdefault ARM64 && ARCH_SPRD\n\nconfig SPRD_SC9863A_CLK\n\ttristate \"Support for the Spreadtrum SC9863A clocks\"\n\tdepends on (ARM64 && ARCH_SPRD) || COMPILE_TEST\n\tdefault ARM64 && ARCH_SPRD\n\thelp\n\t  Support for the global clock controller on sc9863a devices.\n\t  Say Y if you want to use peripheral devices on sc9863a SoC.\n\nconfig SPRD_UMS512_CLK\n\ttristate \"Support for the Spreadtrum UMS512 clocks\"\n\tdepends on (ARM64 && ARCH_SPRD) || COMPILE_TEST\n\tdefault ARM64 && ARCH_SPRD\n\thelp\n\t  Support for the global clock controller on ums512 devices.\n\t  Say Y if you want to use peripheral devices on ums512 SoC.\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

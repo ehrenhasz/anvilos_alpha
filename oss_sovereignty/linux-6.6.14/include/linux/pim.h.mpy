@@ -1,0 +1,9 @@
+{
+  "module_name": "pim.h",
+  "hash_id": "dc18cd4731d29234cf3d428759b252c15109de30baddb51f0f6e43ecae6a8f6c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pim.h",
+  "human_readable_source": " \n#ifndef __LINUX_PIM_H\n#define __LINUX_PIM_H\n\n#include <linux/skbuff.h>\n#include <asm/byteorder.h>\n\n \n#define PIM_V1_VERSION\t\tcpu_to_be32(0x10000000)\n#define PIM_V1_REGISTER\t\t1\n\n \n#define PIM_VERSION\t\t2\n\n \nenum {\n\tPIM_TYPE_HELLO,\n\tPIM_TYPE_REGISTER,\n\tPIM_TYPE_REGISTER_STOP,\n\tPIM_TYPE_JOIN_PRUNE,\n\tPIM_TYPE_BOOTSTRAP,\n\tPIM_TYPE_ASSERT,\n\tPIM_TYPE_GRAFT,\n\tPIM_TYPE_GRAFT_ACK,\n\tPIM_TYPE_CANDIDATE_RP_ADV\n};\n\n#define PIM_NULL_REGISTER\tcpu_to_be32(0x40000000)\n\n \nstruct pimhdr {\n\t__u8\ttype;\n\t__u8\treserved;\n\t__be16\tcsum;\n};\n\n \nstruct pimreghdr {\n\t__u8\ttype;\n\t__u8\treserved;\n\t__be16\tcsum;\n\t__be32\tflags;\n};\n\nint pim_rcv_v1(struct sk_buff *skb);\n\nstatic inline bool ipmr_pimsm_enabled(void)\n{\n\treturn IS_BUILTIN(CONFIG_IP_PIMSM_V1) || IS_BUILTIN(CONFIG_IP_PIMSM_V2);\n}\n\nstatic inline struct pimhdr *pim_hdr(const struct sk_buff *skb)\n{\n\treturn (struct pimhdr *)skb_transport_header(skb);\n}\n\nstatic inline u8 pim_hdr_version(const struct pimhdr *pimhdr)\n{\n\treturn pimhdr->type >> 4;\n}\n\nstatic inline u8 pim_hdr_type(const struct pimhdr *pimhdr)\n{\n\treturn pimhdr->type & 0xf;\n}\n\n \nstatic inline bool pim_ipv4_all_pim_routers(__be32 addr)\n{\n\treturn addr == htonl(0xE000000D);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

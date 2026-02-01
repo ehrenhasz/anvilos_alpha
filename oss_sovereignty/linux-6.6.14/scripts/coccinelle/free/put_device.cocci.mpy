@@ -1,0 +1,9 @@
+{
+  "module_name": "put_device.cocci",
+  "hash_id": "fc476780aeae8ec8fd82a2cc3379e526e3b2a1b05a1c4c6f505a3e8d3e0b5f81",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/free/put_device.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/// Find missing put_device for every of_find_device_by_node.\n///\n// Confidence: Moderate\n// Copyright: (C) 2018-2019 Wen Yang, ZTE.\n// Comments:\n// Options: --no-includes --include-headers\n\nvirtual report\nvirtual org\n\n@search exists@\nlocal idexpression id;\nexpression x,e,e1;\nposition p1,p2;\ntype T,T1,T2,T3;\n@@\n\nid = of_find_device_by_node@p1(x)\n... when != e = id\nif (id == NULL || ...) { ... return ...; }\n... when != put_device(&id->dev)\n    when != platform_device_put(id)\n    when != if (id) { ... put_device(&id->dev) ... }\n    when != e1 = (T)id\n    when != e1 = (T)(&id->dev)\n    when != e1 = get_device(&id->dev)\n    when != e1 = (T1)platform_get_drvdata(id)\n(\n  return\n(    id\n|    (T2)dev_get_drvdata(&id->dev)\n|    (T3)platform_get_drvdata(id)\n|    &id->dev\n);\n| return@p2 ...;\n)\n\n@script:python depends on report@\np1 << search.p1;\np2 << search.p2;\n@@\n\ncoccilib.report.print_report(p2[0],\n                             \"ERROR: missing put_device; call of_find_device_by_node on line \"\n                             + p1[0].line\n                             + \", but without a corresponding object release within this function.\")\n\n@script:python depends on org@\np1 << search.p1;\np2 << search.p2;\n@@\n\ncocci.print_main(\"of_find_device_by_node\", p1)\ncocci.print_secs(\"needed put_device\", p2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

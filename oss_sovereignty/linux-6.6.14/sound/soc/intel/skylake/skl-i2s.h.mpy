@@ -1,0 +1,9 @@
+{
+  "module_name": "skl-i2s.h",
+  "hash_id": "9029459611cf888d55b347bdbba6fd4ba4e16fd7c64c3589460e7cb8ab67f464",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/skylake/skl-i2s.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_SOC_SKL_I2S_H\n#define __SOUND_SOC_SKL_I2S_H\n\n#define SKL_I2S_MAX_TIME_SLOTS\t\t8\n#define SKL_MCLK_DIV_CLK_SRC_MASK\tGENMASK(17, 16)\n\n#define SKL_MNDSS_DIV_CLK_SRC_MASK\tGENMASK(21, 20)\n#define SKL_SHIFT(x)\t\t\t(ffs(x) - 1)\n#define SKL_MCLK_DIV_RATIO_MASK\t\tGENMASK(11, 0)\n\n#define is_legacy_blob(x) (x.signature != 0xEE)\n#define ext_to_legacy_blob(i2s_config_blob_ext) \\\n\t((struct skl_i2s_config_blob_legacy *) i2s_config_blob_ext)\n\n#define get_clk_src(mclk, mask) \\\n\t\t((mclk.mdivctrl & mask) >> SKL_SHIFT(mask))\nstruct skl_i2s_config {\n\tu32 ssc0;\n\tu32 ssc1;\n\tu32 sscto;\n\tu32 sspsp;\n\tu32 sstsa;\n\tu32 ssrsa;\n\tu32 ssc2;\n\tu32 sspsp2;\n\tu32 ssc3;\n\tu32 ssioc;\n} __packed;\n\nstruct skl_i2s_config_mclk {\n\tu32 mdivctrl;\n\tu32 mdivr;\n};\n\nstruct skl_i2s_config_mclk_ext {\n\tu32 mdivctrl;\n\tu32 mdivr_count;\n\tu32 mdivr[];\n} __packed;\n\nstruct skl_i2s_config_blob_signature {\n\tu32 minor_ver : 8;\n\tu32 major_ver : 8;\n\tu32 resvdz : 8;\n\tu32 signature : 8;\n} __packed;\n\nstruct skl_i2s_config_blob_header {\n\tstruct skl_i2s_config_blob_signature sig;\n\tu32 size;\n};\n\n \nstruct skl_i2s_config_blob_legacy {\n\tu32 gtw_attr;\n\tu32 tdm_ts_group[SKL_I2S_MAX_TIME_SLOTS];\n\tstruct skl_i2s_config i2s_cfg;\n\tstruct skl_i2s_config_mclk mclk;\n};\n\nstruct skl_i2s_config_blob_ext {\n\tu32 gtw_attr;\n\tstruct skl_i2s_config_blob_header hdr;\n\tu32 tdm_ts_group[SKL_I2S_MAX_TIME_SLOTS];\n\tstruct skl_i2s_config i2s_cfg;\n\tstruct skl_i2s_config_mclk_ext mclk;\n} __packed;\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

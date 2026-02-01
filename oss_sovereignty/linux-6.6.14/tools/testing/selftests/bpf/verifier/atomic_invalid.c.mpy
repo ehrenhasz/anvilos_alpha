@@ -1,0 +1,9 @@
+{
+  "module_name": "atomic_invalid.c",
+  "hash_id": "31df8dc471394b754b646145bd79fc2c3e7499c270b803e0788802266dc4aaae",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/verifier/atomic_invalid.c",
+  "human_readable_source": "#define __INVALID_ATOMIC_ACCESS_TEST(op)\t\t\t\t\\\n\t{\t\t\t\t\t\t\t\t\\\n\t\t\"atomic \" #op \" access through non-pointer \",\t\t\\\n\t\t.insns = {\t\t\t\t\t\t\\\n\t\t\tBPF_MOV64_IMM(BPF_REG_0, 1),\t\t\t\\\n\t\t\tBPF_MOV64_IMM(BPF_REG_1, 0),\t\t\t\\\n\t\t\tBPF_ATOMIC_OP(BPF_DW, op, BPF_REG_1, BPF_REG_0, -8), \\\n\t\t\tBPF_MOV64_IMM(BPF_REG_0, 0),\t\t\t\\\n\t\t\tBPF_EXIT_INSN(),\t\t\t\t\\\n\t\t},\t\t\t\t\t\t\t\\\n\t\t.result = REJECT,\t\t\t\t\t\\\n\t\t.errstr = \"R1 invalid mem access 'scalar'\"\t\t\\\n\t}\n__INVALID_ATOMIC_ACCESS_TEST(BPF_ADD),\n__INVALID_ATOMIC_ACCESS_TEST(BPF_ADD | BPF_FETCH),\n__INVALID_ATOMIC_ACCESS_TEST(BPF_ADD),\n__INVALID_ATOMIC_ACCESS_TEST(BPF_ADD | BPF_FETCH),\n__INVALID_ATOMIC_ACCESS_TEST(BPF_AND),\n__INVALID_ATOMIC_ACCESS_TEST(BPF_AND | BPF_FETCH),\n__INVALID_ATOMIC_ACCESS_TEST(BPF_OR),\n__INVALID_ATOMIC_ACCESS_TEST(BPF_OR | BPF_FETCH),\n__INVALID_ATOMIC_ACCESS_TEST(BPF_XOR),\n__INVALID_ATOMIC_ACCESS_TEST(BPF_XOR | BPF_FETCH),\n__INVALID_ATOMIC_ACCESS_TEST(BPF_XCHG),\n__INVALID_ATOMIC_ACCESS_TEST(BPF_CMPXCHG),\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

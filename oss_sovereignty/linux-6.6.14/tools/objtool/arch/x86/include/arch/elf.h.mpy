@@ -1,0 +1,9 @@
+{
+  "module_name": "elf.h",
+  "hash_id": "6e3e1d13922ea6ad255f27a0a57ea390101bc5e533cfe078903f5c8083d19ef8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/objtool/arch/x86/include/arch/elf.h",
+  "human_readable_source": " \n#ifndef _OBJTOOL_ARCH_ELF\n#define _OBJTOOL_ARCH_ELF\n\n#define R_NONE\t\tR_X86_64_NONE\n#define R_ABS32\t\tR_X86_64_32\n#define R_ABS64\t\tR_X86_64_64\n#define R_DATA32\tR_X86_64_PC32\n#define R_DATA64\tR_X86_64_PC32\n#define R_TEXT32\tR_X86_64_PC32\n#define R_TEXT64\tR_X86_64_PC32\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

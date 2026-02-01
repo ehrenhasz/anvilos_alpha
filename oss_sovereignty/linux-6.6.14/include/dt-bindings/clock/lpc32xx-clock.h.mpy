@@ -1,0 +1,9 @@
+{
+  "module_name": "lpc32xx-clock.h",
+  "hash_id": "003cda35c2e65adcda6e456692c6909af117fefb976a9c9f989cc27abeb881ce",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/lpc32xx-clock.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_LPC32XX_CLOCK_H\n#define __DT_BINDINGS_LPC32XX_CLOCK_H\n\n \n#define LPC32XX_CLK_RTC\t\t1\n#define LPC32XX_CLK_DMA\t\t2\n#define LPC32XX_CLK_MLC\t\t3\n#define LPC32XX_CLK_SLC\t\t4\n#define LPC32XX_CLK_LCD\t\t5\n#define LPC32XX_CLK_MAC\t\t6\n#define LPC32XX_CLK_SD\t\t7\n#define LPC32XX_CLK_DDRAM\t8\n#define LPC32XX_CLK_SSP0\t9\n#define LPC32XX_CLK_SSP1\t10\n#define LPC32XX_CLK_UART3\t11\n#define LPC32XX_CLK_UART4\t12\n#define LPC32XX_CLK_UART5\t13\n#define LPC32XX_CLK_UART6\t14\n#define LPC32XX_CLK_IRDA\t15\n#define LPC32XX_CLK_I2C1\t16\n#define LPC32XX_CLK_I2C2\t17\n#define LPC32XX_CLK_TIMER0\t18\n#define LPC32XX_CLK_TIMER1\t19\n#define LPC32XX_CLK_TIMER2\t20\n#define LPC32XX_CLK_TIMER3\t21\n#define LPC32XX_CLK_TIMER4\t22\n#define LPC32XX_CLK_TIMER5\t23\n#define LPC32XX_CLK_WDOG\t24\n#define LPC32XX_CLK_I2S0\t25\n#define LPC32XX_CLK_I2S1\t26\n#define LPC32XX_CLK_SPI1\t27\n#define LPC32XX_CLK_SPI2\t28\n#define LPC32XX_CLK_MCPWM\t29\n#define LPC32XX_CLK_HSTIMER\t30\n#define LPC32XX_CLK_KEY\t\t31\n#define LPC32XX_CLK_PWM1\t32\n#define LPC32XX_CLK_PWM2\t33\n#define LPC32XX_CLK_ADC\t\t34\n#define LPC32XX_CLK_HCLK_PLL\t35\n#define LPC32XX_CLK_PERIPH\t36\n\n \n#define LPC32XX_USB_CLK_I2C\t1\n#define LPC32XX_USB_CLK_DEVICE\t2\n#define LPC32XX_USB_CLK_HOST\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

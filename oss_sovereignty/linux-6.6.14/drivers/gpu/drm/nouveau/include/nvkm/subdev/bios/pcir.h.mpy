@@ -1,0 +1,9 @@
+{
+  "module_name": "pcir.h",
+  "hash_id": "061da4b851985821c81b0c3fc0b06de895698e2a141712b8ea98ca24ed947d0b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/pcir.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_PCIR_H__\n#define __NVBIOS_PCIR_H__\nstruct nvbios_pcirT {\n\tu16 vendor_id;\n\tu16 device_id;\n\tu8  class_code[3];\n\tu32 image_size;\n\tu16 image_rev;\n\tu8  image_type;\n\tbool last;\n};\n\nu32 nvbios_pcirTe(struct nvkm_bios *, u32, u8 *ver, u16 *hdr);\nu32 nvbios_pcirTp(struct nvkm_bios *, u32, u8 *ver, u16 *hdr,\n\t\t  struct nvbios_pcirT *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

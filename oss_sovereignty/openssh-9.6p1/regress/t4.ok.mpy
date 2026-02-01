@@ -1,0 +1,9 @@
+{
+  "module_name": "t4.ok",
+  "hash_id": "7a8573bc8bcdd09a83108d415d53715576a49056c847647eaa605ca9591d3b1d",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/t4.ok",
+  "human_readable_source": "MD5:3b:dd:44:e9:49:18:84:95:f1:e7:33:6b:9d:93:b1:36\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

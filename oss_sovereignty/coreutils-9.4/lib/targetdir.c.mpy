@@ -1,0 +1,9 @@
+{
+  "module_name": "targetdir.c",
+  "hash_id": "9c6555d9ac28d8900776da371f8cfbe4ccb44b46e77485e4db0aff745066a609",
+  "original_prompt": "Ingested from coreutils-9.4/lib/targetdir.c",
+  "human_readable_source": " \n\nATTRIBUTE_PURE static bool\nmust_be_working_directory (char const *f)\n{\n   \n  while (*f++ == '.')\n    {\n      if (*f != '/')\n        return !*f;\n      while (*++f == '/')\n        continue;\n      if (!*f)\n        return true;\n    }\n  return false;\n}\n\n \n\nint\ntarget_directory_operand (char const *file, struct stat *st)\n{\n  if (must_be_working_directory (file))\n    return AT_FDCWD;\n\n  int fd = -1;\n  int try_to_open = 1;\n  int stat_result;\n\n   \n  if (!O_DIRECTORY)\n    {\n      stat_result = stat (file, st);\n      if (stat_result == 0)\n        {\n          try_to_open = S_ISDIR (st->st_mode);\n          errno = ENOTDIR;\n        }\n      else\n        {\n           \n          try_to_open = errno == EOVERFLOW;\n        }\n    }\n\n  if (try_to_open)\n    {\n      fd = open (file, O_PATHSEARCH | O_DIRECTORY);\n\n       \n      if (O_PATHSEARCH == O_SEARCH && fd < 0 && errno == EACCES)\n        errno = (((O_DIRECTORY ? stat (file, st) : stat_result) == 0\n                  && !S_ISDIR (st->st_mode))\n                 ? ENOTDIR : EACCES);\n    }\n\n  if (!O_DIRECTORY && 0 <= fd)\n    {\n       \n      int err;\n      if (fstat (fd, st) == 0\n          ? !S_ISDIR (st->st_mode) && (err = ENOTDIR, true)\n          : (err = errno) != EOVERFLOW)\n        {\n          close (fd);\n          errno = err;\n          fd = -1;\n        }\n    }\n\n  return fd - (AT_FDCWD == -1 && fd < 0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

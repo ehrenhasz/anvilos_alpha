@@ -1,0 +1,9 @@
+{
+  "module_name": "pgtable-nopmd.h",
+  "hash_id": "f328a1a1cdfc41d357483ef95d0640fbe53cda00ae923c41d577a2d647b8074b",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/pgtable-nopmd.h",
+  "human_readable_source": " \n#ifndef _PGTABLE_NOPMD_H\n#define _PGTABLE_NOPMD_H\n\n#ifndef __ASSEMBLY__\n\n#include <asm-generic/pgtable-nopud.h>\n\nstruct mm_struct;\n\n#define __PAGETABLE_PMD_FOLDED 1\n\n \ntypedef struct { pud_t pud; } pmd_t;\n\n#define PMD_SHIFT\tPUD_SHIFT\n#define PTRS_PER_PMD\t1\n#define PMD_SIZE  \t(1UL << PMD_SHIFT)\n#define PMD_MASK  \t(~(PMD_SIZE-1))\n\n \nstatic inline int pud_none(pud_t pud)\t\t{ return 0; }\nstatic inline int pud_bad(pud_t pud)\t\t{ return 0; }\nstatic inline int pud_present(pud_t pud)\t{ return 1; }\nstatic inline int pud_user(pud_t pud)\t\t{ return 0; }\nstatic inline int pud_leaf(pud_t pud)\t\t{ return 0; }\nstatic inline void pud_clear(pud_t *pud)\t{ }\n#define pmd_ERROR(pmd)\t\t\t\t(pud_ERROR((pmd).pud))\n\n#define pud_populate(mm, pmd, pte)\t\tdo { } while (0)\n\n \n#define set_pud(pudptr, pudval)\t\t\tset_pmd((pmd_t *)(pudptr), (pmd_t) { pudval })\n\nstatic inline pmd_t * pmd_offset(pud_t * pud, unsigned long address)\n{\n\treturn (pmd_t *)pud;\n}\n#define pmd_offset pmd_offset\n\n#define pmd_val(x)\t\t\t\t(pud_val((x).pud))\n#define __pmd(x)\t\t\t\t((pmd_t) { __pud(x) } )\n\n#define pud_page(pud)\t\t\t\t(pmd_page((pmd_t){ pud }))\n#define pud_pgtable(pud)\t\t\t((pmd_t *)(pmd_page_vaddr((pmd_t){ pud })))\n\n \n#define pmd_alloc_one(mm, address)\t\tNULL\nstatic inline void pmd_free(struct mm_struct *mm, pmd_t *pmd)\n{\n}\n#define pmd_free_tlb(tlb, x, a)\t\tdo { } while (0)\n\n#undef  pmd_addr_end\n#define pmd_addr_end(addr, end)\t\t\t(end)\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

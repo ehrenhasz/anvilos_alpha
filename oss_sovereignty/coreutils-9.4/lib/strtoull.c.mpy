@@ -1,0 +1,9 @@
+{
+  "module_name": "strtoull.c",
+  "hash_id": "94df7e4c41aaa28ba12f08c832011679a539e40900cfed6e1f3a053af1aab60c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/strtoull.c",
+  "human_readable_source": "/* Function to parse an 'unsigned long long int' from text.\n   Copyright (C) 1995-1997, 1999, 2009-2023 Free Software Foundation, Inc.\n   NOTE: The canonical source of this file is maintained with the GNU C\n   Library.  Bugs can be reported to bug-glibc@gnu.org.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU Lesser General Public License as\n   published by the Free Software Foundation, either version 3 of the\n   License, or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU Lesser General Public License for more details.\n\n   You should have received a copy of the GNU Lesser General Public License\n   along with this program.  If not, see <https:\n\n#define QUAD 1\n\n#include \"strtoul.c\"\n\n#ifdef _LIBC\nstrong_alias (__strtoull_internal, __strtouq_internal)\nweak_alias (strtoull, strtouq)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

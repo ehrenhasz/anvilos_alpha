@@ -1,0 +1,9 @@
+{
+  "module_name": "test-symlinkat.c",
+  "hash_id": "d42b97193f7a9d2511d148f5751aa15edc161124ff7a44249ef200f5ad3df70e",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-symlinkat.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <unistd.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (symlinkat, int, (char const *, int, char const *));\n\n#include <fcntl.h>\n#include <errno.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <sys/stat.h>\n\n#include \"ignore-value.h\"\n#include \"macros.h\"\n\n#ifndef HAVE_SYMLINK\n# define HAVE_SYMLINK 0\n#endif\n\n#define BASE \"test-symlinkat.t\"\n\n#include \"test-symlink.h\"\n\nstatic int dfd = AT_FDCWD;\n\nstatic int\ndo_symlink (char const *contents, char const *name)\n{\n  return symlinkat (contents, dfd, name);\n}\n\nint\nmain (void)\n{\n  int result;\n\n   \n  ignore_value (system (\"rm -rf \" BASE \"*\"));\n\n   \n  {\n    errno = 0;\n    ASSERT (symlinkat (\"foo\", -1, \"bar\") == -1);\n    ASSERT (errno == EBADF\n            || errno == ENOSYS  \n           );\n  }\n  {\n    close (99);\n    errno = 0;\n    ASSERT (symlinkat (\"foo\", 99, \"bar\") == -1);\n    ASSERT (errno == EBADF\n            || errno == ENOSYS  \n           );\n  }\n\n   \n  result = test_symlink (do_symlink, false);\n  dfd = openat (AT_FDCWD, \".\", O_RDONLY);\n  ASSERT (0 <= dfd);\n  ASSERT (test_symlink (do_symlink, false) == result);\n\n  ASSERT (close (dfd) == 0);\n  if (result == 77)\n    fputs (\"skipping test: symlinks not supported on this file system\\n\",\n           stderr);\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

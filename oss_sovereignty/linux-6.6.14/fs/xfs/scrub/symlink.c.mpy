@@ -1,0 +1,9 @@
+{
+  "module_name": "symlink.c",
+  "hash_id": "29e850c9c9608ebb114536fe97bc25579a40115a6a5a0daffb7b6b9b4c9e31fd",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/scrub/symlink.c",
+  "human_readable_source": "\n \n#include \"xfs.h\"\n#include \"xfs_fs.h\"\n#include \"xfs_shared.h\"\n#include \"xfs_format.h\"\n#include \"xfs_trans_resv.h\"\n#include \"xfs_mount.h\"\n#include \"xfs_log_format.h\"\n#include \"xfs_inode.h\"\n#include \"xfs_symlink.h\"\n#include \"scrub/scrub.h\"\n#include \"scrub/common.h\"\n\n \nint\nxchk_setup_symlink(\n\tstruct xfs_scrub\t*sc)\n{\n\t \n\tsc->buf = kvzalloc(XFS_SYMLINK_MAXLEN + 1, XCHK_GFP_FLAGS);\n\tif (!sc->buf)\n\t\treturn -ENOMEM;\n\n\treturn xchk_setup_inode_contents(sc, 0);\n}\n\n \n\nint\nxchk_symlink(\n\tstruct xfs_scrub\t*sc)\n{\n\tstruct xfs_inode\t*ip = sc->ip;\n\tstruct xfs_ifork\t*ifp;\n\tloff_t\t\t\tlen;\n\tint\t\t\terror = 0;\n\n\tif (!S_ISLNK(VFS_I(ip)->i_mode))\n\t\treturn -ENOENT;\n\tifp = xfs_ifork_ptr(ip, XFS_DATA_FORK);\n\tlen = ip->i_disk_size;\n\n\t \n\tif (len > XFS_SYMLINK_MAXLEN || len <= 0) {\n\t\txchk_fblock_set_corrupt(sc, XFS_DATA_FORK, 0);\n\t\tgoto out;\n\t}\n\n\t \n\tif (ifp->if_format == XFS_DINODE_FMT_LOCAL) {\n\t\tif (len > xfs_inode_data_fork_size(ip) ||\n\t\t    len > strnlen(ifp->if_u1.if_data, xfs_inode_data_fork_size(ip)))\n\t\t\txchk_fblock_set_corrupt(sc, XFS_DATA_FORK, 0);\n\t\tgoto out;\n\t}\n\n\t \n\terror = xfs_readlink_bmap_ilocked(sc->ip, sc->buf);\n\tif (!xchk_fblock_process_error(sc, XFS_DATA_FORK, 0, &error))\n\t\tgoto out;\n\tif (strnlen(sc->buf, XFS_SYMLINK_MAXLEN) < len)\n\t\txchk_fblock_set_corrupt(sc, XFS_DATA_FORK, 0);\nout:\n\treturn error;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

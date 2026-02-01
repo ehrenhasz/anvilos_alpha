@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "6e3bb688c3abe8495eee83d3e5705562e3094fe33575e19d12a52af50ee0402e",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libuutil/Makefile.am",
+  "human_readable_source": "libuutil_la_CFLAGS = $(AM_CFLAGS) $(LIBRARY_CFLAGS) $(LIBRARY_CFLAGS)\n\nlib_LTLIBRARIES += libuutil.la\nCPPCHECKTARGETS += libuutil.la\n\nlibuutil_la_SOURCES = \\\n\t%D%/uu_alloc.c \\\n\t%D%/uu_avl.c \\\n\t%D%/uu_ident.c \\\n\t%D%/uu_list.c \\\n\t%D%/uu_misc.c \\\n\t%D%/uu_string.c\n\nlibuutil_la_LIBADD = \\\n\tlibavl.la \\\n\tlibspl.la\n\nlibuutil_la_LIBADD += $(LTLIBINTL)\n\nlibuutil_la_LDFLAGS = -pthread\n\nif !ASAN_ENABLED\nlibuutil_la_LDFLAGS += -Wl,-z,defs\nendif\n\nlibuutil_la_LDFLAGS += -version-info 3:0:0\n\ndist_noinst_DATA += %D%/libuutil.abi %D%/libuutil.suppr\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

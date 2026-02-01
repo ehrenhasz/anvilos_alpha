@@ -1,0 +1,9 @@
+{
+  "module_name": "cc_sram_mgr.h",
+  "hash_id": "ec655b015277f768313a39a75f375cce5ab55bd23bf61ebe3bb87b0cecfa0d05",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/ccree/cc_sram_mgr.h",
+  "human_readable_source": " \n \n\n#ifndef __CC_SRAM_MGR_H__\n#define __CC_SRAM_MGR_H__\n\n#ifndef CC_CC_SRAM_SIZE\n#define CC_CC_SRAM_SIZE 4096\n#endif\n\nstruct cc_drvdata;\n\n#define NULL_SRAM_ADDR ((u32)-1)\n\n \nint cc_sram_mgr_init(struct cc_drvdata *drvdata);\n\n \nu32 cc_sram_alloc(struct cc_drvdata *drvdata, u32 size);\n\n \nvoid cc_set_sram_desc(const u32 *src, u32 dst, unsigned int nelement,\n\t\t      struct cc_hw_desc *seq, unsigned int *seq_len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

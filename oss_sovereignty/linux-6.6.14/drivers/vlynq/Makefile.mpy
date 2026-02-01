@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cc21bb56c0d6b3c08068acd6b1745ef0bf1fdfdb2c2c6c33f83833ba78e08982",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vlynq/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for kernel vlynq drivers\n#\n\nobj-$(CONFIG_VLYNQ) += vlynq.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

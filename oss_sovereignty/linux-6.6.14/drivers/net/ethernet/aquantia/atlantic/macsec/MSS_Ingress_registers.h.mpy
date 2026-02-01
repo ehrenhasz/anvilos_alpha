@@ -1,0 +1,9 @@
+{
+  "module_name": "MSS_Ingress_registers.h",
+  "hash_id": "8cb9b25cb1bce75615b47eddf89e672b796f0164e99755d8ad1f33b5049eb005",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/aquantia/atlantic/macsec/MSS_Ingress_registers.h",
+  "human_readable_source": " \n \n\n#ifndef MSS_INGRESS_REGS_HEADER\n#define MSS_INGRESS_REGS_HEADER\n\n#define MSS_INGRESS_CTL_REGISTER_ADDR 0x0000800E\n#define MSS_INGRESS_LUT_ADDR_CTL_REGISTER_ADDR 0x00008080\n#define MSS_INGRESS_LUT_CTL_REGISTER_ADDR 0x00008081\n#define MSS_INGRESS_LUT_DATA_CTL_REGISTER_ADDR 0x000080A0\n\nstruct mss_ingress_ctl_register {\n\tunion {\n\t\tstruct {\n\t\t\tunsigned int soft_reset : 1;\n\t\t\tunsigned int operation_point_to_point : 1;\n\t\t\tunsigned int create_sci : 1;\n\t\t\t \n\t\t\tunsigned int mask_short_length_error : 1;\n\t\t\tunsigned int drop_kay_packet : 1;\n\t\t\tunsigned int drop_igprc_miss : 1;\n\t\t\t \n\t\t\tunsigned int check_icv : 1;\n\t\t\tunsigned int clear_global_time : 1;\n\t\t\tunsigned int clear_count : 1;\n\t\t\tunsigned int high_prio : 1;\n\t\t\tunsigned int remove_sectag : 1;\n\t\t\tunsigned int global_validate_frames : 2;\n\t\t\tunsigned int icv_lsb_8bytes_enabled : 1;\n\t\t\tunsigned int reserved0 : 2;\n\t\t} bits_0;\n\t\tunsigned short word_0;\n\t};\n\tunion {\n\t\tstruct {\n\t\t\tunsigned int reserved0 : 16;\n\t\t} bits_1;\n\t\tunsigned short word_1;\n\t};\n};\n\nstruct mss_ingress_lut_addr_ctl_register {\n\tunion {\n\t\tstruct {\n\t\t\tunsigned int lut_addr : 9;\n\t\t\tunsigned int reserved0 : 3;\n\t\t\t \n\t\t\tunsigned int lut_select : 4;\n\t\t} bits_0;\n\t\tunsigned short word_0;\n\t};\n};\n\nstruct mss_ingress_lut_ctl_register {\n\tunion {\n\t\tstruct {\n\t\t\tunsigned int reserved0 : 14;\n\t\t\tunsigned int lut_read : 1;\n\t\t\tunsigned int lut_write : 1;\n\t\t} bits_0;\n\t\tunsigned short word_0;\n\t};\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "osdep_intf.h",
+  "hash_id": "41499aea34f4584fc99bc5da094b6da24f83c25f86b26647ceba0103a2ed9aea",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/osdep_intf.h",
+  "human_readable_source": " \n \n#ifndef __OSDEP_INTF_H_\n#define __OSDEP_INTF_H_\n\n#include \"osdep_service.h\"\n#include \"drv_types.h\"\n\n#define RND4(x)\t(((x >> 2) + ((x & 3) != 0)) << 2)\n\nstruct intf_priv {\n\tu8 *intf_dev;\n\t \n\tstruct usb_device *udev;\n\tstruct urb *piorw_urb;\n\tstruct completion io_retevt_comp;\n};\n\nint r871x_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

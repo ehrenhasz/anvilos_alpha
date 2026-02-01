@@ -1,0 +1,9 @@
+{
+  "module_name": "ddk750_chip.h",
+  "hash_id": "22a8931cc072020f4d8a5bc83f71eb62a73c5cc151c6d4d45ff969be46ab51cf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/sm750fb/ddk750_chip.h",
+  "human_readable_source": " \n#ifndef DDK750_CHIP_H__\n#define DDK750_CHIP_H__\n#define DEFAULT_INPUT_CLOCK 14318181  \n#ifndef SM750LE_REVISION_ID\n#define SM750LE_REVISION_ID ((unsigned char)0xfe)\n#endif\n\n#include <linux/io.h>\n#include <linux/ioport.h>\n#include <linux/uaccess.h>\n\nextern void __iomem *mmio750;\n\n \nstatic inline u32 peek32(u32 addr)\n{\n\treturn readl(addr + mmio750);\n}\n\nstatic inline void poke32(u32 addr, u32 data)\n{\n\twritel(data, addr + mmio750);\n}\n\n \nenum logical_chip_type {\n\tSM_UNKNOWN,\n\tSM718,\n\tSM750,\n\tSM750LE,\n};\n\nenum clock_type {\n\tMXCLK_PLL,\n\tPRIMARY_PLL,\n\tSECONDARY_PLL,\n\tVGA0_PLL,\n\tVGA1_PLL,\n};\n\nstruct pll_value {\n\tenum clock_type clock_type;\n\tunsigned long input_freq;  \n\n\t \n\tunsigned long M;\n\tunsigned long N;\n\tunsigned long OD;\n\tunsigned long POD;\n};\n\n \nstruct initchip_param {\n\t \n\tunsigned short power_mode;\n\n\t \n\tunsigned short chip_clock;\n\n\t \n\tunsigned short mem_clock;\n\n\t \n\tunsigned short master_clock;\n\n\t \n\tunsigned short set_all_eng_off;\n\n\t \n\tunsigned char reset_memory;\n\n\t \n};\n\nenum logical_chip_type sm750_get_chip_type(void);\nvoid sm750_set_chip_type(unsigned short dev_id, u8 rev_id);\nunsigned int sm750_calc_pll_value(unsigned int request, struct  pll_value *pll);\nunsigned int sm750_format_pll_reg(struct pll_value *p_PLL);\nunsigned int ddk750_get_vm_size(void);\nint ddk750_init_hw(struct initchip_param *pinit_param);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

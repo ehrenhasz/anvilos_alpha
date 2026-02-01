@@ -1,0 +1,9 @@
+{
+  "module_name": "kconfig.h",
+  "hash_id": "7854ca5288bca464b4d31205d7199e162fb1031d0fce82fdd553a78a52842dac",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/kconfig.h",
+  "human_readable_source": " \n#ifndef _TOOLS_LINUX_KCONFIG_H\n#define _TOOLS_LINUX_KCONFIG_H\n\n \n\n#define __ARG_PLACEHOLDER_1 0,\n#define __take_second_arg(__ignored, val, ...) val\n\n \n#define __and(x, y)\t\t\t___and(x, y)\n#define ___and(x, y)\t\t\t____and(__ARG_PLACEHOLDER_##x, y)\n#define ____and(arg1_or_junk, y)\t__take_second_arg(arg1_or_junk y, 0)\n\n#define __or(x, y)\t\t\t___or(x, y)\n#define ___or(x, y)\t\t\t____or(__ARG_PLACEHOLDER_##x, y)\n#define ____or(arg1_or_junk, y)\t\t__take_second_arg(arg1_or_junk 1, y)\n\n \n\n \n#define __is_defined(x)\t\t\t___is_defined(x)\n#define ___is_defined(val)\t\t____is_defined(__ARG_PLACEHOLDER_##val)\n#define ____is_defined(arg1_or_junk)\t__take_second_arg(arg1_or_junk 1, 0)\n\n \n#define IS_BUILTIN(option) __is_defined(option)\n\n \n#define IS_MODULE(option) __is_defined(option##_MODULE)\n\n \n#define IS_REACHABLE(option) __or(IS_BUILTIN(option), \\\n\t\t\t\t__and(IS_MODULE(option), __is_defined(MODULE)))\n\n \n#define IS_ENABLED(option) __or(IS_BUILTIN(option), IS_MODULE(option))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

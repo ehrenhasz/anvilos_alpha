@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c08947f24a562d5defabe61f8178701e5da9de5124007b99438f5378b798f614",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/purelifi/plfxlc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_PLFXLC)\t:= plfxlc.o\nplfxlc-objs \t\t+= chip.o firmware.o usb.o mac.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mips64.config",
+  "hash_id": "1a50189e5a945002e087023096509295285fcad5b868625ffc9919535ecdc518",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/wireguard/qemu/arch/mips64.config",
+  "human_readable_source": "CONFIG_64BIT=y\nCONFIG_CPU_MIPS64_R2=y\nCONFIG_MIPS32_N32=y\nCONFIG_CPU_HAS_MSA=y\nCONFIG_MIPS_MALTA=y\nCONFIG_MIPS_CPS=y\nCONFIG_MIPS_FP_SUPPORT=y\nCONFIG_POWER_RESET=y\nCONFIG_POWER_RESET_SYSCON=y\nCONFIG_SERIAL_8250=y\nCONFIG_SERIAL_8250_CONSOLE=y\nCONFIG_CMDLINE_BOOL=y\nCONFIG_CMDLINE=\"console=ttyS0 wg.success=ttyS1 panic_on_warn=1\"\nCONFIG_FRAME_WARN=1280\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

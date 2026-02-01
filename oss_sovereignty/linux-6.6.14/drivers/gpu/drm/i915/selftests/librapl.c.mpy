@@ -1,0 +1,9 @@
+{
+  "module_name": "librapl.c",
+  "hash_id": "83c49ea915f30b3783d6717e5c1b31b0e15072a3486fe29a5be94ac646003cb0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/librapl.c",
+  "human_readable_source": "\n \n\n#include <asm/msr.h>\n\n#include \"i915_drv.h\"\n#include \"librapl.h\"\n\nbool librapl_supported(const struct drm_i915_private *i915)\n{\n\t \n\tif (IS_DGFX(i915))\n\t\treturn false;\n\n\treturn librapl_energy_uJ();\n}\n\nu64 librapl_energy_uJ(void)\n{\n\tunsigned long long power;\n\tu32 units;\n\n\tif (rdmsrl_safe(MSR_RAPL_POWER_UNIT, &power))\n\t\treturn 0;\n\n\tunits = (power & 0x1f00) >> 8;\n\n\tif (rdmsrl_safe(MSR_PP1_ENERGY_STATUS, &power))\n\t\treturn 0;\n\n\treturn (1000000 * power) >> units;  \n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

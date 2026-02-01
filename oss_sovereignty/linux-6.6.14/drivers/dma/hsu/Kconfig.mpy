@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c22070367bf4b31d27210c3b87c56bf3c49ff91086f6f7f202df292d0a103f02",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/hsu/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# DMA engine configuration for hsu\nconfig HSU_DMA\n\ttristate\n\tselect DMA_ENGINE\n\tselect DMA_VIRTUAL_CHANNELS\n\nconfig HSU_DMA_PCI\n\ttristate\n\tdepends on HSU_DMA && PCI\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

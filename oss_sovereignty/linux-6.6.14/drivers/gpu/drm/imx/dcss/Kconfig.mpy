@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "252f4823823c9b25f8fad120d2871552ca42db63e2b227cf8d4b5177c460f1bc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/imx/dcss/Kconfig",
+  "human_readable_source": "config DRM_IMX_DCSS\n\ttristate \"i.MX8MQ DCSS\"\n\tselect IMX_IRQSTEER\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect VIDEOMODE_HELPERS\n\tdepends on DRM && ARCH_MXC && ARM64\n\thelp\n\t  Choose this if you have a NXP i.MX8MQ based system and want to use the\n\t  Display Controller Subsystem. This option enables DCSS support.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

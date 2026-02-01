@@ -1,0 +1,9 @@
+{
+  "module_name": "ptrace.h",
+  "hash_id": "710cb6e4e8e3f774c903cf96b988d9d70e5fed244af772d91ee43f393dc93cf7",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/ptrace.h",
+  "human_readable_source": " \n#ifndef _UAPI_ASM_X86_PTRACE_H\n#define _UAPI_ASM_X86_PTRACE_H\n\n#include <linux/compiler.h>\t \n#include <asm/ptrace-abi.h>\n#include <asm/processor-flags.h>\n\n\n#ifndef __ASSEMBLY__\n\n#ifdef __i386__\n \n\n#ifndef __KERNEL__\n\nstruct pt_regs {\n\tlong ebx;\n\tlong ecx;\n\tlong edx;\n\tlong esi;\n\tlong edi;\n\tlong ebp;\n\tlong eax;\n\tint  xds;\n\tint  xes;\n\tint  xfs;\n\tint  xgs;\n\tlong orig_eax;\n\tlong eip;\n\tint  xcs;\n\tlong eflags;\n\tlong esp;\n\tint  xss;\n};\n\n#endif  \n\n#else  \n\n#ifndef __KERNEL__\n\nstruct pt_regs {\n \n\tunsigned long r15;\n\tunsigned long r14;\n\tunsigned long r13;\n\tunsigned long r12;\n\tunsigned long rbp;\n\tunsigned long rbx;\n \n\tunsigned long r11;\n\tunsigned long r10;\n\tunsigned long r9;\n\tunsigned long r8;\n\tunsigned long rax;\n\tunsigned long rcx;\n\tunsigned long rdx;\n\tunsigned long rsi;\n\tunsigned long rdi;\n \n\tunsigned long orig_rax;\n \n\tunsigned long rip;\n\tunsigned long cs;\n\tunsigned long eflags;\n\tunsigned long rsp;\n\tunsigned long ss;\n \n};\n\n#endif  \n#endif  \n\n\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

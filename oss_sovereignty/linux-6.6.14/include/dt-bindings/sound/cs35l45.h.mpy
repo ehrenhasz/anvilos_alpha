@@ -1,0 +1,9 @@
+{
+  "module_name": "cs35l45.h",
+  "hash_id": "193222b3d5f39999ab5710f542ea54e38eaf4a19e8aad9496fe935bddddf1d3d",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/sound/cs35l45.h",
+  "human_readable_source": " \n \n\n#ifndef DT_CS35L45_H\n#define DT_CS35L45_H\n\n \n#define CS35L45_ASP_TX_HIZ_UNUSED\t0x1\n#define CS35L45_ASP_TX_HIZ_DISABLED\t0x2\n\n \n#define CS35L45_NUM_GPIOS\t0x3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

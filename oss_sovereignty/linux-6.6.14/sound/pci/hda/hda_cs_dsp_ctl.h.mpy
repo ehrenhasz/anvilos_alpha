@@ -1,0 +1,9 @@
+{
+  "module_name": "hda_cs_dsp_ctl.h",
+  "hash_id": "4d74e339e364a0e6d724c410504cac308433d3f27a98dab62d681b8e1462502a",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/hda/hda_cs_dsp_ctl.h",
+  "human_readable_source": " \n\n#ifndef __HDA_CS_DSP_CTL_H__\n#define __HDA_CS_DSP_CTL_H__\n\n#include <sound/soc.h>\n#include <linux/firmware/cirrus/cs_dsp.h>\n\nenum hda_cs_dsp_fw_id {\n\tHDA_CS_DSP_FW_SPK_PROT,\n\tHDA_CS_DSP_FW_SPK_CALI,\n\tHDA_CS_DSP_FW_SPK_DIAG,\n\tHDA_CS_DSP_FW_MISC,\n\tHDA_CS_DSP_NUM_FW\n};\n\nstruct hda_cs_dsp_ctl_info {\n\tstruct snd_card *card;\n\tenum hda_cs_dsp_fw_id fw_type;\n\tconst char *device_name;\n};\n\nextern const char * const hda_cs_dsp_fw_ids[HDA_CS_DSP_NUM_FW];\n\nvoid hda_cs_dsp_add_controls(struct cs_dsp *dsp, const struct hda_cs_dsp_ctl_info *info);\nvoid hda_cs_dsp_control_remove(struct cs_dsp_coeff_ctl *cs_ctl);\nint hda_cs_dsp_write_ctl(struct cs_dsp *dsp, const char *name, int type,\n\t\t\t unsigned int alg, const void *buf, size_t len);\nint hda_cs_dsp_read_ctl(struct cs_dsp *dsp, const char *name, int type,\n\t\t\tunsigned int alg, void *buf, size_t len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

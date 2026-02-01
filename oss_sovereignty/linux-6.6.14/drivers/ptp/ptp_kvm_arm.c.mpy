@@ -1,0 +1,9 @@
+{
+  "module_name": "ptp_kvm_arm.c",
+  "hash_id": "d2a745196f5b302f851940ffce1dfe6b8511d5b25991b9e799ec9dc7d9a35363",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ptp/ptp_kvm_arm.c",
+  "human_readable_source": "\n \n\n#include <linux/arm-smccc.h>\n#include <linux/ptp_kvm.h>\n\n#include <asm/arch_timer.h>\n#include <asm/hypervisor.h>\n\nint kvm_arch_ptp_init(void)\n{\n\tint ret;\n\n\tret = kvm_arm_hyp_service_available(ARM_SMCCC_KVM_FUNC_PTP);\n\tif (ret <= 0)\n\t\treturn -EOPNOTSUPP;\n\n\treturn 0;\n}\n\nvoid kvm_arch_ptp_exit(void)\n{\n}\n\nint kvm_arch_ptp_get_clock(struct timespec64 *ts)\n{\n\treturn kvm_arch_ptp_get_crosststamp(NULL, ts, NULL);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

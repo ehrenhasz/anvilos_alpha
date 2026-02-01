@@ -1,0 +1,9 @@
+{
+  "module_name": "param.h",
+  "hash_id": "2bf1b3bfd5ed4d4cf79c9fee3d60aa227487be3d82ba5526c620a44974b695f7",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/param.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_PARAM_H\n#define __ASM_GENERIC_PARAM_H\n\n#include <uapi/asm-generic/param.h>\n\n# undef HZ\n# define HZ\t\tCONFIG_HZ\t \n# define USER_HZ\t100\t\t \n# define CLOCKS_PER_SEC\t(USER_HZ)        \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

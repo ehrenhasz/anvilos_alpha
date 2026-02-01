@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-tanix-tx3mini.c",
+  "hash_id": "141cbcf3e81634ae551f883a1b65f7110d3fdf2fa23b7c17ef72b5e1ecb1161f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-tanix-tx3mini.c",
+  "human_readable_source": "\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n\nstatic struct rc_map_table tanix_tx3mini[] = {\n\t{ 0x8051, KEY_POWER },\n\t{ 0x804d, KEY_MUTE },\n\n\t{ 0x8009, KEY_RED },\n\t{ 0x8011, KEY_GREEN },\n\t{ 0x8054, KEY_YELLOW },\n\t{ 0x804f, KEY_BLUE },\n\n\t{ 0x8056, KEY_VOLUMEDOWN },\n\t{ 0x80bd, KEY_PREVIOUS },\n\t{ 0x80bb, KEY_NEXT },\n\t{ 0x804e, KEY_VOLUMEUP },\n\n\t{ 0x8053, KEY_HOME },\n\t{ 0x801b, KEY_BACK },\n\n\t{ 0x8026, KEY_UP },\n\t{ 0x8028, KEY_DOWN },\n\t{ 0x8025, KEY_LEFT },\n\t{ 0x8027, KEY_RIGHT },\n\t{ 0x800d, KEY_OK },\n\n\t{ 0x8049, KEY_MENU },\n\t{ 0x8052, KEY_EPG }, \n\n\t{ 0x8031, KEY_1 },\n\t{ 0x8032, KEY_2 },\n\t{ 0x8033, KEY_3 },\n\n\t{ 0x8034, KEY_4 },\n\t{ 0x8035, KEY_5 },\n\t{ 0x8036, KEY_6 },\n\n\t{ 0x8037, KEY_7 },\n\t{ 0x8038, KEY_8 },\n\t{ 0x8039, KEY_9 },\n\n\t{ 0x8058, KEY_SUBTITLE }, \n\t{ 0x8030, KEY_0 },\n\t{ 0x8044, KEY_DELETE },\n};\n\nstatic struct rc_map_list tanix_tx3mini_map = {\n\t.map = {\n\t\t.scan     = tanix_tx3mini,\n\t\t.size     = ARRAY_SIZE(tanix_tx3mini),\n\t\t.rc_proto = RC_PROTO_NEC,\n\t\t.name     = RC_MAP_TANIX_TX3MINI,\n\t}\n};\n\nstatic int __init init_rc_map_tanix_tx3mini(void)\n{\n\treturn rc_map_register(&tanix_tx3mini_map);\n}\n\nstatic void __exit exit_rc_map_tanix_tx3mini(void)\n{\n\trc_map_unregister(&tanix_tx3mini_map);\n}\n\nmodule_init(init_rc_map_tanix_tx3mini)\nmodule_exit(exit_rc_map_tanix_tx3mini)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Christian Hewitt <christianshewitt@gmail.com>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

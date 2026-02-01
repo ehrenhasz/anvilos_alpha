@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d0479a514e1098620b98a19d2bf4c8c1aed9ca3cd612a5b26d1743fb0dbe9e3d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/tegra/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y\t\t\t\t\t+= clk.o\nobj-y\t\t\t\t\t+= clk-audio-sync.o\nobj-y\t\t\t\t\t+= clk-device.o\nobj-y\t\t\t\t\t+= clk-dfll.o\nobj-y\t\t\t\t\t+= clk-divider.o\nobj-y\t\t\t\t\t+= clk-periph.o\nobj-y\t\t\t\t\t+= clk-periph-fixed.o\nobj-y\t\t\t\t\t+= clk-periph-gate.o\nobj-y\t\t\t\t\t+= clk-pll.o\nobj-y\t\t\t\t\t+= clk-pll-out.o\nobj-y\t\t\t\t\t+= clk-sdmmc-mux.o\nobj-y\t\t\t\t\t+= clk-super.o\nobj-y\t\t\t\t\t+= clk-tegra-audio.o\nobj-y\t\t\t\t\t+= clk-tegra-periph.o\nobj-y\t\t\t\t\t+= clk-tegra-fixed.o\nobj-y\t\t\t\t\t+= clk-tegra-super-cclk.o\nobj-y\t\t\t\t\t+= clk-tegra-super-gen4.o\nobj-$(CONFIG_ARCH_TEGRA_2x_SOC)         += clk-tegra20.o\nobj-$(CONFIG_ARCH_TEGRA_2x_SOC)\t\t+= clk-tegra20-emc.o\nobj-$(CONFIG_ARCH_TEGRA_3x_SOC)         += clk-tegra30.o\nobj-$(CONFIG_ARCH_TEGRA_3x_SOC)\t\t+= clk-tegra20-emc.o\nobj-$(CONFIG_ARCH_TEGRA_114_SOC)\t+= clk-tegra114.o\nobj-$(CONFIG_ARCH_TEGRA_124_SOC)\t+= clk-tegra124.o\nobj-$(CONFIG_TEGRA_CLK_DFLL)\t\t+= clk-tegra124-dfll-fcpu.o\nobj-$(CONFIG_TEGRA124_CLK_EMC)\t\t+= clk-tegra124-emc.o\nobj-$(CONFIG_ARCH_TEGRA_132_SOC)\t+= clk-tegra124.o\nobj-y\t\t\t\t\t+= cvb.o\nobj-$(CONFIG_ARCH_TEGRA_210_SOC)\t+= clk-tegra210.o\nobj-$(CONFIG_ARCH_TEGRA_210_SOC)\t+= clk-tegra210-emc.o\nobj-$(CONFIG_CLK_TEGRA_BPMP)\t\t+= clk-bpmp.o\nobj-y\t\t\t\t\t+= clk-utils.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

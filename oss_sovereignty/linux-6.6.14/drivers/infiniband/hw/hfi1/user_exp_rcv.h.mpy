@@ -1,0 +1,9 @@
+{
+  "module_name": "user_exp_rcv.h",
+  "hash_id": "77e4808099b0c7f3bf70a6a543ca62f8ef70d4d29db6082206c57d6b2a44f486",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/user_exp_rcv.h",
+  "human_readable_source": " \n \n\n#ifndef _HFI1_USER_EXP_RCV_H\n#define _HFI1_USER_EXP_RCV_H\n\n#include \"hfi.h\"\n#include \"exp_rcv.h\"\n\nstruct tid_pageset {\n\tu16 idx;\n\tu16 count;\n};\n\nstruct tid_user_buf {\n\tstruct mmu_interval_notifier notifier;\n\tstruct mutex cover_mutex;\n\tunsigned long vaddr;\n\tunsigned long length;\n\tunsigned int npages;\n\tstruct page **pages;\n\tstruct tid_pageset *psets;\n\tunsigned int n_psets;\n};\n\nstruct tid_rb_node {\n\tstruct mmu_interval_notifier notifier;\n\tstruct hfi1_filedata *fdata;\n\tstruct mutex invalidate_mutex;  \n\tunsigned long phys;\n\tstruct tid_group *grp;\n\tu32 rcventry;\n\tdma_addr_t dma_addr;\n\tbool freed;\n\tunsigned int npages;\n\tstruct page *pages[];\n};\n\nstatic inline int num_user_pages(unsigned long addr,\n\t\t\t\t unsigned long len)\n{\n\tconst unsigned long spage = addr & PAGE_MASK;\n\tconst unsigned long epage = (addr + len - 1) & PAGE_MASK;\n\n\treturn 1 + ((epage - spage) >> PAGE_SHIFT);\n}\n\nint hfi1_user_exp_rcv_init(struct hfi1_filedata *fd,\n\t\t\t   struct hfi1_ctxtdata *uctxt);\nvoid hfi1_user_exp_rcv_free(struct hfi1_filedata *fd);\nint hfi1_user_exp_rcv_setup(struct hfi1_filedata *fd,\n\t\t\t    struct hfi1_tid_info *tinfo);\nint hfi1_user_exp_rcv_clear(struct hfi1_filedata *fd,\n\t\t\t    struct hfi1_tid_info *tinfo);\nint hfi1_user_exp_rcv_invalid(struct hfi1_filedata *fd,\n\t\t\t      struct hfi1_tid_info *tinfo);\n\nstatic inline struct mm_struct *mm_from_tid_node(struct tid_rb_node *node)\n{\n\treturn node->notifier.mm;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cpu.sh",
+  "hash_id": "edb761f3dba7b0847f6b07701e02dc70b9bbd2ef1a3e961a3ff2b9a5d6d0bf85",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/cpufreq/cpu.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n#\n# CPU helpers\n\n# protect against multiple inclusion\nif [ $FILE_CPU ]; then\n\treturn 0\nelse\n\tFILE_CPU=DONE\nfi\n\nsource cpufreq.sh\n\nfor_each_cpu()\n{\n\tcpus=$(ls $CPUROOT | grep \"cpu[0-9].*\")\n\tfor cpu in $cpus; do\n\t\t$@ $cpu\n\tdone\n}\n\nfor_each_non_boot_cpu()\n{\n\tcpus=$(ls $CPUROOT | grep \"cpu[1-9].*\")\n\tfor cpu in $cpus; do\n\t\t$@ $cpu\n\tdone\n}\n\n#$1: cpu\noffline_cpu()\n{\n\tprintf \"Offline $1\\n\"\n\techo 0 > $CPUROOT/$1/online\n}\n\n#$1: cpu\nonline_cpu()\n{\n\tprintf \"Online $1\\n\"\n\techo 1 > $CPUROOT/$1/online\n}\n\n#$1: cpu\nreboot_cpu()\n{\n\toffline_cpu $1\n\tonline_cpu $1\n}\n\n# Reboot CPUs\n# param: number of times we want to run the loop\nreboot_cpus()\n{\n\tprintf \"** Test: Running ${FUNCNAME[0]} for $1 loops **\\n\\n\"\n\n\tfor i in `seq 1 $1`; do\n\t\tfor_each_non_boot_cpu offline_cpu\n\t\tfor_each_non_boot_cpu online_cpu\n\t\tprintf \"\\n\"\n\tdone\n\n\tprintf \"\\n%s\\n\\n\" \"------------------------------------------------\"\n}\n\n# Prints warning for all CPUs with missing cpufreq directory\nprint_unmanaged_cpus()\n{\n\tfor_each_cpu cpu_should_have_cpufreq_directory\n}\n\n# Counts CPUs with cpufreq directories\ncount_cpufreq_managed_cpus()\n{\n\tcount=0;\n\n\tfor cpu in `ls $CPUROOT | grep \"cpu[0-9].*\"`; do\n\t\tif [ -d $CPUROOT/$cpu/cpufreq ]; then\n\t\t\tlet count=count+1;\n\t\tfi\n\tdone\n\n\techo $count;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

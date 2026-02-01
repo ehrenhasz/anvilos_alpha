@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4e95037f792218b5e9e1d7bc02e678ee66593818f32b95f0b234a67d3b62afb1",
+  "original_prompt": "Ingested from linux-6.6.14/fs/gfs2/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig GFS2_FS\n\ttristate \"GFS2 file system support\"\n\tselect BUFFER_HEAD\n\tselect FS_POSIX_ACL\n\tselect CRC32\n\tselect LIBCRC32C\n\tselect QUOTACTL\n\tselect FS_IOMAP\n\thelp\n\t  A cluster filesystem.\n\n\t  Allows a cluster of computers to simultaneously use a block device\n\t  that is shared between them (with FC, iSCSI, NBD, etc...).  GFS reads\n\t  and writes to the block device like a local filesystem, but also uses\n\t  a lock module to allow the computers coordinate their I/O so\n\t  filesystem consistency is maintained.  One of the nifty features of\n\t  GFS is perfect consistency -- changes made to the filesystem on one\n\t  machine show up immediately on all other machines in the cluster.\n\n\t  To use the GFS2 filesystem in a cluster, you will need to enable\n\t  the locking module below. Documentation and utilities for GFS2 can\n\t  be found here: http://sources.redhat.com/cluster\n\n\t  The \"nolock\" lock module is now built in to GFS2 by default. If\n\t  you want to use the DLM, be sure to enable IPv4/6 networking.\n\nconfig GFS2_FS_LOCKING_DLM\n\tbool \"GFS2 DLM locking\"\n\tdepends on (GFS2_FS!=n) && NET && INET && (IPV6 || IPV6=n) && \\\n\t\tCONFIGFS_FS && SYSFS && (DLM=y || DLM=GFS2_FS)\n\thelp\n\t  Multiple node locking module for GFS2\n\n\t  Most users of GFS2 will require this. It provides the locking\n\t  interface between GFS2 and the DLM, which is required to use GFS2\n\t  in a cluster environment.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

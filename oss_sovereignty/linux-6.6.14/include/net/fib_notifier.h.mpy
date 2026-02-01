@@ -1,0 +1,9 @@
+{
+  "module_name": "fib_notifier.h",
+  "hash_id": "310a87383560ebfc28ef48ae896c7b6dfe32a2c36bb48799f36a480cfac6cbb1",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/fib_notifier.h",
+  "human_readable_source": "#ifndef __NET_FIB_NOTIFIER_H\n#define __NET_FIB_NOTIFIER_H\n\n#include <linux/types.h>\n#include <linux/notifier.h>\n#include <net/net_namespace.h>\n\nstruct module;\n\nstruct fib_notifier_info {\n\tint family;\n\tstruct netlink_ext_ack  *extack;\n};\n\nenum fib_event_type {\n\tFIB_EVENT_ENTRY_REPLACE,\n\tFIB_EVENT_ENTRY_APPEND,\n\tFIB_EVENT_ENTRY_ADD,\n\tFIB_EVENT_ENTRY_DEL,\n\tFIB_EVENT_RULE_ADD,\n\tFIB_EVENT_RULE_DEL,\n\tFIB_EVENT_NH_ADD,\n\tFIB_EVENT_NH_DEL,\n\tFIB_EVENT_VIF_ADD,\n\tFIB_EVENT_VIF_DEL,\n};\n\nstruct fib_notifier_ops {\n\tint family;\n\tstruct list_head list;\n\tunsigned int (*fib_seq_read)(struct net *net);\n\tint (*fib_dump)(struct net *net, struct notifier_block *nb,\n\t\t\tstruct netlink_ext_ack *extack);\n\tstruct module *owner;\n\tstruct rcu_head rcu;\n};\n\nint call_fib_notifier(struct notifier_block *nb,\n\t\t      enum fib_event_type event_type,\n\t\t      struct fib_notifier_info *info);\nint call_fib_notifiers(struct net *net, enum fib_event_type event_type,\n\t\t       struct fib_notifier_info *info);\nint register_fib_notifier(struct net *net, struct notifier_block *nb,\n\t\t\t  void (*cb)(struct notifier_block *nb),\n\t\t\t  struct netlink_ext_ack *extack);\nint unregister_fib_notifier(struct net *net, struct notifier_block *nb);\nstruct fib_notifier_ops *\nfib_notifier_ops_register(const struct fib_notifier_ops *tmpl, struct net *net);\nvoid fib_notifier_ops_unregister(struct fib_notifier_ops *ops);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

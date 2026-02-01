@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_realm.c",
+  "hash_id": "3f1ca52338971d4f74767a290509757febd6ebb9ff176533201259e452e09e9c",
+  "original_prompt": "Ingested from linux-6.6.14/net/netfilter/xt_realm.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/skbuff.h>\n#include <linux/netdevice.h>\n#include <net/route.h>\n\n#include <linux/netfilter_ipv4.h>\n#include <linux/netfilter/xt_realm.h>\n#include <linux/netfilter/x_tables.h>\n\nMODULE_AUTHOR(\"Sampsa Ranta <sampsa@netsonic.fi>\");\nMODULE_LICENSE(\"GPL\");\nMODULE_DESCRIPTION(\"Xtables: Routing realm match\");\nMODULE_ALIAS(\"ipt_realm\");\n\nstatic bool\nrealm_mt(const struct sk_buff *skb, struct xt_action_param *par)\n{\n\tconst struct xt_realm_info *info = par->matchinfo;\n\tconst struct dst_entry *dst = skb_dst(skb);\n\n\treturn (info->id == (dst->tclassid & info->mask)) ^ info->invert;\n}\n\nstatic struct xt_match realm_mt_reg __read_mostly = {\n\t.name\t\t= \"realm\",\n\t.match\t\t= realm_mt,\n\t.matchsize\t= sizeof(struct xt_realm_info),\n\t.hooks\t\t= (1 << NF_INET_POST_ROUTING) | (1 << NF_INET_FORWARD) |\n\t\t\t  (1 << NF_INET_LOCAL_OUT) | (1 << NF_INET_LOCAL_IN),\n\t.family\t\t= NFPROTO_UNSPEC,\n\t.me\t\t= THIS_MODULE\n};\n\nstatic int __init realm_mt_init(void)\n{\n\treturn xt_register_match(&realm_mt_reg);\n}\n\nstatic void __exit realm_mt_exit(void)\n{\n\txt_unregister_match(&realm_mt_reg);\n}\n\nmodule_init(realm_mt_init);\nmodule_exit(realm_mt_exit);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

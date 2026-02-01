@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "2f55143790c20f02dec1093bcbdf5f056bae49eabc9a6a349ba7ef73cd8b3751",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/perl/Perf-Trace-Util/Build",
+  "human_readable_source": "perf-y += Context.o\n\nCFLAGS_Context.o += $(PERL_EMBED_CCOPTS) -Wno-redundant-decls -Wno-strict-prototypes -Wno-bad-function-cast -Wno-declaration-after-statement -Wno-switch-enum\nCFLAGS_Context.o += -Wno-unused-parameter -Wno-nested-externs -Wno-undef\nCFLAGS_Context.o += -Wno-switch-default -Wno-shadow\n\nifeq ($(CC_NO_CLANG), 1)\n  CFLAGS_Context.o += -Wno-unused-command-line-argument\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

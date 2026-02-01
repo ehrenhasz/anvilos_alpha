@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "e82bd90658ae163fee48e2c5bab629516363c82eabb61e46bfc1c9d4547ca3b7",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zfs/Makefile.am",
+  "human_readable_source": "sbin_PROGRAMS   += zfs\nCPPCHECKTARGETS += zfs\n\nzfs_SOURCES = \\\n\t%D%/zfs_iter.c \\\n\t%D%/zfs_iter.h \\\n\t%D%/zfs_main.c \\\n\t%D%/zfs_project.c \\\n\t%D%/zfs_projectutil.h \\\n\t%D%/zfs_util.h\n\nzfs_LDADD = \\\n\tlibzfs.la \\\n\tlibzfs_core.la \\\n\tlibnvpair.la \\\n\tlibuutil.la\n\nzfs_LDADD += $(LTLIBINTL)\n\nif BUILD_FREEBSD\nzfs_LDADD += -lgeom -ljail\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

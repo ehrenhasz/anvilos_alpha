@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b1e82fdb02764e633537a721fd1905c4e406dcc3c289928a7500af03cdcbca56",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/davicom/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Davicom device configuration\n#\n\nconfig NET_VENDOR_DAVICOM\n\tbool \"Davicom devices\"\n\tdefault y\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Davicom devices. If you say Y, you will be asked\n\t  for your specific card in the following selections.\n\nif NET_VENDOR_DAVICOM\n\nconfig DM9000\n\ttristate \"DM9000 support\"\n\tdepends on ARM || MIPS || COLDFIRE || NIOS2 || COMPILE_TEST\n\tselect CRC32\n\tselect MII\n\thelp\n\t  Support for DM9000 chipset.\n\n\t  To compile this driver as a module, choose M here.  The module\n\t  will be called dm9000.\n\nconfig DM9000_FORCE_SIMPLE_PHY_POLL\n\tbool \"Force simple NSR based PHY polling\"\n\tdepends on DM9000\n\thelp\n\t  This configuration forces the DM9000 to use the NSR's LinkStatus\n\t  bit to determine if the link is up or down instead of the more\n\t  costly MII PHY reads. Note, this will not work if the chip is\n\t  operating with an external PHY.\n\nconfig DM9051\n\ttristate \"DM9051 SPI support\"\n\tdepends on SPI\n\tselect CRC32\n\tselect MDIO\n\tselect PHYLIB\n\tselect REGMAP_SPI\n\thelp\n\t  Support for DM9051 SPI chipset.\n\n\t  To compile this driver as a module, choose M here.  The module\n\t  will be called dm9051.\n\n\t  The SPI mode for the host's SPI master to access DM9051 is mode\n\t  0 on the SPI bus.\n\nendif # NET_VENDOR_DAVICOM\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

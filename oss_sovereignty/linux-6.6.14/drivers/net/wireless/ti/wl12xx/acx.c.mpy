@@ -1,0 +1,9 @@
+{
+  "module_name": "acx.c",
+  "hash_id": "ab6cb218f4a8f06b5d695ac987b858c929ff56dd2fa869495568930633d4a13e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wl12xx/acx.c",
+  "human_readable_source": "\n \n\n#include \"../wlcore/cmd.h\"\n#include \"../wlcore/debug.h\"\n#include \"../wlcore/acx.h\"\n\n#include \"acx.h\"\n\nint wl1271_acx_host_if_cfg_bitmap(struct wl1271 *wl, u32 host_cfg_bitmap)\n{\n\tstruct wl1271_acx_host_config_bitmap *bitmap_conf;\n\tint ret;\n\n\tbitmap_conf = kzalloc(sizeof(*bitmap_conf), GFP_KERNEL);\n\tif (!bitmap_conf) {\n\t\tret = -ENOMEM;\n\t\tgoto out;\n\t}\n\n\tbitmap_conf->host_cfg_bitmap = cpu_to_le32(host_cfg_bitmap);\n\n\tret = wl1271_cmd_configure(wl, ACX_HOST_IF_CFG_BITMAP,\n\t\t\t\t   bitmap_conf, sizeof(*bitmap_conf));\n\tif (ret < 0) {\n\t\twl1271_warning(\"wl1271 bitmap config opt failed: %d\", ret);\n\t\tgoto out;\n\t}\n\nout:\n\tkfree(bitmap_conf);\n\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

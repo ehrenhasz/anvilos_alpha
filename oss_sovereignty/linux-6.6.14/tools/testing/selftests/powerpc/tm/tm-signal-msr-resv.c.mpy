@@ -1,0 +1,9 @@
+{
+  "module_name": "tm-signal-msr-resv.c",
+  "hash_id": "f1aa5c999d22d81f94dc7ab42258690616d3c799a24d73ac2ee8b50014c2a325",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/tm/tm-signal-msr-resv.c",
+  "human_readable_source": "\n \n\n#include <stdlib.h>\n#include <stdio.h>\n#include <signal.h>\n#include <unistd.h>\n\n#include \"utils.h\"\n#include \"tm.h\"\n\nint segv_expected = 0;\n\nvoid signal_segv(int signum)\n{\n\tif (segv_expected && (signum == SIGSEGV))\n\t\t_exit(0);\n\t_exit(1);\n}\n\nvoid signal_usr1(int signum, siginfo_t *info, void *uc)\n{\n\tucontext_t *ucp = uc;\n\n\t \n\tucp->uc_link = ucp;\n\t \n#ifdef __powerpc64__\n\tucp->uc_mcontext.gp_regs[PT_MSR] |= (7ULL << 32);\n#else\n\tucp->uc_mcontext.uc_regs->gregs[PT_MSR] |= (7ULL);\n#endif\n\t \n\tsegv_expected = 1;\n}\n\nint tm_signal_msr_resv()\n{\n\tstruct sigaction act;\n\n\tSKIP_IF(!have_htm());\n\n\tact.sa_sigaction = signal_usr1;\n\tsigemptyset(&act.sa_mask);\n\tact.sa_flags = SA_SIGINFO;\n\tif (sigaction(SIGUSR1, &act, NULL) < 0) {\n\t\tperror(\"sigaction sigusr1\");\n\t\texit(1);\n\t}\n\tif (signal(SIGSEGV, signal_segv) == SIG_ERR)\n\t\texit(1);\n\n\traise(SIGUSR1);\n\n\t \n\treturn 1;\n}\n\nint main(void)\n{\n\treturn test_harness(tm_signal_msr_resv, \"tm_signal_msr_resv\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nc_panel.h",
+  "hash_id": "b3e80b299c6501aebfbd7b608c0bcc7a8d506cb2ab04ed10b421314cb46b5bc8",
+  "original_prompt": "Ingested from ncurses-6.4/include/nc_panel.h",
+  "human_readable_source": " \n\n \n\n \n\n#ifndef NC_PANEL_H\n#define NC_PANEL_H 1\n\n#include <ncurses_cfg.h>\n#include <curses.h>\n\n#ifdef __cplusplus\nextern \"C\"\n{\n#endif\n\n  struct panel;\t\t\t \n\n  struct panelhook\n    {\n      struct panel *top_panel;\n      struct panel *bottom_panel;\n      struct panel *stdscr_pseudo_panel;\n#if NO_LEAKS\n      int (*destroy) (struct panel *);\n#endif\n    };\n\n  struct screen;\t\t \n \n  extern NCURSES_EXPORT(struct panelhook *)\n    _nc_panelhook (void);\n#if NCURSES_SP_FUNCS\n  extern NCURSES_EXPORT(struct panelhook *)\n    NCURSES_SP_NAME(_nc_panelhook) (SCREEN *);\n#endif\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

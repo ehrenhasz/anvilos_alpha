@@ -1,0 +1,9 @@
+{
+  "module_name": "intel-mid.h",
+  "hash_id": "45d470cc04fb85dcc20130a0786bd4b243e662729fe3efd357611bb7c9891a65",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/intel-mid.h",
+  "human_readable_source": " \n \n#ifndef _ASM_X86_INTEL_MID_H\n#define _ASM_X86_INTEL_MID_H\n\n#include <linux/pci.h>\n\nextern int intel_mid_pci_init(void);\nextern int intel_mid_pci_set_power_state(struct pci_dev *pdev, pci_power_t state);\nextern pci_power_t intel_mid_pci_get_power_state(struct pci_dev *pdev);\n\nextern void intel_mid_pwr_power_off(void);\n\n#define INTEL_MID_PWR_LSS_OFFSET\t4\n#define INTEL_MID_PWR_LSS_TYPE\t\t(1 << 7)\n\nextern int intel_mid_pwr_get_lss_id(struct pci_dev *pdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

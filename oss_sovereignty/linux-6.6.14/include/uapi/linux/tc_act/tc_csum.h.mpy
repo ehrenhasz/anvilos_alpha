@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_csum.h",
+  "hash_id": "dd553fc2e09155ef08293bf5afc78c66c43db39a8c4610fe2f3a685b44324614",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_act/tc_csum.h",
+  "human_readable_source": " \n#ifndef __LINUX_TC_CSUM_H\n#define __LINUX_TC_CSUM_H\n\n#include <linux/types.h>\n#include <linux/pkt_cls.h>\n\nenum {\n\tTCA_CSUM_UNSPEC,\n\tTCA_CSUM_PARMS,\n\tTCA_CSUM_TM,\n\tTCA_CSUM_PAD,\n\t__TCA_CSUM_MAX\n};\n#define TCA_CSUM_MAX (__TCA_CSUM_MAX - 1)\n\nenum {\n\tTCA_CSUM_UPDATE_FLAG_IPV4HDR = 1,\n\tTCA_CSUM_UPDATE_FLAG_ICMP    = 2,\n\tTCA_CSUM_UPDATE_FLAG_IGMP    = 4,\n\tTCA_CSUM_UPDATE_FLAG_TCP     = 8,\n\tTCA_CSUM_UPDATE_FLAG_UDP     = 16,\n\tTCA_CSUM_UPDATE_FLAG_UDPLITE = 32,\n\tTCA_CSUM_UPDATE_FLAG_SCTP    = 64,\n};\n\nstruct tc_csum {\n\ttc_gen;\n\n\t__u32 update_flags;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

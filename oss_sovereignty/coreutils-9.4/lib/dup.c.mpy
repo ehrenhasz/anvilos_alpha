@@ -1,0 +1,9 @@
+{
+  "module_name": "dup.c",
+  "hash_id": "5bd7122128dbd393891940a803f6e82a01c4cf7db0e72bf363089d45e8de9226",
+  "original_prompt": "Ingested from coreutils-9.4/lib/dup.c",
+  "human_readable_source": " \n#include <unistd.h>\n\n#include <errno.h>\n\n#if HAVE_MSVC_INVALID_PARAMETER_HANDLER\n# include \"msvc-inval.h\"\n#endif\n\n#undef dup\n\n#if defined _WIN32 && !defined __CYGWIN__\n# if HAVE_MSVC_INVALID_PARAMETER_HANDLER\nstatic int\ndup_nothrow (int fd)\n{\n  int result;\n\n  TRY_MSVC_INVAL\n    {\n      result = _dup (fd);\n    }\n  CATCH_MSVC_INVAL\n    {\n      result = -1;\n      errno = EBADF;\n    }\n  DONE_MSVC_INVAL;\n\n  return result;\n}\n# else\n#  define dup_nothrow _dup\n# endif\n#elif defined __KLIBC__\n# include <fcntl.h>\n# include <sys/stat.h>\n\n# include <InnoTekLIBC/backend.h>\n\nstatic int\ndup_nothrow (int fd)\n{\n  int dupfd;\n  struct stat sbuf;\n\n  dupfd = dup (fd);\n  if (dupfd == -1 && errno == ENOTSUP \\\n      && !fstat (fd, &sbuf) && S_ISDIR (sbuf.st_mode))\n    {\n      char path[_MAX_PATH];\n\n       \n      if (!__libc_Back_ioFHToPath (fd, path, sizeof (path)))\n        dupfd = open (path, O_RDONLY);\n    }\n\n  return dupfd;\n}\n#else\n# define dup_nothrow dup\n#endif\n\nint\nrpl_dup (int fd)\n{\n  int result = dup_nothrow (fd);\n#if REPLACE_FCHDIR\n  if (result >= 0)\n    result = _gl_register_dup (fd, result);\n#endif\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

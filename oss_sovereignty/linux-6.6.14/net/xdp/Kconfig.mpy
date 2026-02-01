@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ea999bfbaa9c2f6feb75fe3e4c7004f60f6c22d924b3d2744adbf7a7a8fdea27",
+  "original_prompt": "Ingested from linux-6.6.14/net/xdp/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig XDP_SOCKETS\n\tbool \"XDP sockets\"\n\tdepends on BPF_SYSCALL\n\tdefault n\n\thelp\n\t  XDP sockets allows a channel between XDP programs and\n\t  userspace applications.\n\nconfig XDP_SOCKETS_DIAG\n\ttristate \"XDP sockets: monitoring interface\"\n\tdepends on XDP_SOCKETS\n\tdefault n\n\thelp\n\t  Support for PF_XDP sockets monitoring interface used by the ss tool.\n\t  If unsure, say Y.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

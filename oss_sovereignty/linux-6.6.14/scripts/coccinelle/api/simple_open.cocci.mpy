@@ -1,0 +1,9 @@
+{
+  "module_name": "simple_open.cocci",
+  "hash_id": "5ceb63238c7b6a04f5fa4fd31cf7e83829102675b4ddd4070c2df12e96d3e227",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/api/simple_open.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/// Remove an open coded simple_open() function\n/// and replace file operations references to the function\n/// with simple_open() instead.\n///\n// Confidence: High\n// Comments:\n// Options: --no-includes --include-headers\n\nvirtual patch\nvirtual report\n\n@ open depends on patch @\nidentifier open_f != simple_open;\nidentifier i, f;\n@@\n-int open_f(struct inode *i, struct file *f)\n-{\n(\n-if (i->i_private)\n-f->private_data = i->i_private;\n|\n-f->private_data = i->i_private;\n)\n-return 0;\n-}\n\n@ has_open depends on open @\nidentifier fops;\nidentifier open.open_f;\n@@\nstruct file_operations fops = {\n...,\n-.open = open_f,\n+.open = simple_open,\n...\n};\n\n@ openr depends on report @\nidentifier open_f != simple_open;\nidentifier i, f;\nposition p;\n@@\nint open_f@p(struct inode *i, struct file *f)\n{\n(\nif (i->i_private)\nf->private_data = i->i_private;\n|\nf->private_data = i->i_private;\n)\nreturn 0;\n}\n\n@ has_openr depends on openr @\nidentifier fops;\nidentifier openr.open_f;\nposition p;\n@@\nstruct file_operations fops = {\n...,\n.open = open_f@p,\n...\n};\n\n@script:python@\npf << openr.p;\nps << has_openr.p;\n@@\n\ncoccilib.report.print_report(pf[0],\"WARNING opportunity for simple_open, see also structure on line %s\"%(ps[0].line))\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

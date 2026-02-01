@@ -1,0 +1,9 @@
+{
+  "module_name": "touchscreen-s3c2410.h",
+  "hash_id": "8c75c6fe9d49758502934b53470fc1da620ff316e23f220f14f37e3489bdbf8b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/touchscreen-s3c2410.h",
+  "human_readable_source": " \n \n\n#ifndef __TOUCHSCREEN_S3C2410_H\n#define __TOUCHSCREEN_S3C2410_H\n\nstruct s3c2410_ts_mach_info {\n\tint delay;\n\tint presc;\n\tint oversampling_shift;\n\tvoid (*cfg_gpio)(struct platform_device *dev);\n};\n\nextern void s3c24xx_ts_set_platdata(struct s3c2410_ts_mach_info *);\nextern void s3c64xx_ts_set_platdata(struct s3c2410_ts_mach_info *);\n\n \nextern void s3c24xx_ts_cfg_gpio(struct platform_device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

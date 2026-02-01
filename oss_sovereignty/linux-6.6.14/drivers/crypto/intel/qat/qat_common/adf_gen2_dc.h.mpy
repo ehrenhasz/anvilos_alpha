@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_gen2_dc.h",
+  "hash_id": "538b894b0de18646022540bdea4fa388366d335b1eaf89b07057a9bffabb2f55",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/adf_gen2_dc.h",
+  "human_readable_source": " \n \n#ifndef ADF_GEN2_DC_H\n#define ADF_GEN2_DC_H\n\n#include \"adf_accel_devices.h\"\n\nvoid adf_gen2_init_dc_ops(struct adf_dc_ops *dc_ops);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

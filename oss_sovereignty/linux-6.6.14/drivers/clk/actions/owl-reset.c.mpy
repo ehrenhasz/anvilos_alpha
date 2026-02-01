@@ -1,0 +1,9 @@
+{
+  "module_name": "owl-reset.c",
+  "hash_id": "2bc618b147e2dc1951daacdf4a6cccde933eb913c280c46cbbc176f7a24a0dfb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/actions/owl-reset.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <linux/delay.h>\n#include <linux/regmap.h>\n#include <linux/reset-controller.h>\n\n#include \"owl-reset.h\"\n\nstatic int owl_reset_assert(struct reset_controller_dev *rcdev,\n\t\t\t    unsigned long id)\n{\n\tstruct owl_reset *reset = to_owl_reset(rcdev);\n\tconst struct owl_reset_map *map = &reset->reset_map[id];\n\n\treturn regmap_update_bits(reset->regmap, map->reg, map->bit, 0);\n}\n\nstatic int owl_reset_deassert(struct reset_controller_dev *rcdev,\n\t\t\t      unsigned long id)\n{\n\tstruct owl_reset *reset = to_owl_reset(rcdev);\n\tconst struct owl_reset_map *map = &reset->reset_map[id];\n\n\treturn regmap_update_bits(reset->regmap, map->reg, map->bit, map->bit);\n}\n\nstatic int owl_reset_reset(struct reset_controller_dev *rcdev,\n\t\t\t   unsigned long id)\n{\n\towl_reset_assert(rcdev, id);\n\tudelay(1);\n\towl_reset_deassert(rcdev, id);\n\n\treturn 0;\n}\n\nstatic int owl_reset_status(struct reset_controller_dev *rcdev,\n\t\t\t    unsigned long id)\n{\n\tstruct owl_reset *reset = to_owl_reset(rcdev);\n\tconst struct owl_reset_map *map = &reset->reset_map[id];\n\tu32 reg;\n\tint ret;\n\n\tret = regmap_read(reset->regmap, map->reg, &reg);\n\tif (ret)\n\t\treturn ret;\n\n\t \n\treturn !(map->bit & reg);\n}\n\nconst struct reset_control_ops owl_reset_ops = {\n\t.assert\t\t= owl_reset_assert,\n\t.deassert\t= owl_reset_deassert,\n\t.reset\t\t= owl_reset_reset,\n\t.status\t\t= owl_reset_status,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

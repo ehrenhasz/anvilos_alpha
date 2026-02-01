@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "e0ae06d8512bfa92bb6af95107ba46220376fe44ebd2fe597828ac777b7f2b0f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath10k/trace.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n\n#define CREATE_TRACE_POINTS\n#include \"trace.h\"\nEXPORT_SYMBOL(__tracepoint_ath10k_log_dbg);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

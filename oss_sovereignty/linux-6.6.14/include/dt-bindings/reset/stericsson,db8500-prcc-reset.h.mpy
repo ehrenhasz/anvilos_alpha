@@ -1,0 +1,9 @@
+{
+  "module_name": "stericsson,db8500-prcc-reset.h",
+  "hash_id": "31faea197adecbb7a6903405acd315aecebb12a9bb75cb9fc5e6f77ab3900bd6",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/stericsson,db8500-prcc-reset.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_STE_PRCC_RESET\n#define _DT_BINDINGS_STE_PRCC_RESET\n\n#define DB8500_PRCC_1\t\t\t\t1\n#define DB8500_PRCC_2\t\t\t\t2\n#define DB8500_PRCC_3\t\t\t\t3\n#define DB8500_PRCC_6\t\t\t\t6\n\n \n#define DB8500_PRCC_1_RESET_UART0\t\t0\n#define DB8500_PRCC_1_RESET_UART1\t\t1\n#define DB8500_PRCC_1_RESET_I2C1\t\t2\n#define DB8500_PRCC_1_RESET_MSP0\t\t3\n#define DB8500_PRCC_1_RESET_MSP1\t\t4\n#define DB8500_PRCC_1_RESET_SDI0\t\t5\n#define DB8500_PRCC_1_RESET_I2C2\t\t6\n#define DB8500_PRCC_1_RESET_SPI3\t\t7\n#define DB8500_PRCC_1_RESET_SLIMBUS0\t\t8\n#define DB8500_PRCC_1_RESET_I2C4\t\t9\n#define DB8500_PRCC_1_RESET_MSP3\t\t10\n#define DB8500_PRCC_1_RESET_PER_MSP3\t\t11\n#define DB8500_PRCC_1_RESET_PER_MSP1\t\t12\n#define DB8500_PRCC_1_RESET_PER_MSP0\t\t13\n#define DB8500_PRCC_1_RESET_PER_SLIMBUS\t\t14\n\n \n#define DB8500_PRCC_2_RESET_I2C3\t\t0\n#define DB8500_PRCC_2_RESET_PWL\t\t\t1\n#define DB8500_PRCC_2_RESET_SDI4\t\t2\n#define DB8500_PRCC_2_RESET_MSP2\t\t3\n#define DB8500_PRCC_2_RESET_SDI1\t\t4\n#define DB8500_PRCC_2_RESET_SDI3\t\t5\n#define DB8500_PRCC_2_RESET_HSIRX\t\t6\n#define DB8500_PRCC_2_RESET_HSITX\t\t7\n#define DB8500_PRCC_1_RESET_PER_MSP2\t\t8\n\n \n#define DB8500_PRCC_3_RESET_SSP0\t\t1\n#define DB8500_PRCC_3_RESET_SSP1\t\t2\n#define DB8500_PRCC_3_RESET_I2C0\t\t3\n#define DB8500_PRCC_3_RESET_SDI2\t\t4\n#define DB8500_PRCC_3_RESET_SKE\t\t\t5\n#define DB8500_PRCC_3_RESET_UART2\t\t6\n#define DB8500_PRCC_3_RESET_SDI5\t\t7\n\n \n#define DB8500_PRCC_3_RESET_RNG\t\t\t0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

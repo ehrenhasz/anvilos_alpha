@@ -1,0 +1,9 @@
+{
+  "module_name": "recalc_apic_map_test.c",
+  "hash_id": "765e5d80e454bbcddbdfdb24c10d3c1e5ea1eddd45168dc9978c4c6a70afd480",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/x86_64/recalc_apic_map_test.c",
+  "human_readable_source": "\n \n\n#include <sys/ioctl.h>\n#include <pthread.h>\n#include <time.h>\n\n#include \"processor.h\"\n#include \"test_util.h\"\n#include \"kvm_util.h\"\n#include \"apic.h\"\n\n#define TIMEOUT\t\t5\t \n\n#define LAPIC_DISABLED\t0\n#define LAPIC_X2APIC\t(MSR_IA32_APICBASE_ENABLE | X2APIC_ENABLE)\n#define MAX_XAPIC_ID\t0xff\n\nstatic void *race(void *arg)\n{\n\tstruct kvm_lapic_state lapic = {};\n\tstruct kvm_vcpu *vcpu = arg;\n\n\twhile (1) {\n\t\t \n\t\tvcpu_ioctl(vcpu, KVM_SET_LAPIC, &lapic);\n\t\tpthread_testcancel();\n\t}\n\n\treturn NULL;\n}\n\nint main(void)\n{\n\tstruct kvm_vcpu *vcpus[KVM_MAX_VCPUS];\n\tstruct kvm_vcpu *vcpuN;\n\tstruct kvm_vm *vm;\n\tpthread_t thread;\n\ttime_t t;\n\tint i;\n\n\tkvm_static_assert(KVM_MAX_VCPUS > MAX_XAPIC_ID);\n\n\t \n\tvm = vm_create_with_vcpus(KVM_MAX_VCPUS, NULL, vcpus);\n\n\t \n\tfor (i = 0; i < KVM_MAX_VCPUS; i++)\n\t\tvcpu_set_msr(vcpus[i], MSR_IA32_APICBASE, LAPIC_X2APIC);\n\n\tTEST_ASSERT_EQ(pthread_create(&thread, NULL, race, vcpus[0]), 0);\n\n\tvcpuN = vcpus[KVM_MAX_VCPUS - 1];\n\tfor (t = time(NULL) + TIMEOUT; time(NULL) < t;) {\n\t\tvcpu_set_msr(vcpuN, MSR_IA32_APICBASE, LAPIC_X2APIC);\n\t\tvcpu_set_msr(vcpuN, MSR_IA32_APICBASE, LAPIC_DISABLED);\n\t}\n\n\tTEST_ASSERT_EQ(pthread_cancel(thread), 0);\n\tTEST_ASSERT_EQ(pthread_join(thread, NULL), 0);\n\n\tkvm_vm_free(vm);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

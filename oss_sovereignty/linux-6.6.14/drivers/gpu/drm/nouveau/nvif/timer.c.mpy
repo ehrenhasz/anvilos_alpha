@@ -1,0 +1,9 @@
+{
+  "module_name": "timer.c",
+  "hash_id": "111fc122c3f2cb2356da69dff9a6c7d2c8e35920ad2fb034c58ade289c66bf55",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvif/timer.c",
+  "human_readable_source": " \n#include <nvif/timer.h>\n#include <nvif/device.h>\n\ns64\nnvif_timer_wait_test(struct nvif_timer_wait *wait)\n{\n\tu64 time = nvif_device_time(wait->device);\n\n\tif (wait->reads == 0) {\n\t\twait->time0 = time;\n\t\twait->time1 = time;\n\t}\n\n\tif (wait->time1 == time) {\n\t\tif (WARN_ON(wait->reads++ == 16))\n\t\t\treturn -ETIMEDOUT;\n\t} else {\n\t\twait->time1 = time;\n\t\twait->reads = 1;\n\t}\n\n\tif (wait->time1 - wait->time0 > wait->limit)\n\t\treturn -ETIMEDOUT;\n\n\treturn wait->time1 - wait->time0;\n}\n\nvoid\nnvif_timer_wait_init(struct nvif_device *device, u64 nsec,\n\t\t     struct nvif_timer_wait *wait)\n{\n\twait->device = device;\n\twait->limit = nsec;\n\twait->reads = 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

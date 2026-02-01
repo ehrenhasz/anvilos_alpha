@@ -1,0 +1,9 @@
+{
+  "module_name": "bus.json",
+  "hash_id": "3bc566c80215081158346310c5759d04f437d34d1205adc605ffe7cf47e1046d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/ampere/emag/bus.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS_RD\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS_WR\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS_SHARED\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS_NOT_SHARED\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS_NORMAL\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS_PERIPH\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

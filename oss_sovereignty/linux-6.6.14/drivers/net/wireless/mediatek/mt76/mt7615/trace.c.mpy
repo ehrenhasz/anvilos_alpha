@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "dbe644226515ed1a9f1a35f8f3c7d94313773571c128d027e264937f627eae17",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt7615/trace.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n\n#ifndef __CHECKER__\n#define CREATE_TRACE_POINTS\n#include \"mt7615_trace.h\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

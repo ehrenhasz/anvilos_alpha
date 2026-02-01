@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b024487b277979a0350b26ea664d95ab83f8d8d7620b2cd1c39a10c266f51b3f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/pasemi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the A Semi network device drivers.\n#\n\nobj-$(CONFIG_PASEMI_MAC) += pasemi_mac_driver.o\npasemi_mac_driver-objs := pasemi_mac.o pasemi_mac_ethtool.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

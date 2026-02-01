@@ -1,0 +1,9 @@
+{
+  "module_name": "comedi_pci.h",
+  "hash_id": "72ae42f3951cfd011811f8dd32595d068efbc01227946ec421ea48867be5b28a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/comedi/comedi_pci.h",
+  "human_readable_source": " \n \n\n#ifndef _COMEDI_PCI_H\n#define _COMEDI_PCI_H\n\n#include <linux/pci.h>\n#include <linux/comedi/comedidev.h>\n\n \n#define PCI_VENDOR_ID_KOLTER\t\t0x1001\n#define PCI_VENDOR_ID_ICP\t\t0x104c\n#define PCI_VENDOR_ID_DT\t\t0x1116\n#define PCI_VENDOR_ID_IOTECH\t\t0x1616\n#define PCI_VENDOR_ID_CONTEC\t\t0x1221\n#define PCI_VENDOR_ID_RTD\t\t0x1435\n#define PCI_VENDOR_ID_HUMUSOFT\t\t0x186c\n\nstruct pci_dev *comedi_to_pci_dev(struct comedi_device *dev);\n\nint comedi_pci_enable(struct comedi_device *dev);\nvoid comedi_pci_disable(struct comedi_device *dev);\nvoid comedi_pci_detach(struct comedi_device *dev);\n\nint comedi_pci_auto_config(struct pci_dev *pcidev, struct comedi_driver *driver,\n\t\t\t   unsigned long context);\nvoid comedi_pci_auto_unconfig(struct pci_dev *pcidev);\n\nint comedi_pci_driver_register(struct comedi_driver *comedi_driver,\n\t\t\t       struct pci_driver *pci_driver);\nvoid comedi_pci_driver_unregister(struct comedi_driver *comedi_driver,\n\t\t\t\t  struct pci_driver *pci_driver);\n\n \n#define module_comedi_pci_driver(__comedi_driver, __pci_driver) \\\n\tmodule_driver(__comedi_driver, comedi_pci_driver_register, \\\n\t\t\tcomedi_pci_driver_unregister, &(__pci_driver))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

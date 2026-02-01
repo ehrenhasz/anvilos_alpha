@@ -1,0 +1,9 @@
+{
+  "module_name": "recover.h",
+  "hash_id": "823db1f638dae0d9ff37ff181a660682c18a7f947c565053ea846848585cb37d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/dlm/recover.h",
+  "human_readable_source": " \n \n\n#ifndef __RECOVER_DOT_H__\n#define __RECOVER_DOT_H__\n\nint dlm_wait_function(struct dlm_ls *ls, int (*testfn) (struct dlm_ls *ls));\nuint32_t dlm_recover_status(struct dlm_ls *ls);\nvoid dlm_set_recover_status(struct dlm_ls *ls, uint32_t status);\nint dlm_recover_members_wait(struct dlm_ls *ls, uint64_t seq);\nint dlm_recover_directory_wait(struct dlm_ls *ls, uint64_t seq);\nint dlm_recover_locks_wait(struct dlm_ls *ls, uint64_t seq);\nint dlm_recover_done_wait(struct dlm_ls *ls, uint64_t seq);\nint dlm_recover_masters(struct dlm_ls *ls, uint64_t seq);\nint dlm_recover_master_reply(struct dlm_ls *ls, const struct dlm_rcom *rc);\nint dlm_recover_locks(struct dlm_ls *ls, uint64_t seq);\nvoid dlm_recovered_lock(struct dlm_rsb *r);\nint dlm_create_root_list(struct dlm_ls *ls);\nvoid dlm_release_root_list(struct dlm_ls *ls);\nvoid dlm_clear_toss(struct dlm_ls *ls);\nvoid dlm_recover_rsbs(struct dlm_ls *ls);\n\n#endif\t\t\t\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

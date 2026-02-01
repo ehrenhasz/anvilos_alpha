@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm47xx_wdt.h",
+  "hash_id": "61c2eee3b7f9d04554a6aaeaaab51f9f3a8a797923d359193b6be51400f22893",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bcm47xx_wdt.h",
+  "human_readable_source": " \n#ifndef LINUX_BCM47XX_WDT_H_\n#define LINUX_BCM47XX_WDT_H_\n\n#include <linux/timer.h>\n#include <linux/types.h>\n#include <linux/watchdog.h>\n\n\nstruct bcm47xx_wdt {\n\tu32 (*timer_set)(struct bcm47xx_wdt *, u32);\n\tu32 (*timer_set_ms)(struct bcm47xx_wdt *, u32);\n\tu32 max_timer_ms;\n\n\tvoid *driver_data;\n\n\tstruct watchdog_device wdd;\n\n\tstruct timer_list soft_timer;\n\tatomic_t soft_ticks;\n};\n\nstatic inline void *bcm47xx_wdt_get_drvdata(struct bcm47xx_wdt *wdt)\n{\n\treturn wdt->driver_data;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

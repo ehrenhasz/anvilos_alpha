@@ -1,0 +1,9 @@
+{
+  "module_name": "statfs.h",
+  "hash_id": "b9cd62ab6fdc2fbb6fae3a2ca25da6ba43a77e6c66ea13885df9aac58e881a4e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/statfs.h",
+  "human_readable_source": " \n#ifndef _LINUX_STATFS_H\n#define _LINUX_STATFS_H\n\n#include <linux/types.h>\n#include <asm/statfs.h>\n#include <asm/byteorder.h>\n\nstruct kstatfs {\n\tlong f_type;\n\tlong f_bsize;\n\tu64 f_blocks;\n\tu64 f_bfree;\n\tu64 f_bavail;\n\tu64 f_files;\n\tu64 f_ffree;\n\t__kernel_fsid_t f_fsid;\n\tlong f_namelen;\n\tlong f_frsize;\n\tlong f_flags;\n\tlong f_spare[4];\n};\n\n \n#define ST_RDONLY\t0x0001\t \n#define ST_NOSUID\t0x0002\t \n#define ST_NODEV\t0x0004\t \n#define ST_NOEXEC\t0x0008\t \n#define ST_SYNCHRONOUS\t0x0010\t \n#define ST_VALID\t0x0020\t \n#define ST_MANDLOCK\t0x0040\t \n \n \n \n#define ST_NOATIME\t0x0400\t \n#define ST_NODIRATIME\t0x0800\t \n#define ST_RELATIME\t0x1000\t \n#define ST_NOSYMFOLLOW\t0x2000\t \n\nstruct dentry;\nextern int vfs_get_fsid(struct dentry *dentry, __kernel_fsid_t *fsid);\n\nstatic inline __kernel_fsid_t u64_to_fsid(u64 v)\n{\n\treturn (__kernel_fsid_t){.val = {(u32)v, (u32)(v>>32)}};\n}\n\n \nstatic inline __kernel_fsid_t uuid_to_fsid(__u8 *uuid)\n{\n\treturn u64_to_fsid(le64_to_cpup((void *)uuid) ^\n\t\tle64_to_cpup((void *)(uuid + sizeof(u64))));\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

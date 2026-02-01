@@ -1,0 +1,9 @@
+{
+  "module_name": "sof_cirrus_common.h",
+  "hash_id": "d2fb46758d9c20969c9c91f16ef0ef93f71a155f64cdc957bb190c0529935a36",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/boards/sof_cirrus_common.h",
+  "human_readable_source": " \n \n#ifndef __SOF_CIRRUS_COMMON_H\n#define __SOF_CIRRUS_COMMON_H\n\n#include <sound/soc.h>\n\n \n#define CS35L41_CODEC_DAI\t\"cs35l41-pcm\"\n#define CS35L41_DEV0_NAME\t\"i2c-CSC3541:00\"\n#define CS35L41_DEV1_NAME\t\"i2c-CSC3541:01\"\n#define CS35L41_DEV2_NAME\t\"i2c-CSC3541:02\"\n#define CS35L41_DEV3_NAME\t\"i2c-CSC3541:03\"\n\nvoid cs35l41_set_dai_link(struct snd_soc_dai_link *link);\nvoid cs35l41_set_codec_conf(struct snd_soc_card *card);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

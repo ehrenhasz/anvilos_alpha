@@ -1,0 +1,9 @@
+{
+  "module_name": "us122l.h",
+  "hash_id": "31cf4d384ac7b96219413ec12535f97998d46fc1258b3b074c1cf9da0e14d9f6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/usx2y/us122l.h",
+  "human_readable_source": " \n#ifndef US122L_H\n#define US122L_H\n\n\nstruct us122l {\n\tstruct usb_device\t*dev;\n\tint\t\t\tcard_index;\n\tint\t\t\tstride;\n\tstruct usb_stream_kernel sk;\n\n\tstruct mutex\t\tmutex;\n\tstruct file\t\t*first;\n\tunsigned int\t\tsecond_periods_polled;\n\tstruct file\t\t*master;\n\tstruct file\t\t*slave;\n\tstruct list_head\tmidi_list;\n\n\tatomic_t\t\tmmap_count;\n\n\tbool\t\t\tis_us144;\n};\n\n\n#define US122L(c) ((struct us122l *)(c)->private_data)\n\n#define NAME_ALLCAPS \"US-122L\"\n\n#define USB_ID_US122L 0x800E\n#define USB_ID_US144 0x800F\n#define USB_ID_US122MKII 0x8021\n#define USB_ID_US144MKII 0x8020\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

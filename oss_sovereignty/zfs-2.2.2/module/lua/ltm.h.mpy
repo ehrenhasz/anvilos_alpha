@@ -1,0 +1,9 @@
+{
+  "module_name": "ltm.h",
+  "hash_id": "5de17544c2aac3b6d8d8846ad305ed7d9e07d387b9c60903e1edb6d49fc484cd",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/ltm.h",
+  "human_readable_source": " \n\n#ifndef ltm_h\n#define ltm_h\n\n\n#include \"lobject.h\"\n\n\n \ntypedef enum {\n  TM_INDEX,\n  TM_NEWINDEX,\n  TM_GC,\n  TM_MODE,\n  TM_LEN,\n  TM_EQ,   \n  TM_ADD,\n  TM_SUB,\n  TM_MUL,\n  TM_DIV,\n  TM_MOD,\n  TM_POW,\n  TM_UNM,\n  TM_LT,\n  TM_LE,\n  TM_CONCAT,\n  TM_CALL,\n  TM_N\t\t \n} TMS;\n\n\n\n#define gfasttm(g,et,e) ((et) == NULL ? NULL : \\\n  ((et)->flags & (1u<<(e))) ? NULL : luaT_gettm(et, e, (g)->tmname[e]))\n\n#define fasttm(l,et,e)\tgfasttm(G(l), et, e)\n\n#define ttypename(x)\tluaT_typenames_[(x) + 1]\n#define objtypename(x)\tttypename(ttypenv(x))\n\nLUAI_DDEC const char *const luaT_typenames_[LUA_TOTALTAGS];\n\n\nLUAI_FUNC const TValue *luaT_gettm (Table *events, TMS event, TString *ename);\nLUAI_FUNC const TValue *luaT_gettmbyobj (lua_State *L, const TValue *o,\n                                                       TMS event);\nLUAI_FUNC void luaT_init (lua_State *L);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

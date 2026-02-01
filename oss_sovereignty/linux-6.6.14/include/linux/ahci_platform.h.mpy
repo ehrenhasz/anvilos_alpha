@@ -1,0 +1,9 @@
+{
+  "module_name": "ahci_platform.h",
+  "hash_id": "b2bda1618cee549c098517f6aa27db062fbebacedca145139c518374aacab199",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ahci_platform.h",
+  "human_readable_source": " \n \n\n#ifndef _AHCI_PLATFORM_H\n#define _AHCI_PLATFORM_H\n\n#include <linux/compiler.h>\n\nstruct clk;\nstruct device;\nstruct ata_port_info;\nstruct ahci_host_priv;\nstruct platform_device;\nstruct scsi_host_template;\n\nint ahci_platform_enable_phys(struct ahci_host_priv *hpriv);\nvoid ahci_platform_disable_phys(struct ahci_host_priv *hpriv);\nstruct clk *ahci_platform_find_clk(struct ahci_host_priv *hpriv,\n\t\t\t\t   const char *con_id);\nint ahci_platform_enable_clks(struct ahci_host_priv *hpriv);\nvoid ahci_platform_disable_clks(struct ahci_host_priv *hpriv);\nint ahci_platform_deassert_rsts(struct ahci_host_priv *hpriv);\nint ahci_platform_assert_rsts(struct ahci_host_priv *hpriv);\nint ahci_platform_enable_regulators(struct ahci_host_priv *hpriv);\nvoid ahci_platform_disable_regulators(struct ahci_host_priv *hpriv);\nint ahci_platform_enable_resources(struct ahci_host_priv *hpriv);\nvoid ahci_platform_disable_resources(struct ahci_host_priv *hpriv);\nstruct ahci_host_priv *ahci_platform_get_resources(\n\tstruct platform_device *pdev, unsigned int flags);\nint ahci_platform_init_host(struct platform_device *pdev,\n\t\t\t    struct ahci_host_priv *hpriv,\n\t\t\t    const struct ata_port_info *pi_template,\n\t\t\t    const struct scsi_host_template *sht);\n\nvoid ahci_platform_shutdown(struct platform_device *pdev);\n\nint ahci_platform_suspend_host(struct device *dev);\nint ahci_platform_resume_host(struct device *dev);\nint ahci_platform_suspend(struct device *dev);\nint ahci_platform_resume(struct device *dev);\n\n#define AHCI_PLATFORM_GET_RESETS\tBIT(0)\n#define AHCI_PLATFORM_RST_TRIGGER\tBIT(1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

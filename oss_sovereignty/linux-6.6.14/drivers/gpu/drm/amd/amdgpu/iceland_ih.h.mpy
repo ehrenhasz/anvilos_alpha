@@ -1,0 +1,9 @@
+{
+  "module_name": "iceland_ih.h",
+  "hash_id": "e86aaa9ee606b13efaa01085f5a66d91a3f3e5f90e23b44103aafe2573fac4a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/iceland_ih.h",
+  "human_readable_source": " \n\n#ifndef __ICELAND_IH_H__\n#define __ICELAND_IH_H__\n\nextern const struct amdgpu_ip_block_version iceland_ih_ip_block;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

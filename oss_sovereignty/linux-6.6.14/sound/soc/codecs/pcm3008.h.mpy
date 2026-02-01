@@ -1,0 +1,9 @@
+{
+  "module_name": "pcm3008.h",
+  "hash_id": "66c2db84c5df626c3846aca484cf31b8c7875fc434c7b6ae2f0c286d91ad05b3",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/pcm3008.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SND_SOC_PCM3008_H\n#define __LINUX_SND_SOC_PCM3008_H\n\nstruct pcm3008_setup_data {\n\tunsigned dem0_pin;\n\tunsigned dem1_pin;\n\tunsigned pdad_pin;\n\tunsigned pdda_pin;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

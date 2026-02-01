@@ -1,0 +1,9 @@
+{
+  "module_name": "cros_ec.h",
+  "hash_id": "9e0f2d8bb0ce66a932a134fa5815eecff5d22d6284b5140a7975ece698492d04",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/chrome/cros_ec.h",
+  "human_readable_source": " \n \n\n#ifndef __CROS_EC_H\n#define __CROS_EC_H\n\n#include <linux/interrupt.h>\n\nint cros_ec_register(struct cros_ec_device *ec_dev);\nvoid cros_ec_unregister(struct cros_ec_device *ec_dev);\n\nint cros_ec_suspend(struct cros_ec_device *ec_dev);\nint cros_ec_suspend_late(struct cros_ec_device *ec_dev);\nint cros_ec_suspend_prepare(struct cros_ec_device *ec_dev);\nint cros_ec_resume(struct cros_ec_device *ec_dev);\nint cros_ec_resume_early(struct cros_ec_device *ec_dev);\nvoid cros_ec_resume_complete(struct cros_ec_device *ec_dev);\n\nirqreturn_t cros_ec_irq_thread(int irq, void *data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

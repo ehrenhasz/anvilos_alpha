@@ -1,0 +1,9 @@
+{
+  "module_name": "at91.h",
+  "hash_id": "831df574b12e4344ab7106e398d7b5eaef86b674b6a572f98b14437a352620b3",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/dma/at91.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_AT91_DMA_H__\n#define __DT_BINDINGS_AT91_DMA_H__\n\n \n\n \n#define AT91_DMA_CFG_PER_ID_MASK\t(0xff)\n#define AT91_DMA_CFG_PER_ID(id)\t\t(id & AT91_DMA_CFG_PER_ID_MASK)\n\n \n#define AT91_DMA_CFG_FIFOCFG_OFFSET\t(8)\n#define AT91_DMA_CFG_FIFOCFG_MASK\t(0xf << AT91_DMA_CFG_FIFOCFG_OFFSET)\n#define AT91_DMA_CFG_FIFOCFG_HALF\t(0x0 << AT91_DMA_CFG_FIFOCFG_OFFSET)\t \n#define AT91_DMA_CFG_FIFOCFG_ALAP\t(0x1 << AT91_DMA_CFG_FIFOCFG_OFFSET)\t \n#define AT91_DMA_CFG_FIFOCFG_ASAP\t(0x2 << AT91_DMA_CFG_FIFOCFG_OFFSET)\t \n\n\n \n#define AT91_XDMAC_DT_MEM_IF_MASK\t(0x1)\n#define AT91_XDMAC_DT_MEM_IF_OFFSET\t(13)\n#define AT91_XDMAC_DT_MEM_IF(mem_if)\t(((mem_if) & AT91_XDMAC_DT_MEM_IF_MASK) \\\n\t\t\t\t\t<< AT91_XDMAC_DT_MEM_IF_OFFSET)\n#define AT91_XDMAC_DT_GET_MEM_IF(cfg)\t(((cfg) >> AT91_XDMAC_DT_MEM_IF_OFFSET) \\\n\t\t\t\t\t& AT91_XDMAC_DT_MEM_IF_MASK)\n\n#define AT91_XDMAC_DT_PER_IF_MASK\t(0x1)\n#define AT91_XDMAC_DT_PER_IF_OFFSET\t(14)\n#define AT91_XDMAC_DT_PER_IF(per_if)\t(((per_if) & AT91_XDMAC_DT_PER_IF_MASK) \\\n\t\t\t\t\t<< AT91_XDMAC_DT_PER_IF_OFFSET)\n#define AT91_XDMAC_DT_GET_PER_IF(cfg)\t(((cfg) >> AT91_XDMAC_DT_PER_IF_OFFSET) \\\n\t\t\t\t\t& AT91_XDMAC_DT_PER_IF_MASK)\n\n#define AT91_XDMAC_DT_PERID_MASK\t(0x7f)\n#define AT91_XDMAC_DT_PERID_OFFSET\t(24)\n#define AT91_XDMAC_DT_PERID(perid)\t(((perid) & AT91_XDMAC_DT_PERID_MASK) \\\n\t\t\t\t\t<< AT91_XDMAC_DT_PERID_OFFSET)\n#define AT91_XDMAC_DT_GET_PERID(cfg)\t(((cfg) >> AT91_XDMAC_DT_PERID_OFFSET) \\\n\t\t\t\t\t& AT91_XDMAC_DT_PERID_MASK)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

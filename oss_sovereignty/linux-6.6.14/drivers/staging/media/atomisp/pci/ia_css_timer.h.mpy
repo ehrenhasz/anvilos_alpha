@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_timer.h",
+  "hash_id": "51f885e9639523f5916db352175614db5e4e605f6cf9a8153d609d479d77946f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/ia_css_timer.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_TIMER_H\n#define __IA_CSS_TIMER_H\n\n \n#include <type_support.h>\t\t \n#include \"ia_css_err.h\"\n\n \ntypedef u32 clock_value_t;\n\n \nstruct ia_css_clock_tick {\n\tclock_value_t ticks;  \n};\n\n \nenum ia_css_tm_event {\n\tIA_CSS_TM_EVENT_AFTER_INIT,\n\t \n\tIA_CSS_TM_EVENT_MAIN_END,\n\t \n\tIA_CSS_TM_EVENT_THREAD_START,\n\t \n\tIA_CSS_TM_EVENT_FRAME_PROC_START,\n\t \n\tIA_CSS_TM_EVENT_FRAME_PROC_END\n\t \n};\n\n \nstruct ia_css_time_meas {\n\tclock_value_t\tstart_timer_value;\t \n\tclock_value_t\tend_timer_value;\t \n};\n\n \n#define SIZE_OF_IA_CSS_CLOCK_TICK_STRUCT sizeof(clock_value_t)\n \n#define SIZE_OF_IA_CSS_TIME_MEAS_STRUCT (sizeof(clock_value_t) \\\n\t\t\t\t\t+ sizeof(clock_value_t))\n\n \nint\nia_css_timer_get_current_tick(\n    struct ia_css_clock_tick *curr_ts);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

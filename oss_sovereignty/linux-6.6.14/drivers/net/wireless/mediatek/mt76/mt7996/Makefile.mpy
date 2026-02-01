@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "56c4423dba40c79347b644666020962beb28f35ff23cd9ea3668459ffafc3789",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt7996/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: ISC\n\nobj-$(CONFIG_MT7996E) += mt7996e.o\n\nmt7996e-y := pci.o init.o dma.o eeprom.o main.o mcu.o mac.o \\\n\t     debugfs.o mmio.o\n\nmt7996e-$(CONFIG_DEV_COREDUMP) += coredump.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

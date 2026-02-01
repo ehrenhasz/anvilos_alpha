@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_9p.h",
+  "hash_id": "db2c9dcd43e1e6151fbad0ccb810e37125f4cf175bfd9d5fa0c2d39062af12c6",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/virtio_9p.h",
+  "human_readable_source": "#ifndef _LINUX_VIRTIO_9P_H\n#define _LINUX_VIRTIO_9P_H\n \n#include <linux/virtio_types.h>\n#include <linux/virtio_ids.h>\n#include <linux/virtio_config.h>\n\n \n\n \n#define VIRTIO_9P_MOUNT_TAG 0\n\nstruct virtio_9p_config {\n\t \n\t__virtio16 tag_len;\n\t \n\t__u8 tag[];\n} __attribute__((packed));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

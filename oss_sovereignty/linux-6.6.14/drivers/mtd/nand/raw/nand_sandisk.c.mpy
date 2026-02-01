@@ -1,0 +1,9 @@
+{
+  "module_name": "nand_sandisk.c",
+  "hash_id": "57e4df4462c352a55c27620b63e325e6483f89f47f29119b33d738ed857c01f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/nand/raw/nand_sandisk.c",
+  "human_readable_source": "\n\n#include \"internals.h\"\n\nstatic int\nsdtnqgama_choose_interface_config(struct nand_chip *chip,\n\t\t\t\t  struct nand_interface_config *iface)\n{\n\tonfi_fill_interface_config(chip, iface, NAND_SDR_IFACE, 0);\n\n\treturn nand_choose_best_sdr_timings(chip, iface, NULL);\n}\n\nstatic int sandisk_nand_init(struct nand_chip *chip)\n{\n\tif (!strncmp(\"SDTNQGAMA\", chip->parameters.model,\n\t\t     sizeof(\"SDTNQGAMA\") - 1))\n\t\tchip->ops.choose_interface_config =\n\t\t\t&sdtnqgama_choose_interface_config;\n\n\treturn 0;\n}\n\nconst struct nand_manufacturer_ops sandisk_nand_manuf_ops = {\n\t.init = sandisk_nand_init,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

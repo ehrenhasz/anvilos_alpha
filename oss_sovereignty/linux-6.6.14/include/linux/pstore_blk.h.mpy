@@ -1,0 +1,9 @@
+{
+  "module_name": "pstore_blk.h",
+  "hash_id": "0e5d46f1bb8df1621c9bb07095550e6c5cad4b5c4bc8c274e946f801627b712d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pstore_blk.h",
+  "human_readable_source": " \n\n#ifndef __PSTORE_BLK_H_\n#define __PSTORE_BLK_H_\n\n#include <linux/types.h>\n#include <linux/pstore.h>\n#include <linux/pstore_zone.h>\n\n \nstruct pstore_device_info {\n\tunsigned int flags;\n\tstruct pstore_zone_info zone;\n};\n\nint  register_pstore_device(struct pstore_device_info *dev);\nvoid unregister_pstore_device(struct pstore_device_info *dev);\n\n \nstruct pstore_blk_config {\n\tchar device[80];\n\tenum kmsg_dump_reason max_reason;\n\tunsigned long kmsg_size;\n\tunsigned long pmsg_size;\n\tunsigned long console_size;\n\tunsigned long ftrace_size;\n};\n\n \nint pstore_blk_get_config(struct pstore_blk_config *info);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

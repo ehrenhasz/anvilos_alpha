@@ -1,0 +1,9 @@
+{
+  "module_name": "ramnv10.c",
+  "hash_id": "4c4ad1cecd8fa4ba6b9281a487d0202839c82dab30d1afb5d56028fb2b1b45f8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/ramnv10.c",
+  "human_readable_source": " \n#include \"ram.h\"\n\nint\nnv10_ram_new(struct nvkm_fb *fb, struct nvkm_ram **pram)\n{\n\tstruct nvkm_device *device = fb->subdev.device;\n\tu32 size = nvkm_rd32(device, 0x10020c) & 0xff000000;\n\tu32 cfg0 = nvkm_rd32(device, 0x100200);\n\tenum nvkm_ram_type type;\n\n\tif (cfg0 & 0x00000001)\n\t\ttype = NVKM_RAM_TYPE_DDR1;\n\telse\n\t\ttype = NVKM_RAM_TYPE_SDRAM;\n\n\treturn nvkm_ram_new_(&nv04_ram_func, fb, type, size, pram);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

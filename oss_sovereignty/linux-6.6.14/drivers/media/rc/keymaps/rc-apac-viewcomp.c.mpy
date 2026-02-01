@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-apac-viewcomp.c",
+  "hash_id": "39db3d522a496737b2bb01140180e0c8f7e25ecfad51b338f3a62d45c5a18199",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-apac-viewcomp.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n\nstatic struct rc_map_table apac_viewcomp[] = {\n\n\t{ 0x01, KEY_NUMERIC_1 },\n\t{ 0x02, KEY_NUMERIC_2 },\n\t{ 0x03, KEY_NUMERIC_3 },\n\t{ 0x04, KEY_NUMERIC_4 },\n\t{ 0x05, KEY_NUMERIC_5 },\n\t{ 0x06, KEY_NUMERIC_6 },\n\t{ 0x07, KEY_NUMERIC_7 },\n\t{ 0x08, KEY_NUMERIC_8 },\n\t{ 0x09, KEY_NUMERIC_9 },\n\t{ 0x00, KEY_NUMERIC_0 },\n\t{ 0x17, KEY_LAST },\t\t \n\t{ 0x0a, KEY_LIST },\t\t \n\n\n\t{ 0x1c, KEY_TUNER },\t\t \n\t{ 0x15, KEY_SEARCH },\t\t \n\t{ 0x12, KEY_POWER },\t\t \n\t{ 0x1f, KEY_VOLUMEDOWN },\t \n\t{ 0x1b, KEY_VOLUMEUP },\t\t \n\t{ 0x1e, KEY_CHANNELDOWN },\t \n\t{ 0x1a, KEY_CHANNELUP },\t \n\n\t{ 0x11, KEY_VIDEO },\t\t \n\t{ 0x0f, KEY_ZOOM },\t\t \n\t{ 0x13, KEY_MUTE },\t\t \n\t{ 0x10, KEY_TEXT },\t\t \n\n\t{ 0x0d, KEY_STOP },\t\t \n\t{ 0x0e, KEY_RECORD },\t\t \n\t{ 0x1d, KEY_PLAYPAUSE },\t \n\t{ 0x19, KEY_PLAY },\t\t \n\n\t{ 0x16, KEY_GOTO },\t\t \n\t{ 0x14, KEY_REFRESH },\t\t \n\t{ 0x0c, KEY_KPPLUS },\t\t \n\t{ 0x18, KEY_KPMINUS },\t\t \n};\n\nstatic struct rc_map_list apac_viewcomp_map = {\n\t.map = {\n\t\t.scan     = apac_viewcomp,\n\t\t.size     = ARRAY_SIZE(apac_viewcomp),\n\t\t.rc_proto = RC_PROTO_UNKNOWN,\t \n\t\t.name     = RC_MAP_APAC_VIEWCOMP,\n\t}\n};\n\nstatic int __init init_rc_map_apac_viewcomp(void)\n{\n\treturn rc_map_register(&apac_viewcomp_map);\n}\n\nstatic void __exit exit_rc_map_apac_viewcomp(void)\n{\n\trc_map_unregister(&apac_viewcomp_map);\n}\n\nmodule_init(init_rc_map_apac_viewcomp)\nmodule_exit(exit_rc_map_apac_viewcomp)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Mauro Carvalho Chehab\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

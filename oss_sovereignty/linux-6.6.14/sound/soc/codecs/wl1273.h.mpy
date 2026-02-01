@@ -1,0 +1,9 @@
+{
+  "module_name": "wl1273.h",
+  "hash_id": "ebea1b150e42f174d783bd25d6c75f08ea33bbf578cbd0bd175912ea084eee38",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/wl1273.h",
+  "human_readable_source": " \n \n\n#ifndef __WL1273_CODEC_H__\n#define __WL1273_CODEC_H__\n\nint wl1273_get_format(struct snd_soc_component *component, unsigned int *fmt);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vivaldi-fmap.h",
+  "hash_id": "97857887a7c2e31f5828ef4902aff7f84288a24192cd288db3b267b9f3d1e995",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/input/vivaldi-fmap.h",
+  "human_readable_source": " \n#ifndef _VIVALDI_FMAP_H\n#define _VIVALDI_FMAP_H\n\n#include <linux/types.h>\n\n#define VIVALDI_MAX_FUNCTION_ROW_KEYS\t24\n\n \nstruct vivaldi_data {\n\tu32 function_row_physmap[VIVALDI_MAX_FUNCTION_ROW_KEYS];\n\tunsigned int num_function_row_keys;\n};\n\nssize_t vivaldi_function_row_physmap_show(const struct vivaldi_data *data,\n\t\t\t\t\t  char *buf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4e2b585c13915f76a868cb2063ca6f3464ac2a4fa6733933d5e6d5dea2f58720",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/adaptec/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Adaptec network device configuration\n#\n\nconfig NET_VENDOR_ADAPTEC\n\tbool \"Adaptec devices\"\n\tdefault y\n\tdepends on PCI\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Adaptec cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif NET_VENDOR_ADAPTEC\n\nconfig ADAPTEC_STARFIRE\n\ttristate \"Adaptec Starfire/DuraLAN support\"\n\tdepends on PCI\n\tselect CRC32\n\tselect MII\n\thelp\n\t  Say Y here if you have an Adaptec Starfire (or DuraLAN) PCI network\n\t  adapter. The DuraLAN chip is used on the 64 bit PCI boards from\n\t  Adaptec e.g. the ANA-6922A. The older 32 bit boards use the tulip\n\t  driver.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called starfire.  This is recommended.\n\nendif # NET_VENDOR_ADAPTEC\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

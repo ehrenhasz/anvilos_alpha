@@ -1,0 +1,9 @@
+{
+  "module_name": "cmpdi2.c",
+  "hash_id": "54e36c4625b7358d0d3e4ac7e46afa9626840b89a3d9ffeeccef047bb3aca560",
+  "original_prompt": "Ingested from linux-6.6.14/lib/cmpdi2.c",
+  "human_readable_source": "\n \n\n#include <linux/export.h>\n\n#include <linux/libgcc.h>\n\nword_type notrace __cmpdi2(long long a, long long b)\n{\n\tconst DWunion au = {\n\t\t.ll = a\n\t};\n\tconst DWunion bu = {\n\t\t.ll = b\n\t};\n\n\tif (au.s.high < bu.s.high)\n\t\treturn 0;\n\telse if (au.s.high > bu.s.high)\n\t\treturn 2;\n\n\tif ((unsigned int) au.s.low < (unsigned int) bu.s.low)\n\t\treturn 0;\n\telse if ((unsigned int) au.s.low > (unsigned int) bu.s.low)\n\t\treturn 2;\n\n\treturn 1;\n}\nEXPORT_SYMBOL(__cmpdi2);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

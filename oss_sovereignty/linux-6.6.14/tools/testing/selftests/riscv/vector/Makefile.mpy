@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "dacbc7b798bd0fc287406befbeb977136872beca40e5680d1b2c0033a6c23c99",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/riscv/vector/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (C) 2021 ARM Limited\n# Originally tools/testing/arm64/abi/Makefile\n\nTEST_GEN_PROGS := vstate_prctl v_initval_nolibc\nTEST_GEN_PROGS_EXTENDED := vstate_exec_nolibc\n\ninclude ../../lib.mk\n\n$(OUTPUT)/vstate_prctl: vstate_prctl.c ../hwprobe/sys_hwprobe.S\n\t$(CC) -static -o$@ $(CFLAGS) $(LDFLAGS) $^\n\n$(OUTPUT)/vstate_exec_nolibc: vstate_exec_nolibc.c\n\t$(CC) -nostdlib -static -include ../../../../include/nolibc/nolibc.h \\\n\t\t-Wall $(CFLAGS) $(LDFLAGS) $^ -o $@ -lgcc\n\n$(OUTPUT)/v_initval_nolibc: v_initval_nolibc.c\n\t$(CC) -nostdlib -static -include ../../../../include/nolibc/nolibc.h \\\n\t\t-Wall $(CFLAGS) $(LDFLAGS) $^ -o $@ -lgcc\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

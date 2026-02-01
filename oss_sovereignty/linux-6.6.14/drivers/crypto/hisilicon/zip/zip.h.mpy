@@ -1,0 +1,9 @@
+{
+  "module_name": "zip.h",
+  "hash_id": "177abfae2b3954c36adb2d5d206e69fd2eb57bfb163c41710f2524ec65a42d58",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/hisilicon/zip/zip.h",
+  "human_readable_source": " \n \n#ifndef HISI_ZIP_H\n#define HISI_ZIP_H\n\n#undef pr_fmt\n#define pr_fmt(fmt)\t\"hisi_zip: \" fmt\n\n#include <linux/list.h>\n#include <linux/hisi_acc_qm.h>\n\nenum hisi_zip_error_type {\n\t \n\tHZIP_NC_ERR = 0x0d,\n};\n\nstruct hisi_zip_dfx {\n\tatomic64_t send_cnt;\n\tatomic64_t recv_cnt;\n\tatomic64_t send_busy_cnt;\n\tatomic64_t err_bd_cnt;\n};\n\nstruct hisi_zip_ctrl;\n\nstruct hisi_zip {\n\tstruct hisi_qm qm;\n\tstruct hisi_zip_ctrl *ctrl;\n\tstruct hisi_zip_dfx dfx;\n};\n\nstruct hisi_zip_sqe {\n\tu32 consumed;\n\tu32 produced;\n\tu32 comp_data_length;\n\t \n\tu32 dw3;\n\tu32 input_data_length;\n\tu32 dw5;\n\tu32 dw6;\n\t \n\tu32 dw7;\n\t \n\tu32 dw8;\n\t \n\tu32 dw9;\n\tu32 dw10;\n\tu32 dw11;\n\tu32 dw12;\n\t \n\tu32 dw13;\n\tu32 dest_avail_out;\n\tu32 dw15;\n\tu32 dw16;\n\tu32 dw17;\n\tu32 source_addr_l;\n\tu32 source_addr_h;\n\tu32 dest_addr_l;\n\tu32 dest_addr_h;\n\tu32 dw22;\n\tu32 dw23;\n\tu32 dw24;\n\tu32 dw25;\n\t \n\tu32 dw26;\n\tu32 dw27;\n\tu32 rsvd1[4];\n};\n\nint zip_create_qps(struct hisi_qp **qps, int qp_num, int node);\nint hisi_zip_register_to_crypto(struct hisi_qm *qm);\nvoid hisi_zip_unregister_from_crypto(struct hisi_qm *qm);\nbool hisi_zip_alg_support(struct hisi_qm *qm, u32 alg);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

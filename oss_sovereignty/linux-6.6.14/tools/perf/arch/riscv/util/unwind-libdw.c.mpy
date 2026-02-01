@@ -1,0 +1,9 @@
+{
+  "module_name": "unwind-libdw.c",
+  "hash_id": "53e78ae3dd8d0fddf3fb15c53177db2849185013b47b4c1d64fac59f27f1dec4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/riscv/util/unwind-libdw.c",
+  "human_readable_source": "\n \n\n#include <elfutils/libdwfl.h>\n#include \"perf_regs.h\"\n#include \"../../util/unwind-libdw.h\"\n#include \"../../util/perf_regs.h\"\n#include \"../../util/sample.h\"\n\nbool libdw__arch_set_initial_registers(Dwfl_Thread *thread, void *arg)\n{\n\tstruct unwind_info *ui = arg;\n\tstruct regs_dump *user_regs = &ui->sample->user_regs;\n\tDwarf_Word dwarf_regs[32];\n\n#define REG(r) ({\t\t\t\t\t\t\\\n\tDwarf_Word val = 0;\t\t\t\t\t\\\n\tperf_reg_value(&val, user_regs, PERF_REG_RISCV_##r);\t\\\n\tval;\t\t\t\t\t\t\t\\\n})\n\n\tdwarf_regs[0]  = 0;\n\tdwarf_regs[1]  = REG(RA);\n\tdwarf_regs[2]  = REG(SP);\n\tdwarf_regs[3]  = REG(GP);\n\tdwarf_regs[4]  = REG(TP);\n\tdwarf_regs[5]  = REG(T0);\n\tdwarf_regs[6]  = REG(T1);\n\tdwarf_regs[7]  = REG(T2);\n\tdwarf_regs[8]  = REG(S0);\n\tdwarf_regs[9]  = REG(S1);\n\tdwarf_regs[10] = REG(A0);\n\tdwarf_regs[11] = REG(A1);\n\tdwarf_regs[12] = REG(A2);\n\tdwarf_regs[13] = REG(A3);\n\tdwarf_regs[14] = REG(A4);\n\tdwarf_regs[15] = REG(A5);\n\tdwarf_regs[16] = REG(A6);\n\tdwarf_regs[17] = REG(A7);\n\tdwarf_regs[18] = REG(S2);\n\tdwarf_regs[19] = REG(S3);\n\tdwarf_regs[20] = REG(S4);\n\tdwarf_regs[21] = REG(S5);\n\tdwarf_regs[22] = REG(S6);\n\tdwarf_regs[23] = REG(S7);\n\tdwarf_regs[24] = REG(S8);\n\tdwarf_regs[25] = REG(S9);\n\tdwarf_regs[26] = REG(S10);\n\tdwarf_regs[27] = REG(S11);\n\tdwarf_regs[28] = REG(T3);\n\tdwarf_regs[29] = REG(T4);\n\tdwarf_regs[30] = REG(T5);\n\tdwarf_regs[31] = REG(T6);\n\tdwfl_thread_state_register_pc(thread, REG(PC));\n\n\treturn dwfl_thread_state_registers(thread, 0, PERF_REG_RISCV_MAX,\n\t\t\t\t\t   dwarf_regs);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

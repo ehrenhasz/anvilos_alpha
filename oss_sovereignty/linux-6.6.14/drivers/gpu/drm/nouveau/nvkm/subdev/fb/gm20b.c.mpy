@@ -1,0 +1,9 @@
+{
+  "module_name": "gm20b.c",
+  "hash_id": "4e2417ec170a19463425a242450a17e9b8a1911d669651396288465453ff52ea",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/gm20b.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"gf100.h\"\n\n \nstatic const struct nvkm_fb_func\ngm20b_fb = {\n\t.dtor = gf100_fb_dtor,\n\t.oneinit = gf100_fb_oneinit,\n\t.init = gm200_fb_init,\n\t.init_page = gm200_fb_init_page,\n\t.intr = gf100_fb_intr,\n\t.sysmem.flush_page_init = gf100_fb_sysmem_flush_page_init,\n\t.default_bigpage = 0  ,\n};\n\nint\ngm20b_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn gf100_fb_new_(&gm20b_fb, device, type, inst, pfb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

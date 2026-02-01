@@ -1,0 +1,9 @@
+{
+  "module_name": "c-strtold.c",
+  "hash_id": "fdf92d836780805e06823d63f1e1cb7bc0e60145df2f605af90f1dd113a91ee5",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c-strtold.c",
+  "human_readable_source": "/* Convert string to 'long double' in C locale.\n\n   Copyright (C) 2004-2023 Free Software Foundation, Inc.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published\n   by the Free Software Foundation, either version 3 of the License,\n   or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with this program.  If not, see <https:\n\n#define LONG 1\n#include \"c-strtod.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

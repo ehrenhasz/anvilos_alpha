@@ -1,0 +1,9 @@
+{
+  "module_name": "uaccess_32.h",
+  "hash_id": "834aa7571c9a63dfb73c981ac97e0d029350e14a51c7d3d639b6b3c375e3f896",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/uaccess_32.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_UACCESS_32_H\n#define _ASM_X86_UACCESS_32_H\n\n \n#include <linux/string.h>\n#include <asm/asm.h>\n#include <asm/page.h>\n\nunsigned long __must_check __copy_user_ll\n\t\t(void *to, const void *from, unsigned long n);\nunsigned long __must_check __copy_from_user_ll_nocache_nozero\n\t\t(void *to, const void __user *from, unsigned long n);\n\nstatic __always_inline unsigned long __must_check\nraw_copy_to_user(void __user *to, const void *from, unsigned long n)\n{\n\treturn __copy_user_ll((__force void *)to, from, n);\n}\n\nstatic __always_inline unsigned long\nraw_copy_from_user(void *to, const void __user *from, unsigned long n)\n{\n\treturn __copy_user_ll(to, (__force const void *)from, n);\n}\n\nstatic __always_inline unsigned long\n__copy_from_user_inatomic_nocache(void *to, const void __user *from,\n\t\t\t\t  unsigned long n)\n{\n       return __copy_from_user_ll_nocache_nozero(to, from, n);\n}\n\nunsigned long __must_check clear_user(void __user *mem, unsigned long len);\nunsigned long __must_check __clear_user(void __user *mem, unsigned long len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

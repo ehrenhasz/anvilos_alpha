@@ -1,0 +1,9 @@
+{
+  "module_name": "sparx5_vcap_ag_api.h",
+  "hash_id": "1a2ec984454ba6b1309424a754b49825b0716b3c2d3b0ed80a5153ff2d68ffc5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/microchip/sparx5/sparx5_vcap_ag_api.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef __SPARX5_VCAP_AG_API_H__\n#define __SPARX5_VCAP_AG_API_H__\n\n \nextern const struct vcap_info sparx5_vcaps[];\nextern const struct vcap_statistics sparx5_vcap_stats;\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

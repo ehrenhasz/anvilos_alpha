@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "be6e217e6dd7129767f94ebddb8d174e4fe129cd7bf99ab66db937755c0f9336",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/mdp3/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmtk-mdp3-y += mdp_cfg_data.o mtk-mdp3-core.o mtk-mdp3-vpu.o mtk-mdp3-regs.o\nmtk-mdp3-y += mtk-mdp3-m2m.o\nmtk-mdp3-y += mtk-mdp3-comp.o mtk-mdp3-cmdq.o\n\nobj-$(CONFIG_VIDEO_MEDIATEK_MDP3) += mtk-mdp3.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

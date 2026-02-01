@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0887f0a379230416424c350a6e01739956a2469247817d218065bda04f27b619",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/mxsfb/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_MXS\n\tbool\n\thelp\n\t  Choose this option to select drivers for MXS FB devices\n\nconfig DRM_MXSFB\n\ttristate \"i.MX (e)LCDIF LCD controller\"\n\tdepends on DRM && OF\n\tdepends on COMMON_CLK\n\tdepends on ARCH_MXS || ARCH_MXC || COMPILE_TEST\n\tselect DRM_MXS\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect DRM_PANEL\n\tselect DRM_PANEL_BRIDGE\n\thelp\n\t  Choose this option if you have an LCDIF or eLCDIF LCD controller.\n\t  Those devices are found in various i.MX SoC (including i.MX23,\n\t  i.MX28, i.MX6SX, i.MX7 and i.MX8M).\n\n\t  If M is selected the module will be called mxsfb.\n\nconfig DRM_IMX_LCDIF\n\ttristate \"i.MX LCDIFv3 LCD controller\"\n\tdepends on DRM && OF\n\tdepends on COMMON_CLK\n\tdepends on ARCH_MXC || COMPILE_TEST\n\tselect DRM_MXS\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect DRM_PANEL\n\tselect DRM_PANEL_BRIDGE\n\thelp\n\t  Choose this option if you have an LCDIFv3 LCD controller.\n\t  Those devices are found in various i.MX SoC (i.MX8MP,\n\t  i.MXRT).\n\n\t  If M is selected the module will be called imx-lcdif.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

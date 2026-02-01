@@ -1,0 +1,9 @@
+{
+  "module_name": "mkfifo.c",
+  "hash_id": "2f1969bbfa00c4ef1d699c877239ba589477eddcd84a57786c505328a0902a0a",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mkfifo.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/stat.h>\n\n#include <errno.h>\n#include <string.h>\n\n#if !HAVE_MKFIFO\n \n\nint\nmkfifo (_GL_UNUSED char const *name, _GL_UNUSED mode_t mode)\n{\n  errno = ENOSYS;\n  return -1;\n}\n\n#else  \n\n# undef mkfifo\n\n \n\nint\nrpl_mkfifo (char const *name, mode_t mode)\n{\n# if MKFIFO_TRAILING_SLASH_BUG\n  size_t len = strlen (name);\n  if (len && name[len - 1] == '/')\n    {\n      struct stat st;\n      if (stat (name, &st) == 0 || errno == EOVERFLOW)\n        errno = EEXIST;\n      return -1;\n    }\n# endif\n  return mkfifo (name, mode);\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

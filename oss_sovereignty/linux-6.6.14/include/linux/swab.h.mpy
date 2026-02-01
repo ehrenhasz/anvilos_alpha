@@ -1,0 +1,9 @@
+{
+  "module_name": "swab.h",
+  "hash_id": "78c4e9afff33b882cb97cbd5391c22c3297b767cfa7d2093c926a8cfd99c9a17",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/swab.h",
+  "human_readable_source": " \n#ifndef _LINUX_SWAB_H\n#define _LINUX_SWAB_H\n\n#include <uapi/linux/swab.h>\n\n# define swab16 __swab16\n# define swab32 __swab32\n# define swab64 __swab64\n# define swab __swab\n# define swahw32 __swahw32\n# define swahb32 __swahb32\n# define swab16p __swab16p\n# define swab32p __swab32p\n# define swab64p __swab64p\n# define swahw32p __swahw32p\n# define swahb32p __swahb32p\n# define swab16s __swab16s\n# define swab32s __swab32s\n# define swab64s __swab64s\n# define swahw32s __swahw32s\n# define swahb32s __swahb32s\n\nstatic inline void swab16_array(u16 *buf, unsigned int words)\n{\n\twhile (words--) {\n\t\tswab16s(buf);\n\t\tbuf++;\n\t}\n}\n\nstatic inline void swab32_array(u32 *buf, unsigned int words)\n{\n\twhile (words--) {\n\t\tswab32s(buf);\n\t\tbuf++;\n\t}\n}\n\nstatic inline void swab64_array(u64 *buf, unsigned int words)\n{\n\twhile (words--) {\n\t\tswab64s(buf);\n\t\tbuf++;\n\t}\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

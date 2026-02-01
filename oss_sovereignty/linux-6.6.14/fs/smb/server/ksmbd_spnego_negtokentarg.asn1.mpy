@@ -1,0 +1,9 @@
+{
+  "module_name": "ksmbd_spnego_negtokentarg.asn1",
+  "hash_id": "769ffee72a75f6f16eca064ac3e9d737671794cd2084542b1ff4389f524fb0d9",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/server/ksmbd_spnego_negtokentarg.asn1",
+  "human_readable_source": "GSSAPI ::=\n\tCHOICE {\n\t\tnegTokenInit\n\t\t\t[0] ANY,\n\t\tnegTokenTarg\n\t\t\t[1] NegTokenTarg\n\t}\n\nNegTokenTarg ::=\n\tSEQUENCE {\n\t\tnegResult\n\t\t\t[0] ENUMERATED OPTIONAL,\n\t\tsupportedMech\n\t\t\t[1] OBJECT IDENTIFIER OPTIONAL,\n\t\tresponseToken\n\t\t\t[2] OCTET STRING OPTIONAL ({ksmbd_neg_token_targ_resp_token}),\n\t\tmechListMIC\n\t\t\t[3] OCTET STRING OPTIONAL\n\t}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

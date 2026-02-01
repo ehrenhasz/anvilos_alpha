@@ -1,0 +1,9 @@
+{
+  "module_name": "pg.h",
+  "hash_id": "1293b5a105e17c90bbee29cd2910109682884f2c7f5a64fe0eaee603c204e0a4",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/pg.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_PG_H\n#define _UAPI_LINUX_PG_H\n\n#define PG_MAGIC\t'P'\n#define PG_RESET\t'Z'\n#define PG_COMMAND\t'C'\n\n#define PG_MAX_DATA\t32768\n\nstruct pg_write_hdr {\n\n\tchar\tmagic;\t\t \n\tchar\tfunc;\t\t \n\tint     dlen;\t\t \n\tint     timeout;\t \n\tchar\tpacket[12];\t \n\n};\n\nstruct pg_read_hdr {\n\n\tchar\tmagic;\t\t \n\tchar\tscsi;\t\t \n\tint\tdlen;\t\t \n\tint     duration;\t \n\tchar    pad[12];\t \n\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

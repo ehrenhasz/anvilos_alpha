@@ -1,0 +1,9 @@
+{
+  "module_name": "smartpqi_sis.h",
+  "hash_id": "fe402646ff797dd739e271ff07b904621a44efc96508a2b5dd37e5e3af4c62d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/smartpqi/smartpqi_sis.h",
+  "human_readable_source": " \n \n\n#if !defined(_SMARTPQI_SIS_H)\n#define _SMARTPQI_SIS_H\n\nvoid sis_verify_structures(void);\nint sis_wait_for_ctrl_ready(struct pqi_ctrl_info *ctrl_info);\nint sis_wait_for_ctrl_ready_resume(struct pqi_ctrl_info *ctrl_info);\nbool sis_is_firmware_running(struct pqi_ctrl_info *ctrl_info);\nbool sis_is_kernel_up(struct pqi_ctrl_info *ctrl_info);\nint sis_get_ctrl_properties(struct pqi_ctrl_info *ctrl_info);\nint sis_get_pqi_capabilities(struct pqi_ctrl_info *ctrl_info);\nint sis_init_base_struct_addr(struct pqi_ctrl_info *ctrl_info);\nvoid sis_enable_msix(struct pqi_ctrl_info *ctrl_info);\nvoid sis_enable_intx(struct pqi_ctrl_info *ctrl_info);\nvoid sis_shutdown_ctrl(struct pqi_ctrl_info *ctrl_info,\n\tenum pqi_ctrl_shutdown_reason ctrl_shutdown_reason);\nint sis_pqi_reset_quiesce(struct pqi_ctrl_info *ctrl_info);\nint sis_reenable_sis_mode(struct pqi_ctrl_info *ctrl_info);\nvoid sis_write_driver_scratch(struct pqi_ctrl_info *ctrl_info, u32 value);\nu32 sis_read_driver_scratch(struct pqi_ctrl_info *ctrl_info);\nvoid sis_soft_reset(struct pqi_ctrl_info *ctrl_info);\nu32 sis_get_product_id(struct pqi_ctrl_info *ctrl_info);\nint sis_wait_for_fw_triage_completion(struct pqi_ctrl_info *ctrl_info);\n\nextern unsigned int sis_ctrl_ready_timeout_secs;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

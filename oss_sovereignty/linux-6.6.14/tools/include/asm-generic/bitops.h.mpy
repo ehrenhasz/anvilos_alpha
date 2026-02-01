@@ -1,0 +1,9 @@
+{
+  "module_name": "bitops.h",
+  "hash_id": "e06cf461e35c2e4ec36d5944512a8a311e3b142eee5b016c798a0cf562af99d1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/asm-generic/bitops.h",
+  "human_readable_source": " \n#ifndef __TOOLS_ASM_GENERIC_BITOPS_H\n#define __TOOLS_ASM_GENERIC_BITOPS_H\n\n \n\n#include <asm-generic/bitops/__ffs.h>\n#include <asm-generic/bitops/__ffz.h>\n#include <asm-generic/bitops/fls.h>\n#include <asm-generic/bitops/__fls.h>\n#include <asm-generic/bitops/fls64.h>\n\n#ifndef _TOOLS_LINUX_BITOPS_H_\n#error only <linux/bitops.h> can be included directly\n#endif\n\n#include <asm-generic/bitops/hweight.h>\n\n#include <asm-generic/bitops/atomic.h>\n#include <asm-generic/bitops/non-atomic.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cpu_if_regs.h",
+  "hash_id": "ec9949bc511cbeda4c20fe678580272cf7c6150aa87273239bbc9d6e3d3ba9ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/goya/asic_reg/cpu_if_regs.h",
+  "human_readable_source": " \n\n \n\n#ifndef ASIC_REG_CPU_IF_REGS_H_\n#define ASIC_REG_CPU_IF_REGS_H_\n\n \n\n#define mmCPU_IF_PF_PQ_PI                                            0x442100\n\n#define mmCPU_IF_ARUSER_OVR                                          0x442104\n\n#define mmCPU_IF_ARUSER_OVR_EN                                       0x442108\n\n#define mmCPU_IF_AWUSER_OVR                                          0x44210C\n\n#define mmCPU_IF_AWUSER_OVR_EN                                       0x442110\n\n#define mmCPU_IF_AXCACHE_OVR                                         0x442114\n\n#define mmCPU_IF_LOCK_OVR                                            0x442118\n\n#define mmCPU_IF_PROT_OVR                                            0x44211C\n\n#define mmCPU_IF_MAX_OUTSTANDING                                     0x442120\n\n#define mmCPU_IF_EARLY_BRESP_EN                                      0x442124\n\n#define mmCPU_IF_FORCE_RSP_OK                                        0x442128\n\n#define mmCPU_IF_CPU_MSB_ADDR                                        0x44212C\n\n#define mmCPU_IF_AXI_SPLIT_INTR                                      0x442130\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

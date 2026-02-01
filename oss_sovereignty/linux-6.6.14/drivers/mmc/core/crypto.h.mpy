@@ -1,0 +1,9 @@
+{
+  "module_name": "crypto.h",
+  "hash_id": "a32b9d47e6986091a2fb6435c78a65d4e44211f4b201416547e019ffcdef1976",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/core/crypto.h",
+  "human_readable_source": " \n \n\n#ifndef _MMC_CORE_CRYPTO_H\n#define _MMC_CORE_CRYPTO_H\n\nstruct mmc_host;\nstruct mmc_queue_req;\nstruct request_queue;\n\n#ifdef CONFIG_MMC_CRYPTO\n\nvoid mmc_crypto_set_initial_state(struct mmc_host *host);\n\nvoid mmc_crypto_setup_queue(struct request_queue *q, struct mmc_host *host);\n\nvoid mmc_crypto_prepare_req(struct mmc_queue_req *mqrq);\n\n#else  \n\nstatic inline void mmc_crypto_set_initial_state(struct mmc_host *host)\n{\n}\n\nstatic inline void mmc_crypto_setup_queue(struct request_queue *q,\n\t\t\t\t\t  struct mmc_host *host)\n{\n}\n\nstatic inline void mmc_crypto_prepare_req(struct mmc_queue_req *mqrq)\n{\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

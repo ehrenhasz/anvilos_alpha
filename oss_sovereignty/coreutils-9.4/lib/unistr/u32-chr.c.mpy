@@ -1,0 +1,9 @@
+{
+  "module_name": "u32-chr.c",
+  "hash_id": "3eaebed10fd9836dfa42ebd1dc8fb22456d6aa233b9097009aa790a401eb864d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unistr/u32-chr.c",
+  "human_readable_source": " \n#include \"unistr.h\"\n\nuint32_t *\nu32_chr (const uint32_t *s, size_t n, ucs4_t uc)\n{\n  for (; n > 0; s++, n--)\n    {\n      if (*s == uc)\n        return (uint32_t *) s;\n    }\n  return NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

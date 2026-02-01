@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5fc3b1f911ef50b4e506d7b120bda4dc7e2d193dbe9d66f300638721f55b41d8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/dma/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCFLAGS += -I../../../../usr/include/\nCFLAGS += -I../../../../include/\n\nTEST_GEN_PROGS := dma_map_benchmark\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

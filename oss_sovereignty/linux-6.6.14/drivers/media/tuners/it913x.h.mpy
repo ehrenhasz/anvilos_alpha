@@ -1,0 +1,9 @@
+{
+  "module_name": "it913x.h",
+  "hash_id": "50cf06c589f164bbab983372de70cee6c08c4dcde14655d129542ecc048c1168",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/it913x.h",
+  "human_readable_source": " \n \n\n#ifndef IT913X_H\n#define IT913X_H\n\n#include <media/dvb_frontend.h>\n\n \n\nstruct it913x_platform_data {\n\tstruct regmap *regmap;\n\tstruct dvb_frontend *fe;\n#define IT913X_ROLE_SINGLE         0\n#define IT913X_ROLE_DUAL_MASTER    1\n#define IT913X_ROLE_DUAL_SLAVE     2\n\tunsigned int role:2;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

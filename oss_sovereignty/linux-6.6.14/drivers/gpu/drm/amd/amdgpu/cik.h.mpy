@@ -1,0 +1,9 @@
+{
+  "module_name": "cik.h",
+  "hash_id": "713627a613b9c040cac918a4b7105bbdfcdcd37429a048b6b55b435ea492ccf1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/cik.h",
+  "human_readable_source": " \n\n#ifndef __CIK_H__\n#define __CIK_H__\n\n#define CIK_FLUSH_GPU_TLB_NUM_WREG\t3\n\nvoid cik_srbm_select(struct amdgpu_device *adev,\n\t\t     u32 me, u32 pipe, u32 queue, u32 vmid);\nint cik_set_ip_blocks(struct amdgpu_device *adev);\n\nvoid legacy_doorbell_index_init(struct amdgpu_device *adev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

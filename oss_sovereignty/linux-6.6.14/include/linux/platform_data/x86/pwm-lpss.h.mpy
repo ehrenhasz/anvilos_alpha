@@ -1,0 +1,9 @@
+{
+  "module_name": "pwm-lpss.h",
+  "hash_id": "e12e3a3fa31083ce1a484efb233772c194efdad47d0bf1996d9e055f0522a31d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/x86/pwm-lpss.h",
+  "human_readable_source": " \n \n\n#ifndef __PLATFORM_DATA_X86_PWM_LPSS_H\n#define __PLATFORM_DATA_X86_PWM_LPSS_H\n\n#include <linux/types.h>\n\nstruct device;\n\nstruct pwm_lpss_chip;\n\nstruct pwm_lpss_boardinfo {\n\tunsigned long clk_rate;\n\tunsigned int npwm;\n\tunsigned long base_unit_bits;\n\t \n\tbool bypass;\n\t \n\tbool other_devices_aml_touches_pwm_regs;\n};\n\nstruct pwm_lpss_chip *devm_pwm_lpss_probe(struct device *dev, void __iomem *base,\n\t\t\t\t\t  const struct pwm_lpss_boardinfo *info);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

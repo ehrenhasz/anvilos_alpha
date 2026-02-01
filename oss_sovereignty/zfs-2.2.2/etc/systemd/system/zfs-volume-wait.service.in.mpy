@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs-volume-wait.service.in",
+  "hash_id": "c49c2c1d907589215ae52406feb69eb8d306bd58bb090f74a0ed5c80682630e0",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/systemd/system/zfs-volume-wait.service.in",
+  "human_readable_source": "[Unit]\nDescription=Wait for ZFS Volume (zvol) links in /dev\nDefaultDependencies=no\nAfter=systemd-udev-settle.service\nAfter=zfs-import.target\nConditionPathIsDirectory=/sys/module/zfs\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\nEnvironmentFile=-@initconfdir@/zfs\nExecStart=@bindir@/zvol_wait\n\n[Install]\nWantedBy=zfs-volumes.target\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

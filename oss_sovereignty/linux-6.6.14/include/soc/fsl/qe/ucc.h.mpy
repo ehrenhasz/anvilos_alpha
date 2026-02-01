@@ -1,0 +1,9 @@
+{
+  "module_name": "ucc.h",
+  "hash_id": "b16c0ada103f969c536cc7462224beacf352ea0182b480c57ab71b367515213f",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/fsl/qe/ucc.h",
+  "human_readable_source": " \n \n#ifndef __UCC_H__\n#define __UCC_H__\n\n#include <soc/fsl/qe/immap_qe.h>\n#include <soc/fsl/qe/qe.h>\n\n#define STATISTICS\n\n#define UCC_MAX_NUM\t8\n\n \nenum ucc_speed_type {\n\tUCC_SPEED_TYPE_FAST = UCC_GUEMR_MODE_FAST_RX | UCC_GUEMR_MODE_FAST_TX,\n\tUCC_SPEED_TYPE_SLOW = UCC_GUEMR_MODE_SLOW_RX | UCC_GUEMR_MODE_SLOW_TX\n};\n\n \nint ucc_set_type(unsigned int ucc_num, enum ucc_speed_type speed);\n\nint ucc_set_qe_mux_mii_mng(unsigned int ucc_num);\n\nint ucc_set_qe_mux_rxtx(unsigned int ucc_num, enum qe_clock clock,\n\tenum comm_dir mode);\nint ucc_set_tdm_rxtx_clk(unsigned int tdm_num, enum qe_clock clock,\n\t\t\t enum comm_dir mode);\nint ucc_set_tdm_rxtx_sync(unsigned int tdm_num, enum qe_clock clock,\n\t\t\t  enum comm_dir mode);\n\nint ucc_mux_set_grant_tsa_bkpt(unsigned int ucc_num, int set, u32 mask);\n\n \nstatic inline int ucc_set_qe_mux_grant(unsigned int ucc_num, int set)\n{\n\treturn ucc_mux_set_grant_tsa_bkpt(ucc_num, set, QE_CMXUCR_GRANT);\n}\n\nstatic inline int ucc_set_qe_mux_tsa(unsigned int ucc_num, int set)\n{\n\treturn ucc_mux_set_grant_tsa_bkpt(ucc_num, set, QE_CMXUCR_TSA);\n}\n\nstatic inline int ucc_set_qe_mux_bkpt(unsigned int ucc_num, int set)\n{\n\treturn ucc_mux_set_grant_tsa_bkpt(ucc_num, set, QE_CMXUCR_BKPT);\n}\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hda_dsp_common.h",
+  "hash_id": "84271543662d0911ad79dd2fa917903a3c7615cb5a7c84a24a0e79683fd64e12",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/boards/hda_dsp_common.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef __HDA_DSP_COMMON_H\n#define __HDA_DSP_COMMON_H\n\n#include <sound/hda_codec.h>\n#include <sound/hda_i915.h>\n#include \"../../codecs/hdac_hda.h\"\n\n#if IS_ENABLED(CONFIG_SND_SOC_SOF_HDA_AUDIO_CODEC)\nint hda_dsp_hdmi_build_controls(struct snd_soc_card *card,\n\t\t\t\tstruct snd_soc_component *comp);\n#else\nstatic inline int hda_dsp_hdmi_build_controls(struct snd_soc_card *card,\n\t\t\t\t\t      struct snd_soc_component *comp)\n{\n\treturn -EINVAL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

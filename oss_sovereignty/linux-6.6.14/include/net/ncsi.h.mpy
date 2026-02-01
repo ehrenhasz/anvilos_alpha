@@ -1,0 +1,9 @@
+{
+  "module_name": "ncsi.h",
+  "hash_id": "9b630bd66b0d54d966d55abf1efcab01929184ce44efad829994ed6c5165b0da",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/ncsi.h",
+  "human_readable_source": " \n#ifndef __NET_NCSI_H\n#define __NET_NCSI_H\n\n#include <linux/types.h>\n\n \nenum {\n\tncsi_dev_state_registered\t= 0x0000,\n\tncsi_dev_state_functional\t= 0x0100,\n\tncsi_dev_state_probe\t\t= 0x0200,\n\tncsi_dev_state_config\t\t= 0x0300,\n\tncsi_dev_state_suspend\t\t= 0x0400,\n};\n\nstruct ncsi_dev {\n\tint               state;\n\tint\t\t  link_up;\n\tstruct net_device *dev;\n\tvoid\t\t  (*handler)(struct ncsi_dev *ndev);\n};\n\n#ifdef CONFIG_NET_NCSI\nint ncsi_vlan_rx_add_vid(struct net_device *dev, __be16 proto, u16 vid);\nint ncsi_vlan_rx_kill_vid(struct net_device *dev, __be16 proto, u16 vid);\nstruct ncsi_dev *ncsi_register_dev(struct net_device *dev,\n\t\t\t\t   void (*notifier)(struct ncsi_dev *nd));\nint ncsi_start_dev(struct ncsi_dev *nd);\nvoid ncsi_stop_dev(struct ncsi_dev *nd);\nvoid ncsi_unregister_dev(struct ncsi_dev *nd);\n#else  \nstatic inline int ncsi_vlan_rx_add_vid(struct net_device *dev, __be16 proto, u16 vid)\n{\n\treturn -EINVAL;\n}\n\nstatic inline int ncsi_vlan_rx_kill_vid(struct net_device *dev, __be16 proto, u16 vid)\n{\n\treturn -EINVAL;\n}\n\nstatic inline struct ncsi_dev *ncsi_register_dev(struct net_device *dev,\n\t\t\t\t\tvoid (*notifier)(struct ncsi_dev *nd))\n{\n\treturn NULL;\n}\n\nstatic inline int ncsi_start_dev(struct ncsi_dev *nd)\n{\n\treturn -ENOTTY;\n}\n\nstatic void ncsi_stop_dev(struct ncsi_dev *nd)\n{\n}\n\nstatic inline void ncsi_unregister_dev(struct ncsi_dev *nd)\n{\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "selftest.h",
+  "hash_id": "4ef14c7bd038784e0c043bc48c971db382cfbc2b10261f3a12fa8edab8c7cfbb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/siena/selftest.h",
+  "human_readable_source": " \n \n\n#ifndef EFX_SELFTEST_H\n#define EFX_SELFTEST_H\n\n#include \"net_driver.h\"\n\n \n\nstruct efx_loopback_self_tests {\n\tint tx_sent[EFX_MAX_TXQ_PER_CHANNEL];\n\tint tx_done[EFX_MAX_TXQ_PER_CHANNEL];\n\tint rx_good;\n\tint rx_bad;\n};\n\n#define EFX_MAX_PHY_TESTS 20\n\n \nstruct efx_self_tests {\n\t \n\tint phy_alive;\n\tint nvram;\n\tint interrupt;\n\tint eventq_dma[EFX_MAX_CHANNELS];\n\tint eventq_int[EFX_MAX_CHANNELS];\n\t \n\tint memory;\n\tint registers;\n\tint phy_ext[EFX_MAX_PHY_TESTS];\n\tstruct efx_loopback_self_tests loopback[LOOPBACK_TEST_MAX + 1];\n};\n\nvoid efx_siena_loopback_rx_packet(struct efx_nic *efx, const char *buf_ptr,\n\t\t\t\t  int pkt_len);\nint efx_siena_selftest(struct efx_nic *efx, struct efx_self_tests *tests,\n\t\t       unsigned int flags);\nvoid efx_siena_selftest_async_init(struct efx_nic *efx);\nvoid efx_siena_selftest_async_start(struct efx_nic *efx);\nvoid efx_siena_selftest_async_cancel(struct efx_nic *efx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

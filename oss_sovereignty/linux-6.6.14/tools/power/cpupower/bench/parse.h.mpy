@@ -1,0 +1,9 @@
+{
+  "module_name": "parse.h",
+  "hash_id": "3403d09b59696fc762a7d86b4fc391d710265b8594fc481062d9feba1da159be",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/bench/parse.h",
+  "human_readable_source": " \n \n\n \nstruct config\n{\n\tlong sleep;\t\t \n\tlong load;\t\t \n\tlong sleep_step;\t \n\tlong load_step;\t\t \n\tunsigned int cycles;\t \n\tunsigned int rounds;\t \n\tunsigned int cpu;\t \n\tchar governor[15];\t \n\tenum sched_prio\t\t \n\t{\n\t\tSCHED_ERR = -1,\n\t\tSCHED_HIGH,\n\t\tSCHED_DEFAULT,\n\t\tSCHED_LOW\n\t} prio;\n\n\tunsigned int verbose;\t \n\tFILE *output;\t\t \n\tchar *output_filename;\t \n};\n\nenum sched_prio string_to_prio(const char *str);\n\nFILE *prepare_output(const char *dir);\n\nint prepare_config(const char *path, struct config *config);\nstruct config *prepare_default_config();\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

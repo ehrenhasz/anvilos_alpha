@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3b3a0143a3d1dea48cb61cb80950ade512fe3d19179047385c74c6f98671dabb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/arm/display/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig DRM_KOMEDA\n\ttristate \"ARM Komeda display driver\"\n\tdepends on DRM && OF\n\tdepends on COMMON_CLK\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect VIDEOMODE_HELPERS\n\thelp\n\t  Choose this option if you want to compile the ARM Komeda display\n\t  Processor driver. It supports the D71 variants of the hardware.\n\n\t  If compiled as a module it will be called komeda.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

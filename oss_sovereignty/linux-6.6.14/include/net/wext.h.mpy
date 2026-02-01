@@ -1,0 +1,9 @@
+{
+  "module_name": "wext.h",
+  "hash_id": "6e5efc61081ebe0175237b8fd7c71a0aab9bb0b558ad794299fd433d432caa6c",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/wext.h",
+  "human_readable_source": " \n#ifndef __NET_WEXT_H\n#define __NET_WEXT_H\n\n#include <net/iw_handler.h>\n\nstruct net;\n\n#ifdef CONFIG_WEXT_CORE\nint wext_handle_ioctl(struct net *net, unsigned int cmd,\n\t\t      void __user *arg);\nint compat_wext_handle_ioctl(struct net *net, unsigned int cmd,\n\t\t\t     unsigned long arg);\n\nstruct iw_statistics *get_wireless_stats(struct net_device *dev);\nint call_commit_handler(struct net_device *dev);\n#else\nstatic inline int wext_handle_ioctl(struct net *net, unsigned int cmd,\n\t\t\t\t    void __user *arg)\n{\n\treturn -EINVAL;\n}\nstatic inline int compat_wext_handle_ioctl(struct net *net, unsigned int cmd,\n\t\t\t\t\t   unsigned long arg)\n{\n\treturn -EINVAL;\n}\n#endif\n\n#ifdef CONFIG_WEXT_PROC\nint wext_proc_init(struct net *net);\nvoid wext_proc_exit(struct net *net);\n#else\nstatic inline int wext_proc_init(struct net *net)\n{\n\treturn 0;\n}\nstatic inline void wext_proc_exit(struct net *net)\n{\n\treturn;\n}\n#endif\n\n#ifdef CONFIG_WEXT_PRIV\nint ioctl_private_call(struct net_device *dev, struct iwreq *iwr,\n\t\t       unsigned int cmd, struct iw_request_info *info,\n\t\t       iw_handler handler);\nint compat_private_call(struct net_device *dev, struct iwreq *iwr,\n\t\t\tunsigned int cmd, struct iw_request_info *info,\n\t\t\tiw_handler handler);\nint iw_handler_get_private(struct net_device *\t\tdev,\n\t\t\t   struct iw_request_info *\tinfo,\n\t\t\t   union iwreq_data *\t\twrqu,\n\t\t\t   char *\t\t\textra);\n#else\n#define ioctl_private_call NULL\n#define compat_private_call NULL\n#endif\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

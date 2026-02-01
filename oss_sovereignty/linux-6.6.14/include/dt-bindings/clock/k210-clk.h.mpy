@@ -1,0 +1,9 @@
+{
+  "module_name": "k210-clk.h",
+  "hash_id": "10055d7eba5620babbe3cb377dad195973fd55d6272e6eaec6a6a3196e726a94",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/k210-clk.h",
+  "human_readable_source": " \n \n#ifndef CLOCK_K210_CLK_H\n#define CLOCK_K210_CLK_H\n\n \n#define K210_CLK_CPU\t0\n#define K210_CLK_SRAM0\t1\n#define K210_CLK_SRAM1\t2\n#define K210_CLK_AI\t3\n#define K210_CLK_DMA\t4\n#define K210_CLK_FFT\t5\n#define K210_CLK_ROM\t6\n#define K210_CLK_DVP\t7\n#define K210_CLK_APB0\t8\n#define K210_CLK_APB1\t9\n#define K210_CLK_APB2\t10\n#define K210_CLK_I2S0\t11\n#define K210_CLK_I2S1\t12\n#define K210_CLK_I2S2\t13\n#define K210_CLK_I2S0_M\t14\n#define K210_CLK_I2S1_M\t15\n#define K210_CLK_I2S2_M\t16\n#define K210_CLK_WDT0\t17\n#define K210_CLK_WDT1\t18\n#define K210_CLK_SPI0\t19\n#define K210_CLK_SPI1\t20\n#define K210_CLK_SPI2\t21\n#define K210_CLK_I2C0\t22\n#define K210_CLK_I2C1\t23\n#define K210_CLK_I2C2\t24\n#define K210_CLK_SPI3\t25\n#define K210_CLK_TIMER0\t26\n#define K210_CLK_TIMER1\t27\n#define K210_CLK_TIMER2\t28\n#define K210_CLK_GPIO\t29\n#define K210_CLK_UART1\t30\n#define K210_CLK_UART2\t31\n#define K210_CLK_UART3\t32\n#define K210_CLK_FPIOA\t33\n#define K210_CLK_SHA\t34\n#define K210_CLK_AES\t35\n#define K210_CLK_OTP\t36\n#define K210_CLK_RTC\t37\n\n#define K210_NUM_CLKS\t38\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

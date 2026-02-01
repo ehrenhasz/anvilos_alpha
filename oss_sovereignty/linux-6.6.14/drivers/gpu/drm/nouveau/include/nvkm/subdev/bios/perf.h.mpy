@@ -1,0 +1,9 @@
+{
+  "module_name": "perf.h",
+  "hash_id": "140635372d05b528d9d7da08a68be4ad5d7a40258c401d7be8340b4e71e342f6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/perf.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_PERF_H__\n#define __NVBIOS_PERF_H__\nu32 nvbios_perf_table(struct nvkm_bios *, u8 *ver, u8 *hdr,\n\t\t      u8 *cnt, u8 *len, u8 *snr, u8 *ssz);\n\nstruct nvbios_perfE {\n\tu8  pstate;\n\tu8  fanspeed;\n\tu8  voltage;\n\tu32 core;\n\tu32 shader;\n\tu32 memory;\n\tu32 vdec;\n\tu32 disp;\n\tu32 script;\n\tu8  pcie_speed;\n\tu8  pcie_width;\n};\n\nu32 nvbios_perf_entry(struct nvkm_bios *, int idx,\n\t\t      u8 *ver, u8 *hdr, u8 *cnt, u8 *len);\nu32 nvbios_perfEp(struct nvkm_bios *, int idx,\n\t\t  u8 *ver, u8 *hdr, u8 *cnt, u8 *len, struct nvbios_perfE *);\n\nstruct nvbios_perfS {\n\tunion {\n\t\tstruct {\n\t\t\tu32 freq;\n\t\t} v40;\n\t};\n};\n\nu32 nvbios_perfSe(struct nvkm_bios *, u32 data, int idx,\n\t\t  u8 *ver, u8 *hdr, u8 cnt, u8 len);\nu32 nvbios_perfSp(struct nvkm_bios *, u32 data, int idx,\n\t\t  u8 *ver, u8 *hdr, u8 cnt, u8 len, struct nvbios_perfS *);\n\nstruct nvbios_perf_fan {\n\tu32 pwm_divisor;\n};\n\nint nvbios_perf_fan_parse(struct nvkm_bios *, struct nvbios_perf_fan *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

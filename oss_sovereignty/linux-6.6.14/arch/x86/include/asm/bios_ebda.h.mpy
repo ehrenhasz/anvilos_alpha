@@ -1,0 +1,9 @@
+{
+  "module_name": "bios_ebda.h",
+  "hash_id": "96b7d46bd8f68638c8935927f35cccaa8c1cb28fff2d58367e2d909e43d6b98f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/bios_ebda.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_BIOS_EBDA_H\n#define _ASM_X86_BIOS_EBDA_H\n\n#include <asm/io.h>\n\n \nstatic inline unsigned int get_bios_ebda(void)\n{\n\t \n\tunsigned int address = *(unsigned short *)phys_to_virt(0x40E);\n\taddress <<= 4;\n\treturn address;\t \n}\n\nvoid reserve_bios_regions(void);\n\n#ifdef CONFIG_X86_CHECK_BIOS_CORRUPTION\n \nvoid check_for_bios_corruption(void);\nvoid start_periodic_check_for_corruption(void);\n#else\nstatic inline void check_for_bios_corruption(void)\n{\n}\n\nstatic inline void start_periodic_check_for_corruption(void)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

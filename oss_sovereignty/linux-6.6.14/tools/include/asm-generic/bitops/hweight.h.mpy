@@ -1,0 +1,9 @@
+{
+  "module_name": "hweight.h",
+  "hash_id": "ffbef07d5ca31fa4254c0682f621e3625e0af5ab12eecf94866b61eefe1b7277",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/asm-generic/bitops/hweight.h",
+  "human_readable_source": " \n#ifndef _TOOLS_LINUX_ASM_GENERIC_BITOPS_HWEIGHT_H_\n#define _TOOLS_LINUX_ASM_GENERIC_BITOPS_HWEIGHT_H_\n\n#include <asm-generic/bitops/arch_hweight.h>\n#include <asm-generic/bitops/const_hweight.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

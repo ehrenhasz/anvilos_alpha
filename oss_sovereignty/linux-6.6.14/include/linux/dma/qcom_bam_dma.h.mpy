@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom_bam_dma.h",
+  "hash_id": "df8036788b3d2db3488498ae0c81a60ad8b6da1f6cff063a1fb40245d95be0f0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dma/qcom_bam_dma.h",
+  "human_readable_source": " \n \n\n#ifndef _QCOM_BAM_DMA_H\n#define _QCOM_BAM_DMA_H\n\n#include <asm/byteorder.h>\n\n \nstruct bam_cmd_element {\n\t__le32 cmd_and_addr;\n\t__le32 data;\n\t__le32 mask;\n\t__le32 reserved;\n};\n\n \nenum bam_command_type {\n\tBAM_WRITE_COMMAND = 0,\n\tBAM_READ_COMMAND,\n};\n\n \nstatic inline void\nbam_prep_ce_le32(struct bam_cmd_element *bam_ce, u32 addr,\n\t\t enum bam_command_type cmd, __le32 data)\n{\n\tbam_ce->cmd_and_addr =\n\t\tcpu_to_le32((addr & 0xffffff) | ((cmd & 0xff) << 24));\n\tbam_ce->data = data;\n\tbam_ce->mask = cpu_to_le32(0xffffffff);\n}\n\n \nstatic inline void\nbam_prep_ce(struct bam_cmd_element *bam_ce, u32 addr,\n\t    enum bam_command_type cmd, u32 data)\n{\n\tbam_prep_ce_le32(bam_ce, addr, cmd, cpu_to_le32(data));\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

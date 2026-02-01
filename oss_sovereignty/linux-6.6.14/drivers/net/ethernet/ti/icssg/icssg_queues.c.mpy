@@ -1,0 +1,9 @@
+{
+  "module_name": "icssg_queues.c",
+  "hash_id": "fa636d839cd43bbdd822444beae50d7a6883ae06da6e4f069bc611420e51d9da",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ti/icssg/icssg_queues.c",
+  "human_readable_source": "\n \n\n#include <linux/regmap.h>\n#include \"icssg_prueth.h\"\n\n#define ICSSG_QUEUES_MAX\t\t64\n#define ICSSG_QUEUE_OFFSET\t\t0xd00\n#define ICSSG_QUEUE_PEEK_OFFSET\t\t0xe00\n#define ICSSG_QUEUE_CNT_OFFSET\t\t0xe40\n#define\tICSSG_QUEUE_RESET_OFFSET\t0xf40\n\nint icssg_queue_pop(struct prueth *prueth, u8 queue)\n{\n\tu32 val, cnt;\n\n\tif (queue >= ICSSG_QUEUES_MAX)\n\t\treturn -EINVAL;\n\n\tregmap_read(prueth->miig_rt, ICSSG_QUEUE_CNT_OFFSET + 4 * queue, &cnt);\n\tif (!cnt)\n\t\treturn -EINVAL;\n\n\tregmap_read(prueth->miig_rt, ICSSG_QUEUE_OFFSET + 4 * queue, &val);\n\n\treturn val;\n}\n\nvoid icssg_queue_push(struct prueth *prueth, int queue, u16 addr)\n{\n\tif (queue >= ICSSG_QUEUES_MAX)\n\t\treturn;\n\n\tregmap_write(prueth->miig_rt, ICSSG_QUEUE_OFFSET + 4 * queue, addr);\n}\n\nu32 icssg_queue_level(struct prueth *prueth, int queue)\n{\n\tu32 reg;\n\n\tif (queue >= ICSSG_QUEUES_MAX)\n\t\treturn 0;\n\n\tregmap_read(prueth->miig_rt, ICSSG_QUEUE_CNT_OFFSET + 4 * queue, &reg);\n\n\treturn reg;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sync.h",
+  "hash_id": "e8968fc49f4eaa0fdcf0bea7c772abd59630a14783c3cf90164f156824abde5e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sync/sync.h",
+  "human_readable_source": " \n\n#ifndef SELFTESTS_SYNC_H\n#define SELFTESTS_SYNC_H\n\n#define FENCE_STATUS_ERROR\t(-1)\n#define FENCE_STATUS_ACTIVE\t(0)\n#define FENCE_STATUS_SIGNALED\t(1)\n\nint sync_wait(int fd, int timeout);\nint sync_merge(const char *name, int fd1, int fd2);\nint sync_fence_size(int fd);\nint sync_fence_count_with_status(int fd, int status);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

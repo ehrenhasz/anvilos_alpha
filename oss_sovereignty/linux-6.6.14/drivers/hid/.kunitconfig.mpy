@@ -1,0 +1,9 @@
+{
+  "module_name": ".kunitconfig",
+  "hash_id": "190d50568394572a130cb1911a602aeb59baf115e6f9f50a539672c149b68fe2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/.kunitconfig",
+  "human_readable_source": "CONFIG_KUNIT=y\nCONFIG_USB=y\nCONFIG_USB_HID=y\nCONFIG_HID_BATTERY_STRENGTH=y\nCONFIG_HID_UCLOGIC=y\nCONFIG_HID_KUNIT_TEST=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

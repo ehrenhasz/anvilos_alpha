@@ -1,0 +1,9 @@
+{
+  "module_name": "max8973-regulator.h",
+  "hash_id": "d62d0d81745f3860fab27ce6eb53874cd602a90259bd2be814d4136c75fb96c6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/max8973-regulator.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_REGULATOR_MAX8973_H\n#define __LINUX_REGULATOR_MAX8973_H\n\n \n#define MAX8973_CONTROL_REMOTE_SENSE_ENABLE\t\t\t0x00000001\n#define MAX8973_CONTROL_FALLING_SLEW_RATE_ENABLE\t\t0x00000002\n#define MAX8973_CONTROL_OUTPUT_ACTIVE_DISCH_ENABLE\t\t0x00000004\n#define MAX8973_CONTROL_BIAS_ENABLE\t\t\t\t0x00000008\n#define MAX8973_CONTROL_PULL_DOWN_ENABLE\t\t\t0x00000010\n#define MAX8973_CONTROL_FREQ_SHIFT_9PER_ENABLE\t\t\t0x00000020\n\n#define MAX8973_CONTROL_CLKADV_TRIP_DISABLED\t\t\t0x00000000\n#define MAX8973_CONTROL_CLKADV_TRIP_75mV_PER_US\t\t\t0x00010000\n#define MAX8973_CONTROL_CLKADV_TRIP_150mV_PER_US\t\t0x00020000\n#define MAX8973_CONTROL_CLKADV_TRIP_75mV_PER_US_HIST_DIS\t0x00030000\n\n#define MAX8973_CONTROL_INDUCTOR_VALUE_NOMINAL\t\t\t0x00000000\n#define MAX8973_CONTROL_INDUCTOR_VALUE_MINUS_30_PER\t\t0x00100000\n#define MAX8973_CONTROL_INDUCTOR_VALUE_PLUS_30_PER\t\t0x00200000\n#define MAX8973_CONTROL_INDUCTOR_VALUE_PLUS_60_PER\t\t0x00300000\n\n \nstruct max8973_regulator_platform_data {\n\tstruct regulator_init_data *reg_init_data;\n\tunsigned long control_flags;\n\tunsigned long junction_temp_warning;\n\tbool enable_ext_control;\n\tint enable_gpio;\n\tint dvs_gpio;\n\tunsigned dvs_def_state:1;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

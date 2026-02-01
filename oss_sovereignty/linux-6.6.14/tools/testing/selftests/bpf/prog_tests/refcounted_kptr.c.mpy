@@ -1,0 +1,9 @@
+{
+  "module_name": "refcounted_kptr.c",
+  "hash_id": "1702192af9901a6889061d64a9044a5060c821ef18e0ddeeb1803b6b8bd6ca2e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/refcounted_kptr.c",
+  "human_readable_source": "\n \n\n#include <test_progs.h>\n#include <network_helpers.h>\n\n#include \"refcounted_kptr.skel.h\"\n#include \"refcounted_kptr_fail.skel.h\"\n\nvoid test_refcounted_kptr(void)\n{\n\tRUN_TESTS(refcounted_kptr);\n}\n\nvoid test_refcounted_kptr_fail(void)\n{\n\tRUN_TESTS(refcounted_kptr_fail);\n}\n\nvoid test_refcounted_kptr_wrong_owner(void)\n{\n\tLIBBPF_OPTS(bpf_test_run_opts, opts,\n\t\t    .data_in = &pkt_v4,\n\t\t    .data_size_in = sizeof(pkt_v4),\n\t\t    .repeat = 1,\n\t);\n\tstruct refcounted_kptr *skel;\n\tint ret;\n\n\tskel = refcounted_kptr__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"refcounted_kptr__open_and_load\"))\n\t\treturn;\n\n\tret = bpf_prog_test_run_opts(bpf_program__fd(skel->progs.rbtree_wrong_owner_remove_fail_a1), &opts);\n\tASSERT_OK(ret, \"rbtree_wrong_owner_remove_fail_a1\");\n\tASSERT_OK(opts.retval, \"rbtree_wrong_owner_remove_fail_a1 retval\");\n\n\tret = bpf_prog_test_run_opts(bpf_program__fd(skel->progs.rbtree_wrong_owner_remove_fail_b), &opts);\n\tASSERT_OK(ret, \"rbtree_wrong_owner_remove_fail_b\");\n\tASSERT_OK(opts.retval, \"rbtree_wrong_owner_remove_fail_b retval\");\n\n\tret = bpf_prog_test_run_opts(bpf_program__fd(skel->progs.rbtree_wrong_owner_remove_fail_a2), &opts);\n\tASSERT_OK(ret, \"rbtree_wrong_owner_remove_fail_a2\");\n\tASSERT_OK(opts.retval, \"rbtree_wrong_owner_remove_fail_a2 retval\");\n\trefcounted_kptr__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

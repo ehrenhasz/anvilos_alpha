@@ -1,0 +1,9 @@
+{
+  "module_name": "fw.h",
+  "hash_id": "587c20f7f00cef67dd28eecf629c1e9483b29d7d1b6fc0b3b2893b4d610eef99",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvfw/fw.h",
+  "human_readable_source": " \n#ifndef __NVFW_FW_H__\n#define __NVFW_FW_H__\n#include <core/os.h>\nstruct nvkm_subdev;\n\nstruct nvfw_bin_hdr {\n\tu32 bin_magic;\n\tu32 bin_ver;\n\tu32 bin_size;\n\tu32 header_offset;\n\tu32 data_offset;\n\tu32 data_size;\n};\n\nconst struct nvfw_bin_hdr *nvfw_bin_hdr(struct nvkm_subdev *, const void *);\n\nstruct nvfw_bl_desc {\n\tu32 start_tag;\n\tu32 dmem_load_off;\n\tu32 code_off;\n\tu32 code_size;\n\tu32 data_off;\n\tu32 data_size;\n};\n\nconst struct nvfw_bl_desc *nvfw_bl_desc(struct nvkm_subdev *, const void *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

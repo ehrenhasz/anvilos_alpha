@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5f11f5a7158b8f49663e4135cd63849c8c75e618a3963cbaab4c3cdff6b35ed7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sunplus/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Sunplus network device configuration\n#\n\nconfig NET_VENDOR_SUNPLUS\n\tbool \"Sunplus devices\"\n\tdefault y\n\tdepends on ARCH_SUNPLUS || COMPILE_TEST\n\thelp\n\t  If you have a network (Ethernet) card belonging to this\n\t  class, say Y here.\n\n\t  Note that the answer to this question doesn't directly\n\t  affect the kernel: saying N will just cause the configurator\n\t  to skip all the questions about Sunplus cards. If you say Y,\n\t  you will be asked for your specific card in the following\n\t  questions.\n\nif NET_VENDOR_SUNPLUS\n\nconfig SP7021_EMAC\n\ttristate \"Sunplus Dual 10M/100M Ethernet devices\"\n\tdepends on SOC_SP7021 || COMPILE_TEST\n\tselect PHYLIB\n\thelp\n\t  If you have Sunplus dual 10M/100M Ethernet devices, say Y.\n\t  The network device creates two net-device interfaces.\n\t  To compile this driver as a module, choose M here. The\n\t  module will be called sp7021_emac.\n\nendif # NET_VENDOR_SUNPLUS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

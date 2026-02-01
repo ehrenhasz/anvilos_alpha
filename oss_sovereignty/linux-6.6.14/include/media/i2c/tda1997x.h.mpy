@@ -1,0 +1,9 @@
+{
+  "module_name": "tda1997x.h",
+  "hash_id": "83c1ce2a1a4c7eb842cf5cf40b6f4fa8004f50b481d864bf56db3c3e44e74c97",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/tda1997x.h",
+  "human_readable_source": " \n \n\n#ifndef _TDA1997X_\n#define _TDA1997X_\n\n \nstruct tda1997x_platform_data {\n\tenum v4l2_mbus_type vidout_bus_type;\n\tu32 vidout_bus_width;\n\tu8 vidout_port_cfg[9];\n\t \n\tbool vidout_inv_de;\n\tbool vidout_inv_hs;\n\tbool vidout_inv_vs;\n\tbool vidout_inv_pclk;\n\t \n\tu8 vidout_delay_hs;\n\tu8 vidout_delay_vs;\n\tu8 vidout_delay_de;\n\tu8 vidout_delay_pclk;\n\t \n\tu8 vidout_sel_hs;\n\tu8 vidout_sel_vs;\n\tu8 vidout_sel_de;\n\n\t \n\tint audout_format;\n\tu32 audout_mclk_fs;\t \n\tu32 audout_width;\t \n\tu32 audout_layout;\t \n\tbool audout_layoutauto;\t \n\tbool audout_invert_clk;\t \n\tbool audio_auto_mute;\t \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

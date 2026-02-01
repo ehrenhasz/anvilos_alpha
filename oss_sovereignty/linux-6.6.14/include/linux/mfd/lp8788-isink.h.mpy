@@ -1,0 +1,9 @@
+{
+  "module_name": "lp8788-isink.h",
+  "hash_id": "d6c94bc8ef74deb50941f576edd2bd59aeac2b60c952262caaddd7f362c1981e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/lp8788-isink.h",
+  "human_readable_source": " \n \n\n#ifndef __ISINK_LP8788_H__\n#define __ISINK_LP8788_H__\n\n \n#define LP8788_ISINK_CTRL\t\t0x99\n#define LP8788_ISINK12_IOUT\t\t0x9A\n#define LP8788_ISINK3_IOUT\t\t0x9B\n#define LP8788_ISINK1_PWM\t\t0x9C\n#define LP8788_ISINK2_PWM\t\t0x9D\n#define LP8788_ISINK3_PWM\t\t0x9E\n\n \n#define LP8788_ISINK1_IOUT_M\t\t0x0F\t \n#define LP8788_ISINK2_IOUT_M\t\t0xF0\n#define LP8788_ISINK3_IOUT_M\t\t0x0F\t \n\n \n#define LP8788_ISINK_MAX_PWM\t\t63\n#define LP8788_ISINK_SCALE_OFFSET\t3\n\nstatic const u8 lp8788_iout_addr[] = {\n\tLP8788_ISINK12_IOUT,\n\tLP8788_ISINK12_IOUT,\n\tLP8788_ISINK3_IOUT,\n};\n\nstatic const u8 lp8788_iout_mask[] = {\n\tLP8788_ISINK1_IOUT_M,\n\tLP8788_ISINK2_IOUT_M,\n\tLP8788_ISINK3_IOUT_M,\n};\n\nstatic const u8 lp8788_pwm_addr[] = {\n\tLP8788_ISINK1_PWM,\n\tLP8788_ISINK2_PWM,\n\tLP8788_ISINK3_PWM,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

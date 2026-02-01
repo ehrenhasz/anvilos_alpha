@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_gen4_timer.h",
+  "hash_id": "3fc41d9e5ab2ce0148f865caedd136770e3cbf82ae032de25c95711b46353745",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/adf_gen4_timer.h",
+  "human_readable_source": " \n \n\n#ifndef ADF_GEN4_TIMER_H_\n#define ADF_GEN4_TIMER_H_\n\n#include <linux/ktime.h>\n#include <linux/workqueue.h>\n\nstruct adf_accel_dev;\n\nstruct adf_timer {\n\tstruct adf_accel_dev *accel_dev;\n\tstruct delayed_work work_ctx;\n\tktime_t initial_ktime;\n};\n\nint adf_gen4_timer_start(struct adf_accel_dev *accel_dev);\nvoid adf_gen4_timer_stop(struct adf_accel_dev *accel_dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

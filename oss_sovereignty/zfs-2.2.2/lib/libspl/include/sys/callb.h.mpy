@@ -1,0 +1,9 @@
+{
+  "module_name": "callb.h",
+  "hash_id": "ec20e502e930dc0995f75ee68608e66b154fc3fc4fc9c0daa6b14397b81fca31",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/callb.h",
+  "human_readable_source": " \n \n\n#ifndef _SYS_CALLB_H\n#define\t_SYS_CALLB_H\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

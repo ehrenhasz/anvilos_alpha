@@ -1,0 +1,9 @@
+{
+  "module_name": "windows-mutex.c",
+  "hash_id": "428b5081233a561958418464a6ded00d4356704bcf8800193ac99eeaa9480c2b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/windows-mutex.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include \"windows-mutex.h\"\n\n#include <errno.h>\n\nvoid\nglwthread_mutex_init (glwthread_mutex_t *mutex)\n{\n  InitializeCriticalSection (&mutex->lock);\n  mutex->guard.done = 1;\n}\n\nint\nglwthread_mutex_lock (glwthread_mutex_t *mutex)\n{\n  if (!mutex->guard.done)\n    {\n      if (InterlockedIncrement (&mutex->guard.started) == 0)\n         \n        glwthread_mutex_init (mutex);\n      else\n        {\n           \n          InterlockedDecrement (&mutex->guard.started);\n           \n          while (!mutex->guard.done)\n            Sleep (0);\n        }\n    }\n  EnterCriticalSection (&mutex->lock);\n  return 0;\n}\n\nint\nglwthread_mutex_trylock (glwthread_mutex_t *mutex)\n{\n  if (!mutex->guard.done)\n    {\n      if (InterlockedIncrement (&mutex->guard.started) == 0)\n         \n        glwthread_mutex_init (mutex);\n      else\n        {\n           \n          InterlockedDecrement (&mutex->guard.started);\n           \n          return EBUSY;\n        }\n    }\n  if (!TryEnterCriticalSection (&mutex->lock))\n    return EBUSY;\n  return 0;\n}\n\nint\nglwthread_mutex_unlock (glwthread_mutex_t *mutex)\n{\n  if (!mutex->guard.done)\n    return EINVAL;\n  LeaveCriticalSection (&mutex->lock);\n  return 0;\n}\n\nint\nglwthread_mutex_destroy (glwthread_mutex_t *mutex)\n{\n  if (!mutex->guard.done)\n    return EINVAL;\n  DeleteCriticalSection (&mutex->lock);\n  mutex->guard.done = 0;\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

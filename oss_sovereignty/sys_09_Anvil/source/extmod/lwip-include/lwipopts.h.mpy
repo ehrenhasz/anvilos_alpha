@@ -1,0 +1,9 @@
+{
+  "module_name": "lwipopts.h",
+  "hash_id": "53024784b8e8eaefa3d0cdea9fa89194eb731ddadfa34d33df61f01c76530040",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/lwip-include/lwipopts.h",
+  "human_readable_source": "#ifndef MICROPY_INCLUDED_EXTMOD_LWIP_INCLUDE_LWIPOPTS_H\n#define MICROPY_INCLUDED_EXTMOD_LWIP_INCLUDE_LWIPOPTS_H\n\n#include <py/mpconfig.h>\n#include <py/misc.h>\n#include <py/mphal.h>\n\n\n#define NO_SYS 1\n\n#define SYS_LIGHTWEIGHT_PROT 1\n#include <stdint.h>\ntypedef uint32_t sys_prot_t;\n\n#define TCP_LISTEN_BACKLOG 1\n\n\n#define LWIP_ARP 0\n#define LWIP_ETHERNET 0\n\n#define LWIP_DNS 1\n\n#define LWIP_NETCONN 0\n#define LWIP_SOCKET 0\n\n#ifdef MICROPY_PY_LWIP_SLIP\n#define LWIP_HAVE_SLIPIF 1\n#endif\n\n\n\n\n#define sys_now mp_hal_ticks_ms\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

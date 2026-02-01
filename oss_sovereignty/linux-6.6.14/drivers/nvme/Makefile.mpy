@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "aa1579947dd3cfdfff39d576727136aec1441ab8cedbcc62b55111865ae45272",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nvme/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nobj-$(CONFIG_NVME_COMMON)\t\t+= common/\nobj-y\t\t+= host/\nobj-y\t\t+= target/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

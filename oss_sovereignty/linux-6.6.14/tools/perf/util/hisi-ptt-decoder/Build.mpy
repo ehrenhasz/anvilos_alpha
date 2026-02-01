@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "0a327118034590e0eed877c008cd65cb883919fc29f0a76534511f686fe3ee36",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/hisi-ptt-decoder/Build",
+  "human_readable_source": "perf-$(CONFIG_AUXTRACE) += hisi-ptt-pkt-decoder.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

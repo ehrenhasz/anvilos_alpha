@@ -1,0 +1,9 @@
+{
+  "module_name": "irq.h",
+  "hash_id": "d483c0c407bae691cec7e2ad1f8e2a21c376918c0b1cd7e0e7087ea4326735cb",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/irq.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_IRQ_H\n#define _ASM_X86_IRQ_H\n \n\n#include <asm/apicdef.h>\n#include <asm/irq_vectors.h>\n\n \n#define __irq_entry __invalid_section\n\nstatic inline int irq_canonicalize(int irq)\n{\n\treturn ((irq == 2) ? 9 : irq);\n}\n\nextern int irq_init_percpu_irqstack(unsigned int cpu);\n\nstruct irq_desc;\n\nextern void fixup_irqs(void);\n\n#ifdef CONFIG_HAVE_KVM\nextern void kvm_set_posted_intr_wakeup_handler(void (*handler)(void));\n#endif\n\nextern void (*x86_platform_ipi_callback)(void);\nextern void native_init_IRQ(void);\n\nextern void __handle_irq(struct irq_desc *desc, struct pt_regs *regs);\n\nextern void init_ISA_irqs(void);\n\n#ifdef CONFIG_X86_LOCAL_APIC\nvoid arch_trigger_cpumask_backtrace(const struct cpumask *mask,\n\t\t\t\t    int exclude_cpu);\n\n#define arch_trigger_cpumask_backtrace arch_trigger_cpumask_backtrace\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

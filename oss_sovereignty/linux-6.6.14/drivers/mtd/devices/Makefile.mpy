@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3135a67abfe327b835b92459d3b51be55e66c4f873eac88e5e2d8c5d862430ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/devices/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# linux/drivers/mtd/devices/Makefile\n#\n\nobj-$(CONFIG_MTD_DOCG3)\t\t+= docg3.o\nobj-$(CONFIG_MTD_SLRAM)\t\t+= slram.o\nobj-$(CONFIG_MTD_PHRAM)\t\t+= phram.o\nobj-$(CONFIG_MTD_PMC551)\t+= pmc551.o\nobj-$(CONFIG_MTD_MS02NV)\t+= ms02-nv.o\nobj-$(CONFIG_MTD_MTDRAM)\t+= mtdram.o\nobj-$(CONFIG_MTD_BLOCK2MTD)\t+= block2mtd.o\nobj-$(CONFIG_MTD_DATAFLASH)\t+= mtd_dataflash.o\nobj-$(CONFIG_MTD_MCHP23K256)\t+= mchp23k256.o\nobj-$(CONFIG_MTD_MCHP48L640)\t+= mchp48l640.o\nobj-$(CONFIG_MTD_SPEAR_SMI)\t+= spear_smi.o\nobj-$(CONFIG_MTD_SST25L)\t+= sst25l.o\nobj-$(CONFIG_MTD_BCM47XXSFLASH)\t+= bcm47xxsflash.o\nobj-$(CONFIG_MTD_ST_SPI_FSM)    += st_spi_fsm.o\nobj-$(CONFIG_MTD_POWERNV_FLASH)\t+= powernv_flash.o\n\n\nCFLAGS_docg3.o\t\t\t+= -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5cc8158fce789cbe511550f9ebeef0e3cd96b8f74eacca1bbf9dd0c02ed38786",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/fsl-dcu/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nfsl-dcu-drm-y := fsl_dcu_drm_drv.o \\\n\t\t fsl_dcu_drm_kms.o \\\n\t\t fsl_dcu_drm_rgb.o \\\n\t\t fsl_dcu_drm_plane.o \\\n\t\t fsl_dcu_drm_crtc.o \\\n\t\t fsl_tcon.o\nobj-$(CONFIG_DRM_FSL_DCU)\t+= fsl-dcu-drm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cpuidle-zynq.c",
+  "hash_id": "181bd8d6f3400f9a6482d5825dedce4fd211852e0cbd5092079cf5da43d5c76d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpuidle/cpuidle-zynq.c",
+  "human_readable_source": "\n \n\n#include <linux/init.h>\n#include <linux/cpuidle.h>\n#include <linux/platform_device.h>\n#include <asm/cpuidle.h>\n\n#define ZYNQ_MAX_STATES\t\t2\n\n \nstatic int zynq_enter_idle(struct cpuidle_device *dev,\n\t\t\t   struct cpuidle_driver *drv, int index)\n{\n\t \n\tcpu_do_idle();\n\n\treturn index;\n}\n\nstatic struct cpuidle_driver zynq_idle_driver = {\n\t.name = \"zynq_idle\",\n\t.owner = THIS_MODULE,\n\t.states = {\n\t\tARM_CPUIDLE_WFI_STATE,\n\t\t{\n\t\t\t.enter\t\t\t= zynq_enter_idle,\n\t\t\t.exit_latency\t\t= 10,\n\t\t\t.target_residency\t= 10000,\n\t\t\t.name\t\t\t= \"RAM_SR\",\n\t\t\t.desc\t\t\t= \"WFI and RAM Self Refresh\",\n\t\t},\n\t},\n\t.safe_state_index = 0,\n\t.state_count = ZYNQ_MAX_STATES,\n};\n\n \nstatic int zynq_cpuidle_probe(struct platform_device *pdev)\n{\n\tpr_info(\"Xilinx Zynq CpuIdle Driver started\\n\");\n\n\treturn cpuidle_register(&zynq_idle_driver, NULL);\n}\n\nstatic struct platform_driver zynq_cpuidle_driver = {\n\t.driver = {\n\t\t.name = \"cpuidle-zynq\",\n\t},\n\t.probe = zynq_cpuidle_probe,\n};\nbuiltin_platform_driver(zynq_cpuidle_driver);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

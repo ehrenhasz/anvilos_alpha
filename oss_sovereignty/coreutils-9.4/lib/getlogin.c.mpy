@@ -1,0 +1,9 @@
+{
+  "module_name": "getlogin.c",
+  "hash_id": "c309a289aaa46e9e030ddb326db80fbd9673902df196e9928ef51897ef04ef38",
+  "original_prompt": "Ingested from coreutils-9.4/lib/getlogin.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <unistd.h>\n\n#if defined _WIN32 && ! defined __CYGWIN__\n# define WIN32_LEAN_AND_MEAN\n# include <windows.h>\n \n# undef GetUserName\n# define GetUserName GetUserNameA\n#endif\n\nchar *\ngetlogin (void)\n{\n#if defined _WIN32 && ! defined __CYGWIN__\n  static char login_name[1024];\n  DWORD sz = sizeof (login_name);\n\n  if (GetUserName (login_name, &sz))\n    return login_name;\n#endif\n  return NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vegam_smumgr.h",
+  "hash_id": "964e295730cc9f1677280196d1e2a8dab714fba58f48b6776f72b0527fd01087",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/smumgr/vegam_smumgr.h",
+  "human_readable_source": " \n\n#ifndef _VEGAM_SMUMANAGER_H\n#define _VEGAM_SMUMANAGER_H\n\n\n#include <pp_endian.h>\n#include \"smu75_discrete.h\"\n#include \"smu7_smumgr.h\"\n\n#define SMC_RAM_END 0x40000\n\n#define DPMTuning_Uphyst_Shift    0\n#define DPMTuning_Downhyst_Shift  8\n#define DPMTuning_Activity_Shift  16\n\n#define GraphicsDPMTuning_VEGAM    0x001e6400\n#define MemoryDPMTuning_VEGAM      0x000f3c0a\n#define SclkDPMTuning_VEGAM        0x002d000a\n#define MclkDPMTuning_VEGAM        0x001f100a\n\n\nstruct vegam_pt_defaults {\n\tuint8_t   SviLoadLineEn;\n\tuint8_t   SviLoadLineVddC;\n\tuint8_t   TDC_VDDC_ThrottleReleaseLimitPerc;\n\tuint8_t   TDC_MAWt;\n\tuint8_t   TdcWaterfallCtl;\n\tuint8_t   DTEAmbientTempBase;\n\n\tuint32_t  DisplayCac;\n\tuint32_t  BAPM_TEMP_GRADIENT;\n\tuint16_t  BAPMTI_R[SMU75_DTE_ITERATIONS * SMU75_DTE_SOURCES * SMU75_DTE_SINKS];\n\tuint16_t  BAPMTI_RC[SMU75_DTE_ITERATIONS * SMU75_DTE_SOURCES * SMU75_DTE_SINKS];\n};\n\nstruct vegam_range_table {\n\tuint32_t trans_lower_frequency;  \n\tuint32_t trans_upper_frequency;\n};\n\nstruct vegam_smumgr {\n\tstruct smu7_smumgr smu7_data;\n\tuint8_t protected_mode;\n\tSMU75_Discrete_DpmTable              smc_state_table;\n\tstruct SMU75_Discrete_Ulv            ulv_setting;\n\tstruct SMU75_Discrete_PmFuses  power_tune_table;\n\tstruct vegam_range_table                range_table[NUM_SCLK_RANGE];\n\tconst struct vegam_pt_defaults       *power_tune_defaults;\n\tuint32_t               bif_sclk_table[SMU75_MAX_LEVELS_LINK];\n};\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

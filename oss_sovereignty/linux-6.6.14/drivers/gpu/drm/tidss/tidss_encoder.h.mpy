@@ -1,0 +1,9 @@
+{
+  "module_name": "tidss_encoder.h",
+  "hash_id": "a40a571f09c16f7bb3978c9d3ea4592c1a9bca0cdef189d1ffbd95a25c7cdb19",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tidss/tidss_encoder.h",
+  "human_readable_source": " \n \n\n#ifndef __TIDSS_ENCODER_H__\n#define __TIDSS_ENCODER_H__\n\n#include <drm/drm_encoder.h>\n\nstruct tidss_device;\n\nint tidss_encoder_create(struct tidss_device *tidss,\n\t\t\t struct drm_bridge *next_bridge,\n\t\t\t u32 encoder_type, u32 possible_crtcs);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

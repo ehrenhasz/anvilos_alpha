@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0d2ed8dd3e4f196eb76898457dcaff48f339da510196ffabe3689233fcb3849d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn201/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\n#\n# Makefile for DCN.\nDCN201 = dcn201_init.o dcn201_resource.o dcn201_hwseq.o \\\n\tdcn201_hubbub.o\\\n\tdcn201_mpc.o dcn201_hubp.o dcn201_opp.o dcn201_optc.o dcn201_dpp.o \\\n\tdcn201_dccg.o dcn201_link_encoder.o\n\nAMD_DAL_DCN201 = $(addprefix $(AMDDALPATH)/dc/dcn201/,$(DCN201))\n\nAMD_DISPLAY_FILES += $(AMD_DAL_DCN201)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "changes",
+  "hash_id": "3ef8b8975e7068912a80f9340858272b0869a9bbac91334844dfd1e89134ccee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192u/changes",
+  "human_readable_source": "v 0.1\n\nFirst version.\nThis is based on the rtl8180-sa2400 pre-0.22-CVS code..\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

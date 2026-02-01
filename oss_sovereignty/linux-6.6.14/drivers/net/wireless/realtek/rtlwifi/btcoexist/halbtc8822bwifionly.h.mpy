@@ -1,0 +1,9 @@
+{
+  "module_name": "halbtc8822bwifionly.h",
+  "hash_id": "62e199cf238ccf3cd3ffe36da798a2deb81480c6299c61d715b63ebef3aea624",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtc8822bwifionly.h",
+  "human_readable_source": " \n \n\n#ifndef __INC_HAL8822BWIFIONLYHWCFG_H\n#define __INC_HAL8822BWIFIONLYHWCFG_H\n\nvoid ex_hal8822b_wifi_only_hw_config(struct wifi_only_cfg *wifionlycfg);\nvoid ex_hal8822b_wifi_only_scannotify(struct wifi_only_cfg *wifionlycfg,\n\t\t\t\t      u8 is_5g);\nvoid ex_hal8822b_wifi_only_switchbandnotify(struct wifi_only_cfg *wifionlycfg,\n\t\t\t\t\t    u8 is_5g);\nvoid hal8822b_wifi_only_switch_antenna(struct wifi_only_cfg *wifionlycfg,\n\t\t\t\t       u8 is_5g);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

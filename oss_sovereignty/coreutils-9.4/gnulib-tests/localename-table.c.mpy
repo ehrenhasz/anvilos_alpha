@@ -1,0 +1,9 @@
+{
+  "module_name": "localename-table.c",
+  "hash_id": "2a12ddd2774e47d1c620573d3fd78699fcf012f69da5c727097ee8ea8aaa3109",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/localename-table.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#if HAVE_WORKING_USELOCALE && HAVE_NAMELESS_LOCALES\n\n \n#include \"localename-table.h\"\n\n#include <stdint.h>\n\n \nsize_t _GL_ATTRIBUTE_CONST\nlocale_hash_function (locale_t x)\n{\n  uintptr_t p = (uintptr_t) x;\n  size_t h = ((p % 4177) << 12) + ((p % 79) << 6) + (p % 61);\n  return h;\n}\n\nstruct locale_hash_node * locale_hash_table[LOCALE_HASH_TABLE_SIZE]\n   ;\n\ngl_rwlock_define_initialized(, locale_lock)\n\n#else\n\n \ntypedef int dummy;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

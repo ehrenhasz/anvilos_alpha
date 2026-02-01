@@ -1,0 +1,9 @@
+{
+  "module_name": "irqhandler.h",
+  "hash_id": "40a9ac4dc42d095b50a876a67c6203f9d7e35c890750d762eb8bfdd8f910e1e8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/irqhandler.h",
+  "human_readable_source": " \n#ifndef _LINUX_IRQHANDLER_H\n#define _LINUX_IRQHANDLER_H\n\n \n\nstruct irq_desc;\nstruct irq_data;\ntypedef\tvoid (*irq_flow_handler_t)(struct irq_desc *desc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

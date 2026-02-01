@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "f4e0337e415069f11d21d414773a9822c66c1faea0c45dea5605128c7293d973",
+  "original_prompt": "Ingested from linux-6.6.14/net/netlink/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Netlink Sockets\n#\n\nconfig NETLINK_DIAG\n\ttristate \"NETLINK: socket monitoring interface\"\n\tdefault n\n\thelp\n\t  Support for NETLINK socket monitoring interface used by the ss tool.\n\t  If unsure, say Y.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

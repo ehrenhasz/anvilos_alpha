@@ -1,0 +1,9 @@
+{
+  "module_name": "file",
+  "hash_id": "54184e46d9e69edf40f62babf205a906656c6a7b3f803bded371a956041135f2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/strace/groups/file",
+  "human_readable_source": "access\nchmod\ncreat\nexecve\nfaccessat\ngetcwd\nlstat\nmkdir\nopen\nopenat\nquotactl\nread\nreadlink\nrename\nrmdir\nstat\nstatfs\nsymlink\nunlink\nwrite\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

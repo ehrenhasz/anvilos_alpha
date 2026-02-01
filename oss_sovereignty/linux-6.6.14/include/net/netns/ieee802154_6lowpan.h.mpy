@@ -1,0 +1,9 @@
+{
+  "module_name": "ieee802154_6lowpan.h",
+  "hash_id": "458825440a228de47903d0bad2d1cf63fc228536a48f2a918332489c0473ad72",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netns/ieee802154_6lowpan.h",
+  "human_readable_source": " \n \n\n#include <net/inet_frag.h>\n\n#ifndef __NETNS_IEEE802154_6LOWPAN_H__\n#define __NETNS_IEEE802154_6LOWPAN_H__\n\nstruct netns_sysctl_lowpan {\n#ifdef CONFIG_SYSCTL\n\tstruct ctl_table_header *frags_hdr;\n#endif\n};\n\nstruct netns_ieee802154_lowpan {\n\tstruct netns_sysctl_lowpan sysctl;\n\tstruct fqdir\t\t*fqdir;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

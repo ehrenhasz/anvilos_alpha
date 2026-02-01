@@ -1,0 +1,9 @@
+{
+  "module_name": "config.x86_64",
+  "hash_id": "44f932c607eb786b1418c5b73f0ad73b839a92cc9289b64bb9afd3b663a62292",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/hid/config.x86_64",
+  "human_readable_source": "CONFIG_X86_ACPI_CPUFREQ=y\nCONFIG_X86_CPUID=y\nCONFIG_X86_MSR=y\nCONFIG_X86_POWERNOW_K8=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

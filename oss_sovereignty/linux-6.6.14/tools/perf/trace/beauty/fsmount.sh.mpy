@@ -1,0 +1,9 @@
+{
+  "module_name": "fsmount.sh",
+  "hash_id": "f0e6a2223efe4260a1b1566d91690cc59d257516326d4bd566508be9e878556b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/fsmount.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n\nif [ $# -ne 1 ] ; then\n\tlinux_header_dir=tools/include/uapi/linux\nelse\n\tlinux_header_dir=$1\nfi\n\nlinux_mount=${linux_header_dir}/mount.h\n\n# Remove MOUNT_ATTR_RELATIME as it is zeros, handle it a special way in the beautifier\n# Only handle MOUNT_ATTR_ followed by a capital letter/num as __ is special case\n# for things like MOUNT_ATTR__ATIME that is a mask for the possible ATIME handling\n# bits. Special case it as well in the beautifier\n\nprintf \"static const char *fsmount_attr_flags[] = {\\n\"\nregex='^[[:space:]]*#[[:space:]]*define[[:space:]]+MOUNT_ATTR_([[:alnum:]][[:alnum:]_]+)[[:space:]]+(0x[[:xdigit:]]+)[[:space:]]*.*'\ngrep -E $regex ${linux_mount} | grep -v MOUNT_ATTR_RELATIME | \\\n\tsed -r \"s/$regex/\\2 \\1/g\"\t| \\\n\txargs printf \"\\t[ilog2(%s) + 1] = \\\"%s\\\",\\n\"\nprintf \"};\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

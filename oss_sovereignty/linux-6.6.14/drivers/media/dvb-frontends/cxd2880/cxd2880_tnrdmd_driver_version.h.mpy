@@ -1,0 +1,9 @@
+{
+  "module_name": "cxd2880_tnrdmd_driver_version.h",
+  "hash_id": "1a17eeb4a0c68dceeaacc00c2b47e039fcba63de277b17465af09f3009bcd752",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cxd2880/cxd2880_tnrdmd_driver_version.h",
+  "human_readable_source": " \n \n\n#define CXD2880_TNRDMD_DRIVER_VERSION \"1.4.1 - 1.0.5\"\n\n#define CXD2880_TNRDMD_DRIVER_RELEASE_DATE \"2018-04-25\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

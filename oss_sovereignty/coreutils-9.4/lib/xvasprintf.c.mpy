@@ -1,0 +1,9 @@
+{
+  "module_name": "xvasprintf.c",
+  "hash_id": "50fe2acf07b90dcab824238678f13ce145597427d0b312f25bf2d089f7f86e2c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xvasprintf.c",
+  "human_readable_source": " \n#include \"xvasprintf.h\"\n\n#include <errno.h>\n#include <limits.h>\n#include <string.h>\n#include <stdio.h>\n\n#include \"xalloc.h\"\n\n \n#include \"xsize.h\"\n\nstatic char *\nxstrcat (size_t argcount, va_list args)\n{\n  char *result;\n  va_list ap;\n  size_t totalsize;\n  size_t i;\n  char *p;\n\n   \n  totalsize = 0;\n  va_copy (ap, args);\n  for (i = argcount; i > 0; i--)\n    {\n      const char *next = va_arg (ap, const char *);\n      totalsize = xsum (totalsize, strlen (next));\n    }\n  va_end (ap);\n\n   \n  if (totalsize == SIZE_MAX || totalsize > INT_MAX)\n    {\n      errno = EOVERFLOW;\n      return NULL;\n    }\n\n   \n  result = XNMALLOC (totalsize + 1, char);\n  p = result;\n  for (i = argcount; i > 0; i--)\n    {\n      const char *next = va_arg (args, const char *);\n      size_t len = strlen (next);\n      memcpy (p, next, len);\n      p += len;\n    }\n  *p = '\\0';\n\n  return result;\n}\n\nchar *\nxvasprintf (const char *format, va_list args)\n{\n  char *result;\n\n   \n  {\n    size_t argcount = 0;\n    const char *f;\n\n    for (f = format;;)\n      {\n        if (*f == '\\0')\n           \n          return xstrcat (argcount, args);\n        if (*f != '%')\n          break;\n        f++;\n        if (*f != 's')\n          break;\n        f++;\n        argcount++;\n      }\n  }\n\n  if (vasprintf (&result, format, args) < 0)\n    {\n      if (errno == ENOMEM)\n        xalloc_die ();\n      return NULL;\n    }\n\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "wf_tgamma.c",
+  "hash_id": "0e62e4ab41bef321c7f853d8cd839e504ab748b4b8cf147f790dee96259a3dd3",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/wf_tgamma.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"math.h\"\n#include \"fdlibm.h\"\n#define _IEEE_LIBM 1\n\n#ifdef __STDC__\n\tfloat tgammaf(float x)\n#else\n\tfloat tgammaf(x)\n\tfloat x;\n#endif\n{\n        float y;\n\tint local_signgam;\n\tif (!isfinite(x)) {\n\t   \n\t  return x + INFINITY;\n\t}\n\ty = expf(__ieee754_lgammaf_r(x,&local_signgam));\n\tif (local_signgam < 0) y = -y;\n#ifdef _IEEE_LIBM\n\treturn y;\n#else\n\tif(_LIB_VERSION == _IEEE_) return y;\n\n\tif(!finitef(y)&&finitef(x)) {\n\t  if(floorf(x)==x&&x<=(float)0.0)\n\t     \n\t    return (float)__kernel_standard((double)x,(double)x,141);\n\t  else\n\t     \n\t    return (float)__kernel_standard((double)x,(double)x,140);\n\t}\n\treturn y;\n#endif\n}\n\n#ifdef _DOUBLE_IS_32BITS\n\n#ifdef __STDC__\n\tdouble tgamma(double x)\n#else\n\tdouble tgamma(x)\n\tdouble x;\n#endif\n{\n\treturn (double) tgammaf((float) x);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

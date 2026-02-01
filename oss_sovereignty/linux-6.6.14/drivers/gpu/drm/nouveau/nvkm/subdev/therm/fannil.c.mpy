@@ -1,0 +1,9 @@
+{
+  "module_name": "fannil.c",
+  "hash_id": "80eeab77601513eb528cef53ca608cbb59700e95274281637045db23ae59db1e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/therm/fannil.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic int\nnvkm_fannil_get(struct nvkm_therm *therm)\n{\n\treturn -ENODEV;\n}\n\nstatic int\nnvkm_fannil_set(struct nvkm_therm *therm, int percent)\n{\n\treturn -ENODEV;\n}\n\nint\nnvkm_fannil_create(struct nvkm_therm *therm)\n{\n\tstruct nvkm_fan *priv;\n\n\tpriv = kzalloc(sizeof(*priv), GFP_KERNEL);\n\ttherm->fan = priv;\n\tif (!priv)\n\t\treturn -ENOMEM;\n\n\tpriv->type = \"none / external\";\n\tpriv->get = nvkm_fannil_get;\n\tpriv->set = nvkm_fannil_set;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

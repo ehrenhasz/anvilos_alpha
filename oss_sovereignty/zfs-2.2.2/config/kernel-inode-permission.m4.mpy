@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-inode-permission.m4",
+  "hash_id": "00157e31557be199f2348936c15a16a362a2f3a8b61fa482591bdbff2fcb8ad3",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-inode-permission.m4",
+  "human_readable_source": "AC_DEFUN([ZFS_AC_KERNEL_SRC_PERMISSION], [\n\tdnl #\n\tdnl # 6.3 API change\n\tdnl # iops->permission() now takes struct mnt_idmap*\n\tdnl # as its first arg\n\tdnl #\n\tZFS_LINUX_TEST_SRC([permission_mnt_idmap], [\n\t\t#include <linux/fs.h>\n\t\t#include <linux/sched.h>\n\n\t\tint inode_permission(struct mnt_idmap *idmap,\n\t\t    struct inode *inode, int mask) { return 0; }\n\n\t\tstatic const struct inode_operations\n\t\t\tiops __attribute__ ((unused)) = {\n\t\t\t.permission             = inode_permission,\n\t\t};\n\t],[])\n\n\tdnl #\n\tdnl # 5.12 API change that added the struct user_namespace* arg\n\tdnl # to the front of this function type's arg list.\n\tdnl #\n\tZFS_LINUX_TEST_SRC([permission_userns], [\n\t\t#include <linux/fs.h>\n\t\t#include <linux/sched.h>\n\n\t\tint inode_permission(struct user_namespace *userns,\n\t\t    struct inode *inode, int mask) { return 0; }\n\n\t\tstatic const struct inode_operations\n\t\t\tiops __attribute__ ((unused)) = {\n\t\t\t.permission\t\t= inode_permission,\n\t\t};\n\t],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_PERMISSION], [\n\tAC_MSG_CHECKING([whether iops->permission() takes struct mnt_idmap*])\n\tZFS_LINUX_TEST_RESULT([permission_mnt_idmap], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_IOPS_PERMISSION_IDMAP, 1,\n\t\t   [iops->permission() takes struct mnt_idmap*])\n\t],[\n\t\tAC_MSG_CHECKING([whether iops->permission() takes struct user_namespace*])\n\t\tZFS_LINUX_TEST_RESULT([permission_userns], [\n\t\t\tAC_MSG_RESULT(yes)\n\t\t\tAC_DEFINE(HAVE_IOPS_PERMISSION_USERNS, 1,\n\t\t\t   [iops->permission() takes struct user_namespace*])\n\t\t],[\n\t\t\tAC_MSG_RESULT(no)\n\t\t])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

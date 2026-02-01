@@ -1,0 +1,9 @@
+{
+  "module_name": "simatic-ipc-base.h",
+  "hash_id": "71c9b0b899f16fb422eeb83ac6a01843fa28fa0ccc5f7dbf4992194167eb84c0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/x86/simatic-ipc-base.h",
+  "human_readable_source": " \n \n\n#ifndef __PLATFORM_DATA_X86_SIMATIC_IPC_BASE_H\n#define __PLATFORM_DATA_X86_SIMATIC_IPC_BASE_H\n\n#include <linux/types.h>\n\n#define SIMATIC_IPC_DEVICE_NONE 0\n#define SIMATIC_IPC_DEVICE_227D 1\n#define SIMATIC_IPC_DEVICE_427E 2\n#define SIMATIC_IPC_DEVICE_127E 3\n#define SIMATIC_IPC_DEVICE_227E 4\n#define SIMATIC_IPC_DEVICE_227G 5\n#define SIMATIC_IPC_DEVICE_BX_21A 6\n#define SIMATIC_IPC_DEVICE_BX_39A 7\n#define SIMATIC_IPC_DEVICE_BX_59A 8\n\nstruct simatic_ipc_platform {\n\tu8\tdevmode;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

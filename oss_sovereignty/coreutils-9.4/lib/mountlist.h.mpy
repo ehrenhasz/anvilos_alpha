@@ -1,0 +1,9 @@
+{
+  "module_name": "mountlist.h",
+  "hash_id": "ea2c0fff7a15280c2e87a5d0fc09ba49f97eb9d25f308dbfcbe778dde1203092",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mountlist.h",
+  "human_readable_source": " \n# if !_GL_CONFIG_H_INCLUDED\n#  error \"Please include config.h first.\"\n# endif\n\n# include <sys/types.h>\n\n \nstruct mount_entry\n{\n  char *me_devname;              \n  char *me_mountdir;             \n  char *me_mntroot;              \n                                 \n  char *me_type;                 \n  dev_t me_dev;                  \n  unsigned int me_dummy : 1;     \n  unsigned int me_remote : 1;    \n  unsigned int me_type_malloced : 1;  \n  struct mount_entry *me_next;\n};\n\nstruct mount_entry *read_file_system_list (bool need_fs_type)\n  _GL_ATTRIBUTE_MALLOC;\nvoid free_mount_entry (struct mount_entry *entry);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

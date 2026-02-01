@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b093778baa45116a242fb278c06c8b62d9c1dd5663d79d61233348afe5137222",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/virtio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the drm device driver.  This driver provides support for the\n# Direct Rendering Infrastructure (DRI) in XFree86 4.1.0 and higher.\n\nvirtio-gpu-y := virtgpu_drv.o virtgpu_kms.o virtgpu_gem.o virtgpu_vram.o \\\n\tvirtgpu_display.o virtgpu_vq.o \\\n\tvirtgpu_fence.o virtgpu_object.o virtgpu_debugfs.o virtgpu_plane.o \\\n\tvirtgpu_ioctl.o virtgpu_prime.o virtgpu_trace_points.o virtgpu_submit.o\n\nobj-$(CONFIG_DRM_VIRTIO_GPU) += virtio-gpu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

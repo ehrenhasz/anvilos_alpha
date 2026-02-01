@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "87a2c70fe70bdeb49d8446ca02b28f5a381e6ce1c9aae3c2d8f994fc3613c83a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/ifs/Makefile",
+  "human_readable_source": "obj-$(CONFIG_INTEL_IFS)\t\t+= intel_ifs.o\n\nintel_ifs-objs\t\t\t:= core.o load.o runtest.o sysfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

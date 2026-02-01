@@ -1,0 +1,9 @@
+{
+  "module_name": "fentry_fexit.c",
+  "hash_id": "24bc831755adb7b0f6ba63d009632d9eeac03497062e076c212a835bf6dd4d85",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/fentry_fexit.c",
+  "human_readable_source": "\n \n#include <test_progs.h>\n#include \"fentry_test.lskel.h\"\n#include \"fexit_test.lskel.h\"\n\nvoid test_fentry_fexit(void)\n{\n\tstruct fentry_test_lskel *fentry_skel = NULL;\n\tstruct fexit_test_lskel *fexit_skel = NULL;\n\t__u64 *fentry_res, *fexit_res;\n\tint err, prog_fd, i;\n\tLIBBPF_OPTS(bpf_test_run_opts, topts);\n\n\tfentry_skel = fentry_test_lskel__open_and_load();\n\tif (!ASSERT_OK_PTR(fentry_skel, \"fentry_skel_load\"))\n\t\tgoto close_prog;\n\tfexit_skel = fexit_test_lskel__open_and_load();\n\tif (!ASSERT_OK_PTR(fexit_skel, \"fexit_skel_load\"))\n\t\tgoto close_prog;\n\n\terr = fentry_test_lskel__attach(fentry_skel);\n\tif (!ASSERT_OK(err, \"fentry_attach\"))\n\t\tgoto close_prog;\n\terr = fexit_test_lskel__attach(fexit_skel);\n\tif (!ASSERT_OK(err, \"fexit_attach\"))\n\t\tgoto close_prog;\n\n\tprog_fd = fexit_skel->progs.test1.prog_fd;\n\terr = bpf_prog_test_run_opts(prog_fd, &topts);\n\tASSERT_OK(err, \"ipv6 test_run\");\n\tASSERT_OK(topts.retval, \"ipv6 test retval\");\n\n\tfentry_res = (__u64 *)fentry_skel->bss;\n\tfexit_res = (__u64 *)fexit_skel->bss;\n\tprintf(\"%lld\\n\", fentry_skel->bss->test1_result);\n\tfor (i = 0; i < 8; i++) {\n\t\tASSERT_EQ(fentry_res[i], 1, \"fentry result\");\n\t\tASSERT_EQ(fexit_res[i], 1, \"fexit result\");\n\t}\n\nclose_prog:\n\tfentry_test_lskel__destroy(fentry_skel);\n\tfexit_test_lskel__destroy(fexit_skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

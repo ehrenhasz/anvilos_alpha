@@ -1,0 +1,9 @@
+{
+  "module_name": "f_uvc.h",
+  "hash_id": "1a1b4d48880290ea1b4dfa92c1fcef631b714bf68d7b0d86ec93c22bc8c6f2b5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/function/f_uvc.h",
+  "human_readable_source": " \n \n\n#ifndef _F_UVC_H_\n#define _F_UVC_H_\n\nstruct uvc_device;\n\nvoid uvc_function_setup_continue(struct uvc_device *uvc);\n\nvoid uvc_function_connect(struct uvc_device *uvc);\n\nvoid uvc_function_disconnect(struct uvc_device *uvc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

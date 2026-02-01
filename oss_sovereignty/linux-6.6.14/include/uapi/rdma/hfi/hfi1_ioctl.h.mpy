@@ -1,0 +1,9 @@
+{
+  "module_name": "hfi1_ioctl.h",
+  "hash_id": "a46aced5b1ce0b0b54fd6930db6c4467f423d027dc4e969297aa858e22cad750",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/rdma/hfi/hfi1_ioctl.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX__HFI1_IOCTL_H\n#define _LINUX__HFI1_IOCTL_H\n#include <linux/types.h>\n\n \nstruct hfi1_user_info {\n\t \n\t__u32 userversion;\n\t__u32 pad;\n\t \n\t__u16 subctxt_cnt;\n\t__u16 subctxt_id;\n\t \n\t__u8 uuid[16];\n};\n\nstruct hfi1_ctxt_info {\n\t__aligned_u64 runtime_flags;     \n\t__u32 rcvegr_size;       \n\t__u16 num_active;        \n\t__u16 unit;              \n\t__u16 ctxt;              \n\t__u16 subctxt;           \n\t__u16 rcvtids;           \n\t__u16 credits;           \n\t__u16 numa_node;         \n\t__u16 rec_cpu;           \n\t__u16 send_ctxt;         \n\t__u16 egrtids;           \n\t__u16 rcvhdrq_cnt;       \n\t__u16 rcvhdrq_entsize;   \n\t__u16 sdma_ring_size;    \n};\n\nstruct hfi1_tid_info {\n\t \n\t__aligned_u64 vaddr;\n\t \n\t__aligned_u64 tidlist;\n\t \n\t__u32 tidcnt;\n\t \n\t__u32 length;\n};\n\n \nstruct hfi1_base_info {\n\t \n\t__u32 hw_version;\n\t \n\t__u32 sw_version;\n\t \n\t__u16 jkey;\n\t__u16 padding1;\n\t \n\t__u32 bthqp;\n\t \n\t__aligned_u64 sc_credits_addr;\n\t \n\t__aligned_u64 pio_bufbase_sop;\n\t \n\t__aligned_u64 pio_bufbase;\n\t \n\t__aligned_u64 rcvhdr_bufbase;\n\t \n\t__aligned_u64 rcvegr_bufbase;\n\t \n\t__aligned_u64 sdma_comp_bufbase;\n\t \n\t__aligned_u64 user_regbase;\n\t \n\t__aligned_u64 events_bufbase;\n\t \n\t__aligned_u64 status_bufbase;\n\t \n\t__aligned_u64 rcvhdrtail_base;\n\t \n\t__aligned_u64 subctxt_uregbase;\n\t__aligned_u64 subctxt_rcvegrbuf;\n\t__aligned_u64 subctxt_rcvhdrbuf;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

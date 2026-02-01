@@ -1,0 +1,9 @@
+{
+  "module_name": "compressed.collected.hash",
+  "hash_id": "bda9893600daf382e0849c3f217357747da7ca02d3580bc7679d9a17cc802f3e",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compressed.collected.hash",
+  "human_readable_source": "8574f3bd7f635cc22172d1d3559f149e",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

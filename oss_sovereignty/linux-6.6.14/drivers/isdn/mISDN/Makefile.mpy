@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ce7606dfa7a45a87dcbe215b3fdae68038629eb67ebaf4dcd0e14306bd706a86",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/isdn/mISDN/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the modular ISDN driver\n#\n\nobj-$(CONFIG_MISDN) += mISDN_core.o\nobj-$(CONFIG_MISDN_DSP) += mISDN_dsp.o\nobj-$(CONFIG_MISDN_L1OIP) += l1oip.o\n\n# multi objects\n\nmISDN_core-objs := core.o fsm.o socket.o clock.o hwchannel.o stack.o layer1.o layer2.o tei.o timerdev.o\nmISDN_dsp-objs := dsp_core.o dsp_cmx.o dsp_tones.o dsp_dtmf.o dsp_audio.o dsp_blowfish.o dsp_pipeline.o dsp_hwec.o\nl1oip-objs := l1oip_core.o l1oip_codec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

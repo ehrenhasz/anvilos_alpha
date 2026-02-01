@@ -1,0 +1,9 @@
+{
+  "module_name": "modanvil.c.qstr",
+  "hash_id": "d3e0cce873a5845930fb2f3d7056ef999c13513db72331c4d766cad13f9e44aa",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/modanvil.c.qstr",
+  "human_readable_source": "Q(__name__)\nQ(anvil)\nQ(check_output)\nQ(anvil)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

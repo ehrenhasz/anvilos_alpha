@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "727261986dacff918755af63b19b3fdddf85859f4b89e7581ee37162a0d82bcc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/renesas/rcar-vin/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig VIDEO_RCAR_CSI2\n\ttristate \"R-Car MIPI CSI-2 Receiver\"\n\tdepends on V4L_PLATFORM_DRIVERS\n\tdepends on VIDEO_DEV && OF\n\tdepends on ARCH_RENESAS || COMPILE_TEST\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect RESET_CONTROLLER\n\tselect V4L2_FWNODE\n\thelp\n\t  Support for Renesas R-Car MIPI CSI-2 receiver.\n\t  Supports R-Car Gen3 and RZ/G2 SoCs.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called rcar-csi2.\n\nconfig VIDEO_RCAR_VIN\n\ttristate \"R-Car Video Input (VIN) Driver\"\n\tdepends on V4L_PLATFORM_DRIVERS\n\tdepends on VIDEO_DEV && OF\n\tdepends on ARCH_RENESAS || COMPILE_TEST\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_FWNODE\n\thelp\n\t  Support for Renesas R-Car Video Input (VIN) driver.\n\t  Supports R-Car Gen{2,3} and RZ/G{1,2} SoCs.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called rcar-vin.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

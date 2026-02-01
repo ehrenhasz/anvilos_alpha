@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_macc.host.c",
+  "hash_id": "11aff87fa9cfa98e865c084757f1de994a389f30147776137543cc479946b2ce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/macc/macc_1.0/ia_css_macc.host.c",
+  "human_readable_source": "\n \n\n#include \"ia_css_types.h\"\n#include \"sh_css_defs.h\"\n#include \"ia_css_debug.h\"\n#include \"sh_css_frac.h\"\n\n#include \"ia_css_macc.host.h\"\n\nconst struct ia_css_macc_config default_macc_config = {\n\t1,\n};\n\nvoid\nia_css_macc_encode(\n    struct sh_css_isp_macc_params *to,\n    const struct ia_css_macc_config *from,\n    unsigned int size)\n{\n\t(void)size;\n\tto->exp = from->exp;\n}\n\nvoid\nia_css_macc_dump(\n    const struct sh_css_isp_macc_params *macc,\n    unsigned int level);\n\nvoid\nia_css_macc_debug_dtrace(\n    const struct ia_css_macc_config *config,\n    unsigned int level)\n{\n\tia_css_debug_dtrace(level,\n\t\t\t    \"config.exp=%d\\n\",\n\t\t\t    config->exp);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

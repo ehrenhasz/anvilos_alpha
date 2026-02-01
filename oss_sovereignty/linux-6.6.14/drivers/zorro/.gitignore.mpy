@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "ef04e304e136c3dedef6baf309e5bcbff1947244fb810a3769d4776991936b24",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/zorro/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ndevlist.h\ngen-devlist\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

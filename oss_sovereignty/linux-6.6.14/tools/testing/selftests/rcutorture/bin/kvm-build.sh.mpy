@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm-build.sh",
+  "hash_id": "f7b4fe64f6b85726b21f721b0ccf1b1e00e7f866fd44b3602c5d09d8cd83246d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/bin/kvm-build.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Build a kvm-ready Linux kernel from the tree in the current directory.\n#\n# Usage: kvm-build.sh config-template resdir\n#\n# Copyright (C) IBM Corporation, 2011\n#\n# Authors: Paul E. McKenney <paulmck@linux.ibm.com>\n\nif test -f \"$TORTURE_STOPFILE\"\nthen\n\techo \"kvm-build.sh early exit due to run STOP request\"\n\texit 1\nfi\n\nconfig_template=${1}\nif test -z \"$config_template\" -o ! -f \"$config_template\" -o ! -r \"$config_template\"\nthen\n\techo \"kvm-build.sh :$config_template: Not a readable file\"\n\texit 1\nfi\nresdir=${2}\n\nT=\"`mktemp -d ${TMPDIR-/tmp}/kvm-build.sh.XXXXXX`\"\ntrap 'rm -rf $T' 0\n\ncp ${config_template} $T/config\ncat << ___EOF___ >> $T/config\nCONFIG_INITRAMFS_SOURCE=\"$TORTURE_INITRD\"\nCONFIG_VIRTIO_PCI=y\nCONFIG_VIRTIO_CONSOLE=y\n___EOF___\n\nconfiginit.sh $T/config $resdir\nretval=$?\nif test $retval -gt 1\nthen\n\texit 2\nfi\n\n# Tell \"make\" to use double the number of real CPUs on the build system.\nncpus=\"`getconf _NPROCESSORS_ONLN`\"\nmake -j$((2 * ncpus)) $TORTURE_KMAKE_ARG > $resdir/Make.out 2>&1\nretval=$?\nif test $retval -ne 0 || grep \"rcu[^/]*\": < $resdir/Make.out | grep -E -q \"Stop|Error|error:|warning:\" || grep -E -q \"Stop|Error|error:\" < $resdir/Make.out\nthen\n\techo Kernel build error\n\tgrep -E \"Stop|Error|error:|warning:\" < $resdir/Make.out\n\techo Run aborted.\n\texit 3\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

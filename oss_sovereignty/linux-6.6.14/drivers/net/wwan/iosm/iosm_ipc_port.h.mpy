@@ -1,0 +1,9 @@
+{
+  "module_name": "iosm_ipc_port.h",
+  "hash_id": "6cedb8ed1f7ee760901ddf5926f050060817ce013ec41b811b4845ab5d5f5eff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wwan/iosm/iosm_ipc_port.h",
+  "human_readable_source": " \n\n#ifndef IOSM_IPC_PORT_H\n#define IOSM_IPC_PORT_H\n\n#include <linux/wwan.h>\n\n#include \"iosm_ipc_imem_ops.h\"\n\n \nstruct iosm_cdev {\n\tstruct wwan_port *iosm_port;\n\tstruct iosm_imem *ipc_imem;\n\tstruct device *dev;\n\tstruct iosm_pcie *pcie;\n\tenum wwan_port_type port_type;\n\tstruct ipc_mem_channel *channel;\n\tenum ipc_channel_id chl_id;\n};\n\n \nstruct iosm_cdev *ipc_port_init(struct iosm_imem *ipc_imem,\n\t\t\t\tstruct ipc_chnl_cfg ipc_port_cfg);\n\n \nvoid ipc_port_deinit(struct iosm_cdev *ipc_port[]);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

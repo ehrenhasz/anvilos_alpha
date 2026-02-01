@@ -1,0 +1,9 @@
+{
+  "module_name": "file-mmu.c",
+  "hash_id": "f23418454ab3b0ae891b056116e0bea6b352bcad8f4b02235d07ec45e813923b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ramfs/file-mmu.c",
+  "human_readable_source": " \n\n \n\n#include <linux/fs.h>\n#include <linux/mm.h>\n#include <linux/ramfs.h>\n#include <linux/sched.h>\n\n#include \"internal.h\"\n\nstatic unsigned long ramfs_mmu_get_unmapped_area(struct file *file,\n\t\tunsigned long addr, unsigned long len, unsigned long pgoff,\n\t\tunsigned long flags)\n{\n\treturn current->mm->get_unmapped_area(file, addr, len, pgoff, flags);\n}\n\nconst struct file_operations ramfs_file_operations = {\n\t.read_iter\t= generic_file_read_iter,\n\t.write_iter\t= generic_file_write_iter,\n\t.mmap\t\t= generic_file_mmap,\n\t.fsync\t\t= noop_fsync,\n\t.splice_read\t= filemap_splice_read,\n\t.splice_write\t= iter_file_splice_write,\n\t.llseek\t\t= generic_file_llseek,\n\t.get_unmapped_area\t= ramfs_mmu_get_unmapped_area,\n};\n\nconst struct inode_operations ramfs_file_inode_operations = {\n\t.setattr\t= simple_setattr,\n\t.getattr\t= simple_getattr,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

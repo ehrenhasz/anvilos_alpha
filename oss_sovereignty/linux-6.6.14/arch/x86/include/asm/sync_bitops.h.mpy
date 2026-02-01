@@ -1,0 +1,9 @@
+{
+  "module_name": "sync_bitops.h",
+  "hash_id": "00680f64a874d27c6c64d044ae035c646b3fcd09234be3f580e6cab5b939b1b5",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/sync_bitops.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SYNC_BITOPS_H\n#define _ASM_X86_SYNC_BITOPS_H\n\n \n\n \n\n#include <asm/rmwcc.h>\n\n#define ADDR (*(volatile long *)addr)\n\n \nstatic inline void sync_set_bit(long nr, volatile unsigned long *addr)\n{\n\tasm volatile(\"lock; \" __ASM_SIZE(bts) \" %1,%0\"\n\t\t     : \"+m\" (ADDR)\n\t\t     : \"Ir\" (nr)\n\t\t     : \"memory\");\n}\n\n \nstatic inline void sync_clear_bit(long nr, volatile unsigned long *addr)\n{\n\tasm volatile(\"lock; \" __ASM_SIZE(btr) \" %1,%0\"\n\t\t     : \"+m\" (ADDR)\n\t\t     : \"Ir\" (nr)\n\t\t     : \"memory\");\n}\n\n \nstatic inline void sync_change_bit(long nr, volatile unsigned long *addr)\n{\n\tasm volatile(\"lock; \" __ASM_SIZE(btc) \" %1,%0\"\n\t\t     : \"+m\" (ADDR)\n\t\t     : \"Ir\" (nr)\n\t\t     : \"memory\");\n}\n\n \nstatic inline bool sync_test_and_set_bit(long nr, volatile unsigned long *addr)\n{\n\treturn GEN_BINARY_RMWcc(\"lock; \" __ASM_SIZE(bts), *addr, c, \"Ir\", nr);\n}\n\n \nstatic inline int sync_test_and_clear_bit(long nr, volatile unsigned long *addr)\n{\n\treturn GEN_BINARY_RMWcc(\"lock; \" __ASM_SIZE(btr), *addr, c, \"Ir\", nr);\n}\n\n \nstatic inline int sync_test_and_change_bit(long nr, volatile unsigned long *addr)\n{\n\treturn GEN_BINARY_RMWcc(\"lock; \" __ASM_SIZE(btc), *addr, c, \"Ir\", nr);\n}\n\n#define sync_test_bit(nr, addr) test_bit(nr, addr)\n\n#undef ADDR\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

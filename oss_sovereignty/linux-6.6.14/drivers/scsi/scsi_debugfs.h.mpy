@@ -1,0 +1,9 @@
+{
+  "module_name": "scsi_debugfs.h",
+  "hash_id": "2fe61aad59d2ce9c5e26440292106557cf998d5d8eba0846e2197ed3f9299311",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/scsi_debugfs.h",
+  "human_readable_source": " \nstruct request;\nstruct seq_file;\n\nvoid scsi_show_rq(struct seq_file *m, struct request *rq);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

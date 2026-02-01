@@ -1,0 +1,9 @@
+{
+  "module_name": "task.h",
+  "hash_id": "2c216b44889fb5d4836d2dff20316ab0d7e03025c83e70b3ca71860093240ccc",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/task.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM task\n\n#if !defined(_TRACE_TASK_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_TASK_H\n#include <linux/tracepoint.h>\n\nTRACE_EVENT(task_newtask,\n\n\tTP_PROTO(struct task_struct *task, unsigned long clone_flags),\n\n\tTP_ARGS(task, clone_flags),\n\n\tTP_STRUCT__entry(\n\t\t__field(\tpid_t,\tpid)\n\t\t__array(\tchar,\tcomm, TASK_COMM_LEN)\n\t\t__field( unsigned long, clone_flags)\n\t\t__field(\tshort,\toom_score_adj)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->pid = task->pid;\n\t\tmemcpy(__entry->comm, task->comm, TASK_COMM_LEN);\n\t\t__entry->clone_flags = clone_flags;\n\t\t__entry->oom_score_adj = task->signal->oom_score_adj;\n\t),\n\n\tTP_printk(\"pid=%d comm=%s clone_flags=%lx oom_score_adj=%hd\",\n\t\t__entry->pid, __entry->comm,\n\t\t__entry->clone_flags, __entry->oom_score_adj)\n);\n\nTRACE_EVENT(task_rename,\n\n\tTP_PROTO(struct task_struct *task, const char *comm),\n\n\tTP_ARGS(task, comm),\n\n\tTP_STRUCT__entry(\n\t\t__field(\tpid_t,\tpid)\n\t\t__array(\tchar, oldcomm,  TASK_COMM_LEN)\n\t\t__array(\tchar, newcomm,  TASK_COMM_LEN)\n\t\t__field(\tshort,\toom_score_adj)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->pid = task->pid;\n\t\tmemcpy(entry->oldcomm, task->comm, TASK_COMM_LEN);\n\t\tstrscpy(entry->newcomm, comm, TASK_COMM_LEN);\n\t\t__entry->oom_score_adj = task->signal->oom_score_adj;\n\t),\n\n\tTP_printk(\"pid=%d oldcomm=%s newcomm=%s oom_score_adj=%hd\",\n\t\t__entry->pid, __entry->oldcomm,\n\t\t__entry->newcomm, __entry->oom_score_adj)\n);\n\n#endif\n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

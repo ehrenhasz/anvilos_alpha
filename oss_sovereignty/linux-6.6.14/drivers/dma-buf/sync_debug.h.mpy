@@ -1,0 +1,9 @@
+{
+  "module_name": "sync_debug.h",
+  "hash_id": "dd529a45cb01a1f63f38d414776ec7d640b4ab6d1d2493ca59dd66ba92094f8c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma-buf/sync_debug.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_SYNC_H\n#define _LINUX_SYNC_H\n\n#include <linux/list.h>\n#include <linux/rbtree.h>\n#include <linux/spinlock.h>\n#include <linux/dma-fence.h>\n\n#include <linux/sync_file.h>\n#include <uapi/linux/sync_file.h>\n\n \nstruct sync_timeline {\n\tstruct kref\t\tkref;\n\tchar\t\t\tname[32];\n\n\t \n\tu64\t\t\tcontext;\n\tint\t\t\tvalue;\n\n\tstruct rb_root\t\tpt_tree;\n\tstruct list_head\tpt_list;\n\tspinlock_t\t\tlock;\n\n\tstruct list_head\tsync_timeline_list;\n};\n\nstatic inline struct sync_timeline *dma_fence_parent(struct dma_fence *fence)\n{\n\treturn container_of(fence->lock, struct sync_timeline, lock);\n}\n\n \nstruct sync_pt {\n\tstruct dma_fence base;\n\tstruct list_head link;\n\tstruct rb_node node;\n};\n\nextern const struct file_operations sw_sync_debugfs_fops;\n\nvoid sync_timeline_debug_add(struct sync_timeline *obj);\nvoid sync_timeline_debug_remove(struct sync_timeline *obj);\nvoid sync_file_debug_add(struct sync_file *fence);\nvoid sync_file_debug_remove(struct sync_file *fence);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

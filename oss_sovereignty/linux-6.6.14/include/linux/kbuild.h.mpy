@@ -1,0 +1,9 @@
+{
+  "module_name": "kbuild.h",
+  "hash_id": "5d7e07c3143274cef0cafd24f12366bb0da2693f4e69b05180630f42efc1d1be",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kbuild.h",
+  "human_readable_source": " \n#ifndef __LINUX_KBUILD_H\n#define __LINUX_KBUILD_H\n\n#define DEFINE(sym, val) \\\n\tasm volatile(\"\\n.ascii \\\"->\" #sym \" %0 \" #val \"\\\"\" : : \"i\" (val))\n\n#define BLANK() asm volatile(\"\\n.ascii \\\"->\\\"\" : : )\n\n#define OFFSET(sym, str, mem) \\\n\tDEFINE(sym, offsetof(struct str, mem))\n\n#define COMMENT(x) \\\n\tasm volatile(\"\\n.ascii \\\"->#\" x \"\\\"\")\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

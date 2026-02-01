@@ -1,0 +1,9 @@
+{
+  "module_name": "digest.h",
+  "hash_id": "0f1fc1ab26fc3b7cf60ddbc1e7c1feec461703c23c7f94c6cf0246bd786c098b",
+  "original_prompt": "Ingested from openssh-9.6p1/digest.h",
+  "human_readable_source": " \n \n\n#ifndef _DIGEST_H\n#define _DIGEST_H\n\n \n#define SSH_DIGEST_MAX_LENGTH\t64\n\n \n#define SSH_DIGEST_MD5\t\t0\n#define SSH_DIGEST_SHA1\t\t1\n#define SSH_DIGEST_SHA256\t2\n#define SSH_DIGEST_SHA384\t3\n#define SSH_DIGEST_SHA512\t4\n#define SSH_DIGEST_MAX\t\t5\n\nstruct sshbuf;\nstruct ssh_digest_ctx;\n\n \nint ssh_digest_alg_by_name(const char *name);\n\n \nconst char *ssh_digest_alg_name(int alg);\n\n \nsize_t ssh_digest_bytes(int alg);\n\n \nsize_t ssh_digest_blocksize(struct ssh_digest_ctx *ctx);\n\n \nint ssh_digest_copy_state(struct ssh_digest_ctx *from,\n    struct ssh_digest_ctx *to);\n\n \nint ssh_digest_memory(int alg, const void *m, size_t mlen,\n    u_char *d, size_t dlen)\n\t__attribute__((__bounded__(__buffer__, 2, 3)))\n\t__attribute__((__bounded__(__buffer__, 4, 5)));\nint ssh_digest_buffer(int alg, const struct sshbuf *b, u_char *d, size_t dlen)\n\t__attribute__((__bounded__(__buffer__, 3, 4)));\n\n \nstruct ssh_digest_ctx *ssh_digest_start(int alg);\nint ssh_digest_update(struct ssh_digest_ctx *ctx, const void *m, size_t mlen)\n\t__attribute__((__bounded__(__buffer__, 2, 3)));\nint ssh_digest_update_buffer(struct ssh_digest_ctx *ctx,\n    const struct sshbuf *b);\nint ssh_digest_final(struct ssh_digest_ctx *ctx, u_char *d, size_t dlen)\n\t__attribute__((__bounded__(__buffer__, 2, 3)));\nvoid ssh_digest_free(struct ssh_digest_ctx *ctx);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

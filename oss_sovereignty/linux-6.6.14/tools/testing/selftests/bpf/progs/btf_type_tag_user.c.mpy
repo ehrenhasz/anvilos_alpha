@@ -1,0 +1,9 @@
+{
+  "module_name": "btf_type_tag_user.c",
+  "hash_id": "b151c8e93e63d39b0867076ac670baeb8a45ceecc7ff203360ec15e859598210",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf_type_tag_user.c",
+  "human_readable_source": "\n \n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nstruct bpf_testmod_btf_type_tag_1 {\n\tint a;\n};\n\nstruct bpf_testmod_btf_type_tag_2 {\n\tstruct bpf_testmod_btf_type_tag_1 *p;\n};\n\nint g;\n\nSEC(\"fentry/bpf_testmod_test_btf_type_tag_user_1\")\nint BPF_PROG(test_user1, struct bpf_testmod_btf_type_tag_1 *arg)\n{\n\tg = arg->a;\n\treturn 0;\n}\n\nSEC(\"fentry/bpf_testmod_test_btf_type_tag_user_2\")\nint BPF_PROG(test_user2, struct bpf_testmod_btf_type_tag_2 *arg)\n{\n\tg = arg->p->a;\n\treturn 0;\n}\n\n \nSEC(\"fentry/__sys_getsockname\")\nint BPF_PROG(test_sys_getsockname, int fd, struct sockaddr *usockaddr,\n\t     int *usockaddr_len)\n{\n\tg = usockaddr->sa_family;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

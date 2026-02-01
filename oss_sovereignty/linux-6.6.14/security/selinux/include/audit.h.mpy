@@ -1,0 +1,9 @@
+{
+  "module_name": "audit.h",
+  "hash_id": "20decba0c5905358e8b18c4e70a3f278971883c0e36b44229e49e055ec72f002",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/include/audit.h",
+  "human_readable_source": " \n \n\n#ifndef _SELINUX_AUDIT_H\n#define _SELINUX_AUDIT_H\n\n#include <linux/audit.h>\n#include <linux/types.h>\n\n \nint selinux_audit_rule_init(u32 field, u32 op, char *rulestr, void **rule);\n\n \nvoid selinux_audit_rule_free(void *rule);\n\n \nint selinux_audit_rule_match(u32 sid, u32 field, u32 op, void *rule);\n\n \nint selinux_audit_rule_known(struct audit_krule *rule);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "check_signature.c",
+  "hash_id": "2618f2a52ccde2b8a9020ab9a4134e3aa20099a79706e59722fd99d730ed549f",
+  "original_prompt": "Ingested from linux-6.6.14/lib/check_signature.c",
+  "human_readable_source": "\n#include <linux/io.h>\n#include <linux/export.h>\n\n \n\nint check_signature(const volatile void __iomem *io_addr,\n\t\t\tconst unsigned char *signature, int length)\n{\n\twhile (length--) {\n\t\tif (readb(io_addr) != *signature)\n\t\t\treturn 0;\n\t\tio_addr++;\n\t\tsignature++;\n\t}\n\treturn 1;\n}\nEXPORT_SYMBOL(check_signature);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

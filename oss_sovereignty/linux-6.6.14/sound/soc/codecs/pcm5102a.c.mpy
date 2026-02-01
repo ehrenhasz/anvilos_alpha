@@ -1,0 +1,9 @@
+{
+  "module_name": "pcm5102a.c",
+  "hash_id": "e6a3c6c388cb77b3af6d30ef598f08f05bb0cf1af5a023e76cb10c2631e76222",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/pcm5102a.c",
+  "human_readable_source": "\n \n\n#include <linux/init.h>\n#include <linux/module.h>\n#include <linux/platform_device.h>\n\n#include <sound/soc.h>\n\nstatic struct snd_soc_dai_driver pcm5102a_dai = {\n\t.name = \"pcm5102a-hifi\",\n\t.playback = {\n\t\t.channels_min = 2,\n\t\t.channels_max = 2,\n\t\t.rates = SNDRV_PCM_RATE_8000_384000,\n\t\t.formats = SNDRV_PCM_FMTBIT_S16_LE |\n\t\t\t   SNDRV_PCM_FMTBIT_S24_LE |\n\t\t\t   SNDRV_PCM_FMTBIT_S32_LE\n\t},\n};\n\nstatic struct snd_soc_component_driver soc_component_dev_pcm5102a = {\n\t.idle_bias_on\t\t= 1,\n\t.use_pmdown_time\t= 1,\n\t.endianness\t\t= 1,\n};\n\nstatic int pcm5102a_probe(struct platform_device *pdev)\n{\n\treturn devm_snd_soc_register_component(&pdev->dev, &soc_component_dev_pcm5102a,\n\t\t\t&pcm5102a_dai, 1);\n}\n\nstatic const struct of_device_id pcm5102a_of_match[] = {\n\t{ .compatible = \"ti,pcm5102a\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, pcm5102a_of_match);\n\nstatic struct platform_driver pcm5102a_codec_driver = {\n\t.probe\t\t= pcm5102a_probe,\n\t.driver\t\t= {\n\t\t.name\t= \"pcm5102a-codec\",\n\t\t.of_match_table = pcm5102a_of_match,\n\t},\n};\n\nmodule_platform_driver(pcm5102a_codec_driver);\n\nMODULE_DESCRIPTION(\"ASoC PCM5102A codec driver\");\nMODULE_AUTHOR(\"Florian Meier <florian.meier@koalo.de>\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

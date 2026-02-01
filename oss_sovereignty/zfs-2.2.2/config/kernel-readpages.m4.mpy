@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-readpages.m4",
+  "hash_id": "4d836a3b8d5852f70c0cb68eb8916f41f77bdd5913bc3afd042da574cdfe0c0a",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-readpages.m4",
+  "human_readable_source": "dnl #\ndnl # Linux 5.18 removes address_space_operations ->readpages in favour of\ndnl # ->readahead\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_VFS_READPAGES], [\n\tZFS_LINUX_TEST_SRC([vfs_has_readpages], [\n\t\t#include <linux/fs.h>\n\n\t\tstatic const struct address_space_operations\n\t\t    aops __attribute__ ((unused)) = {\n\t\t\t.readpages = NULL,\n\t\t};\n\t],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_VFS_READPAGES], [\n\tAC_MSG_CHECKING([whether aops->readpages exists])\n\tZFS_LINUX_TEST_RESULT([vfs_has_readpages], [\n\t\tAC_MSG_RESULT([yes])\n\t\tAC_DEFINE(HAVE_VFS_READPAGES, 1,\n\t\t\t[address_space_operations->readpages exists])\n\t],[\n\t\tAC_MSG_RESULT([no])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "a2xx_gpu.h",
+  "hash_id": "2098e2889503dbbd981083887f312839d225d1ba161320c7adf2b1042deb404d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/adreno/a2xx_gpu.h",
+  "human_readable_source": "\n \n\n#ifndef __A2XX_GPU_H__\n#define __A2XX_GPU_H__\n\n#include \"adreno_gpu.h\"\n\n \n#undef ROP_COPY\n#undef ROP_XOR\n\n#include \"a2xx.xml.h\"\n\nstruct a2xx_gpu {\n\tstruct adreno_gpu base;\n\tbool pm_enabled;\n\tbool protection_disabled;\n};\n#define to_a2xx_gpu(x) container_of(x, struct a2xx_gpu, base)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

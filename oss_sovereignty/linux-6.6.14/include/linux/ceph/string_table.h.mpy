@@ -1,0 +1,9 @@
+{
+  "module_name": "string_table.h",
+  "hash_id": "eb2e1a8f396f13d1f43b5acc9d8d5f98fb81494ebaf4cab9475b0104d5e5f787",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ceph/string_table.h",
+  "human_readable_source": " \n#ifndef _FS_CEPH_STRING_TABLE_H\n#define _FS_CEPH_STRING_TABLE_H\n\n#include <linux/types.h>\n#include <linux/kref.h>\n#include <linux/rbtree.h>\n#include <linux/rcupdate.h>\n\nstruct ceph_string {\n\tstruct kref kref;\n\tunion {\n\t\tstruct rb_node node;\n\t\tstruct rcu_head rcu;\n\t};\n\tsize_t len;\n\tchar str[];\n};\n\nextern void ceph_release_string(struct kref *ref);\nextern struct ceph_string *ceph_find_or_create_string(const char *str,\n\t\t\t\t\t\t      size_t len);\nextern bool ceph_strings_empty(void);\n\nstatic inline struct ceph_string *ceph_get_string(struct ceph_string *str)\n{\n\tkref_get(&str->kref);\n\treturn str;\n}\n\nstatic inline void ceph_put_string(struct ceph_string *str)\n{\n\tif (!str)\n\t\treturn;\n\tkref_put(&str->kref, ceph_release_string);\n}\n\nstatic inline int ceph_compare_string(struct ceph_string *cs,\n\t\t\t\t      const char* str, size_t len)\n{\n\tsize_t cs_len = cs ? cs->len : 0;\n\tif (cs_len != len)\n\t\treturn cs_len - len;\n\tif (len == 0)\n\t\treturn 0;\n\treturn strncmp(cs->str, str, len);\n}\n\n#define ceph_try_get_string(x)\t\t\t\t\t\\\n({\t\t\t\t\t\t\t\t\\\n\tstruct ceph_string *___str;\t\t\t\t\\\n\trcu_read_lock();\t\t\t\t\t\\\n\tfor (;;) {\t\t\t\t\t\t\\\n\t\t___str = rcu_dereference(x);\t\t\t\\\n\t\tif (!___str ||\t\t\t\t\t\\\n\t\t    kref_get_unless_zero(&___str->kref))\t\\\n\t\t\tbreak;\t\t\t\t\t\\\n\t}\t\t\t\t\t\t\t\\\n\trcu_read_unlock();\t\t\t\t\t\\\n\t(___str);\t\t\t\t\t\t\\\n})\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

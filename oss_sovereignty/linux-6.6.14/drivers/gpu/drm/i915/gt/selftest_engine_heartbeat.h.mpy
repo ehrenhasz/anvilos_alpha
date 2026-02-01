@@ -1,0 +1,9 @@
+{
+  "module_name": "selftest_engine_heartbeat.h",
+  "hash_id": "88b6a30560a29d8036b12d46766843fb88bd57b7edd2edad60b77b25bff90856",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/selftest_engine_heartbeat.h",
+  "human_readable_source": " \n \n\n#ifndef SELFTEST_ENGINE_HEARTBEAT_H\n#define SELFTEST_ENGINE_HEARTBEAT_H\n\nstruct intel_engine_cs;\n\nvoid st_engine_heartbeat_disable(struct intel_engine_cs *engine);\nvoid st_engine_heartbeat_disable_no_pm(struct intel_engine_cs *engine);\nvoid st_engine_heartbeat_enable(struct intel_engine_cs *engine);\nvoid st_engine_heartbeat_enable_no_pm(struct intel_engine_cs *engine);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

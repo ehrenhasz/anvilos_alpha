@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "880c8d8a8c38eb4812b23c67916bed3196f0379549338bc061940e576c822d3a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/uniphier/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y\t\t\t\t\t+= pinctrl-uniphier-core.o\n\nobj-$(CONFIG_PINCTRL_UNIPHIER_LD4)\t+= pinctrl-uniphier-ld4.o\nobj-$(CONFIG_PINCTRL_UNIPHIER_PRO4)\t+= pinctrl-uniphier-pro4.o\nobj-$(CONFIG_PINCTRL_UNIPHIER_SLD8)\t+= pinctrl-uniphier-sld8.o\nobj-$(CONFIG_PINCTRL_UNIPHIER_PRO5)\t+= pinctrl-uniphier-pro5.o\nobj-$(CONFIG_PINCTRL_UNIPHIER_PXS2)\t+= pinctrl-uniphier-pxs2.o\nobj-$(CONFIG_PINCTRL_UNIPHIER_LD6B)\t+= pinctrl-uniphier-ld6b.o\nobj-$(CONFIG_PINCTRL_UNIPHIER_LD11)\t+= pinctrl-uniphier-ld11.o\nobj-$(CONFIG_PINCTRL_UNIPHIER_LD20)\t+= pinctrl-uniphier-ld20.o\nobj-$(CONFIG_PINCTRL_UNIPHIER_PXS3)\t+= pinctrl-uniphier-pxs3.o\nobj-$(CONFIG_PINCTRL_UNIPHIER_NX1)\t+= pinctrl-uniphier-nx1.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

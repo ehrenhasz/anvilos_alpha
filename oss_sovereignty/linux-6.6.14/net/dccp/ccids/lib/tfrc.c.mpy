@@ -1,0 +1,9 @@
+{
+  "module_name": "tfrc.c",
+  "hash_id": "c36d1abe0b83d2ad073aee9e33b3ad908ccfa799f2b06a64d22e333cffda7d69",
+  "original_prompt": "Ingested from linux-6.6.14/net/dccp/ccids/lib/tfrc.c",
+  "human_readable_source": "\n \n#include <linux/moduleparam.h>\n#include \"tfrc.h\"\n\n#ifdef CONFIG_IP_DCCP_TFRC_DEBUG\nbool tfrc_debug;\nmodule_param(tfrc_debug, bool, 0644);\nMODULE_PARM_DESC(tfrc_debug, \"Enable TFRC debug messages\");\n#endif\n\nint __init tfrc_lib_init(void)\n{\n\tint rc = tfrc_li_init();\n\n\tif (rc)\n\t\tgoto out;\n\n\trc = tfrc_tx_packet_history_init();\n\tif (rc)\n\t\tgoto out_free_loss_intervals;\n\n\trc = tfrc_rx_packet_history_init();\n\tif (rc)\n\t\tgoto out_free_tx_history;\n\treturn 0;\n\nout_free_tx_history:\n\ttfrc_tx_packet_history_exit();\nout_free_loss_intervals:\n\ttfrc_li_exit();\nout:\n\treturn rc;\n}\n\nvoid tfrc_lib_exit(void)\n{\n\ttfrc_rx_packet_history_exit();\n\ttfrc_tx_packet_history_exit();\n\ttfrc_li_exit();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

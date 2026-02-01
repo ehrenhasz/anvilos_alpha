@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c060658f468cb3659d5ec530c11b011149f324bd4946237230e1dc80139a61c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/most/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_MOST_NET)\t+= net/\nobj-$(CONFIG_MOST_VIDEO)\t+= video/\nobj-$(CONFIG_MOST_DIM2)\t+= dim2/\nobj-$(CONFIG_MOST_I2C)\t+= i2c/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

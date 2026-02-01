@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "18aaac31f0dc0eb149f2734edbdae4ec4ce18e3aaa446e3f48f88ac02254345b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tilcdc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_TILCDC\n\ttristate \"DRM Support for TI LCDC Display Controller\"\n\tdepends on DRM && OF && ARM\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect DRM_BRIDGE\n\tselect DRM_PANEL_BRIDGE\n\tselect VIDEOMODE_HELPERS\n\tselect BACKLIGHT_CLASS_DEVICE\n\thelp\n\t  Choose this option if you have an TI SoC with LCDC display\n\t  controller, for example AM33xx in beagle-bone, DA8xx, or\n\t  OMAP-L1xx.  This driver replaces the FB_DA8XX fbdev driver.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

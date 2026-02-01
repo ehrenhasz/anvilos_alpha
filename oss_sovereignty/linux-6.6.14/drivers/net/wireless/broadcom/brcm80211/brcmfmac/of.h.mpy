@@ -1,0 +1,9 @@
+{
+  "module_name": "of.h",
+  "hash_id": "a2eb677a7ca8bec9da564fc42fa230f5f2dd76ff20dda0a72c76251a0ab6edc7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.h",
+  "human_readable_source": "\n \n#ifdef CONFIG_OF\nvoid brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,\n\t\t    struct brcmf_mp_device *settings);\n#else\nstatic void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,\n\t\t\t   struct brcmf_mp_device *settings)\n{\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

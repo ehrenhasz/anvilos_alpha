@@ -1,0 +1,9 @@
+{
+  "module_name": "map_in_map.h",
+  "hash_id": "b80a9a1a1e752e12298585364ad7f4981ced2dccf8d450b3642602f6c0a07f70",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/bpf/map_in_map.h",
+  "human_readable_source": " \n \n#ifndef __MAP_IN_MAP_H__\n#define __MAP_IN_MAP_H__\n\n#include <linux/types.h>\n\nstruct file;\nstruct bpf_map;\n\nstruct bpf_map *bpf_map_meta_alloc(int inner_map_ufd);\nvoid bpf_map_meta_free(struct bpf_map *map_meta);\nvoid *bpf_map_fd_get_ptr(struct bpf_map *map, struct file *map_file,\n\t\t\t int ufd);\nvoid bpf_map_fd_put_ptr(struct bpf_map *map, void *ptr, bool need_defer);\nu32 bpf_map_fd_sys_lookup_elem(void *ptr);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

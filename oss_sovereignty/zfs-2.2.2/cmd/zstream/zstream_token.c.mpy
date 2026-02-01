@@ -1,0 +1,9 @@
+{
+  "module_name": "zstream_token.c",
+  "hash_id": "e16eb86ed8ec493d956f5c33524da2845eaddb4d6d57e96861dc88e122ca3291",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zstream/zstream_token.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <ctype.h>\n#include <libnvpair.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n#include <stddef.h>\n\n#include <libzfs.h>\n#include <libzfs_core.h>\n\n#include <sys/dmu.h>\n#include <sys/zfs_ioctl.h>\n#include \"zstream.h\"\n\nint\nzstream_do_token(int argc, char *argv[])\n{\n\tchar *resume_token = NULL;\n\tlibzfs_handle_t *hdl;\n\n\tif (argc < 2) {\n\t\t(void) fprintf(stderr, \"Need to pass the resume token\\n\");\n\t\tzstream_usage();\n\t}\n\n\tresume_token = argv[1];\n\n\tif ((hdl = libzfs_init()) == NULL) {\n\t\t(void) fprintf(stderr, \"%s\\n\", libzfs_error_init(errno));\n\t\treturn (1);\n\t}\n\n\tnvlist_t *resume_nvl =\n\t    zfs_send_resume_token_to_nvlist(hdl, resume_token);\n\n\tif (resume_nvl == NULL) {\n\t\t(void) fprintf(stderr,\n\t\t    \"Unable to parse resume token: %s\\n\",\n\t\t    libzfs_error_description(hdl));\n\t\tlibzfs_fini(hdl);\n\t\treturn (1);\n\t}\n\n\tdump_nvlist(resume_nvl, 5);\n\tnvlist_free(resume_nvl);\n\n\tlibzfs_fini(hdl);\n\treturn (0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

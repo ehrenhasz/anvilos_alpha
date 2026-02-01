@@ -1,0 +1,9 @@
+{
+  "module_name": "via_utility.h",
+  "hash_id": "b003eb5e6f51654e9c45f0d16dc33d0beb64cfffd41ad9627b849b9b6dd40a40",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/via/via_utility.h",
+  "human_readable_source": " \n \n#ifndef __VIAUTILITY_H__\n#define __VIAUTILITY_H__\n\n \nvoid viafb_get_device_support_state(u32 *support_state);\nvoid viafb_get_device_connect_state(u32 *connect_state);\nbool viafb_lcd_get_support_expand_state(u32 xres, u32 yres);\n\n \nvoid viafb_set_gamma_table(int bpp, unsigned int *gamma_table);\nvoid viafb_get_gamma_table(unsigned int *gamma_table);\nvoid viafb_get_gamma_support_state(int bpp, unsigned int *support_state);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

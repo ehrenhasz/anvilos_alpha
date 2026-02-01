@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "766ce746fe3a3dbdc1905442a8b516351edf6d18b9f3acf198df392d43cec778",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/reset/sti/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nif ARCH_STI\n\nconfig STIH407_RESET\n\tbool\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cpufreq_ondemand.h",
+  "hash_id": "43d3617f475d8701f7de434c798f4ce8cba482df78167e11c9d45eb5268389e0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpufreq/cpufreq_ondemand.h",
+  "human_readable_source": " \n \n\n#include \"cpufreq_governor.h\"\n\nstruct od_policy_dbs_info {\n\tstruct policy_dbs_info policy_dbs;\n\tunsigned int freq_lo;\n\tunsigned int freq_lo_delay_us;\n\tunsigned int freq_hi_delay_us;\n\tunsigned int sample_type:1;\n};\n\nstatic inline struct od_policy_dbs_info *to_dbs_info(struct policy_dbs_info *policy_dbs)\n{\n\treturn container_of(policy_dbs, struct od_policy_dbs_info, policy_dbs);\n}\n\nstruct od_dbs_tuners {\n\tunsigned int powersave_bias;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

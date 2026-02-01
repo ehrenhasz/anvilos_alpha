@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_SECMARK.h",
+  "hash_id": "073ce3144d98834563519a6e803d3b08da0752236134efb9ceefa756f32099fe",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_SECMARK.h",
+  "human_readable_source": " \n#ifndef _XT_SECMARK_H_target\n#define _XT_SECMARK_H_target\n\n#include <linux/types.h>\n\n \n#define SECMARK_MODE_SEL\t0x01\t\t \n#define SECMARK_SECCTX_MAX\t256\n\nstruct xt_secmark_target_info {\n\t__u8 mode;\n\t__u32 secid;\n\tchar secctx[SECMARK_SECCTX_MAX];\n};\n\nstruct xt_secmark_target_info_v1 {\n\t__u8 mode;\n\tchar secctx[SECMARK_SECCTX_MAX];\n\t__u32 secid;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

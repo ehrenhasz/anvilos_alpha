@@ -1,0 +1,9 @@
+{
+  "module_name": "cc770.h",
+  "hash_id": "eaf4d98c2510f7ca1ac33c7a4e128bcb6f3fd5d6c69a503ffb349e707682fe60",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/can/platform/cc770.h",
+  "human_readable_source": " \n#ifndef _CAN_PLATFORM_CC770_H\n#define _CAN_PLATFORM_CC770_H\n\n \n#define CPUIF_CEN\t0x01\t \n#define CPUIF_MUX\t0x04\t \n#define CPUIF_SLP\t0x08\t \n#define CPUIF_PWD\t0x10\t \n#define CPUIF_DMC\t0x20\t \n#define CPUIF_DSC\t0x40\t \n#define CPUIF_RST\t0x80\t \n\n \n#define CLKOUT_CD_MASK  0x0f\t \n#define CLKOUT_SL_MASK\t0x30\t \n#define CLKOUT_SL_SHIFT\t4\n\n \n#define BUSCFG_DR0\t0x01\t \n#define BUSCFG_DR1\t0x02\t \n#define BUSCFG_DT1\t0x08\t \n#define BUSCFG_POL\t0x20\t \n#define BUSCFG_CBY\t0x40\t \n\nstruct cc770_platform_data {\n\tu32 osc_freq;\t \n\n\tu8 cir;\t\t \n\tu8 cor;\t\t \n\tu8 bcr;\t\t \n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

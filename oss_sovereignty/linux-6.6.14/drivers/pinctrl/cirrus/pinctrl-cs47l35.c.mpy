@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-cs47l35.c",
+  "hash_id": "5880c6abf19c8cb25f063b49c0f615b80edf4e6af2bb4377c10816ee26506a90",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/cirrus/pinctrl-cs47l35.c",
+  "human_readable_source": "\n \n\n#include <linux/err.h>\n#include <linux/mfd/madera/core.h>\n\n#include \"pinctrl-madera.h\"\n\n \nstatic const unsigned int cs47l35_aif3_pins[] = { 0, 1, 2, 3 };\nstatic const unsigned int cs47l35_spk_pins[] = { 4, 5 };\nstatic const unsigned int cs47l35_aif1_pins[] = { 7, 8, 9, 10 };\nstatic const unsigned int cs47l35_aif2_pins[] = { 11, 12, 13, 14 };\nstatic const unsigned int cs47l35_mif1_pins[] = { 6, 15 };\n\nstatic const struct madera_pin_groups cs47l35_pin_groups[] = {\n\t{ \"aif1\", cs47l35_aif1_pins, ARRAY_SIZE(cs47l35_aif1_pins) },\n\t{ \"aif2\", cs47l35_aif2_pins, ARRAY_SIZE(cs47l35_aif2_pins) },\n\t{ \"aif3\", cs47l35_aif3_pins, ARRAY_SIZE(cs47l35_aif3_pins) },\n\t{ \"mif1\", cs47l35_mif1_pins, ARRAY_SIZE(cs47l35_mif1_pins) },\n\t{ \"pdmspk1\", cs47l35_spk_pins, ARRAY_SIZE(cs47l35_spk_pins) },\n};\n\nconst struct madera_pin_chip cs47l35_pin_chip = {\n\t.n_pins = CS47L35_NUM_GPIOS,\n\t.pin_groups = cs47l35_pin_groups,\n\t.n_pin_groups = ARRAY_SIZE(cs47l35_pin_groups),\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

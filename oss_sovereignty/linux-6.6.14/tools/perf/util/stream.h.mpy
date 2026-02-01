@@ -1,0 +1,9 @@
+{
+  "module_name": "stream.h",
+  "hash_id": "2696d22cc722ab1eaf3b9dce32d566dc4d6dcc379e8c029d0a2cfb59ba279cb0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/stream.h",
+  "human_readable_source": " \n#ifndef __PERF_STREAM_H\n#define __PERF_STREAM_H\n\n#include \"callchain.h\"\n\nstruct stream {\n\tstruct callchain_node\t*cnode;\n\tstruct callchain_node\t*pair_cnode;\n};\n\nstruct evsel_streams {\n\tstruct stream\t\t*streams;\n\tint\t\t\tnr_streams_max;\n\tint\t\t\tnr_streams;\n\tint\t\t\tevsel_idx;\n\tu64\t\t\tstreams_hits;\n};\n\nstruct evlist_streams {\n\tstruct evsel_streams\t*ev_streams;\n\tint\t\t\tnr_evsel;\n};\n\nstruct evlist;\n\nvoid evlist_streams__delete(struct evlist_streams *els);\n\nstruct evlist_streams *evlist__create_streams(struct evlist *evlist,\n\t\t\t\t\t      int nr_streams_max);\n\nstruct evsel_streams *evsel_streams__entry(struct evlist_streams *els,\n\t\t\t\t\t   int evsel_idx);\n\nvoid evsel_streams__match(struct evsel_streams *es_base,\n\t\t\t  struct evsel_streams *es_pair);\n\nvoid evsel_streams__report(struct evsel_streams *es_base,\n\t\t\t   struct evsel_streams *es_pair);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

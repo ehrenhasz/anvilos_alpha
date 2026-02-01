@@ -1,0 +1,9 @@
+{
+  "module_name": "noring.c",
+  "hash_id": "610fb92a7af56bfa2ef704d4a5c900d5b93a61db678afb8c466580b1bb6feff7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/ringtest/noring.c",
+  "human_readable_source": "\n#define _GNU_SOURCE\n#include \"main.h\"\n#include <assert.h>\n\n \nvoid alloc_ring(void)\n{\n}\n\n \nint add_inbuf(unsigned len, void *buf, void *datap)\n{\n\treturn 0;\n}\n\n \nvoid *get_buf(unsigned *lenp, void **bufp)\n{\n\treturn \"Buffer\";\n}\n\nbool used_empty()\n{\n\treturn false;\n}\n\nvoid disable_call()\n{\n\tassert(0);\n}\n\nbool enable_call()\n{\n\tassert(0);\n}\n\nvoid kick_available(void)\n{\n\tassert(0);\n}\n\n \nvoid disable_kick()\n{\n\tassert(0);\n}\n\nbool enable_kick()\n{\n\tassert(0);\n}\n\nbool avail_empty()\n{\n\treturn false;\n}\n\nbool use_buf(unsigned *lenp, void **bufp)\n{\n\treturn true;\n}\n\nvoid call_used(void)\n{\n\tassert(0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

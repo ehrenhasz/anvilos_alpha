@@ -1,0 +1,9 @@
+{
+  "module_name": "helper_restricted.c",
+  "hash_id": "a1cfc2d3ffa0f8a34db63dd91d8eca7f0433f638fbd65a085e006a4c13301c67",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/helper_restricted.c",
+  "human_readable_source": "\n\n#include <test_progs.h>\n#include \"test_helper_restricted.skel.h\"\n\nvoid test_helper_restricted(void)\n{\n\tint prog_i = 0, prog_cnt;\n\n\tdo {\n\t\tstruct test_helper_restricted *test;\n\t\tint err;\n\n\t\ttest = test_helper_restricted__open();\n\t\tif (!ASSERT_OK_PTR(test, \"open\"))\n\t\t\treturn;\n\n\t\tprog_cnt = test->skeleton->prog_cnt;\n\n\t\tfor (int j = 0; j < prog_cnt; ++j) {\n\t\t\tstruct bpf_program *prog = *test->skeleton->progs[j].prog;\n\n\t\t\tbpf_program__set_autoload(prog, true);\n\t\t}\n\n\t\terr = test_helper_restricted__load(test);\n\t\tASSERT_ERR(err, \"load_should_fail\");\n\n\t\ttest_helper_restricted__destroy(test);\n\t} while (++prog_i < prog_cnt);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

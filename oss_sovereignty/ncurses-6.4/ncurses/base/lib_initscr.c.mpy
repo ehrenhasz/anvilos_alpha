@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_initscr.c",
+  "hash_id": "98575fa572502eb4176b72d7fbaa034f26608016b51363e9123c635dd4bf7164",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_initscr.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\n#if HAVE_SYS_TERMIO_H\n#include <sys/termio.h>\t\t \n#endif\n\nMODULE_ID(\"$Id: lib_initscr.c,v 1.48 2020/09/07 14:26:48 tom Exp $\")\n\nNCURSES_EXPORT(WINDOW *)\ninitscr(void)\n{\n    WINDOW *result;\n\n    START_TRACE();\n    T((T_CALLED(\"initscr()\")));\n\n    _nc_init_pthreads();\n    _nc_lock_global(curses);\n\n     \n    if (!_nc_globals.init_screen) {\n\tconst char *env;\n\tchar *name;\n\n\t_nc_globals.init_screen = TRUE;\n\n\tenv = getenv(\"TERM\");\n\t(void) VALID_TERM_ENV(env, \"unknown\");\n\n\tif ((name = strdup(env)) == NULL) {\n\t    fprintf(stderr, \"Error opening allocating $TERM.\\n\");\n\t    ExitProgram(EXIT_FAILURE);\n\t}\n#ifdef __CYGWIN__\n\t \n\tif (NC_ISATTY(fileno(stdout))) {\n\t    FILE *fp = fopen(\"/dev/tty\", \"w\");\n\t    if (fp != 0 && NC_ISATTY(fileno(fp))) {\n\t\tfclose(stdout);\n\t\tdup2(fileno(fp), STDOUT_FILENO);\n\t\tstdout = fdopen(STDOUT_FILENO, \"w\");\n\t    }\n\t}\n#endif\n\tif (newterm(name, stdout, stdin) == 0) {\n\t    fprintf(stderr, \"Error opening terminal: %s.\\n\", name);\n\t    ExitProgram(EXIT_FAILURE);\n\t}\n\n\t \n#if NCURSES_SP_FUNCS\n\tNCURSES_SP_NAME(def_prog_mode) (CURRENT_SCREEN);\n#else\n\tdef_prog_mode();\n#endif\n\tfree(name);\n    }\n    result = stdscr;\n    _nc_unlock_global(curses);\n\n    returnWin(result);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

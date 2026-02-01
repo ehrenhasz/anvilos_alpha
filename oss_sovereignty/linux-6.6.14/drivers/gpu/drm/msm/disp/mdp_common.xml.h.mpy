@@ -1,0 +1,9 @@
+{
+  "module_name": "mdp_common.xml.h",
+  "hash_id": "e1948da0d9fb93beba319e4995ef072a4fbc7c6bc7cbbaea6d844e172e6aa43c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/disp/mdp_common.xml.h",
+  "human_readable_source": "#ifndef MDP_COMMON_XML\n#define MDP_COMMON_XML\n\n \n\n\nenum mdp_chroma_samp_type {\n\tCHROMA_FULL = 0,\n\tCHROMA_H2V1 = 1,\n\tCHROMA_H1V2 = 2,\n\tCHROMA_420 = 3,\n};\n\nenum mdp_fetch_type {\n\tMDP_PLANE_INTERLEAVED = 0,\n\tMDP_PLANE_PLANAR = 1,\n\tMDP_PLANE_PSEUDO_PLANAR = 2,\n};\n\nenum mdp_mixer_stage_id {\n\tSTAGE_UNUSED = 0,\n\tSTAGE_BASE = 1,\n\tSTAGE0 = 2,\n\tSTAGE1 = 3,\n\tSTAGE2 = 4,\n\tSTAGE3 = 5,\n\tSTAGE4 = 6,\n\tSTAGE5 = 7,\n\tSTAGE6 = 8,\n\tSTAGE_MAX = 8,\n};\n\nenum mdp_alpha_type {\n\tFG_CONST = 0,\n\tBG_CONST = 1,\n\tFG_PIXEL = 2,\n\tBG_PIXEL = 3,\n};\n\nenum mdp_component_type {\n\tCOMP_0 = 0,\n\tCOMP_1_2 = 1,\n\tCOMP_3 = 2,\n\tCOMP_MAX = 3,\n};\n\nenum mdp_bpc {\n\tBPC1 = 0,\n\tBPC5 = 1,\n\tBPC6 = 2,\n\tBPC8 = 3,\n};\n\nenum mdp_bpc_alpha {\n\tBPC1A = 0,\n\tBPC4A = 1,\n\tBPC6A = 2,\n\tBPC8A = 3,\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

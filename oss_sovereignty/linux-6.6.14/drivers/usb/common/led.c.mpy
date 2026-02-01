@@ -1,0 +1,9 @@
+{
+  "module_name": "led.c",
+  "hash_id": "abd95bed70a8871b67132fa3351b721f9b3d09adfa02899b56e838d32972591c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/common/led.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/kernel.h>\n#include <linux/init.h>\n#include <linux/leds.h>\n#include <linux/usb.h>\n#include \"common.h\"\n\n#define BLINK_DELAY 30\n\nDEFINE_LED_TRIGGER(ledtrig_usb_gadget);\nDEFINE_LED_TRIGGER(ledtrig_usb_host);\n\nvoid usb_led_activity(enum usb_led_event ev)\n{\n\tstruct led_trigger *trig = NULL;\n\n\tswitch (ev) {\n\tcase USB_LED_EVENT_GADGET:\n\t\ttrig = ledtrig_usb_gadget;\n\t\tbreak;\n\tcase USB_LED_EVENT_HOST:\n\t\ttrig = ledtrig_usb_host;\n\t\tbreak;\n\t}\n\t \n\tled_trigger_blink_oneshot(trig, BLINK_DELAY, BLINK_DELAY, 0);\n}\nEXPORT_SYMBOL_GPL(usb_led_activity);\n\n\nvoid __init ledtrig_usb_init(void)\n{\n\tled_trigger_register_simple(\"usb-gadget\", &ledtrig_usb_gadget);\n\tled_trigger_register_simple(\"usb-host\", &ledtrig_usb_host);\n}\n\nvoid __exit ledtrig_usb_exit(void)\n{\n\tled_trigger_unregister_simple(ledtrig_usb_gadget);\n\tled_trigger_unregister_simple(ledtrig_usb_host);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

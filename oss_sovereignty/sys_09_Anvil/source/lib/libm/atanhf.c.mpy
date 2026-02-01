@@ -1,0 +1,9 @@
+{
+  "module_name": "atanhf.c",
+  "hash_id": "427207602520f4e99cb37657dec839ceb2425617976741d4459fd843f9bd5dc0",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/atanhf.c",
+  "human_readable_source": " \n \n\n \n \n\n#include \"libm.h\"\n\n \nfloat atanhf(float x)\n{\n\tunion {float f; uint32_t i;} u = {.f = x};\n\tunsigned s = u.i >> 31;\n\tfloat_t y;\n\n\t \n\tu.i &= 0x7fffffff;\n\ty = u.f;\n\n\tif (u.i < 0x3f800000 - (1<<23)) {\n\t\tif (u.i < 0x3f800000 - (32<<23)) {\n\t\t\t \n\t\t\tif (u.i < (1<<23))\n\t\t\t\tFORCE_EVAL((float)(y*y));\n\t\t} else {\n\t\t\t \n\t\t\ty = 0.5f*log1pf(2*y + 2*y*y/(1-y));\n\t\t}\n\t} else {\n\t\t \n\t\ty = 0.5f*log1pf(2*(y/(1-y)));\n\t}\n\treturn s ? -y : y;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

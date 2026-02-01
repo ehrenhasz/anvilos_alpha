@@ -1,0 +1,9 @@
+{
+  "module_name": "dce80_hw_sequencer.c",
+  "hash_id": "31848efec06de2fb2d90fa5a0250f6a9b1da9ef0d43e46eaf937d3b8fbcdd6b8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce80/dce80_hw_sequencer.c",
+  "human_readable_source": " \n\n#include \"dm_services.h\"\n#include \"dc.h\"\n#include \"core_types.h\"\n#include \"dce80_hw_sequencer.h\"\n\n#include \"dce/dce_hwseq.h\"\n#include \"dce110/dce110_hw_sequencer.h\"\n#include \"dce100/dce100_hw_sequencer.h\"\n\n \n#include \"dce/dce_8_0_d.h\"\n#include \"dce/dce_8_0_sh_mask.h\"\n\n \n\n \n\nvoid dce80_hw_sequencer_construct(struct dc *dc)\n{\n\tdce110_hw_sequencer_construct(dc);\n\n\tdc->hwseq->funcs.enable_display_power_gating = dce100_enable_display_power_gating;\n\tdc->hwss.pipe_control_lock = dce_pipe_control_lock;\n\tdc->hwss.prepare_bandwidth = dce100_prepare_bandwidth;\n\tdc->hwss.optimize_bandwidth = dce100_optimize_bandwidth;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

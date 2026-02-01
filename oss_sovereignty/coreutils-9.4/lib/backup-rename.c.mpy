@@ -1,0 +1,9 @@
+{
+  "module_name": "backup-rename.c",
+  "hash_id": "08fc07e2d6ab2d6c6aaa4a37da4f54df800a497f1c9d2923efea14d93d4d2497",
+  "original_prompt": "Ingested from coreutils-9.4/lib/backup-rename.c",
+  "human_readable_source": " \n\nchar *\nbackup_file_rename (int dir_fd, char const *file, enum backup_type backup_type)\n{\n  return backupfile_internal (dir_fd, file, backup_type, true);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

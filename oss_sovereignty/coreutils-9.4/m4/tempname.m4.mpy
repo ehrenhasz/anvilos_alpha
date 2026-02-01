@@ -1,0 +1,9 @@
+{
+  "module_name": "tempname.m4",
+  "hash_id": "71fb9fb6859cdf7dc3a20a874d8e92e5cb5904a8066af4b66e8e27a302e28ca4",
+  "original_prompt": "Ingested from coreutils-9.4/m4/tempname.m4",
+  "human_readable_source": "#serial 5\n\n# Copyright (C) 2006-2007, 2009-2023 Free Software Foundation, Inc.\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\n# glibc provides __gen_tempname as a wrapper for mk[ds]temp.  Expose\n# it as a public API, and provide it on systems that are lacking.\nAC_DEFUN([gl_FUNC_GEN_TEMPNAME],\n[\n  gl_PREREQ_TEMPNAME\n])\n\n# Prerequisites of lib/tempname.c.\nAC_DEFUN([gl_PREREQ_TEMPNAME],\n[\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

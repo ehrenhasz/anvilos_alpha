@@ -1,0 +1,9 @@
+{
+  "module_name": "qxl_object.h",
+  "hash_id": "729d493c7203d88a63d9c703fa64c07617e2763de11a209778ca72a7d01c8d83",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/qxl/qxl_object.h",
+  "human_readable_source": " \n#ifndef QXL_OBJECT_H\n#define QXL_OBJECT_H\n\n#include \"qxl_drv.h\"\n\nstatic inline int qxl_bo_reserve(struct qxl_bo *bo)\n{\n\tint r;\n\n\tr = ttm_bo_reserve(&bo->tbo, true, false, NULL);\n\tif (unlikely(r != 0)) {\n\t\tif (r != -ERESTARTSYS) {\n\t\t\tstruct drm_device *ddev = bo->tbo.base.dev;\n\n\t\t\tdev_err(ddev->dev, \"%p reserve failed\\n\", bo);\n\t\t}\n\t\treturn r;\n\t}\n\treturn 0;\n}\n\nstatic inline void qxl_bo_unreserve(struct qxl_bo *bo)\n{\n\tttm_bo_unreserve(&bo->tbo);\n}\n\nstatic inline unsigned long qxl_bo_size(struct qxl_bo *bo)\n{\n\treturn bo->tbo.base.size;\n}\n\nextern int qxl_bo_create(struct qxl_device *qdev,\n\t\t\t unsigned long size,\n\t\t\t bool kernel, bool pinned, u32 domain,\n\t\t\t u32 priority,\n\t\t\t struct qxl_surface *surf,\n\t\t\t struct qxl_bo **bo_ptr);\nint qxl_bo_vmap(struct qxl_bo *bo, struct iosys_map *map);\nint qxl_bo_vmap_locked(struct qxl_bo *bo, struct iosys_map *map);\nint qxl_bo_vunmap(struct qxl_bo *bo);\nvoid qxl_bo_vunmap_locked(struct qxl_bo *bo);\nvoid *qxl_bo_kmap_atomic_page(struct qxl_device *qdev, struct qxl_bo *bo, int page_offset);\nvoid qxl_bo_kunmap_atomic_page(struct qxl_device *qdev, struct qxl_bo *bo, void *map);\nextern struct qxl_bo *qxl_bo_ref(struct qxl_bo *bo);\nextern void qxl_bo_unref(struct qxl_bo **bo);\nextern int qxl_bo_pin(struct qxl_bo *bo);\nextern int qxl_bo_unpin(struct qxl_bo *bo);\nextern void qxl_ttm_placement_from_domain(struct qxl_bo *qbo, u32 domain);\nextern bool qxl_ttm_bo_is_qxl_bo(struct ttm_buffer_object *bo);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

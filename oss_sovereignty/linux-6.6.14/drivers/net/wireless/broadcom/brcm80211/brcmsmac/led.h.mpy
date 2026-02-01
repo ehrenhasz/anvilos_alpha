@@ -1,0 +1,9 @@
+{
+  "module_name": "led.h",
+  "hash_id": "849a9455674b37245fd1230cb491029017036190543cc4a72a1755d87f23f46d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmsmac/led.h",
+  "human_readable_source": " \n\n#ifndef _BRCM_LED_H_\n#define _BRCM_LED_H_\n\nstruct gpio_desc;\n\nstruct brcms_led {\n\tchar name[32];\n\tstruct gpio_desc *gpiod;\n};\n\n#ifdef CONFIG_BRCMSMAC_LEDS\nvoid brcms_led_unregister(struct brcms_info *wl);\nint brcms_led_register(struct brcms_info *wl);\n#else\nstatic inline void brcms_led_unregister(struct brcms_info *wl) {};\nstatic inline int brcms_led_register(struct brcms_info *wl)\n{\n\treturn -ENOTSUPP;\n};\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

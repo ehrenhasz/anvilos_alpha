@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "5a866a26e7f6da2dc5b087a0beb14f9f36f7b877ca10b7f8ad905d77b1385bca",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nboot/compressed/vmlinux\ntools/test_get_len\ntools/insn_sanity\ntools/insn_decoder_test\npurgatory/purgatory.ro\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

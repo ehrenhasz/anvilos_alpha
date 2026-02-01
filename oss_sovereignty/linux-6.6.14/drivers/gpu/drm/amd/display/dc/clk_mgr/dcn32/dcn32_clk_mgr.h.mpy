@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn32_clk_mgr.h",
+  "hash_id": "dbff6b5513d373fe5ed575a63cd06376981801f2826c49363bf8fb5d885c65c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn32/dcn32_clk_mgr.h",
+  "human_readable_source": " \n#ifndef __DCN32_CLK_MGR_H_\n#define __DCN32_CLK_MGR_H_\n\nvoid dcn32_init_clocks(struct clk_mgr *clk_mgr_base);\n\nvoid dcn32_clk_mgr_construct(struct dc_context *ctx,\n\t\tstruct clk_mgr_internal *clk_mgr,\n\t\tstruct pp_smu_funcs *pp_smu,\n\t\tstruct dccg *dccg);\n\nvoid dcn32_update_clocks_update_dpp_dto(struct clk_mgr_internal *clk_mgr,\n\t\tstruct dc_state *context, bool safe_to_lower);\n\nvoid dcn32_clk_mgr_destroy(struct clk_mgr_internal *clk_mgr);\n\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

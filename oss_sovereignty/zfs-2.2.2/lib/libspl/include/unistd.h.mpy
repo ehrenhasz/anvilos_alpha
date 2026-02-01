@@ -1,0 +1,9 @@
+{
+  "module_name": "unistd.h",
+  "hash_id": "7d0feddb97ec5e2eff973cd793cacf697dffce6ae877c65ee9e82b0ff1f970cd",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/unistd.h",
+  "human_readable_source": " \n \n\n#include_next <unistd.h>\n\n#ifndef _LIBSPL_UNISTD_H\n#define\t_LIBSPL_UNISTD_H\n\n#include <sys/ioctl.h>\n\n#if !defined(HAVE_ISSETUGID)\n#include <sys/types.h>\n#define\tissetugid() (geteuid() == 0 || getegid() == 0)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

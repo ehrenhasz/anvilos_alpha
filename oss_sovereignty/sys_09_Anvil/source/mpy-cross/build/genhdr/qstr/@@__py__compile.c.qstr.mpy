@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__compile.c.qstr",
+  "hash_id": "2e4d8810d33d5acce5c1135f4af2bebf3921d4b0eab250e18396144c8f43b0db",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__compile.c.qstr",
+  "human_readable_source": "Q(micropython)\nQ(bytecode)\nQ(native)\nQ(viper)\nQ(asm_thumb)\nQ(asm_xtensa)\nQ(_star_)\nQ(AssertionError)\nQ(range)\nQ(__aiter__)\nQ(__anext__)\nQ(StopAsyncIteration)\nQ(__aenter__)\nQ(__aenter__)\nQ(BaseException)\nQ(__aexit__)\nQ(__class__)\nQ(__aexit__)\nQ(__repl_print__)\nQ(super)\nQ(__class__)\nQ(__class__)\nQ(__name__)\nQ(__module__)\nQ(__qualname__)\nQ(__class__)\nQ(__class__)\nQ(object)\nQ(bool)\nQ(int)\nQ(uint)\nQ(label)\nQ(align)\nQ(data)\nQ(__class__)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

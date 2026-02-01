@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1f6bd2f4fdccc62137ea13c28fcbc8dc9c5506d76add5d23385dde9f2246422d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/pistachio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y\t+= clk.o\nobj-y\t+= clk-pll.o\nobj-y\t+= clk-pistachio.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

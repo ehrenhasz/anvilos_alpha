@@ -1,0 +1,9 @@
+{
+  "module_name": "int-ll64.h",
+  "hash_id": "68948c270683614b2bd47537739e761dd3e326e902d2a0318402de7b591e75b1",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/int-ll64.h",
+  "human_readable_source": " \n \n#ifndef _ASM_GENERIC_INT_LL64_H\n#define _ASM_GENERIC_INT_LL64_H\n\n#include <uapi/asm-generic/int-ll64.h>\n\n\n#ifndef __ASSEMBLY__\n\ntypedef __s8  s8;\ntypedef __u8  u8;\ntypedef __s16 s16;\ntypedef __u16 u16;\ntypedef __s32 s32;\ntypedef __u32 u32;\ntypedef __s64 s64;\ntypedef __u64 u64;\n\n#define S8_C(x)  x\n#define U8_C(x)  x ## U\n#define S16_C(x) x\n#define U16_C(x) x ## U\n#define S32_C(x) x\n#define U32_C(x) x ## U\n#define S64_C(x) x ## LL\n#define U64_C(x) x ## ULL\n\n#else  \n\n#define S8_C(x)  x\n#define U8_C(x)  x\n#define S16_C(x) x\n#define U16_C(x) x\n#define S32_C(x) x\n#define U32_C(x) x\n#define S64_C(x) x\n#define U64_C(x) x\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

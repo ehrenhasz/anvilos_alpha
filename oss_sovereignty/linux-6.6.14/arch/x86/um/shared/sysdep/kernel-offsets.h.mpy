@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-offsets.h",
+  "hash_id": "4452052a6cf8da9ea83e3f1cd0f195df8a82c46924073250c821c106fbd2b31b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/shared/sysdep/kernel-offsets.h",
+  "human_readable_source": " \n#include <linux/stddef.h>\n#include <linux/sched.h>\n#include <linux/elf.h>\n#include <linux/crypto.h>\n#include <linux/kbuild.h>\n#include <asm/mman.h>\n\nvoid foo(void)\n{\n#include <common-offsets.h>\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

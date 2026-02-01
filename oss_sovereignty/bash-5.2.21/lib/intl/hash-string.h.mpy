@@ -1,0 +1,9 @@
+{
+  "module_name": "hash-string.h",
+  "hash_id": "8ea0438ab150209e3c005ad95b6ecf3f28cb75780a082e1b54f0180de7efdd51",
+  "original_prompt": "Ingested from bash-5.2.21/lib/intl/hash-string.h",
+  "human_readable_source": " \n\n \n\n \n\n#ifndef PARAMS\n# if __STDC__ || defined __GNUC__ || defined __SUNPRO_C || defined __cplusplus || __PROTOTYPES\n#  define PARAMS(Args) Args\n# else\n#  define PARAMS(Args) ()\n# endif\n#endif\n\n \n#define HASHWORDBITS 32\n\n\n \nstatic unsigned long int hash_string PARAMS ((const char *__str_param));\n\nstatic inline unsigned long int\nhash_string (str_param)\n     const char *str_param;\n{\n  unsigned long int hval, g;\n  const char *str = str_param;\n\n   \n  hval = 0;\n  while (*str != '\\0')\n    {\n      hval <<= 4;\n      hval += (unsigned long int) *str++;\n      g = hval & ((unsigned long int) 0xf << (HASHWORDBITS - 4));\n      if (g != 0)\n\t{\n\t  hval ^= g >> (HASHWORDBITS - 8);\n\t  hval ^= g;\n\t}\n    }\n  return hval;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

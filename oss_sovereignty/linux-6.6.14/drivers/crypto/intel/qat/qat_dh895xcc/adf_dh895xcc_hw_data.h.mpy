@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_dh895xcc_hw_data.h",
+  "hash_id": "f73b0f1ebeaf975f015da212247cb5f964aa2bce11fc28859c9f1de5b5519920",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_dh895xcc/adf_dh895xcc_hw_data.h",
+  "human_readable_source": " \n \n#ifndef ADF_DH895x_HW_DATA_H_\n#define ADF_DH895x_HW_DATA_H_\n\n#include <linux/units.h>\n\n \n#define ADF_DH895XCC_SRAM_BAR 0\n#define ADF_DH895XCC_PMISC_BAR 1\n#define ADF_DH895XCC_ETR_BAR 2\n#define ADF_DH895XCC_FUSECTL_SKU_MASK 0x300000\n#define ADF_DH895XCC_FUSECTL_SKU_SHIFT 20\n#define ADF_DH895XCC_FUSECTL_SKU_1 0x0\n#define ADF_DH895XCC_FUSECTL_SKU_2 0x1\n#define ADF_DH895XCC_FUSECTL_SKU_3 0x2\n#define ADF_DH895XCC_FUSECTL_SKU_4 0x3\n#define ADF_DH895XCC_MAX_ACCELERATORS 6\n#define ADF_DH895XCC_MAX_ACCELENGINES 12\n#define ADF_DH895XCC_ACCELERATORS_REG_OFFSET 13\n#define ADF_DH895XCC_ACCELERATORS_MASK 0x3F\n#define ADF_DH895XCC_ACCELENGINES_MASK 0xFFF\n#define ADF_DH895XCC_ETR_MAX_BANKS 32\n\n \n#define ADF_DH895XCC_ERR_REG_VF2PF_L(vf_src)\t(((vf_src) & 0x01FFFE00) >> 9)\n#define ADF_DH895XCC_ERR_MSK_VF2PF_L(vf_mask)\t(((vf_mask) & 0xFFFF) << 9)\n#define ADF_DH895XCC_ERR_REG_VF2PF_U(vf_src)\t(((vf_src) & 0x0000FFFF) << 16)\n#define ADF_DH895XCC_ERR_MSK_VF2PF_U(vf_mask)\t((vf_mask) >> 16)\n\n \n#define ADF_DH895XCC_AE2FUNC_MAP_GRP_A_NUM_REGS 96\n#define ADF_DH895XCC_AE2FUNC_MAP_GRP_B_NUM_REGS 12\n\n \n#define ADF_DH895X_AE_FREQ (933 * HZ_PER_MHZ)\n\n \n#define ADF_DH895XCC_FW \"qat_895xcc.bin\"\n#define ADF_DH895XCC_MMP \"qat_895xcc_mmp.bin\"\n\nvoid adf_init_hw_data_dh895xcc(struct adf_hw_device_data *hw_data);\nvoid adf_clean_hw_data_dh895xcc(struct adf_hw_device_data *hw_data);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

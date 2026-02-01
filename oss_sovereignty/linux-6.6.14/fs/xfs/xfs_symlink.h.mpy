@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_symlink.h",
+  "hash_id": "d992158fd8e4a5dcada1c23999555e8ef2b9ef46f903b7b349f01bc5b058ab54",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_symlink.h",
+  "human_readable_source": "\n \n#ifndef __XFS_SYMLINK_H\n#define __XFS_SYMLINK_H 1\n\n \n\nint xfs_symlink(struct mnt_idmap *idmap, struct xfs_inode *dp,\n\t\tstruct xfs_name *link_name, const char *target_path,\n\t\tumode_t mode, struct xfs_inode **ipp);\nint xfs_readlink_bmap_ilocked(struct xfs_inode *ip, char *link);\nint xfs_readlink(struct xfs_inode *ip, char *link);\nint xfs_inactive_symlink(struct xfs_inode *ip);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tty_buffer.h",
+  "hash_id": "07cf6814de741664ace7b76ffdfe9e9ac884dfb6522ac7c13d16dd4b57bc16e6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/tty_buffer.h",
+  "human_readable_source": " \n#ifndef _LINUX_TTY_BUFFER_H\n#define _LINUX_TTY_BUFFER_H\n\n#include <linux/atomic.h>\n#include <linux/llist.h>\n#include <linux/mutex.h>\n#include <linux/workqueue.h>\n\nstruct tty_buffer {\n\tunion {\n\t\tstruct tty_buffer *next;\n\t\tstruct llist_node free;\n\t};\n\tunsigned int used;\n\tunsigned int size;\n\tunsigned int commit;\n\tunsigned int lookahead;\t\t \n\tunsigned int read;\n\tbool flags;\n\t \n\tu8 data[] __aligned(sizeof(unsigned long));\n};\n\nstatic inline u8 *char_buf_ptr(struct tty_buffer *b, unsigned int ofs)\n{\n\treturn b->data + ofs;\n}\n\nstatic inline u8 *flag_buf_ptr(struct tty_buffer *b, unsigned int ofs)\n{\n\treturn char_buf_ptr(b, ofs) + b->size;\n}\n\nstruct tty_bufhead {\n\tstruct tty_buffer *head;\t \n\tstruct work_struct work;\n\tstruct mutex\t   lock;\n\tatomic_t\t   priority;\n\tstruct tty_buffer sentinel;\n\tstruct llist_head free;\t\t \n\tatomic_t\t   mem_used;     \n\tint\t\t   mem_limit;\n\tstruct tty_buffer *tail;\t \n};\n\n \n#define TTY_NORMAL\t0\n#define TTY_BREAK\t1\n#define TTY_FRAME\t2\n#define TTY_PARITY\t3\n#define TTY_OVERRUN\t4\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

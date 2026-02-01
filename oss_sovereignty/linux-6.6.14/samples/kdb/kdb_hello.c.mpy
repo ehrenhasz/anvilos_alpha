@@ -1,0 +1,9 @@
+{
+  "module_name": "kdb_hello.c",
+  "hash_id": "68079b96760472ce3d23be15fccd7d2399a1a0211dc8cc1da9c52fe8ebad3f96",
+  "original_prompt": "Ingested from linux-6.6.14/samples/kdb/kdb_hello.c",
+  "human_readable_source": " \n\n#include <linux/module.h>\n#include <linux/kdb.h>\n\n \nstatic int kdb_hello_cmd(int argc, const char **argv)\n{\n\tif (argc > 1)\n\t\treturn KDB_ARGCOUNT;\n\n\tif (argc)\n\t\tkdb_printf(\"Hello %s.\\n\", argv[1]);\n\telse\n\t\tkdb_printf(\"Hello world!\\n\");\n\n\treturn 0;\n}\n\nstatic kdbtab_t hello_cmd = {\n\t.name = \"hello\",\n\t.func = kdb_hello_cmd,\n\t.usage = \"[string]\",\n\t.help = \"Say Hello World or Hello [string]\",\n};\n\nstatic int __init kdb_hello_cmd_init(void)\n{\n\t \n\tkdb_register(&hello_cmd);\n\treturn 0;\n}\n\nstatic void __exit kdb_hello_cmd_exit(void)\n{\n\tkdb_unregister(&hello_cmd);\n}\n\nmodule_init(kdb_hello_cmd_init);\nmodule_exit(kdb_hello_cmd_exit);\n\nMODULE_AUTHOR(\"WindRiver\");\nMODULE_DESCRIPTION(\"KDB example to add a hello command\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

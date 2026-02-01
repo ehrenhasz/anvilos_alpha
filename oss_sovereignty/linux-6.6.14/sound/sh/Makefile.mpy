@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a32866ffc8b757a62e8fd401b620cecdfa2404e3f4d301de09aea98b637b5298",
+  "original_prompt": "Ingested from linux-6.6.14/sound/sh/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n#\n\nsnd-aica-objs := aica.o\nsnd-sh_dac_audio-objs := sh_dac_audio.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_AICA) += snd-aica.o\nobj-$(CONFIG_SND_SH_DAC_AUDIO) += snd-sh_dac_audio.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

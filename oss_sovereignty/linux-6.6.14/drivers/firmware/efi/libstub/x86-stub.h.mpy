@@ -1,0 +1,9 @@
+{
+  "module_name": "x86-stub.h",
+  "hash_id": "6fb24150a9fe7a40fadffe1cfc5250b301c7ef3b3a558d89dee68284565425bb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/efi/libstub/x86-stub.h",
+  "human_readable_source": " \n\n#include <linux/efi.h>\n\nextern struct boot_params *boot_params_pointer asm(\"boot_params\");\n\nextern void trampoline_32bit_src(void *, bool);\nextern const u16 trampoline_ljmp_imm_offset;\n\nvoid efi_adjust_memory_range_protection(unsigned long start,\n\t\t\t\t\tunsigned long size);\n\n#ifdef CONFIG_X86_64\nefi_status_t efi_setup_5level_paging(void);\nvoid efi_5level_switch(void);\n#else\nstatic inline efi_status_t efi_setup_5level_paging(void) { return EFI_SUCCESS; }\nstatic inline void efi_5level_switch(void) {}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

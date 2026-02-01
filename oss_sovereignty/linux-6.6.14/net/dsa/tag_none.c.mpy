@@ -1,0 +1,9 @@
+{
+  "module_name": "tag_none.c",
+  "hash_id": "03dfd0307efd957ef078a7ebae59b32f28aa2b26f1260ab876e166a35ef80725",
+  "original_prompt": "Ingested from linux-6.6.14/net/dsa/tag_none.c",
+  "human_readable_source": "\n \n\n#include \"tag.h\"\n\n#define NONE_NAME\t\"none\"\n\nstatic struct sk_buff *dsa_slave_notag_xmit(struct sk_buff *skb,\n\t\t\t\t\t    struct net_device *dev)\n{\n\t \n\treturn skb;\n}\n\nstatic const struct dsa_device_ops none_ops = {\n\t.name\t= NONE_NAME,\n\t.proto\t= DSA_TAG_PROTO_NONE,\n\t.xmit\t= dsa_slave_notag_xmit,\n};\n\nmodule_dsa_tag_driver(none_ops);\nMODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_NONE, NONE_NAME);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

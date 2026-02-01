@@ -1,0 +1,9 @@
+{
+  "module_name": "kprobe_args_string.tc",
+  "hash_id": "3802db9718bfc403bf8c9c09e3408835defa63d1ed1091d0cc8a5837591cc2aa",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_string.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Kprobe event string type argument\n# requires: kprobe_events\n\ncase `uname -m` in\nx86_64)\n  ARG1=%di\n;;\ni[3456]86)\n  ARG1=%ax\n;;\naarch64)\n  ARG1=%x0\n;;\narm*)\n  ARG1=%r0\n;;\nppc64*)\n  ARG1=%r3\n;;\nppc*)\n  ARG1=%r3\n;;\ns390*)\n  ARG1=%r2\n;;\nmips*)\n  ARG1=%r4\n;;\nloongarch*)\n  ARG1=%r4\n;;\n*)\n  echo \"Please implement other architecture here\"\n  exit_untested\nesac\n\n: \"Test get argument (1)\"\nif grep -q eventfs_add_dir available_filter_functions; then\n  DIR_NAME=\"eventfs_add_dir\"\nelse\n  DIR_NAME=\"tracefs_create_dir\"\nfi\necho \"p:testprobe ${DIR_NAME} arg1=+0(${ARG1}):string\" > kprobe_events\necho 1 > events/kprobes/testprobe/enable\necho \"p:test $FUNCTION_FORK\" >> kprobe_events\ngrep -qe \"testprobe.* arg1=\\\"test\\\"\" trace\n\necho 0 > events/kprobes/testprobe/enable\n: \"Test get argument (2)\"\necho \"p:testprobe ${DIR_NAME} arg1=+0(${ARG1}):string arg2=+0(${ARG1}):string\" > kprobe_events\necho 1 > events/kprobes/testprobe/enable\necho \"p:test $FUNCTION_FORK\" >> kprobe_events\ngrep -qe \"testprobe.* arg1=\\\"test\\\" arg2=\\\"test\\\"\" trace\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

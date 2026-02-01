@@ -1,0 +1,9 @@
+{
+  "module_name": "load_policy.c",
+  "hash_id": "719fad4fac0b72a76c83954402eb5c494820fe7884c13b4a8633c45b6a416e53",
+  "original_prompt": "Ingested from linux-6.6.14/security/tomoyo/load_policy.c",
+  "human_readable_source": "\n \n\n#include \"common.h\"\n\n#ifndef CONFIG_SECURITY_TOMOYO_OMIT_USERSPACE_LOADER\n\n \nstatic const char *tomoyo_loader;\n\n \nstatic int __init tomoyo_loader_setup(char *str)\n{\n\ttomoyo_loader = str;\n\treturn 1;\n}\n\n__setup(\"TOMOYO_loader=\", tomoyo_loader_setup);\n\n \nstatic bool tomoyo_policy_loader_exists(void)\n{\n\tstruct path path;\n\n\tif (!tomoyo_loader)\n\t\ttomoyo_loader = CONFIG_SECURITY_TOMOYO_POLICY_LOADER;\n\tif (kern_path(tomoyo_loader, LOOKUP_FOLLOW, &path)) {\n\t\tpr_info(\"Not activating Mandatory Access Control as %s does not exist.\\n\",\n\t\t\ttomoyo_loader);\n\t\treturn false;\n\t}\n\tpath_put(&path);\n\treturn true;\n}\n\n \nstatic const char *tomoyo_trigger;\n\n \nstatic int __init tomoyo_trigger_setup(char *str)\n{\n\ttomoyo_trigger = str;\n\treturn 1;\n}\n\n__setup(\"TOMOYO_trigger=\", tomoyo_trigger_setup);\n\n \nvoid tomoyo_load_policy(const char *filename)\n{\n\tstatic bool done;\n\tchar *argv[2];\n\tchar *envp[3];\n\n\tif (tomoyo_policy_loaded || done)\n\t\treturn;\n\tif (!tomoyo_trigger)\n\t\ttomoyo_trigger = CONFIG_SECURITY_TOMOYO_ACTIVATION_TRIGGER;\n\tif (strcmp(filename, tomoyo_trigger))\n\t\treturn;\n\tif (!tomoyo_policy_loader_exists())\n\t\treturn;\n\tdone = true;\n\tpr_info(\"Calling %s to load policy. Please wait.\\n\", tomoyo_loader);\n\targv[0] = (char *) tomoyo_loader;\n\targv[1] = NULL;\n\tenvp[0] = \"HOME=/\";\n\tenvp[1] = \"PATH=/sbin:/bin:/usr/sbin:/usr/bin\";\n\tenvp[2] = NULL;\n\tcall_usermodehelper(argv[0], argv, envp, UMH_WAIT_PROC);\n\ttomoyo_check_profile();\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

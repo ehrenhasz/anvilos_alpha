@@ -1,0 +1,9 @@
+{
+  "module_name": "pidfd.h",
+  "hash_id": "98b0bac7a95ce0d15fed0514ff5cee205022feb3c7b16fb3e9c0cc556e29bf0f",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/pidfd.h",
+  "human_readable_source": " \n\n#ifndef _UAPI_LINUX_PIDFD_H\n#define _UAPI_LINUX_PIDFD_H\n\n#include <linux/types.h>\n#include <linux/fcntl.h>\n\n \n#define PIDFD_NONBLOCK O_NONBLOCK\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

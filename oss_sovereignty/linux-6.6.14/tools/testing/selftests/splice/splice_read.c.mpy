@@ -1,0 +1,9 @@
+{
+  "module_name": "splice_read.c",
+  "hash_id": "b90eee744464fe6d2da11d316b6294de7a0fb36d622ed455575e9b46d7601eb1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/splice/splice_read.c",
+  "human_readable_source": "\n#define _GNU_SOURCE\n#include <errno.h>\n#include <fcntl.h>\n#include <limits.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n\nint main(int argc, char *argv[])\n{\n\tint fd;\n\tsize_t size;\n\tssize_t spliced;\n\n\tif (argc < 2) {\n\t\tfprintf(stderr, \"Usage: %s INPUT [BYTES]\\n\", argv[0]);\n\t\treturn EXIT_FAILURE;\n\t}\n\n\tfd = open(argv[1], O_RDONLY);\n\tif (fd < 0) {\n\t\tperror(argv[1]);\n\t\treturn EXIT_FAILURE;\n\t}\n\n\tif (argc == 3)\n\t\tsize = atol(argv[2]);\n\telse {\n\t\tstruct stat statbuf;\n\n\t\tif (fstat(fd, &statbuf) < 0) {\n\t\t\tperror(argv[1]);\n\t\t\treturn EXIT_FAILURE;\n\t\t}\n\n\t\tif (statbuf.st_size > INT_MAX) {\n\t\t\tfprintf(stderr, \"%s: Too big\\n\", argv[1]);\n\t\t\treturn EXIT_FAILURE;\n\t\t}\n\n\t\tsize = statbuf.st_size;\n\t}\n\n\t \n\tspliced = splice(fd, NULL, STDOUT_FILENO, NULL,\n\t\t      size, SPLICE_F_MOVE);\n\tif (spliced < 0) {\n\t\tperror(\"splice\");\n\t\treturn EXIT_FAILURE;\n\t}\n\n\tclose(fd);\n\treturn EXIT_SUCCESS;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fs.h",
+  "hash_id": "56b00afd4d2f4112e9a278521ad38a5e2aa53f94dfab0a4993d995a056bf8d31",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/api/fs/fs.h",
+  "human_readable_source": " \n#ifndef __API_FS__\n#define __API_FS__\n\n#include <stdbool.h>\n#include <unistd.h>\n\n \n#ifndef PATH_MAX\n#define PATH_MAX 4096\n#endif\n\n#define FS(name)\t\t\t\t\\\n\tconst char *name##__mountpoint(void);\t\\\n\tconst char *name##__mount(void);\t\\\n\tbool name##__configured(void);\t\t\\\n\n \nFS(sysfs)\nFS(procfs)\nFS(debugfs)\nFS(tracefs)\nFS(hugetlbfs)\nFS(bpf_fs)\n\n#undef FS\n\n\nint cgroupfs_find_mountpoint(char *buf, size_t maxlen, const char *subsys);\n\nint filename__read_int(const char *filename, int *value);\nint filename__read_ull(const char *filename, unsigned long long *value);\nint filename__read_xll(const char *filename, unsigned long long *value);\nint filename__read_str(const char *filename, char **buf, size_t *sizep);\n\nint filename__write_int(const char *filename, int value);\n\nint procfs__read_str(const char *entry, char **buf, size_t *sizep);\n\nint sysctl__read_int(const char *sysctl, int *value);\nint sysfs__read_int(const char *entry, int *value);\nint sysfs__read_ull(const char *entry, unsigned long long *value);\nint sysfs__read_xll(const char *entry, unsigned long long *value);\nint sysfs__read_str(const char *entry, char **buf, size_t *sizep);\nint sysfs__read_bool(const char *entry, bool *value);\n\nint sysfs__write_int(const char *entry, int value);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

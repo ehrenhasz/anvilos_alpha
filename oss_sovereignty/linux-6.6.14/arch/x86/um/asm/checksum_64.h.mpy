@@ -1,0 +1,9 @@
+{
+  "module_name": "checksum_64.h",
+  "hash_id": "5f994e7679d47ed70c5a19d55f7e355f2277d8bf7952c42fda875867b5eafb7d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/asm/checksum_64.h",
+  "human_readable_source": " \n\n#ifndef __UM_SYSDEP_CHECKSUM_H\n#define __UM_SYSDEP_CHECKSUM_H\n\nstatic inline unsigned add32_with_carry(unsigned a, unsigned b)\n{\n        asm(\"addl %2,%0\\n\\t\"\n            \"adcl $0,%0\"\n            : \"=r\" (a)\n            : \"0\" (a), \"r\" (b));\n        return a;\n}\n\nextern __sum16 ip_compute_csum(const void *buff, int len);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ffed95a5458e926a7fb62ad5e58925ed5f6d6cbc800cb083a1f4a3365e91a183",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn20/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\n#\n# Makefile for DCN.\n\nDCN20 = dcn20_resource.o dcn20_init.o dcn20_hwseq.o dcn20_dpp.o dcn20_dpp_cm.o dcn20_hubp.o \\\n\t\tdcn20_mpc.o dcn20_opp.o dcn20_hubbub.o dcn20_optc.o dcn20_mmhubbub.o \\\n\t\tdcn20_stream_encoder.o dcn20_link_encoder.o dcn20_dccg.o \\\n\t\tdcn20_vmid.o dcn20_dwb.o dcn20_dwb_scl.o\n\nDCN20 += dcn20_dsc.o\n\nAMD_DAL_DCN20 = $(addprefix $(AMDDALPATH)/dc/dcn20/,$(DCN20))\n\nAMD_DISPLAY_FILES += $(AMD_DAL_DCN20)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

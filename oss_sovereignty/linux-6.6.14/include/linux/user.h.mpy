@@ -1,0 +1,9 @@
+{
+  "module_name": "user.h",
+  "hash_id": "25ea321ef82b8973b8c15e126e06dda702cb3f458a99f48c4ffd4c463c797487",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/user.h",
+  "human_readable_source": "#include <asm/user.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

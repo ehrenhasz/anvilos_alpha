@@ -1,0 +1,9 @@
+{
+  "module_name": "dsa_loop_bdinfo.c",
+  "hash_id": "3e840c2fa3f32ee7d2152fafeabb567a4b5bb18e4665bba20e7d6f4a8d06477c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/dsa_loop_bdinfo.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <linux/init.h>\n#include <linux/phy.h>\n#include <net/dsa.h>\n\n#include \"dsa_loop.h\"\n\nstatic struct dsa_loop_pdata dsa_loop_pdata = {\n\t.cd = {\n\t\t.port_names[0] = \"lan1\",\n\t\t.port_names[1] = \"lan2\",\n\t\t.port_names[2] = \"lan3\",\n\t\t.port_names[3] = \"lan4\",\n\t\t.port_names[DSA_LOOP_CPU_PORT] = \"cpu\",\n\t},\n\t.name = \"DSA mockup driver\",\n\t.enabled_ports = 0x1f,\n\t.netdev = \"eth0\",\n};\n\nstatic const struct mdio_board_info bdinfo = {\n\t.bus_id\t= \"fixed-0\",\n\t.modalias = \"dsa-loop\",\n\t.mdio_addr = 31,\n\t.platform_data = &dsa_loop_pdata,\n};\n\nstatic int __init dsa_loop_bdinfo_init(void)\n{\n\treturn mdiobus_register_board_info(&bdinfo, 1);\n}\narch_initcall(dsa_loop_bdinfo_init)\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

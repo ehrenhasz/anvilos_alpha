@@ -1,0 +1,9 @@
+{
+  "module_name": "r8190P_rtl8256.h",
+  "hash_id": "dc7815e226bc16ae0c45c05edb2f71d89662a77323ffddc52870959ad97d6d0d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192e/rtl8192e/r8190P_rtl8256.h",
+  "human_readable_source": " \n \n#ifndef RTL8225H\n#define RTL8225H\n\n#define RTL819X_TOTAL_RF_PATH 2\nvoid rtl92e_set_bandwidth(struct net_device *dev,\n\t\t\t  enum ht_channel_width bandwidth);\nbool rtl92e_config_rf(struct net_device *dev);\nvoid rtl92e_set_cck_tx_power(struct net_device *dev, u8\tpowerlevel);\nvoid rtl92e_set_ofdm_tx_power(struct net_device *dev, u8 powerlevel);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

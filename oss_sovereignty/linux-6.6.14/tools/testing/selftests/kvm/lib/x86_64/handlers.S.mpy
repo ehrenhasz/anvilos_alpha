@@ -1,0 +1,9 @@
+{
+  "module_name": "handlers.S",
+  "hash_id": "3a870c8f2b6d625ae3a51b33c36daf18df800c02c5bc66f76f1ce6b8da700717",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/lib/x86_64/handlers.S",
+  "human_readable_source": "handle_exception:\n\tpush %r15\n\tpush %r14\n\tpush %r13\n\tpush %r12\n\tpush %r11\n\tpush %r10\n\tpush %r9\n\tpush %r8\n\n\tpush %rdi\n\tpush %rsi\n\tpush %rbp\n\tpush %rbx\n\tpush %rdx\n\tpush %rcx\n\tpush %rax\n\tmov %rsp, %rdi\n\n\tcall route_exception\n\n\tpop %rax\n\tpop %rcx\n\tpop %rdx\n\tpop %rbx\n\tpop %rbp\n\tpop %rsi\n\tpop %rdi\n\tpop %r8\n\tpop %r9\n\tpop %r10\n\tpop %r11\n\tpop %r12\n\tpop %r13\n\tpop %r14\n\tpop %r15\n\n\t \n\tadd $16, %rsp\n\tiretq\n\n \n.pushsection .rodata\n.globl idt_handlers\nidt_handlers:\n.popsection\n\n.macro HANDLERS has_error from to\n\tvector = \\from\n\t.rept \\to - \\from + 1\n\t.align 8\n\n\t \n666 :\n.pushsection .rodata\n\t.quad 666b\n.popsection\n\n\t.if ! \\has_error\n\tpushq $0\n\t.endif\n\tpushq $vector\n\tjmp handle_exception\n\tvector = vector + 1\n\t.endr\n.endm\n\n.global idt_handler_code\nidt_handler_code:\n\tHANDLERS has_error=0 from=0  to=7\n\tHANDLERS has_error=1 from=8  to=8\n\tHANDLERS has_error=0 from=9  to=9\n\tHANDLERS has_error=1 from=10 to=14\n\tHANDLERS has_error=0 from=15 to=16\n\tHANDLERS has_error=1 from=17 to=17\n\tHANDLERS has_error=0 from=18 to=255\n\n.section        .note.GNU-stack, \"\", %progbits\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

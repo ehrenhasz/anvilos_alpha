@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8b7031772d179d1032501754f629aca86bc1afb8570f9b8d4a5a7d6eb28bf764",
+  "original_prompt": "Ingested from linux-6.6.14/sound/isa/opti9xx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-opti92x-ad1848-objs := opti92x-ad1848.o\nsnd-opti92x-cs4231-objs := opti92x-cs4231.o\nsnd-opti93x-objs := opti93x.o\nsnd-miro-objs := miro.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_OPTI92X_AD1848) += snd-opti92x-ad1848.o\nobj-$(CONFIG_SND_OPTI92X_CS4231) += snd-opti92x-cs4231.o\nobj-$(CONFIG_SND_OPTI93X) += snd-opti93x.o\nobj-$(CONFIG_SND_MIRO) += snd-miro.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

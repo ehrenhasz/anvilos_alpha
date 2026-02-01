@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gem_internal.h",
+  "hash_id": "e6d09c82fc1612a49e849bb7f28a49506444530fe5af1a6db85c839111f6a52e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gem/i915_gem_internal.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_GEM_INTERNAL_H__\n#define __I915_GEM_INTERNAL_H__\n\n#include <linux/types.h>\n\nstruct drm_i915_gem_object;\nstruct drm_i915_gem_object_ops;\nstruct drm_i915_private;\n\nstruct drm_i915_gem_object *\ni915_gem_object_create_internal(struct drm_i915_private *i915,\n\t\t\t\tphys_addr_t size);\nstruct drm_i915_gem_object *\n__i915_gem_object_create_internal(struct drm_i915_private *i915,\n\t\t\t\t  const struct drm_i915_gem_object_ops *ops,\n\t\t\t\t  phys_addr_t size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

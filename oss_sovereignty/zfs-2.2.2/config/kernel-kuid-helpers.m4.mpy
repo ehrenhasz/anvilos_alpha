@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-kuid-helpers.m4",
+  "hash_id": "8bcd87e9874af8dce31ff9fdd68f86e0755d1cd8a81c37988931afa5b419bf11",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-kuid-helpers.m4",
+  "human_readable_source": "dnl #\ndnl # 3.5 API change,\ndnl # Since usernamespaces were introduced in kernel version 3.5, it\ndnl # became necessary to go through one more level of indirection\ndnl # when dealing with uid/gid - namely the kuid type.\ndnl #\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_KUID_HELPERS], [\n\tZFS_LINUX_TEST_SRC([i_uid_read], [\n\t\t#include <linux/fs.h>\n\t],[\n\t\tstruct inode *ip = NULL;\n\t\t(void) i_uid_read(ip);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_KUID_HELPERS], [\n\tAC_MSG_CHECKING([whether i_(uid|gid)_(read|write) exist])\n\tZFS_LINUX_TEST_RESULT([i_uid_read], [\n\t\tAC_MSG_RESULT(yes)\n\t],[\n\t\tZFS_LINUX_TEST_ERROR([i_uid_read])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "clut_vga16.ppm",
+  "hash_id": "ff1ac2fe298f8308e995c606ff50ae5a3eba05e3d01bb3d975aa869218a7e733",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/logo/clut_vga16.ppm",
+  "human_readable_source": "P3\n# Standard console colors\n16 1\n255\n  0   0   0\n  0   0 170\n  0 170   0\n  0 170 170\n170   0   0\n170   0 170\n170  85   0\n170 170 170\n 85  85  85\n 85  85 255\n 85 255  85\n 85 255 255\n255  85  85\n255  85 255\n255 255  85\n255 255 255\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

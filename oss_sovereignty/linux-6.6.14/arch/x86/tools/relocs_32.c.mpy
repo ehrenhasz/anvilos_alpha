@@ -1,0 +1,9 @@
+{
+  "module_name": "relocs_32.c",
+  "hash_id": "36ae4788225d2bc866ee5d331f03c7409f53d6f3449e718f351d787544283915",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/tools/relocs_32.c",
+  "human_readable_source": "\n#include \"relocs.h\"\n\n#define ELF_BITS 32\n\n#define ELF_MACHINE\t\tEM_386\n#define ELF_MACHINE_NAME\t\"i386\"\n#define SHT_REL_TYPE\t\tSHT_REL\n#define Elf_Rel\t\t\tElfW(Rel)\n\n#define ELF_CLASS\t\tELFCLASS32\n#define ELF_R_SYM(val)\t\tELF32_R_SYM(val)\n#define ELF_R_TYPE(val)\t\tELF32_R_TYPE(val)\n#define ELF_ST_TYPE(o)\t\tELF32_ST_TYPE(o)\n#define ELF_ST_BIND(o)\t\tELF32_ST_BIND(o)\n#define ELF_ST_VISIBILITY(o)\tELF32_ST_VISIBILITY(o)\n\n#include \"relocs.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

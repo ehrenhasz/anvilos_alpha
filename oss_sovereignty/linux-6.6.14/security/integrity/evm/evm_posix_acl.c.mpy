@@ -1,0 +1,9 @@
+{
+  "module_name": "evm_posix_acl.c",
+  "hash_id": "e803c2ef7a9706902f023b579fe8c6f3e28c054a3ecb73a2490b549d8c7bedd1",
+  "original_prompt": "Ingested from linux-6.6.14/security/integrity/evm/evm_posix_acl.c",
+  "human_readable_source": "\n \n\n#include <linux/xattr.h>\n#include <linux/evm.h>\n\nint posix_xattr_acl(const char *xattr)\n{\n\tint xattr_len = strlen(xattr);\n\n\tif ((strlen(XATTR_NAME_POSIX_ACL_ACCESS) == xattr_len)\n\t     && (strncmp(XATTR_NAME_POSIX_ACL_ACCESS, xattr, xattr_len) == 0))\n\t\treturn 1;\n\tif ((strlen(XATTR_NAME_POSIX_ACL_DEFAULT) == xattr_len)\n\t     && (strncmp(XATTR_NAME_POSIX_ACL_DEFAULT, xattr, xattr_len) == 0))\n\t\treturn 1;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

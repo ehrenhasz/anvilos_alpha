@@ -1,0 +1,9 @@
+{
+  "module_name": "generate_errors.diff",
+  "hash_id": "ac3b1388296a52c77aee9d1f5a9687ea75b33f2603a69d20bd4057296c521387",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/mbedtls_errors/generate_errors.diff",
+  "human_readable_source": "--- generate_errors_orig.pl\t2023-04-30 17:58:23.503070758 +1000\n+++ generate_errors.py\t2023-04-30 17:58:20.826338349 +1000\n@@ -162,7 +162,7 @@\n     {\n         $code_check = \\$ll_code_check;\n         $old_define = \\$ll_old_define;\n-        $white_space = '        ';\n+        $white_space = '    ';\n     }\n     else\n     {\n@@ -203,8 +203,15 @@\n         ${$old_define} = $define_name;\n     }\n\n-    ${$code_check} .= \"${white_space}case -($error_name):\\n\".\n-                      \"${white_space}    return( \\\"$module_name - $description\\\" );\\n\"\n+    if ($error_name eq \"MBEDTLS_ERR_SSL_FATAL_ALERT_MESSAGE\")\n+    {\n+        # no-op, this case is hard-coded in error.fmt\n+    }\n+    else\n+    {\n+        my $error_text = $error_name =~ s/^MBEDTLS_ERR_//r;\n+        ${$code_check} .= \"${white_space}{ -($error_name), \\\"$error_text\\\" },\\n\"\n+    }\n };\n \n if ($ll_old_define ne \"\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

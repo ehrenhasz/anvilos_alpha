@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu-sun6i-rtc.h",
+  "hash_id": "2730e237433516205aeaa7c6c9863f40994e481248b4787a019b08ac1576777c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu-sun6i-rtc.h",
+  "human_readable_source": " \n\n#ifndef _CCU_SUN6I_RTC_H\n#define _CCU_SUN6I_RTC_H\n\n#include <dt-bindings/clock/sun6i-rtc.h>\n\n#define CLK_IOSC_32K\t\t3\n#define CLK_EXT_OSC32K_GATE\t4\n#define CLK_OSC24M_32K\t\t5\n#define CLK_RTC_32K\t\t6\n\n#define CLK_NUMBER\t\t(CLK_RTC_32K + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

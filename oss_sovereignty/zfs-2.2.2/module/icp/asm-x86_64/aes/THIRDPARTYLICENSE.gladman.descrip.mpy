@@ -1,0 +1,9 @@
+{
+  "module_name": "THIRDPARTYLICENSE.gladman.descrip",
+  "hash_id": "312de4c29d8e9c78d6133489f4dfcd2ac42afd60ddc682d2f09c298a3934c6bd",
+  "original_prompt": "Ingested from zfs-2.2.2/module/icp/asm-x86_64/aes/THIRDPARTYLICENSE.gladman.descrip",
+  "human_readable_source": "PORTIONS OF AES FUNCTIONALITY\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

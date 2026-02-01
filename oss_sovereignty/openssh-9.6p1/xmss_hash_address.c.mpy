@@ -1,0 +1,9 @@
+{
+  "module_name": "xmss_hash_address.c",
+  "hash_id": "1a01dfbfe9c91bd2378c8ff0213251b43d334f3798c48dda4948cb4cff9614b7",
+  "original_prompt": "Ingested from openssh-9.6p1/xmss_hash_address.c",
+  "human_readable_source": " \n \n#include \"includes.h\"\n#ifdef WITH_XMSS\n\n#ifdef HAVE_STDINT_H\n# include <stdint.h>\n#endif\n#include \"xmss_hash_address.h\"\t \n\nvoid setLayerADRS(uint32_t adrs[8], uint32_t layer){\n  adrs[0] = layer;\n}\n\nvoid setTreeADRS(uint32_t adrs[8], uint64_t tree){\n  adrs[1] = (uint32_t) (tree >> 32);\n  adrs[2] = (uint32_t) tree;\n}\n\nvoid setType(uint32_t adrs[8], uint32_t type){\n  adrs[3] = type;\n  int i;\n  for(i = 4; i < 8; i++){\n    adrs[i] = 0;\n  }\n}\n\nvoid setKeyAndMask(uint32_t adrs[8], uint32_t keyAndMask){\n  adrs[7] = keyAndMask;\n}\n\n\n\nvoid setOTSADRS(uint32_t adrs[8], uint32_t ots){\n  adrs[4] = ots;\n}\n\nvoid setChainADRS(uint32_t adrs[8], uint32_t chain){\n  adrs[5] = chain;\n}\n\nvoid setHashADRS(uint32_t adrs[8], uint32_t hash){\n  adrs[6] = hash;\n}\n\n\n\nvoid setLtreeADRS(uint32_t adrs[8], uint32_t ltree){\n  adrs[4] = ltree;\n}\n\n\n\nvoid setTreeHeight(uint32_t adrs[8], uint32_t treeHeight){\n  adrs[5] = treeHeight;\n}\n\nvoid setTreeIndex(uint32_t adrs[8], uint32_t treeIndex){\n  adrs[6] = treeIndex;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

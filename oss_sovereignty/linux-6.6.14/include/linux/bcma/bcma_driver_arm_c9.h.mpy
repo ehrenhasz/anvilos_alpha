@@ -1,0 +1,9 @@
+{
+  "module_name": "bcma_driver_arm_c9.h",
+  "hash_id": "517600924280e78358c078e7c1f0c19a39528f8f973406b7b4f0f91a97e11a7a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bcma/bcma_driver_arm_c9.h",
+  "human_readable_source": " \n#ifndef LINUX_BCMA_DRIVER_ARM_C9_H_\n#define LINUX_BCMA_DRIVER_ARM_C9_H_\n\n \n#define BCMA_DMU_CRU_USB2_CONTROL\t\t\t0x0164\n#define  BCMA_DMU_CRU_USB2_CONTROL_USB_PLL_NDIV_MASK\t0x00000FFC\n#define  BCMA_DMU_CRU_USB2_CONTROL_USB_PLL_NDIV_SHIFT\t2\n#define  BCMA_DMU_CRU_USB2_CONTROL_USB_PLL_PDIV_MASK\t0x00007000\n#define  BCMA_DMU_CRU_USB2_CONTROL_USB_PLL_PDIV_SHIFT\t12\n#define BCMA_DMU_CRU_CLKSET_KEY\t\t\t\t0x0180\n#define BCMA_DMU_CRU_STRAPS_CTRL\t\t\t0x02A0\n#define  BCMA_DMU_CRU_STRAPS_CTRL_USB3\t\t\t0x00000010\n#define  BCMA_DMU_CRU_STRAPS_CTRL_4BYTE\t\t\t0x00008000\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

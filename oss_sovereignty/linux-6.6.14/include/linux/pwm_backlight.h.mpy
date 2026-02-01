@@ -1,0 +1,9 @@
+{
+  "module_name": "pwm_backlight.h",
+  "hash_id": "4e586fed729d97547919e92d758f6f7d533755d176495e59233a4e84e8452567",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pwm_backlight.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_PWM_BACKLIGHT_H\n#define __LINUX_PWM_BACKLIGHT_H\n\n#include <linux/backlight.h>\n\nstruct platform_pwm_backlight_data {\n\tunsigned int max_brightness;\n\tunsigned int dft_brightness;\n\tunsigned int lth_brightness;\n\tunsigned int pwm_period_ns;\n\tunsigned int *levels;\n\tunsigned int post_pwm_on_delay;\n\tunsigned int pwm_off_delay;\n\tint (*init)(struct device *dev);\n\tint (*notify)(struct device *dev, int brightness);\n\tvoid (*notify_after)(struct device *dev, int brightness);\n\tvoid (*exit)(struct device *dev);\n\tint (*check_fb)(struct device *dev, struct fb_info *info);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

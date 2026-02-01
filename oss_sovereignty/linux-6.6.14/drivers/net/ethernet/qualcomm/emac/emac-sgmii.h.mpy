@@ -1,0 +1,9 @@
+{
+  "module_name": "emac-sgmii.h",
+  "hash_id": "9ca2671c22f1aa857d7cf2d54e06ec29386622372073a6629aa616581042b97d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qualcomm/emac/emac-sgmii.h",
+  "human_readable_source": " \n \n\n#ifndef _EMAC_SGMII_H_\n#define _EMAC_SGMII_H_\n\nstruct emac_adapter;\nstruct platform_device;\n\n \nstruct sgmii_ops {\n\tint (*init)(struct emac_adapter *adpt);\n\tint (*open)(struct emac_adapter *adpt);\n\tvoid (*close)(struct emac_adapter *adpt);\n\tint (*link_change)(struct emac_adapter *adpt, bool link_state);\n\tvoid (*reset)(struct emac_adapter *adpt);\n};\n\n \nstruct emac_sgmii {\n\tvoid __iomem\t\t*base;\n\tvoid __iomem\t\t*digital;\n\tunsigned int\t\tirq;\n\tatomic_t\t\tdecode_error_count;\n\tstruct\tsgmii_ops\t*sgmii_ops;\n};\n\nint emac_sgmii_config(struct platform_device *pdev, struct emac_adapter *adpt);\n\nint emac_sgmii_init_fsm9900(struct emac_adapter *adpt);\nint emac_sgmii_init_qdf2432(struct emac_adapter *adpt);\nint emac_sgmii_init_qdf2400(struct emac_adapter *adpt);\n\nint emac_sgmii_init(struct emac_adapter *adpt);\nint emac_sgmii_open(struct emac_adapter *adpt);\nvoid emac_sgmii_close(struct emac_adapter *adpt);\nint emac_sgmii_link_change(struct emac_adapter *adpt, bool link_state);\nvoid emac_sgmii_reset(struct emac_adapter *adpt);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

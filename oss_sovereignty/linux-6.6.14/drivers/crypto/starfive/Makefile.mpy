@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6acbb14d182969c1ca0c94a716bcb52060e6b95213027960705f20cfcecd556f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/starfive/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_CRYPTO_DEV_JH7110) += jh7110-crypto.o\njh7110-crypto-objs := jh7110-cryp.o jh7110-hash.o jh7110-rsa.o jh7110-aes.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

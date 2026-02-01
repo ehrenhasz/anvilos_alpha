@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "504d4d6f9222ff2dab22803d8c545671898b7d11e7525f93bc298f8e29814ac3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/asix/Makefile",
+  "human_readable_source": "#\n# Makefile for the Asix network device drivers.\n#\n\nobj-$(CONFIG_SPI_AX88796C) += ax88796c.o\nax88796c-y := ax88796c_main.o ax88796c_ioctl.o ax88796c_spi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

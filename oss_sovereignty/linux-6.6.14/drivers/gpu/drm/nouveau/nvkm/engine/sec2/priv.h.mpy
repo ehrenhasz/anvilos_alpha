@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "f8ded215cb65b66a82d48f3e3e5bde257e80d33d342f1e5113ea30ece81a4617",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/sec2/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_SEC2_PRIV_H__\n#define __NVKM_SEC2_PRIV_H__\n#include <engine/sec2.h>\nstruct nvkm_acr_lsfw;\n\nstruct nvkm_sec2_func {\n\tconst struct nvkm_falcon_func *flcn;\n\tu8 unit_unload;\n\tu8 unit_acr;\n\tstruct nvkm_intr *(*intr_vector)(struct nvkm_sec2 *, enum nvkm_intr_type *);\n\tirqreturn_t (*intr)(struct nvkm_inth *);\n\tint (*initmsg)(struct nvkm_sec2 *);\n};\n\nirqreturn_t gp102_sec2_intr(struct nvkm_inth *);\nint gp102_sec2_initmsg(struct nvkm_sec2 *);\n\nstruct nvkm_sec2_fwif {\n\tint version;\n\tint (*load)(struct nvkm_sec2 *, int ver, const struct nvkm_sec2_fwif *);\n\tconst struct nvkm_sec2_func *func;\n\tconst struct nvkm_acr_lsf_func *acr;\n};\n\nint gp102_sec2_nofw(struct nvkm_sec2 *, int, const struct nvkm_sec2_fwif *);\nint gp102_sec2_load(struct nvkm_sec2 *, int, const struct nvkm_sec2_fwif *);\nextern const struct nvkm_sec2_func gp102_sec2;\nextern const struct nvkm_acr_lsf_func gp102_sec2_acr_1;\nvoid gp102_sec2_acr_bld_write_1(struct nvkm_acr *, u32, struct nvkm_acr_lsfw *);\nvoid gp102_sec2_acr_bld_patch_1(struct nvkm_acr *, u32, s64);\n\nint nvkm_sec2_new_(const struct nvkm_sec2_fwif *, struct nvkm_device *, enum nvkm_subdev_type,\n\t\t   int, u32 addr, struct nvkm_sec2 **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

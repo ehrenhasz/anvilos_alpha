@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "338d543e072b73457f596971a486cad91a50bd58fc10506481d7fcc29557803e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/udc/aspeed-vhub/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\nobj-$(CONFIG_USB_ASPEED_VHUB)\t+= aspeed-vhub.o\naspeed-vhub-y\t:= core.o ep0.o epn.o dev.o hub.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

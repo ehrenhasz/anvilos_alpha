@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "dc192fd8becaeaca885e1b8e68e5bb5cfbfa55cb40521b2f525a9a365a2d82cb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/hisilicon/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nmenu \"Hisilicon SoC drivers\"\n\tdepends on ARCH_HISI || COMPILE_TEST\n\nconfig KUNPENG_HCCS\n\ttristate \"HCCS driver on Kunpeng SoC\"\n\tdepends on ACPI\n\tdepends on MAILBOX\n\tdepends on ARM64 || COMPILE_TEST\n\thelp\n\t  The Huawei Cache Coherence System (HCCS) is a multi-chip\n\t  interconnection bus protocol.\n\t  The performance of application may be affected if some HCCS\n\t  ports are not in full lane status, have a large number of CRC\n\t  errors and so on.\n\n\t  Say M here if you want to include support for querying the\n\t  health status and port information of HCCS on Kunpeng SoC.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

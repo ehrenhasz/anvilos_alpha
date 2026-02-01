@@ -1,0 +1,9 @@
+{
+  "module_name": "wm8728.h",
+  "hash_id": "a07174ab88273cf05b6064f543f601b476efb884de54c588d86ed016bb53d2c6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/wm8728.h",
+  "human_readable_source": " \n \n\n#ifndef _WM8728_H\n#define _WM8728_H\n\n#define WM8728_DACLVOL   0x00\n#define WM8728_DACRVOL   0x01\n#define WM8728_DACCTL    0x02\n#define WM8728_IFCTL     0x03\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nsp_message.c",
+  "hash_id": "a3e350c148d1f3edb24fa72f505faedb9375b4d0d9405ea3ed9946cc1ee5c6ee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/pcmcia/nsp_message.c",
+  "human_readable_source": " \n\n \n\nstatic void nsp_message_in(struct scsi_cmnd *SCpnt)\n{\n\tunsigned int  base = SCpnt->device->host->io_port;\n\tnsp_hw_data  *data = (nsp_hw_data *)SCpnt->device->host->hostdata;\n\tunsigned char data_reg, control_reg;\n\tint           ret, len;\n\n\t \n\tret = 16;\n\tlen = 0;\n\n\tnsp_dbg(NSP_DEBUG_MSGINOCCUR, \"msgin loop\");\n\tdo {\n\t\t \n\t\tdata_reg = nsp_index_read(base, SCSIDATAIN);\n\n\t\t \n\t\tcontrol_reg = nsp_index_read(base, SCSIBUSCTRL);\n\t\tcontrol_reg |= SCSI_ACK;\n\t\tnsp_index_write(base, SCSIBUSCTRL, control_reg);\n\t\tnsp_negate_signal(SCpnt, BUSMON_REQ, \"msgin<REQ>\");\n\n\t\tdata->MsgBuffer[len] = data_reg; len++;\n\n\t\t \n\t\tcontrol_reg =  nsp_index_read(base, SCSIBUSCTRL);\n\t\tcontrol_reg &= ~SCSI_ACK;\n\t\tnsp_index_write(base, SCSIBUSCTRL, control_reg);\n\n\t\t \n\t\tret = nsp_expect_signal(SCpnt, BUSPHASE_MESSAGE_IN, BUSMON_REQ);\n\t} while (ret > 0 && MSGBUF_SIZE > len);\n\n\tdata->MsgLen = len;\n\n}\n\nstatic void nsp_message_out(struct scsi_cmnd *SCpnt)\n{\n\tnsp_hw_data *data = (nsp_hw_data *)SCpnt->device->host->hostdata;\n\tint ret = 1;\n\tint len = data->MsgLen;\n\n\t \n\n\tnsp_dbg(NSP_DEBUG_MSGOUTOCCUR, \"msgout loop\");\n\tdo {\n\t\tif (nsp_xfer(SCpnt, BUSPHASE_MESSAGE_OUT)) {\n\t\t\tnsp_msg(KERN_DEBUG, \"msgout: xfer short\");\n\t\t}\n\n\t\t \n\t\tret = nsp_expect_signal(SCpnt, BUSPHASE_MESSAGE_OUT, BUSMON_REQ);\n\t} while (ret > 0 && len-- > 0);\n\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

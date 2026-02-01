@@ -1,0 +1,9 @@
+{
+  "module_name": "visl-debugfs.h",
+  "hash_id": "7e063a757151712c70566e2879d33c304a6713d0206b85f0d89fcb786524026a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/visl/visl-debugfs.h",
+  "human_readable_source": " \n \n\n#include \"visl.h\"\n#include \"visl-dec.h\"\n\n#ifdef CONFIG_VISL_DEBUGFS\n\nint visl_debugfs_init(struct visl_dev *dev);\nint visl_debugfs_bitstream_init(struct visl_dev *dev);\nvoid visl_trace_bitstream(struct visl_ctx *ctx, struct visl_run *run);\nvoid visl_debugfs_clear_bitstream(struct visl_dev *dev);\nvoid visl_debugfs_bitstream_deinit(struct visl_dev *dev);\nvoid visl_debugfs_deinit(struct visl_dev *dev);\n\n#else\n\nstatic inline int visl_debugfs_init(struct visl_dev *dev)\n{\n\treturn 0;\n}\n\nstatic inline int visl_debugfs_bitstream_init(struct visl_dev *dev)\n{\n\treturn 0;\n}\n\nstatic inline void visl_trace_bitstream(struct visl_ctx *ctx, struct visl_run *run) {}\nstatic inline void visl_debugfs_clear_bitstream(struct visl_dev *dev) {}\nstatic inline void visl_debugfs_bitstream_deinit(struct visl_dev *dev) {}\nstatic inline void visl_debugfs_deinit(struct visl_dev *dev) {}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

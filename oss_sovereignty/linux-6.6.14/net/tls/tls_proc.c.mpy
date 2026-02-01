@@ -1,0 +1,9 @@
+{
+  "module_name": "tls_proc.c",
+  "hash_id": "b3ce447283a5aa855b5ca156a765e807830192020a4da5052084fa7ba8f82226",
+  "original_prompt": "Ingested from linux-6.6.14/net/tls/tls_proc.c",
+  "human_readable_source": "\n \n\n#include <linux/proc_fs.h>\n#include <linux/seq_file.h>\n#include <net/snmp.h>\n#include <net/tls.h>\n\n#include \"tls.h\"\n\n#ifdef CONFIG_PROC_FS\nstatic const struct snmp_mib tls_mib_list[] = {\n\tSNMP_MIB_ITEM(\"TlsCurrTxSw\", LINUX_MIB_TLSCURRTXSW),\n\tSNMP_MIB_ITEM(\"TlsCurrRxSw\", LINUX_MIB_TLSCURRRXSW),\n\tSNMP_MIB_ITEM(\"TlsCurrTxDevice\", LINUX_MIB_TLSCURRTXDEVICE),\n\tSNMP_MIB_ITEM(\"TlsCurrRxDevice\", LINUX_MIB_TLSCURRRXDEVICE),\n\tSNMP_MIB_ITEM(\"TlsTxSw\", LINUX_MIB_TLSTXSW),\n\tSNMP_MIB_ITEM(\"TlsRxSw\", LINUX_MIB_TLSRXSW),\n\tSNMP_MIB_ITEM(\"TlsTxDevice\", LINUX_MIB_TLSTXDEVICE),\n\tSNMP_MIB_ITEM(\"TlsRxDevice\", LINUX_MIB_TLSRXDEVICE),\n\tSNMP_MIB_ITEM(\"TlsDecryptError\", LINUX_MIB_TLSDECRYPTERROR),\n\tSNMP_MIB_ITEM(\"TlsRxDeviceResync\", LINUX_MIB_TLSRXDEVICERESYNC),\n\tSNMP_MIB_ITEM(\"TlsDecryptRetry\", LINUX_MIB_TLSDECRYPTRETRY),\n\tSNMP_MIB_ITEM(\"TlsRxNoPadViolation\", LINUX_MIB_TLSRXNOPADVIOL),\n\tSNMP_MIB_SENTINEL\n};\n\nstatic int tls_statistics_seq_show(struct seq_file *seq, void *v)\n{\n\tunsigned long buf[LINUX_MIB_TLSMAX] = {};\n\tstruct net *net = seq->private;\n\tint i;\n\n\tsnmp_get_cpu_field_batch(buf, tls_mib_list, net->mib.tls_statistics);\n\tfor (i = 0; tls_mib_list[i].name; i++)\n\t\tseq_printf(seq, \"%-32s\\t%lu\\n\", tls_mib_list[i].name, buf[i]);\n\n\treturn 0;\n}\n#endif\n\nint __net_init tls_proc_init(struct net *net)\n{\n#ifdef CONFIG_PROC_FS\n\tif (!proc_create_net_single(\"tls_stat\", 0444, net->proc_net,\n\t\t\t\t    tls_statistics_seq_show, NULL))\n\t\treturn -ENOMEM;\n#endif  \n\n\treturn 0;\n}\n\nvoid __net_exit tls_proc_fini(struct net *net)\n{\n\tremove_proc_entry(\"tls_stat\", net->proc_net);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

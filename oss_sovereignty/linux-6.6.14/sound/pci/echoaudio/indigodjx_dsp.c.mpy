@@ -1,0 +1,9 @@
+{
+  "module_name": "indigodjx_dsp.c",
+  "hash_id": "efce83ab202c647731f9c708e737d661848433d4b93aee2971f680d06e083944",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/echoaudio/indigodjx_dsp.c",
+  "human_readable_source": " \n\nstatic int update_vmixer_level(struct echoaudio *chip);\nstatic int set_vmixer_gain(struct echoaudio *chip, u16 output,\n\t\t\t   u16 pipe, int gain);\n\n\nstatic int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)\n{\n\tint err;\n\n\tif (snd_BUG_ON((subdevice_id & 0xfff0) != INDIGO_DJX))\n\t\treturn -ENODEV;\n\n\terr = init_dsp_comm_page(chip);\n\tif (err < 0) {\n\t\tdev_err(chip->card->dev,\n\t\t\t\"init_hw - could not initialize DSP comm page\\n\");\n\t\treturn err;\n\t}\n\n\tchip->device_id = device_id;\n\tchip->subdevice_id = subdevice_id;\n\tchip->bad_board = true;\n\tchip->dsp_code_to_load = FW_INDIGO_DJX_DSP;\n\t \n\tchip->asic_loaded = true;\n\tchip->input_clock_types = ECHO_CLOCK_BIT_INTERNAL;\n\n\terr = load_firmware(chip);\n\tif (err < 0)\n\t\treturn err;\n\tchip->bad_board = false;\n\n\treturn err;\n}\n\n\n\nstatic int set_mixer_defaults(struct echoaudio *chip)\n{\n\treturn init_line_levels(chip);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

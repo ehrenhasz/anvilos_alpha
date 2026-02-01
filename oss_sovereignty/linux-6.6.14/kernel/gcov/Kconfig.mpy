@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4104d98dc21c748e9babd3c1c5ad99675cc4f44e545d7c3fbc86cfd696c083af",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/gcov/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenu \"GCOV-based kernel profiling\"\n\nconfig GCOV_KERNEL\n\tbool \"Enable gcov-based kernel profiling\"\n\tdepends on DEBUG_FS\n\tdepends on !ARCH_WANTS_NO_INSTR || CC_HAS_NO_PROFILE_FN_ATTR\n\tselect CONSTRUCTORS\n\tdefault n\n\thelp\n\tThis option enables gcov-based code profiling (e.g. for code coverage\n\tmeasurements).\n\n\tIf unsure, say N.\n\n\tAdditionally specify CONFIG_GCOV_PROFILE_ALL=y to get profiling data\n\tfor the entire kernel. To enable profiling for specific files or\n\tdirectories, add a line similar to the following to the respective\n\tMakefile:\n\n\tFor a single file (e.g. main.o):\n\t        GCOV_PROFILE_main.o := y\n\n\tFor all files in one directory:\n\t        GCOV_PROFILE := y\n\n\tTo exclude files from being profiled even when CONFIG_GCOV_PROFILE_ALL\n\tis specified, use:\n\n\t        GCOV_PROFILE_main.o := n\n\tand:\n\t        GCOV_PROFILE := n\n\n\tNote that the debugfs filesystem has to be mounted to access\n\tprofiling data.\n\nconfig ARCH_HAS_GCOV_PROFILE_ALL\n\tdef_bool n\n\nconfig GCOV_PROFILE_ALL\n\tbool \"Profile entire Kernel\"\n\tdepends on !COMPILE_TEST\n\tdepends on GCOV_KERNEL\n\tdepends on ARCH_HAS_GCOV_PROFILE_ALL\n\tdefault n\n\thelp\n\tThis options activates profiling for the entire kernel.\n\n\tIf unsure, say N.\n\n\tNote that a kernel compiled with profiling flags will be significantly\n\tlarger and run slower. Also be sure to exclude files from profiling\n\twhich are not linked to the kernel image to prevent linker errors.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

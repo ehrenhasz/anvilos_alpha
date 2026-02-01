@@ -1,0 +1,9 @@
+{
+  "module_name": "display_timing.c",
+  "hash_id": "cb4b14b54c2a470c09315adc0935df81feedefa6e6e494b580768b017b2a3451",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/display_timing.c",
+  "human_readable_source": "\n \n\n#include <linux/export.h>\n#include <linux/slab.h>\n#include <video/display_timing.h>\n\nvoid display_timings_release(struct display_timings *disp)\n{\n\tif (disp->timings) {\n\t\tunsigned int i;\n\n\t\tfor (i = 0; i < disp->num_timings; i++)\n\t\t\tkfree(disp->timings[i]);\n\t\tkfree(disp->timings);\n\t}\n\tkfree(disp);\n}\nEXPORT_SYMBOL_GPL(display_timings_release);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

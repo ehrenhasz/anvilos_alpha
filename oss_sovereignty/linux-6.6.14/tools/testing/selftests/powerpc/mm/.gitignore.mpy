@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "e4edee18b170ff5649ac167dfa9e47798e16434a5f736603ddf0abfffae45a29",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/mm/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nbad_accesses\nexec_prot\nhugetlb_vs_thp_test\nlarge_vm_fork_separation\nlarge_vm_gpr_corruption\npkey_exec_prot\npkey_siginfo\nprot_sao\nsegv_errors\nstack_expansion_ldst\nstack_expansion_signal\nsubpage_prot\ntempfile\ntlbie_test\nwild_bctr\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

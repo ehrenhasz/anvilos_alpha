@@ -1,0 +1,9 @@
+{
+  "module_name": "c8sectpfe-dvb.h",
+  "hash_id": "9884bdbc73efcb86e9beb8180e642dd3525aa385b2bc0fa9b02bfc486de09366",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/c8sectpfe/c8sectpfe-dvb.h",
+  "human_readable_source": " \n \n#ifndef _C8SECTPFE_DVB_H_\n#define _C8SECTPFE_DVB_H_\n\nint c8sectpfe_frontend_attach(struct dvb_frontend **fe,\n\t\t\tstruct c8sectpfe *c8sectpfe, struct channel_info *tsin,\n\t\t\tint chan_num);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

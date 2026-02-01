@@ -1,0 +1,9 @@
+{
+  "module_name": "trunc.c",
+  "hash_id": "2f2941542db65a5c3a8a6fa952b978a5ff757f8b14ffdaef8ad28e0cafead644",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/trunc.c",
+  "human_readable_source": "#include \"libm.h\"\n\ndouble trunc(double x)\n{\n\tunion {double f; uint64_t i;} u = {x};\n\tint e = (int)(u.i >> 52 & 0x7ff) - 0x3ff + 12;\n\tuint64_t m;\n\n\tif (e >= 52 + 12)\n\t\treturn x;\n\tif (e < 12)\n\t\te = 1;\n\tm = -1ULL >> e;\n\tif ((u.i & m) == 0)\n\t\treturn x;\n\tFORCE_EVAL(x + 0x1p120f);\n\tu.i &= ~m;\n\treturn u.f;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

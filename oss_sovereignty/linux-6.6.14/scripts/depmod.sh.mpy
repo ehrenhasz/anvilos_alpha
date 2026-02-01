@@ -1,0 +1,9 @@
+{
+  "module_name": "depmod.sh",
+  "hash_id": "aa3707e09781c5037d3acc8864e91bc709bf5ec35769a2ec746f6a64cd75755e",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/depmod.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n#\n# A depmod wrapper\n\nif test $# -ne 1; then\n\techo \"Usage: $0 <kernelrelease>\" >&2\n\texit 1\nfi\n\nKERNELRELEASE=$1\n\n: ${DEPMOD:=depmod}\n\nif ! test -r System.map ; then\n\techo \"Warning: modules_install: missing 'System.map' file. Skipping depmod.\" >&2\n\texit 0\nfi\n\n# legacy behavior: \"depmod\" in /sbin, no /sbin in PATH\nPATH=\"$PATH:/sbin\"\nif [ -z $(command -v $DEPMOD) ]; then\n\techo \"Warning: 'make modules_install' requires $DEPMOD. Please install it.\" >&2\n\techo \"This is probably in the kmod package.\" >&2\n\texit 0\nfi\n\nset -- -ae -F System.map\nif test -n \"$INSTALL_MOD_PATH\"; then\n\tset -- \"$@\" -b \"$INSTALL_MOD_PATH\"\nfi\nexec \"$DEPMOD\" \"$@\" \"$KERNELRELEASE\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

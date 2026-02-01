@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2b18a1d729f75b39dec3e8e9f64e3ecf0d3a26a6287718e08265e838eb4fd001",
+  "original_prompt": "Ingested from linux-6.6.14/net/packet/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the packet AF.\n#\n\nobj-$(CONFIG_PACKET) += af_packet.o\nobj-$(CONFIG_PACKET_DIAG) += af_packet_diag.o\naf_packet_diag-y += diag.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

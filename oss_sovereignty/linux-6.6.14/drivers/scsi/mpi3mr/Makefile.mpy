@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e146df0b644f006304fd74959cecd02fed17c39e0bcff41f35ab45b9ebfb1065",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/mpi3mr/Makefile",
+  "human_readable_source": "# mpi3mr makefile\nobj-$(CONFIG_SCSI_MPI3MR) += mpi3mr.o\nmpi3mr-y +=  mpi3mr_os.o     \\\n\t\tmpi3mr_fw.o \\\n\t\tmpi3mr_app.o \\\n\t\tmpi3mr_transport.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

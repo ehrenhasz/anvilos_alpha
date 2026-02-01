@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d33dd4038203317736f944939c8e4ad9a0ab31acf85c4d433774b19551d363da",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/intel/ivsc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Copyright (C) 2023, Intel Corporation. All rights reserved.\n\nobj-$(CONFIG_INTEL_VSC) += ivsc-csi.o\nivsc-csi-y += mei_csi.o\n\nobj-$(CONFIG_INTEL_VSC) += ivsc-ace.o\nivsc-ace-y += mei_ace.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

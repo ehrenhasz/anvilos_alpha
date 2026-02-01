@@ -1,0 +1,9 @@
+{
+  "module_name": "test_d_path_check_types.c",
+  "hash_id": "1cc7928ed72b9bdb127751582f685cadb9e369c7132187ce1b3b0fff064317d0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_d_path_check_types.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nextern const int bpf_prog_active __ksym;\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_RINGBUF);\n\t__uint(max_entries, 1 << 12);\n} ringbuf SEC(\".maps\");\n\nSEC(\"fentry/security_inode_getattr\")\nint BPF_PROG(d_path_check_rdonly_mem, struct path *path, struct kstat *stat,\n\t     __u32 request_mask, unsigned int query_flags)\n{\n\tvoid *active;\n\tu32 cpu;\n\n\tcpu = bpf_get_smp_processor_id();\n\tactive = (void *)bpf_per_cpu_ptr(&bpf_prog_active, cpu);\n\tif (active) {\n\t\t \n\t\tbpf_ringbuf_submit(active, 0);\n\t}\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

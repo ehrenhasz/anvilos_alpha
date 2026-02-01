@@ -1,0 +1,9 @@
+{
+  "module_name": "r8a77995-sysc.h",
+  "hash_id": "206a67b87bf9a9e53797671ee5d54a4826728c04fc4a7a2e8496cf7c5e76a84b",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/r8a77995-sysc.h",
+  "human_readable_source": " \n \n#ifndef __DT_BINDINGS_POWER_R8A77995_SYSC_H__\n#define __DT_BINDINGS_POWER_R8A77995_SYSC_H__\n\n \n\n#define R8A77995_PD_CA53_CPU0\t\t 5\n#define R8A77995_PD_CA53_SCU\t\t21\n\n \n#define R8A77995_PD_ALWAYS_ON\t\t32\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

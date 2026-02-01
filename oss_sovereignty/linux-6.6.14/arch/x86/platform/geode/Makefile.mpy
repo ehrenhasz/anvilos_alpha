@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "57987f13bb15e18f79ac24c1456d37e36a101549330320a15013493f70f91df2",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/platform/geode/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_ALIX)\t\t+= alix.o\nobj-$(CONFIG_NET5501)\t\t+= net5501.o\nobj-$(CONFIG_GEOS)\t\t+= geos.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

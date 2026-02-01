@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-cpu.h",
+  "hash_id": "9058a2ffbce6a7cd34c25971d3be0f397fa3fa95201634904cbe26d008dc6f32",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/samsung/clk-cpu.h",
+  "human_readable_source": " \n \n\n#ifndef __SAMSUNG_CLK_CPU_H\n#define __SAMSUNG_CLK_CPU_H\n\n#include \"clk.h\"\n\n \nstruct exynos_cpuclk_cfg_data {\n\tunsigned long\tprate;\n\tunsigned long\tdiv0;\n\tunsigned long\tdiv1;\n};\n\n \nstruct exynos_cpuclk {\n\tstruct clk_hw\t\t\t\thw;\n\tconst struct clk_hw\t\t\t*alt_parent;\n\tvoid __iomem\t\t\t\t*ctrl_base;\n\tspinlock_t\t\t\t\t*lock;\n\tconst struct exynos_cpuclk_cfg_data\t*cfg;\n\tconst unsigned long\t\t\tnum_cfgs;\n\tstruct notifier_block\t\t\tclk_nb;\n\tunsigned long\t\t\t\tflags;\n\n \n#define CLK_CPU_HAS_DIV1\t\t(1 << 0)\n \n#define CLK_CPU_NEEDS_DEBUG_ALT_DIV\t(1 << 1)\n \n#define CLK_CPU_HAS_E5433_REGS_LAYOUT\t(1 << 2)\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

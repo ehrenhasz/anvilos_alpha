@@ -1,0 +1,9 @@
+{
+  "module_name": "video_function_calls.rst",
+  "hash_id": "8512db8ea67f5d927ae2dd3d5d893cb5b2f1167470606dedb91d4b308b6f821d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/video_function_calls.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n\n.. _video_function_calls:\n\n********************\nVideo Function Calls\n********************\n\n.. toctree::\n    :maxdepth: 1\n\n    video-fopen\n    video-fclose\n    video-fwrite\n    video-stop\n    video-play\n    video-freeze\n    video-continue\n    video-select-source\n    video-set-blank\n    video-get-status\n    video-get-frame-count\n    video-get-pts\n    video-get-event\n    video-command\n    video-try-command\n    video-get-size\n    video-set-display-format\n    video-stillpicture\n    video-fast-forward\n    video-slowmotion\n    video-get-capabilities\n    video-clear-buffer\n    video-set-streamtype\n    video-set-format\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

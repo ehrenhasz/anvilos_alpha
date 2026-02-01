@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ec36525aa38f57ade3eb58ec8a3dff0c8d17644b381b310a60c89e398bd7c301",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/pcmcia/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nccflags-y\t\t:= -I $(srctree)/drivers/scsi\n\n# 16-bit client drivers\nobj-$(CONFIG_PCMCIA_QLOGIC)\t+= qlogic_cs.o\nobj-$(CONFIG_PCMCIA_FDOMAIN)\t+= fdomain_cs.o\nobj-$(CONFIG_PCMCIA_AHA152X)\t+= aha152x_cs.o\nobj-$(CONFIG_PCMCIA_NINJA_SCSI)\t+= nsp_cs.o\nobj-$(CONFIG_PCMCIA_SYM53C500)\t+= sym53c500_cs.o\n\naha152x_cs-objs\t:= aha152x_stub.o aha152x_core.o\nqlogic_cs-objs\t:= qlogic_stub.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

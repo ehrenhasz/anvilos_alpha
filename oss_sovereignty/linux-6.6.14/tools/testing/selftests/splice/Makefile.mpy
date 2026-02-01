@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "59bfb5ffb3c78c08e8603ad6ca8972cbc80f0263927483a5baced5620690d855",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/splice/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nTEST_PROGS := default_file_splice_read.sh short_splice_read.sh\nTEST_GEN_PROGS_EXTENDED := default_file_splice_read splice_read\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ctucanfd.h",
+  "hash_id": "f30c7e3de7bc03b326dc5cb8f822de79ed11355982fa8f7235b9f207a938ac6d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/ctucanfd/ctucanfd.h",
+  "human_readable_source": " \n \n\n#ifndef __CTUCANFD__\n#define __CTUCANFD__\n\n#include <linux/netdevice.h>\n#include <linux/can/dev.h>\n#include <linux/list.h>\n\nenum ctu_can_fd_can_registers;\n\nstruct ctucan_priv {\n\tstruct can_priv can;  \n\n\tvoid __iomem *mem_base;\n\tu32 (*read_reg)(struct ctucan_priv *priv,\n\t\t\tenum ctu_can_fd_can_registers reg);\n\tvoid (*write_reg)(struct ctucan_priv *priv,\n\t\t\t  enum ctu_can_fd_can_registers reg, u32 val);\n\n\tunsigned int txb_head;\n\tunsigned int txb_tail;\n\tu32 txb_prio;\n\tunsigned int ntxbufs;\n\tspinlock_t tx_lock;  \n\n\tstruct napi_struct napi;\n\tstruct device *dev;\n\tstruct clk *can_clk;\n\n\tint irq_flags;\n\tunsigned long drv_flags;\n\n\tu32 rxfrm_first_word;\n\n\tstruct list_head peers_on_pdev;\n};\n\n \nint ctucan_probe_common(struct device *dev, void __iomem *addr,\n\t\t\tint irq, unsigned int ntxbufs,\n\t\t\tunsigned long can_clk_rate,\n\t\t\tint pm_enable_call,\n\t\t\tvoid (*set_drvdata_fnc)(struct device *dev,\n\t\t\t\t\t\tstruct net_device *ndev));\n\nint ctucan_suspend(struct device *dev) __maybe_unused;\nint ctucan_resume(struct device *dev) __maybe_unused;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

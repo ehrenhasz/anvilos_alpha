@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b1704af7b61b9e2fde267d73673c4f71f4d12a5695463818d067a3dfa1912e64",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/bcm-vk/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Broadcom VK driver\n#\n\nobj-$(CONFIG_BCM_VK) += bcm_vk.o\nbcm_vk-objs := \\\n\tbcm_vk_dev.o \\\n\tbcm_vk_msg.o \\\n\tbcm_vk_sg.o\n\nbcm_vk-$(CONFIG_BCM_VK_TTY) += bcm_vk_tty.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

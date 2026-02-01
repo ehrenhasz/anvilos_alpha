@@ -1,0 +1,9 @@
+{
+  "module_name": "version.c",
+  "hash_id": "dd52e9281cf7458544b79c52a9d678c9e0c90e44594aa1becee52b6de175d9a4",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/version.c",
+  "human_readable_source": "\n \n\n \n\n#include \"boot.h\"\n#include <generated/utsversion.h>\n#include <generated/utsrelease.h>\n#include <generated/compile.h>\n\nconst char kernel_version[] =\n\tUTS_RELEASE \" (\" LINUX_COMPILE_BY \"@\" LINUX_COMPILE_HOST \") \"\n\tUTS_VERSION;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

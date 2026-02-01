@@ -1,0 +1,9 @@
+{
+  "module_name": "MP+pooncerelease+poacquireonce.litmus",
+  "hash_id": "fbfcb4210aa3593ab07e564b2c362734cfaf670c1cb34dad1c6b483f7f41d8c3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/MP+pooncerelease+poacquireonce.litmus",
+  "human_readable_source": "C MP+pooncerelease+poacquireonce\n\n(*\n * Result: Never\n *\n * This litmus test demonstrates that smp_store_release() and\n * smp_load_acquire() provide sufficient ordering for the message-passing\n * pattern.\n *)\n\n{}\n\nP0(int *buf, int *flag) // Producer\n{\n\tWRITE_ONCE(*buf, 1);\n\tsmp_store_release(flag, 1);\n}\n\nP1(int *buf, int *flag) // Consumer\n{\n\tint r0;\n\tint r1;\n\n\tr0 = smp_load_acquire(flag);\n\tr1 = READ_ONCE(*buf);\n}\n\nexists (1:r0=1 /\\ 1:r1=0) (* Bad outcome. *)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

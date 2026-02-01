@@ -1,0 +1,9 @@
+{
+  "module_name": "wm8770.h",
+  "hash_id": "25e0a1d2349eb39fc7eb217d4a96d9a3be60e36736c8c7fe32aeb022aa431692",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/wm8770.h",
+  "human_readable_source": " \n \n\n#ifndef _WM8770_H\n#define _WM8770_H\n\n \n#define WM8770_VOUT1LVOL                0\n#define WM8770_VOUT1RVOL                0x1\n#define WM8770_VOUT2LVOL                0x2\n#define WM8770_VOUT2RVOL                0x3\n#define WM8770_VOUT3LVOL                0x4\n#define WM8770_VOUT3RVOL                0x5\n#define WM8770_VOUT4LVOL                0x6\n#define WM8770_VOUT4RVOL                0x7\n#define WM8770_MSALGVOL                 0x8\n#define WM8770_DAC1LVOL                 0x9\n#define WM8770_DAC1RVOL                 0xa\n#define WM8770_DAC2LVOL                 0xb\n#define WM8770_DAC2RVOL                 0xc\n#define WM8770_DAC3LVOL                 0xd\n#define WM8770_DAC3RVOL                 0xe\n#define WM8770_DAC4LVOL                 0xf\n#define WM8770_DAC4RVOL                 0x10\n#define WM8770_MSDIGVOL                 0x11\n#define WM8770_DACPHASE                 0x12\n#define WM8770_DACCTRL1                 0x13\n#define WM8770_DACMUTE                  0x14\n#define WM8770_DACCTRL2                 0x15\n#define WM8770_IFACECTRL                0x16\n#define WM8770_MSTRCTRL                 0x17\n#define WM8770_PWDNCTRL                 0x18\n#define WM8770_ADCLCTRL                 0x19\n#define WM8770_ADCRCTRL                 0x1a\n#define WM8770_ADCMUX                   0x1b\n#define WM8770_OUTMUX1                  0x1c\n#define WM8770_OUTMUX2                  0x1d\n#define WM8770_RESET                    0x31\n\n#define WM8770_CACHEREGNUM 0x20\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b47975c00965ddbc38a16ceb0d42810558b93b0e59fcd51c6391ed05ae6ebd06",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/meson/vdec/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig VIDEO_MESON_VDEC\n\ttristate \"Amlogic video decoder driver\"\n\tdepends on VIDEO_DEV && HAS_DMA\n\tdepends on ARCH_MESON || COMPILE_TEST\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_MEM2MEM_DEV\n\tselect MESON_CANVAS\n\thelp\n\tSupport for the video decoder found in gxbb/gxl/gxm chips.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

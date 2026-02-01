@@ -1,0 +1,9 @@
+{
+  "module_name": "dir.h",
+  "hash_id": "b220eadf736b46f1e3c028cf67745d50c71bc7fcadcd5da314c606eb28125c15",
+  "original_prompt": "Ingested from linux-6.6.14/fs/dlm/dir.h",
+  "human_readable_source": " \n \n\n#ifndef __DIR_DOT_H__\n#define __DIR_DOT_H__\n\nint dlm_dir_nodeid(struct dlm_rsb *rsb);\nint dlm_hash2nodeid(struct dlm_ls *ls, uint32_t hash);\nvoid dlm_recover_dir_nodeid(struct dlm_ls *ls);\nint dlm_recover_directory(struct dlm_ls *ls, uint64_t seq);\nvoid dlm_copy_master_names(struct dlm_ls *ls, const char *inbuf, int inlen,\n\t\t\t   char *outbuf, int outlen, int nodeid);\n\n#endif\t\t\t\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

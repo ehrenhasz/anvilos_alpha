@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f8a76a1f75f3f749b7a2ae3a14c2eeb989f5d8e0e9352183842329a20f632d81",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/parisc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile PCI and non-PCI devices in PA-RISC machines\n#\n# Keep the order below, e.g.\n# - ccio before any potential subdevices\n# - gsc is required before lasi and wax\n# - asp and wax before the EISA adapters for the IRQ regions\n# - EISA must come before PCI to be sure it gets IRQ region\n#\n\nobj-$(CONFIG_IOSAPIC)\t\t+= iosapic.o\nobj-$(CONFIG_IOMMU_SBA)\t\t+= sba_iommu.o\nobj-$(CONFIG_PCI_LBA)\t\t+= lba_pci.o\nobj-$(CONFIG_IOMMU_CCIO)\t+= ccio-dma.o\n\nobj-$(CONFIG_GSC)\t\t+= gsc.o\nobj-$(CONFIG_GSC_LASI)\t\t+= lasi.o asp.o\nobj-$(CONFIG_GSC_WAX)\t\t+= wax.o\nobj-$(CONFIG_EISA)\t\t+= eisa.o eisa_enumerator.o eisa_eeprom.o\nobj-$(CONFIG_HPPB)\t\t+= hppb.o\nobj-$(CONFIG_GSC_DINO)\t\t+= dino.o\n\nobj-$(CONFIG_SUPERIO)\t\t+= superio.o\nobj-$(CONFIG_CHASSIS_LCD_LED)\t+= led.o\nobj-$(CONFIG_PDC_STABLE)\t+= pdc_stable.o\nobj-y\t\t\t\t+= power.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hclge_devlink.h",
+  "hash_id": "5ad223d19869ada4648e05a0519589934caa316f98740d25f8001995253989b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_devlink.h",
+  "human_readable_source": " \n \n\n#ifndef __HCLGE_DEVLINK_H\n#define __HCLGE_DEVLINK_H\n\n#include \"hclge_main.h\"\n\nstruct hclge_devlink_priv {\n\tstruct hclge_dev *hdev;\n};\n\nint hclge_devlink_init(struct hclge_dev *hdev);\nvoid hclge_devlink_uninit(struct hclge_dev *hdev);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

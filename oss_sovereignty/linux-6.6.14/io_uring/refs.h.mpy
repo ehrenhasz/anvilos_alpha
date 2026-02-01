@@ -1,0 +1,9 @@
+{
+  "module_name": "refs.h",
+  "hash_id": "0cbc3f66527bcd629d6935ced2f3aeab019da1e522ff8cd9ecf9dc338d8e23f5",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/refs.h",
+  "human_readable_source": "#ifndef IOU_REQ_REF_H\n#define IOU_REQ_REF_H\n\n#include <linux/atomic.h>\n#include <linux/io_uring_types.h>\n\n \n#define req_ref_zero_or_close_to_overflow(req)\t\\\n\t((unsigned int) atomic_read(&(req->refs)) + 127u <= 127u)\n\nstatic inline bool req_ref_inc_not_zero(struct io_kiocb *req)\n{\n\tWARN_ON_ONCE(!(req->flags & REQ_F_REFCOUNT));\n\treturn atomic_inc_not_zero(&req->refs);\n}\n\nstatic inline bool req_ref_put_and_test(struct io_kiocb *req)\n{\n\tif (likely(!(req->flags & REQ_F_REFCOUNT)))\n\t\treturn true;\n\n\tWARN_ON_ONCE(req_ref_zero_or_close_to_overflow(req));\n\treturn atomic_dec_and_test(&req->refs);\n}\n\nstatic inline void req_ref_get(struct io_kiocb *req)\n{\n\tWARN_ON_ONCE(!(req->flags & REQ_F_REFCOUNT));\n\tWARN_ON_ONCE(req_ref_zero_or_close_to_overflow(req));\n\tatomic_inc(&req->refs);\n}\n\nstatic inline void __io_req_set_refcount(struct io_kiocb *req, int nr)\n{\n\tif (!(req->flags & REQ_F_REFCOUNT)) {\n\t\treq->flags |= REQ_F_REFCOUNT;\n\t\tatomic_set(&req->refs, nr);\n\t}\n}\n\nstatic inline void io_req_set_refcount(struct io_kiocb *req)\n{\n\t__io_req_set_refcount(req, 1);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

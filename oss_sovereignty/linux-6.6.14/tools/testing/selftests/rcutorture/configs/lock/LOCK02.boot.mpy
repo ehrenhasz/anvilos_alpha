@@ -1,0 +1,9 @@
+{
+  "module_name": "LOCK02.boot",
+  "hash_id": "0e27058476c9499ec1a25c7dfd4db59b64c7637023111b8bbf600dcf0bfbe6a4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/lock/LOCK02.boot",
+  "human_readable_source": "locktorture.torture_type=mutex_lock\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dml1_display_rq_dlg_calc.h",
+  "hash_id": "c688a5cd635a519e131c56c0bf6ec791386be7101a9dfd2a3df455ae5e37484d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dml/dml1_display_rq_dlg_calc.h",
+  "human_readable_source": " \n\n#ifndef __DISPLAY_RQ_DLG_CALC_H__\n#define __DISPLAY_RQ_DLG_CALC_H__\n\nstruct display_mode_lib;\n\n#include \"display_rq_dlg_helpers.h\"\n\nvoid dml1_extract_rq_regs(\n\t\tstruct display_mode_lib *mode_lib,\n\t\tstruct _vcs_dpi_display_rq_regs_st *rq_regs,\n\t\tconst struct _vcs_dpi_display_rq_params_st *rq_param);\n \nvoid dml1_rq_dlg_get_rq_params(\n\t\tstruct display_mode_lib *mode_lib,\n\t\tstruct _vcs_dpi_display_rq_params_st *rq_param,\n\t\tconst struct _vcs_dpi_display_pipe_source_params_st *pipe_src_param);\n\n\n \nvoid dml1_rq_dlg_get_dlg_params(\n\t\tstruct display_mode_lib *mode_lib,\n\t\tstruct _vcs_dpi_display_dlg_regs_st *dlg_regs,\n\t\tstruct _vcs_dpi_display_ttu_regs_st *ttu_regs,\n\t\tconst struct _vcs_dpi_display_rq_dlg_params_st *rq_dlg_param,\n\t\tconst struct _vcs_dpi_display_dlg_sys_params_st *dlg_sys_param,\n\t\tconst struct _vcs_dpi_display_e2e_pipe_params_st *e2e_pipe_param,\n\t\tconst bool cstate_en,\n\t\tconst bool pstate_en,\n\t\tconst bool vm_en,\n\t\tconst bool iflip_en);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

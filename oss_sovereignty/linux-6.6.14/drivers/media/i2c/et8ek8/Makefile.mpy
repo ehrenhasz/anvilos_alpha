@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d3db127f2a2662add46fdfd70f72192b5f932c8e93eabce4973615d595d1037b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/i2c/et8ek8/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\net8ek8-objs\t\t\t+= et8ek8_mode.o et8ek8_driver.o\nobj-$(CONFIG_VIDEO_ET8EK8)\t+= et8ek8.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

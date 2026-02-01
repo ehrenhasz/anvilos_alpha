@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0697bf8be532ca5b993d6c320826084606792b53366f0035b58a2970696de4bd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ntb/hw/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsource \"drivers/ntb/hw/amd/Kconfig\"\nsource \"drivers/ntb/hw/idt/Kconfig\"\nsource \"drivers/ntb/hw/intel/Kconfig\"\nsource \"drivers/ntb/hw/epf/Kconfig\"\nsource \"drivers/ntb/hw/mscc/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

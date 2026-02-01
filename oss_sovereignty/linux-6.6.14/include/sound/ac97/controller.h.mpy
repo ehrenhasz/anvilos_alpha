@@ -1,0 +1,9 @@
+{
+  "module_name": "controller.h",
+  "hash_id": "65ed4064263d93862619b291b5d8d4fffa439336224a5b3b42d78b2ef5364c11",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/ac97/controller.h",
+  "human_readable_source": " \n\n#ifndef AC97_CONTROLLER_H\n#define AC97_CONTROLLER_H\n\n#include <linux/device.h>\n#include <linux/list.h>\n\n#define AC97_BUS_MAX_CODECS 4\n#define AC97_SLOTS_AVAILABLE_ALL 0xf\n\nstruct ac97_controller_ops;\n\n \nstruct ac97_controller {\n\tconst struct ac97_controller_ops *ops;\n\tstruct list_head controllers;\n\tstruct device adap;\n\tint nr;\n\tunsigned short slots_available;\n\tstruct device *parent;\n\tstruct ac97_codec_device *codecs[AC97_BUS_MAX_CODECS];\n\tvoid *codecs_pdata[AC97_BUS_MAX_CODECS];\n};\n\n \nstruct ac97_controller_ops {\n\tvoid (*reset)(struct ac97_controller *adrv);\n\tvoid (*warm_reset)(struct ac97_controller *adrv);\n\tint (*write)(struct ac97_controller *adrv, int slot,\n\t\t     unsigned short reg, unsigned short val);\n\tint (*read)(struct ac97_controller *adrv, int slot, unsigned short reg);\n};\n\n#if IS_ENABLED(CONFIG_AC97_BUS_NEW)\nstruct ac97_controller *snd_ac97_controller_register(\n\tconst struct ac97_controller_ops *ops, struct device *dev,\n\tunsigned short slots_available, void **codecs_pdata);\nvoid snd_ac97_controller_unregister(struct ac97_controller *ac97_ctrl);\n#else\nstatic inline struct ac97_controller *\nsnd_ac97_controller_register(const struct ac97_controller_ops *ops,\n\t\t\t     struct device *dev,\n\t\t\t     unsigned short slots_available,\n\t\t\t     void **codecs_pdata)\n{\n\treturn ERR_PTR(-ENODEV);\n}\n\nstatic inline void\nsnd_ac97_controller_unregister(struct ac97_controller *ac97_ctrl)\n{\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "6579a52c121e05d8db24e7e3155ee29a9ff8c2bf971e6d5a88cf66d7f8c2ffc5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/nand/raw/ingenic/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig MTD_NAND_JZ4780\n\ttristate \"JZ4780 NAND controller\"\n\tdepends on MIPS || COMPILE_TEST\n\tdepends on JZ4780_NEMC\n\thelp\n\t  Enables support for NAND Flash connected to the NEMC on JZ4780 SoC\n\t  based boards, using the BCH controller for hardware error correction.\n\nif MTD_NAND_JZ4780\n\nconfig MTD_NAND_INGENIC_ECC\n\tbool\n\nconfig MTD_NAND_JZ4740_ECC\n\ttristate \"Hardware BCH support for JZ4740 SoC\"\n\tselect MTD_NAND_INGENIC_ECC\n\thelp\n\t  Enable this driver to support the Reed-Solomon error-correction\n\t  hardware present on the JZ4740 SoC from Ingenic.\n\n\t  This driver can also be built as a module. If so, the module\n\t  will be called jz4740-ecc.\n\nconfig MTD_NAND_JZ4725B_BCH\n\ttristate \"Hardware BCH support for JZ4725B SoC\"\n\tselect MTD_NAND_INGENIC_ECC\n\thelp\n\t  Enable this driver to support the BCH error-correction hardware\n\t  present on the JZ4725B SoC from Ingenic.\n\n\t  This driver can also be built as a module. If so, the module\n\t  will be called jz4725b-bch.\n\nconfig MTD_NAND_JZ4780_BCH\n\ttristate \"Hardware BCH support for JZ4780 SoC\"\n\tselect MTD_NAND_INGENIC_ECC\n\thelp\n\t  Enable this driver to support the BCH error-correction hardware\n\t  present on the JZ4780 SoC from Ingenic.\n\n\t  This driver can also be built as a module. If so, the module\n\t  will be called jz4780-bch.\n\nendif # MTD_NAND_JZ4780\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

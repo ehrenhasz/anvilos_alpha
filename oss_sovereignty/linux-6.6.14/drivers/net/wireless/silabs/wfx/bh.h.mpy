@@ -1,0 +1,9 @@
+{
+  "module_name": "bh.h",
+  "hash_id": "b9d77a092394ad4338472670f4c42730392cf53ca8c062b964e63af3930ceb1e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/silabs/wfx/bh.h",
+  "human_readable_source": " \n \n#ifndef WFX_BH_H\n#define WFX_BH_H\n\n#include <linux/atomic.h>\n#include <linux/wait.h>\n#include <linux/completion.h>\n#include <linux/workqueue.h>\n\nstruct wfx_dev;\n\nstruct wfx_hif {\n\tstruct work_struct bh;\n\tstruct completion ctrl_ready;\n\twait_queue_head_t tx_buffers_empty;\n\tatomic_t ctrl_reg;\n\tint rx_seqnum;\n\tint tx_seqnum;\n\tint tx_buffers_used;\n};\n\nvoid wfx_bh_register(struct wfx_dev *wdev);\nvoid wfx_bh_unregister(struct wfx_dev *wdev);\nvoid wfx_bh_request_rx(struct wfx_dev *wdev);\nvoid wfx_bh_request_tx(struct wfx_dev *wdev);\nvoid wfx_bh_poll_irq(struct wfx_dev *wdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

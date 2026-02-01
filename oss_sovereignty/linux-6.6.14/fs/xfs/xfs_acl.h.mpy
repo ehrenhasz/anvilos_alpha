@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_acl.h",
+  "hash_id": "20785c342b20c924dbbd901b9cc7ff77886970042beb45d78913d14c6bbc7b35",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_acl.h",
+  "human_readable_source": "\n \n#ifndef __XFS_ACL_H__\n#define __XFS_ACL_H__\n\nstruct inode;\nstruct posix_acl;\n\n#ifdef CONFIG_XFS_POSIX_ACL\nextern struct posix_acl *xfs_get_acl(struct inode *inode, int type, bool rcu);\nextern int xfs_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,\n\t\t       struct posix_acl *acl, int type);\nextern int __xfs_set_acl(struct inode *inode, struct posix_acl *acl, int type);\nvoid xfs_forget_acl(struct inode *inode, const char *name);\n#else\n#define xfs_get_acl NULL\n#define xfs_set_acl NULL\nstatic inline int __xfs_set_acl(struct inode *inode, struct posix_acl *acl,\n\t\t\t\tint type)\n{\n\treturn 0;\n}\nstatic inline void xfs_forget_acl(struct inode *inode, const char *name)\n{\n}\n#endif  \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

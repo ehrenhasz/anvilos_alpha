@@ -1,0 +1,9 @@
+{
+  "module_name": "rmnet_private.h",
+  "hash_id": "4a0dede1e19b66a7dff9bc2b887fa41d2cfa273922cd9d9f1ceb6b46539e729d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qualcomm/rmnet/rmnet_private.h",
+  "human_readable_source": " \n \n\n#ifndef _RMNET_PRIVATE_H_\n#define _RMNET_PRIVATE_H_\n\n#define RMNET_MAX_PACKET_SIZE      16384\n#define RMNET_DFLT_PACKET_SIZE     1500\n#define RMNET_NEEDED_HEADROOM      16\n#define RMNET_TX_QUEUE_LEN         1000\n\n \n#define RMNET_EPMODE_VND (1)\n \n#define RMNET_EPMODE_BRIDGE (2)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test_core_reloc_nesting.c",
+  "hash_id": "acfac7586b12ac3cdc832860751050ba3b06e6f063a33599a867ade4a947724b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_core_reloc_nesting.c",
+  "human_readable_source": "\n\n\n#include <linux/bpf.h>\n#include <stdint.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_core_read.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\tchar in[256];\n\tchar out[256];\n} data = {};\n\nstruct core_reloc_nesting_substruct {\n\tint a;\n};\n\nunion core_reloc_nesting_subunion {\n\tint b;\n};\n\n \nstruct core_reloc_nesting {\n\tunion {\n\t\tstruct core_reloc_nesting_substruct a;\n\t} a;\n\tstruct {\n\t\tunion core_reloc_nesting_subunion b;\n\t} b;\n};\n\n#define CORE_READ(dst, src) bpf_core_read(dst, sizeof(*(dst)), src)\n\nSEC(\"raw_tracepoint/sys_enter\")\nint test_core_nesting(void *ctx)\n{\n\tstruct core_reloc_nesting *in = (void *)&data.in;\n\tstruct core_reloc_nesting *out = (void *)&data.out;\n\n\tif (CORE_READ(&out->a.a.a, &in->a.a.a))\n\t\treturn 1;\n\tif (CORE_READ(&out->b.b.b, &in->b.b.b))\n\t\treturn 1;\n\n\treturn 0;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

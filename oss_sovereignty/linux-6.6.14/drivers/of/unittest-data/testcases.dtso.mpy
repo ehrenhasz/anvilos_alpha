@@ -1,0 +1,9 @@
+{
+  "module_name": "testcases.dtso",
+  "hash_id": "75a51bba50b247df6b291c3f0dd3bf00d236aedcb023df1408e5cf4627543f2b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/testcases.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n#include \"testcases_common.dtsi\"\n\n/ {\n\t/*\n\t * testcase data that intentionally results in an error is located here\n\t * instead of in testcases_common.dtsi so that the static overlay apply\n\t * tests will not include the error.\n\t */\n\ttestcase-data {\n\t\ttestcase-device2 {\n\t\t\tcompatible = \"testcase-device\";\n\t\t\tinterrupt-parent = <&test_intc2>;\n\t\t\tinterrupts = <1>; /* invalid specifier - too short */\n\t\t};\n\t};\n\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

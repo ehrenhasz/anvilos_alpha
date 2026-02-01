@@ -1,0 +1,9 @@
+{
+  "module_name": "sco.h",
+  "hash_id": "1efc110a0f5d848cc7c2d5da3a68a00c57dc8426e63af0cb6f9e79a2400b306f",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/bluetooth/sco.h",
+  "human_readable_source": " \n\n#ifndef __SCO_H\n#define __SCO_H\n\n \n#define SCO_DEFAULT_MTU\t\t500\n\n \nstruct sockaddr_sco {\n\tsa_family_t\tsco_family;\n\tbdaddr_t\tsco_bdaddr;\n};\n\n \n#define SCO_OPTIONS\t0x01\nstruct sco_options {\n\t__u16 mtu;\n};\n\n#define SCO_CONNINFO\t0x02\nstruct sco_conninfo {\n\t__u16 hci_handle;\n\t__u8  dev_class[3];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

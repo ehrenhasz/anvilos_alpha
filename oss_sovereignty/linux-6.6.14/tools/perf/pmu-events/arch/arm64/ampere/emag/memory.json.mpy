@@ -1,0 +1,9 @@
+{
+  "module_name": "memory.json",
+  "hash_id": "c1400a247efd2790cffcdfe03d4783f70034cef8fb65eada5cda700206edbb18",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/ampere/emag/memory.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS_RD\"\n    },\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS_WR\"\n    },\n    {\n        \"ArchStdEvent\": \"UNALIGNED_LD_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"UNALIGNED_ST_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"UNALIGNED_LDST_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS\"\n    },\n    {\n        \"PublicDescription\": \"This event counts any correctable or uncorrectable memory error (ECC or parity) in the protected core RAMs\",\n        \"ArchStdEvent\": \"MEMORY_ERROR\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "st_pressure.h",
+  "hash_id": "ff44dfa033eb9914b795aab6f171d9609ca56d994f46f3b8b52c98f90564cfa1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/pressure/st_pressure.h",
+  "human_readable_source": " \n \n\n#ifndef ST_PRESS_H\n#define ST_PRESS_H\n\n#include <linux/types.h>\n#include <linux/iio/common/st_sensors.h>\n\nenum st_press_type {\n\tLPS001WP,\n\tLPS25H,\n\tLPS331AP,\n\tLPS22HB,\n\tLPS33HW,\n\tLPS35HW,\n\tLPS22HH,\n\tLPS22DF,\n\tST_PRESS_MAX,\n};\n\n#define LPS001WP_PRESS_DEV_NAME\t\t\"lps001wp\"\n#define LPS25H_PRESS_DEV_NAME\t\t\"lps25h\"\n#define LPS331AP_PRESS_DEV_NAME\t\t\"lps331ap\"\n#define LPS22HB_PRESS_DEV_NAME\t\t\"lps22hb\"\n#define LPS33HW_PRESS_DEV_NAME\t\t\"lps33hw\"\n#define LPS35HW_PRESS_DEV_NAME\t\t\"lps35hw\"\n#define LPS22HH_PRESS_DEV_NAME\t\t\"lps22hh\"\n#define LPS22DF_PRESS_DEV_NAME\t\t\"lps22df\"\n\n \nstatic __maybe_unused const struct st_sensors_platform_data default_press_pdata = {\n\t.drdy_int_pin = 1,\n};\n\n#ifdef CONFIG_IIO_BUFFER\nint st_press_allocate_ring(struct iio_dev *indio_dev);\nint st_press_trig_set_state(struct iio_trigger *trig, bool state);\n#define ST_PRESS_TRIGGER_SET_STATE (&st_press_trig_set_state)\n#else  \nstatic inline int st_press_allocate_ring(struct iio_dev *indio_dev)\n{\n\treturn 0;\n}\n#define ST_PRESS_TRIGGER_SET_STATE NULL\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

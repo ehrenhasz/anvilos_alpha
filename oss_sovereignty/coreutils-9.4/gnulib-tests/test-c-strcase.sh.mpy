@@ -1,0 +1,9 @@
+{
+  "module_name": "test-c-strcase.sh",
+  "hash_id": "6956c853e346e39b5ebf8a02690f7267d5f4aa9b071aa7a7a978b78c8787e10d",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-c-strcase.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test in the C locale.\n${CHECKER} ./test-c-strcasecmp${EXEEXT} || exit 1\n${CHECKER} ./test-c-strncasecmp${EXEEXT} || exit 1\n\n# Test in an ISO-8859-1 or ISO-8859-15 locale.\n: \"${LOCALE_FR=fr_FR}\"\nif test $LOCALE_FR != none; then\n  LC_ALL=$LOCALE_FR ${CHECKER} ./test-c-strcasecmp${EXEEXT} locale || exit 1\n  LC_ALL=$LOCALE_FR ${CHECKER} ./test-c-strncasecmp${EXEEXT} locale || exit 1\nfi\n\n# Test in a Turkish UTF-8 locale.\n: \"${LOCALE_TR_UTF8=tr_TR.UTF-8}\"\nif test $LOCALE_TR_UTF8 != none; then\n  LC_ALL=$LOCALE_TR_UTF8 ${CHECKER} ./test-c-strcasecmp${EXEEXT} locale || exit 1\n  LC_ALL=$LOCALE_TR_UTF8 ${CHECKER} ./test-c-strncasecmp${EXEEXT} locale || exit 1\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

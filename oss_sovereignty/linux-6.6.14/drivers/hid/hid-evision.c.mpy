@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-evision.c",
+  "hash_id": "978f8cb38d082794edc667295b34799a62ce1d97022f2878d2d8d1286cc9a717",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-evision.c",
+  "human_readable_source": "\n \n\n#include <linux/device.h>\n#include <linux/input.h>\n#include <linux/hid.h>\n#include <linux/module.h>\n\n#include \"hid-ids.h\"\n\nstatic int evision_input_mapping(struct hid_device *hdev, struct hid_input *hi,\n\t\tstruct hid_field *field, struct hid_usage *usage,\n\t\tunsigned long **bit, int *max)\n{\n\tif ((usage->hid & HID_USAGE_PAGE) != HID_UP_CONSUMER)\n\t\treturn 0;\n\n\t \n\tif ((usage->hid & HID_USAGE) >> 8 == 0x05)\n\t\treturn -1;\n\t \n\tif ((usage->hid & HID_USAGE) >> 8 == 0x06)\n\t\treturn -1;\n\n\tswitch (usage->hid & HID_USAGE) {\n\t \n\tcase 0x0401: return -1;\n\t \n\tcase 0x0402: return -1;\n\t}\n\treturn 0;\n}\n\nstatic const struct hid_device_id evision_devices[] = {\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_EVISION, USB_DEVICE_ID_EVISION_ICL01) },\n\t{ }\n};\nMODULE_DEVICE_TABLE(hid, evision_devices);\n\nstatic struct hid_driver evision_driver = {\n\t.name = \"evision\",\n\t.id_table = evision_devices,\n\t.input_mapping = evision_input_mapping,\n};\nmodule_hid_driver(evision_driver);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

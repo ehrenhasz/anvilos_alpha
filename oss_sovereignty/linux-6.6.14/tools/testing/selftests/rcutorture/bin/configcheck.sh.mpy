@@ -1,0 +1,9 @@
+{
+  "module_name": "configcheck.sh",
+  "hash_id": "737e208bf79a49b19089ea9aae70edfa568ef29867bbb2ae0438de3140035ecc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/bin/configcheck.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Usage: configcheck.sh .config .config-template\n#\n# Non-empty output if errors detected.\n#\n# Copyright (C) IBM Corporation, 2011\n#\n# Authors: Paul E. McKenney <paulmck@linux.ibm.com>\n\nT=\"`mktemp -d ${TMPDIR-/tmp}/configcheck.sh.XXXXXX`\"\ntrap 'rm -rf $T' 0\n\n# function test_kconfig_enabled ( Kconfig-var=val )\nfunction test_kconfig_enabled () {\n\tif ! grep -q \"^$1$\" $T/.config\n\tthen\n\t\techo :$1: improperly set\n\t\treturn 1\n\tfi\n\treturn 0\n}\n\n# function test_kconfig_disabled ( Kconfig-var )\nfunction test_kconfig_disabled () {\n\tif grep -q \"^$1=n$\" $T/.config\n\tthen\n\t\treturn 0\n\tfi\n\tif grep -q \"^$1=\" $T/.config\n\tthen\n\t\techo :$1=n: improperly set\n\t\treturn 1\n\tfi\n\treturn 0\n}\n\nsed -e 's/\"//g' < $1 > $T/.config\nsed -e 's/^#CHECK#//' < $2 > $T/ConfigFragment\ngrep '^CONFIG_.*=n$' $T/ConfigFragment |\n\tsed -e 's/^/test_kconfig_disabled /' -e 's/=n$//' > $T/kconfig-n.sh\n. $T/kconfig-n.sh\ngrep -v '^CONFIG_.*=n$' $T/ConfigFragment | grep '^CONFIG_' |\n\tsed -e 's/^/test_kconfig_enabled /' > $T/kconfig-not-n.sh\n. $T/kconfig-not-n.sh\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

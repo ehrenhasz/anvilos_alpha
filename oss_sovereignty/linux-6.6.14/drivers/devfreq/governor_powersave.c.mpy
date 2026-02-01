@@ -1,0 +1,9 @@
+{
+  "module_name": "governor_powersave.c",
+  "hash_id": "746eb22b9f80863fba327963d5dd5d8af8d6972518618837d3b8b1eecff414c5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/devfreq/governor_powersave.c",
+  "human_readable_source": "\n \n\n#include <linux/devfreq.h>\n#include <linux/module.h>\n#include \"governor.h\"\n\nstatic int devfreq_powersave_func(struct devfreq *df,\n\t\t\t\t  unsigned long *freq)\n{\n\t \n\t*freq = DEVFREQ_MIN_FREQ;\n\treturn 0;\n}\n\nstatic int devfreq_powersave_handler(struct devfreq *devfreq,\n\t\t\t\tunsigned int event, void *data)\n{\n\tint ret = 0;\n\n\tif (event == DEVFREQ_GOV_START) {\n\t\tmutex_lock(&devfreq->lock);\n\t\tret = update_devfreq(devfreq);\n\t\tmutex_unlock(&devfreq->lock);\n\t}\n\n\treturn ret;\n}\n\nstatic struct devfreq_governor devfreq_powersave = {\n\t.name = DEVFREQ_GOV_POWERSAVE,\n\t.get_target_freq = devfreq_powersave_func,\n\t.event_handler = devfreq_powersave_handler,\n};\n\nstatic int __init devfreq_powersave_init(void)\n{\n\treturn devfreq_add_governor(&devfreq_powersave);\n}\nsubsys_initcall(devfreq_powersave_init);\n\nstatic void __exit devfreq_powersave_exit(void)\n{\n\tint ret;\n\n\tret = devfreq_remove_governor(&devfreq_powersave);\n\tif (ret)\n\t\tpr_err(\"%s: failed remove governor %d\\n\", __func__, ret);\n\n\treturn;\n}\nmodule_exit(devfreq_powersave_exit);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

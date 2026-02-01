@@ -1,0 +1,9 @@
+{
+  "module_name": "audit.c",
+  "hash_id": "2d414c9d68b287afbe2b4b1bb75bc73bb0c838a76cc8dabe6142b4bdbc3f8234",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/ia32/audit.c",
+  "human_readable_source": "\n#include <linux/audit_arch.h>\n#include <asm/unistd_32.h>\n#include <asm/audit.h>\n\nunsigned ia32_dir_class[] = {\n#include <asm-generic/audit_dir_write.h>\n~0U\n};\n\nunsigned ia32_chattr_class[] = {\n#include <asm-generic/audit_change_attr.h>\n~0U\n};\n\nunsigned ia32_write_class[] = {\n#include <asm-generic/audit_write.h>\n~0U\n};\n\nunsigned ia32_read_class[] = {\n#include <asm-generic/audit_read.h>\n~0U\n};\n\nunsigned ia32_signal_class[] = {\n#include <asm-generic/audit_signal.h>\n~0U\n};\n\nint ia32_classify_syscall(unsigned syscall)\n{\n\tswitch (syscall) {\n\tcase __NR_open:\n\t\treturn AUDITSC_OPEN;\n\tcase __NR_openat:\n\t\treturn AUDITSC_OPENAT;\n\tcase __NR_socketcall:\n\t\treturn AUDITSC_SOCKETCALL;\n\tcase __NR_execve:\n\tcase __NR_execveat:\n\t\treturn AUDITSC_EXECVE;\n\tcase __NR_openat2:\n\t\treturn AUDITSC_OPENAT2;\n\tdefault:\n\t\treturn AUDITSC_COMPAT;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

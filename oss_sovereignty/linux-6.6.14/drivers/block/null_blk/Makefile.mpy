@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "03bd31a4abc10d69127371c5aa8c5e43b029c1b4473ea63c407b3179cc4916ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/block/null_blk/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\n# needed for trace events\nccflags-y\t\t\t+= -I$(src)\n\nobj-$(CONFIG_BLK_DEV_NULL_BLK)\t+= null_blk.o\nnull_blk-objs\t\t\t:= main.o\nifeq ($(CONFIG_BLK_DEV_ZONED), y)\nnull_blk-$(CONFIG_TRACING) \t+= trace.o\nendif\nnull_blk-$(CONFIG_BLK_DEV_ZONED) += zoned.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

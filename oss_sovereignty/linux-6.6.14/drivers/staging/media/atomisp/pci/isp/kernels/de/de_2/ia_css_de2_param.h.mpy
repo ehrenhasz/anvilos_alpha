@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_de2_param.h",
+  "hash_id": "b06f1ca3feadb96d8a8b04fab279ea0cd8d58b6e4e9516724ac1ef09a8461f62",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/de/de_2/ia_css_de2_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_DE2_PARAM_H\n#define __IA_CSS_DE2_PARAM_H\n\n#include \"type_support.h\"\n\n \n#include \"../de_1.0/ia_css_de_param.h\"\n\n \nstruct sh_css_isp_ecd_params {\n\ts32 zip_strength;\n\ts32 fc_strength;\n\ts32 fc_debias;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

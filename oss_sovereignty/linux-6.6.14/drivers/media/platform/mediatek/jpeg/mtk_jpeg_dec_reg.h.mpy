@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_jpeg_dec_reg.h",
+  "hash_id": "412e46ec6a555b8e4203cadf654bca01de28fd9dbf6ac8513be9c2116353f17e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/jpeg/mtk_jpeg_dec_reg.h",
+  "human_readable_source": " \n \n\n#ifndef _MTK_JPEG_REG_H\n#define _MTK_JPEG_REG_H\n\n#define MTK_JPEG_BLOCK_MAX\t\t10\n#define MTK_JPEG_DCTSIZE\t\t8\n\n#define BIT_INQST_MASK_ERROR_BS\t\t0x20\n#define BIT_INQST_MASK_PAUSE\t\t0x10\n#define BIT_INQST_MASK_OVERFLOW\t\t0x04\n#define BIT_INQST_MASK_UNDERFLOW\t0x02\n#define BIT_INQST_MASK_EOF\t\t0x01\n#define BIT_INQST_MASK_ALLIRQ\t\t0x37\n\n#define JPGDEC_REG_RESET\t\t0x0090\n#define JPGDEC_REG_BRZ_FACTOR\t\t0x00f8\n#define JPGDEC_REG_DU_NUM\t\t0x00fc\n#define JPGDEC_REG_DEST_ADDR0_Y\t\t0x0140\n#define JPGDEC_REG_DEST_ADDR0_U\t\t0x0144\n#define JPGDEC_REG_DEST_ADDR0_V\t\t0x0148\n#define JPGDEC_REG_DEST_ADDR1_Y\t\t0x014c\n#define JPGDEC_REG_DEST_ADDR1_U\t\t0x0150\n#define JPGDEC_REG_DEST_ADDR1_V\t\t0x0154\n#define JPGDEC_REG_STRIDE_Y\t\t0x0158\n#define JPGDEC_REG_STRIDE_UV\t\t0x015c\n#define JPGDEC_REG_IMG_STRIDE_Y\t\t0x0160\n#define JPGDEC_REG_IMG_STRIDE_UV\t0x0164\n#define JPGDEC_REG_WDMA_CTRL\t\t0x016c\n#define JPGDEC_REG_PAUSE_MCU_NUM\t0x0170\n#define JPGDEC_REG_OPERATION_MODE\t0x017c\n#define JPGDEC_REG_FILE_ADDR\t\t0x0200\n#define JPGDEC_REG_COMP_ID\t\t0x020c\n#define JPGDEC_REG_TOTAL_MCU_NUM\t0x0210\n#define JPGDEC_REG_COMP0_DATA_UNIT_NUM\t0x0224\n#define JPGDEC_REG_DU_CTRL\t\t0x023c\n#define JPGDEC_REG_TRIG\t\t\t0x0240\n#define JPGDEC_REG_FILE_BRP\t\t0x0248\n#define JPGDEC_REG_FILE_TOTAL_SIZE\t0x024c\n#define JPGDEC_REG_QT_ID\t\t0x0270\n#define JPGDEC_REG_INTERRUPT_STATUS\t0x0274\n#define JPGDEC_REG_STATUS\t\t0x0278\n#define JPGDEC_REG_BIT_STREAM_SIZE\t0x0344\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

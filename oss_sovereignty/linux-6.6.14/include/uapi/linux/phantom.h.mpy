@@ -1,0 +1,9 @@
+{
+  "module_name": "phantom.h",
+  "hash_id": "45963412315282120b0ff0780f1bbf577d5ebb29adc87ecbe0afd4b945029e1a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/phantom.h",
+  "human_readable_source": " \n \n\n#ifndef __PHANTOM_H\n#define __PHANTOM_H\n\n#include <linux/types.h>\n\n \nstruct phm_reg {\n\t__u32 reg;\n\t__u32 value;\n};\n\n \nstruct phm_regs {\n\t__u32 count;\n\t__u32 mask;\n\t__u32 values[8];\n};\n\n#define PH_IOC_MAGIC\t\t'p'\n#define PHN_GET_REG\t\t_IOWR(PH_IOC_MAGIC, 0, struct phm_reg *)\n#define PHN_SET_REG\t\t_IOW(PH_IOC_MAGIC, 1, struct phm_reg *)\n#define PHN_GET_REGS\t\t_IOWR(PH_IOC_MAGIC, 2, struct phm_regs *)\n#define PHN_SET_REGS\t\t_IOW(PH_IOC_MAGIC, 3, struct phm_regs *)\n \n#define PHN_NOT_OH\t\t_IO(PH_IOC_MAGIC, 4)\n#define PHN_GETREG\t\t_IOWR(PH_IOC_MAGIC, 5, struct phm_reg)\n#define PHN_SETREG\t\t_IOW(PH_IOC_MAGIC, 6, struct phm_reg)\n#define PHN_GETREGS\t\t_IOWR(PH_IOC_MAGIC, 7, struct phm_regs)\n#define PHN_SETREGS\t\t_IOW(PH_IOC_MAGIC, 8, struct phm_regs)\n\n#define PHN_CONTROL\t\t0x6      \n#define PHN_CTL_AMP\t\t0x1      \n#define PHN_CTL_BUT\t\t0x2      \n#define PHN_CTL_IRQ\t\t0x10     \n\n#define PHN_ZERO_FORCE\t\t2048\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

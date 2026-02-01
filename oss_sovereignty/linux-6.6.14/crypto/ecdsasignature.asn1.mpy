@@ -1,0 +1,9 @@
+{
+  "module_name": "ecdsasignature.asn1",
+  "hash_id": "a0f28bbb31143b365415d3389b50bcdabc827ed715cecee558490b8b1faa68aa",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/ecdsasignature.asn1",
+  "human_readable_source": "ECDSASignature ::= SEQUENCE {\n\tr\tINTEGER ({ ecdsa_get_signature_r }),\n\ts\tINTEGER ({ ecdsa_get_signature_s })\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

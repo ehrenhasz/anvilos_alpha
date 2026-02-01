@@ -1,0 +1,9 @@
+{
+  "module_name": "signalblocking.m4",
+  "hash_id": "d13cbbf81a38d9764a18575d6c055d6c81ac7b539e9cff6941be722e4d832281",
+  "original_prompt": "Ingested from coreutils-9.4/m4/signalblocking.m4",
+  "human_readable_source": "# signalblocking.m4 serial 17\ndnl Copyright (C) 2001-2002, 2006-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n# Determine available signal blocking primitives. Three different APIs exist:\n# 1) POSIX: sigemptyset, sigaddset, sigprocmask\n# 2) SYSV: sighold, sigrelse\n# 3) BSD: sigblock, sigsetmask\n# For simplicity, here we check only for the POSIX signal blocking.\nAC_DEFUN([gl_SIGNALBLOCKING],\n[\n  AC_REQUIRE([gl_SIGNAL_H_DEFAULTS])\n  AC_REQUIRE([gl_CHECK_TYPE_SIGSET_T])\n  HAVE_POSIX_SIGNALBLOCKING=0\n  if test \"$gl_cv_type_sigset_t\" = yes; then\n    AC_CHECK_FUNC([sigprocmask], [HAVE_POSIX_SIGNALBLOCKING=1])\n  fi\n])\n\n# Prerequisites of lib/sigprocmask.c.\nAC_DEFUN([gl_PREREQ_SIGPROCMASK], [:])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

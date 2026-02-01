@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "7aac7eaa77770a6ad57ca3fb4ba5ee3b078e185004d0d86afd0aff68374ec60e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/iommu/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/iommufd\n/iommufd_fail_nth\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

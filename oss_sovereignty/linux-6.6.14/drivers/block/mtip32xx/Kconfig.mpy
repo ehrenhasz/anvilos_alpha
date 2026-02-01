@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4130b0c9c5f4d5f5e09e35e6a803ab002e68c8bba40ef851a4690017bfac94b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/block/mtip32xx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# mtip32xx device driver configuration\n#\n\nconfig BLK_DEV_PCIESSD_MTIP32XX\n\ttristate \"Block Device Driver for Micron PCIe SSDs\"\n\tdepends on PCI\n\thelp\n          This enables the block driver for Micron PCIe SSDs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

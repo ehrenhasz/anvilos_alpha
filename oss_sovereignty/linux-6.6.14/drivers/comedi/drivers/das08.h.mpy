@@ -1,0 +1,9 @@
+{
+  "module_name": "das08.h",
+  "hash_id": "90f27d262d794c312f774517f82224f80f400c343d3d8f85f3c3f112cdea68db",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/das08.h",
+  "human_readable_source": " \n \n\n#ifndef _DAS08_H\n#define _DAS08_H\n\n#include <linux/types.h>\n\nstruct comedi_device;\n\n \nenum das08_ai_encoding { das08_encode12, das08_encode16, das08_pcm_encode12 };\n \nenum das08_lrange {\n\tdas08_pg_none, das08_bipolar5, das08_pgh, das08_pgl, das08_pgm\n};\n\nstruct das08_board_struct {\n\tconst char *name;\n\tbool is_jr;\t\t \n\tunsigned int ai_nbits;\n\tenum das08_lrange ai_pg;\n\tenum das08_ai_encoding ai_encoding;\n\tunsigned int ao_nbits;\n\tunsigned int di_nchan;\n\tunsigned int do_nchan;\n\tunsigned int i8255_offset;\n\tunsigned int i8254_offset;\n\tunsigned int iosize;\t \n};\n\nstruct das08_private_struct {\n\t \n\tunsigned int do_mux_bits;\n\tconst unsigned int *pg_gainlist;\n};\n\nint das08_common_attach(struct comedi_device *dev, unsigned long iobase);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9987eb16ae3620b3c7176939e7b8791b02565eb5d92217138359ea621e9ee9da",
+  "original_prompt": "Ingested from linux-6.6.14/fs/fscache/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for general filesystem caching code\n#\n\nfscache-y := \\\n\tcache.o \\\n\tcookie.o \\\n\tio.o \\\n\tmain.o \\\n\tvolume.o\n\nfscache-$(CONFIG_PROC_FS) += proc.o\nfscache-$(CONFIG_FSCACHE_STATS) += stats.o\n\nobj-$(CONFIG_FSCACHE) := fscache.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

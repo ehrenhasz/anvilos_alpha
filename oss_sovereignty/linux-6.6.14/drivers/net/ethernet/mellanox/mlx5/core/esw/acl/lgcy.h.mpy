@@ -1,0 +1,9 @@
+{
+  "module_name": "lgcy.h",
+  "hash_id": "a90bfeeb15e0b3a943f3c0125dc30ece8f33d8ecbae29212c7cc98edc937ae54",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/lgcy.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_ESWITCH_ACL_LGCY_H__\n#define __MLX5_ESWITCH_ACL_LGCY_H__\n\n#include \"eswitch.h\"\n\n \nint esw_acl_egress_lgcy_setup(struct mlx5_eswitch *esw, struct mlx5_vport *vport);\nvoid esw_acl_egress_lgcy_cleanup(struct mlx5_eswitch *esw, struct mlx5_vport *vport);\n\n \nint esw_acl_ingress_lgcy_setup(struct mlx5_eswitch *esw, struct mlx5_vport *vport);\nvoid esw_acl_ingress_lgcy_cleanup(struct mlx5_eswitch *esw, struct mlx5_vport *vport);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

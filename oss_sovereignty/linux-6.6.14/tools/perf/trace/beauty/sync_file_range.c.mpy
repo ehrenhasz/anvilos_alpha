@@ -1,0 +1,9 @@
+{
+  "module_name": "sync_file_range.c",
+  "hash_id": "b4c5929f67edd19cdc905bd4e16dae6e14179c10eb2aece3c491e3299028b528",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/sync_file_range.c",
+  "human_readable_source": "\n \n\n#include \"trace/beauty/beauty.h\"\n#include <linux/log2.h>\n#include <uapi/linux/fs.h>\n\nstatic size_t sync_file_range__scnprintf_flags(unsigned long flags, char *bf, size_t size, bool show_prefix)\n{\n#include \"trace/beauty/generated/sync_file_range_arrays.c\"\n       static DEFINE_STRARRAY(sync_file_range_flags, \"SYNC_FILE_RANGE_\");\n       size_t printed = 0;\n\n       if ((flags & SYNC_FILE_RANGE_WRITE_AND_WAIT) == SYNC_FILE_RANGE_WRITE_AND_WAIT) {\n               printed += scnprintf(bf + printed, size - printed, \"%s%s\", show_prefix ? \"SYNC_FILE_RANGE_\" : \"\", \"WRITE_AND_WAIT\");\n\t       flags &= ~SYNC_FILE_RANGE_WRITE_AND_WAIT;\n       }\n\n       return printed + strarray__scnprintf_flags(&strarray__sync_file_range_flags, bf + printed, size - printed, show_prefix, flags);\n}\n\nsize_t syscall_arg__scnprintf_sync_file_range_flags(char *bf, size_t size, struct syscall_arg *arg)\n{\n\tunsigned long flags = arg->val;\n\n\treturn sync_file_range__scnprintf_flags(flags, bf, size, arg->show_string_prefix);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

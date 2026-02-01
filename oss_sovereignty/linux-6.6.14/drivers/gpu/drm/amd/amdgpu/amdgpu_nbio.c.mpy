@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_nbio.c",
+  "hash_id": "5ec6fa9da1438016ca972cc3d92aeb0fbcfd84ef675bf5371223ee7751a0038d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_nbio.c",
+  "human_readable_source": " \n\n#include \"amdgpu.h\"\n#include \"amdgpu_ras.h\"\n\nint amdgpu_nbio_ras_sw_init(struct amdgpu_device *adev)\n{\n\tint err;\n\tstruct amdgpu_nbio_ras *ras;\n\n\tif (!adev->nbio.ras)\n\t\treturn 0;\n\n\tras = adev->nbio.ras;\n\terr = amdgpu_ras_register_ras_block(adev, &ras->ras_block);\n\tif (err) {\n\t\tdev_err(adev->dev, \"Failed to register pcie_bif ras block!\\n\");\n\t\treturn err;\n\t}\n\n\tstrcpy(ras->ras_block.ras_comm.name, \"pcie_bif\");\n\tras->ras_block.ras_comm.block = AMDGPU_RAS_BLOCK__PCIE_BIF;\n\tras->ras_block.ras_comm.type = AMDGPU_RAS_ERROR__MULTI_UNCORRECTABLE;\n\tadev->nbio.ras_if = &ras->ras_block.ras_comm;\n\n\treturn 0;\n}\n\nu64 amdgpu_nbio_get_pcie_replay_count(struct amdgpu_device *adev)\n{\n\tif (adev->nbio.funcs && adev->nbio.funcs->get_pcie_replay_count)\n\t\treturn adev->nbio.funcs->get_pcie_replay_count(adev);\n\n\treturn 0;\n}\n\nvoid amdgpu_nbio_get_pcie_usage(struct amdgpu_device *adev, uint64_t *count0,\n\t\t\t\tuint64_t *count1)\n{\n\tif (adev->nbio.funcs->get_pcie_usage)\n\t\tadev->nbio.funcs->get_pcie_usage(adev, count0, count1);\n\n}\n\nint amdgpu_nbio_ras_late_init(struct amdgpu_device *adev, struct ras_common_if *ras_block)\n{\n\tint r;\n\tr = amdgpu_ras_block_late_init(adev, ras_block);\n\tif (r)\n\t\treturn r;\n\n\tif (amdgpu_ras_is_supported(adev, ras_block->block)) {\n\t\tr = amdgpu_irq_get(adev, &adev->nbio.ras_controller_irq, 0);\n\t\tif (r)\n\t\t\tgoto late_fini;\n\t\tr = amdgpu_irq_get(adev, &adev->nbio.ras_err_event_athub_irq, 0);\n\t\tif (r)\n\t\t\tgoto late_fini;\n\t}\n\n\treturn 0;\nlate_fini:\n\tamdgpu_ras_block_late_fini(adev, ras_block);\n\treturn r;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

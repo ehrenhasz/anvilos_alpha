@@ -1,0 +1,9 @@
+{
+  "module_name": "compress.h",
+  "hash_id": "90009433451abae8074d66076f68a17491ad2f13bcf4c0838ee910ef5dd97d0a",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/compress.h",
+  "human_readable_source": " \n \n#ifndef _LOCAL_CRYPTO_COMPRESS_H\n#define _LOCAL_CRYPTO_COMPRESS_H\n\n#include \"internal.h\"\n\nstruct acomp_req;\nstruct comp_alg_common;\nstruct sk_buff;\n\nint crypto_init_scomp_ops_async(struct crypto_tfm *tfm);\nstruct acomp_req *crypto_acomp_scomp_alloc_ctx(struct acomp_req *req);\nvoid crypto_acomp_scomp_free_ctx(struct acomp_req *req);\n\nint crypto_acomp_report_stat(struct sk_buff *skb, struct crypto_alg *alg);\n\nvoid comp_prepare_alg(struct comp_alg_common *alg);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

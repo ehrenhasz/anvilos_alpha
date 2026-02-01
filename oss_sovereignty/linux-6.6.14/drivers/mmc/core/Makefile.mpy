@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "597ba07dce6d38da17ac068496e6341c8ae4d4aadbb70bbb45efea0f5264480c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/core/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the kernel mmc core.\n#\n\nobj-$(CONFIG_MMC)\t\t+= mmc_core.o\nmmc_core-y\t\t\t:= core.o bus.o host.o \\\n\t\t\t\t   mmc.o mmc_ops.o sd.o sd_ops.o \\\n\t\t\t\t   sdio.o sdio_ops.o sdio_bus.o \\\n\t\t\t\t   sdio_cis.o sdio_io.o sdio_irq.o \\\n\t\t\t\t   slot-gpio.o regulator.o\nmmc_core-$(CONFIG_OF)\t\t+= pwrseq.o\nobj-$(CONFIG_PWRSEQ_SIMPLE)\t+= pwrseq_simple.o\nobj-$(CONFIG_PWRSEQ_SD8787)\t+= pwrseq_sd8787.o\nobj-$(CONFIG_PWRSEQ_EMMC)\t+= pwrseq_emmc.o\nmmc_core-$(CONFIG_DEBUG_FS)\t+= debugfs.o\nobj-$(CONFIG_MMC_BLOCK)\t\t+= mmc_block.o\nmmc_block-objs\t\t\t:= block.o queue.o\nobj-$(CONFIG_MMC_TEST)\t\t+= mmc_test.o\nobj-$(CONFIG_SDIO_UART)\t\t+= sdio_uart.o\nmmc_core-$(CONFIG_MMC_CRYPTO)\t+= crypto.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

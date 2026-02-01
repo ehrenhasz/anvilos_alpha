@@ -1,0 +1,9 @@
+{
+  "module_name": "cl-strtod.c",
+  "hash_id": "43151ae2ea64c69e95a52d4acb003308e7ba86f1158721035345b54635de35e9",
+  "original_prompt": "Ingested from coreutils-9.4/lib/cl-strtod.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"cl-strtod.h\"\n\n#include <c-strtod.h>\n\n#include <errno.h>\n#include <stdlib.h>\n\n#if LONG\n# define CL_STRTOD cl_strtold\n# define DOUBLE long double\n# define C_STRTOD c_strtold\n# define STRTOD strtold\n#else\n# define CL_STRTOD cl_strtod\n# define DOUBLE double\n# define C_STRTOD c_strtod\n# define STRTOD strtod\n#endif\n\n \n\nDOUBLE\nCL_STRTOD (char const *nptr, char **restrict endptr)\n{\n  char *end;\n  DOUBLE d = STRTOD (nptr, &end);\n  if (*end)\n    {\n      int strtod_errno = errno;\n      char *c_end;\n      DOUBLE c = C_STRTOD (nptr, &c_end);\n      if (end < c_end)\n        d = c, end = c_end;\n      else\n        errno = strtod_errno;\n    }\n  if (endptr)\n    *endptr = end;\n  return d;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

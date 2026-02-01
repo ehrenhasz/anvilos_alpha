@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "f2369eed05b57b9cc65059ec9bafd25e20ea4bb761cc757c177d3305d6c72eb6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/endpoint/functions/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# PCI Endpoint Functions\n#\n\nconfig PCI_EPF_TEST\n\ttristate \"PCI Endpoint Test driver\"\n\tdepends on PCI_ENDPOINT\n\tselect CRC32\n\thelp\n\t   Enable this configuration option to enable the test driver\n\t   for PCI Endpoint.\n\n\t   If in doubt, say \"N\" to disable Endpoint test driver.\n\nconfig PCI_EPF_NTB\n\ttristate \"PCI Endpoint NTB driver\"\n\tdepends on PCI_ENDPOINT\n\tselect CONFIGFS_FS\n\thelp\n\t  Select this configuration option to enable the Non-Transparent\n\t  Bridge (NTB) driver for PCI Endpoint. NTB driver implements NTB\n\t  controller functionality using multiple PCIe endpoint instances.\n\t  It can support NTB endpoint function devices created using\n\t  device tree.\n\n\t  If in doubt, say \"N\" to disable Endpoint NTB driver.\n\nconfig PCI_EPF_VNTB\n\ttristate \"PCI Endpoint Virtual NTB driver\"\n\tdepends on PCI_ENDPOINT\n\tdepends on NTB\n\tselect CONFIGFS_FS\n\thelp\n\t  Select this configuration option to enable the Non-Transparent\n\t  Bridge (NTB) driver for PCIe Endpoint. NTB driver implements NTB\n\t  between PCI Root Port and PCIe Endpoint.\n\n\t  If in doubt, say \"N\" to disable Endpoint NTB driver.\n\nconfig PCI_EPF_MHI\n\ttristate \"PCI Endpoint driver for MHI bus\"\n\tdepends on PCI_ENDPOINT && MHI_BUS_EP\n\thelp\n\t   Enable this configuration option to enable the PCI Endpoint\n\t   driver for Modem Host Interface (MHI) bus in Qualcomm Endpoint\n\t   devices such as SDX55.\n\n\t   If in doubt, say \"N\" to disable Endpoint driver for MHI bus.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

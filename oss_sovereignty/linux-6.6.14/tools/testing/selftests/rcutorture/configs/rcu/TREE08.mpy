@@ -1,0 +1,9 @@
+{
+  "module_name": "TREE08",
+  "hash_id": "ed243efb7c4032387a62ebc1105bd66bbdd7e450f47db4d8a86b3059d75c14c3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/TREE08",
+  "human_readable_source": "CONFIG_SMP=y\nCONFIG_NR_CPUS=8\nCONFIG_PREEMPT_NONE=n\nCONFIG_PREEMPT_VOLUNTARY=n\nCONFIG_PREEMPT=y\n#CHECK#CONFIG_PREEMPT_RCU=y\nCONFIG_HZ_PERIODIC=n\nCONFIG_NO_HZ_IDLE=y\nCONFIG_NO_HZ_FULL=n\nCONFIG_RCU_TRACE=n\nCONFIG_RCU_FANOUT=3\nCONFIG_RCU_FANOUT_LEAF=2\nCONFIG_RCU_NOCB_CPU=y\nCONFIG_DEBUG_LOCK_ALLOC=n\nCONFIG_PROVE_LOCKING=n\nCONFIG_RCU_BOOST=n\nCONFIG_DEBUG_OBJECTS_RCU_HEAD=n\nCONFIG_RCU_EXPERT=y\nCONFIG_RCU_EQS_DEBUG=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

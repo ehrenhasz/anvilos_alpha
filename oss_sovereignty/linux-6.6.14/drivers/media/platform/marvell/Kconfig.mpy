@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "f47569a76d574f7a1e8fd32dcc2cd908679cd34d02f19921777d9210c475510f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/marvell/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\ncomment \"Marvell media platform drivers\"\n\nconfig VIDEO_CAFE_CCIC\n\ttristate \"Marvell 88ALP01 (Cafe) CMOS Camera Controller support\"\n\tdepends on V4L_PLATFORM_DRIVERS\n\tdepends on PCI && I2C && VIDEO_DEV\n\tdepends on COMMON_CLK\n\tselect VIDEO_OV7670 if MEDIA_SUBDRV_AUTOSELECT && VIDEO_CAMERA_SENSOR\n\tselect VIDEOBUF2_VMALLOC\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect VIDEOBUF2_DMA_SG\n\thelp\n\t  This is a video4linux2 driver for the Marvell 88ALP01 integrated\n\t  CMOS camera controller.  This is the controller found on first-\n\t  generation OLPC systems.\n\nconfig VIDEO_MMP_CAMERA\n\ttristate \"Marvell Armada 610 integrated camera controller support\"\n\tdepends on V4L_PLATFORM_DRIVERS\n\tdepends on I2C && VIDEO_DEV\n\tdepends on ARCH_MMP || COMPILE_TEST\n\tdepends on COMMON_CLK\n\tselect VIDEO_OV7670 if MEDIA_SUBDRV_AUTOSELECT && VIDEO_CAMERA_SENSOR\n\tselect I2C_GPIO\n\tselect VIDEOBUF2_VMALLOC\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect VIDEOBUF2_DMA_SG\n\thelp\n\t  This is a Video4Linux2 driver for the integrated camera\n\t  controller found on Marvell Armada 610 application\n\t  processors (and likely beyond).  This is the controller found\n\t  in OLPC XO 1.75 systems.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

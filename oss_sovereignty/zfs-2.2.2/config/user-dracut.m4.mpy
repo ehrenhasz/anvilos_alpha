@@ -1,0 +1,9 @@
+{
+  "module_name": "user-dracut.m4",
+  "hash_id": "8fe47cf7ab9752ff72058aa2c3cde733088872353c33f3162f368f935f65f970",
+  "original_prompt": "Ingested from zfs-2.2.2/config/user-dracut.m4",
+  "human_readable_source": "AC_DEFUN([ZFS_AC_CONFIG_USER_DRACUT], [\n\tAC_MSG_CHECKING(for dracut directory)\n\tAC_ARG_WITH([dracutdir],\n\t\tAS_HELP_STRING([--with-dracutdir=DIR],\n\t\t[install dracut helpers @<:@default=check@:>@]),\n\t\t[dracutdir=$withval],\n\t\t[dracutdir=check])\n\n\tAS_IF([test \"x$dracutdir\" = xcheck], [\n\t\tpath1=/usr/share/dracut\n\t\tpath2=/usr/lib/dracut\n\t\tdefault=$path2\n\n\t\tAS_IF([test -d \"$path1\"], [dracutdir=\"$path1\"], [\n\t\t\tAS_IF([test -d \"$path2\"], [dracutdir=\"$path2\"],\n\t\t\t\t[dracutdir=\"$default\"])\n\t\t])\n\t])\n\n\tAC_SUBST(dracutdir)\n\tAC_MSG_RESULT([$dracutdir])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

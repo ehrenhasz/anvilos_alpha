@@ -1,0 +1,9 @@
+{
+  "module_name": "mpls.h",
+  "hash_id": "49ff92836f5d3ff7a1ab22e2b5c2339bdf896f3a3abe94c6043f92d1376204c9",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/mpls.h",
+  "human_readable_source": " \n \n\n#ifndef _NET_MPLS_H\n#define _NET_MPLS_H 1\n\n#include <linux/if_ether.h>\n#include <linux/netdevice.h>\n#include <linux/mpls.h>\n\n#define MPLS_HLEN 4\n\nstruct mpls_shim_hdr {\n\t__be32 label_stack_entry;\n};\n\nstatic inline bool eth_p_mpls(__be16 eth_type)\n{\n\treturn eth_type == htons(ETH_P_MPLS_UC) ||\n\t\teth_type == htons(ETH_P_MPLS_MC);\n}\n\nstatic inline struct mpls_shim_hdr *mpls_hdr(const struct sk_buff *skb)\n{\n\treturn (struct mpls_shim_hdr *)skb_network_header(skb);\n}\n\nstatic inline struct mpls_shim_hdr mpls_entry_encode(u32 label,\n\t\t\t\t\t\t     unsigned int ttl,\n\t\t\t\t\t\t     unsigned int tc,\n\t\t\t\t\t\t     bool bos)\n{\n\tstruct mpls_shim_hdr result;\n\n\tresult.label_stack_entry =\n\t\tcpu_to_be32((label << MPLS_LS_LABEL_SHIFT) |\n\t\t\t    (tc << MPLS_LS_TC_SHIFT) |\n\t\t\t    (bos ? (1 << MPLS_LS_S_SHIFT) : 0) |\n\t\t\t    (ttl << MPLS_LS_TTL_SHIFT));\n\treturn result;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

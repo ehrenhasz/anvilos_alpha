@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_delay.h",
+  "hash_id": "f3cbbf2b9db049ef9fd687c2e266bed27269e7807bc92ae2820568507573b433",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zfs_delay.h",
+  "human_readable_source": " \n\n#ifndef\t_SYS_FS_ZFS_DELAY_H\n#define\t_SYS_FS_ZFS_DELAY_H\n\n#include <sys/timer.h>\n\n \n#define\tzfs_sleep_until(wakeup)\t\t\t\t\t\t\\\n\tdo {\t\t\t\t\t\t\t\t\\\n\t\thrtime_t delta = wakeup - gethrtime();\t\t\t\\\n\t\t\t\t\t\t\t\t\t\\\n\t\tif (delta > 0) {\t\t\t\t\t\\\n\t\t\tunsigned long delta_us;\t\t\t\t\\\n\t\t\tdelta_us = delta / (NANOSEC / MICROSEC);\t\\\n\t\t\tusleep_range(delta_us, delta_us + 100);\t\t\\\n\t\t}\t\t\t\t\t\t\t\\\n\t} while (0)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

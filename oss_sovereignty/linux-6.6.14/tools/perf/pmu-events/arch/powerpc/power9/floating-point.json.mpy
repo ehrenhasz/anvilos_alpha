@@ -1,0 +1,9 @@
+{
+  "module_name": "floating-point.json",
+  "hash_id": "7706c071cac78e2f968967af9411ac3e475b846af299f2f6e877c8e87e2e29b5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/powerpc/power9/floating-point.json",
+  "human_readable_source": "[\n  {\n    \"EventCode\": \"0x1415A\",\n    \"EventName\": \"PM_MRK_DATA_FROM_L2_DISP_CONFLICT_LDHITST_CYC\",\n    \"BriefDescription\": \"Duration in cycles to reload from local core's L2 with load hit store conflict due to a marked load\"\n  },\n  {\n    \"EventCode\": \"0x10058\",\n    \"EventName\": \"PM_MEM_LOC_THRESH_IFU\",\n    \"BriefDescription\": \"Local Memory above threshold for IFU speculation control\"\n  },\n  {\n    \"EventCode\": \"0x2D028\",\n    \"EventName\": \"PM_RADIX_PWC_L2_PDE_FROM_L2\",\n    \"BriefDescription\": \"A Page Directory Entry was reloaded to a level 2 page walk cache from the core's L2 data cache\"\n  },\n  {\n    \"EventCode\": \"0x30012\",\n    \"EventName\": \"PM_FLUSH_COMPLETION\",\n    \"BriefDescription\": \"The instruction that was next to complete did not complete because it suffered a flush\"\n  },\n  {\n    \"EventCode\": \"0x2D154\",\n    \"EventName\": \"PM_MRK_DERAT_MISS_64K\",\n    \"BriefDescription\": \"Marked Data ERAT Miss (Data TLB Access) page size 64K\"\n  },\n  {\n    \"EventCode\": \"0x4016E\",\n    \"EventName\": \"PM_THRESH_NOT_MET\",\n    \"BriefDescription\": \"Threshold counter did not meet threshold\"\n  }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

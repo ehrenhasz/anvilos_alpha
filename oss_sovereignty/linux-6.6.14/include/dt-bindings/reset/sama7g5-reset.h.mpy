@@ -1,0 +1,9 @@
+{
+  "module_name": "sama7g5-reset.h",
+  "hash_id": "de40869adc3a4a19f194eac2459a4ce08c81d09a92873e34f79452928263f40c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/sama7g5-reset.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_RESET_SAMA7G5_H\n#define __DT_BINDINGS_RESET_SAMA7G5_H\n\n#define SAMA7G5_RESET_USB_PHY1\t\t4\n#define SAMA7G5_RESET_USB_PHY2\t\t5\n#define SAMA7G5_RESET_USB_PHY3\t\t6\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

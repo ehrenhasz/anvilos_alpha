@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_dp_aux_backlight.h",
+  "hash_id": "de809569421dfb64dd79b1f9b50a7716506ff8779c97d59ef6bb97b672cabbfb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_dp_aux_backlight.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_DP_AUX_BACKLIGHT_H__\n#define __INTEL_DP_AUX_BACKLIGHT_H__\n\nstruct intel_connector;\n\nint intel_dp_aux_init_backlight_funcs(struct intel_connector *intel_connector);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

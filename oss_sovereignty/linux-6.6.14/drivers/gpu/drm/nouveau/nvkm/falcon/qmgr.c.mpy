@@ -1,0 +1,9 @@
+{
+  "module_name": "qmgr.c",
+  "hash_id": "a617513762be42fec57937f065bbff09691744d68ad4a8f507470b9e9e4920df",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/falcon/qmgr.c",
+  "human_readable_source": " \n#include \"qmgr.h\"\n\nstruct nvkm_falcon_qmgr_seq *\nnvkm_falcon_qmgr_seq_acquire(struct nvkm_falcon_qmgr *qmgr)\n{\n\tconst struct nvkm_subdev *subdev = qmgr->falcon->owner;\n\tstruct nvkm_falcon_qmgr_seq *seq;\n\tu32 index;\n\n\tmutex_lock(&qmgr->seq.mutex);\n\tindex = find_first_zero_bit(qmgr->seq.tbl, NVKM_FALCON_QMGR_SEQ_NUM);\n\tif (index >= NVKM_FALCON_QMGR_SEQ_NUM) {\n\t\tnvkm_error(subdev, \"no free sequence available\\n\");\n\t\tmutex_unlock(&qmgr->seq.mutex);\n\t\treturn ERR_PTR(-EAGAIN);\n\t}\n\n\tset_bit(index, qmgr->seq.tbl);\n\tmutex_unlock(&qmgr->seq.mutex);\n\n\tseq = &qmgr->seq.id[index];\n\tseq->state = SEQ_STATE_PENDING;\n\treturn seq;\n}\n\nvoid\nnvkm_falcon_qmgr_seq_release(struct nvkm_falcon_qmgr *qmgr,\n\t\t\t     struct nvkm_falcon_qmgr_seq *seq)\n{\n\t \n\tseq->state = SEQ_STATE_FREE;\n\tseq->callback = NULL;\n\treinit_completion(&seq->done);\n\tclear_bit(seq->id, qmgr->seq.tbl);\n}\n\nvoid\nnvkm_falcon_qmgr_del(struct nvkm_falcon_qmgr **pqmgr)\n{\n\tstruct nvkm_falcon_qmgr *qmgr = *pqmgr;\n\tif (qmgr) {\n\t\tkfree(*pqmgr);\n\t\t*pqmgr = NULL;\n\t}\n}\n\nint\nnvkm_falcon_qmgr_new(struct nvkm_falcon *falcon,\n\t\t     struct nvkm_falcon_qmgr **pqmgr)\n{\n\tstruct nvkm_falcon_qmgr *qmgr;\n\tint i;\n\n\tif (!(qmgr = *pqmgr = kzalloc(sizeof(*qmgr), GFP_KERNEL)))\n\t\treturn -ENOMEM;\n\n\tqmgr->falcon = falcon;\n\tmutex_init(&qmgr->seq.mutex);\n\tfor (i = 0; i < NVKM_FALCON_QMGR_SEQ_NUM; i++) {\n\t\tqmgr->seq.id[i].id = i;\n\t\tinit_completion(&qmgr->seq.id[i].done);\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

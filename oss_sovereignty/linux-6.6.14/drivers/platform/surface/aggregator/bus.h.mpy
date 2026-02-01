@@ -1,0 +1,9 @@
+{
+  "module_name": "bus.h",
+  "hash_id": "3c60bdba76fce88db4a805f5a55a5dcc491dc59ccfbfb65a7c08d7489159b117",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/surface/aggregator/bus.h",
+  "human_readable_source": " \n \n\n#ifndef _SURFACE_AGGREGATOR_BUS_H\n#define _SURFACE_AGGREGATOR_BUS_H\n\n#include <linux/surface_aggregator/controller.h>\n\n#ifdef CONFIG_SURFACE_AGGREGATOR_BUS\n\nint ssam_bus_register(void);\nvoid ssam_bus_unregister(void);\n\n#else  \n\nstatic inline int ssam_bus_register(void) { return 0; }\nstatic inline void ssam_bus_unregister(void) {}\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

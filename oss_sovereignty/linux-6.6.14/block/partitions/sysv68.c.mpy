@@ -1,0 +1,9 @@
+{
+  "module_name": "sysv68.c",
+  "hash_id": "c912fdc1a22fef57baab6cde5d429e9435748e574c10ea8eb1238b1e4503d7f6",
+  "original_prompt": "Ingested from linux-6.6.14/block/partitions/sysv68.c",
+  "human_readable_source": "\n \n\n#include \"check.h\"\n\n \n\nstruct volumeid {\n\tu8\tvid_unused[248];\n\tu8\tvid_mac[8];\t \n};\n\n \n\nstruct dkconfig {\n\tu8\tios_unused0[128];\n\t__be32\tios_slcblk;\t \n\t__be16\tios_slccnt;\t \n\tu8\tios_unused1[122];\n};\n\n \n\nstruct dkblk0 {\n\tstruct volumeid dk_vid;\n\tstruct dkconfig dk_ios;\n};\n\n \n\nstruct slice {\n\t__be32\tnblocks;\t\t \n\t__be32\tblkoff;\t\t\t \n};\n\n\nint sysv68_partition(struct parsed_partitions *state)\n{\n\tint i, slices;\n\tint slot = 1;\n\tSector sect;\n\tunsigned char *data;\n\tstruct dkblk0 *b;\n\tstruct slice *slice;\n\tchar tmp[64];\n\n\tdata = read_part_sector(state, 0, &sect);\n\tif (!data)\n\t\treturn -1;\n\n\tb = (struct dkblk0 *)data;\n\tif (memcmp(b->dk_vid.vid_mac, \"MOTOROLA\", sizeof(b->dk_vid.vid_mac))) {\n\t\tput_dev_sector(sect);\n\t\treturn 0;\n\t}\n\tslices = be16_to_cpu(b->dk_ios.ios_slccnt);\n\ti = be32_to_cpu(b->dk_ios.ios_slcblk);\n\tput_dev_sector(sect);\n\n\tdata = read_part_sector(state, i, &sect);\n\tif (!data)\n\t\treturn -1;\n\n\tslices -= 1;  \n\tsnprintf(tmp, sizeof(tmp), \"sysV68: %s(s%u)\", state->name, slices);\n\tstrlcat(state->pp_buf, tmp, PAGE_SIZE);\n\tslice = (struct slice *)data;\n\tfor (i = 0; i < slices; i++, slice++) {\n\t\tif (slot == state->limit)\n\t\t\tbreak;\n\t\tif (be32_to_cpu(slice->nblocks)) {\n\t\t\tput_partition(state, slot,\n\t\t\t\tbe32_to_cpu(slice->blkoff),\n\t\t\t\tbe32_to_cpu(slice->nblocks));\n\t\t\tsnprintf(tmp, sizeof(tmp), \"(s%u)\", i);\n\t\t\tstrlcat(state->pp_buf, tmp, PAGE_SIZE);\n\t\t}\n\t\tslot++;\n\t}\n\tstrlcat(state->pp_buf, \"\\n\", PAGE_SIZE);\n\tput_dev_sector(sect);\n\treturn 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

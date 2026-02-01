@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sys_select.c",
+  "hash_id": "551eb3309438f805ec9712f276a3551ebee8e45b0fedf09496ad8b6c70be319f",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sys_select.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/select.h>\n\n \nstruct timeval a;\n\n \ntypedef int verify_tv_sec_type[sizeof (time_t) <= sizeof (a.tv_sec) ? 1 : -1];\n\n \nsigset_t t2;\n\n#include \"signature.h\"\n\n \n#ifndef FD_CLR\nSIGNATURE_CHECK (FD_CLR, void, (int, fd_set *));\n#endif\n#ifndef FD_ISSET\nSIGNATURE_CHECK (FD_ISSET, void, (int, fd_set *));\n#endif\n#ifndef FD_SET\nSIGNATURE_CHECK (FD_SET, int, (int, fd_set *));\n#endif\n#ifndef FD_ZERO\nSIGNATURE_CHECK (FD_ZERO, void, (fd_set *));\n#endif\n\nint\nmain (void)\n{\n   \n  fd_set fds;\n  FD_ZERO (&fds);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

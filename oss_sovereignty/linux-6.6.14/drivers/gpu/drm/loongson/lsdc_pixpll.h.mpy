@@ -1,0 +1,9 @@
+{
+  "module_name": "lsdc_pixpll.h",
+  "hash_id": "e9fd9136f0dbdf57a10df831c61d4c31e0153fa21764ab1c0712f3e4b871314f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/loongson/lsdc_pixpll.h",
+  "human_readable_source": " \n \n\n#ifndef __LSDC_PIXPLL_H__\n#define __LSDC_PIXPLL_H__\n\n#include <drm/drm_device.h>\n\n \n\nstruct lsdc_pixpll_parms {\n\tunsigned int ref_clock;\n\tunsigned int div_ref;\n\tunsigned int loopc;\n\tunsigned int div_out;\n};\n\nstruct lsdc_pixpll;\n\nstruct lsdc_pixpll_funcs {\n\tint (*setup)(struct lsdc_pixpll * const this);\n\n\tint (*compute)(struct lsdc_pixpll * const this,\n\t\t       unsigned int clock,\n\t\t       struct lsdc_pixpll_parms *pout);\n\n\tint (*update)(struct lsdc_pixpll * const this,\n\t\t      struct lsdc_pixpll_parms const *pin);\n\n\tunsigned int (*get_rate)(struct lsdc_pixpll * const this);\n\n\tvoid (*print)(struct lsdc_pixpll * const this,\n\t\t      struct drm_printer *printer);\n};\n\nstruct lsdc_pixpll {\n\tconst struct lsdc_pixpll_funcs *funcs;\n\n\tstruct drm_device *ddev;\n\n\t \n\tu32 reg_base;\n\t \n\tu32 reg_size;\n\n\tvoid __iomem *mmio;\n\n\tstruct lsdc_pixpll_parms *priv;\n};\n\nint lsdc_pixpll_init(struct lsdc_pixpll * const this,\n\t\t     struct drm_device *ddev,\n\t\t     unsigned int index);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

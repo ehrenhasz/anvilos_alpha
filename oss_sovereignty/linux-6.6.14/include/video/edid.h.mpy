@@ -1,0 +1,9 @@
+{
+  "module_name": "edid.h",
+  "hash_id": "d2d6f83d2b2539309408c95d57dcb8e83e1a50767c17d72a7880c1b02a57348a",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/edid.h",
+  "human_readable_source": " \n#ifndef __linux_video_edid_h__\n#define __linux_video_edid_h__\n\n#include <uapi/video/edid.h>\n\n#ifdef CONFIG_X86\nextern struct edid_info edid_info;\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

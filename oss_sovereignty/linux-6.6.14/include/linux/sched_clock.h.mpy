@@ -1,0 +1,9 @@
+{
+  "module_name": "sched_clock.h",
+  "hash_id": "da9d2a7ee6462bfaa35e4b1cc3d73ef5b8352897c81e0121e6d58d617041072c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched_clock.h",
+  "human_readable_source": " \n \n#ifndef LINUX_SCHED_CLOCK\n#define LINUX_SCHED_CLOCK\n\n#include <linux/types.h>\n\n#ifdef CONFIG_GENERIC_SCHED_CLOCK\n \nstruct clock_read_data {\n\tu64 epoch_ns;\n\tu64 epoch_cyc;\n\tu64 sched_clock_mask;\n\tu64 (*read_sched_clock)(void);\n\tu32 mult;\n\tu32 shift;\n};\n\nextern struct clock_read_data *sched_clock_read_begin(unsigned int *seq);\nextern int sched_clock_read_retry(unsigned int seq);\n\nextern void generic_sched_clock_init(void);\n\nextern void sched_clock_register(u64 (*read)(void), int bits,\n\t\t\t\t unsigned long rate);\n#else\nstatic inline void generic_sched_clock_init(void) { }\n\nstatic inline void sched_clock_register(u64 (*read)(void), int bits,\n\t\t\t\t\tunsigned long rate)\n{\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "esp_hosted_netif.h",
+  "hash_id": "67bdf958725f32742e187cd2c3ca4e1dccbe83a5f8168f3b86169d70e6c7c713",
+  "original_prompt": "Ingested from sys_09_Anvil/source/drivers/esp-hosted/esp_hosted_netif.h",
+  "human_readable_source": " \n\n#ifndef MICROPY_INCLUDED_DRIVERS_ESP_HOSTED_NETIF_H\n#define MICROPY_INCLUDED_DRIVERS_ESP_HOSTED_NETIF_H\n\ntypedef struct esp_hosted_state esp_hosted_state_t;\nint esp_hosted_netif_init(esp_hosted_state_t *state, uint32_t itf);\nint esp_hosted_netif_deinit(esp_hosted_state_t *state, uint32_t itf);\nint esp_hosted_netif_input(esp_hosted_state_t *state, uint32_t itf, const void *buf, size_t len);\nerr_t esp_hosted_netif_output(struct netif *netif, struct pbuf *p);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

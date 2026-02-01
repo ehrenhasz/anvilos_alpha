@@ -1,0 +1,9 @@
+{
+  "module_name": "assure.h",
+  "hash_id": "fc5cc96821f95035daf17318a47d13b5c5a6427caeb2d9af366da462dc403594",
+  "original_prompt": "Ingested from coreutils-9.4/lib/assure.h",
+  "human_readable_source": " \n\n#ifndef _GL_ASSURE_H\n#define _GL_ASSURE_H\n\n#include <assert.h>\n#include \"verify.h\"\n\n \n\n#ifdef NDEBUG\n# define affirm(E) assume (E)\n#else\n# define affirm(E) assert (E)\n#endif\n\n \n\n#ifdef NDEBUG\n# define assure(E) ((void) (0 && (E)))\n#else\n# define assure(E) assert (E)\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

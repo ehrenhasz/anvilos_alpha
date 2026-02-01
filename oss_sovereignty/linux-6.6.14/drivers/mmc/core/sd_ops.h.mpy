@@ -1,0 +1,9 @@
+{
+  "module_name": "sd_ops.h",
+  "hash_id": "c0ba65cb57456dc5410141dfbb9d0f774c56305a5d2c8a4f78cfa821b079c26e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/core/sd_ops.h",
+  "human_readable_source": " \n \n\n#ifndef _MMC_SD_OPS_H\n#define _MMC_SD_OPS_H\n\n#include <linux/types.h>\n\nstruct mmc_card;\nstruct mmc_host;\n\nint mmc_app_set_bus_width(struct mmc_card *card, int width);\nint mmc_send_app_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr);\nint mmc_send_if_cond(struct mmc_host *host, u32 ocr);\nint mmc_send_if_cond_pcie(struct mmc_host *host, u32 ocr);\nint mmc_send_relative_addr(struct mmc_host *host, unsigned int *rca);\nint mmc_app_send_scr(struct mmc_card *card);\nint mmc_app_sd_status(struct mmc_card *card, void *ssr);\nint mmc_app_cmd(struct mmc_host *host, struct mmc_card *card);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

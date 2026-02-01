@@ -1,0 +1,9 @@
+{
+  "module_name": "if_team.h",
+  "hash_id": "80f2964e5f243b82a9948dbc34ba789402fa7fe8ce193c1b37096afe16478a60",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/if_team.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_IF_TEAM_H_\n#define _UAPI_LINUX_IF_TEAM_H_\n\n\n#define TEAM_STRING_MAX_LEN 32\n\n \n\nenum {\n\tTEAM_CMD_NOOP,\n\tTEAM_CMD_OPTIONS_SET,\n\tTEAM_CMD_OPTIONS_GET,\n\tTEAM_CMD_PORT_LIST_GET,\n\n\t__TEAM_CMD_MAX,\n\tTEAM_CMD_MAX = (__TEAM_CMD_MAX - 1),\n};\n\nenum {\n\tTEAM_ATTR_UNSPEC,\n\tTEAM_ATTR_TEAM_IFINDEX,\t\t \n\tTEAM_ATTR_LIST_OPTION,\t\t \n\tTEAM_ATTR_LIST_PORT,\t\t \n\n\t__TEAM_ATTR_MAX,\n\tTEAM_ATTR_MAX = __TEAM_ATTR_MAX - 1,\n};\n\n \n\nenum {\n\tTEAM_ATTR_ITEM_OPTION_UNSPEC,\n\tTEAM_ATTR_ITEM_OPTION,\t\t \n\n\t__TEAM_ATTR_ITEM_OPTION_MAX,\n\tTEAM_ATTR_ITEM_OPTION_MAX = __TEAM_ATTR_ITEM_OPTION_MAX - 1,\n};\n\nenum {\n\tTEAM_ATTR_OPTION_UNSPEC,\n\tTEAM_ATTR_OPTION_NAME,\t\t \n\tTEAM_ATTR_OPTION_CHANGED,\t \n\tTEAM_ATTR_OPTION_TYPE,\t\t \n\tTEAM_ATTR_OPTION_DATA,\t\t \n\tTEAM_ATTR_OPTION_REMOVED,\t \n\tTEAM_ATTR_OPTION_PORT_IFINDEX,\t   \n\tTEAM_ATTR_OPTION_ARRAY_INDEX,\t   \n\n\t__TEAM_ATTR_OPTION_MAX,\n\tTEAM_ATTR_OPTION_MAX = __TEAM_ATTR_OPTION_MAX - 1,\n};\n\nenum {\n\tTEAM_ATTR_ITEM_PORT_UNSPEC,\n\tTEAM_ATTR_ITEM_PORT,\t\t \n\n\t__TEAM_ATTR_ITEM_PORT_MAX,\n\tTEAM_ATTR_ITEM_PORT_MAX = __TEAM_ATTR_ITEM_PORT_MAX - 1,\n};\n\nenum {\n\tTEAM_ATTR_PORT_UNSPEC,\n\tTEAM_ATTR_PORT_IFINDEX,\t\t \n\tTEAM_ATTR_PORT_CHANGED,\t\t \n\tTEAM_ATTR_PORT_LINKUP,\t\t \n\tTEAM_ATTR_PORT_SPEED,\t\t \n\tTEAM_ATTR_PORT_DUPLEX,\t\t \n\tTEAM_ATTR_PORT_REMOVED,\t\t \n\n\t__TEAM_ATTR_PORT_MAX,\n\tTEAM_ATTR_PORT_MAX = __TEAM_ATTR_PORT_MAX - 1,\n};\n\n \n#define TEAM_GENL_NAME \"team\"\n#define TEAM_GENL_VERSION 0x1\n#define TEAM_GENL_CHANGE_EVENT_MC_GRP_NAME \"change_event\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

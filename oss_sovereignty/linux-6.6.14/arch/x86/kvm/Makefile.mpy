@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fefedbfe5b0a2a299118abea8fdda77316de6033175392d2f7264d59b8e6d736",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kvm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nccflags-y += -I $(srctree)/arch/x86/kvm\nccflags-$(CONFIG_KVM_WERROR) += -Werror\n\nifeq ($(CONFIG_FRAME_POINTER),y)\nOBJECT_FILES_NON_STANDARD_vmenter.o := y\nendif\n\ninclude $(srctree)/virt/kvm/Makefile.kvm\n\nkvm-y\t\t\t+= x86.o emulate.o i8259.o irq.o lapic.o \\\n\t\t\t   i8254.o ioapic.o irq_comm.o cpuid.o pmu.o mtrr.o \\\n\t\t\t   hyperv.o debugfs.o mmu/mmu.o mmu/page_track.o \\\n\t\t\t   mmu/spte.o\n\nifdef CONFIG_HYPERV\nkvm-y\t\t\t+= kvm_onhyperv.o\nendif\n\nkvm-$(CONFIG_X86_64) += mmu/tdp_iter.o mmu/tdp_mmu.o\nkvm-$(CONFIG_KVM_XEN)\t+= xen.o\nkvm-$(CONFIG_KVM_SMM)\t+= smm.o\n\nkvm-intel-y\t\t+= vmx/vmx.o vmx/vmenter.o vmx/pmu_intel.o vmx/vmcs12.o \\\n\t\t\t   vmx/hyperv.o vmx/nested.o vmx/posted_intr.o\nkvm-intel-$(CONFIG_X86_SGX_KVM)\t+= vmx/sgx.o\n\nkvm-amd-y\t\t+= svm/svm.o svm/vmenter.o svm/pmu.o svm/nested.o svm/avic.o \\\n\t\t\t   svm/sev.o svm/hyperv.o\n\nifdef CONFIG_HYPERV\nkvm-amd-y\t\t+= svm/svm_onhyperv.o\nendif\n\nobj-$(CONFIG_KVM)\t+= kvm.o\nobj-$(CONFIG_KVM_INTEL)\t+= kvm-intel.o\nobj-$(CONFIG_KVM_AMD)\t+= kvm-amd.o\n\nAFLAGS_svm/vmenter.o    := -iquote $(obj)\n$(obj)/svm/vmenter.o: $(obj)/kvm-asm-offsets.h\n\nAFLAGS_vmx/vmenter.o    := -iquote $(obj)\n$(obj)/vmx/vmenter.o: $(obj)/kvm-asm-offsets.h\n\n$(obj)/kvm-asm-offsets.h: $(obj)/kvm-asm-offsets.s FORCE\n\t$(call filechk,offsets,__KVM_ASM_OFFSETS_H__)\n\ntargets += kvm-asm-offsets.s\nclean-files += kvm-asm-offsets.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "if0003.h",
+  "hash_id": "6d562a1623d2dff539c5899ede98e8293e9301d0b8316542c624893e3673f9ac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/if0003.h",
+  "human_readable_source": " \n#ifndef __NVIF_IF0003_H__\n#define __NVIF_IF0003_H__\n\nstruct nvif_perfdom_v0 {\n\t__u8  version;\n\t__u8  domain;\n\t__u8  mode;\n\t__u8  pad03[1];\n\tstruct {\n\t\t__u8  signal[4];\n\t\t__u64 source[4][8];\n\t\t__u16 logic_op;\n\t} ctr[4];\n};\n\n#define NVIF_PERFDOM_V0_INIT                                               0x00\n#define NVIF_PERFDOM_V0_SAMPLE                                             0x01\n#define NVIF_PERFDOM_V0_READ                                               0x02\n\nstruct nvif_perfdom_init {\n};\n\nstruct nvif_perfdom_sample {\n};\n\nstruct nvif_perfdom_read_v0 {\n\t__u8  version;\n\t__u8  pad01[7];\n\t__u32 ctr[4];\n\t__u32 clk;\n\t__u8  pad04[4];\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

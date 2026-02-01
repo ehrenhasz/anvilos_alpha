@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2305ecf81a672e4fc4630ca54681c731a93d2f7f76c64547bc41dc2fd3c880fa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/mscc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Microsemi phy drivers.\n#\n\nobj-$(CONFIG_PHY_OCELOT_SERDES) := phy-ocelot-serdes.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

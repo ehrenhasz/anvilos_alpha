@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e4261ab252163e9e0ad3f21656269669dea89c1a156633bc3983147d2f284ec0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/xen/xenbus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y\t+= xenbus.o\nobj-y\t+= xenbus_dev_frontend.o\n\nxenbus-objs =\nxenbus-objs += xenbus_client.o\nxenbus-objs += xenbus_comms.o\nxenbus-objs += xenbus_xs.o\nxenbus-objs += xenbus_probe.o\n\nxenbus-be-objs-$(CONFIG_XEN_BACKEND) += xenbus_probe_backend.o\nxenbus-objs += $(xenbus-be-objs-y)\n\nobj-$(CONFIG_XEN_BACKEND) += xenbus_dev_backend.o\nobj-$(CONFIG_XEN_XENBUS_FRONTEND) += xenbus_probe_frontend.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

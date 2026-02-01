@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-misc-minor.m4",
+  "hash_id": "f162b33ce1a60b398cebfcac71def0b5afd759b7add29f45a66ccfd5257b7280",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-misc-minor.m4",
+  "human_readable_source": "dnl #\ndnl # Determine an available miscellaneous minor number which can be used\ndnl # for the /dev/zfs device.  This is needed because kernel module\ndnl # auto-loading depends on registering a reserved non-conflicting minor\ndnl # number.  Start with a large known available unreserved minor and work\ndnl # our way down to lower value if a collision is detected.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_MISC_MINOR], [\n\tAC_MSG_CHECKING([whether /dev/zfs minor is available])\n\n\tfor i in $(seq 249 -1 200); do\n\t\tif ! grep -q \"^#define\\s\\+.*_MINOR\\s\\+.*$i\" \\\n\t\t    ${LINUX}/include/linux/miscdevice.h; then\n\t\t\tZFS_DEVICE_MINOR=\"$i\"\n\t\t\tAC_MSG_RESULT($ZFS_DEVICE_MINOR)\n\t\t\tAC_DEFINE_UNQUOTED([ZFS_DEVICE_MINOR],\n\t\t\t    [$ZFS_DEVICE_MINOR], [/dev/zfs minor])\n\t\t\tbreak\n\t\tfi\n\tdone\n\n\tAS_IF([ test -z \"$ZFS_DEVICE_MINOR\"], [\n\t\tAC_MSG_ERROR([\n\t*** No available misc minor numbers available for use.])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

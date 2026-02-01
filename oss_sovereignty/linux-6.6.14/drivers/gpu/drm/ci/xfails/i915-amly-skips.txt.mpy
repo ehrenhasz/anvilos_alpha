@@ -1,0 +1,9 @@
+{
+  "module_name": "i915-amly-skips.txt",
+  "hash_id": "94c0d846e88c33438e97110875f8d72ea09f166fca9f5d0c0177b5bde9840fff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/i915-amly-skips.txt",
+  "human_readable_source": "# Suspend to RAM seems to be broken on this machine\n.*suspend.*\n# This is generating kernel oops with divide error\nkms_plane_scaling@invalid-parameters",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mixer_oss.h",
+  "hash_id": "267db4e650cfaf83e43895d4339b19b8f679281a2a4532e5bc8a12e00535bc49",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/mixer_oss.h",
+  "human_readable_source": " \n#ifndef __SOUND_MIXER_OSS_H\n#define __SOUND_MIXER_OSS_H\n\n \n\n#if IS_ENABLED(CONFIG_SND_MIXER_OSS)\n\n#define SNDRV_OSS_MAX_MIXERS\t32\n\nstruct snd_mixer_oss_file;\n\nstruct snd_mixer_oss_slot {\n\tint number;\n\tunsigned int stereo: 1;\n\tint (*get_volume)(struct snd_mixer_oss_file *fmixer,\n\t\t\t  struct snd_mixer_oss_slot *chn,\n\t\t\t  int *left, int *right);\n\tint (*put_volume)(struct snd_mixer_oss_file *fmixer,\n\t\t\t  struct snd_mixer_oss_slot *chn,\n\t\t\t  int left, int right);\n\tint (*get_recsrc)(struct snd_mixer_oss_file *fmixer,\n\t\t\t  struct snd_mixer_oss_slot *chn,\n\t\t\t  int *active);\n\tint (*put_recsrc)(struct snd_mixer_oss_file *fmixer,\n\t\t\t  struct snd_mixer_oss_slot *chn,\n\t\t\t  int active);\n\tunsigned long private_value;\n\tvoid *private_data;\n\tvoid (*private_free)(struct snd_mixer_oss_slot *slot);\n\tint volume[2];\n};\n\nstruct snd_mixer_oss {\n\tstruct snd_card *card;\n\tchar id[16];\n\tchar name[32];\n\tstruct snd_mixer_oss_slot slots[SNDRV_OSS_MAX_MIXERS];  \n\tunsigned int mask_recsrc;\t\t \n\tint (*get_recsrc)(struct snd_mixer_oss_file *fmixer,\n\t\t\t  unsigned int *active_index);\n\tint (*put_recsrc)(struct snd_mixer_oss_file *fmixer,\n\t\t\t  unsigned int active_index);\n\tvoid *private_data_recsrc;\n\tvoid (*private_free_recsrc)(struct snd_mixer_oss *mixer);\n\tstruct mutex reg_mutex;\n\tstruct snd_info_entry *proc_entry;\n\tint oss_dev_alloc;\n\t \n\tint oss_recsrc;\n};\n\nstruct snd_mixer_oss_file {\n\tstruct snd_card *card;\n\tstruct snd_mixer_oss *mixer;\n};\n\nint snd_mixer_oss_ioctl_card(struct snd_card *card,\n\t\t\t     unsigned int cmd, unsigned long arg);\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

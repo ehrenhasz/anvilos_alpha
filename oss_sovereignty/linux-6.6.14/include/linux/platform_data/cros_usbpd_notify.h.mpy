@@ -1,0 +1,9 @@
+{
+  "module_name": "cros_usbpd_notify.h",
+  "hash_id": "8b9349364ef451b66c8a5213a8eea24c8deb8bf06bde5c20663d446e79af9f67",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/cros_usbpd_notify.h",
+  "human_readable_source": "\n \n\n#ifndef __LINUX_PLATFORM_DATA_CROS_USBPD_NOTIFY_H\n#define __LINUX_PLATFORM_DATA_CROS_USBPD_NOTIFY_H\n\n#include <linux/notifier.h>\n\nint cros_usbpd_register_notify(struct notifier_block *nb);\n\nvoid cros_usbpd_unregister_notify(struct notifier_block *nb);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

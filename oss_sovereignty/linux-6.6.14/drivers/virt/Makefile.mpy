@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "419632243385975b619b37c7c23f1caf908f08f64f2118a791c3e3d28360338e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/virt/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for drivers that support virtualization\n#\n\nobj-$(CONFIG_FSL_HV_MANAGER)\t+= fsl_hypervisor.o\nobj-$(CONFIG_VMGENID)\t\t+= vmgenid.o\nobj-y\t\t\t\t+= vboxguest/\n\nobj-$(CONFIG_NITRO_ENCLAVES)\t+= nitro_enclaves/\nobj-$(CONFIG_ACRN_HSM)\t\t+= acrn/\nobj-$(CONFIG_EFI_SECRET)\t+= coco/efi_secret/\nobj-$(CONFIG_SEV_GUEST)\t\t+= coco/sev-guest/\nobj-$(CONFIG_INTEL_TDX_GUEST)\t+= coco/tdx-guest/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

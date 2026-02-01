@@ -1,0 +1,9 @@
+{
+  "module_name": "fallback_platform.c",
+  "hash_id": "18921a51870d093d9bd762994d1fa715c6cba87c488c39ec4242d1c3ddc6d236",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/base/firmware_loader/fallback_platform.c",
+  "human_readable_source": "\n\n#include <linux/efi_embedded_fw.h>\n#include <linux/property.h>\n#include <linux/security.h>\n#include <linux/vmalloc.h>\n\n#include \"fallback.h\"\n#include \"firmware.h\"\n\nint firmware_fallback_platform(struct fw_priv *fw_priv)\n{\n\tconst u8 *data;\n\tsize_t size;\n\tint rc;\n\n\tif (!(fw_priv->opt_flags & FW_OPT_FALLBACK_PLATFORM))\n\t\treturn -ENOENT;\n\n\trc = security_kernel_load_data(LOADING_FIRMWARE, true);\n\tif (rc)\n\t\treturn rc;\n\n\trc = efi_get_embedded_fw(fw_priv->fw_name, &data, &size);\n\tif (rc)\n\t\treturn rc;  \n\n\tif (fw_priv->data && size > fw_priv->allocated_size)\n\t\treturn -ENOMEM;\n\n\trc = security_kernel_post_load_data((u8 *)data, size, LOADING_FIRMWARE,\n\t\t\t\t\t\t\"platform\");\n\tif (rc)\n\t\treturn rc;\n\n\tif (!fw_priv->data)\n\t\tfw_priv->data = vmalloc(size);\n\tif (!fw_priv->data)\n\t\treturn -ENOMEM;\n\n\tmemcpy(fw_priv->data, data, size);\n\tfw_priv->size = size;\n\tfw_state_done(fw_priv);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

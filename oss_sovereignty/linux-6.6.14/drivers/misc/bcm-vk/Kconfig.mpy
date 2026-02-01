@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b28c0e4d1142eb02116a15c664f2d386513181283a2ea290b985c923a5f98451",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/bcm-vk/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Broadcom VK device\n#\nconfig BCM_VK\n\ttristate \"Support for Broadcom VK Accelerators\"\n\tdepends on PCI_MSI\n\thelp\n\t  Select this option to enable support for Broadcom\n\t  VK Accelerators.  VK is used for performing\n\t  multiple specific offload processing tasks in parallel.\n\t  Such offload tasks assist in such operations as video\n\t  transcoding, compression, and crypto tasks.\n\t  This driver enables userspace programs to access these\n\t  accelerators via /dev/bcm-vk.N devices.\n\n\t  If unsure, say N.\n\nconfig BCM_VK_TTY\n\tbool \"Enable tty ports on a Broadcom VK Accelerator device\"\n\tdepends on TTY\n\tdepends on BCM_VK\n\thelp\n\t  Select this option to enable tty support to allow console\n\t  access to Broadcom VK Accelerator cards from host.\n\n\t  Device node will in the form /dev/bcm-vk.x_ttyVKy where:\n\t  x is the instance of the VK card\n\t  y is the tty device number on the VK card.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

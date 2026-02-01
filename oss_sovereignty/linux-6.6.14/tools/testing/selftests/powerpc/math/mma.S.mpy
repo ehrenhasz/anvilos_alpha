@@ -1,0 +1,9 @@
+{
+  "module_name": "mma.S",
+  "hash_id": "ecbebef604906f180511ba2bb6c6e71c2f65fd43df514e0776fd0a25a172d42f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/math/mma.S",
+  "human_readable_source": " \n\t.global test_mma\ntest_mma:\n\t \n\tlxvh8x\t4,0,3\n\tlxvh8x\t5,0,4\n\n\t \n\t.long\t0x7c030162\n\n\t \n\t \n\n\t \n\t.long\t0xec042958\n\n\t \n\t.long 0x7c000162\n\n\t \n\tstxvw4x\t0,0,5\n\taddi\t5,5,16\n\tstxvw4x\t1,0,5\n\taddi\t5,5,16\n\tstxvw4x\t2,0,5\n\taddi\t5,5,16\n\tstxvw4x\t3,0,5\n\taddi\t5,5,16\n\n\tblr\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

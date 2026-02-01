@@ -1,0 +1,9 @@
+{
+  "module_name": "mpstate.c",
+  "hash_id": "90fd72633162379f63a4eaed8abb63a4891a3cfcb60cc145c32bd1e0ad3ae049",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/mpstate.c",
+  "human_readable_source": " \n\n#include \"py/mpstate.h\"\n\n#if MICROPY_DYNAMIC_COMPILER\nmp_dynamic_compiler_t mp_dynamic_compiler = {0};\n#endif\n\nmp_state_ctx_t mp_state_ctx;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

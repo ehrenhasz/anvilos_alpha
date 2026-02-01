@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "39ea6fc210063dc4daf1064832c589fdccc275e9c88aa2b4530ca9666a8b4e1b",
+  "original_prompt": "Ingested from linux-6.6.14/net/9p/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_NET_9P) := 9pnet.o\nobj-$(CONFIG_NET_9P_FD) += 9pnet_fd.o\nobj-$(CONFIG_NET_9P_XEN) += 9pnet_xen.o\nobj-$(CONFIG_NET_9P_VIRTIO) += 9pnet_virtio.o\nobj-$(CONFIG_NET_9P_RDMA) += 9pnet_rdma.o\n\n9pnet-objs := \\\n\tmod.o \\\n\tclient.o \\\n\terror.o \\\n\tprotocol.o \\\n\ttrans_common.o \\\n\n9pnet_fd-objs := \\\n\ttrans_fd.o \\\n\n9pnet_virtio-objs := \\\n\ttrans_virtio.o \\\n\n9pnet_xen-objs := \\\n\ttrans_xen.o \\\n\n9pnet_rdma-objs := \\\n\ttrans_rdma.o \\\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

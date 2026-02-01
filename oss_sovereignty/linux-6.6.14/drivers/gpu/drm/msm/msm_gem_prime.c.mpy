@@ -1,0 +1,9 @@
+{
+  "module_name": "msm_gem_prime.c",
+  "hash_id": "5fab0f68981edf4bbeb8070c4f4918907f2766a17903fa5235060d814bdfb4ee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/msm_gem_prime.c",
+  "human_readable_source": "\n \n\n#include <linux/dma-buf.h>\n\n#include <drm/drm_prime.h>\n\n#include \"msm_drv.h\"\n#include \"msm_gem.h\"\n\nstruct sg_table *msm_gem_prime_get_sg_table(struct drm_gem_object *obj)\n{\n\tstruct msm_gem_object *msm_obj = to_msm_bo(obj);\n\tint npages = obj->size >> PAGE_SHIFT;\n\n\tif (WARN_ON(!msm_obj->pages))   \n\t\treturn ERR_PTR(-ENOMEM);\n\n\treturn drm_prime_pages_to_sg(obj->dev, msm_obj->pages, npages);\n}\n\nint msm_gem_prime_vmap(struct drm_gem_object *obj, struct iosys_map *map)\n{\n\tvoid *vaddr;\n\n\tvaddr = msm_gem_get_vaddr(obj);\n\tif (IS_ERR(vaddr))\n\t\treturn PTR_ERR(vaddr);\n\tiosys_map_set_vaddr(map, vaddr);\n\n\treturn 0;\n}\n\nvoid msm_gem_prime_vunmap(struct drm_gem_object *obj, struct iosys_map *map)\n{\n\tmsm_gem_put_vaddr(obj);\n}\n\nstruct drm_gem_object *msm_gem_prime_import_sg_table(struct drm_device *dev,\n\t\tstruct dma_buf_attachment *attach, struct sg_table *sg)\n{\n\treturn msm_gem_import(dev, attach->dmabuf, sg);\n}\n\nint msm_gem_prime_pin(struct drm_gem_object *obj)\n{\n\tif (!obj->import_attach)\n\t\tmsm_gem_pin_pages(obj);\n\treturn 0;\n}\n\nvoid msm_gem_prime_unpin(struct drm_gem_object *obj)\n{\n\tif (!obj->import_attach)\n\t\tmsm_gem_unpin_pages(obj);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

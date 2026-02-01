@@ -1,0 +1,9 @@
+{
+  "module_name": "bsearch.h",
+  "hash_id": "0786cf29e2bcc3fe4145c0024154e8d3f294c0cae65f19c01336e4c5e7980b74",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bsearch.h",
+  "human_readable_source": " \n#ifndef _LINUX_BSEARCH_H\n#define _LINUX_BSEARCH_H\n\n#include <linux/types.h>\n\nstatic __always_inline\nvoid *__inline_bsearch(const void *key, const void *base, size_t num, size_t size, cmp_func_t cmp)\n{\n\tconst char *pivot;\n\tint result;\n\n\twhile (num > 0) {\n\t\tpivot = base + (num >> 1) * size;\n\t\tresult = cmp(key, pivot);\n\n\t\tif (result == 0)\n\t\t\treturn (void *)pivot;\n\n\t\tif (result > 0) {\n\t\t\tbase = pivot + size;\n\t\t\tnum--;\n\t\t}\n\t\tnum >>= 1;\n\t}\n\n\treturn NULL;\n}\n\nextern void *bsearch(const void *key, const void *base, size_t num, size_t size, cmp_func_t cmp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

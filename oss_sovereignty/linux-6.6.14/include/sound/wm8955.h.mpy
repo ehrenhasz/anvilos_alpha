@@ -1,0 +1,9 @@
+{
+  "module_name": "wm8955.h",
+  "hash_id": "9a65971ddccafa3c91475cf09326ec82b6006adb78bbe15b66dde26c73ee68ab",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/wm8955.h",
+  "human_readable_source": " \n \n\n#ifndef __WM8955_PDATA_H__\n#define __WM8955_PDATA_H__\n\nstruct wm8955_pdata {\n\t \n\tunsigned int out2_speaker:1;\n\n\t \n\tunsigned int monoin_diff:1;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

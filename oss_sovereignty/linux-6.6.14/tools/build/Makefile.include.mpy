@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.include",
+  "hash_id": "330a0c620eb50f956adedadc86ef5ec786124b7cea1ad1037ca60b52ced9b81f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/Makefile.include",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nbuild := -f $(srctree)/tools/build/Makefile.build dir=. obj\n\nfixdep:\n\t$(Q)$(MAKE) -C $(srctree)/tools/build CFLAGS= LDFLAGS= $(OUTPUT)fixdep\n\nfixdep-clean:\n\t$(Q)$(MAKE) -C $(srctree)/tools/build clean\n\n.PHONY: fixdep\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

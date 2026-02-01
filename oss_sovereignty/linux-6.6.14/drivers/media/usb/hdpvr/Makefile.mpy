@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "93f52916fefe3b5871ba3d5a81462d389067f112460b21e5c86a80135c95e56a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/hdpvr/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nhdpvr-objs\t:= hdpvr-control.o hdpvr-core.o hdpvr-video.o hdpvr-i2c.o\n\nobj-$(CONFIG_VIDEO_HDPVR) += hdpvr.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

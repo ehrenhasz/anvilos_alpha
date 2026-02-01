@@ -1,0 +1,9 @@
+{
+  "module_name": "ocrdma_stats.h",
+  "hash_id": "f4efd881aa67b04ffad1a15f8cadcdc5bbf4e87af98b588281542d742fc2fab8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/ocrdma/ocrdma_stats.h",
+  "human_readable_source": " \n\n#ifndef __OCRDMA_STATS_H__\n#define __OCRDMA_STATS_H__\n\n#include <linux/debugfs.h>\n#include \"ocrdma.h\"\n#include \"ocrdma_hw.h\"\n\n#define OCRDMA_MAX_DBGFS_MEM 4096\n\nenum OCRDMA_STATS_TYPE {\n\tOCRDMA_RSRC_STATS,\n\tOCRDMA_RXSTATS,\n\tOCRDMA_WQESTATS,\n\tOCRDMA_TXSTATS,\n\tOCRDMA_DB_ERRSTATS,\n\tOCRDMA_RXQP_ERRSTATS,\n\tOCRDMA_TXQP_ERRSTATS,\n\tOCRDMA_TX_DBG_STATS,\n\tOCRDMA_RX_DBG_STATS,\n\tOCRDMA_DRV_STATS,\n\tOCRDMA_RESET_STATS\n};\n\nvoid ocrdma_rem_debugfs(void);\nvoid ocrdma_init_debugfs(void);\nbool ocrdma_alloc_stats_resources(struct ocrdma_dev *dev);\nvoid ocrdma_release_stats_resources(struct ocrdma_dev *dev);\nvoid ocrdma_rem_port_stats(struct ocrdma_dev *dev);\nvoid ocrdma_add_port_stats(struct ocrdma_dev *dev);\nvoid ocrdma_pma_counters(struct ocrdma_dev *dev, struct ib_mad *out_mad);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

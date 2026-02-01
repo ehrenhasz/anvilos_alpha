@@ -1,0 +1,9 @@
+{
+  "module_name": "qed_fcoe.h",
+  "hash_id": "c54d873b12fc494cb7e0d11a6e72b5b07ff99bd14b5baf4226b330c13fbcbb10",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qlogic/qed/qed_fcoe.h",
+  "human_readable_source": " \n \n\n#ifndef _QED_FCOE_H\n#define _QED_FCOE_H\n#include <linux/types.h>\n#include <linux/list.h>\n#include <linux/slab.h>\n#include <linux/spinlock.h>\n#include <linux/qed/qed_fcoe_if.h>\n#include <linux/qed/qed_chain.h>\n#include \"qed.h\"\n#include \"qed_hsi.h\"\n#include \"qed_mcp.h\"\n#include \"qed_sp.h\"\n\nstruct qed_fcoe_info {\n\tspinlock_t lock;  \n\tstruct list_head free_list;\n};\n\n#if IS_ENABLED(CONFIG_QED_FCOE)\nint qed_fcoe_alloc(struct qed_hwfn *p_hwfn);\n\nvoid qed_fcoe_setup(struct qed_hwfn *p_hwfn);\n\nvoid qed_fcoe_free(struct qed_hwfn *p_hwfn);\n \nvoid qed_get_protocol_stats_fcoe(struct qed_dev *cdev,\n\t\t\t\t struct qed_mcp_fcoe_stats *stats,\n\t\t\t\t bool is_atomic);\n#else  \nstatic inline int qed_fcoe_alloc(struct qed_hwfn *p_hwfn)\n{\n\treturn -EINVAL;\n}\n\nstatic inline void qed_fcoe_setup(struct qed_hwfn *p_hwfn) {}\nstatic inline void qed_fcoe_free(struct qed_hwfn *p_hwfn) {}\n\nstatic inline void qed_get_protocol_stats_fcoe(struct qed_dev *cdev,\n\t\t\t\t\t       struct qed_mcp_fcoe_stats *stats,\n\t\t\t\t\t       bool is_atomic)\n{\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

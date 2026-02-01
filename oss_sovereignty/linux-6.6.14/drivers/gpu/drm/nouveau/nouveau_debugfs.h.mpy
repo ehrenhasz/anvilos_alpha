@@ -1,0 +1,9 @@
+{
+  "module_name": "nouveau_debugfs.h",
+  "hash_id": "48de43cf31eb0ce85e30f47e70642d2107eb74e670330825053af297ce83c35e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nouveau_debugfs.h",
+  "human_readable_source": " \n#ifndef __NOUVEAU_DEBUGFS_H__\n#define __NOUVEAU_DEBUGFS_H__\n\n#include <drm/drm_debugfs.h>\n\n#if defined(CONFIG_DEBUG_FS)\n\n#include \"nouveau_drv.h\"\n\nstruct nouveau_debugfs {\n\tstruct nvif_object ctrl;\n};\n\nstatic inline struct nouveau_debugfs *\nnouveau_debugfs(struct drm_device *dev)\n{\n\treturn nouveau_drm(dev)->debugfs;\n}\n\nextern void  nouveau_drm_debugfs_init(struct drm_minor *);\nextern int  nouveau_debugfs_init(struct nouveau_drm *);\nextern void nouveau_debugfs_fini(struct nouveau_drm *);\n#else\nstatic inline void\nnouveau_drm_debugfs_init(struct drm_minor *minor)\n{}\n\nstatic inline int\nnouveau_debugfs_init(struct nouveau_drm *drm)\n{\n\treturn 0;\n}\n\nstatic inline void\nnouveau_debugfs_fini(struct nouveau_drm *drm)\n{\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

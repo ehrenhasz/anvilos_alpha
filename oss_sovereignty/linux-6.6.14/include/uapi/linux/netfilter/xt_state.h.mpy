@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_state.h",
+  "hash_id": "41e40dd3ab9184907e1c2ce4064197dec5113a6e15195c02350f44c31623dd66",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_state.h",
+  "human_readable_source": " \n#ifndef _XT_STATE_H\n#define _XT_STATE_H\n\n#define XT_STATE_BIT(ctinfo) (1 << ((ctinfo)%IP_CT_IS_REPLY+1))\n#define XT_STATE_INVALID (1 << 0)\n\n#define XT_STATE_UNTRACKED (1 << (IP_CT_NUMBER + 1))\n\nstruct xt_state_info {\n\tunsigned int statemask;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

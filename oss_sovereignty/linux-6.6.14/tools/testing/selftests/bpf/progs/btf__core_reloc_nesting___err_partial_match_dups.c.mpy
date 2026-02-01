@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_nesting___err_partial_match_dups.c",
+  "hash_id": "77a0672639a8f43e1b2afa5eaac6a83c3f81598a6fb966cfd9685c3c89166c6f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_partial_match_dups.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f1(struct core_reloc_nesting___err_partial_match_dups__a x) {}\nvoid f2(struct core_reloc_nesting___err_partial_match_dups__b x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

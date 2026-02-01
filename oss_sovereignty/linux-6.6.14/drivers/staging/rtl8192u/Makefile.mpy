@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8e72a5d2b55dfd1a97844a66c8dedd4315f27260435e871920cd01e16232bf87",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192u/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nNIC_SELECT = RTL8192U\n\nccflags-y += -DCONFIG_FORCE_HARD_FLOAT=y\nccflags-y += -DJACKSON_NEW_8187 -DJACKSON_NEW_RX\nccflags-y += -DTHOMAS_BEACON -DTHOMAS_TASKLET -DTHOMAS_SKB -DTHOMAS_TURBO\n\nr8192u_usb-y := r8192U_core.o r8180_93cx6.o r8192U_wx.o\t\t\\\n\t\t  r8190_rtl8256.o r819xU_phy.o r819xU_firmware.o\t\\\n\t\t  r819xU_cmdpkt.o r8192U_dm.o r819xU_firmware_img.o\t\\\n\t\t  r8192U_debugfs.o\t\t\t\t\t\\\n\t\t  ieee80211/ieee80211_crypt.o\t\t\t\t\\\n\t\t  ieee80211/ieee80211_crypt_tkip.o\t\t\t\\\n\t\t  ieee80211/ieee80211_crypt_ccmp.o\t\t\t\\\n\t\t  ieee80211/ieee80211_crypt_wep.o\t\t\t\\\n\t\t  ieee80211/ieee80211_rx.o\t\t\t\t\\\n\t\t  ieee80211/ieee80211_softmac.o\t\t\t\t\\\n\t\t  ieee80211/ieee80211_tx.o\t\t\t\t\\\n\t\t  ieee80211/ieee80211_wx.o\t\t\t\t\\\n\t\t  ieee80211/ieee80211_module.o\t\t\t\t\\\n\t\t  ieee80211/ieee80211_softmac_wx.o\t\t\t\\\n\t\t  ieee80211/rtl819x_HTProc.o\t\t\t\t\\\n\t\t  ieee80211/rtl819x_TSProc.o\t\t\t\t\\\n\t\t  ieee80211/rtl819x_BAProc.o\t\t\t\t\\\n\t\t  ieee80211/dot11d.o\n\nobj-$(CONFIG_RTL8192U) += r8192u_usb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

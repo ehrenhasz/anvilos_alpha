@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__objfun.c.qstr",
+  "hash_id": "0c3f360756697300f9acd98c9bd05a7c71add2dec2938371f09f1dfeca159400",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__objfun.c.qstr",
+  "human_readable_source": "Q(function)\nQ(function)\nQ(function)\nQ(function)\nQ(function)\nQ(function)\nQ(function)\nQ(function)\nQ(function)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

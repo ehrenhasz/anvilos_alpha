@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8c88b9fd55ed0ca3fbe0bcdb072cf635826fc8a66a395d845358392dd8e5a8d8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/i40e/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright(c) 2013 - 2018 Intel Corporation.\n\n#\n# Makefile for the Intel(R) Ethernet Connection XL710 (i40e.ko) driver\n#\n\nccflags-y += -I$(src)\nsubdir-ccflags-y += -I$(src)\n\nobj-$(CONFIG_I40E) += i40e.o\n\ni40e-objs := i40e_main.o \\\n\ti40e_ethtool.o\t\\\n\ti40e_adminq.o\t\\\n\ti40e_common.o\t\\\n\ti40e_hmc.o\t\\\n\ti40e_lan_hmc.o\t\\\n\ti40e_nvm.o\t\\\n\ti40e_debugfs.o\t\\\n\ti40e_diag.o\t\\\n\ti40e_txrx.o\t\\\n\ti40e_ptp.o\t\\\n\ti40e_ddp.o \\\n\ti40e_client.o   \\\n\ti40e_virtchnl_pf.o \\\n\ti40e_xsk.o\n\ni40e-$(CONFIG_I40E_DCB) += i40e_dcb.o i40e_dcb_nl.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

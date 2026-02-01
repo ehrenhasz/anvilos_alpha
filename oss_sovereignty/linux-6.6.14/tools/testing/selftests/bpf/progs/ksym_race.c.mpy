@@ -1,0 +1,9 @@
+{
+  "module_name": "ksym_race.c",
+  "hash_id": "91896a0734e1f8ef51b5ea676d4515d2b3ea2b64f3585eeea3b1bb2c58b98d4c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/ksym_race.c",
+  "human_readable_source": "\n#include <vmlinux.h>\n#include <bpf/bpf_helpers.h>\n\nextern int bpf_testmod_ksym_percpu __ksym;\n\nSEC(\"tc\")\nint ksym_fail(struct __sk_buff *ctx)\n{\n\treturn *(int *)bpf_this_cpu_ptr(&bpf_testmod_ksym_percpu);\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

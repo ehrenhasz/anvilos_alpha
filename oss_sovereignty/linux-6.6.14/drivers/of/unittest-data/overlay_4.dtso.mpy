@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_4.dtso",
+  "hash_id": "af7f0e2545bda4d9dad45e336b4712bf52f45a4f07b5afa954eebba501e3785f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_4.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n/* overlay_4 - test insertion of a full node */\n\n&unittest_test_bus {\n\t/* suppress DTC warning */\n\t#address-cells = <1>;\n\t#size-cells = <0>;\n\n\ttest-unittest4 {\n\t\tcompatible = \"unittest\";\n\t\tstatus = \"okay\";\n\t\treg = <4>;\n\t};\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

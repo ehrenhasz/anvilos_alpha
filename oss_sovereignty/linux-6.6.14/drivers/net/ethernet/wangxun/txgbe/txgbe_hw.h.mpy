@@ -1,0 +1,9 @@
+{
+  "module_name": "txgbe_hw.h",
+  "hash_id": "89d142c85e7f8385efa014dc2d2b6080db812e7c4aeceab92bc8ce1dd367a568",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/wangxun/txgbe/txgbe_hw.h",
+  "human_readable_source": " \n \n\n#ifndef _TXGBE_HW_H_\n#define _TXGBE_HW_H_\n\nint txgbe_disable_sec_tx_path(struct wx *wx);\nvoid txgbe_enable_sec_tx_path(struct wx *wx);\nint txgbe_read_pba_string(struct wx *wx, u8 *pba_num, u32 pba_num_size);\nint txgbe_validate_eeprom_checksum(struct wx *wx, u16 *checksum_val);\nint txgbe_reset_hw(struct wx *wx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

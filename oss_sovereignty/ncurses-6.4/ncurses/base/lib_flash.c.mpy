@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_flash.c",
+  "hash_id": "9191e8e8ba81104bee065a693ed7d871cc9a130e0bc0d6decb419107911a72f3",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_flash.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\n#ifndef CUR\n#define CUR SP_TERMTYPE\n#endif\n\nMODULE_ID(\"$Id: lib_flash.c,v 1.15 2020/02/02 23:34:34 tom Exp $\")\n\n \n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(flash) (NCURSES_SP_DCL0)\n{\n    int res = ERR;\n\n    T((T_CALLED(\"flash(%p)\"), (void *) SP_PARM));\n#ifdef USE_TERM_DRIVER\n    if (SP_PARM != 0)\n\tres = CallDriver_1(SP_PARM, td_doBeepOrFlash, FALSE);\n#else\n    if (HasTerminal(SP_PARM)) {\n\t \n\tif (flash_screen) {\n\t    res = NCURSES_PUTP2_FLUSH(\"flash_screen\", flash_screen);\n\t} else if (bell) {\n\t    res = NCURSES_PUTP2_FLUSH(\"bell\", bell);\n\t}\n    }\n#endif\n    returnCode(res);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nflash(void)\n{\n    return NCURSES_SP_NAME(flash) (CURRENT_SCREEN);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

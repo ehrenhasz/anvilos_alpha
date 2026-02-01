@@ -1,0 +1,9 @@
+{
+  "module_name": "wm9713.h",
+  "hash_id": "12843e89ac7cf4a11045c50b336b78921b28b1bbbb16b4dd11e204b4fe8bf796",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/wm9713.h",
+  "human_readable_source": " \n \n\n#ifndef _WM9713_H\n#define _WM9713_H\n\n \n#define WM9713_CLKA_PIN\t\t\t0\n#define WM9713_CLKB_PIN\t\t\t1\n\n \n#define WM9713_PCMCLK_DIV\t\t0\n#define WM9713_CLKA_MULT\t\t1\n#define WM9713_CLKB_MULT\t\t2\n#define WM9713_HIFI_DIV\t\t\t3\n#define WM9713_PCMBCLK_DIV\t\t4\n#define WM9713_PCMCLK_PLL_DIV           5\n#define WM9713_HIFI_PLL_DIV             6\n\n \n#define WM9713_PCMDIV(x)\t((x - 1) << 8)\n\n \n#define WM9713_HIFIDIV(x)\t((x - 1) << 12)\n\n \n#define WM9713_CLKA_X1\t\t(0 << 1)\n#define WM9713_CLKA_X2\t\t(1 << 1)\n#define WM9713_CLKB_X1\t\t(0 << 2)\n#define WM9713_CLKB_X2\t\t(1 << 2)\n\n \n#define WM9713_CLK_MUX_A\t\t(0 << 0)\n#define WM9713_CLK_MUX_B\t\t(1 << 0)\n\n \n#define WM9713_PCMBCLK_DIV_1\t(0 << 9)\n#define WM9713_PCMBCLK_DIV_2\t(1 << 9)\n#define WM9713_PCMBCLK_DIV_4\t(2 << 9)\n#define WM9713_PCMBCLK_DIV_8\t(3 << 9)\n#define WM9713_PCMBCLK_DIV_16\t(4 << 9)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

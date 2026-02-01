@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f987667b98159ad39a68f92b75681773990bb197302969ed4de941b5859eea0b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tee/optee/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_OPTEE) += optee.o\noptee-objs += core.o\noptee-objs += call.o\noptee-objs += notif.o\noptee-objs += rpc.o\noptee-objs += supp.o\noptee-objs += device.o\noptee-objs += smc_abi.o\noptee-objs += ffa_abi.o\n\n# for tracing framework to find optee_trace.h\nCFLAGS_smc_abi.o := -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

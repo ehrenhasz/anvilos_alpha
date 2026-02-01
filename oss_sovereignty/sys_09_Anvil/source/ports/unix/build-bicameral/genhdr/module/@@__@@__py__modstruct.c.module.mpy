@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__modstruct.c.module",
+  "hash_id": "c6cf8fd561ea30b16d3fbbfea766ad397824599e312f22722cb74d9c8a2d28a9",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/module/@@__@@__py__modstruct.c.module",
+  "human_readable_source": "MP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_struct, mp_module_struct);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

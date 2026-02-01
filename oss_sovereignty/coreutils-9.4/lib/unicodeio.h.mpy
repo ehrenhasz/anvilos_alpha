@@ -1,0 +1,9 @@
+{
+  "module_name": "unicodeio.h",
+  "hash_id": "0d7a650bc36fc81d3d770fdb2394b1551d9ada4c63eadca455fd99030101d323",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unicodeio.h",
+  "human_readable_source": " \nextern long unicode_to_mb (unsigned int code,\n                           long (*success) (const char *buf, size_t buflen,\n                                            void *callback_arg),\n                           long (*failure) (unsigned int code, const char *msg,\n                                            void *callback_arg),\n                           void *callback_arg);\n\n \nextern void print_unicode_char (FILE *stream, unsigned int code,\n                                int exit_on_error);\n\n \nextern long fwrite_success_callback (const char *buf, size_t buflen,\n                                     void *callback_arg);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

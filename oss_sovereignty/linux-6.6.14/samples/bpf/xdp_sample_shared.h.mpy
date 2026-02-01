@@ -1,0 +1,9 @@
+{
+  "module_name": "xdp_sample_shared.h",
+  "hash_id": "5c7bf52a441a797678afd4b1b4223250e6191ec74a15934178d0e9dbee2c4ee8",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/xdp_sample_shared.h",
+  "human_readable_source": "\n#ifndef _XDP_SAMPLE_SHARED_H\n#define _XDP_SAMPLE_SHARED_H\n\nstruct datarec {\n\tsize_t processed;\n\tsize_t dropped;\n\tsize_t issue;\n\tunion {\n\t\tsize_t xdp_pass;\n\t\tsize_t info;\n\t};\n\tsize_t xdp_drop;\n\tsize_t xdp_redirect;\n} __attribute__((aligned(64)));\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

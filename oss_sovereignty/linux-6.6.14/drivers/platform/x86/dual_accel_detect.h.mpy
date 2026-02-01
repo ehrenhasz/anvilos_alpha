@@ -1,0 +1,9 @@
+{
+  "module_name": "dual_accel_detect.h",
+  "hash_id": "af0754b2c2271518c690812d03a8ccc5055992f5adecf32286901f9f418d9938",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/dual_accel_detect.h",
+  "human_readable_source": " \n \n\n#include <linux/acpi.h>\n#include <linux/i2c.h>\n\nstatic bool dual_accel_detect_bosc0200(void)\n{\n\tstruct acpi_device *adev;\n\tint count;\n\n\tadev = acpi_dev_get_first_match_dev(\"BOSC0200\", NULL, -1);\n\tif (!adev)\n\t\treturn false;\n\n\tcount = i2c_acpi_client_count(adev);\n\n\tacpi_dev_put(adev);\n\n\treturn count == 2;\n}\n\nstatic bool dual_accel_detect(void)\n{\n\t \n\tif (acpi_dev_present(\"KIOX010A\", NULL, -1) &&\n\t    acpi_dev_present(\"KIOX020A\", NULL, -1))\n\t\treturn true;\n\n\t \n\tif (acpi_dev_present(\"DUAL250E\", NULL, -1))\n\t\treturn true;\n\n\t \n\tif (dual_accel_detect_bosc0200())\n\t\treturn true;\n\n\treturn false;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

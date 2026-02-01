@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrtoc32-3.sh",
+  "hash_id": "7a55ddf3834b18707c52aabbf8428b42d1f3c3adecdf9e9abb77f0a9d4e75c80",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrtoc32-3.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test whether a specific UTF-8 locale is installed.\n: \"${LOCALE_FR_UTF8=fr_FR.UTF-8}\"\nif test $LOCALE_FR_UTF8 = none; then\n  if test -f /usr/bin/localedef; then\n    echo \"Skipping test: no french Unicode locale is installed\"\n  else\n    echo \"Skipping test: no french Unicode locale is supported\"\n  fi\n  exit 77\nfi\n\nLC_ALL=$LOCALE_FR_UTF8 \\\n${CHECKER} ./test-mbrtoc32${EXEEXT} 3\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

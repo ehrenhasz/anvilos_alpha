@@ -1,0 +1,9 @@
+{
+  "module_name": "omap-mailbox.h",
+  "hash_id": "57384f5dc80b8d177e59ed3fc31b4336c00d79cb007eb09b22a8cca453cca839",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/omap-mailbox.h",
+  "human_readable_source": " \n \n\n#ifndef OMAP_MAILBOX_H\n#define OMAP_MAILBOX_H\n\ntypedef uintptr_t mbox_msg_t;\n\n#define omap_mbox_message(data) (u32)(mbox_msg_t)(data)\n\ntypedef int __bitwise omap_mbox_irq_t;\n#define IRQ_TX ((__force omap_mbox_irq_t) 1)\n#define IRQ_RX ((__force omap_mbox_irq_t) 2)\n\nstruct mbox_chan;\nstruct mbox_client;\n\nstruct mbox_chan *omap_mbox_request_channel(struct mbox_client *cl,\n\t\t\t\t\t    const char *chan_name);\n\nvoid omap_mbox_enable_irq(struct mbox_chan *chan, omap_mbox_irq_t irq);\nvoid omap_mbox_disable_irq(struct mbox_chan *chan, omap_mbox_irq_t irq);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

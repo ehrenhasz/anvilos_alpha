@@ -1,0 +1,9 @@
+{
+  "module_name": "copy-acl.c",
+  "hash_id": "2290cfbadf1fcf68c599138f865e8afc924052db0c6375c8b607008f4aff7ed8",
+  "original_prompt": "Ingested from coreutils-9.4/lib/copy-acl.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"acl.h\"\n\n#include <errno.h>\n\n#include \"quote.h\"\n#include \"error.h\"\n#include \"gettext.h\"\n#define _(msgid) gettext (msgid)\n\n\n \n\nint\ncopy_acl (const char *src_name, int source_desc, const char *dst_name,\n          int dest_desc, mode_t mode)\n{\n  int ret = qcopy_acl (src_name, source_desc, dst_name, dest_desc, mode);\n  switch (ret)\n    {\n    case -2:\n      error (0, errno, \"%s\", quote (src_name));\n      break;\n\n    case -1:\n      error (0, errno, _(\"preserving permissions for %s\"), quote (dst_name));\n      break;\n\n    default:\n      break;\n    }\n  return ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

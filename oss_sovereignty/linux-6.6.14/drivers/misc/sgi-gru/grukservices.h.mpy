@@ -1,0 +1,9 @@
+{
+  "module_name": "grukservices.h",
+  "hash_id": "258d21bdbbe8e0c33982941c8582740f147b74c5ce7a54fa3d6cfdab9da1d091",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/sgi-gru/grukservices.h",
+  "human_readable_source": " \n\n \n#ifndef __GRU_KSERVICES_H_\n#define __GRU_KSERVICES_H_\n\n\n \n\nstruct gru_message_queue_desc {\n\tvoid\t\t*mq;\t\t\t \n\tunsigned long\tmq_gpa;\t\t\t \n\tint\t\tqlines;\t\t\t \n\tint\t\tinterrupt_vector;\t \n\tint\t\tinterrupt_pnode;\t \n\tint\t\tinterrupt_apicid;\t \n};\n\n \nextern int gru_create_message_queue(struct gru_message_queue_desc *mqd,\n\t\tvoid *p, unsigned int bytes, int nasid, int vector, int apicid);\n\n \nextern int gru_send_message_gpa(struct gru_message_queue_desc *mqd,\n\t\t\tvoid *mesg, unsigned int bytes);\n\n \n#define MQE_OK\t\t\t0\t \n#define MQE_CONGESTION\t\t1\t \n#define MQE_QUEUE_FULL\t\t2\t \n#define MQE_UNEXPECTED_CB_ERR\t3\t \n#define MQE_PAGE_OVERFLOW\t10\t \n#define MQE_BUG_NO_RESOURCES\t11\t \n\n \nextern void gru_free_message(struct gru_message_queue_desc *mqd,\n\t\t\t     void *mesq);\n\n \nextern void *gru_get_next_message(struct gru_message_queue_desc *mqd);\n\n\n \nint gru_read_gpa(unsigned long *value, unsigned long gpa);\n\n\n \nextern int gru_copy_gpa(unsigned long dest_gpa, unsigned long src_gpa,\n\t\t\t\t\t\t\tunsigned int bytes);\n\n \nextern unsigned long gru_reserve_async_resources(int blade_id, int cbrs, int dsr_bytes,\n\t\t\t\tstruct completion *cmp);\n\n \nextern void gru_release_async_resources(unsigned long han);\n\n \nextern void gru_wait_async_cbr(unsigned long han);\n\n \nextern void gru_lock_async_resource(unsigned long han,  void **cb, void **dsr);\n\n \nextern void gru_unlock_async_resource(unsigned long han);\n\n#endif \t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

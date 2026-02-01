@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "16cc25bac6ff8335f6b1f6f98fa318435c7deb43214f8ba9f8106d37aecec7f0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/xilinx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig XILINX_VCU\n\ttristate \"Xilinx VCU logicoreIP Init\"\n\tdepends on HAS_IOMEM\n\tselect REGMAP_MMIO\n\thelp\n\t  Provides the driver to enable and disable the isolation between the\n\t  processing system and programmable logic part by using the logicoreIP\n\t  register set. This driver also configures the frequency based on the\n\t  clock information from the logicoreIP register set.\n\n\t  If you say yes here you get support for the logicoreIP.\n\n\t  If unsure, say N.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called xlnx_vcu.\n\nconfig COMMON_CLK_XLNX_CLKWZRD\n\ttristate \"Xilinx Clocking Wizard\"\n\tdepends on OF\n\tdepends on HAS_IOMEM\n\thelp\n\t  Support for the Xilinx Clocking Wizard IP core clock generator.\n\t  Adds support for clocking wizard and compatible.\n\t  This driver supports the Xilinx clocking wizard programmable clock\n\t  synthesizer. The number of output is configurable in the design.\n\n\t  If unsure, say N.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

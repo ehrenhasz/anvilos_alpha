@@ -1,0 +1,9 @@
+{
+  "module_name": "stack.c",
+  "hash_id": "b3ae6f3f3480a275fb4ce0359f624578a81ab37cfa3e28e4e4bcea56cedfc929",
+  "original_prompt": "Ingested from linux-6.6.14/fs/stack.c",
+  "human_readable_source": "\n#include <linux/export.h>\n#include <linux/fs.h>\n#include <linux/fs_stack.h>\n\n \nvoid fsstack_copy_inode_size(struct inode *dst, struct inode *src)\n{\n\tloff_t i_size;\n\tblkcnt_t i_blocks;\n\n\t \n\ti_size = i_size_read(src);\n\n\t \n\tif (sizeof(i_blocks) > sizeof(long))\n\t\tspin_lock(&src->i_lock);\n\ti_blocks = src->i_blocks;\n\tif (sizeof(i_blocks) > sizeof(long))\n\t\tspin_unlock(&src->i_lock);\n\n\t \n\tif (sizeof(i_size) > sizeof(long) || sizeof(i_blocks) > sizeof(long))\n\t\tspin_lock(&dst->i_lock);\n\ti_size_write(dst, i_size);\n\tdst->i_blocks = i_blocks;\n\tif (sizeof(i_size) > sizeof(long) || sizeof(i_blocks) > sizeof(long))\n\t\tspin_unlock(&dst->i_lock);\n}\nEXPORT_SYMBOL_GPL(fsstack_copy_inode_size);\n\n \nvoid fsstack_copy_attr_all(struct inode *dest, const struct inode *src)\n{\n\tdest->i_mode = src->i_mode;\n\tdest->i_uid = src->i_uid;\n\tdest->i_gid = src->i_gid;\n\tdest->i_rdev = src->i_rdev;\n\tdest->i_atime = src->i_atime;\n\tdest->i_mtime = src->i_mtime;\n\tinode_set_ctime_to_ts(dest, inode_get_ctime(src));\n\tdest->i_blkbits = src->i_blkbits;\n\tdest->i_flags = src->i_flags;\n\tset_nlink(dest, src->i_nlink);\n}\nEXPORT_SYMBOL_GPL(fsstack_copy_attr_all);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

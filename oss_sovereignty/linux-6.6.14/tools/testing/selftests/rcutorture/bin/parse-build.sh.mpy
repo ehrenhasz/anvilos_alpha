@@ -1,0 +1,9 @@
+{
+  "module_name": "parse-build.sh",
+  "hash_id": "e6119c631f39d01abfe642ef818c61e6afa7faa4d53aed525cedfc1fe478c6a2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/bin/parse-build.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Check the build output from an rcutorture run for goodness.\n# The \"file\" is a pathname on the local system, and \"title\" is\n# a text string for error-message purposes.\n#\n# The file must contain kernel build output.\n#\n# Usage: parse-build.sh file title\n#\n# Copyright (C) IBM Corporation, 2011\n#\n# Authors: Paul E. McKenney <paulmck@linux.ibm.com>\n\nF=$1\ntitle=$2\nT=\"`mktemp -d ${TMPDIR-/tmp}/parse-build.sh.XXXXXX`\"\ntrap 'rm -rf $T' 0\n\n. functions.sh\n\nif grep -q CC < $F || test -n \"$TORTURE_TRUST_MAKE\" || grep -qe --trust-make < `dirname $F`/../log\nthen\n\t:\nelse\n\tprint_bug $title no build\n\texit 1\nfi\n\nif grep -q \"error:\" < $F\nthen\n\tprint_bug $title build errors:\n\tgrep \"error:\" < $F\n\texit 2\nfi\n\ngrep warning: < $F > $T/warnings\ngrep \"include/linux/*rcu*\\.h:\" $T/warnings > $T/hwarnings\ngrep \"kernel/rcu/[^/]*:\" $T/warnings > $T/cwarnings\ngrep \"^ld: .*undefined reference to\" $T/warnings | head -1 > $T/ldwarnings\ncat $T/hwarnings $T/cwarnings $T/ldwarnings > $T/rcuwarnings\nif test -s $T/rcuwarnings\nthen\n\tprint_warning $title build errors:\n\tcat $T/rcuwarnings\n\texit 2\nfi\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fpucw.h",
+  "hash_id": "97f1220f4c895a19d76cd4f9cb4c4b637f35a7227754f5af87cd6d4b934e824f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fpucw.h",
+  "human_readable_source": " \n\n \n\n \n#if (defined __i386__ || defined __x86_64__) && (defined __GNUC__ || defined __clang__)\n\ntypedef unsigned short fpucw_t;  \n\n# define FPU_PC_MASK 0x0300\n# define FPU_PC_DOUBLE 0x200     \n# define FPU_PC_EXTENDED 0x300   \n\n# define GET_FPUCW() __extension__ \\\n  ({ fpucw_t _cw;                                               \\\n     __asm__ __volatile__ (\"fnstcw %0\" : \"=m\" (*&_cw));         \\\n     _cw;                                                       \\\n   })\n# define SET_FPUCW(word) __extension__ \\\n  (void)({ fpucw_t _ncw = (word);                               \\\n           __asm__ __volatile__ (\"fldcw %0\" : : \"m\" (*&_ncw));  \\\n         })\n\n# define DECL_LONG_DOUBLE_ROUNDING \\\n  fpucw_t oldcw;\n# define BEGIN_LONG_DOUBLE_ROUNDING() \\\n  (void)(oldcw = GET_FPUCW (),                                  \\\n         SET_FPUCW ((oldcw & ~FPU_PC_MASK) | FPU_PC_EXTENDED))\n# define END_LONG_DOUBLE_ROUNDING() \\\n  SET_FPUCW (oldcw)\n\n#else\n\ntypedef unsigned int fpucw_t;\n\n# define FPU_PC_MASK 0\n# define FPU_PC_DOUBLE 0\n# define FPU_PC_EXTENDED 0\n\n# define GET_FPUCW() 0\n# define SET_FPUCW(word) (void)(word)\n\n# define DECL_LONG_DOUBLE_ROUNDING\n# define BEGIN_LONG_DOUBLE_ROUNDING()\n# define END_LONG_DOUBLE_ROUNDING()\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

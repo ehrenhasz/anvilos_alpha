@@ -1,0 +1,9 @@
+{
+  "module_name": "repl.h",
+  "hash_id": "539e5b6dd3b3d08df494a768b1857d74277f20d0421a092d77efb7ef04db147a",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/repl.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_REPL_H\n#define MICROPY_INCLUDED_PY_REPL_H\n\n#include \"py/mpconfig.h\"\n#include \"py/misc.h\"\n#include \"py/mpprint.h\"\n\n#if MICROPY_HELPER_REPL\n\n#if MICROPY_PY_SYS_PS1_PS2\n\nconst char *mp_repl_get_psx(unsigned int entry);\n\nstatic inline const char *mp_repl_get_ps1(void) {\n    return mp_repl_get_psx(MP_SYS_MUTABLE_PS1);\n}\n\nstatic inline const char *mp_repl_get_ps2(void) {\n    return mp_repl_get_psx(MP_SYS_MUTABLE_PS2);\n}\n\n#else\n\nstatic inline const char *mp_repl_get_ps1(void) {\n    return \">>> \";\n}\n\nstatic inline const char *mp_repl_get_ps2(void) {\n    return \"... \";\n}\n\n#endif\n\nbool mp_repl_continue_with_input(const char *input);\nsize_t mp_repl_autocomplete(const char *str, size_t len, const mp_print_t *print, const char **compl_str);\n\n#endif\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

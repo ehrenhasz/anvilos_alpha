@@ -1,0 +1,9 @@
+{
+  "module_name": "eeh-basic.sh",
+  "hash_id": "9fe473723891fba2926e46389dff0d181653e958f482a0f53673250d276f85b3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/eeh/eeh-basic.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-only\n\n. ./eeh-functions.sh\n\neeh_test_prep # NB: may exit\n\npre_lspci=`mktemp`\nlspci > $pre_lspci\n\n# record the devices that we break in here. Assuming everything\n# goes to plan we should get them back once the recover process\n# is finished.\ndevices=\"\"\n\n# Build up a list of candidate devices.\nfor dev in `ls -1 /sys/bus/pci/devices/ | grep '\\.0$'` ; do\n\tif ! eeh_can_break $dev ; then\n\t\tcontinue;\n\tfi\n\n\t# Skip VFs for now since we don't have a reliable way to break them.\n\tif [ -e \"/sys/bus/pci/devices/$dev/physfn\" ] ; then\n\t\techo \"$dev, Skipped: virtfn\"\n\t\tcontinue;\n\tfi\n\n\techo \"$dev, Added\"\n\n\t# Add to this list of device to check\n\tdevices=\"$devices $dev\"\ndone\n\ndev_count=\"$(echo $devices | wc -w)\"\necho \"Found ${dev_count} breakable devices...\"\n\nfailed=0\nfor dev in $devices ; do\n\techo \"Breaking $dev...\"\n\n\tif ! pe_ok $dev ; then\n\t\techo \"Skipping $dev, Initial PE state is not ok\"\n\t\tfailed=\"$((failed + 1))\"\n\t\tcontinue;\n\tfi\n\n\tif ! eeh_one_dev $dev ; then\n\t\tfailed=\"$((failed + 1))\"\n\tfi\ndone\n\necho \"$failed devices failed to recover ($dev_count tested)\"\nlspci | diff -u $pre_lspci -\nrm -f $pre_lspci\n\ntest \"$failed\" -eq 0\nexit $?\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

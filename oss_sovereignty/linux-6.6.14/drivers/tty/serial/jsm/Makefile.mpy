@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d20be31b19a53bdd358445e3c9bc799bcfd6821db05240aa3b91c49886cc4ecc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/serial/jsm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Jasmine adapter\n#\n\nobj-$(CONFIG_SERIAL_JSM) += jsm.o\n\njsm-objs :=    jsm_driver.o jsm_neo.o jsm_tty.o jsm_cls.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

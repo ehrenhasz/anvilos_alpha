@@ -1,0 +1,9 @@
+{
+  "module_name": "rdc321x.h",
+  "hash_id": "63b215aa7c6bba68020cd338245302930749fb7af539460a583ed74405cb0fe0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/rdc321x.h",
+  "human_readable_source": " \n#ifndef __RDC321X_MFD_H\n#define __RDC321X_MFD_H\n\n#include <linux/types.h>\n#include <linux/pci.h>\n\n \n#define RDC321X_WDT_CTRL\t0x44\n#define RDC321X_GPIO_CTRL_REG1\t0x48\n#define RDC321X_GPIO_DATA_REG1\t0x4c\n#define RDC321X_GPIO_CTRL_REG2\t0x84\n#define RDC321X_GPIO_DATA_REG2\t0x88\n\n#define RDC321X_NUM_GPIO\t59\n\nstruct rdc321x_gpio_pdata {\n\tstruct pci_dev *sb_pdev;\n\tunsigned max_gpios;\n};\n\nstruct rdc321x_wdt_pdata {\n\tstruct pci_dev *sb_pdev;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

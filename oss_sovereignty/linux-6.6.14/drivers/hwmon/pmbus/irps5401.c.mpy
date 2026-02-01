@@ -1,0 +1,9 @@
+{
+  "module_name": "irps5401.c",
+  "hash_id": "4eafa7c4533f2c94a39c24a43a2e725c7bdfc91cab94248e60025fc53519d588",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwmon/pmbus/irps5401.c",
+  "human_readable_source": "\n \n\n#include <linux/err.h>\n#include <linux/i2c.h>\n#include <linux/init.h>\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include \"pmbus.h\"\n\n#define IRPS5401_SW_FUNC (PMBUS_HAVE_VIN | PMBUS_HAVE_IIN | \\\n\t\t\t  PMBUS_HAVE_STATUS_INPUT | \\\n\t\t\t  PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT | \\\n\t\t\t  PMBUS_HAVE_IOUT | PMBUS_HAVE_STATUS_IOUT | \\\n\t\t\t  PMBUS_HAVE_PIN | PMBUS_HAVE_POUT | \\\n\t\t\t  PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP)\n\n#define IRPS5401_LDO_FUNC (PMBUS_HAVE_VIN | \\\n\t\t\t   PMBUS_HAVE_STATUS_INPUT | \\\n\t\t\t   PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT | \\\n\t\t\t   PMBUS_HAVE_IOUT | PMBUS_HAVE_STATUS_IOUT | \\\n\t\t\t   PMBUS_HAVE_PIN | PMBUS_HAVE_POUT | \\\n\t\t\t   PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP)\n\nstatic struct pmbus_driver_info irps5401_info = {\n\t.pages = 5,\n\t.func[0] = IRPS5401_SW_FUNC,\n\t.func[1] = IRPS5401_SW_FUNC,\n\t.func[2] = IRPS5401_SW_FUNC,\n\t.func[3] = IRPS5401_SW_FUNC,\n\t.func[4] = IRPS5401_LDO_FUNC,\n};\n\nstatic int irps5401_probe(struct i2c_client *client)\n{\n\treturn pmbus_do_probe(client, &irps5401_info);\n}\n\nstatic const struct i2c_device_id irps5401_id[] = {\n\t{\"irps5401\", 0},\n\t{}\n};\n\nMODULE_DEVICE_TABLE(i2c, irps5401_id);\n\nstatic struct i2c_driver irps5401_driver = {\n\t.driver = {\n\t\t   .name = \"irps5401\",\n\t\t   },\n\t.probe = irps5401_probe,\n\t.id_table = irps5401_id,\n};\n\nmodule_i2c_driver(irps5401_driver);\n\nMODULE_AUTHOR(\"Robert Hancock\");\nMODULE_DESCRIPTION(\"PMBus driver for Infineon IRPS5401\");\nMODULE_LICENSE(\"GPL\");\nMODULE_IMPORT_NS(PMBUS);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

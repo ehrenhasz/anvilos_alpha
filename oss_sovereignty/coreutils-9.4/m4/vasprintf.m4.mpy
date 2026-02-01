@@ -1,0 +1,9 @@
+{
+  "module_name": "vasprintf.m4",
+  "hash_id": "8b64f0296630baf380dd385cfee11b72b159756fcd38b9eed2bef4962831f41c",
+  "original_prompt": "Ingested from coreutils-9.4/m4/vasprintf.m4",
+  "human_readable_source": "# vasprintf.m4 serial 6\ndnl Copyright (C) 2002-2003, 2006-2007, 2009-2023 Free Software Foundation,\ndnl Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_VASPRINTF],\n[\n  AC_CHECK_FUNCS([vasprintf])\n  if test $ac_cv_func_vasprintf = no; then\n    gl_REPLACE_VASPRINTF\n  fi\n])\n\nAC_DEFUN([gl_REPLACE_VASPRINTF],\n[\n  AC_LIBOBJ([vasprintf])\n  AC_LIBOBJ([asprintf])\n  AC_REQUIRE([gl_STDIO_H_DEFAULTS])\n  if test $ac_cv_func_vasprintf = yes; then\n    REPLACE_VASPRINTF=1\n  else\n    HAVE_VASPRINTF=0\n  fi\n  gl_PREREQ_VASPRINTF_H\n  gl_PREREQ_VASPRINTF\n  gl_PREREQ_ASPRINTF\n])\n\n# Prerequisites of the vasprintf portion of lib/stdio.h.\nAC_DEFUN([gl_PREREQ_VASPRINTF_H],\n[\n  dnl Persuade glibc <stdio.h> to declare asprintf() and vasprintf().\n  AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])\n])\n\n# Prerequisites of lib/vasprintf.c.\nAC_DEFUN([gl_PREREQ_VASPRINTF],\n[\n])\n\n# Prerequisites of lib/asprintf.c.\nAC_DEFUN([gl_PREREQ_ASPRINTF],\n[\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

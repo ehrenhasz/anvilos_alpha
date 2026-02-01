@@ -1,0 +1,9 @@
+{
+  "module_name": "cx25821-cards.c",
+  "hash_id": "fda9e49249494439248e7c7e871386f77738864a3803f5b30b853e0921f60e73",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx25821/cx25821-cards.c",
+  "human_readable_source": "\n \n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <linux/init.h>\n#include <linux/module.h>\n#include <linux/pci.h>\n\n#include \"cx25821.h\"\n\n \n\nstruct cx25821_board cx25821_boards[] = {\n\t[UNKNOWN_BOARD] = {\n\t\t.name = \"UNKNOWN/GENERIC\",\n\t\t \n\t\t.clk_freq = 0,\n\t},\n\n\t[CX25821_BOARD] = {\n\t\t.name = \"CX25821\",\n\t\t.portb = CX25821_RAW,\n\t\t.portc = CX25821_264,\n\t},\n\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

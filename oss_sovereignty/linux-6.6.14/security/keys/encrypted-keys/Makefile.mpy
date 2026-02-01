@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "76d345fd548680177139838385e6c5c372598eed44f1caf751b33a7fa847a228",
+  "original_prompt": "Ingested from linux-6.6.14/security/keys/encrypted-keys/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for encrypted keys\n#\n\nobj-$(CONFIG_ENCRYPTED_KEYS) += encrypted-keys.o\n\nencrypted-keys-y := encrypted.o ecryptfs_format.o\nmasterkey-$(CONFIG_TRUSTED_KEYS) := masterkey_trusted.o\nmasterkey-$(CONFIG_TRUSTED_KEYS)-$(CONFIG_ENCRYPTED_KEYS) := masterkey_trusted.o\nencrypted-keys-y += $(masterkey-y) $(masterkey-m-m)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

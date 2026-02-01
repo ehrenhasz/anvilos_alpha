@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "dee470daa058fb5b6ae37d575372594e39318c87c8281253e6eeeea77adfcf70",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/st/cw1200/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CW1200\n\ttristate \"CW1200 WLAN support\"\n\tdepends on MAC80211 && CFG80211\n\thelp\n\t  This is a driver for the ST-E CW1100 & CW1200 WLAN chipsets.\n\t  This option just enables the driver core, see below for\n\t  specific bus support.\n\nif CW1200\n\nconfig CW1200_WLAN_SDIO\n\ttristate \"Support SDIO platforms\"\n\tdepends on CW1200 && MMC\n\thelp\n\t  Enable support for the CW1200 connected via an SDIO bus.\n\t  By default this driver only supports the Sagrad SG901-1091/1098 EVK\n\t  and similar designs that utilize a hardware reset circuit. To\n\t  support different CW1200 SDIO designs you will need to override\n\t  the default platform data by calling cw1200_sdio_set_platform_data()\n\t  in your board setup file.\n\nconfig CW1200_WLAN_SPI\n\ttristate \"Support SPI platforms\"\n\tdepends on CW1200 && SPI\n\thelp\n\t  Enables support for the CW1200 connected via a SPI bus.  You will\n\t  need to add appropriate platform data glue in your board setup\n\t  file.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

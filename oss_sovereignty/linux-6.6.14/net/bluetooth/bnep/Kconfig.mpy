@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a601aba3cbceff367ddc974c6782cea3f063a18a3abb0f18c3a782447e7feb85",
+  "original_prompt": "Ingested from linux-6.6.14/net/bluetooth/bnep/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig BT_BNEP\n\ttristate \"BNEP protocol support\"\n\tdepends on BT_BREDR\n\tselect CRC32\n\thelp\n\t  BNEP (Bluetooth Network Encapsulation Protocol) is Ethernet\n\t  emulation layer on top of Bluetooth.  BNEP is required for\n\t  Bluetooth PAN (Personal Area Network).\n\n\t  Say Y here to compile BNEP support into the kernel or say M to\n\t  compile it as module (bnep).\n\nconfig BT_BNEP_MC_FILTER\n\tbool \"Multicast filter support\"\n\tdepends on BT_BNEP\n\thelp\n\t  This option enables the multicast filter support for BNEP.\n\nconfig BT_BNEP_PROTO_FILTER\n\tbool \"Protocol filter support\"\n\tdepends on BT_BNEP\n\thelp\n\t  This option enables the protocol filter support for BNEP.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

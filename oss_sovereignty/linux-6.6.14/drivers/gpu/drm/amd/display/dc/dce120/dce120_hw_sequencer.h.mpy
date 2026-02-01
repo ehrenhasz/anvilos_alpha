@@ -1,0 +1,9 @@
+{
+  "module_name": "dce120_hw_sequencer.h",
+  "hash_id": "9565073f9433274fe07b76853eeeb24873b5a40e6fa1fe7ade607946a7306aff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce120/dce120_hw_sequencer.h",
+  "human_readable_source": " \n\n#ifndef __DC_HWSS_DCE120_H__\n#define __DC_HWSS_DCE120_H__\n\n#include \"core_types.h\"\n#include \"hw_sequencer_private.h\"\n\nstruct dc;\n\nbool dce121_xgmi_enabled(struct dce_hwseq *hws);\nvoid dce120_hw_sequencer_construct(struct dc *dc);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

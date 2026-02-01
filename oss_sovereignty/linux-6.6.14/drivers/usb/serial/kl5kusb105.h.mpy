@@ -1,0 +1,9 @@
+{
+  "module_name": "kl5kusb105.h",
+  "hash_id": "596819f23c7add03deb34a9fd8d01abb77ef741d5cbfd6e790200807b58314d2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/serial/kl5kusb105.h",
+  "human_readable_source": " \n \n\n \n#define PALMCONNECT_VID\t\t0x0830\n#define PALMCONNECT_PID\t\t0x0080\n\n \n\n\n \n\n \n\nenum {\n\tkl5kusb105a_sio_b115200 = 0,\n\tkl5kusb105a_sio_b57600  = 1,\n\tkl5kusb105a_sio_b38400  = 2,\n\tkl5kusb105a_sio_b19200  = 4,\n\tkl5kusb105a_sio_b14400  = 5,\n\tkl5kusb105a_sio_b9600   = 6,\n\tkl5kusb105a_sio_b4800   = 8,\t \n\tkl5kusb105a_sio_b2400   = 9,\t \n\tkl5kusb105a_sio_b1200   = 0xa,\t \n\tkl5kusb105a_sio_b600    = 0xb\t \n};\n\n \n#define kl5kusb105a_dtb_7   7\n#define kl5kusb105a_dtb_8   8\n\n\n\n \n#define KL5KUSB105A_SIO_SET_DATA  1\n#define KL5KUSB105A_SIO_POLL      2\n#define KL5KUSB105A_SIO_CONFIGURE      3\n \n#define KL5KUSB105A_SIO_CONFIGURE_READ_ON      3\n#define KL5KUSB105A_SIO_CONFIGURE_READ_OFF     2\n\n \n \n#define KL5KUSB105A_DSR\t\t\t((1<<4) | (1<<5))\n#define KL5KUSB105A_CTS\t\t\t((1<<5) | (1<<4))\n\n#define KL5KUSB105A_WANTS_TO_SEND\t0x30\n#if 0\n#define KL5KUSB105A_DTR\t\t\t \n#define KL5KUSB105A_CTS\t\t\t \n#define KL5KUSB105A_CD\t\t\t \n#define KL5KUSB105A_DSR\t\t\t \n#define KL5KUSB105A_RxD\t\t\t \n\n#define KL5KUSB105A_LE\n#define KL5KUSB105A_RTS\n#define KL5KUSB105A_ST\n#define KL5KUSB105A_SR\n#define KL5KUSB105A_RI\t\t\t \n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

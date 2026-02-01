@@ -1,0 +1,9 @@
+{
+  "module_name": "crg.h",
+  "hash_id": "3cc995fcfe0e28210ca7cd9fe9530ab340cb017d0c4fd3cc8fd2fab33cd488b7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/hisilicon/crg.h",
+  "human_readable_source": " \n \n\n#ifndef __HISI_CRG_H\n#define __HISI_CRG_H\n\nstruct hisi_clock_data;\nstruct hisi_reset_controller;\n\nstruct hisi_crg_funcs {\n\tstruct hisi_clock_data*\t(*register_clks)(struct platform_device *pdev);\n\tvoid (*unregister_clks)(struct platform_device *pdev);\n};\n\nstruct hisi_crg_dev {\n\tstruct hisi_clock_data *clk_data;\n\tstruct hisi_reset_controller *rstc;\n\tconst struct hisi_crg_funcs *funcs;\n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

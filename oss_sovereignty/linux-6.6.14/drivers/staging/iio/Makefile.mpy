@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d326e5bd6228ee8220c801926744dd3f1cc96831c0f08127e67c4df925555099",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/iio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the industrial I/O core.\n#\n\nobj-y += accel/\nobj-y += adc/\nobj-y += addac/\nobj-y += frequency/\nobj-y += impedance-analyzer/\nobj-y += resolver/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

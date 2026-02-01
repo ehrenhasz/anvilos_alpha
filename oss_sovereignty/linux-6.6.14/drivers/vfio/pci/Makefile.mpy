@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2280f2ba19034cc52cf8db964103f707b28c17abd9666d89f39bcadc4efb7901",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/pci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nvfio-pci-core-y := vfio_pci_core.o vfio_pci_intrs.o vfio_pci_rdwr.o vfio_pci_config.o\nvfio-pci-core-$(CONFIG_VFIO_PCI_ZDEV_KVM) += vfio_pci_zdev.o\nobj-$(CONFIG_VFIO_PCI_CORE) += vfio-pci-core.o\n\nvfio-pci-y := vfio_pci.o\nvfio-pci-$(CONFIG_VFIO_PCI_IGD) += vfio_pci_igd.o\nobj-$(CONFIG_VFIO_PCI) += vfio-pci.o\n\nobj-$(CONFIG_MLX5_VFIO_PCI)           += mlx5/\n\nobj-$(CONFIG_HISI_ACC_VFIO_PCI) += hisilicon/\n\nobj-$(CONFIG_PDS_VFIO_PCI) += pds/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

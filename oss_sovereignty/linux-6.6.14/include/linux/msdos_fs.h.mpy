@@ -1,0 +1,9 @@
+{
+  "module_name": "msdos_fs.h",
+  "hash_id": "ccaa766ab2adfa4703694de96357e243fb683946af06e215ed76199c12342a93",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/msdos_fs.h",
+  "human_readable_source": " \n#ifndef _LINUX_MSDOS_FS_H\n#define _LINUX_MSDOS_FS_H\n\n#include <uapi/linux/msdos_fs.h>\n\n \nstatic inline int fat_valid_media(u8 media)\n{\n\treturn 0xf8 <= media || media == 0xf0;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

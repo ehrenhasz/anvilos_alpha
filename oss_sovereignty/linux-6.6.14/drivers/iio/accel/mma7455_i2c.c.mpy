@@ -1,0 +1,9 @@
+{
+  "module_name": "mma7455_i2c.c",
+  "hash_id": "6101936e1eae7e4ed5381e8c48dba1cbc3799a6ff6a5d7daca633184fa15c665",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/accel/mma7455_i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/i2c.h>\n#include <linux/module.h>\n#include <linux/regmap.h>\n\n#include \"mma7455.h\"\n\nstatic int mma7455_i2c_probe(struct i2c_client *i2c)\n{\n\tconst struct i2c_device_id *id = i2c_client_get_device_id(i2c);\n\tstruct regmap *regmap;\n\tconst char *name = NULL;\n\n\tregmap = devm_regmap_init_i2c(i2c, &mma7455_core_regmap);\n\tif (IS_ERR(regmap))\n\t\treturn PTR_ERR(regmap);\n\n\tif (id)\n\t\tname = id->name;\n\n\treturn mma7455_core_probe(&i2c->dev, regmap, name);\n}\n\nstatic void mma7455_i2c_remove(struct i2c_client *i2c)\n{\n\tmma7455_core_remove(&i2c->dev);\n}\n\nstatic const struct i2c_device_id mma7455_i2c_ids[] = {\n\t{ \"mma7455\", 0 },\n\t{ \"mma7456\", 0 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, mma7455_i2c_ids);\n\nstatic const struct of_device_id mma7455_of_match[] = {\n\t{ .compatible = \"fsl,mma7455\" },\n\t{ .compatible = \"fsl,mma7456\" },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, mma7455_of_match);\n\nstatic struct i2c_driver mma7455_i2c_driver = {\n\t.probe = mma7455_i2c_probe,\n\t.remove = mma7455_i2c_remove,\n\t.id_table = mma7455_i2c_ids,\n\t.driver = {\n\t\t.name\t= \"mma7455-i2c\",\n\t\t.of_match_table = mma7455_of_match,\n\t},\n};\nmodule_i2c_driver(mma7455_i2c_driver);\n\nMODULE_AUTHOR(\"Joachim Eastwood <manabian@gmail.com>\");\nMODULE_DESCRIPTION(\"Freescale MMA7455L I2C accelerometer driver\");\nMODULE_LICENSE(\"GPL v2\");\nMODULE_IMPORT_NS(IIO_MMA7455);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

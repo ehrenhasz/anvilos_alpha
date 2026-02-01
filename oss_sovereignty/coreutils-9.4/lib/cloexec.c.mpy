@@ -1,0 +1,9 @@
+{
+  "module_name": "cloexec.c",
+  "hash_id": "af121bbef54fa3a1895c11dc1792f170b557c2b6b23186932466ab09504c1a8b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/cloexec.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"cloexec.h\"\n\n#include <errno.h>\n#include <fcntl.h>\n#include <unistd.h>\n\n \n\nint\nset_cloexec_flag (int desc, bool value)\n{\n#ifdef F_SETFD\n\n  int flags = fcntl (desc, F_GETFD, 0);\n\n  if (0 <= flags)\n    {\n      int newflags = (value ? flags | FD_CLOEXEC : flags & ~FD_CLOEXEC);\n\n      if (flags == newflags\n          || fcntl (desc, F_SETFD, newflags) != -1)\n        return 0;\n    }\n\n  return -1;\n\n#else  \n\n   \n  if (desc < 0)\n    {\n      errno = EBADF;\n      return -1;\n    }\n  if (dup2 (desc, desc) < 0)\n     \n    return -1;\n\n   \n  return 0;\n#endif  \n}\n\n\n \n\nint\ndup_cloexec (int fd)\n{\n  return fcntl (fd, F_DUPFD_CLOEXEC, 0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

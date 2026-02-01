@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn302_init.c",
+  "hash_id": "160c8e3f7fd999c09f4b624a0e979a9dd6872f5bae1399e7f70ecc5d372576db",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn302/dcn302_init.c",
+  "human_readable_source": " \n\n#include \"dcn302_hwseq.h\"\n\n#include \"dcn30/dcn30_init.h\"\n\n#include \"dc.h\"\n\n#include \"dcn302_init.h\"\n\nvoid dcn302_hw_sequencer_construct(struct dc *dc)\n{\n\tdcn30_hw_sequencer_construct(dc);\n\n\tdc->hwseq->funcs.dpp_pg_control = dcn302_dpp_pg_control;\n\tdc->hwseq->funcs.hubp_pg_control = dcn302_hubp_pg_control;\n\tdc->hwseq->funcs.dsc_pg_control = dcn302_dsc_pg_control;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

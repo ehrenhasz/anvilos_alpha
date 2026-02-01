@@ -1,0 +1,9 @@
+{
+  "module_name": "selftest_rc6.h",
+  "hash_id": "265ddccaf4ad441b948f0583e8bfd4efb7b835115e634b6b79fa123dc84e0fbf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/selftest_rc6.h",
+  "human_readable_source": " \n \n\n#ifndef SELFTEST_RC6_H\n#define SELFTEST_RC6_H\n\nint live_rc6_ctx_wa(void *arg);\nint live_rc6_manual(void *arg);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

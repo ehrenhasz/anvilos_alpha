@@ -1,0 +1,9 @@
+{
+  "module_name": "iomap_copy.c",
+  "hash_id": "d334246872612aa68317c04f55f841d6086b7400fa737648d1228f9a0d715591",
+  "original_prompt": "Ingested from linux-6.6.14/lib/iomap_copy.c",
+  "human_readable_source": "\n \n\n#include <linux/export.h>\n#include <linux/io.h>\n\n \nvoid __attribute__((weak)) __iowrite32_copy(void __iomem *to,\n\t\t\t\t\t    const void *from,\n\t\t\t\t\t    size_t count)\n{\n\tu32 __iomem *dst = to;\n\tconst u32 *src = from;\n\tconst u32 *end = src + count;\n\n\twhile (src < end)\n\t\t__raw_writel(*src++, dst++);\n}\nEXPORT_SYMBOL_GPL(__iowrite32_copy);\n\n \nvoid __ioread32_copy(void *to, const void __iomem *from, size_t count)\n{\n\tu32 *dst = to;\n\tconst u32 __iomem *src = from;\n\tconst u32 __iomem *end = src + count;\n\n\twhile (src < end)\n\t\t*dst++ = __raw_readl(src++);\n}\nEXPORT_SYMBOL_GPL(__ioread32_copy);\n\n \nvoid __attribute__((weak)) __iowrite64_copy(void __iomem *to,\n\t\t\t\t\t    const void *from,\n\t\t\t\t\t    size_t count)\n{\n#ifdef CONFIG_64BIT\n\tu64 __iomem *dst = to;\n\tconst u64 *src = from;\n\tconst u64 *end = src + count;\n\n\twhile (src < end)\n\t\t__raw_writeq(*src++, dst++);\n#else\n\t__iowrite32_copy(to, from, count * 2);\n#endif\n}\n\nEXPORT_SYMBOL_GPL(__iowrite64_copy);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

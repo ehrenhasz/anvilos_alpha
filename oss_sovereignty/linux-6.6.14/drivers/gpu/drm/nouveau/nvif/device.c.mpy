@@ -1,0 +1,9 @@
+{
+  "module_name": "device.c",
+  "hash_id": "03463ee3acb4ad93f8627e1866364267ee67a3c91eb029ad3dee1f9dce20b202",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvif/device.c",
+  "human_readable_source": " \n\n#include <nvif/device.h>\n\nu64\nnvif_device_time(struct nvif_device *device)\n{\n\tif (!device->user.func) {\n\t\tstruct nv_device_time_v0 args = {};\n\t\tint ret = nvif_object_mthd(&device->object, NV_DEVICE_V0_TIME,\n\t\t\t\t\t   &args, sizeof(args));\n\t\tWARN_ON_ONCE(ret != 0);\n\t\treturn args.time;\n\t}\n\n\treturn device->user.func->time(&device->user);\n}\n\nvoid\nnvif_device_dtor(struct nvif_device *device)\n{\n\tnvif_user_dtor(device);\n\tkfree(device->runlist);\n\tdevice->runlist = NULL;\n\tnvif_object_dtor(&device->object);\n}\n\nint\nnvif_device_ctor(struct nvif_object *parent, const char *name, u32 handle,\n\t\t s32 oclass, void *data, u32 size, struct nvif_device *device)\n{\n\tint ret = nvif_object_ctor(parent, name ? name : \"nvifDevice\", handle,\n\t\t\t\t   oclass, data, size, &device->object);\n\tdevice->runlist = NULL;\n\tdevice->user.func = NULL;\n\tif (ret == 0) {\n\t\tdevice->info.version = 0;\n\t\tret = nvif_object_mthd(&device->object, NV_DEVICE_V0_INFO,\n\t\t\t\t       &device->info, sizeof(device->info));\n\t}\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

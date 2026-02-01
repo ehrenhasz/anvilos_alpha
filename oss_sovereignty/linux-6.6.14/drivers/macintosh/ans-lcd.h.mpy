@@ -1,0 +1,9 @@
+{
+  "module_name": "ans-lcd.h",
+  "hash_id": "46dbbf0005677b440b464bd654ac4b7be953ecf4b31bd528b2eb0be5cbd7b326",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/macintosh/ans-lcd.h",
+  "human_readable_source": " \n#ifndef _PPC_ANS_LCD_H\n#define _PPC_ANS_LCD_H\n\n#define ANSLCD_CLEAR\t\t0x01\n#define ANSLCD_SENDCTRL\t\t0x02\n#define ANSLCD_SETSHORTDELAY\t0x03\n#define ANSLCD_SETLONGDELAY\t0x04\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

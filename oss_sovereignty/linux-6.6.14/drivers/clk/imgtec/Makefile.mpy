@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8027d19d9f004cef607f97795f743485860cd8083979867df0405b6ee30afaaa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/imgtec/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_COMMON_CLK_BOSTON)\t\t+= clk-boston.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

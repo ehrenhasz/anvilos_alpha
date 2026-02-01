@@ -1,0 +1,9 @@
+{
+  "module_name": "analogbits-wrpll-cln28hpc.h",
+  "hash_id": "0e8680ba27a20a57001d657e6bc73b446e88adcebe79e2cef4f13b4ebf366d87",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/clk/analogbits-wrpll-cln28hpc.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_CLK_ANALOGBITS_WRPLL_CLN28HPC_H\n#define __LINUX_CLK_ANALOGBITS_WRPLL_CLN28HPC_H\n\n#include <linux/types.h>\n\n \n#define DIVQ_VALUES\t\t\t\t6\n\n \n#define WRPLL_FLAGS_BYPASS_SHIFT\t\t0\n#define WRPLL_FLAGS_BYPASS_MASK\t\tBIT(WRPLL_FLAGS_BYPASS_SHIFT)\n#define WRPLL_FLAGS_RESET_SHIFT\t\t1\n#define WRPLL_FLAGS_RESET_MASK\t\tBIT(WRPLL_FLAGS_RESET_SHIFT)\n#define WRPLL_FLAGS_INT_FEEDBACK_SHIFT\t2\n#define WRPLL_FLAGS_INT_FEEDBACK_MASK\tBIT(WRPLL_FLAGS_INT_FEEDBACK_SHIFT)\n#define WRPLL_FLAGS_EXT_FEEDBACK_SHIFT\t3\n#define WRPLL_FLAGS_EXT_FEEDBACK_MASK\tBIT(WRPLL_FLAGS_EXT_FEEDBACK_SHIFT)\n\n \nstruct wrpll_cfg {\n\tu8 divr;\n\tu8 divq;\n\tu8 range;\n\tu8 flags;\n\tu16 divf;\n \n\tu32 output_rate_cache[DIVQ_VALUES];\n\tunsigned long parent_rate;\n\tu8 max_r;\n\tu8 init_r;\n};\n\nint wrpll_configure_for_rate(struct wrpll_cfg *c, u32 target_rate,\n\t\t\t     unsigned long parent_rate);\n\nunsigned int wrpll_calc_max_lock_us(const struct wrpll_cfg *c);\n\nunsigned long wrpll_calc_output_rate(const struct wrpll_cfg *c,\n\t\t\t\t     unsigned long parent_rate);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

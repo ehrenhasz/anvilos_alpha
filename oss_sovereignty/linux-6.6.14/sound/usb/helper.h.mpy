@@ -1,0 +1,9 @@
+{
+  "module_name": "helper.h",
+  "hash_id": "24e242acd00e67e5cd104b0ec11872d4a47cf56f1727a717780204084035b8f5",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/helper.h",
+  "human_readable_source": " \n#ifndef __USBAUDIO_HELPER_H\n#define __USBAUDIO_HELPER_H\n\nunsigned int snd_usb_combine_bytes(unsigned char *bytes, int size);\n\nvoid *snd_usb_find_desc(void *descstart, int desclen, void *after, u8 dtype);\nvoid *snd_usb_find_csint_desc(void *descstart, int desclen, void *after, u8 dsubtype);\n\nint snd_usb_ctl_msg(struct usb_device *dev, unsigned int pipe,\n\t\t    __u8 request, __u8 requesttype, __u16 value, __u16 index,\n\t\t    void *data, __u16 size);\n\nunsigned char snd_usb_parse_datainterval(struct snd_usb_audio *chip,\n\t\t\t\t\t struct usb_host_interface *alts);\n\nstruct usb_host_interface *\nsnd_usb_get_host_interface(struct snd_usb_audio *chip, int ifnum, int altsetting);\n\n \n#define get_iface_desc(iface)\t(&(iface)->desc)\n#define get_endpoint(alt,ep)\t(&(alt)->endpoint[ep].desc)\n#define get_ep_desc(ep)\t\t(&(ep)->desc)\n#define get_cfg_desc(cfg)\t(&(cfg)->desc)\n\n#define snd_usb_get_speed(dev) ((dev)->speed)\n\nstatic inline int snd_usb_ctrl_intf(struct snd_usb_audio *chip)\n{\n\treturn get_iface_desc(chip->ctrl_intf)->bInterfaceNumber;\n}\n\n \nbool snd_usb_validate_audio_desc(void *p, int protocol);\nbool snd_usb_validate_midi_desc(void *p);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

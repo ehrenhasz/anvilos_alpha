@@ -1,0 +1,9 @@
+{
+  "module_name": "line-display.h",
+  "hash_id": "d238189dddc8bbbbb12e852d9a2d00488121630ffc2d13553c2ce06b70e93e59",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/auxdisplay/line-display.h",
+  "human_readable_source": " \n \n\n#ifndef _LINEDISP_H\n#define _LINEDISP_H\n\n \nstruct linedisp {\n\tstruct device dev;\n\tstruct timer_list timer;\n\tvoid (*update)(struct linedisp *linedisp);\n\tchar *buf;\n\tchar *message;\n\tunsigned int num_chars;\n\tunsigned int message_len;\n\tunsigned int scroll_pos;\n\tunsigned int scroll_rate;\n};\n\nint linedisp_register(struct linedisp *linedisp, struct device *parent,\n\t\t      unsigned int num_chars, char *buf,\n\t\t      void (*update)(struct linedisp *linedisp));\nvoid linedisp_unregister(struct linedisp *linedisp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

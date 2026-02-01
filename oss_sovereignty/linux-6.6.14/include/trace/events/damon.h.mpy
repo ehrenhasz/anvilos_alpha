@@ -1,0 +1,9 @@
+{
+  "module_name": "damon.h",
+  "hash_id": "11b55a303da2b454280217a93e3450d79764c4356d1553089be214a304aaed8d",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/damon.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM damon\n\n#if !defined(_TRACE_DAMON_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_DAMON_H\n\n#include <linux/damon.h>\n#include <linux/types.h>\n#include <linux/tracepoint.h>\n\nTRACE_EVENT(damon_aggregated,\n\n\tTP_PROTO(struct damon_target *t, unsigned int target_id,\n\t\tstruct damon_region *r, unsigned int nr_regions),\n\n\tTP_ARGS(t, target_id, r, nr_regions),\n\n\tTP_STRUCT__entry(\n\t\t__field(unsigned long, target_id)\n\t\t__field(unsigned int, nr_regions)\n\t\t__field(unsigned long, start)\n\t\t__field(unsigned long, end)\n\t\t__field(unsigned int, nr_accesses)\n\t\t__field(unsigned int, age)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->target_id = target_id;\n\t\t__entry->nr_regions = nr_regions;\n\t\t__entry->start = r->ar.start;\n\t\t__entry->end = r->ar.end;\n\t\t__entry->nr_accesses = r->nr_accesses;\n\t\t__entry->age = r->age;\n\t),\n\n\tTP_printk(\"target_id=%lu nr_regions=%u %lu-%lu: %u %u\",\n\t\t\t__entry->target_id, __entry->nr_regions,\n\t\t\t__entry->start, __entry->end,\n\t\t\t__entry->nr_accesses, __entry->age)\n);\n\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

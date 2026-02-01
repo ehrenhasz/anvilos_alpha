@@ -1,0 +1,9 @@
+{
+  "module_name": "renameat.c",
+  "hash_id": "eaad927895eb0a5b9f090557ef59cba01fb6b18a15b73a7a1eac612206f6c540",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/renameat.c",
+  "human_readable_source": "\n\n\n#include \"trace/beauty/beauty.h\"\n\nstatic size_t renameat2__scnprintf_flags(unsigned long flags, char *bf, size_t size, bool show_prefix)\n{\n#include \"trace/beauty/generated/rename_flags_array.c\"\n       static DEFINE_STRARRAY(rename_flags, \"RENAME_\");\n\n       return strarray__scnprintf_flags(&strarray__rename_flags, bf, size, show_prefix, flags);\n}\n\nsize_t syscall_arg__scnprintf_renameat2_flags(char *bf, size_t size, struct syscall_arg *arg)\n{\n\tunsigned long flags = arg->val;\n\treturn renameat2__scnprintf_flags(flags, bf, size, arg->show_string_prefix);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

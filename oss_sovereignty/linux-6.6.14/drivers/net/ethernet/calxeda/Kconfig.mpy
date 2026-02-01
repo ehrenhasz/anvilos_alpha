@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b5bf1ba583411e3d68259b589c5e3bfb7b45a8771536392267b5ff4e7646c5cc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/calxeda/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NET_CALXEDA_XGMAC\n\ttristate \"Calxeda 1G/10G XGMAC Ethernet driver\"\n\tdepends on HAS_IOMEM\n\tdepends on ARCH_HIGHBANK || COMPILE_TEST\n\tselect CRC32\n\thelp\n\t  This is the driver for the XGMAC Ethernet IP block found on Calxeda\n\t  Highbank platforms.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

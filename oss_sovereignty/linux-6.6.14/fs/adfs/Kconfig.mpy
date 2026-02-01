@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b53517c20ea2163e82f5743d73c8b7b9784d23d856e1c8a1b837ca2c94725650",
+  "original_prompt": "Ingested from linux-6.6.14/fs/adfs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig ADFS_FS\n\ttristate \"ADFS file system support\"\n\tdepends on BLOCK\n\tselect BUFFER_HEAD\n\thelp\n\t  The Acorn Disc Filing System is the standard file system of the\n\t  RiscOS operating system which runs on Acorn's ARM-based Risc PC\n\t  systems and the Acorn Archimedes range of machines. If you say Y\n\t  here, Linux will be able to read from ADFS partitions on hard drives\n\t  and from ADFS-formatted floppy discs. If you also want to be able to\n\t  write to those devices, say Y to \"ADFS write support\" below.\n\n\t  The ADFS partition should be the first partition (i.e.,\n\t  /dev/[hs]d?1) on each of your drives. Please read the file\n\t  <file:Documentation/filesystems/adfs.rst> for further details.\n\n\t  To compile this code as a module, choose M here: the module will be\n\t  called adfs.\n\n\t  If unsure, say N.\n\nconfig ADFS_FS_RW\n\tbool \"ADFS write support (DANGEROUS)\"\n\tdepends on ADFS_FS\n\thelp\n\t  If you say Y here, you will be able to write to ADFS partitions on\n\t  hard drives and ADFS-formatted floppy disks. This is experimental\n\t  codes, so if you're unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

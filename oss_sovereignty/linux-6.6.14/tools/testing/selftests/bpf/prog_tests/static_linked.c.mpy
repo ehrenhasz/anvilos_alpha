@@ -1,0 +1,9 @@
+{
+  "module_name": "static_linked.c",
+  "hash_id": "0cb49f418f1ca7bb8b45b0b95ed14a5cef065b5c49a8ab97624dee70b935367f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/static_linked.c",
+  "human_readable_source": "\n \n\n#include <test_progs.h>\n#include \"test_static_linked.skel.h\"\n\nvoid test_static_linked(void)\n{\n\tint err;\n\tstruct test_static_linked* skel;\n\n\tskel = test_static_linked__open();\n\tif (!ASSERT_OK_PTR(skel, \"skel_open\"))\n\t\treturn;\n\n\tskel->rodata->rovar1 = 1;\n\tskel->rodata->rovar2 = 4;\n\n\terr = test_static_linked__load(skel);\n\tif (!ASSERT_OK(err, \"skel_load\"))\n\t\tgoto cleanup;\n\n\terr = test_static_linked__attach(skel);\n\tif (!ASSERT_OK(err, \"skel_attach\"))\n\t\tgoto cleanup;\n\n\t \n\tusleep(1);\n\n\tASSERT_EQ(skel->data->var1, 1 * 2 + 2 + 3, \"var1\");\n\tASSERT_EQ(skel->data->var2, 4 * 3 + 5 + 6, \"var2\");\n\ncleanup:\n\ttest_static_linked__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

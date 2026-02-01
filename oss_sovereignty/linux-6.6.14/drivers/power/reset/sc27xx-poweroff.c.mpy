@@ -1,0 +1,9 @@
+{
+  "module_name": "sc27xx-poweroff.c",
+  "hash_id": "775b8b1b2e2544ef416e08232f2884ca473efd753ebc3df59642b41da9a234df",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/power/reset/sc27xx-poweroff.c",
+  "human_readable_source": "\n \n\n#include <linux/cpu.h>\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/platform_device.h>\n#include <linux/pm.h>\n#include <linux/regmap.h>\n#include <linux/syscore_ops.h>\n\n#define SC27XX_PWR_PD_HW\t0xc2c\n#define SC27XX_PWR_OFF_EN\tBIT(0)\n#define SC27XX_SLP_CTRL\t\t0xdf0\n#define SC27XX_LDO_XTL_EN\tBIT(3)\n\nstatic struct regmap *regmap;\n\n \nstatic void sc27xx_poweroff_shutdown(void)\n{\n#ifdef CONFIG_HOTPLUG_CPU\n\tint cpu;\n\n\tfor_each_online_cpu(cpu) {\n\t\tif (cpu != smp_processor_id())\n\t\t\tremove_cpu(cpu);\n\t}\n#endif\n}\n\nstatic struct syscore_ops poweroff_syscore_ops = {\n\t.shutdown = sc27xx_poweroff_shutdown,\n};\n\nstatic void sc27xx_poweroff_do_poweroff(void)\n{\n\t \n\tregmap_write(regmap, SC27XX_SLP_CTRL, SC27XX_LDO_XTL_EN);\n\n\tregmap_write(regmap, SC27XX_PWR_PD_HW, SC27XX_PWR_OFF_EN);\n}\n\nstatic int sc27xx_poweroff_probe(struct platform_device *pdev)\n{\n\tif (regmap)\n\t\treturn -EINVAL;\n\n\tregmap = dev_get_regmap(pdev->dev.parent, NULL);\n\tif (!regmap)\n\t\treturn -ENODEV;\n\n\tpm_power_off = sc27xx_poweroff_do_poweroff;\n\tregister_syscore_ops(&poweroff_syscore_ops);\n\treturn 0;\n}\n\nstatic struct platform_driver sc27xx_poweroff_driver = {\n\t.probe = sc27xx_poweroff_probe,\n\t.driver = {\n\t\t.name = \"sc27xx-poweroff\",\n\t},\n};\nmodule_platform_driver(sc27xx_poweroff_driver);\n\nMODULE_DESCRIPTION(\"Power off driver for SC27XX PMIC Device\");\nMODULE_AUTHOR(\"Baolin Wang <baolin.wang@unisoc.com>\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

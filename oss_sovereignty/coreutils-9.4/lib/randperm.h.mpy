@@ -1,0 +1,9 @@
+{
+  "module_name": "randperm.h",
+  "hash_id": "a1de66474494ece228ae1dc9037da42658638b8a9bf0dc93e3dcef64a3a26d0f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/randperm.h",
+  "human_readable_source": "#include \"randint.h\"\n#include <stddef.h>\n#include <stdlib.h>\nsize_t randperm_bound (size_t, size_t) _GL_ATTRIBUTE_CONST;\nsize_t *randperm_new (struct randint_source *, size_t, size_t)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

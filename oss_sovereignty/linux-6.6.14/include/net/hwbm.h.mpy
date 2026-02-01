@@ -1,0 +1,9 @@
+{
+  "module_name": "hwbm.h",
+  "hash_id": "829c6bb7af819a042582f7a9416baf71d8b117813bd7243393ca23956b99e5c3",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/hwbm.h",
+  "human_readable_source": " \n#ifndef _HWBM_H\n#define _HWBM_H\n\n#include <linux/mutex.h>\n\nstruct hwbm_pool {\n\t \n\tint size;\n\t \n\tint frag_size;\n\t \n\tint buf_num;\n\t \n\tint (*construct)(struct hwbm_pool *bm_pool, void *buf);\n\t \n\tstruct mutex buf_lock;\n\t \n\tvoid *priv;\n};\n#ifdef CONFIG_HWBM\nvoid hwbm_buf_free(struct hwbm_pool *bm_pool, void *buf);\nint hwbm_pool_refill(struct hwbm_pool *bm_pool, gfp_t gfp);\nint hwbm_pool_add(struct hwbm_pool *bm_pool, unsigned int buf_num);\n#else\nstatic inline void hwbm_buf_free(struct hwbm_pool *bm_pool, void *buf) {}\n\nstatic inline int hwbm_pool_refill(struct hwbm_pool *bm_pool, gfp_t gfp)\n{ return 0; }\n\nstatic inline int hwbm_pool_add(struct hwbm_pool *bm_pool,\n\t\t\t\tunsigned int buf_num)\n{ return 0; }\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

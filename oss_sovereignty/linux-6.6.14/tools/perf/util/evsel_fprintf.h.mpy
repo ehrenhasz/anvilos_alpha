@@ -1,0 +1,9 @@
+{
+  "module_name": "evsel_fprintf.h",
+  "hash_id": "91f89284abef65b7cba645f4aad50ae00ff4f81c7a6836b7b7fbe46d57541dc6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/evsel_fprintf.h",
+  "human_readable_source": "\n#ifndef __PERF_EVSEL_FPRINTF_H\n#define __PERF_EVSEL_FPRINTF_H 1\n\n#include <stdio.h>\n#include <stdbool.h>\n\nstruct evsel;\n\nstruct perf_attr_details {\n\tbool freq;\n\tbool verbose;\n\tbool event_group;\n\tbool force;\n\tbool trace_fields;\n};\n\nint evsel__fprintf(struct evsel *evsel, struct perf_attr_details *details, FILE *fp);\n\n#define EVSEL__PRINT_IP\t\t\t(1<<0)\n#define EVSEL__PRINT_SYM\t\t(1<<1)\n#define EVSEL__PRINT_DSO\t\t(1<<2)\n#define EVSEL__PRINT_SYMOFFSET\t\t(1<<3)\n#define EVSEL__PRINT_ONELINE\t\t(1<<4)\n#define EVSEL__PRINT_SRCLINE\t\t(1<<5)\n#define EVSEL__PRINT_UNKNOWN_AS_ADDR\t(1<<6)\n#define EVSEL__PRINT_CALLCHAIN_ARROW\t(1<<7)\n#define EVSEL__PRINT_SKIP_IGNORED\t(1<<8)\n#define EVSEL__PRINT_DSOFF\t\t(1<<9)\n\nstruct addr_location;\nstruct perf_event_attr;\nstruct perf_sample;\nstruct callchain_cursor;\nstruct strlist;\n\nint sample__fprintf_callchain(struct perf_sample *sample, int left_alignment,\n\t\t\t      unsigned int print_opts, struct callchain_cursor *cursor,\n\t\t\t      struct strlist *bt_stop_list, FILE *fp);\n\nint sample__fprintf_sym(struct perf_sample *sample, struct addr_location *al,\n\t\t\tint left_alignment, unsigned int print_opts,\n\t\t\tstruct callchain_cursor *cursor,\n\t\t\tstruct strlist *bt_stop_list, FILE *fp);\n\ntypedef int (*attr__fprintf_f)(FILE *, const char *, const char *, void *);\n\nint perf_event_attr__fprintf(FILE *fp, struct perf_event_attr *attr,\n\t\t\t     attr__fprintf_f attr__fprintf, void *priv);\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

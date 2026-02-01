@@ -1,0 +1,9 @@
+{
+  "module_name": "pcs-xpcs.h",
+  "hash_id": "343da71483326840d5ef1e58535fb868724901d1bfa5e0491e800dc8156a0535",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pcs/pcs-xpcs.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_PCS_XPCS_H\n#define __LINUX_PCS_XPCS_H\n\n#include <linux/phy.h>\n#include <linux/phylink.h>\n\n#define NXP_SJA1105_XPCS_ID\t\t0x00000010\n#define NXP_SJA1110_XPCS_ID\t\t0x00000020\n\n \n#define DW_AN_C73\t\t\t1\n#define DW_AN_C37_SGMII\t\t\t2\n#define DW_2500BASEX\t\t\t3\n#define DW_AN_C37_1000BASEX\t\t4\n#define DW_10GBASER\t\t\t5\n\n \n#define DW_OUI_WX\t\t\t0x0018fc80\n\n \n#define DW_DEV_TXGBE\t\t\tBIT(0)\n\nstruct xpcs_id;\n\nstruct dw_xpcs {\n\tstruct mdio_device *mdiodev;\n\tconst struct xpcs_id *id;\n\tstruct phylink_pcs pcs;\n\tphy_interface_t interface;\n\tint dev_flag;\n};\n\nint xpcs_get_an_mode(struct dw_xpcs *xpcs, phy_interface_t interface);\nvoid xpcs_link_up(struct phylink_pcs *pcs, unsigned int neg_mode,\n\t\t  phy_interface_t interface, int speed, int duplex);\nint xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,\n\t\t   const unsigned long *advertising, unsigned int neg_mode);\nvoid xpcs_get_interfaces(struct dw_xpcs *xpcs, unsigned long *interfaces);\nint xpcs_config_eee(struct dw_xpcs *xpcs, int mult_fact_100ns,\n\t\t    int enable);\nstruct dw_xpcs *xpcs_create_mdiodev(struct mii_bus *bus, int addr,\n\t\t\t\t    phy_interface_t interface);\nvoid xpcs_destroy(struct dw_xpcs *xpcs);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

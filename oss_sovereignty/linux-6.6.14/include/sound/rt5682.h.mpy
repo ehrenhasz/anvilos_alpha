@@ -1,0 +1,9 @@
+{
+  "module_name": "rt5682.h",
+  "hash_id": "4c290dc864edad46bac2dd5ff8fe8d2b4aae08493229b803f8f06ae31fb73984",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/rt5682.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SND_RT5682_H\n#define __LINUX_SND_RT5682_H\n\nenum rt5682_dmic1_data_pin {\n\tRT5682_DMIC1_NULL,\n\tRT5682_DMIC1_DATA_GPIO2,\n\tRT5682_DMIC1_DATA_GPIO5,\n};\n\nenum rt5682_dmic1_clk_pin {\n\tRT5682_DMIC1_CLK_GPIO1,\n\tRT5682_DMIC1_CLK_GPIO3,\n};\n\nenum rt5682_jd_src {\n\tRT5682_JD_NULL,\n\tRT5682_JD1,\n};\n\nenum rt5682_dai_clks {\n\tRT5682_DAI_WCLK_IDX,\n\tRT5682_DAI_BCLK_IDX,\n\tRT5682_DAI_NUM_CLKS,\n};\n\nstruct rt5682_platform_data {\n\tenum rt5682_dmic1_data_pin dmic1_data_pin;\n\tenum rt5682_dmic1_clk_pin dmic1_clk_pin;\n\tenum rt5682_jd_src jd_src;\n\tunsigned int btndet_delay;\n\tunsigned int dmic_clk_rate;\n\tunsigned int dmic_delay;\n\tbool dmic_clk_driving_high;\n\n\tconst char *dai_clk_names[RT5682_DAI_NUM_CLKS];\n};\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

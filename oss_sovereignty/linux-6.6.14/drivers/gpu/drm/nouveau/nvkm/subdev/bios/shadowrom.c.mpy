@@ -1,0 +1,9 @@
+{
+  "module_name": "shadowrom.c",
+  "hash_id": "7d1d5c70059d41253d0853d9dcddf629957bcb54fdfef8444448de2b96c9dae8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bios/shadowrom.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <subdev/pci.h>\n\nstatic u32\nnvbios_prom_read(void *data, u32 offset, u32 length, struct nvkm_bios *bios)\n{\n\tstruct nvkm_device *device = data;\n\tu32 i;\n\tif (offset + length <= 0x00100000) {\n\t\tfor (i = offset; i < offset + length; i += 4)\n\t\t\t*(u32 *)&bios->data[i] = nvkm_rd32(device, 0x300000 + i);\n\t\treturn length;\n\t}\n\treturn 0;\n}\n\nstatic void\nnvbios_prom_fini(void *data)\n{\n\tstruct nvkm_device *device = data;\n\tnvkm_pci_rom_shadow(device->pci, true);\n}\n\nstatic void *\nnvbios_prom_init(struct nvkm_bios *bios, const char *name)\n{\n\tstruct nvkm_device *device = bios->subdev.device;\n\tif (device->card_type == NV_40 && device->chipset >= 0x4c)\n\t\treturn ERR_PTR(-ENODEV);\n\tnvkm_pci_rom_shadow(device->pci, false);\n\treturn device;\n}\n\nconst struct nvbios_source\nnvbios_prom = {\n\t.name = \"PROM\",\n\t.init = nvbios_prom_init,\n\t.fini = nvbios_prom_fini,\n\t.read = nvbios_prom_read,\n\t.rw = false,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

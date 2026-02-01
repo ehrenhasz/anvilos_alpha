@@ -1,0 +1,9 @@
+{
+  "module_name": "efx_channels.h",
+  "hash_id": "0ff6b21a816911a9e81544975c59d38e58b7eadc1f8236961e0d4e4184fecd27",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/siena/efx_channels.h",
+  "human_readable_source": " \n \n\n#ifndef EFX_SIENA_CHANNELS_H\n#define EFX_SIENA_CHANNELS_H\n\nextern unsigned int efx_siena_interrupt_mode;\nextern unsigned int efx_siena_rss_cpus;\n\nint efx_siena_probe_interrupts(struct efx_nic *efx);\nvoid efx_siena_remove_interrupts(struct efx_nic *efx);\nint efx_siena_enable_interrupts(struct efx_nic *efx);\nvoid efx_siena_disable_interrupts(struct efx_nic *efx);\n\nvoid efx_siena_set_interrupt_affinity(struct efx_nic *efx);\nvoid efx_siena_clear_interrupt_affinity(struct efx_nic *efx);\n\nvoid efx_siena_start_eventq(struct efx_channel *channel);\nvoid efx_siena_stop_eventq(struct efx_channel *channel);\n\nint efx_siena_realloc_channels(struct efx_nic *efx, u32 rxq_entries,\n\t\t\t       u32 txq_entries);\nvoid efx_siena_set_channel_names(struct efx_nic *efx);\nint efx_siena_init_channels(struct efx_nic *efx);\nint efx_siena_probe_channels(struct efx_nic *efx);\nint efx_siena_set_channels(struct efx_nic *efx);\nvoid efx_siena_remove_channel(struct efx_channel *channel);\nvoid efx_siena_remove_channels(struct efx_nic *efx);\nvoid efx_siena_fini_channels(struct efx_nic *efx);\nvoid efx_siena_start_channels(struct efx_nic *efx);\nvoid efx_siena_stop_channels(struct efx_nic *efx);\n\nvoid efx_siena_init_napi(struct efx_nic *efx);\nvoid efx_siena_fini_napi(struct efx_nic *efx);\n\nvoid efx_siena_channel_dummy_op_void(struct efx_channel *channel);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

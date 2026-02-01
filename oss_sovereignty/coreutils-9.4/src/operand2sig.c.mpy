@@ -1,0 +1,9 @@
+{
+  "module_name": "operand2sig.c",
+  "hash_id": "af77c4e263867de3001882fe0d3174662a8c38f24dfbbf048b7cb1234af4d1ab",
+  "original_prompt": "Ingested from coreutils-9.4/src/operand2sig.c",
+  "human_readable_source": " \n\n\n \n\n#include <config.h>\n#include <stdio.h>\n#include <sys/types.h>\n#include <sys/wait.h>\n\n#include \"system.h\"\n#include \"quote.h\"\n#include \"sig2str.h\"\n#include \"operand2sig.h\"\n\nextern int\noperand2sig (char const *operand, char *signame)\n{\n  int signum;\n\n  if (ISDIGIT (*operand))\n    {\n       \n          signum &= signum >= 0xFF ? 0xFF : 0x7F;\n        }\n    }\n  else\n    {\n       \n      char *upcased = xstrdup (operand);\n      char *p;\n      for (p = upcased; *p; p++)\n        if (strchr (\"abcdefghijklmnopqrstuvwxyz\", *p))\n          *p += 'A' - 'a';\n\n       \n      if (!(str2sig (upcased, &signum) == 0\n            || (upcased[0] == 'S' && upcased[1] == 'I' && upcased[2] == 'G'\n                && str2sig (upcased + 3, &signum) == 0)))\n        signum = -1;\n\n      free (upcased);\n    }\n\n  if (signum < 0 || sig2str (signum, signame) != 0)\n    {\n      error (0, 0, _(\"%s: invalid signal\"), quote (operand));\n      return -1;\n    }\n\n  return signum;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

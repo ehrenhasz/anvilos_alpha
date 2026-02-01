@@ -1,0 +1,9 @@
+{
+  "module_name": "adau1372-spi.c",
+  "hash_id": "312c784306e00be77c954a1b111e270b87a813b41a572d4a4b370f8dd9d91281",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/adau1372-spi.c",
+  "human_readable_source": "\n \n\n#include <linux/mod_devicetable.h>\n#include <linux/module.h>\n#include <linux/regmap.h>\n#include <linux/spi/spi.h>\n#include <sound/soc.h>\n\n#include \"adau1372.h\"\n\nstatic void adau1372_spi_switch_mode(struct device *dev)\n{\n\tstruct spi_device *spi = to_spi_device(dev);\n\n\t \n\tspi_w8r8(spi, 0x00);\n\tspi_w8r8(spi, 0x00);\n\tspi_w8r8(spi, 0x00);\n}\n\nstatic int adau1372_spi_probe(struct spi_device *spi)\n{\n\tstruct regmap_config config;\n\n\tconfig = adau1372_regmap_config;\n\tconfig.read_flag_mask = 0x1;\n\n\treturn adau1372_probe(&spi->dev,\n\t\tdevm_regmap_init_spi(spi, &config), adau1372_spi_switch_mode);\n}\n\nstatic const struct spi_device_id adau1372_spi_id[] = {\n\t{ \"adau1372\", 0 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(spi, adau1372_spi_id);\n\nstatic struct spi_driver adau1372_spi_driver = {\n\t.driver = {\n\t\t.name = \"adau1372\",\n\t},\n\t.probe = adau1372_spi_probe,\n\t.id_table = adau1372_spi_id,\n};\nmodule_spi_driver(adau1372_spi_driver);\n\nMODULE_DESCRIPTION(\"ASoC ADAU1372 CODEC SPI driver\");\nMODULE_AUTHOR(\"Lars-Peter Clausen <lars@metafoo.de>\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

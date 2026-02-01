@@ -1,0 +1,9 @@
+{
+  "module_name": "max2165.h",
+  "hash_id": "15431a61b21da4d951307364d7e6eac43650a790efb8154064d46e14437d4bf8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/max2165.h",
+  "human_readable_source": " \n \n\n#ifndef __MAX2165_H__\n#define __MAX2165_H__\n\nstruct dvb_frontend;\nstruct i2c_adapter;\n\nstruct max2165_config {\n\tu8 i2c_address;\n\tu8 osc_clk;  \n};\n\n#if IS_REACHABLE(CONFIG_MEDIA_TUNER_MAX2165)\nextern struct dvb_frontend *max2165_attach(struct dvb_frontend *fe,\n\tstruct i2c_adapter *i2c,\n\tstruct max2165_config *cfg);\n#else\nstatic inline struct dvb_frontend *max2165_attach(struct dvb_frontend *fe,\n\tstruct i2c_adapter *i2c,\n\tstruct max2165_config *cfg)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

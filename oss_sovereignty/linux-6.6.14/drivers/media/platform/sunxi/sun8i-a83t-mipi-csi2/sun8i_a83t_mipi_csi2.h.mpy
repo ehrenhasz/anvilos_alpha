@@ -1,0 +1,9 @@
+{
+  "module_name": "sun8i_a83t_mipi_csi2.h",
+  "hash_id": "ee90afad4b94601d773eb1ef3e579d61b58413198ce3b769fdce02507df0de4f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/sunxi/sun8i-a83t-mipi-csi2/sun8i_a83t_mipi_csi2.h",
+  "human_readable_source": " \n \n\n#ifndef _SUN8I_A83T_MIPI_CSI2_H_\n#define _SUN8I_A83T_MIPI_CSI2_H_\n\n#include <linux/phy/phy.h>\n#include <linux/regmap.h>\n#include <linux/reset.h>\n#include <media/v4l2-device.h>\n#include <media/v4l2-fwnode.h>\n\n#define SUN8I_A83T_MIPI_CSI2_NAME\t\"sun8i-a83t-mipi-csi2\"\n\nenum sun8i_a83t_mipi_csi2_pad {\n\tSUN8I_A83T_MIPI_CSI2_PAD_SINK\t= 0,\n\tSUN8I_A83T_MIPI_CSI2_PAD_SOURCE\t= 1,\n\tSUN8I_A83T_MIPI_CSI2_PAD_COUNT\t= 2,\n};\n\nstruct sun8i_a83t_mipi_csi2_format {\n\tu32\tmbus_code;\n\tu8\tdata_type;\n\tu32\tbpp;\n};\n\nstruct sun8i_a83t_mipi_csi2_bridge {\n\tstruct v4l2_subdev\t\tsubdev;\n\tstruct media_pad\t\tpads[SUN8I_A83T_MIPI_CSI2_PAD_COUNT];\n\tstruct v4l2_fwnode_endpoint\tendpoint;\n\tstruct v4l2_async_notifier\tnotifier;\n\tstruct v4l2_mbus_framefmt\tmbus_format;\n\tstruct mutex\t\t\tlock;  \n\n\tstruct v4l2_subdev\t\t*source_subdev;\n};\n\nstruct sun8i_a83t_mipi_csi2_device {\n\tstruct device\t\t\t\t*dev;\n\n\tstruct regmap\t\t\t\t*regmap;\n\tstruct clk\t\t\t\t*clock_mod;\n\tstruct clk\t\t\t\t*clock_mipi;\n\tstruct clk\t\t\t\t*clock_misc;\n\tstruct reset_control\t\t\t*reset;\n\tstruct phy\t\t\t\t*dphy;\n\n\tstruct sun8i_a83t_mipi_csi2_bridge\tbridge;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

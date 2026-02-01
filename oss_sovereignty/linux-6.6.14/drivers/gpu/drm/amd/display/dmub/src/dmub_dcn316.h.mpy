@@ -1,0 +1,9 @@
+{
+  "module_name": "dmub_dcn316.h",
+  "hash_id": "3c15a1697a36358796f281dffe3890aab2755ead42a703f60baaba2c668ace0f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dmub/src/dmub_dcn316.h",
+  "human_readable_source": " \n\n#ifndef _DMUB_DCN316_H_\n#define _DMUB_DCN316_H_\n\n#include \"dmub_dcn31.h\"\n\nextern const struct dmub_srv_dcn31_regs dmub_srv_dcn316_regs;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

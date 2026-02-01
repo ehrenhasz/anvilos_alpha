@@ -1,0 +1,9 @@
+{
+  "module_name": "mmal-msg-common.h",
+  "hash_id": "cb96140fdb9718f676f0be611a766dc4386e2dd554f7ef7d6d06628c29aff08e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vc04_services/vchiq-mmal/mmal-msg-common.h",
+  "human_readable_source": " \n \n\n#ifndef MMAL_MSG_COMMON_H\n#define MMAL_MSG_COMMON_H\n\n#include <linux/types.h>\n\nenum mmal_msg_status {\n\tMMAL_MSG_STATUS_SUCCESS = 0,  \n\tMMAL_MSG_STATUS_ENOMEM,       \n\tMMAL_MSG_STATUS_ENOSPC,       \n\tMMAL_MSG_STATUS_EINVAL,       \n\tMMAL_MSG_STATUS_ENOSYS,       \n\tMMAL_MSG_STATUS_ENOENT,       \n\tMMAL_MSG_STATUS_ENXIO,        \n\tMMAL_MSG_STATUS_EIO,          \n\tMMAL_MSG_STATUS_ESPIPE,       \n\tMMAL_MSG_STATUS_ECORRUPT,     \n\tMMAL_MSG_STATUS_ENOTREADY,    \n\tMMAL_MSG_STATUS_ECONFIG,      \n\tMMAL_MSG_STATUS_EISCONN,      \n\tMMAL_MSG_STATUS_ENOTCONN,     \n\tMMAL_MSG_STATUS_EAGAIN,       \n\tMMAL_MSG_STATUS_EFAULT,       \n};\n\nstruct mmal_rect {\n\ts32 x;       \n\ts32 y;       \n\ts32 width;   \n\ts32 height;  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

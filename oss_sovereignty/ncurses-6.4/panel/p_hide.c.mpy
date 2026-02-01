@@ -1,0 +1,9 @@
+{
+  "module_name": "p_hide.c",
+  "hash_id": "8790c48b07f764ae8a450c54f143a128dc5b958b90f61c152440aa090437463b",
+  "original_prompt": "Ingested from ncurses-6.4/panel/p_hide.c",
+  "human_readable_source": " \n\n \n\n \n#include \"panel.priv.h\"\n\nMODULE_ID(\"$Id: p_hide.c,v 1.14 2020/09/26 18:02:35 tom Exp $\")\n\nPANEL_EXPORT(int)\nhide_panel(register PANEL * pan)\n{\n  int err = ERR;\n\n  T((T_CALLED(\"hide_panel(%p)\"), (void *)pan));\n\n  if (pan)\n    {\n      GetHook(pan);\n\n      dBug((\"--> hide_panel %s\", USER_PTR(pan->user, 1)));\n      dStack(\"<u%d>\", 1, pan);\n\n      HIDE_PANEL(pan, err, ERR);\n\n      err = OK;\n\n      dStack(\"<u%d>\", 9, pan);\n    }\n  returnCode(err);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

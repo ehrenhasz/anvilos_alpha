@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "19bab008fa8452ba997fde4c3cfa587947cba610cf084b5b53255b24b6e888a0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192u/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig RTL8192U\n\ttristate \"RealTek RTL8192U Wireless LAN NIC driver\"\n\tdepends on PCI && WLAN && USB\n\tdepends on m\n\tselect WIRELESS_EXT\n\tselect WEXT_PRIV\n\tselect CRC32\n\tselect CRYPTO\n\tselect CRYPTO_AES\n\tselect CRYPTO_CCM\n\tselect CRYPTO_LIB_ARC4\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio_private.h",
+  "hash_id": "c3796db4d941ac754c90fc54a57626ec4746f052a55e14aafc50e4a3fd41c84e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/host/gpio_private.h",
+  "human_readable_source": " \n \n\n#ifndef __GPIO_PRIVATE_H_INCLUDED__\n#define __GPIO_PRIVATE_H_INCLUDED__\n\n#include \"gpio_public.h\"\n\n#include \"device_access.h\"\n\n#include \"assert_support.h\"\n\nSTORAGE_CLASS_GPIO_C void gpio_reg_store(\n    const gpio_ID_t\tID,\n    const unsigned int\t\treg,\n    const hrt_data\t\t\tvalue)\n{\n\tOP___assert(ID < N_GPIO_ID);\n\tOP___assert(GPIO_BASE[ID] != (hrt_address) - 1);\n\tia_css_device_store_uint32(GPIO_BASE[ID] + reg * sizeof(hrt_data), value);\n\treturn;\n}\n\nSTORAGE_CLASS_GPIO_C hrt_data gpio_reg_load(\n    const gpio_ID_t\tID,\n    const unsigned int\t\treg)\n{\n\tOP___assert(ID < N_GPIO_ID);\n\tOP___assert(GPIO_BASE[ID] != (hrt_address) - 1);\n\treturn ia_css_device_load_uint32(GPIO_BASE[ID] + reg * sizeof(hrt_data));\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

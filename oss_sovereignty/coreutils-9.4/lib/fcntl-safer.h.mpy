@@ -1,0 +1,9 @@
+{
+  "module_name": "fcntl-safer.h",
+  "hash_id": "6d7b0f762cb7065e5d507f77d4b3c0e30a33342ae1cc48148e2b0e06793e8063",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fcntl-safer.h",
+  "human_readable_source": " \n\n#include <sys/types.h>\n\nint open_safer (char const *, int, ...);\nint creat_safer (char const *, mode_t);\n\n#if GNULIB_OPENAT_SAFER\nint openat_safer (int, char const *, int, ...);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dma-mapping.h",
+  "hash_id": "83af0fa309648cb7591c294c2534a4c5de6b5f0195808f753efde0effd2e24b1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/linux/dma-mapping.h",
+  "human_readable_source": " \n#ifndef _LINUX_DMA_MAPPING_H\n#define _LINUX_DMA_MAPPING_H\n\n#ifdef CONFIG_HAS_DMA\n# error Virtio userspace code does not support CONFIG_HAS_DMA\n#endif\n\nenum dma_data_direction {\n\tDMA_BIDIRECTIONAL = 0,\n\tDMA_TO_DEVICE = 1,\n\tDMA_FROM_DEVICE = 2,\n\tDMA_NONE = 3,\n};\n\n#define dma_alloc_coherent(d, s, hp, f) ({ \\\n\tvoid *__dma_alloc_coherent_p = kmalloc((s), (f)); \\\n\t*(hp) = (unsigned long)__dma_alloc_coherent_p; \\\n\t__dma_alloc_coherent_p; \\\n})\n\n#define dma_free_coherent(d, s, p, h) kfree(p)\n\n#define dma_map_page(d, p, o, s, dir) (page_to_phys(p) + (o))\n\n#define dma_map_single(d, p, s, dir) (virt_to_phys(p))\n#define dma_map_single_attrs(d, p, s, dir, a) (virt_to_phys(p))\n#define dma_mapping_error(...) (0)\n\n#define dma_unmap_single(d, a, s, r) do { (void)(d); (void)(a); (void)(s); (void)(r); } while (0)\n#define dma_unmap_page(d, a, s, r) do { (void)(d); (void)(a); (void)(s); (void)(r); } while (0)\n\n#define sg_dma_address(sg) (0)\n#define dma_need_sync(v, a) (0)\n#define dma_unmap_single_attrs(d, a, s, r, t) do { \\\n\t(void)(d); (void)(a); (void)(s); (void)(r); (void)(t); \\\n} while (0)\n#define dma_sync_single_range_for_cpu(d, a, o, s, r) do { \\\n\t(void)(d); (void)(a); (void)(o); (void)(s); (void)(r); \\\n} while (0)\n#define dma_sync_single_range_for_device(d, a, o, s, r) do { \\\n\t(void)(d); (void)(a); (void)(o); (void)(s); (void)(r); \\\n} while (0)\n#define dma_max_mapping_size(...) SIZE_MAX\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

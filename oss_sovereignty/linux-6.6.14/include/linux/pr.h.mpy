@@ -1,0 +1,9 @@
+{
+  "module_name": "pr.h",
+  "hash_id": "af9edcf37491c50bd784df02f31029a0ab1e9288fb41de657f31dad34f9dde8c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pr.h",
+  "human_readable_source": " \n#ifndef LINUX_PR_H\n#define LINUX_PR_H\n\n#include <uapi/linux/pr.h>\n\nstruct pr_keys {\n\tu32\tgeneration;\n\tu32\tnum_keys;\n\tu64\tkeys[];\n};\n\nstruct pr_held_reservation {\n\tu64\t\tkey;\n\tu32\t\tgeneration;\n\tenum pr_type\ttype;\n};\n\nstruct pr_ops {\n\tint (*pr_register)(struct block_device *bdev, u64 old_key, u64 new_key,\n\t\t\tu32 flags);\n\tint (*pr_reserve)(struct block_device *bdev, u64 key,\n\t\t\tenum pr_type type, u32 flags);\n\tint (*pr_release)(struct block_device *bdev, u64 key,\n\t\t\tenum pr_type type);\n\tint (*pr_preempt)(struct block_device *bdev, u64 old_key, u64 new_key,\n\t\t\tenum pr_type type, bool abort);\n\tint (*pr_clear)(struct block_device *bdev, u64 key);\n\t \n\tint (*pr_read_keys)(struct block_device *bdev,\n\t\t\tstruct pr_keys *keys_info);\n\tint (*pr_read_reservation)(struct block_device *bdev,\n\t\t\tstruct pr_held_reservation *rsv);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

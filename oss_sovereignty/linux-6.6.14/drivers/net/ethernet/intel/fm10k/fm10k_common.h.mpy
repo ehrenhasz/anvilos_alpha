@@ -1,0 +1,9 @@
+{
+  "module_name": "fm10k_common.h",
+  "hash_id": "ebac66275626a6945a01597a7a744528e950912e086638ab290f646698961354",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/fm10k/fm10k_common.h",
+  "human_readable_source": " \n \n\n#ifndef _FM10K_COMMON_H_\n#define _FM10K_COMMON_H_\n\n#include \"fm10k_type.h\"\n\n#define FM10K_REMOVED(hw_addr) unlikely(!(hw_addr))\n\n \nu16 fm10k_read_pci_cfg_word(struct fm10k_hw *hw, u32 reg);\n\n \nu32 fm10k_read_reg(struct fm10k_hw *hw, int reg);\n\n \n#define fm10k_write_reg(hw, reg, val) \\\ndo { \\\n\tu32 __iomem *hw_addr = READ_ONCE((hw)->hw_addr); \\\n\tif (!FM10K_REMOVED(hw_addr)) \\\n\t\twritel((val), &hw_addr[(reg)]); \\\n} while (0)\n\n \n#define fm10k_write_sw_reg(hw, reg, val) \\\ndo { \\\n\tu32 __iomem *sw_addr = READ_ONCE((hw)->sw_addr); \\\n\tif (!FM10K_REMOVED(sw_addr)) \\\n\t\twritel((val), &sw_addr[(reg)]); \\\n} while (0)\n\n \n#define fm10k_write_flush(hw) fm10k_read_reg((hw), FM10K_CTRL)\ns32 fm10k_get_bus_info_generic(struct fm10k_hw *hw);\ns32 fm10k_get_invariants_generic(struct fm10k_hw *hw);\ns32 fm10k_disable_queues_generic(struct fm10k_hw *hw, u16 q_cnt);\ns32 fm10k_start_hw_generic(struct fm10k_hw *hw);\ns32 fm10k_stop_hw_generic(struct fm10k_hw *hw);\nu32 fm10k_read_hw_stats_32b(struct fm10k_hw *hw, u32 addr,\n\t\t\t    struct fm10k_hw_stat *stat);\n#define fm10k_update_hw_base_32b(stat, delta) ((stat)->base_l += (delta))\nvoid fm10k_update_hw_stats_q(struct fm10k_hw *hw, struct fm10k_hw_stats_q *q,\n\t\t\t     u32 idx, u32 count);\n#define fm10k_unbind_hw_stats_32b(s) ((s)->base_h = 0)\nvoid fm10k_unbind_hw_stats_q(struct fm10k_hw_stats_q *q, u32 idx, u32 count);\ns32 fm10k_get_host_state_generic(struct fm10k_hw *hw, bool *host_ready);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

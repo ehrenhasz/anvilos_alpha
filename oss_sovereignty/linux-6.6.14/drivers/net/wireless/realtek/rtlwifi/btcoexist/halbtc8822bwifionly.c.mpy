@@ -1,0 +1,9 @@
+{
+  "module_name": "halbtc8822bwifionly.c",
+  "hash_id": "4cbe50c5d9761ca9f3481058b2f522c4e5a175a7d0ab301154b4ea30d430e8fb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtc8822bwifionly.c",
+  "human_readable_source": "\n \n\n#include \"halbt_precomp.h\"\n\nvoid ex_hal8822b_wifi_only_hw_config(struct wifi_only_cfg *wifionlycfg)\n{\n\t \n\thalwifionly_phy_set_bb_reg(wifionlycfg, 0x4c, 0x01800000, 0x2);\n\t \n\thalwifionly_phy_set_bb_reg(wifionlycfg, 0xcb4, 0xff, 0x77);\n\t \n\thalwifionly_phy_set_bb_reg(wifionlycfg, 0x974, 0x300, 0x3);\n\n\thalwifionly_phy_set_bb_reg(wifionlycfg, 0x1990, 0x300, 0x0);\n\n\thalwifionly_phy_set_bb_reg(wifionlycfg, 0xcbc, 0x80000, 0x0);\n\t \n\thalwifionly_phy_set_bb_reg(wifionlycfg, 0x70, 0xff000000, 0x0e);\n\t \n\thalwifionly_phy_set_bb_reg(wifionlycfg, 0x1704, 0xffffffff, 0x7700);\n\thalwifionly_phy_set_bb_reg(wifionlycfg, 0x1700, 0xffffffff, 0xc00f0038);\n}\n\nvoid ex_hal8822b_wifi_only_scannotify(struct wifi_only_cfg *wifionlycfg,\n\t\t\t\t      u8 is_5g)\n{\n\thal8822b_wifi_only_switch_antenna(wifionlycfg, is_5g);\n}\n\nvoid ex_hal8822b_wifi_only_switchbandnotify(struct wifi_only_cfg *wifionlycfg,\n\t\t\t\t\t    u8 is_5g)\n{\n\thal8822b_wifi_only_switch_antenna(wifionlycfg, is_5g);\n}\n\nvoid hal8822b_wifi_only_switch_antenna(struct wifi_only_cfg *wifionlycfg,\n\t\t\t\t       u8 is_5g)\n{\n\tif (is_5g)\n\t\thalwifionly_phy_set_bb_reg(wifionlycfg, 0xcbc, 0x300, 0x1);\n\telse\n\t\thalwifionly_phy_set_bb_reg(wifionlycfg, 0xcbc, 0x300, 0x2);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

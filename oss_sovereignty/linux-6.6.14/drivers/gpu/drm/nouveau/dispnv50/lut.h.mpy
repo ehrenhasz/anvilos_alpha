@@ -1,0 +1,9 @@
+{
+  "module_name": "lut.h",
+  "hash_id": "a5740455fd27134cb8523e8276f27cf3ca35caab163767d40d74db14fae93a16",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/lut.h",
+  "human_readable_source": "#ifndef __NV50_KMS_LUT_H__\n#define __NV50_KMS_LUT_H__\n#include <nvif/mem.h>\nstruct drm_property_blob;\nstruct drm_color_lut;\nstruct nv50_disp;\n\nstruct nv50_lut {\n\tstruct nvif_mem mem[2];\n};\n\nint nv50_lut_init(struct nv50_disp *, struct nvif_mmu *, struct nv50_lut *);\nvoid nv50_lut_fini(struct nv50_lut *);\nu32 nv50_lut_load(struct nv50_lut *, int buffer, struct drm_property_blob *,\n\t\t  void (*)(struct drm_color_lut *, int size, void __iomem *));\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

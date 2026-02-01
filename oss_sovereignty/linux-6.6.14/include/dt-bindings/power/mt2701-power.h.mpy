@@ -1,0 +1,9 @@
+{
+  "module_name": "mt2701-power.h",
+  "hash_id": "a4724a2788d2bc8d83ba7446a3af7a7d1fcb716f8a6e1f7aa9d8e6a039e5b64c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/mt2701-power.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_POWER_MT2701_POWER_H\n#define _DT_BINDINGS_POWER_MT2701_POWER_H\n\n#define MT2701_POWER_DOMAIN_CONN\t0\n#define MT2701_POWER_DOMAIN_DISP\t1\n#define MT2701_POWER_DOMAIN_MFG\t\t2\n#define MT2701_POWER_DOMAIN_VDEC\t3\n#define MT2701_POWER_DOMAIN_ISP\t\t4\n#define MT2701_POWER_DOMAIN_BDP\t\t5\n#define MT2701_POWER_DOMAIN_ETH\t\t6\n#define MT2701_POWER_DOMAIN_HIF\t\t7\n#define MT2701_POWER_DOMAIN_IFR_MSC\t8\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

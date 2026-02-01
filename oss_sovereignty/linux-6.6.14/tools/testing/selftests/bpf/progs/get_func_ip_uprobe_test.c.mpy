@@ -1,0 +1,9 @@
+{
+  "module_name": "get_func_ip_uprobe_test.c",
+  "hash_id": "a3a53730f13c5fbab80bf2c3c8c67c88d96c70501a85fa0120293dc13d59ad92",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/get_func_ip_uprobe_test.c",
+  "human_readable_source": "\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nunsigned long uprobe_trigger_body;\n\n__u64 test1_result = 0;\nSEC(\"uprobe//proc/self/exe:uprobe_trigger_body+1\")\nint BPF_UPROBE(test1)\n{\n\t__u64 addr = bpf_get_func_ip(ctx);\n\n\ttest1_result = (const void *) addr == (const void *) uprobe_trigger_body + 1;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

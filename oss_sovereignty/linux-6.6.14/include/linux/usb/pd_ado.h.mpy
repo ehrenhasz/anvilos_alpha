@@ -1,0 +1,9 @@
+{
+  "module_name": "pd_ado.h",
+  "hash_id": "c69e200670d6f44a2a2b267f4865e4760e403c2ed94c3c12a71478c60000c671",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/pd_ado.h",
+  "human_readable_source": "\n \n\n#ifndef __LINUX_USB_PD_ADO_H\n#define __LINUX_USB_PD_ADO_H\n\n \n#define USB_PD_ADO_TYPE_SHIFT\t\t\t24\n#define USB_PD_ADO_TYPE_MASK\t\t\t0xff\n#define USB_PD_ADO_FIXED_BATT_SHIFT\t\t20\n#define USB_PD_ADO_FIXED_BATT_MASK\t\t0xf\n#define USB_PD_ADO_HOT_SWAP_BATT_SHIFT\t\t16\n#define USB_PD_ADO_HOT_SWAP_BATT_MASK\t\t0xf\n\n#define USB_PD_ADO_TYPE_BATT_STATUS_CHANGE\tBIT(1)\n#define USB_PD_ADO_TYPE_OCP\t\t\tBIT(2)\n#define USB_PD_ADO_TYPE_OTP\t\t\tBIT(3)\n#define USB_PD_ADO_TYPE_OP_COND_CHANGE\t\tBIT(4)\n#define USB_PD_ADO_TYPE_SRC_INPUT_CHANGE\tBIT(5)\n#define USB_PD_ADO_TYPE_OVP\t\t\tBIT(6)\n\nstatic inline unsigned int usb_pd_ado_type(u32 ado)\n{\n\treturn (ado >> USB_PD_ADO_TYPE_SHIFT) & USB_PD_ADO_TYPE_MASK;\n}\n\nstatic inline unsigned int usb_pd_ado_fixed_batt(u32 ado)\n{\n\treturn (ado >> USB_PD_ADO_FIXED_BATT_SHIFT) &\n\t       USB_PD_ADO_FIXED_BATT_MASK;\n}\n\nstatic inline unsigned int usb_pd_ado_hot_swap_batt(u32 ado)\n{\n\treturn (ado >> USB_PD_ADO_HOT_SWAP_BATT_SHIFT) &\n\t       USB_PD_ADO_HOT_SWAP_BATT_MASK;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

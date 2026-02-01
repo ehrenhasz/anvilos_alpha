@@ -1,0 +1,9 @@
+{
+  "module_name": "omap1_bl.h",
+  "hash_id": "4323424daa7f2970d0d2ecd6d27756cb5a68012daa6eb949b76d4a5b56ce8431",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/omap1_bl.h",
+  "human_readable_source": " \n#ifndef __OMAP1_BL_H__\n#define __OMAP1_BL_H__\n\n#include <linux/device.h>\n\nstruct omap_backlight_config {\n\tint default_intensity;\n\tint (*set_power)(struct device *dev, int state);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

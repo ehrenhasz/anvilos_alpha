@@ -1,0 +1,9 @@
+{
+  "module_name": "netfilter_ipv4.h",
+  "hash_id": "afb867bda8aee7a95943b547291964143af3bb71a317aaed921b743f863bb94b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter_ipv4.h",
+  "human_readable_source": " \n#ifndef __LINUX_IP_NETFILTER_H\n#define __LINUX_IP_NETFILTER_H\n\n#include <uapi/linux/netfilter_ipv4.h>\n\n \nstruct ip_rt_info {\n\t__be32 daddr;\n\t__be32 saddr;\n\tu_int8_t tos;\n\tu_int32_t mark;\n};\n\nint ip_route_me_harder(struct net *net, struct sock *sk, struct sk_buff *skb, unsigned addr_type);\n\nstruct nf_queue_entry;\n\n#ifdef CONFIG_INET\n__sum16 nf_ip_checksum(struct sk_buff *skb, unsigned int hook,\n\t\t       unsigned int dataoff, u_int8_t protocol);\nint nf_ip_route(struct net *net, struct dst_entry **dst, struct flowi *fl,\n\t\tbool strict);\n#else\nstatic inline __sum16 nf_ip_checksum(struct sk_buff *skb, unsigned int hook,\n\t\t\t\t     unsigned int dataoff, u_int8_t protocol)\n{\n\treturn 0;\n}\nstatic inline int nf_ip_route(struct net *net, struct dst_entry **dst,\n\t\t\t      struct flowi *fl, bool strict)\n{\n\treturn -EOPNOTSUPP;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

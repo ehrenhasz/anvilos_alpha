@@ -1,0 +1,9 @@
+{
+  "module_name": "kasprintf.c",
+  "hash_id": "08e16baa235780c8db4167c22572a1c360e7f3c8bf0c41af645e0c0ceb9d1378",
+  "original_prompt": "Ingested from linux-6.6.14/lib/kasprintf.c",
+  "human_readable_source": "\n \n\n#include <linux/stdarg.h>\n#include <linux/export.h>\n#include <linux/slab.h>\n#include <linux/types.h>\n#include <linux/string.h>\n\n \nchar *kvasprintf(gfp_t gfp, const char *fmt, va_list ap)\n{\n\tunsigned int first, second;\n\tchar *p;\n\tva_list aq;\n\n\tva_copy(aq, ap);\n\tfirst = vsnprintf(NULL, 0, fmt, aq);\n\tva_end(aq);\n\n\tp = kmalloc_track_caller(first+1, gfp);\n\tif (!p)\n\t\treturn NULL;\n\n\tsecond = vsnprintf(p, first+1, fmt, ap);\n\tWARN(first != second, \"different return values (%u and %u) from vsnprintf(\\\"%s\\\", ...)\",\n\t     first, second, fmt);\n\n\treturn p;\n}\nEXPORT_SYMBOL(kvasprintf);\n\n \nconst char *kvasprintf_const(gfp_t gfp, const char *fmt, va_list ap)\n{\n\tif (!strchr(fmt, '%'))\n\t\treturn kstrdup_const(fmt, gfp);\n\tif (!strcmp(fmt, \"%s\"))\n\t\treturn kstrdup_const(va_arg(ap, const char*), gfp);\n\treturn kvasprintf(gfp, fmt, ap);\n}\nEXPORT_SYMBOL(kvasprintf_const);\n\nchar *kasprintf(gfp_t gfp, const char *fmt, ...)\n{\n\tva_list ap;\n\tchar *p;\n\n\tva_start(ap, fmt);\n\tp = kvasprintf(gfp, fmt, ap);\n\tva_end(ap);\n\n\treturn p;\n}\nEXPORT_SYMBOL(kasprintf);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

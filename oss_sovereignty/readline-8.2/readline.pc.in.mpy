@@ -1,0 +1,9 @@
+{
+  "module_name": "readline.pc.in",
+  "hash_id": "98d82585fc92e1f71bf41378fd6fde68a7ab46fe2245a47c90934b5919aac18e",
+  "original_prompt": "Ingested from readline-8.2/readline.pc.in",
+  "human_readable_source": "prefix=@prefix@\nexec_prefix=@exec_prefix@\nlibdir=@libdir@\nincludedir=@includedir@\n\nName: Readline\nDescription: Gnu Readline library for command line editing\nURL: http://tiswww.cwru.edu/php/chet/readline/rltop.html\nVersion: @LIBVERSION@\nRequires.private: @TERMCAP_PKG_CONFIG_LIB@\nLibs: -L${libdir} -lreadline\nCflags: -I${includedir}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

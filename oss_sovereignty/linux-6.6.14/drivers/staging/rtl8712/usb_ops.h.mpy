@@ -1,0 +1,9 @@
+{
+  "module_name": "usb_ops.h",
+  "hash_id": "116d17320666024368afd201e46b952b30b55e36273cd1724382b936a383d7f2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/usb_ops.h",
+  "human_readable_source": " \n \n#ifndef __USB_OPS_H_\n#define __USB_OPS_H_\n\n#include \"osdep_service.h\"\n#include \"drv_types.h\"\n#include \"osdep_intf.h\"\n\nvoid r8712_usb_write_mem(struct intf_hdl *pintfhdl, u32 addr,\n\t\t\t u32 cnt, u8 *wmem);\nu32 r8712_usb_write_port(struct intf_hdl *pintfhdl, u32 addr,\n\t\t\t u32 cnt, u8 *wmem);\nu32 r8712_usb_read_port(struct intf_hdl *pintfhdl, u32 addr,\n\t\t\tu32 cnt, u8 *rmem);\nvoid r8712_usb_set_intf_option(u32 *poption);\nvoid r8712_usb_set_intf_funs(struct intf_hdl *pintf_hdl);\nuint r8712_usb_init_intf_priv(struct intf_priv *pintfpriv);\nvoid r8712_usb_unload_intf_priv(struct intf_priv *pintfpriv);\nvoid r8712_usb_set_intf_ops(struct _io_ops *pops);\nvoid r8712_usb_read_port_cancel(struct _adapter *padapter);\nvoid r8712_usb_write_port_cancel(struct _adapter *padapter);\nint r8712_usbctrl_vendorreq(struct intf_priv *pintfpriv, u8 request, u16 value,\n\t\t\t    u16 index, void *pdata, u16 len, u8 requesttype);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

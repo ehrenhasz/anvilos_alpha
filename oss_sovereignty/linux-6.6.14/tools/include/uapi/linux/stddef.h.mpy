@@ -1,0 +1,9 @@
+{
+  "module_name": "stddef.h",
+  "hash_id": "95acf202543b00799e92f3596a36d21542365d2138491931b2f8816c5b3849f4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/uapi/linux/stddef.h",
+  "human_readable_source": " \n#ifndef _LINUX_STDDEF_H\n#define _LINUX_STDDEF_H\n\n\n\n#ifndef __always_inline\n#define __always_inline __inline__\n#endif\n\n \n#define __struct_group(TAG, NAME, ATTRS, MEMBERS...) \\\n\tunion { \\\n\t\tstruct { MEMBERS } ATTRS; \\\n\t\tstruct TAG { MEMBERS } ATTRS NAME; \\\n\t}\n\n \n#define __DECLARE_FLEX_ARRAY(TYPE, NAME)\t\\\n\tstruct { \\\n\t\tstruct { } __empty_ ## NAME; \\\n\t\tTYPE NAME[]; \\\n\t}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

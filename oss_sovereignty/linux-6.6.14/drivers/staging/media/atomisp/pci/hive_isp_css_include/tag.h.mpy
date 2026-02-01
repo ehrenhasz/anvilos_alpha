@@ -1,0 +1,9 @@
+{
+  "module_name": "tag.h",
+  "hash_id": "4b8969edd6c1c5e4541b1932a8fc5e3dd3e14cdb15ceb08e82ffc9b5a1151274",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/tag.h",
+  "human_readable_source": " \n \n\n#ifndef __TAG_H_INCLUDED__\n#define __TAG_H_INCLUDED__\n\n \n\n#include \"tag_local.h\"\n\n#ifndef __INLINE_TAG__\n#define STORAGE_CLASS_TAG_H extern\n#define STORAGE_CLASS_TAG_C\n#include \"tag_public.h\"\n#else   \n#define STORAGE_CLASS_TAG_H static inline\n#define STORAGE_CLASS_TAG_C static inline\n#include \"tag_private.h\"\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

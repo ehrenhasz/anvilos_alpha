@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_wunctrl.c",
+  "hash_id": "fb4c41d8246577fed92f5b99e1df7ce386677be913c5d5d82c62d65f2ecf5ca5",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/widechar/lib_wunctrl.c",
+  "human_readable_source": " \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_wunctrl.c,v 1.17 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(wchar_t *)\nNCURSES_SP_NAME(wunctrl) (NCURSES_SP_DCLx cchar_t *wc)\n{\n    static wchar_t str[CCHARW_MAX + 1], *wsp;\n    wchar_t *result;\n\n    if (wc == 0) {\n\tresult = 0;\n    } else if (SP_PARM != 0 && Charable(*wc)) {\n\tconst char *p =\n\tNCURSES_SP_NAME(unctrl) (NCURSES_SP_ARGx\n\t\t\t\t (unsigned) _nc_to_char((wint_t)CharOf(*wc)));\n\n\tfor (wsp = str; *p; ++p) {\n\t    *wsp++ = (wchar_t) _nc_to_widechar(*p);\n\t}\n\t*wsp = 0;\n\tresult = str;\n    } else {\n\tresult = wc->chars;\n    }\n    return result;\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(wchar_t *)\nwunctrl(cchar_t *wc)\n{\n    return NCURSES_SP_NAME(wunctrl) (CURRENT_SCREEN, wc);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

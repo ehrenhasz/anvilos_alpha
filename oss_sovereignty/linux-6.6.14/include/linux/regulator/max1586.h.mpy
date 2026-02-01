@@ -1,0 +1,9 @@
+{
+  "module_name": "max1586.h",
+  "hash_id": "e74fde139c8d24cd5eb5a2728131d9c2db4440d8db4cbb57b8e0e26426344f1d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/max1586.h",
+  "human_readable_source": " \n \n\n#ifndef REGULATOR_MAX1586\n#define REGULATOR_MAX1586\n\n#include <linux/regulator/machine.h>\n\n#define MAX1586_V3 0\n#define MAX1586_V6 1\n\n \n#define MAX1586_GAIN_NO_R24   1000000   \n#define MAX1586_GAIN_R24_3k32 1051098   \n#define MAX1586_GAIN_R24_5k11 1078648   \n#define MAX1586_GAIN_R24_7k5  1115432   \n\n \nstruct max1586_subdev_data {\n\tint\t\t\t\tid;\n\tconst char\t\t\t*name;\n\tstruct regulator_init_data\t*platform_data;\n};\n\n \nstruct max1586_platform_data {\n\tint num_subdevs;\n\tstruct max1586_subdev_data *subdevs;\n\tint v3_gain;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

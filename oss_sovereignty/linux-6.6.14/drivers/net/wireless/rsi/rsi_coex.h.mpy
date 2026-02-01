@@ -1,0 +1,9 @@
+{
+  "module_name": "rsi_coex.h",
+  "hash_id": "73262c8e94f48f51ef00687ef419c501df2e235ac0c3be7ad0f08300ee9a658a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/rsi/rsi_coex.h",
+  "human_readable_source": " \n\n#ifndef __RSI_COEX_H__\n#define __RSI_COEX_H__\n\n#include \"rsi_common.h\"\n\n#ifdef CONFIG_RSI_COEX\n#define COMMON_CARD_READY_IND           0\n#define NUM_COEX_TX_QUEUES              5\n\nstruct rsi_coex_ctrl_block {\n\tstruct rsi_common *priv;\n\tstruct sk_buff_head coex_tx_qs[NUM_COEX_TX_QUEUES];\n\tstruct rsi_thread coex_tx_thread;\n};\n\nint rsi_coex_attach(struct rsi_common *common);\nvoid rsi_coex_detach(struct rsi_common *common);\nint rsi_coex_send_pkt(void *priv, struct sk_buff *skb, u8 proto_type);\nint rsi_coex_recv_pkt(struct rsi_common *common, u8 *msg);\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

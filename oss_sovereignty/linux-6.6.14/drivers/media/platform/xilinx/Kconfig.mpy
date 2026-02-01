@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "07b46b92390dfef0d2e1bebe654564ab607fb328137b8902cd46da6305a29658",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/xilinx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\ncomment \"Xilinx media platform drivers\"\n\nconfig VIDEO_XILINX\n\ttristate \"Xilinx Video IP (EXPERIMENTAL)\"\n\tdepends on V4L_PLATFORM_DRIVERS\n\tdepends on VIDEO_DEV  && OF && HAS_DMA\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_FWNODE\n\thelp\n\t  Driver for Xilinx Video IP Pipelines\n\nconfig VIDEO_XILINX_CSI2RXSS\n\tdepends on VIDEO_XILINX\n\ttristate \"Xilinx CSI-2 Rx Subsystem\"\n\thelp\n\t  Driver for Xilinx MIPI CSI-2 Rx Subsystem. This is a V4L sub-device\n\t  based driver that takes input from CSI-2 Tx source and converts\n\t  it into an AXI4-Stream.\n\nconfig VIDEO_XILINX_TPG\n\ttristate \"Xilinx Video Test Pattern Generator\"\n\tdepends on VIDEO_XILINX\n\tselect VIDEO_XILINX_VTC\n\thelp\n\t   Driver for the Xilinx Video Test Pattern Generator\n\nconfig VIDEO_XILINX_VTC\n\ttristate \"Xilinx Video Timing Controller\"\n\tdepends on VIDEO_XILINX\n\thelp\n\t   Driver for the Xilinx Video Timing Controller\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

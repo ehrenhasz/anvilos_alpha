@@ -1,0 +1,9 @@
+{
+  "module_name": "tdcall.S",
+  "hash_id": "8ff32ee668de4f7dc4b6d134e42de0c50c9c8899ec780925201eb4429ea42bf3",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/compressed/tdcall.S",
+  "human_readable_source": " \n\n#include \"../../coco/tdx/tdcall.S\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

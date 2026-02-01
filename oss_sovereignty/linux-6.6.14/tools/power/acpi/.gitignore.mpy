@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "82b891c40550d5542c4f55b8e16f48bfafc0c0c73723796f110cef6ee84a3b5f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/acpi/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/acpidbg\n/acpidump\n/ec\n/pfrut\n/include/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

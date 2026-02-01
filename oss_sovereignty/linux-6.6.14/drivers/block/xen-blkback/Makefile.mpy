@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fbeddef6eb9337cb3272b4f92e44add46be25c44e519daa558470e2cad9bf2f9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/block/xen-blkback/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_XEN_BLKDEV_BACKEND) := xen-blkback.o\n\nxen-blkback-y\t:= blkback.o xenbus.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

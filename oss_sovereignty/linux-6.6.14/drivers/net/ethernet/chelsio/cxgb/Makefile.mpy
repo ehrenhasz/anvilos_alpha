@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "14de1e460e71cb98d1fdc221fd112dda62ef0d275c021ea9a5ae4f426f55a248",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Chelsio T1 driver\n#\n\nobj-$(CONFIG_CHELSIO_T1) += cxgb.o\n\ncxgb-$(CONFIG_CHELSIO_T1_1G) += mv88e1xxx.o vsc7326.o\ncxgb-objs := cxgb2.o espi.o tp.o pm3393.o sge.o subr.o \\\n\t     mv88x201x.o my3126.o $(cxgb-y)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

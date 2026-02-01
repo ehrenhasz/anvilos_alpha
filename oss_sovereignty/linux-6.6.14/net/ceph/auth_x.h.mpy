@@ -1,0 +1,9 @@
+{
+  "module_name": "auth_x.h",
+  "hash_id": "c5a0140863cd0783208cb2e0b46ea7602ec21f56718079ae42940f69ba16af33",
+  "original_prompt": "Ingested from linux-6.6.14/net/ceph/auth_x.h",
+  "human_readable_source": " \n#ifndef _FS_CEPH_AUTH_X_H\n#define _FS_CEPH_AUTH_X_H\n\n#include <linux/rbtree.h>\n\n#include <linux/ceph/auth.h>\n\n#include \"crypto.h\"\n#include \"auth_x_protocol.h\"\n\n \nstruct ceph_x_ticket_handler {\n\tstruct rb_node node;\n\tunsigned int service;\n\n\tstruct ceph_crypto_key session_key;\n\tbool have_key;\n\n\tu64 secret_id;\n\tstruct ceph_buffer *ticket_blob;\n\n\ttime64_t renew_after, expires;\n};\n\n#define CEPHX_AU_ENC_BUF_LEN\t128   \n\nstruct ceph_x_authorizer {\n\tstruct ceph_authorizer base;\n\tstruct ceph_crypto_key session_key;\n\tstruct ceph_buffer *buf;\n\tunsigned int service;\n\tu64 nonce;\n\tu64 secret_id;\n\tchar enc_buf[CEPHX_AU_ENC_BUF_LEN] __aligned(8);\n};\n\nstruct ceph_x_info {\n\tstruct ceph_crypto_key secret;\n\n\tbool starting;\n\tu64 server_challenge;\n\n\tunsigned int have_keys;\n\tstruct rb_root ticket_handlers;\n\n\tstruct ceph_x_authorizer auth_authorizer;\n};\n\nint ceph_x_init(struct ceph_auth_client *ac);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

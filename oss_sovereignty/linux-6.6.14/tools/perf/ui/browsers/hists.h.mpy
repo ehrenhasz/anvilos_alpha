@@ -1,0 +1,9 @@
+{
+  "module_name": "hists.h",
+  "hash_id": "7d4e70b24991b43cedc344668d44d99e3d83a43c8b245ed6e6da12db9e826deb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/browsers/hists.h",
+  "human_readable_source": " \n#ifndef _PERF_UI_BROWSER_HISTS_H_\n#define _PERF_UI_BROWSER_HISTS_H_ 1\n\n#include \"ui/browser.h\"\n\nstruct annotation_options;\nstruct evsel;\n\nstruct hist_browser {\n\tstruct ui_browser   b;\n\tstruct hists\t    *hists;\n\tstruct hist_entry   *he_selection;\n\tstruct map_symbol   *selection;\n\tstruct hist_browser_timer *hbt;\n\tstruct pstack\t    *pstack;\n\tstruct perf_env\t    *env;\n\tstruct annotation_options *annotation_opts;\n\tstruct evsel\t    *block_evsel;\n\tint\t\t     print_seq;\n\tbool\t\t     show_dso;\n\tbool\t\t     show_headers;\n\tfloat\t\t     min_pcnt;\n\tu64\t\t     nr_non_filtered_entries;\n\tu64\t\t     nr_hierarchy_entries;\n\tu64\t\t     nr_callchain_rows;\n\tbool\t\t     c2c_filter;\n\n\t \n\tint                  (*title)(struct hist_browser *browser,\n\t\t\t     char *bf, size_t size);\n};\n\nstruct hist_browser *hist_browser__new(struct hists *hists);\nvoid hist_browser__delete(struct hist_browser *browser);\nint hist_browser__run(struct hist_browser *browser, const char *help,\n\t\t      bool warn_lost_event, int key);\nvoid hist_browser__init(struct hist_browser *browser,\n\t\t\tstruct hists *hists);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

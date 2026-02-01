@@ -1,0 +1,9 @@
+{
+  "module_name": "test_skmsg_load_helpers.c",
+  "hash_id": "e13e5c7b4e5025faf9fbc1968060520e5702f239ee5d318ad77af6b38b06b0d0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_skmsg_load_helpers.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SOCKMAP);\n\t__uint(max_entries, 2);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} sock_map SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SOCKHASH);\n\t__uint(max_entries, 2);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} sock_hash SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SK_STORAGE);\n\t__uint(map_flags, BPF_F_NO_PREALLOC);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} socket_storage SEC(\".maps\");\n\nSEC(\"sk_msg\")\nint prog_msg_verdict(struct sk_msg_md *msg)\n{\n\tstruct task_struct *task = (struct task_struct *)bpf_get_current_task();\n\tint verdict = SK_PASS;\n\t__u32 pid, tpid;\n\t__u64 *sk_stg;\n\n\tpid = bpf_get_current_pid_tgid() >> 32;\n\tsk_stg = bpf_sk_storage_get(&socket_storage, msg->sk, 0, BPF_SK_STORAGE_GET_F_CREATE);\n\tif (!sk_stg)\n\t\treturn SK_DROP;\n\t*sk_stg = pid;\n\tbpf_probe_read_kernel(&tpid , sizeof(tpid), &task->tgid);\n\tif (pid != tpid)\n\t\tverdict = SK_DROP;\n\tbpf_sk_storage_delete(&socket_storage, (void *)msg->sk);\n\treturn verdict;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

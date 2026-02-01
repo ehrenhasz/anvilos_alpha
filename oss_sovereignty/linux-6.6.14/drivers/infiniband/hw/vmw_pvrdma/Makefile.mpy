@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8ba290ed021f8a6055a7164567cc8b9b6aed18da6d6085e9e55a4c7a9c654779",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/vmw_pvrdma/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_INFINIBAND_VMWARE_PVRDMA) += vmw_pvrdma.o\n\nvmw_pvrdma-y := pvrdma_cmd.o pvrdma_cq.o pvrdma_doorbell.o pvrdma_main.o pvrdma_misc.o pvrdma_mr.o pvrdma_qp.o pvrdma_srq.o pvrdma_verbs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

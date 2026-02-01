@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_display_helper_mod.c",
+  "hash_id": "bcbd885bc840e9177fede796b02dd216555d988ec05640bb3ab1896a98970c96",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/display/drm_display_helper_mod.c",
+  "human_readable_source": "\n\n#include <linux/module.h>\n\n#include \"drm_dp_helper_internal.h\"\n\nMODULE_DESCRIPTION(\"DRM display adapter helper\");\nMODULE_LICENSE(\"GPL and additional rights\");\n\nstatic int __init drm_display_helper_module_init(void)\n{\n\treturn drm_dp_aux_dev_init();\n}\n\nstatic void __exit drm_display_helper_module_exit(void)\n{\n\t \n\tdrm_dp_aux_dev_exit();\n}\n\nmodule_init(drm_display_helper_module_init);\nmodule_exit(drm_display_helper_module_exit);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

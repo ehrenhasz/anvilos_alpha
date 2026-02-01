@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_lspcon.h",
+  "hash_id": "d45b4517c58860b732998ffba149d4491aba9a41ce8974d770c3770598c70787",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_lspcon.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_LSPCON_H__\n#define __INTEL_LSPCON_H__\n\n#include <linux/types.h>\n\nstruct drm_connector;\nstruct drm_connector_state;\nstruct intel_crtc_state;\nstruct intel_digital_port;\nstruct intel_encoder;\nstruct intel_lspcon;\n\nbool lspcon_init(struct intel_digital_port *dig_port);\nvoid lspcon_detect_hdr_capability(struct intel_lspcon *lspcon);\nvoid lspcon_resume(struct intel_digital_port *dig_port);\nvoid lspcon_wait_pcon_mode(struct intel_lspcon *lspcon);\nvoid lspcon_write_infoframe(struct intel_encoder *encoder,\n\t\t\t    const struct intel_crtc_state *crtc_state,\n\t\t\t    unsigned int type,\n\t\t\t    const void *buf, ssize_t len);\nvoid lspcon_read_infoframe(struct intel_encoder *encoder,\n\t\t\t   const struct intel_crtc_state *crtc_state,\n\t\t\t   unsigned int type,\n\t\t\t   void *frame, ssize_t len);\nvoid lspcon_set_infoframes(struct intel_encoder *encoder,\n\t\t\t   bool enable,\n\t\t\t   const struct intel_crtc_state *crtc_state,\n\t\t\t   const struct drm_connector_state *conn_state);\nu32 lspcon_infoframes_enabled(struct intel_encoder *encoder,\n\t\t\t      const struct intel_crtc_state *pipe_config);\nu32 intel_lspcon_infoframes_enabled(struct intel_encoder *encoder,\n\t\t\t\t    const struct intel_crtc_state *pipe_config);\nvoid hsw_write_infoframe(struct intel_encoder *encoder,\n\t\t\t const struct intel_crtc_state *crtc_state,\n\t\t\t unsigned int type,\n\t\t\t const void *frame, ssize_t len);\nvoid hsw_read_infoframe(struct intel_encoder *encoder,\n\t\t\tconst struct intel_crtc_state *crtc_state,\n\t\t\tunsigned int type,\n\t\t\tvoid *frame, ssize_t len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

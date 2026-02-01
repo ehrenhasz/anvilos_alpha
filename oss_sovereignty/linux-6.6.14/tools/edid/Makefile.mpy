@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fde5e6ed07c651f590dcc7549c7aad27a4bc05b2d7ad7d7ede816681c5db8fc5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/edid/Makefile",
+  "human_readable_source": "\nSOURCES\t:= $(wildcard [0-9]*x[0-9]*.S)\n\nBIN\t:= $(patsubst %.S, %.bin, $(SOURCES))\n\nIHEX\t:= $(patsubst %.S, %.bin.ihex, $(SOURCES))\n\nCODE\t:= $(patsubst %.S, %.c, $(SOURCES))\n\nall:\t$(BIN) $(IHEX) $(CODE)\n\nclean:\n\t@rm -f *.o *.bin.ihex *.bin *.c\n\n%.o:\t%.S\n\t@cc -c $^\n\n%.bin.nocrc:\t%.o\n\t@objcopy -Obinary $^ $@\n\n%.crc:\t%.bin.nocrc\n\t@list=$$(for i in `seq 1 127`; do head -c$$i $^ | tail -c1 \\\n\t\t| hexdump -v -e '/1 \"%02X+\"'; done); \\\n\t\techo \"ibase=16;100-($${list%?})%100\" | bc >$@\n\n%.p:\t%.crc %.S\n\t@cc -c -DCRC=\"$$(cat $*.crc)\" -o $@ $*.S\n\n%.bin:\t%.p\n\t@objcopy -Obinary $^ $@\n\n%.bin.ihex:\t%.p\n\t@objcopy -Oihex $^ $@\n\t@dos2unix $@ 2>/dev/null\n\n%.c:\t%.bin\n\t@echo \"{\" >$@; hexdump -f hex $^ >>$@; echo \"};\" >>$@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

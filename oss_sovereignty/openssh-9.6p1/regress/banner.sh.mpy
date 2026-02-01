@@ -1,0 +1,9 @@
+{
+  "module_name": "banner.sh",
+  "hash_id": "c5a5c91f1b21045cb611949d125d5fe4c3f8f4c35d4546204c7612ca4dfa27c0",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/banner.sh",
+  "human_readable_source": "#\t$OpenBSD: banner.sh,v 1.4 2021/08/08 06:38:33 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"banner\"\necho \"Banner $OBJ/banner.in\" >> $OBJ/sshd_proxy\n\nrm -f $OBJ/banner.out $OBJ/banner.in $OBJ/empty.in\ntouch $OBJ/empty.in\n\ntrace \"test missing banner file\"\nverbose \"test $tid: missing banner file\"\n( ${SSH} -F $OBJ/ssh_proxy otherhost true 2>$OBJ/banner.out && \\\n\tcmp $OBJ/empty.in $OBJ/banner.out ) || \\\n\tfail \"missing banner file\"\n\nfor s in 0 10 100 1000 10000 100000 ; do\n\tif [ \"$s\" = \"0\" ]; then\n\t\t# create empty banner\n\t\ttouch $OBJ/banner.in\n\telif [ \"$s\" = \"10\" ]; then\n\t\t# create 10-byte banner file\n\t\techo \"abcdefghi\" >$OBJ/banner.in\n\telse\n\t\t# increase size 10x\n\t\tcp $OBJ/banner.in $OBJ/banner.out\n\t\tfor i in 0 1 2 3 4 5 6 7 8 ; do\n\t\t\tcat $OBJ/banner.out >> $OBJ/banner.in\n\t\tdone\n\tfi\n\n\ttrace \"test banner size $s\"\n\tverbose \"test $tid: size $s\"\n\t( ${SSH} -F $OBJ/ssh_proxy otherhost true 2>$OBJ/banner.out && \\\n\t\tcmp $OBJ/banner.in $OBJ/banner.out ) || \\\n\t\tfail \"banner size $s mismatch\"\ndone\n\ntrace \"test suppress banner (-q)\"\nverbose \"test $tid: suppress banner (-q)\"\n# ssh-log-wrapper drops \"-q\" to preserve debug output so use ssh directly\n# for just this test.\n( ${REAL_SSH} -q -F $OBJ/ssh_proxy otherhost true 2>$OBJ/banner.out && \\\n\tcmp $OBJ/empty.in $OBJ/banner.out ) || \\\n\tfail \"suppress banner (-q)\"\n\nrm -f $OBJ/banner.out $OBJ/banner.in $OBJ/empty.in\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

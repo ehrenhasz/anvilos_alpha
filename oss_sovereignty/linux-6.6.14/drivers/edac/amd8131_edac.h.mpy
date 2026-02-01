@@ -1,0 +1,9 @@
+{
+  "module_name": "amd8131_edac.h",
+  "hash_id": "5fcc051b438e722917c5519bc35e68a915790ac00fd04fe85125d5abf26837a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/edac/amd8131_edac.h",
+  "human_readable_source": " \n \n\n#ifndef _AMD8131_EDAC_H_\n#define _AMD8131_EDAC_H_\n\n#define DEVFN_PCIX_BRIDGE_NORTH_A\t8\n#define DEVFN_PCIX_BRIDGE_NORTH_B\t16\n#define DEVFN_PCIX_BRIDGE_SOUTH_A\t24\n#define DEVFN_PCIX_BRIDGE_SOUTH_B\t32\n\n \n#define REG_STS_CMD\t0x04\nenum sts_cmd_bits {\n\tSTS_CMD_SSE\t= BIT(30),\n\tSTS_CMD_SERREN\t= BIT(8)\n};\n\n \n#define REG_INT_CTLR\t0x3c\nenum int_ctlr_bits {\n\tINT_CTLR_DTSE\t= BIT(27),\n\tINT_CTLR_DTS\t= BIT(26),\n\tINT_CTLR_SERR\t= BIT(17),\n\tINT_CTLR_PERR\t= BIT(16)\n};\n\n \n#define REG_MEM_LIM\t0x1c\nenum mem_limit_bits {\n\tMEM_LIMIT_DPE \t= BIT(31),\n\tMEM_LIMIT_RSE \t= BIT(30),\n\tMEM_LIMIT_RMA \t= BIT(29),\n\tMEM_LIMIT_RTA \t= BIT(28),\n\tMEM_LIMIT_STA\t= BIT(27),\n\tMEM_LIMIT_MDPE\t= BIT(24),\n\tMEM_LIMIT_MASK\t= MEM_LIMIT_DPE|MEM_LIMIT_RSE|MEM_LIMIT_RMA|\n\t\t\t\tMEM_LIMIT_RTA|MEM_LIMIT_STA|MEM_LIMIT_MDPE\n};\n\n \n#define REG_LNK_CTRL_A\t0xc4\n\n \n#define REG_LNK_CTRL_B  0xc8\n\nenum lnk_ctrl_bits {\n\tLNK_CTRL_CRCERR_A\t= BIT(9),\n\tLNK_CTRL_CRCERR_B\t= BIT(8),\n\tLNK_CTRL_CRCFEN\t\t= BIT(1)\n};\n\nenum pcix_bridge_inst {\n\tNORTH_A = 0,\n\tNORTH_B = 1,\n\tSOUTH_A = 2,\n\tSOUTH_B = 3,\n\tNO_BRIDGE = 4\n};\n\nstruct amd8131_dev_info {\n\tint devfn;\n\tenum pcix_bridge_inst inst;\n\tstruct pci_dev *dev;\n\tint edac_idx;\t \n\tchar *ctl_name;\n\tstruct edac_pci_ctl_info *edac_dev;\n};\n\n \nstruct amd8131_info {\n\tu16 err_dev;\t \n\tstruct amd8131_dev_info *devices;\n\tvoid (*init)(struct amd8131_dev_info *dev_info);\n\tvoid (*exit)(struct amd8131_dev_info *dev_info);\n\tvoid (*check)(struct edac_pci_ctl_info *edac_dev);\n};\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

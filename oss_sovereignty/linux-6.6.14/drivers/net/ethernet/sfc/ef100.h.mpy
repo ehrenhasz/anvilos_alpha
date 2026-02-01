@@ -1,0 +1,9 @@
+{
+  "module_name": "ef100.h",
+  "hash_id": "2d3550bdf7f581f3190320d68db4354672a9bd1be0d44aa0394c9ab5f633b92a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/ef100.h",
+  "human_readable_source": " \n \n\nextern struct pci_driver ef100_pci_driver;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

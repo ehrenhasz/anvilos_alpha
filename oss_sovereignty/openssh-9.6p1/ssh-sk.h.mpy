@@ -1,0 +1,9 @@
+{
+  "module_name": "ssh-sk.h",
+  "hash_id": "8bc4693753fe980b207bd021d369ff13a06ae46386a1a7c06584dc739a9b80f6",
+  "original_prompt": "Ingested from openssh-9.6p1/ssh-sk.h",
+  "human_readable_source": " \n \n\n#ifndef _SSH_SK_H\n#define _SSH_SK_H 1\n\nstruct sshbuf;\nstruct sshkey;\nstruct sk_option;\n\n \n#define SSH_SK_HELPER_VERSION\t\t5\n\n \n#define SSH_SK_HELPER_ERROR\t\t0\t \n#define SSH_SK_HELPER_SIGN\t\t1\n#define SSH_SK_HELPER_ENROLL\t\t2\n#define SSH_SK_HELPER_LOAD_RESIDENT\t3\n\nstruct sshsk_resident_key {\n\tstruct sshkey *key;\n\tuint8_t *user_id;\n\tsize_t user_id_len;\n};\n\n \nint sshsk_enroll(int type, const char *provider_path, const char *device,\n    const char *application, const char *userid, uint8_t flags,\n    const char *pin, struct sshbuf *challenge_buf,\n    struct sshkey **keyp, struct sshbuf *attest);\n\n \nint sshsk_sign(const char *provider_path, struct sshkey *key,\n    u_char **sigp, size_t *lenp, const u_char *data, size_t datalen,\n    u_int compat, const char *pin);\n\n \nint sshsk_load_resident(const char *provider_path, const char *device,\n    const char *pin, u_int flags, struct sshsk_resident_key ***srksp,\n    size_t *nsrksp);\n\n \nvoid sshsk_free_resident_keys(struct sshsk_resident_key **srks, size_t nsrks);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

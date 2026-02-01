@@ -1,0 +1,9 @@
+{
+  "module_name": "byteswap.m4",
+  "hash_id": "4d4b86a5027cdd5cdbbeaceb7e32ca4c5b274026eaf05d6f4482965577df7d01",
+  "original_prompt": "Ingested from coreutils-9.4/m4/byteswap.m4",
+  "human_readable_source": "# byteswap.m4 serial 5\ndnl Copyright (C) 2005, 2007, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl Written by Oskar Liljeblad.\n\nAC_DEFUN([gl_BYTESWAP],\n[\n  dnl Prerequisites of lib/byteswap.in.h.\n  AC_CHECK_HEADERS([byteswap.h], [\n    GL_GENERATE_BYTESWAP_H=false\n  ], [\n    GL_GENERATE_BYTESWAP_H=true\n  ])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

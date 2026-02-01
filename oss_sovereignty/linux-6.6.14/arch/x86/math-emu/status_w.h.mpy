@@ -1,0 +1,9 @@
+{
+  "module_name": "status_w.h",
+  "hash_id": "aacfa795821dec3d877d8ef62154437c29f46009a036ddcc1eb1637cf7ce6fbb",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/math-emu/status_w.h",
+  "human_readable_source": " \n \n\n#ifndef _STATUS_H_\n#define _STATUS_H_\n\n#include \"fpu_emu.h\"\t\t \n\n#ifdef __ASSEMBLY__\n#define\tConst__(x)\t$##x\n#else\n#define\tConst__(x)\tx\n#endif\n\n#define SW_Backward    \tConst__(0x8000)\t \n#define SW_C3\t\tConst__(0x4000)\t \n#define SW_Top\t\tConst__(0x3800)\t \n#define SW_Top_Shift \tConst__(11)\t \n#define SW_C2\t\tConst__(0x0400)\t \n#define SW_C1\t\tConst__(0x0200)\t \n#define SW_C0\t\tConst__(0x0100)\t \n#define SW_Summary     \tConst__(0x0080)\t \n#define SW_Stack_Fault\tConst__(0x0040)\t \n#define SW_Precision   \tConst__(0x0020)\t \n#define SW_Underflow   \tConst__(0x0010)\t \n#define SW_Overflow    \tConst__(0x0008)\t \n#define SW_Zero_Div    \tConst__(0x0004)\t \n#define SW_Denorm_Op   \tConst__(0x0002)\t \n#define SW_Invalid     \tConst__(0x0001)\t \n\n#define SW_Exc_Mask     Const__(0x27f)\t \n\n#ifndef __ASSEMBLY__\n\n#define COMP_A_gt_B\t1\n#define COMP_A_eq_B\t2\n#define COMP_A_lt_B\t3\n#define COMP_No_Comp\t4\n#define COMP_Denormal   0x20\n#define COMP_NaN\t0x40\n#define COMP_SNaN\t0x80\n\n#define status_word() \\\n  ((partial_status & ~SW_Top & 0xffff) | ((top << SW_Top_Shift) & SW_Top))\nstatic inline void setcc(int cc)\n{\n\tpartial_status &= ~(SW_C0 | SW_C1 | SW_C2 | SW_C3);\n\tpartial_status |= (cc) & (SW_C0 | SW_C1 | SW_C2 | SW_C3);\n}\n\n#ifdef PECULIAR_486\n    \n    \n#  define clear_C1()  { partial_status &= ~SW_C1; }\n# else\n#  define clear_C1()\n#endif  \n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

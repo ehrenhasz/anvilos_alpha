@@ -1,0 +1,9 @@
+{
+  "module_name": "full-write.h",
+  "hash_id": "3c85b83098fb2c48889a508082c819c27bf8152d4e4a94a2f66825d7f08abf1f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/full-write.h",
+  "human_readable_source": " \nextern size_t full_write (int fd, const void *buf, size_t count);\n\n\n#ifdef __cplusplus\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "stac946x.h",
+  "hash_id": "4c05822937f7e57aeeba8fcece57d1d24e452368dd2bc74d65b81907b236b90b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ice1712/stac946x.h",
+  "human_readable_source": " \n#ifndef __SOUND_STAC946X_H\n#define __SOUND_STAC946X_H\n\n#define STAC946X_RESET\t\t\t0x00\n#define STAC946X_STATUS\t\t\t0x01\n#define STAC946X_MASTER_VOLUME\t\t0x02\n#define STAC946X_LF_VOLUME\t\t0x03\n#define STAC946X_RF_VOLUME\t\t0x04\n#define STAC946X_LR_VOLUME\t\t0x05\n#define STAC946X_RR_VOLUME\t\t0x06\n#define STAC946X_CENTER_VOLUME\t\t0x07\n#define STAC946X_LFE_VOLUME\t\t0x08\n#define STAC946X_MIC_L_VOLUME\t\t0x09\n#define STAC946X_MIC_R_VOLUME\t\t0x0a\n#define STAC946X_DEEMPHASIS\t\t0x0c\n#define STAC946X_GENERAL_PURPOSE\t0x0d\n#define STAC946X_AUDIO_PORT_CONTROL\t0x0e\n#define STAC946X_MASTER_CLOCKING\t0x0f\n#define STAC946X_POWERDOWN_CTRL1\t0x10\n#define STAC946X_POWERDOWN_CTRL2\t0x11\n#define STAC946X_REVISION_CODE\t\t0x12\n#define STAC946X_ADDRESS_CONTROL\t0x13\n#define STAC946X_ADDRESS\t\t0x14\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

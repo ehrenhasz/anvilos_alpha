@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d455a545cd704393749d96d955021e9b1bad855ddf82745bc912bca331e273c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bus/fsl-mc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Freescale Management Complex (MC) bus drivers\n#\n# Copyright (C) 2014 Freescale Semiconductor, Inc.\n#\nobj-$(CONFIG_FSL_MC_BUS) += mc-bus-driver.o\n\nmc-bus-driver-objs := fsl-mc-bus.o \\\n\t\t      mc-sys.o \\\n\t\t      mc-io.o \\\n\t\t      dpbp.o \\\n\t\t      dpcon.o \\\n\t\t      dprc.o \\\n\t\t      dprc-driver.o \\\n\t\t      fsl-mc-allocator.o \\\n\t\t      fsl-mc-msi.o \\\n\t\t      dpmcp.o \\\n\t\t      obj-api.o\n\n# MC userspace support\nobj-$(CONFIG_FSL_MC_UAPI_SUPPORT) += fsl-mc-uapi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

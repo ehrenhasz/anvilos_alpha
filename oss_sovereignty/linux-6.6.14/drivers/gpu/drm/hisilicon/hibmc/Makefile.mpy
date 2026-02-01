@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f212a4aebb8d9f27f4481aeb8b2b0d280e5de38780f56fd7577116cc91f53d34",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/hisilicon/hibmc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nhibmc-drm-y := hibmc_drm_drv.o hibmc_drm_de.o hibmc_drm_vdac.o hibmc_drm_i2c.o\n\nobj-$(CONFIG_DRM_HISI_HIBMC) += hibmc-drm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

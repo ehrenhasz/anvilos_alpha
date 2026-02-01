@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "041096fcd0687895cb29b7b4763739f0db48c5fa6ee5d371ed6ff84aef0be864",
+  "original_prompt": "Ingested from linux-6.6.14/security/safesetid/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SECURITY_SAFESETID\n        bool \"Gate setid transitions to limit CAP_SET{U/G}ID capabilities\"\n        depends on SECURITY\n        select SECURITYFS\n        default n\n        help\n          SafeSetID is an LSM module that gates the setid family of syscalls to\n          restrict UID/GID transitions from a given UID/GID to only those\n          approved by a system-wide whitelist. These restrictions also prohibit\n          the given UIDs/GIDs from obtaining auxiliary privileges associated\n          with CAP_SET{U/G}ID, such as allowing a user to set up user namespace\n          UID mappings.\n\n          If you are unsure how to answer this question, answer N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

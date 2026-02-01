@@ -1,0 +1,9 @@
+{
+  "module_name": "core_kern.c",
+  "hash_id": "48f48137860a4be7213408d78c1587e89fbac375dc4d506125dfcb1ab0a1758b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/core_kern.c",
+  "human_readable_source": "\n \n\n#include \"test_progs.h\"\n#include \"core_kern.lskel.h\"\n\nvoid test_core_kern_lskel(void)\n{\n\tstruct core_kern_lskel *skel;\n\tint link_fd;\n\n\tskel = core_kern_lskel__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"open_and_load\"))\n\t\treturn;\n\n\tlink_fd = core_kern_lskel__core_relo_proto__attach(skel);\n\tif (!ASSERT_GT(link_fd, 0, \"attach(core_relo_proto)\"))\n\t\tgoto cleanup;\n\n\t \n\tusleep(1);\n\tASSERT_TRUE(skel->bss->proto_out[0], \"bpf_core_type_exists\");\n\tASSERT_FALSE(skel->bss->proto_out[1], \"!bpf_core_type_exists\");\n\tASSERT_TRUE(skel->bss->proto_out[2], \"bpf_core_type_exists. nested\");\n\ncleanup:\n\tcore_kern_lskel__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

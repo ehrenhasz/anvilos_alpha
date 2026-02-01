@@ -1,0 +1,9 @@
+{
+  "module_name": "sdt.h",
+  "hash_id": "2b0616ffdfa9b3c33c85af9e3300bfcd7c1c3240ffd3e0eea2f5f95435522332",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/sdt.h",
+  "human_readable_source": " \n\n#ifndef _OPENSOLARIS_SYS_SDT_H_\n#define\t_OPENSOLARIS_SYS_SDT_H_\n\n#include_next <sys/sdt.h>\n#ifdef KDTRACE_HOOKS\n \nSDT_PROBE_DECLARE(sdt, , , set__error);\n\n#define\tSET_ERROR(err) \\\n\t((sdt_sdt___set__error->id ? \\\n\t(*sdt_probe_func)(sdt_sdt___set__error->id, \\\n\t    (uintptr_t)err, 0, 0, 0, 0) : 0), err)\n#else\n#define\tSET_ERROR(err) (err)\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "time.h",
+  "hash_id": "66b75ddf1447c8c04188919f404bc799fcb6d38c4bbe030d5b042861600f7012",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/nolibc/time.h",
+  "human_readable_source": " \n \n\n#ifndef _NOLIBC_TIME_H\n#define _NOLIBC_TIME_H\n\n#include \"std.h\"\n#include \"arch.h\"\n#include \"types.h\"\n#include \"sys.h\"\n\nstatic __attribute__((unused))\ntime_t time(time_t *tptr)\n{\n\tstruct timeval tv;\n\n\t \n\tsys_gettimeofday(&tv, NULL);\n\n\tif (tptr)\n\t\t*tptr = tv.tv_sec;\n\treturn tv.tv_sec;\n}\n\n \n#include \"nolibc.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

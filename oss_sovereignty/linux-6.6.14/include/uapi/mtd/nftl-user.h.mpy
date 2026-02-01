@@ -1,0 +1,9 @@
+{
+  "module_name": "nftl-user.h",
+  "hash_id": "74a28a4e6e83b6749eaf0093a1ab2a096b5d8f23f2dee5184cc870207877277c",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/mtd/nftl-user.h",
+  "human_readable_source": " \n \n\n#ifndef __MTD_NFTL_USER_H__\n#define __MTD_NFTL_USER_H__\n\n#include <linux/types.h>\n\n \n\nstruct nftl_bci {\n\tunsigned char ECCSig[6];\n\t__u8 Status;\n\t__u8 Status1;\n}__attribute__((packed));\n\n \n\nstruct nftl_uci0 {\n\t__u16 VirtUnitNum;\n\t__u16 ReplUnitNum;\n\t__u16 SpareVirtUnitNum;\n\t__u16 SpareReplUnitNum;\n} __attribute__((packed));\n\nstruct nftl_uci1 {\n\t__u32 WearInfo;\n\t__u16 EraseMark;\n\t__u16 EraseMark1;\n} __attribute__((packed));\n\nstruct nftl_uci2 {\n        __u16 FoldMark;\n        __u16 FoldMark1;\n\t__u32 unused;\n} __attribute__((packed));\n\nunion nftl_uci {\n\tstruct nftl_uci0 a;\n\tstruct nftl_uci1 b;\n\tstruct nftl_uci2 c;\n};\n\nstruct nftl_oob {\n\tstruct nftl_bci b;\n\tunion nftl_uci u;\n};\n\n \n\nstruct NFTLMediaHeader {\n\tchar DataOrgID[6];\n\t__u16 NumEraseUnits;\n\t__u16 FirstPhysicalEUN;\n\t__u32 FormattedSize;\n\tunsigned char UnitSizeFactor;\n} __attribute__((packed));\n\n#define MAX_ERASE_ZONES (8192 - 512)\n\n#define ERASE_MARK 0x3c69\n#define SECTOR_FREE 0xff\n#define SECTOR_USED 0x55\n#define SECTOR_IGNORE 0x11\n#define SECTOR_DELETED 0x00\n\n#define FOLD_MARK_IN_PROGRESS 0x5555\n\n#define ZONE_GOOD 0xff\n#define ZONE_BAD_ORIGINAL 0\n#define ZONE_BAD_MARKED 7\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

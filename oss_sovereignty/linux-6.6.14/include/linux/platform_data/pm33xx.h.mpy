@@ -1,0 +1,9 @@
+{
+  "module_name": "pm33xx.h",
+  "hash_id": "185e81fbfd03890c7d5c741bc8787e99df22a3d8aa315d4872adb4677e648d97",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/pm33xx.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_PLATFORM_DATA_PM33XX_H\n#define _LINUX_PLATFORM_DATA_PM33XX_H\n\n#include <linux/kbuild.h>\n#include <linux/types.h>\n\n \n#define WFI_FLAG_FLUSH_CACHE\t\tBIT(0)\n#define WFI_FLAG_SELF_REFRESH\t\tBIT(1)\n#define WFI_FLAG_SAVE_EMIF\t\tBIT(2)\n#define WFI_FLAG_WAKE_M3\t\tBIT(3)\n#define WFI_FLAG_RTC_ONLY\t\tBIT(4)\n\n#ifndef __ASSEMBLER__\nstruct am33xx_pm_sram_addr {\n\tvoid (*do_wfi)(void);\n\tunsigned long *do_wfi_sz;\n\tunsigned long *resume_offset;\n\tunsigned long *emif_sram_table;\n\tunsigned long *ro_sram_data;\n\tunsigned long resume_address;\n};\n\nstruct am33xx_pm_platform_data {\n\tint     (*init)(int (*idle)(u32 wfi_flags));\n\tint     (*deinit)(void);\n\tint\t(*soc_suspend)(unsigned int state, int (*fn)(unsigned long),\n\t\t\t       unsigned long args);\n\tint\t(*cpu_suspend)(int (*fn)(unsigned long), unsigned long args);\n\tvoid    (*begin_suspend)(void);\n\tvoid    (*finish_suspend)(void);\n\tstruct  am33xx_pm_sram_addr *(*get_sram_addrs)(void);\n\tvoid (*save_context)(void);\n\tvoid (*restore_context)(void);\n\tint (*check_off_mode_enable)(void);\n};\n\nstruct am33xx_pm_sram_data {\n\tu32 wfi_flags;\n\tu32 l2_aux_ctrl_val;\n\tu32 l2_prefetch_ctrl_val;\n} __packed __aligned(8);\n\nstruct am33xx_pm_ro_sram_data {\n\tu32 amx3_pm_sram_data_virt;\n\tu32 amx3_pm_sram_data_phys;\n\tvoid __iomem *rtc_base_virt;\n} __packed __aligned(8);\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

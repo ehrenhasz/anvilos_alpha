@@ -1,0 +1,9 @@
+{
+  "module_name": "dwarf-regs.c",
+  "hash_id": "bf9302e2cecf6a3dcae0744ba6e11927c2cafc96e796603bc988b7c47244c644",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/csky/util/dwarf-regs.c",
+  "human_readable_source": "\n\n\n\n#include <stddef.h>\n#include <dwarf-regs.h>\n\n#if defined(__CSKYABIV2__)\n#define CSKY_MAX_REGS 73\nconst char *csky_dwarf_regs_table[CSKY_MAX_REGS] = {\n\t \n\t\"%a0\", \"%a1\", \"%a2\", \"%a3\", \"%regs0\", \"%regs1\", \"%regs2\", \"%regs3\",\n\t \n\t\"%regs4\", \"%regs5\", \"%regs6\", \"%regs7\", \"%regs8\", \"%regs9\", \"%sp\",\n\t\"%lr\",\n\t \n\t\"%exregs0\", \"%exregs1\", \"%exregs2\", \"%exregs3\", \"%exregs4\",\n\t\"%exregs5\", \"%exregs6\", \"%exregs7\",\n\t \n\t\"%exregs8\", \"%exregs9\", \"%exregs10\", \"%exregs11\", \"%exregs12\",\n\t\"%exregs13\", \"%exregs14\", \"%tls\",\n\t\"%pc\", NULL, NULL, NULL, \"%hi\", \"%lo\", NULL, NULL,\n\tNULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,\n\tNULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,\n\tNULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,\n\tNULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,\n\t\"%epc\",\n};\n#else\n#define CSKY_MAX_REGS 57\nconst char *csky_dwarf_regs_table[CSKY_MAX_REGS] = {\n\t \n\t\"%sp\", \"%regs9\", \"%a0\", \"%a1\", \"%a2\", \"%a3\", \"%regs0\", \"%regs1\",\n\t \n\t\"%regs2\", \"%regs3\", \"%regs4\", \"%regs5\", \"%regs6\", \"%regs7\", \"%regs8\",\n\t\"%lr\",\n\tNULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,\n\tNULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,\n\tNULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,\n\tNULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,\n\tNULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,\n\t\"%epc\",\n};\n#endif\n\nconst char *get_arch_regstr(unsigned int n)\n{\n\treturn (n < CSKY_MAX_REGS) ? csky_dwarf_regs_table[n] : NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

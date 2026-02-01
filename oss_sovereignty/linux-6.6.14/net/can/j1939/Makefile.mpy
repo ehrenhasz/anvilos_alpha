@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4ed82a08de586bb31cdf4d1fa46744f6273bb359f21400de61119c60fbbad896",
+  "original_prompt": "Ingested from linux-6.6.14/net/can/j1939/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_CAN_J1939) += can-j1939.o\n\ncan-j1939-objs := \\\n\taddress-claim.o \\\n\tbus.o \\\n\tmain.o \\\n\tsocket.o \\\n\ttransport.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

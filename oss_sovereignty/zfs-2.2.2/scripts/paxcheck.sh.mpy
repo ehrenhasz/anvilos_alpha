@@ -1,0 +1,9 @@
+{
+  "module_name": "paxcheck.sh",
+  "hash_id": "bc4259e6e6a58d48983bc02d5db7a15d582b6569cc236b2d31d20486c2f837e8",
+  "original_prompt": "Ingested from zfs-2.2.2/scripts/paxcheck.sh",
+  "human_readable_source": "#!/bin/sh\n\nif ! command -v scanelf > /dev/null; then\n    echo \"scanelf (from pax-utils) is required for these checks.\" >&2\n    exit 3\nfi\n\nRET=0\n\n# check for exec stacks\nOUT=$(scanelf -qyRAF '%e %p' \"$1\")\n\nif [ x\"${OUT}\" != x ]; then\n    RET=2\n    echo \"The following files contain writable and executable sections\"\n    echo \" Files with such sections will not work properly (or at all!) on some\"\n    echo \" architectures/operating systems.\"\n    echo \" For more information, see:\"\n    echo \"   https://wiki.gentoo.org/wiki/Hardened/GNU_stack_quickstart\"\n    echo\n    echo \"${OUT}\"\n    echo\nfi\n\n\n# check for TEXTRELS\nOUT=$(scanelf -qyRAF '%T %p' \"$1\")\n\nif [ x\"${OUT}\" != x ]; then\n    RET=2\n    echo \"The following files contain runtime text relocations\"\n    echo \" Text relocations force the dynamic linker to perform extra\"\n    echo \" work at startup, waste system resources, and may pose a security\"\n    echo \" risk.  On some architectures, the code may not even function\"\n    echo \" properly, if at all.\"\n    echo \" For more information, see:\"\n    echo \"   https://wiki.gentoo.org/wiki/Hardened/HOWTO_locate_and_fix_textrels\"\n    echo\n    echo \"${OUT}\"\n    echo\nfi\n\nexit \"$RET\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

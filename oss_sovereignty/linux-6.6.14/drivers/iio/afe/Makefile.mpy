@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6ae8e6485866a25d47288cece0439f8eafd41bfcefd7ca23e58d1b4e74b34cc3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/afe/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for industrial I/O Analog Front Ends (AFE)\n#\n\n# When adding new entries keep the list in alphabetical order\nobj-$(CONFIG_IIO_RESCALE) += iio-rescale.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

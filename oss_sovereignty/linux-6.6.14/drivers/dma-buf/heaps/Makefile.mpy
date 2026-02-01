@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0f9e2d7c63fbc10f6a5802d84f548132754590615ec1d12ce6cfe0730f5f4591",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma-buf/heaps/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_DMABUF_HEAPS_SYSTEM)\t+= system_heap.o\nobj-$(CONFIG_DMABUF_HEAPS_CMA)\t\t+= cma_heap.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

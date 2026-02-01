@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "324635e28802d0694acbe2a87b5143c2e9f6e216d5879262c8907df055595c77",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nccflags-$(CONFIG_COMEDI_DEBUG)\t\t:= -DDEBUG\n\ncomedi-y\t\t\t\t:= comedi_fops.o range.o drivers.o \\\n\t\t\t\t\t   comedi_buf.o\ncomedi-$(CONFIG_PROC_FS)\t\t+= proc.o\n\nobj-$(CONFIG_COMEDI_PCI_DRIVERS)\t+= comedi_pci.o\nobj-$(CONFIG_COMEDI_PCMCIA_DRIVERS)\t+= comedi_pcmcia.o\nobj-$(CONFIG_COMEDI_USB_DRIVERS)\t+= comedi_usb.o\n\nobj-$(CONFIG_COMEDI)\t\t\t+= comedi.o\n\nobj-$(CONFIG_COMEDI)\t\t\t+= kcomedilib/\nobj-$(CONFIG_COMEDI)\t\t\t+= drivers/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

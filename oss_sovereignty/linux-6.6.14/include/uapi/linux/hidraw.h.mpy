@@ -1,0 +1,9 @@
+{
+  "module_name": "hidraw.h",
+  "hash_id": "98e70d984778aa4431e8f64ddb79892ce17fc98054e293aeea29b61b353b105c",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/hidraw.h",
+  "human_readable_source": " \n \n \n#ifndef _UAPI_HIDRAW_H\n#define _UAPI_HIDRAW_H\n\n\n\n#include <linux/hid.h>\n#include <linux/types.h>\n\nstruct hidraw_report_descriptor {\n\t__u32 size;\n\t__u8 value[HID_MAX_DESCRIPTOR_SIZE];\n};\n\nstruct hidraw_devinfo {\n\t__u32 bustype;\n\t__s16 vendor;\n\t__s16 product;\n};\n\n \n#define HIDIOCGRDESCSIZE\t_IOR('H', 0x01, int)\n#define HIDIOCGRDESC\t\t_IOR('H', 0x02, struct hidraw_report_descriptor)\n#define HIDIOCGRAWINFO\t\t_IOR('H', 0x03, struct hidraw_devinfo)\n#define HIDIOCGRAWNAME(len)     _IOC(_IOC_READ, 'H', 0x04, len)\n#define HIDIOCGRAWPHYS(len)     _IOC(_IOC_READ, 'H', 0x05, len)\n \n#define HIDIOCSFEATURE(len)    _IOC(_IOC_WRITE|_IOC_READ, 'H', 0x06, len)\n#define HIDIOCGFEATURE(len)    _IOC(_IOC_WRITE|_IOC_READ, 'H', 0x07, len)\n#define HIDIOCGRAWUNIQ(len)     _IOC(_IOC_READ, 'H', 0x08, len)\n \n#define HIDIOCSINPUT(len)    _IOC(_IOC_WRITE|_IOC_READ, 'H', 0x09, len)\n#define HIDIOCGINPUT(len)    _IOC(_IOC_WRITE|_IOC_READ, 'H', 0x0A, len)\n \n#define HIDIOCSOUTPUT(len)    _IOC(_IOC_WRITE|_IOC_READ, 'H', 0x0B, len)\n#define HIDIOCGOUTPUT(len)    _IOC(_IOC_WRITE|_IOC_READ, 'H', 0x0C, len)\n\n#define HIDRAW_FIRST_MINOR 0\n#define HIDRAW_MAX_DEVICES 64\n \n#define HIDRAW_BUFFER_SIZE 64\n\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

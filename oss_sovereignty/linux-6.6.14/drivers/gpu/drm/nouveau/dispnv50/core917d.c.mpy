@@ -1,0 +1,9 @@
+{
+  "module_name": "core917d.c",
+  "hash_id": "0c1dc0253c91084bedc8343a8131b32d05f81c094f333f29c2091a58c5c961c5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/core917d.c",
+  "human_readable_source": " \n#include \"core.h\"\n#include \"head.h\"\n\nstatic const struct nv50_core_func\ncore917d = {\n\t.init = core507d_init,\n\t.ntfy_init = core507d_ntfy_init,\n\t.caps_init = core907d_caps_init,\n\t.ntfy_wait_done = core507d_ntfy_wait_done,\n\t.update = core507d_update,\n\t.head = &head917d,\n#if IS_ENABLED(CONFIG_DEBUG_FS)\n\t.crc = &crc907d,\n#endif\n\t.dac = &dac907d,\n\t.sor = &sor907d,\n};\n\nint\ncore917d_new(struct nouveau_drm *drm, s32 oclass, struct nv50_core **pcore)\n{\n\treturn core507d_new_(&core917d, drm, oclass, pcore);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

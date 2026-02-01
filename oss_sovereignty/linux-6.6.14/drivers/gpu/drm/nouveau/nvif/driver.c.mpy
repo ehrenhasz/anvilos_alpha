@@ -1,0 +1,9 @@
+{
+  "module_name": "driver.c",
+  "hash_id": "14c914a3e72d5fd5cd455f2b420646bd07f8fb7adfe034938e38f8805802a323",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvif/driver.c",
+  "human_readable_source": " \n#include <nvif/driver.h>\n#include <nvif/client.h>\n\nstatic const struct nvif_driver *\nnvif_driver[] = {\n#ifdef __KERNEL__\n\t&nvif_driver_nvkm,\n#else\n\t&nvif_driver_drm,\n\t&nvif_driver_lib,\n\t&nvif_driver_null,\n#endif\n\tNULL\n};\n\nint\nnvif_driver_init(const char *drv, const char *cfg, const char *dbg,\n\t\t const char *name, u64 device, struct nvif_client *client)\n{\n\tint ret = -EINVAL, i;\n\n\tfor (i = 0; (client->driver = nvif_driver[i]); i++) {\n\t\tif (!drv || !strcmp(client->driver->name, drv)) {\n\t\t\tret = client->driver->init(name, device, cfg, dbg,\n\t\t\t\t\t\t   &client->object.priv);\n\t\t\tif (ret == 0)\n\t\t\t\tbreak;\n\t\t\tclient->driver->fini(client->object.priv);\n\t\t}\n\t}\n\n\tif (ret == 0)\n\t\tret = nvif_client_ctor(client, name, device, client);\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

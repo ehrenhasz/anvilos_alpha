@@ -1,0 +1,9 @@
+{
+  "module_name": "basename.x",
+  "hash_id": "e2701d25bb623ed6a6071d17d9ec279d3236e4ec3bc82c6737be7bea8c38a9f1",
+  "original_prompt": "Ingested from coreutils-9.4/man/basename.x",
+  "human_readable_source": "[NAME]\nbasename \\- strip directory and suffix from filenames\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ndirname(1), readlink(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

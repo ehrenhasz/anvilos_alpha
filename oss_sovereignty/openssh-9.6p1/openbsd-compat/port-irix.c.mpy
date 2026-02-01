@@ -1,0 +1,9 @@
+{
+  "module_name": "port-irix.c",
+  "hash_id": "87b12beb795356163cd973ac569ddcd91127fc5f4d938bacb4fcd5d91dad1130",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/port-irix.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#if defined(WITH_IRIX_PROJECT) || \\\n    defined(WITH_IRIX_JOBS) || \\\n    defined(WITH_IRIX_ARRAY)\n\n#include <errno.h>\n#include <string.h>\n#include <unistd.h>\n\n#ifdef WITH_IRIX_PROJECT\n# include <proj.h>\n#endif  \n#ifdef WITH_IRIX_JOBS\n# include <sys/resource.h>\n#endif\n#ifdef WITH_IRIX_AUDIT\n# include <sat.h>\n#endif  \n\n#include \"log.h\"\n\nvoid\nirix_setusercontext(struct passwd *pw)\n{\n#ifdef WITH_IRIX_PROJECT\n\tprid_t projid;\n#endif\n#ifdef WITH_IRIX_JOBS\n\tjid_t jid = 0;\n#elif defined(WITH_IRIX_ARRAY)\n\tint jid = 0;\n#endif\n\n#ifdef WITH_IRIX_JOBS\n\tjid = jlimit_startjob(pw->pw_name, pw->pw_uid, \"interactive\");\n\tif (jid == -1)\n\t\tfatal(\"Failed to create job container: %.100s\",\n\t\t    strerror(errno));\n#endif  \n#ifdef WITH_IRIX_ARRAY\n\t \n\tif (jid == 0  && newarraysess() != 0)\n\t\tfatal(\"Failed to set up new array session: %.100s\",\n\t\t    strerror(errno));\n#endif  \n#ifdef WITH_IRIX_PROJECT\n\t \n\tif ((projid = getdfltprojuser(pw->pw_name)) == -1) {\n\t\tdebug(\"Failed to get project id, using projid 0\");\n\t\tprojid = 0;\n\t}\n\tif (setprid(projid))\n\t\tfatal(\"Failed to initialize project %d for %s: %.100s\",\n\t\t    (int)projid, pw->pw_name, strerror(errno));\n#endif  \n#ifdef WITH_IRIX_AUDIT\n\tif (sysconf(_SC_AUDIT)) {\n\t\tdebug(\"Setting sat id to %d\", (int) pw->pw_uid);\n\t\tif (satsetid(pw->pw_uid))\n\t\t\tdebug(\"error setting satid: %.100s\", strerror(errno));\n\t}\n#endif  \n}\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

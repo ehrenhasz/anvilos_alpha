@@ -1,0 +1,9 @@
+{
+  "module_name": "fmtumax.c",
+  "hash_id": "107df39007b3d1564f95630e77f810426a31931de48c3bf62cfd839f5e38b59e",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/fmtumax.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#define LONG\tintmax_t\n#define UNSIGNED_LONG\tuintmax_t\n#define fmtulong\tfmtumax\n\n#include \"fmtulong.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

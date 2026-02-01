@@ -1,0 +1,9 @@
+{
+  "module_name": "watermark.h",
+  "hash_id": "d5380c94329979ca9a920791e2a38cd8d272ddb4f9dfc0e2c7c8ff91a721d0c5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/cxl/watermark.h",
+  "human_readable_source": "\n \n#ifndef _TEST_CXL_WATERMARK_H_\n#define _TEST_CXL_WATERMARK_H_\n#include <linux/module.h>\n#include <linux/printk.h>\n\nint cxl_acpi_test(void);\nint cxl_core_test(void);\nint cxl_mem_test(void);\nint cxl_pmem_test(void);\nint cxl_port_test(void);\n\n \n#define cxl_test_watermark(x)\t\t\t\t\\\nint x##_test(void)\t\t\t\t\t\\\n{\t\t\t\t\t\t\t\\\n\tpr_debug(\"%s for cxl_test\\n\", KBUILD_MODNAME);\t\\\n\treturn 0;\t\t\t\t\t\\\n}\t\t\t\t\t\t\t\\\nEXPORT_SYMBOL(x##_test)\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "af7fcadd3c9a4dd48ad1c002d23e065dd51425cc8a25d184ff52402cd689de2b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/Build",
+  "human_readable_source": "hostprogs := fixdep\n\nfixdep-y := fixdep.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

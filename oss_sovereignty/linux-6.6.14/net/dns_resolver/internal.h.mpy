@@ -1,0 +1,9 @@
+{
+  "module_name": "internal.h",
+  "hash_id": "4c7f31ec9b594e7f0d8fd7f97d7caf63bcbb3b1efcabffe2b6be26635fcba9e0",
+  "original_prompt": "Ingested from linux-6.6.14/net/dns_resolver/internal.h",
+  "human_readable_source": " \n\n#include <linux/compiler.h>\n#include <linux/kernel.h>\n#include <linux/sched.h>\n\n \nenum {\n\tdns_key_data,\n\tdns_key_error,\n};\n\n \nextern const struct cred *dns_resolver_cache;\n\n \nextern unsigned int dns_resolver_debug;\n\n#define\tkdebug(FMT, ...)\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\\\n\tif (unlikely(dns_resolver_debug))\t\t\\\n\t\tprintk(KERN_DEBUG \"[%-6.6s] \"FMT\"\\n\",\t\\\n\t\t       current->comm, ##__VA_ARGS__);\t\\\n} while (0)\n\n#define kenter(FMT, ...) kdebug(\"==> %s(\"FMT\")\", __func__, ##__VA_ARGS__)\n#define kleave(FMT, ...) kdebug(\"<== %s()\"FMT\"\", __func__, ##__VA_ARGS__)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

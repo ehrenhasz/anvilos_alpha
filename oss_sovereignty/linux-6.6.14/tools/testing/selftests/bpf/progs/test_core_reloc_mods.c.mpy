@@ -1,0 +1,9 @@
+{
+  "module_name": "test_core_reloc_mods.c",
+  "hash_id": "b28dbee5d62ee5a0cf05704efd06af5848ccdb314157f51036bf3c5a040e92b8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_core_reloc_mods.c",
+  "human_readable_source": "\n\n\n#include <linux/bpf.h>\n#include <stdint.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_core_read.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\tchar in[256];\n\tchar out[256];\n} data = {};\n\nstruct core_reloc_mods_output {\n\tint a, b, c, d, e, f, g, h;\n};\n\ntypedef const int int_t;\ntypedef const char *char_ptr_t;\ntypedef const int arr_t[7];\n\nstruct core_reloc_mods_substruct {\n\tint x;\n\tint y;\n};\n\ntypedef struct {\n\tint x;\n\tint y;\n} core_reloc_mods_substruct_t;\n\nstruct core_reloc_mods {\n\tint a;\n\tint_t b;\n\tchar *c;\n\tchar_ptr_t d;\n\tint e[3];\n\tarr_t f;\n\tstruct core_reloc_mods_substruct g;\n\tcore_reloc_mods_substruct_t h;\n};\n\n#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__\n#define CORE_READ(dst, src) bpf_core_read(dst, sizeof(*(dst)), src)\n#else\n#define CORE_READ(dst, src) ({ \\\n\tint __sz = sizeof(*(dst)) < sizeof(*(src)) ? sizeof(*(dst)) : \\\n\t\t\t\t\t\t     sizeof(*(src)); \\\n\tbpf_core_read((char *)(dst) + sizeof(*(dst)) - __sz, __sz, \\\n\t\t      (const char *)(src) + sizeof(*(src)) - __sz); \\\n})\n#endif\n\nSEC(\"raw_tracepoint/sys_enter\")\nint test_core_mods(void *ctx)\n{\n\tstruct core_reloc_mods *in = (void *)&data.in;\n\tstruct core_reloc_mods_output *out = (void *)&data.out;\n\n\tif (CORE_READ(&out->a, &in->a) ||\n\t    CORE_READ(&out->b, &in->b) ||\n\t    CORE_READ(&out->c, &in->c) ||\n\t    CORE_READ(&out->d, &in->d) ||\n\t    CORE_READ(&out->e, &in->e[2]) ||\n\t    CORE_READ(&out->f, &in->f[1]) ||\n\t    CORE_READ(&out->g, &in->g.x) ||\n\t    CORE_READ(&out->h, &in->h.y))\n\t\treturn 1;\n\n\treturn 0;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

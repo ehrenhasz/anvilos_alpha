@@ -1,0 +1,9 @@
+{
+  "module_name": "audit_dir_write.h",
+  "hash_id": "c55f1437f4126d0439d9f64a42ebb00b09ac39973c63b82563ebf93605409ce2",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/audit_dir_write.h",
+  "human_readable_source": " \n#ifdef __NR_rename\n__NR_rename,\n#endif\n#ifdef __NR_mkdir\n__NR_mkdir,\n#endif\n#ifdef __NR_rmdir\n__NR_rmdir,\n#endif\n#ifdef __NR_creat\n__NR_creat,\n#endif\n#ifdef __NR_link\n__NR_link,\n#endif\n#ifdef __NR_unlink\n__NR_unlink,\n#endif\n#ifdef __NR_symlink\n__NR_symlink,\n#endif\n#ifdef __NR_mknod\n__NR_mknod,\n#endif\n#ifdef __NR_mkdirat\n__NR_mkdirat,\n__NR_mknodat,\n__NR_unlinkat,\n#ifdef __NR_renameat\n__NR_renameat,\n#endif\n__NR_linkat,\n__NR_symlinkat,\n#endif\n#ifdef __NR_renameat2\n__NR_renameat2,\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "46f41bb93d0a0425b86dfd434895737cbc8ae5ceb9e272830e4eb74dc8514df5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/rgb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_LEDS_GROUP_MULTICOLOR)\t+= leds-group-multicolor.o\nobj-$(CONFIG_LEDS_PWM_MULTICOLOR)\t+= leds-pwm-multicolor.o\nobj-$(CONFIG_LEDS_QCOM_LPG)\t\t+= leds-qcom-lpg.o\nobj-$(CONFIG_LEDS_MT6370_RGB)\t\t+= leds-mt6370-rgb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

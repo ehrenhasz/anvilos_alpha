@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a475da8b800cb96c46960772c0061a37f8b68c263f054f021e62f0eae9b5f645",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/verisilicon/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_VIDEO_HANTRO) += hantro-vpu.o\n\nhantro-vpu-y += \\\n\t\thantro_drv.o \\\n\t\thantro_v4l2.o \\\n\t\thantro_postproc.o \\\n\t\thantro_h1_jpeg_enc.o \\\n\t\thantro_g1.o \\\n\t\thantro_g1_h264_dec.o \\\n\t\thantro_g1_mpeg2_dec.o \\\n\t\thantro_g1_vp8_dec.o \\\n\t\thantro_g2.o \\\n\t\thantro_g2_hevc_dec.o \\\n\t\thantro_g2_vp9_dec.o \\\n\t\trockchip_vpu2_hw_jpeg_enc.o \\\n\t\trockchip_vpu2_hw_h264_dec.o \\\n\t\trockchip_vpu2_hw_mpeg2_dec.o \\\n\t\trockchip_vpu2_hw_vp8_dec.o \\\n\t\trockchip_vpu981_hw_av1_dec.o \\\n\t\trockchip_av1_filmgrain.o \\\n\t\trockchip_av1_entropymode.o \\\n\t\thantro_jpeg.o \\\n\t\thantro_h264.o \\\n\t\thantro_hevc.o \\\n\t\thantro_mpeg2.o \\\n\t\thantro_vp8.o \\\n\t\thantro_vp9.o\n\nhantro-vpu-$(CONFIG_VIDEO_HANTRO_IMX8M) += \\\n\t\timx8m_vpu_hw.o\n\nhantro-vpu-$(CONFIG_VIDEO_HANTRO_SAMA5D4) += \\\n\t\tsama5d4_vdec_hw.o\n\nhantro-vpu-$(CONFIG_VIDEO_HANTRO_ROCKCHIP) += \\\n\t\trockchip_vpu_hw.o\n\nhantro-vpu-$(CONFIG_VIDEO_HANTRO_SUNXI) += \\\n\t\tsunxi_vpu_hw.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

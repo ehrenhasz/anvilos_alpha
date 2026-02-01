@@ -1,0 +1,9 @@
+{
+  "module_name": "timbuart.h",
+  "hash_id": "8ba7a24cfb21f19084aff8e5f016e7ed6b6cb3c48a24eeab36a3bd16da04f49d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/serial/timbuart.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _TIMBUART_H\n#define _TIMBUART_H\n\n#define TIMBUART_FIFO_SIZE\t2048\n\n#define TIMBUART_RXFIFO\t\t0x08\n#define TIMBUART_TXFIFO\t\t0x0c\n#define TIMBUART_IER\t\t0x10\n#define TIMBUART_IPR\t\t0x14\n#define TIMBUART_ISR\t\t0x18\n#define TIMBUART_CTRL\t\t0x1c\n#define TIMBUART_BAUDRATE\t0x20\n\n#define TIMBUART_CTRL_RTS\t0x01\n#define TIMBUART_CTRL_CTS\t0x02\n#define TIMBUART_CTRL_FLSHTX\t0x40\n#define TIMBUART_CTRL_FLSHRX\t0x80\n\n#define TXBF\t\t0x01\n#define TXBAE\t\t0x02\n#define CTS_DELTA\t0x04\n#define RXDP\t\t0x08\n#define RXBAF\t\t0x10\n#define RXBF\t\t0x20\n#define RXTT\t\t0x40\n#define RXBNAE\t\t0x80\n#define TXBE\t\t0x100\n\n#define RXFLAGS (RXDP | RXBAF | RXBF | RXTT | RXBNAE)\n#define TXFLAGS (TXBF | TXBAE)\n\n#define TIMBUART_MAJOR 204\n#define TIMBUART_MINOR 192\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

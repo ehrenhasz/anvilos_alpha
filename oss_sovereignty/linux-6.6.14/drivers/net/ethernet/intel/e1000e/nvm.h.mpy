@@ -1,0 +1,9 @@
+{
+  "module_name": "nvm.h",
+  "hash_id": "de294996d0f49d9d4892fd25cc6b10924c3eef56ceeff28ce9781946a052cbae",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/e1000e/nvm.h",
+  "human_readable_source": " \n \n\n#ifndef _E1000E_NVM_H_\n#define _E1000E_NVM_H_\n\ns32 e1000e_acquire_nvm(struct e1000_hw *hw);\n\ns32 e1000e_poll_eerd_eewr_done(struct e1000_hw *hw, int ee_reg);\ns32 e1000_read_mac_addr_generic(struct e1000_hw *hw);\ns32 e1000_read_pba_string_generic(struct e1000_hw *hw, u8 *pba_num,\n\t\t\t\t  u32 pba_num_size);\ns32 e1000e_read_nvm_eerd(struct e1000_hw *hw, u16 offset, u16 words, u16 *data);\ns32 e1000e_valid_led_default(struct e1000_hw *hw, u16 *data);\ns32 e1000e_validate_nvm_checksum_generic(struct e1000_hw *hw);\ns32 e1000e_write_nvm_spi(struct e1000_hw *hw, u16 offset, u16 words, u16 *data);\ns32 e1000e_update_nvm_checksum_generic(struct e1000_hw *hw);\nvoid e1000e_release_nvm(struct e1000_hw *hw);\n\n#define E1000_STM_OPCODE\t0xDB00\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "audio-set-av-sync.rst",
+  "hash_id": "7e93aef0f2df7df8fa43efdaabc5616c2c62d908dfdd687d7ede87b95867633f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/audio-set-av-sync.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n.. c:namespace:: DTV.audio\n\n.. _AUDIO_SET_AV_SYNC:\n\n=================\nAUDIO_SET_AV_SYNC\n=================\n\nName\n----\n\nAUDIO_SET_AV_SYNC\n\n.. attention:: This ioctl is deprecated\n\nSynopsis\n--------\n\n.. c:macro:: AUDIO_SET_AV_SYNC\n\n``int ioctl(int fd, AUDIO_SET_AV_SYNC, boolean state)``\n\nArguments\n---------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -\n\n       -  int fd\n\n       -  File descriptor returned by a previous call to open().\n\n    -\n\n       -  boolean state\n\n       -  Tells the Digital TV subsystem if A/V synchronization shall be ON or OFF.\n\n          TRUE: AV-sync ON\n\n          FALSE: AV-sync OFF\n\nDescription\n-----------\n\nThis ioctl call asks the Audio Device to turn ON or OFF A/V\nsynchronization.\n\nReturn Value\n------------\n\nOn success 0 is returned, on error -1 and the ``errno`` variable is set\nappropriately. The generic error codes are described at the\n:ref:`Generic Error Codes <gen-errors>` chapter.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

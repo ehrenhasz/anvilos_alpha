@@ -1,0 +1,9 @@
+{
+  "module_name": "pmu.c",
+  "hash_id": "35322927e548dff6a182f8c8299340d0a8ca297bfb4055de78f5c060a26002e4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cxl/core/pmu.c",
+  "human_readable_source": "\n \n\n#include <linux/device.h>\n#include <linux/slab.h>\n#include <linux/idr.h>\n#include <cxlmem.h>\n#include <pmu.h>\n#include <cxl.h>\n#include \"core.h\"\n\nstatic void cxl_pmu_release(struct device *dev)\n{\n\tstruct cxl_pmu *pmu = to_cxl_pmu(dev);\n\n\tkfree(pmu);\n}\n\nconst struct device_type cxl_pmu_type = {\n\t.name = \"cxl_pmu\",\n\t.release = cxl_pmu_release,\n};\n\nstatic void remove_dev(void *dev)\n{\n\tdevice_unregister(dev);\n}\n\nint devm_cxl_pmu_add(struct device *parent, struct cxl_pmu_regs *regs,\n\t\t     int assoc_id, int index, enum cxl_pmu_type type)\n{\n\tstruct cxl_pmu *pmu;\n\tstruct device *dev;\n\tint rc;\n\n\tpmu = kzalloc(sizeof(*pmu), GFP_KERNEL);\n\tif (!pmu)\n\t\treturn -ENOMEM;\n\n\tpmu->assoc_id = assoc_id;\n\tpmu->index = index;\n\tpmu->type = type;\n\tpmu->base = regs->pmu;\n\tdev = &pmu->dev;\n\tdevice_initialize(dev);\n\tdevice_set_pm_not_required(dev);\n\tdev->parent = parent;\n\tdev->bus = &cxl_bus_type;\n\tdev->type = &cxl_pmu_type;\n\tswitch (pmu->type) {\n\tcase CXL_PMU_MEMDEV:\n\t\trc = dev_set_name(dev, \"pmu_mem%d.%d\", assoc_id, index);\n\t\tbreak;\n\t}\n\tif (rc)\n\t\tgoto err;\n\n\trc = device_add(dev);\n\tif (rc)\n\t\tgoto err;\n\n\treturn devm_add_action_or_reset(parent, remove_dev, dev);\n\nerr:\n\tput_device(&pmu->dev);\n\treturn rc;\n}\nEXPORT_SYMBOL_NS_GPL(devm_cxl_pmu_add, CXL);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

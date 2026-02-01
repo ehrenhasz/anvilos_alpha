@@ -1,0 +1,9 @@
+{
+  "module_name": "seg6_iptunnel.h",
+  "hash_id": "6fa9b986786c36abc4b7ec3d449662f3945b4f42b21f311c4faabdfeccfd437a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/seg6_iptunnel.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_SEG6_IPTUNNEL_H\n#define _UAPI_LINUX_SEG6_IPTUNNEL_H\n\n#include <linux/seg6.h>\t\t \n\nenum {\n\tSEG6_IPTUNNEL_UNSPEC,\n\tSEG6_IPTUNNEL_SRH,\n\t__SEG6_IPTUNNEL_MAX,\n};\n#define SEG6_IPTUNNEL_MAX (__SEG6_IPTUNNEL_MAX - 1)\n\nstruct seg6_iptunnel_encap {\n\tint mode;\n\tstruct ipv6_sr_hdr srh[];\n};\n\n#define SEG6_IPTUN_ENCAP_SIZE(x) ((sizeof(*x)) + (((x)->srh->hdrlen + 1) << 3))\n\nenum {\n\tSEG6_IPTUN_MODE_INLINE,\n\tSEG6_IPTUN_MODE_ENCAP,\n\tSEG6_IPTUN_MODE_L2ENCAP,\n\tSEG6_IPTUN_MODE_ENCAP_RED,\n\tSEG6_IPTUN_MODE_L2ENCAP_RED,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

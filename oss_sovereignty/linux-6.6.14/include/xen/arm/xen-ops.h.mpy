@@ -1,0 +1,9 @@
+{
+  "module_name": "xen-ops.h",
+  "hash_id": "1d91f30629b26929b04c371723a95b8c747cbc93ef0a765366220107f517fee3",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/arm/xen-ops.h",
+  "human_readable_source": " \n#ifndef _ASM_ARM_XEN_OPS_H\n#define _ASM_ARM_XEN_OPS_H\n\n#include <xen/swiotlb-xen.h>\n#include <xen/xen-ops.h>\n\nstatic inline void xen_setup_dma_ops(struct device *dev)\n{\n#ifdef CONFIG_XEN\n\tif (xen_swiotlb_detect())\n\t\tdev->dma_ops = &xen_swiotlb_dma_ops;\n#endif\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

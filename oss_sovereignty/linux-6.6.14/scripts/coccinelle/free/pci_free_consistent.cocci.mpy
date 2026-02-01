@@ -1,0 +1,9 @@
+{
+  "module_name": "pci_free_consistent.cocci",
+  "hash_id": "3ec64be264f9a176c6a5f03469c65d09e4b351b723e8f95209f4ed03f0f5e2fd",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/free/pci_free_consistent.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0-only\n/// Find missing pci_free_consistent for every pci_alloc_consistent.\n///\n// Confidence: Moderate\n// Copyright: (C) 2013 Petr Strnad.\n// URL: https://coccinelle.gitlabpages.inria.fr/website\n// Keywords: pci_free_consistent, pci_alloc_consistent\n// Options: --no-includes --include-headers\n\nvirtual report\nvirtual org\n\n@search@\nlocal idexpression id;\nexpression x,y,z,e;\nposition p1,p2;\ntype T;\n@@\n\nid = pci_alloc_consistent@p1(x,y,&z)\n... when != e = id\nif (id == NULL || ...) { ... return ...; }\n... when != pci_free_consistent(x,y,id,z)\n    when != if (id) { ... pci_free_consistent(x,y,id,z) ... }\n    when != if (y) { ... pci_free_consistent(x,y,id,z) ... }\n    when != e = (T)id\n    when exists\n(\nreturn 0;\n|\nreturn 1;\n|\nreturn id;\n|\nreturn@p2 ...;\n)\n\n@script:python depends on report@\np1 << search.p1;\np2 << search.p2;\n@@\n\nmsg = \"ERROR: missing pci_free_consistent; pci_alloc_consistent on line %s and return without freeing on line %s\" % (p1[0].line,p2[0].line)\ncoccilib.report.print_report(p2[0],msg)\n\n@script:python depends on org@\np1 << search.p1;\np2 << search.p2;\n@@\n\nmsg = \"ERROR: missing pci_free_consistent; pci_alloc_consistent on line %s and return without freeing on line %s\" % (p1[0].line,p2[0].line)\ncocci.print_main(msg,p1)\ncocci.print_secs(\"\",p2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

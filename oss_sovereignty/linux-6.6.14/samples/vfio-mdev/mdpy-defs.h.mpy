@@ -1,0 +1,9 @@
+{
+  "module_name": "mdpy-defs.h",
+  "hash_id": "9ceb1bd9c8830c92a0004591f6daa4ce5bd98caa9d4facc1fcedecb9cf409231",
+  "original_prompt": "Ingested from linux-6.6.14/samples/vfio-mdev/mdpy-defs.h",
+  "human_readable_source": " \n \n\n \n#define MDPY_PCI_VENDOR_ID\tPCI_VENDOR_ID_REDHAT\n#define MDPY_PCI_DEVICE_ID\t0x000f\n#define MDPY_PCI_SUBVENDOR_ID\tPCI_SUBVENDOR_ID_REDHAT_QUMRANET\n#define MDPY_PCI_SUBDEVICE_ID\tPCI_SUBDEVICE_ID_QEMU\n\n \n#define MDPY_VENDORCAP_OFFSET   0x40\n#define MDPY_VENDORCAP_SIZE     0x10\n#define MDPY_FORMAT_OFFSET\t(MDPY_VENDORCAP_OFFSET + 0x04)\n#define MDPY_WIDTH_OFFSET\t(MDPY_VENDORCAP_OFFSET + 0x08)\n#define MDPY_HEIGHT_OFFSET\t(MDPY_VENDORCAP_OFFSET + 0x0c)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

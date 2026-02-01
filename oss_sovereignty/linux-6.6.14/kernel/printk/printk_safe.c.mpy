@@ -1,0 +1,9 @@
+{
+  "module_name": "printk_safe.c",
+  "hash_id": "4f4bc42090f0d509c21fc9acd0169182b6ce3f22412d681cd78208d5b01b0c45",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/printk/printk_safe.c",
+  "human_readable_source": "\n \n\n#include <linux/preempt.h>\n#include <linux/kdb.h>\n#include <linux/smp.h>\n#include <linux/cpumask.h>\n#include <linux/printk.h>\n#include <linux/kprobes.h>\n\n#include \"internal.h\"\n\nstatic DEFINE_PER_CPU(int, printk_context);\n\n \nvoid __printk_safe_enter(void)\n{\n\tthis_cpu_inc(printk_context);\n}\n\n \nvoid __printk_safe_exit(void)\n{\n\tthis_cpu_dec(printk_context);\n}\n\nasmlinkage int vprintk(const char *fmt, va_list args)\n{\n#ifdef CONFIG_KGDB_KDB\n\t \n\tif (unlikely(kdb_trap_printk && kdb_printf_cpu < 0))\n\t\treturn vkdb_printf(KDB_MSGSRC_PRINTK, fmt, args);\n#endif\n\n\t \n\tif (this_cpu_read(printk_context) || in_nmi())\n\t\treturn vprintk_deferred(fmt, args);\n\n\t \n\treturn vprintk_default(fmt, args);\n}\nEXPORT_SYMBOL(vprintk);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

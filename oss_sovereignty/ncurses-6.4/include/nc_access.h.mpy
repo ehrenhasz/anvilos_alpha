@@ -1,0 +1,9 @@
+{
+  "module_name": "nc_access.h",
+  "hash_id": "2d0dbb20f846db8876f9477d6940cd36dfd64b479bd54761c1b60fa5908f405a",
+  "original_prompt": "Ingested from ncurses-6.4/include/nc_access.h",
+  "human_readable_source": " \n\n \n\n#ifndef NC_ACCESS_included\n#define NC_ACCESS_included 1\n \n\n#include <ncurses_cfg.h>\n#include <curses.h>\n#include <sys/types.h>\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n \n#ifdef USE_ROOT_ENVIRON\n\n#define use_terminfo_vars() 1\n\n#else\n\n#define use_terminfo_vars() _nc_env_access()\nextern NCURSES_EXPORT(int) _nc_env_access (void);\n\n#endif\n\n \n#ifdef USE_ROOT_ACCESS\n\n#define safe_fopen(name,mode) fopen(name,mode)\n#define safe_open3(name,flags,mode) open(name,flags,mode)\n\n#else\n\n#define safe_fopen(name,mode) fopen(name,mode)\n#define safe_open3(name,flags,mode) open(name,flags,mode)\nextern NCURSES_EXPORT(FILE *) _nc_safe_fopen (const char *, const char *);\nextern NCURSES_EXPORT(int) _nc_safe_open3 (const char *, int, mode_t);\n\n#endif\n\n#ifdef __cplusplus\n}\n#endif\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

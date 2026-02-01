@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_color.h",
+  "hash_id": "2d588db67beb1d53bdbeb59b9655495b9f04d5e3e7b5c10954365a0628bbad8d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_color.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_COLOR_H__\n#define __INTEL_COLOR_H__\n\n#include <linux/types.h>\n\nstruct intel_crtc_state;\nstruct intel_crtc;\nstruct drm_i915_private;\nstruct drm_property_blob;\n\nvoid intel_color_init_hooks(struct drm_i915_private *i915);\nint intel_color_init(struct drm_i915_private *i915);\nvoid intel_color_crtc_init(struct intel_crtc *crtc);\nint intel_color_check(struct intel_crtc_state *crtc_state);\nvoid intel_color_prepare_commit(struct intel_crtc_state *crtc_state);\nvoid intel_color_cleanup_commit(struct intel_crtc_state *crtc_state);\nvoid intel_color_commit_noarm(const struct intel_crtc_state *crtc_state);\nvoid intel_color_commit_arm(const struct intel_crtc_state *crtc_state);\nvoid intel_color_post_update(const struct intel_crtc_state *crtc_state);\nvoid intel_color_load_luts(const struct intel_crtc_state *crtc_state);\nvoid intel_color_get_config(struct intel_crtc_state *crtc_state);\nbool intel_color_lut_equal(const struct intel_crtc_state *crtc_state,\n\t\t\t   const struct drm_property_blob *blob1,\n\t\t\t   const struct drm_property_blob *blob2,\n\t\t\t   bool is_pre_csc_lut);\nvoid intel_color_assert_luts(const struct intel_crtc_state *crtc_state);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

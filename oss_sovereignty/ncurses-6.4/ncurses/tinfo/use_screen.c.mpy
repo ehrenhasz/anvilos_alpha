@@ -1,0 +1,9 @@
+{
+  "module_name": "use_screen.c",
+  "hash_id": "6c4c58012c064377e2e9b7a592c129620ef845969a85e3d65444fc8331bab71e",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/tinfo/use_screen.c",
+  "human_readable_source": " \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: use_screen.c,v 1.12 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nuse_screen(SCREEN *screen, NCURSES_SCREEN_CB func, void *data)\n{\n    SCREEN *save_SP;\n    int code = OK;\n    TR_FUNC_BFR(1);\n\n    T((T_CALLED(\"use_screen(%p,%s,%p)\"),\n       (void *) screen,\n       TR_FUNC_ARG(0, func),\n       (void *) data));\n\n     \n    _nc_lock_global(curses);\n    save_SP = CURRENT_SCREEN;\n    set_term(screen);\n\n    code = func(screen, data);\n\n    set_term(save_SP);\n    _nc_unlock_global(curses);\n    returnCode(code);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

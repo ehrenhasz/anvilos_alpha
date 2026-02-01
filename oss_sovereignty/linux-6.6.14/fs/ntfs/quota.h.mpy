@@ -1,0 +1,9 @@
+{
+  "module_name": "quota.h",
+  "hash_id": "8dcc804a0083c4f3b920d2cd1e6fcc8ee290bf9fba4c53bc3a74385da8a699df",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ntfs/quota.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_NTFS_QUOTA_H\n#define _LINUX_NTFS_QUOTA_H\n\n#ifdef NTFS_RW\n\n#include \"types.h\"\n#include \"volume.h\"\n\nextern bool ntfs_mark_quotas_out_of_date(ntfs_volume *vol);\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

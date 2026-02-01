@@ -1,0 +1,9 @@
+{
+  "module_name": "jailhouse_para.h",
+  "hash_id": "b28412bd6aa1d6f16678c686ffc943fe4fecef595511e8f79e44bc04be461274",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/jailhouse_para.h",
+  "human_readable_source": " \n\n \n\n#ifndef _ASM_X86_JAILHOUSE_PARA_H\n#define _ASM_X86_JAILHOUSE_PARA_H\n\n#include <linux/types.h>\n\n#ifdef CONFIG_JAILHOUSE_GUEST\nbool jailhouse_paravirt(void);\n#else\nstatic inline bool jailhouse_paravirt(void)\n{\n\treturn false;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

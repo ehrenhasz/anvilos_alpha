@@ -1,0 +1,9 @@
+{
+  "module_name": "special.c",
+  "hash_id": "19129893ed6c4e2f6730cf5163b262049a1132fbe348dfc004ee420a1886935e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/objtool/arch/powerpc/special.c",
+  "human_readable_source": "\n#include <string.h>\n#include <stdlib.h>\n#include <objtool/special.h>\n#include <objtool/builtin.h>\n\n\nbool arch_support_alt_relocation(struct special_alt *special_alt,\n\t\t\t\t struct instruction *insn,\n\t\t\t\t struct reloc *reloc)\n{\n\texit(-1);\n}\n\nstruct reloc *arch_find_switch_table(struct objtool_file *file,\n\t\t\t\t    struct instruction *insn)\n{\n\texit(-1);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

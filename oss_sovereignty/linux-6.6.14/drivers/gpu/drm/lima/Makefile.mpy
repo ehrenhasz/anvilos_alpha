@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1e0354ce191f1f8a6647253c25c0c7def5c015a594f93fed99151a0d0f72330e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/lima/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0 OR MIT\n# Copyright 2017-2019 Qiang Yu <yuq825@gmail.com>\n\nlima-y := \\\n\tlima_drv.o \\\n\tlima_device.o \\\n\tlima_pmu.o \\\n\tlima_l2_cache.o \\\n\tlima_mmu.o \\\n\tlima_gp.o \\\n\tlima_pp.o \\\n\tlima_gem.o \\\n\tlima_vm.o \\\n\tlima_sched.o \\\n\tlima_ctx.o \\\n\tlima_dlbu.o \\\n\tlima_bcast.o \\\n\tlima_trace.o \\\n\tlima_devfreq.o\n\nobj-$(CONFIG_DRM_LIMA) += lima.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

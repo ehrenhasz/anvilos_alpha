@@ -1,0 +1,9 @@
+{
+  "module_name": "jitterstop.sh",
+  "hash_id": "8724eba6af15c323ad9659a52a4e675251ef07c5f0bd161e6d99cd00f594043e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/bin/jitterstop.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Remove the \"jittering\" file, signaling the jitter.sh scripts to stop,\n# then wait for them to terminate.\n#\n# Usage: . jitterstop.sh jittering-dir\n#\n# jittering-dir: Directory containing \"jittering\" file.\n#\n# Copyright (C) 2021 Facebook, Inc.\n#\n# Authors: Paul E. McKenney <paulmck@kernel.org>\n\njittering_dir=$1\nif test -z \"$jittering_dir\"\nthen\n\techo jitterstop.sh: Missing directory in which to place jittering file.\n\texit 34\nfi\n\nrm -f ${jittering_dir}/jittering\nwait\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

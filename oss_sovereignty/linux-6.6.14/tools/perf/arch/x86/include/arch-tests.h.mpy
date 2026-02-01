@@ -1,0 +1,9 @@
+{
+  "module_name": "arch-tests.h",
+  "hash_id": "a36d58b518b1612336ecf2293fb665a448900d852ff2b493d9e499452711ca4c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/x86/include/arch-tests.h",
+  "human_readable_source": " \n#ifndef ARCH_TESTS_H\n#define ARCH_TESTS_H\n\nstruct test_suite;\n\n \nint test__rdpmc(struct test_suite *test, int subtest);\n#ifdef HAVE_EXTRA_TESTS\nint test__insn_x86(struct test_suite *test, int subtest);\n#endif\nint test__intel_pt_pkt_decoder(struct test_suite *test, int subtest);\nint test__intel_pt_hybrid_compat(struct test_suite *test, int subtest);\nint test__bp_modify(struct test_suite *test, int subtest);\nint test__x86_sample_parsing(struct test_suite *test, int subtest);\nint test__amd_ibs_via_core_pmu(struct test_suite *test, int subtest);\nint test__hybrid(struct test_suite *test, int subtest);\n\nextern struct test_suite *arch_tests[];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

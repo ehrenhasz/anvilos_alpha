@@ -1,0 +1,9 @@
+{
+  "module_name": "test-readlink.c",
+  "hash_id": "b8e1cd7d06d80cd3048bb58e454d89d6a486e66b3c1e869b4ba18533e507e625",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-readlink.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <unistd.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (readlink, ssize_t, (char const *, char *, size_t));\n\n#include <fcntl.h>\n#include <errno.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <sys/stat.h>\n\n#include \"ignore-value.h\"\n#include \"macros.h\"\n\n#define BASE \"test-readlink.t\"\n\n#include \"test-readlink.h\"\n\nint\nmain (void)\n{\n   \n  ignore_value (system (\"rm -rf \" BASE \"*\"));\n\n  return test_readlink (readlink, true);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

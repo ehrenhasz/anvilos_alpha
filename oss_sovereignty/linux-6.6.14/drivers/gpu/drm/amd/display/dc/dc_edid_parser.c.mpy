@@ -1,0 +1,9 @@
+{
+  "module_name": "dc_edid_parser.c",
+  "hash_id": "aff7bd4b28dc1c2619cdb9ac44d45d0d7de3045901f468e342613f8b056487fa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dc_edid_parser.c",
+  "human_readable_source": " \n\n#include \"dce/dce_dmcu.h\"\n#include \"dc_edid_parser.h\"\n\nbool dc_edid_parser_send_cea(struct dc *dc,\n\t\tint offset,\n\t\tint total_length,\n\t\tuint8_t *data,\n\t\tint length)\n{\n\tstruct dmcu *dmcu = dc->res_pool->dmcu;\n\n\tif (dmcu &&\n\t    dmcu->funcs->is_dmcu_initialized(dmcu) &&\n\t    dmcu->funcs->send_edid_cea) {\n\t\treturn dmcu->funcs->send_edid_cea(dmcu,\n\t\t\t\toffset,\n\t\t\t\ttotal_length,\n\t\t\t\tdata,\n\t\t\t\tlength);\n\t}\n\n\treturn false;\n}\n\nbool dc_edid_parser_recv_cea_ack(struct dc *dc, int *offset)\n{\n\tstruct dmcu *dmcu = dc->res_pool->dmcu;\n\n\tif (dmcu &&\n\t    dmcu->funcs->is_dmcu_initialized(dmcu) &&\n\t    dmcu->funcs->recv_edid_cea_ack) {\n\t\treturn dmcu->funcs->recv_edid_cea_ack(dmcu, offset);\n\t}\n\n\treturn false;\n}\n\nbool dc_edid_parser_recv_amd_vsdb(struct dc *dc,\n\t\tint *version,\n\t\tint *min_frame_rate,\n\t\tint *max_frame_rate)\n{\n\tstruct dmcu *dmcu = dc->res_pool->dmcu;\n\n\tif (dmcu &&\n\t    dmcu->funcs->is_dmcu_initialized(dmcu) &&\n\t    dmcu->funcs->recv_amd_vsdb) {\n\t\treturn dmcu->funcs->recv_amd_vsdb(dmcu,\n\t\t\t\tversion,\n\t\t\t\tmin_frame_rate,\n\t\t\t\tmax_frame_rate);\n\t}\n\n\treturn false;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

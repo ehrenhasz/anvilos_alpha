@@ -1,0 +1,9 @@
+{
+  "module_name": "test-binary-io.sh",
+  "hash_id": "9400f3902e2da64757af4137704fb9ea965eb3d599a09bb38bd49cae2f3e0695",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-binary-io.sh",
+  "human_readable_source": "#!/bin/sh\n\ntmpfiles=\"\"\ntrap 'rm -fr $tmpfiles' HUP INT QUIT TERM\n\ntmpfiles=\"$tmpfiles t-bin-out0.tmp t-bin-out1.tmp\"\n${CHECKER} ./test-binary-io${EXEEXT} 1 > t-bin-out1.tmp || exit 1\ncmp t-bin-out0.tmp t-bin-out1.tmp > /dev/null || exit 1\n\nrm -fr $tmpfiles\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

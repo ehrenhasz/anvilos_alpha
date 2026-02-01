@@ -1,0 +1,9 @@
+{
+  "module_name": "zswap.h",
+  "hash_id": "41a099d1fc175e3f2f00a603e68dece4a068e288bb410a35bb4846066fa0ffda",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/zswap.h",
+  "human_readable_source": " \n#ifndef _LINUX_ZSWAP_H\n#define _LINUX_ZSWAP_H\n\n#include <linux/types.h>\n#include <linux/mm_types.h>\n\nextern u64 zswap_pool_total_size;\nextern atomic_t zswap_stored_pages;\n\n#ifdef CONFIG_ZSWAP\n\nbool zswap_store(struct folio *folio);\nbool zswap_load(struct folio *folio);\nvoid zswap_invalidate(int type, pgoff_t offset);\nvoid zswap_swapon(int type);\nvoid zswap_swapoff(int type);\n\n#else\n\nstatic inline bool zswap_store(struct folio *folio)\n{\n\treturn false;\n}\n\nstatic inline bool zswap_load(struct folio *folio)\n{\n\treturn false;\n}\n\nstatic inline void zswap_invalidate(int type, pgoff_t offset) {}\nstatic inline void zswap_swapon(int type) {}\nstatic inline void zswap_swapoff(int type) {}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

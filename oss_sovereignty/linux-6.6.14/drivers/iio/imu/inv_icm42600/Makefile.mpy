@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0efb460b6438c03def9f55eb5f778639b13e5c96258e28fef47c4a16dd7cf0ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/inv_icm42600/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-or-later\n\nobj-$(CONFIG_INV_ICM42600) += inv-icm42600.o\ninv-icm42600-y += inv_icm42600_core.o\ninv-icm42600-y += inv_icm42600_gyro.o\ninv-icm42600-y += inv_icm42600_accel.o\ninv-icm42600-y += inv_icm42600_temp.o\ninv-icm42600-y += inv_icm42600_buffer.o\n\nobj-$(CONFIG_INV_ICM42600_I2C) += inv-icm42600-i2c.o\ninv-icm42600-i2c-y += inv_icm42600_i2c.o\n\nobj-$(CONFIG_INV_ICM42600_SPI) += inv-icm42600-spi.o\ninv-icm42600-spi-y += inv_icm42600_spi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

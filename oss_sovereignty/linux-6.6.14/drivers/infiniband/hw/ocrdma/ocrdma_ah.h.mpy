@@ -1,0 +1,9 @@
+{
+  "module_name": "ocrdma_ah.h",
+  "hash_id": "e2eab86f1c6db27318762dbb39fbdc4aa559a59d3c3937745a4da1baffcf6709",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/ocrdma/ocrdma_ah.h",
+  "human_readable_source": " \n\n#ifndef __OCRDMA_AH_H__\n#define __OCRDMA_AH_H__\n\nenum {\n\tOCRDMA_AH_ID_MASK\t\t= 0x3FF,\n\tOCRDMA_AH_VLAN_VALID_MASK\t= 0x01,\n\tOCRDMA_AH_VLAN_VALID_SHIFT\t= 0x1F,\n\tOCRDMA_AH_L3_TYPE_MASK\t\t= 0x03,\n\tOCRDMA_AH_L3_TYPE_SHIFT\t\t= 0x1D  \n};\n\nint ocrdma_create_ah(struct ib_ah *ah, struct rdma_ah_init_attr *init_attr,\n\t\t     struct ib_udata *udata);\nint ocrdma_destroy_ah(struct ib_ah *ah, u32 flags);\nint ocrdma_query_ah(struct ib_ah *ah, struct rdma_ah_attr *ah_attr);\n\nint ocrdma_process_mad(struct ib_device *dev, int process_mad_flags,\n\t\t       u32 port_num, const struct ib_wc *in_wc,\n\t\t       const struct ib_grh *in_grh, const struct ib_mad *in,\n\t\t       struct ib_mad *out, size_t *out_mad_size,\n\t\t       u16 *out_mad_pkey_index);\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

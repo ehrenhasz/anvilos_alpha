@@ -1,0 +1,9 @@
+{
+  "module_name": "fadvise.c",
+  "hash_id": "d988d8412d7c340b2190c4629773f58a91388d22c1f6a6e4d4426aadc0f74dbc",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fadvise.c",
+  "human_readable_source": " \n#if (__GNUC__ == 4 && 6 <= __GNUC_MINOR__) || 4 < __GNUC__\n# pragma GCC diagnostic ignored \"-Wsuggest-attribute=const\"\n#endif\n\n#include <config.h>\n#include \"fadvise.h\"\n\n#include <stdio.h>\n#include <fcntl.h>\n#include \"ignore-value.h\"\n\nvoid\nfdadvise (int fd, off_t offset, off_t len, fadvice_t advice)\n{\n#if HAVE_POSIX_FADVISE\n  ignore_value (posix_fadvise (fd, offset, len, advice));\n#endif\n}\n\nvoid\nfadvise (FILE *fp, fadvice_t advice)\n{\n  if (fp)\n    fdadvise (fileno (fp), 0, 0, advice);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

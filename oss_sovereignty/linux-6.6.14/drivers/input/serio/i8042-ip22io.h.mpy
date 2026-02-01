@@ -1,0 +1,9 @@
+{
+  "module_name": "i8042-ip22io.h",
+  "hash_id": "75e09a9ded7a2cb49d9b46bb380775a6acfd0371b016cb53442fd32f2c2efc95",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/serio/i8042-ip22io.h",
+  "human_readable_source": " \n#ifndef _I8042_IP22_H\n#define _I8042_IP22_H\n\n#include <asm/sgi/ioc.h>\n#include <asm/sgi/ip22.h>\n\n\n \n\n#define I8042_KBD_PHYS_DESC \"hpc3ps2/serio0\"\n#define I8042_AUX_PHYS_DESC \"hpc3ps2/serio1\"\n#define I8042_MUX_PHYS_DESC \"hpc3ps2/serio%d\"\n\n \n\n#define I8042_KBD_IRQ SGI_KEYBD_IRQ\n#define I8042_AUX_IRQ SGI_KEYBD_IRQ\n\n \n\n#define I8042_COMMAND_REG\t((unsigned long)&sgioc->kbdmouse.command)\n#define I8042_STATUS_REG\t((unsigned long)&sgioc->kbdmouse.command)\n#define I8042_DATA_REG\t\t((unsigned long)&sgioc->kbdmouse.data)\n\nstatic inline int i8042_read_data(void)\n{\n\treturn sgioc->kbdmouse.data;\n}\n\nstatic inline int i8042_read_status(void)\n{\n\treturn sgioc->kbdmouse.command;\n}\n\nstatic inline void i8042_write_data(int val)\n{\n\tsgioc->kbdmouse.data = val;\n}\n\nstatic inline void i8042_write_command(int val)\n{\n\tsgioc->kbdmouse.command = val;\n}\n\nstatic inline int i8042_platform_init(void)\n{\n#if 0\n\t \n\tif (!request_mem_region(sgi_kh, sizeof(struct hpc_keyb), \"i8042\"))\n\t\treturn -EBUSY;\n#endif\n\n\ti8042_reset = I8042_RESET_ALWAYS;\n\n\treturn 0;\n}\n\nstatic inline void i8042_platform_exit(void)\n{\n#if 0\n\trelease_mem_region(JAZZ_KEYBOARD_ADDRESS, sizeof(struct hpc_keyb));\n#endif\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

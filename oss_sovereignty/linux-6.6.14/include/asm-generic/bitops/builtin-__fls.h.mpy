@@ -1,0 +1,9 @@
+{
+  "module_name": "builtin-__fls.h",
+  "hash_id": "a0d2df1c539fde9528bf73a0f012b4bbc592f041a629091fc3a32bdb5f21f059",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/bitops/builtin-__fls.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_BITOPS_BUILTIN___FLS_H_\n#define _ASM_GENERIC_BITOPS_BUILTIN___FLS_H_\n\n \nstatic __always_inline unsigned long __fls(unsigned long word)\n{\n\treturn (sizeof(word) * 8) - 1 - __builtin_clzl(word);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

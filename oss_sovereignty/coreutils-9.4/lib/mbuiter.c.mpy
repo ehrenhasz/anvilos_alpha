@@ -1,0 +1,9 @@
+{
+  "module_name": "mbuiter.c",
+  "hash_id": "70cdc661cdf398903ddcb54f844ea2abfbd2a5c11d21537fec55bd8d68080a9c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mbuiter.c",
+  "human_readable_source": "/* Iterating through multibyte strings: macros for multi-byte encodings.\n   Copyright (C) 2012-2023 Free Software Foundation, Inc.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU Lesser General Public License as\n   published by the Free Software Foundation, either version 3 of the\n   License, or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU Lesser General Public License for more details.\n\n   You should have received a copy of the GNU Lesser General Public License\n   along with this program.  If not, see <https:\n\n#include <config.h>\n\n#define MBUITER_INLINE _GL_EXTERN_INLINE\n#include \"mbuiter.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

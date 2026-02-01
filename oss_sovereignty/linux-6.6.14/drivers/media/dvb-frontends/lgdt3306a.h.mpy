@@ -1,0 +1,9 @@
+{
+  "module_name": "lgdt3306a.h",
+  "hash_id": "f4336f9c2c1a32959312ba0d0578f7dedd595fa31d3de7c58d0fcf7102f560a3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/lgdt3306a.h",
+  "human_readable_source": " \n \n\n#ifndef _LGDT3306A_H_\n#define _LGDT3306A_H_\n\n#include <linux/i2c.h>\n#include <media/dvb_frontend.h>\n\n\nenum lgdt3306a_mpeg_mode {\n\tLGDT3306A_MPEG_PARALLEL = 0,\n\tLGDT3306A_MPEG_SERIAL = 1,\n};\n\nenum lgdt3306a_tp_clock_edge {\n\tLGDT3306A_TPCLK_RISING_EDGE = 0,\n\tLGDT3306A_TPCLK_FALLING_EDGE = 1,\n};\n\nenum lgdt3306a_tp_valid_polarity {\n\tLGDT3306A_TP_VALID_LOW = 0,\n\tLGDT3306A_TP_VALID_HIGH = 1,\n};\n\nstruct lgdt3306a_config {\n\tu8 i2c_addr;\n\n\t \n\tu16 qam_if_khz;\n\tu16 vsb_if_khz;\n\n\t \n\tunsigned int deny_i2c_rptr:1;\n\n\t \n\tunsigned int spectral_inversion:1;\n\n\tenum lgdt3306a_mpeg_mode mpeg_mode;\n\tenum lgdt3306a_tp_clock_edge tpclk_edge;\n\tenum lgdt3306a_tp_valid_polarity tpvalid_polarity;\n\n\t \n\tint  xtalMHz;\n\n\t \n\tstruct dvb_frontend **fe;\n\tstruct i2c_adapter **i2c_adapter;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_LGDT3306A)\nstruct dvb_frontend *lgdt3306a_attach(const struct lgdt3306a_config *config,\n\t\t\t\t      struct i2c_adapter *i2c_adap);\n#else\nstatic inline\nstruct dvb_frontend *lgdt3306a_attach(const struct lgdt3306a_config *config,\n\t\t\t\t      struct i2c_adapter *i2c_adap)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

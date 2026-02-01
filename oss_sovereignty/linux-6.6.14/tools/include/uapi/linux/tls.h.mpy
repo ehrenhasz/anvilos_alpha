@@ -1,0 +1,9 @@
+{
+  "module_name": "tls.h",
+  "hash_id": "28a4ea724078d963ff4bdd7f88e856ebae7ceb4f7d789801e84d9934b7a05fab",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/uapi/linux/tls.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_TLS_H\n#define _UAPI_LINUX_TLS_H\n\n#include <linux/types.h>\n\n \n#define TLS_TX\t\t\t1\t \n#define TLS_RX\t\t\t2\t \n\n \n#define TLS_VERSION_MINOR(ver)\t((ver) & 0xFF)\n#define TLS_VERSION_MAJOR(ver)\t(((ver) >> 8) & 0xFF)\n\n#define TLS_VERSION_NUMBER(id)\t((((id##_VERSION_MAJOR) & 0xFF) << 8) |\t\\\n\t\t\t\t ((id##_VERSION_MINOR) & 0xFF))\n\n#define TLS_1_2_VERSION_MAJOR\t0x3\n#define TLS_1_2_VERSION_MINOR\t0x3\n#define TLS_1_2_VERSION\t\tTLS_VERSION_NUMBER(TLS_1_2)\n\n \n#define TLS_CIPHER_AES_GCM_128\t\t\t\t51\n#define TLS_CIPHER_AES_GCM_128_IV_SIZE\t\t\t8\n#define TLS_CIPHER_AES_GCM_128_KEY_SIZE\t\t16\n#define TLS_CIPHER_AES_GCM_128_SALT_SIZE\t\t4\n#define TLS_CIPHER_AES_GCM_128_TAG_SIZE\t\t16\n#define TLS_CIPHER_AES_GCM_128_REC_SEQ_SIZE\t\t8\n\n#define TLS_SET_RECORD_TYPE\t1\n#define TLS_GET_RECORD_TYPE\t2\n\nstruct tls_crypto_info {\n\t__u16 version;\n\t__u16 cipher_type;\n};\n\nstruct tls12_crypto_info_aes_gcm_128 {\n\tstruct tls_crypto_info info;\n\tunsigned char iv[TLS_CIPHER_AES_GCM_128_IV_SIZE];\n\tunsigned char key[TLS_CIPHER_AES_GCM_128_KEY_SIZE];\n\tunsigned char salt[TLS_CIPHER_AES_GCM_128_SALT_SIZE];\n\tunsigned char rec_seq[TLS_CIPHER_AES_GCM_128_REC_SEQ_SIZE];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

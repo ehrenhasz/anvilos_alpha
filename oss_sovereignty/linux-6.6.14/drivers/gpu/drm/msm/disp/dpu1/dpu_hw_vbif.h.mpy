@@ -1,0 +1,9 @@
+{
+  "module_name": "dpu_hw_vbif.h",
+  "hash_id": "11649ce0df8999cac09c57e2d7b92090826c8035b07989df7cdbb5a6abe37714",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_vbif.h",
+  "human_readable_source": " \n \n\n#ifndef _DPU_HW_VBIF_H\n#define _DPU_HW_VBIF_H\n\n#include \"dpu_hw_catalog.h\"\n#include \"dpu_hw_mdss.h\"\n#include \"dpu_hw_util.h\"\n\nstruct dpu_hw_vbif;\n\n \nstruct dpu_hw_vbif_ops {\n\t \n\tvoid (*set_limit_conf)(struct dpu_hw_vbif *vbif,\n\t\t\tu32 xin_id, bool rd, u32 limit);\n\n\t \n\tu32 (*get_limit_conf)(struct dpu_hw_vbif *vbif,\n\t\t\tu32 xin_id, bool rd);\n\n\t \n\tvoid (*set_halt_ctrl)(struct dpu_hw_vbif *vbif,\n\t\t\tu32 xin_id, bool enable);\n\n\t \n\tbool (*get_halt_ctrl)(struct dpu_hw_vbif *vbif,\n\t\t\tu32 xin_id);\n\n\t \n\tvoid (*set_qos_remap)(struct dpu_hw_vbif *vbif,\n\t\t\tu32 xin_id, u32 level, u32 remap_level);\n\n\t \n\tvoid (*set_mem_type)(struct dpu_hw_vbif *vbif,\n\t\t\tu32 xin_id, u32 value);\n\n\t \n\tvoid (*clear_errors)(struct dpu_hw_vbif *vbif,\n\t\tu32 *pnd_errors, u32 *src_errors);\n\n\t \n\tvoid (*set_write_gather_en)(struct dpu_hw_vbif *vbif, u32 xin_id);\n};\n\nstruct dpu_hw_vbif {\n\t \n\tstruct dpu_hw_blk_reg_map hw;\n\n\t \n\tenum dpu_vbif idx;\n\tconst struct dpu_vbif_cfg *cap;\n\n\t \n\tstruct dpu_hw_vbif_ops ops;\n};\n\n \nstruct dpu_hw_vbif *dpu_hw_vbif_init(const struct dpu_vbif_cfg *cfg,\n\t\tvoid __iomem *addr);\n\nvoid dpu_hw_vbif_destroy(struct dpu_hw_vbif *vbif);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

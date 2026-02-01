@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "80c93b65acc95deeb8ee9c39b1d261aafd34ece869a0290a010ec810dcd892c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/isdn/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# ISDN device configuration\n#\n\nmenuconfig ISDN\n\tbool \"ISDN support\"\n\tdepends on NET && NETDEVICES\n\thelp\n\t  ISDN (\"Integrated Services Digital Network\", called RNIS in France)\n\t  is a fully digital telephone service that can be used for voice and\n\t  data connections.  If your computer is equipped with an ISDN\n\t  adapter you can use it to connect to your Internet service provider\n\t  (with SLIP or PPP) faster than via a conventional telephone modem\n\t  (though still much slower than with DSL) or to make and accept\n\t  voice calls (eg. turning your PC into a software answering machine\n\t  or PABX).\n\n\t  Select this option if you want your kernel to support ISDN.\n\nif ISDN\n\nsource \"drivers/isdn/capi/Kconfig\"\n\nsource \"drivers/isdn/mISDN/Kconfig\"\n\nendif # ISDN\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

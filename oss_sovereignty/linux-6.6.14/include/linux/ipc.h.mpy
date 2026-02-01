@@ -1,0 +1,9 @@
+{
+  "module_name": "ipc.h",
+  "hash_id": "5e35ef9c55cad3a613860ca8bf9e74cb6c07302b4c4fea6d89d5c46618d43e0e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ipc.h",
+  "human_readable_source": " \n#ifndef _LINUX_IPC_H\n#define _LINUX_IPC_H\n\n#include <linux/spinlock.h>\n#include <linux/uidgid.h>\n#include <linux/rhashtable-types.h>\n#include <uapi/linux/ipc.h>\n#include <linux/refcount.h>\n\n \nstruct kern_ipc_perm {\n\tspinlock_t\tlock;\n\tbool\t\tdeleted;\n\tint\t\tid;\n\tkey_t\t\tkey;\n\tkuid_t\t\tuid;\n\tkgid_t\t\tgid;\n\tkuid_t\t\tcuid;\n\tkgid_t\t\tcgid;\n\tumode_t\t\tmode;\n\tunsigned long\tseq;\n\tvoid\t\t*security;\n\n\tstruct rhash_head khtnode;\n\n\tstruct rcu_head rcu;\n\trefcount_t refcount;\n} ____cacheline_aligned_in_smp __randomize_layout;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

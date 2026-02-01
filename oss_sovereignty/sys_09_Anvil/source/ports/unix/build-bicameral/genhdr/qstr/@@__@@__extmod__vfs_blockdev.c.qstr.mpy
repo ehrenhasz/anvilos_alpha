@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__extmod__vfs_blockdev.c.qstr",
+  "hash_id": "d861cc0b4586a7c10d1652c5749b22701636574a703d1ad86bde021e5a763962",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__extmod__vfs_blockdev.c.qstr",
+  "human_readable_source": "Q(readblocks)\nQ(writeblocks)\nQ(ioctl)\nQ(sync)\nQ(count)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

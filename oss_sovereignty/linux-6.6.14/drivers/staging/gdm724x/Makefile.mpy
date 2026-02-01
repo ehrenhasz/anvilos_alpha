@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "83854cdee94594e830b8ccde5c9da105bbd38e056d070561483fcabc420fcbac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/gdm724x/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_LTE_GDM724X) := gdmulte.o\ngdmulte-y += gdm_lte.o netlink_k.o\ngdmulte-y += gdm_usb.o gdm_endian.o\n\nobj-$(CONFIG_LTE_GDM724X) += gdmtty.o\ngdmtty-y := gdm_tty.o gdm_mux.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

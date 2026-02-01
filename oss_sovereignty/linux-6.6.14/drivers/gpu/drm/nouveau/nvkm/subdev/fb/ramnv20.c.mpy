@@ -1,0 +1,9 @@
+{
+  "module_name": "ramnv20.c",
+  "hash_id": "77d889431cc5ac213e7dac92a4848366eff0db59373e2d01eeff67ee9dad952e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/ramnv20.c",
+  "human_readable_source": " \n#include \"ram.h\"\n\nint\nnv20_ram_new(struct nvkm_fb *fb, struct nvkm_ram **pram)\n{\n\tstruct nvkm_device *device = fb->subdev.device;\n\tu32 pbus1218 =  nvkm_rd32(device, 0x001218);\n\tu32     size = (nvkm_rd32(device, 0x10020c) & 0xff000000);\n\tenum nvkm_ram_type type = NVKM_RAM_TYPE_UNKNOWN;\n\tint ret;\n\n\tswitch (pbus1218 & 0x00000300) {\n\tcase 0x00000000: type = NVKM_RAM_TYPE_SDRAM; break;\n\tcase 0x00000100: type = NVKM_RAM_TYPE_DDR1 ; break;\n\tcase 0x00000200: type = NVKM_RAM_TYPE_GDDR3; break;\n\tcase 0x00000300: type = NVKM_RAM_TYPE_GDDR2; break;\n\t}\n\n\tret = nvkm_ram_new_(&nv04_ram_func, fb, type, size, pram);\n\tif (ret)\n\t\treturn ret;\n\n\t(*pram)->parts = (nvkm_rd32(device, 0x100200) & 0x00000003) + 1;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

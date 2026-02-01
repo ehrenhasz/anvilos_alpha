@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-hist-syntax-errors.tc",
+  "hash_id": "9932c0c1e93984493f3b7c498bdc61dd988246a0f50b29037402f34768af176d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/trigger-hist-syntax-errors.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event trigger - test histogram parser errors\n# requires: set_event events/kmem/kmalloc/trigger events/kmem/kmalloc/hist error_log\n\ncheck_error() { # command-with-error-pos-by-^\n    ftrace_errlog_check 'hist:kmem:kmalloc' \"$1\" 'events/kmem/kmalloc/trigger'\n}\n\ncheck_error 'hist:keys=common_pid:vals=bytes_req:sort=common_pid,^junk'\t# INVALID_SORT_FIELD\ncheck_error 'hist:keys=common_pid:vals=bytes_req:^sort='\t\t# EMPTY_ASSIGNMENT\ncheck_error 'hist:keys=common_pid:vals=bytes_req:^sort=common_pid,'\t# EMPTY_SORT_FIELD\ncheck_error 'hist:keys=common_pid:vals=bytes_req:sort=common_pid.^junk'\t# INVALID_SORT_MODIFIER\ncheck_error 'hist:keys=common_pid:vals=bytes_req,bytes_alloc:^sort=common_pid,bytes_req,bytes_alloc'\t# TOO_MANY_SORT_FIELDS\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

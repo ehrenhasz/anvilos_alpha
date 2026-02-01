@@ -1,0 +1,9 @@
+{
+  "module_name": "rootPlugin.py",
+  "hash_id": "3662d85eb2e943f68095a187c195ca791ae8ee07f2fdd331091fef0e2a20cf42",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tc-testing/plugin-lib/rootPlugin.py",
+  "human_readable_source": "import os\nimport sys\nfrom TdcPlugin import TdcPlugin\n\nfrom tdc_config import *\n\n\nclass SubPlugin(TdcPlugin):\n    def __init__(self):\n        self.sub_class = 'root/SubPlugin'\n        super().__init__()\n\n    def pre_suite(self, testcount, testidlist):\n        # run commands before test_runner goes into a test loop\n        super().pre_suite(testcount, testidlist)\n\n        if os.geteuid():\n            print('This script must be run with root privileges', file=sys.stderr)\n            exit(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "3841b5d50a432e03228c7d029ee22bbb9b9a65f04c15246ab49481e840b37f37",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/storage/debug.h",
+  "human_readable_source": " \n \n\n#ifndef _DEBUG_H_\n#define _DEBUG_H_\n\n#include <linux/kernel.h>\n\n#ifdef CONFIG_USB_STORAGE_DEBUG\nvoid usb_stor_show_command(const struct us_data *us, struct scsi_cmnd *srb);\nvoid usb_stor_show_sense(const struct us_data *us, unsigned char key,\n\t\t\t unsigned char asc, unsigned char ascq);\n__printf(2, 3) void usb_stor_dbg(const struct us_data *us,\n\t\t\t\t const char *fmt, ...);\n\n#define US_DEBUG(x)\t\tx\n#else\n__printf(2, 3)\nstatic inline void _usb_stor_dbg(const struct us_data *us,\n\t\t\t\t const char *fmt, ...)\n{\n}\n#define usb_stor_dbg(us, fmt, ...)\t\t\t\t\\\n\tdo { if (0) _usb_stor_dbg(us, fmt, ##__VA_ARGS__); } while (0)\n#define US_DEBUG(x)\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

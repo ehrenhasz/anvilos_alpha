@@ -1,0 +1,9 @@
+{
+  "module_name": "syscalls.h",
+  "hash_id": "8830e304d560e5e4cfe5505fa40b1be67dcd625b32f8583419e3f9c64fc40ea3",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/shared/sysdep/syscalls.h",
+  "human_readable_source": " \n#ifdef __i386__\n#include \"syscalls_32.h\"\n#else\n#include \"syscalls_64.h\"\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

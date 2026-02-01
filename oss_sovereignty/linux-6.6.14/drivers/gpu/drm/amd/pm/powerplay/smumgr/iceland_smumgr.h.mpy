@@ -1,0 +1,9 @@
+{
+  "module_name": "iceland_smumgr.h",
+  "hash_id": "2b1fb40ade06ed142ff37f73c73f08fdb2d403936e0139724a31678e65c4c6a7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/smumgr/iceland_smumgr.h",
+  "human_readable_source": " \n\n#ifndef _ICELAND_SMUMGR_H_\n#define _ICELAND_SMUMGR_H_\n\n\n#include \"smu7_smumgr.h\"\n#include \"pp_endian.h\"\n#include \"smu71_discrete.h\"\n\nstruct iceland_pt_defaults {\n\tuint8_t   svi_load_line_en;\n\tuint8_t   svi_load_line_vddc;\n\tuint8_t   tdc_vddc_throttle_release_limit_perc;\n\tuint8_t   tdc_mawt;\n\tuint8_t   tdc_waterfall_ctl;\n\tuint8_t   dte_ambient_temp_base;\n\tuint32_t  display_cac;\n\tuint32_t  bapm_temp_gradient;\n\tuint16_t  bapmti_r[SMU71_DTE_ITERATIONS * SMU71_DTE_SOURCES * SMU71_DTE_SINKS];\n\tuint16_t  bapmti_rc[SMU71_DTE_ITERATIONS * SMU71_DTE_SOURCES * SMU71_DTE_SINKS];\n};\n\nstruct iceland_mc_reg_entry {\n\tuint32_t mclk_max;\n\tuint32_t mc_data[SMU71_DISCRETE_MC_REGISTER_ARRAY_SIZE];\n};\n\nstruct iceland_mc_reg_table {\n\tuint8_t   last;                \n\tuint8_t   num_entries;         \n\tuint16_t  validflag;           \n\tstruct iceland_mc_reg_entry    mc_reg_table_entry[MAX_AC_TIMING_ENTRIES];\n\tSMU71_Discrete_MCRegisterAddress mc_reg_address[SMU71_DISCRETE_MC_REGISTER_ARRAY_SIZE];\n};\n\nstruct iceland_smumgr {\n\tstruct smu7_smumgr smu7_data;\n\tstruct SMU71_Discrete_DpmTable       smc_state_table;\n\tstruct SMU71_Discrete_PmFuses  power_tune_table;\n\tstruct SMU71_Discrete_Ulv            ulv_setting;\n\tconst struct iceland_pt_defaults  *power_tune_defaults;\n\tSMU71_Discrete_MCRegisters      mc_regs;\n\tstruct iceland_mc_reg_table mc_reg_table;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

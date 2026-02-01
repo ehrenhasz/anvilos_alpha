@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn302_init.h",
+  "hash_id": "0d50f0fd8f9fca216266eeb3ad274758e8bf9be644a0b91a116bf61c49ec8edf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn302/dcn302_init.h",
+  "human_readable_source": " \n\n#ifndef __DC_DCN302_INIT_H__\n#define __DC_DCN302_INIT_H__\n\nstruct dc;\n\nvoid dcn302_hw_sequencer_construct(struct dc *dc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "f3d68ff3f01bf3efe8d7833e3ce76edc629fbebe9195b4f248aebba12deafa55",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/Build",
+  "human_readable_source": "perf-y += clone.o\nperf-y += fcntl.o\nperf-y += flock.o\nperf-y += fsmount.o\nperf-y += fspick.o\nifeq ($(SRCARCH),$(filter $(SRCARCH),x86))\nperf-y += ioctl.o\nendif\nperf-y += kcmp.o\nperf-y += mount_flags.o\nperf-y += move_mount.o\nperf-y += pkey_alloc.o\nperf-y += arch_prctl.o\nperf-y += prctl.o\nperf-y += renameat.o\nperf-y += sockaddr.o\nperf-y += socket.o\nperf-y += statx.o\nperf-y += sync_file_range.o\nperf-y += timespec.o\nperf-y += tracepoints/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

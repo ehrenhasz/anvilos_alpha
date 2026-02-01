@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ba9d09af433ad9c23522c81a0b3529764d1307f71c145f3369f4f86102a18ce3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/greybus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Greybus core\ngreybus-y :=\tcore.o\t\t\\\n\t\tdebugfs.o\t\\\n\t\thd.o\t\t\\\n\t\tmanifest.o\t\\\n\t\tmodule.o\t\\\n\t\tinterface.o\t\\\n\t\tbundle.o\t\\\n\t\tconnection.o\t\\\n\t\tcontrol.o\t\\\n\t\tsvc.o\t\t\\\n\t\tsvc_watchdog.o\t\\\n\t\toperation.o\n\nobj-$(CONFIG_GREYBUS)\t\t+= greybus.o\n\n# needed for trace events\nccflags-y += -I$(src)\n\n# Greybus Host controller drivers\ngb-es2-y := es2.o\n\nobj-$(CONFIG_GREYBUS_ES2)\t+= gb-es2.o\n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

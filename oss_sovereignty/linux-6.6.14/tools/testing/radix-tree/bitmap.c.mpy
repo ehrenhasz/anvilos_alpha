@@ -1,0 +1,9 @@
+{
+  "module_name": "bitmap.c",
+  "hash_id": "dc09b64d3635ebdae8c850701dbd1ce956627336fe3505ca86e1786a850d84ce",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/radix-tree/bitmap.c",
+  "human_readable_source": " \n\n#include <linux/bitmap.h>\n\nvoid bitmap_clear(unsigned long *map, unsigned int start, int len)\n{\n\tunsigned long *p = map + BIT_WORD(start);\n\tconst unsigned int size = start + len;\n\tint bits_to_clear = BITS_PER_LONG - (start % BITS_PER_LONG);\n\tunsigned long mask_to_clear = BITMAP_FIRST_WORD_MASK(start);\n\n\twhile (len - bits_to_clear >= 0) {\n\t\t*p &= ~mask_to_clear;\n\t\tlen -= bits_to_clear;\n\t\tbits_to_clear = BITS_PER_LONG;\n\t\tmask_to_clear = ~0UL;\n\t\tp++;\n\t}\n\tif (len) {\n\t\tmask_to_clear &= BITMAP_LAST_WORD_MASK(size);\n\t\t*p &= ~mask_to_clear;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "channel.h",
+  "hash_id": "b76b45731b3f29bebb43cd4fe32fef7510ddb23895e81f6ecff64aed30e4befa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/channel.h",
+  "human_readable_source": " \n \n\n#ifndef __HOST1X_CHANNEL_H\n#define __HOST1X_CHANNEL_H\n\n#include <linux/io.h>\n#include <linux/kref.h>\n\n#include \"cdma.h\"\n\nstruct host1x;\nstruct host1x_channel;\n\nstruct host1x_channel_list {\n\tstruct host1x_channel *channels;\n\tunsigned long *allocated_channels;\n};\n\nstruct host1x_channel {\n\tstruct kref refcount;\n\tunsigned int id;\n\tstruct mutex submitlock;\n\tvoid __iomem *regs;\n\tstruct host1x_client *client;\n\tstruct device *dev;\n\tstruct host1x_cdma cdma;\n};\n\n \nint host1x_channel_list_init(struct host1x_channel_list *chlist,\n\t\t\t     unsigned int num_channels);\nvoid host1x_channel_list_free(struct host1x_channel_list *chlist);\nstruct host1x_channel *host1x_channel_get_index(struct host1x *host,\n\t\t\t\t\t\tunsigned int index);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

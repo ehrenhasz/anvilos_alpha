@@ -1,0 +1,9 @@
+{
+  "module_name": "test_xdp_with_devmap_frags_helpers.c",
+  "hash_id": "0b05c0a123175475d8c2b57319ac0fc70226d7298b023a91e550ff3d1e3bf65c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_xdp_with_devmap_frags_helpers.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_DEVMAP);\n\t__uint(key_size, sizeof(__u32));\n\t__uint(value_size, sizeof(struct bpf_devmap_val));\n\t__uint(max_entries, 4);\n} dm_ports SEC(\".maps\");\n\n \nSEC(\"xdp/devmap\")\nint xdp_dummy_dm(struct xdp_md *ctx)\n{\n\treturn XDP_PASS;\n}\n\nSEC(\"xdp.frags/devmap\")\nint xdp_dummy_dm_frags(struct xdp_md *ctx)\n{\n\treturn XDP_PASS;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

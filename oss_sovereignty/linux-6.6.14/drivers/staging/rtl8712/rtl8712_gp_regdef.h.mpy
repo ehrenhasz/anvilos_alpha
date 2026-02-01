@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_gp_regdef.h",
+  "hash_id": "4bb3e55d8fb02bcf4496f6ba24f5000c786b5a11781f576a0470eb7bff8034f0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_gp_regdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_GP_REGDEF_H__\n#define __RTL8712_GP_REGDEF_H__\n\n#define PSTIMER\t\t\t(RTL8712_GP_ + 0x00)\n#define TIMER1\t\t\t(RTL8712_GP_ + 0x04)\n#define TIMER2\t\t\t(RTL8712_GP_ + 0x08)\n#define GPIO_CTRL\t\t(RTL8712_GP_ + 0x0C)\n#define GPIO_IO_SEL\t\t(RTL8712_GP_ + 0x0E)\n#define GPIO_INTCTRL\t\t(RTL8712_GP_ + 0x10)\n#define MAC_PINMUX_CTRL\t\t(RTL8712_GP_ + 0x11)\n#define LEDCFG\t\t\t(RTL8712_GP_ + 0x12)\n#define PHY_REG_RPT\t\t(RTL8712_GP_ + 0x13)\n#define PHY_REG_DATA\t\t(RTL8712_GP_ + 0x14)\n\n#endif\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9c42f5d477d7b7454c39b61f80cb539a02495633c2e8033f3e4806bf137ecc03",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/iio/adc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# ADC drivers\n#\nmenu \"Analog to digital converters\"\n\nconfig AD7816\n\ttristate \"Analog Devices AD7816/7/8 temperature sensor and ADC driver\"\n\tdepends on SPI\n\tdepends on GPIOLIB || COMPILE_TEST\n\thelp\n\t  Say yes here to build support for Analog Devices AD7816/7/8\n\t  temperature sensors and ADC.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called ad7816.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

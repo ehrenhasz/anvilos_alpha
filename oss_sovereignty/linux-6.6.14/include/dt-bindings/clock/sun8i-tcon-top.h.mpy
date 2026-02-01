@@ -1,0 +1,9 @@
+{
+  "module_name": "sun8i-tcon-top.h",
+  "hash_id": "20f650b02a2d499423d302aa13bb342b708697cdc6abbe50bb218811bf036b5d",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/sun8i-tcon-top.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLOCK_SUN8I_TCON_TOP_H_\n#define _DT_BINDINGS_CLOCK_SUN8I_TCON_TOP_H_\n\n#define CLK_TCON_TOP_TV0\t0\n#define CLK_TCON_TOP_TV1\t1\n#define CLK_TCON_TOP_DSI\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

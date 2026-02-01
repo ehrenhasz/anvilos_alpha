@@ -1,0 +1,9 @@
+{
+  "module_name": "vdev_initialize.h",
+  "hash_id": "1f3f90b73a9b4fcb09d4425f281e28a48233ff41da7664f216df60f251c0c4e7",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/vdev_initialize.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SYS_VDEV_INITIALIZE_H\n#define\t_SYS_VDEV_INITIALIZE_H\n\n#include <sys/spa.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\nextern void vdev_initialize(vdev_t *vd);\nextern void vdev_uninitialize(vdev_t *vd);\nextern void vdev_initialize_stop(vdev_t *vd,\n    vdev_initializing_state_t tgt_state, list_t *vd_list);\nextern void vdev_initialize_stop_all(vdev_t *vd,\n    vdev_initializing_state_t tgt_state);\nextern void vdev_initialize_stop_wait(spa_t *spa, list_t *vd_list);\nextern void vdev_initialize_restart(vdev_t *vd);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

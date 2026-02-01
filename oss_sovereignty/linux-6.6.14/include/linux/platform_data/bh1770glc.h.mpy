@@ -1,0 +1,9 @@
+{
+  "module_name": "bh1770glc.h",
+  "hash_id": "e2e3d4cd48a9a7f4fcd50b651fd032b1ca63531ee2f906d78d7908d66fdba99d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/bh1770glc.h",
+  "human_readable_source": " \n \n\n#ifndef __BH1770_H__\n#define __BH1770_H__\n\n \n\nstruct bh1770_platform_data {\n#define BH1770_LED_5mA\t0\n#define BH1770_LED_10mA\t1\n#define BH1770_LED_20mA\t2\n#define BH1770_LED_50mA\t3\n#define BH1770_LED_100mA 4\n#define BH1770_LED_150mA 5\n#define BH1770_LED_200mA 6\n\t__u8 led_def_curr;\n#define BH1770_NEUTRAL_GA 16384  \n\t__u32 glass_attenuation;\n\tint (*setup_resources)(void);\n\tint (*release_resources)(void);\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

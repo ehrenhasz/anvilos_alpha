@@ -1,0 +1,9 @@
+{
+  "module_name": "usnic_common_pkt_hdr.h",
+  "hash_id": "d85610cf50e94b42a5458f5e41ed1ee0d5e648811d353b9b64344ddd5d930606",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/usnic/usnic_common_pkt_hdr.h",
+  "human_readable_source": " \n\n#ifndef USNIC_CMN_PKT_HDR_H\n#define USNIC_CMN_PKT_HDR_H\n\n#define USNIC_ROCE_GRH_VER              (8)\n#define USNIC_PROTO_VER                 (1)\n#define USNIC_ROCE_GRH_VER_SHIFT        (4)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

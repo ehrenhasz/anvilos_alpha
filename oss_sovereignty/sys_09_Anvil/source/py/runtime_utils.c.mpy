@@ -1,0 +1,9 @@
+{
+  "module_name": "runtime_utils.c",
+  "hash_id": "18ef3a2ecd1e550ef625b1e79642e2a00a21fdd73f7debf2aed17582e33a4866",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/runtime_utils.c",
+  "human_readable_source": " \n\n#include \"py/runtime.h\"\n\nmp_obj_t mp_call_function_1_protected(mp_obj_t fun, mp_obj_t arg) {\n    nlr_buf_t nlr;\n    if (nlr_push(&nlr) == 0) {\n        mp_obj_t ret = mp_call_function_1(fun, arg);\n        nlr_pop();\n        return ret;\n    } else {\n        mp_obj_print_exception(&mp_plat_print, MP_OBJ_FROM_PTR(nlr.ret_val));\n        return MP_OBJ_NULL;\n    }\n}\n\nmp_obj_t mp_call_function_2_protected(mp_obj_t fun, mp_obj_t arg1, mp_obj_t arg2) {\n    nlr_buf_t nlr;\n    if (nlr_push(&nlr) == 0) {\n        mp_obj_t ret = mp_call_function_2(fun, arg1, arg2);\n        nlr_pop();\n        return ret;\n    } else {\n        mp_obj_print_exception(&mp_plat_print, MP_OBJ_FROM_PTR(nlr.ret_val));\n        return MP_OBJ_NULL;\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

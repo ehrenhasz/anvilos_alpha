@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "715ff3ff06c5282dfcaeb5095e1e82475e37c2efda173c9da7115261b8e60d97",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nbootsect\nbzImage\ncpustr.h\nmkcpustr\nvoffset.h\nzoffset.h\nsetup\nsetup.bin\nsetup.elf\nfdimage\nmtools.conf\nimage.iso\nhdimage\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

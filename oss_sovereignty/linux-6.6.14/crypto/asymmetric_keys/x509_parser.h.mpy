@@ -1,0 +1,9 @@
+{
+  "module_name": "x509_parser.h",
+  "hash_id": "1d9acbde1e8a9544ec4987eb18110f48ef68d17629a9647dc52699e6ef31bcd9",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/asymmetric_keys/x509_parser.h",
+  "human_readable_source": " \n \n\n#include <linux/time.h>\n#include <crypto/public_key.h>\n#include <keys/asymmetric-type.h>\n\nstruct x509_certificate {\n\tstruct x509_certificate *next;\n\tstruct x509_certificate *signer;\t \n\tstruct public_key *pub;\t\t\t \n\tstruct public_key_signature *sig;\t \n\tchar\t\t*issuer;\t\t \n\tchar\t\t*subject;\t\t \n\tstruct asymmetric_key_id *id;\t\t \n\tstruct asymmetric_key_id *skid;\t\t \n\ttime64_t\tvalid_from;\n\ttime64_t\tvalid_to;\n\tconst void\t*tbs;\t\t\t \n\tunsigned\ttbs_size;\t\t \n\tunsigned\traw_sig_size;\t\t \n\tconst void\t*raw_sig;\t\t \n\tconst void\t*raw_serial;\t\t \n\tunsigned\traw_serial_size;\n\tunsigned\traw_issuer_size;\n\tconst void\t*raw_issuer;\t\t \n\tconst void\t*raw_subject;\t\t \n\tunsigned\traw_subject_size;\n\tunsigned\traw_skid_size;\n\tconst void\t*raw_skid;\t\t \n\tunsigned\tindex;\n\tbool\t\tseen;\t\t\t \n\tbool\t\tverified;\n\tbool\t\tself_signed;\t\t \n\tbool\t\tunsupported_sig;\t \n\tbool\t\tblacklisted;\n};\n\n \nextern void x509_free_certificate(struct x509_certificate *cert);\nextern struct x509_certificate *x509_cert_parse(const void *data, size_t datalen);\nextern int x509_decode_time(time64_t *_t,  size_t hdrlen,\n\t\t\t    unsigned char tag,\n\t\t\t    const unsigned char *value, size_t vlen);\n\n \nextern int x509_get_sig_params(struct x509_certificate *cert);\nextern int x509_check_for_self_signed(struct x509_certificate *cert);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ch7006.h",
+  "hash_id": "5361c611185f5f997323203797a1e8f705c8c338a3aa184f26c7256b2afc3fcf",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/i2c/ch7006.h",
+  "human_readable_source": " \n\n#ifndef __DRM_I2C_CH7006_H__\n#define __DRM_I2C_CH7006_H__\n\n \nstruct ch7006_encoder_params {\n\tenum {\n\t\tCH7006_FORMAT_RGB16 = 0,\n\t\tCH7006_FORMAT_YCrCb24m16,\n\t\tCH7006_FORMAT_RGB24m16,\n\t\tCH7006_FORMAT_RGB15,\n\t\tCH7006_FORMAT_RGB24m12C,\n\t\tCH7006_FORMAT_RGB24m12I,\n\t\tCH7006_FORMAT_RGB24m8,\n\t\tCH7006_FORMAT_RGB16m8,\n\t\tCH7006_FORMAT_RGB15m8,\n\t\tCH7006_FORMAT_YCrCb24m8,\n\t} input_format;\n\n\tenum {\n\t\tCH7006_CLOCK_SLAVE = 0,\n\t\tCH7006_CLOCK_MASTER,\n\t} clock_mode;\n\n\tenum {\n\t\tCH7006_CLOCK_EDGE_NEG = 0,\n\t\tCH7006_CLOCK_EDGE_POS,\n\t} clock_edge;\n\n\tint xcm, pcm;\n\n\tenum {\n\t\tCH7006_SYNC_SLAVE = 0,\n\t\tCH7006_SYNC_MASTER,\n\t} sync_direction;\n\n\tenum {\n\t\tCH7006_SYNC_SEPARATED = 0,\n\t\tCH7006_SYNC_EMBEDDED,\n\t} sync_encoding;\n\n\tenum {\n\t\tCH7006_POUT_1_8V = 0,\n\t\tCH7006_POUT_3_3V,\n\t} pout_level;\n\n\tenum {\n\t\tCH7006_ACTIVE_HSYNC = 0,\n\t\tCH7006_ACTIVE_DSTART,\n\t} active_detect;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

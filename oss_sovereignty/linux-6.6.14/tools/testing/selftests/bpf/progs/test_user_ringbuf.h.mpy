@@ -1,0 +1,9 @@
+{
+  "module_name": "test_user_ringbuf.h",
+  "hash_id": "0fa045015e724f718bfdbb115b1e979449009d011042beb4b9e940a7a1f2eb3b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_user_ringbuf.h",
+  "human_readable_source": " \n \n\n#ifndef _TEST_USER_RINGBUF_H\n#define _TEST_USER_RINGBUF_H\n\n#define TEST_OP_64 4\n#define TEST_OP_32 2\n\nenum test_msg_op {\n\tTEST_MSG_OP_INC64,\n\tTEST_MSG_OP_INC32,\n\tTEST_MSG_OP_MUL64,\n\tTEST_MSG_OP_MUL32,\n\n\t\n\tTEST_MSG_OP_NUM_OPS,\n};\n\nstruct test_msg {\n\tenum test_msg_op msg_op;\n\tunion {\n\t\t__s64 operand_64;\n\t\t__s32 operand_32;\n\t};\n};\n\nstruct sample {\n\tint pid;\n\tint seq;\n\tlong value;\n\tchar comm[16];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

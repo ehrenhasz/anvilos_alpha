@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_rrwlock.h",
+  "hash_id": "6d04774503209698c1b5bb9ddccdbef697e8889764a3c05e4b14fbaf83842da4",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/zfs/sys/trace_rrwlock.h",
+  "human_readable_source": " \n\n#if defined(_KERNEL)\n#if defined(HAVE_DECLARE_EVENT_CLASS)\n\n#else\n\nDEFINE_DTRACE_PROBE(zfs__rrwfastpath__rdmiss);\nDEFINE_DTRACE_PROBE(zfs__rrwfastpath__exitmiss);\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

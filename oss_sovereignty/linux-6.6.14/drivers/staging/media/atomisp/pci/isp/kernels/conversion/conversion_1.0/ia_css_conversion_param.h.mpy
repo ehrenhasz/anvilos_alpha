@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_conversion_param.h",
+  "hash_id": "0c73a0fbd66225b2531b556490df4aa5e157238443ee23765049be7a57abf801",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/conversion/conversion_1.0/ia_css_conversion_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_CONVERSION_PARAM_H\n#define __IA_CSS_CONVERSION_PARAM_H\n\n#include \"type_support.h\"\n\n \nstruct sh_css_isp_conversion_params {\n\tu32 en;\n\tu32 dummy0;\n\tu32 dummy1;\n\tu32 dummy2;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

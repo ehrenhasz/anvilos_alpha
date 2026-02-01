@@ -1,0 +1,9 @@
+{
+  "module_name": "kprobe_args_type.tc",
+  "hash_id": "d72273a332b32d963f244c983abf8facf70b62a0f0a47006c2c5dc0d6f189e79",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args_type.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Kprobes event arguments with types\n# requires: kprobe_events \"x8/16/32/64\":README\n\ngen_event() { # Bitsize\n  echo \"p:testprobe $FUNCTION_FORK \\$stack0:s$1 \\$stack0:u$1 \\$stack0:x$1 \\$stack0:b4@4/$1\"\n}\n\ncheck_types() { # s-type u-type x-type bf-type width\n  test $# -eq 5\n  CW=$5\n  CW=$((CW / 4))\n  X1=`printf \"%x\" $1 | tail -c ${CW}`\n  X2=`printf \"%x\" $2`\n  X3=`printf \"%x\" $3`\n  test $X1 = $X2\n  test $X2 = $X3\n  test 0x$X3 = $3\n\n  B4=`printf \"%1x\" $4`\n  B3=`printf \"%03x\" 0x$X3 | tail -c 2 | head -c 1`\n  test $B3 = $B4\n}\n\nfor width in 64 32 16 8; do\n  : \"Add new event with basic types\"\n  gen_event $width > kprobe_events\n  grep testprobe kprobe_events\n  test -d events/kprobes/testprobe\n\n  : \"Trace the event\"\n  echo 1 > events/kprobes/testprobe/enable\n  ( echo \"forked\")\n  echo 0 > events/kprobes/testprobe/enable\n\n  : \"Confirm the arguments is recorded in given types correctly\"\n  ARGS=`grep \"testprobe\" trace | head -n 1 | sed -e 's/.* arg1=\\(.*\\) arg2=\\(.*\\) arg3=\\(.*\\) arg4=\\(.*\\)/\\1 \\2 \\3 \\4/'`\n  check_types $ARGS $width\n\n  : \"Clear event for next loop\"\n  echo \"-:testprobe\" >> kprobe_events\n  clear_trace\n\ndone\n\nexit_pass\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

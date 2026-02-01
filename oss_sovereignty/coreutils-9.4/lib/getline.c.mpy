@@ -1,0 +1,9 @@
+{
+  "module_name": "getline.c",
+  "hash_id": "5a61c01303eaa98aec95aa32c463c278ec9dfbc568c58a5666ede62e6ec479db",
+  "original_prompt": "Ingested from coreutils-9.4/lib/getline.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdio.h>\n\nssize_t\ngetline (char **lineptr, size_t *n, FILE *stream)\n{\n  return getdelim (lineptr, n, '\\n', stream);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

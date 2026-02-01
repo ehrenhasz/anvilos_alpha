@@ -1,0 +1,9 @@
+{
+  "module_name": "nouveau_acpi.h",
+  "hash_id": "01e231f701fff0f998a6f62f09536cde04b2c1185c5cdc692edb672431ae3f94",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nouveau_acpi.h",
+  "human_readable_source": " \n#ifndef __NOUVEAU_ACPI_H__\n#define __NOUVEAU_ACPI_H__\n\n#define ROM_BIOS_PAGE 4096\n\n#if defined(CONFIG_ACPI) && defined(CONFIG_X86)\nbool nouveau_is_optimus(void);\nbool nouveau_is_v1_dsm(void);\nvoid nouveau_register_dsm_handler(void);\nvoid nouveau_unregister_dsm_handler(void);\nvoid nouveau_switcheroo_optimus_dsm(void);\nvoid *nouveau_acpi_edid(struct drm_device *, struct drm_connector *);\nbool nouveau_acpi_video_backlight_use_native(void);\nvoid nouveau_acpi_video_register_backlight(void);\n#else\nstatic inline bool nouveau_is_optimus(void) { return false; };\nstatic inline bool nouveau_is_v1_dsm(void) { return false; };\nstatic inline void nouveau_register_dsm_handler(void) {}\nstatic inline void nouveau_unregister_dsm_handler(void) {}\nstatic inline void nouveau_switcheroo_optimus_dsm(void) {}\nstatic inline void *nouveau_acpi_edid(struct drm_device *dev, struct drm_connector *connector) { return NULL; }\nstatic inline bool nouveau_acpi_video_backlight_use_native(void) { return true; }\nstatic inline void nouveau_acpi_video_register_backlight(void) {}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

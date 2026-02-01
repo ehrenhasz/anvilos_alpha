@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn21_resource.h",
+  "hash_id": "66294efa6370c02e66ab0d1534e9aa39b5bf6ad94902621b977e8a59797e54a2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_resource.h",
+  "human_readable_source": " \n\n#ifndef _DCN21_RESOURCE_H_\n#define _DCN21_RESOURCE_H_\n\n#include \"core_types.h\"\n\n#define TO_DCN21_RES_POOL(pool)\\\n\tcontainer_of(pool, struct dcn21_resource_pool, base)\n\nstruct dc;\nstruct resource_pool;\nstruct _vcs_dpi_display_pipe_params_st;\n\nextern struct _vcs_dpi_ip_params_st dcn2_1_ip;\nextern struct _vcs_dpi_soc_bounding_box_st dcn2_1_soc;\n\nstruct dcn21_resource_pool {\n\tstruct resource_pool base;\n};\nstruct resource_pool *dcn21_create_resource_pool(\n\t\tconst struct dc_init_data *init_data,\n\t\tstruct dc *dc);\nbool dcn21_fast_validate_bw(\n\t\tstruct dc *dc,\n\t\tstruct dc_state *context,\n\t\tdisplay_e2e_pipe_params_st *pipes,\n\t\tint *pipe_cnt_out,\n\t\tint *pipe_split_from,\n\t\tint *vlevel_out,\n\t\tbool fast_validate);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

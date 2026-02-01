@@ -1,0 +1,9 @@
+{
+  "module_name": "regset.h",
+  "hash_id": "17eac01cc3bcb5e085359ee8bca9cc6a76472bb11873037eeeaba4b4f7143aa7",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/fpu/regset.h",
+  "human_readable_source": " \n \n#ifndef _ASM_X86_FPU_REGSET_H\n#define _ASM_X86_FPU_REGSET_H\n\n#include <linux/regset.h>\n\nextern user_regset_active_fn regset_fpregs_active, regset_xregset_fpregs_active,\n\t\t\t\tssp_active;\nextern user_regset_get2_fn fpregs_get, xfpregs_get, fpregs_soft_get,\n\t\t\t\t xstateregs_get, ssp_get;\nextern user_regset_set_fn fpregs_set, xfpregs_set, fpregs_soft_set,\n\t\t\t\t xstateregs_set, ssp_set;\n\n \n#define xstateregs_active\tregset_fpregs_active\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

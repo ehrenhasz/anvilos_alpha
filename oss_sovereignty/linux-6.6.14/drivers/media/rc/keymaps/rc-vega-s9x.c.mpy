@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-vega-s9x.c",
+  "hash_id": "0e881b0f550aad8fde268dd3b937b322ed2b1eb4edec069eed66dad2071203c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-vega-s9x.c",
+  "human_readable_source": "\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n\n\n\n\nstatic struct rc_map_table vega_s9x[] = {\n\t{ 0x18, KEY_POWER },\n\t{ 0x17, KEY_MUTE }, \n\n\t{ 0x46, KEY_UP },\n\t{ 0x47, KEY_LEFT },\n\t{ 0x55, KEY_OK },\n\t{ 0x15, KEY_RIGHT },\n\t{ 0x16, KEY_DOWN },\n\n\t{ 0x06, KEY_HOME },\n\t{ 0x42, KEY_PLAYPAUSE},\n\t{ 0x40, KEY_BACK },\n\n\t{ 0x14, KEY_VOLUMEDOWN },\n\t{ 0x04, KEY_MENU },\n\t{ 0x10, KEY_VOLUMEUP },\n};\n\nstatic struct rc_map_list vega_s9x_map = {\n\t.map = {\n\t\t.scan     = vega_s9x,\n\t\t.size     = ARRAY_SIZE(vega_s9x),\n\t\t.rc_proto = RC_PROTO_NEC,\n\t\t.name     = RC_MAP_VEGA_S9X,\n\t}\n};\n\nstatic int __init init_rc_map_vega_s9x(void)\n{\n\treturn rc_map_register(&vega_s9x_map);\n}\n\nstatic void __exit exit_rc_map_vega_s9x(void)\n{\n\trc_map_unregister(&vega_s9x_map);\n}\n\nmodule_init(init_rc_map_vega_s9x)\nmodule_exit(exit_rc_map_vega_s9x)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Christian Hewitt <christianshewitt@gmail.com\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

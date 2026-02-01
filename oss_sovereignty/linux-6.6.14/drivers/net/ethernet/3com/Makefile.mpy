@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "57d1b4e78cad2c8a21ac5f55bba85af3fd17ada5ef04eb4d7140d1230b7850c5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/3com/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the 3Com Ethernet device drivers\n#\n\nobj-$(CONFIG_EL3) += 3c509.o\nobj-$(CONFIG_3C515) += 3c515.o\nobj-$(CONFIG_PCMCIA_3C589) += 3c589_cs.o\nobj-$(CONFIG_PCMCIA_3C574) += 3c574_cs.o\nobj-$(CONFIG_VORTEX) += 3c59x.o\nobj-$(CONFIG_TYPHOON) += typhoon.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

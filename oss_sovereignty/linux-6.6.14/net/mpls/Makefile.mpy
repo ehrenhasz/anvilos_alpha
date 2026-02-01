@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c804fa7b394f5cd768bbc460b5f236e04536ee6539e0b6863efeef901f4c820a",
+  "original_prompt": "Ingested from linux-6.6.14/net/mpls/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for MPLS.\n#\nobj-$(CONFIG_NET_MPLS_GSO) += mpls_gso.o\nobj-$(CONFIG_MPLS_ROUTING) += mpls_router.o\nobj-$(CONFIG_MPLS_IPTUNNEL) += mpls_iptunnel.o\n\nmpls_router-y := af_mpls.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

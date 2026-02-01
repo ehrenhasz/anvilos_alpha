@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0eae1059dca9e7c7a3f75d5b7d3a9a712ff0fd06ed24775a7f073faa23fbe180",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pmdomain/sunxi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SUN20I_PPU)\t\t+= sun20i-ppu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

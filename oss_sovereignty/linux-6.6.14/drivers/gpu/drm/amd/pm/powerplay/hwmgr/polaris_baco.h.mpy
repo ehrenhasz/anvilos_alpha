@@ -1,0 +1,9 @@
+{
+  "module_name": "polaris_baco.h",
+  "hash_id": "d309754c5dc6e0664e09f6ec393fa99c1564929b09de4f986a11ed78697a00bf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/polaris_baco.h",
+  "human_readable_source": " \n#ifndef __POLARIS_BACO_H__\n#define __POLARIS_BACO_H__\n#include \"smu7_baco.h\"\n\nextern int polaris_baco_set_state(struct pp_hwmgr *hwmgr, enum BACO_STATE state);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

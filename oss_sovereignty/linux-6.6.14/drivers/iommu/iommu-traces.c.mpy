@@ -1,0 +1,9 @@
+{
+  "module_name": "iommu-traces.c",
+  "hash_id": "8b075a64b2cedb2525e6a44138c0232baecef9f0a8f8a4f0e7328349425694df",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/iommu-traces.c",
+  "human_readable_source": "\n \n\n#include <linux/string.h>\n#include <linux/types.h>\n\n#define CREATE_TRACE_POINTS\n#include <trace/events/iommu.h>\n\n \nEXPORT_TRACEPOINT_SYMBOL_GPL(add_device_to_group);\nEXPORT_TRACEPOINT_SYMBOL_GPL(remove_device_from_group);\n\n \nEXPORT_TRACEPOINT_SYMBOL_GPL(attach_device_to_domain);\n\n \nEXPORT_TRACEPOINT_SYMBOL_GPL(map);\nEXPORT_TRACEPOINT_SYMBOL_GPL(unmap);\n\n \nEXPORT_TRACEPOINT_SYMBOL_GPL(io_page_fault);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

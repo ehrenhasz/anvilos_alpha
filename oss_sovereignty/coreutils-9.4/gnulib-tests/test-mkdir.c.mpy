@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mkdir.c",
+  "hash_id": "43105a27db23fc42ccbc704249bf71d4b87ea4a6b456cc72c924e014d55f5cec",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mkdir.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/stat.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (mkdir, int, (char const *, mode_t));\n\n#include <fcntl.h>\n#include <errno.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n\n#include \"ignore-value.h\"\n#include \"macros.h\"\n\n#define BASE \"test-mkdir.t\"\n\n#include \"test-mkdir.h\"\n\nint\nmain (void)\n{\n   \n  ignore_value (system (\"rm -rf \" BASE \"*\"));\n\n  return test_mkdir (mkdir, true);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

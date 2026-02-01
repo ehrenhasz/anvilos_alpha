@@ -1,0 +1,9 @@
+{
+  "module_name": "test_lookup_and_delete.c",
+  "hash_id": "f8c64501c0f2e9737d2240d745956c85b9d456a0869114034ad9ce07c6e72ed3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_lookup_and_delete.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n\n__u32 set_pid = 0;\n__u64 set_key = 0;\n__u64 set_value = 0;\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__uint(max_entries, 2);\n\t__type(key, __u64);\n\t__type(value, __u64);\n} hash_map SEC(\".maps\");\n\nSEC(\"tp/syscalls/sys_enter_getpgid\")\nint bpf_lookup_and_delete_test(const void *ctx)\n{\n\tif (set_pid == bpf_get_current_pid_tgid() >> 32)\n\t\tbpf_map_update_elem(&hash_map, &set_key, &set_value, BPF_NOEXIST);\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "611e7236547c81785fe0e57c1bfc9b009f31d432847243c6b828aadff579ffa5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Chelsio network device drivers.\n#\n\nobj-$(CONFIG_CHELSIO_T1) += cxgb/\nobj-$(CONFIG_CHELSIO_T3) += cxgb3/\nobj-$(CONFIG_CHELSIO_T4) += cxgb4/\nobj-$(CONFIG_CHELSIO_T4VF) += cxgb4vf/\nobj-$(CONFIG_CHELSIO_LIB) += libcxgb/\nobj-$(CONFIG_CHELSIO_INLINE_CRYPTO) += inline_crypto/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ff562ac8cc910aa774293be34622d37a2a226aa8345edf35852d47a8ae63b59f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/rpmsg/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_RPMSG)\t\t+= rpmsg_core.o\nobj-$(CONFIG_RPMSG_CHAR)\t+= rpmsg_char.o\nobj-$(CONFIG_RPMSG_CTRL)\t+= rpmsg_ctrl.o\nobj-$(CONFIG_RPMSG_NS)\t\t+= rpmsg_ns.o\nobj-$(CONFIG_RPMSG_MTK_SCP)\t+= mtk_rpmsg.o\nqcom_glink-objs\t\t\t:= qcom_glink_native.o qcom_glink_ssr.o\nobj-$(CONFIG_RPMSG_QCOM_GLINK) += qcom_glink.o\nobj-$(CONFIG_RPMSG_QCOM_GLINK_RPM) += qcom_glink_rpm.o\nobj-$(CONFIG_RPMSG_QCOM_GLINK_SMEM) += qcom_glink_smem.o\nobj-$(CONFIG_RPMSG_QCOM_SMD)\t+= qcom_smd.o\nobj-$(CONFIG_RPMSG_VIRTIO)\t+= virtio_rpmsg_bus.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

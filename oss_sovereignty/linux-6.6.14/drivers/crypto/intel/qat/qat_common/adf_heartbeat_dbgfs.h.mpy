@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_heartbeat_dbgfs.h",
+  "hash_id": "cafcc2b90098beefd62d9236f430140264cef2a1e1ae4ca0de3f63821efd1b5e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/adf_heartbeat_dbgfs.h",
+  "human_readable_source": " \n \n\n#ifndef ADF_HEARTBEAT_DBGFS_H_\n#define ADF_HEARTBEAT_DBGFS_H_\n\nstruct adf_accel_dev;\n\nvoid adf_heartbeat_dbgfs_add(struct adf_accel_dev *accel_dev);\nvoid adf_heartbeat_dbgfs_rm(struct adf_accel_dev *accel_dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

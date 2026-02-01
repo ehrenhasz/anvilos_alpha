@@ -1,0 +1,9 @@
+{
+  "module_name": "amd_sfh_init.h",
+  "hash_id": "d6ab8922d4c93bd45f641f54e337186a397bc83aed3652697443434ccc6bb139",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/amd-sfh-hid/sfh1_1/amd_sfh_init.h",
+  "human_readable_source": " \n \n\n#ifndef AMD_SFH_INIT_H\n#define AMD_SFH_INIT_H\n\n#include \"../amd_sfh_common.h\"\n\nstruct amd_sfh1_1_ops {\n\tint (*init)(struct amd_mp2_dev *mp2);\n};\n\nint amd_sfh1_1_init(struct amd_mp2_dev *mp2);\n\nstatic const struct amd_sfh1_1_ops __maybe_unused sfh1_1_ops = {\n\t.init = amd_sfh1_1_init,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fseek.sh",
+  "hash_id": "664243324a9918b54c7bbfb3d93ad568bc16e21ce26b2a5afe476cd37561411b",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fseek.sh",
+  "human_readable_source": "#!/bin/sh\n\n${CHECKER} ./test-fseek${EXEEXT} 1 < \"$srcdir/test-fseek.sh\" || exit 1\necho hi | ${CHECKER} ./test-fseek${EXEEXT} || exit 1\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

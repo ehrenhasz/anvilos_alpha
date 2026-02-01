@@ -1,0 +1,9 @@
+{
+  "module_name": "mediatek,mt6735-wdt.h",
+  "hash_id": "c8e53d9725cd85978f1c8eb00690805732b34a5910e6516e379be199e56ed3e1",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/mediatek,mt6735-wdt.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_RESET_MEDIATEK_MT6735_WDT_H_\n#define _DT_BINDINGS_RESET_MEDIATEK_MT6735_WDT_H_\n\n#define MT6735_TOPRGU_MM_RST\t\t1\n#define MT6735_TOPRGU_MFG_RST\t\t2\n#define MT6735_TOPRGU_VENC_RST\t\t3\n#define MT6735_TOPRGU_VDEC_RST\t\t4\n#define MT6735_TOPRGU_IMG_RST\t\t5\n#define MT6735_TOPRGU_MD_RST\t\t7\n#define MT6735_TOPRGU_CONN_RST\t\t9\n#define MT6735_TOPRGU_C2K_SW_RST\t14\n#define MT6735_TOPRGU_C2K_RST\t\t15\n#define MT6735_TOPRGU_RST_NUM\t\t9\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

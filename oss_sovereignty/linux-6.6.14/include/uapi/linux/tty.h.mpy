@@ -1,0 +1,9 @@
+{
+  "module_name": "tty.h",
+  "hash_id": "e313c67227b1aa126518d38e1ee9c72297ec3e1b3d5c3a14eac14e24ac916dbd",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tty.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_TTY_H\n#define _UAPI_LINUX_TTY_H\n\n \n\n \n#define N_TTY\t\t0\n#define N_SLIP\t\t1\n#define N_MOUSE\t\t2\n#define N_PPP\t\t3\n#define N_STRIP\t\t4\n#define N_AX25\t\t5\n#define N_X25\t\t6\t \n#define N_6PACK\t\t7\n#define N_MASC\t\t8\t \n#define N_R3964\t\t9\t \n#define N_PROFIBUS_FDL\t10\t \n#define N_IRDA\t\t11\t \n\t\t\t\t \n#define N_HDLC\t\t13\t \n#define N_SYNC_PPP\t14\t \n#define N_HCI\t\t15\t \n#define N_GIGASET_M101\t16\t \n#define N_SLCAN\t\t17\t \n#define N_PPS\t\t18\t \n#define N_V253\t\t19\t \n#define N_CAIF\t\t20       \n#define N_GSM0710\t21\t \n#define N_TI_WL\t\t22\t \n#define N_TRACESINK\t23\t \n#define N_TRACEROUTER\t24\t \n#define N_NCI\t\t25\t \n#define N_SPEAKUP\t26\t \n#define N_NULL\t\t27\t \n#define N_MCTP\t\t28\t \n#define N_DEVELOPMENT\t29\t \n#define N_CAN327\t30\t \n\n \n#define NR_LDISCS\t31\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

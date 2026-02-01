@@ -1,0 +1,9 @@
+{
+  "module_name": "max77620.h",
+  "hash_id": "45294810158593064e8f2b5a3c458275a2d08f8283140f734a5d4d46bb1c8e7f",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/mfd/max77620.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_MFD_MAX77620_H\n#define _DT_BINDINGS_MFD_MAX77620_H\n\n \n#define MAX77620_IRQ_TOP_GLBL\t\t0  \n#define MAX77620_IRQ_TOP_SD\t\t1  \n#define MAX77620_IRQ_TOP_LDO\t\t2  \n#define MAX77620_IRQ_TOP_GPIO\t\t3  \n#define MAX77620_IRQ_TOP_RTC\t\t4  \n#define MAX77620_IRQ_TOP_32K\t\t5  \n#define MAX77620_IRQ_TOP_ONOFF\t\t6  \n#define MAX77620_IRQ_LBT_MBATLOW\t7  \n#define MAX77620_IRQ_LBT_TJALRM1\t8  \n#define MAX77620_IRQ_LBT_TJALRM2\t9  \n\n \n#define MAX77620_FPS_EVENT_SRC_EN0\t\t0\n#define MAX77620_FPS_EVENT_SRC_EN1\t\t1\n#define MAX77620_FPS_EVENT_SRC_SW\t\t2\n\n \n#define MAX77620_FPS_INACTIVE_STATE_SLEEP\t0\n#define MAX77620_FPS_INACTIVE_STATE_LOW_POWER\t1\n\n \n#define MAX77620_FPS_SRC_0\t\t\t0\n#define MAX77620_FPS_SRC_1\t\t\t1\n#define MAX77620_FPS_SRC_2\t\t\t2\n#define MAX77620_FPS_SRC_NONE\t\t\t3\n#define MAX77620_FPS_SRC_DEF\t\t\t4\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "stack.h",
+  "hash_id": "79170be59da26213ac30e38330784b395763a2432c33493b126f928cc938f6b1",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/stack.h",
+  "human_readable_source": " \n \n#ifndef _SYS_STACK_H\n#define\t_SYS_STACK_H\n\n#include <pthread.h>\n\n#define\tSTACK_BIAS\t0\n\n#ifdef __USE_GNU\n\nstatic inline int\nstack_getbounds(stack_t *sp)\n{\n\tpthread_attr_t attr;\n\tint rc;\n\n\trc = pthread_getattr_np(pthread_self(), &attr);\n\tif (rc)\n\t\treturn (rc);\n\n\trc = pthread_attr_getstack(&attr, &sp->ss_sp, &sp->ss_size);\n\tif (rc == 0)\n\t\tsp->ss_flags = 0;\n\n\tpthread_attr_destroy(&attr);\n\n\treturn (rc);\n}\n\nstatic inline int\nthr_stksegment(stack_t *sp)\n{\n\tint rc;\n\n\trc = stack_getbounds(sp);\n\tif (rc)\n\t\treturn (rc);\n\n\t \n\tsp->ss_sp = (void *)(((uintptr_t)sp->ss_sp) + sp->ss_size);\n\tsp->ss_flags = 0;\n\n\treturn (rc);\n}\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

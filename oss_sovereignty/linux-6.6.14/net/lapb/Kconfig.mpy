@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d3a45ec7a29ee2c66a769ced0d4feb8ceb72a2374ecfcc34177feaccd05df213",
+  "original_prompt": "Ingested from linux-6.6.14/net/lapb/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# LAPB Data Link Drive\n#\n\nconfig LAPB\n\ttristate \"LAPB Data Link Driver\"\n\thelp\n\t  Link Access Procedure, Balanced (LAPB) is the data link layer (i.e.\n\t  the lower) part of the X.25 protocol. It offers a reliable\n\t  connection service to exchange data frames with one other host, and\n\t  it is used to transport higher level protocols (mostly X.25 Packet\n\t  Layer, the higher part of X.25, but others are possible as well).\n\t  Usually, LAPB is used with specialized X.21 network cards, but Linux\n\t  currently supports LAPB only over Ethernet connections. If you want\n\t  to use LAPB connections over Ethernet, say Y here and to \"LAPB over\n\t  Ethernet driver\" below. Read\n\t  <file:Documentation/networking/lapb-module.rst> for technical\n\t  details.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called lapb.  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

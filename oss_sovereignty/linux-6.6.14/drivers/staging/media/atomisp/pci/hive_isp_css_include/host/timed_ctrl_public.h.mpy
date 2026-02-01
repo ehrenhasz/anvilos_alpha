@@ -1,0 +1,9 @@
+{
+  "module_name": "timed_ctrl_public.h",
+  "hash_id": "a92e4b15b5ba43a7e6fe3a5342b5259fd5525b8f5bce4b3570023d3ae76d9fe8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/host/timed_ctrl_public.h",
+  "human_readable_source": " \n \n\n#ifndef __TIMED_CTRL_PUBLIC_H_INCLUDED__\n#define __TIMED_CTRL_PUBLIC_H_INCLUDED__\n\n#include \"system_local.h\"\n\n \nSTORAGE_CLASS_TIMED_CTRL_H void timed_ctrl_reg_store(\n    const timed_ctrl_ID_t\tID,\n    const unsigned int\t\treg_addr,\n    const hrt_data\t\t\tvalue);\n\nvoid timed_ctrl_snd_commnd(\n    const timed_ctrl_ID_t\t\t\t\tID,\n    hrt_data\t\t\t\tmask,\n    hrt_data\t\t\t\tcondition,\n    hrt_data\t\t\t\tcounter,\n    hrt_address\t\t\t\taddr,\n    hrt_data\t\t\t\tvalue);\n\nvoid timed_ctrl_snd_sp_commnd(\n    const timed_ctrl_ID_t\t\t\t\tID,\n    hrt_data\t\t\t\tmask,\n    hrt_data\t\t\t\tcondition,\n    hrt_data\t\t\t\tcounter,\n    const sp_ID_t\t\t\tSP_ID,\n    hrt_address\t\t\t\toffset,\n    hrt_data\t\t\t\tvalue);\n\nvoid timed_ctrl_snd_gpio_commnd(\n    const timed_ctrl_ID_t\t\t\t\tID,\n    hrt_data\t\t\t\tmask,\n    hrt_data\t\t\t\tcondition,\n    hrt_data\t\t\t\tcounter,\n    const gpio_ID_t\t\t\tGPIO_ID,\n    hrt_address\t\t\t\toffset,\n    hrt_data\t\t\t\tvalue);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mem-memset-arch.h",
+  "hash_id": "dfd57722da8adbe4b206e2033e8f85a0607a5713699f1d226770cd874e60276b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/bench/mem-memset-arch.h",
+  "human_readable_source": " \n\n#ifdef HAVE_ARCH_X86_64_SUPPORT\n\n#define MEMSET_FN(fn, name, desc)\t\t\\\n\tvoid *fn(void *, int, size_t);\n\n#include \"mem-memset-x86-64-asm-def.h\"\n\n#undef MEMSET_FN\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "set_memory.h",
+  "hash_id": "640b608be5c508232a4b28b8ee55e7068a9d22e18ba86a5c75acc44ece43b5e8",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/set_memory.h",
+  "human_readable_source": " \n#ifndef __ASM_SET_MEMORY_H\n#define __ASM_SET_MEMORY_H\n\n \nint set_memory_ro(unsigned long addr, int numpages);\nint set_memory_rw(unsigned long addr, int numpages);\nint set_memory_x(unsigned long addr, int numpages);\nint set_memory_nx(unsigned long addr, int numpages);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mxgpu_vi.h",
+  "hash_id": "2892f1f30f686fda733e717ce5c8ddce676bef034729393c9f05a180006016de",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/mxgpu_vi.h",
+  "human_readable_source": " \n\n#ifndef __MXGPU_VI_H__\n#define __MXGPU_VI_H__\n\n#define VI_MAILBOX_TIMEDOUT\t12000\n#define VI_MAILBOX_RESET_TIME\t12\n\n \nenum idh_request {\n\tIDH_REQ_GPU_INIT_ACCESS\t= 1,\n\tIDH_REL_GPU_INIT_ACCESS,\n\tIDH_REQ_GPU_FINI_ACCESS,\n\tIDH_REL_GPU_FINI_ACCESS,\n\tIDH_REQ_GPU_RESET_ACCESS,\n\n\tIDH_LOG_VF_ERROR       = 200,\n};\n\n \nenum idh_event {\n\tIDH_CLR_MSG_BUF = 0,\n\tIDH_READY_TO_ACCESS_GPU,\n\tIDH_FLR_NOTIFICATION,\n\tIDH_FLR_NOTIFICATION_CMPL,\n\n\tIDH_TEXT_MESSAGE = 255\n};\n\nextern const struct amdgpu_virt_ops xgpu_vi_virt_ops;\n\nvoid xgpu_vi_init_golden_registers(struct amdgpu_device *adev);\nvoid xgpu_vi_mailbox_set_irq_funcs(struct amdgpu_device *adev);\nint xgpu_vi_mailbox_add_irq_id(struct amdgpu_device *adev);\nint xgpu_vi_mailbox_get_irq(struct amdgpu_device *adev);\nvoid xgpu_vi_mailbox_put_irq(struct amdgpu_device *adev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

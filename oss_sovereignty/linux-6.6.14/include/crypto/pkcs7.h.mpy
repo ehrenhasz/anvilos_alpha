@@ -1,0 +1,9 @@
+{
+  "module_name": "pkcs7.h",
+  "hash_id": "fa9651057ce8ed423575375ca92d6b23916e8905639faaa65b8e90ea8c197783",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/pkcs7.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYPTO_PKCS7_H\n#define _CRYPTO_PKCS7_H\n\n#include <linux/verification.h>\n#include <linux/hash_info.h>\n#include <crypto/public_key.h>\n\nstruct key;\nstruct pkcs7_message;\n\n \nextern struct pkcs7_message *pkcs7_parse_message(const void *data,\n\t\t\t\t\t\t size_t datalen);\nextern void pkcs7_free_message(struct pkcs7_message *pkcs7);\n\nextern int pkcs7_get_content_data(const struct pkcs7_message *pkcs7,\n\t\t\t\t  const void **_data, size_t *_datalen,\n\t\t\t\t  size_t *_headerlen);\n\n \nextern int pkcs7_validate_trust(struct pkcs7_message *pkcs7,\n\t\t\t\tstruct key *trust_keyring);\n\n \nextern int pkcs7_verify(struct pkcs7_message *pkcs7,\n\t\t\tenum key_being_used_for usage);\n\nextern int pkcs7_supply_detached_data(struct pkcs7_message *pkcs7,\n\t\t\t\t      const void *data, size_t datalen);\n\nextern int pkcs7_get_digest(struct pkcs7_message *pkcs7, const u8 **buf,\n\t\t\t    u32 *len, enum hash_algo *hash_algo);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

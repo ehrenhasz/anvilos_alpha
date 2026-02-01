@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn32_clk_mgr_smu_msg.h",
+  "hash_id": "268a7be601c042f506f53e06457734eddf07b2e410c9a06122d2ed9f2b5b2793",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn32/dcn32_clk_mgr_smu_msg.h",
+  "human_readable_source": " \n\n#ifndef __DCN32_CLK_MGR_SMU_MSG_H_\n#define __DCN32_CLK_MGR_SMU_MSG_H_\n\n#include \"core_types.h\"\n#include \"dcn30/dcn30_clk_mgr_smu_msg.h\"\n\n#define FCLK_PSTATE_NOTSUPPORTED       0x00\n#define FCLK_PSTATE_SUPPORTED          0x01\n\n \n#define DALSMC_MSG_SetCabForUclkPstate\t0x12\n#define DALSMC_Result_OK\t\t\t\t0x1\n\nvoid\ndcn32_smu_send_fclk_pstate_message(struct clk_mgr_internal *clk_mgr, bool enable);\nvoid dcn32_smu_transfer_wm_table_dram_2_smu(struct clk_mgr_internal *clk_mgr);\nvoid dcn32_smu_set_pme_workaround(struct clk_mgr_internal *clk_mgr);\nvoid dcn32_smu_send_cab_for_uclk_message(struct clk_mgr_internal *clk_mgr, unsigned int num_ways);\nvoid dcn32_smu_transfer_wm_table_dram_2_smu(struct clk_mgr_internal *clk_mgr);\nunsigned int dcn32_smu_set_hard_min_by_freq(struct clk_mgr_internal *clk_mgr, uint32_t clk, uint16_t freq_mhz);\nvoid dcn32_smu_wait_for_dmub_ack_mclk(struct clk_mgr_internal *clk_mgr, bool enable);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

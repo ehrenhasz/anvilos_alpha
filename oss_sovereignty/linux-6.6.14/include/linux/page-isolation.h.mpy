@@ -1,0 +1,9 @@
+{
+  "module_name": "page-isolation.h",
+  "hash_id": "5b6ed18ce6926698650e22ba926464280e6df1f2d52a0c274de5aa707d841bcc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/page-isolation.h",
+  "human_readable_source": " \n#ifndef __LINUX_PAGEISOLATION_H\n#define __LINUX_PAGEISOLATION_H\n\n#ifdef CONFIG_MEMORY_ISOLATION\nstatic inline bool has_isolate_pageblock(struct zone *zone)\n{\n\treturn zone->nr_isolate_pageblock;\n}\nstatic inline bool is_migrate_isolate_page(struct page *page)\n{\n\treturn get_pageblock_migratetype(page) == MIGRATE_ISOLATE;\n}\nstatic inline bool is_migrate_isolate(int migratetype)\n{\n\treturn migratetype == MIGRATE_ISOLATE;\n}\n#else\nstatic inline bool has_isolate_pageblock(struct zone *zone)\n{\n\treturn false;\n}\nstatic inline bool is_migrate_isolate_page(struct page *page)\n{\n\treturn false;\n}\nstatic inline bool is_migrate_isolate(int migratetype)\n{\n\treturn false;\n}\n#endif\n\n#define MEMORY_OFFLINE\t0x1\n#define REPORT_FAILURE\t0x2\n\nvoid set_pageblock_migratetype(struct page *page, int migratetype);\nint move_freepages_block(struct zone *zone, struct page *page,\n\t\t\t\tint migratetype, int *num_movable);\n\nint start_isolate_page_range(unsigned long start_pfn, unsigned long end_pfn,\n\t\t\t     int migratetype, int flags, gfp_t gfp_flags);\n\nvoid undo_isolate_page_range(unsigned long start_pfn, unsigned long end_pfn,\n\t\t\t     int migratetype);\n\nint test_pages_isolated(unsigned long start_pfn, unsigned long end_pfn,\n\t\t\tint isol_flags);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

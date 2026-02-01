@@ -1,0 +1,9 @@
+{
+  "module_name": "LB+poonceonces.litmus",
+  "hash_id": "cb9dc13d4d23b9019602263bf1994031f838bc775a2fadf80b9756ec988e78e2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/LB+poonceonces.litmus",
+  "human_readable_source": "C LB+poonceonces\n\n(*\n * Result: Sometimes\n *\n * Can the counter-intuitive outcome for the load-buffering pattern\n * be prevented even with no explicit ordering?\n *)\n\n{}\n\nP0(int *x, int *y)\n{\n\tint r0;\n\n\tr0 = READ_ONCE(*x);\n\tWRITE_ONCE(*y, 1);\n}\n\nP1(int *x, int *y)\n{\n\tint r0;\n\n\tr0 = READ_ONCE(*y);\n\tWRITE_ONCE(*x, 1);\n}\n\nexists (0:r0=1 /\\ 1:r0=1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

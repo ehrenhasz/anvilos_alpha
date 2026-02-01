@@ -1,0 +1,9 @@
+{
+  "module_name": "bond_topo_3d1c.sh",
+  "hash_id": "1e5730246602b2a08b64a6e1198f2339653ce19feed178f9b83c0354b4fadeae",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/bonding/bond_topo_3d1c.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n#\n# Topology for Bond mode 1,5,6 testing\n#\n#  +-------------------------------------+\n#  |                bond0                |\n#  |                  +                  |  Server\n#  |      eth0        | eth1   eth2      |  192.0.2.1/24\n#  |        +-------------------+        |  2001:db8::1/24\n#  |        |         |         |        |\n#  +-------------------------------------+\n#           |         |         |\n#  +-------------------------------------+\n#  |        |         |         |        |\n#  |    +---+---------+---------+---+    |  Gateway\n#  |    |            br0            |    |  192.0.2.254/24\n#  |    +-------------+-------------+    |  2001:db8::254/24\n#  |                  |                  |\n#  +-------------------------------------+\n#                     |\n#  +-------------------------------------+\n#  |                  |                  |  Client\n#  |                  +                  |  192.0.2.10/24\n#  |                eth0                 |  2001:db8::10/24\n#  +-------------------------------------+\n\nsource bond_topo_2d1c.sh\n\nsetup_prepare()\n{\n\tgateway_create\n\tserver_create\n\tclient_create\n\n\t# Add the extra device as we use 3 down links for bond0\n\tlocal i=2\n\tip -n ${s_ns} link add eth${i} type veth peer name s${i} netns ${g_ns}\n\tip -n ${g_ns} link set s${i} up\n\tip -n ${g_ns} link set s${i} master br0\n\tip -n ${s_ns} link set eth${i} master bond0\n\ttc -n ${g_ns} qdisc add dev s${i} clsact\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

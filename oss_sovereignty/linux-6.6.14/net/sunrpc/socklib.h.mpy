@@ -1,0 +1,9 @@
+{
+  "module_name": "socklib.h",
+  "hash_id": "ad94082a3d1d1aab7e76287640460e012bc0e06fb9dc033a4233c16292b85f09",
+  "original_prompt": "Ingested from linux-6.6.14/net/sunrpc/socklib.h",
+  "human_readable_source": " \n \n\n#ifndef _NET_SUNRPC_SOCKLIB_H_\n#define _NET_SUNRPC_SOCKLIB_H_\n\nint csum_partial_copy_to_xdr(struct xdr_buf *xdr, struct sk_buff *skb);\nint xprt_sock_sendmsg(struct socket *sock, struct msghdr *msg,\n\t\t      struct xdr_buf *xdr, unsigned int base,\n\t\t      rpc_fraghdr marker, unsigned int *sent_p);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

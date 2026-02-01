@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbschr.c",
+  "hash_id": "e13cdf7ebbecda39eedf3acca8d089caa2aeed892e2928c4ec71b585ad6643d8",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbschr.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <string.h>\n\n#include <locale.h>\n\n#include \"macros.h\"\n\nint\nmain ()\n{\n   \n  if (setlocale (LC_ALL, \"\") == NULL)\n    return 1;\n\n   \n  {\n    const char input[] = \"\\312\\276\\300\\375 \\312\\276\\300\\375 \\312\\276\\300\\375\";  \n    const char *result = mbschr (input, ' ');\n    ASSERT (result == input + 4);\n  }\n\n  {\n    const char input[] = \"\\312\\276\\300\\375\";  \n    const char *result = mbschr (input, ' ');\n    ASSERT (result == NULL);\n  }\n\n   \n  {\n    const char input[] = \"\\272\\305123\\324\\313\\320\\320\\241\\243\";  \n    const char *result = mbschr (input, '2');\n    ASSERT (result == input + 3);\n  }\n\n   \n  {\n    const char input[] = \"\\203\\062\\332\\066123\\324\\313\\320\\320\\241\\243\";  \n    const char *result = mbschr (input, '2');\n    ASSERT (result == input + 5);\n  }\n\n  {\n    const char input[] = \"\\312\\300\\275\\347\\304\\343\\272\\303\\243\\241\";  \n    const char *result = mbschr (input, '!');\n    ASSERT (result == NULL);\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

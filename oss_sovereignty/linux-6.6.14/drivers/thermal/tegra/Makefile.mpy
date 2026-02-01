@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4e2ae7a4bc65f6d470eda749cdf2225943081ba317c0c288c8d0293878ca694c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/tegra/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_TEGRA_SOCTHERM)\t\t+= tegra-soctherm.o\nobj-$(CONFIG_TEGRA_BPMP_THERMAL)\t+= tegra-bpmp-thermal.o\nobj-$(CONFIG_TEGRA30_TSENSOR)\t\t+= tegra30-tsensor.o\n\ntegra-soctherm-y\t\t\t\t:= soctherm.o soctherm-fuse.o\ntegra-soctherm-$(CONFIG_ARCH_TEGRA_124_SOC)\t+= tegra124-soctherm.o\ntegra-soctherm-$(CONFIG_ARCH_TEGRA_132_SOC)\t+= tegra132-soctherm.o\ntegra-soctherm-$(CONFIG_ARCH_TEGRA_210_SOC)\t+= tegra210-soctherm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

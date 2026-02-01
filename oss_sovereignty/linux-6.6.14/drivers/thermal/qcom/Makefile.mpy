@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7391f66e95236a6c0eb3e20f1a3205d09c87c19c781563e63fc0d8aaee7b46a1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/qcom/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_QCOM_TSENS)\t+= qcom_tsens.o\n\nqcom_tsens-y\t\t\t+= tsens.o tsens-v2.o tsens-v1.o tsens-v0_1.o \\\n\t\t\t\t   tsens-8960.o\nobj-$(CONFIG_QCOM_SPMI_ADC_TM5)\t+= qcom-spmi-adc-tm5.o\nobj-$(CONFIG_QCOM_SPMI_TEMP_ALARM)\t+= qcom-spmi-temp-alarm.o\nobj-$(CONFIG_QCOM_LMH)\t\t+= lmh.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

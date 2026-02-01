@@ -1,0 +1,9 @@
+{
+  "module_name": "numa.h",
+  "hash_id": "531683d4e620075f4956d0886445f0ec5da86c2aa9338ce71175a2ab81c22d5a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/numa.h",
+  "human_readable_source": " \n#ifndef _LINUX_NUMA_H\n#define _LINUX_NUMA_H\n#include <linux/types.h>\n\n#ifdef CONFIG_NODES_SHIFT\n#define NODES_SHIFT     CONFIG_NODES_SHIFT\n#else\n#define NODES_SHIFT     0\n#endif\n\n#define MAX_NUMNODES    (1 << NODES_SHIFT)\n\n#define\tNUMA_NO_NODE\t(-1)\n#define\tNUMA_NO_MEMBLK\t(-1)\n\n \n#ifdef CONFIG_NUMA_KEEP_MEMINFO\n#define __initdata_or_meminfo\n#else\n#define __initdata_or_meminfo __initdata\n#endif\n\n#ifdef CONFIG_NUMA\n#include <linux/printk.h>\n#include <asm/sparsemem.h>\n\n \nint numa_nearest_node(int node, unsigned int state);\n\n#ifndef memory_add_physaddr_to_nid\nstatic inline int memory_add_physaddr_to_nid(u64 start)\n{\n\tpr_info_once(\"Unknown online node for memory at 0x%llx, assuming node 0\\n\",\n\t\t\tstart);\n\treturn 0;\n}\n#endif\n#ifndef phys_to_target_node\nstatic inline int phys_to_target_node(u64 start)\n{\n\tpr_info_once(\"Unknown target node for memory at 0x%llx, assuming node 0\\n\",\n\t\t\tstart);\n\treturn 0;\n}\n#endif\n#ifndef numa_fill_memblks\nstatic inline int __init numa_fill_memblks(u64 start, u64 end)\n{\n\treturn NUMA_NO_MEMBLK;\n}\n#endif\n#else  \nstatic inline int numa_nearest_node(int node, unsigned int state)\n{\n\treturn NUMA_NO_NODE;\n}\n\nstatic inline int memory_add_physaddr_to_nid(u64 start)\n{\n\treturn 0;\n}\nstatic inline int phys_to_target_node(u64 start)\n{\n\treturn 0;\n}\n#endif\n\n#define numa_map_to_online_node(node) numa_nearest_node(node, N_ONLINE)\n\n#ifdef CONFIG_HAVE_ARCH_NODE_DEV_GROUP\nextern const struct attribute_group arch_node_dev_group;\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

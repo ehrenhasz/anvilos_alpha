@@ -1,0 +1,9 @@
+{
+  "module_name": "savewd.h",
+  "hash_id": "35b6da5da1d6f5764789d2bf3776f7c891b718f6f390b2e3d024187561246dd3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/savewd.h",
+  "human_readable_source": " \n\n#ifndef SAVEWD_H\n#define SAVEWD_H 1\n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <sys/types.h>\n\n_GL_INLINE_HEADER_BEGIN\n#ifndef SAVEWD_INLINE\n# define SAVEWD_INLINE _GL_INLINE\n#endif\n\n \nstruct savewd\n{\n   \n  enum\n    {\n       \n      INITIAL_STATE,\n\n       \n      FD_STATE,\n\n       \n      FD_POST_CHDIR_STATE,\n\n       \n      FORKING_STATE,\n\n       \n      ERROR_STATE,\n\n       \n      FINAL_STATE\n    } state;\n\n   \n  union\n  {\n    int fd;\n    int errnum;\n    pid_t child;\n  } val;\n};\n\n \nSAVEWD_INLINE void\nsavewd_init (struct savewd *wd)\n{\n  wd->state = INITIAL_STATE;\n}\n\n\n \nenum\n  {\n     \n    SAVEWD_CHDIR_NOFOLLOW = 1,\n\n     \n    SAVEWD_CHDIR_SKIP_READABLE = 2\n  };\n\n \nint savewd_chdir (struct savewd *wd, char const *dir, int options,\n                  int open_result[2]);\n\n \nint savewd_restore (struct savewd *wd, int status);\n\n \nSAVEWD_INLINE int _GL_ATTRIBUTE_PURE\nsavewd_errno (struct savewd const *wd)\n{\n  return (wd->state == ERROR_STATE ? wd->val.errnum : 0);\n}\n\n \nvoid savewd_finish (struct savewd *wd);\n\n \nint savewd_process_files (int n_files, char **file,\n                          int (*act) (char *, struct savewd *, void *),\n                          void *options);\n\n_GL_INLINE_HEADER_END\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

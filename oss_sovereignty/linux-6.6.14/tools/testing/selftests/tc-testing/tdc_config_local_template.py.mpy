@@ -1,0 +1,9 @@
+{
+  "module_name": "tdc_config_local_template.py",
+  "hash_id": "35c2375e5b642951eeb598096a5fe8e6b9c08fb5fb9e275c397de0fdac937044",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tc-testing/tdc_config_local_template.py",
+  "human_readable_source": "\"\"\"\ntdc_config_local.py - tdc plugin-writer-specified values\n\nCopyright (C) 2017 bjb@mojatatu.com\n\"\"\"\n\nimport os\n\nENVIR = os.environ.copy()\n\nENV_LD_LIBRARY_PATH = os.getenv('LD_LIBRARY_PATH', '')\nENV_OTHER_LIB = os.getenv('OTHER_LIB', '')\n\n\n# example adding value to NAMES, without editing tdc_config.py\nEXTRA_NAMES = dict()\nEXTRA_NAMES['SOME_BIN'] = os.path.join(os.getenv('OTHER_BIN', ''), 'some_bin')\n\n\n# example adding values to ENVIR, without editing tdc_config.py\nENVIR['VALGRIND_LIB'] = '/usr/lib/valgrind'\nENVIR['VALGRIND_BIN'] = '/usr/bin/valgrind'\nENVIR['VGDB_BIN'] = '/usr/bin/vgdb'\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

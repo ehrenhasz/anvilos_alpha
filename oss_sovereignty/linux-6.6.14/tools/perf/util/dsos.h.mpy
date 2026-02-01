@@ -1,0 +1,9 @@
+{
+  "module_name": "dsos.h",
+  "hash_id": "d5e11d4323695c981c8aabcc85862f9cba4c15906a933a560c833f10ee4877e5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/dsos.h",
+  "human_readable_source": " \n#ifndef __PERF_DSOS\n#define __PERF_DSOS\n\n#include <stdbool.h>\n#include <stdio.h>\n#include <linux/list.h>\n#include <linux/rbtree.h>\n#include \"rwsem.h\"\n\nstruct dso;\nstruct dso_id;\n\n \nstruct dsos {\n\tstruct list_head    head;\n\tstruct rb_root\t    root;\t \n\tstruct rw_semaphore lock;\n};\n\nvoid __dsos__add(struct dsos *dsos, struct dso *dso);\nvoid dsos__add(struct dsos *dsos, struct dso *dso);\nstruct dso *__dsos__addnew(struct dsos *dsos, const char *name);\nstruct dso *__dsos__find(struct dsos *dsos, const char *name, bool cmp_short);\n\nstruct dso *dsos__findnew_id(struct dsos *dsos, const char *name, struct dso_id *id);\n \nstruct dso *__dsos__findnew_link_by_longname_id(struct rb_root *root, struct dso *dso,\n\t\t\t\t\t\tconst char *name, struct dso_id *id);\n\nbool __dsos__read_build_ids(struct list_head *head, bool with_hits);\n\nsize_t __dsos__fprintf_buildid(struct list_head *head, FILE *fp,\n\t\t\t       bool (skip)(struct dso *dso, int parm), int parm);\nsize_t __dsos__fprintf(struct list_head *head, FILE *fp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

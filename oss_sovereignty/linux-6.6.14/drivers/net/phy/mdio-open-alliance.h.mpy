@@ -1,0 +1,9 @@
+{
+  "module_name": "mdio-open-alliance.h",
+  "hash_id": "c2c86beedecc876ff1a34120a98767981ffec66f9842198a05f61d338d8faea6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/phy/mdio-open-alliance.h",
+  "human_readable_source": " \n \n\n#ifndef __MDIO_OPEN_ALLIANCE__\n#define __MDIO_OPEN_ALLIANCE__\n\n#include <linux/mdio.h>\n\n \n\n \n#define MDIO_OATC14_PLCA_IDVER\t0xca00   \n#define MDIO_OATC14_PLCA_CTRL0\t0xca01\t \n#define MDIO_OATC14_PLCA_CTRL1\t0xca02\t \n#define MDIO_OATC14_PLCA_STATUS\t0xca03\t \n#define MDIO_OATC14_PLCA_TOTMR\t0xca04\t \n#define MDIO_OATC14_PLCA_BURST\t0xca05\t \n\n \n#define MDIO_OATC14_PLCA_IDM\t0xff00\t \n#define MDIO_OATC14_PLCA_VER\t0x00ff\t \n\n \n#define MDIO_OATC14_PLCA_EN\tBIT(15)  \n#define MDIO_OATC14_PLCA_RST\tBIT(14)  \n\n \n#define MDIO_OATC14_PLCA_NCNT\t0xff00\t \n#define MDIO_OATC14_PLCA_ID\t0x00ff\t \n\n \n#define MDIO_OATC14_PLCA_PST\tBIT(15)\t \n\n \n#define MDIO_OATC14_PLCA_TOT\t0x00ff\n\n \n#define MDIO_OATC14_PLCA_MAXBC\t0xff00\n#define MDIO_OATC14_PLCA_BTMR\t0x00ff\n\n \n#define OATC14_IDM\t\t0x0a00\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

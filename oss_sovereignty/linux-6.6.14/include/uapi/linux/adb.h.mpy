@@ -1,0 +1,9 @@
+{
+  "module_name": "adb.h",
+  "hash_id": "6cedd6b110fc512d8e58277dd0854f90146b54686aa0ef16e6e6b1e7b1461a33",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/adb.h",
+  "human_readable_source": " \n \n#ifndef _UAPI__ADB_H\n#define _UAPI__ADB_H\n\n \n#define ADB_BUSRESET\t\t0\n#define ADB_FLUSH(id)\t\t(0x01 | ((id) << 4))\n#define ADB_WRITEREG(id, reg)\t(0x08 | (reg) | ((id) << 4))\n#define ADB_READREG(id, reg)\t(0x0C | (reg) | ((id) << 4))\n\n \n#define ADB_DONGLE\t1\t \n#define ADB_KEYBOARD\t2\n#define ADB_MOUSE\t3\n#define ADB_TABLET\t4\n#define ADB_MODEM\t5\n#define ADB_MISC\t7\t \n\n#define ADB_RET_OK\t0\n#define ADB_RET_TIMEOUT\t3\n\n \n#define ADB_PACKET\t0\n#define CUDA_PACKET\t1\n#define ERROR_PACKET\t2\n#define TIMER_PACKET\t3\n#define POWER_PACKET\t4\n#define MACIIC_PACKET\t5\n#define PMU_PACKET\t6\n#define ADB_QUERY\t7\n\n \n\n \n#define ADB_QUERY_GETDEVINFO\t1\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

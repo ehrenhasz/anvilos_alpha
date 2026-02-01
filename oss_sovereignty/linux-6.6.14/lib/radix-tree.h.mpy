@@ -1,0 +1,9 @@
+{
+  "module_name": "radix-tree.h",
+  "hash_id": "5fe1c13e33b948601e9883aa21213d8a8122c161e08d48cf68b77532d9d9f858",
+  "original_prompt": "Ingested from linux-6.6.14/lib/radix-tree.h",
+  "human_readable_source": "\n \n\nstruct kmem_cache;\nstruct rcu_head;\n\nextern struct kmem_cache *radix_tree_node_cachep;\nextern void radix_tree_node_rcu_free(struct rcu_head *head);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

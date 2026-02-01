@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objtype.c.compress",
+  "hash_id": "692c3fd8c3454155a0a9695736d5e63b28fb8ffc8375c334440b1a4af5d37a22",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__objtype.c.compress",
+  "human_readable_source": "__init__() should return None, not '%s'\nunreadable attribute\n'%s' object isn't callable\ntype takes 1 or 3 arguments\ncan't create '%q' instances\ncan't add special method to already-subclassed class\ntype '%q' isn't an acceptable base type\nmultiple bases have instance lay-out conflict\nissubclass() arg 2 must be a class or a tuple of classes\nissubclass() arg 1 must be a class\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

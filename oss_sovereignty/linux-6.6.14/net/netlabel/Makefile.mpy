@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "04b86ad07c8d17e59f8bfb4bef8c143cef2a49e27ae4864a3ab39cca0d081673",
+  "original_prompt": "Ingested from linux-6.6.14/net/netlabel/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the NetLabel subsystem.\n#\n\n# base objects\nobj-y\t:= netlabel_user.o netlabel_kapi.o\nobj-y\t+= netlabel_domainhash.o netlabel_addrlist.o\n\n# management objects\nobj-y\t+= netlabel_mgmt.o\n\n# protocol modules\nobj-y\t+= netlabel_unlabeled.o\nobj-y\t+= netlabel_cipso_v4.o\nobj-$(subst m,y,$(CONFIG_IPV6)) += netlabel_calipso.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

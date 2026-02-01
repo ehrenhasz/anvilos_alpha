@@ -1,0 +1,9 @@
+{
+  "module_name": "bench-sha256.c",
+  "hash_id": "5c8e07eaa22b567b43e7bb61e491519b17f0b8e037dd8a8394e6cc24f328ac6b",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/bench-sha256.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"sha256.h\"\n\n#define FUNC sha256_buffer\n#include \"bench-digest.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

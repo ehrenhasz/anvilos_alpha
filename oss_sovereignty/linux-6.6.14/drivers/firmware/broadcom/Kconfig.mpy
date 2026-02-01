@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "fda0cd15c6e4e70a2cd941170f06c643f04fd6b99cedc27e193e75d6510227ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/broadcom/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig BCM47XX_NVRAM\n\tbool \"Broadcom NVRAM driver\"\n\tdepends on BCM47XX || ARCH_BCM_5301X || COMPILE_TEST\n\thelp\n\t  Broadcom home routers contain flash partition called \"nvram\" with all\n\t  important hardware configuration as well as some minor user setup.\n\t  NVRAM partition contains a text-like data representing name=value\n\t  pairs.\n\t  This driver provides an easy way to get value of requested parameter.\n\t  It simply reads content of NVRAM and parses it. It doesn't control any\n\t  hardware part itself.\n\nconfig BCM47XX_SPROM\n\tbool \"Broadcom SPROM driver\"\n\tdepends on BCM47XX_NVRAM\n\tselect GENERIC_NET_UTILS\n\thelp\n\t  Broadcom devices store configuration data in SPROM. Accessing it is\n\t  specific to the bus host type, e.g. PCI(e) devices have it mapped in\n\t  a PCI BAR.\n\t  In case of SoC devices SPROM content is stored on a flash used by\n\t  bootloader firmware CFE. This driver provides method to ssb and bcma\n\t  drivers to read SPROM on SoC.\n\nconfig TEE_BNXT_FW\n\ttristate \"Broadcom BNXT firmware manager\"\n\tdepends on (ARCH_BCM_IPROC && OPTEE) || (COMPILE_TEST && TEE)\n\tdefault ARCH_BCM_IPROC\n\thelp\n\t  This module help to manage firmware on Broadcom BNXT device. The module\n\t  registers on tee bus and invoke calls to manage firmware on BNXT device.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

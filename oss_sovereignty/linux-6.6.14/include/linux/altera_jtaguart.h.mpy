@@ -1,0 +1,9 @@
+{
+  "module_name": "altera_jtaguart.h",
+  "hash_id": "ead63c17cddea7acbe9a9e19d8b25acb9523e849789936cd5fa829b052ad380d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/altera_jtaguart.h",
+  "human_readable_source": " \n \n\n#ifndef\t__ALTJUART_H\n#define\t__ALTJUART_H\n\n#define ALTERA_JTAGUART_MAJOR\t204\n#define ALTERA_JTAGUART_MINOR\t186\n\nstruct altera_jtaguart_platform_uart {\n\tunsigned long mapbase;\t \n\tunsigned int irq;\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

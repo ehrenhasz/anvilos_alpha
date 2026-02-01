@@ -1,0 +1,9 @@
+{
+  "module_name": "cipher.h",
+  "hash_id": "3fb834677f13b634130f5095688f02dab78eb662d186e175b664ecfe757329ed",
+  "original_prompt": "Ingested from openssh-9.6p1/cipher.h",
+  "human_readable_source": " \n\n \n\n#ifndef CIPHER_H\n#define CIPHER_H\n\n#include <sys/types.h>\n#ifdef WITH_OPENSSL\n#include <openssl/evp.h>\n#endif\n#include \"cipher-chachapoly.h\"\n#include \"cipher-aesctr.h\"\n\n#define CIPHER_ENCRYPT\t\t1\n#define CIPHER_DECRYPT\t\t0\n\nstruct sshcipher;\nstruct sshcipher_ctx;\n\nconst struct sshcipher *cipher_by_name(const char *);\nconst char *cipher_warning_message(const struct sshcipher_ctx *);\nint\t ciphers_valid(const char *);\nchar\t*cipher_alg_list(char, int);\nconst char *compression_alg_list(int);\nint\t cipher_init(struct sshcipher_ctx **, const struct sshcipher *,\n    const u_char *, u_int, const u_char *, u_int, int);\nint\t cipher_crypt(struct sshcipher_ctx *, u_int, u_char *, const u_char *,\n    u_int, u_int, u_int);\nint\t cipher_get_length(struct sshcipher_ctx *, u_int *, u_int,\n    const u_char *, u_int);\nvoid\t cipher_free(struct sshcipher_ctx *);\nu_int\t cipher_blocksize(const struct sshcipher *);\nu_int\t cipher_keylen(const struct sshcipher *);\nu_int\t cipher_seclen(const struct sshcipher *);\nu_int\t cipher_authlen(const struct sshcipher *);\nu_int\t cipher_ivlen(const struct sshcipher *);\nu_int\t cipher_is_cbc(const struct sshcipher *);\n\nu_int\t cipher_ctx_is_plaintext(struct sshcipher_ctx *);\n\nint\t cipher_get_keyiv(struct sshcipher_ctx *, u_char *, size_t);\nint\t cipher_set_keyiv(struct sshcipher_ctx *, const u_char *, size_t);\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

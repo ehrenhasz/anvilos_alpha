@@ -1,0 +1,9 @@
+{
+  "module_name": "bashtypes.h",
+  "hash_id": "60116066c994b37845e958297d9d3f4f64a836fe8c0021eb4448f3387e2521c6",
+  "original_prompt": "Ingested from bash-5.2.21/bashtypes.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_BASHTYPES_H_)\n#  define _BASHTYPES_H_\n\n#if defined (CRAY)\n#  define word __word\n#endif\n\n#include <sys/types.h>\n\n#if defined (CRAY)\n#  undef word\n#endif\n\n#if defined (HAVE_INTTYPES_H)\n#  include <inttypes.h>\n#endif\n\n#if HAVE_STDINT_H\n#  include <stdint.h>\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

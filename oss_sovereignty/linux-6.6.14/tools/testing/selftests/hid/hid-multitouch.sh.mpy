@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-multitouch.sh",
+  "hash_id": "4853cbc1b8a38d3318cf0c7023fc1111992cb57ca51a9b42c582320ece122e37",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/hid/hid-multitouch.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# Runs tests for the HID subsystem\n\nexport TARGET=test_multitouch.py\n\nbash ./run-hid-tools-tests.sh\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

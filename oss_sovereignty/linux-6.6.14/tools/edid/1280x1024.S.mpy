@@ -1,0 +1,9 @@
+{
+  "module_name": "1280x1024.S",
+  "hash_id": "8ac99a26a18867ed5ec8e412b71f77a6d70c723ce1c83070a981fdfe49697b25",
+  "original_prompt": "Ingested from linux-6.6.14/tools/edid/1280x1024.S",
+  "human_readable_source": " \n\n \n#define VERSION 1\n#define REVISION 3\n\n \n#define CLOCK 108000  \n#define XPIX 1280\n#define YPIX 1024\n#define XY_RATIO XY_RATIO_5_4\n#define XBLANK 408\n#define YBLANK 42\n#define XOFFSET 48\n#define XPULSE 112\n#define YOFFSET 1\n#define YPULSE 3\n#define DPI 72\n#define VFREQ 60  \n#define TIMING_NAME \"Linux SXGA\"\n \n#define HSYNC_POL 1\n#define VSYNC_POL 1\n\n#include \"edid.S\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

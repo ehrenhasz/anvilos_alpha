@@ -1,0 +1,9 @@
+{
+  "module_name": "log1p.c",
+  "hash_id": "8393eaff7d01f6749e48a57c81b9a0a1897ab1afc8a586ea2e37237f76e01e10",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/log1p.c",
+  "human_readable_source": " \n \n \n\n#include \"libm.h\"\n\nstatic const double\nln2_hi = 6.93147180369123816490e-01,   \nln2_lo = 1.90821492927058770002e-10,   \nLg1 = 6.666666666666735130e-01,   \nLg2 = 3.999999999940941908e-01,   \nLg3 = 2.857142874366239149e-01,   \nLg4 = 2.222219843214978396e-01,   \nLg5 = 1.818357216161805012e-01,   \nLg6 = 1.531383769920937332e-01,   \nLg7 = 1.479819860511658591e-01;   \n\ndouble log1p(double x)\n{\n\tunion {double f; uint64_t i;} u = {x};\n\tdouble_t hfsq,f,c,s,z,R,w,t1,t2,dk;\n\tuint32_t hx,hu;\n\tint k;\n\n\thx = u.i>>32;\n\tk = 1;\n\tif (hx < 0x3fda827a || hx>>31) {   \n\t\tif (hx >= 0xbff00000) {   \n\t\t\tif (x == -1)\n\t\t\t\treturn x/0.0;  \n\t\t\treturn (x-x)/0.0;      \n\t\t}\n\t\tif (hx<<1 < 0x3ca00000<<1) {   \n\t\t\t \n\t\t\tif ((hx&0x7ff00000) == 0)\n\t\t\t\tFORCE_EVAL((float)x);\n\t\t\treturn x;\n\t\t}\n\t\tif (hx <= 0xbfd2bec4) {   \n\t\t\tk = 0;\n\t\t\tc = 0;\n\t\t\tf = x;\n\t\t}\n\t} else if (hx >= 0x7ff00000)\n\t\treturn x;\n\tif (k) {\n\t\tu.f = 1 + x;\n\t\thu = u.i>>32;\n\t\thu += 0x3ff00000 - 0x3fe6a09e;\n\t\tk = (int)(hu>>20) - 0x3ff;\n\t\t \n\t\tif (k < 54) {\n\t\t\tc = k >= 2 ? 1-(u.f-x) : x-(u.f-1);\n\t\t\tc /= u.f;\n\t\t} else\n\t\t\tc = 0;\n\t\t \n\t\thu = (hu&0x000fffff) + 0x3fe6a09e;\n\t\tu.i = (uint64_t)hu<<32 | (u.i&0xffffffff);\n\t\tf = u.f - 1;\n\t}\n\thfsq = 0.5*f*f;\n\ts = f/(2.0+f);\n\tz = s*s;\n\tw = z*z;\n\tt1 = w*(Lg2+w*(Lg4+w*Lg6));\n\tt2 = z*(Lg1+w*(Lg3+w*(Lg5+w*Lg7)));\n\tR = t2 + t1;\n\tdk = k;\n\treturn s*(hfsq+R) + (dk*ln2_lo+c) - hfsq + f + dk*ln2_hi;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "target_core_iblock.h",
+  "hash_id": "9f8a0bd5f2dc03d479513ec367e4ae830f9cd25b67330d2c1569217aae9a3342",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/target_core_iblock.h",
+  "human_readable_source": " \n#ifndef TARGET_CORE_IBLOCK_H\n#define TARGET_CORE_IBLOCK_H\n\n#include <linux/atomic.h>\n#include <linux/refcount.h>\n#include <linux/blkdev.h>\n#include <target/target_core_base.h>\n\n#define IBLOCK_VERSION\t\t\"4.0\"\n\n#define IBLOCK_MAX_CDBS\t\t16\n\nstruct iblock_req {\n\trefcount_t pending;\n\tatomic_t ib_bio_err_cnt;\n} ____cacheline_aligned;\n\n#define IBDF_HAS_UDEV_PATH\t\t0x01\n\n#define IBD_PLUGF_PLUGGED\t\t0x01\n\nstruct iblock_dev_plug {\n\tstruct se_dev_plug se_plug;\n\tstruct blk_plug blk_plug;\n\tunsigned long flags;\n};\n\nstruct iblock_dev {\n\tstruct se_device dev;\n\tunsigned char ibd_udev_path[SE_UDEV_PATH_LEN];\n\tu32\tibd_flags;\n\tstruct bio_set\tibd_bio_set;\n\tstruct block_device *ibd_bd;\n\tbool ibd_readonly;\n\tstruct iblock_dev_plug *ibd_plug;\n} ____cacheline_aligned;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

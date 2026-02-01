@@ -1,0 +1,9 @@
+{
+  "module_name": "types32.h",
+  "hash_id": "4e79c3b5bdb28ad9e926c848cffea4dfbb82eee597de2a0464dfcc245f228d0d",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/types32.h",
+  "human_readable_source": " \n \n\n#ifndef _SYS_TYPES32_H\n#define\t_SYS_TYPES32_H\n\n#include <sys/inttypes.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \ntypedef\tuint32_t\tcaddr32_t;\ntypedef\tint32_t\t\tdaddr32_t;\ntypedef\tint32_t\t\toff32_t;\ntypedef\tuint32_t\tino32_t;\ntypedef\tint32_t\t\tblkcnt32_t;\ntypedef uint32_t\tfsblkcnt32_t;\ntypedef\tuint32_t\tfsfilcnt32_t;\ntypedef\tint32_t\t\tid32_t;\ntypedef\tuint32_t\tmajor32_t;\ntypedef\tuint32_t\tminor32_t;\ntypedef\tint32_t\t\tkey32_t;\ntypedef\tuint32_t\tmode32_t;\ntypedef\tuint32_t\tuid32_t;\ntypedef\tuint32_t\tgid32_t;\ntypedef\tuint32_t\tnlink32_t;\ntypedef\tuint32_t\tdev32_t;\ntypedef\tint32_t\t\tpid32_t;\ntypedef\tuint32_t\tsize32_t;\ntypedef\tint32_t\t\tssize32_t;\ntypedef\tint32_t\t\ttime32_t;\ntypedef\tint32_t\t\tclock32_t;\n\nstruct timeval32 {\n\ttime32_t\ttv_sec;\t\t \n\tint32_t\t\ttv_usec;\t \n};\n\ntypedef struct timespec32 {\n\ttime32_t\ttv_sec;\t\t \n\tint32_t\t\ttv_nsec;\t \n} timespec32_t;\n\ntypedef struct timespec32 timestruc32_t;\n\ntypedef\tstruct itimerspec32 {\n\tstruct timespec32 it_interval;\n\tstruct timespec32 it_value;\n} itimerspec32_t;\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

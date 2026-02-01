@@ -1,0 +1,9 @@
+{
+  "module_name": "bitop_support.h",
+  "hash_id": "b19205b903f09aadf8aef2c5acdfa88ced2140cf63ee8d31694f6d7c45b7128a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/bitop_support.h",
+  "human_readable_source": " \n \n\n#ifndef __BITOP_SUPPORT_H_INCLUDED__\n#define __BITOP_SUPPORT_H_INCLUDED__\n\n#define bitop_setbit(a, b) ((a) |= (1UL << (b)))\n\n#define bitop_getbit(a, b) (((a) & (1UL << (b))) != 0)\n\n#define bitop_clearbit(a, b) ((a) &= ~(1UL << (b)))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ov2659.h",
+  "hash_id": "916defc5fa85e660c809d31604875fe5974ebb62d1caf300fd811f007cff2bc2",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/ov2659.h",
+  "human_readable_source": " \n \n\n#ifndef OV2659_H\n#define OV2659_H\n\n \nstruct ov2659_platform_data {\n\ts64 link_frequency;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

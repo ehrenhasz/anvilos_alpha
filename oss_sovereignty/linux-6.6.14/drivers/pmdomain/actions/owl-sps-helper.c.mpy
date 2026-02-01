@@ -1,0 +1,9 @@
+{
+  "module_name": "owl-sps-helper.c",
+  "hash_id": "1c1e3d2d2e19507f82b3e56e7921ad7ccda0f942cf1602e803b9c5f84e943a38",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pmdomain/actions/owl-sps-helper.c",
+  "human_readable_source": "\n \n\n#include <linux/delay.h>\n#include <linux/io.h>\n#include <linux/soc/actions/owl-sps.h>\n\n#define OWL_SPS_PG_CTL\t0x0\n\nint owl_sps_set_pg(void __iomem *base, u32 pwr_mask, u32 ack_mask, bool enable)\n{\n\tu32 val;\n\tbool ack;\n\tint timeout;\n\n\tval = readl(base + OWL_SPS_PG_CTL);\n\tack = val & ack_mask;\n\tif (ack == enable)\n\t\treturn 0;\n\n\tif (enable)\n\t\tval |= pwr_mask;\n\telse\n\t\tval &= ~pwr_mask;\n\n\twritel(val, base + OWL_SPS_PG_CTL);\n\n\tfor (timeout = 5000; timeout > 0; timeout -= 50) {\n\t\tval = readl(base + OWL_SPS_PG_CTL);\n\t\tif ((val & ack_mask) == (enable ? ack_mask : 0))\n\t\t\tbreak;\n\t\tudelay(50);\n\t}\n\tif (timeout <= 0)\n\t\treturn -ETIMEDOUT;\n\n\tudelay(10);\n\n\treturn 0;\n}\nEXPORT_SYMBOL_GPL(owl_sps_set_pg);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

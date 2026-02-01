@@ -1,0 +1,9 @@
+{
+  "module_name": "da7219.h",
+  "hash_id": "f3a5ce9d18d5075ec53fba6dab4abcc915fc29d5e3343c25c3f001292f1cdf4d",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/da7219.h",
+  "human_readable_source": " \n \n\n#ifndef __DA7219_PDATA_H\n#define __DA7219_PDATA_H\n\n \nenum da7219_micbias_voltage {\n\tDA7219_MICBIAS_1_6V = 0,\n\tDA7219_MICBIAS_1_8V,\n\tDA7219_MICBIAS_2_0V,\n\tDA7219_MICBIAS_2_2V,\n\tDA7219_MICBIAS_2_4V,\n\tDA7219_MICBIAS_2_6V,\n};\n\n \nenum da7219_mic_amp_in_sel {\n\tDA7219_MIC_AMP_IN_SEL_DIFF = 0,\n\tDA7219_MIC_AMP_IN_SEL_SE_P,\n\tDA7219_MIC_AMP_IN_SEL_SE_N,\n};\n\nstruct da7219_aad_pdata;\n\nenum da7219_dai_clks {\n\tDA7219_DAI_WCLK_IDX = 0,\n\tDA7219_DAI_BCLK_IDX,\n\tDA7219_DAI_NUM_CLKS,\n};\n\nstruct da7219_pdata {\n\tbool wakeup_source;\n\n\tconst char *dai_clk_names[DA7219_DAI_NUM_CLKS];\n\n\t \n\tenum da7219_micbias_voltage micbias_lvl;\n\tenum da7219_mic_amp_in_sel mic_amp_in_sel;\n\n\t \n\tstruct da7219_aad_pdata *aad_pdata;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

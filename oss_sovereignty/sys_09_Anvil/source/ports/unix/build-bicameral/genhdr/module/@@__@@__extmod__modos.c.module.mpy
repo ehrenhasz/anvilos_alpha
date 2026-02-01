@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__extmod__modos.c.module",
+  "hash_id": "103b45e74b87fd134c92a25d3e20776a2b94df70fa37f1415a8380421d08deb9",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/module/@@__@@__extmod__modos.c.module",
+  "human_readable_source": "MP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_os, mp_module_os);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cb_refs.c",
+  "hash_id": "810c905d516fb6fd19db2518700a99a8d7090ea52a53c2badc62f6095f815337",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/cb_refs.c",
+  "human_readable_source": "\n#include \"bpf/libbpf.h\"\n#include <test_progs.h>\n#include <network_helpers.h>\n\n#include \"cb_refs.skel.h\"\n\nstatic char log_buf[1024 * 1024];\n\nstruct {\n\tconst char *prog_name;\n\tconst char *err_msg;\n} cb_refs_tests[] = {\n\t{ \"underflow_prog\", \"reference has not been acquired before\" },\n\t{ \"leak_prog\", \"Unreleased reference\" },\n\t{ \"nested_cb\", \"Unreleased reference id=4 alloc_insn=2\" },  \n\t{ \"non_cb_transfer_ref\", \"Unreleased reference id=4 alloc_insn=1\" },  \n};\n\nvoid test_cb_refs(void)\n{\n\tLIBBPF_OPTS(bpf_object_open_opts, opts, .kernel_log_buf = log_buf,\n\t\t\t\t\t\t.kernel_log_size = sizeof(log_buf),\n\t\t\t\t\t\t.kernel_log_level = 1);\n\tstruct bpf_program *prog;\n\tstruct cb_refs *skel;\n\tint i;\n\n\tfor (i = 0; i < ARRAY_SIZE(cb_refs_tests); i++) {\n\t\tLIBBPF_OPTS(bpf_test_run_opts, run_opts,\n\t\t\t.data_in = &pkt_v4,\n\t\t\t.data_size_in = sizeof(pkt_v4),\n\t\t\t.repeat = 1,\n\t\t);\n\t\tskel = cb_refs__open_opts(&opts);\n\t\tif (!ASSERT_OK_PTR(skel, \"cb_refs__open_and_load\"))\n\t\t\treturn;\n\t\tprog = bpf_object__find_program_by_name(skel->obj, cb_refs_tests[i].prog_name);\n\t\tbpf_program__set_autoload(prog, true);\n\t\tif (!ASSERT_ERR(cb_refs__load(skel), \"cb_refs__load\"))\n\t\t\tbpf_prog_test_run_opts(bpf_program__fd(prog), &run_opts);\n\t\tif (!ASSERT_OK_PTR(strstr(log_buf, cb_refs_tests[i].err_msg), \"expected error message\")) {\n\t\t\tfprintf(stderr, \"Expected: %s\\n\", cb_refs_tests[i].err_msg);\n\t\t\tfprintf(stderr, \"Verifier: %s\\n\", log_buf);\n\t\t}\n\t\tcb_refs__destroy(skel);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

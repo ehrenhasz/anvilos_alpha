@@ -1,0 +1,9 @@
+{
+  "module_name": "selinux-context-h.m4",
+  "hash_id": "7337470940b36ab44ed2d746bbc1735e0fb12cab076c465e1050d45ecd9f0686",
+  "original_prompt": "Ingested from coreutils-9.4/m4/selinux-context-h.m4",
+  "human_readable_source": "# serial 4   -*- Autoconf -*-\n# Copyright (C) 2006-2007, 2009-2023 Free Software Foundation, Inc.\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\n# From Jim Meyering\n# Provide <selinux/context.h>, if necessary.\n\nAC_DEFUN([gl_HEADERS_SELINUX_CONTEXT_H],\n[\n  AC_REQUIRE([gl_LIBSELINUX])\n  if test \"$with_selinux\" != no; then\n    AC_CHECK_HEADERS([selinux/context.h],\n                     [GL_GENERATE_SELINUX_CONTEXT_H=false],\n                     [GL_GENERATE_SELINUX_CONTEXT_H=true])\n  else\n    GL_GENERATE_SELINUX_CONTEXT_H=true\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

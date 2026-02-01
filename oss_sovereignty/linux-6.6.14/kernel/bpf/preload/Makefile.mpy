@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "07b9a366feaeb6f980141d7bcf5f7bc26d6dd3ae3f4c5943ca504f51a7608b74",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/bpf/preload/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nLIBBPF_INCLUDE = $(srctree)/tools/lib\n\nobj-$(CONFIG_BPF_PRELOAD_UMD) += bpf_preload.o\nCFLAGS_bpf_preload_kern.o += -I$(LIBBPF_INCLUDE)\nbpf_preload-objs += bpf_preload_kern.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

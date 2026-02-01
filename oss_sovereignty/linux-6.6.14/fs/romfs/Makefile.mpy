@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4cea47e57cc67954369577f5d6513639858c67b1d004c1ab32ba930ffe74f17c",
+  "original_prompt": "Ingested from linux-6.6.14/fs/romfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the linux RomFS filesystem routines.\n#\n\nobj-$(CONFIG_ROMFS_FS) += romfs.o\n\nromfs-y := storage.o super.o\n\nifneq ($(CONFIG_MMU),y)\nromfs-$(CONFIG_ROMFS_ON_MTD) += mmap-nommu.o\nendif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

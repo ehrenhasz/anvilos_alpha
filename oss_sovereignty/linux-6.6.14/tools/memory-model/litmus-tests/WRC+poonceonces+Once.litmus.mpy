@@ -1,0 +1,9 @@
+{
+  "module_name": "WRC+poonceonces+Once.litmus",
+  "hash_id": "0b455c5cac10689090a12b71f96dd76c0d0ff4039961f2bc51457cb099276554",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/WRC+poonceonces+Once.litmus",
+  "human_readable_source": "C WRC+poonceonces+Once\n\n(*\n * Result: Sometimes\n *\n * This litmus test is an extension of the message-passing pattern,\n * where the first write is moved to a separate process.  Note that this\n * test has no ordering at all.\n *)\n\n{}\n\nP0(int *x)\n{\n\tWRITE_ONCE(*x, 1);\n}\n\nP1(int *x, int *y)\n{\n\tint r0;\n\n\tr0 = READ_ONCE(*x);\n\tWRITE_ONCE(*y, 1);\n}\n\nP2(int *x, int *y)\n{\n\tint r0;\n\tint r1;\n\n\tr0 = READ_ONCE(*y);\n\tr1 = READ_ONCE(*x);\n}\n\nexists (1:r0=1 /\\ 2:r0=1 /\\ 2:r1=0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

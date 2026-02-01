@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk-cmdq-mailbox.h",
+  "hash_id": "6bb6fea30196234985f7c09d12cc7db1ca1442e8c4a7f88150961e5c732eec13",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mailbox/mtk-cmdq-mailbox.h",
+  "human_readable_source": " \n \n\n#ifndef __MTK_CMDQ_MAILBOX_H__\n#define __MTK_CMDQ_MAILBOX_H__\n\n#include <linux/platform_device.h>\n#include <linux/slab.h>\n#include <linux/types.h>\n\n#define CMDQ_INST_SIZE\t\t\t8  \n#define CMDQ_SUBSYS_SHIFT\t\t16\n#define CMDQ_OP_CODE_SHIFT\t\t24\n#define CMDQ_JUMP_PASS\t\t\tCMDQ_INST_SIZE\n\n#define CMDQ_WFE_UPDATE\t\t\tBIT(31)\n#define CMDQ_WFE_UPDATE_VALUE\t\tBIT(16)\n#define CMDQ_WFE_WAIT\t\t\tBIT(15)\n#define CMDQ_WFE_WAIT_VALUE\t\t0x1\n\n \n#define CMDQ_WFE_OPTION\t\t\t(CMDQ_WFE_WAIT | CMDQ_WFE_WAIT_VALUE)\n\n \n#define CMDQ_MAX_EVENT\t\t\t0x3ff\n\n \nenum cmdq_code {\n\tCMDQ_CODE_MASK = 0x02,\n\tCMDQ_CODE_WRITE = 0x04,\n\tCMDQ_CODE_POLL = 0x08,\n\tCMDQ_CODE_JUMP = 0x10,\n\tCMDQ_CODE_WFE = 0x20,\n\tCMDQ_CODE_EOC = 0x40,\n\tCMDQ_CODE_READ_S = 0x80,\n\tCMDQ_CODE_WRITE_S = 0x90,\n\tCMDQ_CODE_WRITE_S_MASK = 0x91,\n\tCMDQ_CODE_LOGIC = 0xa0,\n};\n\nstruct cmdq_cb_data {\n\tint\t\t\tsta;\n\tstruct cmdq_pkt\t\t*pkt;\n};\n\nstruct cmdq_pkt {\n\tvoid\t\t\t*va_base;\n\tdma_addr_t\t\tpa_base;\n\tsize_t\t\t\tcmd_buf_size;  \n\tsize_t\t\t\tbuf_size;  \n\tvoid\t\t\t*cl;\n};\n\nu8 cmdq_get_shift_pa(struct mbox_chan *chan);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mmc-mxcmmc.h",
+  "hash_id": "0e9817e5cd216f3da431fffc7edfa21fb7959c52c440468457710823cb5a9a3a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/mmc-mxcmmc.h",
+  "human_readable_source": " \n#ifndef ASMARM_ARCH_MMC_H\n#define ASMARM_ARCH_MMC_H\n\n#include <linux/interrupt.h>\n#include <linux/mmc/host.h>\n\nstruct device;\n\n \nstruct imxmmc_platform_data {\n\t \n\tint (*get_ro)(struct device *);\n\n\t \n\tint (*init)(struct device *dev, irq_handler_t handler, void *data);\n\tvoid (*exit)(struct device *dev, void *data);\n\n\t \n\tunsigned int ocr_avail;\n\n\t \n\tvoid (*setpower)(struct device *, unsigned int vdd);\n\n\t \n\tint dat3_card_detect;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

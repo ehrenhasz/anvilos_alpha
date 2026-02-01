@@ -1,0 +1,9 @@
+{
+  "module_name": "test-timerfd.c",
+  "hash_id": "8c44ffc2a6b9fdc97fc2b6cead074ed14b1448661ebe8cd4cc75c7bb32d7c598",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-timerfd.c",
+  "human_readable_source": "\n \n#include <sys/timerfd.h>\n\nint main(void)\n{\n\tstruct itimerspec new_value;\n\n\tint fd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK);\n\tif (fd < 0)\n\t\treturn 1;\n\n\tif (timerfd_settime(fd, 0, &new_value, NULL) != 0)\n\t\treturn 1;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

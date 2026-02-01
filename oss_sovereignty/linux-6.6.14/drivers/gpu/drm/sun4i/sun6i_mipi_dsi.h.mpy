@@ -1,0 +1,9 @@
+{
+  "module_name": "sun6i_mipi_dsi.h",
+  "hash_id": "7fff0cf29b91269d16c3445960f7a818d5119780058f81630f43bbe6d65d696a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sun4i/sun6i_mipi_dsi.h",
+  "human_readable_source": "\n \n\n#ifndef _SUN6I_MIPI_DSI_H_\n#define _SUN6I_MIPI_DSI_H_\n\n#include <drm/drm_connector.h>\n#include <drm/drm_encoder.h>\n#include <drm/drm_mipi_dsi.h>\n\n#define SUN6I_DSI_TCON_DIV\t4\n\nstruct sun6i_dsi_variant {\n\tbool\t\t\thas_mod_clk;\n\tbool\t\t\tset_mod_clk;\n};\n\nstruct sun6i_dsi {\n\tstruct drm_connector\tconnector;\n\tstruct drm_encoder\tencoder;\n\tstruct mipi_dsi_host\thost;\n\n\tstruct clk\t\t*bus_clk;\n\tstruct clk\t\t*mod_clk;\n\tstruct regmap\t\t*regs;\n\tstruct regulator\t*regulator;\n\tstruct reset_control\t*reset;\n\tstruct phy\t\t*dphy;\n\n\tstruct device\t\t*dev;\n\tstruct mipi_dsi_device\t*device;\n\tstruct drm_device\t*drm;\n\tstruct drm_panel\t*panel;\n\n\tconst struct sun6i_dsi_variant *variant;\n};\n\nstatic inline struct sun6i_dsi *host_to_sun6i_dsi(struct mipi_dsi_host *host)\n{\n\treturn container_of(host, struct sun6i_dsi, host);\n};\n\nstatic inline struct sun6i_dsi *connector_to_sun6i_dsi(struct drm_connector *connector)\n{\n\treturn container_of(connector, struct sun6i_dsi, connector);\n};\n\nstatic inline struct sun6i_dsi *encoder_to_sun6i_dsi(const struct drm_encoder *encoder)\n{\n\treturn container_of(encoder, struct sun6i_dsi, encoder);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

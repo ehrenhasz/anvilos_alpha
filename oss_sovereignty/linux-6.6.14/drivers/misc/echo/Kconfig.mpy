@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "381686c39147b6c98d4af2a7e48d1333989127be9732103801f1b7278a077a8c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/echo/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig ECHO\n\ttristate \"Line Echo Canceller support\"\n\thelp\n\t  This driver provides line echo cancelling support for mISDN and\n\t  Zaptel drivers.\n\n\t  To compile this driver as a module, choose M here. The module\n\t  will be called echo.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

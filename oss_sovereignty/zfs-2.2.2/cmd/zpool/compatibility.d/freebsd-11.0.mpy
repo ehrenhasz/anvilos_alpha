@@ -1,0 +1,9 @@
+{
+  "module_name": "freebsd-11.0",
+  "hash_id": "b23fb16934ef97a571a9105edcb1f663313073ba84735e30f1113f0c881070cb",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/compatibility.d/freebsd-11.0",
+  "human_readable_source": "# Features supported by FreeBSD 11.0\nasync_destroy\nbookmarks\nembedded_data\nempty_bpobj\nenabled_txg\nextensible_dataset\nfilesystem_limits\nhole_birth\nlarge_blocks\nlz4_compress\nmulti_vdev_crash_dump\nsha512\nskein\nspacemap_histogram\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

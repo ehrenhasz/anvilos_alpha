@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,rpmh-regulator.h",
+  "hash_id": "2b382f6e18b7d3ebcd420f2854ac04bd77324b52e90e4db85aba4abe3c266cd3",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/regulator/qcom,rpmh-regulator.h",
+  "human_readable_source": " \n \n\n#ifndef __QCOM_RPMH_REGULATOR_H\n#define __QCOM_RPMH_REGULATOR_H\n\n \n#define RPMH_REGULATOR_MODE_RET\t\t0\n#define RPMH_REGULATOR_MODE_LPM\t\t1\n#define RPMH_REGULATOR_MODE_AUTO\t2\n#define RPMH_REGULATOR_MODE_HPM\t\t3\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

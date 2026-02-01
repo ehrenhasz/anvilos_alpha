@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0342459c4d11e9c513cf2ac81b03480991b756c128b9da2bfe84e4b05f8d2d4d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/interconnect/imx/Kconfig",
+  "human_readable_source": "config INTERCONNECT_IMX\n\ttristate \"i.MX interconnect drivers\"\n\tdepends on ARCH_MXC || COMPILE_TEST\n\thelp\n\t  Generic interconnect drivers for i.MX SOCs\n\nconfig INTERCONNECT_IMX8MM\n\ttristate \"i.MX8MM interconnect driver\"\n\tdepends on INTERCONNECT_IMX\n\nconfig INTERCONNECT_IMX8MN\n\ttristate \"i.MX8MN interconnect driver\"\n\tdepends on INTERCONNECT_IMX\n\nconfig INTERCONNECT_IMX8MQ\n\ttristate \"i.MX8MQ interconnect driver\"\n\tdepends on INTERCONNECT_IMX\n\nconfig INTERCONNECT_IMX8MP\n\ttristate \"i.MX8MP interconnect driver\"\n\tdepends on INTERCONNECT_IMX\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c52b857ea841337ff39296d04ca85f77b077cc061ce7e4fe25e10554ba0f17c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/fsl-dcu/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_FSL_DCU\n\ttristate \"DRM Support for Freescale DCU\"\n\tdepends on DRM && OF && ARM && COMMON_CLK\n\tselect BACKLIGHT_CLASS_DEVICE\n\tselect DRM_GEM_DMA_HELPER\n\tselect DRM_KMS_HELPER\n\tselect DRM_PANEL\n\tselect REGMAP_MMIO\n\tselect VIDEOMODE_HELPERS\n\thelp\n\t  Choose this option if you have an Freescale DCU chipset.\n\t  If M is selected the module will be called fsl-dcu-drm.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

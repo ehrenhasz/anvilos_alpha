@@ -1,0 +1,9 @@
+{
+  "module_name": "ff-proc.c",
+  "hash_id": "639fa34e331f6462aea65d4336725be29da2bfca30337121afb06fbaa2ae6fb3",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/fireface/ff-proc.c",
+  "human_readable_source": "\n \n\n#include \"./ff.h\"\n\nconst char *snd_ff_proc_get_clk_label(enum snd_ff_clock_src src)\n{\n\tstatic const char *const labels[] = {\n\t\t\"Internal\",\n\t\t\"S/PDIF\",\n\t\t\"ADAT1\",\n\t\t\"ADAT2\",\n\t\t\"Word\",\n\t\t\"LTC\",\n\t};\n\n\tif (src >= ARRAY_SIZE(labels))\n\t\treturn NULL;\n\n\treturn labels[src];\n}\n\nstatic void proc_dump_status(struct snd_info_entry *entry,\n\t\t\t     struct snd_info_buffer *buffer)\n{\n\tstruct snd_ff *ff = entry->private_data;\n\n\tff->spec->protocol->dump_status(ff, buffer);\n}\n\nstatic void add_node(struct snd_ff *ff, struct snd_info_entry *root,\n\t\t     const char *name,\n\t\t     void (*op)(struct snd_info_entry *e,\n\t\t\t\tstruct snd_info_buffer *b))\n{\n\tstruct snd_info_entry *entry;\n\n\tentry = snd_info_create_card_entry(ff->card, name, root);\n\tif (entry)\n\t\tsnd_info_set_text_ops(entry, ff, op);\n}\n\nvoid snd_ff_proc_init(struct snd_ff *ff)\n{\n\tstruct snd_info_entry *root;\n\n\t \n\troot = snd_info_create_card_entry(ff->card, \"firewire\",\n\t\t\t\t\t  ff->card->proc_root);\n\tif (root == NULL)\n\t\treturn;\n\troot->mode = S_IFDIR | 0555;\n\n\tadd_node(ff, root, \"status\", proc_dump_status);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

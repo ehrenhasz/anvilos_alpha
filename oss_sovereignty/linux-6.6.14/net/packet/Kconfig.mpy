@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e3311cd1d844e6c26fa59ae72cad3a1444ba2f1e9bae34d655db19d93161a6ab",
+  "original_prompt": "Ingested from linux-6.6.14/net/packet/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Packet configuration\n#\n\nconfig PACKET\n\ttristate \"Packet socket\"\n\thelp\n\t  The Packet protocol is used by applications which communicate\n\t  directly with network devices without an intermediate network\n\t  protocol implemented in the kernel, e.g. tcpdump.  If you want them\n\t  to work, choose Y.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called af_packet.\n\n\t  If unsure, say Y.\n\nconfig PACKET_DIAG\n\ttristate \"Packet: sockets monitoring interface\"\n\tdepends on PACKET\n\tdefault n\n\thelp\n\t  Support for PF_PACKET sockets monitoring interface used by the ss tool.\n\t  If unsure, say Y.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

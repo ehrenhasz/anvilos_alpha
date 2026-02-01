@@ -1,0 +1,9 @@
+{
+  "module_name": "gk104.c",
+  "hash_id": "d3ef8c8cbbf8cd3bd3c525155d5d311115591b1e2d5bea577f10386a9a19074d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/gpio/gk104.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic void\ngk104_gpio_intr_stat(struct nvkm_gpio *gpio, u32 *hi, u32 *lo)\n{\n\tstruct nvkm_device *device = gpio->subdev.device;\n\tu32 intr0 = nvkm_rd32(device, 0x00dc00);\n\tu32 intr1 = nvkm_rd32(device, 0x00dc80);\n\tu32 stat0 = nvkm_rd32(device, 0x00dc08) & intr0;\n\tu32 stat1 = nvkm_rd32(device, 0x00dc88) & intr1;\n\t*lo = (stat1 & 0xffff0000) | (stat0 >> 16);\n\t*hi = (stat1 << 16) | (stat0 & 0x0000ffff);\n\tnvkm_wr32(device, 0x00dc00, intr0);\n\tnvkm_wr32(device, 0x00dc80, intr1);\n}\n\nstatic void\ngk104_gpio_intr_mask(struct nvkm_gpio *gpio, u32 type, u32 mask, u32 data)\n{\n\tstruct nvkm_device *device = gpio->subdev.device;\n\tu32 inte0 = nvkm_rd32(device, 0x00dc08);\n\tu32 inte1 = nvkm_rd32(device, 0x00dc88);\n\tif (type & NVKM_GPIO_LO)\n\t\tinte0 = (inte0 & ~(mask << 16)) | (data << 16);\n\tif (type & NVKM_GPIO_HI)\n\t\tinte0 = (inte0 & ~(mask & 0xffff)) | (data & 0xffff);\n\tmask >>= 16;\n\tdata >>= 16;\n\tif (type & NVKM_GPIO_LO)\n\t\tinte1 = (inte1 & ~(mask << 16)) | (data << 16);\n\tif (type & NVKM_GPIO_HI)\n\t\tinte1 = (inte1 & ~mask) | data;\n\tnvkm_wr32(device, 0x00dc08, inte0);\n\tnvkm_wr32(device, 0x00dc88, inte1);\n}\n\nstatic const struct nvkm_gpio_func\ngk104_gpio = {\n\t.lines = 32,\n\t.intr_stat = gk104_gpio_intr_stat,\n\t.intr_mask = gk104_gpio_intr_mask,\n\t.drive = gf119_gpio_drive,\n\t.sense = gf119_gpio_sense,\n\t.reset = gf119_gpio_reset,\n};\n\nint\ngk104_gpio_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t       struct nvkm_gpio **pgpio)\n{\n\treturn nvkm_gpio_new_(&gk104_gpio, device, type, inst, pgpio);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

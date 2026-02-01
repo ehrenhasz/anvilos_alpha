@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4820cdb223ba13070e898d40c0efe9f92188096044c93eca80df4850d065782a",
+  "original_prompt": "Ingested from linux-6.6.14/net/mpls/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# MPLS configuration\n#\n\nmenuconfig MPLS\n\tbool \"MultiProtocol Label Switching\"\n\tdefault n\n\thelp\n\t  MultiProtocol Label Switching routes packets through logical\n\t  circuits.  Originally conceived as a way of routing packets at\n\t  hardware speeds (before hardware was capable of routing ipv4 packets),\n\t  MPLS remains a simple way of making tunnels.\n\n\t  If you have not heard of MPLS you probably want to say N here.\n\nif MPLS\n\nconfig NET_MPLS_GSO\n\ttristate \"MPLS: GSO support\"\n\thelp\n\t This is helper module to allow segmentation of non-MPLS GSO packets\n\t that have had MPLS stack entries pushed onto them and thus\n\t become MPLS GSO packets.\n\nconfig MPLS_ROUTING\n\ttristate \"MPLS: routing support\"\n\tdepends on NET_IP_TUNNEL || NET_IP_TUNNEL=n\n\tdepends on PROC_SYSCTL\n\thelp\n\t Add support for forwarding of mpls packets.\n\nconfig MPLS_IPTUNNEL\n\ttristate \"MPLS: IP over MPLS tunnel support\"\n\tdepends on LWTUNNEL && MPLS_ROUTING\n\thelp\n\t mpls ip tunnel support.\n\nendif # MPLS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

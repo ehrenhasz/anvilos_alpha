@@ -1,0 +1,9 @@
+{
+  "module_name": "bptree.h",
+  "hash_id": "5249ec177d70f4931e59f6a832bd928c1fef66715901a06e0ad0be43cbea1521",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/bptree.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_BPTREE_H\n#define\t_SYS_BPTREE_H\n\n#include <sys/spa.h>\n#include <sys/zio.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\ntypedef struct bptree_phys {\n\tuint64_t bt_begin;\n\tuint64_t bt_end;\n\tuint64_t bt_bytes;\n\tuint64_t bt_comp;\n\tuint64_t bt_uncomp;\n} bptree_phys_t;\n\ntypedef struct bptree_entry_phys {\n\tblkptr_t be_bp;\n\tuint64_t be_birth_txg;  \n\tzbookmark_phys_t be_zb;  \n} bptree_entry_phys_t;\n\ntypedef int bptree_itor_t(void *arg, const blkptr_t *bp, dmu_tx_t *tx);\n\nuint64_t bptree_alloc(objset_t *os, dmu_tx_t *tx);\nint bptree_free(objset_t *os, uint64_t obj, dmu_tx_t *tx);\nboolean_t bptree_is_empty(objset_t *os, uint64_t obj);\n\nvoid bptree_add(objset_t *os, uint64_t obj, blkptr_t *bp, uint64_t birth_txg,\n    uint64_t bytes, uint64_t comp, uint64_t uncomp, dmu_tx_t *tx);\n\nint bptree_iterate(objset_t *os, uint64_t obj, boolean_t free,\n    bptree_itor_t func, void *arg, dmu_tx_t *tx);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

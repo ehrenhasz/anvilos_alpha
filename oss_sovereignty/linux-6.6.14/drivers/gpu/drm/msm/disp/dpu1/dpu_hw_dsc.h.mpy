@@ -1,0 +1,9 @@
+{
+  "module_name": "dpu_hw_dsc.h",
+  "hash_id": "b11be358e0dbf79297dfd91c5da20dfe1e19d190b61e9b5c583f35bbc28e5134",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc.h",
+  "human_readable_source": " \n \n\n#ifndef _DPU_HW_DSC_H\n#define _DPU_HW_DSC_H\n\n#include <drm/display/drm_dsc.h>\n\n#define DSC_MODE_SPLIT_PANEL            BIT(0)\n#define DSC_MODE_MULTIPLEX              BIT(1)\n#define DSC_MODE_VIDEO                  BIT(2)\n\nstruct dpu_hw_dsc;\n\n \nstruct dpu_hw_dsc_ops {\n\t \n\tvoid (*dsc_disable)(struct dpu_hw_dsc *hw_dsc);\n\n\t \n\tvoid (*dsc_config)(struct dpu_hw_dsc *hw_dsc,\n\t\t\t   struct drm_dsc_config *dsc,\n\t\t\t   u32 mode,\n\t\t\t   u32 initial_lines);\n\n\t \n\tvoid (*dsc_config_thresh)(struct dpu_hw_dsc *hw_dsc,\n\t\t\t\t  struct drm_dsc_config *dsc);\n\n\tvoid (*dsc_bind_pingpong_blk)(struct dpu_hw_dsc *hw_dsc,\n\t\t\t\t  enum dpu_pingpong pp);\n};\n\nstruct dpu_hw_dsc {\n\tstruct dpu_hw_blk base;\n\tstruct dpu_hw_blk_reg_map hw;\n\n\t \n\tenum dpu_dsc idx;\n\tconst struct dpu_dsc_cfg *caps;\n\n\t \n\tstruct dpu_hw_dsc_ops ops;\n};\n\n \nstruct dpu_hw_dsc *dpu_hw_dsc_init(const struct dpu_dsc_cfg *cfg,\n\t\tvoid __iomem *addr);\n\n \nstruct dpu_hw_dsc *dpu_hw_dsc_init_1_2(const struct dpu_dsc_cfg *cfg,\n\t\t\t\t       void __iomem *addr);\n\n \nvoid dpu_hw_dsc_destroy(struct dpu_hw_dsc *dsc);\n\nstatic inline struct dpu_hw_dsc *to_dpu_hw_dsc(struct dpu_hw_blk *hw)\n{\n\treturn container_of(hw, struct dpu_hw_dsc, base);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

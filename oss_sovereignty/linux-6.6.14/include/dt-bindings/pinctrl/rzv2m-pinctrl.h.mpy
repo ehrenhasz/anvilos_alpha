@@ -1,0 +1,9 @@
+{
+  "module_name": "rzv2m-pinctrl.h",
+  "hash_id": "2de2f4ad28eb0e6230338641b0e20a38bc84d6840070dd76aa6a1624a3ccefd8",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/rzv2m-pinctrl.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_RZV2M_PINCTRL_H\n#define __DT_BINDINGS_RZV2M_PINCTRL_H\n\n#define RZV2M_PINS_PER_PORT\t16\n\n \n#define RZV2M_PORT_PINMUX(b, p, f)\t((b) * RZV2M_PINS_PER_PORT + (p) | ((f) << 16))\n\n \n#define RZV2M_GPIO(port, pin)\t((port) * RZV2M_PINS_PER_PORT + (pin))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sshtty.c",
+  "hash_id": "afde6f2ebe9844971d2b2278c0298487ce2dbb59fee3a6a4712d29a5729339f2",
+  "original_prompt": "Ingested from openssh-9.6p1/sshtty.c",
+  "human_readable_source": " \n \n \n\n#include \"includes.h\"\n\n#include <sys/types.h>\n#include <stdio.h>\n#include <termios.h>\n#include <pwd.h>\n\n#include \"sshpty.h\"\n\nstatic struct termios _saved_tio;\nstatic int _in_raw_mode = 0;\n\nstruct termios *\nget_saved_tio(void)\n{\n\treturn _in_raw_mode ? &_saved_tio : NULL;\n}\n\nvoid\nleave_raw_mode(int quiet)\n{\n\tif (!_in_raw_mode)\n\t\treturn;\n\tif (tcsetattr(fileno(stdin), TCSADRAIN, &_saved_tio) == -1) {\n\t\tif (!quiet)\n\t\t\tperror(\"tcsetattr\");\n\t} else\n\t\t_in_raw_mode = 0;\n}\n\nvoid\nenter_raw_mode(int quiet)\n{\n\tstruct termios tio;\n\n\tif (tcgetattr(fileno(stdin), &tio) == -1) {\n\t\tif (!quiet)\n\t\t\tperror(\"tcgetattr\");\n\t\treturn;\n\t}\n\t_saved_tio = tio;\n\ttio.c_iflag |= IGNPAR;\n\ttio.c_iflag &= ~(ISTRIP | INLCR | IGNCR | ICRNL | IXON | IXANY | IXOFF);\n#ifdef IUCLC\n\ttio.c_iflag &= ~IUCLC;\n#endif\n\ttio.c_lflag &= ~(ISIG | ICANON | ECHO | ECHOE | ECHOK | ECHONL);\n#ifdef IEXTEN\n\ttio.c_lflag &= ~IEXTEN;\n#endif\n\ttio.c_oflag &= ~OPOST;\n\ttio.c_cc[VMIN] = 1;\n\ttio.c_cc[VTIME] = 0;\n\tif (tcsetattr(fileno(stdin), TCSADRAIN, &tio) == -1) {\n\t\tif (!quiet)\n\t\t\tperror(\"tcsetattr\");\n\t} else\n\t\t_in_raw_mode = 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

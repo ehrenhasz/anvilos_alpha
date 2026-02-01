@@ -1,0 +1,9 @@
+{
+  "module_name": "atmel-authenc.h",
+  "hash_id": "09cc6daf1673bb84ce61c423349e4c5e3d580d95db03dc8774870b916c2aff3a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/atmel-authenc.h",
+  "human_readable_source": " \n \n\n#ifndef __ATMEL_AUTHENC_H__\n#define __ATMEL_AUTHENC_H__\n\n#if IS_ENABLED(CONFIG_CRYPTO_DEV_ATMEL_AUTHENC)\n\n#include <crypto/authenc.h>\n#include <crypto/hash.h>\n#include <crypto/sha1.h>\n#include <crypto/sha2.h>\n#include \"atmel-sha-regs.h\"\n\nstruct atmel_aes_dev;\ntypedef int (*atmel_aes_authenc_fn_t)(struct atmel_aes_dev *, int, bool);\n\nstruct atmel_sha_authenc_ctx;\n\nbool atmel_sha_authenc_is_ready(void);\nunsigned int atmel_sha_authenc_get_reqsize(void);\n\nstruct atmel_sha_authenc_ctx *atmel_sha_authenc_spawn(unsigned long mode);\nvoid atmel_sha_authenc_free(struct atmel_sha_authenc_ctx *auth);\nint atmel_sha_authenc_setkey(struct atmel_sha_authenc_ctx *auth,\n\t\t\t     const u8 *key, unsigned int keylen, u32 flags);\n\nint atmel_sha_authenc_schedule(struct ahash_request *req,\n\t\t\t       struct atmel_sha_authenc_ctx *auth,\n\t\t\t       atmel_aes_authenc_fn_t cb,\n\t\t\t       struct atmel_aes_dev *dd);\nint atmel_sha_authenc_init(struct ahash_request *req,\n\t\t\t   struct scatterlist *assoc, unsigned int assoclen,\n\t\t\t   unsigned int textlen,\n\t\t\t   atmel_aes_authenc_fn_t cb,\n\t\t\t   struct atmel_aes_dev *dd);\nint atmel_sha_authenc_final(struct ahash_request *req,\n\t\t\t    u32 *digest, unsigned int digestlen,\n\t\t\t    atmel_aes_authenc_fn_t cb,\n\t\t\t    struct atmel_aes_dev *dd);\nvoid  atmel_sha_authenc_abort(struct ahash_request *req);\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

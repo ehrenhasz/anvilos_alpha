@@ -1,0 +1,9 @@
+{
+  "module_name": "test-uname.c",
+  "hash_id": "ad17e46fcc07c97ced13f579d0ba5bbac53b4dcc5bc9057424adae545503ab5a",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-uname.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/utsname.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (uname, int, (struct utsname *));\n\n#include <stdio.h>\n#include <string.h>\n\n#include \"macros.h\"\n\n\n \n\nint\nmain (int argc, char *argv[])\n{\n  struct utsname buf;\n\n  memset (&buf, '?', sizeof (buf));\n\n  ASSERT (uname (&buf) >= 0);\n\n   \n  ASSERT (strlen (buf.sysname) < sizeof (buf.sysname));\n  ASSERT (strlen (buf.nodename) < sizeof (buf.nodename));\n  ASSERT (strlen (buf.release) < sizeof (buf.release));\n  ASSERT (strlen (buf.version) < sizeof (buf.version));\n  ASSERT (strlen (buf.machine) < sizeof (buf.machine));\n\n  if (argc > 1)\n    {\n       \n\n      printf (\"uname -n = nodename       = %s\\n\", buf.nodename);\n      printf (\"uname -s = sysname        = %s\\n\", buf.sysname);\n      printf (\"uname -r = release        = %s\\n\", buf.release);\n      printf (\"uname -v = version        = %s\\n\", buf.version);\n      printf (\"uname -m = machine or cpu = %s\\n\", buf.machine);\n    }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mpversion.h",
+  "hash_id": "91fa746cb4b9073ba1e8249bbcdb9181eb52b47643898dda49551395c9e9af52",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/mpversion.h",
+  "human_readable_source": "\n#define MICROPY_GIT_TAG \"972686b49-dirty\"\n#define MICROPY_GIT_HASH \"972686b49\"\n#define MICROPY_BUILD_DATE \"2026-01-30\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

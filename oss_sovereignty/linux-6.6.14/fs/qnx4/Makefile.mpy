@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "af604363235278a642eb17af2df5501bc59bcf69f1ba2d9ab1d9558b06ba42e2",
+  "original_prompt": "Ingested from linux-6.6.14/fs/qnx4/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the linux qnx4-filesystem routines.\n#\n\nobj-$(CONFIG_QNX4FS_FS) += qnx4.o\n\nqnx4-objs := inode.o dir.o namei.o bitmap.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

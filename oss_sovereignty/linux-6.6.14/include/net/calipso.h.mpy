@@ -1,0 +1,9 @@
+{
+  "module_name": "calipso.h",
+  "hash_id": "56aaddc4aa512502cd1760559aae4605f2b21d220d36eed06f49e4f284df89cb",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/calipso.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _CALIPSO_H\n#define _CALIPSO_H\n\n#include <linux/types.h>\n#include <linux/rcupdate.h>\n#include <linux/list.h>\n#include <linux/net.h>\n#include <linux/skbuff.h>\n#include <net/netlabel.h>\n#include <net/request_sock.h>\n#include <linux/refcount.h>\n#include <asm/unaligned.h>\n\n \n#define CALIPSO_DOI_UNKNOWN          0x00000000\n\n \n#define CALIPSO_MAP_UNKNOWN          0\n#define CALIPSO_MAP_PASS             2\n\n \n\n \nstruct calipso_doi {\n\tu32 doi;\n\tu32 type;\n\n\trefcount_t refcount;\n\tstruct list_head list;\n\tstruct rcu_head rcu;\n};\n\n \nextern int calipso_cache_enabled;\nextern int calipso_cache_bucketsize;\n\n#ifdef CONFIG_NETLABEL\nint __init calipso_init(void);\nvoid calipso_exit(void);\nbool calipso_validate(const struct sk_buff *skb, const unsigned char *option);\n#else\nstatic inline int __init calipso_init(void)\n{\n\treturn 0;\n}\n\nstatic inline void calipso_exit(void)\n{\n}\nstatic inline bool calipso_validate(const struct sk_buff *skb,\n\t\t\t\t    const unsigned char *option)\n{\n\treturn true;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

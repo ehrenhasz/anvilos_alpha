@@ -1,0 +1,9 @@
+{
+  "module_name": "sunxi-ng.h",
+  "hash_id": "68a9ca8b991810d7f35261aaaf0fe2f7371f06cd609cd577346e153b5c76e7ec",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/clk/sunxi-ng.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_CLK_SUNXI_NG_H_\n#define _LINUX_CLK_SUNXI_NG_H_\n\nint sunxi_ccu_set_mmc_timing_mode(struct clk *clk, bool new_mode);\nint sunxi_ccu_get_mmc_timing_mode(struct clk *clk);\n\nint sun6i_rtc_ccu_probe(struct device *dev, void __iomem *reg);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

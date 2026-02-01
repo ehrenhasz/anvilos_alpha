@@ -1,0 +1,9 @@
+{
+  "module_name": "nbd.h",
+  "hash_id": "20aa5c934aadb739e13a3a87313ef1eb4a2e4d73e0cc514cc387f986040a1ee0",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/nbd.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPILINUX_NBD_H\n#define _UAPILINUX_NBD_H\n\n#include <linux/types.h>\n\n#define NBD_SET_SOCK\t_IO( 0xab, 0 )\n#define NBD_SET_BLKSIZE\t_IO( 0xab, 1 )\n#define NBD_SET_SIZE\t_IO( 0xab, 2 )\n#define NBD_DO_IT\t_IO( 0xab, 3 )\n#define NBD_CLEAR_SOCK\t_IO( 0xab, 4 )\n#define NBD_CLEAR_QUE\t_IO( 0xab, 5 )\n#define NBD_PRINT_DEBUG\t_IO( 0xab, 6 )\n#define NBD_SET_SIZE_BLOCKS\t_IO( 0xab, 7 )\n#define NBD_DISCONNECT  _IO( 0xab, 8 )\n#define NBD_SET_TIMEOUT _IO( 0xab, 9 )\n#define NBD_SET_FLAGS   _IO( 0xab, 10)\n\n \n\nenum {\n\tNBD_CMD_READ = 0,\n\tNBD_CMD_WRITE = 1,\n\tNBD_CMD_DISC = 2,\n\tNBD_CMD_FLUSH = 3,\n\tNBD_CMD_TRIM = 4\n\t \n};\n\n \n#define NBD_FLAG_HAS_FLAGS\t(1 << 0)  \n#define NBD_FLAG_READ_ONLY\t(1 << 1)  \n#define NBD_FLAG_SEND_FLUSH\t(1 << 2)  \n#define NBD_FLAG_SEND_FUA\t(1 << 3)  \n \n#define NBD_FLAG_SEND_TRIM\t(1 << 5)  \n#define NBD_FLAG_CAN_MULTI_CONN\t(1 << 8)\t \n\n \n#define NBD_CMD_FLAG_FUA\t(1 << 16)  \n\n \n#define NBD_CFLAG_DESTROY_ON_DISCONNECT\t(1 << 0)  \n#define NBD_CFLAG_DISCONNECT_ON_CLOSE (1 << 1)  \n\n \n\n \n\n#define NBD_REQUEST_MAGIC 0x25609513\n#define NBD_REPLY_MAGIC 0x67446698\n \n \n\n \nstruct nbd_request {\n\t__be32 magic;\t \n\t__be32 type;\t \n\tunion {\n\t\t__be64 cookie;\t \n\t\tchar handle[8];\t \n\t};\n\t__be64 from;\n\t__be32 len;\n} __attribute__((packed));\n\n \nstruct nbd_reply {\n\t__be32 magic;\t\t \n\t__be32 error;\t\t \n\tunion {\n\t\t__be64 cookie;\t \n\t\tchar handle[8];\t \n\t};\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

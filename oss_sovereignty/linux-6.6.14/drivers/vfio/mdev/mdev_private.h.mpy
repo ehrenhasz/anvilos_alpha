@@ -1,0 +1,9 @@
+{
+  "module_name": "mdev_private.h",
+  "hash_id": "43853e0ee41c919073f8ec2cadc5ee7c7dfc1589e28225d33b1dfb5ed9228553",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/mdev/mdev_private.h",
+  "human_readable_source": " \n \n\n#ifndef MDEV_PRIVATE_H\n#define MDEV_PRIVATE_H\n\nint  mdev_bus_register(void);\nvoid mdev_bus_unregister(void);\n\nextern struct bus_type mdev_bus_type;\nextern const struct attribute_group *mdev_device_groups[];\n\n#define to_mdev_type_attr(_attr)\t\\\n\tcontainer_of(_attr, struct mdev_type_attribute, attr)\n#define to_mdev_type(_kobj)\t\t\\\n\tcontainer_of(_kobj, struct mdev_type, kobj)\n\nint  parent_create_sysfs_files(struct mdev_parent *parent);\nvoid parent_remove_sysfs_files(struct mdev_parent *parent);\n\nint  mdev_create_sysfs_files(struct mdev_device *mdev);\nvoid mdev_remove_sysfs_files(struct mdev_device *mdev);\n\nint mdev_device_create(struct mdev_type *kobj, const guid_t *uuid);\nint  mdev_device_remove(struct mdev_device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

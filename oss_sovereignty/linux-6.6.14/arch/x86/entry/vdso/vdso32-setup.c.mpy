@@ -1,0 +1,9 @@
+{
+  "module_name": "vdso32-setup.c",
+  "hash_id": "be4b7d1ac5c54b7b079e8bd5071209fe56fd981293a19a66adf6dc51b44a648b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/vdso/vdso32-setup.c",
+  "human_readable_source": "\n \n\n#include <linux/init.h>\n#include <linux/smp.h>\n#include <linux/kernel.h>\n#include <linux/mm_types.h>\n#include <linux/elf.h>\n\n#include <asm/processor.h>\n#include <asm/vdso.h>\n\n#ifdef CONFIG_COMPAT_VDSO\n#define VDSO_DEFAULT\t0\n#else\n#define VDSO_DEFAULT\t1\n#endif\n\n \nunsigned int __read_mostly vdso32_enabled = VDSO_DEFAULT;\n\nstatic int __init vdso32_setup(char *s)\n{\n\tvdso32_enabled = simple_strtoul(s, NULL, 0);\n\n\tif (vdso32_enabled > 1) {\n\t\tpr_warn(\"vdso32 values other than 0 and 1 are no longer allowed; vdso disabled\\n\");\n\t\tvdso32_enabled = 0;\n\t}\n\n\treturn 1;\n}\n\n \n__setup(\"vdso32=\", vdso32_setup);\n\n#ifdef CONFIG_X86_32\n__setup_param(\"vdso=\", vdso_setup, vdso32_setup, 0);\n#endif\n\n#ifdef CONFIG_X86_64\n\n#ifdef CONFIG_SYSCTL\n \n#include <linux/sysctl.h>\n\nstatic struct ctl_table abi_table2[] = {\n\t{\n\t\t.procname\t= \"vsyscall32\",\n\t\t.data\t\t= &vdso32_enabled,\n\t\t.maxlen\t\t= sizeof(int),\n\t\t.mode\t\t= 0644,\n\t\t.proc_handler\t= proc_dointvec_minmax,\n\t\t.extra1\t\t= SYSCTL_ZERO,\n\t\t.extra2\t\t= SYSCTL_ONE,\n\t},\n\t{}\n};\n\nstatic __init int ia32_binfmt_init(void)\n{\n\tregister_sysctl(\"abi\", abi_table2);\n\treturn 0;\n}\n__initcall(ia32_binfmt_init);\n#endif  \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

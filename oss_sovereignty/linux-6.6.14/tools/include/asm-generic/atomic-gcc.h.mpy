@@ -1,0 +1,9 @@
+{
+  "module_name": "atomic-gcc.h",
+  "hash_id": "fde6f9a9fadb13908c072eccdce446bddec12c4c633a261cef7f7621a9ab06fe",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/asm-generic/atomic-gcc.h",
+  "human_readable_source": " \n#ifndef __TOOLS_ASM_GENERIC_ATOMIC_H\n#define __TOOLS_ASM_GENERIC_ATOMIC_H\n\n#include <linux/compiler.h>\n#include <linux/types.h>\n#include <linux/bitops.h>\n\n \n\n#define ATOMIC_INIT(i)\t{ (i) }\n\n \nstatic inline int atomic_read(const atomic_t *v)\n{\n\treturn READ_ONCE((v)->counter);\n}\n\n \nstatic inline void atomic_set(atomic_t *v, int i)\n{\n        v->counter = i;\n}\n\n \nstatic inline void atomic_inc(atomic_t *v)\n{\n\t__sync_add_and_fetch(&v->counter, 1);\n}\n\n \nstatic inline int atomic_dec_and_test(atomic_t *v)\n{\n\treturn __sync_sub_and_fetch(&v->counter, 1) == 0;\n}\n\n#define cmpxchg(ptr, oldval, newval) \\\n\t__sync_val_compare_and_swap(ptr, oldval, newval)\n\nstatic inline int atomic_cmpxchg(atomic_t *v, int oldval, int newval)\n{\n\treturn cmpxchg(&(v)->counter, oldval, newval);\n}\n\nstatic inline int test_and_set_bit(long nr, unsigned long *addr)\n{\n\tunsigned long mask = BIT_MASK(nr);\n\tlong old;\n\n\taddr += BIT_WORD(nr);\n\n\told = __sync_fetch_and_or(addr, mask);\n\treturn !!(old & mask);\n}\n\nstatic inline int test_and_clear_bit(long nr, unsigned long *addr)\n{\n\tunsigned long mask = BIT_MASK(nr);\n\tlong old;\n\n\taddr += BIT_WORD(nr);\n\n\told = __sync_fetch_and_and(addr, ~mask);\n\treturn !!(old & mask);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "std",
+  "hash_id": "370e529b7210b7a1237174a1cb419e9912e8e4c5f0a8685f1e3c95a9385feffa",
+  "original_prompt": "Ingested from ncurses-6.4/misc/tabset/std",
+  "human_readable_source": "\n\u001b3\n        \u001b1        \u001b1        \u001b1        \u001b1        \u001b1        \u001b1        \u001b1        \u001b1        \u001b1        \u001b1        \u001b1        \u001b1        \u001b1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

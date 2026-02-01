@@ -1,0 +1,9 @@
+{
+  "module_name": "fw.c",
+  "hash_id": "96f9cfe8a9e3458c8ca0c45516aeb0e404174257f5bdf49da6fbd66c7cb5f14d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/nvfw/fw.c",
+  "human_readable_source": " \n#include <core/subdev.h>\n#include <nvfw/fw.h>\n\nconst struct nvfw_bin_hdr *\nnvfw_bin_hdr(struct nvkm_subdev *subdev, const void *data)\n{\n\tconst struct nvfw_bin_hdr *hdr = data;\n\tnvkm_debug(subdev, \"binHdr:\\n\");\n\tnvkm_debug(subdev, \"\\tbinMagic         : 0x%08x\\n\", hdr->bin_magic);\n\tnvkm_debug(subdev, \"\\tbinVer           : %d\\n\", hdr->bin_ver);\n\tnvkm_debug(subdev, \"\\tbinSize          : %d\\n\", hdr->bin_size);\n\tnvkm_debug(subdev, \"\\theaderOffset     : 0x%x\\n\", hdr->header_offset);\n\tnvkm_debug(subdev, \"\\tdataOffset       : 0x%x\\n\", hdr->data_offset);\n\tnvkm_debug(subdev, \"\\tdataSize         : 0x%x\\n\", hdr->data_size);\n\treturn hdr;\n}\n\nconst struct nvfw_bl_desc *\nnvfw_bl_desc(struct nvkm_subdev *subdev, const void *data)\n{\n\tconst struct nvfw_bl_desc *hdr = data;\n\tnvkm_debug(subdev, \"blDesc\\n\");\n\tnvkm_debug(subdev, \"\\tstartTag         : 0x%x\\n\", hdr->start_tag);\n\tnvkm_debug(subdev, \"\\tdmemLoadOff      : 0x%x\\n\", hdr->dmem_load_off);\n\tnvkm_debug(subdev, \"\\tcodeOff          : 0x%x\\n\", hdr->code_off);\n\tnvkm_debug(subdev, \"\\tcodeSize         : 0x%x\\n\", hdr->code_size);\n\tnvkm_debug(subdev, \"\\tdataOff          : 0x%x\\n\", hdr->data_off);\n\tnvkm_debug(subdev, \"\\tdataSize         : 0x%x\\n\", hdr->data_size);\n\treturn hdr;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a7eb485a8d8963c119398f8d8d5e7d6ca6e050d95bda78eeac66dc7aa17fd1d9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/ibmvscsi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SCSI_IBMVSCSI)\t+= ibmvscsi.o\nobj-$(CONFIG_SCSI_IBMVFC)\t+= ibmvfc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

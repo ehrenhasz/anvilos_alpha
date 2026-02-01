@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e712cc08d04071c24280d7d1607f7bf3f1b6e108fb02e14d84c5743562678ca1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/b43/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nb43-y\t\t\t\t+= main.o\nb43-y\t\t\t\t+= bus.o\nb43-$(CONFIG_B43_PHY_G)\t\t+= phy_g.o tables.o lo.o wa.o\nb43-$(CONFIG_B43_PHY_N)\t\t+= tables_nphy.o\nb43-$(CONFIG_B43_PHY_N)\t\t+= radio_2055.o\nb43-$(CONFIG_B43_PHY_N)\t\t+= radio_2056.o\nb43-$(CONFIG_B43_PHY_N)\t\t+= radio_2057.o\nb43-y\t\t\t\t+= phy_common.o\nb43-$(CONFIG_B43_PHY_N)\t\t+= phy_n.o\nb43-$(CONFIG_B43_PHY_LP)\t+= phy_lp.o\nb43-$(CONFIG_B43_PHY_LP)\t+= tables_lpphy.o\nb43-$(CONFIG_B43_PHY_HT)\t+= phy_ht.o\nb43-$(CONFIG_B43_PHY_HT)\t+= tables_phy_ht.o\nb43-$(CONFIG_B43_PHY_HT)\t+= radio_2059.o\nb43-$(CONFIG_B43_PHY_LCN)\t+= phy_lcn.o tables_phy_lcn.o\nb43-$(CONFIG_B43_PHY_AC)\t+= phy_ac.o\nb43-y\t\t\t\t+= sysfs.o\nb43-y\t\t\t\t+= xmit.o\nb43-y\t\t\t\t+= dma.o\nb43-y\t\t\t\t+= pio.o\nb43-y\t\t\t\t+= rfkill.o\nb43-y\t\t\t\t+= ppr.o\nb43-$(CONFIG_B43_LEDS)\t\t+= leds.o\nb43-$(CONFIG_B43_SDIO)\t\t+= sdio.o\nb43-$(CONFIG_B43_DEBUG)\t\t+= debugfs.o\n\nobj-$(CONFIG_B43)\t\t+= b43.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

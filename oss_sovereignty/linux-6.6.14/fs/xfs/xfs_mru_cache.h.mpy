@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_mru_cache.h",
+  "hash_id": "501926e5c9b6203c31f6fdb1d55af08dfa120795d3bc1ee55a0f2dd4ff6d213c",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_mru_cache.h",
+  "human_readable_source": "\n \n#ifndef __XFS_MRU_CACHE_H__\n#define __XFS_MRU_CACHE_H__\n\nstruct xfs_mru_cache;\n\nstruct xfs_mru_cache_elem {\n\tstruct list_head list_node;\n\tunsigned long\tkey;\n};\n\n \ntypedef void (*xfs_mru_cache_free_func_t)(void *, struct xfs_mru_cache_elem *);\n\nint xfs_mru_cache_init(void);\nvoid xfs_mru_cache_uninit(void);\nint xfs_mru_cache_create(struct xfs_mru_cache **mrup, void *data,\n\t\tunsigned int lifetime_ms, unsigned int grp_count,\n\t\txfs_mru_cache_free_func_t free_func);\nvoid xfs_mru_cache_destroy(struct xfs_mru_cache *mru);\nint xfs_mru_cache_insert(struct xfs_mru_cache *mru, unsigned long key,\n\t\tstruct xfs_mru_cache_elem *elem);\nstruct xfs_mru_cache_elem *\nxfs_mru_cache_remove(struct xfs_mru_cache *mru, unsigned long key);\nvoid xfs_mru_cache_delete(struct xfs_mru_cache *mru, unsigned long key);\nstruct xfs_mru_cache_elem *\nxfs_mru_cache_lookup(struct xfs_mru_cache *mru, unsigned long key);\nvoid xfs_mru_cache_done(struct xfs_mru_cache *mru);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

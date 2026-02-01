@@ -1,0 +1,9 @@
+{
+  "module_name": "mem.h",
+  "hash_id": "ef3987b92d434be652012757ada5c699e2b72cf841161ef31ae94e75f7b183b1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/mem.h",
+  "human_readable_source": "#ifndef __NVIF_MEM_H__\n#define __NVIF_MEM_H__\n#include \"mmu.h\"\n\nstruct nvif_mem {\n\tstruct nvif_object object;\n\tu8  type;\n\tu8  page;\n\tu64 addr;\n\tu64 size;\n};\n\nint nvif_mem_ctor_type(struct nvif_mmu *mmu, const char *name, s32 oclass,\n\t\t       int type, u8 page, u64 size, void *argv, u32 argc,\n\t\t       struct nvif_mem *);\nint nvif_mem_ctor(struct nvif_mmu *mmu, const char *name, s32 oclass, u8 type,\n\t\t  u8 page, u64 size, void *argv, u32 argc, struct nvif_mem *);\nvoid nvif_mem_dtor(struct nvif_mem *);\n\nint nvif_mem_ctor_map(struct nvif_mmu *, const char *name, u8 type, u64 size,\n\t\t      struct nvif_mem *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

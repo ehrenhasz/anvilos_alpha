@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cb14d6130bfb86d455bbde4b0792d6ef8cdd019ba96c8c4c70a8e7c40836b106",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/arm_ffa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nffa-bus-y = bus.o\nffa-driver-y = driver.o\nffa-transport-$(CONFIG_ARM_FFA_SMCCC) += smccc.o\nffa-module-objs := $(ffa-bus-y) $(ffa-driver-y) $(ffa-transport-y)\nobj-$(CONFIG_ARM_FFA_TRANSPORT) = ffa-module.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

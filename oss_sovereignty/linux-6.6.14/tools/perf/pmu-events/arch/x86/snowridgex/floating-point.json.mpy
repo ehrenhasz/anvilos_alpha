@@ -1,0 +1,9 @@
+{
+  "module_name": "floating-point.json",
+  "hash_id": "30248fe8d0e6ed71e937d5ebac17cd42f5e8cf5b37584ac123578f70dcd6e6d0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/snowridgex/floating-point.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"Counts the number of cycles the floating point divider is busy.\",\n        \"EventCode\": \"0xcd\",\n        \"EventName\": \"CYCLES_DIV_BUSY.FPDIV\",\n        \"PublicDescription\": \"Counts the number of cycles the floating point divider is busy.  Does not imply a stall waiting for the divider.\",\n        \"SampleAfterValue\": \"200003\",\n        \"UMask\": \"0x2\"\n    },\n    {\n        \"BriefDescription\": \"Counts the number of floating point operations retired that required microcode assist.\",\n        \"EventCode\": \"0xc3\",\n        \"EventName\": \"MACHINE_CLEARS.FP_ASSIST\",\n        \"PublicDescription\": \"Counts the number of floating point operations retired that required microcode assist, which is not a reflection of the number of FP operations, instructions or uops.\",\n        \"SampleAfterValue\": \"20003\",\n        \"UMask\": \"0x4\"\n    },\n    {\n        \"BriefDescription\": \"Counts the number of floating point divide uops retired (x87 and SSE, including x87 sqrt).\",\n        \"EventCode\": \"0xc2\",\n        \"EventName\": \"UOPS_RETIRED.FPDIV\",\n        \"PEBS\": \"1\",\n        \"SampleAfterValue\": \"2000003\",\n        \"UMask\": \"0x8\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

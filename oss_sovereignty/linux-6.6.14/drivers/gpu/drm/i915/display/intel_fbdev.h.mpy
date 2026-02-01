@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_fbdev.h",
+  "hash_id": "d209fa6c7ddae81c3128b5c781c7d60b09a738e79e01e3daade7884f671fb309",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_fbdev.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_FBDEV_H__\n#define __INTEL_FBDEV_H__\n\n#include <linux/types.h>\n\nstruct drm_device;\nstruct drm_i915_private;\nstruct intel_fbdev;\nstruct intel_framebuffer;\n\n#ifdef CONFIG_DRM_FBDEV_EMULATION\nint intel_fbdev_init(struct drm_device *dev);\nvoid intel_fbdev_initial_config_async(struct drm_i915_private *dev_priv);\nvoid intel_fbdev_unregister(struct drm_i915_private *dev_priv);\nvoid intel_fbdev_fini(struct drm_i915_private *dev_priv);\nvoid intel_fbdev_set_suspend(struct drm_device *dev, int state, bool synchronous);\nvoid intel_fbdev_output_poll_changed(struct drm_device *dev);\nvoid intel_fbdev_restore_mode(struct drm_i915_private *dev_priv);\nstruct intel_framebuffer *intel_fbdev_framebuffer(struct intel_fbdev *fbdev);\n#else\nstatic inline int intel_fbdev_init(struct drm_device *dev)\n{\n\treturn 0;\n}\n\nstatic inline void intel_fbdev_initial_config_async(struct drm_i915_private *dev_priv)\n{\n}\n\nstatic inline void intel_fbdev_unregister(struct drm_i915_private *dev_priv)\n{\n}\n\nstatic inline void intel_fbdev_fini(struct drm_i915_private *dev_priv)\n{\n}\n\nstatic inline void intel_fbdev_set_suspend(struct drm_device *dev, int state, bool synchronous)\n{\n}\n\nstatic inline void intel_fbdev_output_poll_changed(struct drm_device *dev)\n{\n}\n\nstatic inline void intel_fbdev_restore_mode(struct drm_i915_private *i915)\n{\n}\nstatic inline struct intel_framebuffer *intel_fbdev_framebuffer(struct intel_fbdev *fbdev)\n{\n\treturn NULL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

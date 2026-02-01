@@ -1,0 +1,9 @@
+{
+  "module_name": "sock_destroy_prog_fail.c",
+  "hash_id": "3bda3bf6f1034b72d7ce9e34d12054b8ba9c1bff4aaa25a2c95b72c5dae77be3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/sock_destroy_prog_fail.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_tracing.h>\n#include <bpf/bpf_helpers.h>\n\n#include \"bpf_misc.h\"\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nint bpf_sock_destroy(struct sock_common *sk) __ksym;\n\nSEC(\"tp_btf/tcp_destroy_sock\")\n__failure __msg(\"calling kernel function bpf_sock_destroy is not allowed\")\nint BPF_PROG(trace_tcp_destroy_sock, struct sock *sk)\n{\n\t \n\tbpf_sock_destroy((struct sock_common *)sk);\n\n\treturn 0;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

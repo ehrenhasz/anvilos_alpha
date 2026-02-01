@@ -1,0 +1,9 @@
+{
+  "module_name": "vega20_powertune.c",
+  "hash_id": "cee6152907223cd6de5faad32d26a70eb25728454b431a00476713b2384f4c14",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega20_powertune.c",
+  "human_readable_source": " \n\n#include \"hwmgr.h\"\n#include \"vega20_hwmgr.h\"\n#include \"vega20_powertune.h\"\n#include \"vega20_smumgr.h\"\n#include \"vega20_ppsmc.h\"\n#include \"vega20_inc.h\"\n#include \"pp_debug.h\"\n\nint vega20_set_power_limit(struct pp_hwmgr *hwmgr, uint32_t n)\n{\n\tstruct vega20_hwmgr *data =\n\t\t\t(struct vega20_hwmgr *)(hwmgr->backend);\n\n\tif (data->smu_features[GNLD_PPT].enabled)\n\t\treturn smum_send_msg_to_smc_with_parameter(hwmgr,\n\t\t\t\tPPSMC_MSG_SetPptLimit, n,\n\t\t\t\tNULL);\n\n\treturn 0;\n}\n\nint vega20_validate_power_level_request(struct pp_hwmgr *hwmgr,\n\t\tuint32_t tdp_percentage_adjustment, uint32_t tdp_absolute_value_adjustment)\n{\n\treturn (tdp_percentage_adjustment > hwmgr->platform_descriptor.TDPLimit) ? -1 : 0;\n}\n\nstatic int vega20_set_overdrive_target_percentage(struct pp_hwmgr *hwmgr,\n\t\tuint32_t adjust_percent)\n{\n\treturn smum_send_msg_to_smc_with_parameter(hwmgr,\n\t\t\tPPSMC_MSG_OverDriveSetPercentage, adjust_percent,\n\t\t\tNULL);\n}\n\nint vega20_power_control_set_level(struct pp_hwmgr *hwmgr)\n{\n\tint adjust_percent, result = 0;\n\n\tif (PP_CAP(PHM_PlatformCaps_PowerContainment)) {\n\t\tadjust_percent =\n\t\t\t\thwmgr->platform_descriptor.TDPAdjustmentPolarity ?\n\t\t\t\thwmgr->platform_descriptor.TDPAdjustment :\n\t\t\t\t(-1 * hwmgr->platform_descriptor.TDPAdjustment);\n\t\tresult = vega20_set_overdrive_target_percentage(hwmgr,\n\t\t\t\t(uint32_t)adjust_percent);\n\t}\n\treturn result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

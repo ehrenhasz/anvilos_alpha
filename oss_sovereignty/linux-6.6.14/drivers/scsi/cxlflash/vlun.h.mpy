@@ -1,0 +1,9 @@
+{
+  "module_name": "vlun.h",
+  "hash_id": "ed3ae9930342f33c1bbddf8de66f6f747f06712a77e7da0651b16c9e45bbcc1d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/cxlflash/vlun.h",
+  "human_readable_source": " \n \n\n#ifndef _CXLFLASH_VLUN_H\n#define _CXLFLASH_VLUN_H\n\n \n#define MC_RHT_NMASK      16\t \n#define MC_CHUNK_SHIFT    MC_RHT_NMASK\t \n\n#define HIBIT             (BITS_PER_LONG - 1)\n\n#define MAX_AUN_CLONE_CNT 0xFF\n\n \n#define LXT_GROUP_SIZE          8\n#define LXT_NUM_GROUPS(lxt_cnt) (((lxt_cnt) + 7)/8)\t \n#define LXT_LUNIDX_SHIFT  8\t \n#define LXT_PERM_SHIFT    4\t \n\nstruct ba_lun_info {\n\tu64 *lun_alloc_map;\n\tu32 lun_bmap_size;\n\tu32 total_aus;\n\tu64 free_aun_cnt;\n\n\t \n\tu32 free_low_idx;\n\tu32 free_curr_idx;\n\tu32 free_high_idx;\n\n\tu8 *aun_clone_map;\n};\n\nstruct ba_lun {\n\tu64 lun_id;\n\tu64 wwpn;\n\tsize_t lsize;\t\t \n\tsize_t lba_size;\t \n\tsize_t au_size;\t\t \n\tstruct ba_lun_info *ba_lun_handle;\n};\n\n \nstruct blka {\n\tstruct ba_lun ba_lun;\n\tu64 nchunk;\t\t \n\tstruct mutex mutex;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

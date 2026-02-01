@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio.h",
+  "hash_id": "2fe8991387ed454ed9f8764d226c0091ce3d8131286607945d8adc1d3156d369",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/gpio/gpio.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_GPIO_GPIO_H\n#define _DT_BINDINGS_GPIO_GPIO_H\n\n \n#define GPIO_ACTIVE_HIGH 0\n#define GPIO_ACTIVE_LOW 1\n\n \n#define GPIO_PUSH_PULL 0\n#define GPIO_SINGLE_ENDED 2\n\n \n#define GPIO_LINE_OPEN_SOURCE 0\n#define GPIO_LINE_OPEN_DRAIN 4\n\n \n#define GPIO_OPEN_DRAIN (GPIO_SINGLE_ENDED | GPIO_LINE_OPEN_DRAIN)\n#define GPIO_OPEN_SOURCE (GPIO_SINGLE_ENDED | GPIO_LINE_OPEN_SOURCE)\n\n \n#define GPIO_PERSISTENT 0\n#define GPIO_TRANSITORY 8\n\n \n#define GPIO_PULL_UP 16\n\n \n#define GPIO_PULL_DOWN 32\n\n \n#define GPIO_PULL_DISABLE 64\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

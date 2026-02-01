@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_queue_comm.h",
+  "hash_id": "354f6ea4f1570ce8ee2a1073440ffe321c0b6bb044a1c1d93d89a725a598c25c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/queue/interface/ia_css_queue_comm.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_QUEUE_COMM_H\n#define __IA_CSS_QUEUE_COMM_H\n\n#include \"type_support.h\"\n#include \"ia_css_circbuf.h\"\n \n\n \n \n#define IA_CSS_QUEUE_LOC_HOST 0\n#define IA_CSS_QUEUE_LOC_SP   1\n#define IA_CSS_QUEUE_LOC_ISP  2\n\n \n \n#define IA_CSS_QUEUE_TYPE_LOCAL  0\n#define IA_CSS_QUEUE_TYPE_REMOTE 1\n\n \n#define IA_CSS_MIN_ELEM_COUNT    8\n#define IA_CSS_DMA_XFER_MASK (IA_CSS_MIN_ELEM_COUNT - 1)\n\n \nstruct ia_css_queue_remote {\n\tu32 cb_desc_addr;  \n\tu32 cb_elems_addr;  \n\tu8 location;     \n\tu8 proc_id;      \n};\n\ntypedef struct ia_css_queue_remote ia_css_queue_remote_t;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

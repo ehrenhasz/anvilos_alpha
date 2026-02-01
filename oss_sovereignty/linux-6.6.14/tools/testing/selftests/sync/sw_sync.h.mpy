@@ -1,0 +1,9 @@
+{
+  "module_name": "sw_sync.h",
+  "hash_id": "93712bcb2727b4d2d643f1e8f3a897d951a3a0937405ff580703b40e2cf892df",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sync/sw_sync.h",
+  "human_readable_source": " \n\n#ifndef SELFTESTS_SW_SYNC_H\n#define SELFTESTS_SW_SYNC_H\n\n \n\nint sw_sync_timeline_create(void);\nint sw_sync_timeline_is_valid(int fd);\nint sw_sync_timeline_inc(int fd, unsigned int count);\nvoid sw_sync_timeline_destroy(int fd);\n\nint sw_sync_fence_create(int fd, const char *name, unsigned int value);\nint sw_sync_fence_is_valid(int fd);\nvoid sw_sync_fence_destroy(int fd);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

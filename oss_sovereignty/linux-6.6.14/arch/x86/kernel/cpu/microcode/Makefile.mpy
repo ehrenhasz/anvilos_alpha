@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9bedb156b5300d76f06e24be27fc47339e1fe370c708b205d72b9eccd4463b5f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/cpu/microcode/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmicrocode-y\t\t\t\t:= core.o\nobj-$(CONFIG_MICROCODE)\t\t\t+= microcode.o\nmicrocode-$(CONFIG_CPU_SUP_INTEL)\t+= intel.o\nmicrocode-$(CONFIG_CPU_SUP_AMD)\t\t+= amd.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

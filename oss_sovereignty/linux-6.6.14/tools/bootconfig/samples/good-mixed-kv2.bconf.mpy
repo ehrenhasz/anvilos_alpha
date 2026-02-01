@@ -1,0 +1,9 @@
+{
+  "module_name": "good-mixed-kv2.bconf",
+  "hash_id": "308977dc7da06d5419318cea5c5ca8a0e72cb09ea8811063ae443c15f2f5257b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bootconfig/samples/good-mixed-kv2.bconf",
+  "human_readable_source": "# subkey -> value pattern\nkey.subkey = value\nkey = another-value\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

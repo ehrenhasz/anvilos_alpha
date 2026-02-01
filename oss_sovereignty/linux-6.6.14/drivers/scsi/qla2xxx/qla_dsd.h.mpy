@@ -1,0 +1,9 @@
+{
+  "module_name": "qla_dsd.h",
+  "hash_id": "13a373f12923d1347fecf36be35a93735cd4c279a74e3929268e8a9397af4980",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/qla2xxx/qla_dsd.h",
+  "human_readable_source": "#ifndef _QLA_DSD_H_\n#define _QLA_DSD_H_\n\n#include <asm/unaligned.h>\n\n \nstruct dsd32 {\n\t__le32 address;\n\t__le32 length;\n};\n\nstatic inline void append_dsd32(struct dsd32 **dsd, struct scatterlist *sg)\n{\n\tput_unaligned_le32(sg_dma_address(sg), &(*dsd)->address);\n\tput_unaligned_le32(sg_dma_len(sg),     &(*dsd)->length);\n\t(*dsd)++;\n}\n\n \nstruct dsd64 {\n\t__le64 address;\n\t__le32 length;\n} __packed;\n\nstatic inline void append_dsd64(struct dsd64 **dsd, struct scatterlist *sg)\n{\n\tput_unaligned_le64(sg_dma_address(sg), &(*dsd)->address);\n\tput_unaligned_le32(sg_dma_len(sg),     &(*dsd)->length);\n\t(*dsd)++;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "adb.h",
+  "hash_id": "9e7d11324cb3d944b0a47f77a4e4b70318c05fbf6366fd01aba67b49c1736e8a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/adb.h",
+  "human_readable_source": " \n \n#ifndef __ADB_H\n#define __ADB_H\n\n#include <uapi/linux/adb.h>\n\n\nstruct adb_request {\n\tunsigned char data[32];\n\tint nbytes;\n\tunsigned char reply[32];\n\tint reply_len;\n\tunsigned char reply_expected;\n\tunsigned char sent;\n\tunsigned char complete;\n\tvoid (*done)(struct adb_request *);\n\tvoid *arg;\n\tstruct adb_request *next;\n};\n\nstruct adb_ids {\n\tint nids;\n\tunsigned char id[16];\n};\n\n \n\nstruct adb_driver {\n\tchar name[16];\n\tint (*probe)(void);\n\tint (*init)(void);\n\tint (*send_request)(struct adb_request *req, int sync);\n\tint (*autopoll)(int devs);\n\tvoid (*poll)(void);\n\tint (*reset_bus)(void);\n};\n\n \n#define ADBREQ_REPLY\t1\t \n#define ADBREQ_SYNC\t2\t \n#define ADBREQ_NOSEND\t4\t \n\n \nenum adb_message {\n    ADB_MSG_POWERDOWN,\t \n    ADB_MSG_PRE_RESET,\t \n    ADB_MSG_POST_RESET\t \n};\nextern struct blocking_notifier_head adb_client_list;\n\nint adb_request(struct adb_request *req, void (*done)(struct adb_request *),\n\t\tint flags, int nbytes, ...);\nint adb_register(int default_id,int handler_id,struct adb_ids *ids,\n\t\t void (*handler)(unsigned char *, int, int));\nint adb_unregister(int index);\nvoid adb_poll(void);\nvoid adb_input(unsigned char *, int, int);\nint adb_reset_bus(void);\n\nint adb_try_handler_change(int address, int new_id);\nint adb_get_infos(int address, int *original_address, int *handler_id);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

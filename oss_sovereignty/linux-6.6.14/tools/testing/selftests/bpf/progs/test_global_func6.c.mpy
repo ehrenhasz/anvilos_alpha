@@ -1,0 +1,9 @@
+{
+  "module_name": "test_global_func6.c",
+  "hash_id": "a414a53a357f1935506fa0c78ee5d8370e3e9a31bcd05b40e4593822e2d386f8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_global_func6.c",
+  "human_readable_source": "\n \n#include <stddef.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\n__attribute__ ((noinline))\nint f1(struct __sk_buff *skb)\n{\n\treturn skb->len;\n}\n\nint f3(int, struct __sk_buff *skb);\n\n__attribute__ ((noinline))\nint f2(int val, struct __sk_buff *skb)\n{\n\treturn f1(skb) + f3(val, skb + 1);  \n}\n\n__attribute__ ((noinline))\nint f3(int val, struct __sk_buff *skb)\n{\n\treturn skb->ifindex * val;\n}\n\nSEC(\"tc\")\n__failure __msg(\"modified ctx ptr R2\")\nint global_func6(struct __sk_buff *skb)\n{\n\treturn f1(skb) + f2(2, skb) + f3(3, skb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

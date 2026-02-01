@@ -1,0 +1,9 @@
+{
+  "module_name": "cx23885-video.h",
+  "hash_id": "7d9425ecdae7d30369d28f45dd6858973a79619dd15fbaa1add77ae5b488ffad",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx23885/cx23885-video.h",
+  "human_readable_source": " \n \n\n#ifndef _CX23885_VIDEO_H_\n#define _CX23885_VIDEO_H_\nint cx23885_flatiron_write(struct cx23885_dev *dev, u8 reg, u8 data);\nu8 cx23885_flatiron_read(struct cx23885_dev *dev, u8 reg);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

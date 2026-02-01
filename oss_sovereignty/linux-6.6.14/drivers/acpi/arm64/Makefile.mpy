@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "21e48153032ca87ed7651a7858e67f8347656ccbe161093b3464f8be114ab735",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/arm64/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_ACPI_AGDI) \t+= agdi.o\nobj-$(CONFIG_ACPI_IORT) \t+= iort.o\nobj-$(CONFIG_ACPI_GTDT) \t+= gtdt.o\nobj-$(CONFIG_ACPI_APMT) \t+= apmt.o\nobj-$(CONFIG_ARM_AMBA)\t\t+= amba.o\nobj-y\t\t\t\t+= dma.o init.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

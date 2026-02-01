@@ -1,0 +1,9 @@
+{
+  "module_name": "__signbit.c",
+  "hash_id": "881b23a7453d624fdc5bcf248cfca8f0e0d46c415c7c114726a31ac0b64fc2af",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/__signbit.c",
+  "human_readable_source": "#include \"libm.h\"\n\nint __signbitd(double x)\n{\n\tunion {\n\t\tdouble d;\n\t\tuint64_t i;\n\t} y = { x };\n\treturn y.i>>63;\n}\n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "threadmap.h",
+  "hash_id": "9365b0aab439228b26d48f44741072bc9aa018301a66812e3d5346a59e23127e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/perf/include/perf/threadmap.h",
+  "human_readable_source": " \n#ifndef __LIBPERF_THREADMAP_H\n#define __LIBPERF_THREADMAP_H\n\n#include <perf/core.h>\n#include <sys/types.h>\n\nstruct perf_thread_map;\n\nLIBPERF_API struct perf_thread_map *perf_thread_map__new_dummy(void);\nLIBPERF_API struct perf_thread_map *perf_thread_map__new_array(int nr_threads, pid_t *array);\n\nLIBPERF_API void perf_thread_map__set_pid(struct perf_thread_map *map, int idx, pid_t pid);\nLIBPERF_API char *perf_thread_map__comm(struct perf_thread_map *map, int idx);\nLIBPERF_API int perf_thread_map__nr(struct perf_thread_map *threads);\nLIBPERF_API pid_t perf_thread_map__pid(struct perf_thread_map *map, int idx);\n\nLIBPERF_API struct perf_thread_map *perf_thread_map__get(struct perf_thread_map *map);\nLIBPERF_API void perf_thread_map__put(struct perf_thread_map *map);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

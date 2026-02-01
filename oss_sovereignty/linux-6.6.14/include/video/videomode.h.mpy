@@ -1,0 +1,9 @@
+{
+  "module_name": "videomode.h",
+  "hash_id": "1cbf11df77564dc277832f97dfa4fb2665d1a38092a7df89cdf3f10ee5d42612",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/videomode.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_VIDEOMODE_H\n#define __LINUX_VIDEOMODE_H\n\n#include <linux/types.h>\n#include <video/display_timing.h>\n\n \nstruct videomode {\n\tunsigned long pixelclock;\t \n\n\tu32 hactive;\n\tu32 hfront_porch;\n\tu32 hback_porch;\n\tu32 hsync_len;\n\n\tu32 vactive;\n\tu32 vfront_porch;\n\tu32 vback_porch;\n\tu32 vsync_len;\n\n\tenum display_flags flags;  \n};\n\n \nvoid videomode_from_timing(const struct display_timing *dt,\n\t\t\t  struct videomode *vm);\n\n \nint videomode_from_timings(const struct display_timings *disp,\n\t\t\t  struct videomode *vm, unsigned int index);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

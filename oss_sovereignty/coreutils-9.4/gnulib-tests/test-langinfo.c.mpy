@@ -1,0 +1,9 @@
+{
+  "module_name": "test-langinfo.c",
+  "hash_id": "9b6621e6b3d3d235edde74429598dda601649eba540380c518f8ba2adca8ea98",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-langinfo.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <langinfo.h>\n\n \nint items[] =\n  {\n     \n    CODESET,\n     \n    RADIXCHAR,\n    THOUSEP,\n     \n    D_T_FMT,\n    D_FMT,\n    T_FMT,\n    T_FMT_AMPM,\n    AM_STR,\n    PM_STR,\n    DAY_1,\n    DAY_2,\n    DAY_3,\n    DAY_4,\n    DAY_5,\n    DAY_6,\n    DAY_7,\n    ABDAY_1,\n    ABDAY_2,\n    ABDAY_3,\n    ABDAY_4,\n    ABDAY_5,\n    ABDAY_6,\n    ABDAY_7,\n    MON_1,\n    MON_2,\n    MON_3,\n    MON_4,\n    MON_5,\n    MON_6,\n    MON_7,\n    MON_8,\n    MON_9,\n    MON_10,\n    MON_11,\n    MON_12,\n    ABMON_1,\n    ABMON_2,\n    ABMON_3,\n    ABMON_4,\n    ABMON_5,\n    ABMON_6,\n    ABMON_7,\n    ABMON_8,\n    ABMON_9,\n    ABMON_10,\n    ABMON_11,\n    ABMON_12,\n    ERA,\n    ERA_D_FMT,\n    ERA_D_T_FMT,\n    ERA_T_FMT,\n    ALT_DIGITS,\n     \n    CRNCYSTR,\n     \n    YESEXPR,\n    NOEXPR\n  };\n\nint\nmain (void)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "panfrost_devfreq.h",
+  "hash_id": "cb0fc8a959263747c7d6d05b5aaa8462d8ce07987497a350869307fe82149805",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/panfrost/panfrost_devfreq.h",
+  "human_readable_source": " \n \n\n#ifndef __PANFROST_DEVFREQ_H__\n#define __PANFROST_DEVFREQ_H__\n\n#include <linux/devfreq.h>\n#include <linux/spinlock.h>\n#include <linux/ktime.h>\n\nstruct devfreq;\nstruct thermal_cooling_device;\n\nstruct panfrost_device;\n\nstruct panfrost_devfreq {\n\tstruct devfreq *devfreq;\n\tstruct thermal_cooling_device *cooling;\n\tstruct devfreq_simple_ondemand_data gov_data;\n\tbool opp_of_table_added;\n\n\tktime_t busy_time;\n\tktime_t idle_time;\n\tktime_t time_last_update;\n\tint busy_count;\n\t \n\tspinlock_t lock;\n};\n\nint panfrost_devfreq_init(struct panfrost_device *pfdev);\nvoid panfrost_devfreq_fini(struct panfrost_device *pfdev);\n\nvoid panfrost_devfreq_resume(struct panfrost_device *pfdev);\nvoid panfrost_devfreq_suspend(struct panfrost_device *pfdev);\n\nvoid panfrost_devfreq_record_busy(struct panfrost_devfreq *devfreq);\nvoid panfrost_devfreq_record_idle(struct panfrost_devfreq *devfreq);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

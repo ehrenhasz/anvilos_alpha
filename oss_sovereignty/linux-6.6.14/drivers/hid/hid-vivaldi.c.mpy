@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-vivaldi.c",
+  "hash_id": "9927bd6129507fa98b2488935ccc5c4d80d4bf10329782ae235ee904b8a6c0d5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-vivaldi.c",
+  "human_readable_source": "\n \n\n#include <linux/device.h>\n#include <linux/hid.h>\n#include <linux/input/vivaldi-fmap.h>\n#include <linux/kernel.h>\n#include <linux/module.h>\n\n#include \"hid-vivaldi-common.h\"\n\nstatic int vivaldi_probe(struct hid_device *hdev,\n\t\t\t const struct hid_device_id *id)\n{\n\tstruct vivaldi_data *drvdata;\n\tint ret;\n\n\tdrvdata = devm_kzalloc(&hdev->dev, sizeof(*drvdata), GFP_KERNEL);\n\tif (!drvdata)\n\t\treturn -ENOMEM;\n\n\thid_set_drvdata(hdev, drvdata);\n\n\tret = hid_parse(hdev);\n\tif (ret)\n\t\treturn ret;\n\n\treturn hid_hw_start(hdev, HID_CONNECT_DEFAULT);\n}\n\nstatic const struct hid_device_id vivaldi_table[] = {\n\t{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_VIVALDI, HID_ANY_ID, HID_ANY_ID) },\n\t{ }\n};\n\nMODULE_DEVICE_TABLE(hid, vivaldi_table);\n\nstatic struct hid_driver hid_vivaldi = {\n\t.name = \"hid-vivaldi\",\n\t.id_table = vivaldi_table,\n\t.probe = vivaldi_probe,\n\t.feature_mapping = vivaldi_feature_mapping,\n\t.driver = {\n\t\t.dev_groups = vivaldi_attribute_groups,\n\t},\n};\n\nmodule_hid_driver(hid_vivaldi);\n\nMODULE_AUTHOR(\"Sean O'Brien\");\nMODULE_DESCRIPTION(\"HID vivaldi driver\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

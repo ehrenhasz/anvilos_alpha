@@ -1,0 +1,9 @@
+{
+  "module_name": "r7s9210-pinctrl.h",
+  "hash_id": "c3168b63debf94a70f79aa8d2da0cf6aba6df5d1453e60c23d34402593eb34e1",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/r7s9210-pinctrl.h",
+  "human_readable_source": " \n \n#ifndef __DT_BINDINGS_PINCTRL_RENESAS_RZA2_H\n#define __DT_BINDINGS_PINCTRL_RENESAS_RZA2_H\n\n#define RZA2_PINS_PER_PORT\t8\n\n \n#define PORT0 0\n#define PORT1 1\n#define PORT2 2\n#define PORT3 3\n#define PORT4 4\n#define PORT5 5\n#define PORT6 6\n#define PORT7 7\n#define PORT8 8\n#define PORT9 9\n#define PORTA 10\n#define PORTB 11\n#define PORTC 12\n#define PORTD 13\n#define PORTE 14\n#define PORTF 15\n#define PORTG 16\n#define PORTH 17\n \n#define PORTJ 18\n#define PORTK 19\n#define PORTL 20\n#define PORTM 21\t \n\n \n#define RZA2_PINMUX(b, p, f)\t((b) * RZA2_PINS_PER_PORT + (p) | (f << 16))\n\n \n#define RZA2_PIN(port, pin)\t((port) * RZA2_PINS_PER_PORT + (pin))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

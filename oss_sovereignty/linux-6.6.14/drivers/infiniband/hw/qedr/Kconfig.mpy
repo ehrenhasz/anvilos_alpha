@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "97e9e0cd3677e0668f77cc8b3f67c43e84459c74ae38e900288c7e2eae2b03a7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/qedr/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig INFINIBAND_QEDR\n\ttristate \"QLogic RoCE driver\"\n\tdepends on 64BIT && QEDE\n\tdepends on PCI\n\tselect QED_LL2\n\tselect QED_OOO\n\tselect QED_RDMA\n\thelp\n\t  This driver provides low-level InfiniBand over Ethernet\n\t  support for QLogic QED host channel adapters (HCAs).\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

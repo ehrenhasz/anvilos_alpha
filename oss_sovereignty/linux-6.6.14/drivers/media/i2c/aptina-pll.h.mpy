@@ -1,0 +1,9 @@
+{
+  "module_name": "aptina-pll.h",
+  "hash_id": "3b3e5bbc43d2c8b22681629c4a58172b0181fb5ae0996d0c915266d99eddf200",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/i2c/aptina-pll.h",
+  "human_readable_source": " \n \n\n#ifndef __APTINA_PLL_H\n#define __APTINA_PLL_H\n\nstruct aptina_pll {\n\tunsigned int ext_clock;\n\tunsigned int pix_clock;\n\n\tunsigned int n;\n\tunsigned int m;\n\tunsigned int p1;\n};\n\nstruct aptina_pll_limits {\n\tunsigned int ext_clock_min;\n\tunsigned int ext_clock_max;\n\tunsigned int int_clock_min;\n\tunsigned int int_clock_max;\n\tunsigned int out_clock_min;\n\tunsigned int out_clock_max;\n\tunsigned int pix_clock_max;\n\n\tunsigned int n_min;\n\tunsigned int n_max;\n\tunsigned int m_min;\n\tunsigned int m_max;\n\tunsigned int p1_min;\n\tunsigned int p1_max;\n};\n\nstruct device;\n\nint aptina_pll_calculate(struct device *dev,\n\t\t\t const struct aptina_pll_limits *limits,\n\t\t\t struct aptina_pll *pll);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

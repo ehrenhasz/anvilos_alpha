@@ -1,0 +1,9 @@
+{
+  "module_name": "ams-delta-fiq.h",
+  "hash_id": "01099c812c997e4528de2ae7ca455afed62602400e68442aacfb15885eb3fee8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/ams-delta-fiq.h",
+  "human_readable_source": " \n\n \n#ifndef __LINUX_PLATFORM_DATA_AMS_DELTA_FIQ_H\n#define __LINUX_PLATFORM_DATA_AMS_DELTA_FIQ_H\n\n \n#define FIQ_MASK\t\t 0\n#define FIQ_STATE\t\t 1\n#define FIQ_KEYS_CNT\t\t 2\n#define FIQ_TAIL_OFFSET\t\t 3\n#define FIQ_HEAD_OFFSET\t\t 4\n#define FIQ_BUF_LEN\t\t 5\n#define FIQ_KEY\t\t\t 6\n#define FIQ_MISSED_KEYS\t\t 7\n#define FIQ_BUFFER_START\t 8\n#define FIQ_GPIO_INT_MASK\t 9\n#define FIQ_KEYS_HICNT\t\t10\n#define FIQ_IRQ_PEND\t\t11\n#define FIQ_SIR_CODE_L1\t\t12\n#define IRQ_SIR_CODE_L2\t\t13\n\n#define FIQ_CNT_INT_00\t\t14\n#define FIQ_CNT_INT_KEY\t\t15\n#define FIQ_CNT_INT_MDM\t\t16\n#define FIQ_CNT_INT_03\t\t17\n#define FIQ_CNT_INT_HSW\t\t18\n#define FIQ_CNT_INT_05\t\t19\n#define FIQ_CNT_INT_06\t\t20\n#define FIQ_CNT_INT_07\t\t21\n#define FIQ_CNT_INT_08\t\t22\n#define FIQ_CNT_INT_09\t\t23\n#define FIQ_CNT_INT_10\t\t24\n#define FIQ_CNT_INT_11\t\t25\n#define FIQ_CNT_INT_12\t\t26\n#define FIQ_CNT_INT_13\t\t27\n#define FIQ_CNT_INT_14\t\t28\n#define FIQ_CNT_INT_15\t\t29\n\n#define FIQ_CIRC_BUFF\t\t30       \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

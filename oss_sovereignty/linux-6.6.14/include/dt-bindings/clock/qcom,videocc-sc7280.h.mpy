@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,videocc-sc7280.h",
+  "hash_id": "5c306c7f4ae3f606d8d5cea1ede2f2ada8a5990310a270aec3fc4b06f430ee7d",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,videocc-sc7280.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_QCOM_VIDEO_CC_SC7280_H\n#define _DT_BINDINGS_CLK_QCOM_VIDEO_CC_SC7280_H\n\n \n#define VIDEO_PLL0\t\t\t\t0\n#define VIDEO_CC_IRIS_AHB_CLK\t\t\t1\n#define VIDEO_CC_IRIS_CLK_SRC\t\t\t2\n#define VIDEO_CC_MVS0_AXI_CLK\t\t\t3\n#define VIDEO_CC_MVS0_CORE_CLK\t\t\t4\n#define VIDEO_CC_MVSC_CORE_CLK\t\t\t5\n#define VIDEO_CC_MVSC_CTL_AXI_CLK\t\t6\n#define VIDEO_CC_SLEEP_CLK\t\t\t7\n#define VIDEO_CC_SLEEP_CLK_SRC\t\t\t8\n#define VIDEO_CC_VENUS_AHB_CLK\t\t\t9\n#define VIDEO_CC_XO_CLK\t\t\t\t10\n#define VIDEO_CC_XO_CLK_SRC\t\t\t11\n\n \n#define MVS0_GDSC\t\t\t\t0\n#define MVSC_GDSC\t\t\t\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

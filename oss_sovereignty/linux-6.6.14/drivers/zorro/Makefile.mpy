@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "424022e3e0cdaebefb7209cb1f614c9b52e5b3e37de5899fdc6b14f8d87f5074",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/zorro/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Zorro bus specific drivers.\n#\n\nobj-$(CONFIG_ZORRO)\t+= zorro.o zorro-driver.o zorro-sysfs.o\nobj-$(CONFIG_PROC_FS)\t+= proc.o\nobj-$(CONFIG_ZORRO_NAMES) +=  names.o\n\nhostprogs\t\t:= gen-devlist\n\n# Files generated that shall be removed upon make clean\nclean-files := devlist.h\n\n# Dependencies on generated files need to be listed explicitly\n$(obj)/names.o: $(obj)/devlist.h\n\n# And that's how to generate them\nquiet_cmd_devlist = DEVLIST $@\n      cmd_devlist = ( cd $(obj); ./gen-devlist ) < $<\n$(obj)/devlist.h: $(src)/zorro.ids $(obj)/gen-devlist\n\t$(call cmd,devlist)\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

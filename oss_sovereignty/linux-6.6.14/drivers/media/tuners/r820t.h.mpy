@@ -1,0 +1,9 @@
+{
+  "module_name": "r820t.h",
+  "hash_id": "4c5bba0c6be922671b2d42b5cc06b11e02b7fd0f70519a318d407b80764eddc6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/r820t.h",
+  "human_readable_source": " \n \n\n#ifndef R820T_H\n#define R820T_H\n\n#include <media/dvb_frontend.h>\n\nenum r820t_chip {\n\tCHIP_R820T,\n\tCHIP_R620D,\n\tCHIP_R828D,\n\tCHIP_R828,\n\tCHIP_R828S,\n\tCHIP_R820C,\n};\n\nstruct r820t_config {\n\tu8 i2c_addr;\t\t \n\tu32 xtal;\n\tenum r820t_chip rafael_chip;\n\tunsigned max_i2c_msg_len;\n\tbool use_diplexer;\n\tbool use_predetect;\n};\n\n#if IS_REACHABLE(CONFIG_MEDIA_TUNER_R820T)\nstruct dvb_frontend *r820t_attach(struct dvb_frontend *fe,\n\t\t\t\t  struct i2c_adapter *i2c,\n\t\t\t\t  const struct r820t_config *cfg);\n#else\nstatic inline struct dvb_frontend *r820t_attach(struct dvb_frontend *fe,\n\t\t\t\t\t\tstruct i2c_adapter *i2c,\n\t\t\t\t\t\tconst struct r820t_config *cfg)\n{\n\tpr_warn(\"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

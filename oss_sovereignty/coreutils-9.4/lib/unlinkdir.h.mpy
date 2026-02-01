@@ -1,0 +1,9 @@
+{
+  "module_name": "unlinkdir.h",
+  "hash_id": "e5e0d0dd31daa673e4b9f65e35d05c3e0e3dd84391b1b5838883b01b64da0709",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unlinkdir.h",
+  "human_readable_source": " \n\n#if UNLINK_CANNOT_UNLINK_DIR\n# define cannot_unlink_dir() true\n#else\nbool cannot_unlink_dir (void);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

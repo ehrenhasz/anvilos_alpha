@@ -1,0 +1,9 @@
+{
+  "module_name": "arm_mhuv2_message.h",
+  "hash_id": "48030313f385f1ca3df938e80efd512fa5465eb29077401bff6c03141a3472d1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mailbox/arm_mhuv2_message.h",
+  "human_readable_source": "\n \n\n#ifndef _LINUX_ARM_MHUV2_MESSAGE_H_\n#define _LINUX_ARM_MHUV2_MESSAGE_H_\n\n#include <linux/types.h>\n\n \nstruct arm_mhuv2_mbox_msg {\n\tvoid *data;\n\tsize_t len;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

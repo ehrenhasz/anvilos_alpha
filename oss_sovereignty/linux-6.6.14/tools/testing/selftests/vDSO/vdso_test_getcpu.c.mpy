@@ -1,0 +1,9 @@
+{
+  "module_name": "vdso_test_getcpu.c",
+  "hash_id": "a960e4f48b9256e4226a6922859c5fd53200edda02dd7d81a07d0aa0baaeb841",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/vDSO/vdso_test_getcpu.c",
+  "human_readable_source": "\n \n\n#include <stdint.h>\n#include <elf.h>\n#include <stdio.h>\n#include <sys/auxv.h>\n#include <sys/time.h>\n\n#include \"../kselftest.h\"\n#include \"parse_vdso.h\"\n\n#if defined(__riscv)\nconst char *version = \"LINUX_4.15\";\n#else\nconst char *version = \"LINUX_2.6\";\n#endif\nconst char *name = \"__vdso_getcpu\";\n\nstruct getcpu_cache;\ntypedef long (*getcpu_t)(unsigned int *, unsigned int *,\n\t\t\t struct getcpu_cache *);\n\nint main(int argc, char **argv)\n{\n\tunsigned long sysinfo_ehdr;\n\tunsigned int cpu, node;\n\tgetcpu_t get_cpu;\n\tlong ret;\n\n\tsysinfo_ehdr = getauxval(AT_SYSINFO_EHDR);\n\tif (!sysinfo_ehdr) {\n\t\tprintf(\"AT_SYSINFO_EHDR is not present!\\n\");\n\t\treturn KSFT_SKIP;\n\t}\n\n\tvdso_init_from_sysinfo_ehdr(getauxval(AT_SYSINFO_EHDR));\n\n\tget_cpu = (getcpu_t)vdso_sym(version, name);\n\tif (!get_cpu) {\n\t\tprintf(\"Could not find %s\\n\", name);\n\t\treturn KSFT_SKIP;\n\t}\n\n\tret = get_cpu(&cpu, &node, 0);\n\tif (ret == 0) {\n\t\tprintf(\"Running on CPU %u node %u\\n\", cpu, node);\n\t} else {\n\t\tprintf(\"%s failed\\n\", name);\n\t\treturn KSFT_FAIL;\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

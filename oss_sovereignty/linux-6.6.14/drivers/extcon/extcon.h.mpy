@@ -1,0 +1,9 @@
+{
+  "module_name": "extcon.h",
+  "hash_id": "af8533e9898170ddc6c9a50f44efcc7f7c555a68caa89267e51187236e8b7dd4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/extcon/extcon.h",
+  "human_readable_source": " \n#ifndef __LINUX_EXTCON_INTERNAL_H__\n#define __LINUX_EXTCON_INTERNAL_H__\n\n#include <linux/extcon-provider.h>\n\n \nstruct extcon_dev {\n\t \n\tconst char *name;\n\tconst unsigned int *supported_cable;\n\tconst u32 *mutually_exclusive;\n\n\t \n\tstruct device dev;\n\tunsigned int id;\n\tstruct raw_notifier_head nh_all;\n\tstruct raw_notifier_head *nh;\n\tstruct list_head entry;\n\tint max_supported;\n\tspinlock_t lock;\t \n\tu32 state;\n\n\t \n\tstruct device_type extcon_dev_type;\n\tstruct extcon_cable *cables;\n\n\t \n\tstruct attribute_group attr_g_muex;\n\tstruct attribute **attrs_muex;\n\tstruct device_attribute *d_attrs_muex;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

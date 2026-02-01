@@ -1,0 +1,9 @@
+{
+  "module_name": "smu_v13_0_7_ppt.h",
+  "hash_id": "fc7fbf1e88a4336d52b3a6f08bea3a19bc024788c87aa3fc50240438284520fc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.h",
+  "human_readable_source": " \n#ifndef __SMU_V13_0_7_PPT_H__\n#define __SMU_V13_0_7_PPT_H__\n\nextern void smu_v13_0_7_set_ppt_funcs(struct smu_context *smu);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tlb.h",
+  "hash_id": "eea005824b1de46a7e4a458d7f2eb206108ead3e100bd3edb57636db7677ca45",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/tlb.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM tlb\n\n#if !defined(_TRACE_TLB_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_TLB_H\n\n#include <linux/mm_types.h>\n#include <linux/tracepoint.h>\n\n#define TLB_FLUSH_REASON\t\t\t\t\t\t\\\n\tEM(  TLB_FLUSH_ON_TASK_SWITCH,\t\"flush on task switch\" )\t\\\n\tEM(  TLB_REMOTE_SHOOTDOWN,\t\"remote shootdown\" )\t\t\\\n\tEM(  TLB_LOCAL_SHOOTDOWN,\t\"local shootdown\" )\t\t\\\n\tEM(  TLB_LOCAL_MM_SHOOTDOWN,\t\"local mm shootdown\" )\t\t\\\n\tEMe( TLB_REMOTE_SEND_IPI,\t\"remote ipi send\" )\n\n \n#undef EM\n#undef EMe\n#define EM(a,b)\t\tTRACE_DEFINE_ENUM(a);\n#define EMe(a,b)\tTRACE_DEFINE_ENUM(a);\n\nTLB_FLUSH_REASON\n\n \n#undef EM\n#undef EMe\n#define EM(a,b)\t\t{ a, b },\n#define EMe(a,b)\t{ a, b }\n\nTRACE_EVENT(tlb_flush,\n\n\tTP_PROTO(int reason, unsigned long pages),\n\tTP_ARGS(reason, pages),\n\n\tTP_STRUCT__entry(\n\t\t__field(\t  int, reason)\n\t\t__field(unsigned long,  pages)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->reason = reason;\n\t\t__entry->pages  = pages;\n\t),\n\n\tTP_printk(\"pages:%ld reason:%s (%d)\",\n\t\t__entry->pages,\n\t\t__print_symbolic(__entry->reason, TLB_FLUSH_REASON),\n\t\t__entry->reason)\n);\n\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

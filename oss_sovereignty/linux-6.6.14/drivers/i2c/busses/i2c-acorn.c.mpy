@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-acorn.c",
+  "hash_id": "660bc9f045b83d97b1a51dd702f51654e03ee11fdbdf3bf69e85f3cd609adf0f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/i2c/busses/i2c-acorn.c",
+  "human_readable_source": "\n \n#include <linux/module.h>\n#include <linux/i2c.h>\n#include <linux/i2c-algo-bit.h>\n#include <linux/io.h>\n\n#include <mach/hardware.h>\n#include <asm/hardware/ioc.h>\n\n#define FORCE_ONES\t0xdc\n#define SCL\t\t0x02\n#define SDA\t\t0x01\n\n \nstatic u_int force_ones;\n\nstatic void ioc_setscl(void *data, int state)\n{\n\tu_int ioc_control = ioc_readb(IOC_CONTROL) & ~(SCL | SDA);\n\tu_int ones = force_ones;\n\n\tif (state)\n\t\tones |= SCL;\n\telse\n\t\tones &= ~SCL;\n\n\tforce_ones = ones;\n\n \tioc_writeb(ioc_control | ones, IOC_CONTROL);\n}\n\nstatic void ioc_setsda(void *data, int state)\n{\n\tu_int ioc_control = ioc_readb(IOC_CONTROL) & ~(SCL | SDA);\n\tu_int ones = force_ones;\n\n\tif (state)\n\t\tones |= SDA;\n\telse\n\t\tones &= ~SDA;\n\n\tforce_ones = ones;\n\n \tioc_writeb(ioc_control | ones, IOC_CONTROL);\n}\n\nstatic int ioc_getscl(void *data)\n{\n\treturn (ioc_readb(IOC_CONTROL) & SCL) != 0;\n}\n\nstatic int ioc_getsda(void *data)\n{\n\treturn (ioc_readb(IOC_CONTROL) & SDA) != 0;\n}\n\nstatic struct i2c_algo_bit_data ioc_data = {\n\t.setsda\t\t= ioc_setsda,\n\t.setscl\t\t= ioc_setscl,\n\t.getsda\t\t= ioc_getsda,\n\t.getscl\t\t= ioc_getscl,\n\t.udelay\t\t= 80,\n\t.timeout\t= HZ,\n};\n\nstatic struct i2c_adapter ioc_ops = {\n\t.nr\t\t\t= 0,\n\t.name\t\t\t= \"ioc\",\n\t.algo_data\t\t= &ioc_data,\n};\n\nstatic int __init i2c_ioc_init(void)\n{\n\tforce_ones = FORCE_ONES | SCL | SDA;\n\n\treturn i2c_bit_add_numbered_bus(&ioc_ops);\n}\n\nmodule_init(i2c_ioc_init);\n\nMODULE_AUTHOR(\"Russell King <linux@armlinux.org.uk>\");\nMODULE_DESCRIPTION(\"ARM IOC/IOMD i2c driver\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

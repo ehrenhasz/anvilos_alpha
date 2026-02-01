@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "84458b0fedad350214bd72468339c00acc9528d9478b5f406b387620489d9ed8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/visconti/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_PINCTRL_VISCONTI)\t+= pinctrl-common.o\nobj-$(CONFIG_PINCTRL_TMPV7700)\t+= pinctrl-tmpv7700.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

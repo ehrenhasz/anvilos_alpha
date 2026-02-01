@@ -1,0 +1,9 @@
+{
+  "module_name": "tda10086.h",
+  "hash_id": "9ebfe7849ab3f59d859a00252372e7594e8da70c219ef5f123f75306117fb559",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/tda10086.h",
+  "human_readable_source": " \n   \n\n#ifndef TDA10086_H\n#define TDA10086_H\n\n#include <linux/dvb/frontend.h>\n#include <linux/firmware.h>\n\nenum tda10086_xtal {\n\tTDA10086_XTAL_16M,\n\tTDA10086_XTAL_4M\n};\n\nstruct tda10086_config\n{\n\t \n\tu8 demod_address;\n\n\t \n\tu8 invert;\n\n\t \n\tu8 diseqc_tone;\n\n\t \n\tenum tda10086_xtal xtal_freq;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_TDA10086)\nextern struct dvb_frontend* tda10086_attach(const struct tda10086_config* config,\n\t\t\t\t\t    struct i2c_adapter* i2c);\n#else\nstatic inline struct dvb_frontend* tda10086_attach(const struct tda10086_config* config,\n\t\t\t\t\t\t   struct i2c_adapter* i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

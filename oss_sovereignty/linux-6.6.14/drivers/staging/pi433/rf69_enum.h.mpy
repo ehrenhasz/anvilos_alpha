@@ -1,0 +1,9 @@
+{
+  "module_name": "rf69_enum.h",
+  "hash_id": "59abf106d8f2e7c5a3f4ea7fa186b7766b9f8b8c05dc67cc4dca38d63f1d7656",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/pi433/rf69_enum.h",
+  "human_readable_source": " \n \n\n#ifndef RF69_ENUM_H\n#define RF69_ENUM_H\n\nenum mode {\n\tmode_sleep,\n\tstandby,\n\tsynthesizer,\n\ttransmit,\n\treceive\n};\n\nenum modulation {\n\tOOK,\n\tFSK,\n\tUNDEF\n};\n\nenum mod_shaping {\n\tSHAPING_OFF,\n\tSHAPING_1_0,\n\tSHAPING_0_5,\n\tSHAPING_0_3,\n\tSHAPING_BR,\n\tSHAPING_2BR\n};\n\nenum pa_ramp {\n\tramp3400,\n\tramp2000,\n\tramp1000,\n\tramp500,\n\tramp250,\n\tramp125,\n\tramp100,\n\tramp62,\n\tramp50,\n\tramp40,\n\tramp31,\n\tramp25,\n\tramp20,\n\tramp15,\n\tramp12,\n\tramp10\n};\n\nenum antenna_impedance {\n\tfifty_ohm,\n\ttwo_hundred_ohm\n};\n\nenum lna_gain {\n\tautomatic,\n\tmax,\n\tmax_minus_6,\n\tmax_minus_12,\n\tmax_minus_24,\n\tmax_minus_36,\n\tmax_minus_48,\n\tundefined\n};\n\nenum mantisse {\n\tmantisse16,\n\tmantisse20,\n\tmantisse24\n};\n\nenum threshold_decrement {\n\tdec_every8th,\n\tdec_every4th,\n\tdec_every2nd,\n\tdec_once,\n\tdec_twice,\n\tdec_4times,\n\tdec_8times,\n\tdec_16times\n};\n\nenum fifo_fill_condition {\n\tafter_sync_interrupt,\n\talways\n};\n\nenum packet_format {\n\t \n\tpacket_length_fix,\n\t \n\tpacket_length_var\n};\n\nenum tx_start_condition {\n\t \n\tfifo_level,\n\t \n\tfifo_not_empty\n};\n\nenum address_filtering {\n\tfiltering_off,\n\tnode_address,\n\tnode_or_broadcast_address\n};\n\nenum dagc {\n\tnormal_mode,\n\timprove,\n\timprove_for_low_modulation_index\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "lsdc_gem.h",
+  "hash_id": "f70bcfb19a8e0ea17d24175214cecfca002cee14c5ee7c49132e2b8a288ca42d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/loongson/lsdc_gem.h",
+  "human_readable_source": " \n \n\n#ifndef __LSDC_GEM_H__\n#define __LSDC_GEM_H__\n\n#include <drm/drm_device.h>\n#include <drm/drm_gem.h>\n\nstruct drm_gem_object *\nlsdc_prime_import_sg_table(struct drm_device *ddev,\n\t\t\t   struct dma_buf_attachment *attach,\n\t\t\t   struct sg_table *sg);\n\nint lsdc_dumb_map_offset(struct drm_file *file,\n\t\t\t struct drm_device *dev,\n\t\t\t u32 handle,\n\t\t\t uint64_t *offset);\n\nint lsdc_dumb_create(struct drm_file *file,\n\t\t     struct drm_device *ddev,\n\t\t     struct drm_mode_create_dumb *args);\n\nvoid lsdc_gem_init(struct drm_device *ddev);\nint lsdc_show_buffer_object(struct seq_file *m, void *arg);\n\nstruct drm_gem_object *\nlsdc_gem_object_create(struct drm_device *ddev,\n\t\t       u32 domain,\n\t\t       size_t size,\n\t\t       bool kerenl,\n\t\t       struct sg_table *sg,\n\t\t       struct dma_resv *resv);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

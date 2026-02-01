@@ -1,0 +1,9 @@
+{
+  "module_name": "apple-mailbox.h",
+  "hash_id": "05037b3ffd064866670eb2623365c8412e792687f04d03bde0e4526512bf9b07",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/apple-mailbox.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_APPLE_MAILBOX_H_\n#define _LINUX_APPLE_MAILBOX_H_\n\n#include <linux/types.h>\n\n \nstruct apple_mbox_msg {\n\tu64 msg0;\n\tu32 msg1;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

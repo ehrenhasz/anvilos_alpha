@@ -1,0 +1,9 @@
+{
+  "module_name": "dsa.h",
+  "hash_id": "48a1ccc703e37a7920a78ea5d6d21a42b8cb023791e6fb16c2974fea44ba165f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/dsa.h",
+  "human_readable_source": " \n#ifndef __DSA_PDATA_H\n#define __DSA_PDATA_H\n\nstruct device;\nstruct net_device;\n\n#define DSA_MAX_SWITCHES\t4\n#define DSA_MAX_PORTS\t\t12\n#define DSA_RTABLE_NONE\t\t-1\n\nstruct dsa_chip_data {\n\t \n\tstruct device\t*host_dev;\n\tint\t\tsw_addr;\n\n\t \n\tstruct device\t*netdev[DSA_MAX_PORTS];\n\n\t \n\tint\t\teeprom_len;\n\n\t \n\tstruct device_node *of_node;\n\n\t \n\tchar\t\t*port_names[DSA_MAX_PORTS];\n\tstruct device_node *port_dn[DSA_MAX_PORTS];\n\n\t \n\ts8\t\trtable[DSA_MAX_SWITCHES];\n};\n\nstruct dsa_platform_data {\n\t \n\tstruct device\t*netdev;\n\tstruct net_device *of_netdev;\n\n\t \n\tint\t\tnr_chips;\n\tstruct dsa_chip_data\t*chip;\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

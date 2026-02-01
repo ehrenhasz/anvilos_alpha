@@ -1,0 +1,9 @@
+{
+  "module_name": "bootconfig-data.S",
+  "hash_id": "d3e25dbb9fb94ca180b215d812ef6917fc8935b2936f4a86a55c931740ea13b2",
+  "original_prompt": "Ingested from linux-6.6.14/lib/bootconfig-data.S",
+  "human_readable_source": " \n \n\t.section .init.rodata, \"aw\"\n\t.global embedded_bootconfig_data\nembedded_bootconfig_data:\n\t.incbin \"lib/default.bconf\"\n\t.global embedded_bootconfig_data_end\nembedded_bootconfig_data_end:\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

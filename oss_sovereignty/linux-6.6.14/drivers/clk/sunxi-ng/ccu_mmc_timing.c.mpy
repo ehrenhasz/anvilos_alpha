@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu_mmc_timing.c",
+  "hash_id": "14aedd859c92582c8adb5c59e8df74b87d9fb87cd1d330fa112f3d9df3470c7d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu_mmc_timing.c",
+  "human_readable_source": "\n \n\n#include <linux/clk-provider.h>\n#include <linux/clk/sunxi-ng.h>\n#include <linux/io.h>\n\n#include \"ccu_common.h\"\n\n \nint sunxi_ccu_set_mmc_timing_mode(struct clk *clk, bool new_mode)\n{\n\tstruct clk_hw *hw = __clk_get_hw(clk);\n\tstruct ccu_common *cm = hw_to_ccu_common(hw);\n\tunsigned long flags;\n\tu32 val;\n\n\tif (!(cm->features & CCU_FEATURE_MMC_TIMING_SWITCH))\n\t\treturn -ENOTSUPP;\n\n\tspin_lock_irqsave(cm->lock, flags);\n\n\tval = readl(cm->base + cm->reg);\n\tif (new_mode)\n\t\tval |= CCU_MMC_NEW_TIMING_MODE;\n\telse\n\t\tval &= ~CCU_MMC_NEW_TIMING_MODE;\n\twritel(val, cm->base + cm->reg);\n\n\tspin_unlock_irqrestore(cm->lock, flags);\n\n\treturn 0;\n}\nEXPORT_SYMBOL_GPL(sunxi_ccu_set_mmc_timing_mode);\n\n \nint sunxi_ccu_get_mmc_timing_mode(struct clk *clk)\n{\n\tstruct clk_hw *hw = __clk_get_hw(clk);\n\tstruct ccu_common *cm = hw_to_ccu_common(hw);\n\n\tif (!(cm->features & CCU_FEATURE_MMC_TIMING_SWITCH))\n\t\treturn -ENOTSUPP;\n\n\treturn !!(readl(cm->base + cm->reg) & CCU_MMC_NEW_TIMING_MODE);\n}\nEXPORT_SYMBOL_GPL(sunxi_ccu_get_mmc_timing_mode);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

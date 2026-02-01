@@ -1,0 +1,9 @@
+{
+  "module_name": "g94.c",
+  "hash_id": "fff802fbba9bdd5a42ab058b19cefca3fa34885fb8f06d822605dbf5b68c64ef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/gpio/g94.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nvoid\ng94_gpio_intr_stat(struct nvkm_gpio *gpio, u32 *hi, u32 *lo)\n{\n\tstruct nvkm_device *device = gpio->subdev.device;\n\tu32 intr0 = nvkm_rd32(device, 0x00e054);\n\tu32 intr1 = nvkm_rd32(device, 0x00e074);\n\tu32 stat0 = nvkm_rd32(device, 0x00e050) & intr0;\n\tu32 stat1 = nvkm_rd32(device, 0x00e070) & intr1;\n\t*lo = (stat1 & 0xffff0000) | (stat0 >> 16);\n\t*hi = (stat1 << 16) | (stat0 & 0x0000ffff);\n\tnvkm_wr32(device, 0x00e054, intr0);\n\tnvkm_wr32(device, 0x00e074, intr1);\n}\n\nvoid\ng94_gpio_intr_mask(struct nvkm_gpio *gpio, u32 type, u32 mask, u32 data)\n{\n\tstruct nvkm_device *device = gpio->subdev.device;\n\tu32 inte0 = nvkm_rd32(device, 0x00e050);\n\tu32 inte1 = nvkm_rd32(device, 0x00e070);\n\tif (type & NVKM_GPIO_LO)\n\t\tinte0 = (inte0 & ~(mask << 16)) | (data << 16);\n\tif (type & NVKM_GPIO_HI)\n\t\tinte0 = (inte0 & ~(mask & 0xffff)) | (data & 0xffff);\n\tmask >>= 16;\n\tdata >>= 16;\n\tif (type & NVKM_GPIO_LO)\n\t\tinte1 = (inte1 & ~(mask << 16)) | (data << 16);\n\tif (type & NVKM_GPIO_HI)\n\t\tinte1 = (inte1 & ~mask) | data;\n\tnvkm_wr32(device, 0x00e050, inte0);\n\tnvkm_wr32(device, 0x00e070, inte1);\n}\n\nstatic const struct nvkm_gpio_func\ng94_gpio = {\n\t.lines = 32,\n\t.intr_stat = g94_gpio_intr_stat,\n\t.intr_mask = g94_gpio_intr_mask,\n\t.drive = nv50_gpio_drive,\n\t.sense = nv50_gpio_sense,\n\t.reset = nv50_gpio_reset,\n};\n\nint\ng94_gpio_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t     struct nvkm_gpio **pgpio)\n{\n\treturn nvkm_gpio_new_(&g94_gpio, device, type, inst, pgpio);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "netrom.h",
+  "hash_id": "425747b36e5ad1ac972251516a66f3c06ae147a63497476795e394f0353d4bad",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netrom.h",
+  "human_readable_source": " \n \n\n#ifndef\tNETROM_KERNEL_H\n#define\tNETROM_KERNEL_H\n\n#include <linux/ax25.h>\n\n#define NETROM_MTU\t236\n\n#define NETROM_T1\t1\n#define NETROM_T2\t2\n#define NETROM_N2\t3\n#define\tNETROM_T4\t6\n#define\tNETROM_IDLE\t7\n\n#define\tSIOCNRDECOBS\t\t(SIOCPROTOPRIVATE+2)\n\nstruct nr_route_struct {\n#define\tNETROM_NEIGH\t0\n#define\tNETROM_NODE\t1\n\tint\t\ttype;\n\tax25_address\tcallsign;\n\tchar\t\tdevice[16];\n\tunsigned int\tquality;\n\tchar\t\tmnemonic[7];\n\tax25_address\tneighbour;\n\tunsigned int\tobs_count;\n\tunsigned int\tndigis;\n\tax25_address\tdigipeaters[AX25_MAX_DIGIS];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

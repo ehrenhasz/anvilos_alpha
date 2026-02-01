@@ -1,0 +1,9 @@
+{
+  "module_name": "cmp.h",
+  "hash_id": "fdafa1dba3e6756375db69046dccc4137c7ee25f8bc5055612252997a51ff7f9",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/cmp.h",
+  "human_readable_source": " \n#ifndef SOUND_FIREWIRE_CMP_H_INCLUDED\n#define SOUND_FIREWIRE_CMP_H_INCLUDED\n\n#include <linux/mutex.h>\n#include <linux/types.h>\n#include \"iso-resources.h\"\n\nstruct fw_unit;\n\nenum cmp_direction {\n\tCMP_INPUT = 0,\n\tCMP_OUTPUT,\n};\n\n \nstruct cmp_connection {\n\tint speed;\n\t \n\tbool connected;\n\tstruct mutex mutex;\n\tstruct fw_iso_resources resources;\n\t__be32 last_pcr_value;\n\tunsigned int pcr_index;\n\tunsigned int max_speed;\n\tenum cmp_direction direction;\n};\n\nint cmp_connection_init(struct cmp_connection *connection,\n\t\t\tstruct fw_unit *unit,\n\t\t\tenum cmp_direction direction,\n\t\t\tunsigned int pcr_index);\nint cmp_connection_check_used(struct cmp_connection *connection, bool *used);\nvoid cmp_connection_destroy(struct cmp_connection *connection);\n\nint cmp_connection_reserve(struct cmp_connection *connection,\n\t\t\t   unsigned int max_payload);\nvoid cmp_connection_release(struct cmp_connection *connection);\n\nint cmp_connection_establish(struct cmp_connection *connection);\nint cmp_connection_update(struct cmp_connection *connection);\nvoid cmp_connection_break(struct cmp_connection *connection);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

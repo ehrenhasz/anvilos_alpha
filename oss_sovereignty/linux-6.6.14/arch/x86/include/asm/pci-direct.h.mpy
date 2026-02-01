@@ -1,0 +1,9 @@
+{
+  "module_name": "pci-direct.h",
+  "hash_id": "8721d003476cf70a46b8b88022b6af8a3fb36034e941f0acd30512582c8df79f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/pci-direct.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PCI_DIRECT_H\n#define _ASM_X86_PCI_DIRECT_H\n\n#include <linux/types.h>\n\n \n\nextern u32 read_pci_config(u8 bus, u8 slot, u8 func, u8 offset);\nextern u8 read_pci_config_byte(u8 bus, u8 slot, u8 func, u8 offset);\nextern u16 read_pci_config_16(u8 bus, u8 slot, u8 func, u8 offset);\nextern void write_pci_config(u8 bus, u8 slot, u8 func, u8 offset, u32 val);\nextern void write_pci_config_byte(u8 bus, u8 slot, u8 func, u8 offset, u8 val);\nextern void write_pci_config_16(u8 bus, u8 slot, u8 func, u8 offset, u16 val);\n\nextern int early_pci_allowed(void);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

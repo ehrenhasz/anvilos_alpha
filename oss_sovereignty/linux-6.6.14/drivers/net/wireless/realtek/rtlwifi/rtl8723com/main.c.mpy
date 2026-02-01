@@ -1,0 +1,9 @@
+{
+  "module_name": "main.c",
+  "hash_id": "61f402887c87dee58feacbb36011d2f0933db049ab17ee65af1fafbbca50bf7a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8723com/main.c",
+  "human_readable_source": "\n \n\n#include \"../wifi.h\"\n#include <linux/module.h>\n\n\nMODULE_AUTHOR(\"Realtek WlanFAE\t<wlanfae@realtek.com>\");\nMODULE_AUTHOR(\"Larry Finger\t<Larry.Finger@lwfinger.net>\");\nMODULE_LICENSE(\"GPL\");\nMODULE_DESCRIPTION(\"Realtek RTL8723AE/RTL8723BE 802.11n PCI wireless common routines\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

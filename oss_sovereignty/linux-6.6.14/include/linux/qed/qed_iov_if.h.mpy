@@ -1,0 +1,9 @@
+{
+  "module_name": "qed_iov_if.h",
+  "hash_id": "671ab8d6896427a2debbb89967b6117e2a77d1574c606779d83627e2752c26dd",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/qed/qed_iov_if.h",
+  "human_readable_source": " \n \n\n#ifndef _QED_IOV_IF_H\n#define _QED_IOV_IF_H\n\n#include <linux/qed/qed_if.h>\n\n \nstruct qed_iov_hv_ops {\n\tint (*configure)(struct qed_dev *cdev, int num_vfs_param);\n\n\tint (*set_mac) (struct qed_dev *cdev, u8 *mac, int vfid);\n\n\tint (*set_vlan) (struct qed_dev *cdev, u16 vid, int vfid);\n\n\tint (*get_config) (struct qed_dev *cdev, int vf_id,\n\t\t\t   struct ifla_vf_info *ivi);\n\n\tint (*set_link_state) (struct qed_dev *cdev, int vf_id,\n\t\t\t       int link_state);\n\n\tint (*set_spoof) (struct qed_dev *cdev, int vfid, bool val);\n\n\tint (*set_rate) (struct qed_dev *cdev, int vfid,\n\t\t\t u32 min_rate, u32 max_rate);\n\n\tint (*set_trust) (struct qed_dev *cdev, int vfid, bool trust);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

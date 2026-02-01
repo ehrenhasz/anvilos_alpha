@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6ce9453eae6b2ca47230f87ef5e3da7bdc72b9e7a0dffb12c6b2323693f25069",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/platform/uv/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_X86_UV)\t\t+= bios_uv.o uv_irq.o uv_time.o uv_nmi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

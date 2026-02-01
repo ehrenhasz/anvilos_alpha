@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfs_local.h",
+  "hash_id": "da7c42edc1ffe49c07cce79a80338fd8a1888354138c77b1021f608565f5e21c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soundwire/sysfs_local.h",
+  "human_readable_source": " \n \n\n#ifndef __SDW_SYSFS_LOCAL_H\n#define __SDW_SYSFS_LOCAL_H\n\n \n\n \nextern const struct attribute_group *sdw_slave_status_attr_groups[];\n\n \nint sdw_slave_sysfs_init(struct sdw_slave *slave);\nint sdw_slave_sysfs_dpn_init(struct sdw_slave *slave);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

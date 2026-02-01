@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "54e4a28d1ab679b5465c58464b0f03e0276eb7212bec7edb6dc786e275d30157",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/dt3155/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_DT3155\n\ttristate \"DT3155 frame grabber\"\n\tdepends on PCI && VIDEO_DEV\n\tselect VIDEOBUF2_DMA_CONTIG\n\thelp\n\t  Enables dt3155 device driver for the DataTranslation DT3155 frame grabber.\n\t  Say Y here if you have this hardware.\n\t  In doubt, say N.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called dt3155.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

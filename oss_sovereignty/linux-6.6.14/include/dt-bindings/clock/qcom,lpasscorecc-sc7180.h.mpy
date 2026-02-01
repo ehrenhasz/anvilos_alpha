@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,lpasscorecc-sc7180.h",
+  "hash_id": "84be6af2e236f72c868a3f0531b7a42a4773f87991ce525e9229603d0a7e2bcc",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,lpasscorecc-sc7180.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_QCOM_LPASS_CORE_CC_SC7180_H\n#define _DT_BINDINGS_CLK_QCOM_LPASS_CORE_CC_SC7180_H\n\n \n#define LPASS_LPAAUDIO_DIG_PLL\t\t\t\t0\n#define LPASS_LPAAUDIO_DIG_PLL_OUT_ODD\t\t\t1\n#define CORE_CLK_SRC\t\t\t\t\t2\n#define EXT_MCLK0_CLK_SRC\t\t\t\t3\n#define LPAIF_PRI_CLK_SRC\t\t\t\t4\n#define LPAIF_SEC_CLK_SRC\t\t\t\t5\n#define LPASS_AUDIO_CORE_CORE_CLK\t\t\t6\n#define LPASS_AUDIO_CORE_EXT_MCLK0_CLK\t\t\t7\n#define LPASS_AUDIO_CORE_LPAIF_PRI_IBIT_CLK\t\t8\n#define LPASS_AUDIO_CORE_LPAIF_SEC_IBIT_CLK\t\t9\n#define LPASS_AUDIO_CORE_SYSNOC_MPORT_CORE_CLK\t\t10\n\n \n#define LPASS_CORE_HM_GDSCR\t\t\t\t0\n\n \n#define LPASS_AUDIO_HM_GDSCR\t\t\t\t0\n#define LPASS_PDC_HM_GDSCR\t\t\t\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

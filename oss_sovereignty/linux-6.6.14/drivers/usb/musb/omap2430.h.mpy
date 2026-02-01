@@ -1,0 +1,9 @@
+{
+  "module_name": "omap2430.h",
+  "hash_id": "5c82e6d129d7eaeea4f6bed72e96aea481abf99287edd8966f750b0ec69bc0e8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/musb/omap2430.h",
+  "human_readable_source": " \n \n\n#ifndef __MUSB_OMAP243X_H__\n#define __MUSB_OMAP243X_H__\n\n#include <linux/platform_data/usb-omap.h>\n\n \n\n#define OTG_REVISION\t\t0x400\n\n#define OTG_SYSCONFIG\t\t0x404\n#\tdefine\tMIDLEMODE\t12\t \n#\tdefine\tFORCESTDBY\t\t(0 << MIDLEMODE)\n#\tdefine\tNOSTDBY\t\t\t(1 << MIDLEMODE)\n#\tdefine\tSMARTSTDBY\t\t(2 << MIDLEMODE)\n\n#\tdefine\tSIDLEMODE\t\t3\t \n#\tdefine\tFORCEIDLE\t\t(0 << SIDLEMODE)\n#\tdefine\tNOIDLE\t\t\t(1 << SIDLEMODE)\n#\tdefine\tSMARTIDLE\t\t(2 << SIDLEMODE)\n\n#\tdefine\tENABLEWAKEUP\t\t(1 << 2)\n#\tdefine\tSOFTRST\t\t\t(1 << 1)\n#\tdefine\tAUTOIDLE\t\t(1 << 0)\n\n#define OTG_SYSSTATUS\t\t0x408\n#\tdefine\tRESETDONE\t\t(1 << 0)\n\n#define OTG_INTERFSEL\t\t0x40c\n#\tdefine\tEXTCP\t\t\t(1 << 2)\n#\tdefine\tPHYSEL\t\t\t0\t \n#\tdefine\tUTMI_8BIT\t\t(0 << PHYSEL)\n#\tdefine\tULPI_12PIN\t\t(1 << PHYSEL)\n#\tdefine\tULPI_8PIN\t\t(2 << PHYSEL)\n\n#define OTG_SIMENABLE\t\t0x410\n#\tdefine\tTM1\t\t\t(1 << 0)\n\n#define OTG_FORCESTDBY\t\t0x414\n#\tdefine\tENABLEFORCE\t\t(1 << 0)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

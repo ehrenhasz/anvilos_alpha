@@ -1,0 +1,9 @@
+{
+  "module_name": "bug.h",
+  "hash_id": "63a400c9c01ec4f3923b80454cc91ff745abc54b8f7872b937a07d63d80fd506",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/bug.h",
+  "human_readable_source": " \n#ifndef _TOOLS_PERF_LINUX_BUG_H\n#define _TOOLS_PERF_LINUX_BUG_H\n\n \n#define BUILD_BUG_ON_ZERO(e) (sizeof(struct { int:-!!(e); }))\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

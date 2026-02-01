@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e3b15de93091ee5a13ea12ff6d79fed9cf8fddcfb78407e73303cd4768dcc7e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/sunxi/sun8i-rotate/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsun8i-rotate-y += sun8i_rotate.o\nsun8i-rotate-y += sun8i_formats.o\n\nobj-$(CONFIG_VIDEO_SUN8I_ROTATE) += sun8i-rotate.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

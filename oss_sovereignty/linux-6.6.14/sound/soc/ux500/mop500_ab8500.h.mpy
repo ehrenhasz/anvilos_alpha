@@ -1,0 +1,9 @@
+{
+  "module_name": "mop500_ab8500.h",
+  "hash_id": "65703ad292331132ff32d9f0b42b00714bbf32cbbc053be3256107dca24cf743",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/ux500/mop500_ab8500.h",
+  "human_readable_source": " \n \n\n#ifndef MOP500_AB8500_H\n#define MOP500_AB8500_H\n\nextern const struct snd_soc_ops mop500_ab8500_ops[];\n\nint mop500_ab8500_machine_init(struct snd_soc_pcm_runtime *rtd);\nvoid mop500_ab8500_remove(struct snd_soc_card *card);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

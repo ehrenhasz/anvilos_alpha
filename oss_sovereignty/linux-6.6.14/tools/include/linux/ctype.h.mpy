@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype.h",
+  "hash_id": "62aa8950e7064e1be6a25a48d76357b58053a46913e21035bfaa450dc85b3fae",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/ctype.h",
+  "human_readable_source": " \n#ifndef _LINUX_CTYPE_H\n#define _LINUX_CTYPE_H\n\n#include <linux/compiler.h>\n\n \n\n#define _U\t0x01\t \n#define _L\t0x02\t \n#define _D\t0x04\t \n#define _C\t0x08\t \n#define _P\t0x10\t \n#define _S\t0x20\t \n#define _X\t0x40\t \n#define _SP\t0x80\t \n\nextern const unsigned char _ctype[];\n\n#define __ismask(x) (_ctype[(int)(unsigned char)(x)])\n\n#define isalnum(c)\t((__ismask(c)&(_U|_L|_D)) != 0)\n#define isalpha(c)\t((__ismask(c)&(_U|_L)) != 0)\n#define iscntrl(c)\t((__ismask(c)&(_C)) != 0)\n#define isgraph(c)\t((__ismask(c)&(_P|_U|_L|_D)) != 0)\n#define islower(c)\t((__ismask(c)&(_L)) != 0)\n#define isprint(c)\t((__ismask(c)&(_P|_U|_L|_D|_SP)) != 0)\n#define ispunct(c)\t((__ismask(c)&(_P)) != 0)\n \n#define isspace(c)\t((__ismask(c)&(_S)) != 0)\n#define isupper(c)\t((__ismask(c)&(_U)) != 0)\n#define isxdigit(c)\t((__ismask(c)&(_D|_X)) != 0)\n\n#define isascii(c) (((unsigned char)(c))<=0x7f)\n#define toascii(c) (((unsigned char)(c))&0x7f)\n\n#if __has_builtin(__builtin_isdigit)\n#define  isdigit(c) __builtin_isdigit(c)\n#else\nstatic inline int __isdigit(int c)\n{\n\treturn '0' <= c && c <= '9';\n}\n#define  isdigit(c) __isdigit(c)\n#endif\n\nstatic inline unsigned char __tolower(unsigned char c)\n{\n\tif (isupper(c))\n\t\tc -= 'A'-'a';\n\treturn c;\n}\n\nstatic inline unsigned char __toupper(unsigned char c)\n{\n\tif (islower(c))\n\t\tc -= 'a'-'A';\n\treturn c;\n}\n\n#define tolower(c) __tolower(c)\n#define toupper(c) __toupper(c)\n\n \nstatic inline char _tolower(const char c)\n{\n\treturn c | 0x20;\n}\n\n \nstatic inline int isodigit(const char c)\n{\n\treturn c >= '0' && c <= '7';\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

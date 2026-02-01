@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objenumerate.c.qstr",
+  "hash_id": "2204355bb112ced7b2a74abb69b85d3cab2ed4085fec5ce329b4a4d97732f6db",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objenumerate.c.qstr",
+  "human_readable_source": "Q(iterable)\nQ(start)\nQ(enumerate)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

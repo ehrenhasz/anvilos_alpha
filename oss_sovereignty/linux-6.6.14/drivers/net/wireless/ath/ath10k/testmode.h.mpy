@@ -1,0 +1,9 @@
+{
+  "module_name": "testmode.h",
+  "hash_id": "39bc3fadcbe65b2f13ca2d4a7d48445cf302eb887104c56af9ec5e7c3c9717ac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath10k/testmode.h",
+  "human_readable_source": " \n \n\n#include \"core.h\"\n\n#ifdef CONFIG_NL80211_TESTMODE\n\nvoid ath10k_testmode_destroy(struct ath10k *ar);\n\nbool ath10k_tm_event_wmi(struct ath10k *ar, u32 cmd_id, struct sk_buff *skb);\nint ath10k_tm_cmd(struct ieee80211_hw *hw, struct ieee80211_vif *vif,\n\t\t  void *data, int len);\n\n#else\n\nstatic inline void ath10k_testmode_destroy(struct ath10k *ar)\n{\n}\n\nstatic inline bool ath10k_tm_event_wmi(struct ath10k *ar, u32 cmd_id,\n\t\t\t\t       struct sk_buff *skb)\n{\n\treturn false;\n}\n\nstatic inline int ath10k_tm_cmd(struct ieee80211_hw *hw,\n\t\t\t\tstruct ieee80211_vif *vif,\n\t\t\t\tvoid *data, int len)\n{\n\treturn 0;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

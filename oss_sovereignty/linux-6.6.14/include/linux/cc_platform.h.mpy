@@ -1,0 +1,9 @@
+{
+  "module_name": "cc_platform.h",
+  "hash_id": "3174f81d44e33807bdc287ac14bf1a158831e085bc10b4de91ab1a1de148aa89",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cc_platform.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_CC_PLATFORM_H\n#define _LINUX_CC_PLATFORM_H\n\n#include <linux/types.h>\n#include <linux/stddef.h>\n\n \nenum cc_attr {\n\t \n\tCC_ATTR_MEM_ENCRYPT,\n\n\t \n\tCC_ATTR_HOST_MEM_ENCRYPT,\n\n\t \n\tCC_ATTR_GUEST_MEM_ENCRYPT,\n\n\t \n\tCC_ATTR_GUEST_STATE_ENCRYPT,\n\n\t \n\tCC_ATTR_GUEST_UNROLL_STRING_IO,\n\n\t \n\tCC_ATTR_GUEST_SEV_SNP,\n\n\t \n\tCC_ATTR_HOTPLUG_DISABLED,\n};\n\n#ifdef CONFIG_ARCH_HAS_CC_PLATFORM\n\n \nbool cc_platform_has(enum cc_attr attr);\n\n#else\t \n\nstatic inline bool cc_platform_has(enum cc_attr attr) { return false; }\n\n#endif\t \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

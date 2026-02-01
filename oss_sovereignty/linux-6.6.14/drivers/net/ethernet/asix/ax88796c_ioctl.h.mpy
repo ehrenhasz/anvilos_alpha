@@ -1,0 +1,9 @@
+{
+  "module_name": "ax88796c_ioctl.h",
+  "hash_id": "c1b4af333ca31cd2452c206e6ce32460ceaf055a18e3c71874c7c016025d3d0d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/asix/ax88796c_ioctl.h",
+  "human_readable_source": " \n \n\n#ifndef _AX88796C_IOCTL_H\n#define _AX88796C_IOCTL_H\n\n#include <linux/ethtool.h>\n#include <linux/netdevice.h>\n\n#include \"ax88796c_main.h\"\n\nextern const struct ethtool_ops ax88796c_ethtool_ops;\n\nbool ax88796c_check_power(const struct ax88796c_device *ax_local);\nbool ax88796c_check_power_and_wake(struct ax88796c_device *ax_local);\nvoid ax88796c_set_power_saving(struct ax88796c_device *ax_local, u8 ps_level);\nint ax88796c_mdio_read(struct mii_bus *mdiobus, int phy_id, int loc);\nint ax88796c_mdio_write(struct mii_bus *mdiobus, int phy_id, int loc, u16 val);\nint ax88796c_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

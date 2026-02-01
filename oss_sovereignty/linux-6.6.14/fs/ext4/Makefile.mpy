@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "236554253e990c3d12efe453049ea68b789918c4deccf41fe693361d8ec84ba0",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ext4/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the linux ext4-filesystem routines.\n#\n\nobj-$(CONFIG_EXT4_FS) += ext4.o\n\next4-y\t:= balloc.o bitmap.o block_validity.o dir.o ext4_jbd2.o extents.o \\\n\t\textents_status.o file.o fsmap.o fsync.o hash.o ialloc.o \\\n\t\tindirect.o inline.o inode.o ioctl.o mballoc.o migrate.o \\\n\t\tmmp.o move_extent.o namei.o page-io.o readpage.o resize.o \\\n\t\tsuper.o symlink.o sysfs.o xattr.o xattr_hurd.o xattr_trusted.o \\\n\t\txattr_user.o fast_commit.o orphan.o\n\next4-$(CONFIG_EXT4_FS_POSIX_ACL)\t+= acl.o\next4-$(CONFIG_EXT4_FS_SECURITY)\t\t+= xattr_security.o\next4-inode-test-objs\t\t\t+= inode-test.o\nobj-$(CONFIG_EXT4_KUNIT_TESTS)\t\t+= ext4-inode-test.o\next4-$(CONFIG_FS_VERITY)\t\t+= verity.o\next4-$(CONFIG_FS_ENCRYPTION)\t\t+= crypto.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

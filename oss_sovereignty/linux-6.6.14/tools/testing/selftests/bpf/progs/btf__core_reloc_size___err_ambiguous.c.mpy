@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_size___err_ambiguous.c",
+  "hash_id": "ee86a5e62468e7bc67216df25b2d0101532edd1a3d481061a102038b98f4b906",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_size___err_ambiguous.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_size___err_ambiguous1 x,\n       struct core_reloc_size___err_ambiguous2 y) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "etm.json",
+  "hash_id": "f7043e907d8a8fd5517834a856075b63180e28d48bcaa82726dbeb392f44ccb6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a73/etm.json",
+  "human_readable_source": "[\n    {\n        \"PublicDescription\": \"ETM trace unit output 0\",\n        \"EventCode\": \"0xDE\",\n        \"EventName\": \"ETM_EXT_OUT0\",\n        \"BriefDescription\": \"ETM trace unit output 0\"\n    },\n    {\n        \"PublicDescription\": \"ETM trace unit output 1\",\n        \"EventCode\": \"0xDF\",\n        \"EventName\": \"ETM_EXT_OUT1\",\n        \"BriefDescription\": \"ETM trace unit output 1\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

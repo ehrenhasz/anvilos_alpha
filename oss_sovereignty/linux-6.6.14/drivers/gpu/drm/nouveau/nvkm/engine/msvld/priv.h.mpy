@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "4dec11f5746e9eed6e106b9d0810f51696814670b1abe56e5f47b5c1dba590de",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/msvld/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_MSVLD_PRIV_H__\n#define __NVKM_MSVLD_PRIV_H__\n#include <engine/msvld.h>\n\nint nvkm_msvld_new_(const struct nvkm_falcon_func *, struct nvkm_device *, enum nvkm_subdev_type,\n\t\t    int, struct nvkm_engine **);\n\nvoid g98_msvld_init(struct nvkm_falcon *);\n\nvoid gf100_msvld_init(struct nvkm_falcon *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

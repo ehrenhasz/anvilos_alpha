@@ -1,0 +1,9 @@
+{
+  "module_name": "altera.h",
+  "hash_id": "fa91817f4463c46a8aa4a81658fbe2363114df42f2b3b884a5fb68484e6ddc4a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/altera.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_SPI_ALTERA_H\n#define __LINUX_SPI_ALTERA_H\n\n#include <linux/interrupt.h>\n#include <linux/regmap.h>\n#include <linux/spi/spi.h>\n#include <linux/types.h>\n\n#define ALTERA_SPI_MAX_CS\t\t32\n\n \nstruct altera_spi_platform_data {\n\tu16\t\t\t\tmode_bits;\n\tu16\t\t\t\tnum_chipselect;\n\tu32\t\t\t\tbits_per_word_mask;\n\tu16\t\t\t\tnum_devices;\n\tstruct spi_board_info\t\t*devices;\n};\n\nstruct altera_spi {\n\tint irq;\n\tint len;\n\tint count;\n\tint bytes_per_word;\n\tu32 imr;\n\n\t \n\tconst unsigned char *tx;\n\tunsigned char *rx;\n\n\tstruct regmap *regmap;\n\tu32 regoff;\n\tstruct device *dev;\n};\n\nextern irqreturn_t altera_spi_irq(int irq, void *dev);\nextern void altera_spi_init_host(struct spi_controller *host);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

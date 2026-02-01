@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "6bcac6d2b706f21dabd9d246de50fcb87f9cece893553c2708756e02d07509bc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/memory-hotplug/config",
+  "human_readable_source": "CONFIG_MEMORY_HOTPLUG=y\nCONFIG_NOTIFIER_ERROR_INJECTION=y\nCONFIG_MEMORY_NOTIFIER_ERROR_INJECT=m\nCONFIG_MEMORY_HOTREMOVE=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9d30d2144dfe9210bd2f992f196207ff9879b59daceb9610ecba59b8d5167c1d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/cavium/nitrox/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_CRYPTO_DEV_NITROX_CNN55XX) += n5pf.o\n\nn5pf-objs := nitrox_main.o \\\n\tnitrox_isr.o \\\n\tnitrox_lib.o \\\n\tnitrox_hal.o \\\n\tnitrox_reqmgr.o \\\n\tnitrox_algs.o\t\\\n\tnitrox_mbx.o\t\\\n\tnitrox_skcipher.o \\\n\tnitrox_aead.o\n\nn5pf-$(CONFIG_PCI_IOV) += nitrox_sriov.o\nn5pf-$(CONFIG_DEBUG_FS) += nitrox_debugfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "audit.h",
+  "hash_id": "e106e443e41c537d754341f8effc83c8c5dbb993e7e0f79dd50261a6944bcbfa",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/audit.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_AUDIT_H\n#define _ASM_X86_AUDIT_H\n\nint ia32_classify_syscall(unsigned int syscall);\n\nextern unsigned ia32_dir_class[];\nextern unsigned ia32_write_class[];\nextern unsigned ia32_read_class[];\nextern unsigned ia32_chattr_class[];\nextern unsigned ia32_signal_class[];\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

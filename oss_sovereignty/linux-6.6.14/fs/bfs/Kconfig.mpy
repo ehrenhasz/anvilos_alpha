@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "05e8fde893ddccf917212e41993dc75ee1d65fa355e6999b1797b0627befb973",
+  "original_prompt": "Ingested from linux-6.6.14/fs/bfs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig BFS_FS\n\ttristate \"BFS file system support\"\n\tdepends on BLOCK\n\tselect BUFFER_HEAD\n\thelp\n\t  Boot File System (BFS) is a file system used under SCO UnixWare to\n\t  allow the bootloader access to the kernel image and other important\n\t  files during the boot process.  It is usually mounted under /stand\n\t  and corresponds to the slice marked as \"STAND\" in the UnixWare\n\t  partition.  You should say Y if you want to read or write the files\n\t  on your /stand slice from within Linux.  You then also need to say Y\n\t  to \"UnixWare slices support\", below.  More information about the BFS\n\t  file system is contained in the file\n\t  <file:Documentation/filesystems/bfs.rst>.\n\n\t  If you don't know what this is about, say N.\n\n\t  To compile this as a module, choose M here: the module will be called\n\t  bfs.  Note that the file system of your root partition (the one\n\t  containing the directory /) cannot be compiled as a module.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

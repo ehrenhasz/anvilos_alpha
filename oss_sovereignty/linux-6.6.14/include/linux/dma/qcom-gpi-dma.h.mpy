@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom-gpi-dma.h",
+  "hash_id": "2def6e058c8be33ee78104e55a3144da831f31a4003aa3e21fd4e8fb62a65c13",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dma/qcom-gpi-dma.h",
+  "human_readable_source": " \n \n\n#ifndef QCOM_GPI_DMA_H\n#define QCOM_GPI_DMA_H\n\n \nenum spi_transfer_cmd {\n\tSPI_TX = 1,\n\tSPI_RX,\n\tSPI_DUPLEX,\n};\n\n \nstruct gpi_spi_config {\n\tu8 set_config;\n\tu8 loopback_en;\n\tu8 clock_pol_high;\n\tu8 data_pol_high;\n\tu8 pack_en;\n\tu8 word_len;\n\tu8 fragmentation;\n\tu8 cs;\n\tu32 clk_div;\n\tu32 clk_src;\n\tenum spi_transfer_cmd cmd;\n\tu32 rx_len;\n};\n\nenum i2c_op {\n\tI2C_WRITE = 1,\n\tI2C_READ,\n};\n\n \nstruct gpi_i2c_config {\n\tu8 set_config;\n\tu8 pack_enable;\n\tu8 cycle_count;\n\tu8 high_count;\n\tu8 low_count;\n\tu8 addr;\n\tu8 stretch;\n\tu16 clk_div;\n\tu32 rx_len;\n\tenum i2c_op op;\n\tbool multi_msg;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

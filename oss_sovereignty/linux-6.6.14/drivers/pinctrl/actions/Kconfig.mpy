@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "6a6ac517382d80c5730676a44cea7d119e35ed1a177481cf493446bd7da44a65",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/actions/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig PINCTRL_OWL\n\tbool \"Actions Semi OWL pinctrl driver\"\n\tdepends on (ARCH_ACTIONS || COMPILE_TEST) && OF\n\tselect PINMUX\n\tselect PINCONF\n\tselect GENERIC_PINCONF\n\tselect GPIOLIB\n\tselect GPIOLIB_IRQCHIP\n\thelp\n\t  Say Y here to enable Actions Semi OWL pinctrl driver\n\nconfig PINCTRL_S500\n\tbool \"Actions Semi S500 pinctrl driver\"\n\tdepends on ARM || COMPILE_TEST\n\tdepends on PINCTRL_OWL\n\thelp\n\t  Say Y here to enable Actions Semi S500 pinctrl driver\n\nconfig PINCTRL_S700\n\tbool \"Actions Semi S700 pinctrl driver\"\n\tdepends on ARM64 || COMPILE_TEST\n\tdepends on PINCTRL_OWL\n\thelp\n\t  Say Y here to enable Actions Semi S700 pinctrl driver\n\nconfig PINCTRL_S900\n\tbool \"Actions Semi S900 pinctrl driver\"\n\tdepends on ARM64 || COMPILE_TEST\n\tdepends on PINCTRL_OWL\n\thelp\n\t  Say Y here to enable Actions Semi S900 pinctrl driver\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

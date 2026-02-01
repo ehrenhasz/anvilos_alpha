@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_ecn.h",
+  "hash_id": "d88c7d13d9234be827d5212b9b1c4a83e4e9da386a298ef5e178f5bbdf8afbeb",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_ecn.h",
+  "human_readable_source": " \n \n#ifndef _XT_ECN_H\n#define _XT_ECN_H\n\n#include <linux/types.h>\n#include <linux/netfilter/xt_dscp.h>\n\n#define XT_ECN_IP_MASK\t(~XT_DSCP_MASK)\n\n#define XT_ECN_OP_MATCH_IP\t0x01\n#define XT_ECN_OP_MATCH_ECE\t0x10\n#define XT_ECN_OP_MATCH_CWR\t0x20\n\n#define XT_ECN_OP_MATCH_MASK\t0xce\n\n \nstruct xt_ecn_info {\n\t__u8 operation;\n\t__u8 invert;\n\t__u8 ip_ect;\n\tunion {\n\t\tstruct {\n\t\t\t__u8 ect;\n\t\t} tcp;\n\t} proto;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

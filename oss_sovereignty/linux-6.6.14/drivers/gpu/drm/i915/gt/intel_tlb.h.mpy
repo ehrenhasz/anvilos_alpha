@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_tlb.h",
+  "hash_id": "423efdd1bf9c5ed57b23579a645d8bea71ebeac0df023b6f9f6616a727d145b8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_tlb.h",
+  "human_readable_source": " \n \n\n#ifndef INTEL_TLB_H\n#define INTEL_TLB_H\n\n#include <linux/seqlock.h>\n#include <linux/types.h>\n\n#include \"intel_gt_types.h\"\n\nvoid intel_gt_invalidate_tlb_full(struct intel_gt *gt, u32 seqno);\n\nvoid intel_gt_init_tlb(struct intel_gt *gt);\nvoid intel_gt_fini_tlb(struct intel_gt *gt);\n\nstatic inline u32 intel_gt_tlb_seqno(const struct intel_gt *gt)\n{\n\treturn seqprop_sequence(&gt->tlb.seqno);\n}\n\nstatic inline u32 intel_gt_next_invalidate_tlb_full(const struct intel_gt *gt)\n{\n\treturn intel_gt_tlb_seqno(gt) | 1;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

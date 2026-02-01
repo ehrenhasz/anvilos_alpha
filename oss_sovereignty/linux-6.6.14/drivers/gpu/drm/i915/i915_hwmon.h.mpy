@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_hwmon.h",
+  "hash_id": "336f19b6d7c9ec39b228a40c1dd9302c50ecbf6404bbe8383129ad0287c09016",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_hwmon.h",
+  "human_readable_source": " \n\n \n\n#ifndef __I915_HWMON_H__\n#define __I915_HWMON_H__\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\nstruct intel_gt;\n\n#if IS_REACHABLE(CONFIG_HWMON)\nvoid i915_hwmon_register(struct drm_i915_private *i915);\nvoid i915_hwmon_unregister(struct drm_i915_private *i915);\nvoid i915_hwmon_power_max_disable(struct drm_i915_private *i915, bool *old);\nvoid i915_hwmon_power_max_restore(struct drm_i915_private *i915, bool old);\n#else\nstatic inline void i915_hwmon_register(struct drm_i915_private *i915) { };\nstatic inline void i915_hwmon_unregister(struct drm_i915_private *i915) { };\nstatic inline void i915_hwmon_power_max_disable(struct drm_i915_private *i915, bool *old) { };\nstatic inline void i915_hwmon_power_max_restore(struct drm_i915_private *i915, bool old) { };\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dpu_writeback.h",
+  "hash_id": "027d67eaa2c0d24e6621129b669b23b6df951d929833290f6a52f74dee891b23",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/disp/dpu1/dpu_writeback.h",
+  "human_readable_source": " \n \n\n#ifndef _DPU_WRITEBACK_H\n#define _DPU_WRITEBACK_H\n\n#include <drm/drm_crtc.h>\n#include <drm/drm_file.h>\n#include <drm/drm_probe_helper.h>\n#include <drm/drm_writeback.h>\n\n#include \"msm_drv.h\"\n#include \"dpu_kms.h\"\n#include \"dpu_encoder_phys.h\"\n\nstruct dpu_wb_connector {\n\tstruct drm_writeback_connector base;\n\tstruct drm_encoder *wb_enc;\n};\n\nstatic inline struct dpu_wb_connector *to_dpu_wb_conn(struct drm_writeback_connector *conn)\n{\n\treturn container_of(conn, struct dpu_wb_connector, base);\n}\n\nint dpu_writeback_init(struct drm_device *dev, struct drm_encoder *enc,\n\t\tconst u32 *format_list, u32 num_formats);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

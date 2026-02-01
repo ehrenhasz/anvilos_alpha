@@ -1,0 +1,9 @@
+{
+  "module_name": "obstack.m4",
+  "hash_id": "e5611bb66fc4ab73c261b2e120a0d16b695142499d1b26d855466e0c1e921545",
+  "original_prompt": "Ingested from coreutils-9.4/m4/obstack.m4",
+  "human_readable_source": "# See if we need to provide obstacks.\n\ndnl Copyright 1996-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl Autoconf's AC_FUNC_OBSTACK is marked obsolete since version 2.70.\ndnl We provide our own macro here.\n\nAC_DEFUN([gl_FUNC_OBSTACK],\n[\n  AC_CACHE_CHECK([for obstacks that work with any size object],\n    [gl_cv_func_obstack],\n    [AC_LINK_IFELSE(\n       [AC_LANG_PROGRAM(\n          [[#include \"obstack.h\"\n            void *obstack_chunk_alloc (size_t n) { return 0; }\n            void obstack_chunk_free (void *p) { }\n            /* Check that an internal function returns size_t, not int.  */\n            size_t _obstack_memory_used (struct obstack *);\n           ]],\n          [[struct obstack mem;\n            obstack_init (&mem);\n            obstack_free (&mem, 0);\n          ]])],\n       [gl_cv_func_obstack=yes],\n       [gl_cv_func_obstack=no])])\n  if test \"$gl_cv_func_obstack\" = yes; then\n    AC_DEFINE([HAVE_OBSTACK], 1,\n      [Define to 1 if the system has obstacks that work with any size object.])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "call-path.h",
+  "hash_id": "6552df2df71e0e4c8f7902bb92bd5d10ba8f9bae6689492e3baa6e61e81f15c5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/call-path.h",
+  "human_readable_source": " \n \n\n#ifndef __PERF_CALL_PATH_H\n#define __PERF_CALL_PATH_H\n\n#include <sys/types.h>\n\n#include <linux/types.h>\n#include <linux/rbtree.h>\n\n \nstruct call_path {\n\tstruct call_path *parent;\n\tstruct symbol *sym;\n\tu64 ip;\n\tu64 db_id;\n\tbool in_kernel;\n\tstruct rb_node rb_node;\n\tstruct rb_root children;\n};\n\n#define CALL_PATH_BLOCK_SHIFT 8\n#define CALL_PATH_BLOCK_SIZE (1 << CALL_PATH_BLOCK_SHIFT)\n#define CALL_PATH_BLOCK_MASK (CALL_PATH_BLOCK_SIZE - 1)\n\nstruct call_path_block {\n\tstruct call_path cp[CALL_PATH_BLOCK_SIZE];\n\tstruct list_head node;\n};\n\n \nstruct call_path_root {\n\tstruct call_path call_path;\n\tstruct list_head blocks;\n\tsize_t next;\n\tsize_t sz;\n};\n\nstruct call_path_root *call_path_root__new(void);\nvoid call_path_root__free(struct call_path_root *cpr);\n\nstruct call_path *call_path__findnew(struct call_path_root *cpr,\n\t\t\t\t     struct call_path *parent,\n\t\t\t\t     struct symbol *sym, u64 ip, u64 ks);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

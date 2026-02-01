@@ -1,0 +1,9 @@
+{
+  "module_name": "thanks-gen",
+  "hash_id": "d882ad737c16d9ba034fee8aa4329f9b0e3885a1b70d59add3bc49c2373b871c",
+  "original_prompt": "Ingested from coreutils-9.4/thanks-gen",
+  "human_readable_source": "#!/usr/bin/perl -nl\n# Use Perl's multi-byte alignment code, via sprintf, while\n# performing a rudimentary check for duplicate names and\n# removing duplicate name,email pairs.\nuse Encode;\n\nBEGIN { my (%seen, %name) }\n\nchomp;\nmy ($name, $email) = split '\\0', decode ('UTF-8', $_);\n\n$seen{$name}++\n  and warn \"$0: THANKS.in: duplicate name: $name\\n\";\n\nprint encode ('UTF-8', sprintf ('%-36s', $name)), $email\n  unless $seen{\"$name\\0$email\"}++;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

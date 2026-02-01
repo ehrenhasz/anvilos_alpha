@@ -1,0 +1,9 @@
+{
+  "module_name": "check-integrity.h",
+  "hash_id": "deddff488f3176823e4cdd7d53785ea92ee7c47fc07950dc3dd4e4fe8cfc48cc",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/check-integrity.h",
+  "human_readable_source": " \n \n\n#ifndef BTRFS_CHECK_INTEGRITY_H\n#define BTRFS_CHECK_INTEGRITY_H\n\n#ifdef CONFIG_BTRFS_FS_CHECK_INTEGRITY\nvoid btrfsic_check_bio(struct bio *bio);\n#else\nstatic inline void btrfsic_check_bio(struct bio *bio) { }\n#endif\n\nint btrfsic_mount(struct btrfs_fs_info *fs_info,\n\t\t  struct btrfs_fs_devices *fs_devices,\n\t\t  int including_extent_data, u32 print_mask);\nvoid btrfsic_unmount(struct btrfs_fs_devices *fs_devices);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

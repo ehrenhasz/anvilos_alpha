@@ -1,0 +1,9 @@
+{
+  "module_name": "sharded_mutex.c",
+  "hash_id": "5a80044606e99d9cc4dec341fa290a21d1474e7482b882920032ef3245ac9d54",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/sharded_mutex.c",
+  "human_readable_source": "\n#include \"sharded_mutex.h\"\n\n#include <stdlib.h>\n\nstruct sharded_mutex *sharded_mutex__new(size_t num_shards)\n{\n\tstruct sharded_mutex *result;\n\tsize_t size;\n\tunsigned int bits;\n\n\tfor (bits = 0; ((size_t)1 << bits) < num_shards; bits++)\n\t\t;\n\n\tsize = sizeof(*result) + sizeof(struct mutex) * (1 << bits);\n\tresult = malloc(size);\n\tif (!result)\n\t\treturn NULL;\n\n\tresult->cap_bits = bits;\n\tfor (size_t i = 0; i < ((size_t)1 << bits); i++)\n\t\tmutex_init(&result->mutexes[i]);\n\n\treturn result;\n}\n\nvoid sharded_mutex__delete(struct sharded_mutex *sm)\n{\n\tfor (size_t i = 0; i < ((size_t)1 << sm->cap_bits); i++)\n\t\tmutex_destroy(&sm->mutexes[i]);\n\n\tfree(sm);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

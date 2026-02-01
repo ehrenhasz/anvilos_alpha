@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sched_getcpu.c",
+  "hash_id": "cf66c39959fbf04bc446b5dcc4645608c66e0d280a76d88eee67f68417a5afcd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-sched_getcpu.c",
+  "human_readable_source": "\n#ifndef _GNU_SOURCE\n#define _GNU_SOURCE\n#endif\n#include <sched.h>\n\nint main(void)\n{\n\treturn sched_getcpu();\n}\n\n#undef _GNU_SOURCE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

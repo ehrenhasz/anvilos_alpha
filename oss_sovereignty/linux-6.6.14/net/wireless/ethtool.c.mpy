@@ -1,0 +1,9 @@
+{
+  "module_name": "ethtool.c",
+  "hash_id": "a2f847777edb360fd617f05fcd4e423c6e0affb95bc8551e30a864360d66b17c",
+  "original_prompt": "Ingested from linux-6.6.14/net/wireless/ethtool.c",
+  "human_readable_source": "\n#include <linux/utsname.h>\n#include <net/cfg80211.h>\n#include \"core.h\"\n#include \"rdev-ops.h\"\n\nvoid cfg80211_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)\n{\n\tstruct wireless_dev *wdev = dev->ieee80211_ptr;\n\tstruct device *pdev = wiphy_dev(wdev->wiphy);\n\n\tif (pdev->driver)\n\t\tstrscpy(info->driver, pdev->driver->name,\n\t\t\tsizeof(info->driver));\n\telse\n\t\tstrscpy(info->driver, \"N/A\", sizeof(info->driver));\n\n\tstrscpy(info->version, init_utsname()->release, sizeof(info->version));\n\n\tif (wdev->wiphy->fw_version[0])\n\t\tstrscpy(info->fw_version, wdev->wiphy->fw_version,\n\t\t\tsizeof(info->fw_version));\n\telse\n\t\tstrscpy(info->fw_version, \"N/A\", sizeof(info->fw_version));\n\n\tstrscpy(info->bus_info, dev_name(wiphy_dev(wdev->wiphy)),\n\t\tsizeof(info->bus_info));\n}\nEXPORT_SYMBOL(cfg80211_get_drvinfo);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

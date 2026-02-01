@@ -1,0 +1,9 @@
+{
+  "module_name": "kmem.h",
+  "hash_id": "1c91d71559e736ba5f7d8a0666ca88300de5721e728c893146abf147480dba5f",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/kmem.h",
+  "human_readable_source": " \n \n\n#ifndef _SYS_KMEM_H\n#define\t_SYS_KMEM_H\n\n#include <stdlib.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n#define\tKM_SLEEP\t0x00000000\t \n#define\tKM_NOSLEEP\t0x00000001\t \n\n#define\tkmem_alloc(size, flags)\t\t((void) sizeof (flags), malloc(size))\n#define\tkmem_free(ptr, size)\t\t((void) sizeof (size), free(ptr))\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "host.h",
+  "hash_id": "6c06aad415fa4a0e237db096a0b8424b619376f83990152ca089e8c7f2ae9c5b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/chipidea/host.h",
+  "human_readable_source": " \n#ifndef __DRIVERS_USB_CHIPIDEA_HOST_H\n#define __DRIVERS_USB_CHIPIDEA_HOST_H\n\n#ifdef CONFIG_USB_CHIPIDEA_HOST\n\nint ci_hdrc_host_init(struct ci_hdrc *ci);\nvoid ci_hdrc_host_destroy(struct ci_hdrc *ci);\nvoid ci_hdrc_host_driver_init(void);\n\n#else\n\nstatic inline int ci_hdrc_host_init(struct ci_hdrc *ci)\n{\n\treturn -ENXIO;\n}\n\nstatic inline void ci_hdrc_host_destroy(struct ci_hdrc *ci)\n{\n\n}\n\nstatic inline void ci_hdrc_host_driver_init(void)\n{\n\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

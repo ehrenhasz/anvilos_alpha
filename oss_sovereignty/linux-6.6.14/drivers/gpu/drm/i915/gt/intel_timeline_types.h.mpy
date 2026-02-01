@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_timeline_types.h",
+  "hash_id": "d32ac3a61cc6a14303557fcd2acaaf22c8bc7a56e7ad14c4e07f6c8aad31e7ff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_timeline_types.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_TIMELINE_TYPES_H__\n#define __I915_TIMELINE_TYPES_H__\n\n#include <linux/list.h>\n#include <linux/kref.h>\n#include <linux/mutex.h>\n#include <linux/rcupdate.h>\n#include <linux/types.h>\n\n#include \"i915_active_types.h\"\n\nstruct i915_vma;\nstruct i915_syncmap;\nstruct intel_gt;\n\nstruct intel_timeline {\n\tu64 fence_context;\n\tu32 seqno;\n\n\tstruct mutex mutex;  \n\n\t \n\tatomic_t pin_count;\n\tatomic_t active_count;\n\n\tvoid *hwsp_map;\n\tconst u32 *hwsp_seqno;\n\tstruct i915_vma *hwsp_ggtt;\n\tu32 hwsp_offset;\n\n\tbool has_initial_breadcrumb;\n\n\t \n\tstruct list_head requests;\n\n\t \n\tstruct i915_active_fence last_request;\n\n\tstruct i915_active active;\n\n\t \n\tstruct intel_timeline *retire;\n\n\t \n\tstruct i915_syncmap *sync;\n\n\tstruct list_head link;\n\tstruct intel_gt *gt;\n\n\tstruct list_head engine_link;\n\n\tstruct kref kref;\n\tstruct rcu_head rcu;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

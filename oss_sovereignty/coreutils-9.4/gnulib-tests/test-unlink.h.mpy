@@ -1,0 +1,9 @@
+{
+  "module_name": "test-unlink.h",
+  "hash_id": "64741575c79e17210b2976472e2c51335c9c578e1a6fb1e996829a0d0cd3b18d",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-unlink.h",
+  "human_readable_source": " \n\n \n\nstatic int\ntest_unlink_func (int (*func) (char const *name), bool print)\n{\n   \n  ASSERT (mkdir (BASE \"dir\", 0700) == 0);\n  ASSERT (close (creat (BASE \"dir/file\", 0600)) == 0);\n\n   \n  errno = 0;\n  ASSERT (func (\"\") == -1);\n  ASSERT (errno == ENOENT);\n  errno = 0;\n  ASSERT (func (BASE \"nosuch\") == -1);\n  ASSERT (errno == ENOENT);\n  errno = 0;\n  ASSERT (func (BASE \"nosuch/\") == -1);\n  ASSERT (errno == ENOENT);\n   \n  if (cannot_unlink_dir ())\n    {\n      ASSERT (func (\".\") == -1);\n      ASSERT (func (\"..\") == -1);\n      ASSERT (func (\"/\") == -1);\n      ASSERT (func (BASE \"dir\") == -1);\n      ASSERT (mkdir (BASE \"dir1\", 0700) == 0);\n      ASSERT (func (BASE \"dir1\") == -1);\n      ASSERT (rmdir (BASE \"dir1\") == 0);\n    }\n  errno = 0;\n  ASSERT (func (BASE \"dir/file/\") == -1);\n  ASSERT (errno == ENOTDIR);\n\n   \n  if (symlink (BASE \"dir\", BASE \"link\") != 0)\n    {\n      ASSERT (func (BASE \"dir/file\") == 0);\n      ASSERT (rmdir (BASE \"dir\") == 0);\n      if (print)\n        fputs (\"skipping test: symlinks not supported on this file system\\n\",\n               stderr);\n      return 77;\n    }\n  if (cannot_unlink_dir ())\n    ASSERT (func (BASE \"link/\") == -1);\n  ASSERT (func (BASE \"link\") == 0);\n  ASSERT (symlink (BASE \"dir/file\", BASE \"link\") == 0);\n  errno = 0;\n  ASSERT (func (BASE \"link/\") == -1);\n  ASSERT (errno == ENOTDIR);\n   \n  ASSERT (func (BASE \"link\") == 0);\n  ASSERT (func (BASE \"dir/file\") == 0);\n  ASSERT (rmdir (BASE \"dir\") == 0);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

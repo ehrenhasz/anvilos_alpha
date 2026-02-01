@@ -1,0 +1,9 @@
+{
+  "module_name": "cp.x",
+  "hash_id": "095faf6b2470ccb00fb61bfd7f6feb6dfb1f3629f04151ad3283f0ad15a69c5b",
+  "original_prompt": "Ingested from coreutils-9.4/man/cp.x",
+  "human_readable_source": "[NAME]\ncp \\- copy files and directories\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ninstall(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-mcp23s08.h",
+  "hash_id": "8f55c2128c6e1a972eb01fe847f7bce7f25142f4fb6009cac13a56b95086fb64",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/pinctrl-mcp23s08.h",
+  "human_readable_source": " \n \n\n#include <linux/gpio/driver.h>\n#include <linux/irq.h>\n#include <linux/mutex.h>\n#include <linux/pinctrl/pinctrl.h>\n#include <linux/types.h>\n\n \n#define MCP_TYPE_S08\t1\n#define MCP_TYPE_S17\t2\n#define MCP_TYPE_008\t3\n#define MCP_TYPE_017\t4\n#define MCP_TYPE_S18\t5\n#define MCP_TYPE_018\t6\n\nstruct device;\nstruct regmap;\n\nstruct pinctrl_dev;\n\nstruct mcp23s08 {\n\tu8\t\t\taddr;\n\tbool\t\t\tirq_active_high;\n\tbool\t\t\treg_shift;\n\n\tu16\t\t\tirq_rise;\n\tu16\t\t\tirq_fall;\n\tint\t\t\tirq;\n\tbool\t\t\tirq_controller;\n\tint\t\t\tcached_gpio;\n\t \n\tstruct mutex\t\tlock;\n\n\tstruct gpio_chip\tchip;\n\n\tstruct regmap\t\t*regmap;\n\tstruct device\t\t*dev;\n\n\tstruct pinctrl_dev\t*pctldev;\n\tstruct pinctrl_desc\tpinctrl_desc;\n\tstruct gpio_desc        *reset_gpio;\n};\n\nextern const struct regmap_config mcp23x08_regmap;\nextern const struct regmap_config mcp23x17_regmap;\n\nint mcp23s08_probe_one(struct mcp23s08 *mcp, struct device *dev,\n\t\t       unsigned int addr, unsigned int type, unsigned int base);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

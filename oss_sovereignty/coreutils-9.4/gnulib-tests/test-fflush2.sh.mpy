@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fflush2.sh",
+  "hash_id": "716654e4d1fccb74ebb2a4ba528e3738f26a5e853d574635d7f2c3303718e46b",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fflush2.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Execute the test only with seekable input stream.\n# The behaviour of fflush() on a non-seekable input stream is undefined.\n${CHECKER} ./test-fflush2${EXEEXT} 1 < \"$srcdir/test-fflush2.sh\" || exit $?\n${CHECKER} ./test-fflush2${EXEEXT} 2 < \"$srcdir/test-fflush2.sh\" || exit $?\n#cat \"$srcdir/test-fflush2.sh\" | ${CHECKER} ./test-fflush2${EXEEXT} || exit $?\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

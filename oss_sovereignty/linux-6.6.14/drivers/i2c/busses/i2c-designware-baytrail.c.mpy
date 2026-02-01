@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-designware-baytrail.c",
+  "hash_id": "a7eb73439efe5077e6a0acaaf2b31bd5630ddc62730601e73fb1393b660f6637",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/i2c/busses/i2c-designware-baytrail.c",
+  "human_readable_source": "\n \n#include <linux/device.h>\n#include <linux/acpi.h>\n#include <linux/i2c.h>\n#include <linux/interrupt.h>\n\n#include <asm/iosf_mbi.h>\n\n#include \"i2c-designware-core.h\"\n\nint i2c_dw_baytrail_probe_lock_support(struct dw_i2c_dev *dev)\n{\n\tacpi_status status;\n\tunsigned long long shared_host = 0;\n\tacpi_handle handle;\n\n\tif (!dev)\n\t\treturn -ENODEV;\n\n\thandle = ACPI_HANDLE(dev->dev);\n\tif (!handle)\n\t\treturn -ENODEV;\n\n\tstatus = acpi_evaluate_integer(handle, \"_SEM\", NULL, &shared_host);\n\tif (ACPI_FAILURE(status))\n\t\treturn -ENODEV;\n\n\tif (!shared_host)\n\t\treturn -ENODEV;\n\n\tif (!iosf_mbi_available())\n\t\treturn -EPROBE_DEFER;\n\n\tdev_info(dev->dev, \"I2C bus managed by PUNIT\\n\");\n\tdev->acquire_lock = iosf_mbi_block_punit_i2c_access;\n\tdev->release_lock = iosf_mbi_unblock_punit_i2c_access;\n\tdev->shared_with_punit = true;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

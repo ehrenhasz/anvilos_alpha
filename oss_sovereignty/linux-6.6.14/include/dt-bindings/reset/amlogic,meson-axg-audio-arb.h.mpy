@@ -1,0 +1,9 @@
+{
+  "module_name": "amlogic,meson-axg-audio-arb.h",
+  "hash_id": "4fb3879c3467db7df03e04acd65c0d9cab6a27ed9939b25e31968b285a84c4c2",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/amlogic,meson-axg-audio-arb.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_AMLOGIC_MESON_AXG_AUDIO_ARB_H\n#define _DT_BINDINGS_AMLOGIC_MESON_AXG_AUDIO_ARB_H\n\n#define AXG_ARB_TODDR_A\t0\n#define AXG_ARB_TODDR_B\t1\n#define AXG_ARB_TODDR_C\t2\n#define AXG_ARB_FRDDR_A\t3\n#define AXG_ARB_FRDDR_B\t4\n#define AXG_ARB_FRDDR_C\t5\n#define AXG_ARB_TODDR_D\t6\n#define AXG_ARB_FRDDR_D\t7\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

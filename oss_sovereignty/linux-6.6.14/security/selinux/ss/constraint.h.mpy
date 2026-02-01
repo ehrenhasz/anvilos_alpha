@@ -1,0 +1,9 @@
+{
+  "module_name": "constraint.h",
+  "hash_id": "c4a887c1671327351b49e30e5fadb51849793e92250cb38860ba712f01ceaa72",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/ss/constraint.h",
+  "human_readable_source": " \n \n#ifndef _SS_CONSTRAINT_H_\n#define _SS_CONSTRAINT_H_\n\n#include \"ebitmap.h\"\n\n#define CEXPR_MAXDEPTH 5\n\nstruct constraint_expr {\n#define CEXPR_NOT\t\t1  \n#define CEXPR_AND\t\t2  \n#define CEXPR_OR\t\t3  \n#define CEXPR_ATTR\t\t4  \n#define CEXPR_NAMES\t\t5  \n\tu32 expr_type;\t\t \n\n#define CEXPR_USER 1\t\t \n#define CEXPR_ROLE 2\t\t \n#define CEXPR_TYPE 4\t\t \n#define CEXPR_TARGET 8\t\t \n#define CEXPR_XTARGET 16\t \n#define CEXPR_L1L2 32\t\t \n#define CEXPR_L1H2 64\t\t \n#define CEXPR_H1L2 128\t\t \n#define CEXPR_H1H2 256\t\t \n#define CEXPR_L1H1 512\t\t \n#define CEXPR_L2H2 1024\t\t \n\tu32 attr;\t\t \n\n#define CEXPR_EQ     1\t\t \n#define CEXPR_NEQ    2\t\t \n#define CEXPR_DOM    3\t\t \n#define CEXPR_DOMBY  4\t\t \n#define CEXPR_INCOMP 5\t\t \n\tu32 op;\t\t\t \n\n\tstruct ebitmap names;\t \n\tstruct type_set *type_names;\n\n\tstruct constraint_expr *next;    \n};\n\nstruct constraint_node {\n\tu32 permissions;\t \n\tstruct constraint_expr *expr;\t \n\tstruct constraint_node *next;\t \n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

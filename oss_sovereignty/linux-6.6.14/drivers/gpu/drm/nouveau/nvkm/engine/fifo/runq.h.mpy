@@ -1,0 +1,9 @@
+{
+  "module_name": "runq.h",
+  "hash_id": "479b2f4953f1df186405757687412c19ca21fd1c3965049469d30747e5a7a4d3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/fifo/runq.h",
+  "human_readable_source": " \n#ifndef __NVKM_RUNQ_H__\n#define __NVKM_RUNQ_H__\n#include <core/os.h>\nstruct nvkm_runl;\n\nstruct nvkm_runq {\n\tconst struct nvkm_runq_func {\n\t\tvoid (*init)(struct nvkm_runq *);\n\t\tbool (*intr)(struct nvkm_runq *, struct nvkm_runl *);\n\t\tconst struct nvkm_bitfield *intr_0_names;\n\t\tbool (*intr_1_ctxnotvalid)(struct nvkm_runq *, int chid);\n\t\tbool (*idle)(struct nvkm_runq *);\n\t} *func;\n\tstruct nvkm_fifo *fifo;\n\tint id;\n\n\tstruct list_head head;\n};\n\nstruct nvkm_runq *nvkm_runq_new(struct nvkm_fifo *, int pbid);\nvoid nvkm_runq_del(struct nvkm_runq *);\n\n#define nvkm_runq_foreach(runq,fifo) list_for_each_entry((runq), &(fifo)->runqs, head)\n#define nvkm_runq_foreach_cond(runq,fifo,cond) nvkm_list_foreach(runq, &(fifo)->runqs, head, (cond))\n\n#define RUNQ_PRINT(r,l,p,f,a...)\t\t\t\t\t\t\t   \\\n\tnvkm_printk__(&(r)->fifo->engine.subdev, NV_DBG_##l, p, \"PBDMA%d:\"f, (r)->id, ##a)\n#define RUNQ_ERROR(r,f,a...) RUNQ_PRINT((r), ERROR,    err, \" \"f\"\\n\", ##a)\n#define RUNQ_DEBUG(r,f,a...) RUNQ_PRINT((r), DEBUG,   info, \" \"f\"\\n\", ##a)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

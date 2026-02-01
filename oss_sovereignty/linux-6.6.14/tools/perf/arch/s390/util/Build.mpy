@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "fcf5cf5faaceb67dc9de9d9e4fdc7f927e2b4006d02b3d91f7a941bfdd8134f6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/s390/util/Build",
+  "human_readable_source": "perf-y += header.o\nperf-$(CONFIG_LIBTRACEEVENT) += kvm-stat.o\nperf-y += perf_regs.o\n\nperf-$(CONFIG_DWARF) += dwarf-regs.o\nperf-$(CONFIG_LIBDW_DWARF_UNWIND) += unwind-libdw.o\n\nperf-y += machine.o\nperf-y += pmu.o\n\nperf-$(CONFIG_AUXTRACE) += auxtrace.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "internal.h",
+  "hash_id": "166042c277febe0bf11d1e804a7d595b6625fff9e32b690da902d8e49a4123d5",
+  "original_prompt": "Ingested from linux-6.6.14/fs/tracefs/internal.h",
+  "human_readable_source": " \n#ifndef _TRACEFS_INTERNAL_H\n#define _TRACEFS_INTERNAL_H\n\nenum {\n\tTRACEFS_EVENT_INODE\t\t= BIT(1),\n\tTRACEFS_EVENT_TOP_INODE\t\t= BIT(2),\n};\n\nstruct tracefs_inode {\n\tunsigned long           flags;\n\tvoid                    *private;\n\tstruct inode            vfs_inode;\n};\n\nstatic inline struct tracefs_inode *get_tracefs(const struct inode *inode)\n{\n\treturn container_of(inode, struct tracefs_inode, vfs_inode);\n}\n\nstruct dentry *tracefs_start_creating(const char *name, struct dentry *parent);\nstruct dentry *tracefs_end_creating(struct dentry *dentry);\nstruct dentry *tracefs_failed_creating(struct dentry *dentry);\nstruct inode *tracefs_get_inode(struct super_block *sb);\nstruct dentry *eventfs_start_creating(const char *name, struct dentry *parent);\nstruct dentry *eventfs_failed_creating(struct dentry *dentry);\nstruct dentry *eventfs_end_creating(struct dentry *dentry);\nvoid eventfs_set_ef_status_free(struct tracefs_inode *ti, struct dentry *dentry);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

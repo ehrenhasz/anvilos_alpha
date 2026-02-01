@@ -1,0 +1,9 @@
+{
+  "module_name": "dfl.h",
+  "hash_id": "ee2ccae27baea5a460666584714793404d5419c771287dde81c5282bc0183c0e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dfl.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_DFL_H\n#define __LINUX_DFL_H\n\n#include <linux/device.h>\n#include <linux/mod_devicetable.h>\n\n \nenum dfl_id_type {\n\tFME_ID = 0,\n\tPORT_ID = 1,\n\tDFL_ID_MAX,\n};\n\n \nstruct dfl_device {\n\tstruct device dev;\n\tint id;\n\tu16 type;\n\tu16 feature_id;\n\tu8 revision;\n\tstruct resource mmio_res;\n\tint *irqs;\n\tunsigned int num_irqs;\n\tstruct dfl_fpga_cdev *cdev;\n\tconst struct dfl_device_id *id_entry;\n\tu8 dfh_version;\n\tunsigned int param_size;\n\tvoid *params;\n};\n\n \nstruct dfl_driver {\n\tstruct device_driver drv;\n\tconst struct dfl_device_id *id_table;\n\n\tint (*probe)(struct dfl_device *dfl_dev);\n\tvoid (*remove)(struct dfl_device *dfl_dev);\n};\n\n#define to_dfl_dev(d) container_of(d, struct dfl_device, dev)\n#define to_dfl_drv(d) container_of(d, struct dfl_driver, drv)\n\n \n#define dfl_driver_register(drv) \\\n\t__dfl_driver_register(drv, THIS_MODULE)\nint __dfl_driver_register(struct dfl_driver *dfl_drv, struct module *owner);\nvoid dfl_driver_unregister(struct dfl_driver *dfl_drv);\n\n \n#define module_dfl_driver(__dfl_driver) \\\n\tmodule_driver(__dfl_driver, dfl_driver_register, \\\n\t\t      dfl_driver_unregister)\n\nvoid *dfh_find_param(struct dfl_device *dfl_dev, int param_id, size_t *pcount);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

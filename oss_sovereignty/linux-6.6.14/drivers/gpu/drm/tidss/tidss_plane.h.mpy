@@ -1,0 +1,9 @@
+{
+  "module_name": "tidss_plane.h",
+  "hash_id": "acabbf9fd25482eb9746cd91a6cbab9a63ffb94e4d66fef4ff9e8b921b1fac29",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tidss/tidss_plane.h",
+  "human_readable_source": " \n \n\n#ifndef __TIDSS_PLANE_H__\n#define __TIDSS_PLANE_H__\n\n#define to_tidss_plane(p) container_of((p), struct tidss_plane, plane)\n\nstruct tidss_device;\n\nstruct tidss_plane {\n\tstruct drm_plane plane;\n\n\tu32 hw_plane_id;\n};\n\nstruct tidss_plane *tidss_plane_create(struct tidss_device *tidss,\n\t\t\t\t       u32 hw_plane_id, u32 plane_type,\n\t\t\t\t       u32 crtc_mask, const u32 *formats,\n\t\t\t\t       u32 num_formats);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

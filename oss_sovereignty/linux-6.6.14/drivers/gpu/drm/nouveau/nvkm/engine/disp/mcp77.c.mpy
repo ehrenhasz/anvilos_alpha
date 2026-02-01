@@ -1,0 +1,9 @@
+{
+  "module_name": "mcp77.c",
+  "hash_id": "1b6fa07b9fb781fe4724d0ad9ef08a9299f8c7daa6cb5b947fa8b0a74106cb0b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/disp/mcp77.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"chan.h\"\n#include \"head.h\"\n#include \"ior.h\"\n\n#include <nvif/class.h>\n\nstatic const struct nvkm_ior_func\nmcp77_sor = {\n\t.state = g94_sor_state,\n\t.power = nv50_sor_power,\n\t.clock = nv50_sor_clock,\n\t.hdmi = &g84_sor_hdmi,\n\t.dp = &g94_sor_dp,\n};\n\nstatic int\nmcp77_sor_new(struct nvkm_disp *disp, int id)\n{\n\treturn nvkm_ior_new_(&mcp77_sor, disp, SOR, id, false);\n}\n\nstatic const struct nvkm_disp_func\nmcp77_disp = {\n\t.oneinit = nv50_disp_oneinit,\n\t.init = nv50_disp_init,\n\t.fini = nv50_disp_fini,\n\t.intr = nv50_disp_intr,\n\t.super = nv50_disp_super,\n\t.uevent = &nv50_disp_chan_uevent,\n\t.head = { .cnt = nv50_head_cnt, .new = nv50_head_new },\n\t.dac = { .cnt = nv50_dac_cnt, .new = nv50_dac_new },\n\t.sor = { .cnt = g94_sor_cnt, .new = mcp77_sor_new },\n\t.pior = { .cnt = nv50_pior_cnt, .new = nv50_pior_new },\n\t.root = { 0,0,GT206_DISP },\n\t.user = {\n\t\t{{0,0,  G82_DISP_CURSOR             }, nvkm_disp_chan_new, & nv50_disp_curs },\n\t\t{{0,0,  G82_DISP_OVERLAY            }, nvkm_disp_chan_new, & nv50_disp_oimm },\n\t\t{{0,0,GT200_DISP_BASE_CHANNEL_DMA   }, nvkm_disp_chan_new, &  g84_disp_base },\n\t\t{{0,0,GT206_DISP_CORE_CHANNEL_DMA   }, nvkm_disp_core_new, &  g94_disp_core },\n\t\t{{0,0,GT200_DISP_OVERLAY_CHANNEL_DMA}, nvkm_disp_chan_new, &gt200_disp_ovly },\n\t\t{}\n\t},\n};\n\nint\nmcp77_disp_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t       struct nvkm_disp **pdisp)\n{\n\treturn nvkm_disp_new_(&mcp77_disp, device, type, inst, pdisp);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

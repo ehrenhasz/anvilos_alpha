@@ -1,0 +1,9 @@
+{
+  "module_name": "BIG.FAT.WARNING",
+  "hash_id": "73ad660058cb21d83c3d9c12e40d5734dd6cb2b8369ce6200378e08ac11ea3f7",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/kconfig/lxdialog/BIG.FAT.WARNING",
+  "human_readable_source": "This is NOT the official version of dialog.  This version has been\nsignificantly modified from the original.  It is for use by the Linux\nkernel configuration script.  Please do not bother Savio Lam with\nquestions about this program.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

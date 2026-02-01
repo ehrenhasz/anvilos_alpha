@@ -1,0 +1,9 @@
+{
+  "module_name": "memcat_p.c",
+  "hash_id": "1d0bd6f12dcb86e70f8826d7973ef77be70d27f8d92e4011ead920ee4258d95a",
+  "original_prompt": "Ingested from linux-6.6.14/lib/memcat_p.c",
+  "human_readable_source": "\n\n#include <linux/slab.h>\n\n \nvoid **__memcat_p(void **a, void **b)\n{\n\tvoid **p = a, **new;\n\tint nr;\n\n\t \n\tfor (nr = 0, p = a; *p; nr++, p++)\n\t\t;\n\tfor (p = b; *p; nr++, p++)\n\t\t;\n\t \n\tnr++;\n\n\tnew = kmalloc_array(nr, sizeof(void *), GFP_KERNEL);\n\tif (!new)\n\t\treturn NULL;\n\n\t \n\tfor (nr--; nr >= 0; nr--, p = p == b ? &a[nr] : p - 1)\n\t\tnew[nr] = *p;\n\n\treturn new;\n}\nEXPORT_SYMBOL_GPL(__memcat_p);\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "genl.c",
+  "hash_id": "7e6cdb02ecdc71b408abed9b6f984616cab9f709e11aba3c847ac21981608810",
+  "original_prompt": "Ingested from linux-6.6.14/net/handshake/genl.c",
+  "human_readable_source": "\n \n \n \n\n#include <net/netlink.h>\n#include <net/genetlink.h>\n\n#include \"genl.h\"\n\n#include <uapi/linux/handshake.h>\n\n \nstatic const struct nla_policy handshake_accept_nl_policy[HANDSHAKE_A_ACCEPT_HANDLER_CLASS + 1] = {\n\t[HANDSHAKE_A_ACCEPT_HANDLER_CLASS] = NLA_POLICY_MAX(NLA_U32, 2),\n};\n\n \nstatic const struct nla_policy handshake_done_nl_policy[HANDSHAKE_A_DONE_REMOTE_AUTH + 1] = {\n\t[HANDSHAKE_A_DONE_STATUS] = { .type = NLA_U32, },\n\t[HANDSHAKE_A_DONE_SOCKFD] = { .type = NLA_U32, },\n\t[HANDSHAKE_A_DONE_REMOTE_AUTH] = { .type = NLA_U32, },\n};\n\n \nstatic const struct genl_split_ops handshake_nl_ops[] = {\n\t{\n\t\t.cmd\t\t= HANDSHAKE_CMD_ACCEPT,\n\t\t.doit\t\t= handshake_nl_accept_doit,\n\t\t.policy\t\t= handshake_accept_nl_policy,\n\t\t.maxattr\t= HANDSHAKE_A_ACCEPT_HANDLER_CLASS,\n\t\t.flags\t\t= GENL_ADMIN_PERM | GENL_CMD_CAP_DO,\n\t},\n\t{\n\t\t.cmd\t\t= HANDSHAKE_CMD_DONE,\n\t\t.doit\t\t= handshake_nl_done_doit,\n\t\t.policy\t\t= handshake_done_nl_policy,\n\t\t.maxattr\t= HANDSHAKE_A_DONE_REMOTE_AUTH,\n\t\t.flags\t\t= GENL_CMD_CAP_DO,\n\t},\n};\n\nstatic const struct genl_multicast_group handshake_nl_mcgrps[] = {\n\t[HANDSHAKE_NLGRP_NONE] = { \"none\", },\n\t[HANDSHAKE_NLGRP_TLSHD] = { \"tlshd\", },\n};\n\nstruct genl_family handshake_nl_family __ro_after_init = {\n\t.name\t\t= HANDSHAKE_FAMILY_NAME,\n\t.version\t= HANDSHAKE_FAMILY_VERSION,\n\t.netnsok\t= true,\n\t.parallel_ops\t= true,\n\t.module\t\t= THIS_MODULE,\n\t.split_ops\t= handshake_nl_ops,\n\t.n_split_ops\t= ARRAY_SIZE(handshake_nl_ops),\n\t.mcgrps\t\t= handshake_nl_mcgrps,\n\t.n_mcgrps\t= ARRAY_SIZE(handshake_nl_mcgrps),\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

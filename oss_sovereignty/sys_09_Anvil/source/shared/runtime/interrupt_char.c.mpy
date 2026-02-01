@@ -1,0 +1,9 @@
+{
+  "module_name": "interrupt_char.c",
+  "hash_id": "bb7e765178440a459c0311b77fc16ed5aaea3b61c75f42d733ef086f8fdc5442",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/runtime/interrupt_char.c",
+  "human_readable_source": " \n\n#include \"py/obj.h\"\n#include \"py/mpstate.h\"\n\n#if MICROPY_KBD_EXCEPTION\n\nint mp_interrupt_char = -1;\n\nvoid mp_hal_set_interrupt_char(int c) {\n    mp_interrupt_char = c;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

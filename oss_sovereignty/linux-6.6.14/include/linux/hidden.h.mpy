@@ -1,0 +1,9 @@
+{
+  "module_name": "hidden.h",
+  "hash_id": "8da6be5ef619d3b5f2303a3e4f897dc2881acc230735805f44d57695412baa21",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/hidden.h",
+  "human_readable_source": " \n \n\n#pragma GCC visibility push(hidden)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

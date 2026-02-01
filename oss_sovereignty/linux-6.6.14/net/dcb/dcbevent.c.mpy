@@ -1,0 +1,9 @@
+{
+  "module_name": "dcbevent.c",
+  "hash_id": "b9a707568074440ad76d7248a888aa26750dece44dfedaeba47be8141c776dfd",
+  "original_prompt": "Ingested from linux-6.6.14/net/dcb/dcbevent.c",
+  "human_readable_source": "\n \n\n#include <linux/rtnetlink.h>\n#include <linux/notifier.h>\n#include <linux/export.h>\n#include <net/dcbevent.h>\n\nstatic ATOMIC_NOTIFIER_HEAD(dcbevent_notif_chain);\n\nint register_dcbevent_notifier(struct notifier_block *nb)\n{\n\treturn atomic_notifier_chain_register(&dcbevent_notif_chain, nb);\n}\nEXPORT_SYMBOL(register_dcbevent_notifier);\n\nint unregister_dcbevent_notifier(struct notifier_block *nb)\n{\n\treturn atomic_notifier_chain_unregister(&dcbevent_notif_chain, nb);\n}\nEXPORT_SYMBOL(unregister_dcbevent_notifier);\n\nint call_dcbevent_notifiers(unsigned long val, void *v)\n{\n\treturn atomic_notifier_call_chain(&dcbevent_notif_chain, val, v);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

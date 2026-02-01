@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7b902606bba50865978ffc4860be657debbaee487f7c6db9a4f01abb300e61c5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/aic94xx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for Adaptec aic94xx SAS/SATA driver.\n#\n# Copyright (C) 2005 Adaptec, Inc.  All rights reserved.\n# Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>\n#\n\nccflags-$(CONFIG_AIC94XX_DEBUG) := -DASD_DEBUG -DASD_ENTER_EXIT\n\nobj-$(CONFIG_SCSI_AIC94XX) += aic94xx.o\naic94xx-y += aic94xx_init.o \\\n\t     aic94xx_hwi.o  \\\n\t     aic94xx_reg.o  \\\n\t     aic94xx_sds.o  \\\n\t     aic94xx_seq.o  \\\n\t     aic94xx_dump.o \\\n\t     aic94xx_scb.o  \\\n\t     aic94xx_dev.o  \\\n\t     aic94xx_tmf.o  \\\n\t     aic94xx_task.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

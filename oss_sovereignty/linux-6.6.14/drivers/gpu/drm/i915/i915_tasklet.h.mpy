@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_tasklet.h",
+  "hash_id": "e87a17e22bec4563c8b17dd54f778787b689e62cd783b3e4563071a422063373",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_tasklet.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_TASKLET_H__\n#define __I915_TASKLET_H__\n\n#include <linux/interrupt.h>\n\nstatic inline void tasklet_lock(struct tasklet_struct *t)\n{\n\twhile (!tasklet_trylock(t))\n\t\tcpu_relax();\n}\n\nstatic inline bool tasklet_is_locked(const struct tasklet_struct *t)\n{\n\treturn test_bit(TASKLET_STATE_RUN, &t->state);\n}\n\nstatic inline void __tasklet_disable_sync_once(struct tasklet_struct *t)\n{\n\tif (!atomic_fetch_inc(&t->count))\n\t\ttasklet_unlock_spin_wait(t);\n}\n\nstatic inline bool __tasklet_is_enabled(const struct tasklet_struct *t)\n{\n\treturn !atomic_read(&t->count);\n}\n\nstatic inline bool __tasklet_enable(struct tasklet_struct *t)\n{\n\treturn atomic_dec_and_test(&t->count);\n}\n\nstatic inline bool __tasklet_is_scheduled(struct tasklet_struct *t)\n{\n\treturn test_bit(TASKLET_STATE_SCHED, &t->state);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

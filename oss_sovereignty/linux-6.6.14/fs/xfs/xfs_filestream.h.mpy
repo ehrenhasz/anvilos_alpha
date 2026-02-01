@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_filestream.h",
+  "hash_id": "dd940d49c22016063c5dab9c27852cc2de1454e040ac5bce73cfe17af945aca6",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_filestream.h",
+  "human_readable_source": "\n \n#ifndef __XFS_FILESTREAM_H__\n#define __XFS_FILESTREAM_H__\n\nstruct xfs_mount;\nstruct xfs_inode;\nstruct xfs_bmalloca;\nstruct xfs_alloc_arg;\n\nint xfs_filestream_mount(struct xfs_mount *mp);\nvoid xfs_filestream_unmount(struct xfs_mount *mp);\nvoid xfs_filestream_deassociate(struct xfs_inode *ip);\nint xfs_filestream_select_ag(struct xfs_bmalloca *ap,\n\t\tstruct xfs_alloc_arg *args, xfs_extlen_t *blen);\n\nstatic inline int\nxfs_inode_is_filestream(\n\tstruct xfs_inode\t*ip)\n{\n\treturn xfs_has_filestreams(ip->i_mount) ||\n\t\t(ip->i_diflags & XFS_DIFLAG_FILESTREAM);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

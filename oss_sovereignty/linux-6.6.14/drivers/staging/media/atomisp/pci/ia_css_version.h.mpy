@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_version.h",
+  "hash_id": "8e83c29a4a9257670219858b160d678bc9b59df794fd6714ce5cece1face772d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/ia_css_version.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_VERSION_H\n#define __IA_CSS_VERSION_H\n\n \n\n#include <ia_css_err.h>\n\n \n#define MAX_VERSION_SIZE\t500\n\n \nint\nia_css_get_version(char *version, int max_size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

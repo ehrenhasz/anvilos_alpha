@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "8c31e140a2e82f7fa0f7da3c2b40a166460c0c1242d8aa34510b147cd82e546e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/typec/tipd/trace.c",
+  "human_readable_source": "\n \n#define CREATE_TRACE_POINTS\n#include \"trace.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

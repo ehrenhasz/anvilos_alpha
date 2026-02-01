@@ -1,0 +1,9 @@
+{
+  "module_name": "compat.c",
+  "hash_id": "b0ffc6fe4c877d9b4a5ecb7cd6660d745e45469f697701a37b0803b001c2fdd6",
+  "original_prompt": "Ingested from bash-5.2.21/lib/readline/compat.c",
+  "human_readable_source": " \n\n \n\n#define READLINE_LIBRARY\n\n#if defined (HAVE_CONFIG_H)\n#  include <config.h>\n#endif\n\n#include <stdio.h>\n\n#include \"rlstdc.h\"\n#include \"rltypedefs.h\"\n\nextern void rl_free_undo_list (void);\nextern int rl_maybe_save_line (void);\nextern int rl_maybe_unsave_line (void);\nextern int rl_maybe_replace_line (void);\n\nextern int rl_crlf (void);\nextern int rl_ding (void);\nextern int rl_alphabetic (int);\n\nextern char **rl_completion_matches (const char *, rl_compentry_func_t *);\nextern char *rl_username_completion_function (const char *, int);\nextern char *rl_filename_completion_function (const char *, int);\n\n \n\nvoid\nfree_undo_list (void)\n{\n  rl_free_undo_list ();\n}\n\nint\nmaybe_replace_line (void)\n{\n  return rl_maybe_replace_line ();\n}\n\nint\nmaybe_save_line (void)\n{\n  return rl_maybe_save_line ();\n}\n\nint\nmaybe_unsave_line (void)\n{\n  return rl_maybe_unsave_line ();\n}\n\nint\nding (void)\n{\n  return rl_ding ();\n}\n\nint\ncrlf (void)\n{\n  return rl_crlf ();\n}\n\nint\nalphabetic (int c)\n{\n  return rl_alphabetic (c);\n}\n\nchar **\ncompletion_matches (const char *s, rl_compentry_func_t *f)\n{\n  return rl_completion_matches (s, f);\n}\n\nchar *\nusername_completion_function (const char *s, int i)\n{\n  return rl_username_completion_function (s, i);\n}\n\nchar *\nfilename_completion_function (const char *s, int i)\n{\n  return rl_filename_completion_function (s, i);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

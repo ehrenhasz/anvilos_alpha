@@ -1,0 +1,9 @@
+{
+  "module_name": "locks.json",
+  "hash_id": "bb52571f0f696ae4d370dc877c709735901d0c9fedca570f4bb31e3655088a28",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/powerpc/power10/locks.json",
+  "human_readable_source": "[\n  {\n    \"EventCode\": \"0x1E058\",\n    \"EventName\": \"PM_STCX_FAIL_FIN\",\n    \"BriefDescription\": \"Conditional store instruction (STCX) failed. LARX and STCX are instructions used to acquire a lock.\"\n  },\n  {\n    \"EventCode\": \"0x4E050\",\n    \"EventName\": \"PM_STCX_PASS_FIN\",\n    \"BriefDescription\": \"Conditional store instruction (STCX) passed. LARX and STCX are instructions used to acquire a lock.\"\n  }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

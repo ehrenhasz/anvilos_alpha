@@ -1,0 +1,9 @@
+{
+  "module_name": "objlist.h",
+  "hash_id": "5e6e3a7baad5d519766aa1e09ed202e1c9680e38cbc43f9d99e6245794435737",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/objlist.h",
+  "human_readable_source": " \n \n\n#ifndef\t_OBJLIST_H\n#define\t_OBJLIST_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n#include\t<sys/zfs_context.h>\n\ntypedef struct objlist_node {\n\tlist_node_t\ton_node;\n\tuint64_t\ton_object;\n} objlist_node_t;\n\ntypedef struct objlist {\n\tlist_t\t\tol_list;  \n\t \n\tuint64_t\tol_last_lookup;\n} objlist_t;\n\nobjlist_t *objlist_create(void);\nvoid objlist_destroy(objlist_t *);\nboolean_t objlist_exists(objlist_t *, uint64_t);\nvoid objlist_insert(objlist_t *, uint64_t);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

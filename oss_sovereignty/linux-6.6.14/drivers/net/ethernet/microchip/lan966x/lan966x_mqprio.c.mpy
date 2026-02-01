@@ -1,0 +1,9 @@
+{
+  "module_name": "lan966x_mqprio.c",
+  "hash_id": "03619647be3105af0370ee440741daff5970773d84585652271aa43b054e7541",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/microchip/lan966x/lan966x_mqprio.c",
+  "human_readable_source": "\n\n#include \"lan966x_main.h\"\n\nint lan966x_mqprio_add(struct lan966x_port *port, u8 num_tc)\n{\n\tu8 i;\n\n\tif (num_tc != NUM_PRIO_QUEUES) {\n\t\tnetdev_err(port->dev, \"Only %d traffic classes supported\\n\",\n\t\t\t   NUM_PRIO_QUEUES);\n\t\treturn -EINVAL;\n\t}\n\n\tnetdev_set_num_tc(port->dev, num_tc);\n\n\tfor (i = 0; i < num_tc; ++i)\n\t\tnetdev_set_tc_queue(port->dev, i, 1, i);\n\n\treturn 0;\n}\n\nint lan966x_mqprio_del(struct lan966x_port *port)\n{\n\tnetdev_reset_tc(port->dev);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mtd-nand-s3c2410.h",
+  "hash_id": "8156dfb4a6f9b1739245dfa9cd8df8612e351205f8a6fff7af42ac0bd68ef400",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/mtd-nand-s3c2410.h",
+  "human_readable_source": " \n \n\n#ifndef __MTD_NAND_S3C2410_H\n#define __MTD_NAND_S3C2410_H\n\n#include <linux/mtd/rawnand.h>\n\n \nstruct s3c2410_nand_set {\n\tunsigned int\t\tflash_bbt:1;\n\n\tunsigned int\t\toptions;\n\tint\t\t\tnr_chips;\n\tint\t\t\tnr_partitions;\n\tchar\t\t\t*name;\n\tint\t\t\t*nr_map;\n\tstruct mtd_partition\t*partitions;\n\tstruct device_node\t*of_node;\n};\n\nstruct s3c2410_platform_nand {\n\t \n\n\tint\ttacls;\t \n\tint\ttwrph0;\t \n\tint\ttwrph1;\t \n\n\tunsigned int\tignore_unset_ecc:1;\n\n\tenum nand_ecc_engine_type engine_type;\n\n\tint\t\t\tnr_sets;\n\tstruct s3c2410_nand_set *sets;\n\n\tvoid\t\t\t(*select_chip)(struct s3c2410_nand_set *,\n\t\t\t\t\t       int chip);\n};\n\n \nextern void s3c_nand_set_platdata(struct s3c2410_platform_nand *nand);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "392dc47d80953a94df4cc2d6eb96373a12ee5ac70ccb695820013381f4b398c7",
+  "original_prompt": "Ingested from linux-6.6.14/fs/isofs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux isofs filesystem routines.\n#\n\nobj-$(CONFIG_ISO9660_FS) += isofs.o\n\nisofs-objs-y \t\t\t:= namei.o inode.o dir.o util.o rock.o export.o\nisofs-objs-$(CONFIG_JOLIET)\t+= joliet.o\nisofs-objs-$(CONFIG_ZISOFS)\t+= compress.o\nisofs-objs\t\t\t:= $(isofs-objs-y)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

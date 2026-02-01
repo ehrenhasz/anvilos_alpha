@@ -1,0 +1,9 @@
+{
+  "module_name": "ufshcd-pltfrm.h",
+  "hash_id": "6fc91227055b75927fd7bf95cb40579b42eda6965228c176d655c048e7718f25",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ufs/host/ufshcd-pltfrm.h",
+  "human_readable_source": " \n \n\n#ifndef UFSHCD_PLTFRM_H_\n#define UFSHCD_PLTFRM_H_\n\n#include <ufs/ufshcd.h>\n\n#define UFS_PWM_MODE 1\n#define UFS_HS_MODE  2\n\nstruct ufs_dev_params {\n\tu32 pwm_rx_gear;         \n\tu32 pwm_tx_gear;         \n\tu32 hs_rx_gear;          \n\tu32 hs_tx_gear;          \n\tu32 rx_lanes;            \n\tu32 tx_lanes;            \n\tu32 rx_pwr_pwm;          \n\tu32 tx_pwr_pwm;          \n\tu32 rx_pwr_hs;           \n\tu32 tx_pwr_hs;           \n\tu32 hs_rate;             \n\tu32 desired_working_mode;\n};\n\nint ufshcd_get_pwr_dev_param(const struct ufs_dev_params *dev_param,\n\t\t\t     const struct ufs_pa_layer_attr *dev_max,\n\t\t\t     struct ufs_pa_layer_attr *agreed_pwr);\nvoid ufshcd_init_pwr_dev_param(struct ufs_dev_params *dev_param);\nint ufshcd_pltfrm_init(struct platform_device *pdev,\n\t\t       const struct ufs_hba_variant_ops *vops);\nint ufshcd_populate_vreg(struct device *dev, const char *name,\n\t\t\t struct ufs_vreg **out_vreg);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

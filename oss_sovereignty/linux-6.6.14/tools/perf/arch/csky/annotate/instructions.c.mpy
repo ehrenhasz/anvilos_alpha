@@ -1,0 +1,9 @@
+{
+  "module_name": "instructions.c",
+  "hash_id": "5a1291f15a29f357d7fa5fbfea456a7919f69bc66dc6834f6fd096420f9c05cb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/csky/annotate/instructions.c",
+  "human_readable_source": "\n\n\n#include <linux/compiler.h>\n\nstatic struct ins_ops *csky__associate_ins_ops(struct arch *arch,\n\t\t\t\t\t       const char *name)\n{\n\tstruct ins_ops *ops = NULL;\n\n\t \n\tif (!strcmp(name, \"bt\") ||\n\t    !strcmp(name, \"bf\") ||\n\t    !strcmp(name, \"bez\") ||\n\t    !strcmp(name, \"bnez\") ||\n\t    !strcmp(name, \"bnezad\") ||\n\t    !strcmp(name, \"bhsz\") ||\n\t    !strcmp(name, \"bhz\") ||\n\t    !strcmp(name, \"blsz\") ||\n\t    !strcmp(name, \"blz\") ||\n\t    !strcmp(name, \"br\") ||\n\t    !strcmp(name, \"jmpi\") ||\n\t    !strcmp(name, \"jmp\"))\n\t\tops = &jump_ops;\n\n\t \n\tif (!strcmp(name, \"bsr\") ||\n\t    !strcmp(name, \"jsri\") ||\n\t    !strcmp(name, \"jsr\"))\n\t\tops = &call_ops;\n\n\t \n\tif (!strcmp(name, \"rts\"))\n\t\tops = &ret_ops;\n\n\tif (ops)\n\t\tarch__associate_ins_ops(arch, name, ops);\n\treturn ops;\n}\n\nstatic int csky__annotate_init(struct arch *arch, char *cpuid __maybe_unused)\n{\n\tarch->initialized = true;\n\tarch->objdump.comment_char = '/';\n\tarch->associate_instruction_ops = csky__associate_ins_ops;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

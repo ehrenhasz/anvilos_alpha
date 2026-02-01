@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e26731598445bb392d83cc85f0b5db45a6c8d984f33e5a94a332b7e0e388fd98",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/xlnx/Kconfig",
+  "human_readable_source": "config DRM_ZYNQMP_DPSUB\n\ttristate \"ZynqMP DisplayPort Controller Driver\"\n\tdepends on ARCH_ZYNQMP || COMPILE_TEST\n\tdepends on COMMON_CLK && DRM && OF\n\tdepends on DMADEVICES\n\tdepends on PHY_XILINX_ZYNQMP\n\tdepends on XILINX_ZYNQMP_DPDMA\n\tselect DMA_ENGINE\n\tselect DRM_DISPLAY_DP_HELPER\n\tselect DRM_DISPLAY_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect DRM_KMS_HELPER\n\tselect GENERIC_PHY\n\thelp\n\t  This is a DRM/KMS driver for ZynqMP DisplayPort controller. Choose\n\t  this option if you have a Xilinx ZynqMP SoC with DisplayPort\n\t  subsystem.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

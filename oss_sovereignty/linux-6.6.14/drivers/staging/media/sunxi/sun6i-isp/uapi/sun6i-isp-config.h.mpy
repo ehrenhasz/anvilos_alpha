@@ -1,0 +1,9 @@
+{
+  "module_name": "sun6i-isp-config.h",
+  "hash_id": "7b1bd5c026a80ee4d2659f3ad66bf6aa6745bed62f2921b9d75e08f79784142b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/sunxi/sun6i-isp/uapi/sun6i-isp-config.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_SUN6I_ISP_CONFIG_H\n#define _UAPI_SUN6I_ISP_CONFIG_H\n\n#include <linux/types.h>\n\n#define V4L2_META_FMT_SUN6I_ISP_PARAMS v4l2_fourcc('S', '6', 'I', 'P')  \n\n#define SUN6I_ISP_MODULE_BAYER\t\t\t(1U << 0)\n#define SUN6I_ISP_MODULE_BDNF\t\t\t(1U << 1)\n\nstruct sun6i_isp_params_config_bayer {\n\t__u16\toffset_r;\n\t__u16\toffset_gr;\n\t__u16\toffset_gb;\n\t__u16\toffset_b;\n\n\t__u16\tgain_r;\n\t__u16\tgain_gr;\n\t__u16\tgain_gb;\n\t__u16\tgain_b;\n};\n\nstruct sun6i_isp_params_config_bdnf {\n\t__u8\tin_dis_min;\n\t__u8\tin_dis_max;\n\n\t__u8\tcoefficients_g[7];\n\t__u8\tcoefficients_rb[5];\n};\n\nstruct sun6i_isp_params_config {\n\t__u32\t\t\t\t\tmodules_used;\n\n\tstruct sun6i_isp_params_config_bayer\tbayer;\n\tstruct sun6i_isp_params_config_bdnf\tbdnf;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

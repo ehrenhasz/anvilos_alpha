@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "33507552dbf2c8b50636dacfdbe1ca460aa689fd178907def01c19e8ee715fba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vc04_services/vchiq-mmal/Kconfig",
+  "human_readable_source": "config BCM2835_VCHIQ_MMAL\n\ttristate \"BCM2835 MMAL VCHIQ service\"\n\tdepends on BCM2835_VCHIQ\n\thelp\n\t  Enables the MMAL API over VCHIQ interface as used for the\n\t  majority of the multimedia services on VideoCore.\n\t  Defaults to Y when the Broadcomd BCM2835 camera host is selected.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

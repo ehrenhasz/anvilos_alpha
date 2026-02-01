@@ -1,0 +1,9 @@
+{
+  "module_name": "sram.h",
+  "hash_id": "add8a6309a258722fb8478345dac358850958b5e7e3770b67be4247a44bb4ee6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sram.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_SRAM_H__\n#define __LINUX_SRAM_H__\n\nstruct gen_pool;\n\n#ifdef CONFIG_SRAM_EXEC\nvoid *sram_exec_copy(struct gen_pool *pool, void *dst, void *src, size_t size);\n#else\nstatic inline void *sram_exec_copy(struct gen_pool *pool, void *dst, void *src,\n\t\t\t\t   size_t size)\n{\n\treturn NULL;\n}\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

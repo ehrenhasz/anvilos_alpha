@@ -1,0 +1,9 @@
+{
+  "module_name": "sched.in.h",
+  "hash_id": "9762a256ff16f613f54737897721e14c3ada02c64b0eb75e01b96a03b94e6917",
+  "original_prompt": "Ingested from coreutils-9.4/lib/sched.in.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n#if @HAVE_SCHED_H@\n# if @HAVE_SYS_CDEFS_H@\n#  include <sys/cdefs.h>\n# endif\n# @INCLUDE_NEXT@ @NEXT_SCHED_H@\n#endif\n\n#ifndef _@GUARD_PREFIX@_SCHED_H\n#define _@GUARD_PREFIX@_SCHED_H\n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n#include <sys/types.h>\n\n#ifdef __KLIBC__\n \n# include <spawn.h>\n#endif\n\n#ifdef __VMS\n \n# include <pthread.h>\n#endif\n\n \n\n \n\n#if !@HAVE_STRUCT_SCHED_PARAM@\n\n# if !GNULIB_defined_struct_sched_param\nstruct sched_param\n{\n  int sched_priority;\n};\n#  define GNULIB_defined_struct_sched_param 1\n# endif\n\n#endif\n\n#if !(defined SCHED_FIFO && defined SCHED_RR && defined SCHED_OTHER)\n# define SCHED_FIFO   1\n# define SCHED_RR     2\n# define SCHED_OTHER  0\n#endif\n\n#if @GNULIB_SCHED_YIELD@\n# if @REPLACE_SCHED_YIELD@\n#  if !(defined __cplusplus && defined GNULIB_NAMESPACE)\n#   undef sched_yield\n#   define sched_yield rpl_sched_yield\n#  endif\n_GL_FUNCDECL_RPL (sched_yield, int, (void));\n_GL_CXXALIAS_RPL (sched_yield, int, (void));\n# else\n#  if !@HAVE_SCHED_YIELD@\n_GL_FUNCDECL_SYS (sched_yield, int, (void));\n#  endif\n_GL_CXXALIAS_SYS (sched_yield, int, (void));\n# endif\n# if __GLIBC__ >= 2\n_GL_CXXALIASWARN (sched_yield);\n# endif\n#elif defined GNULIB_POSIXCHECK\n# undef sched_yield\n# if HAVE_RAW_DECL_SCHED_YIELD\n_GL_WARN_ON_USE (sched_yield, \"sched_yield is not portable - \"\n                 \"use gnulib module sched_yield for portability\");\n# endif\n#endif\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

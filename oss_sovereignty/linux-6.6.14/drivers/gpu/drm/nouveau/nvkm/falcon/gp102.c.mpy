@@ -1,0 +1,9 @@
+{
+  "module_name": "gp102.c",
+  "hash_id": "604a2ccc425c508b7380ae552b7839a1eb04fee1895d07fa099116fc6e459238",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/falcon/gp102.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic void\ngp102_flcn_pio_emem_rd(struct nvkm_falcon *falcon, u8 port, const u8 *img, int len)\n{\n\twhile (len >= 4) {\n\t\t*(u32 *)img = nvkm_falcon_rd32(falcon, 0xac4 + (port * 8));\n\t\timg += 4;\n\t\tlen -= 4;\n\t}\n}\n\nstatic void\ngp102_flcn_pio_emem_rd_init(struct nvkm_falcon *falcon, u8 port, u32 dmem_base)\n{\n\tnvkm_falcon_wr32(falcon, 0xac0 + (port * 8), BIT(25) | dmem_base);\n}\n\nstatic void\ngp102_flcn_pio_emem_wr(struct nvkm_falcon *falcon, u8 port, const u8 *img, int len, u16 tag)\n{\n\twhile (len >= 4) {\n\t\tnvkm_falcon_wr32(falcon, 0xac4 + (port * 8), *(u32 *)img);\n\t\timg += 4;\n\t\tlen -= 4;\n\t}\n}\n\nstatic void\ngp102_flcn_pio_emem_wr_init(struct nvkm_falcon *falcon, u8 port, bool sec, u32 emem_base)\n{\n\tnvkm_falcon_wr32(falcon, 0xac0 + (port * 8), BIT(24) | emem_base);\n}\n\nconst struct nvkm_falcon_func_pio\ngp102_flcn_emem_pio = {\n\t.min = 4,\n\t.max = 0x100,\n\t.wr_init = gp102_flcn_pio_emem_wr_init,\n\t.wr = gp102_flcn_pio_emem_wr,\n\t.rd_init = gp102_flcn_pio_emem_rd_init,\n\t.rd = gp102_flcn_pio_emem_rd,\n};\n\nint\ngp102_flcn_reset_eng(struct nvkm_falcon *falcon)\n{\n\tint ret;\n\n\tif (falcon->func->reset_prep) {\n\t\tret = falcon->func->reset_prep(falcon);\n\t\tif (ret)\n\t\t\treturn ret;\n\t}\n\n\tnvkm_falcon_mask(falcon, 0x3c0, 0x00000001, 0x00000001);\n\tudelay(10);\n\tnvkm_falcon_mask(falcon, 0x3c0, 0x00000001, 0x00000000);\n\n\treturn falcon->func->reset_wait_mem_scrubbing(falcon);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

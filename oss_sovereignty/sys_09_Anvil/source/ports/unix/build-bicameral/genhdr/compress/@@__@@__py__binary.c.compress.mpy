@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__binary.c.compress",
+  "hash_id": "51210a661e45c9cd61aaa7964fb1a445b00bf8ff9a6d81d714554056188b5504",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__binary.c.compress",
+  "human_readable_source": "bad typecode\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

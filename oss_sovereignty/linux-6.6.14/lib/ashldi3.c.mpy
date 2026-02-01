@@ -1,0 +1,9 @@
+{
+  "module_name": "ashldi3.c",
+  "hash_id": "d379d5ba37576de5a8e8aeff8c2a6dd0d058c5e0b3e6f9488d24d31ac3bad3a3",
+  "original_prompt": "Ingested from linux-6.6.14/lib/ashldi3.c",
+  "human_readable_source": "\n \n\n#include <linux/export.h>\n\n#include <linux/libgcc.h>\n\nlong long notrace __ashldi3(long long u, word_type b)\n{\n\tDWunion uu, w;\n\tword_type bm;\n\n\tif (b == 0)\n\t\treturn u;\n\n\tuu.ll = u;\n\tbm = 32 - b;\n\n\tif (bm <= 0) {\n\t\tw.s.low = 0;\n\t\tw.s.high = (unsigned int) uu.s.low << -bm;\n\t} else {\n\t\tconst unsigned int carries = (unsigned int) uu.s.low >> bm;\n\n\t\tw.s.low = (unsigned int) uu.s.low << b;\n\t\tw.s.high = ((unsigned int) uu.s.high << b) | carries;\n\t}\n\n\treturn w.ll;\n}\nEXPORT_SYMBOL(__ashldi3);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

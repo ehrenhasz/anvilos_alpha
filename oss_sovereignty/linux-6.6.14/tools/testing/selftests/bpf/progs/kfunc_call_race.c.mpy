@@ -1,0 +1,9 @@
+{
+  "module_name": "kfunc_call_race.c",
+  "hash_id": "50003c179ede0de7b6e809677e5184fde8a04aa54ebee76cac7a59a2ab1a3caa",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/kfunc_call_race.c",
+  "human_readable_source": "\n#include <vmlinux.h>\n#include <bpf/bpf_helpers.h>\n#include \"../bpf_testmod/bpf_testmod_kfunc.h\"\n\nSEC(\"tc\")\nint kfunc_call_fail(struct __sk_buff *ctx)\n{\n\tbpf_testmod_test_mod_kfunc(0);\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-pthread.c",
+  "hash_id": "b1e5a0cf619ed14e83d4a660bfff5270d0cb9e0f677e6d431f639dc93ab69e14",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-pthread.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <pthread.h>\n\n \n\npthread_t t1;\npthread_attr_t t2;\n\npthread_once_t t3 = PTHREAD_ONCE_INIT;\n\npthread_mutex_t t4 = PTHREAD_MUTEX_INITIALIZER;\npthread_mutexattr_t t5;\n\npthread_rwlock_t t6 = PTHREAD_RWLOCK_INITIALIZER;\npthread_rwlockattr_t t7;\n\npthread_cond_t t8 = PTHREAD_COND_INITIALIZER;\npthread_condattr_t t9;\n\npthread_key_t t10;\n\npthread_spinlock_t t11;\n\n#ifdef TODO  \npthread_barrier_t t12;\npthread_barrierattr_t t13;\n#endif\n\n \n\n \nint ds[] = { PTHREAD_CREATE_JOINABLE, PTHREAD_CREATE_DETACHED };\n\n \nvoid *canceled = PTHREAD_CANCELED;\n\n \nint mt[] = {\n  PTHREAD_MUTEX_DEFAULT,\n  PTHREAD_MUTEX_NORMAL,\n  PTHREAD_MUTEX_RECURSIVE,\n  PTHREAD_MUTEX_ERRORCHECK\n};\n\n#ifdef TODO  \n\n \nint mr[] = { PTHREAD_MUTEX_ROBUST, PTHREAD_MUTEX_STALLED };\n\n \nint bp[] = { PTHREAD_PROCESS_SHARED, PTHREAD_PROCESS_PRIVATE };\n\n \nint bw[] = { PTHREAD_BARRIER_SERIAL_THREAD };\n\n \nint cs[] = { PTHREAD_CANCEL_ENABLE, PTHREAD_CANCEL_DISABLE };\n\n \nint ct[] = { PTHREAD_CANCEL_DEFERRED, PTHREAD_CANCEL_ASYNCHRONOUS };\n\n#endif\n\n\nint\nmain (void)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

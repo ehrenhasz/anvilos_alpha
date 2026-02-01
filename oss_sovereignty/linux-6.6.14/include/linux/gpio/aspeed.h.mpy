@@ -1,0 +1,9 @@
+{
+  "module_name": "aspeed.h",
+  "hash_id": "4e2db08ba54e1cd46fd70f406ccce91a33c6b7e7d5a7c0e1cc62bcc043fc7a19",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/gpio/aspeed.h",
+  "human_readable_source": "#ifndef __GPIO_ASPEED_H\n#define __GPIO_ASPEED_H\n\n#include <linux/types.h>\n\nstruct gpio_desc;\n\nstruct aspeed_gpio_copro_ops {\n\tint (*request_access)(void *data);\n\tint (*release_access)(void *data);\n};\n\nint aspeed_gpio_copro_grab_gpio(struct gpio_desc *desc,\n\t\t\t\tu16 *vreg_offset, u16 *dreg_offset, u8 *bit);\nint aspeed_gpio_copro_release_gpio(struct gpio_desc *desc);\nint aspeed_gpio_copro_set_ops(const struct aspeed_gpio_copro_ops *ops, void *data);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

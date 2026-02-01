@@ -1,0 +1,9 @@
+{
+  "module_name": "string.h",
+  "hash_id": "4268d3ed1744da0a642a5c12dfefc983f2e29846ac6338b34552bb37557065fb",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/string.h",
+  "human_readable_source": " \n#ifndef BOOT_STRING_H\n#define BOOT_STRING_H\n\n \n#undef memcpy\n#undef memset\n#undef memcmp\n\nvoid *memcpy(void *dst, const void *src, size_t len);\nvoid *memmove(void *dst, const void *src, size_t len);\nvoid *memset(void *dst, int c, size_t len);\nint memcmp(const void *s1, const void *s2, size_t len);\nint bcmp(const void *s1, const void *s2, size_t len);\n\n \n#define memcpy(d,s,l) __builtin_memcpy(d,s,l)\n#define memset(d,c,l) __builtin_memset(d,c,l)\n#define memcmp\t__builtin_memcmp\n\nextern int strcmp(const char *str1, const char *str2);\nextern int strncmp(const char *cs, const char *ct, size_t count);\nextern size_t strlen(const char *s);\nextern char *strstr(const char *s1, const char *s2);\nextern char *strchr(const char *s, int c);\nextern size_t strnlen(const char *s, size_t maxlen);\nextern unsigned int atou(const char *s);\nextern unsigned long long simple_strtoull(const char *cp, char **endp,\n\t\t\t\t\t  unsigned int base);\nlong simple_strtol(const char *cp, char **endp, unsigned int base);\n\nint kstrtoull(const char *s, unsigned int base, unsigned long long *res);\nint boot_kstrtoul(const char *s, unsigned int base, unsigned long *res);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

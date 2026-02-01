@@ -1,0 +1,9 @@
+{
+  "module_name": "nfnetlink_acct.h",
+  "hash_id": "97d4ce19ae2a838def1ae69afbe6fd65210291466b0912a18c34d6e4bd21e26e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/nfnetlink_acct.h",
+  "human_readable_source": " \n#ifndef _UAPI_NFNL_ACCT_H_\n#define _UAPI_NFNL_ACCT_H_\n\n#ifndef NFACCT_NAME_MAX\n#define NFACCT_NAME_MAX\t\t32\n#endif\n\nenum nfnl_acct_msg_types {\n\tNFNL_MSG_ACCT_NEW,\n\tNFNL_MSG_ACCT_GET,\n\tNFNL_MSG_ACCT_GET_CTRZERO,\n\tNFNL_MSG_ACCT_DEL,\n\tNFNL_MSG_ACCT_OVERQUOTA,\n\tNFNL_MSG_ACCT_MAX\n};\n\nenum nfnl_acct_flags {\n\tNFACCT_F_QUOTA_PKTS\t= (1 << 0),\n\tNFACCT_F_QUOTA_BYTES\t= (1 << 1),\n\tNFACCT_F_OVERQUOTA\t= (1 << 2),  \n};\n\nenum nfnl_acct_type {\n\tNFACCT_UNSPEC,\n\tNFACCT_NAME,\n\tNFACCT_PKTS,\n\tNFACCT_BYTES,\n\tNFACCT_USE,\n\tNFACCT_FLAGS,\n\tNFACCT_QUOTA,\n\tNFACCT_FILTER,\n\tNFACCT_PAD,\n\t__NFACCT_MAX\n};\n#define NFACCT_MAX (__NFACCT_MAX - 1)\n\nenum nfnl_attr_filter_type {\n\tNFACCT_FILTER_UNSPEC,\n\tNFACCT_FILTER_MASK,\n\tNFACCT_FILTER_VALUE,\n\t__NFACCT_FILTER_MAX\n};\n#define NFACCT_FILTER_MAX (__NFACCT_FILTER_MAX - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "53de3f12dec9256bf2ba4f9378764238b2fcf883eb27ed61aaf5c95324a53831",
+  "original_prompt": "Ingested from linux-6.6.14/fs/f2fs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_F2FS_FS) += f2fs.o\n\nf2fs-y\t\t:= dir.o file.o inode.o namei.o hash.o super.o inline.o\nf2fs-y\t\t+= checkpoint.o gc.o data.o node.o segment.o recovery.o\nf2fs-y\t\t+= shrinker.o extent_cache.o sysfs.o\nf2fs-$(CONFIG_F2FS_STAT_FS) += debug.o\nf2fs-$(CONFIG_F2FS_FS_XATTR) += xattr.o\nf2fs-$(CONFIG_F2FS_FS_POSIX_ACL) += acl.o\nf2fs-$(CONFIG_FS_VERITY) += verity.o\nf2fs-$(CONFIG_F2FS_FS_COMPRESSION) += compress.o\nf2fs-$(CONFIG_F2FS_IOSTAT) += iostat.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

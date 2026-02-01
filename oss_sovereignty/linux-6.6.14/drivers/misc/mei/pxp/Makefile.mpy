@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3d70ee600126acccedecc4076931130a674c296697cbba89c4d9f485d65cb361",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/mei/pxp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Copyright (c) 2020, Intel Corporation. All rights reserved.\n#\n# Makefile - PXP client driver for Intel MEI Bus Driver.\n\nobj-$(CONFIG_INTEL_MEI_PXP) += mei_pxp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

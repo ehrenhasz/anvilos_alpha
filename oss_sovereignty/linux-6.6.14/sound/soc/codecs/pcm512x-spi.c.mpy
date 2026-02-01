@@ -1,0 +1,9 @@
+{
+  "module_name": "pcm512x-spi.c",
+  "hash_id": "0f31cf8b6eace8b832339dbcfadd224bfaa1c40c8ea3e02c0870adbd2dbc5755",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/pcm512x-spi.c",
+  "human_readable_source": "\n \n\n#include <linux/init.h>\n#include <linux/module.h>\n#include <linux/spi/spi.h>\n\n#include \"pcm512x.h\"\n\nstatic int pcm512x_spi_probe(struct spi_device *spi)\n{\n\tstruct regmap *regmap;\n\tint ret;\n\n\tregmap = devm_regmap_init_spi(spi, &pcm512x_regmap);\n\tif (IS_ERR(regmap)) {\n\t\tret = PTR_ERR(regmap);\n\t\treturn ret;\n\t}\n\n\treturn pcm512x_probe(&spi->dev, regmap);\n}\n\nstatic void pcm512x_spi_remove(struct spi_device *spi)\n{\n\tpcm512x_remove(&spi->dev);\n}\n\nstatic const struct spi_device_id pcm512x_spi_id[] = {\n\t{ \"pcm5121\", },\n\t{ \"pcm5122\", },\n\t{ \"pcm5141\", },\n\t{ \"pcm5142\", },\n\t{ },\n};\nMODULE_DEVICE_TABLE(spi, pcm512x_spi_id);\n\nstatic const struct of_device_id pcm512x_of_match[] = {\n\t{ .compatible = \"ti,pcm5121\", },\n\t{ .compatible = \"ti,pcm5122\", },\n\t{ .compatible = \"ti,pcm5141\", },\n\t{ .compatible = \"ti,pcm5142\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, pcm512x_of_match);\n\nstatic struct spi_driver pcm512x_spi_driver = {\n\t.probe\t\t= pcm512x_spi_probe,\n\t.remove\t\t= pcm512x_spi_remove,\n\t.id_table\t= pcm512x_spi_id,\n\t.driver = {\n\t\t.name\t= \"pcm512x\",\n\t\t.of_match_table = pcm512x_of_match,\n\t\t.pm     = &pcm512x_pm_ops,\n\t},\n};\n\nmodule_spi_driver(pcm512x_spi_driver);\n\nMODULE_DESCRIPTION(\"ASoC PCM512x codec driver - SPI\");\nMODULE_AUTHOR(\"Mark Brown <broonie@kernel.org>\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

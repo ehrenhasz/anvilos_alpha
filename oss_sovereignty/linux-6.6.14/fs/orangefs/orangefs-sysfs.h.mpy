@@ -1,0 +1,9 @@
+{
+  "module_name": "orangefs-sysfs.h",
+  "hash_id": "e4567d25840b3a79d84fe9ac8d5353e951b3efd680893de61543bec446056cd0",
+  "original_prompt": "Ingested from linux-6.6.14/fs/orangefs/orangefs-sysfs.h",
+  "human_readable_source": "extern int orangefs_sysfs_init(void);\nextern void orangefs_sysfs_exit(void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn21_hwseq.h",
+  "hash_id": "ceccef7f348dfe5262b6aa8ec1a55c69f53cb133af87c56a02d10c420b71a5a1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn21/dcn21_hwseq.h",
+  "human_readable_source": " \n\n#ifndef __DC_HWSS_DCN21_H__\n#define __DC_HWSS_DCN21_H__\n\n#include \"hw_sequencer_private.h\"\n\nstruct dc;\n\nint dcn21_init_sys_ctx(struct dce_hwseq *hws,\n\t\tstruct dc *dc,\n\t\tstruct dc_phy_addr_space_config *pa_config);\n\nbool dcn21_s0i3_golden_init_wa(struct dc *dc);\n\nvoid dcn21_exit_optimized_pwr_state(\n\t\tconst struct dc *dc,\n\t\tstruct dc_state *context);\n\nvoid dcn21_optimize_pwr_state(\n\t\tconst struct dc *dc,\n\t\tstruct dc_state *context);\n\nvoid dcn21_PLAT_58856_wa(struct dc_state *context,\n\t\tstruct pipe_ctx *pipe_ctx);\n\nvoid dcn21_set_pipe(struct pipe_ctx *pipe_ctx);\nvoid dcn21_set_abm_immediate_disable(struct pipe_ctx *pipe_ctx);\nbool dcn21_set_backlight_level(struct pipe_ctx *pipe_ctx,\n\t\tuint32_t backlight_pwm_u16_16,\n\t\tuint32_t frame_ramp);\nbool dcn21_is_abm_supported(struct dc *dc,\n\t\tstruct dc_state *context, struct dc_stream_state *stream);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "connect-uri.sh",
+  "hash_id": "a530207e24fbd14da00f265b330a1b6b5014bf23a92c7e82119f5449c7bff7cf",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/connect-uri.sh",
+  "human_readable_source": "#\t$OpenBSD: connect-uri.sh,v 1.1 2017/10/24 19:33:32 millert Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"uri connect\"\n\n# Remove Port and User from ssh_config, we want to rely on the URI\ncp $OBJ/ssh_config $OBJ/ssh_config.orig\negrep -v '^\t+(Port|User)\t+.*$' $OBJ/ssh_config.orig > $OBJ/ssh_config\n\nstart_sshd\n\nverbose \"$tid: no trailing slash\"\n${SSH} -F $OBJ/ssh_config \"ssh://${USER}@somehost:${PORT}\" true\nif [ $? -ne 0 ]; then\n\tfail \"ssh connection failed\"\nfi\n\nverbose \"$tid: trailing slash\"\n${SSH} -F $OBJ/ssh_config \"ssh://${USER}@somehost:${PORT}/\" true\nif [ $? -ne 0 ]; then\n\tfail \"ssh connection failed\"\nfi\n\nverbose \"$tid: with path name\"\n${SSH} -F $OBJ/ssh_config \"ssh://${USER}@somehost:${PORT}/${DATA}\" true \\\n    > /dev/null 2>&1\nif [ $? -eq 0 ]; then\n\tfail \"ssh connection succeeded, expected failure\"\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

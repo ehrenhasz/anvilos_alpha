@@ -1,0 +1,9 @@
+{
+  "module_name": "pcm1796.h",
+  "hash_id": "1547717afcf7ceea08bffbef34412360be2e64b61887c30603c71de1d19dab9e",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/oxygen/pcm1796.h",
+  "human_readable_source": " \n#ifndef PCM1796_H_INCLUDED\n#define PCM1796_H_INCLUDED\n\n \n#define PCM1796_ATL_MASK\t0xff\n \n#define PCM1796_ATR_MASK\t0xff\n \n#define PCM1796_MUTE\t\t0x01\n#define PCM1796_DME\t\t0x02\n#define PCM1796_DMF_MASK\t0x0c\n#define PCM1796_DMF_48\t\t0x04\n#define PCM1796_DMF_441\t\t0x08\n#define PCM1796_DMF_32\t\t0x0c\n#define PCM1796_FMT_MASK\t0x70\n#define PCM1796_FMT_16_RJUST\t0x00\n#define PCM1796_FMT_20_RJUST\t0x10\n#define PCM1796_FMT_24_RJUST\t0x20\n#define PCM1796_FMT_24_LJUST\t0x30\n#define PCM1796_FMT_16_I2S\t0x40\n#define PCM1796_FMT_24_I2S\t0x50\n#define PCM1796_ATLD\t\t0x80\n \n#define PCM1796_INZD\t\t0x01\n#define PCM1796_FLT_MASK\t0x02\n#define PCM1796_FLT_SHARP\t0x00\n#define PCM1796_FLT_SLOW\t0x02\n#define PCM1796_DFMS\t\t0x04\n#define PCM1796_OPE\t\t0x10\n#define PCM1796_ATS_MASK\t0x60\n#define PCM1796_ATS_1\t\t0x00\n#define PCM1796_ATS_2\t\t0x20\n#define PCM1796_ATS_4\t\t0x40\n#define PCM1796_ATS_8\t\t0x60\n#define PCM1796_REV\t\t0x80\n \n#define PCM1796_OS_MASK\t\t0x03\n#define PCM1796_OS_64\t\t0x00\n#define PCM1796_OS_32\t\t0x01\n#define PCM1796_OS_128\t\t0x02\n#define PCM1796_CHSL_MASK\t0x04\n#define PCM1796_CHSL_LEFT\t0x00\n#define PCM1796_CHSL_RIGHT\t0x04\n#define PCM1796_MONO\t\t0x08\n#define PCM1796_DFTH\t\t0x10\n#define PCM1796_DSD\t\t0x20\n#define PCM1796_SRST\t\t0x40\n \n#define PCM1796_PCMZ\t\t0x01\n#define PCM1796_DZ_MASK\t\t0x06\n \n#define PCM1796_ZFGL\t\t0x01\n#define PCM1796_ZFGR\t\t0x02\n \n#define PCM1796_ID_MASK\t\t0x1f\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

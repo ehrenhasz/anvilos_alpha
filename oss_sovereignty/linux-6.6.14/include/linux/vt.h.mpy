@@ -1,0 +1,9 @@
+{
+  "module_name": "vt.h",
+  "hash_id": "97a9876d2d38fb0d087fd3ab3af619fb465272ec6f459f09c3f0367a3d00c2c8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/vt.h",
+  "human_readable_source": " \n#ifndef _LINUX_VT_H\n#define _LINUX_VT_H\n\n#include <uapi/linux/vt.h>\n\n\n \n#define VT_ALLOCATE\t\t0x0001  \n#define VT_DEALLOCATE\t\t0x0002  \n#define VT_WRITE\t\t0x0003  \n#define VT_UPDATE\t\t0x0004  \n#define VT_PREWRITE\t\t0x0005  \n\n#ifdef CONFIG_VT_CONSOLE\n\nextern int vt_kmsg_redirect(int new);\n\n#else\n\nstatic inline int vt_kmsg_redirect(int new)\n{\n\treturn 0;\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

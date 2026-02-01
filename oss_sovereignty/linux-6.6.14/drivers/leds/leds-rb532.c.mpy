@@ -1,0 +1,9 @@
+{
+  "module_name": "leds-rb532.c",
+  "hash_id": "b41958290c992553a252b3616ef63a0c22c8f219e14a3c13d6589c258b775b7b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/leds-rb532.c",
+  "human_readable_source": "\n \n\n#include <linux/leds.h>\n#include <linux/module.h>\n#include <linux/platform_device.h>\n\n#include <asm/mach-rc32434/gpio.h>\n#include <asm/mach-rc32434/rb.h>\n\nstatic void rb532_led_set(struct led_classdev *cdev,\n\t\t\t  enum led_brightness brightness)\n{\n\tif (brightness)\n\t\tset_latch_u5(LO_ULED, 0);\n\telse\n\t\tset_latch_u5(0, LO_ULED);\n}\n\nstatic enum led_brightness rb532_led_get(struct led_classdev *cdev)\n{\n\treturn (get_latch_u5() & LO_ULED) ? LED_FULL : LED_OFF;\n}\n\nstatic struct led_classdev rb532_uled = {\n\t.name = \"uled\",\n\t.brightness_set = rb532_led_set,\n\t.brightness_get = rb532_led_get,\n\t.default_trigger = \"nand-disk\",\n};\n\nstatic int rb532_led_probe(struct platform_device *pdev)\n{\n\treturn led_classdev_register(&pdev->dev, &rb532_uled);\n}\n\nstatic int rb532_led_remove(struct platform_device *pdev)\n{\n\tled_classdev_unregister(&rb532_uled);\n\treturn 0;\n}\n\nstatic struct platform_driver rb532_led_driver = {\n\t.probe = rb532_led_probe,\n\t.remove = rb532_led_remove,\n\t.driver = {\n\t\t.name = \"rb532-led\",\n\t},\n};\n\nmodule_platform_driver(rb532_led_driver);\n\nMODULE_LICENSE(\"GPL\");\nMODULE_DESCRIPTION(\"User LED support for Routerboard532\");\nMODULE_AUTHOR(\"Phil Sutter <n0-1@freewrt.org>\");\nMODULE_ALIAS(\"platform:rb532-led\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

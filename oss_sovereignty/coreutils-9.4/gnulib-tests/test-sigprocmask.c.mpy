@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sigprocmask.c",
+  "hash_id": "0175e9bb772619bdf7c22afa94a132eaa7a8018ca535a55dae5ec0c7dd5302ff",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sigprocmask.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <signal.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (sigprocmask, int, (int, const sigset_t *, sigset_t *));\n\n#include <errno.h>\n#include <limits.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n\n#include \"macros.h\"\n\n#if !(defined _WIN32 && !defined __CYGWIN__)\n\nstatic volatile int sigint_occurred;\n\nstatic void\nsigint_handler (int sig)\n{\n  sigint_occurred++;\n}\n\nint\nmain (int argc, char *argv[])\n{\n  sigset_t set;\n  pid_t pid = getpid ();\n  char command[80];\n\n  if (LONG_MAX < pid)\n    {\n      fputs (\"Skipping test: pid too large\\n\", stderr);\n      return 77;\n    }\n\n  signal (SIGINT, sigint_handler);\n\n  sigemptyset (&set);\n  sigaddset (&set, SIGINT);\n\n   \n  ASSERT (sigprocmask (1729, &set, NULL) == -1);\n  ASSERT (errno == EINVAL);\n\n   \n  ASSERT (sigprocmask (SIG_BLOCK, &set, NULL) == 0);\n\n   \n  sprintf (command, \"sh -c 'sleep 1; kill -INT %ld' &\", (long) pid);\n  ASSERT (system (command) == 0);\n\n   \n  sleep (2);\n\n   \n  ASSERT (sigint_occurred == 0);\n\n   \n  ASSERT (sigprocmask (SIG_UNBLOCK, &set, NULL) == 0);\n\n   \n  ASSERT (sigint_occurred == 1);\n\n  return 0;\n}\n\n#else\n\n \n\nint\nmain ()\n{\n  fputs (\"Skipping test: native Windows platform\\n\", stderr);\n  return 77;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

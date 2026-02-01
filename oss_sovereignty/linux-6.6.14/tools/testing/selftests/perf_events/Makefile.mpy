@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3134e84ccdeba88b8c14dbc10c3c5e2083a21b4bc1c1d6648765e41f7b66f9ec",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/perf_events/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCFLAGS += -Wl,-no-as-needed -Wall $(KHDR_INCLUDES)\nLDFLAGS += -lpthread\n\nTEST_GEN_PROGS := sigtrap_threads remove_on_exec\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

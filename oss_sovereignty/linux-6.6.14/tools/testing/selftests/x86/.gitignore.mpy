@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "8a4ef38ca99f6f7fee1f469d0e7a3b01f0f3a8d62da9345b5c49dfde6afc5428",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/x86/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n*_32\n*_64\nsingle_step_syscall\nsysret_ss_attrs\nsyscall_nt\nptrace_syscall\ntest_mremap_vdso\ncheck_initial_reg_state\nsigreturn\nldt_gdt\niopl\nmpx-mini-test\nioperm\ntest_vdso\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

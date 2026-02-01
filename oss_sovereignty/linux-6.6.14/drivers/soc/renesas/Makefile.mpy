@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9891fa60dae23f0cf99a7b9860dc256b71b57d3f1a77ac1bc6dfc89212a6911e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/renesas/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Generic, must be first because of soc_device_register()\nobj-$(CONFIG_SOC_RENESAS)\t+= renesas-soc.o\n\n# SoC\nifdef CONFIG_SMP\nobj-$(CONFIG_ARCH_R9A06G032)\t+= r9a06g032-smp.o\nendif\n\n# Family\nobj-$(CONFIG_PWC_RZV2M)\t\t+= pwc-rzv2m.o\nobj-$(CONFIG_RST_RCAR)\t\t+= rcar-rst.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

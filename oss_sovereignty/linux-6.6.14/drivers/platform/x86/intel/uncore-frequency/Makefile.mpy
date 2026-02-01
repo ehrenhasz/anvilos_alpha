@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "63b29e73878eedddd78cbefc0e8f361bc7d07fd6204ff7ece56495c694473061",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/uncore-frequency/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for linux/drivers/platform/x86/intel/uncore-frequency\n#\n\nobj-$(CONFIG_INTEL_UNCORE_FREQ_CONTROL)\t+= intel-uncore-frequency.o\nintel-uncore-frequency-y\t\t:= uncore-frequency.o\nobj-$(CONFIG_INTEL_UNCORE_FREQ_CONTROL)\t+= intel-uncore-frequency-common.o\nintel-uncore-frequency-common-y\t\t:= uncore-frequency-common.o\nobj-$(CONFIG_INTEL_UNCORE_FREQ_CONTROL_TPMI)\t+= intel-uncore-frequency-tpmi.o\nintel-uncore-frequency-tpmi-y\t\t:= uncore-frequency-tpmi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

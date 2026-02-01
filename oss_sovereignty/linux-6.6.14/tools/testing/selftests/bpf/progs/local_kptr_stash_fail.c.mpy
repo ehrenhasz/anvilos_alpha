@@ -1,0 +1,9 @@
+{
+  "module_name": "local_kptr_stash_fail.c",
+  "hash_id": "e48bcf7cc8439a0d5423e36ffea8432b117b6136b7931d1e50553d8f2bfe7ed1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/local_kptr_stash_fail.c",
+  "human_readable_source": "\n \n\n#include <vmlinux.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n#include <bpf/bpf_core_read.h>\n#include \"../bpf_experimental.h\"\n#include \"bpf_misc.h\"\n\nstruct node_data {\n\tlong key;\n\tlong data;\n\tstruct bpf_rb_node node;\n};\n\nstruct map_value {\n\tstruct node_data __kptr *node;\n};\n\nstruct node_data2 {\n\tlong key[4];\n};\n\n \nstruct node_data *just_here_because_btf_bug;\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__type(key, int);\n\t__type(value, struct map_value);\n\t__uint(max_entries, 2);\n} some_nodes SEC(\".maps\");\n\nSEC(\"tc\")\n__failure __msg(\"invalid kptr access, R2 type=ptr_node_data2 expected=ptr_node_data\")\nlong stash_rb_nodes(void *ctx)\n{\n\tstruct map_value *mapval;\n\tstruct node_data2 *res;\n\tint idx = 0;\n\n\tmapval = bpf_map_lookup_elem(&some_nodes, &idx);\n\tif (!mapval)\n\t\treturn 1;\n\n\tres = bpf_obj_new(typeof(*res));\n\tif (!res)\n\t\treturn 1;\n\tres->key[0] = 40;\n\n\tres = bpf_kptr_xchg(&mapval->node, res);\n\tif (res)\n\t\tbpf_obj_drop(res);\n\treturn 0;\n}\n\nSEC(\"tc\")\n__failure __msg(\"R1 must have zero offset when passed to release func\")\nlong drop_rb_node_off(void *ctx)\n{\n\tstruct map_value *mapval;\n\tstruct node_data *res;\n\tint idx = 0;\n\n\tmapval = bpf_map_lookup_elem(&some_nodes, &idx);\n\tif (!mapval)\n\t\treturn 1;\n\n\tres = bpf_obj_new(typeof(*res));\n\tif (!res)\n\t\treturn 1;\n\t \n\tbpf_obj_drop(&res->node);\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

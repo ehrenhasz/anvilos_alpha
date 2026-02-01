@@ -1,0 +1,9 @@
+{
+  "module_name": "ringbuf_bench.c",
+  "hash_id": "93a971a99add856ef69db517ffba536b41ea116193267f385cdf94ec8e63b68c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/ringbuf_bench.c",
+  "human_readable_source": "\n\n\n#include <linux/bpf.h>\n#include <stdint.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_RINGBUF);\n} ringbuf SEC(\".maps\");\n\nconst volatile int batch_cnt = 0;\nconst volatile long use_output = 0;\n\nlong sample_val = 42;\nlong dropped __attribute__((aligned(128))) = 0;\n\nconst volatile long wakeup_data_size = 0;\n\nstatic __always_inline long get_flags()\n{\n\tlong sz;\n\n\tif (!wakeup_data_size)\n\t\treturn 0;\n\n\tsz = bpf_ringbuf_query(&ringbuf, BPF_RB_AVAIL_DATA);\n\treturn sz >= wakeup_data_size ? BPF_RB_FORCE_WAKEUP : BPF_RB_NO_WAKEUP;\n}\n\nSEC(\"fentry/\" SYS_PREFIX \"sys_getpgid\")\nint bench_ringbuf(void *ctx)\n{\n\tlong *sample, flags;\n\tint i;\n\n\tif (!use_output) {\n\t\tfor (i = 0; i < batch_cnt; i++) {\n\t\t\tsample = bpf_ringbuf_reserve(&ringbuf,\n\t\t\t\t\t             sizeof(sample_val), 0);\n\t\t\tif (!sample) {\n\t\t\t\t__sync_add_and_fetch(&dropped, 1);\n\t\t\t} else {\n\t\t\t\t*sample = sample_val;\n\t\t\t\tflags = get_flags();\n\t\t\t\tbpf_ringbuf_submit(sample, flags);\n\t\t\t}\n\t\t}\n\t} else {\n\t\tfor (i = 0; i < batch_cnt; i++) {\n\t\t\tflags = get_flags();\n\t\t\tif (bpf_ringbuf_output(&ringbuf, &sample_val,\n\t\t\t\t\t       sizeof(sample_val), flags))\n\t\t\t\t__sync_add_and_fetch(&dropped, 1);\n\t\t}\n\t}\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

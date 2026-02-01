@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7af9fa68d0ef29ae0a08e5246649c958e99fd3a745644879e80cc57fceba17b6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/crypto/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# S/390 crypto devices\n#\n\nap-objs := ap_bus.o ap_card.o ap_queue.o\nobj-$(subst m,y,$(CONFIG_ZCRYPT)) += ap.o\n# zcrypt_api.o and zcrypt_msgtype*.o depend on ap.o\nzcrypt-objs := zcrypt_api.o zcrypt_card.o zcrypt_queue.o\nzcrypt-objs += zcrypt_msgtype6.o zcrypt_msgtype50.o\nzcrypt-objs += zcrypt_ccamisc.o zcrypt_ep11misc.o\nobj-$(CONFIG_ZCRYPT) += zcrypt.o\n# adapter drivers depend on ap.o and zcrypt.o\nobj-$(CONFIG_ZCRYPT) += zcrypt_cex4.o\n\n# pkey kernel module\npkey-objs := pkey_api.o\nobj-$(CONFIG_PKEY) += pkey.o\n\n# adjunct processor matrix\nvfio_ap-objs := vfio_ap_drv.o vfio_ap_ops.o\nobj-$(CONFIG_VFIO_AP) += vfio_ap.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

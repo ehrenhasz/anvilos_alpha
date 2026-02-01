@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objint.c.compress",
+  "hash_id": "b4a6c9b6f0aa67d79f2857f6613e26643aa5ea34aba006415b56e2e938c5ca87",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__objint.c.compress",
+  "human_readable_source": "long int not supported in this build\nsmall int overflow\nsmall int overflow\nsmall int overflow\nsmall int overflow\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gcm_pclmulqdq.c",
+  "hash_id": "42e305f1a3032056282f1e58cfc0520044e9f65c59f88b6f822edf281320284b",
+  "original_prompt": "Ingested from zfs-2.2.2/module/icp/algs/modes/gcm_pclmulqdq.c",
+  "human_readable_source": " \n \n\n#if defined(__x86_64) && defined(HAVE_PCLMULQDQ)\n\n#include <sys/types.h>\n#include <sys/simd.h>\n#include <sys/asm_linkage.h>\n\n \nextern void ASMABI gcm_mul_pclmulqdq(uint64_t *, uint64_t *, uint64_t *);\n\n#include <modes/gcm_impl.h>\n\n \nstatic void\ngcm_pclmulqdq_mul(uint64_t *x_in, uint64_t *y, uint64_t *res)\n{\n\tkfpu_begin();\n\tgcm_mul_pclmulqdq(x_in, y, res);\n\tkfpu_end();\n}\n\nstatic boolean_t\ngcm_pclmulqdq_will_work(void)\n{\n\treturn (kfpu_allowed() && zfs_pclmulqdq_available());\n}\n\nconst gcm_impl_ops_t gcm_pclmulqdq_impl = {\n\t.mul = &gcm_pclmulqdq_mul,\n\t.is_supported = &gcm_pclmulqdq_will_work,\n\t.name = \"pclmulqdq\"\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

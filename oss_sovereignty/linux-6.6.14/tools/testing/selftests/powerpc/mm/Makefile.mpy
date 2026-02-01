@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8271f4ba96e2124840757b96bb064cdb9cc075df99b06669c385ae76bdb9607e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/mm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nnoarg:\n\t$(MAKE) -C ../\n\nTEST_GEN_PROGS := hugetlb_vs_thp_test subpage_prot prot_sao segv_errors wild_bctr \\\n\t\t  large_vm_fork_separation bad_accesses exec_prot pkey_exec_prot \\\n\t\t  pkey_siginfo stack_expansion_signal stack_expansion_ldst \\\n\t\t  large_vm_gpr_corruption\nTEST_PROGS := stress_code_patching.sh\n\nTEST_GEN_PROGS_EXTENDED := tlbie_test\nTEST_GEN_FILES := tempfile\n\ntop_srcdir = ../../../../..\ninclude ../../lib.mk\n\n$(TEST_GEN_PROGS): ../harness.c ../utils.c\n\n$(OUTPUT)/prot_sao: ../utils.c\n\n$(OUTPUT)/wild_bctr: CFLAGS += -m64\n$(OUTPUT)/large_vm_fork_separation: CFLAGS += -m64\n$(OUTPUT)/large_vm_gpr_corruption: CFLAGS += -m64\n$(OUTPUT)/bad_accesses: CFLAGS += -m64\n$(OUTPUT)/exec_prot: CFLAGS += -m64\n$(OUTPUT)/pkey_exec_prot: CFLAGS += -m64\n$(OUTPUT)/pkey_siginfo: CFLAGS += -m64\n\n$(OUTPUT)/stack_expansion_signal: ../utils.c ../pmu/lib.c\n\n$(OUTPUT)/stack_expansion_ldst: CFLAGS += -fno-stack-protector\n$(OUTPUT)/stack_expansion_ldst: ../utils.c\n\n$(OUTPUT)/tempfile:\n\tdd if=/dev/zero of=$@ bs=64k count=1 status=none\n\n$(OUTPUT)/tlbie_test: LDLIBS += -lpthread\n$(OUTPUT)/pkey_siginfo: LDLIBS += -lpthread\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

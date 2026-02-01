@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype_space.c",
+  "hash_id": "85c9730c02b22daaa08b0b32e5bd5954e1975cb48db9c9a2ff36537b7d718cec",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unictype/ctype_space.c",
+  "human_readable_source": " \n#include \"unictype.h\"\n\n#include \"bitmap.h\"\n\n \n#include \"ctype_space.h\"\n\nbool\nuc_is_space (ucs4_t uc)\n{\n  return bitmap_lookup (&u_is_space, uc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

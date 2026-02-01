@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "147bf7c80facb1546ab09ddc6efa17675b2c3b3e6cd598d9b12cc82a9cb09a2c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/pt1/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nearth-pt1-objs := pt1.o\n\nobj-$(CONFIG_DVB_PT1) += earth-pt1.o\n\nccflags-y += -I $(srctree)/drivers/media/dvb-frontends\nccflags-y += -I $(srctree)/drivers/media/tuners\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

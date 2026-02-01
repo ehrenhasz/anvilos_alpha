@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3f431e937c76c8613f0690482b61f9b77089db1218103c4908b4d513d0f13fc2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/pci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\ninclude ../scripts/Makefile.include\n\nbindir ?= /usr/bin\n\nifeq ($(srctree),)\nsrctree := $(patsubst %/,%,$(dir $(CURDIR)))\nsrctree := $(patsubst %/,%,$(dir $(srctree)))\nendif\n\n# Do not use make's built-in rules\n# (this improves performance and avoids hard-to-debug behaviour);\nMAKEFLAGS += -r\n\nCFLAGS += -O2 -Wall -g -D_GNU_SOURCE -I$(OUTPUT)include\n\nALL_TARGETS := pcitest\nALL_PROGRAMS := $(patsubst %,$(OUTPUT)%,$(ALL_TARGETS))\n\nSCRIPTS := pcitest.sh\n\nall: $(ALL_PROGRAMS)\n\nexport srctree OUTPUT CC LD CFLAGS\ninclude $(srctree)/tools/build/Makefile.include\n\n#\n# We need the following to be outside of kernel tree\n#\n$(OUTPUT)include/linux/: ../../include/uapi/linux/\n\tmkdir -p $(OUTPUT)include/linux/ 2>&1 || true\n\tln -sf $(CURDIR)/../../include/uapi/linux/pcitest.h $@\n\nprepare: $(OUTPUT)include/linux/\n\nPCITEST_IN := $(OUTPUT)pcitest-in.o\n$(PCITEST_IN): prepare FORCE\n\t$(Q)$(MAKE) $(build)=pcitest\n$(OUTPUT)pcitest: $(PCITEST_IN)\n\t$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) $< -o $@\n\nclean:\n\trm -f $(ALL_PROGRAMS)\n\trm -rf $(OUTPUT)include/\n\tfind $(or $(OUTPUT),.) -name '*.o' -delete -o -name '\\.*.d' -delete\n\ninstall: $(ALL_PROGRAMS)\n\tinstall -d -m 755 $(DESTDIR)$(bindir);\t\t\\\n\tfor program in $(ALL_PROGRAMS); do\t\t\\\n\t\tinstall $$program $(DESTDIR)$(bindir);\t\\\n\tdone;\t\t\t\t\t\t\\\n\tfor script in $(SCRIPTS); do\t\t\t\\\n\t\tinstall $$script $(DESTDIR)$(bindir);\t\\\n\tdone\n\nFORCE:\n\n.PHONY: all install clean FORCE prepare\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

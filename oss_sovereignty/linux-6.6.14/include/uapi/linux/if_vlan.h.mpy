@@ -1,0 +1,9 @@
+{
+  "module_name": "if_vlan.h",
+  "hash_id": "5e275eefb6d9b6bb906a0b8a8cf4ad53c102b09e98c895314c83efdca08e3f00",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/if_vlan.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_IF_VLAN_H_\n#define _UAPI_LINUX_IF_VLAN_H_\n\n\n \n\n \nenum vlan_ioctl_cmds {\n\tADD_VLAN_CMD,\n\tDEL_VLAN_CMD,\n\tSET_VLAN_INGRESS_PRIORITY_CMD,\n\tSET_VLAN_EGRESS_PRIORITY_CMD,\n\tGET_VLAN_INGRESS_PRIORITY_CMD,\n\tGET_VLAN_EGRESS_PRIORITY_CMD,\n\tSET_VLAN_NAME_TYPE_CMD,\n\tSET_VLAN_FLAG_CMD,\n\tGET_VLAN_REALDEV_NAME_CMD,  \n\tGET_VLAN_VID_CMD  \n};\n\nenum vlan_flags {\n\tVLAN_FLAG_REORDER_HDR\t\t= 0x1,\n\tVLAN_FLAG_GVRP\t\t\t= 0x2,\n\tVLAN_FLAG_LOOSE_BINDING\t\t= 0x4,\n\tVLAN_FLAG_MVRP\t\t\t= 0x8,\n\tVLAN_FLAG_BRIDGE_BINDING\t= 0x10,\n};\n\nenum vlan_name_types {\n\tVLAN_NAME_TYPE_PLUS_VID,  \n\tVLAN_NAME_TYPE_RAW_PLUS_VID,  \n\tVLAN_NAME_TYPE_PLUS_VID_NO_PAD,  \n\tVLAN_NAME_TYPE_RAW_PLUS_VID_NO_PAD,  \n\tVLAN_NAME_TYPE_HIGHEST\n};\n\nstruct vlan_ioctl_args {\n\tint cmd;  \n\tchar device1[24];\n\n        union {\n\t\tchar device2[24];\n\t\tint VID;\n\t\tunsigned int skb_priority;\n\t\tunsigned int name_type;\n\t\tunsigned int bind_type;\n\t\tunsigned int flag;  \n        } u;\n\n\tshort vlan_qos;   \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

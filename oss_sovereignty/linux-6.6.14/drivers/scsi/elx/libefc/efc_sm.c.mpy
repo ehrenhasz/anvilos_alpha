@@ -1,0 +1,9 @@
+{
+  "module_name": "efc_sm.c",
+  "hash_id": "d829da5823b7727e4f2797b49f1eb00acae8c2d738bcc1072d108d457ce542ca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/elx/libefc/efc_sm.c",
+  "human_readable_source": "\n \n\n \n#include \"efc.h\"\n#include \"efc_sm.h\"\n\n \nint\nefc_sm_post_event(struct efc_sm_ctx *ctx,\n\t\t  enum efc_sm_event evt, void *data)\n{\n\tif (!ctx->current_state)\n\t\treturn -EIO;\n\n\tctx->current_state(ctx, evt, data);\n\treturn 0;\n}\n\nvoid\nefc_sm_transition(struct efc_sm_ctx *ctx,\n\t\t  void (*state)(struct efc_sm_ctx *,\n\t\t\t\tenum efc_sm_event, void *), void *data)\n\n{\n\tif (ctx->current_state == state) {\n\t\tefc_sm_post_event(ctx, EFC_EVT_REENTER, data);\n\t} else {\n\t\tefc_sm_post_event(ctx, EFC_EVT_EXIT, data);\n\t\tctx->current_state = state;\n\t\tefc_sm_post_event(ctx, EFC_EVT_ENTER, data);\n\t}\n}\n\nstatic char *event_name[] = EFC_SM_EVENT_NAME;\n\nconst char *efc_sm_event_name(enum efc_sm_event evt)\n{\n\tif (evt > EFC_EVT_LAST)\n\t\treturn \"unknown\";\n\n\treturn event_name[evt];\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

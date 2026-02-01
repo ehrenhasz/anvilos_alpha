@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d08acbda3ed65b10a54a1b740b41648c6c635cd6196adca0b5ac72b929d8f2de",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/sampling_tests/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCFLAGS += -m64\n\nTEST_GEN_PROGS := mmcr0_exceptionbits_test mmcr0_cc56run_test mmcr0_pmccext_test \\\n\t\t   mmcr0_pmcjce_test mmcr0_fc56_pmc1ce_test mmcr0_fc56_pmc56_test \\\n\t\t   mmcr1_comb_test mmcr2_l2l3_test mmcr2_fcs_fch_test \\\n\t\t   mmcr3_src_test mmcra_thresh_marked_sample_test mmcra_thresh_cmp_test \\\n\t\t   mmcra_bhrb_ind_call_test mmcra_bhrb_any_test mmcra_bhrb_cond_test \\\n\t\t   mmcra_bhrb_disable_test bhrb_no_crash_wo_pmu_test intr_regs_no_crash_wo_pmu_test \\\n\t\t   bhrb_filter_map_test mmcr1_sel_unit_cache_test mmcra_bhrb_disable_no_branch_test\n\ntop_srcdir = ../../../../../..\ninclude ../../../lib.mk\n\n$(TEST_GEN_PROGS): ../../harness.c ../../utils.c ../event.c ../lib.c misc.c misc.h ../loop.S ../branch_loops.S\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

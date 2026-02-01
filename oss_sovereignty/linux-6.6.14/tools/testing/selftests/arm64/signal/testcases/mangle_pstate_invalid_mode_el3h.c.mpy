@@ -1,0 +1,9 @@
+{
+  "module_name": "mangle_pstate_invalid_mode_el3h.c",
+  "hash_id": "46ea67033ca20af3118f5b468d83fce6d64f732299f2d63944bbd4a7c9a9e507",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/signal/testcases/mangle_pstate_invalid_mode_el3h.c",
+  "human_readable_source": "\n \n\n#include \"test_signals_utils.h\"\n#include \"testcases.h\"\n\n#include \"mangle_pstate_invalid_mode_template.h\"\n\nDEFINE_TESTCASE_MANGLE_PSTATE_INVALID_MODE(3h);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

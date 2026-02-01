@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "a185d407b6d07886c04756cc12c84686a8f70af6c3ef2190853d8588a8123ae2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/firmware/config",
+  "human_readable_source": "CONFIG_TEST_FIRMWARE=y\nCONFIG_FW_LOADER=y\nCONFIG_FW_LOADER_USER_HELPER=y\nCONFIG_IKCONFIG=y\nCONFIG_IKCONFIG_PROC=y\nCONFIG_FW_UPLOAD=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

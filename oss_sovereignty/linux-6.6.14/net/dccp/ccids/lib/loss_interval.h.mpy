@@ -1,0 +1,9 @@
+{
+  "module_name": "loss_interval.h",
+  "hash_id": "baec3974cd4f639afa64cf2f32ba0b6c69538561149506e104de1d23ff63345b",
+  "original_prompt": "Ingested from linux-6.6.14/net/dccp/ccids/lib/loss_interval.h",
+  "human_readable_source": " \n#ifndef _DCCP_LI_HIST_\n#define _DCCP_LI_HIST_\n \n#include <linux/ktime.h>\n#include <linux/list.h>\n#include <linux/slab.h>\n\n \n#define NINTERVAL\t8\n#define LIH_SIZE\t(NINTERVAL + 1)\n\n \nstruct tfrc_loss_interval {\n\tu64\t\t li_seqno:48,\n\t\t\t li_ccval:4,\n\t\t\t li_is_closed:1;\n\tu32\t\t li_length;\n};\n\n \nstruct tfrc_loss_hist {\n\tstruct tfrc_loss_interval\t*ring[LIH_SIZE];\n\tu8\t\t\t\tcounter;\n\tu32\t\t\t\ti_mean;\n};\n\nstatic inline void tfrc_lh_init(struct tfrc_loss_hist *lh)\n{\n\tmemset(lh, 0, sizeof(struct tfrc_loss_hist));\n}\n\nstatic inline u8 tfrc_lh_is_initialised(struct tfrc_loss_hist *lh)\n{\n\treturn lh->counter > 0;\n}\n\nstatic inline u8 tfrc_lh_length(struct tfrc_loss_hist *lh)\n{\n\treturn min(lh->counter, (u8)LIH_SIZE);\n}\n\nstruct tfrc_rx_hist;\n\nint tfrc_lh_interval_add(struct tfrc_loss_hist *, struct tfrc_rx_hist *,\n\t\t\t u32 (*first_li)(struct sock *), struct sock *);\nu8 tfrc_lh_update_i_mean(struct tfrc_loss_hist *lh, struct sk_buff *);\nvoid tfrc_lh_cleanup(struct tfrc_loss_hist *lh);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

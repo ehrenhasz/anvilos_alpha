@@ -1,0 +1,9 @@
+{
+  "module_name": "mm_types_task.h",
+  "hash_id": "804a71eb1aa8c6a43b73f78976d0258004b30bbb6a24568b95e2f7d7a465cf22",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mm_types_task.h",
+  "human_readable_source": " \n#ifndef _LINUX_MM_TYPES_TASK_H\n#define _LINUX_MM_TYPES_TASK_H\n\n \n\n#include <linux/types.h>\n#include <linux/threads.h>\n#include <linux/atomic.h>\n#include <linux/cpumask.h>\n\n#include <asm/page.h>\n\n#ifdef CONFIG_ARCH_WANT_BATCHED_UNMAP_TLB_FLUSH\n#include <asm/tlbbatch.h>\n#endif\n\n#define USE_SPLIT_PTE_PTLOCKS\t(NR_CPUS >= CONFIG_SPLIT_PTLOCK_CPUS)\n#define USE_SPLIT_PMD_PTLOCKS\t(USE_SPLIT_PTE_PTLOCKS && \\\n\t\tIS_ENABLED(CONFIG_ARCH_ENABLE_SPLIT_PMD_PTLOCK))\n#define ALLOC_SPLIT_PTLOCKS\t(SPINLOCK_SIZE > BITS_PER_LONG/8)\n\n \nenum {\n\tMM_FILEPAGES,\t \n\tMM_ANONPAGES,\t \n\tMM_SWAPENTS,\t \n\tMM_SHMEMPAGES,\t \n\tNR_MM_COUNTERS\n};\n\nstruct page_frag {\n\tstruct page *page;\n#if (BITS_PER_LONG > 32) || (PAGE_SIZE >= 65536)\n\t__u32 offset;\n\t__u32 size;\n#else\n\t__u16 offset;\n\t__u16 size;\n#endif\n};\n\n \nstruct tlbflush_unmap_batch {\n#ifdef CONFIG_ARCH_WANT_BATCHED_UNMAP_TLB_FLUSH\n\t \n\tstruct arch_tlbflush_unmap_batch arch;\n\n\t \n\tbool flush_required;\n\n\t \n\tbool writable;\n#endif\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

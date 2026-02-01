@@ -1,0 +1,9 @@
+{
+  "module_name": "nx_debugfs.c",
+  "hash_id": "2f028ebcfeeb0b377ba09e10d7fea22cc87e5201714833fa28496a425c014d7c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/nx/nx_debugfs.c",
+  "human_readable_source": "\n \n\n#include <linux/device.h>\n#include <linux/kobject.h>\n#include <linux/string.h>\n#include <linux/debugfs.h>\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/crypto.h>\n#include <crypto/hash.h>\n#include <asm/vio.h>\n\n#include \"nx_csbcpb.h\"\n#include \"nx.h\"\n\n#ifdef CONFIG_DEBUG_FS\n\n \n\nvoid nx_debugfs_init(struct nx_crypto_driver *drv)\n{\n\tstruct dentry *root;\n\n\troot = debugfs_create_dir(NX_NAME, NULL);\n\tdrv->dfs_root = root;\n\n\tdebugfs_create_u32(\"aes_ops\", S_IRUSR | S_IRGRP | S_IROTH,\n\t\t\t   root, &drv->stats.aes_ops.counter);\n\tdebugfs_create_u32(\"sha256_ops\", S_IRUSR | S_IRGRP | S_IROTH,\n\t\t\t   root, &drv->stats.sha256_ops.counter);\n\tdebugfs_create_u32(\"sha512_ops\", S_IRUSR | S_IRGRP | S_IROTH,\n\t\t\t   root, &drv->stats.sha512_ops.counter);\n\tdebugfs_create_u64(\"aes_bytes\", S_IRUSR | S_IRGRP | S_IROTH,\n\t\t\t   root, &drv->stats.aes_bytes.counter);\n\tdebugfs_create_u64(\"sha256_bytes\", S_IRUSR | S_IRGRP | S_IROTH,\n\t\t\t   root, &drv->stats.sha256_bytes.counter);\n\tdebugfs_create_u64(\"sha512_bytes\", S_IRUSR | S_IRGRP | S_IROTH,\n\t\t\t   root, &drv->stats.sha512_bytes.counter);\n\tdebugfs_create_u32(\"errors\", S_IRUSR | S_IRGRP | S_IROTH,\n\t\t\t   root, &drv->stats.errors.counter);\n\tdebugfs_create_u32(\"last_error\", S_IRUSR | S_IRGRP | S_IROTH,\n\t\t\t   root, &drv->stats.last_error.counter);\n\tdebugfs_create_u32(\"last_error_pid\", S_IRUSR | S_IRGRP | S_IROTH,\n\t\t\t   root, &drv->stats.last_error_pid.counter);\n}\n\nvoid\nnx_debugfs_fini(struct nx_crypto_driver *drv)\n{\n\tdebugfs_remove_recursive(drv->dfs_root);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

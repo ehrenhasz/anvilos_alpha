@@ -1,0 +1,9 @@
+{
+  "module_name": "printenv.c",
+  "hash_id": "8c30ad85ce58869a75e8df6414f85f9b595ca84b2db82944bd124e6d37043dde",
+  "original_prompt": "Ingested from bash-5.2.21/support/printenv.c",
+  "human_readable_source": " \n\n \n\n#if defined (HAVE_CONFIG_H)\n#  include  <config.h>\n#endif\n\n#include \"bashansi.h\"\n#include <stdio.h>\t\t \n\nextern char **environ;\n\nint\nmain (argc, argv) \n     int argc;\n     char **argv;\n{\n  register char **envp, *eval;\n  int len;\n\n  argv++;\n  argc--;\n\n   \n  if (argc == 0)\n    {\n      for (envp = environ; *envp; envp++)\n\tputs (*envp);\n      exit (0);\n    }\n\n   \n  len = strlen (*argv);\n  for (envp = environ; *envp; envp++)\n    {\n      if (**argv == **envp && strncmp (*envp, *argv, len) == 0)\n\t{\n\t  eval = *envp + len;\n\t   \n\t  if (*eval == '=')\n\t    {\n\t      puts (eval + 1);\n\t      exit (0);\n\t    }\n\t}\n    }\n  exit (1);\n}\n  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

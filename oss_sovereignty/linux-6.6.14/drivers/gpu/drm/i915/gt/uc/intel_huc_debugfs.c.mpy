@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_huc_debugfs.c",
+  "hash_id": "471065b91de1ecefd11d72cd382e1f8f6d30c0b4d2d4be3ad914bd3025c68746",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/uc/intel_huc_debugfs.c",
+  "human_readable_source": "\n \n\n#include <drm/drm_print.h>\n\n#include \"gt/intel_gt_debugfs.h\"\n#include \"intel_huc.h\"\n#include \"intel_huc_debugfs.h\"\n\nstatic int huc_info_show(struct seq_file *m, void *data)\n{\n\tstruct intel_huc *huc = m->private;\n\tstruct drm_printer p = drm_seq_file_printer(m);\n\n\tif (!intel_huc_is_supported(huc))\n\t\treturn -ENODEV;\n\n\tintel_huc_load_status(huc, &p);\n\n\treturn 0;\n}\nDEFINE_INTEL_GT_DEBUGFS_ATTRIBUTE(huc_info);\n\nvoid intel_huc_debugfs_register(struct intel_huc *huc, struct dentry *root)\n{\n\tstatic const struct intel_gt_debugfs_file files[] = {\n\t\t{ \"huc_info\", &huc_info_fops, NULL },\n\t};\n\n\tif (!intel_huc_is_supported(huc))\n\t\treturn;\n\n\tintel_gt_debugfs_register_files(root, files, ARRAY_SIZE(files), huc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

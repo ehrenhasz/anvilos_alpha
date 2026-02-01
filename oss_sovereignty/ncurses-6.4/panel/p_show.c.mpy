@@ -1,0 +1,9 @@
+{
+  "module_name": "p_show.c",
+  "hash_id": "5ae0622fd66ad6388282ebb58c394bcedfe0108abd4a9ccdc75f157755bf79be",
+  "original_prompt": "Ingested from ncurses-6.4/panel/p_show.c",
+  "human_readable_source": " \n\n \n\n \n#include \"panel.priv.h\"\n\nMODULE_ID(\"$Id: p_show.c,v 1.17 2021/06/17 21:20:30 tom Exp $\")\n\nPANEL_EXPORT(int)\nshow_panel(PANEL * pan)\n{\n  int err = ERR;\n\n  T((T_CALLED(\"show_panel(%p)\"), (void *)pan));\n\n  if (pan)\n    {\n      GetHook(pan);\n\n      if (Is_Top(pan))\n\treturnCode(OK);\n\n      dBug((\"--> show_panel %s\", USER_PTR(pan->user, 1)));\n\n      HIDE_PANEL(pan, err, OK);\n\n      dStack(\"<lt%d>\", 1, pan);\n      assert(_nc_bottom_panel == _nc_stdscr_pseudo_panel);\n\n      _nc_top_panel->above = pan;\n      pan->below = _nc_top_panel;\n      pan->above = (PANEL *) 0;\n      _nc_top_panel = pan;\n\n      err = OK;\n\n      dStack(\"<lt%d>\", 9, pan);\n    }\n  returnCode(err);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

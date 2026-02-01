@@ -1,0 +1,9 @@
+{
+  "module_name": "dnotify_test.c",
+  "hash_id": "d74a26648365462dbb888a9c22e66979b04fa437b01a7ba2459604ec400ccb4a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/filesystems/dnotify_test.c",
+  "human_readable_source": "\n#define _GNU_SOURCE\t \n#include <fcntl.h>\t \n#include <signal.h>\n#include <stdio.h>\n#include <unistd.h>\n\nstatic volatile int event_fd;\n\nstatic void handler(int sig, siginfo_t *si, void *data)\n{\n\tevent_fd = si->si_fd;\n}\n\nint main(void)\n{\n\tstruct sigaction act;\n\tint fd;\n\n\tact.sa_sigaction = handler;\n\tsigemptyset(&act.sa_mask);\n\tact.sa_flags = SA_SIGINFO;\n\tsigaction(SIGRTMIN + 1, &act, NULL);\n\n\tfd = open(\".\", O_RDONLY);\n\tfcntl(fd, F_SETSIG, SIGRTMIN + 1);\n\tfcntl(fd, F_NOTIFY, DN_MODIFY|DN_CREATE|DN_MULTISHOT);\n\t \n\twhile (1) {\n\t\tpause();\n\t\tprintf(\"Got event on fd=%d\\n\", event_fd);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

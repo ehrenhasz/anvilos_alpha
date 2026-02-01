@@ -1,0 +1,9 @@
+{
+  "module_name": "cc_cipher.h",
+  "hash_id": "5f11447c1f97a6f8c351c37fa191841862747d2993b83aacc703923c9754195c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/ccree/cc_cipher.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef __CC_CIPHER_H__\n#define __CC_CIPHER_H__\n\n#include <linux/kernel.h>\n#include <crypto/algapi.h>\n#include \"cc_driver.h\"\n#include \"cc_buffer_mgr.h\"\n\nstruct cipher_req_ctx {\n\tstruct async_gen_req_ctx gen_ctx;\n\tenum cc_req_dma_buf_type dma_buf_type;\n\tu32 in_nents;\n\tu32 in_mlli_nents;\n\tu32 out_nents;\n\tu32 out_mlli_nents;\n\tu8 *iv;\n\tstruct mlli_params mlli_params;\n};\n\nint cc_cipher_alloc(struct cc_drvdata *drvdata);\n\nint cc_cipher_free(struct cc_drvdata *drvdata);\n\nstruct cc_hkey_info {\n\tu16 keylen;\n\tu8 hw_key1;\n\tu8 hw_key2;\n} __packed;\n\n#define CC_HW_KEY_SIZE sizeof(struct cc_hkey_info)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

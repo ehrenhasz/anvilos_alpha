@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6a2f478715f5f8f44dce91a6f37c4bdb06b129cef9733c189ce774ef5d3c6524",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/tegra/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y += fuse/\nobj-y += cbb/\n\nobj-y += common.o\nobj-$(CONFIG_SOC_TEGRA_FLOWCTRL) += flowctrl.o\nobj-$(CONFIG_SOC_TEGRA_PMC) += pmc.o\nobj-$(CONFIG_SOC_TEGRA20_VOLTAGE_COUPLER) += regulators-tegra20.o\nobj-$(CONFIG_SOC_TEGRA30_VOLTAGE_COUPLER) += regulators-tegra30.o\nobj-$(CONFIG_ARCH_TEGRA_186_SOC) += ari-tegra186.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

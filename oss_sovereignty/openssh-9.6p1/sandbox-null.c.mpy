@@ -1,0 +1,9 @@
+{
+  "module_name": "sandbox-null.c",
+  "hash_id": "4223ab72a69e1d4fa45d33743c1ae1b1b3c7857bb2b2206907eb744bc33dccdd",
+  "original_prompt": "Ingested from openssh-9.6p1/sandbox-null.c",
+  "human_readable_source": " \n \n\n#include \"includes.h\"\n\n#ifdef SANDBOX_NULL\n\n#include <sys/types.h>\n\n#include <errno.h>\n#include <stdarg.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n\n#include \"log.h\"\n#include \"ssh-sandbox.h\"\n#include \"xmalloc.h\"\n\n \n\nstruct ssh_sandbox {\n\tint junk;\n};\n\nstruct ssh_sandbox *\nssh_sandbox_init(struct monitor *monitor)\n{\n\tstruct ssh_sandbox *box;\n\n\t \n\tbox = xcalloc(1, sizeof(*box));\n\treturn box;\n}\n\nvoid\nssh_sandbox_child(struct ssh_sandbox *box)\n{\n\t \n}\n\nvoid\nssh_sandbox_parent_finish(struct ssh_sandbox *box)\n{\n\tfree(box);\n}\n\nvoid\nssh_sandbox_parent_preauth(struct ssh_sandbox *box, pid_t child_pid)\n{\n\t \n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

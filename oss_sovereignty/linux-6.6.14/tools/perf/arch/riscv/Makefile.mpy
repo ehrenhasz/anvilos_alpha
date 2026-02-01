@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "89d90c873aaf89a564f8c45ead7bf7a8e0f01b561abce20619e202fdb95707df",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/riscv/Makefile",
+  "human_readable_source": "ifndef NO_DWARF\nPERF_HAVE_DWARF_REGS := 1\nendif\nPERF_HAVE_ARCH_REGS_QUERY_REGISTER_OFFSET := 1\nPERF_HAVE_JITDUMP := 1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

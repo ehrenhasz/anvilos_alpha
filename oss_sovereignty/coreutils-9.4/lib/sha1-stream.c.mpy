@@ -1,0 +1,9 @@
+{
+  "module_name": "sha1-stream.c",
+  "hash_id": "5ec9adea554368358577473595584f069c37084628acd6640a48d60fc0633337",
+  "original_prompt": "Ingested from coreutils-9.4/lib/sha1-stream.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#if HAVE_OPENSSL_SHA1\n# define GL_OPENSSL_INLINE _GL_EXTERN_INLINE\n#endif\n#include \"sha1.h\"\n\n#include <stdlib.h>\n\n#if USE_UNLOCKED_IO\n# include \"unlocked-io.h\"\n#endif\n\n#include \"af_alg.h\"\n\n#define BLOCKSIZE 32768\n#if BLOCKSIZE % 64 != 0\n# error \"invalid BLOCKSIZE\"\n#endif\n\n \nint\nsha1_stream (FILE *stream, void *resblock)\n{\n  switch (afalg_stream (stream, \"sha1\", resblock, SHA1_DIGEST_SIZE))\n    {\n    case 0: return 0;\n    case -EIO: return 1;\n    }\n\n  char *buffer = malloc (BLOCKSIZE + 72);\n  if (!buffer)\n    return 1;\n\n  struct sha1_ctx ctx;\n  sha1_init_ctx (&ctx);\n  size_t sum;\n\n   \n  while (1)\n    {\n       \n      size_t n;\n      sum = 0;\n\n       \n      while (1)\n        {\n           \n              if (ferror (stream))\n                {\n                  free (buffer);\n                  return 1;\n                }\n              goto process_partial_block;\n            }\n        }\n\n       \n      sha1_process_block (buffer, BLOCKSIZE, &ctx);\n    }\n\n process_partial_block:;\n\n   \n  if (sum > 0)\n    sha1_process_bytes (buffer, sum, &ctx);\n\n   \n  sha1_finish_ctx (&ctx, resblock);\n  free (buffer);\n  return 0;\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

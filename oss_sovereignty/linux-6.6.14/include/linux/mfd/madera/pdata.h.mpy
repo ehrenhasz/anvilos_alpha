@@ -1,0 +1,9 @@
+{
+  "module_name": "pdata.h",
+  "hash_id": "00fb1a869d7272feb99a16a22019381fda73e9c239bbd5abec270a198d693e81",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/madera/pdata.h",
+  "human_readable_source": " \n \n\n#ifndef MADERA_PDATA_H\n#define MADERA_PDATA_H\n\n#include <linux/kernel.h>\n#include <linux/regulator/arizona-ldo1.h>\n#include <linux/regulator/arizona-micsupp.h>\n#include <linux/regulator/machine.h>\n#include <sound/madera-pdata.h>\n\n#define MADERA_MAX_MICBIAS\t\t4\n#define MADERA_MAX_CHILD_MICBIAS\t4\n\n#define MADERA_MAX_GPSW\t\t\t2\n\nstruct gpio_desc;\nstruct pinctrl_map;\n\n \nstruct madera_pdata {\n\tstruct gpio_desc *reset;\n\n\tstruct arizona_ldo1_pdata ldo1;\n\tstruct arizona_micsupp_pdata micvdd;\n\n\tunsigned int irq_flags;\n\tint gpio_base;\n\n\tconst struct pinctrl_map *gpio_configs;\n\tint n_gpio_configs;\n\n\tu32 gpsw[MADERA_MAX_GPSW];\n\n\tstruct madera_codec_pdata codec;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

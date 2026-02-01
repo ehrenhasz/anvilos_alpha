@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_gt_sysfs.h",
+  "hash_id": "5d48e688bae819036cd941508cf5ddb100e12874650e289ce80a8604fcce3cf4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_gt_sysfs.h",
+  "human_readable_source": " \n \n\n#ifndef __SYSFS_GT_H__\n#define __SYSFS_GT_H__\n\n#include <linux/ctype.h>\n#include <linux/kobject.h>\n\n#include \"i915_gem.h\"  \n#include \"intel_gt_types.h\"\n\nstruct intel_gt;\n\nbool is_object_gt(struct kobject *kobj);\n\nstruct drm_i915_private *kobj_to_i915(struct kobject *kobj);\n\nstatic inline struct intel_gt *kobj_to_gt(struct kobject *kobj)\n{\n\treturn container_of(kobj, struct intel_gt, sysfs_gt);\n}\n\nvoid intel_gt_sysfs_register(struct intel_gt *gt);\nvoid intel_gt_sysfs_unregister(struct intel_gt *gt);\nstruct intel_gt *intel_gt_sysfs_get_drvdata(struct kobject *kobj,\n\t\t\t\t\t    const char *name);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "watchdog_core.h",
+  "hash_id": "47885be5e16bae1f2a81db22e4c11ef5b0f623087568dde23e18c5ebd1e0474b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/watchdog/watchdog_core.h",
+  "human_readable_source": " \n \n\n#include <linux/hrtimer.h>\n#include <linux/kthread.h>\n\n#define MAX_DOGS\t32\t \n\n \nstruct watchdog_core_data {\n\tstruct device dev;\n\tstruct cdev cdev;\n\tstruct watchdog_device *wdd;\n\tstruct mutex lock;\n\tktime_t last_keepalive;\n\tktime_t last_hw_keepalive;\n\tktime_t open_deadline;\n\tstruct hrtimer timer;\n\tstruct kthread_work work;\n#if IS_ENABLED(CONFIG_WATCHDOG_HRTIMER_PRETIMEOUT)\n\tstruct hrtimer pretimeout_timer;\n#endif\n\tunsigned long status;\t\t \n#define _WDOG_DEV_OPEN\t\t0\t \n#define _WDOG_ALLOW_RELEASE\t1\t \n#define _WDOG_KEEPALIVE\t\t2\t \n};\n\n \nextern int watchdog_dev_register(struct watchdog_device *);\nextern void watchdog_dev_unregister(struct watchdog_device *);\nextern int __init watchdog_dev_init(void);\nextern void __exit watchdog_dev_exit(void);\n\nstatic inline bool watchdog_have_pretimeout(struct watchdog_device *wdd)\n{\n\treturn wdd->info->options & WDIOF_PRETIMEOUT ||\n\t       IS_ENABLED(CONFIG_WATCHDOG_HRTIMER_PRETIMEOUT);\n}\n\n#if IS_ENABLED(CONFIG_WATCHDOG_HRTIMER_PRETIMEOUT)\nvoid watchdog_hrtimer_pretimeout_init(struct watchdog_device *wdd);\nvoid watchdog_hrtimer_pretimeout_start(struct watchdog_device *wdd);\nvoid watchdog_hrtimer_pretimeout_stop(struct watchdog_device *wdd);\n#else\nstatic inline void watchdog_hrtimer_pretimeout_init(struct watchdog_device *wdd) {}\nstatic inline void watchdog_hrtimer_pretimeout_start(struct watchdog_device *wdd) {}\nstatic inline void watchdog_hrtimer_pretimeout_stop(struct watchdog_device *wdd) {}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

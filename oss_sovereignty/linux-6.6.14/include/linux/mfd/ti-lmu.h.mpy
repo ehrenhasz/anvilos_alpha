@@ -1,0 +1,9 @@
+{
+  "module_name": "ti-lmu.h",
+  "hash_id": "8c67c257a38148416742d6c08e3f9e31dfdebf43ddad83254bd3aa8412ce0132",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/ti-lmu.h",
+  "human_readable_source": " \n \n\n#ifndef __MFD_TI_LMU_H__\n#define __MFD_TI_LMU_H__\n\n#include <linux/gpio.h>\n#include <linux/notifier.h>\n#include <linux/regmap.h>\n#include <linux/gpio/consumer.h>\n\n \n#define LMU_EVENT_MONITOR_DONE\t\t0x01\n\nenum ti_lmu_id {\n\tLM3631,\n\tLM3632,\n\tLM3633,\n\tLM3695,\n\tLM36274,\n\tLMU_MAX_ID,\n};\n\nenum ti_lmu_max_current {\n\tLMU_IMAX_5mA,\n\tLMU_IMAX_6mA,\n\tLMU_IMAX_7mA = 0x03,\n\tLMU_IMAX_8mA,\n\tLMU_IMAX_9mA,\n\tLMU_IMAX_10mA = 0x07,\n\tLMU_IMAX_11mA,\n\tLMU_IMAX_12mA,\n\tLMU_IMAX_13mA,\n\tLMU_IMAX_14mA,\n\tLMU_IMAX_15mA = 0x0D,\n\tLMU_IMAX_16mA,\n\tLMU_IMAX_17mA,\n\tLMU_IMAX_18mA,\n\tLMU_IMAX_19mA,\n\tLMU_IMAX_20mA = 0x13,\n\tLMU_IMAX_21mA,\n\tLMU_IMAX_22mA,\n\tLMU_IMAX_23mA = 0x17,\n\tLMU_IMAX_24mA,\n\tLMU_IMAX_25mA,\n\tLMU_IMAX_26mA,\n\tLMU_IMAX_27mA = 0x1C,\n\tLMU_IMAX_28mA,\n\tLMU_IMAX_29mA,\n\tLMU_IMAX_30mA,\n};\n\nenum lm363x_regulator_id {\n\tLM3631_BOOST,\t\t \n\tLM3631_LDO_CONT,\t \n\tLM3631_LDO_OREF,\t \n\tLM3631_LDO_POS,\t\t \n\tLM3631_LDO_NEG,\t\t \n\tLM3632_BOOST,\t\t \n\tLM3632_LDO_POS,\t\t \n\tLM3632_LDO_NEG,\t\t \n\tLM36274_BOOST,\t\t \n\tLM36274_LDO_POS,\t \n\tLM36274_LDO_NEG,\t \n};\n\n \nstruct ti_lmu {\n\tstruct device *dev;\n\tstruct regmap *regmap;\n\tstruct gpio_desc *en_gpio;\n\tstruct blocking_notifier_head notifier;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dns_resolve.h",
+  "hash_id": "c2c7188eb0cd33dcfa126948972c28b372f7ab4f6e6bb213f51ba487adf07734",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfs/dns_resolve.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_FS_NFS_DNS_RESOLVE_H\n#define __LINUX_FS_NFS_DNS_RESOLVE_H\n\n#define NFS_DNS_HOSTNAME_MAXLEN\t(128)\n\n\n#ifdef CONFIG_NFS_USE_KERNEL_DNS\nstatic inline int nfs_dns_resolver_init(void)\n{\n\treturn 0;\n}\n\nstatic inline void nfs_dns_resolver_destroy(void)\n{}\n\nstatic inline int nfs_dns_resolver_cache_init(struct net *net)\n{\n\treturn 0;\n}\n\nstatic inline void nfs_dns_resolver_cache_destroy(struct net *net)\n{}\n#else\nextern int nfs_dns_resolver_init(void);\nextern void nfs_dns_resolver_destroy(void);\nextern int nfs_dns_resolver_cache_init(struct net *net);\nextern void nfs_dns_resolver_cache_destroy(struct net *net);\n#endif\n\nextern ssize_t nfs_dns_resolve_name(struct net *net, char *name,\n\t\tsize_t namelen,\tstruct sockaddr_storage *sa, size_t salen);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

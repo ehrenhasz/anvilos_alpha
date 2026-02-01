@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_iter_task_stack.c",
+  "hash_id": "ebe2df2f3f06c31362d569f8802e75073e00f45d1502ec9ac34df4dfd47c2eb5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_iter_task_stack.c",
+  "human_readable_source": "\n \n#include \"bpf_iter.h\"\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\n#define MAX_STACK_TRACE_DEPTH   64\nunsigned long entries[MAX_STACK_TRACE_DEPTH] = {};\n#define SIZE_OF_ULONG (sizeof(unsigned long))\n\nSEC(\"iter/task\")\nint dump_task_stack(struct bpf_iter__task *ctx)\n{\n\tstruct seq_file *seq = ctx->meta->seq;\n\tstruct task_struct *task = ctx->task;\n\tlong i, retlen;\n\n\tif (task == (void *)0)\n\t\treturn 0;\n\n\tretlen = bpf_get_task_stack(task, entries,\n\t\t\t\t    MAX_STACK_TRACE_DEPTH * SIZE_OF_ULONG, 0);\n\tif (retlen < 0)\n\t\treturn 0;\n\n\tBPF_SEQ_PRINTF(seq, \"pid: %8u num_entries: %8u\\n\", task->pid,\n\t\t       retlen / SIZE_OF_ULONG);\n\tfor (i = 0; i < MAX_STACK_TRACE_DEPTH; i++) {\n\t\tif (retlen > i * SIZE_OF_ULONG)\n\t\t\tBPF_SEQ_PRINTF(seq, \"[<0>] %pB\\n\", (void *)entries[i]);\n\t}\n\tBPF_SEQ_PRINTF(seq, \"\\n\");\n\n\treturn 0;\n}\n\nint num_user_stacks = 0;\n\nSEC(\"iter/task\")\nint get_task_user_stacks(struct bpf_iter__task *ctx)\n{\n\tstruct seq_file *seq = ctx->meta->seq;\n\tstruct task_struct *task = ctx->task;\n\tuint64_t buf_sz = 0;\n\tint64_t res;\n\n\tif (task == (void *)0)\n\t\treturn 0;\n\n\tres = bpf_get_task_stack(task, entries,\n\t\t\tMAX_STACK_TRACE_DEPTH * SIZE_OF_ULONG, BPF_F_USER_STACK);\n\tif (res <= 0)\n\t\treturn 0;\n\n\t \n\t++num_user_stacks;\n\n\tbuf_sz += res;\n\n\t \n\tbpf_seq_write(seq, &entries, buf_sz);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

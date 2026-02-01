@@ -1,0 +1,9 @@
+{
+  "module_name": "inv_icm42600_temp.h",
+  "hash_id": "94997f5c64c46c797d9ec74655dfc67782dc400246e417763f742623900ff851",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.h",
+  "human_readable_source": " \n \n\n#ifndef INV_ICM42600_TEMP_H_\n#define INV_ICM42600_TEMP_H_\n\n#include <linux/iio/iio.h>\n\n#define INV_ICM42600_TEMP_CHAN(_index)\t\t\t\t\t\\\n\t{\t\t\t\t\t\t\t\t\\\n\t\t.type = IIO_TEMP,\t\t\t\t\t\\\n\t\t.info_mask_separate =\t\t\t\t\t\\\n\t\t\tBIT(IIO_CHAN_INFO_RAW) |\t\t\t\\\n\t\t\tBIT(IIO_CHAN_INFO_OFFSET) |\t\t\t\\\n\t\t\tBIT(IIO_CHAN_INFO_SCALE),\t\t\t\\\n\t\t.scan_index = _index,\t\t\t\t\t\\\n\t\t.scan_type = {\t\t\t\t\t\t\\\n\t\t\t.sign = 's',\t\t\t\t\t\\\n\t\t\t.realbits = 16,\t\t\t\t\t\\\n\t\t\t.storagebits = 16,\t\t\t\t\\\n\t\t},\t\t\t\t\t\t\t\\\n\t}\n\nint inv_icm42600_temp_read_raw(struct iio_dev *indio_dev,\n\t\t\t       struct iio_chan_spec const *chan,\n\t\t\t       int *val, int *val2, long mask);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cx25821-audio.h",
+  "hash_id": "1b0e99f4b97447ca23201e5f29270fc0272727350daf6756bc3a7e0deccdc053",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx25821/cx25821-audio.h",
+  "human_readable_source": " \n \n\n#ifndef __CX25821_AUDIO_H__\n#define __CX25821_AUDIO_H__\n\n#define USE_RISC_NOOP\t\t1\n#define LINES_PER_BUFFER\t15\n#define AUDIO_LINE_SIZE\t\t128\n\n \n#define NUMBER_OF_PROGRAMS\t8\n\n \n#ifndef USE_RISC_NOOP\n#define MAX_BUFFER_PROGRAM_SIZE\t\t\t\t\t\t\\\n\t(2 * LINES_PER_BUFFER * RISC_WRITE_INSTRUCTION_SIZE +\t\t\\\n\t RISC_WRITECR_INSTRUCTION_SIZE * 4)\n#endif\n\n \n#ifdef USE_RISC_NOOP\n#define MAX_BUFFER_PROGRAM_SIZE\t\t\t\t\t\t\\\n\t(2 * LINES_PER_BUFFER * RISC_WRITE_INSTRUCTION_SIZE +\t\t\\\n\t RISC_NOOP_INSTRUCTION_SIZE * 4)\n#endif\n\n \n#define RISC_WRITE_INSTRUCTION_SIZE\t12\n#define RISC_JUMP_INSTRUCTION_SIZE\t12\n#define RISC_SKIP_INSTRUCTION_SIZE\t4\n#define RISC_SYNC_INSTRUCTION_SIZE\t4\n#define RISC_WRITECR_INSTRUCTION_SIZE\t16\n#define RISC_NOOP_INSTRUCTION_SIZE\t4\n\n#define MAX_AUDIO_DMA_BUFFER_SIZE\t\t\t\t\t\\\n\t(MAX_BUFFER_PROGRAM_SIZE * NUMBER_OF_PROGRAMS +\t\t\t\\\n\t RISC_SYNC_INSTRUCTION_SIZE)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__modcollections.c.qstr",
+  "hash_id": "31e65f7f935b47688f4db87e5797137749027c1134b3340d58c69945d7431b53",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__modcollections.c.qstr",
+  "human_readable_source": "Q(__name__)\nQ(collections)\nQ(namedtuple)\nQ(collections)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

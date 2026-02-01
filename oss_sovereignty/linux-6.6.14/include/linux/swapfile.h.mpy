@@ -1,0 +1,9 @@
+{
+  "module_name": "swapfile.h",
+  "hash_id": "f48bc587e4401282280a6575b976197de9c7f5ee48e0bb0b89c3016a5046629a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/swapfile.h",
+  "human_readable_source": " \n#ifndef _LINUX_SWAPFILE_H\n#define _LINUX_SWAPFILE_H\n\nextern unsigned long generic_max_swapfile_size(void);\nunsigned long arch_max_swapfile_size(void);\n\n \nextern unsigned long swapfile_maximum_size;\n \nextern bool swap_migration_ad_supported;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

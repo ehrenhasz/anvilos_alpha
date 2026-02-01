@@ -1,0 +1,9 @@
+{
+  "module_name": "fchown-stub.c",
+  "hash_id": "5a8397cac9eef6d020c5e3e6777ec674fbcb2b742afe1b00701c40349457f557",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fchown-stub.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/types.h>\n#include <errno.h>\n\n \n\nint\nfchown (int fd, uid_t uid, gid_t gid)\n{\n  errno = EPERM;\n  return -1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

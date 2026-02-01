@@ -1,0 +1,9 @@
+{
+  "module_name": "free_ttype.c",
+  "hash_id": "c98876880eb3bc04d88f67f88212f81405491e3bb4720cf8de6ffd6ff16adb19",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/tinfo/free_ttype.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\n#include <tic.h>\n\nMODULE_ID(\"$Id: free_ttype.c,v 1.21 2022/05/28 18:02:33 tom Exp $\")\n\nstatic void\nreally_free_termtype(TERMTYPE2 *ptr, bool freeStrings)\n{\n    T((\"really_free_termtype(%s) %d\", ptr->term_names, freeStrings));\n\n    if (freeStrings) {\n\tFreeIfNeeded(ptr->str_table);\n    }\n    FreeIfNeeded(ptr->Booleans);\n    FreeIfNeeded(ptr->Numbers);\n    FreeIfNeeded(ptr->Strings);\n#if NCURSES_XNAMES\n    if (freeStrings) {\n\tFreeIfNeeded(ptr->ext_str_table);\n    }\n    FreeIfNeeded(ptr->ext_Names);\n#endif\n    memset(ptr, 0, sizeof(TERMTYPE));\n    _nc_free_entry(_nc_head, ptr);\n}\n\n \nNCURSES_EXPORT(void)\n_nc_free_termtype(TERMTYPE *ptr)\n{\n    really_free_termtype((TERMTYPE2 *) ptr, !NCURSES_EXT_NUMBERS);\n}\n\n \nNCURSES_EXPORT(void)\n_nc_free_termtype1(TERMTYPE *ptr)\n{\n    really_free_termtype((TERMTYPE2 *) ptr, TRUE);\n}\n\n#if NCURSES_EXT_NUMBERS\nNCURSES_EXPORT(void)\n_nc_free_termtype2(TERMTYPE2 *ptr)\n{\n    really_free_termtype(ptr, TRUE);\n}\n#endif\n\n#if NCURSES_XNAMES\nNCURSES_EXPORT_VAR(bool) _nc_user_definable = TRUE;\n\nNCURSES_EXPORT(int)\nuse_extended_names(bool flag)\n{\n    int oldflag = _nc_user_definable;\n\n    START_TRACE();\n    T((T_CALLED(\"use_extended_names(%d)\"), flag));\n    _nc_user_definable = flag;\n    returnBool(oldflag);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

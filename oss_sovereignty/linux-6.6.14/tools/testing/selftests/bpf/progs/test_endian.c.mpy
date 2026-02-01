@@ -1,0 +1,9 @@
+{
+  "module_name": "test_endian.c",
+  "hash_id": "7cee530d503d43b89b9dc15c3ce2091ff8e42e8fd9a24bad6a7fb1cc5e862382",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_endian.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n\n#define IN16 0x1234\n#define IN32 0x12345678U\n#define IN64 0x123456789abcdef0ULL\n\n__u16 in16 = 0;\n__u32 in32 = 0;\n__u64 in64 = 0;\n\n__u16 out16 = 0;\n__u32 out32 = 0;\n__u64 out64 = 0;\n\n__u16 const16 = 0;\n__u32 const32 = 0;\n__u64 const64 = 0;\n\nSEC(\"raw_tp/sys_enter\")\nint sys_enter(const void *ctx)\n{\n\tout16 = __builtin_bswap16(in16);\n\tout32 = __builtin_bswap32(in32);\n\tout64 = __builtin_bswap64(in64);\n\tconst16 = ___bpf_swab16(IN16);\n\tconst32 = ___bpf_swab32(IN32);\n\tconst64 = ___bpf_swab64(IN64);\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

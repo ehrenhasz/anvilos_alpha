@@ -1,0 +1,9 @@
+{
+  "module_name": "max8660.h",
+  "hash_id": "e0193b1efa836cb06352f925e1d02aaf4a4037aad8b3a6e45754b74d8b8991a0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/max8660.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_REGULATOR_MAX8660_H\n#define __LINUX_REGULATOR_MAX8660_H\n\n#include <linux/regulator/machine.h>\n\nenum {\n\tMAX8660_V3,\n\tMAX8660_V4,\n\tMAX8660_V5,\n\tMAX8660_V6,\n\tMAX8660_V7,\n\tMAX8660_V_END,\n};\n\n \nstruct max8660_subdev_data {\n\tint\t\t\t\tid;\n\tconst char\t\t\t*name;\n\tstruct regulator_init_data\t*platform_data;\n};\n\n \nstruct max8660_platform_data {\n\tint num_subdevs;\n\tstruct max8660_subdev_data *subdevs;\n\tunsigned en34_is_high:1;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

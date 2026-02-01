@@ -1,0 +1,9 @@
+{
+  "module_name": "highuid.h",
+  "hash_id": "9de32de1d336474d0f48db9aa45d4b5b40770df156ebd1bf82f875646807b015",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/highuid.h",
+  "human_readable_source": " \n#ifndef _LINUX_HIGHUID_H\n#define _LINUX_HIGHUID_H\n\n#include <linux/types.h>\n\n \n\n\n \n\nextern int overflowuid;\nextern int overflowgid;\n\nextern void __bad_uid(void);\nextern void __bad_gid(void);\n\n#define DEFAULT_OVERFLOWUID\t65534\n#define DEFAULT_OVERFLOWGID\t65534\n\n#ifdef CONFIG_UID16\n\n \n#define high2lowuid(uid) ((uid) & ~0xFFFF ? (old_uid_t)overflowuid : (old_uid_t)(uid))\n#define high2lowgid(gid) ((gid) & ~0xFFFF ? (old_gid_t)overflowgid : (old_gid_t)(gid))\n \n#define low2highuid(uid) ((uid) == (old_uid_t)-1 ? (uid_t)-1 : (uid_t)(uid))\n#define low2highgid(gid) ((gid) == (old_gid_t)-1 ? (gid_t)-1 : (gid_t)(gid))\n\n#define __convert_uid(size, uid) \\\n\t(size >= sizeof(uid) ? (uid) : high2lowuid(uid))\n#define __convert_gid(size, gid) \\\n\t(size >= sizeof(gid) ? (gid) : high2lowgid(gid))\n\t\n\n#else\n\n#define __convert_uid(size, uid) (uid)\n#define __convert_gid(size, gid) (gid)\n\n#endif  \n\n \n#define SET_UID(var, uid) do { (var) = __convert_uid(sizeof(var), (uid)); } while (0)\n#define SET_GID(var, gid) do { (var) = __convert_gid(sizeof(var), (gid)); } while (0)\n\n \n\n \nextern int fs_overflowuid;\nextern int fs_overflowgid;\n\n#define DEFAULT_FS_OVERFLOWUID\t65534\n#define DEFAULT_FS_OVERFLOWGID\t65534\n\n \n#define fs_high2lowuid(uid) ((uid) & ~0xFFFF ? (uid16_t)fs_overflowuid : (uid16_t)(uid))\n#define fs_high2lowgid(gid) ((gid) & ~0xFFFF ? (gid16_t)fs_overflowgid : (gid16_t)(gid))\n\n#define low_16_bits(x)\t((x) & 0xFFFF)\n#define high_16_bits(x)\t(((x) & 0xFFFF0000) >> 16)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

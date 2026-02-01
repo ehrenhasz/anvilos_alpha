@@ -1,0 +1,9 @@
+{
+  "module_name": "root_pointers.h",
+  "hash_id": "e33cce1432c2d782a322a9dbbbbd4617d3b60ef7d97b49208a5ee18b0e64eafc",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/root_pointers.h",
+  "human_readable_source": "\n\nmp_obj_t track_reloc_code_list;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

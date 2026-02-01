@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-gotview7135.c",
+  "hash_id": "19f60671ef831cf76e854b67e30cf4d9c086bef68c165fec3c1dccb3404bdbf0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-gotview7135.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n\nstatic struct rc_map_table gotview7135[] = {\n\n\t{ 0x11, KEY_POWER },\n\t{ 0x35, KEY_TV },\n\t{ 0x1b, KEY_NUMERIC_0 },\n\t{ 0x29, KEY_NUMERIC_1 },\n\t{ 0x19, KEY_NUMERIC_2 },\n\t{ 0x39, KEY_NUMERIC_3 },\n\t{ 0x1f, KEY_NUMERIC_4 },\n\t{ 0x2c, KEY_NUMERIC_5 },\n\t{ 0x21, KEY_NUMERIC_6 },\n\t{ 0x24, KEY_NUMERIC_7 },\n\t{ 0x18, KEY_NUMERIC_8 },\n\t{ 0x2b, KEY_NUMERIC_9 },\n\t{ 0x3b, KEY_AGAIN },\t \n\t{ 0x06, KEY_AUDIO },\n\t{ 0x31, KEY_PRINT },\t \n\t{ 0x3e, KEY_VIDEO },\n\t{ 0x10, KEY_CHANNELUP },\n\t{ 0x20, KEY_CHANNELDOWN },\n\t{ 0x0c, KEY_VOLUMEDOWN },\n\t{ 0x28, KEY_VOLUMEUP },\n\t{ 0x08, KEY_MUTE },\n\t{ 0x26, KEY_SEARCH },\t \n\t{ 0x3f, KEY_CAMERA },\t \n\t{ 0x12, KEY_RECORD },\n\t{ 0x32, KEY_STOP },\n\t{ 0x3c, KEY_PLAY },\n\t{ 0x1d, KEY_REWIND },\n\t{ 0x2d, KEY_PAUSE },\n\t{ 0x0d, KEY_FORWARD },\n\t{ 0x05, KEY_ZOOM },\t \n\n\t{ 0x2a, KEY_F21 },\t \n\t{ 0x0e, KEY_F22 },\t \n\t{ 0x1e, KEY_TIME },\t \n\t{ 0x38, KEY_F24 },\t \n};\n\nstatic struct rc_map_list gotview7135_map = {\n\t.map = {\n\t\t.scan     = gotview7135,\n\t\t.size     = ARRAY_SIZE(gotview7135),\n\t\t.rc_proto = RC_PROTO_UNKNOWN,\t \n\t\t.name     = RC_MAP_GOTVIEW7135,\n\t}\n};\n\nstatic int __init init_rc_map_gotview7135(void)\n{\n\treturn rc_map_register(&gotview7135_map);\n}\n\nstatic void __exit exit_rc_map_gotview7135(void)\n{\n\trc_map_unregister(&gotview7135_map);\n}\n\nmodule_init(init_rc_map_gotview7135)\nmodule_exit(exit_rc_map_gotview7135)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Mauro Carvalho Chehab\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

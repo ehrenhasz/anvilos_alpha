@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi_cppc.h",
+  "hash_id": "f7b4b76e6d7613d6dea3d06474c984312aa2de09821794c75f5dabfe0d367ad4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/lib/acpi_cppc.h",
+  "human_readable_source": " \n\n#ifndef __ACPI_CPPC_H__\n#define __ACPI_CPPC_H__\n\nenum acpi_cppc_value {\n\tHIGHEST_PERF,\n\tLOWEST_PERF,\n\tNOMINAL_PERF,\n\tLOWEST_NONLINEAR_PERF,\n\tLOWEST_FREQ,\n\tNOMINAL_FREQ,\n\tREFERENCE_PERF,\n\tWRAPAROUND_TIME,\n\tMAX_CPPC_VALUE_FILES\n};\n\nunsigned long acpi_cppc_get_data(unsigned int cpu,\n\t\t\t\t enum acpi_cppc_value which);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

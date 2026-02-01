@@ -1,0 +1,9 @@
+{
+  "module_name": "test-reallocarray.c",
+  "hash_id": "2eaab2a29ff79045678ccabb56fff5da969b38eadb0bd21ce84fb922938b6680",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-reallocarray.c",
+  "human_readable_source": "\n#define _GNU_SOURCE\n#include <stdlib.h>\n\nint main(void)\n{\n\treturn !!reallocarray(NULL, 1, 1);\n}\n\n#undef _GNU_SOURCE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

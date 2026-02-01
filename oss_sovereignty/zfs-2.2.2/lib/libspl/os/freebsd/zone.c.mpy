@@ -1,0 +1,9 @@
+{
+  "module_name": "zone.c",
+  "hash_id": "69ed4123ffdc5f34d29f6eee5f3db93698267f48b2ab061ca7c011eb63ac74f8",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/os/freebsd/zone.c",
+  "human_readable_source": " \n\n#include <stdlib.h>\n#include <assert.h>\n#include <sys/types.h>\n#include <sys/sysctl.h>\n#include <zone.h>\n\nzoneid_t\ngetzoneid(void)\n{\n\tsize_t size;\n\tint jailid;\n\n\t \n\tsize = sizeof (jailid);\n\tif (sysctlbyname(\"security.jail.jailed\", &jailid, &size, NULL, 0) == -1)\n\t\tassert(!\"No security.jail.jailed sysctl!\");\n\treturn ((zoneid_t)jailid);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

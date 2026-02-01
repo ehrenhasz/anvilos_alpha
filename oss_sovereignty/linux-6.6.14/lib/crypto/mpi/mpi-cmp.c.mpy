@@ -1,0 +1,9 @@
+{
+  "module_name": "mpi-cmp.c",
+  "hash_id": "f32a6de5ceaa4a8fc1e60611febe2e4f607ad7f5240a0693923f385d17f91965",
+  "original_prompt": "Ingested from linux-6.6.14/lib/crypto/mpi/mpi-cmp.c",
+  "human_readable_source": " \n\n#include \"mpi-internal.h\"\n\nint mpi_cmp_ui(MPI u, unsigned long v)\n{\n\tmpi_limb_t limb = v;\n\n\tmpi_normalize(u);\n\tif (u->nlimbs == 0) {\n\t\tif (v == 0)\n\t\t\treturn 0;\n\t\telse\n\t\t\treturn -1;\n\t}\n\tif (u->sign)\n\t\treturn -1;\n\tif (u->nlimbs > 1)\n\t\treturn 1;\n\n\tif (u->d[0] == limb)\n\t\treturn 0;\n\telse if (u->d[0] > limb)\n\t\treturn 1;\n\telse\n\t\treturn -1;\n}\nEXPORT_SYMBOL_GPL(mpi_cmp_ui);\n\nstatic int do_mpi_cmp(MPI u, MPI v, int absmode)\n{\n\tmpi_size_t usize;\n\tmpi_size_t vsize;\n\tint usign;\n\tint vsign;\n\tint cmp;\n\n\tmpi_normalize(u);\n\tmpi_normalize(v);\n\n\tusize = u->nlimbs;\n\tvsize = v->nlimbs;\n\tusign = absmode ? 0 : u->sign;\n\tvsign = absmode ? 0 : v->sign;\n\n\t \n\n\tif (!usign && vsign)\n\t\treturn 1;\n\tif (usign && !vsign)\n\t\treturn -1;\n\n\t \n\n\tif (usize != vsize && !usign && !vsign)\n\t\treturn usize - vsize;\n\tif (usize != vsize && usign && vsign)\n\t\treturn vsize + usize;\n\tif (!usize)\n\t\treturn 0;\n\tcmp = mpihelp_cmp(u->d, v->d, usize);\n\tif (!cmp)\n\t\treturn 0;\n\tif ((cmp < 0?1:0) == (usign?1:0))\n\t\treturn 1;\n\n\treturn -1;\n}\n\nint mpi_cmp(MPI u, MPI v)\n{\n\treturn do_mpi_cmp(u, v, 0);\n}\nEXPORT_SYMBOL_GPL(mpi_cmp);\n\nint mpi_cmpabs(MPI u, MPI v)\n{\n\treturn do_mpi_cmp(u, v, 1);\n}\nEXPORT_SYMBOL_GPL(mpi_cmpabs);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

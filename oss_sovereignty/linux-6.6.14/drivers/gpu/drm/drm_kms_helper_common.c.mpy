@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_kms_helper_common.c",
+  "hash_id": "a9e3da6c060f3f8dd5ed685131c6266d0b28197b57c2a5c149e1e661dce55a9d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/drm_kms_helper_common.c",
+  "human_readable_source": " \n\n#include <linux/module.h>\n\n#include <drm/drm_edid.h>\n#include <drm/drm_print.h>\n\n#include \"drm_crtc_helper_internal.h\"\n\nMODULE_AUTHOR(\"David Airlie, Jesse Barnes\");\nMODULE_DESCRIPTION(\"DRM KMS helper\");\nMODULE_LICENSE(\"GPL and additional rights\");\n\n#if IS_ENABLED(CONFIG_DRM_LOAD_EDID_FIRMWARE)\n\n \nstatic int edid_firmware_set(const char *val, const struct kernel_param *kp)\n{\n\tDRM_NOTE(\"drm_kms_helper.edid_firmware is deprecated, please use drm.edid_firmware instead.\\n\");\n\n\treturn __drm_set_edid_firmware_path(val);\n}\n\nstatic int edid_firmware_get(char *buffer, const struct kernel_param *kp)\n{\n\treturn __drm_get_edid_firmware_path(buffer, PAGE_SIZE);\n}\n\nstatic const struct kernel_param_ops edid_firmware_ops = {\n\t.set = edid_firmware_set,\n\t.get = edid_firmware_get,\n};\n\nmodule_param_cb(edid_firmware, &edid_firmware_ops, NULL, 0644);\n__MODULE_PARM_TYPE(edid_firmware, \"charp\");\nMODULE_PARM_DESC(edid_firmware,\n\t\t \"DEPRECATED. Use drm.edid_firmware module parameter instead.\");\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

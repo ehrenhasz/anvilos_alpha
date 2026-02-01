@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9442cc315b8b9dca1f2aa28c8a9f7f1101cec7e6db2935ad0de6dbda7d4c8458",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/sunxi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-y\t\t+= sun4i-csi/\nobj-y\t\t+= sun6i-csi/\nobj-y\t\t+= sun6i-mipi-csi2/\nobj-y\t\t+= sun8i-a83t-mipi-csi2/\nobj-y\t\t+= sun8i-di/\nobj-y\t\t+= sun8i-rotate/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

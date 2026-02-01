@@ -1,0 +1,9 @@
+{
+  "module_name": "mapfile.csv",
+  "hash_id": "553a5d29abf8a6fac4db0e170bc47f4bc7b280ac9fa129638d7e1e66d16e2ceb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/nds32/mapfile.csv",
+  "human_readable_source": "# Format:\n#\tMIDR,Version,JSON/file/pathname,Type\n#\n# where\n#\tMIDR\tProcessor version\n#\t\tVariant[23:20] and Revision [3:0] should be zero.\n#\tVersion could be used to track version of of JSON file\n#\t\tbut currently unused.\n#\tJSON/file/pathname is the path to JSON file, relative\n#\t\tto tools/perf/pmu-events/arch/arm64/.\n#\tType is core, uncore etc\n#\n#\n#Family-model,Version,Filename,EventType\n0x0,v3,n13,core\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

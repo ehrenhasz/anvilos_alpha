@@ -1,0 +1,9 @@
+{
+  "module_name": "sun6i_isp_proc.h",
+  "hash_id": "8466530974309381eec8fbe31260c2d10e7bca26697894ff17f9f633725b3ea0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/sunxi/sun6i-isp/sun6i_isp_proc.h",
+  "human_readable_source": " \n \n\n#ifndef _SUN6I_ISP_PROC_H_\n#define _SUN6I_ISP_PROC_H_\n\n#include <media/v4l2-device.h>\n#include <media/v4l2-fwnode.h>\n\n#define SUN6I_ISP_PROC_NAME\t\t\"sun6i-isp-proc\"\n\nenum sun6i_isp_proc_pad {\n\tSUN6I_ISP_PROC_PAD_SINK_CSI\t= 0,\n\tSUN6I_ISP_PROC_PAD_SINK_PARAMS\t= 1,\n\tSUN6I_ISP_PROC_PAD_SOURCE\t= 2,\n\tSUN6I_ISP_PROC_PAD_COUNT\t= 3,\n};\n\nstruct sun6i_isp_device;\n\nstruct sun6i_isp_proc_format {\n\tu32\tmbus_code;\n\tu8\tinput_format;\n\tu8\tinput_yuv_seq;\n};\n\nstruct sun6i_isp_proc_source {\n\tstruct v4l2_subdev\t\t*subdev;\n\tstruct v4l2_fwnode_endpoint\tendpoint;\n\tbool\t\t\t\texpected;\n};\n\nstruct sun6i_isp_proc_async_subdev {\n\tstruct v4l2_async_connection\tasync_subdev;\n\tstruct sun6i_isp_proc_source\t*source;\n};\n\nstruct sun6i_isp_proc {\n\tstruct v4l2_subdev\t\tsubdev;\n\tstruct media_pad\t\tpads[3];\n\tstruct v4l2_async_notifier\tnotifier;\n\tstruct v4l2_mbus_framefmt\tmbus_format;\n\tstruct mutex\t\t\tlock;  \n\n\tstruct sun6i_isp_proc_source\tsource_csi0;\n\tstruct sun6i_isp_proc_source\tsource_csi1;\n};\n\n \n\nvoid sun6i_isp_proc_dimensions(struct sun6i_isp_device *isp_dev,\n\t\t\t       unsigned int *width, unsigned int *height);\n\n \n\nconst struct sun6i_isp_proc_format *sun6i_isp_proc_format_find(u32 mbus_code);\n\n \n\nint sun6i_isp_proc_setup(struct sun6i_isp_device *isp_dev);\nvoid sun6i_isp_proc_cleanup(struct sun6i_isp_device *isp_dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

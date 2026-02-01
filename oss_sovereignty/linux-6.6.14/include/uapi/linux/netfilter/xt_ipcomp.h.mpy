@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_ipcomp.h",
+  "hash_id": "22f3ecb5d1fbe854364d17afed5835a3b0430ac6547bd8fabf920b8fd0f1f915",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_ipcomp.h",
+  "human_readable_source": " \n#ifndef _XT_IPCOMP_H\n#define _XT_IPCOMP_H\n\n#include <linux/types.h>\n\nstruct xt_ipcomp {\n\t__u32 spis[2];\t \n\t__u8 invflags;\t \n\t__u8 hdrres;\t \n};\n\n \n#define XT_IPCOMP_INV_SPI\t0x01\t \n#define XT_IPCOMP_INV_MASK\t0x01\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

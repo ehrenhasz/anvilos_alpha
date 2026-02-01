@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_vcodec_fw_priv.h",
+  "hash_id": "9dd994014a71397d0d47df6e7c8ae014a0ef388539929083ab1b4d62227ab3a8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/vcodec/common/mtk_vcodec_fw_priv.h",
+  "human_readable_source": " \n\n#ifndef _MTK_VCODEC_FW_PRIV_H_\n#define _MTK_VCODEC_FW_PRIV_H_\n\n#include \"mtk_vcodec_fw.h\"\n\nstruct mtk_vcodec_dec_dev;\nstruct mtk_vcodec_enc_dev;\n\nstruct mtk_vcodec_fw {\n\tenum mtk_vcodec_fw_type type;\n\tconst struct mtk_vcodec_fw_ops *ops;\n\tstruct platform_device *pdev;\n\tstruct mtk_scp *scp;\n\tenum mtk_vcodec_fw_use fw_use;\n};\n\nstruct mtk_vcodec_fw_ops {\n\tint (*load_firmware)(struct mtk_vcodec_fw *fw);\n\tunsigned int (*get_vdec_capa)(struct mtk_vcodec_fw *fw);\n\tunsigned int (*get_venc_capa)(struct mtk_vcodec_fw *fw);\n\tvoid *(*map_dm_addr)(struct mtk_vcodec_fw *fw, u32 dtcm_dmem_addr);\n\tint (*ipi_register)(struct mtk_vcodec_fw *fw, int id,\n\t\t\t    mtk_vcodec_ipi_handler handler, const char *name,\n\t\t\t    void *priv);\n\tint (*ipi_send)(struct mtk_vcodec_fw *fw, int id, void *buf,\n\t\t\tunsigned int len, unsigned int wait);\n\tvoid (*release)(struct mtk_vcodec_fw *fw);\n};\n\n#if IS_ENABLED(CONFIG_VIDEO_MEDIATEK_VCODEC_VPU)\nstruct mtk_vcodec_fw *mtk_vcodec_fw_vpu_init(void *priv, enum mtk_vcodec_fw_use fw_use);\n#else\nstatic inline struct mtk_vcodec_fw *\nmtk_vcodec_fw_vpu_init(void *priv, enum mtk_vcodec_fw_use fw_use)\n{\n\treturn ERR_PTR(-ENODEV);\n}\n#endif  \n\n#if IS_ENABLED(CONFIG_VIDEO_MEDIATEK_VCODEC_SCP)\nstruct mtk_vcodec_fw *mtk_vcodec_fw_scp_init(void *priv, enum mtk_vcodec_fw_use fw_use);\n#else\nstatic inline struct mtk_vcodec_fw *\nmtk_vcodec_fw_scp_init(void *priv, enum mtk_vcodec_fw_use fw_use)\n{\n\treturn ERR_PTR(-ENODEV);\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

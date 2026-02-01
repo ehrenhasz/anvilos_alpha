@@ -1,0 +1,9 @@
+{
+  "module_name": "mantis_uart.h",
+  "hash_id": "50398f9d61b2d5e218baecc9ce5e7498206f0f9a76be34b87f0db04aa87813c0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/mantis/mantis_uart.h",
+  "human_readable_source": " \n \n\n#ifndef __MANTIS_UART_H\n#define __MANTIS_UART_H\n\n#define MANTIS_UART_CTL\t\t\t0xe0\n#define MANTIS_UART_RXINT\t\t(1 << 4)\n#define MANTIS_UART_RXFLUSH\t\t(1 << 2)\n\n#define MANTIS_UART_RXD\t\t\t0xe8\n#define MANTIS_UART_BAUD\t\t0xec\n\n#define MANTIS_UART_STAT\t\t0xf0\n#define MANTIS_UART_RXFIFO_DATA\t\t(1 << 7)\n#define MANTIS_UART_RXFIFO_EMPTY\t(1 << 6)\n#define MANTIS_UART_RXFIFO_FULL\t\t(1 << 3)\n#define MANTIS_UART_FRAME_ERR\t\t(1 << 2)\n#define MANTIS_UART_PARITY_ERR\t\t(1 << 1)\n#define MANTIS_UART_RXTHRESH_INT\t(1 << 0)\n\nenum mantis_baud {\n\tMANTIS_BAUD_9600\t= 0,\n\tMANTIS_BAUD_19200,\n\tMANTIS_BAUD_38400,\n\tMANTIS_BAUD_57600,\n\tMANTIS_BAUD_115200\n};\n\nenum mantis_parity {\n\tMANTIS_PARITY_NONE\t= 0,\n\tMANTIS_PARITY_EVEN,\n\tMANTIS_PARITY_ODD,\n};\n\nstruct mantis_pci;\n\nextern int mantis_uart_init(struct mantis_pci *mantis);\nextern void mantis_uart_exit(struct mantis_pci *mantis);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

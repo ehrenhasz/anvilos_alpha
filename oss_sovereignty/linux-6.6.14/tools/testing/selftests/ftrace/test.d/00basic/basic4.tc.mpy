@@ -1,0 +1,9 @@
+{
+  "module_name": "basic4.tc",
+  "hash_id": "77653963715003e26cd005a2095f9e4790349f6a1f8386ffd8d3bc6c690a0252",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/00basic/basic4.tc",
+  "human_readable_source": "#!/bin/sh\n# description: Basic event tracing check\ntest -f available_events -a -f set_event -a -d events\n# check scheduler events are available\ngrep -q sched available_events && exit_pass || exit_fail\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

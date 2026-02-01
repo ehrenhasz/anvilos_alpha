@@ -1,0 +1,9 @@
+{
+  "module_name": "nhc_hop.c",
+  "hash_id": "055e0e3aa8e2eb228843cd00e3ea6de49c080e186aaa86b1401d7e38b3346aec",
+  "original_prompt": "Ingested from linux-6.6.14/net/6lowpan/nhc_hop.c",
+  "human_readable_source": "\n \n\n#include \"nhc.h\"\n\n#define LOWPAN_NHC_HOP_ID_0\t0xe0\n#define LOWPAN_NHC_HOP_MASK_0\t0xfe\n\nLOWPAN_NHC(nhc_hop, \"RFC6282 Hop-by-Hop Options\", NEXTHDR_HOP, 0,\n\t   LOWPAN_NHC_HOP_ID_0, LOWPAN_NHC_HOP_MASK_0, NULL, NULL);\n\nmodule_lowpan_nhc(nhc_hop);\nMODULE_DESCRIPTION(\"6LoWPAN next header RFC6282 Hop-by-Hop Options compression\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

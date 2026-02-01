@@ -1,0 +1,9 @@
+{
+  "module_name": "utsname.h",
+  "hash_id": "1b5f4296bab823505ee92c9dd513578a7541234e172cdde9ac34ebce53304047",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/utsname.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_UTSNAME_H\n#define _UAPI_LINUX_UTSNAME_H\n\n#define __OLD_UTS_LEN 8\n\nstruct oldold_utsname {\n\tchar sysname[9];\n\tchar nodename[9];\n\tchar release[9];\n\tchar version[9];\n\tchar machine[9];\n};\n\n#define __NEW_UTS_LEN 64\n\nstruct old_utsname {\n\tchar sysname[65];\n\tchar nodename[65];\n\tchar release[65];\n\tchar version[65];\n\tchar machine[65];\n};\n\nstruct new_utsname {\n\tchar sysname[__NEW_UTS_LEN + 1];\n\tchar nodename[__NEW_UTS_LEN + 1];\n\tchar release[__NEW_UTS_LEN + 1];\n\tchar version[__NEW_UTS_LEN + 1];\n\tchar machine[__NEW_UTS_LEN + 1];\n\tchar domainname[__NEW_UTS_LEN + 1];\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

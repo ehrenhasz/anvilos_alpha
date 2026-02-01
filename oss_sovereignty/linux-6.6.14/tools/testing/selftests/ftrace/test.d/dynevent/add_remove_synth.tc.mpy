@@ -1,0 +1,9 @@
+{
+  "module_name": "add_remove_synth.tc",
+  "hash_id": "7b8ddbf2a64e0043287376b229869c1202d7f365973413a2ad38b95df4ddae03",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/dynevent/add_remove_synth.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Generic dynamic event - add/remove synthetic events\n# requires: dynamic_events \"s:[synthetic/]\":README\n\necho 0 > events/enable\necho > dynamic_events\n\necho \"s:latency1 u64 lat; pid_t pid;\" >> dynamic_events\necho \"s:latency2 u64 lat; pid_t pid;\" >> dynamic_events\n\ngrep -q latency1 dynamic_events\ngrep -q latency2 dynamic_events\ntest -d events/synthetic/latency1\ntest -d events/synthetic/latency2\n\necho \"-:synthetic/latency2\" >> dynamic_events\n\ngrep -q latency1 dynamic_events\n! grep -q latency2 dynamic_events\n\necho > dynamic_events\n\nclear_trace\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

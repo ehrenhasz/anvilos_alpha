@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_leaveok.c",
+  "hash_id": "5b22bc4d4ce10de0c0187a8fb7c36934399d991c3beb2d23cee74a89d6c4642b",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_leaveok.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_leaveok.c,v 1.7 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nleaveok(WINDOW *win, bool flag)\n{\n    T((T_CALLED(\"leaveok(%p,%d)\"), (void *) win, flag));\n\n    if (win) {\n\twin->_leaveok = flag;\n\treturnCode(OK);\n    } else\n\treturnCode(ERR);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

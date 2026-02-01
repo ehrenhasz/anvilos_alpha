@@ -1,0 +1,9 @@
+{
+  "module_name": "dpu_vbif.h",
+  "hash_id": "eb23ecb58f309bd87e8d98007bcfc1c73ff08b889f8ef79eec64b673b818ed19",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/disp/dpu1/dpu_vbif.h",
+  "human_readable_source": " \n \n\n#ifndef __DPU_VBIF_H__\n#define __DPU_VBIF_H__\n\n#include \"dpu_kms.h\"\n\nstruct dpu_vbif_set_ot_params {\n\tu32 xin_id;\n\tu32 num;\n\tu32 width;\n\tu32 height;\n\tu32 frame_rate;\n\tbool rd;\n\tbool is_wfd;\n\tu32 vbif_idx;\n\tu32 clk_ctrl;\n};\n\nstruct dpu_vbif_set_memtype_params {\n\tu32 xin_id;\n\tu32 vbif_idx;\n\tu32 clk_ctrl;\n\tbool is_cacheable;\n};\n\n \nstruct dpu_vbif_set_qos_params {\n\tu32 vbif_idx;\n\tu32 xin_id;\n\tu32 clk_ctrl;\n\tu32 num;\n\tbool is_rt;\n};\n\n \nvoid dpu_vbif_set_ot_limit(struct dpu_kms *dpu_kms,\n\t\tstruct dpu_vbif_set_ot_params *params);\n\n \nvoid dpu_vbif_set_qos_remap(struct dpu_kms *dpu_kms,\n\t\tstruct dpu_vbif_set_qos_params *params);\n\n \nvoid dpu_vbif_clear_errors(struct dpu_kms *dpu_kms);\n\n \nvoid dpu_vbif_init_memtypes(struct dpu_kms *dpu_kms);\n\nvoid dpu_debugfs_vbif_init(struct dpu_kms *dpu_kms, struct dentry *debugfs_root);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

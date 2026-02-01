@@ -1,0 +1,9 @@
+{
+  "module_name": "a2091.h",
+  "hash_id": "d520c63f316fcf6caa8e403c34dd5de4c0893d199bee99e22d686d8f8fa322ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/a2091.h",
+  "human_readable_source": " \n#ifndef A2091_H\n#define A2091_H\n\n \n\n#include <linux/types.h>\n\n#ifndef CMD_PER_LUN\n#define CMD_PER_LUN\t\t2\n#endif\n\n#ifndef CAN_QUEUE\n#define CAN_QUEUE\t\t16\n#endif\n\n \n#define A2091_XFER_MASK\t\t(0xff000001)\n\nstruct a2091_scsiregs {\n\t\t unsigned char\tpad1[64];\n\tvolatile unsigned short\tISTR;\n\tvolatile unsigned short\tCNTR;\n\t\t unsigned char\tpad2[60];\n\tvolatile unsigned int\tWTC;\n\tvolatile unsigned long\tACR;\n\t\t unsigned char\tpad3[6];\n\tvolatile unsigned short\tDAWR;\n\t\t unsigned char\tpad4;\n\tvolatile unsigned char\tSASR;\n\t\t unsigned char\tpad5;\n\tvolatile unsigned char\tSCMD;\n\t\t unsigned char\tpad6[76];\n\tvolatile unsigned short\tST_DMA;\n\tvolatile unsigned short\tSP_DMA;\n\tvolatile unsigned short\tCINT;\n\t\t unsigned char\tpad7[2];\n\tvolatile unsigned short\tFLUSH;\n};\n\n#define DAWR_A2091\t\t(3)\n\n \n#define CNTR_TCEN\t\t(1<<7)\n#define CNTR_PREST\t\t(1<<6)\n#define CNTR_PDMD\t\t(1<<5)\n#define CNTR_INTEN\t\t(1<<4)\n#define CNTR_DDIR\t\t(1<<3)\n\n \n#define ISTR_INTX\t\t(1<<8)\n#define ISTR_INT_F\t\t(1<<7)\n#define ISTR_INTS\t\t(1<<6)\n#define ISTR_E_INT\t\t(1<<5)\n#define ISTR_INT_P\t\t(1<<4)\n#define ISTR_UE_INT\t\t(1<<3)\n#define ISTR_OE_INT\t\t(1<<2)\n#define ISTR_FF_FLG\t\t(1<<1)\n#define ISTR_FE_FLG\t\t(1<<0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

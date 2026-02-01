@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_eed1_8.host.h",
+  "hash_id": "12c99e8e606e59018fb11dcc1783bcaf14d3c3cb7f64b65ad1d037ecc5257be1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/eed1_8/ia_css_eed1_8.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_EED1_8_HOST_H\n#define __IA_CSS_EED1_8_HOST_H\n\n#include \"ia_css_eed1_8_types.h\"\n#include \"ia_css_eed1_8_param.h\"\n\nvoid\nia_css_eed1_8_vmem_encode(\n    struct eed1_8_vmem_params *to,\n    const struct ia_css_eed1_8_config *from,\n    size_t size);\n\nvoid\nia_css_eed1_8_encode(\n    struct eed1_8_dmem_params *to,\n    const struct ia_css_eed1_8_config *from,\n    size_t size);\n\nvoid\nia_css_init_eed1_8_state(\n    void *state,\n    size_t size);\n\n#ifndef IA_CSS_NO_DEBUG\nvoid\nia_css_eed1_8_debug_dtrace(\n    const struct ia_css_eed1_8_config *config,\n    unsigned int level);\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

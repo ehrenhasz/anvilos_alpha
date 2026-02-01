@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__runtime.c.qstr",
+  "hash_id": "8379b525778fa4179cb149aed992e35259e769cbbd20f8446047c4cba08d8e36",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__runtime.c.qstr",
+  "human_readable_source": "Q(__main__)\nQ(__name__)\nQ(__main__)\nQ(keys)\nQ(__getitem__)\nQ(function)\nQ(__class__)\nQ(__next__)\nQ(__getitem__)\nQ(__next__)\nQ(__next__)\nQ(__next__)\nQ(send)\nQ(close)\nQ(throw)\nQ(__path__)\nQ(__name__)\nQ(maximum_space_recursion_space_depth_space_exceeded)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

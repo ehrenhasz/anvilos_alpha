@@ -1,0 +1,9 @@
+{
+  "module_name": "wcwidth.c",
+  "hash_id": "9c20649249dd6e5ce4338322cdddaa3b852715fba4d54ecfdecd49e797b26eeb",
+  "original_prompt": "Ingested from coreutils-9.4/lib/wcwidth.c",
+  "human_readable_source": " \n#include <wchar.h>\n\n \n#include <wctype.h>\n\n#include \"localcharset.h\"\n#include \"streq.h\"\n#include \"uniwidth.h\"\n\n \nstatic inline int\nis_locale_utf8 (void)\n{\n  const char *encoding = locale_charset ();\n  return STREQ_OPT (encoding, \"UTF-8\", 'U', 'T', 'F', '-', '8', 0, 0, 0, 0);\n}\n\n#if GNULIB_WCHAR_SINGLE_LOCALE\n \nstatic int cached_is_locale_utf8 = -1;\nstatic inline int\nis_locale_utf8_cached (void)\n{\n  if (cached_is_locale_utf8 < 0)\n    cached_is_locale_utf8 = is_locale_utf8 ();\n  return cached_is_locale_utf8;\n}\n#else\n \n# define is_locale_utf8_cached is_locale_utf8\n#endif\n\nint\nwcwidth (wchar_t wc)\n#undef wcwidth\n{\n   \n  if (is_locale_utf8_cached ())\n    {\n       \n      return uc_width (wc, \"UTF-8\");\n    }\n  else\n    {\n       \n#if HAVE_WCWIDTH\n      return wcwidth (wc);\n#else\n      return wc == 0 ? 0 : iswprint (wc) ? 1 : -1;\n#endif\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

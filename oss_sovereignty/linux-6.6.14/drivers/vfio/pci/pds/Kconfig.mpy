@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9fdaff68d09c20de789890fc588d4bdef16044af17c6c10bae0b95d1915e72d2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/pci/pds/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (c) 2023 Advanced Micro Devices, Inc.\n\nconfig PDS_VFIO_PCI\n\ttristate \"VFIO support for PDS PCI devices\"\n\tdepends on PDS_CORE && PCI_IOV\n\tselect VFIO_PCI_CORE\n\thelp\n\t  This provides generic PCI support for PDS devices using the VFIO\n\t  framework.\n\n\t  More specific information on this driver can be\n\t  found in\n\t  <file:Documentation/networking/device_drivers/ethernet/amd/pds_vfio_pci.rst>.\n\n\t  To compile this driver as a module, choose M here. The module\n\t  will be called pds-vfio-pci.\n\n\t  If you don't know what to do here, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

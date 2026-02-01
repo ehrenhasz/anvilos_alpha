@@ -1,0 +1,9 @@
+{
+  "module_name": "eeprom_93cx6.h",
+  "hash_id": "fe221f16b45a56fac92fd115575da8f5cbae73477e1e9c0120a6eb9faeff24ca",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/eeprom_93cx6.h",
+  "human_readable_source": " \n \n\n \n\n \n#define PCI_EEPROM_WIDTH_93C46\t6\n#define PCI_EEPROM_WIDTH_93C56\t8\n#define PCI_EEPROM_WIDTH_93C66\t8\n#define PCI_EEPROM_WIDTH_93C86\t8\n#define PCI_EEPROM_WIDTH_OPCODE\t3\n#define PCI_EEPROM_WRITE_OPCODE\t0x05\n#define PCI_EEPROM_ERASE_OPCODE 0x07\n#define PCI_EEPROM_READ_OPCODE\t0x06\n#define PCI_EEPROM_EWDS_OPCODE\t0x10\n#define PCI_EEPROM_EWEN_OPCODE\t0x13\n\n \nstruct eeprom_93cx6 {\n\tvoid *data;\n\n\tvoid (*register_read)(struct eeprom_93cx6 *eeprom);\n\tvoid (*register_write)(struct eeprom_93cx6 *eeprom);\n\n\tint width;\n\n\tchar drive_data;\n\tchar reg_data_in;\n\tchar reg_data_out;\n\tchar reg_data_clock;\n\tchar reg_chip_select;\n};\n\nextern void eeprom_93cx6_read(struct eeprom_93cx6 *eeprom,\n\tconst u8 word, u16 *data);\nextern void eeprom_93cx6_multiread(struct eeprom_93cx6 *eeprom,\n\tconst u8 word, __le16 *data, const u16 words);\nextern void eeprom_93cx6_readb(struct eeprom_93cx6 *eeprom,\n\tconst u8 byte, u8 *data);\nextern void eeprom_93cx6_multireadb(struct eeprom_93cx6 *eeprom,\n\tconst u8 byte, u8 *data, const u16 bytes);\n\nextern void eeprom_93cx6_wren(struct eeprom_93cx6 *eeprom, bool enable);\n\nextern void eeprom_93cx6_write(struct eeprom_93cx6 *eeprom,\n\t\t\t       u8 addr, u16 data);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

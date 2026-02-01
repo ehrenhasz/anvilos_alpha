@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "93d279b6a0aaffc97aae3f5e24c0100941b71415947d1a7532355189b10bd1d4",
+  "original_prompt": "Ingested from linux-6.6.14/samples/rust/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_SAMPLE_RUST_MINIMAL)\t\t+= rust_minimal.o\nobj-$(CONFIG_SAMPLE_RUST_PRINT)\t\t\t+= rust_print.o\n\nsubdir-$(CONFIG_SAMPLE_RUST_HOSTPROGS)\t\t+= hostprogs\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

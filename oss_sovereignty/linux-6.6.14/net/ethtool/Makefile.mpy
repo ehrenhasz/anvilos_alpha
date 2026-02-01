@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6ccdc56d7dfa7367ee9ca9d5c27e66848c325a62576d84f3f825bc1b0bfb3a43",
+  "original_prompt": "Ingested from linux-6.6.14/net/ethtool/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nobj-y\t\t\t\t+= ioctl.o common.o\n\nobj-$(CONFIG_ETHTOOL_NETLINK)\t+= ethtool_nl.o\n\nethtool_nl-y\t:= netlink.o bitset.o strset.o linkinfo.o linkmodes.o rss.o \\\n\t\t   linkstate.o debug.o wol.o features.o privflags.o rings.o \\\n\t\t   channels.o coalesce.o pause.o eee.o tsinfo.o cabletest.o \\\n\t\t   tunnels.o fec.o eeprom.o stats.o phc_vclocks.o mm.o \\\n\t\t   module.o pse-pd.o plca.o mm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

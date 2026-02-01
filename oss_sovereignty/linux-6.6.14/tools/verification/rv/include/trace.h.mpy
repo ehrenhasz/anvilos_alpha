@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.h",
+  "hash_id": "a92a73a668325d67452e9c5bc9012d49cac8febd6b541f6b2c01b0d952bfbc2f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/verification/rv/include/trace.h",
+  "human_readable_source": "\n\n#include <tracefs.h>\n\nstruct trace_instance {\n\tstruct tracefs_instance\t\t*inst;\n\tstruct tep_handle\t\t*tep;\n\tstruct trace_seq\t\t*seq;\n};\n\nint trace_instance_init(struct trace_instance *trace, char *name);\nint trace_instance_start(struct trace_instance *trace);\nvoid trace_instance_destroy(struct trace_instance *trace);\n\nint collect_registered_events(struct tep_event *event, struct tep_record *record,\n\t\t\t      int cpu, void *context);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

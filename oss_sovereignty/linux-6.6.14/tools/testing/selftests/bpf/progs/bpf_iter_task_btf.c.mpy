@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_iter_task_btf.c",
+  "hash_id": "eb71c10544596ac78305e3fd390c6e9109d777c0fea1c7b6e4d86225c07b3e80",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_iter_task_btf.c",
+  "human_readable_source": "\n \n#include \"bpf_iter.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_core_read.h>\n\n#include <errno.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nlong tasks = 0;\nlong seq_err = 0;\nbool skip = false;\n\nSEC(\"iter/task\")\nint dump_task_struct(struct bpf_iter__task *ctx)\n{\n\tstruct seq_file *seq = ctx->meta->seq;\n\tstruct task_struct *task = ctx->task;\n\tstatic struct btf_ptr ptr = { };\n\tlong ret;\n\n#if __has_builtin(__builtin_btf_type_id)\n\tptr.type_id = bpf_core_type_id_kernel(struct task_struct);\n\tptr.ptr = task;\n\n\tif (ctx->meta->seq_num == 0)\n\t\tBPF_SEQ_PRINTF(seq, \"Raw BTF task\\n\");\n\n\tret = bpf_seq_printf_btf(seq, &ptr, sizeof(ptr), 0);\n\tswitch (ret) {\n\tcase 0:\n\t\ttasks++;\n\t\tbreak;\n\tcase -ERANGE:\n\t\t \n\t\tbreak;\n\tcase -E2BIG:\n\t\treturn 1;\n\tdefault:\n\t\tseq_err = ret;\n\t\tbreak;\n\t}\n#else\n\tskip = true;\n#endif\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

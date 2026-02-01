@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "8b9d75a96dd24e50c6a988f65c47f9eccf8164eb2d4909688f963b02184212e2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/Build",
+  "human_readable_source": "perf-y += common.o\nperf-y += $(SRCARCH)/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

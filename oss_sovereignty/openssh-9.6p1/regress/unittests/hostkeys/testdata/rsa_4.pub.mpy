@@ -1,0 +1,9 @@
+{
+  "module_name": "rsa_4.pub",
+  "hash_id": "4ff0f0b2d0333f2ef4757864252606709559764366b84e6f1088e5702fb06075",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/hostkeys/testdata/rsa_4.pub",
+  "human_readable_source": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDI8AdjBAozcdRnIikVlt69iyDHKyrtxmpdkbRy9bWaL86OH+PTmLUk5e+T/ufiakpeE2pm0hkE3e4Sh/FsY+rsQdRoraWVNFfchcMeVlKvuy5RZN0ElvmaQebOJUeNeBn2LLw8aL8bJ4CP/bQRKrmrSSqjz3+4H9YNVyyk1OGBPQ== RSA #4\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

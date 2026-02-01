@@ -1,0 +1,9 @@
+{
+  "module_name": "domain.h",
+  "hash_id": "996a478839ab6f6ab5cbbbb7fa8a5c67e21736614a75df5a2054f66eaa8ab0ef",
+  "original_prompt": "Ingested from linux-6.6.14/security/apparmor/include/domain.h",
+  "human_readable_source": " \n \n\n#include <linux/binfmts.h>\n#include <linux/types.h>\n\n#include \"label.h\"\n\n#ifndef __AA_DOMAIN_H\n#define __AA_DOMAIN_H\n\n#define AA_CHANGE_NOFLAGS 0\n#define AA_CHANGE_TEST 1\n#define AA_CHANGE_CHILD 2\n#define AA_CHANGE_ONEXEC  4\n#define AA_CHANGE_STACK 8\n\nstruct aa_label *x_table_lookup(struct aa_profile *profile, u32 xindex,\n\t\t\t\tconst char **name);\n\nint apparmor_bprm_creds_for_exec(struct linux_binprm *bprm);\n\nint aa_change_hat(const char *hats[], int count, u64 token, int flags);\nint aa_change_profile(const char *fqname, int flags);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

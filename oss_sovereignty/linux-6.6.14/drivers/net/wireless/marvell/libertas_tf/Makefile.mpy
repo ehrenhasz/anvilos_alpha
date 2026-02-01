@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a8b1d34e7f62e773c8458d31cf0d2abf9ef75c95802f04f242aacb016e783ad0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/marvell/libertas_tf/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nlibertas_tf-objs := main.o cmd.o\n\nlibertas_tf_usb-objs += if_usb.o\n\nobj-$(CONFIG_LIBERTAS_THINFIRM) += libertas_tf.o\nobj-$(CONFIG_LIBERTAS_THINFIRM_USB) += libertas_tf_usb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

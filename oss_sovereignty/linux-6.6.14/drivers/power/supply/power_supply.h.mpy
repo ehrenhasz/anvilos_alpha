@@ -1,0 +1,9 @@
+{
+  "module_name": "power_supply.h",
+  "hash_id": "f7b51162339160139b3243a003f87aae5bcb2d0c26c1ffac3e6384afd6416c96",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/power/supply/power_supply.h",
+  "human_readable_source": " \n \n\nstruct device;\nstruct device_type;\nstruct power_supply;\n\n#ifdef CONFIG_SYSFS\n\nextern void power_supply_init_attrs(struct device_type *dev_type);\nextern int power_supply_uevent(const struct device *dev, struct kobj_uevent_env *env);\n\n#else\n\nstatic inline void power_supply_init_attrs(struct device_type *dev_type) {}\n#define power_supply_uevent NULL\n\n#endif  \n\n#ifdef CONFIG_LEDS_TRIGGERS\n\nextern void power_supply_update_leds(struct power_supply *psy);\nextern int power_supply_create_triggers(struct power_supply *psy);\nextern void power_supply_remove_triggers(struct power_supply *psy);\n\n#else\n\nstatic inline void power_supply_update_leds(struct power_supply *psy) {}\nstatic inline int power_supply_create_triggers(struct power_supply *psy)\n{ return 0; }\nstatic inline void power_supply_remove_triggers(struct power_supply *psy) {}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_ct.h",
+  "hash_id": "328894cb605f906de5700776c77fcd61b563d062a7d35cebfaa41cddd75f3f63",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_act/tc_ct.h",
+  "human_readable_source": " \n#ifndef __UAPI_TC_CT_H\n#define __UAPI_TC_CT_H\n\n#include <linux/types.h>\n#include <linux/pkt_cls.h>\n\nenum {\n\tTCA_CT_UNSPEC,\n\tTCA_CT_PARMS,\n\tTCA_CT_TM,\n\tTCA_CT_ACTION,\t\t \n\tTCA_CT_ZONE,\t\t \n\tTCA_CT_MARK,\t\t \n\tTCA_CT_MARK_MASK,\t \n\tTCA_CT_LABELS,\t\t \n\tTCA_CT_LABELS_MASK,\t \n\tTCA_CT_NAT_IPV4_MIN,\t \n\tTCA_CT_NAT_IPV4_MAX,\t \n\tTCA_CT_NAT_IPV6_MIN,\t \n\tTCA_CT_NAT_IPV6_MAX,\t \n\tTCA_CT_NAT_PORT_MIN,\t \n\tTCA_CT_NAT_PORT_MAX,\t \n\tTCA_CT_PAD,\n\tTCA_CT_HELPER_NAME,\t \n\tTCA_CT_HELPER_FAMILY,\t \n\tTCA_CT_HELPER_PROTO,\t \n\t__TCA_CT_MAX\n};\n\n#define TCA_CT_MAX (__TCA_CT_MAX - 1)\n\n#define TCA_CT_ACT_COMMIT\t(1 << 0)\n#define TCA_CT_ACT_FORCE\t(1 << 1)\n#define TCA_CT_ACT_CLEAR\t(1 << 2)\n#define TCA_CT_ACT_NAT\t\t(1 << 3)\n#define TCA_CT_ACT_NAT_SRC\t(1 << 4)\n#define TCA_CT_ACT_NAT_DST\t(1 << 5)\n\nstruct tc_ct {\n\ttc_gen;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

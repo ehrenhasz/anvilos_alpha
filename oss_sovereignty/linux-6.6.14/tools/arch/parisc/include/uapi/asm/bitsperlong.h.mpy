@@ -1,0 +1,9 @@
+{
+  "module_name": "bitsperlong.h",
+  "hash_id": "3377995e8dab30a0fdec46b26ac2ee566f5164391308e116cb2d4e457e9853ab",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/parisc/include/uapi/asm/bitsperlong.h",
+  "human_readable_source": " \n#ifndef __ASM_PARISC_BITSPERLONG_H\n#define __ASM_PARISC_BITSPERLONG_H\n\n#if defined(__LP64__)\n#define __BITS_PER_LONG 64\n#define SHIFT_PER_LONG 6\n#else\n#define __BITS_PER_LONG 32\n#define SHIFT_PER_LONG 5\n#endif\n\n#include <asm-generic/bitsperlong.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

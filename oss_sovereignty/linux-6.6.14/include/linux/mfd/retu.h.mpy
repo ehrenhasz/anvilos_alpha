@@ -1,0 +1,9 @@
+{
+  "module_name": "retu.h",
+  "hash_id": "7eda36dd8bece6cd6b9a2b87a1842a6c2c5ff089717759ee385e61c7d9370b3d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/retu.h",
+  "human_readable_source": " \n\n#ifndef __LINUX_MFD_RETU_H\n#define __LINUX_MFD_RETU_H\n\nstruct retu_dev;\n\nint retu_read(struct retu_dev *, u8);\nint retu_write(struct retu_dev *, u8, u16);\n\n \n#define RETU_REG_WATCHDOG\t0x17\t\t \n#define RETU_REG_CC1\t\t0x0d\t\t \n#define RETU_REG_STATUS\t\t0x16\t\t \n\n \n#define TAHVO_INT_VBUS\t\t0\t\t \n\n \n#define TAHVO_STAT_VBUS\t\t(1 << TAHVO_INT_VBUS)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

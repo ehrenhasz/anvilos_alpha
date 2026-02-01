@@ -1,0 +1,9 @@
+{
+  "module_name": "kasan-tags.h",
+  "hash_id": "813574b01ff95ceb9a4619a258812d4ee43b5be123c6a5eea255eb0ead3b8d57",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kasan-tags.h",
+  "human_readable_source": " \n#ifndef _LINUX_KASAN_TAGS_H\n#define _LINUX_KASAN_TAGS_H\n\n#define KASAN_TAG_KERNEL\t0xFF  \n#define KASAN_TAG_INVALID\t0xFE  \n#define KASAN_TAG_MAX\t\t0xFD  \n\n#ifdef CONFIG_KASAN_HW_TAGS\n#define KASAN_TAG_MIN\t\t0xF0  \n#else\n#define KASAN_TAG_MIN\t\t0x00  \n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

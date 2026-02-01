@@ -1,0 +1,9 @@
+{
+  "module_name": "dmu_send.h",
+  "hash_id": "79cdfdd811d5a395a36104588a54a9bedbe84c92b211f5e5eb3954260eefdfa5",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/dmu_send.h",
+  "human_readable_source": " \n\n \n\n#ifndef _DMU_SEND_H\n#define\t_DMU_SEND_H\n\n#include <sys/inttypes.h>\n#include <sys/dsl_crypt.h>\n#include <sys/dsl_bookmark.h>\n#include <sys/spa.h>\n#include <sys/objlist.h>\n#include <sys/dmu_redact.h>\n\n#define\tBEGINNV_REDACT_SNAPS\t\t\"redact_snaps\"\n#define\tBEGINNV_REDACT_FROM_SNAPS\t\"redact_from_snaps\"\n#define\tBEGINNV_RESUME_OBJECT\t\t\"resume_object\"\n#define\tBEGINNV_RESUME_OFFSET\t\t\"resume_offset\"\n\nstruct vnode;\nstruct dsl_dataset;\nstruct drr_begin;\nstruct avl_tree;\nstruct dmu_replay_record;\nstruct dmu_send_outparams;\nint\ndmu_send(const char *tosnap, const char *fromsnap, boolean_t embedok,\n    boolean_t large_block_ok, boolean_t compressok, boolean_t rawok,\n    boolean_t savedok, uint64_t resumeobj, uint64_t resumeoff,\n    const char *redactbook, int outfd, offset_t *off,\n    struct dmu_send_outparams *dsop);\nint dmu_send_estimate_fast(struct dsl_dataset *ds, struct dsl_dataset *fromds,\n    zfs_bookmark_phys_t *frombook, boolean_t stream_compressed,\n    boolean_t saved, uint64_t *sizep);\nint dmu_send_obj(const char *pool, uint64_t tosnap, uint64_t fromsnap,\n    boolean_t embedok, boolean_t large_block_ok, boolean_t compressok,\n    boolean_t rawok, boolean_t savedok, int outfd, offset_t *off,\n    struct dmu_send_outparams *dso);\n\ntypedef int (*dmu_send_outfunc_t)(objset_t *os, void *buf, int len, void *arg);\ntypedef struct dmu_send_outparams {\n\tdmu_send_outfunc_t\tdso_outfunc;\n\tvoid\t\t\t*dso_arg;\n\tboolean_t\t\tdso_dryrun;\n} dmu_send_outparams_t;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

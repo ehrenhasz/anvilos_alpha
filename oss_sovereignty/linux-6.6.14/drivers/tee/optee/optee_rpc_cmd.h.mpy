@@ -1,0 +1,9 @@
+{
+  "module_name": "optee_rpc_cmd.h",
+  "hash_id": "290698129e59035def7c2cf06b2cdfbe74378b13a24c18d67e139c49849f57ca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tee/optee/optee_rpc_cmd.h",
+  "human_readable_source": " \n \n\n#ifndef __OPTEE_RPC_CMD_H\n#define __OPTEE_RPC_CMD_H\n\n \n\n \n#define OPTEE_RPC_CMD_GET_TIME\t\t3\n\n \n#define OPTEE_RPC_CMD_NOTIFICATION\t4\n#define OPTEE_RPC_NOTIFICATION_WAIT\t0\n#define OPTEE_RPC_NOTIFICATION_SEND\t1\n\n \n#define OPTEE_RPC_CMD_SUSPEND\t\t5\n\n \n#define OPTEE_RPC_CMD_SHM_ALLOC\t\t6\n \n#define OPTEE_RPC_SHM_TYPE_APPL\t\t0\n \n#define OPTEE_RPC_SHM_TYPE_KERNEL\t1\n\n \n#define OPTEE_RPC_CMD_SHM_FREE\t\t7\n\n \n#define OPTEE_RPC_CMD_I2C_TRANSFER\t21\n\n \n#define OPTEE_RPC_I2C_TRANSFER_RD\t0\n#define OPTEE_RPC_I2C_TRANSFER_WR\t1\n\n \n#define OPTEE_RPC_I2C_FLAGS_TEN_BIT\tBIT(0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

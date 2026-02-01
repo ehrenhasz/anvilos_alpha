@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_ref.host.h",
+  "hash_id": "b510479116b4cb44f473ef9fa028e8036574d6a3af71dd4e61adb69b17819e77",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ref/ref_1.0/ia_css_ref.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_REF_HOST_H\n#define __IA_CSS_REF_HOST_H\n\n#include <ia_css_frame_public.h>\n#include <ia_css_binary.h>\n\n#include \"ia_css_ref_types.h\"\n#include \"ia_css_ref_param.h\"\n#include \"ia_css_ref_state.h\"\n\nint ia_css_ref_config(struct sh_css_isp_ref_isp_config      *to,\n\t\t      const struct ia_css_ref_configuration *from,\n\t\t      unsigned int size);\n\nint ia_css_ref_configure(const struct ia_css_binary        *binary,\n\t\t\t const struct ia_css_frame * const *ref_frames,\n\t\t\t const uint32_t                    dvs_frame_delay);\n\nvoid\nia_css_init_ref_state(\n    struct sh_css_isp_ref_dmem_state *state,\n    unsigned int size);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

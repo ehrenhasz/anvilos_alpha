@@ -1,0 +1,9 @@
+{
+  "module_name": "rfkill.c",
+  "hash_id": "6a4ee9d5c783cbb6d8f55e521a95b359c40e103459e40ee2175fff2271d5e368",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/b43/rfkill.c",
+  "human_readable_source": "\n \n\n#include \"b43.h\"\n\n\n \nbool b43_is_hw_radio_enabled(struct b43_wldev *dev)\n{\n\treturn !(b43_read32(dev, B43_MMIO_RADIO_HWENABLED_HI)\n\t\t& B43_MMIO_RADIO_HWENABLED_HI_MASK);\n}\n\n \nvoid b43_rfkill_poll(struct ieee80211_hw *hw)\n{\n\tstruct b43_wl *wl = hw_to_b43_wl(hw);\n\tstruct b43_wldev *dev = wl->current_dev;\n\tbool enabled;\n\tbool brought_up = false;\n\n\tmutex_lock(&wl->mutex);\n\tif (unlikely(b43_status(dev) < B43_STAT_INITIALIZED)) {\n\t\tif (b43_bus_powerup(dev, 0)) {\n\t\t\tmutex_unlock(&wl->mutex);\n\t\t\treturn;\n\t\t}\n\t\tb43_device_enable(dev, 0);\n\t\tbrought_up = true;\n\t}\n\n\tenabled = b43_is_hw_radio_enabled(dev);\n\n\tif (unlikely(enabled != dev->radio_hw_enable)) {\n\t\tdev->radio_hw_enable = enabled;\n\t\tb43info(wl, \"Radio hardware status changed to %s\\n\",\n\t\t\tenabled ? \"ENABLED\" : \"DISABLED\");\n\t\twiphy_rfkill_set_hw_state(hw->wiphy, !enabled);\n\t\tif (enabled != dev->phy.radio_on)\n\t\t\tb43_software_rfkill(dev, !enabled);\n\t}\n\n\tif (brought_up) {\n\t\tb43_device_disable(dev, 0);\n\t\tb43_bus_may_powerdown(dev);\n\t}\n\n\tmutex_unlock(&wl->mutex);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

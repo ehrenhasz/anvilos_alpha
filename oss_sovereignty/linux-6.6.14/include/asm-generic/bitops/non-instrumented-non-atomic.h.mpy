@@ -1,0 +1,9 @@
+{
+  "module_name": "non-instrumented-non-atomic.h",
+  "hash_id": "b575c54c400b905d814a561c606533fe46a0b037e2cf94567f97f3588fd76f05",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/bitops/non-instrumented-non-atomic.h",
+  "human_readable_source": " \n\n#ifndef __ASM_GENERIC_BITOPS_NON_INSTRUMENTED_NON_ATOMIC_H\n#define __ASM_GENERIC_BITOPS_NON_INSTRUMENTED_NON_ATOMIC_H\n\n#define ___set_bit\t\tarch___set_bit\n#define ___clear_bit\t\tarch___clear_bit\n#define ___change_bit\t\tarch___change_bit\n\n#define ___test_and_set_bit\tarch___test_and_set_bit\n#define ___test_and_clear_bit\tarch___test_and_clear_bit\n#define ___test_and_change_bit\tarch___test_and_change_bit\n\n#define _test_bit\t\tarch_test_bit\n#define _test_bit_acquire\tarch_test_bit_acquire\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

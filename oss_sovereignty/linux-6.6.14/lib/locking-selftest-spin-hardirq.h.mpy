@@ -1,0 +1,9 @@
+{
+  "module_name": "locking-selftest-spin-hardirq.h",
+  "hash_id": "525a0d63b030a5eaf9273f11c539b5f0ad868160991cabc45887a56318f1b94f",
+  "original_prompt": "Ingested from linux-6.6.14/lib/locking-selftest-spin-hardirq.h",
+  "human_readable_source": "#include \"locking-selftest-spin.h\"\n#include \"locking-selftest-hardirq.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

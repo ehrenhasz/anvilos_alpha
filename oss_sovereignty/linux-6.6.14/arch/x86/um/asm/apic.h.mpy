@@ -1,0 +1,9 @@
+{
+  "module_name": "apic.h",
+  "hash_id": "ed2c1b3ea05ed395fc08ecf71970c1b01fe24dde44a2b1066848a7308662d952",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/asm/apic.h",
+  "human_readable_source": "#ifndef __UM_APIC_H\n#define __UM_APIC_H\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

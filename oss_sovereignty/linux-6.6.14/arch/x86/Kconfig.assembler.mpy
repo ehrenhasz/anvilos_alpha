@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig.assembler",
+  "hash_id": "230857c6a6b855c6173539aa7f976a0d605f897240a7e7738106d54863da831e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/Kconfig.assembler",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (C) 2020 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.\n\nconfig AS_AVX512\n\tdef_bool $(as-instr,vpmovm2b %k1$(comma)%zmm5)\n\thelp\n\t  Supported by binutils >= 2.25 and LLVM integrated assembler\n\nconfig AS_SHA1_NI\n\tdef_bool $(as-instr,sha1msg1 %xmm0$(comma)%xmm1)\n\thelp\n\t  Supported by binutils >= 2.24 and LLVM integrated assembler\n\nconfig AS_SHA256_NI\n\tdef_bool $(as-instr,sha256msg1 %xmm0$(comma)%xmm1)\n\thelp\n\t  Supported by binutils >= 2.24 and LLVM integrated assembler\nconfig AS_TPAUSE\n\tdef_bool $(as-instr,tpause %ecx)\n\thelp\n\t  Supported by binutils >= 2.31.1 and LLVM integrated assembler >= V7\n\nconfig AS_GFNI\n\tdef_bool $(as-instr,vgf2p8mulb %xmm0$(comma)%xmm1$(comma)%xmm2)\n\thelp\n\t  Supported by binutils >= 2.30 and LLVM integrated assembler\n\nconfig AS_WRUSS\n\tdef_bool $(as-instr,wrussq %rax$(comma)(%rbx))\n\thelp\n\t  Supported by binutils >= 2.31 and LLVM integrated assembler\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

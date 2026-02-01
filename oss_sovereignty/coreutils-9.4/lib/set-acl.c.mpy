@@ -1,0 +1,9 @@
+{
+  "module_name": "set-acl.c",
+  "hash_id": "4d57fe728e73436df102f1c4354269ddc0195b7e9e39438c8cf116b6810fd1c2",
+  "original_prompt": "Ingested from coreutils-9.4/lib/set-acl.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"acl.h\"\n\n#include <errno.h>\n\n#include \"quote.h\"\n#include \"error.h\"\n#include \"gettext.h\"\n#define _(msgid) gettext (msgid)\n\n \n\nint\nset_acl (char const *name, int desc, mode_t mode)\n{\n  int ret = qset_acl (name, desc, mode);\n  if (ret != 0)\n    error (0, errno, _(\"setting permissions for %s\"), quote (name));\n  return ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

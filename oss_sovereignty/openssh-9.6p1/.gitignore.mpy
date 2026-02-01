@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "53176fdfa799b49d715ac175d5706a72cc4c993eab76cb79e836ed0c0879beb9",
+  "original_prompt": "Ingested from openssh-9.6p1/.gitignore",
+  "human_readable_source": "Makefile\nbuildpkg.sh\nconfig.h\nconfig.h.in\nconfig.h.in~\nconfig.log\nconfig.status\nconfigure\naclocal.m4\nopenbsd-compat/Makefile\nopenbsd-compat/regress/Makefile\nopenssh.xml\nopensshd.init\nsurvey.sh\n**/*.0\n**/*.o\n**/*.lo\n**/*.so\n**/*.out\n**/*.a\nautom4te.cache/\nscp\nsftp\nsftp-server\nssh\nssh-add\nssh-agent\nssh-keygen\nssh-keyscan\nssh-keysign\nssh-pkcs11-helper\nssh-sk-helper\nsshd\n!regress/misc/fuzz-harness/Makefile\n!regress/unittests/sshsig/Makefile\ntags\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

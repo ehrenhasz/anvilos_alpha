@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_hotplug.h",
+  "hash_id": "735187df671528d292abab99195bd8f70997cba68e74d44a9b322321e601f538",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_hotplug.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_HOTPLUG_H__\n#define __INTEL_HOTPLUG_H__\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\nstruct intel_connector;\nstruct intel_digital_port;\nstruct intel_encoder;\nenum port;\n\nvoid intel_hpd_poll_enable(struct drm_i915_private *dev_priv);\nvoid intel_hpd_poll_disable(struct drm_i915_private *dev_priv);\nenum intel_hotplug_state intel_encoder_hotplug(struct intel_encoder *encoder,\n\t\t\t\t\t       struct intel_connector *connector);\nvoid intel_hpd_irq_handler(struct drm_i915_private *dev_priv,\n\t\t\t   u32 pin_mask, u32 long_mask);\nvoid intel_hpd_trigger_irq(struct intel_digital_port *dig_port);\nvoid intel_hpd_init(struct drm_i915_private *dev_priv);\nvoid intel_hpd_init_early(struct drm_i915_private *i915);\nvoid intel_hpd_cancel_work(struct drm_i915_private *dev_priv);\nenum hpd_pin intel_hpd_pin_default(struct drm_i915_private *dev_priv,\n\t\t\t\t   enum port port);\nbool intel_hpd_disable(struct drm_i915_private *dev_priv, enum hpd_pin pin);\nvoid intel_hpd_enable(struct drm_i915_private *dev_priv, enum hpd_pin pin);\nvoid intel_hpd_debugfs_register(struct drm_i915_private *i915);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fsl_rpmsg.h",
+  "hash_id": "70611ea9ab925c6f86fec659272305e4dce96a029a15ffd3e990b3de38d2ae76",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/fsl/fsl_rpmsg.h",
+  "human_readable_source": " \n \n\n#ifndef __FSL_RPMSG_H\n#define __FSL_RPMSG_H\n\n \nstruct fsl_rpmsg_soc_data {\n\tint rates;\n\tu64 formats;\n};\n\n \nstruct fsl_rpmsg {\n\tstruct clk *ipg;\n\tstruct clk *mclk;\n\tstruct clk *dma;\n\tstruct clk *pll8k;\n\tstruct clk *pll11k;\n\tstruct platform_device *card_pdev;\n\tconst struct fsl_rpmsg_soc_data *soc_data;\n\tunsigned int mclk_streams;\n\tint force_lpa;\n\tint enable_lpa;\n\tint buffer_size;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "drbd_genl_api.h",
+  "hash_id": "1c3502be74f90b3915aff12e41bd00fcc0e855e0fb5577c0db3bfb1f9c67456a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/drbd_genl_api.h",
+  "human_readable_source": " \n#ifndef DRBD_GENL_STRUCT_H\n#define DRBD_GENL_STRUCT_H\n\n \nstruct drbd_genlmsghdr {\n\t__u32 minor;\n\tunion {\n\t__u32 flags;\n\t__s32 ret_code;\n\t};\n};\n\n \nenum {\n\tDRBD_GENL_F_SET_DEFAULTS = 1,\n};\n\nenum drbd_state_info_bcast_reason {\n\tSIB_GET_STATUS_REPLY = 1,\n\tSIB_STATE_CHANGE = 2,\n\tSIB_HELPER_PRE = 3,\n\tSIB_HELPER_POST = 4,\n\tSIB_SYNC_PROGRESS = 5,\n};\n\n \n#undef linux\n\n#include <linux/drbd.h>\n#define GENL_MAGIC_VERSION\t1\n#define GENL_MAGIC_FAMILY\tdrbd\n#define GENL_MAGIC_FAMILY_HDRSZ\tsizeof(struct drbd_genlmsghdr)\n#define GENL_MAGIC_INCLUDE_FILE <linux/drbd_genl.h>\n#include <linux/genl_magic_struct.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

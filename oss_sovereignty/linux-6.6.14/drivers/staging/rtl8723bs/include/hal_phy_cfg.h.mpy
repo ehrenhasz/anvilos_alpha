@@ -1,0 +1,9 @@
+{
+  "module_name": "hal_phy_cfg.h",
+  "hash_id": "8ce9778d2f29eddb155c38d360858ecdc2df1516ee3b5b4f285b0651b5831edb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/hal_phy_cfg.h",
+  "human_readable_source": " \n \n#ifndef __INC_HAL8723BPHYCFG_H__\n#define __INC_HAL8723BPHYCFG_H__\n\n \n#define LOOP_LIMIT\t\t5\n#define MAX_STALL_TIME\t\t50\t \n#define AntennaDiversityValue\t0x80\t \n#define MAX_TXPWR_IDX_NMODE_92S\t63\n#define Reset_Cnt_Limit\t\t3\n\n#define MAX_AGGR_NUM\t0x07\n\n\n \n\n\n \n\n \n\n \nu32 PHY_QueryBBReg_8723B(struct adapter *Adapter, u32 RegAddr, u32 BitMask);\n\nvoid PHY_SetBBReg_8723B(struct adapter *Adapter, u32 RegAddr,\n\t\t\tu32 BitMask, u32 Data);\n\nu32 PHY_QueryRFReg_8723B(struct adapter *Adapter, u8 eRFPath,\n\t\t\t u32 RegAddr, u32 BitMask);\n\nvoid PHY_SetRFReg_8723B(struct adapter *Adapter, u8 eRFPath,\n\t\t\tu32 RegAddr, u32 BitMask, u32 Data);\n\n \nint PHY_BBConfig8723B(struct adapter *Adapter);\n\nint PHY_RFConfig8723B(struct adapter *Adapter);\n\ns32 PHY_MACConfig8723B(struct adapter *padapter);\n\nvoid PHY_SetTxPowerIndex(struct adapter *Adapter, u32 PowerIndex,\n\t\t\t u8 RFPath, u8 Rate);\n\nu8 PHY_GetTxPowerIndex(struct adapter *padapter, u8 RFPath, u8 Rate,\n\t\t\tenum channel_width BandWidth, u8 Channel);\n\nvoid PHY_GetTxPowerLevel8723B(struct adapter *Adapter, s32 *powerlevel);\n\nvoid PHY_SetTxPowerLevel8723B(struct adapter *Adapter, u8 channel);\n\nvoid PHY_SetBWMode8723B(struct adapter *Adapter, enum channel_width Bandwidth,\n\t\t\tunsigned char Offset);\n\n \nvoid PHY_SwChnl8723B(struct adapter *Adapter, u8 channel);\n\nvoid PHY_SetSwChnlBWMode8723B(struct adapter *Adapter, u8 channel,\n\t\t\t\tenum channel_width Bandwidth,\n\t\t\t\tu8 Offset40, u8 Offset80);\n\n \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

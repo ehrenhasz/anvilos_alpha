@@ -1,0 +1,9 @@
+{
+  "module_name": "rt2x00soc.h",
+  "hash_id": "3e62271fed1d1e540d548c9508824ffbe0db59cf1626735218632e77da4127a0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ralink/rt2x00/rt2x00soc.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef RT2X00SOC_H\n#define RT2X00SOC_H\n\n \nint rt2x00soc_probe(struct platform_device *pdev, const struct rt2x00_ops *ops);\nint rt2x00soc_remove(struct platform_device *pdev);\n#ifdef CONFIG_PM\nint rt2x00soc_suspend(struct platform_device *pdev, pm_message_t state);\nint rt2x00soc_resume(struct platform_device *pdev);\n#else\n#define rt2x00soc_suspend\tNULL\n#define rt2x00soc_resume\tNULL\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

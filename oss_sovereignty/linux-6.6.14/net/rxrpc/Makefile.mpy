@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8b33b2ae3e376597129c8358f439e75f9f6e96ecba9958213eb03ad88cf53934",
+  "original_prompt": "Ingested from linux-6.6.14/net/rxrpc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Linux kernel RxRPC\n#\n\nobj-$(CONFIG_AF_RXRPC) += rxrpc.o\n\nrxrpc-y := \\\n\taf_rxrpc.o \\\n\tcall_accept.o \\\n\tcall_event.o \\\n\tcall_object.o \\\n\tcall_state.o \\\n\tconn_client.o \\\n\tconn_event.o \\\n\tconn_object.o \\\n\tconn_service.o \\\n\tinput.o \\\n\tinsecure.o \\\n\tio_thread.o \\\n\tkey.o \\\n\tlocal_event.o \\\n\tlocal_object.o \\\n\tmisc.o \\\n\tnet_ns.o \\\n\toutput.o \\\n\tpeer_event.o \\\n\tpeer_object.o \\\n\trecvmsg.o \\\n\trtt.o \\\n\tsecurity.o \\\n\tsendmsg.o \\\n\tserver_key.o \\\n\tskbuff.o \\\n\ttxbuf.o \\\n\tutils.o\n\nrxrpc-$(CONFIG_PROC_FS) += proc.o\nrxrpc-$(CONFIG_RXKAD) += rxkad.o\nrxrpc-$(CONFIG_SYSCTL) += sysctl.o\n\n\nobj-$(CONFIG_RXPERF) += rxperf.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dpio.h",
+  "hash_id": "8c54abf4cf9888c776adb89427f0ed1e61302034e187d52a737560c141affa67",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/fsl/dpio/dpio.h",
+  "human_readable_source": " \n \n#ifndef __FSL_DPIO_H\n#define __FSL_DPIO_H\n\nstruct fsl_mc_io;\n\nint dpio_open(struct fsl_mc_io\t*mc_io,\n\t      u32\t\tcmd_flags,\n\t      int\t\tdpio_id,\n\t      u16\t\t*token);\n\nint dpio_close(struct fsl_mc_io\t*mc_io,\n\t       u32\t\tcmd_flags,\n\t       u16\t\ttoken);\n\n \nenum dpio_channel_mode {\n\tDPIO_NO_CHANNEL = 0,\n\tDPIO_LOCAL_CHANNEL = 1,\n};\n\n \nstruct dpio_cfg {\n\tenum dpio_channel_mode\tchannel_mode;\n\tu8\t\tnum_priorities;\n};\n\nint dpio_enable(struct fsl_mc_io\t*mc_io,\n\t\tu32\t\tcmd_flags,\n\t\tu16\t\ttoken);\n\nint dpio_disable(struct fsl_mc_io\t*mc_io,\n\t\t u32\t\tcmd_flags,\n\t\t u16\t\ttoken);\n\n \nstruct dpio_attr {\n\tint\t\t\tid;\n\tu64\t\tqbman_portal_ce_offset;\n\tu64\t\tqbman_portal_ci_offset;\n\tu16\t\tqbman_portal_id;\n\tenum dpio_channel_mode\tchannel_mode;\n\tu8\t\t\tnum_priorities;\n\tu32\t\tqbman_version;\n\tu32\t\tclk;\n};\n\nint dpio_get_attributes(struct fsl_mc_io\t*mc_io,\n\t\t\tu32\t\tcmd_flags,\n\t\t\tu16\t\ttoken,\n\t\t\tstruct dpio_attr\t*attr);\n\nint dpio_set_stashing_destination(struct fsl_mc_io *mc_io,\n\t\t\t\t  u32 cmd_flags,\n\t\t\t\t  u16 token,\n\t\t\t\t  u8 dest);\n\nint dpio_get_api_version(struct fsl_mc_io *mc_io,\n\t\t\t u32 cmd_flags,\n\t\t\t u16 *major_ver,\n\t\t\t u16 *minor_ver);\n\nint dpio_reset(struct fsl_mc_io\t*mc_io,\n\t       u32 cmd_flags,\n\t       u16 token);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

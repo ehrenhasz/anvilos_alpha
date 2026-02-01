@@ -1,0 +1,9 @@
+{
+  "module_name": "vasprintf.c",
+  "hash_id": "0839c307778a3ffb30f66660fd3e76bd4702b6235ce60b536f77a18915ad269f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/vasprintf.c",
+  "human_readable_source": " \n#ifdef IN_LIBASPRINTF\n# include \"vasprintf.h\"\n#else\n# include <stdio.h>\n#endif\n\n#include <errno.h>\n#include <limits.h>\n#include <stdlib.h>\n\n#include \"vasnprintf.h\"\n\nint\nvasprintf (char **resultp, const char *format, va_list args)\n{\n  size_t length;\n  char *result = vasnprintf (NULL, &length, format, args);\n  if (result == NULL)\n    return -1;\n\n  if (length > INT_MAX)\n    {\n      free (result);\n      errno = EOVERFLOW;\n      return -1;\n    }\n\n  *resultp = result;\n   \n  return length;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

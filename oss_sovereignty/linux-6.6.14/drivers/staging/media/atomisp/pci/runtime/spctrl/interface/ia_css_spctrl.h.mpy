@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_spctrl.h",
+  "hash_id": "28ef00b9d6277c184417c52cccaf6c89206556e0c443daff9e884bdac3ac51d9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/spctrl/interface/ia_css_spctrl.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_SPCTRL_H__\n#define __IA_CSS_SPCTRL_H__\n\n#include <system_global.h>\n#include <ia_css_err.h>\n#include \"ia_css_spctrl_comm.h\"\n\ntypedef struct {\n\tu32        ddr_data_offset;        \n\tu32        dmem_data_addr;         \n\tu32        dmem_bss_addr;          \n\tu32        data_size;              \n\tu32        bss_size;               \n\tu32        spctrl_config_dmem_addr;  \n\tu32        spctrl_state_dmem_addr;   \n\tunsigned int    sp_entry;                 \n\tconst void      *code;                    \n\tu32         code_size;\n\tchar      *program_name;     \n} ia_css_spctrl_cfg;\n\n \nia_css_ptr get_sp_code_addr(sp_ID_t  sp_id);\n\n \nint ia_css_spctrl_load_fw(sp_ID_t sp_id,\n\t\t\t\t      ia_css_spctrl_cfg *spctrl_cfg);\n\n \n \nvoid sh_css_spctrl_reload_fw(sp_ID_t sp_id);\n\n \nint ia_css_spctrl_unload_fw(sp_ID_t sp_id);\n\n \nint ia_css_spctrl_start(sp_ID_t sp_id);\n\n \nint ia_css_spctrl_stop(sp_ID_t sp_id);\n\n \nia_css_spctrl_sp_sw_state ia_css_spctrl_get_state(sp_ID_t sp_id);\n\n \nint ia_css_spctrl_is_idle(sp_ID_t sp_id);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

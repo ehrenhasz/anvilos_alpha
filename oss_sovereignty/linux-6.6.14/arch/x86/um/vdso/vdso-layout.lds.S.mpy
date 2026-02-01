@@ -1,0 +1,9 @@
+{
+  "module_name": "vdso-layout.lds.S",
+  "hash_id": "3f784f969af6898d069dbc9b1465e8f47ff637a6c36b286cdfc0c224e26e98ea",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/vdso/vdso-layout.lds.S",
+  "human_readable_source": " \n \n\nSECTIONS\n{\n\t. = VDSO_PRELINK + SIZEOF_HEADERS;\n\n\t.hash\t\t: { *(.hash) }\t\t\t:text\n\t.gnu.hash\t: { *(.gnu.hash) }\n\t.dynsym\t\t: { *(.dynsym) }\n\t.dynstr\t\t: { *(.dynstr) }\n\t.gnu.version\t: { *(.gnu.version) }\n\t.gnu.version_d\t: { *(.gnu.version_d) }\n\t.gnu.version_r\t: { *(.gnu.version_r) }\n\n\t.note\t\t: { *(.note.*) }\t\t:text\t:note\n\n\t.eh_frame_hdr\t: { *(.eh_frame_hdr) }\t\t:text\t:eh_frame_hdr\n\t.eh_frame\t: { KEEP (*(.eh_frame)) }\t:text\n\n\t.dynamic\t: { *(.dynamic) }\t\t:text\t:dynamic\n\n\t.rodata\t\t: { *(.rodata*) }\t\t:text\n\t.data\t\t: {\n\t      *(.data*)\n\t      *(.sdata*)\n\t      *(.got.plt) *(.got)\n\t      *(.gnu.linkonce.d.*)\n\t      *(.bss*)\n\t      *(.dynbss*)\n\t      *(.gnu.linkonce.b.*)\n\t}\n\n\t.altinstructions\t: { *(.altinstructions) }\n\t.altinstr_replacement\t: { *(.altinstr_replacement) }\n\n\t \n\t. = ALIGN(0x100);\n\n\t.text\t\t: { *(.text*) }\t\t\t:text\t=0x90909090\n}\n\n \n#define PT_GNU_EH_FRAME\t0x6474e550\n\n \nPHDRS\n{\n\ttext\t\tPT_LOAD\t\tFLAGS(5) FILEHDR PHDRS;  \n\tdynamic\t\tPT_DYNAMIC\tFLAGS(4);\t\t \n\tnote\t\tPT_NOTE\t\tFLAGS(4);\t\t \n\teh_frame_hdr\tPT_GNU_EH_FRAME;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "wwnr.dot",
+  "hash_id": "8dd6ca576457a6b757d7a6ba48148257c290c2d1bc7c06bd8ac67fa42fa19106",
+  "original_prompt": "Ingested from linux-6.6.14/tools/verification/models/wwnr.dot",
+  "human_readable_source": "digraph state_automaton {\n\t{node [shape = plaintext, style=invis, label=\"\"] \"__init_not_running\"};\n\t{node [shape = ellipse] \"not_running\"};\n\t{node [shape = plaintext] \"not_running\"};\n\t{node [shape = plaintext] \"running\"};\n\t\"__init_not_running\" -> \"not_running\";\n\t\"not_running\" [label = \"not_running\", color = green3];\n\t\"not_running\" -> \"not_running\" [ label = \"wakeup\" ];\n\t\"not_running\" -> \"running\" [ label = \"switch_in\" ];\n\t\"running\" [label = \"running\"];\n\t\"running\" -> \"not_running\" [ label = \"switch_out\" ];\n\t{ rank = min ;\n\t\t\"__init_not_running\";\n\t\t\"not_running\";\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

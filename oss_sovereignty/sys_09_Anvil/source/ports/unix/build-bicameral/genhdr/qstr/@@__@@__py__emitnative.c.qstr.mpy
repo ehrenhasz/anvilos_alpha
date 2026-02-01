@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__emitnative.c.qstr",
+  "hash_id": "b7ca546c16fc904ba771a8cfb51adb2ddce17187e1e9a91c302e53b87dd2fcab",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__emitnative.c.qstr",
+  "human_readable_source": "Q(object)\nQ(bool)\nQ(int)\nQ(uint)\nQ(ptr)\nQ(ptr8)\nQ(ptr16)\nQ(ptr32)\nQ(None)\nQ(_star_)\nQ(__exit__)\nQ(__enter__)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

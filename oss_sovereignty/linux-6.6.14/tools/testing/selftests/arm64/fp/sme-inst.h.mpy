@@ -1,0 +1,9 @@
+{
+  "module_name": "sme-inst.h",
+  "hash_id": "2e80609256dd695aa51e96768be6fd95b04b5013713536c2ffd73e4207966c16",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/fp/sme-inst.h",
+  "human_readable_source": "\n\n\n\n#ifndef SME_INST_H\n#define SME_INST_H\n\n \n.macro rdsvl nx, imm\n\t.inst\t0x4bf5800\t\t\t\\\n\t\t| (\\imm << 5)\t\t\t\\\n\t\t| (\\nx)\n.endm\n\n.macro smstop\n\tmsr\tS0_3_C4_C6_3, xzr\n.endm\n\n.macro smstart_za\n\tmsr\tS0_3_C4_C5_3, xzr\n.endm\n\n.macro smstart_sm\n\tmsr\tS0_3_C4_C3_3, xzr\n.endm\n\n \n.macro _ldr_za nw, nxbase, offset=0\n\t.inst\t0xe1000000\t\t\t\\\n\t\t| (((\\nw) & 3) << 13)\t\t\\\n\t\t| ((\\nxbase) << 5)\t\t\\\n\t\t| ((\\offset) & 7)\n.endm\n\n \n.macro _str_za nw, nxbase, offset=0\n\t.inst\t0xe1200000\t\t\t\\\n\t\t| (((\\nw) & 3) << 13)\t\t\\\n\t\t| ((\\nxbase) << 5)\t\t\\\n\t\t| ((\\offset) & 7)\n.endm\n\n \n.macro _ldr_zt nx\n\t.inst\t0xe11f8000\t\t\t\\\n\t\t| (((\\nx) & 0x1f) << 5)\n.endm\n\n \n.macro _str_zt nx\n\t.inst\t0xe13f8000\t\t\t\\\n\t\t| (((\\nx) & 0x1f) << 5)\n.endm\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pxp_regs.h",
+  "hash_id": "d75c4080908d168ef999aeb66d074834c006a122568fc84fd694d08188864f88",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/pxp/intel_pxp_regs.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_PXP_REGS_H__\n#define __INTEL_PXP_REGS_H__\n\n#include \"i915_reg_defs.h\"\n\n \n#define GEN12_KCR_BASE 0x32000\n#define MTL_KCR_BASE 0x386000\n\n \n#define KCR_INIT(base) _MMIO((base) + 0xf0)\n\n \n#define KCR_INIT_ALLOW_DISPLAY_ME_WRITES REG_BIT(14)\n\n \n#define KCR_SIP(base) _MMIO((base) + 0x260)\n\n \n#define KCR_GLOBAL_TERMINATE(base) _MMIO((base) + 0xf8)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

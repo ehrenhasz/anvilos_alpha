@@ -1,0 +1,9 @@
+{
+  "module_name": "rescale.h",
+  "hash_id": "1d8840897542eda68b7c972e29049823e6370143417b4cfc8e36323a1f328f32",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/afe/rescale.h",
+  "human_readable_source": " \n \n\n#ifndef __IIO_RESCALE_H__\n#define __IIO_RESCALE_H__\n\n#include <linux/types.h>\n#include <linux/iio/iio.h>\n\nstruct device;\nstruct rescale;\n\nstruct rescale_cfg {\n\tenum iio_chan_type type;\n\tint (*props)(struct device *dev, struct rescale *rescale);\n};\n\nstruct rescale {\n\tconst struct rescale_cfg *cfg;\n\tstruct iio_channel *source;\n\tstruct iio_chan_spec chan;\n\tstruct iio_chan_spec_ext_info *ext_info;\n\tbool chan_processed;\n\ts32 numerator;\n\ts32 denominator;\n\ts32 offset;\n};\n\nint rescale_process_scale(struct rescale *rescale, int scale_type,\n\t\t\t  int *val, int *val2);\nint rescale_process_offset(struct rescale *rescale, int scale_type,\n\t\t\t   int scale, int scale2, int schan_off,\n\t\t\t   int *val, int *val2);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

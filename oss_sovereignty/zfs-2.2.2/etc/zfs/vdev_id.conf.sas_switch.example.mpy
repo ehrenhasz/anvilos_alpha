@@ -1,0 +1,9 @@
+{
+  "module_name": "vdev_id.conf.sas_switch.example",
+  "hash_id": "372570f363ca9eb50c1d5f15b50876d9f1b98055bcd2d12419be40df4aa148d3",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/zfs/vdev_id.conf.sas_switch.example",
+  "human_readable_source": "topology      sas_switch\n\n#       SWITCH PORT  CHANNEL NAME\nchannel 1            A\nchannel 2            B\nchannel 3            C\nchannel 4            D\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

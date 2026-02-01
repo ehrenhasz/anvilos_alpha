@@ -1,0 +1,9 @@
+{
+  "module_name": "lima_ctx.h",
+  "hash_id": "c4705226b72af0f05e7d4a4219f317beef74dd57277436019009ad7d4aeca63c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/lima/lima_ctx.h",
+  "human_readable_source": " \n \n\n#ifndef __LIMA_CTX_H__\n#define __LIMA_CTX_H__\n\n#include <linux/xarray.h>\n#include <linux/sched.h>\n\n#include \"lima_device.h\"\n\nstruct lima_ctx {\n\tstruct kref refcnt;\n\tstruct lima_device *dev;\n\tstruct lima_sched_context context[lima_pipe_num];\n\tatomic_t guilty;\n\n\t \n\tchar pname[TASK_COMM_LEN];\n\tpid_t pid;\n};\n\nstruct lima_ctx_mgr {\n\tstruct mutex lock;\n\tstruct xarray handles;\n};\n\nint lima_ctx_create(struct lima_device *dev, struct lima_ctx_mgr *mgr, u32 *id);\nint lima_ctx_free(struct lima_ctx_mgr *mgr, u32 id);\nstruct lima_ctx *lima_ctx_get(struct lima_ctx_mgr *mgr, u32 id);\nvoid lima_ctx_put(struct lima_ctx *ctx);\nvoid lima_ctx_mgr_init(struct lima_ctx_mgr *mgr);\nvoid lima_ctx_mgr_fini(struct lima_ctx_mgr *mgr);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

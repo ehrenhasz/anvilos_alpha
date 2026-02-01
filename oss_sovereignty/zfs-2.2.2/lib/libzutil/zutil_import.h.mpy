@@ -1,0 +1,9 @@
+{
+  "module_name": "zutil_import.h",
+  "hash_id": "09bc5b39526ee351804d06deef2d6dd6b005414fbdbccd8a3071782ea3bb3138",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libzutil/zutil_import.h",
+  "human_readable_source": " \n \n#ifndef _LIBZUTIL_ZUTIL_IMPORT_H_\n#define\t_LIBZUTIL_ZUTIL_IMPORT_H_\n\n#define\tIMPORT_ORDER_PREFERRED_1\t1\n#define\tIMPORT_ORDER_PREFERRED_2\t2\n#define\tIMPORT_ORDER_SCAN_OFFSET\t10\n#define\tIMPORT_ORDER_DEFAULT\t\t100\n\nint label_paths(libpc_handle_t *hdl, nvlist_t *label, const char **path,\n    const char **devid);\nint zpool_find_import_blkid(libpc_handle_t *hdl, pthread_mutex_t *lock,\n    avl_tree_t **slice_cache);\n\nvoid * zutil_alloc(libpc_handle_t *hdl, size_t size);\nchar *zutil_strdup(libpc_handle_t *hdl, const char *str);\n\ntypedef struct rdsk_node {\n\tchar *rn_name;\t\t\t \n\tint rn_order;\t\t\t \n\tint rn_num_labels;\t\t \n\tuint64_t rn_vdev_guid;\t\t \n\tlibpc_handle_t *rn_hdl;\n\tnvlist_t *rn_config;\t\t \n\tavl_tree_t *rn_avl;\n\tavl_node_t rn_node;\n\tpthread_mutex_t *rn_lock;\n\tboolean_t rn_labelpaths;\n} rdsk_node_t;\n\nint slice_cache_compare(const void *, const void *);\n\nvoid zpool_open_func(void *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

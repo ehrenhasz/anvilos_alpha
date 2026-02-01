@@ -1,0 +1,9 @@
+{
+  "module_name": "cpsw.h",
+  "hash_id": "89ab834b1e236984189344296f9973844a836494342be9f76ed03c6b5dc22d34",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ti/cpsw.h",
+  "human_readable_source": " \n \n#ifndef __CPSW_H__\n#define __CPSW_H__\n\n#include <linux/if_ether.h>\n#include <linux/phy.h>\n\n#define mac_hi(mac)\t(((mac)[0] << 0) | ((mac)[1] << 8) |\t\\\n\t\t\t ((mac)[2] << 16) | ((mac)[3] << 24))\n#define mac_lo(mac)\t(((mac)[4] << 0) | ((mac)[5] << 8))\n\n#if IS_ENABLED(CONFIG_TI_CPSW_PHY_SEL)\nvoid cpsw_phy_sel(struct device *dev, phy_interface_t phy_mode, int slave);\n#else\nstatic inline\nvoid cpsw_phy_sel(struct device *dev, phy_interface_t phy_mode, int slave)\n{}\n#endif\nint ti_cm_get_macid(struct device *dev, int slave, u8 *mac_addr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

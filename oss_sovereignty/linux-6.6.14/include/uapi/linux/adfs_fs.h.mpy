@@ -1,0 +1,9 @@
+{
+  "module_name": "adfs_fs.h",
+  "hash_id": "fa10c67da3b8394b161782db92d8a80a7db710d90f8cd58e9e90bdd919b56401",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/adfs_fs.h",
+  "human_readable_source": " \n#ifndef _UAPI_ADFS_FS_H\n#define _UAPI_ADFS_FS_H\n\n#include <linux/types.h>\n#include <linux/magic.h>\n\n \nstruct adfs_discrecord {\n    __u8  log2secsize;\n    __u8  secspertrack;\n    __u8  heads;\n    __u8  density;\n    __u8  idlen;\n    __u8  log2bpmb;\n    __u8  skew;\n    __u8  bootoption;\n    __u8  lowsector;\n    __u8  nzones;\n    __le16 zone_spare;\n    __le32 root;\n    __le32 disc_size;\n    __le16 disc_id;\n    __u8  disc_name[10];\n    __le32 disc_type;\n    __le32 disc_size_high;\n    __u8  log2sharesize:4;\n    __u8  unused40:4;\n    __u8  big_flag:1;\n    __u8  unused41:7;\n    __u8  nzones_high;\n    __u8  reserved43;\n    __le32 format_version;\n    __le32 root_size;\n    __u8  unused52[60 - 52];\n} __attribute__((packed, aligned(4)));\n\n#define ADFS_DISCRECORD\t\t(0xc00)\n#define ADFS_DR_OFFSET\t\t(0x1c0)\n#define ADFS_DR_SIZE\t\t 60\n#define ADFS_DR_SIZE_BITS\t(ADFS_DR_SIZE << 3)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

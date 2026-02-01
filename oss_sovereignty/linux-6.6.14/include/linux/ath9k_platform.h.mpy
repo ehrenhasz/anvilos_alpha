@@ -1,0 +1,9 @@
+{
+  "module_name": "ath9k_platform.h",
+  "hash_id": "817a113f527939bdb2533205070ecd8d57757d5a04d54a24db86f07d57d6cafd",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ath9k_platform.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_ATH9K_PLATFORM_H\n#define _LINUX_ATH9K_PLATFORM_H\n\n#define ATH9K_PLAT_EEP_MAX_WORDS\t2048\n\nstruct ath9k_platform_data {\n\tconst char *eeprom_name;\n\n\tu16 eeprom_data[ATH9K_PLAT_EEP_MAX_WORDS];\n\tu8 *macaddr;\n\n\tint led_pin;\n\tu32 gpio_mask;\n\tu32 gpio_val;\n\n\tu32 bt_active_pin;\n\tu32 bt_priority_pin;\n\tu32 wlan_active_pin;\n\n\tbool endian_check;\n\tbool is_clk_25mhz;\n\tbool tx_gain_buffalo;\n\tbool disable_2ghz;\n\tbool disable_5ghz;\n\tbool led_active_high;\n\n\tint (*get_mac_revision)(void);\n\tint (*external_reset)(void);\n\n\tbool use_eeprom;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

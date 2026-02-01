@@ -1,0 +1,9 @@
+{
+  "module_name": "string-stream.h",
+  "hash_id": "c646dd1c13d5050f0264d66e6bcafeafccd2e65725e5b6560d683b46b038227e",
+  "original_prompt": "Ingested from linux-6.6.14/lib/kunit/string-stream.h",
+  "human_readable_source": " \n \n\n#ifndef _KUNIT_STRING_STREAM_H\n#define _KUNIT_STRING_STREAM_H\n\n#include <linux/spinlock.h>\n#include <linux/types.h>\n#include <linux/stdarg.h>\n\nstruct string_stream_fragment {\n\tstruct list_head node;\n\tchar *fragment;\n};\n\nstruct string_stream {\n\tsize_t length;\n\tstruct list_head fragments;\n\t \n\tspinlock_t lock;\n\tstruct kunit *test;\n\tgfp_t gfp;\n};\n\nstruct kunit;\n\nstruct string_stream *alloc_string_stream(struct kunit *test, gfp_t gfp);\n\nint __printf(2, 3) string_stream_add(struct string_stream *stream,\n\t\t\t\t     const char *fmt, ...);\n\nint __printf(2, 0) string_stream_vadd(struct string_stream *stream,\n\t\t\t\t      const char *fmt,\n\t\t\t\t      va_list args);\n\nchar *string_stream_get_string(struct string_stream *stream);\n\nint string_stream_append(struct string_stream *stream,\n\t\t\t struct string_stream *other);\n\nbool string_stream_is_empty(struct string_stream *stream);\n\nvoid string_stream_destroy(struct string_stream *stream);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

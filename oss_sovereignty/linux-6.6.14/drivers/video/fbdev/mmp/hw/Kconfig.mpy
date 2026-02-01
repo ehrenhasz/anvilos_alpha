@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "352dea0ba1f2e032464ddae71f38d0e36fc2f7aaaf54987e91a388333065d6ee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/mmp/hw/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig MMP_DISP_CONTROLLER\n\tbool \"mmp display controller hw support\"\n\tdepends on HAVE_CLK && HAS_IOMEM\n\tdepends on CPU_PXA910 || CPU_MMP2 || COMPILE_TEST\n\thelp\n\t\tMarvell MMP display hw controller support\n\t\tthis controller is used on Marvell PXA910 and\n\t\tMMP2 chips\n\nconfig MMP_DISP_SPI\n\tbool \"mmp display controller spi port\"\n\tdepends on MMP_DISP_CONTROLLER && SPI_MASTER\n\tdefault y\n\thelp\n\t\tMarvell MMP display hw controller spi port support\n\t\twill register as a spi master for panel usage\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

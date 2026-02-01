@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fd04e3e5c4d18e11bccb95d37bf721087397e5e99480d6a46fa247d22e38fbf8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/mediatek/Makefile",
+  "human_readable_source": "obj-$(CONFIG_MTK_SOC_THERMAL)\t+= auxadc_thermal.o\nobj-$(CONFIG_MTK_LVTS_THERMAL)\t+= lvts_thermal.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

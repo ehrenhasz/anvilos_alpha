@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e197b41cfb859f314a585b7d14394112fb1f53b30e84f7eb95c6d8ff95b7c1f3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/synopsys/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Synopsys network device configuration\n#\n\nconfig NET_VENDOR_SYNOPSYS\n\tbool \"Synopsys devices\"\n\tdefault y\n\thelp\n\t  If you have a network (Ethernet) device belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Synopsys devices. If you say Y, you will be asked\n\t  for your specific device in the following questions.\n\nif NET_VENDOR_SYNOPSYS\n\nconfig DWC_XLGMAC\n\ttristate \"Synopsys DWC Enterprise Ethernet (XLGMAC) driver support\"\n\tdepends on HAS_IOMEM && HAS_DMA\n\tselect BITREVERSE\n\tselect CRC32\n\thelp\n\t  This driver supports the Synopsys DesignWare Cores Enterprise\n\t  Ethernet (dwc-xlgmac).\n\nif DWC_XLGMAC\n\nconfig DWC_XLGMAC_PCI\n\ttristate \"XLGMAC PCI bus support\"\n\tdepends on DWC_XLGMAC && PCI\n\thelp\n\t  This selects the pci bus support for the dwc-xlgmac driver.\n\t  This driver was tested on Synopsys XLGMAC IP Prototyping Kit.\n\n\t  If you have a controller with this interface, say Y or M here.\n\t  If unsure, say N.\n\nendif # DWC_XLGMAC\n\nendif # NET_VENDOR_SYNOPSYS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

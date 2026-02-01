@@ -1,0 +1,9 @@
+{
+  "module_name": "xyarray.c",
+  "hash_id": "cc53e8e1f4ed30df25b74814fcee552a09b75a39d77600f228b683602e677928",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/perf/xyarray.c",
+  "human_readable_source": "\n#include <internal/xyarray.h>\n#include <linux/zalloc.h>\n#include <stdlib.h>\n#include <string.h>\n\nstruct xyarray *xyarray__new(int xlen, int ylen, size_t entry_size)\n{\n\tsize_t row_size = ylen * entry_size;\n\tstruct xyarray *xy = zalloc(sizeof(*xy) + xlen * row_size);\n\n\tif (xy != NULL) {\n\t\txy->entry_size = entry_size;\n\t\txy->row_size   = row_size;\n\t\txy->entries    = xlen * ylen;\n\t\txy->max_x      = xlen;\n\t\txy->max_y      = ylen;\n\t}\n\n\treturn xy;\n}\n\nvoid xyarray__reset(struct xyarray *xy)\n{\n\tsize_t n = xy->entries * xy->entry_size;\n\n\tmemset(xy->contents, 0, n);\n}\n\nvoid xyarray__delete(struct xyarray *xy)\n{\n\tfree(xy);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

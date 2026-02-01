@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_bt.h",
+  "hash_id": "0f6c1aa00fd0e28e66710e903849bc815a4d0ec5f9a584201781426908817710",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/virtio_bt.h",
+  "human_readable_source": " \n\n#ifndef _UAPI_LINUX_VIRTIO_BT_H\n#define _UAPI_LINUX_VIRTIO_BT_H\n\n#include <linux/virtio_types.h>\n\n \n#define VIRTIO_BT_F_VND_HCI\t0\t \n#define VIRTIO_BT_F_MSFT_EXT\t1\t \n#define VIRTIO_BT_F_AOSP_EXT\t2\t \n#define VIRTIO_BT_F_CONFIG_V2\t3\t \n\nenum virtio_bt_config_type {\n\tVIRTIO_BT_CONFIG_TYPE_PRIMARY\t= 0,\n\tVIRTIO_BT_CONFIG_TYPE_AMP\t= 1,\n};\n\nenum virtio_bt_config_vendor {\n\tVIRTIO_BT_CONFIG_VENDOR_NONE\t= 0,\n\tVIRTIO_BT_CONFIG_VENDOR_ZEPHYR\t= 1,\n\tVIRTIO_BT_CONFIG_VENDOR_INTEL\t= 2,\n\tVIRTIO_BT_CONFIG_VENDOR_REALTEK\t= 3,\n};\n\nstruct virtio_bt_config {\n\t__u8  type;\n\t__u16 vendor;\n\t__u16 msft_opcode;\n} __attribute__((packed));\n\nstruct virtio_bt_config_v2 {\n\t__u8  type;\n\t__u8  alignment;\n\t__u16 vendor;\n\t__u16 msft_opcode;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

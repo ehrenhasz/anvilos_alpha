@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7263ba87159505af700d6c23e6a4c5cae2d4ebda47969c1070c007ba0650a0d8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/bpf/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenu \"HID-BPF support\"\n\nconfig HID_BPF\n\tbool \"HID-BPF support\"\n\tdepends on BPF\n\tdepends on BPF_SYSCALL\n\tdepends on DYNAMIC_FTRACE_WITH_DIRECT_CALLS\n\thelp\n\tThis option allows to support eBPF programs on the HID subsystem.\n\teBPF programs can fix HID devices in a lighter way than a full\n\tkernel patch and allow a lot more flexibility.\n\n\tFor documentation, see Documentation/hid/hid-bpf.rst\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

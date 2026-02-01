@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_gmbus.h",
+  "hash_id": "80a28d0cba9c1f4d46815b6a05fa0d2843d791bfcb8268679e2c6b7346855a87",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_gmbus.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_GMBUS_H__\n#define __INTEL_GMBUS_H__\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\nstruct i2c_adapter;\n\n#define GMBUS_PIN_DISABLED\t0\n#define GMBUS_PIN_SSC\t\t1\n#define GMBUS_PIN_VGADDC\t2\n#define GMBUS_PIN_PANEL\t\t3\n#define GMBUS_PIN_DPD_CHV\t3  \n#define GMBUS_PIN_DPC\t\t4  \n#define GMBUS_PIN_DPB\t\t5  \n#define GMBUS_PIN_DPD\t\t6  \n#define GMBUS_PIN_RESERVED\t7  \n#define GMBUS_PIN_1_BXT\t\t1  \n#define GMBUS_PIN_2_BXT\t\t2\n#define GMBUS_PIN_3_BXT\t\t3\n#define GMBUS_PIN_4_CNP\t\t4\n#define GMBUS_PIN_5_MTP\t\t5\n#define GMBUS_PIN_9_TC1_ICP\t9\n#define GMBUS_PIN_10_TC2_ICP\t10\n#define GMBUS_PIN_11_TC3_ICP\t11\n#define GMBUS_PIN_12_TC4_ICP\t12\n#define GMBUS_PIN_13_TC5_TGP\t13\n#define GMBUS_PIN_14_TC6_TGP\t14\n\n#define GMBUS_NUM_PINS\t15  \n\nint intel_gmbus_setup(struct drm_i915_private *dev_priv);\nvoid intel_gmbus_teardown(struct drm_i915_private *dev_priv);\nbool intel_gmbus_is_valid_pin(struct drm_i915_private *dev_priv,\n\t\t\t      unsigned int pin);\nint intel_gmbus_output_aksv(struct i2c_adapter *adapter);\n\nstruct i2c_adapter *\nintel_gmbus_get_adapter(struct drm_i915_private *dev_priv, unsigned int pin);\nvoid intel_gmbus_force_bit(struct i2c_adapter *adapter, bool force_bit);\nbool intel_gmbus_is_forced_bit(struct i2c_adapter *adapter);\nvoid intel_gmbus_reset(struct drm_i915_private *dev_priv);\n\nvoid intel_gmbus_irq_handler(struct drm_i915_private *i915);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

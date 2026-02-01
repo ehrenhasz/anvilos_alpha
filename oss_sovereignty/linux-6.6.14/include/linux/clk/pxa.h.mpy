@@ -1,0 +1,9 @@
+{
+  "module_name": "pxa.h",
+  "hash_id": "885b04460f3032d00cce35e36912b3aa3272b4b549d4046a42ad2233a49a83af",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/clk/pxa.h",
+  "human_readable_source": " \n\n#include <linux/compiler.h>\n#include <linux/types.h>\n\nextern int pxa25x_clocks_init(void __iomem *regs);\nextern int pxa27x_clocks_init(void __iomem *regs);\nextern int pxa3xx_clocks_init(void __iomem *regs, void __iomem *oscc_reg);\n\n#ifdef CONFIG_PXA3xx\nextern unsigned\tpxa3xx_get_clk_frequency_khz(int);\nextern void pxa3xx_clk_update_accr(u32 disable, u32 enable, u32 xclkcfg, u32 mask);\n#else\n#define pxa3xx_get_clk_frequency_khz(x)\t\t(0)\n#define pxa3xx_clk_update_accr(disable, enable, xclkcfg, mask) do { } while (0)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

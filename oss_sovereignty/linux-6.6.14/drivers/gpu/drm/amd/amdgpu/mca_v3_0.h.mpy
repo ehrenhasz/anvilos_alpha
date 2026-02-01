@@ -1,0 +1,9 @@
+{
+  "module_name": "mca_v3_0.h",
+  "hash_id": "62485e6229a860003009f1034fb17ffbc9ebb3af93a945c7ed31e4b0da1876b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/mca_v3_0.h",
+  "human_readable_source": " \n#ifndef __MCA_V3_0_H__\n#define __MCA_V3_0_H__\n\nextern struct amdgpu_mca_ras_block mca_v3_0_mp0_ras;\nextern struct amdgpu_mca_ras_block mca_v3_0_mp1_ras;\nextern struct amdgpu_mca_ras_block mca_v3_0_mpio_ras;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

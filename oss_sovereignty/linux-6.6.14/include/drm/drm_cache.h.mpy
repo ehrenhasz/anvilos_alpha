@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_cache.h",
+  "hash_id": "73cb906f30fdd35da5e7d12b2970ef7c2e796d1388e1bfa9d3db9ee0b069b6d1",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_cache.h",
+  "human_readable_source": " \n \n\n#ifndef _DRM_CACHE_H_\n#define _DRM_CACHE_H_\n\n#include <linux/scatterlist.h>\n\nstruct iosys_map;\n\nvoid drm_clflush_pages(struct page *pages[], unsigned long num_pages);\nvoid drm_clflush_sg(struct sg_table *st);\nvoid drm_clflush_virt_range(void *addr, unsigned long length);\nbool drm_need_swiotlb(int dma_bits);\n\n\nstatic inline bool drm_arch_can_wc_memory(void)\n{\n#if defined(CONFIG_PPC) && !defined(CONFIG_NOT_COHERENT_CACHE)\n\treturn false;\n#elif defined(CONFIG_MIPS) && defined(CONFIG_CPU_LOONGSON64)\n\treturn false;\n#elif defined(CONFIG_ARM) || defined(CONFIG_ARM64)\n\t \n\treturn false;\n#elif defined(CONFIG_LOONGARCH)\n\t \n\treturn false;\n#else\n\treturn true;\n#endif\n}\n\nvoid drm_memcpy_init_early(void);\n\nvoid drm_memcpy_from_wc(struct iosys_map *dst,\n\t\t\tconst struct iosys_map *src,\n\t\t\tunsigned long len);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gntalloc.h",
+  "hash_id": "6c2f797065e47605556da350c050c04a0228c5f242c153a4a1d4df6986ec2397",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/xen/gntalloc.h",
+  "human_readable_source": " \n\n#ifndef __LINUX_PUBLIC_GNTALLOC_H__\n#define __LINUX_PUBLIC_GNTALLOC_H__\n\n#include <linux/types.h>\n\n \n#define IOCTL_GNTALLOC_ALLOC_GREF \\\n_IOC(_IOC_NONE, 'G', 5, sizeof(struct ioctl_gntalloc_alloc_gref))\nstruct ioctl_gntalloc_alloc_gref {\n\t \n\t \n\t__u16 domid;\n\t \n\t__u16 flags;\n\t \n\t__u32 count;\n\t \n\t \n\t__u64 index;\n\t \n\t \n\t__u32 gref_ids[1];\n};\n\n#define GNTALLOC_FLAG_WRITABLE 1\n\n \n#define IOCTL_GNTALLOC_DEALLOC_GREF \\\n_IOC(_IOC_NONE, 'G', 6, sizeof(struct ioctl_gntalloc_dealloc_gref))\nstruct ioctl_gntalloc_dealloc_gref {\n\t \n\t \n\t__u64 index;\n\t \n\t__u32 count;\n};\n\n \n#define IOCTL_GNTALLOC_SET_UNMAP_NOTIFY \\\n_IOC(_IOC_NONE, 'G', 7, sizeof(struct ioctl_gntalloc_unmap_notify))\nstruct ioctl_gntalloc_unmap_notify {\n\t \n\t \n\t__u64 index;\n\t \n\t__u32 action;\n\t \n\t__u32 event_channel_port;\n};\n\n \n#define UNMAP_NOTIFY_CLEAR_BYTE 0x1\n \n#define UNMAP_NOTIFY_SEND_EVENT 0x2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

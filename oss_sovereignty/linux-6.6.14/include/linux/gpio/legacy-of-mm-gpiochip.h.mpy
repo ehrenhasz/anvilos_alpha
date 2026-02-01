@@ -1,0 +1,9 @@
+{
+  "module_name": "legacy-of-mm-gpiochip.h",
+  "hash_id": "f8793f7983437150b5a2b6a51bcd1a6ea2a0b52401a72e24a63a3ecc13c832c4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/gpio/legacy-of-mm-gpiochip.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_GPIO_LEGACY_OF_MM_GPIO_CHIP_H\n#define __LINUX_GPIO_LEGACY_OF_MM_GPIO_CHIP_H\n\n#include <linux/gpio/driver.h>\n#include <linux/of.h>\n\n \nstruct of_mm_gpio_chip {\n\tstruct gpio_chip gc;\n\tvoid (*save_regs)(struct of_mm_gpio_chip *mm_gc);\n\tvoid __iomem *regs;\n};\n\nstatic inline struct of_mm_gpio_chip *to_of_mm_gpio_chip(struct gpio_chip *gc)\n{\n\treturn container_of(gc, struct of_mm_gpio_chip, gc);\n}\n\nextern int of_mm_gpiochip_add_data(struct device_node *np,\n\t\t\t\t   struct of_mm_gpio_chip *mm_gc,\n\t\t\t\t   void *data);\nextern void of_mm_gpiochip_remove(struct of_mm_gpio_chip *mm_gc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

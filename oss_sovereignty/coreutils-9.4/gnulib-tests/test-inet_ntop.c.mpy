@@ -1,0 +1,9 @@
+{
+  "module_name": "test-inet_ntop.c",
+  "hash_id": "7324b8a3601212ae6dbea0398dc2e34b28c8b5aac045cf9f9e67b0ec4b57d624",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-inet_ntop.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <arpa/inet.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (inet_ntop, char const *, (int, void const *, char *,\n                                           socklen_t));\n\n#include <netinet/in.h>\n#include <sys/socket.h>\n#include <string.h>\n\n#include \"macros.h\"\n\nint\nmain (void)\n{\n#if defined AF_INET  \n  {\n    struct in_addr internal;\n    char printable[16];\n    const char *result;\n\n     \n# ifdef WORDS_BIGENDIAN\n    internal.s_addr = 0x810D7302;\n# else\n    internal.s_addr = 0x02730D81;\n# endif\n    result = inet_ntop (AF_INET, &internal, printable, sizeof (printable));\n    ASSERT (result != NULL);\n    ASSERT (strcmp (result, \"129.13.115.2\") == 0);\n  }\n#endif\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

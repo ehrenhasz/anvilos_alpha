@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b09132160bbb1ed5a6d4eb2dbfa5996770554111e9eba8a3b82914d1251f9801",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/acpi/tools/pfrut/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n\ninclude ../../Makefile.config\n\nTOOL = pfrut\nEXTRA_INSTALL = install-man\nEXTRA_UNINSTALL = uninstall-man\n\nCFLAGS += -Wall -O2\nCFLAGS += -DPFRUT_HEADER='\"../../../../../include/uapi/linux/pfrut.h\"'\nLDFLAGS += -luuid\n\nTOOL_OBJS = \\\n\tpfrut.o\n\ninclude ../../Makefile.rules\n\ninstall-man: $(srctree)/man/pfrut.8\n\t$(ECHO) \"  INST    \" pfrut.8\n\t$(QUIET) $(INSTALL_DATA) -D $< $(DESTDIR)$(mandir)/man8/pfrut.8\nuninstall-man:\n\t$(ECHO) \"  UNINST  \" pfrut.8\n\t$(QUIET) rm -f $(DESTDIR)$(mandir)/man8/pfrut.8\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

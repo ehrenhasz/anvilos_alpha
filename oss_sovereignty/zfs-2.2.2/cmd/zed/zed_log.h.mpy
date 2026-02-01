@@ -1,0 +1,9 @@
+{
+  "module_name": "zed_log.h",
+  "hash_id": "a28e43c45aed07562dfc8a1634b3517bd90e82b5d7783348a9c5d2f6d245754b",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zed/zed_log.h",
+  "human_readable_source": " \n\n#ifndef\tZED_LOG_H\n#define\tZED_LOG_H\n\n#include <syslog.h>\n\nvoid zed_log_init(const char *identity);\n\nvoid zed_log_fini(void);\n\nvoid zed_log_pipe_open(void);\n\nvoid zed_log_pipe_close_reads(void);\n\nvoid zed_log_pipe_close_writes(void);\n\nvoid zed_log_pipe_wait(void);\n\nvoid zed_log_stderr_open(int priority);\n\nvoid zed_log_stderr_close(void);\n\nvoid zed_log_syslog_open(int facility);\n\nvoid zed_log_syslog_close(void);\n\nvoid zed_log_msg(int priority, const char *fmt, ...);\n\n__attribute__((format(printf, 1, 2), __noreturn__))\nvoid zed_log_die(const char *fmt, ...);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

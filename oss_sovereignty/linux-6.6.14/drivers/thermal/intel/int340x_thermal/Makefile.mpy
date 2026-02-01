@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e10257a096cff01ca6d6a06c65e97c26361b520d7fe37d3c77caa4d2820864f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thermal/intel/int340x_thermal/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_INT340X_THERMAL)\t+= int3400_thermal.o\nobj-$(CONFIG_INT340X_THERMAL)\t+= int340x_thermal_zone.o\nobj-$(CONFIG_INT340X_THERMAL)\t+= int3402_thermal.o\nobj-$(CONFIG_INT340X_THERMAL)\t+= int3403_thermal.o\nobj-$(CONFIG_INT340X_THERMAL)\t+= processor_thermal_device.o\nobj-$(CONFIG_INT340X_THERMAL)\t+= int3401_thermal.o\nobj-$(CONFIG_INT340X_THERMAL)\t+= processor_thermal_device_pci_legacy.o\nobj-$(CONFIG_INT340X_THERMAL)\t+= processor_thermal_device_pci.o\nobj-$(CONFIG_PROC_THERMAL_MMIO_RAPL) += processor_thermal_rapl.o\nobj-$(CONFIG_INT340X_THERMAL)\t+= processor_thermal_rfim.o\nobj-$(CONFIG_INT340X_THERMAL)\t+= processor_thermal_mbox.o\nobj-$(CONFIG_INT3406_THERMAL)\t+= int3406_thermal.o\nobj-$(CONFIG_ACPI_THERMAL_REL)\t+= acpi_thermal_rel.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

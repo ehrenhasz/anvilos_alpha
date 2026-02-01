@@ -1,0 +1,9 @@
+{
+  "module_name": "evsel.h",
+  "hash_id": "9f70c9d67f8dc95db68de5849382da8c45ca62a243fd50821d49eb46d9350d40",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/perf/include/internal/evsel.h",
+  "human_readable_source": " \n#ifndef __LIBPERF_INTERNAL_EVSEL_H\n#define __LIBPERF_INTERNAL_EVSEL_H\n\n#include <linux/types.h>\n#include <linux/perf_event.h>\n#include <stdbool.h>\n#include <sys/types.h>\n#include <internal/cpumap.h>\n\nstruct perf_thread_map;\nstruct xyarray;\n\n \nstruct perf_sample_id {\n\tstruct hlist_node\t node;\n\tu64\t\t\t id;\n\tstruct perf_evsel\t*evsel;\n        \n\tint\t\t\t idx;\n\tstruct perf_cpu\t\t cpu;\n\tpid_t\t\t\t tid;\n\n\t \n\tpid_t\t\t\t machine_pid;\n\tstruct perf_cpu\t\t vcpu;\n\n\t \n\tu64\t\t\t period;\n};\n\nstruct perf_evsel {\n\tstruct list_head\t node;\n\tstruct perf_event_attr\t attr;\n\t \n\tstruct perf_cpu_map\t*cpus;\n\t \n\tstruct perf_cpu_map\t*own_cpus;\n\tstruct perf_thread_map\t*threads;\n\tstruct xyarray\t\t*fd;\n\tstruct xyarray\t\t*mmap;\n\tstruct xyarray\t\t*sample_id;\n\tu64\t\t\t*id;\n\tu32\t\t\t ids;\n\tstruct perf_evsel\t*leader;\n\n\t \n\tint\t\t\t nr_members;\n\t \n\tbool\t\t\t system_wide;\n\t \n\tbool\t\t\t requires_cpu;\n\t \n\tbool\t\t\t is_pmu_core;\n\tint\t\t\t idx;\n};\n\nvoid perf_evsel__init(struct perf_evsel *evsel, struct perf_event_attr *attr,\n\t\t      int idx);\nint perf_evsel__alloc_fd(struct perf_evsel *evsel, int ncpus, int nthreads);\nvoid perf_evsel__close_fd(struct perf_evsel *evsel);\nvoid perf_evsel__free_fd(struct perf_evsel *evsel);\nint perf_evsel__read_size(struct perf_evsel *evsel);\nint perf_evsel__apply_filter(struct perf_evsel *evsel, const char *filter);\n\nint perf_evsel__alloc_id(struct perf_evsel *evsel, int ncpus, int nthreads);\nvoid perf_evsel__free_id(struct perf_evsel *evsel);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

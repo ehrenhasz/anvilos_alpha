@@ -1,0 +1,9 @@
+{
+  "module_name": "endian.c",
+  "hash_id": "eac8a37aac604f1cfcebc4ad452817b9dcebb2920dd559c6b8ee78d67dfd1e5a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/endian.c",
+  "human_readable_source": "\n \n\n#include <test_progs.h>\n#include \"test_endian.skel.h\"\n\nstatic int duration;\n\n#define IN16 0x1234\n#define IN32 0x12345678U\n#define IN64 0x123456789abcdef0ULL\n\n#define OUT16 0x3412\n#define OUT32 0x78563412U\n#define OUT64 0xf0debc9a78563412ULL\n\nvoid test_endian(void)\n{\n\tstruct test_endian* skel;\n\tstruct test_endian__bss *bss;\n\tint err;\n\n\tskel = test_endian__open_and_load();\n\tif (CHECK(!skel, \"skel_open\", \"failed to open skeleton\\n\"))\n\t\treturn;\n\tbss = skel->bss;\n\n\tbss->in16 = IN16;\n\tbss->in32 = IN32;\n\tbss->in64 = IN64;\n\n\terr = test_endian__attach(skel);\n\tif (CHECK(err, \"skel_attach\", \"skeleton attach failed: %d\\n\", err))\n\t\tgoto cleanup;\n\n\tusleep(1);\n\n\tCHECK(bss->out16 != OUT16, \"out16\", \"got 0x%llx != exp 0x%llx\\n\",\n\t      (__u64)bss->out16, (__u64)OUT16);\n\tCHECK(bss->out32 != OUT32, \"out32\", \"got 0x%llx != exp 0x%llx\\n\",\n\t      (__u64)bss->out32, (__u64)OUT32);\n\tCHECK(bss->out64 != OUT64, \"out16\", \"got 0x%llx != exp 0x%llx\\n\",\n\t      (__u64)bss->out64, (__u64)OUT64);\n\n\tCHECK(bss->const16 != OUT16, \"const16\", \"got 0x%llx != exp 0x%llx\\n\",\n\t      (__u64)bss->const16, (__u64)OUT16);\n\tCHECK(bss->const32 != OUT32, \"const32\", \"got 0x%llx != exp 0x%llx\\n\",\n\t      (__u64)bss->const32, (__u64)OUT32);\n\tCHECK(bss->const64 != OUT64, \"const64\", \"got 0x%llx != exp 0x%llx\\n\",\n\t      (__u64)bss->const64, (__u64)OUT64);\ncleanup:\n\ttest_endian__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

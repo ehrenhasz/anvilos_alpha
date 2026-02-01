@@ -1,0 +1,9 @@
+{
+  "module_name": "cptpf.h",
+  "hash_id": "9b6d2f7530a58262634d6f285b452e7c377cac09be573e7ba1f2b153c7ef3d7e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/cavium/cpt/cptpf.h",
+  "human_readable_source": " \n \n\n#ifndef __CPTPF_H\n#define __CPTPF_H\n\n#include \"cpt_common.h\"\n\n#define CSR_DELAY 30\n#define CPT_MAX_CORE_GROUPS 8\n#define CPT_MAX_SE_CORES 10\n#define CPT_MAX_AE_CORES 6\n#define CPT_MAX_TOTAL_CORES (CPT_MAX_SE_CORES + CPT_MAX_AE_CORES)\n#define CPT_MAX_VF_NUM 16\n#define\tCPT_PF_MSIX_VECTORS 3\n#define CPT_PF_INT_VEC_E_MBOXX(a) (0x02 + (a))\n#define CPT_UCODE_VERSION_SZ 32\nstruct cpt_device;\n\nstruct microcode {\n\tu8 is_mc_valid;\n\tu8 is_ae;\n\tu8 group;\n\tu8 num_cores;\n\tu32 code_size;\n\tu64 core_mask;\n\tu8 version[CPT_UCODE_VERSION_SZ];\n\t \n\tdma_addr_t phys_base;\n\tvoid *code;\n};\n\nstruct cpt_vf_info {\n\tu8 state;\n\tu8 priority;\n\tu8 id;\n\tu32 qlen;\n};\n\n \nstruct cpt_device {\n\tu16 flags;\t \n\tu8 num_vf_en;  \n\tstruct cpt_vf_info vfinfo[CPT_MAX_VF_NUM];  \n\n\tvoid __iomem *reg_base;  \n\tstruct pci_dev *pdev;  \n\n\tstruct microcode mcode[CPT_MAX_CORE_GROUPS];\n\tu8 next_mc_idx;  \n\tu8 next_group;\n\tu8 max_se_cores;\n\tu8 max_ae_cores;\n};\n\nvoid cpt_mbox_intr_handler(struct cpt_device *cpt, int mbx);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

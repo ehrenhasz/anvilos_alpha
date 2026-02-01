@@ -1,0 +1,9 @@
+{
+  "module_name": "r9a06g032-smp.c",
+  "hash_id": "50c68c87f4534420349c3ef01dec63a461ed7b39cfa6c56b23c52b6ebd199576",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/renesas/r9a06g032-smp.c",
+  "human_readable_source": "\n \n\n#include <linux/io.h>\n#include <linux/of.h>\n#include <linux/of_address.h>\n#include <linux/smp.h>\n\n \n\nstatic void __iomem *cpu_bootaddr;\n\nstatic DEFINE_SPINLOCK(cpu_lock);\n\nstatic int\nr9a06g032_smp_boot_secondary(unsigned int cpu,\n\t\t\t     struct task_struct *idle)\n{\n\tif (!cpu_bootaddr)\n\t\treturn -ENODEV;\n\n\tspin_lock(&cpu_lock);\n\n\twritel(__pa_symbol(secondary_startup), cpu_bootaddr);\n\tarch_send_wakeup_ipi_mask(cpumask_of(cpu));\n\n\tspin_unlock(&cpu_lock);\n\n\treturn 0;\n}\n\nstatic void __init r9a06g032_smp_prepare_cpus(unsigned int max_cpus)\n{\n\tstruct device_node *dn;\n\tint ret = -EINVAL, dns;\n\tu32 bootaddr;\n\n\tdn = of_get_cpu_node(1, NULL);\n\tif (!dn) {\n\t\tpr_err(\"CPU#1: missing device tree node\\n\");\n\t\treturn;\n\t}\n\t \n\tif (of_find_property(dn, \"cpu-release-addr\", &dns)) {\n\t\tif (dns == sizeof(u64)) {\n\t\t\tu64 temp;\n\n\t\t\tret = of_property_read_u64(dn,\n\t\t\t\t\t\t   \"cpu-release-addr\", &temp);\n\t\t\tbootaddr = temp;\n\t\t} else {\n\t\t\tret = of_property_read_u32(dn,\n\t\t\t\t\t\t   \"cpu-release-addr\",\n\t\t\t\t\t\t   &bootaddr);\n\t\t}\n\t}\n\tof_node_put(dn);\n\tif (ret) {\n\t\tpr_err(\"CPU#1: invalid cpu-release-addr property\\n\");\n\t\treturn;\n\t}\n\tpr_info(\"CPU#1: cpu-release-addr %08x\\n\", bootaddr);\n\n\tcpu_bootaddr = ioremap(bootaddr, sizeof(bootaddr));\n}\n\nstatic const struct smp_operations r9a06g032_smp_ops __initconst = {\n\t.smp_prepare_cpus = r9a06g032_smp_prepare_cpus,\n\t.smp_boot_secondary = r9a06g032_smp_boot_secondary,\n};\n\nCPU_METHOD_OF_DECLARE(r9a06g032_smp,\n\t\t      \"renesas,r9a06g032-smp\", &r9a06g032_smp_ops);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

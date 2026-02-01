@@ -1,0 +1,9 @@
+{
+  "module_name": "gk20a.c",
+  "hash_id": "dbab59faa870c26c4774699e5713a1abf55eea48565dcb63a03eaf7d1c120472",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/fifo/gk20a.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <nvif/class.h>\n\nstatic const struct nvkm_fifo_func\ngk20a_fifo = {\n\t.chid_nr = nv50_fifo_chid_nr,\n\t.chid_ctor = gk110_fifo_chid_ctor,\n\t.runq_nr = gf100_fifo_runq_nr,\n\t.runl_ctor = gk104_fifo_runl_ctor,\n\t.init = gk104_fifo_init,\n\t.init_pbdmas = gk104_fifo_init_pbdmas,\n\t.intr = gk104_fifo_intr,\n\t.intr_mmu_fault_unit = gf100_fifo_intr_mmu_fault_unit,\n\t.intr_ctxsw_timeout = gf100_fifo_intr_ctxsw_timeout,\n\t.mmu_fault = &gk104_fifo_mmu_fault,\n\t.nonstall = &gf100_fifo_nonstall,\n\t.runl = &gk110_runl,\n\t.runq = &gk208_runq,\n\t.engn = &gk104_engn,\n\t.engn_ce = &gk104_engn_ce,\n\t.cgrp = {{                               }, &gk110_cgrp },\n\t.chan = {{ 0, 0, KEPLER_CHANNEL_GPFIFO_A }, &gk110_chan },\n};\n\nint\ngk20a_fifo_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t       struct nvkm_fifo **pfifo)\n{\n\treturn nvkm_fifo_new_(&gk20a_fifo, device, type, inst, pfifo);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

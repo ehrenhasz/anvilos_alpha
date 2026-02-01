@@ -1,0 +1,9 @@
+{
+  "module_name": "smallint.c",
+  "hash_id": "852de90df8e2fecab3611a928d1a93acd6be752e3e9a38629f3ef951cbcc7877",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/smallint.c",
+  "human_readable_source": " \n\n#include \"py/smallint.h\"\n\nbool mp_small_int_mul_overflow(mp_int_t x, mp_int_t y) {\n    \n    if (x > 0) { \n        if (y > 0) { \n            if (x > (MP_SMALL_INT_MAX / y)) {\n                return true;\n            }\n        } else { \n            if (y < (MP_SMALL_INT_MIN / x)) {\n                return true;\n            }\n        } \n    } else { \n        if (y > 0) { \n            if (x < (MP_SMALL_INT_MIN / y)) {\n                return true;\n            }\n        } else { \n            if (x != 0 && y < (MP_SMALL_INT_MAX / x)) {\n                return true;\n            }\n        } \n    } \n    return false;\n}\n\nmp_int_t mp_small_int_modulo(mp_int_t dividend, mp_int_t divisor) {\n    \n    dividend %= divisor;\n    if ((dividend < 0 && divisor > 0) || (dividend > 0 && divisor < 0)) {\n        dividend += divisor;\n    }\n    return dividend;\n}\n\nmp_int_t mp_small_int_floor_divide(mp_int_t num, mp_int_t denom) {\n    if (num >= 0) {\n        if (denom < 0) {\n            num += -denom - 1;\n        }\n    } else {\n        if (denom >= 0) {\n            num += -denom + 1;\n        }\n    }\n    return num / denom;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

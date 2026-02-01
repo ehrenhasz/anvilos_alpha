@@ -1,0 +1,9 @@
+{
+  "module_name": "perf.h",
+  "hash_id": "fa911e373926e303a1e27bb039a2478cd024bc23e7b2fc76e91a862df4a59d81",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/intel/perf.h",
+  "human_readable_source": " \n \n\nenum latency_type {\n\tDMAR_LATENCY_INV_IOTLB = 0,\n\tDMAR_LATENCY_INV_DEVTLB,\n\tDMAR_LATENCY_INV_IEC,\n\tDMAR_LATENCY_PRQ,\n\tDMAR_LATENCY_NUM\n};\n\nenum latency_count {\n\tCOUNTS_10e2 = 0,\t \n\tCOUNTS_10e3,\t\t \n\tCOUNTS_10e4,\t\t \n\tCOUNTS_10e5,\t\t \n\tCOUNTS_10e6,\t\t \n\tCOUNTS_10e7,\t\t \n\tCOUNTS_10e8_plus,\t \n\tCOUNTS_MIN,\n\tCOUNTS_MAX,\n\tCOUNTS_SUM,\n\tCOUNTS_NUM\n};\n\nstruct latency_statistic {\n\tbool enabled;\n\tu64 counter[COUNTS_NUM];\n\tu64 samples;\n};\n\n#ifdef CONFIG_DMAR_PERF\nint dmar_latency_enable(struct intel_iommu *iommu, enum latency_type type);\nvoid dmar_latency_disable(struct intel_iommu *iommu, enum latency_type type);\nbool dmar_latency_enabled(struct intel_iommu *iommu, enum latency_type type);\nvoid dmar_latency_update(struct intel_iommu *iommu, enum latency_type type,\n\t\t\t u64 latency);\nint dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size);\n#else\nstatic inline int\ndmar_latency_enable(struct intel_iommu *iommu, enum latency_type type)\n{\n\treturn -EINVAL;\n}\n\nstatic inline void\ndmar_latency_disable(struct intel_iommu *iommu, enum latency_type type)\n{\n}\n\nstatic inline bool\ndmar_latency_enabled(struct intel_iommu *iommu, enum latency_type type)\n{\n\treturn false;\n}\n\nstatic inline void\ndmar_latency_update(struct intel_iommu *iommu, enum latency_type type, u64 latency)\n{\n}\n\nstatic inline int\ndmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)\n{\n\treturn 0;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

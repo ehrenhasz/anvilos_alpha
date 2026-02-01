@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ffd22f1c1991110ef029f266f7d4f5c96adc41e575f4d72cc23faf64591b7992",
+  "original_prompt": "Ingested from linux-6.6.14/sound/aoa/codecs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsnd-aoa-codec-onyx-objs := onyx.o\nsnd-aoa-codec-tas-objs := tas.o\nsnd-aoa-codec-toonie-objs := toonie.o\n\nobj-$(CONFIG_SND_AOA_ONYX) += snd-aoa-codec-onyx.o\nobj-$(CONFIG_SND_AOA_TAS) += snd-aoa-codec-tas.o\nobj-$(CONFIG_SND_AOA_TOONIE) += snd-aoa-codec-toonie.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-imx8dxl-rsrc.c",
+  "hash_id": "ed7d95e9418930891925650fea8751d341fd4254665494c214918e81d6b8d4be",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/imx/clk-imx8dxl-rsrc.c",
+  "human_readable_source": "\n \n\n#include <dt-bindings/firmware/imx/rsrc.h>\n\n#include \"clk-scu.h\"\n\n \nstatic u32 imx8dxl_clk_scu_rsrc_table[] = {\n\tIMX_SC_R_SPI_0,\n\tIMX_SC_R_SPI_1,\n\tIMX_SC_R_SPI_2,\n\tIMX_SC_R_SPI_3,\n\tIMX_SC_R_UART_0,\n\tIMX_SC_R_UART_1,\n\tIMX_SC_R_UART_2,\n\tIMX_SC_R_UART_3,\n\tIMX_SC_R_I2C_0,\n\tIMX_SC_R_I2C_1,\n\tIMX_SC_R_I2C_2,\n\tIMX_SC_R_I2C_3,\n\tIMX_SC_R_ADC_0,\n\tIMX_SC_R_FTM_0,\n\tIMX_SC_R_FTM_1,\n\tIMX_SC_R_CAN_0,\n\tIMX_SC_R_LCD_0,\n\tIMX_SC_R_LCD_0_PWM_0,\n\tIMX_SC_R_PWM_0,\n\tIMX_SC_R_PWM_1,\n\tIMX_SC_R_PWM_2,\n\tIMX_SC_R_PWM_3,\n\tIMX_SC_R_PWM_4,\n\tIMX_SC_R_PWM_5,\n\tIMX_SC_R_PWM_6,\n\tIMX_SC_R_PWM_7,\n\tIMX_SC_R_GPT_0,\n\tIMX_SC_R_GPT_1,\n\tIMX_SC_R_GPT_2,\n\tIMX_SC_R_GPT_3,\n\tIMX_SC_R_GPT_4,\n\tIMX_SC_R_FSPI_0,\n\tIMX_SC_R_FSPI_1,\n\tIMX_SC_R_SDHC_0,\n\tIMX_SC_R_SDHC_1,\n\tIMX_SC_R_SDHC_2,\n\tIMX_SC_R_ENET_0,\n\tIMX_SC_R_ENET_1,\n\tIMX_SC_R_MLB_0,\n\tIMX_SC_R_USB_1,\n\tIMX_SC_R_NAND,\n\tIMX_SC_R_M4_0_I2C,\n\tIMX_SC_R_M4_0_UART,\n\tIMX_SC_R_ELCDIF_PLL,\n\tIMX_SC_R_AUDIO_PLL_0,\n\tIMX_SC_R_AUDIO_PLL_1,\n\tIMX_SC_R_AUDIO_CLK_0,\n\tIMX_SC_R_AUDIO_CLK_1,\n\tIMX_SC_R_A35\n};\n\nconst struct imx_clk_scu_rsrc_table imx_clk_scu_rsrc_imx8dxl = {\n\t.rsrc = imx8dxl_clk_scu_rsrc_table,\n\t.num = ARRAY_SIZE(imx8dxl_clk_scu_rsrc_table),\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

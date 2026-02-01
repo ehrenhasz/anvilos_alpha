@@ -1,0 +1,9 @@
+{
+  "module_name": "pathname.h",
+  "hash_id": "d521e29cfefe85edaa5408f0441785aceca1b06be2ad2a1a02b07c460ff98277",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/pathname.h",
+  "human_readable_source": " \n\n \n\n \n \n\n \n\n#ifndef _SYS_PATHNAME_H\n#define\t_SYS_PATHNAME_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \ntypedef struct pathname {\n\tchar\t*pn_buf;\t\t \n\tsize_t\tpn_bufsize;\t\t \n} pathname_t;\n\nextern void\tpn_alloc(struct pathname *);\nextern void\tpn_alloc_sz(struct pathname *, size_t);\nextern void\tpn_free(struct pathname *);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

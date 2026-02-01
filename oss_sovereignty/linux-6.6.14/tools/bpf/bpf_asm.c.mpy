@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_asm.c",
+  "hash_id": "c6c5d947d9d5d8585a6bc6e1639e936c702c1024fa69f5dab4bccf201e88873f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bpf/bpf_asm.c",
+  "human_readable_source": "\n \n\n#include <stdbool.h>\n#include <stdio.h>\n#include <string.h>\n\nextern void bpf_asm_compile(FILE *fp, bool cstyle);\n\nint main(int argc, char **argv)\n{\n\tFILE *fp = stdin;\n\tbool cstyle = false;\n\tint i;\n\n\tfor (i = 1; i < argc; i++) {\n\t\tif (!strncmp(\"-c\", argv[i], 2)) {\n\t\t\tcstyle = true;\n\t\t\tcontinue;\n\t\t}\n\n\t\tfp = fopen(argv[i], \"r\");\n\t\tif (!fp) {\n\t\t\tfp = stdin;\n\t\t\tcontinue;\n\t\t}\n\n\t\tbreak;\n\t}\n\n\tbpf_asm_compile(fp, cstyle);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

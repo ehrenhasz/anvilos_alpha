@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5af40f5740de517beb05ff25676b35cf2920dadf35bbe29ab090085da29abee2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/cec/platform/sti/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CEC_STI) += stih-cec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

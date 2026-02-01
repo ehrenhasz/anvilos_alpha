@@ -1,0 +1,9 @@
+{
+  "module_name": "flds_emulation.h",
+  "hash_id": "b7f2fa876f899a4c656adf1c7cbc765571f857908d618e86778ef9d4a74a1a43",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/x86_64/flds_emulation.h",
+  "human_readable_source": " \n#ifndef SELFTEST_KVM_FLDS_EMULATION_H\n#define SELFTEST_KVM_FLDS_EMULATION_H\n\n#include \"kvm_util.h\"\n\n#define FLDS_MEM_EAX \".byte 0xd9, 0x00\"\n\n \nstatic inline void flds(uint64_t address)\n{\n\t__asm__ __volatile__(FLDS_MEM_EAX :: \"a\"(address));\n}\n\nstatic inline void handle_flds_emulation_failure_exit(struct kvm_vcpu *vcpu)\n{\n\tstruct kvm_run *run = vcpu->run;\n\tstruct kvm_regs regs;\n\tuint8_t *insn_bytes;\n\tuint64_t flags;\n\n\tTEST_ASSERT_KVM_EXIT_REASON(vcpu, KVM_EXIT_INTERNAL_ERROR);\n\n\tTEST_ASSERT(run->emulation_failure.suberror == KVM_INTERNAL_ERROR_EMULATION,\n\t\t    \"Unexpected suberror: %u\",\n\t\t    run->emulation_failure.suberror);\n\n\tflags = run->emulation_failure.flags;\n\tTEST_ASSERT(run->emulation_failure.ndata >= 3 &&\n\t\t    flags & KVM_INTERNAL_ERROR_EMULATION_FLAG_INSTRUCTION_BYTES,\n\t\t    \"run->emulation_failure is missing instruction bytes\");\n\n\tTEST_ASSERT(run->emulation_failure.insn_size >= 2,\n\t\t    \"Expected a 2-byte opcode for 'flds', got %d bytes\",\n\t\t    run->emulation_failure.insn_size);\n\n\tinsn_bytes = run->emulation_failure.insn_bytes;\n\tTEST_ASSERT(insn_bytes[0] == 0xd9 && insn_bytes[1] == 0,\n\t\t    \"Expected 'flds [eax]', opcode '0xd9 0x00', got opcode 0x%02x 0x%02x\\n\",\n\t\t    insn_bytes[0], insn_bytes[1]);\n\n\tvcpu_regs_get(vcpu, &regs);\n\tregs.rip += 2;\n\tvcpu_regs_set(vcpu, &regs);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

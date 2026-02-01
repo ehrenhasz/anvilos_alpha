@@ -1,0 +1,9 @@
+{
+  "module_name": "stackcollapse-record",
+  "hash_id": "c495f9827588e853da89d48b7369703ec532aed75a97bc7753017355608f0ffd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/stackcollapse-record",
+  "human_readable_source": "#!/bin/sh\n\n#\n# stackcollapse.py can cover all type of perf samples including\n# the tracepoints, so no special record requirements, just record what\n# you want to analyze.\n#\nperf record \"$@\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

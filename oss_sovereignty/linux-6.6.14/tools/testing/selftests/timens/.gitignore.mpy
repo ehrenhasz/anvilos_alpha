@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "3c8826ded65d34c2d474d6c1cb1853ccf45a6b66674c6275e3ca8a65d3d9b8c0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/timens/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nclock_nanosleep\nexec\nfutex\ngettime_perf\ngettime_perf_cold\nprocfs\ntimens\ntimer\ntimerfd\nvfork_exec\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

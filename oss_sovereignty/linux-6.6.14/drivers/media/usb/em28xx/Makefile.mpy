@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "690cba2d5a05b95c5829daf07463dafa9f9c72aa1a2ec4ba66eedfd8d8a4af15",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/em28xx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nem28xx-y +=\tem28xx-core.o em28xx-i2c.o em28xx-cards.o em28xx-camera.o\n\nem28xx-v4l-objs := em28xx-video.o em28xx-vbi.o\nem28xx-alsa-objs := em28xx-audio.o\nem28xx-rc-objs := em28xx-input.o\n\nobj-$(CONFIG_VIDEO_EM28XX) += em28xx.o\nobj-$(CONFIG_VIDEO_EM28XX_V4L2) += em28xx-v4l.o\nobj-$(CONFIG_VIDEO_EM28XX_ALSA) += em28xx-alsa.o\nobj-$(CONFIG_VIDEO_EM28XX_DVB) += em28xx-dvb.o\nobj-$(CONFIG_VIDEO_EM28XX_RC) += em28xx-rc.o\n\nccflags-y += -I $(srctree)/drivers/media/tuners\nccflags-y += -I $(srctree)/drivers/media/dvb-frontends\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

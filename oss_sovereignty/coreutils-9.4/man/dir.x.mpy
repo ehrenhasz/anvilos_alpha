@@ -1,0 +1,9 @@
+{
+  "module_name": "dir.x",
+  "hash_id": "724e9c0012dc3f08611973d24929cd22761c25441bd5f57d971f9f26438b96f1",
+  "original_prompt": "Ingested from coreutils-9.4/man/dir.x",
+  "human_readable_source": "[NAME]\ndir \\- list directory contents\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

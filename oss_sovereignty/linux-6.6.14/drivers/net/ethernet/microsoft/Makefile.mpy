@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "72b440b4ed2729f6b038ec457f1d43884aef74b06f129d324f6186514543e269",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/microsoft/Makefile",
+  "human_readable_source": "#\n# Makefile for the Microsoft Azure network device driver.\n#\n\nobj-$(CONFIG_MICROSOFT_MANA) += mana/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "version.c",
+  "hash_id": "dd0670ba5fd6d3f2444652d829069d175a7bace5bab924f3aec5a534221fcb19",
+  "original_prompt": "Ingested from bash-5.2.21/lib/termcap/version.c",
+  "human_readable_source": " \n\n \n\n \nstatic char *termcap_version_string = \"\\n$Version: GNU termcap 1.3 $\\n\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

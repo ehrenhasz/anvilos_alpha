@@ -1,0 +1,9 @@
+{
+  "module_name": "fin_ack_lat.sh",
+  "hash_id": "feb00708bf6e8d1e0629e8fae43683bdf7e7f904890485bd6a6f5a3e8130a42c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/fin_ack_lat.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n#\n# Test latency spikes caused by FIN/ACK handling race.\n\nset +x\nset -e\n\ntmpfile=$(mktemp /tmp/fin_ack_latency.XXXX.log)\n\ncleanup() {\n\tkill $(pidof fin_ack_lat)\n\trm -f $tmpfile\n}\n\ntrap cleanup EXIT\n\ndo_test() {\n\tRUNTIME=$1\n\n\t./fin_ack_lat | tee $tmpfile &\n\tPID=$!\n\n\tsleep $RUNTIME\n\tNR_SPIKES=$(wc -l $tmpfile | awk '{print $1}')\n\tif [ $NR_SPIKES -gt 0 ]\n\tthen\n\t\techo \"FAIL: $NR_SPIKES spikes detected\"\n\t\treturn 1\n\tfi\n\treturn 0\n}\n\ndo_test \"30\"\necho \"test done\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

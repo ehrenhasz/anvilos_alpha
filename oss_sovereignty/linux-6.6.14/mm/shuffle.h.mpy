@@ -1,0 +1,9 @@
+{
+  "module_name": "shuffle.h",
+  "hash_id": "8b221daff0a2721623a02f95036a3fd266a86b295bf47a0901c363eb94e606b2",
+  "original_prompt": "Ingested from linux-6.6.14/mm/shuffle.h",
+  "human_readable_source": "\n\n#ifndef _MM_SHUFFLE_H\n#define _MM_SHUFFLE_H\n#include <linux/jump_label.h>\n\n#define SHUFFLE_ORDER MAX_ORDER\n\n#ifdef CONFIG_SHUFFLE_PAGE_ALLOCATOR\nDECLARE_STATIC_KEY_FALSE(page_alloc_shuffle_key);\nextern void __shuffle_free_memory(pg_data_t *pgdat);\nextern bool shuffle_pick_tail(void);\nstatic inline void __meminit shuffle_free_memory(pg_data_t *pgdat)\n{\n\tif (!static_branch_unlikely(&page_alloc_shuffle_key))\n\t\treturn;\n\t__shuffle_free_memory(pgdat);\n}\n\nextern void __shuffle_zone(struct zone *z);\nstatic inline void __meminit shuffle_zone(struct zone *z)\n{\n\tif (!static_branch_unlikely(&page_alloc_shuffle_key))\n\t\treturn;\n\t__shuffle_zone(z);\n}\n\nstatic inline bool is_shuffle_order(int order)\n{\n\tif (!static_branch_unlikely(&page_alloc_shuffle_key))\n\t\treturn false;\n\treturn order >= SHUFFLE_ORDER;\n}\n#else\nstatic inline bool shuffle_pick_tail(void)\n{\n\treturn false;\n}\n\nstatic inline void shuffle_free_memory(pg_data_t *pgdat)\n{\n}\n\nstatic inline void shuffle_zone(struct zone *z)\n{\n}\n\nstatic inline bool is_shuffle_order(int order)\n{\n\treturn false;\n}\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

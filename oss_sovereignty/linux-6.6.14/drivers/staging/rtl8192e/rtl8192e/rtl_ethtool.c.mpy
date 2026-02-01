@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl_ethtool.c",
+  "hash_id": "e30a1900e93d9fb619d2e605d358974d9853fca051d1abe23d1649aec645b740",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192e/rtl8192e/rtl_ethtool.c",
+  "human_readable_source": "\n \n#include <linux/netdevice.h>\n#include <linux/ethtool.h>\n#include <linux/delay.h>\n\n#include \"rtl_core.h\"\n\nstatic void _rtl92e_ethtool_get_drvinfo(struct net_device *dev,\n\t\t\t\t\tstruct ethtool_drvinfo *info)\n{\n\tstruct r8192_priv *priv = rtllib_priv(dev);\n\n\tstrscpy(info->driver, DRV_NAME, sizeof(info->driver));\n\tstrscpy(info->version, DRV_VERSION, sizeof(info->version));\n\tstrscpy(info->bus_info, pci_name(priv->pdev), sizeof(info->bus_info));\n}\n\nstatic u32 _rtl92e_ethtool_get_link(struct net_device *dev)\n{\n\tstruct r8192_priv *priv = rtllib_priv(dev);\n\n\treturn ((priv->rtllib->link_state == MAC80211_LINKED) ||\n\t\t(priv->rtllib->link_state == MAC80211_LINKED_SCANNING));\n}\n\nconst struct ethtool_ops rtl819x_ethtool_ops = {\n\t.get_drvinfo = _rtl92e_ethtool_get_drvinfo,\n\t.get_link = _rtl92e_ethtool_get_link,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

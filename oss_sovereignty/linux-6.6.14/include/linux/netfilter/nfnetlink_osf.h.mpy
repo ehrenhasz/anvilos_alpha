@@ -1,0 +1,9 @@
+{
+  "module_name": "nfnetlink_osf.h",
+  "hash_id": "e79da596be322db0b291eb1c3af7ff760de32e952363f1ca55f2223dfae28c97",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter/nfnetlink_osf.h",
+  "human_readable_source": " \n#ifndef _NFOSF_H\n#define _NFOSF_H\n\n#include <uapi/linux/netfilter/nfnetlink_osf.h>\n\nenum osf_fmatch_states {\n\t \n\tFMATCH_WRONG = 0,\n\t \n\tFMATCH_OK,\n\t \n\tFMATCH_OPT_WRONG,\n};\n\nextern struct list_head nf_osf_fingers[2];\n\nstruct nf_osf_finger {\n\tstruct rcu_head\t\t\trcu_head;\n\tstruct list_head\t\tfinger_entry;\n\tstruct nf_osf_user_finger\tfinger;\n};\n\nstruct nf_osf_data {\n\tconst char *genre;\n\tconst char *version;\n};\n\nbool nf_osf_match(const struct sk_buff *skb, u_int8_t family,\n\t\t  int hooknum, struct net_device *in, struct net_device *out,\n\t\t  const struct nf_osf_info *info, struct net *net,\n\t\t  const struct list_head *nf_osf_fingers);\n\nbool nf_osf_find(const struct sk_buff *skb,\n\t\t const struct list_head *nf_osf_fingers,\n\t\t const int ttl_check, struct nf_osf_data *data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

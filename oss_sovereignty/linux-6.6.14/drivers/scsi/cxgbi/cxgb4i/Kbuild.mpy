@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "08d659707ccdf167945edeb12e395d128168da62c533febda16d9f3cf2bf5b1d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/cxgbi/cxgb4i/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nccflags-y += -I$(srctree)/drivers/net/ethernet/chelsio/cxgb4\nccflags-y += -I$(srctree)/drivers/net/ethernet/chelsio/libcxgb\n\nobj-$(CONFIG_SCSI_CXGB4_ISCSI) += cxgb4i.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c7378dab3a371805541856ce4286580c17c150fd0f610a0ce6e0a988c8b8643e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tdx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nCFLAGS += -O3 -Wl,-no-as-needed -Wall $(KHDR_INCLUDES) -static\n\nTEST_GEN_PROGS := tdx_guest_test\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bnxt_vfr.h",
+  "hash_id": "92549981a94b714bb1eba16b44af6e84996d567e486a4051774f336cb6887036",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/broadcom/bnxt/bnxt_vfr.h",
+  "human_readable_source": " \n\n#ifndef BNXT_VFR_H\n#define BNXT_VFR_H\n\n#ifdef CONFIG_BNXT_SRIOV\n\n#define\tMAX_CFA_CODE\t\t\t65536\n\nint bnxt_vf_reps_create(struct bnxt *bp);\nvoid bnxt_vf_reps_destroy(struct bnxt *bp);\nvoid bnxt_vf_reps_close(struct bnxt *bp);\nvoid bnxt_vf_reps_open(struct bnxt *bp);\nvoid bnxt_vf_rep_rx(struct bnxt *bp, struct sk_buff *skb);\nstruct net_device *bnxt_get_vf_rep(struct bnxt *bp, u16 cfa_code);\nint bnxt_vf_reps_alloc(struct bnxt *bp);\nvoid bnxt_vf_reps_free(struct bnxt *bp);\n\nstatic inline u16 bnxt_vf_rep_get_fid(struct net_device *dev)\n{\n\tstruct bnxt_vf_rep *vf_rep = netdev_priv(dev);\n\tstruct bnxt *bp = vf_rep->bp;\n\n\treturn bp->pf.vf[vf_rep->vf_idx].fw_fid;\n}\n\nbool bnxt_dev_is_vf_rep(struct net_device *dev);\nint bnxt_dl_eswitch_mode_get(struct devlink *devlink, u16 *mode);\nint bnxt_dl_eswitch_mode_set(struct devlink *devlink, u16 mode,\n\t\t\t     struct netlink_ext_ack *extack);\n\n#else\n\nstatic inline int bnxt_vf_reps_create(struct bnxt *bp)\n{\n\treturn 0;\n}\n\nstatic inline void bnxt_vf_reps_close(struct bnxt *bp)\n{\n}\n\nstatic inline void bnxt_vf_reps_open(struct bnxt *bp)\n{\n}\n\nstatic inline void bnxt_vf_rep_rx(struct bnxt *bp, struct sk_buff *skb)\n{\n}\n\nstatic inline struct net_device *bnxt_get_vf_rep(struct bnxt *bp, u16 cfa_code)\n{\n\treturn NULL;\n}\n\nstatic inline u16 bnxt_vf_rep_get_fid(struct net_device *dev)\n{\n\treturn 0;\n}\n\nstatic inline bool bnxt_dev_is_vf_rep(struct net_device *dev)\n{\n\treturn false;\n}\n\nstatic inline int bnxt_vf_reps_alloc(struct bnxt *bp)\n{\n\treturn 0;\n}\n\nstatic inline void bnxt_vf_reps_free(struct bnxt *bp)\n{\n}\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

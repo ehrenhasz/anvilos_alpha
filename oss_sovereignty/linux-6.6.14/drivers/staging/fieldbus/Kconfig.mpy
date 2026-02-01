@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c05cc3509d424da40643ca38795e436dec57755d5c8f3fac6ca7a82014613695",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/fieldbus/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig FIELDBUS_DEV\n\ttristate \"Fieldbus Device Support\"\n\thelp\n\t  Support for Fieldbus Device Adapters.\n\n\t  Fieldbus device (client) adapters allow data exchange with a PLC aka.\n\t  \"Fieldbus Controller\" over a fieldbus (Profinet, FLNet, etc.)\n\n\t  They are typically used when a Linux device wants to expose itself\n\t  as an actuator, motor, console light, switch, etc. over the fieldbus.\n\n\t  This framework is designed to provide a generic interface to Fieldbus\n\t  Devices from both the Linux Kernel and the userspace.\n\n\t  If unsure, say no.\n\nsource \"drivers/staging/fieldbus/anybuss/Kconfig\"\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

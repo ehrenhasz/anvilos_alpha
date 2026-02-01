@@ -1,0 +1,9 @@
+{
+  "module_name": "npe.h",
+  "hash_id": "5f5fed4e023ed548ea0a6f42193422b667a8336ce43e17727b5c2b546e4a2ad8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/ixp4xx/npe.h",
+  "human_readable_source": " \n#ifndef __IXP4XX_NPE_H\n#define __IXP4XX_NPE_H\n\n#include <linux/kernel.h>\n#include <linux/regmap.h>\n\nextern const char *npe_names[];\n\nstruct npe_regs {\n\tu32 exec_addr, exec_data, exec_status_cmd, exec_count;\n\tu32 action_points[4];\n\tu32 watchpoint_fifo, watch_count;\n\tu32 profile_count;\n\tu32 messaging_status, messaging_control;\n\tu32 mailbox_status,   in_out_fifo;\n};\n\nstruct npe {\n\tstruct npe_regs __iomem *regs;\n\tstruct regmap *rmap;\n\tint id;\n\tint valid;\n};\n\n\nstatic inline const char *npe_name(struct npe *npe)\n{\n\treturn npe_names[npe->id];\n}\n\nint npe_running(struct npe *npe);\nint npe_send_message(struct npe *npe, const void *msg, const char *what);\nint npe_recv_message(struct npe *npe, void *msg, const char *what);\nint npe_send_recv_message(struct npe *npe, void *msg, const char *what);\nint npe_load_firmware(struct npe *npe, const char *name, struct device *dev);\nstruct npe *npe_request(unsigned id);\nvoid npe_release(struct npe *npe);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

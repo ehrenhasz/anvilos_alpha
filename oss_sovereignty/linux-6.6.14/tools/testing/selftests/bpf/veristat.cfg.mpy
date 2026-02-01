@@ -1,0 +1,9 @@
+{
+  "module_name": "veristat.cfg",
+  "hash_id": "30fc3edb801eb72153ef38c71c83c685fb6550780a43623ad133106daa10876e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/veristat.cfg",
+  "human_readable_source": "# pre-canned list of rather complex selftests/bpf BPF object files to monitor\n# BPF verifier's performance on\nbpf_flow*\nbpf_loop_bench*\nloop*\nnetif_receive_skb*\nprofiler*\npyperf*\nstrobemeta*\ntest_cls_redirect*\ntest_l4lb\ntest_sysctl*\ntest_tcp_hdr_*\ntest_usdt*\ntest_verif_scale*\ntest_xdp_noinline*\nxdp_synproxy*\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

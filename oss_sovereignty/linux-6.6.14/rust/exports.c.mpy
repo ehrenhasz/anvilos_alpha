@@ -1,0 +1,9 @@
+{
+  "module_name": "exports.c",
+  "hash_id": "7ff889dd10aae8fb37a4d65e27865a039af55ef8786a4fb2fdc6b28293a38026",
+  "original_prompt": "Ingested from linux-6.6.14/rust/exports.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n\n#define EXPORT_SYMBOL_RUST_GPL(sym) extern int sym; EXPORT_SYMBOL_GPL(sym)\n\n#include \"exports_core_generated.h\"\n#include \"exports_alloc_generated.h\"\n#include \"exports_bindings_generated.h\"\n#include \"exports_kernel_generated.h\"\n\n\n#ifdef CONFIG_RUST_BUILD_ASSERT_ALLOW\nEXPORT_SYMBOL_RUST_GPL(rust_build_error);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

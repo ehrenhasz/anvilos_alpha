@@ -1,0 +1,9 @@
+{
+  "module_name": "ahb.h",
+  "hash_id": "017f1e125720c15753ab428924e951a4463ef5be0c2746f43dce2ca6535cafa2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath11k/ahb.h",
+  "human_readable_source": " \n \n#ifndef ATH11K_AHB_H\n#define ATH11K_AHB_H\n\n#include \"core.h\"\n\n#define ATH11K_AHB_RECOVERY_TIMEOUT (3 * HZ)\n\n#define ATH11K_AHB_SMP2P_SMEM_MSG\t\tGENMASK(15, 0)\n#define ATH11K_AHB_SMP2P_SMEM_SEQ_NO\t\tGENMASK(31, 16)\n#define ATH11K_AHB_SMP2P_SMEM_VALUE_MASK\t0xFFFFFFFF\n\nenum ath11k_ahb_smp2p_msg_id {\n\tATH11K_AHB_POWER_SAVE_ENTER = 1,\n\tATH11K_AHB_POWER_SAVE_EXIT,\n};\n\nstruct ath11k_base;\n\nstruct ath11k_ahb {\n\tstruct rproc *tgt_rproc;\n\tstruct {\n\t\tstruct device *dev;\n\t\tstruct iommu_domain *iommu_domain;\n\t\tdma_addr_t msa_paddr;\n\t\tu32 msa_size;\n\t\tdma_addr_t ce_paddr;\n\t\tu32 ce_size;\n\t\tbool use_tz;\n\t} fw;\n\tstruct {\n\t\tunsigned short seq_no;\n\t\tunsigned int smem_bit;\n\t\tstruct qcom_smem_state *smem_state;\n\t} smp2p_info;\n};\n\nstatic inline struct ath11k_ahb *ath11k_ahb_priv(struct ath11k_base *ab)\n{\n\treturn (struct ath11k_ahb *)ab->drv_priv;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

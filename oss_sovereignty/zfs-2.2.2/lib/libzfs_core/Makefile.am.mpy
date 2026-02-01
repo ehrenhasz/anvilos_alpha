@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "971b21168068479ac9b4abd25a886e860ba7ebf5f1fe78876bcdc612fa847776",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libzfs_core/Makefile.am",
+  "human_readable_source": "libzfs_core_la_CFLAGS  = $(AM_CFLAGS) $(LIBRARY_CFLAGS)\nlibzfs_core_la_CFLAGS += -fvisibility=hidden\n\nlib_LTLIBRARIES += libzfs_core.la\nCPPCHECKTARGETS += libzfs_core.la\n\nlibzfs_core_la_SOURCES = \\\n\t%D%/libzfs_core.c\n\nif BUILD_LINUX\nlibzfs_core_la_SOURCES += \\\n\t%D%/os/linux/libzfs_core_ioctl.c\nendif\n\nlibzfs_core_la_CPPFLAGS  = $(AM_CPPFLAGS)\nif BUILD_FREEBSD\nlibzfs_core_la_CPPFLAGS += -Iinclude/os/freebsd/zfs\n\nlibzfs_core_la_SOURCES += \\\n\t%D%/os/freebsd/libzfs_core_ioctl.c\n\nnodist_libzfs_core_la_SOURCES = \\\n\tmodule/os/freebsd/zfs/zfs_ioctl_compat.c\nendif\n\nlibzfs_core_la_LIBADD = \\\n\tlibnvpair.la \\\n\tlibspl.la\n\nlibzfs_core_la_LIBADD += $(LTLIBINTL)\n\nlibzfs_core_la_LDFLAGS = -pthread\n\nif !ASAN_ENABLED\nlibzfs_core_la_LDFLAGS += -Wl,-z,defs\nendif\n\nif BUILD_FREEBSD\nlibzfs_core_la_LIBADD += -lutil -lgeom\nendif\n\nlibzfs_core_la_LDFLAGS += -version-info 3:0:0\n\npkgconfig_DATA += %D%/libzfs_core.pc\n\ndist_noinst_DATA += %D%/libzfs_core.abi %D%/libzfs_core.suppr\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

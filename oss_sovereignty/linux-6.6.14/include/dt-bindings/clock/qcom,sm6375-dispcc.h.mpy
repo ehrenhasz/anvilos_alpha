@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,sm6375-dispcc.h",
+  "hash_id": "d471f60d2721a24c44d93451480f81bb651daafcc63468b7352e5b77e933c0d6",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/qcom,sm6375-dispcc.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_QCOM_DISP_CC_SM6375_H\n#define _DT_BINDINGS_CLK_QCOM_DISP_CC_SM6375_H\n\n \n#define DISP_CC_PLL0\t\t\t\t\t0\n#define DISP_CC_MDSS_AHB_CLK\t\t\t\t1\n#define DISP_CC_MDSS_AHB_CLK_SRC\t\t\t2\n#define DISP_CC_MDSS_BYTE0_CLK\t\t\t\t3\n#define DISP_CC_MDSS_BYTE0_CLK_SRC\t\t\t4\n#define DISP_CC_MDSS_BYTE0_DIV_CLK_SRC\t\t\t5\n#define DISP_CC_MDSS_BYTE0_INTF_CLK\t\t\t6\n#define DISP_CC_MDSS_ESC0_CLK\t\t\t\t7\n#define DISP_CC_MDSS_ESC0_CLK_SRC\t\t\t8\n#define DISP_CC_MDSS_MDP_CLK\t\t\t\t9\n#define DISP_CC_MDSS_MDP_CLK_SRC\t\t\t10\n#define DISP_CC_MDSS_MDP_LUT_CLK\t\t\t11\n#define DISP_CC_MDSS_NON_GDSC_AHB_CLK\t\t\t12\n#define DISP_CC_MDSS_PCLK0_CLK\t\t\t\t13\n#define DISP_CC_MDSS_PCLK0_CLK_SRC\t\t\t14\n#define DISP_CC_MDSS_ROT_CLK\t\t\t\t15\n#define DISP_CC_MDSS_ROT_CLK_SRC\t\t\t16\n#define DISP_CC_MDSS_RSCC_AHB_CLK\t\t\t17\n#define DISP_CC_MDSS_RSCC_VSYNC_CLK\t\t\t18\n#define DISP_CC_MDSS_VSYNC_CLK\t\t\t\t19\n#define DISP_CC_MDSS_VSYNC_CLK_SRC\t\t\t20\n#define DISP_CC_SLEEP_CLK\t\t\t\t21\n#define DISP_CC_XO_CLK\t\t\t\t\t22\n\n \n#define DISP_CC_MDSS_CORE_BCR\t\t\t\t0\n#define DISP_CC_MDSS_RSCC_BCR\t\t\t\t1\n\n \n#define MDSS_GDSC\t\t\t\t\t0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

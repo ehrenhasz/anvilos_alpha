@@ -1,0 +1,9 @@
+{
+  "module_name": "test-gettid.c",
+  "hash_id": "677ec8a26410cd0555092418029042ca6423bef9ddcfc9670ab9dc8114a3864c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-gettid.c",
+  "human_readable_source": "\n\n#define _GNU_SOURCE\n#include <unistd.h>\n\nint main(void)\n{\n\treturn gettid();\n}\n\n#undef _GNU_SOURCE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

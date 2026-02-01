@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_hashmap_full_update_bench.c",
+  "hash_id": "215d8e21d324ec0ee10dad983e163dd211be521430a707990410472bee054b83",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_hashmap_full_update_bench.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\n#define MAX_ENTRIES 1000\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__type(key, u32);\n\t__type(value, u64);\n\t__uint(max_entries, MAX_ENTRIES);\n} hash_map_bench SEC(\".maps\");\n\nu64 __attribute__((__aligned__(256))) percpu_time[256];\nu64 nr_loops;\n\nstatic int loop_update_callback(__u32 index, u32 *key)\n{\n\tu64 init_val = 1;\n\n\tbpf_map_update_elem(&hash_map_bench, key, &init_val, BPF_ANY);\n\treturn 0;\n}\n\nSEC(\"fentry/\" SYS_PREFIX \"sys_getpgid\")\nint benchmark(void *ctx)\n{\n\tu32 cpu = bpf_get_smp_processor_id();\n\tu32 key = cpu + MAX_ENTRIES;\n\tu64 start_time = bpf_ktime_get_ns();\n\n\tbpf_loop(nr_loops, loop_update_callback, &key, 0);\n\tpercpu_time[cpu & 255] = bpf_ktime_get_ns() - start_time;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

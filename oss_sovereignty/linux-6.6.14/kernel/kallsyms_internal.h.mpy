@@ -1,0 +1,9 @@
+{
+  "module_name": "kallsyms_internal.h",
+  "hash_id": "1ad3ce07f23a58b442cd5ed1d8361782bb83415ad4a99b9cf75a773523357dfb",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/kallsyms_internal.h",
+  "human_readable_source": " \n#ifndef LINUX_KALLSYMS_INTERNAL_H_\n#define LINUX_KALLSYMS_INTERNAL_H_\n\n#include <linux/types.h>\n\n \nextern const unsigned long kallsyms_addresses[] __weak;\nextern const int kallsyms_offsets[] __weak;\nextern const u8 kallsyms_names[] __weak;\n\n \nextern const unsigned int kallsyms_num_syms\n__section(\".rodata\") __attribute__((weak));\n\nextern const unsigned long kallsyms_relative_base\n__section(\".rodata\") __attribute__((weak));\n\nextern const char kallsyms_token_table[] __weak;\nextern const u16 kallsyms_token_index[] __weak;\n\nextern const unsigned int kallsyms_markers[] __weak;\nextern const u8 kallsyms_seqs_of_names[] __weak;\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

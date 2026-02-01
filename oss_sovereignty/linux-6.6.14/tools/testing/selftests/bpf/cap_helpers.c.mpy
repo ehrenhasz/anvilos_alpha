@@ -1,0 +1,9 @@
+{
+  "module_name": "cap_helpers.c",
+  "hash_id": "5d3a128b4f634211695c10a0e9ccc4a7fee539da8a48a775609b6ea2f7d4a7f1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/cap_helpers.c",
+  "human_readable_source": "\n#include \"cap_helpers.h\"\n\n \nint capget(cap_user_header_t header, cap_user_data_t data);\nint capset(cap_user_header_t header, const cap_user_data_t data);\n\nint cap_enable_effective(__u64 caps, __u64 *old_caps)\n{\n\tstruct __user_cap_data_struct data[_LINUX_CAPABILITY_U32S_3];\n\tstruct __user_cap_header_struct hdr = {\n\t\t.version = _LINUX_CAPABILITY_VERSION_3,\n\t};\n\t__u32 cap0 = caps;\n\t__u32 cap1 = caps >> 32;\n\tint err;\n\n\terr = capget(&hdr, data);\n\tif (err)\n\t\treturn err;\n\n\tif (old_caps)\n\t\t*old_caps = (__u64)(data[1].effective) << 32 | data[0].effective;\n\n\tif ((data[0].effective & cap0) == cap0 &&\n\t    (data[1].effective & cap1) == cap1)\n\t\treturn 0;\n\n\tdata[0].effective |= cap0;\n\tdata[1].effective |= cap1;\n\terr = capset(&hdr, data);\n\tif (err)\n\t\treturn err;\n\n\treturn 0;\n}\n\nint cap_disable_effective(__u64 caps, __u64 *old_caps)\n{\n\tstruct __user_cap_data_struct data[_LINUX_CAPABILITY_U32S_3];\n\tstruct __user_cap_header_struct hdr = {\n\t\t.version = _LINUX_CAPABILITY_VERSION_3,\n\t};\n\t__u32 cap0 = caps;\n\t__u32 cap1 = caps >> 32;\n\tint err;\n\n\terr = capget(&hdr, data);\n\tif (err)\n\t\treturn err;\n\n\tif (old_caps)\n\t\t*old_caps = (__u64)(data[1].effective) << 32 | data[0].effective;\n\n\tif (!(data[0].effective & cap0) && !(data[1].effective & cap1))\n\t\treturn 0;\n\n\tdata[0].effective &= ~cap0;\n\tdata[1].effective &= ~cap1;\n\terr = capset(&hdr, data);\n\tif (err)\n\t\treturn err;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

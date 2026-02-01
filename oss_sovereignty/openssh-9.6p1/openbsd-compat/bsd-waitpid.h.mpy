@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-waitpid.h",
+  "hash_id": "4c1e55ede1cffed0e6cb02af8379f029af591ba41766d72bb0cd1d1110037bb9",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-waitpid.h",
+  "human_readable_source": " \n\n#ifndef _BSD_WAITPID_H\n#define _BSD_WAITPID_H\n\n#ifndef HAVE_WAITPID\n \n#undef WIFEXITED\n#undef WIFSTOPPED\n#undef WIFSIGNALED\n\n \n#define _W_INT(w)\t(*(int*)&(w))\t \n#define WIFEXITED(w)\t(!((_W_INT(w)) & 0377))\n#define WIFSTOPPED(w)\t((_W_INT(w)) & 0100)\n#define WIFSIGNALED(w)\t(!WIFEXITED(w) && !WIFSTOPPED(w))\n#define WEXITSTATUS(w)\t(int)(WIFEXITED(w) ? ((_W_INT(w) >> 8) & 0377) : -1)\n#define WTERMSIG(w)\t(int)(WIFSIGNALED(w) ? (_W_INT(w) & 0177) : -1)\n#define WCOREFLAG\t0x80\n#define WCOREDUMP(w)\t((_W_INT(w)) & WCOREFLAG)\n\n \npid_t waitpid(int, int *, int);\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

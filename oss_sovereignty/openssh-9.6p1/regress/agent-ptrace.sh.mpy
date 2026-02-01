@@ -1,0 +1,9 @@
+{
+  "module_name": "agent-ptrace.sh",
+  "hash_id": "e9cc0fbc8d35cd6cda395bcec7fb2eab2a170df3f5c217e57ade0a4e5aecb644",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/agent-ptrace.sh",
+  "human_readable_source": "#\t$OpenBSD: agent-ptrace.sh,v 1.5 2022/04/22 05:08:43 anton Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"disallow agent ptrace attach\"\n\nif have_prog uname ; then\n\tcase `uname` in\n\tAIX|CYGWIN*|OSF1)\n\t\techo \"skipped (not supported on this platform)\"\n\t\texit 0\n\t\t;;\n\tesac\nfi\n\nif [ \"x$USER\" = \"xroot\" ]; then\n\techo \"Skipped: running as root\"\n\texit 0\nfi\n\nif have_prog gdb ; then\n\t: ok\nelse\n\techo \"skipped (gdb not found)\"\n\texit 0\nfi\n\nif $OBJ/setuid-allowed ${SSHAGENT} ; then\n\t: ok\nelse\n\techo \"skipped (${SSHAGENT} is mounted on a no-setuid filesystem)\"\n\texit 0\nfi\n\nif test -z \"$SUDO\" ; then\n\techo \"skipped (SUDO not set)\"\n\texit 0\nelse\n\t$SUDO chown 0 ${SSHAGENT}\n\t$SUDO chgrp 0 ${SSHAGENT}\n\t$SUDO chmod 2755 ${SSHAGENT}\n\ttrap \"$SUDO chown ${USER} ${SSHAGENT}; $SUDO chmod 755 ${SSHAGENT}\" 0\nfi\n\ntrace \"start agent\"\neval `${SSHAGENT} ${EXTRA_AGENT_ARGS} -s` > /dev/null\nr=$?\nif [ $r -ne 0 ]; then\n\tfail \"could not start ssh-agent: exit code $r\"\nelse\n\t# ls -l ${SSH_AUTH_SOCK}\n\tgdb ${SSHAGENT} ${SSH_AGENT_PID} > ${OBJ}/gdb.out 2>&1 << EOF\n\t\tquit\nEOF\n\tr=$?\n\tif [ $r -ne 0 ]; then\n\t\tfail \"gdb failed: exit code $r\"\n\tfi\n\tegrep 'Operation not permitted.|Permission denied.|Invalid argument.|Unable to access task|Inappropriate ioctl for device.' >/dev/null ${OBJ}/gdb.out\n\tr=$?\n\trm -f ${OBJ}/gdb.out\n\tif [ $r -ne 0 ]; then\n\t\tfail \"ptrace succeeded?: exit code $r\"\n\tfi\n\n\ttrace \"kill agent\"\n\t${SSHAGENT} -k > /dev/null\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

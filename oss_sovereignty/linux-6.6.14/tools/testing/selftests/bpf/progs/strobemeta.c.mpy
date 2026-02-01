@@ -1,0 +1,9 @@
+{
+  "module_name": "strobemeta.c",
+  "hash_id": "811543ebe5546bc0c355f70f36343243f662a1acbfa81111e63af63216698de9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/strobemeta.c",
+  "human_readable_source": "\n\n\n#define STROBE_MAX_INTS 2\n#define STROBE_MAX_STRS 25\n#define STROBE_MAX_MAPS 100\n#define STROBE_MAX_MAP_ENTRIES 20\n \n#include \"strobemeta.h\"\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

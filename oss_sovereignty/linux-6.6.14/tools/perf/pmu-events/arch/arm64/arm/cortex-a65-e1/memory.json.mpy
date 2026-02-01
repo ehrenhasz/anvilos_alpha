@@ -1,0 +1,9 @@
+{
+  "module_name": "memory.json",
+  "hash_id": "9aa1c7d02bf3b3a7bba46262ba4385809fe93db1db7cbf925217e585f6420bab",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a65-e1/memory.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS\"\n    },\n    {\n        \"ArchStdEvent\": \"REMOTE_ACCESS_RD\"\n    },\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS_RD\"\n    },\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS_WR\"\n    },\n    {\n        \"ArchStdEvent\": \"UNALIGNED_LD_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"UNALIGNED_ST_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"UNALIGNED_LDST_SPEC\"\n    },\n    {\n        \"PublicDescription\": \"External memory request\",\n        \"EventCode\": \"0xC1\",\n        \"EventName\": \"BIU_EXT_MEM_REQ\",\n        \"BriefDescription\": \"External memory request\"\n    },\n    {\n        \"PublicDescription\": \"External memory request to non-cacheable memory\",\n        \"EventCode\": \"0xC2\",\n        \"EventName\": \"BIU_EXT_MEM_REQ_NC\",\n        \"BriefDescription\": \"External memory request to non-cacheable memory\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

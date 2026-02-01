@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_iter_bpf_sk_storage_helpers.c",
+  "hash_id": "a07e53b32fc54628f6df6bccee66da7fff284c3ef4f5638d96e309844fcbc638",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_iter_bpf_sk_storage_helpers.c",
+  "human_readable_source": "\n \n#include \"bpf_iter.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SK_STORAGE);\n\t__uint(map_flags, BPF_F_NO_PREALLOC);\n\t__type(key, int);\n\t__type(value, int);\n} sk_stg_map SEC(\".maps\");\n\nSEC(\"iter/bpf_sk_storage_map\")\nint delete_bpf_sk_storage_map(struct bpf_iter__bpf_sk_storage_map *ctx)\n{\n\tif (ctx->sk)\n\t\tbpf_sk_storage_delete(&sk_stg_map, ctx->sk);\n\n\treturn 0;\n}\n\nSEC(\"iter/task_file\")\nint fill_socket_owner(struct bpf_iter__task_file *ctx)\n{\n\tstruct task_struct *task = ctx->task;\n\tstruct file *file = ctx->file;\n\tstruct socket *sock;\n\tint *sock_tgid;\n\n\tif (!task || !file)\n\t\treturn 0;\n\n\tsock = bpf_sock_from_file(file);\n\tif (!sock)\n\t\treturn 0;\n\n\tsock_tgid = bpf_sk_storage_get(&sk_stg_map, sock->sk, 0, 0);\n\tif (!sock_tgid)\n\t\treturn 0;\n\n\t*sock_tgid = task->tgid;\n\n\treturn 0;\n}\n\nSEC(\"iter/tcp\")\nint negate_socket_local_storage(struct bpf_iter__tcp *ctx)\n{\n\tstruct sock_common *sk_common = ctx->sk_common;\n\tint *sock_tgid;\n\n\tif (!sk_common)\n\t\treturn 0;\n\n\tsock_tgid = bpf_sk_storage_get(&sk_stg_map, sk_common, 0, 0);\n\tif (!sock_tgid)\n\t\treturn 0;\n\n\t*sock_tgid = -*sock_tgid;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

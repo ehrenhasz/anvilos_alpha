@@ -1,0 +1,9 @@
+{
+  "module_name": "test-connect.c",
+  "hash_id": "f0a3ce67767855ee686a2be4c24ddde87fdd06b55265233e4bef6f73e5175249",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-connect.c",
+  "human_readable_source": " \n  {\n    struct sockaddr_in addr;\n\n    addr.sin_family = AF_INET;\n    inet_pton (AF_INET, \"127.0.0.1\", &addr.sin_addr);\n    addr.sin_port = htons (80);\n    {\n      errno = 0;\n      ASSERT (connect (-1, (const struct sockaddr *) &addr, sizeof (addr))\n              == -1);\n      ASSERT (errno == EBADF);\n    }\n    {\n      close (99);\n      errno = 0;\n      ASSERT (connect (99, (const struct sockaddr *) &addr, sizeof (addr))\n              == -1);\n      ASSERT (errno == EBADF);\n    }\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

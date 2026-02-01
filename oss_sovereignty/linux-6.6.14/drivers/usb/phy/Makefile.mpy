@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b4e09740e59d4028fa195c1786d1861544a3395f050529931638a55f4dd5a068",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/phy/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for physical layer USB drivers\n#\nobj-$(CONFIG_USB_PHY)\t\t\t+= phy.o\nobj-$(CONFIG_OF)\t\t\t+= of.o\n\n# transceiver drivers, keep the list sorted\n\nobj-$(CONFIG_AB8500_USB)\t\t+= phy-ab8500-usb.o\nobj-$(CONFIG_FSL_USB2_OTG)\t\t+= phy-fsl-usb.o\nobj-$(CONFIG_NOP_USB_XCEIV)\t\t+= phy-generic.o\nobj-$(CONFIG_TAHVO_USB)\t\t\t+= phy-tahvo.o\nobj-$(CONFIG_AM335X_CONTROL_USB)\t+= phy-am335x-control.o\nobj-$(CONFIG_AM335X_PHY_USB)\t\t+= phy-am335x.o\nobj-$(CONFIG_OMAP_OTG)\t\t\t+= phy-omap-otg.o\nobj-$(CONFIG_TWL6030_USB)\t\t+= phy-twl6030-usb.o\nobj-$(CONFIG_USB_TEGRA_PHY)\t\t+= phy-tegra-usb.o\nobj-$(CONFIG_USB_GPIO_VBUS)\t\t+= phy-gpio-vbus-usb.o\nobj-$(CONFIG_USB_ISP1301)\t\t+= phy-isp1301.o\nobj-$(CONFIG_USB_MV_OTG)\t\t+= phy-mv-usb.o\nobj-$(CONFIG_USB_MXS_PHY)\t\t+= phy-mxs-usb.o\nobj-$(CONFIG_USB_ULPI)\t\t\t+= phy-ulpi.o\nobj-$(CONFIG_USB_ULPI_VIEWPORT)\t\t+= phy-ulpi-viewport.o\nobj-$(CONFIG_KEYSTONE_USB_PHY)\t\t+= phy-keystone.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "smc_netlink.h",
+  "hash_id": "847323caddf759be3c511620d6b819c3d04498e870f56d58d0849804f155ddb9",
+  "original_prompt": "Ingested from linux-6.6.14/net/smc/smc_netlink.h",
+  "human_readable_source": " \n \n\n#ifndef _SMC_NETLINK_H\n#define _SMC_NETLINK_H\n\n#include <net/netlink.h>\n#include <net/genetlink.h>\n\nextern struct genl_family smc_gen_nl_family;\n\nextern const struct nla_policy smc_gen_ueid_policy[];\n\nstruct smc_nl_dmp_ctx {\n\tint pos[3];\n};\n\nstatic inline struct smc_nl_dmp_ctx *smc_nl_dmp_ctx(struct netlink_callback *c)\n{\n\treturn (struct smc_nl_dmp_ctx *)c->ctx;\n}\n\nint smc_nl_init(void) __init;\nvoid smc_nl_exit(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

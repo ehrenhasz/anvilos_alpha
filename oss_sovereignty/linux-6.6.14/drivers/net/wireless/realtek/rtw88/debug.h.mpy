@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "872ec4f60e58008e5298b81c932ab8496a475da919ec8b5bef538fc318c76181",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw88/debug.h",
+  "human_readable_source": " \n \n\n#ifndef __RTW_DEBUG_H\n#define __RTW_DEBUG_H\n\nenum rtw_debug_mask {\n\tRTW_DBG_PCI\t\t= 0x00000001,\n\tRTW_DBG_TX\t\t= 0x00000002,\n\tRTW_DBG_RX\t\t= 0x00000004,\n\tRTW_DBG_PHY\t\t= 0x00000008,\n\tRTW_DBG_FW\t\t= 0x00000010,\n\tRTW_DBG_EFUSE\t\t= 0x00000020,\n\tRTW_DBG_COEX\t\t= 0x00000040,\n\tRTW_DBG_RFK\t\t= 0x00000080,\n\tRTW_DBG_REGD\t\t= 0x00000100,\n\tRTW_DBG_DEBUGFS\t\t= 0x00000200,\n\tRTW_DBG_PS\t\t= 0x00000400,\n\tRTW_DBG_BF\t\t= 0x00000800,\n\tRTW_DBG_WOW\t\t= 0x00001000,\n\tRTW_DBG_CFO\t\t= 0x00002000,\n\tRTW_DBG_PATH_DIV\t= 0x00004000,\n\tRTW_DBG_ADAPTIVITY\t= 0x00008000,\n\tRTW_DBG_HW_SCAN\t\t= 0x00010000,\n\tRTW_DBG_STATE\t\t= 0x00020000,\n\tRTW_DBG_SDIO\t\t= 0x00040000,\n\n\tRTW_DBG_ALL\t\t= 0xffffffff\n};\n\n#ifdef CONFIG_RTW88_DEBUGFS\n\nvoid rtw_debugfs_init(struct rtw_dev *rtwdev);\nvoid rtw_debugfs_get_simple_phy_info(struct seq_file *m);\n\n#else\n\nstatic inline void rtw_debugfs_init(struct rtw_dev *rtwdev) {}\n\n#endif  \n\n#ifdef CONFIG_RTW88_DEBUG\n\n__printf(3, 4)\nvoid __rtw_dbg(struct rtw_dev *rtwdev, enum rtw_debug_mask mask,\n\t       const char *fmt, ...);\n\n#define rtw_dbg(rtwdev, a...) __rtw_dbg(rtwdev, ##a)\n\n#else\n\nstatic inline void rtw_dbg(struct rtw_dev *rtwdev, enum rtw_debug_mask mask,\n\t\t\t   const char *fmt, ...) {}\n\n#endif  \n\n#define rtw_info(rtwdev, a...) dev_info(rtwdev->dev, ##a)\n#define rtw_warn(rtwdev, a...) dev_warn(rtwdev->dev, ##a)\n#define rtw_err(rtwdev, a...) dev_err(rtwdev->dev, ##a)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

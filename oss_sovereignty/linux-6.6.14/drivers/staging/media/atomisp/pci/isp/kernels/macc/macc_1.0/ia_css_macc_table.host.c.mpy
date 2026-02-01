@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_macc_table.host.c",
+  "hash_id": "5aaa8d364660243f1cbbefd53e3a66ddb05db1f196397e975c2733ba7ada23e9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/macc/macc_1.0/ia_css_macc_table.host.c",
+  "human_readable_source": "\n \n\n#include \"system_global.h\"\n#include \"ia_css_types.h\"\n#include \"ia_css_macc_table.host.h\"\n\n \nconst struct ia_css_macc_table default_macc_table = {\n\t{\n\t\t8192, 0, 0, 8192, 8192, 0, 0, 8192,\n\t\t8192, 0, 0, 8192, 8192, 0, 0, 8192,\n\t\t8192, 0, 0, 8192, 8192, 0, 0, 8192,\n\t\t8192, 0, 0, 8192, 8192, 0, 0, 8192,\n\t\t8192, 0, 0, 8192, 8192, 0, 0, 8192,\n\t\t8192, 0, 0, 8192, 8192, 0, 0, 8192,\n\t\t8192, 0, 0, 8192, 8192, 0, 0, 8192,\n\t\t8192, 0, 0, 8192, 8192, 0, 0, 8192\n\t}\n};\n\n \nconst struct ia_css_macc_table default_macc2_table = {\n\t{\n\t\t4096, 0, 0, 4096, 4096, 0, 0, 4096,\n\t\t4096, 0, 0, 4096, 4096, 0, 0, 4096,\n\t\t4096, 0, 0, 4096, 4096, 0, 0, 4096,\n\t\t4096, 0, 0, 4096, 4096, 0, 0, 4096,\n\t\t4096, 0, 0, 4096, 4096, 0, 0, 4096,\n\t\t4096, 0, 0, 4096, 4096, 0, 0, 4096,\n\t\t4096, 0, 0, 4096, 4096, 0, 0, 4096,\n\t\t4096, 0, 0, 4096, 4096, 0, 0, 4096\n\t}\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

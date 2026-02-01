@@ -1,0 +1,9 @@
+{
+  "module_name": "logcfg.h",
+  "hash_id": "06fbe9cfde097086eea3c16db7f5923d08e8359bd77ef33d57486544b0beb1ec",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/nimble/logcfg/logcfg.h",
+  "human_readable_source": " \n\n#ifndef MICROPY_INCLUDED_EXTMOD_NIMBLE_LOGCFG_LOGCFG_H\n#define MICROPY_INCLUDED_EXTMOD_NIMBLE_LOGCFG_LOGCFG_H\n\n#include \"py/mphal.h\"\n#include \"modlog/modlog.h\"\n#include \"log_common/log_common.h\"\n\n#define MICROPY_PY_BLUETOOTH_DIAGNOSTIC_LOGGING (1)\n\n#if MICROPY_PY_BLUETOOTH_DIAGNOSTIC_LOGGING\n#define DFLT_LOG_DEBUG(...) MODLOG_DEBUG(4, __VA_ARGS__)\n#else\n#define DFLT_LOG_DEBUG(...) IGNORE(__VA_ARGS__)\n#endif\n\n#if MICROPY_PY_BLUETOOTH_DIAGNOSTIC_LOGGING > 1\n#define BLE_HS_LOG_DEBUG(...) MODLOG_DEBUG(4, __VA_ARGS__)\n#else\n#define BLE_HS_LOG_DEBUG(...) IGNORE(__VA_ARGS__)\n#endif\n\n#define BLE_HS_LOG_INFO(...) MODLOG_INFO(4, __VA_ARGS__)\n#define BLE_HS_LOG_WARN(...) MODLOG_WARN(4, __VA_ARGS__)\n#define BLE_HS_LOG_ERROR(...) MODLOG_ERROR(4, __VA_ARGS__)\n#define BLE_HS_LOG_CRITICAL(...) MODLOG_CRITICAL(4, __VA_ARGS__)\n#define BLE_HS_LOG_DISABLED(...) MODLOG_DISABLED(4, __VA_ARGS__)\n\n#define DFLT_LOG_INFO(...) MODLOG_INFO(0, __VA_ARGS__)\n#define DFLT_LOG_WARN(...) MODLOG_WARN(0, __VA_ARGS__)\n#define DFLT_LOG_ERROR(...) MODLOG_ERROR(0, __VA_ARGS__)\n#define DFLT_LOG_CRITICAL(...) MODLOG_CRITICAL(0, __VA_ARGS__)\n#define DFLT_LOG_DISABLED(...) MODLOG_DISABLED(0, __VA_ARGS__)\n\n#define MFG_LOG_DEBUG(...) IGNORE(__VA_ARGS__)\n#define MFG_LOG_INFO(...) IGNORE(__VA_ARGS__)\n#define MFG_LOG_WARN(...) IGNORE(__VA_ARGS__)\n#define MFG_LOG_ERROR(...) IGNORE(__VA_ARGS__)\n#define MFG_LOG_CRITICAL(...) IGNORE(__VA_ARGS__)\n#define MFG_LOG_DISABLED(...) MODLOG_DISABLED(128, __VA_ARGS__)\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

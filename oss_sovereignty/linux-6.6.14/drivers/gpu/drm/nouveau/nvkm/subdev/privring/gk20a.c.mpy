@@ -1,0 +1,9 @@
+{
+  "module_name": "gk20a.c",
+  "hash_id": "ab136e665e621ec4871b3d415e360755621ee54d442ed931822aec5791c90c97",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/privring/gk20a.c",
+  "human_readable_source": " \n#include <subdev/privring.h>\n#include <subdev/timer.h>\n\nstatic void\ngk20a_privring_init_privring_ring(struct nvkm_subdev *privring)\n{\n\tstruct nvkm_device *device = privring->device;\n\tnvkm_mask(device, 0x137250, 0x3f, 0);\n\n\tnvkm_mask(device, 0x000200, 0x20, 0);\n\tudelay(20);\n\tnvkm_mask(device, 0x000200, 0x20, 0x20);\n\n\tnvkm_wr32(device, 0x12004c, 0x4);\n\tnvkm_wr32(device, 0x122204, 0x2);\n\tnvkm_rd32(device, 0x122204);\n\n\t \n\tnvkm_wr32(device, 0x122354, 0x800);\n\tnvkm_wr32(device, 0x128328, 0x800);\n\tnvkm_wr32(device, 0x124320, 0x800);\n}\n\nstatic void\ngk20a_privring_intr(struct nvkm_subdev *privring)\n{\n\tstruct nvkm_device *device = privring->device;\n\tu32 status0 = nvkm_rd32(device, 0x120058);\n\n\tif (status0 & 0x7) {\n\t\tnvkm_debug(privring, \"resetting privring ring\\n\");\n\t\tgk20a_privring_init_privring_ring(privring);\n\t}\n\n\t \n\tnvkm_mask(device, 0x12004c, 0x2, 0x2);\n\tnvkm_msec(device, 2000,\n\t\tif (!(nvkm_rd32(device, 0x12004c) & 0x0000003f))\n\t\t\tbreak;\n\t);\n}\n\nstatic int\ngk20a_privring_init(struct nvkm_subdev *privring)\n{\n\tgk20a_privring_init_privring_ring(privring);\n\treturn 0;\n}\n\nstatic const struct nvkm_subdev_func\ngk20a_privring = {\n\t.init = gk20a_privring_init,\n\t.intr = gk20a_privring_intr,\n};\n\nint\ngk20a_privring_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t\t   struct nvkm_subdev **pprivring)\n{\n\treturn nvkm_subdev_new_(&gk20a_privring, device, type, inst, pprivring);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9ea4e2ad8210095130d2771a009d956f1c7a2c83d036ab990709a6b4aa1684a2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/lkdtm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_LKDTM)\t\t+= lkdtm.o\n\nlkdtm-$(CONFIG_LKDTM)\t\t+= core.o\nlkdtm-$(CONFIG_LKDTM)\t\t+= bugs.o\nlkdtm-$(CONFIG_LKDTM)\t\t+= heap.o\nlkdtm-$(CONFIG_LKDTM)\t\t+= perms.o\nlkdtm-$(CONFIG_LKDTM)\t\t+= refcount.o\nlkdtm-$(CONFIG_LKDTM)\t\t+= rodata_objcopy.o\nlkdtm-$(CONFIG_LKDTM)\t\t+= usercopy.o\nlkdtm-$(CONFIG_LKDTM)\t\t+= stackleak.o\nlkdtm-$(CONFIG_LKDTM)\t\t+= cfi.o\nlkdtm-$(CONFIG_LKDTM)\t\t+= fortify.o\nlkdtm-$(CONFIG_PPC_64S_HASH_MMU)\t+= powerpc.o\n\nKASAN_SANITIZE_stackleak.o\t:= n\n\nKASAN_SANITIZE_rodata.o\t\t\t:= n\nKCSAN_SANITIZE_rodata.o\t\t\t:= n\nKCOV_INSTRUMENT_rodata.o\t\t:= n\nOBJECT_FILES_NON_STANDARD_rodata.o\t:= y\nCFLAGS_REMOVE_rodata.o\t\t\t+= $(CC_FLAGS_LTO) $(RETHUNK_CFLAGS)\n\nOBJCOPYFLAGS :=\nOBJCOPYFLAGS_rodata_objcopy.o\t:= \\\n\t\t\t--rename-section .noinstr.text=.rodata,alloc,readonly,load,contents\ntargets += rodata.o rodata_objcopy.o\n$(obj)/rodata_objcopy.o: $(obj)/rodata.o FORCE\n\t$(call if_changed,objcopy)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

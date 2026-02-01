@@ -1,0 +1,9 @@
+{
+  "module_name": "spdxcheck-test.sh",
+  "hash_id": "1a759cc575d7451ea348cc31f21de29561d91355e3a05bec0efac994802c8a3d",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/spdxcheck-test.sh",
+  "human_readable_source": "#!/bin/sh\n\n# run check on a text and a binary file\nfor FILE in Makefile Documentation/images/logo.gif; do\n\tpython3 scripts/spdxcheck.py $FILE\n\tpython3 scripts/spdxcheck.py - < $FILE\ndone\n\n# run check on complete tree to catch any other issues\npython3 scripts/spdxcheck.py > /dev/null\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

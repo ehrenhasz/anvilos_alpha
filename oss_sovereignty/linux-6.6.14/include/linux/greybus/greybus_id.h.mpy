@@ -1,0 +1,9 @@
+{
+  "module_name": "greybus_id.h",
+  "hash_id": "13d2198a196bdb1b8c8048811085a3a855ccedf1c99582b37c94423fa640ff32",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/greybus/greybus_id.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_GREYBUS_ID_H\n#define __LINUX_GREYBUS_ID_H\n\n#include <linux/types.h>\n#include <linux/mod_devicetable.h>\n\n\nstruct greybus_bundle_id {\n\t__u16\tmatch_flags;\n\t__u32\tvendor;\n\t__u32\tproduct;\n\t__u8\tclass;\n\n\tkernel_ulong_t\tdriver_info __aligned(sizeof(kernel_ulong_t));\n};\n\n \n#define GREYBUS_ID_MATCH_VENDOR\t\tBIT(0)\n#define GREYBUS_ID_MATCH_PRODUCT\tBIT(1)\n#define GREYBUS_ID_MATCH_CLASS\t\tBIT(2)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

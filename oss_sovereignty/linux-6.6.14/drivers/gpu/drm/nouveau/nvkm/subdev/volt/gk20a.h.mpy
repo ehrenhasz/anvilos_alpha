@@ -1,0 +1,9 @@
+{
+  "module_name": "gk20a.h",
+  "hash_id": "38afb46b20b4c8c3bdbba513e180f1cd37761973cdf2af6c6cf4d2056deb0e9e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/volt/gk20a.h",
+  "human_readable_source": " \n\n#ifndef __GK20A_VOLT_H__\n#define __GK20A_VOLT_H__\n\nstruct cvb_coef {\n\tint c0;\n\tint c1;\n\tint c2;\n\tint c3;\n\tint c4;\n\tint c5;\n};\n\nstruct gk20a_volt {\n\tstruct nvkm_volt base;\n\tstruct regulator *vdd;\n};\n\nint gk20a_volt_ctor(struct nvkm_device *device, enum nvkm_subdev_type, int,\n\t\t    const struct cvb_coef *coefs, int nb_coefs,\n\t\t    int vmin, struct gk20a_volt *volt);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

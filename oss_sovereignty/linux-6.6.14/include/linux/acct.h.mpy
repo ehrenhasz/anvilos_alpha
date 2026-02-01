@@ -1,0 +1,9 @@
+{
+  "module_name": "acct.h",
+  "hash_id": "fbe11d1f0ed7fa031c03cb1aa5d5dc81ea06695a0e49fef78ad6e364c60a30f6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/acct.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_ACCT_H\n#define _LINUX_ACCT_H\n\n#include <uapi/linux/acct.h>\n\n\n\n#ifdef CONFIG_BSD_PROCESS_ACCT\nstruct pid_namespace;\nextern void acct_collect(long exitcode, int group_dead);\nextern void acct_process(void);\nextern void acct_exit_ns(struct pid_namespace *);\n#else\n#define acct_collect(x,y)\tdo { } while (0)\n#define acct_process()\t\tdo { } while (0)\n#define acct_exit_ns(ns)\tdo { } while (0)\n#endif\n\n \n\n#undef ACCT_VERSION\n#undef AHZ\n\n#ifdef CONFIG_BSD_PROCESS_ACCT_V3\n#define ACCT_VERSION\t3\n#define AHZ\t\t100\ntypedef struct acct_v3 acct_t;\n#else\n#ifdef CONFIG_M68K\n#define ACCT_VERSION\t1\n#else\n#define ACCT_VERSION\t2\n#endif\n#define AHZ\t\t(USER_HZ)\ntypedef struct acct acct_t;\n#endif\n\n#include <linux/jiffies.h>\n \n\nstatic inline u32 jiffies_to_AHZ(unsigned long x)\n{\n#if (TICK_NSEC % (NSEC_PER_SEC / AHZ)) == 0\n# if HZ < AHZ\n\treturn x * (AHZ / HZ);\n# else\n\treturn x / (HZ / AHZ);\n# endif\n#else\n        u64 tmp = (u64)x * TICK_NSEC;\n        do_div(tmp, (NSEC_PER_SEC / AHZ));\n        return (long)tmp;\n#endif\n}\n\nstatic inline u64 nsec_to_AHZ(u64 x)\n{\n#if (NSEC_PER_SEC % AHZ) == 0\n\tdo_div(x, (NSEC_PER_SEC / AHZ));\n#elif (AHZ % 512) == 0\n\tx *= AHZ/512;\n\tdo_div(x, (NSEC_PER_SEC / 512));\n#else\n\t \n\tx *= 9;\n\tdo_div(x, (unsigned long)((9ull * NSEC_PER_SEC + (AHZ/2))\n\t                          / AHZ));\n#endif\n\treturn x;\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "18d87e2049c9262d51d3a776d7f27f9a3e14fbdb9d55da7288b37268c4902e77",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/cc770/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig CAN_CC770\n\ttristate \"Bosch CC770 and Intel AN82527 devices\"\n\tdepends on HAS_IOMEM\n\nif CAN_CC770\n\nconfig CAN_CC770_ISA\n\ttristate \"ISA Bus based legacy CC770 driver\"\n\thelp\n\t  This driver adds legacy support for CC770 and AN82527 chips\n\t  connected to the ISA bus using I/O port, memory mapped or\n\t  indirect access.\n\nconfig CAN_CC770_PLATFORM\n\ttristate \"Generic Platform Bus based CC770 driver\"\n\thelp\n\t  This driver adds support for the CC770 and AN82527 chips\n\t  connected to the \"platform bus\" (Linux abstraction for directly\n\t  to the processor attached devices).\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "frzmpy4.py",
+  "hash_id": "28c47498325ef9db44a6c47711db29320db1aa88d0b30de6742cb2ef312df06f",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/coverage/frzmpy/frzmpy4.py",
+  "human_readable_source": "# Test importing frozen functions.\n\n# A simple bytecode function with no children.\ndef f():\n    return 1\n\n\nprint(__name__, f())\n\n\n# A simple bytecode generator with no children.\ndef g():\n    yield 2\n\n\nprint(__name__, next(g()))\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

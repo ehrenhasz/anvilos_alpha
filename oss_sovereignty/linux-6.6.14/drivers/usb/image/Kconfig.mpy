@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "929675cce2162ccf1a63feca387014d8b77fbe211dec3fce4ffa6d7255adac10",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/image/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# USB Imaging devices configuration\n#\ncomment \"USB Imaging devices\"\n\nconfig USB_MDC800\n\ttristate \"USB Mustek MDC800 Digital Camera support\"\n\thelp\n\t  Say Y here if you want to connect this type of still camera to\n\t  your computer's USB port. This driver can be used with gphoto 0.4.3\n\t  and higher (look at <http://www.gphoto.org/>).\n\t  To use it create a device node with \"mknod /dev/mustek c 180 32\" and\n\t  configure it in your software.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called mdc800.\n\nconfig USB_MICROTEK\n\ttristate \"Microtek X6USB scanner support\"\n\tdepends on SCSI\n\thelp\n\t  Say Y here if you want support for the Microtek X6USB and\n\t  possibly the Phantom 336CX, Phantom C6 and ScanMaker V6U(S)L.\n\t  Support for anything but the X6 is experimental.\n\t  Please report failures and successes.\n\t  The scanner will appear as a scsi generic device to the rest\n\t  of the system. Scsi support is required.\n\t  This driver can be compiled as a module, called microtek.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

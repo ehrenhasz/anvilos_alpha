@@ -1,0 +1,9 @@
+{
+  "module_name": "ptx.x",
+  "hash_id": "fcf9059f26018ab49be3919f0b107b8b03dade351d472819c9e21cbc11a5c7f2",
+  "original_prompt": "Ingested from coreutils-9.4/man/ptx.x",
+  "human_readable_source": "[NAME]\nptx \\- produce a permuted index of file contents\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

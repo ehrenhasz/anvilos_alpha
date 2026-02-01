@@ -1,0 +1,9 @@
+{
+  "module_name": "mpconfigvariant.mk",
+  "hash_id": "223d3c46a3977621ec0d1f2195e7b8d89247566e62ed012bc695b5e4d4e92eaa",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/bicameral/mpconfigvariant.mk",
+  "human_readable_source": "MICROPY_PY_BTREE = 0\nMICROPY_PY_FFI = 0\nMICROPY_PY_SOCKET = 0\nMICROPY_PY_THREAD = 0\nMICROPY_PY_SSL = 0\nMICROPY_USE_READLINE = 0\nMICROPY_PY_TERMIOS = 0\nMICROPY_VFS_LFS1 = 0\nMICROPY_VFS_LFS2 = 0\nFROZEN_MANIFEST = variants/bicameral/manifest.py",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

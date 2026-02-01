@@ -1,0 +1,9 @@
+{
+  "module_name": "rt1015.h",
+  "hash_id": "e6ff2a6530257bdd28121e7928a18a86ef2c3d53907b163530f285be9fe957f7",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/rt1015.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SND_RT1015_H\n#define __LINUX_SND_RT1015_H\n\nstruct rt1015_platform_data {\n\tunsigned int power_up_delay_ms;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

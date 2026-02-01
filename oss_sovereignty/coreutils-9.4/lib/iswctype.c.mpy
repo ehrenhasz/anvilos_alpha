@@ -1,0 +1,9 @@
+{
+  "module_name": "iswctype.c",
+  "hash_id": "f4bc5af6738065f463a4436c9453cf15253f429099912e7a2208ac6d435d7c22",
+  "original_prompt": "Ingested from coreutils-9.4/lib/iswctype.c",
+  "human_readable_source": " \n#include <wctype.h>\n\n#if GNULIB_defined_wint_t && !GNULIB_defined_wctype_t\n\nint\niswctype (wint_t wc, wctype_t desc)\n# undef iswctype\n{\n  return ((wchar_t) wc == wc ? iswctype ((wchar_t) wc, desc) : 0);\n}\n\n#else\n\n# include \"iswctype-impl.h\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

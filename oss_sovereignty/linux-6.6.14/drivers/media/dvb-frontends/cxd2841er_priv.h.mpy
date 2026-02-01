@@ -1,0 +1,9 @@
+{
+  "module_name": "cxd2841er_priv.h",
+  "hash_id": "98bfe24232dff7b71a0b64cb4e0e3b0e2318c2e56872b63861e9bb7347c1147a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cxd2841er_priv.h",
+  "human_readable_source": " \n \n\n#ifndef CXD2841ER_PRIV_H\n#define CXD2841ER_PRIV_H\n\n#define I2C_SLVX\t\t\t0\n#define I2C_SLVT\t\t\t1\n\n#define CXD2837ER_CHIP_ID\t\t0xb1\n#define CXD2838ER_CHIP_ID\t\t0xb0\n#define CXD2841ER_CHIP_ID\t\t0xa7\n#define CXD2843ER_CHIP_ID\t\t0xa4\n#define CXD2854ER_CHIP_ID\t\t0xc1\n\n#define CXD2841ER_DVBS_POLLING_INVL\t10\n\nstruct cxd2841er_cnr_data {\n\tu32 value;\n\tint cnr_x1000;\n};\n\nenum cxd2841er_dvbt2_profile_t {\n\tDVBT2_PROFILE_ANY = 0,\n\tDVBT2_PROFILE_BASE = 1,\n\tDVBT2_PROFILE_LITE = 2\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cros_ec_lpc_mec.h",
+  "hash_id": "6857b576b150d0f81a5bdf2be9c1b1479751d0ee63c4a697ceb30fc6f5b20728",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/chrome/cros_ec_lpc_mec.h",
+  "human_readable_source": " \n \n\n#ifndef __CROS_EC_LPC_MEC_H\n#define __CROS_EC_LPC_MEC_H\n\nenum cros_ec_lpc_mec_emi_access_mode {\n\t \n\tACCESS_TYPE_BYTE = 0x0,\n\t \n\tACCESS_TYPE_WORD = 0x1,\n\t \n\tACCESS_TYPE_LONG = 0x2,\n\t \n\tACCESS_TYPE_LONG_AUTO_INCREMENT = 0x3,\n};\n\nenum cros_ec_lpc_mec_io_type {\n\tMEC_IO_READ,\n\tMEC_IO_WRITE,\n};\n\n \n#define MEC_EMI_HOST_TO_EC(MEC_EMI_BASE)\t((MEC_EMI_BASE) + 0)\n#define MEC_EMI_EC_TO_HOST(MEC_EMI_BASE)\t((MEC_EMI_BASE) + 1)\n#define MEC_EMI_EC_ADDRESS_B0(MEC_EMI_BASE)\t((MEC_EMI_BASE) + 2)\n#define MEC_EMI_EC_ADDRESS_B1(MEC_EMI_BASE)\t((MEC_EMI_BASE) + 3)\n#define MEC_EMI_EC_DATA_B0(MEC_EMI_BASE)\t((MEC_EMI_BASE) + 4)\n#define MEC_EMI_EC_DATA_B1(MEC_EMI_BASE)\t((MEC_EMI_BASE) + 5)\n#define MEC_EMI_EC_DATA_B2(MEC_EMI_BASE)\t((MEC_EMI_BASE) + 6)\n#define MEC_EMI_EC_DATA_B3(MEC_EMI_BASE)\t((MEC_EMI_BASE) + 7)\n\n \nvoid cros_ec_lpc_mec_init(unsigned int base, unsigned int end);\n\n \nint cros_ec_lpc_mec_in_range(unsigned int offset, unsigned int length);\n\n \nu8 cros_ec_lpc_io_bytes_mec(enum cros_ec_lpc_mec_io_type io_type,\n\t\t\t    unsigned int offset, unsigned int length, u8 *buf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "guest_modes.h",
+  "hash_id": "0d4f5634c2114005f91e5d29e7250cae5e41fe736173f06298ab3673e662dcc5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/include/guest_modes.h",
+  "human_readable_source": " \n \n#include \"kvm_util.h\"\n\nstruct guest_mode {\n\tbool supported;\n\tbool enabled;\n};\n\nextern struct guest_mode guest_modes[NUM_VM_MODES];\n\n#define guest_mode_append(mode, supported, enabled) ({ \\\n\tguest_modes[mode] = (struct guest_mode){ supported, enabled }; \\\n})\n\nvoid guest_modes_append_default(void);\nvoid for_each_guest_mode(void (*func)(enum vm_guest_mode, void *), void *arg);\nvoid guest_modes_help(void);\nvoid guest_modes_cmdline(const char *arg);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

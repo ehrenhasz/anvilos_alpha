@@ -1,0 +1,9 @@
+{
+  "module_name": "test-c-strcasecmp.c",
+  "hash_id": "6ce02822b94f1718b5d1a756b29cfdf8a7039bbd7d7d5b0e93be8c2d7137e608",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-c-strcasecmp.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"c-strcase.h\"\n#include \"c-ctype.h\"\n\n#include <locale.h>\n#include <string.h>\n\n#include \"macros.h\"\n\nint\nmain (int argc, char *argv[])\n{\n  if (argc > 1)\n    {\n       \n      if (setlocale (LC_ALL, \"\") == NULL)\n        return 1;\n    }\n\n  ASSERT (c_strcasecmp (\"paragraph\", \"Paragraph\") == 0);\n\n  ASSERT (c_strcasecmp (\"paragrapH\", \"parAgRaph\") == 0);\n\n  ASSERT (c_strcasecmp (\"paragraph\", \"paraLyzed\") < 0);\n  ASSERT (c_strcasecmp (\"paraLyzed\", \"paragraph\") > 0);\n\n  ASSERT (c_strcasecmp (\"para\", \"paragraph\") < 0);\n  ASSERT (c_strcasecmp (\"paragraph\", \"para\") > 0);\n\n   \n\n  ASSERT (c_strcasecmp (\"\\311mile\", \"\\351mile\") < 0);\n  ASSERT (c_strcasecmp (\"\\351mile\", \"\\311mile\") > 0);\n\n   \n\n  ASSERT (c_strcasecmp (\"\\303\\266zg\\303\\274r\", \"\\303\\226ZG\\303\\234R\") > 0);  \n  ASSERT (c_strcasecmp (\"\\303\\226ZG\\303\\234R\", \"\\303\\266zg\\303\\274r\") < 0);  \n\n#if C_CTYPE_ASCII\n   \n  ASSERT (c_strcasecmp (\"turkish\", \"TURK\\304\\260SH\") < 0);\n  ASSERT (c_strcasecmp (\"TURK\\304\\260SH\", \"turkish\") > 0);\n#endif\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

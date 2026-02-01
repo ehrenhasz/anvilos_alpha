@@ -1,0 +1,9 @@
+{
+  "module_name": "kernelcapi.h",
+  "hash_id": "590645bc2f4cded7ae22d0f414288b0acced17b501c89304cca53a2b5e82130d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kernelcapi.h",
+  "human_readable_source": " \n \n#ifndef __KERNELCAPI_H__\n#define __KERNELCAPI_H__\n\n#include <linux/list.h>\n#include <linux/skbuff.h>\n#include <linux/workqueue.h>\n#include <linux/notifier.h>\n#include <uapi/linux/kernelcapi.h>\n\n#define CAPI_NOERROR                      0x0000\n\n#define CAPI_TOOMANYAPPLS\t\t  0x1001\n#define CAPI_LOGBLKSIZETOSMALL\t          0x1002\n#define CAPI_BUFFEXECEEDS64K \t          0x1003\n#define CAPI_MSGBUFSIZETOOSMALL\t          0x1004\n#define CAPI_ANZLOGCONNNOTSUPPORTED\t  0x1005\n#define CAPI_REGRESERVED\t\t  0x1006\n#define CAPI_REGBUSY \t\t          0x1007\n#define CAPI_REGOSRESOURCEERR\t          0x1008\n#define CAPI_REGNOTINSTALLED \t          0x1009\n#define CAPI_REGCTRLERNOTSUPPORTEXTEQUIP  0x100a\n#define CAPI_REGCTRLERONLYSUPPORTEXTEQUIP 0x100b\n\n#define CAPI_ILLAPPNR\t\t          0x1101\n#define CAPI_ILLCMDORSUBCMDORMSGTOSMALL   0x1102\n#define CAPI_SENDQUEUEFULL\t\t  0x1103\n#define CAPI_RECEIVEQUEUEEMPTY\t          0x1104\n#define CAPI_RECEIVEOVERFLOW \t          0x1105\n#define CAPI_UNKNOWNNOTPAR\t\t  0x1106\n#define CAPI_MSGBUSY \t\t          0x1107\n#define CAPI_MSGOSRESOURCEERR\t          0x1108\n#define CAPI_MSGNOTINSTALLED \t          0x1109\n#define CAPI_MSGCTRLERNOTSUPPORTEXTEQUIP  0x110a\n#define CAPI_MSGCTRLERONLYSUPPORTEXTEQUIP 0x110b\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

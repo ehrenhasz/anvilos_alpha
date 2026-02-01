@@ -1,0 +1,9 @@
+{
+  "module_name": "topology.h",
+  "hash_id": "1b8653721e7565234630759646507c03bfdd5bc56f5fc7f38a7b7ba00e06a48b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/linux/topology.h",
+  "human_readable_source": " \n#ifndef _LINUX_TOPOLOGY_H\n#define _LINUX_TOPOLOGY_H\n\n#include <linux/cpumask.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

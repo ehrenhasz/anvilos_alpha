@@ -1,0 +1,9 @@
+{
+  "module_name": "core_kern_overflow.c",
+  "hash_id": "f5d621798c258bdb8a7ab75fb50ed7226bd4fb82a42d9e74ff9a82b0917e91c5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/core_kern_overflow.c",
+  "human_readable_source": "\n#include \"vmlinux.h\"\n\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n#include <bpf/bpf_core_read.h>\n\ntypedef int (*func_proto_typedef)(long);\ntypedef int (*func_proto_typedef_nested1)(func_proto_typedef);\ntypedef int (*func_proto_typedef_nested2)(func_proto_typedef_nested1);\n\nint proto_out;\n\nSEC(\"raw_tracepoint/sys_enter\")\nint core_relo_proto(void *ctx)\n{\n\tproto_out = bpf_core_type_exists(func_proto_typedef_nested2);\n\n\treturn 0;\n}\n\nchar LICENSE[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

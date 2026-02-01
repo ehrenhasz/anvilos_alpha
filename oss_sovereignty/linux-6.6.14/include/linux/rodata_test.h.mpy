@@ -1,0 +1,9 @@
+{
+  "module_name": "rodata_test.h",
+  "hash_id": "e229e5ed5b802c5ef9239c56e35baa054c721329735f205c879e642933299fb5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rodata_test.h",
+  "human_readable_source": " \n \n\n#ifndef _RODATA_TEST_H\n#define _RODATA_TEST_H\n\n#ifdef CONFIG_DEBUG_RODATA_TEST\nvoid rodata_test(void);\n#else\nstatic inline void rodata_test(void) {}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

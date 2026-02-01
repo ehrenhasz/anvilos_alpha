@@ -1,0 +1,9 @@
+{
+  "module_name": "fman_dtsec.h",
+  "hash_id": "f64b0a8749e82296376d06acbe9c7679792dc20e2d8596863e424048386d1458",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/fman/fman_dtsec.h",
+  "human_readable_source": " \n \n\n#ifndef __DTSEC_H\n#define __DTSEC_H\n\n#include \"fman_mac.h\"\n\nstruct mac_device;\n\nint dtsec_initialization(struct mac_device *mac_dev,\n\t\t\t struct device_node *mac_node,\n\t\t\t struct fman_mac_params *params);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

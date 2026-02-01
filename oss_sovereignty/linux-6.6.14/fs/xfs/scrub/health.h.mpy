@@ -1,0 +1,9 @@
+{
+  "module_name": "health.h",
+  "hash_id": "27feebf2346698aa5883a5801be208c99f385cd1fce1cbf996afc474c8ce6f75",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/scrub/health.h",
+  "human_readable_source": "\n \n#ifndef __XFS_SCRUB_HEALTH_H__\n#define __XFS_SCRUB_HEALTH_H__\n\nunsigned int xchk_health_mask_for_scrub_type(__u32 scrub_type);\nvoid xchk_update_health(struct xfs_scrub *sc);\nbool xchk_ag_btree_healthy_enough(struct xfs_scrub *sc, struct xfs_perag *pag,\n\t\txfs_btnum_t btnum);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

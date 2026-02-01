@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.h",
+  "hash_id": "8a99a3f904e4dab3b42222072bbf636a269c9f5498501be3b72942ed6c053583",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/trace.h",
+  "human_readable_source": " \n \n\n#define packettype_name(etype) { RHF_RCV_TYPE_##etype, #etype }\n#define show_packettype(etype)                  \\\n__print_symbolic(etype,                         \\\n\tpackettype_name(EXPECTED),              \\\n\tpackettype_name(EAGER),                 \\\n\tpackettype_name(IB),                    \\\n\tpackettype_name(ERROR),                 \\\n\tpackettype_name(BYPASS))\n\n#include \"trace_dbg.h\"\n#include \"trace_misc.h\"\n#include \"trace_ctxts.h\"\n#include \"trace_ibhdrs.h\"\n#include \"trace_rc.h\"\n#include \"trace_rx.h\"\n#include \"trace_tx.h\"\n#include \"trace_mmu.h\"\n#include \"trace_iowait.h\"\n#include \"trace_tid.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

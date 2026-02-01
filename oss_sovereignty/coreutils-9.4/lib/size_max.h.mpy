@@ -1,0 +1,9 @@
+{
+  "module_name": "size_max.h",
+  "hash_id": "07734b73500e4a7a4ebbf7d0b22aed256b5abc868cdd130c8971134027d0e5cd",
+  "original_prompt": "Ingested from coreutils-9.4/lib/size_max.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n# include <limits.h>\n \n# if HAVE_STDINT_H\n#  include <stdint.h>\n# endif\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

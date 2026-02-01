@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-keyboard.sh",
+  "hash_id": "9366c37d91f17fa0d03f9747c5b0cc7538b7f4b4a5b74edc473f3725bfae6f7f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/hid/hid-keyboard.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# Runs tests for the HID subsystem\n\nexport TARGET=test_keyboard.py\n\nbash ./run-hid-tools-tests.sh\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

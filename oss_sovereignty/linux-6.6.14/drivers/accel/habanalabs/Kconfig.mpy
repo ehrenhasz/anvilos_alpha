@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4b88a3b6305f19dbda2f3ccfe75f12a630c0340c56d8675e378c6fdee2b535c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# HabanaLabs AI accelerators driver\n#\n\nconfig DRM_ACCEL_HABANALABS\n\ttristate \"HabanaLabs AI accelerators\"\n\tdepends on DRM_ACCEL\n\tdepends on X86_64\n\tdepends on PCI && HAS_IOMEM\n\tselect GENERIC_ALLOCATOR\n\tselect HWMON\n\tselect DMA_SHARED_BUFFER\n\tselect CRC32\n\tselect FW_LOADER\n\thelp\n\t  Enables PCIe card driver for Habana's AI Processors (AIP) that are\n\t  designed to accelerate Deep Learning inference and training workloads.\n\n\t  The driver manages the PCIe devices and provides IOCTL interface for\n\t  the user to submit workloads to the devices.\n\n\t  The user-space interface is described in\n\t  include/uapi/drm/habanalabs_accel.h\n\n\t  If unsure, say N.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called habanalabs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dc_stat.c",
+  "hash_id": "beffd6d24944d395c7e260a99e0e7527b863df1f900ad409f7372d4d657cdd98",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/core/dc_stat.c",
+  "human_readable_source": " \n\n#include \"dc/dc_stat.h\"\n#include \"dmub/dmub_srv_stat.h\"\n#include \"dc_dmub_srv.h\"\n\n \n\n \nvoid dc_stat_get_dmub_notification(const struct dc *dc, struct dmub_notification *notify)\n{\n\t \n\tstruct dmub_srv *dmub = dc->ctx->dmub_srv->dmub;\n\tenum dmub_status status;\n\n\tstatus = dmub_srv_stat_get_notification(dmub, notify);\n\tASSERT(status == DMUB_STATUS_OK);\n\n\t \n\tif (notify->type == DMUB_NOTIFICATION_HPD ||\n\t    notify->type == DMUB_NOTIFICATION_HPD_IRQ ||\n\t\tnotify->type == DMUB_NOTIFICATION_DPIA_NOTIFICATION ||\n\t    notify->type == DMUB_NOTIFICATION_SET_CONFIG_REPLY) {\n\t\tnotify->link_index =\n\t\t\tget_link_index_from_dpia_port_index(dc, notify->link_index);\n\t}\n}\n\n \nvoid dc_stat_get_dmub_dataout(const struct dc *dc, uint32_t *dataout)\n{\n\tstruct dmub_srv *dmub = dc->ctx->dmub_srv->dmub;\n\tenum dmub_status status;\n\n\tstatus = dmub_srv_get_gpint_dataout(dmub, dataout);\n\tASSERT(status == DMUB_STATUS_OK);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

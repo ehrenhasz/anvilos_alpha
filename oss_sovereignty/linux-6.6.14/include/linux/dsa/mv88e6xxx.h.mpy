@@ -1,0 +1,9 @@
+{
+  "module_name": "mv88e6xxx.h",
+  "hash_id": "ed9bfb5dc9e824704f7931a591a979437c15a9137ffdd14ab47892030f16917c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dsa/mv88e6xxx.h",
+  "human_readable_source": " \n\n#ifndef _NET_DSA_TAG_MV88E6XXX_H\n#define _NET_DSA_TAG_MV88E6XXX_H\n\n#include <linux/if_vlan.h>\n\n#define MV88E6XXX_VID_STANDALONE\t0\n#define MV88E6XXX_VID_BRIDGED\t\t(VLAN_N_VID - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

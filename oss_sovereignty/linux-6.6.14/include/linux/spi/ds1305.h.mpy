@@ -1,0 +1,9 @@
+{
+  "module_name": "ds1305.h",
+  "hash_id": "5378ebba9e234764e4ff6e92abb92c5e244baa550a6041872ef30fdbe395db5e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/ds1305.h",
+  "human_readable_source": " \n#ifndef __LINUX_SPI_DS1305_H\n#define __LINUX_SPI_DS1305_H\n\n \nstruct ds1305_platform_data {\n\n\t \n#define DS1305_TRICKLE_MAGIC\t0xa0\n#define DS1305_TRICKLE_DS2\t0x08\t \n#define DS1305_TRICKLE_DS1\t0x04\t \n#define DS1305_TRICKLE_2K\t0x01\t \n#define DS1305_TRICKLE_4K\t0x02\t \n#define DS1305_TRICKLE_8K\t0x03\t \n\tu8\ttrickle;\n\n\t \n\tbool\tis_ds1306;\n\n\t \n\tbool\ten_1hz;\n\n\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

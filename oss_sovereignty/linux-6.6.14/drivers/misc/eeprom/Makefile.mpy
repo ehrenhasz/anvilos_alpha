@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "88ef241ed4cf6468a85f631115cf9bfdccfb3be173a4242e61822e2f8703b8dc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/eeprom/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_EEPROM_AT24)\t+= at24.o\nobj-$(CONFIG_EEPROM_AT25)\t+= at25.o\nobj-$(CONFIG_EEPROM_LEGACY)\t+= eeprom.o\nobj-$(CONFIG_EEPROM_MAX6875)\t+= max6875.o\nobj-$(CONFIG_EEPROM_93CX6)\t+= eeprom_93cx6.o\nobj-$(CONFIG_EEPROM_93XX46)\t+= eeprom_93xx46.o\nobj-$(CONFIG_EEPROM_DIGSY_MTC_CFG) += digsy_mtc_eeprom.o\nobj-$(CONFIG_EEPROM_IDT_89HPESX) += idt_89hpesx.o\nobj-$(CONFIG_EEPROM_EE1004)\t+= ee1004.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "qcopy-acl.c",
+  "hash_id": "e62d4bbcde3c091b83f4f9113a84cd4ba2df1a583af3eb269b0801796ec6c19c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/qcopy-acl.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"acl.h\"\n\n#include \"acl-internal.h\"\n\n#if USE_XATTR\n\n# include <attr/libattr.h>\n\n \n\nstatic int\nis_attr_permissions (const char *name, struct error_context *ctx)\n{\n  return attr_copy_action (name, ctx) == ATTR_ACTION_PERMISSIONS;\n}\n\n#endif   \n\n \n\nint\nqcopy_acl (const char *src_name, int source_desc, const char *dst_name,\n           int dest_desc, mode_t mode)\n{\n  int ret;\n\n#ifdef USE_XATTR\n   \n  ret = chmod_or_fchmod (dst_name, dest_desc, mode);\n   \n  if (ret == 0)\n    ret = source_desc <= 0 || dest_desc <= 0\n      ? attr_copy_file (src_name, dst_name, is_attr_permissions, NULL)\n      : attr_copy_fd (src_name, source_desc, dst_name, dest_desc,\n                      is_attr_permissions, NULL);\n#else\n   \n  struct permission_context ctx;\n\n  ret = get_permissions (src_name, source_desc, mode, &ctx);\n  if (ret != 0)\n    return -2;\n  ret = set_permissions (&ctx, dst_name, dest_desc);\n  free_permission_context (&ctx);\n#endif\n  return ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

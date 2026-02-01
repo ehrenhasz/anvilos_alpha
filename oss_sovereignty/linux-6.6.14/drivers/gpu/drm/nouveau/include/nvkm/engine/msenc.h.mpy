@@ -1,0 +1,9 @@
+{
+  "module_name": "msenc.h",
+  "hash_id": "b84d0ccee60b4584c5aca681c22845a459b9277d27b9a6549383f9d6d370cad1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/engine/msenc.h",
+  "human_readable_source": " \n#ifndef __NVKM_MSENC_H__\n#define __NVKM_MSENC_H__\n#include <core/engine.h>\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tnum.h",
+  "hash_id": "5ce87471a6bf1f32d1d43466b4f5d3ec5bbb3de7d8cf15f0523a456ef63c5d9a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/tnum.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_TNUM_H\n#define _LINUX_TNUM_H\n\n#include <linux/types.h>\n\nstruct tnum {\n\tu64 value;\n\tu64 mask;\n};\n\n \n \nstruct tnum tnum_const(u64 value);\n \nextern const struct tnum tnum_unknown;\n \nstruct tnum tnum_range(u64 min, u64 max);\n\n \n \nstruct tnum tnum_lshift(struct tnum a, u8 shift);\n \nstruct tnum tnum_rshift(struct tnum a, u8 shift);\n \nstruct tnum tnum_arshift(struct tnum a, u8 min_shift, u8 insn_bitness);\n \nstruct tnum tnum_add(struct tnum a, struct tnum b);\n \nstruct tnum tnum_sub(struct tnum a, struct tnum b);\n \nstruct tnum tnum_and(struct tnum a, struct tnum b);\n \nstruct tnum tnum_or(struct tnum a, struct tnum b);\n \nstruct tnum tnum_xor(struct tnum a, struct tnum b);\n \nstruct tnum tnum_mul(struct tnum a, struct tnum b);\n\n \nstruct tnum tnum_intersect(struct tnum a, struct tnum b);\n\n \nstruct tnum tnum_cast(struct tnum a, u8 size);\n\n \nstatic inline bool tnum_is_const(struct tnum a)\n{\n\treturn !a.mask;\n}\n\n \nstatic inline bool tnum_equals_const(struct tnum a, u64 b)\n{\n\treturn tnum_is_const(a) && a.value == b;\n}\n\n \nstatic inline bool tnum_is_unknown(struct tnum a)\n{\n\treturn !~a.mask;\n}\n\n \nbool tnum_is_aligned(struct tnum a, u64 size);\n\n \nbool tnum_in(struct tnum a, struct tnum b);\n\n \n \nint tnum_strn(char *str, size_t size, struct tnum a);\n \nint tnum_sbin(char *str, size_t size, struct tnum a);\n\n \nstruct tnum tnum_subreg(struct tnum a);\n \nstruct tnum tnum_clear_subreg(struct tnum a);\n \nstruct tnum tnum_const_subreg(struct tnum a, u32 value);\n \nstatic inline bool tnum_subreg_is_const(struct tnum a)\n{\n\treturn !(tnum_subreg(a)).mask;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

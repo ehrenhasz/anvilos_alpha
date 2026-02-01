@@ -1,0 +1,9 @@
+{
+  "module_name": "barrier.h",
+  "hash_id": "af0a56f4b19725922fcee7837af0ce4e06b7d19aeeecc8135b0594ac0288f98f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/x86/include/asm/barrier.h",
+  "human_readable_source": " \n#ifndef _TOOLS_LINUX_ASM_X86_BARRIER_H\n#define _TOOLS_LINUX_ASM_X86_BARRIER_H\n\n \n\n#if defined(__i386__)\n \n#define mb()\tasm volatile(\"lock; addl $0,0(%%esp)\" ::: \"memory\")\n#define rmb()\tasm volatile(\"lock; addl $0,0(%%esp)\" ::: \"memory\")\n#define wmb()\tasm volatile(\"lock; addl $0,0(%%esp)\" ::: \"memory\")\n#elif defined(__x86_64__)\n#define mb()\tasm volatile(\"mfence\" ::: \"memory\")\n#define rmb()\tasm volatile(\"lfence\" ::: \"memory\")\n#define wmb()\tasm volatile(\"sfence\" ::: \"memory\")\n#define smp_rmb() barrier()\n#define smp_wmb() barrier()\n#define smp_mb()  asm volatile(\"lock; addl $0,-132(%%rsp)\" ::: \"memory\", \"cc\")\n#endif\n\n#if defined(__x86_64__)\n#define smp_store_release(p, v)\t\t\t\\\ndo {\t\t\t\t\t\t\\\n\tbarrier();\t\t\t\t\\\n\tWRITE_ONCE(*p, v);\t\t\t\\\n} while (0)\n\n#define smp_load_acquire(p)\t\t\t\\\n({\t\t\t\t\t\t\\\n\ttypeof(*p) ___p1 = READ_ONCE(*p);\t\\\n\tbarrier();\t\t\t\t\\\n\t___p1;\t\t\t\t\t\\\n})\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

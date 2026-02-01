@@ -1,0 +1,9 @@
+{
+  "module_name": "hdac_hdmi.h",
+  "hash_id": "c21bb49c43f3748de931f4e95edc9cf9024315b73327033791d99020871f7d5b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/hdac_hdmi.h",
+  "human_readable_source": " \n#ifndef __HDAC_HDMI_H__\n#define __HDAC_HDMI_H__\n\nint hdac_hdmi_jack_init(struct snd_soc_dai *dai, int device,\n\t\t\t\tstruct snd_soc_jack *jack);\n\nint hdac_hdmi_jack_port_init(struct snd_soc_component *component,\n\t\t\tstruct snd_soc_dapm_context *dapm);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

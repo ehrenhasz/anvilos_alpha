@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "5d5a59b46b53d80df48b78f63ccf27621f0c4c596574b0991a0043c1c7511bf8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/syscall_user_dispatch/config",
+  "human_readable_source": "CONFIG_GENERIC_ENTRY=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_tcpmss.h",
+  "hash_id": "9fec16c1594a7ab136564a9661ebb117f2e020e17eaffae26c1e984cede57744",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_tcpmss.h",
+  "human_readable_source": " \n#ifndef _XT_TCPMSS_MATCH_H\n#define _XT_TCPMSS_MATCH_H\n\n#include <linux/types.h>\n\nstruct xt_tcpmss_match_info {\n    __u16 mss_min, mss_max;\n    __u8 invert;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

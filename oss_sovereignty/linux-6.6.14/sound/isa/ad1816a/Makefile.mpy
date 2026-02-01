@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0757783b5e62924d14320f46238eb720fd97233c59f334018ab2db5d3d053703",
+  "original_prompt": "Ingested from linux-6.6.14/sound/isa/ad1816a/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-ad1816a-objs := ad1816a.o ad1816a_lib.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_AD1816A) += snd-ad1816a.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

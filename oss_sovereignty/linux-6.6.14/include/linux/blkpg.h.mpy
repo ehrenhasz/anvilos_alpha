@@ -1,0 +1,9 @@
+{
+  "module_name": "blkpg.h",
+  "hash_id": "cc3e6fb40aeb5acb2b8a054c9c382f95a5d5b05f65e48070f3ac456a6368d6ec",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/blkpg.h",
+  "human_readable_source": " \n#ifndef _LINUX_BLKPG_H\n#define _LINUX_BLKPG_H\n\n \n\n#include <linux/compat.h>\n#include <uapi/linux/blkpg.h>\n\n#ifdef CONFIG_COMPAT\n \nstruct blkpg_compat_ioctl_arg {\n\tcompat_int_t op;\n\tcompat_int_t flags;\n\tcompat_int_t datalen;\n\tcompat_uptr_t data;\n};\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

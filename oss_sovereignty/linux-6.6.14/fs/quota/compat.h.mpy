@@ -1,0 +1,9 @@
+{
+  "module_name": "compat.h",
+  "hash_id": "b2b6bdfd2c2ef30280ca9e62184c30214b8f0e9d06c268a0af51211fba6313fb",
+  "original_prompt": "Ingested from linux-6.6.14/fs/quota/compat.h",
+  "human_readable_source": "\n#include <linux/compat.h>\n\nstruct compat_if_dqblk {\n\tcompat_u64\t\t\tdqb_bhardlimit;\n\tcompat_u64\t\t\tdqb_bsoftlimit;\n\tcompat_u64\t\t\tdqb_curspace;\n\tcompat_u64\t\t\tdqb_ihardlimit;\n\tcompat_u64\t\t\tdqb_isoftlimit;\n\tcompat_u64\t\t\tdqb_curinodes;\n\tcompat_u64\t\t\tdqb_btime;\n\tcompat_u64\t\t\tdqb_itime;\n\tcompat_uint_t\t\t\tdqb_valid;\n};\n\nstruct compat_fs_qfilestat {\n\tcompat_u64\t\t\tdqb_bhardlimit;\n\tcompat_u64\t\t\tqfs_nblks;\n\tcompat_uint_t\t\t\tqfs_nextents;\n};\n\nstruct compat_fs_quota_stat {\n\t__s8\t\t\t\tqs_version;\n\t__u16\t\t\t\tqs_flags;\n\t__s8\t\t\t\tqs_pad;\n\tstruct compat_fs_qfilestat\tqs_uquota;\n\tstruct compat_fs_qfilestat\tqs_gquota;\n\tcompat_uint_t\t\t\tqs_incoredqs;\n\tcompat_int_t\t\t\tqs_btimelimit;\n\tcompat_int_t\t\t\tqs_itimelimit;\n\tcompat_int_t\t\t\tqs_rtbtimelimit;\n\t__u16\t\t\t\tqs_bwarnlimit;\n\t__u16\t\t\t\tqs_iwarnlimit;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

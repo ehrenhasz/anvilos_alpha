@@ -1,0 +1,9 @@
+{
+  "module_name": "test-locale.c",
+  "hash_id": "16d1cdaad27b8ae3aa26cf9339bf1bb5c95491a25e7d44378f1122417a840832",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-locale.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <locale.h>\n\nint a[] =\n  {\n    LC_ALL,\n    LC_COLLATE,\n    LC_CTYPE,\n    LC_MESSAGES,\n    LC_MONETARY,\n    LC_NUMERIC,\n    LC_TIME\n  };\n\n \nstruct lconv l;\nint ls;\n\n \nstatic_assert (sizeof NULL == sizeof (void *));\n\nint\nmain ()\n{\n#if HAVE_WORKING_NEWLOCALE\n   \n  locale_t b = LC_GLOBAL_LOCALE;\n  (void) b;\n#endif\n\n   \n  ls += sizeof (*l.decimal_point);\n  ls += sizeof (*l.thousands_sep);\n  ls += sizeof (*l.grouping);\n  ls += sizeof (*l.mon_decimal_point);\n  ls += sizeof (*l.mon_thousands_sep);\n  ls += sizeof (*l.mon_grouping);\n  ls += sizeof (*l.positive_sign);\n  ls += sizeof (*l.negative_sign);\n  ls += sizeof (*l.currency_symbol);\n  ls += sizeof (l.frac_digits);\n  ls += sizeof (l.p_cs_precedes);\n  ls += sizeof (l.p_sign_posn);\n  ls += sizeof (l.p_sep_by_space);\n  ls += sizeof (l.n_cs_precedes);\n  ls += sizeof (l.n_sign_posn);\n  ls += sizeof (l.n_sep_by_space);\n  ls += sizeof (*l.int_curr_symbol);\n  ls += sizeof (l.int_frac_digits);\n  ls += sizeof (l.int_p_cs_precedes);\n  ls += sizeof (l.int_p_sign_posn);\n  ls += sizeof (l.int_p_sep_by_space);\n  ls += sizeof (l.int_n_cs_precedes);\n  ls += sizeof (l.int_n_sign_posn);\n  ls += sizeof (l.int_n_sep_by_space);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

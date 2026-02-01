@@ -1,0 +1,9 @@
+{
+  "module_name": "ste-ab8500.h",
+  "hash_id": "180a05a9f3647699fc32005fadab89783ae5739c619cf3b16dd0b30e9453f40c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/ste-ab8500.h",
+  "human_readable_source": " \n#ifndef __STE_CLK_AB8500_H__\n#define __STE_CLK_AB8500_H__\n\n#define AB8500_SYSCLK_BUF2\t0\n#define AB8500_SYSCLK_BUF3\t1\n#define AB8500_SYSCLK_BUF4\t2\n#define AB8500_SYSCLK_ULP\t3\n#define AB8500_SYSCLK_INT\t4\n#define AB8500_SYSCLK_AUDIO\t5\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

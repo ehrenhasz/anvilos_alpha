@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b79320ff41d92cb47b023e98baf45a4e76ff8ae6c09fd7c8dc3215ee3072aceb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/common/ssp_sensors/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for SSP sensor drivers and commons.\n#\n\nsensorhub-objs\t\t\t\t:= ssp_dev.o ssp_spi.o\nobj-$(CONFIG_IIO_SSP_SENSORHUB)\t\t+= sensorhub.o\n\nobj-$(CONFIG_IIO_SSP_SENSORS_COMMONS) \t+= ssp_iio.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

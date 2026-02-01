@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_NFLOG.h",
+  "hash_id": "9488ee7fd53e289de731c9f8b362374bc9cf76a0f64f1cb7e5b4683de671d884",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_NFLOG.h",
+  "human_readable_source": " \n#ifndef _XT_NFLOG_TARGET\n#define _XT_NFLOG_TARGET\n\n#include <linux/types.h>\n\n#define XT_NFLOG_DEFAULT_GROUP\t\t0x1\n#define XT_NFLOG_DEFAULT_THRESHOLD\t0\n\n#define XT_NFLOG_MASK\t\t\t0x1\n\n \n#define XT_NFLOG_F_COPY_LEN\t\t0x1\n\nstruct xt_nflog_info {\n\t \n\t__u32\tlen;\n\t__u16\tgroup;\n\t__u16\tthreshold;\n\t__u16\tflags;\n\t__u16\tpad;\n\tchar\t\tprefix[64];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

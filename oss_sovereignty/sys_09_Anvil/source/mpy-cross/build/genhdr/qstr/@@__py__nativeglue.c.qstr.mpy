@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__nativeglue.c.qstr",
+  "hash_id": "bc1ab35e4b9090500416088d4957efe240f183f81e20df68e1c9c186d2ef7503",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__nativeglue.c.qstr",
+  "human_readable_source": "Q(object)\nQ(bool)\nQ(int)\nQ(uint)\nQ(ptr)\nQ(ptr8)\nQ(ptr16)\nQ(ptr32)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

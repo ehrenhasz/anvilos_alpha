@@ -1,0 +1,9 @@
+{
+  "module_name": "tracepoint-defs.h",
+  "hash_id": "fa49fe539eac805574af0691f0fbe2ef2ff852e9fd10f777e46d4349e447f9dd",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/tracepoint-defs.h",
+  "human_readable_source": " \n#ifndef TRACEPOINT_DEFS_H\n#define TRACEPOINT_DEFS_H 1\n\n \n\n#include <linux/atomic.h>\n#include <linux/static_key.h>\n\nstruct static_call_key;\n\nstruct trace_print_flags {\n\tunsigned long\t\tmask;\n\tconst char\t\t*name;\n};\n\nstruct trace_print_flags_u64 {\n\tunsigned long long\tmask;\n\tconst char\t\t*name;\n};\n\nstruct tracepoint_func {\n\tvoid *func;\n\tvoid *data;\n\tint prio;\n};\n\nstruct tracepoint {\n\tconst char *name;\t\t \n\tstruct static_key key;\n\tstruct static_call_key *static_call_key;\n\tvoid *static_call_tramp;\n\tvoid *iterator;\n\tvoid *probestub;\n\tint (*regfunc)(void);\n\tvoid (*unregfunc)(void);\n\tstruct tracepoint_func __rcu *funcs;\n};\n\n#ifdef CONFIG_HAVE_ARCH_PREL32_RELOCATIONS\ntypedef const int tracepoint_ptr_t;\n#else\ntypedef struct tracepoint * const tracepoint_ptr_t;\n#endif\n\nstruct bpf_raw_event_map {\n\tstruct tracepoint\t*tp;\n\tvoid\t\t\t*bpf_func;\n\tu32\t\t\tnum_args;\n\tu32\t\t\twritable_size;\n} __aligned(32);\n\n \n#define DECLARE_TRACEPOINT(tp) \\\n\textern struct tracepoint __tracepoint_##tp\n\n#ifdef CONFIG_TRACEPOINTS\n# define tracepoint_enabled(tp) \\\n\tstatic_key_false(&(__tracepoint_##tp).key)\n#else\n# define tracepoint_enabled(tracepoint) false\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

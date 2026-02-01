@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm_ioctl.sh",
+  "hash_id": "991df1fecc1262390806c553e1d05aea9644a754675d34325da6bc52357e9263",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/kvm_ioctl.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n\n[ $# -eq 1 ] && header_dir=$1 || header_dir=tools/include/uapi/linux/\n\nprintf \"static const char *kvm_ioctl_cmds[] = {\\n\"\nregex='^#[[:space:]]*define[[:space:]]+KVM_(\\w+)[[:space:]]+_IO[RW]*\\([[:space:]]*KVMIO[[:space:]]*,[[:space:]]*(0x[[:xdigit:]]+).*'\ngrep -E $regex ${header_dir}/kvm.h\t| \\\n\tsed -r \"s/$regex/\\2 \\1/g\"\t| \\\n\tgrep -E -v \" ((ARM|PPC|S390)_|[GS]ET_(DEBUGREGS|PIT2|XSAVE|TSC_KHZ)|CREATE_SPAPR_TCE_64)\" | \\\n\tsort | xargs printf \"\\t[%s] = \\\"%s\\\",\\n\"\nprintf \"};\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

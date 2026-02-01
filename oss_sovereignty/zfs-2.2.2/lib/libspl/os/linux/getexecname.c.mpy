@@ -1,0 +1,9 @@
+{
+  "module_name": "getexecname.c",
+  "hash_id": "dd14f5d205afcdaf133aeffb238a43e906c40d6f2b6fbe7a73d9b0954d235cff",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/os/linux/getexecname.c",
+  "human_readable_source": " \n\n#include <limits.h>\n#include <stdint.h>\n#include <unistd.h>\n#include \"../../libspl_impl.h\"\n\n__attribute__((visibility(\"hidden\"))) ssize_t\ngetexecname_impl(char *execname)\n{\n\treturn (readlink(\"/proc/self/exe\", execname, PATH_MAX));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

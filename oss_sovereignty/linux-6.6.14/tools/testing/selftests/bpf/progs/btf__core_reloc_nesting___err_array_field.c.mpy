@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_nesting___err_array_field.c",
+  "hash_id": "aa86c0bd744461ae38a6d6df942e002bd4b7e28f4d636023acf3032737c7ecda",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_field.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_nesting___err_array_field x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

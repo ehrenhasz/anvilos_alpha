@@ -1,0 +1,9 @@
+{
+  "module_name": "symlink.c",
+  "hash_id": "1754efbe32df3b4905185fcc5671b0f968b373737adc01b599fcefb4b986e3c3",
+  "original_prompt": "Ingested from linux-6.6.14/fs/jfs/symlink.c",
+  "human_readable_source": "\n \n\n#include <linux/fs.h>\n#include \"jfs_incore.h\"\n#include \"jfs_inode.h\"\n#include \"jfs_xattr.h\"\n\nconst struct inode_operations jfs_fast_symlink_inode_operations = {\n\t.get_link\t= simple_get_link,\n\t.setattr\t= jfs_setattr,\n\t.listxattr\t= jfs_listxattr,\n};\n\nconst struct inode_operations jfs_symlink_inode_operations = {\n\t.get_link\t= page_get_link,\n\t.setattr\t= jfs_setattr,\n\t.listxattr\t= jfs_listxattr,\n};\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

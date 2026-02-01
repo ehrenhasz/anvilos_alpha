@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-reddo.c",
+  "hash_id": "e225d62fb910eefacb8f9efb4348e950bcae60f2c77ec709fa4b5dff5b7c9321",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-reddo.c",
+  "human_readable_source": "\n \n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n\nstatic struct rc_map_table reddo[] = {\n\t{ 0x61d601, KEY_EPG },              \n\t{ 0x61d602, KEY_NUMERIC_3 },\n\t{ 0x61d604, KEY_NUMERIC_1 },\n\t{ 0x61d605, KEY_NUMERIC_5 },\n\t{ 0x61d606, KEY_NUMERIC_6 },\n\t{ 0x61d607, KEY_CHANNELDOWN },      \n\t{ 0x61d608, KEY_NUMERIC_2 },\n\t{ 0x61d609, KEY_CHANNELUP },        \n\t{ 0x61d60a, KEY_NUMERIC_9 },\n\t{ 0x61d60b, KEY_ZOOM },             \n\t{ 0x61d60c, KEY_NUMERIC_7 },\n\t{ 0x61d60d, KEY_NUMERIC_8 },\n\t{ 0x61d60e, KEY_VOLUMEUP },         \n\t{ 0x61d60f, KEY_NUMERIC_4 },\n\t{ 0x61d610, KEY_ESC },              \n\t{ 0x61d611, KEY_NUMERIC_0 },\n\t{ 0x61d612, KEY_OK },               \n\t{ 0x61d613, KEY_VOLUMEDOWN },       \n\t{ 0x61d614, KEY_RECORD },           \n\t{ 0x61d615, KEY_STOP },             \n\t{ 0x61d616, KEY_PLAY },             \n\t{ 0x61d617, KEY_MUTE },             \n\t{ 0x61d643, KEY_POWER2 },           \n};\n\nstatic struct rc_map_list reddo_map = {\n\t.map = {\n\t\t.scan     = reddo,\n\t\t.size     = ARRAY_SIZE(reddo),\n\t\t.rc_proto = RC_PROTO_NECX,\n\t\t.name     = RC_MAP_REDDO,\n\t}\n};\n\nstatic int __init init_rc_map_reddo(void)\n{\n\treturn rc_map_register(&reddo_map);\n}\n\nstatic void __exit exit_rc_map_reddo(void)\n{\n\trc_map_unregister(&reddo_map);\n}\n\nmodule_init(init_rc_map_reddo)\nmodule_exit(exit_rc_map_reddo)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Antti Palosaari <crope@iki.fi>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

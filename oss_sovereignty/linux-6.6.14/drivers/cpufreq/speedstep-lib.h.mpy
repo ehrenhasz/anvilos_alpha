@@ -1,0 +1,9 @@
+{
+  "module_name": "speedstep-lib.h",
+  "hash_id": "16ac89159a84b2bf169206e0803136ebd405585b2b96b08b1651930942e95338",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpufreq/speedstep-lib.h",
+  "human_readable_source": " \n \n\n\n\n \nenum speedstep_processor {\n\tSPEEDSTEP_CPU_PIII_C_EARLY = 0x00000001,   \n\tSPEEDSTEP_CPU_PIII_C\t   = 0x00000002,   \n\tSPEEDSTEP_CPU_PIII_T\t   = 0x00000003,   \n\tSPEEDSTEP_CPU_P4M\t   = 0x00000004,   \n \n\tSPEEDSTEP_CPU_PM\t   = 0xFFFFFF03,   \n\tSPEEDSTEP_CPU_P4D\t   = 0xFFFFFF04,   \n\tSPEEDSTEP_CPU_PCORE\t   = 0xFFFFFF05,   \n};\n\n \n\n#define SPEEDSTEP_HIGH\t0x00000000\n#define SPEEDSTEP_LOW\t0x00000001\n\n\n \nextern enum speedstep_processor speedstep_detect_processor(void);\n\n \nextern unsigned int speedstep_get_frequency(enum speedstep_processor processor);\n\n\n \nextern unsigned int speedstep_get_freqs(enum speedstep_processor processor,\n\tunsigned int *low_speed,\n\tunsigned int *high_speed,\n\tunsigned int *transition_latency,\n\tvoid (*set_state) (unsigned int state));\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

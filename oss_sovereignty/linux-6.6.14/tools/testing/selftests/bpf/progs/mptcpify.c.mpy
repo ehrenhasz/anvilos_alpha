@@ -1,0 +1,9 @@
+{
+  "module_name": "mptcpify.c",
+  "hash_id": "99cbb1fabc345f7eff02e3c4edc3946b2a7703c010b21b0ca56a4a892f9f9c4e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/mptcpify.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_tracing.h>\n#include \"bpf_tracing_net.h\"\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"fmod_ret/update_socket_protocol\")\nint BPF_PROG(mptcpify, int family, int type, int protocol)\n{\n\tif ((family == AF_INET || family == AF_INET6) &&\n\t    type == SOCK_STREAM &&\n\t    (!protocol || protocol == IPPROTO_TCP)) {\n\t\treturn IPPROTO_MPTCP;\n\t}\n\n\treturn protocol;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

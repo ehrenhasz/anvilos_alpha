@@ -1,0 +1,9 @@
+{
+  "module_name": "cfag12864b.h",
+  "hash_id": "46d5e143f9b6d3d7fa98d149dd9e2e472c3d6333bad5c36d58d7087af410a3de",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cfag12864b.h",
+  "human_readable_source": " \n \n\n#ifndef _CFAG12864B_H_\n#define _CFAG12864B_H_\n\n#define CFAG12864B_WIDTH\t(128)\n#define CFAG12864B_HEIGHT\t(64)\n#define CFAG12864B_CONTROLLERS\t(2)\n#define CFAG12864B_PAGES\t(8)\n#define CFAG12864B_ADDRESSES\t(64)\n#define CFAG12864B_SIZE\t\t((CFAG12864B_CONTROLLERS) * \\\n\t\t\t\t(CFAG12864B_PAGES) * \\\n\t\t\t\t(CFAG12864B_ADDRESSES))\n\n \nextern unsigned char * cfag12864b_buffer;\n\n \nextern unsigned int cfag12864b_getrate(void);\n\n \nextern unsigned char cfag12864b_enable(void);\n\n \nextern void cfag12864b_disable(void);\n\n \nextern unsigned char cfag12864b_isenabled(void);\n\n \nextern unsigned char cfag12864b_isinited(void);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

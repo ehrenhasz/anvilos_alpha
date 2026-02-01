@@ -1,0 +1,9 @@
+{
+  "module_name": "lstat.c",
+  "hash_id": "864054d2d7bde7e441ba03070e9c1b1dd83a7e0fecb4a2eebf25f377ab4b22de",
+  "original_prompt": "Ingested from coreutils-9.4/lib/lstat.c",
+  "human_readable_source": " \n\n \n#define __need_system_sys_stat_h\n#include <config.h>\n\n#if !HAVE_LSTAT\n \ntypedef int dummy;\n#else  \n\n \n# include <sys/types.h>\n# include <sys/stat.h>\n# undef __need_system_sys_stat_h\n\nstatic int\norig_lstat (const char *filename, struct stat *buf)\n{\n  return lstat (filename, buf);\n}\n\n \n# ifdef __osf__\n \n#  include \"sys/stat.h\"\n# else\n#  include <sys/stat.h>\n# endif\n\n# include \"stat-time.h\"\n\n# include <string.h>\n# include <errno.h>\n\n \n\nint\nrpl_lstat (const char *file, struct stat *sbuf)\n{\n  int result = orig_lstat (file, sbuf);\n\n   \n  if (result == 0)\n    {\n      if (S_ISDIR (sbuf->st_mode) || file[strlen (file) - 1] != '/')\n        result = stat_time_normalize (result, sbuf);\n      else\n        {\n           \n          if (!S_ISLNK (sbuf->st_mode))\n            {\n              errno = ENOTDIR;\n              return -1;\n            }\n          result = stat (file, sbuf);\n        }\n    }\n  return result;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

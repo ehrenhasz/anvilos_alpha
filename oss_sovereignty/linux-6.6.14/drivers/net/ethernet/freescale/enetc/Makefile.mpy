@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a8b79650b2bcce23eff2eafa139b935db5e29b887e0e01e485b8690868bbf695",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/enetc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_FSL_ENETC_CORE) += fsl-enetc-core.o\nfsl-enetc-core-y := enetc.o enetc_cbdr.o enetc_ethtool.o\n\nobj-$(CONFIG_FSL_ENETC) += fsl-enetc.o\nfsl-enetc-y := enetc_pf.o\nfsl-enetc-$(CONFIG_PCI_IOV) += enetc_msg.o\nfsl-enetc-$(CONFIG_FSL_ENETC_QOS) += enetc_qos.o\n\nobj-$(CONFIG_FSL_ENETC_VF) += fsl-enetc-vf.o\nfsl-enetc-vf-y := enetc_vf.o\n\nobj-$(CONFIG_FSL_ENETC_IERB) += fsl-enetc-ierb.o\nfsl-enetc-ierb-y := enetc_ierb.o\n\nobj-$(CONFIG_FSL_ENETC_MDIO) += fsl-enetc-mdio.o\nfsl-enetc-mdio-y := enetc_pci_mdio.o enetc_mdio.o\n\nobj-$(CONFIG_FSL_ENETC_PTP_CLOCK) += fsl-enetc-ptp.o\nfsl-enetc-ptp-y := enetc_ptp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

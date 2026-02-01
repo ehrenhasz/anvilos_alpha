@@ -1,0 +1,9 @@
+{
+  "module_name": "dircolors.x",
+  "hash_id": "8836fac36e625eb59462074e287e6b1831302188f5ac30b861e7e62503bca257",
+  "original_prompt": "Ingested from coreutils-9.4/man/dircolors.x",
+  "human_readable_source": "[NAME]\ndircolors \\- color setup for ls\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

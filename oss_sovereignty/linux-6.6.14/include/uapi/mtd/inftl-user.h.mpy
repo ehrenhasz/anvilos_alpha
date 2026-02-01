@@ -1,0 +1,9 @@
+{
+  "module_name": "inftl-user.h",
+  "hash_id": "7e1670823c0075b20376ae42d6385fb89129495298b66c930bd24e756a0861db",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/mtd/inftl-user.h",
+  "human_readable_source": " \n \n\n#ifndef __MTD_INFTL_USER_H__\n#define __MTD_INFTL_USER_H__\n\n#include <linux/types.h>\n\n#define\tOSAK_VERSION\t0x5120\n#define\tPERCENTUSED\t98\n\n#define\tSECTORSIZE\t512\n\n \n\nstruct inftl_bci {\n\t__u8 ECCsig[6];\n\t__u8 Status;\n\t__u8 Status1;\n} __attribute__((packed));\n\nstruct inftl_unithead1 {\n\t__u16 virtualUnitNo;\n\t__u16 prevUnitNo;\n\t__u8 ANAC;\n\t__u8 NACs;\n\t__u8 parityPerField;\n\t__u8 discarded;\n} __attribute__((packed));\n\nstruct inftl_unithead2 {\n\t__u8 parityPerField;\n\t__u8 ANAC;\n\t__u16 prevUnitNo;\n\t__u16 virtualUnitNo;\n\t__u8 NACs;\n\t__u8 discarded;\n} __attribute__((packed));\n\nstruct inftl_unittail {\n\t__u8 Reserved[4];\n\t__u16 EraseMark;\n\t__u16 EraseMark1;\n} __attribute__((packed));\n\nunion inftl_uci {\n\tstruct inftl_unithead1 a;\n\tstruct inftl_unithead2 b;\n\tstruct inftl_unittail c;\n};\n\nstruct inftl_oob {\n\tstruct inftl_bci b;\n\tunion inftl_uci u;\n};\n\n\n \n\nstruct INFTLPartition {\n\t__u32 virtualUnits;\n\t__u32 firstUnit;\n\t__u32 lastUnit;\n\t__u32 flags;\n\t__u32 spareUnits;\n\t__u32 Reserved0;\n\t__u32 Reserved1;\n} __attribute__((packed));\n\nstruct INFTLMediaHeader {\n\tchar bootRecordID[8];\n\t__u32 NoOfBootImageBlocks;\n\t__u32 NoOfBinaryPartitions;\n\t__u32 NoOfBDTLPartitions;\n\t__u32 BlockMultiplierBits;\n\t__u32 FormatFlags;\n\t__u32 OsakVersion;\n\t__u32 PercentUsed;\n\tstruct INFTLPartition Partitions[4];\n} __attribute__((packed));\n\n \n#define\tINFTL_BINARY\t0x20000000\n#define\tINFTL_BDTL\t0x40000000\n#define\tINFTL_LAST\t0x80000000\n\n#endif  \n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

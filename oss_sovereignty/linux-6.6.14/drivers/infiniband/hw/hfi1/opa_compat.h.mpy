@@ -1,0 +1,9 @@
+{
+  "module_name": "opa_compat.h",
+  "hash_id": "2509ed81f5069624bad561ba42cbe300befef388c6ffe22f7b57d6f75957c2d9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/opa_compat.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_H\n#define _LINUX_H\n \n\n \n#define OPA_ATTRIB_ID_CONGESTION_INFO\t\tcpu_to_be16(0x008b)\n#define OPA_ATTRIB_ID_HFI_CONGESTION_LOG\tcpu_to_be16(0x008f)\n#define OPA_ATTRIB_ID_HFI_CONGESTION_SETTING\tcpu_to_be16(0x0090)\n#define OPA_ATTRIB_ID_CONGESTION_CONTROL_TABLE\tcpu_to_be16(0x0091)\n\n \n#define OPA_PM_ATTRIB_ID_PORT_STATUS\t\tcpu_to_be16(0x0040)\n#define OPA_PM_ATTRIB_ID_CLEAR_PORT_STATUS\tcpu_to_be16(0x0041)\n#define OPA_PM_ATTRIB_ID_DATA_PORT_COUNTERS\tcpu_to_be16(0x0042)\n#define OPA_PM_ATTRIB_ID_ERROR_PORT_COUNTERS\tcpu_to_be16(0x0043)\n#define OPA_PM_ATTRIB_ID_ERROR_INFO\t\tcpu_to_be16(0x0044)\n\n \n#define OPA_PM_STATUS_REQUEST_TOO_LARGE\t\tcpu_to_be16(0x100)\n\nstatic inline u8 port_states_to_logical_state(struct opa_port_states *ps)\n{\n\treturn ps->portphysstate_portstate & OPA_PI_MASK_PORT_STATE;\n}\n\nstatic inline u8 port_states_to_phys_state(struct opa_port_states *ps)\n{\n\treturn ((ps->portphysstate_portstate &\n\t\t  OPA_PI_MASK_PORT_PHYSICAL_STATE) >> 4) & 0xf;\n}\n\n \nenum opa_port_phys_state {\n\t \n\n\tIB_PORTPHYSSTATE_NOP = 0,\n\t \n\tIB_PORTPHYSSTATE_POLLING = 2,\n\tIB_PORTPHYSSTATE_DISABLED = 3,\n\tIB_PORTPHYSSTATE_TRAINING = 4,\n\tIB_PORTPHYSSTATE_LINKUP = 5,\n\tIB_PORTPHYSSTATE_LINK_ERROR_RECOVERY = 6,\n\tIB_PORTPHYSSTATE_PHY_TEST = 7,\n\t \n\n\t \n\tOPA_PORTPHYSSTATE_OFFLINE = 9,\n\n\t \n\n\t \n\tOPA_PORTPHYSSTATE_TEST = 11,\n\n\tOPA_PORTPHYSSTATE_MAX = 11,\n\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

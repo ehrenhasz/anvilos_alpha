@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "053ee56d9597bb4a7a948ecf6b81bda7558c36d9c7562798eda8d8448b0f0130",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/mvebu/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_PINCTRL_MVEBU)\t+= pinctrl-mvebu.o\nobj-$(CONFIG_PINCTRL_DOVE)\t+= pinctrl-dove.o\nobj-$(CONFIG_PINCTRL_KIRKWOOD)\t+= pinctrl-kirkwood.o\nobj-$(CONFIG_PINCTRL_ARMADA_370) += pinctrl-armada-370.o\nobj-$(CONFIG_PINCTRL_ARMADA_375) += pinctrl-armada-375.o\nobj-$(CONFIG_PINCTRL_ARMADA_38X) += pinctrl-armada-38x.o\nobj-$(CONFIG_PINCTRL_ARMADA_39X) += pinctrl-armada-39x.o\nobj-$(CONFIG_PINCTRL_ARMADA_AP806) += pinctrl-armada-ap806.o\nobj-$(CONFIG_PINCTRL_ARMADA_CP110) += pinctrl-armada-cp110.o\nobj-$(CONFIG_PINCTRL_ARMADA_XP)  += pinctrl-armada-xp.o\nobj-$(CONFIG_PINCTRL_ARMADA_37XX)  += pinctrl-armada-37xx.o\nobj-$(CONFIG_PINCTRL_ORION)  += pinctrl-orion.o\nobj-$(CONFIG_PINCTRL_AC5) += pinctrl-ac5.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

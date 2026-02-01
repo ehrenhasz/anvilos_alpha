@@ -1,0 +1,9 @@
+{
+  "module_name": "test-xstrtoumax.c",
+  "hash_id": "257441d9c0f1b24b0d758658b014fae6ae1c9f17a4453ccd246dde4897eaa45a",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-xstrtoumax.c",
+  "human_readable_source": "#define __xstrtol xstrtoumax\n#define __strtol_t uintmax_t\n#define __spec PRIuMAX\n#include \"test-xstrtol.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

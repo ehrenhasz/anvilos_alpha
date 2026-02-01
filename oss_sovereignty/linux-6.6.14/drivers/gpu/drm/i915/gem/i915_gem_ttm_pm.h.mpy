@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gem_ttm_pm.h",
+  "hash_id": "07678829789ed4e8005a9a27d246474896005b61db7d57cacfe3447457f2dede",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gem/i915_gem_ttm_pm.h",
+  "human_readable_source": " \n \n\n#ifndef _I915_GEM_TTM_PM_H_\n#define _I915_GEM_TTM_PM_H_\n\n#include <linux/types.h>\n\nstruct intel_memory_region;\nstruct drm_i915_gem_object;\n\n#define I915_TTM_BACKUP_ALLOW_GPU BIT(0)\n#define I915_TTM_BACKUP_PINNED    BIT(1)\n\nint i915_ttm_backup_region(struct intel_memory_region *mr, u32 flags);\n\nvoid i915_ttm_recover_region(struct intel_memory_region *mr);\n\nint i915_ttm_restore_region(struct intel_memory_region *mr, u32 flags);\n\n \nvoid i915_ttm_backup_free(struct drm_i915_gem_object *obj);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

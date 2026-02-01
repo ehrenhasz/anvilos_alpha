@@ -1,0 +1,9 @@
+{
+  "module_name": "getcpu.h",
+  "hash_id": "d1607d4522eadc2af1caf238cb1fbe0c0eb7711e813b10f8e09751213c6baa5e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/getcpu.h",
+  "human_readable_source": " \n#ifndef _LINUX_GETCPU_H\n#define _LINUX_GETCPU_H 1\n\n \nstruct getcpu_cache {\n\tunsigned long blob[128 / sizeof(long)];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "glob.h",
+  "hash_id": "39333b062f929d6dab0691ddf56e716cf166798cc57df90d23d82e1079aef23e",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/server/glob.h",
+  "human_readable_source": " \n \n\n#ifndef __KSMBD_GLOB_H\n#define __KSMBD_GLOB_H\n\n#include <linux/ctype.h>\n\n#include \"unicode.h\"\n#include \"vfs_cache.h\"\n\n#define KSMBD_VERSION\t\"3.4.2\"\n\nextern int ksmbd_debug_types;\n\n#define KSMBD_DEBUG_SMB\t\tBIT(0)\n#define KSMBD_DEBUG_AUTH\tBIT(1)\n#define KSMBD_DEBUG_VFS\t\tBIT(2)\n#define KSMBD_DEBUG_OPLOCK      BIT(3)\n#define KSMBD_DEBUG_IPC         BIT(4)\n#define KSMBD_DEBUG_CONN        BIT(5)\n#define KSMBD_DEBUG_RDMA        BIT(6)\n#define KSMBD_DEBUG_ALL         (KSMBD_DEBUG_SMB | KSMBD_DEBUG_AUTH |\t\\\n\t\t\t\tKSMBD_DEBUG_VFS | KSMBD_DEBUG_OPLOCK |\t\\\n\t\t\t\tKSMBD_DEBUG_IPC | KSMBD_DEBUG_CONN |\t\\\n\t\t\t\tKSMBD_DEBUG_RDMA)\n\n#ifdef pr_fmt\n#undef pr_fmt\n#endif\n\n#ifdef SUBMOD_NAME\n#define pr_fmt(fmt)\t\"ksmbd: \" SUBMOD_NAME \": \" fmt\n#else\n#define pr_fmt(fmt)\t\"ksmbd: \" fmt\n#endif\n\n#define ksmbd_debug(type, fmt, ...)\t\t\t\t\\\n\tdo {\t\t\t\t\t\t\t\\\n\t\tif (ksmbd_debug_types & KSMBD_DEBUG_##type)\t\\\n\t\t\tpr_info(fmt, ##__VA_ARGS__);\t\t\\\n\t} while (0)\n\n#define UNICODE_LEN(x)\t\t((x) * 2)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

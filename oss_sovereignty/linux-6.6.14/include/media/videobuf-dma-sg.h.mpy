@@ -1,0 +1,9 @@
+{
+  "module_name": "videobuf-dma-sg.h",
+  "hash_id": "dd2a2ea9f973248b99cd797704e7f66011133feb89f9b57b55dee9c610334233",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/videobuf-dma-sg.h",
+  "human_readable_source": " \n \n#ifndef _VIDEOBUF_DMA_SG_H\n#define _VIDEOBUF_DMA_SG_H\n\n#include <media/videobuf-core.h>\n\n \n\n \n\nstruct videobuf_dmabuf {\n\tu32                 magic;\n\n\t \n\tint                 offset;\n\tsize_t\t\t    size;\n\tstruct page         **pages;\n\n\t \n\tvoid                *vaddr;\n\tstruct page         **vaddr_pages;\n\tdma_addr_t          *dma_addr;\n\tstruct device       *dev;\n\n\t \n\tdma_addr_t          bus_addr;\n\n\t \n\tstruct scatterlist  *sglist;\n\tint                 sglen;\n\tunsigned long       nr_pages;\n\tint                 direction;\n};\n\nstruct videobuf_dma_sg_memory {\n\tu32                 magic;\n\n\t \n\tstruct videobuf_dmabuf  dma;\n};\n\n \nint videobuf_dma_free(struct videobuf_dmabuf *dma);\n\nint videobuf_dma_unmap(struct device *dev, struct videobuf_dmabuf *dma);\nstruct videobuf_dmabuf *videobuf_to_dma(struct videobuf_buffer *buf);\n\nvoid *videobuf_sg_alloc(size_t size);\n\nvoid videobuf_queue_sg_init(struct videobuf_queue *q,\n\t\t\t const struct videobuf_queue_ops *ops,\n\t\t\t struct device *dev,\n\t\t\t spinlock_t *irqlock,\n\t\t\t enum v4l2_buf_type type,\n\t\t\t enum v4l2_field field,\n\t\t\t unsigned int msize,\n\t\t\t void *priv,\n\t\t\t struct mutex *ext_lock);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dentry.c",
+  "hash_id": "3587b4b36d5f3adc334762794a8c99644be9a68b40cc179b024725ddc14eab65",
+  "original_prompt": "Ingested from linux-6.6.14/fs/hpfs/dentry.c",
+  "human_readable_source": "\n \n\n#include \"hpfs_fn.h\"\n\n \n\nstatic int hpfs_hash_dentry(const struct dentry *dentry, struct qstr *qstr)\n{\n\tunsigned long\t hash;\n\tint\t\t i;\n\tunsigned l = qstr->len;\n\n\tif (l == 1) if (qstr->name[0]=='.') goto x;\n\tif (l == 2) if (qstr->name[0]=='.' || qstr->name[1]=='.') goto x;\n\thpfs_adjust_length(qstr->name, &l);\n\t \n\t\t \n\t\t \n\tx:\n\n\thash = init_name_hash(dentry);\n\tfor (i = 0; i < l; i++)\n\t\thash = partial_name_hash(hpfs_upcase(hpfs_sb(dentry->d_sb)->sb_cp_table,qstr->name[i]), hash);\n\tqstr->hash = end_name_hash(hash);\n\n\treturn 0;\n}\n\nstatic int hpfs_compare_dentry(const struct dentry *dentry,\n\t\tunsigned int len, const char *str, const struct qstr *name)\n{\n\tunsigned al = len;\n\tunsigned bl = name->len;\n\n\thpfs_adjust_length(str, &al);\n\t \n\n\t \n\n\tif (hpfs_chk_name(name->name, &bl))\n\t\treturn 1;\n\tif (hpfs_compare_names(dentry->d_sb, str, al, name->name, bl, 0))\n\t\treturn 1;\n\treturn 0;\n}\n\nconst struct dentry_operations hpfs_dentry_operations = {\n\t.d_hash\t\t= hpfs_hash_dentry,\n\t.d_compare\t= hpfs_compare_dentry,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

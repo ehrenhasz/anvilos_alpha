@@ -1,0 +1,9 @@
+{
+  "module_name": "async_stack_depth.c",
+  "hash_id": "110b77cee8d1611f5e1432d40b2e26342d71fca17acd9dc44b11646f4f3ba007",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/async_stack_depth.c",
+  "human_readable_source": "\n#include <vmlinux.h>\n#include <bpf/bpf_helpers.h>\n\n#include \"bpf_misc.h\"\n\nstruct hmap_elem {\n\tstruct bpf_timer timer;\n};\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__uint(max_entries, 64);\n\t__type(key, int);\n\t__type(value, struct hmap_elem);\n} hmap SEC(\".maps\");\n\n__attribute__((noinline))\nstatic int timer_cb(void *map, int *key, struct bpf_timer *timer)\n{\n\tvolatile char buf[256] = {};\n\treturn buf[69];\n}\n\n__attribute__((noinline))\nstatic int bad_timer_cb(void *map, int *key, struct bpf_timer *timer)\n{\n\tvolatile char buf[300] = {};\n\treturn buf[255] + timer_cb(NULL, NULL, NULL);\n}\n\nSEC(\"tc\")\n__failure __msg(\"combined stack size of 2 calls is 576. Too large\")\nint pseudo_call_check(struct __sk_buff *ctx)\n{\n\tstruct hmap_elem *elem;\n\tvolatile char buf[256] = {};\n\n\telem = bpf_map_lookup_elem(&hmap, &(int){0});\n\tif (!elem)\n\t\treturn 0;\n\n\ttimer_cb(NULL, NULL, NULL);\n\treturn bpf_timer_set_callback(&elem->timer, timer_cb) + buf[0];\n}\n\nSEC(\"tc\")\n__failure __msg(\"combined stack size of 2 calls is 608. Too large\")\nint async_call_root_check(struct __sk_buff *ctx)\n{\n\tstruct hmap_elem *elem;\n\tvolatile char buf[256] = {};\n\n\telem = bpf_map_lookup_elem(&hmap, &(int){0});\n\tif (!elem)\n\t\treturn 0;\n\n\treturn bpf_timer_set_callback(&elem->timer, bad_timer_cb) + buf[0];\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0987e7d109eda24e162c8be8dae9a88460b178707b7a206dfefb3c733d7d27ff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/filter/Kconfig",
+  "human_readable_source": "#\n# Filter drivers\n#\n# When adding new entries keep the list in alphabetical order\n\nmenu \"Filters\"\n\nconfig ADMV8818\n\ttristate \"Analog Devices ADMV8818 High-Pass and Low-Pass Filter\"\n\tdepends on SPI && COMMON_CLK && 64BIT\n\tselect REGMAP_SPI\n\thelp\n\t  Say yes here to build support for Analog Devices ADMV8818\n\t  2 GHz to 18 GHz, Digitally Tunable, High-Pass and Low-Pass Filter.\n\n\t  To compile this driver as a module, choose M here: the\n\t  modiule will be called admv8818.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

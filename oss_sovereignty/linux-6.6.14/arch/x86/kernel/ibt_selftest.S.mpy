@@ -1,0 +1,9 @@
+{
+  "module_name": "ibt_selftest.S",
+  "hash_id": "a7cf5bb2ac12b72c9d45161463db84c90fb2a393b0b264c944325645a2d92bc5",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/ibt_selftest.S",
+  "human_readable_source": " \n#include <linux/linkage.h>\n#include <linux/objtool.h>\n#include <asm/nospec-branch.h>\n\nSYM_CODE_START(ibt_selftest_noendbr)\n\tANNOTATE_NOENDBR\n\tUNWIND_HINT_FUNC\n\t \n\tRET\nSYM_CODE_END(ibt_selftest_noendbr)\n\nSYM_FUNC_START(ibt_selftest)\n\tlea ibt_selftest_noendbr(%rip), %rax\n\tANNOTATE_RETPOLINE_SAFE\n\tjmp *%rax\nSYM_FUNC_END(ibt_selftest)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

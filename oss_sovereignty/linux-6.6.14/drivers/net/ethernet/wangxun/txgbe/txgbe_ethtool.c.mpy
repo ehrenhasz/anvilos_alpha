@@ -1,0 +1,9 @@
+{
+  "module_name": "txgbe_ethtool.c",
+  "hash_id": "356c7d2562423c12625eb7774bdb71fa12d891fb29ad6190242b89f6d20b3ea6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.c",
+  "human_readable_source": "\n \n\n#include <linux/pci.h>\n#include <linux/phylink.h>\n#include <linux/netdevice.h>\n\n#include \"../libwx/wx_ethtool.h\"\n#include \"../libwx/wx_type.h\"\n#include \"txgbe_type.h\"\n#include \"txgbe_ethtool.h\"\n\nstatic int txgbe_nway_reset(struct net_device *netdev)\n{\n\tstruct txgbe *txgbe = netdev_to_txgbe(netdev);\n\n\treturn phylink_ethtool_nway_reset(txgbe->phylink);\n}\n\nstatic int txgbe_get_link_ksettings(struct net_device *netdev,\n\t\t\t\t    struct ethtool_link_ksettings *cmd)\n{\n\tstruct txgbe *txgbe = netdev_to_txgbe(netdev);\n\n\treturn phylink_ethtool_ksettings_get(txgbe->phylink, cmd);\n}\n\nstatic int txgbe_set_link_ksettings(struct net_device *netdev,\n\t\t\t\t    const struct ethtool_link_ksettings *cmd)\n{\n\tstruct txgbe *txgbe = netdev_to_txgbe(netdev);\n\n\treturn phylink_ethtool_ksettings_set(txgbe->phylink, cmd);\n}\n\nstatic const struct ethtool_ops txgbe_ethtool_ops = {\n\t.get_drvinfo\t\t= wx_get_drvinfo,\n\t.nway_reset\t\t= txgbe_nway_reset,\n\t.get_link\t\t= ethtool_op_get_link,\n\t.get_link_ksettings\t= txgbe_get_link_ksettings,\n\t.set_link_ksettings\t= txgbe_set_link_ksettings,\n};\n\nvoid txgbe_set_ethtool_ops(struct net_device *netdev)\n{\n\tnetdev->ethtool_ops = &txgbe_ethtool_ops;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "types.h",
+  "hash_id": "660f195254f482e76000ab2abd14d2ac1d408d5d9697707253046c4427040e52",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/types.h",
+  "human_readable_source": " \n\n#ifndef _SPL_SYS_TYPES_H_\n#define\t_SPL_SYS_TYPES_H_\n\n#pragma once\n \n#include_next <sys/types.h>\n\n#ifdef __ILP32__\ntypedef __uint64_t u_longlong_t;\ntypedef __int64_t longlong_t;\n#else\ntypedef unsigned long long\tu_longlong_t;\ntypedef long long\t\tlonglong_t;\n#endif\n#include <sys/stdint.h>\n\n#define\t_CLOCK_T_DECLARED\n\n#include <sys/types32.h>\n#include <sys/_stdarg.h>\n#include <linux/types.h>\n\n#define\tMAXNAMELEN\t256\n\n\n\ntypedef\tvoid zfs_kernel_param_t;\n\ntypedef\tstruct timespec\ttimestruc_t;\ntypedef\tstruct timespec\ttimespec_t;\ntypedef struct timespec inode_timespec_t;\n \ntypedef u_int\t\tuint_t;\ntypedef u_char\t\tuchar_t;\ntypedef u_short\t\tushort_t;\ntypedef u_long\t\tulong_t;\n \ntypedef\tint\t\tminor_t;\n#ifndef\t_OFF64_T_DECLARED\n#define\t_OFF64_T_DECLARED\ntypedef off_t\t\toff64_t;\n#endif\ntypedef id_t\t\ttaskid_t;\ntypedef id_t\t\tprojid_t;\ntypedef id_t\t\tpoolid_t;\ntypedef uint_t\t\tzoneid_t;\ntypedef id_t\t\tctid_t;\ntypedef\tmode_t\t\to_mode_t;\ntypedef\tuint64_t\tpgcnt_t;\n\ntypedef\tshort\t\tindex_t;\ntypedef\toff_t\t\toffset_t;\n#ifndef _PTRDIFF_T_DECLARED\ntypedef\t__ptrdiff_t\t\tptrdiff_t;\t \n#define\t_PTRDIFF_T_DECLARED\n#endif\ntypedef\tint64_t\t\trlim64_t;\ntypedef\tint\t\tmajor_t;\n\n#ifdef NEED_SOLARIS_BOOLEAN\n#if defined(__XOPEN_OR_POSIX)\ntypedef enum { _B_FALSE, _B_TRUE }\tboolean_t;\n#else\ntypedef enum { B_FALSE, B_TRUE }\tboolean_t;\n#endif  \n#else\n\n#define\tB_FALSE\t0\n#define\tB_TRUE\t1\n\n#endif\n\ntypedef\tu_longlong_t\tu_offset_t;\ntypedef\tu_longlong_t\tlen_t;\n\ntypedef\tlonglong_t\tdiskaddr_t;\n\ntypedef void\t\tzidmap_t;\n\n#include <sys/debug.h>\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

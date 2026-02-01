@@ -1,0 +1,9 @@
+{
+  "module_name": "dsa_loop.h",
+  "hash_id": "ab0cb1182e0e1f487392acf75057b8da3ce775820db146a945c7a21d4afbab67",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/dsa_loop.h",
+  "human_readable_source": " \n#ifndef __DSA_LOOP_H\n#define __DSA_LOOP_H\n\nstruct dsa_chip_data;\n\nstruct dsa_loop_pdata {\n\t \n\tstruct dsa_chip_data cd;\n\tconst char *name;\n\tunsigned int enabled_ports;\n\tconst char *netdev;\n};\n\n#define DSA_LOOP_NUM_PORTS\t6\n#define DSA_LOOP_CPU_PORT\t(DSA_LOOP_NUM_PORTS - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

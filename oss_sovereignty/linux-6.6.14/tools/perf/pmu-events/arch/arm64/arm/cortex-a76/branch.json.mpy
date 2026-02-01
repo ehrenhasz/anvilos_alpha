@@ -1,0 +1,9 @@
+{
+  "module_name": "branch.json",
+  "hash_id": "9f3152baf3b895324f220c9123e72479e151068b6477365238562a205ce9510a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a76/branch.json",
+  "human_readable_source": "[\n    {\n        \"PublicDescription\": \"This event counts any predictable branch instruction which is mispredicted either due to dynamic misprediction or because the MMU is off and the branches are statically predicted not taken\",\n        \"ArchStdEvent\": \"BR_MIS_PRED\"\n    },\n    {\n        \"PublicDescription\": \"This event counts all predictable branches.\",\n        \"ArchStdEvent\": \"BR_PRED\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

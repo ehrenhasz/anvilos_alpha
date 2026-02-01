@@ -1,0 +1,9 @@
+{
+  "module_name": "iscsi_target_erl0.h",
+  "hash_id": "0cd97e3473392efc94f6d7148a5e2b3fc07cc76991503fb9c1baad14ff1040c2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/iscsi/iscsi_target_erl0.h",
+  "human_readable_source": " \n#ifndef ISCSI_TARGET_ERL0_H\n#define ISCSI_TARGET_ERL0_H\n\n#include <linux/types.h>\n\nstruct iscsit_cmd;\nstruct iscsit_conn;\nstruct iscsit_session;\n\nextern void iscsit_set_dataout_sequence_values(struct iscsit_cmd *);\nextern int iscsit_check_pre_dataout(struct iscsit_cmd *, unsigned char *);\nextern int iscsit_check_post_dataout(struct iscsit_cmd *, unsigned char *, u8);\nextern void iscsit_start_time2retain_handler(struct iscsit_session *);\nextern void iscsit_handle_time2retain_timeout(struct timer_list *t);\nextern int iscsit_stop_time2retain_timer(struct iscsit_session *);\nextern void iscsit_connection_reinstatement_rcfr(struct iscsit_conn *);\nextern void iscsit_cause_connection_reinstatement(struct iscsit_conn *, int);\nextern void iscsit_fall_back_to_erl0(struct iscsit_session *);\nextern void iscsit_take_action_for_connection_exit(struct iscsit_conn *, bool *);\n\n#endif    \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

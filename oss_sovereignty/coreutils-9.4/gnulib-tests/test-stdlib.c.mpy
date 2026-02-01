@@ -1,0 +1,9 @@
+{
+  "module_name": "test-stdlib.c",
+  "hash_id": "5cba703f420e8ca4f6d142b5298c7a09e335cdb91a055b3bc3fa0937adfb21f2",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-stdlib.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdlib.h>\n\n \nstatic int exitcode = EXIT_SUCCESS;\n#if EXIT_SUCCESS\n\"oops\"\n#endif\n\n \n#if EXIT_FAILURE != 1\n\"oops\"\n#endif\n\n \nstatic_assert (sizeof NULL == sizeof (void *));\n\n#if GNULIB_TEST_SYSTEM_POSIX\n# include \"test-sys_wait.h\"\n#else\n# define test_sys_wait_macros() 0\n#endif\n\nint\nmain (void)\n{\n   \n   \n#ifndef __ANDROID__\n  if (MB_CUR_MAX != 1)\n    return 1;\n#endif\n\n  if (test_sys_wait_macros ())\n    return 2;\n\n  return exitcode;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

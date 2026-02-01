@@ -1,0 +1,9 @@
+{
+  "module_name": "channels.c",
+  "hash_id": "0f912b0c6bc906f52add21f7f63e726ba5c066313ef3159a6094123aea0130bb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/channels.c",
+  "human_readable_source": "\n \n\n#include \"channels.h\"\n#include \"en.h\"\n#include \"en/ptp.h\"\n\nunsigned int mlx5e_channels_get_num(struct mlx5e_channels *chs)\n{\n\treturn chs->num;\n}\n\nstatic struct mlx5e_channel *mlx5e_channels_get(struct mlx5e_channels *chs, unsigned int ix)\n{\n\tWARN_ON_ONCE(ix >= mlx5e_channels_get_num(chs));\n\treturn chs->c[ix];\n}\n\nbool mlx5e_channels_is_xsk(struct mlx5e_channels *chs, unsigned int ix)\n{\n\tstruct mlx5e_channel *c = mlx5e_channels_get(chs, ix);\n\n\treturn test_bit(MLX5E_CHANNEL_STATE_XSK, c->state);\n}\n\nvoid mlx5e_channels_get_regular_rqn(struct mlx5e_channels *chs, unsigned int ix, u32 *rqn)\n{\n\tstruct mlx5e_channel *c = mlx5e_channels_get(chs, ix);\n\n\t*rqn = c->rq.rqn;\n}\n\nvoid mlx5e_channels_get_xsk_rqn(struct mlx5e_channels *chs, unsigned int ix, u32 *rqn)\n{\n\tstruct mlx5e_channel *c = mlx5e_channels_get(chs, ix);\n\n\tWARN_ON_ONCE(!test_bit(MLX5E_CHANNEL_STATE_XSK, c->state));\n\n\t*rqn = c->xskrq.rqn;\n}\n\nbool mlx5e_channels_get_ptp_rqn(struct mlx5e_channels *chs, u32 *rqn)\n{\n\tstruct mlx5e_ptp *c = chs->ptp;\n\n\tif (!c || !test_bit(MLX5E_PTP_STATE_RX, c->state))\n\t\treturn false;\n\n\t*rqn = c->rq.rqn;\n\treturn true;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

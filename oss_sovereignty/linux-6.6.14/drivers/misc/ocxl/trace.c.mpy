@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "028a244fcd633d5a0c9a8950d39bd078e87f0e1ee7a6cb2b879744c544eba9d2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/ocxl/trace.c",
+  "human_readable_source": "\n\n#ifndef __CHECKER__\n#define CREATE_TRACE_POINTS\n#include \"trace.h\"\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

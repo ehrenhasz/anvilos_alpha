@@ -1,0 +1,9 @@
+{
+  "module_name": "nhc_ghc_ext_frag.c",
+  "hash_id": "54509f91bb3f33b2986bcb630b6c62e32c9b16096a515a69d71716087052b2ce",
+  "original_prompt": "Ingested from linux-6.6.14/net/6lowpan/nhc_ghc_ext_frag.c",
+  "human_readable_source": "\n \n\n#include \"nhc.h\"\n\n#define LOWPAN_GHC_EXT_FRAG_ID_0\t0xb4\n#define LOWPAN_GHC_EXT_FRAG_MASK_0\t0xfe\n\nLOWPAN_NHC(ghc_ext_frag, \"RFC7400 Fragmentation Extension Header\",\n\t   NEXTHDR_FRAGMENT, 0, LOWPAN_GHC_EXT_FRAG_ID_0,\n\t   LOWPAN_GHC_EXT_FRAG_MASK_0, NULL, NULL);\n\nmodule_lowpan_nhc(ghc_ext_frag);\nMODULE_DESCRIPTION(\"6LoWPAN generic header fragmentation extension compression\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

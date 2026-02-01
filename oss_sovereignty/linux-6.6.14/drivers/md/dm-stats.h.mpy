@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-stats.h",
+  "hash_id": "abe6b01b22f974d6c4d71144f0a9fda1678d5e2a35ee324ac7331ff1cd5f59b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/dm-stats.h",
+  "human_readable_source": " \n#ifndef DM_STATS_H\n#define DM_STATS_H\n\n#include <linux/types.h>\n#include <linux/mutex.h>\n#include <linux/list.h>\n\nint dm_statistics_init(void);\nvoid dm_statistics_exit(void);\n\nstruct dm_stats {\n\tstruct mutex mutex;\n\tstruct list_head list;\t \n\tstruct dm_stats_last_position __percpu *last;\n\tbool precise_timestamps;\n};\n\nstruct dm_stats_aux {\n\tbool merged;\n\tunsigned long long duration_ns;\n};\n\nint dm_stats_init(struct dm_stats *st);\nvoid dm_stats_cleanup(struct dm_stats *st);\n\nstruct mapped_device;\n\nint dm_stats_message(struct mapped_device *md, unsigned int argc, char **argv,\n\t\t     char *result, unsigned int maxlen);\n\nvoid dm_stats_account_io(struct dm_stats *stats, unsigned long bi_rw,\n\t\t\t sector_t bi_sector, unsigned int bi_sectors, bool end,\n\t\t\t unsigned long start_time,\n\t\t\t struct dm_stats_aux *aux);\n\nstatic inline bool dm_stats_used(struct dm_stats *st)\n{\n\treturn !list_empty(&st->list);\n}\n\nstatic inline void dm_stats_record_start(struct dm_stats *stats, struct dm_stats_aux *aux)\n{\n\tif (unlikely(stats->precise_timestamps))\n\t\taux->duration_ns = ktime_to_ns(ktime_get());\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

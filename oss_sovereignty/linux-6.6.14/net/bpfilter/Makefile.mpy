@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "33162496901623a17b172b5f27ee5124cba6a29ef061080b805d133f7fe59e7c",
+  "original_prompt": "Ingested from linux-6.6.14/net/bpfilter/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux BPFILTER layer.\n#\n\nuserprogs := bpfilter_umh\nbpfilter_umh-objs := main.o\nuserccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi\n\nifeq ($(CONFIG_BPFILTER_UMH), y)\n# builtin bpfilter_umh should be linked with -static\n# since rootfs isn't mounted at the time of __init\n# function is called and do_execv won't find elf interpreter\nuserldflags += -static\nendif\n\n$(obj)/bpfilter_umh_blob.o: $(obj)/bpfilter_umh\n\nobj-$(CONFIG_BPFILTER_UMH) += bpfilter.o\nbpfilter-objs += bpfilter_kern.o bpfilter_umh_blob.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

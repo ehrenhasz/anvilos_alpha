@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6f70ea2e93e055d18a379b7fa65aacc21d75d4a06b5a4e6297ca6c289d245712",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/platform/ce4100/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_X86_INTEL_CE)\t+= ce4100.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

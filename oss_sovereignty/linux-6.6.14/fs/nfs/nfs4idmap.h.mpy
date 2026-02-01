@@ -1,0 +1,9 @@
+{
+  "module_name": "nfs4idmap.h",
+  "hash_id": "2db225e184b70d36faa3b692cb8b3baf8570b96958b9260f31055819f4b9d3c4",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfs/nfs4idmap.h",
+  "human_readable_source": " \n#ifndef NFS_IDMAP_H\n#define NFS_IDMAP_H\n\n#include <linux/uidgid.h>\n#include <uapi/linux/nfs_idmap.h>\n\n\n \nstruct nfs_client;\nstruct nfs_server;\nstruct nfs_fattr;\nstruct nfs4_string;\n\nint nfs_idmap_init(void);\nvoid nfs_idmap_quit(void);\nint nfs_idmap_new(struct nfs_client *);\nvoid nfs_idmap_delete(struct nfs_client *);\n\nvoid nfs_fattr_init_names(struct nfs_fattr *fattr,\n\t\tstruct nfs4_string *owner_name,\n\t\tstruct nfs4_string *group_name);\nvoid nfs_fattr_free_names(struct nfs_fattr *);\nvoid nfs_fattr_map_and_free_names(struct nfs_server *, struct nfs_fattr *);\n\nint nfs_map_name_to_uid(const struct nfs_server *, const char *, size_t, kuid_t *);\nint nfs_map_group_to_gid(const struct nfs_server *, const char *, size_t, kgid_t *);\nint nfs_map_uid_to_name(const struct nfs_server *, kuid_t, char *, size_t);\nint nfs_map_gid_to_group(const struct nfs_server *, kgid_t, char *, size_t);\n\nint nfs_map_string_to_numeric(const char *name, size_t namelen, __u32 *res);\n\nextern unsigned int nfs_idmap_cache_timeout;\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

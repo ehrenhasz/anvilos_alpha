@@ -1,0 +1,9 @@
+{
+  "module_name": "mce.h",
+  "hash_id": "271bb3bf74df67e42c7239021aa303b45f10e7d052c1addd7a4f0c7942d5538b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/include/x86_64/mce.h",
+  "human_readable_source": " \n \n\n#ifndef SELFTEST_KVM_MCE_H\n#define SELFTEST_KVM_MCE_H\n\n#define MCG_CTL_P\t\tBIT_ULL(8)    \n#define MCG_SER_P\t\tBIT_ULL(24)   \n#define MCG_LMCE_P\t\tBIT_ULL(27)   \n#define MCG_CMCI_P\t\tBIT_ULL(10)   \n#define KVM_MAX_MCE_BANKS 32\n#define MCG_CAP_BANKS_MASK 0xff        \n#define MCI_STATUS_VAL (1ULL << 63)    \n#define MCI_STATUS_UC (1ULL << 61)     \n#define MCI_STATUS_EN (1ULL << 60)     \n#define MCI_STATUS_MISCV (1ULL << 59)  \n#define MCI_STATUS_ADDRV (1ULL << 58)  \n#define MCM_ADDR_PHYS 2     \n#define MCI_CTL2_CMCI_EN\t\tBIT_ULL(30)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

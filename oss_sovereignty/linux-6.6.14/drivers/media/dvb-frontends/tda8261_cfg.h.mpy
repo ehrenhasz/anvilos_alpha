@@ -1,0 +1,9 @@
+{
+  "module_name": "tda8261_cfg.h",
+  "hash_id": "2f6001d6dee460590fe7f30ffeba4977eb8af009f58622f914b24fb9712e76a1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/tda8261_cfg.h",
+  "human_readable_source": " \n \n\nstatic int tda8261_get_frequency(struct dvb_frontend *fe, u32 *frequency)\n{\n\tstruct dvb_frontend_ops\t*frontend_ops = &fe->ops;\n\tstruct dvb_tuner_ops\t*tuner_ops = &frontend_ops->tuner_ops;\n\tint err = 0;\n\n\tif (tuner_ops->get_frequency) {\n\t\terr = tuner_ops->get_frequency(fe, frequency);\n\t\tif (err < 0) {\n\t\t\tpr_err(\"%s: Invalid parameter\\n\", __func__);\n\t\t\treturn err;\n\t\t}\n\t\tpr_debug(\"%s: Frequency=%d\\n\", __func__, *frequency);\n\t}\n\treturn 0;\n}\n\nstatic int tda8261_set_frequency(struct dvb_frontend *fe, u32 frequency)\n{\n\tstruct dvb_frontend_ops\t*frontend_ops = &fe->ops;\n\tstruct dvb_tuner_ops\t*tuner_ops = &frontend_ops->tuner_ops;\n\tstruct dtv_frontend_properties *c = &fe->dtv_property_cache;\n\tint err = 0;\n\n\tif (tuner_ops->set_params) {\n\t\terr = tuner_ops->set_params(fe);\n\t\tif (err < 0) {\n\t\t\tpr_err(\"%s: Invalid parameter\\n\", __func__);\n\t\t\treturn err;\n\t\t}\n\t}\n\tpr_debug(\"%s: Frequency=%d\\n\", __func__, c->frequency);\n\treturn 0;\n}\n\nstatic int tda8261_get_bandwidth(struct dvb_frontend *fe, u32 *bandwidth)\n{\n\t \n\t*bandwidth = 40000000;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

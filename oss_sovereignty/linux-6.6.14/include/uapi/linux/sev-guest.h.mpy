@@ -1,0 +1,9 @@
+{
+  "module_name": "sev-guest.h",
+  "hash_id": "4274359e84a3d3cba8b36a889e2bd65789280fa5e62b50cef63520df98e8cb96",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/sev-guest.h",
+  "human_readable_source": " \n \n\n#ifndef __UAPI_LINUX_SEV_GUEST_H_\n#define __UAPI_LINUX_SEV_GUEST_H_\n\n#include <linux/types.h>\n\nstruct snp_report_req {\n\t \n\t__u8 user_data[64];\n\n\t \n\t__u32 vmpl;\n\n\t \n\t__u8 rsvd[28];\n};\n\nstruct snp_report_resp {\n\t \n\t__u8 data[4000];\n};\n\nstruct snp_derived_key_req {\n\t__u32 root_key_select;\n\t__u32 rsvd;\n\t__u64 guest_field_select;\n\t__u32 vmpl;\n\t__u32 guest_svn;\n\t__u64 tcb_version;\n};\n\nstruct snp_derived_key_resp {\n\t \n\t__u8 data[64];\n};\n\nstruct snp_guest_request_ioctl {\n\t \n\t__u8 msg_version;\n\n\t \n\t__u64 req_data;\n\t__u64 resp_data;\n\n\t \n\tunion {\n\t\t__u64 exitinfo2;\n\t\tstruct {\n\t\t\t__u32 fw_error;\n\t\t\t__u32 vmm_error;\n\t\t};\n\t};\n};\n\nstruct snp_ext_report_req {\n\tstruct snp_report_req data;\n\n\t \n\t__u64 certs_address;\n\n\t \n\t__u32 certs_len;\n};\n\n#define SNP_GUEST_REQ_IOC_TYPE\t'S'\n\n \n#define SNP_GET_REPORT _IOWR(SNP_GUEST_REQ_IOC_TYPE, 0x0, struct snp_guest_request_ioctl)\n\n \n#define SNP_GET_DERIVED_KEY _IOWR(SNP_GUEST_REQ_IOC_TYPE, 0x1, struct snp_guest_request_ioctl)\n\n \n#define SNP_GET_EXT_REPORT _IOWR(SNP_GUEST_REQ_IOC_TYPE, 0x2, struct snp_guest_request_ioctl)\n\n \n#define SNP_GUEST_FW_ERR_MASK\t\tGENMASK_ULL(31, 0)\n#define SNP_GUEST_VMM_ERR_SHIFT\t\t32\n#define SNP_GUEST_VMM_ERR(x)\t\t(((u64)x) << SNP_GUEST_VMM_ERR_SHIFT)\n\n#define SNP_GUEST_VMM_ERR_INVALID_LEN\t1\n#define SNP_GUEST_VMM_ERR_BUSY\t\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

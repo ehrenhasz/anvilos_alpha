@@ -1,0 +1,9 @@
+{
+  "module_name": "zed_conf.h",
+  "hash_id": "c391fc80981df14f6bec148bb1a9956fd41a35529c7f22af41f2270197051d84",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zed/zed_conf.h",
+  "human_readable_source": " \n\n#ifndef\tZED_CONF_H\n#define\tZED_CONF_H\n\n#include <libzfs.h>\n#include <stdint.h>\n#include \"zed_strings.h\"\n\nstruct zed_conf {\n\tchar\t\t*pid_file;\t\t \n\tchar\t\t*zedlet_dir;\t\t \n\tchar\t\t*state_file;\t\t \n\n\tlibzfs_handle_t\t*zfs_hdl;\t\t \n\tzed_strings_t\t*zedlets;\t\t \n\tchar\t\t*path;\t\t \n\n\tint\t\tpid_fd;\t\t\t \n\tint\t\tstate_fd;\t\t \n\tint\t\tzevent_fd;\t\t \n\n\tint16_t max_jobs;\t\t \n\tint32_t max_zevent_buf_len;\t \n\n\tboolean_t\tdo_force:1;\t\t \n\tboolean_t\tdo_foreground:1;\t \n\tboolean_t\tdo_memlock:1;\t\t \n\tboolean_t\tdo_verbose:1;\t\t \n\tboolean_t\tdo_zero:1;\t\t \n\tboolean_t\tdo_idle:1;\t\t \n};\n\nvoid zed_conf_init(struct zed_conf *zcp);\nvoid zed_conf_destroy(struct zed_conf *zcp);\n\nvoid zed_conf_parse_opts(struct zed_conf *zcp, int argc, char **argv);\n\nint zed_conf_scan_dir(struct zed_conf *zcp);\n\nint zed_conf_write_pid(struct zed_conf *zcp);\n\nint zed_conf_open_state(struct zed_conf *zcp);\nint zed_conf_read_state(struct zed_conf *zcp, uint64_t *eidp, int64_t etime[]);\nint zed_conf_write_state(struct zed_conf *zcp, uint64_t eid, int64_t etime[]);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

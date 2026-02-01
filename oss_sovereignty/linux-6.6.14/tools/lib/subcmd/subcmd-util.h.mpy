@@ -1,0 +1,9 @@
+{
+  "module_name": "subcmd-util.h",
+  "hash_id": "1350fad8cf6bb913b2c7956ba7742a191500a5fed74d982fd4e85f51c595b6c8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/subcmd/subcmd-util.h",
+  "human_readable_source": " \n#ifndef __SUBCMD_UTIL_H\n#define __SUBCMD_UTIL_H\n\n#include <stdarg.h>\n#include <stdlib.h>\n#include <stdio.h>\n#include <linux/compiler.h>\n\nstatic inline void report(const char *prefix, const char *err, va_list params)\n{\n\tchar msg[1024];\n\tvsnprintf(msg, sizeof(msg), err, params);\n\tfprintf(stderr, \" %s%s\\n\", prefix, msg);\n}\n\nstatic __noreturn inline void die(const char *err, ...)\n{\n\tva_list params;\n\n\tva_start(params, err);\n\treport(\" Fatal: \", err, params);\n\texit(128);\n\tva_end(params);\n}\n\n#define zfree(ptr) ({ free(*ptr); *ptr = NULL; })\n\n#define alloc_nr(x) (((x)+16)*3/2)\n\n \n#define ALLOC_GROW(x, nr, alloc) \\\n\tdo { \\\n\t\tif ((nr) > alloc) { \\\n\t\t\tif (alloc_nr(alloc) < (nr)) \\\n\t\t\t\talloc = (nr); \\\n\t\t\telse \\\n\t\t\t\talloc = alloc_nr(alloc); \\\n\t\t\tx = xrealloc((x), alloc * sizeof(*(x))); \\\n\t\t} \\\n\t} while(0)\n\nstatic inline void *xrealloc(void *ptr, size_t size)\n{\n\tvoid *ret = realloc(ptr, size);\n\tif (!ret)\n\t\tdie(\"Out of memory, realloc failed\");\n\treturn ret;\n}\n\n#define astrcatf(out, fmt, ...)\t\t\t\t\t\t\\\n({\t\t\t\t\t\t\t\t\t\\\n\tchar *tmp = *(out);\t\t\t\t\t\t\\\n\tif (asprintf((out), \"%s\" fmt, tmp ?: \"\", ## __VA_ARGS__) == -1)\t\\\n\t\tdie(\"asprintf failed\");\t\t\t\t\t\\\n\tfree(tmp);\t\t\t\t\t\t\t\\\n})\n\nstatic inline void astrcat(char **out, const char *add)\n{\n\tchar *tmp = *out;\n\n\tif (asprintf(out, \"%s%s\", tmp ?: \"\", add) == -1)\n\t\tdie(\"asprintf failed\");\n\n\tfree(tmp);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

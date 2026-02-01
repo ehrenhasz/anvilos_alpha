@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_migrate_types.h",
+  "hash_id": "6096a88320c44fe0ed5fca17c49b67e85a26044274da89ef2b8496fb80d44288",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_migrate_types.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_MIGRATE_TYPES__\n#define __INTEL_MIGRATE_TYPES__\n\nstruct intel_context;\n\nstruct intel_migrate {\n\tstruct intel_context *context;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

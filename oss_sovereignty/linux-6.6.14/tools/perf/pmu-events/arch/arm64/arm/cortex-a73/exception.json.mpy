@@ -1,0 +1,9 @@
+{
+  "module_name": "exception.json",
+  "hash_id": "314231ba0231b5448077ebad235489443d1e94c2a65bece27b1cbd3dc0adf758",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a73/exception.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"EXC_TAKEN\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_HVC\"\n    },\n    {\n        \"PublicDescription\": \"Number of Traps to hypervisor\",\n        \"EventCode\": \"0xDC\",\n        \"EventName\": \"EXC_TRAP_HYP\",\n        \"BriefDescription\": \"Number of Traps to hypervisor\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

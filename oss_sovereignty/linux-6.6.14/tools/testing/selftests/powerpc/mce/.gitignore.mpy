@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "e320febd4fdb1768557643021c282633784ad09d9fd50aa07fd36cf49eb2d8e8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/mce/.gitignore",
+  "human_readable_source": "inject-ra-err\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

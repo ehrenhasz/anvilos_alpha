@@ -1,0 +1,9 @@
+{
+  "module_name": "rpl_acp6x.h",
+  "hash_id": "c2a695dd250aae286a051cf9a3c5c44b9977b8cfcf1f97378c9b9658cf9ce3ef",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/amd/rpl/rpl_acp6x.h",
+  "human_readable_source": " \n \n\n#include \"rpl_acp6x_chip_offset_byte.h\"\n\n#define ACP_DEVICE_ID 0x15E2\n#define ACP6x_PHY_BASE_ADDRESS 0x1240000\n\n#define ACP_SOFT_RESET_SOFTRESET_AUDDONE_MASK   0x00010001\n#define ACP_PGFSM_CNTL_POWER_ON_MASK    1\n#define ACP_PGFSM_CNTL_POWER_OFF_MASK   0\n#define ACP_PGFSM_STATUS_MASK           3\n#define ACP_POWERED_ON                  0\n#define ACP_POWER_ON_IN_PROGRESS        1\n#define ACP_POWERED_OFF                 2\n#define ACP_POWER_OFF_IN_PROGRESS       3\n\n#define DELAY_US        5\n#define ACP_COUNTER     20000\n\n \n#define ACP_SUSPEND_DELAY_MS    2000\n\nstatic inline u32 rpl_acp_readl(void __iomem *base_addr)\n{\n\treturn readl(base_addr - ACP6x_PHY_BASE_ADDRESS);\n}\n\nstatic inline void rpl_acp_writel(u32 val, void __iomem *base_addr)\n{\n\twritel(val, base_addr - ACP6x_PHY_BASE_ADDRESS);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

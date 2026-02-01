@@ -1,0 +1,9 @@
+{
+  "module_name": "font.h",
+  "hash_id": "88c491b3f8f01f96f50a7db44b51b626e6c223ca17b9c725536f83a53254aa1e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/font.h",
+  "human_readable_source": " \n\n#ifndef _VIDEO_FONT_H\n#define _VIDEO_FONT_H\n\n#include <linux/types.h>\n\nstruct font_desc {\n    int idx;\n    const char *name;\n    unsigned int width, height;\n    unsigned int charcount;\n    const void *data;\n    int pref;\n};\n\n#define VGA8x8_IDX\t0\n#define VGA8x16_IDX\t1\n#define PEARL8x8_IDX\t2\n#define VGA6x11_IDX\t3\n#define FONT7x14_IDX\t4\n#define\tFONT10x18_IDX\t5\n#define SUN8x16_IDX\t6\n#define SUN12x22_IDX\t7\n#define ACORN8x8_IDX\t8\n#define\tMINI4x6_IDX\t9\n#define FONT6x10_IDX\t10\n#define TER16x32_IDX\t11\n#define FONT6x8_IDX\t12\n\nextern const struct font_desc\tfont_vga_8x8,\n\t\t\tfont_vga_8x16,\n\t\t\tfont_pearl_8x8,\n\t\t\tfont_vga_6x11,\n\t\t\tfont_7x14,\n\t\t\tfont_10x18,\n\t\t\tfont_sun_8x16,\n\t\t\tfont_sun_12x22,\n\t\t\tfont_acorn_8x8,\n\t\t\tfont_mini_4x6,\n\t\t\tfont_6x10,\n\t\t\tfont_ter_16x32,\n\t\t\tfont_6x8;\n\n \n\nextern const struct font_desc *find_font(const char *name);\n\n \n\nextern const struct font_desc *get_default_font(int xres, int yres,\n\t\t\t\t\t\tu32 font_w, u32 font_h);\n\n \n#define MAX_FONT_NAME\t32\n\n \n#define REFCOUNT(fd)\t(((int *)(fd))[-1])\n#define FNTSIZE(fd)\t(((int *)(fd))[-2])\n#define FNTCHARCNT(fd)\t(((int *)(fd))[-3])\n#define FNTSUM(fd)\t(((int *)(fd))[-4])\n\n#define FONT_EXTRA_WORDS 4\n\nstruct font_data {\n\tunsigned int extra[FONT_EXTRA_WORDS];\n\tconst unsigned char data[];\n} __packed;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

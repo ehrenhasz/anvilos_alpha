@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "16bd31e02bd4a9732b952892b60e9f4948d0b0edc9738bd2d093e47853413828",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/mdp3/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_MEDIATEK_MDP3\n\ttristate \"MediaTek MDP v3 driver\"\n\tdepends on MTK_IOMMU || COMPILE_TEST\n\tdepends on VIDEO_DEV\n\tdepends on HAS_DMA\n\tdepends on REMOTEPROC\n\tdepends on MTK_MMSYS\n\tdepends on MTK_CMDQ\n\tdepends on MTK_SCP\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_MEM2MEM_DEV\n\tdefault n\n\thelp\n\t    It is a v4l2 driver and present in MediaTek MT8183 SoC.\n\t    The driver supports scaling and color space conversion.\n\n\t    To compile this driver as a module, choose M here: the\n\t    module will be called mtk-mdp3.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

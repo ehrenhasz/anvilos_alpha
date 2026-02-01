@@ -1,0 +1,9 @@
+{
+  "module_name": "perf-data.txt",
+  "hash_id": "24690abb45b94aa668c1e1538847c57180c556626d4af305cc27db17fa9455c2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/perf-data.txt",
+  "human_readable_source": "perf-data(1)\n============\n\nNAME\n----\nperf-data - Data file related processing\n\nSYNOPSIS\n--------\n[verse]\n'perf data' [<common options>] <command> [<options>]\",\n\nDESCRIPTION\n-----------\nData file related processing.\n\nCOMMANDS\n--------\nconvert::\n\tConverts perf data file into another format.\n\tIt's possible to set data-convert debug variable to get debug messages from conversion,\n\tlike:\n\t  perf --debug data-convert data convert ...\n\nOPTIONS for 'convert'\n---------------------\n--to-ctf::\n\tTriggers the CTF conversion, specify the path of CTF data directory.\n\n--to-json::\n\tTriggers JSON conversion. Specify the JSON filename to output.\n\n--tod::\n\tConvert time to wall clock time.\n\n-i::\n\tSpecify input perf data file path.\n\n-f::\n--force::\n\tDon't complain, do it.\n\n-v::\n--verbose::\n        Be more verbose (show counter open errors, etc).\n\n--all::\n\tConvert all events, including non-sample events (comm, fork, ...), to output.\n\tDefault is off, only convert samples.\n\nSEE ALSO\n--------\nlinkperf:perf[1]\n[1] Common Trace Format - http://www.efficios.com/ctf\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

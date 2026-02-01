@@ -1,0 +1,9 @@
+{
+  "module_name": "m68k.py",
+  "hash_id": "84a107d75b76d0bb09461cc3814ea63c6209b8383dbedcc1ca5bf0218a9e8b0a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/qemu_configs/m68k.py",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nfrom ..qemu_config import QemuArchParams\n\nQEMU_ARCH = QemuArchParams(linux_arch='m68k',\n\t\t\t   kconfig='''\nCONFIG_VIRT=y''',\n\t\t\t   qemu_arch='m68k',\n\t\t\t   kernel_path='vmlinux',\n\t\t\t   kernel_command_line='console=hvc0',\n\t\t\t   extra_qemu_params=['-machine', 'virt'])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

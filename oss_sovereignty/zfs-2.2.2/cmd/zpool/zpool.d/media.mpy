@@ -1,0 +1,9 @@
+{
+  "module_name": "media",
+  "hash_id": "1b002615b9afd809223834d50570e67dac9236b9da06b33d2f48c41f0e5434e1",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/zpool.d/media",
+  "human_readable_source": "#!/bin/sh\n#\n# Print out the type of device\n#\n\nif [ \"$1\" = \"-h\" ] ; then\n\techo \"Show whether a vdev is a file, hdd, ssd, or iscsi.\"\n\texit\nfi\n\n# shellcheck disable=SC2154\nif [ -b \"$VDEV_UPATH\" ]; then\n\tdevice=\"${VDEV_UPATH##*/}\"\n\tread -r val 2>/dev/null < \"/sys/block/$device/queue/rotational\"\n\tcase \"$val\" in\n\t\t0) MEDIA=\"ssd\" ;;\n\t\t1) MEDIA=\"hdd\" ;;\n\t\t*) MEDIA=\"invalid\" ;;\n\tesac\n\n\tvpd_pg83=\"/sys/block/$device/device/vpd_pg83\"\n\tif [ -f \"$vpd_pg83\" ]; then\n\t\tif grep -q --binary \"iqn.\" \"$vpd_pg83\"; then\n\t\t\tMEDIA=\"iscsi\"\n\t\tfi\n\tfi\nelse\n\tif [ -f \"$VDEV_UPATH\" ]; then\n\t\tMEDIA=\"file\"\n\tfi\nfi\n\necho \"media=$MEDIA\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

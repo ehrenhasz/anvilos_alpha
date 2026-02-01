@@ -1,0 +1,9 @@
+{
+  "module_name": "wm97xx.h",
+  "hash_id": "d306870f405c5c80150e3735aba15a5e8011a88aaac8a73ed1c79917d40bb0a6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/wm97xx.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MFD_WM97XX_H\n#define __LINUX_MFD_WM97XX_H\n\nstruct regmap;\nstruct wm97xx_batt_pdata;\nstruct snd_ac97;\n\nstruct wm97xx_platform_data {\n\tstruct snd_ac97 *ac97;\n\tstruct regmap *regmap;\n\tstruct wm97xx_batt_pdata *batt_pdata;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

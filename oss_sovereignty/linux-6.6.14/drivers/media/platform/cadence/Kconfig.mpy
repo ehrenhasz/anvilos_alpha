@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7b37cc7fd6316f4a35e291c43ecbd8502495a750222754bac118c0b72a3d8f3e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/cadence/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\ncomment \"Cadence media platform drivers\"\n\nconfig VIDEO_CADENCE_CSI2RX\n\ttristate \"Cadence MIPI-CSI2 RX Controller\"\n\tdepends on VIDEO_DEV\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect V4L2_FWNODE\n\thelp\n\t  Support for the Cadence MIPI CSI2 Receiver controller.\n\n\t  To compile this driver as a module, choose M here: the module will be\n\t  called cdns-csi2rx.\n\nconfig VIDEO_CADENCE_CSI2TX\n\ttristate \"Cadence MIPI-CSI2 TX Controller\"\n\tdepends on VIDEO_DEV\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect V4L2_FWNODE\n\thelp\n\t  Support for the Cadence MIPI CSI2 Transceiver controller.\n\n\t  To compile this driver as a module, choose M here: the module will be\n\t  called cdns-csi2tx.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

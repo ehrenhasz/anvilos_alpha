@@ -1,0 +1,9 @@
+{
+  "module_name": "vis.h",
+  "hash_id": "43aca419c77ac1a6ab086120ae8e0ec95895753418daee1e901dc712c22debd1",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/vis.h",
+  "human_readable_source": " \n \n\n \n\n \n\n#include \"includes.h\"\n#if !defined(HAVE_STRNVIS) || defined(BROKEN_STRNVIS)\n\n#ifndef _VIS_H_\n#define\t_VIS_H_\n\n#include <sys/types.h>\n#include <limits.h>\n\n \n#define\tVIS_OCTAL\t0x01\t \n#define\tVIS_CSTYLE\t0x02\t \n\n \n#define\tVIS_SP\t\t0x04\t \n#define\tVIS_TAB\t\t0x08\t \n#define\tVIS_NL\t\t0x10\t \n#define\tVIS_WHITE\t(VIS_SP | VIS_TAB | VIS_NL)\n#define\tVIS_SAFE\t0x20\t \n#define\tVIS_DQ\t\t0x200\t \n#define\tVIS_ALL\t\t0x400\t \n\n \n#define\tVIS_NOSLASH\t0x40\t \n#define\tVIS_GLOB\t0x100\t \n\n \n#define\tUNVIS_VALID\t 1\t \n#define\tUNVIS_VALIDPUSH\t 2\t \n#define\tUNVIS_NOCHAR\t 3\t \n#define\tUNVIS_SYNBAD\t-1\t \n#define\tUNVIS_ERROR\t-2\t \n\n \n#define\tUNVIS_END\t1\t \n\nchar\t*vis(char *, int, int, int);\nint\tstrvis(char *, const char *, int);\nint\tstravis(char **, const char *, int);\nint\tstrnvis(char *, const char *, size_t, int)\n\t\t__attribute__ ((__bounded__(__string__,1,3)));\nint\tstrvisx(char *, const char *, size_t, int)\n\t\t__attribute__ ((__bounded__(__string__,1,3)));\nint\tstrunvis(char *, const char *);\nint\tunvis(char *, char, int *, int);\nssize_t strnunvis(char *, const char *, size_t)\n\t\t__attribute__ ((__bounded__(__string__,1,3)));\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

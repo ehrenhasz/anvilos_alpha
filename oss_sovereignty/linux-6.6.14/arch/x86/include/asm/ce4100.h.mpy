@@ -1,0 +1,9 @@
+{
+  "module_name": "ce4100.h",
+  "hash_id": "b13aee3eb2ddd369a772863d0bf72b1dee2a3083f51cc383c4071c76a19a0202",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/ce4100.h",
+  "human_readable_source": " \n#ifndef _ASM_CE4100_H_\n#define _ASM_CE4100_H_\n\nint ce4100_pci_init(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

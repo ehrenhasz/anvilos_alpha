@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_service.h",
+  "hash_id": "2fa48db87746cf585ebccef358fd1aa10b1003dce4447990f36275eb62bb3c8a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/irq/irq_service.h",
+  "human_readable_source": " \n\n#ifndef __DAL_IRQ_SERVICE_H__\n#define __DAL_IRQ_SERVICE_H__\n\n#include \"include/irq_service_interface.h\"\n\n#include \"irq_types.h\"\n\nstruct irq_service;\nstruct irq_source_info;\n\nstruct irq_source_info_funcs {\n\tbool (*set)(\n\t\tstruct irq_service *irq_service,\n\t\tconst struct irq_source_info *info,\n\t\tbool enable);\n\tbool (*ack)(\n\t\tstruct irq_service *irq_service,\n\t\tconst struct irq_source_info *info);\n};\n\nstruct irq_source_info {\n\tuint32_t src_id;\n\tuint32_t ext_id;\n\tuint32_t enable_reg;\n\tuint32_t enable_mask;\n\tuint32_t enable_value[2];\n\tuint32_t ack_reg;\n\tuint32_t ack_mask;\n\tuint32_t ack_value;\n\tuint32_t status_reg;\n\tconst struct irq_source_info_funcs *funcs;\n};\n\nstruct irq_service_funcs {\n\tenum dc_irq_source (*to_dal_irq_source)(\n\t\t\tstruct irq_service *irq_service,\n\t\t\tuint32_t src_id,\n\t\t\tuint32_t ext_id);\n};\n\nstruct irq_service {\n\tstruct dc_context *ctx;\n\tconst struct irq_source_info *info;\n\tconst struct irq_service_funcs *funcs;\n};\n\nvoid dal_irq_service_construct(\n\tstruct irq_service *irq_service,\n\tstruct irq_service_init_data *init_data);\n\nvoid dal_irq_service_ack_generic(\n\tstruct irq_service *irq_service,\n\tconst struct irq_source_info *info);\n\nvoid dal_irq_service_set_generic(\n\tstruct irq_service *irq_service,\n\tconst struct irq_source_info *info,\n\tbool enable);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

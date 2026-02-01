@@ -1,0 +1,9 @@
+{
+  "module_name": "manpage-normal.xsl",
+  "hash_id": "43d3a1ee482917514fdf5fc6777d3ab9045e6d83e3c5bc2ab269f01911253f98",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/manpage-normal.xsl",
+  "human_readable_source": "<!-- manpage-normal.xsl:\n     special settings for manpages rendered from asciidoc+docbook\n     handles anything we want to keep away from docbook-xsl 1.72.0 -->\n<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n\t\tversion=\"1.0\">\n\n<xsl:import href=\"manpage-base.xsl\"/>\n\n<!-- these are the normal values for the roff control characters -->\n<xsl:param name=\"git.docbook.backslash\">\\</xsl:param>\n<xsl:param name=\"git.docbook.dot\"\t>.</xsl:param>\n\n</xsl:stylesheet>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

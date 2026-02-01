@@ -1,0 +1,9 @@
+{
+  "module_name": "probe_roms.h",
+  "hash_id": "3ac5686ef07bb0b6ff36cf8e6bdabe6b4062aff3a7d5090aea19c17f0736f1a7",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/probe_roms.h",
+  "human_readable_source": " \n#ifndef _PROBE_ROMS_H_\n#define _PROBE_ROMS_H_\nstruct pci_dev;\n\nextern void __iomem *pci_map_biosrom(struct pci_dev *pdev);\nextern void pci_unmap_biosrom(void __iomem *rom);\nextern size_t pci_biosrom_size(struct pci_dev *pdev);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "port-mapper.c",
+  "hash_id": "27cb4465ce8b23e5b04de32916c4ab16db32d082e5e04b9428d2148d1a87f469",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/typec/port-mapper.c",
+  "human_readable_source": "\n \n\n#include <linux/acpi.h>\n#include <linux/component.h>\n\n#include \"class.h\"\n\nstatic int typec_aggregate_bind(struct device *dev)\n{\n\treturn component_bind_all(dev, NULL);\n}\n\nstatic void typec_aggregate_unbind(struct device *dev)\n{\n\tcomponent_unbind_all(dev, NULL);\n}\n\nstatic const struct component_master_ops typec_aggregate_ops = {\n\t.bind = typec_aggregate_bind,\n\t.unbind = typec_aggregate_unbind,\n};\n\nstruct each_port_arg {\n\tstruct typec_port *port;\n\tstruct component_match *match;\n};\n\nstatic int typec_port_compare(struct device *dev, void *fwnode)\n{\n\treturn device_match_fwnode(dev, fwnode);\n}\n\nstatic int typec_port_match(struct device *dev, void *data)\n{\n\tstruct acpi_device *adev = to_acpi_device(dev);\n\tstruct each_port_arg *arg = data;\n\tstruct acpi_device *con_adev;\n\n\tcon_adev = ACPI_COMPANION(&arg->port->dev);\n\tif (con_adev == adev)\n\t\treturn 0;\n\n\tif (con_adev->pld_crc == adev->pld_crc)\n\t\tcomponent_match_add(&arg->port->dev, &arg->match, typec_port_compare,\n\t\t\t\t    acpi_fwnode_handle(adev));\n\treturn 0;\n}\n\nint typec_link_ports(struct typec_port *con)\n{\n\tstruct each_port_arg arg = { .port = con, .match = NULL };\n\n\tif (!has_acpi_companion(&con->dev))\n\t\treturn 0;\n\n\tacpi_bus_for_each_dev(typec_port_match, &arg);\n\tif (!arg.match)\n\t\treturn 0;\n\n\t \n\treturn component_master_add_with_match(&con->dev, &typec_aggregate_ops, arg.match);\n}\n\nvoid typec_unlink_ports(struct typec_port *con)\n{\n\tif (has_acpi_companion(&con->dev))\n\t\tcomponent_master_del(&con->dev, &typec_aggregate_ops);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_dkl_phy.h",
+  "hash_id": "dea172660dcaa14e41c541e0c7567ee1138ef3378d37fa8df2320258d80ccbbc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_dkl_phy.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_DKL_PHY_H__\n#define __INTEL_DKL_PHY_H__\n\n#include <linux/types.h>\n\n#include \"intel_dkl_phy_regs.h\"\n\nstruct drm_i915_private;\n\nvoid intel_dkl_phy_init(struct drm_i915_private *i915);\nu32\nintel_dkl_phy_read(struct drm_i915_private *i915, struct intel_dkl_phy_reg reg);\nvoid\nintel_dkl_phy_write(struct drm_i915_private *i915, struct intel_dkl_phy_reg reg, u32 val);\nvoid\nintel_dkl_phy_rmw(struct drm_i915_private *i915, struct intel_dkl_phy_reg reg, u32 clear, u32 set);\nvoid\nintel_dkl_phy_posting_read(struct drm_i915_private *i915, struct intel_dkl_phy_reg reg);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

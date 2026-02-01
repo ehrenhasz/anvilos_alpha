@@ -1,0 +1,9 @@
+{
+  "module_name": "enet.c",
+  "hash_id": "8949d9775995847d582432564149d27fecdf7b5a2941f028e8493c724123d83e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/apm/xgene-v2/enet.c",
+  "human_readable_source": "\n \n\n#include \"main.h\"\n\nvoid xge_wr_csr(struct xge_pdata *pdata, u32 offset, u32 val)\n{\n\tvoid __iomem *addr = pdata->resources.base_addr + offset;\n\n\tiowrite32(val, addr);\n}\n\nu32 xge_rd_csr(struct xge_pdata *pdata, u32 offset)\n{\n\tvoid __iomem *addr = pdata->resources.base_addr + offset;\n\n\treturn ioread32(addr);\n}\n\nint xge_port_reset(struct net_device *ndev)\n{\n\tstruct xge_pdata *pdata = netdev_priv(ndev);\n\tstruct device *dev = &pdata->pdev->dev;\n\tu32 data, wait = 10;\n\n\txge_wr_csr(pdata, ENET_CLKEN, 0x3);\n\txge_wr_csr(pdata, ENET_SRST, 0xf);\n\txge_wr_csr(pdata, ENET_SRST, 0);\n\txge_wr_csr(pdata, CFG_MEM_RAM_SHUTDOWN, 1);\n\txge_wr_csr(pdata, CFG_MEM_RAM_SHUTDOWN, 0);\n\n\tdo {\n\t\tusleep_range(100, 110);\n\t\tdata = xge_rd_csr(pdata, BLOCK_MEM_RDY);\n\t} while (data != MEM_RDY && wait--);\n\n\tif (data != MEM_RDY) {\n\t\tdev_err(dev, \"ECC init failed: %x\\n\", data);\n\t\treturn -ETIMEDOUT;\n\t}\n\n\txge_wr_csr(pdata, ENET_SHIM, DEVM_ARAUX_COH | DEVM_AWAUX_COH);\n\n\treturn 0;\n}\n\nstatic void xge_traffic_resume(struct net_device *ndev)\n{\n\tstruct xge_pdata *pdata = netdev_priv(ndev);\n\n\txge_wr_csr(pdata, CFG_FORCE_LINK_STATUS_EN, 1);\n\txge_wr_csr(pdata, FORCE_LINK_STATUS, 1);\n\n\txge_wr_csr(pdata, CFG_LINK_AGGR_RESUME, 1);\n\txge_wr_csr(pdata, RX_DV_GATE_REG, 1);\n}\n\nvoid xge_port_init(struct net_device *ndev)\n{\n\tstruct xge_pdata *pdata = netdev_priv(ndev);\n\n\tpdata->phy_speed = SPEED_1000;\n\txge_mac_init(pdata);\n\txge_traffic_resume(ndev);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_project.h",
+  "hash_id": "2a17c4203aa02ab1906f5870907add1db53188a16760f24c4d0d238898b49d74",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zfs_project.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_ZFS_PROJECT_H\n#define\t_SYS_ZFS_PROJECT_H\n\n#ifndef _KERNEL\n#ifndef _SYS_MOUNT_H\n \n#define\t_SYS_MOUNT_H\n#endif\n#endif\n\n#include <sys/vfs.h>\n\n#ifdef FS_PROJINHERIT_FL\n#define\tZFS_PROJINHERIT_FL\tFS_PROJINHERIT_FL\n#else\n#define\tZFS_PROJINHERIT_FL\t0x20000000\n#endif\n\n#ifdef FS_IOC_FSGETXATTR\ntypedef struct fsxattr zfsxattr_t;\n\n#define\tZFS_IOC_FSGETXATTR\tFS_IOC_FSGETXATTR\n#define\tZFS_IOC_FSSETXATTR\tFS_IOC_FSSETXATTR\n#else\nstruct zfsxattr {\n\tuint32_t\tfsx_xflags;\t \n\tuint32_t\tfsx_extsize;\t \n\tuint32_t\tfsx_nextents;\t \n\tuint32_t\tfsx_projid;\t \n\tuint32_t\tfsx_cowextsize;\n\tunsigned char\tfsx_pad[8];\n};\ntypedef struct zfsxattr zfsxattr_t;\n\n#define\tZFS_IOC_FSGETXATTR\t_IOR('X', 31, zfsxattr_t)\n#define\tZFS_IOC_FSSETXATTR\t_IOW('X', 32, zfsxattr_t)\n#endif\n\n#define\tZFS_DEFAULT_PROJID\t(0ULL)\n \n#define\tZFS_INVALID_PROJID\t(-1ULL)\n\nstatic inline boolean_t\nzpl_is_valid_projid(uint32_t projid)\n{\n\t \n\tif ((uint32_t)ZFS_INVALID_PROJID == projid)\n\t\treturn (B_FALSE);\n\treturn (B_TRUE);\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

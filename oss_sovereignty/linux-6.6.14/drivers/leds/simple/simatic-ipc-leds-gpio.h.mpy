@@ -1,0 +1,9 @@
+{
+  "module_name": "simatic-ipc-leds-gpio.h",
+  "hash_id": "4349ae95b3c485c62910bbdc77a184904b8a88ee62fedd23963ba480cd1646df",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/simple/simatic-ipc-leds-gpio.h",
+  "human_readable_source": " \n \n\n#ifndef _SIMATIC_IPC_LEDS_GPIO_H\n#define _SIMATIC_IPC_LEDS_GPIO_H\n\nint simatic_ipc_leds_gpio_probe(struct platform_device *pdev,\n\t\t\t\tstruct gpiod_lookup_table *table,\n\t\t\t\tstruct gpiod_lookup_table *table_extra);\n\nint simatic_ipc_leds_gpio_remove(struct platform_device *pdev,\n\t\t\t\t struct gpiod_lookup_table *table,\n\t\t\t\t struct gpiod_lookup_table *table_extra);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

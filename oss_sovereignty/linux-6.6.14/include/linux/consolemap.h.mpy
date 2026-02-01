@@ -1,0 +1,9 @@
+{
+  "module_name": "consolemap.h",
+  "hash_id": "5ca82cacec7d8df71f8f2a98d5c46c3c285e560211a2a3c99e96dda67f941e98",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/consolemap.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_CONSOLEMAP_H__\n#define __LINUX_CONSOLEMAP_H__\n\nenum translation_map {\n\tLAT1_MAP,\n\tGRAF_MAP,\n\tIBMPC_MAP,\n\tUSER_MAP,\n\n\tFIRST_MAP = LAT1_MAP,\n\tLAST_MAP = USER_MAP,\n};\n\n#include <linux/types.h>\n\nstruct vc_data;\n\n#ifdef CONFIG_CONSOLE_TRANSLATIONS\nu16 inverse_translate(const struct vc_data *conp, u16 glyph, bool use_unicode);\nunsigned short *set_translate(enum translation_map m, struct vc_data *vc);\nint conv_uni_to_pc(struct vc_data *conp, long ucs);\nu32 conv_8bit_to_uni(unsigned char c);\nint conv_uni_to_8bit(u32 uni);\nvoid console_map_init(void);\n#else\nstatic inline u16 inverse_translate(const struct vc_data *conp, u16 glyph,\n\t\tbool use_unicode)\n{\n\treturn glyph;\n}\n\nstatic inline unsigned short *set_translate(enum translation_map m,\n\t\tstruct vc_data *vc)\n{\n\treturn NULL;\n}\n\nstatic inline int conv_uni_to_pc(struct vc_data *conp, long ucs)\n{\n\treturn ucs > 0xff ? -1 : ucs;\n}\n\nstatic inline u32 conv_8bit_to_uni(unsigned char c)\n{\n\treturn c;\n}\n\nstatic inline int conv_uni_to_8bit(u32 uni)\n{\n\treturn uni & 0xff;\n}\n\nstatic inline void console_map_init(void) { }\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

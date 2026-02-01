@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_translate_dce60.h",
+  "hash_id": "b0a19277f5017037bebda075fc0c716003ca062daa5f886577e7fe37997556d4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/dce60/hw_translate_dce60.h",
+  "human_readable_source": " \n\n#ifndef __DAL_HW_TRANSLATE_DCE60_H__\n#define __DAL_HW_TRANSLATE_DCE60_H__\n\nvoid dal_hw_translate_dce60_init(\n\tstruct hw_translate *tr);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

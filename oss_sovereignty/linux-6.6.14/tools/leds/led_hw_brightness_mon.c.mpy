@@ -1,0 +1,9 @@
+{
+  "module_name": "led_hw_brightness_mon.c",
+  "hash_id": "18f4708f6eca8325b9498de4bbe6cb699e3675c00ca9ee29a4e7215e33fc63da",
+  "original_prompt": "Ingested from linux-6.6.14/tools/leds/led_hw_brightness_mon.c",
+  "human_readable_source": "\n \n\n#include <errno.h>\n#include <fcntl.h>\n#include <poll.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <time.h>\n#include <unistd.h>\n\n#include <linux/uleds.h>\n\nint main(int argc, char const *argv[])\n{\n\tint fd, ret;\n\tchar brightness_file_path[LED_MAX_NAME_SIZE + 11];\n\tstruct pollfd pollfd;\n\tstruct timespec ts;\n\tchar buf[11];\n\n\tif (argc != 2) {\n\t\tfprintf(stderr, \"Requires <device-name> argument\\n\");\n\t\treturn 1;\n\t}\n\n\tsnprintf(brightness_file_path, LED_MAX_NAME_SIZE,\n\t\t \"/sys/class/leds/%s/brightness_hw_changed\", argv[1]);\n\n\tfd = open(brightness_file_path, O_RDONLY);\n\tif (fd == -1) {\n\t\tprintf(\"Failed to open %s file\\n\", brightness_file_path);\n\t\treturn 1;\n\t}\n\n\t \n\tread(fd, buf, sizeof(buf));\n\n\tpollfd.fd = fd;\n\tpollfd.events = POLLPRI;\n\n\twhile (1) {\n\t\tret = poll(&pollfd, 1, -1);\n\t\tif (ret == -1) {\n\t\t\tprintf(\"Failed to poll %s file (%d)\\n\",\n\t\t\t\tbrightness_file_path, ret);\n\t\t\tret = 1;\n\t\t\tbreak;\n\t\t}\n\n\t\tclock_gettime(CLOCK_MONOTONIC, &ts);\n\n\t\tret = read(fd, buf, sizeof(buf));\n\t\tif (ret < 0)\n\t\t\tbreak;\n\n\t\tret = lseek(pollfd.fd, 0, SEEK_SET);\n\t\tif (ret < 0) {\n\t\t\tprintf(\"lseek failed (%d)\\n\", ret);\n\t\t\tbreak;\n\t\t}\n\n\t\tprintf(\"[%ld.%09ld] %d\\n\", ts.tv_sec, ts.tv_nsec, atoi(buf));\n\t}\n\n\tclose(fd);\n\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

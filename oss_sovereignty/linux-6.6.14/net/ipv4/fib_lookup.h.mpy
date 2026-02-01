@@ -1,0 +1,9 @@
+{
+  "module_name": "fib_lookup.h",
+  "hash_id": "d8f4170dd047c6189594c9af0f445c70553c025150971d819b71e5e6582ca264",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv4/fib_lookup.h",
+  "human_readable_source": " \n#ifndef _FIB_LOOKUP_H\n#define _FIB_LOOKUP_H\n\n#include <linux/types.h>\n#include <linux/list.h>\n#include <net/inet_dscp.h>\n#include <net/ip_fib.h>\n#include <net/nexthop.h>\n\nstruct fib_alias {\n\tstruct hlist_node\tfa_list;\n\tstruct fib_info\t\t*fa_info;\n\tdscp_t\t\t\tfa_dscp;\n\tu8\t\t\tfa_type;\n\tu8\t\t\tfa_state;\n\tu8\t\t\tfa_slen;\n\tu32\t\t\ttb_id;\n\ts16\t\t\tfa_default;\n\tu8\t\t\toffload;\n\tu8\t\t\ttrap;\n\tu8\t\t\toffload_failed;\n\tstruct rcu_head\t\trcu;\n};\n\n#define FA_S_ACCESSED\t0x01\n\n \nstatic inline void fib_alias_accessed(struct fib_alias *fa)\n{\n\tif (!(fa->fa_state & FA_S_ACCESSED))\n\t\tfa->fa_state |= FA_S_ACCESSED;\n}\n\n \nvoid fib_release_info(struct fib_info *);\nstruct fib_info *fib_create_info(struct fib_config *cfg,\n\t\t\t\t struct netlink_ext_ack *extack);\nint fib_nh_match(struct net *net, struct fib_config *cfg, struct fib_info *fi,\n\t\t struct netlink_ext_ack *extack);\nbool fib_metrics_match(struct fib_config *cfg, struct fib_info *fi);\nint fib_dump_info(struct sk_buff *skb, u32 pid, u32 seq, int event,\n\t\t  const struct fib_rt_info *fri, unsigned int flags);\nvoid rtmsg_fib(int event, __be32 key, struct fib_alias *fa, int dst_len,\n\t       u32 tb_id, const struct nl_info *info, unsigned int nlm_flags);\nsize_t fib_nlmsg_size(struct fib_info *fi);\n\nstatic inline void fib_result_assign(struct fib_result *res,\n\t\t\t\t     struct fib_info *fi)\n{\n\t \n\tres->fi = fi;\n\tres->nhc = fib_info_nhc(fi, 0);\n}\n\nstruct fib_prop {\n\tint\terror;\n\tu8\tscope;\n};\n\nextern const struct fib_prop fib_props[RTN_MAX + 1];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

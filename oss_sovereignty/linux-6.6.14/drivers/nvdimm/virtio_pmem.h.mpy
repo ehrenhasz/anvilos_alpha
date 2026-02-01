@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_pmem.h",
+  "hash_id": "29e8f4520d71a19cc935b502319327953d5a9d22e75e0ba4b65ffb84df5f5a3b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nvdimm/virtio_pmem.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_VIRTIO_PMEM_H\n#define _LINUX_VIRTIO_PMEM_H\n\n#include <linux/module.h>\n#include <uapi/linux/virtio_pmem.h>\n#include <linux/libnvdimm.h>\n#include <linux/spinlock.h>\n\nstruct virtio_pmem_request {\n\tstruct virtio_pmem_req req;\n\tstruct virtio_pmem_resp resp;\n\n\t \n\twait_queue_head_t host_acked;\n\tbool done;\n\n\t \n\twait_queue_head_t wq_buf;\n\tbool wq_buf_avail;\n\tstruct list_head list;\n};\n\nstruct virtio_pmem {\n\tstruct virtio_device *vdev;\n\n\t \n\tstruct virtqueue *req_vq;\n\n\t \n\tstruct nvdimm_bus *nvdimm_bus;\n\tstruct nvdimm_bus_descriptor nd_desc;\n\n\t \n\tstruct list_head req_list;\n\n\t \n\tspinlock_t pmem_lock;\n\n\t \n\t__u64 start;\n\t__u64 size;\n};\n\nvoid virtio_pmem_host_ack(struct virtqueue *vq);\nint async_pmem_flush(struct nd_region *nd_region, struct bio *bio);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

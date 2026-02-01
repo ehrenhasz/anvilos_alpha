@@ -1,0 +1,9 @@
+{
+  "module_name": "mt76x2u.h",
+  "hash_id": "4f2ce6da3ee0b06bf94a0b3f4d0fedc572d4ee2f833733eac9d03faa7ac64641",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt76x2/mt76x2u.h",
+  "human_readable_source": " \n \n\n#ifndef __MT76x2U_H\n#define __MT76x2U_H\n\n#include <linux/device.h>\n\n#include \"mt76x2.h\"\n#include \"mcu.h\"\n\n#define MT7612U_EEPROM_SIZE\t\t512\n\n#define MT_USB_AGGR_SIZE_LIMIT\t\t21  \n#define MT_USB_AGGR_TIMEOUT\t\t0x80  \n\nextern const struct ieee80211_ops mt76x2u_ops;\n\nint mt76x2u_register_device(struct mt76x02_dev *dev);\nint mt76x2u_init_hardware(struct mt76x02_dev *dev);\nvoid mt76x2u_cleanup(struct mt76x02_dev *dev);\nvoid mt76x2u_stop_hw(struct mt76x02_dev *dev);\n\nint mt76x2u_mac_reset(struct mt76x02_dev *dev);\nint mt76x2u_mac_stop(struct mt76x02_dev *dev);\n\nint mt76x2u_phy_set_channel(struct mt76x02_dev *dev,\n\t\t\t    struct cfg80211_chan_def *chandef);\nvoid mt76x2u_phy_calibrate(struct work_struct *work);\n\nvoid mt76x2u_mcu_complete_urb(struct urb *urb);\nint mt76x2u_mcu_init(struct mt76x02_dev *dev);\nint mt76x2u_mcu_fw_init(struct mt76x02_dev *dev);\n\nint mt76x2u_alloc_queues(struct mt76x02_dev *dev);\nvoid mt76x2u_queues_deinit(struct mt76x02_dev *dev);\nvoid mt76x2u_stop_queues(struct mt76x02_dev *dev);\nint mt76x2u_skb_dma_info(struct sk_buff *skb, enum dma_msg_port port,\n\t\t\t u32 flags);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

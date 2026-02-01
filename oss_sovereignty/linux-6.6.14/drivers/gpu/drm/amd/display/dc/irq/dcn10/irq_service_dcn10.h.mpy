@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_service_dcn10.h",
+  "hash_id": "024f0ae96da68a830e0424fa50610af844d2d0f16591250fa10a3af11ecd4bba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/irq/dcn10/irq_service_dcn10.h",
+  "human_readable_source": " \n\n#ifndef __DAL_IRQ_SERVICE_DCN10_H__\n#define __DAL_IRQ_SERVICE_DCN10_H__\n\n#include \"../irq_service.h\"\n\nstruct irq_service *dal_irq_service_dcn10_create(\n\tstruct irq_service_init_data *init_data);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

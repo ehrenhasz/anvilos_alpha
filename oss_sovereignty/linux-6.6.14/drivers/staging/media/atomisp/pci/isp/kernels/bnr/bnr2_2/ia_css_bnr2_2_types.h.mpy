@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_bnr2_2_types.h",
+  "hash_id": "340d5a85e16dd69045b83564b4885ea89349a9436550c6eb49bbe8f110ffb827",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/bnr/bnr2_2/ia_css_bnr2_2_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_BNR2_2_TYPES_H\n#define __IA_CSS_BNR2_2_TYPES_H\n\n \n\n#include \"type_support.h\"  \n\n \nstruct ia_css_bnr2_2_config {\n\t \n\t \n\ts32 d_var_gain_r;\n\ts32 d_var_gain_g;\n\ts32 d_var_gain_b;\n\t \n\t \n\t \n\ts32 d_var_gain_slope_r;\n\ts32 d_var_gain_slope_g;\n\ts32 d_var_gain_slope_b;\n\t \n\t \n\t \n\ts32 n_var_gain_r;\n\ts32 n_var_gain_g;\n\ts32 n_var_gain_b;\n\t \n\t \n\t \n\ts32 n_var_gain_slope_r;\n\ts32 n_var_gain_slope_g;\n\ts32 n_var_gain_slope_b;\n\t \n\n\ts32 dir_thres;\t\t \n\ts32 dir_thres_w;\t\t \n\ts32 var_offset_coef;\t \n\ts32 dir_gain;\t\t \n\ts32 detail_gain;\t\t \n\ts32 detail_gain_divisor;\t \n\ts32 detail_level_offset;\t \n\ts32 d_var_th_min;\t\t \n\ts32 d_var_th_max;\t\t \n\ts32 n_var_th_min;\t\t \n\ts32 n_var_th_max;\t\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

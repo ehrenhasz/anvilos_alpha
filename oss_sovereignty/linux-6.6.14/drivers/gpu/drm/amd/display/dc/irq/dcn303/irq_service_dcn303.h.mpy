@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_service_dcn303.h",
+  "hash_id": "70f38ed53426ce8f7fe060b85c8ae84c50d3ed41315be0b711ee56797346e31c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/irq/dcn303/irq_service_dcn303.h",
+  "human_readable_source": "\n \n\n#ifndef __DAL_IRQ_SERVICE_DCN303_H__\n#define __DAL_IRQ_SERVICE_DCN303_H__\n\n#include \"../irq_service.h\"\n\nstruct irq_service *dal_irq_service_dcn303_create(struct irq_service_init_data *init_data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

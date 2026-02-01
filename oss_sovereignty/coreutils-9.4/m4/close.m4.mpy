@@ -1,0 +1,9 @@
+{
+  "module_name": "close.m4",
+  "hash_id": "1455d8312fa2d4f8de7d6d389f15caa69173ef12c04af4b3b5ebb3e0d5e0892a",
+  "original_prompt": "Ingested from coreutils-9.4/m4/close.m4",
+  "human_readable_source": "# close.m4 serial 10\ndnl Copyright (C) 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN_ONCE([gl_FUNC_CLOSE],\n[\n  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])\n  m4_ifdef([gl_MSVC_INVAL], [\n    AC_REQUIRE([gl_MSVC_INVAL])\n    if test $HAVE_MSVC_INVALID_PARAMETER_HANDLER = 1; then\n      REPLACE_CLOSE=1\n    fi\n  ])\n  m4_ifdef([gl_PREREQ_SYS_H_WINSOCK2], [\n    gl_PREREQ_SYS_H_WINSOCK2\n    if test $UNISTD_H_HAVE_WINSOCK2_H = 1; then\n      dnl Even if the 'socket' module is not used here, another part of the\n      dnl application may use it and pass file descriptors that refer to\n      dnl sockets to the close() function. So enable the support for sockets.\n      REPLACE_CLOSE=1\n    fi\n  ])\n  dnl Replace close() for supporting the gnulib-defined fchdir() function,\n  dnl to keep fchdir's bookkeeping up-to-date.\n  m4_ifdef([gl_FUNC_FCHDIR], [\n    if test $REPLACE_CLOSE = 0; then\n      gl_TEST_FCHDIR\n      if test $HAVE_FCHDIR = 0; then\n        REPLACE_CLOSE=1\n      fi\n    fi\n  ])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

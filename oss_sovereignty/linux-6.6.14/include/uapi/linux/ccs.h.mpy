@@ -1,0 +1,9 @@
+{
+  "module_name": "ccs.h",
+  "hash_id": "25d5fda11fb00f3b4567b1667e8a663b59d9dddc19a09d7c478e7020c454f8b1",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/ccs.h",
+  "human_readable_source": " \n \n\n#ifndef __UAPI_CCS_H__\n#define __UAPI_CCS_H__\n\n#include <linux/v4l2-controls.h>\n\n#define V4L2_CID_CCS_ANALOGUE_GAIN_M0\t\t(V4L2_CID_USER_CCS_BASE + 1)\n#define V4L2_CID_CCS_ANALOGUE_GAIN_C0\t\t(V4L2_CID_USER_CCS_BASE + 2)\n#define V4L2_CID_CCS_ANALOGUE_GAIN_M1\t\t(V4L2_CID_USER_CCS_BASE + 3)\n#define V4L2_CID_CCS_ANALOGUE_GAIN_C1\t\t(V4L2_CID_USER_CCS_BASE + 4)\n#define V4L2_CID_CCS_ANALOGUE_LINEAR_GAIN\t(V4L2_CID_USER_CCS_BASE + 5)\n#define V4L2_CID_CCS_ANALOGUE_EXPONENTIAL_GAIN\t(V4L2_CID_USER_CCS_BASE + 6)\n#define V4L2_CID_CCS_SHADING_CORRECTION\t\t(V4L2_CID_USER_CCS_BASE + 8)\n#define V4L2_CID_CCS_LUMINANCE_CORRECTION_LEVEL\t(V4L2_CID_USER_CCS_BASE + 9)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "443fcbbacf0c8862030d0d104c167b095064a0854f513cfa53e7dcb2749fe7ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/isci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_SCSI_ISCI) += isci.o\nisci-objs := init.o phy.o request.o \\\n\t     remote_device.o port.o \\\n\t     host.o task.o probe_roms.o \\\n\t     remote_node_context.o \\\n\t     remote_node_table.o \\\n\t     unsolicited_frame_control.o \\\n\t     port_config.o \\\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

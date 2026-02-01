@@ -1,0 +1,9 @@
+{
+  "module_name": "iocontext.h",
+  "hash_id": "fb41ffaf832e7d35e6bb5303ece579b48ccf8b117a69a1a1b157d85d82b9a288",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iocontext.h",
+  "human_readable_source": " \n#ifndef IOCONTEXT_H\n#define IOCONTEXT_H\n\n#include <linux/radix-tree.h>\n#include <linux/rcupdate.h>\n#include <linux/workqueue.h>\n\nenum {\n\tICQ_EXITED\t\t= 1 << 2,\n\tICQ_DESTROYED\t\t= 1 << 3,\n};\n\n \nstruct io_cq {\n\tstruct request_queue\t*q;\n\tstruct io_context\t*ioc;\n\n\t \n\tunion {\n\t\tstruct list_head\tq_node;\n\t\tstruct kmem_cache\t*__rcu_icq_cache;\n\t};\n\tunion {\n\t\tstruct hlist_node\tioc_node;\n\t\tstruct rcu_head\t\t__rcu_head;\n\t};\n\n\tunsigned int\t\tflags;\n};\n\n \nstruct io_context {\n\tatomic_long_t refcount;\n\tatomic_t active_ref;\n\n\tunsigned short ioprio;\n\n#ifdef CONFIG_BLK_ICQ\n\t \n\tspinlock_t lock;\n\n\tstruct radix_tree_root\ticq_tree;\n\tstruct io_cq __rcu\t*icq_hint;\n\tstruct hlist_head\ticq_list;\n\n\tstruct work_struct release_work;\n#endif  \n};\n\nstruct task_struct;\n#ifdef CONFIG_BLOCK\nvoid put_io_context(struct io_context *ioc);\nvoid exit_io_context(struct task_struct *task);\nint __copy_io(unsigned long clone_flags, struct task_struct *tsk);\nstatic inline int copy_io(unsigned long clone_flags, struct task_struct *tsk)\n{\n\tif (!current->io_context)\n\t\treturn 0;\n\treturn __copy_io(clone_flags, tsk);\n}\n#else\nstruct io_context;\nstatic inline void put_io_context(struct io_context *ioc) { }\nstatic inline void exit_io_context(struct task_struct *task) { }\nstatic inline int copy_io(unsigned long clone_flags, struct task_struct *tsk)\n{\n\treturn 0;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

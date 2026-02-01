@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-pagemap-folio_wait_bit.m4",
+  "hash_id": "df502b472d016cbc93716c652111f3616dcddcbd308c0ad577f8a73d835ff83a",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-pagemap-folio_wait_bit.m4",
+  "human_readable_source": "dnl #\ndnl # Linux 5.16 no longer allows directly calling wait_on_page_bit, and\ndnl # instead requires you to call folio-specific functions. In this case,\ndnl # wait_on_page_bit(pg, PG_writeback) becomes\ndnl # folio_wait_bit(pg, PG_writeback)\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_PAGEMAP_FOLIO_WAIT_BIT], [\n\tZFS_LINUX_TEST_SRC([pagemap_has_folio_wait_bit], [\n\t\t#include <linux/pagemap.h>\n\t],[\n\t\tstatic struct folio *f = NULL;\n\n\t\tfolio_wait_bit(f, PG_writeback);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_PAGEMAP_FOLIO_WAIT_BIT], [\n\tAC_MSG_CHECKING([whether folio_wait_bit() exists])\n\tZFS_LINUX_TEST_RESULT([pagemap_has_folio_wait_bit], [\n\t\tAC_MSG_RESULT([yes])\n\t\tAC_DEFINE(HAVE_PAGEMAP_FOLIO_WAIT_BIT, 1,\n\t\t\t[folio_wait_bit() exists])\n\t],[\n\t\tAC_MSG_RESULT([no])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

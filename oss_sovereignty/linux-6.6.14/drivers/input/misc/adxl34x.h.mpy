@@ -1,0 +1,9 @@
+{
+  "module_name": "adxl34x.h",
+  "hash_id": "158cde20e2f6fb3bee7311c998172edb7b6767108432f9811aef96b34c8ec1ff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/misc/adxl34x.h",
+  "human_readable_source": " \n \n\n#ifndef _ADXL34X_H_\n#define _ADXL34X_H_\n\nstruct device;\nstruct adxl34x;\n\nstruct adxl34x_bus_ops {\n\tu16 bustype;\n\tint (*read)(struct device *, unsigned char);\n\tint (*read_block)(struct device *, unsigned char, int, void *);\n\tint (*write)(struct device *, unsigned char, unsigned char);\n};\n\nstruct adxl34x *adxl34x_probe(struct device *dev, int irq,\n\t\t\t      bool fifo_delay_default,\n\t\t\t      const struct adxl34x_bus_ops *bops);\nvoid adxl34x_remove(struct adxl34x *ac);\n\nextern const struct dev_pm_ops adxl34x_pm;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

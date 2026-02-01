@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__modmicropython.c.module",
+  "hash_id": "b8dc63ba3edd67eba791b5b1eeb5869914ecbb9741ace87ed0401259fd590c4d",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/module/@@__@@__py__modmicropython.c.module",
+  "human_readable_source": "MP_REGISTER_MODULE(MP_QSTR_micropython, mp_module_micropython);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7101c6308af9ea6d936e940cfdec8d2e114a18219dc9212b5a5a8745639d4a89",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/mod/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nOBJECT_FILES_NON_STANDARD := y\nCFLAGS_REMOVE_empty.o += $(CC_FLAGS_LTO)\n\nhostprogs-always-y\t+= modpost mk_elfconfig\nalways-y\t\t+= empty.o\n\nmodpost-objs\t:= modpost.o file2alias.o sumversion.o\n\ndevicetable-offsets-file := devicetable-offsets.h\n\n$(obj)/$(devicetable-offsets-file): $(obj)/devicetable-offsets.s FORCE\n\t$(call filechk,offsets,__DEVICETABLE_OFFSETS_H__)\n\ntargets += $(devicetable-offsets-file) devicetable-offsets.s\n\n# dependencies on generated files need to be listed explicitly\n\n$(obj)/modpost.o $(obj)/file2alias.o $(obj)/sumversion.o: $(obj)/elfconfig.h\n$(obj)/file2alias.o: $(obj)/$(devicetable-offsets-file)\n\nquiet_cmd_elfconfig = MKELF   $@\n      cmd_elfconfig = $(obj)/mk_elfconfig < $< > $@\n\n$(obj)/elfconfig.h: $(obj)/empty.o $(obj)/mk_elfconfig FORCE\n\t$(call if_changed,elfconfig)\n\ntargets += elfconfig.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

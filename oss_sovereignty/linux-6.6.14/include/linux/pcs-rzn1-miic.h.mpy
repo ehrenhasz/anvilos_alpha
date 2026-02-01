@@ -1,0 +1,9 @@
+{
+  "module_name": "pcs-rzn1-miic.h",
+  "hash_id": "98609fc6c7c7c64d71d80a36aa4491a6f946762e54ca5915a0e089e0280886cc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pcs-rzn1-miic.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_PCS_MIIC_H\n#define __LINUX_PCS_MIIC_H\n\nstruct phylink;\nstruct device_node;\n\nstruct phylink_pcs *miic_create(struct device *dev, struct device_node *np);\n\nvoid miic_destroy(struct phylink_pcs *pcs);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

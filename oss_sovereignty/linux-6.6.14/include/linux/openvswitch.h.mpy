@@ -1,0 +1,9 @@
+{
+  "module_name": "openvswitch.h",
+  "hash_id": "deb7a4c383cf88cccd9b5ab37c399a2d8f3afbdc10d059f75a0b88c6ae8d28d4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/openvswitch.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_OPENVSWITCH_H\n#define _LINUX_OPENVSWITCH_H 1\n\n#include <uapi/linux/openvswitch.h>\n\n#define OVS_CLONE_ATTR_EXEC      0    \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "irqdomain.c",
+  "hash_id": "5df70de9b0f19ca73879d779ad6474d72ce583b9105dd1b93dbd586d7397b64e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/sh/intc/irqdomain.c",
+  "human_readable_source": " \n#define pr_fmt(fmt) \"intc: \" fmt\n\n#include <linux/irqdomain.h>\n#include <linux/sh_intc.h>\n#include <linux/export.h>\n#include \"internals.h\"\n\n \nstatic int intc_evt_xlate(struct irq_domain *d, struct device_node *ctrlr,\n\t\t\t  const u32 *intspec, unsigned int intsize,\n\t\t\t  unsigned long *out_hwirq, unsigned int *out_type)\n{\n\tif (WARN_ON(intsize < 1))\n\t\treturn -EINVAL;\n\n\t*out_hwirq = evt2irq(intspec[0]);\n\t*out_type = IRQ_TYPE_NONE;\n\n\treturn 0;\n}\n\nstatic const struct irq_domain_ops intc_evt_ops = {\n\t.xlate\t\t= intc_evt_xlate,\n};\n\nvoid __init intc_irq_domain_init(struct intc_desc_int *d,\n\t\t\t\t struct intc_hw_desc *hw)\n{\n\tunsigned int irq_base, irq_end;\n\n\t \n\tirq_base = evt2irq(hw->vectors[0].vect);\n\tirq_end = evt2irq(hw->vectors[hw->nr_vectors - 1].vect);\n\n\t \n\tif (irq_base == 0 && irq_end == (irq_base + hw->nr_vectors - 1))\n\t\td->domain = irq_domain_add_linear(NULL, hw->nr_vectors,\n\t\t\t\t\t\t  &intc_evt_ops, NULL);\n\telse\n\t\td->domain = irq_domain_add_tree(NULL, &intc_evt_ops, NULL);\n\n\tBUG_ON(!d->domain);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pfn.h",
+  "hash_id": "766b7224818679fd58ab68987914978e70c58ed272ade302353d3834f1d9e732",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nvdimm/pfn.h",
+  "human_readable_source": " \n \n\n#ifndef __NVDIMM_PFN_H\n#define __NVDIMM_PFN_H\n\n#include <linux/types.h>\n#include <linux/mmzone.h>\n\n#define PFN_SIG_LEN 16\n#define PFN_SIG \"NVDIMM_PFN_INFO\\0\"\n#define DAX_SIG \"NVDIMM_DAX_INFO\\0\"\n\nstruct nd_pfn_sb {\n\tu8 signature[PFN_SIG_LEN];\n\tu8 uuid[16];\n\tu8 parent_uuid[16];\n\t__le32 flags;\n\t__le16 version_major;\n\t__le16 version_minor;\n\t__le64 dataoff;  \n\t__le64 npfns;\n\t__le32 mode;\n\t \n\t \n\t__le32 start_pad;\n\t__le32 end_trunc;\n\t \n\t__le32 align;\n\t \n\t \n\t__le32 page_size;\n\t__le16 page_struct_size;\n\tu8 padding[3994];\n\t__le64 checksum;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

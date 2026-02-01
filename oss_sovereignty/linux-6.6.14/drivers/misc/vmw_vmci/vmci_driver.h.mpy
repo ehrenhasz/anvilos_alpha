@@ -1,0 +1,9 @@
+{
+  "module_name": "vmci_driver.h",
+  "hash_id": "542d048c4e5ab81ac5c0ebbeaa8a850f42ffcc866feb3caa0b99e4a6c6b96d3b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/vmw_vmci/vmci_driver.h",
+  "human_readable_source": " \n \n\n#ifndef _VMCI_DRIVER_H_\n#define _VMCI_DRIVER_H_\n\n#include <linux/vmw_vmci_defs.h>\n#include <linux/wait.h>\n\n#include \"vmci_queue_pair.h\"\n#include \"vmci_context.h\"\n\nenum vmci_obj_type {\n\tVMCIOBJ_VMX_VM = 10,\n\tVMCIOBJ_CONTEXT,\n\tVMCIOBJ_SOCKET,\n\tVMCIOBJ_NOT_SET,\n};\n\n \nstruct vmci_obj {\n\tvoid *ptr;\n\tenum vmci_obj_type type;\n};\n\n \nextern struct pci_dev *vmci_pdev;\n\nu32 vmci_get_context_id(void);\nint vmci_send_datagram(struct vmci_datagram *dg);\nvoid vmci_call_vsock_callback(bool is_host);\n\nint vmci_host_init(void);\nvoid vmci_host_exit(void);\nbool vmci_host_code_active(void);\nint vmci_host_users(void);\n\nint vmci_guest_init(void);\nvoid vmci_guest_exit(void);\nbool vmci_guest_code_active(void);\nu32 vmci_get_vm_context_id(void);\n\nbool vmci_use_ppn64(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

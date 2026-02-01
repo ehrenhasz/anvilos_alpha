@@ -1,0 +1,9 @@
+{
+  "module_name": "savestring.c",
+  "hash_id": "2142dbc64296c9aae50408cfce8bea53d76cc5c9c824f8331691bd052f8bf658",
+  "original_prompt": "Ingested from readline-8.2/savestring.c",
+  "human_readable_source": " \n\n \n\n#define READLINE_LIBRARY\n\n#include <config.h>\n#ifdef HAVE_STRING_H\n#  include <string.h>\n#endif\n#include \"xmalloc.h\"\n\n \nchar *\nsavestring (const char *s)\n{\n  char *ret;\n\n  ret = (char *)xmalloc (strlen (s) + 1);\n  strcpy (ret, s);\n  return ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

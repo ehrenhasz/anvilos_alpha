@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl871x_wlan_sme.h",
+  "hash_id": "433e54ce0feba7247056a57f8dc4880091b324d4644a56e7131230b6e179b0f7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl871x_wlan_sme.h",
+  "human_readable_source": " \n \n#ifndef _RTL871X_WLAN_SME_H_\n#define _RTL871X_WLAN_SME_H_\n\n#define MSR_APMODE\t\t0x0C\n#define MSR_STAMODE\t0x08\n#define MSR_ADHOCMODE\t0x04\n#define MSR_NOLINKMODE\t0x00\n#define\t\t_1M_RATE_\t0\n#define\t\t_2M_RATE_\t1\n#define\t\t_5M_RATE_\t2\n#define\t\t_11M_RATE_\t3\n#define\t\t_6M_RATE_\t4\n#define\t\t_9M_RATE_\t5\n#define\t\t_12M_RATE_\t6\n#define\t\t_18M_RATE_\t7\n#define\t\t_24M_RATE_\t8\n#define\t\t_36M_RATE_\t9\n#define\t\t_48M_RATE_\t10\n#define\t\t_54M_RATE_\t11\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rename_exchange.c",
+  "hash_id": "71391c75abba7d584cb61fb21845180dbfa7eceae2f4852654274d2fc793c68e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/filesystems/fat/rename_exchange.c",
+  "human_readable_source": "\n \n\n#define _GNU_SOURCE\n#include <fcntl.h>\n#include <stdio.h>\n#include <stdlib.h>\n\nvoid print_usage(const char *program)\n{\n\tprintf(\"Usage: %s [oldpath] [newpath]\\n\", program);\n\tprintf(\"Atomically exchange oldpath and newpath\\n\");\n}\n\nint main(int argc, char *argv[])\n{\n\tint ret;\n\n\tif (argc != 3) {\n\t\tprint_usage(argv[0]);\n\t\texit(EXIT_FAILURE);\n\t}\n\n\tret = renameat2(AT_FDCWD, argv[1], AT_FDCWD, argv[2], RENAME_EXCHANGE);\n\tif (ret) {\n\t\tperror(\"rename exchange failed\");\n\t\texit(EXIT_FAILURE);\n\t}\n\n\texit(EXIT_SUCCESS);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

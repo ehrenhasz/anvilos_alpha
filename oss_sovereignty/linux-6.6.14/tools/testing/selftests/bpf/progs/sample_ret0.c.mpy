@@ -1,0 +1,9 @@
+{
+  "module_name": "sample_ret0.c",
+  "hash_id": "3b5a4bbacbe7a251cd74d6b69f15fc7cecac6bac1127d5489ea0f0b618bb601e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/sample_ret0.c",
+  "human_readable_source": " \n\n \nint func()\n{\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

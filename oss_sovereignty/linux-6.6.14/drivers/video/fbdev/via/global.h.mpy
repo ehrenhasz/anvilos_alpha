@@ -1,0 +1,9 @@
+{
+  "module_name": "global.h",
+  "hash_id": "d5baadd2f88744531da0f49eca5ce1bdc67070f1374754326e03f88ef03ddf48",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/via/global.h",
+  "human_readable_source": " \n \n\n#ifndef __GLOBAL_H__\n#define __GLOBAL_H__\n\n#include <linux/fb.h>\n#include <linux/delay.h>\n#include <linux/ioport.h>\n#include <linux/pci.h>\n#include <linux/io.h>\n#include <linux/uaccess.h>\n#include <linux/init.h>\n#include <linux/proc_fs.h>\n#include <linux/console.h>\n#include <linux/timer.h>\n\n#ifdef CONFIG_X86\n#include <asm/olpc.h>\n#else\n#define machine_is_olpc(x) 0\n#endif\n\n#include \"debug.h\"\n\n#include \"viafbdev.h\"\n#include \"chip.h\"\n#include \"accel.h\"\n#include \"share.h\"\n#include \"dvi.h\"\n#include \"viamode.h\"\n#include \"hw.h\"\n\n#include \"lcd.h\"\n#include \"ioctl.h\"\n#include \"via_utility.h\"\n#include \"vt1636.h\"\n#include \"tblDPASetting.h\"\n\n \n\nextern int viafb_platform_epia_dvi;\nextern int viafb_device_lcd_dualedge;\nextern int viafb_bus_width;\nextern int viafb_display_hardware_layout;\nextern struct offset offset_reg;\nextern struct viafb_par *viaparinfo;\nextern struct viafb_par *viaparinfo1;\nextern struct fb_info *viafbinfo;\nextern struct fb_info *viafbinfo1;\nextern int viafb_DeviceStatus;\nextern int viafb_refresh;\nextern int viafb_refresh1;\nextern int viafb_lcd_dsp_method;\nextern int viafb_lcd_mode;\n\nextern int viafb_CRT_ON;\nextern unsigned int viafb_second_xres;\nextern unsigned int viafb_second_yres;\nextern int viafb_hotplug_Xres;\nextern int viafb_hotplug_Yres;\nextern int viafb_hotplug_bpp;\nextern int viafb_hotplug_refresh;\nextern int viafb_primary_dev;\n\nextern int viafb_lcd_panel_id;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

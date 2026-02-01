@@ -1,0 +1,9 @@
+{
+  "module_name": "sun6i-rtc.h",
+  "hash_id": "0a12d2223e7ade94e6b04fb30b340a4f93edf91f4d233424f1fa6145c6851f3b",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/sun6i-rtc.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_CLK_SUN6I_RTC_H_\n#define _DT_BINDINGS_CLK_SUN6I_RTC_H_\n\n#define CLK_OSC32K\t\t0\n#define CLK_OSC32K_FANOUT\t1\n#define CLK_IOSC\t\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

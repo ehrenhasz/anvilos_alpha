@@ -1,0 +1,9 @@
+{
+  "module_name": "xenbus_dev.h",
+  "hash_id": "b814dc9ba4d38a90c2201f669df826178b766125a4e09cd98ecec1d521cc8fb4",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/xenbus_dev.h",
+  "human_readable_source": " \n\n#ifndef __LINUX_XEN_XENBUS_DEV_H__\n#define __LINUX_XEN_XENBUS_DEV_H__\n\n#include <linux/ioctl.h>\n\n#define IOCTL_XENBUS_BACKEND_EVTCHN\t\t\t\\\n\t_IOC(_IOC_NONE, 'B', 0, 0)\n\n#define IOCTL_XENBUS_BACKEND_SETUP\t\t\t\\\n\t_IOC(_IOC_NONE, 'B', 1, 0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

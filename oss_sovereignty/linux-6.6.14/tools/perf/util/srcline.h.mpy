@@ -1,0 +1,9 @@
+{
+  "module_name": "srcline.h",
+  "hash_id": "0d5b1750ff459bcdb58ff778bb8fb326a8ffb9925292e204ac9c15b0369c7764",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/srcline.h",
+  "human_readable_source": " \n#ifndef PERF_SRCLINE_H\n#define PERF_SRCLINE_H\n\n#include <linux/list.h>\n#include <linux/rbtree.h>\n#include <linux/types.h>\n\nstruct dso;\nstruct symbol;\n\nextern int addr2line_timeout_ms;\nextern bool srcline_full_filename;\nchar *get_srcline(struct dso *dso, u64 addr, struct symbol *sym,\n\t\t  bool show_sym, bool show_addr, u64 ip);\nchar *__get_srcline(struct dso *dso, u64 addr, struct symbol *sym,\n\t\t  bool show_sym, bool show_addr, bool unwind_inlines,\n\t\t  u64 ip);\nvoid zfree_srcline(char **srcline);\nchar *get_srcline_split(struct dso *dso, u64 addr, unsigned *line);\n\n \nvoid srcline__tree_insert(struct rb_root_cached *tree, u64 addr, char *srcline);\n \nchar *srcline__tree_find(struct rb_root_cached *tree, u64 addr);\n \nvoid srcline__tree_delete(struct rb_root_cached *tree);\n\nextern char *srcline__unknown;\n#define SRCLINE_UNKNOWN srcline__unknown\n\nstruct inline_list {\n\tstruct symbol\t\t*symbol;\n\tchar\t\t\t*srcline;\n\tstruct list_head\tlist;\n};\n\nstruct inline_node {\n\tu64\t\t\taddr;\n\tstruct list_head\tval;\n\tstruct rb_node\t\trb_node;\n};\n\n \nstruct inline_node *dso__parse_addr_inlines(struct dso *dso, u64 addr,\n\t\t\t\t\t    struct symbol *sym);\n \nvoid inline_node__delete(struct inline_node *node);\n\n \nvoid inlines__tree_insert(struct rb_root_cached *tree,\n\t\t\t  struct inline_node *inlines);\n \nstruct inline_node *inlines__tree_find(struct rb_root_cached *tree, u64 addr);\n \nvoid inlines__tree_delete(struct rb_root_cached *tree);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

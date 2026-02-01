@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "05df336aed17bf2b6825799daa2d05b03c7bd7ae247f1edfd17adec5ae64c271",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/panfrost/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig DRM_PANFROST\n\ttristate \"Panfrost (DRM support for ARM Mali Midgard/Bifrost GPUs)\"\n\tdepends on DRM\n\tdepends on ARM || ARM64 || COMPILE_TEST\n\tdepends on !GENERIC_ATOMIC64    # for IOMMU_IO_PGTABLE_LPAE\n\tdepends on MMU\n\tselect DRM_SCHED\n\tselect IOMMU_SUPPORT\n\tselect IOMMU_IO_PGTABLE_LPAE\n\tselect DRM_GEM_SHMEM_HELPER\n\tselect PM_DEVFREQ\n\tselect DEVFREQ_GOV_SIMPLE_ONDEMAND\n\tselect WANT_DEV_COREDUMP\n\thelp\n\t  DRM driver for ARM Mali Midgard (T6xx, T7xx, T8xx) and\n\t  Bifrost (G3x, G5x, G7x) GPUs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

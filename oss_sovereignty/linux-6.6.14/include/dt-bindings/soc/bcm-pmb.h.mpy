@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm-pmb.h",
+  "hash_id": "2a92bba1da353f52ad84032dc91e5d07f4de49b3ec3a86abe9ae55b5fd5250a2",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/soc/bcm-pmb.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_SOC_BCM_PMB_H\n#define __DT_BINDINGS_SOC_BCM_PMB_H\n\n#define BCM_PMB_PCIE0\t\t\t\t0x01\n#define BCM_PMB_PCIE1\t\t\t\t0x02\n#define BCM_PMB_PCIE2\t\t\t\t0x03\n#define BCM_PMB_HOST_USB\t\t\t0x04\n#define BCM_PMB_SATA\t\t\t\t0x05\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

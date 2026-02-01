@@ -1,0 +1,9 @@
+{
+  "module_name": "clip_tbl.h",
+  "hash_id": "93d2b03bffe563b79552f98f1d81adc04a40084b15fe8a6606f999b10eacb4bf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4/clip_tbl.h",
+  "human_readable_source": " \n\n#include <linux/refcount.h>\n\nstruct clip_entry {\n\tspinlock_t lock;\t \n\trefcount_t refcnt;\n\tstruct list_head list;\n\tunion {\n\t\tstruct sockaddr_in addr;\n\t\tstruct sockaddr_in6 addr6;\n\t};\n};\n\nstruct clip_tbl {\n\tunsigned int clipt_start;\n\tunsigned int clipt_size;\n\trwlock_t lock;\n\tatomic_t nfree;\n\tstruct list_head ce_free_head;\n\tvoid *cl_list;\n\tstruct list_head hash_list[];\n};\n\nenum {\n\tCLIPT_MIN_HASH_BUCKETS = 2,\n};\n\nstruct clip_tbl *t4_init_clip_tbl(unsigned int clipt_start,\n\t\t\t\t  unsigned int clipt_end);\nint cxgb4_clip_get(const struct net_device *dev, const u32 *lip, u8 v6);\nvoid cxgb4_clip_release(const struct net_device *dev, const u32 *lip, u8 v6);\nint clip_tbl_show(struct seq_file *seq, void *v);\nint cxgb4_update_root_dev_clip(struct net_device *dev);\nvoid t4_cleanup_clip_tbl(struct adapter *adap);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

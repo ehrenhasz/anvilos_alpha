@@ -1,0 +1,9 @@
+{
+  "module_name": "vc4_fence.c",
+  "hash_id": "9688662ff69521317b46839f1adf2cfd527e35080ae784137a1d493db79a67e4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/vc4/vc4_fence.c",
+  "human_readable_source": " \n\n#include \"vc4_drv.h\"\n\nstatic const char *vc4_fence_get_driver_name(struct dma_fence *fence)\n{\n\treturn \"vc4\";\n}\n\nstatic const char *vc4_fence_get_timeline_name(struct dma_fence *fence)\n{\n\treturn \"vc4-v3d\";\n}\n\nstatic bool vc4_fence_signaled(struct dma_fence *fence)\n{\n\tstruct vc4_fence *f = to_vc4_fence(fence);\n\tstruct vc4_dev *vc4 = to_vc4_dev(f->dev);\n\n\treturn vc4->finished_seqno >= f->seqno;\n}\n\nconst struct dma_fence_ops vc4_fence_ops = {\n\t.get_driver_name = vc4_fence_get_driver_name,\n\t.get_timeline_name = vc4_fence_get_timeline_name,\n\t.signaled = vc4_fence_signaled,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

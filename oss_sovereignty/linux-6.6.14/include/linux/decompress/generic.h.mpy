@@ -1,0 +1,9 @@
+{
+  "module_name": "generic.h",
+  "hash_id": "8a2c11dbfed1c4bc652b2802d3577f1815666197b6612886fe5a4a887f77728d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/decompress/generic.h",
+  "human_readable_source": " \n#ifndef DECOMPRESS_GENERIC_H\n#define DECOMPRESS_GENERIC_H\n\ntypedef int (*decompress_fn) (unsigned char *inbuf, long len,\n\t\t\t      long (*fill)(void*, unsigned long),\n\t\t\t      long (*flush)(void*, unsigned long),\n\t\t\t      unsigned char *outbuf,\n\t\t\t      long *posp,\n\t\t\t      void(*error)(char *x));\n\n \n\n\n \ndecompress_fn decompress_method(const unsigned char *inbuf, long len,\n\t\t\t\tconst char **name);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

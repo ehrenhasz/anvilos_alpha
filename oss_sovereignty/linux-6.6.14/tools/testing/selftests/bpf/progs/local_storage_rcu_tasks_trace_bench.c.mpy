@@ -1,0 +1,9 @@
+{
+  "module_name": "local_storage_rcu_tasks_trace_bench.c",
+  "hash_id": "9aa32c7280b0a51f724acf8c8d32e5975a2fa11ddf4b6fa731fbb61b0816ce3d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/local_storage_rcu_tasks_trace_bench.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_TASK_STORAGE);\n\t__uint(map_flags, BPF_F_NO_PREALLOC);\n\t__type(key, int);\n\t__type(value, int);\n} task_storage SEC(\".maps\");\n\nlong hits;\nlong gp_hits;\nlong gp_times;\nlong current_gp_start;\nlong unexpected;\nbool postgp_seen;\n\nSEC(\"fentry/\" SYS_PREFIX \"sys_getpgid\")\nint get_local(void *ctx)\n{\n\tstruct task_struct *task;\n\tint idx;\n\tint *s;\n\n\tidx = 0;\n\ttask = bpf_get_current_task_btf();\n\ts = bpf_task_storage_get(&task_storage, task, &idx,\n\t\t\t\t BPF_LOCAL_STORAGE_GET_F_CREATE);\n\tif (!s)\n\t\treturn 0;\n\n\t*s = 3;\n\tbpf_task_storage_delete(&task_storage, task);\n\t__sync_add_and_fetch(&hits, 1);\n\treturn 0;\n}\n\nSEC(\"fentry/rcu_tasks_trace_pregp_step\")\nint pregp_step(struct pt_regs *ctx)\n{\n\tcurrent_gp_start = bpf_ktime_get_ns();\n\treturn 0;\n}\n\nSEC(\"fentry/rcu_tasks_trace_postgp\")\nint postgp(struct pt_regs *ctx)\n{\n\tif (!current_gp_start && postgp_seen) {\n\t\t \n\t\t__sync_add_and_fetch(&unexpected, 1);\n\t\treturn 0;\n\t}\n\n\t__sync_add_and_fetch(&gp_times, bpf_ktime_get_ns() - current_gp_start);\n\t__sync_add_and_fetch(&gp_hits, 1);\n\tcurrent_gp_start = 0;\n\tpostgp_seen = true;\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

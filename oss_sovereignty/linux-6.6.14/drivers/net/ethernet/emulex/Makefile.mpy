@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "31266e1facd7c04e5e00fbe650b5e426890fc46de280341e56563223102690ad",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/emulex/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Emulex device drivers.\n#\n\nobj-$(CONFIG_BE2NET) += benet/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

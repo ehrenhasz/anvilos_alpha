@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7e3060f203ff88cdd7c3b424e73a511435c5f8cdee46c108f0458b7136ff7df7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/verisilicon/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\ncomment \"Verisilicon media platform drivers\"\n\nconfig VIDEO_HANTRO\n\ttristate \"Hantro VPU driver\"\n\tdepends on ARCH_MXC || ARCH_ROCKCHIP || ARCH_AT91 || ARCH_SUNXI || COMPILE_TEST\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on VIDEO_DEV\n\tselect MEDIA_CONTROLLER\n\tselect MEDIA_CONTROLLER_REQUEST_API\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect VIDEOBUF2_VMALLOC\n\tselect V4L2_MEM2MEM_DEV\n\tselect V4L2_H264\n\tselect V4L2_VP9\n\thelp\n\t  Support for the Hantro IP based Video Processing Units present on\n\t  Rockchip and NXP i.MX8M SoCs, which accelerate video and image\n\t  encoding and decoding.\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called hantro-vpu.\n\nconfig VIDEO_HANTRO_IMX8M\n\tbool \"Hantro VPU i.MX8M support\"\n\tdepends on VIDEO_HANTRO\n\tdepends on ARCH_MXC || COMPILE_TEST\n\tdefault y\n\thelp\n\t  Enable support for i.MX8M SoCs.\n\nconfig VIDEO_HANTRO_SAMA5D4\n\tbool \"Hantro VDEC SAMA5D4 support\"\n\tdepends on VIDEO_HANTRO\n\tdepends on ARCH_AT91 || COMPILE_TEST\n\tdefault y\n\thelp\n\t  Enable support for Microchip SAMA5D4 SoCs.\n\nconfig VIDEO_HANTRO_ROCKCHIP\n\tbool \"Hantro VPU Rockchip support\"\n\tdepends on VIDEO_HANTRO\n\tdepends on ARCH_ROCKCHIP || COMPILE_TEST\n\tdefault y\n\thelp\n\t  Enable support for RK3288, RK3328, and RK3399 SoCs.\n\nconfig VIDEO_HANTRO_SUNXI\n\tbool \"Hantro VPU Allwinner support\"\n\tdepends on VIDEO_HANTRO\n\tdepends on ARCH_SUNXI || COMPILE_TEST\n\tdefault y\n\thelp\n\t  Enable support for H6 SoC.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

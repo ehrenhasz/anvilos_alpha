@@ -1,0 +1,9 @@
+{
+  "module_name": "mapper.h",
+  "hash_id": "6fa0e667bb755e1727bf0ca1b6edaff4057ea68882a84450a6eea797d844d270",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/crush/mapper.h",
+  "human_readable_source": " \n#ifndef CEPH_CRUSH_MAPPER_H\n#define CEPH_CRUSH_MAPPER_H\n\n \n\n#include \"crush.h\"\n\nextern int crush_find_rule(const struct crush_map *map, int ruleset, int type, int size);\nint crush_do_rule(const struct crush_map *map,\n\t\t  int ruleno, int x, int *result, int result_max,\n\t\t  const __u32 *weight, int weight_max,\n\t\t  void *cwin, const struct crush_choose_arg *choose_args);\n\n \nstatic inline size_t crush_work_size(const struct crush_map *map,\n\t\t\t\t     int result_max)\n{\n\treturn map->working_size + result_max * 3 * sizeof(__u32);\n}\n\nvoid crush_init_workspace(const struct crush_map *map, void *v);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8095d151fe2a902cc838c307afed99a71e21b9d6eed0ddf2b3b563cdaec48e2a",
+  "original_prompt": "Ingested from linux-6.6.14/security/keys/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for key management\n#\n\n#\n# Core\n#\nobj-y := \\\n\tgc.o \\\n\tkey.o \\\n\tkeyring.o \\\n\tkeyctl.o \\\n\tpermission.o \\\n\tprocess_keys.o \\\n\trequest_key.o \\\n\trequest_key_auth.o \\\n\tuser_defined.o\ncompat-obj-$(CONFIG_KEY_DH_OPERATIONS) += compat_dh.o\nobj-$(CONFIG_COMPAT) += compat.o $(compat-obj-y)\nobj-$(CONFIG_PROC_FS) += proc.o\nobj-$(CONFIG_SYSCTL) += sysctl.o\nobj-$(CONFIG_PERSISTENT_KEYRINGS) += persistent.o\nobj-$(CONFIG_KEY_DH_OPERATIONS) += dh.o\nobj-$(CONFIG_ASYMMETRIC_KEY_TYPE) += keyctl_pkey.o\n\n#\n# Key types\n#\nobj-$(CONFIG_BIG_KEYS) += big_key.o\nobj-$(CONFIG_TRUSTED_KEYS) += trusted-keys/\nobj-$(CONFIG_ENCRYPTED_KEYS) += encrypted-keys/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

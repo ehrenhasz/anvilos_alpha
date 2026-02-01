@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_wattroff.c",
+  "hash_id": "e831e06ada6f656bb4eea953565744a957209283e0e674595cef093e5867e543",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_wattroff.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n#include <ctype.h>\n\nMODULE_ID(\"$Id: lib_wattroff.c,v 1.11 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwattr_off(WINDOW *win, attr_t at, void *opts GCC_UNUSED)\n{\n    T((T_CALLED(\"wattr_off(%p,%s)\"), (void *) win, _traceattr(at)));\n    if (win) {\n\tT((\"... current %s (%d)\",\n\t   _traceattr(WINDOW_ATTRS(win)),\n\t   GET_WINDOW_PAIR(win)));\n\n\tif_EXT_COLORS({\n\t    if (at & A_COLOR)\n\t\twin->_color = 0;\n\t});\n\ttoggle_attr_off(WINDOW_ATTRS(win), at);\n\treturnCode(OK);\n    } else\n\treturnCode(ERR);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

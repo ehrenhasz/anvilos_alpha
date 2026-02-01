@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "c98025b0255c529ce6189aac7f1bc7ff3875b39a731e82cf81a1d40fd0c94fe9",
+  "original_prompt": "Ingested from linux-6.6.14/samples/mei/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/mei-amt-version\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

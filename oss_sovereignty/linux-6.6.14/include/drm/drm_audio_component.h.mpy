@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_audio_component.h",
+  "hash_id": "9f66a59e51459a3a0c2836c5e525c63cf27df15720e2e3b0a70d48219e5303de",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_audio_component.h",
+  "human_readable_source": "\n\n\n#ifndef _DRM_AUDIO_COMPONENT_H_\n#define _DRM_AUDIO_COMPONENT_H_\n\n#include <linux/completion.h>\n#include <linux/types.h>\n\nstruct drm_audio_component;\nstruct device;\n\n \nstruct drm_audio_component_ops {\n\t \n\tstruct module *owner;\n\t \n\tunsigned long (*get_power)(struct device *);\n\t \n\tvoid (*put_power)(struct device *, unsigned long);\n\t \n\tvoid (*codec_wake_override)(struct device *, bool enable);\n\t \n\tint (*get_cdclk_freq)(struct device *);\n\t \n\tint (*sync_audio_rate)(struct device *, int port, int pipe, int rate);\n\t \n\tint (*get_eld)(struct device *, int port, int pipe, bool *enabled,\n\t\t       unsigned char *buf, int max_bytes);\n};\n\n \nstruct drm_audio_component_audio_ops {\n\t \n\tvoid *audio_ptr;\n\t \n\tvoid (*pin_eld_notify)(void *audio_ptr, int port, int pipe);\n\t \n\tint (*pin2port)(void *audio_ptr, int pin);\n\t \n\tint (*master_bind)(struct device *dev, struct drm_audio_component *);\n\t \n\tvoid (*master_unbind)(struct device *dev, struct drm_audio_component *);\n};\n\n \nstruct drm_audio_component {\n\t \n\tstruct device *dev;\n\t \n\tconst struct drm_audio_component_ops *ops;\n\t \n\tconst struct drm_audio_component_audio_ops *audio_ops;\n\t \n\tstruct completion master_bind_complete;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

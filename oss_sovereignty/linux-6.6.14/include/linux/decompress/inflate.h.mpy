@@ -1,0 +1,9 @@
+{
+  "module_name": "inflate.h",
+  "hash_id": "20c00467633d88843b7aa0903a153c89d3bf56b3e32d323b476eb5f210d515dd",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/decompress/inflate.h",
+  "human_readable_source": " \n#ifndef LINUX_DECOMPRESS_INFLATE_H\n#define LINUX_DECOMPRESS_INFLATE_H\n\nint gunzip(unsigned char *inbuf, long len,\n\t   long (*fill)(void*, unsigned long),\n\t   long (*flush)(void*, unsigned long),\n\t   unsigned char *output,\n\t   long *pos,\n\t   void(*error_fn)(char *x));\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

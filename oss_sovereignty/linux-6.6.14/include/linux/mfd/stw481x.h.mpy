@@ -1,0 +1,9 @@
+{
+  "module_name": "stw481x.h",
+  "hash_id": "031a3d7eb47204fe3a8a2b3dc8526f1e3593ef55fef2393782b029b88e5aacba",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/stw481x.h",
+  "human_readable_source": " \n \n#ifndef MFD_STW481X_H\n#define MFD_STW481X_H\n\n#include <linux/i2c.h>\n#include <linux/regulator/machine.h>\n#include <linux/regmap.h>\n#include <linux/bitops.h>\n\n \n#define STW_CONF1\t\t\t0x11U\n#define STW_CONF1_PDN_VMMC\t\t0x01U\n#define STW_CONF1_VMMC_MASK\t\t0x0eU\n#define STW_CONF1_VMMC_1_8V\t\t0x02U\n#define STW_CONF1_VMMC_2_85V\t\t0x04U\n#define STW_CONF1_VMMC_3V\t\t0x06U\n#define STW_CONF1_VMMC_1_85V\t\t0x08U\n#define STW_CONF1_VMMC_2_6V\t\t0x0aU\n#define STW_CONF1_VMMC_2_7V\t\t0x0cU\n#define STW_CONF1_VMMC_3_3V\t\t0x0eU\n#define STW_CONF1_MMC_LS_STATUS\t\t0x10U\n#define STW_PCTL_REG_LO\t\t\t0x1eU\n#define STW_PCTL_REG_HI\t\t\t0x1fU\n#define STW_CONF1_V_MONITORING\t\t0x20U\n#define STW_CONF1_IT_WARN\t\t0x40U\n#define STW_CONF1_PDN_VAUX\t\t0x80U\n#define STW_CONF2\t\t\t0x20U\n#define STW_CONF2_MASK_TWARN\t\t0x01U\n#define STW_CONF2_VMMC_EXT\t\t0x02U\n#define STW_CONF2_MASK_IT_WAKE_UP\t0x04U\n#define STW_CONF2_GPO1\t\t\t0x08U\n#define STW_CONF2_GPO2\t\t\t0x10U\n#define STW_VCORE_SLEEP\t\t\t0x21U\n\n \nstruct stw481x {\n\tstruct i2c_client\t*client;\n\tstruct regmap\t\t*map;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

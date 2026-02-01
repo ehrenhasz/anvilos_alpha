@@ -1,0 +1,9 @@
+{
+  "module_name": "tail.x",
+  "hash_id": "5a743f1b2aff751b79b6520d1ae2ce75cd9e407bdc729783342815becfe448c4",
+  "original_prompt": "Ingested from coreutils-9.4/man/tail.x",
+  "human_readable_source": "[NAME]\ntail \\- output the last part of files\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nhead(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

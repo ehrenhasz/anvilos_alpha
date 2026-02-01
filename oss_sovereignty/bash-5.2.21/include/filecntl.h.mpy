@@ -1,0 +1,9 @@
+{
+  "module_name": "filecntl.h",
+  "hash_id": "6e51afc07ea9205dd3f8a504e36a76b87bed9ab0d771ac6bd442489236e3696f",
+  "original_prompt": "Ingested from bash-5.2.21/include/filecntl.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_FILECNTL_H_)\n#define _FILECNTL_H_\n\n#include <fcntl.h>\n\n \n#if !defined (FD_CLOEXEC)\n#define FD_CLOEXEC     1\n#endif\n\n#define FD_NCLOEXEC    0\n\n#define SET_CLOSE_ON_EXEC(fd)  (fcntl ((fd), F_SETFD, FD_CLOEXEC))\n#define SET_OPEN_ON_EXEC(fd)   (fcntl ((fd), F_SETFD, FD_NCLOEXEC))\n\n \n#if !defined (O_NONBLOCK)\n#  if defined (O_NDELAY)\n#    define O_NONBLOCK O_NDELAY\n#  else\n#    define O_NONBLOCK 0\n#  endif\n#endif\n\n \n#if !defined (O_BINARY)\n#  define O_BINARY 0\n#endif\n#if !defined (O_TEXT)\n#  define O_TEXT 0\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

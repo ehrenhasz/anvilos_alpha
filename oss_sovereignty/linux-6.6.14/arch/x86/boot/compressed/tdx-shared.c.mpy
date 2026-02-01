@@ -1,0 +1,9 @@
+{
+  "module_name": "tdx-shared.c",
+  "hash_id": "ec17215d3eb72b9a9bbfc1f5b0cfcc4f8e967f076ca577a5786b699108134545",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/compressed/tdx-shared.c",
+  "human_readable_source": "#include \"error.h\"\n#include \"../../coco/tdx/tdx-shared.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

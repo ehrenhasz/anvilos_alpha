@@ -1,0 +1,9 @@
+{
+  "module_name": "gen_bd.h",
+  "hash_id": "92d008d61093887a66c148e52c02dcad89da7e1556404341af43ee0d78e8cdf4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fsl/bestcomm/gen_bd.h",
+  "human_readable_source": " \n \n\n#ifndef __BESTCOMM_GEN_BD_H__\n#define __BESTCOMM_GEN_BD_H__\n\nstruct bcom_gen_bd {\n\tu32\tstatus;\n\tu32\tbuf_pa;\n};\n\n\nextern struct bcom_task *\nbcom_gen_bd_rx_init(int queue_len, phys_addr_t fifo,\n\t\t\tint initiator, int ipr, int maxbufsize);\n\nextern int\nbcom_gen_bd_rx_reset(struct bcom_task *tsk);\n\nextern void\nbcom_gen_bd_rx_release(struct bcom_task *tsk);\n\n\nextern struct bcom_task *\nbcom_gen_bd_tx_init(int queue_len, phys_addr_t fifo,\n\t\t\tint initiator, int ipr);\n\nextern int\nbcom_gen_bd_tx_reset(struct bcom_task *tsk);\n\nextern void\nbcom_gen_bd_tx_release(struct bcom_task *tsk);\n\n\n \nstruct bcom_task * bcom_psc_gen_bd_rx_init(unsigned psc_num, int queue_len,\n\t\t\t\t\t   phys_addr_t fifo, int maxbufsize);\nstruct bcom_task * bcom_psc_gen_bd_tx_init(unsigned psc_num, int queue_len,\n\t\t\t\t\t   phys_addr_t fifo);\n#endif   \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

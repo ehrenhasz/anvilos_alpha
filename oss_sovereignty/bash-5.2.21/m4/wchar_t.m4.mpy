@@ -1,0 +1,9 @@
+{
+  "module_name": "wchar_t.m4",
+  "hash_id": "1cc4cb414ecbb5d41bf3fad28669446349ef51d4a26d0de88a2dd6573e5c657b",
+  "original_prompt": "Ingested from bash-5.2.21/m4/wchar_t.m4",
+  "human_readable_source": "# wchar_t.m4 serial 4 (gettext-0.18.2)\ndnl Copyright (C) 2002-2003, 2008-2019 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl From Bruno Haible.\ndnl Test whether <stddef.h> has the 'wchar_t' type.\ndnl Prerequisite: AC_PROG_CC\n\nAC_DEFUN([gt_TYPE_WCHAR_T],\n[\n  AC_CACHE_CHECK([for wchar_t], [gt_cv_c_wchar_t],\n    [AC_COMPILE_IFELSE(\n       [AC_LANG_PROGRAM(\n          [[#include <stddef.h>\n            wchar_t foo = (wchar_t)'\\0';]],\n          [[]])],\n       [gt_cv_c_wchar_t=yes],\n       [gt_cv_c_wchar_t=no])])\n  if test $gt_cv_c_wchar_t = yes; then\n    AC_DEFINE([HAVE_WCHAR_T], [1], [Define if you have the 'wchar_t' type.])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

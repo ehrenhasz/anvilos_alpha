@@ -1,0 +1,9 @@
+{
+  "module_name": "LOCK08.boot",
+  "hash_id": "b3c3db6b6682856d2f3e144369ffb521956090ddf04ab2d6a8b3cbed51648949",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/lock/LOCK08.boot",
+  "human_readable_source": "locktorture.torture_type=mutex_lock locktorture.nested_locks=8\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "eba172369f016666c0df5efe57a9567be25ce66ef0520a7a4d23cd7b80718266",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/loongson/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig DRM_LOONGSON\n\ttristate \"DRM support for Loongson Graphics\"\n\tdepends on DRM && PCI && MMU\n\tselect DRM_KMS_HELPER\n\tselect DRM_TTM\n\tselect I2C\n\tselect I2C_ALGOBIT\n\thelp\n\t  This is a DRM driver for Loongson Graphics, it may including\n\t  LS7A2000, LS7A1000, LS2K2000 and LS2K1000 etc. Loongson LS7A\n\t  series are bridge chipset, while Loongson LS2K series are SoC.\n\n\t  If \"M\" is selected, the module will be called loongson.\n\n\t  If in doubt, say \"N\".\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

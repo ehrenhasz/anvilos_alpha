@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "607801f8ee04d11a3d1094ba0d4821f02209dc5048bcf178c026cfe0a905f355",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/base/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Makefile for the Linux device tree\n\nobj-y\t\t\t:= component.o core.o bus.o dd.o syscore.o \\\n\t\t\t   driver.o class.o platform.o \\\n\t\t\t   cpu.o firmware.o init.o map.o devres.o \\\n\t\t\t   attribute_container.o transport_class.o \\\n\t\t\t   topology.o container.o property.o cacheinfo.o \\\n\t\t\t   swnode.o\nobj-$(CONFIG_AUXILIARY_BUS) += auxiliary.o\nobj-$(CONFIG_DEVTMPFS)\t+= devtmpfs.o\nobj-y\t\t\t+= power/\nobj-$(CONFIG_ISA_BUS_API)\t+= isa.o\nobj-y\t\t\t\t+= firmware_loader/\nobj-$(CONFIG_NUMA)\t+= node.o\nobj-$(CONFIG_MEMORY_HOTPLUG) += memory.o\nifeq ($(CONFIG_SYSFS),y)\nobj-$(CONFIG_MODULES)\t+= module.o\nendif\nobj-$(CONFIG_SYS_HYPERVISOR) += hypervisor.o\nobj-$(CONFIG_REGMAP)\t+= regmap/\nobj-$(CONFIG_SOC_BUS) += soc.o\nobj-$(CONFIG_PINCTRL) += pinctrl.o\nobj-$(CONFIG_DEV_COREDUMP) += devcoredump.o\nobj-$(CONFIG_GENERIC_MSI_IRQ) += platform-msi.o\nobj-$(CONFIG_GENERIC_ARCH_TOPOLOGY) += arch_topology.o\nobj-$(CONFIG_GENERIC_ARCH_NUMA) += arch_numa.o\nobj-$(CONFIG_ACPI) += physical_location.o\n\nobj-y\t\t\t+= test/\n\nccflags-$(CONFIG_DEBUG_DRIVER) := -DDEBUG\n\n# define_trace.h needs to know how to find our header\nCFLAGS_trace.o\t\t:= -I$(src)\nobj-$(CONFIG_TRACING)\t+= trace.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

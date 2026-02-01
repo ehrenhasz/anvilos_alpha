@@ -1,0 +1,9 @@
+{
+  "module_name": "copy-paste.h",
+  "hash_id": "7334d2931a3d547b248130c56f7f280852b45541b93dac1547e2eac1e2538444",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/nx-gzip/include/copy-paste.h",
+  "human_readable_source": " \n\n \n#define __stringify_in_c(...)\t#__VA_ARGS__\n#define stringify_in_c(...)\t__stringify_in_c(__VA_ARGS__) \" \"\n\n \n#define ___PPC_RA(a)    (((a) & 0x1f) << 16)\n#define ___PPC_RB(b)    (((b) & 0x1f) << 11)\n\n#define PPC_INST_COPY                   0x7c20060c\n#define PPC_INST_PASTE                  0x7c20070d\n\n#define PPC_COPY(a, b)          stringify_in_c(.long PPC_INST_COPY | \\\n\t\t\t\t\t\t___PPC_RA(a) | ___PPC_RB(b))\n#define PPC_PASTE(a, b)         stringify_in_c(.long PPC_INST_PASTE | \\\n\t\t\t\t\t\t___PPC_RA(a) | ___PPC_RB(b))\n#define CR0_SHIFT\t28\n#define CR0_MASK\t0xF\n \nstatic inline int vas_copy(void *crb, int offset)\n{\n\tasm volatile(PPC_COPY(%0, %1)\";\"\n\t\t:\n\t\t: \"b\" (offset), \"b\" (crb)\n\t\t: \"memory\");\n\n\treturn 0;\n}\n\nstatic inline int vas_paste(void *paste_address, int offset)\n{\n\t__u32 cr;\n\n\tcr = 0;\n\tasm volatile(PPC_PASTE(%1, %2)\";\"\n\t\t\"mfocrf %0, 0x80;\"\n\t\t: \"=r\" (cr)\n\t\t: \"b\" (offset), \"b\" (paste_address)\n\t\t: \"memory\", \"cr0\");\n\n\treturn (cr >> CR0_SHIFT) & CR0_MASK;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

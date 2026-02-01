@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8173-gce.h",
+  "hash_id": "0ec79a7b9cdaf814cc20af121eaa995c5a97c718ad784015fe2758cdca470d81",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/gce/mt8173-gce.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_GCE_MT8173_H\n#define _DT_BINDINGS_GCE_MT8173_H\n\n \n#define CMDQ_THR_PRIO_LOWEST\t0\n#define CMDQ_THR_PRIO_HIGHEST\t1\n\n \n#define SUBSYS_1400XXXX\t\t1\n#define SUBSYS_1401XXXX\t\t2\n#define SUBSYS_1402XXXX\t\t3\n\n \n#define CMDQ_EVENT_DISP_OVL0_SOF\t\t11\n#define CMDQ_EVENT_DISP_OVL1_SOF\t\t12\n#define CMDQ_EVENT_DISP_RDMA0_SOF\t\t13\n#define CMDQ_EVENT_DISP_RDMA1_SOF\t\t14\n#define CMDQ_EVENT_DISP_RDMA2_SOF\t\t15\n#define CMDQ_EVENT_DISP_WDMA0_SOF\t\t16\n#define CMDQ_EVENT_DISP_WDMA1_SOF\t\t17\n#define CMDQ_EVENT_DISP_OVL0_EOF\t\t39\n#define CMDQ_EVENT_DISP_OVL1_EOF\t\t40\n#define CMDQ_EVENT_DISP_RDMA0_EOF\t\t41\n#define CMDQ_EVENT_DISP_RDMA1_EOF\t\t42\n#define CMDQ_EVENT_DISP_RDMA2_EOF\t\t43\n#define CMDQ_EVENT_DISP_WDMA0_EOF\t\t44\n#define CMDQ_EVENT_DISP_WDMA1_EOF\t\t45\n#define CMDQ_EVENT_MUTEX0_STREAM_EOF\t\t53\n#define CMDQ_EVENT_MUTEX1_STREAM_EOF\t\t54\n#define CMDQ_EVENT_MUTEX2_STREAM_EOF\t\t55\n#define CMDQ_EVENT_MUTEX3_STREAM_EOF\t\t56\n#define CMDQ_EVENT_MUTEX4_STREAM_EOF\t\t57\n#define CMDQ_EVENT_DISP_RDMA0_UNDERRUN\t\t63\n#define CMDQ_EVENT_DISP_RDMA1_UNDERRUN\t\t64\n#define CMDQ_EVENT_DISP_RDMA2_UNDERRUN\t\t65\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

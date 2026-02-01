@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "99a74358fddc93ba647133b2df4476194dceba7118560112a5102ea9adeda1a9",
+  "original_prompt": "Ingested from linux-6.6.14/net/l3mdev/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Configuration for L3 master device support\n#\n\nconfig NET_L3_MASTER_DEV\n\tbool \"L3 Master device support\"\n\tdepends on INET || IPV6\n\thelp\n\t  This module provides glue between core networking code and device\n\t  drivers to support L3 master devices like VRF.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

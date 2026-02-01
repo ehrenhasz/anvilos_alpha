@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_pnfs.h",
+  "hash_id": "0c2314ec34c7d77120f2f08a98a9934eb630671ddafd8663aa0b4177aee6f4df",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_pnfs.h",
+  "human_readable_source": " \n#ifndef _XFS_PNFS_H\n#define _XFS_PNFS_H 1\n\n#ifdef CONFIG_EXPORTFS_BLOCK_OPS\nint xfs_fs_get_uuid(struct super_block *sb, u8 *buf, u32 *len, u64 *offset);\nint xfs_fs_map_blocks(struct inode *inode, loff_t offset, u64 length,\n\t\tstruct iomap *iomap, bool write, u32 *device_generation);\nint xfs_fs_commit_blocks(struct inode *inode, struct iomap *maps, int nr_maps,\n\t\tstruct iattr *iattr);\n\nint xfs_break_leased_layouts(struct inode *inode, uint *iolock,\n\t\tbool *did_unlock);\n#else\nstatic inline int\nxfs_break_leased_layouts(struct inode *inode, uint *iolock, bool *did_unlock)\n{\n\treturn 0;\n}\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

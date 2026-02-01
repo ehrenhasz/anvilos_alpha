@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "905ef3e15eed3109e764efcc66f4117341f1f2dbdadfb16fd5bf02db5a224eb0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/sis/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the SiS framebuffer device driver\n#\n\nobj-$(CONFIG_FB_SIS) += sisfb.o\n\nsisfb-objs := sis_main.o sis_accel.o init.o init301.o initextlfb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

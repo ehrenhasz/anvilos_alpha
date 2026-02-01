@@ -1,0 +1,9 @@
+{
+  "module_name": "amlogic,meson8b-clkc-reset.h",
+  "hash_id": "a3e978f2b65155606a1ea53dce027787753dfd2dbbc3c7a5773166211380368c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/amlogic,meson8b-clkc-reset.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_AMLOGIC_MESON8B_CLKC_RESET_H\n#define _DT_BINDINGS_AMLOGIC_MESON8B_CLKC_RESET_H\n\n#define CLKC_RESET_L2_CACHE_SOFT_RESET\t\t\t\t0\n#define CLKC_RESET_AXI_64_TO_128_BRIDGE_A5_SOFT_RESET\t\t1\n#define CLKC_RESET_SCU_SOFT_RESET\t\t\t\t2\n#define CLKC_RESET_CPU0_SOFT_RESET\t\t\t\t3\n#define CLKC_RESET_CPU1_SOFT_RESET\t\t\t\t4\n#define CLKC_RESET_CPU2_SOFT_RESET\t\t\t\t5\n#define CLKC_RESET_CPU3_SOFT_RESET\t\t\t\t6\n#define CLKC_RESET_A5_GLOBAL_RESET\t\t\t\t7\n#define CLKC_RESET_A5_AXI_SOFT_RESET\t\t\t\t8\n#define CLKC_RESET_A5_ABP_SOFT_RESET\t\t\t\t9\n#define CLKC_RESET_AXI_64_TO_128_BRIDGE_MMC_SOFT_RESET\t\t10\n#define CLKC_RESET_VID_CLK_CNTL_SOFT_RESET\t\t\t11\n#define CLKC_RESET_VID_DIVIDER_CNTL_SOFT_RESET_POST\t\t12\n#define CLKC_RESET_VID_DIVIDER_CNTL_SOFT_RESET_PRE\t\t13\n#define CLKC_RESET_VID_DIVIDER_CNTL_RESET_N_POST\t\t14\n#define CLKC_RESET_VID_DIVIDER_CNTL_RESET_N_PRE\t\t\t15\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

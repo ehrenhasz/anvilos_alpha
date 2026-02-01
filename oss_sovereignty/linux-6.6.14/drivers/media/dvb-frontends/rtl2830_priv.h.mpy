@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl2830_priv.h",
+  "hash_id": "3638d058455a2cbac91d39c2f826bb8ae319596db2f10b117816d67963df3127",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/rtl2830_priv.h",
+  "human_readable_source": " \n \n\n#ifndef RTL2830_PRIV_H\n#define RTL2830_PRIV_H\n\n#include <media/dvb_frontend.h>\n#include <linux/int_log.h>\n#include \"rtl2830.h\"\n#include <linux/i2c-mux.h>\n#include <linux/math64.h>\n#include <linux/regmap.h>\n#include <linux/bitops.h>\n\nstruct rtl2830_dev {\n\tstruct rtl2830_platform_data *pdata;\n\tstruct i2c_client *client;\n\tstruct regmap *regmap;\n\tstruct i2c_mux_core *muxc;\n\tstruct dvb_frontend fe;\n\tbool sleeping;\n\tunsigned long filters;\n\tenum fe_status fe_status;\n\tu64 post_bit_error_prev;  \n\tu64 post_bit_error;\n\tu64 post_bit_count;\n};\n\nstruct rtl2830_reg_val_mask {\n\tu16 reg;\n\tu8  val;\n\tu8  mask;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

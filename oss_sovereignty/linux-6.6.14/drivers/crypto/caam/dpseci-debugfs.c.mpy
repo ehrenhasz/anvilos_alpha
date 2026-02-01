@@ -1,0 +1,9 @@
+{
+  "module_name": "dpseci-debugfs.c",
+  "hash_id": "7edf8f17edc14eb58e9ca7641f67f75cf1d7b68e78d60681ac56852f61b01908",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/caam/dpseci-debugfs.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/device.h>\n#include <linux/debugfs.h>\n#include \"dpseci-debugfs.h\"\n\nstatic int dpseci_dbg_fqs_show(struct seq_file *file, void *offset)\n{\n\tstruct dpaa2_caam_priv *priv = file->private;\n\tu32 fqid, fcnt, bcnt;\n\tint i, err;\n\n\tseq_printf(file, \"FQ stats for %s:\\n\", dev_name(priv->dev));\n\tseq_printf(file, \"%s%16s%16s\\n\",\n\t\t   \"Rx-VFQID\",\n\t\t   \"Pending frames\",\n\t\t   \"Pending bytes\");\n\n\tfor (i = 0; i <  priv->num_pairs; i++) {\n\t\tfqid = priv->rx_queue_attr[i].fqid;\n\t\terr = dpaa2_io_query_fq_count(NULL, fqid, &fcnt, &bcnt);\n\t\tif (err)\n\t\t\tcontinue;\n\n\t\tseq_printf(file, \"%5d%16u%16u\\n\", fqid, fcnt, bcnt);\n\t}\n\n\tseq_printf(file, \"%s%16s%16s\\n\",\n\t\t   \"Tx-VFQID\",\n\t\t   \"Pending frames\",\n\t\t   \"Pending bytes\");\n\n\tfor (i = 0; i <  priv->num_pairs; i++) {\n\t\tfqid = priv->tx_queue_attr[i].fqid;\n\t\terr = dpaa2_io_query_fq_count(NULL, fqid, &fcnt, &bcnt);\n\t\tif (err)\n\t\t\tcontinue;\n\n\t\tseq_printf(file, \"%5d%16u%16u\\n\", fqid, fcnt, bcnt);\n\t}\n\n\treturn 0;\n}\n\nDEFINE_SHOW_ATTRIBUTE(dpseci_dbg_fqs);\n\nvoid dpaa2_dpseci_debugfs_init(struct dpaa2_caam_priv *priv)\n{\n\tpriv->dfs_root = debugfs_create_dir(dev_name(priv->dev), NULL);\n\n\tdebugfs_create_file(\"fq_stats\", 0444, priv->dfs_root, priv,\n\t\t\t    &dpseci_dbg_fqs_fops);\n}\n\nvoid dpaa2_dpseci_debugfs_exit(struct dpaa2_caam_priv *priv)\n{\n\tdebugfs_remove_recursive(priv->dfs_root);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

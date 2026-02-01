@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "933da2cf03ec67a0356dec0c3953b05d4e3c19f32a0611489eff8032be3f5c6b",
+  "original_prompt": "Ingested from linux-6.6.14/security/keys/trusted-keys/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for trusted keys\n#\n\nobj-$(CONFIG_TRUSTED_KEYS) += trusted.o\ntrusted-y += trusted_core.o\ntrusted-$(CONFIG_TRUSTED_KEYS_TPM) += trusted_tpm1.o\n\n$(obj)/trusted_tpm2.o: $(obj)/tpm2key.asn1.h\ntrusted-$(CONFIG_TRUSTED_KEYS_TPM) += trusted_tpm2.o\ntrusted-$(CONFIG_TRUSTED_KEYS_TPM) += tpm2key.asn1.o\n\ntrusted-$(CONFIG_TRUSTED_KEYS_TEE) += trusted_tee.o\n\ntrusted-$(CONFIG_TRUSTED_KEYS_CAAM) += trusted_caam.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

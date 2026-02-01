@@ -1,0 +1,9 @@
+{
+  "module_name": "cmds.h",
+  "hash_id": "546825bb09c335b77c77c74b09b1843dfa881dc0c889d58a3cb7c780b0a18ac9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/pci/pds/cmds.h",
+  "human_readable_source": " \n \n\n#ifndef _CMDS_H_\n#define _CMDS_H_\n\nint pds_vfio_register_client_cmd(struct pds_vfio_pci_device *pds_vfio);\nvoid pds_vfio_unregister_client_cmd(struct pds_vfio_pci_device *pds_vfio);\nint pds_vfio_suspend_device_cmd(struct pds_vfio_pci_device *pds_vfio, u8 type);\nint pds_vfio_resume_device_cmd(struct pds_vfio_pci_device *pds_vfio, u8 type);\nint pds_vfio_get_lm_state_size_cmd(struct pds_vfio_pci_device *pds_vfio, u64 *size);\nint pds_vfio_get_lm_state_cmd(struct pds_vfio_pci_device *pds_vfio);\nint pds_vfio_set_lm_state_cmd(struct pds_vfio_pci_device *pds_vfio);\nvoid pds_vfio_send_host_vf_lm_status_cmd(struct pds_vfio_pci_device *pds_vfio,\n\t\t\t\t\t enum pds_lm_host_vf_status vf_status);\nint pds_vfio_dirty_status_cmd(struct pds_vfio_pci_device *pds_vfio,\n\t\t\t      u64 regions_dma, u8 *max_regions,\n\t\t\t      u8 *num_regions);\nint pds_vfio_dirty_enable_cmd(struct pds_vfio_pci_device *pds_vfio,\n\t\t\t      u64 regions_dma, u8 num_regions);\nint pds_vfio_dirty_disable_cmd(struct pds_vfio_pci_device *pds_vfio);\nint pds_vfio_dirty_seq_ack_cmd(struct pds_vfio_pci_device *pds_vfio,\n\t\t\t       u64 sgl_dma, u16 num_sge, u32 offset,\n\t\t\t       u32 total_len, bool read_seq);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

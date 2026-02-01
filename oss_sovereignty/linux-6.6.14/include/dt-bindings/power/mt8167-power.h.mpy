@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8167-power.h",
+  "hash_id": "83025fdb62057c74a71e334fc650e05f92452b97cc12a68cc681cb581919998e",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/mt8167-power.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_POWER_MT8167_POWER_H\n#define _DT_BINDINGS_POWER_MT8167_POWER_H\n\n#define MT8167_POWER_DOMAIN_MM\t\t0\n#define MT8167_POWER_DOMAIN_VDEC\t1\n#define MT8167_POWER_DOMAIN_ISP\t\t2\n#define MT8167_POWER_DOMAIN_CONN\t3\n#define MT8167_POWER_DOMAIN_MFG_ASYNC\t4\n#define MT8167_POWER_DOMAIN_MFG_2D\t5\n#define MT8167_POWER_DOMAIN_MFG\t\t6\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fc_fcoe.h",
+  "hash_id": "146ff36a98b86887696a1ff9b05d36e55a28d39fab58bad67a897f7f9a3762d6",
+  "original_prompt": "Ingested from linux-6.6.14/include/scsi/fc/fc_fcoe.h",
+  "human_readable_source": " \n \n\n#ifndef _FC_FCOE_H_\n#define\t_FC_FCOE_H_\n\n \n\n \n#define\tFC_FCOE_OUI\t0x0efc00\t \n\n \n#define\tFC_FCOE_FLOGI_MAC { 0x0e, 0xfc, 0x00, 0xff, 0xff, 0xfe }\n\n#define\tFC_FCOE_VER\t0\t\t\t \n\n \n#define\tFC_FCOE_ENCAPS_ID(n)\t(((u64) FC_FCOE_OUI << 24) | (n))\n#define\tFC_FCOE_DECAPS_ID(n)\t((n) >> 24)\n\n \nstruct fcoe_hdr {\n\t__u8\t\tfcoe_ver;\t \n\t__u8\t\tfcoe_resvd[12];\t \n\t__u8\t\tfcoe_sof;\t \n};\n\n#define FC_FCOE_DECAPS_VER(hp)\t    ((hp)->fcoe_ver >> 4)\n#define FC_FCOE_ENCAPS_VER(hp, ver) ((hp)->fcoe_ver = (ver) << 4)\n\n \nstruct fcoe_crc_eof {\n\t__le32\t\tfcoe_crc32;\t \n\t__u8\t\tfcoe_eof;\t \n\t__u8\t\tfcoe_resvd[3];\t \n} __attribute__((packed));\n\n \n#define FCOE_HEADER_LEN 38\n\n \n#define FCOE_MIN_FRAME 46\n\n \nstruct fcoe_fc_els_lesb {\n\t__be32\t\tlesb_link_fail;\t \n\t__be32\t\tlesb_vlink_fail;  \n\t__be32\t\tlesb_miss_fka;\t \n\t__be32\t\tlesb_symb_err;\t \n\t__be32\t\tlesb_err_block;\t \n\t__be32\t\tlesb_fcs_error;  \n};\n\n \nstatic inline void fc_fcoe_set_mac(u8 *mac, u8 *did)\n{\n\tmac[0] = (u8) (FC_FCOE_OUI >> 16);\n\tmac[1] = (u8) (FC_FCOE_OUI >> 8);\n\tmac[2] = (u8) FC_FCOE_OUI;\n\tmac[3] = did[0];\n\tmac[4] = did[1];\n\tmac[5] = did[2];\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

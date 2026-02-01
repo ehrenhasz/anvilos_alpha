@@ -1,0 +1,9 @@
+{
+  "module_name": "imx-common.h",
+  "hash_id": "65ab59c989db7188157143fb52d4235c71a604c1c0de0fe9fa9f9d5b06259fab",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/imx/imx-common.h",
+  "human_readable_source": " \n\n#ifndef __IMX_COMMON_H__\n#define __IMX_COMMON_H__\n\n#include <linux/clk.h>\n\n#define EXCEPT_MAX_HDR_SIZE\t0x400\n#define IMX8_STACK_DUMP_SIZE 32\n\nvoid imx8_get_registers(struct snd_sof_dev *sdev,\n\t\t\tstruct sof_ipc_dsp_oops_xtensa *xoops,\n\t\t\tstruct sof_ipc_panic_info *panic_info,\n\t\t\tu32 *stack, size_t stack_words);\n\nvoid imx8_dump(struct snd_sof_dev *sdev, u32 flags);\n\nstruct imx_clocks {\n\tstruct clk_bulk_data *dsp_clks;\n\tint num_dsp_clks;\n};\n\nint imx8_parse_clocks(struct snd_sof_dev *sdev, struct imx_clocks *clks);\nint imx8_enable_clocks(struct snd_sof_dev *sdev, struct imx_clocks *clks);\nvoid imx8_disable_clocks(struct snd_sof_dev *sdev, struct imx_clocks *clks);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

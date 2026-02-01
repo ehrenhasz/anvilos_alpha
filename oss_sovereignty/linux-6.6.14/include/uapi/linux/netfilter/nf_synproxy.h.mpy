@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_synproxy.h",
+  "hash_id": "85cf6a725bef655c3bae73b66fad48fa93dfc8deaaaa473e297cec95456300f5",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/nf_synproxy.h",
+  "human_readable_source": " \n#ifndef _NF_SYNPROXY_H\n#define _NF_SYNPROXY_H\n\n#include <linux/types.h>\n\n#define NF_SYNPROXY_OPT_MSS\t\t0x01\n#define NF_SYNPROXY_OPT_WSCALE\t\t0x02\n#define NF_SYNPROXY_OPT_SACK_PERM\t0x04\n#define NF_SYNPROXY_OPT_TIMESTAMP\t0x08\n#define NF_SYNPROXY_OPT_ECN\t\t0x10\n#define NF_SYNPROXY_OPT_MASK\t\t(NF_SYNPROXY_OPT_MSS | \\\n\t\t\t\t\t NF_SYNPROXY_OPT_WSCALE | \\\n\t\t\t\t\t NF_SYNPROXY_OPT_SACK_PERM | \\\n\t\t\t\t\t NF_SYNPROXY_OPT_TIMESTAMP)\n\nstruct nf_synproxy_info {\n\t__u8\toptions;\n\t__u8\twscale;\n\t__u16\tmss;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8e43c13d53c1be8c782b474f76b5cea22202d0f9b5f49f65df7c6a2da17a6ef6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/vertexcom/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Vertexcom network device configuration\n#\n\nconfig NET_VENDOR_VERTEXCOM\n\tbool \"Vertexcom devices\"\n\tdefault y\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Vertexcom cards. If you say Y, you will be asked\n\t  for your specific card in the following questions.\n\nif NET_VENDOR_VERTEXCOM\n\nconfig MSE102X\n\ttristate \"Vertexcom MSE102x SPI\"\n\tdepends on SPI\n\thelp\n\t  SPI driver for Vertexcom MSE102x SPI attached network chip.\n\nendif # NET_VENDOR_VERTEXCOM\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

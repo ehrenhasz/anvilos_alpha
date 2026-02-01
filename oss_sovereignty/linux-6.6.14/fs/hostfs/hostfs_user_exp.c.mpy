@@ -1,0 +1,9 @@
+{
+  "module_name": "hostfs_user_exp.c",
+  "hash_id": "0e167b6d0b83b6eafd77cfd8ea6f70711485cc29cd2fae82a90c0d787a49041c",
+  "original_prompt": "Ingested from linux-6.6.14/fs/hostfs/hostfs_user_exp.c",
+  "human_readable_source": "#include <linux/module.h>\n#include \"hostfs.h\"\n\nEXPORT_SYMBOL_GPL(stat_file);\nEXPORT_SYMBOL_GPL(access_file);\nEXPORT_SYMBOL_GPL(open_file);\nEXPORT_SYMBOL_GPL(open_dir);\nEXPORT_SYMBOL_GPL(seek_dir);\nEXPORT_SYMBOL_GPL(read_dir);\nEXPORT_SYMBOL_GPL(read_file);\nEXPORT_SYMBOL_GPL(write_file);\nEXPORT_SYMBOL_GPL(lseek_file);\nEXPORT_SYMBOL_GPL(fsync_file);\nEXPORT_SYMBOL_GPL(replace_file);\nEXPORT_SYMBOL_GPL(close_file);\nEXPORT_SYMBOL_GPL(close_dir);\nEXPORT_SYMBOL_GPL(file_create);\nEXPORT_SYMBOL_GPL(set_attr);\nEXPORT_SYMBOL_GPL(make_symlink);\nEXPORT_SYMBOL_GPL(unlink_file);\nEXPORT_SYMBOL_GPL(do_mkdir);\nEXPORT_SYMBOL_GPL(hostfs_do_rmdir);\nEXPORT_SYMBOL_GPL(do_mknod);\nEXPORT_SYMBOL_GPL(link_file);\nEXPORT_SYMBOL_GPL(hostfs_do_readlink);\nEXPORT_SYMBOL_GPL(rename_file);\nEXPORT_SYMBOL_GPL(rename2_file);\nEXPORT_SYMBOL_GPL(do_statfs);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

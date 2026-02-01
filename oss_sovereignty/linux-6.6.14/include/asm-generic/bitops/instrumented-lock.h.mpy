@@ -1,0 +1,9 @@
+{
+  "module_name": "instrumented-lock.h",
+  "hash_id": "cdea809816f7c9a0fbdd0b8bdcb9048c67d38264c33aee8062d5f8705fefa751",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/bitops/instrumented-lock.h",
+  "human_readable_source": " \n\n \n#ifndef _ASM_GENERIC_BITOPS_INSTRUMENTED_LOCK_H\n#define _ASM_GENERIC_BITOPS_INSTRUMENTED_LOCK_H\n\n#include <linux/instrumented.h>\n\n \nstatic inline void clear_bit_unlock(long nr, volatile unsigned long *addr)\n{\n\tkcsan_release();\n\tinstrument_atomic_write(addr + BIT_WORD(nr), sizeof(long));\n\tarch_clear_bit_unlock(nr, addr);\n}\n\n \nstatic inline void __clear_bit_unlock(long nr, volatile unsigned long *addr)\n{\n\tkcsan_release();\n\tinstrument_write(addr + BIT_WORD(nr), sizeof(long));\n\tarch___clear_bit_unlock(nr, addr);\n}\n\n \nstatic inline bool test_and_set_bit_lock(long nr, volatile unsigned long *addr)\n{\n\tinstrument_atomic_read_write(addr + BIT_WORD(nr), sizeof(long));\n\treturn arch_test_and_set_bit_lock(nr, addr);\n}\n\n#if defined(arch_clear_bit_unlock_is_negative_byte)\n \nstatic inline bool\nclear_bit_unlock_is_negative_byte(long nr, volatile unsigned long *addr)\n{\n\tkcsan_release();\n\tinstrument_atomic_write(addr + BIT_WORD(nr), sizeof(long));\n\treturn arch_clear_bit_unlock_is_negative_byte(nr, addr);\n}\n \n#define clear_bit_unlock_is_negative_byte clear_bit_unlock_is_negative_byte\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

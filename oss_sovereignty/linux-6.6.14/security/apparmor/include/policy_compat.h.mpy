@@ -1,0 +1,9 @@
+{
+  "module_name": "policy_compat.h",
+  "hash_id": "fec3d39f9f3f4ea08c69b25f0f1c1c8ab7869f0b9e5003ea06edd94d279e4541",
+  "original_prompt": "Ingested from linux-6.6.14/security/apparmor/include/policy_compat.h",
+  "human_readable_source": " \n \n\n#ifndef __POLICY_COMPAT_H\n#define __POLICY_COMPAT_H\n\n#include \"policy.h\"\n\n#define K_ABI_MASK 0x3ff\n#define FORCE_COMPLAIN_FLAG 0x800\n#define VERSION_LT(X, Y) (((X) & K_ABI_MASK) < ((Y) & K_ABI_MASK))\n#define VERSION_LE(X, Y) (((X) & K_ABI_MASK) <= ((Y) & K_ABI_MASK))\n#define VERSION_GT(X, Y) (((X) & K_ABI_MASK) > ((Y) & K_ABI_MASK))\n\n#define v5\t5\t \n#define v6\t6\t \n#define v7\t7\n#define v8\t8\t \n#define v9\t9\t \n\nint aa_compat_map_xmatch(struct aa_policydb *policy);\nint aa_compat_map_policy(struct aa_policydb *policy, u32 version);\nint aa_compat_map_file(struct aa_policydb *policy);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

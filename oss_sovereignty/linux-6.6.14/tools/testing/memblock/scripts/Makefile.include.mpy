@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.include",
+  "hash_id": "49dc61a1c619905f0ab533951536fef4385d27ea6294991c6240fd1bb2df9717",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/memblock/scripts/Makefile.include",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Definitions for user-provided arguments\n\n# Simulate CONFIG_NUMA=y\nifeq ($(NUMA), 1)\n\tCFLAGS += -D CONFIG_NUMA -D CONFIG_NODES_SHIFT=4\nendif\n\n# Use 32 bit physical addresses.\n# Remember to install 32-bit version of dependencies.\nifeq ($(32BIT_PHYS_ADDR_T), 1)\n\tCFLAGS += -m32 -U CONFIG_PHYS_ADDR_T_64BIT\n\tLDFLAGS += -m32\nendif\n\n# Enable memblock_dbg() messages\nifeq ($(MEMBLOCK_DEBUG), 1)\n\tCFLAGS += -D MEMBLOCK_DEBUG\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

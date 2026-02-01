@@ -1,0 +1,9 @@
+{
+  "module_name": "cxl_acpi_test.c",
+  "hash_id": "5631404a35027f9d0f7bc58fab901d485841c18e37f51c618570f24db0dd5d78",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/cxl/cxl_acpi_test.c",
+  "human_readable_source": "\n \n\n#include \"watermark.h\"\n\ncxl_test_watermark(cxl_acpi);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

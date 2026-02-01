@@ -1,0 +1,9 @@
+{
+  "module_name": "glue_helper-asm-avx.S",
+  "hash_id": "01c3778ca599d41664e6fb01d8c92317f11cca01f0e8d78fa066f1c00627253f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/crypto/glue_helper-asm-avx.S",
+  "human_readable_source": " \n \n\n#define load_8way(src, x0, x1, x2, x3, x4, x5, x6, x7) \\\n\tvmovdqu (0*16)(src), x0; \\\n\tvmovdqu (1*16)(src), x1; \\\n\tvmovdqu (2*16)(src), x2; \\\n\tvmovdqu (3*16)(src), x3; \\\n\tvmovdqu (4*16)(src), x4; \\\n\tvmovdqu (5*16)(src), x5; \\\n\tvmovdqu (6*16)(src), x6; \\\n\tvmovdqu (7*16)(src), x7;\n\n#define store_8way(dst, x0, x1, x2, x3, x4, x5, x6, x7) \\\n\tvmovdqu x0, (0*16)(dst); \\\n\tvmovdqu x1, (1*16)(dst); \\\n\tvmovdqu x2, (2*16)(dst); \\\n\tvmovdqu x3, (3*16)(dst); \\\n\tvmovdqu x4, (4*16)(dst); \\\n\tvmovdqu x5, (5*16)(dst); \\\n\tvmovdqu x6, (6*16)(dst); \\\n\tvmovdqu x7, (7*16)(dst);\n\n#define store_cbc_8way(src, dst, x0, x1, x2, x3, x4, x5, x6, x7) \\\n\tvpxor (0*16)(src), x1, x1; \\\n\tvpxor (1*16)(src), x2, x2; \\\n\tvpxor (2*16)(src), x3, x3; \\\n\tvpxor (3*16)(src), x4, x4; \\\n\tvpxor (4*16)(src), x5, x5; \\\n\tvpxor (5*16)(src), x6, x6; \\\n\tvpxor (6*16)(src), x7, x7; \\\n\tstore_8way(dst, x0, x1, x2, x3, x4, x5, x6, x7);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "apei.c",
+  "hash_id": "c5193bb2bce83a2642c2f1d40ddc0da3adcf6ee5bcd3b7db204442984324c702",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/acpi/apei.c",
+  "human_readable_source": "\n \n\n#include <acpi/apei.h>\n\n#include <asm/mce.h>\n#include <asm/tlbflush.h>\n\nint arch_apei_enable_cmcff(struct acpi_hest_header *hest_hdr, void *data)\n{\n#ifdef CONFIG_X86_MCE\n\tint i;\n\tstruct acpi_hest_ia_corrected *cmc;\n\tstruct acpi_hest_ia_error_bank *mc_bank;\n\n\tcmc = (struct acpi_hest_ia_corrected *)hest_hdr;\n\tif (!cmc->enabled)\n\t\treturn 0;\n\n\t \n\tif (!(cmc->flags & ACPI_HEST_FIRMWARE_FIRST) ||\n\t    !cmc->num_hardware_banks)\n\t\treturn 1;\n\n\tpr_info(\"HEST: Enabling Firmware First mode for corrected errors.\\n\");\n\n\tmc_bank = (struct acpi_hest_ia_error_bank *)(cmc + 1);\n\tfor (i = 0; i < cmc->num_hardware_banks; i++, mc_bank++)\n\t\tmce_disable_bank(mc_bank->bank_number);\n#endif\n\treturn 1;\n}\n\nvoid arch_apei_report_mem_error(int sev, struct cper_sec_mem_err *mem_err)\n{\n#ifdef CONFIG_X86_MCE\n\tapei_mce_report_mem_error(sev, mem_err);\n#endif\n}\n\nint arch_apei_report_x86_error(struct cper_ia_proc_ctx *ctx_info, u64 lapic_id)\n{\n\treturn apei_smca_report_x86_error(ctx_info, lapic_id);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

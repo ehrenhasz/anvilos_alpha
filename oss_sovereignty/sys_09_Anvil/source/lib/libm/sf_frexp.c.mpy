@@ -1,0 +1,9 @@
+{
+  "module_name": "sf_frexp.c",
+  "hash_id": "4c6c4c8f9e520351427df49e2d49e8c047b470314675c74b87658eb05321d361",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/sf_frexp.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"fdlibm.h\"\n\n#ifdef __STDC__\nstatic const float\n#else\nstatic float\n#endif\ntwo25 =  3.3554432000e+07f;  \n\n#ifdef __STDC__\n\tfloat frexpf(float x, int *eptr)\n#else\n\tfloat frexpf(x, eptr)\n\tfloat x; int *eptr;\n#endif\n{\n\t__int32_t hx, ix;\n\tGET_FLOAT_WORD(hx,x);\n\tix = 0x7fffffff&hx;\n\t*eptr = 0;\n\tif(!FLT_UWORD_IS_FINITE(ix)||FLT_UWORD_IS_ZERO(ix)) return x;\t \n\tif (FLT_UWORD_IS_SUBNORMAL(ix)) {\t\t \n\t    x *= two25;\n\t    GET_FLOAT_WORD(hx,x);\n\t    ix = hx&0x7fffffff;\n\t    *eptr = -25;\n\t}\n\t*eptr += (ix>>23)-126;\n\thx = (hx&0x807fffff)|0x3f000000;\n\tSET_FLOAT_WORD(x,hx);\n\treturn x;\n}\n\n#ifdef _DOUBLE_IS_32BITS\n\n#ifdef __STDC__\n\tdouble frexp(double x, int *eptr)\n#else\n\tdouble frexp(x, eptr)\n\tdouble x; int *eptr;\n#endif\n{\n\treturn (double) frexpf((float) x, eptr);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

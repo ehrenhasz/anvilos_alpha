@@ -1,0 +1,9 @@
+{
+  "module_name": "nopm.config",
+  "hash_id": "3d9771025a65f36f7755d1b6270fcefb85b3433e02b6a34230c2fc488c0da8eb",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/configs/nopm.config",
+  "human_readable_source": "# Help: Disable Power Management\n\nCONFIG_PM=n\nCONFIG_SUSPEND=n\nCONFIG_HIBERNATION=n\n\n# Triggers PM on OMAP\nCONFIG_CPU_IDLE=n\n\n# Triggers enablement via hibernate callbacks\nCONFIG_XEN=n\n\n# ARM/ARM64 architectures that select PM unconditionally\nCONFIG_ARCH_OMAP2PLUS_TYPICAL=n\nCONFIG_ARCH_RENESAS=n\nCONFIG_ARCH_TEGRA=n\nCONFIG_ARCH_VEXPRESS=n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_bindings.h",
+  "hash_id": "8d03fc1e339e871fd581d0e78071fe02348c9e504ceb4d04a7e97679e6d6578a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/tc_bindings.h",
+  "human_readable_source": " \n \n\n#ifndef EFX_TC_BINDINGS_H\n#define EFX_TC_BINDINGS_H\n#include \"net_driver.h\"\n\n#if IS_ENABLED(CONFIG_SFC_SRIOV)\n#include <net/sch_generic.h>\n\nstruct efx_rep;\n\nvoid efx_tc_block_unbind(void *cb_priv);\nint efx_tc_setup_block(struct net_device *net_dev, struct efx_nic *efx,\n\t\t       struct flow_block_offload *tcb, struct efx_rep *efv);\nint efx_tc_setup(struct net_device *net_dev, enum tc_setup_type type,\n\t\t void *type_data);\n\nint efx_tc_indr_setup_cb(struct net_device *net_dev, struct Qdisc *sch,\n\t\t\t void *cb_priv, enum tc_setup_type type,\n\t\t\t void *type_data, void *data,\n\t\t\t void (*cleanup)(struct flow_block_cb *block_cb));\nint efx_tc_netdev_event(struct efx_nic *efx, unsigned long event,\n\t\t\tstruct net_device *net_dev);\n\n#else  \n\nstatic inline int efx_tc_netdev_event(struct efx_nic *efx, unsigned long event,\n\t\t\t\t      struct net_device *net_dev)\n{\n\treturn NOTIFY_DONE;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cycles_with_mmcr2_test.c",
+  "hash_id": "516d952b39844cacea3585e891e507f30fcb67bcee1122899bab68b4c97f6fec",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/ebb/cycles_with_mmcr2_test.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <stdlib.h>\n#include <stdbool.h>\n\n#include \"ebb.h\"\n\n\n \n\n \n#define MMCR2_EXPECTED_1 0x4020100804020000UL  \n#define MMCR2_EXPECTED_2 0x0020100804020000UL  \n\n\nint cycles_with_mmcr2(void)\n{\n\tstruct event event;\n\tuint64_t val, expected[2], actual;\n\tint i;\n\tbool bad_mmcr2;\n\n\tSKIP_IF(!ebb_is_supported());\n\n\tevent_init_named(&event, 0x1001e, \"cycles\");\n\tevent_leader_ebb_init(&event);\n\n\tevent.attr.exclude_kernel = 1;\n\tevent.attr.exclude_hv = 1;\n\tevent.attr.exclude_idle = 1;\n\n\tFAIL_IF(event_open(&event));\n\n\tebb_enable_pmc_counting(1);\n\tsetup_ebb_handler(standard_ebb_callee);\n\tebb_global_enable();\n\n\tFAIL_IF(ebb_event_enable(&event));\n\n\tmtspr(SPRN_PMC1, pmc_sample_period(sample_period));\n\n\t \n\texpected[0] = MMCR2_EXPECTED_1;\n\texpected[1] = MMCR2_EXPECTED_2;\n\ti = 0;\n\tbad_mmcr2 = false;\n\tactual = 0;\n\n\t \n\twhile ((ebb_state.stats.ebb_count < 20 && !bad_mmcr2) ||\n\t\tebb_state.stats.ebb_count < 1)\n\t{\n\t\tmtspr(SPRN_MMCR2, expected[i % 2]);\n\n\t\tFAIL_IF(core_busy_loop());\n\n\t\tval = mfspr(SPRN_MMCR2);\n\t\tif (val != expected[i % 2]) {\n\t\t\tbad_mmcr2 = true;\n\t\t\tactual = val;\n\t\t}\n\n\t\ti++;\n\t}\n\n\tebb_global_disable();\n\tebb_freeze_pmcs();\n\n\tdump_ebb_state();\n\n\tevent_close(&event);\n\n\tFAIL_IF(ebb_state.stats.ebb_count == 0);\n\n\tif (bad_mmcr2)\n\t\tprintf(\"Bad MMCR2 value seen is 0x%lx\\n\", actual);\n\n\tFAIL_IF(bad_mmcr2);\n\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(cycles_with_mmcr2, \"cycles_with_mmcr2\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

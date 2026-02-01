@@ -1,0 +1,9 @@
+{
+  "module_name": "allwinner,sun20i-d1-ppu.h",
+  "hash_id": "45992bfaf9120714f794101cf89a6ce1587bbe8c89a001998a84963481955104",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/allwinner,sun20i-d1-ppu.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_POWER_SUN20I_D1_PPU_H_\n#define _DT_BINDINGS_POWER_SUN20I_D1_PPU_H_\n\n#define PD_CPU\t\t\t0\n#define PD_VE\t\t\t1\n#define PD_DSP\t\t\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "seg6_hmac.h",
+  "hash_id": "4a9a2c18800ee87a067fffa5075bad9dc149014efdf80f243b1232482ebc625d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/seg6_hmac.h",
+  "human_readable_source": " \n#ifndef _LINUX_SEG6_HMAC_H\n#define _LINUX_SEG6_HMAC_H\n\n#include <uapi/linux/seg6_hmac.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

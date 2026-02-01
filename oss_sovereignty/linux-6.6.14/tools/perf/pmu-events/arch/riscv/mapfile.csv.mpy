@@ -1,0 +1,9 @@
+{
+  "module_name": "mapfile.csv",
+  "hash_id": "6a1dc09d4a4bef145baeec81466c841293728373b2a5cd46a7797844f8037de7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/riscv/mapfile.csv",
+  "human_readable_source": "# Format:\n#\tMVENDORID-MARCHID-MIMPID,Version,JSON/file/pathname,Type\n#\n# where\n#\tMVENDORID\tJEDEC code of the core provider\n#\tMARCHID\t\tbase microarchitecture of the hart\n#\tMIMPID\t\tunique encoding of the version\n#\t\t\tof the processor implementation\n#\tVersion could be used to track version of JSON file\n#\t\tbut currently unused.\n#\tJSON/file/pathname is the path to JSON file, relative\n#\t\tto tools/perf/pmu-events/arch/riscv/.\n#\tType is core, uncore etc\n#\n#\n#MVENDORID-MARCHID-MIMPID,Version,Filename,EventType\n0x489-0x8000000000000007-0x[[:xdigit:]]+,v1,sifive/u74,core\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "iosm_ipc_trace.h",
+  "hash_id": "53c128741d4e5f083d303f53c163890d56377f5d8003f8fc5d4f85ca804ee07f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wwan/iosm/iosm_ipc_trace.h",
+  "human_readable_source": " \n\n#ifndef IOSM_IPC_TRACE_H\n#define IOSM_IPC_TRACE_H\n\n#include <linux/debugfs.h>\n#include <linux/relay.h>\n\n#include \"iosm_ipc_chnl_cfg.h\"\n#include \"iosm_ipc_imem_ops.h\"\n\n \nenum trace_ctrl_mode {\n\tTRACE_DISABLE = 0,\n\tTRACE_ENABLE,\n};\n\n \n\nstruct iosm_trace {\n\tstruct rchan *ipc_rchan;\n\tstruct dentry *ctrl_file;\n\tstruct iosm_imem *ipc_imem;\n\tstruct device *dev;\n\tstruct ipc_mem_channel *channel;\n\tenum ipc_channel_id chl_id;\n\tstruct mutex trc_mutex;\t \n\tenum trace_ctrl_mode mode;\n};\n\n#ifdef CONFIG_WWAN_DEBUGFS\n\nstatic inline bool ipc_is_trace_channel(struct iosm_imem *ipc_mem, u16 chl_id)\n{\n\treturn ipc_mem->trace && ipc_mem->trace->chl_id == chl_id;\n}\n\nstruct iosm_trace *ipc_trace_init(struct iosm_imem *ipc_imem);\nvoid ipc_trace_deinit(struct iosm_trace *ipc_trace);\nvoid ipc_trace_port_rx(struct iosm_imem *ipc_imem, struct sk_buff *skb);\n\n#else\n\nstatic inline bool ipc_is_trace_channel(struct iosm_imem *ipc_mem, u16 chl_id)\n{\n\treturn false;\n}\n\nstatic inline void ipc_trace_port_rx(struct iosm_imem *ipc_imem,\n\t\t\t\t     struct sk_buff *skb)\n{\n\tdev_kfree_skb(skb);\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

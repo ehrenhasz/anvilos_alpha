@@ -1,0 +1,9 @@
+{
+  "module_name": "prefix.pl",
+  "hash_id": "27e7013d12037f55269e24f12aef5a90586d4f0922157192a472b217ec1d5939",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kselftest/prefix.pl",
+  "human_readable_source": "#!/usr/bin/env perl\n# SPDX-License-Identifier: GPL-2.0\n# Prefix all lines with \"# \", unbuffered. Command being piped in may need\n# to have unbuffering forced with \"stdbuf -i0 -o0 -e0 $cmd\".\nuse strict;\nuse IO::Handle;\n\nbinmode STDIN;\nbinmode STDOUT;\n\nSTDOUT->autoflush(1);\n\nmy $needed = 1;\nwhile (1) {\n\tmy $char;\n\tmy $bytes = sysread(STDIN, $char, 1);\n\texit 0 if ($bytes == 0);\n\tif ($needed) {\n\t\tprint \"# \";\n\t\t$needed = 0;\n\t}\n\tprint $char;\n\t$needed = 1 if ($char eq \"\\n\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

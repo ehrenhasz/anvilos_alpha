@@ -1,0 +1,9 @@
+{
+  "module_name": "pwc-timon.h",
+  "hash_id": "9b0f7c5bdb4688a90177d55f7f15590215dfb7579f47bfe5893dacc8cd4b2333",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pwc/pwc-timon.h",
+  "human_readable_source": " \n \n\n\n\n \n\n#ifndef PWC_TIMON_H\n#define PWC_TIMON_H\n\n#include \"pwc.h\"\n\n#define PWC_FPS_MAX_TIMON 6\n\nstruct Timon_table_entry\n{\n\tchar alternate;\t\t\t \n\tunsigned short packetsize;\t \n\tunsigned short bandlength;\t \n\tunsigned char mode[13];\t\t \n};\n\nextern const struct Timon_table_entry Timon_table[PSZ_MAX][PWC_FPS_MAX_TIMON][4];\nextern const unsigned int TimonRomTable [16][2][16][8];\nextern const unsigned int Timon_fps_vector[PWC_FPS_MAX_TIMON];\n\n#endif\n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-strtod1.c",
+  "hash_id": "1bade70d7983591c87e745561ad9ea40293b32435743006072789a176f79eded",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-strtod1.c",
+  "human_readable_source": " \n  if (setlocale (LC_ALL, \"\") == NULL)\n    return 1;\n\n  {\n    const char input[] = \"1,\";\n    char *ptr;\n    double result;\n    errno = 0;\n    result = strtod (input, &ptr);\n    ASSERT (result == 1.0);\n    ASSERT (ptr == input + 2);\n    ASSERT (errno == 0);\n  }\n  {\n    const char input[] = \",5\";\n    char *ptr;\n    double result;\n    errno = 0;\n    result = strtod (input, &ptr);\n    ASSERT (result == 0.5);\n    ASSERT (ptr == input + 2);\n    ASSERT (errno == 0);\n  }\n  {\n    const char input[] = \"1,5\";\n    char *ptr;\n    double result;\n    errno = 0;\n    result = strtod (input, &ptr);\n    ASSERT (result == 1.5);\n    ASSERT (ptr == input + 3);\n    ASSERT (errno == 0);\n  }\n  {\n    const char input[] = \"1.5\";\n    char *ptr;\n    double result;\n    errno = 0;\n    result = strtod (input, &ptr);\n     \n    ASSERT ((ptr == input + 1 && result == 1.0)\n            || (ptr == input + 3 && result == 1.5));\n    ASSERT (errno == 0);\n  }\n  {\n    const char input[] = \"123.456,789\";\n    char *ptr;\n    double result;\n    errno = 0;\n    result = strtod (input, &ptr);\n     \n    ASSERT ((ptr == input + 3 && result == 123.0)\n            || (ptr == input + 7 && result > 123.45 && result < 123.46));\n    ASSERT (errno == 0);\n  }\n  {\n    const char input[] = \"123,456.789\";\n    char *ptr;\n    double result;\n    errno = 0;\n    result = strtod (input, &ptr);\n    ASSERT (result > 123.45 && result < 123.46);\n    ASSERT (ptr == input + 7);\n    ASSERT (errno == 0);\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

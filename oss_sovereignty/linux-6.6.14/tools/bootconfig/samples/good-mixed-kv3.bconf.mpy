@@ -1,0 +1,9 @@
+{
+  "module_name": "good-mixed-kv3.bconf",
+  "hash_id": "d59b20eba3087afd1e3e20b480843c55a2252028d8d1a1ec6e655eeccce7831b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bootconfig/samples/good-mixed-kv3.bconf",
+  "human_readable_source": "# mixed key and subkeys with braces\nkey = value\nkey {\n\tsubkey1\n\tsubkey2 = foo\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

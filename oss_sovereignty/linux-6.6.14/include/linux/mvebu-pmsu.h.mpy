@@ -1,0 +1,9 @@
+{
+  "module_name": "mvebu-pmsu.h",
+  "hash_id": "9e3cff89b8e074c89f46d289c17c4813267d1c83f29ec610076994b06ab0b561",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mvebu-pmsu.h",
+  "human_readable_source": " \n\n#ifndef __MVEBU_PMSU_H__\n#define __MVEBU_PMSU_H__\n\n#ifdef CONFIG_MACH_MVEBU_V7\nint mvebu_pmsu_dfs_request(int cpu);\n#else\nstatic inline int mvebu_pmsu_dfs_request(int cpu) { return -ENODEV; }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

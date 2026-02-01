@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm-voter.h",
+  "hash_id": "e4057cf3fd78576038de9585ef38364abbf639e25648acef5d8f96af1b9b63d3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/interconnect/qcom/bcm-voter.h",
+  "human_readable_source": " \n \n\n#ifndef __DRIVERS_INTERCONNECT_QCOM_BCM_VOTER_H__\n#define __DRIVERS_INTERCONNECT_QCOM_BCM_VOTER_H__\n\n#include <soc/qcom/cmd-db.h>\n#include <soc/qcom/rpmh.h>\n#include <soc/qcom/tcs.h>\n\n#include \"icc-rpmh.h\"\n\nstruct bcm_voter *of_bcm_voter_get(struct device *dev, const char *name);\nvoid qcom_icc_bcm_voter_add(struct bcm_voter *voter, struct qcom_icc_bcm *bcm);\nint qcom_icc_bcm_voter_commit(struct bcm_voter *voter);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ecpf.h",
+  "hash_id": "dcecd31e6086c19d426521bf47d34a5dec540faf97fdcc5f02c5de794da7a035",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/ecpf.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_ECPF_H__\n#define __MLX5_ECPF_H__\n\n#include <linux/mlx5/driver.h>\n#include \"mlx5_core.h\"\n\n#ifdef CONFIG_MLX5_ESWITCH\n\nenum {\n\tMLX5_ECPU_BIT_NUM = 23,\n};\n\nbool mlx5_read_embedded_cpu(struct mlx5_core_dev *dev);\nint mlx5_ec_init(struct mlx5_core_dev *dev);\nvoid mlx5_ec_cleanup(struct mlx5_core_dev *dev);\n\nint mlx5_cmd_host_pf_enable_hca(struct mlx5_core_dev *dev);\nint mlx5_cmd_host_pf_disable_hca(struct mlx5_core_dev *dev);\n\n#else   \n\nstatic inline bool\nmlx5_read_embedded_cpu(struct mlx5_core_dev *dev) { return false; }\nstatic inline int mlx5_ec_init(struct mlx5_core_dev *dev) { return 0; }\nstatic inline void mlx5_ec_cleanup(struct mlx5_core_dev *dev) {}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

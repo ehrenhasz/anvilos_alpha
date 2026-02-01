@@ -1,0 +1,9 @@
+{
+  "module_name": "interconnect-clk.h",
+  "hash_id": "f2a9484cb5ce587452722e429abad6c85405291059d39f31b10558a360cb591e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/interconnect-clk.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_INTERCONNECT_CLK_H\n#define __LINUX_INTERCONNECT_CLK_H\n\nstruct device;\n\nstruct icc_clk_data {\n\tstruct clk *clk;\n\tconst char *name;\n};\n\nstruct icc_provider *icc_clk_register(struct device *dev,\n\t\t\t\t      unsigned int first_id,\n\t\t\t\t      unsigned int num_clocks,\n\t\t\t\t      const struct icc_clk_data *data);\nvoid icc_clk_unregister(struct icc_provider *provider);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

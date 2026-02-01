@@ -1,0 +1,9 @@
+{
+  "module_name": "adt7316.h",
+  "hash_id": "663b924dbc0df0fd96afbb4e2f70366879c96203f1c559b58d41dfc475453820",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/iio/addac/adt7316.h",
+  "human_readable_source": " \n \n\n#ifndef _ADT7316_H_\n#define _ADT7316_H_\n\n#include <linux/types.h>\n#include <linux/pm.h>\n\n#define ADT7316_REG_MAX_ADDR\t\t0x3F\n\nstruct adt7316_bus {\n\tvoid *client;\n\tint irq;\n\tint (*read)(void *client, u8 reg, u8 *data);\n\tint (*write)(void *client, u8 reg, u8 val);\n\tint (*multi_read)(void *client, u8 first_reg, u8 count, u8 *data);\n\tint (*multi_write)(void *client, u8 first_reg, u8 count, u8 *data);\n};\n\n#ifdef CONFIG_PM_SLEEP\nextern const struct dev_pm_ops adt7316_pm_ops;\n#define ADT7316_PM_OPS (&adt7316_pm_ops)\n#else\n#define ADT7316_PM_OPS NULL\n#endif\nint adt7316_probe(struct device *dev, struct adt7316_bus *bus,\n\t\t  const char *name);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

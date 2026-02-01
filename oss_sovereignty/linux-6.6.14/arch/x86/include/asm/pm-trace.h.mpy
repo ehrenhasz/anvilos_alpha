@@ -1,0 +1,9 @@
+{
+  "module_name": "pm-trace.h",
+  "hash_id": "d8266b3443a656f1ee11677457906ac061dcf4ddda671c24e40d85c2e118b852",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/pm-trace.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PM_TRACE_H\n#define _ASM_X86_PM_TRACE_H\n\n#include <asm/asm.h>\n\n#define TRACE_RESUME(user)\t\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\\\n\tif (pm_trace_enabled) {\t\t\t\t\t\\\n\t\tconst void *tracedata;\t\t\t\t\\\n\t\tasm volatile(_ASM_MOV \" $1f,%0\\n\"\t\t\\\n\t\t\t     \".section .tracedata,\\\"a\\\"\\n\"\t\\\n\t\t\t     \"1:\\t.word %c1\\n\\t\"\t\t\\\n\t\t\t     _ASM_PTR \" %c2\\n\"\t\t\t\\\n\t\t\t     \".previous\"\t\t\t\\\n\t\t\t     :\"=r\" (tracedata)\t\t\t\\\n\t\t\t     : \"i\" (__LINE__), \"i\" (__FILE__));\t\\\n\t\tgenerate_pm_trace(tracedata, user);\t\t\\\n\t}\t\t\t\t\t\t\t\\\n} while (0)\n\n#define TRACE_SUSPEND(user)\tTRACE_RESUME(user)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

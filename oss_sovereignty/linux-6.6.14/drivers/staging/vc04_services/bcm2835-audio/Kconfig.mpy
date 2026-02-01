@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c2130314c27980526aa9ecebb63d9fe2126fdb70580a8d2cff06c631abca51e8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vc04_services/bcm2835-audio/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig SND_BCM2835\n\ttristate \"BCM2835 Audio\"\n\tdepends on (ARCH_BCM2835 || COMPILE_TEST) && SND\n\tselect SND_PCM\n\tselect BCM2835_VCHIQ if HAS_DMA\n\thelp\n\t  Say Y or M if you want to support BCM2835 built in audio.\n\t  This driver handles both 3.5mm and HDMI audio, by leveraging\n\t  the VCHIQ messaging interface between the kernel and the firmware\n\t  running on VideoCore.",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

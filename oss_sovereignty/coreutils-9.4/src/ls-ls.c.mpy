@@ -1,0 +1,9 @@
+{
+  "module_name": "ls-ls.c",
+  "hash_id": "a21327f06c0e7e8fc97b4c843ca7ad592944fd41d7ed1ea57dc4e7411591bd41",
+  "original_prompt": "Ingested from coreutils-9.4/src/ls-ls.c",
+  "human_readable_source": "#include \"ls.h\"\nint ls_mode = LS_LS;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "du.x",
+  "hash_id": "7a9c5650fe064d190bf4802719595324f129eeebc53f544931187cd035b24849",
+  "original_prompt": "Ingested from coreutils-9.4/man/du.x",
+  "human_readable_source": "'\\\" Copyright (C) 1998-2023 Free Software Foundation, Inc.\n'\\\"\n'\\\" This is free software.  You may redistribute copies of it under the terms\n'\\\" of the GNU General Public License <https://www.gnu.org/licenses/gpl.html>.\n'\\\" There is NO WARRANTY, to the extent permitted by law.\n[NAME]\ndu \\- estimate file space usage\n[DESCRIPTION]\n.\\\" Add any additional description here\n[PATTERNS]\nPATTERN is a shell pattern (not a regular expression).  The pattern\n.B ?\\&\nmatches any one character, whereas\n.B *\nmatches any string (composed of zero, one or multiple characters).  For\nexample,\n.B *.o\nwill match any files whose names end in\n.BR .o .\nTherefore, the command\n.IP\n.B du \\-\\-exclude=\\(aq*.o\\(aq\n.PP\nwill skip all files and subdirectories ending in\n.B .o\n(including the file\n.B .o\nitself).\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

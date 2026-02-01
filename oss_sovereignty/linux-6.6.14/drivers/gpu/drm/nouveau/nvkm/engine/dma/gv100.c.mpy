@@ -1,0 +1,9 @@
+{
+  "module_name": "gv100.c",
+  "hash_id": "2c36eeb606199a4f70fffc127011dcb4bc93bd599f483a4de25d5225dfbbec8f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/dma/gv100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"user.h\"\n\nstatic const struct nvkm_dma_func\ngv100_dma = {\n\t.class_new = gv100_dmaobj_new,\n};\n\nint\ngv100_dma_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_dma **pdma)\n{\n\treturn nvkm_dma_new_(&gv100_dma, device, type, inst, pdma);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

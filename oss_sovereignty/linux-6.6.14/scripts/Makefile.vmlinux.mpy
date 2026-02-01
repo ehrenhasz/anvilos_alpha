@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.vmlinux",
+  "hash_id": "d690a7afa967a2bcdd1fd9ebbc25330d0f13f7323d52f86ced98b1e649bccd5f",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/Makefile.vmlinux",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nPHONY := __default\n__default: vmlinux\n\ninclude include/config/auto.conf\ninclude $(srctree)/scripts/Kbuild.include\n\n# for c_flags\ninclude $(srctree)/scripts/Makefile.lib\n\ntargets :=\n\nquiet_cmd_cc_o_c = CC      $@\n      cmd_cc_o_c = $(CC) $(c_flags) -c -o $@ $<\n\n%.o: %.c FORCE\n\t$(call if_changed_dep,cc_o_c)\n\nifdef CONFIG_MODULES\nKASAN_SANITIZE_.vmlinux.export.o := n\nKCSAN_SANITIZE_.vmlinux.export.o := n\nGCOV_PROFILE_.vmlinux.export.o := n\ntargets += .vmlinux.export.o\nvmlinux: .vmlinux.export.o\nendif\n\nARCH_POSTLINK := $(wildcard $(srctree)/arch/$(SRCARCH)/Makefile.postlink)\n\n# Final link of vmlinux with optional arch pass after final link\ncmd_link_vmlinux =\t\t\t\t\t\t\t\\\n\t$< \"$(LD)\" \"$(KBUILD_LDFLAGS)\" \"$(LDFLAGS_vmlinux)\";\t\t\\\n\t$(if $(ARCH_POSTLINK), $(MAKE) -f $(ARCH_POSTLINK) $@, true)\n\ntargets += vmlinux\nvmlinux: scripts/link-vmlinux.sh vmlinux.o $(KBUILD_LDS) FORCE\n\t+$(call if_changed_dep,link_vmlinux)\n\n# Add FORCE to the prequisites of a target to force it to be always rebuilt.\n# ---------------------------------------------------------------------------\n\nPHONY += FORCE\nFORCE:\n\n# Read all saved command lines and dependencies for the $(targets) we\n# may be building above, using $(if_changed{,_dep}). As an\n# optimization, we don't need to read them if the target does not\n# exist, we will rebuild anyway in that case.\n\nexisting-targets := $(wildcard $(sort $(targets)))\n\n-include $(foreach f,$(existing-targets),$(dir $(f)).$(notdir $(f)).cmd)\n\n.PHONY: $(PHONY)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

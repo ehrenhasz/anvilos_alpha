@@ -1,0 +1,9 @@
+{
+  "module_name": "printk.h",
+  "hash_id": "1af5ba64b7b4f7ba456f9f49ea64c2ef7119a646eb81dd0de2974b404d980523",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/linux/printk.h",
+  "human_readable_source": "#include \"../../../include/linux/kern_levels.h\"\n\n#define printk printf\n#define vprintk vprintf\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

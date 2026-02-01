@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "58c19262e280a86f9040f038d7ee86655d441e84e6fe0ebbdf65fd07b0a3e219",
+  "original_prompt": "Ingested from linux-6.6.14/tools/counter/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\ninclude ../scripts/Makefile.include\n\nbindir ?= /usr/bin\n\nifeq ($(srctree),)\nsrctree := $(patsubst %/,%,$(dir $(CURDIR)))\nsrctree := $(patsubst %/,%,$(dir $(srctree)))\nendif\n\n# Do not use make's built-in rules\n# (this improves performance and avoids hard-to-debug behaviour);\nMAKEFLAGS += -r\n\noverride CFLAGS += -O2 -Wall -g -D_GNU_SOURCE -I$(OUTPUT)include\n\nALL_TARGETS := counter_example\nALL_PROGRAMS := $(patsubst %,$(OUTPUT)%,$(ALL_TARGETS))\n\nall: $(ALL_PROGRAMS)\n\nexport srctree OUTPUT CC LD CFLAGS\ninclude $(srctree)/tools/build/Makefile.include\n\n#\n# We need the following to be outside of kernel tree\n#\n$(OUTPUT)include/linux/counter.h: ../../include/uapi/linux/counter.h\n\tmkdir -p $(OUTPUT)include/linux 2>&1 || true\n\tln -sf $(CURDIR)/../../include/uapi/linux/counter.h $@\n\nprepare: $(OUTPUT)include/linux/counter.h\n\nCOUNTER_EXAMPLE := $(OUTPUT)counter_example.o\n$(COUNTER_EXAMPLE): prepare FORCE\n\t$(Q)$(MAKE) $(build)=counter_example\n$(OUTPUT)counter_example: $(COUNTER_EXAMPLE)\n\t$(QUIET_LINK)$(CC) $(CFLAGS) $(LDFLAGS) $< -o $@\n\nclean:\n\trm -f $(ALL_PROGRAMS)\n\trm -rf $(OUTPUT)include/linux/counter.h\n\trm -df $(OUTPUT)include/linux\n\trm -df $(OUTPUT)include\n\tfind $(or $(OUTPUT),.) -name '*.o' -delete -o -name '\\.*.d' -delete\n\ninstall: $(ALL_PROGRAMS)\n\tinstall -d -m 755 $(DESTDIR)$(bindir);\t\t\\\n\tfor program in $(ALL_PROGRAMS); do\t\t\\\n\t\tinstall $$program $(DESTDIR)$(bindir);\t\\\n\tdone\n\nFORCE:\n\n.PHONY: all install clean FORCE prepare\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

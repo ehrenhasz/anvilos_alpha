@@ -1,0 +1,9 @@
+{
+  "module_name": "rseq.h",
+  "hash_id": "b38ed1b63753137912e162ae473db42bb2022d7f76e72930ea9c81665ddad85e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/rseq.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_RSEQ_H\n#define _UAPI_LINUX_RSEQ_H\n\n \n\n#include <linux/types.h>\n#include <asm/byteorder.h>\n\nenum rseq_cpu_id_state {\n\tRSEQ_CPU_ID_UNINITIALIZED\t\t= -1,\n\tRSEQ_CPU_ID_REGISTRATION_FAILED\t\t= -2,\n};\n\nenum rseq_flags {\n\tRSEQ_FLAG_UNREGISTER = (1 << 0),\n};\n\nenum rseq_cs_flags_bit {\n\tRSEQ_CS_FLAG_NO_RESTART_ON_PREEMPT_BIT\t= 0,\n\tRSEQ_CS_FLAG_NO_RESTART_ON_SIGNAL_BIT\t= 1,\n\tRSEQ_CS_FLAG_NO_RESTART_ON_MIGRATE_BIT\t= 2,\n};\n\nenum rseq_cs_flags {\n\tRSEQ_CS_FLAG_NO_RESTART_ON_PREEMPT\t=\n\t\t(1U << RSEQ_CS_FLAG_NO_RESTART_ON_PREEMPT_BIT),\n\tRSEQ_CS_FLAG_NO_RESTART_ON_SIGNAL\t=\n\t\t(1U << RSEQ_CS_FLAG_NO_RESTART_ON_SIGNAL_BIT),\n\tRSEQ_CS_FLAG_NO_RESTART_ON_MIGRATE\t=\n\t\t(1U << RSEQ_CS_FLAG_NO_RESTART_ON_MIGRATE_BIT),\n};\n\n \nstruct rseq_cs {\n\t \n\t__u32 version;\n\t \n\t__u32 flags;\n\t__u64 start_ip;\n\t \n\t__u64 post_commit_offset;\n\t__u64 abort_ip;\n} __attribute__((aligned(4 * sizeof(__u64))));\n\n \nstruct rseq {\n\t \n\t__u32 cpu_id_start;\n\t \n\t__u32 cpu_id;\n\t \n\t__u64 rseq_cs;\n\n\t \n\t__u32 flags;\n\n\t \n\t__u32 node_id;\n\n\t \n\t__u32 mm_cid;\n\n\t \n\tchar end[];\n} __attribute__((aligned(4 * sizeof(__u64))));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "timespec.m4",
+  "hash_id": "fc41b4946362382b8cdb855ee0436bfcf747c70d801d0f2935b6f0cfe594beef",
+  "original_prompt": "Ingested from coreutils-9.4/m4/timespec.m4",
+  "human_readable_source": "#serial 15\n\n# Copyright (C) 2000-2001, 2003-2007, 2009-2023 Free Software Foundation, Inc.\n\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\ndnl From Jim Meyering\n\nAC_DEFUN([gl_TIMESPEC], [:])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

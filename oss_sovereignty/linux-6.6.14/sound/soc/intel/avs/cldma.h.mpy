@@ -1,0 +1,9 @@
+{
+  "module_name": "cldma.h",
+  "hash_id": "d41861c50966c7173a2e42312d91aa01469b3b8045d5b8ff749095131258694e",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/avs/cldma.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_SOC_INTEL_AVS_CLDMA_H\n#define __SOUND_SOC_INTEL_AVS_CLDMA_H\n\n#define AVS_CL_DEFAULT_BUFFER_SIZE\t(32 * PAGE_SIZE)\n\nstruct hda_cldma;\nextern struct hda_cldma code_loader;\n\nvoid hda_cldma_fill(struct hda_cldma *cl);\nvoid hda_cldma_transfer(struct hda_cldma *cl, unsigned long start_delay);\n\nint hda_cldma_start(struct hda_cldma *cl);\nint hda_cldma_stop(struct hda_cldma *cl);\nint hda_cldma_reset(struct hda_cldma *cl);\n\nvoid hda_cldma_set_data(struct hda_cldma *cl, void *data, unsigned int size);\nvoid hda_cldma_setup(struct hda_cldma *cl);\nint hda_cldma_init(struct hda_cldma *cl, struct hdac_bus *bus, void __iomem *dsp_ba,\n\t\t   unsigned int buffer_size);\nvoid hda_cldma_free(struct hda_cldma *cl);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

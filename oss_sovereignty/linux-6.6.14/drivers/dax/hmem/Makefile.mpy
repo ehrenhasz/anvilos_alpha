@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "432120f3c25c17c95d4c799dc659841aaafb9930aa8ba526ca3e94a76c6fc122",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dax/hmem/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# device_hmem.o deliberately precedes dax_hmem.o for initcall ordering\nobj-$(CONFIG_DEV_DAX_HMEM_DEVICES) += device_hmem.o\nobj-$(CONFIG_DEV_DAX_HMEM) += dax_hmem.o\n\ndevice_hmem-y := device.o\ndax_hmem-y := hmem.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hard-locale.c",
+  "hash_id": "ccf1ba96718f2c3783d70a00981fcb51407ccbbee92b0f51d015c25df8aac4b5",
+  "original_prompt": "Ingested from coreutils-9.4/lib/hard-locale.c",
+  "human_readable_source": "/* hard-locale.c -- Determine whether a locale is hard.\n\n   Copyright (C) 1997-1999, 2002-2004, 2006-2007, 2009-2023 Free Software\n   Foundation, Inc.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU Lesser General Public License as\n   published by the Free Software Foundation; either version 2.1 of the\n   License, or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU Lesser General Public License for more details.\n\n   You should have received a copy of the GNU Lesser General Public License\n   along with this program.  If not, see <https:\n\n#include <config.h>\n\n#include \"hard-locale.h\"\n\n#include <locale.h>\n#include <stdlib.h>\n#include <string.h>\n\nbool\nhard_locale (int category)\n{\n  char locale[SETLOCALE_NULL_MAX];\n\n  if (setlocale_null_r (category, locale, sizeof (locale)))\n    return false;\n\n  if (!(strcmp (locale, \"C\") == 0 || strcmp (locale, \"POSIX\") == 0))\n    return true;\n\n#if defined __ANDROID__\n  /* On Android 5.0 or newer, it is possible to set a locale that has the same\n     name as the \"C\" locale but in fact uses UTF-8 encoding.  Cf. test case 2 in\n     <https:\n  if (MB_CUR_MAX > 1)\n    return true;\n#endif\n\n  return false;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

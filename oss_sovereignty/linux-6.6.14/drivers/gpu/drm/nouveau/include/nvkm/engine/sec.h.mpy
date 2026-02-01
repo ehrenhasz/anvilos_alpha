@@ -1,0 +1,9 @@
+{
+  "module_name": "sec.h",
+  "hash_id": "995fc7ee80ca03b605f3a47f22102b5ec8b97d5434fcdc57b7dd1f743d3a2dd9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/engine/sec.h",
+  "human_readable_source": " \n#ifndef __NVKM_SEC_H__\n#define __NVKM_SEC_H__\n#include <engine/falcon.h>\nint g98_sec_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_engine **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

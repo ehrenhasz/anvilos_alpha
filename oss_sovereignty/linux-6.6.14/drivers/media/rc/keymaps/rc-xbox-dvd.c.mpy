@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-xbox-dvd.c",
+  "hash_id": "694fd300794ad847805417a8cac42872ce7ace31bc4deebc5ff0b1b01962dd35",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-xbox-dvd.c",
+  "human_readable_source": "\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \nstatic struct rc_map_table xbox_dvd[] = {\n\t{0xa0b, KEY_OK},\n\t{0xaa6, KEY_UP},\n\t{0xaa7, KEY_DOWN},\n\t{0xaa8, KEY_RIGHT},\n\t{0xaa9, KEY_LEFT},\n\t{0xac3, KEY_INFO},\n\n\t{0xac6, KEY_NUMERIC_9},\n\t{0xac7, KEY_NUMERIC_8},\n\t{0xac8, KEY_NUMERIC_7},\n\t{0xac9, KEY_NUMERIC_6},\n\t{0xaca, KEY_NUMERIC_5},\n\t{0xacb, KEY_NUMERIC_4},\n\t{0xacc, KEY_NUMERIC_3},\n\t{0xacd, KEY_NUMERIC_2},\n\t{0xace, KEY_NUMERIC_1},\n\t{0xacf, KEY_NUMERIC_0},\n\n\t{0xad5, KEY_ANGLE},\n\t{0xad8, KEY_BACK},\n\t{0xadd, KEY_PREVIOUSSONG},\n\t{0xadf, KEY_NEXTSONG},\n\t{0xae0, KEY_STOP},\n\t{0xae2, KEY_REWIND},\n\t{0xae3, KEY_FASTFORWARD},\n\t{0xae5, KEY_TITLE},\n\t{0xae6, KEY_PAUSE},\n\t{0xaea, KEY_PLAY},\n\t{0xaf7, KEY_MENU},\n};\n\nstatic struct rc_map_list xbox_dvd_map = {\n\t.map = {\n\t\t.scan     = xbox_dvd,\n\t\t.size     = ARRAY_SIZE(xbox_dvd),\n\t\t.rc_proto = RC_PROTO_XBOX_DVD,\n\t\t.name     = RC_MAP_XBOX_DVD,\n\t}\n};\n\nstatic int __init init_rc_map(void)\n{\n\treturn rc_map_register(&xbox_dvd_map);\n}\n\nstatic void __exit exit_rc_map(void)\n{\n\trc_map_unregister(&xbox_dvd_map);\n}\n\nmodule_init(init_rc_map)\nmodule_exit(exit_rc_map)\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

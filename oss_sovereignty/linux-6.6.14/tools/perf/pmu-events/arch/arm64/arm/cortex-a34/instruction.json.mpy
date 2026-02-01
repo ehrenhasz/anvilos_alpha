@@ -1,0 +1,9 @@
+{
+  "module_name": "instruction.json",
+  "hash_id": "8ffe2a04a9986399d5488a9ece9964a97a3f641099d273a8cba305f29651ae76",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a34/instruction.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"SW_INCR\"\n    },\n    {\n        \"ArchStdEvent\": \"LD_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"ST_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"INST_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"EXC_RETURN\"\n    },\n    {\n        \"ArchStdEvent\": \"CID_WRITE_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"PC_WRITE_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"BR_IMMED_RETIRED\"\n    },\n    {\n        \"ArchStdEvent\": \"BR_RETURN_RETIRED\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

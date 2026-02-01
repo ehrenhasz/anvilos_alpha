@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cb475ab1f65650035c05f5862e79f7505a6e50951f16d77b264039fe3eee9e8f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/common/saa7146/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsaa7146-objs    := saa7146_i2c.o saa7146_core.o\nsaa7146_vv-objs := saa7146_fops.o saa7146_video.o saa7146_hlp.o saa7146_vbi.o\n\nobj-$(CONFIG_VIDEO_SAA7146) += saa7146.o\nobj-$(CONFIG_VIDEO_SAA7146_VV) += saa7146_vv.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

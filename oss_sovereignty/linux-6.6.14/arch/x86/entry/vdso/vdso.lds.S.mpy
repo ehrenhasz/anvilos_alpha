@@ -1,0 +1,9 @@
+{
+  "module_name": "vdso.lds.S",
+  "hash_id": "015777f16958f801957572536f9857baab55c998fb1971cee150f9837f4be6dd",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/vdso/vdso.lds.S",
+  "human_readable_source": " \n \n\n#define BUILD_VDSO64\n\n#include \"vdso-layout.lds.S\"\n\n \nVERSION {\n\tLINUX_2.6 {\n\tglobal:\n\t\tclock_gettime;\n\t\t__vdso_clock_gettime;\n\t\tgettimeofday;\n\t\t__vdso_gettimeofday;\n\t\tgetcpu;\n\t\t__vdso_getcpu;\n\t\ttime;\n\t\t__vdso_time;\n\t\tclock_getres;\n\t\t__vdso_clock_getres;\n#ifdef CONFIG_X86_SGX\n\t\t__vdso_sgx_enter_enclave;\n#endif\n\tlocal: *;\n\t};\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

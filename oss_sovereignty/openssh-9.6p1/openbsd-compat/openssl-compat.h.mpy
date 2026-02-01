@@ -1,0 +1,9 @@
+{
+  "module_name": "openssl-compat.h",
+  "hash_id": "edb119c87c67fa7565121b2aa4d234f087d70df7dbacb6e217e18747c240679e",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/openssl-compat.h",
+  "human_readable_source": " \n\n#ifndef _OPENSSL_COMPAT_H\n#define _OPENSSL_COMPAT_H\n\n#include \"includes.h\"\n#ifdef WITH_OPENSSL\n\n#include <openssl/opensslv.h>\n#include <openssl/crypto.h>\n#include <openssl/evp.h>\n#include <openssl/rsa.h>\n#include <openssl/dsa.h>\n#ifdef OPENSSL_HAS_ECC\n#include <openssl/ecdsa.h>\n#endif\n#include <openssl/dh.h>\n\nint ssh_compatible_openssl(long, long);\nvoid ssh_libcrypto_init(void);\n\n#if (OPENSSL_VERSION_NUMBER < 0x10100000L)\n# error OpenSSL 1.1.0 or greater is required\n#endif\n#ifdef LIBRESSL_VERSION_NUMBER\n# if LIBRESSL_VERSION_NUMBER < 0x3010000fL\n#  error LibreSSL 3.1.0 or greater is required\n# endif\n#endif\n\n#ifndef OPENSSL_RSA_MAX_MODULUS_BITS\n# define OPENSSL_RSA_MAX_MODULUS_BITS\t16384\n#endif\n#ifndef OPENSSL_DSA_MAX_MODULUS_BITS\n# define OPENSSL_DSA_MAX_MODULUS_BITS\t10000\n#endif\n\n#ifdef LIBRESSL_VERSION_NUMBER\n# if LIBRESSL_VERSION_NUMBER < 0x3010000fL\n#  define HAVE_BROKEN_CHACHA20\n# endif\n#endif\n\n#ifdef OPENSSL_IS_BORINGSSL\n \n# define BN_set_flags(a, b)\n#endif\n\n#ifndef HAVE_EVP_CIPHER_CTX_GET_IV\n# ifdef HAVE_EVP_CIPHER_CTX_GET_UPDATED_IV\n#  define EVP_CIPHER_CTX_get_iv EVP_CIPHER_CTX_get_updated_iv\n# else  \nint EVP_CIPHER_CTX_get_iv(const EVP_CIPHER_CTX *ctx,\n    unsigned char *iv, size_t len);\n# endif  \n#endif  \n\n#ifndef HAVE_EVP_CIPHER_CTX_SET_IV\nint EVP_CIPHER_CTX_set_iv(EVP_CIPHER_CTX *ctx,\n    const unsigned char *iv, size_t len);\n#endif  \n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

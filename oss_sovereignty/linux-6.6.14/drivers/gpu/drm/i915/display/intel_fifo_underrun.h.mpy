@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_fifo_underrun.h",
+  "hash_id": "da4f5edd56a7ba44faff7d988d0e9cedf3a00927b96b49e3ec658b186f31fefd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_fifo_underrun.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_FIFO_UNDERRUN_H__\n#define __INTEL_FIFO_UNDERRUN_H__\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\nstruct intel_crtc;\nenum pipe;\n\nvoid intel_init_fifo_underrun_reporting(struct drm_i915_private *i915,\n\t\t\t\t\tstruct intel_crtc *crtc, bool enable);\nbool intel_set_cpu_fifo_underrun_reporting(struct drm_i915_private *dev_priv,\n\t\t\t\t\t   enum pipe pipe, bool enable);\nbool intel_set_pch_fifo_underrun_reporting(struct drm_i915_private *dev_priv,\n\t\t\t\t\t   enum pipe pch_transcoder,\n\t\t\t\t\t   bool enable);\nvoid intel_cpu_fifo_underrun_irq_handler(struct drm_i915_private *dev_priv,\n\t\t\t\t\t enum pipe pipe);\nvoid intel_pch_fifo_underrun_irq_handler(struct drm_i915_private *dev_priv,\n\t\t\t\t\t enum pipe pch_transcoder);\nvoid intel_check_cpu_fifo_underruns(struct drm_i915_private *dev_priv);\nvoid intel_check_pch_fifo_underruns(struct drm_i915_private *dev_priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

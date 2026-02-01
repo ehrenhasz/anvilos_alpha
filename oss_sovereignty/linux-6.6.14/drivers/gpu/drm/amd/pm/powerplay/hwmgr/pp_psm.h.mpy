@@ -1,0 +1,9 @@
+{
+  "module_name": "pp_psm.h",
+  "hash_id": "c4b2888238a46db0afd795da60cb015ea657f95d0e570cf8ade32d18acb75677",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/pp_psm.h",
+  "human_readable_source": " \n\n#ifndef PP_PSM_H\n#define PP_PSM_H\n\n#include \"hwmgr.h\"\n\nint psm_init_power_state_table(struct pp_hwmgr *hwmgr);\nint psm_fini_power_state_table(struct pp_hwmgr *hwmgr);\nint psm_set_boot_states(struct pp_hwmgr *hwmgr);\nint psm_set_performance_states(struct pp_hwmgr *hwmgr);\nint psm_set_user_performance_state(struct pp_hwmgr *hwmgr,\n\t\t\t\t\tenum PP_StateUILabel label_id,\n\t\t\t\t\tstruct pp_power_state **state);\nint psm_adjust_power_state_dynamic(struct pp_hwmgr *hwmgr,\n\t\t\t\tbool skip_display_settings,\n\t\t\t\tstruct pp_power_state *new_ps);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

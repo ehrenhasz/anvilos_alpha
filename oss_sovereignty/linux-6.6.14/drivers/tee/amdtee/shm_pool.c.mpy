@@ -1,0 +1,9 @@
+{
+  "module_name": "shm_pool.c",
+  "hash_id": "acd80b6640d1b2106babecd25a0e88a4dd6a03c097f217497450cfb97e3226e7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tee/amdtee/shm_pool.c",
+  "human_readable_source": "\n \n\n#include <linux/slab.h>\n#include <linux/tee_drv.h>\n#include <linux/psp.h>\n#include \"amdtee_private.h\"\n\nstatic int pool_op_alloc(struct tee_shm_pool *pool, struct tee_shm *shm,\n\t\t\t size_t size, size_t align)\n{\n\tunsigned int order = get_order(size);\n\tunsigned long va;\n\tint rc;\n\n\t \n\tva = __get_free_pages(GFP_KERNEL | __GFP_ZERO, order);\n\tif (!va)\n\t\treturn -ENOMEM;\n\n\tshm->kaddr = (void *)va;\n\tshm->paddr = __psp_pa((void *)va);\n\tshm->size = PAGE_SIZE << order;\n\n\t \n\trc = amdtee_map_shmem(shm);\n\tif (rc) {\n\t\tfree_pages(va, order);\n\t\tshm->kaddr = NULL;\n\t\treturn rc;\n\t}\n\n\treturn 0;\n}\n\nstatic void pool_op_free(struct tee_shm_pool *pool, struct tee_shm *shm)\n{\n\t \n\tamdtee_unmap_shmem(shm);\n\tfree_pages((unsigned long)shm->kaddr, get_order(shm->size));\n\tshm->kaddr = NULL;\n}\n\nstatic void pool_op_destroy_pool(struct tee_shm_pool *pool)\n{\n\tkfree(pool);\n}\n\nstatic const struct tee_shm_pool_ops pool_ops = {\n\t.alloc = pool_op_alloc,\n\t.free = pool_op_free,\n\t.destroy_pool = pool_op_destroy_pool,\n};\n\nstruct tee_shm_pool *amdtee_config_shm(void)\n{\n\tstruct tee_shm_pool *pool = kzalloc(sizeof(*pool), GFP_KERNEL);\n\n\tif (!pool)\n\t\treturn ERR_PTR(-ENOMEM);\n\n\tpool->ops = &pool_ops;\n\n\treturn pool;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

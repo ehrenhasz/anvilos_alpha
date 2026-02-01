@@ -1,0 +1,9 @@
+{
+  "module_name": "spear_spdif.h",
+  "hash_id": "ab7d678c5e83956adc2daf77d66bb3fa1624f9f06821426357952a8e665877d6",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/spear_spdif.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_SPDIF_H\n#define __SOUND_SPDIF_H\n\nstruct spear_spdif_platform_data {\n\t \n\tvoid *dma_params;\n\tbool (*filter)(struct dma_chan *chan, void *slave);\n\tvoid (*reset_perip)(void);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

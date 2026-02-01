@@ -1,0 +1,9 @@
+{
+  "module_name": "user.h",
+  "hash_id": "4f57c12484d20084cbf237d79498c566f884a4c411356ff77fb86b4a46b9e0ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/dma/user.h",
+  "human_readable_source": " \n#ifndef __NVKM_DMA_USER_H__\n#define __NVKM_DMA_USER_H__\n#define nvkm_dmaobj(p) container_of((p), struct nvkm_dmaobj, object)\n#include \"priv.h\"\n\nint nvkm_dmaobj_ctor(const struct nvkm_dmaobj_func *, struct nvkm_dma *,\n\t\t     const struct nvkm_oclass *, void **data, u32 *size,\n\t\t     struct nvkm_dmaobj *);\n\nint nv04_dmaobj_new(struct nvkm_dma *, const struct nvkm_oclass *, void *, u32,\n\t\t    struct nvkm_dmaobj **);\nint nv50_dmaobj_new(struct nvkm_dma *, const struct nvkm_oclass *, void *, u32,\n\t\t    struct nvkm_dmaobj **);\nint gf100_dmaobj_new(struct nvkm_dma *, const struct nvkm_oclass *, void *, u32,\n\t\t     struct nvkm_dmaobj **);\nint gf119_dmaobj_new(struct nvkm_dma *, const struct nvkm_oclass *, void *, u32,\n\t\t     struct nvkm_dmaobj **);\nint gv100_dmaobj_new(struct nvkm_dma *, const struct nvkm_oclass *, void *, u32,\n\t\t     struct nvkm_dmaobj **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

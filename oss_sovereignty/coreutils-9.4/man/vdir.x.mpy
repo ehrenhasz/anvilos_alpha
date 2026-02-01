@@ -1,0 +1,9 @@
+{
+  "module_name": "vdir.x",
+  "hash_id": "4e51b469968ddaaf5b98262c56cdd8ffa69dfe01e99057eb6647ac96fa69196b",
+  "original_prompt": "Ingested from coreutils-9.4/man/vdir.x",
+  "human_readable_source": "[NAME]\nvdir \\- list directory contents\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "power.h",
+  "hash_id": "a5461c6950cc9441d887a15a6f5da2719c72fabba8ef2b2245a15ed593945baa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/dvm/power.h",
+  "human_readable_source": " \n \n#ifndef __iwl_power_setting_h__\n#define __iwl_power_setting_h__\n\n#include \"commands.h\"\n\nstruct iwl_power_mgr {\n\tstruct iwl_powertable_cmd sleep_cmd;\n\tstruct iwl_powertable_cmd sleep_cmd_next;\n\tint debug_sleep_level_override;\n\tbool bus_pm;\n};\n\nint iwl_power_set_mode(struct iwl_priv *priv, struct iwl_powertable_cmd *cmd,\n\t\t       bool force);\nint iwl_power_update_mode(struct iwl_priv *priv, bool force);\nvoid iwl_power_initialize(struct iwl_priv *priv);\n\nextern bool no_sleep_autoadjust;\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

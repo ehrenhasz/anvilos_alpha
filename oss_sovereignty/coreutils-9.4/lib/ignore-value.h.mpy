@@ -1,0 +1,9 @@
+{
+  "module_name": "ignore-value.h",
+  "hash_id": "0ea563c08d3cc4c8fe0e354a02b4c65b7035af3dae4d3d7a87d2eff72918681c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/ignore-value.h",
+  "human_readable_source": " \n\n \n\n#ifndef _GL_IGNORE_VALUE_H\n#define _GL_IGNORE_VALUE_H\n\n \n#if (3 < __GNUC__ + (4 <= __GNUC_MINOR__)) && !defined __clang__\n# define ignore_value(x) \\\n    (__extension__ ({ __typeof__ (x) __x = (x); (void) __x; }))\n#else\n# define ignore_value(x) ((void) (x))\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

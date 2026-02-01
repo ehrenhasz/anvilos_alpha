@@ -1,0 +1,9 @@
+{
+  "module_name": "uptodate.h",
+  "hash_id": "cf21eca0e8dea60a668f12bcd35e501b9d06915f1c7aec707b14ca151dc89fcb",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/uptodate.h",
+  "human_readable_source": " \n \n\n#ifndef OCFS2_UPTODATE_H\n#define OCFS2_UPTODATE_H\n\n \nstruct ocfs2_caching_operations {\n\t \n\tu64\t(*co_owner)(struct ocfs2_caching_info *ci);\n\n\t \n\tstruct super_block *(*co_get_super)(struct ocfs2_caching_info *ci);\n\t \n\tvoid\t(*co_cache_lock)(struct ocfs2_caching_info *ci);\n\tvoid\t(*co_cache_unlock)(struct ocfs2_caching_info *ci);\n\n\t \n\tvoid\t(*co_io_lock)(struct ocfs2_caching_info *ci);\n\tvoid\t(*co_io_unlock)(struct ocfs2_caching_info *ci);\n};\n\nint __init init_ocfs2_uptodate_cache(void);\nvoid exit_ocfs2_uptodate_cache(void);\n\nvoid ocfs2_metadata_cache_init(struct ocfs2_caching_info *ci,\n\t\t\t       const struct ocfs2_caching_operations *ops);\nvoid ocfs2_metadata_cache_purge(struct ocfs2_caching_info *ci);\nvoid ocfs2_metadata_cache_exit(struct ocfs2_caching_info *ci);\n\nu64 ocfs2_metadata_cache_owner(struct ocfs2_caching_info *ci);\nvoid ocfs2_metadata_cache_io_lock(struct ocfs2_caching_info *ci);\nvoid ocfs2_metadata_cache_io_unlock(struct ocfs2_caching_info *ci);\n\nint ocfs2_buffer_uptodate(struct ocfs2_caching_info *ci,\n\t\t\t  struct buffer_head *bh);\nvoid ocfs2_set_buffer_uptodate(struct ocfs2_caching_info *ci,\n\t\t\t       struct buffer_head *bh);\nvoid ocfs2_set_new_buffer_uptodate(struct ocfs2_caching_info *ci,\n\t\t\t\t   struct buffer_head *bh);\nvoid ocfs2_remove_from_cache(struct ocfs2_caching_info *ci,\n\t\t\t     struct buffer_head *bh);\nvoid ocfs2_remove_xattr_clusters_from_cache(struct ocfs2_caching_info *ci,\n\t\t\t\t\t    sector_t block,\n\t\t\t\t\t    u32 c_len);\nint ocfs2_buffer_read_ahead(struct ocfs2_caching_info *ci,\n\t\t\t    struct buffer_head *bh);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

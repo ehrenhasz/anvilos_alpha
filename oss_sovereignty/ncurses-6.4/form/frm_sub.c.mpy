@@ -1,0 +1,9 @@
+{
+  "module_name": "frm_sub.c",
+  "hash_id": "0169a2c1dfe18fc3f93f41aaa3dbffefd3999ca2e13d03e6d5a416e6c6bdb5e3",
+  "original_prompt": "Ingested from ncurses-6.4/form/frm_sub.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: frm_sub.c,v 1.15 2021/06/17 21:20:30 tom Exp $\")\n\n \nFORM_EXPORT(int)\nset_form_sub(FORM *form, WINDOW *win)\n{\n  T((T_CALLED(\"set_form_sub(%p,%p)\"), (void *)form, (void *)win));\n\n  if (form && (form->status & _POSTED))\n    RETURN(E_POSTED);\n  else\n    {\n#if NCURSES_SP_FUNCS\n      FORM *f = Normalize_Form(form);\n\n      f->sub = win ? win : StdScreen(Get_Form_Screen(f));\n      RETURN(E_OK);\n#else\n      Normalize_Form(form)->sub = win;\n      RETURN(E_OK);\n#endif\n    }\n}\n\n \nFORM_EXPORT(WINDOW *)\nform_sub(const FORM *form)\n{\n  const FORM *f;\n\n  T((T_CALLED(\"form_sub(%p)\"), (const void *)form));\n\n  f = Normalize_Form(form);\n  returnWin(Get_Form_Window(f));\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

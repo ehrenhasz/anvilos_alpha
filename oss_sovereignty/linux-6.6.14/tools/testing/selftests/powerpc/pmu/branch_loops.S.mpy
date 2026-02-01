@@ -1,0 +1,9 @@
+{
+  "module_name": "branch_loops.S",
+  "hash_id": "f83bf5a58a0ee47068b06fd243af217d2a691fb5dfbab051fdbacbc44a1ce410",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/branch_loops.S",
+  "human_readable_source": " \n \n\n#include <ppc-asm.h>\n\n\t.text\n\n#define ITER_SHIFT\t31\n\nFUNC_START(indirect_branch_loop)\n\tli\tr3, 1\n\tsldi\tr3, r3, ITER_SHIFT\n\n1:\tcmpdi\tr3, 0\n\tbeqlr\n\n\taddi\tr3, r3, -1\n\n\tld\tr4, 2f@got(%r2)\n\tmtctr\tr4\n\tbctr\n\n\t.balign 32\n2:\tb\t1b\n\nFUNC_END(indirect_branch_loop)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

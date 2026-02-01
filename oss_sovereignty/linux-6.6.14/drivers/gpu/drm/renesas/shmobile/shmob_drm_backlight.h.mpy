@@ -1,0 +1,9 @@
+{
+  "module_name": "shmob_drm_backlight.h",
+  "hash_id": "46962adb5fd06807a90b39c6a869465a4b9efec42bbfa4452022c1751185926c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/renesas/shmobile/shmob_drm_backlight.h",
+  "human_readable_source": " \n \n\n#ifndef __SHMOB_DRM_BACKLIGHT_H__\n#define __SHMOB_DRM_BACKLIGHT_H__\n\nstruct shmob_drm_connector;\n\nvoid shmob_drm_backlight_dpms(struct shmob_drm_connector *scon, int mode);\nint shmob_drm_backlight_init(struct shmob_drm_connector *scon);\nvoid shmob_drm_backlight_exit(struct shmob_drm_connector *scon);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

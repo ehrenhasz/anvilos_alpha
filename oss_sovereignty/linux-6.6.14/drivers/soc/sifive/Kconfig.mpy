@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "dae78d7ce94ac54ce41fd21d6d0fea2344de5cc7da54fd85565f66b9318a2e8c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/sifive/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nif SOC_SIFIVE || SOC_STARFIVE\n\nconfig SIFIVE_CCACHE\n\tbool \"Sifive Composable Cache controller\"\n\thelp\n\t  Support for the composable cache controller on SiFive platforms.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dvb_net.h",
+  "hash_id": "a548f02e26b6181e2d064b49d2d591f805e6c34f2dd41e753899fd69d1e1414c",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/dvb_net.h",
+  "human_readable_source": " \n\n#ifndef _DVB_NET_H_\n#define _DVB_NET_H_\n\n#include <linux/module.h>\n\n#include <media/dvbdev.h>\n\nstruct net_device;\n\n#define DVB_NET_DEVICES_MAX 10\n\n#ifdef CONFIG_DVB_NET\n\n \n\nstruct dvb_net {\n\tstruct dvb_device *dvbdev;\n\tstruct net_device *device[DVB_NET_DEVICES_MAX];\n\tint state[DVB_NET_DEVICES_MAX];\n\tunsigned int exit:1;\n\tstruct dmx_demux *demux;\n\tstruct mutex ioctl_mutex;\n\tstruct mutex remove_mutex;\n};\n\n \nint dvb_net_init(struct dvb_adapter *adap, struct dvb_net *dvbnet,\n\t\t  struct dmx_demux *dmxdemux);\n\n \nvoid dvb_net_release(struct dvb_net *dvbnet);\n\n#else\n\nstruct dvb_net {\n\tstruct dvb_device *dvbdev;\n};\n\nstatic inline void dvb_net_release(struct dvb_net *dvbnet)\n{\n}\n\nstatic inline int dvb_net_init(struct dvb_adapter *adap,\n\t\t\t       struct dvb_net *dvbnet, struct dmx_demux *dmx)\n{\n\treturn 0;\n}\n\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

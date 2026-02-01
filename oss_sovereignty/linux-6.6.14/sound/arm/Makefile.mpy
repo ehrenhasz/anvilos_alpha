@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f1c05783c9efae1cfe1bf7f53462e5d96958bcf5927f4af1fb42fb0d0be7aa9f",
+  "original_prompt": "Ingested from linux-6.6.14/sound/arm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ALSA\n#\n\nobj-$(CONFIG_SND_ARMAACI)\t+= snd-aaci.o\nsnd-aaci-objs\t\t\t:= aaci.o\n\nobj-$(CONFIG_SND_PXA2XX_LIB)\t+= snd-pxa2xx-lib.o\nsnd-pxa2xx-lib-y\t\t:= pxa2xx-pcm-lib.o\nsnd-pxa2xx-lib-$(CONFIG_SND_PXA2XX_LIB_AC97)\t+= pxa2xx-ac97-lib.o\n\nobj-$(CONFIG_SND_PXA2XX_AC97)\t+= snd-pxa2xx-ac97.o\nsnd-pxa2xx-ac97-objs\t\t:= pxa2xx-ac97.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "find_vma_fail1.c",
+  "hash_id": "af2e618019be3a8f16004399040d4555f3a4fe2023fd979428f455eaf3b97501",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/find_vma_fail1.c",
+  "human_readable_source": "\n \n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#define vm_flags vm_start\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct callback_ctx {\n\tint dummy;\n};\n\nstatic long write_vma(struct task_struct *task, struct vm_area_struct *vma,\n\t\t      struct callback_ctx *data)\n{\n\t \n\tvma->vm_start = 0xffffffffff600000;\n\n\treturn 0;\n}\n\nSEC(\"raw_tp/sys_enter\")\nint handle_getpid(void)\n{\n\tstruct task_struct *task = bpf_get_current_task_btf();\n\tstruct callback_ctx data = {};\n\n\tbpf_find_vma(task, 0, write_vma, &data, 0);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

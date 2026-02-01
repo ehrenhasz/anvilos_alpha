@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6d63874cedf9c474cdfe0b6dd3fe72619874933d8ae75821fe000afe34357aa6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/dove/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y\t\t+= pmu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

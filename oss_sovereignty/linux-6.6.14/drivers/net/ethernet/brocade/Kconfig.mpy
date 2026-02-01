@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "02dcac5bc7aa298ed58f7bca4dd73cce57df8c53e9f305537588ab4e3d492d2c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/brocade/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# QLogic BR-series device configuration\n#\n\nconfig NET_VENDOR_BROCADE\n\tbool \"QLogic BR-series devices\"\n\tdefault y\n\tdepends on PCI\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about QLogic BR-series cards. If you say Y, you will be\n\t  asked for your specific card in the following questions.\n\nif NET_VENDOR_BROCADE\n\nsource \"drivers/net/ethernet/brocade/bna/Kconfig\"\n\nendif # NET_VENDOR_BROCADE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

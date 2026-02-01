@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3c6e398b99be7e338e8b6dc1bb492597d770f990eadd4aad6b0296a45da4d2ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/mgag200/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_MGAG200\n\ttristate \"Matrox G200\"\n\tdepends on DRM && PCI && MMU\n\tselect DRM_GEM_SHMEM_HELPER\n\tselect DRM_KMS_HELPER\n\tselect I2C\n\tselect I2C_ALGOBIT\n\thelp\n\t This is a KMS driver for Matrox G200 chips. It supports the original\n\t MGA G200 desktop chips and the server variants. It requires 0.3.0\n\t of the modesetting userspace driver, and a version of mga driver\n\t that will fail on KMS enabled devices.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

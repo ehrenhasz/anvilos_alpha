@@ -1,0 +1,9 @@
+{
+  "module_name": "vdpa_dev.h",
+  "hash_id": "e84da748a7d53dcc3a56da54fce486a2ea5971c4e9607b99481a9409d3fb51af",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vdpa/pds/vdpa_dev.h",
+  "human_readable_source": " \n \n\n#ifndef _VDPA_DEV_H_\n#define _VDPA_DEV_H_\n\n#include <linux/pci.h>\n#include <linux/vdpa.h>\n\nstruct pds_vdpa_vq_info {\n\tbool ready;\n\tu64 desc_addr;\n\tu64 avail_addr;\n\tu64 used_addr;\n\tu32 q_len;\n\tu16 qid;\n\tint irq;\n\tchar irq_name[32];\n\n\tvoid __iomem *notify;\n\tdma_addr_t notify_pa;\n\n\tu64 doorbell;\n\tu16 avail_idx;\n\tu16 used_idx;\n\n\tstruct vdpa_callback event_cb;\n\tstruct pds_vdpa_device *pdsv;\n};\n\n#define PDS_VDPA_MAX_QUEUES\t65\n#define PDS_VDPA_MAX_QLEN\t32768\nstruct pds_vdpa_device {\n\tstruct vdpa_device vdpa_dev;\n\tstruct pds_vdpa_aux *vdpa_aux;\n\n\tstruct pds_vdpa_vq_info vqs[PDS_VDPA_MAX_QUEUES];\n\tu64 supported_features;\t\t \n\tu64 negotiated_features;\t \n\tu8 vdpa_index;\t\t\t \n\tu8 num_vqs;\t\t\t \n\tu8 mac[ETH_ALEN];\t\t \n\tstruct vdpa_callback config_cb;\n\tstruct notifier_block nb;\n};\n\n#define PDS_VDPA_PACKED_INVERT_IDX\t0x8000\n\nint pds_vdpa_get_mgmt_info(struct pds_vdpa_aux *vdpa_aux);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

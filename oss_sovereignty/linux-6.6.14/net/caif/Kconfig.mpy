@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "00730a24bc5d2506ca8d7cf0bfc3348aaaafdf54d68b9c081d8b289d0e36e134",
+  "original_prompt": "Ingested from linux-6.6.14/net/caif/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# CAIF net configurations\n#\n\nmenuconfig CAIF\n\ttristate \"CAIF support\"\n\tselect CRC_CCITT\n\tdefault n\n\thelp\n\tThe \"Communication CPU to Application CPU Interface\" (CAIF) is a packet\n\tbased connection-oriented MUX protocol developed by ST-Ericsson for use\n\twith its modems. It is accessed from user space as sockets (PF_CAIF).\n\n\tSay Y (or M) here if you build for a phone product (e.g. Android or\n\tMeeGo) that uses CAIF as transport. If unsure say N.\n\n\tIf you select to build it as module then CAIF_NETDEV also needs to be\n\tbuilt as a module. You will also need to say Y (or M) to any CAIF\n\tphysical devices that your platform requires.\n\n\tSee Documentation/networking/caif for a further explanation on how to\n\tuse and configure CAIF.\n\nconfig  CAIF_DEBUG\n\tbool \"Enable Debug\"\n\tdepends on CAIF\n\tdefault n\n\thelp\n\tEnable the inclusion of debug code in the CAIF stack.\n\tBe aware that doing this will impact performance.\n\tIf unsure say N.\n\nconfig CAIF_NETDEV\n\ttristate \"CAIF GPRS Network device\"\n\tdepends on CAIF\n\tdefault CAIF\n\thelp\n\tSay Y if you will be using a CAIF based GPRS network device.\n\tThis can be either built-in or a loadable module.\n\tIf you select to build it as a built-in then the main CAIF device must\n\talso be a built-in.\n\tIf unsure say Y.\n\nconfig CAIF_USB\n\ttristate \"CAIF USB support\"\n\tdepends on CAIF\n\tdefault n\n\thelp\n\tSay Y if you are using CAIF over USB CDC NCM.\n\tThis can be either built-in or a loadable module.\n\tIf you select to build it as a built-in then the main CAIF device must\n\talso be a built-in.\n\tIf unsure say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

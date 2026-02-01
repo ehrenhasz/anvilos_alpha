@@ -1,0 +1,9 @@
+{
+  "module_name": "mpls_iptunnel.h",
+  "hash_id": "67cf684cacf5680927027a2080caf7edf6b5284a6a41639f8fa4d48b7b07efeb",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/mpls_iptunnel.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_MPLS_IPTUNNEL_H\n#define _UAPI_LINUX_MPLS_IPTUNNEL_H\n\n \nenum {\n\tMPLS_IPTUNNEL_UNSPEC,\n\tMPLS_IPTUNNEL_DST,\n\tMPLS_IPTUNNEL_TTL,\n\t__MPLS_IPTUNNEL_MAX,\n};\n#define MPLS_IPTUNNEL_MAX (__MPLS_IPTUNNEL_MAX - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

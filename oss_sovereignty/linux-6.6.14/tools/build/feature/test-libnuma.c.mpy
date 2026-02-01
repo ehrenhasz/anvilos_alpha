@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libnuma.c",
+  "hash_id": "40cfdf1910e15f9e1efdf90f57693706ba65eb6aa3ef613b5d7bc9f8b9861a83",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libnuma.c",
+  "human_readable_source": "\n#include <numa.h>\n#include <numaif.h>\n\nint main(void)\n{\n\tnuma_available();\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

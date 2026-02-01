@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a0a616d61d954fb1e7230c7974093571fd513328bfaf3b7fc23676a5502be243",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sched/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n\nifneq ($(shell $(CC) --version 2>&1 | head -n 1 | grep clang),)\nCLANG_FLAGS += -no-integrated-as\nendif\n\nCFLAGS += -O2 -Wall -g -I./ $(KHDR_INCLUDES) -Wl,-rpath=./ \\\n\t  $(CLANG_FLAGS)\nLDLIBS += -lpthread\n\nTEST_GEN_FILES := cs_prctl_test\nTEST_PROGS := cs_prctl_test\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

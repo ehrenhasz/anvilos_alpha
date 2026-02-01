@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-kensington.c",
+  "hash_id": "83b06077f9f0d25f7da688eaf78a4066b68b434f8f15a6d4c61d64a11c376bb2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-kensington.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/device.h>\n#include <linux/input.h>\n#include <linux/hid.h>\n#include <linux/module.h>\n\n#include \"hid-ids.h\"\n\n#define ks_map_key(c)\thid_map_usage(hi, usage, bit, max, EV_KEY, (c))\n\nstatic int ks_input_mapping(struct hid_device *hdev, struct hid_input *hi,\n\t\tstruct hid_field *field, struct hid_usage *usage,\n\t\tunsigned long **bit, int *max)\n{\n\tif ((usage->hid & HID_USAGE_PAGE) != HID_UP_MSVENDOR)\n\t\treturn 0;\n\n\tswitch (usage->hid & HID_USAGE) {\n\tcase 0x01: ks_map_key(BTN_MIDDLE);\tbreak;\n\tcase 0x02: ks_map_key(BTN_SIDE);\tbreak;\n\tdefault:\n\t\treturn 0;\n\t}\n\treturn 1;\n}\n\nstatic const struct hid_device_id ks_devices[] = {\n\t{ HID_USB_DEVICE(USB_VENDOR_ID_KENSINGTON, USB_DEVICE_ID_KS_SLIMBLADE) },\n\t{ }\n};\nMODULE_DEVICE_TABLE(hid, ks_devices);\n\nstatic struct hid_driver ks_driver = {\n\t.name = \"kensington\",\n\t.id_table = ks_devices,\n\t.input_mapping = ks_input_mapping,\n};\nmodule_hid_driver(ks_driver);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

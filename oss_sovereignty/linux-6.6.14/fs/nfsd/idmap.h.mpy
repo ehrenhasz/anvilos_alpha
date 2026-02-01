@@ -1,0 +1,9 @@
+{
+  "module_name": "idmap.h",
+  "hash_id": "979bf0b26439828f54404eb2914d05d608112e2f995b55cb7dc8b54f85e07aca",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfsd/idmap.h",
+  "human_readable_source": " \n\n#ifndef LINUX_NFSD_IDMAP_H\n#define LINUX_NFSD_IDMAP_H\n\n#include <linux/in.h>\n#include <linux/sunrpc/svc.h>\n#include <linux/nfs_idmap.h>\n\n#ifdef CONFIG_NFSD_V4\nint nfsd_idmap_init(struct net *);\nvoid nfsd_idmap_shutdown(struct net *);\n#else\nstatic inline int nfsd_idmap_init(struct net *net)\n{\n\treturn 0;\n}\nstatic inline void nfsd_idmap_shutdown(struct net *net)\n{\n}\n#endif\n\n__be32 nfsd_map_name_to_uid(struct svc_rqst *, const char *, size_t, kuid_t *);\n__be32 nfsd_map_name_to_gid(struct svc_rqst *, const char *, size_t, kgid_t *);\n__be32 nfsd4_encode_user(struct xdr_stream *, struct svc_rqst *, kuid_t);\n__be32 nfsd4_encode_group(struct xdr_stream *, struct svc_rqst *, kgid_t);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

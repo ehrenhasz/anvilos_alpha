@@ -1,0 +1,9 @@
+{
+  "module_name": "static_call.h",
+  "hash_id": "5418401397365a1828266f9712956eae122c69e3ff5d25892428cc28e8f2244b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/static_call.h",
+  "human_readable_source": " \n#ifndef _ASM_STATIC_CALL_H\n#define _ASM_STATIC_CALL_H\n\n#include <asm/text-patching.h>\n\n \n\n \n#define __ARCH_DEFINE_STATIC_CALL_TRAMP(name, insns)\t\t\t\\\n\tasm(\".pushsection .static_call.text, \\\"ax\\\"\t\t\\n\"\t\\\n\t    \".align 4\t\t\t\t\t\t\\n\"\t\\\n\t    \".globl \" STATIC_CALL_TRAMP_STR(name) \"\t\t\\n\"\t\\\n\t    STATIC_CALL_TRAMP_STR(name) \":\t\t\t\\n\"\t\\\n\t    ANNOTATE_NOENDBR\t\t\t\t\t\t\\\n\t    insns \"\t\t\t\t\t\t\\n\"\t\\\n\t    \".byte 0x0f, 0xb9, 0xcc\t\t\t\t\\n\"\t\\\n\t    \".type \" STATIC_CALL_TRAMP_STR(name) \", @function\t\\n\"\t\\\n\t    \".size \" STATIC_CALL_TRAMP_STR(name) \", . - \" STATIC_CALL_TRAMP_STR(name) \" \\n\" \\\n\t    \".popsection\t\t\t\t\t\\n\")\n\n#define ARCH_DEFINE_STATIC_CALL_TRAMP(name, func)\t\t\t\\\n\t__ARCH_DEFINE_STATIC_CALL_TRAMP(name, \".byte 0xe9; .long \" #func \" - (. + 4)\")\n\n#ifdef CONFIG_RETHUNK\n#define ARCH_DEFINE_STATIC_CALL_NULL_TRAMP(name)\t\t\t\\\n\t__ARCH_DEFINE_STATIC_CALL_TRAMP(name, \"jmp __x86_return_thunk\")\n#else\n#define ARCH_DEFINE_STATIC_CALL_NULL_TRAMP(name)\t\t\t\\\n\t__ARCH_DEFINE_STATIC_CALL_TRAMP(name, \"ret; int3; nop; nop; nop\")\n#endif\n\n#define ARCH_DEFINE_STATIC_CALL_RET0_TRAMP(name)\t\t\t\\\n\tARCH_DEFINE_STATIC_CALL_TRAMP(name, __static_call_return0)\n\n#define ARCH_ADD_TRAMP_KEY(name)\t\t\t\t\t\\\n\tasm(\".pushsection .static_call_tramp_key, \\\"a\\\"\t\t\\n\"\t\\\n\t    \".long \" STATIC_CALL_TRAMP_STR(name) \" - .\t\t\\n\"\t\\\n\t    \".long \" STATIC_CALL_KEY_STR(name) \" - .\t\t\\n\"\t\\\n\t    \".popsection\t\t\t\t\t\\n\")\n\nextern bool __static_call_fixup(void *tramp, u8 op, void *dest);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

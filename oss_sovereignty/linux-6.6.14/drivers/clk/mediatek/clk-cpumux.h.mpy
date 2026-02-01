@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-cpumux.h",
+  "hash_id": "e27379dee405698576da176c6a5ff5f69c5e391696feab08d068547e7fb56486",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mediatek/clk-cpumux.h",
+  "human_readable_source": " \n \n\n#ifndef __DRV_CLK_CPUMUX_H\n#define __DRV_CLK_CPUMUX_H\n\nstruct clk_hw_onecell_data;\nstruct device_node;\nstruct mtk_composite;\n\nint mtk_clk_register_cpumuxes(struct device *dev, struct device_node *node,\n\t\t\t      const struct mtk_composite *clks, int num,\n\t\t\t      struct clk_hw_onecell_data *clk_data);\n\nvoid mtk_clk_unregister_cpumuxes(const struct mtk_composite *clks, int num,\n\t\t\t\t struct clk_hw_onecell_data *clk_data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

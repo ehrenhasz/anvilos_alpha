@@ -1,0 +1,9 @@
+{
+  "module_name": "odm_types.h",
+  "hash_id": "1634bb8c6e17a8f7f067a33a5f2a7906504dd40231fe470a9dd581ddd8c6e712",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/hal/odm_types.h",
+  "human_readable_source": " \n \n#ifndef __ODM_TYPES_H__\n#define __ODM_TYPES_H__\n\n#include <drv_types.h>\n\n \n#define\tODM_ENDIAN_BIG\t0\n#define\tODM_ENDIAN_LITTLE\t1\n\n#define GET_ODM(__padapter)\t((PDM_ODM_T)(&((GET_HAL_DATA(__padapter))->odmpriv)))\n\nenum hal_status {\n\tHAL_STATUS_SUCCESS,\n\tHAL_STATUS_FAILURE,\n\t \n};\n\n\n\t#if defined(__LITTLE_ENDIAN)\n\t\t#define\tODM_ENDIAN_TYPE\t\t\tODM_ENDIAN_LITTLE\n\t#else\n\t\t#define\tODM_ENDIAN_TYPE\t\t\tODM_ENDIAN_BIG\n\t#endif\n\n\t#define\tSTA_INFO_T\t\t\tstruct sta_info\n\t#define\tPSTA_INFO_T\t\tstruct sta_info *\n\n\t#define SET_TX_DESC_ANTSEL_A_88E(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 24, 1, __Value)\n\t#define SET_TX_DESC_ANTSEL_B_88E(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+8, 25, 1, __Value)\n\t#define SET_TX_DESC_ANTSEL_C_88E(__pTxDesc, __Value) SET_BITS_TO_LE_4BYTE(__pTxDesc+28, 29, 1, __Value)\n\n\t \n\t#define\tUSE_WORKITEM 0\n\t#define   FPGA_TWO_MAC_VERIFICATION\t0\n\n#define READ_NEXT_PAIR(v1, v2, i) do { if (i+2 >= ArrayLen) break; i += 2; v1 = Array[i]; v2 = Array[i+1]; } while (0)\n#define COND_ELSE  2\n#define COND_ENDIF 3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

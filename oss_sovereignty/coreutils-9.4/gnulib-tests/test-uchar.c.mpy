@@ -1,0 +1,9 @@
+{
+  "module_name": "test-uchar.c",
+  "hash_id": "aab8874fa10acb8cb1b7f12a3f146bbb340ae067cbf915a986fa388fd189c67f",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-uchar.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <uchar.h>\n\n \nmbstate_t a = { 0 };\nsize_t b = 5;\nchar8_t c = 'x';\nchar16_t d = 'y';\nchar32_t e = 'z';\n\n \nstatic_assert ((char8_t)(-1) >= 0);\nstatic_assert ((char16_t)(-1) >= 0);\n#if !defined __HP_cc\nstatic_assert ((char32_t)(-1) >= 0);\n#endif\n\n \nstatic_assert ((char8_t)0xFF != (char8_t)0x7F);\n\n \nstatic_assert ((char16_t)0xFFFF != (char16_t)0x7FFF);\n\n \nstatic_assert ((char32_t)0x7FFFFFFF != (char32_t)0x3FFFFFFF);\n\n \n#if _GL_SMALL_WCHAR_T\nstatic_assert (sizeof (wchar_t) < sizeof (char32_t));\n#else\nstatic_assert (sizeof (wchar_t) == sizeof (char32_t));\n#endif\n\nint\nmain (void)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

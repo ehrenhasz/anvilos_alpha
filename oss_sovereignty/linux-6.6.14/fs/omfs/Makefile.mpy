@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "386ba38532892d5845ae4d8e0eaa86222d8f496f306b2edc895ef0a1a799816a",
+  "original_prompt": "Ingested from linux-6.6.14/fs/omfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nobj-$(CONFIG_OMFS_FS) += omfs.o\n\nomfs-y := bitmap.o dir.o file.o inode.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

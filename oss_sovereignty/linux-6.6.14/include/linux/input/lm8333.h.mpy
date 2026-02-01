@@ -1,0 +1,9 @@
+{
+  "module_name": "lm8333.h",
+  "hash_id": "e062774024b5a68de0235657b80c19c7880419dc25dc480ffe5f2c0c09cda0e2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/input/lm8333.h",
+  "human_readable_source": " \n\n#ifndef _LM8333_H\n#define _LM8333_H\n\nstruct lm8333;\n\nstruct lm8333_platform_data {\n\t \n\tconst struct matrix_keymap_data *matrix_data;\n\t \n\tunsigned active_time;\n\t \n\tunsigned debounce_time;\n};\n\nextern int lm8333_read8(struct lm8333 *lm8333, u8 cmd);\nextern int lm8333_write8(struct lm8333 *lm8333, u8 cmd, u8 val);\nextern int lm8333_read_block(struct lm8333 *lm8333, u8 cmd, u8 len, u8 *buf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

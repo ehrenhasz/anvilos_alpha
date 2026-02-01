@@ -1,0 +1,9 @@
+{
+  "module_name": "lcmessage.m4",
+  "hash_id": "796743384f79a3f35bb24dfa364b2609035cc306d46f4669e05d385c9610b9b2",
+  "original_prompt": "Ingested from bash-5.2.21/m4/lcmessage.m4",
+  "human_readable_source": "# lcmessage.m4 serial 7 (gettext-0.18.2)\ndnl Copyright (C) 1995-2002, 2004-2005, 2008-2014, 2016, 2019 Free Software\ndnl Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\ndnl\ndnl This file can be used in projects which are not available under\ndnl the GNU General Public License or the GNU Library General Public\ndnl License but which still want to provide support for the GNU gettext\ndnl functionality.\ndnl Please note that the actual code of the GNU gettext library is covered\ndnl by the GNU Library General Public License, and the rest of the GNU\ndnl gettext package is covered by the GNU General Public License.\ndnl They are *not* in the public domain.\n\ndnl Authors:\ndnl   Ulrich Drepper <drepper@cygnus.com>, 1995.\n\n# Check whether LC_MESSAGES is available in <locale.h>.\n\nAC_DEFUN([gt_LC_MESSAGES],\n[\n  AC_CACHE_CHECK([for LC_MESSAGES], [gt_cv_val_LC_MESSAGES],\n    [AC_LINK_IFELSE(\n       [AC_LANG_PROGRAM(\n          [[#include <locale.h>]],\n          [[return LC_MESSAGES]])],\n       [gt_cv_val_LC_MESSAGES=yes],\n       [gt_cv_val_LC_MESSAGES=no])])\n  if test $gt_cv_val_LC_MESSAGES = yes; then\n    AC_DEFINE([HAVE_LC_MESSAGES], [1],\n      [Define if your <locale.h> file defines LC_MESSAGES.])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

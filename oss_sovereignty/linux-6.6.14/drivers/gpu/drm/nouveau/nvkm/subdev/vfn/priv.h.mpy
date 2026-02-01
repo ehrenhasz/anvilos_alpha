@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "03921027dd8659ec069ed547e204aae2aca0f0e935effe465439521ecca19a3f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/vfn/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_VFN_PRIV_H__\n#define __NVKM_VFN_PRIV_H__\n#define nvkm_vfn(p) container_of((p), struct nvkm_vfn, subdev)\n#include <subdev/vfn.h>\n\nstruct nvkm_vfn_func {\n\tconst struct nvkm_intr_func *intr;\n\tconst struct nvkm_intr_data *intrs;\n\n\tstruct {\n\t\tu32 addr;\n\t\tu32 size;\n\t\tconst struct nvkm_sclass base;\n\t} user;\n};\n\nint nvkm_vfn_new_(const struct nvkm_vfn_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t  u32 addr, struct nvkm_vfn **);\n\nextern const struct nvkm_intr_func tu102_vfn_intr;\n\nint nvkm_uvfn_new(struct nvkm_device *, const struct nvkm_oclass *, void *, u32,\n\t\t  struct nvkm_object **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

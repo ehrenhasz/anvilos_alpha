@@ -1,0 +1,9 @@
+{
+  "module_name": "seq_info.c",
+  "hash_id": "c84c7ed3e533253e5c8ddb7af8a08a05749b0dc74014a3ee804cce456b1168ae",
+  "original_prompt": "Ingested from linux-6.6.14/sound/core/seq/seq_info.c",
+  "human_readable_source": "\n \n\n#include <linux/init.h>\n#include <linux/export.h>\n#include <sound/core.h>\n\n#include \"seq_info.h\"\n#include \"seq_clientmgr.h\"\n#include \"seq_timer.h\"\n\nstatic struct snd_info_entry *queues_entry;\nstatic struct snd_info_entry *clients_entry;\nstatic struct snd_info_entry *timer_entry;\n\n\nstatic struct snd_info_entry * __init\ncreate_info_entry(char *name, void (*read)(struct snd_info_entry *,\n\t\t\t\t\t   struct snd_info_buffer *))\n{\n\tstruct snd_info_entry *entry;\n\n\tentry = snd_info_create_module_entry(THIS_MODULE, name, snd_seq_root);\n\tif (entry == NULL)\n\t\treturn NULL;\n\tentry->content = SNDRV_INFO_CONTENT_TEXT;\n\tentry->c.text.read = read;\n\tif (snd_info_register(entry) < 0) {\n\t\tsnd_info_free_entry(entry);\n\t\treturn NULL;\n\t}\n\treturn entry;\n}\n\nvoid snd_seq_info_done(void)\n{\n\tsnd_info_free_entry(queues_entry);\n\tsnd_info_free_entry(clients_entry);\n\tsnd_info_free_entry(timer_entry);\n}\n\n \nint __init snd_seq_info_init(void)\n{\n\tqueues_entry = create_info_entry(\"queues\",\n\t\t\t\t\t snd_seq_info_queues_read);\n\tclients_entry = create_info_entry(\"clients\",\n\t\t\t\t\t  snd_seq_info_clients_read);\n\ttimer_entry = create_info_entry(\"timer\", snd_seq_info_timer_read);\n\tif (!queues_entry || !clients_entry || !timer_entry)\n\t\tgoto error;\n\treturn 0;\n\n error:\n\tsnd_seq_info_done();\n\treturn -ENOMEM;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test_log_fixup.c",
+  "hash_id": "272f68ac31f656911e0bcbe989ce010349bd7d162106c5c16ff616fbce77a445",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_log_fixup.c",
+  "human_readable_source": "\n \n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_core_read.h>\n\nstruct task_struct___bad {\n\tint pid;\n\tint fake_field;\n\tvoid *fake_field_subprog;\n} __attribute__((preserve_access_index));\n\nSEC(\"?raw_tp/sys_enter\")\nint bad_relo(const void *ctx)\n{\n\tstatic struct task_struct___bad *t;\n\n\treturn bpf_core_field_size(t->fake_field);\n}\n\nstatic __noinline int bad_subprog(void)\n{\n\tstatic struct task_struct___bad *t;\n\n\t \n\treturn (void *)&t->fake_field_subprog - (void *)t;\n}\n\nSEC(\"?raw_tp/sys_enter\")\nint bad_relo_subprog(const void *ctx)\n{\n\tstatic struct task_struct___bad *t;\n\n\treturn bad_subprog() + bpf_core_field_size(t->pid);\n}\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(max_entries, 1);\n\t__type(key, int);\n\t__type(value, int);\n} existing_map SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(max_entries, 1);\n\t__type(key, int);\n\t__type(value, int);\n} missing_map SEC(\".maps\");\n\nSEC(\"?raw_tp/sys_enter\")\nint use_missing_map(const void *ctx)\n{\n\tint zero = 0, *value;\n\n\tvalue = bpf_map_lookup_elem(&existing_map, &zero);\n\n\tvalue = bpf_map_lookup_elem(&missing_map, &zero);\n\n\treturn value != NULL;\n}\n\nextern int bpf_nonexistent_kfunc(void) __ksym __weak;\n\nSEC(\"?raw_tp/sys_enter\")\nint use_missing_kfunc(const void *ctx)\n{\n\tbpf_nonexistent_kfunc();\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_refcount.h",
+  "hash_id": "251b08974b5ff830585b43d2ceb94b195dc8bc3f82da93082cb29f9fda4bdf3a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/base/refcount/interface/ia_css_refcount.h",
+  "human_readable_source": " \n \n\n#ifndef _IA_CSS_REFCOUNT_H_\n#define _IA_CSS_REFCOUNT_H_\n\n#include <type_support.h>\n#include <system_local.h>\n#include <ia_css_err.h>\n#include <ia_css_types.h>\n\ntypedef void (*clear_func)(ia_css_ptr ptr);\n\n \nint ia_css_refcount_init(uint32_t size);\n\n \nvoid ia_css_refcount_uninit(void);\n\n \nia_css_ptr ia_css_refcount_increment(s32 id, ia_css_ptr ptr);\n\n \nbool ia_css_refcount_decrement(s32 id, ia_css_ptr ptr);\n\n \nbool ia_css_refcount_is_single(ia_css_ptr ptr);\n\n \nvoid ia_css_refcount_clear(s32 id,\n\t\t\t   clear_func clear_func_ptr);\n\n \nbool ia_css_refcount_is_valid(ia_css_ptr ptr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

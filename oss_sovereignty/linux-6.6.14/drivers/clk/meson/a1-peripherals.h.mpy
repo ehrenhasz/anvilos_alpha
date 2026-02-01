@@ -1,0 +1,9 @@
+{
+  "module_name": "a1-peripherals.h",
+  "hash_id": "cf79750c9fa0b2ce966022f5b0025c1d453338d390cee39e516586209b253dcf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/meson/a1-peripherals.h",
+  "human_readable_source": " \n \n\n#ifndef __A1_PERIPHERALS_H\n#define __A1_PERIPHERALS_H\n\n \n#define SYS_OSCIN_CTRL\t\t0x0\n#define RTC_BY_OSCIN_CTRL0\t0x4\n#define RTC_BY_OSCIN_CTRL1\t0x8\n#define RTC_CTRL\t\t0xc\n#define SYS_CLK_CTRL0\t\t0x10\n#define SYS_CLK_EN0\t\t0x1c\n#define SYS_CLK_EN1\t\t0x20\n#define AXI_CLK_EN\t\t0x24\n#define DSPA_CLK_EN\t\t0x28\n#define DSPB_CLK_EN\t\t0x2c\n#define DSPA_CLK_CTRL0\t\t0x30\n#define DSPB_CLK_CTRL0\t\t0x34\n#define CLK12_24_CTRL\t\t0x38\n#define GEN_CLK_CTRL\t\t0x3c\n#define SAR_ADC_CLK_CTRL\t0xc0\n#define PWM_CLK_AB_CTRL\t\t0xc4\n#define PWM_CLK_CD_CTRL\t\t0xc8\n#define PWM_CLK_EF_CTRL\t\t0xcc\n#define SPICC_CLK_CTRL\t\t0xd0\n#define TS_CLK_CTRL\t\t0xd4\n#define SPIFC_CLK_CTRL\t\t0xd8\n#define USB_BUSCLK_CTRL\t\t0xdc\n#define SD_EMMC_CLK_CTRL\t0xe0\n#define CECA_CLK_CTRL0\t\t0xe4\n#define CECA_CLK_CTRL1\t\t0xe8\n#define CECB_CLK_CTRL0\t\t0xec\n#define CECB_CLK_CTRL1\t\t0xf0\n#define PSRAM_CLK_CTRL\t\t0xf4\n#define DMC_CLK_CTRL\t\t0xf8\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

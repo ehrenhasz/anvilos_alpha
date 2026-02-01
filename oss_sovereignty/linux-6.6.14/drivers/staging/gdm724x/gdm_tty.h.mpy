@@ -1,0 +1,9 @@
+{
+  "module_name": "gdm_tty.h",
+  "hash_id": "ded87099955467bab3f46edff397ff9350e501e118bd17e435c82f81777187f7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/gdm724x/gdm_tty.h",
+  "human_readable_source": " \n \n\n#ifndef _GDM_TTY_H_\n#define _GDM_TTY_H_\n\n#include <linux/types.h>\n#include <linux/tty.h>\n\n#define TTY_MAX_COUNT\t\t2\n\n#define MAX_ISSUE_NUM 3\n\nenum TO_HOST_RESULT {\n\tTO_HOST_BUFFER_REQUEST_FAIL = 1,\n\tTO_HOST_PORT_CLOSE = 2,\n\tTO_HOST_INVALID_PACKET = 3,\n};\n\nenum RECV_PACKET_PROCESS {\n\tRECV_PACKET_PROCESS_COMPLETE = 0,\n\tRECV_PACKET_PROCESS_CONTINUE = 1,\n};\n\nstruct gdm {\n\tstruct tty_dev *tty_dev;\n\tstruct tty_port port;\n\tunsigned int index;\n\tunsigned int minor;\n};\n\nstruct tty_dev {\n\tvoid *priv_dev;\n\tint (*send_func)(void *priv_dev,\n\t\t\t void *data,\n\t\t\t int len,\n\t\t\t int tty_index,\n\t\t\t void (*cb)(void *cb_data),\n\t\t\t void *cb_data);\n\tint (*recv_func)(void *priv_dev,\n\t\t\t int (*cb)(void *data,\n\t\t\t\t   int len,\n\t\t\t\t   int tty_index,\n\t\t\t\t   struct tty_dev *tty_dev,\n\t\t\t\t   int complete));\n\tint (*send_control)(void *priv_dev,\n\t\t\t    int request,\n\t\t\t    int value,\n\t\t\t    void *data,\n\t\t\t    int len);\n\tstruct gdm *gdm[2];\n};\n\nint register_lte_tty_driver(void);\nvoid unregister_lte_tty_driver(void);\nint register_lte_tty_device(struct tty_dev *tty_dev, struct device *dev);\nvoid unregister_lte_tty_device(struct tty_dev *tty_dev);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

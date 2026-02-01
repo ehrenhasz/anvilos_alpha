@@ -1,0 +1,9 @@
+{
+  "module_name": "smccc.c",
+  "hash_id": "890e30f2145bd2b63f72619151c02bdb557944475c664c0d0e6f382632955e38",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/arm_ffa/smccc.c",
+  "human_readable_source": "\n \n\n#include <linux/printk.h>\n\n#include \"common.h\"\n\nstatic void __arm_ffa_fn_smc(ffa_value_t args, ffa_value_t *res)\n{\n\tarm_smccc_1_2_smc(&args, res);\n}\n\nstatic void __arm_ffa_fn_hvc(ffa_value_t args, ffa_value_t *res)\n{\n\tarm_smccc_1_2_hvc(&args, res);\n}\n\nint __init ffa_transport_init(ffa_fn **invoke_ffa_fn)\n{\n\tenum arm_smccc_conduit conduit;\n\n\tif (arm_smccc_get_version() < ARM_SMCCC_VERSION_1_2)\n\t\treturn -EOPNOTSUPP;\n\n\tconduit = arm_smccc_1_1_get_conduit();\n\tif (conduit == SMCCC_CONDUIT_NONE) {\n\t\tpr_err(\"%s: invalid SMCCC conduit\\n\", __func__);\n\t\treturn -EOPNOTSUPP;\n\t}\n\n\tif (conduit == SMCCC_CONDUIT_SMC)\n\t\t*invoke_ffa_fn = __arm_ffa_fn_smc;\n\telse\n\t\t*invoke_ffa_fn = __arm_ffa_fn_hvc;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

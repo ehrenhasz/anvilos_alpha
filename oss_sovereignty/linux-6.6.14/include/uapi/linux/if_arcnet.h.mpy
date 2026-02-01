@@ -1,0 +1,9 @@
+{
+  "module_name": "if_arcnet.h",
+  "hash_id": "cd22c3e5174b7dd547b7074f5ea4db6caa198ea7822e2dcefee1e967e346fe7d",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/if_arcnet.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_IF_ARCNET_H\n#define _LINUX_IF_ARCNET_H\n\n#include <linux/types.h>\n#include <linux/if_ether.h>\n\n \n\n \n \n\n \n#define ARC_P_IP\t\t212\t \n#define ARC_P_IPV6\t\t196\t \n#define ARC_P_ARP\t\t213\t \n#define ARC_P_RARP\t\t214\t \n#define ARC_P_IPX\t\t250\t \n#define ARC_P_NOVELL_EC\t\t236\t \n\n \n#define ARC_P_IP_RFC1051\t240\t \n#define ARC_P_ARP_RFC1051\t241\t \n\n \n#define ARC_P_ETHER\t\t232\t \n\n \n#define ARC_P_DATAPOINT_BOOT\t0\t \n#define ARC_P_DATAPOINT_MOUNT\t1\n#define ARC_P_POWERLAN_BEACON\t8\t \n#define ARC_P_POWERLAN_BEACON2\t243\t \n#define ARC_P_LANSOFT\t\t251\t \n#define ARC_P_ATALK\t\t0xDD\n\n \n#define ARCNET_ALEN\t1\n\n \nstruct arc_rfc1201 {\n\t__u8  proto;\t\t \n\t__u8  split_flag;\t \n\t__be16   sequence;\t \n\t__u8  payload[];\t \n};\n#define RFC1201_HDR_SIZE 4\n\n \nstruct arc_rfc1051 {\n\t__u8 proto;\t\t \n\t__u8 payload[];\t \n};\n#define RFC1051_HDR_SIZE 1\n\n \nstruct arc_eth_encap {\n\t__u8 proto;\t\t \n\tstruct ethhdr eth;\t \n\t__u8 payload[];\t \n};\n#define ETH_ENCAP_HDR_SIZE 14\n\nstruct arc_cap {\n\t__u8 proto;\n\t__u8 cookie[sizeof(int)];\n\t\t\t\t \n\tunion {\n\t\t__u8 ack;\n\t\t__u8 raw[0];\t \n\t} mes;\n};\n\n \nstruct arc_hardware {\n\t__u8 source;\t\t \n\t__u8 dest;\t\t \n\t__u8 offset[2];\t\t \n};\n#define ARC_HDR_SIZE 4\n\n \nstruct archdr {\n\t \n\tstruct arc_hardware hard;\n\n\t \n\tunion {\n\t\tstruct arc_rfc1201   rfc1201;\n\t\tstruct arc_rfc1051   rfc1051;\n\t\tstruct arc_eth_encap eth_encap;\n\t\tstruct arc_cap       cap;\n\t\t__u8 raw[0];\t \n\t} soft;\n};\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

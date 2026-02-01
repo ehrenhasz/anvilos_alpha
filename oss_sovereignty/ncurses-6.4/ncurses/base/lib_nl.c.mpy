@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_nl.c",
+  "hash_id": "49edf6cd0fd1e514c162a2463bf88e00543cec23c0d40fa32e2ae07941800b24",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_nl.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_nl.c,v 1.13 2020/02/02 23:34:34 tom Exp $\")\n\n#ifdef __EMX__\n#include <io.h>\n#endif\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(nl) (NCURSES_SP_DCL0)\n{\n    T((T_CALLED(\"nl(%p)\"), (void *) SP_PARM));\n    if (0 == SP_PARM)\n\treturnCode(ERR);\n    SP_PARM->_nl = TRUE;\n#ifdef __EMX__\n    _nc_flush();\n    _fsetmode(NC_OUTPUT(SP_PARM), \"t\");\n#endif\n    returnCode(OK);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nnl(void)\n{\n    return NCURSES_SP_NAME(nl) (CURRENT_SCREEN);\n}\n#endif\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(nonl) (NCURSES_SP_DCL0)\n{\n    T((T_CALLED(\"nonl(%p)\"), (void *) SP_PARM));\n    if (0 == SP_PARM)\n\treturnCode(ERR);\n    SP_PARM->_nl = FALSE;\n#ifdef __EMX__\n    _nc_flush();\n    _fsetmode(NC_OUTPUT(SP_PARM), \"b\");\n#endif\n    returnCode(OK);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nnonl(void)\n{\n    return NCURSES_SP_NAME(nonl) (CURRENT_SCREEN);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

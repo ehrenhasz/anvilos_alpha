@@ -1,0 +1,9 @@
+{
+  "module_name": "verifier_xdp.c",
+  "hash_id": "8ed43bc59fa2573d37bd7ffaba6dfb0f7c0f06764db5c57eeb62487d92e90d07",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/verifier_xdp.c",
+  "human_readable_source": "\n \n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nSEC(\"xdp\")\n__description(\"XDP, using ifindex from netdev\")\n__success __retval(1)\n__naked void xdp_using_ifindex_from_netdev(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr0 = 0;\t\t\t\t\t\t\\\n\tr2 = *(u32*)(r1 + %[xdp_md_ingress_ifindex]);\t\\\n\tif r2 < 1 goto l0_%=;\t\t\t\t\\\n\tr0 = 1;\t\t\t\t\t\t\\\nl0_%=:\texit;\t\t\t\t\t\t\\\n\"\t:\n\t: __imm_const(xdp_md_ingress_ifindex, offsetof(struct xdp_md, ingress_ifindex))\n\t: __clobber_all);\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "snps,hsdk-reset.h",
+  "hash_id": "c388cceafb9c7aa8484a5705425599e5afc7c3fe631a7397caff44d1c589d6d4",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/snps,hsdk-reset.h",
+  "human_readable_source": " \n#ifndef _DT_BINDINGS_RESET_CONTROLLER_SNPS_HSDK\n#define _DT_BINDINGS_RESET_CONTROLLER_SNPS_HSDK\n\n#define HSDK_APB_RESET\t0\n#define HSDK_AXI_RESET\t1\n#define HSDK_ETH_RESET\t2\n#define HSDK_USB_RESET\t3\n#define HSDK_SDIO_RESET\t4\n#define HSDK_HDMI_RESET\t5\n#define HSDK_GFX_RESET\t6\n#define HSDK_DMAC_RESET\t7\n#define HSDK_EBI_RESET\t8\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

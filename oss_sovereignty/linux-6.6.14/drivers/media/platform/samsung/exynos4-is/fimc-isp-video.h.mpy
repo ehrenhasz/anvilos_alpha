@@ -1,0 +1,9 @@
+{
+  "module_name": "fimc-isp-video.h",
+  "hash_id": "f275e5735b5bb763ae3f06ded6cc90ebbc55ec1938b24671fcf43a21e8cb93eb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/exynos4-is/fimc-isp-video.h",
+  "human_readable_source": " \n \n#ifndef FIMC_ISP_VIDEO__\n#define FIMC_ISP_VIDEO__\n\n#include <media/videobuf2-v4l2.h>\n#include \"fimc-isp.h\"\n\n#ifdef CONFIG_VIDEO_EXYNOS4_ISP_DMA_CAPTURE\nint fimc_isp_video_device_register(struct fimc_isp *isp,\n\t\t\t\tstruct v4l2_device *v4l2_dev,\n\t\t\t\tenum v4l2_buf_type type);\n\nvoid fimc_isp_video_device_unregister(struct fimc_isp *isp,\n\t\t\t\tenum v4l2_buf_type type);\n\nvoid fimc_isp_video_irq_handler(struct fimc_is *is);\n#else\nstatic inline void fimc_isp_video_irq_handler(struct fimc_is *is)\n{\n}\n\nstatic inline int fimc_isp_video_device_register(struct fimc_isp *isp,\n\t\t\t\t\t\tstruct v4l2_device *v4l2_dev,\n\t\t\t\t\t\tenum v4l2_buf_type type)\n{\n\treturn 0;\n}\n\nstatic inline void fimc_isp_video_device_unregister(struct fimc_isp *isp,\n\t\t\t\tenum v4l2_buf_type type)\n{\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

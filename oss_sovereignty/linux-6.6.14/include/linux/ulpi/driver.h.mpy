@@ -1,0 +1,9 @@
+{
+  "module_name": "driver.h",
+  "hash_id": "9e4b4ea0cfe3c3b186bd8aac88c8a11237c828e17e0aab5774be4c21ea61cbed",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ulpi/driver.h",
+  "human_readable_source": " \n#ifndef __LINUX_ULPI_DRIVER_H\n#define __LINUX_ULPI_DRIVER_H\n\n#include <linux/mod_devicetable.h>\n\n#include <linux/device.h>\n\nstruct ulpi_ops;\n\n \nstruct ulpi {\n\tstruct device dev;\n\tstruct ulpi_device_id id;\n\tconst struct ulpi_ops *ops;\n};\n\n#define to_ulpi_dev(d) container_of(d, struct ulpi, dev)\n\nstatic inline void ulpi_set_drvdata(struct ulpi *ulpi, void *data)\n{\n\tdev_set_drvdata(&ulpi->dev, data);\n}\n\nstatic inline void *ulpi_get_drvdata(struct ulpi *ulpi)\n{\n\treturn dev_get_drvdata(&ulpi->dev);\n}\n\n \nstruct ulpi_driver {\n\tconst struct ulpi_device_id *id_table;\n\tint (*probe)(struct ulpi *ulpi);\n\tvoid (*remove)(struct ulpi *ulpi);\n\tstruct device_driver driver;\n};\n\n#define to_ulpi_driver(d) container_of(d, struct ulpi_driver, driver)\n\n \n#define ulpi_register_driver(drv) __ulpi_register_driver(drv, THIS_MODULE)\nint __ulpi_register_driver(struct ulpi_driver *drv, struct module *module);\nvoid ulpi_unregister_driver(struct ulpi_driver *drv);\n\n#define module_ulpi_driver(__ulpi_driver) \\\n\tmodule_driver(__ulpi_driver, ulpi_register_driver, \\\n\t\t      ulpi_unregister_driver)\n\nint ulpi_read(struct ulpi *ulpi, u8 addr);\nint ulpi_write(struct ulpi *ulpi, u8 addr, u8 val);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

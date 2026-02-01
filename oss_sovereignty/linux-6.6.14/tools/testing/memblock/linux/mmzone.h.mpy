@@ -1,0 +1,9 @@
+{
+  "module_name": "mmzone.h",
+  "hash_id": "8d15d17924bac42e304a449fd9b3b456d8f242cc7555edd1157f432a0c0a966b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/memblock/linux/mmzone.h",
+  "human_readable_source": " \n#ifndef _TOOLS_MMZONE_H\n#define _TOOLS_MMZONE_H\n\n#include <linux/atomic.h>\n\nstruct pglist_data *first_online_pgdat(void);\nstruct pglist_data *next_online_pgdat(struct pglist_data *pgdat);\n\n#define for_each_online_pgdat(pgdat)\t\t\t\\\n\tfor (pgdat = first_online_pgdat();\t\t\\\n\t     pgdat;\t\t\t\t\t\\\n\t     pgdat = next_online_pgdat(pgdat))\n\nenum zone_type {\n\t__MAX_NR_ZONES\n};\n\n#define MAX_NR_ZONES __MAX_NR_ZONES\n#define MAX_ORDER 10\n#define MAX_ORDER_NR_PAGES (1 << MAX_ORDER)\n\n#define pageblock_order\t\tMAX_ORDER\n#define pageblock_nr_pages\tBIT(pageblock_order)\n#define pageblock_align(pfn)\tALIGN((pfn), pageblock_nr_pages)\n#define pageblock_start_pfn(pfn)\tALIGN_DOWN((pfn), pageblock_nr_pages)\n\nstruct zone {\n\tatomic_long_t\t\tmanaged_pages;\n};\n\ntypedef struct pglist_data {\n\tstruct zone node_zones[MAX_NR_ZONES];\n\n} pg_data_t;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

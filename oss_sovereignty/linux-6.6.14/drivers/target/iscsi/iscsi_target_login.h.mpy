@@ -1,0 +1,9 @@
+{
+  "module_name": "iscsi_target_login.h",
+  "hash_id": "b4b8524aeb78b01f6d92fdfa8bc732dee7e670f247e62cd318f474ea9bd30441",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/iscsi/iscsi_target_login.h",
+  "human_readable_source": " \n#ifndef ISCSI_TARGET_LOGIN_H\n#define ISCSI_TARGET_LOGIN_H\n\n#include <linux/types.h>\n\nstruct iscsit_conn;\nstruct iscsi_login;\nstruct iscsi_np;\nstruct sockaddr_storage;\n\nextern int iscsi_login_setup_crypto(struct iscsit_conn *);\nextern int iscsi_check_for_session_reinstatement(struct iscsit_conn *);\nextern int iscsi_login_post_auth_non_zero_tsih(struct iscsit_conn *, u16, u32);\nextern int iscsit_setup_np(struct iscsi_np *,\n\t\t\t\tstruct sockaddr_storage *);\nextern int iscsi_target_setup_login_socket(struct iscsi_np *,\n\t\t\t\tstruct sockaddr_storage *);\nextern int iscsit_accept_np(struct iscsi_np *, struct iscsit_conn *);\nextern int iscsit_get_login_rx(struct iscsit_conn *, struct iscsi_login *);\nextern int iscsit_put_login_tx(struct iscsit_conn *, struct iscsi_login *, u32);\nextern void iscsit_free_conn(struct iscsit_conn *);\nextern int iscsit_start_kthreads(struct iscsit_conn *);\nextern void iscsi_post_login_handler(struct iscsi_np *, struct iscsit_conn *, u8);\nextern void iscsi_target_login_sess_out(struct iscsit_conn *, bool, bool);\nextern int iscsi_target_login_thread(void *);\nextern void iscsi_handle_login_thread_timeout(struct timer_list *t);\n\n#endif    \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

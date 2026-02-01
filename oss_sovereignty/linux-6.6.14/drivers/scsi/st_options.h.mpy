@@ -1,0 +1,9 @@
+{
+  "module_name": "st_options.h",
+  "hash_id": "26cdf029e47f2c2390b799c0e6e6e93489cb0ed15a116577e68e2546d2cdfea0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/st_options.h",
+  "human_readable_source": " \n \n\n#ifndef _ST_OPTIONS_H\n#define _ST_OPTIONS_H\n\n \n#define TRY_DIRECT_IO 1\n\n \n#define ST_NOWAIT 0\n\n \n#define ST_IN_FILE_POS 0\n\n \n#define ST_RECOVERED_WRITE_FATAL 0\n\n \n#define ST_DEFAULT_BLOCK 0\n\n \n#define ST_FIXED_BUFFER_BLOCKS 32\n\n \n#define ST_MAX_SG      256\n\n \n#define ST_FIRST_SG    8\n\n \n#define ST_FIRST_ORDER  5\n\n\n \n\n \n#define ST_TWO_FM 0\n\n \n#define ST_BUFFER_WRITES 1\n\n \n#define ST_ASYNC_WRITES 1\n\n \n#define ST_READ_AHEAD 1\n\n \n#define ST_AUTO_LOCK 0\n\n \n#define ST_FAST_MTEOM 0\n\n \n#define ST_SCSI2LOGICAL 0\n\n \n#define ST_SYSV 0\n\n \n#define ST_SILI 0\n\n \n#define ST_BLOCK_SECONDS     120\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

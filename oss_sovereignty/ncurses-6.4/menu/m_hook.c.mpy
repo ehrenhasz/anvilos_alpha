@@ -1,0 +1,9 @@
+{
+  "module_name": "m_hook.c",
+  "hash_id": "90217d797ee173fcc1cb6239d5a2e35f02cef801fd01981cb30e15d37a979889",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_hook.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_hook.c,v 1.21 2021/06/17 21:26:02 tom Exp $\")\n\n \n#define GEN_HOOK_SET_FUNCTION( typ, name ) \\\nMENU_EXPORT(int) NCURSES_API set_ ## typ ## _ ## name (MENU *menu, Menu_Hook func )\\\n{\\\n   TR_FUNC_BFR(1);\\\n   T((T_CALLED(\"set_\" #typ \"_\" #name \"(%p,%s)\"), (void *) menu, TR_FUNC_ARG(0, func)));\\\n   (Normalize_Menu(menu) -> typ ## name = func );\\\n   RETURN(E_OK);\\\n}\n\n \n#define GEN_HOOK_GET_FUNCTION( typ, name ) \\\nMENU_EXPORT(Menu_Hook) NCURSES_API typ ## _ ## name ( const MENU *menu )\\\n{\\\n   T((T_CALLED(#typ \"_\" #name \"(%p)\"), (const void *) menu));\\\n   returnMenuHook(Normalize_Menu(menu) -> typ ## name);\\\n}\n\n \nGEN_HOOK_SET_FUNCTION(menu, init)\n\n \nGEN_HOOK_GET_FUNCTION(menu, init)\n\n \nGEN_HOOK_SET_FUNCTION(menu, term)\n\n \nGEN_HOOK_GET_FUNCTION(menu, term)\n\n \nGEN_HOOK_SET_FUNCTION(item, init)\n\n \nGEN_HOOK_GET_FUNCTION(item, init)\n\n \nGEN_HOOK_SET_FUNCTION(item, term)\n\n \nGEN_HOOK_GET_FUNCTION(item, term)\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

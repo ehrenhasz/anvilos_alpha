@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e0b79653ee95e0cf93d41e7f024299b2611f9e921152224e0ed74927e9073bd7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/imx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nimx-media-common-objs := imx-media-capture.o imx-media-dev-common.o \\\n\timx-media-of.o imx-media-utils.o\n\nimx6-media-objs := imx-media-dev.o imx-media-internal-sd.o \\\n\timx-ic-common.o imx-ic-prp.o imx-ic-prpencvf.o imx-media-vdic.o \\\n\timx-media-csc-scaler.o\n\nimx6-media-csi-objs := imx-media-csi.o imx-media-fim.o\n\nobj-$(CONFIG_VIDEO_IMX_MEDIA) += imx-media-common.o\nobj-$(CONFIG_VIDEO_IMX_MEDIA) += imx6-media.o\nobj-$(CONFIG_VIDEO_IMX_MEDIA) += imx6-media-csi.o\nobj-$(CONFIG_VIDEO_IMX_MEDIA) += imx6-mipi-csi2.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

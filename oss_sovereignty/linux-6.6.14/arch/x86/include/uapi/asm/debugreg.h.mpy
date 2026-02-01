@@ -1,0 +1,9 @@
+{
+  "module_name": "debugreg.h",
+  "hash_id": "9388ccdde82b7f6b4e913ca3e76dc4b25f3d4e50cb7e7c92d2299c484041f1d8",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/debugreg.h",
+  "human_readable_source": " \n#ifndef _UAPI_ASM_X86_DEBUGREG_H\n#define _UAPI_ASM_X86_DEBUGREG_H\n\n\n \n#define DR_FIRSTADDR 0         \n#define DR_LASTADDR 3          \n\n#define DR_STATUS 6            \n#define DR_CONTROL 7           \n\n \n\n \n#define DR6_RESERVED\t(0xFFFF0FF0)\n\n#define DR_TRAP0\t(0x1)\t\t \n#define DR_TRAP1\t(0x2)\t\t \n#define DR_TRAP2\t(0x4)\t\t \n#define DR_TRAP3\t(0x8)\t\t \n#define DR_TRAP_BITS\t(DR_TRAP0|DR_TRAP1|DR_TRAP2|DR_TRAP3)\n\n#define DR_BUS_LOCK\t(0x800)\t\t \n#define DR_STEP\t\t(0x4000)\t \n#define DR_SWITCH\t(0x8000)\t \n\n \n\n#define DR_CONTROL_SHIFT 16  \n#define DR_CONTROL_SIZE 4    \n\n#define DR_RW_EXECUTE (0x0)    \n#define DR_RW_WRITE (0x1)\n#define DR_RW_READ (0x3)\n\n#define DR_LEN_1 (0x0)  \n#define DR_LEN_2 (0x4)\n#define DR_LEN_4 (0xC)\n#define DR_LEN_8 (0x8)\n\n \n\n#define DR_LOCAL_ENABLE_SHIFT 0     \n#define DR_GLOBAL_ENABLE_SHIFT 1    \n#define DR_LOCAL_ENABLE (0x1)       \n#define DR_GLOBAL_ENABLE (0x2)      \n#define DR_ENABLE_SIZE 2            \n\n#define DR_LOCAL_ENABLE_MASK (0x55)   \n#define DR_GLOBAL_ENABLE_MASK (0xAA)  \n\n \n\n#ifdef __i386__\n#define DR_CONTROL_RESERVED (0xFC00)  \n#else\n#define DR_CONTROL_RESERVED (0xFFFFFFFF0000FC00UL)  \n#endif\n\n#define DR_LOCAL_SLOWDOWN (0x100)    \n#define DR_GLOBAL_SLOWDOWN (0x200)   \n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

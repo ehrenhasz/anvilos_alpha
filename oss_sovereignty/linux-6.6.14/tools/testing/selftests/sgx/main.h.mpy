@@ -1,0 +1,9 @@
+{
+  "module_name": "main.h",
+  "hash_id": "3bcc606edfb425ccb921759a68c5af6b8cc02bbf6274b59edca56b0db94b33fa",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sgx/main.h",
+  "human_readable_source": " \n \n\n#ifndef MAIN_H\n#define MAIN_H\n\n#define ENCL_HEAP_SIZE_DEFAULT\t4096\n\nstruct encl_segment {\n\tvoid *src;\n\toff_t offset;\n\tsize_t size;\n\tunsigned int prot;\n\tunsigned int flags;\n\tbool measure;\n};\n\nstruct encl {\n\tint fd;\n\tvoid *bin;\n\toff_t bin_size;\n\tvoid *src;\n\tsize_t src_size;\n\tsize_t encl_size;\n\toff_t encl_base;\n\tunsigned int nr_segments;\n\tstruct encl_segment *segment_tbl;\n\tstruct sgx_secs secs;\n\tstruct sgx_sigstruct sigstruct;\n};\n\nextern unsigned char sign_key[];\nextern unsigned char sign_key_end[];\n\nvoid encl_delete(struct encl *ctx);\nbool encl_load(const char *path, struct encl *encl, unsigned long heap_size);\nbool encl_measure(struct encl *encl);\nbool encl_build(struct encl *encl);\nuint64_t encl_get_entry(struct encl *encl, const char *symbol);\n\nint sgx_enter_enclave(void *rdi, void *rsi, long rdx, u32 function, void *r8, void *r9,\n\t\t      struct sgx_enclave_run *run);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

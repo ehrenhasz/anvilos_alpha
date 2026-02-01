@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "3edc93f1595ab410f6f732a95e63c6d58d447507f17f93179b5ff8ea0f6046e7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/livepatch/config",
+  "human_readable_source": "CONFIG_LIVEPATCH=y\nCONFIG_DYNAMIC_DEBUG=y\nCONFIG_TEST_LIVEPATCH=m\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

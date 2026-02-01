@@ -1,0 +1,9 @@
+{
+  "module_name": "bprm_opts.c",
+  "hash_id": "29d66969ca6dbd3337ffab3cb40debfc576472a27d308417af0af0f627f942cb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bprm_opts.c",
+  "human_readable_source": "\n\n \n\n#include <linux/bpf.h>\n#include <errno.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_TASK_STORAGE);\n\t__uint(map_flags, BPF_F_NO_PREALLOC);\n\t__type(key, int);\n\t__type(value, int);\n} secure_exec_task_map SEC(\".maps\");\n\nSEC(\"lsm/bprm_creds_for_exec\")\nint BPF_PROG(secure_exec, struct linux_binprm *bprm)\n{\n\tint *secureexec;\n\n\tsecureexec = bpf_task_storage_get(&secure_exec_task_map,\n\t\t\t\t   bpf_get_current_task_btf(), 0,\n\t\t\t\t   BPF_LOCAL_STORAGE_GET_F_CREATE);\n\n\tif (secureexec && *secureexec)\n\t\tbpf_bprm_opts_set(bprm, BPF_F_BPRM_SECUREEXEC);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

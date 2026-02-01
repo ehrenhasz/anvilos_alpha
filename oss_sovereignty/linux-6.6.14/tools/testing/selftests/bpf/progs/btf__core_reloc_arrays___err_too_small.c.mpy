@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_arrays___err_too_small.c",
+  "hash_id": "4b621679da181dd8d18a4f09d1792fa4196e49e8e457cf1f67268a9f09bcc993",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_too_small.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_arrays___err_too_small x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

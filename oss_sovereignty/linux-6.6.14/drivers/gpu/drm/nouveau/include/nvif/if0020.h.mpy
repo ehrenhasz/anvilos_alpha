@@ -1,0 +1,9 @@
+{
+  "module_name": "if0020.h",
+  "hash_id": "8d951b598de1434c53490742b40ffc7088171eda02576eb7b67322a96c2c9a1f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/if0020.h",
+  "human_readable_source": " \n#ifndef __NVIF_IF0020_H__\n#define __NVIF_IF0020_H__\n\nunion nvif_chan_args {\n\tstruct nvif_chan_v0 {\n\t\t__u8  version;\n\t\t__u8  namelen;\n\t\t__u8  runlist;\n\t\t__u8  runq;\n\t\t__u8  priv;\n\t\t__u8  pad05;\n\t\t__u16 devm;\n\t\t__u64 vmm;\n\n\t\t__u64 ctxdma;\n\t\t__u64 offset;\n\t\t__u64 length;\n\n\t\t__u64 huserd;\n\t\t__u64 ouserd;\n\n\t\t__u32 token;\n\t\t__u16 chid;\n\t\t__u8  pad3e;\n#define NVIF_CHAN_V0_INST_APER_VRAM 0\n#define NVIF_CHAN_V0_INST_APER_HOST 1\n#define NVIF_CHAN_V0_INST_APER_NCOH 2\n#define NVIF_CHAN_V0_INST_APER_INST 0xff\n\t\t__u8  aper;\n\t\t__u64 inst;\n\n\t\t__u8  name[];\n\t} v0;\n};\n\nunion nvif_chan_event_args {\n\tstruct nvif_chan_event_v0 {\n\t\t__u8 version;\n#define NVIF_CHAN_EVENT_V0_NON_STALL_INTR 0x00\n#define NVIF_CHAN_EVENT_V0_KILLED         0x01\n\t\t__u8 type;\n\t} v0;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

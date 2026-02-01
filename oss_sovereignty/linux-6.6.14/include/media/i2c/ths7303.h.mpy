@@ -1,0 +1,9 @@
+{
+  "module_name": "ths7303.h",
+  "hash_id": "7ca725aa839b485a0a33f6e0741be52d88ce878cf141c0ad0d16a7729673bcc0",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/ths7303.h",
+  "human_readable_source": " \n \n\n#ifndef THS7303_H\n#define THS7303_H\n\n \nstruct ths7303_platform_data {\n\tu8 ch_1;\n\tu8 ch_2;\n\tu8 ch_3;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

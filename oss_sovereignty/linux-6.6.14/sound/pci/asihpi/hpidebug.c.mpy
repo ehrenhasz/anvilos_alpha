@@ -1,0 +1,9 @@
+{
+  "module_name": "hpidebug.c",
+  "hash_id": "dd2f54599e7268e48fa34cb0d3ae0d792a457afd1750c7c635f7dd19d1f3d6a9",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/asihpi/hpidebug.c",
+  "human_readable_source": "\n \n\n#include \"hpi_internal.h\"\n#include \"hpidebug.h\"\n\n \nint hpi_debug_level = HPI_DEBUG_LEVEL_DEFAULT;\n\nvoid hpi_debug_init(void)\n{\n\tprintk(KERN_INFO \"debug start\\n\");\n}\n\nint hpi_debug_level_set(int level)\n{\n\tint old_level;\n\n\told_level = hpi_debug_level;\n\thpi_debug_level = level;\n\treturn old_level;\n}\n\nint hpi_debug_level_get(void)\n{\n\treturn hpi_debug_level;\n}\n\nvoid hpi_debug_message(struct hpi_message *phm, char *sz_fileline)\n{\n\tif (phm) {\n\t\tprintk(KERN_DEBUG \"HPI_MSG%d,%d,%d,%d,%d\\n\", phm->version,\n\t\t\tphm->adapter_index, phm->obj_index, phm->function,\n\t\t\tphm->u.c.attribute);\n\t}\n\n}\n\nvoid hpi_debug_data(u16 *pdata, u32 len)\n{\n\tu32 i;\n\tint j;\n\tint k;\n\tint lines;\n\tint cols = 8;\n\n\tlines = DIV_ROUND_UP(len, cols);\n\tif (lines > 8)\n\t\tlines = 8;\n\n\tfor (i = 0, j = 0; j < lines; j++) {\n\t\tprintk(KERN_DEBUG \"%p:\", (pdata + i));\n\n\t\tfor (k = 0; k < cols && i < len; i++, k++)\n\t\t\tprintk(KERN_CONT \"%s%04x\", k == 0 ? \"\" : \" \", pdata[i]);\n\n\t\tprintk(KERN_CONT \"\\n\");\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

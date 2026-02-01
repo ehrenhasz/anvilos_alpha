@@ -1,0 +1,9 @@
+{
+  "module_name": "i915-amly-flakes.txt",
+  "hash_id": "ac7223fb333fb578bfd1df6e8ec30c8d9469e3b3901d25bd1e5a6cd1988b9132",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/i915-amly-flakes.txt",
+  "human_readable_source": "kms_bw@linear-tiling-2-displays-1920x1080p\nkms_bw@linear-tiling-2-displays-2560x1440p\nkms_bw@linear-tiling-2-displays-3840x2160p\nkms_bw@linear-tiling-3-displays-1920x1080p\nkms_bw@linear-tiling-3-displays-2560x1440p\nkms_bw@linear-tiling-3-displays-3840x2160p\nkms_bw@linear-tiling-4-displays-1920x1080p\nkms_bw@linear-tiling-4-displays-2560x1440p\nkms_bw@linear-tiling-4-displays-3840x2160p\nkms_flip_scaled_crc@flip-32bpp-ytile-to-64bpp-ytile-downscaling\nkms_flip_scaled_crc@flip-32bpp-ytile-to-64bpp-ytile-upscaling\nkms_flip_scaled_crc@flip-32bpp-ytileccs-to-64bpp-ytile-downscaling\nkms_flip_scaled_crc@flip-32bpp-ytileccs-to-64bpp-ytile-upscaling\nkms_flip_scaled_crc@flip-64bpp-ytile-to-16bpp-ytile-downscaling\nkms_flip_scaled_crc@flip-64bpp-ytile-to-16bpp-ytile-upscaling\nkms_flip_scaled_crc@flip-64bpp-ytile-to-32bpp-ytile-downscaling\nkms_flip_scaled_crc@flip-64bpp-ytile-to-32bpp-ytile-upscaling\nkms_flip_scaled_crc@flip-64bpp-ytile-to-32bpp-ytilercccs-downscaling\nkms_flip_scaled_crc@flip-64bpp-ytile-to-32bpp-ytilercccs-upscaling\nkms_plane_alpha_blend@pipe-A-alpha-basic\nkms_plane_alpha_blend@pipe-A-alpha-opaque-fb\nkms_plane_alpha_blend@pipe-A-alpha-transparent-fb\nkms_plane_alpha_blend@pipe-A-constant-alpha-max\nkms_plane_alpha_blend@pipe-B-alpha-basic\nkms_plane_alpha_blend@pipe-B-alpha-opaque-fb\nkms_plane_alpha_blend@pipe-B-alpha-transparent-fb\nkms_plane_alpha_blend@pipe-B-constant-alpha-max\nkms_plane_alpha_blend@pipe-C-alpha-basic\nkms_plane_alpha_blend@pipe-C-alpha-opaque-fb\nkms_plane_alpha_blend@pipe-C-alpha-transparent-fb\nkms_plane_alpha_blend@pipe-C-constant-alpha-max\nkms_sysfs_edid_timing\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

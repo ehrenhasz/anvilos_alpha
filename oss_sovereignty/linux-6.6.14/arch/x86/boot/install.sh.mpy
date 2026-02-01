@@ -1,0 +1,9 @@
+{
+  "module_name": "install.sh",
+  "hash_id": "60d91dfda438a33d46968541e2318eb92584596cb81a25f103b4f874f459d6c3",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/install.sh",
+  "human_readable_source": "#!/bin/sh\n#\n# This file is subject to the terms and conditions of the GNU General Public\n# License.  See the file \"COPYING\" in the main directory of this archive\n# for more details.\n#\n# Copyright (C) 1995 by Linus Torvalds\n#\n# Adapted from code in arch/i386/boot/Makefile by H. Peter Anvin\n#\n# \"make install\" script for i386 architecture\n#\n# Arguments:\n#   $1 - kernel version\n#   $2 - kernel image file\n#   $3 - kernel map file\n#   $4 - default install path (blank if root directory)\n\nif [ -f $4/vmlinuz ]; then\n\tmv $4/vmlinuz $4/vmlinuz.old\nfi\n\nif [ -f $4/System.map ]; then\n\tmv $4/System.map $4/System.old\nfi\n\ncat $2 > $4/vmlinuz\ncp $3 $4/System.map\n\nif [ -x /sbin/lilo ]; then\n       /sbin/lilo\nelif [ -x /etc/lilo/install ]; then\n       /etc/lilo/install\nelse\n       sync\n       echo \"Cannot find LILO.\"\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

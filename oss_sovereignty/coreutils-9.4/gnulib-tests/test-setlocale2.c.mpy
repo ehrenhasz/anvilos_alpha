@@ -1,0 +1,9 @@
+{
+  "module_name": "test-setlocale2.c",
+  "hash_id": "532de309b82f7e0eb35d7496654e08dcce3f52d74b770270cd8cf801d49f41d1",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-setlocale2.c",
+  "human_readable_source": " \n  if (setlocale (LC_ALL, \"\") != NULL)\n     \n    if (strcmp (setlocale (LC_CTYPE, NULL), \"C\") == 0)\n      {\n        fprintf (stderr, \"setlocale did not fail for implicit %s\\n\",\n                 getenv (\"LC_ALL\"));\n        return 1;\n      }\n\n   \n  if (setlocale (LC_ALL, \"C\") == NULL)\n    return 1;\n\n   \n  if (setlocale (LC_ALL, getenv (\"LC_ALL\")) != NULL)\n     \n    if (strcmp (setlocale (LC_CTYPE, NULL), \"C\") == 0)\n      {\n        fprintf (stderr, \"setlocale did not fail for explicit %s\\n\",\n                 getenv (\"LC_ALL\"));\n        return 1;\n      }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

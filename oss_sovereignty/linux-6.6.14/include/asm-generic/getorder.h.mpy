@@ -1,0 +1,9 @@
+{
+  "module_name": "getorder.h",
+  "hash_id": "b892da6b1e9683a8b5c2279b440e2bb59d13453bc17221b68462d6d0e693bc18",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/getorder.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_GETORDER_H\n#define __ASM_GENERIC_GETORDER_H\n\n#ifndef __ASSEMBLY__\n\n#include <linux/compiler.h>\n#include <linux/log2.h>\n\n \nstatic __always_inline __attribute_const__ int get_order(unsigned long size)\n{\n\tif (__builtin_constant_p(size)) {\n\t\tif (!size)\n\t\t\treturn BITS_PER_LONG - PAGE_SHIFT;\n\n\t\tif (size < (1UL << PAGE_SHIFT))\n\t\t\treturn 0;\n\n\t\treturn ilog2((size) - 1) - PAGE_SHIFT + 1;\n\t}\n\n\tsize--;\n\tsize >>= PAGE_SHIFT;\n#if BITS_PER_LONG == 32\n\treturn fls(size);\n#else\n\treturn fls64(size);\n#endif\n}\n\n#endif\t \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gve_register.h",
+  "hash_id": "090216e495980eb30dd42f90c92723d547856af756910a873897770fb25d73f6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/google/gve/gve_register.h",
+  "human_readable_source": " \n\n#ifndef _GVE_REGISTER_H_\n#define _GVE_REGISTER_H_\n\n \nstruct gve_registers {\n\t__be32\tdevice_status;\n\t__be32\tdriver_status;\n\t__be32\tmax_tx_queues;\n\t__be32\tmax_rx_queues;\n\t__be32\tadminq_pfn;\n\t__be32\tadminq_doorbell;\n\t__be32\tadminq_event_counter;\n\tu8\treserved[3];\n\tu8\tdriver_version;\n};\n\nenum gve_device_status_flags {\n\tGVE_DEVICE_STATUS_RESET_MASK\t\t= BIT(1),\n\tGVE_DEVICE_STATUS_LINK_STATUS_MASK\t= BIT(2),\n\tGVE_DEVICE_STATUS_REPORT_STATS_MASK\t= BIT(3),\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

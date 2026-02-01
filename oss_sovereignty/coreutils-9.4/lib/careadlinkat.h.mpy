@@ -1,0 +1,9 @@
+{
+  "module_name": "careadlinkat.h",
+  "hash_id": "8fa91735311d542547f7812c67dd5d5f3d88448fcc32a786c9666d26de5e59f0",
+  "original_prompt": "Ingested from coreutils-9.4/lib/careadlinkat.h",
+  "human_readable_source": " \n\n#ifndef _GL_CAREADLINKAT_H\n#define _GL_CAREADLINKAT_H\n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <fcntl.h>\n#include <unistd.h>\n\nstruct allocator;\n\n \n\nchar *careadlinkat (int fd, char const *filename,\n                    char *restrict buffer, size_t buffer_size,\n                    struct allocator const *alloc,\n                    ssize_t (*preadlinkat) (int, char const *,\n                                            char *, size_t));\n\n \n#if HAVE_READLINKAT\n \n#else\n \n# ifndef AT_FDCWD\n#  define AT_FDCWD (-3041965)\n# endif\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

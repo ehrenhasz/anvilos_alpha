@@ -1,0 +1,9 @@
+{
+  "module_name": "camss-csid-gen1.h",
+  "hash_id": "c187d92ee581d8cc22a7069d24953ea252d48389ff3704a0227bf6ceb4208fc8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/qcom/camss/camss-csid-gen1.h",
+  "human_readable_source": " \n \n#ifndef QC_MSM_CAMSS_CSID_GEN1_H\n#define QC_MSM_CAMSS_CSID_GEN1_H\n\n#define DECODE_FORMAT_UNCOMPRESSED_6_BIT\t0x0\n#define DECODE_FORMAT_UNCOMPRESSED_8_BIT\t0x1\n#define DECODE_FORMAT_UNCOMPRESSED_10_BIT\t0x2\n#define DECODE_FORMAT_UNCOMPRESSED_12_BIT\t0x3\n#define DECODE_FORMAT_DPCM_10_6_10\t\t0x4\n#define DECODE_FORMAT_DPCM_10_8_10\t\t0x5\n#define DECODE_FORMAT_DPCM_12_6_12\t\t0x6\n#define DECODE_FORMAT_DPCM_12_8_12\t\t0x7\n#define DECODE_FORMAT_UNCOMPRESSED_14_BIT\t0x8\n#define DECODE_FORMAT_DPCM_14_8_14\t\t0x9\n#define DECODE_FORMAT_DPCM_14_10_14\t\t0xa\n\n#define PLAIN_FORMAT_PLAIN8\t0x0  \n#define PLAIN_FORMAT_PLAIN16\t0x1  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

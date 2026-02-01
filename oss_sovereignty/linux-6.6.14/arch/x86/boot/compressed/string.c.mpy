@@ -1,0 +1,9 @@
+{
+  "module_name": "string.c",
+  "hash_id": "a1cdcf88a2ed8fde514457e96e98e1ef447a3402df68b12f0889e6174a52e6c3",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/compressed/string.c",
+  "human_readable_source": "\n \n#include \"error.h\"\n\n#include \"../string.c\"\n\n#ifdef CONFIG_X86_32\nstatic void *____memcpy(void *dest, const void *src, size_t n)\n{\n\tint d0, d1, d2;\n\tasm volatile(\n\t\t\"rep ; movsl\\n\\t\"\n\t\t\"movl %4,%%ecx\\n\\t\"\n\t\t\"rep ; movsb\\n\\t\"\n\t\t: \"=&c\" (d0), \"=&D\" (d1), \"=&S\" (d2)\n\t\t: \"0\" (n >> 2), \"g\" (n & 3), \"1\" (dest), \"2\" (src)\n\t\t: \"memory\");\n\n\treturn dest;\n}\n#else\nstatic void *____memcpy(void *dest, const void *src, size_t n)\n{\n\tlong d0, d1, d2;\n\tasm volatile(\n\t\t\"rep ; movsq\\n\\t\"\n\t\t\"movq %4,%%rcx\\n\\t\"\n\t\t\"rep ; movsb\\n\\t\"\n\t\t: \"=&c\" (d0), \"=&D\" (d1), \"=&S\" (d2)\n\t\t: \"0\" (n >> 3), \"g\" (n & 7), \"1\" (dest), \"2\" (src)\n\t\t: \"memory\");\n\n\treturn dest;\n}\n#endif\n\nvoid *memset(void *s, int c, size_t n)\n{\n\tint i;\n\tchar *ss = s;\n\n\tfor (i = 0; i < n; i++)\n\t\tss[i] = c;\n\treturn s;\n}\n\nvoid *memmove(void *dest, const void *src, size_t n)\n{\n\tunsigned char *d = dest;\n\tconst unsigned char *s = src;\n\n\tif (d <= s || d - s >= n)\n\t\treturn ____memcpy(dest, src, n);\n\n\twhile (n-- > 0)\n\t\td[n] = s[n];\n\n\treturn dest;\n}\n\n \nvoid *memcpy(void *dest, const void *src, size_t n)\n{\n\tif (dest > src && dest - src < n) {\n\t\twarn(\"Avoiding potentially unsafe overlapping memcpy()!\");\n\t\treturn memmove(dest, src, n);\n\t}\n\treturn ____memcpy(dest, src, n);\n}\n\n#ifdef CONFIG_KASAN\nextern void *__memset(void *s, int c, size_t n) __alias(memset);\nextern void *__memmove(void *dest, const void *src, size_t n) __alias(memmove);\nextern void *__memcpy(void *dest, const void *src, size_t n) __alias(memcpy);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

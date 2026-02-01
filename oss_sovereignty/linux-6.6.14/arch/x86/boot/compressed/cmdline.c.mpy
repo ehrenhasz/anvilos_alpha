@@ -1,0 +1,9 @@
+{
+  "module_name": "cmdline.c",
+  "hash_id": "87a088975735597da21524bebf4ed17da4cd51b854cedbb40191eb8112774856",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/compressed/cmdline.c",
+  "human_readable_source": "\n#include \"misc.h\"\n\nstatic unsigned long fs;\nstatic inline void set_fs(unsigned long seg)\n{\n\tfs = seg << 4;   \n}\ntypedef unsigned long addr_t;\nstatic inline char rdfs8(addr_t addr)\n{\n\treturn *((char *)(fs + addr));\n}\n#include \"../cmdline.c\"\nunsigned long get_cmd_line_ptr(void)\n{\n\tunsigned long cmd_line_ptr = boot_params->hdr.cmd_line_ptr;\n\n\tcmd_line_ptr |= (u64)boot_params->ext_cmd_line_ptr << 32;\n\n\treturn cmd_line_ptr;\n}\nint cmdline_find_option(const char *option, char *buffer, int bufsize)\n{\n\treturn __cmdline_find_option(get_cmd_line_ptr(), option, buffer, bufsize);\n}\nint cmdline_find_option_bool(const char *option)\n{\n\treturn __cmdline_find_option_bool(get_cmd_line_ptr(), option);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

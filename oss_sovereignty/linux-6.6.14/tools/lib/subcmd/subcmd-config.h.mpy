@@ -1,0 +1,9 @@
+{
+  "module_name": "subcmd-config.h",
+  "hash_id": "f15aae65e06fc01f5a5cf65f77199a1ad8c1ba98cc975c789a65a28201532806",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/subcmd/subcmd-config.h",
+  "human_readable_source": " \n#ifndef __PERF_SUBCMD_CONFIG_H\n#define __PERF_SUBCMD_CONFIG_H\n\nstruct subcmd_config {\n\tconst char *exec_name;\n\tconst char *prefix;\n\tconst char *exec_path;\n\tconst char *exec_path_env;\n\tconst char *pager_env;\n};\n\nextern struct subcmd_config subcmd_config;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

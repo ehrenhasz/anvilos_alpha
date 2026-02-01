@@ -1,0 +1,9 @@
+{
+  "module_name": "dm9000.h",
+  "hash_id": "62d4e7b19fab6fab30cd19ffecdc8686458fa933be7f2d1f1bc0cbde39533cb5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dm9000.h",
+  "human_readable_source": " \n \n\n#ifndef __DM9000_PLATFORM_DATA\n#define __DM9000_PLATFORM_DATA __FILE__\n\n#include <linux/if_ether.h>\n\n \n\n#define DM9000_PLATF_8BITONLY\t(0x0001)\n#define DM9000_PLATF_16BITONLY\t(0x0002)\n#define DM9000_PLATF_32BITONLY\t(0x0004)\n#define DM9000_PLATF_EXT_PHY\t(0x0008)\n#define DM9000_PLATF_NO_EEPROM\t(0x0010)\n#define DM9000_PLATF_SIMPLE_PHY (0x0020)   \n\n \n\nstruct dm9000_plat_data {\n\tunsigned int\tflags;\n\tunsigned char\tdev_addr[ETH_ALEN];\n\n\t \n\n\tvoid\t(*inblk)(void __iomem *reg, void *data, int len);\n\tvoid\t(*outblk)(void __iomem *reg, void *data, int len);\n\tvoid\t(*dumpblk)(void __iomem *reg, int len);\n};\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

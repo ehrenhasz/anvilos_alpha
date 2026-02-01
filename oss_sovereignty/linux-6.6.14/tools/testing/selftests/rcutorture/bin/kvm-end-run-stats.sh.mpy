@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm-end-run-stats.sh",
+  "hash_id": "006e7b4aa2f6b87ff68bd0af6e90391b53bc8929a371c7cfe9dd1cbfa3be6d07",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/bin/kvm-end-run-stats.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Check the status of the specified run.\n#\n# Usage: kvm-end-run-stats.sh /path/to/run starttime\n#\n# Copyright (C) 2021 Facebook, Inc.\n#\n# Authors: Paul E. McKenney <paulmck@kernel.org>\n\n# scriptname=$0\n# args=\"$*\"\nrundir=\"$1\"\nif ! test -d \"$rundir\"\nthen\n\techo kvm-end-run-stats.sh: Specified run directory does not exist: $rundir\n\texit 1\nfi\n\nT=\"`mktemp -d ${TMPDIR-/tmp}/kvm-end-run-stats.sh.XXXXXX`\"\ntrap 'rm -rf $T' 0\n\nRCUTORTURE=\"`pwd`/tools/testing/selftests/rcutorture\"; export RCUTORTURE\nPATH=${RCUTORTURE}/bin:$PATH; export PATH\n. functions.sh\ndefault_starttime=\"`get_starttime`\"\nstarttime=\"${2-default_starttime}\"\n\necho | tee -a \"$rundir/log\"\necho | tee -a \"$rundir/log\"\necho \" --- `date` Test summary:\" | tee -a \"$rundir/log\"\necho Results directory: $rundir | tee -a \"$rundir/log\"\nkcsan-collapse.sh \"$rundir\" | tee -a \"$rundir/log\"\nkvm-recheck.sh \"$rundir\" > $T/kvm-recheck.sh.out 2>&1\nret=$?\ncat $T/kvm-recheck.sh.out | tee -a \"$rundir/log\"\necho \" --- Done at `date` (`get_starttime_duration $starttime`) exitcode $ret\" | tee -a \"$rundir/log\"\nexit $ret\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

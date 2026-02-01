@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "edf3a24dd0fe673e92abf97e877d57f6cd0083926a581fe24d67cc63ec5bf761",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/buffer/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the industrial I/O buffer implementations\n#\n\n# When adding new entries keep the list in alphabetical order\nobj-$(CONFIG_IIO_BUFFER_CB) += industrialio-buffer-cb.o\nobj-$(CONFIG_IIO_BUFFER_DMA) += industrialio-buffer-dma.o\nobj-$(CONFIG_IIO_BUFFER_DMAENGINE) += industrialio-buffer-dmaengine.o\nobj-$(CONFIG_IIO_BUFFER_HW_CONSUMER) += industrialio-hw-consumer.o\nobj-$(CONFIG_IIO_TRIGGERED_BUFFER) += industrialio-triggered-buffer.o\nobj-$(CONFIG_IIO_KFIFO_BUF) += kfifo_buf.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

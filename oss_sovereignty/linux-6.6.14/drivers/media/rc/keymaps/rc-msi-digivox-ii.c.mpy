@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-msi-digivox-ii.c",
+  "hash_id": "996dd7caeb8367b0be9e0af2f6ae2b708611e4833e6b6e38d861ea5de1e1999d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-msi-digivox-ii.c",
+  "human_readable_source": "\n \n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\nstatic struct rc_map_table msi_digivox_ii[] = {\n\t{ 0x0302, KEY_NUMERIC_2 },\n\t{ 0x0303, KEY_UP },               \n\t{ 0x0304, KEY_NUMERIC_3 },\n\t{ 0x0305, KEY_CHANNELDOWN },\n\t{ 0x0308, KEY_NUMERIC_5 },\n\t{ 0x0309, KEY_NUMERIC_0 },\n\t{ 0x030b, KEY_NUMERIC_8 },\n\t{ 0x030d, KEY_DOWN },             \n\t{ 0x0310, KEY_NUMERIC_9 },\n\t{ 0x0311, KEY_NUMERIC_7 },\n\t{ 0x0314, KEY_VOLUMEUP },\n\t{ 0x0315, KEY_CHANNELUP },\n\t{ 0x0316, KEY_OK },\n\t{ 0x0317, KEY_POWER2 },\n\t{ 0x031a, KEY_NUMERIC_1 },\n\t{ 0x031c, KEY_NUMERIC_4 },\n\t{ 0x031d, KEY_NUMERIC_6 },\n\t{ 0x031f, KEY_VOLUMEDOWN },\n};\n\nstatic struct rc_map_list msi_digivox_ii_map = {\n\t.map = {\n\t\t.scan     = msi_digivox_ii,\n\t\t.size     = ARRAY_SIZE(msi_digivox_ii),\n\t\t.rc_proto = RC_PROTO_NEC,\n\t\t.name     = RC_MAP_MSI_DIGIVOX_II,\n\t}\n};\n\nstatic int __init init_rc_map_msi_digivox_ii(void)\n{\n\treturn rc_map_register(&msi_digivox_ii_map);\n}\n\nstatic void __exit exit_rc_map_msi_digivox_ii(void)\n{\n\trc_map_unregister(&msi_digivox_ii_map);\n}\n\nmodule_init(init_rc_map_msi_digivox_ii)\nmodule_exit(exit_rc_map_msi_digivox_ii)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Antti Palosaari <crope@iki.fi>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nested_trust.c",
+  "hash_id": "46b749209705538c847641d76b561dccce850fd3cd85d44e6f8ed244bb415fed",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/nested_trust.c",
+  "human_readable_source": "\n \n\n#include <test_progs.h>\n#include \"nested_trust_failure.skel.h\"\n#include \"nested_trust_success.skel.h\"\n\nvoid test_nested_trust(void)\n{\n\tRUN_TESTS(nested_trust_success);\n\tRUN_TESTS(nested_trust_failure);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

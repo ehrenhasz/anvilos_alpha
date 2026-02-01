@@ -1,0 +1,9 @@
+{
+  "module_name": "TASKS03",
+  "hash_id": "67ad83a1fdba00b5013eca74464ba3af69e341ede9727d547f915e35bf183d45",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/TASKS03",
+  "human_readable_source": "CONFIG_SMP=y\nCONFIG_NR_CPUS=4\nCONFIG_PREEMPT_NONE=n\nCONFIG_PREEMPT_VOLUNTARY=n\nCONFIG_PREEMPT=y\nCONFIG_HZ_PERIODIC=n\nCONFIG_NO_HZ_IDLE=n\nCONFIG_NO_HZ_FULL=y\nCONFIG_TASKS_RCU=y\nCONFIG_RCU_EXPERT=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

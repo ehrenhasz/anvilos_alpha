@@ -1,0 +1,9 @@
+{
+  "module_name": "jpeg.h",
+  "hash_id": "fe6b4de454aa11743427acbfe39efee7f87a089cc41625f825947eb0df506a2b",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/jpeg.h",
+  "human_readable_source": " \n\n#ifndef _MEDIA_JPEG_H_\n#define _MEDIA_JPEG_H_\n\n \n#define JPEG_MARKER_TEM\t\t0x01\n#define JPEG_MARKER_SOF0\t0xc0\n#define JPEG_MARKER_DHT\t\t0xc4\n#define JPEG_MARKER_RST\t\t0xd0\n#define JPEG_MARKER_SOI\t\t0xd8\n#define JPEG_MARKER_EOI\t\t0xd9\n#define JPEG_MARKER_SOS\t\t0xda\n#define JPEG_MARKER_DQT\t\t0xdb\n#define JPEG_MARKER_DRI\t\t0xdd\n#define JPEG_MARKER_DHP\t\t0xde\n#define JPEG_MARKER_APP0\t0xe0\n#define JPEG_MARKER_COM\t\t0xfe\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

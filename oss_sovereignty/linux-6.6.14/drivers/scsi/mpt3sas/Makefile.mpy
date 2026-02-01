@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8a5cc8383e8078efae75f2da4bb5ca996282ee1517f5764818e376bd8a1ec00d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/mpt3sas/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# mpt3sas makefile\nobj-$(CONFIG_SCSI_MPT3SAS) += mpt3sas.o\nmpt3sas-y +=  mpt3sas_base.o     \\\n\t\tmpt3sas_config.o \\\n\t\tmpt3sas_scsih.o      \\\n\t\tmpt3sas_transport.o     \\\n\t\tmpt3sas_ctl.o\t\\\n\t\tmpt3sas_trigger_diag.o \\\n\t\tmpt3sas_warpdrive.o \\\n\t\tmpt3sas_debugfs.o \\\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

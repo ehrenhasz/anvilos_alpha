@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "27c5df91b3837aed9c7db42cba69b09807d9bb27177c6263ed97355158308255",
+  "original_prompt": "Ingested from linux-6.6.14/fs/cachefiles/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for caching in a mounted filesystem\n#\n\ncachefiles-y := \\\n\tcache.o \\\n\tdaemon.o \\\n\tinterface.o \\\n\tio.o \\\n\tkey.o \\\n\tmain.o \\\n\tnamei.o \\\n\tsecurity.o \\\n\tvolume.o \\\n\txattr.o\n\ncachefiles-$(CONFIG_CACHEFILES_ERROR_INJECTION) += error_inject.o\ncachefiles-$(CONFIG_CACHEFILES_ONDEMAND) += ondemand.o\n\nobj-$(CONFIG_CACHEFILES) := cachefiles.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

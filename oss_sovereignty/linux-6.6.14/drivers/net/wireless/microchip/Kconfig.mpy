@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a3ba3060a1a8f1fd6ba16d117b3a8372f6701cac4238a411517dbe841f330c47",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/microchip/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig WLAN_VENDOR_MICROCHIP\n\tbool \"Microchip devices\"\n\tdefault y\n\thelp\n\tIf you have a wireless card belonging to this class, say Y.\n\n\tNote that the answer to this question doesn't directly affect the\n\tkernel: saying N will just cause the configurator to skip all the\n\tquestions about these cards. If you say Y, you will be asked for\n\tyour specific card in the following questions.\n\nif WLAN_VENDOR_MICROCHIP\nsource \"drivers/net/wireless/microchip/wilc1000/Kconfig\"\nendif # WLAN_VENDOR_MICROCHIP\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

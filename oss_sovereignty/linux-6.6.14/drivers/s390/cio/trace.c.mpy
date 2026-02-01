@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "3d2ccafb823280d62afb7be5add64fee408bccf55693c8cc39a37a3ca1fe5c1e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/cio/trace.c",
+  "human_readable_source": "\n \n\n#include <asm/crw.h>\n#include \"cio.h\"\n\n#define CREATE_TRACE_POINTS\n#include \"trace.h\"\n\nEXPORT_TRACEPOINT_SYMBOL(s390_cio_stsch);\nEXPORT_TRACEPOINT_SYMBOL(s390_cio_msch);\nEXPORT_TRACEPOINT_SYMBOL(s390_cio_tsch);\nEXPORT_TRACEPOINT_SYMBOL(s390_cio_tpi);\nEXPORT_TRACEPOINT_SYMBOL(s390_cio_ssch);\nEXPORT_TRACEPOINT_SYMBOL(s390_cio_csch);\nEXPORT_TRACEPOINT_SYMBOL(s390_cio_hsch);\nEXPORT_TRACEPOINT_SYMBOL(s390_cio_xsch);\nEXPORT_TRACEPOINT_SYMBOL(s390_cio_rsch);\nEXPORT_TRACEPOINT_SYMBOL(s390_cio_chsc);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

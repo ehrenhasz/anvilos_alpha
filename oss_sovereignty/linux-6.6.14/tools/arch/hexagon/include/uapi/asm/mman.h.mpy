@@ -1,0 +1,9 @@
+{
+  "module_name": "mman.h",
+  "hash_id": "5b29d7686e7d7e1ba7c4230d518d78d2ce0febcb47bc985d0cb74e2bb2279354",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/hexagon/include/uapi/asm/mman.h",
+  "human_readable_source": " \n#ifndef TOOLS_ARCH_HEXAGON_UAPI_ASM_MMAN_FIX_H\n#define TOOLS_ARCH_HEXAGON_UAPI_ASM_MMAN_FIX_H\n#include <uapi/asm-generic/mman.h>\n \n#define MAP_32BIT\t0\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

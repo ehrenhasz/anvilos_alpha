@@ -1,0 +1,9 @@
+{
+  "module_name": "gsmmux.h",
+  "hash_id": "3aea41a397df76cfd4f28d61d7175812e7c71b441839d03d307b3446234ba56b",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/gsmmux.h",
+  "human_readable_source": " \n#ifndef _LINUX_GSMMUX_H\n#define _LINUX_GSMMUX_H\n\n#include <linux/const.h>\n#include <linux/if.h>\n#include <linux/ioctl.h>\n#include <linux/types.h>\n\n \n \n#define GSM_FL_RESTART\t_BITUL(0)\n\n \nstruct gsm_config\n{\n\tunsigned int adaption;\n\tunsigned int encapsulation;\n\tunsigned int initiator;\n\tunsigned int t1;\n\tunsigned int t2;\n\tunsigned int t3;\n\tunsigned int n2;\n\tunsigned int mru;\n\tunsigned int mtu;\n\tunsigned int k;\n\tunsigned int i;\n\tunsigned int unused[8];\n};\n\n#define GSMIOC_GETCONF\t\t_IOR('G', 0, struct gsm_config)\n#define GSMIOC_SETCONF\t\t_IOW('G', 1, struct gsm_config)\n\n \nstruct gsm_netconfig {\n\tunsigned int adaption;\n\tunsigned short protocol;\n\tunsigned short unused2;\n\tchar if_name[IFNAMSIZ];\n\t__u8 unused[28];\n};\n\n#define GSMIOC_ENABLE_NET      _IOW('G', 2, struct gsm_netconfig)\n#define GSMIOC_DISABLE_NET     _IO('G', 3)\n\n \n#define GSMIOC_GETFIRST\t\t_IOR('G', 4, __u32)\n\n \nstruct gsm_config_ext {\n\t__u32 keep_alive;\n\t__u32 wait_config;\n\t__u32 flags;\n\t__u32 reserved[5];\n};\n\n#define GSMIOC_GETCONF_EXT\t_IOR('G', 5, struct gsm_config_ext)\n#define GSMIOC_SETCONF_EXT\t_IOW('G', 6, struct gsm_config_ext)\n\n \nstruct gsm_dlci_config {\n\t__u32 channel;\n\t__u32 adaption;\n\t__u32 mtu;\n\t__u32 priority;\n\t__u32 i;\n\t__u32 k;\n\t__u32 flags;\n\t__u32 reserved[7];\n};\n\n#define GSMIOC_GETCONF_DLCI\t_IOWR('G', 7, struct gsm_dlci_config)\n#define GSMIOC_SETCONF_DLCI\t_IOW('G', 8, struct gsm_dlci_config)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

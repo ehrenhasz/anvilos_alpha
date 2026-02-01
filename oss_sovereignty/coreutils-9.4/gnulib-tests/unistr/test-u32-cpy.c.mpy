@@ -1,0 +1,9 @@
+{
+  "module_name": "test-u32-cpy.c",
+  "hash_id": "66aab7ba64b7aaf5104f3c9eaf56fd28e47c90fbf9ed8e65d0820d621b5e8c7e",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/unistr/test-u32-cpy.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"unistr.h\"\n\n#include \"macros.h\"\n\n#define UNIT uint32_t\n#define U_CPY u32_cpy\n#define MAGIC 0xBADFACE\n#include \"test-cpy.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

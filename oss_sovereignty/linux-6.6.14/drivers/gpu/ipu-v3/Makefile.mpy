@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0703ed6cbba56102239f7ef18e9d29a02998745c8a26d1111e7a8b35355d1b0a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/ipu-v3/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_IMX_IPUV3_CORE) += imx-ipu-v3.o\n\nimx-ipu-v3-objs := ipu-common.o ipu-cpmem.o ipu-csi.o ipu-dc.o ipu-di.o \\\n\t\tipu-dp.o ipu-dmfc.o ipu-ic.o ipu-ic-csc.o \\\n\t\tipu-image-convert.o ipu-smfc.o ipu-vdi.o\n\nifdef CONFIG_DRM\n\timx-ipu-v3-objs += ipu-pre.o ipu-prg.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

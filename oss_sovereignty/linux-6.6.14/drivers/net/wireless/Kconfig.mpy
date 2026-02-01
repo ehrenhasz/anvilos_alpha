@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ecfcd5c8545f02ce33ca126efdf3b6a949e91d09795a8ba0d5442fd1273def62",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Wireless LAN device configuration\n#\n\nmenuconfig WLAN\n\tbool \"Wireless LAN\"\n\tdepends on !S390\n\tdepends on NET\n\tselect WIRELESS\n\tdefault y\n\thelp\n\t  This section contains all the pre 802.11 and 802.11 wireless\n\t  device drivers. For a complete list of drivers and documentation\n\t  on them refer to the wireless wiki:\n\n\t  https://wireless.wiki.kernel.org/en/users/Drivers\n\nif WLAN\n\nsource \"drivers/net/wireless/admtek/Kconfig\"\nsource \"drivers/net/wireless/ath/Kconfig\"\nsource \"drivers/net/wireless/atmel/Kconfig\"\nsource \"drivers/net/wireless/broadcom/Kconfig\"\nsource \"drivers/net/wireless/cisco/Kconfig\"\nsource \"drivers/net/wireless/intel/Kconfig\"\nsource \"drivers/net/wireless/intersil/Kconfig\"\nsource \"drivers/net/wireless/marvell/Kconfig\"\nsource \"drivers/net/wireless/mediatek/Kconfig\"\nsource \"drivers/net/wireless/microchip/Kconfig\"\nsource \"drivers/net/wireless/purelifi/Kconfig\"\nsource \"drivers/net/wireless/ralink/Kconfig\"\nsource \"drivers/net/wireless/realtek/Kconfig\"\nsource \"drivers/net/wireless/rsi/Kconfig\"\nsource \"drivers/net/wireless/silabs/Kconfig\"\nsource \"drivers/net/wireless/st/Kconfig\"\nsource \"drivers/net/wireless/ti/Kconfig\"\nsource \"drivers/net/wireless/zydas/Kconfig\"\nsource \"drivers/net/wireless/quantenna/Kconfig\"\n\nsource \"drivers/net/wireless/legacy/Kconfig\"\n\nsource \"drivers/net/wireless/virtual/Kconfig\"\n\nendif # WLAN\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "physmem.h",
+  "hash_id": "29ddd3e0c4d47d08c8eaa1b8d22cedc1fc832619741f02eb24ab6490937cee98",
+  "original_prompt": "Ingested from coreutils-9.4/lib/physmem.h",
+  "human_readable_source": " \n\n#ifndef PHYSMEM_H_\n# define PHYSMEM_H_ 1\n\ndouble physmem_total (void);\ndouble physmem_available (void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

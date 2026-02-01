@@ -1,0 +1,9 @@
+{
+  "module_name": "timestamping.c",
+  "hash_id": "ed9e4475de9ece8a0345372fca673fef9f55c7d9c72b091f48c219d220a1acb6",
+  "original_prompt": "Ingested from linux-6.6.14/net/core/timestamping.c",
+  "human_readable_source": "\n \n#include <linux/errqueue.h>\n#include <linux/phy.h>\n#include <linux/ptp_classify.h>\n#include <linux/skbuff.h>\n#include <linux/export.h>\n\nstatic unsigned int classify(const struct sk_buff *skb)\n{\n\tif (likely(skb->dev && skb->dev->phydev &&\n\t\t   skb->dev->phydev->mii_ts))\n\t\treturn ptp_classify_raw(skb);\n\telse\n\t\treturn PTP_CLASS_NONE;\n}\n\nvoid skb_clone_tx_timestamp(struct sk_buff *skb)\n{\n\tstruct mii_timestamper *mii_ts;\n\tstruct sk_buff *clone;\n\tunsigned int type;\n\n\tif (!skb->sk)\n\t\treturn;\n\n\ttype = classify(skb);\n\tif (type == PTP_CLASS_NONE)\n\t\treturn;\n\n\tmii_ts = skb->dev->phydev->mii_ts;\n\tif (likely(mii_ts->txtstamp)) {\n\t\tclone = skb_clone_sk(skb);\n\t\tif (!clone)\n\t\t\treturn;\n\t\tmii_ts->txtstamp(mii_ts, clone, type);\n\t}\n}\nEXPORT_SYMBOL_GPL(skb_clone_tx_timestamp);\n\nbool skb_defer_rx_timestamp(struct sk_buff *skb)\n{\n\tstruct mii_timestamper *mii_ts;\n\tunsigned int type;\n\n\tif (!skb->dev || !skb->dev->phydev || !skb->dev->phydev->mii_ts)\n\t\treturn false;\n\n\tif (skb_headroom(skb) < ETH_HLEN)\n\t\treturn false;\n\n\t__skb_push(skb, ETH_HLEN);\n\n\ttype = ptp_classify_raw(skb);\n\n\t__skb_pull(skb, ETH_HLEN);\n\n\tif (type == PTP_CLASS_NONE)\n\t\treturn false;\n\n\tmii_ts = skb->dev->phydev->mii_ts;\n\tif (likely(mii_ts->rxtstamp))\n\t\treturn mii_ts->rxtstamp(mii_ts, skb, type);\n\n\treturn false;\n}\nEXPORT_SYMBOL_GPL(skb_defer_rx_timestamp);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

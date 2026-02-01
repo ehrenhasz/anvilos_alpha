@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbsrtowcs-4.sh",
+  "hash_id": "650c4c55c74c0fe602b0001bde024334abaca25a8f3525f34acc8f22e1ffbefc",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbsrtowcs-4.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test whether a specific EUC-JP locale is installed.\n: \"${LOCALE_JA=ja_JP}\"\nif test $LOCALE_JA = none; then\n  if test -f /usr/bin/localedef; then\n    echo \"Skipping test: no traditional japanese locale is installed\"\n  else\n    echo \"Skipping test: no traditional japanese locale is supported\"\n  fi\n  exit 77\nfi\n\nLC_ALL=$LOCALE_JA \\\n${CHECKER} ./test-mbsrtowcs${EXEEXT} 4\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

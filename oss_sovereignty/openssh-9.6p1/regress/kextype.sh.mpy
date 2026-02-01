@@ -1,0 +1,9 @@
+{
+  "module_name": "kextype.sh",
+  "hash_id": "2f5f7ed39dba01691f89d843f8a38bb92bd6a3ad05a3933faac63b81ba05e46a",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/kextype.sh",
+  "human_readable_source": "#\t$OpenBSD: kextype.sh,v 1.6 2015/03/24 20:19:15 markus Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"login with different key exchange algorithms\"\n\nTIME=/usr/bin/time\ncp $OBJ/sshd_proxy $OBJ/sshd_proxy_bak\ncp $OBJ/ssh_proxy $OBJ/ssh_proxy_bak\n\n# Make server accept all key exchanges.\nALLKEX=`${SSH} -Q kex`\nKEXOPT=`echo $ALLKEX | tr ' ' ,`\necho \"KexAlgorithms=$KEXOPT\" >> $OBJ/sshd_proxy\n\ntries=\"1 2 3 4\"\nfor k in `${SSH} -Q kex`; do\n\tverbose \"kex $k\"\n\tfor i in $tries; do\n\t\t${SSH} -F $OBJ/ssh_proxy -o KexAlgorithms=$k x true\n\t\tif [ $? -ne 0 ]; then\n\t\t\tfail \"ssh kex $k\"\n\t\tfi\n\tdone\ndone\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ip_set_list.h",
+  "hash_id": "6dd819b5cb2d52b352ced41198f9507533ae7e653bbc16c04c18514ccf2da905",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/ipset/ip_set_list.h",
+  "human_readable_source": " \n#ifndef _UAPI__IP_SET_LIST_H\n#define _UAPI__IP_SET_LIST_H\n\n#include <linux/netfilter/ipset/ip_set.h>\n\n \nenum {\n\t \n\tIPSET_ERR_NAME = IPSET_ERR_TYPE_SPECIFIC,\n\t \n\tIPSET_ERR_LOOP,\n\t \n\tIPSET_ERR_BEFORE,\n\t \n\tIPSET_ERR_NAMEREF,\n\t \n\tIPSET_ERR_LIST_FULL,\n\t \n\tIPSET_ERR_REF_EXIST,\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

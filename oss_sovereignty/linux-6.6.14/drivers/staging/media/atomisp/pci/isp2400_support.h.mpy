@@ -1,0 +1,9 @@
+{
+  "module_name": "isp2400_support.h",
+  "hash_id": "c4f7481b14cb9514b38e030baab89043d013226d985af24e48e3e18157ec626d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp2400_support.h",
+  "human_readable_source": " \n \n\n#ifndef _isp2400_support_h\n#define _isp2400_support_h\n\n#ifndef ISP2400_VECTOR_TYPES\n \ntypedef char *tmemvectors, *tmemvectoru, *tvector;\n#endif\n\n#define hrt_isp_vamem1_store_16(cell, addr, val) hrt_mem_store_16(cell, HRT_PROC_TYPE_PROP(cell, _simd_vamem1), addr, val)\n#define hrt_isp_vamem2_store_16(cell, addr, val) hrt_mem_store_16(cell, HRT_PROC_TYPE_PROP(cell, _simd_vamem2), addr, val)\n\n#define hrt_isp_dmem(cell) HRT_PROC_TYPE_PROP(cell, _base_dmem)\n#define hrt_isp_vmem(cell) HRT_PROC_TYPE_PROP(cell, _simd_vmem)\n\n#define hrt_isp_dmem_master_port_address(cell) hrt_mem_master_port_address(cell, hrt_isp_dmem(cell))\n#define hrt_isp_vmem_master_port_address(cell) hrt_mem_master_port_address(cell, hrt_isp_vmem(cell))\n\n#if ISP_HAS_HIST\n#define hrt_isp_hist(cell) HRT_PROC_TYPE_PROP(cell, _simd_histogram)\n#define hrt_isp_hist_master_port_address(cell) hrt_mem_master_port_address(cell, hrt_isp_hist(cell))\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

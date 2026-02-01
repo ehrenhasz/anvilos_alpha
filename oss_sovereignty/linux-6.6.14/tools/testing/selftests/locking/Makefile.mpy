@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6f1f4bcedb8cd6c177614c09eae8b455de22cafc2541ec7a0f9ac1977c732fd4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/locking/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for locking/ww_mutx selftests\n\n# No binaries, but make sure arg-less \"make\" doesn't trigger \"run_tests\"\nall:\n\nTEST_PROGS := ww_mutex.sh\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

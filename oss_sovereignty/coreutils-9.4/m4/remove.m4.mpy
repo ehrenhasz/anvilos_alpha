@@ -1,0 +1,9 @@
+{
+  "module_name": "remove.m4",
+  "hash_id": "f77e124cebcfc406731918698fcb61ef4efab9247e14c5007c7ef006ad7b6b5a",
+  "original_prompt": "Ingested from coreutils-9.4/m4/remove.m4",
+  "human_readable_source": "# remove.m4 serial 6\ndnl Copyright (C) 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_REMOVE],\n[\n  AC_REQUIRE([AC_CANONICAL_HOST]) dnl for cross-compiles\n  AC_REQUIRE([gl_STDIO_H_DEFAULTS])\n  AC_REQUIRE([gl_FUNC_RMDIR])\n  AC_REQUIRE([gl_FUNC_UNLINK])\n  if { case \"$gl_cv_func_rmdir_works:$gl_cv_func_unlink_honors_slashes\" in\n         *yes:*yes) false;;\n         *) true;;\n       esac\n     }; then\n    dnl If either underlying syscall is broken, then remove likely has\n    dnl the same bug; blindly use our replacement.\n    REPLACE_REMOVE=1\n  else\n    dnl C89 requires remove(), but only POSIX requires it to handle\n    dnl directories.  On mingw, directories fails with EPERM.\n    AC_CACHE_CHECK([whether remove handles directories],\n      [gl_cv_func_remove_dir_works],\n      [mkdir conftest.dir\n       AC_RUN_IFELSE(\n         [AC_LANG_PROGRAM(\n           [[#include <stdio.h>\n]], [[return remove (\"conftest.dir\");]])],\n         [gl_cv_func_remove_dir_works=yes], [gl_cv_func_remove_dir_works=no],\n         [case $host_os in\n            mingw* | windows*) gl_cv_func_remove_dir_works=\"guessing no\" ;;\n            *)                 gl_cv_func_remove_dir_works=\"guessing yes\" ;;\n          esac])\n       rm -rf conftest.dir])\n    case $gl_cv_func_remove_dir_works in\n      *no*) REPLACE_REMOVE=1;;\n    esac\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

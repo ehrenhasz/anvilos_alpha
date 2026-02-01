@@ -1,0 +1,9 @@
+{
+  "module_name": "authors",
+  "hash_id": "f30b36fd6cf4a91021d4b7ae490b5f2000926e3a3ac7258c40f709b7fafbfab0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192u/authors",
+  "human_readable_source": "Andrea Merello <andrea.merello@gmail.com>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

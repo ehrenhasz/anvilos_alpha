@@ -1,0 +1,9 @@
+{
+  "module_name": "init.h",
+  "hash_id": "9c10667a497ca3d2f9fd2752d58ea2b04bbf5ea7e2090109599c0d7090d04c51",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/memblock/linux/init.h",
+  "human_readable_source": " \n#ifndef _LINUX_INIT_H\n#define _LINUX_INIT_H\n\n#include <linux/compiler.h>\n#include <asm/export.h>\n#include <linux/memory_hotplug.h>\n\n#define __section(section)              __attribute__((__section__(section)))\n\n#define __initconst\n#define __meminit\n#define __meminitdata\n#define __refdata\n#define __initdata\n\nstruct obs_kernel_param {\n\tconst char *str;\n\tint (*setup_func)(char *st);\n\tint early;\n};\n\n#define __setup_param(str, unique_id, fn, early)\t\t\t\\\n\tstatic const char __setup_str_##unique_id[] __initconst\t\t\\\n\t\t__aligned(1) = str;\t\t\t\t\t\\\n\tstatic struct obs_kernel_param __setup_##unique_id\t\t\\\n\t\t__used __section(\".init.setup\")\t\t\t\t\\\n\t\t__aligned(__alignof__(struct obs_kernel_param)) =\t\\\n\t\t{ __setup_str_##unique_id, fn, early }\n\n#define early_param(str, fn)\t\t\t\t\t\t\\\n\t__setup_param(str, fn, fn, 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

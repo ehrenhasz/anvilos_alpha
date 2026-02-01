@@ -1,0 +1,9 @@
+{
+  "module_name": "mmal-common.h",
+  "hash_id": "fc90aaae8ff1531dcfc7edb9d6a202e533dafdb615148495f8403f7bea79bdd5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vc04_services/vchiq-mmal/mmal-common.h",
+  "human_readable_source": " \n \n#ifndef MMAL_COMMON_H\n#define MMAL_COMMON_H\n\n#define MMAL_FOURCC(a, b, c, d) ((a) | (b << 8) | (c << 16) | (d << 24))\n#define MMAL_MAGIC MMAL_FOURCC('m', 'm', 'a', 'l')\n\n \n#define MMAL_TIME_UNKNOWN BIT_ULL(63)\n\nstruct mmal_msg_context;\n\n \nstruct mmal_fmt {\n\tu32 fourcc;           \n\tint flags;            \n\tu32 mmal;\n\tint depth;\n\tu32 mmal_component;   \n\tu32 ybbp;             \n\tbool remove_padding;    \n};\n\n \nstruct mmal_buffer {\n\t \n\tstruct vb2_v4l2_buffer vb;\n\n\t \n\tstruct list_head list;\n\n\tvoid *buffer;  \n\tunsigned long buffer_size;  \n\n\tstruct mmal_msg_context *msg_context;\n\n\tunsigned long length;\n\tu32 mmal_flags;\n\ts64 dts;\n\ts64 pts;\n};\n\n \nstruct mmal_colourfx {\n\ts32 enable;\n\tu32 u;\n\tu32 v;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

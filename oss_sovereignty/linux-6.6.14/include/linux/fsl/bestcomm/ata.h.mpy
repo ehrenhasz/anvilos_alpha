@@ -1,0 +1,9 @@
+{
+  "module_name": "ata.h",
+  "hash_id": "fcfb489e48d49f28dd7542e3a6599f00631ced1c2d32e141071a8e7724c68430",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fsl/bestcomm/ata.h",
+  "human_readable_source": " \n\n#ifndef __BESTCOMM_ATA_H__\n#define __BESTCOMM_ATA_H__\n\n\nstruct bcom_ata_bd {\n\tu32\tstatus;\n\tu32\tsrc_pa;\n\tu32\tdst_pa;\n};\n\nextern struct bcom_task * bcom_ata_init(int queue_len, int maxbufsize);\nextern void bcom_ata_rx_prepare(struct bcom_task *tsk);\nextern void bcom_ata_tx_prepare(struct bcom_task *tsk);\nextern void bcom_ata_reset_bd(struct bcom_task *tsk);\nextern void bcom_ata_release(struct bcom_task *tsk);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

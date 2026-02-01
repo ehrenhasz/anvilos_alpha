@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9d45ae505b78323a16f70399a3b7a4820a82a82026968c16c6fa6c6807498ec7",
+  "original_prompt": "Ingested from linux-6.6.14/samples/ftrace/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nobj-$(CONFIG_SAMPLE_FTRACE_DIRECT) += ftrace-direct.o\nobj-$(CONFIG_SAMPLE_FTRACE_DIRECT) += ftrace-direct-too.o\nobj-$(CONFIG_SAMPLE_FTRACE_DIRECT) += ftrace-direct-modify.o\nobj-$(CONFIG_SAMPLE_FTRACE_DIRECT_MULTI) += ftrace-direct-multi.o\nobj-$(CONFIG_SAMPLE_FTRACE_DIRECT_MULTI) += ftrace-direct-multi-modify.o\nobj-$(CONFIG_SAMPLE_FTRACE_OPS) += ftrace-ops.o\n\nCFLAGS_sample-trace-array.o := -I$(src)\nobj-$(CONFIG_SAMPLE_TRACE_ARRAY) += sample-trace-array.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

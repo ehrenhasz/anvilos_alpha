@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "062be8028a6999b0d40789de01e2c39074e4ef052d3de99da76b0f94bcb81509",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/gemini/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y\t+= soc-gemini.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sch56xx-common.h",
+  "hash_id": "e373ded7db56ca10170566f73bc760c4ca80a6ec349e384958b3e45f35fe680b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwmon/sch56xx-common.h",
+  "human_readable_source": " \n \n\n#include <linux/mutex.h>\n\nstruct sch56xx_watchdog_data;\n\nint sch56xx_read_virtual_reg(u16 addr, u16 reg);\nint sch56xx_write_virtual_reg(u16 addr, u16 reg, u8 val);\nint sch56xx_read_virtual_reg16(u16 addr, u16 reg);\nint sch56xx_read_virtual_reg12(u16 addr, u16 msb_reg, u16 lsn_reg,\n\t\t\t       int high_nibble);\n\nvoid sch56xx_watchdog_register(struct device *parent, u16 addr, u32 revision,\n\t\t\t       struct mutex *io_lock, int check_enabled);\nvoid sch56xx_watchdog_unregister(struct sch56xx_watchdog_data *data);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

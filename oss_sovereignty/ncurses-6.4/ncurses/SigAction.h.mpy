@@ -1,0 +1,9 @@
+{
+  "module_name": "SigAction.h",
+  "hash_id": "a65a4aa64512ba23cc1da81c79cbe49b1df7b2cacf80353a119a1bfd099ba3f6",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/SigAction.h",
+  "human_readable_source": " \n\n \n\n \n\n#ifndef _SIGACTION_H\n#define _SIGACTION_H\n\n#ifndef HAVE_SIGACTION\n#define HAVE_SIGACTION 0\n#endif\n\n#ifndef HAVE_SIGVEC\n#define HAVE_SIGVEC 0\n#endif\n\n#if HAVE_SIGACTION\n\n#if !HAVE_TYPE_SIGACTION\ntypedef struct sigaction sigaction_t;\n#endif\n\n#else\t \n\n#if HAVE_SIGVEC\n\n#undef  SIG_BLOCK\n#define SIG_BLOCK       00\n\n#undef  SIG_UNBLOCK\n#define SIG_UNBLOCK     01\n\n#undef  SIG_SETMASK\n#define SIG_SETMASK     02\n\n \t \n#if HAVE_BSD_SIGNAL_H\n#include <bsd/signal.h>\n#endif\n\ntypedef struct sigvec sigaction_t;\n\n#define sigset_t _nc_sigset_t\ntypedef unsigned long sigset_t;\n\n#undef  sa_mask\n#define sa_mask sv_mask\n#undef  sa_handler\n#define sa_handler sv_handler\n#undef  sa_flags\n#define sa_flags sv_flags\n\n#undef  sigaction\n#define sigaction   _nc_sigaction\n#undef  sigprocmask\n#define sigprocmask _nc_sigprocmask\n#undef  sigemptyset\n#define sigemptyset _nc_sigemptyset\n#undef  sigsuspend\n#define sigsuspend  _nc_sigsuspend\n#undef  sigdelset\n#define sigdelset   _nc_sigdelset\n#undef  sigaddset\n#define sigaddset   _nc_sigaddset\n\n \n#include <base/sigaction.c>\n\n#endif  \n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

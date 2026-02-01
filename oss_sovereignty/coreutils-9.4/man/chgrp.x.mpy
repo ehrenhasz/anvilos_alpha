@@ -1,0 +1,9 @@
+{
+  "module_name": "chgrp.x",
+  "hash_id": "f23f4c42efe61930b70f70a01d0f807d5a2b46b75fc5d2a7b337ea8c0639a441",
+  "original_prompt": "Ingested from coreutils-9.4/man/chgrp.x",
+  "human_readable_source": "[NAME]\nchgrp \\- change group ownership\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nchown(1), chown(2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

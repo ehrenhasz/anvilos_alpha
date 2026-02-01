@@ -1,0 +1,9 @@
+{
+  "module_name": "agp.h",
+  "hash_id": "2f7bb15d6f0a64298db0b21cd39355fbd7855bb462092663210193cd623e191d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/pci/agp.h",
+  "human_readable_source": " \n#include \"priv.h\"\n#if defined(CONFIG_AGP) || (defined(CONFIG_AGP_MODULE) && defined(MODULE))\n#ifndef __NVKM_PCI_AGP_H__\n#define __NVKM_PCI_AGP_H__\n\nvoid nvkm_agp_ctor(struct nvkm_pci *);\nvoid nvkm_agp_dtor(struct nvkm_pci *);\nvoid nvkm_agp_preinit(struct nvkm_pci *);\nint nvkm_agp_init(struct nvkm_pci *);\nvoid nvkm_agp_fini(struct nvkm_pci *);\n#endif\n#else\nstatic inline void nvkm_agp_ctor(struct nvkm_pci *pci) {}\nstatic inline void nvkm_agp_dtor(struct nvkm_pci *pci) {}\nstatic inline void nvkm_agp_preinit(struct nvkm_pci *pci) {}\nstatic inline int nvkm_agp_init(struct nvkm_pci *pci) { return -ENOSYS; }\nstatic inline void nvkm_agp_fini(struct nvkm_pci *pci) {}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sock_flags.bpf.c",
+  "hash_id": "62ad6469de9dfa20409570bc67af74321746f3b4e2d4a5eac1abd407f5ca7758",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/sock_flags.bpf.c",
+  "human_readable_source": "\n#include \"vmlinux.h\"\n#include \"net_shared.h\"\n#include <bpf/bpf_helpers.h>\n\nSEC(\"cgroup/sock\")\nint bpf_prog1(struct bpf_sock *sk)\n{\n\tchar fmt[] = \"socket: family %d type %d protocol %d\\n\";\n\tchar fmt2[] = \"socket: uid %u gid %u\\n\";\n\t__u64 gid_uid = bpf_get_current_uid_gid();\n\t__u32 uid = gid_uid & 0xffffffff;\n\t__u32 gid = gid_uid >> 32;\n\n\tbpf_trace_printk(fmt, sizeof(fmt), sk->family, sk->type, sk->protocol);\n\tbpf_trace_printk(fmt2, sizeof(fmt2), uid, gid);\n\n\t \n\tif (sk->family == AF_INET6 &&\n\t    sk->type == SOCK_DGRAM   &&\n\t    sk->protocol == IPPROTO_ICMPV6)\n\t\treturn 0;\n\n\treturn 1;\n}\n\nSEC(\"cgroup/sock\")\nint bpf_prog2(struct bpf_sock *sk)\n{\n\tchar fmt[] = \"socket: family %d type %d protocol %d\\n\";\n\n\tbpf_trace_printk(fmt, sizeof(fmt), sk->family, sk->type, sk->protocol);\n\n\t \n\tif (sk->family == AF_INET &&\n\t    sk->type == SOCK_DGRAM  &&\n\t    sk->protocol == IPPROTO_ICMP)\n\t\treturn 0;\n\n\treturn 1;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

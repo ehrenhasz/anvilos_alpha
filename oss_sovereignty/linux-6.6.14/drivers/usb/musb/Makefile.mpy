@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d54ee7ad0850b0267ef80a9187042c180fdb3bfab84e0943e8ee9a646ff29794",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/musb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# for USB OTG silicon based on Mentor Graphics INVENTRA designs\n#\n\n# define_trace.h needs to know how to find our header\nCFLAGS_musb_trace.o\t:= -I$(src)\n\nobj-$(CONFIG_USB_MUSB_HDRC) += musb_hdrc.o\n\nmusb_hdrc-y := musb_core.o musb_trace.o\n\nmusb_hdrc-$(CONFIG_USB_MUSB_HOST)$(CONFIG_USB_MUSB_DUAL_ROLE) += musb_virthub.o musb_host.o\nmusb_hdrc-$(CONFIG_USB_MUSB_GADGET)$(CONFIG_USB_MUSB_DUAL_ROLE) += musb_gadget_ep0.o musb_gadget.o\nmusb_hdrc-$(CONFIG_DEBUG_FS)\t\t\t+= musb_debugfs.o\n\n# Hardware Glue Layer\nobj-$(CONFIG_USB_MUSB_OMAP2PLUS)\t\t+= omap2430.o\nobj-$(CONFIG_USB_MUSB_DSPS)\t\t\t+= musb_dsps.o\nobj-$(CONFIG_USB_MUSB_TUSB6010)\t\t\t+= tusb6010.o\nobj-$(CONFIG_USB_MUSB_DA8XX)\t\t\t+= da8xx.o\nobj-$(CONFIG_USB_MUSB_UX500)\t\t\t+= ux500.o\nobj-$(CONFIG_USB_MUSB_JZ4740)\t\t\t+= jz4740.o\nobj-$(CONFIG_USB_MUSB_SUNXI)\t\t\t+= sunxi.o\nobj-$(CONFIG_USB_MUSB_MEDIATEK)      \t\t+= mediatek.o\nobj-$(CONFIG_USB_MUSB_POLARFIRE_SOC)\t\t+= mpfs.o\n\n# the kconfig must guarantee that only one of the\n# possible I/O schemes will be enabled at a time ...\n# PIO only, or DMA (several potential schemes).\n# though PIO is always there to back up DMA, and for ep0\n\nmusb_hdrc-$(CONFIG_USB_INVENTRA_DMA)\t\t+= musbhsdma.o\nmusb_hdrc-$(CONFIG_USB_TUSB_OMAP_DMA)\t\t+= tusb6010_omap.o\nmusb_hdrc-$(CONFIG_USB_UX500_DMA)\t\t+= ux500_dma.o\nmusb_hdrc-$(CONFIG_USB_TI_CPPI41_DMA)\t\t+= musb_cppi41.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

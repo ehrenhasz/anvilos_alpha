@@ -1,0 +1,9 @@
+{
+  "module_name": "stdio--.h",
+  "hash_id": "1827ee0c97146a9b6c8effef431faafe01e4587cf5b287c4f9b419eeed22c9ec",
+  "original_prompt": "Ingested from coreutils-9.4/lib/stdio--.h",
+  "human_readable_source": " \n\n#include <stdio.h>\n#include \"stdio-safer.h\"\n\n#if GNULIB_FOPEN_SAFER\n# undef fopen\n# define fopen fopen_safer\n#endif\n\n#if GNULIB_FREOPEN_SAFER\n# undef freopen\n# define freopen freopen_safer\n#endif\n\n#if GNULIB_TMPFILE_SAFER\n# undef tmpfile\n# define tmpfile tmpfile_safer\n#endif\n\n#if GNULIB_POPEN_SAFER\n# undef popen\n# define popen popen_safer\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

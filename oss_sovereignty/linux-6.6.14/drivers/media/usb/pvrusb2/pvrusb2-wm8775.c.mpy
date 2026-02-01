@@ -1,0 +1,9 @@
+{
+  "module_name": "pvrusb2-wm8775.c",
+  "hash_id": "a5506a2d32444e95b02c878e5050b8460e5cd706c6c967168f13dff5d98e2fed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pvrusb2/pvrusb2-wm8775.c",
+  "human_readable_source": "\n \n\n \n\n#include \"pvrusb2-wm8775.h\"\n\n\n#include \"pvrusb2-hdw-internal.h\"\n#include \"pvrusb2-debug.h\"\n#include <linux/videodev2.h>\n#include <media/v4l2-common.h>\n#include <linux/errno.h>\n\nvoid pvr2_wm8775_subdev_update(struct pvr2_hdw *hdw, struct v4l2_subdev *sd)\n{\n\tif (hdw->input_dirty || hdw->force_dirty) {\n\t\tu32 input;\n\n\t\tswitch (hdw->input_val) {\n\t\tcase PVR2_CVAL_INPUT_RADIO:\n\t\t\tinput = 1;\n\t\t\tbreak;\n\t\tdefault:\n\t\t\t \n\t\t\tinput = 2;\n\t\t\tbreak;\n\t\t}\n\t\tpvr2_trace(PVR2_TRACE_CHIPS, \"subdev wm8775 set_input(val=%d route=0x%x)\",\n\t\t\t   hdw->input_val, input);\n\n\t\tsd->ops->audio->s_routing(sd, input, 0, 0);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

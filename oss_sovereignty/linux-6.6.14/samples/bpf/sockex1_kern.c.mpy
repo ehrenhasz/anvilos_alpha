@@ -1,0 +1,9 @@
+{
+  "module_name": "sockex1_kern.c",
+  "hash_id": "594054f541f5f6228e352a554e8fa802136ed80b4e9fde83ec1b6d94a23186e4",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/sockex1_kern.c",
+  "human_readable_source": "#include <uapi/linux/bpf.h>\n#include <uapi/linux/if_ether.h>\n#include <uapi/linux/if_packet.h>\n#include <uapi/linux/ip.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_legacy.h\"\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__type(key, u32);\n\t__type(value, long);\n\t__uint(max_entries, 256);\n} my_map SEC(\".maps\");\n\nSEC(\"socket1\")\nint bpf_prog1(struct __sk_buff *skb)\n{\n\tint index = load_byte(skb, ETH_HLEN + offsetof(struct iphdr, protocol));\n\tlong *value;\n\n\tif (skb->pkt_type != PACKET_OUTGOING)\n\t\treturn 0;\n\n\tvalue = bpf_map_lookup_elem(&my_map, &index);\n\tif (value)\n\t\t__sync_fetch_and_add(value, skb->len);\n\n\treturn 0;\n}\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

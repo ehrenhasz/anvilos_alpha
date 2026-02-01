@@ -1,0 +1,9 @@
+{
+  "module_name": "bplist.h",
+  "hash_id": "291d56d2622043fe5b127bbd3fa09420620df1e98f66360131d5389ed11c6245",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/bplist.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_BPLIST_H\n#define\t_SYS_BPLIST_H\n\n#include <sys/zfs_context.h>\n#include <sys/spa.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\ntypedef struct bplist_entry {\n\tblkptr_t\tbpe_blk;\n\tlist_node_t\tbpe_node;\n} bplist_entry_t;\n\ntypedef struct bplist {\n\tkmutex_t\tbpl_lock;\n\tlist_t\t\tbpl_list;\n} bplist_t;\n\ntypedef int bplist_itor_t(void *arg, const blkptr_t *bp, dmu_tx_t *tx);\n\nvoid bplist_create(bplist_t *bpl);\nvoid bplist_destroy(bplist_t *bpl);\nvoid bplist_append(bplist_t *bpl, const blkptr_t *bp);\nvoid bplist_iterate(bplist_t *bpl, bplist_itor_t *func,\n    void *arg, dmu_tx_t *tx);\nvoid bplist_clear(bplist_t *bpl);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

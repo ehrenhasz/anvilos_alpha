@@ -1,0 +1,9 @@
+{
+  "module_name": "dmaengine.c",
+  "hash_id": "867162243bd2f38ead5b43642c570e7eaeb31acb4154d608f645f5820f9f03d2",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/samsung/dmaengine.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <linux/module.h>\n#include <sound/core.h>\n#include <sound/pcm.h>\n#include <sound/pcm_params.h>\n#include <sound/dmaengine_pcm.h>\n#include <sound/soc.h>\n\n#include \"dma.h\"\n\nint samsung_asoc_dma_platform_register(struct device *dev, dma_filter_fn filter,\n\t\t\t\t       const char *tx, const char *rx,\n\t\t\t\t       struct device *dma_dev)\n{\n\tstruct snd_dmaengine_pcm_config *pcm_conf;\n\n\tpcm_conf = devm_kzalloc(dev, sizeof(*pcm_conf), GFP_KERNEL);\n\tif (!pcm_conf)\n\t\treturn -ENOMEM;\n\n\tpcm_conf->prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config;\n\tpcm_conf->compat_filter_fn = filter;\n\tpcm_conf->dma_dev = dma_dev;\n\n\tpcm_conf->chan_names[SNDRV_PCM_STREAM_PLAYBACK] = tx;\n\tpcm_conf->chan_names[SNDRV_PCM_STREAM_CAPTURE] = rx;\n\n\treturn devm_snd_dmaengine_pcm_register(dev, pcm_conf,\n\t\t\t\tSND_DMAENGINE_PCM_FLAG_COMPAT);\n}\nEXPORT_SYMBOL_GPL(samsung_asoc_dma_platform_register);\n\nMODULE_AUTHOR(\"Mark Brown <broonie@linaro.org>\");\nMODULE_DESCRIPTION(\"Samsung dmaengine ASoC driver\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

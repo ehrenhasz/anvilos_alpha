@@ -1,0 +1,9 @@
+{
+  "module_name": "measure.c",
+  "hash_id": "ca6a4e0efcf5d47afd1f0fe53a82f7a8f2e294f2c480c2ca3115259729ae22bb",
+  "original_prompt": "Ingested from linux-6.6.14/fs/verity/measure.c",
+  "human_readable_source": "\n \n\n#include \"fsverity_private.h\"\n\n#include <linux/uaccess.h>\n\n \nint fsverity_ioctl_measure(struct file *filp, void __user *_uarg)\n{\n\tconst struct inode *inode = file_inode(filp);\n\tstruct fsverity_digest __user *uarg = _uarg;\n\tconst struct fsverity_info *vi;\n\tconst struct fsverity_hash_alg *hash_alg;\n\tstruct fsverity_digest arg;\n\n\tvi = fsverity_get_info(inode);\n\tif (!vi)\n\t\treturn -ENODATA;  \n\thash_alg = vi->tree_params.hash_alg;\n\n\t \n\n\tif (get_user(arg.digest_size, &uarg->digest_size))\n\t\treturn -EFAULT;\n\tif (arg.digest_size < hash_alg->digest_size)\n\t\treturn -EOVERFLOW;\n\n\tmemset(&arg, 0, sizeof(arg));\n\targ.digest_algorithm = hash_alg - fsverity_hash_algs;\n\targ.digest_size = hash_alg->digest_size;\n\n\tif (copy_to_user(uarg, &arg, sizeof(arg)))\n\t\treturn -EFAULT;\n\n\tif (copy_to_user(uarg->digest, vi->file_digest, hash_alg->digest_size))\n\t\treturn -EFAULT;\n\n\treturn 0;\n}\nEXPORT_SYMBOL_GPL(fsverity_ioctl_measure);\n\n \nint fsverity_get_digest(struct inode *inode,\n\t\t\tu8 raw_digest[FS_VERITY_MAX_DIGEST_SIZE],\n\t\t\tu8 *alg, enum hash_algo *halg)\n{\n\tconst struct fsverity_info *vi;\n\tconst struct fsverity_hash_alg *hash_alg;\n\n\tvi = fsverity_get_info(inode);\n\tif (!vi)\n\t\treturn 0;  \n\n\thash_alg = vi->tree_params.hash_alg;\n\tmemcpy(raw_digest, vi->file_digest, hash_alg->digest_size);\n\tif (alg)\n\t\t*alg = hash_alg - fsverity_hash_algs;\n\tif (halg)\n\t\t*halg = hash_alg->algo_id;\n\treturn hash_alg->digest_size;\n}\nEXPORT_SYMBOL_GPL(fsverity_get_digest);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

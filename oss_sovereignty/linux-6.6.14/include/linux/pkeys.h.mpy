@@ -1,0 +1,9 @@
+{
+  "module_name": "pkeys.h",
+  "hash_id": "301563e942547fdac03b15359655428b6860956579d96098d47ccd1afad20699",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pkeys.h",
+  "human_readable_source": " \n#ifndef _LINUX_PKEYS_H\n#define _LINUX_PKEYS_H\n\n#include <linux/mm.h>\n\n#define ARCH_DEFAULT_PKEY\t0\n\n#ifdef CONFIG_ARCH_HAS_PKEYS\n#include <asm/pkeys.h>\n#else  \n#define arch_max_pkey() (1)\n#define execute_only_pkey(mm) (0)\n#define arch_override_mprotect_pkey(vma, prot, pkey) (0)\n#define PKEY_DEDICATED_EXECUTE_ONLY 0\n#define ARCH_VM_PKEY_FLAGS 0\n\nstatic inline int vma_pkey(struct vm_area_struct *vma)\n{\n\treturn 0;\n}\n\nstatic inline bool mm_pkey_is_allocated(struct mm_struct *mm, int pkey)\n{\n\treturn (pkey == 0);\n}\n\nstatic inline int mm_pkey_alloc(struct mm_struct *mm)\n{\n\treturn -1;\n}\n\nstatic inline int mm_pkey_free(struct mm_struct *mm, int pkey)\n{\n\treturn -EINVAL;\n}\n\nstatic inline int arch_set_user_pkey_access(struct task_struct *tsk, int pkey,\n\t\t\tunsigned long init_val)\n{\n\treturn 0;\n}\n\nstatic inline bool arch_pkeys_enabled(void)\n{\n\treturn false;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mount-helper.m4",
+  "hash_id": "56002e1450198d951fde5cfd8f9dd84efa8b00d62285576f4c1b6d8adb188dad",
+  "original_prompt": "Ingested from zfs-2.2.2/config/mount-helper.m4",
+  "human_readable_source": "AC_DEFUN([ZFS_AC_CONFIG_USER_MOUNT_HELPER], [\n\tAC_ARG_WITH(mounthelperdir,\n\t\tAS_HELP_STRING([--with-mounthelperdir=DIR],\n\t\t[install mount.zfs in dir [[/sbin]]]),\n\t\tmounthelperdir=$withval,mounthelperdir=/sbin)\n\n\tAC_SUBST(mounthelperdir)\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

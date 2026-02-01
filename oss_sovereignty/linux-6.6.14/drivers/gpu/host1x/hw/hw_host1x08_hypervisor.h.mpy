@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_host1x08_hypervisor.h",
+  "hash_id": "06eec922499c4e44134109c0679027f7a24f25680ac011010e3ca6fede8aafd3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/hw/hw_host1x08_hypervisor.h",
+  "human_readable_source": " \n \n\n#define HOST1X_HV_SYNCPT_PROT_EN\t\t\t0x1724\n#define HOST1X_HV_SYNCPT_PROT_EN_CH_EN\t\t\tBIT(1)\n#define HOST1X_HV_CH_MLOCK_EN(x)\t\t\t(0x1700 + (x * 4))\n#define HOST1X_HV_CH_KERNEL_FILTER_GBUFFER(x)\t\t(0x1710 + (x * 4))\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

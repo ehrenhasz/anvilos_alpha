@@ -1,0 +1,9 @@
+{
+  "module_name": "basic.c",
+  "hash_id": "309790af357e6b64b974ce2d9524399721b387d2aedfa98fbedbd169c6eac09d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/verifier/basic.c",
+  "human_readable_source": "{\n\t\"empty prog\",\n\t.insns = {\n\t},\n\t.errstr = \"last insn is not an exit or jmp\",\n\t.result = REJECT,\n},\n{\n\t\"only exit insn\",\n\t.insns = {\n\tBPF_EXIT_INSN(),\n\t},\n\t.errstr = \"R0 !read_ok\",\n\t.result = REJECT,\n},\n{\n\t\"no bpf_exit\",\n\t.insns = {\n\tBPF_ALU64_REG(BPF_MOV, BPF_REG_0, BPF_REG_2),\n\t},\n\t.errstr = \"not an exit\",\n\t.result = REJECT,\n},\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

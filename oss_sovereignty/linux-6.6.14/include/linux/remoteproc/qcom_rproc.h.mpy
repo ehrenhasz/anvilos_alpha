@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom_rproc.h",
+  "hash_id": "ebb5c45043278fd779312a456fb0cc03be176ec0971f58b6d541e9cd1e19b925",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/remoteproc/qcom_rproc.h",
+  "human_readable_source": "#ifndef __QCOM_RPROC_H__\n#define __QCOM_RPROC_H__\n\nstruct notifier_block;\n\n \nenum qcom_ssr_notify_type {\n\tQCOM_SSR_BEFORE_POWERUP,\n\tQCOM_SSR_AFTER_POWERUP,\n\tQCOM_SSR_BEFORE_SHUTDOWN,\n\tQCOM_SSR_AFTER_SHUTDOWN,\n};\n\nstruct qcom_ssr_notify_data {\n\tconst char *name;\n\tbool crashed;\n};\n\n#if IS_ENABLED(CONFIG_QCOM_RPROC_COMMON)\n\nvoid *qcom_register_ssr_notifier(const char *name, struct notifier_block *nb);\nint qcom_unregister_ssr_notifier(void *notify, struct notifier_block *nb);\n\n#else\n\nstatic inline void *qcom_register_ssr_notifier(const char *name,\n\t\t\t\t\t       struct notifier_block *nb)\n{\n\treturn NULL;\n}\n\nstatic inline int qcom_unregister_ssr_notifier(void *notify,\n\t\t\t\t\t       struct notifier_block *nb)\n{\n\treturn 0;\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

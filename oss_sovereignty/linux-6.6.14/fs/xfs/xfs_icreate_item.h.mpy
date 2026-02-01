@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_icreate_item.h",
+  "hash_id": "2ab6cdd59d8c9d3335214b8ccc1d6f2717992a334512651780c1bf824abc9b9c",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_icreate_item.h",
+  "human_readable_source": "\n \n#ifndef XFS_ICREATE_ITEM_H\n#define XFS_ICREATE_ITEM_H\t1\n\n \nstruct xfs_icreate_item {\n\tstruct xfs_log_item\tic_item;\n\tstruct xfs_icreate_log\tic_format;\n};\n\nextern struct kmem_cache *xfs_icreate_cache;\t \n\nvoid xfs_icreate_log(struct xfs_trans *tp, xfs_agnumber_t agno,\n\t\t\txfs_agblock_t agbno, unsigned int count,\n\t\t\tunsigned int inode_size, xfs_agblock_t length,\n\t\t\tunsigned int generation);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

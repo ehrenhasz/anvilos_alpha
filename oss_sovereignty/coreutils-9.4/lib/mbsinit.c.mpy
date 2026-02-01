@@ -1,0 +1,9 @@
+{
+  "module_name": "mbsinit.c",
+  "hash_id": "432b09fc67af1ac3bbb575713bd3cc77df9a5e348a50151ecfaf59c20d363201",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mbsinit.c",
+  "human_readable_source": " \n#include <wchar.h>\n\n\n#if GNULIB_defined_mbstate_t\n\n \n\nstatic_assert (sizeof (mbstate_t) >= 4);\n\nint\nmbsinit (const mbstate_t *ps)\n{\n  const char *pstate = (const char *)ps;\n\n  return pstate == NULL || pstate[0] == 0;\n}\n\n#else\n\nint\nmbsinit (const mbstate_t *ps)\n{\n# if defined _WIN32 && !defined __CYGWIN__\n   \n   \n  return ps == NULL || *(const unsigned int *)ps == 0;\n# else\n   \n   \n  return ps == NULL || *(const char *)ps == 0;\n# endif\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

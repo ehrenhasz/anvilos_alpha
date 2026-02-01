@@ -1,0 +1,9 @@
+{
+  "module_name": "sun8i-a23-a33-ccu.h",
+  "hash_id": "78edbf89b8c3b68834a38397d5747e48e9a4d124a600f600a22d45ca2aa8c8b0",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/sun8i-a23-a33-ccu.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_RST_SUN8I_A23_A33_H_\n#define _DT_BINDINGS_RST_SUN8I_A23_A33_H_\n\n#define RST_USB_PHY0\t\t0\n#define RST_USB_PHY1\t\t1\n#define RST_USB_HSIC\t\t2\n#define RST_MBUS\t\t3\n#define RST_BUS_MIPI_DSI\t4\n#define RST_BUS_SS\t\t5\n#define RST_BUS_DMA\t\t6\n#define RST_BUS_MMC0\t\t7\n#define RST_BUS_MMC1\t\t8\n#define RST_BUS_MMC2\t\t9\n#define RST_BUS_NAND\t\t10\n#define RST_BUS_DRAM\t\t11\n#define RST_BUS_HSTIMER\t\t12\n#define RST_BUS_SPI0\t\t13\n#define RST_BUS_SPI1\t\t14\n#define RST_BUS_OTG\t\t15\n#define RST_BUS_EHCI\t\t16\n#define RST_BUS_OHCI\t\t17\n#define RST_BUS_VE\t\t18\n#define RST_BUS_LCD\t\t19\n#define RST_BUS_CSI\t\t20\n#define RST_BUS_DE_BE\t\t21\n#define RST_BUS_DE_FE\t\t22\n#define RST_BUS_GPU\t\t23\n#define RST_BUS_MSGBOX\t\t24\n#define RST_BUS_SPINLOCK\t25\n#define RST_BUS_DRC\t\t26\n#define RST_BUS_SAT\t\t27\n#define RST_BUS_LVDS\t\t28\n#define RST_BUS_CODEC\t\t29\n#define RST_BUS_I2S0\t\t30\n#define RST_BUS_I2S1\t\t31\n#define RST_BUS_I2C0\t\t32\n#define RST_BUS_I2C1\t\t33\n#define RST_BUS_I2C2\t\t34\n#define RST_BUS_UART0\t\t35\n#define RST_BUS_UART1\t\t36\n#define RST_BUS_UART2\t\t37\n#define RST_BUS_UART3\t\t38\n#define RST_BUS_UART4\t\t39\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

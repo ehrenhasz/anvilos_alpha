@@ -1,0 +1,9 @@
+{
+  "module_name": "wm831x-otp.c",
+  "hash_id": "484b9aec43f9e04b1c348ae9ce3bb9e7670a9969b8117008d27dfd55189b14cd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/wm831x-otp.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/i2c.h>\n#include <linux/bcd.h>\n#include <linux/delay.h>\n#include <linux/mfd/core.h>\n#include <linux/random.h>\n\n#include <linux/mfd/wm831x/core.h>\n#include <linux/mfd/wm831x/otp.h>\n\n \n#define WM831X_UNIQUE_ID_LEN 16\n\n \nstatic int wm831x_unique_id_read(struct wm831x *wm831x, char *id)\n{\n\tint i, val;\n\n\tfor (i = 0; i < WM831X_UNIQUE_ID_LEN / 2; i++) {\n\t\tval = wm831x_reg_read(wm831x, WM831X_UNIQUE_ID_1 + i);\n\t\tif (val < 0)\n\t\t\treturn val;\n\n\t\tid[i * 2]       = (val >> 8) & 0xff;\n\t\tid[(i * 2) + 1] = val & 0xff;\n\t}\n\n\treturn 0;\n}\n\nstatic ssize_t unique_id_show(struct device *dev,\n\t\t\t      struct device_attribute *attr, char *buf)\n{\n\tstruct wm831x *wm831x = dev_get_drvdata(dev);\n\tint rval;\n\tchar id[WM831X_UNIQUE_ID_LEN];\n\n\trval = wm831x_unique_id_read(wm831x, id);\n\tif (rval < 0)\n\t\treturn 0;\n\n\treturn sprintf(buf, \"%*phN\\n\", WM831X_UNIQUE_ID_LEN, id);\n}\n\nstatic DEVICE_ATTR_RO(unique_id);\n\nint wm831x_otp_init(struct wm831x *wm831x)\n{\n\tchar uuid[WM831X_UNIQUE_ID_LEN];\n\tint ret;\n\n\tret = device_create_file(wm831x->dev, &dev_attr_unique_id);\n\tif (ret != 0)\n\t\tdev_err(wm831x->dev, \"Unique ID attribute not created: %d\\n\",\n\t\t\tret);\n\n\tret = wm831x_unique_id_read(wm831x, uuid);\n\tif (ret == 0)\n\t\tadd_device_randomness(uuid, sizeof(uuid));\n\telse\n\t\tdev_err(wm831x->dev, \"Failed to read UUID: %d\\n\", ret);\n\n\treturn ret;\n}\n\nvoid wm831x_otp_exit(struct wm831x *wm831x)\n{\n\tdevice_remove_file(wm831x->dev, &dev_attr_unique_id);\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

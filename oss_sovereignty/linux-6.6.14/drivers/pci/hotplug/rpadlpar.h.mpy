@@ -1,0 +1,9 @@
+{
+  "module_name": "rpadlpar.h",
+  "hash_id": "729abe520ca256f156f9a00d28ee8d301e80a9bce810bd77f2616cc496f4f638",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/hotplug/rpadlpar.h",
+  "human_readable_source": " \n \n#ifndef _RPADLPAR_IO_H_\n#define _RPADLPAR_IO_H_\n\nint dlpar_sysfs_init(void);\nvoid dlpar_sysfs_exit(void);\n\nint dlpar_add_slot(char *drc_name);\nint dlpar_remove_slot(char *drc_name);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

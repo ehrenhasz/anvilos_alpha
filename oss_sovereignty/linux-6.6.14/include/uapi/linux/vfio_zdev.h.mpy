@@ -1,0 +1,9 @@
+{
+  "module_name": "vfio_zdev.h",
+  "hash_id": "c0d8bb04c940daaaeeea97802b73a6f72fc3e79d855212cbaee4c70d2c519895",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/vfio_zdev.h",
+  "human_readable_source": " \n \n\n#ifndef _VFIO_ZDEV_H_\n#define _VFIO_ZDEV_H_\n\n#include <linux/types.h>\n#include <linux/vfio.h>\n\n \nstruct vfio_device_info_cap_zpci_base {\n\tstruct vfio_info_cap_header header;\n\t__u64 start_dma;\t \n\t__u64 end_dma;\t\t \n\t__u16 pchid;\t\t \n\t__u16 vfn;\t\t \n\t__u16 fmb_length;\t \n\t__u8 pft;\t\t \n\t__u8 gid;\t\t \n\t \n\t__u32 fh;\t\t \n\t \n};\n\n \nstruct vfio_device_info_cap_zpci_group {\n\tstruct vfio_info_cap_header header;\n\t__u64 dasm;\t\t \n\t__u64 msi_addr;\t\t \n\t__u64 flags;\n#define VFIO_DEVICE_INFO_ZPCI_FLAG_REFRESH 1  \n\t__u16 mui;\t\t \n\t__u16 noi;\t\t \n\t__u16 maxstbl;\t\t \n\t__u8 version;\t\t \n\t \n\t__u8 reserved;\n\t__u16 imaxstbl;\t\t \n\t \n};\n\n \nstruct vfio_device_info_cap_zpci_util {\n\tstruct vfio_info_cap_header header;\n\t__u32 size;\n\t__u8 util_str[];\n};\n\n \nstruct vfio_device_info_cap_zpci_pfip {\n\tstruct vfio_info_cap_header header;\n\t__u32 size;\n\t__u8 pfip[];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

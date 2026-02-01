@@ -1,0 +1,9 @@
+{
+  "module_name": "caam-blob.h",
+  "hash_id": "c82f72d0de9e5975a405f468a22a0f0215b7941a3ffd5a91eebf4ff0a68f5b4f",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/fsl/caam-blob.h",
+  "human_readable_source": " \n \n\n#ifndef __CAAM_BLOB_GEN\n#define __CAAM_BLOB_GEN\n\n#include <linux/types.h>\n#include <linux/errno.h>\n\n#define CAAM_BLOB_KEYMOD_LENGTH\t\t16\n#define CAAM_BLOB_OVERHEAD\t\t(32 + 16)\n#define CAAM_BLOB_MAX_LEN\t\t4096\n\nstruct caam_blob_priv;\n\n \nstruct caam_blob_info {\n\tvoid *input;\n\tsize_t input_len;\n\n\tvoid *output;\n\tsize_t output_len;\n\n\tconst void *key_mod;\n\tsize_t key_mod_len;\n};\n\n \nstruct caam_blob_priv *caam_blob_gen_init(void);\n\n \nvoid caam_blob_gen_exit(struct caam_blob_priv *priv);\n\n \nint caam_process_blob(struct caam_blob_priv *priv,\n\t\t      struct caam_blob_info *info, bool encap);\n\n \nstatic inline int caam_encap_blob(struct caam_blob_priv *priv,\n\t\t\t\t  struct caam_blob_info *info)\n{\n\tif (info->output_len < info->input_len + CAAM_BLOB_OVERHEAD)\n\t\treturn -EINVAL;\n\n\treturn caam_process_blob(priv, info, true);\n}\n\n \nstatic inline int caam_decap_blob(struct caam_blob_priv *priv,\n\t\t\t\t  struct caam_blob_info *info)\n{\n\tif (info->input_len < CAAM_BLOB_OVERHEAD ||\n\t    info->output_len < info->input_len - CAAM_BLOB_OVERHEAD)\n\t\treturn -EINVAL;\n\n\treturn caam_process_blob(priv, info, false);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

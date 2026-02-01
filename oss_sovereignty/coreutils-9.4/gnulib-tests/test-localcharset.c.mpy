@@ -1,0 +1,9 @@
+{
+  "module_name": "test-localcharset.c",
+  "hash_id": "2d03b765b65cbc2dd538b1dd2feb93aa9fefeb235d78f6a75a762536ad311a5d",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-localcharset.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"localcharset.h\"\n\n#include <locale.h>\n#include <stdio.h>\n\nint\nmain (void)\n{\n  setlocale (LC_ALL, \"\");\n  printf (\"%s\\n\", locale_charset ());\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

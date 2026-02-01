@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__runtime.c.compress",
+  "hash_id": "063f5f6019e8da8735875a2c59826b760789777f26e22fb0ebeeab97792e49de",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__runtime.c.compress",
+  "human_readable_source": "name '%q' isn't defined\nunsupported type for %q: '%s'\nnegative shift count\nnegative shift count\nnegative power with no float support\nunsupported types for %q: '%s', '%s'\ndivide by zero\n'%s' object isn't callable\nneed more than %d values to unpack\ntoo many values to unpack (expected %d)\nneed more than %d values to unpack\nargument has wrong type\ntype object '%q' has no attribute '%q'\n'%s' object has no attribute '%q'\n'%s' object has no attribute '%q'\n'%s' object isn't iterable\n'%s' object isn't an iterator\n'%s' object isn't an iterator\ngenerator raised StopIteration\nexceptions must derive from BaseException\ncan't import name %q\nmemory allocation failed, heap is locked\nmemory allocation failed, allocating %u bytes\ncan't convert %s to int\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sil164.h",
+  "hash_id": "179424e32346299c98c9d88d2a86603cdadf4ddb63c37fb0518976f99ea53f64",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/i2c/sil164.h",
+  "human_readable_source": " \n\n#ifndef __DRM_I2C_SIL164_H__\n#define __DRM_I2C_SIL164_H__\n\n \nstruct sil164_encoder_params {\n\tenum {\n\t\tSIL164_INPUT_EDGE_FALLING = 0,\n\t\tSIL164_INPUT_EDGE_RISING\n\t} input_edge;\n\n\tenum {\n\t\tSIL164_INPUT_WIDTH_12BIT = 0,\n\t\tSIL164_INPUT_WIDTH_24BIT\n\t} input_width;\n\n\tenum {\n\t\tSIL164_INPUT_SINGLE_EDGE = 0,\n\t\tSIL164_INPUT_DUAL_EDGE\n\t} input_dual;\n\n\tenum {\n\t\tSIL164_PLL_FILTER_ON = 0,\n\t\tSIL164_PLL_FILTER_OFF,\n\t} pll_filter;\n\n\tint input_skew;  \n\tint duallink_skew;  \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

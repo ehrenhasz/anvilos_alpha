@@ -1,0 +1,9 @@
+{
+  "module_name": "libressl-api-compat.c",
+  "hash_id": "6708eac0c0627c208a2ee7e729d84a1a7c46662d650dc3843d37e5f9c1903de1",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/libressl-api-compat.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#ifdef WITH_OPENSSL\n\n#include <sys/types.h>\n\n#include <stdlib.h>\n#include <string.h>\n\n#include <openssl/evp.h>\n\n#ifndef HAVE_EVP_CIPHER_CTX_GET_IV\nint\nEVP_CIPHER_CTX_get_iv(const EVP_CIPHER_CTX *ctx, unsigned char *iv, size_t len)\n{\n\tif (ctx == NULL)\n\t\treturn 0;\n\tif (EVP_CIPHER_CTX_iv_length(ctx) < 0)\n\t\treturn 0;\n\tif (len != (size_t)EVP_CIPHER_CTX_iv_length(ctx))\n\t\treturn 0;\n\tif (len > EVP_MAX_IV_LENGTH)\n\t\treturn 0;  \n\t \n\tif (len != 0) {\n\t\tif (iv == NULL)\n\t\t\treturn 0;\n# ifdef HAVE_EVP_CIPHER_CTX_IV\n\t\tmemcpy(iv, EVP_CIPHER_CTX_iv(ctx), len);\n# else\n\t\tmemcpy(iv, ctx->iv, len);\n# endif  \n\t}\n\treturn 1;\n}\n#endif  \n\n#ifndef HAVE_EVP_CIPHER_CTX_SET_IV\nint\nEVP_CIPHER_CTX_set_iv(EVP_CIPHER_CTX *ctx, const unsigned char *iv, size_t len)\n{\n\tif (ctx == NULL)\n\t\treturn 0;\n\tif (EVP_CIPHER_CTX_iv_length(ctx) < 0)\n\t\treturn 0;\n\tif (len != (size_t)EVP_CIPHER_CTX_iv_length(ctx))\n\t\treturn 0;\n\tif (len > EVP_MAX_IV_LENGTH)\n\t\treturn 0;  \n\t \n\tif (len != 0) {\n\t\tif (iv == NULL)\n\t\t\treturn 0;\n# ifdef HAVE_EVP_CIPHER_CTX_IV_NOCONST\n\t\tmemcpy(EVP_CIPHER_CTX_iv_noconst(ctx), iv, len);\n# else\n\t\tmemcpy(ctx->iv, iv, len);\n# endif  \n\t}\n\treturn 1;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

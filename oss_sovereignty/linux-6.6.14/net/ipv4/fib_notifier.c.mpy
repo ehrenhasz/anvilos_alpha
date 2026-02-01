@@ -1,0 +1,9 @@
+{
+  "module_name": "fib_notifier.c",
+  "hash_id": "9fb92e8e114b058003fed350c44ce397b31eac6840354625ee98989e89cbaa99",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv4/fib_notifier.c",
+  "human_readable_source": "\n#include <linux/rtnetlink.h>\n#include <linux/notifier.h>\n#include <linux/socket.h>\n#include <linux/kernel.h>\n#include <linux/export.h>\n#include <net/net_namespace.h>\n#include <net/fib_notifier.h>\n#include <net/ip_fib.h>\n\nint call_fib4_notifier(struct notifier_block *nb,\n\t\t       enum fib_event_type event_type,\n\t\t       struct fib_notifier_info *info)\n{\n\tinfo->family = AF_INET;\n\treturn call_fib_notifier(nb, event_type, info);\n}\n\nint call_fib4_notifiers(struct net *net, enum fib_event_type event_type,\n\t\t\tstruct fib_notifier_info *info)\n{\n\tASSERT_RTNL();\n\n\tinfo->family = AF_INET;\n\tnet->ipv4.fib_seq++;\n\treturn call_fib_notifiers(net, event_type, info);\n}\n\nstatic unsigned int fib4_seq_read(struct net *net)\n{\n\tASSERT_RTNL();\n\n\treturn net->ipv4.fib_seq + fib4_rules_seq_read(net);\n}\n\nstatic int fib4_dump(struct net *net, struct notifier_block *nb,\n\t\t     struct netlink_ext_ack *extack)\n{\n\tint err;\n\n\terr = fib4_rules_dump(net, nb, extack);\n\tif (err)\n\t\treturn err;\n\n\treturn fib_notify(net, nb, extack);\n}\n\nstatic const struct fib_notifier_ops fib4_notifier_ops_template = {\n\t.family\t\t= AF_INET,\n\t.fib_seq_read\t= fib4_seq_read,\n\t.fib_dump\t= fib4_dump,\n\t.owner\t\t= THIS_MODULE,\n};\n\nint __net_init fib4_notifier_init(struct net *net)\n{\n\tstruct fib_notifier_ops *ops;\n\n\tnet->ipv4.fib_seq = 0;\n\n\tops = fib_notifier_ops_register(&fib4_notifier_ops_template, net);\n\tif (IS_ERR(ops))\n\t\treturn PTR_ERR(ops);\n\tnet->ipv4.notifier_ops = ops;\n\n\treturn 0;\n}\n\nvoid __net_exit fib4_notifier_exit(struct net *net)\n{\n\tfib_notifier_ops_unregister(net->ipv4.notifier_ops);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

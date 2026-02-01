@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "098522e453318e75db63eb5cd94439d3138cb88631dc5370a5ae782bfd95da03",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/wiznet/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_WIZNET_W5100) += w5100.o\nobj-$(CONFIG_WIZNET_W5100_SPI) += w5100-spi.o\nobj-$(CONFIG_WIZNET_W5300) += w5300.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

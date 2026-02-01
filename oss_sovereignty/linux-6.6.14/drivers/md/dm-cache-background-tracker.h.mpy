@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-cache-background-tracker.h",
+  "hash_id": "9b61e3c8c467557957bb4271dfc2f206d49eecdec01997902e6c5d016781997b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/dm-cache-background-tracker.h",
+  "human_readable_source": " \n \n\n#ifndef DM_CACHE_BACKGROUND_WORK_H\n#define DM_CACHE_BACKGROUND_WORK_H\n\n#include <linux/vmalloc.h>\n#include \"dm-cache-policy.h\"\n\n \n\n \n\nstruct background_work;\nstruct background_tracker;\n\n \nstruct background_tracker *btracker_create(unsigned int max_work);\n\n \nvoid btracker_destroy(struct background_tracker *b);\n\nunsigned int btracker_nr_writebacks_queued(struct background_tracker *b);\nunsigned int btracker_nr_demotions_queued(struct background_tracker *b);\n\n \nint btracker_queue(struct background_tracker *b,\n\t\t   struct policy_work *work,\n\t\t   struct policy_work **pwork);\n\n \nint btracker_issue(struct background_tracker *b, struct policy_work **work);\n\n \nvoid btracker_complete(struct background_tracker *b, struct policy_work *op);\n\n \nbool btracker_promotion_already_present(struct background_tracker *b,\n\t\t\t\t\tdm_oblock_t oblock);\n\n \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

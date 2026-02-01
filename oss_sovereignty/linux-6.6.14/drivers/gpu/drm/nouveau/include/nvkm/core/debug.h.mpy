@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "dcebac5dacab02eb17889b27a6f77a23a40a93acf40961f5fc7e3159d8796351",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/core/debug.h",
+  "human_readable_source": " \n#ifndef __NVKM_DEBUG_H__\n#define __NVKM_DEBUG_H__\n#define NV_DBG_FATAL    0\n#define NV_DBG_ERROR    1\n#define NV_DBG_WARN     2\n#define NV_DBG_INFO     3\n#define NV_DBG_DEBUG    4\n#define NV_DBG_TRACE    5\n#define NV_DBG_PARANOIA 6\n#define NV_DBG_SPAM     7\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

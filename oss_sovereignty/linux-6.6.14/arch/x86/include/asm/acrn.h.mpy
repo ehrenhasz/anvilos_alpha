@@ -1,0 +1,9 @@
+{
+  "module_name": "acrn.h",
+  "hash_id": "f5219d3adc004e3456a74bec9c566296475df09139ff8d260a0165e8bb03d776",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/acrn.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_ACRN_H\n#define _ASM_X86_ACRN_H\n\n \n#define\tACRN_CPUID_FEATURES\t\t0x40000001\n \n#define\tACRN_FEATURE_PRIVILEGED_VM\tBIT(0)\n\n \n#define ACRN_CPUID_TIMING_INFO\t\t0x40000010\n\nvoid acrn_setup_intr_handler(void (*handler)(void));\nvoid acrn_remove_intr_handler(void);\n\nstatic inline u32 acrn_cpuid_base(void)\n{\n\tif (boot_cpu_has(X86_FEATURE_HYPERVISOR))\n\t\treturn hypervisor_cpuid_base(\"ACRNACRNACRN\", 0);\n\n\treturn 0;\n}\n\nstatic inline unsigned long acrn_get_tsc_khz(void)\n{\n\treturn cpuid_eax(ACRN_CPUID_TIMING_INFO);\n}\n\n \nstatic inline long acrn_hypercall0(unsigned long hcall_id)\n{\n\tlong result;\n\n\tasm volatile(\"movl %1, %%r8d\\n\\t\"\n\t\t     \"vmcall\\n\\t\"\n\t\t     : \"=a\" (result)\n\t\t     : \"g\" (hcall_id)\n\t\t     : \"r8\", \"memory\");\n\n\treturn result;\n}\n\nstatic inline long acrn_hypercall1(unsigned long hcall_id,\n\t\t\t\t   unsigned long param1)\n{\n\tlong result;\n\n\tasm volatile(\"movl %1, %%r8d\\n\\t\"\n\t\t     \"vmcall\\n\\t\"\n\t\t     : \"=a\" (result)\n\t\t     : \"g\" (hcall_id), \"D\" (param1)\n\t\t     : \"r8\", \"memory\");\n\n\treturn result;\n}\n\nstatic inline long acrn_hypercall2(unsigned long hcall_id,\n\t\t\t\t   unsigned long param1,\n\t\t\t\t   unsigned long param2)\n{\n\tlong result;\n\n\tasm volatile(\"movl %1, %%r8d\\n\\t\"\n\t\t     \"vmcall\\n\\t\"\n\t\t     : \"=a\" (result)\n\t\t     : \"g\" (hcall_id), \"D\" (param1), \"S\" (param2)\n\t\t     : \"r8\", \"memory\");\n\n\treturn result;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

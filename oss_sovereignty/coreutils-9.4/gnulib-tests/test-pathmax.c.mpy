@@ -1,0 +1,9 @@
+{
+  "module_name": "test-pathmax.c",
+  "hash_id": "c7d44be0adffa5b21bb73a087ea70d8dd5fbfc49f0f9320cb8121d9818991206",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-pathmax.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"pathmax.h\"\n\n \n#ifdef PATH_MAX\nint a = PATH_MAX;\n#endif\n\nint\nmain (void)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

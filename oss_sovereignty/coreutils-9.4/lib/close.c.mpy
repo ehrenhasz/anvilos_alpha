@@ -1,0 +1,9 @@
+{
+  "module_name": "close.c",
+  "hash_id": "4825a6dca7bcf0f27923843cb7266c404646e73a7db6a8824ddfacc2d062b14d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/close.c",
+  "human_readable_source": " \n#include <unistd.h>\n\n#include <errno.h>\n\n#include \"fd-hook.h\"\n#if HAVE_MSVC_INVALID_PARAMETER_HANDLER\n# include \"msvc-inval.h\"\n#endif\n\n#undef close\n\n#if defined _WIN32 && !defined __CYGWIN__\n# if HAVE_MSVC_INVALID_PARAMETER_HANDLER\nstatic int\nclose_nothrow (int fd)\n{\n  int result;\n\n  TRY_MSVC_INVAL\n    {\n      result = _close (fd);\n    }\n  CATCH_MSVC_INVAL\n    {\n      result = -1;\n      errno = EBADF;\n    }\n  DONE_MSVC_INVAL;\n\n  return result;\n}\n# else\n#  define close_nothrow _close\n# endif\n#else\n# define close_nothrow close\n#endif\n\n \n\nint\nrpl_close (int fd)\n{\n#if WINDOWS_SOCKETS\n  int retval = execute_all_close_hooks (close_nothrow, fd);\n#else\n  int retval = close_nothrow (fd);\n#endif\n\n#if REPLACE_FCHDIR\n  if (retval >= 0)\n    _gl_unregister_fd (fd);\n#endif\n\n  return retval;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

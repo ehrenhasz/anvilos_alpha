@@ -1,0 +1,9 @@
+{
+  "module_name": "vidtv_common.h",
+  "hash_id": "78191fb358952349a4f47314fc5e725d6a8d788f31b7b431633bec1d388f87ae",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vidtv/vidtv_common.h",
+  "human_readable_source": " \n \n\n#ifndef VIDTV_COMMON_H\n#define VIDTV_COMMON_H\n\n#include <linux/types.h>\n\n#define CLOCK_UNIT_90KHZ 90000\n#define CLOCK_UNIT_27MHZ 27000000\n#define VIDTV_SLEEP_USECS 10000\n#define VIDTV_MAX_SLEEP_USECS (2 * VIDTV_SLEEP_USECS)\n\nu32 vidtv_memcpy(void *to,\n\t\t size_t to_offset,\n\t\t size_t to_size,\n\t\t const void *from,\n\t\t size_t len);\n\nu32 vidtv_memset(void *to,\n\t\t size_t to_offset,\n\t\t size_t to_size,\n\t\t int c,\n\t\t size_t len);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

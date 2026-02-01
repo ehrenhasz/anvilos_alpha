@@ -1,0 +1,9 @@
+{
+  "module_name": "prandom.h",
+  "hash_id": "df95b93c0abf807a289563c0f4d4d29d7ba99fcc2420fa86ab31e5ae72413754",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/prandom.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_PRANDOM_H\n#define _LINUX_PRANDOM_H\n\n#include <linux/types.h>\n#include <linux/once.h>\n#include <linux/percpu.h>\n#include <linux/random.h>\n\nstruct rnd_state {\n\t__u32 s1, s2, s3, s4;\n};\n\nu32 prandom_u32_state(struct rnd_state *state);\nvoid prandom_bytes_state(struct rnd_state *state, void *buf, size_t nbytes);\nvoid prandom_seed_full_state(struct rnd_state __percpu *pcpu_state);\n\n#define prandom_init_once(pcpu_state)\t\t\t\\\n\tDO_ONCE(prandom_seed_full_state, (pcpu_state))\n\n \nstatic inline u32 __seed(u32 x, u32 m)\n{\n\treturn (x < m) ? x + m : x;\n}\n\n \nstatic inline void prandom_seed_state(struct rnd_state *state, u64 seed)\n{\n\tu32 i = ((seed >> 32) ^ (seed << 10) ^ seed) & 0xffffffffUL;\n\n\tstate->s1 = __seed(i,   2U);\n\tstate->s2 = __seed(i,   8U);\n\tstate->s3 = __seed(i,  16U);\n\tstate->s4 = __seed(i, 128U);\n}\n\n \nstatic inline u32 next_pseudo_random32(u32 seed)\n{\n\treturn seed * 1664525 + 1013904223;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

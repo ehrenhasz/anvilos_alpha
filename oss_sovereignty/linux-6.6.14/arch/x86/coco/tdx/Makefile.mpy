@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "586806b24042ea60ea4d2292fa43f87d5400d8fe72acd4ea9211e8d531c629a4",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/coco/tdx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-y += tdx.o tdx-shared.o tdcall.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

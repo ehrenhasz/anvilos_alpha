@@ -1,0 +1,9 @@
+{
+  "module_name": "mock_timeline.h",
+  "hash_id": "c237c6f838402f36c1831aa9206c39f7cc0ead74befad2fc7387b1c1a776da69",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/selftests/mock_timeline.h",
+  "human_readable_source": " \n\n#ifndef __MOCK_TIMELINE__\n#define __MOCK_TIMELINE__\n\n#include <linux/types.h>\n\nstruct intel_timeline;\n\nvoid mock_timeline_init(struct intel_timeline *timeline, u64 context);\nvoid mock_timeline_fini(struct intel_timeline *timeline);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mwavepub.h",
+  "hash_id": "9f3ac9b2aa20dec6bf34cb5cfd91b4494fe784c2277a692864b5d3c19f97acea",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/mwave/mwavepub.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_MWAVEPUB_H\n#define _LINUX_MWAVEPUB_H\n\n#include <linux/miscdevice.h>\n\n\ntypedef struct _MW_ABILITIES {\n\tunsigned long instr_per_sec;\n\tunsigned long data_size;\n\tunsigned long inst_size;\n\tunsigned long bus_dma_bw;\n\tunsigned short uart_enable;\n\tshort component_count;\n\tunsigned long component_list[7];\n\tchar mwave_os_name[16];\n\tchar bios_task_name[16];\n} MW_ABILITIES, *pMW_ABILITIES;\n\n\ntypedef struct _MW_READWRITE {\n\tunsigned short usDspAddress;\t \n\tunsigned long ulDataLength;\t \n\tvoid __user *pBuf;\t\t \n} MW_READWRITE, *pMW_READWRITE;\n\n#define IOCTL_MW_RESET           _IO(MWAVE_MINOR,1)\n#define IOCTL_MW_RUN             _IO(MWAVE_MINOR,2)\n#define IOCTL_MW_DSP_ABILITIES   _IOR(MWAVE_MINOR,3,MW_ABILITIES)\n#define IOCTL_MW_READ_DATA       _IOR(MWAVE_MINOR,4,MW_READWRITE)\n#define IOCTL_MW_READCLEAR_DATA  _IOR(MWAVE_MINOR,5,MW_READWRITE)\n#define IOCTL_MW_READ_INST       _IOR(MWAVE_MINOR,6,MW_READWRITE)\n#define IOCTL_MW_WRITE_DATA      _IOW(MWAVE_MINOR,7,MW_READWRITE)\n#define IOCTL_MW_WRITE_INST      _IOW(MWAVE_MINOR,8,MW_READWRITE)\n#define IOCTL_MW_REGISTER_IPC    _IOW(MWAVE_MINOR,9,int)\n#define IOCTL_MW_UNREGISTER_IPC  _IOW(MWAVE_MINOR,10,int)\n#define IOCTL_MW_GET_IPC         _IOW(MWAVE_MINOR,11,int)\n#define IOCTL_MW_TRACE           _IOR(MWAVE_MINOR,12,MW_READWRITE)\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

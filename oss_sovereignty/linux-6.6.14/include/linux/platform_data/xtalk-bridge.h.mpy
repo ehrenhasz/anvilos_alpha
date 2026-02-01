@@ -1,0 +1,9 @@
+{
+  "module_name": "xtalk-bridge.h",
+  "hash_id": "6bba6af869bdc0fdbe8f9b6379694473303df123ea099280437a195bfb6ccbcf",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/xtalk-bridge.h",
+  "human_readable_source": " \n \n\n#ifndef PLATFORM_DATA_XTALK_BRIDGE_H\n#define PLATFORM_DATA_XTALK_BRIDGE_H\n\n#include <asm/sn/types.h>\n\nstruct xtalk_bridge_platform_data {\n\tstruct resource\tmem;\n\tstruct resource io;\n\tunsigned long bridge_addr;\n\tunsigned long intr_addr;\n\tunsigned long mem_offset;\n\tunsigned long io_offset;\n\tnasid_t\tnasid;\n\tint\tmasterwid;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "cf7b2c8ac89b85b8a02a15d19aaaff2b63f87a6d78c8ff5ce9f0260fe439a7dd",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/kconfig/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/conf\n/[gmnq]conf\n/[gmnq]conf-bin\n/[gmnq]conf-cflags\n/[gmnq]conf-libs\n/qconf-moc.cc\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ocelot.h",
+  "hash_id": "7ceb51a15e12f95594e1869a85aa281a19867d98c0ef762da99edba311f5dca7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/ocelot.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_MFD_OCELOT_H\n#define _LINUX_MFD_OCELOT_H\n\n#include <linux/err.h>\n#include <linux/errno.h>\n#include <linux/ioport.h>\n#include <linux/platform_device.h>\n#include <linux/regmap.h>\n#include <linux/types.h>\n\nstruct resource;\n\nstatic inline struct regmap *\nocelot_regmap_from_resource_optional(struct platform_device *pdev,\n\t\t\t\t     unsigned int index,\n\t\t\t\t     const struct regmap_config *config)\n{\n\tstruct device *dev = &pdev->dev;\n\tstruct resource *res;\n\tvoid __iomem *regs;\n\n\t \n\tres = platform_get_resource(pdev, IORESOURCE_MEM, index);\n\tif (res) {\n\t\tregs = devm_ioremap_resource(dev, res);\n\t\tif (IS_ERR(regs))\n\t\t\treturn ERR_CAST(regs);\n\t\treturn devm_regmap_init_mmio(dev, regs, config);\n\t}\n\n\t \n\tif (dev->parent) {\n\t\tres = platform_get_resource(pdev, IORESOURCE_REG, index);\n\t\tif (!res)\n\t\t\treturn NULL;\n\n\t\treturn dev_get_regmap(dev->parent, res->name);\n\t}\n\n\treturn NULL;\n}\n\nstatic inline struct regmap *\nocelot_regmap_from_resource(struct platform_device *pdev, unsigned int index,\n\t\t\t    const struct regmap_config *config)\n{\n\tstruct regmap *map;\n\n\tmap = ocelot_regmap_from_resource_optional(pdev, index, config);\n\treturn map ?: ERR_PTR(-ENOENT);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

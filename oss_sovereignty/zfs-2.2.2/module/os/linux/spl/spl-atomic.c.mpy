@@ -1,0 +1,9 @@
+{
+  "module_name": "spl-atomic.c",
+  "hash_id": "bc69081101ee5614e39ebe94ecbdfe1f6c6e17f3e31e8ec0f623231a9c3f2d4d",
+  "original_prompt": "Ingested from zfs-2.2.2/module/os/linux/spl/spl-atomic.c",
+  "human_readable_source": " \n\n#include <sys/atomic.h>\n\n#ifdef ATOMIC_SPINLOCK\n \nDEFINE_SPINLOCK(atomic32_lock);\nDEFINE_SPINLOCK(atomic64_lock);\n\nEXPORT_SYMBOL(atomic32_lock);\nEXPORT_SYMBOL(atomic64_lock);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

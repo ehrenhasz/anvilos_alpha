@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a041d07a0fe9787221ee64816943379a3f7373a4a97915fb6d2db242a7928607",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/s5p-mfc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_VIDEO_SAMSUNG_S5P_MFC) += s5p-mfc.o\ns5p-mfc-y += s5p_mfc.o s5p_mfc_intr.o\ns5p-mfc-y += s5p_mfc_dec.o s5p_mfc_enc.o\ns5p-mfc-y += s5p_mfc_ctrl.o s5p_mfc_pm.o\ns5p-mfc-y += s5p_mfc_opr.o s5p_mfc_opr_v5.o s5p_mfc_opr_v6.o\ns5p-mfc-y += s5p_mfc_cmd.o s5p_mfc_cmd_v5.o s5p_mfc_cmd_v6.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

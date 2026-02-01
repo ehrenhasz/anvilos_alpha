@@ -1,0 +1,9 @@
+{
+  "module_name": "io-mapping.c",
+  "hash_id": "ca17211877d0933e51f3e60ab06ad4a4e046c14ce74724d0bab5d04e0523a2cb",
+  "original_prompt": "Ingested from linux-6.6.14/mm/io-mapping.c",
+  "human_readable_source": "\n\n#include <linux/mm.h>\n#include <linux/io-mapping.h>\n\n \nint io_mapping_map_user(struct io_mapping *iomap, struct vm_area_struct *vma,\n\t\tunsigned long addr, unsigned long pfn, unsigned long size)\n{\n\tvm_flags_t expected_flags = VM_PFNMAP | VM_DONTEXPAND | VM_DONTDUMP;\n\n\tif (WARN_ON_ONCE((vma->vm_flags & expected_flags) != expected_flags))\n\t\treturn -EINVAL;\n\n\t \n\treturn remap_pfn_range_notrack(vma, addr, pfn, size,\n\t\t__pgprot((pgprot_val(iomap->prot) & _PAGE_CACHE_MASK) |\n\t\t\t (pgprot_val(vma->vm_page_prot) & ~_PAGE_CACHE_MASK)));\n}\nEXPORT_SYMBOL_GPL(io_mapping_map_user);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

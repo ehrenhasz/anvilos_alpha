@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk-adsp-ipc.h",
+  "hash_id": "9b65ca5b62474c077c938ea9cbc51a7da9bdcfdc2b6dead045f307921fa9d467",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/firmware/mediatek/mtk-adsp-ipc.h",
+  "human_readable_source": " \n \n\n#ifndef MTK_ADSP_IPC_H\n#define MTK_ADSP_IPC_H\n\n#include <linux/device.h>\n#include <linux/types.h>\n#include <linux/mailbox_controller.h>\n#include <linux/mailbox_client.h>\n\n#define MTK_ADSP_IPC_REQ 0\n#define MTK_ADSP_IPC_RSP 1\n#define MTK_ADSP_IPC_OP_REQ 0x1\n#define MTK_ADSP_IPC_OP_RSP 0x2\n\nenum {\n\tMTK_ADSP_MBOX_REPLY,\n\tMTK_ADSP_MBOX_REQUEST,\n\tMTK_ADSP_MBOX_NUM,\n};\n\nstruct mtk_adsp_ipc;\n\nstruct mtk_adsp_ipc_ops {\n\tvoid (*handle_reply)(struct mtk_adsp_ipc *ipc);\n\tvoid (*handle_request)(struct mtk_adsp_ipc *ipc);\n};\n\nstruct mtk_adsp_chan {\n\tstruct mtk_adsp_ipc *ipc;\n\tstruct mbox_client cl;\n\tstruct mbox_chan *ch;\n\tchar *name;\n\tint idx;\n};\n\nstruct mtk_adsp_ipc {\n\tstruct mtk_adsp_chan chans[MTK_ADSP_MBOX_NUM];\n\tstruct device *dev;\n\tstruct mtk_adsp_ipc_ops *ops;\n\tvoid *private_data;\n};\n\nstatic inline void mtk_adsp_ipc_set_data(struct mtk_adsp_ipc *ipc, void *data)\n{\n\tipc->private_data = data;\n}\n\nstatic inline void *mtk_adsp_ipc_get_data(struct mtk_adsp_ipc *ipc)\n{\n\treturn ipc->private_data;\n}\n\nint mtk_adsp_ipc_send(struct mtk_adsp_ipc *ipc, unsigned int idx, uint32_t op);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

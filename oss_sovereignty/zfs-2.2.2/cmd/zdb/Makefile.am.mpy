@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "ac1f2196523510eea8b8cf35bd8fd876306389488eabd7bb2a958cd8a02bc490",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zdb/Makefile.am",
+  "human_readable_source": "zdb_CPPFLAGS = $(AM_CPPFLAGS) $(FORCEDEBUG_CPPFLAGS)\nzdb_CFLAGS   = $(AM_CFLAGS) $(LIBCRYPTO_CFLAGS)\n\nsbin_PROGRAMS   += zdb\nCPPCHECKTARGETS += zdb\n\nzdb_SOURCES = \\\n\t%D%/zdb.c \\\n\t%D%/zdb.h \\\n\t%D%/zdb_il.c\n\nzdb_LDADD = \\\n\tlibzpool.la \\\n\tlibzfs_core.la \\\n\tlibnvpair.la\n\nzdb_LDADD += $(LIBCRYPTO_LIBS)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

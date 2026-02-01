@@ -1,0 +1,9 @@
+{
+  "module_name": "dummychip.c",
+  "hash_id": "0b2c1c533d097fbcced6b1a9966036ed2cc4dd53681509d2200625aa98636fa2",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/irq/dummychip.c",
+  "human_readable_source": "\n \n#include <linux/interrupt.h>\n#include <linux/irq.h>\n#include <linux/export.h>\n\n#include \"internals.h\"\n\n \nstatic void ack_bad(struct irq_data *data)\n{\n\tstruct irq_desc *desc = irq_data_to_desc(data);\n\n\tprint_irq_desc(data->irq, desc);\n\tack_bad_irq(data->irq);\n}\n\n \nstatic void noop(struct irq_data *data) { }\n\nstatic unsigned int noop_ret(struct irq_data *data)\n{\n\treturn 0;\n}\n\n \nstruct irq_chip no_irq_chip = {\n\t.name\t\t= \"none\",\n\t.irq_startup\t= noop_ret,\n\t.irq_shutdown\t= noop,\n\t.irq_enable\t= noop,\n\t.irq_disable\t= noop,\n\t.irq_ack\t= ack_bad,\n\t.flags\t\t= IRQCHIP_SKIP_SET_WAKE,\n};\n\n \nstruct irq_chip dummy_irq_chip = {\n\t.name\t\t= \"dummy\",\n\t.irq_startup\t= noop_ret,\n\t.irq_shutdown\t= noop,\n\t.irq_enable\t= noop,\n\t.irq_disable\t= noop,\n\t.irq_ack\t= noop,\n\t.irq_mask\t= noop,\n\t.irq_unmask\t= noop,\n\t.flags\t\t= IRQCHIP_SKIP_SET_WAKE,\n};\nEXPORT_SYMBOL_GPL(dummy_irq_chip);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

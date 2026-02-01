@@ -1,0 +1,9 @@
+{
+  "module_name": "ga100.c",
+  "hash_id": "2b71668eb51d8b2553847201a903779e46b416b75ef98920de13760f65870fde",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/devinit/ga100.c",
+  "human_readable_source": " \n#include \"nv50.h\"\n\n#include <subdev/bios.h>\n#include <subdev/bios/pll.h>\n#include <subdev/clk/pll.h>\n\nstatic int\nga100_devinit_pll_set(struct nvkm_devinit *init, u32 type, u32 freq)\n{\n\tstruct nvkm_subdev *subdev = &init->subdev;\n\tstruct nvkm_device *device = subdev->device;\n\tstruct nvbios_pll info;\n\tint head = type - PLL_VPLL0;\n\tint N, fN, M, P;\n\tint ret;\n\n\tret = nvbios_pll_parse(device->bios, type, &info);\n\tif (ret)\n\t\treturn ret;\n\n\tret = gt215_pll_calc(subdev, &info, freq, &N, &fN, &M, &P);\n\tif (ret < 0)\n\t\treturn ret;\n\n\tswitch (info.type) {\n\tcase PLL_VPLL0:\n\tcase PLL_VPLL1:\n\tcase PLL_VPLL2:\n\tcase PLL_VPLL3:\n\t\tnvkm_wr32(device, 0x00ef00 + (head * 0x40), 0x02080004);\n\t\tnvkm_wr32(device, 0x00ef18 + (head * 0x40), (N << 16) | fN);\n\t\tnvkm_wr32(device, 0x00ef04 + (head * 0x40), (P << 16) | M);\n\t\tnvkm_wr32(device, 0x00e9c0 + (head * 0x04), 0x00000001);\n\t\tbreak;\n\tdefault:\n\t\tnvkm_warn(subdev, \"%08x/%dKhz unimplemented\\n\", type, freq);\n\t\tret = -EINVAL;\n\t\tbreak;\n\t}\n\n\treturn ret;\n}\n\nstatic const struct nvkm_devinit_func\nga100_devinit = {\n\t.init = nv50_devinit_init,\n\t.post = tu102_devinit_post,\n\t.pll_set = ga100_devinit_pll_set,\n};\n\nint\nga100_devinit_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t\t  struct nvkm_devinit **pinit)\n{\n\treturn nv50_devinit_new_(&ga100_devinit, device, type, inst, pinit);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

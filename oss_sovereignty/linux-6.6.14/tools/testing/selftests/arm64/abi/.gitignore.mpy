@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "5ee8cc30ba2d034703e87f06d39ad4f834c6f31852c1f2fdd62c6209b4de85c7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/abi/.gitignore",
+  "human_readable_source": "hwcap\nptrace\nsyscall-abi\ntpidr2\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

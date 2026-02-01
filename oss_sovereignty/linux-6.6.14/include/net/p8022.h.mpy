@@ -1,0 +1,9 @@
+{
+  "module_name": "p8022.h",
+  "hash_id": "e1433c2f5851aa411b047e32d974d2a9fc82e6ca68d61e92978050ada2cefb11",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/p8022.h",
+  "human_readable_source": " \n#ifndef _NET_P8022_H\n#define _NET_P8022_H\n\nstruct net_device;\nstruct packet_type;\nstruct sk_buff;\n\nstruct datalink_proto *\nregister_8022_client(unsigned char type,\n\t\t     int (*func)(struct sk_buff *skb,\n\t\t\t\t struct net_device *dev,\n\t\t\t\t struct packet_type *pt,\n\t\t\t\t struct net_device *orig_dev));\nvoid unregister_8022_client(struct datalink_proto *proto);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

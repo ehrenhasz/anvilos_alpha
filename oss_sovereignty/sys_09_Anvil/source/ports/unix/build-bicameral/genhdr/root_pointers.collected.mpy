@@ -1,0 +1,9 @@
+{
+  "module_name": "root_pointers.collected",
+  "hash_id": "c997e8c46ecc1e4b1b2031ab6f074cf317f6f7a113628ff6424087b92a45d4e3",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/root_pointers.collected",
+  "human_readable_source": "MP_REGISTER_ROOT_POINTER(mp_obj_list_t mp_sys_argv_obj);\n\nMP_REGISTER_ROOT_POINTER(mp_obj_t sys_mutable[MP_SYS_MUTABLE_NUM]);\n\nMP_REGISTER_ROOT_POINTER(struct _mp_vfs_mount_t *vfs_cur);\n\nMP_REGISTER_ROOT_POINTER(struct _mp_vfs_mount_t *vfs_mount_table);\n\nMP_REGISTER_ROOT_POINTER(void *mmap_region_head);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

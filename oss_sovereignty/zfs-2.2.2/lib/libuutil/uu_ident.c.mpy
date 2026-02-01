@@ -1,0 +1,9 @@
+{
+  "module_name": "uu_ident.c",
+  "hash_id": "872142001534b821bdc356e547743dbce35275bf79292159a46fbb5e83c03592",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libuutil/uu_ident.c",
+  "human_readable_source": " \n \n\n\n\n#include \"libuutil_common.h\"\n\n#include <string.h>\n\n \n\n#define\tIS_ALPHA(c) \\\n\t(((c) >= 'a' && (c) <= 'z') || ((c) >= 'A' && (c) <= 'Z'))\n\n#define\tIS_DIGIT(c) \\\n\t((c) >= '0' && (c) <= '9')\n\nstatic int\nis_valid_ident(const char *s, const char *e, int allowdot)\n{\n\tchar c;\n\n\tif (s >= e)\n\t\treturn (0);\t\t \n\n\tc = *s++;\n\tif (!IS_ALPHA(c))\n\t\treturn (0);\t\t \n\n\twhile (s < e && (c = *s++) != 0) {\n\t\tif (IS_ALPHA(c) || IS_DIGIT(c) || c == '-' || c == '_' ||\n\t\t    (allowdot && c == '.'))\n\t\t\tcontinue;\n\t\treturn (0);\t\t \n\t}\n\treturn (1);\n}\n\nstatic int\nis_valid_component(const char *b, const char *e, uint_t flags)\n{\n\tchar *sp;\n\n\tif (flags & UU_NAME_DOMAIN) {\n\t\tsp = strchr(b, ',');\n\t\tif (sp != NULL && sp < e) {\n\t\t\tif (!is_valid_ident(b, sp, 1))\n\t\t\t\treturn (0);\n\t\t\tb = sp + 1;\n\t\t}\n\t}\n\n\treturn (is_valid_ident(b, e, 0));\n}\n\nint\nuu_check_name(const char *name, uint_t flags)\n{\n\tconst char *end = name + strlen(name);\n\tconst char *p;\n\n\tif (flags & ~(UU_NAME_DOMAIN | UU_NAME_PATH)) {\n\t\tuu_set_error(UU_ERROR_UNKNOWN_FLAG);\n\t\treturn (-1);\n\t}\n\n\tif (!(flags & UU_NAME_PATH)) {\n\t\tif (!is_valid_component(name, end, flags))\n\t\t\tgoto bad;\n\t\treturn (0);\n\t}\n\n\twhile ((p = strchr(name, '/')) != NULL) {\n\t\tif (!is_valid_component(name, p - 1, flags))\n\t\t\tgoto bad;\n\t\tname = p + 1;\n\t}\n\tif (!is_valid_component(name, end, flags))\n\t\tgoto bad;\n\n\treturn (0);\n\nbad:\n\tuu_set_error(UU_ERROR_INVALID_ARGUMENT);\n\treturn (-1);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

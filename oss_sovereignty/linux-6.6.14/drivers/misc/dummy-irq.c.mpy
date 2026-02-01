@@ -1,0 +1,9 @@
+{
+  "module_name": "dummy-irq.c",
+  "hash_id": "2c137d70207cb7f65ec4afbdc4350a26e09d77c5c040d5c209de37d0c28a3ed5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/dummy-irq.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/irq.h>\n#include <linux/interrupt.h>\n\nstatic int irq = -1;\n\nstatic irqreturn_t dummy_interrupt(int irq, void *dev_id)\n{\n\tstatic int count = 0;\n\n\tif (count == 0) {\n\t\tprintk(KERN_INFO \"dummy-irq: interrupt occurred on IRQ %d\\n\",\n\t\t\t\tirq);\n\t\tcount++;\n\t}\n\n\treturn IRQ_NONE;\n}\n\nstatic int __init dummy_irq_init(void)\n{\n\tif (irq < 0) {\n\t\tprintk(KERN_ERR \"dummy-irq: no IRQ given.  Use irq=N\\n\");\n\t\treturn -EIO;\n\t}\n\tif (request_irq(irq, &dummy_interrupt, IRQF_SHARED, \"dummy_irq\", &irq)) {\n\t\tprintk(KERN_ERR \"dummy-irq: cannot register IRQ %d\\n\", irq);\n\t\treturn -EIO;\n\t}\n\tprintk(KERN_INFO \"dummy-irq: registered for IRQ %d\\n\", irq);\n\treturn 0;\n}\n\nstatic void __exit dummy_irq_exit(void)\n{\n\tprintk(KERN_INFO \"dummy-irq unloaded\\n\");\n\tfree_irq(irq, &irq);\n}\n\nmodule_init(dummy_irq_init);\nmodule_exit(dummy_irq_exit);\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Jiri Kosina\");\nmodule_param_hw(irq, uint, irq, 0444);\nMODULE_PARM_DESC(irq, \"The IRQ to register for\");\nMODULE_DESCRIPTION(\"Dummy IRQ handler driver\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

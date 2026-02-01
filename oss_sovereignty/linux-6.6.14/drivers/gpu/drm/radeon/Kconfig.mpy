@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0450c5f9ca3dede939626ebfb30965c2c5811e115c6fbcb9a2475d4651fbe238",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\n\nconfig DRM_RADEON\n\ttristate \"ATI Radeon\"\n\tdepends on DRM && PCI && MMU\n\tdepends on AGP || !AGP\n\tselect FW_LOADER\n\tselect DRM_DISPLAY_DP_HELPER\n\tselect DRM_DISPLAY_HELPER\n        select DRM_KMS_HELPER\n\tselect DRM_SUBALLOC_HELPER\n        select DRM_TTM\n\tselect DRM_TTM_HELPER\n\tselect FB_IOMEM_HELPERS if DRM_FBDEV_EMULATION\n\tselect SND_HDA_COMPONENT if SND_HDA_CORE\n\tselect POWER_SUPPLY\n\tselect HWMON\n\tselect BACKLIGHT_CLASS_DEVICE\n\tselect INTERVAL_TREE\n\tselect I2C\n\tselect I2C_ALGOBIT\n\t# radeon depends on ACPI_VIDEO when ACPI is enabled, for select to work\n\t# ACPI_VIDEO's dependencies must also be selected.\n\tselect INPUT if ACPI\n\tselect ACPI_VIDEO if ACPI\n\t# On x86 ACPI_VIDEO also needs ACPI_WMI\n\tselect X86_PLATFORM_DEVICES if ACPI && X86\n\tselect ACPI_WMI if ACPI && X86\n\thelp\n\t  Choose this option if you have an ATI Radeon graphics card.  There\n\t  are both PCI and AGP versions.  You don't need to choose this to\n\t  run the Radeon in plain VGA mode.\n\n\t  If M is selected, the module will be called radeon.\n\nconfig DRM_RADEON_USERPTR\n\tbool \"Always enable userptr support\"\n\tdepends on DRM_RADEON\n\tselect MMU_NOTIFIER\n\thelp\n\t  This option selects CONFIG_MMU_NOTIFIER if it isn't already\n\t  selected to enabled full userptr support.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

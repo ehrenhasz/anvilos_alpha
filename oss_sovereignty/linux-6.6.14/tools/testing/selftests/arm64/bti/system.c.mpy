@@ -1,0 +1,9 @@
+{
+  "module_name": "system.c",
+  "hash_id": "1d540cb10da6105e749880cace0dcc30e9b0e91a9a1a500669cd9ffb6b2d21d2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/bti/system.c",
+  "human_readable_source": "\n \n\n#include \"system.h\"\n\n#include <asm/unistd.h>\n\nvoid __noreturn exit(int n)\n{\n\tsyscall(__NR_exit, n);\n\tunreachable();\n}\n\nssize_t write(int fd, const void *buf, size_t size)\n{\n\treturn syscall(__NR_write, fd, buf, size);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

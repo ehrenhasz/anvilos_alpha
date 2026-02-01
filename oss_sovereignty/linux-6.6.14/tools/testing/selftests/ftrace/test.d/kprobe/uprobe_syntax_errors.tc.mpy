@@ -1,0 +1,9 @@
+{
+  "module_name": "uprobe_syntax_errors.tc",
+  "hash_id": "342a468f6e5dc30d38402807efcf80000026bf347a65136200b8600fb0225d15",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/uprobe_syntax_errors.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Uprobe event parser error log check\n# requires: uprobe_events error_log\n\ncheck_error() { # command-with-error-pos-by-^\n    ftrace_errlog_check 'trace_uprobe' \"$1\" 'uprobe_events'\n}\n\ncheck_error 'p ^/non_exist_file:100'\t# FILE_NOT_FOUND\ncheck_error 'p ^/sys:100'\t\t# NO_REGULAR_FILE\ncheck_error 'p /bin/sh:^10a'\t\t# BAD_UPROBE_OFFS\ncheck_error 'p /bin/sh:10(^1a)'\t\t# BAD_REFCNT\ncheck_error 'p /bin/sh:10(10^'\t\t# REFCNT_OPEN_BRACE\ncheck_error 'p /bin/sh:10(10)^a'\t# BAD_REFCNT_SUFFIX\n\ncheck_error 'p /bin/sh:10 ^@+ab'\t# BAD_FILE_OFFS\ncheck_error 'p /bin/sh:10 ^@symbol'\t# SYM_ON_UPROBE\n\n# %return suffix error\nif grep -q \"place (uprobe): .*%return.*\" README; then\ncheck_error 'p /bin/sh:10^%hoge'\t# BAD_ADDR_SUFFIX\ncheck_error 'p /bin/sh:10(10)^%return'\t# BAD_REFCNT_SUFFIX\nfi\n\n# symstr is not supported by uprobe\nif grep -q \".*symstr.*\" README; then\ncheck_error 'p /bin/sh:10 $stack0:^symstr'\t# BAD_TYPE\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

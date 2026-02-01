@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0944a850db3e05e27063c56acebcf1bbeb8a2c3d4c8316ea4f0ec63651c590ee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pnp/pnpacpi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the kernel PNPACPI driver.\n#\nobj-y += pnp.o\n\npnp-y := core.o rsparser.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

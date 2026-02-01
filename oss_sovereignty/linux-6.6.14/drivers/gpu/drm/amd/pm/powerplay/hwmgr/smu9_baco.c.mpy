@@ -1,0 +1,9 @@
+{
+  "module_name": "smu9_baco.c",
+  "hash_id": "ea6b681a7ea56e2c2ec2c2e3c26e2b9dfbcb6453d0b80f1ef5562ff04e7c1de1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu9_baco.c",
+  "human_readable_source": " \n#include \"amdgpu.h\"\n#include \"soc15.h\"\n#include \"soc15_hw_ip.h\"\n#include \"vega10_ip_offset.h\"\n#include \"soc15_common.h\"\n#include \"vega10_inc.h\"\n#include \"smu9_baco.h\"\n\nint smu9_baco_get_capability(struct pp_hwmgr *hwmgr, bool *cap)\n{\n\tstruct amdgpu_device *adev = (struct amdgpu_device *)(hwmgr->adev);\n\tuint32_t reg, data;\n\n\t*cap = false;\n\tif (!phm_cap_enabled(hwmgr->platform_descriptor.platformCaps, PHM_PlatformCaps_BACO))\n\t\treturn 0;\n\n\tWREG32(0x12074, 0xFFF0003B);\n\tdata = RREG32(0x12075);\n\n\tif (data == 0x1) {\n\t\treg = RREG32_SOC15(NBIF, 0, mmRCC_BIF_STRAP0);\n\n\t\tif (reg & RCC_BIF_STRAP0__STRAP_PX_CAPABLE_MASK)\n\t\t\t*cap = true;\n\t}\n\n\treturn 0;\n}\n\nint smu9_baco_get_state(struct pp_hwmgr *hwmgr, enum BACO_STATE *state)\n{\n\tstruct amdgpu_device *adev = (struct amdgpu_device *)(hwmgr->adev);\n\tuint32_t reg;\n\n\treg = RREG32_SOC15(NBIF, 0, mmBACO_CNTL);\n\n\tif (reg & BACO_CNTL__BACO_MODE_MASK)\n\t\t \n\t\t*state = BACO_STATE_IN;\n\telse\n\t\t*state = BACO_STATE_OUT;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

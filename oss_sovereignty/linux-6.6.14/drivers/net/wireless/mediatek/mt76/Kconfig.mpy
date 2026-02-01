@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "eef3bcad692b8a25bd33084e244b33bd00f97e24ecd4edfebf620f41aa5b924e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig MT76_CORE\n\ttristate\n\tselect PAGE_POOL\n\nconfig MT76_LEDS\n\tbool\n\tdepends on MT76_CORE\n\tdepends on LEDS_CLASS=y || MT76_CORE=LEDS_CLASS\n\tdefault y\n\nconfig MT76_USB\n\ttristate\n\tdepends on MT76_CORE\n\nconfig MT76_SDIO\n\ttristate\n\tdepends on MT76_CORE\n\nconfig MT76x02_LIB\n\ttristate\n\tselect MT76_CORE\n\nconfig MT76x02_USB\n\ttristate\n\tselect MT76_USB\n\nconfig MT76_CONNAC_LIB\n\ttristate\n\tselect MT76_CORE\n\nconfig MT792x_LIB\n\ttristate\n\tselect MT76_CONNAC_LIB\n\nconfig MT792x_USB\n\ttristate\n\tselect MT76_USB\n\nsource \"drivers/net/wireless/mediatek/mt76/mt76x0/Kconfig\"\nsource \"drivers/net/wireless/mediatek/mt76/mt76x2/Kconfig\"\nsource \"drivers/net/wireless/mediatek/mt76/mt7603/Kconfig\"\nsource \"drivers/net/wireless/mediatek/mt76/mt7615/Kconfig\"\nsource \"drivers/net/wireless/mediatek/mt76/mt7915/Kconfig\"\nsource \"drivers/net/wireless/mediatek/mt76/mt7921/Kconfig\"\nsource \"drivers/net/wireless/mediatek/mt76/mt7996/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

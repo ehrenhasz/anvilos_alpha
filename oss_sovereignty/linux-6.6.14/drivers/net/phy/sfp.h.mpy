@@ -1,0 +1,9 @@
+{
+  "module_name": "sfp.h",
+  "hash_id": "abf4a43212ab4c06ea6840f8aa5a215e0f2f0178dbd68e46627a8aec248965f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/phy/sfp.h",
+  "human_readable_source": "#ifndef SFP_H\n#define SFP_H\n\n#include <linux/ethtool.h>\n#include <linux/sfp.h>\n\nstruct sfp;\n\nstruct sfp_quirk {\n\tconst char *vendor;\n\tconst char *part;\n\tvoid (*modes)(const struct sfp_eeprom_id *id, unsigned long *modes,\n\t\t      unsigned long *interfaces);\n\tvoid (*fixup)(struct sfp *sfp);\n};\n\nstruct sfp_socket_ops {\n\tvoid (*attach)(struct sfp *sfp);\n\tvoid (*detach)(struct sfp *sfp);\n\tvoid (*start)(struct sfp *sfp);\n\tvoid (*stop)(struct sfp *sfp);\n\tvoid (*set_signal_rate)(struct sfp *sfp, unsigned int rate_kbd);\n\tint (*module_info)(struct sfp *sfp, struct ethtool_modinfo *modinfo);\n\tint (*module_eeprom)(struct sfp *sfp, struct ethtool_eeprom *ee,\n\t\t\t     u8 *data);\n\tint (*module_eeprom_by_page)(struct sfp *sfp,\n\t\t\t\t     const struct ethtool_module_eeprom *page,\n\t\t\t\t     struct netlink_ext_ack *extack);\n};\n\nint sfp_add_phy(struct sfp_bus *bus, struct phy_device *phydev);\nvoid sfp_remove_phy(struct sfp_bus *bus);\nvoid sfp_link_up(struct sfp_bus *bus);\nvoid sfp_link_down(struct sfp_bus *bus);\nint sfp_module_insert(struct sfp_bus *bus, const struct sfp_eeprom_id *id,\n\t\t      const struct sfp_quirk *quirk);\nvoid sfp_module_remove(struct sfp_bus *bus);\nint sfp_module_start(struct sfp_bus *bus);\nvoid sfp_module_stop(struct sfp_bus *bus);\nstruct sfp_bus *sfp_register_socket(struct device *dev, struct sfp *sfp,\n\t\t\t\t    const struct sfp_socket_ops *ops);\nvoid sfp_unregister_socket(struct sfp_bus *bus);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

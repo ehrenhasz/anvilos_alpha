@@ -1,0 +1,9 @@
+{
+  "module_name": "instmem.h",
+  "hash_id": "c9ff3e95e9c5d67ce7e4b894008d98723b6831690cd9150a66cf1438ab9ece1e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/instmem.h",
+  "human_readable_source": " \n#ifndef __NVKM_INSTMEM_H__\n#define __NVKM_INSTMEM_H__\n#include <core/subdev.h>\nstruct nvkm_memory;\n\nstruct nvkm_instmem {\n\tconst struct nvkm_instmem_func *func;\n\tstruct nvkm_subdev subdev;\n\n\tspinlock_t lock;\n\tstruct list_head list;\n\tstruct list_head boot;\n\tu32 reserved;\n\n\t \n\tstruct mutex mutex;\n\n\tstruct nvkm_memory *vbios;\n\tstruct nvkm_ramht  *ramht;\n\tstruct nvkm_memory *ramro;\n\tstruct nvkm_memory *ramfc;\n};\n\nu32 nvkm_instmem_rd32(struct nvkm_instmem *, u32 addr);\nvoid nvkm_instmem_wr32(struct nvkm_instmem *, u32 addr, u32 data);\nint nvkm_instobj_new(struct nvkm_instmem *, u32 size, u32 align, bool zero,\n\t\t     struct nvkm_memory **);\nint nvkm_instobj_wrap(struct nvkm_device *, struct nvkm_memory *, struct nvkm_memory **);\n\nint nv04_instmem_new(struct nvkm_device *, enum nvkm_subdev_type, int, struct nvkm_instmem **);\nint nv40_instmem_new(struct nvkm_device *, enum nvkm_subdev_type, int, struct nvkm_instmem **);\nint nv50_instmem_new(struct nvkm_device *, enum nvkm_subdev_type, int, struct nvkm_instmem **);\nint gk20a_instmem_new(struct nvkm_device *, enum nvkm_subdev_type, int, struct nvkm_instmem **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

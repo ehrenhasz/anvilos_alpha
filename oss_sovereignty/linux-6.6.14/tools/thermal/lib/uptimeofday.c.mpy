@@ -1,0 +1,9 @@
+{
+  "module_name": "uptimeofday.c",
+  "hash_id": "8a6a3e469e18e12dbcfb087415dd9d66b5e28de2c945e815179a6c19fc1d5927",
+  "original_prompt": "Ingested from linux-6.6.14/tools/thermal/lib/uptimeofday.c",
+  "human_readable_source": "\n\n#include <stdio.h>\n#include <sys/time.h>\n#include <linux/sysinfo.h>\n#include \"thermal-tools.h\"\n\nstatic unsigned long __offset;\nstatic struct timeval __tv;\n\nint uptimeofday_init(void)\n{\n\tstruct sysinfo info;\n\n\tif (sysinfo(&info))\n\t\treturn -1;\n\n\tgettimeofday(&__tv, NULL);\n\n\t__offset = __tv.tv_sec - info.uptime;\n\n\treturn 0;\n}\n\nunsigned long getuptimeofday_ms(void)\n{\n\tgettimeofday(&__tv, NULL);\n\n\treturn ((__tv.tv_sec - __offset) * 1000) + (__tv.tv_usec / 1000);\n}\n\nstruct timespec msec_to_timespec(int msec)\n{\n\tstruct timespec tv = {\n\t\t.tv_sec = (msec / 1000),\n\t\t.tv_nsec = (msec % 1000) * 1000000,\n\t};\n\n\treturn tv;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

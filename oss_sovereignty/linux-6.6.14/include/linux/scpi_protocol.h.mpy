@@ -1,0 +1,9 @@
+{
+  "module_name": "scpi_protocol.h",
+  "hash_id": "056855280e7bd273c1b1668ae6ed0772180399667ac40ed4e9fdd6984640d35a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/scpi_protocol.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_SCPI_PROTOCOL_H\n#define _LINUX_SCPI_PROTOCOL_H\n\n#include <linux/types.h>\n\nstruct scpi_opp {\n\tu32 freq;\n\tu32 m_volt;\n} __packed;\n\nstruct scpi_dvfs_info {\n\tunsigned int count;\n\tunsigned int latency;  \n\tstruct scpi_opp *opps;\n};\n\nenum scpi_sensor_class {\n\tTEMPERATURE,\n\tVOLTAGE,\n\tCURRENT,\n\tPOWER,\n\tENERGY,\n};\n\nstruct scpi_sensor_info {\n\tu16 sensor_id;\n\tu8 class;\n\tu8 trigger_type;\n\tchar name[20];\n} __packed;\n\n \nstruct scpi_ops {\n\tu32 (*get_version)(void);\n\tint (*clk_get_range)(u16, unsigned long *, unsigned long *);\n\tunsigned long (*clk_get_val)(u16);\n\tint (*clk_set_val)(u16, unsigned long);\n\tint (*dvfs_get_idx)(u8);\n\tint (*dvfs_set_idx)(u8, u8);\n\tstruct scpi_dvfs_info *(*dvfs_get_info)(u8);\n\tint (*device_domain_id)(struct device *);\n\tint (*get_transition_latency)(struct device *);\n\tint (*add_opps_to_device)(struct device *);\n\tint (*sensor_get_capability)(u16 *sensors);\n\tint (*sensor_get_info)(u16 sensor_id, struct scpi_sensor_info *);\n\tint (*sensor_get_value)(u16, u64 *);\n\tint (*device_get_power_state)(u16);\n\tint (*device_set_power_state)(u16, u8);\n};\n\n#if IS_REACHABLE(CONFIG_ARM_SCPI_PROTOCOL)\nstruct scpi_ops *get_scpi_ops(void);\n#else\nstatic inline struct scpi_ops *get_scpi_ops(void) { return NULL; }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

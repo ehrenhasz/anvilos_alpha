@@ -1,0 +1,9 @@
+{
+  "module_name": "eth-ep93xx.h",
+  "hash_id": "530b3b4002a68591d46bc571c4798c5541936f13eee0576dce071c129c9b277a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/eth-ep93xx.h",
+  "human_readable_source": " \n#ifndef _LINUX_PLATFORM_DATA_ETH_EP93XX\n#define _LINUX_PLATFORM_DATA_ETH_EP93XX\n\nstruct ep93xx_eth_data {\n\tunsigned char\tdev_addr[6];\n\tunsigned char\tphy_id;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

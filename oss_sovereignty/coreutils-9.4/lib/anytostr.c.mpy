@@ -1,0 +1,9 @@
+{
+  "module_name": "anytostr.c",
+  "hash_id": "278f5c50b32bc4193c857ccc4d8f2580629e5da90d71f03a659fcb0273d7cef6",
+  "original_prompt": "Ingested from coreutils-9.4/lib/anytostr.c",
+  "human_readable_source": " \n\n \n#if (__GNUC__ == 4 && 3 <= __GNUC_MINOR__) || 4 < __GNUC__\n# pragma GCC diagnostic ignored \"-Wtype-limits\"\n#elif defined __clang__\n# pragma clang diagnostic ignored \"-Wtautological-compare\"\n#endif\n\n#include <config.h>\n\n#include \"inttostr.h\"\n\n \n\n_GL_ATTRIBUTE_NODISCARD char *\nanytostr (inttype i, char *buf)\n{\n  char *p = buf + INT_STRLEN_BOUND (inttype);\n  *p = 0;\n\n  if (i < 0)\n    {\n      do\n        *--p = '0' - i % 10;\n      while ((i /= 10) != 0);\n\n      *--p = '-';\n    }\n  else\n    {\n      do\n        *--p = '0' + i % 10;\n      while ((i /= 10) != 0);\n    }\n\n  return p;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

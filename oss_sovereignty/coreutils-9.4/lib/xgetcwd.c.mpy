@@ -1,0 +1,9 @@
+{
+  "module_name": "xgetcwd.c",
+  "hash_id": "b2d5f50e546aa00fdcc3dc76429a81923d74867b4fc6b7b31a6ff61f184e1014",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xgetcwd.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"xgetcwd.h\"\n\n#include <errno.h>\n#include <unistd.h>\n\n#include \"xalloc.h\"\n\n \n\nchar *\nxgetcwd (void)\n{\n  char *cwd = getcwd (NULL, 0);\n  if (! cwd && errno == ENOMEM)\n    xalloc_die ();\n  return cwd;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

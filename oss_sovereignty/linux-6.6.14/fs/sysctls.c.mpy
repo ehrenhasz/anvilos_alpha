@@ -1,0 +1,9 @@
+{
+  "module_name": "sysctls.c",
+  "hash_id": "51755f3da5a677f217cf58ce49af7d810e693fc3f80b06bbc6de6ab2f5b337ff",
+  "original_prompt": "Ingested from linux-6.6.14/fs/sysctls.c",
+  "human_readable_source": "\n \n#include <linux/init.h>\n#include <linux/sysctl.h>\n\nstatic struct ctl_table fs_shared_sysctls[] = {\n\t{\n\t\t.procname\t= \"overflowuid\",\n\t\t.data\t\t= &fs_overflowuid,\n\t\t.maxlen\t\t= sizeof(int),\n\t\t.mode\t\t= 0644,\n\t\t.proc_handler\t= proc_dointvec_minmax,\n\t\t.extra1\t\t= SYSCTL_ZERO,\n\t\t.extra2\t\t= SYSCTL_MAXOLDUID,\n\t},\n\t{\n\t\t.procname\t= \"overflowgid\",\n\t\t.data\t\t= &fs_overflowgid,\n\t\t.maxlen\t\t= sizeof(int),\n\t\t.mode\t\t= 0644,\n\t\t.proc_handler\t= proc_dointvec_minmax,\n\t\t.extra1\t\t= SYSCTL_ZERO,\n\t\t.extra2\t\t= SYSCTL_MAXOLDUID,\n\t},\n\t{ }\n};\n\nstatic int __init init_fs_sysctls(void)\n{\n\tregister_sysctl_init(\"fs\", fs_shared_sysctls);\n\treturn 0;\n}\n\nearly_initcall(init_fs_sysctls);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

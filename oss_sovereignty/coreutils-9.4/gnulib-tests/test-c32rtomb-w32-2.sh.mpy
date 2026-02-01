@@ -1,0 +1,9 @@
+{
+  "module_name": "test-c32rtomb-w32-2.sh",
+  "hash_id": "048446cdff0d18398c43275a2b341a1fbe10d22333eb213ecfb1c978ed09fc5f",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-c32rtomb-w32-2.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a CP1252 locale.\n${CHECKER} ./test-c32rtomb-w32${EXEEXT} French_France 1252\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

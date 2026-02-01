@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-iattr-vfsid.m4",
+  "hash_id": "a838c0b7504e2e8d25291e2d2aaa44fcab4bc2cf3b0769d2069f3041bc983884",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-iattr-vfsid.m4",
+  "human_readable_source": "dnl #\ndnl # 6.0 API change\ndnl # struct iattr has two unions for the uid and gid\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_IATTR_VFSID], [\n\tZFS_LINUX_TEST_SRC([iattr_vfsid], [\n\t\t#include <linux/fs.h>\n\t], [\n\t\tstruct iattr ia;\n\t\tia.ia_vfsuid = (vfsuid_t){0};\n\t\tia.ia_vfsgid = (vfsgid_t){0};\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_IATTR_VFSID], [\n\tAC_MSG_CHECKING([whether iattr->ia_vfsuid and iattr->ia_vfsgid exist])\n\tZFS_LINUX_TEST_RESULT([iattr_vfsid], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_IATTR_VFSID, 1,\n\t\t    [iattr->ia_vfsuid and iattr->ia_vfsgid exist])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

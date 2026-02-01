@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_sc_param.h",
+  "hash_id": "e4893e18b4d85922648404b2efff23d2cf13dab14eb605a3e5f8f2758a089a82",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/sc/sc_1.0/ia_css_sc_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_SC_PARAM_H\n#define __IA_CSS_SC_PARAM_H\n\n#include \"type_support.h\"\n\n \nstruct sh_css_isp_sc_params {\n\ts32 gain_shift;\n};\n\n \n#define SH_CSS_SC_INTERPED_GAIN_HOR_SLICE_TIMES   8\n\nstruct sh_css_isp_sc_isp_config {\n\tu32 interped_gain_hor_slice_bqs[SH_CSS_SC_INTERPED_GAIN_HOR_SLICE_TIMES];\n\tu32 internal_frame_origin_y_bqs_on_sctbl;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

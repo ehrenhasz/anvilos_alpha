@@ -1,0 +1,9 @@
+{
+  "module_name": "mantis_vp2040.h",
+  "hash_id": "61904baab34e6e052a509947e350f050cb052463cf3c0928f07cc9a1b9730907",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/mantis/mantis_vp2040.h",
+  "human_readable_source": " \n \n\n#ifndef __MANTIS_VP2040_H\n#define __MANTIS_VP2040_H\n\n#include \"mantis_common.h\"\n\n#define MANTIS_VP_2040_DVB_C\t0x0043\n#define CINERGY_C\t\t0x1178\n#define CABLESTAR_HD2\t\t0x0002\n\nextern struct mantis_hwconfig vp2040_config;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

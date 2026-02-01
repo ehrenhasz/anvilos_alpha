@@ -1,0 +1,9 @@
+{
+  "module_name": "csv_collection.py",
+  "hash_id": "c9cb5c9997b22ca78fe2ab4aebe300f8ac2313e7241647edd6bcc964a580a1fc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/ni_routing/tools/csv_collection.py",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n\nimport os, csv, glob\n\nclass CSVCollection(dict):\n  delimiter=';'\n  quotechar='\"'\n  source_column_name = 'Sources / Destinations'\n\n  \"\"\"\n  This class is a dictionary representation of the collection of sheets that\n  exist in a given .ODS file.\n  \"\"\"\n  def __init__(self, pattern, skip_commented_lines=True, strip_lines=True):\n    super(CSVCollection, self).__init__()\n    self.pattern = pattern\n    C = '#' if skip_commented_lines else 'blahblahblah'\n\n    if strip_lines:\n      strip = lambda s:s.strip()\n    else:\n      strip = lambda s:s\n\n    # load all CSV files\n    key = self.source_column_name\n    for fname in glob.glob(pattern):\n      with open(fname) as F:\n        dR = csv.DictReader(F, delimiter=self.delimiter,\n                            quotechar=self.quotechar)\n        name = os.path.basename(fname).partition('.')[0]\n        D = {\n          r[key]:{f:strip(c) for f,c in r.items()\n                  if f != key and f[:1] not in ['', C] and\n                     strip(c)[:1] not in ['', C]}\n          for r in dR if r[key][:1] not in ['', C]\n        }\n        # now, go back through and eliminate all empty dictionaries\n        D = {k:v for k,v in D.items() if v}\n        self[name] = D\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

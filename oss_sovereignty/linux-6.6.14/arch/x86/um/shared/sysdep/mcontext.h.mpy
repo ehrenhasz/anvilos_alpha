@@ -1,0 +1,9 @@
+{
+  "module_name": "mcontext.h",
+  "hash_id": "ea35f255f075777b2e1ecc22aa4e71c06022bfac2648604ab821e3c5bf6c2932",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/shared/sysdep/mcontext.h",
+  "human_readable_source": " \n\n#ifndef __SYS_SIGCONTEXT_X86_H\n#define __SYS_SIGCONTEXT_X86_H\n\nextern void get_regs_from_mc(struct uml_pt_regs *, mcontext_t *);\n\n#ifdef __i386__\n\n#define GET_FAULTINFO_FROM_MC(fi, mc) \\\n\t{ \\\n\t\t(fi).cr2 = (mc)->cr2; \\\n\t\t(fi).error_code = (mc)->gregs[REG_ERR]; \\\n\t\t(fi).trap_no = (mc)->gregs[REG_TRAPNO]; \\\n\t}\n\n#else\n\n#define GET_FAULTINFO_FROM_MC(fi, mc) \\\n\t{ \\\n\t\t(fi).cr2 = (mc)->gregs[REG_CR2]; \\\n\t\t(fi).error_code = (mc)->gregs[REG_ERR]; \\\n\t\t(fi).trap_no = (mc)->gregs[REG_TRAPNO]; \\\n\t}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

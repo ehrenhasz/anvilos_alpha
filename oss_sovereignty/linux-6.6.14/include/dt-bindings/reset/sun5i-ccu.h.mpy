@@ -1,0 +1,9 @@
+{
+  "module_name": "sun5i-ccu.h",
+  "hash_id": "af25c50955a22547a6af9cbac4180086f611943336ef020348ef46c1ad4998d8",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/sun5i-ccu.h",
+  "human_readable_source": " \n \n\n#ifndef _RST_SUN5I_H_\n#define _RST_SUN5I_H_\n\n#define RST_USB_PHY0\t0\n#define RST_USB_PHY1\t1\n#define RST_GPS\t\t2\n#define RST_DE_BE\t3\n#define RST_DE_FE\t4\n#define RST_TVE\t\t5\n#define RST_LCD\t\t6\n#define RST_CSI\t\t7\n#define RST_VE\t\t8\n#define RST_GPU\t\t9\n#define RST_IEP\t\t10\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

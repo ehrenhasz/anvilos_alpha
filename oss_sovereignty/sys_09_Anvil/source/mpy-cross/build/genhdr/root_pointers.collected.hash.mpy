@@ -1,0 +1,9 @@
+{
+  "module_name": "root_pointers.collected.hash",
+  "hash_id": "b3d449551a4908bad37fbeb5a2017aadec8e4bf519c89087759ef793c9e1640c",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/root_pointers.collected.hash",
+  "human_readable_source": "bb9685f953fe7fce5ac781dcc6b2b397",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

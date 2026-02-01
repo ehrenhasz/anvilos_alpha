@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "97f4657949eb397367acb86abf3fdbae3e07eedbd9b055dd749cfecb21d92b6e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig TEGRA_HOST1X_CONTEXT_BUS\n\tbool\n\nconfig TEGRA_HOST1X\n\ttristate \"NVIDIA Tegra host1x driver\"\n\tdepends on ARCH_TEGRA || COMPILE_TEST\n\tselect DMA_SHARED_BUFFER\n\tselect TEGRA_HOST1X_CONTEXT_BUS\n\tselect IOMMU_IOVA\n\thelp\n\t  Driver for the NVIDIA Tegra host1x hardware.\n\n\t  The Tegra host1x module is the DMA engine for register access to\n\t  Tegra's graphics- and multimedia-related modules. The modules served\n\t  by host1x are referred to as clients. host1x includes some other\n\t  functionality, such as synchronization.\n\nif TEGRA_HOST1X\n\nconfig TEGRA_HOST1X_FIREWALL\n\tbool \"Enable HOST1X security firewall\"\n\tdefault y\n\thelp\n\t  Say yes if kernel should protect command streams from tampering.\n\n\t  If unsure, choose Y.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

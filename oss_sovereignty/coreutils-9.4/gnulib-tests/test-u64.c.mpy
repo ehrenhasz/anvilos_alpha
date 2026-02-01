@@ -1,0 +1,9 @@
+{
+  "module_name": "test-u64.c",
+  "hash_id": "baf2a6923c820b25c14df6449d779160527f9130b0474b8b8892f86c684ba8fd",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-u64.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <u64.h>\n\nint\nmain (void)\n{\n  u64 i = u64init (42, 4711);\n  u64 j, k, l;\n\n  j = u64hilo (42, 4711);\n\n  if (u64lt (i, j) || u64lt (j, i))\n    return 1;\n\n  i = u64hilo (0, 42);\n  j = u64hilo (0, 43);\n\n  if (!u64lt (i, j))\n    return 1;\n\n  k = u64plus (i, j);\n  l = u64hilo (0, 42 + 43);\n\n  if (u64lt (k, l) || u64lt (l, k))\n    return 1;\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "closeout.c",
+  "hash_id": "bd72c0cb0ee2dcd2f4d5ee0225db2784f975153a21d49a4c49fdb18a295c4d4a",
+  "original_prompt": "Ingested from coreutils-9.4/lib/closeout.c",
+  "human_readable_source": " \nvoid\nclose_stdout_set_file_name (const char *file)\n{\n  file_name = file;\n}\n\nstatic bool ignore_EPIPE  ;\n\n \n\nvoid\nclose_stdout_set_ignore_EPIPE (bool ignore)\n{\n  ignore_EPIPE = ignore;\n}\n\n \n\nvoid\nclose_stdout (void)\n{\n  if (close_stream (stdout) != 0\n      && !(ignore_EPIPE && errno == EPIPE))\n    {\n      char const *write_error = _(\"write error\");\n      if (file_name)\n        error (0, errno, \"%s: %s\", quotearg_colon (file_name),\n               write_error);\n      else\n        error (0, errno, \"%s\", write_error);\n\n      _exit (exit_failure);\n    }\n\n   \n  if (!SANITIZE_ADDRESS && close_stream (stderr) != 0)\n    _exit (exit_failure);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

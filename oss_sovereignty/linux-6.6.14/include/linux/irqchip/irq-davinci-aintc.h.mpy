@@ -1,0 +1,9 @@
+{
+  "module_name": "irq-davinci-aintc.h",
+  "hash_id": "a51ce021f411f3178d5375d5d6c81495e39f445c25bd9cef54044f7cb7802186",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/irqchip/irq-davinci-aintc.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_IRQ_DAVINCI_AINTC_\n#define _LINUX_IRQ_DAVINCI_AINTC_\n\n#include <linux/ioport.h>\n\n \nstruct davinci_aintc_config {\n\tstruct resource reg;\n\tunsigned int num_irqs;\n\tu8 *prios;\n};\n\nvoid davinci_aintc_init(const struct davinci_aintc_config *config);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

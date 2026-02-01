@@ -1,0 +1,9 @@
+{
+  "module_name": "phy.h",
+  "hash_id": "ca6f55d40d3f5a46bc3edd1bd878d0ed680e4b5dff62847fa09d29bc15cce910",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/phy.h",
+  "human_readable_source": " \n \n\n#include \"../rtl8192ce/phy.h\"\n\nvoid rtl92cu_bb_block_on(struct ieee80211_hw *hw);\nbool rtl8192_phy_check_is_legal_rfpath(struct ieee80211_hw *hw, u32 rfpath);\nvoid rtl92c_phy_set_io(struct ieee80211_hw *hw);\nbool _rtl92cu_phy_config_mac_with_headerfile(struct ieee80211_hw *hw);\nbool rtl92cu_phy_bb_config(struct ieee80211_hw *hw);\nu32 rtl92cu_phy_query_rf_reg(struct ieee80211_hw *hw,\n\t\t\t     enum radio_path rfpath, u32 regaddr, u32 bitmask);\nvoid rtl92cu_phy_set_rf_reg(struct ieee80211_hw *hw,\n\t\t\t    enum radio_path rfpath,\n\t\t\t    u32 regaddr, u32 bitmask, u32 data);\nbool rtl92cu_phy_mac_config(struct ieee80211_hw *hw);\nbool _rtl92cu_phy_config_bb_with_pgheaderfile(struct ieee80211_hw *hw,\n\t\t\t\t\t      u8 configtype);\nvoid _rtl92cu_phy_lc_calibrate(struct ieee80211_hw *hw, bool is2t);\nbool _rtl92cu_phy_config_bb_with_headerfile(struct ieee80211_hw *hw,\n\t\t\t\t\t    u8 configtype);\nvoid rtl92cu_phy_set_bw_mode_callback(struct ieee80211_hw *hw);\nbool rtl92cu_phy_set_rf_power_state(struct ieee80211_hw *hw,\n\t\t\t\t    enum rf_pwrstate rfpwr_state);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

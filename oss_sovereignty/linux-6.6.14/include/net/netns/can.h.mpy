@@ -1,0 +1,9 @@
+{
+  "module_name": "can.h",
+  "hash_id": "5187614868e5110ba9c54d4df2221f106a093c2e6a7d3b1b44a99ff1e3ff9a25",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netns/can.h",
+  "human_readable_source": " \n \n\n#ifndef __NETNS_CAN_H__\n#define __NETNS_CAN_H__\n\n#include <linux/spinlock.h>\n#include <linux/timer.h>\n\nstruct can_dev_rcv_lists;\nstruct can_pkg_stats;\nstruct can_rcv_lists_stats;\n\nstruct netns_can {\n#if IS_ENABLED(CONFIG_PROC_FS)\n\tstruct proc_dir_entry *proc_dir;\n\tstruct proc_dir_entry *pde_stats;\n\tstruct proc_dir_entry *pde_reset_stats;\n\tstruct proc_dir_entry *pde_rcvlist_all;\n\tstruct proc_dir_entry *pde_rcvlist_fil;\n\tstruct proc_dir_entry *pde_rcvlist_inv;\n\tstruct proc_dir_entry *pde_rcvlist_sff;\n\tstruct proc_dir_entry *pde_rcvlist_eff;\n\tstruct proc_dir_entry *pde_rcvlist_err;\n\tstruct proc_dir_entry *bcmproc_dir;\n#endif\n\n\t \n\tstruct can_dev_rcv_lists *rx_alldev_list;\n\tspinlock_t rcvlists_lock;\n\tstruct timer_list stattimer;  \n\tstruct can_pkg_stats *pkg_stats;\n\tstruct can_rcv_lists_stats *rcv_lists_stats;\n\n\t \n\tstruct hlist_head cgw_list;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cpcihp_zt5550.h",
+  "hash_id": "51ed8201fc284f103dc6eaeeee855bd73b56c6198942078b1e936e411e0ad029",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/hotplug/cpcihp_zt5550.h",
+  "human_readable_source": " \n \n\n#ifndef _CPCIHP_ZT5550_H\n#define _CPCIHP_ZT5550_H\n\n \n#define CSR_HCINDEX\t\t0x00\n#define CSR_HCDATA\t\t0x04\n#define CSR_INTSTAT\t\t0x08\n#define CSR_INTMASK\t\t0x09\n#define CSR_CNT0CMD\t\t0x0C\n#define CSR_CNT1CMD\t\t0x0E\n#define CSR_CNT0\t\t0x10\n#define CSR_CNT1\t\t0x14\n\n \n#define CNT0_INT_MASK\t\t0x01\n#define CNT1_INT_MASK\t\t0x02\n#define ENUM_INT_MASK\t\t0x04\n#define ALL_DIRECT_INTS_MASK\t0x07\n\n \n#define HC_INT_MASK_REG\t\t0x04\n#define HC_STATUS_REG\t\t0x08\n#define HC_CMD_REG\t\t0x0C\n#define ARB_CONFIG_GNT_REG\t0x10\n#define ARB_CONFIG_CFG_REG\t0x12\n#define ARB_CONFIG_REG\t\t0x10\n#define ISOL_CONFIG_REG\t\t0x18\n#define FAULT_STATUS_REG\t0x20\n#define FAULT_CONFIG_REG\t0x24\n#define WD_CONFIG_REG\t\t0x2C\n#define HC_DIAG_REG\t\t0x30\n#define SERIAL_COMM_REG\t\t0x34\n#define SERIAL_OUT_REG\t\t0x38\n#define SERIAL_IN_REG\t\t0x3C\n\n \n#define SERIAL_INT_MASK\t\t0x01\n#define FAULT_INT_MASK\t\t0x02\n#define HCF_INT_MASK\t\t0x04\n#define ALL_INDEXED_INTS_MASK\t0x07\n\n \n#define ENUM_PORT\t0xE1\n \n#define ENUM_MASK\t0x40\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

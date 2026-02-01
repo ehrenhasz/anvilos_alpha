@@ -1,0 +1,9 @@
+{
+  "module_name": "bench-sha512.c",
+  "hash_id": "ddfb3553b48ebc2c515c77b3e49bb9186f2ead87ac2059163ea4fc55e5124e2e",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/bench-sha512.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"sha512.h\"\n\n#define FUNC sha512_buffer\n#include \"bench-digest.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

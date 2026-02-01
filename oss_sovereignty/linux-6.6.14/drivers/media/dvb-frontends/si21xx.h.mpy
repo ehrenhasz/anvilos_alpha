@@ -1,0 +1,9 @@
+{
+  "module_name": "si21xx.h",
+  "hash_id": "ea057910605ce8420c63ff79cd1856fccd447c2be4aea9ef51499aa7c1ae06d4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/si21xx.h",
+  "human_readable_source": " \n#ifndef SI21XX_H\n#define SI21XX_H\n\n#include <linux/dvb/frontend.h>\n#include <media/dvb_frontend.h>\n\nstruct si21xx_config {\n\t \n\tu8 demod_address;\n\n\t \n\tint min_delay_ms;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_SI21XX)\nextern struct dvb_frontend *si21xx_attach(const struct si21xx_config *config,\n\t\t\t\t\t\tstruct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *si21xx_attach(\n\t\tconst struct si21xx_config *config, struct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\nstatic inline int si21xx_writeregister(struct dvb_frontend *fe, u8 reg, u8 val)\n{\n\tint r = 0;\n\tu8 buf[] = {reg, val};\n\tif (fe->ops.write)\n\t\tr = fe->ops.write(fe, buf, 2);\n\treturn r;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

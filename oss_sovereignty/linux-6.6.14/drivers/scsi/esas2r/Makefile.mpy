@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "15cf7100f5419fe0bbf4b1465d3f8d2de5664ca578ed6092e7e623a5ea6a4827",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/esas2r/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SCSI_ESAS2R)\t+= esas2r.o\n\nesas2r-objs := esas2r_log.o esas2r_disc.o esas2r_flash.o esas2r_init.o \\\n\t esas2r_int.o esas2r_io.o esas2r_ioctl.o esas2r_targdb.o   \\\n\t esas2r_vda.o esas2r_main.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

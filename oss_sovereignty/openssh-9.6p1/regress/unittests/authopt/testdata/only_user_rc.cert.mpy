@@ -1,0 +1,9 @@
+{
+  "module_name": "only_user_rc.cert",
+  "hash_id": "218666fb728d6b60d2c8b2aa3a0eb114b7e0a67ee664532f7341680bb892c872",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/authopt/testdata/only_user_rc.cert",
+  "human_readable_source": "ssh-ed25519-cert-v01@openssh.com AAAAIHNzaC1lZDI1NTE5LWNlcnQtdjAxQG9wZW5zc2guY29tAAAAIJwsRZQ7kx4A8AQ0q/G/3i6sHM48kr4TxJtTcyy3lZAPAAAAICeF4LbtRqwIRhewXifa5PKpbSU9P/K8CzeVYj8J/iBoAAAAAAAAAAEAAAABAAAABHVzZXIAAAAIAAAABHVzZXIAAAAANouDYAAAAAA4a2VgAAAAAAAAABYAAAAOcGVybWl0LXVzZXItcmMAAAAAAAAAAAAAADMAAAALc3NoLWVkMjU1MTkAAAAgKFWCzCzQTh9UkoHphbgwaa86Q16Kern0UjqOr7Q+Jk8AAABTAAAAC3NzaC1lZDI1NTE5AAAAQDhgEXsvoHr21XrxmiZq/sIjWeYapp11XvEVkkTBPVhBnPwtrrUeJbPmGs3gmJkQdv8BYajYpT7TXEX8GvEeLwU= user key\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

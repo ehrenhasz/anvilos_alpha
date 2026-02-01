@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "78b5e42989c6b359fd9b39c7038dc4776fe8705b3c0b225858ef2e326dd1c814",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/platform/reset/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nvfio-platform-calxedaxgmac-y := vfio_platform_calxedaxgmac.o\nvfio-platform-amdxgbe-y := vfio_platform_amdxgbe.o\n\nobj-$(CONFIG_VFIO_PLATFORM_CALXEDAXGMAC_RESET) += vfio-platform-calxedaxgmac.o\nobj-$(CONFIG_VFIO_PLATFORM_AMDXGBE_RESET) += vfio-platform-amdxgbe.o\nobj-$(CONFIG_VFIO_PLATFORM_BCMFLEXRM_RESET) += vfio_platform_bcmflexrm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

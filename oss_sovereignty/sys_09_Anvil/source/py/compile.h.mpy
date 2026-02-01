@@ -1,0 +1,9 @@
+{
+  "module_name": "compile.h",
+  "hash_id": "4d810dc2653c4cba6602c424717ae6b228d756a554920fc7850b5404054ee9d7",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/compile.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_COMPILE_H\n#define MICROPY_INCLUDED_PY_COMPILE_H\n\n#include \"py/lexer.h\"\n#include \"py/parse.h\"\n#include \"py/emitglue.h\"\n\n#if MICROPY_COMP_ALLOW_TOP_LEVEL_AWAIT\n\nextern bool mp_compile_allow_top_level_await;\n#endif\n\n\n\n\nmp_obj_t mp_compile(mp_parse_tree_t *parse_tree, qstr source_file, bool is_repl);\n\n#if MICROPY_PERSISTENT_CODE_SAVE\n\nvoid mp_compile_to_raw_code(mp_parse_tree_t *parse_tree, qstr source_file, bool is_repl, mp_compiled_module_t *cm);\n#endif\n\n\nmp_obj_t mp_parse_compile_execute(mp_lexer_t *lex, mp_parse_input_kind_t parse_input_kind, mp_obj_dict_t *globals, mp_obj_dict_t *locals);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

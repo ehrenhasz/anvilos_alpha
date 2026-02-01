@@ -1,0 +1,9 @@
+{
+  "module_name": "color_config.c",
+  "hash_id": "b24064fdbbeb76af3d5b201d21442bfcfb92ceb85284248fe67c1bfb93e04c80",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/color_config.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <subcmd/pager.h>\n#include <string.h>\n#include \"config.h\"\n#include <stdlib.h>\n#include <stdio.h>\n#include \"color.h\"\n#include <math.h>\n#include <unistd.h>\n\nint perf_config_colorbool(const char *var, const char *value, int stdout_is_tty)\n{\n\tif (value) {\n\t\tif (!strcasecmp(value, \"never\"))\n\t\t\treturn 0;\n\t\tif (!strcasecmp(value, \"always\"))\n\t\t\treturn 1;\n\t\tif (!strcasecmp(value, \"auto\"))\n\t\t\tgoto auto_color;\n\t}\n\n\t \n\tif (!perf_config_bool(var, value))\n\t\treturn 0;\n\n\t \n auto_color:\n\tif (stdout_is_tty < 0)\n\t\tstdout_is_tty = isatty(1);\n\tif (stdout_is_tty || pager_in_use()) {\n\t\tchar *term = getenv(\"TERM\");\n\t\tif (term && strcmp(term, \"dumb\"))\n\t\t\treturn 1;\n\t}\n\treturn 0;\n}\n\nint perf_color_default_config(const char *var, const char *value,\n\t\t\t      void *cb __maybe_unused)\n{\n\tif (!strcmp(var, \"color.ui\")) {\n\t\tperf_use_color_default = perf_config_colorbool(var, value, -1);\n\t\treturn 0;\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

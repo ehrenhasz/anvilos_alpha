@@ -1,0 +1,9 @@
+{
+  "module_name": "test-wcrtomb-w32-8.sh",
+  "hash_id": "68d4ddcdd6e347d574eb2013395aa4b7d72269d4c3f068383cb3e43ab58d50c4",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-wcrtomb-w32-8.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a GB18030 locale.\n${CHECKER} ./test-wcrtomb-w32${EXEEXT} Chinese_China 54936\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

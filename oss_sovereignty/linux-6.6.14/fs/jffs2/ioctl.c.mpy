@@ -1,0 +1,9 @@
+{
+  "module_name": "ioctl.c",
+  "hash_id": "524ec2a72bb347343e9b95286dff88f78a8714e45eb35335a0eb2e9b4f8f530d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/jffs2/ioctl.c",
+  "human_readable_source": " \n\n#include <linux/fs.h>\n#include \"nodelist.h\"\n\nlong jffs2_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)\n{\n\t \n\treturn -ENOTTY;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

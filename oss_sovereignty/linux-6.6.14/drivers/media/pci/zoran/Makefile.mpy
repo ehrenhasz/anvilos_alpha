@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "297fda6bdb81e9defe1207158df83c4daa4cbeb36ec9877ef2a4667c4f6b54ad",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/zoran/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nzr36067-objs\t:=\tzoran_device.o \\\n\t\t\tzoran_driver.o zoran_card.o videocodec.o\n\nobj-$(CONFIG_VIDEO_ZORAN) += zr36067.o\nzr36067-$(CONFIG_VIDEO_ZORAN_DC30) += zr36050.o zr36016.o\nzr36067-$(CONFIG_VIDEO_ZORAN_ZR36060) += zr36060.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

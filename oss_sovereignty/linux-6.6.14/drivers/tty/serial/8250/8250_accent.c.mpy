@@ -1,0 +1,9 @@
+{
+  "module_name": "8250_accent.c",
+  "hash_id": "27725d09fb0ab300b9fad099999d583beafc40de5572c9ddec23a01e688a8f04",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/serial/8250/8250_accent.c",
+  "human_readable_source": "\n \n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/serial_8250.h>\n\n#include \"8250.h\"\n\nstatic struct plat_serial8250_port accent_data[] = {\n\tSERIAL8250_PORT(0x330, 4),\n\tSERIAL8250_PORT(0x338, 4),\n\t{ },\n};\n\nstatic struct platform_device accent_device = {\n\t.name\t\t\t= \"serial8250\",\n\t.id\t\t\t= PLAT8250_DEV_ACCENT,\n\t.dev\t\t\t= {\n\t\t.platform_data\t= accent_data,\n\t},\n};\n\nstatic int __init accent_init(void)\n{\n\treturn platform_device_register(&accent_device);\n}\n\nmodule_init(accent_init);\n\nMODULE_AUTHOR(\"Russell King\");\nMODULE_DESCRIPTION(\"8250 serial probe module for Accent Async cards\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gp100.c",
+  "hash_id": "63c9c85885b06ef6b5c06268b8e19a13b6a5f73cabfbc0b1be76158b782b5d7d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/gp100.c",
+  "human_readable_source": " \n#include \"mem.h\"\n#include \"vmm.h\"\n\n#include <core/option.h>\n\n#include <nvif/class.h>\n\nstatic const struct nvkm_mmu_func\ngp100_mmu = {\n\t.dma_bits = 47,\n\t.mmu = {{ -1, -1, NVIF_CLASS_MMU_GF100}},\n\t.mem = {{ -1,  0, NVIF_CLASS_MEM_GF100}, gf100_mem_new, gf100_mem_map },\n\t.vmm = {{ -1,  0, NVIF_CLASS_VMM_GP100}, gp100_vmm_new },\n\t.kind = gm200_mmu_kind,\n\t.kind_sys = true,\n};\n\nint\ngp100_mmu_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_mmu **pmmu)\n{\n\tif (!nvkm_boolopt(device->cfgopt, \"GP100MmuLayout\", true))\n\t\treturn gm200_mmu_new(device, type, inst, pmmu);\n\treturn nvkm_mmu_new_(&gp100_mmu, device, type, inst, pmmu);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

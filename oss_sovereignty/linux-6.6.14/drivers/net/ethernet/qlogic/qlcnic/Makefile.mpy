@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0983514e2ef9315420a90285e288f23753b396fc4304f199b4d976724c5217d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qlogic/qlcnic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Qlogic 1G/10G Ethernet Driver for CNA devices\n#\n\nobj-$(CONFIG_QLCNIC) := qlcnic.o\n\nqlcnic-y := qlcnic_hw.o qlcnic_main.o qlcnic_init.o \\\n\tqlcnic_ethtool.o qlcnic_ctx.o qlcnic_io.o \\\n\tqlcnic_sysfs.o qlcnic_minidump.o qlcnic_83xx_hw.o \\\n\tqlcnic_83xx_init.o qlcnic_83xx_vnic.o \\\n\tqlcnic_sriov_common.o\n\nqlcnic-$(CONFIG_QLCNIC_SRIOV) += qlcnic_sriov_pf.o\n\nqlcnic-$(CONFIG_QLCNIC_DCB) += qlcnic_dcb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ar9003_aic.h",
+  "hash_id": "6c5e634e612a22538971ca836a97b6d3c682cdc522dea43f4ed7c473fa7ac361",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath9k/ar9003_aic.h",
+  "human_readable_source": " \n\n#ifndef AR9003_AIC_H\n#define AR9003_AIC_H\n\n#define ATH_AIC_MAX_COM_ATT_DB_TABLE    6\n#define ATH_AIC_MAX_AIC_LIN_TABLE       69\n#define ATH_AIC_MIN_ROT_DIR_ATT_DB      0\n#define ATH_AIC_MIN_ROT_QUAD_ATT_DB     0\n#define ATH_AIC_MAX_ROT_DIR_ATT_DB      37\n#define ATH_AIC_MAX_ROT_QUAD_ATT_DB     37\n#define ATH_AIC_SRAM_AUTO_INCREMENT     0x80000000\n#define ATH_AIC_SRAM_GAIN_TABLE_OFFSET  0x280\n#define ATH_AIC_SRAM_CAL_OFFSET         0x140\n#define ATH_AIC_SRAM_OFFSET             0x00\n#define ATH_AIC_MEAS_MAG_THRESH         20\n#define ATH_AIC_BT_JUPITER_CTRL         0x66820\n#define ATH_AIC_BT_AIC_ENABLE           0x02\n\nenum aic_cal_state {\n\tAIC_CAL_STATE_IDLE = 0,\n\tAIC_CAL_STATE_STARTED,\n\tAIC_CAL_STATE_DONE,\n\tAIC_CAL_STATE_ERROR\n};\n\nstruct ath_aic_sram_info {\n\tbool valid:1;\n\tbool vga_quad_sign:1;\n\tbool vga_dir_sign:1;\n\tu8 rot_quad_att_db;\n\tu8 rot_dir_att_db;\n\tu8 com_att_6db;\n};\n\nstruct ath_aic_out_info {\n\tint16_t dir_path_gain_lin;\n\tint16_t quad_path_gain_lin;\n};\n\nu8 ar9003_aic_calibration(struct ath_hw *ah);\nu8 ar9003_aic_start_normal(struct ath_hw *ah);\nu8 ar9003_aic_cal_reset(struct ath_hw *ah);\nu8 ar9003_aic_calibration_single(struct ath_hw *ah);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

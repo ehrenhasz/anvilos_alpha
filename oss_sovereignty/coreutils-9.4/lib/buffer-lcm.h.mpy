@@ -1,0 +1,9 @@
+{
+  "module_name": "buffer-lcm.h",
+  "hash_id": "428578f90051829a7153f5efb4052beafc842f37574fc60931bb47e9d8ab33bb",
+  "original_prompt": "Ingested from coreutils-9.4/lib/buffer-lcm.h",
+  "human_readable_source": "#include <stddef.h>\nsize_t buffer_lcm (size_t, size_t, size_t) _GL_ATTRIBUTE_CONST;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

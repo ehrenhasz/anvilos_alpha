@@ -1,0 +1,9 @@
+{
+  "module_name": "mpi-sub-ui.c",
+  "hash_id": "3517ad5ab2c6388522a86b49e658476c3686adda039e64100e77ea730f994aac",
+  "original_prompt": "Ingested from linux-6.6.14/lib/crypto/mpi/mpi-sub-ui.c",
+  "human_readable_source": "\n \n\n#include \"mpi-internal.h\"\n\nint mpi_sub_ui(MPI w, MPI u, unsigned long vval)\n{\n\tif (u->nlimbs == 0) {\n\t\tif (mpi_resize(w, 1) < 0)\n\t\t\treturn -ENOMEM;\n\t\tw->d[0] = vval;\n\t\tw->nlimbs = (vval != 0);\n\t\tw->sign = (vval != 0);\n\t\treturn 0;\n\t}\n\n\t \n\tif (mpi_resize(w, u->nlimbs + 1))\n\t\treturn -ENOMEM;\n\n\tif (u->sign) {\n\t\tmpi_limb_t cy;\n\n\t\tcy = mpihelp_add_1(w->d, u->d, u->nlimbs, (mpi_limb_t) vval);\n\t\tw->d[u->nlimbs] = cy;\n\t\tw->nlimbs = u->nlimbs + cy;\n\t\tw->sign = 1;\n\t} else {\n\t\t \n\t\tif (u->nlimbs == 1 && u->d[0] < vval) {\n\t\t\tw->d[0] = vval - u->d[0];\n\t\t\tw->nlimbs = 1;\n\t\t\tw->sign = 1;\n\t\t} else {\n\t\t\tmpihelp_sub_1(w->d, u->d, u->nlimbs, (mpi_limb_t) vval);\n\t\t\t \n\t\t\tw->nlimbs = (u->nlimbs - (w->d[u->nlimbs - 1] == 0));\n\t\t\tw->sign = 0;\n\t\t}\n\t}\n\n\tmpi_normalize(w);\n\treturn 0;\n}\nEXPORT_SYMBOL_GPL(mpi_sub_ui);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

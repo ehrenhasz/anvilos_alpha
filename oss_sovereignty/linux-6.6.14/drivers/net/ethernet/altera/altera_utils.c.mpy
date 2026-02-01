@@ -1,0 +1,9 @@
+{
+  "module_name": "altera_utils.c",
+  "hash_id": "b285e7a19b82d6dd9db28758750000e08f984bd4b39125401a11a3b676a71e28",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/altera/altera_utils.c",
+  "human_readable_source": "\n \n\n#include \"altera_tse.h\"\n#include \"altera_utils.h\"\n\nvoid tse_set_bit(void __iomem *ioaddr, size_t offs, u32 bit_mask)\n{\n\tu32 value = csrrd32(ioaddr, offs);\n\tvalue |= bit_mask;\n\tcsrwr32(value, ioaddr, offs);\n}\n\nvoid tse_clear_bit(void __iomem *ioaddr, size_t offs, u32 bit_mask)\n{\n\tu32 value = csrrd32(ioaddr, offs);\n\tvalue &= ~bit_mask;\n\tcsrwr32(value, ioaddr, offs);\n}\n\nint tse_bit_is_set(void __iomem *ioaddr, size_t offs, u32 bit_mask)\n{\n\tu32 value = csrrd32(ioaddr, offs);\n\treturn (value & bit_mask) ? 1 : 0;\n}\n\nint tse_bit_is_clear(void __iomem *ioaddr, size_t offs, u32 bit_mask)\n{\n\tu32 value = csrrd32(ioaddr, offs);\n\treturn (value & bit_mask) ? 0 : 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

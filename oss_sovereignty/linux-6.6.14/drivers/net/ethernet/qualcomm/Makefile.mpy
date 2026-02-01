@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "de7ec672a73e2e27a04bbf790066aae409799ff68f2b9fd4c78dc9348f83fe35",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qualcomm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Qualcomm network device drivers.\n#\n\nobj-$(CONFIG_QCA7000) += qca_7k_common.o\nobj-$(CONFIG_QCA7000_SPI) += qcaspi.o\nqcaspi-objs := qca_7k.o qca_debug.o qca_spi.o\nobj-$(CONFIG_QCA7000_UART) += qcauart.o\nqcauart-objs := qca_uart.o\n\nobj-y += emac/\n\nobj-$(CONFIG_RMNET) += rmnet/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

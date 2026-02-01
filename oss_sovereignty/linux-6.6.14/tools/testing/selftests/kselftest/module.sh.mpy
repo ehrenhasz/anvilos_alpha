@@ -1,0 +1,9 @@
+{
+  "module_name": "module.sh",
+  "hash_id": "3aa4b33c759762b230d2cb38ebc3a121a36f50b52697c80b7f6feea3ed81253d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kselftest/module.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0+\n\n#\n# Runs an individual test module.\n#\n# kselftest expects a separate executable for each test, this can be\n# created by adding a script like this:\n#\n#   #!/bin/sh\n#   SPDX-License-Identifier: GPL-2.0+\n#   $(dirname $0)/../kselftest/module.sh \"description\" module_name\n#\n# Example: tools/testing/selftests/lib/printf.sh\n\ndesc=\"\"\t\t\t\t# Output prefix.\nmodule=\"\"\t\t\t# Filename (without the .ko).\nargs=\"\"\t\t\t\t# modprobe arguments.\n\nmodprobe=\"/sbin/modprobe\"\n\nmain() {\n    parse_args \"$@\"\n    assert_root\n    assert_have_module\n    run_module\n}\n\nparse_args() {\n    script=${0##*/}\n\n    if [ $# -lt 2 ]; then\n\techo \"Usage: $script <description> <module_name> [FAIL]\"\n\texit 1\n    fi\n\n    desc=\"$1\"\n    shift || true\n    module=\"$1\"\n    shift || true\n    args=\"$@\"\n}\n\nassert_root() {\n    if [ ! -w /dev ]; then\n\tskip \"please run as root\"\n    fi\n}\n\nassert_have_module() {\n    if ! $modprobe -q -n $module; then\n\tskip \"module $module is not found\"\n    fi\n}\n\nrun_module() {\n    if $modprobe -q $module $args; then\n\t$modprobe -q -r $module\n\tsay \"ok\"\n    else\n\tfail \"\"\n    fi\n}\n\nsay() {\n    echo \"$desc: $1\"\n}\n\n\nfail() {\n    say \"$1 [FAIL]\" >&2\n    exit 1\n}\n\nskip() {\n    say \"$1 [SKIP]\" >&2\n    # Kselftest framework requirement - SKIP code is 4.\n    exit 4\n}\n\n#\n# Main script\n#\nmain \"$@\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

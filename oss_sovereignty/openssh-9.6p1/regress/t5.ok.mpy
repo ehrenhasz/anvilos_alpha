@@ -1,0 +1,9 @@
+{
+  "module_name": "t5.ok",
+  "hash_id": "40ee8bb5cbb6bdd70d459451b7cc74b6b494fa508b7b658060114688997891dc",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/t5.ok",
+  "human_readable_source": "xokes-lylis-byleh-zebib-kalus-bihas-tevah-haroz-suhar-foved-noxex\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

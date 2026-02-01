@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-poll.h",
+  "hash_id": "b7ba8126cbc86db0574fa913486ad1ec6be9c19e4d9f2bb5453195fa428fde1e",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-poll.h",
+  "human_readable_source": " \n\n \n\n \n\n#ifndef\t_COMPAT_POLL_H_\n#define\t_COMPAT_POLL_H_\n\n#include <sys/types.h>\n#ifdef HAVE_POLL_H\n# include <poll.h>\n#elif HAVE_SYS_POLL_H\n# include <sys/poll.h>\n#endif\n\n#ifndef HAVE_STRUCT_POLLFD_FD\ntypedef struct pollfd {\n\tint\tfd;\n\tshort\tevents;\n\tshort\trevents;\n} pollfd_t;\n\n#ifndef POLLIN\n# define POLLIN\t\t0x0001\n#endif\n#ifndef POLLPRI\n# define POLLPRI\t0x0002\n#endif\n#ifndef POLLOUT\n# define POLLOUT\t0x0004\n#endif\n#ifndef POLLERR\n# define POLLERR\t0x0008\n#endif\n#ifndef POLLHUP\n# define POLLHUP\t0x0010\n#endif\n#ifndef POLLNVAL\n# define POLLNVAL\t0x0020\n#endif\n\n#if 0\n \n#define\tPOLLRDNORM\t0x0040\n#define POLLNORM\tPOLLRDNORM\n#define POLLWRNORM      POLLOUT\n#define\tPOLLRDBAND\t0x0080\n#define\tPOLLWRBAND\t0x0100\n#endif\n\n#define INFTIM\t\t(-1)\t \n#endif  \n\n#ifndef HAVE_NFDS_T\ntypedef unsigned int\tnfds_t;\n#endif\n\n#ifndef HAVE_POLL\nint   poll(struct pollfd *, nfds_t, int);\n#endif\n\n#ifndef HAVE_PPOLL\nint   ppoll(struct pollfd *, nfds_t, const struct timespec *, const sigset_t *);\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

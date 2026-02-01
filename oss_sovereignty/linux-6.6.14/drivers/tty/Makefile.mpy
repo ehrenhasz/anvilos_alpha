@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bb6ca72a697e897e6ac313aa623826a47fb5f1c9936a8f5d638de2f373694707",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_TTY)\t\t+= tty_io.o n_tty.o tty_ioctl.o tty_ldisc.o \\\n\t\t\t\t   tty_buffer.o tty_port.o tty_mutex.o \\\n\t\t\t\t   tty_ldsem.o tty_baudrate.o tty_jobctrl.o \\\n\t\t\t\t   n_null.o\nobj-$(CONFIG_LEGACY_PTYS)\t+= pty.o\nobj-$(CONFIG_UNIX98_PTYS)\t+= pty.o\nobj-$(CONFIG_AUDIT)\t\t+= tty_audit.o\nobj-$(CONFIG_MAGIC_SYSRQ)\t+= sysrq.o\nobj-$(CONFIG_N_HDLC)\t\t+= n_hdlc.o\nobj-$(CONFIG_N_GSM)\t\t+= n_gsm.o\n\nobj-y\t\t\t\t+= vt/\nobj-$(CONFIG_HVC_DRIVER)\t+= hvc/\nobj-y\t\t\t\t+= serial/\nobj-$(CONFIG_SERIAL_DEV_BUS)\t+= serdev/\n\n# tty drivers\nobj-$(CONFIG_AMIGA_BUILTIN_SERIAL) += amiserial.o\nobj-$(CONFIG_MOXA_INTELLIO)\t+= moxa.o\nobj-$(CONFIG_MOXA_SMARTIO)\t+= mxser.o\nobj-$(CONFIG_NOZOMI)\t\t+= nozomi.o\nobj-$(CONFIG_NULL_TTY)\t        += ttynull.o\nobj-$(CONFIG_SYNCLINK_GT)\t+= synclink_gt.o\nobj-$(CONFIG_PPC_EPAPR_HV_BYTECHAN) += ehv_bytechan.o\nobj-$(CONFIG_GOLDFISH_TTY)\t+= goldfish.o\nobj-$(CONFIG_MIPS_EJTAG_FDC_TTY) += mips_ejtag_fdc.o\nobj-$(CONFIG_VCC)\t\t+= vcc.o\nobj-$(CONFIG_RPMSG_TTY)\t\t+= rpmsg_tty.o\n\nobj-y += ipwireless/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

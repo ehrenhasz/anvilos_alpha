@@ -1,0 +1,9 @@
+{
+  "module_name": "hns_dsaf_gmac.h",
+  "hash_id": "eb69f2cf2dc130263720101e23ab3744ae497668bfc544aef16675c6d575232d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/hisilicon/hns/hns_dsaf_gmac.h",
+  "human_readable_source": " \n \n\n#ifndef _HNS_GMAC_H\n#define _HNS_GMAC_H\n\n#include \"hns_dsaf_mac.h\"\n\nenum hns_port_mode {\n\tGMAC_10M_MII = 0,\n\tGMAC_100M_MII,\n\tGMAC_1000M_GMII,\n\tGMAC_10M_RGMII,\n\tGMAC_100M_RGMII,\n\tGMAC_1000M_RGMII,\n\tGMAC_10M_SGMII,\n\tGMAC_100M_SGMII,\n\tGMAC_1000M_SGMII,\n\tGMAC_10000M_SGMII\t \n};\n\nenum hns_gmac_duplex_mdoe {\n\tGMAC_HALF_DUPLEX_MODE = 0,\n\tGMAC_FULL_DUPLEX_MODE\n};\n\nstruct hns_gmac_port_mode_cfg {\n\tenum hns_port_mode port_mode;\n\tu32 max_frm_size;\n\tu32 short_runts_thr;\n\tu32 pad_enable;\n\tu32 crc_add;\n\tu32 an_enable;\t \n\tu32 runt_pkt_en;\n\tu32 strip_pad_en;\n};\n\n#define ETH_GMAC_DUMP_NUM\t\t96\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

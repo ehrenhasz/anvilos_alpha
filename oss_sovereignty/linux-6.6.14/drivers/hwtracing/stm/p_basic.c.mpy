@@ -1,0 +1,9 @@
+{
+  "module_name": "p_basic.c",
+  "hash_id": "b5e329a3e3f6ad1ab81a98ceda650a8391bff2efce8491033c50d9e20b715fc2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwtracing/stm/p_basic.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/device.h>\n#include <linux/stm.h>\n#include \"stm.h\"\n\nstatic ssize_t basic_write(struct stm_data *data, struct stm_output *output,\n\t\t\t   unsigned int chan, const char *buf, size_t count)\n{\n\tunsigned int c = output->channel + chan;\n\tunsigned int m = output->master;\n\tconst unsigned char nil = 0;\n\tssize_t sz;\n\n\tsz = stm_data_write(data, m, c, true, buf, count);\n\tif (sz > 0)\n\t\tdata->packet(data, m, c, STP_PACKET_FLAG, 0, 0, &nil);\n\n\treturn sz;\n}\n\nstatic const struct stm_protocol_driver basic_pdrv = {\n\t.owner\t= THIS_MODULE,\n\t.name\t= \"p_basic\",\n\t.write\t= basic_write,\n};\n\nstatic int basic_stm_init(void)\n{\n\treturn stm_register_protocol(&basic_pdrv);\n}\n\nstatic void basic_stm_exit(void)\n{\n\tstm_unregister_protocol(&basic_pdrv);\n}\n\nmodule_init(basic_stm_init);\nmodule_exit(basic_stm_exit);\n\nMODULE_LICENSE(\"GPL v2\");\nMODULE_DESCRIPTION(\"Basic STM framing protocol driver\");\nMODULE_AUTHOR(\"Alexander Shishkin <alexander.shishkin@linux.intel.com>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

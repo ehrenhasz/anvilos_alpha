@@ -1,0 +1,9 @@
+{
+  "module_name": "test-lseek.sh",
+  "hash_id": "6fde7ef01261fcda322adf12e534ed73878921ebefbcc99b4914fd99fa517885",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-lseek.sh",
+  "human_readable_source": "#!/bin/sh\n\ntmpfiles=\ntrap 'rm -fr $tmpfiles' HUP INT QUIT TERM\n\ntmpfiles=t-lseek.tmp\n# seekable files\n${CHECKER} ./test-lseek${EXEEXT} 0 < \"$srcdir/test-lseek.sh\" > t-lseek.tmp || exit 1\n\n# pipes\necho hi | { ${CHECKER} ./test-lseek${EXEEXT} 1; echo $? > t-lseek.tmp; cat > /dev/null; } | cat\ntest \"`cat t-lseek.tmp`\" = \"0\" || exit 1\n\n# closed descriptors\n${CHECKER} ./test-lseek${EXEEXT} 2 <&- >&- || exit 1\n\nrm -rf $tmpfiles\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

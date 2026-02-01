@@ -1,0 +1,9 @@
+{
+  "module_name": "usb3503.h",
+  "hash_id": "28be41603dc6678b2795ccd54f5c2314096ddac0db7e7ba89a555f0a8573cacc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/usb3503.h",
+  "human_readable_source": " \n#ifndef __USB3503_H__\n#define __USB3503_H__\n\n#define USB3503_I2C_NAME\t\"usb3503\"\n\n#define USB3503_OFF_PORT1\t(1 << 1)\n#define USB3503_OFF_PORT2\t(1 << 2)\n#define USB3503_OFF_PORT3\t(1 << 3)\n\nenum usb3503_mode {\n\tUSB3503_MODE_UNKNOWN,\n\tUSB3503_MODE_HUB,\n\tUSB3503_MODE_STANDBY,\n\tUSB3503_MODE_BYPASS,\n};\n\nstruct usb3503_platform_data {\n\tenum usb3503_mode\tinitial_mode;\n\tu8\tport_off_mask;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

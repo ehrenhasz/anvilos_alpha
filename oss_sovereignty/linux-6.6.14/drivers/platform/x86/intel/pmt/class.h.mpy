@@ -1,0 +1,9 @@
+{
+  "module_name": "class.h",
+  "hash_id": "aea12ec7c147ce99a70e829569196536bd60c80a042d3a6370e2ea91cc46c274",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/pmt/class.h",
+  "human_readable_source": " \n#ifndef _INTEL_PMT_CLASS_H\n#define _INTEL_PMT_CLASS_H\n\n#include <linux/xarray.h>\n#include <linux/types.h>\n#include <linux/bits.h>\n#include <linux/err.h>\n#include <linux/io.h>\n\n#include \"../vsec.h\"\n\n \n#define ACCESS_BARID\t\t2\n#define ACCESS_LOCAL\t\t3\n\n \n#define GET_BIR(v)\t\t((v) & GENMASK(2, 0))\n#define GET_ADDRESS(v)\t\t((v) & GENMASK(31, 3))\n\nstruct intel_pmt_entry {\n\tstruct bin_attribute\tpmt_bin_attr;\n\tstruct kobject\t\t*kobj;\n\tvoid __iomem\t\t*disc_table;\n\tvoid __iomem\t\t*base;\n\tunsigned long\t\tbase_addr;\n\tsize_t\t\t\tsize;\n\tu32\t\t\tguid;\n\tint\t\t\tdevid;\n};\n\nstruct intel_pmt_header {\n\tu32\tbase_offset;\n\tu32\tsize;\n\tu32\tguid;\n\tu8\taccess_type;\n};\n\nstruct intel_pmt_namespace {\n\tconst char *name;\n\tstruct xarray *xa;\n\tconst struct attribute_group *attr_grp;\n\tint (*pmt_header_decode)(struct intel_pmt_entry *entry,\n\t\t\t\t struct intel_pmt_header *header,\n\t\t\t\t struct device *dev);\n};\n\nbool intel_pmt_is_early_client_hw(struct device *dev);\nint intel_pmt_dev_create(struct intel_pmt_entry *entry,\n\t\t\t struct intel_pmt_namespace *ns,\n\t\t\t struct intel_vsec_device *dev, int idx);\nvoid intel_pmt_dev_destroy(struct intel_pmt_entry *entry,\n\t\t\t   struct intel_pmt_namespace *ns);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

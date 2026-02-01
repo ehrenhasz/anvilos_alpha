@@ -1,0 +1,9 @@
+{
+  "module_name": "control",
+  "hash_id": "948379d9009c3d2d22320cbf44dbad944888540ea3c93f91f3bf1e3e47bd8f1f",
+  "original_prompt": "Ingested from ncurses-6.4/package/debian-mingw/control",
+  "human_readable_source": "Source: ncurses6\nSection: libdevel\nPriority: optional\nMaintainer: Thomas E. Dickey <dickey@invisible-island.net>\nHomepage: https://invisible-island.net/ncurses/\nBuild-Depends: debhelper (>= 7),\n  gcc-mingw-w64-i686,\n  g++-mingw-w64-i686,\n  binutils-mingw-w64-i686\nStandards-Version: 4.6.1.0\n\nPackage: mingw32-ncurses6\nArchitecture: any\nDepends: ${misc:Depends}\nDescription: shared libraries for terminal handling\n The ncurses library routines are a terminal-independent method of\n updating character screens with reasonable optimization.\n .\n This package is used for testing ABI 6 with the MinGW 32-bit port.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

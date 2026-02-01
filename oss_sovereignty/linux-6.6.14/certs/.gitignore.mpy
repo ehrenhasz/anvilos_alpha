@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "8bd0bcbb6e95013d514fd4cbb381ddfe27cfba4a507a384855441bdc26166fab",
+  "original_prompt": "Ingested from linux-6.6.14/certs/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/blacklist_hash_list\n/extract-cert\n/x509_certificate_list\n/x509_revocation_list\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

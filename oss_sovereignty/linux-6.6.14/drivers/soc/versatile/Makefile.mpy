@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bfa88dfeeb7b6006409be1a21e6ce2075670b05f1a7e763b2352fbdbdab095c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/versatile/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SOC_INTEGRATOR_CM)\t+= soc-integrator.o\nobj-$(CONFIG_SOC_REALVIEW)\t+= soc-realview.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

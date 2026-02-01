@@ -1,0 +1,9 @@
+{
+  "module_name": "uvfn.c",
+  "hash_id": "c44296c31ef019d28c2b03d5d6e4be37cd8a28e712b924ed835374cd4f7b7b52",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/vfn/uvfn.c",
+  "human_readable_source": " \n#define nvkm_uvfn(p) container_of((p), struct nvkm_uvfn, object)\n#include \"priv.h\"\n\n#include <core/object.h>\n\nstruct nvkm_uvfn {\n\tstruct nvkm_object object;\n\tstruct nvkm_vfn *vfn;\n};\n\nstatic int\nnvkm_uvfn_map(struct nvkm_object *object, void *argv, u32 argc,\n\t      enum nvkm_object_map *type, u64 *addr, u64 *size)\n{\n\tstruct nvkm_vfn *vfn = nvkm_uvfn(object)->vfn;\n\tstruct nvkm_device *device = vfn->subdev.device;\n\n\t*addr = device->func->resource_addr(device, 0) + vfn->addr.user;\n\t*size = vfn->func->user.size;\n\t*type = NVKM_OBJECT_MAP_IO;\n\treturn 0;\n}\n\nstatic const struct nvkm_object_func\nnvkm_uvfn = {\n\t.map = nvkm_uvfn_map,\n};\n\nint\nnvkm_uvfn_new(struct nvkm_device *device, const struct nvkm_oclass *oclass,\n\t      void *argv, u32 argc, struct nvkm_object **pobject)\n{\n\tstruct nvkm_uvfn *uvfn;\n\n\tif (argc != 0)\n\t\treturn -ENOSYS;\n\n\tif (!(uvfn = kzalloc(sizeof(*uvfn), GFP_KERNEL)))\n\t\treturn -ENOMEM;\n\n\tnvkm_object_ctor(&nvkm_uvfn, oclass, &uvfn->object);\n\tuvfn->vfn = device->vfn;\n\n\t*pobject = &uvfn->object;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

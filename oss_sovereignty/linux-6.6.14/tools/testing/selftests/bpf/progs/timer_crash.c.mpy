@@ -1,0 +1,9 @@
+{
+  "module_name": "timer_crash.c",
+  "hash_id": "f6e75c509c7553690388234003c6d68bd294c84979e3279d3b97c345a4fb28f7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/timer_crash.c",
+  "human_readable_source": "\n\n#include <vmlinux.h>\n#include <bpf/bpf_tracing.h>\n#include <bpf/bpf_helpers.h>\n\nstruct map_elem {\n\tstruct bpf_timer timer;\n\tstruct bpf_spin_lock lock;\n};\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(max_entries, 1);\n\t__type(key, int);\n\t__type(value, struct map_elem);\n} amap SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__uint(max_entries, 1);\n\t__type(key, int);\n\t__type(value, struct map_elem);\n} hmap SEC(\".maps\");\n\nint pid = 0;\nint crash_map = 0;  \n\nSEC(\"fentry/do_nanosleep\")\nint sys_enter(void *ctx)\n{\n\tstruct map_elem *e, value = {};\n\tvoid *map = crash_map ? (void *)&hmap : (void *)&amap;\n\n\tif (bpf_get_current_task_btf()->tgid != pid)\n\t\treturn 0;\n\n\t*(void **)&value = (void *)0xdeadcaf3;\n\n\tbpf_map_update_elem(map, &(int){0}, &value, 0);\n\t \n\tif (crash_map == 1) {\n\t\te = bpf_map_lookup_elem(map, &(int){0});\n\t\tif (!e)\n\t\t\treturn 0;\n\t\tbpf_timer_cancel(&e->timer);\n\t}\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

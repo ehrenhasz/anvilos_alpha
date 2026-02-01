@@ -1,0 +1,9 @@
+{
+  "module_name": "super.h",
+  "hash_id": "16a7545ef028721408ed8d2d8ddfb2911afbe09c7d1d6f9dcf8eb529d05f4b9f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/super.h",
+  "human_readable_source": " \n \n\n#ifndef __MTD_SUPER_H__\n#define __MTD_SUPER_H__\n\n#ifdef __KERNEL__\n\n#include <linux/mtd/mtd.h>\n#include <linux/fs.h>\n#include <linux/mount.h>\n\nextern int get_tree_mtd(struct fs_context *fc,\n\t\t     int (*fill_super)(struct super_block *sb,\n\t\t\t\t       struct fs_context *fc));\nextern void kill_mtd_super(struct super_block *sb);\n\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

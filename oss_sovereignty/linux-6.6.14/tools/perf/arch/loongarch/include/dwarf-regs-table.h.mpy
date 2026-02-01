@@ -1,0 +1,9 @@
+{
+  "module_name": "dwarf-regs-table.h",
+  "hash_id": "13ffea4e8100ffdf80284960257c7077bdcb75608a63d1759722baa7528e84c2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/loongarch/include/dwarf-regs-table.h",
+  "human_readable_source": " \n \n\n#ifdef DEFINE_DWARF_REGSTR_TABLE\nstatic const char * const loongarch_regstr_tbl[] = {\n\t\"%r0\", \"%r1\", \"%r2\", \"%r3\", \"%r4\", \"%r5\", \"%r6\", \"%r7\",\n\t\"%r8\", \"%r9\", \"%r10\", \"%r11\", \"%r12\", \"%r13\", \"%r14\", \"%r15\",\n\t\"%r16\", \"%r17\", \"%r18\", \"%r19\", \"%r20\", \"%r21\", \"%r22\", \"%r23\",\n\t\"%r24\", \"%r25\", \"%r26\", \"%r27\", \"%r28\", \"%r29\", \"%r30\", \"%r31\",\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

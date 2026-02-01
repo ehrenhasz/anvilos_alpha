@@ -1,0 +1,9 @@
+{
+  "module_name": "tee_bnxt_fw.h",
+  "hash_id": "05e1a474746a73806d8289afa02cd1f46c058f5361ef63f736df0c8d4d50b5c0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/firmware/broadcom/tee_bnxt_fw.h",
+  "human_readable_source": " \n \n\n#ifndef _BROADCOM_TEE_BNXT_FW_H\n#define _BROADCOM_TEE_BNXT_FW_H\n\n#include <linux/types.h>\n\nint tee_bnxt_fw_load(void);\nint tee_bnxt_copy_coredump(void *buf, u32 offset, u32 size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

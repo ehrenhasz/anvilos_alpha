@@ -1,0 +1,9 @@
+{
+  "module_name": "rt5514-spi.h",
+  "hash_id": "86e0888340a4e659719c4355f4d63a54dad601e3ddf4d0030770f8da7e95085c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/rt5514-spi.h",
+  "human_readable_source": " \n \n\n#ifndef __RT5514_SPI_H__\n#define __RT5514_SPI_H__\n\n \n#define RT5514_SPI_BUF_LEN\t\t240\n\n#define RT5514_BUFFER_VOICE_BASE\t0x18000200\n#define RT5514_BUFFER_VOICE_LIMIT\t0x18000204\n#define RT5514_BUFFER_VOICE_WP\t\t0x1800020c\n#define RT5514_IRQ_CTRL\t\t\t0x18002094\n\n#define RT5514_IRQ_STATUS_BIT\t\t(0x1 << 5)\n\n \nenum {\n\tRT5514_SPI_CMD_16_READ = 0,\n\tRT5514_SPI_CMD_16_WRITE,\n\tRT5514_SPI_CMD_32_READ,\n\tRT5514_SPI_CMD_32_WRITE,\n\tRT5514_SPI_CMD_BURST_READ,\n\tRT5514_SPI_CMD_BURST_WRITE,\n};\n\nint rt5514_spi_burst_read(unsigned int addr, u8 *rxbuf, size_t len);\nint rt5514_spi_burst_write(u32 addr, const u8 *txbuf, size_t len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

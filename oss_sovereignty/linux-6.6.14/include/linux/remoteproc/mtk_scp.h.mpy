@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_scp.h",
+  "hash_id": "d95aecc1291c2262d444e2b75dc933c6e1254670ed6915534ac31d5b0fa53810",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/remoteproc/mtk_scp.h",
+  "human_readable_source": " \n \n\n#ifndef _MTK_SCP_H\n#define _MTK_SCP_H\n\n#include <linux/platform_device.h>\n\ntypedef void (*scp_ipi_handler_t) (void *data,\n\t\t\t\t   unsigned int len,\n\t\t\t\t   void *priv);\nstruct mtk_scp;\n\n \n\nenum scp_ipi_id {\n\tSCP_IPI_INIT = 0,\n\tSCP_IPI_VDEC_H264,\n\tSCP_IPI_VDEC_VP8,\n\tSCP_IPI_VDEC_VP9,\n\tSCP_IPI_VENC_H264,\n\tSCP_IPI_VENC_VP8,\n\tSCP_IPI_MDP_INIT,\n\tSCP_IPI_MDP_DEINIT,\n\tSCP_IPI_MDP_FRAME,\n\tSCP_IPI_DIP,\n\tSCP_IPI_ISP_CMD,\n\tSCP_IPI_ISP_FRAME,\n\tSCP_IPI_FD_CMD,\n\tSCP_IPI_CROS_HOST_CMD,\n\tSCP_IPI_VDEC_LAT,\n\tSCP_IPI_VDEC_CORE,\n\tSCP_IPI_NS_SERVICE = 0xFF,\n\tSCP_IPI_MAX = 0x100,\n};\n\nstruct mtk_scp *scp_get(struct platform_device *pdev);\nvoid scp_put(struct mtk_scp *scp);\n\nstruct device *scp_get_device(struct mtk_scp *scp);\nstruct rproc *scp_get_rproc(struct mtk_scp *scp);\n\nint scp_ipi_register(struct mtk_scp *scp, u32 id, scp_ipi_handler_t handler,\n\t\t     void *priv);\nvoid scp_ipi_unregister(struct mtk_scp *scp, u32 id);\n\nint scp_ipi_send(struct mtk_scp *scp, u32 id, void *buf, unsigned int len,\n\t\t unsigned int wait);\n\nunsigned int scp_get_vdec_hw_capa(struct mtk_scp *scp);\nunsigned int scp_get_venc_hw_capa(struct mtk_scp *scp);\n\nvoid *scp_mapping_dm_addr(struct mtk_scp *scp, u32 mem_addr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rsa_ssh2.prv",
+  "hash_id": "b2dc49faac20489a9e69d09437e2b403208a61fafe60d98a29016c20eb0cc647",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/rsa_ssh2.prv",
+  "human_readable_source": "---- BEGIN SSH2 ENCRYPTED PRIVATE KEY ----\nSubject: ssh-keygen test\nComment: \"1024-bit rsa, Sat Jun 23 2001 12:21:26 -0400\"\nP2/56wAAAi4AAAA3aWYtbW9kbntzaWdue3JzYS1wa2NzMS1zaGExfSxlbmNyeXB0e3JzYS\n1wa2NzMXYyLW9hZXB9fQAAAARub25lAAAB3wAAAdsAAAARAQABAAAD9icflXO8eQxtKonp\n45gOxXCiZG9hsfkgRpiXXHpUBMhM28C72RR1Dg2xKm4xz7smP2Apm+Y7XLZgIpzQ/+I76L\n95XQv7JCHVHDXyNBmWX7XZP4tmspFq/Tdg28zHSA3CpZjjwq3qG/b8395tDMpF7v34PS3Z\nxOH3aFPvEQ0UsgEAAAQA7IpcCnGijesEjDXdVoEPfh0akBJA9JAk1bba2sxrtDoQVN1JKP\nnRQ9SKdAsXV5jduSUFsTmBe4fznLvD948790U1/O8SkdGM5V0y1/ki7Rf8knm0t8Vj65X0\nVA4YdN4UeVfvMcb78vcInT2CsP6CLcBkrnjrBKtS03Mwg79nQI0AAAH/VdpOHYCMLPl/GF\n+uRLMshY55Q6l+MdJ0jo0AdZrCCnxwa3YeVywwU0wsZyoTCdGMf6KYDr39PVxwRcGkJ7Ue\nYgAAAgDWXpLlKafIgS3i0moMORZHD8D86us3xMW4b7GV2/AaP+En5TbOCR18CO0g/WfGiS\n7zOLkP+TO9JW5QzEONIt6NAAACAQEaegYoWMBSQkLA7VWbOlSowelFlU6uo/2FSY+PM0nm\ngE8UZ7j6HWGhJEU4DNo25m3yyxuposKTMHxt/OOqFmoB\n---- END SSH2 ENCRYPTED PRIVATE KEY ----\n---\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

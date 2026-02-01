@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_metadata.h",
+  "hash_id": "fb44b8b367c1b161dabd0aaffe8a6f9df1f1704966c00605d17114f5a705176b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/ia_css_metadata.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_METADATA_H\n#define __IA_CSS_METADATA_H\n\n \n\n#include <type_support.h>\n#include \"ia_css_types.h\"\n#include \"ia_css_stream_format.h\"\n\n \nstruct ia_css_metadata_config {\n\tenum atomisp_input_format data_type;  \n\tstruct ia_css_resolution  resolution;  \n};\n\nstruct ia_css_metadata_info {\n\tstruct ia_css_resolution resolution;  \n\tu32                 stride;      \n\tu32                 size;        \n};\n\nstruct ia_css_metadata {\n\tstruct ia_css_metadata_info info;     \n\tia_css_ptr\t\t    address;  \n\tu32\t\t    exp_id;\n\t \n};\n\n#define SIZE_OF_IA_CSS_METADATA_STRUCT sizeof(struct ia_css_metadata)\n\n \nstruct ia_css_metadata *\nia_css_metadata_allocate(const struct ia_css_metadata_info *metadata_info);\n\n \nvoid\nia_css_metadata_free(struct ia_css_metadata *metadata);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

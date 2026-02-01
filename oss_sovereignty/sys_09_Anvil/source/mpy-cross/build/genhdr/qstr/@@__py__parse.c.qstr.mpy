@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__parse.c.qstr",
+  "hash_id": "50713646f0b1e5b760a882919964d5d6b3fe6614b39381ffe0abf5e0ec1d3e5b",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__parse.c.qstr",
+  "human_readable_source": "Q(const)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

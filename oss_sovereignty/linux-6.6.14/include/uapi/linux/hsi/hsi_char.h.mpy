@@ -1,0 +1,9 @@
+{
+  "module_name": "hsi_char.h",
+  "hash_id": "232d51069ab98fee0f7b9ff4ee99677be966e4c78a47c60f2b1d8557d0ad5caa",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/hsi/hsi_char.h",
+  "human_readable_source": " \n \n\n#ifndef __HSI_CHAR_H\n#define __HSI_CHAR_H\n\n#include <linux/types.h>\n\n#define HSI_CHAR_MAGIC\t\t'k'\n#define HSC_IOW(num, dtype)\t_IOW(HSI_CHAR_MAGIC, num, dtype)\n#define HSC_IOR(num, dtype)\t_IOR(HSI_CHAR_MAGIC, num, dtype)\n#define HSC_IOWR(num, dtype)\t_IOWR(HSI_CHAR_MAGIC, num, dtype)\n#define HSC_IO(num)\t\t_IO(HSI_CHAR_MAGIC, num)\n\n#define HSC_RESET\t\tHSC_IO(16)\n#define HSC_SET_PM\t\tHSC_IO(17)\n#define HSC_SEND_BREAK\t\tHSC_IO(18)\n#define HSC_SET_RX\t\tHSC_IOW(19, struct hsc_rx_config)\n#define HSC_GET_RX\t\tHSC_IOW(20, struct hsc_rx_config)\n#define HSC_SET_TX\t\tHSC_IOW(21, struct hsc_tx_config)\n#define HSC_GET_TX\t\tHSC_IOW(22, struct hsc_tx_config)\n\n#define HSC_PM_DISABLE\t\t0\n#define HSC_PM_ENABLE\t\t1\n\n#define HSC_MODE_STREAM\t\t1\n#define HSC_MODE_FRAME\t\t2\n#define HSC_FLOW_SYNC\t\t0\n#define HSC_ARB_RR\t\t0\n#define HSC_ARB_PRIO\t\t1\n\nstruct hsc_rx_config {\n\t__u32 mode;\n\t__u32 flow;\n\t__u32 channels;\n};\n\nstruct hsc_tx_config {\n\t__u32 mode;\n\t__u32 channels;\n\t__u32 speed;\n\t__u32 arb_mode;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

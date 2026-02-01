@@ -1,0 +1,9 @@
+{
+  "module_name": "cros_ec.h",
+  "hash_id": "2ed3f23b80b9f2d1d4ace5ed886eae16f26decc03facae8b6fd25f07879fd234",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/mfd/cros_ec.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_MFD_CROS_EC_H\n#define _DT_BINDINGS_MFD_CROS_EC_H\n\n \n#define CROS_EC_PWM_DT_KB_LIGHT\t\t0\n \n#define CROS_EC_PWM_DT_DISPLAY_LIGHT\t1\n \n#define CROS_EC_PWM_DT_COUNT\t\t2\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

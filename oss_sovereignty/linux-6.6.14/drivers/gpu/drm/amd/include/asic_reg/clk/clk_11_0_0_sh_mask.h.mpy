@@ -1,0 +1,9 @@
+{
+  "module_name": "clk_11_0_0_sh_mask.h",
+  "hash_id": "13cb24ad79f63f721d9d066db3036865ee3d8f18cec2ff517a17faf2fe2c01f7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/asic_reg/clk/clk_11_0_0_sh_mask.h",
+  "human_readable_source": " \n#ifndef _clk_11_0_0_SH_MASK_HEADER\n#define _clk_11_0_0_SH_MASK_HEADER\n\n\n\n\n#define CLK3_0_CLK3_CLK_PLL_REQ__FbMult_int__SHIFT                                                            0x0\n#define CLK3_0_CLK3_CLK_PLL_REQ__PllSpineDiv__SHIFT                                                           0xc\n#define CLK3_0_CLK3_CLK_PLL_REQ__FbMult_frac__SHIFT                                                           0x10\n#define CLK3_0_CLK3_CLK_PLL_REQ__FbMult_int_MASK                                                              0x000001FFL\n#define CLK3_0_CLK3_CLK_PLL_REQ__PllSpineDiv_MASK                                                             0x0000F000L\n#define CLK3_0_CLK3_CLK_PLL_REQ__FbMult_frac_MASK                                                             0xFFFF0000L\n\n#define CLK3_0_CLK3_CLK2_DFS_CNTL__CLK2_DIVIDER__SHIFT                                                        0x0\n#define CLK3_0_CLK3_CLK2_DFS_CNTL__CLK2_DIVIDER_MASK                                                          0x0000007FL\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

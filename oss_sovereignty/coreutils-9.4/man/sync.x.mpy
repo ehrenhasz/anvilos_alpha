@@ -1,0 +1,9 @@
+{
+  "module_name": "sync.x",
+  "hash_id": "a246fc8f5dd869133727413a3315106197e5349609cb704654e816cc04c0db5d",
+  "original_prompt": "Ingested from coreutils-9.4/man/sync.x",
+  "human_readable_source": "[NAME]\nsync \\- Synchronize cached writes to persistent storage\n[DESCRIPTION]\n.\\\" Add any additional description here\n[BUGS]\nPersistence guarantees vary per system.\nSee the system calls below for more details.\n[SEE ALSO]\nfdatasync(2), fsync(2), sync(2), syncfs(2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

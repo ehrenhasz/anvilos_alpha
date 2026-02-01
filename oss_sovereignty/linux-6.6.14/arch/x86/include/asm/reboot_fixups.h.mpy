@@ -1,0 +1,9 @@
+{
+  "module_name": "reboot_fixups.h",
+  "hash_id": "3c3db9b7eef7d9d11c878f7378033e6b2c194e17159239d2f4267a5d04a079bd",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/reboot_fixups.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_REBOOT_FIXUPS_H\n#define _ASM_X86_REBOOT_FIXUPS_H\n\nextern void mach_reboot_fixups(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "af9013.h",
+  "hash_id": "a28ee677355b3ff92f3b7448fb5be88fd9a3e8ac3d933267ef58d3c5b452b794",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/af9013.h",
+  "human_readable_source": " \n \n\n#ifndef AF9013_H\n#define AF9013_H\n\n#include <linux/dvb/frontend.h>\n\n \n\n \nstruct af9013_platform_data {\n\t \n\tu32 clk;\n#define AF9013_TUNER_MXL5003D      3  \n#define AF9013_TUNER_MXL5005D     13  \n#define AF9013_TUNER_MXL5005R     30  \n#define AF9013_TUNER_ENV77H11D5  129  \n#define AF9013_TUNER_MT2060      130  \n#define AF9013_TUNER_MC44S803    133  \n#define AF9013_TUNER_QT1010      134  \n#define AF9013_TUNER_UNKNOWN     140  \n#define AF9013_TUNER_MT2060_2    147  \n#define AF9013_TUNER_TDA18271    156  \n#define AF9013_TUNER_QT1010A     162  \n#define AF9013_TUNER_MXL5007T    177  \n#define AF9013_TUNER_TDA18218    179  \n\tu8 tuner;\n\tu32 if_frequency;\n#define AF9013_TS_MODE_USB       0\n#define AF9013_TS_MODE_PARALLEL  1\n#define AF9013_TS_MODE_SERIAL    2\n\tu8 ts_mode;\n\tu8 ts_output_pin;\n\tbool spec_inv;\n\tu8 api_version[4];\n#define AF9013_GPIO_ON (1 << 0)\n#define AF9013_GPIO_EN (1 << 1)\n#define AF9013_GPIO_O  (1 << 2)\n#define AF9013_GPIO_I  (1 << 3)\n#define AF9013_GPIO_LO (AF9013_GPIO_ON|AF9013_GPIO_EN)\n#define AF9013_GPIO_HI (AF9013_GPIO_ON|AF9013_GPIO_EN|AF9013_GPIO_O)\n#define AF9013_GPIO_TUNER_ON  (AF9013_GPIO_ON|AF9013_GPIO_EN)\n#define AF9013_GPIO_TUNER_OFF (AF9013_GPIO_ON|AF9013_GPIO_EN|AF9013_GPIO_O)\n\tu8 gpio[4];\n\n\tstruct dvb_frontend* (*get_dvb_frontend)(struct i2c_client *);\n\tstruct i2c_adapter* (*get_i2c_adapter)(struct i2c_client *);\n\tint (*pid_filter_ctrl)(struct dvb_frontend *, int);\n\tint (*pid_filter)(struct dvb_frontend *, u8, u16, int);\n};\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

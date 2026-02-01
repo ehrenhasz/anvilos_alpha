@@ -1,0 +1,9 @@
+{
+  "module_name": "command_table_helper_dce112.h",
+  "hash_id": "a2e8142c00e4b9a43d98cdedc6864c062340f3781ed53088dcd72d89062f45bd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/bios/dce112/command_table_helper_dce112.h",
+  "human_readable_source": " \n\n#ifndef __DAL_COMMAND_TABLE_HELPER_DCE112_H__\n#define __DAL_COMMAND_TABLE_HELPER_DCE112_H__\n\nstruct command_table_helper;\n\n \nconst struct command_table_helper *dal_cmd_tbl_helper_dce112_get_table(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

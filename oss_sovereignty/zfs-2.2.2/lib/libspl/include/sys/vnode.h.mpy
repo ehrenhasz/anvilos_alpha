@@ -1,0 +1,9 @@
+{
+  "module_name": "vnode.h",
+  "hash_id": "d9e0e0a40141f1eb54189448e824ebe75bc2a635a9fbdc0267a415163030292d",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/vnode.h",
+  "human_readable_source": " \n \n\n#ifndef _LIBSPL_SYS_VNODE_H\n#define\t_LIBSPL_SYS_VNODE_H\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

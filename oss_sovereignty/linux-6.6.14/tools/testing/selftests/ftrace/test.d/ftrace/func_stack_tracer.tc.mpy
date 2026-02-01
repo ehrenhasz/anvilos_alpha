@@ -1,0 +1,9 @@
+{
+  "module_name": "func_stack_tracer.tc",
+  "hash_id": "da2db7cdbc0407bfdce96772f1722a7db1f9ae1e81d2532ac33f56e787043db6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/ftrace/func_stack_tracer.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: ftrace - Max stack tracer\n# requires: stack_trace stack_trace_filter\n# Test the basic function of max-stack usage tracing\n\necho > stack_trace_filter\necho 0 > stack_max_size\necho 1 > /proc/sys/kernel/stack_tracer_enabled\n\n: \"Fork and wait for the first entry become !lock\"\ntimeout=10\nwhile [ $timeout -ne 0 ]; do\n  ( echo \"forked\" )\n  FL=`grep \" 0)\" stack_trace`\n  echo $FL | grep -q \"lock\" || break;\n  timeout=$((timeout - 1))\ndone\necho 0 > /proc/sys/kernel/stack_tracer_enabled\n\necho '*lock*' > stack_trace_filter\ntest `cat stack_trace_filter | wc -l` -eq `grep lock stack_trace_filter | wc -l`\n\necho 0 > stack_max_size\necho 1 > /proc/sys/kernel/stack_tracer_enabled\n\n: \"Fork and always the first entry including lock\"\ntimeout=10\nwhile [ $timeout -ne 0 ]; do\n  ( echo \"forked\" )\n  FL=`grep \" 0)\" stack_trace`\n  echo $FL | grep -q \"lock\"\n  timeout=$((timeout - 1))\ndone\necho 0 > /proc/sys/kernel/stack_tracer_enabled\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "c_threaded_variables.h",
+  "hash_id": "07656bdaa4e037faaae2568a9c7c9c4675b244ad37cab5be5eb08c990d146a03",
+  "original_prompt": "Ingested from ncurses-6.4/Ada95/src/c_threaded_variables.h",
+  "human_readable_source": " \n\n \n\n#ifndef __C_THREADED_VARIABLES_H\n#define __C_THREADED_VARIABLES_H\n\n#include <ncurses_cfg.h>\n\n#if HAVE_INTTYPES_H\n# include <inttypes.h>\n#else\n# if HAVE_STDINT_H\n#  include <stdint.h>\n# endif\n#endif\n\n#include <curses.h>\n\nextern WINDOW *stdscr_as_function(void);\nextern WINDOW *curscr_as_function(void);\n\nextern int LINES_as_function(void);\nextern int LINES_as_function(void);\nextern int COLS_as_function(void);\nextern int TABSIZE_as_function(void);\nextern int COLORS_as_function(void);\nextern int COLOR_PAIRS_as_function(void);\n\nextern chtype acs_map_as_function(char   );\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cavium_ptp.h",
+  "hash_id": "83b568b3324985f2f6dba7307705309fcd9f4bba1feed971e4e8883b45efddf4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cavium/common/cavium_ptp.h",
+  "human_readable_source": " \n \n\n#ifndef CAVIUM_PTP_H\n#define CAVIUM_PTP_H\n\n#include <linux/ptp_clock_kernel.h>\n#include <linux/timecounter.h>\n\nstruct cavium_ptp {\n\tstruct pci_dev *pdev;\n\n\t \n\tspinlock_t spin_lock;\n\tstruct cyclecounter cycle_counter;\n\tstruct timecounter time_counter;\n\tvoid __iomem *reg_base;\n\n\tu32 clock_rate;\n\n\tstruct ptp_clock_info ptp_info;\n\tstruct ptp_clock *ptp_clock;\n};\n\n#if IS_REACHABLE(CONFIG_CAVIUM_PTP)\n\nstruct cavium_ptp *cavium_ptp_get(void);\nvoid cavium_ptp_put(struct cavium_ptp *ptp);\n\nstatic inline u64 cavium_ptp_tstamp2time(struct cavium_ptp *ptp, u64 tstamp)\n{\n\tunsigned long flags;\n\tu64 ret;\n\n\tspin_lock_irqsave(&ptp->spin_lock, flags);\n\tret = timecounter_cyc2time(&ptp->time_counter, tstamp);\n\tspin_unlock_irqrestore(&ptp->spin_lock, flags);\n\n\treturn ret;\n}\n\nstatic inline int cavium_ptp_clock_index(struct cavium_ptp *clock)\n{\n\treturn ptp_clock_index(clock->ptp_clock);\n}\n\n#else\n\nstatic inline struct cavium_ptp *cavium_ptp_get(void)\n{\n\treturn ERR_PTR(-ENODEV);\n}\n\nstatic inline void cavium_ptp_put(struct cavium_ptp *ptp) {}\n\nstatic inline u64 cavium_ptp_tstamp2time(struct cavium_ptp *ptp, u64 tstamp)\n{\n\treturn 0;\n}\n\nstatic inline int cavium_ptp_clock_index(struct cavium_ptp *clock)\n{\n\treturn -1;\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

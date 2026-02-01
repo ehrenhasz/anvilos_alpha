@@ -1,0 +1,9 @@
+{
+  "module_name": "dpaa2-eth-debugfs.h",
+  "hash_id": "8a959f6389e3dd53789fad98c851a6eb1da2e209d639d54f13869db26b9c9d76",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.h",
+  "human_readable_source": " \n \n#ifndef DPAA2_ETH_DEBUGFS_H\n#define DPAA2_ETH_DEBUGFS_H\n\n#include <linux/dcache.h>\n\nstruct dpaa2_eth_priv;\n\nstruct dpaa2_debugfs {\n\tstruct dentry *dir;\n};\n\n#ifdef CONFIG_DEBUG_FS\nvoid dpaa2_eth_dbg_init(void);\nvoid dpaa2_eth_dbg_exit(void);\nvoid dpaa2_dbg_add(struct dpaa2_eth_priv *priv);\nvoid dpaa2_dbg_remove(struct dpaa2_eth_priv *priv);\n#else\nstatic inline void dpaa2_eth_dbg_init(void) {}\nstatic inline void dpaa2_eth_dbg_exit(void) {}\nstatic inline void dpaa2_dbg_add(struct dpaa2_eth_priv *priv) {}\nstatic inline void dpaa2_dbg_remove(struct dpaa2_eth_priv *priv) {}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

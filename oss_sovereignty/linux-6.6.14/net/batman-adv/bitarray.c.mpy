@@ -1,0 +1,9 @@
+{
+  "module_name": "bitarray.c",
+  "hash_id": "056f20e65a0852ce153333696bbaec676f1b4addc3da93d11d352358bb17a636",
+  "original_prompt": "Ingested from linux-6.6.14/net/batman-adv/bitarray.c",
+  "human_readable_source": "\n \n\n#include \"bitarray.h\"\n#include \"main.h\"\n\n#include <linux/bitmap.h>\n\n#include \"log.h\"\n\n \nstatic void batadv_bitmap_shift_left(unsigned long *seq_bits, s32 n)\n{\n\tif (n <= 0 || n >= BATADV_TQ_LOCAL_WINDOW_SIZE)\n\t\treturn;\n\n\tbitmap_shift_left(seq_bits, seq_bits, n, BATADV_TQ_LOCAL_WINDOW_SIZE);\n}\n\n \nbool batadv_bit_get_packet(void *priv, unsigned long *seq_bits,\n\t\t\t   s32 seq_num_diff, int set_mark)\n{\n\tstruct batadv_priv *bat_priv = priv;\n\n\t \n\tif (seq_num_diff <= 0 && seq_num_diff > -BATADV_TQ_LOCAL_WINDOW_SIZE) {\n\t\tif (set_mark)\n\t\t\tbatadv_set_bit(seq_bits, -seq_num_diff);\n\t\treturn false;\n\t}\n\n\t \n\tif (seq_num_diff > 0 && seq_num_diff < BATADV_TQ_LOCAL_WINDOW_SIZE) {\n\t\tbatadv_bitmap_shift_left(seq_bits, seq_num_diff);\n\n\t\tif (set_mark)\n\t\t\tbatadv_set_bit(seq_bits, 0);\n\t\treturn true;\n\t}\n\n\t \n\tif (seq_num_diff >= BATADV_TQ_LOCAL_WINDOW_SIZE &&\n\t    seq_num_diff < BATADV_EXPECTED_SEQNO_RANGE) {\n\t\tbatadv_dbg(BATADV_DBG_BATMAN, bat_priv,\n\t\t\t   \"We missed a lot of packets (%i) !\\n\",\n\t\t\t   seq_num_diff - 1);\n\t\tbitmap_zero(seq_bits, BATADV_TQ_LOCAL_WINDOW_SIZE);\n\t\tif (set_mark)\n\t\t\tbatadv_set_bit(seq_bits, 0);\n\t\treturn true;\n\t}\n\n\t \n\tbatadv_dbg(BATADV_DBG_BATMAN, bat_priv,\n\t\t   \"Other host probably restarted!\\n\");\n\n\tbitmap_zero(seq_bits, BATADV_TQ_LOCAL_WINDOW_SIZE);\n\tif (set_mark)\n\t\tbatadv_set_bit(seq_bits, 0);\n\n\treturn true;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

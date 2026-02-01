@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-s3c2410.h",
+  "hash_id": "4ddd32225d75c8aea5b1d3301cc547fe2aec07a1c60bba6b32dd1f2a6208c459",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/i2c-s3c2410.h",
+  "human_readable_source": " \n \n\n#ifndef __I2C_S3C2410_H\n#define __I2C_S3C2410_H __FILE__\n\n#define S3C_IICFLG_FILTER\t(1<<0)\t \n\nstruct platform_device;\n\n \nstruct s3c2410_platform_i2c {\n\tint\t\tbus_num;\n\tunsigned int\tflags;\n\tunsigned int\tslave_addr;\n\tunsigned long\tfrequency;\n\tunsigned int\tsda_delay;\n\n\tvoid\t(*cfg_gpio)(struct platform_device *dev);\n};\n\n \nextern void s3c_i2c0_set_platdata(struct s3c2410_platform_i2c *i2c);\nextern void s3c_i2c1_set_platdata(struct s3c2410_platform_i2c *i2c);\nextern void s3c_i2c2_set_platdata(struct s3c2410_platform_i2c *i2c);\nextern void s3c_i2c3_set_platdata(struct s3c2410_platform_i2c *i2c);\nextern void s3c_i2c4_set_platdata(struct s3c2410_platform_i2c *i2c);\nextern void s3c_i2c5_set_platdata(struct s3c2410_platform_i2c *i2c);\nextern void s3c_i2c6_set_platdata(struct s3c2410_platform_i2c *i2c);\nextern void s3c_i2c7_set_platdata(struct s3c2410_platform_i2c *i2c);\nextern void s5p_i2c_hdmiphy_set_platdata(struct s3c2410_platform_i2c *i2c);\n\n \nextern void s3c_i2c0_cfg_gpio(struct platform_device *dev);\nextern void s3c_i2c1_cfg_gpio(struct platform_device *dev);\nextern void s3c_i2c2_cfg_gpio(struct platform_device *dev);\nextern void s3c_i2c3_cfg_gpio(struct platform_device *dev);\nextern void s3c_i2c4_cfg_gpio(struct platform_device *dev);\nextern void s3c_i2c5_cfg_gpio(struct platform_device *dev);\nextern void s3c_i2c6_cfg_gpio(struct platform_device *dev);\nextern void s3c_i2c7_cfg_gpio(struct platform_device *dev);\n\nextern struct s3c2410_platform_i2c default_i2c_data;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

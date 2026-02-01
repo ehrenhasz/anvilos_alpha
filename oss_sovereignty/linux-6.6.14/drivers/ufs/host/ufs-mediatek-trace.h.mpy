@@ -1,0 +1,9 @@
+{
+  "module_name": "ufs-mediatek-trace.h",
+  "hash_id": "b5e358cd57a4a6e9db1ac76ecbe3a14a6f2938f5a8b103a32cf79f45e38412e9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ufs/host/ufs-mediatek-trace.h",
+  "human_readable_source": " \n \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM ufs_mtk\n\n#if !defined(_TRACE_EVENT_UFS_MEDIATEK_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_EVENT_UFS_MEDIATEK_H\n\n#include <linux/tracepoint.h>\n\nTRACE_EVENT(ufs_mtk_event,\n\tTP_PROTO(unsigned int type, unsigned int data),\n\tTP_ARGS(type, data),\n\n\tTP_STRUCT__entry(\n\t\t__field(unsigned int, type)\n\t\t__field(unsigned int, data)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->type = type;\n\t\t__entry->data = data;\n\t),\n\n\tTP_printk(\"ufs: event=%u data=%u\",\n\t\t  __entry->type, __entry->data)\n);\n\nTRACE_EVENT(ufs_mtk_clk_scale,\n\tTP_PROTO(const char *name, bool scale_up, unsigned long clk_rate),\n\tTP_ARGS(name, scale_up, clk_rate),\n\n\tTP_STRUCT__entry(\n\t\t__field(const char*, name)\n\t\t__field(bool, scale_up)\n\t\t__field(unsigned long, clk_rate)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->name = name;\n\t\t__entry->scale_up = scale_up;\n\t\t__entry->clk_rate = clk_rate;\n\t),\n\n\tTP_printk(\"ufs: clk (%s) scaled %s @ %lu\",\n\t\t  __entry->name,\n\t\t  __entry->scale_up ? \"up\" : \"down\",\n\t\t  __entry->clk_rate)\n);\n\n#endif\n\n#undef TRACE_INCLUDE_PATH\n#undef TRACE_INCLUDE_FILE\n#define TRACE_INCLUDE_PATH ../../drivers/ufs/host\n#define TRACE_INCLUDE_FILE ufs-mediatek-trace\n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

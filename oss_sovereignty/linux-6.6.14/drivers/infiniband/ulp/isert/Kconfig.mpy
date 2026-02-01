@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5d5303f9c7749d8c9cf075a390e4825fcbec7e8d9b12324c8e072ae593242c5d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/ulp/isert/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig INFINIBAND_ISERT\n\ttristate \"iSCSI Extensions for RDMA (iSER) target support\"\n\tdepends on INET && INFINIBAND_ADDR_TRANS && TARGET_CORE && ISCSI_TARGET\n\thelp\n\tSupport for iSCSI Extensions for RDMA (iSER) Target on Infiniband fabrics.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

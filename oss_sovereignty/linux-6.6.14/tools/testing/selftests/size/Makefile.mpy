@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6704e29bafa779f8d7a76e95d58950c4d6f866bf611852373975d9a743868935",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/size/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nCFLAGS := -static -ffreestanding -nostartfiles -s\n\nTEST_GEN_PROGS := get_size\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

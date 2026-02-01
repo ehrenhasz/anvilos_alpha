@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "e4712bf50b885a6b8f79262ef98a13d1b6d577e5112c581ab935864982cf6d24",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/futex/functional/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nfutex_requeue_pi\nfutex_requeue_pi_mismatched_ops\nfutex_requeue_pi_signal_restart\nfutex_wait_private_mapped_file\nfutex_wait_timeout\nfutex_wait_uninitialized_heap\nfutex_wait_wouldblock\nfutex_wait\nfutex_requeue\nfutex_waitv\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

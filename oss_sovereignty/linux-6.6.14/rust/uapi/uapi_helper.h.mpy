@@ -1,0 +1,9 @@
+{
+  "module_name": "uapi_helper.h",
+  "hash_id": "742045d785720791b7293e43475caa202a23b6db45efb562c6200fea345c016c",
+  "original_prompt": "Ingested from linux-6.6.14/rust/uapi/uapi_helper.h",
+  "human_readable_source": " \n \n\n#include <uapi/asm-generic/ioctl.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

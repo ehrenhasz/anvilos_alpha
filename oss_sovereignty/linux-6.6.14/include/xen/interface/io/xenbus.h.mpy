@@ -1,0 +1,9 @@
+{
+  "module_name": "xenbus.h",
+  "hash_id": "1087fac3ae3cb64bed0562c50c9873c02288ee3d158b454856f57d311feea4ca",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/interface/io/xenbus.h",
+  "human_readable_source": " \n \n\n#ifndef _XEN_PUBLIC_IO_XENBUS_H\n#define _XEN_PUBLIC_IO_XENBUS_H\n\n \nenum xenbus_state\n{\n\tXenbusStateUnknown      = 0,\n\tXenbusStateInitialising = 1,\n\tXenbusStateInitWait     = 2,   \n\tXenbusStateInitialised  = 3,   \n\tXenbusStateConnected    = 4,\n\tXenbusStateClosing      = 5,   \n\tXenbusStateClosed       = 6,\n\n\t \n\tXenbusStateReconfiguring = 7,\n\n\tXenbusStateReconfigured  = 8\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "selftests.h",
+  "hash_id": "85ade1c259b15523f0776aa6b40e5e1d36e34ee8884f8b44a61ec81e1e1c4133",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/selftests.h",
+  "human_readable_source": " \n#ifndef _NET_SELFTESTS\n#define _NET_SELFTESTS\n\n#include <linux/ethtool.h>\n\n#if IS_ENABLED(CONFIG_NET_SELFTESTS)\n\nvoid net_selftest(struct net_device *ndev, struct ethtool_test *etest,\n\t\t  u64 *buf);\nint net_selftest_get_count(void);\nvoid net_selftest_get_strings(u8 *data);\n\n#else\n\nstatic inline void net_selftest(struct net_device *ndev, struct ethtool_test *etest,\n\t\t\t\tu64 *buf)\n{\n}\n\nstatic inline int net_selftest_get_count(void)\n{\n\treturn 0;\n}\n\nstatic inline void net_selftest_get_strings(u8 *data)\n{\n}\n\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

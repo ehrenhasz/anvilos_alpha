@@ -1,0 +1,9 @@
+{
+  "module_name": "ax88796.h",
+  "hash_id": "528b7e0c9308df2dc06e0722eb09a1f9be4f20c36c5a90ba555b3c62701bba03",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/ax88796.h",
+  "human_readable_source": " \n \n\n#ifndef __NET_AX88796_PLAT_H\n#define __NET_AX88796_PLAT_H\n\n#include <linux/types.h>\n\nstruct sk_buff;\nstruct net_device;\nstruct platform_device;\n\n#define AXFLG_HAS_EEPROM\t\t(1<<0)\n#define AXFLG_MAC_FROMDEV\t\t(1<<1)\t \n#define AXFLG_HAS_93CX6\t\t\t(1<<2)\t \n#define AXFLG_MAC_FROMPLATFORM\t\t(1<<3)\t \n\nstruct ax_plat_data {\n\tunsigned int\t flags;\n\tunsigned char\t wordlength;\t \n\tunsigned char\t dcr_val;\t \n\tunsigned char\t rcr_val;\t \n\tunsigned char\t gpoc_val;\t \n\tu32\t\t*reg_offsets;\t \n\tu8\t\t*mac_addr;\t \n\n\t \n\tvoid (*block_output)(struct net_device *dev, int count,\n\t\t\tconst unsigned char *buf, int star_page);\n\tvoid (*block_input)(struct net_device *dev, int count,\n\t\t\tstruct sk_buff *skb, int ring_offset);\n\t \n\tint (*check_irq)(struct platform_device *pdev);\n};\n\n \nextern void ax_NS8390_reinit(struct net_device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

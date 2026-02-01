@@ -1,0 +1,9 @@
+{
+  "module_name": "for_each_array_map_elem.c",
+  "hash_id": "8e197e113834de5457817bd7f47379c7357bd0f500da0466ddd2a64fbe74496f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/for_each_array_map_elem.c",
+  "human_readable_source": "\n \n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(max_entries, 3);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} arraymap SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} percpu_map SEC(\".maps\");\n\nstruct callback_ctx {\n\tint output;\n};\n\nconst volatile int bypass_unused = 1;\n\nstatic __u64\nunused_subprog(struct bpf_map *map, __u32 *key, __u64 *val,\n\t       struct callback_ctx *data)\n{\n\tdata->output = 0;\n\treturn 1;\n}\n\nstatic __u64\ncheck_array_elem(struct bpf_map *map, __u32 *key, __u64 *val,\n\t\t struct callback_ctx *data)\n{\n\tdata->output += *val;\n\tif (*key == 1)\n\t\treturn 1;  \n\treturn 0;\n}\n\n__u32 cpu = 0;\n__u64 percpu_val = 0;\n\nstatic __u64\ncheck_percpu_elem(struct bpf_map *map, __u32 *key, __u64 *val,\n\t\t  struct callback_ctx *data)\n{\n\tcpu = bpf_get_smp_processor_id();\n\tpercpu_val = *val;\n\treturn 0;\n}\n\nu32 arraymap_output = 0;\n\nSEC(\"tc\")\nint test_pkt_access(struct __sk_buff *skb)\n{\n\tstruct callback_ctx data;\n\n\tdata.output = 0;\n\tbpf_for_each_map_elem(&arraymap, check_array_elem, &data, 0);\n\tif (!bypass_unused)\n\t\tbpf_for_each_map_elem(&arraymap, unused_subprog, &data, 0);\n\tarraymap_output = data.output;\n\n\tbpf_for_each_map_elem(&percpu_map, check_percpu_elem, (void *)0, 0);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

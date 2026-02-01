@@ -1,0 +1,9 @@
+{
+  "module_name": "parse-sublevel-options.c",
+  "hash_id": "ca4da508633f56b93d155f89d19de4f8be47ce70399ab44424ba20d190248a25",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/parse-sublevel-options.c",
+  "human_readable_source": "#include <stdlib.h>\n#include <stdint.h>\n#include <string.h>\n#include <stdio.h>\n\n#include \"util/debug.h\"\n#include \"util/parse-sublevel-options.h\"\n\nstatic int parse_one_sublevel_option(const char *str,\n\t\t\t\t     struct sublevel_option *opts)\n{\n\tstruct sublevel_option *opt = opts;\n\tchar *vstr, *s = strdup(str);\n\tint v = 1;\n\n\tif (!s) {\n\t\tpr_err(\"no memory\\n\");\n\t\treturn -1;\n\t}\n\n\tvstr = strchr(s, '=');\n\tif (vstr)\n\t\t*vstr++ = 0;\n\n\twhile (opt->name) {\n\t\tif (!strcmp(s, opt->name))\n\t\t\tbreak;\n\t\topt++;\n\t}\n\n\tif (!opt->name) {\n\t\tpr_err(\"Unknown option name '%s'\\n\", s);\n\t\tfree(s);\n\t\treturn -1;\n\t}\n\n\tif (vstr)\n\t\tv = atoi(vstr);\n\n\t*opt->value_ptr = v;\n\tfree(s);\n\treturn 0;\n}\n\n \nint perf_parse_sublevel_options(const char *str, struct sublevel_option *opts)\n{\n\tchar *s = strdup(str);\n\tchar *p = NULL;\n\tint ret;\n\n\tif (!s) {\n\t\tpr_err(\"no memory\\n\");\n\t\treturn -1;\n\t}\n\n\tp = strtok(s, \",\");\n\twhile (p) {\n\t\tret = parse_one_sublevel_option(p, opts);\n\t\tif (ret) {\n\t\t\tfree(s);\n\t\t\treturn ret;\n\t\t}\n\n\t\tp = strtok(NULL, \",\");\n\t}\n\n\tfree(s);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

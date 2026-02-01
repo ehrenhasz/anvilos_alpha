@@ -1,0 +1,9 @@
+{
+  "module_name": "test-btowc-3.sh",
+  "hash_id": "1e1d20b64a236c1f82f350dd4de8bb1b74bfd66cbfee9770621ee416a9627c29",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-btowc-3.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test whether a specific UTF-8 locale is installed.\n: \"${LOCALE_FR_UTF8=fr_FR.UTF-8}\"\nif test $LOCALE_FR_UTF8 = none; then\n  if test -f /usr/bin/localedef; then\n    echo \"Skipping test: no french Unicode locale is installed\"\n  else\n    echo \"Skipping test: no french Unicode locale is supported\"\n  fi\n  exit 77\nfi\n\nLC_ALL=$LOCALE_FR_UTF8 \\\n${CHECKER} ./test-btowc${EXEEXT} 3\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

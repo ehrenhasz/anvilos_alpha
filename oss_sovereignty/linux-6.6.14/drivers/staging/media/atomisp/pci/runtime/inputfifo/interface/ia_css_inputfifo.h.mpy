@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_inputfifo.h",
+  "hash_id": "18d92f89de6f9530e47e2287dcf168e3fdba3b84e3da94f3e960082a31a7db9d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/inputfifo/interface/ia_css_inputfifo.h",
+  "human_readable_source": " \n \n\n#ifndef _IA_CSS_INPUTFIFO_H\n#define _IA_CSS_INPUTFIFO_H\n\n#include <sp.h>\n#include <isp.h>\n\n#include \"ia_css_stream_format.h\"\n\n \nvoid ia_css_inputfifo_send_input_frame(\n    const unsigned short\t*data,\n    unsigned int\twidth,\n    unsigned int\theight,\n    unsigned int\tch_id,\n    enum atomisp_input_format\tinput_format,\n    bool\t\t\ttwo_ppc);\n\nvoid ia_css_inputfifo_start_frame(\n    unsigned int\tch_id,\n    enum atomisp_input_format\tinput_format,\n    bool\t\t\ttwo_ppc);\n\nvoid ia_css_inputfifo_send_line(\n    unsigned int\tch_id,\n    const unsigned short\t*data,\n    unsigned int\twidth,\n    const unsigned short\t*data2,\n    unsigned int\twidth2);\n\nvoid ia_css_inputfifo_send_embedded_line(\n    unsigned int\tch_id,\n    enum atomisp_input_format\tdata_type,\n    const unsigned short\t*data,\n    unsigned int\twidth);\n\nvoid ia_css_inputfifo_end_frame(\n    unsigned int\tch_id);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "82571.h",
+  "hash_id": "b9a4c96f57a8ec646b454f2251c06eb0c01939908f09f3a07c451d231f65bddb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/e1000e/82571.h",
+  "human_readable_source": " \n \n\n#ifndef _E1000E_82571_H_\n#define _E1000E_82571_H_\n\n#define ID_LED_RESERVED_F746\t0xF746\n#define ID_LED_DEFAULT_82573\t((ID_LED_DEF1_DEF2 << 12) | \\\n\t\t\t\t (ID_LED_OFF1_ON2  <<  8) | \\\n\t\t\t\t (ID_LED_DEF1_DEF2 <<  4) | \\\n\t\t\t\t (ID_LED_DEF1_DEF2))\n\n#define E1000_GCR_L1_ACT_WITHOUT_L0S_RX\t0x08000000\n#define AN_RETRY_COUNT\t\t5\t \n\n \n#define E1000_EITR_82574(_n)\t(0x000E8 + (0x4 * (_n)))\n\n#define E1000_EIAC_82574\t0x000DC\t \n#define E1000_EIAC_MASK_82574\t0x01F00000\n\n#define E1000_IVAR_INT_ALLOC_VALID\t0x8\n\n \n#define E1000_NVM_INIT_CTRL2_MNGM\t0x6000\n\n#define E1000_BASE1000T_STATUS\t\t10\n#define E1000_IDLE_ERROR_COUNT_MASK\t0xFF\n#define E1000_RECEIVE_ERROR_COUNTER\t21\n#define E1000_RECEIVE_ERROR_MAX\t\t0xFFFF\nbool e1000_check_phy_82574(struct e1000_hw *hw);\nbool e1000e_get_laa_state_82571(struct e1000_hw *hw);\nvoid e1000e_set_laa_state_82571(struct e1000_hw *hw, bool state);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

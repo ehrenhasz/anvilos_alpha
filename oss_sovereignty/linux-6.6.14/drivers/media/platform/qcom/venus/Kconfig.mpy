@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5071ad606f722c5ef50c1db799c6667366051dd261ec328fa119d74326eb862b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/qcom/venus/Kconfig",
+  "human_readable_source": "config VIDEO_QCOM_VENUS\n\ttristate \"Qualcomm Venus V4L2 encoder/decoder driver\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on VIDEO_DEV && QCOM_SMEM\n\tdepends on (ARCH_QCOM && IOMMU_DMA) || COMPILE_TEST\n\tselect QCOM_MDT_LOADER if ARCH_QCOM\n\tselect QCOM_SCM\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_MEM2MEM_DEV\n\thelp\n\t  This is a V4L2 driver for Qualcomm Venus video accelerator\n\t  hardware. It accelerates encoding and decoding operations\n\t  on various Qualcomm SoCs.\n\t  To compile this driver as a module choose m here.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

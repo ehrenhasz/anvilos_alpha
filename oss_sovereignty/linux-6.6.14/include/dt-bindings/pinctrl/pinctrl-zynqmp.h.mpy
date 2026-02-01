@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-zynqmp.h",
+  "hash_id": "be234ae90e0102405549adc9cdb22559db665e8f0b6a7e51b0c98c8ef5da725a",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/pinctrl-zynqmp.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_PINCTRL_ZYNQMP_H\n#define _DT_BINDINGS_PINCTRL_ZYNQMP_H\n\n \n#define IO_STANDARD_LVCMOS33\t0\n#define IO_STANDARD_LVCMOS18\t1\n\n \n#define SLEW_RATE_FAST\t\t0\n#define SLEW_RATE_SLOW\t\t1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

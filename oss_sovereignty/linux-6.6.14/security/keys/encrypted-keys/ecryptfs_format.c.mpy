@@ -1,0 +1,9 @@
+{
+  "module_name": "ecryptfs_format.c",
+  "hash_id": "a6c3f0d8210d0716514929a8a798b83e341ab252e2a288b0bc7aba7aee3e9a6b",
+  "original_prompt": "Ingested from linux-6.6.14/security/keys/encrypted-keys/ecryptfs_format.c",
+  "human_readable_source": "\n \n\n#include <linux/export.h>\n#include <linux/string.h>\n#include \"ecryptfs_format.h\"\n\nu8 *ecryptfs_get_auth_tok_key(struct ecryptfs_auth_tok *auth_tok)\n{\n\treturn auth_tok->token.password.session_key_encryption_key;\n}\nEXPORT_SYMBOL(ecryptfs_get_auth_tok_key);\n\n \nvoid ecryptfs_get_versions(int *major, int *minor, int *file_version)\n{\n\t*major = ECRYPTFS_VERSION_MAJOR;\n\t*minor = ECRYPTFS_VERSION_MINOR;\n\tif (file_version)\n\t\t*file_version = ECRYPTFS_SUPPORTED_FILE_VERSION;\n}\nEXPORT_SYMBOL(ecryptfs_get_versions);\n\n \nint ecryptfs_fill_auth_tok(struct ecryptfs_auth_tok *auth_tok,\n\t\t\t   const char *key_desc)\n{\n\tint major, minor;\n\n\tecryptfs_get_versions(&major, &minor, NULL);\n\tauth_tok->version = (((uint16_t)(major << 8) & 0xFF00)\n\t\t\t     | ((uint16_t)minor & 0x00FF));\n\tauth_tok->token_type = ECRYPTFS_PASSWORD;\n\tstrncpy((char *)auth_tok->token.password.signature, key_desc,\n\t\tECRYPTFS_PASSWORD_SIG_SIZE);\n\tauth_tok->token.password.session_key_encryption_key_bytes =\n\t\tECRYPTFS_MAX_KEY_BYTES;\n\t \n\t \n\tauth_tok->token.password.flags |=\n\t\tECRYPTFS_SESSION_KEY_ENCRYPTION_KEY_SET;\n\t \n\tauth_tok->session_key.encrypted_key[0] = 0;\n\tauth_tok->session_key.encrypted_key_size = 0;\n\t \n\tauth_tok->token.password.hash_algo = PGP_DIGEST_ALGO_SHA512;\n\tauth_tok->token.password.flags &= ~(ECRYPTFS_PERSISTENT_PASSWORD);\n\treturn 0;\n}\nEXPORT_SYMBOL(ecryptfs_fill_auth_tok);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

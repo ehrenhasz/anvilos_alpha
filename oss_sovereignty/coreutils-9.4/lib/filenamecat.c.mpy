@@ -1,0 +1,9 @@
+{
+  "module_name": "filenamecat.c",
+  "hash_id": "37b6f1cd1b1ee4389b4dd40cf02f75d7ca6038b9735e47a17dc0d0ca976dd9b4",
+  "original_prompt": "Ingested from coreutils-9.4/lib/filenamecat.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include \"filenamecat.h\"\n\n#include <stdlib.h>\n#include <string.h>\n\n#include \"xalloc.h\"\n\n \n\nchar *\nfile_name_concat (char const *dir, char const *base, char **base_in_result)\n{\n  char *p = mfile_name_concat (dir, base, base_in_result);\n  if (p == NULL)\n    xalloc_die ();\n  return p;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f378dfbd002afb6fcc0e0462b94d32d0ca99a8403eede7c5880bdf1c25fe46b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/blink/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_LEDS_BCM63138)\t+= leds-bcm63138.o\nobj-$(CONFIG_LEDS_LGM)\t+= leds-lgm-sso.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "da950fa2b3b988a42b8960d1b59c42fd7e86be14475eda2d73ea88ebe0c10210",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/tm/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ntm-resched-dscr\ntm-syscall\ntm-signal-msr-resv\ntm-signal-stack\ntm-vmxcopy\ntm-fork\ntm-tar\ntm-tmspr\ntm-exec\ntm-signal-context-chk-fpu\ntm-signal-context-chk-gpr\ntm-signal-context-chk-vmx\ntm-signal-context-chk-vsx\ntm-signal-context-force-tm\ntm-signal-sigreturn-nt\ntm-signal-pagefault\ntm-vmx-unavail\ntm-unavailable\ntm-trap\ntm-sigreturn\ntm-poison\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

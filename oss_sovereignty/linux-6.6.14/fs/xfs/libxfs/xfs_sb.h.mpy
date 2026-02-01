@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_sb.h",
+  "hash_id": "30c7b8c619dc649442d0b003e0b23d65bf95d454fdb0f33dda99580c43fdc687",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/libxfs/xfs_sb.h",
+  "human_readable_source": "\n \n#ifndef __XFS_SB_H__\n#define\t__XFS_SB_H__\n\nstruct xfs_mount;\nstruct xfs_sb;\nstruct xfs_dsb;\nstruct xfs_trans;\nstruct xfs_fsop_geom;\nstruct xfs_perag;\n\nextern void\txfs_log_sb(struct xfs_trans *tp);\nextern int\txfs_sync_sb(struct xfs_mount *mp, bool wait);\nextern int\txfs_sync_sb_buf(struct xfs_mount *mp);\nextern void\txfs_sb_mount_common(struct xfs_mount *mp, struct xfs_sb *sbp);\nextern void\txfs_sb_from_disk(struct xfs_sb *to, struct xfs_dsb *from);\nextern void\txfs_sb_to_disk(struct xfs_dsb *to, struct xfs_sb *from);\nextern void\txfs_sb_quota_from_disk(struct xfs_sb *sbp);\nextern bool\txfs_sb_good_version(struct xfs_sb *sbp);\nextern uint64_t\txfs_sb_version_to_features(struct xfs_sb *sbp);\n\nextern int\txfs_update_secondary_sbs(struct xfs_mount *mp);\n\n#define XFS_FS_GEOM_MAX_STRUCT_VER\t(4)\nextern void\txfs_fs_geometry(struct xfs_mount *mp, struct xfs_fsop_geom *geo,\n\t\t\t\tint struct_version);\nextern int\txfs_sb_read_secondary(struct xfs_mount *mp,\n\t\t\t\tstruct xfs_trans *tp, xfs_agnumber_t agno,\n\t\t\t\tstruct xfs_buf **bpp);\nextern int\txfs_sb_get_secondary(struct xfs_mount *mp,\n\t\t\t\tstruct xfs_trans *tp, xfs_agnumber_t agno,\n\t\t\t\tstruct xfs_buf **bpp);\n\nextern bool\txfs_validate_stripe_geometry(struct xfs_mount *mp,\n\t\t__s64 sunit, __s64 swidth, int sectorsize, bool silent);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

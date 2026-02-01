@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "877b0ea3615717a6b2ebd2fd95f02313f10870d0ba2c2a99c56c4eb225fdf6e4",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/au1x/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Au1200/Au1550 PSC audio\nsnd-soc-au1xpsc-dbdma-objs := dbdma2.o\nsnd-soc-au1xpsc-i2s-objs := psc-i2s.o\nsnd-soc-au1xpsc-ac97-objs := psc-ac97.o\n\n# Au1000/1500/1100 Audio units\nsnd-soc-au1x-dma-objs := dma.o\nsnd-soc-au1x-ac97c-objs := ac97c.o\nsnd-soc-au1x-i2sc-objs := i2sc.o\n\nobj-$(CONFIG_SND_SOC_AU1XPSC) += snd-soc-au1xpsc-dbdma.o\nobj-$(CONFIG_SND_SOC_AU1XPSC_I2S) += snd-soc-au1xpsc-i2s.o\nobj-$(CONFIG_SND_SOC_AU1XPSC_AC97) += snd-soc-au1xpsc-ac97.o\nobj-$(CONFIG_SND_SOC_AU1XAUDIO) += snd-soc-au1x-dma.o\nobj-$(CONFIG_SND_SOC_AU1XAC97C) += snd-soc-au1x-ac97c.o\nobj-$(CONFIG_SND_SOC_AU1XI2SC) += snd-soc-au1x-i2sc.o\n\n# Boards\nsnd-soc-db1000-objs := db1000.o\nsnd-soc-db1200-objs := db1200.o\n\nobj-$(CONFIG_SND_SOC_DB1000) += snd-soc-db1000.o\nobj-$(CONFIG_SND_SOC_DB1200) += snd-soc-db1200.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

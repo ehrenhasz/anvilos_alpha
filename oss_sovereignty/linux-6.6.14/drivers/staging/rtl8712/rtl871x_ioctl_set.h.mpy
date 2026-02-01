@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl871x_ioctl_set.h",
+  "hash_id": "90918858f0d6d62bdf69cc10e4eb45b0fafd3f89e05f5faf506a3b1f02a5096b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl871x_ioctl_set.h",
+  "human_readable_source": " \n \n#ifndef __IOCTL_SET_H\n#define __IOCTL_SET_H\n\n#include \"drv_types.h\"\n\ntypedef u8 NDIS_802_11_PMKID_VALUE[16];\n\nstruct BSSIDInfo {\n\tunsigned char BSSID[6];\n\tNDIS_802_11_PMKID_VALUE PMKID;\n};\n\nu8 r8712_set_802_11_authentication_mode(struct _adapter *pdapter,\n\t\t\tenum NDIS_802_11_AUTHENTICATION_MODE authmode);\n\nu8 r8712_set_802_11_bssid(struct _adapter *padapter, u8 *bssid);\n\nint r8712_set_802_11_add_wep(struct _adapter *padapter,\n\t\t\t     struct NDIS_802_11_WEP *wep);\n\nu8 r8712_set_802_11_disassociate(struct _adapter *padapter);\n\nu8 r8712_set_802_11_bssid_list_scan(struct _adapter *padapter);\n\nvoid r8712_set_802_11_infrastructure_mode(struct _adapter *padapter,\n\t\t\tenum NDIS_802_11_NETWORK_INFRASTRUCTURE networktype);\n\nvoid r8712_set_802_11_ssid(struct _adapter *padapter,\n\t\t\t   struct ndis_802_11_ssid *ssid);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

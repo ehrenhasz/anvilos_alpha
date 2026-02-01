@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm_mm.h",
+  "hash_id": "372a58e5a33c5cb9a5e107df283b426a8b4b12f6433950de4288ce7ea5548310",
+  "original_prompt": "Ingested from linux-6.6.14/virt/kvm/kvm_mm.h",
+  "human_readable_source": " \n\n#ifndef __KVM_MM_H__\n#define __KVM_MM_H__ 1\n\n \n\n#ifdef KVM_HAVE_MMU_RWLOCK\n#define KVM_MMU_LOCK_INIT(kvm)\t\trwlock_init(&(kvm)->mmu_lock)\n#define KVM_MMU_LOCK(kvm)\t\twrite_lock(&(kvm)->mmu_lock)\n#define KVM_MMU_UNLOCK(kvm)\t\twrite_unlock(&(kvm)->mmu_lock)\n#else\n#define KVM_MMU_LOCK_INIT(kvm)\t\tspin_lock_init(&(kvm)->mmu_lock)\n#define KVM_MMU_LOCK(kvm)\t\tspin_lock(&(kvm)->mmu_lock)\n#define KVM_MMU_UNLOCK(kvm)\t\tspin_unlock(&(kvm)->mmu_lock)\n#endif  \n\nkvm_pfn_t hva_to_pfn(unsigned long addr, bool atomic, bool interruptible,\n\t\t     bool *async, bool write_fault, bool *writable);\n\n#ifdef CONFIG_HAVE_KVM_PFNCACHE\nvoid gfn_to_pfn_cache_invalidate_start(struct kvm *kvm,\n\t\t\t\t       unsigned long start,\n\t\t\t\t       unsigned long end,\n\t\t\t\t       bool may_block);\n#else\nstatic inline void gfn_to_pfn_cache_invalidate_start(struct kvm *kvm,\n\t\t\t\t\t\t     unsigned long start,\n\t\t\t\t\t\t     unsigned long end,\n\t\t\t\t\t\t     bool may_block)\n{\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

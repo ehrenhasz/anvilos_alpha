@@ -1,0 +1,9 @@
+{
+  "module_name": "tegra186-powergate.h",
+  "hash_id": "14ddf836eab7700702cce5d03ce14c5ca032663884b5f1bcda98ff1ba1a8e0be",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/tegra186-powergate.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_POWER_TEGRA186_POWERGATE_H\n#define _DT_BINDINGS_POWER_TEGRA186_POWERGATE_H\n\n#define TEGRA186_POWER_DOMAIN_AUD\t0\n#define TEGRA186_POWER_DOMAIN_DFD\t1\n#define TEGRA186_POWER_DOMAIN_DISP\t2\n#define TEGRA186_POWER_DOMAIN_DISPB\t3\n#define TEGRA186_POWER_DOMAIN_DISPC\t4\n#define TEGRA186_POWER_DOMAIN_ISPA\t5\n#define TEGRA186_POWER_DOMAIN_NVDEC\t6\n#define TEGRA186_POWER_DOMAIN_NVJPG\t7\n#define TEGRA186_POWER_DOMAIN_MPE\t8\n#define TEGRA186_POWER_DOMAIN_PCX\t9\n#define TEGRA186_POWER_DOMAIN_SAX\t10\n#define TEGRA186_POWER_DOMAIN_VE\t11\n#define TEGRA186_POWER_DOMAIN_VIC\t12\n#define TEGRA186_POWER_DOMAIN_XUSBA\t13\n#define TEGRA186_POWER_DOMAIN_XUSBB\t14\n#define TEGRA186_POWER_DOMAIN_XUSBC\t15\n#define TEGRA186_POWER_DOMAIN_GPU\t43\n#define TEGRA186_POWER_DOMAIN_MAX\t44\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

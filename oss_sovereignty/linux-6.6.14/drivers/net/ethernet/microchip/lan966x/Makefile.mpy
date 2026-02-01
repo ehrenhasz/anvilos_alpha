@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "66940103b22059c78cda99e36eb38cb76c7e78887d8eed588e71c949ed5f59b8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/microchip/lan966x/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Microchip Lan966x network device drivers.\n#\n\nobj-$(CONFIG_LAN966X_SWITCH) += lan966x-switch.o\n\nlan966x-switch-objs  := lan966x_main.o lan966x_phylink.o lan966x_port.o \\\n\t\t\tlan966x_mac.o lan966x_ethtool.o lan966x_switchdev.o \\\n\t\t\tlan966x_vlan.o lan966x_fdb.o lan966x_mdb.o \\\n\t\t\tlan966x_ptp.o lan966x_fdma.o lan966x_lag.o \\\n\t\t\tlan966x_tc.o lan966x_mqprio.o lan966x_taprio.o \\\n\t\t\tlan966x_tbf.o lan966x_cbs.o lan966x_ets.o \\\n\t\t\tlan966x_tc_matchall.o lan966x_police.o lan966x_mirror.o \\\n\t\t\tlan966x_xdp.o lan966x_vcap_impl.o lan966x_vcap_ag_api.o \\\n\t\t\tlan966x_tc_flower.o lan966x_goto.o\n\nlan966x-switch-$(CONFIG_LAN966X_DCB) += lan966x_dcb.o\nlan966x-switch-$(CONFIG_DEBUG_FS) += lan966x_vcap_debugfs.o\n\n# Provide include files\nccflags-y += -I$(srctree)/drivers/net/ethernet/microchip/vcap\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mxl301rf.h",
+  "hash_id": "4933e7712eafb0ed78211d4fe9330e7b8d2e9221ad6b378fbe20cb6b245a353c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/mxl301rf.h",
+  "human_readable_source": " \n \n\n#ifndef MXL301RF_H\n#define MXL301RF_H\n\n#include <media/dvb_frontend.h>\n\nstruct mxl301rf_config {\n\tstruct dvb_frontend *fe;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

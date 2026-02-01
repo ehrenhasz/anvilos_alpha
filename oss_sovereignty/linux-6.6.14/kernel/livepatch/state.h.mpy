@@ -1,0 +1,9 @@
+{
+  "module_name": "state.h",
+  "hash_id": "98a6dc1551fb5996d43f2502c345ea24a26b80301e2b5ae1d0f543e75d2a3508",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/livepatch/state.h",
+  "human_readable_source": " \n#ifndef _LIVEPATCH_STATE_H\n#define _LIVEPATCH_STATE_H\n\n#include <linux/livepatch.h>\n\nbool klp_is_patch_compatible(struct klp_patch *patch);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

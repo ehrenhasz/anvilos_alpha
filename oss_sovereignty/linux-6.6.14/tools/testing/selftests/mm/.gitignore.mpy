@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "6ef0e939a01131e8b320de59c04640c0d1d9bb080be73b03fa256914dec2e0c6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/mm/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ncow\nhugepage-mmap\nhugepage-mremap\nhugepage-shm\nhugepage-vmemmap\nhugetlb-madvise\nhugetlb-read-hwpoison\nkhugepaged\nmap_hugetlb\nmap_populate\nthuge-gen\ncompaction_test\nmigration\nmlock2-tests\nmrelease_test\nmremap_dontunmap\nmremap_test\non-fault-limit\ntranshuge-stress\nprotection_keys\nprotection_keys_32\nprotection_keys_64\nmadv_populate\nuffd-stress\nuffd-unit-tests\nmlock-intersect-test\nmlock-random-test\nvirtual_address_range\ngup_test\nva_128TBswitch\nmap_fixed_noreplace\nwrite_to_hugetlbfs\nhmm-tests\nmemfd_secret\nsoft-dirty\nsplit_huge_page_test\nksm_tests\nlocal_config.h\nlocal_config.mk\nksm_functional_tests\nmdwe_test\ngup_longterm\nmkdirty\nva_high_addr_switch\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ui.h",
+  "hash_id": "dfdf823ea399befe2c77338737fccf63649ce230a1addc5497673c9989c76de2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/ui.h",
+  "human_readable_source": " \n#ifndef _PERF_UI_H_\n#define _PERF_UI_H_ 1\n\n#include \"../util/mutex.h\"\n#include <stdbool.h>\n#include <linux/compiler.h>\n\nextern struct mutex ui__lock;\nextern void *perf_gtk_handle;\n\nextern int use_browser;\n\nvoid setup_browser(bool fallback_to_pager);\nvoid exit_browser(bool wait_for_ok);\n\n#ifdef HAVE_SLANG_SUPPORT\nint ui__init(void);\nvoid ui__exit(bool wait_for_ok);\n#else\nstatic inline int ui__init(void)\n{\n\treturn -1;\n}\nstatic inline void ui__exit(bool wait_for_ok __maybe_unused) {}\n#endif\n\nvoid ui__refresh_dimensions(bool force);\n\nstruct option;\n\nint stdio__config_color(const struct option *opt, const char *mode, int unset);\n\nvoid pthread__block_sigwinch(void);\nvoid pthread__unblock_sigwinch(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

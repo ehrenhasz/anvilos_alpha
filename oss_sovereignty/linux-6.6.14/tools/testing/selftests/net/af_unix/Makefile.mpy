@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1a040aab9ea2d6ada786eacd882b2da8a1058e1ee8574545458a11efe2b5251b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/af_unix/Makefile",
+  "human_readable_source": "CFLAGS += $(KHDR_INCLUDES)\nTEST_GEN_PROGS := diag_uid test_unix_oob unix_connect scm_pidfd\n\ninclude ../../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

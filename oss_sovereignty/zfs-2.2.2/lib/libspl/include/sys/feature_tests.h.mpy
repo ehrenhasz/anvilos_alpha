@@ -1,0 +1,9 @@
+{
+  "module_name": "feature_tests.h",
+  "hash_id": "0c0a2b0d8adcef773b1821fa6a20190c1e4414add2feb85747a6d7c9a24c96c4",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/feature_tests.h",
+  "human_readable_source": " \n \n\n#ifndef _SYS_FEATURE_TESTS_H\n#define\t_SYS_FEATURE_TESTS_H\n\n#define\t____cacheline_aligned\n\n#if !defined(zfs_fallthrough) && !defined(_LIBCPP_VERSION)\n#if defined(HAVE_IMPLICIT_FALLTHROUGH)\n#define\tzfs_fallthrough\t\t__attribute__((__fallthrough__))\n#else\n#define\tzfs_fallthrough\t\t((void)0)\n#endif\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

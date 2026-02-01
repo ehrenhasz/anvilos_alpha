@@ -1,0 +1,9 @@
+{
+  "module_name": "mgag200_bmc.c",
+  "hash_id": "7aff24950d3a1ef8a5172c563c1b472d47a6b88820a612d91158a424e7e353dc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/mgag200/mgag200_bmc.c",
+  "human_readable_source": "\n\n#include <linux/delay.h>\n\n#include \"mgag200_drv.h\"\n\nvoid mgag200_bmc_disable_vidrst(struct mga_device *mdev)\n{\n\tu8 tmp;\n\tint iter_max;\n\n\t \n\n\tWREG8(DAC_INDEX, MGA1064_GEN_IO_CTL);\n\ttmp = RREG8(DAC_DATA);\n\ttmp |= 0x10;\n\tWREG_DAC(MGA1064_GEN_IO_CTL, tmp);\n\n\t \n\tWREG8(DAC_INDEX, MGA1064_GEN_IO_DATA);\n\ttmp = RREG8(DAC_DATA);\n\ttmp |= 0x10;\n\tWREG_DAC(MGA1064_GEN_IO_DATA, tmp);\n\n\t \n\n\tWREG8(DAC_INDEX, MGA1064_SPAREREG);\n\ttmp = RREG8(DAC_DATA);\n\ttmp |= 0x80;\n\tWREG_DAC(MGA1064_SPAREREG, tmp);\n\n\t \n\titer_max = 300;\n\twhile (!(tmp & 0x1) && iter_max) {\n\t\tWREG8(DAC_INDEX, MGA1064_SPAREREG);\n\t\ttmp = RREG8(DAC_DATA);\n\t\tudelay(1000);\n\t\titer_max--;\n\t}\n\n\t \n\tif (iter_max) {\n\t\titer_max = 300;\n\t\twhile ((tmp & 0x2) && iter_max) {\n\t\t\tWREG8(DAC_INDEX, MGA1064_SPAREREG);\n\t\t\ttmp = RREG8(DAC_DATA);\n\t\t\tudelay(1000);\n\t\t\titer_max--;\n\t\t}\n\t}\n}\n\nvoid mgag200_bmc_enable_vidrst(struct mga_device *mdev)\n{\n\tu8 tmp;\n\n\t \n\tWREG8(MGAREG_CRTCEXT_INDEX, 1);\n\ttmp = RREG8(MGAREG_CRTCEXT_DATA);\n\tWREG8(MGAREG_CRTCEXT_DATA, tmp | 0x88);\n\n\t \n\tWREG8(DAC_INDEX, MGA1064_REMHEADCTL2);\n\ttmp = RREG8(DAC_DATA);\n\ttmp |= 0x8;\n\tWREG8(DAC_DATA, tmp);\n\n\tudelay(10);\n\n\t \n\ttmp &= ~0x08;\n\tWREG8(DAC_INDEX, MGA1064_REMHEADCTL2);\n\tWREG8(DAC_DATA, tmp);\n\n\t \n\tWREG8(DAC_INDEX, MGA1064_SPAREREG);\n\ttmp = RREG8(DAC_DATA);\n\ttmp &= ~0x80;\n\tWREG8(DAC_DATA, tmp);\n\n\t \n\tWREG8(DAC_INDEX, MGA1064_GEN_IO_DATA);\n\ttmp = RREG8(DAC_DATA);\n\ttmp &= ~0x10;\n\tWREG_DAC(MGA1064_GEN_IO_DATA, tmp);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

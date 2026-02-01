@@ -1,0 +1,9 @@
+{
+  "module_name": "key_defined.c",
+  "hash_id": "5b96bbbf457e67ea4f5865034b88826b6b132274dc47750d954d2ce382d19e18",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/key_defined.c",
+  "human_readable_source": " \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: key_defined.c,v 1.10 2020/02/02 23:34:34 tom Exp $\")\n\nstatic int\nfind_definition(TRIES * tree, const char *str)\n{\n    TRIES *ptr;\n    int result = OK;\n\n    if (str != 0 && *str != '\\0') {\n\tfor (ptr = tree; ptr != 0; ptr = ptr->sibling) {\n\t    if (UChar(*str) == UChar(ptr->ch)) {\n\t\tif (str[1] == '\\0' && ptr->child != 0) {\n\t\t    result = ERR;\n\t\t} else if ((result = find_definition(ptr->child, str + 1))\n\t\t\t   == OK) {\n\t\t    result = ptr->value;\n\t\t} else if (str[1] == '\\0') {\n\t\t    result = ERR;\n\t\t}\n\t    }\n\t    if (result != OK)\n\t\tbreak;\n\t}\n    }\n    return (result);\n}\n\n \nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(key_defined) (NCURSES_SP_DCLx const char *str)\n{\n    int code = ERR;\n\n    T((T_CALLED(\"key_defined(%p, %s)\"), (void *) SP_PARM, _nc_visbuf(str)));\n    if (SP_PARM != 0 && str != 0) {\n\tcode = find_definition(SP_PARM->_keytry, str);\n    }\n\n    returnCode(code);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nkey_defined(const char *str)\n{\n    return NCURSES_SP_NAME(key_defined) (CURRENT_SCREEN, str);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

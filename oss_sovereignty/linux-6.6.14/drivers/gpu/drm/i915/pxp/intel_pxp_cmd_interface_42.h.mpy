@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pxp_cmd_interface_42.h",
+  "hash_id": "108683471dad73bcefe90cd09b98931e090447c0cad87c136978a570fde0deff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/pxp/intel_pxp_cmd_interface_42.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_PXP_FW_INTERFACE_42_H__\n#define __INTEL_PXP_FW_INTERFACE_42_H__\n\n#include <linux/types.h>\n#include \"intel_pxp_cmd_interface_cmn.h\"\n\n \n#define PXP42_CMDID_INIT_SESSION 0x1e\n\n \n#define PXP42_CMDID_INVALIDATE_STREAM_KEY 0x00000007\n\n \nstruct pxp42_create_arb_in {\n\tstruct pxp_cmd_header header;\n\tu32 protection_mode;\n#define PXP42_ARB_SESSION_MODE_HEAVY 0x2\n\tu32 session_id;\n} __packed;\n\n \nstruct pxp42_create_arb_out {\n\tstruct pxp_cmd_header header;\n} __packed;\n\n \nstruct pxp42_inv_stream_key_in {\n\tstruct pxp_cmd_header header;\n\tu32 rsvd[3];\n} __packed;\n\n \nstruct pxp42_inv_stream_key_out {\n\tstruct pxp_cmd_header header;\n\tu32 rsvd;\n} __packed;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

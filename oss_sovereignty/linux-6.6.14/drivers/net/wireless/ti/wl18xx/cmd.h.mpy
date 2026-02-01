@@ -1,0 +1,9 @@
+{
+  "module_name": "cmd.h",
+  "hash_id": "19d3e1dea586d3db71bc330e472db7742da5d756d4cccae31b00949db2a5e4eb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wl18xx/cmd.h",
+  "human_readable_source": " \n \n\n#ifndef __WL18XX_CMD_H__\n#define __WL18XX_CMD_H__\n\n#include \"../wlcore/wlcore.h\"\n#include \"../wlcore/acx.h\"\n\nstruct wl18xx_cmd_channel_switch {\n\tstruct wl1271_cmd_header header;\n\n\tu8 role_id;\n\n\t \n\tu8 channel;\n\t \n\tu8 switch_time;\n\t \n\tu8 stop_tx;\n\n\t__le32 local_supported_rates;\n\n\tu8 channel_type;\n\tu8 band;\n\n\tu8 padding[2];\n} __packed;\n\nstruct wl18xx_cmd_smart_config_start {\n\tstruct wl1271_cmd_header header;\n\n\t__le32 group_id_bitmask;\n} __packed;\n\nstruct wl18xx_cmd_smart_config_set_group_key {\n\tstruct wl1271_cmd_header header;\n\n\t__le32 group_id;\n\n\tu8 key[16];\n} __packed;\n\nstruct wl18xx_cmd_dfs_radar_debug {\n\tstruct wl1271_cmd_header header;\n\n\tu8 channel;\n\tu8 padding[3];\n} __packed;\n\nstruct wl18xx_cmd_dfs_master_restart {\n\tstruct wl1271_cmd_header header;\n\n\tu8 role_id;\n\tu8 padding[3];\n} __packed;\n\n \nstruct wlcore_cmd_cac_start {\n\tstruct wl1271_cmd_header header;\n\n\tu8 role_id;\n\tu8 channel;\n\tu8 band;\n\tu8 bandwidth;\n} __packed;\n\nint wl18xx_cmd_channel_switch(struct wl1271 *wl,\n\t\t\t      struct wl12xx_vif *wlvif,\n\t\t\t      struct ieee80211_channel_switch *ch_switch);\nint wl18xx_cmd_smart_config_start(struct wl1271 *wl, u32 group_bitmap);\nint wl18xx_cmd_smart_config_stop(struct wl1271 *wl);\nint wl18xx_cmd_smart_config_set_group_key(struct wl1271 *wl, u16 group_id,\n\t\t\t\t\t  u8 key_len, u8 *key);\nint wl18xx_cmd_set_cac(struct wl1271 *wl, struct wl12xx_vif *wlvif, bool start);\nint wl18xx_cmd_radar_detection_debug(struct wl1271 *wl, u8 channel);\nint wl18xx_cmd_dfs_master_restart(struct wl1271 *wl, struct wl12xx_vif *wlvif);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

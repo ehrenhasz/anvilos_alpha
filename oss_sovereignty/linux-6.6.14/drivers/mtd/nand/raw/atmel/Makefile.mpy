@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f2ea4d843a9a747802fa2420704a84d81f794a59fca5df2e97ebe15b65b80531",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/nand/raw/atmel/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_MTD_NAND_ATMEL)\t+= atmel-nand-controller.o atmel-pmecc.o\n\natmel-nand-controller-objs\t:= nand-controller.o\natmel-pmecc-objs\t\t:= pmecc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

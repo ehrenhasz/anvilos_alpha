@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "fea5e15fe7941a28dcf363789b880415c37893e364ee89a80f19f74291a0cc67",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/amd/pmc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# AMD PMC Driver\n#\n\nconfig AMD_PMC\n\ttristate \"AMD SoC PMC driver\"\n\tdepends on ACPI && PCI && RTC_CLASS && AMD_NB\n\tdepends on SUSPEND\n\tselect SERIO\n\thelp\n\t  The driver provides support for AMD Power Management Controller\n\t  primarily responsible for S2Idle transactions that are driven from\n\t  a platform firmware running on SMU. This driver also provides a debug\n\t  mechanism to investigate the S2Idle transactions and failures.\n\n\t  Say Y or M here if you have a notebook powered by AMD RYZEN CPU/APU.\n\n\t  If you choose to compile this driver as a module the module will be\n\t  called amd-pmc.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

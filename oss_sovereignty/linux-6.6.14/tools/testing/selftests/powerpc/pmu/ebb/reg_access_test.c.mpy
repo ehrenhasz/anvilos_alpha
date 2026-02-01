@@ -1,0 +1,9 @@
+{
+  "module_name": "reg_access_test.c",
+  "hash_id": "43920a280577f79759e5257a28f2ffcfafa36170d66f2c03be425fc16fad0d05",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/ebb/reg_access_test.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <stdlib.h>\n\n#include \"ebb.h\"\n\n\n \nint reg_access(void)\n{\n\tuint64_t val, expected;\n\n\tSKIP_IF(!ebb_is_supported());\n\n\texpected = 0x8000000100000000ull;\n\tmtspr(SPRN_BESCR, expected);\n\tval = mfspr(SPRN_BESCR);\n\n\tFAIL_IF(val != expected);\n\n\texpected = 0x0000000001000000ull;\n\tmtspr(SPRN_EBBHR, expected);\n\tval = mfspr(SPRN_EBBHR);\n\n\tFAIL_IF(val != expected);\n\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(reg_access, \"reg_access\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

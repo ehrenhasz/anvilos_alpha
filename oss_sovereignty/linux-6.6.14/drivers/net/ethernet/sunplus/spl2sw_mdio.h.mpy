@@ -1,0 +1,9 @@
+{
+  "module_name": "spl2sw_mdio.h",
+  "hash_id": "2d9918fdab9779ed8562ba765d79cf5b0cb10fede36be3b8e01d71f9b61eb885",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sunplus/spl2sw_mdio.h",
+  "human_readable_source": " \n \n\n#ifndef __SPL2SW_MDIO_H__\n#define __SPL2SW_MDIO_H__\n\nu32  spl2sw_mdio_init(struct spl2sw_common *comm);\nvoid spl2sw_mdio_remove(struct spl2sw_common *comm);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

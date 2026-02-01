@@ -1,0 +1,9 @@
+{
+  "module_name": "softirq_stack.h",
+  "hash_id": "6dbf28137bd44a390e98a3b8b65c2ebbb1c8e30462b41fede1bbc81d72de82b9",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/softirq_stack.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_SOFTIRQ_STACK_H\n#define _ASM_X86_SOFTIRQ_STACK_H\n\n#ifdef CONFIG_X86_64\n# include <asm/irq_stack.h>\n#else\n# include <asm-generic/softirq_stack.h>\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

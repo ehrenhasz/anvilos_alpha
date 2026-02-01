@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8e59214d6af238ad6e19a7c8ecf64e6437d4ba28a99af918f58a91564cd24006",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/amd/rpl/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n# RPL platform Support\nsnd-rpl-pci-acp6x-objs\t:= rpl-pci-acp6x.o\n\nobj-$(CONFIG_SND_SOC_AMD_RPL_ACP6x) += snd-rpl-pci-acp6x.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

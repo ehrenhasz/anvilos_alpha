@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_msiof.h",
+  "hash_id": "4a4aa6c057adc1181aa324973e1482cd03d9bb59d4f9203a29d51b8b50f9b40e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/sh_msiof.h",
+  "human_readable_source": " \n#ifndef __SPI_SH_MSIOF_H__\n#define __SPI_SH_MSIOF_H__\n\nenum {\n\tMSIOF_SPI_HOST,\n\tMSIOF_SPI_TARGET,\n};\n\nstruct sh_msiof_spi_info {\n\tint tx_fifo_override;\n\tint rx_fifo_override;\n\tu16 num_chipselect;\n\tint mode;\n\tunsigned int dma_tx_id;\n\tunsigned int dma_rx_id;\n\tu32 dtdl;\n\tu32 syncdl;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

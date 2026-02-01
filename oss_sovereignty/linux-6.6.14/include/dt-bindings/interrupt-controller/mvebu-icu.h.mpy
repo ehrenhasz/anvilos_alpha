@@ -1,0 +1,9 @@
+{
+  "module_name": "mvebu-icu.h",
+  "hash_id": "43c0777420c86426493402e1d0033bf810d58c3de609b1ed765efc4c5a6f383b",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/interrupt-controller/mvebu-icu.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_INTERRUPT_CONTROLLER_MVEBU_ICU_H\n#define _DT_BINDINGS_INTERRUPT_CONTROLLER_MVEBU_ICU_H\n\n \n\n#define ICU_GRP_NSR\t\t0x0\n#define ICU_GRP_SR\t\t0x1\n#define ICU_GRP_SEI\t\t0x4\n#define ICU_GRP_REI\t\t0x5\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

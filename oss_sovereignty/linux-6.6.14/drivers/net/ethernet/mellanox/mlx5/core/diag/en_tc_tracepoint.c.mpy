@@ -1,0 +1,9 @@
+{
+  "module_name": "en_tc_tracepoint.c",
+  "hash_id": "bfc4f9fcd15e9de0dfa684b6f0f0b4473a9bd3d4e8dac848051015d2680a7838",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/diag/en_tc_tracepoint.c",
+  "human_readable_source": "\n \n\n#define CREATE_TRACE_POINTS\n#include \"en_tc_tracepoint.h\"\n\nvoid put_ids_to_array(int *ids,\n\t\t      const struct flow_action_entry *entries,\n\t\t      unsigned int num)\n{\n\tunsigned int i;\n\n\tfor (i = 0; i < num; i++)\n\t\tids[i] = entries[i].id;\n}\n\n#define NAME_SIZE 16\n\nstatic const char FLOWACT2STR[NUM_FLOW_ACTIONS][NAME_SIZE] = {\n\t[FLOW_ACTION_ACCEPT]\t= \"ACCEPT\",\n\t[FLOW_ACTION_DROP]\t= \"DROP\",\n\t[FLOW_ACTION_TRAP]\t= \"TRAP\",\n\t[FLOW_ACTION_GOTO]\t= \"GOTO\",\n\t[FLOW_ACTION_REDIRECT]\t= \"REDIRECT\",\n\t[FLOW_ACTION_MIRRED]\t= \"MIRRED\",\n\t[FLOW_ACTION_VLAN_PUSH]\t= \"VLAN_PUSH\",\n\t[FLOW_ACTION_VLAN_POP]\t= \"VLAN_POP\",\n\t[FLOW_ACTION_VLAN_MANGLE]\t= \"VLAN_MANGLE\",\n\t[FLOW_ACTION_TUNNEL_ENCAP]\t= \"TUNNEL_ENCAP\",\n\t[FLOW_ACTION_TUNNEL_DECAP]\t= \"TUNNEL_DECAP\",\n\t[FLOW_ACTION_MANGLE]\t= \"MANGLE\",\n\t[FLOW_ACTION_ADD]\t= \"ADD\",\n\t[FLOW_ACTION_CSUM]\t= \"CSUM\",\n\t[FLOW_ACTION_MARK]\t= \"MARK\",\n\t[FLOW_ACTION_WAKE]\t= \"WAKE\",\n\t[FLOW_ACTION_QUEUE]\t= \"QUEUE\",\n\t[FLOW_ACTION_SAMPLE]\t= \"SAMPLE\",\n\t[FLOW_ACTION_POLICE]\t= \"POLICE\",\n\t[FLOW_ACTION_CT]\t= \"CT\",\n};\n\nconst char *parse_action(struct trace_seq *p,\n\t\t\t int *ids,\n\t\t\t unsigned int num)\n{\n\tconst char *ret = trace_seq_buffer_ptr(p);\n\tunsigned int i;\n\n\tfor (i = 0; i < num; i++) {\n\t\tif (ids[i] < NUM_FLOW_ACTIONS)\n\t\t\ttrace_seq_printf(p, \"%s \", FLOWACT2STR[ids[i]]);\n\t\telse\n\t\t\ttrace_seq_printf(p, \"UNKNOWN \");\n\t}\n\n\ttrace_seq_putc(p, 0);\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

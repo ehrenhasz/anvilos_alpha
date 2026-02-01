@@ -1,0 +1,9 @@
+{
+  "module_name": "ebda.c",
+  "hash_id": "bf9c39becfb9f9d0eea5510bbca35ab229ef216b4b49d0fff0230fe190b1be13",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/ebda.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <linux/init.h>\n#include <linux/memblock.h>\n\n#include <asm/setup.h>\n#include <asm/bios_ebda.h>\n\n \n\n#define BIOS_RAM_SIZE_KB_PTR\t0x413\n\n#define BIOS_START_MIN\t\t0x20000U\t \n#define BIOS_START_MAX\t\t0x9f000U\t \n\nvoid __init reserve_bios_regions(void)\n{\n\tunsigned int bios_start, ebda_start;\n\n\t \n\tif (!x86_platform.legacy.reserve_bios_regions)\n\t\treturn;\n\n\t \n\tbios_start = *(unsigned short *)__va(BIOS_RAM_SIZE_KB_PTR);\n\tbios_start <<= 10;\n\n\t \n\tif (bios_start < BIOS_START_MIN || bios_start > BIOS_START_MAX)\n\t\tbios_start = BIOS_START_MAX;\n\n\t \n\tebda_start = get_bios_ebda();\n\n\t \n\tif (ebda_start >= BIOS_START_MIN && ebda_start < bios_start)\n\t\tbios_start = ebda_start;\n\n\t \n\tmemblock_reserve(bios_start, 0x100000 - bios_start);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

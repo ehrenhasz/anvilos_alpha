@@ -1,0 +1,9 @@
+{
+  "module_name": "ad714x.h",
+  "hash_id": "38fe04325c271cf09fc7135798aa12470cc2ec7623bbdf5c24a39325334e0ba9",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/input/ad714x.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_INPUT_AD714X_H__\n#define __LINUX_INPUT_AD714X_H__\n\n#define STAGE_NUM              12\n#define STAGE_CFGREG_NUM       8\n#define SYS_CFGREG_NUM         8\n\n \nstruct ad714x_slider_plat {\n\tint start_stage;\n\tint end_stage;\n\tint max_coord;\n};\n\nstruct ad714x_wheel_plat {\n\tint start_stage;\n\tint end_stage;\n\tint max_coord;\n};\n\nstruct ad714x_touchpad_plat {\n\tint x_start_stage;\n\tint x_end_stage;\n\tint x_max_coord;\n\n\tint y_start_stage;\n\tint y_end_stage;\n\tint y_max_coord;\n};\n\nstruct ad714x_button_plat {\n\tint keycode;\n\tunsigned short l_mask;\n\tunsigned short h_mask;\n};\n\nstruct ad714x_platform_data {\n\tint slider_num;\n\tint wheel_num;\n\tint touchpad_num;\n\tint button_num;\n\tstruct ad714x_slider_plat *slider;\n\tstruct ad714x_wheel_plat *wheel;\n\tstruct ad714x_touchpad_plat *touchpad;\n\tstruct ad714x_button_plat *button;\n\tunsigned short stage_cfg_reg[STAGE_NUM][STAGE_CFGREG_NUM];\n\tunsigned short sys_cfg_reg[SYS_CFGREG_NUM];\n\tunsigned long irqflags;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

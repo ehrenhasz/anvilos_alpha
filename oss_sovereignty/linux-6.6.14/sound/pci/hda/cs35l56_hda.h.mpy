@@ -1,0 +1,9 @@
+{
+  "module_name": "cs35l56_hda.h",
+  "hash_id": "f406608b15d242dbfd2320867d372c8f7b81c187eaa1b18fac1cee866c9c7faa",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/hda/cs35l56_hda.h",
+  "human_readable_source": " \n\n#ifndef __CS35L56_HDA_H__\n#define __CS35L56_HDA_H__\n\n#include <linux/device.h>\n#include <linux/gpio/consumer.h>\n#include <linux/firmware/cirrus/cs_dsp.h>\n#include <linux/firmware/cirrus/wmfw.h>\n#include <linux/regulator/consumer.h>\n#include <sound/cs35l56.h>\n\nstruct dentry;\n\nstruct cs35l56_hda {\n\tstruct cs35l56_base base;\n\tstruct hda_codec *codec;\n\n\tint index;\n\tconst char *system_name;\n\tconst char *amp_name;\n\n\tstruct cs_dsp cs_dsp;\n\tbool playing;\n\tbool suspended;\n\tu8 asp_tx_mask;\n\n\tstruct snd_kcontrol *posture_ctl;\n\tstruct snd_kcontrol *volume_ctl;\n\tstruct snd_kcontrol *mixer_ctl[4];\n\n#if IS_ENABLED(CONFIG_SND_DEBUG)\n\tstruct dentry *debugfs_root;\n#endif\n};\n\nextern const struct dev_pm_ops cs35l56_hda_pm_ops;\n\nint cs35l56_hda_common_probe(struct cs35l56_hda *cs35l56, int id);\nvoid cs35l56_hda_remove(struct device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

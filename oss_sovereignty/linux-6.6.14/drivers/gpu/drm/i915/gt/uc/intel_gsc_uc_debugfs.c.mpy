@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_gsc_uc_debugfs.c",
+  "hash_id": "07befe5f0e8e63adefd4f39394f782011e59016044b4b86e6d451a27ff3275e8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/uc/intel_gsc_uc_debugfs.c",
+  "human_readable_source": "\n \n\n#include <drm/drm_print.h>\n\n#include \"gt/intel_gt.h\"\n#include \"gt/intel_gt_debugfs.h\"\n#include \"gt/intel_gt_print.h\"\n#include \"intel_gsc_uc.h\"\n#include \"intel_gsc_uc_debugfs.h\"\n#include \"i915_drv.h\"\n\nstatic int gsc_info_show(struct seq_file *m, void *data)\n{\n\tstruct drm_printer p = drm_seq_file_printer(m);\n\tstruct intel_gsc_uc *gsc = m->private;\n\n\tif (!intel_gsc_uc_is_supported(gsc))\n\t\treturn -ENODEV;\n\n\tintel_gsc_uc_load_status(gsc, &p);\n\n\treturn 0;\n}\nDEFINE_INTEL_GT_DEBUGFS_ATTRIBUTE(gsc_info);\n\nvoid intel_gsc_uc_debugfs_register(struct intel_gsc_uc *gsc_uc, struct dentry *root)\n{\n\tstatic const struct intel_gt_debugfs_file files[] = {\n\t\t{ \"gsc_info\", &gsc_info_fops, NULL },\n\t};\n\n\tif (!intel_gsc_uc_is_supported(gsc_uc))\n\t\treturn;\n\n\tintel_gt_debugfs_register_files(root, files, ARRAY_SIZE(files), gsc_uc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

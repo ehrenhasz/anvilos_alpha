@@ -1,0 +1,9 @@
+{
+  "module_name": "nvpair_impl.h",
+  "hash_id": "0db68a38293f06b5ad7dcdc3652e5976a35c4a3ce08ba25b5aa55db7cd2fe41b",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/nvpair_impl.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef\t_NVPAIR_IMPL_H\n#define\t_NVPAIR_IMPL_H\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n#include <sys/nvpair.h>\n\n \n\n \ntypedef struct i_nvp i_nvp_t;\n\nstruct i_nvp {\n\tunion {\n\t\t \n\t\tuint64_t\t_nvi_align;\n\n\t\tstruct {\n\t\t\t \n\t\t\ti_nvp_t\t*_nvi_next;\n\n\t\t\t \n\t\t\ti_nvp_t\t*_nvi_prev;\n\n\t\t\t \n\t\t\ti_nvp_t\t*_nvi_hashtable_next;\n\t\t} _nvi;\n\t} _nvi_un;\n\n\t \n\tnvpair_t nvi_nvp;\n};\n#define\tnvi_next\t_nvi_un._nvi._nvi_next\n#define\tnvi_prev\t_nvi_un._nvi._nvi_prev\n#define\tnvi_hashtable_next\t_nvi_un._nvi._nvi_hashtable_next\n\ntypedef struct {\n\ti_nvp_t\t\t*nvp_list;\t \n\ti_nvp_t\t\t*nvp_last;\t \n\tconst i_nvp_t\t*nvp_curr;\t \n\tnv_alloc_t\t*nvp_nva;\t \n\tuint32_t\tnvp_stat;\t \n\n\ti_nvp_t\t\t**nvp_hashtable;  \n\tuint32_t\tnvp_nbuckets;\t \n\tuint32_t\tnvp_nentries;\t \n} nvpriv_t;\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

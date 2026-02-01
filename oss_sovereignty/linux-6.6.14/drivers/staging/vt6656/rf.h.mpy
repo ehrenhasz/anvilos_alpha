@@ -1,0 +1,9 @@
+{
+  "module_name": "rf.h",
+  "hash_id": "5c535b9efc42c6e4c1ee9648998ab8b70f97f8432115b9b105ff6803b40a4807",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vt6656/rf.h",
+  "human_readable_source": " \n \n\n#ifndef __RF_H__\n#define __RF_H__\n\n#include \"device.h\"\n\n \n#define RF_RFMD2959         0x01\n#define RF_MAXIMAG          0x02\n#define RF_AL2230           0x03\n#define RF_GCT5103          0x04\n#define RF_UW2451           0x05\n#define RF_MAXIMG           0x06\n#define RF_MAXIM2829        0x07\n#define RF_UW2452           0x08\n#define RF_VT3226           0x09\n#define RF_AIROHA7230       0x0a\n#define RF_UW2453           0x0b\n#define RF_VT3226D0         0x0c  \n#define RF_VT3342A0         0x0d  \n#define RF_AL2230S          0x0e\n\n#define RF_EMU              0x80\n#define RF_MASK             0x7F\n\n#define VNT_RF_MAX_POWER    0x3f\n#define\tVNT_RF_REG_LEN      0x17  \n\nint vnt_rf_write_embedded(struct vnt_private *priv, u32 data);\nint vnt_rf_setpower(struct vnt_private *priv, struct ieee80211_channel *ch);\nvoid vnt_rf_rssi_to_dbm(struct vnt_private *priv, u8 rssi, long *dbm);\nint vnt_rf_table_download(struct vnt_private *priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

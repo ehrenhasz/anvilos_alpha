@@ -1,0 +1,9 @@
+{
+  "module_name": "mode_t.c",
+  "hash_id": "8ec44251d2363d5acb548d1b621bf2b406e208a1d2e4dff09d35d05a8e5f0736",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/mode_t.c",
+  "human_readable_source": "\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <unistd.h>\n\n \n#ifndef S_IRWXUGO\n#define S_IRWXUGO\t(S_IRWXU|S_IRWXG|S_IRWXO)\n#endif\n#ifndef S_IALLUGO\n#define S_IALLUGO\t(S_ISUID|S_ISGID|S_ISVTX|S_IRWXUGO)\n#endif\n#ifndef S_IRUGO\n#define S_IRUGO         (S_IRUSR|S_IRGRP|S_IROTH)\n#endif\n#ifndef S_IWUGO\n#define S_IWUGO         (S_IWUSR|S_IWGRP|S_IWOTH)\n#endif\n#ifndef S_IXUGO\n#define S_IXUGO         (S_IXUSR|S_IXGRP|S_IXOTH)\n#endif\n\nstatic size_t syscall_arg__scnprintf_mode_t(char *bf, size_t size, struct syscall_arg *arg)\n{\n\tbool show_prefix = arg->show_string_prefix;\n\tconst char *prefix = \"S_\";\n\tint printed = 0, mode = arg->val;\n\n#define\tP_MODE(n) \\\n\tif ((mode & S_##n) == S_##n) { \\\n\t\tprinted += scnprintf(bf + printed, size - printed, \"%s%s%s\", printed ? \"|\" : \"\", show_prefix ? prefix : \"\", #n); \\\n\t\tmode &= ~S_##n; \\\n\t}\n\n\tP_MODE(IALLUGO);\n\tP_MODE(IRWXUGO);\n\tP_MODE(IRUGO);\n\tP_MODE(IWUGO);\n\tP_MODE(IXUGO);\n\tP_MODE(IFMT);\n\tP_MODE(IFSOCK);\n\tP_MODE(IFLNK);\n\tP_MODE(IFREG);\n\tP_MODE(IFBLK);\n\tP_MODE(IFDIR);\n\tP_MODE(IFCHR);\n\tP_MODE(IFIFO);\n\tP_MODE(ISUID);\n\tP_MODE(ISGID);\n\tP_MODE(ISVTX);\n\tP_MODE(IRWXU);\n\tP_MODE(IRUSR);\n\tP_MODE(IWUSR);\n\tP_MODE(IXUSR);\n\tP_MODE(IRWXG);\n\tP_MODE(IRGRP);\n\tP_MODE(IWGRP);\n\tP_MODE(IXGRP);\n\tP_MODE(IRWXO);\n\tP_MODE(IROTH);\n\tP_MODE(IWOTH);\n\tP_MODE(IXOTH);\n#undef P_MODE\n\n\tif (mode)\n\t\tprinted += scnprintf(bf + printed, size - printed, \"%s%#x\", printed ? \"|\" : \"\", mode);\n\n\treturn printed;\n}\n\n#define SCA_MODE_T syscall_arg__scnprintf_mode_t\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

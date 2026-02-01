@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "66e6a9b99308a9c74daf26e1dcf6d69705c36480092fdfad59af66957a8416e5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/starfive/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_CLK_STARFIVE_JH71X0)\t+= clk-starfive-jh71x0.o\n\nobj-$(CONFIG_CLK_STARFIVE_JH7100)\t+= clk-starfive-jh7100.o\nobj-$(CONFIG_CLK_STARFIVE_JH7100_AUDIO)\t+= clk-starfive-jh7100-audio.o\n\nobj-$(CONFIG_CLK_STARFIVE_JH7110_PLL)\t+= clk-starfive-jh7110-pll.o\nobj-$(CONFIG_CLK_STARFIVE_JH7110_SYS)\t+= clk-starfive-jh7110-sys.o\nobj-$(CONFIG_CLK_STARFIVE_JH7110_AON)\t+= clk-starfive-jh7110-aon.o\nobj-$(CONFIG_CLK_STARFIVE_JH7110_STG)\t+= clk-starfive-jh7110-stg.o\nobj-$(CONFIG_CLK_STARFIVE_JH7110_ISP)\t+= clk-starfive-jh7110-isp.o\nobj-$(CONFIG_CLK_STARFIVE_JH7110_VOUT)\t+= clk-starfive-jh7110-vout.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

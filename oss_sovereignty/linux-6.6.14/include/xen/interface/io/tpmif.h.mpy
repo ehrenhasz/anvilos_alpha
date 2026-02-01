@@ -1,0 +1,9 @@
+{
+  "module_name": "tpmif.h",
+  "hash_id": "ffafd8ca9f27e201ced5654ddceb174ebc2b4949216639f8eef2dbe4bb89a517",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/interface/io/tpmif.h",
+  "human_readable_source": " \n\n#ifndef __XEN_PUBLIC_IO_TPMIF_H__\n#define __XEN_PUBLIC_IO_TPMIF_H__\n\n \n\nenum vtpm_shared_page_state {\n\tVTPM_STATE_IDLE,          \n\tVTPM_STATE_SUBMIT,        \n\tVTPM_STATE_FINISH,        \n\tVTPM_STATE_CANCEL,        \n};\n \n\n\nstruct vtpm_shared_page {\n\tuint32_t length;          \n\n\tuint8_t state;            \n\tuint8_t locality;         \n\tuint8_t pad;\n\n\tuint8_t nr_extra_pages;   \n\tuint32_t extra_pages[];  \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

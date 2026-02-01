@@ -1,0 +1,9 @@
+{
+  "module_name": "fsl_aud2htx.h",
+  "hash_id": "073aa3ba14bf683b82353aaf43a68cc143ba1539eb5945f2285c210b0eb09b0b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/fsl/fsl_aud2htx.h",
+  "human_readable_source": " \n \n\n#ifndef _FSL_AUD2HTX_H\n#define _FSL_AUD2HTX_H\n\n#define FSL_AUD2HTX_FORMATS (SNDRV_PCM_FMTBIT_S24_LE | \\\n\t\t\t     SNDRV_PCM_FMTBIT_S32_LE)\n\n \n#define AUD2HTX_CTRL          0x0    \n#define AUD2HTX_CTRL_EXT      0x4    \n#define AUD2HTX_WR            0x8    \n#define AUD2HTX_STATUS        0xC    \n#define AUD2HTX_IRQ_NOMASK    0x10   \n#define AUD2HTX_IRQ_MASKED    0x14   \n#define AUD2HTX_IRQ_MASK      0x18   \n\n \n#define AUD2HTX_CTRL_EN          BIT(0)\n\n \n#define AUD2HTX_CTRE_DE          BIT(0)\n#define AUD2HTX_CTRE_DT_SHIFT    0x1\n#define AUD2HTX_CTRE_DT_WIDTH    0x2\n#define AUD2HTX_CTRE_DT_MASK     ((BIT(AUD2HTX_CTRE_DT_WIDTH) - 1) \\\n\t\t\t\t << AUD2HTX_CTRE_DT_SHIFT)\n#define AUD2HTX_CTRE_WL_SHIFT    16\n#define AUD2HTX_CTRE_WL_WIDTH    5\n#define AUD2HTX_CTRE_WL_MASK     ((BIT(AUD2HTX_CTRE_WL_WIDTH) - 1) \\\n\t\t\t\t << AUD2HTX_CTRE_WL_SHIFT)\n#define AUD2HTX_CTRE_WH_SHIFT    24\n#define AUD2HTX_CTRE_WH_WIDTH    5\n#define AUD2HTX_CTRE_WH_MASK     ((BIT(AUD2HTX_CTRE_WH_WIDTH) - 1) \\\n\t\t\t\t << AUD2HTX_CTRE_WH_SHIFT)\n\n \n#define AUD2HTX_WM_HIGH_IRQ_MASK BIT(2)\n#define AUD2HTX_WM_LOW_IRQ_MASK  BIT(1)\n#define AUD2HTX_OVF_MASK         BIT(0)\n\n#define AUD2HTX_FIFO_DEPTH       0x20\n#define AUD2HTX_WTMK_LOW         0x10\n#define AUD2HTX_WTMK_HIGH        0x10\n#define AUD2HTX_MAXBURST         0x10\n\n \nstruct fsl_aud2htx {\n\tstruct platform_device *pdev;\n\tstruct regmap *regmap;\n\tstruct clk *bus_clk;\n\n\tstruct snd_dmaengine_dai_dma_data dma_params_rx;\n\tstruct snd_dmaengine_dai_dma_data dma_params_tx;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

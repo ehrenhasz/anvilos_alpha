@@ -1,0 +1,9 @@
+{
+  "module_name": "ipsec.h",
+  "hash_id": "ea9fb462276386552be098b9ab6448d7d8df25defee198ec0393ce7c07dc9d04",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/ipsec.h",
+  "human_readable_source": " \n#ifndef _LINUX_IPSEC_H\n#define _LINUX_IPSEC_H\n\n \n\n#include <linux/pfkeyv2.h>\n\n#define IPSEC_PORT_ANY\t\t0\n#define IPSEC_ULPROTO_ANY\t255\n#define IPSEC_PROTO_ANY\t\t255\n\nenum {\n\tIPSEC_MODE_ANY\t\t= 0,\t \n\tIPSEC_MODE_TRANSPORT\t= 1,\n\tIPSEC_MODE_TUNNEL\t= 2,\n\tIPSEC_MODE_BEET         = 3\n};\n\nenum {\n\tIPSEC_DIR_ANY\t\t= 0,\n\tIPSEC_DIR_INBOUND\t= 1,\n\tIPSEC_DIR_OUTBOUND\t= 2,\n\tIPSEC_DIR_FWD\t\t= 3,\t \n\tIPSEC_DIR_MAX\t\t= 4,\n\tIPSEC_DIR_INVALID\t= 5\n};\n\nenum {\n\tIPSEC_POLICY_DISCARD\t= 0,\n\tIPSEC_POLICY_NONE\t= 1,\n\tIPSEC_POLICY_IPSEC\t= 2,\n\tIPSEC_POLICY_ENTRUST\t= 3,\n\tIPSEC_POLICY_BYPASS\t= 4\n};\n\nenum {\n\tIPSEC_LEVEL_DEFAULT\t= 0,\n\tIPSEC_LEVEL_USE\t\t= 1,\n\tIPSEC_LEVEL_REQUIRE\t= 2,\n\tIPSEC_LEVEL_UNIQUE\t= 3\n};\n\n#define IPSEC_MANUAL_REQID_MAX\t0x3fff\n\n#define IPSEC_REPLAYWSIZE  32\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

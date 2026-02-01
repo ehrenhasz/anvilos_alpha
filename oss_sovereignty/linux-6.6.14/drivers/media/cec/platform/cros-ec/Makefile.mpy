@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8016bd7360ab052c833b0240bc94ff1ca47fa14803f047ccb2a6c30ea5f920da",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/cec/platform/cros-ec/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CEC_CROS_EC) += cros-ec-cec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

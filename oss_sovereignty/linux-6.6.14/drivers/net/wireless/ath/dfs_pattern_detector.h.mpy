@@ -1,0 +1,9 @@
+{
+  "module_name": "dfs_pattern_detector.h",
+  "hash_id": "e1c5cbbb93745e1f1cd01d5508bf9279510b6321396da92ab7793bea185a5aba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/dfs_pattern_detector.h",
+  "human_readable_source": " \n\n#ifndef DFS_PATTERN_DETECTOR_H\n#define DFS_PATTERN_DETECTOR_H\n\n#include <linux/types.h>\n#include <linux/list.h>\n#include <linux/nl80211.h>\n\n \n#define PRI_TOLERANCE\t16\n\n \nstruct ath_dfs_pool_stats {\n\tu32 pool_reference;\n\tu32 pulse_allocated;\n\tu32 pulse_alloc_error;\n\tu32 pulse_used;\n\tu32 pseq_allocated;\n\tu32 pseq_alloc_error;\n\tu32 pseq_used;\n};\n\n \nstruct pulse_event {\n\tu64 ts;\n\tu16 freq;\n\tu8 width;\n\tu8 rssi;\n\tbool chirp;\n};\n\n \nstruct radar_detector_specs {\n\tu8 type_id;\n\tu8 width_min;\n\tu8 width_max;\n\tu16 pri_min;\n\tu16 pri_max;\n\tu8 num_pri;\n\tu8 ppb;\n\tu8 ppb_thresh;\n\tu8 max_pri_tolerance;\n\tbool chirp;\n};\n\n \nstruct dfs_pattern_detector {\n\tvoid (*exit)(struct dfs_pattern_detector *dpd);\n\tbool (*set_dfs_domain)(struct dfs_pattern_detector *dpd,\n\t\t\t   enum nl80211_dfs_regions region);\n\tbool (*add_pulse)(struct dfs_pattern_detector *dpd,\n\t\t\t  struct pulse_event *pe,\n\t\t\t  struct radar_detector_specs *rs);\n\n\tstruct ath_dfs_pool_stats (*get_stats)(struct dfs_pattern_detector *dpd);\n\tenum nl80211_dfs_regions region;\n\tu8 num_radar_types;\n\tu64 last_pulse_ts;\n\t \n\tstruct ath_common *common;\n\n\tconst struct radar_detector_specs *radar_spec;\n\tstruct list_head channel_detectors;\n};\n\n \nextern struct dfs_pattern_detector *\ndfs_pattern_detector_init(struct ath_common *common,\n\t\t\t  enum nl80211_dfs_regions region);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

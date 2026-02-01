@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b0844e6721c6c28dc9c509ed1f5de189dfb6e3708464c7d44b4d58cbfcf9d0f1",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/echoaudio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ALSA Echoaudio soundcard drivers\n# Copyright (c) 2003 by Giuliano Pochini <pochini@shiny.it>\n#\n\nsnd-darla20-objs := darla20.o\nsnd-gina20-objs := gina20.o\nsnd-layla20-objs := layla20.o\nsnd-darla24-objs := darla24.o\nsnd-gina24-objs := gina24.o\nsnd-layla24-objs := layla24.o\nsnd-mona-objs := mona.o\nsnd-mia-objs := mia.o\nsnd-echo3g-objs := echo3g.o\nsnd-indigo-objs := indigo.o\nsnd-indigoio-objs := indigoio.o\nsnd-indigodj-objs := indigodj.o\nsnd-indigoiox-objs := indigoiox.o\nsnd-indigodjx-objs := indigodjx.o\n\nobj-$(CONFIG_SND_DARLA20) += snd-darla20.o\nobj-$(CONFIG_SND_GINA20) += snd-gina20.o\nobj-$(CONFIG_SND_LAYLA20) += snd-layla20.o\nobj-$(CONFIG_SND_DARLA24) += snd-darla24.o\nobj-$(CONFIG_SND_GINA24) += snd-gina24.o\nobj-$(CONFIG_SND_LAYLA24) += snd-layla24.o\nobj-$(CONFIG_SND_MONA) += snd-mona.o\nobj-$(CONFIG_SND_MIA) += snd-mia.o\nobj-$(CONFIG_SND_ECHO3G) += snd-echo3g.o\nobj-$(CONFIG_SND_INDIGO) += snd-indigo.o\nobj-$(CONFIG_SND_INDIGOIO) += snd-indigoio.o\nobj-$(CONFIG_SND_INDIGODJ) += snd-indigodj.o\nobj-$(CONFIG_SND_INDIGOIOX) += snd-indigoiox.o\nobj-$(CONFIG_SND_INDIGODJX) += snd-indigodjx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

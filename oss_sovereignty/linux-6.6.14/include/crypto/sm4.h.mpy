@@ -1,0 +1,9 @@
+{
+  "module_name": "sm4.h",
+  "hash_id": "6718deb9b0b1e32c5dba9b9b95f5fa9873d669a78ae2fa1841ca92cae2692966",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/sm4.h",
+  "human_readable_source": " \n\n \n\n#ifndef _CRYPTO_SM4_H\n#define _CRYPTO_SM4_H\n\n#include <linux/types.h>\n#include <linux/crypto.h>\n\n#define SM4_KEY_SIZE\t16\n#define SM4_BLOCK_SIZE\t16\n#define SM4_RKEY_WORDS\t32\n\nstruct sm4_ctx {\n\tu32 rkey_enc[SM4_RKEY_WORDS];\n\tu32 rkey_dec[SM4_RKEY_WORDS];\n};\n\nextern const u32 crypto_sm4_fk[];\nextern const u32 crypto_sm4_ck[];\nextern const u8 crypto_sm4_sbox[];\n\n \nint sm4_expandkey(struct sm4_ctx *ctx, const u8 *in_key,\n\t\t\t  unsigned int key_len);\n\n \nvoid sm4_crypt_block(const u32 *rk, u8 *out, const u8 *in);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

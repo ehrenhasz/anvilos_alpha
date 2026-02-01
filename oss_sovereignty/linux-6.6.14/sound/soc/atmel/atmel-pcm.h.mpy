@@ -1,0 +1,9 @@
+{
+  "module_name": "atmel-pcm.h",
+  "hash_id": "3ab6aaf535787d0de16f4c857f65ef92d1c2d7707a75b76ff53e480e1926ad16",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/atmel/atmel-pcm.h",
+  "human_readable_source": " \n \n\n#ifndef _ATMEL_PCM_H\n#define _ATMEL_PCM_H\n\n#include <linux/atmel-ssc.h>\n\n#define ATMEL_SSC_DMABUF_SIZE\t(64 * 1024)\n\n \nstruct atmel_pdc_regs {\n\tunsigned int\txpr;\t\t \n\tunsigned int\txcr;\t\t \n\tunsigned int\txnpr;\t\t \n\tunsigned int\txncr;\t\t \n\tunsigned int\tptcr;\t\t \n};\n\nstruct atmel_ssc_mask {\n\tu32\tssc_enable;\t\t \n\tu32\tssc_disable;\t\t \n\tu32\tssc_error;\t\t \n\tu32\tssc_endx;\t\t \n\tu32\tssc_endbuf;\t\t \n\tu32\tpdc_enable;\t\t \n\tu32\tpdc_disable;\t\t \n};\n\n \nstruct atmel_pcm_dma_params {\n\tchar *name;\t\t\t \n\tint pdc_xfer_size;\t\t \n\tstruct ssc_device *ssc;\t\t \n\tstruct atmel_pdc_regs *pdc;\t \n\tstruct atmel_ssc_mask *mask;\t \n\tstruct snd_pcm_substream *substream;\n\tvoid (*dma_intr_handler)(u32, struct snd_pcm_substream *);\n};\n\n \n#define ssc_readx(base, reg)            (__raw_readl((base) + (reg)))\n#define ssc_writex(base, reg, value)    __raw_writel((value), (base) + (reg))\n\n#if IS_ENABLED(CONFIG_SND_ATMEL_SOC_PDC)\nint atmel_pcm_pdc_platform_register(struct device *dev);\n#else\nstatic inline int atmel_pcm_pdc_platform_register(struct device *dev)\n{\n\treturn 0;\n}\n#endif\n\n#if IS_ENABLED(CONFIG_SND_ATMEL_SOC_DMA)\nint atmel_pcm_dma_platform_register(struct device *dev);\n#else\nstatic inline int atmel_pcm_dma_platform_register(struct device *dev)\n{\n\treturn 0;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

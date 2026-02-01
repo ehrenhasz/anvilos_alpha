@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn30_smu11_driver_if.h",
+  "hash_id": "9629ebb1fa5a3d097432ab0709bfc541215ff400091c0a345c3fa1799b78fd66",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn30/dcn30_smu11_driver_if.h",
+  "human_readable_source": "\n\n\n#define SMU11_DRIVER_IF_VERSION 0x40\n\n\ntypedef enum {\n\tPPCLK_GFXCLK = 0,\n\tPPCLK_SOCCLK,\n\tPPCLK_UCLK,\n\tPPCLK_FCLK,\n\tPPCLK_DCLK_0,\n\tPPCLK_VCLK_0,\n\tPPCLK_DCLK_1,\n\tPPCLK_VCLK_1,\n\tPPCLK_DCEFCLK,\n\tPPCLK_DISPCLK,\n\tPPCLK_PIXCLK,\n\tPPCLK_PHYCLK,\n\tPPCLK_DTBCLK,\n\tPPCLK_COUNT,\n} PPCLK_e;\n\ntypedef struct {\n\tuint16_t MinClock; \n\tuint16_t MaxClock; \n\tuint16_t MinUclk;\n\tuint16_t MaxUclk;\n\n\tuint8_t  WmSetting;\n\tuint8_t  Flags;\n\tuint8_t  Padding[2];\n\n} WatermarkRowGeneric_t;\n\n#define NUM_WM_RANGES 4\n\ntypedef enum {\n\tWM_SOCCLK = 0,\n\tWM_DCEFCLK,\n\tWM_COUNT,\n} WM_CLOCK_e;\n\ntypedef enum {\n\tWATERMARKS_CLOCK_RANGE = 0,\n\tWATERMARKS_DUMMY_PSTATE,\n\tWATERMARKS_MALL,\n\tWATERMARKS_COUNT,\n} WATERMARKS_FLAGS_e;\n\ntypedef struct {\n\t\n\tWatermarkRowGeneric_t WatermarkRow[WM_COUNT][NUM_WM_RANGES];\n} Watermarks_t;\n\ntypedef struct {\n\tWatermarks_t Watermarks;\n\n\tuint32_t     MmHubPadding[8]; \n} WatermarksExternal_t;\n\n\n#define TABLE_PPTABLE                 0\n#define TABLE_WATERMARKS              1\n#define TABLE_AVFS_PSM_DEBUG          2\n#define TABLE_AVFS_FUSE_OVERRIDE      3\n#define TABLE_PMSTATUSLOG             4\n#define TABLE_SMU_METRICS             5\n#define TABLE_DRIVER_SMU_CONFIG       6\n#define TABLE_ACTIVITY_MONITOR_COEFF  7\n#define TABLE_OVERDRIVE               8\n#define TABLE_I2C_COMMANDS            9\n#define TABLE_PACE                   10\n#define TABLE_ECCINFO                11\n#define TABLE_COUNT                  12\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

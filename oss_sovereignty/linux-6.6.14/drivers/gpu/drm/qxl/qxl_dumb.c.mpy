@@ -1,0 +1,9 @@
+{
+  "module_name": "qxl_dumb.c",
+  "hash_id": "a16db39f8368e5558b7119758ab79922a2fca6eee1da09c25f597c828fc6d342",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/qxl/qxl_dumb.c",
+  "human_readable_source": " \n\n#include \"qxl_drv.h\"\n#include \"qxl_object.h\"\n\n \n\nint qxl_mode_dumb_create(struct drm_file *file_priv,\n\t\t\t    struct drm_device *dev,\n\t\t\t    struct drm_mode_create_dumb *args)\n{\n\tstruct qxl_device *qdev = to_qxl(dev);\n\tstruct qxl_bo *qobj;\n\tstruct drm_gem_object *gobj;\n\tuint32_t handle;\n\tint r;\n\tstruct qxl_surface surf;\n\tuint32_t pitch, format;\n\n\tpitch = args->width * ((args->bpp + 1) / 8);\n\targs->size = pitch * args->height;\n\targs->size = ALIGN(args->size, PAGE_SIZE);\n\n\tswitch (args->bpp) {\n\tcase 16:\n\t\tformat = SPICE_SURFACE_FMT_16_565;\n\t\tbreak;\n\tcase 32:\n\t\tformat = SPICE_SURFACE_FMT_32_xRGB;\n\t\tbreak;\n\tdefault:\n\t\treturn -EINVAL;\n\t}\n\n\tsurf.width = args->width;\n\tsurf.height = args->height;\n\tsurf.stride = pitch;\n\tsurf.format = format;\n\tsurf.data = 0;\n\n\tr = qxl_gem_object_create_with_handle(qdev, file_priv,\n\t\t\t\t\t      QXL_GEM_DOMAIN_CPU,\n\t\t\t\t\t      args->size, &surf, &gobj,\n\t\t\t\t\t      &handle);\n\tif (r)\n\t\treturn r;\n\tqobj = gem_to_qxl_bo(gobj);\n\tqobj->is_dumb = true;\n\tdrm_gem_object_put(gobj);\n\targs->pitch = pitch;\n\targs->handle = handle;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

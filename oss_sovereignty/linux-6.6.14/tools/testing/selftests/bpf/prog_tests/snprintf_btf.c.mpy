@@ -1,0 +1,9 @@
+{
+  "module_name": "snprintf_btf.c",
+  "hash_id": "66251965fcb6b560ef5dce1b7b695e2867cc44b86b74b41721e578c8c03e4999",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/snprintf_btf.c",
+  "human_readable_source": "\n#include <test_progs.h>\n#include <linux/btf.h>\n#include \"netif_receive_skb.skel.h\"\n\n \nvoid serial_test_snprintf_btf(void)\n{\n\tstruct netif_receive_skb *skel;\n\tstruct netif_receive_skb__bss *bss;\n\tint err, duration = 0;\n\n\tskel = netif_receive_skb__open();\n\tif (CHECK(!skel, \"skel_open\", \"failed to open skeleton\\n\"))\n\t\treturn;\n\n\terr = netif_receive_skb__load(skel);\n\tif (CHECK(err, \"skel_load\", \"failed to load skeleton: %d\\n\", err))\n\t\tgoto cleanup;\n\n\tbss = skel->bss;\n\n\terr = netif_receive_skb__attach(skel);\n\tif (CHECK(err, \"skel_attach\", \"skeleton attach failed: %d\\n\", err))\n\t\tgoto cleanup;\n\n\t \n\terr = system(\"ping -c 1 127.0.0.1 > /dev/null\");\n\tif (CHECK(err, \"system\", \"ping failed: %d\\n\", err))\n\t\tgoto cleanup;\n\n\tif (bss->skip) {\n\t\tprintf(\"%s:SKIP:no __builtin_btf_type_id\\n\", __func__);\n\t\ttest__skip();\n\t\tgoto cleanup;\n\t}\n\n\t \n\tif (!ASSERT_GT(bss->ret, 0, \"bpf_snprintf_ret\"))\n\t\tgoto cleanup;\n\n\tif (CHECK(bss->ran_subtests == 0, \"check if subtests ran\",\n\t\t  \"no subtests ran, did BPF program run?\"))\n\t\tgoto cleanup;\n\n\tif (CHECK(bss->num_subtests != bss->ran_subtests,\n\t\t  \"check all subtests ran\",\n\t\t  \"only ran %d of %d tests\\n\", bss->num_subtests,\n\t\t  bss->ran_subtests))\n\t\tgoto cleanup;\n\ncleanup:\n\tnetif_receive_skb__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

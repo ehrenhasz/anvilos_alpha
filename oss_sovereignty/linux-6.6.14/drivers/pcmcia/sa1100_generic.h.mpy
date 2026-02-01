@@ -1,0 +1,9 @@
+{
+  "module_name": "sa1100_generic.h",
+  "hash_id": "8ee1890366c032e159ddd059ab362fe9a60779622ae76cd5863a36a4807436cf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pcmcia/sa1100_generic.h",
+  "human_readable_source": " \n#include \"soc_common.h\"\n#include \"sa11xx_base.h\"\n\n \nextern int pcmcia_adsbitsy_init(struct device *);\nextern int pcmcia_badge4_init(struct device *);\nextern int pcmcia_flexanet_init(struct device *);\nextern int pcmcia_freebird_init(struct device *);\nextern int pcmcia_gcplus_init(struct device *);\nextern int pcmcia_graphicsmaster_init(struct device *);\nextern int pcmcia_h3600_init(struct device *);\nextern int pcmcia_pangolin_init(struct device *);\nextern int pcmcia_pfs168_init(struct device *);\nextern int pcmcia_simpad_init(struct device *);\nextern int pcmcia_stork_init(struct device *);\nextern int pcmcia_system3_init(struct device *);\nextern int pcmcia_trizeps_init(struct device *);\nextern int pcmcia_xp860_init(struct device *);\nextern int pcmcia_yopy_init(struct device *);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

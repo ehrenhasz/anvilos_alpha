@@ -1,0 +1,9 @@
+{
+  "module_name": "st,stpmic1.h",
+  "hash_id": "6590d0b71c7ae4be5a07e7dbdde02a3351e9a3f26fcd0e3ec28250213f2b9941",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/mfd/st,stpmic1.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_STPMIC1_H__\n#define __DT_BINDINGS_STPMIC1_H__\n\n \n#define IT_PONKEY_F\t0\n#define IT_PONKEY_R\t1\n#define IT_WAKEUP_F\t2\n#define IT_WAKEUP_R\t3\n#define IT_VBUS_OTG_F\t4\n#define IT_VBUS_OTG_R\t5\n#define IT_SWOUT_F\t6\n#define IT_SWOUT_R\t7\n\n#define IT_CURLIM_BUCK1\t8\n#define IT_CURLIM_BUCK2\t9\n#define IT_CURLIM_BUCK3\t10\n#define IT_CURLIM_BUCK4\t11\n#define IT_OCP_OTG\t12\n#define IT_OCP_SWOUT\t13\n#define IT_OCP_BOOST\t14\n#define IT_OVP_BOOST\t15\n\n#define IT_CURLIM_LDO1\t16\n#define IT_CURLIM_LDO2\t17\n#define IT_CURLIM_LDO3\t18\n#define IT_CURLIM_LDO4\t19\n#define IT_CURLIM_LDO5\t20\n#define IT_CURLIM_LDO6\t21\n#define IT_SHORT_SWOTG\t22\n#define IT_SHORT_SWOUT\t23\n\n#define IT_TWARN_F\t24\n#define IT_TWARN_R\t25\n#define IT_VINLOW_F\t26\n#define IT_VINLOW_R\t27\n#define IT_SWIN_F\t30\n#define IT_SWIN_R\t31\n\n \n#define STPMIC1_BUCK_MODE_NORMAL 0\n#define STPMIC1_BUCK_MODE_LP 2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

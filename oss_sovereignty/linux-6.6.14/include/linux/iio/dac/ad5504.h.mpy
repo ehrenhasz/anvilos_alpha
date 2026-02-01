@@ -1,0 +1,9 @@
+{
+  "module_name": "ad5504.h",
+  "hash_id": "5b45b4973208906c6e243cdb3ec40e13ea4c4fc060bc0996e32ebc6a830a9426",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/dac/ad5504.h",
+  "human_readable_source": " \n \n\n#ifndef SPI_AD5504_H_\n#define SPI_AD5504_H_\n\nstruct ad5504_platform_data {\n\tu16\t\t\t\tvref_mv;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

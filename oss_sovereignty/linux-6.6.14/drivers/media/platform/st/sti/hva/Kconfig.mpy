@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9ff5af58264a18599ff11bcd29af31b4b6041a69be10b2a15e2f4e1bedae2093",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/hva/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_STI_HVA\n\ttristate \"STMicroelectronics HVA multi-format video encoder V4L2 driver\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on VIDEO_DEV\n\tdepends on ARCH_STI || COMPILE_TEST\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_MEM2MEM_DEV\n\thelp\n\t  This V4L2 driver enables HVA (Hardware Video Accelerator) multi-format\n\t  video encoder of STMicroelectronics SoC, allowing hardware encoding of\n\t  raw uncompressed formats in various compressed video bitstreams format.\n\n\t  To compile this driver as a module, choose M here:\n\t  the module will be called st-hva.\n\nconfig VIDEO_STI_HVA_DEBUGFS\n\tbool \"Export STMicroelectronics HVA internals in debugfs\"\n\tdepends on VIDEO_STI_HVA\n\tdepends on DEBUG_FS\n\thelp\n\t  Select this to see information about the internal state and the last\n\t  operation of STMicroelectronics HVA multi-format video encoder in\n\t  debugfs.\n\n\t  Choose N unless you know you need this.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

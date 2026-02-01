@@ -1,0 +1,9 @@
+{
+  "module_name": "video-bios.c",
+  "hash_id": "c2e44a9a7ca5821bd35931b6057d2ee6b5722eba0aeacd64a8a35257216bfa12",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/realmode/rm/video-bios.c",
+  "human_readable_source": "#include \"../../boot/video-bios.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

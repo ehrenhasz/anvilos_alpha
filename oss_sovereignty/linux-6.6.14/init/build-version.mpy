@@ -1,0 +1,9 @@
+{
+  "module_name": "build-version",
+  "hash_id": "d2767030433067e1e62dabf857a8055a45f5c56ee0856229d269755bf4e76171",
+  "original_prompt": "Ingested from linux-6.6.14/init/build-version",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-only\n\nprev_ver=$(cat .version 2>/dev/null) &&\nver=$(expr ${prev_ver} + 1 2>/dev/null) ||\nver=1\n\necho ${ver} > .version\n\necho ${ver}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

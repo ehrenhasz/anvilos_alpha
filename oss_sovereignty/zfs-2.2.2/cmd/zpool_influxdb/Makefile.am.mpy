@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "eae8616970a9e29a3dd01a53edc4524c22c618ebcdf315ee354a3e6121076a3d",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool_influxdb/Makefile.am",
+  "human_readable_source": "zfsexec_PROGRAMS += zpool_influxdb\nCPPCHECKTARGETS  += zpool_influxdb\n\nzpool_influxdb_SOURCES = \\\n\t%D%/zpool_influxdb.c\n\nzpool_influxdb_LDADD = \\\n\tlibspl.la \\\n\tlibnvpair.la \\\n\tlibzfs.la\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

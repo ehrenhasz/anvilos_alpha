@@ -1,0 +1,9 @@
+{
+  "module_name": "rcar_du_plane.h",
+  "hash_id": "e3e0ae345acde79cfa120852f8f513010c44f820360978b6e3b3c4b9e5285236",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/renesas/rcar-du/rcar_du_plane.h",
+  "human_readable_source": " \n \n\n#ifndef __RCAR_DU_PLANE_H__\n#define __RCAR_DU_PLANE_H__\n\n#include <drm/drm_plane.h>\n\nstruct rcar_du_format_info;\nstruct rcar_du_group;\n\n \n#define RCAR_DU_NUM_KMS_PLANES\t\t9\n#define RCAR_DU_NUM_HW_PLANES\t\t8\n\nenum rcar_du_plane_source {\n\tRCAR_DU_PLANE_MEMORY,\n\tRCAR_DU_PLANE_VSPD0,\n\tRCAR_DU_PLANE_VSPD1,\n};\n\nstruct rcar_du_plane {\n\tstruct drm_plane plane;\n\tstruct rcar_du_group *group;\n};\n\nstatic inline struct rcar_du_plane *to_rcar_plane(struct drm_plane *plane)\n{\n\treturn container_of(plane, struct rcar_du_plane, plane);\n}\n\n \nstruct rcar_du_plane_state {\n\tstruct drm_plane_state state;\n\n\tconst struct rcar_du_format_info *format;\n\tint hwindex;\n\tenum rcar_du_plane_source source;\n\n\tunsigned int colorkey;\n};\n\nstatic inline struct rcar_du_plane_state *\nto_rcar_plane_state(struct drm_plane_state *state)\n{\n\treturn container_of(state, struct rcar_du_plane_state, state);\n}\n\nint rcar_du_atomic_check_planes(struct drm_device *dev,\n\t\t\t\tstruct drm_atomic_state *state);\n\nint __rcar_du_plane_atomic_check(struct drm_plane *plane,\n\t\t\t\t struct drm_plane_state *state,\n\t\t\t\t const struct rcar_du_format_info **format);\n\nint rcar_du_planes_init(struct rcar_du_group *rgrp);\n\nvoid __rcar_du_plane_setup(struct rcar_du_group *rgrp,\n\t\t\t   const struct rcar_du_plane_state *state);\n\nstatic inline void rcar_du_plane_setup(struct rcar_du_plane *plane)\n{\n\tstruct rcar_du_plane_state *state =\n\t\tto_rcar_plane_state(plane->plane.state);\n\n\treturn __rcar_du_plane_setup(plane->group, state);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

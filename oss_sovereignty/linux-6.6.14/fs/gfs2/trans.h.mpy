@@ -1,0 +1,9 @@
+{
+  "module_name": "trans.h",
+  "hash_id": "d0938b8ea7e4bd2057ddf27e8eb3c5c71259c7cec22fb1d4e9fcf6fe9e105010",
+  "original_prompt": "Ingested from linux-6.6.14/fs/gfs2/trans.h",
+  "human_readable_source": " \n \n\n#ifndef __TRANS_DOT_H__\n#define __TRANS_DOT_H__\n\n#include <linux/buffer_head.h>\nstruct gfs2_sbd;\nstruct gfs2_rgrpd;\nstruct gfs2_glock;\n\n#define RES_DINODE\t1\n#define RES_INDIRECT\t1\n#define RES_JDATA\t1\n#define RES_DATA\t1\n#define RES_LEAF\t1\n#define RES_RG_HDR\t1\n#define RES_RG_BIT\t2\n#define RES_EATTR\t1\n#define RES_STATFS\t1\n#define RES_QUOTA\t2\n\n \nstatic inline unsigned int gfs2_rg_blocks(const struct gfs2_inode *ip, unsigned requested)\n{\n\tstruct gfs2_rgrpd *rgd = ip->i_res.rs_rgd;\n\n\tif (requested < rgd->rd_length)\n\t\treturn requested + 1;\n\treturn rgd->rd_length;\n}\n\nextern int __gfs2_trans_begin(struct gfs2_trans *tr, struct gfs2_sbd *sdp,\n\t\t\t      unsigned int blocks, unsigned int revokes,\n\t\t\t      unsigned long ip);\nextern int gfs2_trans_begin(struct gfs2_sbd *sdp, unsigned int blocks,\n\t\t\t    unsigned int revokes);\n\nextern void gfs2_trans_end(struct gfs2_sbd *sdp);\nextern void gfs2_trans_add_data(struct gfs2_glock *gl, struct buffer_head *bh);\nextern void gfs2_trans_add_meta(struct gfs2_glock *gl, struct buffer_head *bh);\nextern void gfs2_trans_add_revoke(struct gfs2_sbd *sdp, struct gfs2_bufdata *bd);\nextern void gfs2_trans_remove_revoke(struct gfs2_sbd *sdp, u64 blkno, unsigned int len);\nextern void gfs2_trans_free(struct gfs2_sbd *sdp, struct gfs2_trans *tr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

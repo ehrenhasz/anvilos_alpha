@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cba2e36e46db8731bb958f164465653e08e888ed89edb73f93ee2b0715db2e20",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/pid_namespace/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCFLAGS += -g $(KHDR_INCLUDES)\n\nTEST_GEN_PROGS = regression_enomem\n\nLOCAL_HDRS += $(selfdir)/pidfd/pidfd.h\n\ninclude ../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

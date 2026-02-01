@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "78691b19043e69bee546ad434a23712afbd91839546f7c51d21129b1a8b307e1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/kmb/Makefile",
+  "human_readable_source": "kmb-drm-y := kmb_crtc.o kmb_drv.o kmb_plane.o kmb_dsi.o\nobj-$(CONFIG_DRM_KMB_DISPLAY)\t+= kmb-drm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

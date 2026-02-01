@@ -1,0 +1,9 @@
+{
+  "module_name": "midi2.h",
+  "hash_id": "dce5faf948186f912b077e4d0e2c1193da0c18861f2129635470faad5127d1bc",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/midi2.h",
+  "human_readable_source": "\n#ifndef __USB_AUDIO_MIDI2_H\n#define __USB_AUDIO_MIDI2_H\n\n#include \"midi.h\"\n\n#if IS_ENABLED(CONFIG_SND_USB_AUDIO_MIDI_V2)\nint snd_usb_midi_v2_create(struct snd_usb_audio *chip,\n\t\t\t   struct usb_interface *iface,\n\t\t\t   const struct snd_usb_audio_quirk *quirk,\n\t\t\t   unsigned int usb_id);\nvoid snd_usb_midi_v2_suspend_all(struct snd_usb_audio *chip);\nvoid snd_usb_midi_v2_resume_all(struct snd_usb_audio *chip);\nvoid snd_usb_midi_v2_disconnect_all(struct snd_usb_audio *chip);\nvoid snd_usb_midi_v2_free_all(struct snd_usb_audio *chip);\n#else  \n \nstatic inline int snd_usb_midi_v2_create(struct snd_usb_audio *chip,\n\t\t\t\t\t struct usb_interface *iface,\n\t\t\t\t\t const struct snd_usb_audio_quirk *quirk,\n\t\t\t\t\t unsigned int usb_id)\n{\n\treturn __snd_usbmidi_create(chip->card, iface, &chip->midi_list,\n\t\t\t\t    quirk, usb_id, &chip->num_rawmidis);\n}\n\nstatic inline void snd_usb_midi_v2_suspend_all(struct snd_usb_audio *chip) {}\nstatic inline void snd_usb_midi_v2_resume_all(struct snd_usb_audio *chip) {}\nstatic inline void snd_usb_midi_v2_disconnect_all(struct snd_usb_audio *chip) {}\nstatic inline void snd_usb_midi_v2_free_all(struct snd_usb_audio *chip) {}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

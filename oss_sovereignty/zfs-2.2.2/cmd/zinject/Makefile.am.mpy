@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "3e6b8a73bba4186b7f3f483c0841950cc6b37f446cccc7451af60d97c0906644",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zinject/Makefile.am",
+  "human_readable_source": "sbin_PROGRAMS   += zinject\nCPPCHECKTARGETS += zinject\n\nzinject_SOURCES = \\\n\t%D%/translate.c \\\n\t%D%/zinject.c \\\n\t%D%/zinject.h\n\nzinject_LDADD = \\\n\tlibzfs.la \\\n\tlibzfs_core.la \\\n\tlibnvpair.la\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

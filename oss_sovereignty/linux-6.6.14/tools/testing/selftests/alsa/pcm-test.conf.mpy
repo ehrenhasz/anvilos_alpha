@@ -1,0 +1,9 @@
+{
+  "module_name": "pcm-test.conf",
+  "hash_id": "6b0a0c8fd67b6abb0275d0240e3dbb1a1468eec072945979bfa43f09bdc19c97",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/alsa/pcm-test.conf",
+  "human_readable_source": "pcm.test.time1 {\n\tdescription \"8kHz mono large periods\"\n\tformat S16_LE\n\talt_formats [ S32_LE ]\n\trate 8000\n\tchannels 1\n\tperiod_size 8000\n\tbuffer_size 32000\n}\npcm.test.time2 {\n\tdescription \"8kHz stereo large periods\"\n\tformat S16_LE\n\talt_formats [ S32_LE ]\n\trate 8000\n\tchannels 2\n\tperiod_size 8000\n\tbuffer_size 32000\n}\npcm.test.time3 {\n\tdescription \"44.1kHz stereo large periods\"\n\tformat S16_LE\n\talt_formats [ S32_LE ]\n\trate 44100\n\tchannels 2\n\tperiod_size 22500\n\tbuffer_size 192000\n}\npcm.test.time4 {\n\tdescription \"48kHz stereo small periods\"\n\tformat S16_LE\n\talt_formats [ S32_LE ]\n\trate 48000\n\tchannels 2\n\tperiod_size 512\n\tbuffer_size 4096\n}\npcm.test.time5 {\n\tdescription \"48kHz stereo large periods\"\n\tformat S16_LE\n\talt_formats [ S32_LE ]\n\trate 48000\n\tchannels 2\n\tperiod_size 24000\n\tbuffer_size 192000\n}\npcm.test.time6 {\n\tdescription \"48kHz 6 channel large periods\"\n\tformat S16_LE\n\talt_formats [ S32_LE ]\n\trate 48000\n\tchannels 2\n\tperiod_size 48000\n\tbuffer_size 576000\n}\npcm.test.time7 {\n\tdescription \"96kHz stereo large periods\"\n\tformat S16_LE\n\talt_formats [ S32_LE ]\n\trate 96000\n\tchannels 2\n\tperiod_size 48000\n\tbuffer_size 192000\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "59964d154c5cb19943189034c76d47dda3f0fda30763b748fbb612682f9b6642",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/amd/vangogh/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n# Vangogh platform Support\nsnd-pci-acp5x-objs\t:= pci-acp5x.o\nsnd-acp5x-i2s-objs\t:= acp5x-i2s.o\nsnd-acp5x-pcm-dma-objs\t:= acp5x-pcm-dma.o\nsnd-soc-acp5x-mach-objs := acp5x-mach.o\n\nobj-$(CONFIG_SND_SOC_AMD_ACP5x) += snd-pci-acp5x.o\nobj-$(CONFIG_SND_SOC_AMD_ACP5x)\t+= snd-acp5x-i2s.o\nobj-$(CONFIG_SND_SOC_AMD_ACP5x) += snd-acp5x-pcm-dma.o\nobj-$(CONFIG_SND_SOC_AMD_VANGOGH_MACH)   += snd-soc-acp5x-mach.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

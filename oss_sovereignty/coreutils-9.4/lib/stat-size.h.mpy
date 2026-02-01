@@ -1,0 +1,9 @@
+{
+  "module_name": "stat-size.h",
+  "hash_id": "fe55ca2886434cb0975aa2a6886e62fe58fb2132ac60835f7303ea8b685f4091",
+  "original_prompt": "Ingested from coreutils-9.4/lib/stat-size.h",
+  "human_readable_source": " \n#ifndef STAT_SIZE_H\n#define STAT_SIZE_H\n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n#if HAVE_SYS_PARAM_H\n# include <sys/param.h>\n#endif\n\n\n \n#if !defined DEV_BSIZE && defined BSIZE\n# define DEV_BSIZE BSIZE\n#endif\n#if !defined DEV_BSIZE && defined BBSIZE  \n# define DEV_BSIZE BBSIZE\n#endif\n#ifndef DEV_BSIZE\n# define DEV_BSIZE 4096\n#endif\n\n\n\n \n#ifndef HAVE_STRUCT_STAT_ST_BLOCKS\n# define ST_BLKSIZE(statbuf) DEV_BSIZE\n   \n# if defined _POSIX_SOURCE || !defined BSIZE\n#  define ST_NBLOCKS(statbuf) \\\n  ((statbuf).st_size / ST_NBLOCKSIZE + ((statbuf).st_size % ST_NBLOCKSIZE != 0))\n# else\n    \n#  define ST_NBLOCKS(statbuf) \\\n  (S_ISREG ((statbuf).st_mode) || S_ISDIR ((statbuf).st_mode) ? \\\n   st_blocks ((statbuf).st_size) : 0)\n# endif\n#else\n \n# define ST_BLKSIZE(statbuf) ((0 < (statbuf).st_blksize \\\n                               && (statbuf).st_blksize <= ((size_t)-1) / 8 + 1) \\\n                              ? (statbuf).st_blksize : DEV_BSIZE)\n# if defined hpux || defined __hpux__ || defined __hpux\n   \n#  define ST_NBLOCKSIZE 1024\n# endif\n#endif\n\n#ifndef ST_NBLOCKS\n# define ST_NBLOCKS(statbuf) ((statbuf).st_blocks)\n#endif\n\n#ifndef ST_NBLOCKSIZE\n# ifdef S_BLKSIZE\n#  define ST_NBLOCKSIZE S_BLKSIZE\n# else\n#  define ST_NBLOCKSIZE 512\n# endif\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

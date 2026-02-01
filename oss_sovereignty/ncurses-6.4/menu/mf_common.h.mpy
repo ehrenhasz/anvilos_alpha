@@ -1,0 +1,9 @@
+{
+  "module_name": "mf_common.h",
+  "hash_id": "87f90365449f309633fa9cf934a0890f9134c2cf4f65ff150c8ec2e8763bff74",
+  "original_prompt": "Ingested from ncurses-6.4/menu/mf_common.h",
+  "human_readable_source": " \n\n \n\n \n\n \n\n#ifndef MF_COMMON_H_incl\n#define MF_COMMON_H_incl 1\n\n#include <ncurses_cfg.h>\n#include <curses.h>\n\n#include <stdlib.h>\n#include <sys/types.h>\n#include <assert.h>\n#include <string.h>\n#include <ctype.h>\n#include <errno.h>\n\n#if DECL_ERRNO\nextern int errno;\n#endif\n\n \n#ifdef TRACE\n#  ifdef NDEBUG\n#    undef NDEBUG\n#  endif\n#endif\n\n#include <nc_alloc.h>\n\n#if USE_RCS_IDS\n#define MODULE_ID(id) static const char Ident[] = id;\n#else\n#define MODULE_ID(id)\t\t \n#endif\n\n \n#define MAX_REGULAR_CHARACTER (0xff)\n\n#define SET_ERROR(code) (errno=(code))\n#define GET_ERROR()     (errno)\n\n#ifdef TRACE\n#define RETURN(code)    returnCode( SET_ERROR(code) )\n#else\n#define RETURN(code)    return( SET_ERROR(code) )\n#endif\n\n \n#define _POSTED         (0x01U)\t \n#define _IN_DRIVER      (0x02U)\t \n\n#define SetStatus(target,mask) (target)->status |= (unsigned short) (mask)\n#define ClrStatus(target,mask) (target)->status = (unsigned short) (target->status & (~mask))\n\n \n#define Call_Hook( object, handler ) \\\n   if ( (object) != 0 && ((object)->handler) != (void *) 0 )\\\n   {\\\n\tSetStatus(object, _IN_DRIVER);\\\n\t(object)->handler(object);\\\n\tClrStatus(object, _IN_DRIVER);\\\n   }\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

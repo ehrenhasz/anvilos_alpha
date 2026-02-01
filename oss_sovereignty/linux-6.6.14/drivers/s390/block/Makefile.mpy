@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a04dcdab846c0b3826404eba00ef728be58a551190e5d438d6d4314599adeea3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/block/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# S/390 block devices\n#\n\ndasd_eckd_mod-objs := dasd_eckd.o dasd_3990_erp.o dasd_alias.o\ndasd_fba_mod-objs  := dasd_fba.o\ndasd_diag_mod-objs := dasd_diag.o\ndasd_mod-objs      := dasd.o dasd_ioctl.o dasd_proc.o dasd_devmap.o \\\n\t\t\tdasd_genhd.o dasd_erp.o\nifdef CONFIG_DASD_EER\ndasd_mod-objs      += dasd_eer.o\nendif\n\nobj-$(CONFIG_DASD) += dasd_mod.o\nobj-$(CONFIG_DASD_DIAG) += dasd_diag_mod.o\nobj-$(CONFIG_DASD_ECKD) += dasd_eckd_mod.o\nobj-$(CONFIG_DASD_FBA)  += dasd_fba_mod.o\nobj-$(CONFIG_DCSSBLK) += dcssblk.o\n\nscm_block-objs := scm_drv.o scm_blk.o\nobj-$(CONFIG_SCM_BLOCK) += scm_block.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

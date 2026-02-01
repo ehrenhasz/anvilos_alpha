@@ -1,0 +1,9 @@
+{
+  "module_name": "mksyscalltbl",
+  "hash_id": "2ff11216d2a3fac7128c82e98e66a198058350a4224bafa32c6558b302f4e9cc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/mips/entry/syscalls/mksyscalltbl",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n#\n# Generate system call table for perf. Derived from\n# s390 script.\n#\n# Author(s):  Hendrik Brueckner <brueckner@linux.vnet.ibm.com>\n# Changed by: Tiezhu Yang <yangtiezhu@loongson.cn>\n\nSYSCALL_TBL=$1\n\nif ! test -r $SYSCALL_TBL; then\n\techo \"Could not read input file\" >&2\n\texit 1\nfi\n\ncreate_table()\n{\n\tlocal max_nr nr abi sc discard\n\n\techo 'static const char *const syscalltbl_mips_n64[] = {'\n\twhile read nr abi sc discard; do\n\t\tprintf '\\t[%d] = \"%s\",\\n' $nr $sc\n\t\tmax_nr=$nr\n\tdone\n\techo '};'\n\techo \"#define SYSCALLTBL_MIPS_N64_MAX_ID $max_nr\"\n}\n\ngrep -E \"^[[:digit:]]+[[:space:]]+(n64)\" $SYSCALL_TBL\t\\\n\t|sort -k1 -n\t\t\t\t\t\\\n\t|create_table\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

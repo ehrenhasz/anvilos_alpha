@@ -1,0 +1,9 @@
+{
+  "module_name": "radeonfb.h",
+  "hash_id": "3f6913df627006e5a9ae2a3a8afef4c0523758b7df87deb3207f829108487727",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/radeonfb.h",
+  "human_readable_source": " \n#ifndef __LINUX_RADEONFB_H__\n#define __LINUX_RADEONFB_H__\n\n#include <asm/ioctl.h>\n#include <linux/types.h>\n\n#define ATY_RADEON_LCD_ON\t0x00000001\n#define ATY_RADEON_CRT_ON\t0x00000002\n\n\n#define FBIO_RADEON_GET_MIRROR\t_IOR('@', 3, size_t)\n#define FBIO_RADEON_SET_MIRROR\t_IOW('@', 4, size_t)\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

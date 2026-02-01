@@ -1,0 +1,9 @@
+{
+  "module_name": "lfs2_util.c",
+  "hash_id": "592ac13ee41fad1fa1369bee007e521ef2d7809fe326344cdfb84ab9c8c19f69",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/littlefs/lfs2_util.c",
+  "human_readable_source": " \n#include \"lfs2_util.h\"\n\n\n#ifndef LFS2_CONFIG\n\n\n\nuint32_t lfs2_crc(uint32_t crc, const void *buffer, size_t size) {\n    static const uint32_t rtable[16] = {\n        0x00000000, 0x1db71064, 0x3b6e20c8, 0x26d930ac,\n        0x76dc4190, 0x6b6b51f4, 0x4db26158, 0x5005713c,\n        0xedb88320, 0xf00f9344, 0xd6d6a3e8, 0xcb61b38c,\n        0x9b64c2b0, 0x86d3d2d4, 0xa00ae278, 0xbdbdf21c,\n    };\n\n    const uint8_t *data = buffer;\n\n    for (size_t i = 0; i < size; i++) {\n        crc = (crc >> 4) ^ rtable[(crc ^ (data[i] >> 0)) & 0xf];\n        crc = (crc >> 4) ^ rtable[(crc ^ (data[i] >> 4)) & 0xf];\n    }\n\n    return crc;\n}\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "756040942ac359f31f4e8064490a6200981d87c488e70a0be5844eb990753d94",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/nvidia/tegra-vde/Kconfig",
+  "human_readable_source": "config VIDEO_TEGRA_VDE\n\ttristate \"NVIDIA Tegra Video Decoder Engine driver\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on ARCH_TEGRA || COMPILE_TEST\n\tdepends on VIDEO_DEV\n\tselect DMA_SHARED_BUFFER\n\tselect IOMMU_IOVA\n\tselect MEDIA_CONTROLLER\n\tselect MEDIA_CONTROLLER_REQUEST_API\n\tselect SRAM\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect VIDEOBUF2_DMA_SG\n\tselect V4L2_H264\n\tselect V4L2_MEM2MEM_DEV\n\thelp\n\t   Support for the NVIDIA Tegra video decoder unit.\n\t   To compile this driver as a module choose m here.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "accommon.h",
+  "hash_id": "924a880d3d6d6a65cb38735f68c7bc4bebad2bca7e3a4c748b91514d03e2dcd0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/acpica/accommon.h",
+  "human_readable_source": " \n \n\n#ifndef __ACCOMMON_H__\n#define __ACCOMMON_H__\n\n \n#include <acpi/acconfig.h>\t \n#include \"acmacros.h\"\t\t \n#include \"aclocal.h\"\t\t \n#include \"acobject.h\"\t\t \n#include \"acstruct.h\"\t\t \n#include \"acglobal.h\"\t\t \n#include \"achware.h\"\t\t \n#include \"acutils.h\"\t\t \n#ifndef ACPI_USE_SYSTEM_CLIBRARY\n#include \"acclib.h\"\t\t \n#endif\t\t\t\t \n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

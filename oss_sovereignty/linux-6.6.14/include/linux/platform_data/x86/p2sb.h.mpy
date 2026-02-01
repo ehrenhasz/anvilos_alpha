@@ -1,0 +1,9 @@
+{
+  "module_name": "p2sb.h",
+  "hash_id": "d540f41b6b9c2b312fc412608d8bd8cc2c119c9458176c7ae28703b040284fa2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/x86/p2sb.h",
+  "human_readable_source": " \n \n\n#ifndef _PLATFORM_DATA_X86_P2SB_H\n#define _PLATFORM_DATA_X86_P2SB_H\n\n#include <linux/errno.h>\n#include <linux/kconfig.h>\n\nstruct pci_bus;\nstruct resource;\n\n#if IS_BUILTIN(CONFIG_P2SB)\n\nint p2sb_bar(struct pci_bus *bus, unsigned int devfn, struct resource *mem);\n\n#else  \n\nstatic inline int p2sb_bar(struct pci_bus *bus, unsigned int devfn, struct resource *mem)\n{\n\treturn -ENODEV;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

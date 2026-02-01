@@ -1,0 +1,9 @@
+{
+  "module_name": "lpc_ich.h",
+  "hash_id": "31921214cf3d39bb76f7751edff6d469fd3db759aaffc0d3a3868717af7cbf12",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/lpc_ich.h",
+  "human_readable_source": " \n \n#ifndef LPC_ICH_H\n#define LPC_ICH_H\n\n#include <linux/platform_data/x86/spi-intel.h>\n\n \n#define ICH_RES_GPIO\t0\n#define ICH_RES_GPE0\t1\n\n \nenum {\n\tICH_I3100_GPIO,\n\tICH_V5_GPIO,\n\tICH_V6_GPIO,\n\tICH_V7_GPIO,\n\tICH_V9_GPIO,\n\tICH_V10CORP_GPIO,\n\tICH_V10CONS_GPIO,\n\tAVOTON_GPIO,\n};\n\nstruct lpc_ich_info {\n\tchar name[32];\n\tunsigned int iTCO_version;\n\tunsigned int gpio_version;\n\tenum intel_spi_type spi_type;\n\tu8 use_gpio;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

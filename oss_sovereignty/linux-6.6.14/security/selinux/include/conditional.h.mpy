@@ -1,0 +1,9 @@
+{
+  "module_name": "conditional.h",
+  "hash_id": "22608839eca488318c686b61a7ccedbf3fde59c7037a96686ad2239980240605",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/include/conditional.h",
+  "human_readable_source": " \n \n\n#ifndef _SELINUX_CONDITIONAL_H_\n#define _SELINUX_CONDITIONAL_H_\n\n#include \"security.h\"\n\nint security_get_bools(struct selinux_policy *policy,\n\t\t       u32 *len, char ***names, int **values);\n\nint security_set_bools(u32 len, int *values);\n\nint security_get_bool_value(u32 index);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

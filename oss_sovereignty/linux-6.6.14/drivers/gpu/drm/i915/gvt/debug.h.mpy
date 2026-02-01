@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "42ba1da3fdc63b7c9ac72b762ceeb02dcf1e79e5d373433d4b0a038e7d46a294",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gvt/debug.h",
+  "human_readable_source": " \n\n#ifndef __GVT_DEBUG_H__\n#define __GVT_DEBUG_H__\n\n#define gvt_err(fmt, args...) \\\n\tpr_err(\"gvt: \"fmt, ##args)\n\n#define gvt_vgpu_err(fmt, args...)\t\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\t\\\n\tif (IS_ERR_OR_NULL(vgpu))\t\t\t\t\t\\\n\t\tpr_err(\"gvt: \"fmt, ##args);\t\t\t\\\n\telse\t\t\t\t\t\t\t\t\\\n\t\tpr_err(\"gvt: vgpu %d: \"fmt, vgpu->id, ##args);\\\n} while (0)\n\n#define gvt_dbg_core(fmt, args...) \\\n\tpr_debug(\"gvt: core: \"fmt, ##args)\n\n#define gvt_dbg_irq(fmt, args...) \\\n\tpr_debug(\"gvt: irq: \"fmt, ##args)\n\n#define gvt_dbg_mm(fmt, args...) \\\n\tpr_debug(\"gvt: mm: \"fmt, ##args)\n\n#define gvt_dbg_mmio(fmt, args...) \\\n\tpr_debug(\"gvt: mmio: \"fmt, ##args)\n\n#define gvt_dbg_dpy(fmt, args...) \\\n\tpr_debug(\"gvt: dpy: \"fmt, ##args)\n\n#define gvt_dbg_el(fmt, args...) \\\n\tpr_debug(\"gvt: el: \"fmt, ##args)\n\n#define gvt_dbg_sched(fmt, args...) \\\n\tpr_debug(\"gvt: sched: \"fmt, ##args)\n\n#define gvt_dbg_render(fmt, args...) \\\n\tpr_debug(\"gvt: render: \"fmt, ##args)\n\n#define gvt_dbg_cmd(fmt, args...) \\\n\tpr_debug(\"gvt: cmd: \"fmt, ##args)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

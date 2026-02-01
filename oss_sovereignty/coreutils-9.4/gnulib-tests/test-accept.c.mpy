@@ -1,0 +1,9 @@
+{
+  "module_name": "test-accept.c",
+  "hash_id": "f88742b951b3e7750df18074f08a57aad2a23dd8f3781132052c3c9a5732ed5d",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-accept.c",
+  "human_readable_source": " \n  {\n    struct sockaddr_in addr;\n    socklen_t addrlen = sizeof (addr);\n\n    errno = 0;\n    ASSERT (accept (-1, (struct sockaddr *) &addr, &addrlen) == -1);\n    ASSERT (errno == EBADF);\n  }\n  {\n    struct sockaddr_in addr;\n    socklen_t addrlen = sizeof (addr);\n\n    close (99);\n    errno = 0;\n    ASSERT (accept (99, (struct sockaddr *) &addr, &addrlen) == -1);\n    ASSERT (errno == EBADF);\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

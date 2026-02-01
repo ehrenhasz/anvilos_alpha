@@ -1,0 +1,9 @@
+{
+  "module_name": "dmub_dcn30.h",
+  "hash_id": "894dd7f579bfa244d48d902d7cf0814d315ca210fee36827cc1930339256d078",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dmub/src/dmub_dcn30.h",
+  "human_readable_source": " \n\n#ifndef _DMUB_DCN30_H_\n#define _DMUB_DCN30_H_\n\n#include \"dmub_dcn20.h\"\n\n \n\nextern const struct dmub_srv_common_regs dmub_srv_dcn30_regs;\n\n \n\nvoid dmub_dcn30_backdoor_load(struct dmub_srv *dmub,\n\t\t\t      const struct dmub_window *cw0,\n\t\t\t      const struct dmub_window *cw1);\n\nvoid dmub_dcn30_setup_windows(struct dmub_srv *dmub,\n\t\t\t      const struct dmub_window *cw2,\n\t\t\t      const struct dmub_window *cw3,\n\t\t\t      const struct dmub_window *cw4,\n\t\t\t      const struct dmub_window *cw5,\n\t\t\t      const struct dmub_window *cw6);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

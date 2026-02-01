@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a23a5b35ac2cebe2facd9e8f897065b0553543ceef93ccb1e1369b90fd942dde",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ipack/devices/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SERIAL_IPOCTAL\n\ttristate \"IndustryPack IP-OCTAL uart support\"\n\tdepends on IPACK_BUS && TTY\n\thelp\n\t  This driver supports the IPOCTAL serial port device for the IndustryPack bus.\n\tdefault n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

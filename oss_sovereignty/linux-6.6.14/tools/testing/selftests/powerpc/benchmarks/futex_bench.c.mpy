@@ -1,0 +1,9 @@
+{
+  "module_name": "futex_bench.c",
+  "hash_id": "c3232fe46e6a6cff6f9685e87a754ac63cf5c1a60e45ffdb2945e85fe5372091",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/benchmarks/futex_bench.c",
+  "human_readable_source": "\n \n\n#define _GNU_SOURCE\n\n#include <stdio.h>\n#include <sys/syscall.h>\n#include <time.h>\n#include <unistd.h>\n#include <linux/futex.h>\n\n#include \"utils.h\"\n\n#define ITERATIONS 100000000\n\n#define futex(A, B, C, D, E, F)\t syscall(__NR_futex, A, B, C, D, E, F)\n\nint test_futex(void)\n{\n\tstruct timespec ts_start, ts_end;\n\tunsigned long i = ITERATIONS;\n\n\tclock_gettime(CLOCK_MONOTONIC, &ts_start);\n\n\twhile (i--) {\n\t\tunsigned int addr = 0;\n\t\tfutex(&addr, FUTEX_WAKE, 1, NULL, NULL, 0);\n\t}\n\n\tclock_gettime(CLOCK_MONOTONIC, &ts_end);\n\n\tprintf(\"time = %.6f\\n\", ts_end.tv_sec - ts_start.tv_sec + (ts_end.tv_nsec - ts_start.tv_nsec) / 1e9);\n\n\treturn 0;\n}\n\nint main(void)\n{\n\ttest_harness_set_timeout(300);\n\treturn test_harness(test_futex, \"futex_bench\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

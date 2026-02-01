@@ -1,0 +1,9 @@
+{
+  "module_name": "opti92x-cs4231.c",
+  "hash_id": "80349cc10d64a6116bd2198f6994adcebd50b8670657ee9ae181df7a09d25802",
+  "original_prompt": "Ingested from linux-6.6.14/sound/isa/opti9xx/opti92x-cs4231.c",
+  "human_readable_source": "#define CS4231\n#include \"opti92x-ad1848.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

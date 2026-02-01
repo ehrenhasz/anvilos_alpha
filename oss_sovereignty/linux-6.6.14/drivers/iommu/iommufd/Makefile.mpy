@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a2442ba2f3effd5b9125707180602999e3e4076dab84be6f3462cbc18f739840",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/iommufd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\niommufd-y := \\\n\tdevice.o \\\n\thw_pagetable.o \\\n\tio_pagetable.o \\\n\tioas.o \\\n\tmain.o \\\n\tpages.o \\\n\tvfio_compat.o\n\niommufd-$(CONFIG_IOMMUFD_TEST) += selftest.o\n\nobj-$(CONFIG_IOMMUFD) += iommufd.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

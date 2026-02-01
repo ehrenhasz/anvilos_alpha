@@ -1,0 +1,9 @@
+{
+  "module_name": "page_32_types.h",
+  "hash_id": "532e6bc709245adaba6860ee1943704266bab33049905d52edadb9dd885f2f66",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/page_32_types.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PAGE_32_DEFS_H\n#define _ASM_X86_PAGE_32_DEFS_H\n\n#include <linux/const.h>\n\n \n#define __PAGE_OFFSET_BASE\t_AC(CONFIG_PAGE_OFFSET, UL)\n#define __PAGE_OFFSET\t\t__PAGE_OFFSET_BASE\n\n#define __START_KERNEL_map\t__PAGE_OFFSET\n\n#define THREAD_SIZE_ORDER\t1\n#define THREAD_SIZE\t\t(PAGE_SIZE << THREAD_SIZE_ORDER)\n\n#define IRQ_STACK_SIZE\t\tTHREAD_SIZE\n\n#define N_EXCEPTION_STACKS\t1\n\n#ifdef CONFIG_X86_PAE\n \n#define __PHYSICAL_MASK_SHIFT\t52\n#define __VIRTUAL_MASK_SHIFT\t32\n\n#else   \n#define __PHYSICAL_MASK_SHIFT\t32\n#define __VIRTUAL_MASK_SHIFT\t32\n#endif\t \n\n \n#define IA32_PAGE_OFFSET\t__PAGE_OFFSET\n#define TASK_SIZE\t\t__PAGE_OFFSET\n#define TASK_SIZE_LOW\t\tTASK_SIZE\n#define TASK_SIZE_MAX\t\tTASK_SIZE\n#define DEFAULT_MAP_WINDOW\tTASK_SIZE\n#define STACK_TOP\t\tTASK_SIZE\n#define STACK_TOP_MAX\t\tSTACK_TOP\n\n \n#define KERNEL_IMAGE_SIZE\t(512 * 1024 * 1024)\n\n#ifndef __ASSEMBLY__\n\n \nextern unsigned int __VMALLOC_RESERVE;\nextern int sysctl_legacy_va_layout;\n\nextern void find_low_pfn_range(void);\nextern void setup_bootmem_allocator(void);\n\n#endif\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "queue.h",
+  "hash_id": "d8edcbed022217ef5e3d6ad8bda3509f02026d94d6cc7d70e56d7cb47982c54b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/silabs/wfx/queue.h",
+  "human_readable_source": " \n \n#ifndef WFX_QUEUE_H\n#define WFX_QUEUE_H\n\n#include <linux/skbuff.h>\n#include <linux/atomic.h>\n\nstruct wfx_dev;\nstruct wfx_vif;\n\nstruct wfx_queue {\n\tstruct sk_buff_head normal;\n\tstruct sk_buff_head cab;  \n\tatomic_t            pending_frames;\n\tint                 priority;\n};\n\nvoid wfx_tx_lock(struct wfx_dev *wdev);\nvoid wfx_tx_unlock(struct wfx_dev *wdev);\nvoid wfx_tx_flush(struct wfx_dev *wdev);\nvoid wfx_tx_lock_flush(struct wfx_dev *wdev);\n\nvoid wfx_tx_queues_init(struct wfx_vif *wvif);\nvoid wfx_tx_queues_check_empty(struct wfx_vif *wvif);\nbool wfx_tx_queues_has_cab(struct wfx_vif *wvif);\nvoid wfx_tx_queues_put(struct wfx_vif *wvif, struct sk_buff *skb);\nstruct wfx_hif_msg *wfx_tx_queues_get(struct wfx_dev *wdev);\n\nbool wfx_tx_queue_empty(struct wfx_vif *wvif, struct wfx_queue *queue);\nvoid wfx_tx_queue_drop(struct wfx_vif *wvif, struct wfx_queue *queue,\n\t\t       struct sk_buff_head *dropped);\n\nstruct sk_buff *wfx_pending_get(struct wfx_dev *wdev, u32 packet_id);\nvoid wfx_pending_drop(struct wfx_dev *wdev, struct sk_buff_head *dropped);\nunsigned int wfx_pending_get_pkt_us_delay(struct wfx_dev *wdev, struct sk_buff *skb);\nvoid wfx_pending_dump_old_frames(struct wfx_dev *wdev, unsigned int limit_ms);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

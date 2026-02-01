@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_socket.h",
+  "hash_id": "9e2f7fc2642be96dd3ce92928b4bae5d94faabb0fe7e616148fa098730ad1d7e",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nf_socket.h",
+  "human_readable_source": " \n#ifndef _NF_SOCK_H_\n#define _NF_SOCK_H_\n\n#include <net/sock.h>\n\nstruct sock *nf_sk_lookup_slow_v4(struct net *net, const struct sk_buff *skb,\n\t\t\t\t  const struct net_device *indev);\n\nstruct sock *nf_sk_lookup_slow_v6(struct net *net, const struct sk_buff *skb,\n\t\t\t\t  const struct net_device *indev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

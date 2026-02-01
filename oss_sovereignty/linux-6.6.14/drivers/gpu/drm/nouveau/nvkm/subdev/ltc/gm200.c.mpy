@@ -1,0 +1,9 @@
+{
+  "module_name": "gm200.c",
+  "hash_id": "321081c694d3a400ee166c6ae09a801ca37a43de67f156034b631808bddb97d9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/ltc/gm200.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <subdev/fb.h>\n#include <subdev/timer.h>\n\nstatic int\ngm200_ltc_oneinit(struct nvkm_ltc *ltc)\n{\n\tstruct nvkm_device *device = ltc->subdev.device;\n\n\tltc->ltc_nr = nvkm_rd32(device, 0x12006c);\n\tltc->lts_nr = nvkm_rd32(device, 0x17e280) >> 28;\n\n\treturn gf100_ltc_oneinit_tag_ram(ltc);\n}\nstatic void\ngm200_ltc_init(struct nvkm_ltc *ltc)\n{\n\tnvkm_wr32(ltc->subdev.device, 0x17e278, ltc->tag_base);\n}\n\nstatic const struct nvkm_ltc_func\ngm200_ltc = {\n\t.oneinit = gm200_ltc_oneinit,\n\t.init = gm200_ltc_init,\n\t.intr = gm107_ltc_intr,\n\t.cbc_clear = gm107_ltc_cbc_clear,\n\t.cbc_wait = gm107_ltc_cbc_wait,\n\t.zbc_color = 16,\n\t.zbc_depth = 16,\n\t.zbc_clear_color = gm107_ltc_zbc_clear_color,\n\t.zbc_clear_depth = gm107_ltc_zbc_clear_depth,\n\t.invalidate = gf100_ltc_invalidate,\n\t.flush = gf100_ltc_flush,\n};\n\nint\ngm200_ltc_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_ltc **pltc)\n{\n\treturn nvkm_ltc_new_(&gm200_ltc, device, type, inst, pltc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

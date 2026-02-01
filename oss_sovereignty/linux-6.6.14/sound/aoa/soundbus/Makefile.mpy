@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "43c330824b6d3ed2c0858ae6aff2cecbc5f6f5b0447f3205abe13793be4686b9",
+  "original_prompt": "Ingested from linux-6.6.14/sound/aoa/soundbus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SND_AOA_SOUNDBUS) += snd-aoa-soundbus.o\nsnd-aoa-soundbus-objs := core.o sysfs.o\nobj-$(CONFIG_SND_AOA_SOUNDBUS_I2S) += i2sbus/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

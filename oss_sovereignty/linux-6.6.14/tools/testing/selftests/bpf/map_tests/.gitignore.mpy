@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "5bb9c002b08c6f435bc34bf393866c46c2f20e7ad279d118ec4cf8156e7cf381",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/map_tests/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ntests.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

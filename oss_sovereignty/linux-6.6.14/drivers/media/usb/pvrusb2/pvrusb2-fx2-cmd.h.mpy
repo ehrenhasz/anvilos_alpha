@@ -1,0 +1,9 @@
+{
+  "module_name": "pvrusb2-fx2-cmd.h",
+  "hash_id": "e6776e21c78e69656779b4c81ec4b70d00fd2b422428545722bc52f34c7da410",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pvrusb2/pvrusb2-fx2-cmd.h",
+  "human_readable_source": " \n \n\n#ifndef _PVRUSB2_FX2_CMD_H_\n#define _PVRUSB2_FX2_CMD_H_\n\n#define FX2CMD_MEM_WRITE_DWORD  0x01u\n#define FX2CMD_MEM_READ_DWORD   0x02u\n\n#define FX2CMD_HCW_ZILOG_RESET  0x10u  \n\n#define FX2CMD_MEM_READ_64BYTES 0x28u\n\n#define FX2CMD_REG_WRITE        0x04u\n#define FX2CMD_REG_READ         0x05u\n#define FX2CMD_MEMSEL           0x06u\n\n#define FX2CMD_I2C_WRITE        0x08u\n#define FX2CMD_I2C_READ         0x09u\n\n#define FX2CMD_GET_USB_SPEED    0x0bu\n\n#define FX2CMD_STREAMING_ON     0x36u\n#define FX2CMD_STREAMING_OFF    0x37u\n\n#define FX2CMD_FWPOST1          0x52u\n\n \n#define FX2CMD_HCW_DEMOD_RESET_PIN 0xd4u\n#define FX2CMD_HCW_MAKO_SLEEP_PIN  0xd5u\n\n#define FX2CMD_POWER_OFF        0xdcu\n#define FX2CMD_POWER_ON         0xdeu\n\n#define FX2CMD_DEEP_RESET       0xddu\n\n#define FX2CMD_GET_EEPROM_ADDR  0xebu\n#define FX2CMD_GET_IR_CODE      0xecu\n\n#define FX2CMD_HCW_DEMOD_RESETIN       0xf0u\n#define FX2CMD_HCW_DTV_STREAMING_ON    0xf1u\n#define FX2CMD_HCW_DTV_STREAMING_OFF   0xf2u\n\n#define FX2CMD_ONAIR_DTV_STREAMING_ON  0xa0u\n#define FX2CMD_ONAIR_DTV_STREAMING_OFF 0xa1u\n#define FX2CMD_ONAIR_DTV_POWER_ON      0xa2u\n#define FX2CMD_ONAIR_DTV_POWER_OFF     0xa3u\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

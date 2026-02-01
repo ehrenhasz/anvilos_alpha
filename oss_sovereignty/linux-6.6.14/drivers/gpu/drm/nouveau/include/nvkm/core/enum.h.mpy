@@ -1,0 +1,9 @@
+{
+  "module_name": "enum.h",
+  "hash_id": "f6bd83e28b498ec660552b6e6ffbda6ffe6c208c1d94cfe1b4c3c18c698c7ebe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/core/enum.h",
+  "human_readable_source": " \n#ifndef __NVKM_ENUM_H__\n#define __NVKM_ENUM_H__\n#include <core/os.h>\n\nstruct nvkm_enum {\n\tu32 value;\n\tconst char *name;\n\tconst void *data;\n\tu32 data2;\n\tint inst;\n};\n\nconst struct nvkm_enum *nvkm_enum_find(const struct nvkm_enum *, u32 value);\n\nstruct nvkm_bitfield {\n\tu32 mask;\n\tconst char *name;\n};\n\nvoid nvkm_snprintbf(char *, int, const struct nvkm_bitfield *, u32 value);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_regs.h",
+  "hash_id": "8b42e1ee50f44917d7606a8a24b202510aebbffda2171446ffd3223dbf47b794",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/perf_regs.h",
+  "human_readable_source": " \n#ifndef _LINUX_PERF_REGS_H\n#define _LINUX_PERF_REGS_H\n\n#include <linux/sched/task_stack.h>\n\nstruct perf_regs {\n\t__u64\t\tabi;\n\tstruct pt_regs\t*regs;\n};\n\n#ifdef CONFIG_HAVE_PERF_REGS\n#include <asm/perf_regs.h>\n\n#ifndef PERF_REG_EXTENDED_MASK\n#define PERF_REG_EXTENDED_MASK\t0\n#endif\n\nu64 perf_reg_value(struct pt_regs *regs, int idx);\nint perf_reg_validate(u64 mask);\nu64 perf_reg_abi(struct task_struct *task);\nvoid perf_get_regs_user(struct perf_regs *regs_user,\n\t\t\tstruct pt_regs *regs);\n#else\n\n#define PERF_REG_EXTENDED_MASK\t0\n\nstatic inline u64 perf_reg_value(struct pt_regs *regs, int idx)\n{\n\treturn 0;\n}\n\nstatic inline int perf_reg_validate(u64 mask)\n{\n\treturn mask ? -ENOSYS : 0;\n}\n\nstatic inline u64 perf_reg_abi(struct task_struct *task)\n{\n\treturn PERF_SAMPLE_REGS_ABI_NONE;\n}\n\nstatic inline void perf_get_regs_user(struct perf_regs *regs_user,\n\t\t\t\t      struct pt_regs *regs)\n{\n\tregs_user->regs = task_pt_regs(current);\n\tregs_user->abi = perf_reg_abi(current);\n}\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

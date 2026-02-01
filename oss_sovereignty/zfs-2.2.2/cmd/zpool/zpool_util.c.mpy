@@ -1,0 +1,9 @@
+{
+  "module_name": "zpool_util.c",
+  "hash_id": "60644713d5ea9bcc26d4058a5c17fabf9d5d6b722603f66096c54865157cc59d",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/zpool_util.c",
+  "human_readable_source": " \n \n\n#include <errno.h>\n#include <libgen.h>\n#include <libintl.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <ctype.h>\n\n#include \"zpool_util.h\"\n\n \nvoid *\nsafe_malloc(size_t size)\n{\n\tvoid *data;\n\n\tif ((data = calloc(1, size)) == NULL) {\n\t\t(void) fprintf(stderr, \"internal error: out of memory\\n\");\n\t\texit(1);\n\t}\n\n\treturn (data);\n}\n\n \nvoid *\nsafe_realloc(void *from, size_t size)\n{\n\tvoid *data;\n\n\tif ((data = realloc(from, size)) == NULL) {\n\t\t(void) fprintf(stderr, \"internal error: out of memory\\n\");\n\t\texit(1);\n\t}\n\n\treturn (data);\n}\n\n \nvoid\nzpool_no_memory(void)\n{\n\tassert(errno == ENOMEM);\n\t(void) fprintf(stderr,\n\t    gettext(\"internal error: out of memory\\n\"));\n\texit(1);\n}\n\n \nuint_t\nnum_logs(nvlist_t *nv)\n{\n\tuint_t nlogs = 0;\n\tuint_t c, children;\n\tnvlist_t **child;\n\n\tif (nvlist_lookup_nvlist_array(nv, ZPOOL_CONFIG_CHILDREN,\n\t    &child, &children) != 0)\n\t\treturn (0);\n\n\tfor (c = 0; c < children; c++) {\n\t\tuint64_t is_log = B_FALSE;\n\n\t\t(void) nvlist_lookup_uint64(child[c], ZPOOL_CONFIG_IS_LOG,\n\t\t    &is_log);\n\t\tif (is_log)\n\t\t\tnlogs++;\n\t}\n\treturn (nlogs);\n}\n\n \nuint64_t\narray64_max(uint64_t array[], unsigned int len)\n{\n\tuint64_t max = 0;\n\tint i;\n\tfor (i = 0; i < len; i++)\n\t\tmax = MAX(max, array[i]);\n\n\treturn (max);\n}\n\n \nint\nhighbit64(uint64_t i)\n{\n\tif (i == 0)\n\t\treturn (0);\n\n\treturn (NBBY * sizeof (uint64_t) - __builtin_clzll(i));\n}\n\n \nint\nlowbit64(uint64_t i)\n{\n\tif (i == 0)\n\t\treturn (0);\n\n\treturn (__builtin_ffsll(i));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

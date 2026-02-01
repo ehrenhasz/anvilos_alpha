@@ -1,0 +1,9 @@
+{
+  "module_name": "dsfield.h",
+  "hash_id": "92d751c409284723d4dd86450b24b3ad99b8450c46eb3107bb63b3d4713f79fb",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/dsfield.h",
+  "human_readable_source": " \n \n\n \n\n\n#ifndef __NET_DSFIELD_H\n#define __NET_DSFIELD_H\n\n#include <linux/types.h>\n#include <linux/ip.h>\n#include <linux/ipv6.h>\n#include <asm/byteorder.h>\n\n\nstatic inline __u8 ipv4_get_dsfield(const struct iphdr *iph)\n{\n\treturn iph->tos;\n}\n\n\nstatic inline __u8 ipv6_get_dsfield(const struct ipv6hdr *ipv6h)\n{\n\treturn ntohs(*(__force const __be16 *)ipv6h) >> 4;\n}\n\n\nstatic inline void ipv4_change_dsfield(struct iphdr *iph,__u8 mask,\n    __u8 value)\n{\n        __u32 check = ntohs((__force __be16)iph->check);\n\t__u8 dsfield;\n\n\tdsfield = (iph->tos & mask) | value;\n\tcheck += iph->tos;\n\tif ((check+1) >> 16) check = (check+1) & 0xffff;\n\tcheck -= dsfield;\n\tcheck += check >> 16;  \n\tiph->check = (__force __sum16)htons(check);\n\tiph->tos = dsfield;\n}\n\n\nstatic inline void ipv6_change_dsfield(struct ipv6hdr *ipv6h,__u8 mask,\n    __u8 value)\n{\n\t__be16 *p = (__force __be16 *)ipv6h;\n\n\t*p = (*p & htons((((u16)mask << 4) | 0xf00f))) | htons((u16)value << 4);\n}\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

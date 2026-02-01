@@ -1,0 +1,9 @@
+{
+  "module_name": "nls_ucs2_data.h",
+  "hash_id": "49aabf4a6b1cfde40a8fa908e3d04764fd6f9231f78fc1f6fc7b906eebf551e9",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nls/nls_ucs2_data.h",
+  "human_readable_source": " \n\n#ifndef _NLS_UCS2_DATA_H\n#define _NLS_UCS2_DATA_H\n\nstruct UniCaseRange {\n\twchar_t start;\n\twchar_t end;\n\tsigned char *table;\n};\n\nextern signed char NlsUniUpperTable[512];\nextern const struct UniCaseRange NlsUniUpperRange[];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

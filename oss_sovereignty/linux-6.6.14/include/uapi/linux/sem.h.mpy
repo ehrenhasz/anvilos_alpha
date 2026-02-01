@@ -1,0 +1,9 @@
+{
+  "module_name": "sem.h",
+  "hash_id": "9c2d4a9990a0522c44feb057259aba6e82a1aca0e098f615ba1c1863e8aecb32",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/sem.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_SEM_H\n#define _UAPI_LINUX_SEM_H\n\n#include <linux/ipc.h>\n\n \n#define SEM_UNDO        0x1000   \n\n \n#define GETPID  11        \n#define GETVAL  12        \n#define GETALL  13        \n#define GETNCNT 14        \n#define GETZCNT 15        \n#define SETVAL  16        \n#define SETALL  17        \n\n \n#define SEM_STAT 18\n#define SEM_INFO 19\n#define SEM_STAT_ANY 20\n\n \nstruct semid_ds {\n\tstruct ipc_perm\tsem_perm;\t\t \n\t__kernel_old_time_t sem_otime;\t\t \n\t__kernel_old_time_t sem_ctime;\t\t \n\tstruct sem\t*sem_base;\t\t \n\tstruct sem_queue *sem_pending;\t\t \n\tstruct sem_queue **sem_pending_last;\t \n\tstruct sem_undo\t*undo;\t\t\t \n\tunsigned short\tsem_nsems;\t\t \n};\n\n \n#include <asm/sembuf.h>\n\n \nstruct sembuf {\n\tunsigned short  sem_num;\t \n\tshort\t\tsem_op;\t\t \n\tshort\t\tsem_flg;\t \n};\n\n \nunion semun {\n\tint val;\t\t\t \n\tstruct semid_ds __user *buf;\t \n\tunsigned short __user *array;\t \n\tstruct seminfo __user *__buf;\t \n\tvoid __user *__pad;\n};\n\nstruct  seminfo {\n\tint semmap;\n\tint semmni;\n\tint semmns;\n\tint semmnu;\n\tint semmsl;\n\tint semopm;\n\tint semume;\n\tint semusz;\n\tint semvmx;\n\tint semaem;\n};\n\n \n\n\n#define SEMMNI  32000            \n#define SEMMSL  32000            \n#define SEMMNS  (SEMMNI*SEMMSL)  \n#define SEMOPM  500\t         \n#define SEMVMX  32767            \n#define SEMAEM  SEMVMX           \n\n \n#define SEMUME  SEMOPM           \n#define SEMMNU  SEMMNS           \n#define SEMMAP  SEMMNS           \n#define SEMUSZ  20\t\t \n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

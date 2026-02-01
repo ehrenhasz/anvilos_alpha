@@ -1,0 +1,9 @@
+{
+  "module_name": "adau7118-hw.c",
+  "hash_id": "8f7698bcce46886411a738887f8cce3341ee89c56746a27286ef3e03ad1bc537",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/adau7118-hw.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <linux/module.h>\n#include <linux/mod_devicetable.h>\n#include <linux/platform_device.h>\n\n#include \"adau7118.h\"\n\nstatic int adau7118_probe_hw(struct platform_device *pdev)\n{\n\treturn adau7118_probe(&pdev->dev, NULL, true);\n}\n\nstatic const struct of_device_id adau7118_of_match[] = {\n\t{ .compatible = \"adi,adau7118\" },\n\t{}\n};\nMODULE_DEVICE_TABLE(of, adau7118_of_match);\n\nstatic const struct platform_device_id adau7118_id[] = {\n\t{ .name\t= \"adau7118\" },\n\t{ }\n};\nMODULE_DEVICE_TABLE(platform, adau7118_id);\n\nstatic struct platform_driver adau7118_driver_hw = {\n\t.driver = {\n\t\t.name = \"adau7118\",\n\t\t.of_match_table = adau7118_of_match,\n\t},\n\t.probe = adau7118_probe_hw,\n\t.id_table = adau7118_id,\n};\nmodule_platform_driver(adau7118_driver_hw);\n\nMODULE_AUTHOR(\"Nuno Sa <nuno.sa@analog.com>\");\nMODULE_DESCRIPTION(\"ADAU7118 8 channel PDM-to-I2S/TDM Converter driver for standalone hw mode\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

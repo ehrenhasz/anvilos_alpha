@@ -1,0 +1,9 @@
+{
+  "module_name": "napi.h",
+  "hash_id": "6315044ad052b8d0c944f86b43e7b208a9d43e207b8961099bbca0773c589a50",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/napi.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM napi\n\n#if !defined(_TRACE_NAPI_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_NAPI_H\n\n#include <linux/netdevice.h>\n#include <linux/tracepoint.h>\n#include <linux/ftrace.h>\n\n#define NO_DEV \"(no_device)\"\n\nTRACE_EVENT(napi_poll,\n\n\tTP_PROTO(struct napi_struct *napi, int work, int budget),\n\n\tTP_ARGS(napi, work, budget),\n\n\tTP_STRUCT__entry(\n\t\t__field(\tstruct napi_struct *,\tnapi)\n\t\t__string(\tdev_name, napi->dev ? napi->dev->name : NO_DEV)\n\t\t__field(\tint,\t\t\twork)\n\t\t__field(\tint,\t\t\tbudget)\n\t),\n\n\tTP_fast_assign(\n\t\t__entry->napi = napi;\n\t\t__assign_str(dev_name, napi->dev ? napi->dev->name : NO_DEV);\n\t\t__entry->work = work;\n\t\t__entry->budget = budget;\n\t),\n\n\tTP_printk(\"napi poll on napi struct %p for device %s work %d budget %d\",\n\t\t  __entry->napi, __get_str(dev_name),\n\t\t  __entry->work, __entry->budget)\n);\n\n#undef NO_DEV\n\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fsverity.h",
+  "hash_id": "51d3db752df89958f4d148c48c88dc5e0e933d528a69ccda7011c09d7941d9c4",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/fsverity.h",
+  "human_readable_source": " \n \n#ifndef _UAPI_LINUX_FSVERITY_H\n#define _UAPI_LINUX_FSVERITY_H\n\n#include <linux/ioctl.h>\n#include <linux/types.h>\n\n#define FS_VERITY_HASH_ALG_SHA256\t1\n#define FS_VERITY_HASH_ALG_SHA512\t2\n\nstruct fsverity_enable_arg {\n\t__u32 version;\n\t__u32 hash_algorithm;\n\t__u32 block_size;\n\t__u32 salt_size;\n\t__u64 salt_ptr;\n\t__u32 sig_size;\n\t__u32 __reserved1;\n\t__u64 sig_ptr;\n\t__u64 __reserved2[11];\n};\n\nstruct fsverity_digest {\n\t__u16 digest_algorithm;\n\t__u16 digest_size;  \n\t__u8 digest[];\n};\n\n \nstruct fsverity_descriptor {\n\t__u8 version;\t\t \n\t__u8 hash_algorithm;\t \n\t__u8 log_blocksize;\t \n\t__u8 salt_size;\t\t \n#ifdef __KERNEL__\n\t__le32 sig_size;\n#else\n\t__le32 __reserved_0x04;\t \n#endif\n\t__le64 data_size;\t \n\t__u8 root_hash[64];\t \n\t__u8 salt[32];\t\t \n\t__u8 __reserved[144];\t \n#ifdef __KERNEL__\n\t__u8 signature[];\n#endif\n};\n\n \nstruct fsverity_formatted_digest {\n\tchar magic[8];\t\t\t \n\t__le16 digest_algorithm;\n\t__le16 digest_size;\n\t__u8 digest[];\n};\n\n#define FS_VERITY_METADATA_TYPE_MERKLE_TREE\t1\n#define FS_VERITY_METADATA_TYPE_DESCRIPTOR\t2\n#define FS_VERITY_METADATA_TYPE_SIGNATURE\t3\n\nstruct fsverity_read_metadata_arg {\n\t__u64 metadata_type;\n\t__u64 offset;\n\t__u64 length;\n\t__u64 buf_ptr;\n\t__u64 __reserved;\n};\n\n#define FS_IOC_ENABLE_VERITY\t_IOW('f', 133, struct fsverity_enable_arg)\n#define FS_IOC_MEASURE_VERITY\t_IOWR('f', 134, struct fsverity_digest)\n#define FS_IOC_READ_VERITY_METADATA \\\n\t_IOWR('f', 135, struct fsverity_read_metadata_arg)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

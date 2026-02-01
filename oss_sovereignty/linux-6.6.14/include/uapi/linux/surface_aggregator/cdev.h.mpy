@@ -1,0 +1,9 @@
+{
+  "module_name": "cdev.h",
+  "hash_id": "f0d3d525a6b778f690c2484570f36496d8bc032d4a9fdd41e3b2f6c8df9beb53",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/surface_aggregator/cdev.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_SURFACE_AGGREGATOR_CDEV_H\n#define _UAPI_LINUX_SURFACE_AGGREGATOR_CDEV_H\n\n#include <linux/ioctl.h>\n#include <linux/types.h>\n\n \nenum ssam_cdev_request_flags {\n\tSSAM_CDEV_REQUEST_HAS_RESPONSE = 0x01,\n\tSSAM_CDEV_REQUEST_UNSEQUENCED  = 0x02,\n};\n\n \nstruct ssam_cdev_request {\n\t__u8 target_category;\n\t__u8 target_id;\n\t__u8 command_id;\n\t__u8 instance_id;\n\t__u16 flags;\n\t__s16 status;\n\n\tstruct {\n\t\t__u64 data;\n\t\t__u16 length;\n\t\t__u8 __pad[6];\n\t} payload;\n\n\tstruct {\n\t\t__u64 data;\n\t\t__u16 length;\n\t\t__u8 __pad[6];\n\t} response;\n} __attribute__((__packed__));\n\n \nstruct ssam_cdev_notifier_desc {\n\t__s32 priority;\n\t__u8 target_category;\n} __attribute__((__packed__));\n\n \nstruct ssam_cdev_event_desc {\n\tstruct {\n\t\t__u8 target_category;\n\t\t__u8 target_id;\n\t\t__u8 cid_enable;\n\t\t__u8 cid_disable;\n\t} reg;\n\n\tstruct {\n\t\t__u8 target_category;\n\t\t__u8 instance;\n\t} id;\n\n\t__u8 flags;\n} __attribute__((__packed__));\n\n \nstruct ssam_cdev_event {\n\t__u8 target_category;\n\t__u8 target_id;\n\t__u8 command_id;\n\t__u8 instance_id;\n\t__u16 length;\n\t__u8 data[];\n} __attribute__((__packed__));\n\n#define SSAM_CDEV_REQUEST\t\t_IOWR(0xA5, 1, struct ssam_cdev_request)\n#define SSAM_CDEV_NOTIF_REGISTER\t_IOW(0xA5, 2, struct ssam_cdev_notifier_desc)\n#define SSAM_CDEV_NOTIF_UNREGISTER\t_IOW(0xA5, 3, struct ssam_cdev_notifier_desc)\n#define SSAM_CDEV_EVENT_ENABLE\t\t_IOW(0xA5, 4, struct ssam_cdev_event_desc)\n#define SSAM_CDEV_EVENT_DISABLE\t\t_IOW(0xA5, 5, struct ssam_cdev_event_desc)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

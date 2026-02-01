@@ -1,0 +1,9 @@
+{
+  "module_name": "bebob_yamaha_terratec.c",
+  "hash_id": "36e676f3f227dfa6a01d0df14f4702f7e4f99040c9cfa12a3a0ee3eca55983a9",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/bebob/bebob_yamaha_terratec.c",
+  "human_readable_source": "\n \n\n#include \"./bebob.h\"\n\n \n\nstatic const enum snd_bebob_clock_type clk_src_types[] = {\n\tSND_BEBOB_CLOCK_TYPE_INTERNAL,\n\tSND_BEBOB_CLOCK_TYPE_EXTERNAL,\t \n};\nstatic int\nclk_src_get(struct snd_bebob *bebob, unsigned int *id)\n{\n\tint err;\n\n\terr = avc_audio_get_selector(bebob->unit, 0, 4, id);\n\tif (err < 0)\n\t\treturn err;\n\n\tif (*id >= ARRAY_SIZE(clk_src_types))\n\t\treturn -EIO;\n\n\treturn 0;\n}\nstatic const struct snd_bebob_clock_spec clock_spec = {\n\t.num\t= ARRAY_SIZE(clk_src_types),\n\t.types\t= clk_src_types,\n\t.get\t= &clk_src_get,\n};\nstatic const struct snd_bebob_rate_spec rate_spec = {\n\t.get\t= &snd_bebob_stream_get_rate,\n\t.set\t= &snd_bebob_stream_set_rate,\n};\nconst struct snd_bebob_spec yamaha_terratec_spec = {\n\t.clock\t= &clock_spec,\n\t.rate\t= &rate_spec,\n\t.meter\t= NULL\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

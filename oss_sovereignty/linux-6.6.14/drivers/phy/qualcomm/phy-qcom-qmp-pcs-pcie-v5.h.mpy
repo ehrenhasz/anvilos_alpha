@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-qcom-qmp-pcs-pcie-v5.h",
+  "hash_id": "28793867fd45b77769b63e067615aa8fe9ffc9aa8913f18d446efbb3a513858e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/qualcomm/phy-qcom-qmp-pcs-pcie-v5.h",
+  "human_readable_source": " \n \n \n\n#ifndef QCOM_PHY_QMP_PCS_PCIE_V5_H_\n#define QCOM_PHY_QMP_PCS_PCIE_V5_H_\n\n \n#define QPHY_V5_PCS_PCIE_POWER_STATE_CONFIG2\t\t0x0c\n#define QPHY_V5_PCS_PCIE_POWER_STATE_CONFIG4\t\t0x14\n#define QPHY_V5_PCS_PCIE_ENDPOINT_REFCLK_DRIVE\t\t0x20\n#define QPHY_V5_PCS_PCIE_INT_AUX_CLK_CONFIG1\t\t0x54\n#define QPHY_V5_PCS_PCIE_OSC_DTCT_ACTIONS\t\t0x94\n#define QPHY_V5_PCS_PCIE_EQ_CONFIG2\t\t\t0xa8\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

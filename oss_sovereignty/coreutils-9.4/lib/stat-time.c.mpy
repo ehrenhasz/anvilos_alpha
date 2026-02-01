@@ -1,0 +1,9 @@
+{
+  "module_name": "stat-time.c",
+  "hash_id": "ad9df3cc831c1381db00eabaf99a89af1d548ce7b9e30e3cc3905f645b84ecf3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/stat-time.c",
+  "human_readable_source": "/* stat-related time functions.\n\n   Copyright (C) 2012-2023 Free Software Foundation, Inc.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU Lesser General Public License as\n   published by the Free Software Foundation; either version 2.1 of the\n   License, or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU Lesser General Public License for more details.\n\n   You should have received a copy of the GNU Lesser General Public License\n   along with this program.  If not, see <https:\n\n#include <config.h>\n\n#define _GL_STAT_TIME_INLINE _GL_EXTERN_INLINE\n#include \"stat-time.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bqueue.h",
+  "hash_id": "8acbceb6f810675e4edf4124778165540b7419dd2036589fa0e69d4a0f70487b",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/bqueue.h",
+  "human_readable_source": " \n \n\n#ifndef\t_BQUEUE_H\n#define\t_BQUEUE_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n#include\t<sys/zfs_context.h>\n\ntypedef struct bqueue {\n\tlist_t bq_list;\n\tsize_t bq_size;\n\tlist_t bq_dequeuing_list;\n\tsize_t bq_dequeuing_size;\n\tlist_t bq_enqueuing_list;\n\tsize_t bq_enqueuing_size;\n\tkmutex_t bq_lock;\n\tkcondvar_t bq_add_cv;\n\tkcondvar_t bq_pop_cv;\n\tsize_t bq_maxsize;\n\tuint_t bq_fill_fraction;\n\tsize_t bq_node_offset;\n} bqueue_t;\n\ntypedef struct bqueue_node {\n\tlist_node_t bqn_node;\n\tsize_t bqn_size;\n} bqueue_node_t;\n\n\nint bqueue_init(bqueue_t *, uint_t, size_t, size_t);\nvoid bqueue_destroy(bqueue_t *);\nvoid bqueue_enqueue(bqueue_t *, void *, size_t);\nvoid bqueue_enqueue_flush(bqueue_t *, void *, size_t);\nvoid *bqueue_dequeue(bqueue_t *);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

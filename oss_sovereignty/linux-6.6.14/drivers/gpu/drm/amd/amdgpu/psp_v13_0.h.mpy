@@ -1,0 +1,9 @@
+{
+  "module_name": "psp_v13_0.h",
+  "hash_id": "b80349448416775a614d6e7f3280334653826e3c528a3512cbb5dcdda5f1d40e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/psp_v13_0.h",
+  "human_readable_source": " \n#ifndef __PSP_V13_0_H__\n#define __PSP_V13_0_H__\n\n#include \"amdgpu_psp.h\"\n\n#define PSP_SPIROM_UPDATE_TIMEOUT   60000    \n\nvoid psp_v13_0_set_psp_funcs(struct psp_context *psp);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

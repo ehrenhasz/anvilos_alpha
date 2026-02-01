@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "483b75481f50acb05b8cb846b7fb72b36ed7ced2c18cdab1295ef94976770d6b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/qcom/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCFLAGS_rpmh-rsc.o := -I$(src)\nobj-$(CONFIG_QCOM_AOSS_QMP) +=\tqcom_aoss.o\nobj-$(CONFIG_QCOM_GENI_SE) +=\tqcom-geni-se.o\nobj-$(CONFIG_QCOM_COMMAND_DB) += cmd-db.o\nobj-$(CONFIG_QCOM_GSBI)\t+=\tqcom_gsbi.o\nobj-$(CONFIG_QCOM_MDT_LOADER)\t+= mdt_loader.o\nobj-$(CONFIG_QCOM_OCMEM)\t+= ocmem.o\nobj-$(CONFIG_QCOM_PDR_HELPERS)\t+= pdr_interface.o\nobj-$(CONFIG_QCOM_PMIC_GLINK)\t+= pmic_glink.o\nobj-$(CONFIG_QCOM_PMIC_GLINK)\t+= pmic_glink_altmode.o\nobj-$(CONFIG_QCOM_QMI_HELPERS)\t+= qmi_helpers.o\nqmi_helpers-y\t+= qmi_encdec.o qmi_interface.o\nobj-$(CONFIG_QCOM_RAMP_CTRL)\t+= ramp_controller.o\nobj-$(CONFIG_QCOM_RMTFS_MEM)\t+= rmtfs_mem.o\nobj-$(CONFIG_QCOM_RPM_MASTER_STATS)\t+= rpm_master_stats.o\nobj-$(CONFIG_QCOM_RPMH)\t\t+= qcom_rpmh.o\nqcom_rpmh-y\t\t\t+= rpmh-rsc.o\nqcom_rpmh-y\t\t\t+= rpmh.o\nobj-$(CONFIG_QCOM_SMD_RPM)\t+= rpm-proc.o smd-rpm.o\nobj-$(CONFIG_QCOM_SMEM) +=\tsmem.o\nobj-$(CONFIG_QCOM_SMEM_STATE) += smem_state.o\nobj-$(CONFIG_QCOM_SMP2P)\t+= smp2p.o\nobj-$(CONFIG_QCOM_SMSM)\t+= smsm.o\nobj-$(CONFIG_QCOM_SOCINFO)\t+= socinfo.o\nobj-$(CONFIG_QCOM_SPM)\t\t+= spm.o\nobj-$(CONFIG_QCOM_STATS)\t+= qcom_stats.o\nobj-$(CONFIG_QCOM_WCNSS_CTRL) += wcnss_ctrl.o\nobj-$(CONFIG_QCOM_APR) += apr.o\nobj-$(CONFIG_QCOM_LLCC) += llcc-qcom.o\nobj-$(CONFIG_QCOM_KRYO_L2_ACCESSORS) +=\tkryo-l2-accessors.o\nobj-$(CONFIG_QCOM_ICC_BWMON)\t+= icc-bwmon.o\nqcom_ice-objs\t\t\t+= ice.o\nobj-$(CONFIG_QCOM_INLINE_CRYPTO_ENGINE)\t+= qcom_ice.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

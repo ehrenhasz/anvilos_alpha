@@ -1,0 +1,9 @@
+{
+  "module_name": "stacktrace_map_skip.c",
+  "hash_id": "dfb89e098bb97b24e789d896bacd01a556324a15da09eb51bc6620b03043e140",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/stacktrace_map_skip.c",
+  "human_readable_source": "\n#include <vmlinux.h>\n#include <bpf/bpf_helpers.h>\n\n#define TEST_STACK_DEPTH\t2\n#define TEST_MAX_ENTRIES\t16384\n\ntypedef __u64 stack_trace_t[TEST_STACK_DEPTH];\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_STACK_TRACE);\n\t__uint(max_entries, TEST_MAX_ENTRIES);\n\t__type(key, __u32);\n\t__type(value, stack_trace_t);\n} stackmap SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__uint(max_entries, TEST_MAX_ENTRIES);\n\t__type(key, __u32);\n\t__type(value, __u32);\n} stackid_hmap SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(max_entries, TEST_MAX_ENTRIES);\n\t__type(key, __u32);\n\t__type(value, stack_trace_t);\n} stack_amap SEC(\".maps\");\n\nint pid = 0;\nint control = 0;\nint failed = 0;\n\nSEC(\"tracepoint/sched/sched_switch\")\nint oncpu(struct trace_event_raw_sched_switch *ctx)\n{\n\t__u32 max_len = TEST_STACK_DEPTH * sizeof(__u64);\n\t__u32 key = 0, val = 0;\n\t__u64 *stack_p;\n\n\tif (pid != (bpf_get_current_pid_tgid() >> 32))\n\t\treturn 0;\n\n\tif (control)\n\t\treturn 0;\n\n\t \n\tkey = bpf_get_stackid(ctx, &stackmap, TEST_STACK_DEPTH);\n\tif ((int)key >= 0) {\n\t\t \n\t\tbpf_map_update_elem(&stackid_hmap, &key, &val, 0);\n\t\tstack_p = bpf_map_lookup_elem(&stack_amap, &key);\n\t\tif (stack_p) {\n\t\t\tbpf_get_stack(ctx, stack_p, max_len, TEST_STACK_DEPTH);\n\t\t\t \n\t\t\tif (stack_p[0] == 0)\n\t\t\t\tfailed = 1;\n\t\t}\n\t} else {\n\t\t \n\t\tfailed = 2;\n\t}\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "strtoul.c",
+  "hash_id": "cc51d37c14b7d40cf895bf1edda87ea5287e3f266f1aafbfbac1fbbf2411eb72",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/strtoul.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#ifndef HAVE_STRTOUL\n\n#define\tUNSIGNED\t1\n#undef HAVE_STRTOL\n\n#include <strtol.c>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

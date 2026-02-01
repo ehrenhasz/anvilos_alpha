@@ -1,0 +1,9 @@
+{
+  "module_name": "audit_signal.h",
+  "hash_id": "4c25383b29decdd26c56426fddb8b98a5dc068c602c339b4f7561e2bdca65490",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/audit_signal.h",
+  "human_readable_source": "__NR_kill,\n__NR_tgkill,\n__NR_tkill,\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

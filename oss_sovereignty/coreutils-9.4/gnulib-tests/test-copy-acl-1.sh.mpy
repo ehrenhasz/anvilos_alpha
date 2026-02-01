@@ -1,0 +1,9 @@
+{
+  "module_name": "test-copy-acl-1.sh",
+  "hash_id": "6a0fe0b92eeb4edd20d572593190efb743afa756f641ccb267bd70f39783331e",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-copy-acl-1.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test copy-acl on the file system of /var/tmp, which usually is a local\n# file system.\n\n. \"${srcdir=.}/init.sh\"; path_prepend_ .\n\nif test -d /var/tmp; then\n  TMPDIR=/var/tmp\nelse\n  TMPDIR=/tmp\nfi\ntest -d $TMPDIR || Exit 77\nexport TMPDIR\n\n$BOURNE_SHELL \"${srcdir}/test-copy-acl.sh\"\n\nExit $?\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

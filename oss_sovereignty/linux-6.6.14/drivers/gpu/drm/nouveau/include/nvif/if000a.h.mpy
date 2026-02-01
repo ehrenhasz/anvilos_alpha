@@ -1,0 +1,9 @@
+{
+  "module_name": "if000a.h",
+  "hash_id": "b086dddb57077ddafe2abc4c9ff2dbbb5633e48960425a9f7a35a26a2fac781b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/if000a.h",
+  "human_readable_source": "#ifndef __NVIF_IF000A_H__\n#define __NVIF_IF000A_H__\nstruct nvif_mem_v0 {\n\t__u8  version;\n\t__u8  type;\n\t__u8  page;\n\t__u8  pad03[5];\n\t__u64 size;\n\t__u64 addr;\n\t__u8  data[];\n};\n\nstruct nvif_mem_ram_vn {\n};\n\nstruct nvif_mem_ram_v0 {\n\t__u8  version;\n\t__u8  pad01[7];\n\tdma_addr_t *dma;\n\tstruct scatterlist *sgl;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "stderr-after-eof.sh",
+  "hash_id": "e3ed9d936df289d004ad868c6a16f73b69cc29975180d39ca875d0fed48578ed",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/stderr-after-eof.sh",
+  "human_readable_source": "#\t$OpenBSD: stderr-after-eof.sh,v 1.3 2017/04/30 23:34:55 djm Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"stderr data after eof\"\n\n# setup data\nrm -f ${DATA} ${COPY}\ncp /dev/null ${DATA}\nfor i in 1 2 3 4 5 6; do\n\t(date;echo $i) | md5 >> ${DATA}\ndone\n\n${SSH} -F $OBJ/ssh_proxy otherhost \\\n\texec sh -c \\'\"exec > /dev/null; sleep 2; cat ${DATA} 1>&2 $s\"\\' \\\n\t2> ${COPY}\nr=$?\nif [ $r -ne 0 ]; then\n\tfail \"ssh failed with exit code $r\"\nfi\negrep 'Disconnecting: Received extended_data after EOF' ${COPY} &&\n\tfail \"ext data received after eof\"\ncmp ${DATA} ${COPY}\t|| fail \"stderr corrupt\"\n\nrm -f ${DATA} ${COPY}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

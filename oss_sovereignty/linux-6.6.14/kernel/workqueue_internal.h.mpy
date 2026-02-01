@@ -1,0 +1,9 @@
+{
+  "module_name": "workqueue_internal.h",
+  "hash_id": "7ebd746d9d0487c8a555426c4dcd9b82b937a9b2144ccc9d184593841aae4c0b",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/workqueue_internal.h",
+  "human_readable_source": " \n \n#ifndef _KERNEL_WORKQUEUE_INTERNAL_H\n#define _KERNEL_WORKQUEUE_INTERNAL_H\n\n#include <linux/workqueue.h>\n#include <linux/kthread.h>\n#include <linux/preempt.h>\n\nstruct worker_pool;\n\n \nstruct worker {\n\t \n\tunion {\n\t\tstruct list_head\tentry;\t \n\t\tstruct hlist_node\thentry;\t \n\t};\n\n\tstruct work_struct\t*current_work;\t \n\twork_func_t\t\tcurrent_func;\t \n\tstruct pool_workqueue\t*current_pwq;\t \n\tu64\t\t\tcurrent_at;\t \n\tunsigned int\t\tcurrent_color;\t \n\n\tint\t\t\tsleeping;\t \n\n\t \n\twork_func_t\t\tlast_func;\t \n\n\tstruct list_head\tscheduled;\t \n\n\tstruct task_struct\t*task;\t\t \n\tstruct worker_pool\t*pool;\t\t \n\t\t\t\t\t\t \n\tstruct list_head\tnode;\t\t \n\t\t\t\t\t\t \n\n\tunsigned long\t\tlast_active;\t \n\tunsigned int\t\tflags;\t\t \n\tint\t\t\tid;\t\t \n\n\t \n\tchar\t\t\tdesc[WORKER_DESC_LEN];\n\n\t \n\tstruct workqueue_struct\t*rescue_wq;\t \n};\n\n \nstatic inline struct worker *current_wq_worker(void)\n{\n\tif (in_task() && (current->flags & PF_WQ_WORKER))\n\t\treturn kthread_data(current);\n\treturn NULL;\n}\n\n \nvoid wq_worker_running(struct task_struct *task);\nvoid wq_worker_sleeping(struct task_struct *task);\nvoid wq_worker_tick(struct task_struct *task);\nwork_func_t wq_worker_last_func(struct task_struct *task);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

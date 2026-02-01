@@ -1,0 +1,9 @@
+{
+  "module_name": "si476x.h",
+  "hash_id": "f0ecf33956b6429cff1ed3784f12214774837ec2abd68581d1b778c3879853d2",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/drv-intf/si476x.h",
+  "human_readable_source": " \n \n\n#ifndef SI476X_H\n#define SI476X_H\n\n#include <linux/types.h>\n#include <linux/videodev2.h>\n\n#include <linux/mfd/si476x-reports.h>\n\nenum si476x_ctrl_id {\n\tV4L2_CID_SI476X_RSSI_THRESHOLD\t= (V4L2_CID_USER_SI476X_BASE + 1),\n\tV4L2_CID_SI476X_SNR_THRESHOLD\t= (V4L2_CID_USER_SI476X_BASE + 2),\n\tV4L2_CID_SI476X_MAX_TUNE_ERROR\t= (V4L2_CID_USER_SI476X_BASE + 3),\n\tV4L2_CID_SI476X_HARMONICS_COUNT\t= (V4L2_CID_USER_SI476X_BASE + 4),\n\tV4L2_CID_SI476X_DIVERSITY_MODE\t= (V4L2_CID_USER_SI476X_BASE + 5),\n\tV4L2_CID_SI476X_INTERCHIP_LINK\t= (V4L2_CID_USER_SI476X_BASE + 6),\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

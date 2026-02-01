@@ -1,0 +1,9 @@
+{
+  "module_name": "opa_vnic.h",
+  "hash_id": "54fbc0ec681f511ee41ae90cfe2682f2f29d2f294cf010c695f7c5887ffdb286",
+  "original_prompt": "Ingested from linux-6.6.14/include/rdma/opa_vnic.h",
+  "human_readable_source": " \n \n\n#ifndef _OPA_VNIC_H\n#define _OPA_VNIC_H\n\n \n\n#include <rdma/ib_verbs.h>\n\n \n#define OPA_VNIC_L2_HDR_LEN   (16 + 2)\n\n#define OPA_VNIC_L4_HDR_LEN   2\n\n#define OPA_VNIC_HDR_LEN      (OPA_VNIC_L2_HDR_LEN + \\\n\t\t\t       OPA_VNIC_L4_HDR_LEN)\n\n#define OPA_VNIC_L4_ETHR  0x78\n\n#define OPA_VNIC_ICRC_LEN   4\n#define OPA_VNIC_TAIL_LEN   1\n#define OPA_VNIC_ICRC_TAIL_LEN  (OPA_VNIC_ICRC_LEN + OPA_VNIC_TAIL_LEN)\n\n#define OPA_VNIC_SKB_MDATA_LEN         4\n#define OPA_VNIC_SKB_MDATA_ENCAP_ERR   0x1\n\n \nstruct opa_vnic_rdma_netdev {\n\tstruct rdma_netdev rn;   \n\t \n\tchar *dev_priv[];\n};\n\nstatic inline void *opa_vnic_priv(const struct net_device *dev)\n{\n\tstruct rdma_netdev *rn = netdev_priv(dev);\n\n\treturn rn->clnt_priv;\n}\n\nstatic inline void *opa_vnic_dev_priv(const struct net_device *dev)\n{\n\tstruct opa_vnic_rdma_netdev *oparn = netdev_priv(dev);\n\n\treturn oparn->dev_priv;\n}\n\n \nstruct opa_vnic_skb_mdata {\n\tu8 vl;\n\tu8 entropy;\n\tu8 flags;\n\tu8 rsvd;\n} __packed;\n\n \nstruct opa_vnic_grp_stats {\n\tu64 unicast;\n\tu64 mcastbcast;\n\tu64 untagged;\n\tu64 vlan;\n\tu64 s_64;\n\tu64 s_65_127;\n\tu64 s_128_255;\n\tu64 s_256_511;\n\tu64 s_512_1023;\n\tu64 s_1024_1518;\n\tu64 s_1519_max;\n};\n\nstruct opa_vnic_stats {\n\t \n\tstruct rtnl_link_stats64 netstats;\n\n\t \n\tstruct opa_vnic_grp_stats tx_grp;\n\tstruct opa_vnic_grp_stats rx_grp;\n\tu64 tx_dlid_zero;\n\tu64 tx_drop_state;\n\tu64 rx_drop_state;\n\tu64 rx_runt;\n\tu64 rx_oversize;\n};\n\nstatic inline bool rdma_cap_opa_vnic(struct ib_device *device)\n{\n\treturn !!(device->attrs.kernel_cap_flags & IBK_RDMA_NETDEV_OPA);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fw.h",
+  "hash_id": "86c9071af75a9a917244af4f7fbc41bd28805d1b12f3c3197a4d991aa779ffcb",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/sound/sof/fw.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef __INCLUDE_UAPI_SOF_FW_H__\n#define __INCLUDE_UAPI_SOF_FW_H__\n\n#include <linux/types.h>\n\n#define SND_SOF_FW_SIG_SIZE\t4\n#define SND_SOF_FW_ABI\t\t1\n#define SND_SOF_FW_SIG\t\t\"Reef\"\n\n \nenum snd_sof_fw_blk_type {\n\tSOF_FW_BLK_TYPE_INVALID\t= -1,\n\tSOF_FW_BLK_TYPE_START\t= 0,\n\tSOF_FW_BLK_TYPE_RSRVD0\t= SOF_FW_BLK_TYPE_START,\n\tSOF_FW_BLK_TYPE_IRAM\t= 1,\t \n\tSOF_FW_BLK_TYPE_DRAM\t= 2,\t \n\tSOF_FW_BLK_TYPE_SRAM\t= 3,\t \n\tSOF_FW_BLK_TYPE_ROM\t= 4,\n\tSOF_FW_BLK_TYPE_IMR\t= 5,\n\tSOF_FW_BLK_TYPE_RSRVD6\t= 6,\n\tSOF_FW_BLK_TYPE_RSRVD7\t= 7,\n\tSOF_FW_BLK_TYPE_RSRVD8\t= 8,\n\tSOF_FW_BLK_TYPE_RSRVD9\t= 9,\n\tSOF_FW_BLK_TYPE_RSRVD10\t= 10,\n\tSOF_FW_BLK_TYPE_RSRVD11\t= 11,\n\tSOF_FW_BLK_TYPE_RSRVD12\t= 12,\n\tSOF_FW_BLK_TYPE_RSRVD13\t= 13,\n\tSOF_FW_BLK_TYPE_RSRVD14\t= 14,\n\t \n\tSOF_FW_BLK_TYPE_NUM\n};\n\nstruct snd_sof_blk_hdr {\n\tenum snd_sof_fw_blk_type type;\n\t__u32 size;\t\t \n\t__u32 offset;\t\t \n} __packed;\n\n \nenum snd_sof_fw_mod_type {\n\tSOF_FW_BASE\t= 0,\t \n\tSOF_FW_MODULE\t= 1,\t \n};\n\nstruct snd_sof_mod_hdr {\n\tenum snd_sof_fw_mod_type type;\n\t__u32 size;\t\t \n\t__u32 num_blocks;\t \n} __packed;\n\n \nstruct snd_sof_fw_header {\n\tunsigned char sig[SND_SOF_FW_SIG_SIZE];  \n\t__u32 file_size;\t \n\t__u32 num_modules;\t \n\t__u32 abi;\t\t \n} __packed;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

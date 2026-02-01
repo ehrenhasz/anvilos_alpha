@@ -1,0 +1,9 @@
+{
+  "module_name": "ethernet-rx.h",
+  "hash_id": "45f3a2ee73120377d6b443a5959ef2403a4298df117210d9920e2296664f9ea9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/octeon/ethernet-rx.h",
+  "human_readable_source": " \n \n\nvoid cvm_oct_poll_controller(struct net_device *dev);\nvoid cvm_oct_rx_initialize(void);\nvoid cvm_oct_rx_shutdown(void);\n\nstatic inline void cvm_oct_rx_refill_pool(int fill_threshold)\n{\n\tint number_to_free;\n\tint num_freed;\n\t \n\tnumber_to_free =\n\t\tcvmx_fau_fetch_and_add32(FAU_NUM_PACKET_BUFFERS_TO_FREE, 0);\n\n\tif (number_to_free > fill_threshold) {\n\t\tcvmx_fau_atomic_add32(FAU_NUM_PACKET_BUFFERS_TO_FREE,\n\t\t\t\t      -number_to_free);\n\t\tnum_freed = cvm_oct_mem_fill_fpa(CVMX_FPA_PACKET_POOL,\n\t\t\t\t\t\t CVMX_FPA_PACKET_POOL_SIZE,\n\t\t\t\t\t\t number_to_free);\n\t\tif (num_freed != number_to_free) {\n\t\t\tcvmx_fau_atomic_add32(FAU_NUM_PACKET_BUFFERS_TO_FREE,\n\t\t\t\t\t      number_to_free - num_freed);\n\t\t}\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

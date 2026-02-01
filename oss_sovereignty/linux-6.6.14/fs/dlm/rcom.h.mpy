@@ -1,0 +1,9 @@
+{
+  "module_name": "rcom.h",
+  "hash_id": "b8d4238c9947bedf8b4686f339745feb6729a74871738175186771f48cb73d53",
+  "original_prompt": "Ingested from linux-6.6.14/fs/dlm/rcom.h",
+  "human_readable_source": " \n \n\n#ifndef __RCOM_DOT_H__\n#define __RCOM_DOT_H__\n\nint dlm_rcom_status(struct dlm_ls *ls, int nodeid, uint32_t status_flags,\n\t\t    uint64_t seq);\nint dlm_rcom_names(struct dlm_ls *ls, int nodeid, char *last_name,\n\t\t   int last_len, uint64_t seq);\nint dlm_send_rcom_lookup(struct dlm_rsb *r, int dir_nodeid, uint64_t seq);\nint dlm_send_rcom_lock(struct dlm_rsb *r, struct dlm_lkb *lkb, uint64_t seq);\nvoid dlm_receive_rcom(struct dlm_ls *ls, const struct dlm_rcom *rc,\n\t\t      int nodeid);\nint dlm_send_ls_not_ready(int nodeid, const struct dlm_rcom *rc_in);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tracex7.bpf.c",
+  "hash_id": "b05a1dcc375dae1bd4eb6e0d0454257b0849949cfa62302910e14372df806848",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/tracex7.bpf.c",
+  "human_readable_source": "#include \"vmlinux.h\"\n#include <linux/version.h>\n#include <bpf/bpf_helpers.h>\n\nSEC(\"kprobe/open_ctree\")\nint bpf_prog1(struct pt_regs *ctx)\n{\n\tunsigned long rc = -12;\n\n\tbpf_override_return(ctx, rc);\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\nu32 _version SEC(\"version\") = LINUX_VERSION_CODE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

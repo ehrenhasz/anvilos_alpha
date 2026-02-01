@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b4004f1f6cfced33b59f4c0644edb239420090d5af4afba1b03f6df00e422c6f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pps/generators/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for PPS generators.\n#\n\nobj-$(CONFIG_PPS_GENERATOR_PARPORT) += pps_gen_parport.o\n\nifeq ($(CONFIG_PPS_DEBUG),y)\nEXTRA_CFLAGS += -DDEBUG\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

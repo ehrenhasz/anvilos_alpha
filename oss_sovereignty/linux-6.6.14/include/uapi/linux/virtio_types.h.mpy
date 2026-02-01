@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_types.h",
+  "hash_id": "6e97e0649b1691313479189f1a6d419a18563c806ba9a6612e7c9c683e1fb5e5",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/virtio_types.h",
+  "human_readable_source": "#ifndef _UAPI_LINUX_VIRTIO_TYPES_H\n#define _UAPI_LINUX_VIRTIO_TYPES_H\n \n#include <linux/types.h>\n\n \n\ntypedef __u16 __bitwise __virtio16;\ntypedef __u32 __bitwise __virtio32;\ntypedef __u64 __bitwise __virtio64;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

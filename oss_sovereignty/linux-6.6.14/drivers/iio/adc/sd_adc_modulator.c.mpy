@@ -1,0 +1,9 @@
+{
+  "module_name": "sd_adc_modulator.c",
+  "hash_id": "b739e7a0cea023cee448ec78eddbbe187f9714839ab4de4d8927e524ea5830c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/adc/sd_adc_modulator.c",
+  "human_readable_source": "\n \n\n#include <linux/iio/iio.h>\n#include <linux/iio/triggered_buffer.h>\n#include <linux/module.h>\n#include <linux/mod_devicetable.h>\n#include <linux/platform_device.h>\n\nstatic const struct iio_info iio_sd_mod_iio_info;\n\nstatic const struct iio_chan_spec iio_sd_mod_ch = {\n\t.type = IIO_VOLTAGE,\n\t.indexed = 1,\n\t.scan_type = {\n\t\t.sign = 'u',\n\t\t.realbits = 1,\n\t\t.shift = 0,\n\t},\n};\n\nstatic int iio_sd_mod_probe(struct platform_device *pdev)\n{\n\tstruct device *dev = &pdev->dev;\n\tstruct iio_dev *iio;\n\n\tiio = devm_iio_device_alloc(dev, 0);\n\tif (!iio)\n\t\treturn -ENOMEM;\n\n\tiio->name = dev_name(dev);\n\tiio->info = &iio_sd_mod_iio_info;\n\tiio->modes = INDIO_BUFFER_HARDWARE;\n\n\tiio->num_channels = 1;\n\tiio->channels = &iio_sd_mod_ch;\n\n\tplatform_set_drvdata(pdev, iio);\n\n\treturn devm_iio_device_register(&pdev->dev, iio);\n}\n\nstatic const struct of_device_id sd_adc_of_match[] = {\n\t{ .compatible = \"sd-modulator\" },\n\t{ .compatible = \"ads1201\" },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, sd_adc_of_match);\n\nstatic struct platform_driver iio_sd_mod_adc = {\n\t.driver = {\n\t\t.name = \"iio_sd_adc_mod\",\n\t\t.of_match_table = sd_adc_of_match,\n\t},\n\t.probe = iio_sd_mod_probe,\n};\n\nmodule_platform_driver(iio_sd_mod_adc);\n\nMODULE_DESCRIPTION(\"Basic sigma delta modulator\");\nMODULE_AUTHOR(\"Arnaud Pouliquen <arnaud.pouliquen@st.com>\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

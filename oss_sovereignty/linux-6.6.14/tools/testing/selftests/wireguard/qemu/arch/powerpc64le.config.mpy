@@ -1,0 +1,9 @@
+{
+  "module_name": "powerpc64le.config",
+  "hash_id": "cdc6e2c6d38d9c38fe603d5e7fee2715f0adf38b306ef4ed499b64d4938e96a7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/wireguard/qemu/arch/powerpc64le.config",
+  "human_readable_source": "CONFIG_PPC64=y\nCONFIG_PPC_PSERIES=y\nCONFIG_ALTIVEC=y\nCONFIG_VSX=y\nCONFIG_PPC_OF_BOOT_TRAMPOLINE=y\nCONFIG_PPC_RADIX_MMU=y\nCONFIG_HVC_CONSOLE=y\nCONFIG_CPU_LITTLE_ENDIAN=y\nCONFIG_CMDLINE_BOOL=y\nCONFIG_CMDLINE=\"console=hvc0 wg.success=hvc1 panic_on_warn=1\"\nCONFIG_SECTION_MISMATCH_WARN_ONLY=y\nCONFIG_FRAME_WARN=1280\nCONFIG_THREAD_SHIFT=14\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

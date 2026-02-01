@@ -1,0 +1,9 @@
+{
+  "module_name": "hmac.h",
+  "hash_id": "e1aae38a5072f8b5a7830d4c93562e96ff28f8f12db811b726ecbe26d0e48141",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/hmac.h",
+  "human_readable_source": " \n#ifndef _CRYPTO_HMAC_H\n#define _CRYPTO_HMAC_H\n\n#define HMAC_IPAD_VALUE 0x36\n#define HMAC_OPAD_VALUE 0x5c\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "media-dev-allocator.h",
+  "hash_id": "f5af457739c1cda5b699d7db793b4f3cb0cb43f41d82cf8cb4738e0ebfc1f8f4",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/media-dev-allocator.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _MEDIA_DEV_ALLOCATOR_H\n#define _MEDIA_DEV_ALLOCATOR_H\n\nstruct usb_device;\n\n#if defined(CONFIG_MEDIA_CONTROLLER) && IS_ENABLED(CONFIG_USB)\n \nstruct media_device *media_device_usb_allocate(struct usb_device *udev,\n\t\t\t\t\t       const char *module_name,\n\t\t\t\t\t       struct module *owner);\n \nvoid media_device_delete(struct media_device *mdev, const char *module_name,\n\t\t\t struct module *owner);\n#else\nstatic inline struct media_device *media_device_usb_allocate(\n\t\t\tstruct usb_device *udev, const char *module_name,\n\t\t\tstruct module *owner)\n\t\t\t{ return NULL; }\nstatic inline void media_device_delete(\n\t\t\tstruct media_device *mdev, const char *module_name,\n\t\t\tstruct module *owner) { }\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

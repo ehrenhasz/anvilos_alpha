@@ -1,0 +1,9 @@
+{
+  "module_name": "trusted_tee.h",
+  "hash_id": "66d0baa0cde271c65061d6140525f2900edad2372d1e3412613e0100ef0aaa46",
+  "original_prompt": "Ingested from linux-6.6.14/include/keys/trusted_tee.h",
+  "human_readable_source": " \n \n\n#ifndef __TEE_TRUSTED_KEY_H\n#define __TEE_TRUSTED_KEY_H\n\n#include <keys/trusted-type.h>\n\nextern struct trusted_key_ops trusted_key_tee_ops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

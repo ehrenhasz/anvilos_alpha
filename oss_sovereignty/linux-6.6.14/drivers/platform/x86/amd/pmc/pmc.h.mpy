@@ -1,0 +1,9 @@
+{
+  "module_name": "pmc.h",
+  "hash_id": "1cd21f2b79199f92385004f83a42bd0e94016ea54f3cb5f3236ee2fcfb82f0cf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/amd/pmc/pmc.h",
+  "human_readable_source": " \n \n\n#ifndef PMC_H\n#define PMC_H\n\n#include <linux/types.h>\n#include <linux/mutex.h>\n\nstruct amd_pmc_dev {\n\tvoid __iomem *regbase;\n\tvoid __iomem *smu_virt_addr;\n\tvoid __iomem *stb_virt_addr;\n\tvoid __iomem *fch_virt_addr;\n\tbool msg_port;\n\tu32 base_addr;\n\tu32 cpu_id;\n\tu32 active_ips;\n\tu32 dram_size;\n\tu32 num_ips;\n\tu32 s2d_msg_id;\n \n\tu8 smu_program;\n\tu8 major;\n\tu8 minor;\n\tu8 rev;\n\tstruct device *dev;\n\tstruct pci_dev *rdev;\n\tstruct mutex lock;  \n\tstruct dentry *dbgfs_dir;\n\tstruct quirk_entry *quirks;\n\tbool disable_8042_wakeup;\n};\n\nvoid amd_pmc_process_restore_quirks(struct amd_pmc_dev *dev);\nvoid amd_pmc_quirks_init(struct amd_pmc_dev *dev);\n\n \n#define AMD_CPU_ID_RV\t\t\t0x15D0\n#define AMD_CPU_ID_RN\t\t\t0x1630\n#define AMD_CPU_ID_PCO\t\t\tAMD_CPU_ID_RV\n#define AMD_CPU_ID_CZN\t\t\tAMD_CPU_ID_RN\n#define AMD_CPU_ID_YC\t\t\t0x14B5\n#define AMD_CPU_ID_CB\t\t\t0x14D8\n#define AMD_CPU_ID_PS\t\t\t0x14E8\n#define AMD_CPU_ID_SP\t\t\t0x14A4\n#define PCI_DEVICE_ID_AMD_1AH_M20H_ROOT 0x1507\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

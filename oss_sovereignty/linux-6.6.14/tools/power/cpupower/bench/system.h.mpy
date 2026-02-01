@@ -1,0 +1,9 @@
+{
+  "module_name": "system.h",
+  "hash_id": "8211b7e3a1b3e941a75d0a710ee43f8a29d2c5da2106eee5e34df8d063b1c95a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/bench/system.h",
+  "human_readable_source": " \n \n\n#include \"parse.h\"\n\nlong long get_time();\n\nint set_cpufreq_governor(char *governor, unsigned int cpu);\nint set_cpu_affinity(unsigned int cpu);\nint set_process_priority(int priority);\n\nvoid prepare_user(const struct config *config);\nvoid prepare_system(const struct config *config);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

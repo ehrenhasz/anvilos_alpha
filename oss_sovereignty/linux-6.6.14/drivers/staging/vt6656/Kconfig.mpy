@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "93b79799aa11eda1a2d9470c962eb7a2a25754a5f2f1ee232a9d8e11674e5133",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vt6656/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig VT6656\n\ttristate \"VIA Technologies VT6656 support\"\n\tdepends on MAC80211 && USB && WLAN && m\n\tselect FW_LOADER\n\thelp\n\t  This is a vendor-written driver for VIA VT6656.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

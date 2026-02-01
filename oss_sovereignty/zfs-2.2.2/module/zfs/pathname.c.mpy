@@ -1,0 +1,9 @@
+{
+  "module_name": "pathname.c",
+  "hash_id": "a6946c5848c5e4890bb3a21608605a060c5761885ff800491a169d9edee5ed16",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zfs/pathname.c",
+  "human_readable_source": " \n \n\n \n \n\n \n\n\n#include <sys/types.h>\n#include <sys/pathname.h>\n#include <sys/kmem.h>\n#include <sys/sysmacros.h>\n\n \n\n \nvoid\npn_alloc(struct pathname *pnp)\n{\n\tpn_alloc_sz(pnp, MAXPATHLEN);\n}\nvoid\npn_alloc_sz(struct pathname *pnp, size_t sz)\n{\n\tpnp->pn_buf = kmem_alloc(sz, KM_SLEEP);\n\tpnp->pn_bufsize = sz;\n}\n\n \nvoid\npn_free(struct pathname *pnp)\n{\n\t \n\tkmem_free(pnp->pn_buf, pnp->pn_bufsize);\n\tpnp->pn_buf = NULL;\n\tpnp->pn_bufsize = 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

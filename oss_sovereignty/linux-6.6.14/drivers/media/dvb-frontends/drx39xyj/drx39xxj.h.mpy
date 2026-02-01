@@ -1,0 +1,9 @@
+{
+  "module_name": "drx39xxj.h",
+  "hash_id": "9533fa9cd0c76a11e7f42b1a67f12a0aba5a51fc94ee7f8fc0f11758b06a9358",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/drx39xyj/drx39xxj.h",
+  "human_readable_source": " \n \n\n#ifndef DRX39XXJ_H\n#define DRX39XXJ_H\n\n#include <linux/dvb/frontend.h>\n#include <media/dvb_frontend.h>\n#include \"drx_driver.h\"\n\nstruct drx39xxj_state {\n\tstruct i2c_adapter *i2c;\n\tstruct drx_demod_instance *demod;\n\tstruct dvb_frontend frontend;\n\tunsigned int i2c_gate_open:1;\n\tconst struct firmware *fw;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_DRX39XYJ)\nstruct dvb_frontend *drx39xxj_attach(struct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *drx39xxj_attach(struct i2c_adapter *i2c) {\n\treturn NULL;\n};\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

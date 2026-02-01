@@ -1,0 +1,9 @@
+{
+  "module_name": "stdlib-safer.h",
+  "hash_id": "4d58823a050ac6010a483150cf01e6c8bf893be50d1310ce9ba4f8eb7f68be52",
+  "original_prompt": "Ingested from coreutils-9.4/lib/stdlib-safer.h",
+  "human_readable_source": " \n\nint mkstemp_safer (char *);\n\n#if GNULIB_MKOSTEMP\nint mkostemp_safer (char *, int);\n#endif\n\n#if GNULIB_MKOSTEMPS\nint mkostemps_safer (char *, int, int);\n#endif\n\n#if GNULIB_MKSTEMPS\nint mkstemps_safer (char *, int);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

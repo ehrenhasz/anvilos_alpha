@@ -1,0 +1,9 @@
+{
+  "module_name": "fexit_bpf2bpf_simple.c",
+  "hash_id": "aff6317f186ef06c88a6dd65789bc35175063a1d864bd5a3de8b6df9b09cb82e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/fexit_bpf2bpf_simple.c",
+  "human_readable_source": "\n \n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nstruct sk_buff {\n\tunsigned int len;\n};\n\n__u64 test_result = 0;\n\nSEC(\"fexit/test_pkt_md_access\")\nint BPF_PROG(test_main2, struct sk_buff *skb, int ret)\n{\n\tint len;\n\n\t__builtin_preserve_access_index(({\n\t\tlen = skb->len;\n\t}));\n\tif (len != 74 || ret != 0)\n\t\treturn 0;\n\n\ttest_result = 1;\n\treturn 0;\n}\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

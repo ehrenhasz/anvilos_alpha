@@ -1,0 +1,9 @@
+{
+  "module_name": "vmem_public.h",
+  "hash_id": "6bc57422bed24bb7e55406f864f1702ce92128c58e79e75e30062aca8c3c22fa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/host/vmem_public.h",
+  "human_readable_source": " \n \n\n#ifndef __VMEM_PUBLIC_H_INCLUDED__\n#define __VMEM_PUBLIC_H_INCLUDED__\n\n#include \"isp.h\"  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm.h",
+  "hash_id": "35ea8b16e00211cd8dc34ab1076253d61bad903107292a808368d9f1ce6d8ee1",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/can/bcm.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_CAN_BCM_H\n#define _UAPI_CAN_BCM_H\n\n#include <linux/types.h>\n#include <linux/can.h>\n\nstruct bcm_timeval {\n\tlong tv_sec;\n\tlong tv_usec;\n};\n\n \nstruct bcm_msg_head {\n\t__u32 opcode;\n\t__u32 flags;\n\t__u32 count;\n\tstruct bcm_timeval ival1, ival2;\n\tcanid_t can_id;\n\t__u32 nframes;\n\tstruct can_frame frames[];\n};\n\nenum {\n\tTX_SETUP = 1,\t \n\tTX_DELETE,\t \n\tTX_READ,\t \n\tTX_SEND,\t \n\tRX_SETUP,\t \n\tRX_DELETE,\t \n\tRX_READ,\t \n\tTX_STATUS,\t \n\tTX_EXPIRED,\t \n\tRX_STATUS,\t \n\tRX_TIMEOUT,\t \n\tRX_CHANGED\t \n};\n\n#define SETTIMER            0x0001\n#define STARTTIMER          0x0002\n#define TX_COUNTEVT         0x0004\n#define TX_ANNOUNCE         0x0008\n#define TX_CP_CAN_ID        0x0010\n#define RX_FILTER_ID        0x0020\n#define RX_CHECK_DLC        0x0040\n#define RX_NO_AUTOTIMER     0x0080\n#define RX_ANNOUNCE_RESUME  0x0100\n#define TX_RESET_MULTI_IDX  0x0200\n#define RX_RTR_FRAME        0x0400\n#define CAN_FD_FRAME        0x0800\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

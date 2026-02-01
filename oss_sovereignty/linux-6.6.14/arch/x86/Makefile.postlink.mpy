@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.postlink",
+  "hash_id": "188aa35326d385814786d8807a07da0c36876a368d992577166448d54b2e5f80",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/Makefile.postlink",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# ===========================================================================\n# Post-link x86 pass\n# ===========================================================================\n#\n# 1. Separate relocations from vmlinux into vmlinux.relocs.\n# 2. Strip relocations from vmlinux.\n\nPHONY := __archpost\n__archpost:\n\n-include include/config/auto.conf\ninclude $(srctree)/scripts/Kbuild.include\n\nCMD_RELOCS = arch/x86/tools/relocs\nOUT_RELOCS = arch/x86/boot/compressed\nquiet_cmd_relocs = RELOCS  $(OUT_RELOCS)/$@.relocs\n      cmd_relocs = \\\n\tmkdir -p $(OUT_RELOCS); \\\n\t$(CMD_RELOCS) $@ > $(OUT_RELOCS)/$@.relocs; \\\n\t$(CMD_RELOCS) --abs-relocs $@\n\nquiet_cmd_strip_relocs = RSTRIP  $@\n      cmd_strip_relocs = \\\n\t$(OBJCOPY) --remove-section='.rel.*' --remove-section='.rel__*' \\\n\t\t   --remove-section='.rela.*' --remove-section='.rela__*' $@\n\n# `@true` prevents complaint when there is nothing to be done\n\nvmlinux: FORCE\n\t@true\nifeq ($(CONFIG_X86_NEED_RELOCS),y)\n\t$(call cmd,relocs)\n\t$(call cmd,strip_relocs)\nendif\n\n%.ko: FORCE\n\t@true\n\nclean:\n\t@rm -f $(OUT_RELOCS)/vmlinux.relocs\n\nPHONY += FORCE clean\n\nFORCE:\n\n.PHONY: $(PHONY)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

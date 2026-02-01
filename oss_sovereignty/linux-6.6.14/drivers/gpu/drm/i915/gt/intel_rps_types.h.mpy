@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_rps_types.h",
+  "hash_id": "8d12dbdd7f3b9ed73046ce8dd6be17d143505294913848bbc4c9bf2b6405b98d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_rps_types.h",
+  "human_readable_source": " \n \n\n#ifndef INTEL_RPS_TYPES_H\n#define INTEL_RPS_TYPES_H\n\n#include <linux/atomic.h>\n#include <linux/ktime.h>\n#include <linux/mutex.h>\n#include <linux/types.h>\n#include <linux/workqueue.h>\n\nstruct intel_ips {\n\tu64 last_count1;\n\tunsigned long last_time1;\n\tunsigned long chipset_power;\n\tu64 last_count2;\n\tu64 last_time2;\n\tunsigned long gfx_power;\n\tu8 corr;\n\n\tint c, m;\n};\n\nstruct intel_rps_ei {\n\tktime_t ktime;\n\tu32 render_c0;\n\tu32 media_c0;\n};\n\nenum {\n\tINTEL_RPS_ENABLED = 0,\n\tINTEL_RPS_ACTIVE,\n\tINTEL_RPS_INTERRUPTS,\n\tINTEL_RPS_TIMER,\n};\n\n \nstruct intel_rps_freq_caps {\n\tu8 rp0_freq;\n\tu8 rp1_freq;\n\tu8 min_freq;\n};\n\nstruct intel_rps {\n\tstruct mutex lock;  \n\n\t \n\tstruct timer_list timer;\n\tstruct work_struct work;\n\tunsigned long flags;\n\n\tktime_t pm_timestamp;\n\tu32 pm_interval;\n\tu32 pm_iir;\n\n\t \n\tu32 pm_intrmsk_mbz;\n\tu32 pm_events;\n\n\t \n\tu8 cur_freq;\t\t \n\tu8 last_freq;\t\t \n\tu8 min_freq_softlimit;\t \n\tu8 max_freq_softlimit;\t \n\tu8 max_freq;\t\t \n\tu8 min_freq;\t\t \n\tu8 boost_freq;\t\t \n\tu8 idle_freq;\t\t \n\tu8 efficient_freq;\t \n\tu8 rp1_freq;\t\t \n\tu8 rp0_freq;\t\t \n\tu16 gpll_ref_freq;\t \n\n\tint last_adj;\n\n\tstruct {\n\t\tstruct mutex mutex;\n\n\t\tenum { LOW_POWER, BETWEEN, HIGH_POWER } mode;\n\t\tunsigned int interactive;\n\n\t\tu8 up_threshold;  \n\t\tu8 down_threshold;  \n\t} power;\n\n\tatomic_t num_waiters;\n\tunsigned int boosts;\n\n\t \n\tstruct intel_rps_ei ei;\n\tstruct intel_ips ips;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

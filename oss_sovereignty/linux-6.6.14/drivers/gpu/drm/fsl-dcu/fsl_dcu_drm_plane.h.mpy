@@ -1,0 +1,9 @@
+{
+  "module_name": "fsl_dcu_drm_plane.h",
+  "hash_id": "d463da585f6d48be733a608964c08d24bba9cb477c06b4fdd3d096a2cadf7e6e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/fsl-dcu/fsl_dcu_drm_plane.h",
+  "human_readable_source": " \n \n\n#ifndef __FSL_DCU_DRM_PLANE_H__\n#define __FSL_DCU_DRM_PLANE_H__\n\nvoid fsl_dcu_drm_init_planes(struct drm_device *dev);\nstruct drm_plane *fsl_dcu_drm_primary_create_plane(struct drm_device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "of_pci.h",
+  "hash_id": "9e3f3e842cfa84c7d61026db35ff6f1a746f01c6d258348c6ca2895592d96322",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/of_pci.h",
+  "human_readable_source": " \n#ifndef __OF_PCI_H\n#define __OF_PCI_H\n\n#include <linux/types.h>\n#include <linux/errno.h>\n\nstruct pci_dev;\nstruct device_node;\n\n#if IS_ENABLED(CONFIG_OF) && IS_ENABLED(CONFIG_PCI)\nstruct device_node *of_pci_find_child_device(struct device_node *parent,\n\t\t\t\t\t     unsigned int devfn);\nint of_pci_get_devfn(struct device_node *np);\nvoid of_pci_check_probe_only(void);\n#else\nstatic inline struct device_node *of_pci_find_child_device(struct device_node *parent,\n\t\t\t\t\t     unsigned int devfn)\n{\n\treturn NULL;\n}\n\nstatic inline int of_pci_get_devfn(struct device_node *np)\n{\n\treturn -EINVAL;\n}\n\nstatic inline void of_pci_check_probe_only(void) { }\n#endif\n\n#if IS_ENABLED(CONFIG_OF_IRQ)\nint of_irq_parse_and_map_pci(const struct pci_dev *dev, u8 slot, u8 pin);\n#else\nstatic inline int\nof_irq_parse_and_map_pci(const struct pci_dev *dev, u8 slot, u8 pin)\n{\n\treturn 0;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

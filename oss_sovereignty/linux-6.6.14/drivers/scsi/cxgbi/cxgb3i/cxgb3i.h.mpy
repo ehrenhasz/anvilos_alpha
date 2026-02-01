@@ -1,0 +1,9 @@
+{
+  "module_name": "cxgb3i.h",
+  "hash_id": "4b805e5a1e4560246b7a8bb01a3533029585d7c1f7a17fa97f12df57d6bebfb8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/cxgbi/cxgb3i/cxgb3i.h",
+  "human_readable_source": " \n\n#ifndef __CXGB3I_H__\n#define __CXGB3I_H__\n\n#define CXGB3I_SCSI_HOST_QDEPTH 1024\n#define CXGB3I_MAX_LUN\t\t512\n#define ISCSI_PDU_NONPAYLOAD_MAX \\\n\t(sizeof(struct iscsi_hdr) + ISCSI_MAX_AHS_SIZE + 2*ISCSI_DIGEST_SIZE)\n\n \n#define CXGB3I_TX_HEADER_LEN \\\n\t(sizeof(struct tx_data_wr) + sizeof(struct sge_opaque_hdr))\n\nextern cxgb3_cpl_handler_func cxgb3i_cpl_handlers[NUM_CPL_CMDS];\n\nstatic inline unsigned int cxgb3i_get_private_ipv4addr(struct net_device *ndev)\n{\n\treturn ((struct port_info *)(netdev_priv(ndev)))->iscsi_ipv4addr;\n}\n\nstatic inline void cxgb3i_set_private_ipv4addr(struct net_device *ndev,\n\t\t\t\t\t\tunsigned int addr)\n{\n\tstruct port_info *pi =  (struct port_info *)netdev_priv(ndev);\n\n\tpi->iscsic.flags = addr ? 1 : 0;\n\tpi->iscsi_ipv4addr = addr;\n\tif (addr)\n\t\tmemcpy(pi->iscsic.mac_addr, ndev->dev_addr, ETH_ALEN);\n}\n\nstruct cpl_iscsi_hdr_norss {\n\tunion opcode_tid ot;\n\tu16 pdu_len_ddp;\n\tu16 len;\n\tu32 seq;\n\tu16 urg;\n\tu8 rsvd;\n\tu8 status;\n};\n\nstruct cpl_rx_data_ddp_norss {\n\tunion opcode_tid ot;\n\tu16 urg;\n\tu16 len;\n\tu32 seq;\n\tu32 nxt_seq;\n\tu32 ulp_crc;\n\tu32 ddp_status;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

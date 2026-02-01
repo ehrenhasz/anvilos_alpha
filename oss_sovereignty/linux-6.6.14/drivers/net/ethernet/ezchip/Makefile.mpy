@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b0ff386f9ffd844a52a95b99e8ad0b8da66654b1ab82232b1d987eedb3ac7fc5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ezchip/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_EZCHIP_NPS_MANAGEMENT_ENET) += nps_enet.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

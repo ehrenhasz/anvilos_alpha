@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5a0fe2fc2d19adf491fc4601b335516408994d38f09e4b040e9976dce6442373",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/vhost_test/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-m += vhost_test.o\nEXTRA_CFLAGS += -Idrivers/vhost\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

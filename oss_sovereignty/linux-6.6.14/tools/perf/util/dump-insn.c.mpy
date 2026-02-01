@@ -1,0 +1,9 @@
+{
+  "module_name": "dump-insn.c",
+  "hash_id": "a6cda766566a5185e4570f582675f0a5f97b298db9c80630fc8c7bb6b27b3d1d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/dump-insn.c",
+  "human_readable_source": "\n#include <linux/compiler.h>\n#include \"dump-insn.h\"\n\n \n\n__weak\nconst char *dump_insn(struct perf_insn *x __maybe_unused,\n\t\t      u64 ip __maybe_unused, u8 *inbuf __maybe_unused,\n\t\t      int inlen __maybe_unused, int *lenp)\n{\n\tif (lenp)\n\t\t*lenp = 0;\n\treturn \"?\";\n}\n\n__weak\nint arch_is_branch(const unsigned char *buf __maybe_unused,\n\t\t   size_t len __maybe_unused,\n\t\t   int x86_64 __maybe_unused)\n{\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

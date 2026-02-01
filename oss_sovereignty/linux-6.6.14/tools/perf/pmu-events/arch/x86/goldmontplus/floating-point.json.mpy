@@ -1,0 +1,9 @@
+{
+  "module_name": "floating-point.json",
+  "hash_id": "e5f34dd8c7991dddf04412b905bffa149b218b401ecbcbe278801b77018400bb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/goldmontplus/floating-point.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"Cycles the FP divide unit is busy\",\n        \"EventCode\": \"0xCD\",\n        \"EventName\": \"CYCLES_DIV_BUSY.FPDIV\",\n        \"PublicDescription\": \"Counts core cycles the floating point divide unit is busy.\",\n        \"SampleAfterValue\": \"200003\",\n        \"UMask\": \"0x2\"\n    },\n    {\n        \"BriefDescription\": \"Machine clears due to FP assists\",\n        \"EventCode\": \"0xC3\",\n        \"EventName\": \"MACHINE_CLEARS.FP_ASSIST\",\n        \"PublicDescription\": \"Counts machine clears due to floating point (FP) operations needing assists.  For instance, if the result was a floating point denormal, the hardware clears the pipeline and reissues uops to produce the correct IEEE compliant denormal result.\",\n        \"SampleAfterValue\": \"20003\",\n        \"UMask\": \"0x4\"\n    },\n    {\n        \"BriefDescription\": \"Floating point divide uops retired (Precise Event Capable)\",\n        \"EventCode\": \"0xC2\",\n        \"EventName\": \"UOPS_RETIRED.FPDIV\",\n        \"PEBS\": \"2\",\n        \"PublicDescription\": \"Counts the number of floating point divide uops retired.\",\n        \"SampleAfterValue\": \"2000003\",\n        \"UMask\": \"0x8\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

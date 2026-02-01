@@ -1,0 +1,9 @@
+{
+  "module_name": "truncate.h",
+  "hash_id": "cec3a093e1ad47602184e4f49b9b95d9a1a7f95aaac53e94f47d283487fadca6",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ext4/truncate.h",
+  "human_readable_source": "\n \n\n \nstatic inline void ext4_truncate_failed_write(struct inode *inode)\n{\n\tstruct address_space *mapping = inode->i_mapping;\n\n\t \n\tfilemap_invalidate_lock(mapping);\n\ttruncate_inode_pages(mapping, inode->i_size);\n\text4_truncate(inode);\n\tfilemap_invalidate_unlock(mapping);\n}\n\n \nstatic inline unsigned long ext4_blocks_for_truncate(struct inode *inode)\n{\n\text4_lblk_t needed;\n\n\tneeded = inode->i_blocks >> (inode->i_sb->s_blocksize_bits - 9);\n\n\t \n\tif (needed < 2)\n\t\tneeded = 2;\n\n\t \n\tif (needed > EXT4_MAX_TRANS_DATA)\n\t\tneeded = EXT4_MAX_TRANS_DATA;\n\n\treturn EXT4_DATA_TRANS_BLOCKS(inode->i_sb) + needed;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

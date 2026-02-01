@@ -1,0 +1,9 @@
+{
+  "module_name": "usb.h",
+  "hash_id": "e214bb74acc3df9de22b7696f1211eb31a8c1df0af114fcffc8525ba02c6863f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/usb.h",
+  "human_readable_source": "\n \n#ifndef BRCMFMAC_USB_H\n#define BRCMFMAC_USB_H\n\nenum brcmf_usb_state {\n\tBRCMFMAC_USB_STATE_DOWN,\n\tBRCMFMAC_USB_STATE_DL_FAIL,\n\tBRCMFMAC_USB_STATE_DL_DONE,\n\tBRCMFMAC_USB_STATE_UP,\n\tBRCMFMAC_USB_STATE_SLEEP\n};\n\nstruct brcmf_stats {\n\tu32 tx_ctlpkts;\n\tu32 tx_ctlerrs;\n\tu32 rx_ctlpkts;\n\tu32 rx_ctlerrs;\n};\n\nstruct brcmf_usbdev {\n\tstruct brcmf_bus *bus;\n\tstruct brcmf_usbdev_info *devinfo;\n\tenum brcmf_usb_state state;\n\tstruct brcmf_stats stats;\n\tint ntxq, nrxq, rxsize;\n\tu32 bus_mtu;\n\tint devid;\n\tint chiprev;  \n};\n\n \nstruct brcmf_usbreq {\n\tstruct list_head list;\n\tstruct brcmf_usbdev_info *devinfo;\n\tstruct urb *urb;\n\tstruct sk_buff  *skb;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

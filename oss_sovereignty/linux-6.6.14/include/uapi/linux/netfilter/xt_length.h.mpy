@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_length.h",
+  "hash_id": "e4da53c20a4a6da68b8562fc4181b92769b982e2e2301557bd589c1e8b939d69",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_length.h",
+  "human_readable_source": " \n#ifndef _XT_LENGTH_H\n#define _XT_LENGTH_H\n\n#include <linux/types.h>\n\nstruct xt_length_info {\n    __u16\tmin, max;\n    __u8\tinvert;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

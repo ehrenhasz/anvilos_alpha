@@ -1,0 +1,9 @@
+{
+  "module_name": "u32-strcat.c",
+  "hash_id": "694632499f939597743377c0492a4de7ced5cc556821303066aa280969988ed2",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unistr/u32-strcat.c",
+  "human_readable_source": " \n#include \"unistr.h\"\n\n#define FUNC u32_strcat\n#define UNIT uint32_t\n#define U_STRLEN u32_strlen\n#include \"u-strcat.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

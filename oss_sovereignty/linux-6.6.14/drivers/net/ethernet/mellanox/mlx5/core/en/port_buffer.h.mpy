@@ -1,0 +1,9 @@
+{
+  "module_name": "port_buffer.h",
+  "hash_id": "deb48a7960b39cfd12f178cc8fd5caadea5cbc143ae28031a13120cc70cacbcb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/port_buffer.h",
+  "human_readable_source": " \n#ifndef __MLX5_EN_PORT_BUFFER_H__\n#define __MLX5_EN_PORT_BUFFER_H__\n\n#include \"en.h\"\n#include \"port.h\"\n\n#define MLX5E_MAX_NETWORK_BUFFER 8\n#define MLX5E_TOTAL_BUFFERS 10\n#define MLX5E_DEFAULT_CABLE_LEN 7  \n\n#define MLX5_BUFFER_SUPPORTED(mdev) (MLX5_CAP_GEN(mdev, pcam_reg) && \\\n\t\t\t\t     MLX5_CAP_PCAM_REG(mdev, pbmc) && \\\n\t\t\t\t     MLX5_CAP_PCAM_REG(mdev, pptb))\n\nenum {\n\tMLX5E_PORT_BUFFER_CABLE_LEN   = BIT(0),\n\tMLX5E_PORT_BUFFER_PFC         = BIT(1),\n\tMLX5E_PORT_BUFFER_PRIO2BUFFER = BIT(2),\n\tMLX5E_PORT_BUFFER_SIZE        = BIT(3),\n};\n\nstruct mlx5e_bufferx_reg {\n\tu8   lossy;\n\tu8   epsb;\n\tu32  size;\n\tu32  xoff;\n\tu32  xon;\n};\n\nstruct mlx5e_port_buffer {\n\tu32                       port_buffer_size;\n\tu32                       spare_buffer_size;\n\tu32                       headroom_size;\t   \n\tu32                       internal_buffers_size;   \n\tstruct mlx5e_bufferx_reg  buffer[MLX5E_MAX_NETWORK_BUFFER];\n};\n\nint mlx5e_port_manual_buffer_config(struct mlx5e_priv *priv,\n\t\t\t\t    u32 change, unsigned int mtu,\n\t\t\t\t    struct ieee_pfc *pfc,\n\t\t\t\t    u32 *buffer_size,\n\t\t\t\t    u8 *prio2buffer);\n\nint mlx5e_port_query_buffer(struct mlx5e_priv *priv,\n\t\t\t    struct mlx5e_port_buffer *port_buffer);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

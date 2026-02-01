@@ -1,0 +1,9 @@
+{
+  "module_name": "libc_compat.h",
+  "hash_id": "5255dec5041a694c8be4eef0294f9b176b4ce2f035cabbc179c76395576792c1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/tools/libc_compat.h",
+  "human_readable_source": "\n \n\n#ifndef __TOOLS_LIBC_COMPAT_H\n#define __TOOLS_LIBC_COMPAT_H\n\n#include <stdlib.h>\n#include <linux/overflow.h>\n\n#ifdef COMPAT_NEED_REALLOCARRAY\nstatic inline void *reallocarray(void *ptr, size_t nmemb, size_t size)\n{\n\tsize_t bytes;\n\n\tif (unlikely(check_mul_overflow(nmemb, size, &bytes)))\n\t\treturn NULL;\n\treturn realloc(ptr, bytes);\n}\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pwer.h",
+  "hash_id": "782d5ca68d4636846f80e13c6a24308b0930bf6d30711439bc488b463731916b",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/sa1100/pwer.h",
+  "human_readable_source": " \n#ifndef SOC_SA1100_PWER_H\n#define SOC_SA1100_PWER_H\n\n \n\nint sa11x0_gpio_set_wake(unsigned int gpio, unsigned int on);\nint sa11x0_sc_set_wake(unsigned int irq, unsigned int on);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

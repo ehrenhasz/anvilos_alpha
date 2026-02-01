@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_getparam.h",
+  "hash_id": "f62719d4d27173c364ae3829726a09c70d7c6f1224d7f9d0b844f4d3b04b407d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_getparam.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_GETPARAM_H__\n#define __I915_GETPARAM_H__\n\nstruct drm_device;\nstruct drm_file;\n\nint i915_getparam_ioctl(struct drm_device *dev, void *data,\n\t\t\tstruct drm_file *file_priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

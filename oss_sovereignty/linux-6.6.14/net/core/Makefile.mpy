@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "59a7aef89dc337edef3c26b9e016b614ecbd8b1884aad3dabe018afd386a3fa3",
+  "original_prompt": "Ingested from linux-6.6.14/net/core/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux networking core.\n#\n\nobj-y := sock.o request_sock.o skbuff.o datagram.o stream.o scm.o \\\n\t gen_stats.o gen_estimator.o net_namespace.o secure_seq.o \\\n\t flow_dissector.o\n\nobj-$(CONFIG_SYSCTL) += sysctl_net_core.o\n\nobj-y\t\t     += dev.o dev_addr_lists.o dst.o netevent.o \\\n\t\t\tneighbour.o rtnetlink.o utils.o link_watch.o filter.o \\\n\t\t\tsock_diag.o dev_ioctl.o tso.o sock_reuseport.o \\\n\t\t\tfib_notifier.o xdp.o flow_offload.o gro.o \\\n\t\t\tnetdev-genl.o netdev-genl-gen.o gso.o\n\nobj-$(CONFIG_NETDEV_ADDR_LIST_TEST) += dev_addr_lists_test.o\n\nobj-y += net-sysfs.o\nobj-$(CONFIG_PAGE_POOL) += page_pool.o\nobj-$(CONFIG_PROC_FS) += net-procfs.o\nobj-$(CONFIG_NET_PKTGEN) += pktgen.o\nobj-$(CONFIG_NETPOLL) += netpoll.o\nobj-$(CONFIG_FIB_RULES) += fib_rules.o\nobj-$(CONFIG_TRACEPOINTS) += net-traces.o\nobj-$(CONFIG_NET_DROP_MONITOR) += drop_monitor.o\nobj-$(CONFIG_NET_SELFTESTS) += selftests.o\nobj-$(CONFIG_NETWORK_PHY_TIMESTAMPING) += timestamping.o\nobj-$(CONFIG_NET_PTP_CLASSIFY) += ptp_classifier.o\nobj-$(CONFIG_CGROUP_NET_PRIO) += netprio_cgroup.o\nobj-$(CONFIG_CGROUP_NET_CLASSID) += netclassid_cgroup.o\nobj-$(CONFIG_LWTUNNEL) += lwtunnel.o\nobj-$(CONFIG_LWTUNNEL_BPF) += lwt_bpf.o\nobj-$(CONFIG_DST_CACHE) += dst_cache.o\nobj-$(CONFIG_HWBM) += hwbm.o\nobj-$(CONFIG_GRO_CELLS) += gro_cells.o\nobj-$(CONFIG_FAILOVER) += failover.o\nobj-$(CONFIG_NET_SOCK_MSG) += skmsg.o\nobj-$(CONFIG_BPF_SYSCALL) += sock_map.o\nobj-$(CONFIG_BPF_SYSCALL) += bpf_sk_storage.o\nobj-$(CONFIG_OF)\t+= of_net.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

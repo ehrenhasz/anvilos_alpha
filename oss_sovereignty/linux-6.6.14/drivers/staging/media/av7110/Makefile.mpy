@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f753b849c1caccdc908ed761dd645d1619d2d4186467d53f464795e556a1239f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the AV7110 DVB device driver\n#\n\ndvb-ttpci-objs := av7110_hw.o av7110_v4l.o av7110_av.o av7110_ca.o av7110.o \\\n\t\t  av7110_ipack.o dvb_filter.o\n\nifdef CONFIG_DVB_AV7110_IR\ndvb-ttpci-objs += av7110_ir.o\nendif\n\nobj-$(CONFIG_DVB_BUDGET_PATCH) += budget-patch.o\n\nobj-$(CONFIG_DVB_AV7110) += dvb-ttpci.o\n\nobj-$(CONFIG_DVB_SP8870) += sp8870.o\n\nccflags-y += -I $(srctree)/drivers/media/dvb-frontends\nccflags-y += -I $(srctree)/drivers/media/tuners\nccflags-y += -I $(srctree)/drivers/media/pci/ttpci\nccflags-y += -I $(srctree)/drivers/media/common\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

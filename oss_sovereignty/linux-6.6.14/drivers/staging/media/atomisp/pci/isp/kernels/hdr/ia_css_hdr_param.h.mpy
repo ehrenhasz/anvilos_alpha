@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_hdr_param.h",
+  "hash_id": "9d9ed1fac4b95e23618f1170f4174edd27fc0d06260e24dfe5fc1b7180e8f383",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/hdr/ia_css_hdr_param.h",
+  "human_readable_source": " \n \n \n\n#ifndef __IA_CSS_HDR_PARAMS_H\n#define __IA_CSS_HDR_PARAMS_H\n\n#include \"type_support.h\"\n\n#define HDR_NUM_INPUT_FRAMES         (3)\n\n \nstruct sh_css_hdr_irradiance_params {\n\ts32 test_irr;\n\ts32 match_shift[HDR_NUM_INPUT_FRAMES -\n\t\t\t\t\t     1];   \n\ts32 match_mul[HDR_NUM_INPUT_FRAMES -\n\t\t\t\t\t   1];     \n\ts32 thr_low[HDR_NUM_INPUT_FRAMES -\n\t\t\t\t\t 1];       \n\ts32 thr_high[HDR_NUM_INPUT_FRAMES -\n\t\t\t\t\t  1];      \n\ts32 thr_coeff[HDR_NUM_INPUT_FRAMES -\n\t\t\t\t\t   1];     \n\ts32 thr_shift[HDR_NUM_INPUT_FRAMES -\n\t\t\t\t\t   1];     \n\ts32 weight_bpp;                              \n};\n\n \nstruct sh_css_hdr_deghost_params {\n\ts32 test_deg;\n};\n\n \nstruct sh_css_hdr_exclusion_params {\n\ts32 test_excl;\n};\n\n \nstruct sh_css_isp_hdr_params {\n\tstruct sh_css_hdr_irradiance_params irradiance;\n\tstruct sh_css_hdr_deghost_params    deghost;\n\tstruct sh_css_hdr_exclusion_params  exclusion;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

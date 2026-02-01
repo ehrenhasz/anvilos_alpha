@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfile.h",
+  "hash_id": "ccdcfc683628585be202d9eddc4d66aa51499623cb89af3b575e27b942313beb",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/sysfile.h",
+  "human_readable_source": " \n \n\n#ifndef OCFS2_SYSFILE_H\n#define OCFS2_SYSFILE_H\n\nstruct inode * ocfs2_get_system_file_inode(struct ocfs2_super *osb,\n\t\t\t\t\t   int type,\n\t\t\t\t\t   u32 slot);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

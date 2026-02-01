@@ -1,0 +1,9 @@
+{
+  "module_name": "xlnx-event-manager.h",
+  "hash_id": "fef6ea4ba779b8ef8bb324629ebe405e6dfc91714cd45280675faf568dbf431a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/firmware/xlnx-event-manager.h",
+  "human_readable_source": " \n\n#ifndef _FIRMWARE_XLNX_EVENT_MANAGER_H_\n#define _FIRMWARE_XLNX_EVENT_MANAGER_H_\n\n#include <linux/firmware/xlnx-zynqmp.h>\n\n#define CB_MAX_PAYLOAD_SIZE\t(4U)  \n\n \n\ntypedef void (*event_cb_func_t)(const u32 *payload, void *data);\n\n#if IS_REACHABLE(CONFIG_XLNX_EVENT_MANAGER)\nint xlnx_register_event(const enum pm_api_cb_id cb_type, const u32 node_id,\n\t\t\tconst u32 event, const bool wake,\n\t\t\tevent_cb_func_t cb_fun, void *data);\n\nint xlnx_unregister_event(const enum pm_api_cb_id cb_type, const u32 node_id,\n\t\t\t  const u32 event, event_cb_func_t cb_fun, void *data);\n#else\nstatic inline int xlnx_register_event(const enum pm_api_cb_id cb_type, const u32 node_id,\n\t\t\t\t      const u32 event, const bool wake,\n\t\t\t\t      event_cb_func_t cb_fun, void *data)\n{\n\treturn -ENODEV;\n}\n\nstatic inline int xlnx_unregister_event(const enum pm_api_cb_id cb_type, const u32 node_id,\n\t\t\t\t\tconst u32 event, event_cb_func_t cb_fun, void *data)\n{\n\treturn -ENODEV;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

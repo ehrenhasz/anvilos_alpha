@@ -1,0 +1,9 @@
+{
+  "module_name": "testing_helpers.h",
+  "hash_id": "a5a34fa172ffb6c59ab910ff6115ee8f749a0845af40a31f97fca486d8df4a1c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/testing_helpers.h",
+  "human_readable_source": " \n \n\n#ifndef __TESTING_HELPERS_H\n#define __TESTING_HELPERS_H\n\n#include <stdbool.h>\n#include <bpf/bpf.h>\n#include <bpf/libbpf.h>\n#include <time.h>\n\nint parse_num_list(const char *s, bool **set, int *set_len);\n__u32 link_info_prog_id(const struct bpf_link *link, struct bpf_link_info *info);\nint bpf_prog_test_load(const char *file, enum bpf_prog_type type,\n\t\t       struct bpf_object **pobj, int *prog_fd);\nint bpf_test_load_program(enum bpf_prog_type type, const struct bpf_insn *insns,\n\t\t\t  size_t insns_cnt, const char *license,\n\t\t\t  __u32 kern_version, char *log_buf,\n\t\t\t  size_t log_buf_sz);\n\n \nstruct test_filter_set;\nint parse_test_list(const char *s,\n\t\t    struct test_filter_set *test_set,\n\t\t    bool is_glob_pattern);\nint parse_test_list_file(const char *path,\n\t\t\t struct test_filter_set *test_set,\n\t\t\t bool is_glob_pattern);\n\n__u64 read_perf_max_sample_freq(void);\nint load_bpf_testmod(bool verbose);\nint unload_bpf_testmod(bool verbose);\nint kern_sync_rcu(void);\n\nstatic inline __u64 get_time_ns(void)\n{\n\tstruct timespec t;\n\n\tclock_gettime(CLOCK_MONOTONIC, &t);\n\n\treturn (u64)t.tv_sec * 1000000000 + t.tv_nsec;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ax_save_flags.m4",
+  "hash_id": "872815805ec8298e050ace360154a4c3de1b0e5ded1cc11a779f053d137b2abc",
+  "original_prompt": "Ingested from zfs-2.2.2/config/ax_save_flags.m4",
+  "human_readable_source": "# ===========================================================================\n#       http://www.gnu.org/software/autoconf-archive/ax_save_flags.html\n# ===========================================================================\n#\n# SYNOPSIS\n#\n#   AX_SAVE_FLAGS()\n#\n# DESCRIPTION\n#\n#   Save common compilation flags into temporary variables\n#\n# LICENSE\n#\n#   Copyright (c) 2009 Filippo Giunchedi <filippo@esaurito.net>\n#\n#   Copying and distribution of this file, with or without modification, are\n#   permitted in any medium without royalty provided the copyright notice\n#   and this notice are preserved. This file is offered as-is, without any\n#   warranty.\n\n#serial 3\n\nAC_DEFUN([AX_SAVE_FLAGS], [\n  CPPFLAGS_save=\"${CPPFLAGS}\"\n  CFLAGS_save=\"${CFLAGS}\"\n  CXXFLAGS_save=\"${CXXFLAGS}\"\n  OBJCFLAGS_save=\"${OBJCFLAGS}\"\n  LDFLAGS_save=\"${LDFLAGS}\"\n  LIBS_save=\"${LIBS}\"\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

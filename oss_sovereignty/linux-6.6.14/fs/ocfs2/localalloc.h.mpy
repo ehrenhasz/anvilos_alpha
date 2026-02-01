@@ -1,0 +1,9 @@
+{
+  "module_name": "localalloc.h",
+  "hash_id": "2104326a78e02641efe221948e8a874a7f68abec31119428e42345fb8bd7688b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/localalloc.h",
+  "human_readable_source": " \n \n\n#ifndef OCFS2_LOCALALLOC_H\n#define OCFS2_LOCALALLOC_H\n\nint ocfs2_load_local_alloc(struct ocfs2_super *osb);\n\nvoid ocfs2_shutdown_local_alloc(struct ocfs2_super *osb);\n\nvoid ocfs2_la_set_sizes(struct ocfs2_super *osb, int requested_mb);\nunsigned int ocfs2_la_default_mb(struct ocfs2_super *osb);\n\nint ocfs2_begin_local_alloc_recovery(struct ocfs2_super *osb,\n\t\t\t\t     int node_num,\n\t\t\t\t     struct ocfs2_dinode **alloc_copy);\n\nint ocfs2_complete_local_alloc_recovery(struct ocfs2_super *osb,\n\t\t\t\t\tstruct ocfs2_dinode *alloc);\n\nint ocfs2_alloc_should_use_local(struct ocfs2_super *osb,\n\t\t\t\t u64 bits);\n\nstruct ocfs2_alloc_context;\nint ocfs2_reserve_local_alloc_bits(struct ocfs2_super *osb,\n\t\t\t\t   u32 bits_wanted,\n\t\t\t\t   struct ocfs2_alloc_context *ac);\n\nint ocfs2_claim_local_alloc_bits(struct ocfs2_super *osb,\n\t\t\t\t handle_t *handle,\n\t\t\t\t struct ocfs2_alloc_context *ac,\n\t\t\t\t u32 bits_wanted,\n\t\t\t\t u32 *bit_off,\n\t\t\t\t u32 *num_bits);\n\nint ocfs2_free_local_alloc_bits(struct ocfs2_super *osb,\n\t\t\t\thandle_t *handle,\n\t\t\t\tstruct ocfs2_alloc_context *ac,\n\t\t\t\tu32 bit_off,\n\t\t\t\tu32 num_bits);\n\nvoid ocfs2_local_alloc_seen_free_bits(struct ocfs2_super *osb,\n\t\t\t\t      unsigned int num_clusters);\nvoid ocfs2_la_enable_worker(struct work_struct *work);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

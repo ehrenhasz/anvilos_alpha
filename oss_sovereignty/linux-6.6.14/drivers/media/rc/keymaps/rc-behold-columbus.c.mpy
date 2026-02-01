@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-behold-columbus.c",
+  "hash_id": "c07466ebacd0ba62f92ecfcb919e036bac1a0068553115bebd61373fdfb77cd5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-behold-columbus.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n\nstatic struct rc_map_table behold_columbus[] = {\n\n\t \n\n\t{ 0x13, KEY_MUTE },\n\t{ 0x11, KEY_VIDEO },\n\t{ 0x1C, KEY_TUNER },\t \n\t{ 0x12, KEY_POWER },\n\n\t \n\t{ 0x01, KEY_NUMERIC_1 },\n\t{ 0x02, KEY_NUMERIC_2 },\n\t{ 0x03, KEY_NUMERIC_3 },\n\t{ 0x0D, KEY_SETUP },\t   \n\t{ 0x04, KEY_NUMERIC_4 },\n\t{ 0x05, KEY_NUMERIC_5 },\n\t{ 0x06, KEY_NUMERIC_6 },\n\t{ 0x19, KEY_CAMERA },\t \n\t{ 0x07, KEY_NUMERIC_7 },\n\t{ 0x08, KEY_NUMERIC_8 },\n\t{ 0x09, KEY_NUMERIC_9 },\n\t{ 0x10, KEY_ZOOM },\n\n\t \n\t{ 0x0A, KEY_AGAIN },\n\t{ 0x00, KEY_NUMERIC_0 },\n\t{ 0x0B, KEY_CHANNELUP },\n\t{ 0x0C, KEY_VOLUMEUP },\n\n\t \n\n\t{ 0x1B, KEY_TIME },\n\t{ 0x1D, KEY_RECORD },\n\t{ 0x15, KEY_CHANNELDOWN },\n\t{ 0x18, KEY_VOLUMEDOWN },\n\n\t \n\n\t{ 0x0E, KEY_STOP },\n\t{ 0x1E, KEY_PAUSE },\n\t{ 0x0F, KEY_PREVIOUS },\n\t{ 0x1A, KEY_NEXT },\n\n};\n\nstatic struct rc_map_list behold_columbus_map = {\n\t.map = {\n\t\t.scan     = behold_columbus,\n\t\t.size     = ARRAY_SIZE(behold_columbus),\n\t\t.rc_proto = RC_PROTO_UNKNOWN,\t \n\t\t.name     = RC_MAP_BEHOLD_COLUMBUS,\n\t}\n};\n\nstatic int __init init_rc_map_behold_columbus(void)\n{\n\treturn rc_map_register(&behold_columbus_map);\n}\n\nstatic void __exit exit_rc_map_behold_columbus(void)\n{\n\trc_map_unregister(&behold_columbus_map);\n}\n\nmodule_init(init_rc_map_behold_columbus)\nmodule_exit(exit_rc_map_behold_columbus)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Mauro Carvalho Chehab\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

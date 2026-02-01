@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a8ddbfc6742e7597224658b9801da4e3faf494bf28d940673f527ab30eabcddb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/mediatek/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_MTK_UART_APDMA) += mtk-uart-apdma.o\nobj-$(CONFIG_MTK_HSDMA) += mtk-hsdma.o\nobj-$(CONFIG_MTK_CQDMA) += mtk-cqdma.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

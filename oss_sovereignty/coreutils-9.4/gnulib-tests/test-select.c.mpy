@@ -1,0 +1,9 @@
+{
+  "module_name": "test-select.c",
+  "hash_id": "f4f1a7a9de670056b6079be66b7dfa79c176178d94831a041ef9cf06ecd463ac",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-select.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/select.h>\n\n#include \"signature.h\"\n\nSIGNATURE_CHECK (select, int, (int, fd_set *, fd_set *, fd_set *,\n                               struct timeval *));\n\n#define TEST_PORT 12346\n#include \"test-select.h\"\n\nint\nmain (void)\n{\n  return test_function (select);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

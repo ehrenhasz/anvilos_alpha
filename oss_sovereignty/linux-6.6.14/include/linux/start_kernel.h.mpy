@@ -1,0 +1,9 @@
+{
+  "module_name": "start_kernel.h",
+  "hash_id": "0349d284c1b44acd01989d870ae66665b473f22e188ad4887b23e7aee17ad40e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/start_kernel.h",
+  "human_readable_source": " \n#ifndef _LINUX_START_KERNEL_H\n#define _LINUX_START_KERNEL_H\n\n#include <linux/linkage.h>\n#include <linux/init.h>\n\n \n\nextern asmlinkage void __init __noreturn start_kernel(void);\nextern void __init __noreturn arch_call_rest_init(void);\nextern void __ref __noreturn rest_init(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

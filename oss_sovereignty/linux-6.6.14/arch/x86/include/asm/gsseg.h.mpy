@@ -1,0 +1,9 @@
+{
+  "module_name": "gsseg.h",
+  "hash_id": "54eff9ba9ed5feebb174d6fae5ebb49dfdf642315551b1b8b63f7bf514d620cd",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/gsseg.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_GSSEG_H\n#define _ASM_X86_GSSEG_H\n\n#include <linux/types.h>\n\n#include <asm/asm.h>\n#include <asm/cpufeature.h>\n#include <asm/alternative.h>\n#include <asm/processor.h>\n#include <asm/nops.h>\n\n#ifdef CONFIG_X86_64\n\nextern asmlinkage void asm_load_gs_index(u16 selector);\n\n \n#define LKGS_DI _ASM_BYTES(0xf2,0x0f,0x00,0xf7)\n\nstatic inline void native_lkgs(unsigned int selector)\n{\n\tu16 sel = selector;\n\tasm_inline volatile(\"1: \" LKGS_DI\n\t\t\t    _ASM_EXTABLE_TYPE_REG(1b, 1b, EX_TYPE_ZERO_REG, %k[sel])\n\t\t\t    : [sel] \"+D\" (sel));\n}\n\nstatic inline void native_load_gs_index(unsigned int selector)\n{\n\tif (cpu_feature_enabled(X86_FEATURE_LKGS)) {\n\t\tnative_lkgs(selector);\n\t} else {\n\t\tunsigned long flags;\n\n\t\tlocal_irq_save(flags);\n\t\tasm_load_gs_index(selector);\n\t\tlocal_irq_restore(flags);\n\t}\n}\n\n#endif  \n\nstatic inline void __init lkgs_init(void)\n{\n#ifdef CONFIG_PARAVIRT_XXL\n#ifdef CONFIG_X86_64\n\tif (cpu_feature_enabled(X86_FEATURE_LKGS))\n\t\tpv_ops.cpu.load_gs_index = native_lkgs;\n#endif\n#endif\n}\n\n#ifndef CONFIG_PARAVIRT_XXL\n\nstatic inline void load_gs_index(unsigned int selector)\n{\n#ifdef CONFIG_X86_64\n\tnative_load_gs_index(selector);\n#else\n\tloadsegment(gs, selector);\n#endif\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

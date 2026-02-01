@@ -1,0 +1,9 @@
+{
+  "module_name": "configfs.h",
+  "hash_id": "86b901c7663ae87451c54f191451b9889947c8495036f5d6deb721fdbba00105",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/configfs.h",
+  "human_readable_source": " \n \n#ifndef __IIO_CONFIGFS\n#define __IIO_CONFIGFS\n\nextern struct configfs_subsystem iio_configfs_subsys;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

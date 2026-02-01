@@ -1,0 +1,9 @@
+{
+  "module_name": "tfrc.h",
+  "hash_id": "851c90da38e79e17d0b1ce7910ebba2e70fbd75ce06bb5f30600cd18b4573c62",
+  "original_prompt": "Ingested from linux-6.6.14/net/dccp/ccids/lib/tfrc.h",
+  "human_readable_source": " \n#ifndef _TFRC_H_\n#define _TFRC_H_\n \n#include <linux/types.h>\n#include <linux/math64.h>\n#include \"../../dccp.h\"\n\n \n#include \"loss_interval.h\"\n#include \"packet_history.h\"\n\n#ifdef CONFIG_IP_DCCP_TFRC_DEBUG\nextern bool tfrc_debug;\n#define tfrc_pr_debug(format, a...)\tDCCP_PR_DEBUG(tfrc_debug, format, ##a)\n#else\n#define tfrc_pr_debug(format, a...)\n#endif\n\n \nstatic inline u64 scaled_div(u64 a, u64 b)\n{\n\tBUG_ON(b == 0);\n\treturn div64_u64(a * 1000000, b);\n}\n\nstatic inline u32 scaled_div32(u64 a, u64 b)\n{\n\tu64 result = scaled_div(a, b);\n\n\tif (result > UINT_MAX) {\n\t\tDCCP_CRIT(\"Overflow: %llu/%llu > UINT_MAX\",\n\t\t\t  (unsigned long long)a, (unsigned long long)b);\n\t\treturn UINT_MAX;\n\t}\n\treturn result;\n}\n\n \nstatic inline u32 tfrc_ewma(const u32 avg, const u32 newval, const u8 weight)\n{\n\treturn avg ? (weight * avg + (10 - weight) * newval) / 10 : newval;\n}\n\nu32 tfrc_calc_x(u16 s, u32 R, u32 p);\nu32 tfrc_calc_x_reverse_lookup(u32 fvalue);\nu32 tfrc_invert_loss_event_rate(u32 loss_event_rate);\n\nint tfrc_tx_packet_history_init(void);\nvoid tfrc_tx_packet_history_exit(void);\nint tfrc_rx_packet_history_init(void);\nvoid tfrc_rx_packet_history_exit(void);\n\nint tfrc_li_init(void);\nvoid tfrc_li_exit(void);\n\n#ifdef CONFIG_IP_DCCP_TFRC_LIB\nint tfrc_lib_init(void);\nvoid tfrc_lib_exit(void);\n#else\n#define tfrc_lib_init() (0)\n#define tfrc_lib_exit()\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

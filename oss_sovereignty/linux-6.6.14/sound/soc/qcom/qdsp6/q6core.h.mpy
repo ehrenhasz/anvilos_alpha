@@ -1,0 +1,9 @@
+{
+  "module_name": "q6core.h",
+  "hash_id": "d93039d7fbd629d3f61a844560b750a29b46a5310615ba5c46032a4ce3c58ec3",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/qcom/qdsp6/q6core.h",
+  "human_readable_source": " \n\n#ifndef __Q6CORE_H__\n#define __Q6CORE_H__\n\nstruct q6core_svc_api_info {\n\tuint32_t service_id;\n\tuint32_t api_version;\n\tuint32_t api_branch_version;\n};\n\nbool q6core_is_adsp_ready(void);\nint q6core_get_svc_api_info(int svc_id, struct q6core_svc_api_info *ainfo);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

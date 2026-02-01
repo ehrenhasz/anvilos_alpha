@@ -1,0 +1,9 @@
+{
+  "module_name": "mod.py",
+  "hash_id": "17f07b89b13c566b1341c98894c97e1bf2324bef7fbb360f3c540b8ee50a9843",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/coverage/frzstr/frzstr_pkg2/mod.py",
+  "human_readable_source": "# test frozen package without __init__.py\nprint(\"frzstr_pkg2.mod\")\n\n\nclass Foo:\n    x = 1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

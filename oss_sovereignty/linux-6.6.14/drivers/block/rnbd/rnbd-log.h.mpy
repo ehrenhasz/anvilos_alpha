@@ -1,0 +1,9 @@
+{
+  "module_name": "rnbd-log.h",
+  "hash_id": "450a30774057c1cdab6708afc758ab6a1ccb740203d9540611bebca3b156d95a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/block/rnbd/rnbd-log.h",
+  "human_readable_source": " \n \n#ifndef RNBD_LOG_H\n#define RNBD_LOG_H\n\n#include \"rnbd-clt.h\"\n#include \"rnbd-srv.h\"\n\n#define rnbd_clt_log(fn, dev, fmt, ...) (\t\t\t\t\\\n\t\tfn(\"<%s@%s> \" fmt, (dev)->pathname,\t\t\t\\\n\t\t(dev)->sess->sessname,\t\t\t\t\t\\\n\t\t   ##__VA_ARGS__))\n#define rnbd_srv_log(fn, dev, fmt, ...) (\t\t\t\t\\\n\t\t\tfn(\"<%s@%s>: \" fmt, (dev)->pathname,\t\t\\\n\t\t\t   (dev)->sess->sessname, ##__VA_ARGS__))\n\n#define rnbd_clt_err(dev, fmt, ...)\t\\\n\trnbd_clt_log(pr_err, dev, fmt, ##__VA_ARGS__)\n#define rnbd_clt_err_rl(dev, fmt, ...)\t\\\n\trnbd_clt_log(pr_err_ratelimited, dev, fmt, ##__VA_ARGS__)\n#define rnbd_clt_info(dev, fmt, ...) \\\n\trnbd_clt_log(pr_info, dev, fmt, ##__VA_ARGS__)\n#define rnbd_clt_info_rl(dev, fmt, ...) \\\n\trnbd_clt_log(pr_info_ratelimited, dev, fmt, ##__VA_ARGS__)\n\n#define rnbd_srv_err(dev, fmt, ...)\t\\\n\trnbd_srv_log(pr_err, dev, fmt, ##__VA_ARGS__)\n#define rnbd_srv_err_rl(dev, fmt, ...)\t\\\n\trnbd_srv_log(pr_err_ratelimited, dev, fmt, ##__VA_ARGS__)\n#define rnbd_srv_info(dev, fmt, ...) \\\n\trnbd_srv_log(pr_info, dev, fmt, ##__VA_ARGS__)\n#define rnbd_srv_info_rl(dev, fmt, ...) \\\n\trnbd_srv_log(pr_info_ratelimited, dev, fmt, ##__VA_ARGS__)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

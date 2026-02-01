@@ -1,0 +1,9 @@
+{
+  "module_name": "ifc00d.h",
+  "hash_id": "0446a8d5a6c28ebac2b819f69f23bfd50b2b6edf00441cbf5c8a17457a149a79",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/ifc00d.h",
+  "human_readable_source": "#ifndef __NVIF_IFC00D_H__\n#define __NVIF_IFC00D_H__\n#include \"if000c.h\"\n\nstruct gp100_vmm_vn {\n\t \n};\n\nstruct gp100_vmm_v0 {\n\t \n\t__u8  version;\n\t__u8  fault_replay;\n};\n\nstruct gp100_vmm_map_vn {\n\t \n};\n\nstruct gp100_vmm_map_v0 {\n\t \n\t__u8  version;\n\t__u8  vol;\n\t__u8  ro;\n\t__u8  priv;\n\t__u8  kind;\n};\n\n#define GP100_VMM_VN_FAULT_REPLAY                         NVIF_VMM_V0_MTHD(0x00)\n#define GP100_VMM_VN_FAULT_CANCEL                         NVIF_VMM_V0_MTHD(0x01)\n\nstruct gp100_vmm_fault_replay_vn {\n};\n\nstruct gp100_vmm_fault_cancel_v0 {\n\t__u8  version;\n\t__u8  hub;\n\t__u8  gpc;\n\t__u8  client;\n\t__u8  pad04[4];\n\t__u64 inst;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

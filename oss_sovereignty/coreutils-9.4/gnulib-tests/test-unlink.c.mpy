@@ -1,0 +1,9 @@
+{
+  "module_name": "test-unlink.c",
+  "hash_id": "15f9f671373f6d000e3a0e1d68608395ae7a411f628f2d9e2a198810f32d072d",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-unlink.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <unistd.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (unlink, int, (char const *));\n\n#include <fcntl.h>\n#include <errno.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <sys/stat.h>\n\n#include \"unlinkdir.h\"\n#include \"ignore-value.h\"\n#include \"macros.h\"\n\n#define BASE \"test-unlink.t\"\n\n#include \"test-unlink.h\"\n\nint\nmain (void)\n{\n   \n  ignore_value (system (\"rm -rf \" BASE \"*\"));\n\n  return test_unlink_func (unlink, true);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

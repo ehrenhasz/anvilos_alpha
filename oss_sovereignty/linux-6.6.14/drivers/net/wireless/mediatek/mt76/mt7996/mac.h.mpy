@@ -1,0 +1,9 @@
+{
+  "module_name": "mac.h",
+  "hash_id": "ab3262b6308b0396d98ab0c82cd906a470211065a4e4aa450a541ded04c9645e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt7996/mac.h",
+  "human_readable_source": " \n \n\n#ifndef __MT7996_MAC_H\n#define __MT7996_MAC_H\n\n#include \"../mt76_connac3_mac.h\"\n\nstruct mt7996_dfs_pulse {\n\tu32 max_width;\t\t \n\tint max_pwr;\t\t \n\tint min_pwr;\t\t \n\tu32 min_stgr_pri;\t \n\tu32 max_stgr_pri;\t \n\tu32 min_cr_pri;\t\t \n\tu32 max_cr_pri;\t\t \n};\n\nstruct mt7996_dfs_pattern {\n\tu8 enb;\n\tu8 stgr;\n\tu8 min_crpn;\n\tu8 max_crpn;\n\tu8 min_crpr;\n\tu8 min_pw;\n\tu32 min_pri;\n\tu32 max_pri;\n\tu8 max_pw;\n\tu8 min_crbn;\n\tu8 max_crbn;\n\tu8 min_stgpn;\n\tu8 max_stgpn;\n\tu8 min_stgpr;\n\tu8 rsv[2];\n\tu32 min_stgpr_diff;\n} __packed;\n\nstruct mt7996_dfs_radar_spec {\n\tstruct mt7996_dfs_pulse pulse_th;\n\tstruct mt7996_dfs_pattern radar_pattern[16];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

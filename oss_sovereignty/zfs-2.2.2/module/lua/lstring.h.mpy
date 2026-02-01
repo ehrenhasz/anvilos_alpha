@@ -1,0 +1,9 @@
+{
+  "module_name": "lstring.h",
+  "hash_id": "aac5599fb034bed24bd881be0945d0d5698041531ebfd0bda972a8db47250135",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/lstring.h",
+  "human_readable_source": " \n\n#ifndef lstring_h\n#define lstring_h\n\n#include \"lgc.h\"\n#include \"lobject.h\"\n#include \"lstate.h\"\n\n\n#define sizestring(s)\t(sizeof(union TString)+((s)->len+1)*sizeof(char))\n\n#define sizeudata(u)\t(sizeof(union Udata)+(u)->len)\n\n#define luaS_newliteral(L, s)\t(luaS_newlstr(L, \"\" s, \\\n                                 (sizeof(s)/sizeof(char))-1))\n\n#define luaS_fix(s)\tl_setbit((s)->tsv.marked, FIXEDBIT)\n\n\n \n#define isreserved(s)\t((s)->tsv.tt == LUA_TSHRSTR && (s)->tsv.extra > 0)\n\n\n \n#define eqshrstr(a,b)\tcheck_exp((a)->tsv.tt == LUA_TSHRSTR, (a) == (b))\n\n\nLUAI_FUNC unsigned int luaS_hash (const char *str, size_t l, unsigned int seed);\nLUAI_FUNC int luaS_eqlngstr (TString *a, TString *b);\nLUAI_FUNC int luaS_eqstr (TString *a, TString *b);\nLUAI_FUNC void luaS_resize (lua_State *L, int newsize);\nLUAI_FUNC Udata *luaS_newudata (lua_State *L, size_t s, Table *e);\nLUAI_FUNC TString *luaS_newlstr (lua_State *L, const char *str, size_t l);\nLUAI_FUNC TString *luaS_new (lua_State *L, const char *str);\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

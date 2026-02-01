@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "30b65b87ab94852b0f3c4a63c7a2573b90be2cd6bf110a41239693ab7a117a13",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sti/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsti-drm-y := \\\n\tsti_mixer.o \\\n\tsti_gdp.o \\\n\tsti_vid.o \\\n\tsti_cursor.o \\\n\tsti_compositor.o \\\n\tsti_crtc.o \\\n\tsti_plane.o \\\n\tsti_crtc.o \\\n\tsti_plane.o \\\n\tsti_hdmi.o \\\n\tsti_hdmi_tx3g4c28phy.o \\\n\tsti_dvo.o \\\n\tsti_awg_utils.o \\\n\tsti_vtg.o \\\n\tsti_hda.o \\\n\tsti_tvout.o \\\n\tsti_hqvdp.o \\\n\tsti_drv.o\n\nobj-$(CONFIG_DRM_STI) = sti-drm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

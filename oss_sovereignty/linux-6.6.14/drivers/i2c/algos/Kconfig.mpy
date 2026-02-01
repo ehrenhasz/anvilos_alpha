@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "77abb04ce899e457a53296e5fd17b15fb711632a30759f207e62c95432837fe6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/i2c/algos/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# I2C algorithm drivers configuration\n#\n\nmenu \"I2C Algorithms\"\n\tvisible if !I2C_HELPER_AUTO\n\nconfig I2C_ALGOBIT\n\ttristate \"I2C bit-banging interfaces\"\n\nconfig I2C_ALGOPCF\n\ttristate \"I2C PCF 8584 interfaces\"\n\nconfig I2C_ALGOPCA\n\ttristate \"I2C PCA 9564 interfaces\"\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rculist_bl.h",
+  "hash_id": "74fdf50dc54b9a473a2af2cc8266cd618e32db61bcdfab27431daa629ceba0f0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rculist_bl.h",
+  "human_readable_source": " \n#ifndef _LINUX_RCULIST_BL_H\n#define _LINUX_RCULIST_BL_H\n\n \n#include <linux/list_bl.h>\n#include <linux/rcupdate.h>\n\nstatic inline void hlist_bl_set_first_rcu(struct hlist_bl_head *h,\n\t\t\t\t\tstruct hlist_bl_node *n)\n{\n\tLIST_BL_BUG_ON((unsigned long)n & LIST_BL_LOCKMASK);\n\tLIST_BL_BUG_ON(((unsigned long)h->first & LIST_BL_LOCKMASK) !=\n\t\t\t\t\t\t\tLIST_BL_LOCKMASK);\n\trcu_assign_pointer(h->first,\n\t\t(struct hlist_bl_node *)((unsigned long)n | LIST_BL_LOCKMASK));\n}\n\nstatic inline struct hlist_bl_node *hlist_bl_first_rcu(struct hlist_bl_head *h)\n{\n\treturn (struct hlist_bl_node *)\n\t\t((unsigned long)rcu_dereference_check(h->first, hlist_bl_is_locked(h)) & ~LIST_BL_LOCKMASK);\n}\n\n \nstatic inline void hlist_bl_del_rcu(struct hlist_bl_node *n)\n{\n\t__hlist_bl_del(n);\n\tn->pprev = LIST_POISON2;\n}\n\n \nstatic inline void hlist_bl_add_head_rcu(struct hlist_bl_node *n,\n\t\t\t\t\tstruct hlist_bl_head *h)\n{\n\tstruct hlist_bl_node *first;\n\n\t \n\tfirst = hlist_bl_first(h);\n\n\tn->next = first;\n\tif (first)\n\t\tfirst->pprev = &n->next;\n\tn->pprev = &h->first;\n\n\t \n\thlist_bl_set_first_rcu(h, n);\n}\n \n#define hlist_bl_for_each_entry_rcu(tpos, pos, head, member)\t\t\\\n\tfor (pos = hlist_bl_first_rcu(head);\t\t\t\t\\\n\t\tpos &&\t\t\t\t\t\t\t\\\n\t\t({ tpos = hlist_bl_entry(pos, typeof(*tpos), member); 1; }); \\\n\t\tpos = rcu_dereference_raw(pos->next))\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

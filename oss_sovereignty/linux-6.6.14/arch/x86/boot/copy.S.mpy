@@ -1,0 +1,9 @@
+{
+  "module_name": "copy.S",
+  "hash_id": "539644f9c5a1446ffa915bf0a50ce1bbf103d7829c89452c24e2546df60df5e2",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/copy.S",
+  "human_readable_source": " \n \n\n#include <linux/linkage.h>\n\n \n\n\t.code16\n\t.text\n\nSYM_FUNC_START_NOALIGN(memcpy)\n\tpushw\t%si\n\tpushw\t%di\n\tmovw\t%ax, %di\n\tmovw\t%dx, %si\n\tpushw\t%cx\n\tshrw\t$2, %cx\n\trep; movsl\n\tpopw\t%cx\n\tandw\t$3, %cx\n\trep; movsb\n\tpopw\t%di\n\tpopw\t%si\n\tretl\nSYM_FUNC_END(memcpy)\n\nSYM_FUNC_START_NOALIGN(memset)\n\tpushw\t%di\n\tmovw\t%ax, %di\n\tmovzbl\t%dl, %eax\n\timull\t$0x01010101,%eax\n\tpushw\t%cx\n\tshrw\t$2, %cx\n\trep; stosl\n\tpopw\t%cx\n\tandw\t$3, %cx\n\trep; stosb\n\tpopw\t%di\n\tretl\nSYM_FUNC_END(memset)\n\nSYM_FUNC_START_NOALIGN(copy_from_fs)\n\tpushw\t%ds\n\tpushw\t%fs\n\tpopw\t%ds\n\tcalll\tmemcpy\n\tpopw\t%ds\n\tretl\nSYM_FUNC_END(copy_from_fs)\n\nSYM_FUNC_START_NOALIGN(copy_to_fs)\n\tpushw\t%es\n\tpushw\t%fs\n\tpopw\t%es\n\tcalll\tmemcpy\n\tpopw\t%es\n\tretl\nSYM_FUNC_END(copy_to_fs)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

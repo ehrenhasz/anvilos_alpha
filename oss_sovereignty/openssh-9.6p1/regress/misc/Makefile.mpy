@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7e663964c2d1da432c0ca2ce59c2e7563d3e2db3c079ee43d505bfc62f59afc9",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/misc/Makefile",
+  "human_readable_source": "SUBDIR=\t\tsk-dummy\n\n.include <bsd.subdir.mk>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

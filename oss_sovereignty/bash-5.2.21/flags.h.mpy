@@ -1,0 +1,9 @@
+{
+  "module_name": "flags.h",
+  "hash_id": "1ff41e4ce71d5ed1e2e44b7a78c01dc160b58f59df3806c4a96d3f77a6fa055a",
+  "original_prompt": "Ingested from bash-5.2.21/flags.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_FLAGS_H_)\n#define _FLAGS_H_\n\n#include \"stdc.h\"\n\n \n#define FLAG_ON '-'\n#define FLAG_OFF '+'\n\n#define FLAG_ERROR -1\n#define FLAG_UNKNOWN (int *)0\n\n \nstruct flags_alist {\n  char name;\n  int *value;\n};\n\nextern const struct flags_alist shell_flags[];\nextern char optflags[];\n\nextern int\n  mark_modified_vars, errexit_flag, exit_immediately_on_error,\n  disallow_filename_globbing,\n  place_keywords_in_env, read_but_dont_execute,\n  just_one_command, unbound_vars_is_error, echo_input_at_read, verbose_flag,\n  echo_command_at_execute, noclobber,\n  hashing_enabled, forced_interactive, privileged_mode, jobs_m_flag,\n  asynchronous_notification, interactive_comments, no_symbolic_links,\n  function_trace_mode, error_trace_mode, pipefail_opt;\n\n \nextern int want_pending_command, read_from_stdin;\n\n#if 0\nextern int lexical_scoping;\n#endif\n\n#if defined (BRACE_EXPANSION)\nextern int brace_expansion;\n#endif\n\n#if defined (BANG_HISTORY)\nextern int history_expansion;\nextern int histexp_flag;\n#endif  \n\n#if defined (RESTRICTED_SHELL)\nextern int restricted;\nextern int restricted_shell;\n#endif  \n\nextern int *find_flag PARAMS((int));\nextern int change_flag PARAMS((int, int));\nextern char *which_set_flags PARAMS((void));\nextern void reset_shell_flags PARAMS((void));\n\nextern char *get_current_flags PARAMS((void));\nextern void set_current_flags PARAMS((const char *));\n\nextern void initialize_flags PARAMS((void));\n\n \n#define change_flag_char(flag, on_or_off)  change_flag (flag, on_or_off)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

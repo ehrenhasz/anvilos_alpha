@@ -1,0 +1,9 @@
+{
+  "module_name": "aes_ccm.h",
+  "hash_id": "6bb1e6b0a7fbd123e1072a80d3244c7638ab27d94ed5cc495d5540ecb1b50df1",
+  "original_prompt": "Ingested from linux-6.6.14/net/mac80211/aes_ccm.h",
+  "human_readable_source": " \n \n\n#ifndef AES_CCM_H\n#define AES_CCM_H\n\n#include \"aead_api.h\"\n\n#define CCM_AAD_LEN\t32\n\nstatic inline struct crypto_aead *\nieee80211_aes_key_setup_encrypt(const u8 key[], size_t key_len, size_t mic_len)\n{\n\treturn aead_key_setup_encrypt(\"ccm(aes)\", key, key_len, mic_len);\n}\n\nstatic inline int\nieee80211_aes_ccm_encrypt(struct crypto_aead *tfm,\n\t\t\t  u8 *b_0, u8 *aad, u8 *data,\n\t\t\t  size_t data_len, u8 *mic)\n{\n\treturn aead_encrypt(tfm, b_0, aad + 2,\n\t\t\t    be16_to_cpup((__be16 *)aad),\n\t\t\t    data, data_len, mic);\n}\n\nstatic inline int\nieee80211_aes_ccm_decrypt(struct crypto_aead *tfm,\n\t\t\t  u8 *b_0, u8 *aad, u8 *data,\n\t\t\t  size_t data_len, u8 *mic)\n{\n\treturn aead_decrypt(tfm, b_0, aad + 2,\n\t\t\t    be16_to_cpup((__be16 *)aad),\n\t\t\t    data, data_len, mic);\n}\n\nstatic inline void ieee80211_aes_key_free(struct crypto_aead *tfm)\n{\n\treturn aead_key_free(tfm);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

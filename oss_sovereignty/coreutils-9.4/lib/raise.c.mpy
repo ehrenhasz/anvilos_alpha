@@ -1,0 +1,9 @@
+{
+  "module_name": "raise.c",
+  "hash_id": "24b567c9840e002b80c145bca83e7c38b270f3777123f1de53723d8f08741fea",
+  "original_prompt": "Ingested from coreutils-9.4/lib/raise.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <signal.h>\n\n#if HAVE_RAISE\n \n\n# include <errno.h>\n\n# if HAVE_MSVC_INVALID_PARAMETER_HANDLER\n#  include \"msvc-inval.h\"\n# endif\n\n# if HAVE_MSVC_INVALID_PARAMETER_HANDLER\n \nstatic int raise_nothrow (int sig);\n# else\n#  define raise_nothrow raise\n# endif\n\n#else\n \n\n# include <unistd.h>\n\n#endif\n\nint\nraise (int sig)\n#undef raise\n{\n#if GNULIB_defined_signal_blocking && GNULIB_defined_SIGPIPE\n  if (sig == SIGPIPE)\n    return _gl_raise_SIGPIPE ();\n#endif\n\n#if HAVE_RAISE\n  return raise_nothrow (sig);\n#else\n  return kill (getpid (), sig);\n#endif\n}\n\n#if HAVE_RAISE && HAVE_MSVC_INVALID_PARAMETER_HANDLER\nstatic int\nraise_nothrow (int sig)\n{\n  int result;\n\n  TRY_MSVC_INVAL\n    {\n      result = raise (sig);\n    }\n  CATCH_MSVC_INVAL\n    {\n      result = -1;\n      errno = EINVAL;\n    }\n  DONE_MSVC_INVAL;\n\n  return result;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

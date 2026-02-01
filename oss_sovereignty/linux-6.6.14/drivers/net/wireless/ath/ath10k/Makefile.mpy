@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f6134d37e2e60375afcf3ba09d276c5f044045f32afff6d86c136ef86d37cee1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath10k/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: ISC\nobj-$(CONFIG_ATH10K) += ath10k_core.o\nath10k_core-y += mac.o \\\n\t\t debug.o \\\n\t\t core.o \\\n\t\t htc.o \\\n\t\t htt.o \\\n\t\t htt_rx.o \\\n\t\t htt_tx.o \\\n\t\t txrx.o \\\n\t\t wmi.o \\\n\t\t wmi-tlv.o \\\n\t\t bmi.o \\\n\t\t hw.o \\\n\t\t p2p.o \\\n\t\t swap.o\n\nath10k_core-$(CONFIG_ATH10K_SPECTRAL) += spectral.o\nath10k_core-$(CONFIG_NL80211_TESTMODE) += testmode.o\nath10k_core-$(CONFIG_ATH10K_TRACING) += trace.o\nath10k_core-$(CONFIG_THERMAL) += thermal.o\nath10k_core-$(CONFIG_MAC80211_DEBUGFS) += debugfs_sta.o\nath10k_core-$(CONFIG_PM) += wow.o\nath10k_core-$(CONFIG_DEV_COREDUMP) += coredump.o\nath10k_core-$(CONFIG_ATH10K_CE) += ce.o\n\nobj-$(CONFIG_ATH10K_PCI) += ath10k_pci.o\nath10k_pci-y += pci.o\n\nath10k_pci-$(CONFIG_ATH10K_AHB) += ahb.o\n\nobj-$(CONFIG_ATH10K_SDIO) += ath10k_sdio.o\nath10k_sdio-y += sdio.o\n\nobj-$(CONFIG_ATH10K_USB) += ath10k_usb.o\nath10k_usb-y += usb.o\n\nobj-$(CONFIG_ATH10K_SNOC) += ath10k_snoc.o\nath10k_snoc-y += qmi.o \\\n\t\t qmi_wlfw_v01.o \\\n\t\t snoc.o\n\n# for tracing framework to find trace.h\nCFLAGS_trace.o := -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

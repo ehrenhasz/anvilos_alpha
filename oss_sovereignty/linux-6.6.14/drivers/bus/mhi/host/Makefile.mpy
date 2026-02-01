@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b5d0caf0e459135dfff83faee382d3e41031cc7d0316d4bcf466c927974acc0a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bus/mhi/host/Makefile",
+  "human_readable_source": "obj-$(CONFIG_MHI_BUS) += mhi.o\nmhi-y := init.o main.o pm.o boot.o\nmhi-$(CONFIG_MHI_BUS_DEBUG) += debugfs.o\n\nobj-$(CONFIG_MHI_BUS_PCI_GENERIC) += mhi_pci_generic.o\nmhi_pci_generic-y += pci_generic.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bashintl.h",
+  "hash_id": "bc291dacda85017a7a0c3faafe67fb21156a9c71c69993cad16aad4772995c46",
+  "original_prompt": "Ingested from bash-5.2.21/bashintl.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_BASHINTL_H_)\n#define _BASHINTL_H_\n\n#if defined (BUILDTOOL)\n#  undef ENABLE_NLS\n#  define ENABLE_NLS 0\n#endif\n\n \n#include \"gettext.h\"\n\n#if defined (HAVE_LOCALE_H)\n#  include <locale.h>\n#endif\n\n#define _(msgid)\tgettext(msgid)\n#define N_(msgid)\tmsgid\n#define D_(d, msgid)\tdgettext(d, msgid)\n\n#define P_(m1, m2, n)\tngettext(m1, m2, n)\n\n#if defined (HAVE_SETLOCALE) && !defined (LC_ALL)\n#  undef HAVE_SETLOCALE\n#endif\n\n#if !defined (HAVE_SETLOCALE)\n#  define setlocale(cat, loc)\n#endif\n\n#if !defined (HAVE_LOCALE_H) || !defined (HAVE_LOCALECONV)\n#  define locale_decpoint()\t'.'\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

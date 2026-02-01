@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "20463f34fa75c5029a1f5815a4ed6d07754295337e06f94dba8d75ecb88d19aa",
+  "original_prompt": "Ingested from linux-6.6.14/security/lockdown/Kconfig",
+  "human_readable_source": "config SECURITY_LOCKDOWN_LSM\n\tbool \"Basic module for enforcing kernel lockdown\"\n\tdepends on SECURITY\n\tselect MODULE_SIG if MODULES\n\thelp\n\t  Build support for an LSM that enforces a coarse kernel lockdown\n\t  behaviour.\n\nconfig SECURITY_LOCKDOWN_LSM_EARLY\n\tbool \"Enable lockdown LSM early in init\"\n\tdepends on SECURITY_LOCKDOWN_LSM\n\thelp\n\t  Enable the lockdown LSM early in boot. This is necessary in order\n\t  to ensure that lockdown enforcement can be carried out on kernel\n\t  boot parameters that are otherwise parsed before the security\n\t  subsystem is fully initialised. If enabled, lockdown will\n\t  unconditionally be called before any other LSMs.\n\nchoice\n\tprompt \"Kernel default lockdown mode\"\n\tdefault LOCK_DOWN_KERNEL_FORCE_NONE\n\tdepends on SECURITY_LOCKDOWN_LSM\n\thelp\n\t  The kernel can be configured to default to differing levels of\n\t  lockdown.\n\nconfig LOCK_DOWN_KERNEL_FORCE_NONE\n\tbool \"None\"\n\thelp\n\t  No lockdown functionality is enabled by default. Lockdown may be\n\t  enabled via the kernel commandline or /sys/kernel/security/lockdown.\n\nconfig LOCK_DOWN_KERNEL_FORCE_INTEGRITY\n\tbool \"Integrity\"\n\thelp\n\t The kernel runs in integrity mode by default. Features that allow\n\t the kernel to be modified at runtime are disabled.\n\nconfig LOCK_DOWN_KERNEL_FORCE_CONFIDENTIALITY\n\tbool \"Confidentiality\"\n\thelp\n\t The kernel runs in confidentiality mode by default. Features that\n\t allow the kernel to be modified at runtime or that permit userland\n\t code to read confidential material held inside the kernel are\n\t disabled.\n\nendchoice\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

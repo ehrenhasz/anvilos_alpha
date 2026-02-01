@@ -1,0 +1,9 @@
+{
+  "module_name": "xdp_metadata.c",
+  "hash_id": "07b3ed35b1a91cbb224983c84126b1cb8e56e08d3fa66403610c74e519a833b6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/xdp_metadata.c",
+  "human_readable_source": "\n\n#include <vmlinux.h>\n#include \"xdp_metadata.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_XSKMAP);\n\t__uint(max_entries, 4);\n\t__type(key, __u32);\n\t__type(value, __u32);\n} xsk SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PROG_ARRAY);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, __u32);\n} prog_arr SEC(\".maps\");\n\nextern int bpf_xdp_metadata_rx_timestamp(const struct xdp_md *ctx,\n\t\t\t\t\t __u64 *timestamp) __ksym;\nextern int bpf_xdp_metadata_rx_hash(const struct xdp_md *ctx, __u32 *hash,\n\t\t\t\t    enum xdp_rss_hash_type *rss_type) __ksym;\n\nSEC(\"xdp\")\nint rx(struct xdp_md *ctx)\n{\n\tvoid *data, *data_meta;\n\tstruct xdp_meta *meta;\n\tu64 timestamp = -1;\n\tint ret;\n\n\t \n\n\tret = bpf_xdp_adjust_meta(ctx, -(int)sizeof(struct xdp_meta));\n\tif (ret != 0)\n\t\treturn XDP_DROP;\n\n\tdata = (void *)(long)ctx->data;\n\tdata_meta = (void *)(long)ctx->data_meta;\n\n\tif (data_meta + sizeof(struct xdp_meta) > data)\n\t\treturn XDP_DROP;\n\n\tmeta = data_meta;\n\n\t \n\n\t \n\tbpf_xdp_metadata_rx_timestamp(ctx, &timestamp);\n\tif (timestamp == 0)\n\t\tmeta->rx_timestamp = 1;\n\n\tbpf_xdp_metadata_rx_hash(ctx, &meta->rx_hash, &meta->rx_hash_type);\n\n\treturn bpf_redirect_map(&xsk, ctx->rx_queue_index, XDP_PASS);\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

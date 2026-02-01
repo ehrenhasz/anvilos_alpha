@@ -1,0 +1,9 @@
+{
+  "module_name": "coresight-tpda.h",
+  "hash_id": "c4584ac5ac78ee585c0dece813c568dea491fae43b163aa7e9023a79b5c86f02",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwtracing/coresight/coresight-tpda.h",
+  "human_readable_source": " \n \n\n#ifndef _CORESIGHT_CORESIGHT_TPDA_H\n#define _CORESIGHT_CORESIGHT_TPDA_H\n\n#define TPDA_CR\t\t\t(0x000)\n#define TPDA_Pn_CR(n)\t\t(0x004 + (n * 4))\n \n#define TPDA_Pn_CR_ENA\t\tBIT(0)\n\n#define TPDA_MAX_INPORTS\t32\n\n \n#define TPDA_CR_ATID\t\tGENMASK(12, 6)\n\n \nstruct tpda_drvdata {\n\tvoid __iomem\t\t*base;\n\tstruct device\t\t*dev;\n\tstruct coresight_device\t*csdev;\n\tspinlock_t\t\tspinlock;\n\tu8\t\t\tatid;\n};\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

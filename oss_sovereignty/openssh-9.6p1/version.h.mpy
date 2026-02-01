@@ -1,0 +1,9 @@
+{
+  "module_name": "version.h",
+  "hash_id": "556115225b8d15b62da9ec0b48c42911247190285643d7195a61a0b9fc251bc1",
+  "original_prompt": "Ingested from openssh-9.6p1/version.h",
+  "human_readable_source": " \n\n#define SSH_VERSION\t\"OpenSSH_9.6\"\n\n#define SSH_PORTABLE\t\"p1\"\n#define SSH_RELEASE\tSSH_VERSION SSH_PORTABLE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

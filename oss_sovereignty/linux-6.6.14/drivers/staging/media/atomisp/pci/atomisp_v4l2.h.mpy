@@ -1,0 +1,9 @@
+{
+  "module_name": "atomisp_v4l2.h",
+  "hash_id": "a8f348ce4216aa9bd21545eb7b581ec92b62ee867c3fe78a23868a0251e4a11e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/atomisp_v4l2.h",
+  "human_readable_source": " \n \n\n#ifndef __ATOMISP_V4L2_H__\n#define __ATOMISP_V4L2_H__\n\nstruct atomisp_video_pipe;\nstruct v4l2_device;\nstruct atomisp_device;\nstruct firmware;\n\nint atomisp_video_init(struct atomisp_video_pipe *video);\nvoid atomisp_video_unregister(struct atomisp_video_pipe *video);\nconst struct firmware *atomisp_load_firmware(struct atomisp_device *isp);\nint atomisp_csi_lane_config(struct atomisp_device *isp);\nint atomisp_register_device_nodes(struct atomisp_device *isp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

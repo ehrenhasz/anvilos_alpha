@@ -1,0 +1,9 @@
+{
+  "module_name": "skbuff.c",
+  "hash_id": "666accac85e5eb48529dd34755ba7077581894f412a101d5da450a2ed2a6a448",
+  "original_prompt": "Ingested from linux-6.6.14/net/rxrpc/skbuff.c",
+  "human_readable_source": "\n \n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <linux/module.h>\n#include <linux/net.h>\n#include <linux/skbuff.h>\n#include <net/sock.h>\n#include <net/af_rxrpc.h>\n#include \"ar-internal.h\"\n\n#define select_skb_count(skb) (&rxrpc_n_rx_skbs)\n\n \nvoid rxrpc_new_skb(struct sk_buff *skb, enum rxrpc_skb_trace why)\n{\n\tint n = atomic_inc_return(select_skb_count(skb));\n\ttrace_rxrpc_skb(skb, refcount_read(&skb->users), n, why);\n}\n\n \nvoid rxrpc_see_skb(struct sk_buff *skb, enum rxrpc_skb_trace why)\n{\n\tif (skb) {\n\t\tint n = atomic_read(select_skb_count(skb));\n\t\ttrace_rxrpc_skb(skb, refcount_read(&skb->users), n, why);\n\t}\n}\n\n \nvoid rxrpc_get_skb(struct sk_buff *skb, enum rxrpc_skb_trace why)\n{\n\tint n = atomic_inc_return(select_skb_count(skb));\n\ttrace_rxrpc_skb(skb, refcount_read(&skb->users), n, why);\n\tskb_get(skb);\n}\n\n \nvoid rxrpc_eaten_skb(struct sk_buff *skb, enum rxrpc_skb_trace why)\n{\n\tint n = atomic_inc_return(&rxrpc_n_rx_skbs);\n\ttrace_rxrpc_skb(skb, 0, n, why);\n}\n\n \nvoid rxrpc_free_skb(struct sk_buff *skb, enum rxrpc_skb_trace why)\n{\n\tif (skb) {\n\t\tint n = atomic_dec_return(select_skb_count(skb));\n\t\ttrace_rxrpc_skb(skb, refcount_read(&skb->users), n, why);\n\t\tconsume_skb(skb);\n\t}\n}\n\n \nvoid rxrpc_purge_queue(struct sk_buff_head *list)\n{\n\tstruct sk_buff *skb;\n\n\twhile ((skb = skb_dequeue((list))) != NULL) {\n\t\tint n = atomic_dec_return(select_skb_count(skb));\n\t\ttrace_rxrpc_skb(skb, refcount_read(&skb->users), n,\n\t\t\t\trxrpc_skb_put_purge);\n\t\tconsume_skb(skb);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

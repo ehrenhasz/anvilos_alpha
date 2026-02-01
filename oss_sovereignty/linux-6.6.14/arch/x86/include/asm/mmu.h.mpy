@@ -1,0 +1,9 @@
+{
+  "module_name": "mmu.h",
+  "hash_id": "c02c934b3b9b1a4fd2e612eeac6b450dd8e709c2e0c86fe929e1bd16d65fe229",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/mmu.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_MMU_H\n#define _ASM_X86_MMU_H\n\n#include <linux/spinlock.h>\n#include <linux/rwsem.h>\n#include <linux/mutex.h>\n#include <linux/atomic.h>\n#include <linux/bits.h>\n\n \n#define MM_CONTEXT_UPROBE_IA32\t\t0\n \n#define MM_CONTEXT_HAS_VSYSCALL\t\t1\n \n#define MM_CONTEXT_LOCK_LAM\t\t2\n \n#define MM_CONTEXT_FORCE_TAGGED_SVA\t3\n\n \ntypedef struct {\n\t \n\tu64 ctx_id;\n\n\t \n\tatomic64_t tlb_gen;\n\n#ifdef CONFIG_MODIFY_LDT_SYSCALL\n\tstruct rw_semaphore\tldt_usr_sem;\n\tstruct ldt_struct\t*ldt;\n#endif\n\n#ifdef CONFIG_X86_64\n\tunsigned long flags;\n#endif\n\n#ifdef CONFIG_ADDRESS_MASKING\n\t \n\tunsigned long lam_cr3_mask;\n\n\t \n\tu64 untag_mask;\n#endif\n\n\tstruct mutex lock;\n\tvoid __user *vdso;\t\t\t \n\tconst struct vdso_image *vdso_image;\t \n\n\tatomic_t perf_rdpmc_allowed;\t \n#ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS\n\t \n\tu16 pkey_allocation_map;\n\ts16 execute_only_pkey;\n#endif\n} mm_context_t;\n\n#define INIT_MM_CONTEXT(mm)\t\t\t\t\t\t\\\n\t.context = {\t\t\t\t\t\t\t\\\n\t\t.ctx_id = 1,\t\t\t\t\t\t\\\n\t\t.lock = __MUTEX_INITIALIZER(mm.context.lock),\t\t\\\n\t}\n\nvoid leave_mm(int cpu);\n#define leave_mm leave_mm\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

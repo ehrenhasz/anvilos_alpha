@@ -1,0 +1,9 @@
+{
+  "module_name": "fcp.h",
+  "hash_id": "e28cfb6f2c5edb63a0df2fcd3ab375eb57b907dd2b5e6c8043c1689ed10f73d5",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/fcp.h",
+  "human_readable_source": " \n#ifndef SOUND_FIREWIRE_FCP_H_INCLUDED\n#define SOUND_FIREWIRE_FCP_H_INCLUDED\n\n#define\tAVC_PLUG_INFO_BUF_BYTES\t4\n\nstruct fw_unit;\n\n \nenum avc_general_plug_dir {\n\tAVC_GENERAL_PLUG_DIR_IN\t\t= 0,\n\tAVC_GENERAL_PLUG_DIR_OUT\t= 1,\n\tAVC_GENERAL_PLUG_DIR_COUNT\n};\nint avc_general_set_sig_fmt(struct fw_unit *unit, unsigned int rate,\n\t\t\t    enum avc_general_plug_dir dir,\n\t\t\t    unsigned short plug);\nint avc_general_get_sig_fmt(struct fw_unit *unit, unsigned int *rate,\n\t\t\t    enum avc_general_plug_dir dir,\n\t\t\t    unsigned short plug);\nint avc_general_get_plug_info(struct fw_unit *unit, unsigned int subunit_type,\n\t\t\t      unsigned int subunit_id, unsigned int subfunction,\n\t\t\t      u8 info[AVC_PLUG_INFO_BUF_BYTES]);\n\nint fcp_avc_transaction(struct fw_unit *unit,\n\t\t\tconst void *command, unsigned int command_size,\n\t\t\tvoid *response, unsigned int response_size,\n\t\t\tunsigned int response_match_bytes);\nvoid fcp_bus_reset(struct fw_unit *unit);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rockchip,rv1126-power.h",
+  "hash_id": "f754cda0c32d7f88ad315386403655a32b9b0c05eaf2e167232c27a48fcdb725",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/rockchip,rv1126-power.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_POWER_RV1126_POWER_H__\n#define __DT_BINDINGS_POWER_RV1126_POWER_H__\n\n \n#define RV1126_PD_CPU_0\t\t0\n#define RV1126_PD_CPU_1\t\t1\n#define RV1126_PD_CPU_2\t\t2\n#define RV1126_PD_CPU_3\t\t3\n#define RV1126_PD_CORE_ALIVE\t4\n\n \n#define RV1126_PD_PMU\t\t5\n#define RV1126_PD_PMU_ALIVE\t6\n\n \n#define RV1126_PD_NPU\t\t7\n\n \n#define RV1126_PD_VEPU\t\t8\n\n \n#define RV1126_PD_VI\t\t9\n#define RV1126_PD_VO\t\t10\n#define RV1126_PD_ISPP\t\t11\n#define RV1126_PD_VDPU\t\t12\n#define RV1126_PD_CRYPTO\t13\n#define RV1126_PD_DDR\t\t14\n#define RV1126_PD_NVM\t\t15\n#define RV1126_PD_SDIO\t\t16\n#define RV1126_PD_USB\t\t17\n#define RV1126_PD_LOGIC_ALIVE\t18\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

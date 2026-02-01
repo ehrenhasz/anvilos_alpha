@@ -1,0 +1,9 @@
+{
+  "module_name": "tcp_stats.c",
+  "hash_id": "3aeb4dbd93c4f5bfac1f3629dfb86c3cd22372c0dfbb62a05f6ededbf24f1019",
+  "original_prompt": "Ingested from linux-6.6.14/net/rds/tcp_stats.c",
+  "human_readable_source": " \n#include <linux/percpu.h>\n#include <linux/seq_file.h>\n#include <linux/proc_fs.h>\n\n#include \"rds.h\"\n#include \"tcp.h\"\n\nDEFINE_PER_CPU(struct rds_tcp_statistics, rds_tcp_stats)\n\t____cacheline_aligned;\n\nstatic const char * const rds_tcp_stat_names[] = {\n\t\"tcp_data_ready_calls\",\n\t\"tcp_write_space_calls\",\n\t\"tcp_sndbuf_full\",\n\t\"tcp_connect_raced\",\n\t\"tcp_listen_closed_stale\",\n};\n\nunsigned int rds_tcp_stats_info_copy(struct rds_info_iterator *iter,\n\t\t\t\t     unsigned int avail)\n{\n\tstruct rds_tcp_statistics stats = {0, };\n\tuint64_t *src;\n\tuint64_t *sum;\n\tsize_t i;\n\tint cpu;\n\n\tif (avail < ARRAY_SIZE(rds_tcp_stat_names))\n\t\tgoto out;\n\n\tfor_each_online_cpu(cpu) {\n\t\tsrc = (uint64_t *)&(per_cpu(rds_tcp_stats, cpu));\n\t\tsum = (uint64_t *)&stats;\n\t\tfor (i = 0; i < sizeof(stats) / sizeof(uint64_t); i++)\n\t\t\t*(sum++) += *(src++);\n\t}\n\n\trds_stats_info_copy(iter, (uint64_t *)&stats, rds_tcp_stat_names,\n\t\t\t    ARRAY_SIZE(rds_tcp_stat_names));\nout:\n\treturn ARRAY_SIZE(rds_tcp_stat_names);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

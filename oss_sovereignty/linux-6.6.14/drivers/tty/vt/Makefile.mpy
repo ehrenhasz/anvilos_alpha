@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c1c90447b6af0219fa89657060c4f9de046e3b9f2572e4eb7d2cad0649d62a71",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/vt/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# This file contains the font map for the default (hardware) font\n#\nFONTMAPFILE = cp437.uni\n\nobj-$(CONFIG_VT)\t\t\t+= vt_ioctl.o vc_screen.o \\\n\t\t\t\t\t   selection.o keyboard.o\nobj-$(CONFIG_CONSOLE_TRANSLATIONS)\t+= consolemap.o consolemap_deftbl.o\nobj-$(CONFIG_HW_CONSOLE)\t\t+= vt.o defkeymap.o\n\n# Files generated that shall be removed upon make clean\nclean-files := consolemap_deftbl.c defkeymap.c\n\nhostprogs += conmakehash\n\nquiet_cmd_conmk = CONMK   $@\n      cmd_conmk = $(obj)/conmakehash $< > $@\n\n$(obj)/consolemap_deftbl.c: $(src)/$(FONTMAPFILE) $(obj)/conmakehash\n\t$(call cmd,conmk)\n\n$(obj)/defkeymap.o:  $(obj)/defkeymap.c\n\n# Uncomment if you're changing the keymap and have an appropriate\n# loadkeys version for the map. By default, we'll use the shipped\n# versions.\n# GENERATE_KEYMAP := 1\n\nifdef GENERATE_KEYMAP\n\n$(obj)/defkeymap.c: $(obj)/%.c: $(src)/%.map\n\tloadkeys --mktable --unicode $< > $@\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

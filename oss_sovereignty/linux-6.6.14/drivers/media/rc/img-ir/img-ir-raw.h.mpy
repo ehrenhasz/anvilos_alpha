@@ -1,0 +1,9 @@
+{
+  "module_name": "img-ir-raw.h",
+  "hash_id": "25e26b4f97f66d7ab0111e6c8b424045cb678de3226883c8d1aa8d7d1b844427",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/img-ir/img-ir-raw.h",
+  "human_readable_source": " \n \n\n#ifndef _IMG_IR_RAW_H_\n#define _IMG_IR_RAW_H_\n\nstruct img_ir_priv;\n\n#ifdef CONFIG_IR_IMG_RAW\n\n \nstruct img_ir_priv_raw {\n\tstruct rc_dev\t\t*rdev;\n\tstruct timer_list\ttimer;\n\tu32\t\t\tlast_status;\n};\n\nstatic inline bool img_ir_raw_enabled(struct img_ir_priv_raw *raw)\n{\n\treturn raw->rdev;\n};\n\nvoid img_ir_isr_raw(struct img_ir_priv *priv, u32 irq_status);\nvoid img_ir_setup_raw(struct img_ir_priv *priv);\nint img_ir_probe_raw(struct img_ir_priv *priv);\nvoid img_ir_remove_raw(struct img_ir_priv *priv);\n\n#else\n\nstruct img_ir_priv_raw {\n};\nstatic inline bool img_ir_raw_enabled(struct img_ir_priv_raw *raw)\n{\n\treturn false;\n};\nstatic inline void img_ir_isr_raw(struct img_ir_priv *priv, u32 irq_status)\n{\n}\nstatic inline void img_ir_setup_raw(struct img_ir_priv *priv)\n{\n}\nstatic inline int img_ir_probe_raw(struct img_ir_priv *priv)\n{\n\treturn -ENODEV;\n}\nstatic inline void img_ir_remove_raw(struct img_ir_priv *priv)\n{\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

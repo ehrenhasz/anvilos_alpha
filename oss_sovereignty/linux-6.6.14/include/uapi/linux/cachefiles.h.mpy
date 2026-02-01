@@ -1,0 +1,9 @@
+{
+  "module_name": "cachefiles.h",
+  "hash_id": "54fa8cd836445ed9f18655592aef6c719e2aee9e7891ad6bfc3fcc5c9873d911",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/cachefiles.h",
+  "human_readable_source": " \n#ifndef _LINUX_CACHEFILES_H\n#define _LINUX_CACHEFILES_H\n\n#include <linux/types.h>\n#include <linux/ioctl.h>\n\n \n#define CACHEFILES_MSG_MAX_SIZE\t1024\n\nenum cachefiles_opcode {\n\tCACHEFILES_OP_OPEN,\n\tCACHEFILES_OP_CLOSE,\n\tCACHEFILES_OP_READ,\n};\n\n \nstruct cachefiles_msg {\n\t__u32 msg_id;\n\t__u32 opcode;\n\t__u32 len;\n\t__u32 object_id;\n\t__u8  data[];\n};\n\n \nstruct cachefiles_open {\n\t__u32 volume_key_size;\n\t__u32 cookie_key_size;\n\t__u32 fd;\n\t__u32 flags;\n\t__u8  data[];\n};\n\n \nstruct cachefiles_read {\n\t__u64 off;\n\t__u64 len;\n};\n\n \n#define CACHEFILES_IOC_READ_COMPLETE\t_IOW(0x98, 1, int)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

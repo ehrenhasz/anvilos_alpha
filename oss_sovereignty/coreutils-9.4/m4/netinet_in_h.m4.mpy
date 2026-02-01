@@ -1,0 +1,9 @@
+{
+  "module_name": "netinet_in_h.m4",
+  "hash_id": "08edea9cd30ce775f279c6bd838e958b529c478ed67018480b9648f4462fe07b",
+  "original_prompt": "Ingested from coreutils-9.4/m4/netinet_in_h.m4",
+  "human_readable_source": "# netinet_in_h.m4 serial 6\ndnl Copyright (C) 2006-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_HEADER_NETINET_IN],\n[\n  AC_CACHE_CHECK([whether <netinet/in.h> is self-contained],\n    [gl_cv_header_netinet_in_h_selfcontained],\n    [\n      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <netinet/in.h>]], [[]])],\n        [gl_cv_header_netinet_in_h_selfcontained=yes],\n        [gl_cv_header_netinet_in_h_selfcontained=no])\n    ])\n  if test $gl_cv_header_netinet_in_h_selfcontained = yes; then\n    GL_GENERATE_NETINET_IN_H=false\n  else\n    GL_GENERATE_NETINET_IN_H=true\n    AC_CHECK_HEADERS([netinet/in.h])\n    gl_CHECK_NEXT_HEADERS([netinet/in.h])\n    if test $ac_cv_header_netinet_in_h = yes; then\n      HAVE_NETINET_IN_H=1\n    else\n      HAVE_NETINET_IN_H=0\n    fi\n    AC_SUBST([HAVE_NETINET_IN_H])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

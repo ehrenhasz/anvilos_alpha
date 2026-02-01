@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "51ce50c773ce3de997f17e7f5a41e84bb56a1b4b7f0931a7bbb515eb5292dde5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/bestcomm/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Kconfig options for Bestcomm\n#\n\nconfig PPC_BESTCOMM\n\ttristate \"Bestcomm DMA engine support\"\n\tdepends on PPC_MPC52xx\n\tdefault n\n\tselect PPC_LIB_RHEAP\n\thelp\n\t  BestComm is the name of the communication coprocessor found\n\t  on the Freescale MPC5200 family of processor.  Its usage is\n\t  optional for some drivers (like ATA), but required for\n\t  others (like FEC).\n\n\t  If you want to use drivers that require DMA operations,\n\t  answer Y or M. Otherwise say N.\n\nconfig PPC_BESTCOMM_ATA\n\ttristate\n\tdepends on PPC_BESTCOMM\n\thelp\n\t  This option enables the support for the ATA task.\n\nconfig PPC_BESTCOMM_FEC\n\ttristate\n\tdepends on PPC_BESTCOMM\n\thelp\n\t  This option enables the support for the FEC tasks.\n\nconfig PPC_BESTCOMM_GEN_BD\n\ttristate\n\tdepends on PPC_BESTCOMM\n\thelp\n\t  This option enables the support for the GenBD tasks.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

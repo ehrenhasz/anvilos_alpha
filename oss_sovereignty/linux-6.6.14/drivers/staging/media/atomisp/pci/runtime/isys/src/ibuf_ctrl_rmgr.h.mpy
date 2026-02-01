@@ -1,0 +1,9 @@
+{
+  "module_name": "ibuf_ctrl_rmgr.h",
+  "hash_id": "fc2d452e9616900ae48d99fdb80136a4bed67e96917ea8b71d967ee2cf411dd7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/isys/src/ibuf_ctrl_rmgr.h",
+  "human_readable_source": " \n \n\n#ifndef __IBUF_CTRL_RMGR_H_INCLUDED__\n#define __IBUF_CTRL_RMGR_H_INCLUDED__\n\n#define MAX_IBUF_HANDLES\t24\n#define MAX_INPUT_BUFFER_SIZE\t(64 * 1024)\n#define IBUF_ALIGN\t\t8\n\ntypedef struct ibuf_handle_s ibuf_handle_t;\nstruct ibuf_handle_s {\n\tu32\tstart_addr;\n\tu32\tsize;\n\tbool\t\tactive;\n};\n\ntypedef struct ibuf_rsrc_s ibuf_rsrc_t;\nstruct ibuf_rsrc_s {\n\tu32\tfree_start_addr;\n\tu32\tfree_size;\n\tu16\tnum_active;\n\tu16\tnum_allocated;\n\tibuf_handle_t\thandles[MAX_IBUF_HANDLES];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

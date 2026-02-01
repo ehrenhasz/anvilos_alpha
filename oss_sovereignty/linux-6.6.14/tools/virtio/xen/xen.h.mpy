@@ -1,0 +1,9 @@
+{
+  "module_name": "xen.h",
+  "hash_id": "46ef18c19564f5a34f37d82a2913d4e5820fc199fe1831136bea383c95af85bc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/xen/xen.h",
+  "human_readable_source": "#ifndef XEN_XEN_STUB_H\n#define XEN_XEN_STUB_H\n\n#define xen_domain() 0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

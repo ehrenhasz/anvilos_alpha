@@ -1,0 +1,9 @@
+{
+  "module_name": "xdp_metadata.h",
+  "hash_id": "11df57342f74da2d09d637646ce19925f3ba70e00baa814d1748bde8d011ca05",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/xdp_metadata.h",
+  "human_readable_source": " \n#pragma once\n\n#ifndef ETH_P_IP\n#define ETH_P_IP 0x0800\n#endif\n\n#ifndef ETH_P_IPV6\n#define ETH_P_IPV6 0x86DD\n#endif\n\nstruct xdp_meta {\n\t__u64 rx_timestamp;\n\t__u64 xdp_timestamp;\n\t__u32 rx_hash;\n\tunion {\n\t\t__u32 rx_hash_type;\n\t\t__s32 rx_hash_err;\n\t};\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

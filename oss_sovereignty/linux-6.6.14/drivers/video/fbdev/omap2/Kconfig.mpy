@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9db182c20321675a852febf7393980c95bc40eba6d25b6472a04032fdd7631e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/omap2/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nif OF && (ARCH_OMAP2PLUS || COMPILE_TEST)\n\nsource \"drivers/video/fbdev/omap2/omapfb/Kconfig\"\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

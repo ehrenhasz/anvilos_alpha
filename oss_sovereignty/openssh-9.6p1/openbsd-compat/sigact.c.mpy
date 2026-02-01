@@ -1,0 +1,9 @@
+{
+  "module_name": "sigact.c",
+  "hash_id": "3019a3bc043c1eb912a22333ed200bf766b5083b2347748fa87a1ae2ffd9491b",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/sigact.c",
+  "human_readable_source": " \n\n \n\n \n\n \n\n#include \"includes.h\"\n#include <errno.h>\n#include <signal.h>\n#include \"sigact.h\"\n\n \n \n\n#if !HAVE_SIGACTION && HAVE_SIGVEC\n\nint\nsigaction(int sig, struct sigaction *sigact, struct sigaction *osigact)\n{\n\treturn sigvec(sig, sigact ? &sigact->sv : NULL,\n\t    osigact ? &osigact->sv : NULL);\n}\n\nint\nsigemptyset (sigset_t *mask)\n{\n\tif (!mask) {\n\t\terrno = EINVAL;\n\t\treturn -1;\n\t}\n\t*mask = 0;\n\treturn 0;\n}\n\nint\nsigprocmask (int mode, sigset_t *mask, sigset_t *omask)\n{\n\tsigset_t current = sigsetmask(0);\n\n\tif (!mask) {\n\t\terrno = EINVAL;\n\t\treturn -1;\n\t}\n\n\tif (omask)\n\t\t*omask = current;\n\n\tif (mode == SIG_BLOCK)\n\t\tcurrent |= *mask;\n\telse if (mode == SIG_UNBLOCK)\n\t\tcurrent &= ~*mask;\n\telse if (mode == SIG_SETMASK)\n\tcurrent = *mask;\n\n\tsigsetmask(current);\n\treturn 0;\n}\n\nint\nsigsuspend (sigset_t *mask)\n{\n\tif (!mask) {\n\t\terrno = EINVAL;\n\t\treturn -1;\n\t}\n\treturn sigpause(*mask);\n}\n\nint\nsigdelset (sigset_t *mask, int sig)\n{\n\tif (!mask) {\n\t\terrno = EINVAL;\n\t\treturn -1;\n\t}\n\t*mask &= ~sigmask(sig);\n\treturn 0;\n}\n\nint\nsigaddset (sigset_t *mask, int sig)\n{\n\tif (!mask) {\n\t\terrno = EINVAL;\n\t\treturn -1;\n\t}\n\t*mask |= sigmask(sig);\n\treturn 0;\n}\n\nint\nsigismember (sigset_t *mask, int sig)\n{\n\tif (!mask) {\n\t\terrno = EINVAL;\n\t\treturn -1;\n\t}\n\treturn (*mask & sigmask(sig)) != 0;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

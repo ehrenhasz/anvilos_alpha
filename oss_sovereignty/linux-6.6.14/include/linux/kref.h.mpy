@@ -1,0 +1,9 @@
+{
+  "module_name": "kref.h",
+  "hash_id": "16843662fbdfac5ab3cc17efa0be1c97250b3be3076e2ebe5f08d6e80b71ea6e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kref.h",
+  "human_readable_source": " \n \n\n#ifndef _KREF_H_\n#define _KREF_H_\n\n#include <linux/spinlock.h>\n#include <linux/refcount.h>\n\nstruct kref {\n\trefcount_t refcount;\n};\n\n#define KREF_INIT(n)\t{ .refcount = REFCOUNT_INIT(n), }\n\n \nstatic inline void kref_init(struct kref *kref)\n{\n\trefcount_set(&kref->refcount, 1);\n}\n\nstatic inline unsigned int kref_read(const struct kref *kref)\n{\n\treturn refcount_read(&kref->refcount);\n}\n\n \nstatic inline void kref_get(struct kref *kref)\n{\n\trefcount_inc(&kref->refcount);\n}\n\n \nstatic inline int kref_put(struct kref *kref, void (*release)(struct kref *kref))\n{\n\tif (refcount_dec_and_test(&kref->refcount)) {\n\t\trelease(kref);\n\t\treturn 1;\n\t}\n\treturn 0;\n}\n\nstatic inline int kref_put_mutex(struct kref *kref,\n\t\t\t\t void (*release)(struct kref *kref),\n\t\t\t\t struct mutex *lock)\n{\n\tif (refcount_dec_and_mutex_lock(&kref->refcount, lock)) {\n\t\trelease(kref);\n\t\treturn 1;\n\t}\n\treturn 0;\n}\n\nstatic inline int kref_put_lock(struct kref *kref,\n\t\t\t\tvoid (*release)(struct kref *kref),\n\t\t\t\tspinlock_t *lock)\n{\n\tif (refcount_dec_and_lock(&kref->refcount, lock)) {\n\t\trelease(kref);\n\t\treturn 1;\n\t}\n\treturn 0;\n}\n\n \nstatic inline int __must_check kref_get_unless_zero(struct kref *kref)\n{\n\treturn refcount_inc_not_zero(&kref->refcount);\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

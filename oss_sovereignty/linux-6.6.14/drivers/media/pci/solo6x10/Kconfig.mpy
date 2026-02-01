@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a16357470b278fae771fbe6a4a22a19e311e1808b0c7e7ebb76464b2d10b7145",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/solo6x10/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_SOLO6X10\n\ttristate \"Bluecherry / Softlogic 6x10 capture cards (MPEG-4/H.264)\"\n\tdepends on PCI && VIDEO_DEV && SND && I2C\n\tselect BITREVERSE\n\tselect FONT_SUPPORT\n\tselect FONT_8x16\n\tselect VIDEOBUF2_DMA_SG\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect SND_PCM\n\tselect FONT_8x16\n\thelp\n\t  This driver supports the Bluecherry H.264 and MPEG-4 hardware\n\t  compression capture cards and other Softlogic-based ones.\n\n\t  Following cards have been tested:\n\t  * Bluecherry BC-H16480A (PCIe, 16 port, H.264)\n\t  * Bluecherry BC-H04120A (PCIe, 4 port, H.264)\n\t  * Bluecherry BC-H04120A-MPCI (Mini-PCI, 4 port, H.264)\n\t  * Bluecherry BC-04120A (PCIe, 4 port, MPEG-4)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

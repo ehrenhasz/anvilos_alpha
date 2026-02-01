@@ -1,0 +1,9 @@
+{
+  "module_name": "shuf.x",
+  "hash_id": "cad605bd4af637e304d2deadcdc7d1abea9f8b7489fe3e9705e814428ef5bc4a",
+  "original_prompt": "Ingested from coreutils-9.4/man/shuf.x",
+  "human_readable_source": "[NAME]\nshuf \\- generate random permutations\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

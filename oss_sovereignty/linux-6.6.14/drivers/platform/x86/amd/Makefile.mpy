@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "80cfcb2bf7a903beaa0435c517a710c4ea82c2172c98b7e12cab9c5c1af775f3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/amd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for drivers/platform/x86/amd\n# AMD x86 Platform-Specific Drivers\n#\n\nobj-$(CONFIG_AMD_PMC)\t\t+= pmc/\namd_hsmp-y\t\t\t:= hsmp.o\nobj-$(CONFIG_AMD_HSMP)\t\t+= amd_hsmp.o\nobj-$(CONFIG_AMD_PMF)\t\t+= pmf/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

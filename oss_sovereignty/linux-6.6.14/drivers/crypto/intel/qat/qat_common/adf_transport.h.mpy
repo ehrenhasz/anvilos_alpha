@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_transport.h",
+  "hash_id": "1405d4bda2e1c68664fc47682d048924c21764dcb5ceacc6063af5e0c2c80838",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/adf_transport.h",
+  "human_readable_source": " \n \n#ifndef ADF_TRANSPORT_H\n#define ADF_TRANSPORT_H\n\n#include \"adf_accel_devices.h\"\n\nstruct adf_etr_ring_data;\n\ntypedef void (*adf_callback_fn)(void *resp_msg);\n\nint adf_create_ring(struct adf_accel_dev *accel_dev, const char *section,\n\t\t    u32 bank_num, u32 num_mgs, u32 msg_size,\n\t\t    const char *ring_name, adf_callback_fn callback,\n\t\t    int poll_mode, struct adf_etr_ring_data **ring_ptr);\n\nbool adf_ring_nearly_full(struct adf_etr_ring_data *ring);\nint adf_send_message(struct adf_etr_ring_data *ring, u32 *msg);\nvoid adf_remove_ring(struct adf_etr_ring_data *ring);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

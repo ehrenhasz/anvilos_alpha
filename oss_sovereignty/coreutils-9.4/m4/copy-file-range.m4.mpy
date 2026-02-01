@@ -1,0 +1,9 @@
+{
+  "module_name": "copy-file-range.m4",
+  "hash_id": "7ea26c6cd5367c1eca23625ffefbd0b45942ff010b2192d52faf68aa9bd38c41",
+  "original_prompt": "Ingested from coreutils-9.4/m4/copy-file-range.m4",
+  "human_readable_source": "# copy-file-range.m4\ndnl Copyright 2019-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_COPY_FILE_RANGE],\n[\n  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])\n  AC_REQUIRE([AC_CANONICAL_HOST])\n\n  dnl Persuade glibc <unistd.h> to declare copy_file_range.\n  AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])\n\n  dnl Use AC_LINK_IFELSE, rather than AC_CHECK_FUNCS or a variant,\n  dnl since we don't want AC_CHECK_FUNCS's checks for glibc stubs.\n  dnl Programs that use copy_file_range must fall back on read+write\n  dnl anyway, and there's little point to substituting the Gnulib stub\n  dnl for a glibc stub.\n  AC_CACHE_CHECK([for copy_file_range], [gl_cv_func_copy_file_range],\n    [AC_LINK_IFELSE(\n       [AC_LANG_PROGRAM(\n          [[#include <unistd.h>\n          ]],\n          [[ssize_t (*func) (int, off_t *, int, off_t *, size_t, unsigned)\n              = copy_file_range;\n            return func (0, 0, 0, 0, 0, 0) & 127;\n          ]])\n       ],\n       [gl_cv_func_copy_file_range=yes],\n       [gl_cv_func_copy_file_range=no])\n    ])\n\n  if test \"$gl_cv_func_copy_file_range\" != yes; then\n    HAVE_COPY_FILE_RANGE=0\n  else\n    AC_DEFINE([HAVE_COPY_FILE_RANGE], 1,\n      [Define to 1 if the function copy_file_range exists.])\n\n    case $host_os in\n      linux*)\n        # See copy-file-range.c comment re pre-5.3 Linux kernel bugs.\n        # We should be able to remove this hack in 2025.\n        REPLACE_COPY_FILE_RANGE=1;;\n    esac\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "of_pdt.h",
+  "hash_id": "62f1126b4f4e4374e3133e0fb6d4e0fe0323f6693636efdc85e1cd484377b359",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/of_pdt.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_OF_PDT_H\n#define _LINUX_OF_PDT_H\n\n \nstruct of_pdt_ops {\n\t \n\tint (*nextprop)(phandle node, char *prev, char *buf);\n\n\t \n\tint (*getproplen)(phandle node, const char *prop);\n\tint (*getproperty)(phandle node, const char *prop, char *buf,\n\t\t\tint bufsize);\n\n\t \n\tphandle (*getchild)(phandle parent);\n\tphandle (*getsibling)(phandle node);\n\n\t \n\tint (*pkg2path)(phandle node, char *buf, const int buflen, int *len);\n};\n\nextern void *prom_early_alloc(unsigned long size);\n\n \nextern void of_pdt_build_devicetree(phandle root_node, struct of_pdt_ops *ops);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

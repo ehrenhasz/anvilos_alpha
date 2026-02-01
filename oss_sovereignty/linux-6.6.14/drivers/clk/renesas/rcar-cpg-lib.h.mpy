@@ -1,0 +1,9 @@
+{
+  "module_name": "rcar-cpg-lib.h",
+  "hash_id": "4d5315508b82907114ca5df991d04bd2c82cacc8754dd02acf1724ac13608056",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/renesas/rcar-cpg-lib.h",
+  "human_readable_source": " \n \n\n#ifndef __CLK_RENESAS_RCAR_CPG_LIB_H__\n#define __CLK_RENESAS_RCAR_CPG_LIB_H__\n\nextern spinlock_t cpg_lock;\n\nstruct cpg_simple_notifier {\n\tstruct notifier_block nb;\n\tvoid __iomem *reg;\n\tu32 saved;\n};\n\nvoid cpg_simple_notifier_register(struct raw_notifier_head *notifiers,\n\t\t\t\t  struct cpg_simple_notifier *csn);\n\nvoid cpg_reg_modify(void __iomem *reg, u32 clear, u32 set);\n\nstruct clk * __init cpg_sdh_clk_register(const char *name,\n\tvoid __iomem *sdnckcr, const char *parent_name,\n\tstruct raw_notifier_head *notifiers);\n\nstruct clk * __init cpg_sd_clk_register(const char *name,\n\tvoid __iomem *sdnckcr, const char *parent_name);\n\nstruct clk * __init cpg_rpc_clk_register(const char *name,\n\tvoid __iomem *rpcckcr, const char *parent_name,\n\tstruct raw_notifier_head *notifiers);\n\nstruct clk * __init cpg_rpcd2_clk_register(const char *name,\n\t\t\t\t\t   void __iomem *rpcckcr,\n\t\t\t\t\t   const char *parent_name);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

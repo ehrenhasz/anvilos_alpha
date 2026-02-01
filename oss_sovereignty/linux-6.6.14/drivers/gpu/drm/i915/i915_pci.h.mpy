@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_pci.h",
+  "hash_id": "5973f9704251dad6ed047316489b1e824f4050ecbb4f9319fdcfe831172902c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_pci.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_PCI_H__\n#define __I915_PCI_H__\n\n#include <linux/types.h>\n\nstruct pci_dev;\n\nint i915_pci_register_driver(void);\nvoid i915_pci_unregister_driver(void);\n\nbool i915_pci_resource_valid(struct pci_dev *pdev, int bar);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

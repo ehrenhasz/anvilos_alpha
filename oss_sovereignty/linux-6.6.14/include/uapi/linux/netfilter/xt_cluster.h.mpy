@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_cluster.h",
+  "hash_id": "bbea81f9f4579807bc98c7148642fbcbe72d098785251b512ed38e3324e75011",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_cluster.h",
+  "human_readable_source": " \n#ifndef _XT_CLUSTER_MATCH_H\n#define _XT_CLUSTER_MATCH_H\n\n#include <linux/types.h>\n\nenum xt_cluster_flags {\n\tXT_CLUSTER_F_INV\t= (1 << 0)\n};\n\nstruct xt_cluster_match_info {\n\t__u32 total_nodes;\n\t__u32 node_mask;\n\t__u32 hash_seed;\n\t__u32 flags;\n};\n\n#define XT_CLUSTER_NODES_MAX\t32\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

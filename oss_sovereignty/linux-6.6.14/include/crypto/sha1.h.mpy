@@ -1,0 +1,9 @@
+{
+  "module_name": "sha1.h",
+  "hash_id": "00c04f29e792aa68655fee5aba7ffdf3937376ea82d8210a1d98ac955b807570",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/sha1.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYPTO_SHA1_H\n#define _CRYPTO_SHA1_H\n\n#include <linux/types.h>\n\n#define SHA1_DIGEST_SIZE        20\n#define SHA1_BLOCK_SIZE         64\n\n#define SHA1_H0\t\t0x67452301UL\n#define SHA1_H1\t\t0xefcdab89UL\n#define SHA1_H2\t\t0x98badcfeUL\n#define SHA1_H3\t\t0x10325476UL\n#define SHA1_H4\t\t0xc3d2e1f0UL\n\nextern const u8 sha1_zero_message_hash[SHA1_DIGEST_SIZE];\n\nstruct sha1_state {\n\tu32 state[SHA1_DIGEST_SIZE / 4];\n\tu64 count;\n\tu8 buffer[SHA1_BLOCK_SIZE];\n};\n\nstruct shash_desc;\n\nextern int crypto_sha1_update(struct shash_desc *desc, const u8 *data,\n\t\t\t      unsigned int len);\n\nextern int crypto_sha1_finup(struct shash_desc *desc, const u8 *data,\n\t\t\t     unsigned int len, u8 *hash);\n\n \n#define SHA1_DIGEST_WORDS\t(SHA1_DIGEST_SIZE / 4)\n#define SHA1_WORKSPACE_WORDS\t16\nvoid sha1_init(__u32 *buf);\nvoid sha1_transform(__u32 *digest, const char *data, __u32 *W);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

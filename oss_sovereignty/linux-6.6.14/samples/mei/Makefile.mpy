@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9ddde542ef9e7bb65226ce5ec797c273eb94bf9443c5373c4104758352e258f6",
+  "original_prompt": "Ingested from linux-6.6.14/samples/mei/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (c) 2012-2019, Intel Corporation. All rights reserved.\nuserprogs-always-y += mei-amt-version\n\nuserccflags += -I usr/include\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

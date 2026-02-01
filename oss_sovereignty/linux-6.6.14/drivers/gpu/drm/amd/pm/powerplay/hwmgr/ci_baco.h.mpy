@@ -1,0 +1,9 @@
+{
+  "module_name": "ci_baco.h",
+  "hash_id": "c2b6bcd900510593514fe70798711decb7b990e2f06fdff377710326831b883f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/ci_baco.h",
+  "human_readable_source": " \n#ifndef __CI_BACO_H__\n#define __CI_BACO_H__\n#include \"smu7_baco.h\"\n\nextern int ci_baco_set_state(struct pp_hwmgr *hwmgr, enum BACO_STATE state);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

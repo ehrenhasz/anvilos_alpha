@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_acp.h",
+  "hash_id": "451b1762ce3d045ba131867ddbec197682d776659b29eb31d4751115811e7987",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_acp.h",
+  "human_readable_source": " \n\n#ifndef __AMDGPU_ACP_H__\n#define __AMDGPU_ACP_H__\n\n#include <linux/mfd/core.h>\n\nstruct amdgpu_acp {\n\tstruct device *parent;\n\tstruct cgs_device *cgs_device;\n\tstruct amd_acp_private *private;\n\tstruct mfd_cell *acp_cell;\n\tstruct resource *acp_res;\n\tstruct acp_pm_domain *acp_genpd;\n};\n\nextern const struct amdgpu_ip_block_version acp_ip_block;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

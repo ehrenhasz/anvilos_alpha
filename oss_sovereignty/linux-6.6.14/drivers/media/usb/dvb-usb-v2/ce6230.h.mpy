@@ -1,0 +1,9 @@
+{
+  "module_name": "ce6230.h",
+  "hash_id": "a2baca1432a28bfe81e45834854542fbeec1349390640d8e264b2050059f813c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/dvb-usb-v2/ce6230.h",
+  "human_readable_source": " \n \n\n#ifndef CE6230_H\n#define CE6230_H\n\n#include \"dvb_usb.h\"\n#include \"zl10353.h\"\n#include \"mxl5005s.h\"\n\n#define CE6230_USB_TIMEOUT 1000\n\nstruct usb_req {\n\tu8  cmd;        \n\tu16 value;      \n\tu16 index;      \n\tu16 data_len;   \n\tu8  *data;\n};\n\nenum ce6230_cmd {\n\tCONFIG_READ          = 0xd0,  \n\tUNKNOWN_WRITE        = 0xc7,  \n\tI2C_READ             = 0xd9,  \n\tI2C_WRITE            = 0xca,  \n\tDEMOD_READ           = 0xdb,  \n\tDEMOD_WRITE          = 0xcc,  \n\tREG_READ             = 0xde,  \n\tREG_WRITE            = 0xcf,  \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

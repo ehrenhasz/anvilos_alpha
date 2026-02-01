@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "b7e88dc85bc42fb3f2e44cc403b42131ed6bbd0ec3c410ced518780ef8d4e890",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/gsp/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_GSP_PRIV_H__\n#define __NVKM_GSP_PRIV_H__\n#include <subdev/gsp.h>\nenum nvkm_acr_lsf_id;\n\nstruct nvkm_gsp_func {\n\tconst struct nvkm_falcon_func *flcn;\n};\n\nstruct nvkm_gsp_fwif {\n\tint version;\n\tint (*load)(struct nvkm_gsp *, int ver, const struct nvkm_gsp_fwif *);\n\tconst struct nvkm_gsp_func *func;\n};\n\nint nvkm_gsp_new_(const struct nvkm_gsp_fwif *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t  struct nvkm_gsp **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

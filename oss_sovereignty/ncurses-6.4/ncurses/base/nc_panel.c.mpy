@@ -1,0 +1,9 @@
+{
+  "module_name": "nc_panel.c",
+  "hash_id": "98ae002342cde541f14b207f31cad2327ba7f17bc493b7968d4cfac2da8ea4ba",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/nc_panel.c",
+  "human_readable_source": " \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: nc_panel.c,v 1.6 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(struct panelhook *)\nNCURSES_SP_NAME(_nc_panelhook) (NCURSES_SP_DCL0)\n{\n    return (SP_PARM\n\t    ? &(SP_PARM->_panelHook)\n\t    : (CURRENT_SCREEN\n\t       ? &(CURRENT_SCREEN->_panelHook)\n\t       : 0));\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(struct panelhook *)\n_nc_panelhook(void)\n{\n    return NCURSES_SP_NAME(_nc_panelhook) (CURRENT_SCREEN);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

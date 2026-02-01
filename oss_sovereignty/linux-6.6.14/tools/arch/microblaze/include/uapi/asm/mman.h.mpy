@@ -1,0 +1,9 @@
+{
+  "module_name": "mman.h",
+  "hash_id": "4e2e6c6f25cae8c21a40b636ec067b63bddac6c8b6a0e67351c30ad26575ffc3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/microblaze/include/uapi/asm/mman.h",
+  "human_readable_source": " \n#ifndef TOOLS_ARCH_MICROBLAZE_UAPI_ASM_MMAN_FIX_H\n#define TOOLS_ARCH_MICROBLAZE_UAPI_ASM_MMAN_FIX_H\n#include <uapi/asm-generic/mman.h>\n \n#define MAP_32BIT\t0\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

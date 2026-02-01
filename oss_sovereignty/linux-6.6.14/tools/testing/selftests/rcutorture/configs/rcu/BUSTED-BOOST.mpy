@@ -1,0 +1,9 @@
+{
+  "module_name": "BUSTED-BOOST",
+  "hash_id": "26df3c8d09fc963da0b8e4f39297c06b1426363093fe8c8c78af3fcefa527c94",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/BUSTED-BOOST",
+  "human_readable_source": "CONFIG_SMP=y\nCONFIG_NR_CPUS=16\nCONFIG_PREEMPT_NONE=n\nCONFIG_PREEMPT_VOLUNTARY=n\nCONFIG_PREEMPT=y\n#CHECK#CONFIG_PREEMPT_RCU=y\nCONFIG_HZ_PERIODIC=y\nCONFIG_NO_HZ_IDLE=n\nCONFIG_NO_HZ_FULL=n\nCONFIG_RCU_TRACE=y\nCONFIG_HOTPLUG_CPU=y\nCONFIG_RCU_FANOUT=2\nCONFIG_RCU_FANOUT_LEAF=2\nCONFIG_RCU_NOCB_CPU=n\nCONFIG_DEBUG_LOCK_ALLOC=n\nCONFIG_DEBUG_OBJECTS_RCU_HEAD=n\nCONFIG_RCU_EXPERT=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

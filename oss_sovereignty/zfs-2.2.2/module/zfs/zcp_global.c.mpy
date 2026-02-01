@@ -1,0 +1,9 @@
+{
+  "module_name": "zcp_global.c",
+  "hash_id": "e9ea6cdfac0cef325d3acb67e0e24bf98d9f39e08156c03cfd7a57867af1c8ca",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zfs/zcp_global.c",
+  "human_readable_source": " \n\n \n\n#include <sys/zcp_global.h>\n\n#include <sys/lua/lua.h>\n#include <sys/lua/lauxlib.h>\n\ntypedef struct zcp_errno_global {\n\tconst char *zeg_name;\n\tint zeg_errno;\n} zcp_errno_global_t;\n\nstatic const zcp_errno_global_t errno_globals[] = {\n\t{\"EPERM\", EPERM},\n\t{\"ENOENT\", ENOENT},\n\t{\"ESRCH\", ESRCH},\n\t{\"EINTR\", EINTR},\n\t{\"EIO\", EIO},\n\t{\"ENXIO\", ENXIO},\n\t{\"E2BIG\", E2BIG},\n\t{\"ENOEXEC\", ENOEXEC},\n\t{\"EBADF\", EBADF},\n\t{\"ECHILD\", ECHILD},\n\t{\"EAGAIN\", EAGAIN},\n\t{\"ENOMEM\", ENOMEM},\n\t{\"EACCES\", EACCES},\n\t{\"EFAULT\", EFAULT},\n\t{\"ENOTBLK\", ENOTBLK},\n\t{\"EBUSY\", EBUSY},\n\t{\"EEXIST\", EEXIST},\n\t{\"EXDEV\", EXDEV},\n\t{\"ENODEV\", ENODEV},\n\t{\"ENOTDIR\", ENOTDIR},\n\t{\"EISDIR\", EISDIR},\n\t{\"EINVAL\", EINVAL},\n\t{\"ENFILE\", ENFILE},\n\t{\"EMFILE\", EMFILE},\n\t{\"ENOTTY\", ENOTTY},\n\t{\"ETXTBSY\", ETXTBSY},\n\t{\"EFBIG\", EFBIG},\n\t{\"ENOSPC\", ENOSPC},\n\t{\"ESPIPE\", ESPIPE},\n\t{\"EROFS\", EROFS},\n\t{\"EMLINK\", EMLINK},\n\t{\"EPIPE\", EPIPE},\n\t{\"EDOM\", EDOM},\n\t{\"ERANGE\", ERANGE},\n\t{\"EDEADLK\", EDEADLK},\n\t{\"ENOLCK\", ENOLCK},\n\t{\"ECANCELED\", ECANCELED},\n\t{\"ENOTSUP\", ENOTSUP},\n\t{\"EDQUOT\", EDQUOT},\n\t{\"ENAMETOOLONG\", ENAMETOOLONG},\n\t{0, 0}\n};\n\nstatic void\nzcp_load_errno_globals(lua_State *state)\n{\n\tconst zcp_errno_global_t *global = errno_globals;\n\twhile (global->zeg_name != NULL) {\n\t\tlua_pushnumber(state, (lua_Number)global->zeg_errno);\n\t\tlua_setglobal(state, global->zeg_name);\n\t\tglobal++;\n\t}\n}\n\nvoid\nzcp_load_globals(lua_State *state)\n{\n\tzcp_load_errno_globals(state);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "audio-get-status.rst",
+  "hash_id": "fe40423edea066b1c2fa6f2884d10a6a3293423269ba20357f9c242bf0366837",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/audio-get-status.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n.. c:namespace:: DTV.audio\n\n.. _AUDIO_GET_STATUS:\n\n================\nAUDIO_GET_STATUS\n================\n\nName\n----\n\nAUDIO_GET_STATUS\n\n.. attention:: This ioctl is deprecated\n\nSynopsis\n--------\n\n.. c:macro:: AUDIO_GET_STATUS\n\n``int ioctl(int fd, AUDIO_GET_STATUS, struct audio_status *status)``\n\nArguments\n---------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -\n\n       -  int fd\n\n       -  File descriptor returned by a previous call to open().\n\n    -\n\n       -  struct audio_status \\*status\n\n       -  Returns the current state of Audio Device.\n\nDescription\n-----------\n\nThis ioctl call asks the Audio Device to return the current state of the\nAudio Device.\n\nReturn Value\n------------\n\nOn success 0 is returned, on error -1 and the ``errno`` variable is set\nappropriately. The generic error codes are described at the\n:ref:`Generic Error Codes <gen-errors>` chapter.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

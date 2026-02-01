@@ -1,0 +1,9 @@
+{
+  "module_name": "st_slim_rproc.h",
+  "hash_id": "5f23664dc5b3114e33f1dd912f4f5e239bf75070f6d772311a646e16e0c4e8a9",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/remoteproc/st_slim_rproc.h",
+  "human_readable_source": " \n \n#ifndef _ST_REMOTEPROC_SLIM_H\n#define _ST_REMOTEPROC_SLIM_H\n\n#define ST_SLIM_MEM_MAX 2\n#define ST_SLIM_MAX_CLK 4\n\nenum {\n\tST_SLIM_DMEM,\n\tST_SLIM_IMEM,\n};\n\n \nstruct st_slim_mem {\n\tvoid __iomem *cpu_addr;\n\tphys_addr_t bus_addr;\n\tsize_t size;\n};\n\n \nstruct st_slim_rproc {\n\tstruct rproc *rproc;\n\tstruct st_slim_mem mem[ST_SLIM_MEM_MAX];\n\tvoid __iomem *slimcore;\n\tvoid __iomem *peri;\n\n\t \n\tstruct clk *clks[ST_SLIM_MAX_CLK];\n};\n\nstruct st_slim_rproc *st_slim_rproc_alloc(struct platform_device *pdev,\n\t\t\t\t\tchar *fw_name);\nvoid st_slim_rproc_put(struct st_slim_rproc *slim_rproc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

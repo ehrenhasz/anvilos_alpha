@@ -1,0 +1,9 @@
+{
+  "module_name": "snapshot1.tc",
+  "hash_id": "b3a72ce8e1f4e8cc946110bc6c2be57040d6535191728f311bd16402209420a3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/00basic/snapshot1.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Snapshot and tracing_cpumask\n# requires: trace_marker tracing_cpumask snapshot\n# flags: instance\n\n# This testcase is constrived to reproduce a problem that the cpu buffers\n# become unavailable which is due to 'record_disabled' of array_buffer and\n# max_buffer being messed up.\n\n# Store origin cpumask\nORIG_CPUMASK=`cat tracing_cpumask`\n\n# Stop tracing all cpu\necho 0 > tracing_cpumask\n\n# Take a snapshot of the main buffer\necho 1 > snapshot\n\n# Restore origin cpumask, note that there should be some cpus being traced\necho ${ORIG_CPUMASK} > tracing_cpumask\n\n# Set tracing on\necho 1 > tracing_on\n\n# Write a log into buffer\necho \"test input 1\" > trace_marker\n\n# Ensure the log writed so that cpu buffers are still available\ngrep -q \"test input 1\" trace\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

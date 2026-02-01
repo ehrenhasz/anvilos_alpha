@@ -1,0 +1,9 @@
+{
+  "module_name": "nal-rbsp.h",
+  "hash_id": "f9c46bec8d7ca406e03df1d45c8b243e11220f80710a9102861d2c03c28b7ed9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/allegro-dvt/nal-rbsp.h",
+  "human_readable_source": " \n \n\n#ifndef __NAL_RBSP_H__\n#define __NAL_RBSP_H__\n\n#include <linux/kernel.h>\n#include <linux/types.h>\n\nstruct rbsp;\n\nstruct nal_rbsp_ops {\n\tint (*rbsp_bit)(struct rbsp *rbsp, int *val);\n\tint (*rbsp_bits)(struct rbsp *rbsp, int n, unsigned int *val);\n\tint (*rbsp_uev)(struct rbsp *rbsp, unsigned int *val);\n\tint (*rbsp_sev)(struct rbsp *rbsp, int *val);\n};\n\n \nstruct rbsp {\n\tu8 *data;\n\tsize_t size;\n\tunsigned int pos;\n\tunsigned int num_consecutive_zeros;\n\tstruct nal_rbsp_ops *ops;\n\tint error;\n};\n\nextern struct nal_rbsp_ops write;\nextern struct nal_rbsp_ops read;\n\nvoid rbsp_init(struct rbsp *rbsp, void *addr, size_t size,\n\t       struct nal_rbsp_ops *ops);\nvoid rbsp_unsupported(struct rbsp *rbsp);\n\nvoid rbsp_bit(struct rbsp *rbsp, int *value);\nvoid rbsp_bits(struct rbsp *rbsp, int n, int *value);\nvoid rbsp_uev(struct rbsp *rbsp, unsigned int *value);\nvoid rbsp_sev(struct rbsp *rbsp, int *value);\n\nvoid rbsp_trailing_bits(struct rbsp *rbsp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

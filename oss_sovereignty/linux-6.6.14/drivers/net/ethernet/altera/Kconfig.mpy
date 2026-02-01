@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "797d53262402ab04baf387d01549ae734e7c1964010e7da8e2c5133e24ad83f2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/altera/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig ALTERA_TSE\n\ttristate \"Altera Triple-Speed Ethernet MAC support\"\n\tdepends on HAS_DMA\n\tdepends on HAS_IOMEM\n\tselect PHYLIB\n\tselect PHYLINK\n\tselect PCS_LYNX\n\tselect MDIO_REGMAP\n\tselect REGMAP_MMIO\n\thelp\n\t  This driver supports the Altera Triple-Speed (TSE) Ethernet MAC.\n\n\t  To compile this driver as a module, choose M here. The module\n\t  will be called alteratse.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

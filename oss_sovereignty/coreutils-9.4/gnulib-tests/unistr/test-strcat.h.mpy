@@ -1,0 +1,9 @@
+{
+  "module_name": "test-strcat.h",
+  "hash_id": "4c81eca23ae7851ed77c570596341b312b3976c9cf76b56defb29428dbb291fe",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/unistr/test-strcat.h",
+  "human_readable_source": " \n\nint\nmain ()\n{\n   \n  {\n    static const UNIT base[] = { 'C', 'h', 'a', 'n', 'g', 'i', 'n', 'g', 0 };\n    static const UNIT src[] = { 'c', 'l', 'i', 'm', 'a', 't', 'e', 0 };\n    size_t m;\n    size_t n;\n\n    for (m = 0; m < SIZEOF (base); m++)\n      for (n = 1; n <= SIZEOF (src); n++)\n        {\n          UNIT dest[1 + (SIZEOF (base) - 1) + SIZEOF (src) + 1] =\n            { MAGIC, MAGIC, MAGIC, MAGIC, MAGIC, MAGIC, MAGIC, MAGIC, MAGIC,\n              MAGIC, MAGIC, MAGIC, MAGIC, MAGIC, MAGIC, MAGIC, MAGIC, MAGIC\n            };\n          UNIT *result;\n          size_t i;\n\n          for (i = 0; i < m; i++)\n            dest[1 + i] = base[i];\n          dest[1 + m] = 0;\n\n          result = U_STRCAT (dest + 1, src + SIZEOF (src) - n);\n          ASSERT (result == dest + 1);\n\n          ASSERT (dest[0] == MAGIC);\n          for (i = 0; i < m; i++)\n            ASSERT (dest[1 + i] == base[i]);\n          for (i = 0; i < n; i++)\n            ASSERT (dest[1 + m + i] == src[SIZEOF (src) - n + i]);\n          ASSERT (dest[1 + m + n] == MAGIC);\n        }\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

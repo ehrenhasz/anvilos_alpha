@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_morph.h",
+  "hash_id": "eed9bc5968aa4f8aa93b066568ac295b2416149538b4902bf94f2ef099b67c52",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/ia_css_morph.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_MORPH_H\n#define __IA_CSS_MORPH_H\n\n \n\n#include <ia_css_types.h>\n\n \nstruct ia_css_morph_table *\nia_css_morph_table_allocate(unsigned int width, unsigned int height);\n\n \nvoid\nia_css_morph_table_free(struct ia_css_morph_table *me);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

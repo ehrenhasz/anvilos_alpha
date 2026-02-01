@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "55c417571c9f4770f102e615cba91cf61ef5f9b9d55652c78c68568d8bfa9345",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/qedi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_QEDI) := qedi.o\nqedi-y := qedi_main.o qedi_iscsi.o qedi_fw.o qedi_sysfs.o \\\n\t    qedi_dbg.o qedi_fw_api.o\n\nqedi-$(CONFIG_DEBUG_FS) += qedi_debugfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

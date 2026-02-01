@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "220f376702e533a698c95f81dbf64a44e52f846b179a875cc02197018c43d47d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/as102/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\ndvb-as102-objs := as102_drv.o as102_fw.o as10x_cmd.o as10x_cmd_stream.o \\\n\t\t  as102_usb_drv.o as10x_cmd_cfg.o\n\nobj-$(CONFIG_DVB_AS102) += dvb-as102.o\n\nccflags-y += -I $(srctree)/drivers/media/dvb-frontends\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

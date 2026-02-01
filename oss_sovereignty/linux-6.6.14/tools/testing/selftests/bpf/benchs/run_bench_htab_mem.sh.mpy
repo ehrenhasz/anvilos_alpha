@@ -1,0 +1,9 @@
+{
+  "module_name": "run_bench_htab_mem.sh",
+  "hash_id": "84418b0c8793478e081b479b6c71d7e115a924e57bfe9351d9d1f83e5a39fe0a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/benchs/run_bench_htab_mem.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nsource ./benchs/run_common.sh\n\nset -eufo pipefail\n\nhtab_mem()\n{\n\techo -n \"per-prod-op: \"\n\techo -n \"$*\" | sed -E \"s/.* per-prod-op\\s+([0-9]+\\.[0-9]+ \u00b1 [0-9]+\\.[0-9]+k\\/s).*/\\1/\"\n\techo -n -e \", avg mem: \"\n\techo -n \"$*\" | sed -E \"s/.* memory usage\\s+([0-9]+\\.[0-9]+ \u00b1 [0-9]+\\.[0-9]+MiB).*/\\1/\"\n\techo -n \", peak mem: \"\n\techo \"$*\" | sed -E \"s/.* peak memory usage\\s+([0-9]+\\.[0-9]+MiB).*/\\1/\"\n}\n\nsummarize_htab_mem()\n{\n\tlocal bench=\"$1\"\n\tlocal summary=$(echo $2 | tail -n1)\n\n\tprintf \"%-20s %s\\n\" \"$bench\" \"$(htab_mem $summary)\"\n}\n\nhtab_mem_bench()\n{\n\tlocal name\n\n\tfor name in overwrite batch_add_batch_del add_del_on_diff_cpu\n\tdo\n\t\tsummarize_htab_mem \"$name\" \"$($RUN_BENCH htab-mem --use-case $name -p8 \"$@\")\"\n\tdone\n}\n\nheader \"preallocated\"\nhtab_mem_bench \"--preallocated\"\n\nheader \"normal bpf ma\"\nhtab_mem_bench\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

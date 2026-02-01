@@ -1,0 +1,9 @@
+{
+  "module_name": "weak.c",
+  "hash_id": "246554ab09b02d5499bf55cd41cafc1c86095a9d0ca865f16aa0eb9ef61f42a7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/objtool/weak.c",
+  "human_readable_source": "\n \n\n#include <stdbool.h>\n#include <errno.h>\n#include <objtool/objtool.h>\n\n#define UNSUPPORTED(name)\t\t\t\t\t\t\\\n({\t\t\t\t\t\t\t\t\t\\\n\tfprintf(stderr, \"error: objtool: \" name \" not implemented\\n\");\t\\\n\treturn ENOSYS;\t\t\t\t\t\t\t\\\n})\n\nint __weak orc_dump(const char *_objname)\n{\n\tUNSUPPORTED(\"ORC\");\n}\n\nint __weak orc_create(struct objtool_file *file)\n{\n\tUNSUPPORTED(\"ORC\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

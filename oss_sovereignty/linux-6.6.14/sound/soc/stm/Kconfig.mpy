@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9cdef3c81e290ade3144f1db47da49694d3b25bdc22673142cebd790870d01d6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/stm/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenu \"STMicroelectronics STM32 SOC audio support\"\n\nconfig SND_SOC_STM32_SAI\n\ttristate \"STM32 SAI interface (Serial Audio Interface) support\"\n\tdepends on (ARCH_STM32 && OF) || COMPILE_TEST\n\tdepends on COMMON_CLK\n\tdepends on SND_SOC\n\tselect SND_SOC_GENERIC_DMAENGINE_PCM\n\tselect REGMAP_MMIO\n\tselect SND_PCM_IEC958\n\thelp\n\t  Say Y if you want to enable SAI for STM32\n\nconfig SND_SOC_STM32_I2S\n\ttristate \"STM32 I2S interface (SPI/I2S block) support\"\n\tdepends on (ARCH_STM32 && OF) || COMPILE_TEST\n\tdepends on COMMON_CLK\n\tdepends on SND_SOC\n\tselect SND_SOC_GENERIC_DMAENGINE_PCM\n\tselect REGMAP_MMIO\n\thelp\n\t  Say Y if you want to enable I2S for STM32\n\nconfig SND_SOC_STM32_SPDIFRX\n\ttristate \"STM32 S/PDIF receiver (SPDIFRX) support\"\n\tdepends on (ARCH_STM32 && OF) || COMPILE_TEST\n\tdepends on SND_SOC\n\tselect SND_SOC_GENERIC_DMAENGINE_PCM\n\tselect REGMAP_MMIO\n\tselect SND_SOC_SPDIF\n\thelp\n\t  Say Y if you want to enable S/PDIF capture for STM32\n\nconfig SND_SOC_STM32_DFSDM\n\ttristate \"SoC Audio support for STM32 DFSDM\"\n\tdepends on ARCH_STM32 || COMPILE_TEST\n\tdepends on SND_SOC\n\tdepends on STM32_DFSDM_ADC\n\tselect SND_SOC_GENERIC_DMAENGINE_PCM\n\tselect SND_SOC_DMIC\n\tselect IIO_BUFFER_CB\n\thelp\n\t  Select this option to enable the STM32 Digital Filter\n\t  for Sigma Delta Modulators (DFSDM) driver used\n\t  in various STM32 series for digital microphone capture.\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

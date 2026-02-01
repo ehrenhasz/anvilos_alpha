@@ -1,0 +1,9 @@
+{
+  "module_name": "find.c",
+  "hash_id": "a89f78b2d01fc2ece68d22f71a9609ac9aa224c04f1d3f3cda4edeb52884eb0f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/efi/libstub/find.c",
+  "human_readable_source": "\n#include <linux/bitmap.h>\n#include <linux/math.h>\n#include <linux/minmax.h>\n\n \n#define FIND_NEXT_BIT(FETCH, MUNGE, size, start)\t\t\t\t\\\n({\t\t\t\t\t\t\t\t\t\t\\\n\tunsigned long mask, idx, tmp, sz = (size), __start = (start);\t\t\\\n\t\t\t\t\t\t\t\t\t\t\\\n\tif (unlikely(__start >= sz))\t\t\t\t\t\t\\\n\t\tgoto out;\t\t\t\t\t\t\t\\\n\t\t\t\t\t\t\t\t\t\t\\\n\tmask = MUNGE(BITMAP_FIRST_WORD_MASK(__start));\t\t\t\t\\\n\tidx = __start / BITS_PER_LONG;\t\t\t\t\t\t\\\n\t\t\t\t\t\t\t\t\t\t\\\n\tfor (tmp = (FETCH) & mask; !tmp; tmp = (FETCH)) {\t\t\t\\\n\t\tif ((idx + 1) * BITS_PER_LONG >= sz)\t\t\t\t\\\n\t\t\tgoto out;\t\t\t\t\t\t\\\n\t\tidx++;\t\t\t\t\t\t\t\t\\\n\t}\t\t\t\t\t\t\t\t\t\\\n\t\t\t\t\t\t\t\t\t\t\\\n\tsz = min(idx * BITS_PER_LONG + __ffs(MUNGE(tmp)), sz);\t\t\t\\\nout:\t\t\t\t\t\t\t\t\t\t\\\n\tsz;\t\t\t\t\t\t\t\t\t\\\n})\n\nunsigned long _find_next_bit(const unsigned long *addr, unsigned long nbits, unsigned long start)\n{\n\treturn FIND_NEXT_BIT(addr[idx],  , nbits, start);\n}\n\nunsigned long _find_next_zero_bit(const unsigned long *addr, unsigned long nbits,\n\t\t\t\t\t unsigned long start)\n{\n\treturn FIND_NEXT_BIT(~addr[idx],  , nbits, start);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

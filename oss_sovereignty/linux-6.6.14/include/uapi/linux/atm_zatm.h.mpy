@@ -1,0 +1,9 @@
+{
+  "module_name": "atm_zatm.h",
+  "hash_id": "2d2214278b243033bfcca2921df0844a5beac8f0d92d64e26ba1c30655631afd",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/atm_zatm.h",
+  "human_readable_source": " \n \n\n \n\n\n#ifndef LINUX_ATM_ZATM_H\n#define LINUX_ATM_ZATM_H\n\n \n\n#include <linux/atmapi.h>\n#include <linux/atmioc.h>\n\n#define ZATM_GETPOOL\t_IOW('a',ATMIOC_SARPRV+1,struct atmif_sioc)\n\t\t\t\t\t\t \n#define ZATM_GETPOOLZ\t_IOW('a',ATMIOC_SARPRV+2,struct atmif_sioc)\n\t\t\t\t\t\t \n#define ZATM_SETPOOL\t_IOW('a',ATMIOC_SARPRV+3,struct atmif_sioc)\n\t\t\t\t\t\t \n\nstruct zatm_pool_info {\n\tint ref_count;\t\t\t \n\tint low_water,high_water;\t \n\tint rqa_count,rqu_count;\t \n\tint offset,next_off;\t\t \n\tint next_cnt,next_thres;\t \n};\n\nstruct zatm_pool_req {\n\tint pool_num;\t\t\t \n\tstruct zatm_pool_info info;\t \n};\n\n#define ZATM_OAM_POOL\t\t0\t \n#define ZATM_AAL0_POOL\t\t1\t \n#define ZATM_AAL5_POOL_BASE\t2\t \n#define ZATM_LAST_POOL\tZATM_AAL5_POOL_BASE+10  \n\n#define ZATM_TIMER_HISTORY_SIZE\t16\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

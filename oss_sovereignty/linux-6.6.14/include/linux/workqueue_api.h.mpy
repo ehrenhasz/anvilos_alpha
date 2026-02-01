@@ -1,0 +1,9 @@
+{
+  "module_name": "workqueue_api.h",
+  "hash_id": "47ad4c113e64e344d0dc9b0e9ca406315b97291e710ebf34df2ff5ec80c6c2fe",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/workqueue_api.h",
+  "human_readable_source": "#include <linux/workqueue.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "arm_psci.h",
+  "hash_id": "5d2e28145d20b961e5952b499bd172bdd2db876fb73df39c2e49302a5edb8edd",
+  "original_prompt": "Ingested from linux-6.6.14/include/kvm/arm_psci.h",
+  "human_readable_source": " \n \n\n#ifndef __KVM_ARM_PSCI_H__\n#define __KVM_ARM_PSCI_H__\n\n#include <linux/kvm_host.h>\n#include <uapi/linux/psci.h>\n\n#define KVM_ARM_PSCI_0_1\tPSCI_VERSION(0, 1)\n#define KVM_ARM_PSCI_0_2\tPSCI_VERSION(0, 2)\n#define KVM_ARM_PSCI_1_0\tPSCI_VERSION(1, 0)\n#define KVM_ARM_PSCI_1_1\tPSCI_VERSION(1, 1)\n\n#define KVM_ARM_PSCI_LATEST\tKVM_ARM_PSCI_1_1\n\nstatic inline int kvm_psci_version(struct kvm_vcpu *vcpu)\n{\n\t \n\tif (test_bit(KVM_ARM_VCPU_PSCI_0_2, vcpu->arch.features)) {\n\t\tif (vcpu->kvm->arch.psci_version)\n\t\t\treturn vcpu->kvm->arch.psci_version;\n\n\t\treturn KVM_ARM_PSCI_LATEST;\n\t}\n\n\treturn KVM_ARM_PSCI_0_1;\n}\n\n\nint kvm_psci_call(struct kvm_vcpu *vcpu);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

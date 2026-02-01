@@ -1,0 +1,9 @@
+{
+  "module_name": "acp_hw.c",
+  "hash_id": "5364bf243e9d070e989207687bf8c9e715ea049e5c8b19a444a167c0198189ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/acp/acp_hw.c",
+  "human_readable_source": " \n\n#include <linux/mm.h>\n#include <linux/slab.h>\n#include <linux/device.h>\n#include <linux/delay.h>\n#include <linux/errno.h>\n\n#include \"acp_gfx_if.h\"\n\n#define ACP_MODE_I2S\t0\n#define ACP_MODE_AZ\t1\n\n#define mmACP_AZALIA_I2S_SELECT 0x51d4\n\nint amd_acp_hw_init(struct cgs_device *cgs_device,\n\t\t    unsigned acp_version_major, unsigned acp_version_minor)\n{\n\tunsigned int acp_mode = ACP_MODE_I2S;\n\n\tif ((acp_version_major == 2) && (acp_version_minor == 2))\n\t\tacp_mode = cgs_read_register(cgs_device,\n\t\t\t\t\tmmACP_AZALIA_I2S_SELECT);\n\n\tif (acp_mode != ACP_MODE_I2S)\n\t\treturn -ENODEV;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

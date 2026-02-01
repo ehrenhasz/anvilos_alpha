@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9914f77ea6e024524fa8c9232f9891dc4473b0bd6bb028a568d4bd82b4259b06",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/vmw_vmci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_VMWARE_VMCI) += vmw_vmci.o\nvmw_vmci-y += vmci_context.o vmci_datagram.o vmci_doorbell.o \\\n\tvmci_driver.o vmci_event.o vmci_guest.o vmci_handle_array.o \\\n\tvmci_host.o vmci_queue_pair.o vmci_resource.o vmci_route.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

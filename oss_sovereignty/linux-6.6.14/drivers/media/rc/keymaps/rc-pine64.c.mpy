@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-pine64.c",
+  "hash_id": "82709d604740fa78123525392124e327c8dcfccad3d25d2a9242e15c5b0779b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-pine64.c",
+  "human_readable_source": "\n\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\nstatic struct rc_map_table pine64[] = {\n\t{ 0x40404d, KEY_POWER },\n\t{ 0x40401f, KEY_WWW },\n\t{ 0x40400a, KEY_MUTE },\n\n\t{ 0x404017, KEY_VOLUMEDOWN },\n\t{ 0x404018, KEY_VOLUMEUP },\n\n\t{ 0x404010, KEY_LEFT },\n\t{ 0x404011, KEY_RIGHT },\n\t{ 0x40400b, KEY_UP },\n\t{ 0x40400e, KEY_DOWN },\n\t{ 0x40400d, KEY_OK },\n\n\t{ 0x40401d, KEY_MENU },\n\t{ 0x40401a, KEY_HOME },\n\n\t{ 0x404045, KEY_BACK },\n\n\t{ 0x404001, KEY_NUMERIC_1 },\n\t{ 0x404002, KEY_NUMERIC_2 },\n\t{ 0x404003, KEY_NUMERIC_3 },\n\t{ 0x404004, KEY_NUMERIC_4 },\n\t{ 0x404005, KEY_NUMERIC_5 },\n\t{ 0x404006, KEY_NUMERIC_6 },\n\t{ 0x404007, KEY_NUMERIC_7 },\n\t{ 0x404008, KEY_NUMERIC_8 },\n\t{ 0x404009, KEY_NUMERIC_9 },\n\t{ 0x40400c, KEY_BACKSPACE },\n\t{ 0x404000, KEY_NUMERIC_0 },\n\t{ 0x404047, KEY_EPG }, \n};\n\nstatic struct rc_map_list pine64_map = {\n\t.map = {\n\t\t.scan     = pine64,\n\t\t.size     = ARRAY_SIZE(pine64),\n\t\t.rc_proto = RC_PROTO_NECX,\n\t\t.name     = RC_MAP_PINE64,\n\t}\n};\n\nstatic int __init init_rc_map_pine64(void)\n{\n\treturn rc_map_register(&pine64_map);\n}\n\nstatic void __exit exit_rc_map_pine64(void)\n{\n\trc_map_unregister(&pine64_map);\n}\n\nmodule_init(init_rc_map_pine64)\nmodule_exit(exit_rc_map_pine64)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Jonas Karlman\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

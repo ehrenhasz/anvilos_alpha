@@ -1,0 +1,9 @@
+{
+  "module_name": "amd-pstate.h",
+  "hash_id": "d8f68b3134029d758b66a7fd2046a79069b49b0b58f204f3392cc918a7f85a09",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/amd-pstate.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_AMD_PSTATE_H\n#define _LINUX_AMD_PSTATE_H\n\n#include <linux/pm_qos.h>\n\n#define AMD_CPPC_EPP_PERFORMANCE\t\t0x00\n#define AMD_CPPC_EPP_BALANCE_PERFORMANCE\t0x80\n#define AMD_CPPC_EPP_BALANCE_POWERSAVE\t\t0xBF\n#define AMD_CPPC_EPP_POWERSAVE\t\t\t0xFF\n\n \n \nstruct amd_aperf_mperf {\n\tu64 aperf;\n\tu64 mperf;\n\tu64 tsc;\n};\n\n \nstruct amd_cpudata {\n\tint\tcpu;\n\n\tstruct\tfreq_qos_request req[2];\n\tu64\tcppc_req_cached;\n\n\tu32\thighest_perf;\n\tu32\tnominal_perf;\n\tu32\tlowest_nonlinear_perf;\n\tu32\tlowest_perf;\n\tu32     min_limit_perf;\n\tu32     max_limit_perf;\n\tu32     min_limit_freq;\n\tu32     max_limit_freq;\n\n\tu32\tmax_freq;\n\tu32\tmin_freq;\n\tu32\tnominal_freq;\n\tu32\tlowest_nonlinear_freq;\n\n\tstruct amd_aperf_mperf cur;\n\tstruct amd_aperf_mperf prev;\n\n\tu64\tfreq;\n\tbool\tboost_supported;\n\n\t \n\ts16\tepp_policy;\n\ts16\tepp_cached;\n\tu32\tpolicy;\n\tu64\tcppc_cap1_cached;\n\tbool\tsuspended;\n};\n\n \nenum amd_pstate_mode {\n\tAMD_PSTATE_UNDEFINED = 0,\n\tAMD_PSTATE_DISABLE,\n\tAMD_PSTATE_PASSIVE,\n\tAMD_PSTATE_ACTIVE,\n\tAMD_PSTATE_GUIDED,\n\tAMD_PSTATE_MAX,\n};\n\nstatic const char * const amd_pstate_mode_string[] = {\n\t[AMD_PSTATE_UNDEFINED]   = \"undefined\",\n\t[AMD_PSTATE_DISABLE]     = \"disable\",\n\t[AMD_PSTATE_PASSIVE]     = \"passive\",\n\t[AMD_PSTATE_ACTIVE]      = \"active\",\n\t[AMD_PSTATE_GUIDED]      = \"guided\",\n\tNULL,\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

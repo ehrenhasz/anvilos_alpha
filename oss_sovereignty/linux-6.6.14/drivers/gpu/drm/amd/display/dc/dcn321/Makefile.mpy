@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0f109e0292d7e970df787cbe7fad64ef41ea1a994c1b548f26399531ddbf3583",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn321/Makefile",
+  "human_readable_source": "#\n# (c) Copyright 2020 Advanced Micro Devices, Inc. All the rights reserved\n#\n#  All rights reserved.  This notice is intended as a precaution against\n#  inadvertent publication and does not imply publication or any waiver\n#  of confidentiality.  The year included in the foregoing notice is the\n#  year of creation of the work.\n#\n#  Authors: AMD\n#\n# Makefile for dcn321.\n\nDCN321 = dcn321_resource.o dcn321_dio_link_encoder.o\n\nAMD_DAL_DCN321 = $(addprefix $(AMDDALPATH)/dc/dcn321/,$(DCN321))\n\nAMD_DISPLAY_FILES += $(AMD_DAL_DCN321)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

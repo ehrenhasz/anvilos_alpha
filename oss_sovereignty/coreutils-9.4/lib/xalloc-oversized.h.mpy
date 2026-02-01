@@ -1,0 +1,9 @@
+{
+  "module_name": "xalloc-oversized.h",
+  "hash_id": "a67f399e3946be801b8b1122bb05242adaf4894911a44b6f650895bb81994f61",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xalloc-oversized.h",
+  "human_readable_source": " \n#define __xalloc_oversized(n, s) \\\n  ((s) != 0 \\\n   && ((size_t) (PTRDIFF_MAX < SIZE_MAX ? PTRDIFF_MAX : SIZE_MAX - 1) / (s) \\\n       < (n)))\n\n \n#if 7 <= __GNUC__ && !defined __clang__ && PTRDIFF_MAX < SIZE_MAX\n# define xalloc_oversized(n, s) \\\n   __builtin_mul_overflow_p (n, s, (ptrdiff_t) 1)\n#elif (5 <= __GNUC__ && !defined __ICC && !__STRICT_ANSI__ \\\n       && PTRDIFF_MAX < SIZE_MAX)\n# define xalloc_oversized(n, s) \\\n   (__builtin_constant_p (n) && __builtin_constant_p (s) \\\n    ? __xalloc_oversized (n, s) \\\n    : ({ ptrdiff_t __xalloc_count; \\\n         __builtin_mul_overflow (n, s, &__xalloc_count); }))\n\n \n#else\n# define xalloc_oversized(n, s) __xalloc_oversized (n, s)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

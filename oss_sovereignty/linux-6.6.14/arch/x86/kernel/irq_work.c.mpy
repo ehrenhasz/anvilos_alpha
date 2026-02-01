@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_work.c",
+  "hash_id": "d0caa889bef3528f78a11565f4a01199f3140bc28d9d45aedabe7aa2b7e3130f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/irq_work.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/irq_work.h>\n#include <linux/hardirq.h>\n#include <asm/apic.h>\n#include <asm/idtentry.h>\n#include <asm/trace/irq_vectors.h>\n#include <linux/interrupt.h>\n\n#ifdef CONFIG_X86_LOCAL_APIC\nDEFINE_IDTENTRY_SYSVEC(sysvec_irq_work)\n{\n\tapic_eoi();\n\ttrace_irq_work_entry(IRQ_WORK_VECTOR);\n\tinc_irq_stat(apic_irq_work_irqs);\n\tirq_work_run();\n\ttrace_irq_work_exit(IRQ_WORK_VECTOR);\n}\n\nvoid arch_irq_work_raise(void)\n{\n\tif (!arch_irq_work_has_interrupt())\n\t\treturn;\n\n\t__apic_send_IPI_self(IRQ_WORK_VECTOR);\n\tapic_wait_icr_idle();\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

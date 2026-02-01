@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b50cf4d812921ec6959eed96e726fb858e5da7981f1fd4e52761b48f2ae01eaf",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/platform/efi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nKASAN_SANITIZE := n\nGCOV_PROFILE := n\n\nobj-$(CONFIG_EFI) \t\t+= memmap.o quirks.o efi.o efi_$(BITS).o \\\n\t\t\t\t   efi_stub_$(BITS).o\nobj-$(CONFIG_EFI_MIXED)\t\t+= efi_thunk_$(BITS).o\nobj-$(CONFIG_EFI_FAKE_MEMMAP)\t+= fake_mem.o\nobj-$(CONFIG_EFI_RUNTIME_MAP)\t+= runtime-map.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

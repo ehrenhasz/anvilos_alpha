@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fdopen.c",
+  "hash_id": "516ea27d6acb805a800f659be4a9286c636aad5176245938899612d082642af4",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fdopen.c",
+  "human_readable_source": " \n  #if defined __ANDROID__  \n    #define COUNT 1\n  #else\n    #define COUNT 1000\n  #endif\n\n  int i;\n  for (i = 0; i < COUNT; i++)\n    {\n      errno = 0;\n      if (! fdopen (STDOUT_FILENO, \"w\"))\n        {\n          ASSERT (errno != 0);\n          break;\n        }\n    }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

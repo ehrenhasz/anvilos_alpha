@@ -1,0 +1,9 @@
+{
+  "module_name": "test_skb_ctx.c",
+  "hash_id": "df1f34e61f963536db8fd8fa722c962afd5be2b7611496a081eee9a25a54b335",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_skb_ctx.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"tc\")\nint process(struct __sk_buff *skb)\n{\n\t#pragma clang loop unroll(full)\n\tfor (int i = 0; i < 5; i++) {\n\t\tif (skb->cb[i] != i + 1)\n\t\t\treturn 1;\n\t\tskb->cb[i]++;\n\t}\n\tskb->priority++;\n\tskb->tstamp++;\n\tskb->mark++;\n\n\tif (skb->wire_len != 100)\n\t\treturn 1;\n\tif (skb->gso_segs != 8)\n\t\treturn 1;\n\tif (skb->gso_size != 10)\n\t\treturn 1;\n\tif (skb->ingress_ifindex != 11)\n\t\treturn 1;\n\tif (skb->ifindex != 1)\n\t\treturn 1;\n\tif (skb->hwtstamp != 11)\n\t\treturn 1;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dbgp.c",
+  "hash_id": "f43c13d930f22f8557f7524d3c0fcbc64615d5fe154d37723aefa7e970a0f923",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/xen/dbgp.c",
+  "human_readable_source": "\n#include <linux/pci.h>\n#include <linux/usb.h>\n#include <linux/usb/ehci_def.h>\n#include <linux/usb/hcd.h>\n#include <asm/xen/hypercall.h>\n#include <xen/interface/physdev.h>\n#include <xen/xen.h>\n\nstatic int xen_dbgp_op(struct usb_hcd *hcd, int op)\n{\n#ifdef CONFIG_PCI\n\tconst struct device *ctrlr = hcd_to_bus(hcd)->controller;\n#endif\n\tstruct physdev_dbgp_op dbgp;\n\n\tif (!xen_initial_domain())\n\t\treturn 0;\n\n\tdbgp.op = op;\n\n#ifdef CONFIG_PCI\n\tif (dev_is_pci(ctrlr)) {\n\t\tconst struct pci_dev *pdev = to_pci_dev(ctrlr);\n\n\t\tdbgp.u.pci.seg = pci_domain_nr(pdev->bus);\n\t\tdbgp.u.pci.bus = pdev->bus->number;\n\t\tdbgp.u.pci.devfn = pdev->devfn;\n\t\tdbgp.bus = PHYSDEVOP_DBGP_BUS_PCI;\n\t} else\n#endif\n\t\tdbgp.bus = PHYSDEVOP_DBGP_BUS_UNKNOWN;\n\n\treturn HYPERVISOR_physdev_op(PHYSDEVOP_dbgp_op, &dbgp);\n}\n\nint xen_dbgp_reset_prep(struct usb_hcd *hcd)\n{\n\treturn xen_dbgp_op(hcd, PHYSDEVOP_DBGP_RESET_PREPARE);\n}\n\nint xen_dbgp_external_startup(struct usb_hcd *hcd)\n{\n\treturn xen_dbgp_op(hcd, PHYSDEVOP_DBGP_RESET_DONE);\n}\n\n#ifndef CONFIG_EARLY_PRINTK_DBGP\n#include <linux/export.h>\nEXPORT_SYMBOL_GPL(xen_dbgp_reset_prep);\nEXPORT_SYMBOL_GPL(xen_dbgp_external_startup);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

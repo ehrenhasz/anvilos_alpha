@@ -1,0 +1,9 @@
+{
+  "module_name": "test-pthread-barrier.c",
+  "hash_id": "c7a14c3561ebff9504b0c3ae6866bbb592c52e4493129642e20735f7ee6c1f0e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-pthread-barrier.c",
+  "human_readable_source": "\n#include <stdint.h>\n#include <pthread.h>\n\nint main(void)\n{\n\tpthread_barrier_t barrier;\n\n\tpthread_barrier_init(&barrier, NULL, 1);\n\tpthread_barrier_wait(&barrier);\n\treturn pthread_barrier_destroy(&barrier);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

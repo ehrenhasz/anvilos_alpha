@@ -1,0 +1,9 @@
+{
+  "module_name": "deflate_syms.c",
+  "hash_id": "69ecd2859fafd50001f076e0dc2d1b327b8d7e5f6876c47743225e31b949dddb",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zlib_deflate/deflate_syms.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/init.h>\n\n#include <linux/zlib.h>\n\nEXPORT_SYMBOL(zlib_deflate_workspacesize);\nEXPORT_SYMBOL(zlib_deflate_dfltcc_enabled);\nEXPORT_SYMBOL(zlib_deflate);\nEXPORT_SYMBOL(zlib_deflateInit2);\nEXPORT_SYMBOL(zlib_deflateEnd);\nEXPORT_SYMBOL(zlib_deflateReset);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

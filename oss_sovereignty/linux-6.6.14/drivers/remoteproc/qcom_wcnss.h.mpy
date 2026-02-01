@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom_wcnss.h",
+  "hash_id": "a7a47b7de045cde2a3efe3e8e843e26c4f6d8bc4782388802d0c4b03b03878da",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/remoteproc/qcom_wcnss.h",
+  "human_readable_source": " \n#ifndef __QCOM_WNCSS_H__\n#define __QCOM_WNCSS_H__\n\nstruct qcom_iris;\nstruct qcom_wcnss;\n\nstruct wcnss_vreg_info {\n\tconst char * const name;\n\tint min_voltage;\n\tint max_voltage;\n\n\tint load_uA;\n\n\tbool super_turbo;\n};\n\nstruct qcom_iris *qcom_iris_probe(struct device *parent, bool *use_48mhz_xo);\nvoid qcom_iris_remove(struct qcom_iris *iris);\nint qcom_iris_enable(struct qcom_iris *iris);\nvoid qcom_iris_disable(struct qcom_iris *iris);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

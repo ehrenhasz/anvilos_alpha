@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6d27757ec464ef429569ef3b6511475443cc873adef94dc2948d7349b7a737e2",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ubifs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_UBIFS_FS) += ubifs.o\n\nubifs-y += shrinker.o journal.o file.o dir.o super.o sb.o io.o\nubifs-y += tnc.o master.o scan.o replay.o log.o commit.o gc.o orphan.o\nubifs-y += budget.o find.o tnc_commit.o compress.o lpt.o lprops.o\nubifs-y += recovery.o ioctl.o lpt_commit.o tnc_misc.o debug.o\nubifs-y += misc.o sysfs.o\nubifs-$(CONFIG_FS_ENCRYPTION) += crypto.o\nubifs-$(CONFIG_UBIFS_FS_XATTR) += xattr.o\nubifs-$(CONFIG_UBIFS_FS_AUTHENTICATION) += auth.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

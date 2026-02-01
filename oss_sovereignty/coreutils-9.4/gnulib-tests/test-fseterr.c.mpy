@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fseterr.c",
+  "hash_id": "0fb6e31957d105024fc0e18e5f772d8947b652eafdedebc97ac0de077bd1d58b",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fseterr.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"fseterr.h\"\n\n#include <stdio.h>\n#include <stdlib.h>\n\nint\nmain ()\n{\n   \n  if (ferror (stdout))\n    abort ();\n\n   \n  fseterr (stdout);\n  if (!ferror (stdout))\n    abort ();\n\n   \n  clearerr (stdout);\n  if (ferror (stdout))\n    abort ();\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

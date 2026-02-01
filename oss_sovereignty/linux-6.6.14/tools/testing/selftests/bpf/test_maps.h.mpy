@@ -1,0 +1,9 @@
+{
+  "module_name": "test_maps.h",
+  "hash_id": "3bdf3d12d3ac6ef619adb1ce658d2c6df7fae0b60daee7d8cd261276de060e15",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/test_maps.h",
+  "human_readable_source": " \n#ifndef _TEST_MAPS_H\n#define _TEST_MAPS_H\n\n#include <stdio.h>\n#include <stdlib.h>\n\n#define CHECK(condition, tag, format...) ({\t\t\t\t\\\n\tint __ret = !!(condition);\t\t\t\t\t\\\n\tif (__ret) {\t\t\t\t\t\t\t\\\n\t\tprintf(\"%s(%d):FAIL:%s \", __func__, __LINE__, tag);\t\\\n\t\tprintf(format);\t\t\t\t\t\t\\\n\t\texit(-1);\t\t\t\t\t\t\\\n\t}\t\t\t\t\t\t\t\t\\\n})\n\nextern int skips;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

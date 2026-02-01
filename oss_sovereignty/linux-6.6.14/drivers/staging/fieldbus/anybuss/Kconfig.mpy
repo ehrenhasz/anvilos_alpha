@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9f701f05b7698b6d33744350ce1df1672b843751fd9dbe254db43f96630b322b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/fieldbus/anybuss/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig HMS_ANYBUSS_BUS\n\ttristate \"HMS Anybus-S Bus Support\"\n\tselect REGMAP\n\tdepends on OF && FIELDBUS_DEV\n\thelp\n\t  Driver for the HMS Industrial Networks Anybus-S bus.\n\t  You can attach a single Anybus-S compatible card to it, which\n\t  typically provides fieldbus and industrial ethernet\n\t  functionality.\n\nif HMS_ANYBUSS_BUS\n\nconfig ARCX_ANYBUS_CONTROLLER\n\ttristate \"Arcx Anybus-S Controller\"\n\tdepends on OF && GPIOLIB && HAS_IOMEM && REGULATOR\n\tselect REGMAP_MMIO\n\thelp\n\t  Select this to get support for the Arcx Anybus controller.\n\t  It connects to the SoC via a parallel memory bus, and\n\t  embeds up to two Anybus-S buses (slots).\n\t  There is also a CAN power readout, unrelated to the Anybus,\n\t  modelled as a regulator.\n\nconfig HMS_PROFINET\n\ttristate \"HMS Profinet IRT Controller (Anybus-S)\"\n\tdepends on FIELDBUS_DEV && HMS_ANYBUSS_BUS\n\thelp\n\t  If you say yes here you get support for the HMS Industrial\n\t  Networks Profinet IRT Controller.\n\n\t  It will be registered with the kernel as a fieldbus_dev,\n\t  so userspace can interact with it via the fieldbus_dev userspace\n\t  interface(s).\n\n\t  This driver can also be built as a module. If so, the module\n\t  will be called hms-profinet.\n\n\t  If unsure, say N.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

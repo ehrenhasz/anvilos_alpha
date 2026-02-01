@@ -1,0 +1,9 @@
+{
+  "module_name": "devlink.h",
+  "hash_id": "58d6d136cb79ab226a5e7bef488f674b1c6d667bd540e0e689f51c76e00af118",
+  "original_prompt": "Ingested from linux-6.6.14/net/dsa/devlink.h",
+  "human_readable_source": " \n\n#ifndef __DSA_DEVLINK_H\n#define __DSA_DEVLINK_H\n\nstruct dsa_port;\nstruct dsa_switch;\n\nint dsa_port_devlink_setup(struct dsa_port *dp);\nvoid dsa_port_devlink_teardown(struct dsa_port *dp);\nvoid dsa_switch_devlink_register(struct dsa_switch *ds);\nvoid dsa_switch_devlink_unregister(struct dsa_switch *ds);\nint dsa_switch_devlink_alloc(struct dsa_switch *ds);\nvoid dsa_switch_devlink_free(struct dsa_switch *ds);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "libthermal_tools.pc.template",
+  "hash_id": "09e349cc379a5de87e37e7c4310031f2599a25e83a8501e99133755e2f57a6ae",
+  "original_prompt": "Ingested from linux-6.6.14/tools/thermal/lib/libthermal_tools.pc.template",
+  "human_readable_source": "# SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)\n\nprefix=@PREFIX@\nlibdir=@LIBDIR@\nincludedir=${prefix}/include\n\nName: libthermal\nDescription: thermal library\nRequires: libnl-3.0 libnl-genl-3.0\nVersion: @VERSION@\nLibs: -L${libdir} -lnl-genl-3 -lnl-3\nCflags: -I${includedir} -I{include}/libnl3\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

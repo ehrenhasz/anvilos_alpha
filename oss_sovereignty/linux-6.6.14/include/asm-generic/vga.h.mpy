@@ -1,0 +1,9 @@
+{
+  "module_name": "vga.h",
+  "hash_id": "49b2e20e50a317331355e5f43af06d5916e0ef8810f3d8d4325f0ff0ba1ab3dc",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/vga.h",
+  "human_readable_source": " \n \n#ifndef __ASM_GENERIC_VGA_H\n#define __ASM_GENERIC_VGA_H\n\n \n#ifndef VGA_MAP_MEM\n#define VGA_MAP_MEM(x, s) (unsigned long)phys_to_virt(x)\n#endif\n\n#define vga_readb(x) (*(x))\n#define vga_writeb(x, y) (*(y) = (x))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

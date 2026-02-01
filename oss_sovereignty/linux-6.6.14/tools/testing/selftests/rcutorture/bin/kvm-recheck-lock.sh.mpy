@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm-recheck-lock.sh",
+  "hash_id": "ca6f7176e98f320ef0fa030fa65e84fc9d5583fcfef17083d884e59d60d89d99",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/bin/kvm-recheck-lock.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Analyze a given results directory for locktorture progress.\n#\n# Usage: kvm-recheck-lock.sh resdir\n#\n# Copyright (C) IBM Corporation, 2014\n#\n# Authors: Paul E. McKenney <paulmck@linux.ibm.com>\n\ni=\"$1\"\nif test -d \"$i\" -a -r \"$i\"\nthen\n\t:\nelse\n\techo Unreadable results directory: $i\n\texit 1\nfi\n\nconfigfile=`echo $i | sed -e 's/^.*\\///'`\nncs=`grep \"Writes:  Total:\" $i/console.log 2> /dev/null | tail -1 | sed -e 's/^.* Total: //' -e 's/ .*$//'`\nif test -z \"$ncs\"\nthen\n\techo \"$configfile -------\"\nelse\n\ttitle=\"$configfile ------- $ncs acquisitions/releases\"\n\tdur=`grep -v '^#' $i/qemu-cmd | sed -e 's/^.* locktorture.shutdown_secs=//' -e 's/ .*$//' 2> /dev/null`\n\tif test -z \"$dur\"\n\tthen\n\t\t:\n\telse\n\t\tncsps=`awk -v ncs=$ncs -v dur=$dur '\n\t\t\tBEGIN { print ncs / dur }' < /dev/null`\n\t\ttitle=\"$title ($ncsps per second)\"\n\tfi\n\techo $title\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

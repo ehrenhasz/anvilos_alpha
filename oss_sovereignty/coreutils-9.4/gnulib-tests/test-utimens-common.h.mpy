@@ -1,0 +1,9 @@
+{
+  "module_name": "test-utimens-common.h",
+  "hash_id": "9fb25d6146c10397bb88dac178d36f580e03dd5c68f663c867b26b729713f40e",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-utimens-common.h",
+  "human_readable_source": " \n\n#ifndef GL_TEST_UTIMENS_COMMON\n# define GL_TEST_UTIMENS_COMMON\n\n# include <fcntl.h>\n# include <errno.h>\n# include <string.h>\n# include <sys/stat.h>\n# include <unistd.h>\n\n \n# include \"stat-time.h\"\n# include \"timespec.h\"\n# include \"utimecmp.h\"\n\n \n# include \"nap.h\"\n\nenum {\n  BILLION = 1000 * 1000 * 1000,\n\n  Y2K = 946684800,  \n\n   \n  UTIME_BOGUS_POS = BILLION + ((UTIME_NOW == BILLION || UTIME_OMIT == BILLION)\n                               ? (1 + (UTIME_NOW == BILLION + 1)\n                                  + (UTIME_OMIT == BILLION + 1))\n                               : 0),\n  UTIME_BOGUS_NEG = -1 - ((UTIME_NOW == -1 || UTIME_OMIT == -1)\n                          ? (1 + (UTIME_NOW == -2) + (UTIME_OMIT == -2))\n                          : 0)\n};\n\n# if defined _WIN32 && !defined __CYGWIN__\n \n#  define check_ctime -1\n# else\n#  define check_ctime 1\n# endif\n\n \nstatic int\nctime_compare (struct stat const *a, struct stat const *b)\n{\n  if (a->st_ctime < b->st_ctime)\n    return -1;\n  else if (b->st_ctime < a->st_ctime)\n    return 1;\n  else if (get_stat_ctime_ns (a) < get_stat_ctime_ns (b))\n    return -1;\n  else if (get_stat_ctime_ns (b) < get_stat_ctime_ns (a))\n    return 1;\n  else\n    return 0;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

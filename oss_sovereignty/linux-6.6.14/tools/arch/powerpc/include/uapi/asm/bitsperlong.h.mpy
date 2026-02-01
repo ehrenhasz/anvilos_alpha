@@ -1,0 +1,9 @@
+{
+  "module_name": "bitsperlong.h",
+  "hash_id": "b967dc9841ed1d89864571642b59f2ae88ed52dfe6c2fabc1267c751b7897846",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/powerpc/include/uapi/asm/bitsperlong.h",
+  "human_readable_source": " \n#ifndef __ASM_POWERPC_BITSPERLONG_H\n#define __ASM_POWERPC_BITSPERLONG_H\n\n#if defined(__powerpc64__)\n# define __BITS_PER_LONG 64\n#else\n# define __BITS_PER_LONG 32\n#endif\n\n#include <asm-generic/bitsperlong.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

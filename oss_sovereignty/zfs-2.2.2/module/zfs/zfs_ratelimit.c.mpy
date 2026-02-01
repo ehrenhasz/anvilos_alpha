@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_ratelimit.c",
+  "hash_id": "01e1fcdc4d63270a6fba050283b574cfb40799bfc34fc09b61667b74408f2d63",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zfs/zfs_ratelimit.c",
+  "human_readable_source": " \n\n \n\n#include <sys/zfs_ratelimit.h>\n\n \nvoid\nzfs_ratelimit_init(zfs_ratelimit_t *rl, unsigned int *burst,\n    unsigned int interval)\n{\n\trl->count = 0;\n\trl->start = 0;\n\trl->interval = interval;\n\trl->burst = burst;\n\tmutex_init(&rl->lock, NULL, MUTEX_DEFAULT, NULL);\n}\n\n \nvoid\nzfs_ratelimit_fini(zfs_ratelimit_t *rl)\n{\n\tmutex_destroy(&rl->lock);\n}\n\n \nint\nzfs_ratelimit(zfs_ratelimit_t *rl)\n{\n\thrtime_t now;\n\n\thrtime_t elapsed;\n\tint error = 1;\n\n\tmutex_enter(&rl->lock);\n\n\tnow = gethrtime();\n\telapsed = now - rl->start;\n\n\trl->count++;\n\tif (NSEC2SEC(elapsed) >= rl->interval) {\n\t\trl->start = now;\n\t\trl->count = 0;\n\t} else {\n\t\tif (rl->count >= *rl->burst) {\n\t\t\terror = 0;  \n\t\t}\n\t}\n\tmutex_exit(&rl->lock);\n\n\treturn (error);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

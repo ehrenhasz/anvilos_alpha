@@ -1,0 +1,9 @@
+{
+  "module_name": "trampoline_32.S",
+  "hash_id": "a16727a494004afed2489eee43efa2f4b580fb7ab81cd27f0545c842cf4d4d53",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/realmode/rm/trampoline_32.S",
+  "human_readable_source": " \n \n\n#include <linux/linkage.h>\n#include <asm/segment.h>\n#include <asm/page_types.h>\n#include \"realmode.h\"\n\n\t.text\n\t.code16\n\n\t.balign\tPAGE_SIZE\nSYM_CODE_START(trampoline_start)\n\twbinvd\t\t\t# Needed for NUMA-Q should be harmless for others\n\n\tLJMPW_RM(1f)\n1:\n\tmov\t%cs, %ax\t# Code and data in the same place\n\tmov\t%ax, %ds\n\n\tcli\t\t\t# We should be safe anyway\n\n\tmovl\ttr_start, %eax\t# where we need to go\n\n\t \n\tlidtl\ttr_idt\t\t\t# load idt with 0, 0\n\tlgdtl\ttr_gdt\t\t\t# load gdt with whatever is appropriate\n\n\tmovw\t$1, %dx\t\t\t# protected mode (PE) bit\n\tlmsw\t%dx\t\t\t# into protected mode\n\n\tljmpl\t$__BOOT_CS, $pa_startup_32\nSYM_CODE_END(trampoline_start)\n\n\t.section \".text32\",\"ax\"\n\t.code32\nSYM_CODE_START(startup_32)\t\t\t# note: also used from wakeup_asm.S\n\tjmp\t*%eax\nSYM_CODE_END(startup_32)\n\n\t.bss\n\t.balign 8\nSYM_DATA_START(trampoline_header)\n\tSYM_DATA_LOCAL(tr_start,\t.space 4)\n\tSYM_DATA_LOCAL(tr_gdt_pad,\t.space 2)\n\tSYM_DATA_LOCAL(tr_gdt,\t\t.space 6)\nSYM_DATA_END(trampoline_header)\n\t\n#include \"trampoline_common.S\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

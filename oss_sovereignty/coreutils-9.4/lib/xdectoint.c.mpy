@@ -1,0 +1,9 @@
+{
+  "module_name": "xdectoint.c",
+  "hash_id": "4ded391e2cbe10778a021096b9c446b5b88f5a53a6034165f333be0c24c7db0b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xdectoint.c",
+  "human_readable_source": " \n\n__xdectoint_t\n__xnumtoint (char const *n_str, int base, __xdectoint_t min, __xdectoint_t max,\n             char const *suffixes, char const *err, int err_exit)\n{\n  strtol_error s_err;\n\n  __xdectoint_t tnum;\n  s_err = __xstrtol (n_str, nullptr, base, &tnum, suffixes);\n\n  if (s_err == LONGINT_OK)\n    {\n      if (tnum < min || max < tnum)\n        {\n          s_err = LONGINT_OVERFLOW;\n           \n          if (tnum > INT_MAX / 2)\n            errno = EOVERFLOW;\n#if __xdectoint_signed\n          else if (tnum < INT_MIN / 2)\n            errno = EOVERFLOW;\n#endif\n          else\n            errno = ERANGE;\n        }\n    }\n  else if (s_err == LONGINT_OVERFLOW)\n    errno = EOVERFLOW;\n  else if (s_err == LONGINT_INVALID_SUFFIX_CHAR_WITH_OVERFLOW)\n    errno = 0;  \n\n  if (s_err != LONGINT_OK)\n    {\n       \n      error (err_exit ? err_exit : EXIT_FAILURE, errno == EINVAL ? 0 : errno,\n             \"%s: %s\", err, quote (n_str));\n      unreachable ();\n    }\n\n  return tnum;\n}\n\n \n\n__xdectoint_t\n__xdectoint (char const *n_str, __xdectoint_t min, __xdectoint_t max,\n             char const *suffixes, char const *err, int err_exit)\n{\n  return __xnumtoint (n_str, 10, min, max, suffixes, err, err_exit);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "clkc.h",
+  "hash_id": "be5667e9bcc41c443c7a892465e7b60dad3e017efb55ef2a92bcb78df8d56efc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/visconti/clkc.h",
+  "human_readable_source": " \n \n\n#ifndef _VISCONTI_CLKC_H_\n#define _VISCONTI_CLKC_H_\n\n#include <linux/mfd/syscon.h>\n#include <linux/clk-provider.h>\n#include <linux/of.h>\n#include <linux/of_address.h>\n#include <linux/delay.h>\n#include <linux/regmap.h>\n#include <linux/slab.h>\n#include <linux/string.h>\n#include <linux/io.h>\n#include <linux/spinlock.h>\n\n#include \"reset.h\"\n\nstruct visconti_clk_provider {\n\tstruct device\t\t*dev;\n\tstruct regmap\t\t*regmap;\n\tstruct clk_hw_onecell_data clk_data;\n};\n\nstruct visconti_clk_gate_table {\n\tunsigned int\tid;\n\tconst char\t*name;\n\tconst struct clk_parent_data *parent_data;\n\tu8\t\tnum_parents;\n\tu8\t\tflags;\n\tu32\t\tckon_offset;\n\tu32\t\tckoff_offset;\n\tu8\t\tck_idx;\n\tunsigned int\tdiv;\n\tu8\t\trs_id;\n};\n\nstruct visconti_fixed_clk {\n\tunsigned int\tid;\n\tconst char\t*name;\n\tconst char\t*parent;\n\tunsigned long\tflag;\n\tunsigned int\tmult;\n\tunsigned int\tdiv;\n};\n\nstruct visconti_clk_gate {\n\tstruct clk_hw\thw;\n\tstruct regmap\t*regmap;\n\tu32\t\tckon_offset;\n\tu32\t\tckoff_offset;\n\tu8\t\tck_idx;\n\tu8\t\tflags;\n\tu32\t\trson_offset;\n\tu32\t\trsoff_offset;\n\tu8\t\trs_idx;\n\tspinlock_t\t*lock;\n};\n\nstruct visconti_clk_provider *visconti_init_clk(struct device *dev,\n\t\t\t\t\t\tstruct regmap *regmap,\n\t\t\t\t\t\tunsigned long nr_clks);\nint visconti_clk_register_gates(struct visconti_clk_provider *data,\n\t\t\t\t const struct visconti_clk_gate_table *clks,\n\t\t\t\t int num_gate,\n\t\t\t\t const struct visconti_reset_data *reset,\n\t\t\t\t spinlock_t *lock);\n\n#define NO_RESET 0xFF\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

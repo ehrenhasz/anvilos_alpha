@@ -1,0 +1,9 @@
+{
+  "module_name": "p_user.c",
+  "hash_id": "5020688fdf44503072b24d826c4f48b6b85984ee57b62931a9de0feb62dbc932",
+  "original_prompt": "Ingested from ncurses-6.4/panel/p_user.c",
+  "human_readable_source": " \n\n \n\n \n#include \"panel.priv.h\"\n\nMODULE_ID(\"$Id: p_user.c,v 1.11 2021/06/17 21:20:30 tom Exp $\")\n\nPANEL_EXPORT(int)\nset_panel_userptr(PANEL * pan, NCURSES_CONST void *uptr)\n{\n  T((T_CALLED(\"set_panel_userptr(%p,%p)\"), (void *)pan, (NCURSES_CONST void *)uptr));\n  if (!pan)\n    returnCode(ERR);\n  pan->user = uptr;\n  returnCode(OK);\n}\n\nPANEL_EXPORT(NCURSES_CONST void *)\npanel_userptr(const PANEL * pan)\n{\n  T((T_CALLED(\"panel_userptr(%p)\"), (const void *)pan));\n  returnCVoidPtr(pan ? pan->user : (NCURSES_CONST void *)0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

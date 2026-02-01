@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a3941087aa9254d3ef1431576e817707eb1bd762088e26af2c672ff529c671f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpuidle/governors/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for cpuidle governors.\n#\n\nobj-$(CONFIG_CPU_IDLE_GOV_LADDER) += ladder.o\nobj-$(CONFIG_CPU_IDLE_GOV_MENU) += menu.o\nobj-$(CONFIG_CPU_IDLE_GOV_TEO) += teo.o\nobj-$(CONFIG_CPU_IDLE_GOV_HALTPOLL) += haltpoll.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

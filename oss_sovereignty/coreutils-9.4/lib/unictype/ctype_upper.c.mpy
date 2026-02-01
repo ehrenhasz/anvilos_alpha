@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype_upper.c",
+  "hash_id": "83ac52c9a4312c7f66c3f6e2c6567f41fdac59632d96e2e5f378e4221f1f023b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unictype/ctype_upper.c",
+  "human_readable_source": " \n#include \"unictype.h\"\n\n#include \"bitmap.h\"\n\n \n#include \"ctype_upper.h\"\n\nbool\nuc_is_upper (ucs4_t uc)\n{\n  return bitmap_lookup (&u_is_upper, uc);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

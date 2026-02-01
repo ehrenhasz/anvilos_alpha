@@ -1,0 +1,9 @@
+{
+  "module_name": "user-udev.m4",
+  "hash_id": "552a249fa2f7d7b4ea0c2d723e1e9efd9191f0a7dfc619c9249ca829887336ee",
+  "original_prompt": "Ingested from zfs-2.2.2/config/user-udev.m4",
+  "human_readable_source": "AC_DEFUN([ZFS_AC_CONFIG_USER_UDEV], [\n\tAC_MSG_CHECKING(for udev directories)\n\tAC_ARG_WITH(udevdir,\n\t\tAS_HELP_STRING([--with-udevdir=DIR],\n\t\t[install udev helpers @<:@default=check@:>@]),\n\t\t[udevdir=$withval],\n\t\t[udevdir=check])\n\n\tAS_IF([test \"x$udevdir\" = xcheck], [\n\t\tpath1=/lib/udev\n\t\tpath2=/usr/lib/udev\n\t\tdefault=$path2\n\n\t\tAS_IF([test -d \"$path1\"], [udevdir=\"$path1\"], [\n\t\t\tAS_IF([test -d \"$path2\"], [udevdir=\"$path2\"],\n\t\t\t\t[udevdir=\"$default\"])\n\t\t])\n\t])\n\n\tAC_ARG_WITH(udevruledir,\n\t\tAS_HELP_STRING([--with-udevruledir=DIR],\n\t\t[install udev rules [[UDEVDIR/rules.d]]]),\n\t\t[udevruledir=$withval],\n\t\t[udevruledir=\"${udevdir}/rules.d\"])\n\n\tAC_SUBST(udevdir)\n\tAC_SUBST(udevruledir)\n\tAC_MSG_RESULT([$udevdir;$udevruledir])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

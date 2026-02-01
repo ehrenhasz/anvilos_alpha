@@ -1,0 +1,9 @@
+{
+  "module_name": "mpconfigport.h",
+  "hash_id": "a9cd289117b005b0d11d6bde1438363d96ec5257f0ee790b706d1f15696637c1",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/minimal/mpconfigport.h",
+  "human_readable_source": "#include <stdint.h>\n\n\n\n\n#define MICROPY_CONFIG_ROM_LEVEL (MICROPY_CONFIG_ROM_LEVEL_MINIMUM)\n\n\n\n\n#define MICROPY_ENABLE_COMPILER     (1)\n\n#define MICROPY_QSTR_EXTRA_POOL           mp_qstr_frozen_const_pool\n#define MICROPY_ENABLE_GC                 (1)\n#define MICROPY_HELPER_REPL               (1)\n#define MICROPY_MODULE_FROZEN_MPY         (1)\n#define MICROPY_ENABLE_EXTERNAL_IMPORT    (1)\n\n#define MICROPY_ALLOC_PATH_MAX            (256)\n\n\n#define MICROPY_ALLOC_PARSE_CHUNK_INIT    (16)\n\n\n\ntypedef intptr_t mp_int_t; \ntypedef uintptr_t mp_uint_t; \ntypedef long mp_off_t;\n\n\n#include <alloca.h>\n\n#define MICROPY_HW_BOARD_NAME \"minimal\"\n#define MICROPY_HW_MCU_NAME \"unknown-cpu\"\n\n#if defined(__linux__) || defined(__APPLE__)\n#define MICROPY_MIN_USE_STDOUT (1)\n#define MICROPY_HEAP_SIZE      (25600) \n#endif\n\n#ifdef __thumb__\n#define MICROPY_MIN_USE_CORTEX_CPU (1)\n#define MICROPY_MIN_USE_STM32_MCU (1)\n#define MICROPY_HEAP_SIZE      (2048) \n#endif\n\n#define MP_STATE_PORT MP_STATE_VM\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

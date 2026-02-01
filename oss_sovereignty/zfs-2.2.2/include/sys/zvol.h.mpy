@@ -1,0 +1,9 @@
+{
+  "module_name": "zvol.h",
+  "hash_id": "cebd9d69289f085a69ef0daf62c3f6c96e1fa9565e9e8d39dc9c07de8020de63",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zvol.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_SYS_ZVOL_H\n#define\t_SYS_ZVOL_H\n\n#include <sys/zfs_context.h>\n\n#define\tZVOL_OBJ\t\t1ULL\n#define\tZVOL_ZAP_OBJ\t\t2ULL\n\n#define\tSPEC_MAXOFFSET_T\t((1LL << ((NBBY * sizeof (daddr32_t)) + \\\n\t\t\t\tDEV_BSHIFT - 1)) - 1)\n\nextern void zvol_create_minor(const char *);\nextern void zvol_create_minors_recursive(const char *);\nextern void zvol_remove_minors(spa_t *, const char *, boolean_t);\nextern void zvol_rename_minors(spa_t *, const char *, const char *, boolean_t);\n\n#ifdef _KERNEL\nstruct zvol_state;\ntypedef struct zvol_state zvol_state_handle_t;\n\nextern int zvol_check_volsize(uint64_t, uint64_t);\nextern int zvol_check_volblocksize(const char *, uint64_t);\nextern int zvol_get_stats(objset_t *, nvlist_t *);\nextern boolean_t zvol_is_zvol(const char *);\nextern void zvol_create_cb(objset_t *, void *, cred_t *, dmu_tx_t *);\nextern int zvol_set_volsize(const char *, uint64_t);\nextern int zvol_set_snapdev(const char *, zprop_source_t, uint64_t);\nextern int zvol_set_volmode(const char *, zprop_source_t, uint64_t);\nextern zvol_state_handle_t *zvol_suspend(const char *);\nextern int zvol_resume(zvol_state_handle_t *);\nextern void *zvol_tag(zvol_state_handle_t *);\n\nextern int zvol_init(void);\nextern void zvol_fini(void);\nextern int zvol_busy(void);\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-verity-verify-sig.h",
+  "hash_id": "3ce02a1ad2fa3793cbbbe1e74728c037a6a49928ecc7b86b73197806ec251117",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/dm-verity-verify-sig.h",
+  "human_readable_source": " \n \n#ifndef DM_VERITY_SIG_VERIFICATION_H\n#define DM_VERITY_SIG_VERIFICATION_H\n\n#define DM_VERITY_ROOT_HASH_VERIFICATION \"DM Verity Sig Verification\"\n#define DM_VERITY_ROOT_HASH_VERIFICATION_OPT_SIG_KEY \"root_hash_sig_key_desc\"\n\nstruct dm_verity_sig_opts {\n\tunsigned int sig_size;\n\tu8 *sig;\n};\n\n#ifdef CONFIG_DM_VERITY_VERIFY_ROOTHASH_SIG\n\n#define DM_VERITY_ROOT_HASH_VERIFICATION_OPTS 2\n\nint verity_verify_root_hash(const void *data, size_t data_len,\n\t\t\t    const void *sig_data, size_t sig_len);\nbool verity_verify_is_sig_opt_arg(const char *arg_name);\n\nint verity_verify_sig_parse_opt_args(struct dm_arg_set *as, struct dm_verity *v,\n\t\t\t\t    struct dm_verity_sig_opts *sig_opts,\n\t\t\t\t    unsigned int *argc, const char *arg_name);\n\nvoid verity_verify_sig_opts_cleanup(struct dm_verity_sig_opts *sig_opts);\n\n#else\n\n#define DM_VERITY_ROOT_HASH_VERIFICATION_OPTS 0\n\nstatic inline int verity_verify_root_hash(const void *data, size_t data_len,\n\t\t\t\t\t  const void *sig_data, size_t sig_len)\n{\n\treturn 0;\n}\n\nstatic inline bool verity_verify_is_sig_opt_arg(const char *arg_name)\n{\n\treturn false;\n}\n\nstatic inline int verity_verify_sig_parse_opt_args(struct dm_arg_set *as,\n\t\t\tstruct dm_verity *v, struct dm_verity_sig_opts *sig_opts,\n\t\t\tunsigned int *argc, const char *arg_name)\n{\n\treturn -EINVAL;\n}\n\nstatic inline void verity_verify_sig_opts_cleanup(struct dm_verity_sig_opts *sig_opts)\n{\n}\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "stress_code_patching.sh",
+  "hash_id": "586dbf4a31e62c2d44deec7e949fae770fc1ed2ad841f9314cb5d99f5a0eb54f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/mm/stress_code_patching.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0-or-later\n\nTIMEOUT=30\n\nDEBUFS_DIR=`cat /proc/mounts | grep debugfs | awk '{print $2}'`\nif [ ! -e \"$DEBUFS_DIR\" ]\nthen\n\techo \"debugfs not found, skipping\" 1>&2\n\texit 4\nfi\n\nif [ ! -e \"$DEBUFS_DIR/tracing/current_tracer\" ]\nthen\n\techo \"Tracing files not found, skipping\" 1>&2\n\texit 4\nfi\n\n\necho \"Testing for spurious faults when mapping kernel memory...\"\n\nif grep -q \"FUNCTION TRACING IS CORRUPTED\" \"$DEBUFS_DIR/tracing/trace\"\nthen\n\techo \"FAILED: Ftrace already dead. Probably due to a spurious fault\" 1>&2\n\texit 1\nfi\n\ndmesg -C\nSTART_TIME=`date +%s`\nEND_TIME=`expr $START_TIME + $TIMEOUT`\nwhile [ `date +%s` -lt $END_TIME ]\ndo\n\techo function > $DEBUFS_DIR/tracing/current_tracer\n\techo nop > $DEBUFS_DIR/tracing/current_tracer\n\tif dmesg | grep -q 'ftrace bug'\n\tthen\n\t\tbreak\n\tfi\ndone\n\necho nop > $DEBUFS_DIR/tracing/current_tracer\nif dmesg | grep -q 'ftrace bug'\nthen\n\techo \"FAILED: Mapping kernel memory causes spurious faults\" 1>&2\n\texit 1\nelse\n\techo \"OK: Mapping kernel memory does not cause spurious faults\"\n\texit 0\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

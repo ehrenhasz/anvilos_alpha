@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6ab5afea8fe86ec3cf6c3b5b427932f4cdb808ad7ed6017ba7e871598de56cb4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/microchip/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmicrochip-isc-objs = microchip-sama5d2-isc.o\nmicrochip-xisc-objs = microchip-sama7g5-isc.o\nmicrochip-isc-common-objs = microchip-isc-base.o microchip-isc-clk.o microchip-isc-scaler.o\n\nobj-$(CONFIG_VIDEO_MICROCHIP_ISC_BASE) += microchip-isc-common.o\nobj-$(CONFIG_VIDEO_MICROCHIP_ISC) += microchip-isc.o\nobj-$(CONFIG_VIDEO_MICROCHIP_XISC) += microchip-xisc.o\nobj-$(CONFIG_VIDEO_MICROCHIP_CSI2DC) += microchip-csi2dc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cortina,gemini-reset.h",
+  "hash_id": "c96686f1e8f008875a9e12c4f8f4e2280f0a43bcb30db6b94e0c9c64fd465170",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/cortina,gemini-reset.h",
+  "human_readable_source": " \n#ifndef _DT_BINDINGS_RESET_CORTINA_GEMINI_H\n#define _DT_BINDINGS_RESET_CORTINA_GEMINI_H\n\n#define GEMINI_RESET_DRAM\t0\n#define GEMINI_RESET_FLASH\t1\n#define GEMINI_RESET_IDE\t2\n#define GEMINI_RESET_RAID\t3\n#define GEMINI_RESET_SECURITY\t4\n#define GEMINI_RESET_GMAC0\t5\n#define GEMINI_RESET_GMAC1\t6\n#define GEMINI_RESET_PCI\t7\n#define GEMINI_RESET_USB0\t8\n#define GEMINI_RESET_USB1\t9\n#define GEMINI_RESET_DMAC\t10\n#define GEMINI_RESET_APB\t11\n#define GEMINI_RESET_LPC\t12\n#define GEMINI_RESET_LCD\t13\n#define GEMINI_RESET_INTCON0\t14\n#define GEMINI_RESET_INTCON1\t15\n#define GEMINI_RESET_RTC\t16\n#define GEMINI_RESET_TIMER\t17\n#define GEMINI_RESET_UART\t18\n#define GEMINI_RESET_SSP\t19\n#define GEMINI_RESET_GPIO0\t20\n#define GEMINI_RESET_GPIO1\t21\n#define GEMINI_RESET_GPIO2\t22\n#define GEMINI_RESET_WDOG\t23\n#define GEMINI_RESET_EXTERN\t24\n#define GEMINI_RESET_CIR\t25\n#define GEMINI_RESET_SATA0\t26\n#define GEMINI_RESET_SATA1\t27\n#define GEMINI_RESET_TVC\t28\n#define GEMINI_RESET_CPU1\t30\n#define GEMINI_RESET_GLOBAL\t31\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

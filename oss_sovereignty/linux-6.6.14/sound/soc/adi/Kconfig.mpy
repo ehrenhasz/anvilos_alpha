@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "05c6e113746ea08578214a8a44123d2a4417d1b60fa4e28a513c5c9cd6171c18",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/adi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SND_SOC_ADI\n\ttristate \"Audio support for Analog Devices reference designs\"\n\thelp\n\t  Audio support for various reference designs by Analog Devices.\n\nconfig SND_SOC_ADI_AXI_I2S\n\ttristate \"AXI-I2S support\"\n\tdepends on SND_SOC_ADI\n\tselect SND_SOC_GENERIC_DMAENGINE_PCM\n\tselect REGMAP_MMIO\n\thelp\n\t  ASoC driver for the Analog Devices AXI-I2S softcore peripheral.\n\nconfig SND_SOC_ADI_AXI_SPDIF\n\ttristate \"AXI-SPDIF support\"\n\tdepends on SND_SOC_ADI\n\tselect SND_SOC_GENERIC_DMAENGINE_PCM\n\tselect REGMAP_MMIO\n\thelp\n\t  ASoC driver for the Analog Devices AXI-SPDIF softcore peripheral.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rt5659.h",
+  "hash_id": "ca626758b3fca8a1beee184a413e4d8646927971a580c83de1ad164ac0c68b6a",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/rt5659.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SND_RT5659_H\n#define __LINUX_SND_RT5659_H\n\nenum rt5659_dmic1_data_pin {\n\tRT5659_DMIC1_NULL,\n\tRT5659_DMIC1_DATA_IN2N,\n\tRT5659_DMIC1_DATA_GPIO5,\n\tRT5659_DMIC1_DATA_GPIO9,\n\tRT5659_DMIC1_DATA_GPIO11,\n};\n\nenum rt5659_dmic2_data_pin {\n\tRT5659_DMIC2_NULL,\n\tRT5659_DMIC2_DATA_IN2P,\n\tRT5659_DMIC2_DATA_GPIO6,\n\tRT5659_DMIC2_DATA_GPIO10,\n\tRT5659_DMIC2_DATA_GPIO12,\n};\n\nenum rt5659_jd_src {\n\tRT5659_JD_NULL,\n\tRT5659_JD3,\n\tRT5659_JD_HDA_HEADER,\n};\n\nstruct rt5659_platform_data {\n\tbool in1_diff;\n\tbool in3_diff;\n\tbool in4_diff;\n\n\tint ldo1_en;  \n\tint reset;  \n\n\tenum rt5659_dmic1_data_pin dmic1_data_pin;\n\tenum rt5659_dmic2_data_pin dmic2_data_pin;\n\tenum rt5659_jd_src jd_src;\n};\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

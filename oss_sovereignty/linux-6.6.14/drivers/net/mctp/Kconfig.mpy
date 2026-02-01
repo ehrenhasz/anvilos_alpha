@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "81a9fb2be4b35fac7b67ff998406bc75ed02f26566cc4f0e9828032cb3682b77",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/mctp/Kconfig",
+  "human_readable_source": "\nif MCTP\n\nmenu \"MCTP Device Drivers\"\n\nconfig MCTP_SERIAL\n\ttristate \"MCTP serial transport\"\n\tdepends on TTY\n\tselect CRC_CCITT\n\thelp\n\t  This driver provides an MCTP-over-serial interface, through a\n\t  serial line-discipline, as defined by DMTF specification \"DSP0253 -\n\t  MCTP Serial Transport Binding\". By attaching the ldisc to a serial\n\t  device, we get a new net device to transport MCTP packets.\n\n\t  This allows communication with external MCTP endpoints which use\n\t  serial as their transport. It can also be used as an easy way to\n\t  provide MCTP connectivity between virtual machines, by forwarding\n\t  data between simple virtual serial devices.\n\n\t  Say y here if you need to connect to MCTP endpoints over serial. To\n\t  compile as a module, use m; the module will be called mctp-serial.\n\nconfig MCTP_TRANSPORT_I2C\n\ttristate \"MCTP SMBus/I2C transport\"\n\t# i2c-mux is optional, but we must build as a module if i2c-mux is a module\n\tdepends on I2C_MUX || !I2C_MUX\n\tdepends on I2C\n\tdepends on I2C_SLAVE\n\tselect MCTP_FLOWS\n\thelp\n\t  Provides a driver to access MCTP devices over SMBus/I2C transport,\n\t  from DMTF specification DSP0237. A MCTP protocol network device is\n\t  created for each I2C bus that has been assigned a mctp-i2c device.\n\nendmenu\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

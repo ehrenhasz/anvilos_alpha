@@ -1,0 +1,9 @@
+{
+  "module_name": "leds-lm3642.h",
+  "hash_id": "976e5699cf189f4fd98f9a3fdf3d318022184c332dbd05e168608317dcbac695",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/leds-lm3642.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_LM3642_H\n#define __LINUX_LM3642_H\n\n#define LM3642_NAME \"leds-lm3642\"\n\nenum lm3642_torch_pin_enable {\n\tLM3642_TORCH_PIN_DISABLE = 0x00,\n\tLM3642_TORCH_PIN_ENABLE = 0x10,\n};\n\nenum lm3642_strobe_pin_enable {\n\tLM3642_STROBE_PIN_DISABLE = 0x00,\n\tLM3642_STROBE_PIN_ENABLE = 0x20,\n};\n\nenum lm3642_tx_pin_enable {\n\tLM3642_TX_PIN_DISABLE = 0x00,\n\tLM3642_TX_PIN_ENABLE = 0x40,\n};\n\nstruct lm3642_platform_data {\n\tenum lm3642_torch_pin_enable torch_pin;\n\tenum lm3642_strobe_pin_enable strobe_pin;\n\tenum lm3642_tx_pin_enable tx_pin;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

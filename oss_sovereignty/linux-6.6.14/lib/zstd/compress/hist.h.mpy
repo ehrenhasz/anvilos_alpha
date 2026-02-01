@@ -1,0 +1,9 @@
+{
+  "module_name": "hist.h",
+  "hash_id": "5c1059470f435c91752c35e5ab68b2df3c6bf25b9ea0aafc38a9db2c4c7a1b0d",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zstd/compress/hist.h",
+  "human_readable_source": " \n\n \n#include \"../common/zstd_deps.h\"    \n\n\n \n\n \nsize_t HIST_count(unsigned* count, unsigned* maxSymbolValuePtr,\n                  const void* src, size_t srcSize);\n\nunsigned HIST_isError(size_t code);   \n\n\n \n\n#define HIST_WKSP_SIZE_U32 1024\n#define HIST_WKSP_SIZE    (HIST_WKSP_SIZE_U32 * sizeof(unsigned))\n \nsize_t HIST_count_wksp(unsigned* count, unsigned* maxSymbolValuePtr,\n                       const void* src, size_t srcSize,\n                       void* workSpace, size_t workSpaceSize);\n\n \nsize_t HIST_countFast(unsigned* count, unsigned* maxSymbolValuePtr,\n                      const void* src, size_t srcSize);\n\n \nsize_t HIST_countFast_wksp(unsigned* count, unsigned* maxSymbolValuePtr,\n                           const void* src, size_t srcSize,\n                           void* workSpace, size_t workSpaceSize);\n\n \nunsigned HIST_count_simple(unsigned* count, unsigned* maxSymbolValuePtr,\n                           const void* src, size_t srcSize);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_lvds_regs.h",
+  "hash_id": "38ece97b9d858a6532f7523cbc09d4f97cd8c54e8cc6edfedd42df3e84ab03b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_lvds_regs.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_LVDS_REGS_H__\n#define __INTEL_LVDS_REGS_H__\n\n#include \"intel_display_reg_defs.h\"\n\n \n#define LVDS\t\t_MMIO(0x61180)\n \n#define   LVDS_PORT_EN\t\t\tREG_BIT(31)\n \n#define   LVDS_PIPE_SEL_MASK\t\tREG_BIT(30)\n#define   LVDS_PIPE_SEL(pipe)\t\tREG_FIELD_PREP(LVDS_PIPE_SEL_MASK, (pipe))\n#define   LVDS_PIPE_SEL_MASK_CPT\tREG_GENMASK(30, 29)\n#define   LVDS_PIPE_SEL_CPT(pipe)\tREG_FIELD_PREP(LVDS_PIPE_SEL_MASK_CPT, (pipe))\n \n#define   LVDS_ENABLE_DITHER\t\tREG_BIT(25)\n \n#define   LVDS_VSYNC_POLARITY\t\tREG_BIT(21)\n#define   LVDS_HSYNC_POLARITY\t\tREG_BIT(20)\n\n \n#define   LVDS_BORDER_ENABLE\t\tREG_BIT(15)\n \n#define   LVDS_A0A2_CLKA_POWER_MASK\tREG_GENMASK(9, 8)\n#define   LVDS_A0A2_CLKA_POWER_DOWN\tREG_FIELD_PREP(LVDS_A0A2_CLKA_POWER_MASK, 0)\n#define   LVDS_A0A2_CLKA_POWER_UP\tREG_FIELD_PREP(LVDS_A0A2_CLKA_POWER_MASK, 3)\n \n#define   LVDS_A3_POWER_MASK\t\tREG_GENMASK(7, 6)\n#define   LVDS_A3_POWER_DOWN\t\tREG_FIELD_PREP(LVDS_A3_POWER_MASK, 0)\n#define   LVDS_A3_POWER_UP\t\tREG_FIELD_PREP(LVDS_A3_POWER_MASK, 3)\n \n#define   LVDS_CLKB_POWER_MASK\t\tREG_GENMASK(5, 4)\n#define   LVDS_CLKB_POWER_DOWN\t\tREG_FIELD_PREP(LVDS_CLKB_POWER_MASK, 0)\n#define   LVDS_CLKB_POWER_UP\t\tREG_FIELD_PREP(LVDS_CLKB_POWER_MASK, 3)\n \n#define   LVDS_B0B3_POWER_MASK\t\tREG_GENMASK(3, 2)\n#define   LVDS_B0B3_POWER_DOWN\t\tREG_FIELD_PREP(LVDS_B0B3_POWER_MASK, 0)\n#define   LVDS_B0B3_POWER_UP\t\tREG_FIELD_PREP(LVDS_B0B3_POWER_MASK, 3)\n\n#define PCH_LVDS\t_MMIO(0xe1180)\n#define   LVDS_DETECTED\t\t\tREG_BIT(1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

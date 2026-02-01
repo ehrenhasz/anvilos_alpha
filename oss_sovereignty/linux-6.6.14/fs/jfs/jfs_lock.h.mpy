@@ -1,0 +1,9 @@
+{
+  "module_name": "jfs_lock.h",
+  "hash_id": "76612d5226c0293c31492b69b6a117ca2a3e74440b60fce86755c8155d42ac3f",
+  "original_prompt": "Ingested from linux-6.6.14/fs/jfs/jfs_lock.h",
+  "human_readable_source": " \n \n#ifndef _H_JFS_LOCK\n#define _H_JFS_LOCK\n\n#include <linux/spinlock.h>\n#include <linux/mutex.h>\n#include <linux/sched.h>\n\n \n\n \n#define __SLEEP_COND(wq, cond, lock_cmd, unlock_cmd)\t\\\ndo {\t\t\t\t\t\t\t\\\n\tDECLARE_WAITQUEUE(__wait, current);\t\t\\\n\t\t\t\t\t\t\t\\\n\tadd_wait_queue(&wq, &__wait);\t\t\t\\\n\tfor (;;) {\t\t\t\t\t\\\n\t\tset_current_state(TASK_UNINTERRUPTIBLE);\\\n\t\tif (cond)\t\t\t\t\\\n\t\t\tbreak;\t\t\t\t\\\n\t\tunlock_cmd;\t\t\t\t\\\n\t\tio_schedule();\t\t\t\t\\\n\t\tlock_cmd;\t\t\t\t\\\n\t}\t\t\t\t\t\t\\\n\t__set_current_state(TASK_RUNNING);\t\t\t\\\n\tremove_wait_queue(&wq, &__wait);\t\t\\\n} while (0)\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

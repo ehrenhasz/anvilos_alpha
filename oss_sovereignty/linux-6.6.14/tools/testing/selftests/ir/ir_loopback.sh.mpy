@@ -1,0 +1,9 @@
+{
+  "module_name": "ir_loopback.sh",
+  "hash_id": "94abafa61281a8a5740c9c84d91eaec2c52855efc263be66d3d7cc1636a839d0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ir/ir_loopback.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# Kselftest framework requirement - SKIP code is 4.\nksft_skip=4\n\nif [ $UID != 0 ]; then\n\techo \"Please run ir_loopback test as root [SKIP]\"\n\texit $ksft_skip\nfi\n\nif ! /sbin/modprobe -q -n rc-loopback; then\n        echo \"ir_loopback: module rc-loopback is not found in /lib/modules/`uname -r` [SKIP]\"\n        exit $ksft_skip\nfi\n\n/sbin/modprobe rc-loopback\nif [ $? -ne 0 ]; then\n\texit\nfi\n\nRCDEV=$(grep -l DRV_NAME=rc-loopback /sys/class/rc/rc*/uevent | grep -o 'rc[0-9]\\+')\n\n./ir_loopback $RCDEV $RCDEV\nexit\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cs4271-spi.c",
+  "hash_id": "08e20debadb0e3ac643a70c30695992846209ead10bf11db5d66f2351a27b788",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/cs4271-spi.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/spi/spi.h>\n#include <linux/regmap.h>\n#include <sound/soc.h>\n#include \"cs4271.h\"\n\nstatic int cs4271_spi_probe(struct spi_device *spi)\n{\n\tstruct regmap_config config;\n\n\tconfig = cs4271_regmap_config;\n\tconfig.reg_bits = 16;\n\tconfig.read_flag_mask = 0x21;\n\tconfig.write_flag_mask = 0x20;\n\n\treturn cs4271_probe(&spi->dev, devm_regmap_init_spi(spi, &config));\n}\n\nstatic struct spi_driver cs4271_spi_driver = {\n\t.driver = {\n\t\t.name\t= \"cs4271\",\n\t\t.of_match_table = of_match_ptr(cs4271_dt_ids),\n\t},\n\t.probe\t\t= cs4271_spi_probe,\n};\nmodule_spi_driver(cs4271_spi_driver);\n\nMODULE_DESCRIPTION(\"ASoC CS4271 SPI Driver\");\nMODULE_AUTHOR(\"Alexander Sverdlin <subaparts@yandex.ru>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

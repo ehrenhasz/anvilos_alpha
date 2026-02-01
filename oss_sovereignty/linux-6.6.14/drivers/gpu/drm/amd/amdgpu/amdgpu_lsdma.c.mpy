@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_lsdma.c",
+  "hash_id": "af4d4240dd32a90d95e708b1853e606f33fd24c7abf4d9669e00ff3cba0ab3d0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_lsdma.c",
+  "human_readable_source": " \n\n#include \"amdgpu.h\"\n#include \"amdgpu_lsdma.h\"\n\n#define AMDGPU_LSDMA_MAX_SIZE\t0x2000000ULL\n\nint amdgpu_lsdma_wait_for(struct amdgpu_device *adev,\n\t\t\t  uint32_t reg_index, uint32_t reg_val,\n\t\t\t  uint32_t mask)\n{\n\tuint32_t val;\n\tint i;\n\n\tfor (i = 0; i < adev->usec_timeout; i++) {\n\t\tval = RREG32(reg_index);\n\t\tif ((val & mask) == reg_val)\n\t\t\treturn 0;\n\t\tudelay(1);\n\t}\n\n\treturn -ETIME;\n}\n\nint amdgpu_lsdma_copy_mem(struct amdgpu_device *adev,\n\t\t\t  uint64_t src_addr,\n\t\t\t  uint64_t dst_addr,\n\t\t\t  uint64_t mem_size)\n{\n\tint ret;\n\n\tif (mem_size == 0)\n\t\treturn -EINVAL;\n\n\twhile (mem_size > 0) {\n\t\tuint64_t current_copy_size = min(mem_size, AMDGPU_LSDMA_MAX_SIZE);\n\n\t\tret = adev->lsdma.funcs->copy_mem(adev, src_addr, dst_addr, current_copy_size);\n\t\tif (ret)\n\t\t\treturn ret;\n\t\tsrc_addr += current_copy_size;\n\t\tdst_addr += current_copy_size;\n\t\tmem_size -= current_copy_size;\n\t}\n\n\treturn 0;\n}\n\nint amdgpu_lsdma_fill_mem(struct amdgpu_device *adev,\n\t\t\t  uint64_t dst_addr,\n\t\t\t  uint32_t data,\n\t\t\t  uint64_t mem_size)\n{\n\tint ret;\n\n\tif (mem_size == 0)\n\t\treturn -EINVAL;\n\n\twhile (mem_size > 0) {\n\t\tuint64_t current_fill_size = min(mem_size, AMDGPU_LSDMA_MAX_SIZE);\n\n\t\tret = adev->lsdma.funcs->fill_mem(adev, dst_addr, data, current_fill_size);\n\t\tif (ret)\n\t\t\treturn ret;\n\t\tdst_addr += current_fill_size;\n\t\tmem_size -= current_fill_size;\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

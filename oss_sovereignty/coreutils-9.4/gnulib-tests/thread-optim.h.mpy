@@ -1,0 +1,9 @@
+{
+  "module_name": "thread-optim.h",
+  "hash_id": "22e47573e61a615c7c40bc41e0f88c1d6c320a1c456ec70764e9cba5405d65d3",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/thread-optim.h",
+  "human_readable_source": " \n\n#ifndef _THREAD_OPTIM_H\n#define _THREAD_OPTIM_H\n\n \n\n \n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#if HAVE_SYS_SINGLE_THREADED_H  \n# include <sys/single_threaded.h>\n# define gl_multithreaded()  (!__libc_single_threaded)\n#else\n# define gl_multithreaded()  1\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

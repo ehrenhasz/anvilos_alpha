@@ -1,0 +1,9 @@
+{
+  "module_name": "rk3188-power.h",
+  "hash_id": "063649311e87c8c79ff1f97b1e73d2f85eaa28fc08964a0c57037569b3467d9b",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/rk3188-power.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_POWER_RK3188_POWER_H__\n#define __DT_BINDINGS_POWER_RK3188_POWER_H__\n\n \n#define RK3188_PD_A9_0\t\t0\n#define RK3188_PD_A9_1\t\t1\n#define RK3188_PD_A9_2\t\t2\n#define RK3188_PD_A9_3\t\t3\n#define RK3188_PD_DBG\t\t4\n#define RK3188_PD_SCU\t\t5\n\n \n#define RK3188_PD_VIDEO\t\t6\n#define RK3188_PD_VIO\t\t7\n#define RK3188_PD_GPU\t\t8\n#define RK3188_PD_PERI\t\t9\n#define RK3188_PD_CPU\t\t10\n#define RK3188_PD_ALIVE\t\t11\n\n \n#define RK3188_PD_RTC\t\t12\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

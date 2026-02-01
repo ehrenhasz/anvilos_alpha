@@ -1,0 +1,9 @@
+{
+  "module_name": "task_barrier.h",
+  "hash_id": "998d954b0658dcd0135a138688bc80c8a6bc6090a0ca640204bac700eec9453f",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/task_barrier.h",
+  "human_readable_source": " \n#include <linux/semaphore.h>\n#include <linux/atomic.h>\n\n \n\n\n\n#ifndef DRM_TASK_BARRIER_H_\n#define DRM_TASK_BARRIER_H_\n\n \nstruct task_barrier {\n\tunsigned int n;\n\tatomic_t count;\n\tstruct semaphore enter_turnstile;\n\tstruct semaphore exit_turnstile;\n};\n\nstatic inline void task_barrier_signal_turnstile(struct semaphore *turnstile,\n\t\t\t\t\t\t unsigned int n)\n{\n\tint i;\n\n\tfor (i = 0 ; i < n; i++)\n\t\tup(turnstile);\n}\n\nstatic inline void task_barrier_init(struct task_barrier *tb)\n{\n\ttb->n = 0;\n\tatomic_set(&tb->count, 0);\n\tsema_init(&tb->enter_turnstile, 0);\n\tsema_init(&tb->exit_turnstile, 0);\n}\n\nstatic inline void task_barrier_add_task(struct task_barrier *tb)\n{\n\ttb->n++;\n}\n\nstatic inline void task_barrier_rem_task(struct task_barrier *tb)\n{\n\ttb->n--;\n}\n\n \nstatic inline void task_barrier_enter(struct task_barrier *tb)\n{\n\tif (atomic_inc_return(&tb->count) == tb->n)\n\t\ttask_barrier_signal_turnstile(&tb->enter_turnstile, tb->n);\n\n\tdown(&tb->enter_turnstile);\n}\n\n \nstatic inline void task_barrier_exit(struct task_barrier *tb)\n{\n\tif (atomic_dec_return(&tb->count) == 0)\n\t\ttask_barrier_signal_turnstile(&tb->exit_turnstile, tb->n);\n\n\tdown(&tb->exit_turnstile);\n}\n\n \nstatic inline void task_barrier_full(struct task_barrier *tb)\n{\n\ttask_barrier_enter(tb);\n\ttask_barrier_exit(tb);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

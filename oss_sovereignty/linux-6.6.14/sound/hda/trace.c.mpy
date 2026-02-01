@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "52bfca48b60356b005b43541945872c95ddabd4721afa957288098041d54f015",
+  "original_prompt": "Ingested from linux-6.6.14/sound/hda/trace.c",
+  "human_readable_source": " \n\n#define CREATE_TRACE_POINTS\n#include \"trace.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libcap.c",
+  "hash_id": "e4dd2bfcfd6ac676cfd6548e6745447b68b78aeadc50f1e5146e9915283e2a24",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libcap.c",
+  "human_readable_source": "\n#include <sys/capability.h>\n#include <linux/capability.h>\n\nint main(void)\n{\n\tcap_flag_value_t val;\n\tcap_t caps = cap_get_proc();\n\n\tif (!caps)\n\t\treturn 1;\n\n\tif (cap_get_flag(caps, CAP_SYS_ADMIN, CAP_EFFECTIVE, &val) != 0)\n\t\treturn 1;\n\n\tif (cap_free(caps) != 0)\n\t\treturn 1;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

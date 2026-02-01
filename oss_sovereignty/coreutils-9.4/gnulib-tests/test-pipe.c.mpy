@@ -1,0 +1,9 @@
+{
+  "module_name": "test-pipe.c",
+  "hash_id": "9f7f6582527eeb065b6909c000784e1249fc9a61525eba2b86b3c42da038fb13",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-pipe.c",
+  "human_readable_source": " \n# define WIN32_LEAN_AND_MEAN\n# include <windows.h>\n \n# if GNULIB_MSVC_NOTHROW\n#  include \"msvc-nothrow.h\"\n# else\n#  include <io.h>\n# endif\n#endif\n\n#include \"binary-io.h\"\n#include \"macros.h\"\n\n \nstatic bool\nis_open (int fd)\n{\n#if defined _WIN32 && ! defined __CYGWIN__\n   \n  return (HANDLE) _get_osfhandle (fd) != INVALID_HANDLE_VALUE;\n#else\n# ifndef F_GETFL\n#  error Please port fcntl to your platform\n# endif\n  return 0 <= fcntl (fd, F_GETFL);\n#endif\n}\n\n \nstatic bool\nis_cloexec (int fd)\n{\n#if defined _WIN32 && ! defined __CYGWIN__\n  HANDLE h = (HANDLE) _get_osfhandle (fd);\n  DWORD flags;\n  ASSERT (GetHandleInformation (h, &flags));\n  return (flags & HANDLE_FLAG_INHERIT) == 0;\n#else\n  int flags;\n  ASSERT ((flags = fcntl (fd, F_GETFD)) >= 0);\n  return (flags & FD_CLOEXEC) != 0;\n#endif\n}\n\n \nstatic bool\nis_nonblocking (int fd)\n{\n#if defined _WIN32 && ! defined __CYGWIN__\n   \n  return 0;\n#else\n  int flags;\n  ASSERT ((flags = fcntl (fd, F_GETFL)) >= 0);\n  return (flags & O_NONBLOCK) != 0;\n#endif\n}\n\nint\nmain ()\n{\n  int fd[2];\n\n  fd[0] = -1;\n  fd[1] = -1;\n  ASSERT (pipe (fd) >= 0);\n  ASSERT (fd[0] >= 0);\n  ASSERT (fd[1] >= 0);\n  ASSERT (fd[0] != fd[1]);\n  ASSERT (is_open (fd[0]));\n  ASSERT (is_open (fd[1]));\n  ASSERT (!is_cloexec (fd[0]));\n  ASSERT (!is_cloexec (fd[1]));\n  ASSERT (!is_nonblocking (fd[0]));\n  ASSERT (!is_nonblocking (fd[1]));\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "THIRDPARTYLICENSE.descrip",
+  "hash_id": "d7455dcc8e0100ebd40d88458f139c6a716683ec96a8801f87fb8491d3fc2879",
+  "original_prompt": "Ingested from zfs-2.2.2/module/icp/algs/skein/THIRDPARTYLICENSE.descrip",
+  "human_readable_source": "LICENSE TERMS OF SKEIN HASH ALGORITHM IMPLEMENTATION\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

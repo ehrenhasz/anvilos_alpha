@@ -1,0 +1,9 @@
+{
+  "module_name": "microchip-lan78xx.h",
+  "hash_id": "f997968d2dd10ec84e640f1ec0edba18f231c1f65e135b2d4a0846743f2e7a2e",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/net/microchip-lan78xx.h",
+  "human_readable_source": " \n#ifndef _DT_BINDINGS_MICROCHIP_LAN78XX_H\n#define _DT_BINDINGS_MICROCHIP_LAN78XX_H\n\n \n\n#define LAN78XX_LINK_ACTIVITY           0\n#define LAN78XX_LINK_1000_ACTIVITY      1\n#define LAN78XX_LINK_100_ACTIVITY       2\n#define LAN78XX_LINK_10_ACTIVITY        3\n#define LAN78XX_LINK_100_1000_ACTIVITY  4\n#define LAN78XX_LINK_10_1000_ACTIVITY   5\n#define LAN78XX_LINK_10_100_ACTIVITY    6\n#define LAN78XX_DUPLEX_COLLISION        8\n#define LAN78XX_COLLISION               9\n#define LAN78XX_ACTIVITY                10\n#define LAN78XX_AUTONEG_FAULT           12\n#define LAN78XX_FORCE_LED_OFF           14\n#define LAN78XX_FORCE_LED_ON            15\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

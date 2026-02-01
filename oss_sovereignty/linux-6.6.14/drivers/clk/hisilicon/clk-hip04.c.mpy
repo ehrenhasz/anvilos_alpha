@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-hip04.c",
+  "hash_id": "26d86a31897e8b6865d59c9ee74d593f7b12882a0025ff43125baf4e89a61555",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/hisilicon/clk-hip04.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/clk-provider.h>\n#include <linux/io.h>\n#include <linux/slab.h>\n\n#include <dt-bindings/clock/hip04-clock.h>\n\n#include \"clk.h\"\n\n \nstatic struct hisi_fixed_rate_clock hip04_fixed_rate_clks[] __initdata = {\n\t{ HIP04_OSC50M,   \"osc50m\",   NULL, 0, 50000000, },\n\t{ HIP04_CLK_50M,  \"clk50m\",   NULL, 0, 50000000, },\n\t{ HIP04_CLK_168M, \"clk168m\",  NULL, 0, 168750000, },\n};\n\nstatic void __init hip04_clk_init(struct device_node *np)\n{\n\tstruct hisi_clock_data *clk_data;\n\n\tclk_data = hisi_clk_init(np, HIP04_NR_CLKS);\n\tif (!clk_data)\n\t\treturn;\n\n\thisi_clk_register_fixed_rate(hip04_fixed_rate_clks,\n\t\t\t\t     ARRAY_SIZE(hip04_fixed_rate_clks),\n\t\t\t\t     clk_data);\n}\nCLK_OF_DECLARE(hip04_clk, \"hisilicon,hip04-clock\", hip04_clk_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

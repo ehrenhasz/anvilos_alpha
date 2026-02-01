@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objproperty.c.qstr",
+  "hash_id": "52629dfab642d07eb6d0a4df1fed5e751e05cbc5821e72f891ec78c57c0ff81d",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objproperty.c.qstr",
+  "human_readable_source": "Q(doc)\nQ(getter)\nQ(setter)\nQ(deleter)\nQ(property)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

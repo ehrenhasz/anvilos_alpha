@@ -1,0 +1,9 @@
+{
+  "module_name": "vsx_asm.h",
+  "hash_id": "c707a8795340e6ec92b58120af9468a4b3c24ec9861dae66b8b9c819c9da0d53",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/include/vsx_asm.h",
+  "human_readable_source": " \n \n\n#include \"basic_asm.h\"\n\n \nFUNC_START(load_vsx)\n\tli\tr5,0\n\tlxvd2x\tvs20,r5,r3\n\taddi\tr5,r5,16\n\tlxvd2x\tvs21,r5,r3\n\taddi\tr5,r5,16\n\tlxvd2x\tvs22,r5,r3\n\taddi\tr5,r5,16\n\tlxvd2x\tvs23,r5,r3\n\taddi\tr5,r5,16\n\tlxvd2x\tvs24,r5,r3\n\taddi\tr5,r5,16\n\tlxvd2x\tvs25,r5,r3\n\taddi\tr5,r5,16\n\tlxvd2x\tvs26,r5,r3\n\taddi\tr5,r5,16\n\tlxvd2x\tvs27,r5,r3\n\taddi\tr5,r5,16\n\tlxvd2x\tvs28,r5,r3\n\taddi\tr5,r5,16\n\tlxvd2x\tvs29,r5,r3\n\taddi\tr5,r5,16\n\tlxvd2x\tvs30,r5,r3\n\taddi\tr5,r5,16\n\tlxvd2x\tvs31,r5,r3\n\tblr\nFUNC_END(load_vsx)\n\nFUNC_START(store_vsx)\n\tli\tr5,0\n\tstxvd2x\tvs20,r5,r3\n\taddi\tr5,r5,16\n\tstxvd2x\tvs21,r5,r3\n\taddi\tr5,r5,16\n\tstxvd2x\tvs22,r5,r3\n\taddi\tr5,r5,16\n\tstxvd2x\tvs23,r5,r3\n\taddi\tr5,r5,16\n\tstxvd2x\tvs24,r5,r3\n\taddi\tr5,r5,16\n\tstxvd2x\tvs25,r5,r3\n\taddi\tr5,r5,16\n\tstxvd2x\tvs26,r5,r3\n\taddi\tr5,r5,16\n\tstxvd2x\tvs27,r5,r3\n\taddi\tr5,r5,16\n\tstxvd2x\tvs28,r5,r3\n\taddi\tr5,r5,16\n\tstxvd2x\tvs29,r5,r3\n\taddi\tr5,r5,16\n\tstxvd2x\tvs30,r5,r3\n\taddi\tr5,r5,16\n\tstxvd2x\tvs31,r5,r3\n\tblr\nFUNC_END(store_vsx)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

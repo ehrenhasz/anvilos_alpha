@@ -1,0 +1,9 @@
+{
+  "module_name": "qe_tdm.h",
+  "hash_id": "63ef02d54415b5a5a42bd8a15192d3632f3a2ed887b45824c52a8b2645b32017",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/fsl/qe/qe_tdm.h",
+  "human_readable_source": " \n \n\n#ifndef _QE_TDM_H_\n#define _QE_TDM_H_\n\n#include <linux/list.h>\n#include <linux/types.h>\n\n#include <soc/fsl/qe/immap_qe.h>\n#include <soc/fsl/qe/qe.h>\n\n#include <soc/fsl/qe/ucc.h>\n#include <soc/fsl/qe/ucc_fast.h>\n\nstruct device_node;\n\n \n#define SIR_LAST\t0x0001\n#define SIR_BYTE\t0x0002\n#define SIR_CNT(x)\t((x) << 2)\n#define SIR_CSEL(x)\t((x) << 5)\n#define SIR_SGS\t\t0x0200\n#define SIR_SWTR\t0x4000\n#define SIR_MCC\t\t0x8000\n#define SIR_IDLE\t0\n\n \n#define SIMR_SAD(x) ((x) << 12)\n#define SIMR_SDM_NORMAL\t0x0000\n#define SIMR_SDM_INTERNAL_LOOPBACK\t0x0800\n#define SIMR_SDM_MASK\t0x0c00\n#define SIMR_CRT\t0x0040\n#define SIMR_SL\t\t0x0020\n#define SIMR_CE\t\t0x0010\n#define SIMR_FE\t\t0x0008\n#define SIMR_GM\t\t0x0004\n#define SIMR_TFSD(n)\t(n)\n#define SIMR_RFSD(n)\t((n) << 8)\n\nenum tdm_ts_t {\n\tTDM_TX_TS,\n\tTDM_RX_TS\n};\n\nenum tdm_framer_t {\n\tTDM_FRAMER_T1,\n\tTDM_FRAMER_E1\n};\n\nenum tdm_mode_t {\n\tTDM_INTERNAL_LOOPBACK,\n\tTDM_NORMAL\n};\n\nstruct si_mode_info {\n\tu8 simr_rfsd;\n\tu8 simr_tfsd;\n\tu8 simr_crt;\n\tu8 simr_sl;\n\tu8 simr_ce;\n\tu8 simr_fe;\n\tu8 simr_gm;\n};\n\nstruct ucc_tdm_info {\n\tstruct ucc_fast_info uf_info;\n\tstruct si_mode_info si_info;\n};\n\nstruct ucc_tdm {\n\tu16 tdm_port;\t\t \n\tu32 siram_entry_id;\n\tu16 __iomem *siram;\n\tstruct si1 __iomem *si_regs;\n\tenum tdm_framer_t tdm_framer_type;\n\tenum tdm_mode_t tdm_mode;\n\tu8 num_of_ts;\t\t \n\tu32 tx_ts_mask;\t\t \n\tu32 rx_ts_mask;\t\t \n};\n\nint ucc_of_parse_tdm(struct device_node *np, struct ucc_tdm *utdm,\n\t\t     struct ucc_tdm_info *ut_info);\nvoid ucc_tdm_init(struct ucc_tdm *utdm, struct ucc_tdm_info *ut_info);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

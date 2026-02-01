@@ -1,0 +1,9 @@
+{
+  "module_name": "bcd.c",
+  "hash_id": "1b21178df0665a2445d546434babfd80fca500ed24abd3b6845b754293e5c862",
+  "original_prompt": "Ingested from linux-6.6.14/lib/bcd.c",
+  "human_readable_source": "\n#include <linux/bcd.h>\n#include <linux/export.h>\n\nunsigned _bcd2bin(unsigned char val)\n{\n\treturn (val & 0x0f) + (val >> 4) * 10;\n}\nEXPORT_SYMBOL(_bcd2bin);\n\nunsigned char _bin2bcd(unsigned val)\n{\n\treturn ((val / 10) << 4) + val % 10;\n}\nEXPORT_SYMBOL(_bin2bcd);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

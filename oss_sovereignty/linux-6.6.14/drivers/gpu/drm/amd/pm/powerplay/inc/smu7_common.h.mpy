@@ -1,0 +1,9 @@
+{
+  "module_name": "smu7_common.h",
+  "hash_id": "667f210267256638c252497aadbb1fdc83e2822695954d852417c80a48352f55",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/inc/smu7_common.h",
+  "human_readable_source": " \n\n#ifndef _PP_COMMON_H\n#define _PP_COMMON_H\n\n#include \"smu7_ppsmc.h\"\n#include \"cgs_common.h\"\n\n#include \"smu/smu_7_1_3_d.h\"\n#include \"smu/smu_7_1_3_sh_mask.h\"\n\n\n#include \"smu74.h\"\n#include \"smu74_discrete.h\"\n\n#include \"gmc/gmc_8_1_d.h\"\n#include \"gmc/gmc_8_1_sh_mask.h\"\n\n#include \"bif/bif_5_0_d.h\"\n#include \"bif/bif_5_0_sh_mask.h\"\n\n#include \"dce/dce_10_0_d.h\"\n#include \"dce/dce_10_0_sh_mask.h\"\n\n#include \"gca/gfx_8_0_d.h\"\n#include \"gca/gfx_8_0_sh_mask.h\"\n\n#include \"oss/oss_3_0_d.h\"\n#include \"oss/oss_3_0_sh_mask.h\"\n\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

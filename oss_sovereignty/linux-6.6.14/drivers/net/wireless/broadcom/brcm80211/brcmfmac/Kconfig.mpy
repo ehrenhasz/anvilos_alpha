@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "bcf68063fb3d3d3659bf7c166dfe1da7bf54353247c925578e961b3446175648",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/Kconfig",
+  "human_readable_source": "config BRCMFMAC\n\ttristate \"Broadcom FullMAC WLAN driver\"\n\tdepends on CFG80211\n\tselect BRCMUTIL\n\thelp\n\t  This module adds support for wireless adapters based on Broadcom\n\t  FullMAC chipsets. It has to work with at least one of the bus\n\t  interface support. If you choose to build a module, it'll be called\n\t  brcmfmac.ko.\n\nconfig BRCMFMAC_PROTO_BCDC\n\tbool\n\nconfig BRCMFMAC_PROTO_MSGBUF\n\tbool\n\nconfig BRCMFMAC_SDIO\n\tbool \"SDIO bus interface support for FullMAC driver\"\n\tdepends on (MMC = y || MMC = BRCMFMAC)\n\tdepends on BRCMFMAC\n\tselect BRCMFMAC_PROTO_BCDC\n\tselect FW_LOADER\n\tdefault y\n\thelp\n\t  This option enables the SDIO bus interface support for Broadcom\n\t  IEEE802.11n embedded FullMAC WLAN driver. Say Y if you want to\n\t  use the driver for a SDIO wireless card.\n\nconfig BRCMFMAC_USB\n\tbool \"USB bus interface support for FullMAC driver\"\n\tdepends on (USB = y || USB = BRCMFMAC)\n\tdepends on BRCMFMAC\n\tselect BRCMFMAC_PROTO_BCDC\n\tselect FW_LOADER\n\thelp\n\t  This option enables the USB bus interface support for Broadcom\n\t  IEEE802.11n embedded FullMAC WLAN driver. Say Y if you want to\n\t  use the driver for an USB wireless card.\n\nconfig BRCMFMAC_PCIE\n\tbool \"PCIE bus interface support for FullMAC driver\"\n\tdepends on BRCMFMAC\n\tdepends on PCI\n\tselect BRCMFMAC_PROTO_MSGBUF\n\tselect FW_LOADER\n\thelp\n\t  This option enables the PCIE bus interface support for Broadcom\n\t  IEEE802.11ac embedded FullMAC WLAN driver. Say Y if you want to\n\t  use the driver for an PCIE wireless card.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

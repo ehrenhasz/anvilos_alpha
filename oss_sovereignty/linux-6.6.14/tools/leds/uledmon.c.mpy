@@ -1,0 +1,9 @@
+{
+  "module_name": "uledmon.c",
+  "hash_id": "52035c5d55ffdd73cbe04dec8ec07672b6eacc1892b8dabc4682d02c21b2f93e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/leds/uledmon.c",
+  "human_readable_source": "\n \n\n#include <fcntl.h>\n#include <stdio.h>\n#include <string.h>\n#include <time.h>\n#include <unistd.h>\n\n#include <linux/uleds.h>\n\nint main(int argc, char const *argv[])\n{\n\tstruct uleds_user_dev uleds_dev;\n\tint fd, ret;\n\tint brightness;\n\tstruct timespec ts;\n\n\tif (argc != 2) {\n\t\tfprintf(stderr, \"Requires <device-name> argument\\n\");\n\t\treturn 1;\n\t}\n\n\tstrncpy(uleds_dev.name, argv[1], LED_MAX_NAME_SIZE);\n\tuleds_dev.max_brightness = 100;\n\n\tfd = open(\"/dev/uleds\", O_RDWR);\n\tif (fd == -1) {\n\t\tperror(\"Failed to open /dev/uleds\");\n\t\treturn 1;\n\t}\n\n\tret = write(fd, &uleds_dev, sizeof(uleds_dev));\n\tif (ret == -1) {\n\t\tperror(\"Failed to write to /dev/uleds\");\n\t\tclose(fd);\n\t\treturn 1;\n\t}\n\n\twhile (1) {\n\t\tret = read(fd, &brightness, sizeof(brightness));\n\t\tif (ret == -1) {\n\t\t\tperror(\"Failed to read from /dev/uleds\");\n\t\t\tclose(fd);\n\t\t\treturn 1;\n\t\t}\n\t\tclock_gettime(CLOCK_MONOTONIC, &ts);\n\t\tprintf(\"[%ld.%09ld] %u\\n\", ts.tv_sec, ts.tv_nsec, brightness);\n\t}\n\n\tclose(fd);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

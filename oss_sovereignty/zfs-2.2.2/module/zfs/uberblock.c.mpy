@@ -1,0 +1,9 @@
+{
+  "module_name": "uberblock.c",
+  "hash_id": "a336c74dcff332fd65eb4e2cd85915b0ec2630fc3ef8ca24bd220c3c2d8ea9ae",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zfs/uberblock.c",
+  "human_readable_source": " \n \n\n#include <sys/zfs_context.h>\n#include <sys/uberblock_impl.h>\n#include <sys/vdev_impl.h>\n#include <sys/mmp.h>\n\nint\nuberblock_verify(uberblock_t *ub)\n{\n\tif (ub->ub_magic == BSWAP_64((uint64_t)UBERBLOCK_MAGIC))\n\t\tbyteswap_uint64_array(ub, sizeof (uberblock_t));\n\n\tif (ub->ub_magic != UBERBLOCK_MAGIC)\n\t\treturn (SET_ERROR(EINVAL));\n\n\treturn (0);\n}\n\n \nboolean_t\nuberblock_update(uberblock_t *ub, vdev_t *rvd, uint64_t txg, uint64_t mmp_delay)\n{\n\tASSERT(ub->ub_txg < txg);\n\n\t \n\tub->ub_magic = UBERBLOCK_MAGIC;\n\tub->ub_txg = txg;\n\tub->ub_guid_sum = rvd->vdev_guid_sum;\n\tub->ub_timestamp = gethrestime_sec();\n\tub->ub_software_version = SPA_VERSION;\n\tub->ub_mmp_magic = MMP_MAGIC;\n\tif (spa_multihost(rvd->vdev_spa)) {\n\t\tub->ub_mmp_delay = mmp_delay;\n\t\tub->ub_mmp_config = MMP_SEQ_SET(0) |\n\t\t    MMP_INTERVAL_SET(zfs_multihost_interval) |\n\t\t    MMP_FAIL_INT_SET(zfs_multihost_fail_intervals);\n\t} else {\n\t\tub->ub_mmp_delay = 0;\n\t\tub->ub_mmp_config = 0;\n\t}\n\tub->ub_checkpoint_txg = 0;\n\n\treturn (ub->ub_rootbp.blk_birth == txg);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

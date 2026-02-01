@@ -1,0 +1,9 @@
+{
+  "module_name": "evsel_config.h",
+  "hash_id": "afb2be3f4d2d8106d0702e26ba9cef5c352b5cd11237b9724f59fb77b3ca86a9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/evsel_config.h",
+  "human_readable_source": "\n#ifndef __PERF_EVSEL_CONFIG_H\n#define __PERF_EVSEL_CONFIG_H 1\n\n#include <linux/types.h>\n#include <stdbool.h>\n\n \nenum evsel_term_type {\n\tEVSEL__CONFIG_TERM_PERIOD,\n\tEVSEL__CONFIG_TERM_FREQ,\n\tEVSEL__CONFIG_TERM_TIME,\n\tEVSEL__CONFIG_TERM_CALLGRAPH,\n\tEVSEL__CONFIG_TERM_STACK_USER,\n\tEVSEL__CONFIG_TERM_INHERIT,\n\tEVSEL__CONFIG_TERM_MAX_STACK,\n\tEVSEL__CONFIG_TERM_MAX_EVENTS,\n\tEVSEL__CONFIG_TERM_OVERWRITE,\n\tEVSEL__CONFIG_TERM_DRV_CFG,\n\tEVSEL__CONFIG_TERM_BRANCH,\n\tEVSEL__CONFIG_TERM_PERCORE,\n\tEVSEL__CONFIG_TERM_AUX_OUTPUT,\n\tEVSEL__CONFIG_TERM_AUX_SAMPLE_SIZE,\n\tEVSEL__CONFIG_TERM_CFG_CHG,\n};\n\nstruct evsel_config_term {\n\tstruct list_head      list;\n\tenum evsel_term_type  type;\n\tbool\t\t      free_str;\n\tunion {\n\t\tu64\t      period;\n\t\tu64\t      freq;\n\t\tbool\t      time;\n\t\tu64\t      stack_user;\n\t\tint\t      max_stack;\n\t\tbool\t      inherit;\n\t\tbool\t      overwrite;\n\t\tunsigned long max_events;\n\t\tbool\t      percore;\n\t\tbool\t      aux_output;\n\t\tu32\t      aux_sample_size;\n\t\tu64\t      cfg_chg;\n\t\tchar\t      *str;\n\t} val;\n\tbool weak;\n};\n\nstruct evsel;\n\nstruct evsel_config_term *__evsel__get_config_term(struct evsel *evsel, enum evsel_term_type type);\n\n#define evsel__get_config_term(evsel, type) \\\n\t__evsel__get_config_term(evsel, EVSEL__CONFIG_TERM_ ## type)\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

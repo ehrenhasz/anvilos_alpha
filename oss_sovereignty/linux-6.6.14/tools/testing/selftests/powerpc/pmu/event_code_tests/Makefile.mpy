@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7a39dce611d09816e34eb28b8c8a93258ff2a4430621717f0248fe5db2d93855",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/event_code_tests/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCFLAGS += -m64\n\nTEST_GEN_PROGS := group_constraint_pmc56_test group_pmc56_exclude_constraints_test group_constraint_pmc_count_test \\\n\tgroup_constraint_repeat_test group_constraint_radix_scope_qual_test reserved_bits_mmcra_sample_elig_mode_test \\\n\tgroup_constraint_mmcra_sample_test invalid_event_code_test reserved_bits_mmcra_thresh_ctl_test \\\n\tblacklisted_events_test event_alternatives_tests_p9 event_alternatives_tests_p10 generic_events_valid_test \\\n\tgroup_constraint_l2l3_sel_test group_constraint_cache_test group_constraint_thresh_cmp_test \\\n\tgroup_constraint_unit_test group_constraint_thresh_ctl_test group_constraint_thresh_sel_test \\\n\thw_cache_event_type_test\n\ntop_srcdir = ../../../../../..\ninclude ../../../lib.mk\n\n$(TEST_GEN_PROGS): ../../harness.c ../../utils.c ../event.c ../lib.c ../sampling_tests/misc.h ../sampling_tests/misc.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

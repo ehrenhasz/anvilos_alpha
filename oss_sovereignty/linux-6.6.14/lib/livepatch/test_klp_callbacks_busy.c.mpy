@@ -1,0 +1,9 @@
+{
+  "module_name": "test_klp_callbacks_busy.c",
+  "hash_id": "872a7cf5c191ec4a02855b04e201b3a2dff9bb2b5fe4c830db25266d1b6904f5",
+  "original_prompt": "Ingested from linux-6.6.14/lib/livepatch/test_klp_callbacks_busy.c",
+  "human_readable_source": "\n\n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <linux/module.h>\n#include <linux/kernel.h>\n#include <linux/sched.h>\n#include <linux/workqueue.h>\n#include <linux/delay.h>\n\n \nstatic bool block_transition;\nmodule_param(block_transition, bool, 0644);\nMODULE_PARM_DESC(block_transition, \"block_transition (default=false)\");\n\nstatic void busymod_work_func(struct work_struct *work);\nstatic DECLARE_WORK(work, busymod_work_func);\nstatic DECLARE_COMPLETION(busymod_work_started);\n\nstatic void busymod_work_func(struct work_struct *work)\n{\n\tpr_info(\"%s enter\\n\", __func__);\n\tcomplete(&busymod_work_started);\n\n\twhile (READ_ONCE(block_transition)) {\n\t\t \n\t\tmsleep(20);\n\t}\n\n\tpr_info(\"%s exit\\n\", __func__);\n}\n\nstatic int test_klp_callbacks_busy_init(void)\n{\n\tpr_info(\"%s\\n\", __func__);\n\tschedule_work(&work);\n\n\t \n\twait_for_completion(&busymod_work_started);\n\n\tif (!block_transition) {\n\t\t \n\t\tflush_work(&work);\n\t}\n\n\treturn 0;\n}\n\nstatic void test_klp_callbacks_busy_exit(void)\n{\n\tWRITE_ONCE(block_transition, false);\n\tflush_work(&work);\n\tpr_info(\"%s\\n\", __func__);\n}\n\nmodule_init(test_klp_callbacks_busy_init);\nmodule_exit(test_klp_callbacks_busy_exit);\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Joe Lawrence <joe.lawrence@redhat.com>\");\nMODULE_DESCRIPTION(\"Livepatch test: busy target module\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

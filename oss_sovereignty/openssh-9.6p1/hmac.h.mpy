@@ -1,0 +1,9 @@
+{
+  "module_name": "hmac.h",
+  "hash_id": "afbdcf9b227eb55a7a9c11db1937e1bb25f6059505ce5c4fff4d83fec8c2acb3",
+  "original_prompt": "Ingested from openssh-9.6p1/hmac.h",
+  "human_readable_source": " \n \n\n#ifndef _HMAC_H\n#define _HMAC_H\n\n \nsize_t ssh_hmac_bytes(int alg);\n\nstruct sshbuf;\nstruct ssh_hmac_ctx;\nstruct ssh_hmac_ctx *ssh_hmac_start(int alg);\n\n \nint ssh_hmac_init(struct ssh_hmac_ctx *ctx, const void *key, size_t klen)\n\t__attribute__((__bounded__(__buffer__, 2, 3)));\nint ssh_hmac_update(struct ssh_hmac_ctx *ctx, const void *m, size_t mlen)\n\t__attribute__((__bounded__(__buffer__, 2, 3)));\nint ssh_hmac_update_buffer(struct ssh_hmac_ctx *ctx, const struct sshbuf *b);\nint ssh_hmac_final(struct ssh_hmac_ctx *ctx, u_char *d, size_t dlen)\n\t__attribute__((__bounded__(__buffer__, 2, 3)));\nvoid ssh_hmac_free(struct ssh_hmac_ctx *ctx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

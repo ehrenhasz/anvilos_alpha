@@ -1,0 +1,9 @@
+{
+  "module_name": "hbm.h",
+  "hash_id": "cc3c772128e5f43b15416411cf31642df653ca9484f50073f021aa849031f35d",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/hbm.h",
+  "human_readable_source": " \nstruct hbm_vqueue {\n\tstruct bpf_spin_lock lock;\n\t \n\tunsigned long long lasttime;\t \n\tint credit;\t\t\t \n\tunsigned int rate;\t\t \n};\n\nstruct hbm_queue_stats {\n\tunsigned long rate;\t\t \n\tunsigned long stats:1,\t\t \n\t\tloopback:1,\t\t \n\t\tno_cn:1;\t\t \n\tunsigned long long pkts_marked;\n\tunsigned long long bytes_marked;\n\tunsigned long long pkts_dropped;\n\tunsigned long long bytes_dropped;\n\tunsigned long long pkts_total;\n\tunsigned long long bytes_total;\n\tunsigned long long firstPacketTime;\n\tunsigned long long lastPacketTime;\n\tunsigned long long pkts_ecn_ce;\n\tunsigned long long returnValCount[4];\n\tunsigned long long sum_cwnd;\n\tunsigned long long sum_rtt;\n\tunsigned long long sum_cwnd_cnt;\n\tlong long sum_credit;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

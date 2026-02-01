@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1341506615f2f5a10a9c04f3145b3c5fc303f34ac35dea5b16b725403ab52e86",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/display/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\n\nconfig DRM_DP_AUX_BUS\n\ttristate\n\tdepends on DRM\n\tdepends on OF || COMPILE_TEST\n\nconfig DRM_DISPLAY_HELPER\n\ttristate\n\tdepends on DRM\n\thelp\n\t  DRM helpers for display adapters.\n\nconfig DRM_DISPLAY_DP_HELPER\n\tbool\n\tdepends on DRM_DISPLAY_HELPER\n\thelp\n\t  DRM display helpers for DisplayPort.\n\nconfig DRM_DISPLAY_HDCP_HELPER\n\tbool\n\tdepends on DRM_DISPLAY_HELPER\n\thelp\n\t  DRM display helpers for HDCP.\n\nconfig DRM_DISPLAY_HDMI_HELPER\n\tbool\n\tdepends on DRM_DISPLAY_HELPER\n\thelp\n\t  DRM display helpers for HDMI.\n\nconfig DRM_DP_AUX_CHARDEV\n\tbool \"DRM DP AUX Interface\"\n\tdepends on DRM && DRM_DISPLAY_HELPER\n\tselect DRM_DISPLAY_DP_HELPER\n\thelp\n\t  Choose this option to enable a /dev/drm_dp_auxN node that allows to\n\t  read and write values to arbitrary DPCD registers on the DP aux\n\t  channel.\n\nconfig DRM_DP_CEC\n\tbool \"Enable DisplayPort CEC-Tunneling-over-AUX HDMI support\"\n\tdepends on DRM && DRM_DISPLAY_HELPER\n\tselect DRM_DISPLAY_DP_HELPER\n\tselect CEC_CORE\n\thelp\n\t  Choose this option if you want to enable HDMI CEC support for\n\t  DisplayPort/USB-C to HDMI adapters.\n\n\t  Note: not all adapters support this feature, and even for those\n\t  that do support this they often do not hook up the CEC pin.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

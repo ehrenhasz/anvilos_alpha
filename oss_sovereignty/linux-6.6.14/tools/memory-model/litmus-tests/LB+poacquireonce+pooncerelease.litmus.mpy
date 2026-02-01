@@ -1,0 +1,9 @@
+{
+  "module_name": "LB+poacquireonce+pooncerelease.litmus",
+  "hash_id": "0e58838a7a0dab97238a26ffc2ec9454d4e3e9d621b094aa36a9c7855954aad2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/LB+poacquireonce+pooncerelease.litmus",
+  "human_readable_source": "C LB+poacquireonce+pooncerelease\n\n(*\n * Result: Never\n *\n * Does a release-acquire pair suffice for the load-buffering litmus\n * test, where each process reads from one of two variables then writes\n * to the other?\n *)\n\n{}\n\nP0(int *x, int *y)\n{\n\tint r0;\n\n\tr0 = READ_ONCE(*x);\n\tsmp_store_release(y, 1);\n}\n\nP1(int *x, int *y)\n{\n\tint r0;\n\n\tr0 = smp_load_acquire(y);\n\tWRITE_ONCE(*x, 1);\n}\n\nexists (0:r0=1 /\\ 1:r0=1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

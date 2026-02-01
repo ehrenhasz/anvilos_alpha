@@ -1,0 +1,9 @@
+{
+  "module_name": "bitmap.sh",
+  "hash_id": "f8b51f9d30adf85b3c68a011cc5e6aba97198c9a92657faf3098033d80f14a28",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/lib/bitmap.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n$(dirname $0)/../kselftest/module.sh \"bitmap\" test_bitmap\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

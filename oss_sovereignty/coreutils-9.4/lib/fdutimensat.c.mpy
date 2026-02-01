@@ -1,0 +1,9 @@
+{
+  "module_name": "fdutimensat.c",
+  "hash_id": "cf919481cf129e136d1d3b3c5989b87114c756f2f20b72bb4312c36528ec74cd",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fdutimensat.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#include \"utimens.h\"\n\n#include <errno.h>\n#include <fcntl.h>\n#include <sys/stat.h>\n\n \n\nint\nfdutimensat (int fd, int dir, char const *file, struct timespec const ts[2],\n             int atflag)\n{\n  int result = 1;\n  if (0 <= fd)\n    result = futimens (fd, ts);\n  if (file && (fd < 0 || (result == -1 && errno == ENOSYS)))\n    result = utimensat (dir, file, ts, atflag);\n  if (result == 1)\n    {\n      errno = EBADF;\n      result = -1;\n    }\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

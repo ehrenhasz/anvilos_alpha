@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype.h",
+  "hash_id": "7582f2494cf87dada89f080eac19e15a10ff1010dd5c1cd56665b455de5cef0d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/nolibc/ctype.h",
+  "human_readable_source": " \n \n\n#ifndef _NOLIBC_CTYPE_H\n#define _NOLIBC_CTYPE_H\n\n#include \"std.h\"\n\n \n\nstatic __attribute__((unused))\nint isascii(int c)\n{\n\t \n\treturn (unsigned int)c <= 0x7f;\n}\n\nstatic __attribute__((unused))\nint isblank(int c)\n{\n\treturn c == '\\t' || c == ' ';\n}\n\nstatic __attribute__((unused))\nint iscntrl(int c)\n{\n\t \n\treturn (unsigned int)c < 0x20 || c == 0x7f;\n}\n\nstatic __attribute__((unused))\nint isdigit(int c)\n{\n\treturn (unsigned int)(c - '0') < 10;\n}\n\nstatic __attribute__((unused))\nint isgraph(int c)\n{\n\t \n\treturn (unsigned int)(c - 0x21) < 0x5e;\n}\n\nstatic __attribute__((unused))\nint islower(int c)\n{\n\treturn (unsigned int)(c - 'a') < 26;\n}\n\nstatic __attribute__((unused))\nint isprint(int c)\n{\n\t \n\treturn (unsigned int)(c - 0x20) < 0x5f;\n}\n\nstatic __attribute__((unused))\nint isspace(int c)\n{\n\t \n\treturn ((unsigned int)c == ' ') || (unsigned int)(c - 0x09) < 5;\n}\n\nstatic __attribute__((unused))\nint isupper(int c)\n{\n\treturn (unsigned int)(c - 'A') < 26;\n}\n\nstatic __attribute__((unused))\nint isxdigit(int c)\n{\n\treturn isdigit(c) || (unsigned int)(c - 'A') < 6 || (unsigned int)(c - 'a') < 6;\n}\n\nstatic __attribute__((unused))\nint isalpha(int c)\n{\n\treturn islower(c) || isupper(c);\n}\n\nstatic __attribute__((unused))\nint isalnum(int c)\n{\n\treturn isalpha(c) || isdigit(c);\n}\n\nstatic __attribute__((unused))\nint ispunct(int c)\n{\n\treturn isgraph(c) && !isalnum(c);\n}\n\n \n#include \"nolibc.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

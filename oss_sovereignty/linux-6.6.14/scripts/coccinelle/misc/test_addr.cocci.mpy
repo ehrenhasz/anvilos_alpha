@@ -1,0 +1,9 @@
+{
+  "module_name": "test_addr.cocci",
+  "hash_id": "14406b6c87d62d90b730707ee5c27d3c6eff4fec9ca585503f846e17c097342b",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/misc/test_addr.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0-only\n/// The address of a variable or field is likely always to be non-zero.\n///\n// Confidence: High\n// Copyright: (C) 2012 Julia Lawall, INRIA/LIP6.\n// Copyright: (C) 2012 Gilles Muller, INRIA/LiP6.\n// URL: https://coccinelle.gitlabpages.inria.fr/website\n// Comments:\n// Options: --no-includes --include-headers\n\nvirtual org\nvirtual report\nvirtual context\n\n@r@\nexpression x;\nposition p;\n@@\n\n*\\(&x@p == NULL \\| &x@p != NULL\\)\n\n@script:python depends on org@\np << r.p;\n@@\n\ncocci.print_main(\"test of a variable/field address\",p)\n\n@script:python depends on report@\np << r.p;\n@@\n\nmsg = \"ERROR: test of a variable/field address\"\ncoccilib.report.print_report(p[0],msg)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

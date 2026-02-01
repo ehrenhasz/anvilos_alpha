@@ -1,0 +1,9 @@
+{
+  "module_name": "time_r.c",
+  "hash_id": "81a0ee89b8e8d69479aa66065dfde70eff0fa5ba7418f9e1a65c1165ccbbe7c3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/time_r.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <time.h>\n\nstatic struct tm *\ncopy_tm_result (struct tm *dest, struct tm const *src)\n{\n  if (! src)\n    return 0;\n  *dest = *src;\n  return dest;\n}\n\n\nstruct tm *\ngmtime_r (time_t const * restrict t, struct tm * restrict tp)\n{\n  return copy_tm_result (tp, gmtime (t));\n}\n\nstruct tm *\nlocaltime_r (time_t const * restrict t, struct tm * restrict tp)\n{\n  return copy_tm_result (tp, localtime (t));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

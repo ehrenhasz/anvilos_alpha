@@ -1,0 +1,9 @@
+{
+  "module_name": "rt2x00debug.h",
+  "hash_id": "35ad0a714f83ef8ce994323becc3b0792fbdd06640c5fb8091c85ebf9bae5da2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ralink/rt2x00/rt2x00debug.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef RT2X00DEBUG_H\n#define RT2X00DEBUG_H\n\nstruct rt2x00_dev;\n\n \nenum rt2x00debugfs_entry_flags {\n\tRT2X00DEBUGFS_OFFSET\t= (1 << 0),\n};\n\n#define RT2X00DEBUGFS_REGISTER_ENTRY(__name, __type)\t\t\\\nstruct reg##__name {\t\t\t\t\t\t\\\n\t__type (*read)(struct rt2x00_dev *rt2x00dev,\t\t\\\n\t\t     const unsigned int word);\t\t\t\\\n\tvoid (*write)(struct rt2x00_dev *rt2x00dev,\t\t\\\n\t\t      const unsigned int word, __type data);\t\\\n\t\t\t\t\t\t\t\t\\\n\tunsigned int flags;\t\t\t\t\t\\\n\t\t\t\t\t\t\t\t\\\n\tunsigned int word_base;\t\t\t\t\t\\\n\tunsigned int word_size;\t\t\t\t\t\\\n\tunsigned int word_count;\t\t\t\t\\\n} __name\n\nstruct rt2x00debug {\n\t \n\tstruct module *owner;\n\n\t \n\tRT2X00DEBUGFS_REGISTER_ENTRY(csr, u32);\n\tRT2X00DEBUGFS_REGISTER_ENTRY(eeprom, u16);\n\tRT2X00DEBUGFS_REGISTER_ENTRY(bbp, u8);\n\tRT2X00DEBUGFS_REGISTER_ENTRY(rf, u32);\n\tRT2X00DEBUGFS_REGISTER_ENTRY(rfcsr, u8);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

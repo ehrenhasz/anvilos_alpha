@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_display_debugfs.h",
+  "hash_id": "fda344ea9f809a79b7e8bed6332acb9cbedf8fae0f102390dcbf699d019d0a32",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_display_debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_DISPLAY_DEBUGFS_H__\n#define __INTEL_DISPLAY_DEBUGFS_H__\n\nstruct drm_i915_private;\nstruct intel_connector;\nstruct intel_crtc;\n\n#ifdef CONFIG_DEBUG_FS\nvoid intel_display_debugfs_register(struct drm_i915_private *i915);\nvoid intel_connector_debugfs_add(struct intel_connector *connector);\nvoid intel_crtc_debugfs_add(struct intel_crtc *crtc);\n#else\nstatic inline void intel_display_debugfs_register(struct drm_i915_private *i915) {}\nstatic inline void intel_connector_debugfs_add(struct intel_connector *connector) {}\nstatic inline void intel_crtc_debugfs_add(struct intel_crtc *crtc) {}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

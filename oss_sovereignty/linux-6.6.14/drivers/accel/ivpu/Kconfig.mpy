@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0b7aaf16424e819ec4b4c9f05aa003ce4ee6ddc08b21ae33a455f78ba4c73a53",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/ivpu/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig DRM_ACCEL_IVPU\n\ttristate \"Intel VPU for Meteor Lake and newer\"\n\tdepends on DRM_ACCEL\n\tdepends on X86_64 && !UML\n\tdepends on PCI && PCI_MSI\n\tselect FW_LOADER\n\tselect SHMEM\n\tselect GENERIC_ALLOCATOR\n\thelp\n\t  Choose this option if you have a system that has an 14th generation Intel CPU\n\t  or newer. VPU stands for Versatile Processing Unit and it's a CPU-integrated\n\t  inference accelerator for Computer Vision and Deep Learning applications.\n\n\t  If \"M\" is selected, the module will be called intel_vpu.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

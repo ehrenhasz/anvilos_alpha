@@ -1,0 +1,9 @@
+{
+  "module_name": "primitive.c",
+  "hash_id": "8af856c1ca472030ef9578ba22a8f939027003b8bfef06342c146b45af36ba33",
+  "original_prompt": "Ingested from linux-6.6.14/net/sctp/primitive.c",
+  "human_readable_source": "\n \n\n#include <linux/types.h>\n#include <linux/list.h>  \n#include <linux/socket.h>\n#include <linux/ip.h>\n#include <linux/time.h>  \n#include <linux/gfp.h>\n#include <net/sock.h>\n#include <net/sctp/sctp.h>\n#include <net/sctp/sm.h>\n\n#define DECLARE_PRIMITIVE(name) \\\n  \\\nint sctp_primitive_ ## name(struct net *net, struct sctp_association *asoc, \\\n\t\t\t    void *arg) { \\\n\tint error = 0; \\\n\tenum sctp_event_type event_type; union sctp_subtype subtype; \\\n\tenum sctp_state state; \\\n\tstruct sctp_endpoint *ep; \\\n\t\\\n\tevent_type = SCTP_EVENT_T_PRIMITIVE; \\\n\tsubtype = SCTP_ST_PRIMITIVE(SCTP_PRIMITIVE_ ## name); \\\n\tstate = asoc ? asoc->state : SCTP_STATE_CLOSED; \\\n\tep = asoc ? asoc->ep : NULL; \\\n\t\\\n\terror = sctp_do_sm(net, event_type, subtype, state, ep, asoc,\t\\\n\t\t\t   arg, GFP_KERNEL); \\\n\treturn error; \\\n}\n\n \n\n \n\nDECLARE_PRIMITIVE(ASSOCIATE)\n\n \n\nDECLARE_PRIMITIVE(SHUTDOWN);\n\n \n\nDECLARE_PRIMITIVE(ABORT);\n\n \n\nDECLARE_PRIMITIVE(SEND);\n\n \n\nDECLARE_PRIMITIVE(REQUESTHEARTBEAT);\n\n \n\nDECLARE_PRIMITIVE(ASCONF);\n\n \nDECLARE_PRIMITIVE(RECONF);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

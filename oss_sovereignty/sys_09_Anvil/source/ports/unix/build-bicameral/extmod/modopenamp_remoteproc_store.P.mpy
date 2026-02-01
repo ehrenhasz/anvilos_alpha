@@ -1,0 +1,9 @@
+{
+  "module_name": "modopenamp_remoteproc_store.P",
+  "hash_id": "944726652ad98aa5bc19a2f928cad67cf904c32d570fa5be769bc02ef90448e0",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/extmod/modopenamp_remoteproc_store.P",
+  "human_readable_source": "build-bicameral/extmod/modopenamp_remoteproc_store.o: \\\n ../../extmod/modopenamp_remoteproc_store.c \\\n /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/stdc-predef.h\n ../../extmod/modopenamp_remoteproc_store.c :\n /home/aimeat/anvilos/ext/toolchain/x86_64-unknown-linux-musl/sysroot/usr/include/stdc-predef.h :\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

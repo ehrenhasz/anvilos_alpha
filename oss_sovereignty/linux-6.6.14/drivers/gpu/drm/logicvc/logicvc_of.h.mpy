@@ -1,0 +1,9 @@
+{
+  "module_name": "logicvc_of.h",
+  "hash_id": "9089f9f95f317e1facdc949cefdc8428a06a6b51ddf1572c3ef55e33cf1f8c9d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/logicvc/logicvc_of.h",
+  "human_readable_source": " \n \n\n#ifndef _LOGICVC_OF_H_\n#define _LOGICVC_OF_H_\n\nenum logicvc_of_property_index {\n\tLOGICVC_OF_PROPERTY_DISPLAY_INTERFACE = 0,\n\tLOGICVC_OF_PROPERTY_DISPLAY_COLORSPACE,\n\tLOGICVC_OF_PROPERTY_DISPLAY_DEPTH,\n\tLOGICVC_OF_PROPERTY_ROW_STRIDE,\n\tLOGICVC_OF_PROPERTY_DITHERING,\n\tLOGICVC_OF_PROPERTY_BACKGROUND_LAYER,\n\tLOGICVC_OF_PROPERTY_LAYERS_CONFIGURABLE,\n\tLOGICVC_OF_PROPERTY_LAYERS_COUNT,\n\tLOGICVC_OF_PROPERTY_LAYER_DEPTH,\n\tLOGICVC_OF_PROPERTY_LAYER_COLORSPACE,\n\tLOGICVC_OF_PROPERTY_LAYER_ALPHA_MODE,\n\tLOGICVC_OF_PROPERTY_LAYER_BASE_OFFSET,\n\tLOGICVC_OF_PROPERTY_LAYER_BUFFER_OFFSET,\n\tLOGICVC_OF_PROPERTY_LAYER_PRIMARY,\n\tLOGICVC_OF_PROPERTY_MAXIMUM,\n};\n\nstruct logicvc_of_property_sv {\n\tconst char *string;\n\tu32 value;\n};\n\nstruct logicvc_of_property {\n\tchar *name;\n\tbool optional;\n\tstruct logicvc_of_property_sv *sv;\n\tu32 range[2];\n};\n\nint logicvc_of_property_parse_u32(struct device_node *of_node,\n\t\t\t\t  unsigned int index, u32 *target);\nvoid logicvc_of_property_parse_bool(struct device_node *of_node,\n\t\t\t\t    unsigned int index, bool *target);\nbool logicvc_of_node_is_layer(struct device_node *of_node);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

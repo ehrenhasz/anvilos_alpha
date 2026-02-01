@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "30f95c8e2f8f5a310b1de96ba2c2c4228b9be2ffaf526a65a5c041d704a990cb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/st95hf/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for STMicroelectronics NFC transceiver ST95HF\n#\n\nobj-$(CONFIG_NFC_ST95HF)\t+= st95hf.o\nst95hf-objs\t\t\t:= spi.o core.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

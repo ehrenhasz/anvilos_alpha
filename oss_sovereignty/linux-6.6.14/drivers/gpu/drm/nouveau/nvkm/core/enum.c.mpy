@@ -1,0 +1,9 @@
+{
+  "module_name": "enum.c",
+  "hash_id": "41c8213efb5720844638760be44b62db635367e648af3de8ef7b300fc1c856f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/core/enum.c",
+  "human_readable_source": " \n#include <core/enum.h>\n\nconst struct nvkm_enum *\nnvkm_enum_find(const struct nvkm_enum *en, u32 value)\n{\n\twhile (en->name) {\n\t\tif (en->value == value)\n\t\t\treturn en;\n\t\ten++;\n\t}\n\n\treturn NULL;\n}\n\nvoid\nnvkm_snprintbf(char *data, int size, const struct nvkm_bitfield *bf, u32 value)\n{\n\tbool space = false;\n\twhile (size >= 1 && bf->name) {\n\t\tif (value & bf->mask) {\n\t\t\tint this = snprintf(data, size, \"%s%s\",\n\t\t\t\t\t    space ? \" \" : \"\", bf->name);\n\t\t\tsize -= this;\n\t\t\tdata += this;\n\t\t\tspace = true;\n\t\t}\n\t\tbf++;\n\t}\n\tdata[0] = '\\0';\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

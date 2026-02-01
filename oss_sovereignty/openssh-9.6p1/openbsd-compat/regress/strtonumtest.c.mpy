@@ -1,0 +1,9 @@
+{
+  "module_name": "strtonumtest.c",
+  "hash_id": "208be2c9a949ba565cb4677bd6cd6ca14659aa7fb1d78c5abcebf48ff5170407",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/regress/strtonumtest.c",
+  "human_readable_source": " \n \n\n \n\n#include \"includes.h\"\n\n#include <limits.h>\n#include <stdio.h>\n#include <stdlib.h>\n\n \n#if defined(LONGLONG_MAX) && !defined(LLONG_MAX)\n# define LLONG_MAX LONGLONG_MAX\n# define LLONG_MIN LONGLONG_MIN\n#endif\n\n \n#if defined(LONG_LONG_MAX) && !defined(LLONG_MAX)\n# define LLONG_MAX LONG_LONG_MAX\n# define LLONG_MIN LONG_LONG_MIN\n#endif\n\nlong long strtonum(const char *, long long, long long, const char **);\n\nint fail;\n\nvoid\ntest(const char *p, long long lb, long long ub, int ok)\n{\n\tlong long val;\n\tconst char *q;\n\n\tval = strtonum(p, lb, ub, &q);\n\tif (ok && q != NULL) {\n\t\tfprintf(stderr, \"%s [%lld-%lld] \", p, lb, ub);\n\t\tfprintf(stderr, \"NUMBER NOT ACCEPTED %s\\n\", q);\n\t\tfail = 1;\n\t} else if (!ok && q == NULL) {\n\t\tfprintf(stderr, \"%s [%lld-%lld] %lld \", p, lb, ub, val);\n\t\tfprintf(stderr, \"NUMBER ACCEPTED\\n\");\n\t\tfail = 1;\n\t}\n}\n\nint main(void)\n{\n\ttest(\"1\", 0, 10, 1);\n\ttest(\"0\", -2, 5, 1);\n\ttest(\"0\", 2, 5, 0);\n\ttest(\"0\", 2, LLONG_MAX, 0);\n\ttest(\"-2\", 0, LLONG_MAX, 0);\n\ttest(\"0\", -5, LLONG_MAX, 1);\n\ttest(\"-3\", -3, LLONG_MAX, 1);\n\ttest(\"-9223372036854775808\", LLONG_MIN, LLONG_MAX, 1);\n\ttest(\"9223372036854775807\", LLONG_MIN, LLONG_MAX, 1);\n\ttest(\"-9223372036854775809\", LLONG_MIN, LLONG_MAX, 0);\n\ttest(\"9223372036854775808\", LLONG_MIN, LLONG_MAX, 0);\n\ttest(\"1000000000000000000000000\", LLONG_MIN, LLONG_MAX, 0);\n\ttest(\"-1000000000000000000000000\", LLONG_MIN, LLONG_MAX, 0);\n\ttest(\"-2\", 10, -1, 0);\n\ttest(\"-2\", -10, -1, 1);\n\ttest(\"-20\", -10, -1, 0);\n\ttest(\"20\", -10, -1, 0);\n\n\treturn (fail);\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

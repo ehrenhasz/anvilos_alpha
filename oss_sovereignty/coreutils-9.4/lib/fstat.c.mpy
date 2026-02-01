@@ -1,0 +1,9 @@
+{
+  "module_name": "fstat.c",
+  "hash_id": "5df9c72f4a332acadc45d4850e1e7c2368174074873d8ab0f3f98a1bd0fd20b1",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fstat.c",
+  "human_readable_source": " \n#define __need_system_sys_stat_h\n#include <config.h>\n\n \n#include <sys/types.h>\n#include <sys/stat.h>\n#undef __need_system_sys_stat_h\n\n#if defined _WIN32 && ! defined __CYGWIN__\n# define WINDOWS_NATIVE\n#endif\n\n#if !defined WINDOWS_NATIVE\n\nstatic int\norig_fstat (int fd, struct stat *buf)\n{\n  return fstat (fd, buf);\n}\n\n#endif\n\n \n#ifdef __osf__\n \n# include \"sys/stat.h\"\n#else\n# include <sys/stat.h>\n#endif\n\n#include \"stat-time.h\"\n\n#include <errno.h>\n#include <unistd.h>\n#ifdef WINDOWS_NATIVE\n# define WIN32_LEAN_AND_MEAN\n# include <windows.h>\n# if GNULIB_MSVC_NOTHROW\n#  include \"msvc-nothrow.h\"\n# else\n#  include <io.h>\n# endif\n# include \"stat-w32.h\"\n#endif\n\nint\nrpl_fstat (int fd, struct stat *buf)\n{\n#if REPLACE_FCHDIR && REPLACE_OPEN_DIRECTORY\n   \n  const char *name = _gl_directory_name (fd);\n  if (name != NULL)\n    return stat (name, buf);\n#endif\n\n#ifdef WINDOWS_NATIVE\n  /* Fill the fields ourselves, because the original fstat function returns\n     values for st_atime, st_mtime, st_ctime that depend on the current time\n     zone.  See\n     <https:\n  HANDLE h = (HANDLE) _get_osfhandle (fd);\n\n  if (h == INVALID_HANDLE_VALUE)\n    {\n      errno = EBADF;\n      return -1;\n    }\n  return _gl_fstat_by_handle (h, NULL, buf);\n#else\n  return stat_time_normalize (orig_fstat (fd, buf), buf);\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "drv_scsi_fw_funcs.h",
+  "hash_id": "d58df33171f47da6b51e8dbbc4bd39648b763e93b359d55e39bae5637a110cee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/qedf/drv_scsi_fw_funcs.h",
+  "human_readable_source": " \n \n#ifndef _SCSI_FW_FUNCS_H\n#define _SCSI_FW_FUNCS_H\n#include <linux/qed/common_hsi.h>\n#include <linux/qed/storage_common.h>\n#include <linux/qed/fcoe_common.h>\n\nstruct scsi_sgl_task_params {\n\tstruct scsi_sge *sgl;\n\tstruct regpair sgl_phys_addr;\n\tu32 total_buffer_size;\n\tu16 num_sges;\n\n\t  \n\tbool small_mid_sge;\n};\n\nstruct scsi_dif_task_params {\n\tu32 initial_ref_tag;\n\tbool initial_ref_tag_is_valid;\n\tu16 application_tag;\n\tu16 application_tag_mask;\n\tu16 dif_block_size_log;\n\tbool dif_on_network;\n\tbool dif_on_host;\n\tu8 host_guard_type;\n\tu8 protection_type;\n\tu8 ref_tag_mask;\n\tbool crc_seed;\n\n\t  \n\tbool tx_dif_conn_err_en;\n\tbool ignore_app_tag;\n\tbool keep_ref_tag_const;\n\tbool validate_guard;\n\tbool validate_app_tag;\n\tbool validate_ref_tag;\n\tbool forward_guard;\n\tbool forward_app_tag;\n\tbool forward_ref_tag;\n\tbool forward_app_tag_with_mask;\n\tbool forward_ref_tag_with_mask;\n};\n\nstruct scsi_initiator_cmd_params {\n\t  \n\tstruct scsi_sge extended_cdb_sge;\n\n\t \n\tstruct regpair sense_data_buffer_phys_addr;\n};\n\n \nbool scsi_is_slow_sgl(u16 num_sges, bool small_mid_sge);\n\n \nvoid init_scsi_sgl_context(struct scsi_sgl_params *sgl_params,\n\tstruct scsi_cached_sges *ctx_data_desc,\n\tstruct scsi_sgl_task_params *sgl_task_params);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

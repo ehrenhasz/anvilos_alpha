@@ -1,0 +1,9 @@
+{
+  "module_name": "thread_pool_impl.h",
+  "hash_id": "77703fc9ecd231706f5deaf0634cd02f7d6da764da8dd565f1891dd2eefee928",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libtpool/thread_pool_impl.h",
+  "human_readable_source": " \n\n \n\n#ifndef _THREAD_POOL_IMPL_H\n#define\t_THREAD_POOL_IMPL_H\n\n#include <thread_pool.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \n\n \ntypedef struct tpool_job tpool_job_t;\nstruct tpool_job {\n\ttpool_job_t\t*tpj_next;\t\t \n\tvoid\t\t(*tpj_func)(void *);\t \n\tvoid\t\t*tpj_arg;\t\t \n};\n\n \ntypedef struct tpool_active tpool_active_t;\nstruct tpool_active {\n\ttpool_active_t\t*tpa_next;\t \n\tpthread_t\ttpa_tid;\t \n};\n\n \nstruct tpool {\n\ttpool_t\t\t*tp_forw;\t \n\ttpool_t\t\t*tp_back;\n\tpthread_mutex_t\ttp_mutex;\t \n\tpthread_cond_t\ttp_busycv;\t \n\tpthread_cond_t\ttp_workcv;\t \n\tpthread_cond_t\ttp_waitcv;\t \n\ttpool_active_t\t*tp_active;\t \n\ttpool_job_t\t*tp_head;\t \n\ttpool_job_t\t*tp_tail;\n\tpthread_attr_t\ttp_attr;\t \n\tint\t\ttp_flags;\t \n\tuint_t\t\ttp_linger;\t \n\tint\t\ttp_njobs;\t \n\tint\t\ttp_minimum;\t \n\tint\t\ttp_maximum;\t \n\tint\t\ttp_current;\t \n\tint\t\ttp_idle;\t \n};\n\n \n#define\tTP_WAIT\t\t0x01\t\t \n#define\tTP_SUSPEND\t0x02\t\t \n#define\tTP_DESTROY\t0x04\t\t \n#define\tTP_ABANDON\t0x08\t\t \n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "unwind-libunwind.c",
+  "hash_id": "b1dd6b83872896073f594ae81fa433bcedd5ae3083527cffedeae14adf33770e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arm/util/unwind-libunwind.c",
+  "human_readable_source": "\n\n#include <errno.h>\n#include <libunwind.h>\n#include \"perf_regs.h\"\n#include \"../../../util/unwind.h\"\n#include \"../../../util/debug.h\"\n\nint libunwind__arch_reg_id(int regnum)\n{\n\tswitch (regnum) {\n\tcase UNW_ARM_R0:\n\t\treturn PERF_REG_ARM_R0;\n\tcase UNW_ARM_R1:\n\t\treturn PERF_REG_ARM_R1;\n\tcase UNW_ARM_R2:\n\t\treturn PERF_REG_ARM_R2;\n\tcase UNW_ARM_R3:\n\t\treturn PERF_REG_ARM_R3;\n\tcase UNW_ARM_R4:\n\t\treturn PERF_REG_ARM_R4;\n\tcase UNW_ARM_R5:\n\t\treturn PERF_REG_ARM_R5;\n\tcase UNW_ARM_R6:\n\t\treturn PERF_REG_ARM_R6;\n\tcase UNW_ARM_R7:\n\t\treturn PERF_REG_ARM_R7;\n\tcase UNW_ARM_R8:\n\t\treturn PERF_REG_ARM_R8;\n\tcase UNW_ARM_R9:\n\t\treturn PERF_REG_ARM_R9;\n\tcase UNW_ARM_R10:\n\t\treturn PERF_REG_ARM_R10;\n\tcase UNW_ARM_R11:\n\t\treturn PERF_REG_ARM_FP;\n\tcase UNW_ARM_R12:\n\t\treturn PERF_REG_ARM_IP;\n\tcase UNW_ARM_R13:\n\t\treturn PERF_REG_ARM_SP;\n\tcase UNW_ARM_R14:\n\t\treturn PERF_REG_ARM_LR;\n\tcase UNW_ARM_R15:\n\t\treturn PERF_REG_ARM_PC;\n\tdefault:\n\t\tpr_err(\"unwind: invalid reg id %d\\n\", regnum);\n\t\treturn -EINVAL;\n\t}\n\n\treturn -EINVAL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

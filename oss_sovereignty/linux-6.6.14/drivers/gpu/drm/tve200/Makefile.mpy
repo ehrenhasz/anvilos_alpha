@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b2179ed68c73ef5ce09538d446bd263ed112bebd028fe704b6104f72f8e95fed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tve200/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ntve200_drm-y +=\ttve200_display.o \\\n\t\ttve200_drv.o\n\nobj-$(CONFIG_DRM_TVE200) += tve200_drm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

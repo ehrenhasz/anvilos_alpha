@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "247c3d385ca64ca6abef863ea73c6be2656049410a7c9edaf4853b4a1e3a5d61",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/chelsio/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CRYPTO_DEV_CHELSIO\n\ttristate \"Chelsio Crypto Co-processor Driver\"\n\tdepends on CHELSIO_T4\n\tselect CRYPTO_LIB_AES\n\tselect CRYPTO_LIB_GF128MUL\n\tselect CRYPTO_SHA1\n\tselect CRYPTO_SHA256\n\tselect CRYPTO_SHA512\n\tselect CRYPTO_AUTHENC\n\thelp\n\t  The Chelsio Crypto Co-processor driver for T6 adapters.\n\n\t  For general information about Chelsio and our products, visit\n\t  our website at <http://www.chelsio.com>.\n\n\t  For customer support, please visit our customer support page at\n\t  <http://www.chelsio.com/support.html>.\n\n\t  Please send feedback to <linux-bugs@chelsio.com>.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called chcr.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

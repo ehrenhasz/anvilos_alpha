@@ -1,0 +1,9 @@
+{
+  "module_name": "fb_internal.h",
+  "hash_id": "e50477db8f87ac53b698bb0730e584ba9558974bdb301f79d660613835557ed0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/core/fb_internal.h",
+  "human_readable_source": " \n\n#ifndef _FB_INTERNAL_H\n#define _FB_INTERNAL_H\n\n#include <linux/device.h>\n#include <linux/fb.h>\n#include <linux/mutex.h>\n\n \n#if defined(CONFIG_FB_DEVICE)\nint fb_register_chrdev(void);\nvoid fb_unregister_chrdev(void);\n#else\nstatic inline int fb_register_chrdev(void)\n{\n\treturn 0;\n}\nstatic inline void fb_unregister_chrdev(void)\n{ }\n#endif\n\n \nextern struct class *fb_class;\nextern struct mutex registration_lock;\nextern struct fb_info *registered_fb[FB_MAX];\nextern int num_registered_fb;\nstruct fb_info *get_fb_info(unsigned int idx);\nvoid put_fb_info(struct fb_info *fb_info);\n\n \n#if defined(CONFIG_FB_DEVICE)\nint fb_init_procfs(void);\nvoid fb_cleanup_procfs(void);\n#else\nstatic inline int fb_init_procfs(void)\n{\n\treturn 0;\n}\nstatic inline void fb_cleanup_procfs(void)\n{ }\n#endif\n\n \n#if defined(CONFIG_FB_DEVICE)\nint fb_device_create(struct fb_info *fb_info);\nvoid fb_device_destroy(struct fb_info *fb_info);\n#else\nstatic inline int fb_device_create(struct fb_info *fb_info)\n{\n\t \n\tget_device(fb_info->device);\n\n\treturn 0;\n}\nstatic inline void fb_device_destroy(struct fb_info *fb_info)\n{\n\t \n\tput_device(fb_info->device);\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

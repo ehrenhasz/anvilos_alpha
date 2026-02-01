@@ -1,0 +1,9 @@
+{
+  "module_name": "audio.h",
+  "hash_id": "d9d899f70441df486938ffe260c2a5fb4d8198e31fcea7166d8a6d1b4d1eb80e",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/caiaq/audio.h",
+  "human_readable_source": " \n#ifndef CAIAQ_AUDIO_H\n#define CAIAQ_AUDIO_H\n\nint snd_usb_caiaq_audio_init(struct snd_usb_caiaqdev *cdev);\nvoid snd_usb_caiaq_audio_free(struct snd_usb_caiaqdev *cdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

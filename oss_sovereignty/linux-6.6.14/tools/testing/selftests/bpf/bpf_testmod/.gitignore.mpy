@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "a7521aa19c006267ac2c92e92ac1739616d31a8d011d30c03df62e618e9f5904",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/bpf_testmod/.gitignore",
+  "human_readable_source": "*.mod\n*.mod.c\n*.o\n.ko\n/Module.symvers\n/modules.order\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "49521d969f909aa25f9fa51ca8903d65dbb7ef8f99297deafe81e9d55ceb7efd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/iio/frequency/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Direct Digital Synthesis drivers\n#\nmenu \"Direct Digital Synthesis\"\n\nconfig AD9832\n\ttristate \"Analog Devices ad9832/5 driver\"\n\tdepends on SPI\n\thelp\n\t  Say yes here to build support for Analog Devices DDS chip\n\t  AD9832 and AD9835, provides direct access via sysfs.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called ad9832.\n\nconfig AD9834\n\ttristate \"Analog Devices AD9833/4/7/8 driver\"\n\tdepends on SPI\n\thelp\n\t  Say yes here to build support for Analog Devices DDS chip\n\t  AD9833, AD9834, AD9837 and AD9838, provides direct access via sysfs.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called ad9834.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

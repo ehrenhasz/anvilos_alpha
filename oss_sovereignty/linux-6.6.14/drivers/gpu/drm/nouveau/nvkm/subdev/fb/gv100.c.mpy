@@ -1,0 +1,9 @@
+{
+  "module_name": "gv100.c",
+  "hash_id": "c260105ada3c389ff8d8fede9aa906ebaaf1245f936d5c941a88f230d09cfd80",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/gv100.c",
+  "human_readable_source": " \n#include \"gf100.h\"\n#include \"ram.h\"\n\nint\ngv100_fb_init_page(struct nvkm_fb *fb)\n{\n\treturn (fb->page == 16) ? 0 : -EINVAL;\n}\n\nstatic const struct nvkm_fb_func\ngv100_fb = {\n\t.dtor = gf100_fb_dtor,\n\t.oneinit = gp102_fb_oneinit,\n\t.init = gm200_fb_init,\n\t.init_page = gv100_fb_init_page,\n\t.init_unkn = gp100_fb_init_unkn,\n\t.sysmem.flush_page_init = gf100_fb_sysmem_flush_page_init,\n\t.vidmem.size = gp102_fb_vidmem_size,\n\t.vpr.scrub_required = gp102_fb_vpr_scrub_required,\n\t.vpr.scrub = gp102_fb_vpr_scrub,\n\t.ram_new = gp102_ram_new,\n\t.default_bigpage = 16,\n};\n\nint\ngv100_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn gf100_fb_new_(&gv100_fb, device, type, inst, pfb);\n}\n\nMODULE_FIRMWARE(\"nvidia/gv100/nvdec/scrubber.bin\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

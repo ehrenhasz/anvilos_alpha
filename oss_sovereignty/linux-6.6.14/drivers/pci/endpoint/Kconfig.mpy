@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1bf3f6c889fe57ffaba590146056dfa0c4e6399cdb995e3421d68dc7c3d72768",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/endpoint/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# PCI Endpoint Support\n#\n\nmenu \"PCI Endpoint\"\n\nconfig PCI_ENDPOINT\n\tbool \"PCI Endpoint Support\"\n\tdepends on HAVE_PCI\n\thelp\n\t   Enable this configuration option to support configurable PCI\n\t   endpoint. This should be enabled if the platform has a PCI\n\t   controller that can operate in endpoint mode.\n\n\t   Enabling this option will build the endpoint library, which\n\t   includes endpoint controller library and endpoint function\n\t   library.\n\n\t   If in doubt, say \"N\" to disable Endpoint support.\n\nconfig PCI_ENDPOINT_CONFIGFS\n\tbool \"PCI Endpoint Configfs Support\"\n\tdepends on PCI_ENDPOINT\n\tselect CONFIGFS_FS\n\thelp\n\t   This will enable the configfs entry that can be used to\n\t   configure the endpoint function and used to bind the\n\t   function with a endpoint controller.\n\nsource \"drivers/pci/endpoint/functions/Kconfig\"\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

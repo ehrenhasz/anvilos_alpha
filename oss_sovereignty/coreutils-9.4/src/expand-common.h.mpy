@@ -1,0 +1,9 @@
+{
+  "module_name": "expand-common.h",
+  "hash_id": "5dcc044eb45a325803b413c1798ae4ef940802e4a4a8b0be39f71ea22a7e999e",
+  "original_prompt": "Ingested from coreutils-9.4/src/expand-common.h",
+  "human_readable_source": " \nextern bool convert_entire_line;\n\n \nextern size_t max_column_width;\n\n \nextern int exit_status;\n\n \nextern void\nadd_tab_stop (uintmax_t tabval);\n\n \nextern void\nparse_tab_stops (char const *stops) _GL_ATTRIBUTE_NONNULL ();\n\n \nextern uintmax_t\nget_next_tab_column (const uintmax_t column, size_t *tab_index,\n                     bool *last_tab)\n  _GL_ATTRIBUTE_NONNULL ((3));\n\n \nextern void\nfinalize_tab_stops (void);\n\n\n\n\n \nextern void\nset_file_list (char **file_list);\n\n \nextern FILE *\nnext_file (FILE *fp);\n\n \nextern void\ncleanup_file_list_stdin (void);\n\n\nextern void\nemit_tab_list_info (void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

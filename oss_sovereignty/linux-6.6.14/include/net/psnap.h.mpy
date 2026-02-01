@@ -1,0 +1,9 @@
+{
+  "module_name": "psnap.h",
+  "hash_id": "aecb5dc6cd7aa96180915dbae10c6b89255225ba80c176d8a8b1028499f014f5",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/psnap.h",
+  "human_readable_source": " \n#ifndef _NET_PSNAP_H\n#define _NET_PSNAP_H\n\nstruct datalink_proto;\nstruct sk_buff;\nstruct packet_type;\nstruct net_device;\n\nstruct datalink_proto *\nregister_snap_client(const unsigned char *desc,\n\t\t     int (*rcvfunc)(struct sk_buff *, struct net_device *,\n\t\t\t\t    struct packet_type *,\n\t\t\t\t    struct net_device *orig_dev));\nvoid unregister_snap_client(struct datalink_proto *proto);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-mt8188-ipe.c",
+  "hash_id": "0d3d9782831a6bf7cd87a4ecc0bcd7280e5f4f22e3ccd4f3fc8ba8a6868c56fc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mediatek/clk-mt8188-ipe.c",
+  "human_readable_source": "\n \n\n#include <dt-bindings/clock/mediatek,mt8188-clk.h>\n#include <linux/clk-provider.h>\n#include <linux/platform_device.h>\n\n#include \"clk-gate.h\"\n#include \"clk-mtk.h\"\n\nstatic const struct mtk_gate_regs ipe_cg_regs = {\n\t.set_ofs = 0x4,\n\t.clr_ofs = 0x8,\n\t.sta_ofs = 0x0,\n};\n\n#define GATE_IPE(_id, _name, _parent, _shift)\t\t\t\\\n\tGATE_MTK(_id, _name, _parent, &ipe_cg_regs, _shift, &mtk_clk_gate_ops_setclr)\n\nstatic const struct mtk_gate ipe_clks[] = {\n\tGATE_IPE(CLK_IPE_DPE, \"ipe_dpe\", \"top_ipe\", 0),\n\tGATE_IPE(CLK_IPE_FDVT, \"ipe_fdvt\", \"top_ipe\", 1),\n\tGATE_IPE(CLK_IPE_ME, \"ipe_me\", \"top_ipe\", 2),\n\tGATE_IPE(CLK_IPESYS_TOP, \"ipesys_top\", \"top_ipe\", 3),\n\tGATE_IPE(CLK_IPE_SMI_LARB12, \"ipe_smi_larb12\", \"top_ipe\", 4),\n};\n\nstatic const struct mtk_clk_desc ipe_desc = {\n\t.clks = ipe_clks,\n\t.num_clks = ARRAY_SIZE(ipe_clks),\n};\n\nstatic const struct of_device_id of_match_clk_mt8188_ipe[] = {\n\t{ .compatible = \"mediatek,mt8188-ipesys\", .data = &ipe_desc },\n\t{   }\n};\nMODULE_DEVICE_TABLE(of, of_match_clk_mt8188_ipe);\n\nstatic struct platform_driver clk_mt8188_ipe_drv = {\n\t.probe = mtk_clk_simple_probe,\n\t.remove_new = mtk_clk_simple_remove,\n\t.driver = {\n\t\t.name = \"clk-mt8188-ipe\",\n\t\t.of_match_table = of_match_clk_mt8188_ipe,\n\t},\n};\n\nmodule_platform_driver(clk_mt8188_ipe_drv);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

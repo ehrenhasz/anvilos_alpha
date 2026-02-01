@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c5e70a6611d1e5c49e156f01cd9ea25dbbdd55a7a7d4ef16c1f8f1ef4355fedb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/fsl/qe/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the linux ppc-specific parts of QE\n#\nobj-$(CONFIG_QUICC_ENGINE)+= qe.o qe_common.o qe_ic.o qe_io.o\nobj-$(CONFIG_CPM)\t+= qe_common.o\nobj-$(CONFIG_CPM_TSA)\t+= tsa.o\nobj-$(CONFIG_CPM_QMC)\t+= qmc.o\nobj-$(CONFIG_UCC)\t+= ucc.o\nobj-$(CONFIG_UCC_SLOW)\t+= ucc_slow.o\nobj-$(CONFIG_UCC_FAST)\t+= ucc_fast.o\nobj-$(CONFIG_QE_TDM)\t+= qe_tdm.o\nobj-$(CONFIG_QE_USB)\t+= usb.o\nobj-$(CONFIG_QE_GPIO)\t+= gpio.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

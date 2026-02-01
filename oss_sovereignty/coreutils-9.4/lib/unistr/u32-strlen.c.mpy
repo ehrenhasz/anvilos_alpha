@@ -1,0 +1,9 @@
+{
+  "module_name": "u32-strlen.c",
+  "hash_id": "c1a56172988331c23813c3c92e4664cc94bcc3fd4f615438496feef8354e4977",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unistr/u32-strlen.c",
+  "human_readable_source": " \n#include \"unistr.h\"\n\n#define FUNC u32_strlen\n#define UNIT uint32_t\n#include \"u-strlen.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

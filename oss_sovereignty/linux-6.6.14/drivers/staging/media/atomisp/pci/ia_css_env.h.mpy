@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_env.h",
+  "hash_id": "7270d2d6cfcf84d9418f93a7e4b86079cc0be863e501b238b0435830c8d295b7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/ia_css_env.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_ENV_H\n#define __IA_CSS_ENV_H\n\n#include <type_support.h>\n#include <linux/stdarg.h>  \n#include <linux/bits.h>\n#include \"ia_css_types.h\"\n#include \"ia_css_acc_types.h\"\n\n \n\n \nenum ia_css_mem_attr {\n\tIA_CSS_MEM_ATTR_CACHED     = BIT(0),\n\tIA_CSS_MEM_ATTR_ZEROED     = BIT(1),\n\tIA_CSS_MEM_ATTR_PAGEALIGN  = BIT(2),\n\tIA_CSS_MEM_ATTR_CONTIGUOUS = BIT(3),\n};\n\n \nstruct ia_css_cpu_mem_env {\n\tvoid (*flush)(struct ia_css_acc_fw *fw);\n\t \n};\n\n \nstruct ia_css_hw_access_env {\n\tvoid (*store_8)(hrt_address addr, uint8_t data);\n\t \n\tvoid (*store_16)(hrt_address addr, uint16_t data);\n\t \n\tvoid (*store_32)(hrt_address addr, uint32_t data);\n\t \n\tuint8_t (*load_8)(hrt_address addr);\n\t \n\tuint16_t (*load_16)(hrt_address addr);\n\t \n\tuint32_t (*load_32)(hrt_address addr);\n\t \n\tvoid (*store)(hrt_address addr, const void *data, uint32_t bytes);\n\t \n\tvoid (*load)(hrt_address addr, void *data, uint32_t bytes);\n\t \n};\n\n \nstruct ia_css_print_env {\n\tint  __printf(1, 0) (*debug_print)(const char *fmt, va_list args);\n\t \n\tint  __printf(1, 0) (*error_print)(const char *fmt, va_list args);\n\t \n};\n\n \nstruct ia_css_env {\n\tstruct ia_css_cpu_mem_env   cpu_mem_env;    \n\tstruct ia_css_hw_access_env hw_access_env;  \n\tstruct ia_css_print_env     print_env;      \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

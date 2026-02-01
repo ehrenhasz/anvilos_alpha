@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "1cc6d0bfb59d5744278ce03340322d7186ef6e95f0de58d7ad0841f70f56451a",
+  "original_prompt": "Ingested from linux-6.6.14/init/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/utsversion-tmp.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ee9f6256bec4f59c8ab619ed75fc4849ce6316b7a6c0d8254cc69addf41da222",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/canaan/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig SOC_K210_SYSCTL\n\tbool \"Canaan Kendryte K210 SoC system controller\"\n\tdepends on RISCV && SOC_CANAAN && OF\n\tdepends on COMMON_CLK_K210\n\tdefault SOC_CANAAN\n\tselect PM\n\tselect MFD_SYSCON\n\thelp\n\t  Canaan Kendryte K210 SoC system controller driver.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

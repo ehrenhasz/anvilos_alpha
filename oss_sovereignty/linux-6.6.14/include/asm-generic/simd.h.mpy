@@ -1,0 +1,9 @@
+{
+  "module_name": "simd.h",
+  "hash_id": "ab12360f4a3cf0f700cacacf6892e4534ec39060d55c87c293a8fe50b6224cc6",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/simd.h",
+  "human_readable_source": " \n\n#include <linux/hardirq.h>\n\n \nstatic __must_check inline bool may_use_simd(void)\n{\n\treturn !in_interrupt();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

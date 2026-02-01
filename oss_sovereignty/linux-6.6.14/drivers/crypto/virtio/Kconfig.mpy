@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "fc9f93472c2ca0e7e50b1f940188c56707322f580b33e8829600552379161cec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/virtio/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CRYPTO_DEV_VIRTIO\n\ttristate \"VirtIO crypto driver\"\n\tdepends on VIRTIO\n\tselect CRYPTO_AEAD\n\tselect CRYPTO_AKCIPHER2\n\tselect CRYPTO_SKCIPHER\n\tselect CRYPTO_ENGINE\n\tselect CRYPTO_RSA\n\tselect MPILIB\n\thelp\n\t  This driver provides support for virtio crypto device. If you\n\t  choose 'M' here, this module will be called virtio_crypto.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

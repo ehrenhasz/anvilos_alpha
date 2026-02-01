@@ -1,0 +1,9 @@
+{
+  "module_name": "argv-iter.c",
+  "hash_id": "28ca86bd3bdfefb0e199237689d880ec23bcd5d26e936bef2e24d09759c1e927",
+  "original_prompt": "Ingested from coreutils-9.4/lib/argv-iter.c",
+  "human_readable_source": " \n\n#include <config.h>\n#include \"argv-iter.h\"\n\n#include <stdlib.h>\n#include <string.h>\n\nstruct argv_iterator\n{\n   \n   \n  FILE *fp;\n  size_t item_idx;\n  char *tok;\n  size_t buf_len;\n\n   \n  char **arg_list;\n  char **p;\n};\n\nstruct argv_iterator *\nargv_iter_init_argv (char **argv)\n{\n  struct argv_iterator *ai = malloc (sizeof *ai);\n  if (!ai)\n    return NULL;\n  ai->fp = NULL;\n  ai->arg_list = argv;\n  ai->p = argv;\n  return ai;\n}\n\n \nstruct argv_iterator *\nargv_iter_init_stream (FILE *fp)\n{\n  struct argv_iterator *ai = malloc (sizeof *ai);\n  if (!ai)\n    return NULL;\n  ai->fp = fp;\n  ai->tok = NULL;\n  ai->buf_len = 0;\n\n  ai->item_idx = 0;\n  ai->arg_list = NULL;\n  return ai;\n}\n\nchar *\nargv_iter (struct argv_iterator *ai, enum argv_iter_err *err)\n{\n  if (ai->fp)\n    {\n      ssize_t len = getdelim (&ai->tok, &ai->buf_len, '\\0', ai->fp);\n      if (len < 0)\n        {\n          *err = feof (ai->fp) ? AI_ERR_EOF : AI_ERR_READ;\n          return NULL;\n        }\n\n      *err = AI_ERR_OK;\n      ai->item_idx++;\n      return ai->tok;\n    }\n  else\n    {\n      if (*(ai->p) == NULL)\n        {\n          *err = AI_ERR_EOF;\n          return NULL;\n        }\n      else\n        {\n          *err = AI_ERR_OK;\n          return *(ai->p++);\n        }\n    }\n}\n\nsize_t\nargv_iter_n_args (struct argv_iterator const *ai)\n{\n  return ai->fp ? ai->item_idx : ai->p - ai->arg_list;\n}\n\nvoid\nargv_iter_free (struct argv_iterator *ai)\n{\n  if (ai->fp)\n    free (ai->tok);\n  free (ai);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

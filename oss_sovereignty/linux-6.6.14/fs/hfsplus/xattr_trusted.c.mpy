@@ -1,0 +1,9 @@
+{
+  "module_name": "xattr_trusted.c",
+  "hash_id": "c38c984962f3fe737a78c2a9fbf5f4b9e1c73b09fd022165c4eed7aa441e7d53",
+  "original_prompt": "Ingested from linux-6.6.14/fs/hfsplus/xattr_trusted.c",
+  "human_readable_source": "\n \n\n#include <linux/nls.h>\n\n#include \"hfsplus_fs.h\"\n#include \"xattr.h\"\n\nstatic int hfsplus_trusted_getxattr(const struct xattr_handler *handler,\n\t\t\t\t    struct dentry *unused, struct inode *inode,\n\t\t\t\t    const char *name, void *buffer, size_t size)\n{\n\treturn hfsplus_getxattr(inode, name, buffer, size,\n\t\t\t\tXATTR_TRUSTED_PREFIX,\n\t\t\t\tXATTR_TRUSTED_PREFIX_LEN);\n}\n\nstatic int hfsplus_trusted_setxattr(const struct xattr_handler *handler,\n\t\t\t\t    struct mnt_idmap *idmap,\n\t\t\t\t    struct dentry *unused, struct inode *inode,\n\t\t\t\t    const char *name, const void *buffer,\n\t\t\t\t    size_t size, int flags)\n{\n\treturn hfsplus_setxattr(inode, name, buffer, size, flags,\n\t\t\t\tXATTR_TRUSTED_PREFIX, XATTR_TRUSTED_PREFIX_LEN);\n}\n\nconst struct xattr_handler hfsplus_xattr_trusted_handler = {\n\t.prefix\t= XATTR_TRUSTED_PREFIX,\n\t.get\t= hfsplus_trusted_getxattr,\n\t.set\t= hfsplus_trusted_setxattr,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

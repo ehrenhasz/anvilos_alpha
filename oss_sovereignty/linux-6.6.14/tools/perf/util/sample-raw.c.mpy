@@ -1,0 +1,9 @@
+{
+  "module_name": "sample-raw.c",
+  "hash_id": "eb7048d36d0da34fce1cbffa8f4db746b2c67de449957f12d15d970a24f900c2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/sample-raw.c",
+  "human_readable_source": " \n\n#include <string.h>\n#include <linux/string.h>\n#include \"evlist.h\"\n#include \"env.h\"\n#include \"header.h\"\n#include \"sample-raw.h\"\n\n \nvoid evlist__init_trace_event_sample_raw(struct evlist *evlist)\n{\n\tconst char *arch_pf = perf_env__arch(evlist->env);\n\tconst char *cpuid = perf_env__cpuid(evlist->env);\n\n\tif (arch_pf && !strcmp(\"s390\", arch_pf))\n\t\tevlist->trace_event_sample_raw = evlist__s390_sample_raw;\n\telse if (arch_pf && !strcmp(\"x86\", arch_pf) &&\n\t\t cpuid && strstarts(cpuid, \"AuthenticAMD\") &&\n\t\t evlist__has_amd_ibs(evlist)) {\n\t\tevlist->trace_event_sample_raw = evlist__amd_sample_raw;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

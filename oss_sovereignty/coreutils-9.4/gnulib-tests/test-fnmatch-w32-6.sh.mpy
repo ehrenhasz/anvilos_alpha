@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fnmatch-w32-6.sh",
+  "hash_id": "369c240e75be58746142ed381c70df2677541cd8fbb487cbc8da3912a3913522",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fnmatch-w32-6.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a CP950 locale.\n${CHECKER} ./test-fnmatch-w32${EXEEXT} Chinese_Taiwan 950\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hw-consumer.h",
+  "hash_id": "7d4d9a25902d5169ea06fe5ecd1009211268fa6f92c912bdc9e107242a7ad351",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/hw-consumer.h",
+  "human_readable_source": " \n \n\n#ifndef LINUX_IIO_HW_CONSUMER_H\n#define LINUX_IIO_HW_CONSUMER_H\n\nstruct iio_hw_consumer;\n\nstruct iio_hw_consumer *iio_hw_consumer_alloc(struct device *dev);\nvoid iio_hw_consumer_free(struct iio_hw_consumer *hwc);\nstruct iio_hw_consumer *devm_iio_hw_consumer_alloc(struct device *dev);\nint iio_hw_consumer_enable(struct iio_hw_consumer *hwc);\nvoid iio_hw_consumer_disable(struct iio_hw_consumer *hwc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

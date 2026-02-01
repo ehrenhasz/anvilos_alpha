@@ -1,0 +1,9 @@
+{
+  "module_name": "cfm_bridge.h",
+  "hash_id": "07f48a549b0682fac2c732d05e55569605572f40e1c219907dba6a9cb1a4ccd8",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/cfm_bridge.h",
+  "human_readable_source": " \n\n#ifndef _UAPI_LINUX_CFM_BRIDGE_H_\n#define _UAPI_LINUX_CFM_BRIDGE_H_\n\n#include <linux/types.h>\n#include <linux/if_ether.h>\n\n#define ETHER_HEADER_LENGTH\t\t(6+6+4+2)\n#define CFM_MAID_LENGTH\t\t\t48\n#define CFM_CCM_PDU_LENGTH\t\t75\n#define CFM_PORT_STATUS_TLV_LENGTH\t4\n#define CFM_IF_STATUS_TLV_LENGTH\t4\n#define CFM_IF_STATUS_TLV_TYPE\t\t4\n#define CFM_PORT_STATUS_TLV_TYPE\t2\n#define CFM_ENDE_TLV_TYPE\t\t0\n#define CFM_CCM_MAX_FRAME_LENGTH\t(ETHER_HEADER_LENGTH+\\\n\t\t\t\t\t CFM_CCM_PDU_LENGTH+\\\n\t\t\t\t\t CFM_PORT_STATUS_TLV_LENGTH+\\\n\t\t\t\t\t CFM_IF_STATUS_TLV_LENGTH)\n#define CFM_FRAME_PRIO\t\t\t7\n#define CFM_CCM_TLV_OFFSET\t\t70\n#define CFM_CCM_PDU_MAID_OFFSET\t\t10\n#define CFM_CCM_PDU_MEPID_OFFSET\t8\n#define CFM_CCM_PDU_SEQNR_OFFSET\t4\n#define CFM_CCM_PDU_TLV_OFFSET\t\t74\n#define CFM_CCM_ITU_RESERVED_SIZE\t16\n\nstruct br_cfm_common_hdr {\n\t__u8 mdlevel_version;\n\t__u8 opcode;\n\t__u8 flags;\n\t__u8 tlv_offset;\n};\n\nenum br_cfm_opcodes {\n\tBR_CFM_OPCODE_CCM = 0x1,\n};\n\n \nenum br_cfm_domain {\n\tBR_CFM_PORT,\n\tBR_CFM_VLAN,\n};\n\n \nenum br_cfm_mep_direction {\n\tBR_CFM_MEP_DIRECTION_DOWN,\n\tBR_CFM_MEP_DIRECTION_UP,\n};\n\n \nenum br_cfm_ccm_interval {\n\tBR_CFM_CCM_INTERVAL_NONE,\n\tBR_CFM_CCM_INTERVAL_3_3_MS,\n\tBR_CFM_CCM_INTERVAL_10_MS,\n\tBR_CFM_CCM_INTERVAL_100_MS,\n\tBR_CFM_CCM_INTERVAL_1_SEC,\n\tBR_CFM_CCM_INTERVAL_10_SEC,\n\tBR_CFM_CCM_INTERVAL_1_MIN,\n\tBR_CFM_CCM_INTERVAL_10_MIN,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

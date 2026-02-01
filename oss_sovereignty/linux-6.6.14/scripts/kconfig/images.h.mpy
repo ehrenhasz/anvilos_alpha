@@ -1,0 +1,9 @@
+{
+  "module_name": "images.h",
+  "hash_id": "608e69d5dd2a2aafdfda73746842240d9cec046bf0cbd83b2d74a66a7f26d4b4",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/kconfig/images.h",
+  "human_readable_source": " \n \n\n#ifndef IMAGES_H\n#define IMAGES_H\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\nextern const char * const xpm_load[];\nextern const char * const xpm_save[];\nextern const char * const xpm_back[];\nextern const char * const xpm_tree_view[];\nextern const char * const xpm_single_view[];\nextern const char * const xpm_split_view[];\nextern const char * const xpm_symbol_no[];\nextern const char * const xpm_symbol_mod[];\nextern const char * const xpm_symbol_yes[];\nextern const char * const xpm_choice_no[];\nextern const char * const xpm_choice_yes[];\nextern const char * const xpm_menu[];\nextern const char * const xpm_menu_inv[];\nextern const char * const xpm_menuback[];\nextern const char * const xpm_void[];\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "msg.h",
+  "hash_id": "c9a85e252cd7981a0c1a6e340948092d7e4564fd5c2f70fc693e58d778838875",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/msg.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_MSG_H\n#define _UAPI_LINUX_MSG_H\n\n#include <linux/ipc.h>\n\n \n#define MSG_STAT 11\n#define MSG_INFO 12\n#define MSG_STAT_ANY 13\n\n \n#define MSG_NOERROR     010000   \n#define MSG_EXCEPT      020000   \n#define MSG_COPY        040000   \n\n \nstruct msqid_ds {\n\tstruct ipc_perm msg_perm;\n\tstruct msg *msg_first;\t\t \n\tstruct msg *msg_last;\t\t \n\t__kernel_old_time_t msg_stime;\t \n\t__kernel_old_time_t msg_rtime;\t \n\t__kernel_old_time_t msg_ctime;\t \n\tunsigned long  msg_lcbytes;\t \n\tunsigned long  msg_lqbytes;\t \n\tunsigned short msg_cbytes;\t \n\tunsigned short msg_qnum;\t \n\tunsigned short msg_qbytes;\t \n\t__kernel_ipc_pid_t msg_lspid;\t \n\t__kernel_ipc_pid_t msg_lrpid;\t \n};\n\n \n#include <asm/msgbuf.h>\n\n \nstruct msgbuf {\n\t__kernel_long_t mtype;           \n\tchar mtext[1];                   \n};\n\n \nstruct msginfo {\n\tint msgpool;\n\tint msgmap; \n\tint msgmax; \n\tint msgmnb; \n\tint msgmni; \n\tint msgssz; \n\tint msgtql; \n\tunsigned short  msgseg; \n};\n\n \n\n#define MSGMNI 32000          \n#define MSGMAX  8192        \n#define MSGMNB 16384        \n\n \n#define MSGPOOL (MSGMNI * MSGMNB / 1024)  \n#define MSGTQL  MSGMNB             \n#define MSGMAP  MSGMNB             \n#define MSGSSZ  16                 \n#define __MSGSEG ((MSGPOOL * 1024) / MSGSSZ)  \n#define MSGSEG (__MSGSEG <= 0xffff ? __MSGSEG : 0xffff)\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

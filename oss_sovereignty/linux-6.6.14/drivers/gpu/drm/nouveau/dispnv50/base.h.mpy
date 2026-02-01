@@ -1,0 +1,9 @@
+{
+  "module_name": "base.h",
+  "hash_id": "10b59e19502051fc19878b647422c8a9c5ee04513d85cdb3f2d214a187221a95",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/base.h",
+  "human_readable_source": "#ifndef __NV50_KMS_BASE_H__\n#define __NV50_KMS_BASE_H__\n#include \"wndw.h\"\n\nint base507c_new(struct nouveau_drm *, int, s32, struct nv50_wndw **);\nint base507c_new_(const struct nv50_wndw_func *, const u32 *format,\n\t\t  struct nouveau_drm *, int head, s32 oclass,\n\t\t  u32 interlock_data, struct nv50_wndw **);\nextern const u32 base507c_format[];\nint base507c_acquire(struct nv50_wndw *, struct nv50_wndw_atom *,\n\t\t     struct nv50_head_atom *);\nvoid base507c_release(struct nv50_wndw *, struct nv50_wndw_atom *,\n\t\t      struct nv50_head_atom *);\nint base507c_sema_set(struct nv50_wndw *, struct nv50_wndw_atom *);\nint base507c_sema_clr(struct nv50_wndw *);\nint base507c_xlut_set(struct nv50_wndw *, struct nv50_wndw_atom *);\nint base507c_xlut_clr(struct nv50_wndw *);\n\nint base827c_new(struct nouveau_drm *, int, s32, struct nv50_wndw **);\n\nint base907c_new(struct nouveau_drm *, int, s32, struct nv50_wndw **);\nextern const struct nv50_wndw_func base907c;\n\nint base917c_new(struct nouveau_drm *, int, s32, struct nv50_wndw **);\n\nint nv50_base_new(struct nouveau_drm *, int head, struct nv50_wndw **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ledtrig-mtd.c",
+  "hash_id": "b963e2c070e59412770449fddeab53c2c7116c91ed10938780f62edfe8062ee8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/trigger/ledtrig-mtd.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/init.h>\n#include <linux/leds.h>\n\n#define BLINK_DELAY 30\n\nDEFINE_LED_TRIGGER(ledtrig_mtd);\nDEFINE_LED_TRIGGER(ledtrig_nand);\n\nvoid ledtrig_mtd_activity(void)\n{\n\tled_trigger_blink_oneshot(ledtrig_mtd, BLINK_DELAY, BLINK_DELAY, 0);\n\tled_trigger_blink_oneshot(ledtrig_nand, BLINK_DELAY, BLINK_DELAY, 0);\n}\nEXPORT_SYMBOL(ledtrig_mtd_activity);\n\nstatic int __init ledtrig_mtd_init(void)\n{\n\tled_trigger_register_simple(\"mtd\", &ledtrig_mtd);\n\tled_trigger_register_simple(\"nand-disk\", &ledtrig_nand);\n\n\treturn 0;\n}\ndevice_initcall(ledtrig_mtd_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

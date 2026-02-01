@@ -1,0 +1,9 @@
+{
+  "module_name": "max3421-hcd.h",
+  "hash_id": "a3126e70fa5cd7a08a3dec63ca8ad2b5ed4718b929d15c86c02cf2fcec2ff651",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/max3421-hcd.h",
+  "human_readable_source": " \n \n#ifndef MAX3421_HCD_PLAT_H_INCLUDED\n#define MAX3421_HCD_PLAT_H_INCLUDED\n\n \nstruct max3421_hcd_platform_data {\n\tu8 vbus_gpout;\t\t\t \n\tu8 vbus_active_level;\t\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

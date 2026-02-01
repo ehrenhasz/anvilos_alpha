@@ -1,0 +1,9 @@
+{
+  "module_name": "vsp1_lif.h",
+  "hash_id": "08d20e20c4d17adf2f57b2a5e07011a36cd65ecf8035a189a0735f01f4576930",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/renesas/vsp1/vsp1_lif.h",
+  "human_readable_source": " \n \n#ifndef __VSP1_LIF_H__\n#define __VSP1_LIF_H__\n\n#include <media/media-entity.h>\n#include <media/v4l2-subdev.h>\n\n#include \"vsp1_entity.h\"\n\nstruct vsp1_device;\n\n#define LIF_PAD_SINK\t\t\t\t0\n#define LIF_PAD_SOURCE\t\t\t\t1\n\nstruct vsp1_lif {\n\tstruct vsp1_entity entity;\n};\n\nstatic inline struct vsp1_lif *to_lif(struct v4l2_subdev *subdev)\n{\n\treturn container_of(subdev, struct vsp1_lif, entity.subdev);\n}\n\nstruct vsp1_lif *vsp1_lif_create(struct vsp1_device *vsp1, unsigned int index);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

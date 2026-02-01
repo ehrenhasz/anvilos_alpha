@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "81c35c4e23bcecb226fb6a61600cab89969e2df6ff481ad214340d98fa80e973",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the x86 low level entry code\n#\n\nKASAN_SANITIZE := n\nUBSAN_SANITIZE := n\nKCOV_INSTRUMENT := n\n\nCFLAGS_REMOVE_common.o\t\t= $(CC_FLAGS_FTRACE)\n\nCFLAGS_common.o\t\t\t+= -fno-stack-protector\n\nobj-y\t\t\t\t:= entry.o entry_$(BITS).o syscall_$(BITS).o\nobj-y\t\t\t\t+= common.o\n\nobj-y\t\t\t\t+= vdso/\nobj-y\t\t\t\t+= vsyscall/\n\nobj-$(CONFIG_PREEMPTION)\t+= thunk_$(BITS).o\nobj-$(CONFIG_IA32_EMULATION)\t+= entry_64_compat.o syscall_32.o\nobj-$(CONFIG_X86_X32_ABI)\t+= syscall_x32.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

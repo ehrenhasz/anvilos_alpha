@@ -1,0 +1,9 @@
+{
+  "module_name": "nitrox_debugfs.h",
+  "hash_id": "72d91c02fb048e27c397444c982d896fed34e4c43049468a40ff690b0b3b17ef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/cavium/nitrox/nitrox_debugfs.h",
+  "human_readable_source": " \n#ifndef __NITROX_DEBUGFS_H\n#define __NITROX_DEBUGFS_H\n\n#include \"nitrox_dev.h\"\n\n#ifdef CONFIG_DEBUG_FS\nvoid nitrox_debugfs_init(struct nitrox_device *ndev);\nvoid nitrox_debugfs_exit(struct nitrox_device *ndev);\n#else\nstatic inline void nitrox_debugfs_init(struct nitrox_device *ndev)\n{\n}\n\nstatic inline void nitrox_debugfs_exit(struct nitrox_device *ndev)\n{\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

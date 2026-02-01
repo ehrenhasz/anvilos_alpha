@@ -1,0 +1,9 @@
+{
+  "module_name": "dma-fence-array.h",
+  "hash_id": "c59ba4f11ea67ac1f5bc284ee2047f98f3f5468e7557c14deb23e1ffa36ff304",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dma-fence-array.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_DMA_FENCE_ARRAY_H\n#define __LINUX_DMA_FENCE_ARRAY_H\n\n#include <linux/dma-fence.h>\n#include <linux/irq_work.h>\n\n \nstruct dma_fence_array_cb {\n\tstruct dma_fence_cb cb;\n\tstruct dma_fence_array *array;\n};\n\n \nstruct dma_fence_array {\n\tstruct dma_fence base;\n\n\tspinlock_t lock;\n\tunsigned num_fences;\n\tatomic_t num_pending;\n\tstruct dma_fence **fences;\n\n\tstruct irq_work work;\n};\n\n \nstatic inline struct dma_fence_array *\nto_dma_fence_array(struct dma_fence *fence)\n{\n\tif (!fence || !dma_fence_is_array(fence))\n\t\treturn NULL;\n\n\treturn container_of(fence, struct dma_fence_array, base);\n}\n\n \n#define dma_fence_array_for_each(fence, index, head)\t\t\t\\\n\tfor (index = 0, fence = dma_fence_array_first(head); fence;\t\\\n\t     ++(index), fence = dma_fence_array_next(head, index))\n\nstruct dma_fence_array *dma_fence_array_create(int num_fences,\n\t\t\t\t\t       struct dma_fence **fences,\n\t\t\t\t\t       u64 context, unsigned seqno,\n\t\t\t\t\t       bool signal_on_any);\n\nbool dma_fence_match_context(struct dma_fence *fence, u64 context);\n\nstruct dma_fence *dma_fence_array_first(struct dma_fence *head);\nstruct dma_fence *dma_fence_array_next(struct dma_fence *head,\n\t\t\t\t       unsigned int index);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

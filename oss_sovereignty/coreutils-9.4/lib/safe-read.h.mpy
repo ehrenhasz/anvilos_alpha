@@ -1,0 +1,9 @@
+{
+  "module_name": "safe-read.h",
+  "hash_id": "32b60d30a751c649fa70060c6cdc7aaae83d26194309a3c8752df10af3dd4b79",
+  "original_prompt": "Ingested from coreutils-9.4/lib/safe-read.h",
+  "human_readable_source": " \n\n#include <stddef.h>\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n\n#define SAFE_READ_ERROR ((size_t) -1)\n\n \nextern size_t safe_read (int fd, void *buf, size_t count);\n\n\n#ifdef __cplusplus\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

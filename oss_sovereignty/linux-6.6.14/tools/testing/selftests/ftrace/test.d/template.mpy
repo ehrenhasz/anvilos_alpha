@@ -1,0 +1,9 @@
+{
+  "module_name": "template",
+  "hash_id": "b26961ababfea176718ce28fb3965ae46fcd323629d356afd8ffc513a4cd1f18",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/template",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: %HERE DESCRIBE WHAT THIS DOES%\n# requires: %HERE LIST THE REQUIRED FILES, TRACERS OR README-STRINGS%\n# The required tracer needs :tracer suffix, e.g. function:tracer\n# The required README string needs :README suffix, e.g. \"x8/16/32/64\":README\n# and the README string is treated as a fixed-string instead of regexp pattern.\n# you have to add \".tc\" extention for your testcase file\n# Note that all tests are run with \"errexit\" option.\n\nexit 0 # Return 0 if the test is passed, otherwise return !0\n# Or you can call exit_pass for passed test, and exit_fail for failed test.\n# If the test could not run because of lack of feature, call exit_unsupported\n# If the test returned unclear results, call exit_unresolved\n# If the test is a dummy, or a placeholder, call exit_untested\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

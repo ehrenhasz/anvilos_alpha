@@ -1,0 +1,9 @@
+{
+  "module_name": "llc.h",
+  "hash_id": "632f25d6afdc90c2c0f10324bbfc947c9dabd5e9192d9be037ade051693e060d",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/nfc/llc.h",
+  "human_readable_source": " \n \n\n#ifndef __NFC_LLC_H_\n#define __NFC_LLC_H_\n\n#include <net/nfc/hci.h>\n#include <linux/skbuff.h>\n\n#define LLC_NOP_NAME \"nop\"\n#define LLC_SHDLC_NAME \"shdlc\"\n\ntypedef void (*rcv_to_hci_t) (struct nfc_hci_dev *hdev, struct sk_buff *skb);\ntypedef int (*xmit_to_drv_t) (struct nfc_hci_dev *hdev, struct sk_buff *skb);\ntypedef void (*llc_failure_t) (struct nfc_hci_dev *hdev, int err);\n\nstruct nfc_llc;\n\nstruct nfc_llc *nfc_llc_allocate(const char *name, struct nfc_hci_dev *hdev,\n\t\t\t\t xmit_to_drv_t xmit_to_drv,\n\t\t\t\t rcv_to_hci_t rcv_to_hci, int tx_headroom,\n\t\t\t\t int tx_tailroom, llc_failure_t llc_failure);\nvoid nfc_llc_free(struct nfc_llc *llc);\n\nint nfc_llc_start(struct nfc_llc *llc);\nint nfc_llc_stop(struct nfc_llc *llc);\nvoid nfc_llc_rcv_from_drv(struct nfc_llc *llc, struct sk_buff *skb);\nint nfc_llc_xmit_from_hci(struct nfc_llc *llc, struct sk_buff *skb);\n\nint nfc_llc_init(void);\nvoid nfc_llc_exit(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

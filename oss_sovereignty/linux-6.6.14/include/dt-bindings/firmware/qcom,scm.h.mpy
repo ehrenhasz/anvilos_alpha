@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,scm.h",
+  "hash_id": "f9d616a8f3baf03d553d5a3cacb4748d90ea13c93efa917dd768673eb21a4f58",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/firmware/qcom,scm.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_FIRMWARE_QCOM_SCM_H\n#define _DT_BINDINGS_FIRMWARE_QCOM_SCM_H\n\n#define QCOM_SCM_VMID_TZ\t\t0x1\n#define QCOM_SCM_VMID_HLOS\t\t0x3\n#define QCOM_SCM_VMID_SSC_Q6\t\t0x5\n#define QCOM_SCM_VMID_ADSP_Q6\t\t0x6\n#define QCOM_SCM_VMID_CP_TOUCH\t\t0x8\n#define QCOM_SCM_VMID_CP_BITSTREAM\t0x9\n#define QCOM_SCM_VMID_CP_PIXEL\t\t0xA\n#define QCOM_SCM_VMID_CP_NON_PIXEL\t0xB\n#define QCOM_SCM_VMID_CP_CAMERA\t\t0xD\n#define QCOM_SCM_VMID_HLOS_FREE\t\t0xE\n#define QCOM_SCM_VMID_MSS_MSA\t\t0xF\n#define QCOM_SCM_VMID_MSS_NONMSA\t0x10\n#define QCOM_SCM_VMID_CP_SEC_DISPLAY\t0x11\n#define QCOM_SCM_VMID_CP_APP\t\t0x12\n#define QCOM_SCM_VMID_LPASS\t\t0x16\n#define QCOM_SCM_VMID_WLAN\t\t0x18\n#define QCOM_SCM_VMID_WLAN_CE\t\t0x19\n#define QCOM_SCM_VMID_CP_SPSS_SP\t0x1A\n#define QCOM_SCM_VMID_CP_CAMERA_PREVIEW 0x1D\n#define QCOM_SCM_VMID_CDSP\t\t0x1E\n#define QCOM_SCM_VMID_CP_SPSS_SP_SHARED 0x22\n#define QCOM_SCM_VMID_CP_SPSS_HLOS_SHARED 0x24\n#define QCOM_SCM_VMID_ADSP_HEAP\t\t0x25\n#define QCOM_SCM_VMID_CP_CDSP\t\t0x2A\n#define QCOM_SCM_VMID_NAV\t\t0x2B\n#define QCOM_SCM_VMID_TVM\t\t0x2D\n#define QCOM_SCM_VMID_OEMVM\t\t0x31\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

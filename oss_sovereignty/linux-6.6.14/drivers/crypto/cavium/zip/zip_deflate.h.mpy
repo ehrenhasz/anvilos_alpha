@@ -1,0 +1,9 @@
+{
+  "module_name": "zip_deflate.h",
+  "hash_id": "5a808708b6bb63e4f3cee98270d37e60cb2c18bb2116516b4b835b420373907e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/cavium/zip/zip_deflate.h",
+  "human_readable_source": " \n\n#ifndef __ZIP_DEFLATE_H__\n#define __ZIP_DEFLATE_H__\n\n \nint zip_deflate(struct zip_operation *zip_ops, struct zip_state *s,\n\t\tstruct zip_device *zip_dev);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

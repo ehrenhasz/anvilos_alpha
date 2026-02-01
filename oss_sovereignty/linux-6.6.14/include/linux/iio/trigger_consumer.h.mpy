@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger_consumer.h",
+  "hash_id": "239cc22070581d71863b98e195442d291fee8bf5deae8a6bbc90df2f673a708e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/trigger_consumer.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_IIO_TRIGGER_CONSUMER_H__\n#define __LINUX_IIO_TRIGGER_CONSUMER_H__\n\n#include <linux/interrupt.h>\n#include <linux/types.h>\n\nstruct iio_dev;\nstruct iio_trigger;\n\n \nstruct iio_poll_func {\n\tstruct iio_dev *indio_dev;\n\tirqreturn_t (*h)(int irq, void *p);\n\tirqreturn_t (*thread)(int irq, void *p);\n\tint type;\n\tchar *name;\n\tint irq;\n\ts64 timestamp;\n};\n\n\n__printf(5, 6) struct iio_poll_func\n*iio_alloc_pollfunc(irqreturn_t (*h)(int irq, void *p),\n\t\t    irqreturn_t (*thread)(int irq, void *p),\n\t\t    int type,\n\t\t    struct iio_dev *indio_dev,\n\t\t    const char *fmt,\n\t\t    ...);\nvoid iio_dealloc_pollfunc(struct iio_poll_func *pf);\nirqreturn_t iio_pollfunc_store_time(int irq, void *p);\n\nvoid iio_trigger_notify_done(struct iio_trigger *trig);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

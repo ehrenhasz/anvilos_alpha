@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_spctrl_comm.h",
+  "hash_id": "b69ddffe91b01ffc08a7cb1f9efe2fd5ca5140f3fdfe8e6ac599e97451390eab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/spctrl/interface/ia_css_spctrl_comm.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_SPCTRL_COMM_H__\n#define __IA_CSS_SPCTRL_COMM_H__\n\n#include <type_support.h>\n\n \ntypedef enum {\n\tIA_CSS_SP_SW_TERMINATED = 0,\n\tIA_CSS_SP_SW_INITIALIZED,\n\tIA_CSS_SP_SW_CONNECTED,\n\tIA_CSS_SP_SW_RUNNING\n} ia_css_spctrl_sp_sw_state;\n\n \nstruct ia_css_sp_init_dmem_cfg {\n\tia_css_ptr      ddr_data_addr;   \n\tu32        dmem_data_addr;  \n\tu32        dmem_bss_addr;   \n\tu32        data_size;       \n\tu32        bss_size;        \n\tsp_ID_t         sp_id;           \n};\n\n#define SIZE_OF_IA_CSS_SP_INIT_DMEM_CFG_STRUCT\t\\\n\t(1 * SIZE_OF_IA_CSS_PTR) +\t\t\\\n\t(4 * sizeof(uint32_t)) +\t\t\\\n\t(1 * sizeof(sp_ID_t))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

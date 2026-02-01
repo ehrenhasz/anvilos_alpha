@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf-utils.h",
+  "hash_id": "ad39c9ef6e2210bc279ba668a3677ff19513a366a59f22d1d131e7e503d851e6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/bpf-utils.h",
+  "human_readable_source": " \n\n#ifndef __PERF_BPF_UTILS_H\n#define __PERF_BPF_UTILS_H\n\n#define ptr_to_u64(ptr)    ((__u64)(unsigned long)(ptr))\n\n#ifdef HAVE_LIBBPF_SUPPORT\n\n#include <bpf/libbpf.h>\n\n \nenum perf_bpil_array_types {\n\tPERF_BPIL_FIRST_ARRAY = 0,\n\tPERF_BPIL_JITED_INSNS = 0,\n\tPERF_BPIL_XLATED_INSNS,\n\tPERF_BPIL_MAP_IDS,\n\tPERF_BPIL_JITED_KSYMS,\n\tPERF_BPIL_JITED_FUNC_LENS,\n\tPERF_BPIL_FUNC_INFO,\n\tPERF_BPIL_LINE_INFO,\n\tPERF_BPIL_JITED_LINE_INFO,\n\tPERF_BPIL_PROG_TAGS,\n\tPERF_BPIL_LAST_ARRAY,\n};\n\nstruct perf_bpil {\n\t \n\t__u32\t\t\tinfo_len;\n\t \n\t__u32\t\t\tdata_len;\n\t \n\t__u64\t\t\tarrays;\n\tstruct bpf_prog_info\tinfo;\n\t__u8\t\t\tdata[];\n};\n\nstruct perf_bpil *\nget_bpf_prog_info_linear(int fd, __u64 arrays);\n\nvoid\nbpil_addr_to_offs(struct perf_bpil *info_linear);\n\nvoid\nbpil_offs_to_addr(struct perf_bpil *info_linear);\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

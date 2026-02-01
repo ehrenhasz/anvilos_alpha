@@ -1,0 +1,9 @@
+{
+  "module_name": "reset-prcc.h",
+  "hash_id": "2e276f91ae0ca84bf275b240428deeae0853246e72761901541bf8a0986cd477",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/ux500/reset-prcc.h",
+  "human_readable_source": " \n\n#ifndef __RESET_PRCC_H\n#define __RESET_PRCC_H\n\n#include <linux/reset-controller.h>\n#include <linux/io.h>\n\n \nstruct u8500_prcc_reset {\n\tstruct reset_controller_dev rcdev;\n\tu32 phy_base[CLKRST_MAX];\n\tvoid __iomem *base[CLKRST_MAX];\n};\n\nvoid u8500_prcc_reset_init(struct device_node *np, struct u8500_prcc_reset *ur);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

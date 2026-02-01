@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "98b0d63a39df28db41129bde994e57268c538b20c0477ebb9c814e086ab4ad1f",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/server/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-or-later\n#\n# Makefile for Linux SMB3 kernel server\n#\nobj-$(CONFIG_SMB_SERVER) += ksmbd.o\n\nksmbd-y :=\tunicode.o auth.o vfs.o vfs_cache.o server.o ndr.o \\\n\t\tmisc.o oplock.o connection.o ksmbd_work.o crypto_ctx.o \\\n\t\tmgmt/ksmbd_ida.o mgmt/user_config.o mgmt/share_config.o \\\n\t\tmgmt/tree_connect.o mgmt/user_session.o smb_common.o \\\n\t\ttransport_tcp.o transport_ipc.o smbacl.o smb2pdu.o \\\n\t\tsmb2ops.o smb2misc.o ksmbd_spnego_negtokeninit.asn1.o \\\n\t\tksmbd_spnego_negtokentarg.asn1.o asn1.o\n\n$(obj)/asn1.o: $(obj)/ksmbd_spnego_negtokeninit.asn1.h $(obj)/ksmbd_spnego_negtokentarg.asn1.h\n\n$(obj)/ksmbd_spnego_negtokeninit.asn1.o: $(obj)/ksmbd_spnego_negtokeninit.asn1.c $(obj)/ksmbd_spnego_negtokeninit.asn1.h\n$(obj)/ksmbd_spnego_negtokentarg.asn1.o: $(obj)/ksmbd_spnego_negtokentarg.asn1.c $(obj)/ksmbd_spnego_negtokentarg.asn1.h\n\nksmbd-$(CONFIG_SMB_SERVER_SMBDIRECT) += transport_rdma.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

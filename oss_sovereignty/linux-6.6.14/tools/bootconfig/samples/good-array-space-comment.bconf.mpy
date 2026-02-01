@@ -1,0 +1,9 @@
+{
+  "module_name": "good-array-space-comment.bconf",
+  "hash_id": "94679e10b5c1cd0dbf7e3677a4ac9bd29def09a7974dea16034b60e28c166c67",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bootconfig/samples/good-array-space-comment.bconf",
+  "human_readable_source": "key =\t# comment\n\t\"value1\",\t  # comment1\n\t\"value2\"\t , # comment2\n\t\"value3\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

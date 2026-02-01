@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fnmatch-w32-4.sh",
+  "hash_id": "4f32a60258355c516d8f097b151d0ef516395bc775c58cdcc8e7e13ffb90a3e5",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fnmatch-w32-4.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test some UTF-8 locales.\n${CHECKER} ./test-fnmatch-w32${EXEEXT} French_France Japanese_Japan Chinese_Taiwan Chinese_China 65001\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

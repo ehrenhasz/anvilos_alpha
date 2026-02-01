@@ -1,0 +1,9 @@
+{
+  "module_name": "cfi_regs.h",
+  "hash_id": "97d78bad5c0a1ed52b707bb0c69986358ed7ddf7d02d83d0791ec634b851c159",
+  "original_prompt": "Ingested from linux-6.6.14/tools/objtool/arch/x86/include/arch/cfi_regs.h",
+  "human_readable_source": " \n\n#ifndef _OBJTOOL_CFI_REGS_H\n#define _OBJTOOL_CFI_REGS_H\n\n#define CFI_AX\t\t\t0\n#define CFI_CX\t\t\t1\n#define CFI_DX\t\t\t2\n#define CFI_BX\t\t\t3\n#define CFI_SP\t\t\t4\n#define CFI_BP\t\t\t5\n#define CFI_SI\t\t\t6\n#define CFI_DI\t\t\t7\n#define CFI_R8\t\t\t8\n#define CFI_R9\t\t\t9\n#define CFI_R10\t\t\t10\n#define CFI_R11\t\t\t11\n#define CFI_R12\t\t\t12\n#define CFI_R13\t\t\t13\n#define CFI_R14\t\t\t14\n#define CFI_R15\t\t\t15\n#define CFI_RA\t\t\t16\n#define CFI_NUM_REGS\t\t17\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

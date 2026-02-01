@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7d3f1ac48aec81bff7a5163390f0f318d1bf44f2826aecc82eb1b1dad1aaed19",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/amd-sfh-hid/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-or-later\n#\n# Makefile - AMD SFH HID drivers\n# Copyright (c) 2019-2020, Advanced Micro Devices, Inc.\n#\n#\nobj-$(CONFIG_AMD_SFH_HID) += amd_sfh.o\namd_sfh-objs := amd_sfh_hid.o\namd_sfh-objs += amd_sfh_client.o\namd_sfh-objs += amd_sfh_pcie.o\namd_sfh-objs += hid_descriptor/amd_sfh_hid_desc.o\namd_sfh-objs += sfh1_1/amd_sfh_init.o\namd_sfh-objs += sfh1_1/amd_sfh_interface.o\namd_sfh-objs += sfh1_1/amd_sfh_desc.o\n\nccflags-y += -I $(srctree)/$(src)/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

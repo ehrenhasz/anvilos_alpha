@@ -1,0 +1,9 @@
+{
+  "module_name": "qlge_devlink.h",
+  "hash_id": "3bab51ce68c797386986ab4d885e637a7870afa2b0ff32423be9835ea1b4643e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/qlge/qlge_devlink.h",
+  "human_readable_source": " \n#ifndef QLGE_DEVLINK_H\n#define QLGE_DEVLINK_H\n\n#include <net/devlink.h>\n\nlong qlge_health_create_reporters(struct qlge_adapter *priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

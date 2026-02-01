@@ -1,0 +1,9 @@
+{
+  "module_name": "dh.h",
+  "hash_id": "8ee25fca5077848fcf75315108b62bd55bee90d7d29ca5af564d9c29942e8990",
+  "original_prompt": "Ingested from openssh-9.6p1/dh.h",
+  "human_readable_source": " \n\n \n#ifndef DH_H\n#define DH_H\n\n#ifdef WITH_OPENSSL\n\nstruct dhgroup {\n\tint size;\n\tBIGNUM *g;\n\tBIGNUM *p;\n};\n\nDH\t*choose_dh(int, int, int);\nDH\t*dh_new_group_asc(const char *, const char *);\nDH\t*dh_new_group(BIGNUM *, BIGNUM *);\nDH\t*dh_new_group1(void);\nDH\t*dh_new_group14(void);\nDH\t*dh_new_group16(void);\nDH\t*dh_new_group18(void);\nDH\t*dh_new_group_fallback(int);\n\nint\t dh_gen_key(DH *, int);\nint\t dh_pub_is_valid(const DH *, const BIGNUM *);\n\nu_int\t dh_estimate(int);\nvoid\t dh_set_moduli_file(const char *);\n\n \n#define DH_GRP_MIN\t2048\n#define DH_GRP_MAX\t8192\n\n \n#define MODULI_TYPE_UNKNOWN\t\t(0)\n#define MODULI_TYPE_UNSTRUCTURED\t(1)\n#define MODULI_TYPE_SAFE\t\t(2)\n#define MODULI_TYPE_SCHNORR\t\t(3)\n#define MODULI_TYPE_SOPHIE_GERMAIN\t(4)\n#define MODULI_TYPE_STRONG\t\t(5)\n\n \n#define MODULI_TESTS_UNTESTED\t\t(0x00)\n#define MODULI_TESTS_COMPOSITE\t\t(0x01)\n#define MODULI_TESTS_SIEVE\t\t(0x02)\n#define MODULI_TESTS_MILLER_RABIN\t(0x04)\n#define MODULI_TESTS_JACOBI\t\t(0x08)\n#define MODULI_TESTS_ELLIPTIC\t\t(0x10)\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

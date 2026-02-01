@@ -1,0 +1,9 @@
+{
+  "module_name": "bug.h",
+  "hash_id": "84596cf3ab7d96b1d609048cb7931f60cb9b34c9a7e49413f32b044be8461bde",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/asm/bug.h",
+  "human_readable_source": " \n#ifndef _TOOLS_ASM_BUG_H\n#define _TOOLS_ASM_BUG_H\n\n#include <linux/compiler.h>\n#include <stdio.h>\n\n#define __WARN_printf(arg...)\tdo { fprintf(stderr, arg); } while (0)\n\n#define WARN(condition, format...) ({\t\t\\\n\tint __ret_warn_on = !!(condition);\t\\\n\tif (unlikely(__ret_warn_on))\t\t\\\n\t\t__WARN_printf(format);\t\t\\\n\tunlikely(__ret_warn_on);\t\t\\\n})\n\n#define WARN_ON(condition) ({\t\t\t\t\t\\\n\tint __ret_warn_on = !!(condition);\t\t\t\\\n\tif (unlikely(__ret_warn_on))\t\t\t\t\\\n\t\t__WARN_printf(\"assertion failed at %s:%d\\n\",\t\\\n\t\t\t\t__FILE__, __LINE__);\t\t\\\n\tunlikely(__ret_warn_on);\t\t\t\t\\\n})\n\n#define WARN_ON_ONCE(condition) ({\t\t\t\\\n\tstatic int __warned;\t\t\t\t\\\n\tint __ret_warn_once = !!(condition);\t\t\\\n\t\t\t\t\t\t\t\\\n\tif (unlikely(__ret_warn_once && !__warned)) {\t\\\n\t\t__warned = true;\t\t\t\\\n\t\tWARN_ON(1);\t\t\t\t\\\n\t}\t\t\t\t\t\t\\\n\tunlikely(__ret_warn_once);\t\t\t\\\n})\n\n#define WARN_ONCE(condition, format...)\t({\t\\\n\tstatic int __warned;\t\t\t\\\n\tint __ret_warn_once = !!(condition);\t\\\n\t\t\t\t\t\t\\\n\tif (unlikely(__ret_warn_once))\t\t\\\n\t\tif (WARN(!__warned, format)) \t\\\n\t\t\t__warned = 1;\t\t\\\n\tunlikely(__ret_warn_once);\t\t\\\n})\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

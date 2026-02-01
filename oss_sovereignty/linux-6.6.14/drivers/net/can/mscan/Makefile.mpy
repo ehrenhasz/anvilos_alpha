@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c627c9c99cc4c2387e508473021f5676d1e19df66b0007281acf77dcb186925f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/mscan/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nobj-$(CONFIG_CAN_MPC5XXX)\t+= mscan-mpc5xxx.o\nmscan-mpc5xxx-objs\t\t:= mscan.o mpc5xxx_can.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

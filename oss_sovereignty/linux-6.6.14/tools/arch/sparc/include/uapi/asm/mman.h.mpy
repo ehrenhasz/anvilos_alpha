@@ -1,0 +1,9 @@
+{
+  "module_name": "mman.h",
+  "hash_id": "80a1e0758e45bdeff366d2fbb708ea648e73b2d2f2bb8ac369cfb6a1f6fa334b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/sparc/include/uapi/asm/mman.h",
+  "human_readable_source": " \n#ifndef TOOLS_ARCH_SPARC_UAPI_ASM_MMAN_FIX_H\n#define TOOLS_ARCH_SPARC_UAPI_ASM_MMAN_FIX_H\n#define MAP_DENYWRITE\t0x0800\n#define MAP_EXECUTABLE\t0x1000\n#define MAP_GROWSDOWN\t0x0200\n#define MAP_LOCKED      0x100\n#define MAP_NORESERVE   0x40\n#include <uapi/asm-generic/mman-common.h>\n \n#define MAP_32BIT\t0\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

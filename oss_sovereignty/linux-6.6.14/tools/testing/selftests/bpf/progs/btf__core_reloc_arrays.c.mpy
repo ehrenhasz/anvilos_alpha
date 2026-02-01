@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_arrays.c",
+  "hash_id": "3eaa613b92ba780f9234d0a00fde7fb01b26773e05e49ced4a8a1c0a7c1689b6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_arrays.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_arrays x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

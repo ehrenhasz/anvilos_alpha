@@ -1,0 +1,9 @@
+{
+  "module_name": "mcdi_functions.h",
+  "hash_id": "e3d2091442ea5d74e822adff9033a4536191b71fbf08ab385745c3cc5f0274be",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/mcdi_functions.h",
+  "human_readable_source": " \n \n#ifndef EFX_MCDI_FUNCTIONS_H\n#define EFX_MCDI_FUNCTIONS_H\n\nint efx_mcdi_alloc_vis(struct efx_nic *efx, unsigned int min_vis,\n\t\t       unsigned int max_vis, unsigned int *vi_base,\n\t\t       unsigned int *allocated_vis);\nint efx_mcdi_free_vis(struct efx_nic *efx);\n\nint efx_mcdi_ev_probe(struct efx_channel *channel);\nint efx_mcdi_ev_init(struct efx_channel *channel, bool v1_cut_thru, bool v2);\nvoid efx_mcdi_ev_remove(struct efx_channel *channel);\nvoid efx_mcdi_ev_fini(struct efx_channel *channel);\nint efx_mcdi_tx_init(struct efx_tx_queue *tx_queue);\nvoid efx_mcdi_tx_remove(struct efx_tx_queue *tx_queue);\nvoid efx_mcdi_tx_fini(struct efx_tx_queue *tx_queue);\nint efx_mcdi_rx_probe(struct efx_rx_queue *rx_queue);\nvoid efx_mcdi_rx_init(struct efx_rx_queue *rx_queue);\nvoid efx_mcdi_rx_remove(struct efx_rx_queue *rx_queue);\nvoid efx_mcdi_rx_fini(struct efx_rx_queue *rx_queue);\nint efx_fini_dmaq(struct efx_nic *efx);\nint efx_mcdi_window_mode_to_stride(struct efx_nic *efx, u8 vi_window_mode);\nint efx_get_pf_index(struct efx_nic *efx, unsigned int *pf_index);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

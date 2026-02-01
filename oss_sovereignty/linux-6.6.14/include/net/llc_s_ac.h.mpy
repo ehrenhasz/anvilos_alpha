@@ -1,0 +1,9 @@
+{
+  "module_name": "llc_s_ac.h",
+  "hash_id": "fec825f5a08cc5852101389cbbdb0b05ebf93dfd70cf6bf9d13ffc78e8e2fb51",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/llc_s_ac.h",
+  "human_readable_source": "#ifndef LLC_S_AC_H\n#define LLC_S_AC_H\n \n\nstruct llc_sap;\nstruct sk_buff;\n\n \n#define SAP_ACT_UNITDATA_IND\t1\n#define SAP_ACT_SEND_UI\t\t2\n#define SAP_ACT_SEND_XID_C\t3\n#define SAP_ACT_SEND_XID_R\t4\n#define SAP_ACT_SEND_TEST_C\t5\n#define SAP_ACT_SEND_TEST_R\t6\n#define SAP_ACT_REPORT_STATUS\t7\n#define SAP_ACT_XID_IND\t\t8\n#define SAP_ACT_TEST_IND\t9\n\n \ntypedef int (*llc_sap_action_t)(struct llc_sap *sap, struct sk_buff *skb);\n\nint llc_sap_action_unitdata_ind(struct llc_sap *sap, struct sk_buff *skb);\nint llc_sap_action_send_ui(struct llc_sap *sap, struct sk_buff *skb);\nint llc_sap_action_send_xid_c(struct llc_sap *sap, struct sk_buff *skb);\nint llc_sap_action_send_xid_r(struct llc_sap *sap, struct sk_buff *skb);\nint llc_sap_action_send_test_c(struct llc_sap *sap, struct sk_buff *skb);\nint llc_sap_action_send_test_r(struct llc_sap *sap, struct sk_buff *skb);\nint llc_sap_action_report_status(struct llc_sap *sap, struct sk_buff *skb);\nint llc_sap_action_xid_ind(struct llc_sap *sap, struct sk_buff *skb);\nint llc_sap_action_test_ind(struct llc_sap *sap, struct sk_buff *skb);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

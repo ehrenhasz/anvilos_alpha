@@ -1,0 +1,9 @@
+{
+  "module_name": "sc27xx-pmic.h",
+  "hash_id": "c92ad46d8744a42c569a56525e9a03c73b1ce9758bc420918f3a88205295aeac",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/sc27xx-pmic.h",
+  "human_readable_source": " \n#ifndef __LINUX_MFD_SC27XX_PMIC_H\n#define __LINUX_MFD_SC27XX_PMIC_H\n\nextern enum usb_charger_type sprd_pmic_detect_charger_type(struct device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

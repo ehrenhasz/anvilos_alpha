@@ -1,0 +1,9 @@
+{
+  "module_name": "pvrusb2-eeprom.h",
+  "hash_id": "d17b2cdc47e08ec30a00c99e08762c76e2943448ba129e73326b08d1eb23e9b0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pvrusb2/pvrusb2-eeprom.h",
+  "human_readable_source": " \n \n\n#ifndef __PVRUSB2_EEPROM_H\n#define __PVRUSB2_EEPROM_H\n\nstruct pvr2_hdw;\n\nint pvr2_eeprom_analyze(struct pvr2_hdw *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

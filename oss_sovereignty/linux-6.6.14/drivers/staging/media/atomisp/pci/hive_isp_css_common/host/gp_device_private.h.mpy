@@ -1,0 +1,9 @@
+{
+  "module_name": "gp_device_private.h",
+  "hash_id": "bfaa78d024652b92043623f5c9fdce850088b1669517214a965b590e455c492a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/host/gp_device_private.h",
+  "human_readable_source": " \n \n\n#ifndef __GP_DEVICE_PRIVATE_H_INCLUDED__\n#define __GP_DEVICE_PRIVATE_H_INCLUDED__\n\n#include \"gp_device_public.h\"\n\n#include \"device_access.h\"\n\n#include \"assert_support.h\"\n\nSTORAGE_CLASS_GP_DEVICE_C void gp_device_reg_store(\n    const gp_device_ID_t\tID,\n    const unsigned int\t\treg_addr,\n    const hrt_data\t\t\tvalue)\n{\n\tassert(ID < N_GP_DEVICE_ID);\n\tassert(GP_DEVICE_BASE[ID] != (hrt_address) - 1);\n\tassert((reg_addr % sizeof(hrt_data)) == 0);\n\tia_css_device_store_uint32(GP_DEVICE_BASE[ID] + reg_addr, value);\n\treturn;\n}\n\nSTORAGE_CLASS_GP_DEVICE_C hrt_data gp_device_reg_load(\n    const gp_device_ID_t\tID,\n    const hrt_address\treg_addr)\n{\n\tassert(ID < N_GP_DEVICE_ID);\n\tassert(GP_DEVICE_BASE[ID] != (hrt_address)-1);\n\tassert((reg_addr % sizeof(hrt_data)) == 0);\n\treturn ia_css_device_load_uint32(GP_DEVICE_BASE[ID] + reg_addr);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

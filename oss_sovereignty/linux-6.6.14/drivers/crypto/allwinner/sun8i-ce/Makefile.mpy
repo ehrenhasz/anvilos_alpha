@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4a97157eea9a76d816fd8ef814de5da85f73e6ffdd59960e1dc536fbf424a3bf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/allwinner/sun8i-ce/Makefile",
+  "human_readable_source": "obj-$(CONFIG_CRYPTO_DEV_SUN8I_CE) += sun8i-ce.o\nsun8i-ce-y += sun8i-ce-core.o sun8i-ce-cipher.o\nsun8i-ce-$(CONFIG_CRYPTO_DEV_SUN8I_CE_HASH) += sun8i-ce-hash.o\nsun8i-ce-$(CONFIG_CRYPTO_DEV_SUN8I_CE_PRNG) += sun8i-ce-prng.o\nsun8i-ce-$(CONFIG_CRYPTO_DEV_SUN8I_CE_TRNG) += sun8i-ce-trng.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "x2000-dma.h",
+  "hash_id": "bdaa015884e6ab9c424be3f090b5c1569d25f012479f10412c69eafa14303352",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/dma/x2000-dma.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_DMA_X2000_DMA_H__\n#define __DT_BINDINGS_DMA_X2000_DMA_H__\n\n \n#define X2000_DMA_AUTO\t\t0x8\n#define X2000_DMA_UART5_TX\t0xa\n#define X2000_DMA_UART5_RX\t0xb\n#define X2000_DMA_UART4_TX\t0xc\n#define X2000_DMA_UART4_RX\t0xd\n#define X2000_DMA_UART3_TX\t0xe\n#define X2000_DMA_UART3_RX\t0xf\n#define X2000_DMA_UART2_TX\t0x10\n#define X2000_DMA_UART2_RX\t0x11\n#define X2000_DMA_UART1_TX\t0x12\n#define X2000_DMA_UART1_RX\t0x13\n#define X2000_DMA_UART0_TX\t0x14\n#define X2000_DMA_UART0_RX\t0x15\n#define X2000_DMA_SSI0_TX\t0x16\n#define X2000_DMA_SSI0_RX\t0x17\n#define X2000_DMA_SSI1_TX\t0x18\n#define X2000_DMA_SSI1_RX\t0x19\n#define X2000_DMA_I2C0_TX\t0x24\n#define X2000_DMA_I2C0_RX\t0x25\n#define X2000_DMA_I2C1_TX\t0x26\n#define X2000_DMA_I2C1_RX\t0x27\n#define X2000_DMA_I2C2_TX\t0x28\n#define X2000_DMA_I2C2_RX\t0x29\n#define X2000_DMA_I2C3_TX\t0x2a\n#define X2000_DMA_I2C3_RX\t0x2b\n#define X2000_DMA_I2C4_TX\t0x2c\n#define X2000_DMA_I2C4_RX\t0x2d\n#define X2000_DMA_I2C5_TX\t0x2e\n#define X2000_DMA_I2C5_RX\t0x2f\n#define X2000_DMA_UART6_TX\t0x30\n#define X2000_DMA_UART6_RX\t0x31\n#define X2000_DMA_UART7_TX\t0x32\n#define X2000_DMA_UART7_RX\t0x33\n#define X2000_DMA_UART8_TX\t0x34\n#define X2000_DMA_UART8_RX\t0x35\n#define X2000_DMA_UART9_TX\t0x36\n#define X2000_DMA_UART9_RX\t0x37\n#define X2000_DMA_SADC_RX\t0x38\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

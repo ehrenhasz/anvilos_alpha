@@ -1,0 +1,9 @@
+{
+  "module_name": "rt2x00leds.h",
+  "hash_id": "ab4b4b0e89e52afd5698b199f5e384351345bdac2c45651cac67e44b56935adf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ralink/rt2x00/rt2x00leds.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef RT2X00LEDS_H\n#define RT2X00LEDS_H\n\nenum led_type {\n\tLED_TYPE_RADIO,\n\tLED_TYPE_ASSOC,\n\tLED_TYPE_ACTIVITY,\n\tLED_TYPE_QUALITY,\n};\n\nstruct rt2x00_led {\n\tstruct rt2x00_dev *rt2x00dev;\n\tstruct led_classdev led_dev;\n\n\tenum led_type type;\n\tunsigned int flags;\n#define LED_INITIALIZED\t\t( 1 << 0 )\n#define LED_REGISTERED\t\t( 1 << 1 )\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

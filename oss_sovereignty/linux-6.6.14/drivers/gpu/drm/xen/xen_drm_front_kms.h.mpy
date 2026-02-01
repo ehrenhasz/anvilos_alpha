@@ -1,0 +1,9 @@
+{
+  "module_name": "xen_drm_front_kms.h",
+  "hash_id": "09b7206b3e9178f7f93bd18021e1ee194971926cf535208916583024a67f9c62",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/xen/xen_drm_front_kms.h",
+  "human_readable_source": " \n\n \n\n#ifndef __XEN_DRM_FRONT_KMS_H_\n#define __XEN_DRM_FRONT_KMS_H_\n\n#include <linux/types.h>\n\nstruct xen_drm_front_drm_info;\nstruct xen_drm_front_drm_pipeline;\n\nint xen_drm_front_kms_init(struct xen_drm_front_drm_info *drm_info);\n\nvoid xen_drm_front_kms_fini(struct xen_drm_front_drm_info *drm_info);\n\nvoid xen_drm_front_kms_on_frame_done(struct xen_drm_front_drm_pipeline *pipeline,\n\t\t\t\t     u64 fb_cookie);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

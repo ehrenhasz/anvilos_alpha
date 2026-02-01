@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "87d2c4a44908afcd4a31b2cc6e4172037afe0929dded1527d596fa4eaf7741e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/i3c/master/mipi-i3c-hci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: BSD-3-Clause\n\nobj-$(CONFIG_MIPI_I3C_HCI)\t\t+= mipi-i3c-hci.o\nmipi-i3c-hci-y\t\t\t\t:= core.o ext_caps.o pio.o dma.o \\\n\t\t\t\t\t   cmd_v1.o cmd_v2.o \\\n\t\t\t\t\t   dat_v1.o dct_v1.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

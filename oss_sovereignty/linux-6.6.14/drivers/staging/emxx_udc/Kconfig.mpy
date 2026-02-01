@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a6ef40be1f351782a0961e4e49de4e524c693177d05ceb82df9c9773d3eb71c5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/emxx_udc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig USB_EMXX\n\ttristate \"EMXX USB Function Device Controller\"\n\tdepends on USB_GADGET && (ARCH_RENESAS || COMPILE_TEST)\n\thelp\n\t   The Emma Mobile series of SoCs from Renesas Electronics and\n\t   former NEC Electronics include USB Function hardware.\n\n\t   Say \"y\" to link the driver statically, or \"m\" to build a\n\t   dynamically linked module called \"emxx_udc\" and force all\n\t   gadget drivers to also be dynamically linked.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

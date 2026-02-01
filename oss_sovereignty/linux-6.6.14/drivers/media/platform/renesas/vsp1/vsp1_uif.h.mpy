@@ -1,0 +1,9 @@
+{
+  "module_name": "vsp1_uif.h",
+  "hash_id": "4468f5cc35ec48a95fb4fe3ad81e9b3e3b76cab1e039104a1c3cc350204ed394",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/renesas/vsp1/vsp1_uif.h",
+  "human_readable_source": " \n \n#ifndef __VSP1_UIF_H__\n#define __VSP1_UIF_H__\n\n#include \"vsp1_entity.h\"\n\nstruct vsp1_device;\n\n#define UIF_PAD_SINK\t\t\t\t0\n#define UIF_PAD_SOURCE\t\t\t\t1\n\nstruct vsp1_uif {\n\tstruct vsp1_entity entity;\n\tbool m3w_quirk;\n};\n\nstatic inline struct vsp1_uif *to_uif(struct v4l2_subdev *subdev)\n{\n\treturn container_of(subdev, struct vsp1_uif, entity.subdev);\n}\n\nstruct vsp1_uif *vsp1_uif_create(struct vsp1_device *vsp1, unsigned int index);\nu32 vsp1_uif_get_crc(struct vsp1_uif *uif);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

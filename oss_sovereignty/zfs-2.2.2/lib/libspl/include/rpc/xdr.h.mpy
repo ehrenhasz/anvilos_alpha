@@ -1,0 +1,9 @@
+{
+  "module_name": "xdr.h",
+  "hash_id": "019721d321cd1b65ca768fe2e7a01cdd1717e2a0d583bc843d0f141206e264ce",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/rpc/xdr.h",
+  "human_readable_source": " \n\n#ifndef LIBSPL_RPC_XDR_H\n#define\tLIBSPL_RPC_XDR_H\n\n#include_next <rpc/xdr.h>\n\n#ifdef xdr_control  \n#undef xdr_control\n#endif\n\n#define\tXDR_GET_BYTES_AVAIL 1\n\n#ifndef HAVE_XDR_BYTESREC\nstruct xdr_bytesrec {\n\tbool_t xc_is_last_record;\n\tsize_t xc_num_avail;\n};\n#endif\ntypedef struct xdr_bytesrec  xdr_bytesrec_t;\n\n \nstatic inline bool_t\nxdr_control(XDR *xdrs, int request, void *info)\n{\n\txdr_bytesrec_t *xptr;\n\n\tASSERT3U(request, ==, XDR_GET_BYTES_AVAIL);\n\n\txptr = (xdr_bytesrec_t *)info;\n\txptr->xc_is_last_record = TRUE;\n\txptr->xc_num_avail = xdrs->x_handy;\n\n\treturn (TRUE);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

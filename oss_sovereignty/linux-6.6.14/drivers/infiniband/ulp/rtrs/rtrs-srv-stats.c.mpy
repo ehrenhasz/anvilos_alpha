@@ -1,0 +1,9 @@
+{
+  "module_name": "rtrs-srv-stats.c",
+  "hash_id": "2260736d0ebc87134cab80646e989c6f3e906aea18f552fb9d92e90b46b73e3d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/ulp/rtrs/rtrs-srv-stats.c",
+  "human_readable_source": "\n \n#undef pr_fmt\n#define pr_fmt(fmt) KBUILD_MODNAME \" L\" __stringify(__LINE__) \": \" fmt\n\n#include \"rtrs-srv.h\"\n\nint rtrs_srv_reset_rdma_stats(struct rtrs_srv_stats *stats, bool enable)\n{\n\tif (enable) {\n\t\tint cpu;\n\t\tstruct rtrs_srv_stats_rdma_stats *r;\n\n\t\tfor_each_possible_cpu(cpu) {\n\t\t\tr = per_cpu_ptr(stats->rdma_stats, cpu);\n\t\t\tmemset(r, 0, sizeof(*r));\n\t\t}\n\n\t\treturn 0;\n\t}\n\n\treturn -EINVAL;\n}\n\nssize_t rtrs_srv_stats_rdma_to_str(struct rtrs_srv_stats *stats, char *page)\n{\n\tint cpu;\n\tstruct rtrs_srv_stats_rdma_stats sum;\n\tstruct rtrs_srv_stats_rdma_stats *r;\n\n\tmemset(&sum, 0, sizeof(sum));\n\n\tfor_each_possible_cpu(cpu) {\n\t\tr = per_cpu_ptr(stats->rdma_stats, cpu);\n\n\t\tsum.dir[READ].cnt\t  += r->dir[READ].cnt;\n\t\tsum.dir[READ].size_total  += r->dir[READ].size_total;\n\t\tsum.dir[WRITE].cnt\t  += r->dir[WRITE].cnt;\n\t\tsum.dir[WRITE].size_total += r->dir[WRITE].size_total;\n\t}\n\n\treturn sysfs_emit(page, \"%llu %llu %llu %llu\\n\",\n\t\t\t  sum.dir[READ].cnt, sum.dir[READ].size_total,\n\t\t\t  sum.dir[WRITE].cnt, sum.dir[WRITE].size_total);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

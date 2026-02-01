@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "25a2f46c85604e505217cfaeda6fe5dac8129dd3dc0416cc05cf79f6d5b392f8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/pcs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# PCS Layer Configuration\n#\n\nmenu \"PCS device drivers\"\n\nconfig PCS_XPCS\n\ttristate\n\tselect PHYLINK\n\thelp\n\t  This module provides helper functions for Synopsys DesignWare XPCS\n\t  controllers.\n\nconfig PCS_LYNX\n\ttristate\n\thelp\n\t  This module provides helpers to phylink for managing the Lynx PCS\n\t  which is part of the Layerscape and QorIQ Ethernet SERDES.\n\nconfig PCS_MTK_LYNXI\n\ttristate\n\tselect REGMAP\n\thelp\n\t  This module provides helpers to phylink for managing the LynxI PCS\n\t  which is part of MediaTek's SoC and Ethernet switch ICs.\n\nconfig PCS_RZN1_MIIC\n\ttristate \"Renesas RZ/N1 MII converter\"\n\tdepends on OF && (ARCH_RZN1 || COMPILE_TEST)\n\thelp\n\t  This module provides a driver for the MII converter that is available\n\t  on RZ/N1 SoCs. This PCS converts MII to RMII/RGMII or can be set in\n\t  pass-through mode for MII.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

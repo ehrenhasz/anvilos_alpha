@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "54b9d1cbd024269b25511548a855bd7bf0cdc06652ecb0b5d3b738878ff50158",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/renesas/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Renesas device drivers.\n#\n\nobj-$(CONFIG_SH_ETH) += sh_eth.o\n\nravb-objs := ravb_main.o ravb_ptp.o\n\nobj-$(CONFIG_RAVB) += ravb.o\n\nrswitch_drv-objs := rswitch.o rcar_gen4_ptp.o\n\nobj-$(CONFIG_RENESAS_ETHER_SWITCH) += rswitch_drv.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "967f587741afaddaf6ea9506c0735e36eecccad5e8b4edd032ac1eb5ed7fb29d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intersil/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig WLAN_VENDOR_INTERSIL\n\tbool \"Intersil devices\"\n\tdefault y\n\thelp\n\t  If you have a wireless card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all the\n\t  questions about these cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif WLAN_VENDOR_INTERSIL\n\nsource \"drivers/net/wireless/intersil/hostap/Kconfig\"\nsource \"drivers/net/wireless/intersil/orinoco/Kconfig\"\nsource \"drivers/net/wireless/intersil/p54/Kconfig\"\n\nendif # WLAN_VENDOR_INTERSIL\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

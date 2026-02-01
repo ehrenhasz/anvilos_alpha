@@ -1,0 +1,9 @@
+{
+  "module_name": "tiny-base.config",
+  "hash_id": "49aee1487e6f8a6a174cd40d43c499f66e5aa4822a3c4d49b89ae85d838e6aaf",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/configs/tiny-base.config",
+  "human_readable_source": "CONFIG_EXPERT=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

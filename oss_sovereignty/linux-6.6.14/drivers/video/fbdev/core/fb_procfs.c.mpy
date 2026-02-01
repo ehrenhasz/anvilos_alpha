@@ -1,0 +1,9 @@
+{
+  "module_name": "fb_procfs.c",
+  "hash_id": "00a338e56839cd85e16803de2e51ebfd66ef795730ebaf31afaba43d82ac9ae3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/core/fb_procfs.c",
+  "human_readable_source": "\n\n#include <linux/proc_fs.h>\n\n#include \"fb_internal.h\"\n\nstatic struct proc_dir_entry *fb_proc_dir_entry;\n\nstatic void *fb_seq_start(struct seq_file *m, loff_t *pos)\n{\n\tmutex_lock(&registration_lock);\n\n\treturn (*pos < FB_MAX) ? pos : NULL;\n}\n\nstatic void fb_seq_stop(struct seq_file *m, void *v)\n{\n\tmutex_unlock(&registration_lock);\n}\n\nstatic void *fb_seq_next(struct seq_file *m, void *v, loff_t *pos)\n{\n\t(*pos)++;\n\n\treturn (*pos < FB_MAX) ? pos : NULL;\n}\n\nstatic int fb_seq_show(struct seq_file *m, void *v)\n{\n\tint i = *(loff_t *)v;\n\tstruct fb_info *fi = registered_fb[i];\n\n\tif (fi)\n\t\tseq_printf(m, \"%d %s\\n\", fi->node, fi->fix.id);\n\n\treturn 0;\n}\n\nstatic const struct seq_operations __maybe_unused fb_proc_seq_ops = {\n\t.start\t= fb_seq_start,\n\t.stop\t= fb_seq_stop,\n\t.next\t= fb_seq_next,\n\t.show\t= fb_seq_show,\n};\n\nint fb_init_procfs(void)\n{\n\tstruct proc_dir_entry *proc;\n\n\tproc = proc_create_seq(\"fb\", 0, NULL, &fb_proc_seq_ops);\n\tif (!proc)\n\t\treturn -ENOMEM;\n\n\tfb_proc_dir_entry = proc;\n\n\treturn 0;\n}\n\nvoid fb_cleanup_procfs(void)\n{\n\tproc_remove(fb_proc_dir_entry);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

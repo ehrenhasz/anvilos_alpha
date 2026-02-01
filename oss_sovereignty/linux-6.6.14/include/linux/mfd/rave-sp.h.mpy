@@ -1,0 +1,9 @@
+{
+  "module_name": "rave-sp.h",
+  "hash_id": "87ec1a2157281990bbec11d18c4b032d72b4bc3159e78bc7801d47cdf5f81ed1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/rave-sp.h",
+  "human_readable_source": " \n\n \n\n#ifndef _LINUX_RAVE_SP_H_\n#define _LINUX_RAVE_SP_H_\n\n#include <linux/notifier.h>\n\nenum rave_sp_command {\n\tRAVE_SP_CMD_GET_FIRMWARE_VERSION\t= 0x20,\n\tRAVE_SP_CMD_GET_BOOTLOADER_VERSION\t= 0x21,\n\tRAVE_SP_CMD_BOOT_SOURCE\t\t\t= 0x26,\n\tRAVE_SP_CMD_GET_BOARD_COPPER_REV\t= 0x2B,\n\tRAVE_SP_CMD_GET_GPIO_STATE\t\t= 0x2F,\n\n\tRAVE_SP_CMD_STATUS\t\t\t= 0xA0,\n\tRAVE_SP_CMD_SW_WDT\t\t\t= 0xA1,\n\tRAVE_SP_CMD_PET_WDT\t\t\t= 0xA2,\n\tRAVE_SP_CMD_RMB_EEPROM\t\t\t= 0xA4,\n\tRAVE_SP_CMD_SET_BACKLIGHT\t\t= 0xA6,\n\tRAVE_SP_CMD_RESET\t\t\t= 0xA7,\n\tRAVE_SP_CMD_RESET_REASON\t\t= 0xA8,\n\n\tRAVE_SP_CMD_REQ_COPPER_REV\t\t= 0xB6,\n\tRAVE_SP_CMD_GET_I2C_DEVICE_STATUS\t= 0xBA,\n\tRAVE_SP_CMD_GET_SP_SILICON_REV\t\t= 0xB9,\n\tRAVE_SP_CMD_CONTROL_EVENTS\t\t= 0xBB,\n\n\tRAVE_SP_EVNT_BASE\t\t\t= 0xE0,\n};\n\nstruct rave_sp;\n\nstatic inline unsigned long rave_sp_action_pack(u8 event, u8 value)\n{\n\treturn ((unsigned long)value << 8) | event;\n}\n\nstatic inline u8 rave_sp_action_unpack_event(unsigned long action)\n{\n\treturn action;\n}\n\nstatic inline u8 rave_sp_action_unpack_value(unsigned long action)\n{\n\treturn action >> 8;\n}\n\nint rave_sp_exec(struct rave_sp *sp,\n\t\t void *__data,  size_t data_size,\n\t\t void *reply_data, size_t reply_data_size);\n\nstruct device;\nint devm_rave_sp_register_event_notifier(struct device *dev,\n\t\t\t\t\t struct notifier_block *nb);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

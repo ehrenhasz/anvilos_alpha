@@ -1,0 +1,9 @@
+{
+  "module_name": "aq_filters.h",
+  "hash_id": "c696a9cda1d1b9883ec6a88808c087066508e4b9954447e8a75b8d1400f50e52",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/aquantia/atlantic/aq_filters.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef AQ_FILTERS_H\n#define AQ_FILTERS_H\n\n#include \"aq_nic.h\"\n\nenum aq_rx_filter_type {\n\taq_rx_filter_ethertype,\n\taq_rx_filter_vlan,\n\taq_rx_filter_l3l4\n};\n\nstruct aq_rx_filter {\n\tstruct hlist_node aq_node;\n\tenum aq_rx_filter_type type;\n\tstruct ethtool_rx_flow_spec aq_fsp;\n};\n\nu16 aq_get_rxnfc_count_all_rules(struct aq_nic_s *aq_nic);\nstruct aq_hw_rx_fltrs_s *aq_get_hw_rx_fltrs(struct aq_nic_s *aq_nic);\nint aq_add_rxnfc_rule(struct aq_nic_s *aq_nic, const struct ethtool_rxnfc *cmd);\nint aq_del_rxnfc_rule(struct aq_nic_s *aq_nic, const struct ethtool_rxnfc *cmd);\nint aq_get_rxnfc_rule(struct aq_nic_s *aq_nic, struct ethtool_rxnfc *cmd);\nint aq_get_rxnfc_all_rules(struct aq_nic_s *aq_nic, struct ethtool_rxnfc *cmd,\n\t\t\t   u32 *rule_locs);\nint aq_del_fvlan_by_vlan(struct aq_nic_s *aq_nic, u16 vlan_id);\nint aq_clear_rxnfc_all_rules(struct aq_nic_s *aq_nic);\nint aq_reapply_rxnfc_all_rules(struct aq_nic_s *aq_nic);\nint aq_filters_vlans_update(struct aq_nic_s *aq_nic);\nint aq_filters_vlan_offload_off(struct aq_nic_s *aq_nic);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

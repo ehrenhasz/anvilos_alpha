@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrtowc-w32-2.sh",
+  "hash_id": "ab90ba4d3e88ecea679378c6d6ba02a13f5da64fb000e0d2d034118892c53135",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrtowc-w32-2.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a CP1252 locale.\n${CHECKER} ./test-mbrtowc-w32${EXEEXT} French_France 1252\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

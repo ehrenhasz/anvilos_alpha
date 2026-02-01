@@ -1,0 +1,9 @@
+{
+  "module_name": "kprobe_args.tc",
+  "hash_id": "755fa4231cd65d43a2ac11e767a979b458024df943674f35b1bc8e1f6835c3b5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/kprobe_args.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Kprobe dynamic event with arguments\n# requires: kprobe_events\n\necho \"p:testprobe $FUNCTION_FORK \\$stack \\$stack0 +0(\\$stack)\" > kprobe_events\ngrep testprobe kprobe_events | grep -q 'arg1=\\$stack arg2=\\$stack0 arg3=+0(\\$stack)'\ntest -d events/kprobes/testprobe\n\necho 1 > events/kprobes/testprobe/enable\n( echo \"forked\")\ngrep testprobe trace | grep \"$FUNCTION_FORK\" | \\\n  grep -q 'arg1=0x[[:xdigit:]]* arg2=0x[[:xdigit:]]* arg3=0x[[:xdigit:]]*$'\n\necho 0 > events/kprobes/testprobe/enable\necho \"-:testprobe\" >> kprobe_events\nclear_trace\ntest -d events/kprobes/testprobe && exit_fail || exit_pass\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

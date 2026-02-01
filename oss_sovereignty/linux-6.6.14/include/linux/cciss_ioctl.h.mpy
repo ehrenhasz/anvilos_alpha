@@ -1,0 +1,9 @@
+{
+  "module_name": "cciss_ioctl.h",
+  "hash_id": "27dc9c801f0a0a4225c0b12433ac251ea2df9c71b114e498cb01c794ca3ca3e5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cciss_ioctl.h",
+  "human_readable_source": " \n#ifndef CCISS_IOCTLH\n#define CCISS_IOCTLH\n\n#include <uapi/linux/cciss_ioctl.h>\n\n#ifdef CONFIG_COMPAT\n\n \ntypedef struct _IOCTL32_Command_struct {\n  LUNAddr_struct\t   LUN_info;\n  RequestBlock_struct      Request;\n  ErrorInfo_struct  \t   error_info;\n  WORD\t\t\t   buf_size;   \n  __u32\t\t\t   buf;  \n} IOCTL32_Command_struct;\n\ntypedef struct _BIG_IOCTL32_Command_struct {\n  LUNAddr_struct\t   LUN_info;\n  RequestBlock_struct      Request;\n  ErrorInfo_struct  \t   error_info;\n  DWORD\t\t\t   malloc_size;  \n  DWORD\t\t\t   buf_size;     \n  \t\t\t\t         \n  __u32 \t\tbuf;\t \n} BIG_IOCTL32_Command_struct;\n\n#define CCISS_PASSTHRU32   _IOWR(CCISS_IOC_MAGIC, 11, IOCTL32_Command_struct)\n#define CCISS_BIG_PASSTHRU32 _IOWR(CCISS_IOC_MAGIC, 18, BIG_IOCTL32_Command_struct)\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

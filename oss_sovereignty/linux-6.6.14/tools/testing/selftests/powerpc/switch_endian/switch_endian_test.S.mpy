@@ -1,0 +1,9 @@
+{
+  "module_name": "switch_endian_test.S",
+  "hash_id": "401fa3bc11c57e71ddcb3cf1f35bfbc27edf181600e5c21250a9e8262284a529",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/switch_endian/switch_endian_test.S",
+  "human_readable_source": " \n#include \"common.h\"\n\n\t.data\n\t.balign 8\nsuccess_message:\n\t.ascii \"success: switch_endian_test\\n\\0\"\n\n\t.balign 8\nfailure_message:\n\t.ascii \"failure: switch_endian_test\\n\\0\"\n\n\t.section \".toc\"\n\t.balign 8\npattern:\n\t.8byte 0x5555AAAA5555AAAA\n\n\t.text\nFUNC_START(_start)\n\t \n\tld\tr15, pattern@TOC(%r2)\n\n\t \n\tlis\tr3, 0x00FF\n\tori\tr3, r3, 0xF000\n\tmtcr\tr3\n\n\t \n\tmr\tr3, r15\n\taddi\tr4, r15, 4\n\n\taddi\tr5, r15, 32\n\tmtlr\tr5\n\n\taddi\tr5, r15, 5\n\taddi\tr6, r15, 6\n\taddi\tr7, r15, 7\n\taddi\tr8, r15, 8\n\n\t \n\n\taddi\tr13, r15, 13\n\taddi\tr14, r15, 14\n\n\t \n\n\taddi\tr16, r15, 16\n\taddi\tr17, r15, 17\n\taddi\tr18, r15, 18\n\taddi\tr19, r15, 19\n\taddi\tr20, r15, 20\n\taddi\tr21, r15, 21\n\taddi\tr22, r15, 22\n\taddi\tr23, r15, 23\n\taddi\tr24, r15, 24\n\taddi\tr25, r15, 25\n\taddi\tr26, r15, 26\n\taddi\tr27, r15, 27\n\taddi\tr28, r15, 28\n\taddi\tr29, r15, 29\n\taddi\tr30, r15, 30\n\taddi\tr31, r15, 31\n\n\t \n\tli r0, __NR_switch_endian\n\tsc\n\n\ttdi   0, 0, 0x48\t \n\tb     .Lfail\t  \t \n\n#include \"check-reversed.S\"\n\n\t \n\t.long\t0x02000044\t \n\n#include \"check.S\"\n\n\tld\tr4, success_message@got(%r2)\n\tli\tr5, 28\t \n\tli\tr14, 0\t \n.Lout:\n\tli\tr0, __NR_write\n\tli\tr3, 1\t \n\tsc\n\tli      r0, __NR_exit\n\tmr\tr3, r14\n\tsc\n\tb       .\n\n.Lfail:\n\tld\tr4, failure_message@got(%r2)\n\tli\tr5, 28\t \n\tli\tr14, 1\n\tb\t.Lout\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

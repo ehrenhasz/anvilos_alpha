@@ -1,0 +1,9 @@
+{
+  "module_name": "reclaim.sh",
+  "hash_id": "a11bb507a238cf64982a4c99932978ef3e7e7b2a9da791f9f775d11decc9c31a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/damon/reclaim.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# Kselftest framework requirement - SKIP code is 4.\nksft_skip=4\n\nif [ $EUID -ne 0 ]\nthen\n\techo \"Run as root\"\n\texit $ksft_skip\nfi\n\ndamon_reclaim_enabled=\"/sys/module/damon_reclaim/parameters/enabled\"\nif [ ! -f \"$damon_reclaim_enabled\" ]\nthen\n\techo \"No 'enabled' file.  Maybe DAMON_RECLAIM not built\"\n\texit $ksft_skip\nfi\n\nnr_kdamonds=$(pgrep kdamond | wc -l)\nif [ \"$nr_kdamonds\" -ne 0 ]\nthen\n\techo \"Another kdamond is running\"\n\texit $ksft_skip\nfi\n\necho Y > \"$damon_reclaim_enabled\"\n\nnr_kdamonds=$(pgrep kdamond | wc -l)\nif [ \"$nr_kdamonds\" -ne 1 ]\nthen\n\techo \"kdamond is not turned on\"\n\texit 1\nfi\n\necho N > \"$damon_reclaim_enabled\"\nnr_kdamonds=$(pgrep kdamond | wc -l)\nif [ \"$nr_kdamonds\" -ne 0 ]\nthen\n\techo \"kdamond is not turned off\"\n\texit 1\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

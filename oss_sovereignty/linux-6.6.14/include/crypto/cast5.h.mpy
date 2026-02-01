@@ -1,0 +1,9 @@
+{
+  "module_name": "cast5.h",
+  "hash_id": "281024d8ccf04010fd7e7e1f61ad55a3c96a00008a3c71cb92276ea9debc45f8",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/cast5.h",
+  "human_readable_source": " \n#ifndef _CRYPTO_CAST5_H\n#define _CRYPTO_CAST5_H\n\n#include <linux/types.h>\n#include <linux/crypto.h>\n#include <crypto/cast_common.h>\n\n#define CAST5_BLOCK_SIZE 8\n#define CAST5_MIN_KEY_SIZE 5\n#define CAST5_MAX_KEY_SIZE 16\n\nstruct cast5_ctx {\n\tu32 Km[16];\n\tu8 Kr[16];\n\tint rr;\t \n};\n\nint cast5_setkey(struct crypto_tfm *tfm, const u8 *key, unsigned int keylen);\n\nvoid __cast5_encrypt(struct cast5_ctx *ctx, u8 *dst, const u8 *src);\nvoid __cast5_decrypt(struct cast5_ctx *ctx, u8 *dst, const u8 *src);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

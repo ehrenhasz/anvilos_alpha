@@ -1,0 +1,9 @@
+{
+  "module_name": "mpsort.h",
+  "hash_id": "e807c826524d8a1a81f8477d2d90d4121ba49b6025c4445ad3fd55e48cf96f4c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mpsort.h",
+  "human_readable_source": "/* Sort a vector of pointers to data.\n\n   Copyright (C) 2007-2023 Free Software Foundation, Inc.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU General Public License as published\n   by the Free Software Foundation, either version 3 of the License,\n   or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU General Public License for more details.\n\n   You should have received a copy of the GNU General Public License\n   along with this program.  If not, see <https:\n\n#include <stddef.h>\n\nvoid mpsort (void const **, size_t, int (*) (void const *, void const *));\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

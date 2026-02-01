@@ -1,0 +1,9 @@
+{
+  "module_name": "test_is_test_passed-no_tests_run_with_header.log",
+  "hash_id": "9086dd877a9d7a5ec1e7050b6b5e7869071fabb4a4dc469f1173e4d70e8841e6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/test_data/test_is_test_passed-no_tests_run_with_header.log",
+  "human_readable_source": "TAP version 14\n1..0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b0cb69beee8f05617b200e2fce06723390e70076a825016c51572d6711c2c1a7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nccflags-y := -I $(srctree)/drivers/net/ethernet/chelsio/cxgb4\n\nobj-$(CONFIG_CHELSIO_TLS_DEVICE) += ch_ktls.o\nch_ktls-objs := chcr_ktls.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

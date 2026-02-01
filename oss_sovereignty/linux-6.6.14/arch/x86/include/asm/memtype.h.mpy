@@ -1,0 +1,9 @@
+{
+  "module_name": "memtype.h",
+  "hash_id": "bb6acce5e5c067ac423aad0065af780388fbea968132cf15372b34fb36db20a5",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/memtype.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_MEMTYPE_H\n#define _ASM_X86_MEMTYPE_H\n\n#include <linux/types.h>\n#include <asm/pgtable_types.h>\n\nextern bool pat_enabled(void);\nextern void pat_bp_init(void);\nextern void pat_cpu_init(void);\n\nextern int memtype_reserve(u64 start, u64 end,\n\t\tenum page_cache_mode req_pcm, enum page_cache_mode *ret_pcm);\nextern int memtype_free(u64 start, u64 end);\n\nextern int memtype_kernel_map_sync(u64 base, unsigned long size,\n\t\tenum page_cache_mode pcm);\n\nextern int memtype_reserve_io(resource_size_t start, resource_size_t end,\n\t\t\tenum page_cache_mode *pcm);\n\nextern void memtype_free_io(resource_size_t start, resource_size_t end);\n\nextern bool pat_pfn_immune_to_uc_mtrr(unsigned long pfn);\n\nbool x86_has_pat_wp(void);\nenum page_cache_mode pgprot2cachemode(pgprot_t pgprot);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

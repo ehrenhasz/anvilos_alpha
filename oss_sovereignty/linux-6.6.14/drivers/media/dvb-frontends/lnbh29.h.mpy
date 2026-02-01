@@ -1,0 +1,9 @@
+{
+  "module_name": "lnbh29.h",
+  "hash_id": "c07e065ca8964631ff7c92bd3634d6cd942e61bb216c6d3ea377f139a82775ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/lnbh29.h",
+  "human_readable_source": " \n \n\n#ifndef LNBH29_H\n#define LNBH29_H\n\n#include <linux/i2c.h>\n#include <linux/dvb/frontend.h>\n\n \n#define LNBH29_DATA_COMP    BIT(3)\n\nstruct lnbh29_config {\n\tu8 i2c_address;\n\tu8 data_config;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_LNBH29)\nstruct dvb_frontend *lnbh29_attach(struct dvb_frontend *fe,\n\t\t\t\t   struct lnbh29_config *cfg,\n\t\t\t\t   struct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *lnbh29_attach(struct dvb_frontend *fe,\n\t\t\t\t\t\t struct lnbh29_config *cfg,\n\t\t\t\t\t\t struct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

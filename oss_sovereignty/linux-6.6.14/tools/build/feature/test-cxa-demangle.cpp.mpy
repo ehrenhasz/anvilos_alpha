@@ -1,0 +1,9 @@
+{
+  "module_name": "test-cxa-demangle.cpp",
+  "hash_id": "a30ee2fa361732e8793e356dfd0594f061de9000a480b61315684a903b428c22",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-cxa-demangle.cpp",
+  "human_readable_source": "\n#include <stdio.h>\n#include <stdlib.h>\n#include <cxxabi.h>\n\nint main(void)\n{\n  size_t len = 256;\n  char *output = (char*)malloc(len);\n        int status;\n\n        output = abi::__cxa_demangle(\"FieldName__9ClassNameFd\", output, &len, &status);\n\n        printf(\"demangled symbol: {%s}\\n\", output);\n\n        return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

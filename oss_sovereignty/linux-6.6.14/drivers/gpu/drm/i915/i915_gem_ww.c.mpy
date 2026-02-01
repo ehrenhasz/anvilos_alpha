@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gem_ww.c",
+  "hash_id": "1262b02d3d4374a8fe3cec78425fd3d884d85a76c3466da42a43ec79c714d09a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_gem_ww.c",
+  "human_readable_source": "\n \n#include <linux/dma-resv.h>\n#include \"i915_gem_ww.h\"\n#include \"gem/i915_gem_object.h\"\n\nvoid i915_gem_ww_ctx_init(struct i915_gem_ww_ctx *ww, bool intr)\n{\n\tww_acquire_init(&ww->ctx, &reservation_ww_class);\n\tINIT_LIST_HEAD(&ww->obj_list);\n\tww->intr = intr;\n\tww->contended = NULL;\n}\n\nstatic void i915_gem_ww_ctx_unlock_all(struct i915_gem_ww_ctx *ww)\n{\n\tstruct drm_i915_gem_object *obj;\n\n\twhile ((obj = list_first_entry_or_null(&ww->obj_list, struct drm_i915_gem_object, obj_link))) {\n\t\tlist_del(&obj->obj_link);\n\t\ti915_gem_object_unlock(obj);\n\t\ti915_gem_object_put(obj);\n\t}\n}\n\nvoid i915_gem_ww_unlock_single(struct drm_i915_gem_object *obj)\n{\n\tlist_del(&obj->obj_link);\n\ti915_gem_object_unlock(obj);\n\ti915_gem_object_put(obj);\n}\n\nvoid i915_gem_ww_ctx_fini(struct i915_gem_ww_ctx *ww)\n{\n\ti915_gem_ww_ctx_unlock_all(ww);\n\tWARN_ON(ww->contended);\n\tww_acquire_fini(&ww->ctx);\n}\n\nint __must_check i915_gem_ww_ctx_backoff(struct i915_gem_ww_ctx *ww)\n{\n\tint ret = 0;\n\n\tif (WARN_ON(!ww->contended))\n\t\treturn -EINVAL;\n\n\ti915_gem_ww_ctx_unlock_all(ww);\n\tif (ww->intr)\n\t\tret = dma_resv_lock_slow_interruptible(ww->contended->base.resv, &ww->ctx);\n\telse\n\t\tdma_resv_lock_slow(ww->contended->base.resv, &ww->ctx);\n\n\tif (!ret)\n\t\tlist_add_tail(&ww->contended->obj_link, &ww->obj_list);\n\telse\n\t\ti915_gem_object_put(ww->contended);\n\n\tww->contended = NULL;\n\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

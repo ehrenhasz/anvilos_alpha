@@ -1,0 +1,9 @@
+{
+  "module_name": "arm-smmu-qcom.h",
+  "hash_id": "e34e51ae7674b9f956fa3cb70c16ec6347fddbf0b4b64ecdfe9224dd17de76d4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h",
+  "human_readable_source": " \n \n\n#ifndef _ARM_SMMU_QCOM_H\n#define _ARM_SMMU_QCOM_H\n\nstruct qcom_smmu {\n\tstruct arm_smmu_device smmu;\n\tconst struct qcom_smmu_config *cfg;\n\tbool bypass_quirk;\n\tu8 bypass_cbndx;\n\tu32 stall_enabled;\n};\n\nenum qcom_smmu_impl_reg_offset {\n\tQCOM_SMMU_TBU_PWR_STATUS,\n\tQCOM_SMMU_STATS_SYNC_INV_TBU_ACK,\n\tQCOM_SMMU_MMU2QSS_AND_SAFE_WAIT_CNTR,\n};\n\nstruct qcom_smmu_config {\n\tconst u32 *reg_offset;\n};\n\nstruct qcom_smmu_match_data {\n\tconst struct qcom_smmu_config *cfg;\n\tconst struct arm_smmu_impl *impl;\n\tconst struct arm_smmu_impl *adreno_impl;\n};\n\n#ifdef CONFIG_ARM_SMMU_QCOM_DEBUG\nvoid qcom_smmu_tlb_sync_debug(struct arm_smmu_device *smmu);\n#else\nstatic inline void qcom_smmu_tlb_sync_debug(struct arm_smmu_device *smmu) { }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

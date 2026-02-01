@@ -1,0 +1,9 @@
+{
+  "module_name": "v3d_fence.c",
+  "hash_id": "41689a356fb66503d9dbf56cdc0a0e0ab5892ecca86e03aeeaa3702a3c23a4f9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/v3d/v3d_fence.c",
+  "human_readable_source": "\n \n\n#include \"v3d_drv.h\"\n\nstruct dma_fence *v3d_fence_create(struct v3d_dev *v3d, enum v3d_queue queue)\n{\n\tstruct v3d_fence *fence;\n\n\tfence = kzalloc(sizeof(*fence), GFP_KERNEL);\n\tif (!fence)\n\t\treturn ERR_PTR(-ENOMEM);\n\n\tfence->dev = &v3d->drm;\n\tfence->queue = queue;\n\tfence->seqno = ++v3d->queue[queue].emit_seqno;\n\tdma_fence_init(&fence->base, &v3d_fence_ops, &v3d->job_lock,\n\t\t       v3d->queue[queue].fence_context, fence->seqno);\n\n\treturn &fence->base;\n}\n\nstatic const char *v3d_fence_get_driver_name(struct dma_fence *fence)\n{\n\treturn \"v3d\";\n}\n\nstatic const char *v3d_fence_get_timeline_name(struct dma_fence *fence)\n{\n\tstruct v3d_fence *f = to_v3d_fence(fence);\n\n\tswitch (f->queue) {\n\tcase V3D_BIN:\n\t\treturn \"v3d-bin\";\n\tcase V3D_RENDER:\n\t\treturn \"v3d-render\";\n\tcase V3D_TFU:\n\t\treturn \"v3d-tfu\";\n\tcase V3D_CSD:\n\t\treturn \"v3d-csd\";\n\tdefault:\n\t\treturn NULL;\n\t}\n}\n\nconst struct dma_fence_ops v3d_fence_ops = {\n\t.get_driver_name = v3d_fence_get_driver_name,\n\t.get_timeline_name = v3d_fence_get_timeline_name,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

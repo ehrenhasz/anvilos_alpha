@@ -1,0 +1,9 @@
+{
+  "module_name": "crash.h",
+  "hash_id": "7d03f5bdefce9f9215f6cf8bbf3011b59f0f9d083581742d12a040193ee82696",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/crash.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_CRASH_H\n#define _ASM_X86_CRASH_H\n\nstruct kimage;\n\nint crash_load_segments(struct kimage *image);\nint crash_setup_memmap_entries(struct kimage *image,\n\t\tstruct boot_params *params);\nvoid crash_smp_send_stop(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

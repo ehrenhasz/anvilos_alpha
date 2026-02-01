@@ -1,0 +1,9 @@
+{
+  "module_name": "pci_irq.h",
+  "hash_id": "faf3f37e6a34baf66e038be5b16621453be570c14c84f6cfb3ac35da6461a86a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.h",
+  "human_readable_source": " \n \n\n#ifndef __PCI_IRQ_H__\n#define __PCI_IRQ_H__\n\n#include <linux/mlx5/driver.h>\n\n#define MLX5_MAX_IRQ_NAME (32)\n#define MLX5_IRQ_NAME_FORMAT_STR (\"%s@pci:%s\")\n#define MLX5_MAX_IRQ_FORMATTED_NAME \\\n\t(MLX5_MAX_IRQ_NAME + sizeof(MLX5_IRQ_NAME_FORMAT_STR))\n \n#define MLX5_MAX_IRQ_IDX_CHARS (4)\n#define MLX5_EQ_REFS_PER_IRQ (2)\n\nstruct mlx5_irq;\nstruct cpu_rmap;\n\nstruct mlx5_irq_pool {\n\tchar name[MLX5_MAX_IRQ_NAME - MLX5_MAX_IRQ_IDX_CHARS];\n\tstruct xa_limit xa_num_irqs;\n\tstruct mutex lock;  \n\tstruct xarray irqs;\n\tu32 max_threshold;\n\tu32 min_threshold;\n\tu16 *irqs_per_cpu;\n\tstruct mlx5_core_dev *dev;\n};\n\nstruct mlx5_irq_pool *mlx5_irq_pool_get(struct mlx5_core_dev *dev);\nstatic inline bool mlx5_irq_pool_is_sf_pool(struct mlx5_irq_pool *pool)\n{\n\treturn !strncmp(\"mlx5_sf\", pool->name, strlen(\"mlx5_sf\"));\n}\n\nstruct mlx5_irq *mlx5_irq_alloc(struct mlx5_irq_pool *pool, int i,\n\t\t\t\tstruct irq_affinity_desc *af_desc,\n\t\t\t\tstruct cpu_rmap **rmap);\nint mlx5_irq_get_locked(struct mlx5_irq *irq);\nint mlx5_irq_read_locked(struct mlx5_irq *irq);\nint mlx5_irq_put(struct mlx5_irq *irq);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

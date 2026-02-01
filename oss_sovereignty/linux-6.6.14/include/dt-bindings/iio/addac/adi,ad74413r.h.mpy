@@ -1,0 +1,9 @@
+{
+  "module_name": "adi,ad74413r.h",
+  "hash_id": "1d2f2f753609d9acc61e8c4020aafeca99b12854fbc8fb4999a0d1498158ba71",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/iio/addac/adi,ad74413r.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_ADI_AD74413R_H\n#define _DT_BINDINGS_ADI_AD74413R_H\n\n#define CH_FUNC_HIGH_IMPEDANCE\t\t\t0x0\n#define CH_FUNC_VOLTAGE_OUTPUT\t\t\t0x1\n#define CH_FUNC_CURRENT_OUTPUT\t\t\t0x2\n#define CH_FUNC_VOLTAGE_INPUT\t\t\t0x3\n#define CH_FUNC_CURRENT_INPUT_EXT_POWER\t\t0x4\n#define CH_FUNC_CURRENT_INPUT_LOOP_POWER\t0x5\n#define CH_FUNC_RESISTANCE_INPUT\t\t0x6\n#define CH_FUNC_DIGITAL_INPUT_LOGIC\t\t0x7\n#define CH_FUNC_DIGITAL_INPUT_LOOP_POWER\t0x8\n#define CH_FUNC_CURRENT_INPUT_EXT_POWER_HART\t0x9\n#define CH_FUNC_CURRENT_INPUT_LOOP_POWER_HART\t0xA\n\n#define CH_FUNC_MIN\tCH_FUNC_HIGH_IMPEDANCE\n#define CH_FUNC_MAX\tCH_FUNC_CURRENT_INPUT_LOOP_POWER_HART\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

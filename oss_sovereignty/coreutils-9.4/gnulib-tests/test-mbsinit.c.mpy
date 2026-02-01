@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbsinit.c",
+  "hash_id": "aad12d951d6a31523db9538c7170a282c6cdf86d613f5865c365bad1088b916f",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbsinit.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <wchar.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (mbsinit, int, (const mbstate_t *));\n\n#include <locale.h>\n\n#include \"macros.h\"\n\nint\nmain (int argc, char *argv[])\n{\n  static mbstate_t state;\n\n  ASSERT (mbsinit (NULL));\n\n  ASSERT (mbsinit (&state));\n\n  if (argc > 1)\n    {\n      static const char input[1] = \"\\303\";\n      wchar_t wc;\n      size_t ret;\n\n       \n      if (setlocale (LC_ALL, \"\") == NULL)\n        return 1;\n\n      ret = mbrtowc (&wc, input, 1, &state);\n      ASSERT (ret == (size_t)(-2));\n      ASSERT (!mbsinit (&state));\n    }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

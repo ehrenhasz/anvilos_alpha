@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pxp_huc.h",
+  "hash_id": "93b017f49fabfd16e931cfc72bb875aaa4eba6bcb8c5925ecb73e2a177f3b8f6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/pxp/intel_pxp_huc.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_PXP_HUC_H__\n#define __INTEL_PXP_HUC_H__\n\nstruct intel_pxp;\n\nint intel_pxp_huc_load_and_auth(struct intel_pxp *pxp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

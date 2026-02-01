@@ -1,0 +1,9 @@
+{
+  "module_name": "ohci_pdriver.h",
+  "hash_id": "43d791bdab5e1ceeda79ea825838af03d963d6205ea4c07df918bc7872b64840",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/ohci_pdriver.h",
+  "human_readable_source": "\n \n\n#ifndef __USB_CORE_OHCI_PDRIVER_H\n#define __USB_CORE_OHCI_PDRIVER_H\n\n \nstruct usb_ohci_pdata {\n\tunsigned\tbig_endian_desc:1;\n\tunsigned\tbig_endian_mmio:1;\n\tunsigned\tno_big_frame_no:1;\n\tunsigned int\tnum_ports;\n\n\t \n\tint (*power_on)(struct platform_device *pdev);\n\t \n\tvoid (*power_off)(struct platform_device *pdev);\n\t \n\tvoid (*power_suspend)(struct platform_device *pdev);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

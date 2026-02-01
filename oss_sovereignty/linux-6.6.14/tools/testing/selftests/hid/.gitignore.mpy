@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "4e1bfcd55fd6a3ba0ee96b84a8de0874fa972f0aa74d860f9d0678e24dd036ba",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/hid/.gitignore",
+  "human_readable_source": "bpftool\n*.skel.h\n/tools\nhid_bpf\nresults\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

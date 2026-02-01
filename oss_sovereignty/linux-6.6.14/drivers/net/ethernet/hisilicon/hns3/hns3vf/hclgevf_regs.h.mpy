@@ -1,0 +1,9 @@
+{
+  "module_name": "hclgevf_regs.h",
+  "hash_id": "cf09f32dde87ab7ed702944a35117a9ab6f9152f2cec8cd2d2e8c1c3dfc5bfa9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_regs.h",
+  "human_readable_source": " \n \n\n#ifndef __HCLGEVF_REGS_H\n#define __HCLGEVF_REGS_H\n#include <linux/types.h>\n\nstruct hnae3_handle;\n\nint hclgevf_get_regs_len(struct hnae3_handle *handle);\nvoid hclgevf_get_regs(struct hnae3_handle *handle, u32 *version,\n\t\t      void *data);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

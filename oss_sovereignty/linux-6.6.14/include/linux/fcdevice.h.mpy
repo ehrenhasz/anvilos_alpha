@@ -1,0 +1,9 @@
+{
+  "module_name": "fcdevice.h",
+  "hash_id": "11e2d506bf58ed2c9ce8dcdb265fa7ff3d6f8511818e912ce52ad980a904062c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fcdevice.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_FCDEVICE_H\n#define _LINUX_FCDEVICE_H\n\n\n#include <linux/if_fc.h>\n\n#ifdef __KERNEL__\nstruct net_device *alloc_fcdev(int sizeof_priv);\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

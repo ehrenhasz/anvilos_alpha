@@ -1,0 +1,9 @@
+{
+  "module_name": "dma.c",
+  "hash_id": "d6884d6b74a8cf4b6d7fd42c79b58d885cde6c9d81b15c26295942133e26686d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/arm64/dma.c",
+  "human_readable_source": "\n#include <linux/acpi.h>\n#include <linux/acpi_iort.h>\n#include <linux/device.h>\n#include <linux/dma-direct.h>\n\nvoid acpi_arch_dma_setup(struct device *dev)\n{\n\tint ret;\n\tu64 end, mask;\n\tu64 size = 0;\n\tconst struct bus_dma_region *map = NULL;\n\n\t \n\tif (!dev->dma_mask) {\n\t\tdev_warn(dev, \"DMA mask not set\\n\");\n\t\tdev->dma_mask = &dev->coherent_dma_mask;\n\t}\n\n\tif (dev->coherent_dma_mask)\n\t\tsize = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);\n\telse\n\t\tsize = 1ULL << 32;\n\n\tret = acpi_dma_get_range(dev, &map);\n\tif (!ret && map) {\n\t\tconst struct bus_dma_region *r = map;\n\n\t\tfor (end = 0; r->size; r++) {\n\t\t\tif (r->dma_start + r->size - 1 > end)\n\t\t\t\tend = r->dma_start + r->size - 1;\n\t\t}\n\n\t\tsize = end + 1;\n\t\tdev->dma_range_map = map;\n\t}\n\n\tif (ret == -ENODEV)\n\t\tret = iort_dma_get_ranges(dev, &size);\n\tif (!ret) {\n\t\t \n\t\tend = size - 1;\n\t\tmask = DMA_BIT_MASK(ilog2(end) + 1);\n\t\tdev->bus_dma_limit = end;\n\t\tdev->coherent_dma_mask = min(dev->coherent_dma_mask, mask);\n\t\t*dev->dma_mask = min(*dev->dma_mask, mask);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

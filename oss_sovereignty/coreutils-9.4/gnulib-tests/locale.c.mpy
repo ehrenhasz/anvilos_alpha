@@ -1,0 +1,9 @@
+{
+  "module_name": "locale.c",
+  "hash_id": "f16ef0704580cc40280c3807ca74c3c2919de8cc0861ebdea58eff07c70dfaf6",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/locale.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <locale.h>\n#include <stdio.h>\n#include <stdlib.h>\n\n \n#undef setlocale\n\n \n\nstatic const char *\ndefaulted_getenv (const char *variable)\n{\n  const char *value = getenv (variable);\n  return (value != NULL ? value : \"\");\n}\n\nstatic void\nprint_category (int category, const char *variable)\n{\n  const char *value = defaulted_getenv (variable);\n  if (value[0] != '\\0' && defaulted_getenv (\"LC_ALL\")[0] == '\\0')\n     \n    printf (\"%s=%s\\n\", variable, value);\n  else\n    printf (\"%s=\\\"%s\\\"\\n\", variable, setlocale (category, NULL));\n}\n\nint\nmain (void)\n{\n  setlocale (LC_ALL, \"\");\n\n  printf (\"LANG=%s\\n\", defaulted_getenv (\"LANG\"));\n  print_category (LC_CTYPE, \"LC_CTYPE\");\n  print_category (LC_NUMERIC, \"LC_NUMERIC\");\n  print_category (LC_TIME, \"LC_TIME\");\n  print_category (LC_COLLATE, \"LC_COLLATE\");\n  print_category (LC_MONETARY, \"LC_MONETARY\");\n  print_category (LC_MESSAGES, \"LC_MESSAGES\");\n#ifdef LC_PAPER\n  print_category (LC_PAPER, \"LC_PAPER\");\n#endif\n#ifdef LC_NAME\n  print_category (LC_NAME, \"LC_NAME\");\n#endif\n#ifdef LC_ADDRESS\n  print_category (LC_ADDRESS, \"LC_ADDRESS\");\n#endif\n#ifdef LC_TELEPHONE\n  print_category (LC_TELEPHONE, \"LC_TELEPHONE\");\n#endif\n#ifdef LC_MEASUREMENT\n  print_category (LC_MEASUREMENT, \"LC_MEASUREMENT\");\n#endif\n#ifdef LC_IDENTIFICATION\n  print_category (LC_IDENTIFICATION, \"LC_IDENTIFICATION\");\n#endif\n\n  printf (\"LC_ALL=%s\\n\", defaulted_getenv (\"LC_ALL\"));\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

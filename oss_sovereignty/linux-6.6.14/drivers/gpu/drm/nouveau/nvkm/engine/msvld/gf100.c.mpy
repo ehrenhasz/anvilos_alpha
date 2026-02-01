@@ -1,0 +1,9 @@
+{
+  "module_name": "gf100.c",
+  "hash_id": "dbbe43433453b9af080ed78afd736c96e47179eae12a0ad45cc3f96e5cd2017d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/msvld/gf100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <nvif/class.h>\n\nvoid\ngf100_msvld_init(struct nvkm_falcon *msvld)\n{\n\tstruct nvkm_device *device = msvld->engine.subdev.device;\n\tnvkm_wr32(device, 0x084010, 0x0000fff2);\n\tnvkm_wr32(device, 0x08401c, 0x0000fff2);\n}\n\nstatic const struct nvkm_falcon_func\ngf100_msvld = {\n\t.init = gf100_msvld_init,\n\t.sclass = {\n\t\t{ -1, -1, GF100_MSVLD },\n\t\t{}\n\t}\n};\n\nint\ngf100_msvld_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t\tstruct nvkm_engine **pengine)\n{\n\treturn nvkm_msvld_new_(&gf100_msvld, device, type, inst, pengine);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "42f79b8e1194a0ee74439797d71d44ff00edb4fd953b8044a4d468209223ac57",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/pistachio/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig COMMON_CLK_PISTACHIO\n\tbool \"Support for IMG Pistachio SoC clock controllers\"\n\tdepends on MIPS || COMPILE_TEST\n\thelp\n\t  Support for the IMG Pistachio SoC clock controller.\n\t  Say Y if you want to include clock support.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

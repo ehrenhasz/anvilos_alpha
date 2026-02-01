@@ -1,0 +1,9 @@
+{
+  "module_name": "control",
+  "hash_id": "73b808911e8b91a86bb3bd8edaa2362a51647459aa88aa4987e5a985632c84ea",
+  "original_prompt": "Ingested from ncurses-6.4/Ada95/package/debian/control",
+  "human_readable_source": "Source: adacurses\nMaintainer: Thomas E. Dickey <dickey@invisible-island.net>\nSection: misc\nPriority: optional\nBuild-Depends: debhelper (>= 5),\n  gnat,\n  gprbuild\nHomepage: https://invisible-island.net/adacurses/\nStandards-Version: 4.6.1.0\n\nPackage: adacurses\nArchitecture: any\nDepends: ${shlibs:Depends}, ${misc:Depends}\nDescription: Ada95 binding for ncurses\n This package installs as \"adacurses\" to avoid conflict with other packages.\n This is the Ada95 binding from the ncurses distribution.\n .\n In addition to a library, this package installs sample programs in\n \"bin/AdaCurses\" to avoid conflict with other packages.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "50720af6f88707304bbc7804270ea977bc476d6a0f2f7c9fca4876a7ce03150d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ntfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Rules for making the NTFS driver.\n\nobj-$(CONFIG_NTFS_FS) += ntfs.o\n\nntfs-y := aops.o attrib.o collate.o compress.o debug.o dir.o file.o \\\n\t  index.o inode.o mft.o mst.o namei.o runlist.o super.o sysctl.o \\\n\t  unistr.o upcase.o\n\nntfs-$(CONFIG_NTFS_RW) += bitmap.o lcnalloc.o logfile.o quota.o usnjrnl.o\n\nccflags-y := -DNTFS_VERSION=\\\"2.1.32\\\"\nccflags-$(CONFIG_NTFS_DEBUG)\t+= -DDEBUG\nccflags-$(CONFIG_NTFS_RW)\t+= -DNTFS_RW\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

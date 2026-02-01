@@ -1,0 +1,9 @@
+{
+  "module_name": "fimc-is-sensor.h",
+  "hash_id": "03c3f4438e2f55ad2c9824d92375c1e56525438e299dcaea7ab229b9856a462c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/exynos4-is/fimc-is-sensor.h",
+  "human_readable_source": " \n \n#ifndef FIMC_IS_SENSOR_H_\n#define FIMC_IS_SENSOR_H_\n\n#include <linux/of.h>\n#include <linux/types.h>\n\n#define S5K6A3_OPEN_TIMEOUT\t\t2000  \n#define S5K6A3_SENSOR_WIDTH\t\t1392\n#define S5K6A3_SENSOR_HEIGHT\t\t1392\n\nenum fimc_is_sensor_id {\n\tFIMC_IS_SENSOR_ID_S5K3H2 = 1,\n\tFIMC_IS_SENSOR_ID_S5K6A3,\n\tFIMC_IS_SENSOR_ID_S5K4E5,\n\tFIMC_IS_SENSOR_ID_S5K3H7,\n\tFIMC_IS_SENSOR_ID_CUSTOM,\n\tFIMC_IS_SENSOR_ID_END\n};\n\n#define IS_SENSOR_CTRL_BUS_I2C0\t\t0\n#define IS_SENSOR_CTRL_BUS_I2C1\t\t1\n\nstruct sensor_drv_data {\n\tenum fimc_is_sensor_id id;\n\t \n\tunsigned short open_timeout;\n};\n\n \nstruct fimc_is_sensor {\n\tconst struct sensor_drv_data *drvdata;\n\tunsigned int i2c_bus;\n\tu8 test_pattern;\n};\n\nconst struct sensor_drv_data *fimc_is_sensor_get_drvdata(\n\t\t\t\tstruct device_node *node);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

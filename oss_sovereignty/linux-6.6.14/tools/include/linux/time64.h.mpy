@@ -1,0 +1,9 @@
+{
+  "module_name": "time64.h",
+  "hash_id": "168913fcf5c406910b7450eddb2913b69ef49f5e6b4f7ed0152583aaf6e7b98c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/time64.h",
+  "human_readable_source": " \n#ifndef _TOOLS_LINUX_TIME64_H\n#define _TOOLS_LINUX_TIME64_H\n\n#define MSEC_PER_SEC\t1000L\n#define USEC_PER_MSEC\t1000L\n#define NSEC_PER_USEC\t1000L\n#define NSEC_PER_MSEC\t1000000L\n#define USEC_PER_SEC\t1000000L\n#define NSEC_PER_SEC\t1000000000L\n#define FSEC_PER_SEC\t1000000000000000LL\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

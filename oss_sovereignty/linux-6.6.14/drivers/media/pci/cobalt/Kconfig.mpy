@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b51d4bc0d3cef6cd546998e290efd16faa1ee803a7c86d09d9b8f790b6b2c0d8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cobalt/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_COBALT\n\ttristate \"Cisco Cobalt support\"\n\tdepends on VIDEO_DEV && I2C\n\tdepends on PCI_MSI && MTD_COMPLEX_MAPPINGS\n\tdepends on (GPIOLIB && DRM_I2C_ADV7511=n) || COMPILE_TEST\n\tdepends on SND\n\tdepends on MTD\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect I2C_ALGOBIT\n\tselect SND_PCM\n\tselect VIDEO_ADV7604\n\tselect VIDEO_ADV7511\n\tselect VIDEO_ADV7842\n\tselect VIDEOBUF2_DMA_SG\n\thelp\n\t  This is a video4linux driver for the Cisco PCIe Cobalt card.\n\n\t  This board is sadly not available outside of Cisco, but it is\n\t  very useful as an example of a real driver that uses all the\n\t  latest frameworks and APIs.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called cobalt.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

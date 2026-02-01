@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_translate.h",
+  "hash_id": "c8fe83a12fbf51736b78ecf031019773cad8bb4c15e8e6c9f70b8b1c19711fb6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/hw_translate.h",
+  "human_readable_source": " \n\n#ifndef __DAL_HW_TRANSLATE_H__\n#define __DAL_HW_TRANSLATE_H__\n\nstruct hw_translate_funcs {\n\tbool (*offset_to_id)(\n\t\tuint32_t offset,\n\t\tuint32_t mask,\n\t\tenum gpio_id *id,\n\t\tuint32_t *en);\n\tbool (*id_to_offset)(\n\t\tenum gpio_id id,\n\t\tuint32_t en,\n\t\tstruct gpio_pin_info *info);\n};\n\nstruct hw_translate {\n\tconst struct hw_translate_funcs *funcs;\n};\n\nbool dal_hw_translate_init(\n\tstruct hw_translate *translate,\n\tenum dce_version dce_version,\n\tenum dce_environment dce_environment);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

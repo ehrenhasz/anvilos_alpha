@@ -1,0 +1,9 @@
+{
+  "module_name": "error_private.h",
+  "hash_id": "4630e39fcc1e7b56811197dc9023b34eb24413a15223dcd0b8cb3a7947040881",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/lib/common/error_private.h",
+  "human_readable_source": " \n\n \n\n#ifndef ERROR_H_MODULE\n#define ERROR_H_MODULE\n\n#if defined (__cplusplus)\nextern \"C\" {\n#endif\n\n\n \n#include <stddef.h>         \n#include \"zstd_errors.h\"   \n\n\n \n#if defined(__GNUC__)\n#  define ERR_STATIC static __attribute__((unused))\n#elif defined (__cplusplus) || (defined (__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)  )\n#  define ERR_STATIC static inline\n#elif defined(_MSC_VER)\n#  define ERR_STATIC static __inline\n#else\n#  define ERR_STATIC static   \n#endif\n\n\n \ntypedef ZSTD_ErrorCode ERR_enum;\n#define PREFIX(name) ZSTD_error_##name\n\n\n \n#undef ERROR    \n#define ERROR(name) ZSTD_ERROR(name)\n#define ZSTD_ERROR(name) ((size_t)-PREFIX(name))\n\nERR_STATIC unsigned ERR_isError(size_t code) { return (code > ERROR(maxCode)); }\n\nERR_STATIC ERR_enum ERR_getErrorCode(size_t code) { if (!ERR_isError(code)) return (ERR_enum)0; return (ERR_enum) (0-code); }\n\n \n#define CHECK_V_F(e, f) size_t const e = f; if (ERR_isError(e)) return e\n#define CHECK_F(f)   { CHECK_V_F(_var_err__, f); }\n\n\n \n\nconst char* ERR_getErrorString(ERR_enum code);    \n\nERR_STATIC const char* ERR_getErrorName(size_t code)\n{\n    return ERR_getErrorString(ERR_getErrorCode(code));\n}\n\n#if defined (__cplusplus)\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

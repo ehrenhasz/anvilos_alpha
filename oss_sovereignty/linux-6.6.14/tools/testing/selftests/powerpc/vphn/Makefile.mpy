@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "180fc7e5f06e039476b81e1d4ffb213b8f4fafd46089165ae77eb94517593c81",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/vphn/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nTEST_GEN_PROGS := test-vphn\n\nCFLAGS += -m64 -I$(CURDIR)\n\ntop_srcdir = ../../../../..\ninclude ../../lib.mk\n\n$(TEST_GEN_PROGS): ../harness.c\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

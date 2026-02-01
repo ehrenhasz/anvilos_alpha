@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_translate_dcn32.h",
+  "hash_id": "de80f39bb596b4fa77d5e76ce7a2c157628e1adb6826bc1650ffa91e41e3fb8f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/dcn32/hw_translate_dcn32.h",
+  "human_readable_source": " \n#ifndef __DAL_HW_TRANSLATE_DCN32_H__\n#define __DAL_HW_TRANSLATE_DCN32_H__\n\nstruct hw_translate;\n\n \nvoid dal_hw_translate_dcn32_init(struct hw_translate *tr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

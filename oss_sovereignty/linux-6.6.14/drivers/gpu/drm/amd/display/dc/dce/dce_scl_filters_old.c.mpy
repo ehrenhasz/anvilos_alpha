@@ -1,0 +1,9 @@
+{
+  "module_name": "dce_scl_filters_old.c",
+  "hash_id": "16647954c146404e2b7418ad84f45ea5430a2b844ae367ccb8ad371b8b8465f5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce/dce_scl_filters_old.c",
+  "human_readable_source": " \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

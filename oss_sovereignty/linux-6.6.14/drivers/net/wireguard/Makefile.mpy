@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ecd2d30f5d728bacdd2e4bfeaa7400dbcd08b13f30799077c3a227445bd71a35",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireguard/Makefile",
+  "human_readable_source": "ccflags-y := -D'pr_fmt(fmt)=KBUILD_MODNAME \": \" fmt'\nccflags-$(CONFIG_WIREGUARD_DEBUG) += -DDEBUG\nwireguard-y := main.o\nwireguard-y += noise.o\nwireguard-y += device.o\nwireguard-y += peer.o\nwireguard-y += timers.o\nwireguard-y += queueing.o\nwireguard-y += send.o\nwireguard-y += receive.o\nwireguard-y += socket.o\nwireguard-y += peerlookup.o\nwireguard-y += allowedips.o\nwireguard-y += ratelimiter.o\nwireguard-y += cookie.o\nwireguard-y += netlink.o\nobj-$(CONFIG_WIREGUARD) := wireguard.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

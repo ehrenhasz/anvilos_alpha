@@ -1,0 +1,9 @@
+{
+  "module_name": "vfio_ap_debug.h",
+  "hash_id": "ce77483a5d50d9887a1f62da87179d24ea17ecb05a3fbd116aa09433b8aeff10",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/crypto/vfio_ap_debug.h",
+  "human_readable_source": " \n \n#ifndef VFIO_AP_DEBUG_H\n#define VFIO_AP_DEBUG_H\n\n#include <asm/debug.h>\n\n#define DBF_ERR\t\t3\t \n#define DBF_WARN\t4\t \n#define DBF_INFO\t5\t \n#define DBF_DEBUG\t6\t \n\n#define DBF_MAX_SPRINTF_ARGS 10\n\n#define VFIO_AP_DBF(...)\t\t\t\t\t\\\n\tdebug_sprintf_event(vfio_ap_dbf_info, ##__VA_ARGS__)\n#define VFIO_AP_DBF_ERR(...)\t\t\t\t\t\\\n\tdebug_sprintf_event(vfio_ap_dbf_info, DBF_ERR, ##__VA_ARGS__)\n#define VFIO_AP_DBF_WARN(...)\t\t\t\t\t\\\n\tdebug_sprintf_event(vfio_ap_dbf_info, DBF_WARN, ##__VA_ARGS__)\n#define VFIO_AP_DBF_INFO(...)\t\t\t\t\t\\\n\tdebug_sprintf_event(vfio_ap_dbf_info, DBF_INFO, ##__VA_ARGS__)\n#define VFIO_AP_DBF_DBG(...)\t\t\t\t\t\\\n\tdebug_sprintf_event(vfio_ap_dbf_info, DBF_DEBUG, ##__VA_ARGS__)\n\nextern debug_info_t *vfio_ap_dbf_info;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

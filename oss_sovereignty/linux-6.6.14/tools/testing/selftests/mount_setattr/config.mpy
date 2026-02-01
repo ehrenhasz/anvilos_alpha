@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "4311b0ad159aa4e07eea0473f9422224db48e05f532dc10aa3153f3093c6fb07",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/mount_setattr/config",
+  "human_readable_source": "CONFIG_USER_NS=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "stringify.h",
+  "hash_id": "5fd82e10d82b766177b07fa82dc6f83227b73a9e0bcef5d1b6cffc952bd54a7e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/stringify.h",
+  "human_readable_source": "#ifndef __LINUX_STRINGIFY_H\n#define __LINUX_STRINGIFY_H\n\n \n\n#define __stringify_1(x...)\t#x\n#define __stringify(x...)\t__stringify_1(x)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

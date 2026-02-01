@@ -1,0 +1,9 @@
+{
+  "module_name": "tas.h",
+  "hash_id": "270de5ba565e0b877ce34e150316691613b855f4f1c2fc9d06fb1ce4f62b8fa6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/aoa/codecs/tas.h",
+  "human_readable_source": " \n \n#ifndef __SND_AOA_CODECTASH\n#define __SND_AOA_CODECTASH\n\n#define TAS_REG_MCS\t0x01\t \n#\tdefine TAS_MCS_FASTLOAD\t\t(1<<7)\n#\tdefine TAS_MCS_SCLK64\t\t(1<<6)\n#\tdefine TAS_MCS_SPORT_MODE_MASK\t(3<<4)\n#\tdefine TAS_MCS_SPORT_MODE_I2S\t(2<<4)\n#\tdefine TAS_MCS_SPORT_MODE_RJ\t(1<<4)\n#\tdefine TAS_MCS_SPORT_MODE_LJ\t(0<<4)\n#\tdefine TAS_MCS_SPORT_WL_MASK\t(3<<0)\n#\tdefine TAS_MCS_SPORT_WL_16BIT\t(0<<0)\n#\tdefine TAS_MCS_SPORT_WL_18BIT\t(1<<0)\n#\tdefine TAS_MCS_SPORT_WL_20BIT\t(2<<0)\n#\tdefine TAS_MCS_SPORT_WL_24BIT\t(3<<0)\n\n#define TAS_REG_DRC\t0x02\n#define TAS_REG_VOL\t0x04\n#define TAS_REG_TREBLE\t0x05\n#define TAS_REG_BASS\t0x06\n#define TAS_REG_LMIX\t0x07\n#define TAS_REG_RMIX\t0x08\n\n#define TAS_REG_ACR\t0x40\t \n#\tdefine TAS_ACR_B_MONAUREAL\t(1<<7)\n#\tdefine TAS_ACR_B_MON_SEL_RIGHT\t(1<<6)\n#\tdefine TAS_ACR_DEEMPH_MASK\t(3<<2)\n#\tdefine TAS_ACR_DEEMPH_OFF\t(0<<2)\n#\tdefine TAS_ACR_DEEMPH_48KHz\t(1<<2)\n#\tdefine TAS_ACR_DEEMPH_44KHz\t(2<<2)\n#\tdefine TAS_ACR_INPUT_B\t\t(1<<1)\n#\tdefine TAS_ACR_ANALOG_PDOWN\t(1<<0)\n\n#define TAS_REG_MCS2\t0x43\t \n#\tdefine TAS_MCS2_ALLPASS\t\t(1<<1)\n\n#define TAS_REG_LEFT_BIQUAD6\t0x10\n#define TAS_REG_RIGHT_BIQUAD6\t0x19\n\n#define TAS_REG_LEFT_LOUDNESS\t\t0x21\n#define TAS_REG_RIGHT_LOUDNESS\t\t0x22\n#define TAS_REG_LEFT_LOUDNESS_GAIN\t0x23\n#define TAS_REG_RIGHT_LOUDNESS_GAIN\t0x24\n\n#define TAS3001_DRC_MAX\t\t0x5f\n#define TAS3004_DRC_MAX\t\t0xef\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

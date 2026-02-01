@@ -1,0 +1,9 @@
+{
+  "module_name": "frexp.c",
+  "hash_id": "58a2973f80f9def7940708850e97f8080da38be2496cd473f7cb9023e9d59e94",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/frexp.c",
+  "human_readable_source": "#include <math.h>\n#include <stdint.h>\n\ndouble frexp(double x, int *e)\n{\n\tunion { double d; uint64_t i; } y = { x };\n\tint ee = y.i>>52 & 0x7ff;\n\n\tif (!ee) {\n\t\tif (x) {\n\t\t\tx = frexp(x*0x1p64, e);\n\t\t\t*e -= 64;\n\t\t} else *e = 0;\n\t\treturn x;\n\t} else if (ee == 0x7ff) {\n\t\treturn x;\n\t}\n\n\t*e = ee - 0x3fe;\n\ty.i &= 0x800fffffffffffffull;\n\ty.i |= 0x3fe0000000000000ull;\n\treturn y.d;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

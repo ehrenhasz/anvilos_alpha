@@ -1,0 +1,9 @@
+{
+  "module_name": "trans.h",
+  "hash_id": "83a451852359ac7369e3ee7608dbc83ab7e83b6b777541395552d6df49017e52",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/quantenna/qtnfmac/trans.h",
+  "human_readable_source": " \n \n\n#ifndef _QTN_FMAC_TRANS_H_\n#define _QTN_FMAC_TRANS_H_\n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/skbuff.h>\n#include <linux/mutex.h>\n\n#include \"qlink.h\"\n\n#define QTNF_CMD_FLAG_RESP_REQ\t\tBIT(0)\n\n#define QTNF_MAX_CMD_BUF_SIZE\t2048\n#define QTNF_DEF_CMD_HROOM\t4\n\nstruct qtnf_bus;\n\nstruct qtnf_cmd_ctl_node {\n\tstruct completion cmd_resp_completion;\n\tstruct sk_buff *resp_skb;\n\tu16 seq_num;\n\tbool waiting_for_resp;\n\tspinlock_t resp_lock;  \n};\n\nstruct qtnf_qlink_transport {\n\tstruct qtnf_cmd_ctl_node curr_cmd;\n\tstruct sk_buff_head event_queue;\n\tsize_t event_queue_max_len;\n};\n\nvoid qtnf_trans_init(struct qtnf_bus *bus);\nvoid qtnf_trans_free(struct qtnf_bus *bus);\n\nint qtnf_trans_send_next_cmd(struct qtnf_bus *bus);\nint qtnf_trans_handle_rx_ctl_packet(struct qtnf_bus *bus, struct sk_buff *skb);\nint qtnf_trans_send_cmd_with_resp(struct qtnf_bus *bus,\n\t\t\t\t  struct sk_buff *cmd_skb,\n\t\t\t\t  struct sk_buff **response_skb);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

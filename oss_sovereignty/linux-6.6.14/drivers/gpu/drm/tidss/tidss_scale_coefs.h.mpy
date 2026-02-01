@@ -1,0 +1,9 @@
+{
+  "module_name": "tidss_scale_coefs.h",
+  "hash_id": "f14ae1d2a667eefc839592fedf75b73d86c50732755459221b855e4b8741306d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tidss/tidss_scale_coefs.h",
+  "human_readable_source": " \n \n\n#ifndef __TIDSS_DISPC_COEF_H__\n#define __TIDSS_DISPC_COEF_H__\n\n#include <linux/types.h>\n\nstruct tidss_scale_coefs {\n\ts16 c2[16];\n\ts16 c1[16];\n\tu16 c0[9];\n};\n\nconst struct tidss_scale_coefs *tidss_get_scale_coefs(struct device *dev,\n\t\t\t\t\t\t      u32 firinc,\n\t\t\t\t\t\t      bool five_taps);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

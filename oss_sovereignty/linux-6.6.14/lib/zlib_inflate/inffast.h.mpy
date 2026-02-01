@@ -1,0 +1,9 @@
+{
+  "module_name": "inffast.h",
+  "hash_id": "5f3eb686f1b98d91060653418f00cec58a53687800577929cdef2bfdc7c3ea53",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zlib_inflate/inffast.h",
+  "human_readable_source": " \n\n \n\nvoid inflate_fast (z_streamp strm, unsigned start);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

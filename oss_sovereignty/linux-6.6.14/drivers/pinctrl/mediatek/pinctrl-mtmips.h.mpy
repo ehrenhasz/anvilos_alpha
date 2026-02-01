@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-mtmips.h",
+  "hash_id": "78dd91bf3eedbd5e9ef0a750d86dbede1aeef51bb1a672697f5581c7a1636f5a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/mediatek/pinctrl-mtmips.h",
+  "human_readable_source": " \n \n\n#ifndef _PINCTRL_MTMIPS_H__\n#define _PINCTRL_MTMIPS_H__\n\n#define FUNC(name, value, pin_first, pin_count) \\\n\t{ name, value, pin_first, pin_count }\n\n#define GRP(_name, _func, _mask, _shift) \\\n\t{ .name = _name, .mask = _mask, .shift = _shift, \\\n\t  .func = _func, .gpio = _mask, \\\n\t  .func_count = ARRAY_SIZE(_func) }\n\n#define GRP_G(_name, _func, _mask, _gpio, _shift) \\\n\t{ .name = _name, .mask = _mask, .shift = _shift, \\\n\t  .func = _func, .gpio = _gpio, \\\n\t  .func_count = ARRAY_SIZE(_func) }\n\nstruct mtmips_pmx_group;\n\nstruct mtmips_pmx_func {\n\tconst char *name;\n\tconst char value;\n\n\tint pin_first;\n\tint pin_count;\n\tint *pins;\n\n\tint *groups;\n\tint group_count;\n\n\tint enabled;\n};\n\nstruct mtmips_pmx_group {\n\tconst char *name;\n\tint enabled;\n\n\tconst u32 shift;\n\tconst char mask;\n\tconst char gpio;\n\n\tstruct mtmips_pmx_func *func;\n\tint func_count;\n};\n\nint mtmips_pinctrl_init(struct platform_device *pdev,\n\t\t\tstruct mtmips_pmx_group *data);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

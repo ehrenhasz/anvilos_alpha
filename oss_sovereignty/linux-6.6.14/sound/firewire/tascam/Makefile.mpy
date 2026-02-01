@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6482446e30bbed44d550e837d54aded17f841e55e24523ccdaddef4b851abfc7",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/tascam/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-firewire-tascam-objs := tascam-proc.o amdtp-tascam.o tascam-stream.o \\\n\t\t\t    tascam-pcm.o tascam-hwdep.o tascam-transaction.o \\\n\t\t\t    tascam-midi.o tascam.o\nobj-$(CONFIG_SND_FIREWIRE_TASCAM) += snd-firewire-tascam.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

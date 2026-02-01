@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_zfs.h",
+  "hash_id": "4209670db1a420a89a1210a62f5bbbee8f5cbc3f3e646cefc843443c02c2fde6",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/zfs/sys/trace_zfs.h",
+  "human_readable_source": " \n\n#ifndef _OS_LINUX_ZFS_TRACE_H\n#define\t_OS_LINUX_ZFS_TRACE_H\n\n#include <sys/multilist.h>\n#include <sys/arc_impl.h>\n#include <sys/vdev_impl.h>\n#include <sys/zio.h>\n#include <sys/dbuf.h>\n#include <sys/dmu_objset.h>\n#include <sys/dsl_dataset.h>\n#include <sys/dmu_tx.h>\n#include <sys/dnode.h>\n#include <sys/zfs_znode.h>\n#include <sys/zil_impl.h>\n#include <sys/zrlock.h>\n\n#include <sys/trace.h>\n#include <sys/trace_acl.h>\n#include <sys/trace_arc.h>\n#include <sys/trace_dbgmsg.h>\n#include <sys/trace_dbuf.h>\n#include <sys/trace_dmu.h>\n#include <sys/trace_dnode.h>\n#include <sys/trace_multilist.h>\n#include <sys/trace_rrwlock.h>\n#include <sys/trace_txg.h>\n#include <sys/trace_vdev.h>\n#include <sys/trace_zil.h>\n#include <sys/trace_zio.h>\n#include <sys/trace_zrlock.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

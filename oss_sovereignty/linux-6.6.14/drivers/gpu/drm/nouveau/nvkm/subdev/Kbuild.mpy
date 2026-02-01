@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "aa0dad15129f7bec7306c33380951f3bcf132ae5ed2e7c76a0ab26fb0607f09a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\ninclude $(src)/nvkm/subdev/acr/Kbuild\ninclude $(src)/nvkm/subdev/bar/Kbuild\ninclude $(src)/nvkm/subdev/bios/Kbuild\ninclude $(src)/nvkm/subdev/bus/Kbuild\ninclude $(src)/nvkm/subdev/clk/Kbuild\ninclude $(src)/nvkm/subdev/devinit/Kbuild\ninclude $(src)/nvkm/subdev/fault/Kbuild\ninclude $(src)/nvkm/subdev/fb/Kbuild\ninclude $(src)/nvkm/subdev/fuse/Kbuild\ninclude $(src)/nvkm/subdev/gpio/Kbuild\ninclude $(src)/nvkm/subdev/gsp/Kbuild\ninclude $(src)/nvkm/subdev/i2c/Kbuild\ninclude $(src)/nvkm/subdev/iccsense/Kbuild\ninclude $(src)/nvkm/subdev/instmem/Kbuild\ninclude $(src)/nvkm/subdev/ltc/Kbuild\ninclude $(src)/nvkm/subdev/mc/Kbuild\ninclude $(src)/nvkm/subdev/mmu/Kbuild\ninclude $(src)/nvkm/subdev/mxm/Kbuild\ninclude $(src)/nvkm/subdev/pci/Kbuild\ninclude $(src)/nvkm/subdev/pmu/Kbuild\ninclude $(src)/nvkm/subdev/privring/Kbuild\ninclude $(src)/nvkm/subdev/therm/Kbuild\ninclude $(src)/nvkm/subdev/timer/Kbuild\ninclude $(src)/nvkm/subdev/top/Kbuild\ninclude $(src)/nvkm/subdev/vfn/Kbuild\ninclude $(src)/nvkm/subdev/volt/Kbuild\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

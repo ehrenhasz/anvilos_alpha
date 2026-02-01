@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "a8eb17886eee7739bf0c8081662df48296f0b035887d89ed3329bac5295f3eca",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/dscr/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ndscr_default_test\ndscr_explicit_test\ndscr_inherit_exec_test\ndscr_inherit_test\ndscr_sysfs_test\ndscr_sysfs_thread_test\ndscr_user_test\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

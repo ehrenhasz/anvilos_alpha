@@ -1,0 +1,9 @@
+{
+  "module_name": "fileattr.h",
+  "hash_id": "ec205bca3b63c127312e739f9b3ab589f635f940dedb03c2d47a866ce7925672",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fileattr.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_FILEATTR_H\n#define _LINUX_FILEATTR_H\n\n \n#define FS_COMMON_FL \\\n\t(FS_SYNC_FL | FS_IMMUTABLE_FL | FS_APPEND_FL | \\\n\t FS_NODUMP_FL |\tFS_NOATIME_FL | FS_DAX_FL | \\\n\t FS_PROJINHERIT_FL)\n\n#define FS_XFLAG_COMMON \\\n\t(FS_XFLAG_SYNC | FS_XFLAG_IMMUTABLE | FS_XFLAG_APPEND | \\\n\t FS_XFLAG_NODUMP | FS_XFLAG_NOATIME | FS_XFLAG_DAX | \\\n\t FS_XFLAG_PROJINHERIT)\n\n \nstruct fileattr {\n\tu32\tflags;\t\t \n\t \n\tu32\tfsx_xflags;\t \n\tu32\tfsx_extsize;\t \n\tu32\tfsx_nextents;\t \n\tu32\tfsx_projid;\t \n\tu32\tfsx_cowextsize;\t \n\t \n\tbool\tflags_valid:1;\n\tbool\tfsx_valid:1;\n};\n\nint copy_fsxattr_to_user(const struct fileattr *fa, struct fsxattr __user *ufa);\n\nvoid fileattr_fill_xflags(struct fileattr *fa, u32 xflags);\nvoid fileattr_fill_flags(struct fileattr *fa, u32 flags);\n\n \nstatic inline bool fileattr_has_fsx(const struct fileattr *fa)\n{\n\treturn fa->fsx_valid &&\n\t\t((fa->fsx_xflags & ~FS_XFLAG_COMMON) || fa->fsx_extsize != 0 ||\n\t\t fa->fsx_projid != 0 ||\tfa->fsx_cowextsize != 0);\n}\n\nint vfs_fileattr_get(struct dentry *dentry, struct fileattr *fa);\nint vfs_fileattr_set(struct mnt_idmap *idmap, struct dentry *dentry,\n\t\t     struct fileattr *fa);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

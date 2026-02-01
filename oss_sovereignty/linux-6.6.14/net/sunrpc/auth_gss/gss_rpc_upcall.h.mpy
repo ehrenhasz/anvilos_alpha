@@ -1,0 +1,9 @@
+{
+  "module_name": "gss_rpc_upcall.h",
+  "hash_id": "1ca0b43358169e81d2bdcca3cffd9bcaead56be15a433832b919cb91cc97d84b",
+  "original_prompt": "Ingested from linux-6.6.14/net/sunrpc/auth_gss/gss_rpc_upcall.h",
+  "human_readable_source": " \n \n\n#ifndef _GSS_RPC_UPCALL_H\n#define _GSS_RPC_UPCALL_H\n\n#include <linux/sunrpc/gss_api.h>\n#include <linux/sunrpc/auth_gss.h>\n#include \"gss_rpc_xdr.h\"\n#include \"../netns.h\"\n\nstruct gssp_upcall_data {\n\tstruct xdr_netobj in_handle;\n\tstruct gssp_in_token in_token;\n\tstruct xdr_netobj out_handle;\n\tstruct xdr_netobj out_token;\n\tstruct rpcsec_gss_oid mech_oid;\n\tstruct svc_cred creds;\n\tint found_creds;\n\tint major_status;\n\tint minor_status;\n};\n\nint gssp_accept_sec_context_upcall(struct net *net,\n\t\t\t\tstruct gssp_upcall_data *data);\nvoid gssp_free_upcall_data(struct gssp_upcall_data *data);\n\nvoid init_gssp_clnt(struct sunrpc_net *);\nint set_gssp_clnt(struct net *);\nvoid clear_gssp_clnt(struct sunrpc_net *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

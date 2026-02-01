@@ -1,0 +1,9 @@
+{
+  "module_name": "pstore_crash_test",
+  "hash_id": "96e17356dbc61517b62cb96118bf27587da7d3a986937c4a9a4dd726c8e1ee37",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/pstore/pstore_crash_test",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-only\n\n# pstore_crash_test - Pstore test shell script which causes crash and reboot\n#\n# Copyright (C) Hitachi Ltd., 2015\n#  Written by Hiraku Toyooka <hiraku.toyooka.gu@hitachi.com>\n#\n\n# exit if pstore backend is not registered\n. ./common_tests\n\nprlog \"Causing kernel crash ...\"\n\n# enable all functions triggered by sysrq\necho 1 > /proc/sys/kernel/sysrq\n# setting to reboot in 3 seconds after panic\necho 3 > /proc/sys/kernel/panic\n\n# save uuid file by different name because next test execution will replace it.\nmv $TOP_DIR/uuid $TOP_DIR/prev_uuid\n\n# create a file as reboot flag\ntouch $REBOOT_FLAG\nsync\n\n# cause crash\n# Note: If you use kdump and want to see kmesg-* files after reboot, you should\n#       specify 'crash_kexec_post_notifiers' in 1st kernel's cmdline.\necho c > /proc/sysrq-trigger\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

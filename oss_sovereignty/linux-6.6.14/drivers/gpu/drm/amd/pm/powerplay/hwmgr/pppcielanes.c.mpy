@@ -1,0 +1,9 @@
+{
+  "module_name": "pppcielanes.c",
+  "hash_id": "aaf31486989d3a72395b853d99c5e248bf25c66d969257f4a427cc0cc582b0d0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/pppcielanes.c",
+  "human_readable_source": " \n\n#include <linux/types.h>\n#include \"atom-types.h\"\n#include \"atombios.h\"\n#include \"pppcielanes.h\"\n\n \n\n \nstatic const unsigned char pp_r600_encode_lanes[] = {\n\t0,           \n\t1,           \n\t2,           \n\t0,           \n\t3,           \n\t0,           \n\t0,           \n\t0,           \n\t4,           \n\t0,           \n\t0,           \n\t0,           \n\t5,           \n\t0,           \n\t0,           \n\t0,           \n\t6            \n};\n\nstatic const unsigned char pp_r600_decoded_lanes[8] = { 16, 1, 2, 4, 8, 12, 16, };\n\nuint8_t encode_pcie_lane_width(uint32_t num_lanes)\n{\n\treturn pp_r600_encode_lanes[num_lanes];\n}\n\nuint8_t decode_pcie_lane_width(uint32_t num_lanes)\n{\n\treturn pp_r600_decoded_lanes[num_lanes];\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

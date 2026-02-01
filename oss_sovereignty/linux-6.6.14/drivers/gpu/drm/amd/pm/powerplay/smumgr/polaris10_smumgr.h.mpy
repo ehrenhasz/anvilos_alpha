@@ -1,0 +1,9 @@
+{
+  "module_name": "polaris10_smumgr.h",
+  "hash_id": "d3e2ca9d1ff385c95eeee2f306255f9d7468cefbdd56beb76432c0a94b390d38",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/smumgr/polaris10_smumgr.h",
+  "human_readable_source": " \n\n#ifndef _POLARIS10_SMUMANAGER_H\n#define _POLARIS10_SMUMANAGER_H\n\n\n#include <pp_endian.h>\n#include \"smu74.h\"\n#include \"smu74_discrete.h\"\n#include \"smu7_smumgr.h\"\n\n#define SMC_RAM_END 0x40000\n\nstruct polaris10_pt_defaults {\n\tuint8_t   SviLoadLineEn;\n\tuint8_t   SviLoadLineVddC;\n\tuint8_t   TDC_VDDC_ThrottleReleaseLimitPerc;\n\tuint8_t   TDC_MAWt;\n\tuint8_t   TdcWaterfallCtl;\n\tuint8_t   DTEAmbientTempBase;\n\n\tuint32_t  DisplayCac;\n\tuint32_t  BAPM_TEMP_GRADIENT;\n\tuint16_t  BAPMTI_R[SMU74_DTE_ITERATIONS * SMU74_DTE_SOURCES * SMU74_DTE_SINKS];\n\tuint16_t  BAPMTI_RC[SMU74_DTE_ITERATIONS * SMU74_DTE_SOURCES * SMU74_DTE_SINKS];\n};\n\nstruct polaris10_range_table {\n\tuint32_t trans_lower_frequency;  \n\tuint32_t trans_upper_frequency;\n};\n\nstruct polaris10_smumgr {\n\tstruct smu7_smumgr smu7_data;\n\tuint8_t protected_mode;\n\tSMU74_Discrete_DpmTable              smc_state_table;\n\tstruct SMU74_Discrete_Ulv            ulv_setting;\n\tstruct SMU74_Discrete_PmFuses  power_tune_table;\n\tstruct polaris10_range_table                range_table[NUM_SCLK_RANGE];\n\tconst struct polaris10_pt_defaults       *power_tune_defaults;\n\tuint32_t               bif_sclk_table[SMU74_MAX_LEVELS_LINK];\n\tpp_atomctrl_mc_reg_table             mc_reg_table;\n};\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

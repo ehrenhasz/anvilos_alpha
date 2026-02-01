@@ -1,0 +1,9 @@
+{
+  "module_name": "mmc-pxamci.h",
+  "hash_id": "14b309c77e8e00412e51548873e47fdbc9c195eb72d519cfa10d66b23afefa0d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/mmc-pxamci.h",
+  "human_readable_source": " \n#ifndef ASMARM_ARCH_MMC_H\n#define ASMARM_ARCH_MMC_H\n\n#include <linux/mmc/host.h>\n#include <linux/interrupt.h>\n\nstruct device;\nstruct mmc_host;\n\nstruct pxamci_platform_data {\n\tunsigned int ocr_mask;\t\t\t \n\tunsigned long detect_delay_ms;\t\t \n\tint (*init)(struct device *, irq_handler_t , void *);\n\tint (*get_ro)(struct device *);\n\tint (*setpower)(struct device *, unsigned int);\n\tvoid (*exit)(struct device *, void *);\n\tbool gpio_card_ro_invert;\t\t \n};\n\nextern void pxa_set_mci_info(struct pxamci_platform_data *info);\nextern void pxa3xx_set_mci2_info(struct pxamci_platform_data *info);\nextern void pxa3xx_set_mci3_info(struct pxamci_platform_data *info);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

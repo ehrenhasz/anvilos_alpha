@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_common.h",
+  "hash_id": "19e2ebf0bf92d401d95c4a9301353a5596e35cb03caac59c70e87f9799db2f24",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter/nf_conntrack_common.h",
+  "human_readable_source": " \n#ifndef _NF_CONNTRACK_COMMON_H\n#define _NF_CONNTRACK_COMMON_H\n\n#include <linux/refcount.h>\n#include <uapi/linux/netfilter/nf_conntrack_common.h>\n\nstruct ip_conntrack_stat {\n\tunsigned int found;\n\tunsigned int invalid;\n\tunsigned int insert;\n\tunsigned int insert_failed;\n\tunsigned int clash_resolve;\n\tunsigned int drop;\n\tunsigned int early_drop;\n\tunsigned int error;\n\tunsigned int expect_new;\n\tunsigned int expect_create;\n\tunsigned int expect_delete;\n\tunsigned int search_restart;\n\tunsigned int chaintoolong;\n};\n\n#define NFCT_INFOMASK\t7UL\n#define NFCT_PTRMASK\t~(NFCT_INFOMASK)\n\nstruct nf_conntrack {\n\trefcount_t use;\n};\n\nvoid nf_conntrack_destroy(struct nf_conntrack *nfct);\n\n \nstatic inline void nf_conntrack_put(struct nf_conntrack *nfct)\n{\n\tif (nfct && refcount_dec_and_test(&nfct->use))\n\t\tnf_conntrack_destroy(nfct);\n}\nstatic inline void nf_conntrack_get(struct nf_conntrack *nfct)\n{\n\tif (nfct)\n\t\trefcount_inc(&nfct->use);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

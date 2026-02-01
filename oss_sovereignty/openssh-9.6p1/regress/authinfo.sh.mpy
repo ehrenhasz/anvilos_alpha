@@ -1,0 +1,9 @@
+{
+  "module_name": "authinfo.sh",
+  "hash_id": "b12135cd0761af257d87d8315a44f87c3350cb1670b49330d7a59cc0eaf5fbbb",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/authinfo.sh",
+  "human_readable_source": "#\t$OpenBSD: authinfo.sh,v 1.3 2018/04/10 00:13:27 djm Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"authinfo\"\n\n# Ensure the environment variable doesn't leak when ExposeAuthInfo=no.\nverbose \"ExposeAuthInfo=no\"\nenv SSH_USER_AUTH=blah ${SSH} -F $OBJ/ssh_proxy x \\\n\t'env | grep SSH_USER_AUTH >/dev/null' && fail \"SSH_USER_AUTH present\"\n\nverbose \"ExposeAuthInfo=yes\"\necho ExposeAuthInfo=yes >> $OBJ/sshd_proxy\n${SSH} -F $OBJ/ssh_proxy x \\\n\t'grep ^publickey \"$SSH_USER_AUTH\" /dev/null >/dev/null' ||\n\tfail \"ssh with ExposeAuthInfo failed\"\n\n# XXX test multiple auth and key contents\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

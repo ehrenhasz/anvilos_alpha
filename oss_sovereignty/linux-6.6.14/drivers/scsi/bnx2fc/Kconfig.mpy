@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "701b16c6d8d47681ca484f59e761e336e6dc7fdf69d96e587c9f0ae29313d70f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/bnx2fc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SCSI_BNX2X_FCOE\n\ttristate \"QLogic FCoE offload support\"\n\tdepends on PCI\n\tdepends on (IPV6 || IPV6=n)\n\tdepends on LIBFC\n\tdepends on LIBFCOE\n\tdepends on MMU\n\tselect NETDEVICES\n\tselect ETHERNET\n\tselect NET_VENDOR_BROADCOM\n\tselect CNIC\n\thelp\n\tThis driver supports FCoE offload for the QLogic devices.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

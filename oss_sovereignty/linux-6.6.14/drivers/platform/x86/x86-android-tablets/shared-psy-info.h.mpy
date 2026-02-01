@@ -1,0 +1,9 @@
+{
+  "module_name": "shared-psy-info.h",
+  "hash_id": "ff55627b5f70b9eec86e1cbe73706cdd0e593f20031b599426a51bf6d10e8ddb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/x86-android-tablets/shared-psy-info.h",
+  "human_readable_source": " \n#ifndef __PDX86_SHARED_PSY_INFO_H\n#define __PDX86_SHARED_PSY_INFO_H\n\nstruct bq24190_platform_data;\nstruct gpiod_lookup_table;\nstruct platform_device_info;\nstruct software_node;\n\nextern const char * const tusb1211_chg_det_psy[];\nextern const char * const bq24190_psy[];\nextern const char * const bq25890_psy[];\n\nextern const struct software_node fg_bq24190_supply_node;\nextern const struct software_node fg_bq25890_supply_node;\nextern const struct software_node generic_lipo_hv_4v35_battery_node;\n\nextern struct bq24190_platform_data bq24190_pdata;\nextern const char * const bq24190_modules[];\n\nextern const struct platform_device_info int3496_pdevs[];\nextern struct gpiod_lookup_table int3496_reference_gpios;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "qib_pio_copy.c",
+  "hash_id": "5792e433ccd1b890b0f3bc3d5222e51f7478bcbfef6a590d7f67ba49672b3e2a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/qib/qib_pio_copy.c",
+  "human_readable_source": " \n\n#include \"qib.h\"\n\n \nvoid qib_pio_copy(void __iomem *to, const void *from, size_t count)\n{\n#ifdef CONFIG_64BIT\n\tu64 __iomem *dst = to;\n\tconst u64 *src = from;\n\tconst u64 *end = src + (count >> 1);\n\n\twhile (src < end)\n\t\t__raw_writeq(*src++, dst++);\n\tif (count & 1)\n\t\t__raw_writel(*(const u32 *)src, dst);\n#else\n\tu32 __iomem *dst = to;\n\tconst u32 *src = from;\n\tconst u32 *end = src + count;\n\n\twhile (src < end)\n\t\t__raw_writel(*src++, dst++);\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

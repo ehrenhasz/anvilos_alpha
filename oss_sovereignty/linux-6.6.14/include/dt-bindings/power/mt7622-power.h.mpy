@@ -1,0 +1,9 @@
+{
+  "module_name": "mt7622-power.h",
+  "hash_id": "157de3322cad33dd3f271c3e1f215b21b0ac4073a7511f4113de77d8ac3c92e5",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/mt7622-power.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_POWER_MT7622_POWER_H\n#define _DT_BINDINGS_POWER_MT7622_POWER_H\n\n#define MT7622_POWER_DOMAIN_ETHSYS\t0\n#define MT7622_POWER_DOMAIN_HIF0\t1\n#define MT7622_POWER_DOMAIN_HIF1\t2\n#define MT7622_POWER_DOMAIN_WB\t\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

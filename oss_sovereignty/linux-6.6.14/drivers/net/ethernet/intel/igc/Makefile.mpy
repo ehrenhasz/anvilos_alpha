@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4c5dbfd70fa90f8b0c04771d23a110e3e462a34e6a55a1619acac071afbe1f9a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/igc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (c)  2018 Intel Corporation\n\n#\n# Intel(R) I225-LM/I225-V 2.5G Ethernet Controller\n#\n\nobj-$(CONFIG_IGC) += igc.o\n\nigc-objs := igc_main.o igc_mac.o igc_i225.o igc_base.o igc_nvm.o igc_phy.o \\\nigc_diag.o igc_ethtool.o igc_ptp.o igc_dump.o igc_tsn.o igc_xdp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

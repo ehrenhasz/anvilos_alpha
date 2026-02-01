@@ -1,0 +1,9 @@
+{
+  "module_name": "recursion.c",
+  "hash_id": "fd7de9e23cc3d22f62da53f2ed48298d293fbd47be2e3e4b3b0b36d2441b800b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/recursion.c",
+  "human_readable_source": "\n \n#include <test_progs.h>\n#include \"recursion.skel.h\"\n\nvoid test_recursion(void)\n{\n\tstruct bpf_prog_info prog_info = {};\n\t__u32 prog_info_len = sizeof(prog_info);\n\tstruct recursion *skel;\n\tint key = 0;\n\tint err;\n\n\tskel = recursion__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"skel_open_and_load\"))\n\t\treturn;\n\n\terr = recursion__attach(skel);\n\tif (!ASSERT_OK(err, \"skel_attach\"))\n\t\tgoto out;\n\n\tASSERT_EQ(skel->bss->pass1, 0, \"pass1 == 0\");\n\tbpf_map_delete_elem(bpf_map__fd(skel->maps.hash1), &key);\n\tASSERT_EQ(skel->bss->pass1, 1, \"pass1 == 1\");\n\tbpf_map_delete_elem(bpf_map__fd(skel->maps.hash1), &key);\n\tASSERT_EQ(skel->bss->pass1, 2, \"pass1 == 2\");\n\n\tASSERT_EQ(skel->bss->pass2, 0, \"pass2 == 0\");\n\tbpf_map_delete_elem(bpf_map__fd(skel->maps.hash2), &key);\n\tASSERT_EQ(skel->bss->pass2, 1, \"pass2 == 1\");\n\tbpf_map_delete_elem(bpf_map__fd(skel->maps.hash2), &key);\n\tASSERT_EQ(skel->bss->pass2, 2, \"pass2 == 2\");\n\n\terr = bpf_prog_get_info_by_fd(bpf_program__fd(skel->progs.on_delete),\n\t\t\t\t      &prog_info, &prog_info_len);\n\tif (!ASSERT_OK(err, \"get_prog_info\"))\n\t\tgoto out;\n\tASSERT_EQ(prog_info.recursion_misses, 2, \"recursion_misses\");\nout:\n\trecursion__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

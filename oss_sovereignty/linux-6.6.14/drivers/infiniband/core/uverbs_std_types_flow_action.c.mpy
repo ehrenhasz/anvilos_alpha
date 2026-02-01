@@ -1,0 +1,9 @@
+{
+  "module_name": "uverbs_std_types_flow_action.c",
+  "hash_id": "abb4e17107ea1345a313f95ccf0a9f8fb764d408bf7183e1f1add2481f32944c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/core/uverbs_std_types_flow_action.c",
+  "human_readable_source": " \n\n#include \"rdma_core.h\"\n#include \"uverbs.h\"\n#include <rdma/uverbs_std_types.h>\n\nstatic int uverbs_free_flow_action(struct ib_uobject *uobject,\n\t\t\t\t   enum rdma_remove_reason why,\n\t\t\t\t   struct uverbs_attr_bundle *attrs)\n{\n\tstruct ib_flow_action *action = uobject->object;\n\n\tif (atomic_read(&action->usecnt))\n\t\treturn -EBUSY;\n\n\treturn action->device->ops.destroy_flow_action(action);\n}\n\nDECLARE_UVERBS_NAMED_METHOD_DESTROY(\n\tUVERBS_METHOD_FLOW_ACTION_DESTROY,\n\tUVERBS_ATTR_IDR(UVERBS_ATTR_DESTROY_FLOW_ACTION_HANDLE,\n\t\t\tUVERBS_OBJECT_FLOW_ACTION,\n\t\t\tUVERBS_ACCESS_DESTROY,\n\t\t\tUA_MANDATORY));\n\nDECLARE_UVERBS_NAMED_OBJECT(\n\tUVERBS_OBJECT_FLOW_ACTION,\n\tUVERBS_TYPE_ALLOC_IDR(uverbs_free_flow_action),\n\t&UVERBS_METHOD(UVERBS_METHOD_FLOW_ACTION_DESTROY));\n\nconst struct uapi_definition uverbs_def_obj_flow_action[] = {\n\tUAPI_DEF_CHAIN_OBJ_TREE_NAMED(\n\t\tUVERBS_OBJECT_FLOW_ACTION,\n\t\tUAPI_DEF_OBJ_NEEDS_FN(destroy_flow_action)),\n\t{}\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

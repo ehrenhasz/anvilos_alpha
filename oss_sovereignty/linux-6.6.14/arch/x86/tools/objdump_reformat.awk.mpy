@@ -1,0 +1,9 @@
+{
+  "module_name": "objdump_reformat.awk",
+  "hash_id": "9dd04cf3e6173e68056eb720db6498fe97c1489838520b317520778d6309476c",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/tools/objdump_reformat.awk",
+  "human_readable_source": "#!/bin/awk -f\n# SPDX-License-Identifier: GPL-2.0\n# Usage: objdump -d a.out | awk -f objdump_reformat.awk | ./insn_decoder_test\n# Reformats the disassembly as follows:\n# - Removes all lines except the disassembled instructions.\n# - For instructions that exceed 1 line (7 bytes), crams all the hex bytes\n# into a single line.\n# - Remove bad(or prefix only) instructions\n\nBEGIN {\n\tprev_addr = \"\"\n\tprev_hex = \"\"\n\tprev_mnemonic = \"\"\n\tbad_expr = \"(\\\\(bad\\\\)|^rex|^.byte|^rep(z|nz)$|^lock$|^es$|^cs$|^ss$|^ds$|^fs$|^gs$|^data(16|32)$|^addr(16|32|64))\"\n\tfwait_expr = \"^9b \"\n\tfwait_str=\"9b\\tfwait\"\n}\n\n/^ *[0-9a-f]+ <[^>]*>:/ {\n\t# Symbol entry\n\tprintf(\"%s%s\\n\", $2, $1)\n}\n\n/^ *[0-9a-f]+:/ {\n\tif (split($0, field, \"\\t\") < 3) {\n\t\t# This is a continuation of the same insn.\n\t\tprev_hex = prev_hex field[2]\n\t} else {\n\t\t# Skip bad instructions\n\t\tif (match(prev_mnemonic, bad_expr))\n\t\t\tprev_addr = \"\"\n\t\t# Split fwait from other f* instructions\n\t\tif (match(prev_hex, fwait_expr) && prev_mnemonic != \"fwait\") {\n\t\t\tprintf \"%s\\t%s\\n\", prev_addr, fwait_str\n\t\t\tsub(fwait_expr, \"\", prev_hex)\n\t\t}\n\t\tif (prev_addr != \"\")\n\t\t\tprintf \"%s\\t%s\\t%s\\n\", prev_addr, prev_hex, prev_mnemonic\n\t\tprev_addr = field[1]\n\t\tprev_hex = field[2]\n\t\tprev_mnemonic = field[3]\n\t}\n}\n\nEND {\n\tif (prev_addr != \"\")\n\t\tprintf \"%s\\t%s\\t%s\\n\", prev_addr, prev_hex, prev_mnemonic\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

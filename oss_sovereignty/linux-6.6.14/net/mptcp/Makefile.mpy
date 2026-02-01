@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8816d68b98d26220212e648cd4ff3ce90d16b424127fd3de8a55ce9e198ec092",
+  "original_prompt": "Ingested from linux-6.6.14/net/mptcp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_MPTCP) += mptcp.o\n\nmptcp-y := protocol.o subflow.o options.o token.o crypto.o ctrl.o pm.o diag.o \\\n\t   mib.o pm_netlink.o sockopt.o pm_userspace.o fastopen.o sched.o\n\nobj-$(CONFIG_SYN_COOKIES) += syncookies.o\nobj-$(CONFIG_INET_MPTCP_DIAG) += mptcp_diag.o\n\nmptcp_crypto_test-objs := crypto_test.o\nmptcp_token_test-objs := token_test.o\nobj-$(CONFIG_MPTCP_KUNIT_TEST) += mptcp_crypto_test.o mptcp_token_test.o\n\nobj-$(CONFIG_BPF_SYSCALL) += bpf.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

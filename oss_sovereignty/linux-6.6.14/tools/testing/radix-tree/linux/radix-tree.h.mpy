@@ -1,0 +1,9 @@
+{
+  "module_name": "radix-tree.h",
+  "hash_id": "444a501d6449e7c10e0ce0576b29878441b963352bf07cb5efa84c6895b3554a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/radix-tree/linux/radix-tree.h",
+  "human_readable_source": " \n#ifndef _TEST_RADIX_TREE_H\n#define _TEST_RADIX_TREE_H\n\n#include \"../../../../include/linux/radix-tree.h\"\n\nextern int kmalloc_verbose;\nextern int test_verbose;\n\nstatic inline void trace_call_rcu(struct rcu_head *head,\n\t\tvoid (*func)(struct rcu_head *head))\n{\n\tif (kmalloc_verbose)\n\t\tprintf(\"Delaying free of %p to slab\\n\", (char *)head -\n\t\t\t\toffsetof(struct radix_tree_node, rcu_head));\n\tcall_rcu(head, func);\n}\n\n#define printv(verbosity_level, fmt, ...) \\\n\tif(test_verbose >= verbosity_level) \\\n\t\tprintf(fmt, ##__VA_ARGS__)\n\n#undef call_rcu\n#define call_rcu(x, y) trace_call_rcu(x, y)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hci.h",
+  "hash_id": "27408ab90c994b4ff51ddde60038f39575cde7a54b80a974adec5900895a8bbe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/gdm724x/hci.h",
+  "human_readable_source": " \n \n\n#ifndef _HCI_H_\n#define _HCI_H_\n\n#define LTE_GET_INFORMATION\t\t0x3002\n#define LTE_GET_INFORMATION_RESULT\t0xB003\n\t#define MAC_ADDRESS\t\t0xA2\n\n#define LTE_LINK_ON_OFF_INDICATION\t0xB133\n#define LTE_PDN_TABLE_IND\t\t0xB143\n\n#define LTE_TX_SDU\t\t\t0x3200\n#define LTE_RX_SDU\t\t\t0xB201\n#define LTE_TX_MULTI_SDU\t\t0x3202\n#define LTE_RX_MULTI_SDU\t\t0xB203\n\n#define LTE_DL_SDU_FLOW_CONTROL\t\t0x3305\n#define LTE_UL_SDU_FLOW_CONTROL\t\t0xB306\n\n#define LTE_AT_CMD_TO_DEVICE\t\t0x3307\n#define LTE_AT_CMD_FROM_DEVICE\t\t0xB308\n\n#define LTE_SDIO_DM_SEND_PKT\t\t0x3312\n#define LTE_SDIO_DM_RECV_PKT\t\t0xB313\n\n#define LTE_NV_RESTORE_REQUEST\t\t0xB30C\n#define LTE_NV_RESTORE_RESPONSE\t\t0x330D\n#define LTE_NV_SAVE_REQUEST\t\t0xB30E\n\t#define NV_TYPE_LTE_INFO\t0x00\n\t#define NV_TYPE_BOARD_CONFIG\t0x01\n\t#define NV_TYPE_RF_CAL\t\t0x02\n\t#define NV_TYPE_TEMP\t\t0x03\n\t#define NV_TYPE_NET_INFO\t0x04\n\t#define NV_TYPE_SAFETY_INFO\t0x05\n\t#define NV_TYPE_CDMA_CAL\t0x06\n\t#define NV_TYPE_VENDOR\t\t0x07\n\t#define NV_TYPE_ALL\t\t0xff\n#define LTE_NV_SAVE_RESPONSE\t\t0x330F\n\n#define LTE_AT_CMD_TO_DEVICE_EXT\t0x3323\n#define LTE_AT_CMD_FROM_DEVICE_EXT\t0xB324\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "max20751.c",
+  "hash_id": "15ea6729d0e397a3a03286f3dadb64f13c860dc2839d1ed5b6d3aa28fe5ced52",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwmon/pmbus/max20751.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/err.h>\n#include <linux/i2c.h>\n#include \"pmbus.h\"\n\nstatic struct pmbus_driver_info max20751_info = {\n\t.pages = 1,\n\t.format[PSC_VOLTAGE_IN] = linear,\n\t.format[PSC_VOLTAGE_OUT] = vid,\n\t.vrm_version[0] = vr12,\n\t.format[PSC_TEMPERATURE] = linear,\n\t.format[PSC_CURRENT_OUT] = linear,\n\t.format[PSC_POWER] = linear,\n\t.func[0] = PMBUS_HAVE_VIN | PMBUS_HAVE_VOUT | PMBUS_HAVE_STATUS_VOUT |\n\t\tPMBUS_HAVE_IOUT | PMBUS_HAVE_STATUS_IOUT |\n\t\tPMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP |\n\t\tPMBUS_HAVE_POUT,\n};\n\nstatic int max20751_probe(struct i2c_client *client)\n{\n\treturn pmbus_do_probe(client, &max20751_info);\n}\n\nstatic const struct i2c_device_id max20751_id[] = {\n\t{\"max20751\", 0},\n\t{}\n};\n\nMODULE_DEVICE_TABLE(i2c, max20751_id);\n\nstatic struct i2c_driver max20751_driver = {\n\t.driver = {\n\t\t   .name = \"max20751\",\n\t\t   },\n\t.probe = max20751_probe,\n\t.id_table = max20751_id,\n};\n\nmodule_i2c_driver(max20751_driver);\n\nMODULE_AUTHOR(\"Guenter Roeck <linux@roeck-us.net>\");\nMODULE_DESCRIPTION(\"PMBus driver for Maxim MAX20751\");\nMODULE_LICENSE(\"GPL\");\nMODULE_IMPORT_NS(PMBUS);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

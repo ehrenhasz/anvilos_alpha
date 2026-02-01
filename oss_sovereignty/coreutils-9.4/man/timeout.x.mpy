@@ -1,0 +1,9 @@
+{
+  "module_name": "timeout.x",
+  "hash_id": "a34253928a5a04d98b7bcf3095f9bcb9ca80ebbf867d6c94936c361322f80f1e",
+  "original_prompt": "Ingested from coreutils-9.4/man/timeout.x",
+  "human_readable_source": "[NAME]\ntimeout \\- run a command with a time limit\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nkill(1)\n[BUGS]\nSome platforms don't currently support timeouts beyond the year 2038.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

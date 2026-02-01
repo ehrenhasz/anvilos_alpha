@@ -1,0 +1,9 @@
+{
+  "module_name": "timespec-sub.c",
+  "hash_id": "90dd126e7d8e68b41d811512b9c5d9826850baa41894d172a2dd4f4f6679b4e2",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/timespec-sub.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n#include \"timespec.h\"\n\n#include <stdckdint.h>\n#include \"intprops.h\"\n\nstruct timespec\ntimespec_sub (struct timespec a, struct timespec b)\n{\n  time_t rs = a.tv_sec;\n  time_t bs = b.tv_sec;\n  int ns = a.tv_nsec - b.tv_nsec;\n  int rns = ns;\n\n  if (ns < 0)\n    {\n      rns = ns + TIMESPEC_HZ;\n      time_t bs1;\n      if (!ckd_add (&bs1, bs, 1))\n        bs = bs1;\n      else if (- TYPE_SIGNED (time_t) < rs)\n        rs--;\n      else\n        goto low_overflow;\n    }\n\n  if (ckd_sub (&rs, rs, bs))\n    {\n      if (0 < bs)\n        {\n        low_overflow:\n          rs = TYPE_MINIMUM (time_t);\n          rns = 0;\n        }\n      else\n        {\n          rs = TYPE_MAXIMUM (time_t);\n          rns = TIMESPEC_HZ - 1;\n        }\n    }\n\n  return make_timespec (rs, rns);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

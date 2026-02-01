@@ -1,0 +1,9 @@
+{
+  "module_name": "auth-pam.h",
+  "hash_id": "ad89e6a7f802c3cb6e0850dfa3bdcd66d4e8dff903b29e14b7bd12a6d549b634",
+  "original_prompt": "Ingested from openssh-9.6p1/auth-pam.h",
+  "human_readable_source": " \n\n#include \"includes.h\"\n#ifdef USE_PAM\n\nstruct ssh;\n\nvoid start_pam(struct ssh *);\nvoid finish_pam(void);\nu_int do_pam_account(void);\nvoid do_pam_session(struct ssh *);\nvoid do_pam_setcred(int );\nvoid do_pam_chauthtok(void);\nint do_pam_putenv(char *, char *);\nchar ** fetch_pam_environment(void);\nchar ** fetch_pam_child_environment(void);\nvoid free_pam_environment(char **);\nvoid sshpam_thread_cleanup(void);\nvoid sshpam_cleanup(void);\nint sshpam_auth_passwd(Authctxt *, const char *);\nint sshpam_get_maxtries_reached(void);\nvoid sshpam_set_maxtries_reached(int);\nint is_pam_session_open(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

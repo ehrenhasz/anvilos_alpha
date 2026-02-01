@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "eb84af1644bd70d0c5249ae1aa4eba32fa9c28d62baf73b3674b8e3daa8a7aef",
+  "original_prompt": "Ingested from linux-6.6.14/sound/spi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#SPI drivers\n\nmenuconfig SND_SPI\n\tbool \"SPI sound devices\"\n\tdepends on SPI\n\tdefault y\n\thelp\n\t  Support for sound devices connected via the SPI bus.\n\nif SND_SPI\n\nconfig SND_AT73C213\n\ttristate \"Atmel AT73C213 DAC driver\"\n\tdepends on ATMEL_SSC\n\tselect SND_PCM\n\thelp\n\t  Say Y here if you want to use the Atmel AT73C213 external DAC. This\n\t  DAC can be found on Atmel development boards.\n\n\t  This driver requires the Atmel SSC driver for sound sink, a\n\t  peripheral found on most AT91 microprocessors.\n\n\t  To compile this driver as a module, choose M here: the module will be\n\t  called snd-at73c213.\n\nconfig SND_AT73C213_TARGET_BITRATE\n\tint \"Target bitrate for AT73C213\"\n\tdepends on SND_AT73C213\n\tdefault \"48000\"\n\trange 8000 50000\n\thelp\n\t  Sets the target bitrate for the bitrate calculator in the driver.\n\t  Limited by hardware to be between 8000 Hz and 50000 Hz.\n\n\t  Set to 48000 Hz by default.\n\nendif\t# SND_SPI\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

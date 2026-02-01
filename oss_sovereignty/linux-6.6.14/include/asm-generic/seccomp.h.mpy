@@ -1,0 +1,9 @@
+{
+  "module_name": "seccomp.h",
+  "hash_id": "e86f746d55e4c256c2f2c5b75ad4a1b1d317c13c38c601e682b57440bbd66972",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/seccomp.h",
+  "human_readable_source": " \n \n#ifndef _ASM_GENERIC_SECCOMP_H\n#define _ASM_GENERIC_SECCOMP_H\n\n#include <linux/unistd.h>\n\n#if defined(CONFIG_COMPAT) && !defined(__NR_seccomp_read_32)\n#define __NR_seccomp_read_32\t\t__NR_read\n#define __NR_seccomp_write_32\t\t__NR_write\n#define __NR_seccomp_exit_32\t\t__NR_exit\n#ifndef __NR_seccomp_sigreturn_32\n#define __NR_seccomp_sigreturn_32\t__NR_rt_sigreturn\n#endif\n#endif  \n\n#define __NR_seccomp_read\t\t__NR_read\n#define __NR_seccomp_write\t\t__NR_write\n#define __NR_seccomp_exit\t\t__NR_exit\n#ifndef __NR_seccomp_sigreturn\n#define __NR_seccomp_sigreturn\t\t__NR_rt_sigreturn\n#endif\n\n#ifdef CONFIG_COMPAT\n#ifndef get_compat_mode1_syscalls\nstatic inline const int *get_compat_mode1_syscalls(void)\n{\n\tstatic const int mode1_syscalls_32[] = {\n\t\t__NR_seccomp_read_32, __NR_seccomp_write_32,\n\t\t__NR_seccomp_exit_32, __NR_seccomp_sigreturn_32,\n\t\t-1,  \n\t};\n\treturn mode1_syscalls_32;\n}\n#endif\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

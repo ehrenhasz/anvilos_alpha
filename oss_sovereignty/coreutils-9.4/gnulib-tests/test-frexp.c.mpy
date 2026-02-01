@@ -1,0 +1,9 @@
+{
+  "module_name": "test-frexp.c",
+  "hash_id": "6233ca7d44df41f8d9cdd76fe0217bf07d76af64fe0f67b743acc80eac1eb1e1",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-frexp.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <math.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (frexp, double, (double, int *));\n\n#include <float.h>\n\n#include \"isnand-nolibm.h\"\n#include \"minus-zero.h\"\n#include \"infinity.h\"\n#include \"nan.h\"\n#include \"macros.h\"\n\n \n#undef exp\n#define exp exponent\n\n#undef INFINITY\n#undef NAN\n\n#define DOUBLE double\n \n#define VOLATILE volatile\n#define ISNAN isnand\n#define INFINITY Infinityd ()\n#define NAN NaNd ()\n#define L_(literal) literal\n#define MINUS_ZERO minus_zerod\n#define MAX_EXP DBL_MAX_EXP\n#define MIN_EXP DBL_MIN_EXP\n#define MIN_NORMAL_EXP DBL_MIN_EXP\n#define FREXP frexp\n#define RANDOM randomd\n#include \"test-frexp.h\"\n\nint\nmain ()\n{\n  test_function ();\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

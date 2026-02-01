@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_nesting___anon_embed.c",
+  "hash_id": "e30db8ec4615106e1fdea0928c7cbbf06d4cdc253c6b81437ee752c5832f1ce6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___anon_embed.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_nesting___anon_embed x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

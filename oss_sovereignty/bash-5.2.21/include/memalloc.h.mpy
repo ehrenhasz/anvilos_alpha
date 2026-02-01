@@ -1,0 +1,9 @@
+{
+  "module_name": "memalloc.h",
+  "hash_id": "a586a5bbe6506462f9ce3a07e7ef61d72a74d649caf4bda033ffdbe7ef39de78",
+  "original_prompt": "Ingested from bash-5.2.21/include/memalloc.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_MEMALLOC_H_)\n#  define _MEMALLOC_H_\n\n#if defined (sparc) && defined (sun) && !defined (HAVE_ALLOCA_H)\n#  define HAVE_ALLOCA_H\n#endif\n\n#if defined (__GNUC__) && !defined (HAVE_ALLOCA)\n#  define HAVE_ALLOCA\n#endif\n\n#if defined (HAVE_ALLOCA_H) && !defined (HAVE_ALLOCA) && !defined (C_ALLOCA)\n#  define HAVE_ALLOCA\n#endif  \n\n#if defined (__GNUC__) && !defined (C_ALLOCA)\n#  undef alloca\n#  define alloca __builtin_alloca\n#else  \n#  if defined (HAVE_ALLOCA_H) && !defined (C_ALLOCA)\n#    if defined (IBMESA)\n#      include <malloc.h>\n#    else  \n#      include <alloca.h>\n#    endif  \n#  else   \n#    if defined (__hpux) && defined (__STDC__) && !defined (alloca)\nextern void *alloca ();\n#    else\n#      if !defined (alloca)\n#        if defined (__STDC__)\nextern void *alloca (size_t);\n#        else\nextern char *alloca ();\n#        endif  \n#      endif  \n#    endif  \n#  endif  \n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

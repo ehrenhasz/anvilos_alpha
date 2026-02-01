@@ -1,0 +1,9 @@
+{
+  "module_name": "dpio-cmd.h",
+  "hash_id": "d6497567bf39d6036ba16c2aa63439200b84ebfe9b22dc5b757d1ef255a6f7c2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/fsl/dpio/dpio-cmd.h",
+  "human_readable_source": " \n \n#ifndef _FSL_DPIO_CMD_H\n#define _FSL_DPIO_CMD_H\n\n \n#define DPIO_VER_MAJOR\t\t\t4\n#define DPIO_VER_MINOR\t\t\t2\n\n \n\n#define DPIO_CMD_ID_OFFSET\t\t4\n#define DPIO_CMD_BASE_VERSION\t\t1\n\n#define DPIO_CMD(id)\t(((id) << DPIO_CMD_ID_OFFSET) | DPIO_CMD_BASE_VERSION)\n\n \n#define DPIO_CMDID_CLOSE\t\t\t\tDPIO_CMD(0x800)\n#define DPIO_CMDID_OPEN\t\t\t\t\tDPIO_CMD(0x803)\n#define DPIO_CMDID_GET_API_VERSION\t\t\tDPIO_CMD(0xa03)\n#define DPIO_CMDID_ENABLE\t\t\t\tDPIO_CMD(0x002)\n#define DPIO_CMDID_DISABLE\t\t\t\tDPIO_CMD(0x003)\n#define DPIO_CMDID_GET_ATTR\t\t\t\tDPIO_CMD(0x004)\n#define DPIO_CMDID_RESET\t\t\t\tDPIO_CMD(0x005)\n#define DPIO_CMDID_SET_STASHING_DEST\t\t\tDPIO_CMD(0x120)\n\nstruct dpio_cmd_open {\n\t__le32 dpio_id;\n};\n\n#define DPIO_CHANNEL_MODE_MASK\t\t0x3\n\nstruct dpio_rsp_get_attr {\n\t \n\t__le32 id;\n\t__le16 qbman_portal_id;\n\tu8 num_priorities;\n\tu8 channel_mode;\n\t \n\t__le64 qbman_portal_ce_addr;\n\t \n\t__le64 qbman_portal_ci_addr;\n\t \n\t__le32 qbman_version;\n\t__le32 pad1;\n\t \n\t__le32 clk;\n};\n\nstruct dpio_stashing_dest {\n\tu8 sdest;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

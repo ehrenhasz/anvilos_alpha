@@ -1,0 +1,9 @@
+{
+  "module_name": "spear_dma.h",
+  "hash_id": "65489e243229910e62cfefdfae02085aa0f8e44ab87d96bd3ad6d2842b94c677",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/spear_dma.h",
+  "human_readable_source": " \n \n\n#ifndef SPEAR_DMA_H\n#define SPEAR_DMA_H\n\n#include <linux/dmaengine.h>\n\nstruct spear_dma_data {\n\tvoid *data;\n\tdma_addr_t addr;\n\tu32 max_burst;\n\tenum dma_slave_buswidth addr_width;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "osdep.c",
+  "hash_id": "d9a87de0e39988e390c63f3ed95837dc9df15c7a9e29607d50dc6f6627e732ba",
+  "original_prompt": "Ingested from bash-5.2.21/lib/intl/osdep.c",
+  "human_readable_source": " \n\n \n\n#if defined __EMX__\n# include \"os2compat.c\"\n#else\n \ntypedef int dummy;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

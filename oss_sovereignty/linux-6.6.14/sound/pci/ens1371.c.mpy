@@ -1,0 +1,9 @@
+{
+  "module_name": "ens1371.c",
+  "hash_id": "0e02f103908120ffbf0eeb4a3c48efc8f1ca9e20b01070c4748502c3d2726fd3",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ens1371.c",
+  "human_readable_source": "#define CHIP1371\n#include \"ens1370.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

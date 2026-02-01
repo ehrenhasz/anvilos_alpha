@@ -1,0 +1,9 @@
+{
+  "module_name": "fxos8700_spi.c",
+  "hash_id": "ff36d099b2009ae4708dbcc3f53765cc4d0034ee296ed935a35a7f086fcdffb8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/fxos8700_spi.c",
+  "human_readable_source": "\n \n#include <linux/acpi.h>\n#include <linux/module.h>\n#include <linux/mod_devicetable.h>\n#include <linux/regmap.h>\n#include <linux/spi/spi.h>\n\n#include \"fxos8700.h\"\n\nstatic int fxos8700_spi_probe(struct spi_device *spi)\n{\n\tstruct regmap *regmap;\n\tconst struct spi_device_id *id = spi_get_device_id(spi);\n\n\tregmap = devm_regmap_init_spi(spi, &fxos8700_regmap_config);\n\tif (IS_ERR(regmap)) {\n\t\tdev_err(&spi->dev, \"Failed to register spi regmap %ld\\n\", PTR_ERR(regmap));\n\t\treturn PTR_ERR(regmap);\n\t}\n\n\treturn fxos8700_core_probe(&spi->dev, regmap, id->name, true);\n}\n\nstatic const struct spi_device_id fxos8700_spi_id[] = {\n\t{\"fxos8700\", 0},\n\t{ }\n};\nMODULE_DEVICE_TABLE(spi, fxos8700_spi_id);\n\nstatic const struct acpi_device_id fxos8700_acpi_match[] = {\n\t{\"FXOS8700\", 0},\n\t{ }\n};\nMODULE_DEVICE_TABLE(acpi, fxos8700_acpi_match);\n\nstatic const struct of_device_id fxos8700_of_match[] = {\n\t{ .compatible = \"nxp,fxos8700\" },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, fxos8700_of_match);\n\nstatic struct spi_driver fxos8700_spi_driver = {\n\t.probe          = fxos8700_spi_probe,\n\t.id_table       = fxos8700_spi_id,\n\t.driver = {\n\t\t.acpi_match_table       = ACPI_PTR(fxos8700_acpi_match),\n\t\t.of_match_table         = fxos8700_of_match,\n\t\t.name                   = \"fxos8700_spi\",\n\t},\n};\nmodule_spi_driver(fxos8700_spi_driver);\n\nMODULE_AUTHOR(\"Robert Jones <rjones@gateworks.com>\");\nMODULE_DESCRIPTION(\"FXOS8700 SPI driver\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

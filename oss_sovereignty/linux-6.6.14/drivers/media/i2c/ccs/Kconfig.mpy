@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "694ad65d8fc509e84c170f23f42cdd5d0717dc5e1f945ba48129a59d75c19682",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/i2c/ccs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_CCS\n\ttristate \"MIPI CCS/SMIA++/SMIA sensor support\"\n\tdepends on HAVE_CLK\n\tselect VIDEO_CCS_PLL\n\thelp\n\t  This is a generic driver for MIPI CCS, SMIA++ and SMIA compliant\n\t  camera sensors.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

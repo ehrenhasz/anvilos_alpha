@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "53e86afe698746b1580f4c1a11420f3d8f5f331a64634017e6db9812b8d6a4be",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/mei/hdcp/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (c) 2019, Intel Corporation. All rights reserved.\n#\nconfig INTEL_MEI_HDCP\n\ttristate \"Intel HDCP2.2 services of ME Interface\"\n\tselect INTEL_MEI_ME\n\tdepends on DRM_I915\n\thelp\n\t  MEI Support for HDCP2.2 Services on Intel platforms.\n\n\t  Enables the ME FW services required for HDCP2.2 support through\n\t  I915 display driver of Intel.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

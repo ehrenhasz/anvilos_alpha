@@ -1,0 +1,9 @@
+{
+  "module_name": "filemode.c",
+  "hash_id": "d056bb82e579a91ede443d5b556828b9961fe70b922a4f79ac95bb7b2a27bf5a",
+  "original_prompt": "Ingested from coreutils-9.4/lib/filemode.c",
+  "human_readable_source": " \n\nstatic char\nftypelet (mode_t bits)\n{\n   \n  if (S_ISREG (bits))\n    return '-';\n  if (S_ISDIR (bits))\n    return 'd';\n\n   \n  if (S_ISBLK (bits))\n    return 'b';\n  if (S_ISCHR (bits))\n    return 'c';\n  if (S_ISLNK (bits))\n    return 'l';\n  if (S_ISFIFO (bits))\n    return 'p';\n\n   \n  if (S_ISSOCK (bits))\n    return 's';\n\n   \n  if (S_ISCTG (bits))\n    return 'C';\n  if (S_ISDOOR (bits))\n    return 'D';\n  if (S_ISMPB (bits) || S_ISMPC (bits) || S_ISMPX (bits))\n    return 'm';\n  if (S_ISNWK (bits))\n    return 'n';\n  if (S_ISPORT (bits))\n    return 'P';\n  if (S_ISWHT (bits))\n    return 'w';\n\n  return '?';\n}\n\n \n\nvoid\nstrmode (mode_t mode, char *str)\n{\n  str[0] = ftypelet (mode);\n  str[1] = mode & S_IRUSR ? 'r' : '-';\n  str[2] = mode & S_IWUSR ? 'w' : '-';\n  str[3] = (mode & S_ISUID\n            ? (mode & S_IXUSR ? 's' : 'S')\n            : (mode & S_IXUSR ? 'x' : '-'));\n  str[4] = mode & S_IRGRP ? 'r' : '-';\n  str[5] = mode & S_IWGRP ? 'w' : '-';\n  str[6] = (mode & S_ISGID\n            ? (mode & S_IXGRP ? 's' : 'S')\n            : (mode & S_IXGRP ? 'x' : '-'));\n  str[7] = mode & S_IROTH ? 'r' : '-';\n  str[8] = mode & S_IWOTH ? 'w' : '-';\n  str[9] = (mode & S_ISVTX\n            ? (mode & S_IXOTH ? 't' : 'T')\n            : (mode & S_IXOTH ? 'x' : '-'));\n  str[10] = ' ';\n  str[11] = '\\0';\n}\n\n#endif  \n\n \n\nvoid\nfilemodestring (struct stat const *statp, char *str)\n{\n  strmode (statp->st_mode, str);\n\n  if (S_TYPEISSEM (statp))\n    str[0] = 'F';\n  else if (S_TYPEISMQ (statp))\n    str[0] = 'Q';\n  else if (S_TYPEISSHM (statp))\n    str[0] = 'S';\n  else if (S_TYPEISTMO (statp))\n    str[0] = 'T';\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

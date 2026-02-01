@@ -1,0 +1,9 @@
+{
+  "module_name": "link.x",
+  "hash_id": "8c3aa3e461907c17d94bf08972eaf81146fc5014e2691e3dcd4fcd1b2bfea53c",
+  "original_prompt": "Ingested from coreutils-9.4/man/link.x",
+  "human_readable_source": "[NAME]\nlink \\- call the link function to create a link to a file\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nlink(2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

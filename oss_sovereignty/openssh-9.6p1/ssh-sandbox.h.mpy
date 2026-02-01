@@ -1,0 +1,9 @@
+{
+  "module_name": "ssh-sandbox.h",
+  "hash_id": "3fc9b2f6c36eed18af34279aa3e8987dd9e5d0956b01ee39803d8b96093ea503",
+  "original_prompt": "Ingested from openssh-9.6p1/ssh-sandbox.h",
+  "human_readable_source": " \n \n\nstruct monitor;\nstruct ssh_sandbox;\n\nstruct ssh_sandbox *ssh_sandbox_init(struct monitor *);\nvoid ssh_sandbox_child(struct ssh_sandbox *);\nvoid ssh_sandbox_parent_finish(struct ssh_sandbox *);\nvoid ssh_sandbox_parent_preauth(struct ssh_sandbox *, pid_t);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

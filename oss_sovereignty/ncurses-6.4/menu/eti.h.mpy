@@ -1,0 +1,9 @@
+{
+  "module_name": "eti.h",
+  "hash_id": "2397accaddfb7501cb81acc76d9cb9afb6279e2632074bd23f849a468bcc6b9a",
+  "original_prompt": "Ingested from ncurses-6.4/menu/eti.h",
+  "human_readable_source": " \n\n \n\n \n\n#ifndef NCURSES_ETI_H_incl\n#define NCURSES_ETI_H_incl 1\n\n#define\tE_OK\t\t\t(0)\n#define\tE_SYSTEM_ERROR\t \t(-1)\n#define\tE_BAD_ARGUMENT\t \t(-2)\n#define\tE_POSTED\t \t(-3)\n#define\tE_CONNECTED\t \t(-4)\n#define\tE_BAD_STATE\t \t(-5)\n#define\tE_NO_ROOM\t \t(-6)\n#define\tE_NOT_POSTED\t\t(-7)\n#define\tE_UNKNOWN_COMMAND\t(-8)\n#define\tE_NO_MATCH\t\t(-9)\n#define\tE_NOT_SELECTABLE\t(-10)\n#define\tE_NOT_CONNECTED\t        (-11)\n#define\tE_REQUEST_DENIED\t(-12)\n#define\tE_INVALID_FIELD\t        (-13)\n#define\tE_CURRENT\t\t(-14)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

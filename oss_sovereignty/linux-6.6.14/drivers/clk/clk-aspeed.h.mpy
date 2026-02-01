@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-aspeed.h",
+  "hash_id": "2853d905f72927048917c055ddc31d6258c84fc75eabc5c1a046962b8c4c5a46",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/clk-aspeed.h",
+  "human_readable_source": " \n \n\n#include <linux/clk-provider.h>\n#include <linux/kernel.h>\n#include <linux/reset-controller.h>\n#include <linux/spinlock.h>\n\nstruct clk_div_table;\nstruct regmap;\n\n \nstruct aspeed_gate_data {\n\tu8\t\tclock_idx;\n\ts8\t\treset_idx;\n\tconst char\t*name;\n\tconst char\t*parent_name;\n\tunsigned long\tflags;\n};\n\n \nstruct aspeed_clk_gate {\n\tstruct clk_hw\thw;\n\tstruct regmap\t*map;\n\tu8\t\tclock_idx;\n\ts8\t\treset_idx;\n\tu8\t\tflags;\n\tspinlock_t\t*lock;\n};\n\n#define to_aspeed_clk_gate(_hw) container_of(_hw, struct aspeed_clk_gate, hw)\n\n \nstruct aspeed_reset {\n\tstruct regmap\t\t\t*map;\n\tstruct reset_controller_dev\trcdev;\n};\n\n#define to_aspeed_reset(p) container_of((p), struct aspeed_reset, rcdev)\n\n \nstruct aspeed_clk_soc_data {\n\tconst struct clk_div_table *div_table;\n\tconst struct clk_div_table *eclk_div_table;\n\tconst struct clk_div_table *mac_div_table;\n\tstruct clk_hw *(*calc_pll)(const char *name, u32 val);\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

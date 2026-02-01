@@ -1,0 +1,9 @@
+{
+  "module_name": "arm64.py",
+  "hash_id": "4df5f5fa53f6558f2466987328457bc056831715b83b4c2373240bbb338a458c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/qemu_configs/arm64.py",
+  "human_readable_source": "from ..qemu_config import QemuArchParams\n\nQEMU_ARCH = QemuArchParams(linux_arch='arm64',\n\t\t\t   kconfig='''\nCONFIG_SERIAL_AMBA_PL010=y\nCONFIG_SERIAL_AMBA_PL010_CONSOLE=y\nCONFIG_SERIAL_AMBA_PL011=y\nCONFIG_SERIAL_AMBA_PL011_CONSOLE=y''',\n\t\t\t   qemu_arch='aarch64',\n\t\t\t   kernel_path='arch/arm64/boot/Image.gz',\n\t\t\t   kernel_command_line='console=ttyAMA0',\n\t\t\t   extra_qemu_params=['-machine', 'virt', '-cpu', 'max,pauth-impdef=on'])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

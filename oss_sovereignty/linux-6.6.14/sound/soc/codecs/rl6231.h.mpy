@@ -1,0 +1,9 @@
+{
+  "module_name": "rl6231.h",
+  "hash_id": "25ddddb7620bfbc0a864cc30f30910ca26e16f3ab3ef73ed9b9a881415457b99",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/rl6231.h",
+  "human_readable_source": " \n \n\n#ifndef __RL6231_H__\n#define __RL6231_H__\n\n#define RL6231_PLL_INP_MAX\t50000000\n#define RL6231_PLL_INP_MIN\t256000\n#define RL6231_PLL_N_MAX\t0x1ff\n#define RL6231_PLL_K_MAX\t0x1f\n#define RL6231_PLL_M_MAX\t0xf\n\nstruct rl6231_pll_code {\n\tbool m_bp;  \n\tbool k_bp;  \n\tint m_code;\n\tint n_code;\n\tint k_code;\n};\n\nint rl6231_calc_dmic_clk(int rate);\nint rl6231_pll_calc(const unsigned int freq_in,\n\tconst unsigned int freq_out, struct rl6231_pll_code *pll_code);\nint rl6231_get_clk_info(int sclk, int rate);\nint rl6231_get_pre_div(struct regmap *map, unsigned int reg, int sft);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

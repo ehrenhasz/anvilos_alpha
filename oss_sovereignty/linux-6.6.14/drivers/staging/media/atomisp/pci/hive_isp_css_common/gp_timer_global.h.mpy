@@ -1,0 +1,9 @@
+{
+  "module_name": "gp_timer_global.h",
+  "hash_id": "945fab69583f3f88c4975d6018f4b57c17209ef546a1a3c9f6df0216e5f618b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/gp_timer_global.h",
+  "human_readable_source": " \n \n\n#ifndef __GP_TIMER_GLOBAL_H_INCLUDED__\n#define __GP_TIMER_GLOBAL_H_INCLUDED__\n\n#include \"hive_isp_css_defs.h\"  \n\n \n#define GP_TIMER_COUNT_TYPE_HIGH             0\n#define GP_TIMER_COUNT_TYPE_LOW              1\n#define GP_TIMER_COUNT_TYPE_POSEDGE          2\n#define GP_TIMER_COUNT_TYPE_NEGEDGE          3\n#define GP_TIMER_COUNT_TYPE_TYPES            4\n\n \n#define GP_TIMER_SEL                         3\n\n \n#define GP_TIMER_SIGNAL_SELECT  HIVE_GP_TIMER_SP_DMEM_ERROR_IRQ\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

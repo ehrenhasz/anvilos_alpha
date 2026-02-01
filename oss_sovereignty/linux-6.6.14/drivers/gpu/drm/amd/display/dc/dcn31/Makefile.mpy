@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "94ec96f310eb93cdc475eb1de36c3ffc2b9664e74e5ea7103040b2708b91f2d5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn31/Makefile",
+  "human_readable_source": "#\n# (c) Copyright 2020 Advanced Micro Devices, Inc. All the rights reserved\n#\n#  All rights reserved.  This notice is intended as a precaution against\n#  inadvertent publication and does not imply publication or any waiver\n#  of confidentiality.  The year included in the foregoing notice is the\n#  year of creation of the work.\n#\n#  Authors: AMD\n#\n# Makefile for dcn31.\n\nDCN31 = dcn31_resource.o dcn31_hubbub.o dcn31_hwseq.o dcn31_init.o dcn31_hubp.o \\\n\tdcn31_dccg.o dcn31_optc.o dcn31_dio_link_encoder.o dcn31_panel_cntl.o \\\n\tdcn31_apg.o dcn31_hpo_dp_stream_encoder.o dcn31_hpo_dp_link_encoder.o \\\n\tdcn31_afmt.o dcn31_vpg.o\n\nAMD_DAL_DCN31 = $(addprefix $(AMDDALPATH)/dc/dcn31/,$(DCN31))\n\nAMD_DISPLAY_FILES += $(AMD_DAL_DCN31)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

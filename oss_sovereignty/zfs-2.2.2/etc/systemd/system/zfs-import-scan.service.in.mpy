@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs-import-scan.service.in",
+  "hash_id": "65b8eb297d3c54fd928cedf3241e642df6a76e8e59401d49035e06273e412f8d",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/systemd/system/zfs-import-scan.service.in",
+  "human_readable_source": "[Unit]\nDescription=Import ZFS pools by device scanning\nDocumentation=man:zpool(8)\nDefaultDependencies=no\nRequires=systemd-udev-settle.service\nAfter=systemd-udev-settle.service\nAfter=cryptsetup.target\nAfter=multipathd.service\nBefore=zfs-import.target\nConditionFileNotEmpty=!@sysconfdir@/zfs/zpool.cache\nConditionPathIsDirectory=/sys/module/zfs\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\nEnvironmentFile=-@initconfdir@/zfs\nExecStart=@sbindir@/zpool import -aN -o cachefile=none $ZPOOL_IMPORT_OPTS\n\n[Install]\nWantedBy=zfs-import.target\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

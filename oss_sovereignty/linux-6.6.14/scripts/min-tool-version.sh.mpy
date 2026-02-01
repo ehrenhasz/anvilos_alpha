@@ -1,0 +1,9 @@
+{
+  "module_name": "min-tool-version.sh",
+  "hash_id": "f70a23eafe8d5d269c8c953bffc8eebc03bb778f824d7ee8113fd3bbd2c2b003",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/min-tool-version.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-only\n#\n# Print the minimum supported version of the given tool.\n# When you raise the minimum version, please update\n# Documentation/process/changes.rst as well.\n\nset -e\n\nif [ $# != 1 ]; then\n\techo \"Usage: $0 toolname\" >&2\n\texit 1\nfi\n\ncase \"$1\" in\nbinutils)\n\techo 2.25.0\n\t;;\ngcc)\n\tif [ \"$ARCH\" = parisc64 ]; then\n\t\techo 12.0.0\n\telse\n\t\techo 5.1.0\n\tfi\n\t;;\nllvm)\n\tif [ \"$SRCARCH\" = s390 ]; then\n\t\techo 15.0.0\n\telse\n\t\techo 11.0.0\n\tfi\n\t;;\nrustc)\n\techo 1.71.1\n\t;;\nbindgen)\n\techo 0.65.1\n\t;;\n*)\n\techo \"$1: unknown tool\" >&2\n\texit 1\n\t;;\nesac\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

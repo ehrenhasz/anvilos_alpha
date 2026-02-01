@@ -1,0 +1,9 @@
+{
+  "module_name": "pgtable_uffd.h",
+  "hash_id": "4bf98a2c519cf0639d3b3cef22b877cfc8a1a9557f191322a202536868a2d875",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/pgtable_uffd.h",
+  "human_readable_source": "#ifndef _ASM_GENERIC_PGTABLE_UFFD_H\n#define _ASM_GENERIC_PGTABLE_UFFD_H\n\n#ifndef CONFIG_HAVE_ARCH_USERFAULTFD_WP\nstatic __always_inline int pte_uffd_wp(pte_t pte)\n{\n\treturn 0;\n}\n\nstatic __always_inline int pmd_uffd_wp(pmd_t pmd)\n{\n\treturn 0;\n}\n\nstatic __always_inline pte_t pte_mkuffd_wp(pte_t pte)\n{\n\treturn pte;\n}\n\nstatic __always_inline pmd_t pmd_mkuffd_wp(pmd_t pmd)\n{\n\treturn pmd;\n}\n\nstatic __always_inline pte_t pte_clear_uffd_wp(pte_t pte)\n{\n\treturn pte;\n}\n\nstatic __always_inline pmd_t pmd_clear_uffd_wp(pmd_t pmd)\n{\n\treturn pmd;\n}\n\nstatic __always_inline pte_t pte_swp_mkuffd_wp(pte_t pte)\n{\n\treturn pte;\n}\n\nstatic __always_inline int pte_swp_uffd_wp(pte_t pte)\n{\n\treturn 0;\n}\n\nstatic __always_inline pte_t pte_swp_clear_uffd_wp(pte_t pte)\n{\n\treturn pte;\n}\n\nstatic inline pmd_t pmd_swp_mkuffd_wp(pmd_t pmd)\n{\n\treturn pmd;\n}\n\nstatic inline int pmd_swp_uffd_wp(pmd_t pmd)\n{\n\treturn 0;\n}\n\nstatic inline pmd_t pmd_swp_clear_uffd_wp(pmd_t pmd)\n{\n\treturn pmd;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d32ec0e7f08bc53fdd03390ff31f393c99492940ea77883f54ff020ad8bcfaf5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/b53/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_B53)\t\t+= b53_common.o\n\nobj-$(CONFIG_B53_SPI_DRIVER)\t+= b53_spi.o\nobj-$(CONFIG_B53_MDIO_DRIVER)\t+= b53_mdio.o\nobj-$(CONFIG_B53_MMAP_DRIVER)\t+= b53_mmap.o\nobj-$(CONFIG_B53_SRAB_DRIVER)\t+= b53_srab.o\nobj-$(CONFIG_B53_SERDES)\t+= b53_serdes.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "aspm.h",
+  "hash_id": "44abbb53dfb08197b3a149bd6500acdf1d1efc14df8a4f599be13a48cfbbc8b1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/aspm.h",
+  "human_readable_source": " \n \n\n#ifndef _ASPM_H\n#define _ASPM_H\n\n#include \"hfi.h\"\n\nextern uint aspm_mode;\n\nenum aspm_mode {\n\tASPM_MODE_DISABLED = 0,\t \n\tASPM_MODE_ENABLED = 1,\t \n\tASPM_MODE_DYNAMIC = 2,\t \n};\n\nvoid aspm_init(struct hfi1_devdata *dd);\nvoid aspm_exit(struct hfi1_devdata *dd);\nvoid aspm_hw_disable_l1(struct hfi1_devdata *dd);\nvoid __aspm_ctx_disable(struct hfi1_ctxtdata *rcd);\nvoid aspm_disable_all(struct hfi1_devdata *dd);\nvoid aspm_enable_all(struct hfi1_devdata *dd);\n\nstatic inline void aspm_ctx_disable(struct hfi1_ctxtdata *rcd)\n{\n\t \n\tif (likely(!rcd->aspm_intr_supported))\n\t\treturn;\n\n\t__aspm_ctx_disable(rcd);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

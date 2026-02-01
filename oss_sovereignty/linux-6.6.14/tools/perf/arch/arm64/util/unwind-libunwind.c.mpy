@@ -1,0 +1,9 @@
+{
+  "module_name": "unwind-libunwind.c",
+  "hash_id": "6fec9a98fb136948167ef153c2fc311e1f9d59960b2339d0b29cf02aaa9675a3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arm64/util/unwind-libunwind.c",
+  "human_readable_source": "\n#include <errno.h>\n\n#ifndef REMOTE_UNWIND_LIBUNWIND\n#include <libunwind.h>\n#include \"perf_regs.h\"\n#include \"../../../util/unwind.h\"\n#endif\n#include \"../../../util/debug.h\"\n\nint LIBUNWIND__ARCH_REG_ID(int regnum)\n{\n\tif (regnum < 0 || regnum >= PERF_REG_ARM64_EXTENDED_MAX)\n\t\treturn -EINVAL;\n\n\treturn regnum;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

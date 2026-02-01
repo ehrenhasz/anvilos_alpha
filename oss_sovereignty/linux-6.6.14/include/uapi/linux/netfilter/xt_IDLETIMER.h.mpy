@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_IDLETIMER.h",
+  "hash_id": "cf264a655effc738dac74889e8935706eb40290948fee9c2a8a60729acd9cc58",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_IDLETIMER.h",
+  "human_readable_source": " \n \n\n#ifndef _XT_IDLETIMER_H\n#define _XT_IDLETIMER_H\n\n#include <linux/types.h>\n\n#define MAX_IDLETIMER_LABEL_SIZE 28\n#define XT_IDLETIMER_ALARM 0x01\n\nstruct idletimer_tg_info {\n\t__u32 timeout;\n\n\tchar label[MAX_IDLETIMER_LABEL_SIZE];\n\n\t \n\tstruct idletimer_tg *timer __attribute__((aligned(8)));\n};\n\nstruct idletimer_tg_info_v1 {\n\t__u32 timeout;\n\n\tchar label[MAX_IDLETIMER_LABEL_SIZE];\n\n\t__u8 send_nl_msg;    \n\t__u8 timer_type;\n\n\t \n\tstruct idletimer_tg *timer __attribute__((aligned(8)));\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

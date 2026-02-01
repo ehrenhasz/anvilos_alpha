@@ -1,0 +1,9 @@
+{
+  "module_name": "run_bench_rename.sh",
+  "hash_id": "26705088418db618f44afd27c671d6f6b17df974ea9c7d33163624b3e29716df",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/benchs/run_bench_rename.sh",
+  "human_readable_source": "#!/bin/bash\n\nset -eufo pipefail\n\nfor i in base kprobe kretprobe rawtp fentry fexit\ndo\n\tsummary=$(sudo ./bench -w2 -d5 -a rename-$i | tail -n1 | cut -d'(' -f1 | cut -d' ' -f3-)\n\tprintf \"%-10s: %s\\n\" $i \"$summary\"\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

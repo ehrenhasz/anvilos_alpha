@@ -1,0 +1,9 @@
+{
+  "module_name": "test_parse_ktap_output.log",
+  "hash_id": "e0e5de94b5b2f5891208047eb264d582b05063262409fcc14643db9efb6307c6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/test_data/test_parse_ktap_output.log",
+  "human_readable_source": "KTAP version 1\n1..1\n  KTAP version 1\n  1..3\n  ok 1 case_1\n  ok 2 case_2\n  ok 3 case_3\nok 1 suite\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

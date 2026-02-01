@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0d93c53e935391e5aa1bf19e6292b8b7d2adf7879d6de7f55cb1afbd806179db",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/virt/vboxguest/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nvboxguest-y := vboxguest_linux.o vboxguest_core.o vboxguest_utils.o\n\nobj-$(CONFIG_VBOXGUEST) += vboxguest.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

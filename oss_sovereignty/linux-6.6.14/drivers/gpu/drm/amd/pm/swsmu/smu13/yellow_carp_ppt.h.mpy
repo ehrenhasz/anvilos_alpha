@@ -1,0 +1,9 @@
+{
+  "module_name": "yellow_carp_ppt.h",
+  "hash_id": "1602e234d4642fe34dc4b5d855e7cc882f5bcc4385dd0f4894230a8dfd6d672b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/swsmu/smu13/yellow_carp_ppt.h",
+  "human_readable_source": " \n#ifndef __YELLOW_CARP_PPT_H__\n#define __YELLOW_CARP_PPT_H__\n\nextern void yellow_carp_set_ppt_funcs(struct smu_context *smu);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

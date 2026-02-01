@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig.iosched",
+  "hash_id": "2c2b489498376ecad3978728271e6fe3e8ebd913ddeaf564af23870b46e43c19",
+  "original_prompt": "Ingested from linux-6.6.14/block/Kconfig.iosched",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nmenu \"IO Schedulers\"\n\nconfig MQ_IOSCHED_DEADLINE\n\ttristate \"MQ deadline I/O scheduler\"\n\tdefault y\n\thelp\n\t  MQ version of the deadline IO scheduler.\n\nconfig MQ_IOSCHED_KYBER\n\ttristate \"Kyber I/O scheduler\"\n\tdefault y\n\thelp\n\t  The Kyber I/O scheduler is a low-overhead scheduler suitable for\n\t  multiqueue and other fast devices. Given target latencies for reads and\n\t  synchronous writes, it will self-tune queue depths to achieve that\n\t  goal.\n\nconfig IOSCHED_BFQ\n\ttristate \"BFQ I/O scheduler\"\n\tselect BLK_ICQ\n\thelp\n\tBFQ I/O scheduler for BLK-MQ. BFQ distributes the bandwidth of\n\tof the device among all processes according to their weights,\n\tregardless of the device parameters and with any workload. It\n\talso guarantees a low latency to interactive and soft\n\treal-time applications.  Details in\n\tDocumentation/block/bfq-iosched.rst\n\nconfig BFQ_GROUP_IOSCHED\n       bool \"BFQ hierarchical scheduling support\"\n       depends on IOSCHED_BFQ && BLK_CGROUP\n       default y\n       select BLK_CGROUP_RWSTAT\n\thelp\n\n       Enable hierarchical scheduling in BFQ, using the blkio\n       (cgroups-v1) or io (cgroups-v2) controller.\n\nconfig BFQ_CGROUP_DEBUG\n\tbool \"BFQ IO controller debugging\"\n\tdepends on BFQ_GROUP_IOSCHED\n\thelp\n\tEnable some debugging help. Currently it exports additional stat\n\tfiles in a cgroup which can be useful for debugging.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

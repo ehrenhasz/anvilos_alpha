@@ -1,0 +1,9 @@
+{
+  "module_name": "ep93xx-pcm.c",
+  "hash_id": "2462f3471b76875a2d416eb238feccd89435f3be09a20e16211b15fb745b0818",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/cirrus/ep93xx-pcm.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/platform_device.h>\n#include <linux/dmaengine.h>\n\n#include <sound/pcm.h>\n#include <sound/soc.h>\n#include <sound/dmaengine_pcm.h>\n\n#include <linux/platform_data/dma-ep93xx.h>\n\n#include \"ep93xx-pcm.h\"\n\nstatic const struct snd_pcm_hardware ep93xx_pcm_hardware = {\n\t.info\t\t\t= (SNDRV_PCM_INFO_MMAP\t\t|\n\t\t\t\t   SNDRV_PCM_INFO_MMAP_VALID\t|\n\t\t\t\t   SNDRV_PCM_INFO_INTERLEAVED\t|\n\t\t\t\t   SNDRV_PCM_INFO_BLOCK_TRANSFER),\n\t.buffer_bytes_max\t= 131072,\n\t.period_bytes_min\t= 32,\n\t.period_bytes_max\t= 32768,\n\t.periods_min\t\t= 1,\n\t.periods_max\t\t= 32,\n\t.fifo_size\t\t= 32,\n};\n\nstatic bool ep93xx_pcm_dma_filter(struct dma_chan *chan, void *filter_param)\n{\n\tstruct ep93xx_dma_data *data = filter_param;\n\n\tif (data->direction == ep93xx_dma_chan_direction(chan)) {\n\t\tchan->private = data;\n\t\treturn true;\n\t}\n\n\treturn false;\n}\n\nstatic const struct snd_dmaengine_pcm_config ep93xx_dmaengine_pcm_config = {\n\t.pcm_hardware = &ep93xx_pcm_hardware,\n\t.compat_filter_fn = ep93xx_pcm_dma_filter,\n\t.prealloc_buffer_size = 131072,\n};\n\nint devm_ep93xx_pcm_platform_register(struct device *dev)\n{\n\treturn devm_snd_dmaengine_pcm_register(dev,\n\t\t&ep93xx_dmaengine_pcm_config,\n\t\tSND_DMAENGINE_PCM_FLAG_NO_DT |\n\t\tSND_DMAENGINE_PCM_FLAG_COMPAT);\n}\nEXPORT_SYMBOL_GPL(devm_ep93xx_pcm_platform_register);\n\nMODULE_AUTHOR(\"Ryan Mallon\");\nMODULE_DESCRIPTION(\"EP93xx ALSA PCM interface\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

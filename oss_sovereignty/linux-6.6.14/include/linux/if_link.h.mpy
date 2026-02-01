@@ -1,0 +1,9 @@
+{
+  "module_name": "if_link.h",
+  "hash_id": "547bc745be7b441206ab7278df4ec39ec781d8b0c99b600878d68965bf51047d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/if_link.h",
+  "human_readable_source": " \n#ifndef _LINUX_IF_LINK_H\n#define _LINUX_IF_LINK_H\n\n#include <uapi/linux/if_link.h>\n\n\n \nstruct ifla_vf_stats {\n\t__u64 rx_packets;\n\t__u64 tx_packets;\n\t__u64 rx_bytes;\n\t__u64 tx_bytes;\n\t__u64 broadcast;\n\t__u64 multicast;\n\t__u64 rx_dropped;\n\t__u64 tx_dropped;\n};\n\nstruct ifla_vf_info {\n\t__u32 vf;\n\t__u8 mac[32];\n\t__u32 vlan;\n\t__u32 qos;\n\t__u32 spoofchk;\n\t__u32 linkstate;\n\t__u32 min_tx_rate;\n\t__u32 max_tx_rate;\n\t__u32 rss_query_en;\n\t__u32 trusted;\n\t__be16 vlan_proto;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

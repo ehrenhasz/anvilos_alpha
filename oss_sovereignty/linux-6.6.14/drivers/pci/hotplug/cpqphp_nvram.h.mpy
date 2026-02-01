@@ -1,0 +1,9 @@
+{
+  "module_name": "cpqphp_nvram.h",
+  "hash_id": "5adbfbb71e4b713eeebc58780bf793017f34c5ddd84f3d896deb1693a4a42f35",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/hotplug/cpqphp_nvram.h",
+  "human_readable_source": " \n \n\n#ifndef _CPQPHP_NVRAM_H\n#define _CPQPHP_NVRAM_H\n\n#ifndef CONFIG_HOTPLUG_PCI_COMPAQ_NVRAM\n\nstatic inline void compaq_nvram_init(void __iomem *rom_start) { }\n\nstatic inline int compaq_nvram_load(void __iomem *rom_start, struct controller *ctrl)\n{\n\treturn 0;\n}\n\nstatic inline int compaq_nvram_store(void __iomem *rom_start)\n{\n\treturn 0;\n}\n\n#else\n\nvoid compaq_nvram_init(void __iomem *rom_start);\nint compaq_nvram_load(void __iomem *rom_start, struct controller *ctrl);\nint compaq_nvram_store(void __iomem *rom_start);\n\n#endif\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

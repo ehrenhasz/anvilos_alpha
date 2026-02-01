@@ -1,0 +1,9 @@
+{
+  "module_name": "general.h",
+  "hash_id": "777bf573225ece92707a7992181b52c5e8590a48b1f2fa089570f14ad3cb6e9d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rts5208/general.h",
+  "human_readable_source": " \n \n\n#ifndef __RTSX_GENERAL_H\n#define __RTSX_GENERAL_H\n\n#include \"rtsx.h\"\n\nint bit1cnt_long(u32 data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

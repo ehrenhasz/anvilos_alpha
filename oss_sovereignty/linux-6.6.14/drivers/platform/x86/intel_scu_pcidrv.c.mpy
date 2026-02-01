@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_scu_pcidrv.c",
+  "hash_id": "f171b4aff28d416f83dcc900389154939d02c7b9911f3d29451b5a50562e1dc8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel_scu_pcidrv.c",
+  "human_readable_source": "\n \n\n#include <linux/errno.h>\n#include <linux/init.h>\n#include <linux/pci.h>\n\n#include <asm/intel-mid.h>\n#include <asm/intel_scu_ipc.h>\n\nstatic int intel_scu_pci_probe(struct pci_dev *pdev,\n\t\t\t       const struct pci_device_id *id)\n{\n\tstruct intel_scu_ipc_data scu_data = {};\n\tstruct intel_scu_ipc_dev *scu;\n\tint ret;\n\n\tret = pcim_enable_device(pdev);\n\tif (ret)\n\t\treturn ret;\n\n\tscu_data.mem = pdev->resource[0];\n\tscu_data.irq = pdev->irq;\n\n\tscu = intel_scu_ipc_register(&pdev->dev, &scu_data);\n\treturn PTR_ERR_OR_ZERO(scu);\n}\n\nstatic const struct pci_device_id pci_ids[] = {\n\t{ PCI_VDEVICE(INTEL, 0x080e) },\n\t{ PCI_VDEVICE(INTEL, 0x082a) },\n\t{ PCI_VDEVICE(INTEL, 0x08ea) },\n\t{ PCI_VDEVICE(INTEL, 0x0a94) },\n\t{ PCI_VDEVICE(INTEL, 0x11a0) },\n\t{ PCI_VDEVICE(INTEL, 0x1a94) },\n\t{ PCI_VDEVICE(INTEL, 0x5a94) },\n\t{}\n};\n\nstatic struct pci_driver intel_scu_pci_driver = {\n\t.driver = {\n\t\t.suppress_bind_attrs = true,\n\t},\n\t.name = \"intel_scu\",\n\t.id_table = pci_ids,\n\t.probe = intel_scu_pci_probe,\n};\n\nbuiltin_pci_driver(intel_scu_pci_driver);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

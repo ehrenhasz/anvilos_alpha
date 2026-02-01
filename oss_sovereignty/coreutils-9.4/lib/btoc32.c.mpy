@@ -1,0 +1,9 @@
+{
+  "module_name": "btoc32.c",
+  "hash_id": "032e888a1a77910d8e5b8c94a122c374ffe7d50fe742417f7122be36a804c434",
+  "original_prompt": "Ingested from coreutils-9.4/lib/btoc32.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#define IN_BTOC32\n \n#include <uchar.h>\n\n#include <stdio.h>\n#include <string.h>\n#include <wchar.h>\n\n#if GL_CHAR32_T_IS_UNICODE\n# include \"lc-charset-unicode.h\"\n#endif\n\n#if _GL_WCHAR_T_IS_UCS4\n_GL_EXTERN_INLINE\n#endif\nwint_t\nbtoc32 (int c)\n{\n#if HAVE_WORKING_MBRTOC32 && !_GL_WCHAR_T_IS_UCS4\n   \n  if (c != EOF)\n    {\n      mbstate_t state;\n      char s[1];\n      char32_t wc;\n\n      mbszero (&state);\n      s[0] = (unsigned char) c;\n      if (mbrtoc32 (&wc, s, 1, &state) <= 1)\n        return wc;\n    }\n  return WEOF;\n#else\n   \n  wint_t wc = btowc (c);\n# if GL_CHAR32_T_IS_UNICODE && GL_CHAR32_T_VS_WCHAR_T_NEEDS_CONVERSION\n  if (wc != WEOF && wc != 0)\n    {\n      wc = locale_encoding_to_unicode (wc);\n      if (wc == 0)\n        return WEOF;\n    }\n# endif\n  return wc;\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

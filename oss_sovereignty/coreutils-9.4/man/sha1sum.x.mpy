@@ -1,0 +1,9 @@
+{
+  "module_name": "sha1sum.x",
+  "hash_id": "8d239acc4703d2cc2f85e2a50305564d47899754a5b678ed079284c73d4ba991",
+  "original_prompt": "Ingested from coreutils-9.4/man/sha1sum.x",
+  "human_readable_source": "[NAME]\nsha1sum \\- compute and check SHA1 message digest\n[DESCRIPTION]\n.\\\" Add any additional description here\n[BUGS]\nDo not use the SHA-1 algorithm for security related purposes.\nInstead, use an SHA\\-2 algorithm, implemented in the programs\nsha224sum(1), sha256sum(1), sha384sum(1), sha512sum(1),\nor the BLAKE2 algorithm, implemented in b2sum(1)\n[SEE ALSO]\ncksum(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

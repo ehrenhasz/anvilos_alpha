@@ -1,0 +1,9 @@
+{
+  "module_name": "amplc_pc236.c",
+  "hash_id": "e7bc28cfcaed40dd5b649d3b03b625ab15d704d799ad080fff3008a6701ef5d5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/amplc_pc236.c",
+  "human_readable_source": "\n \n \n\n#include <linux/module.h>\n#include <linux/comedi/comedidev.h>\n\n#include \"amplc_pc236.h\"\n\nstatic int pc236_attach(struct comedi_device *dev, struct comedi_devconfig *it)\n{\n\tstruct pc236_private *devpriv;\n\tint ret;\n\n\tdevpriv = comedi_alloc_devpriv(dev, sizeof(*devpriv));\n\tif (!devpriv)\n\t\treturn -ENOMEM;\n\n\tret = comedi_request_region(dev, it->options[0], 0x4);\n\tif (ret)\n\t\treturn ret;\n\n\treturn amplc_pc236_common_attach(dev, dev->iobase, it->options[1], 0);\n}\n\nstatic const struct pc236_board pc236_boards[] = {\n\t{\n\t\t.name = \"pc36at\",\n\t},\n};\n\nstatic struct comedi_driver amplc_pc236_driver = {\n\t.driver_name = \"amplc_pc236\",\n\t.module = THIS_MODULE,\n\t.attach = pc236_attach,\n\t.detach = comedi_legacy_detach,\n\t.board_name = &pc236_boards[0].name,\n\t.offset = sizeof(struct pc236_board),\n\t.num_names = ARRAY_SIZE(pc236_boards),\n};\n\nmodule_comedi_driver(amplc_pc236_driver);\n\nMODULE_AUTHOR(\"Comedi https://www.comedi.org\");\nMODULE_DESCRIPTION(\"Comedi driver for Amplicon PC36AT DIO boards\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

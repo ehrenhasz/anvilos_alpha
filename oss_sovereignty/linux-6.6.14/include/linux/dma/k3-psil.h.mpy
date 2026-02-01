@@ -1,0 +1,9 @@
+{
+  "module_name": "k3-psil.h",
+  "hash_id": "6d70e42eb39da4d20db9ca98dd9534cf7d259cc7b187e62d43bf506aeb0081f7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dma/k3-psil.h",
+  "human_readable_source": " \n \n\n#ifndef K3_PSIL_H_\n#define K3_PSIL_H_\n\n#include <linux/types.h>\n\n#define K3_PSIL_DST_THREAD_ID_OFFSET 0x8000\n\nstruct device;\n\n \nenum udma_tp_level {\n\tUDMA_TP_NORMAL = 0,\n\tUDMA_TP_HIGH,\n\tUDMA_TP_ULTRAHIGH,\n\tUDMA_TP_LAST,\n};\n\n \nenum psil_endpoint_type {\n\tPSIL_EP_NATIVE = 0,\n\tPSIL_EP_PDMA_XY,\n\tPSIL_EP_PDMA_MCAN,\n\tPSIL_EP_PDMA_AASRC,\n};\n\n \nstruct psil_endpoint_config {\n\tenum psil_endpoint_type ep_type;\n\tenum udma_tp_level channel_tpl;\n\n\tunsigned pkt_mode:1;\n\tunsigned notdpkt:1;\n\tunsigned needs_epib:1;\n\t \n\tunsigned pdma_acc32:1;\n\tunsigned pdma_burst:1;\n\n\tu32 psd_size;\n\t \n\ts16 mapped_channel_id;\n\t \n\tu16 flow_start;\n\tu16 flow_num;\n\ts16 default_flow_id;\n};\n\nint psil_set_new_ep_config(struct device *dev, const char *name,\n\t\t\t   struct psil_endpoint_config *ep_config);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nvme-auth.h",
+  "hash_id": "de7ede9f69b5381394c449963457e6f3e47ea10b384eb400c2b23ec8c093554f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/nvme-auth.h",
+  "human_readable_source": " \n \n\n#ifndef _NVME_AUTH_H\n#define _NVME_AUTH_H\n\n#include <crypto/kpp.h>\n\nstruct nvme_dhchap_key {\n\tu8 *key;\n\tsize_t len;\n\tu8 hash;\n};\n\nu32 nvme_auth_get_seqnum(void);\nconst char *nvme_auth_dhgroup_name(u8 dhgroup_id);\nconst char *nvme_auth_dhgroup_kpp(u8 dhgroup_id);\nu8 nvme_auth_dhgroup_id(const char *dhgroup_name);\n\nconst char *nvme_auth_hmac_name(u8 hmac_id);\nconst char *nvme_auth_digest_name(u8 hmac_id);\nsize_t nvme_auth_hmac_hash_len(u8 hmac_id);\nu8 nvme_auth_hmac_id(const char *hmac_name);\n\nstruct nvme_dhchap_key *nvme_auth_extract_key(unsigned char *secret,\n\t\t\t\t\t      u8 key_hash);\nvoid nvme_auth_free_key(struct nvme_dhchap_key *key);\nu8 *nvme_auth_transform_key(struct nvme_dhchap_key *key, char *nqn);\nint nvme_auth_generate_key(u8 *secret, struct nvme_dhchap_key **ret_key);\nint nvme_auth_augmented_challenge(u8 hmac_id, u8 *skey, size_t skey_len,\n\t\t\t\t  u8 *challenge, u8 *aug, size_t hlen);\nint nvme_auth_gen_privkey(struct crypto_kpp *dh_tfm, u8 dh_gid);\nint nvme_auth_gen_pubkey(struct crypto_kpp *dh_tfm,\n\t\t\t u8 *host_key, size_t host_key_len);\nint nvme_auth_gen_shared_secret(struct crypto_kpp *dh_tfm,\n\t\t\t\tu8 *ctrl_key, size_t ctrl_key_len,\n\t\t\t\tu8 *sess_key, size_t sess_key_len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

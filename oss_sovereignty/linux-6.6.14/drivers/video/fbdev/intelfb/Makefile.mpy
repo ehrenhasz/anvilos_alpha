@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cc1614883fa76d31496778dd69d4c087c8fd1c8ef65e5501fd2034f9fc1537bc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/intelfb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_FB_INTEL) += intelfb.o\n\nintelfb-y := intelfbdrv.o intelfbhw.o\nintelfb-$(CONFIG_FB_INTEL_I2C) += intelfb_i2c.o\nintelfb-objs := $(intelfb-y)\n\nccflags-$(CONFIG_FB_INTEL_DEBUG) := -DDEBUG -DREGDUMP\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pstore_zone.h",
+  "hash_id": "93eb0f26b0e2b46d3bba7b8afd701865ced23c80690816e373f0b19efbcdc6fe",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pstore_zone.h",
+  "human_readable_source": " \n\n#ifndef __PSTORE_ZONE_H_\n#define __PSTORE_ZONE_H_\n\n#include <linux/types.h>\n\ntypedef ssize_t (*pstore_zone_read_op)(char *, size_t, loff_t);\ntypedef ssize_t (*pstore_zone_write_op)(const char *, size_t, loff_t);\ntypedef ssize_t (*pstore_zone_erase_op)(size_t, loff_t);\n \nstruct pstore_zone_info {\n\tstruct module *owner;\n\tconst char *name;\n\n\tunsigned long total_size;\n\tunsigned long kmsg_size;\n\tint max_reason;\n\tunsigned long pmsg_size;\n\tunsigned long console_size;\n\tunsigned long ftrace_size;\n\tpstore_zone_read_op read;\n\tpstore_zone_write_op write;\n\tpstore_zone_erase_op erase;\n\tpstore_zone_write_op panic_write;\n};\n\nextern int register_pstore_zone(struct pstore_zone_info *info);\nextern void unregister_pstore_zone(struct pstore_zone_info *info);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

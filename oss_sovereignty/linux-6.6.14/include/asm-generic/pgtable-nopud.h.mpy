@@ -1,0 +1,9 @@
+{
+  "module_name": "pgtable-nopud.h",
+  "hash_id": "e18823738012389ade82a19e55842e0bece741c0422d6ad303f2cdc16d12a532",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/pgtable-nopud.h",
+  "human_readable_source": " \n#ifndef _PGTABLE_NOPUD_H\n#define _PGTABLE_NOPUD_H\n\n#ifndef __ASSEMBLY__\n\n#include <asm-generic/pgtable-nop4d.h>\n\n#define __PAGETABLE_PUD_FOLDED 1\n\n \ntypedef struct { p4d_t p4d; } pud_t;\n\n#define PUD_SHIFT\tP4D_SHIFT\n#define PTRS_PER_PUD\t1\n#define PUD_SIZE  \t(1UL << PUD_SHIFT)\n#define PUD_MASK  \t(~(PUD_SIZE-1))\n\n \nstatic inline int p4d_none(p4d_t p4d)\t\t{ return 0; }\nstatic inline int p4d_bad(p4d_t p4d)\t\t{ return 0; }\nstatic inline int p4d_present(p4d_t p4d)\t{ return 1; }\nstatic inline void p4d_clear(p4d_t *p4d)\t{ }\n#define pud_ERROR(pud)\t\t\t\t(p4d_ERROR((pud).p4d))\n\n#define p4d_populate(mm, p4d, pud)\t\tdo { } while (0)\n#define p4d_populate_safe(mm, p4d, pud)\t\tdo { } while (0)\n \n#define set_p4d(p4dptr, p4dval)\tset_pud((pud_t *)(p4dptr), (pud_t) { p4dval })\n\nstatic inline pud_t *pud_offset(p4d_t *p4d, unsigned long address)\n{\n\treturn (pud_t *)p4d;\n}\n#define pud_offset pud_offset\n\n#define pud_val(x)\t\t\t\t(p4d_val((x).p4d))\n#define __pud(x)\t\t\t\t((pud_t) { __p4d(x) })\n\n#define p4d_page(p4d)\t\t\t\t(pud_page((pud_t){ p4d }))\n#define p4d_pgtable(p4d)\t\t\t((pud_t *)(pud_pgtable((pud_t){ p4d })))\n\n \n#define pud_alloc_one(mm, address)\t\tNULL\n#define pud_free(mm, x)\t\t\t\tdo { } while (0)\n#define pud_free_tlb(tlb, x, a)\t\t        do { } while (0)\n\n#undef  pud_addr_end\n#define pud_addr_end(addr, end)\t\t\t(end)\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

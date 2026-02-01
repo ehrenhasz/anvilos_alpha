@@ -1,0 +1,9 @@
+{
+  "module_name": "ehci-dbgp.h",
+  "hash_id": "1024d2fdabd38d0906550aee40146ea694ba3f97f5d1ff094ce8471eaabca6f0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/ehci-dbgp.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_USB_EHCI_DBGP_H\n#define __LINUX_USB_EHCI_DBGP_H\n\n#include <linux/console.h>\n#include <linux/types.h>\n\n \nstruct ehci_dbg_port {\n\tu32\tcontrol;\n#define DBGP_OWNER\t(1<<30)\n#define DBGP_ENABLED\t(1<<28)\n#define DBGP_DONE\t(1<<16)\n#define DBGP_INUSE\t(1<<10)\n#define DBGP_ERRCODE(x)\t(((x)>>7)&0x07)\n#\tdefine DBGP_ERR_BAD\t1\n#\tdefine DBGP_ERR_SIGNAL\t2\n#define DBGP_ERROR\t(1<<6)\n#define DBGP_GO\t\t(1<<5)\n#define DBGP_OUT\t(1<<4)\n#define DBGP_LEN(x)\t(((x)>>0)&0x0f)\n\tu32\tpids;\n#define DBGP_PID_GET(x)\t\t(((x)>>16)&0xff)\n#define DBGP_PID_SET(data, tok)\t(((data)<<8)|(tok))\n\tu32\tdata03;\n\tu32\tdata47;\n\tu32\taddress;\n#define DBGP_EPADDR(dev, ep)\t(((dev)<<8)|(ep))\n};\n\n#ifdef CONFIG_EARLY_PRINTK_DBGP\nextern int early_dbgp_init(char *s);\nextern struct console early_dbgp_console;\n#endif  \n\nstruct usb_hcd;\n\n#ifdef CONFIG_XEN_DOM0\nextern int xen_dbgp_reset_prep(struct usb_hcd *);\nextern int xen_dbgp_external_startup(struct usb_hcd *);\n#else\nstatic inline int xen_dbgp_reset_prep(struct usb_hcd *hcd)\n{\n\treturn 1;  \n}\n\nstatic inline int xen_dbgp_external_startup(struct usb_hcd *hcd)\n{\n\treturn -1;\n}\n#endif\n\n#ifdef CONFIG_EARLY_PRINTK_DBGP\n \nextern int dbgp_external_startup(struct usb_hcd *);\nextern int dbgp_reset_prep(struct usb_hcd *);\n#else\nstatic inline int dbgp_reset_prep(struct usb_hcd *hcd)\n{\n\treturn xen_dbgp_reset_prep(hcd);\n}\n\nstatic inline int dbgp_external_startup(struct usb_hcd *hcd)\n{\n\treturn xen_dbgp_external_startup(hcd);\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

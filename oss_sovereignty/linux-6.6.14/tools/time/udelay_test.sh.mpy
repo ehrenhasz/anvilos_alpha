@@ -1,0 +1,9 @@
+{
+  "module_name": "udelay_test.sh",
+  "hash_id": "ee78dc92ef95dfe1eb0d02ede03096fafb62e0a92e7f70350a462f04f84f59a3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/time/udelay_test.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0-only\n\n# udelay() test script\n#\n# Test is executed by writing and reading to /sys/kernel/debug/udelay_test\n# and exercises a variety of delays to ensure that udelay() is delaying\n# at least as long as requested (as compared to ktime).\n#\n# Copyright (C) 2014 Google, Inc.\n#\n\nMODULE_NAME=udelay_test\nUDELAY_PATH=/sys/kernel/debug/udelay_test\n\nsetup()\n{\n\t/sbin/modprobe -q $MODULE_NAME\n\ttmp_file=`mktemp`\n}\n\ntest_one()\n{\n\tdelay=$1\n\techo $delay > $UDELAY_PATH\n\ttee -a $tmp_file < $UDELAY_PATH\n}\n\ncleanup()\n{\n\tif [ -f $tmp_file ]; then\n\t\trm $tmp_file\n\tfi\n\t/sbin/modprobe -q -r $MODULE_NAME\n}\n\ntrap cleanup EXIT\nsetup\n\n# Delay for a variety of times.\n# 1..200, 200..500 (by 10), 500..2000 (by 100)\nfor (( delay = 1; delay < 200; delay += 1 )); do\n\ttest_one $delay\ndone\nfor (( delay = 200; delay < 500; delay += 10 )); do\n\ttest_one $delay\ndone\nfor (( delay = 500; delay <= 2000; delay += 100 )); do\n\ttest_one $delay\ndone\n\n# Search for failures\ncount=`grep -c FAIL $tmp_file`\nif [ $? -eq \"0\" ]; then\n\techo \"ERROR: $count delays failed to delay long enough\"\n\tretcode=1\nfi\n\nexit $retcode\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

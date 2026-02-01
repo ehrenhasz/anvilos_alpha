@@ -1,0 +1,9 @@
+{
+  "module_name": "nand-gpio.h",
+  "hash_id": "4f524a705ef9c02ecefb0b4091f70a486da65011f61ed199ae02d7601323da6e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/nand-gpio.h",
+  "human_readable_source": " \n#ifndef __LINUX_MTD_NAND_GPIO_H\n#define __LINUX_MTD_NAND_GPIO_H\n\n#include <linux/mtd/rawnand.h>\n\nstruct gpio_nand_platdata {\n\tvoid\t(*adjust_parts)(struct gpio_nand_platdata *, size_t);\n\tstruct mtd_partition *parts;\n\tunsigned int num_parts;\n\tunsigned int options;\n\tint\tchip_delay;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

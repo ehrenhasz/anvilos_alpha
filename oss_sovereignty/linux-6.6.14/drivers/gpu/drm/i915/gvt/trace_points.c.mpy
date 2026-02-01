@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_points.c",
+  "hash_id": "45783b1df90d5c6f6d811d1a8b2f0711d6811324f28088c31b56a6cc63b3b78d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gvt/trace_points.c",
+  "human_readable_source": " \n\n#ifndef __CHECKER__\n#define CREATE_TRACE_POINTS\n#include \"trace.h\"\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

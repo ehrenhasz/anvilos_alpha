@@ -1,0 +1,9 @@
+{
+  "module_name": "ar9003_rtt.h",
+  "hash_id": "6800ff3146bb428e427a4b071db00cea5398539dea844d46e62e14eca321f8b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath9k/ar9003_rtt.h",
+  "human_readable_source": " \n\n#ifndef AR9003_RTT_H\n#define AR9003_RTT_H\n\n#ifdef CONFIG_ATH9K_PCOEM\nvoid ar9003_hw_rtt_enable(struct ath_hw *ah);\nvoid ar9003_hw_rtt_disable(struct ath_hw *ah);\nvoid ar9003_hw_rtt_set_mask(struct ath_hw *ah, u32 rtt_mask);\nbool ar9003_hw_rtt_force_restore(struct ath_hw *ah);\nvoid ar9003_hw_rtt_load_hist(struct ath_hw *ah);\nvoid ar9003_hw_rtt_fill_hist(struct ath_hw *ah);\nvoid ar9003_hw_rtt_clear_hist(struct ath_hw *ah);\nbool ar9003_hw_rtt_restore(struct ath_hw *ah, struct ath9k_channel *chan);\n#else\nstatic inline void ar9003_hw_rtt_enable(struct ath_hw *ah)\n{\n}\n\nstatic inline void ar9003_hw_rtt_disable(struct ath_hw *ah)\n{\n}\n\nstatic inline void ar9003_hw_rtt_set_mask(struct ath_hw *ah, u32 rtt_mask)\n{\n}\n\nstatic inline bool ar9003_hw_rtt_force_restore(struct ath_hw *ah)\n{\n\treturn false;\n}\n\nstatic inline void ar9003_hw_rtt_load_hist(struct ath_hw *ah)\n{\n}\n\nstatic inline void ar9003_hw_rtt_fill_hist(struct ath_hw *ah)\n{\n}\n\nstatic inline void ar9003_hw_rtt_clear_hist(struct ath_hw *ah)\n{\n}\n\nstatic inline bool ar9003_hw_rtt_restore(struct ath_hw *ah, struct ath9k_channel *chan)\n{\n\treturn false;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

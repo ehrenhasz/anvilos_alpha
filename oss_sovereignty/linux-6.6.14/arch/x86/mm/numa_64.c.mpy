@@ -1,0 +1,9 @@
+{
+  "module_name": "numa_64.c",
+  "hash_id": "9923b5eae651a8aba899a53c10c77b7d79db56bce252674703465fb587f7b753",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/mm/numa_64.c",
+  "human_readable_source": "\n \n#include <linux/memblock.h>\n\n#include \"numa_internal.h\"\n\nvoid __init initmem_init(void)\n{\n\tx86_numa_init();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

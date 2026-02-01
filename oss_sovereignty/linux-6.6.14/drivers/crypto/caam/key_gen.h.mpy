@@ -1,0 +1,9 @@
+{
+  "module_name": "key_gen.h",
+  "hash_id": "4084e83677defe9e0be94fda6724216259d7fbd15cb39549b035f056b219fd30",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/caam/key_gen.h",
+  "human_readable_source": " \n \n\n \nstatic inline u32 split_key_len(u32 hash)\n{\n\t \n\tstatic const u8 mdpadlen[] = { 16, 20, 32, 32, 64, 64 };\n\tu32 idx;\n\n\tidx = (hash & OP_ALG_ALGSEL_SUBMASK) >> OP_ALG_ALGSEL_SHIFT;\n\n\treturn (u32)(mdpadlen[idx] * 2);\n}\n\n \nstatic inline u32 split_key_pad_len(u32 hash)\n{\n\treturn ALIGN(split_key_len(hash), 16);\n}\n\nstruct split_key_result {\n\tstruct completion completion;\n\tint err;\n};\n\nvoid split_key_done(struct device *dev, u32 *desc, u32 err, void *context);\n\nint gen_split_key(struct device *jrdev, u8 *key_out,\n\t\t  struct alginfo * const adata, const u8 *key_in, u32 keylen,\n\t\t  int max_keylen);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

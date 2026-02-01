@@ -1,0 +1,9 @@
+{
+  "module_name": "uacce.h",
+  "hash_id": "1bc869c8012462a422cf3f70b50582b124376300b33f52c03279b2dd0b6b7a0d",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/misc/uacce/uacce.h",
+  "human_readable_source": " \n#ifndef _UAPIUUACCE_H\n#define _UAPIUUACCE_H\n\n#include <linux/types.h>\n#include <linux/ioctl.h>\n\n \n#define UACCE_CMD_START_Q\t_IO('W', 0)\n\n \n#define UACCE_CMD_PUT_Q\t\t_IO('W', 1)\n\n \n#define UACCE_DEV_SVA\t\tBIT(0)\n\n \nenum uacce_qfrt {\n\tUACCE_QFRT_MMIO = 0,\n\tUACCE_QFRT_DUS = 1,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

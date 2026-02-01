@@ -1,0 +1,9 @@
+{
+  "module_name": "pi433-overlay.dtso",
+  "hash_id": "4a5ec483f4e91225493cb370f79715283c73aeff60bf8f66ea8cff9d953c157c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/pi433/Documentation/devicetree/pi433-overlay.dtso",
+  "human_readable_source": "// Definitions for Pi433\n/dts-v1/;\n/plugin/;\n\n/ {\n\tcompatible = \"brcm,bcm2835\", \"brcm,bcm2708\", \"brcm,bcm2709\";\n};\n\n&spi0 {\n\t#address-cells = <1>;\n\t#size-cells = <0>;\n\tstatus = \"okay\";\n\n\tspidev@0{\n\t\treg = <0>;\n\t\tstatus = \"disabled\";\n\t};\n\n\tspidev@1{\n\t\treg = <1>;\n\t\tstatus = \"disabled\";\n\t};\n};\n\n&gpio {\n\tpi433_pins: pi433_pins {\n\t\tbrcm,pins = <7 25 24>;\n\t\tbrcm,function = <0 0 0>; // in in in\n\t};\n};\n\n&spi0 {\n\t#address-cells = <1>;\n\t#size-cells = <0>;\n\tstatus = \"okay\";\n\n\tpi433: pi433@0 {\n\t\tcompatible = \"Smarthome-Wolf,pi433\";\n\t\treg = <0>;\n\t\tspi-max-frequency = <10000000>;\n\t\tstatus = \"okay\";\n\n\t\tpinctrl-0 = <&pi433_pins>;\n\t\tDIO0-gpio = <&gpio 24 0>;\n\t\tDIO1-gpio = <&gpio 25 0>;\n\t\tDIO2-gpio = <&gpio  7 0>;\n\t};\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

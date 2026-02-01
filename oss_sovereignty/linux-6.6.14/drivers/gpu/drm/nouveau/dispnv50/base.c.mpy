@@ -1,0 +1,9 @@
+{
+  "module_name": "base.c",
+  "hash_id": "98e75d38d5553639ad3692ef59731add21cc22244b4e3243911858d25b82700f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/base.c",
+  "human_readable_source": " \n#include \"base.h\"\n\n#include <nvif/class.h>\n\nint\nnv50_base_new(struct nouveau_drm *drm, int head, struct nv50_wndw **pwndw)\n{\n\tstruct {\n\t\ts32 oclass;\n\t\tint version;\n\t\tint (*new)(struct nouveau_drm *, int, s32, struct nv50_wndw **);\n\t} bases[] = {\n\t\t{ GK110_DISP_BASE_CHANNEL_DMA, 0, base917c_new },\n\t\t{ GK104_DISP_BASE_CHANNEL_DMA, 0, base917c_new },\n\t\t{ GF110_DISP_BASE_CHANNEL_DMA, 0, base907c_new },\n\t\t{ GT214_DISP_BASE_CHANNEL_DMA, 0, base827c_new },\n\t\t{ GT200_DISP_BASE_CHANNEL_DMA, 0, base827c_new },\n\t\t{   G82_DISP_BASE_CHANNEL_DMA, 0, base827c_new },\n\t\t{  NV50_DISP_BASE_CHANNEL_DMA, 0, base507c_new },\n\t\t{}\n\t};\n\tstruct nv50_disp *disp = nv50_disp(drm->dev);\n\tint cid;\n\n\tcid = nvif_mclass(&disp->disp->object, bases);\n\tif (cid < 0) {\n\t\tNV_ERROR(drm, \"No supported base class\\n\");\n\t\treturn cid;\n\t}\n\n\treturn bases[cid].new(drm, head, bases[cid].oclass, pwndw);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

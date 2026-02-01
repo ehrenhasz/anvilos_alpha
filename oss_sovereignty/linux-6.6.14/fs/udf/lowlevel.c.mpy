@@ -1,0 +1,9 @@
+{
+  "module_name": "lowlevel.c",
+  "hash_id": "a77bf45bed25d70ae50aaf4e225716130ca2bb4abd00eb52dd40ce077553134b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/udf/lowlevel.c",
+  "human_readable_source": "\n \n\n#include \"udfdecl.h\"\n\n#include <linux/blkdev.h>\n#include <linux/cdrom.h>\n#include <linux/uaccess.h>\n\n#include \"udf_sb.h\"\n\nunsigned int udf_get_last_session(struct super_block *sb)\n{\n\tstruct cdrom_device_info *cdi = disk_to_cdi(sb->s_bdev->bd_disk);\n\tstruct cdrom_multisession ms_info;\n\n\tif (!cdi) {\n\t\tudf_debug(\"CDROMMULTISESSION not supported.\\n\");\n\t\treturn 0;\n\t}\n\n\tms_info.addr_format = CDROM_LBA;\n\tif (cdrom_multisession(cdi, &ms_info) == 0) {\n\t\tudf_debug(\"XA disk: %s, vol_desc_start=%d\\n\",\n\t\t\t  ms_info.xa_flag ? \"yes\" : \"no\", ms_info.addr.lba);\n\t\tif (ms_info.xa_flag)  \n\t\t\treturn ms_info.addr.lba;\n\t}\n\treturn 0;\n}\n\nudf_pblk_t udf_get_last_block(struct super_block *sb)\n{\n\tstruct cdrom_device_info *cdi = disk_to_cdi(sb->s_bdev->bd_disk);\n\tunsigned long lblock = 0;\n\n\t \n\tif (!cdi || cdrom_get_last_written(cdi, &lblock) || lblock == 0) {\n\t\tif (sb_bdev_nr_blocks(sb) > ~(udf_pblk_t)0)\n\t\t\treturn 0;\n\t\tlblock = sb_bdev_nr_blocks(sb);\n\t}\n\n\tif (lblock)\n\t\treturn lblock - 1;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

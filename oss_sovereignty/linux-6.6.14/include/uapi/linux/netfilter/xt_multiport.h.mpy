@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_multiport.h",
+  "hash_id": "18f26c19edfc057b53cc634f7b234407831a7616ed34d2c89033be3615af5fd6",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_multiport.h",
+  "human_readable_source": " \n#ifndef _XT_MULTIPORT_H\n#define _XT_MULTIPORT_H\n\n#include <linux/types.h>\n\nenum xt_multiport_flags {\n\tXT_MULTIPORT_SOURCE,\n\tXT_MULTIPORT_DESTINATION,\n\tXT_MULTIPORT_EITHER\n};\n\n#define XT_MULTI_PORTS\t15\n\n \nstruct xt_multiport {\n\t__u8 flags;\t\t\t\t \n\t__u8 count;\t\t\t\t \n\t__u16 ports[XT_MULTI_PORTS];\t \n};\n\nstruct xt_multiport_v1 {\n\t__u8 flags;\t\t\t\t \n\t__u8 count;\t\t\t\t \n\t__u16 ports[XT_MULTI_PORTS];\t \n\t__u8 pflags[XT_MULTI_PORTS];\t \n\t__u8 invert;\t\t\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "doubleinit.cocci",
+  "hash_id": "95aa5a3c549e1039a2aaab84bffe11db810b0f083830c76783db3c0c542c36af",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/misc/doubleinit.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0-only\n/// Find duplicate field initializations.  This has a high rate of false\n/// positives due to #ifdefs, which Coccinelle is not aware of in a structure\n/// initialization.\n///\n// Confidence: Low\n// Copyright: (C) 2010-2012 Nicolas Palix.\n// Copyright: (C) 2010-2012 Julia Lawall, INRIA/LIP6.\n// Copyright: (C) 2010-2012 Gilles Muller, INRIA/LiP6.\n// URL: https://coccinelle.gitlabpages.inria.fr/website\n// Comments: requires at least Coccinelle 0.2.4, lex or parse error otherwise\n// Options: --no-includes --include-headers\n\nvirtual org\nvirtual report\n\n@r@\nidentifier I, s, fld;\nposition p0,p;\nexpression E;\n@@\n\nstruct I s =@p0 { ..., .fld@p = E, ...};\n\n@s@\nidentifier I, s, r.fld;\nposition r.p0,p;\nexpression E;\n@@\n\nstruct I s =@p0 { ..., .fld@p = E, ...};\n\n@script:python depends on org@\np0 << r.p0;\nfld << r.fld;\nps << s.p;\npr << r.p;\n@@\n\nif int(ps[0].line) < int(pr[0].line) or (int(ps[0].line) == int(pr[0].line) and int(ps[0].column) < int(pr[0].column)):\n  cocci.print_main(fld,p0)\n  cocci.print_secs(\"s\",ps)\n  cocci.print_secs(\"r\",pr)\n\n@script:python depends on report@\np0 << r.p0;\nfld << r.fld;\nps << s.p;\npr << r.p;\n@@\n\nif int(ps[0].line) < int(pr[0].line) or (int(ps[0].line) == int(pr[0].line) and int(ps[0].column) < int(pr[0].column)):\n  msg = \"%s: first occurrence line %s, second occurrence line %s\" % (fld,ps[0].line,pr[0].line)\n  coccilib.report.print_report(p0[0],msg)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

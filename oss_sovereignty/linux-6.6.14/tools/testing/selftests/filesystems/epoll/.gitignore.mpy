@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "721055ea7a32dbd3cca066436b05615846a4ab037940dcb1f2d6fae160b70c66",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/filesystems/epoll/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nepoll_wakeup_test\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

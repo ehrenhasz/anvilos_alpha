@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9a28f5eb05cc84f6ddfb25bd642c40ec26c11ddea6c12e84c637ba56d4adb9d4",
+  "original_prompt": "Ingested from linux-6.6.14/fs/qnx4/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig QNX4FS_FS\n\ttristate \"QNX4 file system support (read only)\"\n\tdepends on BLOCK\n\tselect BUFFER_HEAD\n\thelp\n\t  This is the file system used by the real-time operating systems\n\t  QNX 4 and QNX 6 (the latter is also called QNX RTP).\n\t  Further information is available at <http://www.qnx.com/>.\n\t  Say Y if you intend to mount QNX hard disks or floppies.\n\n\t  To compile this file system support as a module, choose M here: the\n\t  module will be called qnx4.\n\n\t  If you don't know whether you need it, then you don't need it:\n\t  answer N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

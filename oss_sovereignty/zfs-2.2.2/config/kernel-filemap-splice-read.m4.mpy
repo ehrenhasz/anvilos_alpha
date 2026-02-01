@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-filemap-splice-read.m4",
+  "hash_id": "e50a035587cfb3f7d6c0727d0df64578db807345e0cb5e7ee51406a0c3ecd9d7",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-filemap-splice-read.m4",
+  "human_readable_source": "AC_DEFUN([ZFS_AC_KERNEL_SRC_COPY_SPLICE_READ], [\n\tdnl #\n\tdnl # Kernel 6.5 - generic_file_splice_read was removed in favor\n\tdnl # of copy_splice_read for the .splice_read member of the\n\tdnl # file_operations struct.\n\tdnl #\n\tZFS_LINUX_TEST_SRC([has_copy_splice_read], [\n\t\t#include <linux/fs.h>\n\n\t\tstruct file_operations fops __attribute__((unused)) = {\n\t\t\t.splice_read = copy_splice_read,\n\t\t};\n\t],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_COPY_SPLICE_READ], [\n\tAC_MSG_CHECKING([whether copy_splice_read() exists])\n\tZFS_LINUX_TEST_RESULT([has_copy_splice_read], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_COPY_SPLICE_READ, 1,\n\t\t    [copy_splice_read exists])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

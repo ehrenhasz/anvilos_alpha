@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "58e2ec054d8d0c01800f359a62a0475cde3acfd937bbaff9e7b529b142265067",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath12k/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: BSD-3-Clause-Clear\nobj-$(CONFIG_ATH12K) += ath12k.o\nath12k-y += core.o \\\n\t    hal.o \\\n\t    hal_tx.o \\\n\t    hal_rx.o \\\n\t    wmi.o \\\n\t    mac.o \\\n\t    reg.o \\\n\t    htc.o \\\n\t    qmi.o \\\n\t    dp.o  \\\n\t    dp_tx.o \\\n\t    dp_rx.o \\\n\t    debug.o \\\n\t    ce.o \\\n\t    peer.o \\\n\t    dbring.o \\\n\t    hw.o \\\n\t    mhi.o \\\n\t    pci.o \\\n\t    dp_mon.o\n\nath12k-$(CONFIG_ATH12K_TRACING) += trace.o\n\n# for tracing framework to find trace.h\nCFLAGS_trace.o := -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

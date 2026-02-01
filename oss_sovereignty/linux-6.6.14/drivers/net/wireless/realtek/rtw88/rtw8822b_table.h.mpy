@@ -1,0 +1,9 @@
+{
+  "module_name": "rtw8822b_table.h",
+  "hash_id": "947bec144e407134d4dbeb8814d431d483a8139d7dfae6fc2850da3dfd0f81bc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw88/rtw8822b_table.h",
+  "human_readable_source": " \n \n\n#ifndef __RTW8822B_TABLE_H__\n#define __RTW8822B_TABLE_H__\n\nextern const struct rtw_table rtw8822b_mac_tbl;\nextern const struct rtw_table rtw8822b_agc_tbl;\nextern const struct rtw_table rtw8822b_bb_tbl;\nextern const struct rtw_table rtw8822b_bb_pg_type2_tbl;\nextern const struct rtw_table rtw8822b_bb_pg_type3_tbl;\nextern const struct rtw_table rtw8822b_bb_pg_type5_tbl;\nextern const struct rtw_table rtw8822b_rf_a_tbl;\nextern const struct rtw_table rtw8822b_rf_b_tbl;\nextern const struct rtw_table rtw8822b_txpwr_lmt_type0_tbl;\nextern const struct rtw_table rtw8822b_txpwr_lmt_type2_tbl;\nextern const struct rtw_table rtw8822b_txpwr_lmt_type5_tbl;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

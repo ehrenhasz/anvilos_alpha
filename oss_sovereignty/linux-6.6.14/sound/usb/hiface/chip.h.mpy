@@ -1,0 +1,9 @@
+{
+  "module_name": "chip.h",
+  "hash_id": "26c1e6183b1af07a13019b03095c0f6fc72f361a047abe2802a386303eb52ee2",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/hiface/chip.h",
+  "human_readable_source": " \n \n\n#ifndef HIFACE_CHIP_H\n#define HIFACE_CHIP_H\n\n#include <linux/usb.h>\n#include <sound/core.h>\n\nstruct pcm_runtime;\n\nstruct hiface_chip {\n\tstruct usb_device *dev;\n\tstruct snd_card *card;\n\tstruct pcm_runtime *pcm;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hisi-reboot.c",
+  "hash_id": "30085f4c9b448f41e5ba6a5cf9b914549db42d777f00b603f3bba11c6f9b67b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/power/reset/hisi-reboot.c",
+  "human_readable_source": "\n \n\n#include <linux/delay.h>\n#include <linux/io.h>\n#include <linux/module.h>\n#include <linux/notifier.h>\n#include <linux/of_address.h>\n#include <linux/platform_device.h>\n#include <linux/reboot.h>\n\n#include <asm/proc-fns.h>\n\nstatic void __iomem *base;\nstatic u32 reboot_offset;\n\nstatic int hisi_restart_handler(struct notifier_block *this,\n\t\t\t\tunsigned long mode, void *cmd)\n{\n\twritel_relaxed(0xdeadbeef, base + reboot_offset);\n\n\twhile (1)\n\t\tcpu_do_idle();\n\n\treturn NOTIFY_DONE;\n}\n\nstatic struct notifier_block hisi_restart_nb = {\n\t.notifier_call = hisi_restart_handler,\n\t.priority = 128,\n};\n\nstatic int hisi_reboot_probe(struct platform_device *pdev)\n{\n\tstruct device_node *np = pdev->dev.of_node;\n\tint err;\n\n\tbase = of_iomap(np, 0);\n\tif (!base) {\n\t\tWARN(1, \"failed to map base address\");\n\t\treturn -ENODEV;\n\t}\n\n\tif (of_property_read_u32(np, \"reboot-offset\", &reboot_offset) < 0) {\n\t\tpr_err(\"failed to find reboot-offset property\\n\");\n\t\tiounmap(base);\n\t\treturn -EINVAL;\n\t}\n\n\terr = register_restart_handler(&hisi_restart_nb);\n\tif (err) {\n\t\tdev_err(&pdev->dev, \"cannot register restart handler (err=%d)\\n\",\n\t\t\terr);\n\t\tiounmap(base);\n\t}\n\n\treturn err;\n}\n\nstatic const struct of_device_id hisi_reboot_of_match[] = {\n\t{ .compatible = \"hisilicon,sysctrl\" },\n\t{}\n};\nMODULE_DEVICE_TABLE(of, hisi_reboot_of_match);\n\nstatic struct platform_driver hisi_reboot_driver = {\n\t.probe = hisi_reboot_probe,\n\t.driver = {\n\t\t.name = \"hisi-reboot\",\n\t\t.of_match_table = hisi_reboot_of_match,\n\t},\n};\nmodule_platform_driver(hisi_reboot_driver);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

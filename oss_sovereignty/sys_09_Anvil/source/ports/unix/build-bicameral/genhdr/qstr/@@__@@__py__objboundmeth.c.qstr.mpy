@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objboundmeth.c.qstr",
+  "hash_id": "826bf1410b27d7ebd03ce2a71f9de21c00f4170ba421eb7efa6a2ccb9e673cc9",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objboundmeth.c.qstr",
+  "human_readable_source": "Q(bound_method)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

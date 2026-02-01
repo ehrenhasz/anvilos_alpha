@@ -1,0 +1,9 @@
+{
+  "module_name": "mmu.c",
+  "hash_id": "ae4f00477bb6649f272b906605d34e2faa5b65818898a72a9cd856d4d62d3b17",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/xen/mmu.c",
+  "human_readable_source": "\n\n#include <linux/pfn.h>\n#include <asm/xen/page.h>\n#include <asm/xen/hypercall.h>\n#include <xen/interface/memory.h>\n\n#include \"multicalls.h\"\n#include \"mmu.h\"\n\nunsigned long arbitrary_virt_to_mfn(void *vaddr)\n{\n\txmaddr_t maddr = arbitrary_virt_to_machine(vaddr);\n\n\treturn PFN_DOWN(maddr.maddr);\n}\n\nxmaddr_t arbitrary_virt_to_machine(void *vaddr)\n{\n\tunsigned long address = (unsigned long)vaddr;\n\tunsigned int level;\n\tpte_t *pte;\n\tunsigned offset;\n\n\t \n\tif (virt_addr_valid(vaddr))\n\t\treturn virt_to_machine(vaddr);\n\n\t \n\n\tpte = lookup_address(address, &level);\n\tBUG_ON(pte == NULL);\n\toffset = address & ~PAGE_MASK;\n\treturn XMADDR(((phys_addr_t)pte_mfn(*pte) << PAGE_SHIFT) + offset);\n}\nEXPORT_SYMBOL_GPL(arbitrary_virt_to_machine);\n\n \nint xen_unmap_domain_gfn_range(struct vm_area_struct *vma,\n\t\t\t       int nr, struct page **pages)\n{\n\tif (xen_feature(XENFEAT_auto_translated_physmap))\n\t\treturn xen_xlate_unmap_gfn_range(vma, nr, pages);\n\n\tif (!pages)\n\t\treturn 0;\n\n\treturn -EINVAL;\n}\nEXPORT_SYMBOL_GPL(xen_unmap_domain_gfn_range);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

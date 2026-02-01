@@ -1,0 +1,9 @@
+{
+  "module_name": "submit.h",
+  "hash_id": "a1ae9362c30af04a134dd5eccf31688621ec9faaad3a65f910ed488e475400d2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tegra/submit.h",
+  "human_readable_source": " \n \n\n#ifndef _TEGRA_DRM_UAPI_SUBMIT_H\n#define _TEGRA_DRM_UAPI_SUBMIT_H\n\nstruct tegra_drm_used_mapping {\n\tstruct tegra_drm_mapping *mapping;\n\tu32 flags;\n};\n\nstruct tegra_drm_submit_data {\n\tstruct tegra_drm_used_mapping *used_mappings;\n\tu32 num_used_mappings;\n};\n\nint tegra_drm_fw_validate(struct tegra_drm_client *client, u32 *data, u32 start,\n\t\t\t  u32 words, struct tegra_drm_submit_data *submit,\n\t\t\t  u32 *job_class);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

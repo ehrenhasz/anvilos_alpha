@@ -1,0 +1,9 @@
+{
+  "module_name": "TREE01",
+  "hash_id": "e8ac58b9b5fc91d13c2faad7c82f388de548869d6a328468d3c2e103ee84d29b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/TREE01",
+  "human_readable_source": "CONFIG_SMP=y\nCONFIG_PREEMPT_NONE=n\nCONFIG_PREEMPT_VOLUNTARY=n\nCONFIG_PREEMPT=y\n#CHECK#CONFIG_PREEMPT_RCU=y\nCONFIG_HZ_PERIODIC=n\nCONFIG_NO_HZ_IDLE=y\nCONFIG_NO_HZ_FULL=n\nCONFIG_RCU_TRACE=y\nCONFIG_HOTPLUG_CPU=y\nCONFIG_MAXSMP=y\nCONFIG_CPUMASK_OFFSTACK=y\nCONFIG_RCU_NOCB_CPU=y\nCONFIG_DEBUG_LOCK_ALLOC=n\nCONFIG_RCU_BOOST=n\nCONFIG_DEBUG_OBJECTS_RCU_HEAD=n\nCONFIG_RCU_EXPERT=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

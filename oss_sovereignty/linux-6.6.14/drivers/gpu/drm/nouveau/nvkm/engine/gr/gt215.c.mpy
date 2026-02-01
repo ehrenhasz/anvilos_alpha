@@ -1,0 +1,9 @@
+{
+  "module_name": "gt215.c",
+  "hash_id": "677dcdb1821fc18533f8d5f1e0861464ac443a227e683ea94d900cc88b55b485",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/gr/gt215.c",
+  "human_readable_source": " \n#include \"nv50.h\"\n\n#include <nvif/class.h>\n\nstatic const struct nvkm_gr_func\ngt215_gr = {\n\t.init = nv50_gr_init,\n\t.intr = nv50_gr_intr,\n\t.chan_new = nv50_gr_chan_new,\n\t.tlb_flush = g84_gr_tlb_flush,\n\t.units = nv50_gr_units,\n\t.sclass = {\n\t\t{ -1, -1, NV_NULL_CLASS, &nv50_gr_object },\n\t\t{ -1, -1, NV50_TWOD, &nv50_gr_object },\n\t\t{ -1, -1, NV50_MEMORY_TO_MEMORY_FORMAT, &nv50_gr_object },\n\t\t{ -1, -1, NV50_COMPUTE, &nv50_gr_object },\n\t\t{ -1, -1, GT214_TESLA, &nv50_gr_object },\n\t\t{ -1, -1, GT214_COMPUTE, &nv50_gr_object },\n\t\t{}\n\t}\n};\n\nint\ngt215_gr_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_gr **pgr)\n{\n\treturn nv50_gr_new_(&gt215_gr, device, type, inst, pgr);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

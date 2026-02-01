@@ -1,0 +1,9 @@
+{
+  "module_name": "cdx_controller.h",
+  "hash_id": "3b13777a5695d7b430a70d78935dd2dd10a6c92ac6558dc55b70fdf348e5a387",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cdx/controller/cdx_controller.h",
+  "human_readable_source": " \n\n#ifndef _CDX_CONTROLLER_H_\n#define _CDX_CONTROLLER_H_\n\n#include <linux/cdx/cdx_bus.h>\n#include \"mcdi_functions.h\"\n\nvoid cdx_rpmsg_post_probe(struct cdx_controller *cdx);\n\nvoid cdx_rpmsg_pre_remove(struct cdx_controller *cdx);\n\nint cdx_rpmsg_send(struct cdx_mcdi *cdx_mcdi,\n\t\t   const struct cdx_dword *hdr, size_t hdr_len,\n\t\t   const struct cdx_dword *sdu, size_t sdu_len);\n\nvoid cdx_rpmsg_read_resp(struct cdx_mcdi *cdx_mcdi,\n\t\t\t struct cdx_dword *outbuf, size_t offset,\n\t\t\t size_t outlen);\n\nint cdx_setup_rpmsg(struct platform_device *pdev);\n\nvoid cdx_destroy_rpmsg(struct platform_device *pdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nv36.c",
+  "hash_id": "448761add4a5658d17ecd436d3d907507b1dcca44fe4026f6a28253a4d3e6180",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/nv36.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"ram.h\"\n\nstatic void\nnv36_fb_tile_comp(struct nvkm_fb *fb, int i, u32 size, u32 flags,\n\t\t  struct nvkm_fb_tile *tile)\n{\n\tu32 tiles = DIV_ROUND_UP(size, 0x40);\n\tu32 tags  = round_up(tiles / fb->ram->parts, 0x40);\n\tif (!nvkm_mm_head(&fb->tags.mm, 0, 1, tags, tags, 1, &tile->tag)) {\n\t\tif (flags & 2) tile->zcomp |= 0x10000000;  \n\t\telse           tile->zcomp |= 0x20000000;  \n\t\ttile->zcomp |= ((tile->tag->offset           ) >> 6);\n\t\ttile->zcomp |= ((tile->tag->offset + tags - 1) >> 6) << 14;\n#ifdef __BIG_ENDIAN\n\t\ttile->zcomp |= 0x80000000;\n#endif\n\t}\n}\n\nstatic const struct nvkm_fb_func\nnv36_fb = {\n\t.tags = nv20_fb_tags,\n\t.init = nv30_fb_init,\n\t.tile.regions = 8,\n\t.tile.init = nv30_fb_tile_init,\n\t.tile.comp = nv36_fb_tile_comp,\n\t.tile.fini = nv20_fb_tile_fini,\n\t.tile.prog = nv20_fb_tile_prog,\n\t.ram_new = nv20_ram_new,\n};\n\nint\nnv36_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn nvkm_fb_new_(&nv36_fb, device, type, inst, pfb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

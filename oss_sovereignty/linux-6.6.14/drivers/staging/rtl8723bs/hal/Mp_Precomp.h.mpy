@@ -1,0 +1,9 @@
+{
+  "module_name": "Mp_Precomp.h",
+  "hash_id": "6a63b68a5992ac8f558a5b00e8b3e5e0b64d29620efc4e634be47734a2c5f70c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/hal/Mp_Precomp.h",
+  "human_readable_source": " \n \n#ifndef __MP_PRECOMP_H__\n#define __MP_PRECOMP_H__\n\n#include <drv_types.h>\n#include <hal_data.h>\n\n#define BT_TMP_BUF_SIZE\t100\n\n#ifdef bEnable\n#undef bEnable\n#endif\n\n#include \"HalBtcOutSrc.h\"\n#include \"HalBtc8723b1Ant.h\"\n#include \"HalBtc8723b2Ant.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

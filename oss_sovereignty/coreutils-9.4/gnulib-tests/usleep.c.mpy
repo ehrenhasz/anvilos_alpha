@@ -1,0 +1,9 @@
+{
+  "module_name": "usleep.c",
+  "hash_id": "0f962bdbbef2113a958844a5e3ee7b2c7c6834331efc730c57a073b67f23d8b1",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/usleep.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <unistd.h>\n\n#include <errno.h>\n\n#if defined _WIN32 && ! defined __CYGWIN__\n# define WIN32_LEAN_AND_MEAN   \n# include <windows.h>\n#endif\n\n#ifndef HAVE_USLEEP\n# define HAVE_USLEEP 0\n#endif\n\n \n\nint\nusleep (useconds_t micro)\n#undef usleep\n{\n#if defined _WIN32 && ! defined __CYGWIN__\n  unsigned int milliseconds = micro / 1000;\n  if (sizeof milliseconds < sizeof micro && micro / 1000 != milliseconds)\n    {\n      errno = EINVAL;\n      return -1;\n    }\n  if (micro % 1000)\n    milliseconds++;\n  Sleep (milliseconds);\n  return 0;\n#else\n  unsigned int seconds = micro / 1000000;\n  if (sizeof seconds < sizeof micro && micro / 1000000 != seconds)\n    {\n      errno = EINVAL;\n      return -1;\n    }\n  if (!HAVE_USLEEP && micro % 1000000)\n    seconds++;\n  while ((seconds = sleep (seconds)) != 0);\n\n# if !HAVE_USLEEP\n#  define usleep(x) 0\n# endif\n  return usleep (micro % 1000000);\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

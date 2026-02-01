@@ -1,0 +1,9 @@
+{
+  "module_name": "pr.h",
+  "hash_id": "cea8f0668ef0edfb3e2f2b5586c8c870b00fd05face01088dbff76dfd95bd5df",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/pr.h",
+  "human_readable_source": " \n#ifndef _UAPI_PR_H\n#define _UAPI_PR_H\n\n#include <linux/types.h>\n\nenum pr_status {\n\tPR_STS_SUCCESS\t\t\t= 0x0,\n\t \n\t \n\tPR_STS_IOERR\t\t\t= 0x2,\n\tPR_STS_RESERVATION_CONFLICT\t= 0x18,\n\t \n\tPR_STS_RETRY_PATH_FAILURE\t= 0xe0000,\n\t \n\tPR_STS_PATH_FAST_FAILED\t\t= 0xf0000,\n\t \n\tPR_STS_PATH_FAILED\t\t= 0x10000,\n};\n\nenum pr_type {\n\tPR_WRITE_EXCLUSIVE\t\t= 1,\n\tPR_EXCLUSIVE_ACCESS\t\t= 2,\n\tPR_WRITE_EXCLUSIVE_REG_ONLY\t= 3,\n\tPR_EXCLUSIVE_ACCESS_REG_ONLY\t= 4,\n\tPR_WRITE_EXCLUSIVE_ALL_REGS\t= 5,\n\tPR_EXCLUSIVE_ACCESS_ALL_REGS\t= 6,\n};\n\nstruct pr_reservation {\n\t__u64\tkey;\n\t__u32\ttype;\n\t__u32\tflags;\n};\n\nstruct pr_registration {\n\t__u64\told_key;\n\t__u64\tnew_key;\n\t__u32\tflags;\n\t__u32\t__pad;\n};\n\nstruct pr_preempt {\n\t__u64\told_key;\n\t__u64\tnew_key;\n\t__u32\ttype;\n\t__u32\tflags;\n};\n\nstruct pr_clear {\n\t__u64\tkey;\n\t__u32\tflags;\n\t__u32\t__pad;\n};\n\n#define PR_FL_IGNORE_KEY\t(1 << 0)\t \n\n#define IOC_PR_REGISTER\t\t_IOW('p', 200, struct pr_registration)\n#define IOC_PR_RESERVE\t\t_IOW('p', 201, struct pr_reservation)\n#define IOC_PR_RELEASE\t\t_IOW('p', 202, struct pr_reservation)\n#define IOC_PR_PREEMPT\t\t_IOW('p', 203, struct pr_preempt)\n#define IOC_PR_PREEMPT_ABORT\t_IOW('p', 204, struct pr_preempt)\n#define IOC_PR_CLEAR\t\t_IOW('p', 205, struct pr_clear)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

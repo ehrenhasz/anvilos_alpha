@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,wcd9335.h",
+  "hash_id": "5c65cc906a9b772f6ec00b887ab86176c948738ef0e1d768e4fdbabc2252f786",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/sound/qcom,wcd9335.h",
+  "human_readable_source": " \n\n#ifndef __DT_SOUND_QCOM_WCD9335_H\n#define __DT_SOUND_QCOM_WCD9335_H\n\n#define AIF1_PB                 0\n#define AIF1_CAP                1\n#define AIF2_PB                 2\n#define AIF2_CAP                3\n#define AIF3_PB                 4\n#define AIF3_CAP                5\n#define AIF4_PB                 6\n#define NUM_CODEC_DAIS          7\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

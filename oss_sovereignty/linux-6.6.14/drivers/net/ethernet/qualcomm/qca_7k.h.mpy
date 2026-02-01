@@ -1,0 +1,9 @@
+{
+  "module_name": "qca_7k.h",
+  "hash_id": "e92c5d10001c5044fb89db57236d2264abc566409bf353ef068b238f983e6e6b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qualcomm/qca_7k.h",
+  "human_readable_source": " \n\n \n\n#ifndef _QCA_7K_H\n#define _QCA_7K_H\n\n#include <linux/types.h>\n\n#include \"qca_spi.h\"\n\n#define QCA7K_SPI_READ     (1 << 15)\n#define QCA7K_SPI_WRITE    (0 << 15)\n#define QCA7K_SPI_INTERNAL (1 << 14)\n#define QCA7K_SPI_EXTERNAL (0 << 14)\n\n#define QCASPI_CMD_LEN    2\n#define QCASPI_HW_PKT_LEN 4\n#define QCASPI_HW_BUF_LEN 0xC5B\n\n \n#define SPI_REG_BFR_SIZE        0x0100\n#define SPI_REG_WRBUF_SPC_AVA   0x0200\n#define SPI_REG_RDBUF_BYTE_AVA  0x0300\n#define SPI_REG_SPI_CONFIG      0x0400\n#define SPI_REG_SPI_STATUS      0x0500\n#define SPI_REG_INTR_CAUSE      0x0C00\n#define SPI_REG_INTR_ENABLE     0x0D00\n#define SPI_REG_RDBUF_WATERMARK 0x1200\n#define SPI_REG_WRBUF_WATERMARK 0x1300\n#define SPI_REG_SIGNATURE       0x1A00\n#define SPI_REG_ACTION_CTRL     0x1B00\n\n \n#define QCASPI_SLAVE_RESET_BIT  BIT(6)\n\n \n#define SPI_INT_WRBUF_BELOW_WM  BIT(10)\n#define SPI_INT_CPU_ON          BIT(6)\n#define SPI_INT_ADDR_ERR        BIT(3)\n#define SPI_INT_WRBUF_ERR       BIT(2)\n#define SPI_INT_RDBUF_ERR       BIT(1)\n#define SPI_INT_PKT_AVLBL       BIT(0)\n\nvoid qcaspi_spi_error(struct qcaspi *qca);\nint qcaspi_read_register(struct qcaspi *qca, u16 reg, u16 *result);\nint qcaspi_write_register(struct qcaspi *qca, u16 reg, u16 value, int retry);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

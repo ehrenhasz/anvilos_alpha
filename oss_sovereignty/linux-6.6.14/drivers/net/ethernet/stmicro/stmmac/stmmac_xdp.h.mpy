@@ -1,0 +1,9 @@
+{
+  "module_name": "stmmac_xdp.h",
+  "hash_id": "4fe3feb171186e956a16b17fd5a657afe370ca9c6a01a5302e84a18c0b007cc0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/stmicro/stmmac/stmmac_xdp.h",
+  "human_readable_source": " \n \n\n#ifndef _STMMAC_XDP_H_\n#define _STMMAC_XDP_H_\n\n#define STMMAC_MAX_RX_BUF_SIZE(num)\t(((num) * PAGE_SIZE) - XDP_PACKET_HEADROOM)\n#define STMMAC_RX_DMA_ATTR\t(DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_WEAK_ORDERING)\n\nint stmmac_xdp_setup_pool(struct stmmac_priv *priv, struct xsk_buff_pool *pool,\n\t\t\t  u16 queue);\nint stmmac_xdp_set_prog(struct stmmac_priv *priv, struct bpf_prog *prog,\n\t\t\tstruct netlink_ext_ack *extack);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

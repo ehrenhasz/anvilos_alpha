@@ -1,0 +1,9 @@
+{
+  "module_name": "asoc-imx-ssi.h",
+  "hash_id": "3cffed97e1cc5541f089f46ccce57068012393d39de99959c7f8a88ef933a7de",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/asoc-imx-ssi.h",
+  "human_readable_source": " \n#ifndef __MACH_SSI_H\n#define __MACH_SSI_H\n\nstruct snd_ac97;\n\nextern unsigned char imx_ssi_fiq_start, imx_ssi_fiq_end;\nextern unsigned long imx_ssi_fiq_base, imx_ssi_fiq_tx_buffer, imx_ssi_fiq_rx_buffer;\n\nstruct imx_ssi_platform_data {\n\tunsigned int flags;\n#define IMX_SSI_DMA            (1 << 0)\n#define IMX_SSI_USE_AC97       (1 << 1)\n#define IMX_SSI_NET            (1 << 2)\n#define IMX_SSI_SYN            (1 << 3)\n#define IMX_SSI_USE_I2S_SLAVE  (1 << 4)\n\tvoid (*ac97_reset) (struct snd_ac97 *ac97);\n\tvoid (*ac97_warm_reset)(struct snd_ac97 *ac97);\n};\n\nextern int mxc_set_irq_fiq(unsigned int irq, unsigned int type);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

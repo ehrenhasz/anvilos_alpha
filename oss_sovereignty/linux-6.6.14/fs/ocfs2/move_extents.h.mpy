@@ -1,0 +1,9 @@
+{
+  "module_name": "move_extents.h",
+  "hash_id": "a280678864770f283209a13c482c0af02b28c28bae551986b1180d51c8923aa2",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/move_extents.h",
+  "human_readable_source": " \n \n#ifndef OCFS2_MOVE_EXTENTS_H\n#define OCFS2_MOVE_EXTENTS_H\n\nint ocfs2_ioctl_move_extents(struct file *filp,  void __user *argp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "674a34b21a26ee505eaabc25fd106292fc2f7f230aec18d70fc84523503bf41e",
+  "original_prompt": "Ingested from linux-6.6.14/fs/efivarfs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig EFIVAR_FS\n\ttristate \"EFI Variable filesystem\"\n\tdepends on EFI\n\tdefault m\n\thelp\n\t  efivarfs is a replacement filesystem for the old EFI\n\t  variable support via sysfs, as it doesn't suffer from the\n\t  same 1024-byte variable size limit.\n\n\t  To compile this file system support as a module, choose M\n\t  here. The module will be called efivarfs.\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

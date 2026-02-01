@@ -1,0 +1,9 @@
+{
+  "module_name": "psize.c",
+  "hash_id": "fda637f0a4c11efe6c438f8b62aab943889f5a487fe574d439b99593378df4ac",
+  "original_prompt": "Ingested from bash-5.2.21/builtins/psize.c",
+  "human_readable_source": " \n\n \n\n \n#include <config.h>\n\n#if defined (HAVE_UNISTD_H)\n#  ifdef _MINIX\n#    include <sys/types.h>\n#  endif\n#  include <unistd.h>\n#endif\n\n#include <stdio.h>\n#ifndef _MINIX\n#include \"../bashtypes.h\"\n#endif\n#include <signal.h>\n#include <errno.h>\n\n#include \"../command.h\"\n#include \"../general.h\"\n#include \"../sig.h\"\n\n#ifndef errno\nextern int errno;\n#endif\n\nint nw;\n\nsighandler\nsigpipe (sig)\n     int sig;\n{\n  fprintf (stderr, \"%d\\n\", nw);\n  exit (0);\n}\n\nint\nmain (argc, argv)\n     int argc;\n     char **argv;\n{\n  char buf[128];\n  register int i;\n\n  for (i = 0; i < 128; i++)\n    buf[i] = ' ';\n\n  signal (SIGPIPE, sigpipe);\n\n  nw = 0;\n  for (;;)\n    {\n      int n;\n      n = write (1, buf, 128);\n      nw += n;\n    }\n  return (0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

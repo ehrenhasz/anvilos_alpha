@@ -1,0 +1,9 @@
+{
+  "module_name": "barrier_64.h",
+  "hash_id": "6311ca25e6a2c0232aa86c51beffc7113d75fda8cb421f2c771816903f2ea542",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/sparc/include/asm/barrier_64.h",
+  "human_readable_source": " \n#ifndef __TOOLS_LINUX_SPARC64_BARRIER_H\n#define __TOOLS_LINUX_SPARC64_BARRIER_H\n\n \n#define membar_safe(type) \\\ndo {\t__asm__ __volatile__(\"ba,pt\t%%xcc, 1f\\n\\t\" \\\n\t\t\t     \" membar\t\" type \"\\n\" \\\n\t\t\t     \"1:\\n\" \\\n\t\t\t     : : : \"memory\"); \\\n} while (0)\n\n \n#define mb()\tmembar_safe(\"#StoreLoad\")\n#define rmb()\t__asm__ __volatile__(\"\":::\"memory\")\n#define wmb()\t__asm__ __volatile__(\"\":::\"memory\")\n\n#define smp_store_release(p, v)\t\t\t\\\ndo {\t\t\t\t\t\t\\\n\tbarrier();\t\t\t\t\\\n\tWRITE_ONCE(*p, v);\t\t\t\\\n} while (0)\n\n#define smp_load_acquire(p)\t\t\t\\\n({\t\t\t\t\t\t\\\n\ttypeof(*p) ___p1 = READ_ONCE(*p);\t\\\n\tbarrier();\t\t\t\t\\\n\t___p1;\t\t\t\t\t\\\n})\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

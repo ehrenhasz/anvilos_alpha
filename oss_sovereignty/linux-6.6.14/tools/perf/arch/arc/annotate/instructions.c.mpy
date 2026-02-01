@@ -1,0 +1,9 @@
+{
+  "module_name": "instructions.c",
+  "hash_id": "5fd47649a6749feb9e0844569182fa9cdce919ce8b8ef5344c18b3480edb12e9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arc/annotate/instructions.c",
+  "human_readable_source": "\n#include <linux/compiler.h>\n\nstatic int arc__annotate_init(struct arch *arch, char *cpuid __maybe_unused)\n{\n\tarch->initialized = true;\n\tarch->objdump.comment_char = ';';\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

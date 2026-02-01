@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b827b9062750849582215ca221f4f6e9b4800e05658dbc98b27ae52b26a8ad7e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/isdn/hardware/mISDN/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the modular ISDN hardware drivers\n#\n#\n\nobj-$(CONFIG_MISDN_HFCPCI) += hfcpci.o\nobj-$(CONFIG_MISDN_HFCMULTI) += hfcmulti.o\nobj-$(CONFIG_MISDN_HFCUSB) += hfcsusb.o\nobj-$(CONFIG_MISDN_AVMFRITZ) += avmfritz.o\nobj-$(CONFIG_MISDN_SPEEDFAX) += speedfax.o\nobj-$(CONFIG_MISDN_INFINEON) += mISDNinfineon.o\nobj-$(CONFIG_MISDN_W6692) += w6692.o\nobj-$(CONFIG_MISDN_NETJET) += netjet.o\n# chip modules\nobj-$(CONFIG_MISDN_IPAC) += mISDNipac.o\nobj-$(CONFIG_MISDN_ISAR) += mISDNisar.o\n\nobj-$(CONFIG_MISDN_HDLC) += isdnhdlc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

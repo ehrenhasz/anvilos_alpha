@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "6494ad6d2ce6d54c78b7e714853b815020942ce1845a82cd29bf2596a3b9eec7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx4/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Mellanox driver configuration\n#\n\nconfig MLX4_EN\n\ttristate \"Mellanox Technologies 1/10/40Gbit Ethernet support\"\n\tdepends on PCI && NETDEVICES && ETHERNET && INET\n\tdepends on PTP_1588_CLOCK_OPTIONAL\n\tselect MLX4_CORE\n\thelp\n\t  This driver supports Mellanox Technologies ConnectX Ethernet\n\t  devices.\n\nconfig MLX4_EN_DCB\n\tbool \"Data Center Bridging (DCB) Support\"\n\tdefault y\n\tdepends on MLX4_EN && DCB\n\thelp\n\t  Say Y here if you want to use Data Center Bridging (DCB) in the\n\t  driver.\n\t  If set to N, will not be able to configure QoS and ratelimit attributes.\n\t  This flag is depended on the kernel's DCB support.\n\n\t  If unsure, set to Y\n\nconfig MLX4_CORE\n\ttristate\n\tdepends on PCI\n\tselect AUXILIARY_BUS\n\tselect NET_DEVLINK\n\tdefault n\n\nconfig MLX4_DEBUG\n\tbool \"Verbose debugging output\" if (MLX4_CORE && EXPERT)\n\tdepends on MLX4_CORE\n\tdefault y\n\thelp\n\t  This option causes debugging code to be compiled into the\n\t  mlx4_core driver.  The output can be turned on via the\n\t  debug_level module parameter (which can also be set after\n\t  the driver is loaded through sysfs).\n\nconfig MLX4_CORE_GEN2\n\tbool \"Support for old gen2 Mellanox PCI IDs\" if (MLX4_CORE)\n\tdepends on MLX4_CORE\n\tdefault y\n\thelp\n\t  Say Y here if you want to use old gen2 Mellanox devices in the\n\t  driver.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "55b4ee634302f9f7ab733c33baaa52f68ef99073e251a7eec334808e7f7b0f56",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/intel/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_VIDEO_PXA27x) += pxa_camera.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

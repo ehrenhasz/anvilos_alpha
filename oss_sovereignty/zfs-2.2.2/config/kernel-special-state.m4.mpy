@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-special-state.m4",
+  "hash_id": "d41021904f6987de905f6d4b4a7f58869ab11577012982f0f7aeb7a3562d6a31",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-special-state.m4",
+  "human_readable_source": "dnl #\ndnl # 4.17 API change\ndnl # Added set_special_state() function\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_SET_SPECIAL_STATE], [\n\tZFS_LINUX_TEST_SRC([set_special_state], [\n\t\t#include <linux/sched.h>\n\t],[\n\t\tset_special_state(TASK_STOPPED);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_SET_SPECIAL_STATE], [\n\tAC_MSG_CHECKING([whether set_special_state() exists])\n\tZFS_LINUX_TEST_RESULT([set_special_state], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_SET_SPECIAL_STATE, 1, [set_special_state() exists])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

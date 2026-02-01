@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3543005272528b690c9307b136b41c12ce24dd1cd73ae82c099d0bb52cf1e015",
+  "original_prompt": "Ingested from linux-6.6.14/sound/ppc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-powermac-objs := powermac.o pmac.o awacs.o burgundy.o daca.o tumbler.o keywest.o beep.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_POWERMAC)\t+= snd-powermac.o\nobj-$(CONFIG_SND_PS3)\t\t+= snd_ps3.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

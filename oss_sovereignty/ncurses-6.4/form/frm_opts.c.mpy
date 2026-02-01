@@ -1,0 +1,9 @@
+{
+  "module_name": "frm_opts.c",
+  "hash_id": "dbad403978b5bbf0e9a72c274a8a69e5e694901aff0f962de6707201f822feba",
+  "original_prompt": "Ingested from ncurses-6.4/form/frm_opts.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: frm_opts.c,v 1.21 2021/06/17 21:20:30 tom Exp $\")\n\n \nFORM_EXPORT(int)\nset_form_opts(FORM *form, Form_Options opts)\n{\n  T((T_CALLED(\"set_form_opts(%p,%d)\"), (void *)form, opts));\n\n  opts &= (Form_Options)ALL_FORM_OPTS;\n  if ((unsigned)opts & ~ALL_FORM_OPTS)\n    RETURN(E_BAD_ARGUMENT);\n  else\n    {\n      Normalize_Form(form)->opts = opts;\n      RETURN(E_OK);\n    }\n}\n\n \nFORM_EXPORT(Form_Options)\nform_opts(const FORM *form)\n{\n  T((T_CALLED(\"form_opts(%p)\"), (const void *)form));\n  returnCode((Form_Options)((unsigned)Normalize_Form(form)->opts & ALL_FORM_OPTS));\n}\n\n \nFORM_EXPORT(int)\nform_opts_on(FORM *form, Form_Options opts)\n{\n  T((T_CALLED(\"form_opts_on(%p,%d)\"), (void *)form, opts));\n\n  opts &= (Form_Options)ALL_FORM_OPTS;\n  if ((unsigned)opts & ~ALL_FORM_OPTS)\n    RETURN(E_BAD_ARGUMENT);\n  else\n    {\n      Normalize_Form(form)->opts |= opts;\n      RETURN(E_OK);\n    }\n}\n\n \nFORM_EXPORT(int)\nform_opts_off(FORM *form, Form_Options opts)\n{\n  T((T_CALLED(\"form_opts_off(%p,%d)\"), (void *)form, opts));\n\n  opts &= (Form_Options)ALL_FORM_OPTS;\n  if ((unsigned)opts & ~ALL_FORM_OPTS)\n    RETURN(E_BAD_ARGUMENT);\n  else\n    {\n      Normalize_Form(form)->opts &= ~opts;\n      RETURN(E_OK);\n    }\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

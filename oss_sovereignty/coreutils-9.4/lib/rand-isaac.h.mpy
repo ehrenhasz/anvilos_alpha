@@ -1,0 +1,9 @@
+{
+  "module_name": "rand-isaac.h",
+  "hash_id": "92f2a8e458fdc1ee41c9699bceb9f1063fc9b79b043abb48261e2b065eff843c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/rand-isaac.h",
+  "human_readable_source": " \n\n#ifndef _GL_RAND_ISAAC_H\n#define _GL_RAND_ISAAC_H\n\n#include <stddef.h>\n#include <stdint.h>\n\n \n#ifndef ISAAC_BITS_LOG\n #if SIZE_MAX >> 31 >> 31 < 3  \n  #define ISAAC_BITS_LOG 5\n #else\n  #define ISAAC_BITS_LOG 6\n #endif\n#endif\n\n \n#define ISAAC_BITS (1 << ISAAC_BITS_LOG)\n\n#if ISAAC_BITS == 32\n  typedef uint_least32_t isaac_word;\n#else\n  typedef uint_least64_t isaac_word;\n#endif\n\n \n#define ISAAC_WORDS_LOG 8\n#define ISAAC_WORDS (1 << ISAAC_WORDS_LOG)\n#define ISAAC_BYTES (ISAAC_WORDS * sizeof (isaac_word))\n\n \nstruct isaac_state\n  {\n    isaac_word m[ISAAC_WORDS];\t \n    isaac_word a, b, c;\t\t \n  };\n\nvoid isaac_seed (struct isaac_state *) _GL_ATTRIBUTE_NONNULL ();\nvoid isaac_refill (struct isaac_state *, isaac_word[ISAAC_WORDS])\n  _GL_ATTRIBUTE_NONNULL ();\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

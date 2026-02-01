@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "eff75a5eeb0777bb60406768ee475733b2bda26f31b90198d3df6fcb70ed555d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/dpaa2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Freescale DPAA2 Ethernet controller\n#\n\nobj-$(CONFIG_FSL_DPAA2_ETH)\t\t+= fsl-dpaa2-eth.o\nobj-$(CONFIG_FSL_DPAA2_PTP_CLOCK)\t+= fsl-dpaa2-ptp.o\nobj-$(CONFIG_FSL_DPAA2_SWITCH)\t\t+= fsl-dpaa2-switch.o\n\nfsl-dpaa2-eth-objs\t:= dpaa2-eth.o dpaa2-ethtool.o dpni.o dpaa2-mac.o dpmac.o dpaa2-eth-devlink.o dpaa2-xsk.o\nfsl-dpaa2-eth-${CONFIG_FSL_DPAA2_ETH_DCB} += dpaa2-eth-dcb.o\nfsl-dpaa2-eth-${CONFIG_DEBUG_FS} += dpaa2-eth-debugfs.o\nfsl-dpaa2-ptp-objs\t:= dpaa2-ptp.o dprtc.o\nfsl-dpaa2-switch-objs\t:= dpaa2-switch.o dpaa2-switch-ethtool.o dpsw.o dpaa2-switch-flower.o dpaa2-mac.o dpmac.o\n\n# Needed by the tracing framework\nCFLAGS_dpaa2-eth.o := -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

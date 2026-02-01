@@ -1,0 +1,9 @@
+{
+  "module_name": "vxfs_extern.h",
+  "hash_id": "d0db016a616a5d6c0c5a56b08572dbe7b202beeb4d1f19f6a4bb66aed278194a",
+  "original_prompt": "Ingested from linux-6.6.14/fs/freevxfs/vxfs_extern.h",
+  "human_readable_source": " \n \n#ifndef _VXFS_EXTERN_H_\n#define _VXFS_EXTERN_H_\n\n \n\n\nstruct kmem_cache;\nstruct super_block;\nstruct vxfs_inode_info;\nstruct inode;\n\n\n \nextern daddr_t\t\t\tvxfs_bmap1(struct inode *, long);\n\n \nextern int\t\t\tvxfs_read_fshead(struct super_block *);\n\n \nextern const struct address_space_operations vxfs_immed_aops;\nextern void\t\t\tvxfs_dumpi(struct vxfs_inode_info *, ino_t);\nextern struct inode\t\t*vxfs_blkiget(struct super_block *, u_long, ino_t);\nextern struct inode\t\t*vxfs_stiget(struct super_block *, ino_t);\nextern struct inode\t\t*vxfs_iget(struct super_block *, ino_t);\nextern void\t\t\tvxfs_evict_inode(struct inode *);\n\n \nextern const struct inode_operations\tvxfs_dir_inode_ops;\nextern const struct file_operations\tvxfs_dir_operations;\n\n \nextern int\t\t\tvxfs_read_olt(struct super_block *, u_long);\n\n \nextern const struct address_space_operations vxfs_aops;\nextern struct page *\t\tvxfs_get_page(struct address_space *, u_long);\nextern void\t\t\tvxfs_put_page(struct page *);\nextern struct buffer_head *\tvxfs_bread(struct inode *, int);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

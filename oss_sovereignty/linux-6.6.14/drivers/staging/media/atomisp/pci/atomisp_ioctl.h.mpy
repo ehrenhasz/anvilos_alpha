@@ -1,0 +1,9 @@
+{
+  "module_name": "atomisp_ioctl.h",
+  "hash_id": "f01d526dcf336e18b3fc77adcc8ba52ed58bbb20a8c0115cafda734c8eb5486e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/atomisp_ioctl.h",
+  "human_readable_source": " \n \n\n#ifndef\t__ATOMISP_IOCTL_H__\n#define\t__ATOMISP_IOCTL_H__\n\n#include \"ia_css.h\"\n\nstruct atomisp_device;\nstruct atomisp_video_pipe;\n\nextern const struct atomisp_format_bridge atomisp_output_fmts[];\n\nconst struct\natomisp_format_bridge *atomisp_get_format_bridge(unsigned int pixelformat);\n\nconst struct\natomisp_format_bridge *atomisp_get_format_bridge_from_mbus(u32 mbus_code);\n\nint atomisp_pipe_check(struct atomisp_video_pipe *pipe, bool streaming_ok);\n\nint atomisp_alloc_css_stat_bufs(struct atomisp_sub_device *asd,\n\t\t\t\tuint16_t stream_id);\n\nint atomisp_start_streaming(struct vb2_queue *vq, unsigned int count);\nvoid atomisp_stop_streaming(struct vb2_queue *vq);\n\nextern const struct v4l2_ioctl_ops atomisp_ioctl_ops;\n\n \nlong atomisp_compat_ioctl32(struct file *file,\n\t\t\t    unsigned int cmd, unsigned long arg);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

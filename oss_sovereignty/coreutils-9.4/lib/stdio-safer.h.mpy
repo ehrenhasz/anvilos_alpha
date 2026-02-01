@@ -1,0 +1,9 @@
+{
+  "module_name": "stdio-safer.h",
+  "hash_id": "8f5d69e6ba34bd99f0c335d9fda68001d25b98aba4d569c215a71aaae1f44af3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/stdio-safer.h",
+  "human_readable_source": " \n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stdio.h>\n\n#if GNULIB_FOPEN_SAFER\nFILE *fopen_safer (char const *, char const *)\n  _GL_ARG_NONNULL ((1, 2)) _GL_ATTRIBUTE_DEALLOC (fclose, 1);\n#endif\n\n#if GNULIB_FREOPEN_SAFER\nFILE *freopen_safer (char const *, char const *, FILE *)\n  _GL_ARG_NONNULL ((2, 3));\n#endif\n\n#if GNULIB_POPEN_SAFER\nFILE *popen_safer (char const *, char const *)\n  _GL_ARG_NONNULL ((1, 2)) _GL_ATTRIBUTE_DEALLOC (pclose, 1);\n#endif\n\n#if GNULIB_TMPFILE_SAFER\nFILE *tmpfile_safer (void)\n  _GL_ATTRIBUTE_DEALLOC (fclose, 1);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

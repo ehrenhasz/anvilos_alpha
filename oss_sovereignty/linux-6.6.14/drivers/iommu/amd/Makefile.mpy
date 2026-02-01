@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3ca08484c1bf07caf6ca428f05528184e35bcfccbf96f8248123773f50c58997",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/amd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_AMD_IOMMU) += iommu.o init.o quirks.o io_pgtable.o io_pgtable_v2.o\nobj-$(CONFIG_AMD_IOMMU_DEBUGFS) += debugfs.o\nobj-$(CONFIG_AMD_IOMMU_V2) += iommu_v2.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

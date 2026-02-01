@@ -1,0 +1,9 @@
+{
+  "module_name": "putty-transfer.sh",
+  "hash_id": "39300ded032d25c792e6bd5c2b46eeb7b6a0e004300110dfc8fb53e331dd1faa",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/putty-transfer.sh",
+  "human_readable_source": "#\t$OpenBSD: putty-transfer.sh,v 1.11 2021/09/01 03:16:06 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"putty transfer data\"\n\nif test \"x$REGRESS_INTEROP_PUTTY\" != \"xyes\" ; then\n\tskip \"putty interop tests not enabled\"\nfi\n\n# Re-enable ssh-rsa on older PuTTY versions.\noldver=\"`${PLINK} --version | awk '/plink: Release/{if ($3<0.76)print \"yes\"}'`\"\nif [ \"x$oldver\" = \"xyes\" ]; then\n\techo \"HostKeyAlgorithms +ssh-rsa\" >> ${OBJ}/sshd_proxy\n\techo \"PubkeyAcceptedKeyTypes +ssh-rsa\" >> ${OBJ}/sshd_proxy\nfi\n\nif [ \"`${SSH} -Q compression`\" = \"none\" ]; then\n\tcomp=\"0\"\nelse\n\tcomp=\"0 1\"\nfi\n\nfor c in $comp; do \n\tverbose \"$tid: compression $c\"\n\trm -f ${COPY}\n\tcp ${OBJ}/.putty/sessions/localhost_proxy \\\n\t    ${OBJ}/.putty/sessions/compression_$c\n\techo \"Compression=$c\" >> ${OBJ}/.putty/sessions/kex_$k\n\tenv HOME=$PWD ${PLINK} -load compression_$c -batch \\\n\t    -i ${OBJ}/putty.rsa2 cat ${DATA} > ${COPY}\n\tif [ $? -ne 0 ]; then\n\t\tfail \"ssh cat $DATA failed\"\n\tfi\n\tcmp ${DATA} ${COPY}\t\t|| fail \"corrupted copy\"\n\n\tfor s in 10 100 1k 32k 64k 128k 256k; do\n\t\ttrace \"compression $c dd-size ${s}\"\n\t\trm -f ${COPY}\n\t\tdd if=$DATA obs=${s} 2> /dev/null | \\\n\t\t\tenv HOME=$PWD ${PLINK} -load compression_$c \\\n\t\t\t    -batch -i ${OBJ}/putty.rsa2 \\\n\t\t\t    \"cat > ${COPY}\"\n\t\tif [ $? -ne 0 ]; then\n\t\t\tfail \"ssh cat $DATA failed\"\n\t\tfi\n\t\tcmp $DATA ${COPY}\t|| fail \"corrupted copy\"\n\tdone\ndone\nrm -f ${COPY}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

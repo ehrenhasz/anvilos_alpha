@@ -1,0 +1,9 @@
+{
+  "module_name": "copy_first_unaligned.c",
+  "hash_id": "8930a50781f72596fa57acfc84804b681bb909e6e6336178a8763ab8ce1baf52",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/alignment/copy_first_unaligned.c",
+  "human_readable_source": "\n \n\n#include <signal.h>\n#include <string.h>\n#include <unistd.h>\n#include \"utils.h\"\n#include \"instructions.h\"\n\nunsigned int expected_instruction = PPC_INST_COPY_FIRST;\nunsigned int instruction_mask = 0xfc2007fe;\n\nvoid signal_action_handler(int signal_num, siginfo_t *info, void *ptr)\n{\n\tucontext_t *ctx = ptr;\n#ifdef __powerpc64__\n\tunsigned int *pc = (unsigned int *)ctx->uc_mcontext.gp_regs[PT_NIP];\n#else\n\tunsigned int *pc = (unsigned int *)ctx->uc_mcontext.uc_regs->gregs[PT_NIP];\n#endif\n\n\t \n\tif ((*pc & instruction_mask) == expected_instruction)\n\t\t_exit(0);  \n\n\t_exit(1);\n}\n\nvoid setup_signal_handler(void)\n{\n\tstruct sigaction signal_action;\n\n\tmemset(&signal_action, 0, sizeof(signal_action));\n\tsignal_action.sa_sigaction = signal_action_handler;\n\tsignal_action.sa_flags = SA_SIGINFO;\n\tsigaction(SIGBUS, &signal_action, NULL);\n}\n\nchar cacheline_buf[128] __cacheline_aligned;\n\nint test_copy_first_unaligned(void)\n{\n\t \n\tSKIP_IF(!have_hwcap2(PPC_FEATURE2_ARCH_3_00));\n\n\t \n\tsetup_signal_handler();\n\n\t \n\tcopy_first(cacheline_buf+1);\n\n\t \n\treturn 1;\n}\n\nint main(int argc, char *argv[])\n{\n\treturn test_harness(test_copy_first_unaligned, \"test_copy_first_unaligned\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

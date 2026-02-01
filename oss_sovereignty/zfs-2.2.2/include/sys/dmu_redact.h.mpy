@@ -1,0 +1,9 @@
+{
+  "module_name": "dmu_redact.h",
+  "hash_id": "a55a3faa3396b46572334d7b9e2303d21a2b40b7ec9a034992370106d8a36cdd",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/dmu_redact.h",
+  "human_readable_source": " \n \n#ifndef _DMU_REDACT_H_\n#define\t_DMU_REDACT_H_\n\n#include <sys/spa.h>\n#include <sys/dsl_bookmark.h>\n\n#define\tREDACT_BLOCK_MAX_COUNT (1ULL << 48)\n\nstatic inline uint64_t\nredact_block_get_size(redact_block_phys_t *rbp)\n{\n\treturn (BF64_GET_SB((rbp)->rbp_size_count, 48, 16, SPA_MINBLOCKSHIFT,\n\t    0));\n}\n\nstatic inline void\nredact_block_set_size(redact_block_phys_t *rbp, uint64_t size)\n{\n\t \n\tBF64_SET_SB((rbp)->rbp_size_count, 48, 16, SPA_MINBLOCKSHIFT, 0, size);\n}\n\nstatic inline uint64_t\nredact_block_get_count(redact_block_phys_t *rbp)\n{\n\treturn (BF64_GET_SB((rbp)->rbp_size_count, 0, 48, 0, 1));\n}\n\nstatic inline void\nredact_block_set_count(redact_block_phys_t *rbp, uint64_t count)\n{\n\t \n\tBF64_SET_SB((rbp)->rbp_size_count, 0, 48, 0, 1, count);\n}\n\nint dmu_redact_snap(const char *, nvlist_t *, const char *);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2840cde41a93d2b51fede3e0cda049de85c4e4ef638c881a526ba4fede0b6c40",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/thunderbolt/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-${CONFIG_USB4} := thunderbolt.o\nthunderbolt-objs := nhi.o nhi_ops.o ctl.o tb.o switch.o cap.o path.o tunnel.o eeprom.o\nthunderbolt-objs += domain.o dma_port.o icm.o property.o xdomain.o lc.o tmu.o usb4.o\nthunderbolt-objs += usb4_port.o nvm.o retimer.o quirks.o clx.o\n\nthunderbolt-${CONFIG_ACPI} += acpi.o\nthunderbolt-$(CONFIG_DEBUG_FS) += debugfs.o\nthunderbolt-${CONFIG_USB4_KUNIT_TEST} += test.o\nCFLAGS_test.o += $(DISABLE_STRUCTLEAK_PLUGIN)\n\nthunderbolt_dma_test-${CONFIG_USB4_DMA_TEST} += dma_test.o\nobj-$(CONFIG_USB4_DMA_TEST) += thunderbolt_dma_test.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

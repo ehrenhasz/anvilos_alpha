@@ -1,0 +1,9 @@
+{
+  "module_name": "bnx2x_fw_file_hdr.h",
+  "hash_id": "de2d0a0585a5161b66d8057769dd4d627a2d12bbcf0bc3360788b50cc177d76f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/broadcom/bnx2x/bnx2x_fw_file_hdr.h",
+  "human_readable_source": " \n\n#ifndef BNX2X_INIT_FILE_HDR_H\n#define BNX2X_INIT_FILE_HDR_H\n\nstruct bnx2x_fw_file_section {\n\t__be32 len;\n\t__be32 offset;\n};\n\nstruct bnx2x_fw_file_hdr {\n\tstruct bnx2x_fw_file_section init_ops;\n\tstruct bnx2x_fw_file_section init_ops_offsets;\n\tstruct bnx2x_fw_file_section init_data;\n\tstruct bnx2x_fw_file_section tsem_int_table_data;\n\tstruct bnx2x_fw_file_section tsem_pram_data;\n\tstruct bnx2x_fw_file_section usem_int_table_data;\n\tstruct bnx2x_fw_file_section usem_pram_data;\n\tstruct bnx2x_fw_file_section csem_int_table_data;\n\tstruct bnx2x_fw_file_section csem_pram_data;\n\tstruct bnx2x_fw_file_section xsem_int_table_data;\n\tstruct bnx2x_fw_file_section xsem_pram_data;\n\tstruct bnx2x_fw_file_section iro_arr;\n\tstruct bnx2x_fw_file_section fw_version;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

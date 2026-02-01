@@ -1,0 +1,9 @@
+{
+  "module_name": "stat.h",
+  "hash_id": "b7d5725d5039f493e0191ce50ed4aee63625bec5b48079ec3de6f0a19626a220",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/asm-generic/stat.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_STAT_H\n#define __ASM_GENERIC_STAT_H\n\n \n\n#include <asm/bitsperlong.h>\n\n#define STAT_HAVE_NSEC 1\n\nstruct stat {\n\tunsigned long\tst_dev;\t\t \n\tunsigned long\tst_ino;\t\t \n\tunsigned int\tst_mode;\t \n\tunsigned int\tst_nlink;\t \n\tunsigned int\tst_uid;\t\t \n\tunsigned int\tst_gid;\t\t \n\tunsigned long\tst_rdev;\t \n\tunsigned long\t__pad1;\n\tlong\t\tst_size;\t \n\tint\t\tst_blksize;\t \n\tint\t\t__pad2;\n\tlong\t\tst_blocks;\t \n\tlong\t\tst_atime;\t \n\tunsigned long\tst_atime_nsec;\n\tlong\t\tst_mtime;\t \n\tunsigned long\tst_mtime_nsec;\n\tlong\t\tst_ctime;\t \n\tunsigned long\tst_ctime_nsec;\n\tunsigned int\t__unused4;\n\tunsigned int\t__unused5;\n};\n\n \n#if __BITS_PER_LONG != 64 || defined(__ARCH_WANT_STAT64)\nstruct stat64 {\n\tunsigned long long st_dev;\t \n\tunsigned long long st_ino;\t \n\tunsigned int\tst_mode;\t \n\tunsigned int\tst_nlink;\t \n\tunsigned int\tst_uid;\t\t \n\tunsigned int\tst_gid;\t\t \n\tunsigned long long st_rdev;\t \n\tunsigned long long __pad1;\n\tlong long\tst_size;\t \n\tint\t\tst_blksize;\t \n\tint\t\t__pad2;\n\tlong long\tst_blocks;\t \n\tint\t\tst_atime;\t \n\tunsigned int\tst_atime_nsec;\n\tint\t\tst_mtime;\t \n\tunsigned int\tst_mtime_nsec;\n\tint\t\tst_ctime;\t \n\tunsigned int\tst_ctime_nsec;\n\tunsigned int\t__unused4;\n\tunsigned int\t__unused5;\n};\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

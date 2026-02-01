@@ -1,0 +1,9 @@
+{
+  "module_name": "dtt200u.h",
+  "hash_id": "f253e0a1b015e92ca42972382552380f203b780cf88468e0916f565cef7e61e4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/dvb-usb/dtt200u.h",
+  "human_readable_source": " \n \n#ifndef _DVB_USB_DTT200U_H_\n#define _DVB_USB_DTT200U_H_\n\n#define DVB_USB_LOG_PREFIX \"dtt200u\"\n\n#include \"dvb-usb.h\"\n\nextern int dvb_usb_dtt200u_debug;\n#define deb_info(args...) dprintk(dvb_usb_dtt200u_debug,0x01,args)\n#define deb_xfer(args...) dprintk(dvb_usb_dtt200u_debug,0x02,args)\n\n \n\n#define GET_SPEED\t\t0x00\n#define GET_TUNE_STATUS\t\t0x81\n#define GET_RC_CODE\t\t0x84\n#define GET_CONFIGURATION\t0x88\n#define GET_AGC\t\t\t0x89\n#define GET_SNR\t\t\t0x8a\n#define GET_VIT_ERR_CNT\t\t0x8c\n#define GET_RS_ERR_CNT\t\t0x8d\n#define GET_RS_UNCOR_BLK_CNT\t0x8e\n\n \n\n#define SET_INIT\t\t0x01\n#define SET_RF_FREQ\t\t0x02\n#define SET_BANDWIDTH\t\t0x03\n#define SET_PID_FILTER\t\t0x04\n#define RESET_PID_FILTER\t0x05\n#define SET_STREAMING\t\t0x08\n\nextern struct dvb_frontend * dtt200u_fe_attach(struct dvb_usb_device *d);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

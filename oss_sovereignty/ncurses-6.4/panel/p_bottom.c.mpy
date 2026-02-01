@@ -1,0 +1,9 @@
+{
+  "module_name": "p_bottom.c",
+  "hash_id": "46f53b63224f25a5bd585e1e872e0d4c9d5401873a07f85998e6953e07dcda2a",
+  "original_prompt": "Ingested from ncurses-6.4/panel/p_bottom.c",
+  "human_readable_source": " \n\n \n\n \n#include \"panel.priv.h\"\n\nMODULE_ID(\"$Id: p_bottom.c,v 1.17 2021/06/17 21:20:30 tom Exp $\")\n\nPANEL_EXPORT(int)\nbottom_panel(PANEL * pan)\n{\n  int err = OK;\n\n  T((T_CALLED(\"bottom_panel(%p)\"), (void *)pan));\n  if (pan)\n    {\n      GetHook(pan);\n      if (!Is_Bottom(pan))\n\t{\n\n\t  dBug((\"--> bottom_panel %s\", USER_PTR(pan->user, 1)));\n\n\t  HIDE_PANEL(pan, err, OK);\n\t  assert(_nc_bottom_panel == _nc_stdscr_pseudo_panel);\n\n\t  dStack(\"<lb%d>\", 1, pan);\n\n\t  pan->below = _nc_bottom_panel;\n\t  pan->above = _nc_bottom_panel->above;\n\t  if (pan->above)\n\t    pan->above->below = pan;\n\t  _nc_bottom_panel->above = pan;\n\n\t  dStack(\"<lb%d>\", 9, pan);\n\t}\n    }\n  else\n    err = ERR;\n\n  returnCode(err);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

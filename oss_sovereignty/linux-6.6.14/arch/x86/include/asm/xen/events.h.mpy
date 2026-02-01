@@ -1,0 +1,9 @@
+{
+  "module_name": "events.h",
+  "hash_id": "500314c125f00b46b1fa732e9f1a9b26b423a3b02756c35910637ac76272768e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/xen/events.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_XEN_EVENTS_H\n#define _ASM_X86_XEN_EVENTS_H\n\n#include <xen/xen.h>\n\nenum ipi_vector {\n\tXEN_RESCHEDULE_VECTOR,\n\tXEN_CALL_FUNCTION_VECTOR,\n\tXEN_CALL_FUNCTION_SINGLE_VECTOR,\n\tXEN_SPIN_UNLOCK_VECTOR,\n\tXEN_IRQ_WORK_VECTOR,\n\tXEN_NMI_VECTOR,\n\n\tXEN_NR_IPIS,\n};\n\nstatic inline int xen_irqs_disabled(struct pt_regs *regs)\n{\n\treturn raw_irqs_disabled_flags(regs->flags);\n}\n\n \n#define xchg_xen_ulong(ptr, val) xchg((ptr), (val))\n\nextern bool xen_have_vector_callback;\n\n \nstatic inline bool xen_support_evtchn_rebind(void)\n{\n\treturn (!xen_hvm_domain() || xen_have_vector_callback);\n}\n\nextern bool xen_percpu_upcall;\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "video-set-display-format.rst",
+  "hash_id": "146e607a7b0bf5cdbd7b482b4cd289f2dc2cf05fcf29302c783a40d0f4d6d6b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/video-set-display-format.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n.. c:namespace:: DTV.video\n\n.. _VIDEO_SET_DISPLAY_FORMAT:\n\n========================\nVIDEO_SET_DISPLAY_FORMAT\n========================\n\nName\n----\n\nVIDEO_SET_DISPLAY_FORMAT\n\n.. attention:: This ioctl is deprecated.\n\nSynopsis\n--------\n\n.. c:macro:: VIDEO_SET_DISPLAY_FORMAT\n\n``int ioctl(fd, VIDEO_SET_DISPLAY_FORMAT)``\n\nArguments\n---------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -  .. row 1\n\n       -  int fd\n\n       -  File descriptor returned by a previous call to open().\n\n    -  .. row 2\n\n       -  int request\n\n       -  Equals VIDEO_SET_DISPLAY_FORMAT for this command.\n\n    -  .. row 3\n\n       -  video_display_format_t format\n\n       -  Selects the video format to be used.\n\nDescription\n-----------\n\nThis ioctl call asks the Video Device to select the video format to be\napplied by the MPEG chip on the video.\n\nReturn Value\n------------\n\nOn success 0 is returned, on error -1 and the ``errno`` variable is set\nappropriately. The generic error codes are described at the\n:ref:`Generic Error Codes <gen-errors>` chapter.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

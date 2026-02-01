@@ -1,0 +1,9 @@
+{
+  "module_name": "test-areadlink.h",
+  "hash_id": "02ab263bc64ce66732a311f4b70c3fc0378daafa7e8e695d036294795660a00a",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-areadlink.h",
+  "human_readable_source": " \n\n \n\nstatic int\ntest_areadlink (char * (*func) (char const *, size_t), bool print)\n{\n   \n  errno = 0;\n  ASSERT (func (\"no_such\", 1) == NULL);\n  ASSERT (errno == ENOENT);\n  errno = 0;\n  ASSERT (func (\"no_such/\", 1) == NULL);\n  ASSERT (errno == ENOENT);\n  errno = 0;\n  ASSERT (func (\"\", 1) == NULL);\n  ASSERT (errno == ENOENT || errno == EINVAL);\n  errno = 0;\n  ASSERT (func (\".\", 1) == NULL);\n  ASSERT (errno == EINVAL);\n  errno = 0;\n  ASSERT (func (\"./\", 1) == NULL);\n  ASSERT (errno == EINVAL);\n  ASSERT (close (creat (BASE \"file\", 0600)) == 0);\n  errno = 0;\n  ASSERT (func (BASE \"file\", 1) == NULL);\n  ASSERT (errno == EINVAL);\n  errno = 0;\n  ASSERT (func (BASE \"file/\", 1) == NULL);\n  ASSERT (errno == ENOTDIR || errno == EINVAL);  \n  ASSERT (unlink (BASE \"file\") == 0);\n\n   \n  if (symlink (BASE \"dir\", BASE \"link\"))\n    {\n      if (print)\n        fputs (\"skipping test: symlinks not supported on this file system\\n\",\n               stderr);\n      return 77;\n    }\n  ASSERT (mkdir (BASE \"dir\", 0700) == 0);\n  errno = 0;\n  ASSERT (func (BASE \"link/\", 1) == NULL);\n  ASSERT (errno == EINVAL);\n  {\n     \n    char *buf = func (BASE \"link\", 1);\n    ASSERT (buf);\n    ASSERT (strcmp (buf, BASE \"dir\") == 0);\n    free (buf);\n     \n    buf = func (BASE \"link\", 10000000);\n    ASSERT (buf);\n    ASSERT (strcmp (buf, BASE \"dir\") == 0);\n    free (buf);\n  }\n  ASSERT (rmdir (BASE \"dir\") == 0);\n  ASSERT (unlink (BASE \"link\") == 0);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

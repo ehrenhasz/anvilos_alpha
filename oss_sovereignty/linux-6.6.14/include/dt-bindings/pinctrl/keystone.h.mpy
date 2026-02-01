@@ -1,0 +1,9 @@
+{
+  "module_name": "keystone.h",
+  "hash_id": "942813407889f0643fe9cc2132b11e68e18fc7080f6289226e689bdd85a77206",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/keystone.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_PINCTRL_KEYSTONE_H\n#define _DT_BINDINGS_PINCTRL_KEYSTONE_H\n\n#define MUX_MODE0\t0\n#define MUX_MODE1\t1\n#define MUX_MODE2\t2\n#define MUX_MODE3\t3\n#define MUX_MODE4\t4\n#define MUX_MODE5\t5\n\n#define BUFFER_CLASS_B\t(0 << 19)\n#define BUFFER_CLASS_C\t(1 << 19)\n#define BUFFER_CLASS_D\t(2 << 19)\n#define BUFFER_CLASS_E\t(3 << 19)\n\n#define PULL_DISABLE\t(1 << 16)\n#define PIN_PULLUP\t(1 << 17)\n#define PIN_PULLDOWN\t(0 << 17)\n\n#define KEYSTONE_IOPAD_OFFSET(pa, offset) (((pa) & 0xffff) - (offset))\n\n#define K2G_CORE_IOPAD(pa) KEYSTONE_IOPAD_OFFSET((pa), 0x1000)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

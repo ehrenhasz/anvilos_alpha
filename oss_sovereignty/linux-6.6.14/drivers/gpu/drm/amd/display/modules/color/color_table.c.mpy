@@ -1,0 +1,9 @@
+{
+  "module_name": "color_table.c",
+  "hash_id": "c9f31af9e01257cde479256ca7e192b4df854351e8018f2c368f87abe06a70ac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/modules/color/color_table.c",
+  "human_readable_source": " \n\n#include \"color_table.h\"\n\nstatic struct fixed31_32 pq_table[MAX_HW_POINTS + 2];\nstatic struct fixed31_32 de_pq_table[MAX_HW_POINTS + 2];\nstatic bool pq_initialized;\nstatic bool de_pg_initialized;\n\nbool mod_color_is_table_init(enum table_type type)\n{\n\tbool ret = false;\n\n\tif (type == type_pq_table)\n\t\tret = pq_initialized;\n\tif (type == type_de_pq_table)\n\t\tret = de_pg_initialized;\n\n\treturn ret;\n}\n\nstruct fixed31_32 *mod_color_get_table(enum table_type type)\n{\n\tstruct fixed31_32 *table = NULL;\n\n\tif (type == type_pq_table)\n\t\ttable = pq_table;\n\tif (type == type_de_pq_table)\n\t\ttable = de_pq_table;\n\n\treturn table;\n}\n\nvoid mod_color_set_table_init_state(enum table_type type, bool state)\n{\n\tif (type == type_pq_table)\n\t\tpq_initialized = state;\n\tif (type == type_de_pq_table)\n\t\tde_pg_initialized = state;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

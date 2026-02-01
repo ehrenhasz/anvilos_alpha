@@ -1,0 +1,9 @@
+{
+  "module_name": "limits.h",
+  "hash_id": "af6b9be79291eb11d0044ea95ee760e9eb6b9019828b2eb8883114e128c16056",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/limits.h",
+  "human_readable_source": " \n#ifndef _LINUX_LIMITS_H\n#define _LINUX_LIMITS_H\n\n#include <uapi/linux/limits.h>\n#include <linux/types.h>\n#include <vdso/limits.h>\n\n#define SIZE_MAX\t(~(size_t)0)\n#define SSIZE_MAX\t((ssize_t)(SIZE_MAX >> 1))\n#define PHYS_ADDR_MAX\t(~(phys_addr_t)0)\n\n#define RESOURCE_SIZE_MAX\t((resource_size_t)~0)\n\n#define U8_MAX\t\t((u8)~0U)\n#define S8_MAX\t\t((s8)(U8_MAX >> 1))\n#define S8_MIN\t\t((s8)(-S8_MAX - 1))\n#define U16_MAX\t\t((u16)~0U)\n#define S16_MAX\t\t((s16)(U16_MAX >> 1))\n#define S16_MIN\t\t((s16)(-S16_MAX - 1))\n#define U32_MAX\t\t((u32)~0U)\n#define U32_MIN\t\t((u32)0)\n#define S32_MAX\t\t((s32)(U32_MAX >> 1))\n#define S32_MIN\t\t((s32)(-S32_MAX - 1))\n#define U64_MAX\t\t((u64)~0ULL)\n#define S64_MAX\t\t((s64)(U64_MAX >> 1))\n#define S64_MIN\t\t((s64)(-S64_MAX - 1))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

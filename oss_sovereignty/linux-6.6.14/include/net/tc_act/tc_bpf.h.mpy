@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_bpf.h",
+  "hash_id": "5c09e9f6af07072435025c10f9b3d44324fe9123eda7209d8c43dddbf5220566",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/tc_act/tc_bpf.h",
+  "human_readable_source": " \n \n\n#ifndef __NET_TC_BPF_H\n#define __NET_TC_BPF_H\n\n#include <linux/filter.h>\n#include <net/act_api.h>\n\nstruct tcf_bpf {\n\tstruct tc_action\tcommon;\n\tstruct bpf_prog __rcu\t*filter;\n\tunion {\n\t\tu32\t\tbpf_fd;\n\t\tu16\t\tbpf_num_ops;\n\t};\n\tstruct sock_filter\t*bpf_ops;\n\tconst char\t\t*bpf_name;\n};\n#define to_bpf(a) ((struct tcf_bpf *)a)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

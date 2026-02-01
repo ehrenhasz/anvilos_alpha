@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5bfafab03a7e68c43e7679d1c1e38c548bbbf03f36773c6c15856e0669a72bff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/iscsi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig ISCSI_TARGET\n\ttristate \"Linux-iSCSI.org iSCSI Target Mode Stack\"\n\tdepends on INET\n\tselect CRYPTO\n\tselect CRYPTO_CRC32C\n\tselect CRYPTO_CRC32C_INTEL if X86\n\thelp\n\tSay M here to enable the ConfigFS enabled Linux-iSCSI.org iSCSI\n\tTarget Mode Stack.\n\nsource\t\"drivers/target/iscsi/cxgbit/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

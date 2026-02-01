@@ -1,0 +1,9 @@
+{
+  "module_name": "tac.x",
+  "hash_id": "21223bc81baccfcb5f785e64ec166c24f60bf8e47a20c92dd19b648323a9ae1c",
+  "original_prompt": "Ingested from coreutils-9.4/man/tac.x",
+  "human_readable_source": "[NAME]\ntac \\- concatenate and print files in reverse\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ncat(1), rev(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

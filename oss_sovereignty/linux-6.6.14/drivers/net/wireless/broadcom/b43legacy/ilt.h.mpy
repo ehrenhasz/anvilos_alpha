@@ -1,0 +1,9 @@
+{
+  "module_name": "ilt.h",
+  "hash_id": "e2608d94c926146a32a568a060c6df873494a1d40651e8e2684d51a6086f318e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/b43legacy/ilt.h",
+  "human_readable_source": " \n#ifndef B43legacy_ILT_H_\n#define B43legacy_ILT_H_\n\n#define B43legacy_ILT_ROTOR_SIZE\t53\nextern const u32 b43legacy_ilt_rotor[B43legacy_ILT_ROTOR_SIZE];\n#define B43legacy_ILT_RETARD_SIZE\t53\nextern const u32 b43legacy_ilt_retard[B43legacy_ILT_RETARD_SIZE];\n#define B43legacy_ILT_FINEFREQA_SIZE\t256\nextern const u16 b43legacy_ilt_finefreqa[B43legacy_ILT_FINEFREQA_SIZE];\n#define B43legacy_ILT_FINEFREQG_SIZE\t256\nextern const u16 b43legacy_ilt_finefreqg[B43legacy_ILT_FINEFREQG_SIZE];\n#define B43legacy_ILT_NOISEA2_SIZE\t8\nextern const u16 b43legacy_ilt_noisea2[B43legacy_ILT_NOISEA2_SIZE];\n#define B43legacy_ILT_NOISEA3_SIZE\t8\nextern const u16 b43legacy_ilt_noisea3[B43legacy_ILT_NOISEA3_SIZE];\n#define B43legacy_ILT_NOISEG1_SIZE\t8\nextern const u16 b43legacy_ilt_noiseg1[B43legacy_ILT_NOISEG1_SIZE];\n#define B43legacy_ILT_NOISEG2_SIZE\t8\nextern const u16 b43legacy_ilt_noiseg2[B43legacy_ILT_NOISEG2_SIZE];\n#define B43legacy_ILT_NOISESCALEG_SIZE\t27\nextern const u16 b43legacy_ilt_noisescaleg1[B43legacy_ILT_NOISESCALEG_SIZE];\nextern const u16 b43legacy_ilt_noisescaleg2[B43legacy_ILT_NOISESCALEG_SIZE];\nextern const u16 b43legacy_ilt_noisescaleg3[B43legacy_ILT_NOISESCALEG_SIZE];\n#define B43legacy_ILT_SIGMASQR_SIZE\t53\nextern const u16 b43legacy_ilt_sigmasqr1[B43legacy_ILT_SIGMASQR_SIZE];\nextern const u16 b43legacy_ilt_sigmasqr2[B43legacy_ILT_SIGMASQR_SIZE];\n\n\nvoid b43legacy_ilt_write(struct b43legacy_wldev *dev, u16 offset, u16 val);\nvoid b43legacy_ilt_write32(struct b43legacy_wldev *dev, u16 offset,\n\t\t\t   u32 val);\nu16 b43legacy_ilt_read(struct b43legacy_wldev *dev, u16 offset);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

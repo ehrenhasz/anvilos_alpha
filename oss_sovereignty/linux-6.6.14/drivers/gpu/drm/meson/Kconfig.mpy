@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "dfed2e71ba9e1e91839ae817a9365d4bf608bd7b4f1fe46021e69c50f7ddd7a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/meson/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_MESON\n\ttristate \"DRM Support for Amlogic Meson Display Controller\"\n\tdepends on DRM && OF && (ARM || ARM64)\n\tdepends on ARCH_MESON || COMPILE_TEST\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect DRM_DISPLAY_CONNECTOR\n\tselect VIDEOMODE_HELPERS\n\tselect REGMAP_MMIO\n\tselect MESON_CANVAS\n\tselect CEC_CORE if CEC_NOTIFIER\n\nconfig DRM_MESON_DW_HDMI\n\ttristate \"HDMI Synopsys Controller support for Amlogic Meson Display\"\n\tdepends on DRM_MESON\n\tdefault y if DRM_MESON\n\tselect DRM_DW_HDMI\n\timply DRM_DW_HDMI_I2S_AUDIO\n\nconfig DRM_MESON_DW_MIPI_DSI\n\ttristate \"MIPI DSI Synopsys Controller support for Amlogic Meson Display\"\n\tdepends on DRM_MESON\n\tdefault y if DRM_MESON\n\tselect DRM_DW_MIPI_DSI\n\tselect GENERIC_PHY_MIPI_DPHY\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

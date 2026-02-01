@@ -1,0 +1,9 @@
+{
+  "module_name": "vdso_test_gettimeofday.c",
+  "hash_id": "72b07c0f513a39e7c40141bb21bb9dcf220abc3c58915e4525bd7136298f369f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/vDSO/vdso_test_gettimeofday.c",
+  "human_readable_source": "\n \n\n#include <stdint.h>\n#include <elf.h>\n#include <stdio.h>\n#include <sys/auxv.h>\n#include <sys/time.h>\n\n#include \"../kselftest.h\"\n#include \"parse_vdso.h\"\n\n \n#if defined(__aarch64__)\nconst char *version = \"LINUX_2.6.39\";\nconst char *name = \"__kernel_gettimeofday\";\n#elif defined(__riscv)\nconst char *version = \"LINUX_4.15\";\nconst char *name = \"__vdso_gettimeofday\";\n#else\nconst char *version = \"LINUX_2.6\";\nconst char *name = \"__vdso_gettimeofday\";\n#endif\n\nint main(int argc, char **argv)\n{\n\tunsigned long sysinfo_ehdr = getauxval(AT_SYSINFO_EHDR);\n\tif (!sysinfo_ehdr) {\n\t\tprintf(\"AT_SYSINFO_EHDR is not present!\\n\");\n\t\treturn KSFT_SKIP;\n\t}\n\n\tvdso_init_from_sysinfo_ehdr(getauxval(AT_SYSINFO_EHDR));\n\n\t \n\ttypedef long (*gtod_t)(struct timeval *tv, struct timezone *tz);\n\tgtod_t gtod = (gtod_t)vdso_sym(version, name);\n\n\tif (!gtod) {\n\t\tprintf(\"Could not find %s\\n\", name);\n\t\treturn KSFT_SKIP;\n\t}\n\n\tstruct timeval tv;\n\tlong ret = gtod(&tv, 0);\n\n\tif (ret == 0) {\n\t\tprintf(\"The time is %lld.%06lld\\n\",\n\t\t       (long long)tv.tv_sec, (long long)tv.tv_usec);\n\t} else {\n\t\tprintf(\"%s failed\\n\", name);\n\t\treturn KSFT_FAIL;\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

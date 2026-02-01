@@ -1,0 +1,9 @@
+{
+  "module_name": "tsacct_kern.h",
+  "hash_id": "b0af31392ae8b8482915db080d6ca183e25bd230247540e0e0efabbf65471ed5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/tsacct_kern.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_TSACCT_KERN_H\n#define _LINUX_TSACCT_KERN_H\n\n#include <linux/taskstats.h>\n\n#ifdef CONFIG_TASKSTATS\nextern void bacct_add_tsk(struct user_namespace *user_ns,\n\t\t\t  struct pid_namespace *pid_ns,\n\t\t\t  struct taskstats *stats, struct task_struct *tsk);\n#else\nstatic inline void bacct_add_tsk(struct user_namespace *user_ns,\n\t\t\t\t struct pid_namespace *pid_ns,\n\t\t\t\t struct taskstats *stats, struct task_struct *tsk)\n{}\n#endif  \n\n#ifdef CONFIG_TASK_XACCT\nextern void xacct_add_tsk(struct taskstats *stats, struct task_struct *p);\nextern void acct_update_integrals(struct task_struct *tsk);\nextern void acct_account_cputime(struct task_struct *tsk);\nextern void acct_clear_integrals(struct task_struct *tsk);\n#else\nstatic inline void xacct_add_tsk(struct taskstats *stats, struct task_struct *p)\n{}\nstatic inline void acct_update_integrals(struct task_struct *tsk)\n{}\nstatic inline void acct_account_cputime(struct task_struct *tsk)\n{}\nstatic inline void acct_clear_integrals(struct task_struct *tsk)\n{}\n#endif  \n\n#endif\n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

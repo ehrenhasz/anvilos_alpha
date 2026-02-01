@@ -1,0 +1,9 @@
+{
+  "module_name": "bugs.c",
+  "hash_id": "91feddc5b81389e6d9c0c7f6aeaaa6d7457a9f74b3a1747b1edfa6104b85e0fd",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/fpu/bugs.c",
+  "human_readable_source": "\n \n#include <asm/fpu/api.h>\n\n \n\nstatic double __initdata x = 4195835.0;\nstatic double __initdata y = 3145727.0;\n\n \nvoid __init fpu__init_check_bugs(void)\n{\n\ts32 fdiv_bug;\n\n\t \n\tif (!boot_cpu_has(X86_FEATURE_FPU))\n\t\treturn;\n\n\tkernel_fpu_begin();\n\n\t \n\t__asm__(\"fninit\\n\\t\"\n\t\t\"fldl %1\\n\\t\"\n\t\t\"fdivl %2\\n\\t\"\n\t\t\"fmull %2\\n\\t\"\n\t\t\"fldl %1\\n\\t\"\n\t\t\"fsubp %%st,%%st(1)\\n\\t\"\n\t\t\"fistpl %0\\n\\t\"\n\t\t\"fwait\\n\\t\"\n\t\t\"fninit\"\n\t\t: \"=m\" (*&fdiv_bug)\n\t\t: \"m\" (*&x), \"m\" (*&y));\n\n\tkernel_fpu_end();\n\n\tif (fdiv_bug) {\n\t\tset_cpu_bug(&boot_cpu_data, X86_BUG_FDIV);\n\t\tpr_warn(\"Hmm, FPU with FDIV bug\\n\");\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

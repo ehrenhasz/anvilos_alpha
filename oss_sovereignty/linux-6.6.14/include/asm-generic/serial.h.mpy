@@ -1,0 +1,9 @@
+{
+  "module_name": "serial.h",
+  "hash_id": "d91f56a5a49e627629c9ac41aeb5860c2629b7352ce4d69937a9095048cd2d2b",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/serial.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_SERIAL_H\n#define __ASM_GENERIC_SERIAL_H\n\n \n\n#define BASE_BAUD (1843200 / 16)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

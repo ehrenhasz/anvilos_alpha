@@ -1,0 +1,9 @@
+{
+  "module_name": "dcss-blkctl.c",
+  "hash_id": "bbd7ca56e30e492d63297f0e0afada8989e0fe338a124f8f551846d4fc22dad6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/imx/dcss/dcss-blkctl.c",
+  "human_readable_source": "\n \n\n#include <linux/device.h>\n#include <linux/of.h>\n#include <linux/slab.h>\n\n#include \"dcss-dev.h\"\n\n#define DCSS_BLKCTL_RESET_CTRL\t\t0x00\n#define   B_CLK_RESETN\t\t\tBIT(0)\n#define   APB_CLK_RESETN\t\tBIT(1)\n#define   P_CLK_RESETN\t\t\tBIT(2)\n#define   RTR_CLK_RESETN\t\tBIT(4)\n#define DCSS_BLKCTL_CONTROL0\t\t0x10\n#define   HDMI_MIPI_CLK_SEL\t\tBIT(0)\n#define   DISPMIX_REFCLK_SEL_POS\t4\n#define   DISPMIX_REFCLK_SEL_MASK\tGENMASK(5, 4)\n#define   DISPMIX_PIXCLK_SEL\t\tBIT(8)\n#define   HDMI_SRC_SECURE_EN\t\tBIT(16)\n\nstruct dcss_blkctl {\n\tstruct dcss_dev *dcss;\n\tvoid __iomem *base_reg;\n};\n\nvoid dcss_blkctl_cfg(struct dcss_blkctl *blkctl)\n{\n\tif (blkctl->dcss->hdmi_output)\n\t\tdcss_writel(0, blkctl->base_reg + DCSS_BLKCTL_CONTROL0);\n\telse\n\t\tdcss_writel(DISPMIX_PIXCLK_SEL,\n\t\t\t    blkctl->base_reg + DCSS_BLKCTL_CONTROL0);\n\n\tdcss_set(B_CLK_RESETN | APB_CLK_RESETN | P_CLK_RESETN | RTR_CLK_RESETN,\n\t\t blkctl->base_reg + DCSS_BLKCTL_RESET_CTRL);\n}\n\nint dcss_blkctl_init(struct dcss_dev *dcss, unsigned long blkctl_base)\n{\n\tstruct dcss_blkctl *blkctl;\n\n\tblkctl = kzalloc(sizeof(*blkctl), GFP_KERNEL);\n\tif (!blkctl)\n\t\treturn -ENOMEM;\n\n\tblkctl->base_reg = ioremap(blkctl_base, SZ_4K);\n\tif (!blkctl->base_reg) {\n\t\tdev_err(dcss->dev, \"unable to remap BLK CTRL base\\n\");\n\t\tkfree(blkctl);\n\t\treturn -ENOMEM;\n\t}\n\n\tdcss->blkctl = blkctl;\n\tblkctl->dcss = dcss;\n\n\tdcss_blkctl_cfg(blkctl);\n\n\treturn 0;\n}\n\nvoid dcss_blkctl_exit(struct dcss_blkctl *blkctl)\n{\n\tif (blkctl->base_reg)\n\t\tiounmap(blkctl->base_reg);\n\n\tkfree(blkctl);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

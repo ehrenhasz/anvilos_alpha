@@ -1,0 +1,9 @@
+{
+  "module_name": "cx18-video.c",
+  "hash_id": "7555e1a24aed26c4e9251230c183e2737b35bc3bd4694cf84aa3b62604478956",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx18/cx18-video.c",
+  "human_readable_source": "\n \n\n#include \"cx18-driver.h\"\n#include \"cx18-video.h\"\n#include \"cx18-cards.h\"\n\nvoid cx18_video_set_io(struct cx18 *cx)\n{\n\tint inp = cx->active_input;\n\n\tv4l2_subdev_call(cx->sd_av, video, s_routing,\n\t\t\tcx->card->video_inputs[inp].video_input, 0, 0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

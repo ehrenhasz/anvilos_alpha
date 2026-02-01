@@ -1,0 +1,9 @@
+{
+  "module_name": "smack_netfilter.c",
+  "hash_id": "dbe9f2738bb9d4a8b136e5f747aae9650cf1b23d1e22cc3c1f553fedc208d515",
+  "original_prompt": "Ingested from linux-6.6.14/security/smack/smack_netfilter.c",
+  "human_readable_source": "\n \n\n#include <linux/netfilter_ipv4.h>\n#include <linux/netfilter_ipv6.h>\n#include <linux/netdevice.h>\n#include <net/inet_sock.h>\n#include <net/net_namespace.h>\n#include \"smack.h\"\n\nstatic unsigned int smack_ip_output(void *priv,\n\t\t\t\t\tstruct sk_buff *skb,\n\t\t\t\t\tconst struct nf_hook_state *state)\n{\n\tstruct sock *sk = skb_to_full_sk(skb);\n\tstruct socket_smack *ssp;\n\tstruct smack_known *skp;\n\n\tif (sk && sk->sk_security) {\n\t\tssp = sk->sk_security;\n\t\tskp = ssp->smk_out;\n\t\tskb->secmark = skp->smk_secid;\n\t}\n\n\treturn NF_ACCEPT;\n}\n\nstatic const struct nf_hook_ops smack_nf_ops[] = {\n\t{\n\t\t.hook =\t\tsmack_ip_output,\n\t\t.pf =\t\tNFPROTO_IPV4,\n\t\t.hooknum =\tNF_INET_LOCAL_OUT,\n\t\t.priority =\tNF_IP_PRI_SELINUX_FIRST,\n\t},\n#if IS_ENABLED(CONFIG_IPV6)\n\t{\n\t\t.hook =\t\tsmack_ip_output,\n\t\t.pf =\t\tNFPROTO_IPV6,\n\t\t.hooknum =\tNF_INET_LOCAL_OUT,\n\t\t.priority =\tNF_IP6_PRI_SELINUX_FIRST,\n\t},\n#endif\t \n};\n\nstatic int __net_init smack_nf_register(struct net *net)\n{\n\treturn nf_register_net_hooks(net, smack_nf_ops,\n\t\t\t\t     ARRAY_SIZE(smack_nf_ops));\n}\n\nstatic void __net_exit smack_nf_unregister(struct net *net)\n{\n\tnf_unregister_net_hooks(net, smack_nf_ops, ARRAY_SIZE(smack_nf_ops));\n}\n\nstatic struct pernet_operations smack_net_ops = {\n\t.init = smack_nf_register,\n\t.exit = smack_nf_unregister,\n};\n\nstatic int __init smack_nf_ip_init(void)\n{\n\tif (smack_enabled == 0)\n\t\treturn 0;\n\n\tprintk(KERN_DEBUG \"Smack: Registering netfilter hooks\\n\");\n\treturn register_pernet_subsys(&smack_net_ops);\n}\n\n__initcall(smack_nf_ip_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

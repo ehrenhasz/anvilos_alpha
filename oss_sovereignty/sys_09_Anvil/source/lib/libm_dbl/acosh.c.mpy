@@ -1,0 +1,9 @@
+{
+  "module_name": "acosh.c",
+  "hash_id": "74bf41ffe7e7801a4fec31bb00083c9bca6e1e2c6d41afa17215ccbab17bf022",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/acosh.c",
+  "human_readable_source": "#include \"libm.h\"\n\n#if FLT_EVAL_METHOD==2\n#undef sqrt\n#define sqrt sqrtl\n#endif\n\n \ndouble acosh(double x)\n{\n\tunion {double f; uint64_t i;} u = {.f = x};\n\tunsigned e = u.i >> 52 & 0x7ff;\n\n\t \n\n\tif (e < 0x3ff + 1)\n\t\t \n\t\treturn log1p(x-1 + sqrt((x-1)*(x-1)+2*(x-1)));\n\tif (e < 0x3ff + 26)\n\t\t \n\t\treturn log(2*x - 1/(x+sqrt(x*x-1)));\n\t \n\treturn log(x) + 0.693147180559945309417232121458176568;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "copyfile.h",
+  "hash_id": "e9723eb2c99674eaa3fb74c6b6bf76c9345df77778a5f10bcc11f2a3458ba325",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/copyfile.h",
+  "human_readable_source": "\n#ifndef PERF_COPYFILE_H_\n#define PERF_COPYFILE_H_\n\n#include <linux/types.h>\n#include <sys/types.h>\n#include <fcntl.h>\n\nstruct nsinfo;\n\nint copyfile(const char *from, const char *to);\nint copyfile_mode(const char *from, const char *to, mode_t mode);\nint copyfile_ns(const char *from, const char *to, struct nsinfo *nsi);\nint copyfile_offset(int ifd, loff_t off_in, int ofd, loff_t off_out, u64 size);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

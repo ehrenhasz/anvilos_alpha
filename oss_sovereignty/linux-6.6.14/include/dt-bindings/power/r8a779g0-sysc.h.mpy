@@ -1,0 +1,9 @@
+{
+  "module_name": "r8a779g0-sysc.h",
+  "hash_id": "d7de7da8550901fe1a90508e4c93e94be0622044e942200647672765bc7a44c2",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/r8a779g0-sysc.h",
+  "human_readable_source": " \n \n#ifndef __DT_BINDINGS_POWER_R8A779G0_SYSC_H__\n#define __DT_BINDINGS_POWER_R8A779G0_SYSC_H__\n\n \n\n#define R8A779G0_PD_A1E0D0C0\t\t0\n#define R8A779G0_PD_A1E0D0C1\t\t1\n#define R8A779G0_PD_A1E0D1C0\t\t2\n#define R8A779G0_PD_A1E0D1C1\t\t3\n#define R8A779G0_PD_A2E0D0\t\t16\n#define R8A779G0_PD_A2E0D1\t\t17\n#define R8A779G0_PD_A3E0\t\t20\n#define R8A779G0_PD_A33DGA\t\t24\n#define R8A779G0_PD_A23DGB\t\t25\n#define R8A779G0_PD_A1DSP0\t\t33\n#define R8A779G0_PD_A2IMP01\t\t34\n#define R8A779G0_PD_A2PSC\t\t35\n#define R8A779G0_PD_A2CV0\t\t36\n#define R8A779G0_PD_A2CV1\t\t37\n#define R8A779G0_PD_A1CNN0\t\t41\n#define R8A779G0_PD_A2CN0\t\t42\n#define R8A779G0_PD_A3IR\t\t43\n#define R8A779G0_PD_A1DSP1\t\t45\n#define R8A779G0_PD_A2IMP23\t\t46\n#define R8A779G0_PD_A2DMA\t\t47\n#define R8A779G0_PD_A2CV2\t\t48\n#define R8A779G0_PD_A2CV3\t\t49\n#define R8A779G0_PD_A1DSP2\t\t53\n#define R8A779G0_PD_A1DSP3\t\t54\n#define R8A779G0_PD_A3VIP0\t\t56\n#define R8A779G0_PD_A3VIP1\t\t57\n#define R8A779G0_PD_A3VIP2\t\t58\n#define R8A779G0_PD_A3ISP0\t\t60\n#define R8A779G0_PD_A3ISP1\t\t61\n#define R8A779G0_PD_A3DUL\t\t62\n\n \n#define R8A779G0_PD_ALWAYS_ON\t\t64\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

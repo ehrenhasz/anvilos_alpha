@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "20c7928a7e4a279e3c9b2a9c995bfd62757fdab6595b9a94194defc162bc94f2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/parsers/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_MTD_AR7_PARTS)\t\t+= ar7part.o\nobj-$(CONFIG_MTD_BCM47XX_PARTS)\t\t+= bcm47xxpart.o\nobj-$(CONFIG_MTD_BCM63XX_PARTS)\t\t+= bcm63xxpart.o\nobj-$(CONFIG_MTD_BRCM_U_BOOT)\t\t+= brcm_u-boot.o\nobj-$(CONFIG_MTD_CMDLINE_PARTS)\t\t+= cmdlinepart.o\nobj-$(CONFIG_MTD_OF_PARTS)\t\t+= ofpart.o\nofpart-y\t\t\t\t+= ofpart_core.o\nofpart-$(CONFIG_MTD_OF_PARTS_BCM4908)\t+= ofpart_bcm4908.o\nofpart-$(CONFIG_MTD_OF_PARTS_LINKSYS_NS)+= ofpart_linksys_ns.o\nobj-$(CONFIG_MTD_PARSER_IMAGETAG)\t+= parser_imagetag.o\nobj-$(CONFIG_MTD_AFS_PARTS)\t\t+= afs.o\nobj-$(CONFIG_MTD_PARSER_TPLINK_SAFELOADER)\t+= tplink_safeloader.o\nobj-$(CONFIG_MTD_PARSER_TRX)\t\t+= parser_trx.o\nobj-$(CONFIG_MTD_SERCOMM_PARTS)\t\t+= scpart.o\nobj-$(CONFIG_MTD_SHARPSL_PARTS)\t\t+= sharpslpart.o\nobj-$(CONFIG_MTD_REDBOOT_PARTS)\t\t+= redboot.o\nobj-$(CONFIG_MTD_QCOMSMEM_PARTS)\t+= qcomsmempart.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

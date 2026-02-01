@@ -1,0 +1,9 @@
+{
+  "module_name": "idcache.h",
+  "hash_id": "5eb25f80222de163bbb327ca72ce456e52258c151cc3c521ca7f81bee4510bd7",
+  "original_prompt": "Ingested from coreutils-9.4/lib/idcache.h",
+  "human_readable_source": " \n\n#ifndef IDCACHE_H\n# define IDCACHE_H 1\n\n# include <sys/types.h>\n\nextern char *getuser (uid_t uid);\nextern char *getgroup (gid_t gid);\nextern uid_t *getuidbyname (const char *user);\nextern gid_t *getgidbyname (const char *group);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

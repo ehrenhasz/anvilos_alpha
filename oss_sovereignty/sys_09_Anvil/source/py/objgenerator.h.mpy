@@ -1,0 +1,9 @@
+{
+  "module_name": "objgenerator.h",
+  "hash_id": "5fecfe3f19148e4e4c247631ea8de4f02b33c87e48344c4912f01b5f2e34e456",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/objgenerator.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_OBJGENERATOR_H\n#define MICROPY_INCLUDED_PY_OBJGENERATOR_H\n\n#include \"py/obj.h\"\n#include \"py/runtime.h\"\n\nmp_vm_return_kind_t mp_obj_gen_resume(mp_obj_t self_in, mp_obj_t send_val, mp_obj_t throw_val, mp_obj_t *ret_val);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

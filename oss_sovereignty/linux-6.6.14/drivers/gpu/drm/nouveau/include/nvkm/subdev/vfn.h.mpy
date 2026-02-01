@@ -1,0 +1,9 @@
+{
+  "module_name": "vfn.h",
+  "hash_id": "73db90d50c23e6cb4e5242f17c7522856326f31b414ba8941bc3234d928acacf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/vfn.h",
+  "human_readable_source": " \n#ifndef __NVKM_VFN_H__\n#define __NVKM_VFN_H__\n#include <core/subdev.h>\n\nstruct nvkm_vfn {\n\tconst struct nvkm_vfn_func *func;\n\tstruct nvkm_subdev subdev;\n\n\tstruct {\n\t\tu32 priv;\n\t\tu32 user;\n\t} addr;\n\n\tstruct nvkm_intr intr;\n\n\tstruct nvkm_device_oclass user;\n};\n\nint gv100_vfn_new(struct nvkm_device *, enum nvkm_subdev_type, int, struct nvkm_vfn **);\nint tu102_vfn_new(struct nvkm_device *, enum nvkm_subdev_type, int, struct nvkm_vfn **);\nint ga100_vfn_new(struct nvkm_device *, enum nvkm_subdev_type, int, struct nvkm_vfn **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

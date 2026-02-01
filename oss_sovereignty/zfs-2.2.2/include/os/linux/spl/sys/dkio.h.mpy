@@ -1,0 +1,9 @@
+{
+  "module_name": "dkio.h",
+  "hash_id": "b8283ac8fd863f11aee9f6db848f549f63317bf65bfb600ca2c72fb0a73d8874",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/dkio.h",
+  "human_readable_source": " \n\n#ifndef _SPL_DKIO_H\n#define\t_SPL_DKIO_H\n\n#define\tDFL_SZ(num_exts) \\\n\t(sizeof (dkioc_free_list_t) + (num_exts - 1) * 16)\n\n#define\tDKIOC\t\t(0x04 << 8)\n#define\tDKIOCFLUSHWRITECACHE\t(DKIOC|34)\t \n\n \n#define\tDKIOCFREE\t(DKIOC|50)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

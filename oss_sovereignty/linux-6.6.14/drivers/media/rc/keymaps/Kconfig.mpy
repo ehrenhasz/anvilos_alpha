@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "316075870d2f02f2fba181e69dda7a9425d6a0249809b8b8f08435e4da953744",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig RC_MAP\n\ttristate \"Compile Remote Controller keymap modules\"\n\tdepends on RC_CORE\n\tdefault y\n\n\thelp\n\t   This option enables the compilation of lots of Remote\n\t   Controller tables. They are short tables, but if you\n\t   don't use a remote controller, or prefer to load the\n\t   tables on userspace, you should disable it.\n\n\t   The ir-keytable program, available at v4l-utils package\n\t   provide the tool and the same RC maps for load from\n\t   userspace. Its available at\n\t\thttp://git.linuxtv.org/cgit.cgi/v4l-utils.git/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

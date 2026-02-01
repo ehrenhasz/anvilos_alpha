@@ -1,0 +1,9 @@
+{
+  "module_name": "btnode.h",
+  "hash_id": "aa2628db7f0984e85f8ffe84200ef0e6cf7342ef79d5d6d509360f02c2a74589",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nilfs2/btnode.h",
+  "human_readable_source": " \n \n\n#ifndef _NILFS_BTNODE_H\n#define _NILFS_BTNODE_H\n\n#include <linux/types.h>\n#include <linux/buffer_head.h>\n#include <linux/fs.h>\n#include <linux/backing-dev.h>\n\n \nstruct nilfs_btnode_chkey_ctxt {\n\t__u64 oldkey;\n\t__u64 newkey;\n\tstruct buffer_head *bh;\n\tstruct buffer_head *newbh;\n};\n\nvoid nilfs_init_btnc_inode(struct inode *btnc_inode);\nvoid nilfs_btnode_cache_clear(struct address_space *);\nstruct buffer_head *nilfs_btnode_create_block(struct address_space *btnc,\n\t\t\t\t\t      __u64 blocknr);\nint nilfs_btnode_submit_block(struct address_space *, __u64, sector_t,\n\t\t\t      blk_opf_t, struct buffer_head **, sector_t *);\nvoid nilfs_btnode_delete(struct buffer_head *);\nint nilfs_btnode_prepare_change_key(struct address_space *,\n\t\t\t\t    struct nilfs_btnode_chkey_ctxt *);\nvoid nilfs_btnode_commit_change_key(struct address_space *,\n\t\t\t\t    struct nilfs_btnode_chkey_ctxt *);\nvoid nilfs_btnode_abort_change_key(struct address_space *,\n\t\t\t\t   struct nilfs_btnode_chkey_ctxt *);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

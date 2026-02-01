@@ -1,0 +1,9 @@
+{
+  "module_name": "termios_internal.h",
+  "hash_id": "229e19900ade788cf241fe8e4f5a9c54b7f8308f23ac3cf30c69f2a1dd1856a2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/termios_internal.h",
+  "human_readable_source": " \n#ifndef _LINUX_TERMIOS_CONV_H\n#define _LINUX_TERMIOS_CONV_H\n\n#include <linux/uaccess.h>\n#include <asm/termios.h>\n\n \n\n#ifdef VDSUSP\n#define INIT_C_CC_VDSUSP_EXTRA [VDSUSP] = 'Y'-0x40,\n#else\n#define INIT_C_CC_VDSUSP_EXTRA\n#endif\n\n#define INIT_C_CC {\t\t\\\n\t[VINTR] = 'C'-0x40,\t\\\n\t[VQUIT] = '\\\\'-0x40,\t\\\n\t[VERASE] = '\\177',\t\\\n\t[VKILL] = 'U'-0x40,\t\\\n\t[VEOF] = 'D'-0x40,\t\\\n\t[VSTART] = 'Q'-0x40,\t\\\n\t[VSTOP] = 'S'-0x40,\t\\\n\t[VSUSP] = 'Z'-0x40,\t\\\n\t[VREPRINT] = 'R'-0x40,\t\\\n\t[VDISCARD] = 'O'-0x40,\t\\\n\t[VWERASE] = 'W'-0x40,\t\\\n\t[VLNEXT] = 'V'-0x40,\t\\\n\tINIT_C_CC_VDSUSP_EXTRA\t\\\n\t[VMIN] = 1 }\n\nint user_termio_to_kernel_termios(struct ktermios *, struct termio __user *);\nint kernel_termios_to_user_termio(struct termio __user *, struct ktermios *);\n#ifdef TCGETS2\nint user_termios_to_kernel_termios(struct ktermios *, struct termios2 __user *);\nint kernel_termios_to_user_termios(struct termios2 __user *, struct ktermios *);\nint user_termios_to_kernel_termios_1(struct ktermios *, struct termios __user *);\nint kernel_termios_to_user_termios_1(struct termios __user *, struct ktermios *);\n#else  \nint user_termios_to_kernel_termios(struct ktermios *, struct termios __user *);\nint kernel_termios_to_user_termios(struct termios __user *, struct ktermios *);\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

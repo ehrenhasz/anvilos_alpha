@@ -1,0 +1,9 @@
+{
+  "module_name": "test-lzma.c",
+  "hash_id": "38ecc13f755f338dcd2056b9c42fe51e7acbc36283ea8d271fc0ab820b6959ef",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-lzma.c",
+  "human_readable_source": "\n#include <lzma.h>\n\nint main(void)\n{\n\tlzma_stream strm = LZMA_STREAM_INIT;\n\tint ret;\n\n\tret = lzma_stream_decoder(&strm, UINT64_MAX, LZMA_CONCATENATED);\n\treturn ret ? -1 : 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

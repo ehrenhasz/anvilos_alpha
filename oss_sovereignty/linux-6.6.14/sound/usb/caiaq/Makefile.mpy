@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f180dc5517a74c34642498be4b4f4adc055a39a8f1e38c22f39bf9ed8d14e7fd",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/caiaq/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-usb-caiaq-y := device.o audio.o midi.o control.o\nsnd-usb-caiaq-$(CONFIG_SND_USB_CAIAQ_INPUT) += input.o\n\nobj-$(CONFIG_SND_USB_CAIAQ) += snd-usb-caiaq.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

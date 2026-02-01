@@ -1,0 +1,9 @@
+{
+  "module_name": "dot_command.h",
+  "hash_id": "70851480aa9a309600d68a4ee8014a10d71d8c9a8691e7fd3b891b38414850a3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/ibmasm/dot_command.h",
+  "human_readable_source": " \n \n\n#ifndef __DOT_COMMAND_H__\n#define __DOT_COMMAND_H__\n\n \n\n \n#define sp_write\t\t0\n#define sp_write_next\t\t1\n#define sp_read\t\t\t2\n#define sp_read_next\t\t3\n#define sp_command_response\t4\n#define sp_event\t\t5\n#define sp_heartbeat\t\t6\n\n#pragma pack(1)\nstruct dot_command_header {\n\tu8\ttype;\n\tu8\tcommand_size;\n\tu16\tdata_size;\n\tu8\tstatus;\n\tu8\treserved;\n};\n#pragma pack()\n\nstatic inline size_t get_dot_command_size(void *buffer)\n{\n\tstruct dot_command_header *cmd = (struct dot_command_header *)buffer;\n\treturn sizeof(struct dot_command_header) + cmd->command_size + cmd->data_size;\n}\n\nstatic inline unsigned int get_dot_command_timeout(void *buffer)\n{\n\tstruct dot_command_header *header = (struct dot_command_header *)buffer;\n\tunsigned char *cmd = buffer + sizeof(struct dot_command_header);\n\n\t \n\n\tif (header->command_size == 3) {\n\t\tif ((cmd[0] == 6) && (cmd[1] == 3) && (cmd[2] == 1))\n\t\t\treturn IBMASM_CMD_TIMEOUT_EXTRA;\n\t} else if (header->command_size == 2) {\n\t\tif ((cmd[0] == 7) && (cmd[1] == 1))\n\t\t\treturn IBMASM_CMD_TIMEOUT_EXTRA;\n\t\tif (cmd[0] == 8)\n\t\t\treturn IBMASM_CMD_TIMEOUT_EXTRA;\n\t}\n\treturn IBMASM_CMD_TIMEOUT_NORMAL;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

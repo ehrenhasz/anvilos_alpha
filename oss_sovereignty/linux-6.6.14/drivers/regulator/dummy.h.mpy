@@ -1,0 +1,9 @@
+{
+  "module_name": "dummy.h",
+  "hash_id": "701a7b95a3ce7b8fe7c681c1148e8560d70bb8e1b5afaba5bbd4301474fbcbdb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/regulator/dummy.h",
+  "human_readable_source": " \n \n\n#ifndef _DUMMY_H\n#define _DUMMY_H\n\nstruct regulator_dev;\n\nextern struct regulator_dev *dummy_regulator_rdev;\n\nvoid __init regulator_dummy_init(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

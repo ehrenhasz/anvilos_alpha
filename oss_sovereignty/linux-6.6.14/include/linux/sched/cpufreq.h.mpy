@@ -1,0 +1,9 @@
+{
+  "module_name": "cpufreq.h",
+  "hash_id": "aa31bc4e04347ced5b598d4639aa2ff46bdbc4d10ed5b4717c83808980347a58",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/cpufreq.h",
+  "human_readable_source": " \n#ifndef _LINUX_SCHED_CPUFREQ_H\n#define _LINUX_SCHED_CPUFREQ_H\n\n#include <linux/types.h>\n\n \n\n#define SCHED_CPUFREQ_IOWAIT\t(1U << 0)\n\n#ifdef CONFIG_CPU_FREQ\nstruct cpufreq_policy;\n\nstruct update_util_data {\n       void (*func)(struct update_util_data *data, u64 time, unsigned int flags);\n};\n\nvoid cpufreq_add_update_util_hook(int cpu, struct update_util_data *data,\n                       void (*func)(struct update_util_data *data, u64 time,\n\t\t\t\t    unsigned int flags));\nvoid cpufreq_remove_update_util_hook(int cpu);\nbool cpufreq_this_cpu_can_update(struct cpufreq_policy *policy);\n\nstatic inline unsigned long map_util_freq(unsigned long util,\n\t\t\t\t\tunsigned long freq, unsigned long cap)\n{\n\treturn freq * util / cap;\n}\n\nstatic inline unsigned long map_util_perf(unsigned long util)\n{\n\treturn util + (util >> 2);\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

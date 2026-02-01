@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_delwin.c",
+  "hash_id": "34efd1d828d47404961926fa38de3674a81227061cd4bd2d42f0704eb88599c2",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_delwin.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_delwin.c,v 1.24 2021/12/11 23:56:25 tom Exp $\")\n\nstatic bool\ncannot_delete(WINDOW *win)\n{\n    bool result = TRUE;\n\n    if (IS_PAD(win)) {\n\tresult = FALSE;\n    } else {\n\tWINDOWLIST *p;\n#ifdef USE_SP_WINDOWLIST\n\tSCREEN *sp = _nc_screen_of(win);\n#endif\n\n\tfor (each_window(SP_PARM, p)) {\n\t    if (&(p->win) == win) {\n\t\tresult = FALSE;\n\t    } else if (IS_SUBWIN(&(p->win))\n\t\t       && p->win._parent == win) {\n\t\tresult = TRUE;\n\t\tbreak;\n\t    }\n\t}\n    }\n    return result;\n}\n\nNCURSES_EXPORT(int)\ndelwin(WINDOW *win)\n{\n    int result = ERR;\n\n    T((T_CALLED(\"delwin(%p)\"), (void *) win));\n\n    if (_nc_try_global(curses) == 0) {\n\tif (win == 0\n\t    || cannot_delete(win)) {\n\t    result = ERR;\n\t} else if (IS_PAD(win)) {\n\t    win->_parent = NULL;\n\t    result = _nc_freewin(win);\n\t} else {\n#if NCURSES_SP_FUNCS\n\t    SCREEN *sp = _nc_screen_of(win);\n#endif\n\t    if (IS_SUBWIN(win)) {\n\t\ttouchwin(win->_parent);\n\t    } else if (CurScreen(SP_PARM) != 0) {\n\t\ttouchwin(CurScreen(SP_PARM));\n\t    }\n\t    result = _nc_freewin(win);\n\t}\n\t_nc_unlock_global(curses);\n    }\n    returnCode(result);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

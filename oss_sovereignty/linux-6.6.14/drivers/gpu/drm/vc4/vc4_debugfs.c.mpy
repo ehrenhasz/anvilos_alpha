@@ -1,0 +1,9 @@
+{
+  "module_name": "vc4_debugfs.c",
+  "hash_id": "94354720f308b669e57bc3aaff30723ca5371b9ce51c4bf5cece02a4baae8187",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/vc4/vc4_debugfs.c",
+  "human_readable_source": "\n \n\n#include <drm/drm_drv.h>\n\n#include <linux/seq_file.h>\n#include <linux/circ_buf.h>\n#include <linux/ctype.h>\n#include <linux/debugfs.h>\n#include <linux/platform_device.h>\n\n#include \"vc4_drv.h\"\n#include \"vc4_regs.h\"\n\n \nvoid\nvc4_debugfs_init(struct drm_minor *minor)\n{\n\tstruct vc4_dev *vc4 = to_vc4_dev(minor->dev);\n\tstruct drm_device *drm = &vc4->base;\n\n\tdrm_WARN_ON(drm, vc4_hvs_debugfs_init(minor));\n\n\tif (vc4->v3d) {\n\t\tdrm_WARN_ON(drm, vc4_bo_debugfs_init(minor));\n\t\tdrm_WARN_ON(drm, vc4_v3d_debugfs_init(minor));\n\t}\n}\n\nstatic int vc4_debugfs_regset32(struct seq_file *m, void *unused)\n{\n\tstruct drm_debugfs_entry *entry = m->private;\n\tstruct drm_device *drm = entry->dev;\n\tstruct debugfs_regset32 *regset = entry->file.data;\n\tstruct drm_printer p = drm_seq_file_printer(m);\n\tint idx;\n\n\tif (!drm_dev_enter(drm, &idx))\n\t\treturn -ENODEV;\n\n\tdrm_print_regset32(&p, regset);\n\n\tdrm_dev_exit(idx);\n\n\treturn 0;\n}\n\nvoid vc4_debugfs_add_regset32(struct drm_device *drm,\n\t\t\t      const char *name,\n\t\t\t      struct debugfs_regset32 *regset)\n{\n\tdrm_debugfs_add_file(drm, name, vc4_debugfs_regset32, regset);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hvm_vcpu.h",
+  "hash_id": "9e0eaa1bb7e9df43993f64f42fdfcc0582f5179c5894b82b491c7e4f56840399",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/interface/hvm/hvm_vcpu.h",
+  "human_readable_source": " \n \n\n#ifndef __XEN_PUBLIC_HVM_HVM_VCPU_H__\n#define __XEN_PUBLIC_HVM_HVM_VCPU_H__\n\n#include \"../xen.h\"\n\nstruct vcpu_hvm_x86_32 {\n    uint32_t eax;\n    uint32_t ecx;\n    uint32_t edx;\n    uint32_t ebx;\n    uint32_t esp;\n    uint32_t ebp;\n    uint32_t esi;\n    uint32_t edi;\n    uint32_t eip;\n    uint32_t eflags;\n\n    uint32_t cr0;\n    uint32_t cr3;\n    uint32_t cr4;\n\n    uint32_t pad1;\n\n     \n    uint64_t efer;\n\n    uint32_t cs_base;\n    uint32_t ds_base;\n    uint32_t ss_base;\n    uint32_t es_base;\n    uint32_t tr_base;\n    uint32_t cs_limit;\n    uint32_t ds_limit;\n    uint32_t ss_limit;\n    uint32_t es_limit;\n    uint32_t tr_limit;\n    uint16_t cs_ar;\n    uint16_t ds_ar;\n    uint16_t ss_ar;\n    uint16_t es_ar;\n    uint16_t tr_ar;\n\n    uint16_t pad2[3];\n};\n\n \n\nstruct vcpu_hvm_x86_64 {\n    uint64_t rax;\n    uint64_t rcx;\n    uint64_t rdx;\n    uint64_t rbx;\n    uint64_t rsp;\n    uint64_t rbp;\n    uint64_t rsi;\n    uint64_t rdi;\n    uint64_t rip;\n    uint64_t rflags;\n\n    uint64_t cr0;\n    uint64_t cr3;\n    uint64_t cr4;\n    uint64_t efer;\n\n     \n};\n\nstruct vcpu_hvm_context {\n#define VCPU_HVM_MODE_32B 0   \n#define VCPU_HVM_MODE_64B 1   \n    uint32_t mode;\n\n    uint32_t pad;\n\n     \n    union {\n        struct vcpu_hvm_x86_32 x86_32;\n        struct vcpu_hvm_x86_64 x86_64;\n    } cpu_regs;\n};\ntypedef struct vcpu_hvm_context vcpu_hvm_context_t;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

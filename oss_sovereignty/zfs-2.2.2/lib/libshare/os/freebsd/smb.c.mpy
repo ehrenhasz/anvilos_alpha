@@ -1,0 +1,9 @@
+{
+  "module_name": "smb.c",
+  "hash_id": "2a53368b8fe0337c9a8b2c2535fc2c27f44e1c84d88e5c05cf57c95c0788875f",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libshare/os/freebsd/smb.c",
+  "human_readable_source": " \n\n \n\n#include <stdio.h>\n#include <libshare.h>\n#include \"libshare_impl.h\"\n\n \nstatic int\nsmb_enable_share(sa_share_impl_t impl_share)\n{\n\t(void) impl_share;\n\tfputs(\"No SMB support in FreeBSD yet.\\n\", stderr);\n\treturn (SA_NOT_SUPPORTED);\n}\n \nstatic int\nsmb_disable_share(sa_share_impl_t impl_share)\n{\n\t(void) impl_share;\n\tfputs(\"No SMB support in FreeBSD yet.\\n\", stderr);\n\treturn (SA_NOT_SUPPORTED);\n}\n\n \nstatic int\nsmb_validate_shareopts(const char *shareopts)\n{\n\t(void) shareopts;\n\tfputs(\"No SMB support in FreeBSD yet.\\n\", stderr);\n\treturn (SA_NOT_SUPPORTED);\n}\n\n \nstatic boolean_t\nsmb_is_share_active(sa_share_impl_t impl_share)\n{\n\t(void) impl_share;\n\treturn (B_FALSE);\n}\n\nstatic int\nsmb_update_shares(void)\n{\n\t \n\treturn (0);\n}\n\nconst sa_fstype_t libshare_smb_type = {\n\t.enable_share = smb_enable_share,\n\t.disable_share = smb_disable_share,\n\t.is_shared = smb_is_share_active,\n\n\t.validate_shareopts = smb_validate_shareopts,\n\t.commit_shares = smb_update_shares,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

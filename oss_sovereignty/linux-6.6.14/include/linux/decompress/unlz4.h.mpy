@@ -1,0 +1,9 @@
+{
+  "module_name": "unlz4.h",
+  "hash_id": "777ccf8d0de5cd540e4d1bc9528e9816a5f2f6a931dcae32101296831990fb43",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/decompress/unlz4.h",
+  "human_readable_source": " \n#ifndef DECOMPRESS_UNLZ4_H\n#define DECOMPRESS_UNLZ4_H\n\nint unlz4(unsigned char *inbuf, long len,\n\tlong (*fill)(void*, unsigned long),\n\tlong (*flush)(void*, unsigned long),\n\tunsigned char *output,\n\tlong *pos,\n\tvoid(*error)(char *x));\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

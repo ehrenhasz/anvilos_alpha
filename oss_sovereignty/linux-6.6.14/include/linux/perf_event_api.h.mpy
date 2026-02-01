@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_event_api.h",
+  "hash_id": "5c65d1efe4147a0ff259adefd48f15a2ac385fe82ac3f51b010c7932d802e63e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/perf_event_api.h",
+  "human_readable_source": "#include <linux/perf_event.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

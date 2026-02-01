@@ -1,0 +1,9 @@
+{
+  "module_name": "mach-config.h",
+  "hash_id": "3060fc104dd9e1cdd0ae21852c420286e0101e13421421768b9d4716b0ad6188",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/amd/mach-config.h",
+  "human_readable_source": " \n \n#ifndef __AMD_MACH_CONFIG_H\n#define __AMD_MACH_CONFIG_H\n\n#include <sound/soc-acpi.h>\n\n#define FLAG_AMD_SOF\t\t\tBIT(1)\n#define FLAG_AMD_SOF_ONLY_DMIC\t\tBIT(2)\n#define FLAG_AMD_LEGACY\t\t\tBIT(3)\n\n#define ACP_PCI_DEV_ID\t\t\t0x15E2\n\nextern struct snd_soc_acpi_mach snd_soc_acpi_amd_sof_machines[];\nextern struct snd_soc_acpi_mach snd_soc_acpi_amd_rmb_sof_machines[];\nextern struct snd_soc_acpi_mach snd_soc_acpi_amd_vangogh_sof_machines[];\n\nstruct config_entry {\n\tu32 flags;\n\tu16 device;\n\tconst struct dmi_system_id *dmi_table;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

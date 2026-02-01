@@ -1,0 +1,9 @@
+{
+  "module_name": "resilver_finish-start-scrub.sh",
+  "hash_id": "9dd143edbc795ef322aa768dc172e0de4e5c41133488eb09a079a10d26be12c4",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zed/zed.d/resilver_finish-start-scrub.sh",
+  "human_readable_source": "#!/bin/sh\n# shellcheck disable=SC2154\n# resilver_finish-start-scrub.sh\n# Run a scrub after a resilver\n#\n# Exit codes:\n# 1: Internal error\n# 2: Script wasn't enabled in zed.rc\n# 3: Scrubs are automatically started for sequential resilvers\n[ -f \"${ZED_ZEDLET_DIR}/zed.rc\" ] && . \"${ZED_ZEDLET_DIR}/zed.rc\"\n. \"${ZED_ZEDLET_DIR}/zed-functions.sh\"\n\n[ \"${ZED_SCRUB_AFTER_RESILVER}\" = \"1\" ] || exit 2\n[ \"${ZEVENT_RESILVER_TYPE}\" != \"sequential\" ] || exit 3\n[ -n \"${ZEVENT_POOL}\" ] || exit 1\n[ -n \"${ZEVENT_SUBCLASS}\" ] || exit 1\nzed_check_cmd \"${ZPOOL}\" || exit 1\n\nzed_log_msg \"Starting scrub after resilver on ${ZEVENT_POOL}\"\n\"${ZPOOL}\" scrub \"${ZEVENT_POOL}\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

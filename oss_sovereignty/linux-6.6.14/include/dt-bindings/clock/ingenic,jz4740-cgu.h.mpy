@@ -1,0 +1,9 @@
+{
+  "module_name": "ingenic,jz4740-cgu.h",
+  "hash_id": "9cb2e0c8848a0521d5caf4b10cd4115ba3a09ec7208a2faa227a465b037a504d",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/ingenic,jz4740-cgu.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_CLOCK_JZ4740_CGU_H__\n#define __DT_BINDINGS_CLOCK_JZ4740_CGU_H__\n\n#define JZ4740_CLK_EXT\t\t0\n#define JZ4740_CLK_RTC\t\t1\n#define JZ4740_CLK_PLL\t\t2\n#define JZ4740_CLK_PLL_HALF\t3\n#define JZ4740_CLK_CCLK\t\t4\n#define JZ4740_CLK_HCLK\t\t5\n#define JZ4740_CLK_PCLK\t\t6\n#define JZ4740_CLK_MCLK\t\t7\n#define JZ4740_CLK_LCD\t\t8\n#define JZ4740_CLK_LCD_PCLK\t9\n#define JZ4740_CLK_I2S\t\t10\n#define JZ4740_CLK_SPI\t\t11\n#define JZ4740_CLK_MMC\t\t12\n#define JZ4740_CLK_UHC\t\t13\n#define JZ4740_CLK_UDC\t\t14\n#define JZ4740_CLK_UART0\t15\n#define JZ4740_CLK_UART1\t16\n#define JZ4740_CLK_DMA\t\t17\n#define JZ4740_CLK_IPU\t\t18\n#define JZ4740_CLK_ADC\t\t19\n#define JZ4740_CLK_I2C\t\t20\n#define JZ4740_CLK_AIC\t\t21\n#define JZ4740_CLK_TCU\t\t22\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

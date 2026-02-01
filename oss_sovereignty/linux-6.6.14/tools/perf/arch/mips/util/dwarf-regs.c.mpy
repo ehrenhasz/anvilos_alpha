@@ -1,0 +1,9 @@
+{
+  "module_name": "dwarf-regs.c",
+  "hash_id": "1300ebe6dee5e0969d7c035aa89c85568b6190d4136d4536e54130584becb4d9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/mips/util/dwarf-regs.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <dwarf-regs.h>\n\nstatic const char *mips_gpr_names[32] = {\n\t\"$0\", \"$1\", \"$2\", \"$3\", \"$4\", \"$5\", \"$6\", \"$7\", \"$8\", \"$9\",\n\t\"$10\", \"$11\", \"$12\", \"$13\", \"$14\", \"$15\", \"$16\", \"$17\", \"$18\", \"$19\",\n\t\"$20\", \"$21\", \"$22\", \"$23\", \"$24\", \"$25\", \"$26\", \"$27\", \"$28\", \"$29\",\n\t\"$30\", \"$31\"\n};\n\nconst char *get_arch_regstr(unsigned int n)\n{\n\tif (n < 32)\n\t\treturn mips_gpr_names[n];\n\tif (n == 64)\n\t\treturn \"hi\";\n\tif (n == 65)\n\t\treturn \"lo\";\n\treturn NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

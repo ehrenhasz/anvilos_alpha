@@ -1,0 +1,9 @@
+{
+  "module_name": "qla_settings.h",
+  "hash_id": "789748b561b8210da17ed1c2f2f16d5b9d2755266037356e37a6f8dc9b1de3e4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/qla2xxx/qla_settings.h",
+  "human_readable_source": " \n \n#define MAX_RETRIES_OF_ISP_ABORT\t5\n\n \n#define MAX_LOOP_TIMEOUT\t(60 * 5)\n\n#include \"qla_version.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

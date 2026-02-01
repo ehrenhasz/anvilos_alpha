@@ -1,0 +1,9 @@
+{
+  "module_name": "dtotimespec.c",
+  "hash_id": "375337f2ed35eeb111b986d360e386cd5cde0d166e0a15cc65a4b8f524d6e5e1",
+  "original_prompt": "Ingested from coreutils-9.4/lib/dtotimespec.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#include \"timespec.h\"\n\n#include \"intprops.h\"\n\nstruct timespec\ndtotimespec (double sec)\n{\n  if (! (TYPE_MINIMUM (time_t) < sec))\n    return make_timespec (TYPE_MINIMUM (time_t), 0);\n  else if (! (sec < 1.0 + TYPE_MAXIMUM (time_t)))\n    return make_timespec (TYPE_MAXIMUM (time_t), TIMESPEC_HZ - 1);\n  else\n    {\n      time_t s = sec;\n      double frac = TIMESPEC_HZ * (sec - s);\n      long ns = frac;\n      ns += ns < frac;\n      s += ns / TIMESPEC_HZ;\n      ns %= TIMESPEC_HZ;\n\n      if (ns < 0)\n        {\n          s--;\n          ns += TIMESPEC_HZ;\n        }\n\n      return make_timespec (s, ns);\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

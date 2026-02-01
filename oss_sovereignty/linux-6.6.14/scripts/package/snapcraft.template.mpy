@@ -1,0 +1,9 @@
+{
+  "module_name": "snapcraft.template",
+  "hash_id": "0689f6d3f29b7c73f81dee162e2fbe8510e21a898f5e770306ac6f96c70b7968",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/package/snapcraft.template",
+  "human_readable_source": "name: kernel\nversion: KERNELRELEASE\nsummary: Linux kernel\ndescription: The upstream Linux kernel\ngrade: stable\nconfinement: strict\ntype: kernel\n\nparts:\n  kernel:\n    plugin: kernel\n    source: SRCTREE\n    source-type: tar\n    kernel-with-firmware: false\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

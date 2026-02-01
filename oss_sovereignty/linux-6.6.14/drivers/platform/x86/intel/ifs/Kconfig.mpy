@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "196881866674b66c8c5bc98fd21b2629db6334c25d55d716c532ce61c9f6bc7c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/ifs/Kconfig",
+  "human_readable_source": "config INTEL_IFS\n\ttristate \"Intel In Field Scan\"\n\tdepends on X86 && CPU_SUP_INTEL && 64BIT && SMP\n\thelp\n\t  Enable support for the In Field Scan capability in select\n\t  CPUs. The capability allows for running low level tests via\n\t  a scan image distributed by Intel via Github to validate CPU\n\t  operation beyond baseline RAS capabilities. To compile this\n\t  support as a module, choose M here. The module will be called\n\t  intel_ifs.\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

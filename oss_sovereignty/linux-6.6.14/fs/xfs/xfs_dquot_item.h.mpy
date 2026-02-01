@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_dquot_item.h",
+  "hash_id": "338ed10eb45f4141f6e4c918278c02feda858d6ce7d28cb86703ac1a9348c6d5",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_dquot_item.h",
+  "human_readable_source": "\n \n#ifndef __XFS_DQUOT_ITEM_H__\n#define __XFS_DQUOT_ITEM_H__\n\nstruct xfs_dquot;\nstruct xfs_trans;\nstruct xfs_mount;\n\nstruct xfs_dq_logitem {\n\tstruct xfs_log_item\tqli_item;\t \n\tstruct xfs_dquot\t*qli_dquot;\t \n\txfs_lsn_t\t\tqli_flush_lsn;\t \n};\n\nvoid xfs_qm_dquot_logitem_init(struct xfs_dquot *dqp);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

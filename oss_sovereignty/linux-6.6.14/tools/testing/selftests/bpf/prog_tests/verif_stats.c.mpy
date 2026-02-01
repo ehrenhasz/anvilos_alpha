@@ -1,0 +1,9 @@
+{
+  "module_name": "verif_stats.c",
+  "hash_id": "6c35826d2876dea4f2b1b3e9c53d556b7e27cc3aadbd9fc255bc019de09c746a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/verif_stats.c",
+  "human_readable_source": "\n \n\n#include <test_progs.h>\n\n#include \"trace_vprintk.lskel.h\"\n\nvoid test_verif_stats(void)\n{\n\t__u32 len = sizeof(struct bpf_prog_info);\n\tstruct trace_vprintk_lskel *skel;\n\tstruct bpf_prog_info info = {};\n\tint err;\n\n\tskel = trace_vprintk_lskel__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"trace_vprintk__open_and_load\"))\n\t\tgoto cleanup;\n\n\terr = bpf_prog_get_info_by_fd(skel->progs.sys_enter.prog_fd,\n\t\t\t\t      &info, &len);\n\tif (!ASSERT_OK(err, \"bpf_prog_get_info_by_fd\"))\n\t\tgoto cleanup;\n\n\tif (!ASSERT_GT(info.verified_insns, 0, \"verified_insns\"))\n\t\tgoto cleanup;\n\ncleanup:\n\ttrace_vprintk_lskel__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

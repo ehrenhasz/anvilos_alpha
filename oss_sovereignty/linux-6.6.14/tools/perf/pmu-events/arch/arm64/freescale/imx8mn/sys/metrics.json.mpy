@@ -1,0 +1,9 @@
+{
+  "module_name": "metrics.json",
+  "hash_id": "cb3fcf5af505b14171e4d88722da297d2b3686e88a3c6caf9fafa7f664fbf697",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/freescale/imx8mn/sys/metrics.json",
+  "human_readable_source": "[\n   {\n\t    \"BriefDescription\": \"bytes all masters read from ddr based on read-cycles event\",\n\t    \"MetricName\": \"imx8mn_ddr_read.all\",\n\t    \"MetricExpr\": \"imx8mn_ddr.read_cycles * 4 * 2\",\n\t    \"ScaleUnit\": \"9.765625e-4KB\",\n\t    \"Unit\": \"imx8_ddr\",\n\t    \"Compat\": \"i.MX8MN\"\n   },\n   {\n\t    \"BriefDescription\": \"bytes all masters write to ddr based on write-cycles event\",\n\t    \"MetricName\": \"imx8mn_ddr_write.all\",\n\t    \"MetricExpr\": \"imx8mn_ddr.write_cycles * 4 * 2\",\n\t    \"ScaleUnit\": \"9.765625e-4KB\",\n\t    \"Unit\": \"imx8_ddr\",\n\t    \"Compat\": \"i.MX8MN\"\n   }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

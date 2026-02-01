@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "72834bbf888d8603cf4321adbea5d8819e4d256a16ea12bf269eae6f5ccd47d6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/tm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nSIGNAL_CONTEXT_CHK_TESTS := tm-signal-context-chk-gpr tm-signal-context-chk-fpu \\\n\ttm-signal-context-chk-vmx tm-signal-context-chk-vsx\n\nTEST_GEN_PROGS := tm-resched-dscr tm-syscall tm-signal-msr-resv tm-signal-stack \\\n\ttm-vmxcopy tm-fork tm-tar tm-tmspr tm-vmx-unavail tm-unavailable tm-trap \\\n\t$(SIGNAL_CONTEXT_CHK_TESTS) tm-sigreturn tm-signal-sigreturn-nt \\\n\ttm-signal-context-force-tm tm-poison tm-signal-pagefault\n\nTEST_FILES := settings\n\ntop_srcdir = ../../../../..\ninclude ../../lib.mk\n\n$(TEST_GEN_PROGS): ../harness.c ../utils.c\n\nCFLAGS += -mhtm\n\n$(OUTPUT)/tm-syscall: tm-syscall-asm.S\n$(OUTPUT)/tm-syscall: CFLAGS += $(KHDR_INCLUDES)\n$(OUTPUT)/tm-tmspr: CFLAGS += -pthread\n$(OUTPUT)/tm-vmx-unavail: CFLAGS += -pthread -m64\n$(OUTPUT)/tm-resched-dscr: ../pmu/lib.c\n$(OUTPUT)/tm-unavailable: CFLAGS += -O0 -pthread -m64 -Wno-error=uninitialized -mvsx\n$(OUTPUT)/tm-trap: CFLAGS += -O0 -pthread -m64\n$(OUTPUT)/tm-signal-context-force-tm: CFLAGS += -pthread -m64\n$(OUTPUT)/tm-signal-pagefault: CFLAGS += -pthread -m64\n$(OUTPUT)/tm-poison: CFLAGS += -m64\n\nSIGNAL_CONTEXT_CHK_TESTS := $(patsubst %,$(OUTPUT)/%,$(SIGNAL_CONTEXT_CHK_TESTS))\n$(SIGNAL_CONTEXT_CHK_TESTS): tm-signal.S\n$(SIGNAL_CONTEXT_CHK_TESTS): CFLAGS += -mhtm -m64 -mvsx\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

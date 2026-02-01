@@ -1,0 +1,9 @@
+{
+  "module_name": "xcase.c",
+  "hash_id": "9af9913b44181bd115dfc65ba4c19f1dc08934cdb334bfcbc990d75bec131e20",
+  "original_prompt": "Ingested from bash-5.2.21/support/xcase.c",
+  "human_readable_source": " \n\n \n\n#ifdef HAVE_CONFIG_H\n#include \"config.h\"\n#endif\n\n#include <stdio.h>\n#include <ctype.h>\n\n#if HAVE_UNISTD_H\n#include <unistd.h>\n#endif\n\n#include \"bashansi.h\"\n#include <errno.h>\n\n#ifndef errno\nextern int errno;\n#endif\n\nextern int optind;\n\n#define LOWER\t1\n#define UPPER\t2\n\nint\nmain(ac, av)\nint\tac;\nchar\t**av;\n{\n\tint\tc, x;\n\tint\top;\n\tFILE\t*inf;\n\n\top = 0;\n\twhile ((c = getopt(ac, av, \"lnu\")) != EOF) {\n\t\tswitch (c) {\n\t\tcase 'n':\n\t\t\tsetbuf (stdout, (char *)NULL);\n\t\t\tbreak;\n\t\tcase 'u':\n\t\t\top = UPPER;\n\t\t\tbreak;\n\t\tcase 'l':\n\t\t\top = LOWER;\n\t\t\tbreak;\n\t\tdefault:\n\t\t\tfprintf(stderr, \"casemod: usage: casemod [-lnu] [file]\\n\");\n\t\t\texit(2);\n\t\t}\n\t}\n\tav += optind;\n\tac -= optind;\n\n\tif (av[0] && (av[0][0] != '-' || av[0][1])) {\n\t\tinf = fopen(av[0], \"r\");\n\t\tif (inf == 0) {\n\t\t\tfprintf(stderr, \"casemod: %s: cannot open: %s\\n\", av[0], strerror(errno));\n\t\t\texit(1);\n\t\t}\n\t} else\n\t\tinf = stdin;\n\n\twhile ((c = getc(inf)) != EOF) {\n\t\tswitch (op) {\n\t\tcase UPPER:\n\t\t\tx = islower(c) ? toupper(c) : c;\n\t\t\tbreak;\n\t\tcase LOWER:\n\t\t\tx = isupper(c) ? tolower(c) : c;\n\t\t\tbreak;\n\t\tdefault:\n\t\t\tx = c;\n\t\t\tbreak;\n\t\t}\n\t\tputchar(x);\n\t}\n\t\t\t\n\texit(0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

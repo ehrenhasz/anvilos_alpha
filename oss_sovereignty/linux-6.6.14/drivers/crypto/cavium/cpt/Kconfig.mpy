@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8afb3d9e09db75e1e9452e9aeba4f1c173a4284e74b5e9f58568c2feac022a3d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/cavium/cpt/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Cavium crypto device configuration\n#\n\nconfig CRYPTO_DEV_CPT\n\ttristate\n\nconfig CAVIUM_CPT\n\ttristate \"Cavium Cryptographic Accelerator driver\"\n\tdepends on ARCH_THUNDER || COMPILE_TEST\n\tdepends on PCI_MSI && 64BIT\n\tselect CRYPTO_DEV_CPT\n\thelp\n\t  Support for Cavium CPT block found in octeon-tx series of\n\t  processors.\n\n\t  To compile this as a module, choose M here.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

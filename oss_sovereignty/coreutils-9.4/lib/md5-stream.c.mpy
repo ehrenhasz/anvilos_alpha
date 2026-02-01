@@ -1,0 +1,9 @@
+{
+  "module_name": "md5-stream.c",
+  "hash_id": "2064c98b4988bc31dbf4807abf6565d93d687634567c0672bb3e7afe6e3ae4cb",
+  "original_prompt": "Ingested from coreutils-9.4/lib/md5-stream.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#if HAVE_OPENSSL_MD5\n# define GL_OPENSSL_INLINE _GL_EXTERN_INLINE\n#endif\n#include \"md5.h\"\n\n#include <stdlib.h>\n\n#if USE_UNLOCKED_IO\n# include \"unlocked-io.h\"\n#endif\n\n#include \"af_alg.h\"\n\n#ifdef _LIBC\n# include <endian.h>\n# if __BYTE_ORDER == __BIG_ENDIAN\n#  define WORDS_BIGENDIAN 1\n# endif\n \n# define md5_init_ctx __md5_init_ctx\n# define md5_process_block __md5_process_block\n# define md5_process_bytes __md5_process_bytes\n# define md5_finish_ctx __md5_finish_ctx\n# define md5_stream __md5_stream\n#endif\n\n#define BLOCKSIZE 32768\n#if BLOCKSIZE % 64 != 0\n# error \"invalid BLOCKSIZE\"\n#endif\n\n \nint\nmd5_stream (FILE *stream, void *resblock)\n{\n  switch (afalg_stream (stream, \"md5\", resblock, MD5_DIGEST_SIZE))\n    {\n    case 0: return 0;\n    case -EIO: return 1;\n    }\n\n  char *buffer = malloc (BLOCKSIZE + 72);\n  if (!buffer)\n    return 1;\n\n  struct md5_ctx ctx;\n  md5_init_ctx (&ctx);\n  size_t sum;\n\n   \n  while (1)\n    {\n       \n      size_t n;\n      sum = 0;\n\n       \n      while (1)\n        {\n           \n              if (ferror (stream))\n                {\n                  free (buffer);\n                  return 1;\n                }\n              goto process_partial_block;\n            }\n        }\n\n       \n      md5_process_block (buffer, BLOCKSIZE, &ctx);\n    }\n\nprocess_partial_block:\n\n   \n  if (sum > 0)\n    md5_process_bytes (buffer, sum, &ctx);\n\n   \n  md5_finish_ctx (&ctx, resblock);\n  free (buffer);\n  return 0;\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

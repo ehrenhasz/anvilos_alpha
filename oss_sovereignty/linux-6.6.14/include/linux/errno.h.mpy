@@ -1,0 +1,9 @@
+{
+  "module_name": "errno.h",
+  "hash_id": "23e4009d1acab1e2735743c640a75670e35a15fca65152b9343727dc703a469c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/errno.h",
+  "human_readable_source": " \n#ifndef _LINUX_ERRNO_H\n#define _LINUX_ERRNO_H\n\n#include <uapi/linux/errno.h>\n\n\n \n#define ERESTARTSYS\t512\n#define ERESTARTNOINTR\t513\n#define ERESTARTNOHAND\t514\t \n#define ENOIOCTLCMD\t515\t \n#define ERESTART_RESTARTBLOCK 516  \n#define EPROBE_DEFER\t517\t \n#define EOPENSTALE\t518\t \n#define ENOPARAM\t519\t \n\n \n#define EBADHANDLE\t521\t \n#define ENOTSYNC\t522\t \n#define EBADCOOKIE\t523\t \n#define ENOTSUPP\t524\t \n#define ETOOSMALL\t525\t \n#define ESERVERFAULT\t526\t \n#define EBADTYPE\t527\t \n#define EJUKEBOX\t528\t \n#define EIOCBQUEUED\t529\t \n#define ERECALLCONFLICT\t530\t \n#define ENOGRACE\t531\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

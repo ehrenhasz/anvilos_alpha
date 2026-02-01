@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "99d53c65c873d835ae2d8ffaa5cff47f9c8b6bf444d64cbdbb9eeb4e79488cf7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/myricom/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Myricom device configuration\n#\n\nconfig NET_VENDOR_MYRI\n\tbool \"Myricom devices\"\n\tdefault y\n\tdepends on PCI && INET\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Myricom cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif NET_VENDOR_MYRI\n\nconfig MYRI10GE\n\ttristate \"Myricom Myri-10G Ethernet support\"\n\tdepends on PCI && INET\n\tselect FW_LOADER\n\tselect CRC32\n\thelp\n\t  This driver supports Myricom Myri-10G Dual Protocol interface in\n\t  Ethernet mode. If the eeprom on your board is not recent enough,\n\t  you will need a newer firmware image.\n\t  You may get this image or more information, at:\n\n\t  <http://www.myri.com/scs/download-Myri10GE.html>\n\n\t  To compile this driver as a module, choose M here. The module\n\t  will be called myri10ge.\n\nconfig MYRI10GE_DCA\n\tbool \"Direct Cache Access (DCA) Support\"\n\tdefault y\n\tdepends on MYRI10GE && DCA && !(MYRI10GE=y && DCA=m)\n\thelp\n\t  Say Y here if you want to use Direct Cache Access (DCA) in the\n\t  driver.  DCA is a method for warming the CPU cache before data\n\t  is used, with the intent of lessening the impact of cache misses.\n\nendif # NET_VENDOR_MYRI\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

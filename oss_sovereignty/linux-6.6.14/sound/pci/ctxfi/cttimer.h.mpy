@@ -1,0 +1,9 @@
+{
+  "module_name": "cttimer.h",
+  "hash_id": "a27508baa342e8ec7b95b7af6000627849c9bba2ba1e943ffb9faea6a12e2b06",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ctxfi/cttimer.h",
+  "human_readable_source": " \n \n\n#ifndef __CTTIMER_H\n#define __CTTIMER_H\n\n#include <linux/spinlock.h>\n#include <linux/timer.h>\n#include <linux/list.h>\n\nstruct snd_pcm_substream;\nstruct ct_atc;\nstruct ct_atc_pcm;\n\nstruct ct_timer;\nstruct ct_timer_instance;\n\nstruct ct_timer *ct_timer_new(struct ct_atc *atc);\nvoid ct_timer_free(struct ct_timer *atimer);\n\nstruct ct_timer_instance *\nct_timer_instance_new(struct ct_timer *atimer, struct ct_atc_pcm *apcm);\nvoid ct_timer_instance_free(struct ct_timer_instance *ti);\nvoid ct_timer_start(struct ct_timer_instance *ti);\nvoid ct_timer_stop(struct ct_timer_instance *ti);\nvoid ct_timer_prepare(struct ct_timer_instance *ti);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

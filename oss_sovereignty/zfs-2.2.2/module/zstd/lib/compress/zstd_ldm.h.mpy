@@ -1,0 +1,9 @@
+{
+  "module_name": "zstd_ldm.h",
+  "hash_id": "076eb5918d7cb6eeb8f760681b02d2e22891c0c9c48adad90d3a3112f488320a",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/lib/compress/zstd_ldm.h",
+  "human_readable_source": " \n\n#ifndef ZSTD_LDM_H\n#define ZSTD_LDM_H\n\n#if defined (__cplusplus)\nextern \"C\" {\n#endif\n\n#include \"zstd_compress_internal.h\"    \n#include \"../zstd.h\"    \n\n \n\n#define ZSTD_LDM_DEFAULT_WINDOW_LOG ZSTD_WINDOWLOG_LIMIT_DEFAULT\n\nvoid ZSTD_ldm_fillHashTable(\n            ldmState_t* state, const BYTE* ip,\n            const BYTE* iend, ldmParams_t const* params);\n\n \nsize_t ZSTD_ldm_generateSequences(\n            ldmState_t* ldms, rawSeqStore_t* sequences,\n            ldmParams_t const* params, void const* src, size_t srcSize);\n\n \nsize_t ZSTD_ldm_blockCompress(rawSeqStore_t* rawSeqStore,\n            ZSTD_matchState_t* ms, seqStore_t* seqStore, U32 rep[ZSTD_REP_NUM],\n            void const* src, size_t srcSize);\n\n \nvoid ZSTD_ldm_skipSequences(rawSeqStore_t* rawSeqStore, size_t srcSize,\n    U32 const minMatch);\n\n\n \nsize_t ZSTD_ldm_getTableSize(ldmParams_t params);\n\n \nsize_t ZSTD_ldm_getMaxNbSeq(ldmParams_t params, size_t maxChunkSize);\n\n \nvoid ZSTD_ldm_adjustParameters(ldmParams_t* params,\n                               ZSTD_compressionParameters const* cParams);\n\n#if defined (__cplusplus)\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

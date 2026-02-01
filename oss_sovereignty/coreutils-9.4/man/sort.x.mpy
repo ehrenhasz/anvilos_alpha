@@ -1,0 +1,9 @@
+{
+  "module_name": "sort.x",
+  "hash_id": "d62e29f2a304a57e1901695fcd089e2965002f2c3cec28538ac8f73decc99a72",
+  "original_prompt": "Ingested from coreutils-9.4/man/sort.x",
+  "human_readable_source": "[NAME]\nsort \\- sort lines of text files\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nshuf(1), uniq(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

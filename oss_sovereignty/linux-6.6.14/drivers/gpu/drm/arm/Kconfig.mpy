@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8da3a35f4b764ac779ff884fef7f2b6a70ce15c27fd96ca61f29143b64f51ac4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/arm/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nmenu \"ARM devices\"\n\tdepends on DRM\n\nconfig DRM_HDLCD\n\ttristate \"ARM HDLCD\"\n\tdepends on DRM && OF && (ARM || ARM64 || COMPILE_TEST)\n\tdepends on COMMON_CLK\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\thelp\n\t  Choose this option if you have an ARM High Definition Colour LCD\n\t  controller.\n\n\t  If M is selected the module will be called hdlcd.\n\nconfig DRM_HDLCD_SHOW_UNDERRUN\n\tbool \"Show underrun conditions\"\n\tdepends on DRM_HDLCD\n\tdefault n\n\thelp\n\t  Enable this option to show in red colour the pixels that the\n\t  HDLCD device did not fetch from framebuffer due to underrun\n\t  conditions.\n\nconfig DRM_MALI_DISPLAY\n\ttristate \"ARM Mali Display Processor\"\n\tdepends on DRM && OF && (ARM || ARM64 || COMPILE_TEST)\n\tdepends on COMMON_CLK\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect VIDEOMODE_HELPERS\n\thelp\n\t  Choose this option if you want to compile the ARM Mali Display\n\t  Processor driver. It supports the DP500, DP550 and DP650 variants\n\t  of the hardware.\n\n\t  If compiled as a module it will be called mali-dp.\n\nsource \"drivers/gpu/drm/arm/display/Kconfig\"\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

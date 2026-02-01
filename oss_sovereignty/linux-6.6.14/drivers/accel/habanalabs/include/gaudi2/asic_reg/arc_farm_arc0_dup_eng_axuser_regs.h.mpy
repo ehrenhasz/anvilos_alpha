@@ -1,0 +1,9 @@
+{
+  "module_name": "arc_farm_arc0_dup_eng_axuser_regs.h",
+  "hash_id": "8e7ee60b9d35041d6f0614feff9b0334ecf1feb73dba5ff6886349880ad2769d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/gaudi2/asic_reg/arc_farm_arc0_dup_eng_axuser_regs.h",
+  "human_readable_source": " \n\n \n\n#ifndef ASIC_REG_ARC_FARM_ARC0_DUP_ENG_AXUSER_REGS_H_\n#define ASIC_REG_ARC_FARM_ARC0_DUP_ENG_AXUSER_REGS_H_\n\n \n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_HB_ASID 0x4E89900\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_HB_MMU_BP 0x4E89904\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_HB_STRONG_ORDER 0x4E89908\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_HB_NO_SNOOP 0x4E8990C\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_HB_WR_REDUCTION 0x4E89910\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_HB_RD_ATOMIC 0x4E89914\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_HB_QOS 0x4E89918\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_HB_RSVD 0x4E8991C\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_HB_EMEM_CPAGE 0x4E89920\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_HB_CORE 0x4E89924\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_E2E_COORD 0x4E89928\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_HB_WR_OVRD_LO 0x4E89930\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_HB_WR_OVRD_HI 0x4E89934\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_HB_RD_OVRD_LO 0x4E89938\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_HB_RD_OVRD_HI 0x4E8993C\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_LB_COORD 0x4E89940\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_LB_LOCK 0x4E89944\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_LB_RSVD 0x4E89948\n\n#define mmARC_FARM_ARC0_DUP_ENG_AXUSER_LB_OVRD 0x4E8994C\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

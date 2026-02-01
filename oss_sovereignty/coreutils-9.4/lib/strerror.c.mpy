@@ -1,0 +1,9 @@
+{
+  "module_name": "strerror.c",
+  "hash_id": "43ab00f285154b5abd4128b9eded903b9fe01c7de812dce6b66229aa198f5c1c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/strerror.c",
+  "human_readable_source": " \n#include <string.h>\n\n#include <errno.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\n#include \"intprops.h\"\n#include \"strerror-override.h\"\n\n \n#undef sprintf\n\nchar *\nstrerror (int n)\n#undef strerror\n{\n  static char buf[STACKBUF_LEN];\n  size_t len;\n\n   \n  const char *msg = strerror_override (n);\n  if (msg)\n    return (char *) msg;\n\n  msg = strerror (n);\n\n   \n  if (!msg || !*msg)\n    {\n      static char const fmt[] = \"Unknown error %d\";\n      static_assert (sizeof buf >= sizeof (fmt) + INT_STRLEN_BOUND (n));\n      sprintf (buf, fmt, n);\n      errno = EINVAL;\n      return buf;\n    }\n\n   \n  len = strlen (msg);\n  if (sizeof buf <= len)\n    abort ();\n\n  memcpy (buf, msg, len + 1);\n  return buf;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

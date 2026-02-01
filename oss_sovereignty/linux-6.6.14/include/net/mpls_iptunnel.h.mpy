@@ -1,0 +1,9 @@
+{
+  "module_name": "mpls_iptunnel.h",
+  "hash_id": "ee9ea283816db71f5d2f6e23a69dba253b71a84c4cb5b494a5de503e618a4ace",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/mpls_iptunnel.h",
+  "human_readable_source": " \n \n\n#ifndef _NET_MPLS_IPTUNNEL_H\n#define _NET_MPLS_IPTUNNEL_H 1\n\n#include <linux/types.h>\n#include <net/lwtunnel.h>\n\nstruct mpls_iptunnel_encap {\n\tu8\tlabels;\n\tu8\tttl_propagate;\n\tu8\tdefault_ttl;\n\tu8\treserved1;\n\tu32\tlabel[];\n};\n\nstatic inline struct mpls_iptunnel_encap *mpls_lwtunnel_encap(struct lwtunnel_state *lwtstate)\n{\n\treturn (struct mpls_iptunnel_encap *)lwtstate->data;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

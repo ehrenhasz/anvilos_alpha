@@ -1,0 +1,9 @@
+{
+  "module_name": "amlogic,a1-pll-clkc.h",
+  "hash_id": "ce35a3eb4361864f9ddf03f1b4e1af496f5df26adfc24dc6af5e2eb95f2abfcd",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/amlogic,a1-pll-clkc.h",
+  "human_readable_source": " \n \n\n#ifndef __A1_PLL_CLKC_H\n#define __A1_PLL_CLKC_H\n\n#define CLKID_FIXED_PLL_DCO\t0\n#define CLKID_FIXED_PLL\t\t1\n#define CLKID_FCLK_DIV2_DIV\t2\n#define CLKID_FCLK_DIV3_DIV\t3\n#define CLKID_FCLK_DIV5_DIV\t4\n#define CLKID_FCLK_DIV7_DIV\t5\n#define CLKID_FCLK_DIV2\t\t6\n#define CLKID_FCLK_DIV3\t\t7\n#define CLKID_FCLK_DIV5\t\t8\n#define CLKID_FCLK_DIV7\t\t9\n#define CLKID_HIFI_PLL\t\t10\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

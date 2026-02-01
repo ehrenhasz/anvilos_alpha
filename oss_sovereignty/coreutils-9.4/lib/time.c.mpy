@@ -1,0 +1,9 @@
+{
+  "module_name": "time.c",
+  "hash_id": "03308aedde48b865cf057accc2470aee963fee4c17241d95e9245d6806dd5484",
+  "original_prompt": "Ingested from coreutils-9.4/lib/time.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <time.h>\n\n#include <stdlib.h>\n#include <sys/time.h>\n\ntime_t\ntime (time_t *tp)\n{\n  struct timeval tv;\n  time_t tt;\n\n  if (gettimeofday (&tv, NULL) < 0)\n    abort ();\n  tt = tv.tv_sec;\n\n  if (tp)\n    *tp = tt;\n\n  return tt;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

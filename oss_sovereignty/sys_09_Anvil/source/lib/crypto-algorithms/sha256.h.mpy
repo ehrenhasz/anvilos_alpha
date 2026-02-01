@@ -1,0 +1,9 @@
+{
+  "module_name": "sha256.h",
+  "hash_id": "4d721f3171ff0ca1f16324d7a0141b4e5e055a7b8b034eb132aa8688f61d3b91",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/crypto-algorithms/sha256.h",
+  "human_readable_source": " \n\n#ifndef SHA256_H\n#define SHA256_H\n\n \n#include <stddef.h>\n\n \n#define SHA256_BLOCK_SIZE 32            \n\n \ntypedef unsigned char BYTE;             \ntypedef unsigned int  WORD;             \n\ntypedef struct {\n\tBYTE data[64];\n\tWORD datalen;\n\tunsigned long long bitlen;\n\tWORD state[8];\n} CRYAL_SHA256_CTX;\n\n \nvoid sha256_init(CRYAL_SHA256_CTX *ctx);\nvoid sha256_update(CRYAL_SHA256_CTX *ctx, const BYTE data[], size_t len);\nvoid sha256_final(CRYAL_SHA256_CTX *ctx, BYTE hash[]);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

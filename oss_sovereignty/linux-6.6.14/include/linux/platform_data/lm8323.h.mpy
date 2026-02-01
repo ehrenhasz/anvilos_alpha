@@ -1,0 +1,9 @@
+{
+  "module_name": "lm8323.h",
+  "hash_id": "b7083c8aa41b5502f7ccb21f5344ec16a814ea0ff31ea4a6a8cfa84e092ad72e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/lm8323.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_LM8323_H\n#define __LINUX_LM8323_H\n\n#include <linux/types.h>\n\n \n#define LM8323_KEYMAP_SIZE\t(0x7f + 1)\n\n#define LM8323_NUM_PWMS\t\t3\n\nstruct lm8323_platform_data {\n\tint debounce_time;  \n\tint active_time;  \n\n\tint size_x;\n\tint size_y;\n\tbool repeat;\n\tconst unsigned short *keymap;\n\n\tconst char *pwm_names[LM8323_NUM_PWMS];\n\n\tconst char *name;  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_primitives___err_non_enum.c",
+  "hash_id": "e23020f4004542fabc307b37dcf5d2732da25b9a23f42d47b16df1fb14421226",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___err_non_enum.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_primitives___err_non_enum x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

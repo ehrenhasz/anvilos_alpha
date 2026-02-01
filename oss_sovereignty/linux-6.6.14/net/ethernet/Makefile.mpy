@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3c1c9a91354f6b01b64779cfcf35d76985263db977e0a38a0acfabb2b30d3ea9",
+  "original_prompt": "Ingested from linux-6.6.14/net/ethernet/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Linux Ethernet layer.\n#\n\nobj-y\t\t\t\t\t+= eth.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bench.h",
+  "hash_id": "0d55d51bcc584d9c65343a1b9c1c88642199bf35ccde11f5c0002e4271f27149",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/bench.h",
+  "human_readable_source": " \n  struct timeval real_start;\n  struct timeval user_start;\n  struct timeval sys_start;\n   \n  long real_usec;\n  long user_usec;\n  long sys_usec;\n};\n\nstatic void\ntiming_start (struct timings_state *ts)\n{\n  struct rusage usage;\n\n  getrusage (RUSAGE_SELF, &usage);\n  ts->user_start = usage.ru_utime;\n  ts->sys_start = usage.ru_stime;\n\n  gettimeofday (&ts->real_start, NULL);\n}\n\nstatic void\ntiming_end (struct timings_state *ts)\n{\n  struct timeval real_end;\n  struct rusage usage;\n\n  gettimeofday (&real_end, NULL);\n\n  getrusage (RUSAGE_SELF, &usage);\n\n  ts->real_usec = (real_end.tv_sec - ts->real_start.tv_sec) * 1000000\n                  + real_end.tv_usec - ts->real_start.tv_usec;\n  ts->user_usec = (usage.ru_utime.tv_sec - ts->user_start.tv_sec) * 1000000\n                  + usage.ru_utime.tv_usec - ts->user_start.tv_usec;\n  ts->sys_usec = (usage.ru_stime.tv_sec - ts->sys_start.tv_sec) * 1000000\n                 + usage.ru_stime.tv_usec - ts->sys_start.tv_usec;\n}\n\nstatic void\ntiming_output (const struct timings_state *ts)\n{\n  printf (\"real %10.6f\\n\", (double)ts->real_usec / 1000000.0);\n  printf (\"user %7.3f\\n\", (double)ts->user_usec / 1000000.0);\n  printf (\"sys  %7.3f\\n\", (double)ts->sys_usec / 1000000.0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

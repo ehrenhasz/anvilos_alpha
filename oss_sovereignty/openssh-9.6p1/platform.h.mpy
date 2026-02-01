@@ -1,0 +1,9 @@
+{
+  "module_name": "platform.h",
+  "hash_id": "ea0bdf1cabf5d948c4c77519df4d8708d182cde50fc6bec566d434cebe8d3a75",
+  "original_prompt": "Ingested from openssh-9.6p1/platform.h",
+  "human_readable_source": " \n\n#include <sys/types.h>\n\n#include <pwd.h>\n\nvoid platform_pre_listen(void);\nvoid platform_pre_fork(void);\nvoid platform_pre_restart(void);\nvoid platform_post_fork_parent(pid_t child_pid);\nvoid platform_post_fork_child(void);\nint  platform_privileged_uidswap(void);\nvoid platform_setusercontext(struct passwd *);\nvoid platform_setusercontext_post_groups(struct passwd *);\nchar *platform_get_krb5_client(const char *);\nchar *platform_krb5_get_principal_name(const char *);\nint platform_locked_account(struct passwd *);\nint platform_sys_dir_uid(uid_t);\nvoid platform_disable_tracing(int);\n\n \nvoid platform_pledge_agent(void);\nvoid platform_pledge_sftp_server(void);\nvoid platform_pledge_mux(void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

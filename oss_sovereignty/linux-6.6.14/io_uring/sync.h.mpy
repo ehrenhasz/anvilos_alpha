@@ -1,0 +1,9 @@
+{
+  "module_name": "sync.h",
+  "hash_id": "a34d4fb805f66040c0648ef0f5143036b17dfe9db03ac65207fc0091af5c6d4d",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/sync.h",
+  "human_readable_source": "\n\nint io_sfr_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_sync_file_range(struct io_kiocb *req, unsigned int issue_flags);\n\nint io_fsync_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_fsync(struct io_kiocb *req, unsigned int issue_flags);\n\nint io_fallocate(struct io_kiocb *req, unsigned int issue_flags);\nint io_fallocate_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

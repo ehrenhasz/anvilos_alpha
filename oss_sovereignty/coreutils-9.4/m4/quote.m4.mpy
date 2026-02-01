@@ -1,0 +1,9 @@
+{
+  "module_name": "quote.m4",
+  "hash_id": "04bfb60643e38a0047320340bc03cc82acc3aa64caf89e18973b93f729d1b09f",
+  "original_prompt": "Ingested from coreutils-9.4/m4/quote.m4",
+  "human_readable_source": "# quote.m4 serial 6\ndnl Copyright (C) 2002-2003, 2005-2006, 2009-2023 Free Software Foundation,\ndnl Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_QUOTE],\n[\n  dnl Prerequisites of lib/quote.c.\n  dnl (none)\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

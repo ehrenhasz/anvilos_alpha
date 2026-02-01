@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e2b5da3f23a9ad29c2f51d185b8dc1f18a2303d065c9b56031f5872e1ec08669",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/olpc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# OLPC XO platform-specific drivers\n#\nobj-$(CONFIG_OLPC_EC)\t\t+= olpc-ec.o\nobj-$(CONFIG_OLPC_XO175_EC)\t+= olpc-xo175-ec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "3f673f4a0df3578d0595559eb0752caff1a53556b9cafd8ac92a7fd38485e530",
+  "original_prompt": "Ingested from linux-6.6.14/net/ieee802154/trace.c",
+  "human_readable_source": "#include <linux/module.h>\n\n#ifndef __CHECKER__\n#define CREATE_TRACE_POINTS\n#include \"trace.h\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

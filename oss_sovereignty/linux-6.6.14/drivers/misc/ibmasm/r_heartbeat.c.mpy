@@ -1,0 +1,9 @@
+{
+  "module_name": "r_heartbeat.c",
+  "hash_id": "63a86dc95d22ba3c712d589f32ec53291424f9d01f14d54ef2b5a70dca07a6ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/ibmasm/r_heartbeat.c",
+  "human_readable_source": "\n\n \n\n#include <linux/sched/signal.h>\n#include \"ibmasm.h\"\n#include \"dot_command.h\"\n\n \n\n \n#pragma pack(1)\nstatic struct {\n\tstruct dot_command_header\theader;\n\tunsigned char\t\t\tcommand[3];\n} rhb_dot_cmd = {\n\t.header = {\n\t\t.type =\t\tsp_read,\n\t\t.command_size = 3,\n\t\t.data_size =\t0,\n\t\t.status =\t0\n\t},\n\t.command = { 4, 3, 6 }\n};\n#pragma pack()\n\nvoid ibmasm_init_reverse_heartbeat(struct service_processor *sp, struct reverse_heartbeat *rhb)\n{\n\tinit_waitqueue_head(&rhb->wait);\n\trhb->stopped = 0;\n}\n\n \nint ibmasm_start_reverse_heartbeat(struct service_processor *sp, struct reverse_heartbeat *rhb)\n{\n\tstruct command *cmd;\n\tint times_failed = 0;\n\tint result = 1;\n\n\tcmd = ibmasm_new_command(sp, sizeof rhb_dot_cmd);\n\tif (!cmd)\n\t\treturn -ENOMEM;\n\n\twhile (times_failed < 3) {\n\t\tmemcpy(cmd->buffer, (void *)&rhb_dot_cmd, sizeof rhb_dot_cmd);\n\t\tcmd->status = IBMASM_CMD_PENDING;\n\t\tibmasm_exec_command(sp, cmd);\n\t\tibmasm_wait_for_response(cmd, IBMASM_CMD_TIMEOUT_NORMAL);\n\n\t\tif (cmd->status != IBMASM_CMD_COMPLETE)\n\t\t\ttimes_failed++;\n\n\t\twait_event_interruptible_timeout(rhb->wait,\n\t\t\trhb->stopped,\n\t\t\tREVERSE_HEARTBEAT_TIMEOUT * HZ);\n\n\t\tif (signal_pending(current) || rhb->stopped) {\n\t\t\tresult = -EINTR;\n\t\t\tbreak;\n\t\t}\n\t}\n\tcommand_put(cmd);\n\trhb->stopped = 0;\n\n\treturn result;\n}\n\nvoid ibmasm_stop_reverse_heartbeat(struct reverse_heartbeat *rhb)\n{\n\trhb->stopped = 1;\n\twake_up_interruptible(&rhb->wait);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

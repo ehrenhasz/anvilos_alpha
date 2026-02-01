@@ -1,0 +1,9 @@
+{
+  "module_name": "m_win.c",
+  "hash_id": "697a7ad3dfad45988187c30da96d36efa8ff076d9f1466a358d60301f3e13f51",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_win.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_win.c,v 1.21 2021/06/17 21:20:30 tom Exp $\")\n\n \nMENU_EXPORT(int)\nset_menu_win(MENU *menu, WINDOW *win)\n{\n  T((T_CALLED(\"set_menu_win(%p,%p)\"), (void *)menu, (void *)win));\n\n  if (menu)\n    {\n      if (menu->status & _POSTED)\n\tRETURN(E_POSTED);\n      else\n#if NCURSES_SP_FUNCS\n\t{\n\t   \n\t  SCREEN *sp = _nc_screen_of(menu->userwin);\n\n\t  menu->userwin = win ? win : sp->_stdscr;\n\t  _nc_Calculate_Item_Length_and_Width(menu);\n\t}\n#else\n\tmenu->userwin = win;\n#endif\n    }\n  else\n    _nc_Default_Menu.userwin = win;\n\n  RETURN(E_OK);\n}\n\n \nMENU_EXPORT(WINDOW *)\nmenu_win(const MENU *menu)\n{\n  const MENU *m = Normalize_Menu(menu);\n\n  T((T_CALLED(\"menu_win(%p)\"), (const void *)menu));\n  returnWin(Get_Menu_UserWin(m));\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tolower.c",
+  "hash_id": "2db1e02fd8d624010b0d659c7451aa9c9db5e1cc32b75001b05824a1d6716a83",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unicase/tolower.c",
+  "human_readable_source": " \n#include \"unicase.h\"\n\n \n#include \"tolower.h\"\n\n#define FUNC uc_tolower\n#include \"simple-mapping.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

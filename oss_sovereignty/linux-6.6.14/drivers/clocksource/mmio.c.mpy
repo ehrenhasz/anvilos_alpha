@@ -1,0 +1,9 @@
+{
+  "module_name": "mmio.c",
+  "hash_id": "2e12ac92cf94f082a709c0f66dbd4039d13b7eca3896819106d89f31c2fc8484",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clocksource/mmio.c",
+  "human_readable_source": "\n \n#include <linux/clocksource.h>\n#include <linux/errno.h>\n#include <linux/init.h>\n#include <linux/slab.h>\n\nstruct clocksource_mmio {\n\tvoid __iomem *reg;\n\tstruct clocksource clksrc;\n};\n\nstatic inline struct clocksource_mmio *to_mmio_clksrc(struct clocksource *c)\n{\n\treturn container_of(c, struct clocksource_mmio, clksrc);\n}\n\nu64 clocksource_mmio_readl_up(struct clocksource *c)\n{\n\treturn (u64)readl_relaxed(to_mmio_clksrc(c)->reg);\n}\n\nu64 clocksource_mmio_readl_down(struct clocksource *c)\n{\n\treturn ~(u64)readl_relaxed(to_mmio_clksrc(c)->reg) & c->mask;\n}\n\nu64 clocksource_mmio_readw_up(struct clocksource *c)\n{\n\treturn (u64)readw_relaxed(to_mmio_clksrc(c)->reg);\n}\n\nu64 clocksource_mmio_readw_down(struct clocksource *c)\n{\n\treturn ~(u64)readw_relaxed(to_mmio_clksrc(c)->reg) & c->mask;\n}\n\n \nint __init clocksource_mmio_init(void __iomem *base, const char *name,\n\tunsigned long hz, int rating, unsigned bits,\n\tu64 (*read)(struct clocksource *))\n{\n\tstruct clocksource_mmio *cs;\n\n\tif (bits > 64 || bits < 16)\n\t\treturn -EINVAL;\n\n\tcs = kzalloc(sizeof(struct clocksource_mmio), GFP_KERNEL);\n\tif (!cs)\n\t\treturn -ENOMEM;\n\n\tcs->reg = base;\n\tcs->clksrc.name = name;\n\tcs->clksrc.rating = rating;\n\tcs->clksrc.read = read;\n\tcs->clksrc.mask = CLOCKSOURCE_MASK(bits);\n\tcs->clksrc.flags = CLOCK_SOURCE_IS_CONTINUOUS;\n\n\treturn clocksource_register_hz(&cs->clksrc, hz);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

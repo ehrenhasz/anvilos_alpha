@@ -1,0 +1,9 @@
+{
+  "module_name": "panel.def",
+  "hash_id": "6bc340c71fc3936737fc1182296fc5558ebdd57f355e39f5e4f0e34af7b4ac62",
+  "original_prompt": "Ingested from ncurses-6.4/misc/panel.def",
+  "human_readable_source": "LIBRARY panel5 INITINSTANCE TERMINSTANCE\nDESCRIPTION \"NCurses-5-1-20000704, module panel\"\nCODE LOADONCALL\nDATA LOADONCALL NONSHARED MULTIPLE\nEXPORTS\n\t\"bottom_panel\"\t@7\tNONAME\n\t\"del_panel\"\t@5\tNONAME\n\t\"hide_panel\"\t@3\tNONAME\n\t\"move_panel\"\t@13\tNONAME\n\t\"new_panel\"\t@8\tNONAME\n\t\"panel_above\"\t@9\tNONAME\n\t\"panel_below\"\t@10\tNONAME\n\t\"panel_hidden\"\t@15\tNONAME\n\t\"panel_userptr\"\t@12\tNONAME\n\t\"panel_window\"\t@1\tNONAME\n\t\"replace_panel\"\t@14\tNONAME\n\t\"set_panel_userptr\"\t@11\tNONAME\n\t\"show_panel\"\t@4\tNONAME\n\t\"top_panel\"\t@6\tNONAME\n\t\"update_panels\"\t@2\tNONAME\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

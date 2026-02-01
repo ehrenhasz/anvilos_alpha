@@ -1,0 +1,9 @@
+{
+  "module_name": "gmc_v10_0.h",
+  "hash_id": "c66d1afeb19af65fe60621765c4238064a6fca94438245b70c6f12cfc4dab254",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.h",
+  "human_readable_source": " \n\n#ifndef __GMC_V10_0_H__\n#define __GMC_V10_0_H__\n\nextern const struct amd_ip_funcs gmc_v10_0_ip_funcs;\nextern const struct amdgpu_ip_block_version gmc_v10_0_ip_block;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

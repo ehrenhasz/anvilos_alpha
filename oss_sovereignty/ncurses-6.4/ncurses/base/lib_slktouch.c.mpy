@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_slktouch.c",
+  "hash_id": "6e2450275c8318ac7b174531f37b49c197d396af9375d7a761d10d018cc0984a",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_slktouch.c",
+  "human_readable_source": " \n\n \n\n \n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_slktouch.c,v 1.9 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(slk_touch) (NCURSES_SP_DCL0)\n{\n    T((T_CALLED(\"slk_touch(%p)\"), (void *) SP_PARM));\n\n    if (SP_PARM == 0 || SP_PARM->_slk == 0)\n\treturnCode(ERR);\n    SP_PARM->_slk->dirty = TRUE;\n\n    returnCode(OK);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nslk_touch(void)\n{\n    return NCURSES_SP_NAME(slk_touch) (CURRENT_SCREEN);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "timers.h",
+  "hash_id": "d3b4b5f4059c72a7edb9f8019edca8168dfdc5d170a96910439ae980767d4105",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/arc/timers.h",
+  "human_readable_source": " \n \n\n#ifndef __SOC_ARC_TIMERS_H\n#define __SOC_ARC_TIMERS_H\n\n#include <soc/arc/aux.h>\n\n \n#define ARC_REG_TIMER0_LIMIT\t0x23\t \n#define ARC_REG_TIMER0_CTRL\t0x22\t \n#define ARC_REG_TIMER0_CNT\t0x21\t \n#define ARC_REG_TIMER1_LIMIT\t0x102\t \n#define ARC_REG_TIMER1_CTRL\t0x101\t \n#define ARC_REG_TIMER1_CNT\t0x100\t \n\n \n#define ARC_TIMER_CTRL_IE\t(1 << 0)  \n#define ARC_TIMER_CTRL_NH\t(1 << 1)  \n\n#define ARC_TIMERN_MAX\t\t0xFFFFFFFF\n\n#define ARC_REG_TIMERS_BCR\t0x75\n\nstruct bcr_timer {\n#ifdef CONFIG_CPU_BIG_ENDIAN\n\tunsigned int pad2:15, rtsc:1, pad1:5, rtc:1, t1:1, t0:1, ver:8;\n#else\n\tunsigned int ver:8, t0:1, t1:1, rtc:1, pad1:5, rtsc:1, pad2:15;\n#endif\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

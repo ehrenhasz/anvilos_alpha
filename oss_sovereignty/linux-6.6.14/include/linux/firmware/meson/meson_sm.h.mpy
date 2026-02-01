@@ -1,0 +1,9 @@
+{
+  "module_name": "meson_sm.h",
+  "hash_id": "52ad37762d21761581a113edc46fc242ea16c480366e81194bd55ce92209766b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/firmware/meson/meson_sm.h",
+  "human_readable_source": " \n \n\n#ifndef _MESON_SM_FW_H_\n#define _MESON_SM_FW_H_\n\nenum {\n\tSM_EFUSE_READ,\n\tSM_EFUSE_WRITE,\n\tSM_EFUSE_USER_MAX,\n\tSM_GET_CHIP_ID,\n\tSM_A1_PWRC_SET,\n\tSM_A1_PWRC_GET,\n};\n\nstruct meson_sm_firmware;\n\nint meson_sm_call(struct meson_sm_firmware *fw, unsigned int cmd_index,\n\t\t  u32 *ret, u32 arg0, u32 arg1, u32 arg2, u32 arg3, u32 arg4);\nint meson_sm_call_write(struct meson_sm_firmware *fw, void *buffer,\n\t\t\tunsigned int b_size, unsigned int cmd_index, u32 arg0,\n\t\t\tu32 arg1, u32 arg2, u32 arg3, u32 arg4);\nint meson_sm_call_read(struct meson_sm_firmware *fw, void *buffer,\n\t\t       unsigned int bsize, unsigned int cmd_index, u32 arg0,\n\t\t       u32 arg1, u32 arg2, u32 arg3, u32 arg4);\nstruct meson_sm_firmware *meson_sm_get(struct device_node *firmware_node);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

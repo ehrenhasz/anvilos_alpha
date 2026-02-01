@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objarray.c.compress",
+  "hash_id": "4461b59b5a09ed4492311eea99b43af4e496f7ee61a51a92c08b4c16dc8e887f",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__objarray.c.compress",
+  "human_readable_source": "string argument without an encoding\nonly slices with step=1 (aka None) are supported\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

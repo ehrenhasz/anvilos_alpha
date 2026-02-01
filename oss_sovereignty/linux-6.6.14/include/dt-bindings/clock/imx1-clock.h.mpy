@@ -1,0 +1,9 @@
+{
+  "module_name": "imx1-clock.h",
+  "hash_id": "b6a4d11e7ee636f200d5605ebde786bce68214daeb7ac3f87c2f7a4c5704c855",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/imx1-clock.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_CLOCK_IMX1_H\n#define __DT_BINDINGS_CLOCK_IMX1_H\n\n#define IMX1_CLK_DUMMY\t\t0\n#define IMX1_CLK_CLK32\t\t1\n#define IMX1_CLK_CLK16M_EXT\t2\n#define IMX1_CLK_CLK16M\t\t3\n#define IMX1_CLK_CLK32_PREMULT\t4\n#define IMX1_CLK_PREM\t\t5\n#define IMX1_CLK_MPLL\t\t6\n#define IMX1_CLK_MPLL_GATE\t7\n#define IMX1_CLK_SPLL\t\t8\n#define IMX1_CLK_SPLL_GATE\t9\n#define IMX1_CLK_MCU\t\t10\n#define IMX1_CLK_FCLK\t\t11\n#define IMX1_CLK_HCLK\t\t12\n#define IMX1_CLK_CLK48M\t\t13\n#define IMX1_CLK_PER1\t\t14\n#define IMX1_CLK_PER2\t\t15\n#define IMX1_CLK_PER3\t\t16\n#define IMX1_CLK_CLKO\t\t17\n#define IMX1_CLK_UART3_GATE\t18\n#define IMX1_CLK_SSI2_GATE\t19\n#define IMX1_CLK_BROM_GATE\t20\n#define IMX1_CLK_DMA_GATE\t21\n#define IMX1_CLK_CSI_GATE\t22\n#define IMX1_CLK_MMA_GATE\t23\n#define IMX1_CLK_USBD_GATE\t24\n#define IMX1_CLK_MAX\t\t25\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

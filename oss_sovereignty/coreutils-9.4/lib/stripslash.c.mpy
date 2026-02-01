@@ -1,0 +1,9 @@
+{
+  "module_name": "stripslash.c",
+  "hash_id": "35c662c239ff1b4cdb4dcbed2d500f119ea2910509e405ebfefa34433a56ae28",
+  "original_prompt": "Ingested from coreutils-9.4/lib/stripslash.c",
+  "human_readable_source": " \n\nbool\nstrip_trailing_slashes (char *file)\n{\n  char *base = last_component (file);\n  char *base_lim;\n  bool had_slash;\n\n   \n  if (! *base)\n    base = file;\n  base_lim = base + base_len (base);\n  had_slash = (*base_lim != '\\0');\n  *base_lim = '\\0';\n  return had_slash;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

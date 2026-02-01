@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "f562f470427e35ecdba5d8569a66926e3bdb6f24a75cf774e0a7f19fcfe48bb3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/imx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nsource \"drivers/gpu/drm/imx/dcss/Kconfig\"\nsource \"drivers/gpu/drm/imx/ipuv3/Kconfig\"\nsource \"drivers/gpu/drm/imx/lcdc/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

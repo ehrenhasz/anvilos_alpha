@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1a721015873916adda0ecc43eb0b04ffddb23b018d8e8d7746660dd78b843972",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/acpi/tools/acpidbg/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# tools/power/acpi/tools/acpidbg/Makefile - ACPI tool Makefile\n#\n# Copyright (c) 2015, Intel Corporation\n#   Author: Lv Zheng <lv.zheng@intel.com>\n#\n\ninclude ../../Makefile.config\n\nTOOL = acpidbg\nvpath %.c \\\n\t../../../../../drivers/acpi/acpica\\\n\t../../common\\\n\t../../os_specific/service_layers\\\n\t.\nCFLAGS += -DACPI_APPLICATION -DACPI_SINGLE_THREAD -DACPI_DEBUGGER\\\n\t-I.\nLDFLAGS += -lpthread\nTOOL_OBJS = \\\n\tacpidbg.o\n\ninclude ../../Makefile.rules\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

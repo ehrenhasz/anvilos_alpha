@@ -1,0 +1,9 @@
+{
+  "module_name": "jffs2_fs_i.h",
+  "hash_id": "551f3b5efb7b45f45781b9a41248483924e9d941f77a9cbf0aecda1d8489fd62",
+  "original_prompt": "Ingested from linux-6.6.14/fs/jffs2/jffs2_fs_i.h",
+  "human_readable_source": " \n\n#ifndef _JFFS2_FS_I\n#define _JFFS2_FS_I\n\n#include <linux/rbtree.h>\n#include <linux/posix_acl.h>\n#include <linux/mutex.h>\n\nstruct jffs2_inode_info {\n\t \n\tstruct mutex sem;\n\n\t \n\tuint32_t highest_version;\n\n\t \n\tstruct rb_root fragtree;\n\n\t \n\t \n\tstruct jffs2_full_dnode *metadata;\n\n\t \n\tstruct jffs2_full_dirent *dents;\n\n\t \n\tunsigned char *target;\n\n\t \n\tstruct jffs2_inode_cache *inocache;\n\n\tuint16_t flags;\n\tuint8_t usercompr;\n\tstruct inode vfs_inode;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

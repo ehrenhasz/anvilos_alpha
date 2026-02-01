@@ -1,0 +1,9 @@
+{
+  "module_name": "tda18250.h",
+  "hash_id": "e429a057d9271634bee50dc16db482cb96f411e6fed0fa8be1b44ca1cce3d9ee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/tda18250.h",
+  "human_readable_source": " \n \n\n#ifndef TDA18250_H\n#define TDA18250_H\n\n#include <linux/kconfig.h>\n#include <media/media-device.h>\n#include <media/dvb_frontend.h>\n\n#define TDA18250_XTAL_FREQ_16MHZ 0\n#define TDA18250_XTAL_FREQ_24MHZ 1\n#define TDA18250_XTAL_FREQ_25MHZ 2\n#define TDA18250_XTAL_FREQ_27MHZ 3\n#define TDA18250_XTAL_FREQ_30MHZ 4\n#define TDA18250_XTAL_FREQ_MAX 5\n\nstruct tda18250_config {\n\tu16 if_dvbt_6;\n\tu16 if_dvbt_7;\n\tu16 if_dvbt_8;\n\tu16 if_dvbc_6;\n\tu16 if_dvbc_8;\n\tu16 if_atsc;\n\tu8 xtal_freq;\n\tbool loopthrough;\n\n\t \n\tstruct dvb_frontend *fe;\n\n#if defined(CONFIG_MEDIA_CONTROLLER)\n\tstruct media_device *mdev;\n#endif\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

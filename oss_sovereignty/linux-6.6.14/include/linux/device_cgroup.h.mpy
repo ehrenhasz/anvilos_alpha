@@ -1,0 +1,9 @@
+{
+  "module_name": "device_cgroup.h",
+  "hash_id": "0c758350e1379107310019d10698c9974f73a2f17b21831b86b61c3853908bf3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/device_cgroup.h",
+  "human_readable_source": " \n#include <linux/fs.h>\n\n#define DEVCG_ACC_MKNOD 1\n#define DEVCG_ACC_READ  2\n#define DEVCG_ACC_WRITE 4\n#define DEVCG_ACC_MASK (DEVCG_ACC_MKNOD | DEVCG_ACC_READ | DEVCG_ACC_WRITE)\n\n#define DEVCG_DEV_BLOCK 1\n#define DEVCG_DEV_CHAR  2\n#define DEVCG_DEV_ALL   4   \n\n\n#if defined(CONFIG_CGROUP_DEVICE) || defined(CONFIG_CGROUP_BPF)\nint devcgroup_check_permission(short type, u32 major, u32 minor,\n\t\t\t       short access);\nstatic inline int devcgroup_inode_permission(struct inode *inode, int mask)\n{\n\tshort type, access = 0;\n\n\tif (likely(!inode->i_rdev))\n\t\treturn 0;\n\n\tif (S_ISBLK(inode->i_mode))\n\t\ttype = DEVCG_DEV_BLOCK;\n\telse if (S_ISCHR(inode->i_mode))\n\t\ttype = DEVCG_DEV_CHAR;\n\telse\n\t\treturn 0;\n\n\tif (mask & MAY_WRITE)\n\t\taccess |= DEVCG_ACC_WRITE;\n\tif (mask & MAY_READ)\n\t\taccess |= DEVCG_ACC_READ;\n\n\treturn devcgroup_check_permission(type, imajor(inode), iminor(inode),\n\t\t\t\t\t  access);\n}\n\nstatic inline int devcgroup_inode_mknod(int mode, dev_t dev)\n{\n\tshort type;\n\n\tif (!S_ISBLK(mode) && !S_ISCHR(mode))\n\t\treturn 0;\n\n\tif (S_ISCHR(mode) && dev == WHITEOUT_DEV)\n\t\treturn 0;\n\n\tif (S_ISBLK(mode))\n\t\ttype = DEVCG_DEV_BLOCK;\n\telse\n\t\ttype = DEVCG_DEV_CHAR;\n\n\treturn devcgroup_check_permission(type, MAJOR(dev), MINOR(dev),\n\t\t\t\t\t  DEVCG_ACC_MKNOD);\n}\n\n#else\nstatic inline int devcgroup_check_permission(short type, u32 major, u32 minor,\n\t\t\t       short access)\n{ return 0; }\nstatic inline int devcgroup_inode_permission(struct inode *inode, int mask)\n{ return 0; }\nstatic inline int devcgroup_inode_mknod(int mode, dev_t dev)\n{ return 0; }\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

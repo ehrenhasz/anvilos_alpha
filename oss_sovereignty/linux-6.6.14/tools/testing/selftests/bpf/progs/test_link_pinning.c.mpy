@@ -1,0 +1,9 @@
+{
+  "module_name": "test_link_pinning.c",
+  "hash_id": "283e3f0a5eeca854e0ef25d74a3004b4d01437cd33d98b6ab85b24e393909180",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_link_pinning.c",
+  "human_readable_source": "\n \n\n#include <stdbool.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nint in = 0;\nint out = 0;\n\nSEC(\"raw_tp/sys_enter\")\nint raw_tp_prog(const void *ctx)\n{\n\tout = in;\n\treturn 0;\n}\n\nSEC(\"tp_btf/sys_enter\")\nint tp_btf_prog(const void *ctx)\n{\n\tout = in;\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

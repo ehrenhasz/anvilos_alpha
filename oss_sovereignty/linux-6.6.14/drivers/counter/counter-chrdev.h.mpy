@@ -1,0 +1,9 @@
+{
+  "module_name": "counter-chrdev.h",
+  "hash_id": "aa65d1a37d723919f49875172a84471fbe733cb71e72e5e0f0d71d89b94da307",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/counter/counter-chrdev.h",
+  "human_readable_source": " \n \n#ifndef _COUNTER_CHRDEV_H_\n#define _COUNTER_CHRDEV_H_\n\n#include <linux/counter.h>\n\nint counter_chrdev_add(struct counter_device *const counter);\nvoid counter_chrdev_remove(struct counter_device *const counter);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

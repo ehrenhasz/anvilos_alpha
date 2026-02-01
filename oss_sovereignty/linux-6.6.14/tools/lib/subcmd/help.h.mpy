@@ -1,0 +1,9 @@
+{
+  "module_name": "help.h",
+  "hash_id": "7186f32a222fc717e0035111bc16129e056edbb88ca8773530bf3608be10e199",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/subcmd/help.h",
+  "human_readable_source": " \n#ifndef __SUBCMD_HELP_H\n#define __SUBCMD_HELP_H\n\n#include <sys/types.h>\n#include <stdio.h>\n\nstruct cmdnames {\n\tsize_t alloc;\n\tsize_t cnt;\n\tstruct cmdname {\n\t\tsize_t len;  \n\t\tchar name[];\n\t} **names;\n};\n\nstatic inline void mput_char(char c, unsigned int num)\n{\n\twhile(num--)\n\t\tputchar(c);\n}\n\nvoid load_command_list(const char *prefix,\n\t\tstruct cmdnames *main_cmds,\n\t\tstruct cmdnames *other_cmds);\nvoid add_cmdname(struct cmdnames *cmds, const char *name, size_t len);\nvoid clean_cmdnames(struct cmdnames *cmds);\nint cmdname_compare(const void *a, const void *b);\nvoid uniq(struct cmdnames *cmds);\n \nvoid exclude_cmds(struct cmdnames *cmds, struct cmdnames *excludes);\nint is_in_cmdlist(struct cmdnames *c, const char *s);\nvoid list_commands(const char *title, struct cmdnames *main_cmds,\n\t\t   struct cmdnames *other_cmds);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

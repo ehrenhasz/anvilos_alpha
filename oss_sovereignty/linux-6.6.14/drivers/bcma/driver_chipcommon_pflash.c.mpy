@@ -1,0 +1,9 @@
+{
+  "module_name": "driver_chipcommon_pflash.c",
+  "hash_id": "52004586828cfff9ad632a9231e37ce83bbea020fe9c8e1cf49e02cfac49e575",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bcma/driver_chipcommon_pflash.c",
+  "human_readable_source": " \n\n#include \"bcma_private.h\"\n\n#include <linux/bcma/bcma.h>\n#include <linux/mtd/physmap.h>\n#include <linux/platform_device.h>\n\nstatic const char * const part_probes[] = { \"bcm47xxpart\", NULL };\n\nstatic struct physmap_flash_data bcma_pflash_data = {\n\t.part_probe_types\t= part_probes,\n};\n\nstatic struct resource bcma_pflash_resource = {\n\t.name\t= \"bcma_pflash\",\n\t.flags  = IORESOURCE_MEM,\n};\n\nstruct platform_device bcma_pflash_dev = {\n\t.name\t\t= \"physmap-flash\",\n\t.dev\t\t= {\n\t\t.platform_data  = &bcma_pflash_data,\n\t},\n\t.resource\t= &bcma_pflash_resource,\n\t.num_resources\t= 1,\n};\n\nint bcma_pflash_init(struct bcma_drv_cc *cc)\n{\n\tstruct bcma_pflash *pflash = &cc->pflash;\n\n\tpflash->present = true;\n\n\tif (!(bcma_read32(cc->core, BCMA_CC_FLASH_CFG) & BCMA_CC_FLASH_CFG_DS))\n\t\tbcma_pflash_data.width = 1;\n\telse\n\t\tbcma_pflash_data.width = 2;\n\n\tbcma_pflash_resource.start = BCMA_SOC_FLASH2;\n\tbcma_pflash_resource.end = BCMA_SOC_FLASH2 + BCMA_SOC_FLASH2_SZ;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

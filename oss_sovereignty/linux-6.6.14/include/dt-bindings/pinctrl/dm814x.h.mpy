@@ -1,0 +1,9 @@
+{
+  "module_name": "dm814x.h",
+  "hash_id": "a34643711123d5102f01ee33efcee9c27b03a15ed1f5bdba5d18c353d5d5248c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/dm814x.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_PINCTRL_DM814X_H\n#define _DT_BINDINGS_PINCTRL_DM814X_H\n\n#include <dt-bindings/pinctrl/omap.h>\n\n#undef INPUT_EN\n#undef PULL_UP\n#undef PULL_ENA\n\n \n#define INPUT_EN\t\t(1 << 18)\n#define PULL_UP\t\t\t(1 << 17)\n#define PULL_DISABLE\t\t(1 << 16)\n\n \n#undef PIN_OUTPUT\n#undef PIN_OUTPUT_PULLUP\n#undef PIN_OUTPUT_PULLDOWN\n#undef PIN_INPUT\n#undef PIN_INPUT_PULLUP\n#undef PIN_INPUT_PULLDOWN\n\n#define PIN_OUTPUT\t\t(PULL_DISABLE)\n#define PIN_OUTPUT_PULLUP\t(PULL_UP)\n#define PIN_OUTPUT_PULLDOWN\t0\n#define PIN_INPUT\t\t(INPUT_EN | PULL_DISABLE)\n#define PIN_INPUT_PULLUP\t(INPUT_EN | PULL_UP)\n#define PIN_INPUT_PULLDOWN\t(INPUT_EN)\n\n \n#undef PIN_OFF_NONE\n#undef PIN_OFF_OUTPUT_HIGH\n#undef PIN_OFF_OUTPUT_LOW\n#undef PIN_OFF_INPUT_PULLUP\n#undef PIN_OFF_INPUT_PULLDOWN\n#undef PIN_OFF_WAKEUPENABLE\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

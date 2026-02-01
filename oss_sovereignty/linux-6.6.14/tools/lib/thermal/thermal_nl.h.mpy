@@ -1,0 +1,9 @@
+{
+  "module_name": "thermal_nl.h",
+  "hash_id": "3f44857b27ff59eec9f51d58b4be17d058765ba06785888981f5433de27d43f4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/thermal/thermal_nl.h",
+  "human_readable_source": " \n \n#ifndef __THERMAL_H\n#define __THERMAL_H\n\n#include <netlink/netlink.h>\n#include <netlink/genl/genl.h>\n#include <netlink/genl/mngt.h>\n#include <netlink/genl/ctrl.h>\n\nstruct thermal_handler {\n\tint done;\n\tint error;\n\tstruct thermal_ops *ops;\n\tstruct nl_msg *msg;\n\tstruct nl_sock *sk_event;\n\tstruct nl_sock *sk_sampling;\n\tstruct nl_sock *sk_cmd;\n\tstruct nl_cb *cb_cmd;\n\tstruct nl_cb *cb_event;\n\tstruct nl_cb *cb_sampling;\n};\n\nstruct thermal_handler_param {\n\tstruct thermal_handler *th;\n\tvoid *arg;\n};\n\n \nextern int nl_subscribe_thermal(struct nl_sock *nl_sock, struct nl_cb *nl_cb,\n\t\t\t\tconst char *group);\n\nextern int nl_unsubscribe_thermal(struct nl_sock *nl_sock, struct nl_cb *nl_cb,\n\t\t\t\t  const char *group);\n\nextern int nl_thermal_connect(struct nl_sock **nl_sock, struct nl_cb **nl_cb);\n\nextern void nl_thermal_disconnect(struct nl_sock *nl_sock, struct nl_cb *nl_cb);\n\nextern int nl_send_msg(struct nl_sock *sock, struct nl_cb *nl_cb, struct nl_msg *msg,\n\t\t       int (*rx_handler)(struct nl_msg *, void *),\n\t\t       void *data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

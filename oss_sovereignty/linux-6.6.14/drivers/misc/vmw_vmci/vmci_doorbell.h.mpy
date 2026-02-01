@@ -1,0 +1,9 @@
+{
+  "module_name": "vmci_doorbell.h",
+  "hash_id": "bbf2f5d0372178e47860977fe2e00a9f2867a249f7677b2215aee663ae0d6945",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/vmw_vmci/vmci_doorbell.h",
+  "human_readable_source": " \n \n\n#ifndef VMCI_DOORBELL_H\n#define VMCI_DOORBELL_H\n\n#include <linux/vmw_vmci_defs.h>\n#include <linux/types.h>\n\n#include \"vmci_driver.h\"\n\n \nstruct vmci_dbell_notify_resource_info {\n\tstruct vmci_handle handle;\n\tu16 resource;\n\tu16 action;\n\ts32 result;\n};\n\n \nstruct dbell_cpt_state {\n\tstruct vmci_handle handle;\n\tu64 bitmap_idx;\n};\n\nint vmci_dbell_host_context_notify(u32 src_cid, struct vmci_handle handle);\nint vmci_dbell_get_priv_flags(struct vmci_handle handle, u32 *priv_flags);\n\nbool vmci_dbell_register_notification_bitmap(u64 bitmap_ppn);\nvoid vmci_dbell_scan_notification_entries(u8 *bitmap);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

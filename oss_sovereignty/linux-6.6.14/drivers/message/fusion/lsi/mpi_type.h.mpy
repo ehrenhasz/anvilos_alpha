@@ -1,0 +1,9 @@
+{
+  "module_name": "mpi_type.h",
+  "hash_id": "6dadafe39498ffa2ca2470f96aa4212e77e01e2a7fe730785571c857b0ab5bcd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/message/fusion/lsi/mpi_type.h",
+  "human_readable_source": " \n \n\n#ifndef MPI_TYPE_H\n#define MPI_TYPE_H\n\n\n \n#ifndef MPI_POINTER\n#define MPI_POINTER     *\n#endif\n\n\n \n\ntypedef signed   char   S8;\ntypedef unsigned char   U8;\ntypedef signed   short  S16;\ntypedef unsigned short  U16;\n\n\ntypedef int32_t   S32;\ntypedef u_int32_t U32;\n\ntypedef struct _S64\n{\n    U32          Low;\n    S32          High;\n} S64;\n\ntypedef struct _U64\n{\n    U32          Low;\n    U32          High;\n} U64;\n\n\n \n \n \n\ntypedef S8      *PS8;\ntypedef U8      *PU8;\ntypedef S16     *PS16;\ntypedef U16     *PU16;\ntypedef S32     *PS32;\ntypedef U32     *PU32;\ntypedef S64     *PS64;\ntypedef U64     *PU64;\n\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

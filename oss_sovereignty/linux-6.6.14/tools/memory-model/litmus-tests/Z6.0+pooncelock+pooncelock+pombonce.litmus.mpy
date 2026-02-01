@@ -1,0 +1,9 @@
+{
+  "module_name": "Z6.0+pooncelock+pooncelock+pombonce.litmus",
+  "hash_id": "d63b90f6f0fbc5415a8982abac6294f66b4cfc8122d92a81eba0dd4dfa5854b0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/Z6.0+pooncelock+pooncelock+pombonce.litmus",
+  "human_readable_source": "C Z6.0+pooncelock+pooncelock+pombonce\n\n(*\n * Result: Sometimes\n *\n * This example demonstrates that a pair of accesses made by different\n * processes each while holding a given lock will not necessarily be\n * seen as ordered by a third process not holding that lock.\n *)\n\n{}\n\nP0(int *x, int *y, spinlock_t *mylock)\n{\n\tspin_lock(mylock);\n\tWRITE_ONCE(*x, 1);\n\tWRITE_ONCE(*y, 1);\n\tspin_unlock(mylock);\n}\n\nP1(int *y, int *z, spinlock_t *mylock)\n{\n\tint r0;\n\n\tspin_lock(mylock);\n\tr0 = READ_ONCE(*y);\n\tWRITE_ONCE(*z, 1);\n\tspin_unlock(mylock);\n}\n\nP2(int *x, int *z)\n{\n\tint r1;\n\n\tWRITE_ONCE(*z, 2);\n\tsmp_mb();\n\tr1 = READ_ONCE(*x);\n}\n\nexists (1:r0=1 /\\ z=2 /\\ 2:r1=0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

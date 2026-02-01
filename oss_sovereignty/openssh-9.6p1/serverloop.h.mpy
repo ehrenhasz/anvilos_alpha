@@ -1,0 +1,9 @@
+{
+  "module_name": "serverloop.h",
+  "hash_id": "e30e69195e608902c8664a9a9547e1bedc66007953ce2eb03a2c967c281c5c4d",
+  "original_prompt": "Ingested from openssh-9.6p1/serverloop.h",
+  "human_readable_source": " \n\n \n \n#ifndef SERVERLOOP_H\n#define SERVERLOOP_H\n\nstruct ssh;\n\nvoid    server_loop2(struct ssh *, Authctxt *);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

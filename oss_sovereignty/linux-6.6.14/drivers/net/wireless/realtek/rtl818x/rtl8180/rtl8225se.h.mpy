@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8225se.h",
+  "hash_id": "4060943b0975c0b2a0fb491adae477c6e220a1a51dd8cf6b38c26a36243c40b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtl818x/rtl8180/rtl8225se.h",
+  "human_readable_source": " \n\n \n\n#ifndef RTL8187SE_RTL8225_H\n#define RTL8187SE_RTL8225_H\n\n#define RTL8225SE_ANAPARAM_ON\t0xb0054d00\n#define RTL8225SE_ANAPARAM2_ON\t0x000004c6\n\n \n#define RTL8225SE_ANAPARAM_OFF\t0xb0054dec\n \n#define RTL8225SE_ANAPARAM_OFF2\t0xb0054dfc\n\n#define RTL8225SE_ANAPARAM2_OFF\t0x00ff04c6\n\n#define RTL8225SE_ANAPARAM3\t0x10\n\nenum rtl8187se_power_state {\n\tRTL8187SE_POWER_ON,\n\tRTL8187SE_POWER_OFF,\n\tRTL8187SE_POWER_SLEEP\n};\n\nstatic inline void rtl8225se_write_phy_ofdm(struct ieee80211_hw *dev,\n\t\t\t\t\t  u8 addr, u8 data)\n{\n\trtl8180_write_phy(dev, addr, data);\n}\n\nstatic inline void rtl8225se_write_phy_cck(struct ieee80211_hw *dev,\n\t\t\t\t\t u8 addr, u8 data)\n{\n\trtl8180_write_phy(dev, addr, data | 0x10000);\n}\n\n\nconst struct rtl818x_rf_ops *rtl8187se_detect_rf(struct ieee80211_hw *);\nvoid rtl8225se_rf_stop(struct ieee80211_hw *dev);\nvoid rtl8225se_rf_set_channel(struct ieee80211_hw *dev,\n\t\t\t\t     struct ieee80211_conf *conf);\nvoid rtl8225se_rf_conf_erp(struct ieee80211_hw *dev,\n\t\t\t\t  struct ieee80211_bss_conf *info);\nvoid rtl8225se_rf_init(struct ieee80211_hw *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

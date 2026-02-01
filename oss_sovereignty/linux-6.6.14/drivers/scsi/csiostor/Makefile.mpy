@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d2da5fab3ffd9bbbfa60d5150f0b1327147566835d8847baed978b5a74ca3231",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/csiostor/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n## Chelsio FCoE driver\n#\n##\n\nccflags-y += -I$(srctree)/drivers/net/ethernet/chelsio/cxgb4\n\nobj-$(CONFIG_SCSI_CHELSIO_FCOE) += csiostor.o\n\ncsiostor-objs := csio_attr.o csio_init.o csio_lnode.o csio_scsi.o \\\n\t\tcsio_hw.o csio_hw_t5.o csio_isr.o \\\n\t\tcsio_mb.o csio_rnode.o csio_wr.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "subprogs_extable.c",
+  "hash_id": "952edd9b3e18629dcf456ce059b12cdb771ec04bb32246e6ae8efd7224ad502f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/subprogs_extable.c",
+  "human_readable_source": "\n\n#include <test_progs.h>\n#include \"test_subprogs_extable.skel.h\"\n\nvoid test_subprogs_extable(void)\n{\n\tconst int read_sz = 456;\n\tstruct test_subprogs_extable *skel;\n\tint err;\n\n\tskel = test_subprogs_extable__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"skel_open_and_load\"))\n\t\treturn;\n\n\terr = test_subprogs_extable__attach(skel);\n\tif (!ASSERT_OK(err, \"skel_attach\"))\n\t\tgoto cleanup;\n\n\t \n\tASSERT_OK(trigger_module_test_read(read_sz), \"trigger_read\");\n\n\tASSERT_NEQ(skel->bss->triggered, 0, \"verify at least one program ran\");\n\n\ttest_subprogs_extable__detach(skel);\n\ncleanup:\n\ttest_subprogs_extable__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mtd-nand-omap2.h",
+  "hash_id": "e9f992fa4b73d5e3c1029ae2c973571cba236812acbf8ccf66b1bb953912a4ef",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/mtd-nand-omap2.h",
+  "human_readable_source": " \n \n\n#ifndef\t_MTD_NAND_OMAP2_H\n#define\t_MTD_NAND_OMAP2_H\n\n#include <linux/mtd/partitions.h>\n#include <linux/mod_devicetable.h>\n\n#define\tGPMC_BCH_NUM_REMAINDER\t8\n\nenum nand_io {\n\tNAND_OMAP_PREFETCH_POLLED = 0,\t \n\tNAND_OMAP_POLLED,\t\t \n\tNAND_OMAP_PREFETCH_DMA,\t\t \n\tNAND_OMAP_PREFETCH_IRQ\t\t \n};\n\nenum omap_ecc {\n\t \n\tOMAP_ECC_HAM1_CODE_SW = 0,\n\n\t \n\tOMAP_ECC_HAM1_CODE_HW,\n\t \n\tOMAP_ECC_BCH4_CODE_HW_DETECTION_SW,\n\t \n\tOMAP_ECC_BCH4_CODE_HW,\n\t \n\tOMAP_ECC_BCH8_CODE_HW_DETECTION_SW,\n\t \n\tOMAP_ECC_BCH8_CODE_HW,\n\t \n\tOMAP_ECC_BCH16_CODE_HW,\n};\n\nstruct gpmc_nand_regs {\n\tvoid __iomem\t*gpmc_nand_command;\n\tvoid __iomem\t*gpmc_nand_address;\n\tvoid __iomem\t*gpmc_nand_data;\n\tvoid __iomem\t*gpmc_prefetch_config1;\n\tvoid __iomem\t*gpmc_prefetch_config2;\n\tvoid __iomem\t*gpmc_prefetch_control;\n\tvoid __iomem\t*gpmc_prefetch_status;\n\tvoid __iomem\t*gpmc_ecc_config;\n\tvoid __iomem\t*gpmc_ecc_control;\n\tvoid __iomem\t*gpmc_ecc_size_config;\n\tvoid __iomem\t*gpmc_ecc1_result;\n\tvoid __iomem\t*gpmc_bch_result0[GPMC_BCH_NUM_REMAINDER];\n\tvoid __iomem\t*gpmc_bch_result1[GPMC_BCH_NUM_REMAINDER];\n\tvoid __iomem\t*gpmc_bch_result2[GPMC_BCH_NUM_REMAINDER];\n\tvoid __iomem\t*gpmc_bch_result3[GPMC_BCH_NUM_REMAINDER];\n\tvoid __iomem\t*gpmc_bch_result4[GPMC_BCH_NUM_REMAINDER];\n\tvoid __iomem\t*gpmc_bch_result5[GPMC_BCH_NUM_REMAINDER];\n\tvoid __iomem\t*gpmc_bch_result6[GPMC_BCH_NUM_REMAINDER];\n};\n\nstatic const struct of_device_id omap_nand_ids[] = {\n\t{ .compatible = \"ti,omap2-nand\", },\n\t{ .compatible = \"ti,am64-nand\", },\n\t{},\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

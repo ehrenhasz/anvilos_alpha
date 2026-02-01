@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "30df75f82026020f844f9b966df4e97d4c4aef1d7d4b4bffb7f5d42d463eabbc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/qcom/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y += camss/\nobj-y += venus/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

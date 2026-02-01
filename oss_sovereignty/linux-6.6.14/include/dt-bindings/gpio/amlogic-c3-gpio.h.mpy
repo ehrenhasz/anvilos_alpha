@@ -1,0 +1,9 @@
+{
+  "module_name": "amlogic-c3-gpio.h",
+  "hash_id": "7f5d5d84e69e342d3e2645fc7b2155ba068d48a0068cc7c6ff64244c7e71d093",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/gpio/amlogic-c3-gpio.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_AMLOGIC_C3_GPIO_H\n#define _DT_BINDINGS_AMLOGIC_C3_GPIO_H\n\n#define\tGPIOE_0\t\t0\n#define\tGPIOE_1\t\t1\n#define\tGPIOE_2\t\t2\n#define\tGPIOE_3\t\t3\n#define\tGPIOE_4\t\t4\n\n#define\tGPIOB_0\t\t5\n#define\tGPIOB_1\t\t6\n#define\tGPIOB_2\t\t7\n#define\tGPIOB_3\t\t8\n#define\tGPIOB_4\t\t9\n#define\tGPIOB_5\t\t10\n#define\tGPIOB_6\t\t11\n#define\tGPIOB_7\t\t12\n#define\tGPIOB_8\t\t13\n#define\tGPIOB_9\t\t14\n#define\tGPIOB_10\t15\n#define\tGPIOB_11\t16\n#define\tGPIOB_12\t17\n#define\tGPIOB_13\t18\n#define\tGPIOB_14\t19\n\n#define\tGPIOC_0\t\t20\n#define\tGPIOC_1\t\t21\n#define\tGPIOC_2\t\t22\n#define\tGPIOC_3\t\t23\n#define\tGPIOC_4\t\t24\n#define\tGPIOC_5\t\t25\n#define\tGPIOC_6\t\t26\n\n#define\tGPIOX_0\t\t27\n#define\tGPIOX_1\t\t28\n#define\tGPIOX_2\t\t29\n#define\tGPIOX_3\t\t30\n#define\tGPIOX_4\t\t31\n#define\tGPIOX_5\t\t32\n#define\tGPIOX_6\t\t33\n#define\tGPIOX_7\t\t34\n#define\tGPIOX_8\t\t35\n#define\tGPIOX_9\t\t36\n#define\tGPIOX_10\t37\n#define\tGPIOX_11\t38\n#define\tGPIOX_12\t39\n#define\tGPIOX_13\t40\n\n#define\tGPIOD_0\t\t41\n#define\tGPIOD_1\t\t42\n#define\tGPIOD_2\t\t43\n#define\tGPIOD_3\t\t44\n#define\tGPIOD_4\t\t45\n#define\tGPIOD_5\t\t46\n#define\tGPIOD_6\t\t47\n\n#define\tGPIOA_0\t\t48\n#define\tGPIOA_1\t\t49\n#define\tGPIOA_2\t\t50\n#define\tGPIOA_3\t\t51\n#define\tGPIOA_4\t\t52\n#define\tGPIOA_5\t\t53\n\n#define\tGPIO_TEST_N\t54\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

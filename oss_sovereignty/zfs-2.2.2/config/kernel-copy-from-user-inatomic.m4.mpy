@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-copy-from-user-inatomic.m4",
+  "hash_id": "28ba409ccea44e410d16caaf8755fca9d259cefffbb0ff0cedee5376a65f2156",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-copy-from-user-inatomic.m4",
+  "human_readable_source": "dnl #\ndnl # On certain architectures `__copy_from_user_inatomic`\ndnl # is a GPL exported variable and cannot be used by OpenZFS.\ndnl #\n\ndnl #\ndnl # Checking if `__copy_from_user_inatomic` is available.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC___COPY_FROM_USER_INATOMIC], [\n\tZFS_LINUX_TEST_SRC([__copy_from_user_inatomic], [\n\t\t#include <linux/uaccess.h>\n\t], [\n\t\tint result __attribute__ ((unused)) = __copy_from_user_inatomic(NULL, NULL, 0);\n\t], [], [ZFS_META_LICENSE])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL___COPY_FROM_USER_INATOMIC], [\n\tAC_MSG_CHECKING([whether __copy_from_user_inatomic is available])\n\tZFS_LINUX_TEST_RESULT([__copy_from_user_inatomic_license], [\n\t\tAC_MSG_RESULT(yes)\n\t], [\n\t\tAC_MSG_RESULT(no)\n\t\tAC_MSG_ERROR([\n\t*** The `__copy_from_user_inatomic()` Linux kernel function is\n\t*** incompatible with the CDDL license and will prevent the module\n\t*** linking stage from succeeding.  OpenZFS cannot be compiled.\n\t\t])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

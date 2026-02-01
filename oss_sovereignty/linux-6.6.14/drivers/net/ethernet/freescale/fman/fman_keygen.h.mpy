@@ -1,0 +1,9 @@
+{
+  "module_name": "fman_keygen.h",
+  "hash_id": "ecdb9264fcccd18683dd61c8547db19a1b4e36ceaeec847cc7f55b9cd0f8dc0b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/fman/fman_keygen.h",
+  "human_readable_source": " \n \n\n#ifndef __KEYGEN_H\n#define __KEYGEN_H\n\n#include <linux/io.h>\n\nstruct fman_keygen;\nstruct fman_kg_regs;\n\nstruct fman_keygen *keygen_init(struct fman_kg_regs __iomem *keygen_regs);\n\nint keygen_port_hashing_init(struct fman_keygen *keygen, u8 hw_port_id,\n\t\t\t     u32 hash_base_fqid, u32 hash_size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

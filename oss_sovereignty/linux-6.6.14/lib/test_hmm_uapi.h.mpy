@@ -1,0 +1,9 @@
+{
+  "module_name": "test_hmm_uapi.h",
+  "hash_id": "7c1a271e84a1f33a836a85896c5b7e410636aee38a2644b3742e95349525ef84",
+  "original_prompt": "Ingested from linux-6.6.14/lib/test_hmm_uapi.h",
+  "human_readable_source": " \n \n#ifndef _LIB_TEST_HMM_UAPI_H\n#define _LIB_TEST_HMM_UAPI_H\n\n#include <linux/types.h>\n#include <linux/ioctl.h>\n\n \nstruct hmm_dmirror_cmd {\n\t__u64\t\taddr;\n\t__u64\t\tptr;\n\t__u64\t\tnpages;\n\t__u64\t\tcpages;\n\t__u64\t\tfaults;\n};\n\n \n#define HMM_DMIRROR_READ\t\t_IOWR('H', 0x00, struct hmm_dmirror_cmd)\n#define HMM_DMIRROR_WRITE\t\t_IOWR('H', 0x01, struct hmm_dmirror_cmd)\n#define HMM_DMIRROR_MIGRATE_TO_DEV\t_IOWR('H', 0x02, struct hmm_dmirror_cmd)\n#define HMM_DMIRROR_MIGRATE_TO_SYS\t_IOWR('H', 0x03, struct hmm_dmirror_cmd)\n#define HMM_DMIRROR_SNAPSHOT\t\t_IOWR('H', 0x04, struct hmm_dmirror_cmd)\n#define HMM_DMIRROR_EXCLUSIVE\t\t_IOWR('H', 0x05, struct hmm_dmirror_cmd)\n#define HMM_DMIRROR_CHECK_EXCLUSIVE\t_IOWR('H', 0x06, struct hmm_dmirror_cmd)\n#define HMM_DMIRROR_RELEASE\t\t_IOWR('H', 0x07, struct hmm_dmirror_cmd)\n\n \nenum {\n\tHMM_DMIRROR_PROT_ERROR\t\t\t= 0xFF,\n\tHMM_DMIRROR_PROT_NONE\t\t\t= 0x00,\n\tHMM_DMIRROR_PROT_READ\t\t\t= 0x01,\n\tHMM_DMIRROR_PROT_WRITE\t\t\t= 0x02,\n\tHMM_DMIRROR_PROT_PMD\t\t\t= 0x04,\n\tHMM_DMIRROR_PROT_PUD\t\t\t= 0x08,\n\tHMM_DMIRROR_PROT_ZERO\t\t\t= 0x10,\n\tHMM_DMIRROR_PROT_DEV_PRIVATE_LOCAL\t= 0x20,\n\tHMM_DMIRROR_PROT_DEV_PRIVATE_REMOTE\t= 0x30,\n\tHMM_DMIRROR_PROT_DEV_COHERENT_LOCAL\t= 0x40,\n\tHMM_DMIRROR_PROT_DEV_COHERENT_REMOTE\t= 0x50,\n};\n\nenum {\n\t \n\tHMM_DMIRROR_MEMORY_DEVICE_PRIVATE = 1,\n\tHMM_DMIRROR_MEMORY_DEVICE_COHERENT,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

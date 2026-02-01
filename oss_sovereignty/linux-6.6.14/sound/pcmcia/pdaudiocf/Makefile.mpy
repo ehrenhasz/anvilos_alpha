@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "661448eb4ec468dfcf33ffdc0b5e36dfc6e277f888c9d593de160cd11d75cc1f",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pcmcia/pdaudiocf/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n# Copyright (c) 2004 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-pdaudiocf-objs := pdaudiocf.o pdaudiocf_core.o pdaudiocf_irq.o pdaudiocf_pcm.o\n\nobj-$(CONFIG_SND_PDAUDIOCF) += snd-pdaudiocf.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

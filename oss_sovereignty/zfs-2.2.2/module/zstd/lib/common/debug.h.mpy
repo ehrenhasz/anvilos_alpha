@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "2d6358140c1310ee88d41f37d5c0c1516f68541f21a44e31ac0d69cc7dcc0d8d",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/lib/common/debug.h",
+  "human_readable_source": " \n\n\n \n\n#ifndef DEBUG_H_12987983217\n#define DEBUG_H_12987983217\n\n#if defined (__cplusplus)\nextern \"C\" {\n#endif\n\n\n \n#define DEBUG_STATIC_ASSERT(c) (void)sizeof(char[(c) ? 1 : -1])\n\n\n \n#ifndef DEBUGLEVEL\n#  define DEBUGLEVEL 0\n#endif\n\n\n \n#ifndef DEBUGFILE\n#  define DEBUGFILE stderr\n#endif\n\n\n \n\n#if (DEBUGLEVEL>=1)\n#  include <assert.h>\n#else\n#  ifndef assert    \n#    define assert(condition) ((void)0)    \n#  endif\n#endif\n\n#if (DEBUGLEVEL>=2)\n#  include <stdio.h>\nextern int g_debuglevel;  \n\n#  define RAWLOG(l, ...) {                                      \\\n                if (l<=g_debuglevel) {                          \\\n                    fprintf(stderr, __VA_ARGS__);               \\\n            }   }\n#  define DEBUGLOG(l, ...) {                                    \\\n                if (l<=g_debuglevel) {                          \\\n                    fprintf(stderr, __FILE__ \": \" __VA_ARGS__); \\\n                    fprintf(stderr, \" \\n\");                     \\\n            }   }\n#else\n#  define RAWLOG(l, ...)      {}     \n#  define DEBUGLOG(l, ...)    {}     \n#endif\n\n\n#if defined (__cplusplus)\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3df3f12a0306bdfa176981f7e1949dee244a7dd0600094137b2b89fd26e0e810",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/altera/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Altera device drivers.\n#\n\nobj-$(CONFIG_ALTERA_TSE) += altera_tse.o\naltera_tse-objs := altera_tse_main.o altera_tse_ethtool.o \\\naltera_msgdma.o altera_sgdma.o altera_utils.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

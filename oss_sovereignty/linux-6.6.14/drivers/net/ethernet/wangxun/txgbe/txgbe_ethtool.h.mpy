@@ -1,0 +1,9 @@
+{
+  "module_name": "txgbe_ethtool.h",
+  "hash_id": "80818dc3345e2e41efba0f00120d1b8071a346436a5150393dc6d00052b2c1c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/wangxun/txgbe/txgbe_ethtool.h",
+  "human_readable_source": " \n \n\n#ifndef _TXGBE_ETHTOOL_H_\n#define _TXGBE_ETHTOOL_H_\n\nvoid txgbe_set_ethtool_ops(struct net_device *netdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

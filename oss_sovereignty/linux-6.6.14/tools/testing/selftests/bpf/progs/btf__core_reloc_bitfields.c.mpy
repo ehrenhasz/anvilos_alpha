@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_bitfields.c",
+  "hash_id": "23ca12c10e35010415badb23f4b46ad3a144d32d315245fa2268f302c3540839",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_bitfields.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_bitfields x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

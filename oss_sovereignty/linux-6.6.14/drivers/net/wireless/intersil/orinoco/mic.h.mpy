@@ -1,0 +1,9 @@
+{
+  "module_name": "mic.h",
+  "hash_id": "960e9a43cd9724f7846779cb4f96dbc73a491fc3b0fcad726a3b17992e995c9d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intersil/orinoco/mic.h",
+  "human_readable_source": " \n#ifndef _ORINOCO_MIC_H_\n#define _ORINOCO_MIC_H_\n\n#include <linux/types.h>\n#include <crypto/hash.h>\n\n#define MICHAEL_MIC_LEN 8\n\n \nstruct orinoco_private;\nstruct crypto_ahash;\n\nint orinoco_mic_init(struct orinoco_private *priv);\nvoid orinoco_mic_free(struct orinoco_private *priv);\nint orinoco_mic(struct crypto_shash *tfm_michael, u8 *key,\n\t\tu8 *da, u8 *sa, u8 priority,\n\t\tu8 *data, size_t data_len, u8 *mic);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

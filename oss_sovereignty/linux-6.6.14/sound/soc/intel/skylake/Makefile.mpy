@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a298d9405ae6dc26ac10b980f3e0483fe6e53927128568a32ed5f7eaa4615a55",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/skylake/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-soc-skl-objs := skl.o skl-pcm.o skl-nhlt.o skl-messages.o skl-topology.o \\\n\t\tskl-sst-ipc.o skl-sst-dsp.o cnl-sst-dsp.o skl-sst-cldma.o \\\n\t\tskl-sst.o bxt-sst.o cnl-sst.o skl-sst-utils.o\n\nifdef CONFIG_DEBUG_FS\n  snd-soc-skl-objs += skl-debug.o\nendif\n\nobj-$(CONFIG_SND_SOC_INTEL_SKYLAKE_COMMON) += snd-soc-skl.o\n\n#Skylake Clock device support\nsnd-soc-skl-ssp-clk-objs := skl-ssp-clk.o\n\nobj-$(CONFIG_SND_SOC_INTEL_SKYLAKE_SSP_CLK) += snd-soc-skl-ssp-clk.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

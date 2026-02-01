@@ -1,0 +1,9 @@
+{
+  "module_name": "tcp_dumpstats_kern.c",
+  "hash_id": "dd0d08e037276692cd9a7bf798c293b79ddc1f0df94eab333106ebf73ff5d5ac",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/tcp_dumpstats_kern.c",
+  "human_readable_source": "\n \n#include <linux/bpf.h>\n\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n\n#define INTERVAL\t\t\t1000000000ULL\n\nint _version SEC(\"version\") = 1;\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__u32 type;\n\t__u32 map_flags;\n\tint *key;\n\t__u64 *value;\n} bpf_next_dump SEC(\".maps\") = {\n\t.type = BPF_MAP_TYPE_SK_STORAGE,\n\t.map_flags = BPF_F_NO_PREALLOC,\n};\n\nSEC(\"sockops\")\nint _sockops(struct bpf_sock_ops *ctx)\n{\n\tstruct bpf_tcp_sock *tcp_sk;\n\tstruct bpf_sock *sk;\n\t__u64 *next_dump;\n\t__u64 now;\n\n\tswitch (ctx->op) {\n\tcase BPF_SOCK_OPS_TCP_CONNECT_CB:\n\t\tbpf_sock_ops_cb_flags_set(ctx, BPF_SOCK_OPS_RTT_CB_FLAG);\n\t\treturn 1;\n\tcase BPF_SOCK_OPS_RTT_CB:\n\t\tbreak;\n\tdefault:\n\t\treturn 1;\n\t}\n\n\tsk = ctx->sk;\n\tif (!sk)\n\t\treturn 1;\n\n\tnext_dump = bpf_sk_storage_get(&bpf_next_dump, sk, 0,\n\t\t\t\t       BPF_SK_STORAGE_GET_F_CREATE);\n\tif (!next_dump)\n\t\treturn 1;\n\n\tnow = bpf_ktime_get_ns();\n\tif (now < *next_dump)\n\t\treturn 1;\n\n\ttcp_sk = bpf_tcp_sock(sk);\n\tif (!tcp_sk)\n\t\treturn 1;\n\n\t*next_dump = now + INTERVAL;\n\n\tbpf_printk(\"dsack_dups=%u delivered=%u\\n\",\n\t\t   tcp_sk->dsack_dups, tcp_sk->delivered);\n\tbpf_printk(\"delivered_ce=%u icsk_retransmits=%u\\n\",\n\t\t   tcp_sk->delivered_ce, tcp_sk->icsk_retransmits);\n\n\treturn 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

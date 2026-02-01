@@ -1,0 +1,9 @@
+{
+  "module_name": "kyro.h",
+  "hash_id": "683eb0b898944cbfb7a1c933b39752df2514306b4b91725fea11dd694e5bb02d",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/kyro.h",
+  "human_readable_source": " \n\n#ifndef _KYRO_H\n#define _KYRO_H\n\nstruct kyrofb_info {\n\tvoid __iomem *regbase;\n\n\tu32 palette[16];\n\tu32 HTot;\t \n\tu32 HFP;\t \n\tu32 HST;\t \n\tu32 HBP;\t \n\ts32 HSP;\t\t \n\tu32 VTot;\t \n\tu32 VFP;\t \n\tu32 VST;\t \n\tu32 VBP;\t \n\ts32 VSP;\t\t \n\tu32 XRES;\t \n\tu32 YRES;\t \n\tu32 VFREQ;\t \n\tu32 PIXCLK;\t \n\tu32 HCLK;\t \n\n\t \n\tu8 PIXDEPTH;\n\n\tint wc_cookie;\n};\n\n \n#define KYRO_IOC_MAGIC 'k'\n\n#define KYRO_IOCTL_OVERLAY_CREATE       _IO(KYRO_IOC_MAGIC, 0)\n#define KYRO_IOCTL_OVERLAY_VIEWPORT_SET _IO(KYRO_IOC_MAGIC, 1)\n#define KYRO_IOCTL_SET_VIDEO_MODE       _IO(KYRO_IOC_MAGIC, 2)\n#define KYRO_IOCTL_UVSTRIDE             _IO(KYRO_IOC_MAGIC, 3)\n#define KYRO_IOCTL_OVERLAY_OFFSET       _IO(KYRO_IOC_MAGIC, 4)\n#define KYRO_IOCTL_STRIDE               _IO(KYRO_IOC_MAGIC, 5)\n\n \ntypedef struct _OVERLAY_CREATE {\n\tu32 ulWidth;\n\tu32 ulHeight;\n\tint bLinear;\n} overlay_create;\n\ntypedef struct _OVERLAY_VIEWPORT_SET {\n\tu32 xOrgin;\n\tu32 yOrgin;\n\tu32 xSize;\n\tu32 ySize;\n} overlay_viewport_set;\n\ntypedef struct _SET_VIDEO_MODE {\n\tu32 ulWidth;\n\tu32 ulHeight;\n\tu32 ulScan;\n\tu8 displayDepth;\n\tint bLinear;\n} set_video_mode;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

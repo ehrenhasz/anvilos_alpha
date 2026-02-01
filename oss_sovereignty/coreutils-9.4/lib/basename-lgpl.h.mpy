@@ -1,0 +1,9 @@
+{
+  "module_name": "basename-lgpl.h",
+  "hash_id": "2be3e7b783d6e60705760128007b6d94097fbaaeec418c7697fef6c55344dd6d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/basename-lgpl.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stddef.h>\n\n#ifndef DOUBLE_SLASH_IS_DISTINCT_ROOT\n# define DOUBLE_SLASH_IS_DISTINCT_ROOT 0\n#endif\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n\n \n\n \nextern char *last_component (char const *filename) _GL_ATTRIBUTE_PURE;\n\n \nextern size_t base_len (char const *filename) _GL_ATTRIBUTE_PURE;\n\n\n#ifdef __cplusplus\n}  \n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

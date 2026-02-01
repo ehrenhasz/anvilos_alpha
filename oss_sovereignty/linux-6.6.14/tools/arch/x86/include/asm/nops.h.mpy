@@ -1,0 +1,9 @@
+{
+  "module_name": "nops.h",
+  "hash_id": "ce139b4b0233b718da4c1e14b46f162ee89733b138c83f70a3057fddc50240d7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/x86/include/asm/nops.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_NOPS_H\n#define _ASM_X86_NOPS_H\n\n#include <asm/asm.h>\n\n \n\n#ifndef CONFIG_64BIT\n\n \n#define BYTES_NOP1\t0x90\n#define BYTES_NOP2\t0x89,0xf6\n#define BYTES_NOP3\t0x8d,0x76,0x00\n#define BYTES_NOP4\t0x8d,0x74,0x26,0x00\n#define BYTES_NOP5\t0x3e,BYTES_NOP4\n#define BYTES_NOP6\t0x8d,0xb6,0x00,0x00,0x00,0x00\n#define BYTES_NOP7\t0x8d,0xb4,0x26,0x00,0x00,0x00,0x00\n#define BYTES_NOP8\t0x3e,BYTES_NOP7\n\n#define ASM_NOP_MAX 8\n\n#else\n\n \n#define BYTES_NOP1\t0x90\n#define BYTES_NOP2\t0x66,BYTES_NOP1\n#define BYTES_NOP3\t0x0f,0x1f,0x00\n#define BYTES_NOP4\t0x0f,0x1f,0x40,0x00\n#define BYTES_NOP5\t0x0f,0x1f,0x44,0x00,0x00\n#define BYTES_NOP6\t0x66,BYTES_NOP5\n#define BYTES_NOP7\t0x0f,0x1f,0x80,0x00,0x00,0x00,0x00\n#define BYTES_NOP8\t0x0f,0x1f,0x84,0x00,0x00,0x00,0x00,0x00\n#define BYTES_NOP9\t0x2e,BYTES_NOP8\n#define BYTES_NOP10\t0x66,BYTES_NOP9\n#define BYTES_NOP11\t0x66,BYTES_NOP10\n\n#define ASM_NOP9  _ASM_BYTES(BYTES_NOP9)\n#define ASM_NOP10 _ASM_BYTES(BYTES_NOP10)\n#define ASM_NOP11 _ASM_BYTES(BYTES_NOP11)\n\n#define ASM_NOP_MAX 11\n\n#endif  \n\n#define ASM_NOP1 _ASM_BYTES(BYTES_NOP1)\n#define ASM_NOP2 _ASM_BYTES(BYTES_NOP2)\n#define ASM_NOP3 _ASM_BYTES(BYTES_NOP3)\n#define ASM_NOP4 _ASM_BYTES(BYTES_NOP4)\n#define ASM_NOP5 _ASM_BYTES(BYTES_NOP5)\n#define ASM_NOP6 _ASM_BYTES(BYTES_NOP6)\n#define ASM_NOP7 _ASM_BYTES(BYTES_NOP7)\n#define ASM_NOP8 _ASM_BYTES(BYTES_NOP8)\n\n#ifndef __ASSEMBLY__\nextern const unsigned char * const x86_nops[];\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

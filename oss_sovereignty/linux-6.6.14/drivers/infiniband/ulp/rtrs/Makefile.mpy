@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8af301936d481381923d748e82a9464a72f0e1adcd7c586a4f99e0826de94f90",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/ulp/rtrs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-or-later\n\nCFLAGS_rtrs-clt-trace.o = -I$(src)\n\nrtrs-client-y := rtrs-clt.o \\\n\t\t  rtrs-clt-stats.o \\\n\t\t  rtrs-clt-sysfs.o \\\n\t\t  rtrs-clt-trace.o\n\nCFLAGS_rtrs-srv-trace.o = -I$(src)\n\nrtrs-server-y := rtrs-srv.o \\\n\t\t  rtrs-srv-stats.o \\\n\t\t  rtrs-srv-sysfs.o \\\n\t\t  rtrs-srv-trace.o\n\nrtrs-core-y := rtrs.o\n\nobj-$(CONFIG_INFINIBAND_RTRS)        += rtrs-core.o\nobj-$(CONFIG_INFINIBAND_RTRS_CLIENT) += rtrs-client.o\nobj-$(CONFIG_INFINIBAND_RTRS_SERVER) += rtrs-server.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

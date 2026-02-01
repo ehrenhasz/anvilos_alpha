@@ -1,0 +1,9 @@
+{
+  "module_name": "kcs_bmc.h",
+  "hash_id": "30153667849c2c8ccacd7f20d8345b32f52524f9dc291e2e9a25ab82d0b76a17",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/ipmi/kcs_bmc.h",
+  "human_readable_source": " \n \n\n#ifndef __KCS_BMC_H__\n#define __KCS_BMC_H__\n\n#include <linux/list.h>\n\n#define KCS_BMC_EVENT_TYPE_OBE\tBIT(0)\n#define KCS_BMC_EVENT_TYPE_IBF\tBIT(1)\n\n#define KCS_BMC_STR_OBF\t\tBIT(0)\n#define KCS_BMC_STR_IBF\t\tBIT(1)\n#define KCS_BMC_STR_CMD_DAT\tBIT(3)\n\n \nstruct kcs_ioreg {\n\tu32 idr;\n\tu32 odr;\n\tu32 str;\n};\n\nstruct kcs_bmc_device_ops;\nstruct kcs_bmc_client;\n\nstruct kcs_bmc_device {\n\tstruct list_head entry;\n\n\tstruct device *dev;\n\tu32 channel;\n\n\tstruct kcs_ioreg ioreg;\n\n\tconst struct kcs_bmc_device_ops *ops;\n\n\tspinlock_t lock;\n\tstruct kcs_bmc_client *client;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

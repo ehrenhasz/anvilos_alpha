@@ -1,0 +1,9 @@
+{
+  "module_name": "testmode.h",
+  "hash_id": "173cb791bed7aa5839533e338998d027fedb809c01773f2b85fc1b55f94e30e0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt7915/testmode.h",
+  "human_readable_source": " \n \n\n#ifndef __MT7915_TESTMODE_H\n#define __MT7915_TESTMODE_H\n\nstruct mt7915_tm_trx {\n\tu8 type;\n\tu8 enable;\n\tu8 band;\n\tu8 rsv;\n};\n\nstruct mt7915_tm_freq_offset {\n\tu8 band;\n\t__le32 freq_offset;\n};\n\nstruct mt7915_tm_slot_time {\n\tu8 slot_time;\n\tu8 sifs;\n\tu8 rifs;\n\tu8 _rsv;\n\t__le16 eifs;\n\tu8 band;\n\tu8 _rsv1[5];\n};\n\nstruct mt7915_tm_clean_txq {\n\tbool sta_pause;\n\tu8 wcid;\t \n\tu8 band;\n\tu8 rsv;\n};\n\nstruct mt7915_tm_cmd {\n\tu8 testmode_en;\n\tu8 param_idx;\n\tu8 _rsv[2];\n\tunion {\n\t\t__le32 data;\n\t\tstruct mt7915_tm_trx trx;\n\t\tstruct mt7915_tm_freq_offset freq;\n\t\tstruct mt7915_tm_slot_time slot;\n\t\tstruct mt7915_tm_clean_txq clean;\n\t\tu8 test[72];\n\t} param;\n} __packed;\n\nenum {\n\tTM_MAC_TX = 1,\n\tTM_MAC_RX,\n\tTM_MAC_TXRX,\n\tTM_MAC_TXRX_RXV,\n\tTM_MAC_RXV,\n\tTM_MAC_RX_RXV,\n};\n\nstruct tm_tx_cont {\n\tu8 control_ch;\n\tu8 center_ch;\n\tu8 bw;\n\tu8 tx_ant;\n\t__le16 rateval;\n\tu8 band;\n\tu8 txfd_mode;\n};\n\nstruct mt7915_tm_rf_test {\n\tu8 action;\n\tu8 icap_len;\n\tu8 _rsv[2];\n\tunion {\n\t\t__le32 op_mode;\n\t\t__le32 freq;\n\n\t\tstruct {\n\t\t\t__le32 func_idx;\n\t\t\tunion {\n\t\t\t\t__le32 func_data;\n\t\t\t\t__le32 cal_dump;\n\n\t\t\t\tstruct tm_tx_cont tx_cont;\n\n\t\t\t\tu8 _pad[80];\n\t\t\t} param;\n\t\t} rf;\n\t} op;\n} __packed;\n\nenum {\n\tRF_OPER_NORMAL,\n\tRF_OPER_RF_TEST,\n\tRF_OPER_ICAP,\n\tRF_OPER_ICAP_OVERLAP,\n\tRF_OPER_WIFI_SPECTRUM,\n};\n\nenum {\n\tTAM_ARB_OP_MODE_NORMAL = 1,\n\tTAM_ARB_OP_MODE_TEST,\n\tTAM_ARB_OP_MODE_FORCE_SU = 5,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

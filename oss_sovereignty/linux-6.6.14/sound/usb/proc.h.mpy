@@ -1,0 +1,9 @@
+{
+  "module_name": "proc.h",
+  "hash_id": "e39efcaec291bde9d70806eb3642d42e607cd371b42c3447ab0f6ac04609487c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/proc.h",
+  "human_readable_source": " \n#ifndef __USBAUDIO_PROC_H\n#define __USBAUDIO_PROC_H\n\nvoid snd_usb_audio_create_proc(struct snd_usb_audio *chip);\nvoid snd_usb_proc_pcm_format_add(struct snd_usb_stream *stream);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

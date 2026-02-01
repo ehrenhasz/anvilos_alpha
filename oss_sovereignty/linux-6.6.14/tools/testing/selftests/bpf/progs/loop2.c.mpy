@@ -1,0 +1,9 @@
+{
+  "module_name": "loop2.c",
+  "hash_id": "0f342e8946df78eb6e627d54d7919cd942e68036eb7b40b965d1bf7469a63b8a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/loop2.c",
+  "human_readable_source": "\n\n#include <linux/sched.h>\n#include <linux/ptrace.h>\n#include <stdint.h>\n#include <stddef.h>\n#include <stdbool.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"raw_tracepoint/consume_skb\")\nint while_true(volatile struct pt_regs* ctx)\n{\n\tint i = 0;\n\n\twhile (true) {\n\t\tif (PT_REGS_RC(ctx) & 1)\n\t\t\ti += 3;\n\t\telse\n\t\t\ti += 7;\n\t\tif (i > 40)\n\t\t\tbreak;\n\t}\n\n\treturn i;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "recv_osdep.h",
+  "hash_id": "b862b2e820fe09d7b4ebdf8f6f5176c426ae11d67429b0af3eed6e3b3bbad3d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/recv_osdep.h",
+  "human_readable_source": " \n \n#ifndef __RECV_OSDEP_H_\n#define __RECV_OSDEP_H_\n\n#include \"osdep_service.h\"\n#include \"drv_types.h\"\n#include <linux/skbuff.h>\n\nint _r8712_init_recv_priv(struct recv_priv *precvpriv,\n\t\t\t  struct _adapter *padapter);\nvoid _r8712_free_recv_priv(struct recv_priv *precvpriv);\nvoid r8712_recv_entry(union recv_frame *precv_frame);\nvoid r8712_recv_indicatepkt(struct _adapter *adapter,\n\t\t\t    union recv_frame *precv_frame);\nvoid r8712_handle_tkip_mic_err(struct _adapter *padapter, u8 bgroup);\nint r8712_init_recv_priv(struct recv_priv *precvpriv,\n\t\t\t struct _adapter *padapter);\nvoid r8712_free_recv_priv(struct recv_priv *precvpriv);\nvoid r8712_os_recv_resource_alloc(struct _adapter *padapter,\n\t\t\t\t  union recv_frame *precvframe);\nint r8712_os_recvbuf_resource_alloc(struct _adapter *padapter,\n\t\t\t\t    struct recv_buf *precvbuf);\nvoid r8712_os_recvbuf_resource_free(struct _adapter *padapter,\n\t\t\t\t    struct recv_buf *precvbuf);\nvoid r8712_init_recv_timer(struct recv_reorder_ctrl *preorder_ctrl);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

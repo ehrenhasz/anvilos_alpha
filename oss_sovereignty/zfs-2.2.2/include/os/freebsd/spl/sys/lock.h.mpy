@@ -1,0 +1,9 @@
+{
+  "module_name": "lock.h",
+  "hash_id": "d50512fb848d73f36725b2ac60154363ac495e56c883b8158f294ffcae4c1ddf",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/lock.h",
+  "human_readable_source": " \n\n#ifndef _OPENSOLARIS_SYS_LOCK_H_\n#define\t_OPENSOLARIS_SYS_LOCK_H_\n\n#include_next <sys/lock.h>\n\n#define\tLO_ALLMASK\t(LO_INITIALIZED | LO_WITNESS | LO_QUIET |\t\\\n    LO_RECURSABLE | LO_SLEEPABLE | LO_UPGRADABLE |\t\\\n    LO_DUPOK | LO_CLASSMASK | LO_NOPROFILE)\n#define\tLO_EXPECTED\t(LO_INITIALIZED | LO_WITNESS | LO_RECURSABLE |\t\\\n    LO_SLEEPABLE | LO_UPGRADABLE | LO_DUPOK | (2 << LO_CLASSSHIFT))\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

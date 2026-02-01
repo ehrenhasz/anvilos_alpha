@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "94e8baa7b0838feabc81302552607e30e00168db5ec95ad01e90b84d9ff01468",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/siemens/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for linux/drivers/platform/x86/siemens\n# Siemens x86 Platform-Specific Drivers\n#\n\nobj-$(CONFIG_SIEMENS_SIMATIC_IPC)\t\t\t+= simatic-ipc.o\nobj-$(CONFIG_SIEMENS_SIMATIC_IPC_BATT)\t\t\t+= simatic-ipc-batt.o\nobj-$(CONFIG_SIEMENS_SIMATIC_IPC_BATT_APOLLOLAKE)\t+= simatic-ipc-batt-apollolake.o\nobj-$(CONFIG_SIEMENS_SIMATIC_IPC_BATT_ELKHARTLAKE)\t+= simatic-ipc-batt-elkhartlake.o\nobj-$(CONFIG_SIEMENS_SIMATIC_IPC_BATT_F7188X)\t\t+= simatic-ipc-batt-f7188x.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

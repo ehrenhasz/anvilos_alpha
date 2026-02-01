@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_gt_clock_utils.h",
+  "hash_id": "fa9957bf0ffe35b356b66f6b49e36f9b6aedeee52268710e5350d8de835b47ce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_gt_clock_utils.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_GT_CLOCK_UTILS_H__\n#define __INTEL_GT_CLOCK_UTILS_H__\n\n#include <linux/types.h>\n\nstruct intel_gt;\n\nvoid intel_gt_init_clock_frequency(struct intel_gt *gt);\n\n#if IS_ENABLED(CONFIG_DRM_I915_DEBUG_GEM)\nvoid intel_gt_check_clock_frequency(const struct intel_gt *gt);\n#else\nstatic inline void intel_gt_check_clock_frequency(const struct intel_gt *gt) {}\n#endif\n\nu64 intel_gt_clock_interval_to_ns(const struct intel_gt *gt, u64 count);\nu64 intel_gt_pm_interval_to_ns(const struct intel_gt *gt, u64 count);\n\nu64 intel_gt_ns_to_clock_interval(const struct intel_gt *gt, u64 ns);\nu64 intel_gt_ns_to_pm_interval(const struct intel_gt *gt, u64 ns);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

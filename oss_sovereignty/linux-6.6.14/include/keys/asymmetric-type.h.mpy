@@ -1,0 +1,9 @@
+{
+  "module_name": "asymmetric-type.h",
+  "hash_id": "1642ab48a341f88bcb40c8a2ef27cfff07fde78671d79515138b1c16c6ea54fd",
+  "original_prompt": "Ingested from linux-6.6.14/include/keys/asymmetric-type.h",
+  "human_readable_source": " \n \n\n#ifndef _KEYS_ASYMMETRIC_TYPE_H\n#define _KEYS_ASYMMETRIC_TYPE_H\n\n#include <linux/key-type.h>\n#include <linux/verification.h>\n\nextern struct key_type key_type_asymmetric;\n\n \nenum asymmetric_payload_bits {\n\tasym_crypto,\t\t \n\tasym_subtype,\t\t \n\tasym_key_ids,\t\t \n\tasym_auth\t\t \n};\n\n \nstruct asymmetric_key_id {\n\tunsigned short\tlen;\n\tunsigned char\tdata[];\n};\n\nstruct asymmetric_key_ids {\n\tvoid\t\t*id[3];\n};\n\nextern bool asymmetric_key_id_same(const struct asymmetric_key_id *kid1,\n\t\t\t\t   const struct asymmetric_key_id *kid2);\n\nextern bool asymmetric_key_id_partial(const struct asymmetric_key_id *kid1,\n\t\t\t\t      const struct asymmetric_key_id *kid2);\n\nextern struct asymmetric_key_id *asymmetric_key_generate_id(const void *val_1,\n\t\t\t\t\t\t\t    size_t len_1,\n\t\t\t\t\t\t\t    const void *val_2,\n\t\t\t\t\t\t\t    size_t len_2);\nstatic inline\nconst struct asymmetric_key_ids *asymmetric_key_ids(const struct key *key)\n{\n\treturn key->payload.data[asym_key_ids];\n}\n\nstatic inline\nconst struct public_key *asymmetric_key_public_key(const struct key *key)\n{\n\treturn key->payload.data[asym_crypto];\n}\n\nextern struct key *find_asymmetric_key(struct key *keyring,\n\t\t\t\t       const struct asymmetric_key_id *id_0,\n\t\t\t\t       const struct asymmetric_key_id *id_1,\n\t\t\t\t       const struct asymmetric_key_id *id_2,\n\t\t\t\t       bool partial);\n\nint x509_load_certificate_list(const u8 cert_list[], const unsigned long list_size,\n\t\t\t       const struct key *keyring);\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio.h",
+  "hash_id": "ebc3b4a1b30413edcc4efac0f390c4e3ea96c516b2a21916c071710357bda07c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/inc/hw/gpio.h",
+  "human_readable_source": " \n\n#ifndef __DAL_GPIO_H__\n#define __DAL_GPIO_H__\n\n#include \"gpio_types.h\"\n\n\nunion gpio_hw_container {\n\tstruct hw_ddc *ddc;\n\tstruct hw_generic *generic;\n\tstruct hw_hpd *hpd;\n};\n\nstruct gpio {\n\tstruct gpio_service *service;\n\tstruct hw_gpio_pin *pin;\n\tenum gpio_id id;\n\tuint32_t en;\n\n\tunion gpio_hw_container hw_container;\n\tenum gpio_mode mode;\n\n\t \n\tenum gpio_pin_output_state output_state;\n};\n\n#if 0\nstruct gpio_funcs {\n\n\tstruct hw_gpio_pin *(*create_ddc_data)(\n\t\tstruct dc_context *ctx,\n\t\tenum gpio_id id,\n\t\tuint32_t en);\n\tstruct hw_gpio_pin *(*create_ddc_clock)(\n\t\tstruct dc_context *ctx,\n\t\tenum gpio_id id,\n\t\tuint32_t en);\n\tstruct hw_gpio_pin *(*create_generic)(\n\t\tstruct dc_context *ctx,\n\t\tenum gpio_id id,\n\t\tuint32_t en);\n\tstruct hw_gpio_pin *(*create_hpd)(\n\t\tstruct dc_context *ctx,\n\t\tenum gpio_id id,\n\t\tuint32_t en);\n\tstruct hw_gpio_pin *(*create_gpio_pad)(\n\t\tstruct dc_context *ctx,\n\t\tenum gpio_id id,\n\t\tuint32_t en);\n\tstruct hw_gpio_pin *(*create_sync)(\n\t\tstruct dc_context *ctx,\n\t\tenum gpio_id id,\n\t\tuint32_t en);\n\tstruct hw_gpio_pin *(*create_gsl)(\n\t\tstruct dc_context *ctx,\n\t\tenum gpio_id id,\n\t\tuint32_t en);\n\n\t \n\tbool (*offset_to_id)(\n\t\tuint32_t offset,\n\t\tuint32_t mask,\n\t\tenum gpio_id *id,\n\t\tuint32_t *en);\n\tbool (*id_to_offset)(\n\t\tenum gpio_id id,\n\t\tuint32_t en,\n\t\tstruct gpio_pin_info *info);\n};\n#endif\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

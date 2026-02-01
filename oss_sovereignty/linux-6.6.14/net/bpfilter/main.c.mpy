@@ -1,0 +1,9 @@
+{
+  "module_name": "main.c",
+  "hash_id": "d4efe6c28522090fd951bfed526db180f8655ab361b05fc8190fcb8f50c7ff7a",
+  "original_prompt": "Ingested from linux-6.6.14/net/bpfilter/main.c",
+  "human_readable_source": "\n#define _GNU_SOURCE\n#include <sys/uio.h>\n#include <errno.h>\n#include <stdio.h>\n#include <sys/socket.h>\n#include <fcntl.h>\n#include <unistd.h>\n#include \"../../include/uapi/linux/bpf.h\"\n#include <asm/unistd.h>\n#include \"msgfmt.h\"\n\nFILE *debug_f;\n\nstatic int handle_get_cmd(struct mbox_request *cmd)\n{\n\tswitch (cmd->cmd) {\n\tcase 0:\n\t\treturn 0;\n\tdefault:\n\t\tbreak;\n\t}\n\treturn -ENOPROTOOPT;\n}\n\nstatic int handle_set_cmd(struct mbox_request *cmd)\n{\n\treturn -ENOPROTOOPT;\n}\n\nstatic void loop(void)\n{\n\twhile (1) {\n\t\tstruct mbox_request req;\n\t\tstruct mbox_reply reply;\n\t\tint n;\n\n\t\tn = read(0, &req, sizeof(req));\n\t\tif (n != sizeof(req)) {\n\t\t\tfprintf(debug_f, \"invalid request %d\\n\", n);\n\t\t\treturn;\n\t\t}\n\n\t\treply.status = req.is_set ?\n\t\t\thandle_set_cmd(&req) :\n\t\t\thandle_get_cmd(&req);\n\n\t\tn = write(1, &reply, sizeof(reply));\n\t\tif (n != sizeof(reply)) {\n\t\t\tfprintf(debug_f, \"reply failed %d\\n\", n);\n\t\t\treturn;\n\t\t}\n\t}\n}\n\nint main(void)\n{\n\tdebug_f = fopen(\"/dev/kmsg\", \"w\");\n\tsetvbuf(debug_f, 0, _IOLBF, 0);\n\tfprintf(debug_f, \"<5>Started bpfilter\\n\");\n\tloop();\n\tfclose(debug_f);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

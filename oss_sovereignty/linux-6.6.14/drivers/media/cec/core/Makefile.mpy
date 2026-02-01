@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b12765b97f1c76d02dbd5c9bfd9fef239c64536e2d01681bc1dca1e5055e93e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/cec/core/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\ncec-objs := cec-core.o cec-adap.o cec-api.o\n\nifeq ($(CONFIG_CEC_NOTIFIER),y)\n  cec-objs += cec-notifier.o\nendif\n\nifeq ($(CONFIG_CEC_PIN),y)\n  cec-objs += cec-pin.o\nendif\n\nifeq ($(CONFIG_CEC_PIN_ERROR_INJ),y)\n  cec-objs += cec-pin-error-inj.o\nendif\n\nobj-$(CONFIG_CEC_CORE) += cec.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

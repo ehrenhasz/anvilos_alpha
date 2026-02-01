@@ -1,0 +1,9 @@
+{
+  "module_name": "kbd_diacr.h",
+  "hash_id": "a539b4a89edf6403141c87ea83d035959b8cd2e60a41b2f83a645d0fceaaf3e4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kbd_diacr.h",
+  "human_readable_source": " \n#ifndef _DIACR_H\n#define _DIACR_H\n#include <linux/kd.h>\n\nextern struct kbdiacruc accent_table[];\nextern unsigned int accent_table_size;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

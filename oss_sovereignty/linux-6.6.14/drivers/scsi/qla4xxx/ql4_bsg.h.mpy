@@ -1,0 +1,9 @@
+{
+  "module_name": "ql4_bsg.h",
+  "hash_id": "9d65f91a5779ef5625053f11863534d06300c371045b635e00c144cb515b4313",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/qla4xxx/ql4_bsg.h",
+  "human_readable_source": " \n \n#ifndef __QL4_BSG_H\n#define __QL4_BSG_H\n\n \n#define QLISCSI_VND_READ_FLASH\t\t1\n#define QLISCSI_VND_UPDATE_FLASH\t2\n#define QLISCSI_VND_GET_ACB_STATE\t3\n#define QLISCSI_VND_READ_NVRAM\t\t4\n#define QLISCSI_VND_UPDATE_NVRAM\t5\n#define QLISCSI_VND_RESTORE_DEFAULTS\t6\n#define QLISCSI_VND_GET_ACB\t\t7\n#define QLISCSI_VND_DIAG_TEST\t\t8\n\n \n#define QL_DIAG_CMD_TEST_DDR_SIZE\t0x2\n#define QL_DIAG_CMD_TEST_DDR_RW\t\t0x3\n#define QL_DIAG_CMD_TEST_ONCHIP_MEM_RW\t0x4\n#define QL_DIAG_CMD_TEST_NVRAM\t\t0x5\t \n#define QL_DIAG_CMD_TEST_FLASH_ROM\t0x6\n#define QL_DIAG_CMD_TEST_INT_LOOPBACK\t0x7\n#define QL_DIAG_CMD_TEST_EXT_LOOPBACK\t0x8\n#define QL_DIAG_CMD_TEST_DMA_XFER\t0x9\t \n#define QL_DIAG_CMD_SELF_DDR_RW\t\t0xC\n#define QL_DIAG_CMD_SELF_ONCHIP_MEM_RW\t0xD\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

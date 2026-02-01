@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objrange.c.qstr",
+  "hash_id": "0c6b17b75ed9dcfb4e1d93545b04d2471bde0618958da08e35c8857e3e4ee8a2",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objrange.c.qstr",
+  "human_readable_source": "Q(iterator)\nQ(start)\nQ(stop)\nQ(step)\nQ(range)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

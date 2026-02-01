@@ -1,0 +1,9 @@
+{
+  "module_name": "fgraph-filter.tc",
+  "hash_id": "571eaaeb47ce96ec1f7b412798cb0cba0c0ad309e8f6c6e073feef328ab57e93",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/ftrace/fgraph-filter.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: ftrace - function graph filters\n# requires: set_ftrace_filter function_graph:tracer\n\n# Make sure that function graph filtering works\n\nfail() { # msg\n    echo $1\n    exit_fail\n}\n\ndisable_tracing\nclear_trace\n\n# filter something, schedule is always good\nif ! echo \"schedule\" > set_ftrace_filter; then\n    # test for powerpc 64\n    if ! echo \".schedule\" > set_ftrace_filter; then\n\tfail \"can not enable schedule filter\"\n    fi\nfi\n\necho function_graph > current_tracer\nenable_tracing\nsleep 1\n# search for functions (has \"()\" on the line), and make sure\n# that only the schedule function was found\ncount=`cat trace | grep '()' | grep -v schedule | wc -l`\nif [ $count -ne 0 ]; then\n    fail \"Graph filtering not working by itself?\"\nfi\n\n# Make sure we did find something\ncount=`cat trace | grep 'schedule()' | wc -l` \nif [ $count -eq 0 ]; then\n    fail \"No schedule traces found?\"\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "753fb473c95cb9a63d0a638b096569b7ec75b58122fb74e1e4e1e950ec3b7585",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/potentiostat/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for industrial I/O potentiostat drivers\n#\n\n# When adding new entries keep the list in alphabetical order\nobj-$(CONFIG_LMP91000) += lmp91000.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

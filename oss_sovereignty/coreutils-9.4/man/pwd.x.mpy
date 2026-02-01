@@ -1,0 +1,9 @@
+{
+  "module_name": "pwd.x",
+  "hash_id": "d4a54100fc99cf650db2a888d096847aa90ddd9c9024ea9e7981b0bd127fba67",
+  "original_prompt": "Ingested from coreutils-9.4/man/pwd.x",
+  "human_readable_source": "[NAME]\npwd \\- print name of current/working directory\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ngetcwd(3)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

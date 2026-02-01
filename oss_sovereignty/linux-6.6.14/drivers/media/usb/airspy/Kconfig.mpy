@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "caa7f7a310a7fbd57a7f0df4c6802be117a2d3607b21b3abc5b3131dfe0833d0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/airspy/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig USB_AIRSPY\n\ttristate \"AirSpy\"\n\tdepends on VIDEO_DEV\n\tselect VIDEOBUF2_VMALLOC\n\thelp\n\t  This is a video4linux2 driver for AirSpy SDR device.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called airspy\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

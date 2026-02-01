@@ -1,0 +1,9 @@
+{
+  "module_name": "generic_mpih-mul1.c",
+  "hash_id": "cdbfca8e805b291786d916c63550374abb408b6d8e6a8a01426058a2ebc350d4",
+  "original_prompt": "Ingested from linux-6.6.14/lib/crypto/mpi/generic_mpih-mul1.c",
+  "human_readable_source": "\n \n\n#include \"mpi-internal.h\"\n#include \"longlong.h\"\n\nmpi_limb_t\nmpihelp_mul_1(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr, mpi_size_t s1_size,\n\t      mpi_limb_t s2_limb)\n{\n\tmpi_limb_t cy_limb;\n\tmpi_size_t j;\n\tmpi_limb_t prod_high, prod_low;\n\n\t \n\tj = -s1_size;\n\n\t \n\ts1_ptr -= j;\n\tres_ptr -= j;\n\n\tcy_limb = 0;\n\tdo {\n\t\tumul_ppmm(prod_high, prod_low, s1_ptr[j], s2_limb);\n\t\tprod_low += cy_limb;\n\t\tcy_limb = (prod_low < cy_limb ? 1 : 0) + prod_high;\n\t\tres_ptr[j] = prod_low;\n\t} while (++j);\n\n\treturn cy_limb;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

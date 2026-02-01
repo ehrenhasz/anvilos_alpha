@@ -1,0 +1,9 @@
+{
+  "module_name": "lchmod.m4",
+  "hash_id": "e220aa126786d906a720a76904e668a01d84fb6526b3e87f750b141601b3fdf7",
+  "original_prompt": "Ingested from coreutils-9.4/m4/lchmod.m4",
+  "human_readable_source": "#serial 10\n\ndnl Copyright (C) 2005-2006, 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl From Paul Eggert.\ndnl Provide a replacement for lchmod on hosts that lack a working version.\n\nAC_DEFUN([gl_FUNC_LCHMOD],\n[\n  AC_REQUIRE([gl_SYS_STAT_H_DEFAULTS])\n\n  dnl Persuade glibc <sys/stat.h> to declare lchmod().\n  AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])\n\n  AC_CHECK_FUNCS_ONCE([lchmod])\n  if test \"$ac_cv_func_lchmod\" = no; then\n    HAVE_LCHMOD=0\n  fi\n])\n\n# Prerequisites of lib/lchmod.c.\nAC_DEFUN([gl_PREREQ_LCHMOD],\n[\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

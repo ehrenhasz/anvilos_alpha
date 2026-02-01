@@ -1,0 +1,9 @@
+{
+  "module_name": "rsc_dump.h",
+  "hash_id": "997652b4aca99f42fd745eaae7f47a1de4ab0f6d71a3f2a2d5f8b26a2147e6b3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mlx5/rsc_dump.h",
+  "human_readable_source": " \n \n\n#include <linux/mlx5/driver.h>\n\n#ifndef __MLX5_RSC_DUMP\n#define __MLX5_RSC_DUMP\n\nenum mlx5_sgmt_type {\n\tMLX5_SGMT_TYPE_HW_CQPC,\n\tMLX5_SGMT_TYPE_HW_SQPC,\n\tMLX5_SGMT_TYPE_HW_RQPC,\n\tMLX5_SGMT_TYPE_FULL_SRQC,\n\tMLX5_SGMT_TYPE_FULL_CQC,\n\tMLX5_SGMT_TYPE_FULL_EQC,\n\tMLX5_SGMT_TYPE_FULL_QPC,\n\tMLX5_SGMT_TYPE_SND_BUFF,\n\tMLX5_SGMT_TYPE_RCV_BUFF,\n\tMLX5_SGMT_TYPE_SRQ_BUFF,\n\tMLX5_SGMT_TYPE_CQ_BUFF,\n\tMLX5_SGMT_TYPE_EQ_BUFF,\n\tMLX5_SGMT_TYPE_SX_SLICE,\n\tMLX5_SGMT_TYPE_SX_SLICE_ALL,\n\tMLX5_SGMT_TYPE_RDB,\n\tMLX5_SGMT_TYPE_RX_SLICE_ALL,\n\tMLX5_SGMT_TYPE_PRM_QUERY_QP,\n\tMLX5_SGMT_TYPE_PRM_QUERY_CQ,\n\tMLX5_SGMT_TYPE_PRM_QUERY_MKEY,\n\tMLX5_SGMT_TYPE_MENU,\n\tMLX5_SGMT_TYPE_TERMINATE,\n\n\tMLX5_SGMT_TYPE_NUM,  \n};\n\nstruct mlx5_rsc_key {\n\tenum mlx5_sgmt_type rsc;\n\tint index1;\n\tint index2;\n\tint num_of_obj1;\n\tint num_of_obj2;\n\tint size;\n};\n\nstruct mlx5_rsc_dump_cmd;\n\nstruct mlx5_rsc_dump_cmd *mlx5_rsc_dump_cmd_create(struct mlx5_core_dev *dev,\n\t\t\t\t\t\t   struct mlx5_rsc_key *key);\nvoid mlx5_rsc_dump_cmd_destroy(struct mlx5_rsc_dump_cmd *cmd);\nint mlx5_rsc_dump_next(struct mlx5_core_dev *dev, struct mlx5_rsc_dump_cmd *cmd,\n\t\t       struct page *page, int *size);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ulpqueue.h",
+  "hash_id": "8baa85857b1ca2ca0b68ded2acf12334cb41820f0915458d8ae2e642c0a485ff",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/sctp/ulpqueue.h",
+  "human_readable_source": " \n \n\n#ifndef __sctp_ulpqueue_h__\n#define __sctp_ulpqueue_h__\n\n \nstruct sctp_ulpq {\n\tchar pd_mode;\n\tstruct sctp_association *asoc;\n\tstruct sk_buff_head reasm;\n\tstruct sk_buff_head reasm_uo;\n\tstruct sk_buff_head lobby;\n};\n\n \nvoid sctp_ulpq_init(struct sctp_ulpq *ulpq, struct sctp_association *asoc);\nvoid sctp_ulpq_flush(struct sctp_ulpq *ulpq);\nvoid sctp_ulpq_free(struct sctp_ulpq *);\n\n \nint sctp_ulpq_tail_data(struct sctp_ulpq *, struct sctp_chunk *, gfp_t);\n\n \nint sctp_ulpq_tail_event(struct sctp_ulpq *, struct sk_buff_head *skb_list);\n\n \nvoid sctp_ulpq_renege(struct sctp_ulpq *, struct sctp_chunk *, gfp_t);\n\n \nvoid sctp_ulpq_partial_delivery(struct sctp_ulpq *, gfp_t);\n\n \nvoid sctp_ulpq_abort_pd(struct sctp_ulpq *, gfp_t);\n\n \nint sctp_clear_pd(struct sock *sk, struct sctp_association *asoc);\n\n \nvoid sctp_ulpq_skip(struct sctp_ulpq *ulpq, __u16 sid, __u16 ssn);\n\nvoid sctp_ulpq_reasm_flushtsn(struct sctp_ulpq *, __u32);\n\n__u16 sctp_ulpq_renege_list(struct sctp_ulpq *ulpq,\n\t\t\t    struct sk_buff_head *list, __u16 needed);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rxe_net.h",
+  "hash_id": "ece3a0610fee43441f88aa4ea71fcdd327d52ca3cecc48c0fce17d9acba3e5ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/sw/rxe/rxe_net.h",
+  "human_readable_source": " \n \n\n#ifndef RXE_NET_H\n#define RXE_NET_H\n\n#include <net/sock.h>\n#include <net/if_inet6.h>\n#include <linux/module.h>\n\nstruct rxe_recv_sockets {\n\tstruct socket *sk4;\n\tstruct socket *sk6;\n};\n\nint rxe_net_add(const char *ibdev_name, struct net_device *ndev);\n\nint rxe_net_init(void);\nvoid rxe_net_exit(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

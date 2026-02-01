@@ -1,0 +1,9 @@
+{
+  "module_name": "tools-support-relr.sh",
+  "hash_id": "b52d3e808bcee5720643472ebe4101ff5d3774dec42f0efe2699878a2b5bfede",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/tools-support-relr.sh",
+  "human_readable_source": "#!/bin/sh -eu\n# SPDX-License-Identifier: GPL-2.0\n\ntmp_file=$(mktemp)\ntrap \"rm -f $tmp_file.o $tmp_file $tmp_file.bin\" EXIT\n\ncat << \"END\" | $CC -c -x c - -o $tmp_file.o >/dev/null 2>&1\nvoid *p = &p;\nEND\n\n# ld.lld before 15 did not support -z pack-relative-relocs.\nif ! $LD $tmp_file.o -shared -Bsymbolic --pack-dyn-relocs=relr -o $tmp_file 2>/dev/null; then\n\t$LD $tmp_file.o -shared -Bsymbolic -z pack-relative-relocs -o $tmp_file 2>&1 |\n\t\tgrep -q pack-relative-relocs && exit 1\nfi\n\n# Despite printing an error message, GNU nm still exits with exit code 0 if it\n# sees a relr section. So we need to check that nothing is printed to stderr.\ntest -z \"$($NM $tmp_file 2>&1 >/dev/null)\"\n\n$OBJCOPY -O binary $tmp_file $tmp_file.bin\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

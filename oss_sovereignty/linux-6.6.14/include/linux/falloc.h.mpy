@@ -1,0 +1,9 @@
+{
+  "module_name": "falloc.h",
+  "hash_id": "ca5616cae7edb9fed56266fcd0cfbe006782ba7f8b0f315b7fa9805d3fdf4eef",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/falloc.h",
+  "human_readable_source": " \n#ifndef _FALLOC_H_\n#define _FALLOC_H_\n\n#include <uapi/linux/falloc.h>\n\n\n \nstruct space_resv {\n\t__s16\t\tl_type;\n\t__s16\t\tl_whence;\n\t__s64\t\tl_start;\n\t__s64\t\tl_len;\t\t \n\t__s32\t\tl_sysid;\n\t__u32\t\tl_pid;\n\t__s32\t\tl_pad[4];\t \n};\n\n#define FS_IOC_RESVSP\t\t_IOW('X', 40, struct space_resv)\n#define FS_IOC_UNRESVSP\t\t_IOW('X', 41, struct space_resv)\n#define FS_IOC_RESVSP64\t\t_IOW('X', 42, struct space_resv)\n#define FS_IOC_UNRESVSP64\t_IOW('X', 43, struct space_resv)\n#define FS_IOC_ZERO_RANGE\t_IOW('X', 57, struct space_resv)\n\n#define\tFALLOC_FL_SUPPORTED_MASK\t(FALLOC_FL_KEEP_SIZE |\t\t\\\n\t\t\t\t\t FALLOC_FL_PUNCH_HOLE |\t\t\\\n\t\t\t\t\t FALLOC_FL_COLLAPSE_RANGE |\t\\\n\t\t\t\t\t FALLOC_FL_ZERO_RANGE |\t\t\\\n\t\t\t\t\t FALLOC_FL_INSERT_RANGE |\t\\\n\t\t\t\t\t FALLOC_FL_UNSHARE_RANGE)\n\n \n#if defined(CONFIG_X86_64)\nstruct space_resv_32 {\n\t__s16\t\tl_type;\n\t__s16\t\tl_whence;\n\t__s64\t\tl_start\t__attribute__((packed));\n\t\t\t \n\t__s64\t\tl_len __attribute__((packed));\n\t__s32\t\tl_sysid;\n\t__u32\t\tl_pid;\n\t__s32\t\tl_pad[4];\t \n};\n\n#define FS_IOC_RESVSP_32\t_IOW ('X', 40, struct space_resv_32)\n#define FS_IOC_UNRESVSP_32\t_IOW ('X', 41, struct space_resv_32)\n#define FS_IOC_RESVSP64_32\t_IOW ('X', 42, struct space_resv_32)\n#define FS_IOC_UNRESVSP64_32\t_IOW ('X', 43, struct space_resv_32)\n#define FS_IOC_ZERO_RANGE_32\t_IOW ('X', 57, struct space_resv_32)\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

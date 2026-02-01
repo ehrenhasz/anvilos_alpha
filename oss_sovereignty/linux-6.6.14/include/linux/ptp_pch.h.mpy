@@ -1,0 +1,9 @@
+{
+  "module_name": "ptp_pch.h",
+  "hash_id": "a5a62e50ddecf80605bc8b67458d90ee40ae3646c855993cb9c9e654c2c8c06b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ptp_pch.h",
+  "human_readable_source": " \n \n\n#ifndef _PTP_PCH_H_\n#define _PTP_PCH_H_\n\n#include <linux/types.h>\n\nstruct pci_dev;\n\nvoid pch_ch_control_write(struct pci_dev *pdev, u32 val);\nu32  pch_ch_event_read(struct pci_dev *pdev);\nvoid pch_ch_event_write(struct pci_dev *pdev, u32 val);\nu32  pch_src_uuid_lo_read(struct pci_dev *pdev);\nu32  pch_src_uuid_hi_read(struct pci_dev *pdev);\nu64  pch_rx_snap_read(struct pci_dev *pdev);\nu64  pch_tx_snap_read(struct pci_dev *pdev);\nint  pch_set_station_address(u8 *addr, struct pci_dev *pdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

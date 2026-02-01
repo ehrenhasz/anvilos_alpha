@@ -1,0 +1,9 @@
+{
+  "module_name": "doorbell.h",
+  "hash_id": "d988871b26c8cf58bc915cffdd4d2fa2d77f2ea074159ac24fa2b326575e1e0b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mlx5/doorbell.h",
+  "human_readable_source": " \n\n#ifndef MLX5_DOORBELL_H\n#define MLX5_DOORBELL_H\n\n#define MLX5_BF_OFFSET\t      0x800\n#define MLX5_CQ_DOORBELL      0x20\n\n \n\nstatic inline void mlx5_write64(__be32 val[2], void __iomem *dest)\n{\n#if BITS_PER_LONG == 64\n\t__raw_writeq(*(u64 *)val, dest);\n#else\n\t__raw_writel((__force u32) val[0], dest);\n\t__raw_writel((__force u32) val[1], dest + 4);\n#endif\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "meson-a1-gpio.h",
+  "hash_id": "8324840d157b9bea9d5716ad29bf5a7c5c6e859efab977bff45c52a1e7ac4930",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/gpio/meson-a1-gpio.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_MESON_A1_GPIO_H\n#define _DT_BINDINGS_MESON_A1_GPIO_H\n\n#define GPIOP_0\t\t0\n#define GPIOP_1\t\t1\n#define GPIOP_2\t\t2\n#define GPIOP_3\t\t3\n#define GPIOP_4\t\t4\n#define GPIOP_5\t\t5\n#define GPIOP_6\t\t6\n#define GPIOP_7\t\t7\n#define GPIOP_8\t\t8\n#define GPIOP_9\t\t9\n#define GPIOP_10\t10\n#define GPIOP_11\t11\n#define GPIOP_12\t12\n#define GPIOB_0\t\t13\n#define GPIOB_1\t\t14\n#define GPIOB_2\t\t15\n#define GPIOB_3\t\t16\n#define GPIOB_4\t\t17\n#define GPIOB_5\t\t18\n#define GPIOB_6\t\t19\n#define GPIOX_0\t\t20\n#define GPIOX_1\t\t21\n#define GPIOX_2\t\t22\n#define GPIOX_3\t\t23\n#define GPIOX_4\t\t24\n#define GPIOX_5\t\t25\n#define GPIOX_6\t\t26\n#define GPIOX_7\t\t27\n#define GPIOX_8\t\t28\n#define GPIOX_9\t\t29\n#define GPIOX_10\t30\n#define GPIOX_11\t31\n#define GPIOX_12\t32\n#define GPIOX_13\t33\n#define GPIOX_14\t34\n#define GPIOX_15\t35\n#define GPIOX_16\t36\n#define GPIOF_0\t\t37\n#define GPIOF_1\t\t38\n#define GPIOF_2\t\t39\n#define GPIOF_3\t\t40\n#define GPIOF_4\t\t41\n#define GPIOF_5\t\t42\n#define GPIOF_6\t\t43\n#define GPIOF_7\t\t44\n#define GPIOF_8\t\t45\n#define GPIOF_9\t\t46\n#define GPIOF_10\t47\n#define GPIOF_11\t48\n#define GPIOF_12\t49\n#define GPIOA_0\t\t50\n#define GPIOA_1\t\t51\n#define GPIOA_2\t\t52\n#define GPIOA_3\t\t53\n#define GPIOA_4\t\t54\n#define GPIOA_5\t\t55\n#define GPIOA_6\t\t56\n#define GPIOA_7\t\t57\n#define GPIOA_8\t\t58\n#define GPIOA_9\t\t59\n#define GPIOA_10\t60\n#define GPIOA_11\t61\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

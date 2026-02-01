@@ -1,0 +1,9 @@
+{
+  "module_name": "ioam6_genl.h",
+  "hash_id": "6524335b660935a0d6f3a2b4ae7baae5db91c59bf30c42042ba89d53d6103456",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/ioam6_genl.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_IOAM6_GENL_H\n#define _UAPI_LINUX_IOAM6_GENL_H\n\n#define IOAM6_GENL_NAME \"IOAM6\"\n#define IOAM6_GENL_VERSION 0x1\n\nenum {\n\tIOAM6_ATTR_UNSPEC,\n\n\tIOAM6_ATTR_NS_ID,\t \n\tIOAM6_ATTR_NS_DATA,\t \n\tIOAM6_ATTR_NS_DATA_WIDE, \n\n#define IOAM6_MAX_SCHEMA_DATA_LEN (255 * 4)\n\tIOAM6_ATTR_SC_ID,\t \n\tIOAM6_ATTR_SC_DATA,\t \n\tIOAM6_ATTR_SC_NONE,\t \n\n\tIOAM6_ATTR_PAD,\n\n\t__IOAM6_ATTR_MAX,\n};\n\n#define IOAM6_ATTR_MAX (__IOAM6_ATTR_MAX - 1)\n\nenum {\n\tIOAM6_CMD_UNSPEC,\n\n\tIOAM6_CMD_ADD_NAMESPACE,\n\tIOAM6_CMD_DEL_NAMESPACE,\n\tIOAM6_CMD_DUMP_NAMESPACES,\n\n\tIOAM6_CMD_ADD_SCHEMA,\n\tIOAM6_CMD_DEL_SCHEMA,\n\tIOAM6_CMD_DUMP_SCHEMAS,\n\n\tIOAM6_CMD_NS_SET_SCHEMA,\n\n\t__IOAM6_CMD_MAX,\n};\n\n#define IOAM6_CMD_MAX (__IOAM6_CMD_MAX - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

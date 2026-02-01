@@ -1,0 +1,9 @@
+{
+  "module_name": "atusb.h",
+  "hash_id": "15c4b31aab4ced5463709234a21ecab562e140eb7c19ad6c88d57eca1c4333ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ieee802154/atusb.h",
+  "human_readable_source": " \n \n\n#ifndef\t_ATUSB_H\n#define\t_ATUSB_H\n\n#define ATUSB_VENDOR_ID\t0x20b7\t \n#define ATUSB_PRODUCT_ID 0x1540\t \n\t\t\t\t \n\n#define ATUSB_BUILD_SIZE 256\t \n\n \nenum atusb_requests {\n\tATUSB_ID\t\t\t= 0x00,\t \n\tATUSB_BUILD,\n\tATUSB_RESET,\n\tATUSB_RF_RESET\t\t\t= 0x10,\t \n\tATUSB_POLL_INT,\n\tATUSB_TEST,\t\t\t \n\tATUSB_TIMER,\n\tATUSB_GPIO,\n\tATUSB_SLP_TR,\n\tATUSB_GPIO_CLEANUP,\n\tATUSB_REG_WRITE\t\t\t= 0x20,\t \n\tATUSB_REG_READ,\n\tATUSB_BUF_WRITE,\n\tATUSB_BUF_READ,\n\tATUSB_SRAM_WRITE,\n\tATUSB_SRAM_READ,\n\tATUSB_SPI_WRITE\t\t\t= 0x30,\t \n\tATUSB_SPI_READ1,\n\tATUSB_SPI_READ2,\n\tATUSB_SPI_WRITE2_SYNC,\n\tATUSB_RX_MODE\t\t\t= 0x40,  \n\tATUSB_TX,\n\tATUSB_EUI64_WRITE\t\t= 0x50,  \n\tATUSB_EUI64_READ,\n};\n\nenum {\n\tATUSB_HW_TYPE_100813,\t \n\tATUSB_HW_TYPE_101216,\t \n\tATUSB_HW_TYPE_110131,\t \n\tATUSB_HW_TYPE_RZUSB,\t \n\tATUSB_HW_TYPE_HULUSB,\t \n};\n\n \n\n#define ATUSB_REQ_FROM_DEV\t(USB_TYPE_VENDOR | USB_DIR_IN)\n#define ATUSB_REQ_TO_DEV\t(USB_TYPE_VENDOR | USB_DIR_OUT)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

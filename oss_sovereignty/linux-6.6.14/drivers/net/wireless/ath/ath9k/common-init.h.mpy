@@ -1,0 +1,9 @@
+{
+  "module_name": "common-init.h",
+  "hash_id": "dea83528beb0cd64560ec992c7362d1ba4a6500f81194b59976dc30b8c5f229b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath9k/common-init.h",
+  "human_readable_source": " \n\nint ath9k_cmn_init_channels_rates(struct ath_common *common);\nvoid ath9k_cmn_setup_ht_cap(struct ath_hw *ah,\n\t\t\t    struct ieee80211_sta_ht_cap *ht_info);\nvoid ath9k_cmn_reload_chainmask(struct ath_hw *ah);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

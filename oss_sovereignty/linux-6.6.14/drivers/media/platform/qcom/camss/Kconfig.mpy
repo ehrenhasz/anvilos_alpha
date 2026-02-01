@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "791a5ba476d8f423bcba4e9bfb3dcb3d41c13a04dd734cd9435b28694921d9d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/qcom/camss/Kconfig",
+  "human_readable_source": "config VIDEO_QCOM_CAMSS\n\ttristate \"Qualcomm V4L2 Camera Subsystem driver\"\n\tdepends on V4L_PLATFORM_DRIVERS\n\tdepends on VIDEO_DEV\n\tdepends on (ARCH_QCOM && IOMMU_DMA) || COMPILE_TEST\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect VIDEOBUF2_DMA_SG\n\tselect V4L2_FWNODE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "printk.h",
+  "hash_id": "be9bf04ca08b2dc75437d7b30f351a4dd9c64516415fb95c7aeedcddcefc1bdf",
+  "original_prompt": "Ingested from linux-6.6.14/include/trace/events/printk.h",
+  "human_readable_source": " \n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM printk\n\n#if !defined(_TRACE_PRINTK_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_PRINTK_H\n\n#include <linux/tracepoint.h>\n\nTRACE_EVENT(console,\n\tTP_PROTO(const char *text, size_t len),\n\n\tTP_ARGS(text, len),\n\n\tTP_STRUCT__entry(\n\t\t__dynamic_array(char, msg, len + 1)\n\t),\n\n\tTP_fast_assign(\n\t\t \n\t\tif ((len > 0) && (text[len-1] == '\\n'))\n\t\t\tlen -= 1;\n\n\t\tmemcpy(__get_str(msg), text, len);\n\t\t__get_str(msg)[len] = 0;\n\t),\n\n\tTP_printk(\"%s\", __get_str(msg))\n);\n#endif  \n\n \n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

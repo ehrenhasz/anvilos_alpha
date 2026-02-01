@@ -1,0 +1,9 @@
+{
+  "module_name": "array.c",
+  "hash_id": "0cb88578bb79a77ed17260c4f30d931cea26835d00d77acd0075adb9c9e96a86",
+  "original_prompt": "Ingested from linux-6.6.14/sound/hda/array.c",
+  "human_readable_source": "\n \n\n#include <linux/slab.h>\n#include <sound/core.h>\n#include <sound/hdaudio.h>\n\n \nvoid *snd_array_new(struct snd_array *array)\n{\n\tif (snd_BUG_ON(!array->elem_size))\n\t\treturn NULL;\n\tif (array->used >= array->alloced) {\n\t\tint num = array->alloced + array->alloc_align;\n\t\tint oldsize = array->alloced * array->elem_size;\n\t\tint size = (num + 1) * array->elem_size;\n\t\tvoid *nlist;\n\t\tif (snd_BUG_ON(num >= 4096))\n\t\t\treturn NULL;\n\t\tnlist = krealloc(array->list, size, GFP_KERNEL);\n\t\tif (!nlist)\n\t\t\treturn NULL;\n\t\tmemset(nlist + oldsize, 0, size - oldsize);\n\t\tarray->list = nlist;\n\t\tarray->alloced = num;\n\t}\n\treturn snd_array_elem(array, array->used++);\n}\nEXPORT_SYMBOL_GPL(snd_array_new);\n\n \nvoid snd_array_free(struct snd_array *array)\n{\n\tkfree(array->list);\n\tarray->used = 0;\n\tarray->alloced = 0;\n\tarray->list = NULL;\n}\nEXPORT_SYMBOL_GPL(snd_array_free);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "spl_condvar.h",
+  "hash_id": "811ba00b2ce9ac1a37773601254673b85550bb379c1de7de1176ffb08f885ae8",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/spl_condvar.h",
+  "human_readable_source": " \n\n#ifndef\t_SPL_SYS_CONDVAR_H_\n#define\t_SPL_SYS_CONDVAR_H_\n\n#ifndef\tLOCORE\n#include <sys/queue.h>\n\nstruct lock_object;\nstruct thread;\n\nTAILQ_HEAD(cv_waitq, thread);\n\n \nstruct cv {\n\tconst char\t*cv_description;\n\tint\t\tcv_waiters;\n};\n\nvoid\tcv_init(struct cv *cvp, const char *desc);\nvoid\tcv_destroy(struct cv *cvp);\n\nvoid\t_cv_wait(struct cv *cvp, struct lock_object *lock);\nvoid\t_cv_wait_unlock(struct cv *cvp, struct lock_object *lock);\nint\t_cv_wait_sig(struct cv *cvp, struct lock_object *lock);\nint\t_cv_timedwait_sbt(struct cv *cvp, struct lock_object *lock,\n\t    sbintime_t sbt, sbintime_t pr, int flags);\nint\t_cv_timedwait_sig_sbt(struct cv *cvp, struct lock_object *lock,\n\t    sbintime_t sbt, sbintime_t pr, int flags);\n\nvoid\tcv_signal(struct cv *cvp);\nvoid\tcv_broadcastpri(struct cv *cvp, int pri);\n\n#define\tcv_wait(cvp, lock)\t\t\t\t\t\t\\\n\t_cv_wait((cvp), &(lock)->lock_object)\n#define\tcv_wait_unlock(cvp, lock)\t\t\t\t\t\\\n\t_cv_wait_unlock((cvp), &(lock)->lock_object)\n#define\tcv_timedwait_sbt(cvp, lock, sbt, pr, flags)\t\t\t\\\n\t_cv_timedwait_sbt((cvp), &(lock)->lock_object, (sbt), (pr), (flags))\n#define\tcv_timedwait_sig_sbt(cvp, lock, sbt, pr, flags)\t\t\t\\\n\t_cv_timedwait_sig_sbt((cvp), &(lock)->lock_object, (sbt), (pr), (flags))\n\n#define\tcv_broadcast(cvp)\tcv_broadcastpri(cvp, 0)\n\n#define\tcv_wmesg(cvp)\t\t((cvp)->cv_description)\n\n#endif\t \n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

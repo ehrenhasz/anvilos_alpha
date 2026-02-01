@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio_backlight.h",
+  "hash_id": "954427c69f8b8e3e6467e316469101d4086991b38ede33b9a2d5e72b9ec2c53b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/gpio_backlight.h",
+  "human_readable_source": " \n \n#ifndef __GPIO_BACKLIGHT_H__\n#define __GPIO_BACKLIGHT_H__\n\nstruct device;\n\nstruct gpio_backlight_platform_data {\n\tstruct device *dev;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

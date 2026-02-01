@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.c",
+  "hash_id": "fed8be642c9f19136901ab292e3b13320c2a3e31e6c505d8c975b1e8e24bb987",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/quantenna/qtnfmac/debug.c",
+  "human_readable_source": "\n \n\n#include \"debug.h\"\n\nvoid qtnf_debugfs_init(struct qtnf_bus *bus, const char *name)\n{\n\tstruct dentry *parent = qtnf_get_debugfs_dir();\n\n\tbus->dbg_dir = debugfs_create_dir(name, parent);\n}\n\nvoid qtnf_debugfs_remove(struct qtnf_bus *bus)\n{\n\tdebugfs_remove_recursive(bus->dbg_dir);\n\tbus->dbg_dir = NULL;\n}\n\nvoid qtnf_debugfs_add_entry(struct qtnf_bus *bus, const char *name,\n\t\t\t    int (*fn)(struct seq_file *seq, void *data))\n{\n\tdebugfs_create_devm_seqfile(bus->dev, name, bus->dbg_dir, fn);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

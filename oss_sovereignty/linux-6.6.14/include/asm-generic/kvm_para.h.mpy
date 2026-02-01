@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm_para.h",
+  "hash_id": "9d859200e03803c53e507c18b21a0b72164bff8ac8928b3536dbae7cbac70888",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/kvm_para.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_KVM_PARA_H\n#define _ASM_GENERIC_KVM_PARA_H\n\n#include <uapi/asm-generic/kvm_para.h>\n\n\n \nstatic inline bool kvm_check_and_clear_guest_paused(void)\n{\n\treturn false;\n}\n\nstatic inline unsigned int kvm_arch_para_features(void)\n{\n\treturn 0;\n}\n\nstatic inline unsigned int kvm_arch_para_hints(void)\n{\n\treturn 0;\n}\n\nstatic inline bool kvm_para_available(void)\n{\n\treturn false;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

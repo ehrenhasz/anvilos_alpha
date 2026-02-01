@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0b958c6778531a3fa5568a2b39f9d0921a38645b2f1ae1b42b054a45c8cb7a9f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/via/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\ncomment \"VIA media platform drivers\"\n\nconfig VIDEO_VIA_CAMERA\n\ttristate \"VIAFB camera controller support\"\n\tdepends on V4L_PLATFORM_DRIVERS\n\tdepends on FB_VIA && VIDEO_DEV\n\tselect VIDEOBUF2_DMA_SG\n\tselect VIDEO_OV7670 if VIDEO_CAMERA_SENSOR\n\thelp\n\t   Driver support for the integrated camera controller in VIA\n\t   Chrome9 chipsets.  Currently only tested on OLPC xo-1.5 systems\n\t   with ov7670 sensors.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

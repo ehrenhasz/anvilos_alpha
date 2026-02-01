@@ -1,0 +1,9 @@
+{
+  "module_name": "version-etc.h",
+  "hash_id": "1d1e0f69719f5c7bc019aa914243d5ebf279e6fcb3b06fca4b74bc5604136508",
+  "original_prompt": "Ingested from coreutils-9.4/lib/version-etc.h",
+  "human_readable_source": " \n\n#ifndef VERSION_ETC_H\n# define VERSION_ETC_H 1\n\n \n# if !_GL_CONFIG_H_INCLUDED\n#  error \"Please include config.h first.\"\n# endif\n\n# include <stdarg.h>\n# include <stdio.h>\n\n# ifdef __cplusplus\nextern \"C\"\n{\n# endif\n\nextern const char version_etc_copyright[];\n\n \n\n \nextern void version_etc_arn (FILE *stream,\n                             const char *command_name, const char *package,\n                             const char *version,\n                             const char * const * authors, size_t n_authors);\n\n \nextern void version_etc_ar (FILE *stream,\n                            const char *command_name, const char *package,\n                            const char *version, const char * const * authors);\n\n \nextern void version_etc_va (FILE *stream,\n                            const char *command_name, const char *package,\n                            const char *version, va_list authors);\n\n \nextern void version_etc (FILE *stream,\n                         const char *command_name, const char *package,\n                         const char *version,\n                           ...)\n  _GL_ATTRIBUTE_SENTINEL ((0));\n\n \nextern void emit_bug_reporting_address (void);\n\n# ifdef __cplusplus\n}\n# endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "modf.c",
+  "hash_id": "8f42eed53daa8a623e281329238bd8f7d1e74bb224d7dcf550b833668b74865f",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/modf.c",
+  "human_readable_source": "#include \"libm.h\"\n\ndouble modf(double x, double *iptr)\n{\n\tunion {double f; uint64_t i;} u = {x};\n\tuint64_t mask;\n\tint e = (int)(u.i>>52 & 0x7ff) - 0x3ff;\n\n\t \n\tif (e >= 52) {\n\t\t*iptr = x;\n\t\tif (e == 0x400 && u.i<<12 != 0)  \n\t\t\treturn x;\n\t\tu.i &= 1ULL<<63;\n\t\treturn u.f;\n\t}\n\n\t \n\tif (e < 0) {\n\t\tu.i &= 1ULL<<63;\n\t\t*iptr = u.f;\n\t\treturn x;\n\t}\n\n\tmask = -1ULL>>12>>e;\n\tif ((u.i & mask) == 0) {\n\t\t*iptr = x;\n\t\tu.i &= 1ULL<<63;\n\t\treturn u.f;\n\t}\n\tu.i &= ~mask;\n\t*iptr = u.f;\n\treturn x - u.f;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

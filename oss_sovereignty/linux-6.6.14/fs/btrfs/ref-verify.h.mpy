@@ -1,0 +1,9 @@
+{
+  "module_name": "ref-verify.h",
+  "hash_id": "87aa749525668e4524c4b999166aa9d3cfbe13512a3edd8198f4f6b44af79a9d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/ref-verify.h",
+  "human_readable_source": " \n \n\n#ifndef BTRFS_REF_VERIFY_H\n#define BTRFS_REF_VERIFY_H\n\n#ifdef CONFIG_BTRFS_FS_REF_VERIFY\nint btrfs_build_ref_tree(struct btrfs_fs_info *fs_info);\nvoid btrfs_free_ref_cache(struct btrfs_fs_info *fs_info);\nint btrfs_ref_tree_mod(struct btrfs_fs_info *fs_info,\n\t\t       struct btrfs_ref *generic_ref);\nvoid btrfs_free_ref_tree_range(struct btrfs_fs_info *fs_info, u64 start,\n\t\t\t       u64 len);\n\nstatic inline void btrfs_init_ref_verify(struct btrfs_fs_info *fs_info)\n{\n\tspin_lock_init(&fs_info->ref_verify_lock);\n\tfs_info->block_tree = RB_ROOT;\n}\n#else\nstatic inline int btrfs_build_ref_tree(struct btrfs_fs_info *fs_info)\n{\n\treturn 0;\n}\n\nstatic inline void btrfs_free_ref_cache(struct btrfs_fs_info *fs_info)\n{\n}\n\nstatic inline int btrfs_ref_tree_mod(struct btrfs_fs_info *fs_info,\n\t\t       struct btrfs_ref *generic_ref)\n{\n\treturn 0;\n}\n\nstatic inline void btrfs_free_ref_tree_range(struct btrfs_fs_info *fs_info,\n\t\t\t\t\t     u64 start, u64 len)\n{\n}\n\nstatic inline void btrfs_init_ref_verify(struct btrfs_fs_info *fs_info)\n{\n}\n\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

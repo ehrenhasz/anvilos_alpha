@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b1156a1c0d0f93c52b3e3e492720dc6682ffb32b275d534428a4f74ce1e2a0d5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlxbf_gige/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause\n#\n# Mellanox GigE driver configuration\n#\n\nconfig MLXBF_GIGE\n\ttristate \"Mellanox Technologies BlueField Gigabit Ethernet support\"\n\tdepends on (ARM64 && ACPI) || COMPILE_TEST\n\tselect PHYLIB\n\thelp\n\t  The second generation BlueField SoC from Mellanox Technologies\n\t  supports an out-of-band Gigabit Ethernet management port to the\n\t  Arm subsystem.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

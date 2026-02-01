@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_bio_io.c",
+  "hash_id": "9534d20bae727296ad98dfea7c2f0923da5e5a1b647697a43bf7910078515b6b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_bio_io.c",
+  "human_readable_source": "\n \n#include \"xfs.h\"\n\nstatic inline unsigned int bio_max_vecs(unsigned int count)\n{\n\treturn bio_max_segs(howmany(count, PAGE_SIZE));\n}\n\nint\nxfs_rw_bdev(\n\tstruct block_device\t*bdev,\n\tsector_t\t\tsector,\n\tunsigned int\t\tcount,\n\tchar\t\t\t*data,\n\tenum req_op\t\top)\n\n{\n\tunsigned int\t\tis_vmalloc = is_vmalloc_addr(data);\n\tunsigned int\t\tleft = count;\n\tint\t\t\terror;\n\tstruct bio\t\t*bio;\n\n\tif (is_vmalloc && op == REQ_OP_WRITE)\n\t\tflush_kernel_vmap_range(data, count);\n\n\tbio = bio_alloc(bdev, bio_max_vecs(left), op | REQ_META | REQ_SYNC,\n\t\t\tGFP_KERNEL);\n\tbio->bi_iter.bi_sector = sector;\n\n\tdo {\n\t\tstruct page\t*page = kmem_to_page(data);\n\t\tunsigned int\toff = offset_in_page(data);\n\t\tunsigned int\tlen = min_t(unsigned, left, PAGE_SIZE - off);\n\n\t\twhile (bio_add_page(bio, page, len, off) != len) {\n\t\t\tstruct bio\t*prev = bio;\n\n\t\t\tbio = bio_alloc(prev->bi_bdev, bio_max_vecs(left),\n\t\t\t\t\tprev->bi_opf, GFP_KERNEL);\n\t\t\tbio->bi_iter.bi_sector = bio_end_sector(prev);\n\t\t\tbio_chain(prev, bio);\n\n\t\t\tsubmit_bio(prev);\n\t\t}\n\n\t\tdata += len;\n\t\tleft -= len;\n\t} while (left > 0);\n\n\terror = submit_bio_wait(bio);\n\tbio_put(bio);\n\n\tif (is_vmalloc && op == REQ_OP_READ)\n\t\tinvalidate_kernel_vmap_range(data, count);\n\treturn error;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

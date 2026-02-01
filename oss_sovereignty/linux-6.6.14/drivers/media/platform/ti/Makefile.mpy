@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "539e1c7c31dfb47a7a712b5d4c3138af8dd9cc89678f6d4c409326ed38ecfd2d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/ti/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y += am437x/\nobj-y += cal/\nobj-y += vpe/\nobj-y += davinci/\nobj-y += omap/\nobj-y += omap3isp/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

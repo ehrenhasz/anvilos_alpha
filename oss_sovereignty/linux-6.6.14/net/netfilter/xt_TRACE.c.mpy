@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_TRACE.c",
+  "hash_id": "a3fa23a6b6e329e0fad7f3bc1cb79a26a8857e989e8020ae96d59e0c30e1bf80",
+  "original_prompt": "Ingested from linux-6.6.14/net/netfilter/xt_TRACE.c",
+  "human_readable_source": "\n \n#include <linux/module.h>\n#include <linux/skbuff.h>\n\n#include <linux/netfilter/x_tables.h>\n#include <net/netfilter/nf_log.h>\n\nMODULE_DESCRIPTION(\"Xtables: packet flow tracing\");\nMODULE_LICENSE(\"GPL\");\nMODULE_ALIAS(\"ipt_TRACE\");\nMODULE_ALIAS(\"ip6t_TRACE\");\n\nstatic int trace_tg_check(const struct xt_tgchk_param *par)\n{\n\treturn nf_logger_find_get(par->family, NF_LOG_TYPE_LOG);\n}\n\nstatic void trace_tg_destroy(const struct xt_tgdtor_param *par)\n{\n\tnf_logger_put(par->family, NF_LOG_TYPE_LOG);\n}\n\nstatic unsigned int\ntrace_tg(struct sk_buff *skb, const struct xt_action_param *par)\n{\n\tskb->nf_trace = 1;\n\treturn XT_CONTINUE;\n}\n\nstatic struct xt_target trace_tg_reg __read_mostly = {\n\t.name\t\t= \"TRACE\",\n\t.revision\t= 0,\n\t.family\t\t= NFPROTO_UNSPEC,\n\t.table\t\t= \"raw\",\n\t.target\t\t= trace_tg,\n\t.checkentry\t= trace_tg_check,\n\t.destroy\t= trace_tg_destroy,\n\t.me\t\t= THIS_MODULE,\n};\n\nstatic int __init trace_tg_init(void)\n{\n\treturn xt_register_target(&trace_tg_reg);\n}\n\nstatic void __exit trace_tg_exit(void)\n{\n\txt_unregister_target(&trace_tg_reg);\n}\n\nmodule_init(trace_tg_init);\nmodule_exit(trace_tg_exit);\nMODULE_SOFTDEP(\"pre: nf_log_syslog\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

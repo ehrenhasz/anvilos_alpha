@@ -1,0 +1,9 @@
+{
+  "module_name": "rlimit.c",
+  "hash_id": "0cc59ec911d7088d2162cc24ca090d6db43f5c75a85b58ed067526835ee0693e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/rlimit.c",
+  "human_readable_source": " \n\n#include \"util/debug.h\"\n#include \"util/rlimit.h\"\n#include <sys/time.h>\n#include <sys/resource.h>\n\n \nvoid rlimit__bump_memlock(void)\n{\n\tstruct rlimit rlim;\n\n\tif (getrlimit(RLIMIT_MEMLOCK, &rlim) == 0) {\n\t\trlim.rlim_cur *= 4;\n\t\trlim.rlim_max *= 4;\n\n\t\tif (setrlimit(RLIMIT_MEMLOCK, &rlim) < 0) {\n\t\t\trlim.rlim_cur /= 2;\n\t\t\trlim.rlim_max /= 2;\n\n\t\t\tif (setrlimit(RLIMIT_MEMLOCK, &rlim) < 0)\n\t\t\t\tpr_debug(\"Couldn't bump rlimit(MEMLOCK), failures may take place when creating BPF maps, etc\\n\");\n\t\t}\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

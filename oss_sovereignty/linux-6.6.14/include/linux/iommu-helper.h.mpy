@@ -1,0 +1,9 @@
+{
+  "module_name": "iommu-helper.h",
+  "hash_id": "fc73a1c71ba77c3a553a037c9704eb2bec6bc477f4df61c405fb303479529b20",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iommu-helper.h",
+  "human_readable_source": " \n#ifndef _LINUX_IOMMU_HELPER_H\n#define _LINUX_IOMMU_HELPER_H\n\n#include <linux/bug.h>\n#include <linux/log2.h>\n#include <linux/math.h>\n#include <linux/types.h>\n\nstatic inline unsigned long iommu_device_max_index(unsigned long size,\n\t\t\t\t\t\t   unsigned long offset,\n\t\t\t\t\t\t   u64 dma_mask)\n{\n\tif (size + offset > dma_mask)\n\t\treturn dma_mask - offset + 1;\n\telse\n\t\treturn size;\n}\n\nstatic inline int iommu_is_span_boundary(unsigned int index, unsigned int nr,\n\t\tunsigned long shift, unsigned long boundary_size)\n{\n\tBUG_ON(!is_power_of_2(boundary_size));\n\n\tshift = (shift + index) & (boundary_size - 1);\n\treturn shift + nr > boundary_size;\n}\n\nextern unsigned long iommu_area_alloc(unsigned long *map, unsigned long size,\n\t\t\t\t      unsigned long start, unsigned int nr,\n\t\t\t\t      unsigned long shift,\n\t\t\t\t      unsigned long boundary_size,\n\t\t\t\t      unsigned long align_mask);\n\nstatic inline unsigned long iommu_num_pages(unsigned long addr,\n\t\t\t\t\t    unsigned long len,\n\t\t\t\t\t    unsigned long io_page_size)\n{\n\tunsigned long size = (addr & (io_page_size - 1)) + len;\n\n\treturn DIV_ROUND_UP(size, io_page_size);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

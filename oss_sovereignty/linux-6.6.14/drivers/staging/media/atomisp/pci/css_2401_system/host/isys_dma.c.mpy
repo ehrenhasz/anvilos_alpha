@@ -1,0 +1,9 @@
+{
+  "module_name": "isys_dma.c",
+  "hash_id": "47b785257ace227533339cc4c7aa4cfea65f4a4ec2308c3993c19f63d39690f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/css_2401_system/host/isys_dma.c",
+  "human_readable_source": "\n \n\n#include \"system_local.h\"\n#include \"isys_dma_global.h\"\n#include \"assert_support.h\"\n#include \"isys_dma_private.h\"\n\nconst isys2401_dma_channel N_ISYS2401_DMA_CHANNEL_PROCS[N_ISYS2401_DMA_ID] = {\n\tN_ISYS2401_DMA_CHANNEL\n};\n\nvoid isys2401_dma_set_max_burst_size(\n    const isys2401_dma_ID_t\tdma_id,\n    uint32_t\t\tmax_burst_size)\n{\n\tassert(dma_id < N_ISYS2401_DMA_ID);\n\tassert((max_burst_size > 0x00) && (max_burst_size <= 0xFF));\n\n\tisys2401_dma_reg_store(dma_id,\n\t\t\t       DMA_DEV_INFO_REG_IDX(_DMA_V2_DEV_INTERF_MAX_BURST_IDX, HIVE_DMA_BUS_DDR_CONN),\n\t\t\t       (max_burst_size - 1));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "852563a1e9499c40e733f2bbbb63dd009752e76374c41726676d25b1b39c99fa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/pressure/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for industrial I/O pressure drivers\n#\n\n# When adding new entries keep the list in alphabetical order\nobj-$(CONFIG_ABP060MG) += abp060mg.o\nobj-$(CONFIG_BMP280) += bmp280.o\nbmp280-objs := bmp280-core.o bmp280-regmap.o\nobj-$(CONFIG_BMP280_I2C) += bmp280-i2c.o\nobj-$(CONFIG_BMP280_SPI) += bmp280-spi.o\nobj-$(CONFIG_DLHL60D) += dlhl60d.o\nobj-$(CONFIG_DPS310) += dps310.o\nobj-$(CONFIG_IIO_CROS_EC_BARO) += cros_ec_baro.o\nobj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o\nobj-$(CONFIG_HP03) += hp03.o\nobj-$(CONFIG_ICP10100) += icp10100.o\nobj-$(CONFIG_MPL115) += mpl115.o\nobj-$(CONFIG_MPL115_I2C) += mpl115_i2c.o\nobj-$(CONFIG_MPL115_SPI) += mpl115_spi.o\nobj-$(CONFIG_MPL3115) += mpl3115.o\nobj-$(CONFIG_MPRLS0025PA) += mprls0025pa.o\nobj-$(CONFIG_MS5611) += ms5611_core.o\nobj-$(CONFIG_MS5611_I2C) += ms5611_i2c.o\nobj-$(CONFIG_MS5611_SPI) += ms5611_spi.o\nobj-$(CONFIG_MS5637) += ms5637.o\nobj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o\nst_pressure-y := st_pressure_core.o\nst_pressure-$(CONFIG_IIO_BUFFER) += st_pressure_buffer.o\nobj-$(CONFIG_T5403) += t5403.o\nobj-$(CONFIG_HP206C) += hp206c.o\nobj-$(CONFIG_ZPA2326) += zpa2326.o\nobj-$(CONFIG_ZPA2326_I2C) += zpa2326_i2c.o\nobj-$(CONFIG_ZPA2326_SPI) += zpa2326_spi.o\n\nobj-$(CONFIG_IIO_ST_PRESS_I2C) += st_pressure_i2c.o\nobj-$(CONFIG_IIO_ST_PRESS_SPI) += st_pressure_spi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

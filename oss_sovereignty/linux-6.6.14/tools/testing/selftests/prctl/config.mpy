@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "5e9016611e2de83eda640dee5bad9caba9cff1a5f2b96318e57e52ccbc574f3b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/prctl/config",
+  "human_readable_source": "CONFIG_ANON_VMA_NAME=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

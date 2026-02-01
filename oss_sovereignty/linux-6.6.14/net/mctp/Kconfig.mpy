@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4bc37deab6ee44a93808332069c674892647ad0287af90a6c5b86f557c123c21",
+  "original_prompt": "Ingested from linux-6.6.14/net/mctp/Kconfig",
+  "human_readable_source": "\nmenuconfig MCTP\n\tdepends on NET\n\tbool \"MCTP core protocol support\"\n\thelp\n\t  Management Component Transport Protocol (MCTP) is an in-system\n\t  protocol for communicating between management controllers and\n\t  their managed devices (peripherals, host processors, etc.). The\n\t  protocol is defined by DMTF specification DSP0236.\n\n\t  This option enables core MCTP support. For communicating with other\n\t  devices, you'll want to enable a driver for a specific hardware\n\t  channel.\n\nconfig MCTP_TEST\n        bool \"MCTP core tests\" if !KUNIT_ALL_TESTS\n        depends on MCTP=y && KUNIT=y\n        default KUNIT_ALL_TESTS\n\nconfig MCTP_FLOWS\n\tbool\n\tdepends on MCTP\n\tselect SKB_EXTENSIONS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gettimeofday.c",
+  "hash_id": "b9a63a640767bfc86e176bf0c68e823e7d090144359391cd664cdcfddd6712ba",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/gettimeofday.c",
+  "human_readable_source": " \n\n \n\n#include \"config.h\"\n\n#if !defined (HAVE_GETTIMEOFDAY)\n\n#include \"posixtime.h\"\n\n \nint\ngettimeofday (struct timeval *tv, void *tz)\n{\n  tv->tv_sec = (time_t) time ((time_t *)0);\n  tv->tv_usec = 0;\n  return 0;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

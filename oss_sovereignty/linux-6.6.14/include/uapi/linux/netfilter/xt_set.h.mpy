@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_set.h",
+  "hash_id": "164a83d12116ba28f81c056f35264b043bc61c1feac06303f70f07574f54866d",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_set.h",
+  "human_readable_source": " \n#ifndef _XT_SET_H\n#define _XT_SET_H\n\n#include <linux/types.h>\n#include <linux/netfilter/ipset/ip_set.h>\n\n \n\n \n#define IPSET_SRC\t\t0x01\t \n#define IPSET_DST\t\t0x02\t \n#define IPSET_MATCH_INV\t\t0x04\t \n\nstruct xt_set_info_v0 {\n\tip_set_id_t index;\n\tunion {\n\t\t__u32 flags[IPSET_DIM_MAX + 1];\n\t\tstruct {\n\t\t\t__u32 __flags[IPSET_DIM_MAX];\n\t\t\t__u8 dim;\n\t\t\t__u8 flags;\n\t\t} compat;\n\t} u;\n};\n\n \nstruct xt_set_info_match_v0 {\n\tstruct xt_set_info_v0 match_set;\n};\n\nstruct xt_set_info_target_v0 {\n\tstruct xt_set_info_v0 add_set;\n\tstruct xt_set_info_v0 del_set;\n};\n\n \n\nstruct xt_set_info {\n\tip_set_id_t index;\n\t__u8 dim;\n\t__u8 flags;\n};\n\n \nstruct xt_set_info_match_v1 {\n\tstruct xt_set_info match_set;\n};\n\nstruct xt_set_info_target_v1 {\n\tstruct xt_set_info add_set;\n\tstruct xt_set_info del_set;\n};\n\n \n\nstruct xt_set_info_target_v2 {\n\tstruct xt_set_info add_set;\n\tstruct xt_set_info del_set;\n\t__u32 flags;\n\t__u32 timeout;\n};\n\n \n\nstruct xt_set_info_match_v3 {\n\tstruct xt_set_info match_set;\n\tstruct ip_set_counter_match0 packets;\n\tstruct ip_set_counter_match0 bytes;\n\t__u32 flags;\n};\n\n \n\nstruct xt_set_info_target_v3 {\n\tstruct xt_set_info add_set;\n\tstruct xt_set_info del_set;\n\tstruct xt_set_info map_set;\n\t__u32 flags;\n\t__u32 timeout;\n};\n\n \n\nstruct xt_set_info_match_v4 {\n\tstruct xt_set_info match_set;\n\tstruct ip_set_counter_match packets;\n\tstruct ip_set_counter_match bytes;\n\t__u32 flags;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

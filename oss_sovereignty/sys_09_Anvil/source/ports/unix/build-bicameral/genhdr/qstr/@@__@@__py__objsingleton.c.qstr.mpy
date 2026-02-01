@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objsingleton.c.qstr",
+  "hash_id": "fb4eab6c621a23cac41c3e0e7a0b7e255d2f51e9b58fefab1279f6e6a4d8aaa0",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objsingleton.c.qstr",
+  "human_readable_source": "Q(Ellipsis)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

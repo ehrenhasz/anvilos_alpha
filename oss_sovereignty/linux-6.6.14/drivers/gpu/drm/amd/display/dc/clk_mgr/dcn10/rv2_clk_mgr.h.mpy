@@ -1,0 +1,9 @@
+{
+  "module_name": "rv2_clk_mgr.h",
+  "hash_id": "29648a5444b8f3374a741bcff0fd373d07729d4fe22a3ee6470f827b60ce1ced",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn10/rv2_clk_mgr.h",
+  "human_readable_source": " \n\n#ifndef __RV2_CLK_MGR_H__\n#define __RV2_CLK_MGR_H__\n\nvoid rv2_clk_mgr_construct(struct dc_context *ctx, struct clk_mgr_internal *clk_mgr, struct pp_smu_funcs *pp_smu);\n\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sync.rs",
+  "hash_id": "3b43ffe2883064f34e06eb5ada58d9732aff08ee49be41b3eec9a89338bb7e5a",
+  "original_prompt": "Ingested from linux-6.6.14/rust/kernel/sync.rs",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n\n//! Synchronisation primitives.\n//!\n//! This module contains the kernel APIs related to synchronisation that have been ported or\n//! wrapped for usage by Rust code in the kernel.\n\nuse crate::types::Opaque;\n\nmod arc;\nmod condvar;\npub mod lock;\nmod locked_by;\n\npub use arc::{Arc, ArcBorrow, UniqueArc};\npub use condvar::CondVar;\npub use lock::{mutex::Mutex, spinlock::SpinLock};\npub use locked_by::LockedBy;\n\n/// Represents a lockdep class. It's a wrapper around C's `lock_class_key`.\n#[repr(transparent)]\npub struct LockClassKey(Opaque<bindings::lock_class_key>);\n\n// SAFETY: `bindings::lock_class_key` is designed to be used concurrently from multiple threads and\n// provides its own synchronization.\nunsafe impl Sync for LockClassKey {}\n\nimpl LockClassKey {\n    /// Creates a new lock class key.\n    pub const fn new() -> Self {\n        Self(Opaque::uninit())\n    }\n\n    pub(crate) fn as_ptr(&self) -> *mut bindings::lock_class_key {\n        self.0.get()\n    }\n}\n\n/// Defines a new static lock class and returns a pointer to it.\n#[doc(hidden)]\n#[macro_export]\nmacro_rules! static_lock_class {\n    () => {{\n        static CLASS: $crate::sync::LockClassKey = $crate::sync::LockClassKey::new();\n        &CLASS\n    }};\n}\n\n/// Returns the given string, if one is provided, otherwise generates one based on the source code\n/// location.\n#[doc(hidden)]\n#[macro_export]\nmacro_rules! optional_name {\n    () => {\n        $crate::c_str!(::core::concat!(::core::file!(), \":\", ::core::line!()))\n    };\n    ($name:literal) => {\n        $crate::c_str!($name)\n    };\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

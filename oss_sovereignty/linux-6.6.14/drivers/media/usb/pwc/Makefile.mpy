@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7a6c87d7b272515b09572e8a88ca061b7df1e5f56e20482991c0747a68804f42",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pwc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\npwc-objs\t+= pwc-if.o pwc-misc.o pwc-ctrl.o pwc-v4l.o pwc-uncompress.o\npwc-objs\t+= pwc-dec1.o pwc-dec23.o pwc-kiara.o pwc-timon.o\n\nobj-$(CONFIG_USB_PWC) += pwc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

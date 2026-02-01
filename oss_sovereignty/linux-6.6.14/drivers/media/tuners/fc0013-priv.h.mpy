@@ -1,0 +1,9 @@
+{
+  "module_name": "fc0013-priv.h",
+  "hash_id": "5550efe0ebd22fe97332e0b6d7be107a530d1644d5edcfc2536c9d06cf0e64e6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/fc0013-priv.h",
+  "human_readable_source": " \n \n\n#ifndef _FC0013_PRIV_H_\n#define _FC0013_PRIV_H_\n\n#define LOG_PREFIX \"fc0013\"\n\n#undef err\n#define err(f, arg...)  printk(KERN_ERR     LOG_PREFIX\": \" f \"\\n\" , ## arg)\n#undef info\n#define info(f, arg...) printk(KERN_INFO    LOG_PREFIX\": \" f \"\\n\" , ## arg)\n#undef warn\n#define warn(f, arg...) printk(KERN_WARNING LOG_PREFIX\": \" f \"\\n\" , ## arg)\n\nstruct fc0013_priv {\n\tstruct i2c_adapter *i2c;\n\tu8 addr;\n\tu8 dual_master;\n\tu8 xtal_freq;\n\n\tu32 frequency;\n\tu32 bandwidth;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

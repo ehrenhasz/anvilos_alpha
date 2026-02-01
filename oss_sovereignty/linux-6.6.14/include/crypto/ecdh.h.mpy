@@ -1,0 +1,9 @@
+{
+  "module_name": "ecdh.h",
+  "hash_id": "0467bcefcd1408f34d4f662207af3ac1cea4639591e6dbb8e87f5e8774d89b70",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/ecdh.h",
+  "human_readable_source": " \n \n#ifndef _CRYPTO_ECDH_\n#define _CRYPTO_ECDH_\n\n \n\n \n#define ECC_CURVE_NIST_P192\t0x0001\n#define ECC_CURVE_NIST_P256\t0x0002\n#define ECC_CURVE_NIST_P384\t0x0003\n\n \nstruct ecdh {\n\tchar *key;\n\tunsigned short key_size;\n};\n\n \nunsigned int crypto_ecdh_key_len(const struct ecdh *params);\n\n \nint crypto_ecdh_encode_key(char *buf, unsigned int len, const struct ecdh *p);\n\n \nint crypto_ecdh_decode_key(const char *buf, unsigned int len, struct ecdh *p);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

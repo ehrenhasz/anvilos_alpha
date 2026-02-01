@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_dvs.host.h",
+  "hash_id": "0d17cfbef9f68e58038120420bc3a1be31e23a8199570c13e5e327f90ef7ec67",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/dvs/dvs_1.0/ia_css_dvs.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_DVS_HOST_H\n#define __IA_CSS_DVS_HOST_H\n\n#include \"ia_css_frame_public.h\"\n#include \"ia_css_binary.h\"\n#include \"sh_css_params.h\"\n\n#include \"ia_css_types.h\"\n#include \"ia_css_dvs_types.h\"\n#include \"ia_css_dvs_param.h\"\n\n \n#define DVS_GDC_BLI_INTERP_ENVELOPE 1\n#define DVS_GDC_BCI_INTERP_ENVELOPE 3\n\nvoid\nia_css_dvs_config(\n    struct sh_css_isp_dvs_isp_config      *to,\n    const struct ia_css_dvs_configuration *from,\n    unsigned int size);\n\nint ia_css_dvs_configure(const struct ia_css_binary     *binary,\n\t\t\t const struct ia_css_frame_info *from);\n\nvoid\nconvert_dvs_6axis_config(\n    struct ia_css_isp_parameters *params,\n    const struct ia_css_binary *binary);\n\nstruct ia_css_host_data *\nconvert_allocate_dvs_6axis_config(\n    const struct ia_css_dvs_6axis_config *dvs_6axis_config,\n    const struct ia_css_binary *binary,\n    const struct ia_css_frame_info *dvs_in_frame_info);\n\nint\nstore_dvs_6axis_config(\n    const struct ia_css_dvs_6axis_config *dvs_6axis_config,\n    const struct ia_css_binary *binary,\n    const struct ia_css_frame_info *dvs_in_frame_info,\n    ia_css_ptr ddr_addr_y);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "umc_v6_0.h",
+  "hash_id": "359bb9abc83614a550ca94d4a636f3c24112fc65b4c2e06dacb6327fecaf2589",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/umc_v6_0.h",
+  "human_readable_source": " \n#ifndef __UMC_V6_0_H__\n#define __UMC_V6_0_H__\n\n#include \"soc15_common.h\"\n#include \"amdgpu.h\"\n\nextern const struct amdgpu_umc_funcs umc_v6_0_funcs;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

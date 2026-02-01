@@ -1,0 +1,9 @@
+{
+  "module_name": "dirname-lgpl.c",
+  "hash_id": "85e3e57a89123241207758764fb17075f7efc87f4df353ced0a3c8435c45c4fc",
+  "original_prompt": "Ingested from coreutils-9.4/lib/dirname-lgpl.c",
+  "human_readable_source": " \n\nsize_t\ndir_len (char const *file)\n{\n  size_t prefix_length = FILE_SYSTEM_PREFIX_LEN (file);\n  size_t length;\n\n   \n  prefix_length += (prefix_length != 0\n                    ? (FILE_SYSTEM_DRIVE_PREFIX_CAN_BE_RELATIVE\n                       && ISSLASH (file[prefix_length]))\n                    : (ISSLASH (file[0])\n                       ? ((DOUBLE_SLASH_IS_DISTINCT_ROOT\n                           && ISSLASH (file[1]) && ! ISSLASH (file[2])\n                           ? 2 : 1))\n                       : 0));\n\n   \n  for (length = last_component (file) - file;\n       prefix_length < length; length--)\n    if (! ISSLASH (file[length - 1]))\n      break;\n  return length;\n}\n\n\n \n\nchar *\nmdir_name (char const *file)\n{\n  size_t length = dir_len (file);\n  bool append_dot = (length == 0\n                     || (FILE_SYSTEM_DRIVE_PREFIX_CAN_BE_RELATIVE\n                         && length == FILE_SYSTEM_PREFIX_LEN (file)\n                         && file[2] != '\\0' && ! ISSLASH (file[2])));\n  char *dir = malloc (length + append_dot + 1);\n  if (!dir)\n    return NULL;\n  memcpy (dir, file, length);\n  if (append_dot)\n    dir[length++] = '.';\n  dir[length] = '\\0';\n  return dir;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

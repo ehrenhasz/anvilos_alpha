@@ -1,0 +1,9 @@
+{
+  "module_name": "spectral.h",
+  "hash_id": "58a8a0ff7e2ae6847717d91e6bf8839244b54a9b89b5feb4322ea378b28214d3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath10k/spectral.h",
+  "human_readable_source": " \n \n\n#ifndef SPECTRAL_H\n#define SPECTRAL_H\n\n#include \"../spectral_common.h\"\n\n \nstruct ath10k_spec_scan {\n\tu8 count;\n\tu8 fft_size;\n};\n\n \nenum ath10k_spectral_mode {\n\tSPECTRAL_DISABLED = 0,\n\tSPECTRAL_BACKGROUND,\n\tSPECTRAL_MANUAL,\n};\n\n#ifdef CONFIG_ATH10K_SPECTRAL\n\nint ath10k_spectral_process_fft(struct ath10k *ar,\n\t\t\t\tstruct wmi_phyerr_ev_arg *phyerr,\n\t\t\t\tconst struct phyerr_fft_report *fftr,\n\t\t\t\tsize_t bin_len, u64 tsf);\nint ath10k_spectral_start(struct ath10k *ar);\nint ath10k_spectral_vif_stop(struct ath10k_vif *arvif);\nint ath10k_spectral_create(struct ath10k *ar);\nvoid ath10k_spectral_destroy(struct ath10k *ar);\n\n#else\n\nstatic inline int\nath10k_spectral_process_fft(struct ath10k *ar,\n\t\t\t    struct wmi_phyerr_ev_arg *phyerr,\n\t\t\t    const struct phyerr_fft_report *fftr,\n\t\t\t    size_t bin_len, u64 tsf)\n{\n\treturn 0;\n}\n\nstatic inline int ath10k_spectral_start(struct ath10k *ar)\n{\n\treturn 0;\n}\n\nstatic inline int ath10k_spectral_vif_stop(struct ath10k_vif *arvif)\n{\n\treturn 0;\n}\n\nstatic inline int ath10k_spectral_create(struct ath10k *ar)\n{\n\treturn 0;\n}\n\nstatic inline void ath10k_spectral_destroy(struct ath10k *ar)\n{\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

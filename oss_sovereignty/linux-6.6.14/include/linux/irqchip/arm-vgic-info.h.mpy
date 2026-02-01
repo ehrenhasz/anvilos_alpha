@@ -1,0 +1,9 @@
+{
+  "module_name": "arm-vgic-info.h",
+  "hash_id": "648ec0895f19fb69381d72fb39b8423aaf037f78b9e5afab0c273ad1b44da66c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/irqchip/arm-vgic-info.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_IRQCHIP_ARM_VGIC_INFO_H\n#define __LINUX_IRQCHIP_ARM_VGIC_INFO_H\n\n#include <linux/types.h>\n#include <linux/ioport.h>\n\nenum gic_type {\n\t \n\tGIC_V2,\n\t \n\tGIC_V3,\n};\n\nstruct gic_kvm_info {\n\t \n\tenum gic_type\ttype;\n\t \n\tstruct resource vcpu;\n\t \n\tunsigned int\tmaint_irq;\n\t \n\tbool\t\tno_maint_irq_mask;\n\t \n\tstruct resource vctrl;\n\t \n\tbool\t\thas_v4;\n\t \n\tbool\t\thas_v4_1;\n\t \n\tbool\t\tno_hw_deactivation;\n};\n\n#ifdef CONFIG_KVM\nvoid vgic_set_kvm_info(const struct gic_kvm_info *info);\n#else\nstatic inline void vgic_set_kvm_info(const struct gic_kvm_info *info) {}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

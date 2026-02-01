@@ -1,0 +1,9 @@
+{
+  "module_name": "invensense_mpu6050.h",
+  "hash_id": "3ad8647ff3de480e8153811724d175222b774b90edb45bc30a85d700527cdad6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/invensense_mpu6050.h",
+  "human_readable_source": " \n \n\n#ifndef __INV_MPU6050_PLATFORM_H_\n#define __INV_MPU6050_PLATFORM_H_\n\n \nstruct inv_mpu6050_platform_data {\n\t__s8 orientation[9];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

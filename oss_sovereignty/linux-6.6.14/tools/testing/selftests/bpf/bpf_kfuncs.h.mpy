@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_kfuncs.h",
+  "hash_id": "8201eb9b6cd636f2e2126d62328e976831844438d6c4e6b9f1b28d067b33c984",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/bpf_kfuncs.h",
+  "human_readable_source": "#ifndef __BPF_KFUNCS__\n#define __BPF_KFUNCS__\n\n \nextern int bpf_dynptr_from_skb(struct __sk_buff *skb, __u64 flags,\n    struct bpf_dynptr *ptr__uninit) __ksym;\n\n \nextern int bpf_dynptr_from_xdp(struct xdp_md *xdp, __u64 flags,\n\t\t\t       struct bpf_dynptr *ptr__uninit) __ksym;\n\n \nextern void *bpf_dynptr_slice(const struct bpf_dynptr *ptr, __u32 offset,\n\t\t\t      void *buffer, __u32 buffer__szk) __ksym;\n\n \nextern void *bpf_dynptr_slice_rdwr(const struct bpf_dynptr *ptr, __u32 offset,\n\t\t\t      void *buffer, __u32 buffer__szk) __ksym;\n\nextern int bpf_dynptr_adjust(const struct bpf_dynptr *ptr, __u32 start, __u32 end) __ksym;\nextern bool bpf_dynptr_is_null(const struct bpf_dynptr *ptr) __ksym;\nextern bool bpf_dynptr_is_rdonly(const struct bpf_dynptr *ptr) __ksym;\nextern __u32 bpf_dynptr_size(const struct bpf_dynptr *ptr) __ksym;\nextern int bpf_dynptr_clone(const struct bpf_dynptr *ptr, struct bpf_dynptr *clone__init) __ksym;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

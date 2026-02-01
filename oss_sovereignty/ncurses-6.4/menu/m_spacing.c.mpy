@@ -1,0 +1,9 @@
+{
+  "module_name": "m_spacing.c",
+  "hash_id": "8d3a8737ee9fd3939d6d7b2f8ae3afc0411a851ec9beba4b4e96a866b39ec62c",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_spacing.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_spacing.c,v 1.22 2020/12/12 00:38:14 tom Exp $\")\n\n#define MAX_SPC_DESC ((TABSIZE) ? (TABSIZE) : 8)\n#define MAX_SPC_COLS ((TABSIZE) ? (TABSIZE) : 8)\n#define MAX_SPC_ROWS (3)\n\n \nMENU_EXPORT(int)\nset_menu_spacing(MENU *menu, int s_desc, int s_row, int s_col)\n{\n  MENU *m;\t\t\t \n\n  T((T_CALLED(\"set_menu_spacing(%p,%d,%d,%d)\"),\n     (void *)menu, s_desc, s_row, s_col));\n\n  m = Normalize_Menu(menu);\n\n  assert(m);\n  if (m->status & _POSTED)\n    RETURN(E_POSTED);\n\n  if (((s_desc < 0) || (s_desc > MAX_SPC_DESC)) ||\n      ((s_row < 0) || (s_row > MAX_SPC_ROWS)) ||\n      ((s_col < 0) || (s_col > MAX_SPC_COLS)))\n    RETURN(E_BAD_ARGUMENT);\n\n  m->spc_desc = (short)(s_desc ? s_desc : 1);\n  m->spc_rows = (short)(s_row ? s_row : 1);\n  m->spc_cols = (short)(s_col ? s_col : 1);\n  _nc_Calculate_Item_Length_and_Width(m);\n\n  RETURN(E_OK);\n}\n\n \nMENU_EXPORT(int)\nmenu_spacing(const MENU *menu, int *s_desc, int *s_row, int *s_col)\n{\n  const MENU *m;\t\t \n\n  T((T_CALLED(\"menu_spacing(%p,%p,%p,%p)\"),\n     (const void *)menu,\n     (void *)s_desc,\n     (void *)s_row,\n     (void *)s_col));\n\n  m = Normalize_Menu(menu);\n\n  assert(m);\n  if (s_desc)\n    *s_desc = m->spc_desc;\n  if (s_row)\n    *s_row = m->spc_rows;\n  if (s_col)\n    *s_col = m->spc_cols;\n\n  RETURN(E_OK);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

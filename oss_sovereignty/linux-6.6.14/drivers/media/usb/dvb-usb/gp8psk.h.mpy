@@ -1,0 +1,9 @@
+{
+  "module_name": "gp8psk.h",
+  "hash_id": "c457c71411803cc15f36e03097062bdae143006a4a1bb2f8d98b26a84a911ba0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/dvb-usb/gp8psk.h",
+  "human_readable_source": " \n \n#ifndef _DVB_USB_GP8PSK_H_\n#define _DVB_USB_GP8PSK_H_\n\n#define DVB_USB_LOG_PREFIX \"gp8psk\"\n#include \"dvb-usb.h\"\n\nextern int dvb_usb_gp8psk_debug;\n#define deb_info(args...) dprintk(dvb_usb_gp8psk_debug,0x01,args)\n#define deb_xfer(args...) dprintk(dvb_usb_gp8psk_debug,0x02,args)\n#define deb_rc(args...)   dprintk(dvb_usb_gp8psk_debug,0x04,args)\n\n#define GET_USB_SPEED                     0x07\n\n#define RESET_FX2                         0x13\n\n#define FW_VERSION_READ                   0x0B\n#define VENDOR_STRING_READ                0x0C\n#define PRODUCT_STRING_READ               0x0D\n#define FW_BCD_VERSION_READ               0x14\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_syscfg_regdef.h",
+  "hash_id": "f0c7bec5d67fad9cbfecad812ece1ce90ce1cd508bf7275e4da3671c3dadf625",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_syscfg_regdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_SYSCFG_REGDEF_H__\n#define __RTL8712_SYSCFG_REGDEF_H__\n\n#define SYS_ISO_CTRL\t\t(RTL8712_SYSCFG_ + 0x0000)\n#define SYS_FUNC_EN\t\t(RTL8712_SYSCFG_ + 0x0002)\n#define PMC_FSM\t\t\t(RTL8712_SYSCFG_ + 0x0004)\n#define SYS_CLKR\t\t(RTL8712_SYSCFG_ + 0x0008)\n#define EE_9346CR\t\t(RTL8712_SYSCFG_ + 0x000A)\n#define EE_VPD\t\t\t(RTL8712_SYSCFG_ + 0x000C)\n#define AFE_MISC\t\t(RTL8712_SYSCFG_ + 0x0010)\n#define SPS0_CTRL\t\t(RTL8712_SYSCFG_ + 0x0011)\n#define SPS1_CTRL\t\t(RTL8712_SYSCFG_ + 0x0018)\n#define RF_CTRL\t\t\t(RTL8712_SYSCFG_ + 0x001F)\n#define LDOA15_CTRL\t\t(RTL8712_SYSCFG_ + 0x0020)\n#define LDOV12D_CTRL\t\t(RTL8712_SYSCFG_ + 0x0021)\n#define LDOHCI12_CTRL\t\t(RTL8712_SYSCFG_ + 0x0022)\n#define LDO_USB_CTRL\t\t(RTL8712_SYSCFG_ + 0x0023)\n#define LPLDO_CTRL\t\t(RTL8712_SYSCFG_ + 0x0024)\n#define AFE_XTAL_CTRL\t\t(RTL8712_SYSCFG_ + 0x0026)\n#define AFE_PLL_CTRL\t\t(RTL8712_SYSCFG_ + 0x0028)\n#define EFUSE_CTRL\t\t(RTL8712_SYSCFG_ + 0x0030)\n#define EFUSE_TEST\t\t(RTL8712_SYSCFG_ + 0x0034)\n#define PWR_DATA\t\t(RTL8712_SYSCFG_ + 0x0038)\n#define DPS_TIMER\t\t(RTL8712_SYSCFG_ + 0x003C)\n#define RCLK_MON\t\t(RTL8712_SYSCFG_ + 0x003E)\n#define EFUSE_CLK_CTRL\t\t(RTL8712_SYSCFG_ + 0x02F8)\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "25a5f854b44a48c2fe6bb661ef524e793ea42ca1baa71b8ccf229bed05a58ad5",
+  "original_prompt": "Ingested from linux-6.6.14/samples/uhid/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/uhid-example\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

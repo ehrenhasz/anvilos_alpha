@@ -1,0 +1,9 @@
+{
+  "module_name": "xfile.h",
+  "hash_id": "aed85002d9f934d31fb362bc1ec82430bfd79b4c3be908b66745b0cab0127846",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/scrub/xfile.h",
+  "human_readable_source": " \n \n#ifndef __XFS_SCRUB_XFILE_H__\n#define __XFS_SCRUB_XFILE_H__\n\nstruct xfile_page {\n\tstruct page\t\t*page;\n\tvoid\t\t\t*fsdata;\n\tloff_t\t\t\tpos;\n};\n\nstatic inline bool xfile_page_cached(const struct xfile_page *xfpage)\n{\n\treturn xfpage->page != NULL;\n}\n\nstatic inline pgoff_t xfile_page_index(const struct xfile_page *xfpage)\n{\n\treturn xfpage->page->index;\n}\n\nstruct xfile {\n\tstruct file\t\t*file;\n};\n\nint xfile_create(const char *description, loff_t isize, struct xfile **xfilep);\nvoid xfile_destroy(struct xfile *xf);\n\nssize_t xfile_pread(struct xfile *xf, void *buf, size_t count, loff_t pos);\nssize_t xfile_pwrite(struct xfile *xf, const void *buf, size_t count,\n\t\tloff_t pos);\n\n \nstatic inline int\nxfile_obj_load(struct xfile *xf, void *buf, size_t count, loff_t pos)\n{\n\tssize_t\tret = xfile_pread(xf, buf, count, pos);\n\n\tif (ret < 0 || ret != count)\n\t\treturn -ENOMEM;\n\treturn 0;\n}\n\n \nstatic inline int\nxfile_obj_store(struct xfile *xf, const void *buf, size_t count, loff_t pos)\n{\n\tssize_t\tret = xfile_pwrite(xf, buf, count, pos);\n\n\tif (ret < 0 || ret != count)\n\t\treturn -ENOMEM;\n\treturn 0;\n}\n\nloff_t xfile_seek_data(struct xfile *xf, loff_t pos);\n\nstruct xfile_stat {\n\tloff_t\t\t\tsize;\n\tunsigned long long\tbytes;\n};\n\nint xfile_stat(struct xfile *xf, struct xfile_stat *statbuf);\n\nint xfile_get_page(struct xfile *xf, loff_t offset, unsigned int len,\n\t\tstruct xfile_page *xbuf);\nint xfile_put_page(struct xfile *xf, struct xfile_page *xbuf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

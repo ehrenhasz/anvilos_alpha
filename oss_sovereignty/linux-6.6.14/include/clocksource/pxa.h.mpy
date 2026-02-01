@@ -1,0 +1,9 @@
+{
+  "module_name": "pxa.h",
+  "hash_id": "f422bf52cfa001e7df37eba9e5a3915b373dbed6de4272086306bef6b2255256",
+  "original_prompt": "Ingested from linux-6.6.14/include/clocksource/pxa.h",
+  "human_readable_source": " \n \n\n#ifndef _CLOCKSOURCE_PXA_H\n#define _CLOCKSOURCE_PXA_H\n\nextern void pxa_timer_nodt_init(int irq, void __iomem *base);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

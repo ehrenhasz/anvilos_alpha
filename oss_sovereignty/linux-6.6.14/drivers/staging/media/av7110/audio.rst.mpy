@@ -1,0 +1,9 @@
+{
+  "module_name": "audio.rst",
+  "hash_id": "c87b84321223ec7f84df763d353acdd0885d0a770d9daa53bdcb72c6e68d4bf4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/audio.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n\n.. _dvb_audio:\n\n#######################\nDigital TV Audio Device\n#######################\n\nThe Digital TV audio device controls the MPEG2 audio decoder of the Digital\nTV hardware. It can be accessed through ``/dev/dvb/adapter?/audio?``. Data\ntypes and ioctl definitions can be accessed by including\n``linux/dvb/audio.h`` in your application.\n\nPlease note that some Digital TV cards don't have their own MPEG decoder, which\nresults in the omission of the audio and video device.\n\nThese ioctls were also used by V4L2 to control MPEG decoders implemented\nin V4L2. The use of these ioctls for that purpose has been made obsolete\nand proper V4L2 ioctls or controls have been created to replace that\nfunctionality.\n\n\n.. toctree::\n    :maxdepth: 1\n\n    audio_data_types\n    audio_function_calls\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

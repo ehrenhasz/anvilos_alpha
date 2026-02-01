@@ -1,0 +1,9 @@
+{
+  "module_name": "seq_oss_legacy.h",
+  "hash_id": "d177a2486373fed1f0ac41fedd29803d75db7b73c5628c557e301d51cadc7e77",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/seq_oss_legacy.h",
+  "human_readable_source": " \n#ifndef __SOUND_SEQ_OSS_LEGACY_H\n#define __SOUND_SEQ_OSS_LEGACY_H\n\n \n\n#include <linux/soundcard.h>\n\n#ifndef SAMPLE_TYPE_AWE32\n#define SAMPLE_TYPE_AWE32\t\t0x20\n#endif\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

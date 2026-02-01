@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "3a81602572f780d2dd04abbbe78d7f02e540104eaa350e18f12166a3ce175082",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zed/Makefile.am",
+  "human_readable_source": "include $(srcdir)/%D%/zed.d/Makefile.am\n\nzed_CFLAGS  = $(AM_CFLAGS)\nzed_CFLAGS += $(LIBUDEV_CFLAGS) $(LIBUUID_CFLAGS)\n\nsbin_PROGRAMS   += zed\nCPPCHECKTARGETS += zed\n\nzed_SOURCES = \\\n\t%D%/zed.c \\\n\t%D%/zed.h \\\n\t%D%/zed_conf.c \\\n\t%D%/zed_conf.h \\\n\t%D%/zed_disk_event.c \\\n\t%D%/zed_disk_event.h \\\n\t%D%/zed_event.c \\\n\t%D%/zed_event.h \\\n\t%D%/zed_exec.c \\\n\t%D%/zed_exec.h \\\n\t%D%/zed_file.c \\\n\t%D%/zed_file.h \\\n\t%D%/zed_log.c \\\n\t%D%/zed_log.h \\\n\t%D%/zed_strings.c \\\n\t%D%/zed_strings.h \\\n\t\\\n\t%D%/agents/fmd_api.c \\\n\t%D%/agents/fmd_api.h \\\n\t%D%/agents/fmd_serd.c \\\n\t%D%/agents/fmd_serd.h \\\n\t%D%/agents/zfs_agents.c \\\n\t%D%/agents/zfs_agents.h \\\n\t%D%/agents/zfs_diagnosis.c \\\n\t%D%/agents/zfs_mod.c \\\n\t%D%/agents/zfs_retire.c\n\nzed_LDADD = \\\n\tlibzfs.la \\\n\tlibzfs_core.la \\\n\tlibnvpair.la \\\n\tlibuutil.la\n\nzed_LDADD += -lrt $(LIBATOMIC_LIBS) $(LIBUDEV_LIBS) $(LIBUUID_LIBS)\nzed_LDFLAGS = -pthread\n\ndist_noinst_DATA += %D%/agents/README.md\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

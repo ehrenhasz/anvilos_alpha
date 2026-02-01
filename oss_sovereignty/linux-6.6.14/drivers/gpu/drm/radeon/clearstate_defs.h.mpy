@@ -1,0 +1,9 @@
+{
+  "module_name": "clearstate_defs.h",
+  "hash_id": "f8f54dabe97900f8ce3c353c460ce491bb72f7a001982ff9eccdcee3d58ae7c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/clearstate_defs.h",
+  "human_readable_source": " \n#ifndef CLEARSTATE_DEFS_H\n#define CLEARSTATE_DEFS_H\n\nenum section_id {\n    SECT_NONE,\n    SECT_CONTEXT,\n    SECT_CLEAR,\n    SECT_CTRLCONST\n};\n\nstruct cs_extent_def {\n    const unsigned int *extent;\n    const unsigned int reg_index;\n    const unsigned int reg_count;\n};\n\nstruct cs_section_def {\n    const struct cs_extent_def *section;\n    const enum section_id id;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

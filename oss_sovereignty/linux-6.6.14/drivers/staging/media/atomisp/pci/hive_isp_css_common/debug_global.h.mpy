@@ -1,0 +1,9 @@
+{
+  "module_name": "debug_global.h",
+  "hash_id": "eb4122b88a4bff6144831d6a59bb4d5ef0ba55e9ee820b51f1a4bf39eae881fc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/debug_global.h",
+  "human_readable_source": " \n \n\n#ifndef __DEBUG_GLOBAL_H_INCLUDED__\n#define __DEBUG_GLOBAL_H_INCLUDED__\n\n#include <type_support.h>\n\n#define DEBUG_BUF_SIZE\t1024\n#define DEBUG_BUF_MASK\t(DEBUG_BUF_SIZE - 1)\n\n#define DEBUG_DATA_ENABLE_ADDR\t\t0x00\n#define DEBUG_DATA_BUF_MODE_ADDR\t0x04\n#define DEBUG_DATA_HEAD_ADDR\t\t0x08\n#define DEBUG_DATA_TAIL_ADDR\t\t0x0C\n#define DEBUG_DATA_BUF_ADDR\t\t\t0x10\n\n#define DEBUG_DATA_ENABLE_DDR_ADDR\t\t0x00\n#define DEBUG_DATA_BUF_MODE_DDR_ADDR\tHIVE_ISP_DDR_WORD_BYTES\n#define DEBUG_DATA_HEAD_DDR_ADDR\t\t(2 * HIVE_ISP_DDR_WORD_BYTES)\n#define DEBUG_DATA_TAIL_DDR_ADDR\t\t(3 * HIVE_ISP_DDR_WORD_BYTES)\n#define DEBUG_DATA_BUF_DDR_ADDR\t\t\t(4 * HIVE_ISP_DDR_WORD_BYTES)\n\n#define DEBUG_BUFFER_ISP_DMEM_ADDR       0x0\n\n \n\n \ntypedef enum {\n\tDEBUG_BUFFER_MODE_LINEAR = 0,\n\tDEBUG_BUFFER_MODE_CIRCULAR,\n\tN_DEBUG_BUFFER_MODE\n} debug_buf_mode_t;\n\nstruct debug_data_s {\n\tu32\t\t\tenable;\n\tu32\t\t\tbufmode;\n\tu32\t\t\thead;\n\tu32\t\t\ttail;\n\tu32\t\t\tbuf[DEBUG_BUF_SIZE];\n};\n\n \n\n#ifdef HIVE_ISP_DDR_WORD_BYTES\nstruct debug_data_ddr_s {\n\tu32\t\t\tenable;\n\ts8\t\t\t\tpadding1[HIVE_ISP_DDR_WORD_BYTES - sizeof(uint32_t)];\n\tu32\t\t\tbufmode;\n\ts8\t\t\t\tpadding2[HIVE_ISP_DDR_WORD_BYTES - sizeof(uint32_t)];\n\tu32\t\t\thead;\n\ts8\t\t\t\tpadding3[HIVE_ISP_DDR_WORD_BYTES - sizeof(uint32_t)];\n\tu32\t\t\ttail;\n\ts8\t\t\t\tpadding4[HIVE_ISP_DDR_WORD_BYTES - sizeof(uint32_t)];\n\tu32\t\t\tbuf[DEBUG_BUF_SIZE];\n};\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

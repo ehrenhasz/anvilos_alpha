@@ -1,0 +1,9 @@
+{
+  "module_name": "nmi.h",
+  "hash_id": "d04a586e7d70c8f0def9080e3fb7def7303501b04273f53101a3b92ff438f2f4",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/interface/nmi.h",
+  "human_readable_source": " \n \n\n#ifndef __XEN_PUBLIC_NMI_H__\n#define __XEN_PUBLIC_NMI_H__\n\n#include <xen/interface/xen.h>\n\n \n  \n#define _XEN_NMIREASON_io_error     0\n#define XEN_NMIREASON_io_error      (1UL << _XEN_NMIREASON_io_error)\n  \n#define _XEN_NMIREASON_pci_serr     1\n#define XEN_NMIREASON_pci_serr      (1UL << _XEN_NMIREASON_pci_serr)\n  \n#define _XEN_NMIREASON_unknown      2\n#define XEN_NMIREASON_unknown       (1UL << _XEN_NMIREASON_unknown)\n\n \n\n \n#define XENNMI_register_callback   0\nstruct xennmi_callback {\n    unsigned long handler_address;\n    unsigned long pad;\n};\nDEFINE_GUEST_HANDLE_STRUCT(xennmi_callback);\n\n \n#define XENNMI_unregister_callback 1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

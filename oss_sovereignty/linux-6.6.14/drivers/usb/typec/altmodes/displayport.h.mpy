@@ -1,0 +1,9 @@
+{
+  "module_name": "displayport.h",
+  "hash_id": "b4a377cbb20df4adacc90303de89a215b02e0a6ea7b478bdd009a426c7b5b055",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/typec/altmodes/displayport.h",
+  "human_readable_source": " \n#if IS_ENABLED(CONFIG_TYPEC_DP_ALTMODE)\nint dp_altmode_probe(struct typec_altmode *alt);\nvoid dp_altmode_remove(struct typec_altmode *alt);\n#else\nint dp_altmode_probe(struct typec_altmode *alt) { return -ENOTSUPP; }\nvoid dp_altmode_remove(struct typec_altmode *alt) { }\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

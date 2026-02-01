@@ -1,0 +1,9 @@
+{
+  "module_name": "resource.h",
+  "hash_id": "c73cbedd6d31f3b9a528cc6eb4b4992c168f2daaf509e25b6c45b06cd8e38a0b",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/resource.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_RESOURCE_H\n#define _ASM_GENERIC_RESOURCE_H\n\n#include <uapi/asm-generic/resource.h>\n\n\n \n#define INIT_RLIMITS\t\t\t\t\t\t\t\\\n{\t\t\t\t\t\t\t\t\t\\\n\t[RLIMIT_CPU]\t\t= {  RLIM_INFINITY,  RLIM_INFINITY },\t\\\n\t[RLIMIT_FSIZE]\t\t= {  RLIM_INFINITY,  RLIM_INFINITY },\t\\\n\t[RLIMIT_DATA]\t\t= {  RLIM_INFINITY,  RLIM_INFINITY },\t\\\n\t[RLIMIT_STACK]\t\t= {       _STK_LIM,  RLIM_INFINITY },\t\\\n\t[RLIMIT_CORE]\t\t= {              0,  RLIM_INFINITY },\t\\\n\t[RLIMIT_RSS]\t\t= {  RLIM_INFINITY,  RLIM_INFINITY },\t\\\n\t[RLIMIT_NPROC]\t\t= {              0,              0 },\t\\\n\t[RLIMIT_NOFILE]\t\t= {   INR_OPEN_CUR,   INR_OPEN_MAX },\t\\\n\t[RLIMIT_MEMLOCK]\t= {    MLOCK_LIMIT,    MLOCK_LIMIT },\t\\\n\t[RLIMIT_AS]\t\t= {  RLIM_INFINITY,  RLIM_INFINITY },\t\\\n\t[RLIMIT_LOCKS]\t\t= {  RLIM_INFINITY,  RLIM_INFINITY },\t\\\n\t[RLIMIT_SIGPENDING]\t= { \t\t0,\t       0 },\t\\\n\t[RLIMIT_MSGQUEUE]\t= {   MQ_BYTES_MAX,   MQ_BYTES_MAX },\t\\\n\t[RLIMIT_NICE]\t\t= { 0, 0 },\t\t\t\t\\\n\t[RLIMIT_RTPRIO]\t\t= { 0, 0 },\t\t\t\t\\\n\t[RLIMIT_RTTIME]\t\t= {  RLIM_INFINITY,  RLIM_INFINITY },\t\\\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

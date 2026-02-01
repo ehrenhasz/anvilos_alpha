@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_conversion_types.h",
+  "hash_id": "8152fa2a07cddd2ce3d26e76e684f7bdff53e7181ee33e46085fa332107cf34f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/conversion/conversion_1.0/ia_css_conversion_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_CONVERSION_TYPES_H\n#define __IA_CSS_CONVERSION_TYPES_H\n\n \nstruct ia_css_conversion_config {\n\tu32 en;      \n\tu32 dummy0;  \n\tu32 dummy1;  \n\tu32 dummy2;  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

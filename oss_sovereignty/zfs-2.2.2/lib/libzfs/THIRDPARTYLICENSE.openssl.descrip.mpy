@@ -1,0 +1,9 @@
+{
+  "module_name": "THIRDPARTYLICENSE.openssl.descrip",
+  "hash_id": "eb71f095660676e4b553f2764fb0e13aeb98cfce982f70c74fb46b4df85da2cb",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libzfs/THIRDPARTYLICENSE.openssl.descrip",
+  "human_readable_source": "PBKDF2 IMPLEMENTATION\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

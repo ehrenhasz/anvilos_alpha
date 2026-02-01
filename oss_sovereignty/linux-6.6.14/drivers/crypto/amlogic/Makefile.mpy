@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "18d02383e03d12dc2727dad093596628a44fa77604b064a016bf1de09c335afe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/amlogic/Makefile",
+  "human_readable_source": "obj-$(CONFIG_CRYPTO_DEV_AMLOGIC_GXL) += amlogic-gxl-crypto.o\namlogic-gxl-crypto-y := amlogic-gxl-core.o amlogic-gxl-cipher.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

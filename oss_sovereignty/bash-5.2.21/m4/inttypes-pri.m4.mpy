@@ -1,0 +1,9 @@
+{
+  "module_name": "inttypes-pri.m4",
+  "hash_id": "0db40688d1cb4e4e5b7ea1dccfe31861ad6e28f8e831c6cf5ddb73609d7a26e2",
+  "original_prompt": "Ingested from bash-5.2.21/m4/inttypes-pri.m4",
+  "human_readable_source": "# inttypes-pri.m4 serial 7 (gettext-0.18.2)\ndnl Copyright (C) 1997-2002, 2006, 2008-2019 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl From Bruno Haible.\n\nAC_PREREQ([2.53])\n\n# Define PRI_MACROS_BROKEN if <inttypes.h> exists and defines the PRI*\n# macros to non-string values.  This is the case on AIX 4.3.3.\n\nAC_DEFUN([gt_INTTYPES_PRI],\n[\n  AC_CHECK_HEADERS([inttypes.h])\n  if test $ac_cv_header_inttypes_h = yes; then\n    AC_CACHE_CHECK([whether the inttypes.h PRIxNN macros are broken],\n      [gt_cv_inttypes_pri_broken],\n      [\n        AC_COMPILE_IFELSE(\n          [AC_LANG_PROGRAM(\n             [[\n#include <inttypes.h>\n#ifdef PRId32\nchar *p = PRId32;\n#endif\n             ]],\n             [[]])],\n          [gt_cv_inttypes_pri_broken=no],\n          [gt_cv_inttypes_pri_broken=yes])\n      ])\n  fi\n  if test \"$gt_cv_inttypes_pri_broken\" = yes; then\n    AC_DEFINE_UNQUOTED([PRI_MACROS_BROKEN], [1],\n      [Define if <inttypes.h> exists and defines unusable PRI* macros.])\n    PRI_MACROS_BROKEN=1\n  else\n    PRI_MACROS_BROKEN=0\n  fi\n  AC_SUBST([PRI_MACROS_BROKEN])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

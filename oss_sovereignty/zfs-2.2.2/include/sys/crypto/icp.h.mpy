@@ -1,0 +1,9 @@
+{
+  "module_name": "icp.h",
+  "hash_id": "353c2c63e534a46d31401eec00e8a8358ac6d9d00584b6a4b51f908ba0da6b3a",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/crypto/icp.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_CRYPTO_ALGS_H\n#define\t_SYS_CRYPTO_ALGS_H\n\nint aes_mod_init(void);\nint aes_mod_fini(void);\n\nint sha2_mod_init(void);\nint sha2_mod_fini(void);\n\nint skein_mod_init(void);\nint skein_mod_fini(void);\n\nint icp_init(void);\nvoid icp_fini(void);\n\nint aes_impl_set(const char *);\nint gcm_impl_set(const char *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

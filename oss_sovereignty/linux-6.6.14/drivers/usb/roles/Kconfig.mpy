@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "deb4b67ff299e14e7de5a6dde8ba33d0e51abeed435defdc8f759052c1b48cb9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/roles/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig USB_ROLE_SWITCH\n\ttristate \"USB Role Switch Support\"\n\thelp\n\t  USB Role Switch is a device that can select the USB role - host or\n\t  device - for a USB port (connector). In most cases dual-role capable\n\t  USB controller will also represent the switch, but on some platforms\n\t  multiplexer/demultiplexer switch is used to route the data lines on\n\t  the USB connector between separate USB host and device controllers.\n\n\t  Say Y here if your USB connectors support both device and host roles.\n\t  To compile the driver as module, choose M here: the module will be\n\t  called roles.ko.\n\nif USB_ROLE_SWITCH\n\nconfig USB_ROLES_INTEL_XHCI\n\ttristate \"Intel XHCI USB Role Switch\"\n\tdepends on ACPI && X86\n\thelp\n\t  Driver for the internal USB role switch for switching the USB data\n\t  lines between the xHCI host controller and the dwc3 gadget controller\n\t  found on various Intel SoCs.\n\n\t  To compile the driver as a module, choose M here: the module will\n\t  be called intel-xhci-usb-role-switch.\n\nendif # USB_ROLE_SWITCH\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

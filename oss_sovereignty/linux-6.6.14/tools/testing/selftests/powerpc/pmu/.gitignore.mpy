@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "f39e07b1023c7459a0f6b272e95977e6d998847898a1fe918eaa5c83acaf0e21",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ncount_instructions\nl3_bank_test\nper_event_excludes\ncount_stcx_fail\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

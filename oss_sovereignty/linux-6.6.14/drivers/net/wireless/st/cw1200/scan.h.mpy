@@ -1,0 +1,9 @@
+{
+  "module_name": "scan.h",
+  "hash_id": "7413d765f557b4365c62650ca429abb9e1b1a49187471cf683523d615bf6b6db",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/st/cw1200/scan.h",
+  "human_readable_source": " \n \n\n#ifndef SCAN_H_INCLUDED\n#define SCAN_H_INCLUDED\n\n#include <linux/semaphore.h>\n#include \"wsm.h\"\n\n  struct sk_buff;\n  struct cfg80211_scan_request;\n  struct ieee80211_channel;\n  struct ieee80211_hw;\n  struct work_struct;\n\nstruct cw1200_scan {\n\tstruct semaphore lock;\n\tstruct work_struct work;\n\tstruct delayed_work timeout;\n\tstruct cfg80211_scan_request *req;\n\tstruct ieee80211_channel **begin;\n\tstruct ieee80211_channel **curr;\n\tstruct ieee80211_channel **end;\n\tstruct wsm_ssid ssids[WSM_SCAN_MAX_NUM_OF_SSIDS];\n\tint output_power;\n\tint n_ssids;\n\tint status;\n\tatomic_t in_progress;\n\t \n\tstruct delayed_work probe_work;\n\tint direct_probe;\n};\n\nint cw1200_hw_scan(struct ieee80211_hw *hw,\n\t\t   struct ieee80211_vif *vif,\n\t\t   struct ieee80211_scan_request *hw_req);\nvoid cw1200_scan_work(struct work_struct *work);\nvoid cw1200_scan_timeout(struct work_struct *work);\nvoid cw1200_clear_recent_scan_work(struct work_struct *work);\nvoid cw1200_scan_complete_cb(struct cw1200_common *priv,\n\t\t\t     struct wsm_scan_complete *arg);\nvoid cw1200_scan_failed_cb(struct cw1200_common *priv);\n\n \n \nvoid cw1200_probe_work(struct work_struct *work);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

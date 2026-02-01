@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8e375f1b9074571fdb2631e59a5a0afe876be30a1d378a93ad142c30e5dcb370",
+  "original_prompt": "Ingested from linux-6.6.14/net/ieee802154/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig IEEE802154\n\ttristate \"IEEE Std 802.15.4 Low-Rate Wireless Personal Area Networks support\"\n\thelp\n\t  IEEE Std 802.15.4 defines a low data rate, low power and low\n\t  complexity short range wireless personal area networks. It was\n\t  designed to organise networks of sensors, switches, etc automation\n\t  devices. Maximum allowed data rate is 250 kb/s and typical personal\n\t  operating space around 10m.\n\n\t  Say Y here to compile LR-WPAN support into the kernel or say M to\n\t  compile it as modules.\n\nif IEEE802154\n\nconfig IEEE802154_NL802154_EXPERIMENTAL\n\tbool \"IEEE 802.15.4 experimental netlink support\"\n\thelp\n\t  Adds experimental netlink support for nl802154.\n\nconfig IEEE802154_SOCKET\n\ttristate \"IEEE 802.15.4 socket interface\"\n\tdefault y\n\thelp\n\t  Socket interface for IEEE 802.15.4. Contains DGRAM sockets interface\n\t  for 802.15.4 dataframes. Also RAW socket interface to build MAC\n\t  header from userspace.\n\nsource \"net/ieee802154/6lowpan/Kconfig\"\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

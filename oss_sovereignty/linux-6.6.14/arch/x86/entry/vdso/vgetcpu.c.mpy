@@ -1,0 +1,9 @@
+{
+  "module_name": "vgetcpu.c",
+  "hash_id": "7fe58193882c2e25f4ebeca9f965a642dfd40bd2b5d2c2561c1e29ee2fde4e30",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/vdso/vgetcpu.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/getcpu.h>\n#include <asm/segment.h>\n#include <vdso/processor.h>\n\nnotrace long\n__vdso_getcpu(unsigned *cpu, unsigned *node, struct getcpu_cache *unused)\n{\n\tvdso_read_cpunode(cpu, node);\n\n\treturn 0;\n}\n\nlong getcpu(unsigned *cpu, unsigned *node, struct getcpu_cache *tcache)\n\t__attribute__((weak, alias(\"__vdso_getcpu\")));\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

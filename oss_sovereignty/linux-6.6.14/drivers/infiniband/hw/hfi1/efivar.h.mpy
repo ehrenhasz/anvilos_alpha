@@ -1,0 +1,9 @@
+{
+  "module_name": "efivar.h",
+  "hash_id": "5d8f9f03061523bd8f8532789fee9cd5e911fc17c953cc83ccbf7acb76afd5cf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/efivar.h",
+  "human_readable_source": " \n \n\n#ifndef _HFI1_EFIVAR_H\n#define _HFI1_EFIVAR_H\n\n#include <linux/efi.h>\n\n#include \"hfi.h\"\n\nint read_hfi1_efi_var(struct hfi1_devdata *dd, const char *kind,\n\t\t      unsigned long *size, void **return_data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

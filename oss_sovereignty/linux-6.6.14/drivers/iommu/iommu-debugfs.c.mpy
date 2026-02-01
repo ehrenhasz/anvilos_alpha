@@ -1,0 +1,9 @@
+{
+  "module_name": "iommu-debugfs.c",
+  "hash_id": "8e9774a7c17d21156b64db78b07bb5c9c36ed20aa65ad45a199236278fb7c707",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/iommu-debugfs.c",
+  "human_readable_source": "\n \n\n#include <linux/pci.h>\n#include <linux/iommu.h>\n#include <linux/debugfs.h>\n\nstruct dentry *iommu_debugfs_dir;\nEXPORT_SYMBOL_GPL(iommu_debugfs_dir);\n\n \nvoid iommu_debugfs_setup(void)\n{\n\tif (!iommu_debugfs_dir) {\n\t\tiommu_debugfs_dir = debugfs_create_dir(\"iommu\", NULL);\n\t\tpr_warn(\"\\n\");\n\t\tpr_warn(\"*************************************************************\\n\");\n\t\tpr_warn(\"**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE    **\\n\");\n\t\tpr_warn(\"**                                                         **\\n\");\n\t\tpr_warn(\"**  IOMMU DebugFS SUPPORT HAS BEEN ENABLED IN THIS KERNEL  **\\n\");\n\t\tpr_warn(\"**                                                         **\\n\");\n\t\tpr_warn(\"** This means that this kernel is built to expose internal **\\n\");\n\t\tpr_warn(\"** IOMMU data structures, which may compromise security on **\\n\");\n\t\tpr_warn(\"** your system.                                            **\\n\");\n\t\tpr_warn(\"**                                                         **\\n\");\n\t\tpr_warn(\"** If you see this message and you are not debugging the   **\\n\");\n\t\tpr_warn(\"** kernel, report this immediately to your vendor!         **\\n\");\n\t\tpr_warn(\"**                                                         **\\n\");\n\t\tpr_warn(\"**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE    **\\n\");\n\t\tpr_warn(\"*************************************************************\\n\");\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

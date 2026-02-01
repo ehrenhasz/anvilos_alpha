@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "aecb202c28fd22e7db3dc8647e17cdaacd1e6a8a3e3f81ded6cd36e2d16d9140",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/adi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause\n#\n# Makefile for the Analog Devices network device drivers.\n#\n\nobj-$(CONFIG_ADIN1110) += adin1110.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "string",
+  "hash_id": "dcd44a906baf18a4224892b9579a857a763e5a5df0eb161dcdb480965de6f344",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/strace/groups/string",
+  "human_readable_source": "access\nacct\nadd_key\nchdir\nchmod\nchown\nchroot\ncreat\ndelete_module\nexecve\nexecveat\nfaccessat\nfchmodat\nfchownat\nfgetxattr\nfinit_module\nfremovexattr\nfsetxattr\nfutimesat\ngetxattr\ninotify_add_watch\nlchown\nlgetxattr\nlink\nlinkat\nlistxattr\nllistxattr\nlremovexattr\nlsetxattr\nlstat\nmemfd_create\nmkdir\nmkdirat\nmknod\nmknodat\nmq_open\nmq_timedsend\nmq_unlink\nname_to_handle_at\nnewfstatat\nopen\nopenat\npivot_root\npwrite64\nquotactl\nreadlink\nreadlinkat\nremovexattr\nrename\nrenameat\nrenameat2\nrequest_key\nrmdir\nsetxattr\nstat\nstatfs\nstatx\nswapoff\nswapon\nsymlink\nsymlinkat\ntruncate\nunlink\nunlinkat\nutimensat\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

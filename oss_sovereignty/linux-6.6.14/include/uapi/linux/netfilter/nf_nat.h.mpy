@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_nat.h",
+  "hash_id": "9bf5f4a7d2755aceb8afed7d661ec483c9eb5a460648a3994f8f0a5d53fcfa82",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/nf_nat.h",
+  "human_readable_source": " \n#ifndef _NETFILTER_NF_NAT_H\n#define _NETFILTER_NF_NAT_H\n\n#include <linux/netfilter.h>\n#include <linux/netfilter/nf_conntrack_tuple_common.h>\n\n#define NF_NAT_RANGE_MAP_IPS\t\t\t(1 << 0)\n#define NF_NAT_RANGE_PROTO_SPECIFIED\t\t(1 << 1)\n#define NF_NAT_RANGE_PROTO_RANDOM\t\t(1 << 2)\n#define NF_NAT_RANGE_PERSISTENT\t\t\t(1 << 3)\n#define NF_NAT_RANGE_PROTO_RANDOM_FULLY\t\t(1 << 4)\n#define NF_NAT_RANGE_PROTO_OFFSET\t\t(1 << 5)\n#define NF_NAT_RANGE_NETMAP\t\t\t(1 << 6)\n\n#define NF_NAT_RANGE_PROTO_RANDOM_ALL\t\t\\\n\t(NF_NAT_RANGE_PROTO_RANDOM | NF_NAT_RANGE_PROTO_RANDOM_FULLY)\n\n#define NF_NAT_RANGE_MASK\t\t\t\t\t\\\n\t(NF_NAT_RANGE_MAP_IPS | NF_NAT_RANGE_PROTO_SPECIFIED |\t\\\n\t NF_NAT_RANGE_PROTO_RANDOM | NF_NAT_RANGE_PERSISTENT |\t\\\n\t NF_NAT_RANGE_PROTO_RANDOM_FULLY | NF_NAT_RANGE_PROTO_OFFSET | \\\n\t NF_NAT_RANGE_NETMAP)\n\nstruct nf_nat_ipv4_range {\n\tunsigned int\t\t\tflags;\n\t__be32\t\t\t\tmin_ip;\n\t__be32\t\t\t\tmax_ip;\n\tunion nf_conntrack_man_proto\tmin;\n\tunion nf_conntrack_man_proto\tmax;\n};\n\nstruct nf_nat_ipv4_multi_range_compat {\n\tunsigned int\t\t\trangesize;\n\tstruct nf_nat_ipv4_range\trange[1];\n};\n\nstruct nf_nat_range {\n\tunsigned int\t\t\tflags;\n\tunion nf_inet_addr\t\tmin_addr;\n\tunion nf_inet_addr\t\tmax_addr;\n\tunion nf_conntrack_man_proto\tmin_proto;\n\tunion nf_conntrack_man_proto\tmax_proto;\n};\n\nstruct nf_nat_range2 {\n\tunsigned int\t\t\tflags;\n\tunion nf_inet_addr\t\tmin_addr;\n\tunion nf_inet_addr\t\tmax_addr;\n\tunion nf_conntrack_man_proto\tmin_proto;\n\tunion nf_conntrack_man_proto\tmax_proto;\n\tunion nf_conntrack_man_proto\tbase_proto;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

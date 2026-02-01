@@ -1,0 +1,9 @@
+{
+  "module_name": "adsp_helper.h",
+  "hash_id": "2e752a054b580cf0675409892486cd0615abe3d55aa8d165b950fd7f5b98324e",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/mediatek/adsp_helper.h",
+  "human_readable_source": " \n\n \n\n#ifndef __MTK_ADSP_HELPER_H__\n#define __MTK_ADSP_HELPER_H__\n\n#include <linux/firmware/mediatek/mtk-adsp-ipc.h>\n\n \nstruct mtk_adsp_chip_info {\n\tphys_addr_t pa_sram;\n\tphys_addr_t pa_dram;  \n\tphys_addr_t pa_shared_dram;  \n\tphys_addr_t pa_cfgreg;\n\tu32 sramsize;\n\tu32 dramsize;\n\tu32 cfgregsize;\n\tu32 shared_size;\n\tvoid __iomem *va_sram;  \n\tvoid __iomem *va_dram;  \n\tvoid __iomem *va_cfgreg;\n\tvoid __iomem *shared_sram;  \n\tvoid __iomem *shared_dram;  \n\tphys_addr_t adsp_bootup_addr;\n\tint dram_offset;  \n\n\tphys_addr_t pa_secreg;\n\tu32 secregsize;\n\tvoid __iomem *va_secreg;\n\n\tphys_addr_t pa_busreg;\n\tu32 busregsize;\n\tvoid __iomem *va_busreg;\n};\n\nstruct adsp_priv {\n\tstruct device *dev;\n\tstruct snd_sof_dev *sdev;\n\tstruct mtk_adsp_ipc *dsp_ipc;\n\tstruct platform_device *ipc_dev;\n\tstruct mtk_adsp_chip_info *adsp;\n\tstruct clk **clk;\n\tu32 (*ap2adsp_addr)(u32 addr, void *data);\n\tu32 (*adsp2ap_addr)(u32 addr, void *data);\n\n\tvoid *private_data;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

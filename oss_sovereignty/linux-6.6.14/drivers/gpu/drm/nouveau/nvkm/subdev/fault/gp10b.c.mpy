@@ -1,0 +1,9 @@
+{
+  "module_name": "gp10b.c",
+  "hash_id": "3c7f076b0f84ae9875c08d3b58518220c1f8a13d363553a8c3649e3c8244dcfe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fault/gp10b.c",
+  "human_readable_source": " \n\n#include \"priv.h\"\n\n#include <core/memory.h>\n\n#include <nvif/class.h>\n\nu64\ngp10b_fault_buffer_pin(struct nvkm_fault_buffer *buffer)\n{\n\treturn nvkm_memory_addr(buffer->mem);\n}\n\nstatic const struct nvkm_fault_func\ngp10b_fault = {\n\t.intr = gp100_fault_intr,\n\t.buffer.nr = 1,\n\t.buffer.entry_size = 32,\n\t.buffer.info = gp100_fault_buffer_info,\n\t.buffer.pin = gp10b_fault_buffer_pin,\n\t.buffer.init = gp100_fault_buffer_init,\n\t.buffer.fini = gp100_fault_buffer_fini,\n\t.buffer.intr = gp100_fault_buffer_intr,\n\t.user = { { 0, 0, MAXWELL_FAULT_BUFFER_A }, 0 },\n};\n\nint\ngp10b_fault_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t\tstruct nvkm_fault **pfault)\n{\n\treturn nvkm_fault_new_(&gp10b_fault, device, type, inst, pfault);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

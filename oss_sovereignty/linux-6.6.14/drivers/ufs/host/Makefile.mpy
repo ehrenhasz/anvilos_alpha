@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "01644903576ba4b074ef17378ba1f00d9af0d8b9fa2614ffb15ced9cd6b8195d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ufs/host/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_SCSI_UFS_DWC_TC_PCI) += tc-dwc-g210-pci.o ufshcd-dwc.o tc-dwc-g210.o\nobj-$(CONFIG_SCSI_UFS_DWC_TC_PLATFORM) += tc-dwc-g210-pltfrm.o ufshcd-dwc.o tc-dwc-g210.o\nobj-$(CONFIG_SCSI_UFS_CDNS_PLATFORM) += cdns-pltfrm.o\nobj-$(CONFIG_SCSI_UFS_QCOM) += ufs-qcom.o\nobj-$(CONFIG_SCSI_UFS_EXYNOS) += ufs-exynos.o\nobj-$(CONFIG_SCSI_UFSHCD_PCI) += ufshcd-pci.o\nobj-$(CONFIG_SCSI_UFSHCD_PLATFORM) += ufshcd-pltfrm.o\nobj-$(CONFIG_SCSI_UFS_HISI) += ufs-hisi.o\nobj-$(CONFIG_SCSI_UFS_MEDIATEK) += ufs-mediatek.o\nobj-$(CONFIG_SCSI_UFS_RENESAS) += ufs-renesas.o\nobj-$(CONFIG_SCSI_UFS_SPRD) += ufs-sprd.o\nobj-$(CONFIG_SCSI_UFS_TI_J721E) += ti-j721e-ufs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

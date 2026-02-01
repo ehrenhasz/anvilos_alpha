@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-mt8192-mfg.c",
+  "hash_id": "29238ec96017c8a44c3cf29d8622e0167e7a9e5a508b2962324819da6cfae337",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mediatek/clk-mt8192-mfg.c",
+  "human_readable_source": "\n\n\n\n\n#include <linux/clk-provider.h>\n#include <linux/mod_devicetable.h>\n#include <linux/platform_device.h>\n\n#include \"clk-mtk.h\"\n#include \"clk-gate.h\"\n\n#include <dt-bindings/clock/mt8192-clk.h>\n\nstatic const struct mtk_gate_regs mfg_cg_regs = {\n\t.set_ofs = 0x4,\n\t.clr_ofs = 0x8,\n\t.sta_ofs = 0x0,\n};\n\n#define GATE_MFG(_id, _name, _parent, _shift)\t\t\t\\\n\tGATE_MTK_FLAGS(_id, _name, _parent, &mfg_cg_regs,\t\\\n\t\t       _shift, &mtk_clk_gate_ops_setclr,\t\\\n\t\t       CLK_SET_RATE_PARENT)\n\nstatic const struct mtk_gate mfg_clks[] = {\n\tGATE_MFG(CLK_MFG_BG3D, \"mfg_bg3d\", \"mfg_pll_sel\", 0),\n};\n\nstatic const struct mtk_clk_desc mfg_desc = {\n\t.clks = mfg_clks,\n\t.num_clks = ARRAY_SIZE(mfg_clks),\n};\n\nstatic const struct of_device_id of_match_clk_mt8192_mfg[] = {\n\t{\n\t\t.compatible = \"mediatek,mt8192-mfgcfg\",\n\t\t.data = &mfg_desc,\n\t}, {\n\t\t \n\t}\n};\nMODULE_DEVICE_TABLE(of, of_match_clk_mt8192_mfg);\n\nstatic struct platform_driver clk_mt8192_mfg_drv = {\n\t.probe = mtk_clk_simple_probe,\n\t.remove_new = mtk_clk_simple_remove,\n\t.driver = {\n\t\t.name = \"clk-mt8192-mfg\",\n\t\t.of_match_table = of_match_clk_mt8192_mfg,\n\t},\n};\nmodule_platform_driver(clk_mt8192_mfg_drv);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

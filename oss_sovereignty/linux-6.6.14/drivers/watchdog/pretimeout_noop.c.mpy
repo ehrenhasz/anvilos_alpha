@@ -1,0 +1,9 @@
+{
+  "module_name": "pretimeout_noop.c",
+  "hash_id": "0e35bfe36c7b86f40b825a4ca4308a3b42058237d73d0d47fe970c41d8be1569",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/watchdog/pretimeout_noop.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/printk.h>\n#include <linux/watchdog.h>\n\n#include \"watchdog_pretimeout.h\"\n\n \nstatic void pretimeout_noop(struct watchdog_device *wdd)\n{\n\tpr_alert(\"watchdog%d: pretimeout event\\n\", wdd->id);\n}\n\nstatic struct watchdog_governor watchdog_gov_noop = {\n\t.name\t\t= \"noop\",\n\t.pretimeout\t= pretimeout_noop,\n};\n\nstatic int __init watchdog_gov_noop_register(void)\n{\n\treturn watchdog_register_governor(&watchdog_gov_noop);\n}\n\nstatic void __exit watchdog_gov_noop_unregister(void)\n{\n\twatchdog_unregister_governor(&watchdog_gov_noop);\n}\nmodule_init(watchdog_gov_noop_register);\nmodule_exit(watchdog_gov_noop_unregister);\n\nMODULE_AUTHOR(\"Vladimir Zapolskiy <vladimir_zapolskiy@mentor.com>\");\nMODULE_DESCRIPTION(\"Panic watchdog pretimeout governor\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

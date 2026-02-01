@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "eb5e6cecbb84dae1c53835b5984b6487f2682e18f269c7f285e248e99f5c025d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/arcmsr/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# File: drivers/arcmsr/Makefile\n# Makefile for the ARECA PCI-X PCI-EXPRESS SATA RAID controllers SCSI driver.\n\narcmsr-objs := arcmsr_attr.o arcmsr_hba.o\n\nobj-$(CONFIG_SCSI_ARCMSR) := arcmsr.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

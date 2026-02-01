@@ -1,0 +1,9 @@
+{
+  "module_name": "seg6_hmac.h",
+  "hash_id": "9d4611a236381bf6b4adb3116691f7b6ebf1ea198b8c515c5bfe10892cf095b0",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/seg6_hmac.h",
+  "human_readable_source": " \n \n\n#ifndef _NET_SEG6_HMAC_H\n#define _NET_SEG6_HMAC_H\n\n#include <net/flow.h>\n#include <net/ip6_fib.h>\n#include <net/sock.h>\n#include <linux/ip.h>\n#include <linux/ipv6.h>\n#include <linux/route.h>\n#include <net/seg6.h>\n#include <linux/seg6_hmac.h>\n#include <linux/rhashtable-types.h>\n\n#define SEG6_HMAC_MAX_DIGESTSIZE\t160\n#define SEG6_HMAC_RING_SIZE\t\t256\n\nstruct seg6_hmac_info {\n\tstruct rhash_head node;\n\tstruct rcu_head rcu;\n\n\tu32 hmackeyid;\n\tchar secret[SEG6_HMAC_SECRET_LEN];\n\tu8 slen;\n\tu8 alg_id;\n};\n\nstruct seg6_hmac_algo {\n\tu8 alg_id;\n\tchar name[64];\n\tstruct crypto_shash * __percpu *tfms;\n\tstruct shash_desc * __percpu *shashs;\n};\n\nextern int seg6_hmac_compute(struct seg6_hmac_info *hinfo,\n\t\t\t     struct ipv6_sr_hdr *hdr, struct in6_addr *saddr,\n\t\t\t     u8 *output);\nextern struct seg6_hmac_info *seg6_hmac_info_lookup(struct net *net, u32 key);\nextern int seg6_hmac_info_add(struct net *net, u32 key,\n\t\t\t      struct seg6_hmac_info *hinfo);\nextern int seg6_hmac_info_del(struct net *net, u32 key);\nextern int seg6_push_hmac(struct net *net, struct in6_addr *saddr,\n\t\t\t  struct ipv6_sr_hdr *srh);\nextern bool seg6_hmac_validate_skb(struct sk_buff *skb);\nextern int seg6_hmac_init(void);\nextern void seg6_hmac_exit(void);\nextern int seg6_hmac_net_init(struct net *net);\nextern void seg6_hmac_net_exit(struct net *net);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dp_drm.h",
+  "hash_id": "240f3e10c1199983160c4020447f891ca8c81c3f57e19c082eb4685900a54156",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/dp/dp_drm.h",
+  "human_readable_source": " \n \n\n#ifndef _DP_DRM_H_\n#define _DP_DRM_H_\n\n#include <linux/types.h>\n#include <drm/drm_bridge.h>\n\n#include \"msm_drv.h\"\n#include \"dp_display.h\"\n\nstruct msm_dp_bridge {\n\tstruct drm_bridge bridge;\n\tstruct msm_dp *dp_display;\n};\n\n#define to_dp_bridge(x)     container_of((x), struct msm_dp_bridge, bridge)\n\nstruct drm_connector *dp_drm_connector_init(struct msm_dp *dp_display, struct drm_encoder *encoder);\nstruct drm_bridge *dp_bridge_init(struct msm_dp *dp_display, struct drm_device *dev,\n\t\t\tstruct drm_encoder *encoder);\n\nvoid dp_bridge_atomic_enable(struct drm_bridge *drm_bridge,\n\t\t\t     struct drm_bridge_state *old_bridge_state);\nvoid dp_bridge_atomic_disable(struct drm_bridge *drm_bridge,\n\t\t\t      struct drm_bridge_state *old_bridge_state);\nvoid dp_bridge_atomic_post_disable(struct drm_bridge *drm_bridge,\n\t\t\t\t   struct drm_bridge_state *old_bridge_state);\nenum drm_mode_status dp_bridge_mode_valid(struct drm_bridge *bridge,\n\t\t\t\t\t  const struct drm_display_info *info,\n\t\t\t\t\t  const struct drm_display_mode *mode);\nvoid dp_bridge_mode_set(struct drm_bridge *drm_bridge,\n\t\t\tconst struct drm_display_mode *mode,\n\t\t\tconst struct drm_display_mode *adjusted_mode);\nvoid dp_bridge_hpd_enable(struct drm_bridge *bridge);\nvoid dp_bridge_hpd_disable(struct drm_bridge *bridge);\nvoid dp_bridge_hpd_notify(struct drm_bridge *bridge,\n\t\t\t  enum drm_connector_status status);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

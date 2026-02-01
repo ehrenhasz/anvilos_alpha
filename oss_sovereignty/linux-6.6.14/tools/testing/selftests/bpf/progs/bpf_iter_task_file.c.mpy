@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_iter_task_file.c",
+  "hash_id": "6b16660b397cf1143fce2a6eb2daf20c6a288fff9930174a0956bcbf0aaf29f0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_iter_task_file.c",
+  "human_readable_source": "\n \n#include \"bpf_iter.h\"\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nint count = 0;\nint tgid = 0;\nint last_tgid = 0;\nint unique_tgid_count = 0;\n\nSEC(\"iter/task_file\")\nint dump_task_file(struct bpf_iter__task_file *ctx)\n{\n\tstruct seq_file *seq = ctx->meta->seq;\n\tstruct task_struct *task = ctx->task;\n\tstruct file *file = ctx->file;\n\t__u32 fd = ctx->fd;\n\n\tif (task == (void *)0 || file == (void *)0)\n\t\treturn 0;\n\n\tif (ctx->meta->seq_num == 0) {\n\t\tcount = 0;\n\t\tBPF_SEQ_PRINTF(seq, \"    tgid      gid       fd      file\\n\");\n\t}\n\n\tif (tgid == task->tgid && task->tgid != task->pid)\n\t\tcount++;\n\n\tif (last_tgid != task->tgid) {\n\t\tlast_tgid = task->tgid;\n\t\tunique_tgid_count++;\n\t}\n\n\tBPF_SEQ_PRINTF(seq, \"%8d %8d %8d %lx\\n\", task->tgid, task->pid, fd,\n\t\t       (long)file->f_op);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

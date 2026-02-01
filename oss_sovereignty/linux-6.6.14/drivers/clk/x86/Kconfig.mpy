@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "890940a4b2cbbd70446c837a43bf87b90dc40ae34bf163ba5b468b24594a2769",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/x86/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CLK_LGM_CGU\n\tdepends on OF && HAS_IOMEM && (X86 || COMPILE_TEST)\n\tselect MFD_SYSCON\n\tselect OF_EARLY_FLATTREE\n\tbool \"Clock driver for Lightning Mountain(LGM) platform\"\n\thelp\n\t  Clock Generation Unit(CGU) driver for MaxLinear's x86 based\n\t  Lightning Mountain(LGM) network processor SoC.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

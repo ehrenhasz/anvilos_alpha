@@ -1,0 +1,9 @@
+{
+  "module_name": "xenpmu.h",
+  "hash_id": "545a6cd63812c3b8b1c1c9f24aa665a56568eb05a72ae8ed9eabeee04cd8edf8",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/interface/xenpmu.h",
+  "human_readable_source": " \n#ifndef __XEN_PUBLIC_XENPMU_H__\n#define __XEN_PUBLIC_XENPMU_H__\n\n#include \"xen.h\"\n\n#define XENPMU_VER_MAJ    0\n#define XENPMU_VER_MIN    1\n\n \n \n#define XENPMU_mode_get        0  \n#define XENPMU_mode_set        1\n#define XENPMU_feature_get     2\n#define XENPMU_feature_set     3\n#define XENPMU_init            4\n#define XENPMU_finish          5\n#define XENPMU_lvtpc_set       6\n#define XENPMU_flush           7\n\n \n\n \nstruct xen_pmu_params {\n\t \n\tstruct {\n\t\tuint32_t maj;\n\t\tuint32_t min;\n\t} version;\n\tuint64_t val;\n\n\t \n\tuint32_t vcpu;\n\tuint32_t pad;\n};\n\n \n#define XENPMU_MODE_OFF           0\n#define XENPMU_MODE_SELF          (1<<0)\n#define XENPMU_MODE_HV            (1<<1)\n#define XENPMU_MODE_ALL           (1<<2)\n\n \n#define XENPMU_FEATURE_INTEL_BTS  1\n\n \nstruct xen_pmu_data {\n\t \n\tuint32_t vcpu_id;\n\n\t \n\tuint32_t pcpu_id;\n\n\t \n\tdomid_t  domain_id;\n\n\tuint8_t pad[6];\n\n\t \n\tstruct xen_pmu_arch pmu;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

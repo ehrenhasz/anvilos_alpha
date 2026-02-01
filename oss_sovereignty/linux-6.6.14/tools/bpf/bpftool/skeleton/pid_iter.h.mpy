@@ -1,0 +1,9 @@
+{
+  "module_name": "pid_iter.h",
+  "hash_id": "d3bed52c2bad132964ef7edbe1679c6a72627c68f93c0bb22b8ab9bfdc3ad92c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bpf/bpftool/skeleton/pid_iter.h",
+  "human_readable_source": " \n \n#ifndef __PID_ITER_H\n#define __PID_ITER_H\n\nstruct pid_iter_entry {\n\t__u32 id;\n\tint pid;\n\t__u64 bpf_cookie;\n\tbool has_bpf_cookie;\n\tchar comm[16];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

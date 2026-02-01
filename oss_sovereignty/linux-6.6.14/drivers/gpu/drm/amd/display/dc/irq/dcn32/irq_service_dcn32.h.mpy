@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_service_dcn32.h",
+  "hash_id": "4025d216236d9aa0bd45a1819fde7a58d0464cb022c68a079fb3c3c417bfa3fd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/irq/dcn32/irq_service_dcn32.h",
+  "human_readable_source": " \n\n\n#ifndef __DAL_IRQ_SERVICE_DCN32_H__\n#define __DAL_IRQ_SERVICE_DCN32_H__\n\n#include \"../irq_service.h\"\n\nstruct irq_service *dal_irq_service_dcn32_create(\n\tstruct irq_service_init_data *init_data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

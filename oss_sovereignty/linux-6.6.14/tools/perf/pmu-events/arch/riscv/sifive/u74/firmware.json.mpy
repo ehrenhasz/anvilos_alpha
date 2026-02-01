@@ -1,0 +1,9 @@
+{
+  "module_name": "firmware.json",
+  "hash_id": "16e98efbc510a8f69577a37de5245c517bae629ee70d47723c8e30379b24be9f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/riscv/sifive/u74/firmware.json",
+  "human_readable_source": "[\n  {\n    \"ArchStdEvent\": \"FW_MISALIGNED_LOAD\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_MISALIGNED_STORE\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_ACCESS_LOAD\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_ACCESS_STORE\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_ILLEGAL_INSN\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_SET_TIMER\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_IPI_SENT\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_IPI_RECEIVED\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_FENCE_I_SENT\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_FENCE_I_RECEIVED\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_SFENCE_VMA_SENT\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_SFENCE_VMA_RECEIVED\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_SFENCE_VMA_RECEIVED\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_SFENCE_VMA_ASID_RECEIVED\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_HFENCE_GVMA_SENT\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_HFENCE_GVMA_RECEIVED\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_HFENCE_GVMA_VMID_SENT\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_HFENCE_GVMA_VMID_RECEIVED\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_HFENCE_VVMA_SENT\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_HFENCE_VVMA_RECEIVED\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_HFENCE_VVMA_ASID_SENT\"\n  },\n  {\n    \"ArchStdEvent\": \"FW_HFENCE_VVMA_ASID_RECEIVED\"\n  }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

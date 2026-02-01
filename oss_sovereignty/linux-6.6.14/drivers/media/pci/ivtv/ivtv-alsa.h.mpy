@@ -1,0 +1,9 @@
+{
+  "module_name": "ivtv-alsa.h",
+  "hash_id": "29510637968dadaa472ed305c45cc930951a5849f4e6fa82b1295e38808ad55b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ivtv/ivtv-alsa.h",
+  "human_readable_source": " \n \n\nstruct snd_card;\n\nstruct snd_ivtv_card {\n\tstruct v4l2_device *v4l2_dev;\n\tstruct snd_card *sc;\n\tunsigned int capture_transfer_done;\n\tunsigned int hwptr_done_capture;\n\tstruct snd_pcm_substream *capture_pcm_substream;\n\tspinlock_t slock;\n};\n\nextern int ivtv_alsa_debug;\n\n \nstatic inline void snd_ivtv_lock(struct snd_ivtv_card *itvsc)\n{\n\tstruct ivtv *itv = to_ivtv(itvsc->v4l2_dev);\n\tmutex_lock(&itv->serialize_lock);\n}\n\nstatic inline void snd_ivtv_unlock(struct snd_ivtv_card *itvsc)\n{\n\tstruct ivtv *itv = to_ivtv(itvsc->v4l2_dev);\n\tmutex_unlock(&itv->serialize_lock);\n}\n\n#define IVTV_ALSA_DBGFLG_WARN  (1 << 0)\n#define IVTV_ALSA_DBGFLG_INFO  (1 << 1)\n\n#define IVTV_ALSA_DEBUG(x, type, fmt, args...) \\\n\tdo { \\\n\t\tif ((x) & ivtv_alsa_debug) \\\n\t\t\tpr_info(\"%s-alsa: \" type \": \" fmt, \\\n\t\t\t\tv4l2_dev->name , ## args); \\\n\t} while (0)\n\n#define IVTV_ALSA_DEBUG_WARN(fmt, args...) \\\n\tIVTV_ALSA_DEBUG(IVTV_ALSA_DBGFLG_WARN, \"warning\", fmt , ## args)\n\n#define IVTV_ALSA_DEBUG_INFO(fmt, args...) \\\n\tIVTV_ALSA_DEBUG(IVTV_ALSA_DBGFLG_INFO, \"info\", fmt , ## args)\n\n#define IVTV_ALSA_ERR(fmt, args...) \\\n\tpr_err(\"%s-alsa: \" fmt, v4l2_dev->name , ## args)\n\n#define IVTV_ALSA_WARN(fmt, args...) \\\n\tpr_warn(\"%s-alsa: \" fmt, v4l2_dev->name , ## args)\n\n#define IVTV_ALSA_INFO(fmt, args...) \\\n\tpr_info(\"%s-alsa: \" fmt, v4l2_dev->name , ## args)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_cfg.h",
+  "hash_id": "8ebc6c0d35c522208780090dfd042fa664efec03ce7eaf95e0e83f6f0f2467f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/adf_cfg.h",
+  "human_readable_source": " \n \n#ifndef ADF_CFG_H_\n#define ADF_CFG_H_\n\n#include <linux/list.h>\n#include <linux/rwsem.h>\n#include <linux/debugfs.h>\n#include \"adf_accel_devices.h\"\n#include \"adf_cfg_common.h\"\n#include \"adf_cfg_strings.h\"\n\nstruct adf_cfg_key_val {\n\tchar key[ADF_CFG_MAX_KEY_LEN_IN_BYTES];\n\tchar val[ADF_CFG_MAX_VAL_LEN_IN_BYTES];\n\tenum adf_cfg_val_type type;\n\tstruct list_head list;\n};\n\nstruct adf_cfg_section {\n\tchar name[ADF_CFG_MAX_SECTION_LEN_IN_BYTES];\n\tstruct list_head list;\n\tstruct list_head param_head;\n};\n\nstruct adf_cfg_device_data {\n\tstruct list_head sec_list;\n\tstruct dentry *debug;\n\tstruct rw_semaphore lock;\n};\n\nint adf_cfg_dev_add(struct adf_accel_dev *accel_dev);\nvoid adf_cfg_dev_remove(struct adf_accel_dev *accel_dev);\nvoid adf_cfg_dev_dbgfs_add(struct adf_accel_dev *accel_dev);\nvoid adf_cfg_dev_dbgfs_rm(struct adf_accel_dev *accel_dev);\nint adf_cfg_section_add(struct adf_accel_dev *accel_dev, const char *name);\nvoid adf_cfg_del_all(struct adf_accel_dev *accel_dev);\nint adf_cfg_add_key_value_param(struct adf_accel_dev *accel_dev,\n\t\t\t\tconst char *section_name,\n\t\t\t\tconst char *key, const void *val,\n\t\t\t\tenum adf_cfg_val_type type);\nint adf_cfg_get_param_value(struct adf_accel_dev *accel_dev,\n\t\t\t    const char *section, const char *name, char *value);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

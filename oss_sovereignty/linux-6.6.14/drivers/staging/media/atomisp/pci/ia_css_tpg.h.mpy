@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_tpg.h",
+  "hash_id": "89fac28fd600b20718a42726e8968cbef750f5134ca6988aa82a1eabde7b6309",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/ia_css_tpg.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_TPG_H\n#define __IA_CSS_TPG_H\n\n \n\n \nenum ia_css_tpg_id {\n\tIA_CSS_TPG_ID0,\n\tIA_CSS_TPG_ID1,\n\tIA_CSS_TPG_ID2\n};\n\n \n#define N_CSS_TPG_IDS (IA_CSS_TPG_ID2 + 1)\n\n \nenum ia_css_tpg_mode {\n\tIA_CSS_TPG_MODE_RAMP,\n\tIA_CSS_TPG_MODE_CHECKERBOARD,\n\tIA_CSS_TPG_MODE_FRAME_BASED_COLOR,\n\tIA_CSS_TPG_MODE_MONO\n};\n\n \nstruct ia_css_tpg_config {\n\tenum ia_css_tpg_id   id;\n\tenum ia_css_tpg_mode mode;\n\tunsigned int         x_mask;\n\tint                  x_delta;\n\tunsigned int         y_mask;\n\tint                  y_delta;\n\tunsigned int         xy_mask;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

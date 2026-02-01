@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a77cac7955ef1fa67a87c90d8431011b1f74a7623bf46e994b69a4365069f021",
+  "original_prompt": "Ingested from linux-6.6.14/sound/hda/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsnd-hda-core-objs := hda_bus_type.o hdac_bus.o hdac_device.o hdac_sysfs.o \\\n\thdac_regmap.o hdac_controller.o hdac_stream.o array.o hdmi_chmap.o\n\nsnd-hda-core-objs += trace.o\nCFLAGS_trace.o := -I$(src)\n\n# for sync with i915 gfx driver\nsnd-hda-core-$(CONFIG_SND_HDA_COMPONENT) += hdac_component.o\nsnd-hda-core-$(CONFIG_SND_HDA_I915) += hdac_i915.o\n\nobj-$(CONFIG_SND_HDA_CORE) += snd-hda-core.o\n\n#extended hda\nobj-$(CONFIG_SND_HDA_EXT_CORE) += ext/\n\nsnd-intel-dspcfg-objs := intel-dsp-config.o\nsnd-intel-dspcfg-$(CONFIG_SND_INTEL_NHLT) += intel-nhlt.o\nobj-$(CONFIG_SND_INTEL_DSP_CONFIG) += snd-intel-dspcfg.o\n\nsnd-intel-sdw-acpi-objs := intel-sdw-acpi.o\nobj-$(CONFIG_SND_INTEL_SOUNDWIRE_ACPI) += snd-intel-sdw-acpi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

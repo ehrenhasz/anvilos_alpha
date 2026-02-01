@@ -1,0 +1,9 @@
+{
+  "module_name": "affs_hardblocks.h",
+  "hash_id": "9433cdb8e7db1a55930588869634320e78350597f6723c1e87c84d7d39402736",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/affs_hardblocks.h",
+  "human_readable_source": " \n#ifndef\tAFFS_HARDBLOCKS_H\n#define\tAFFS_HARDBLOCKS_H\n\n#include <linux/types.h>\n\n \n\nstruct RigidDiskBlock {\n\t__be32\trdb_ID;\n\t__be32\trdb_SummedLongs;\n\t__be32\trdb_ChkSum;\n\t__be32\trdb_HostID;\n\t__be32\trdb_BlockBytes;\n\t__be32\trdb_Flags;\n\t__be32\trdb_BadBlockList;\n\t__be32\trdb_PartitionList;\n\t__be32\trdb_FileSysHeaderList;\n\t__be32\trdb_DriveInit;\n\t__be32\trdb_Reserved1[6];\n\t__be32\trdb_Cylinders;\n\t__be32\trdb_Sectors;\n\t__be32\trdb_Heads;\n\t__be32\trdb_Interleave;\n\t__be32\trdb_Park;\n\t__be32\trdb_Reserved2[3];\n\t__be32\trdb_WritePreComp;\n\t__be32\trdb_ReducedWrite;\n\t__be32\trdb_StepRate;\n\t__be32\trdb_Reserved3[5];\n\t__be32\trdb_RDBBlocksLo;\n\t__be32\trdb_RDBBlocksHi;\n\t__be32\trdb_LoCylinder;\n\t__be32\trdb_HiCylinder;\n\t__be32\trdb_CylBlocks;\n\t__be32\trdb_AutoParkSeconds;\n\t__be32\trdb_HighRDSKBlock;\n\t__be32\trdb_Reserved4;\n\tchar\trdb_DiskVendor[8];\n\tchar\trdb_DiskProduct[16];\n\tchar\trdb_DiskRevision[4];\n\tchar\trdb_ControllerVendor[8];\n\tchar\trdb_ControllerProduct[16];\n\tchar\trdb_ControllerRevision[4];\n\t__be32\trdb_Reserved5[10];\n};\n\n#define\tIDNAME_RIGIDDISK\t0x5244534B\t \n\nstruct PartitionBlock {\n\t__be32\tpb_ID;\n\t__be32\tpb_SummedLongs;\n\t__be32\tpb_ChkSum;\n\t__be32\tpb_HostID;\n\t__be32\tpb_Next;\n\t__be32\tpb_Flags;\n\t__be32\tpb_Reserved1[2];\n\t__be32\tpb_DevFlags;\n\t__u8\tpb_DriveName[32];\n\t__be32\tpb_Reserved2[15];\n\t__be32\tpb_Environment[17];\n\t__be32\tpb_EReserved[15];\n};\n\n#define\tIDNAME_PARTITION\t0x50415254\t \n\n#define RDB_ALLOCATION_LIMIT\t16\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

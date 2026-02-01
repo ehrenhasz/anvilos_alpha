@@ -1,0 +1,9 @@
+{
+  "module_name": "ppp_defs.h",
+  "hash_id": "39d423a99ee1f5da9e3af4e0ba0aa5fff285a0845d2a0651d9a3d878ed0e2386",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ppp_defs.h",
+  "human_readable_source": " \n \n#ifndef _PPP_DEFS_H_\n#define _PPP_DEFS_H_\n\n#include <linux/crc-ccitt.h>\n#include <uapi/linux/ppp_defs.h>\n\n#define PPP_FCS(fcs, c) crc_ccitt_byte(fcs, c)\n\n \nstatic inline bool ppp_proto_is_valid(u16 proto)\n{\n\treturn !!((proto & 0x0101) == 0x0001);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

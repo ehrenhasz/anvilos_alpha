@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a988ad2cc42819e59387ad8e066fa648546c1c8c3fe55f92ffa5e462d00da640",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y += exynos-gsc/\nobj-y += exynos4-is/\nobj-y += s3c-camif/\nobj-y += s5p-g2d/\nobj-y += s5p-jpeg/\nobj-y += s5p-mfc/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cpupower-powercap-info.1",
+  "hash_id": "703076a41031a2a9419a68ab024782a4955888b13f0cfd6cda0f6cb3f2fc10cb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/man/cpupower-powercap-info.1",
+  "human_readable_source": ".TH CPUPOWER\\-POWERCAP\\-INFO \"1\" \"05/08/2016\" \"\" \"cpupower Manual\"\n.SH NAME\ncpupower\\-powercap\\-info \\- Shows powercapping related kernel and hardware configurations\n.SH SYNOPSIS\n.ft B\n.B cpupower powercap-info\n\n.SH DESCRIPTION\n\\fBcpupower powercap-info \\fP shows kernel powercapping subsystem information.\nThis needs hardware support and a loaded powercapping driver (at this time only\nintel_rapl driver exits) exporting hardware values userspace via sysfs.\n\nSome options are platform wide, some affect single cores. By default values\nof core zero are displayed only. cpupower --cpu all cpuinfo will show the\nsettings of all cores, see cpupower(1) how to choose specific cores.\n\n.SH \"DOCUMENTATION\"\n\nkernel sources:\nDocumentation/power/powercap/powercap.rst\n\n\n.SH \"SEE ALSO\"\n\ncpupower(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

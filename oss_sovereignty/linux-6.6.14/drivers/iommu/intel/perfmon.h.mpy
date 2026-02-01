@@ -1,0 +1,9 @@
+{
+  "module_name": "perfmon.h",
+  "hash_id": "214ccbfe30c93cd302ccb2c4c61ab1509204704fb5056d0c780c3eee468410e8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/intel/perfmon.h",
+  "human_readable_source": " \n\n \n#define IOMMU_PMU_NUM_OFF_REGS\t\t\t4\n#define IOMMU_PMU_OFF_REGS_STEP\t\t\t4\n\n#define IOMMU_PMU_FILTER_REQUESTER_ID\t\t0x01\n#define IOMMU_PMU_FILTER_DOMAIN\t\t\t0x02\n#define IOMMU_PMU_FILTER_PASID\t\t\t0x04\n#define IOMMU_PMU_FILTER_ATS\t\t\t0x08\n#define IOMMU_PMU_FILTER_PAGE_TABLE\t\t0x10\n\n#define IOMMU_PMU_FILTER_EN\t\t\tBIT(31)\n\n#define IOMMU_PMU_CFG_OFFSET\t\t\t0x100\n#define IOMMU_PMU_CFG_CNTRCAP_OFFSET\t\t0x80\n#define IOMMU_PMU_CFG_CNTREVCAP_OFFSET\t\t0x84\n#define IOMMU_PMU_CFG_SIZE\t\t\t0x8\n#define IOMMU_PMU_CFG_FILTERS_OFFSET\t\t0x4\n\n#define IOMMU_PMU_CAP_REGS_STEP\t\t\t8\n\n#define iommu_cntrcap_pcc(p)\t\t\t((p) & 0x1)\n#define iommu_cntrcap_cw(p)\t\t\t(((p) >> 8) & 0xff)\n#define iommu_cntrcap_ios(p)\t\t\t(((p) >> 16) & 0x1)\n#define iommu_cntrcap_egcnt(p)\t\t\t(((p) >> 28) & 0xf)\n\n#define IOMMU_EVENT_CFG_EGI_SHIFT\t\t8\n#define IOMMU_EVENT_CFG_ES_SHIFT\t\t32\n#define IOMMU_EVENT_CFG_INT\t\t\tBIT_ULL(1)\n\n#define iommu_event_select(p)\t\t\t((p) & 0xfffffff)\n#define iommu_event_group(p)\t\t\t(((p) >> 28) & 0xf)\n\n#ifdef CONFIG_INTEL_IOMMU_PERF_EVENTS\nint alloc_iommu_pmu(struct intel_iommu *iommu);\nvoid free_iommu_pmu(struct intel_iommu *iommu);\nvoid iommu_pmu_register(struct intel_iommu *iommu);\nvoid iommu_pmu_unregister(struct intel_iommu *iommu);\n#else\nstatic inline int\nalloc_iommu_pmu(struct intel_iommu *iommu)\n{\n\treturn 0;\n}\n\nstatic inline void\nfree_iommu_pmu(struct intel_iommu *iommu)\n{\n}\n\nstatic inline void\niommu_pmu_register(struct intel_iommu *iommu)\n{\n}\n\nstatic inline void\niommu_pmu_unregister(struct intel_iommu *iommu)\n{\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tas-basstreble.h",
+  "hash_id": "a1a527ea77369483caed88cedbd444866ec9f8db8e4c2fcfc70a482c28cb5200",
+  "original_prompt": "Ingested from linux-6.6.14/sound/aoa/codecs/tas-basstreble.h",
+  "human_readable_source": " \n \n\n#define TAS3004_TREBLE_MIN\t0\n#define TAS3004_TREBLE_MAX\t72\n#define TAS3004_BASS_MIN\t0\n#define TAS3004_BASS_MAX\t72\n#define TAS3004_TREBLE_ZERO\t36\n#define TAS3004_BASS_ZERO\t36\n\nstatic const u8 tas3004_treble_table[] = {\n\t150,  \n\t149,\n\t148,\n\t147,\n\t146,\n\t145,\n\t144,\n\t143,\n\t142,\n\t141,\n\t140,\n\t139,\n\t138,\n\t137,\n\t136,\n\t135,\n\t134,\n\t133,\n\t132,\n\t131,\n\t130,\n\t129,\n\t128,\n\t127,\n\t126,\n\t125,\n\t124,\n\t123,\n\t122,\n\t121,\n\t120,\n\t119,\n\t118,\n\t117,\n\t116,\n\t115,\n\t114,  \n\t113,\n\t112,\n\t111,\n\t109,\n\t108,\n\t107,\n\t105,\n\t104,\n\t103,\n\t101,\n\t99,\n\t98,\n\t96,\n\t93,\n\t91,\n\t89,\n\t86,\n\t83,\n\t81,\n\t77,\n\t74,\n\t71,\n\t67,\n\t63,\n\t59,\n\t54,\n\t49,\n\t44,\n\t38,\n\t32,\n\t26,\n\t19,\n\t10,\n\t4,\n\t2,\n\t1,  \n};\n\nstatic inline u8 tas3004_treble(int idx)\n{\n\treturn tas3004_treble_table[idx];\n}\n\n \nstatic const s8 tas3004_bass_diff_to_treble[] = {\n\t2,  \n\t2,\n\t2,\n\t2,\n\t2,\n\t1,\n\t2,\n\t2,\n\t2,\n\t3,\n\t4,\n\t4,\n\t5,\n\t6,\n\t7,\n\t8,\n\t9,\n\t10,\n\t11,\n\t14,\n\t13,\n\t8,\n\t1,  \n};\n\nstatic inline u8 tas3004_bass(int idx)\n{\n\tu8 result = tas3004_treble_table[idx];\n\n\tif (idx >= 50)\n\t\tresult += tas3004_bass_diff_to_treble[idx-50];\n\treturn result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

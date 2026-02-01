@@ -1,0 +1,9 @@
+{
+  "module_name": "printf-frexp.m4",
+  "hash_id": "56efa0cb640b4aa20785d3faf8295e1997fc8d682f57db0616b8a50001a6e8d4",
+  "original_prompt": "Ingested from coreutils-9.4/m4/printf-frexp.m4",
+  "human_readable_source": "# printf-frexp.m4 serial 5\ndnl Copyright (C) 2007, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl Check how to define printf_frexp() without linking with libm.\n\nAC_DEFUN([gl_FUNC_PRINTF_FREXP],\n[\n  AC_REQUIRE([gl_CHECK_FREXP_NO_LIBM])\n  if test $gl_cv_func_frexp_no_libm = yes; then\n    gl_FUNC_FREXP_WORKS\n    case \"$gl_cv_func_frexp_works\" in\n      *yes)\n        AC_DEFINE([HAVE_FREXP_IN_LIBC], [1],\n          [Define if the frexp function is available in libc.])\n        ;;\n    esac\n  fi\n\n  AC_CACHE_CHECK([whether ldexp can be used without linking with libm],\n    [gl_cv_func_ldexp_no_libm],\n    [\n      AC_LINK_IFELSE(\n        [AC_LANG_PROGRAM(\n           [[#include <math.h>\n             double x;\n             int y;]],\n           [[return ldexp (x, y) < 1;]])],\n        [gl_cv_func_ldexp_no_libm=yes],\n        [gl_cv_func_ldexp_no_libm=no])\n    ])\n  if test $gl_cv_func_ldexp_no_libm = yes; then\n    AC_DEFINE([HAVE_LDEXP_IN_LIBC], [1],\n      [Define if the ldexp function is available in libc.])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

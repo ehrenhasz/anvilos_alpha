@@ -1,0 +1,9 @@
+{
+  "module_name": "log.h",
+  "hash_id": "529ff600ad46fa92f2fd29b0f6b6120214cea3a318d6684b50e513574a00c672",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/timens/log.h",
+  "human_readable_source": " \n\n#ifndef __SELFTEST_TIMENS_LOG_H__\n#define __SELFTEST_TIMENS_LOG_H__\n\n#define pr_msg(fmt, lvl, ...)\t\t\t\t\t\t\\\n\tksft_print_msg(\"[%s] (%s:%d)\\t\" fmt \"\\n\",\t\t\t\\\n\t\t\tlvl, __FILE__, __LINE__, ##__VA_ARGS__)\n\n#define pr_p(func, fmt, ...)\tfunc(fmt \": %m\", ##__VA_ARGS__)\n\n#define pr_err(fmt, ...)\t\t\t\t\t\t\\\n\t({\t\t\t\t\t\t\t\t\\\n\t\tksft_test_result_error(fmt \"\\n\", ##__VA_ARGS__);\t\t\\\n\t\t-1;\t\t\t\t\t\t\t\\\n\t})\n\n#define pr_fail(fmt, ...)\t\t\t\t\t\\\n\t({\t\t\t\t\t\t\t\\\n\t\tksft_test_result_fail(fmt, ##__VA_ARGS__);\t\\\n\t\t-1;\t\t\t\t\t\t\\\n\t})\n\n#define pr_perror(fmt, ...)\tpr_p(pr_err, fmt, ##__VA_ARGS__)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

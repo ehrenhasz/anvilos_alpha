@@ -1,0 +1,9 @@
+{
+  "module_name": "cat.x",
+  "hash_id": "d62b1d44083d21c907ad182001016fd2c2e3a3ddb9d93a400be344eacae6f11f",
+  "original_prompt": "Ingested from coreutils-9.4/man/cat.x",
+  "human_readable_source": "[NAME]\ncat \\- concatenate files and print on the standard output\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ntac(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

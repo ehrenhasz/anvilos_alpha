@@ -1,0 +1,9 @@
+{
+  "module_name": "modbluetooth_btstack.h",
+  "hash_id": "0ba1f4a3b4eb4d3aee54d8c2513a47a9c72f85b6a933ee1d63e724afa031bff6",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/btstack/modbluetooth_btstack.h",
+  "human_readable_source": " \n\n#ifndef MICROPY_INCLUDED_EXTMOD_BTSTACK_MODBLUETOOTH_BTSTACK_H\n#define MICROPY_INCLUDED_EXTMOD_BTSTACK_MODBLUETOOTH_BTSTACK_H\n\n#if MICROPY_PY_BLUETOOTH && MICROPY_BLUETOOTH_BTSTACK\n\n#include \"extmod/modbluetooth.h\"\n\n#include \"lib/btstack/src/btstack.h\"\n\ntypedef struct _mp_bluetooth_btstack_root_pointers_t {\n    \n    uint8_t *adv_data;\n    \n    size_t adv_data_alloc;\n\n    \n    mp_gatts_db_t gatts_db;\n\n    #if MICROPY_PY_BLUETOOTH_ENABLE_GATT_CLIENT\n    \n    gatt_client_notification_t notification;\n\n    \n    btstack_linked_list_t active_connections;\n    #endif\n} mp_bluetooth_btstack_root_pointers_t;\n\nenum {\n    MP_BLUETOOTH_BTSTACK_STATE_OFF,\n    MP_BLUETOOTH_BTSTACK_STATE_STARTING,\n    MP_BLUETOOTH_BTSTACK_STATE_ACTIVE,\n    MP_BLUETOOTH_BTSTACK_STATE_HALTING,\n    MP_BLUETOOTH_BTSTACK_STATE_TIMEOUT,\n};\n\nextern volatile int mp_bluetooth_btstack_state;\n\nvoid mp_bluetooth_btstack_port_init(void);\nvoid mp_bluetooth_btstack_port_deinit(void);\nvoid mp_bluetooth_btstack_port_start(void);\n\n#endif \n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

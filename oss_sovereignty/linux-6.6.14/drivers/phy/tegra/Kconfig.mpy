@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "579fe81e68ed63c29550bea762106705a37008720d8173dab71cedb6201e45d9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/tegra/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig PHY_TEGRA_XUSB\n\ttristate \"NVIDIA Tegra XUSB pad controller driver\"\n\tdepends on ARCH_TEGRA && USB_SUPPORT\n\tselect USB_COMMON\n\tselect USB_CONN_GPIO\n\tselect USB_PHY\n\thelp\n\t  Choose this option if you have an NVIDIA Tegra SoC.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called phy-tegra-xusb.\n\nconfig PHY_TEGRA194_P2U\n\ttristate \"NVIDIA Tegra194 PIPE2UPHY PHY driver\"\n\tdepends on ARCH_TEGRA_194_SOC || COMPILE_TEST\n\tselect GENERIC_PHY\n\thelp\n\t  Enable this to support the P2U (PIPE to UPHY) that is part of Tegra 19x SOCs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

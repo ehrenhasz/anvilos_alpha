@@ -1,0 +1,9 @@
+{
+  "module_name": "ifnulldev_put.cocci",
+  "hash_id": "8aa36e42db281e3260496cb5df30d3653b438cddadeb5be6291a9a48b2abb5bb",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/free/ifnulldev_put.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0-only\n/// Since commit b37a46683739 (\"netdevice: add the case if dev is NULL\"),\n/// NULL check before dev_{put, hold} functions is not needed.\n///\n/// Based on ifnullfree.cocci by Fabian Frederick.\n///\n// Copyright: (C) 2022 Ziyang Xuan.\n// Comments: -\n// Options: --no-includes --include-headers\n// Version min: 5.15\n\nvirtual patch\nvirtual org\nvirtual report\nvirtual context\n\n@r2 depends on patch@\nexpression E;\n@@\n- if (E != NULL)\n(\n  __dev_put(E);\n|\n  dev_put(E);\n|\n  dev_put_track(E, ...);\n|\n  __dev_hold(E);\n|\n  dev_hold(E);\n|\n  dev_hold_track(E, ...);\n)\n\n@r depends on context || report || org @\nexpression E;\nposition p;\n@@\n\n* if (E != NULL)\n*\t\\(__dev_put@p\\|dev_put@p\\|dev_put_track@p\\|__dev_hold@p\\|dev_hold@p\\|\n*         dev_hold_track@p\\)(E, ...);\n\n@script:python depends on org@\np << r.p;\n@@\n\ncocci.print_main(\"NULL check before dev_{put, hold} functions is not needed\", p)\n\n@script:python depends on report@\np << r.p;\n@@\n\nmsg = \"WARNING: NULL check before dev_{put, hold} functions is not needed.\"\ncoccilib.report.print_report(p[0], msg)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_drm_plane.h",
+  "hash_id": "fd64eca5af0db970f18f9d83c5e3986e9e8459684f35c94d66fb918d20c1631b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/mediatek/mtk_drm_plane.h",
+  "human_readable_source": " \n \n\n#ifndef _MTK_DRM_PLANE_H_\n#define _MTK_DRM_PLANE_H_\n\n#include <drm/drm_crtc.h>\n#include <linux/types.h>\n\n#define AFBC_DATA_BLOCK_WIDTH 32\n#define AFBC_DATA_BLOCK_HEIGHT 8\n#define AFBC_HEADER_BLOCK_SIZE 16\n#define AFBC_HEADER_ALIGNMENT 1024\n\nstruct mtk_plane_pending_state {\n\tbool\t\t\t\tconfig;\n\tbool\t\t\t\tenable;\n\tdma_addr_t\t\t\taddr;\n\tdma_addr_t\t\t\thdr_addr;\n\tunsigned int\t\t\tpitch;\n\tunsigned int\t\t\thdr_pitch;\n\tunsigned int\t\t\tformat;\n\tunsigned long long\t\tmodifier;\n\tunsigned int\t\t\tx;\n\tunsigned int\t\t\ty;\n\tunsigned int\t\t\twidth;\n\tunsigned int\t\t\theight;\n\tunsigned int\t\t\trotation;\n\tbool\t\t\t\tdirty;\n\tbool\t\t\t\tasync_dirty;\n\tbool\t\t\t\tasync_config;\n\tenum drm_color_encoding\t\tcolor_encoding;\n};\n\nstruct mtk_plane_state {\n\tstruct drm_plane_state\t\tbase;\n\tstruct mtk_plane_pending_state\tpending;\n};\n\nstatic inline struct mtk_plane_state *\nto_mtk_plane_state(struct drm_plane_state *state)\n{\n\treturn container_of(state, struct mtk_plane_state, base);\n}\n\nint mtk_plane_init(struct drm_device *dev, struct drm_plane *plane,\n\t\t   unsigned long possible_crtcs, enum drm_plane_type type,\n\t\t   unsigned int supported_rotations, const u32 *formats,\n\t\t   size_t num_formats);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

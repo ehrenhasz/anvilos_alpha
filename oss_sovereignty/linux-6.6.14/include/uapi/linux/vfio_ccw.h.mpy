@@ -1,0 +1,9 @@
+{
+  "module_name": "vfio_ccw.h",
+  "hash_id": "f3d0421c7905e9aa440f582fdca89d0437720156eea9c1c4b37121de205a80f6",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/vfio_ccw.h",
+  "human_readable_source": " \n \n\n#ifndef _VFIO_CCW_H_\n#define _VFIO_CCW_H_\n\n#include <linux/types.h>\n\n \nstruct ccw_io_region {\n#define ORB_AREA_SIZE 12\n\t__u8\torb_area[ORB_AREA_SIZE];\n#define SCSW_AREA_SIZE 12\n\t__u8\tscsw_area[SCSW_AREA_SIZE];\n#define IRB_AREA_SIZE 96\n\t__u8\tirb_area[IRB_AREA_SIZE];\n\t__u32\tret_code;\n} __packed;\n\n \n#define VFIO_CCW_ASYNC_CMD_HSCH (1 << 0)\n#define VFIO_CCW_ASYNC_CMD_CSCH (1 << 1)\nstruct ccw_cmd_region {\n\t__u32 command;\n\t__u32 ret_code;\n} __packed;\n\n \nstruct ccw_schib_region {\n#define SCHIB_AREA_SIZE 52\n\t__u8 schib_area[SCHIB_AREA_SIZE];\n} __packed;\n\n \nstruct ccw_crw_region {\n\t__u32 crw;\n\t__u32 pad;\n} __packed;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

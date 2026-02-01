@@ -1,0 +1,9 @@
+{
+  "module_name": "tdxcall.S",
+  "hash_id": "46fe61da72b943612a94b616313c80bf84f9ef0abbf2b4674439fdfff1b8f41d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/virt/vmx/tdx/tdxcall.S",
+  "human_readable_source": " \n#include <asm/asm-offsets.h>\n#include <asm/tdx.h>\n\n \n#define tdcall\t\t.byte 0x66,0x0f,0x01,0xcc\n#define seamcall\t.byte 0x66,0x0f,0x01,0xcf\n\n \n.macro TDX_MODULE_CALL host:req\n\t \n\n\t \n\tpush %r12\n\n\t \n\tpush %r9\n\n\t \n\t \n\tmov %rdi, %rax\n\t \n\tmov %r8,  %r9\n\t \n\tmov %rcx, %r8\n\t \n\tmov %rsi, %rcx\n\t \n\n\t.if \\host\n\tseamcall\n\t \n\tjnc .Lno_vmfailinvalid\n\tmov $TDX_SEAMCALL_VMFAILINVALID, %rax\n.Lno_vmfailinvalid:\n\n\t.else\n\ttdcall\n\t.endif\n\n\t \n\tpop %r12\n\n\t \n\ttest %r12, %r12\n\tjz .Lno_output_struct\n\n\t \n\tmovq %rcx, TDX_MODULE_rcx(%r12)\n\tmovq %rdx, TDX_MODULE_rdx(%r12)\n\tmovq %r8,  TDX_MODULE_r8(%r12)\n\tmovq %r9,  TDX_MODULE_r9(%r12)\n\tmovq %r10, TDX_MODULE_r10(%r12)\n\tmovq %r11, TDX_MODULE_r11(%r12)\n\n.Lno_output_struct:\n\t \n\tpop %r12\n.endm\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

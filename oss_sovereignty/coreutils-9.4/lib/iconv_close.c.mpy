@@ -1,0 +1,9 @@
+{
+  "module_name": "iconv_close.c",
+  "hash_id": "558059743e32820b9e2ce76894b755e91e787cb5bf73e1d018ec347e934fe5b3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/iconv_close.c",
+  "human_readable_source": " \n#include <iconv.h>\n\n#include <stdint.h>\n\nint\nrpl_iconv_close (iconv_t cd)\n#undef iconv_close\n{\n#if REPLACE_ICONV_UTF\n  switch ((uintptr_t) cd)\n    {\n    case (uintptr_t) _ICONV_UTF8_UTF16BE:\n    case (uintptr_t) _ICONV_UTF8_UTF16LE:\n    case (uintptr_t) _ICONV_UTF8_UTF32BE:\n    case (uintptr_t) _ICONV_UTF8_UTF32LE:\n    case (uintptr_t) _ICONV_UTF16BE_UTF8:\n    case (uintptr_t) _ICONV_UTF16LE_UTF8:\n    case (uintptr_t) _ICONV_UTF32BE_UTF8:\n    case (uintptr_t) _ICONV_UTF32LE_UTF8:\n      return 0;\n    }\n#endif\n  return iconv_close (cd);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

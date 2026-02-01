@@ -1,0 +1,9 @@
+{
+  "module_name": "regmap.h",
+  "hash_id": "559e7cc4400408489dba7d1104345cda2601c2a2c104ebbdce6ac4d45ee30b67",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/gpio/regmap.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_GPIO_REGMAP_H\n#define _LINUX_GPIO_REGMAP_H\n\nstruct device;\nstruct fwnode_handle;\nstruct gpio_regmap;\nstruct irq_domain;\nstruct regmap;\n\n#define GPIO_REGMAP_ADDR_ZERO ((unsigned int)(-1))\n#define GPIO_REGMAP_ADDR(addr) ((addr) ? : GPIO_REGMAP_ADDR_ZERO)\n\n \nstruct gpio_regmap_config {\n\tstruct device *parent;\n\tstruct regmap *regmap;\n\tstruct fwnode_handle *fwnode;\n\n\tconst char *label;\n\tint ngpio;\n\tconst char *const *names;\n\n\tunsigned int reg_dat_base;\n\tunsigned int reg_set_base;\n\tunsigned int reg_clr_base;\n\tunsigned int reg_dir_in_base;\n\tunsigned int reg_dir_out_base;\n\tint reg_stride;\n\tint ngpio_per_reg;\n\tstruct irq_domain *irq_domain;\n\n\tint (*reg_mask_xlate)(struct gpio_regmap *gpio, unsigned int base,\n\t\t\t      unsigned int offset, unsigned int *reg,\n\t\t\t      unsigned int *mask);\n\n\tvoid *drvdata;\n};\n\nstruct gpio_regmap *gpio_regmap_register(const struct gpio_regmap_config *config);\nvoid gpio_regmap_unregister(struct gpio_regmap *gpio);\nstruct gpio_regmap *devm_gpio_regmap_register(struct device *dev,\n\t\t\t\t\t      const struct gpio_regmap_config *config);\nvoid *gpio_regmap_get_drvdata(struct gpio_regmap *gpio);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

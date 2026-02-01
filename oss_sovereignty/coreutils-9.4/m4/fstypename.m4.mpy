@@ -1,0 +1,9 @@
+{
+  "module_name": "fstypename.m4",
+  "hash_id": "f167b5fb65fb43c64678a311380b7d3ee9c63b1f5ae6a092ca4b96d1efe4566b",
+  "original_prompt": "Ingested from coreutils-9.4/m4/fstypename.m4",
+  "human_readable_source": "#serial 6\n\ndnl From Jim Meyering.\ndnl\ndnl See if struct statfs has the f_fstypename member.\ndnl If so, define HAVE_STRUCT_STATFS_F_FSTYPENAME.\ndnl\n\n# Copyright (C) 1998-1999, 2001, 2004, 2006, 2009-2023 Free Software\n# Foundation, Inc.\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FSTYPENAME],\n[\n  AC_CHECK_MEMBERS([struct statfs.f_fstypename],,,\n    [\n      #include <sys/types.h>\n      #include <sys/param.h>\n      #include <sys/mount.h>\n    ])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

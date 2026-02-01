@@ -1,0 +1,9 @@
+{
+  "module_name": "test_user_copy.sh",
+  "hash_id": "51602eed1f531b9ca858b9d41adaf6ae9416afc6e8a98883737862953c28d4a0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/user/test_user_copy.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# Runs copy_to/from_user infrastructure using test_user_copy kernel module\n\n# Kselftest framework requirement - SKIP code is 4.\nksft_skip=4\n\nif ! /sbin/modprobe -q -n test_user_copy; then\n\techo \"user: module test_user_copy is not found [SKIP]\"\n\texit $ksft_skip\nfi\nif /sbin/modprobe -q test_user_copy; then\n\t/sbin/modprobe -q -r test_user_copy\n\techo \"user_copy: ok\"\nelse\n\techo \"user_copy: [FAIL]\"\n\texit 1\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

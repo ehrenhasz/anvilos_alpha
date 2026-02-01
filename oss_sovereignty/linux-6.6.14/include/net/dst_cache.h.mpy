@@ -1,0 +1,9 @@
+{
+  "module_name": "dst_cache.h",
+  "hash_id": "9d0880f6c6860f1574db4ee4a1cd53b93e293392fac1a12399334d00b9c9d512",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/dst_cache.h",
+  "human_readable_source": " \n#ifndef _NET_DST_CACHE_H\n#define _NET_DST_CACHE_H\n\n#include <linux/jiffies.h>\n#include <net/dst.h>\n#if IS_ENABLED(CONFIG_IPV6)\n#include <net/ip6_fib.h>\n#endif\n\nstruct dst_cache {\n\tstruct dst_cache_pcpu __percpu *cache;\n\tunsigned long reset_ts;\n};\n\n \nstruct dst_entry *dst_cache_get(struct dst_cache *dst_cache);\n\n \nstruct rtable *dst_cache_get_ip4(struct dst_cache *dst_cache, __be32 *saddr);\n\n \nvoid dst_cache_set_ip4(struct dst_cache *dst_cache, struct dst_entry *dst,\n\t\t       __be32 saddr);\n\n#if IS_ENABLED(CONFIG_IPV6)\n\n \nvoid dst_cache_set_ip6(struct dst_cache *dst_cache, struct dst_entry *dst,\n\t\t       const struct in6_addr *saddr);\n\n \nstruct dst_entry *dst_cache_get_ip6(struct dst_cache *dst_cache,\n\t\t\t\t    struct in6_addr *saddr);\n#endif\n\n \nstatic inline void dst_cache_reset(struct dst_cache *dst_cache)\n{\n\tdst_cache->reset_ts = jiffies;\n}\n\n \nvoid dst_cache_reset_now(struct dst_cache *dst_cache);\n\n \nint dst_cache_init(struct dst_cache *dst_cache, gfp_t gfp);\n\n \nvoid dst_cache_destroy(struct dst_cache *dst_cache);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

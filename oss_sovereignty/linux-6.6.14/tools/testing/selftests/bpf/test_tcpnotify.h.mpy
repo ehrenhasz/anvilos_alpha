@@ -1,0 +1,9 @@
+{
+  "module_name": "test_tcpnotify.h",
+  "hash_id": "7c10c6e9460601779ab8386dfa4b59db8fe615e2ed3bea8ac7d50a86a8a935d5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/test_tcpnotify.h",
+  "human_readable_source": "\n\n#ifndef _TEST_TCPBPF_H\n#define _TEST_TCPBPF_H\n\nstruct tcpnotify_globals {\n\t__u32 total_retrans;\n\t__u32 ncalls;\n};\n\nstruct tcp_notifier {\n\t__u8    type;\n\t__u8    subtype;\n\t__u8    source;\n\t__u8    hash;\n};\n\n#define\tTESTPORT\t12877\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

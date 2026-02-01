@@ -1,0 +1,9 @@
+{
+  "module_name": "m88rs6000t.h",
+  "hash_id": "31f3ac2cd8fe6d1ed6f55a21bcf1ef9484f36a5f6bc0b65b2d50f97281004e49",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/m88rs6000t.h",
+  "human_readable_source": " \n \n\n#ifndef _M88RS6000T_H_\n#define _M88RS6000T_H_\n\n#include <media/dvb_frontend.h>\n\nstruct m88rs6000t_config {\n\t \n\tstruct dvb_frontend *fe;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

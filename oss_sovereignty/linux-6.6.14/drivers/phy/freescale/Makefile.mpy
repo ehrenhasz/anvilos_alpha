@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f9392360deb50ca81aefc15fee067162cd45a8e9dc27bd99b79a2f4bf51b0e6a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/freescale/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_PHY_FSL_IMX8MQ_USB)\t+= phy-fsl-imx8mq-usb.o\nobj-$(CONFIG_PHY_MIXEL_LVDS_PHY)\t+= phy-fsl-imx8qm-lvds-phy.o\nobj-$(CONFIG_PHY_MIXEL_MIPI_DPHY)\t+= phy-fsl-imx8-mipi-dphy.o\nobj-$(CONFIG_PHY_FSL_IMX8M_PCIE)\t+= phy-fsl-imx8m-pcie.o\nobj-$(CONFIG_PHY_FSL_LYNX_28G)\t\t+= phy-fsl-lynx-28g.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

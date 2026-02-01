@@ -1,0 +1,9 @@
+{
+  "module_name": "kionix-kx022a-i2c.c",
+  "hash_id": "8627c937b503002dcc327ed6f8dc9c143ec584e47956a0dbd9715add434c5523",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/accel/kionix-kx022a-i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/i2c.h>\n#include <linux/interrupt.h>\n#include <linux/module.h>\n#include <linux/regmap.h>\n\n#include \"kionix-kx022a.h\"\n\nstatic int kx022a_i2c_probe(struct i2c_client *i2c)\n{\n\tstruct device *dev = &i2c->dev;\n\tstruct regmap *regmap;\n\n\tif (!i2c->irq) {\n\t\tdev_err(dev, \"No IRQ configured\\n\");\n\t\treturn -EINVAL;\n\t}\n\n\tregmap = devm_regmap_init_i2c(i2c, &kx022a_regmap);\n\tif (IS_ERR(regmap))\n\t\treturn dev_err_probe(dev, PTR_ERR(regmap),\n\t\t\t\t     \"Failed to initialize Regmap\\n\");\n\n\treturn kx022a_probe_internal(dev);\n}\n\nstatic const struct of_device_id kx022a_of_match[] = {\n\t{ .compatible = \"kionix,kx022a\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, kx022a_of_match);\n\nstatic struct i2c_driver kx022a_i2c_driver = {\n\t.driver = {\n\t\t.name  = \"kx022a-i2c\",\n\t\t.of_match_table = kx022a_of_match,\n\t\t.probe_type = PROBE_PREFER_ASYNCHRONOUS,\n\t  },\n\t.probe        = kx022a_i2c_probe,\n};\nmodule_i2c_driver(kx022a_i2c_driver);\n\nMODULE_DESCRIPTION(\"ROHM/Kionix KX022A accelerometer driver\");\nMODULE_AUTHOR(\"Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>\");\nMODULE_LICENSE(\"GPL\");\nMODULE_IMPORT_NS(IIO_KX022A);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

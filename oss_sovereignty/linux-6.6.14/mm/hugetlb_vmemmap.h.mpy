@@ -1,0 +1,9 @@
+{
+  "module_name": "hugetlb_vmemmap.h",
+  "hash_id": "2f127f5076feaac0e62f816dfc9cad89fd8e591a971e506467fc3334d5c483c4",
+  "original_prompt": "Ingested from linux-6.6.14/mm/hugetlb_vmemmap.h",
+  "human_readable_source": "\n \n#ifndef _LINUX_HUGETLB_VMEMMAP_H\n#define _LINUX_HUGETLB_VMEMMAP_H\n#include <linux/hugetlb.h>\n\n#ifdef CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP\nint hugetlb_vmemmap_restore(const struct hstate *h, struct page *head);\nvoid hugetlb_vmemmap_optimize(const struct hstate *h, struct page *head);\n\n \n#define HUGETLB_VMEMMAP_RESERVE_SIZE\tPAGE_SIZE\n\nstatic inline unsigned int hugetlb_vmemmap_size(const struct hstate *h)\n{\n\treturn pages_per_huge_page(h) * sizeof(struct page);\n}\n\n \nstatic inline unsigned int hugetlb_vmemmap_optimizable_size(const struct hstate *h)\n{\n\tint size = hugetlb_vmemmap_size(h) - HUGETLB_VMEMMAP_RESERVE_SIZE;\n\n\tif (!is_power_of_2(sizeof(struct page)))\n\t\treturn 0;\n\treturn size > 0 ? size : 0;\n}\n#else\nstatic inline int hugetlb_vmemmap_restore(const struct hstate *h, struct page *head)\n{\n\treturn 0;\n}\n\nstatic inline void hugetlb_vmemmap_optimize(const struct hstate *h, struct page *head)\n{\n}\n\nstatic inline unsigned int hugetlb_vmemmap_optimizable_size(const struct hstate *h)\n{\n\treturn 0;\n}\n#endif  \n\nstatic inline bool hugetlb_vmemmap_optimizable(const struct hstate *h)\n{\n\treturn hugetlb_vmemmap_optimizable_size(h) != 0;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

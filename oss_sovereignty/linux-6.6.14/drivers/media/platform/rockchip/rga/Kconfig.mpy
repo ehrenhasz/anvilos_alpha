@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c058ecbc2bb8bac05ae3975850f2755d2f0cddf2abdc9ded8cd0c183ea01dcd3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/rockchip/rga/Kconfig",
+  "human_readable_source": "config VIDEO_ROCKCHIP_RGA\n\ttristate \"Rockchip Raster 2d Graphic Acceleration Unit\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on VIDEO_DEV\n\tdepends on ARCH_ROCKCHIP || COMPILE_TEST\n\tselect VIDEOBUF2_DMA_SG\n\tselect V4L2_MEM2MEM_DEV\n\thelp\n\t  This is a v4l2 driver for Rockchip SOC RGA 2d graphics accelerator.\n\t  Rockchip RGA is a separate 2D raster graphic acceleration unit.\n\t  It accelerates 2D graphics operations, such as point/line drawing,\n\t  image scaling, rotation, BitBLT, alpha blending and image blur/sharpness.\n\n\t  To compile this driver as a module choose m here.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

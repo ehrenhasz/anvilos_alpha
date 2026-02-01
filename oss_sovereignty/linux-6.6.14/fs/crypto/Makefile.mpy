@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a92b2dde867dcfcd169c8b474fcd78df0e8cb95705233259727908684e4a9ad2",
+  "original_prompt": "Ingested from linux-6.6.14/fs/crypto/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_FS_ENCRYPTION)\t+= fscrypto.o\n\nfscrypto-y := crypto.o \\\n\t      fname.o \\\n\t      hkdf.o \\\n\t      hooks.o \\\n\t      keyring.o \\\n\t      keysetup.o \\\n\t      keysetup_v1.o \\\n\t      policy.o\n\nfscrypto-$(CONFIG_BLOCK) += bio.o\nfscrypto-$(CONFIG_FS_ENCRYPTION_INLINE_CRYPT) += inline_crypt.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

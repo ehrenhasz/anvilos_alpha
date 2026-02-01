@@ -1,0 +1,9 @@
+{
+  "module_name": "irq.c",
+  "hash_id": "8bc7d867e535e2fb0342d138b2dec2cdb6ed323b09d91e29128619ceff23982a",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/xen/irq.c",
+  "human_readable_source": "\n#include <linux/hardirq.h>\n\n#include <asm/x86_init.h>\n\n#include <xen/interface/xen.h>\n#include <xen/interface/sched.h>\n#include <xen/interface/vcpu.h>\n#include <xen/features.h>\n#include <xen/events.h>\n\n#include <asm/xen/hypercall.h>\n#include <asm/xen/hypervisor.h>\n\n#include \"xen-ops.h\"\n\n \nnoinstr void xen_force_evtchn_callback(void)\n{\n\t(void)HYPERVISOR_xen_version(0, NULL);\n}\n\nstatic noinstr void xen_safe_halt(void)\n{\n\t \n\tif (HYPERVISOR_sched_op(SCHEDOP_block, NULL) != 0)\n\t\tBUG();\n}\n\nstatic void xen_halt(void)\n{\n\tif (irqs_disabled())\n\t\tHYPERVISOR_vcpu_op(VCPUOP_down,\n\t\t\t\t   xen_vcpu_nr(smp_processor_id()), NULL);\n\telse\n\t\txen_safe_halt();\n}\n\nstatic const typeof(pv_ops) xen_irq_ops __initconst = {\n\t.irq = {\n\t\t \n\t\t.save_fl = __PV_IS_CALLEE_SAVE(paravirt_ret0),\n\t\t.irq_disable = __PV_IS_CALLEE_SAVE(paravirt_nop),\n\t\t.irq_enable = __PV_IS_CALLEE_SAVE(paravirt_BUG),\n\n\t\t.safe_halt = xen_safe_halt,\n\t\t.halt = xen_halt,\n\t},\n};\n\nvoid __init xen_init_irq_ops(void)\n{\n\tpv_ops.irq = xen_irq_ops.irq;\n\tx86_init.irqs.intr_init = xen_init_IRQ;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

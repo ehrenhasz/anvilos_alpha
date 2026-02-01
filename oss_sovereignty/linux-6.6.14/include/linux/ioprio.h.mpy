@@ -1,0 +1,9 @@
+{
+  "module_name": "ioprio.h",
+  "hash_id": "f3d0b80be6130353b14aaec5ead0622de7e6db9a1b75eb64f87868d2766c89a4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ioprio.h",
+  "human_readable_source": " \n#ifndef IOPRIO_H\n#define IOPRIO_H\n\n#include <linux/sched.h>\n#include <linux/sched/rt.h>\n#include <linux/iocontext.h>\n\n#include <uapi/linux/ioprio.h>\n\n \n#define IOPRIO_DEFAULT\tIOPRIO_PRIO_VALUE(IOPRIO_CLASS_NONE, 0)\n\n \nstatic inline bool ioprio_valid(unsigned short ioprio)\n{\n\tunsigned short class = IOPRIO_PRIO_CLASS(ioprio);\n\n\treturn class > IOPRIO_CLASS_NONE && class <= IOPRIO_CLASS_IDLE;\n}\n\n \nstatic inline int task_nice_ioprio(struct task_struct *task)\n{\n\treturn (task_nice(task) + 20) / 5;\n}\n\n \nstatic inline int task_nice_ioclass(struct task_struct *task)\n{\n\tif (task->policy == SCHED_IDLE)\n\t\treturn IOPRIO_CLASS_IDLE;\n\telse if (task_is_realtime(task))\n\t\treturn IOPRIO_CLASS_RT;\n\telse\n\t\treturn IOPRIO_CLASS_BE;\n}\n\n#ifdef CONFIG_BLOCK\nint __get_task_ioprio(struct task_struct *p);\n#else\nstatic inline int __get_task_ioprio(struct task_struct *p)\n{\n\treturn IOPRIO_DEFAULT;\n}\n#endif  \n\nstatic inline int get_current_ioprio(void)\n{\n\treturn __get_task_ioprio(current);\n}\n\nextern int set_task_ioprio(struct task_struct *task, int ioprio);\n\n#ifdef CONFIG_BLOCK\nextern int ioprio_check_cap(int ioprio);\n#else\nstatic inline int ioprio_check_cap(int ioprio)\n{\n\treturn -ENOTBLK;\n}\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

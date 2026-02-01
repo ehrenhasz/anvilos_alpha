@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "b592eaae93df017ad54d5e4569c47023cfab94f5596526b30eb197bb7b66468a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n*.litmus.*\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

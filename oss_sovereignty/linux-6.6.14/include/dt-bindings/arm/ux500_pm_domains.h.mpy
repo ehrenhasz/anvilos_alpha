@@ -1,0 +1,9 @@
+{
+  "module_name": "ux500_pm_domains.h",
+  "hash_id": "b6bb20aec8dde2637ad471b12583d5d709c67f26af3f3f2fe8d13957b9884e7e",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/arm/ux500_pm_domains.h",
+  "human_readable_source": " \n \n#ifndef _DT_BINDINGS_ARM_UX500_PM_DOMAINS_H\n#define _DT_BINDINGS_ARM_UX500_PM_DOMAINS_H\n\n#define DOMAIN_VAPE\t\t0\n\n \n#define NR_DOMAINS\t\t(DOMAIN_VAPE + 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

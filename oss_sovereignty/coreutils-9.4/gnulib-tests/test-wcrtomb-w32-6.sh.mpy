@@ -1,0 +1,9 @@
+{
+  "module_name": "test-wcrtomb-w32-6.sh",
+  "hash_id": "8e1d3d11dd827b826339dab0eacf36ef7def7223f19d376a0c60e6b186b0a5bd",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-wcrtomb-w32-6.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a CP950 locale.\n${CHECKER} ./test-wcrtomb-w32${EXEEXT} Chinese_Taiwan 950\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

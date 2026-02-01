@@ -1,0 +1,9 @@
+{
+  "module_name": "as102_fe.h",
+  "hash_id": "4e698ccbfab3943416ea82e9804a5a867b9f7af680b653e9a4033c8d622760d5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/as102_fe.h",
+  "human_readable_source": " \n \n\n#include \"as102_fe_types.h\"\n\nstruct as102_fe_ops {\n\tint (*set_tune)(void *priv, struct as10x_tune_args *tune_args);\n\tint (*get_tps)(void *priv, struct as10x_tps *tps);\n\tint (*get_status)(void *priv, struct as10x_tune_status *tstate);\n\tint (*get_stats)(void *priv, struct as10x_demod_stats *demod_stats);\n\tint (*stream_ctrl)(void *priv, int acquire, uint32_t elna_cfg);\n};\n\nstruct dvb_frontend *as102_attach(const char *name,\n\t\t\t\t  const struct as102_fe_ops *ops,\n\t\t\t\t  void *priv,\n\t\t\t\t  uint8_t elna_cfg);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

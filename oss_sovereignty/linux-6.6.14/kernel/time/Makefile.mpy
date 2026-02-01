@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "47c59019b60feb3c8f68a0f08e2c264179356db5eadbbe58e0fe094c692a4715",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/time/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y += time.o timer.o hrtimer.o\nobj-y += timekeeping.o ntp.o clocksource.o jiffies.o timer_list.o\nobj-y += timeconv.o timecounter.o alarmtimer.o\n\nifeq ($(CONFIG_POSIX_TIMERS),y)\n obj-y += posix-timers.o posix-cpu-timers.o posix-clock.o itimer.o\nelse\n obj-y += posix-stubs.o\nendif\n\nobj-$(CONFIG_GENERIC_CLOCKEVENTS)\t\t+= clockevents.o tick-common.o\nifeq ($(CONFIG_GENERIC_CLOCKEVENTS_BROADCAST),y)\n obj-y\t\t\t\t\t\t+= tick-broadcast.o\n obj-$(CONFIG_TICK_ONESHOT)\t\t\t+= tick-broadcast-hrtimer.o\nendif\nobj-$(CONFIG_GENERIC_SCHED_CLOCK)\t\t+= sched_clock.o\nobj-$(CONFIG_TICK_ONESHOT)\t\t\t+= tick-oneshot.o tick-sched.o\nobj-$(CONFIG_LEGACY_TIMER_TICK)\t\t\t+= tick-legacy.o\nobj-$(CONFIG_HAVE_GENERIC_VDSO)\t\t\t+= vsyscall.o\nobj-$(CONFIG_DEBUG_FS)\t\t\t\t+= timekeeping_debug.o\nobj-$(CONFIG_TEST_UDELAY)\t\t\t+= test_udelay.o\nobj-$(CONFIG_TIME_NS)\t\t\t\t+= namespace.o\nobj-$(CONFIG_TEST_CLOCKSOURCE_WATCHDOG)\t\t+= clocksource-wdtest.o\nobj-$(CONFIG_TIME_KUNIT_TEST)\t\t\t+= time_test.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "affinity.c",
+  "hash_id": "7e465cc8c1a04fe2336790b28517128f5df8d9b9803c8bb60351427e09c5fdea",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/affinity.c",
+  "human_readable_source": "\n \n#define _GNU_SOURCE 1\n#include <sched.h>\n#include <stdlib.h>\n#include <linux/bitmap.h>\n#include <linux/zalloc.h>\n#include \"perf.h\"\n#include \"cpumap.h\"\n#include \"affinity.h\"\n\nstatic int get_cpu_set_size(void)\n{\n\tint sz = cpu__max_cpu().cpu + 8 - 1;\n\t \n\tif (sz < 4096)\n\t\tsz = 4096;\n\treturn sz / 8;\n}\n\nint affinity__setup(struct affinity *a)\n{\n\tint cpu_set_size = get_cpu_set_size();\n\n\ta->orig_cpus = bitmap_zalloc(cpu_set_size * 8);\n\tif (!a->orig_cpus)\n\t\treturn -1;\n\tsched_getaffinity(0, cpu_set_size, (cpu_set_t *)a->orig_cpus);\n\ta->sched_cpus = bitmap_zalloc(cpu_set_size * 8);\n\tif (!a->sched_cpus) {\n\t\tzfree(&a->orig_cpus);\n\t\treturn -1;\n\t}\n\tbitmap_zero((unsigned long *)a->sched_cpus, cpu_set_size);\n\ta->changed = false;\n\treturn 0;\n}\n\n \nvoid affinity__set(struct affinity *a, int cpu)\n{\n\tint cpu_set_size = get_cpu_set_size();\n\n\t \n\tif (cpu == -1 || ((cpu >= (cpu_set_size * 8))))\n\t\treturn;\n\n\ta->changed = true;\n\t__set_bit(cpu, a->sched_cpus);\n\t \n\tsched_setaffinity(0, cpu_set_size, (cpu_set_t *)a->sched_cpus);\n\t__clear_bit(cpu, a->sched_cpus);\n}\n\nstatic void __affinity__cleanup(struct affinity *a)\n{\n\tint cpu_set_size = get_cpu_set_size();\n\n\tif (a->changed)\n\t\tsched_setaffinity(0, cpu_set_size, (cpu_set_t *)a->orig_cpus);\n\tzfree(&a->sched_cpus);\n\tzfree(&a->orig_cpus);\n}\n\nvoid affinity__cleanup(struct affinity *a)\n{\n\tif (a != NULL)\n\t\t__affinity__cleanup(a);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

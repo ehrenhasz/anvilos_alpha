@@ -1,0 +1,9 @@
+{
+  "module_name": "msr-reg.S",
+  "hash_id": "bc29f2956f2a1bc6e9d128cf908f9d341fe3c738cba8b197752222f1bcbf3a85",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/lib/msr-reg.S",
+  "human_readable_source": " \n#include <linux/linkage.h>\n#include <linux/errno.h>\n#include <asm/asm.h>\n#include <asm/msr.h>\n\n#ifdef CONFIG_X86_64\n \n.macro op_safe_regs op\nSYM_FUNC_START(\\op\\()_safe_regs)\n\tpushq %rbx\n\tpushq %r12\n\tmovq\t%rdi, %r10\t \n\txorl\t%r11d, %r11d\t \n\tmovl    (%rdi), %eax\n\tmovl    4(%rdi), %ecx\n\tmovl    8(%rdi), %edx\n\tmovl    12(%rdi), %ebx\n\tmovl    20(%rdi), %r12d\n\tmovl    24(%rdi), %esi\n\tmovl    28(%rdi), %edi\n1:\t\\op\n2:\tmovl    %eax, (%r10)\n\tmovl\t%r11d, %eax\t \n\tmovl    %ecx, 4(%r10)\n\tmovl    %edx, 8(%r10)\n\tmovl    %ebx, 12(%r10)\n\tmovl    %r12d, 20(%r10)\n\tmovl    %esi, 24(%r10)\n\tmovl    %edi, 28(%r10)\n\tpopq %r12\n\tpopq %rbx\n\tRET\n3:\n\tmovl    $-EIO, %r11d\n\tjmp     2b\n\n\t_ASM_EXTABLE(1b, 3b)\nSYM_FUNC_END(\\op\\()_safe_regs)\n.endm\n\n#else  \n\n.macro op_safe_regs op\nSYM_FUNC_START(\\op\\()_safe_regs)\n\tpushl %ebx\n\tpushl %ebp\n\tpushl %esi\n\tpushl %edi\n\tpushl $0               \n\tpushl %eax\n\tmovl    4(%eax), %ecx\n\tmovl    8(%eax), %edx\n\tmovl    12(%eax), %ebx\n\tmovl    20(%eax), %ebp\n\tmovl    24(%eax), %esi\n\tmovl    28(%eax), %edi\n\tmovl    (%eax), %eax\n1:\t\\op\n2:\tpushl %eax\n\tmovl    4(%esp), %eax\n\tpopl (%eax)\n\taddl    $4, %esp\n\tmovl    %ecx, 4(%eax)\n\tmovl    %edx, 8(%eax)\n\tmovl    %ebx, 12(%eax)\n\tmovl    %ebp, 20(%eax)\n\tmovl    %esi, 24(%eax)\n\tmovl    %edi, 28(%eax)\n\tpopl %eax\n\tpopl %edi\n\tpopl %esi\n\tpopl %ebp\n\tpopl %ebx\n\tRET\n3:\n\tmovl    $-EIO, 4(%esp)\n\tjmp     2b\n\n\t_ASM_EXTABLE(1b, 3b)\nSYM_FUNC_END(\\op\\()_safe_regs)\n.endm\n\n#endif\n\nop_safe_regs rdmsr\nop_safe_regs wrmsr\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

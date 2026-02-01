@@ -1,0 +1,9 @@
+{
+  "module_name": "kselftest_install.sh",
+  "hash_id": "f03a84692070ff706c93338f0da2996d335a4373a33b66d9536ce413bf739494",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kselftest_install.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n#\n# Kselftest Install\n# Install kselftest tests\n# Author: Shuah Khan <shuahkh@osg.samsung.com>\n# Copyright (C) 2015 Samsung Electronics Co., Ltd.\n\nmain()\n{\n\tbase_dir=`pwd`\n\tinstall_dir=\"$base_dir\"/kselftest_install\n\n\t# Make sure we're in the selftests top-level directory.\n\tif [ $(basename \"$base_dir\") !=  \"selftests\" ]; then\n\t\techo \"$0: Please run it in selftests directory ...\"\n\t\texit 1;\n\tfi\n\n\t# Only allow installation into an existing location.\n\tif [ \"$#\" -eq 0 ]; then\n\t\techo \"$0: Installing in default location - $install_dir ...\"\n\telif [ ! -d \"$1\" ]; then\n\t\techo \"$0: $1 doesn't exist!!\"\n\t\texit 1;\n\telse\n\t\tinstall_dir=\"$1\"\n\t\techo \"$0: Installing in specified location - $install_dir ...\"\n\tfi\n\n\t# Build tests\n\tKSFT_INSTALL_PATH=\"$install_dir\" make install\n}\n\nmain \"$@\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

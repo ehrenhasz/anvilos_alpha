@@ -1,0 +1,9 @@
+{
+  "module_name": "mt6380-regulator.h",
+  "hash_id": "70b6d0abb4df2b87951ed167769fddc30c944cfe1c4c877c56f43340c542c6f3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/mt6380-regulator.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_REGULATOR_mt6380_H\n#define __LINUX_REGULATOR_mt6380_H\n\nenum {\n\tMT6380_ID_VCPU = 0,\n\tMT6380_ID_VCORE,\n\tMT6380_ID_VRF,\n\tMT6380_ID_VMLDO,\n\tMT6380_ID_VALDO,\n\tMT6380_ID_VPHYLDO,\n\tMT6380_ID_VDDRLDO,\n\tMT6380_ID_VTLDO,\n\tMT6380_ID_RG_MAX,\n};\n\n#define MT6380_MAX_REGULATOR\tMT6380_ID_RG_MAX\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

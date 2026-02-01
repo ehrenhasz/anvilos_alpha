@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_dm_crtc.h",
+  "hash_id": "afcf213c5c30172500744d1d95851628238f1c921c8d577331462ccbfb4244a6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.h",
+  "human_readable_source": " \n \n\n#ifndef __AMDGPU_DM_CRTC_H__\n#define __AMDGPU_DM_CRTC_H__\n\nvoid amdgpu_dm_crtc_handle_vblank(struct amdgpu_crtc *acrtc);\n\nbool amdgpu_dm_crtc_modeset_required(struct drm_crtc_state *crtc_state,\n\t\t      struct dc_stream_state *new_stream,\n\t\t      struct dc_stream_state *old_stream);\n\nint amdgpu_dm_crtc_set_vupdate_irq(struct drm_crtc *crtc, bool enable);\n\nbool amdgpu_dm_crtc_vrr_active_irq(struct amdgpu_crtc *acrtc);\n\nbool amdgpu_dm_crtc_vrr_active(struct dm_crtc_state *dm_state);\n\nint amdgpu_dm_crtc_enable_vblank(struct drm_crtc *crtc);\n\nvoid amdgpu_dm_crtc_disable_vblank(struct drm_crtc *crtc);\n\nint amdgpu_dm_crtc_init(struct amdgpu_display_manager *dm,\n\t\t\tstruct drm_plane *plane,\n\t\t\tuint32_t link_index);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d42dfe22a047a69776b774d8d2b651f9a1a76e97c99108770131b80078b392b8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the memory technology device drivers.\n#\n\n# Core functionality.\nobj-$(CONFIG_MTD)\t\t+= mtd.o\nmtd-y\t\t\t\t:= mtdcore.o mtdsuper.o mtdconcat.o mtdpart.o mtdchar.o\n\nobj-y\t\t\t\t+= parsers/\n\n# 'Users' - code which presents functionality to userspace.\nobj-$(CONFIG_MTD_BLKDEVS)\t+= mtd_blkdevs.o\nobj-$(CONFIG_MTD_BLOCK)\t\t+= mtdblock.o\nobj-$(CONFIG_MTD_BLOCK_RO)\t+= mtdblock_ro.o\nobj-$(CONFIG_FTL)\t\t+= ftl.o\nobj-$(CONFIG_NFTL)\t\t+= nftl.o\nobj-$(CONFIG_INFTL)\t\t+= inftl.o\nobj-$(CONFIG_RFD_FTL)\t\t+= rfd_ftl.o\nobj-$(CONFIG_SSFDC)\t\t+= ssfdc.o\nobj-$(CONFIG_SM_FTL)\t\t+= sm_ftl.o\nobj-$(CONFIG_MTD_OOPS)\t\t+= mtdoops.o\nobj-$(CONFIG_MTD_PSTORE)\t+= mtdpstore.o\nobj-$(CONFIG_MTD_SWAP)\t\t+= mtdswap.o\n\nnftl-objs\t\t:= nftlcore.o nftlmount.o\ninftl-objs\t\t:= inftlcore.o inftlmount.o\n\nobj-y\t\t+= chips/ lpddr/ maps/ devices/ nand/ tests/\n\nobj-$(CONFIG_MTD_SPI_NOR)\t+= spi-nor/\nobj-$(CONFIG_MTD_UBI)\t\t+= ubi/\nobj-$(CONFIG_MTD_HYPERBUS)\t+= hyperbus/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

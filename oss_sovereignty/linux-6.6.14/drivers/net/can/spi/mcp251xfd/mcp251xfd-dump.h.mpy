@@ -1,0 +1,9 @@
+{
+  "module_name": "mcp251xfd-dump.h",
+  "hash_id": "d20f0f1bd00887244091258806a178dfc667c5eec589919965c74121c14172b5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/spi/mcp251xfd/mcp251xfd-dump.h",
+  "human_readable_source": " \n\n#ifndef _MCP251XFD_DUMP_H\n#define _MCP251XFD_DUMP_H\n\n#define MCP251XFD_DUMP_MAGIC 0x1825434d\n\nenum mcp251xfd_dump_object_type {\n\tMCP251XFD_DUMP_OBJECT_TYPE_REG,\n\tMCP251XFD_DUMP_OBJECT_TYPE_TEF,\n\tMCP251XFD_DUMP_OBJECT_TYPE_RX,\n\tMCP251XFD_DUMP_OBJECT_TYPE_TX,\n\tMCP251XFD_DUMP_OBJECT_TYPE_END = -1,\n};\n\nenum mcp251xfd_dump_object_ring_key {\n\tMCP251XFD_DUMP_OBJECT_RING_KEY_HEAD,\n\tMCP251XFD_DUMP_OBJECT_RING_KEY_TAIL,\n\tMCP251XFD_DUMP_OBJECT_RING_KEY_BASE,\n\tMCP251XFD_DUMP_OBJECT_RING_KEY_NR,\n\tMCP251XFD_DUMP_OBJECT_RING_KEY_FIFO_NR,\n\tMCP251XFD_DUMP_OBJECT_RING_KEY_OBJ_NUM,\n\tMCP251XFD_DUMP_OBJECT_RING_KEY_OBJ_SIZE,\n\t__MCP251XFD_DUMP_OBJECT_RING_KEY_MAX,\n};\n\nstruct mcp251xfd_dump_object_header {\n\t__le32 magic;\n\t__le32 type;\n\t__le32 offset;\n\t__le32 len;\n};\n\nstruct mcp251xfd_dump_object_reg {\n\t__le32 reg;\n\t__le32 val;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

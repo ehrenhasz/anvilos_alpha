@@ -1,0 +1,9 @@
+{
+  "module_name": "vasnprintf.h",
+  "hash_id": "f4d2011a5597130c0a0ae8969b0abe2b6448092956736f7d5beb39b9f3c87c1d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/vasnprintf.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n#include <stdarg.h>\n\n \n#include <stddef.h>\n\n \n#include <stdio.h>\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n \n#if REPLACE_VASNPRINTF\n# define asnprintf rpl_asnprintf\n# define vasnprintf rpl_vasnprintf\n#endif\nextern char * asnprintf (char *restrict resultbuf, size_t *lengthp,\n                         const char *format, ...)\n       _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_STANDARD, 3, 4));\nextern char * vasnprintf (char *restrict resultbuf, size_t *lengthp,\n                          const char *format, va_list args)\n       _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_STANDARD, 3, 0));\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

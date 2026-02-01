@@ -1,0 +1,9 @@
+{
+  "module_name": "agent-getpeereid.sh",
+  "hash_id": "05d2de9decb1e11ef4cace9f47a4374e2a15cd5ed7e9d88790aa21450a565047",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/agent-getpeereid.sh",
+  "human_readable_source": "#\t$OpenBSD: agent-getpeereid.sh,v 1.15 2023/02/08 08:06:03 dtucker Exp $\n#\t$OpenBSD: agent-getpeereid.sh,v 1.13 2021/09/01 00:50:27 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"disallow agent attach from other uid\"\n\nUNPRIV=nobody\nASOCK=${OBJ}/agent\nSSH_AUTH_SOCK=/nonexistent\n>$OBJ/ssh-agent.log\n>$OBJ/ssh-add.log\n\nif config_defined HAVE_GETPEEREID HAVE_GETPEERUCRED HAVE_SO_PEERCRED ; then\n\t:\nelse\n\tskip \"skipped (not supported on this platform)\"\nfi\nif test \"x$USER\" = \"xroot\"; then\n\tskip \"skipped (running as root)\"\nfi\ncase \"x$SUDO\" in\n\txsudo) sudo=1;;\n\txdoas|xdoas\\ *) ;;\n\tx)\n\t\tskip \"need SUDO to switch to uid $UNPRIV\" ;;\n\t*)\n\t\tskip \"unsupported $SUDO - \"doas\" and \"sudo\" are allowed\" ;;\nesac\n\ntrace \"start agent\"\neval `${SSHAGENT} ${EXTRA_AGENT_ARGS} -s -a ${ASOCK}` >$OBJ/ssh-agent.log 2>&1\nr=$?\nif [ $r -ne 0 ]; then\n\tfail \"could not start ssh-agent: exit code $r\"\nelse\n\tchmod 644 ${SSH_AUTH_SOCK}\n\n\t${SSHADD} -vvv -l >>$OBJ/ssh-add.log 2>&1\n\tr=$?\n\tif [ $r -ne 1 ]; then\n\t\tfail \"ssh-add failed with $r != 1\"\n\tfi\n\tif test -z \"$sudo\" ; then\n\t\t# doas\n\t\t${SUDO} -n -u ${UNPRIV} ${SSHADD} -l 2>/dev/null\n\telse\n\t\t# sudo\n\t\t< /dev/null ${SUDO} -S -u ${UNPRIV} ${SSHADD} -vvv -l >>$OBJ/ssh-add.log 2>&1\n\tfi\n\tr=$?\n\tif [ $r -lt 2 ]; then\n\t\tfail \"ssh-add did not fail for ${UNPRIV}: $r < 2\"\n\t\tcat $OBJ/ssh-add.log\n\tfi\n\n\ttrace \"kill agent\"\n\t${SSHAGENT} -k >>$OBJ/ssh-agent.log 2>&1\nfi\n\nrm -f ${OBJ}/agent\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

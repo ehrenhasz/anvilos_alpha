@@ -1,0 +1,9 @@
+{
+  "module_name": "igt_mmap.c",
+  "hash_id": "aacea9b34b03745d0168e57854ac99443fa0e1eafa3d22a0ced1e193c096e748",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/igt_mmap.c",
+  "human_readable_source": " \n\n#include <drm/drm_file.h>\n\n#include \"i915_drv.h\"\n#include \"igt_mmap.h\"\n\nunsigned long igt_mmap_offset(struct drm_i915_private *i915,\n\t\t\t      u64 offset,\n\t\t\t      unsigned long size,\n\t\t\t      unsigned long prot,\n\t\t\t      unsigned long flags)\n{\n\tstruct drm_vma_offset_node *node;\n\tstruct file *file;\n\tunsigned long addr;\n\tint err;\n\n\t \n\tdrm_vma_offset_lock_lookup(i915->drm.vma_offset_manager);\n\tnode = drm_vma_offset_exact_lookup_locked(i915->drm.vma_offset_manager,\n\t\t\t\t\t\t  offset / PAGE_SIZE, size / PAGE_SIZE);\n\tdrm_vma_offset_unlock_lookup(i915->drm.vma_offset_manager);\n\n\tif (GEM_WARN_ON(!node)) {\n\t\tpr_info(\"Failed to lookup %llx\\n\", offset);\n\t\treturn -ENOENT;\n\t}\n\n\t \n\tfile = mock_drm_getfile(i915->drm.primary, O_RDWR);\n\tif (IS_ERR(file))\n\t\treturn PTR_ERR(file);\n\n\terr = drm_vma_node_allow(node, file->private_data);\n\tif (err) {\n\t\taddr = err;\n\t\tgoto out_file;\n\t}\n\n\taddr = vm_mmap(file, 0, drm_vma_node_size(node) << PAGE_SHIFT,\n\t\t       prot, flags, drm_vma_node_offset_addr(node));\n\n\tdrm_vma_node_revoke(node, file->private_data);\nout_file:\n\tfput(file);\n\treturn addr;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

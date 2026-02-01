@@ -1,0 +1,9 @@
+{
+  "module_name": "mock_acpi.c",
+  "hash_id": "1388b40ee87153784fc4c7026445884099cdb6db13cdcb6ebff6c76f7e393448",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/cxl/mock_acpi.c",
+  "human_readable_source": "\n \n\n#include <linux/platform_device.h>\n#include <linux/device.h>\n#include <linux/acpi.h>\n#include <cxl.h>\n#include \"test/mock.h\"\n\nstruct acpi_device *to_cxl_host_bridge(struct device *host, struct device *dev)\n{\n\tint index;\n\tstruct acpi_device *adev, *found = NULL;\n\tstruct cxl_mock_ops *ops = get_cxl_mock_ops(&index);\n\n\tif (ops && ops->is_mock_bridge(dev)) {\n\t\tfound = ACPI_COMPANION(dev);\n\t\tgoto out;\n\t}\n\n\tif (dev->bus == &platform_bus_type)\n\t\tgoto out;\n\n\tadev = to_acpi_device(dev);\n\tif (!acpi_pci_find_root(adev->handle))\n\t\tgoto out;\n\n\tif (strcmp(acpi_device_hid(adev), \"ACPI0016\") == 0) {\n\t\tfound = adev;\n\t\tdev_dbg(host, \"found host bridge %s\\n\", dev_name(&adev->dev));\n\t}\nout:\n\tput_cxl_mock_ops(index);\n\treturn found;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

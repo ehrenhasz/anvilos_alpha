@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "89eaae4854ced5f6e15ab5c75c9dc66f54066983c9c8ec92e2d68c863c3e249d",
+  "original_prompt": "Ingested from linux-6.6.14/sound/drivers/opl4/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-opl4-lib-objs := opl4_lib.o opl4_mixer.o\nsnd-opl4-lib-$(CONFIG_SND_PROC_FS) += opl4_proc.o\nsnd-opl4-synth-objs := opl4_seq.o opl4_synth.o yrw801.o\n\nobj-$(CONFIG_SND_OPL4_LIB) += snd-opl4-lib.o\nobj-$(CONFIG_SND_OPL4_LIB_SEQ) += snd-opl4-synth.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

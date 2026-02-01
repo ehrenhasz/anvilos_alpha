@@ -1,0 +1,9 @@
+{
+  "module_name": "printenv.sh",
+  "hash_id": "33cdfe2f3ab44f99c9729e1838958da4abeee8e1749ee24ed92d0429b872ee12",
+  "original_prompt": "Ingested from bash-5.2.21/support/printenv.sh",
+  "human_readable_source": "#! /bin/sh -\n\n# Copyright (C) 1996-2002 Free Software Foundation, Inc.\n#\n#   This program is free software: you can redistribute it and/or modify\n#   it under the terms of the GNU General Public License as published by\n#   the Free Software Foundation, either version 3 of the License, or\n#   (at your option) any later version.\n#\n#   This program is distributed in the hope that it will be useful,\n#   but WITHOUT ANY WARRANTY; without even the implied warranty of\n#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n#   GNU General Public License for more details.\n#\n#   You should have received a copy of the GNU General Public License\n#   along with this program.  If not, see <http://www.gnu.org/licenses/>.\n#\n\nif [ $# -eq 0 ]; then\n\tenv\n\texit\nelif eval [ \"\\${$1-unset}\" = \"unset\" ]; then\n\texit 1\nelse\n\teval echo \\$$1\n\texit 0\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

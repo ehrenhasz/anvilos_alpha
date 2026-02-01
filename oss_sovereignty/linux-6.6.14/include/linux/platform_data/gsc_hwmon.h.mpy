@@ -1,0 +1,9 @@
+{
+  "module_name": "gsc_hwmon.h",
+  "hash_id": "f222ad850b30fdfa232dd28b0ae81e0be545ef288ca1c6de2980be8a2fe02445",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/gsc_hwmon.h",
+  "human_readable_source": " \n#ifndef _GSC_HWMON_H\n#define _GSC_HWMON_H\n\nenum gsc_hwmon_mode {\n\tmode_temperature,\n\tmode_voltage_24bit,\n\tmode_voltage_raw,\n\tmode_voltage_16bit,\n\tmode_fan,\n\tmode_max,\n};\n\n \nstruct gsc_hwmon_channel {\n\tunsigned int reg;\n\tunsigned int mode;\n\tconst char *name;\n\tunsigned int mvoffset;\n\tunsigned int vdiv[2];\n};\n\n \nstruct gsc_hwmon_platform_data {\n\tint nchannels;\n\tunsigned int resolution;\n\tunsigned int vreference;\n\tunsigned int fan_base;\n\tstruct gsc_hwmon_channel channels[];\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

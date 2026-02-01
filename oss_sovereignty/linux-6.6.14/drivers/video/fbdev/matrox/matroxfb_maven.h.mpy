@@ -1,0 +1,9 @@
+{
+  "module_name": "matroxfb_maven.h",
+  "hash_id": "dd22df2d5816b801a91ce506e2172fbbc359c2e2b6faf519472c123151fae1ac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/matrox/matroxfb_maven.h",
+  "human_readable_source": " \n#ifndef __MATROXFB_MAVEN_H__\n#define __MATROXFB_MAVEN_H__\n\n#include <linux/ioctl.h>\n#include <linux/i2c.h>\n#include <linux/i2c-algo-bit.h>\n#include \"matroxfb_base.h\"\n\nstruct i2c_bit_adapter {\n\tstruct i2c_adapter\t\tadapter;\n\tint\t\t\t\tinitialized;\n\tstruct i2c_algo_bit_data\tbac;\n\tstruct matrox_fb_info*\t\tminfo;\n\tstruct {\n\t\tunsigned int\t\tdata;\n\t\tunsigned int\t\tclock;\n\t\t\t\t      } mask;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

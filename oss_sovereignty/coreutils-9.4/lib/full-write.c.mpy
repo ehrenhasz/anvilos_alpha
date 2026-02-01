@@ -1,0 +1,9 @@
+{
+  "module_name": "full-write.c",
+  "hash_id": "83ae05841ffc00a5f552a97177e26c94d5d43fc50bba200878d6e7214cf065b7",
+  "original_prompt": "Ingested from coreutils-9.4/lib/full-write.c",
+  "human_readable_source": " \n#ifdef FULL_READ\n# include \"full-read.h\"\n#else\n# include \"full-write.h\"\n#endif\n\n#include <errno.h>\n\n#ifdef FULL_READ\n# include \"safe-read.h\"\n# define safe_rw safe_read\n# define full_rw full_read\n# undef const\n# define const  \n#else\n# include \"safe-write.h\"\n# define safe_rw safe_write\n# define full_rw full_write\n#endif\n\n#ifdef FULL_READ\n \n# define ZERO_BYTE_TRANSFER_ERRNO 0\n#else\n \n# define ZERO_BYTE_TRANSFER_ERRNO ENOSPC\n#endif\n\n \nsize_t\nfull_rw (int fd, const void *buf, size_t count)\n{\n  size_t total = 0;\n  const char *ptr = (const char *) buf;\n\n  while (count > 0)\n    {\n      size_t n_rw = safe_rw (fd, ptr, count);\n      if (n_rw == (size_t) -1)\n        break;\n      if (n_rw == 0)\n        {\n          errno = ZERO_BYTE_TRANSFER_ERRNO;\n          break;\n        }\n      total += n_rw;\n      ptr += n_rw;\n      count -= n_rw;\n    }\n\n  return total;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6ee91f2b7187c976a7b43fb730bf54a341a0adca8a19a86d5447bade90715660",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/futex/functional/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nINCLUDES := -I../include -I../../ $(KHDR_INCLUDES)\nCFLAGS := $(CFLAGS) -g -O2 -Wall -D_GNU_SOURCE -pthread $(INCLUDES) $(KHDR_INCLUDES)\nLDLIBS := -lpthread -lrt\n\nLOCAL_HDRS := \\\n\t../include/futextest.h \\\n\t../include/atomic.h \\\n\t../include/logging.h\nTEST_GEN_PROGS := \\\n\tfutex_wait_timeout \\\n\tfutex_wait_wouldblock \\\n\tfutex_requeue_pi \\\n\tfutex_requeue_pi_signal_restart \\\n\tfutex_requeue_pi_mismatched_ops \\\n\tfutex_wait_uninitialized_heap \\\n\tfutex_wait_private_mapped_file \\\n\tfutex_wait \\\n\tfutex_requeue \\\n\tfutex_waitv\n\nTEST_PROGS := run.sh\n\ntop_srcdir = ../../../../..\nDEFAULT_INSTALL_HDR_PATH := 1\ninclude ../../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

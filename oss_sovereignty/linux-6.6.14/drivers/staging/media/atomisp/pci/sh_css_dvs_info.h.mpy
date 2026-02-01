@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_css_dvs_info.h",
+  "hash_id": "0d8300e84d8bfa96585752edb9f305519d34242777b8e5db59a0a6d94b27a9ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/sh_css_dvs_info.h",
+  "human_readable_source": " \n \n\n#ifndef __SH_CSS_DVS_INFO_H__\n#define __SH_CSS_DVS_INFO_H__\n\n#include <math_support.h>\n\n \n#define DVS_NUM_BLOCKS_X(X)\t\t(CEIL_MUL(CEIL_DIV((X), DVS_BLOCKDIM_X), 2))\n\n \n#define DVS_NUM_BLOCKS_Y(X)\t\t(CEIL_DIV((X), DVS_BLOCKDIM_Y_LUMA))\n\n \n#define DVS_GDC_INTERP_METHOD HRT_GDC_BLI_MODE\n\n#define DVS_INPUT_BYTES_PER_PIXEL (1)\n\n#define DVS_NUM_BLOCKS_X_CHROMA(X)\t(CEIL_DIV((X), DVS_BLOCKDIM_X))\n\n#define DVS_NUM_BLOCKS_Y_CHROMA(X)\t(CEIL_DIV((X), DVS_BLOCKDIM_Y_CHROMA))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

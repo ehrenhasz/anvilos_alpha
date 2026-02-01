@@ -1,0 +1,9 @@
+{
+  "module_name": "wmi.h",
+  "hash_id": "f7f405f1e2f6cf668a9fc83e6cbfcd7140db8605edbf8cc8c8f5d1ec4f40c5d2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/wmi.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_WMI_H\n#define _LINUX_WMI_H\n\n#include <linux/device.h>\n#include <linux/acpi.h>\n#include <linux/mod_devicetable.h>\n#include <uapi/linux/wmi.h>\n\n \nstruct wmi_device {\n\tstruct device dev;\n\n\t \n\tbool setable;\n};\n\nextern acpi_status wmidev_evaluate_method(struct wmi_device *wdev,\n\t\t\t\t\t  u8 instance, u32 method_id,\n\t\t\t\t\t  const struct acpi_buffer *in,\n\t\t\t\t\t  struct acpi_buffer *out);\n\nextern union acpi_object *wmidev_block_query(struct wmi_device *wdev,\n\t\t\t\t\t     u8 instance);\n\nu8 wmidev_instance_count(struct wmi_device *wdev);\n\nextern int set_required_buffer_size(struct wmi_device *wdev, u64 length);\n\n \nstruct wmi_driver {\n\tstruct device_driver driver;\n\tconst struct wmi_device_id *id_table;\n\tbool no_notify_data;\n\n\tint (*probe)(struct wmi_device *wdev, const void *context);\n\tvoid (*remove)(struct wmi_device *wdev);\n\tvoid (*notify)(struct wmi_device *device, union acpi_object *data);\n\tlong (*filter_callback)(struct wmi_device *wdev, unsigned int cmd,\n\t\t\t\tstruct wmi_ioctl_buffer *arg);\n};\n\nextern int __must_check __wmi_driver_register(struct wmi_driver *driver,\n\t\t\t\t\t      struct module *owner);\nextern void wmi_driver_unregister(struct wmi_driver *driver);\n\n \n#define wmi_driver_register(driver) __wmi_driver_register((driver), THIS_MODULE)\n\n \n#define module_wmi_driver(__wmi_driver) \\\n\tmodule_driver(__wmi_driver, wmi_driver_register, \\\n\t\t      wmi_driver_unregister)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

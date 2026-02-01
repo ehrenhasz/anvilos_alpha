@@ -1,0 +1,9 @@
+{
+  "module_name": "param.h",
+  "hash_id": "afea0b45ed6575edaa958bacabacbd0256d267b884f1dc7d5dbb0b993c32c406",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/os/freebsd/sys/param.h",
+  "human_readable_source": " \n \n\n#ifndef _LIBSPL_SYS_PARAM_H\n#define\t_LIBSPL_SYS_PARAM_H\n\n#include_next <sys/param.h>\n#include <unistd.h>\n\n \n#define\tMAXNAMELEN\t256\n\n#define\tUID_NOACCESS\t60002\t\t \n\n#define\tMAXUID\t\tUINT32_MAX\t \n#define\tMAXPROJID\tMAXUID\t\t \n\n#ifdef\tPAGESIZE\n#undef\tPAGESIZE\n#endif  \n\nextern size_t spl_pagesize(void);\n#define\tPAGESIZE\t(spl_pagesize())\n\nextern int execvpe(const char *name, char * const argv[], char * const envp[]);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

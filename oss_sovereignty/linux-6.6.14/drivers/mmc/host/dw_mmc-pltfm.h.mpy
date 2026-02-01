@@ -1,0 +1,9 @@
+{
+  "module_name": "dw_mmc-pltfm.h",
+  "hash_id": "4430ef2023bfef82094dc5ff567a4ed8c4a26d590d4af225f44c0d7d8cc91a63",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/host/dw_mmc-pltfm.h",
+  "human_readable_source": " \n \n\n#ifndef _DW_MMC_PLTFM_H_\n#define _DW_MMC_PLTFM_H_\n\nextern int dw_mci_pltfm_register(struct platform_device *pdev,\n\t\t\t\tconst struct dw_mci_drv_data *drv_data);\nextern void dw_mci_pltfm_remove(struct platform_device *pdev);\nextern const struct dev_pm_ops dw_mci_pltfm_pmops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

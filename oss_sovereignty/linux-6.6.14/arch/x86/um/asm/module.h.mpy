@@ -1,0 +1,9 @@
+{
+  "module_name": "module.h",
+  "hash_id": "b8868248e1867f366d5d4f9a6c924e48a596a9e58c25dbbdbb3899511fbad8a4",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/asm/module.h",
+  "human_readable_source": " \n#ifndef __UM_MODULE_H\n#define __UM_MODULE_H\n\n \nstruct mod_arch_specific\n{\n};\n\n#ifdef CONFIG_X86_32\n\n#define Elf_Shdr Elf32_Shdr\n#define Elf_Sym Elf32_Sym\n#define Elf_Ehdr Elf32_Ehdr\n\n#else\n\n#define Elf_Shdr Elf64_Shdr\n#define Elf_Sym Elf64_Sym\n#define Elf_Ehdr Elf64_Ehdr\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

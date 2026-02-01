@@ -1,0 +1,9 @@
+{
+  "module_name": "iss_csiphy.h",
+  "hash_id": "d1568944c169bcbd2ed2b5fd381d04e554f675d905c86b86133b34a07cd09248",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/omap4iss/iss_csiphy.h",
+  "human_readable_source": " \n \n\n#ifndef OMAP4_ISS_CSI_PHY_H\n#define OMAP4_ISS_CSI_PHY_H\n\n#include <linux/platform_data/media/omap4iss.h>\n\nstruct iss_csi2_device;\n\nstruct iss_csiphy_dphy_cfg {\n\tu8 ths_term;\n\tu8 ths_settle;\n\tu8 tclk_term;\n\tunsigned tclk_miss:1;\n\tu8 tclk_settle;\n};\n\nstruct iss_csiphy {\n\tstruct iss_device *iss;\n\tstruct mutex mutex;\t \n\tu8 phy_in_use;\n\tstruct iss_csi2_device *csi2;\n\n\t \n\tunsigned int cfg_regs;\n\tunsigned int phy_regs;\n\n\tu8 max_data_lanes;\t \n\tu8 used_data_lanes;\t \n\tstruct iss_csiphy_lanes_cfg lanes;\n\tstruct iss_csiphy_dphy_cfg dphy;\n};\n\nint omap4iss_csiphy_config(struct iss_device *iss,\n\t\t\t   struct v4l2_subdev *csi2_subdev);\nint omap4iss_csiphy_acquire(struct iss_csiphy *phy);\nvoid omap4iss_csiphy_release(struct iss_csiphy *phy);\nint omap4iss_csiphy_init(struct iss_device *iss);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

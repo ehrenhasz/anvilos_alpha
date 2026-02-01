@@ -1,0 +1,9 @@
+{
+  "module_name": "shell.c",
+  "hash_id": "73023329e0ddd3d3be626de43913bcd3666991611f7f6304a89fcc81dcfb92f3",
+  "original_prompt": "Ingested from bash-5.2.21/lib/tilde/shell.c",
+  "human_readable_source": " \n\n \n\n#if defined (HAVE_CONFIG_H)\n#  include <config.h>\n#endif\n\n#if defined (HAVE_UNISTD_H)\n#  ifdef _MINIX\n#    include <sys/types.h>\n#  endif\n#  include <unistd.h>\n#endif  \n\n#if defined (HAVE_STDLIB_H)\n#  include <stdlib.h>\n#else\n#  include \"ansi_stdlib.h\"\n#endif  \n\n#if defined (HAVE_STRING_H)\n#  include <string.h>\n#else\n#  include <strings.h>\n#endif  \n\n#include <pwd.h>\n\n#if !defined (HAVE_GETPW_DECLS)\nextern struct passwd *getpwuid ();\n#endif  \n\nchar *\nget_env_value (char *varname)\n{\n  return ((char *)getenv (varname));\n}\n\n \nchar *\nget_home_dir (void)\n{\n  static char *home_dir = (char *)NULL;\n  struct passwd *entry;\n\n  if (home_dir)\n    return (home_dir);\n\n#if defined (HAVE_GETPWUID)\n  entry = getpwuid (getuid ());\n  if (entry)\n    home_dir = savestring (entry->pw_dir);\n#endif\n\n#if defined (HAVE_GETPWENT)\n  endpwent ();\t\t \n#endif\n\n  return (home_dir);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

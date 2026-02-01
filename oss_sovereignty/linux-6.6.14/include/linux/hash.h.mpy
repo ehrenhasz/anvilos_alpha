@@ -1,0 +1,9 @@
+{
+  "module_name": "hash.h",
+  "hash_id": "7b7f81e8e98802d771cc2dd582db8ec66281649d14f4eb220e45c36ef5ca270e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/hash.h",
+  "human_readable_source": "#ifndef _LINUX_HASH_H\n#define _LINUX_HASH_H\n \n\n#include <asm/types.h>\n#include <linux/compiler.h>\n\n \n#if BITS_PER_LONG == 32\n#define GOLDEN_RATIO_PRIME GOLDEN_RATIO_32\n#define hash_long(val, bits) hash_32(val, bits)\n#elif BITS_PER_LONG == 64\n#define hash_long(val, bits) hash_64(val, bits)\n#define GOLDEN_RATIO_PRIME GOLDEN_RATIO_64\n#else\n#error Wordsize not 32 or 64\n#endif\n\n \n#define GOLDEN_RATIO_32 0x61C88647\n#define GOLDEN_RATIO_64 0x61C8864680B583EBull\n\n#ifdef CONFIG_HAVE_ARCH_HASH\n \n#include <asm/hash.h>\n#endif\n\n \n#ifndef HAVE_ARCH__HASH_32\n#define __hash_32 __hash_32_generic\n#endif\nstatic inline u32 __hash_32_generic(u32 val)\n{\n\treturn val * GOLDEN_RATIO_32;\n}\n\nstatic inline u32 hash_32(u32 val, unsigned int bits)\n{\n\t \n\treturn __hash_32(val) >> (32 - bits);\n}\n\n#ifndef HAVE_ARCH_HASH_64\n#define hash_64 hash_64_generic\n#endif\nstatic __always_inline u32 hash_64_generic(u64 val, unsigned int bits)\n{\n#if BITS_PER_LONG == 64\n\t \n\treturn val * GOLDEN_RATIO_64 >> (64 - bits);\n#else\n\t \n\treturn hash_32((u32)val ^ __hash_32(val >> 32), bits);\n#endif\n}\n\nstatic inline u32 hash_ptr(const void *ptr, unsigned int bits)\n{\n\treturn hash_long((unsigned long)ptr, bits);\n}\n\n \nstatic inline u32 hash32_ptr(const void *ptr)\n{\n\tunsigned long val = (unsigned long)ptr;\n\n#if BITS_PER_LONG == 64\n\tval ^= (val >> 32);\n#endif\n\treturn (u32)val;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

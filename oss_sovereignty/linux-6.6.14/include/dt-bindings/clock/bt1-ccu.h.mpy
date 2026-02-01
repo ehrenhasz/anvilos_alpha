@@ -1,0 +1,9 @@
+{
+  "module_name": "bt1-ccu.h",
+  "hash_id": "4d225443acadf801d3d204ffce232efdbc302b42d4c1ba6974cc1a0237abaa35",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/bt1-ccu.h",
+  "human_readable_source": " \n \n#ifndef __DT_BINDINGS_CLOCK_BT1_CCU_H\n#define __DT_BINDINGS_CLOCK_BT1_CCU_H\n\n#define CCU_CPU_PLL\t\t\t0\n#define CCU_SATA_PLL\t\t\t1\n#define CCU_DDR_PLL\t\t\t2\n#define CCU_PCIE_PLL\t\t\t3\n#define CCU_ETH_PLL\t\t\t4\n\n#define CCU_AXI_MAIN_CLK\t\t0\n#define CCU_AXI_DDR_CLK\t\t\t1\n#define CCU_AXI_SATA_CLK\t\t2\n#define CCU_AXI_GMAC0_CLK\t\t3\n#define CCU_AXI_GMAC1_CLK\t\t4\n#define CCU_AXI_XGMAC_CLK\t\t5\n#define CCU_AXI_PCIE_M_CLK\t\t6\n#define CCU_AXI_PCIE_S_CLK\t\t7\n#define CCU_AXI_USB_CLK\t\t\t8\n#define CCU_AXI_HWA_CLK\t\t\t9\n#define CCU_AXI_SRAM_CLK\t\t10\n\n#define CCU_SYS_SATA_REF_CLK\t\t0\n#define CCU_SYS_APB_CLK\t\t\t1\n#define CCU_SYS_GMAC0_TX_CLK\t\t2\n#define CCU_SYS_GMAC0_PTP_CLK\t\t3\n#define CCU_SYS_GMAC1_TX_CLK\t\t4\n#define CCU_SYS_GMAC1_PTP_CLK\t\t5\n#define CCU_SYS_XGMAC_REF_CLK\t\t6\n#define CCU_SYS_XGMAC_PTP_CLK\t\t7\n#define CCU_SYS_USB_CLK\t\t\t8\n#define CCU_SYS_PVT_CLK\t\t\t9\n#define CCU_SYS_HWA_CLK\t\t\t10\n#define CCU_SYS_UART_CLK\t\t11\n#define CCU_SYS_I2C1_CLK\t\t12\n#define CCU_SYS_I2C2_CLK\t\t13\n#define CCU_SYS_GPIO_CLK\t\t14\n#define CCU_SYS_TIMER0_CLK\t\t15\n#define CCU_SYS_TIMER1_CLK\t\t16\n#define CCU_SYS_TIMER2_CLK\t\t17\n#define CCU_SYS_WDT_CLK\t\t\t18\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

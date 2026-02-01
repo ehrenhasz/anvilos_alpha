@@ -1,0 +1,9 @@
+{
+  "module_name": "tdx.h",
+  "hash_id": "0392653569d2e916242b9702a7fca13d7a7fa603feb0b5a4866f2d7b8eefcc11",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/tdx.h",
+  "human_readable_source": " \n \n#ifndef _ASM_X86_TDX_H\n#define _ASM_X86_TDX_H\n\n#include <linux/init.h>\n#include <linux/bits.h>\n\n#include <asm/errno.h>\n#include <asm/ptrace.h>\n#include <asm/shared/tdx.h>\n\n \n#define TDX_ERROR\t\t\t_BITUL(63)\n#define TDX_SW_ERROR\t\t\t(TDX_ERROR | GENMASK_ULL(47, 40))\n#define TDX_SEAMCALL_VMFAILINVALID\t(TDX_SW_ERROR | _UL(0xFFFF0000))\n\n#ifndef __ASSEMBLY__\n\n \nstruct ve_info {\n\tu64 exit_reason;\n\tu64 exit_qual;\n\t \n\tu64 gla;\n\t \n\tu64 gpa;\n\tu32 instr_len;\n\tu32 instr_info;\n};\n\n#ifdef CONFIG_INTEL_TDX_GUEST\n\nvoid __init tdx_early_init(void);\n\nvoid tdx_get_ve_info(struct ve_info *ve);\n\nbool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve);\n\nvoid tdx_safe_halt(void);\n\nbool tdx_early_handle_ve(struct pt_regs *regs);\n\nint tdx_mcall_get_report0(u8 *reportdata, u8 *tdreport);\n\n#else\n\nstatic inline void tdx_early_init(void) { };\nstatic inline void tdx_safe_halt(void) { };\n\nstatic inline bool tdx_early_handle_ve(struct pt_regs *regs) { return false; }\n\n#endif  \n\n#if defined(CONFIG_KVM_GUEST) && defined(CONFIG_INTEL_TDX_GUEST)\nlong tdx_kvm_hypercall(unsigned int nr, unsigned long p1, unsigned long p2,\n\t\t       unsigned long p3, unsigned long p4);\n#else\nstatic inline long tdx_kvm_hypercall(unsigned int nr, unsigned long p1,\n\t\t\t\t     unsigned long p2, unsigned long p3,\n\t\t\t\t     unsigned long p4)\n{\n\treturn -ENODEV;\n}\n#endif  \n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

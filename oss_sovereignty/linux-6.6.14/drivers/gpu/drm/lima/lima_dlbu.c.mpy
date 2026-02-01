@@ -1,0 +1,9 @@
+{
+  "module_name": "lima_dlbu.c",
+  "hash_id": "57d0984704eb755a0d5f38de83bbf834f1dd3c595eab56b65ec951f08451f752",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/lima/lima_dlbu.c",
+  "human_readable_source": "\n \n\n#include <linux/io.h>\n#include <linux/device.h>\n\n#include \"lima_device.h\"\n#include \"lima_dlbu.h\"\n#include \"lima_vm.h\"\n#include \"lima_regs.h\"\n\n#define dlbu_write(reg, data) writel(data, ip->iomem + reg)\n#define dlbu_read(reg) readl(ip->iomem + reg)\n\nvoid lima_dlbu_enable(struct lima_device *dev, int num_pp)\n{\n\tstruct lima_sched_pipe *pipe = dev->pipe + lima_pipe_pp;\n\tstruct lima_ip *ip = dev->ip + lima_ip_dlbu;\n\tint i, mask = 0;\n\n\tfor (i = 0; i < num_pp; i++) {\n\t\tstruct lima_ip *pp = pipe->processor[i];\n\n\t\tmask |= 1 << (pp->id - lima_ip_pp0);\n\t}\n\n\tdlbu_write(LIMA_DLBU_PP_ENABLE_MASK, mask);\n}\n\nvoid lima_dlbu_disable(struct lima_device *dev)\n{\n\tstruct lima_ip *ip = dev->ip + lima_ip_dlbu;\n\n\tdlbu_write(LIMA_DLBU_PP_ENABLE_MASK, 0);\n}\n\nvoid lima_dlbu_set_reg(struct lima_ip *ip, u32 *reg)\n{\n\tdlbu_write(LIMA_DLBU_TLLIST_VBASEADDR, reg[0]);\n\tdlbu_write(LIMA_DLBU_FB_DIM, reg[1]);\n\tdlbu_write(LIMA_DLBU_TLLIST_CONF, reg[2]);\n\tdlbu_write(LIMA_DLBU_START_TILE_POS, reg[3]);\n}\n\nstatic int lima_dlbu_hw_init(struct lima_ip *ip)\n{\n\tstruct lima_device *dev = ip->dev;\n\n\tdlbu_write(LIMA_DLBU_MASTER_TLLIST_PHYS_ADDR, dev->dlbu_dma | 1);\n\tdlbu_write(LIMA_DLBU_MASTER_TLLIST_VADDR, LIMA_VA_RESERVE_DLBU);\n\n\treturn 0;\n}\n\nint lima_dlbu_resume(struct lima_ip *ip)\n{\n\treturn lima_dlbu_hw_init(ip);\n}\n\nvoid lima_dlbu_suspend(struct lima_ip *ip)\n{\n\n}\n\nint lima_dlbu_init(struct lima_ip *ip)\n{\n\treturn lima_dlbu_hw_init(ip);\n}\n\nvoid lima_dlbu_fini(struct lima_ip *ip)\n{\n\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

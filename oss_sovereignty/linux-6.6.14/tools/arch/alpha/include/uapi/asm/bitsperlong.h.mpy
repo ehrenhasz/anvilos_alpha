@@ -1,0 +1,9 @@
+{
+  "module_name": "bitsperlong.h",
+  "hash_id": "3d30f124cd35122d1c5b192c6559e98736a6cc2f402df4b97847d91f264c6016",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/alpha/include/uapi/asm/bitsperlong.h",
+  "human_readable_source": " \n#ifndef __ASM_ALPHA_BITSPERLONG_H\n#define __ASM_ALPHA_BITSPERLONG_H\n\n#define __BITS_PER_LONG 64\n\n#include <asm-generic/bitsperlong.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

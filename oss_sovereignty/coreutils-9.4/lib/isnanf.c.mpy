@@ -1,0 +1,9 @@
+{
+  "module_name": "isnanf.c",
+  "hash_id": "5043c4660c28f9a7970b39809a609a4334fa917be52e3cf859eded5bf805ad8e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/isnanf.c",
+  "human_readable_source": " \n\n#define USE_FLOAT\n#include \"isnan.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

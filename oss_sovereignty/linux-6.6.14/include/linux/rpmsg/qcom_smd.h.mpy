@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom_smd.h",
+  "hash_id": "121b45abe38787333ad1d0ba9db35828c89c29ccef04b3c7f338af5ae62f38e8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rpmsg/qcom_smd.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_RPMSG_QCOM_SMD_H\n#define _LINUX_RPMSG_QCOM_SMD_H\n\n#include <linux/device.h>\n\nstruct qcom_smd_edge;\n\n#if IS_ENABLED(CONFIG_RPMSG_QCOM_SMD)\n\nstruct qcom_smd_edge *qcom_smd_register_edge(struct device *parent,\n\t\t\t\t\t     struct device_node *node);\nvoid qcom_smd_unregister_edge(struct qcom_smd_edge *edge);\n\n#else\n\nstatic inline struct qcom_smd_edge *\nqcom_smd_register_edge(struct device *parent,\n\t\t       struct device_node *node)\n{\n\treturn NULL;\n}\n\nstatic inline void qcom_smd_unregister_edge(struct qcom_smd_edge *edge)\n{\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

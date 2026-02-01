@@ -1,0 +1,9 @@
+{
+  "module_name": "strmatch.h",
+  "hash_id": "3aec173b77e5628ba847ebad8bb6cffcf23342b00831457c49e90599abf6eca4",
+  "original_prompt": "Ingested from bash-5.2.21/lib/glob/strmatch.h",
+  "human_readable_source": " \n\n#ifndef\t_STRMATCH_H\n#define\t_STRMATCH_H\t1\n\n#include <config.h>\n\n#include \"stdc.h\"\n\n \n#undef  FNM_PATHNAME\n#undef  FNM_NOESCAPE\n#undef  FNM_PERIOD\n\n \n\n \n#define\tFNM_PATHNAME\t(1 << 0)  \n#define\tFNM_NOESCAPE\t(1 << 1)  \n#define\tFNM_PERIOD\t(1 << 2)  \n\n \n#undef FNM_LEADING_DIR\n#undef FNM_CASEFOLD\n#undef FNM_EXTMATCH\n\n#define FNM_LEADING_DIR\t(1 << 3)  \n#define FNM_CASEFOLD\t(1 << 4)  \n#define FNM_EXTMATCH\t(1 << 5)  \n\n#define FNM_FIRSTCHAR\t(1 << 6)  \n#define FNM_DOTDOT\t(1 << 7)  \n\n \n#undef FNM_NOMATCH\n\n#define\tFNM_NOMATCH\t1\n\n \nextern int strmatch PARAMS((char *, char *, int));\n\n#if HANDLE_MULTIBYTE\nextern int wcsmatch PARAMS((wchar_t *, wchar_t *, int));\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

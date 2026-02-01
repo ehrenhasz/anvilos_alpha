@@ -1,0 +1,9 @@
+{
+  "module_name": "e1000e_trace.h",
+  "hash_id": "8db83fd6b3db0c129f87260f04214895d1dd9f2e2d9d655deeeb2a962452896d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/e1000e/e1000e_trace.h",
+  "human_readable_source": " \n \n \n \n\n#undef TRACE_SYSTEM\n#define TRACE_SYSTEM e1000e_trace\n\n#if !defined(_TRACE_E1000E_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)\n#define _TRACE_E1000E_TRACE_H\n\n#include <linux/tracepoint.h>\n\nTRACE_EVENT(e1000e_trace_mac_register,\n\t    TP_PROTO(uint32_t reg),\n\t    TP_ARGS(reg),\n\t    TP_STRUCT__entry(__field(uint32_t,\treg)),\n\t    TP_fast_assign(__entry->reg = reg;),\n\t    TP_printk(\"event: TraceHub e1000e mac register: 0x%08x\",\n\t\t      __entry->reg)\n);\n\n#endif\n \n \n\n#undef TRACE_INCLUDE_PATH\n#define TRACE_INCLUDE_PATH .\n#undef TRACE_INCLUDE_FILE\n#define TRACE_INCLUDE_FILE e1000e_trace\n\n#include <trace/define_trace.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

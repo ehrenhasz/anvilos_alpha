@@ -1,0 +1,9 @@
+{
+  "module_name": "ti,sci_pm_domain.h",
+  "hash_id": "9bf5b76cbff27c80ec00c7fe1bfdd067f19088f257b0fc4790b664118caff87d",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/soc/ti,sci_pm_domain.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_TI_SCI_PM_DOMAIN_H\n#define __DT_BINDINGS_TI_SCI_PM_DOMAIN_H\n\n#define TI_SCI_PD_EXCLUSIVE\t1\n#define TI_SCI_PD_SHARED\t0\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "lockd.c",
+  "hash_id": "d9ef216b96bfcfab0f1a78f54e27ac6c2d494dd00fdfe8d0df4bac451dafefb6",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfsd/lockd.c",
+  "human_readable_source": "\n \n\n#include <linux/file.h>\n#include <linux/lockd/bind.h>\n#include \"nfsd.h\"\n#include \"vfs.h\"\n\n#define NFSDDBG_FACILITY\t\tNFSDDBG_LOCKD\n\n#ifdef CONFIG_LOCKD_V4\n#define nlm_stale_fh\tnlm4_stale_fh\n#define nlm_failed\tnlm4_failed\n#else\n#define nlm_stale_fh\tnlm_lck_denied_nolocks\n#define nlm_failed\tnlm_lck_denied_nolocks\n#endif\n \nstatic __be32\nnlm_fopen(struct svc_rqst *rqstp, struct nfs_fh *f, struct file **filp,\n\t\tint mode)\n{\n\t__be32\t\tnfserr;\n\tint\t\taccess;\n\tstruct svc_fh\tfh;\n\n\t \n\tfh_init(&fh,0);\n\tfh.fh_handle.fh_size = f->size;\n\tmemcpy(&fh.fh_handle.fh_raw, f->data, f->size);\n\tfh.fh_export = NULL;\n\n\taccess = (mode == O_WRONLY) ? NFSD_MAY_WRITE : NFSD_MAY_READ;\n\taccess |= NFSD_MAY_LOCK;\n\tnfserr = nfsd_open(rqstp, &fh, S_IFREG, access, filp);\n\tfh_put(&fh);\n \t \n\tswitch (nfserr) {\n\tcase nfs_ok:\n\t\treturn 0;\n\tcase nfserr_dropit:\n\t\treturn nlm_drop_reply;\n\tcase nfserr_stale:\n\t\treturn nlm_stale_fh;\n\tdefault:\n\t\treturn nlm_failed;\n\t}\n}\n\nstatic void\nnlm_fclose(struct file *filp)\n{\n\tfput(filp);\n}\n\nstatic const struct nlmsvc_binding nfsd_nlm_ops = {\n\t.fopen\t\t= nlm_fopen,\t\t \n\t.fclose\t\t= nlm_fclose,\t\t \n};\n\nvoid\nnfsd_lockd_init(void)\n{\n\tdprintk(\"nfsd: initializing lockd\\n\");\n\tnlmsvc_ops = &nfsd_nlm_ops;\n}\n\nvoid\nnfsd_lockd_shutdown(void)\n{\n\tnlmsvc_ops = NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

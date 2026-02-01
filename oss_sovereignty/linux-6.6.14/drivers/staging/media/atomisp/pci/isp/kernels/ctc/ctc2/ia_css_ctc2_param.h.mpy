@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_ctc2_param.h",
+  "hash_id": "2b52feb63485844af47ce30bf915f58baa58e5501c479ff19a385cbf9e1b3a8f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ctc/ctc2/ia_css_ctc2_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_CTC2_PARAM_H\n#define __IA_CSS_CTC2_PARAM_H\n\n#define IA_CSS_CTC_COEF_SHIFT          13\n#include \"vmem.h\"  \n\n \n\n \nstruct ia_css_isp_ctc2_vmem_params {\n\t \n\tVMEM_ARRAY(y_x, ISP_VEC_NELEMS);\n\t \n\tVMEM_ARRAY(y_y, ISP_VEC_NELEMS);\n\t \n\tVMEM_ARRAY(e_y_slope, ISP_VEC_NELEMS);\n};\n\n \nstruct ia_css_isp_ctc2_dmem_params {\n\t \n\ts32 uv_y0;\n\ts32 uv_y1;\n\n\t \n\ts32 uv_x0;\n\ts32 uv_x1;\n\n\t \n\ts32 uv_dydx;\n\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

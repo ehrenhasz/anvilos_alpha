@@ -1,0 +1,9 @@
+{
+  "module_name": "rtsx_common.h",
+  "hash_id": "ec666e0f6e5b38f64a5a58d184ed378583774bc190439690b2b882aa12b7e6bd",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rtsx_common.h",
+  "human_readable_source": " \n \n\n#ifndef __RTSX_COMMON_H\n#define __RTSX_COMMON_H\n\n#define DRV_NAME_RTSX_PCI\t\t\"rtsx_pci\"\n#define DRV_NAME_RTSX_PCI_SDMMC\t\t\"rtsx_pci_sdmmc\"\n#define DRV_NAME_RTSX_PCI_MS\t\t\"rtsx_pci_ms\"\n\n#define RTSX_REG_PAIR(addr, val)\t(((u32)(addr) << 16) | (u8)(val))\n\n#define RTSX_SSC_DEPTH_4M\t\t0x01\n#define RTSX_SSC_DEPTH_2M\t\t0x02\n#define RTSX_SSC_DEPTH_1M\t\t0x03\n#define RTSX_SSC_DEPTH_500K\t\t0x04\n#define RTSX_SSC_DEPTH_250K\t\t0x05\n\n#define RTSX_SD_CARD\t\t\t0\n#define RTSX_MS_CARD\t\t\t1\n\n#define CLK_TO_DIV_N\t\t\t0\n#define DIV_N_TO_CLK\t\t\t1\n\nstruct platform_device;\n\nstruct rtsx_slot {\n\tstruct platform_device\t*p_dev;\n\tvoid\t\t\t(*card_event)(struct platform_device *p_dev);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

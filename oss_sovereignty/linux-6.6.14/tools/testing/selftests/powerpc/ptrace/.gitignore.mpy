@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "b14f28a04fb20bddef48ef7ebaf5bc2cfceafd399664511b4c1cb6bf550dfd41",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/ptrace/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nptrace-gpr\nptrace-tm-gpr\nptrace-tm-spd-gpr\nptrace-tar\nptrace-tm-tar\nptrace-tm-spd-tar\nptrace-vsx\nptrace-tm-vsx\nptrace-tm-spd-vsx\nptrace-tm-spr\nptrace-hwbreak\nperf-hwbreak\ncore-pkey\nptrace-pkey\nptrace-syscall\nptrace-perf-hwbreak\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

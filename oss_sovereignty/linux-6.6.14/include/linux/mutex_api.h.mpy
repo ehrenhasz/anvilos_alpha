@@ -1,0 +1,9 @@
+{
+  "module_name": "mutex_api.h",
+  "hash_id": "430bd04fbdc61d7434d0061cf4cd811177e372854d67d09de11b197ab3043146",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mutex_api.h",
+  "human_readable_source": "#include <linux/mutex.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

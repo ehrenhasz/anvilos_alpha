@@ -1,0 +1,9 @@
+{
+  "module_name": "hypercall.h",
+  "hash_id": "d5fc0e2e4cbcd36e250af19657a208b27998aadf78f06ee2bc5c7da44785ed33",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/arm/hypercall.h",
+  "human_readable_source": " \n\n#ifndef _ASM_ARM_XEN_HYPERCALL_H\n#define _ASM_ARM_XEN_HYPERCALL_H\n\n#include <linux/bug.h>\n\n#include <xen/interface/xen.h>\n#include <xen/interface/sched.h>\n#include <xen/interface/platform.h>\n\nstruct xen_dm_op_buf;\n\nlong privcmd_call(unsigned call, unsigned long a1,\n\t\tunsigned long a2, unsigned long a3,\n\t\tunsigned long a4, unsigned long a5);\nint HYPERVISOR_xen_version(int cmd, void *arg);\nint HYPERVISOR_console_io(int cmd, int count, char *str);\nint HYPERVISOR_grant_table_op(unsigned int cmd, void *uop, unsigned int count);\nint HYPERVISOR_sched_op(int cmd, void *arg);\nint HYPERVISOR_event_channel_op(int cmd, void *arg);\nunsigned long HYPERVISOR_hvm_op(int op, void *arg);\nint HYPERVISOR_memory_op(unsigned int cmd, void *arg);\nint HYPERVISOR_physdev_op(int cmd, void *arg);\nint HYPERVISOR_vcpu_op(int cmd, int vcpuid, void *extra_args);\nint HYPERVISOR_vm_assist(unsigned int cmd, unsigned int type);\nint HYPERVISOR_dm_op(domid_t domid, unsigned int nr_bufs,\n\t\t     struct xen_dm_op_buf *bufs);\nint HYPERVISOR_platform_op_raw(void *arg);\nstatic inline int HYPERVISOR_platform_op(struct xen_platform_op *op)\n{\n\top->interface_version = XENPF_INTERFACE_VERSION;\n\treturn HYPERVISOR_platform_op_raw(op);\n}\nint HYPERVISOR_multicall(struct multicall_entry *calls, uint32_t nr);\n\nstatic inline int\nHYPERVISOR_suspend(unsigned long start_info_mfn)\n{\n\tstruct sched_shutdown r = { .reason = SHUTDOWN_suspend };\n\n\t \n\treturn HYPERVISOR_sched_op(SCHEDOP_shutdown, &r);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

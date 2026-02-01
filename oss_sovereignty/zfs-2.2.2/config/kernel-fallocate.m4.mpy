@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-fallocate.m4",
+  "hash_id": "5622b1de66be5e7d4329da4154806647d47fd038ada82dabf647afd352f135aa",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-fallocate.m4",
+  "human_readable_source": "dnl #\ndnl # Linux 2.6.38 - 3.x API\ndnl # The fallocate callback was moved from the inode_operations\ndnl # structure to the file_operations structure.\ndnl #\ndnl #\ndnl # Linux 3.15+\ndnl # fallocate learned a new flag, FALLOC_FL_ZERO_RANGE\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_FALLOCATE], [\n\tZFS_LINUX_TEST_SRC([file_fallocate], [\n\t\t#include <linux/fs.h>\n\n\t\tlong test_fallocate(struct file *file, int mode,\n\t\t    loff_t offset, loff_t len) { return 0; }\n\n\t\tstatic const struct file_operations\n\t\t    fops __attribute__ ((unused)) = {\n\t\t\t.fallocate = test_fallocate,\n\t\t};\n\t], [])\n\tZFS_LINUX_TEST_SRC([falloc_fl_zero_range], [\n\t\t#include <linux/falloc.h>\n\t],[\n\t\tint flags __attribute__ ((unused));\n\t\tflags = FALLOC_FL_ZERO_RANGE;\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_FALLOCATE], [\n\tAC_MSG_CHECKING([whether fops->fallocate() exists])\n\tZFS_LINUX_TEST_RESULT([file_fallocate], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_MSG_CHECKING([whether FALLOC_FL_ZERO_RANGE exists])\n\t\tZFS_LINUX_TEST_RESULT([falloc_fl_zero_range], [\n\t\t\tAC_MSG_RESULT(yes)\n\t\t\tAC_DEFINE(HAVE_FALLOC_FL_ZERO_RANGE, 1, [FALLOC_FL_ZERO_RANGE is defined])\n\t\t],[\n\t\t\tAC_MSG_RESULT(no)\n\t\t])\n\t],[\n\t\tZFS_LINUX_TEST_ERROR([file_fallocate])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

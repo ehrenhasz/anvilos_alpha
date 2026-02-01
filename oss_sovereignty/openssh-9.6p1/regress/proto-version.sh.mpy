@@ -1,0 +1,9 @@
+{
+  "module_name": "proto-version.sh",
+  "hash_id": "bbcf7d0e51feba94b73fd0f630658c8b12d8a99dcb90bc8211040ce8013526ba",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/proto-version.sh",
+  "human_readable_source": "#\t$OpenBSD: proto-version.sh,v 1.7 2017/06/07 01:48:15 djm Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"sshd version with different protocol combinations\"\n\n# we just start sshd in inetd mode and check the banner\ncheck_version ()\n{\n\texpect=$1\n\tbanner=`printf '' | ${SSHD} -i -f ${OBJ}/sshd_proxy`\n\tcase ${banner} in\n\tSSH-1.99-*)\n\t\tproto=199\n\t\t;;\n\tSSH-2.0-*)\n\t\tproto=20\n\t\t;;\n\tSSH-1.5-*)\n\t\tproto=15\n\t\t;;\n\t*)\n\t\tproto=0\n\t\t;;\n\tesac\n\tif [ ${expect} -ne ${proto} ]; then\n\t\tfail \"wrong protocol version ${banner}\"\n\tfi\n}\n\ncheck_version\t20\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

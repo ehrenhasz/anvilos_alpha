@@ -1,0 +1,9 @@
+{
+  "module_name": "slot-gpio.h",
+  "hash_id": "5e5b1c2ed6e9a56d2a8e928f9d675b7e494e46ef0c9448d2ad4919e6ab1a5e34",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/core/slot-gpio.h",
+  "human_readable_source": " \n \n#ifndef _MMC_CORE_SLOTGPIO_H\n#define _MMC_CORE_SLOTGPIO_H\n\nstruct mmc_host;\n\nint mmc_gpio_alloc(struct mmc_host *host);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

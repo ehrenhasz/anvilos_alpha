@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "250e2221c6a66d2d07765798dcc17cbe64a350bb8b4f859a1604cd6d5b8e2ae6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/vmw_vmci/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# VMware VMCI device\n#\n\nconfig VMWARE_VMCI\n\ttristate \"VMware VMCI Driver\"\n\tdepends on (X86 || ARM64) && !CPU_BIG_ENDIAN && PCI\n\thelp\n\t  This is VMware's Virtual Machine Communication Interface.  It enables\n\t  high-speed communication between host and guest in a virtual\n\t  environment via the VMCI virtual device.\n\n\t  If unsure, say N.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called vmw_vmci.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

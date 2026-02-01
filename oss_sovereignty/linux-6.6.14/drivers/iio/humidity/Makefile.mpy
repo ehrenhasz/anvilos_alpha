@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6d9ded5bc65eb289bc863bf0e7eb8479bcb2a0be41597f2c8be528448488714d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/humidity/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for IIO humidity sensor drivers\n#\n\nobj-$(CONFIG_AM2315) += am2315.o\nobj-$(CONFIG_DHT11) += dht11.o\nobj-$(CONFIG_HDC100X) += hdc100x.o\nobj-$(CONFIG_HDC2010) += hdc2010.o\nobj-$(CONFIG_HID_SENSOR_HUMIDITY) += hid-sensor-humidity.o\n\nhts221-y := hts221_core.o \\\n\t    hts221_buffer.o\nobj-$(CONFIG_HTS221) += hts221.o\nobj-$(CONFIG_HTS221_I2C) += hts221_i2c.o\nobj-$(CONFIG_HTS221_SPI) += hts221_spi.o\n\nobj-$(CONFIG_HTU21) += htu21.o\nobj-$(CONFIG_SI7005) += si7005.o\nobj-$(CONFIG_SI7020) += si7020.o\n\nccflags-y += -I$(srctree)/drivers/iio/common/hid-sensors\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

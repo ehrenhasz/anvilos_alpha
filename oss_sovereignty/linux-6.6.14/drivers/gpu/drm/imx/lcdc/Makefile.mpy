@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c2d3533206ccec58840e7e05720726f84681bb0c5781b64a08cc5443b7612793",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/imx/lcdc/Makefile",
+  "human_readable_source": "obj-$(CONFIG_DRM_IMX_LCDC) += imx-lcdc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

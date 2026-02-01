@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_vcodec_dec_hw.h",
+  "hash_id": "982ee5687f639c59cfedd7175a1a810a968ba002885b66e128622e3b203d9611",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/vcodec/decoder/mtk_vcodec_dec_hw.h",
+  "human_readable_source": " \n \n\n#ifndef _MTK_VCODEC_DEC_HW_H_\n#define _MTK_VCODEC_DEC_HW_H_\n\n#include <linux/io.h>\n#include <linux/platform_device.h>\n\n#include \"mtk_vcodec_dec_drv.h\"\n\n#define VDEC_HW_ACTIVE_ADDR 0x0\n#define VDEC_HW_ACTIVE_MASK BIT(4)\n#define VDEC_IRQ_CFG 0x11\n#define VDEC_IRQ_CLR 0x10\n#define VDEC_IRQ_CFG_REG 0xa4\n\n#define IS_SUPPORT_VDEC_HW_IRQ(hw_idx) ((hw_idx) != MTK_VDEC_LAT_SOC)\n\n \nenum mtk_vdec_hw_reg_idx {\n\tVDEC_HW_SYS,\n\tVDEC_HW_MISC,\n\tVDEC_HW_MAX\n};\n\n \nstruct mtk_vdec_hw_dev {\n\tstruct platform_device *plat_dev;\n\tstruct mtk_vcodec_dec_dev *main_dev;\n\tvoid __iomem *reg_base[VDEC_HW_MAX];\n\n\tstruct mtk_vcodec_dec_ctx *curr_ctx;\n\n\tint dec_irq;\n\tstruct mtk_vcodec_pm pm;\n\tint hw_idx;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

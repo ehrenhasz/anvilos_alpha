@@ -1,0 +1,9 @@
+{
+  "module_name": "test_is_test_passed-missing_plan.log",
+  "hash_id": "e2f39d87e9c4c3232da8f8f31d623fce226ff659e7835d740c475ea7f7fef731",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/test_data/test_is_test_passed-missing_plan.log",
+  "human_readable_source": "KTAP version 1\n\t# Subtest: sysctl_test\n\t# sysctl_test_dointvec_null_tbl_data: sysctl_test_dointvec_null_tbl_data passed\n\tok 1 - sysctl_test_dointvec_null_tbl_data\n\t# sysctl_test_dointvec_table_maxlen_unset: sysctl_test_dointvec_table_maxlen_unset passed\n\tok 2 - sysctl_test_dointvec_table_maxlen_unset\n\t# sysctl_test_dointvec_table_len_is_zero: sysctl_test_dointvec_table_len_is_zero passed\n\tok 3 - sysctl_test_dointvec_table_len_is_zero\n\t# sysctl_test_dointvec_table_read_but_position_set: sysctl_test_dointvec_table_read_but_position_set passed\n\tok 4 - sysctl_test_dointvec_table_read_but_position_set\n\t# sysctl_test_dointvec_happy_single_positive: sysctl_test_dointvec_happy_single_positive passed\n\tok 5 - sysctl_test_dointvec_happy_single_positive\n\t# sysctl_test_dointvec_happy_single_negative: sysctl_test_dointvec_happy_single_negative passed\n\tok 6 - sysctl_test_dointvec_happy_single_negative\n\t# sysctl_test_dointvec_single_less_int_min: sysctl_test_dointvec_single_less_int_min passed\n\tok 7 - sysctl_test_dointvec_single_less_int_min\n\t# sysctl_test_dointvec_single_greater_int_max: sysctl_test_dointvec_single_greater_int_max passed\n\tok 8 - sysctl_test_dointvec_single_greater_int_max\nkunit sysctl_test: all tests passed\nok 1 - sysctl_test\n\t# Subtest: example\n\t1..2\ninit_suite\n\t# example_simple_test: initializing\n\t# example_simple_test: example_simple_test passed\n\tok 1 - example_simple_test\n\t# example_mock_test: initializing\n\t# example_mock_test: example_mock_test passed\n\tok 2 - example_mock_test\nkunit example: all tests passed\nok 2 - example\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

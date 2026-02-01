@@ -1,0 +1,9 @@
+{
+  "module_name": "alignalloc.c",
+  "hash_id": "51f1b2ca410df9179ef57f4dc79076db323f45d72acfa9bd33f0801ad9e094c3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/alignalloc.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#define ALIGNALLOC_INLINE _GL_EXTERN_INLINE\n#include \"alignalloc.h\"\n\n#include <limits.h>\n#include <stdckdint.h>\n#include <stdint.h>\n\n#if !ALIGNALLOC_VIA_ALIGNED_ALLOC\n# if HAVE_POSIX_MEMALIGN\n\n \nstatic_assert (! (sizeof (void *) & (sizeof (void *) - 1)));\n\n# else  \n\n \n\nstatic void *\nalign_down (void *p, idx_t alignment)\n{\n  char *c = p;\n  return c - ((uintptr_t) p & (alignment - 1));\n}\n\n \n\nstatic void **\naddress_of_pointer_to_malloced (unsigned char *r)\n{\n   \n  static_assert (sizeof (void *) + alignof (void *) - 1 <= UCHAR_MAX);\n\n  return align_down (r - 1 - sizeof (void *), alignof (void *));\n}\n\n \n\nvoid *\nalignalloc (idx_t alignment, idx_t size)\n{\n   \n\n  size_t malloc_size;\n  unsigned char *q;\n  if (ckd_add (&malloc_size, size, alignment)\n      || ! (q = malloc (malloc_size)))\n    {\n      errno = ENOMEM;\n      return NULL;\n    }\n\n  unsigned char *r = align_down (q + alignment, alignment);\n  idx_t offset = r - q;\n\n  if (offset <= UCHAR_MAX)\n    r[-1] = offset;\n  else\n    {\n      r[-1] = 0;\n      *address_of_pointer_to_malloced (r) = q;\n    }\n\n  return r;\n}\n\n \n\nvoid\nalignfree (void *ptr)\n{\n  if (ptr)\n    {\n      unsigned char *r = ptr;\n      unsigned char offset = r[-1];\n      void *q = offset ? r - offset : *address_of_pointer_to_malloced (r);\n      free (q);\n    }\n}\n\n# endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

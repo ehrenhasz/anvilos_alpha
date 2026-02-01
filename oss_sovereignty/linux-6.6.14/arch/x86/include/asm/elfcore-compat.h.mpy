@@ -1,0 +1,9 @@
+{
+  "module_name": "elfcore-compat.h",
+  "hash_id": "53df3ff533a082c65496f0dd93f8121dbaadf7b03540bd7cb5588824f95901aa",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/elfcore-compat.h",
+  "human_readable_source": "#ifndef _ASM_X86_ELFCORE_COMPAT_H\n#define _ASM_X86_ELFCORE_COMPAT_H\n\n#include <asm/user32.h>\n\n \ntypedef struct user_regs_struct compat_elf_gregset_t;\n\nstruct i386_elf_prstatus\n{\n\tstruct compat_elf_prstatus_common\tcommon;\n\tstruct user_regs_struct32\t\tpr_reg;\n\tcompat_int_t\t\t\tpr_fpvalid;\n};\n\n#define PRSTATUS_SIZE \\\n\t(user_64bit_mode(task_pt_regs(current)) \\\n\t\t? sizeof(struct compat_elf_prstatus) \\\n\t\t: sizeof(struct i386_elf_prstatus))\n#define SET_PR_FPVALID(S) \\\n\t(*(user_64bit_mode(task_pt_regs(current)) \\\n\t\t? &(S)->pr_fpvalid \t\\\n\t\t: &((struct i386_elf_prstatus *)(S))->pr_fpvalid) = 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

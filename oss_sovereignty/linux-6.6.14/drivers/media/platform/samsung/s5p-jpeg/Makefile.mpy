@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ae029ef50d782775a067d0fc13a15e0ed02f3648a2db9437a365b16ebfa5bc25",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/s5p-jpeg/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ns5p-jpeg-objs := jpeg-core.o jpeg-hw-exynos3250.o jpeg-hw-exynos4.o jpeg-hw-s5p.o\nobj-$(CONFIG_VIDEO_SAMSUNG_S5P_JPEG) += s5p-jpeg.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ba7eb7b347fb04f9e9488dc72264f80793f1988c99d1a312c8044c32dc959d11",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/rockchip/rkisp1/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_ROCKCHIP_ISP1\n\ttristate \"Rockchip Image Signal Processing v1 Unit driver\"\n\tdepends on V4L_PLATFORM_DRIVERS\n\tdepends on VIDEO_DEV && OF\n\tdepends on ARCH_ROCKCHIP || ARCH_MXC || COMPILE_TEST\n\tselect MEDIA_CONTROLLER\n\tselect VIDEO_V4L2_SUBDEV_API\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect VIDEOBUF2_VMALLOC\n\tselect V4L2_FWNODE\n\tselect GENERIC_PHY_MIPI_DPHY\n\tdefault n\n\thelp\n\t  Enable this to support the Image Signal Processing (ISP) module\n\t  present in RK3399 SoCs.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called rockchip-isp1.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

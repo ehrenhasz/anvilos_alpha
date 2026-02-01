@@ -1,0 +1,9 @@
+{
+  "module_name": "rsa.sig",
+  "hash_id": "f0049c2699b468e1ff98e94476554b076581fc6f546aff6d33a3f390f8fe5ee3",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshsig/testdata/rsa.sig",
+  "human_readable_source": "-----BEGIN SSH SIGNATURE-----\nU1NIU0lHAAAAAQAAAZcAAAAHc3NoLXJzYQAAAAMBAAEAAAGBAN/OpZo0R7Saco/Owa0vrL\nDJrb3P9UjzdIF0z7PY2dYWAKvfD3Gt/0WFTOB2krugjs7UCdmZ2Q903v13gZyFNpn7r0BJ\nfg4sIrBnjYJVckQou+/O3zxRX3Mc2Xw2uxAdqmPEt6GkhmSvEKs7hsJhgCJo5UF8+ifhwn\nf3g/+fBqAkkoqyBAhVggLfrjazgvxJoAM7G33H2iG21cwONLZYFN4TtieNpHXc/AorA07Q\nykAARXDmkGcnEn5+xwz/loFy11wVCPcFTNU4n9X/vTF9PMSLLwrxs6O8i4G20xS0hq+UpA\nPrTq2LqAO1fH4HtInf96Z1bRtVItyO73o3gMH9B2arRXgRJzsJCCRZmXjLRXjlX/uJIuId\naw6gL0rHDbzLS6ejl6WwAEwEwLhFhJCEAZda54JxHtIgvYlPYrSjFuqieBbSG+AAh9RKFN\ncfL6qxXnINob6n5OQmQSSG1dvCRbho2nNzsQWdexam/JY6JlIq9RqxE9s+ujTIG+U4ww+w\nVQAAAAh1bml0dGVzdAAAAAAAAAAGc2hhNTEyAAABlAAAAAxyc2Etc2hhMi01MTIAAAGACi\nnEpBrQxZi0yOrrT6h98JFfZh0XXioih4fzmvtoV0yOReWClS+otGgXoJyZHcbaKNOjDwSM\nrIkUoX6OUJmtHYP0HRELnKw35m33LdBPXpFGS4tRS7NeSpvc04KtjT6jYXY9FjWy5hcn17\nSxc/3DnJqLgJBur8acY7FeIzpWmKixPd/dGkEjdWoD9gO6szLczGuQgrOdYmSRL4yKadTJ\nlVjz5OSeKSYYGQy33US2XQassRRNYf4e9byTA3DKvHa/OcTt7lFerea0kZdDpAboqffz7T\nYaw/hFskAYLIEdTW3aoXBGHSOvu8AkDOtb7qwuxGSQ27pjkDLDNsp1ceCFaCaQ6X83RZuK\nACv9JUBI5KaSf81e0bs0KezJKkhB9czeZ6dk96qISbgayEBnvhYgXvUDKtHn7HzNlCJKfK\n5ABhNxfGG2CD+NKqcrndwFgS1sQO3hbA84zPQb26ShBovT8ytHBmW1F8ZK4O9Bz61Q6EZK\nvs/u6xP6LUean/so5daa\n-----END SSH SIGNATURE-----\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tls.h",
+  "hash_id": "95598c55d14dd000c026b3e0cb67284a8b51458e9a37fe96d6ff3bb14b1e28c8",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/shared/sysdep/tls.h",
+  "human_readable_source": " \n#ifndef _SYSDEP_TLS_H\n#define _SYSDEP_TLS_H\n\n#ifdef __UM_HOST__\n\n \n\ntypedef struct um_dup_user_desc {\n\tunsigned int  entry_number;\n\tunsigned int  base_addr;\n\tunsigned int  limit;\n\tunsigned int  seg_32bit:1;\n\tunsigned int  contents:2;\n\tunsigned int  read_exec_only:1;\n\tunsigned int  limit_in_pages:1;\n\tunsigned int  seg_not_present:1;\n\tunsigned int  useable:1;\n#ifdef __x86_64__\n\tunsigned int  lm:1;\n#endif\n} user_desc_t;\n\n#else  \n\ntypedef struct user_desc user_desc_t;\n\n#endif  \n\nextern int os_set_thread_area(user_desc_t *info, int pid);\nextern int os_get_thread_area(user_desc_t *info, int pid);\n\n#ifdef __i386__\n#define GDT_ENTRY_TLS_MIN_I386 6\n#define GDT_ENTRY_TLS_MIN_X86_64 12\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

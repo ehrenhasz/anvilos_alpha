@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5a0a70d622af890e7fbafc6e20db0c38831f9194601ed6f5ca8bc2ddf96eb7fa",
+  "original_prompt": "Ingested from linux-6.6.14/fs/omfs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig OMFS_FS\n\ttristate \"SonicBlue Optimized MPEG File System support\"\n\tdepends on BLOCK\n\tselect BUFFER_HEAD\n\tselect CRC_ITU_T\n\thelp\n\t  This is the proprietary file system used by the Rio Karma music\n\t  player and ReplayTV DVR.  Despite the name, this filesystem is not\n\t  more efficient than a standard FS for MPEG files, in fact likely\n\t  the opposite is true.  Say Y if you have either of these devices\n\t  and wish to mount its disk.\n\n\t  To compile this file system support as a module, choose M here: the\n\t  module will be called omfs.  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

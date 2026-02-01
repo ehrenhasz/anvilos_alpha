@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "645f937efe739d25d9173613cd1b203bda5cafb6f8185524bee8afdd5ad88acc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/cgroup/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\ncgroup_event_listener\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

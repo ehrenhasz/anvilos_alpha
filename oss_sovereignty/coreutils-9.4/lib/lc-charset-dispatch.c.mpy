@@ -1,0 +1,9 @@
+{
+  "module_name": "lc-charset-dispatch.c",
+  "hash_id": "44012575be4fe867d32cdb42bd13b62b66b523fb0a04be183ecf601d1869d61f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/lc-charset-dispatch.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n \n#include \"lc-charset-dispatch.h\"\n\n#if GNULIB_defined_mbstate_t\n\n# include \"localcharset.h\"\n# include \"streq.h\"\n\n# if GNULIB_WCHAR_SINGLE_LOCALE\n \n#  define locale_encoding_classification_cached locale_encoding_classification\n# else\n \n#  define locale_encoding_classification_uncached locale_encoding_classification\n# endif\n\n# if GNULIB_WCHAR_SINGLE_LOCALE\nstatic inline\n# endif\nenc_t\nlocale_encoding_classification_uncached (void)\n{\n  const char *encoding = locale_charset ();\n  if (STREQ_OPT (encoding, \"UTF-8\", 'U', 'T', 'F', '-', '8', 0, 0, 0, 0))\n    return enc_utf8;\n  if (STREQ_OPT (encoding, \"EUC-JP\", 'E', 'U', 'C', '-', 'J', 'P', 0, 0, 0))\n    return enc_eucjp;\n  if (STREQ_OPT (encoding, \"EUC-KR\", 'E', 'U', 'C', '-', 'K', 'R', 0, 0, 0)\n      || STREQ_OPT (encoding, \"GB2312\", 'G', 'B', '2', '3', '1', '2', 0, 0, 0)\n      || STREQ_OPT (encoding, \"BIG5\", 'B', 'I', 'G', '5', 0, 0, 0, 0, 0))\n    return enc_94;\n  if (STREQ_OPT (encoding, \"EUC-TW\", 'E', 'U', 'C', '-', 'T', 'W', 0, 0, 0))\n    return enc_euctw;\n  if (STREQ_OPT (encoding, \"GB18030\", 'G', 'B', '1', '8', '0', '3', '0', 0, 0))\n    return enc_gb18030;\n  if (STREQ_OPT (encoding, \"SJIS\", 'S', 'J', 'I', 'S', 0, 0, 0, 0, 0))\n    return enc_sjis;\n  return enc_other;\n}\n\n# if GNULIB_WCHAR_SINGLE_LOCALE\n\nstatic int cached_locale_enc = -1;\n\nenc_t\nlocale_encoding_classification_cached (void)\n{\n  if (cached_locale_enc < 0)\n    cached_locale_enc = locale_encoding_classification_uncached ();\n  return cached_locale_enc;\n}\n\n# endif\n\n#else\n\n \ntypedef int dummy;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

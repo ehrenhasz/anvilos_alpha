@@ -1,0 +1,9 @@
+{
+  "module_name": "ipa_mem.h",
+  "hash_id": "70e9e5921a13129ce319ca1bcf1820b388db20dd5bbaf3b4f12c8fd0cf16ad28",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ipa/ipa_mem.h",
+  "human_readable_source": " \n\n \n#ifndef _IPA_MEM_H_\n#define _IPA_MEM_H_\n\nstruct ipa;\nstruct ipa_mem_data;\n\n \n\n \n#define IPA_MEM_MAX\t(2 * PAGE_SIZE)\n\n \nenum ipa_mem_id {\n\tIPA_MEM_UC_SHARED,\t\t \n\tIPA_MEM_UC_INFO,\t\t \n\tIPA_MEM_V4_FILTER_HASHED,\t \n\tIPA_MEM_V4_FILTER,\t\t \n\tIPA_MEM_V6_FILTER_HASHED,\t \n\tIPA_MEM_V6_FILTER,\t\t \n\tIPA_MEM_V4_ROUTE_HASHED,\t \n\tIPA_MEM_V4_ROUTE,\t\t \n\tIPA_MEM_V6_ROUTE_HASHED,\t \n\tIPA_MEM_V6_ROUTE,\t\t \n\tIPA_MEM_MODEM_HEADER,\t\t \n\tIPA_MEM_AP_HEADER,\t\t \n\tIPA_MEM_MODEM_PROC_CTX,\t\t \n\tIPA_MEM_AP_PROC_CTX,\t\t \n\tIPA_MEM_MODEM,\t\t\t \n\tIPA_MEM_UC_EVENT_RING,\t\t \n\tIPA_MEM_PDN_CONFIG,\t\t \n\tIPA_MEM_STATS_QUOTA_MODEM,\t \n\tIPA_MEM_STATS_QUOTA_AP,\t\t \n\tIPA_MEM_STATS_TETHERING,\t \n\tIPA_MEM_STATS_DROP,\t\t \n\t \n\tIPA_MEM_STATS_V4_FILTER,\t \n\tIPA_MEM_STATS_V6_FILTER,\t \n\tIPA_MEM_STATS_V4_ROUTE,\t\t \n\tIPA_MEM_STATS_V6_ROUTE,\t\t \n\tIPA_MEM_AP_V4_FILTER,\t\t \n\tIPA_MEM_AP_V6_FILTER,\t\t \n\tIPA_MEM_STATS_FILTER_ROUTE,\t \n\tIPA_MEM_NAT_TABLE,\t\t \n\tIPA_MEM_END_MARKER,\t\t \n\tIPA_MEM_COUNT,\t\t\t \n};\n\n \nstruct ipa_mem {\n\tenum ipa_mem_id id;\n\tu32 offset;\n\tu16 size;\n\tu16 canary_count;\n};\n\nconst struct ipa_mem *ipa_mem_find(struct ipa *ipa, enum ipa_mem_id mem_id);\n\nint ipa_mem_config(struct ipa *ipa);\nvoid ipa_mem_deconfig(struct ipa *ipa);\n\nint ipa_mem_setup(struct ipa *ipa);\t \n\nint ipa_mem_zero_modem(struct ipa *ipa);\n\nint ipa_mem_init(struct ipa *ipa, const struct ipa_mem_data *mem_data);\nvoid ipa_mem_exit(struct ipa *ipa);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

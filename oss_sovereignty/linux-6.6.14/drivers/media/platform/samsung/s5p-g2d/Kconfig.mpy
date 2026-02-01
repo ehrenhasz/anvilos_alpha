@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "80c11f29d662f3484e8f4614a85dbeda1e472ee6df3812451af2033593326e1b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/s5p-g2d/Kconfig",
+  "human_readable_source": "config VIDEO_SAMSUNG_S5P_G2D\n\ttristate \"Samsung S5P and EXYNOS4 G2D 2d graphics accelerator driver\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on VIDEO_DEV\n\tdepends on ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_MEM2MEM_DEV\n\thelp\n\t  This is a v4l2 driver for Samsung S5P and EXYNOS4 G2D\n\t  2d graphics accelerator.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

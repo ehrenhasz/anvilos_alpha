@@ -1,0 +1,9 @@
+{
+  "module_name": "isphist.h",
+  "hash_id": "f3bb5bf25e00338bb992d15f82b9dfabd00b4b7dfb86ad6992710ce44e2bb796",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/ti/omap3isp/isphist.h",
+  "human_readable_source": " \n \n\n#ifndef OMAP3_ISP_HIST_H\n#define OMAP3_ISP_HIST_H\n\n#include <linux/omap3isp.h>\n\n#define ISPHIST_IN_BIT_WIDTH_CCDC\t10\n\nstruct isp_device;\n\nint omap3isp_hist_init(struct isp_device *isp);\nvoid omap3isp_hist_cleanup(struct isp_device *isp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

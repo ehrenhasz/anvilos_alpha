@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_enumval___diff.c",
+  "hash_id": "319c010dea99a32f7eb6853bd68699d29a65e9caf11f57fa45a225947bc22dc3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_enumval___diff.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_enumval___diff x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

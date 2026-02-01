@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_isys_comm.h",
+  "hash_id": "60d5f5538e3fa972fbe3086fd14fe8f2d6e8ddd552f47b8a581730cf61f02329",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/isys/interface/ia_css_isys_comm.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_ISYS_COMM_H\n#define __IA_CSS_ISYS_COMM_H\n\n#include <type_support.h>\n#include <input_system.h>\n\n#ifdef ISP2401\n#include <platform_support.h>\t\t \n#include <input_system_global.h>\n#include <ia_css_stream_public.h>\t \n\n#define SH_CSS_NODES_PER_THREAD\t\t2\n#define SH_CSS_MAX_ISYS_CHANNEL_NODES\t(SH_CSS_MAX_SP_THREADS * SH_CSS_NODES_PER_THREAD)\n\n \ntypedef virtual_input_system_stream_t\t\t*ia_css_isys_stream_h;\ntypedef virtual_input_system_stream_cfg_t\tia_css_isys_stream_cfg_t;\n\n \ntypedef bool ia_css_isys_error_t;\n\nstatic inline uint32_t ia_css_isys_generate_stream_id(\n    u32\tsp_thread_id,\n    uint32_t\tstream_id)\n{\n\treturn sp_thread_id * IA_CSS_STREAM_MAX_ISYS_STREAM_PER_CH + stream_id;\n}\n\n#endif   \n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

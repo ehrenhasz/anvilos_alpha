@@ -1,0 +1,9 @@
+{
+  "module_name": "compare-ktest-sample.pl",
+  "hash_id": "29178c96102d6b2a40166166d79523f130dd181b275a9b50db0c916923186b75",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/ktest/compare-ktest-sample.pl",
+  "human_readable_source": "#!/usr/bin/env perl\n# SPDX-License-Identifier: GPL-2.0\n\nopen (IN,\"ktest.pl\");\nwhile (<IN>) {\n    # hashes are now used\n    if (/\\$opt\\{\"?([A-Z].*?)(\\[.*\\])?\"?\\}/ ||\n\t/^\\s*\"?([A-Z].*?)\"?\\s*=>\\s*/ ||\n\t/set_test_option\\(\"(.*?)\"/) {\n\t$opt{$1} = 1;\n    }\n}\nclose IN;\n\nopen (IN, \"sample.conf\");\nwhile (<IN>) {\n    if (/^\\s*#?\\s*([A-Z]\\S*)\\s*=/) {\n\t$samp{$1} = 1;\n    }\n}\nclose IN;\n\nforeach $opt (keys %opt) {\n    if (!defined($samp{$opt})) {\n\tprint \"opt = $opt\\n\";\n    }\n}\n\nforeach $samp (keys %samp) {\n    if (!defined($opt{$samp})) {\n\tprint \"samp = $samp\\n\";\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rsa_openssh.pub",
+  "hash_id": "8e15a08f6c0fd219aae12005085987e8c0456ea4109f33a13a5b78ba96e8e0dd",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/rsa_openssh.pub",
+  "human_readable_source": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQDsilwKcaKN6wSMNd1WgQ9+HRqQEkD0kCTVttrazGu0OhBU3Uko+dFD1Ip0CxdXmN25JQWxOYF7h/Ocu8P3jzv3RTX87xKR0YzlXTLX+SLtF/ySebS3xWPrlfRUDhh03hR5V+8xxvvy9widPYKw/oItwGSueOsEq1LTczCDv2dAjQ==\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

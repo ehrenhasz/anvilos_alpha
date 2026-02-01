@@ -1,0 +1,9 @@
+{
+  "module_name": "atc260x-i2c.c",
+  "hash_id": "73b99bb2bb5aa5385f4c03ba520d15e360bef91f3f9914647c59811596655efe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/atc260x-i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/i2c.h>\n#include <linux/mfd/atc260x/core.h>\n#include <linux/module.h>\n#include <linux/of.h>\n#include <linux/regmap.h>\n\nstatic int atc260x_i2c_probe(struct i2c_client *client)\n{\n\tstruct atc260x *atc260x;\n\tstruct regmap_config regmap_cfg;\n\tint ret;\n\n\tatc260x = devm_kzalloc(&client->dev, sizeof(*atc260x), GFP_KERNEL);\n\tif (!atc260x)\n\t\treturn -ENOMEM;\n\n\tatc260x->dev = &client->dev;\n\tatc260x->irq = client->irq;\n\n\tret = atc260x_match_device(atc260x, &regmap_cfg);\n\tif (ret)\n\t\treturn ret;\n\n\ti2c_set_clientdata(client, atc260x);\n\n\tatc260x->regmap = devm_regmap_init_i2c(client, &regmap_cfg);\n\tif (IS_ERR(atc260x->regmap)) {\n\t\tret = PTR_ERR(atc260x->regmap);\n\t\tdev_err(&client->dev, \"failed to init regmap: %d\\n\", ret);\n\t\treturn ret;\n\t}\n\n\treturn atc260x_device_probe(atc260x);\n}\n\nstatic const struct of_device_id atc260x_i2c_of_match[] = {\n\t{ .compatible = \"actions,atc2603c\", .data = (void *)ATC2603C },\n\t{ .compatible = \"actions,atc2609a\", .data = (void *)ATC2609A },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, atc260x_i2c_of_match);\n\nstatic struct i2c_driver atc260x_i2c_driver = {\n\t.driver = {\n\t\t.name = \"atc260x\",\n\t\t.of_match_table\t= atc260x_i2c_of_match,\n\t},\n\t.probe = atc260x_i2c_probe,\n};\nmodule_i2c_driver(atc260x_i2c_driver);\n\nMODULE_DESCRIPTION(\"ATC260x PMICs I2C bus interface\");\nMODULE_AUTHOR(\"Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>\");\nMODULE_AUTHOR(\"Cristian Ciocaltea <cristian.ciocaltea@gmail.com>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

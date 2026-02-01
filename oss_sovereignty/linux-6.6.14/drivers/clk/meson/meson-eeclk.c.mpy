@@ -1,0 +1,9 @@
+{
+  "module_name": "meson-eeclk.c",
+  "hash_id": "8580cc658590c5da9e2f6918cf8e4f7a823fc837738e87354706387f84b1c0df",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/meson/meson-eeclk.c",
+  "human_readable_source": "\n \n\n#include <linux/clk-provider.h>\n#include <linux/of.h>\n#include <linux/platform_device.h>\n#include <linux/mfd/syscon.h>\n#include <linux/regmap.h>\n#include <linux/module.h>\n\n#include \"clk-regmap.h\"\n#include \"meson-eeclk.h\"\n\nint meson_eeclkc_probe(struct platform_device *pdev)\n{\n\tconst struct meson_eeclkc_data *data;\n\tstruct device *dev = &pdev->dev;\n\tstruct device_node *np;\n\tstruct regmap *map;\n\tint ret, i;\n\n\tdata = of_device_get_match_data(dev);\n\tif (!data)\n\t\treturn -EINVAL;\n\n\t \n\tnp = of_get_parent(dev->of_node);\n\tmap = syscon_node_to_regmap(np);\n\tof_node_put(np);\n\tif (IS_ERR(map)) {\n\t\tdev_err(dev,\n\t\t\t\"failed to get HHI regmap\\n\");\n\t\treturn PTR_ERR(map);\n\t}\n\n\tif (data->init_count)\n\t\tregmap_multi_reg_write(map, data->init_regs, data->init_count);\n\n\t \n\tfor (i = 0; i < data->regmap_clk_num; i++)\n\t\tdata->regmap_clks[i]->map = map;\n\n\tfor (i = 0; i < data->hw_clks.num; i++) {\n\t\t \n\t\tif (!data->hw_clks.hws[i])\n\t\t\tcontinue;\n\n\t\tret = devm_clk_hw_register(dev, data->hw_clks.hws[i]);\n\t\tif (ret) {\n\t\t\tdev_err(dev, \"Clock registration failed\\n\");\n\t\t\treturn ret;\n\t\t}\n\t}\n\n\treturn devm_of_clk_add_hw_provider(dev, meson_clk_hw_get, (void *)&data->hw_clks);\n}\nEXPORT_SYMBOL_GPL(meson_eeclkc_probe);\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

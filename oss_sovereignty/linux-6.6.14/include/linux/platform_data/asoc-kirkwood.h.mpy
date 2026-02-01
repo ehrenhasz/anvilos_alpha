@@ -1,0 +1,9 @@
+{
+  "module_name": "asoc-kirkwood.h",
+  "hash_id": "b140209e2f17f22e32709090716caa01e29f9ec6e7a92db0bdb278efe1b8e657",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/asoc-kirkwood.h",
+  "human_readable_source": " \n#ifndef __PLAT_AUDIO_H\n#define __PLAT_AUDIO_H\n\nstruct kirkwood_asoc_platform_data {\n\tint burst;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

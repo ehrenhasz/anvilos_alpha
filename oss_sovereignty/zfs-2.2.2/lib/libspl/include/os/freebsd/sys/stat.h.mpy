@@ -1,0 +1,9 @@
+{
+  "module_name": "stat.h",
+  "hash_id": "8e0a13afde6c55a05ce8715b07b406ed04f6c29242f266b3769594dd32f5f12a",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/os/freebsd/sys/stat.h",
+  "human_readable_source": " \n \n\n#ifndef _LIBSPL_SYS_STAT_H\n#define\t_LIBSPL_SYS_STAT_H\n\n#include_next <sys/stat.h>\n\n \n\n#if defined(__FreeBSD__)\n#include <sys/mount.h>  \n\n#define\tstat64\tstat\n\n#define\tMAXOFFSET_T\tOFF_MAX\n\n#ifndef _KERNEL\n#include <sys/disk.h>\n\nstatic __inline int\nfstat64(int fd, struct stat *sb)\n{\n\tint ret;\n\n\tret = fstat(fd, sb);\n\tif (ret == 0) {\n\t\tif (S_ISCHR(sb->st_mode))\n\t\t\t(void) ioctl(fd, DIOCGMEDIASIZE, &sb->st_size);\n\t}\n\treturn (ret);\n}\n#endif\n\n \nstatic inline int\nfstat64_blk(int fd, struct stat64 *st)\n{\n\tif (fstat64(fd, st) == -1)\n\t\treturn (-1);\n\n\t \n\tif (S_ISBLK(st->st_mode)) {\n\t\tif (ioctl(fd, BLKGETSIZE64, &st->st_size) != 0)\n\t\t\treturn (-1);\n\t}\n\n\treturn (0);\n}\n#endif  \n\n \n#if defined(__APPLE__) && !(defined(__i386__) || defined(__x86_64__))\n#define\tstat64\tstat\n#define\tfstat64\tfstat\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

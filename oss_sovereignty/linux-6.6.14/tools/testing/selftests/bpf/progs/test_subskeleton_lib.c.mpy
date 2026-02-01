@@ -1,0 +1,9 @@
+{
+  "module_name": "test_subskeleton_lib.c",
+  "hash_id": "aa36c11e64de37b2257f5031d4d33a40a36e53cfcb70ccc4e6ba0c79219906e5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_subskeleton_lib.c",
+  "human_readable_source": "\n \n\n#include <stdbool.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\n \nconst volatile int var1;\nvolatile int var2 = 1;\nstruct {\n\tint var3_1;\n\t__s64 var3_2;\n} var3;\nint libout1;\n\nextern volatile bool CONFIG_BPF_SYSCALL __kconfig;\n\nint var4[4];\n\n__weak int var5 SEC(\".data\");\n\n \nextern int var6;\n\nint var7 SEC(\".data.custom\");\n\nint (*fn_ptr)(void);\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__type(key, __u32);\n\t__type(value, __u32);\n\t__uint(max_entries, 16);\n} map1 SEC(\".maps\");\n\nextern struct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n\t__type(key, __u32);\n\t__type(value, __u32);\n\t__uint(max_entries, 16);\n} map2 SEC(\".maps\");\n\nint lib_routine(void)\n{\n\t__u32 key = 1, value = 2;\n\n\t(void) CONFIG_BPF_SYSCALL;\n\tbpf_map_update_elem(&map2, &key, &value, BPF_ANY);\n\n\tlibout1 = var1 + var2 + var3.var3_1 + var3.var3_2 + var5 + var6;\n\treturn libout1;\n}\n\nSEC(\"perf_event\")\nint lib_perf_handler(struct pt_regs *ctx)\n{\n\treturn 0;\n}\n\nchar LICENSE[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

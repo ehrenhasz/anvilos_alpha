@@ -1,0 +1,9 @@
+{
+  "module_name": "subunit.h",
+  "hash_id": "d7dd66a484f0d314a41bbbfa57527c03966cfe6b15a114b2a1bf4502140ce117",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/include/subunit.h",
+  "human_readable_source": " \n \n\n#ifndef _SELFTESTS_POWERPC_SUBUNIT_H\n#define _SELFTESTS_POWERPC_SUBUNIT_H\n\nstatic inline void test_start(const char *name)\n{\n\tprintf(\"test: %s\\n\", name);\n}\n\nstatic inline void test_failure_detail(const char *name, const char *detail)\n{\n\tprintf(\"failure: %s [%s]\\n\", name, detail);\n}\n\nstatic inline void test_failure(const char *name)\n{\n\tprintf(\"failure: %s\\n\", name);\n}\n\nstatic inline void test_error(const char *name)\n{\n\tprintf(\"error: %s\\n\", name);\n}\n\nstatic inline void test_skip(const char *name)\n{\n\tprintf(\"skip: %s\\n\", name);\n}\n\nstatic inline void test_success(const char *name)\n{\n\tprintf(\"success: %s\\n\", name);\n}\n\nstatic inline void test_finish(const char *name, int status)\n{\n\tif (status)\n\t\ttest_failure(name);\n\telse\n\t\ttest_success(name);\n}\n\nstatic inline void test_set_git_version(const char *value)\n{\n\tprintf(\"tags: git_version:%s\\n\", value);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

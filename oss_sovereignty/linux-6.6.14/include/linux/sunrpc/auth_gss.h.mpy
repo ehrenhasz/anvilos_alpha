@@ -1,0 +1,9 @@
+{
+  "module_name": "auth_gss.h",
+  "hash_id": "900edce39301f08c04a1f600c85b713393dfc5e0cc04de360c3ae3179c58fe48",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sunrpc/auth_gss.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_SUNRPC_AUTH_GSS_H\n#define _LINUX_SUNRPC_AUTH_GSS_H\n\n#include <linux/refcount.h>\n#include <linux/sunrpc/auth.h>\n#include <linux/sunrpc/svc.h>\n#include <linux/sunrpc/gss_api.h>\n\n#define RPC_GSS_VERSION\t\t1\n\n#define MAXSEQ 0x80000000  \n\nenum rpc_gss_proc {\n\tRPC_GSS_PROC_DATA = 0,\n\tRPC_GSS_PROC_INIT = 1,\n\tRPC_GSS_PROC_CONTINUE_INIT = 2,\n\tRPC_GSS_PROC_DESTROY = 3\n};\n\nenum rpc_gss_svc {\n\tRPC_GSS_SVC_NONE = 1,\n\tRPC_GSS_SVC_INTEGRITY = 2,\n\tRPC_GSS_SVC_PRIVACY = 3\n};\n\n \nstruct rpc_gss_wire_cred {\n\tu32\t\t\tgc_v;\t\t \n\tu32\t\t\tgc_proc;\t \n\tu32\t\t\tgc_seq;\t\t \n\tu32\t\t\tgc_svc;\t\t \n\tstruct xdr_netobj\tgc_ctx;\t\t \n};\n\n \nstruct rpc_gss_wire_verf {\n\tu32\t\t\tgv_flavor;\n\tstruct xdr_netobj\tgv_verf;\n};\n\n \nstruct rpc_gss_init_res {\n\tstruct xdr_netobj\tgr_ctx;\t\t \n\tu32\t\t\tgr_major;\t \n\tu32\t\t\tgr_minor;\t \n\tu32\t\t\tgr_win;\t\t \n\tstruct xdr_netobj\tgr_token;\t \n};\n\n \n\nstruct gss_cl_ctx {\n\trefcount_t\t\tcount;\n\tenum rpc_gss_proc\tgc_proc;\n\tu32\t\t\tgc_seq;\n\tu32\t\t\tgc_seq_xmit;\n\tspinlock_t\t\tgc_seq_lock;\n\tstruct gss_ctx\t\t*gc_gss_ctx;\n\tstruct xdr_netobj\tgc_wire_ctx;\n\tstruct xdr_netobj\tgc_acceptor;\n\tu32\t\t\tgc_win;\n\tunsigned long\t\tgc_expiry;\n\tstruct rcu_head\t\tgc_rcu;\n};\n\nstruct gss_upcall_msg;\nstruct gss_cred {\n\tstruct rpc_cred\t\tgc_base;\n\tenum rpc_gss_svc\tgc_service;\n\tstruct gss_cl_ctx __rcu\t*gc_ctx;\n\tstruct gss_upcall_msg\t*gc_upcall;\n\tconst char\t\t*gc_principal;\n\tunsigned long\t\tgc_upcall_timestamp;\n};\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

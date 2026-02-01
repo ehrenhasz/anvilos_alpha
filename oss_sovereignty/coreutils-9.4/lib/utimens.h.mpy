@@ -1,0 +1,9 @@
+{
+  "module_name": "utimens.h",
+  "hash_id": "0621b76a32028ee4650bcda74099169b33a3ced2744fec69732de61ab44c41f4",
+  "original_prompt": "Ingested from coreutils-9.4/lib/utimens.h",
+  "human_readable_source": " \n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <time.h>\nint fdutimens (int, char const *, struct timespec const [2]);\nint utimens (char const *, struct timespec const [2]);\nint lutimens (char const *, struct timespec const [2]);\n\n#if GNULIB_FDUTIMENSAT\n# include <fcntl.h>\n# include <sys/stat.h>\n\n_GL_INLINE_HEADER_BEGIN\n#ifndef _GL_UTIMENS_INLINE\n# define _GL_UTIMENS_INLINE _GL_INLINE\n#endif\n\nint fdutimensat (int fd, int dir, char const *name, struct timespec const [2],\n                 int atflag);\n\n \n_GL_UTIMENS_INLINE int\nlutimensat (int dir, char const *file, struct timespec const times[2])\n{\n  return utimensat (dir, file, times, AT_SYMLINK_NOFOLLOW);\n}\n\n_GL_INLINE_HEADER_END\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

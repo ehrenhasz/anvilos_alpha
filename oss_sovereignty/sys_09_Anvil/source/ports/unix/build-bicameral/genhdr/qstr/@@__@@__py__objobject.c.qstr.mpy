@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objobject.c.qstr",
+  "hash_id": "a05c0b5b4e780ad191abb769f9901c117b489538e89f3fa68f7925ff07f6fa72",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objobject.c.qstr",
+  "human_readable_source": "Q(__init__)\nQ(__new__)\nQ(object)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "des.h",
+  "hash_id": "f5257183534d2118af5cb1448d892e5f87fc7572c1e5184b5599f88fd3153d74",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/des.h",
+  "human_readable_source": " \n \n\n#ifndef __CRYPTO_DES_H\n#define __CRYPTO_DES_H\n\n#include <linux/types.h>\n\n#define DES_KEY_SIZE\t\t8\n#define DES_EXPKEY_WORDS\t32\n#define DES_BLOCK_SIZE\t\t8\n\n#define DES3_EDE_KEY_SIZE\t(3 * DES_KEY_SIZE)\n#define DES3_EDE_EXPKEY_WORDS\t(3 * DES_EXPKEY_WORDS)\n#define DES3_EDE_BLOCK_SIZE\tDES_BLOCK_SIZE\n\nstruct des_ctx {\n\tu32 expkey[DES_EXPKEY_WORDS];\n};\n\nstruct des3_ede_ctx {\n\tu32 expkey[DES3_EDE_EXPKEY_WORDS];\n};\n\nvoid des_encrypt(const struct des_ctx *ctx, u8 *dst, const u8 *src);\nvoid des_decrypt(const struct des_ctx *ctx, u8 *dst, const u8 *src);\n\nvoid des3_ede_encrypt(const struct des3_ede_ctx *dctx, u8 *dst, const u8 *src);\nvoid des3_ede_decrypt(const struct des3_ede_ctx *dctx, u8 *dst, const u8 *src);\n\n \nint des_expand_key(struct des_ctx *ctx, const u8 *key, unsigned int keylen);\n\n \nint des3_ede_expand_key(struct des3_ede_ctx *ctx, const u8 *key,\n\t\t\tunsigned int keylen);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

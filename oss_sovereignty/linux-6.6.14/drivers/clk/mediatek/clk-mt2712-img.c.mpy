@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-mt2712-img.c",
+  "hash_id": "dd96d1ac6f392723b7add3bc0b77555efac38330984bf8e2179ee78f8d4fb238",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mediatek/clk-mt2712-img.c",
+  "human_readable_source": "\n \n\n#include <linux/clk-provider.h>\n#include <linux/platform_device.h>\n\n#include \"clk-mtk.h\"\n#include \"clk-gate.h\"\n\n#include <dt-bindings/clock/mt2712-clk.h>\n\nstatic const struct mtk_gate_regs img_cg_regs = {\n\t.set_ofs = 0x0,\n\t.clr_ofs = 0x0,\n\t.sta_ofs = 0x0,\n};\n\n#define GATE_IMG(_id, _name, _parent, _shift)\t\t\t\\\n\tGATE_MTK(_id, _name, _parent, &img_cg_regs, _shift, &mtk_clk_gate_ops_no_setclr)\n\nstatic const struct mtk_gate img_clks[] = {\n\tGATE_IMG(CLK_IMG_SMI_LARB2, \"img_smi_larb2\", \"mm_sel\", 0),\n\tGATE_IMG(CLK_IMG_SENINF_SCAM_EN, \"img_scam_en\", \"csi0\", 3),\n\tGATE_IMG(CLK_IMG_SENINF_CAM_EN, \"img_cam_en\", \"mm_sel\", 8),\n\tGATE_IMG(CLK_IMG_CAM_SV_EN, \"img_cam_sv_en\", \"mm_sel\", 9),\n\tGATE_IMG(CLK_IMG_CAM_SV1_EN, \"img_cam_sv1_en\", \"mm_sel\", 10),\n\tGATE_IMG(CLK_IMG_CAM_SV2_EN, \"img_cam_sv2_en\", \"mm_sel\", 11),\n};\n\nstatic const struct mtk_clk_desc img_desc = {\n\t.clks = img_clks,\n\t.num_clks = ARRAY_SIZE(img_clks),\n};\n\nstatic const struct of_device_id of_match_clk_mt2712_img[] = {\n\t{\n\t\t.compatible = \"mediatek,mt2712-imgsys\",\n\t\t.data = &img_desc,\n\t}, {\n\t\t \n\t}\n};\nMODULE_DEVICE_TABLE(of, of_match_clk_mt2712_img);\n\nstatic struct platform_driver clk_mt2712_img_drv = {\n\t.probe = mtk_clk_simple_probe,\n\t.remove_new = mtk_clk_simple_remove,\n\t.driver = {\n\t\t.name = \"clk-mt2712-img\",\n\t\t.of_match_table = of_match_clk_mt2712_img,\n\t},\n};\nmodule_platform_driver(clk_mt2712_img_drv);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

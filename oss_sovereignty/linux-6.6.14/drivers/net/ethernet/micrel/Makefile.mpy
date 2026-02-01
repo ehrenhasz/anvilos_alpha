@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "abc69d26d74cbc69c82eb40cee2af5efdc5edee8e5c5950beba816f88c978ad7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/micrel/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Micrel network device drivers.\n#\n\nobj-$(CONFIG_KS8842) += ks8842.o\nobj-$(CONFIG_KS8851) += ks8851_common.o ks8851_spi.o\nobj-$(CONFIG_KS8851_MLL) += ks8851_common.o ks8851_par.o\nobj-$(CONFIG_KSZ884X_PCI) += ksz884x.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

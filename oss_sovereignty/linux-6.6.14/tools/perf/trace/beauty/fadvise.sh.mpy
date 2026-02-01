@@ -1,0 +1,9 @@
+{
+  "module_name": "fadvise.sh",
+  "hash_id": "4e8707e8f73dedc3a8c1760a66e33f7d2243ecce3390e2b70180e66be206d8a1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/fadvise.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n\n[ $# -eq 1 ] && header_dir=$1 || header_dir=tools/include/uapi/linux/\n\nprintf \"static const char *fadvise_advices[] = {\\n\"\nregex='^[[:space:]]*#[[:space:]]*define[[:space:]]+POSIX_FADV_(\\w+)[[:space:]]+([[:digit:]]+)[[:space:]]+.*'\n\ngrep -E $regex ${header_dir}/fadvise.h | \\\n\tsed -r \"s/$regex/\\2 \\1/g\"\t| \\\n\tsort | xargs printf \"\\t[%s] = \\\"%s\\\",\\n\" | \\\n\tgrep -v \"[6].*DONTNEED\" | grep -v \"[7].*NOREUSE\"\nprintf \"};\\n\"\n\n# XXX Fix this properly:\n\n# The grep 6/7 DONTNEED/NOREUSE are a hack to filter out the s/390 oddity See\n# tools/include/uapi/linux/fadvise.h for details.\n\n# Probably fix this when generating the string tables per arch so that We can\n# reliably process on arch FOO a perf.data file collected by 'perf trace\n# record' on arch BAR, e.g. collect on s/390 and process on x86.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

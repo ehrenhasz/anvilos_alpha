@@ -1,0 +1,9 @@
+{
+  "module_name": "ttm_kmap_iter.h",
+  "hash_id": "d84467f31b23de6e85828b2d2e7ab91e09469f96b4f9dae99ba2f038482b1975",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/ttm/ttm_kmap_iter.h",
+  "human_readable_source": " \n \n#ifndef __TTM_KMAP_ITER_H__\n#define __TTM_KMAP_ITER_H__\n\n#include <linux/types.h>\n\nstruct ttm_kmap_iter;\nstruct iosys_map;\n\n \nstruct ttm_kmap_iter_ops {\n\t \n\tvoid (*map_local)(struct ttm_kmap_iter *res_iter,\n\t\t\t  struct iosys_map *dmap, pgoff_t i);\n\t \n\tvoid (*unmap_local)(struct ttm_kmap_iter *res_iter,\n\t\t\t    struct iosys_map *dmap);\n\tbool maps_tt;\n};\n\n \nstruct ttm_kmap_iter {\n\tconst struct ttm_kmap_iter_ops *ops;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

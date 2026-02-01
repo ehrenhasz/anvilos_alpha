@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f806ff65ab9b3e372420d7f18bd310278cc79610272edfedb68bfdd6ffb54b3d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pnp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux Plug-and-Play Support.\n#\n\nobj-y\t\t:= pnp.o\n\npnp-y\t\t:= core.o card.o driver.o resource.o manager.o support.o interface.o quirks.o\n\nobj-$(CONFIG_PNPACPI)\t\t+= pnpacpi/\nobj-$(CONFIG_PNPBIOS)\t\t+= pnpbios/\nobj-$(CONFIG_ISAPNP)\t\t+= isapnp/\n\n# pnp_system_init goes after pnpacpi/pnpbios init\npnp-y\t\t\t\t+= system.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

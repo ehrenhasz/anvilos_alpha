@@ -1,0 +1,9 @@
+{
+  "module_name": "ep93xx.h",
+  "hash_id": "82ab588b91b549e7077b89d99688ca94bc21a216a890d6a7fe2e4cb63125b84f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/cirrus/ep93xx.h",
+  "human_readable_source": " \n#ifndef _SOC_EP93XX_H\n#define _SOC_EP93XX_H\n\nstruct platform_device;\n\n#define EP93XX_CHIP_REV_D0\t3\n#define EP93XX_CHIP_REV_D1\t4\n#define EP93XX_CHIP_REV_E0\t5\n#define EP93XX_CHIP_REV_E1\t6\n#define EP93XX_CHIP_REV_E2\t7\n\n#ifdef CONFIG_ARCH_EP93XX\nint ep93xx_pwm_acquire_gpio(struct platform_device *pdev);\nvoid ep93xx_pwm_release_gpio(struct platform_device *pdev);\nint ep93xx_ide_acquire_gpio(struct platform_device *pdev);\nvoid ep93xx_ide_release_gpio(struct platform_device *pdev);\nint ep93xx_keypad_acquire_gpio(struct platform_device *pdev);\nvoid ep93xx_keypad_release_gpio(struct platform_device *pdev);\nint ep93xx_i2s_acquire(void);\nvoid ep93xx_i2s_release(void);\nunsigned int ep93xx_chip_revision(void);\n\n#else\nstatic inline int ep93xx_pwm_acquire_gpio(struct platform_device *pdev) { return 0; }\nstatic inline void ep93xx_pwm_release_gpio(struct platform_device *pdev) {}\nstatic inline int ep93xx_ide_acquire_gpio(struct platform_device *pdev) { return 0; }\nstatic inline void ep93xx_ide_release_gpio(struct platform_device *pdev) {}\nstatic inline int ep93xx_keypad_acquire_gpio(struct platform_device *pdev) { return 0; }\nstatic inline void ep93xx_keypad_release_gpio(struct platform_device *pdev) {}\nstatic inline int ep93xx_i2s_acquire(void) { return 0; }\nstatic inline void ep93xx_i2s_release(void) {}\nstatic inline unsigned int ep93xx_chip_revision(void) { return 0; }\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ls2k-reset.c",
+  "hash_id": "be5f6da2bb68fd0988a90f232191d1e199d942d2e928c728b7892401dda055da",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/mips/ls2k-reset.c",
+  "human_readable_source": "\n \n\n#include <linux/of_address.h>\n#include <linux/pm.h>\n#include <asm/reboot.h>\n\n#define\tPM1_STS\t\t0x0c  \n#define\tPM1_CNT\t\t0x14  \n#define\tRST_CNT\t\t0x30  \n\nstatic void __iomem *base;\n\nstatic void ls2k_restart(char *command)\n{\n\twritel(0x1, base + RST_CNT);\n}\n\nstatic void ls2k_poweroff(void)\n{\n\t \n\twritel((readl(base + PM1_STS) & 0xffffffff), base + PM1_STS);\n\t \n\twritel(GENMASK(12, 10) | BIT(13), base + PM1_CNT);\n}\n\nstatic int ls2k_reset_init(void)\n{\n\tstruct device_node *np;\n\n\tnp = of_find_compatible_node(NULL, NULL, \"loongson,ls2k-pm\");\n\tif (!np) {\n\t\tpr_info(\"Failed to get PM node\\n\");\n\t\treturn -ENODEV;\n\t}\n\n\tbase = of_iomap(np, 0);\n\tof_node_put(np);\n\tif (!base) {\n\t\tpr_info(\"Failed to map PM register base address\\n\");\n\t\treturn -ENOMEM;\n\t}\n\n\t_machine_restart = ls2k_restart;\n\tpm_power_off = ls2k_poweroff;\n\n\treturn 0;\n}\n\narch_initcall(ls2k_reset_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

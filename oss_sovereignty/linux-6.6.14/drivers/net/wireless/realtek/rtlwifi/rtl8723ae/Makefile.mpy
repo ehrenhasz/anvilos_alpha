@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cc30d4bdf5e2e36679923e6df087db05a7964ae7b21a55774933148003e79946",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nrtl8723ae-objs :=\t\t\\\n\t\tdm.o\t\t\\\n\t\tfw.o\t\t\\\n\t\thal_btc.o\t\\\n\t\thal_bt_coexist.o\\\n\t\thw.o\t\t\\\n\t\tled.o\t\t\\\n\t\tphy.o\t\t\\\n\t\tpwrseq.o\t\\\n\t\trf.o\t\t\\\n\t\tsw.o\t\t\\\n\t\ttable.o\t\t\\\n\t\ttrx.o\t\t\\\n\n\nobj-$(CONFIG_RTL8723AE) += rtl8723ae.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

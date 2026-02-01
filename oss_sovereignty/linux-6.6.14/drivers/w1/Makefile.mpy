@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a6d55bf19e6a4558c6905c88eda7df705c42b9652bde30fd174043cdf3a1dbc9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/w1/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Dallas's 1-wire bus.\n#\n\nobj-$(CONFIG_W1)\t+= wire.o\nwire-objs\t\t:= w1.o w1_int.o w1_family.o w1_netlink.o w1_io.o\n\nobj-y\t\t\t+= masters/ slaves/\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cpumap.h",
+  "hash_id": "65973743f1dea2b28bd77848e03d0279c1ee1866e369b848d112855afd79bebb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/perf/include/internal/cpumap.h",
+  "human_readable_source": " \n#ifndef __LIBPERF_INTERNAL_CPUMAP_H\n#define __LIBPERF_INTERNAL_CPUMAP_H\n\n#include <linux/refcount.h>\n#include <perf/cpumap.h>\n#include <internal/rc_check.h>\n\n \nDECLARE_RC_STRUCT(perf_cpu_map) {\n\trefcount_t\trefcnt;\n\t \n\tint\t\tnr;\n\t \n\tstruct perf_cpu\tmap[];\n};\n\n#ifndef MAX_NR_CPUS\n#define MAX_NR_CPUS\t2048\n#endif\n\nstruct perf_cpu_map *perf_cpu_map__alloc(int nr_cpus);\nint perf_cpu_map__idx(const struct perf_cpu_map *cpus, struct perf_cpu cpu);\nbool perf_cpu_map__is_subset(const struct perf_cpu_map *a, const struct perf_cpu_map *b);\n\nvoid perf_cpu_map__set_nr(struct perf_cpu_map *map, int nr_cpus);\n\nstatic inline refcount_t *perf_cpu_map__refcnt(struct perf_cpu_map *map)\n{\n\treturn &RC_CHK_ACCESS(map)->refcnt;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

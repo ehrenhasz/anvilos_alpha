@@ -1,0 +1,9 @@
+{
+  "module_name": "hex",
+  "hash_id": "60ea1ae74056a65e731fd3ef21becd0315c2b04d9c0b3da512cc8b7954ff6218",
+  "original_prompt": "Ingested from linux-6.6.14/tools/edid/hex",
+  "human_readable_source": "\"\\t\" 8/1 \"0x%02x, \" \"\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

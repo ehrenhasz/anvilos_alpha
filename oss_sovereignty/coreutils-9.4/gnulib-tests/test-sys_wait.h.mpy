@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sys_wait.h",
+  "hash_id": "33b2249cc86374840a6058a54179028c2ad48918d8fa25ff7332b2cffd24694d",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sys_wait.h",
+  "human_readable_source": " \n\nstatic int\ntest_sys_wait_macros (void)\n{\n   \n  int i;\n  for (i = 0; i < 0x8000; i = (i ? i << 1 : 1))\n    {\n       \n      if (i == 0x80)\n        continue;\n      if (!!WIFSIGNALED (i) + !!WIFEXITED (i) + !!WIFSTOPPED (i) != 1)\n        return 1;\n    }\n  i = WEXITSTATUS (i) + WSTOPSIG (i) + WTERMSIG (i);\n\n#if 0\n  switch (i)\n    {\n   \n    case WNOHANG:\n    case WUNTRACED:\n      break;\n    }\n#endif\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xgethostname.h",
+  "hash_id": "114062df0b5f7025a8e9e465e6a0a1fc4ea583d7d3995b1b907533696c267a10",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xgethostname.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stdlib.h>\n\nchar *xgethostname (void)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

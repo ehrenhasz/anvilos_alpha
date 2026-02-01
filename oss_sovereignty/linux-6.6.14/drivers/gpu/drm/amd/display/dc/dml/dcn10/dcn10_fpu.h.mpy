@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn10_fpu.h",
+  "hash_id": "dbc19862a3e41be5481003a96b4f3660fe79907f25d8aa7ea5a19021bb51b1e0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dml/dcn10/dcn10_fpu.h",
+  "human_readable_source": " \n \n\n#ifndef __DCN10_FPU_H__\n#define __DCN10_FPU_H__\n\nvoid dcn10_resource_construct_fp(struct dc *dc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

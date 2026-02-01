@@ -1,0 +1,9 @@
+{
+  "module_name": "va_high_addr_switch.sh",
+  "hash_id": "986d2da03f191714fd1a984e9f668817f2e0f516053b0b39966e45f4546e65a4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/mm/va_high_addr_switch.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n#\n# Copyright (C) 2022 Adam Sindelar (Meta) <adam@wowsignal.io>\n#\n# This is a test for mmap behavior with 5-level paging. This script wraps the\n# real test to check that the kernel is configured to support at least 5\n# pagetable levels.\n\n# 1 means the test failed\nexitcode=1\n\n# Kselftest framework requirement - SKIP code is 4.\nksft_skip=4\n\nfail()\n{\n\techo \"$1\"\n\texit $exitcode\n}\n\ncheck_supported_x86_64()\n{\n\tlocal config=\"/proc/config.gz\"\n\t[[ -f \"${config}\" ]] || config=\"/boot/config-$(uname -r)\"\n\t[[ -f \"${config}\" ]] || fail \"Cannot find kernel config in /proc or /boot\"\n\n\t# gzip -dcfq automatically handles both compressed and plaintext input.\n\t# See man 1 gzip under '-f'.\n\tlocal pg_table_levels=$(gzip -dcfq \"${config}\" | grep PGTABLE_LEVELS | cut -d'=' -f 2)\n\n\tif [[ \"${pg_table_levels}\" -lt 5 ]]; then\n\t\techo \"$0: PGTABLE_LEVELS=${pg_table_levels}, must be >= 5 to run this test\"\n\t\texit $ksft_skip\n\tfi\n}\n\ncheck_test_requirements()\n{\n\t# The test supports x86_64 and powerpc64. We currently have no useful\n\t# eligibility check for powerpc64, and the test itself will reject other\n\t# architectures.\n\tcase `uname -m` in\n\t\t\"x86_64\")\n\t\t\tcheck_supported_x86_64\n\t\t;;\n\t\t*)\n\t\t\treturn 0\n\t\t;;\n\tesac\n}\n\ncheck_test_requirements\n./va_high_addr_switch\n\n# In order to run hugetlb testcases, \"--run-hugetlb\" must be appended\n# to the binary.\n./va_high_addr_switch --run-hugetlb\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_translate_dce110.h",
+  "hash_id": "f2fbeab54d1ca17a8f24fd79bc54a6e571706d53185de3bcc3ddba4716b2d0d4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/dce110/hw_translate_dce110.h",
+  "human_readable_source": " \n\n#ifndef __DAL_HW_TRANSLATE_DCE110_H__\n#define __DAL_HW_TRANSLATE_DCE110_H__\n\nstruct hw_translate;\n\n \nvoid dal_hw_translate_dce110_init(struct hw_translate *tr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

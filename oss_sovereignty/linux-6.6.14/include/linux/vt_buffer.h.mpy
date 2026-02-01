@@ -1,0 +1,9 @@
+{
+  "module_name": "vt_buffer.h",
+  "hash_id": "473c4379ee2bf6d969ca08f606a7f1a95127d1817a4efcb618033fc2c82bf50b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/vt_buffer.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_VT_BUFFER_H_\n#define _LINUX_VT_BUFFER_H_\n\n#include <linux/string.h>\n\n#if IS_ENABLED(CONFIG_VGA_CONSOLE) || IS_ENABLED(CONFIG_MDA_CONSOLE)\n#include <asm/vga.h>\n#endif\n\n#ifndef VT_BUF_HAVE_RW\n#define scr_writew(val, addr) (*(addr) = (val))\n#define scr_readw(addr) (*(addr))\n#endif\n\n#ifndef VT_BUF_HAVE_MEMSETW\nstatic inline void scr_memsetw(u16 *s, u16 c, unsigned int count)\n{\n#ifdef VT_BUF_HAVE_RW\n\tcount /= 2;\n\twhile (count--)\n\t\tscr_writew(c, s++);\n#else\n\tmemset16(s, c, count / 2);\n#endif\n}\n#endif\n\n#ifndef VT_BUF_HAVE_MEMCPYW\nstatic inline void scr_memcpyw(u16 *d, const u16 *s, unsigned int count)\n{\n#ifdef VT_BUF_HAVE_RW\n\tcount /= 2;\n\twhile (count--)\n\t\tscr_writew(scr_readw(s++), d++);\n#else\n\tmemcpy(d, s, count);\n#endif\n}\n#endif\n\n#ifndef VT_BUF_HAVE_MEMMOVEW\nstatic inline void scr_memmovew(u16 *d, const u16 *s, unsigned int count)\n{\n#ifdef VT_BUF_HAVE_RW\n\tif (d < s)\n\t\tscr_memcpyw(d, s, count);\n\telse {\n\t\tcount /= 2;\n\t\td += count;\n\t\ts += count;\n\t\twhile (count--)\n\t\t\tscr_writew(scr_readw(--s), --d);\n\t}\n#else\n\tmemmove(d, s, count);\n#endif\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

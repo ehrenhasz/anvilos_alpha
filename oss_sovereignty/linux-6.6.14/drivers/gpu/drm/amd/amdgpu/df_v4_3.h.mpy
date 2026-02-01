@@ -1,0 +1,9 @@
+{
+  "module_name": "df_v4_3.h",
+  "hash_id": "ef4860efbe9e442ac5f629fa2845d8f8a81ba9cff84e1b354ad45bbe1d505323",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/df_v4_3.h",
+  "human_readable_source": " \n\n#ifndef __DF_V4_3_H__\n#define __DF_V4_3_H__\n\n#include \"soc15_common.h\"\n\nextern const struct amdgpu_df_funcs df_v4_3_funcs;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

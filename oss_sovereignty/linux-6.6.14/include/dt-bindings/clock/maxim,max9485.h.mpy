@@ -1,0 +1,9 @@
+{
+  "module_name": "maxim,max9485.h",
+  "hash_id": "0109aaea03198e208746590fb53830ea807063dce4cfd006589252f25584fb63",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/maxim,max9485.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_MAX9485_CLK_H\n#define __DT_BINDINGS_MAX9485_CLK_H\n\n#define MAX9485_MCLKOUT\t0\n#define MAX9485_CLKOUT\t1\n#define MAX9485_CLKOUT1\t2\n#define MAX9485_CLKOUT2\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

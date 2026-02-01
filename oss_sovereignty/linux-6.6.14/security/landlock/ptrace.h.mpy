@@ -1,0 +1,9 @@
+{
+  "module_name": "ptrace.h",
+  "hash_id": "98262a1a31c85414502992f803f19e3e50655492b3e7114e6548ee55857ca807",
+  "original_prompt": "Ingested from linux-6.6.14/security/landlock/ptrace.h",
+  "human_readable_source": " \n \n\n#ifndef _SECURITY_LANDLOCK_PTRACE_H\n#define _SECURITY_LANDLOCK_PTRACE_H\n\n__init void landlock_add_ptrace_hooks(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

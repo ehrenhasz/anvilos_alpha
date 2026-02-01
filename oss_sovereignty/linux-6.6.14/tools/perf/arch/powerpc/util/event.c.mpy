@@ -1,0 +1,9 @@
+{
+  "module_name": "event.c",
+  "hash_id": "d6a8d5cda90b95ad2f1076a6e9c2ca8622df5e50f4bb5dac7107aa397bca2b14",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/powerpc/util/event.c",
+  "human_readable_source": "\n#include <linux/types.h>\n#include <linux/string.h>\n#include <linux/zalloc.h>\n\n#include \"../../../util/event.h\"\n#include \"../../../util/synthetic-events.h\"\n#include \"../../../util/machine.h\"\n#include \"../../../util/tool.h\"\n#include \"../../../util/map.h\"\n#include \"../../../util/debug.h\"\n#include \"../../../util/sample.h\"\n\nvoid arch_perf_parse_sample_weight(struct perf_sample *data,\n\t\t\t\t   const __u64 *array, u64 type)\n{\n\tunion perf_sample_weight weight;\n\n\tweight.full = *array;\n\tif (type & PERF_SAMPLE_WEIGHT)\n\t\tdata->weight = weight.full;\n\telse {\n\t\tdata->weight = weight.var1_dw;\n\t\tdata->ins_lat = weight.var2_w;\n\t\tdata->p_stage_cyc = weight.var3_w;\n\t}\n}\n\nvoid arch_perf_synthesize_sample_weight(const struct perf_sample *data,\n\t\t\t\t\t__u64 *array, u64 type)\n{\n\t*array = data->weight;\n\n\tif (type & PERF_SAMPLE_WEIGHT_STRUCT) {\n\t\t*array &= 0xffffffff;\n\t\t*array |= ((u64)data->ins_lat << 32);\n\t}\n}\n\nconst char *arch_perf_header_entry(const char *se_header)\n{\n\tif (!strcmp(se_header, \"Local INSTR Latency\"))\n\t\treturn \"Finish Cyc\";\n\telse if (!strcmp(se_header, \"INSTR Latency\"))\n\t\treturn \"Global Finish_cyc\";\n\telse if (!strcmp(se_header, \"Local Pipeline Stage Cycle\"))\n\t\treturn \"Dispatch Cyc\";\n\telse if (!strcmp(se_header, \"Pipeline Stage Cycle\"))\n\t\treturn \"Global Dispatch_cyc\";\n\treturn se_header;\n}\n\nint arch_support_sort_key(const char *sort_key)\n{\n\tif (!strcmp(sort_key, \"p_stage_cyc\"))\n\t\treturn 1;\n\tif (!strcmp(sort_key, \"local_p_stage_cyc\"))\n\t\treturn 1;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "r8169.h",
+  "hash_id": "0d1d13034e1ac135f25d1e4ec399f8a4b72d0147c53b43e3c988906b191f7333",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/realtek/r8169.h",
+  "human_readable_source": " \n \n\n#include <linux/types.h>\n#include <linux/phy.h>\n\nenum mac_version {\n\t \n\tRTL_GIGA_MAC_VER_02,\n\tRTL_GIGA_MAC_VER_03,\n\tRTL_GIGA_MAC_VER_04,\n\tRTL_GIGA_MAC_VER_05,\n\tRTL_GIGA_MAC_VER_06,\n\tRTL_GIGA_MAC_VER_07,\n\tRTL_GIGA_MAC_VER_08,\n\tRTL_GIGA_MAC_VER_09,\n\tRTL_GIGA_MAC_VER_10,\n\tRTL_GIGA_MAC_VER_11,\n\t \n\t \n\tRTL_GIGA_MAC_VER_14,\n\t \n\tRTL_GIGA_MAC_VER_17,\n\tRTL_GIGA_MAC_VER_18,\n\tRTL_GIGA_MAC_VER_19,\n\tRTL_GIGA_MAC_VER_20,\n\tRTL_GIGA_MAC_VER_21,\n\tRTL_GIGA_MAC_VER_22,\n\tRTL_GIGA_MAC_VER_23,\n\tRTL_GIGA_MAC_VER_24,\n\tRTL_GIGA_MAC_VER_25,\n\tRTL_GIGA_MAC_VER_26,\n\t \n\tRTL_GIGA_MAC_VER_28,\n\tRTL_GIGA_MAC_VER_29,\n\tRTL_GIGA_MAC_VER_30,\n\tRTL_GIGA_MAC_VER_31,\n\tRTL_GIGA_MAC_VER_32,\n\tRTL_GIGA_MAC_VER_33,\n\tRTL_GIGA_MAC_VER_34,\n\tRTL_GIGA_MAC_VER_35,\n\tRTL_GIGA_MAC_VER_36,\n\tRTL_GIGA_MAC_VER_37,\n\tRTL_GIGA_MAC_VER_38,\n\tRTL_GIGA_MAC_VER_39,\n\tRTL_GIGA_MAC_VER_40,\n\t \n\tRTL_GIGA_MAC_VER_42,\n\tRTL_GIGA_MAC_VER_43,\n\tRTL_GIGA_MAC_VER_44,\n\t \n\tRTL_GIGA_MAC_VER_46,\n\t \n\tRTL_GIGA_MAC_VER_48,\n\t \n\t \n\tRTL_GIGA_MAC_VER_51,\n\tRTL_GIGA_MAC_VER_52,\n\tRTL_GIGA_MAC_VER_53,\n\t \n\tRTL_GIGA_MAC_VER_61,\n\tRTL_GIGA_MAC_VER_63,\n\tRTL_GIGA_MAC_NONE\n};\n\nstruct rtl8169_private;\n\nvoid r8169_apply_firmware(struct rtl8169_private *tp);\nu16 rtl8168h_2_get_adc_bias_ioffset(struct rtl8169_private *tp);\nu8 rtl8168d_efuse_read(struct rtl8169_private *tp, int reg_addr);\nvoid r8169_hw_phy_config(struct rtl8169_private *tp, struct phy_device *phydev,\n\t\t\t enum mac_version ver);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_defact.h",
+  "hash_id": "a51de74487ef34e5f8acd38592028e93e576ca072bda40e9097d60b3fe510482",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tc_act/tc_defact.h",
+  "human_readable_source": " \n#ifndef __LINUX_TC_DEF_H\n#define __LINUX_TC_DEF_H\n\n#include <linux/pkt_cls.h>\n\nstruct tc_defact {\n\ttc_gen;\n};\n\nenum {\n\tTCA_DEF_UNSPEC,\n\tTCA_DEF_TM,\n\tTCA_DEF_PARMS,\n\tTCA_DEF_DATA,\n\tTCA_DEF_PAD,\n\t__TCA_DEF_MAX\n};\n#define TCA_DEF_MAX (__TCA_DEF_MAX - 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

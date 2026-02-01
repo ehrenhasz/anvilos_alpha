@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio-davinci.h",
+  "hash_id": "5915811a6dc8c69e125ed550f407a4a54e4fe2518e7a331d4d9ede8f6337345e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/gpio-davinci.h",
+  "human_readable_source": " \n \n\n#ifndef __DAVINCI_GPIO_PLATFORM_H\n#define __DAVINCI_GPIO_PLATFORM_H\n\nstruct davinci_gpio_platform_data {\n\tbool\tno_auto_base;\n\tu32\tbase;\n\tu32\tngpio;\n\tu32\tgpio_unbanked;\n};\n\n \n#define GPIO_TO_PIN(bank, gpio)\t(16 * (bank) + (gpio))\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

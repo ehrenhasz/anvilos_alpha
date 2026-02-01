@@ -1,0 +1,9 @@
+{
+  "module_name": "stdtypes.h",
+  "hash_id": "4df8306fc16fc680bdf9039fc9213bdb65e91ee893bfe2a33350773f80ad34d2",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/stdtypes.h",
+  "human_readable_source": " \n\n#ifndef\t__SYS_STDTYPES_H\n#define\t__SYS_STDTYPES_H\n\ntypedef enum {\n\tB_FALSE = 0,\n\tB_TRUE = 1\n} boolean_t;\n\ntypedef unsigned char\t\tuchar_t;\ntypedef unsigned short\t\tushort_t;\ntypedef unsigned int\t\tuint_t;\ntypedef unsigned long\t\tulong_t;\ntypedef unsigned long long\tu_longlong_t;\ntypedef long long\t\tlonglong_t;\n\ntypedef longlong_t\t\toffset_t;\ntypedef u_longlong_t\t\tu_offset_t;\ntypedef u_longlong_t\t\tlen_t;\ntypedef longlong_t\t\tdiskaddr_t;\n\ntypedef ulong_t\t\t\tpgcnt_t;\t \ntypedef long\t\t\tspgcnt_t;\t \n\ntypedef short\t\t\tpri_t;\ntypedef ushort_t\t\to_mode_t;\t \n\ntypedef int\t\t\tmajor_t;\ntypedef int\t\t\tminor_t;\n\ntypedef short\t\t\tindex_t;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

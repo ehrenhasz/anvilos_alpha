@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8f1f293751bcd5e5dd34257b0d705a6fa0df5ef8d1111a49fc017e360c720db9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/meson/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig PINCTRL_MESON\n\ttristate \"Amlogic SoC pinctrl drivers\"\n\tdepends on ARCH_MESON || COMPILE_TEST\n\tdepends on OF\n\tdefault y\n\tselect PINMUX\n\tselect PINCONF\n\tselect GENERIC_PINCONF\n\tselect GPIOLIB\n\tselect OF_GPIO\n\tselect REGMAP_MMIO\n\nif PINCTRL_MESON\n\nconfig PINCTRL_MESON8\n\tbool \"Meson 8 SoC pinctrl driver\"\n\tdepends on ARM\n\tselect PINCTRL_MESON8_PMX\n\tdefault y\n\nconfig PINCTRL_MESON8B\n\tbool \"Meson 8b SoC pinctrl driver\"\n\tdepends on ARM\n\tselect PINCTRL_MESON8_PMX\n\tdefault y\n\nconfig PINCTRL_MESON_GXBB\n\ttristate \"Meson gxbb SoC pinctrl driver\"\n\tdepends on ARM64\n\tselect PINCTRL_MESON8_PMX\n\tdefault y\n\nconfig PINCTRL_MESON_GXL\n\ttristate \"Meson gxl SoC pinctrl driver\"\n\tdepends on ARM64\n\tselect PINCTRL_MESON8_PMX\n\tdefault y\n\nconfig PINCTRL_MESON8_PMX\n\ttristate\n\nconfig PINCTRL_MESON_AXG\n\ttristate \"Meson axg Soc pinctrl driver\"\n\tdepends on ARM64\n\tselect PINCTRL_MESON_AXG_PMX\n\tdefault y\n\nconfig PINCTRL_MESON_AXG_PMX\n\ttristate\n\nconfig PINCTRL_MESON_G12A\n\ttristate \"Meson g12a Soc pinctrl driver\"\n\tdepends on ARM64\n\tselect PINCTRL_MESON_AXG_PMX\n\tdefault y\n\nconfig PINCTRL_MESON_A1\n\ttristate \"Meson a1 Soc pinctrl driver\"\n\tdepends on ARM64\n\tselect PINCTRL_MESON_AXG_PMX\n\tdefault y\n\nconfig PINCTRL_MESON_S4\n\ttristate \"Meson s4 Soc pinctrl driver\"\n\tdepends on ARM64\n\tselect PINCTRL_MESON_AXG_PMX\n\tdefault y\n\nconfig PINCTRL_AMLOGIC_C3\n\ttristate \"Amlogic C3 SoC pinctrl driver\"\n\tdepends on ARM64\n\tselect PINCTRL_MESON_AXG_PMX\n\tdefault y\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

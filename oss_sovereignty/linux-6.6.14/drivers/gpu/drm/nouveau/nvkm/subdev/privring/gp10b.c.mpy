@@ -1,0 +1,9 @@
+{
+  "module_name": "gp10b.c",
+  "hash_id": "8befdb5a4e25ce23ca86a7f24cd33d359ec2ce14ebce9652c5db232ec286d92c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/privring/gp10b.c",
+  "human_readable_source": " \n#include <subdev/privring.h>\n\n#include \"priv.h\"\n\nstatic int\ngp10b_privring_init(struct nvkm_subdev *privring)\n{\n\tstruct nvkm_device *device = privring->device;\n\n\tnvkm_wr32(device, 0x1200a8, 0x0);\n\n\t \n\tnvkm_wr32(device, 0x12004c, 0x4);\n\tnvkm_wr32(device, 0x122204, 0x2);\n\tnvkm_rd32(device, 0x122204);\n\n\t \n\tnvkm_wr32(device, 0x009080, 0x800186a0);\n\n\treturn 0;\n}\n\nstatic const struct nvkm_subdev_func\ngp10b_privring = {\n\t.init = gp10b_privring_init,\n\t.intr = gk104_privring_intr,\n};\n\nint\ngp10b_privring_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t\t   struct nvkm_subdev **pprivring)\n{\n\treturn nvkm_subdev_new_(&gp10b_privring, device, type, inst, pprivring);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

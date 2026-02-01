@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "586db9c50edd9ab64027828476ab7c7eda149044903607c22aeebea3a35701c5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/mdp/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_MEDIATEK_MDP\n\ttristate \"Mediatek MDP driver\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on MTK_IOMMU || COMPILE_TEST\n\tdepends on VIDEO_DEV\n\tdepends on ARCH_MEDIATEK || COMPILE_TEST\n\tdepends on MTK_SMI || (COMPILE_TEST && MTK_SMI=n)\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_MEM2MEM_DEV\n\tselect VIDEO_MEDIATEK_VPU\n\thelp\n\t    It is a v4l2 driver and present in Mediatek MT8173 SoCs.\n\t    The driver supports for scaling and color space conversion.\n\n\t    To compile this driver as a module, choose M here: the\n\t    module will be called mtk-mdp.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

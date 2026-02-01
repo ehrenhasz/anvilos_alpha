@@ -1,0 +1,9 @@
+{
+  "module_name": "amd_powerplay.h",
+  "hash_id": "0f824eb55e11ab11d42e425c75ca87fcf4116e02d19f7bb2e51e4c766f2bb109",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/inc/amd_powerplay.h",
+  "human_readable_source": " \n#ifndef _AMD_POWERPLAY_H_\n#define _AMD_POWERPLAY_H_\n\n#include <linux/seq_file.h>\n#include <linux/types.h>\n#include <linux/errno.h>\n#include \"amd_shared.h\"\n#include \"cgs_common.h\"\n#include \"dm_pp_interface.h\"\n#include \"kgd_pp_interface.h\"\n#include \"amdgpu.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

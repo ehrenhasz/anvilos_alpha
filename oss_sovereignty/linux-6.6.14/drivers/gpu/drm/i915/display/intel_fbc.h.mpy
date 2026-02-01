@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_fbc.h",
+  "hash_id": "9dc67f0443e249c70b0fa055db3b9f2776670474711f8f3bb68f05b8d75efe6f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_fbc.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_FBC_H__\n#define __INTEL_FBC_H__\n\n#include <linux/types.h>\n\nenum fb_op_origin;\nstruct drm_i915_private;\nstruct intel_atomic_state;\nstruct intel_crtc;\nstruct intel_crtc_state;\nstruct intel_fbc;\nstruct intel_plane;\nstruct intel_plane_state;\n\nenum intel_fbc_id {\n\tINTEL_FBC_A,\n\tINTEL_FBC_B,\n\n\tI915_MAX_FBCS,\n};\n\nint intel_fbc_atomic_check(struct intel_atomic_state *state);\nbool intel_fbc_pre_update(struct intel_atomic_state *state,\n\t\t\t  struct intel_crtc *crtc);\nvoid intel_fbc_post_update(struct intel_atomic_state *state,\n\t\t\t   struct intel_crtc *crtc);\nvoid intel_fbc_init(struct drm_i915_private *dev_priv);\nvoid intel_fbc_cleanup(struct drm_i915_private *dev_priv);\nvoid intel_fbc_sanitize(struct drm_i915_private *dev_priv);\nvoid intel_fbc_update(struct intel_atomic_state *state,\n\t\t      struct intel_crtc *crtc);\nvoid intel_fbc_disable(struct intel_crtc *crtc);\nvoid intel_fbc_invalidate(struct drm_i915_private *dev_priv,\n\t\t\t  unsigned int frontbuffer_bits,\n\t\t\t  enum fb_op_origin origin);\nvoid intel_fbc_flush(struct drm_i915_private *dev_priv,\n\t\t     unsigned int frontbuffer_bits, enum fb_op_origin origin);\nvoid intel_fbc_add_plane(struct intel_fbc *fbc, struct intel_plane *plane);\nvoid intel_fbc_handle_fifo_underrun_irq(struct drm_i915_private *i915);\nvoid intel_fbc_reset_underrun(struct drm_i915_private *i915);\nvoid intel_fbc_crtc_debugfs_add(struct intel_crtc *crtc);\nvoid intel_fbc_debugfs_register(struct drm_i915_private *i915);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

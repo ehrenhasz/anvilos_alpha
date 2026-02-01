@@ -1,0 +1,9 @@
+{
+  "module_name": "ingenic,adc.h",
+  "hash_id": "0eef2cf4d0e24f8ac0323ab9dbbc5d13c4da5fdd4eb5c5b9be17f88974591882",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/iio/adc/ingenic,adc.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_IIO_ADC_INGENIC_ADC_H\n#define _DT_BINDINGS_IIO_ADC_INGENIC_ADC_H\n\n \n#define INGENIC_ADC_AUX\t\t0\n#define INGENIC_ADC_BATTERY\t1\n#define INGENIC_ADC_AUX2\t2\n#define INGENIC_ADC_TOUCH_XP\t3\n#define INGENIC_ADC_TOUCH_YP\t4\n#define INGENIC_ADC_TOUCH_XN\t5\n#define INGENIC_ADC_TOUCH_YN\t6\n#define INGENIC_ADC_TOUCH_XD\t7\n#define INGENIC_ADC_TOUCH_YD\t8\n#define INGENIC_ADC_AUX0\t9\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

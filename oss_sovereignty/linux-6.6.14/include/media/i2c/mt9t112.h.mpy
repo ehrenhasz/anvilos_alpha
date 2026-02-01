@@ -1,0 +1,9 @@
+{
+  "module_name": "mt9t112.h",
+  "hash_id": "7f42ecb2ff4ddd29c760f16940872f9209d79a1099a94196ea19be303c157560",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/mt9t112.h",
+  "human_readable_source": " \n \n\n#ifndef __MT9T112_H__\n#define __MT9T112_H__\n\nstruct mt9t112_pll_divider {\n\tu8 m, n;\n\tu8 p1, p2, p3, p4, p5, p6, p7;\n};\n\n \nstruct mt9t112_platform_data {\n#define MT9T112_FLAG_PCLK_RISING_EDGE\tBIT(0)\n\tu32 flags;\n\tstruct mt9t112_pll_divider divider;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "25e217e42ed331a6e4f15912c5e114ae8bfa1633bd1a6583bd70c5f49df0d709",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/atmel-hlcdc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_ATMEL_HLCDC\n\ttristate \"DRM Support for ATMEL HLCDC Display Controller\"\n\tdepends on DRM && OF && COMMON_CLK && MFD_ATMEL_HLCDC && ARM\n\tselect DRM_GEM_DMA_HELPER\n\tselect DRM_KMS_HELPER\n\tselect DRM_PANEL\n\thelp\n\t  Choose this option if you have an ATMEL SoC with an HLCDC display\n\t  controller (i.e. at91sam9n12, at91sam9x5 family or sama5d3 family).\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

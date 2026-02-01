@@ -1,0 +1,9 @@
+{
+  "module_name": "dib07x0.h",
+  "hash_id": "9addbec5834b8dd56d4b68e5f04e56a5fe7ec752728e1ec6d6a815f0ac5fb329",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/dvb-usb/dib07x0.h",
+  "human_readable_source": " \n#ifndef _DIB07X0_H_\n#define _DIB07X0_H_\n\nenum dib07x0_gpios {\n\tGPIO0  =  0,\n\tGPIO1  =  2,\n\tGPIO2  =  3,\n\tGPIO3  =  4,\n\tGPIO4  =  5,\n\tGPIO5  =  6,\n\tGPIO6  =  8,\n\tGPIO7  = 10,\n\tGPIO8  = 11,\n\tGPIO9  = 14,\n\tGPIO10 = 15,\n};\n\n#define GPIO_IN  0\n#define GPIO_OUT 1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

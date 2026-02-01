@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-synthetic-event-stack-legacy.tc",
+  "hash_id": "89c69a7f3dd1f883ce8efdff1768f229fef5e4169185bbdf5b29c72754f43d40",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/inter-event/trigger-synthetic-event-stack-legacy.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event trigger - test inter-event histogram trigger trace action with dynamic string param (legacy stack)\n# requires: set_event synthetic_events events/sched/sched_process_exec/hist \"long[] stack' >> synthetic_events\":README\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\necho \"Test create synthetic event with stack\"\n\n# Test the old stacktrace keyword (for backward compatibility)\necho 's:wake_lat pid_t pid; u64 delta; unsigned long[] stack;' > dynamic_events\necho 'hist:keys=next_pid:ts=common_timestamp.usecs,st=stacktrace  if prev_state == 1||prev_state == 2' >> events/sched/sched_switch/trigger\necho 'hist:keys=prev_pid:delta=common_timestamp.usecs-$ts,s=$st:onmax($delta).trace(wake_lat,prev_pid,$delta,$s)' >> events/sched/sched_switch/trigger\necho 1 > events/synthetic/wake_lat/enable\nsleep 1\n\nif ! grep -q \"=>.*sched\" trace; then\n    fail \"Failed to create synthetic event with stack\"\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

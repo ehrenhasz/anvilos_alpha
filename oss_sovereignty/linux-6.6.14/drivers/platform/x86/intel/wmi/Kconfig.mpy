@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "93a08e753827d3b512b2765a67dea3adfe5f7bc2a12cea6a1740d7ddefeb933e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/wmi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Intel x86 Platform Specific Drivers\n#\n\nconfig INTEL_WMI\n\tbool\n\nconfig INTEL_WMI_SBL_FW_UPDATE\n\ttristate \"Intel WMI Slim Bootloader firmware update signaling driver\"\n\tdepends on ACPI_WMI\n\tselect INTEL_WMI\n\thelp\n\t  Say Y here if you want to be able to use the WMI interface to signal\n\t  Slim Bootloader to trigger update on next reboot.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called intel-wmi-sbl-fw-update.\n\nconfig INTEL_WMI_THUNDERBOLT\n\ttristate \"Intel WMI thunderbolt force power driver\"\n\tdepends on ACPI_WMI\n\tselect INTEL_WMI\n\thelp\n\t  Say Y here if you want to be able to use the WMI interface on select\n\t  systems to force the power control of Intel Thunderbolt controllers.\n\t  This is useful for updating the firmware when devices are not plugged\n\t  into the controller.\n\n\t  To compile this driver as a module, choose M here: the module will\n\t  be called intel-wmi-thunderbolt.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

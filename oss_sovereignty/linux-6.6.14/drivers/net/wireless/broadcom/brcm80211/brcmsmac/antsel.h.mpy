@@ -1,0 +1,9 @@
+{
+  "module_name": "antsel.h",
+  "hash_id": "a2bd7d38cd7e7ed6f9e4597d038a62a7e7634c0738871a27adb0670f69742d4d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmsmac/antsel.h",
+  "human_readable_source": " \n\n#ifndef _BRCM_ANTSEL_H_\n#define _BRCM_ANTSEL_H_\n\nstruct antsel_info *brcms_c_antsel_attach(struct brcms_c_info *wlc);\nvoid brcms_c_antsel_detach(struct antsel_info *asi);\nvoid brcms_c_antsel_init(struct antsel_info *asi);\nvoid brcms_c_antsel_antcfg_get(struct antsel_info *asi, bool usedef, bool sel,\n\t\t\t       u8 id, u8 fbid, u8 *antcfg, u8 *fbantcfg);\nu8 brcms_c_antsel_antsel2id(struct antsel_info *asi, u16 antsel);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

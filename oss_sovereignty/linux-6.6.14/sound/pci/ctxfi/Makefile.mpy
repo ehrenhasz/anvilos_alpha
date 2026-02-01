@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "80265528fef7c9730c60e465413c8f12b63a7dbf179b310b0263c3a5bef5364d",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ctxfi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-ctxfi-objs := xfi.o ctatc.o ctvmem.o ctpcm.o ctmixer.o ctresource.o \\\n\tctsrc.o ctamixer.o ctdaio.o ctimap.o cthardware.o cttimer.o \\\n\tcthw20k2.o cthw20k1.o\n\nobj-$(CONFIG_SND_CTXFI) += snd-ctxfi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "336f1c2e2913c2d9cc018d568b26e69a6899bbc2ceecfd7f47580f9fd9ebd1d3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192e/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig RTLLIB\n\ttristate \"Support for rtllib wireless devices\"\n\tdepends on WLAN && m\n\tselect LIB80211\n\tselect CRC32\n\thelp\n\t  If you have a wireless card that uses rtllib, say\n\t  Y. Currently the only card is the rtl8192e.\n\n\t  If unsure, say N.\n\n\t  This driver adds support for rtllib wireless cards.\n\t  Only the rtl8192e is supported as of now.\n\nif RTLLIB\n\nconfig RTLLIB_CRYPTO_CCMP\n\ttristate \"Support for rtllib CCMP crypto\"\n\tdepends on RTLLIB\n\tselect CRYPTO\n\tselect CRYPTO_AES\n\tselect CRYPTO_CCM\n\tdefault y\n\thelp\n\t  CCMP crypto driver for rtllib.\n\n\t  If you enabled RTLLIB, you want this.\n\t  Adds support for the CCM mode Protocol crypto driver for\n\t  use in wireless cards (including rtllib cards).\n\nconfig RTLLIB_CRYPTO_TKIP\n\ttristate \"Support for rtllib TKIP crypto\"\n\tdepends on RTLLIB\n\tselect CRYPTO\n\tselect CRYPTO_LIB_ARC4\n\tselect CRYPTO_MICHAEL_MIC\n\tdefault y\n\thelp\n\t  TKIP crypto driver for rtllib.\n\n\t  If you enabled RTLLIB, you want this.\n\t  Adds support for the Temporal Key Integrity Protocol for\n\t  the IEEE 802.11i standard for use on wireless cards.\n\nconfig RTLLIB_CRYPTO_WEP\n\ttristate \"Support for rtllib WEP crypto\"\n\tselect CRYPTO_LIB_ARC4\n\tdepends on RTLLIB\n\tdefault y\n\thelp\n\t  WEP crypto driver for rtllib.\n\n\t  If you enabled RTLLIB, you want this.\n\t  Adds support for the (now weak) Wired Equivalent Privacy\n\t  (WEP) crypto protocol for wireless cards.\n\t  NOTE: This protocol is now considered insecure.\n\nsource \"drivers/staging/rtl8192e/rtl8192e/Kconfig\"\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "err.h",
+  "hash_id": "5088da9c8dc23cd0fbd41241122df518e3823a92b31dcfa715061d1f9e013bd1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/err.h",
+  "human_readable_source": " \n#ifndef __ERR_H__\n#define __ERR_H__\n\n#define MAX_ERRNO 4095\n#define IS_ERR_VALUE(x) (unsigned long)(void *)(x) >= (unsigned long)-MAX_ERRNO\n\nstatic inline int IS_ERR_OR_NULL(const void *ptr)\n{\n\treturn !ptr || IS_ERR_VALUE((unsigned long)ptr);\n}\n\nstatic inline long PTR_ERR(const void *ptr)\n{\n\treturn (long) ptr;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

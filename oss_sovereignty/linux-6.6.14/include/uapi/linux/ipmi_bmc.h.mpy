@@ -1,0 +1,9 @@
+{
+  "module_name": "ipmi_bmc.h",
+  "hash_id": "8aa1f47b848ac97869143499d235a8fe5bde60f8dfd2db2fa40541a29ea1ab36",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/ipmi_bmc.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_IPMI_BMC_H\n#define _UAPI_LINUX_IPMI_BMC_H\n\n#include <linux/ioctl.h>\n\n#define __IPMI_BMC_IOCTL_MAGIC        0xB1\n#define IPMI_BMC_IOCTL_SET_SMS_ATN    _IO(__IPMI_BMC_IOCTL_MAGIC, 0x00)\n#define IPMI_BMC_IOCTL_CLEAR_SMS_ATN  _IO(__IPMI_BMC_IOCTL_MAGIC, 0x01)\n#define IPMI_BMC_IOCTL_FORCE_ABORT    _IO(__IPMI_BMC_IOCTL_MAGIC, 0x02)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

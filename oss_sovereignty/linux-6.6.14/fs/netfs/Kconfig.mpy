@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "28d5a02b4101e532b1a676de8c48a2d575b3c47c17ffc71553eb5ee764174377",
+  "original_prompt": "Ingested from linux-6.6.14/fs/netfs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig NETFS_SUPPORT\n\ttristate\n\thelp\n\t  This option enables support for network filesystems, including\n\t  helpers for high-level buffered I/O, abstracting out read\n\t  segmentation, local caching and transparent huge page support.\n\nconfig NETFS_STATS\n\tbool \"Gather statistical information on local caching\"\n\tdepends on NETFS_SUPPORT && PROC_FS\n\thelp\n\t  This option causes statistical information to be gathered on local\n\t  caching and exported through file:\n\n\t\t/proc/fs/fscache/stats\n\n\t  The gathering of statistics adds a certain amount of overhead to\n\t  execution as there are a quite a few stats gathered, and on a\n\t  multi-CPU system these may be on cachelines that keep bouncing\n\t  between CPUs.  On the other hand, the stats are very useful for\n\t  debugging purposes.  Saying 'Y' here is recommended.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

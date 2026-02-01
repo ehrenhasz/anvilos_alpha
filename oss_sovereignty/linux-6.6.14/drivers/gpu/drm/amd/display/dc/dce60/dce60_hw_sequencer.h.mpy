@@ -1,0 +1,9 @@
+{
+  "module_name": "dce60_hw_sequencer.h",
+  "hash_id": "ae1fba83137e6c0bfae59c1c96b0332ebad6cb8265582a908584d2cbb3c532dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce60/dce60_hw_sequencer.h",
+  "human_readable_source": " \n\n#ifndef __DC_HWSS_DCE60_H__\n#define __DC_HWSS_DCE60_H__\n\n#include \"core_types.h\"\n#include \"hw_sequencer_private.h\"\n\nstruct dc;\n\nvoid dce60_hw_sequencer_construct(struct dc *dc);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

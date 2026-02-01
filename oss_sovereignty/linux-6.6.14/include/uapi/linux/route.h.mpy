@@ -1,0 +1,9 @@
+{
+  "module_name": "route.h",
+  "hash_id": "e7cd94833fb9087e8e99f266ce796c71472083d81a9fe011fae389b83b2227ed",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/route.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_ROUTE_H\n#define _LINUX_ROUTE_H\n\n#include <linux/if.h>\n#include <linux/compiler.h>\n\n \nstruct rtentry {\n\tunsigned long\trt_pad1;\n\tstruct sockaddr\trt_dst;\t\t \n\tstruct sockaddr\trt_gateway;\t \n\tstruct sockaddr\trt_genmask;\t \n\tunsigned short\trt_flags;\n\tshort\t\trt_pad2;\n\tunsigned long\trt_pad3;\n\tvoid\t\t*rt_pad4;\n\tshort\t\trt_metric;\t \n\tchar __user\t*rt_dev;\t \n\tunsigned long\trt_mtu;\t\t \n#ifndef __KERNEL__\n#define rt_mss\trt_mtu\t\t\t \n#endif\n\tunsigned long\trt_window;\t \n\tunsigned short\trt_irtt;\t \n};\n\n\n#define\tRTF_UP\t\t0x0001\t\t \n#define\tRTF_GATEWAY\t0x0002\t\t \n#define\tRTF_HOST\t0x0004\t\t \n#define RTF_REINSTATE\t0x0008\t\t \n#define\tRTF_DYNAMIC\t0x0010\t\t \n#define\tRTF_MODIFIED\t0x0020\t\t \n#define RTF_MTU\t\t0x0040\t\t \n#define RTF_MSS\t\tRTF_MTU\t\t \n#define RTF_WINDOW\t0x0080\t\t \n#define RTF_IRTT\t0x0100\t\t \n#define RTF_REJECT\t0x0200\t\t \n\n \n\n\n\n#endif\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7dd5da4a4db128bb1dfe726df22684d634182528bf1ea480d2c274c32f7d9cfd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for HabanaLabs AI accelerators driver\n#\n\nobj-$(CONFIG_DRM_ACCEL_HABANALABS) := habanalabs.o\n\ninclude $(src)/common/Makefile\nhabanalabs-y += $(HL_COMMON_FILES)\n\ninclude $(src)/gaudi2/Makefile\nhabanalabs-y += $(HL_GAUDI2_FILES)\n\ninclude $(src)/gaudi/Makefile\nhabanalabs-y += $(HL_GAUDI_FILES)\n\ninclude $(src)/goya/Makefile\nhabanalabs-y += $(HL_GOYA_FILES)\n\nhabanalabs-$(CONFIG_DEBUG_FS) += common/debugfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

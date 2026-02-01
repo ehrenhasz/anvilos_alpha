@@ -1,0 +1,9 @@
+{
+  "module_name": "rt5640.h",
+  "hash_id": "187d1c26a493d6c0ac50338d89919ed50de2f65072c312d062d518ecc4d7b9a8",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/sound/rt5640.h",
+  "human_readable_source": " \n#ifndef __DT_RT5640_H\n#define __DT_RT5640_H\n\n#define RT5640_DMIC1_DATA_PIN_NONE\t0\n#define RT5640_DMIC1_DATA_PIN_IN1P\t1\n#define RT5640_DMIC1_DATA_PIN_GPIO3\t2\n\n#define RT5640_DMIC2_DATA_PIN_NONE\t0\n#define RT5640_DMIC2_DATA_PIN_IN1N\t1\n#define RT5640_DMIC2_DATA_PIN_GPIO4\t2\n\n#define RT5640_JD_SRC_GPIO1\t\t1\n#define RT5640_JD_SRC_JD1_IN4P\t\t2\n#define RT5640_JD_SRC_JD2_IN4N\t\t3\n#define RT5640_JD_SRC_GPIO2\t\t4\n#define RT5640_JD_SRC_GPIO3\t\t5\n#define RT5640_JD_SRC_GPIO4\t\t6\n#define RT5640_JD_SRC_HDA_HEADER\t7\n\n#define RT5640_OVCD_SF_0P5\t\t0\n#define RT5640_OVCD_SF_0P75\t\t1\n#define RT5640_OVCD_SF_1P0\t\t2\n#define RT5640_OVCD_SF_1P5\t\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

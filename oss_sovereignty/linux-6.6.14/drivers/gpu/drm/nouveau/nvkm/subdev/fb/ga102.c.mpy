@@ -1,0 +1,9 @@
+{
+  "module_name": "ga102.c",
+  "hash_id": "489c5e00e630f3dfba702873c5e8cb88933eb3bab9c5095bbc8f7de6a1e0d316",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/ga102.c",
+  "human_readable_source": " \n#include \"gf100.h\"\n#include \"ram.h\"\n\n#include <engine/nvdec.h>\n\nstatic u64\nga102_fb_vidmem_size(struct nvkm_fb *fb)\n{\n\treturn (u64)nvkm_rd32(fb->subdev.device, 0x1183a4) << 20;\n}\n\nstatic int\nga102_fb_oneinit(struct nvkm_fb *fb)\n{\n\tstruct nvkm_subdev *subdev = &fb->subdev;\n\n\tnvkm_falcon_fw_ctor_hs_v2(&ga102_flcn_fw, \"mem-unlock\", subdev, \"nvdec/scrubber\",\n\t\t\t\t  0, &subdev->device->nvdec[0]->falcon, &fb->vpr_scrubber);\n\n\treturn gf100_fb_oneinit(fb);\n}\n\nstatic const struct nvkm_fb_func\nga102_fb = {\n\t.dtor = gf100_fb_dtor,\n\t.oneinit = ga102_fb_oneinit,\n\t.init = gm200_fb_init,\n\t.init_page = gv100_fb_init_page,\n\t.init_unkn = gp100_fb_init_unkn,\n\t.sysmem.flush_page_init = gf100_fb_sysmem_flush_page_init,\n\t.vidmem.size = ga102_fb_vidmem_size,\n\t.ram_new = gp102_ram_new,\n\t.default_bigpage = 16,\n\t.vpr.scrub_required = tu102_fb_vpr_scrub_required,\n\t.vpr.scrub = gp102_fb_vpr_scrub,\n};\n\nint\nga102_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn gf100_fb_new_(&ga102_fb, device, type, inst, pfb);\n}\n\nMODULE_FIRMWARE(\"nvidia/ga102/nvdec/scrubber.bin\");\nMODULE_FIRMWARE(\"nvidia/ga103/nvdec/scrubber.bin\");\nMODULE_FIRMWARE(\"nvidia/ga104/nvdec/scrubber.bin\");\nMODULE_FIRMWARE(\"nvidia/ga106/nvdec/scrubber.bin\");\nMODULE_FIRMWARE(\"nvidia/ga107/nvdec/scrubber.bin\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

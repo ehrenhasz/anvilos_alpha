@@ -1,0 +1,9 @@
+{
+  "module_name": "autogroup.h",
+  "hash_id": "bdc97ced3a7eca48ba1929f0d1bb9852590f42c45db471930ded63ef40774a8b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sched/autogroup.h",
+  "human_readable_source": " \n#ifndef _LINUX_SCHED_AUTOGROUP_H\n#define _LINUX_SCHED_AUTOGROUP_H\n\nstruct signal_struct;\nstruct task_struct;\nstruct task_group;\nstruct seq_file;\n\n#ifdef CONFIG_SCHED_AUTOGROUP\nextern void sched_autogroup_create_attach(struct task_struct *p);\nextern void sched_autogroup_detach(struct task_struct *p);\nextern void sched_autogroup_fork(struct signal_struct *sig);\nextern void sched_autogroup_exit(struct signal_struct *sig);\nextern void sched_autogroup_exit_task(struct task_struct *p);\n#ifdef CONFIG_PROC_FS\nextern void proc_sched_autogroup_show_task(struct task_struct *p, struct seq_file *m);\nextern int proc_sched_autogroup_set_nice(struct task_struct *p, int nice);\n#endif\n#else\nstatic inline void sched_autogroup_create_attach(struct task_struct *p) { }\nstatic inline void sched_autogroup_detach(struct task_struct *p) { }\nstatic inline void sched_autogroup_fork(struct signal_struct *sig) { }\nstatic inline void sched_autogroup_exit(struct signal_struct *sig) { }\nstatic inline void sched_autogroup_exit_task(struct task_struct *p) { }\n#endif\n\n#ifdef CONFIG_CGROUP_SCHED\nextern struct task_group root_task_group;\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

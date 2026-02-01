@@ -1,0 +1,9 @@
+{
+  "module_name": "perf-help.txt",
+  "hash_id": "4f684df02a0108b120323a5230fc070121c30b98f37a08dd48e0bad372253955",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/perf-help.txt",
+  "human_readable_source": "perf-help(1)\n============\n\nNAME\n----\nperf-help - display help information about perf\n\nSYNOPSIS\n--------\n'perf help' [-a|--all] [COMMAND]\n\nDESCRIPTION\n-----------\n\nWith no options and no COMMAND given, the synopsis of the 'perf'\ncommand and a list of the most commonly used perf commands are printed\non the standard output.\n\nIf the option '--all' or '-a' is given, then all available commands are\nprinted on the standard output.\n\nIf a perf command is named, a manual page for that command is brought\nup. The 'man' program is used by default for this purpose, but this\ncan be overridden by other options or configuration variables.\n\nNote that `perf --help ...` is identical to `perf help ...` because the\nformer is internally converted into the latter.\n\nOPTIONS\n-------\n-a::\n--all::\n\tPrints all the available commands on the standard output. This\n\toption supersedes any other option.\n\nPERF\n----\nPart of the linkperf:perf[1] suite\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

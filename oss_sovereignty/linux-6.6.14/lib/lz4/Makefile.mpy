@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d6da54b4827a3b8eeee03d8d5f26703b56ce0b8227bb3fe62e88d7731d1853d6",
+  "original_prompt": "Ingested from linux-6.6.14/lib/lz4/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nccflags-y += -O3\n\nobj-$(CONFIG_LZ4_COMPRESS) += lz4_compress.o\nobj-$(CONFIG_LZ4HC_COMPRESS) += lz4hc_compress.o\nobj-$(CONFIG_LZ4_DECOMPRESS) += lz4_decompress.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

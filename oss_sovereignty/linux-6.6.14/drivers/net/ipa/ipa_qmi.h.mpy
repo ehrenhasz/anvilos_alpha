@@ -1,0 +1,9 @@
+{
+  "module_name": "ipa_qmi.h",
+  "hash_id": "5c3ea8ad83713da5c7d39ba7996abfeb2e4ae3e692c417467abdf7d6c09ecec8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ipa/ipa_qmi.h",
+  "human_readable_source": " \n\n \n#ifndef _IPA_QMI_H_\n#define _IPA_QMI_H_\n\n#include <linux/types.h>\n#include <linux/soc/qcom/qmi.h>\n\nstruct ipa;\n\n \nstruct ipa_qmi {\n\tstruct qmi_handle client_handle;\n\tstruct qmi_handle server_handle;\n\n\t \n\tstruct sockaddr_qrtr modem_sq;\n\tstruct work_struct init_driver_work;\n\n\t \n\tbool initial_boot;\n\tbool uc_ready;\n\tbool modem_ready;\n\tbool indication_requested;\n\tbool indication_sent;\n};\n\n \nint ipa_qmi_setup(struct ipa *ipa);\n\n \nvoid ipa_qmi_teardown(struct ipa *ipa);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

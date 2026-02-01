@@ -1,0 +1,9 @@
+{
+  "module_name": "power_helpers.h",
+  "hash_id": "2a87cd9b8f24984850b7e1329a6c03481646f47d383d4f2ba124b16eea03a2ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/modules/power/power_helpers.h",
+  "human_readable_source": " \n\n#ifndef MODULES_POWER_POWER_HELPERS_H_\n#define MODULES_POWER_POWER_HELPERS_H_\n\n#include \"dc/inc/hw/dmcu.h\"\n#include \"dc/inc/hw/abm.h\"\n#include \"dc/inc/core_types.h\"\n\nstruct resource_pool;\n\n\nenum abm_defines {\n\tabm_defines_max_level = 4,\n\tabm_defines_max_config = 4,\n};\n\nstruct dmcu_iram_parameters {\n\tunsigned int *backlight_lut_array;\n\tunsigned int backlight_lut_array_size;\n\tbool backlight_ramping_override;\n\tunsigned int backlight_ramping_reduction;\n\tunsigned int backlight_ramping_start;\n\tunsigned int min_abm_backlight;\n\tunsigned int set;\n};\n\nbool dmcu_load_iram(struct dmcu *dmcu,\n\t\tstruct dmcu_iram_parameters params);\nbool dmub_init_abm_config(struct resource_pool *res_pool,\n\t\tstruct dmcu_iram_parameters params,\n\t\tunsigned int inst);\n\nvoid init_replay_config(struct dc_link *link, struct replay_config *pr_config);\n\nbool is_psr_su_specific_panel(struct dc_link *link);\nvoid mod_power_calc_psr_configs(struct psr_config *psr_config,\n\t\tstruct dc_link *link,\n\t\tconst struct dc_stream_state *stream);\nbool mod_power_only_edp(const struct dc_state *context,\n\t\tconst struct dc_stream_state *stream);\nbool psr_su_set_dsc_slice_height(struct dc *dc, struct dc_link *link,\n\t\t\t      struct dc_stream_state *stream,\n\t\t\t      struct psr_config *config);\n\nbool fill_custom_backlight_caps(unsigned int config_no,\n\t\tstruct dm_acpi_atif_backlight_caps *caps);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

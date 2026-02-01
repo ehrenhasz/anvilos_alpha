@@ -1,0 +1,9 @@
+{
+  "module_name": "ioctl.m4",
+  "hash_id": "a2243aba14a342d613588c3df86ee06d06f47c2de18f6ffd8f27afaf748eaeca",
+  "original_prompt": "Ingested from coreutils-9.4/m4/ioctl.m4",
+  "human_readable_source": "# ioctl.m4 serial 6\ndnl Copyright (C) 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_IOCTL],\n[\n  AC_REQUIRE([gl_SYS_IOCTL_H_DEFAULTS])\n  AC_REQUIRE([gl_SYS_SOCKET_H])\n  HAVE_IOCTL=1\n  if test \"$ac_cv_header_winsock2_h\" = yes; then\n    dnl Even if the 'socket' module is not used here, another part of the\n    dnl application may use it and pass file descriptors that refer to\n    dnl sockets to the ioctl() function. So enable the support for sockets.\n    HAVE_IOCTL=0\n  else\n    AC_CHECK_FUNCS([ioctl])\n    dnl On glibc systems, the second parameter is 'unsigned long int request',\n    dnl not 'int request'. We cannot simply cast the function pointer, but\n    dnl instead need a wrapper.\n    AC_CACHE_CHECK([for ioctl with POSIX signature],\n      [gl_cv_func_ioctl_posix_signature],\n      [AC_COMPILE_IFELSE(\n         [AC_LANG_PROGRAM(\n            [[#include <sys/ioctl.h>\n              /* On some platforms, ioctl() is declared in <unistd.h>.  */\n              #include <unistd.h>\n            ]],\n            [[extern\n              #ifdef __cplusplus\n              \"C\"\n              #endif\n              int ioctl (int, int, ...);\n            ]])\n         ],\n         [gl_cv_func_ioctl_posix_signature=yes],\n         [gl_cv_func_ioctl_posix_signature=no])\n      ])\n    if test $gl_cv_func_ioctl_posix_signature != yes; then\n      REPLACE_IOCTL=1\n    fi\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "r8a774c0-sysc.h",
+  "hash_id": "f071a6a228b8e356042adb7f9499aa9ab52d66f24b18f7dd8b8f9f14d6d5c3ca",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/r8a774c0-sysc.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_POWER_R8A774C0_SYSC_H__\n#define __DT_BINDINGS_POWER_R8A774C0_SYSC_H__\n\n \n\n#define R8A774C0_PD_CA53_CPU0\t\t5\n#define R8A774C0_PD_CA53_CPU1\t\t6\n#define R8A774C0_PD_A3VC\t\t14\n#define R8A774C0_PD_3DG_A\t\t17\n#define R8A774C0_PD_3DG_B\t\t18\n#define R8A774C0_PD_CA53_SCU\t\t21\n#define R8A774C0_PD_A2VC1\t\t26\n\n \n#define R8A774C0_PD_ALWAYS_ON\t\t32\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

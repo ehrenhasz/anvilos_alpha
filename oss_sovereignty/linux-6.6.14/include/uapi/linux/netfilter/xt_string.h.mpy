@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_string.h",
+  "hash_id": "62f658b65de410d0585dd2ac492cdd48472ccddfa8a9a8f3682feed42c6548ff",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_string.h",
+  "human_readable_source": " \n#ifndef _XT_STRING_H\n#define _XT_STRING_H\n\n#include <linux/types.h>\n\n#define XT_STRING_MAX_PATTERN_SIZE 128\n#define XT_STRING_MAX_ALGO_NAME_SIZE 16\n\nenum {\n\tXT_STRING_FLAG_INVERT\t\t= 0x01,\n\tXT_STRING_FLAG_IGNORECASE\t= 0x02\n};\n\nstruct xt_string_info {\n\t__u16 from_offset;\n\t__u16 to_offset;\n\tchar\t  algo[XT_STRING_MAX_ALGO_NAME_SIZE];\n\tchar \t  pattern[XT_STRING_MAX_PATTERN_SIZE];\n\t__u8  patlen;\n\tunion {\n\t\tstruct {\n\t\t\t__u8  invert;\n\t\t} v0;\n\n\t\tstruct {\n\t\t\t__u8  flags;\n\t\t} v1;\n\t} u;\n\n\t \n\tstruct ts_config __attribute__((aligned(8))) *config;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

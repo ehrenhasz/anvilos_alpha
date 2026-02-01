@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "25b3d994747c3ed96925fb20577b77a4f78b8eb9dae9c87429de94a7cef6b18a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the linux kernel.\n#\nobj-$(CONFIG_ARM_SCPI_PROTOCOL)\t+= arm_scpi.o\nobj-$(CONFIG_ARM_SCPI_POWER_DOMAIN) += scpi_pm_domain.o\nobj-$(CONFIG_ARM_SDE_INTERFACE)\t+= arm_sdei.o\nobj-$(CONFIG_DMI)\t\t+= dmi_scan.o\nobj-$(CONFIG_DMI_SYSFS)\t\t+= dmi-sysfs.o\nobj-$(CONFIG_EDD)\t\t+= edd.o\nobj-$(CONFIG_EFI_PCDP)\t\t+= pcdp.o\nobj-$(CONFIG_DMIID)\t\t+= dmi-id.o\nobj-$(CONFIG_INTEL_STRATIX10_SERVICE) += stratix10-svc.o\nobj-$(CONFIG_INTEL_STRATIX10_RSU)     += stratix10-rsu.o\nobj-$(CONFIG_ISCSI_IBFT_FIND)\t+= iscsi_ibft_find.o\nobj-$(CONFIG_ISCSI_IBFT)\t+= iscsi_ibft.o\nobj-$(CONFIG_FIRMWARE_MEMMAP)\t+= memmap.o\nobj-$(CONFIG_MTK_ADSP_IPC)\t+= mtk-adsp-ipc.o\nobj-$(CONFIG_RASPBERRYPI_FIRMWARE) += raspberrypi.o\nobj-$(CONFIG_FW_CFG_SYSFS)\t+= qemu_fw_cfg.o\nobj-$(CONFIG_QCOM_SCM)\t\t+= qcom-scm.o\nqcom-scm-objs += qcom_scm.o qcom_scm-smc.o qcom_scm-legacy.o\nobj-$(CONFIG_SYSFB)\t\t+= sysfb.o\nobj-$(CONFIG_SYSFB_SIMPLEFB)\t+= sysfb_simplefb.o\nobj-$(CONFIG_TI_SCI_PROTOCOL)\t+= ti_sci.o\nobj-$(CONFIG_TRUSTED_FOUNDATIONS) += trusted_foundations.o\nobj-$(CONFIG_TURRIS_MOX_RWTM)\t+= turris-mox-rwtm.o\n\nobj-y\t\t\t\t+= arm_ffa/\nobj-y\t\t\t\t+= arm_scmi/\nobj-y\t\t\t\t+= broadcom/\nobj-y\t\t\t\t+= cirrus/\nobj-y\t\t\t\t+= meson/\nobj-$(CONFIG_GOOGLE_FIRMWARE)\t+= google/\nobj-y\t\t\t\t+= efi/\nobj-y\t\t\t\t+= imx/\nobj-y\t\t\t\t+= psci/\nobj-y\t\t\t\t+= smccc/\nobj-y\t\t\t\t+= tegra/\nobj-y\t\t\t\t+= xilinx/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

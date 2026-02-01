@@ -1,0 +1,9 @@
+{
+  "module_name": "fiemap.h",
+  "hash_id": "7baae534ff6766d32c5c120f2a69217e2731780d2419e22d845ad23fdc63aef2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fiemap.h",
+  "human_readable_source": " \n#ifndef _LINUX_FIEMAP_H\n#define _LINUX_FIEMAP_H 1\n\n#include <uapi/linux/fiemap.h>\n#include <linux/fs.h>\n\nstruct fiemap_extent_info {\n\tunsigned int fi_flags;\t\t \n\tunsigned int fi_extents_mapped;\t \n\tunsigned int fi_extents_max;\t \n\tstruct fiemap_extent __user *fi_extents_start;  \n};\n\nint fiemap_prep(struct inode *inode, struct fiemap_extent_info *fieinfo,\n\t\tu64 start, u64 *len, u32 supported_flags);\nint fiemap_fill_next_extent(struct fiemap_extent_info *info, u64 logical,\n\t\t\t    u64 phys, u64 len, u32 flags);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

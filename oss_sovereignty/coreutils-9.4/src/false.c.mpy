@@ -1,0 +1,9 @@
+{
+  "module_name": "false.c",
+  "hash_id": "250b10a23ccded70a8343d2507b4e24151c506bf26b08ab0ad7c046905c9bce5",
+  "original_prompt": "Ingested from coreutils-9.4/src/false.c",
+  "human_readable_source": "#define EXIT_STATUS EXIT_FAILURE\n#include \"true.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

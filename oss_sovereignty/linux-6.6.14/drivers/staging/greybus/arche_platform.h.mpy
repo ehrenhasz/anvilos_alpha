@@ -1,0 +1,9 @@
+{
+  "module_name": "arche_platform.h",
+  "hash_id": "0c119971304dbed253b172e02bf5d0f4208495c5b57d9056706ed8451a9eadc9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/greybus/arche_platform.h",
+  "human_readable_source": " \n \n\n#ifndef __ARCHE_PLATFORM_H\n#define __ARCHE_PLATFORM_H\n\nenum arche_platform_state {\n\tARCHE_PLATFORM_STATE_OFF,\n\tARCHE_PLATFORM_STATE_ACTIVE,\n\tARCHE_PLATFORM_STATE_STANDBY,\n\tARCHE_PLATFORM_STATE_FW_FLASHING,\n};\n\nint __init arche_apb_init(void);\nvoid __exit arche_apb_exit(void);\n\n \nint apb_ctrl_coldboot(struct device *dev);\nint apb_ctrl_fw_flashing(struct device *dev);\nint apb_ctrl_standby_boot(struct device *dev);\nvoid apb_ctrl_poweroff(struct device *dev);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

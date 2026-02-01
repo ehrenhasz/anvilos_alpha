@@ -1,0 +1,9 @@
+{
+  "module_name": "genwqe_driver.h",
+  "hash_id": "3d084c041183522265bce5feb0940f77558301a0b2772e53c78e233818c387f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/genwqe/genwqe_driver.h",
+  "human_readable_source": " \n#ifndef __GENWQE_DRIVER_H__\n#define __GENWQE_DRIVER_H__\n\n \n\n#include <linux/types.h>\n#include <linux/stddef.h>\n#include <linux/cdev.h>\n#include <linux/list.h>\n#include <linux/kthread.h>\n#include <linux/scatterlist.h>\n#include <linux/iommu.h>\n#include <linux/spinlock.h>\n#include <linux/mutex.h>\n#include <linux/platform_device.h>\n#include <linux/printk.h>\n\n#include <asm/byteorder.h>\n#include <linux/genwqe/genwqe_card.h>\n\n#define DRV_VERSION\t\t\"2.0.25\"\n\n \n#define GENWQE_MAX_MINOR\t128  \n\n \nstruct genwqe_ddcb_cmd *ddcb_requ_alloc(void);\n\n \nvoid ddcb_requ_free(struct genwqe_ddcb_cmd *req);\n\nu32  genwqe_crc32(u8 *buff, size_t len, u32 init);\n\nstatic inline void genwqe_hexdump(struct pci_dev *pci_dev,\n\t\t\t\t  const void *buff, unsigned int size)\n{\n\tchar prefix[32];\n\n\tscnprintf(prefix, sizeof(prefix), \"%s %s: \",\n\t\t  GENWQE_DEVNAME, pci_name(pci_dev));\n\n\tprint_hex_dump_debug(prefix, DUMP_PREFIX_OFFSET, 16, 1, buff,\n\t\t\t     size, true);\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

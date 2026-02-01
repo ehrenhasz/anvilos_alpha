@@ -1,0 +1,9 @@
+{
+  "module_name": "netcnt_prog.c",
+  "hash_id": "29ccbd85126cdd77c49c836294b33e995ef20618cf2d54fef207afb4151995e7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/netcnt_prog.c",
+  "human_readable_source": "\n#include <linux/bpf.h>\n#include <linux/version.h>\n\n#include <bpf/bpf_helpers.h>\n#include \"netcnt_common.h\"\n\n#define MAX_BPS\t(3 * 1024 * 1024)\n\n#define REFRESH_TIME_NS\t100000000\n#define NS_PER_SEC\t1000000000\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE);\n\t__type(key, struct bpf_cgroup_storage_key);\n\t__type(value, union percpu_net_cnt);\n} percpu_netcnt SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_CGROUP_STORAGE);\n\t__type(key, struct bpf_cgroup_storage_key);\n\t__type(value, union net_cnt);\n} netcnt SEC(\".maps\");\n\nSEC(\"cgroup/skb\")\nint bpf_nextcnt(struct __sk_buff *skb)\n{\n\tunion percpu_net_cnt *percpu_cnt;\n\tunion net_cnt *cnt;\n\t__u64 ts, dt;\n\tint ret;\n\n\tcnt = bpf_get_local_storage(&netcnt, 0);\n\tpercpu_cnt = bpf_get_local_storage(&percpu_netcnt, 0);\n\n\tpercpu_cnt->packets++;\n\tpercpu_cnt->bytes += skb->len;\n\n\tif (percpu_cnt->packets > MAX_PERCPU_PACKETS) {\n\t\t__sync_fetch_and_add(&cnt->packets,\n\t\t\t\t     percpu_cnt->packets);\n\t\tpercpu_cnt->packets = 0;\n\n\t\t__sync_fetch_and_add(&cnt->bytes,\n\t\t\t\t     percpu_cnt->bytes);\n\t\tpercpu_cnt->bytes = 0;\n\t}\n\n\tts = bpf_ktime_get_ns();\n\tdt = ts - percpu_cnt->prev_ts;\n\n\tdt *= MAX_BPS;\n\tdt /= NS_PER_SEC;\n\n\tif (cnt->bytes + percpu_cnt->bytes - percpu_cnt->prev_bytes < dt)\n\t\tret = 1;\n\telse\n\t\tret = 0;\n\n\tif (dt > REFRESH_TIME_NS) {\n\t\tpercpu_cnt->prev_ts = ts;\n\t\tpercpu_cnt->prev_packets = cnt->packets;\n\t\tpercpu_cnt->prev_bytes = cnt->bytes;\n\t}\n\n\treturn !!ret;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

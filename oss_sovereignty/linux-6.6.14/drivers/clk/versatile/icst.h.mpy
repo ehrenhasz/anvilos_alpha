@@ -1,0 +1,9 @@
+{
+  "module_name": "icst.h",
+  "hash_id": "9f53e0d928c260d415cd420754b6dd32b710f01880e07a43de2500078842c132",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/versatile/icst.h",
+  "human_readable_source": " \n \n#ifndef ICST_H\n#define ICST_H\n\nstruct icst_params {\n\tunsigned long\tref;\n\tunsigned long\tvco_max;\t \n\tunsigned long\tvco_min;\t \n\tunsigned short\tvd_min;\t\t \n\tunsigned short\tvd_max;\t\t \n\tunsigned char\trd_min;\t\t \n\tunsigned char\trd_max;\t\t \n\tconst unsigned char *s2div;\t \n\tconst unsigned char *idx2s;\t \n};\n\nstruct icst_vco {\n\tunsigned short\tv;\n\tunsigned char\tr;\n\tunsigned char\ts;\n};\n\nunsigned long icst_hz(const struct icst_params *p, struct icst_vco vco);\nstruct icst_vco icst_hz_to_vco(const struct icst_params *p, unsigned long freq);\n\n \n#define ICST307_VCO_MIN\t6000000\n#define ICST307_VCO_MAX\t200000000\n\nextern const unsigned char icst307_s2div[];\nextern const unsigned char icst307_idx2s[];\n\n \n#define ICST525_VCO_MIN\t\t10000000\n#define ICST525_VCO_MAX_3V\t200000000\n#define ICST525_VCO_MAX_5V\t320000000\n\nextern const unsigned char icst525_s2div[];\nextern const unsigned char icst525_idx2s[];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

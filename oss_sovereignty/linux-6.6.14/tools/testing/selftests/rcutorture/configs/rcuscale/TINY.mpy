@@ -1,0 +1,9 @@
+{
+  "module_name": "TINY",
+  "hash_id": "609d3cf0b720d64bca57640a31dfa46eb9c64b63c40eaee4335963991f0845e2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcuscale/TINY",
+  "human_readable_source": "CONFIG_SMP=n\nCONFIG_PREEMPT_NONE=y\nCONFIG_PREEMPT_VOLUNTARY=n\nCONFIG_PREEMPT=n\nCONFIG_PREEMPT_DYNAMIC=n\n#CHECK#CONFIG_TINY_RCU=y\nCONFIG_HZ_PERIODIC=n\nCONFIG_NO_HZ_IDLE=y\nCONFIG_NO_HZ_FULL=n\nCONFIG_RCU_NOCB_CPU=n\nCONFIG_DEBUG_LOCK_ALLOC=n\nCONFIG_PROVE_LOCKING=n\nCONFIG_RCU_BOOST=n\nCONFIG_DEBUG_OBJECTS_RCU_HEAD=n\nCONFIG_RCU_EXPERT=y\nCONFIG_RCU_TRACE=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

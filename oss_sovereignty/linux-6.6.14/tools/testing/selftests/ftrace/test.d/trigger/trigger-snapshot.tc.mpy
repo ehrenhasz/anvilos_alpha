@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-snapshot.tc",
+  "hash_id": "857a7c74f1609394b4e0af107e699a27c882342fe8fcaab25109fb792be62c9b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/trigger-snapshot.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event trigger - test snapshot-trigger\n# requires: set_event events/sched/sched_process_fork/trigger snapshot\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\nFEATURE=`grep snapshot events/sched/sched_process_fork/trigger`\nif [ -z \"$FEATURE\" ]; then\n    echo \"snapshot trigger is not supported\"\n    exit_unsupported\nfi\n\necho \"Test snapshot trigger\"\necho 0 > snapshot\necho 1 > events/sched/sched_process_fork/enable\n( echo \"forked\")\necho 'snapshot:1' > events/sched/sched_process_fork/trigger\n( echo \"forked\")\ngrep sched_process_fork snapshot > /dev/null || \\\n    fail \"snapshot trigger on sched_process_fork did not work\"\n\nreset_trigger\necho 0 > snapshot\necho 0 > events/sched/sched_process_fork/enable\n\necho \"Test snapshot semantic errors\"\n\n! echo \"snapshot+1\" > events/sched/sched_process_fork/trigger\necho \"snapshot\" > events/sched/sched_process_fork/trigger\n! echo \"snapshot\" > events/sched/sched_process_fork/trigger\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

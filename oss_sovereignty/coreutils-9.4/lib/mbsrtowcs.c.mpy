@@ -1,0 +1,9 @@
+{
+  "module_name": "mbsrtowcs.c",
+  "hash_id": "7c8e3a30dd62ff9f8632f7e9e35610bea6ae5abf97e6e529b23a4e118a798e2a",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mbsrtowcs.c",
+  "human_readable_source": " \n#include <wchar.h>\n\n#include <errno.h>\n#include <limits.h>\n#include <stdlib.h>\n\n#include \"strnlen1.h\"\n\n\nextern mbstate_t _gl_mbsrtowcs_state;\n\n#define FUNC mbsrtowcs\n#define DCHAR_T wchar_t\n#define INTERNAL_STATE _gl_mbsrtowcs_state\n#define MBRTOWC mbrtowc\n#define USES_C32 0\n#include \"mbsrtowcs-impl.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

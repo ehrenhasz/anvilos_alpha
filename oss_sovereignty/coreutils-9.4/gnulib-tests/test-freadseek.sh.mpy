@@ -1,0 +1,9 @@
+{
+  "module_name": "test-freadseek.sh",
+  "hash_id": "f82e4060a7e5d2ed19691ada951547dadd0b3f9638ba3cdefd75aed81e8328da",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-freadseek.sh",
+  "human_readable_source": "#!/bin/sh\n\n${CHECKER} ./test-freadseek${EXEEXT} 5 19 6 7 18 9 19 < \"$srcdir/test-freadseek.sh\" || exit 1\ncat \"$srcdir/test-freadseek.sh\" | ${CHECKER} ./test-freadseek${EXEEXT} 5 19 6 7 18 9 19 || exit 1\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

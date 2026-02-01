@@ -1,0 +1,9 @@
+{
+  "module_name": "link_dp_dpia_bw.h",
+  "hash_id": "25ceafa44e741a6cce5e95f4ba20b603ab6690a1332bb49a32833e0fae2746a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/protocols/link_dp_dpia_bw.h",
+  "human_readable_source": " \n\n#ifndef DC_INC_LINK_DP_DPIA_BW_H_\n#define DC_INC_LINK_DP_DPIA_BW_H_\n\n#include \"link.h\"\n\n \n#define MAX_HR_NUM\t\t\t2\n \n#define MAX_DPIA_NUM\t\t(MAX_HR_NUM * 2)\n\n \nenum bw_type {\n\tHOST_ROUTER_BW_ESTIMATED,\n\tHOST_ROUTER_BW_ALLOCATED,\n\tHOST_ROUTER_BW_INVALID,\n};\n\n \nbool link_dp_dpia_set_dptx_usb4_bw_alloc_support(struct dc_link *link);\n\n \nint link_dp_dpia_allocate_usb4_bandwidth_for_stream(struct dc_link *link, int req_bw);\n\n \nint dpia_handle_usb4_bandwidth_allocation_for_link(struct dc_link *link, int peak_bw);\n\n \nvoid dpia_handle_bw_alloc_response(struct dc_link *link, uint8_t bw, uint8_t result);\n\n \nbool dpia_validate_usb4_bw(struct dc_link **link, int *bw_needed, const unsigned int num_dpias);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xenstored.c",
+  "hash_id": "88859d847fa02355a104dd46425281eccd09c34c045fb4d32bde4b78a30d8966",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/xen/xenfs/xenstored.c",
+  "human_readable_source": "\n#include <linux/slab.h>\n#include <linux/types.h>\n#include <linux/mm.h>\n#include <linux/fs.h>\n\n#include <xen/page.h>\n#include <xen/xenbus.h>\n\n#include \"xenfs.h\"\n\nstatic ssize_t xsd_read(struct file *file, char __user *buf,\n\t\t\t    size_t size, loff_t *off)\n{\n\tconst char *str = (const char *)file->private_data;\n\treturn simple_read_from_buffer(buf, size, off, str, strlen(str));\n}\n\nstatic int xsd_release(struct inode *inode, struct file *file)\n{\n\tkfree(file->private_data);\n\treturn 0;\n}\n\nstatic int xsd_kva_open(struct inode *inode, struct file *file)\n{\n\tfile->private_data = (void *)kasprintf(GFP_KERNEL, \"0x%p\",\n\t\t\t\t\t       xen_store_interface);\n\tif (!file->private_data)\n\t\treturn -ENOMEM;\n\treturn 0;\n}\n\nstatic int xsd_kva_mmap(struct file *file, struct vm_area_struct *vma)\n{\n\tsize_t size = vma->vm_end - vma->vm_start;\n\n\tif ((size > PAGE_SIZE) || (vma->vm_pgoff != 0))\n\t\treturn -EINVAL;\n\n\tif (remap_pfn_range(vma, vma->vm_start,\n\t\t\t    virt_to_pfn(xen_store_interface),\n\t\t\t    size, vma->vm_page_prot))\n\t\treturn -EAGAIN;\n\n\treturn 0;\n}\n\nconst struct file_operations xsd_kva_file_ops = {\n\t.open = xsd_kva_open,\n\t.mmap = xsd_kva_mmap,\n\t.read = xsd_read,\n\t.release = xsd_release,\n};\n\nstatic int xsd_port_open(struct inode *inode, struct file *file)\n{\n\tfile->private_data = (void *)kasprintf(GFP_KERNEL, \"%d\",\n\t\t\t\t\t       xen_store_evtchn);\n\tif (!file->private_data)\n\t\treturn -ENOMEM;\n\treturn 0;\n}\n\nconst struct file_operations xsd_port_file_ops = {\n\t.open = xsd_port_open,\n\t.read = xsd_read,\n\t.release = xsd_release,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rdmavt_cq.h",
+  "hash_id": "85b356a212fb568b3d4968feec004f5e31a345a906bd0a4d88aae71a8ce0cd8c",
+  "original_prompt": "Ingested from linux-6.6.14/include/rdma/rdmavt_cq.h",
+  "human_readable_source": " \n \n\n#ifndef DEF_RDMAVT_INCCQ_H\n#define DEF_RDMAVT_INCCQ_H\n\n#include <linux/kthread.h>\n#include <rdma/ib_user_verbs.h>\n#include <rdma/ib_verbs.h>\n\n \n#define RVT_CQ_NONE      (IB_CQ_NEXT_COMP + 1)\n\n \n#define RDMA_READ_UAPI_ATOMIC(member) smp_load_acquire(&(member).val)\n\n \n#define RDMA_WRITE_UAPI_ATOMIC(member, x) smp_store_release(&(member).val, x)\n#include <rdma/rvt-abi.h>\n\n \nstruct rvt_k_cq_wc {\n\tu32 head;                \n\tu32 tail;                \n\tstruct ib_wc kqueue[];\n};\n\n \nstruct rvt_cq {\n\tstruct ib_cq ibcq;\n\tstruct work_struct comptask;\n\tspinlock_t lock;  \n\tu8 notify;\n\tu8 triggered;\n\tu8 cq_full;\n\tint comp_vector_cpu;\n\tstruct rvt_dev_info *rdi;\n\tstruct rvt_cq_wc *queue;\n\tstruct rvt_mmap_info *ip;\n\tstruct rvt_k_cq_wc *kqueue;\n};\n\nstatic inline struct rvt_cq *ibcq_to_rvtcq(struct ib_cq *ibcq)\n{\n\treturn container_of(ibcq, struct rvt_cq, ibcq);\n}\n\nbool rvt_cq_enter(struct rvt_cq *cq, struct ib_wc *entry, bool solicited);\n\n#endif           \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

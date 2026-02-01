@@ -1,0 +1,9 @@
+{
+  "module_name": "nouveau_ttm.h",
+  "hash_id": "6cfd3dc1a6b18adbcb3684c60fb963ff4c6c8f447e4522940344a74880f897d2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nouveau_ttm.h",
+  "human_readable_source": " \n#ifndef __NOUVEAU_TTM_H__\n#define __NOUVEAU_TTM_H__\n\nstatic inline struct nouveau_drm *\nnouveau_bdev(struct ttm_device *bd)\n{\n\treturn container_of(bd, struct nouveau_drm, ttm.bdev);\n}\n\nextern const struct ttm_resource_manager_func nouveau_vram_manager;\nextern const struct ttm_resource_manager_func nouveau_gart_manager;\nextern const struct ttm_resource_manager_func nv04_gart_manager;\n\nstruct ttm_tt *nouveau_sgdma_create_ttm(struct ttm_buffer_object *bo,\n\t\t\t\t\tu32 page_flags);\n\nint  nouveau_ttm_init(struct nouveau_drm *drm);\nvoid nouveau_ttm_fini(struct nouveau_drm *drm);\n\nint  nouveau_ttm_global_init(struct nouveau_drm *);\nvoid nouveau_ttm_global_release(struct nouveau_drm *);\n\nint nouveau_sgdma_bind(struct ttm_device *bdev, struct ttm_tt *ttm, struct ttm_resource *reg);\nvoid nouveau_sgdma_unbind(struct ttm_device *bdev, struct ttm_tt *ttm);\nvoid nouveau_sgdma_destroy(struct ttm_device *bdev, struct ttm_tt *ttm);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

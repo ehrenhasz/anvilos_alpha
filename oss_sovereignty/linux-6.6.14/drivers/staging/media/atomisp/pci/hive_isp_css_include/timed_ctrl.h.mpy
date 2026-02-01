@@ -1,0 +1,9 @@
+{
+  "module_name": "timed_ctrl.h",
+  "hash_id": "376cd5859b2873d1846df3ce3481ef90eb3ace3fa73dcc474e80828a8927702c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/timed_ctrl.h",
+  "human_readable_source": " \n \n\n#ifndef __TIMED_CTRL_H_INCLUDED__\n#define __TIMED_CTRL_H_INCLUDED__\n\n \n\n#include \"system_local.h\"\n#include \"timed_ctrl_local.h\"\n\n#ifndef __INLINE_TIMED_CTRL__\n#define STORAGE_CLASS_TIMED_CTRL_H extern\n#define STORAGE_CLASS_TIMED_CTRL_C\n#include \"timed_ctrl_public.h\"\n#else   \n#define STORAGE_CLASS_TIMED_CTRL_H static inline\n#define STORAGE_CLASS_TIMED_CTRL_C static inline\n#include \"timed_ctrl_private.h\"\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

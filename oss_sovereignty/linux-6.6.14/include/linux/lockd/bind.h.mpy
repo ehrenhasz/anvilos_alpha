@@ -1,0 +1,9 @@
+{
+  "module_name": "bind.h",
+  "hash_id": "34aa3a88bf121de6cfea25e063ea8b44ff65998a9837e59c311cedc5f00ccea4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/lockd/bind.h",
+  "human_readable_source": " \n \n\n#ifndef LINUX_LOCKD_BIND_H\n#define LINUX_LOCKD_BIND_H\n\n#include <linux/lockd/nlm.h>\n \n#include <linux/lockd/xdr.h>\n#ifdef CONFIG_LOCKD_V4\n#include <linux/lockd/xdr4.h>\n#endif\n\n \nstruct svc_rqst;\nstruct rpc_task;\nstruct rpc_clnt;\n\n \nstruct nlmsvc_binding {\n\t__be32\t\t\t(*fopen)(struct svc_rqst *,\n\t\t\t\t\t\tstruct nfs_fh *,\n\t\t\t\t\t\tstruct file **,\n\t\t\t\t\t\tint mode);\n\tvoid\t\t\t(*fclose)(struct file *);\n};\n\nextern const struct nlmsvc_binding *nlmsvc_ops;\n\n \nstruct nlmclnt_initdata {\n\tconst char\t\t*hostname;\n\tconst struct sockaddr\t*address;\n\tsize_t\t\t\taddrlen;\n\tunsigned short\t\tprotocol;\n\tu32\t\t\tnfs_version;\n\tint\t\t\tnoresvport;\n\tstruct net\t\t*net;\n\tconst struct nlmclnt_operations\t*nlmclnt_ops;\n\tconst struct cred\t*cred;\n};\n\n \n\nextern struct nlm_host *nlmclnt_init(const struct nlmclnt_initdata *nlm_init);\nextern void\tnlmclnt_done(struct nlm_host *host);\nextern struct rpc_clnt *nlmclnt_rpc_clnt(struct nlm_host *host);\n\n \nstruct nlmclnt_operations {\n\t \n\tvoid (*nlmclnt_alloc_call)(void *);\n\n\t \n\tbool (*nlmclnt_unlock_prepare)(struct rpc_task*, void *);\n\n\t \n\tvoid (*nlmclnt_release_call)(void *);\n};\n\nextern int\tnlmclnt_proc(struct nlm_host *host, int cmd, struct file_lock *fl, void *data);\nextern int\tlockd_up(struct net *net, const struct cred *cred);\nextern void\tlockd_down(struct net *net);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gk104.h",
+  "hash_id": "c264f141e212ea78693c2cc39aeba1531dccf435d97a6b7b3cd99f4145b67196",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/therm/gk104.h",
+  "human_readable_source": " \n\n#ifndef __GK104_THERM_H__\n#define __GK104_THERM_H__\n#define gk104_therm(p) (container_of((p), struct gk104_therm, base))\n\n#include <subdev/therm.h>\n#include \"priv.h\"\n#include \"gf100.h\"\n\nstruct gk104_clkgate_engine_info {\n\tenum nvkm_subdev_type type;\n\tint inst;\n\tu8 offset;\n};\n\nstruct gk104_therm {\n\tstruct nvkm_therm base;\n\n\tconst struct gk104_clkgate_engine_info *clkgate_order;\n\tconst struct gf100_idle_filter *idle_filter;\n};\n\nextern const struct gk104_clkgate_engine_info gk104_clkgate_engine_info[];\nextern const struct gf100_idle_filter gk104_idle_filter;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

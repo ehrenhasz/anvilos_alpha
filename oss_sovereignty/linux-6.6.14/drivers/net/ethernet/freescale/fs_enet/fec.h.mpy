@@ -1,0 +1,9 @@
+{
+  "module_name": "fec.h",
+  "hash_id": "5b0df3282c6ede33b0905ed68e40df6a2b42a7ee0dde7947e98a053923c730f1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/fs_enet/fec.h",
+  "human_readable_source": " \n#ifndef FS_ENET_FEC_H\n#define FS_ENET_FEC_H\n\n#define FEC_MAX_MULTICAST_ADDRS\t64\n\n \n#define FEC_ENET_HBERR\t0x80000000U\t \n#define FEC_ENET_BABR\t0x40000000U\t \n#define FEC_ENET_BABT\t0x20000000U\t \n#define FEC_ENET_GRA\t0x10000000U\t \n#define FEC_ENET_TXF\t0x08000000U\t \n#define FEC_ENET_TXB\t0x04000000U\t \n#define FEC_ENET_RXF\t0x02000000U\t \n#define FEC_ENET_RXB\t0x01000000U\t \n#define FEC_ENET_MII\t0x00800000U\t \n#define FEC_ENET_EBERR\t0x00400000U\t \n\n#define FEC_ECNTRL_PINMUX\t0x00000004\n#define FEC_ECNTRL_ETHER_EN\t0x00000002\n#define FEC_ECNTRL_RESET\t0x00000001\n\n \n#define FEC_RCNTRL_RMII_MODE\t(0x00000100 | \\\n\t\t\t\t FEC_RCNTRL_MII_MODE | FEC_RCNTRL_FCE)\n#define FEC_RCNTRL_FCE\t\t0x00000020\n#define FEC_RCNTRL_BC_REJ\t0x00000010\n#define FEC_RCNTRL_PROM\t\t0x00000008\n#define FEC_RCNTRL_MII_MODE\t0x00000004\n#define FEC_RCNTRL_DRT\t\t0x00000002\n#define FEC_RCNTRL_LOOP\t\t0x00000001\n\n#define FEC_TCNTRL_FDEN\t\t0x00000004\n#define FEC_TCNTRL_HBC\t\t0x00000002\n#define FEC_TCNTRL_GTS\t\t0x00000001\n\n \n#define FEC_RESET_DELAY\t\t50\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

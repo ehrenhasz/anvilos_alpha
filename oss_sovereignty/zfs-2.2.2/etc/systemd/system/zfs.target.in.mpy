@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs.target.in",
+  "hash_id": "04bc085198b464b7a77374472374e099593241f59d7ed2676905e58b62c8d301",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/systemd/system/zfs.target.in",
+  "human_readable_source": "[Unit]\nDescription=ZFS startup target\n\n[Install]\nWantedBy=multi-user.target\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

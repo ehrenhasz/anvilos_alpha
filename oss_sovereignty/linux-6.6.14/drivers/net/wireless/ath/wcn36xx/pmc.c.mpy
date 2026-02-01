@@ -1,0 +1,9 @@
+{
+  "module_name": "pmc.c",
+  "hash_id": "1ca2c3e0e5f857b53001e817e263eaf156af23b87a1b7945301004fcf0caf63c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/wcn36xx/pmc.c",
+  "human_readable_source": " \n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include \"wcn36xx.h\"\n\n#define WCN36XX_BMPS_FAIL_THREHOLD 3\n\nint wcn36xx_pmc_enter_bmps_state(struct wcn36xx *wcn,\n\t\t\t\t struct ieee80211_vif *vif)\n{\n\tint ret = 0;\n\tstruct wcn36xx_vif *vif_priv = wcn36xx_vif_to_priv(vif);\n\t \n\tret = wcn36xx_smd_enter_bmps(wcn, vif);\n\tif (!ret) {\n\t\twcn36xx_dbg(WCN36XX_DBG_PMC, \"Entered BMPS\\n\");\n\t\tvif_priv->pw_state = WCN36XX_BMPS;\n\t\tvif_priv->bmps_fail_ct = 0;\n\t\tvif->driver_flags |= IEEE80211_VIF_BEACON_FILTER;\n\t} else {\n\t\t \n\t\twcn36xx_err(\"Can not enter BMPS!\\n\");\n\n\t\tif (vif_priv->bmps_fail_ct++ == WCN36XX_BMPS_FAIL_THREHOLD) {\n\t\t\tieee80211_connection_loss(vif);\n\t\t\tvif_priv->bmps_fail_ct = 0;\n\t\t}\n\t}\n\treturn ret;\n}\n\nint wcn36xx_pmc_exit_bmps_state(struct wcn36xx *wcn,\n\t\t\t\tstruct ieee80211_vif *vif)\n{\n\tstruct wcn36xx_vif *vif_priv = wcn36xx_vif_to_priv(vif);\n\n\tif (WCN36XX_BMPS != vif_priv->pw_state) {\n\t\t \n\t\twcn36xx_dbg(WCN36XX_DBG_PMC,\n\t\t\t    \"Not in BMPS mode, no need to exit\\n\");\n\t\treturn -EALREADY;\n\t}\n\twcn36xx_smd_exit_bmps(wcn, vif);\n\tvif_priv->pw_state = WCN36XX_FULL_POWER;\n\tvif->driver_flags &= ~IEEE80211_VIF_BEACON_FILTER;\n\treturn 0;\n}\n\nint wcn36xx_enable_keep_alive_null_packet(struct wcn36xx *wcn,\n\t\t\t\t\t  struct ieee80211_vif *vif)\n{\n\twcn36xx_dbg(WCN36XX_DBG_PMC, \"%s\\n\", __func__);\n\treturn wcn36xx_smd_keep_alive_req(wcn, vif,\n\t\t\t\t\t  WCN36XX_HAL_KEEP_ALIVE_NULL_PKT);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

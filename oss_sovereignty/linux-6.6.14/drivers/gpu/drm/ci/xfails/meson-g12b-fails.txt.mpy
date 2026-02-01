@@ -1,0 +1,9 @@
+{
+  "module_name": "meson-g12b-fails.txt",
+  "hash_id": "9595b7d3c82d822836d7200b2ba418824c580a7f56f22ec26d4aa3e425b5a090",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/meson-g12b-fails.txt",
+  "human_readable_source": "kms_3d,Fail\nkms_properties@connector-properties-atomic,Fail\nkms_properties@get_properties-sanity-atomic,Fail\nkms_properties@get_properties-sanity-non-atomic,Fail\nkms_properties@connector-properties-legacy,Fail\nkms_cursor_legacy@forked-bo,Fail\nkms_cursor_legacy@forked-move,Fail\nkms_cursor_legacy@single-bo,Fail\nkms_cursor_legacy@single-move,Fail\nkms_cursor_legacy@torture-bo,Fail\nkms_cursor_legacy@torture-move,Fail\nkms_hdmi_inject@inject-4k,Fail",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-proteus-2309.c",
+  "hash_id": "13f11ed6e86d62e3f4e94322cabceed9bb9edb9bd5070ef2386829f51eb5803f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-proteus-2309.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n\nstatic struct rc_map_table proteus_2309[] = {\n\t \n\t{ 0x00, KEY_NUMERIC_0 },\n\t{ 0x01, KEY_NUMERIC_1 },\n\t{ 0x02, KEY_NUMERIC_2 },\n\t{ 0x03, KEY_NUMERIC_3 },\n\t{ 0x04, KEY_NUMERIC_4 },\n\t{ 0x05, KEY_NUMERIC_5 },\n\t{ 0x06, KEY_NUMERIC_6 },\n\t{ 0x07, KEY_NUMERIC_7 },\n\t{ 0x08, KEY_NUMERIC_8 },\n\t{ 0x09, KEY_NUMERIC_9 },\n\n\t{ 0x5c, KEY_POWER },\t\t \n\t{ 0x20, KEY_ZOOM },\t\t \n\t{ 0x0f, KEY_BACKSPACE },\t \n\t{ 0x1b, KEY_ENTER },\t\t \n\t{ 0x41, KEY_RECORD },\t\t \n\t{ 0x43, KEY_STOP },\t\t \n\t{ 0x16, KEY_S },\n\t{ 0x1a, KEY_POWER2 },\t\t \n\t{ 0x2e, KEY_RED },\n\t{ 0x1f, KEY_CHANNELDOWN },\t \n\t{ 0x1c, KEY_CHANNELUP },\t \n\t{ 0x10, KEY_VOLUMEDOWN },\t \n\t{ 0x1e, KEY_VOLUMEUP },\t\t \n\t{ 0x14, KEY_F1 },\n};\n\nstatic struct rc_map_list proteus_2309_map = {\n\t.map = {\n\t\t.scan     = proteus_2309,\n\t\t.size     = ARRAY_SIZE(proteus_2309),\n\t\t.rc_proto = RC_PROTO_UNKNOWN,\t \n\t\t.name     = RC_MAP_PROTEUS_2309,\n\t}\n};\n\nstatic int __init init_rc_map_proteus_2309(void)\n{\n\treturn rc_map_register(&proteus_2309_map);\n}\n\nstatic void __exit exit_rc_map_proteus_2309(void)\n{\n\trc_map_unregister(&proteus_2309_map);\n}\n\nmodule_init(init_rc_map_proteus_2309)\nmodule_exit(exit_rc_map_proteus_2309)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Mauro Carvalho Chehab\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

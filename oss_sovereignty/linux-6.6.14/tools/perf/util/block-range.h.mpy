@@ -1,0 +1,9 @@
+{
+  "module_name": "block-range.h",
+  "hash_id": "e2daf72ab6edb82ebbad425565f1d36fa5c166170362ca71250f784723711d5a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/block-range.h",
+  "human_readable_source": " \n#ifndef __PERF_BLOCK_RANGE_H\n#define __PERF_BLOCK_RANGE_H\n\n#include <stdbool.h>\n#include <linux/rbtree.h>\n#include <linux/types.h>\n\nstruct symbol;\n\n \nstruct block_range {\n\tstruct rb_node node;\n\n\tstruct symbol *sym;\n\n\tu64 start;\n\tu64 end;\n\n\tint is_target, is_branch;\n\n\tu64 coverage;\n\tu64 entry;\n\tu64 taken;\n\tu64 pred;\n};\n\nstatic inline struct block_range *block_range__next(struct block_range *br)\n{\n\tstruct rb_node *n = rb_next(&br->node);\n\tif (!n)\n\t\treturn NULL;\n\treturn rb_entry(n, struct block_range, node);\n}\n\nstruct block_range_iter {\n\tstruct block_range *start;\n\tstruct block_range *end;\n};\n\nstatic inline struct block_range *block_range_iter(struct block_range_iter *iter)\n{\n\treturn iter->start;\n}\n\nstatic inline bool block_range_iter__next(struct block_range_iter *iter)\n{\n\tif (iter->start == iter->end)\n\t\treturn false;\n\n\titer->start = block_range__next(iter->start);\n\treturn true;\n}\n\nstatic inline bool block_range_iter__valid(struct block_range_iter *iter)\n{\n\tif (!iter->start || !iter->end)\n\t\treturn false;\n\treturn true;\n}\n\nextern struct block_range *block_range__find(u64 addr);\nextern struct block_range_iter block_range__create(u64 start, u64 end);\nextern double block_range__coverage(struct block_range *br);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

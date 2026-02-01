@@ -1,0 +1,9 @@
+{
+  "module_name": "base.c",
+  "hash_id": "ad6650baa39a6d51ccaf33670e83533b8501a3cf17580cf1d538ab5319e1f0ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/vfn/base.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic void *\nnvkm_vfn_dtor(struct nvkm_subdev *subdev)\n{\n\treturn nvkm_vfn(subdev);\n}\n\nstatic const struct nvkm_subdev_func\nnvkm_vfn = {\n\t.dtor = nvkm_vfn_dtor,\n};\n\nint\nnvkm_vfn_new_(const struct nvkm_vfn_func *func, struct nvkm_device *device,\n\t      enum nvkm_subdev_type type, int inst, u32 addr, struct nvkm_vfn **pvfn)\n{\n\tstruct nvkm_vfn *vfn;\n\tint ret;\n\n\tif (!(vfn = *pvfn = kzalloc(sizeof(*vfn), GFP_KERNEL)))\n\t\treturn -ENOMEM;\n\n\tnvkm_subdev_ctor(&nvkm_vfn, device, type, inst, &vfn->subdev);\n\tvfn->func = func;\n\tvfn->addr.priv = addr;\n\tvfn->addr.user = vfn->addr.priv + func->user.addr;\n\n\tif (vfn->func->intr) {\n\t\tret = nvkm_intr_add(vfn->func->intr, vfn->func->intrs,\n\t\t\t\t    &vfn->subdev, 8, &vfn->intr);\n\t\tif (ret)\n\t\t\treturn ret;\n\t}\n\n\tvfn->user.ctor = nvkm_uvfn_new;\n\tvfn->user.base = func->user.base;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

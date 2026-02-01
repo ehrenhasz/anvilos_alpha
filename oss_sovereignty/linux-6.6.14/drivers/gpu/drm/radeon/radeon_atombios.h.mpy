@@ -1,0 +1,9 @@
+{
+  "module_name": "radeon_atombios.h",
+  "hash_id": "4cd7dee019ae510b2b50b3a8068541bb2b9fb2a1cd98806edf124668f7cf8809",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/radeon_atombios.h",
+  "human_readable_source": " \n\n#ifndef __RADEON_ATOMBIOS_H__\n#define __RADEON_ATOMBIOS_H__\n\nstruct drm_connector;\nstruct drm_device;\nstruct drm_display_mode;\nstruct radeon_device;\nstruct radeon_encoder;\n\nbool radeon_atom_get_tv_timings(struct radeon_device *rdev, int index,\n\t\t\t\tstruct drm_display_mode *mode);\nvoid radeon_add_atom_encoder(struct drm_device *dev, uint32_t encoder_enum,\n\t\t\t     uint32_t supported_device, u16 caps);\nvoid radeon_atom_backlight_init(struct radeon_encoder *radeon_encoder,\n\t\t\t\tstruct drm_connector *drm_connector);\n\n\n#endif                          \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

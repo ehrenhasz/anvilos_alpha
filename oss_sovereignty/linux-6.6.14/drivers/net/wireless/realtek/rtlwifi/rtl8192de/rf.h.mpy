@@ -1,0 +1,9 @@
+{
+  "module_name": "rf.h",
+  "hash_id": "84cfb8827344c1d6cc20f08d02e25efc3a018d6e570e1a8dab0bd85ab1b9ccee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8192de/rf.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL92D_RF_H__\n#define __RTL92D_RF_H__\n\nvoid rtl92d_phy_rf6052_set_bandwidth(struct ieee80211_hw *hw, u8 bandwidth);\nvoid rtl92d_phy_rf6052_set_cck_txpower(struct ieee80211_hw *hw,\n\t\t\t\t       u8 *ppowerlevel);\nvoid rtl92d_phy_rf6052_set_ofdm_txpower(struct ieee80211_hw *hw,\n\t\t\t\t\tu8 *ppowerlevel, u8 channel);\nbool rtl92d_phy_rf6052_config(struct ieee80211_hw *hw);\nbool rtl92d_phy_enable_anotherphy(struct ieee80211_hw *hw, bool bmac0);\nvoid rtl92d_phy_powerdown_anotherphy(struct ieee80211_hw *hw, bool bmac0);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sof-utils.h",
+  "hash_id": "29e747b4a03ed60999977149520b8b5c71c1381ea22699225f3985bed84d0480",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/sof-utils.h",
+  "human_readable_source": " \n \n\n#ifndef __SOC_SOF_UTILS_H\n#define __SOC_SOF_UTILS_H\n\nstruct snd_dma_buffer;\nstruct device;\n\nint snd_sof_create_page_table(struct device *dev,\n\t\t\t      struct snd_dma_buffer *dmab,\n\t\t\t      unsigned char *page_table, size_t size);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

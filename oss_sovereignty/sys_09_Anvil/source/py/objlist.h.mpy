@@ -1,0 +1,9 @@
+{
+  "module_name": "objlist.h",
+  "hash_id": "7ba8a861bc650707282e293591349bf39bfd61f76ebb8faddbcf831916ab2f8b",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/objlist.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_OBJLIST_H\n#define MICROPY_INCLUDED_PY_OBJLIST_H\n\n#include \"py/obj.h\"\n\ntypedef struct _mp_obj_list_t {\n    mp_obj_base_t base;\n    size_t alloc;\n    size_t len;\n    mp_obj_t *items;\n} mp_obj_list_t;\n\nvoid mp_obj_list_init(mp_obj_list_t *o, size_t n);\nmp_obj_t mp_obj_list_make_new(const mp_obj_type_t *type_in, size_t n_args, size_t n_kw, const mp_obj_t *args);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

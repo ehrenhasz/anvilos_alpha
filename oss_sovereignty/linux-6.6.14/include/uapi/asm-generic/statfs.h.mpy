@@ -1,0 +1,9 @@
+{
+  "module_name": "statfs.h",
+  "hash_id": "d85e284032b14f0f63bd691de074dda3a413e55606411fada1279a923f221c5b",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/asm-generic/statfs.h",
+  "human_readable_source": " \n#ifndef _UAPI_GENERIC_STATFS_H\n#define _UAPI_GENERIC_STATFS_H\n\n#include <linux/types.h>\n\n\n \n#ifndef __statfs_word\n#if __BITS_PER_LONG == 64\n#define __statfs_word __kernel_long_t\n#else\n#define __statfs_word __u32\n#endif\n#endif\n\nstruct statfs {\n\t__statfs_word f_type;\n\t__statfs_word f_bsize;\n\t__statfs_word f_blocks;\n\t__statfs_word f_bfree;\n\t__statfs_word f_bavail;\n\t__statfs_word f_files;\n\t__statfs_word f_ffree;\n\t__kernel_fsid_t f_fsid;\n\t__statfs_word f_namelen;\n\t__statfs_word f_frsize;\n\t__statfs_word f_flags;\n\t__statfs_word f_spare[4];\n};\n\n \n#ifndef ARCH_PACK_STATFS64\n#define ARCH_PACK_STATFS64\n#endif\n\nstruct statfs64 {\n\t__statfs_word f_type;\n\t__statfs_word f_bsize;\n\t__u64 f_blocks;\n\t__u64 f_bfree;\n\t__u64 f_bavail;\n\t__u64 f_files;\n\t__u64 f_ffree;\n\t__kernel_fsid_t f_fsid;\n\t__statfs_word f_namelen;\n\t__statfs_word f_frsize;\n\t__statfs_word f_flags;\n\t__statfs_word f_spare[4];\n} ARCH_PACK_STATFS64;\n\n \n#ifndef ARCH_PACK_COMPAT_STATFS64\n#define ARCH_PACK_COMPAT_STATFS64\n#endif\n\nstruct compat_statfs64 {\n\t__u32 f_type;\n\t__u32 f_bsize;\n\t__u64 f_blocks;\n\t__u64 f_bfree;\n\t__u64 f_bavail;\n\t__u64 f_files;\n\t__u64 f_ffree;\n\t__kernel_fsid_t f_fsid;\n\t__u32 f_namelen;\n\t__u32 f_frsize;\n\t__u32 f_flags;\n\t__u32 f_spare[4];\n} ARCH_PACK_COMPAT_STATFS64;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

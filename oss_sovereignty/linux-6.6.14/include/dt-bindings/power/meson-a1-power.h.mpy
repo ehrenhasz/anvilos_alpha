@@ -1,0 +1,9 @@
+{
+  "module_name": "meson-a1-power.h",
+  "hash_id": "ff4e58803f1d0f90cf9b6effe7a97bcd4fc18bfb6675ff2c0afcfa9bfaefa73a",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/meson-a1-power.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_MESON_A1_POWER_H\n#define _DT_BINDINGS_MESON_A1_POWER_H\n\n#define PWRC_DSPA_ID\t8\n#define PWRC_DSPB_ID\t9\n#define PWRC_UART_ID\t10\n#define PWRC_DMC_ID\t11\n#define PWRC_I2C_ID\t12\n#define PWRC_PSRAM_ID\t13\n#define PWRC_ACODEC_ID\t14\n#define PWRC_AUDIO_ID\t15\n#define PWRC_OTP_ID\t16\n#define PWRC_DMA_ID\t17\n#define PWRC_SD_EMMC_ID\t18\n#define PWRC_RAMA_ID\t19\n#define PWRC_RAMB_ID\t20\n#define PWRC_IR_ID\t21\n#define PWRC_SPICC_ID\t22\n#define PWRC_SPIFC_ID\t23\n#define PWRC_USB_ID\t24\n#define PWRC_NIC_ID\t25\n#define PWRC_PDMIN_ID\t26\n#define PWRC_RSA_ID\t27\n#define PWRC_MAX_ID\t28\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "acl_entries.c",
+  "hash_id": "53959139c33002c1582dc859d17387c07e8f593897f12c1324f162596f3eb767",
+  "original_prompt": "Ingested from coreutils-9.4/lib/acl_entries.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"acl-internal.h\"\n\n \n\n \n\nint\nacl_entries (acl_t acl)\n{\n  int count = 0;\n\n  if (acl != NULL)\n    {\n#if HAVE_ACL_FIRST_ENTRY  \n# if HAVE_ACL_TYPE_EXTENDED  \n       \n      acl_entry_t ace;\n      int got_one;\n\n      for (got_one = acl_get_entry (acl, ACL_FIRST_ENTRY, &ace);\n           got_one >= 0;\n           got_one = acl_get_entry (acl, ACL_NEXT_ENTRY, &ace))\n        count++;\n# else  \n       \n      acl_entry_t ace;\n      int got_one;\n\n      for (got_one = acl_get_entry (acl, ACL_FIRST_ENTRY, &ace);\n           got_one > 0;\n           got_one = acl_get_entry (acl, ACL_NEXT_ENTRY, &ace))\n        count++;\n      if (got_one < 0)\n        return -1;\n# endif\n#else  \n# if HAVE_ACL_TO_SHORT_TEXT  \n       \n      count = acl->acl_cnt;\n# endif\n# if HAVE_ACL_FREE_TEXT  \n       \n      count = acl->acl_num;\n# endif\n#endif\n    }\n\n  return count;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

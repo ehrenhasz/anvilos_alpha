@@ -1,0 +1,9 @@
+{
+  "module_name": "aq_drvinfo.h",
+  "hash_id": "909f0c7dfd02ebd439f5988412ddf3b6300734978fd433a67d36265ca247c6fc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/aquantia/atlantic/aq_drvinfo.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef AQ_DRVINFO_H\n#define AQ_DRVINFO_H\n\nstruct net_device;\n\nint aq_drvinfo_init(struct net_device *ndev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

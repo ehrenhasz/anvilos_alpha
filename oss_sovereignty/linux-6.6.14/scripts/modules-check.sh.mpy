@@ -1,0 +1,9 @@
+{
+  "module_name": "modules-check.sh",
+  "hash_id": "14e90ab74c5c3aca2c58b27e17bb6f34c82e5f461e2a10c30b6aed97c6d60500",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/modules-check.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\nset -e\n\nif [ $# != 1 ]; then\n\techo \"Usage: $0 <modules.order>\" >& 2\n\texit 1\nfi\n\nexit_code=0\n\n# Check uniqueness of module names\ncheck_same_name_modules()\n{\n\tfor m in $(sed 's:.*/::' \"$1\" | sort | uniq -d)\n\tdo\n\t\techo \"error: the following would cause module name conflict:\" >&2\n\t\tsed -n \"/\\/$m/s:^\\(.*\\)\\.o\\$:  \\1.ko:p\" \"$1\" >&2\n\t\texit_code=1\n\tdone\n}\n\ncheck_same_name_modules \"$1\"\n\nexit $exit_code\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

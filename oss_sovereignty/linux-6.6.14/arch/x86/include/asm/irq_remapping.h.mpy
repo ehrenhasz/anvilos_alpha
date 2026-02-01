@@ -1,0 +1,9 @@
+{
+  "module_name": "irq_remapping.h",
+  "hash_id": "be41741642ebf3971547f9947bd653abe8cc29336b56bbbfb725600fc4812237",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/irq_remapping.h",
+  "human_readable_source": " \n \n\n#ifndef __X86_IRQ_REMAPPING_H\n#define __X86_IRQ_REMAPPING_H\n\n#include <asm/irqdomain.h>\n#include <asm/hw_irq.h>\n#include <asm/io_apic.h>\n\nstruct msi_msg;\nstruct irq_alloc_info;\n\nenum irq_remap_cap {\n\tIRQ_POSTING_CAP = 0,\n};\n\nenum {\n\tIRQ_REMAP_XAPIC_MODE,\n\tIRQ_REMAP_X2APIC_MODE,\n};\n\nstruct vcpu_data {\n\tu64 pi_desc_addr;\t \n\tu32 vector;\t\t \n};\n\n#ifdef CONFIG_IRQ_REMAP\n\nextern raw_spinlock_t irq_2_ir_lock;\n\nextern bool irq_remapping_cap(enum irq_remap_cap cap);\nextern void set_irq_remapping_broken(void);\nextern int irq_remapping_prepare(void);\nextern int irq_remapping_enable(void);\nextern void irq_remapping_disable(void);\nextern int irq_remapping_reenable(int);\nextern int irq_remap_enable_fault_handling(void);\nextern void panic_if_irq_remap(const char *msg);\n\n \nstatic inline struct irq_domain *arch_get_ir_parent_domain(void)\n{\n\treturn x86_vector_domain;\n}\n\n#else   \n\nstatic inline bool irq_remapping_cap(enum irq_remap_cap cap) { return 0; }\nstatic inline void set_irq_remapping_broken(void) { }\nstatic inline int irq_remapping_prepare(void) { return -ENODEV; }\nstatic inline int irq_remapping_enable(void) { return -ENODEV; }\nstatic inline void irq_remapping_disable(void) { }\nstatic inline int irq_remapping_reenable(int eim) { return -ENODEV; }\nstatic inline int irq_remap_enable_fault_handling(void) { return -ENODEV; }\n\nstatic inline void panic_if_irq_remap(const char *msg)\n{\n}\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xen_drm_front_conn.h",
+  "hash_id": "cbec203cb129157ba77f2c0665e392a7692522d454b262372eeeb43f1d6c82e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/xen/xen_drm_front_conn.h",
+  "human_readable_source": " \n\n \n\n#ifndef __XEN_DRM_FRONT_CONN_H_\n#define __XEN_DRM_FRONT_CONN_H_\n\n#include <linux/types.h>\n\nstruct drm_connector;\nstruct xen_drm_front_drm_info;\n\n\nint xen_drm_front_conn_init(struct xen_drm_front_drm_info *drm_info,\n\t\t\t    struct drm_connector *connector);\n\nconst u32 *xen_drm_front_conn_get_formats(int *format_count);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

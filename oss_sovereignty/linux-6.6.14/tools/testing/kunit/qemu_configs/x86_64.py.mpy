@@ -1,0 +1,9 @@
+{
+  "module_name": "x86_64.py",
+  "hash_id": "3955025ab07bb063aa3384f8176e2cce9d72256355dacbbab29d71f59d6c0826",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/qemu_configs/x86_64.py",
+  "human_readable_source": "from ..qemu_config import QemuArchParams\n\nQEMU_ARCH = QemuArchParams(linux_arch='x86_64',\n\t\t\t   kconfig='''\nCONFIG_SERIAL_8250=y\nCONFIG_SERIAL_8250_CONSOLE=y''',\n\t\t\t   qemu_arch='x86_64',\n\t\t\t   kernel_path='arch/x86/boot/bzImage',\n\t\t\t   kernel_command_line='console=ttyS0',\n\t\t\t   extra_qemu_params=[])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

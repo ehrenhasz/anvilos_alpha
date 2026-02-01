@@ -1,0 +1,9 @@
+{
+  "module_name": "posixtm.h",
+  "hash_id": "2c267c99310d4465a6e8a8ecd8338fc2c411fc74cd8ff8d339f5d4d8882d1889",
+  "original_prompt": "Ingested from coreutils-9.4/lib/posixtm.h",
+  "human_readable_source": " \n\n#ifndef POSIXTM_H_\n# define POSIXTM_H_\n\n# include <time.h>\n\n \n# define PDS_TRAILING_YEAR 1\n# define PDS_CENTURY 2\n# define PDS_SECONDS 4\n# define PDS_PRE_2000 8\n\n \n# define PDS_LEADING_YEAR 0\n\nbool posixtime (time_t *p, const char *s, unsigned int syntax_bits);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

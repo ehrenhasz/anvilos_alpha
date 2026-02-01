@@ -1,0 +1,9 @@
+{
+  "module_name": "atomic_bounds.c",
+  "hash_id": "1037ff1a147f3e74118b27dc11ced714ebcd074a8bee70c6597014ea1a947177",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/atomic_bounds.c",
+  "human_readable_source": "\n\n#include <test_progs.h>\n\n#include \"atomic_bounds.skel.h\"\n\nvoid test_atomic_bounds(void)\n{\n\tstruct atomic_bounds *skel;\n\t__u32 duration = 0;\n\n\tskel = atomic_bounds__open_and_load();\n\tif (CHECK(!skel, \"skel_load\", \"couldn't load program\\n\"))\n\t\treturn;\n\n\tatomic_bounds__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

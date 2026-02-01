@@ -1,0 +1,9 @@
+{
+  "module_name": "test-rawmemchr.c",
+  "hash_id": "8fd09de6e31d3d8e9c3bdcf205fe70f52c46a5c9f2d62a59b26921c3069e1394",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-rawmemchr.c",
+  "human_readable_source": " \n#define RAWMEMCHR (char *) rawmemchr\n\nint\nmain (void)\n{\n  size_t n = 0x100000;\n  char *input = malloc (n + 1);\n  ASSERT (input);\n\n  input[0] = 'a';\n  input[1] = 'b';\n  memset (input + 2, 'c', 1024);\n  memset (input + 1026, 'd', n - 1028);\n  input[n - 2] = 'e';\n  input[n - 1] = 'a';\n  input[n] = '\\0';\n\n   \n  ASSERT (RAWMEMCHR (input, 'a') == input);\n  ASSERT (RAWMEMCHR (input, 'b') == input + 1);\n  ASSERT (RAWMEMCHR (input, 'c') == input + 2);\n  ASSERT (RAWMEMCHR (input, 'd') == input + 1026);\n\n  ASSERT (RAWMEMCHR (input + 1, 'a') == input + n - 1);\n  ASSERT (RAWMEMCHR (input + 1, 'e') == input + n - 2);\n  ASSERT (RAWMEMCHR (input + 1, 0x789abc00 | 'e') == input + n - 2);\n\n  ASSERT (RAWMEMCHR (input, '\\0') == input + n);\n\n   \n  {\n    int i, j;\n    for (i = 0; i < 32; i++)\n      {\n        for (j = 0; j < 256; j++)\n          input[i + j] = j;\n        for (j = 0; j < 256; j++)\n          {\n            ASSERT (RAWMEMCHR (input + i, j) == input + i + j);\n          }\n      }\n  }\n\n   \n  {\n    char *page_boundary = (char *) zerosize_ptr ();\n    size_t i;\n\n    if (!page_boundary)\n      page_boundary = input + 4096;\n    memset (page_boundary - 512, '1', 511);\n    page_boundary[-1] = '2';\n    for (i = 1; i <= 512; i++)\n      ASSERT (RAWMEMCHR (page_boundary - i, (i * 0x01010100) | '2')\n              == page_boundary - 1);\n  }\n\n  free (input);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

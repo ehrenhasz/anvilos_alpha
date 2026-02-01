@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5dc96dbcb360c0acc51463cef56b66d0b684b072ecc92a0175311797b0df3634",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/matrox/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Makefile for the Linux video drivers.\n# 5 Aug 1999, James Simmons, <mailto:jsimmons@edgeglobal.com>\n# Rewritten to use lists instead of if-statements.\n\n# Each configuration option enables a list of files.\n\nmy-obj-$(CONFIG_FB_MATROX_G)      += g450_pll.o matroxfb_g450.o matroxfb_crtc2.o\n\nobj-$(CONFIG_FB_MATROX)           += matroxfb_base.o matroxfb_accel.o matroxfb_DAC1064.o matroxfb_Ti3026.o matroxfb_misc.o $(my-obj-y)\nobj-$(CONFIG_FB_MATROX_I2C)       += i2c-matroxfb.o\nobj-$(CONFIG_FB_MATROX_MAVEN)     += matroxfb_maven.o matroxfb_crtc2.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

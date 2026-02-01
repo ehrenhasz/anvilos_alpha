@@ -1,0 +1,9 @@
+{
+  "module_name": "job.h",
+  "hash_id": "c9180b87cc1a34577d5e347abebdf2aa3c19fc5a1eef9dc8db2bcca40fcfcb92",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/job.h",
+  "human_readable_source": " \n \n\n#ifndef __HOST1X_JOB_H\n#define __HOST1X_JOB_H\n\n#include <linux/dma-direction.h>\n\nstruct host1x_job_gather {\n\tunsigned int words;\n\tdma_addr_t base;\n\tstruct host1x_bo *bo;\n\tunsigned int offset;\n\tbool handled;\n};\n\nstruct host1x_job_wait {\n\tu32 id;\n\tu32 threshold;\n\tu32 next_class;\n\tbool relative;\n};\n\nstruct host1x_job_cmd {\n\tbool is_wait;\n\n\tunion {\n\t\tstruct host1x_job_gather gather;\n\t\tstruct host1x_job_wait wait;\n\t};\n};\n\nstruct host1x_job_unpin_data {\n\tstruct host1x_bo_mapping *map;\n};\n\n \nvoid host1x_job_dump(struct device *dev, struct host1x_job *job);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

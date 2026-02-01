@@ -1,0 +1,9 @@
+{
+  "module_name": "leds-lm355x.h",
+  "hash_id": "d34d5f3759b337dede9758d89fd2f97e8850e7322ec43b6749a7530d1313ee88",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/leds-lm355x.h",
+  "human_readable_source": " \n \n\n#define LM355x_NAME \"leds-lm355x\"\n#define LM3554_NAME \"leds-lm3554\"\n#define LM3556_NAME \"leds-lm3556\"\n\n \nenum lm355x_strobe {\n\tLM355x_PIN_STROBE_DISABLE = 0x00,\n\tLM355x_PIN_STROBE_ENABLE = 0x01,\n};\n\nenum lm355x_torch {\n\tLM355x_PIN_TORCH_DISABLE = 0,\n\tLM3554_PIN_TORCH_ENABLE = 0x80,\n\tLM3556_PIN_TORCH_ENABLE = 0x10,\n};\n\nenum lm355x_tx2 {\n\tLM355x_PIN_TX_DISABLE = 0,\n\tLM3554_PIN_TX_ENABLE = 0x20,\n\tLM3556_PIN_TX_ENABLE = 0x40,\n};\n\nenum lm355x_ntc {\n\tLM355x_PIN_NTC_DISABLE = 0,\n\tLM3554_PIN_NTC_ENABLE = 0x08,\n\tLM3556_PIN_NTC_ENABLE = 0x80,\n};\n\nenum lm355x_pmode {\n\tLM355x_PMODE_DISABLE = 0,\n\tLM355x_PMODE_ENABLE = 0x04,\n};\n\n \nstruct lm355x_platform_data {\n\tenum lm355x_strobe pin_strobe;\n\tenum lm355x_torch pin_tx1;\n\tenum lm355x_tx2 pin_tx2;\n\tenum lm355x_ntc ntc_pin;\n\n\tenum lm355x_pmode pass_mode;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

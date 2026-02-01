@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2def513c5cf50e632d9cbdd307448944bb06c6bec9fdcb8766d644e4c71867e7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn30/Makefile",
+  "human_readable_source": "#\n# Copyright 2020 Advanced Micro Devices, Inc.\n#\n# Permission is hereby granted, free of charge, to any person obtaining a\n# copy of this software and associated documentation files (the \"Software\"),\n# to deal in the Software without restriction, including without limitation\n# the rights to use, copy, modify, merge, publish, distribute, sublicense,\n# and/or sell copies of the Software, and to permit persons to whom the\n# Software is furnished to do so, subject to the following conditions:\n#\n# The above copyright notice and this permission notice shall be included in\n# all copies or substantial portions of the Software.\n#\n# THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL\n# THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR\n# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,\n# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR\n# OTHER DEALINGS IN THE SOFTWARE.\n#\n# Authors: AMD\n#\n#\n\nDCN30 := \\\n\tdcn30_init.o \\\n\tdcn30_hubbub.o \\\n\tdcn30_hubp.o \\\n\tdcn30_dpp.o \\\n\tdcn30_optc.o \\\n\tdcn30_dccg.o \\\n\tdcn30_hwseq.o \\\n\tdcn30_mpc.o dcn30_vpg.o \\\n\tdcn30_afmt.o \\\n\tdcn30_dio_stream_encoder.o \\\n\tdcn30_dwb.o \\\n\tdcn30_dpp_cm.o \\\n\tdcn30_dwb_cm.o \\\n\tdcn30_cm_common.o \\\n\tdcn30_mmhubbub.o \\\n\tdcn30_resource.o \\\n\tdcn30_dio_link_encoder.o\n\n\n\nAMD_DAL_DCN30 = $(addprefix $(AMDDALPATH)/dc/dcn30/,$(DCN30))\n\nAMD_DISPLAY_FILES += $(AMD_DAL_DCN30)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "if_slip.h",
+  "hash_id": "f7b8cfe350aa726c1e3bf25c5f6f377ec7f519c5233faab9e6624b035be32c6f",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/if_slip.h",
+  "human_readable_source": " \n \n \n#ifndef __LINUX_SLIP_H\n#define __LINUX_SLIP_H\n\n#define\t\tSL_MODE_SLIP\t\t0\n#define\t\tSL_MODE_CSLIP\t\t1\n#define \tSL_MODE_KISS\t\t4\n\n#define\t\tSL_OPT_SIXBIT\t\t2\n#define\t\tSL_OPT_ADAPTIVE\t\t8\n\n \n \n#define SIOCSKEEPALIVE\t(SIOCDEVPRIVATE)\t\t \n#define SIOCGKEEPALIVE\t(SIOCDEVPRIVATE+1)\t\t \n#define SIOCSOUTFILL\t(SIOCDEVPRIVATE+2)\t\t \n#define\tSIOCGOUTFILL\t(SIOCDEVPRIVATE+3)\t\t \n#define SIOCSLEASE\t(SIOCDEVPRIVATE+4)\t\t \n#define\tSIOCGLEASE\t(SIOCDEVPRIVATE+5)\t\t \n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

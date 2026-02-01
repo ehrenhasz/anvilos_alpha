@@ -1,0 +1,9 @@
+{
+  "module_name": "auth-sia.h",
+  "hash_id": "2386cf1581ed7bfad68736bee7a3664dac84c83abe9d014c7aa6867683c3476b",
+  "original_prompt": "Ingested from openssh-9.6p1/auth-sia.h",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#ifdef HAVE_OSF_SIA\n\nvoid\tsession_setup_sia(struct passwd *, char *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

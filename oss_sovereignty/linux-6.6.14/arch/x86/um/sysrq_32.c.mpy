@@ -1,0 +1,9 @@
+{
+  "module_name": "sysrq_32.c",
+  "hash_id": "a14b517f7ebdee4b0c3426b22c216602aa3504eab1fa5a7eea111864c58121d9",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/sysrq_32.c",
+  "human_readable_source": " \n\n#include <linux/kernel.h>\n#include <linux/smp.h>\n#include <linux/sched.h>\n#include <linux/sched/debug.h>\n#include <linux/kallsyms.h>\n#include <asm/ptrace.h>\n#include <asm/sysrq.h>\n\n \nvoid show_regs(struct pt_regs *regs)\n{\n        printk(\"\\n\");\n        printk(\"EIP: %04lx:[<%08lx>] CPU: %d %s\", \n\t       0xffff & PT_REGS_CS(regs), PT_REGS_IP(regs),\n\t       smp_processor_id(), print_tainted());\n        if (PT_REGS_CS(regs) & 3)\n                printk(\" ESP: %04lx:%08lx\", 0xffff & PT_REGS_SS(regs),\n\t\t       PT_REGS_SP(regs));\n        printk(\" EFLAGS: %08lx\\n    %s\\n\", PT_REGS_EFLAGS(regs),\n\t       print_tainted());\n        printk(\"EAX: %08lx EBX: %08lx ECX: %08lx EDX: %08lx\\n\",\n               PT_REGS_AX(regs), PT_REGS_BX(regs), \n\t       PT_REGS_CX(regs), PT_REGS_DX(regs));\n        printk(\"ESI: %08lx EDI: %08lx EBP: %08lx\",\n\t       PT_REGS_SI(regs), PT_REGS_DI(regs), PT_REGS_BP(regs));\n        printk(\" DS: %04lx ES: %04lx\\n\",\n\t       0xffff & PT_REGS_DS(regs), \n\t       0xffff & PT_REGS_ES(regs));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

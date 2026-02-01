@@ -1,0 +1,9 @@
+{
+  "module_name": "core.c",
+  "hash_id": "64cd7aec667f23a9747d22556dc8ef1f480034a67949bdc5bc6f7c4b0c22de67",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cyw/core.c",
+  "human_readable_source": "\n \n#include <linux/errno.h>\n#include <linux/types.h>\n#include <core.h>\n#include <bus.h>\n#include <fwvid.h>\n\n#include \"vops.h\"\n\nstatic int brcmf_cyw_attach(struct brcmf_pub *drvr)\n{\n\tpr_err(\"%s: executing\\n\", __func__);\n\treturn 0;\n}\n\nstatic void brcmf_cyw_detach(struct brcmf_pub *drvr)\n{\n\tpr_err(\"%s: executing\\n\", __func__);\n}\n\nconst struct brcmf_fwvid_ops brcmf_cyw_ops = {\n\t.attach = brcmf_cyw_attach,\n\t.detach = brcmf_cyw_detach,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

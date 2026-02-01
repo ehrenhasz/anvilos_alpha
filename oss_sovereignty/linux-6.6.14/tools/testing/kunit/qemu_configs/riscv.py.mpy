@@ -1,0 +1,9 @@
+{
+  "module_name": "riscv.py",
+  "hash_id": "275f16a9a29c072e136353a127925ace34bf7557e0009d1ca36463771570fd77",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/qemu_configs/riscv.py",
+  "human_readable_source": "from ..qemu_config import QemuArchParams\nimport os\nimport os.path\nimport sys\n\nOPENSBI_FILE = 'opensbi-riscv64-generic-fw_dynamic.bin'\nOPENSBI_PATH = '/usr/share/qemu/' + OPENSBI_FILE\n\nif not os.path.isfile(OPENSBI_PATH):\n\tprint('\\n\\nOpenSBI bios was not found in \"' + OPENSBI_PATH + '\".\\n'\n\t      'Please ensure that qemu-system-riscv is installed, or edit the path in \"qemu_configs/riscv.py\"\\n')\n\tsys.exit()\n\nQEMU_ARCH = QemuArchParams(linux_arch='riscv',\n\t\t\t   kconfig='''\nCONFIG_SOC_VIRT=y\nCONFIG_SERIAL_8250=y\nCONFIG_SERIAL_8250_CONSOLE=y\nCONFIG_SERIAL_OF_PLATFORM=y\nCONFIG_RISCV_SBI_V01=y\nCONFIG_SERIAL_EARLYCON_RISCV_SBI=y''',\n\t\t\t   qemu_arch='riscv64',\n\t\t\t   kernel_path='arch/riscv/boot/Image',\n\t\t\t   kernel_command_line='console=ttyS0',\n\t\t\t   extra_qemu_params=[\n\t\t\t\t\t   '-machine', 'virt',\n\t\t\t\t\t   '-cpu', 'rv64',\n\t\t\t\t\t   '-bios', OPENSBI_PATH])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f39632e6d5a0552cac66e8e7cc61176c9456910d23172c0f646ba8a394d4025c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/udl/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nudl-y := udl_drv.o udl_modeset.o udl_main.o udl_transfer.o\n\nobj-$(CONFIG_DRM_UDL) := udl.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

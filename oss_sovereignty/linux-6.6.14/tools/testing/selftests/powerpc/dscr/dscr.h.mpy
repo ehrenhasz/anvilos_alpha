@@ -1,0 +1,9 @@
+{
+  "module_name": "dscr.h",
+  "hash_id": "9e86271ef13bd6e00769291cc62624efd4774dd25c6b4fa4c2f10ada2edffff7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/dscr/dscr.h",
+  "human_readable_source": " \n \n#ifndef _SELFTESTS_POWERPC_DSCR_DSCR_H\n#define _SELFTESTS_POWERPC_DSCR_DSCR_H\n\n#include <unistd.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <fcntl.h>\n#include <dirent.h>\n#include <pthread.h>\n#include <sched.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <sys/wait.h>\n\n#include \"reg.h\"\n#include \"utils.h\"\n\n#define THREADS\t\t100\t \n#define COUNT\t\t100\t \n#define DSCR_MAX\t16\t \n#define LEN_MAX\t\t100\t \n\n#define DSCR_DEFAULT\t\"/sys/devices/system/cpu/dscr_default\"\n#define CPU_PATH\t\"/sys/devices/system/cpu/\"\n\n#define rmb()  asm volatile(\"lwsync\":::\"memory\")\n#define wmb()  asm volatile(\"lwsync\":::\"memory\")\n\n#define READ_ONCE(x) (*(volatile typeof(x) *)&(x))\n\n \ninline unsigned long get_dscr(void)\n{\n\treturn mfspr(SPRN_DSCR_PRIV);\n}\n\ninline void set_dscr(unsigned long val)\n{\n\tmtspr(SPRN_DSCR_PRIV, val);\n}\n\n \ninline unsigned long get_dscr_usr(void)\n{\n\treturn mfspr(SPRN_DSCR);\n}\n\ninline void set_dscr_usr(unsigned long val)\n{\n\tmtspr(SPRN_DSCR, val);\n}\n\n \nunsigned long get_default_dscr(void)\n{\n\tint err;\n\tunsigned long val;\n\n\terr = read_ulong(DSCR_DEFAULT, &val, 16);\n\tif (err) {\n\t\tperror(\"read() failed\");\n\t\texit(1);\n\t}\n\treturn val;\n}\n\nvoid set_default_dscr(unsigned long val)\n{\n\tint err;\n\n\terr = write_ulong(DSCR_DEFAULT, val, 16);\n\tif (err) {\n\t\tperror(\"write() failed\");\n\t\texit(1);\n\t}\n}\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ecc_curve.h",
+  "hash_id": "ef4455da88ecdb2576628c9c18616b649bfdbc5b2f33059539f2f7ecf600138b",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/ecc_curve.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYTO_ECC_CURVE_H\n#define _CRYTO_ECC_CURVE_H\n\n#include <linux/types.h>\n\n \nstruct ecc_point {\n\tu64 *x;\n\tu64 *y;\n\tu8 ndigits;\n};\n\n \nstruct ecc_curve {\n\tchar *name;\n\tstruct ecc_point g;\n\tu64 *p;\n\tu64 *n;\n\tu64 *a;\n\tu64 *b;\n};\n\n \nconst struct ecc_curve *ecc_get_curve(unsigned int curve_id);\n\n \nconst struct ecc_curve *ecc_get_curve25519(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

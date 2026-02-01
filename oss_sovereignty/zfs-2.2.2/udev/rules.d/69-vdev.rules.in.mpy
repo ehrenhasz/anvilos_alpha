@@ -1,0 +1,9 @@
+{
+  "module_name": "69-vdev.rules.in",
+  "hash_id": "eb7a1fb48310145d6471dd0a164591924d3fe73d58ca5d5d928bf63d395af29d",
+  "original_prompt": "Ingested from zfs-2.2.2/udev/rules.d/69-vdev.rules.in",
+  "human_readable_source": "#\n# @udevdir@/rules.d/69-vdev.rules\n#\n\nENV{DEVTYPE}==\"disk\", IMPORT{program}=\"@udevdir@/vdev_id -d %k\"\nENV{DEVTYPE}==\"partition\", IMPORT{program}=\"@udevdir@/vdev_id -d %k\"\n\nKERNEL==\"*[!0-9]\", ENV{SUBSYSTEM}==\"block\", ENV{ID_VDEV}==\"?*\", SYMLINK+=\"$env{ID_VDEV_PATH}\"\nKERNEL==\"nvme*[0-9]n*[0-9]\", ENV{SUBSYSTEM}==\"block\", ENV{DEVTYPE}==\"disk\", ENV{ID_VDEV}==\"?*\", SYMLINK+=\"$env{ID_VDEV_PATH}\"\nKERNEL==\"*[0-9]\", ENV{SUBSYSTEM}==\"block\", ENV{DEVTYPE}==\"partition\", ENV{ID_VDEV}==\"?*\", SYMLINK+=\"$env{ID_VDEV_PATH}-part%n\"\nKERNEL==\"dm-[0-9]*\", ENV{SUBSYSTEM}==\"block\", ENV{ID_VDEV}==\"?*\", SYMLINK+=\"$env{ID_VDEV_PATH}\"\n\n# Enclosure device symlink rules\nENV{SUBSYSTEM}==\"scsi_generic\", IMPORT{program}=\"@udevdir@/vdev_id -e\"\nENV{SUBSYSTEM}==\"scsi_generic\", ENV{ID_ENCLOSURE}==\"?*\", SYMLINK+=\"$env{ID_ENCLOSURE_PATH}\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

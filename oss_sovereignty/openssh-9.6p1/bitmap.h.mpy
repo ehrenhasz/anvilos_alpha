@@ -1,0 +1,9 @@
+{
+  "module_name": "bitmap.h",
+  "hash_id": "38a621443ca25cc2da88d6d454207b700c6b8e0ee4d6c9205373928e89a1568e",
+  "original_prompt": "Ingested from openssh-9.6p1/bitmap.h",
+  "human_readable_source": " \n \n\n#ifndef _BITMAP_H\n#define _BITMAP_H\n\n#include <sys/types.h>\n\n \n\nstruct bitmap;\n\n \nstruct bitmap *bitmap_new(void);\n\n \nvoid bitmap_free(struct bitmap *b);\n\n \nvoid bitmap_zero(struct bitmap *b);\n\n \nint bitmap_test_bit(struct bitmap *b, u_int n);\n\n \nint bitmap_set_bit(struct bitmap *b, u_int n);\n\n \nvoid bitmap_clear_bit(struct bitmap *b, u_int n);\n\n \nsize_t bitmap_nbits(struct bitmap *b);\n\n \nsize_t bitmap_nbytes(struct bitmap *b);\n\n \nint bitmap_to_string(struct bitmap *b, void *p, size_t l);\n\n \nint bitmap_from_string(struct bitmap *b, const void *p, size_t l);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

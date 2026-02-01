@@ -1,0 +1,9 @@
+{
+  "module_name": "test",
+  "hash_id": "c2df1804f763caafde7d65933af440d6a040e6567ec9b635ae59d3dde8bf52a5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vt6655/test",
+  "human_readable_source": "KSP :=  /lib/modules/$(shell uname -r)/build \\\n\t/usr/src/linux-$(shell uname -r) \\\n\t/usr/src/linux-$(shell uname -r | sed 's/-.*//') \\\n#\t/usr/src/kernel-headers-$(shell uname -r) \\\n#\t/usr/src/kernel-source-$(shell uname -r) \\\n#\t/usr/src/linux-$(shell uname -r | sed 's/\\([0-9]*\\.[0-9]*\\)\\..*/\\1/') \\\n#\t/usr/src/linux   /home/plice\ntest_dir = $(shell [ -e $(dir)/include/linux ] && echo $(dir))\nKSP := $(foreach dir, $(KSP), $(test_dir))\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

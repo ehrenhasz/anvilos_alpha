@@ -1,0 +1,9 @@
+{
+  "module_name": "marvell,mmp2.h",
+  "hash_id": "dff7f04ea28d62a324e5d5d06ef295e592f587d2669dc0495ea503c60ebfeabc",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/marvell,mmp2.h",
+  "human_readable_source": " \n#ifndef __DTS_MARVELL_MMP2_POWER_H\n#define __DTS_MARVELL_MMP2_POWER_H\n\n#define MMP2_POWER_DOMAIN_GPU\t\t0\n#define MMP2_POWER_DOMAIN_AUDIO\t\t1\n#define MMP3_POWER_DOMAIN_CAMERA\t2\n\n#define MMP2_NR_POWER_DOMAINS\t\t3\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fips.h",
+  "hash_id": "5c95bc1659dac85f2c94021d6484219a5fe6f7b84f5d06224fd9862ed7ce7ceb",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fips.h",
+  "human_readable_source": " \n#ifndef _FIPS_H\n#define _FIPS_H\n\n#ifdef CONFIG_CRYPTO_FIPS\nextern int fips_enabled;\nextern struct atomic_notifier_head fips_fail_notif_chain;\n\nvoid fips_fail_notify(void);\n\n#else\n#define fips_enabled 0\n\nstatic inline void fips_fail_notify(void) {}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "libperf.map",
+  "hash_id": "c064f10e41eb484cba0d98d7492d704ccb7afc6bdacb5a17694c40258b5ecb46",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/perf/libperf.map",
+  "human_readable_source": "LIBPERF_0.0.1 {\n\tglobal:\n\t\tlibperf_init;\n\t\tperf_cpu_map__dummy_new;\n\t\tperf_cpu_map__default_new;\n\t\tperf_cpu_map__get;\n\t\tperf_cpu_map__put;\n\t\tperf_cpu_map__new;\n\t\tperf_cpu_map__read;\n\t\tperf_cpu_map__nr;\n\t\tperf_cpu_map__cpu;\n\t\tperf_cpu_map__empty;\n\t\tperf_cpu_map__max;\n\t\tperf_cpu_map__has;\n\t\tperf_thread_map__new_array;\n\t\tperf_thread_map__new_dummy;\n\t\tperf_thread_map__set_pid;\n\t\tperf_thread_map__comm;\n\t\tperf_thread_map__nr;\n\t\tperf_thread_map__pid;\n\t\tperf_thread_map__get;\n\t\tperf_thread_map__put;\n\t\tperf_evsel__new;\n\t\tperf_evsel__delete;\n\t\tperf_evsel__enable;\n\t\tperf_evsel__disable;\n\t\tperf_evsel__open;\n\t\tperf_evsel__close;\n\t\tperf_evsel__mmap;\n\t\tperf_evsel__munmap;\n\t\tperf_evsel__mmap_base;\n\t\tperf_evsel__read;\n\t\tperf_evsel__cpus;\n\t\tperf_evsel__threads;\n\t\tperf_evsel__attr;\n\t\tperf_evlist__new;\n\t\tperf_evlist__delete;\n\t\tperf_evlist__open;\n\t\tperf_evlist__close;\n\t\tperf_evlist__enable;\n\t\tperf_evlist__disable;\n\t\tperf_evlist__add;\n\t\tperf_evlist__remove;\n\t\tperf_evlist__next;\n\t\tperf_evlist__set_maps;\n\t\tperf_evlist__poll;\n\t\tperf_evlist__mmap;\n\t\tperf_evlist__munmap;\n\t\tperf_evlist__filter_pollfd;\n\t\tperf_evlist__next_mmap;\n\t\tperf_evlist__set_leader;\n\t\tperf_mmap__consume;\n\t\tperf_mmap__read_init;\n\t\tperf_mmap__read_done;\n\t\tperf_mmap__read_event;\n\t\tperf_counts_values__scale;\n\tlocal:\n\t\t*;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "path.h",
+  "hash_id": "562d88a5d8d853a1075ca174be2c47b04e7835cf96b1ec970e5feb8b2d286b86",
+  "original_prompt": "Ingested from linux-6.6.14/security/apparmor/include/path.h",
+  "human_readable_source": " \n \n\n#ifndef __AA_PATH_H\n#define __AA_PATH_H\n\nenum path_flags {\n\tPATH_IS_DIR = 0x1,\t\t \n\tPATH_CONNECT_PATH = 0x4,\t \n\tPATH_CHROOT_REL = 0x8,\t\t \n\tPATH_CHROOT_NSCONNECT = 0x10,\t \n\n\tPATH_DELEGATE_DELETED = 0x10000,  \n\tPATH_MEDIATE_DELETED = 0x20000,\t  \n};\n\nint aa_path_name(const struct path *path, int flags, char *buffer,\n\t\t const char **name, const char **info,\n\t\t const char *disconnected);\n\n#define IN_ATOMIC true\nchar *aa_get_buffer(bool in_atomic);\nvoid aa_put_buffer(char *buf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

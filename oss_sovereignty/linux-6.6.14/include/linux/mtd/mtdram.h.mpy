@@ -1,0 +1,9 @@
+{
+  "module_name": "mtdram.h",
+  "hash_id": "357ae8808fb6804bc4102ed8b8ae6b17c618863ac1c3f328f19becdbebd6a95e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/mtdram.h",
+  "human_readable_source": " \n#ifndef __MTD_MTDRAM_H__\n#define __MTD_MTDRAM_H__\n\n#include <linux/mtd/mtd.h>\nint mtdram_init_device(struct mtd_info *mtd, void *mapped_address,\n\t\t\tunsigned long size, const char *name);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

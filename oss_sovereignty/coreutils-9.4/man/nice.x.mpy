@@ -1,0 +1,9 @@
+{
+  "module_name": "nice.x",
+  "hash_id": "d81f3bf1b51794410e1f3046270525c2d4d17d5c359c5c2f4cd27f70fe739590",
+  "original_prompt": "Ingested from coreutils-9.4/man/nice.x",
+  "human_readable_source": "[NAME]\nnice \\- run a program with modified scheduling priority\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nnice(2), renice(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

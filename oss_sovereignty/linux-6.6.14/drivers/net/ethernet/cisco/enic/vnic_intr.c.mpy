@@ -1,0 +1,9 @@
+{
+  "module_name": "vnic_intr.c",
+  "hash_id": "4e243f7fac3b73bb8d1f1f3c1b844b4a0e282d7b172cdf7e9b66243c2af5a341",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cisco/enic/vnic_intr.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/errno.h>\n#include <linux/types.h>\n#include <linux/pci.h>\n#include <linux/delay.h>\n\n#include \"vnic_dev.h\"\n#include \"vnic_intr.h\"\n#include \"enic.h\"\n\nvoid vnic_intr_free(struct vnic_intr *intr)\n{\n\tintr->ctrl = NULL;\n}\n\nint vnic_intr_alloc(struct vnic_dev *vdev, struct vnic_intr *intr,\n\tunsigned int index)\n{\n\tintr->index = index;\n\tintr->vdev = vdev;\n\n\tintr->ctrl = vnic_dev_get_res(vdev, RES_TYPE_INTR_CTRL, index);\n\tif (!intr->ctrl) {\n\t\tvdev_err(vdev, \"Failed to hook INTR[%d].ctrl resource\\n\",\n\t\t\t index);\n\t\treturn -EINVAL;\n\t}\n\n\treturn 0;\n}\n\nvoid vnic_intr_init(struct vnic_intr *intr, u32 coalescing_timer,\n\tunsigned int coalescing_type, unsigned int mask_on_assertion)\n{\n\tvnic_intr_coalescing_timer_set(intr, coalescing_timer);\n\tiowrite32(coalescing_type, &intr->ctrl->coalescing_type);\n\tiowrite32(mask_on_assertion, &intr->ctrl->mask_on_assertion);\n\tiowrite32(0, &intr->ctrl->int_credits);\n}\n\nvoid vnic_intr_coalescing_timer_set(struct vnic_intr *intr,\n\tu32 coalescing_timer)\n{\n\tiowrite32(vnic_dev_intr_coal_timer_usec_to_hw(intr->vdev,\n\t\tcoalescing_timer), &intr->ctrl->coalescing_timer);\n}\n\nvoid vnic_intr_clean(struct vnic_intr *intr)\n{\n\tiowrite32(0, &intr->ctrl->int_credits);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

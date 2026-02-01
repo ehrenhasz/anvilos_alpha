@@ -1,0 +1,9 @@
+{
+  "module_name": "tc358743.h",
+  "hash_id": "5111cb5f38b254705712afa7e5c8593c828aa0e6d3bef07a5f61a20a9bead67c",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/tc358743.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _TC358743_\n#define _TC358743_\n\nenum tc358743_ddc5v_delays {\n\tDDC5V_DELAY_0_MS,\n\tDDC5V_DELAY_50_MS,\n\tDDC5V_DELAY_100_MS,\n\tDDC5V_DELAY_200_MS,\n};\n\nenum tc358743_hdmi_detection_delay {\n\tHDMI_MODE_DELAY_0_MS,\n\tHDMI_MODE_DELAY_25_MS,\n\tHDMI_MODE_DELAY_50_MS,\n\tHDMI_MODE_DELAY_100_MS,\n};\n\nstruct tc358743_platform_data {\n\t \n\tu32 refclk_hz;  \n\n\t \n\tenum tc358743_ddc5v_delays ddc5v_delay;\n\n\tbool enable_hdcp;\n\n\t \n\tu16 fifo_level;\n\n\t \n\tu16 pll_prd;\n\tu16 pll_fbd;\n\n\t \n\tu32 lineinitcnt;\t \n\tu32 lptxtimecnt;\t \n\tu32 tclk_headercnt;\t \n\tu32 tclk_trailcnt;\t \n\tu32 ths_headercnt;\t \n\tu32 twakeup;\t\t \n\tu32 tclk_postcnt;\t \n\tu32 ths_trailcnt;\t \n\tu32 hstxvregcnt;\t \n\n\t \n\tenum tc358743_hdmi_detection_delay hdmi_detection_delay;\n\n\t \n\tbool hdmi_phy_auto_reset_tmds_detected;\n\n\t \n\tbool hdmi_phy_auto_reset_tmds_in_range;\n\n\t \n\tbool hdmi_phy_auto_reset_tmds_valid;\n\n\t \n\tbool hdmi_phy_auto_reset_hsync_out_of_range;\n\n\t \n\tbool hdmi_phy_auto_reset_vsync_out_of_range;\n};\n\n \n \n#define TC358743_CID_AUDIO_SAMPLING_RATE (V4L2_CID_USER_TC358743_BASE + 0)\n \n#define TC358743_CID_AUDIO_PRESENT       (V4L2_CID_USER_TC358743_BASE + 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

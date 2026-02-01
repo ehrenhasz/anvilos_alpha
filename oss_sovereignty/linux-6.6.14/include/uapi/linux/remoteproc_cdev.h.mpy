@@ -1,0 +1,9 @@
+{
+  "module_name": "remoteproc_cdev.h",
+  "hash_id": "87b17bea405928a2a756278be249fcfad4a2f407f2b527a9c387e5ecf7d23e66",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/remoteproc_cdev.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_REMOTEPROC_CDEV_H_\n#define _UAPI_REMOTEPROC_CDEV_H_\n\n#include <linux/ioctl.h>\n#include <linux/types.h>\n\n#define RPROC_MAGIC\t0xB7\n\n \n#define RPROC_SET_SHUTDOWN_ON_RELEASE _IOW(RPROC_MAGIC, 1, __s32)\n\n \n#define RPROC_GET_SHUTDOWN_ON_RELEASE _IOR(RPROC_MAGIC, 2, __s32)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

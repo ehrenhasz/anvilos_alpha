@@ -1,0 +1,9 @@
+{
+  "module_name": "asn1_decoder.h",
+  "hash_id": "b5e5528cd2a8ef14682d2f186860b2794aaf82f769319b95a7229f42d3369fef",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/asn1_decoder.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_ASN1_DECODER_H\n#define _LINUX_ASN1_DECODER_H\n\n#include <linux/asn1.h>\n\nstruct asn1_decoder;\n\nextern int asn1_ber_decoder(const struct asn1_decoder *decoder,\n\t\t\t    void *context,\n\t\t\t    const unsigned char *data,\n\t\t\t    size_t datalen);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

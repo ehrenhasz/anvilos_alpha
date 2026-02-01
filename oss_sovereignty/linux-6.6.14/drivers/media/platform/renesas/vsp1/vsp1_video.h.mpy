@@ -1,0 +1,9 @@
+{
+  "module_name": "vsp1_video.h",
+  "hash_id": "b3839b6f294147b7e347f06124825901746a72075bd703075da56d2ad8dc914e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/renesas/vsp1/vsp1_video.h",
+  "human_readable_source": " \n \n#ifndef __VSP1_VIDEO_H__\n#define __VSP1_VIDEO_H__\n\n#include <linux/list.h>\n#include <linux/spinlock.h>\n\n#include <media/videobuf2-v4l2.h>\n\n#include \"vsp1_rwpf.h\"\n\nstruct vsp1_vb2_buffer {\n\tstruct vb2_v4l2_buffer buf;\n\tstruct list_head queue;\n\tstruct vsp1_rwpf_memory mem;\n};\n\nstatic inline struct vsp1_vb2_buffer *\nto_vsp1_vb2_buffer(struct vb2_v4l2_buffer *vbuf)\n{\n\treturn container_of(vbuf, struct vsp1_vb2_buffer, buf);\n}\n\nstruct vsp1_video {\n\tstruct list_head list;\n\tstruct vsp1_device *vsp1;\n\tstruct vsp1_rwpf *rwpf;\n\n\tstruct video_device video;\n\tenum v4l2_buf_type type;\n\tstruct media_pad pad;\n\n\tstruct mutex lock;\n\n\tunsigned int pipe_index;\n\n\tstruct vb2_queue queue;\n\tspinlock_t irqlock;\n\tstruct list_head irqqueue;\n};\n\nstatic inline struct vsp1_video *to_vsp1_video(struct video_device *vdev)\n{\n\treturn container_of(vdev, struct vsp1_video, video);\n}\n\nvoid vsp1_video_suspend(struct vsp1_device *vsp1);\nvoid vsp1_video_resume(struct vsp1_device *vsp1);\n\nstruct vsp1_video *vsp1_video_create(struct vsp1_device *vsp1,\n\t\t\t\t     struct vsp1_rwpf *rwpf);\nvoid vsp1_video_cleanup(struct vsp1_video *video);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-getdtablesize.c",
+  "hash_id": "75681459f841dbd2147635b2a697fc976f0c96190c822e6763b309b78751d263",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-getdtablesize.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <unistd.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (getdtablesize, int, (void));\n\n#include \"macros.h\"\n\n \n#if __GNUC__ >= 13\n# pragma GCC diagnostic ignored \"-Wanalyzer-fd-leak\"\n#endif\n\nint\nmain (int argc, char *argv[])\n{\n  ASSERT (getdtablesize () >= 3);\n  ASSERT (dup2 (0, getdtablesize() - 1) == getdtablesize () - 1);\n  ASSERT (dup2 (0, getdtablesize()) == -1);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

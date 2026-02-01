@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi_mdio.c",
+  "hash_id": "2e8699cfb515d4e5462b60eda27d755e6bf547f82e4446c4ee53e2b0951a4d73",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/mdio/acpi_mdio.c",
+  "human_readable_source": "\n \n\n#include <linux/acpi.h>\n#include <linux/acpi_mdio.h>\n#include <linux/bits.h>\n#include <linux/dev_printk.h>\n#include <linux/fwnode_mdio.h>\n#include <linux/module.h>\n#include <linux/types.h>\n\nMODULE_AUTHOR(\"Calvin Johnson <calvin.johnson@oss.nxp.com>\");\nMODULE_LICENSE(\"GPL\");\n\n \nint __acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode,\n\t\t\t    struct module *owner)\n{\n\tstruct fwnode_handle *child;\n\tu32 addr;\n\tint ret;\n\n\t \n\tmdio->phy_mask = GENMASK(31, 0);\n\tret = __mdiobus_register(mdio, owner);\n\tif (ret)\n\t\treturn ret;\n\n\tACPI_COMPANION_SET(&mdio->dev, to_acpi_device_node(fwnode));\n\n\t \n\tfwnode_for_each_child_node(fwnode, child) {\n\t\tret = acpi_get_local_address(ACPI_HANDLE_FWNODE(child), &addr);\n\t\tif (ret || addr >= PHY_MAX_ADDR)\n\t\t\tcontinue;\n\n\t\tret = fwnode_mdiobus_register_phy(mdio, child, addr);\n\t\tif (ret == -ENODEV)\n\t\t\tdev_err(&mdio->dev,\n\t\t\t\t\"MDIO device at address %d is missing.\\n\",\n\t\t\t\taddr);\n\t}\n\treturn 0;\n}\nEXPORT_SYMBOL(__acpi_mdiobus_register);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

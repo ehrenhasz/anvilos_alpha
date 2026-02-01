@@ -1,0 +1,9 @@
+{
+  "module_name": "smc_rx.h",
+  "hash_id": "80df6c3ef21d00e4de4ebcd717ab6eab4ff6996d68c21c1c12be417e24788a9a",
+  "original_prompt": "Ingested from linux-6.6.14/net/smc/smc_rx.h",
+  "human_readable_source": " \n \n\n#ifndef SMC_RX_H\n#define SMC_RX_H\n\n#include <linux/socket.h>\n#include <linux/types.h>\n\n#include \"smc.h\"\n\nvoid smc_rx_init(struct smc_sock *smc);\n\nint smc_rx_recvmsg(struct smc_sock *smc, struct msghdr *msg,\n\t\t   struct pipe_inode_info *pipe, size_t len, int flags);\nint smc_rx_wait(struct smc_sock *smc, long *timeo,\n\t\tint (*fcrit)(struct smc_connection *conn));\nstatic inline int smc_rx_data_available(struct smc_connection *conn)\n{\n\treturn atomic_read(&conn->bytes_to_rcv);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

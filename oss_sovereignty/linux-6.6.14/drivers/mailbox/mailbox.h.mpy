@@ -1,0 +1,9 @@
+{
+  "module_name": "mailbox.h",
+  "hash_id": "0968af1c125204ab40b4ddef285d5cf86f41bd8adb3e6580b1e682d67ed708da",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mailbox/mailbox.h",
+  "human_readable_source": " \n\n#ifndef __MAILBOX_H\n#define __MAILBOX_H\n\n#define TXDONE_BY_IRQ\tBIT(0)  \n#define TXDONE_BY_POLL\tBIT(1)  \n#define TXDONE_BY_ACK\tBIT(2)  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

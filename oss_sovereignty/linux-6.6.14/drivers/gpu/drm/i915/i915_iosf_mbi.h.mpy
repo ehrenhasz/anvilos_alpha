@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_iosf_mbi.h",
+  "hash_id": "57e7f7a4d95f5a2ed82a9b1713c6f9500d547a381c85acc1fef3b1c698d08816",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_iosf_mbi.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_IOSF_MBI_H__\n#define __I915_IOSF_MBI_H__\n\n#if IS_ENABLED(CONFIG_IOSF_MBI)\n#include <asm/iosf_mbi.h>\n#else\n\n \n#define MBI_PMIC_BUS_ACCESS_BEGIN       1\n#define MBI_PMIC_BUS_ACCESS_END         2\n\nstruct notifier_block;\n\nstatic inline void iosf_mbi_punit_acquire(void) {}\nstatic inline void iosf_mbi_punit_release(void) {}\nstatic inline void iosf_mbi_assert_punit_acquired(void) {}\n\nstatic inline\nint iosf_mbi_register_pmic_bus_access_notifier(struct notifier_block *nb)\n{\n\treturn 0;\n}\n\nstatic inline int\niosf_mbi_unregister_pmic_bus_access_notifier_unlocked(struct notifier_block *nb)\n{\n\treturn 0;\n}\n\nstatic inline\nint iosf_mbi_unregister_pmic_bus_access_notifier(struct notifier_block *nb)\n{\n\treturn 0;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

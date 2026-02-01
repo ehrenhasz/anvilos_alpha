@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sys_types.c",
+  "hash_id": "ef5712eb05948e61e6b9a2c5532143b62fd2523ece83eea765a6cfbab7b56b86",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sys_types.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/types.h>\n\n \npid_t t1;\nsize_t t2;\nssize_t t3;\noff_t t4;\nmode_t t5;\n\nint\nmain (void)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

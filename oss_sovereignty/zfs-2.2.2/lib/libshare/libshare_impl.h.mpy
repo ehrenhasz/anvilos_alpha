@@ -1,0 +1,9 @@
+{
+  "module_name": "libshare_impl.h",
+  "hash_id": "20e8b1512b0692eb10d7e52af2348673b7e3ccadda293f7cdf9cab90f02294be",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libshare/libshare_impl.h",
+  "human_readable_source": " \n\n \n#ifndef _LIBSPL_LIBSHARE_IMPL_H\n#define\t_LIBSPL_LIBSHARE_IMPL_H\n\ntypedef const struct sa_share_impl {\n\tconst char *sa_zfsname;\n\tconst char *sa_mountpoint;\n\tconst char *sa_shareopts;\n} *sa_share_impl_t;\n\ntypedef struct {\n\tint (*const enable_share)(sa_share_impl_t share);\n\tint (*const disable_share)(sa_share_impl_t share);\n\tboolean_t (*const is_shared)(sa_share_impl_t share);\n\tint (*const validate_shareopts)(const char *shareopts);\n\tint (*const commit_shares)(void);\n\tvoid (*const truncate_shares)(void);\n} sa_fstype_t;\n\nextern const sa_fstype_t libshare_nfs_type, libshare_smb_type;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

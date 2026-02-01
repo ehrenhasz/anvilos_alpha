@@ -1,0 +1,9 @@
+{
+  "module_name": "owl-s500-powergate.h",
+  "hash_id": "91473d1d794ff1ab170972acca7cbe729d09b03acb39c541097ce61abdf4b751",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/owl-s500-powergate.h",
+  "human_readable_source": " \n#ifndef DT_BINDINGS_POWER_OWL_S500_POWERGATE_H\n#define DT_BINDINGS_POWER_OWL_S500_POWERGATE_H\n\n#define S500_PD_VDE\t0\n#define S500_PD_VCE_SI\t1\n#define S500_PD_USB2_1\t2\n#define S500_PD_CPU2\t3\n#define S500_PD_CPU3\t4\n#define S500_PD_DMA\t5\n#define S500_PD_DS\t6\n#define S500_PD_USB3\t7\n#define S500_PD_USB2_0\t8\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

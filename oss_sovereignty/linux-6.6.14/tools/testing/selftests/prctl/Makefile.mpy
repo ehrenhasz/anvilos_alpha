@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7f8589cb81988f2b122e773be30562e736a2b451394f0433b0ff7fbdd42c3e4a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/prctl/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nifndef CROSS_COMPILE\nuname_M := $(shell uname -m 2>/dev/null || echo not)\nARCH ?= $(shell echo $(uname_M) | sed -e s/i.86/x86/ -e s/x86_64/x86/)\n\nifeq ($(ARCH),x86)\nTEST_PROGS := disable-tsc-ctxt-sw-stress-test disable-tsc-on-off-stress-test \\\n\t\tdisable-tsc-test set-anon-vma-name-test set-process-name\nall: $(TEST_PROGS)\n\ninclude ../lib.mk\n\nendif\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

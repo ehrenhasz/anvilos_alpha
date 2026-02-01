@@ -1,0 +1,9 @@
+{
+  "module_name": "cuda.h",
+  "hash_id": "a484184bcece72217230cd973377bce026ef90fadee68386367523a78d956c09",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/cuda.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_CUDA_H\n#define _UAPI_LINUX_CUDA_H\n\n \n#define CUDA_WARM_START\t\t0\n#define CUDA_AUTOPOLL\t\t1\n#define CUDA_GET_6805_ADDR\t2\n#define CUDA_GET_TIME\t\t3\n#define CUDA_GET_PRAM\t\t7\n#define CUDA_SET_6805_ADDR\t8\n#define CUDA_SET_TIME\t\t9\n#define CUDA_POWERDOWN\t\t0xa\n#define CUDA_POWERUP_TIME\t0xb\n#define CUDA_SET_PRAM\t\t0xc\n#define CUDA_MS_RESET\t\t0xd\n#define CUDA_SEND_DFAC\t\t0xe\n#define CUDA_RESET_SYSTEM\t0x11\n#define CUDA_SET_IPL\t\t0x12\n#define CUDA_SET_AUTO_RATE\t0x14\n#define CUDA_GET_AUTO_RATE\t0x16\n#define CUDA_SET_DEVICE_LIST\t0x19\n#define CUDA_GET_DEVICE_LIST\t0x1a\n#define CUDA_GET_SET_IIC\t0x22\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

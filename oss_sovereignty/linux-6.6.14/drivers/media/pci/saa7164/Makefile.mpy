@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5c9304aa59a2da3599cd7c9c4b5e69416f93b310622d0f582908d5af725aa26a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/saa7164/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsaa7164-objs\t:= saa7164-cards.o saa7164-core.o saa7164-i2c.o saa7164-dvb.o \\\n\t\t\tsaa7164-fw.o saa7164-bus.o saa7164-cmd.o saa7164-api.o \\\n\t\t\tsaa7164-buffer.o saa7164-encoder.o saa7164-vbi.o\n\nobj-$(CONFIG_VIDEO_SAA7164) += saa7164.o\n\nccflags-y += -I$(srctree)/drivers/media/tuners\nccflags-y += -I$(srctree)/drivers/media/dvb-frontends\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

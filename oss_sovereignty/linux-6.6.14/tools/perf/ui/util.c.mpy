@@ -1,0 +1,9 @@
+{
+  "module_name": "util.c",
+  "hash_id": "25ef0da91d22ef6b8c3c15e24f18f734392b993ae9b45f194669b6a5a395894e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/util.c",
+  "human_readable_source": "\n#include \"util.h\"\n#include \"../util/debug.h\"\n#include <stdio.h>\n\n \nstatic int perf_stdio__error(const char *format, va_list args)\n{\n\tfprintf(stderr, \"Error:\\n\");\n\tvfprintf(stderr, format, args);\n\treturn 0;\n}\n\nstatic int perf_stdio__warning(const char *format, va_list args)\n{\n\tif (quiet)\n\t\treturn 0;\n\n\tfprintf(stderr, \"Warning:\\n\");\n\tvfprintf(stderr, format, args);\n\treturn 0;\n}\n\nstatic struct perf_error_ops default_eops =\n{\n\t.error\t\t= perf_stdio__error,\n\t.warning\t= perf_stdio__warning,\n};\n\nstatic struct perf_error_ops *perf_eops = &default_eops;\n\n\nint ui__error(const char *format, ...)\n{\n\tint ret;\n\tva_list args;\n\n\tva_start(args, format);\n\tret = perf_eops->error(format, args);\n\tva_end(args);\n\n\treturn ret;\n}\n\nint ui__warning(const char *format, ...)\n{\n\tint ret;\n\tva_list args;\n\tif (quiet)\n\t\treturn 0;\n\n\tva_start(args, format);\n\tret = perf_eops->warning(format, args);\n\tva_end(args);\n\n\treturn ret;\n}\n\n \nint perf_error__register(struct perf_error_ops *eops)\n{\n\tif (perf_eops != &default_eops)\n\t\treturn -1;\n\n\tperf_eops = eops;\n\treturn 0;\n}\n\n \nint perf_error__unregister(struct perf_error_ops *eops)\n{\n\tif (perf_eops != eops)\n\t\treturn -1;\n\n\tperf_eops = &default_eops;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

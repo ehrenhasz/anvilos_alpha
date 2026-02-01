@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-div6.h",
+  "hash_id": "7a269b115c0df283404786c8a817bbf6e1410e2ec5aba4cae7997bdcd5507809",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/renesas/clk-div6.h",
+  "human_readable_source": " \n#ifndef __RENESAS_CLK_DIV6_H__\n#define __RENESAS_CLK_DIV6_H__\n\nstruct clk *cpg_div6_register(const char *name, unsigned int num_parents,\n\t\t\t      const char **parent_names, void __iomem *reg,\n\t\t\t      struct raw_notifier_head *notifiers);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

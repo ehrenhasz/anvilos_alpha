@@ -1,0 +1,9 @@
+{
+  "module_name": "meson-g12a-tohdmitx.h",
+  "hash_id": "8dae5910b1c945a56cb74afaf1cd40b931068a925f37612c2eeefaeab5ce109d",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/sound/meson-g12a-tohdmitx.h",
+  "human_readable_source": " \n#ifndef __DT_MESON_G12A_TOHDMITX_H\n#define __DT_MESON_G12A_TOHDMITX_H\n\n#define TOHDMITX_I2S_IN_A\t0\n#define TOHDMITX_I2S_IN_B\t1\n#define TOHDMITX_I2S_IN_C\t2\n#define TOHDMITX_I2S_OUT\t3\n#define TOHDMITX_SPDIF_IN_A\t4\n#define TOHDMITX_SPDIF_IN_B\t5\n#define TOHDMITX_SPDIF_OUT\t6\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

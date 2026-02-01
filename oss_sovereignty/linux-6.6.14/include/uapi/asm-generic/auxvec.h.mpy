@@ -1,0 +1,9 @@
+{
+  "module_name": "auxvec.h",
+  "hash_id": "d35b00563f93544c84d04f6bf2aeb0d86a57c4315e4f2c5c26ad2145fdb9299e",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/asm-generic/auxvec.h",
+  "human_readable_source": "#ifndef __ASM_GENERIC_AUXVEC_H\n#define __ASM_GENERIC_AUXVEC_H\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

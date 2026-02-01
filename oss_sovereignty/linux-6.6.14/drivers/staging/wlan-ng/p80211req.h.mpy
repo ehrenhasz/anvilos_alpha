@@ -1,0 +1,9 @@
+{
+  "module_name": "p80211req.h",
+  "hash_id": "84ada604e3a607d7bff1f53f93cbd47e93449a0fd4507b72a700a3ef6f18c4e1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/wlan-ng/p80211req.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_P80211REQ_H\n#define _LINUX_P80211REQ_H\n\nint p80211req_dorequest(struct wlandevice *wlandev, u8 *msgbuf);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

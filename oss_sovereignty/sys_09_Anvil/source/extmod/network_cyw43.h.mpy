@@ -1,0 +1,9 @@
+{
+  "module_name": "network_cyw43.h",
+  "hash_id": "1e238c13cd3ea5bad1700e69f4ccd32aba4c6e7cf852c07587fee0b58b6d9a50",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/network_cyw43.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_EXTMOD_NETWORK_CYW43_H\n#define MICROPY_INCLUDED_EXTMOD_NETWORK_CYW43_H\n\nextern const mp_obj_type_t mp_network_cyw43_type;\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

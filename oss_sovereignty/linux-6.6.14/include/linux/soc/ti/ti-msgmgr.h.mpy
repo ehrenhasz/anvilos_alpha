@@ -1,0 +1,9 @@
+{
+  "module_name": "ti-msgmgr.h",
+  "hash_id": "43f90689518cc01ae386332d99187757cf9747faf26f4a043802b9cf9bc5fc14",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/ti/ti-msgmgr.h",
+  "human_readable_source": " \n \n\n#ifndef TI_MSGMGR_H\n#define TI_MSGMGR_H\n\nstruct mbox_chan;\n\n \nstruct ti_msgmgr_message {\n\tsize_t len;\n\tu8 *buf;\n\tstruct mbox_chan *chan_rx;\n\tint timeout_rx_ms;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

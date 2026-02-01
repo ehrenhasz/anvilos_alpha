@@ -1,0 +1,9 @@
+{
+  "module_name": "sha2_impl.h",
+  "hash_id": "3d936faa275f962f67be20068ac298f90a7edfcb4f596f50f91624f6538cfad4",
+  "original_prompt": "Ingested from zfs-2.2.2/module/icp/include/sha2/sha2_impl.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_SHA2_IMPL_H\n#define\t_SHA2_IMPL_H\n\n#include <sys/sha2.h>\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n \ntypedef void (*sha256_f)(uint32_t state[8], const void *data, size_t blks);\ntypedef void (*sha512_f)(uint64_t state[8], const void *data, size_t blks);\n\n \ntypedef boolean_t (*sha2_is_supported_f)(void);\n\ntypedef struct {\n\tconst char *name;\n\tsha256_f transform;\n\tsha2_is_supported_f is_supported;\n} sha256_ops_t;\n\ntypedef struct {\n\tconst char *name;\n\tsha512_f transform;\n\tsha2_is_supported_f is_supported;\n} sha512_ops_t;\n\nextern const sha256_ops_t *sha256_get_ops(void);\nextern const sha512_ops_t *sha512_get_ops(void);\n\ntypedef enum {\n\tSHA1_TYPE,\n\tSHA256_TYPE,\n\tSHA384_TYPE,\n\tSHA512_TYPE\n} sha2_mech_t;\n\n \ntypedef struct sha2_ctx {\n\tsha2_mech_type_t\tsc_mech_type;\t \n\tSHA2_CTX\t\tsc_sha2_ctx;\t \n} sha2_ctx_t;\n\n \ntypedef struct sha2_hmac_ctx {\n\tsha2_mech_type_t\thc_mech_type;\t \n\tuint32_t\t\thc_digest_len;\t \n\tSHA2_CTX\t\thc_icontext;\t \n\tSHA2_CTX\t\thc_ocontext;\t \n} sha2_hmac_ctx_t;\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

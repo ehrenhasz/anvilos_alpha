@@ -1,0 +1,9 @@
+{
+  "module_name": "div_small.S",
+  "hash_id": "34c90edb35eda9361fee8b0be2448371b94fa2d9b52d70dbd8696a49345665fe",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/math-emu/div_small.S",
+  "human_readable_source": " \n\t.file\t\"div_small.S\"\n \n\n \n\n#include \"fpu_emu.h\"\n\n.text\nSYM_FUNC_START(FPU_div_small)\n\tpushl\t%ebp\n\tmovl\t%esp,%ebp\n\n\tpushl\t%esi\n\n\tmovl\tPARAM1,%esi\t \n\tmovl\tPARAM2,%ecx\t \n\n\tmovl\t4(%esi),%eax\t \n\txorl\t%edx,%edx\n\tdivl\t%ecx\n\n\tmovl\t%eax,4(%esi)\n\n\tmovl\t(%esi),%eax\t \n\tdivl\t%ecx\n\n\tmovl\t%eax,(%esi)\n\n\tmovl\t%edx,%eax\t \n\n\tpopl\t%esi\n\n\tleave\n\tRET\nSYM_FUNC_END(FPU_div_small)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

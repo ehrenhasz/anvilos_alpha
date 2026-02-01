@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "ef8a1af1847c80dc4ac41ea50ada2a9a0b41db1a599d6339dfd42c978c08fe58",
+  "original_prompt": "Ingested from linux-6.6.14/tools/crypto/ccp/.gitignore",
+  "human_readable_source": "__pycache__\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

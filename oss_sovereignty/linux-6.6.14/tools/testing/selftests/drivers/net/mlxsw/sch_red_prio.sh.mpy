@@ -1,0 +1,9 @@
+{
+  "module_name": "sch_red_prio.sh",
+  "hash_id": "88e2c4c9a6cb30fbf44757f9734f9fe031a389313ae3919f11d74142f5b64979",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/sch_red_prio.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nQDISC=prio\nsource sch_red_ets.sh\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_bayer_io_types.h",
+  "hash_id": "c514636d1e606322adfa864958732e269317375e99ff8e10175ee8679cb58708",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ipu2_io_ls/bayer_io_ls/ia_css_bayer_io_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_BAYER_IO_TYPES_H\n#define __IA_CSS_BAYER_IO_TYPES_H\n\n#include \"../common/ia_css_common_io_types.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

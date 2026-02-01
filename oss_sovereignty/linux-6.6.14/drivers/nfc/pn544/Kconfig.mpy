@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "07d9841d0fe9967a853e40b41344b4f90dcea209874372bac45c3f6ab2193a90",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/pn544/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NFC_PN544\n\ttristate\n\tselect CRC_CCITT\n\thelp\n\t  NXP PN544 core driver.\n\t  This is a driver based on the HCI NFC kernel layers and\n\t  will thus not work with NXP libnfc library.\n\nconfig NFC_PN544_I2C\n\ttristate \"NXP PN544 device support (I2C)\"\n\tdepends on NFC_HCI && I2C && NFC_SHDLC\n\tselect NFC_PN544\n\thelp\n\t  This module adds support for the NXP pn544 i2c interface.\n\t  Select this if your platform is using the i2c bus.\n\n\t  If you choose to build a module, it'll be called pn544_i2c.\n\t  Say N if unsure.\n\nconfig NFC_PN544_MEI\n\ttristate \"NXP PN544 device support (MEI)\"\n\tdepends on NFC_HCI && NFC_MEI_PHY\n\tselect NFC_PN544\n\thelp\n\t  This module adds support for the mei interface of adapters using\n\t  NXP pn544 chipsets.  Select this if your pn544 chipset\n\t  is handled by Intel's Management Engine Interface on your platform.\n\n\t  If you choose to build a module, it'll be called pn544_mei.\n\t  Say N if unsure.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

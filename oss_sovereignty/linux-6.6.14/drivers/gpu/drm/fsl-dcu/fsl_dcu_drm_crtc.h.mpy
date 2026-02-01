@@ -1,0 +1,9 @@
+{
+  "module_name": "fsl_dcu_drm_crtc.h",
+  "hash_id": "9992034782b71a2173e889b2a18408b00c8ca524f2e107a6ab82d02eaab86f45",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/fsl-dcu/fsl_dcu_drm_crtc.h",
+  "human_readable_source": " \n \n\n#ifndef __FSL_DCU_DRM_CRTC_H__\n#define __FSL_DCU_DRM_CRTC_H__\n\nstruct fsl_dcu_drm_device;\n\nint fsl_dcu_drm_crtc_create(struct fsl_dcu_drm_device *fsl_dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

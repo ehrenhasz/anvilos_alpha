@@ -1,0 +1,9 @@
+{
+  "module_name": "vdev_indirect_births.h",
+  "hash_id": "1c257953a7117097daff501d201a47d67290de69f9cd4fb153226715c4c6d63d",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/vdev_indirect_births.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_SYS_VDEV_INDIRECT_BIRTHS_H\n#define\t_SYS_VDEV_INDIRECT_BIRTHS_H\n\n#include <sys/dmu.h>\n#include <sys/spa.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\ntypedef struct vdev_indirect_birth_entry_phys {\n\tuint64_t vibe_offset;\n\tuint64_t vibe_phys_birth_txg;\n} vdev_indirect_birth_entry_phys_t;\n\ntypedef struct vdev_indirect_birth_phys {\n\tuint64_t\tvib_count;  \n} vdev_indirect_birth_phys_t;\n\ntypedef struct vdev_indirect_births {\n\tuint64_t\tvib_object;\n\n\t \n\tvdev_indirect_birth_entry_phys_t *vib_entries;\n\n\tobjset_t\t*vib_objset;\n\n\tdmu_buf_t\t*vib_dbuf;\n\tvdev_indirect_birth_phys_t\t*vib_phys;\n} vdev_indirect_births_t;\n\nextern vdev_indirect_births_t *vdev_indirect_births_open(objset_t *os,\n    uint64_t object);\nextern void vdev_indirect_births_close(vdev_indirect_births_t *vib);\nextern boolean_t vdev_indirect_births_is_open(vdev_indirect_births_t *vib);\nextern uint64_t vdev_indirect_births_alloc(objset_t *os, dmu_tx_t *tx);\nextern void vdev_indirect_births_free(objset_t *os, uint64_t object,\n    dmu_tx_t *tx);\n\nextern uint64_t vdev_indirect_births_count(vdev_indirect_births_t *vib);\nextern uint64_t vdev_indirect_births_object(vdev_indirect_births_t *vib);\n\nextern void vdev_indirect_births_add_entry(vdev_indirect_births_t *vib,\n    uint64_t offset, uint64_t txg, dmu_tx_t *tx);\n\nextern uint64_t vdev_indirect_births_physbirth(vdev_indirect_births_t *vib,\n    uint64_t offset, uint64_t asize);\n\nextern uint64_t vdev_indirect_births_last_entry_txg(\n    vdev_indirect_births_t *vib);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

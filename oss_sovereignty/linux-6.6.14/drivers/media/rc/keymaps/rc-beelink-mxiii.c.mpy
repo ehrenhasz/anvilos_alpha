@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-beelink-mxiii.c",
+  "hash_id": "fba5f947a57f5035e14d2e111a49353e4f5f45851345c196528a6606af22d57f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-beelink-mxiii.c",
+  "human_readable_source": "\n \n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n\nstatic struct rc_map_table beelink_mxiii[] = {\n\t{ 0xb2dc, KEY_POWER },\n\n\t{ 0xb288, KEY_MUTE },\n\t{ 0xb282, KEY_HOME },\n\n\t{ 0xb2ca, KEY_UP },\n\t{ 0xb299, KEY_LEFT },\n\t{ 0xb2ce, KEY_OK },\n\t{ 0xb2c1, KEY_RIGHT },\n\t{ 0xb2d2, KEY_DOWN },\n\n\t{ 0xb2c5, KEY_MENU },\n\t{ 0xb29a, KEY_BACK },\n\n\t{ 0xb281, KEY_VOLUMEDOWN },\n\t{ 0xb280, KEY_VOLUMEUP },\n};\n\nstatic struct rc_map_list beelink_mxiii_map = {\n\t.map = {\n\t\t.scan     = beelink_mxiii,\n\t\t.size     = ARRAY_SIZE(beelink_mxiii),\n\t\t.rc_proto = RC_PROTO_NEC,\n\t\t.name     = RC_MAP_BEELINK_MXIII,\n\t}\n};\n\nstatic int __init init_rc_map_beelink_mxiii(void)\n{\n\treturn rc_map_register(&beelink_mxiii_map);\n}\n\nstatic void __exit exit_rc_map_beelink_mxiii(void)\n{\n\trc_map_unregister(&beelink_mxiii_map);\n}\n\nmodule_init(init_rc_map_beelink_mxiii)\nmodule_exit(exit_rc_map_beelink_mxiii)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Christian Hewitt <christianshewitt@gmail.com\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

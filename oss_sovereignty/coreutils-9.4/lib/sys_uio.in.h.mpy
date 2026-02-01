@@ -1,0 +1,9 @@
+{
+  "module_name": "sys_uio.in.h",
+  "hash_id": "29057121a21bfbb14c9510b7849465f101dd97b9e26dbe73e1b1591ddcca0140",
+  "original_prompt": "Ingested from coreutils-9.4/lib/sys_uio.in.h",
+  "human_readable_source": " \n# include <sys/types.h>\n\n \n# @INCLUDE_NEXT@ @NEXT_SYS_UIO_H@\n\n#endif\n\n#ifndef _@GUARD_PREFIX@_SYS_UIO_H\n#define _@GUARD_PREFIX@_SYS_UIO_H\n\n#if !@HAVE_SYS_UIO_H@\n \n \n# include <sys/types.h>\n\n# ifdef __cplusplus\nextern \"C\" {\n# endif\n\n# if !GNULIB_defined_struct_iovec\n \nstruct iovec {\n  void *iov_base;\n  size_t iov_len;\n};\n#  define GNULIB_defined_struct_iovec 1\n# endif\n\n# ifdef __cplusplus\n}\n# endif\n\n#endif\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

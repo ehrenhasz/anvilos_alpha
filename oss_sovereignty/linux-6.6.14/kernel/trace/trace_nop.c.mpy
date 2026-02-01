@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_nop.c",
+  "hash_id": "5d96d0d54df65987f1033d1b0a589a6f79ca3fc9854d6db97055f8c5562249d3",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/trace/trace_nop.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/ftrace.h>\n\n#include \"trace.h\"\n\n \nenum {\n\tTRACE_NOP_OPT_ACCEPT = 0x1,\n\tTRACE_NOP_OPT_REFUSE = 0x2\n};\n\n \nstatic struct tracer_opt nop_opts[] = {\n\t \n\t{ TRACER_OPT(test_nop_accept, TRACE_NOP_OPT_ACCEPT) },\n\t \n\t{ TRACER_OPT(test_nop_refuse, TRACE_NOP_OPT_REFUSE) },\n\t{ }  \n};\n\nstatic struct tracer_flags nop_flags = {\n\t \n\t.val = 0,  \n\t.opts = nop_opts\n};\n\nstatic struct trace_array\t*ctx_trace;\n\nstatic void start_nop_trace(struct trace_array *tr)\n{\n\t \n}\n\nstatic void stop_nop_trace(struct trace_array *tr)\n{\n\t \n}\n\nstatic int nop_trace_init(struct trace_array *tr)\n{\n\tctx_trace = tr;\n\tstart_nop_trace(tr);\n\treturn 0;\n}\n\nstatic void nop_trace_reset(struct trace_array *tr)\n{\n\tstop_nop_trace(tr);\n}\n\n \nstatic int nop_set_flag(struct trace_array *tr, u32 old_flags, u32 bit, int set)\n{\n\t \n\tif (bit == TRACE_NOP_OPT_ACCEPT) {\n\t\tprintk(KERN_DEBUG \"nop_test_accept flag set to %d: we accept.\"\n\t\t\t\" Now cat trace_options to see the result\\n\",\n\t\t\tset);\n\t\treturn 0;\n\t}\n\n\tif (bit == TRACE_NOP_OPT_REFUSE) {\n\t\tprintk(KERN_DEBUG \"nop_test_refuse flag set to %d: we refuse.\"\n\t\t\t\" Now cat trace_options to see the result\\n\",\n\t\t\tset);\n\t\treturn -EINVAL;\n\t}\n\n\treturn 0;\n}\n\n\nstruct tracer nop_trace __read_mostly =\n{\n\t.name\t\t= \"nop\",\n\t.init\t\t= nop_trace_init,\n\t.reset\t\t= nop_trace_reset,\n#ifdef CONFIG_FTRACE_SELFTEST\n\t.selftest\t= trace_selftest_startup_nop,\n#endif\n\t.flags\t\t= &nop_flags,\n\t.set_flag\t= nop_set_flag,\n\t.allow_instances = true,\n};\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

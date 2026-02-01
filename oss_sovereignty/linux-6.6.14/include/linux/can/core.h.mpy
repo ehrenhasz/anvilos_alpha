@@ -1,0 +1,9 @@
+{
+  "module_name": "core.h",
+  "hash_id": "9769096eed5659761c9e07e1b2e50207ca3cb07c7ce5232d37f600cdec29efed",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/can/core.h",
+  "human_readable_source": " \n \n\n#ifndef _CAN_CORE_H\n#define _CAN_CORE_H\n\n#include <linux/can.h>\n#include <linux/skbuff.h>\n#include <linux/netdevice.h>\n\n#define DNAME(dev) ((dev) ? (dev)->name : \"any\")\n\n \nstruct can_proto {\n\tint type;\n\tint protocol;\n\tconst struct proto_ops *ops;\n\tstruct proto *prot;\n};\n\n \n#define CAN_REQUIRED_SIZE(struct_type, member) \\\n\t(offsetof(typeof(struct_type), member) + \\\n\t sizeof(((typeof(struct_type) *)(NULL))->member))\n\n \n\nextern int  can_proto_register(const struct can_proto *cp);\nextern void can_proto_unregister(const struct can_proto *cp);\n\nint can_rx_register(struct net *net, struct net_device *dev,\n\t\t    canid_t can_id, canid_t mask,\n\t\t    void (*func)(struct sk_buff *, void *),\n\t\t    void *data, char *ident, struct sock *sk);\n\nextern void can_rx_unregister(struct net *net, struct net_device *dev,\n\t\t\t      canid_t can_id, canid_t mask,\n\t\t\t      void (*func)(struct sk_buff *, void *),\n\t\t\t      void *data);\n\nextern int can_send(struct sk_buff *skb, int loop);\nvoid can_sock_destruct(struct sock *sk);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

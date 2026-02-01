@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2375972587570ac9fc29da87ccadc0a077c37120bde29611cb7395ec38233975",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gvt/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nkvmgt-$(CONFIG_DRM_I915_GVT) += \\\n\tgvt/aperture_gm.o \\\n\tgvt/cfg_space.o \\\n\tgvt/cmd_parser.o \\\n\tgvt/debugfs.o \\\n\tgvt/display.o \\\n\tgvt/dmabuf.o \\\n\tgvt/edid.o \\\n\tgvt/execlist.o \\\n\tgvt/fb_decoder.o \\\n\tgvt/firmware.o \\\n\tgvt/gtt.o \\\n\tgvt/handlers.o \\\n\tgvt/interrupt.o \\\n\tgvt/kvmgt.o \\\n\tgvt/mmio.o \\\n\tgvt/mmio_context.o \\\n\tgvt/opregion.o \\\n\tgvt/page_track.o \\\n\tgvt/sched_policy.o \\\n\tgvt/scheduler.o \\\n\tgvt/trace_points.o \\\n\tgvt/vgpu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "f751abc1c9cb2532714793ec5a7c31d69fb57f55f482679476abcfd1ccc9384d",
+  "original_prompt": "Ingested from linux-6.6.14/net/sunrpc/auth_gss/trace.c",
+  "human_readable_source": "\n \n\n#include <linux/sunrpc/clnt.h>\n#include <linux/sunrpc/sched.h>\n#include <linux/sunrpc/svc.h>\n#include <linux/sunrpc/svc_xprt.h>\n#include <linux/sunrpc/auth_gss.h>\n#include <linux/sunrpc/gss_err.h>\n\n#define CREATE_TRACE_POINTS\n#include <trace/events/rpcgss.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a1eab9bcbff65bb9dd184361b64aab3b8c937c249c947bdaab9d9ee361b50a74",
+  "original_prompt": "Ingested from linux-6.6.14/net/sunrpc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Linux kernel SUN RPC\n#\n\n\nobj-$(CONFIG_SUNRPC) += sunrpc.o\nobj-$(CONFIG_SUNRPC_GSS) += auth_gss/\nobj-$(CONFIG_SUNRPC_XPRT_RDMA) += xprtrdma/\n\nsunrpc-y := clnt.o xprt.o socklib.o xprtsock.o sched.o \\\n\t    auth.o auth_null.o auth_tls.o auth_unix.o \\\n\t    svc.o svcsock.o svcauth.o svcauth_unix.o \\\n\t    addr.o rpcb_clnt.o timer.o xdr.o \\\n\t    sunrpc_syms.o cache.o rpc_pipe.o sysfs.o \\\n\t    svc_xprt.o \\\n\t    xprtmultipath.o\nsunrpc-$(CONFIG_SUNRPC_DEBUG) += debugfs.o\nsunrpc-$(CONFIG_SUNRPC_BACKCHANNEL) += backchannel_rqst.o\nsunrpc-$(CONFIG_PROC_FS) += stats.o\nsunrpc-$(CONFIG_SYSCTL) += sysctl.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

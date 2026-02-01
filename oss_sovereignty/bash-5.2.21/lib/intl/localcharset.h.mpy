@@ -1,0 +1,9 @@
+{
+  "module_name": "localcharset.h",
+  "hash_id": "3b07871522f6d5419f4a836a04fa8a3abf57b6b2d4f9f3fe959cfc9463328a47",
+  "original_prompt": "Ingested from bash-5.2.21/lib/intl/localcharset.h",
+  "human_readable_source": " \n\n \n\n#ifndef _LOCALCHARSET_H\n#define _LOCALCHARSET_H\n\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n\n \nextern const char * locale_charset (void);\n\n\n#ifdef __cplusplus\n}\n#endif\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

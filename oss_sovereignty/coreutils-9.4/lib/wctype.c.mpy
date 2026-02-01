@@ -1,0 +1,9 @@
+{
+  "module_name": "wctype.c",
+  "hash_id": "b8bc9e20b0b0eeb65376dc62674a50430048eac30bc5f1931d909756e84c67b4",
+  "original_prompt": "Ingested from coreutils-9.4/lib/wctype.c",
+  "human_readable_source": " \n#include <wctype.h>\n\n#include <string.h>\n\n#include \"wctype-impl.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

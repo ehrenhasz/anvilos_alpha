@@ -1,0 +1,9 @@
+{
+  "module_name": "igt_reset.h",
+  "hash_id": "2ff43f6f3a6d0b3ee52ab5d7cad11c619187f147ac0d2f92b0a93015e5be2485",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/igt_reset.h",
+  "human_readable_source": " \n\n#ifndef __I915_SELFTESTS_IGT_RESET_H__\n#define __I915_SELFTESTS_IGT_RESET_H__\n\n#include <linux/types.h>\n\nstruct intel_gt;\n\nvoid igt_global_reset_lock(struct intel_gt *gt);\nvoid igt_global_reset_unlock(struct intel_gt *gt);\nbool igt_force_reset(struct intel_gt *gt);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

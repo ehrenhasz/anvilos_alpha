@@ -1,0 +1,9 @@
+{
+  "module_name": "input-core-private.h",
+  "hash_id": "b97f7b2b5bf3aef9f23a6fb55f2a66c0ec3aa6ccaa92f292e3dcf42feac71cd3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/input-core-private.h",
+  "human_readable_source": " \n#ifndef _INPUT_CORE_PRIVATE_H\n#define _INPUT_CORE_PRIVATE_H\n\n \n\nstruct input_dev;\n\nvoid input_mt_release_slots(struct input_dev *dev);\nvoid input_handle_event(struct input_dev *dev,\n\t\t\tunsigned int type, unsigned int code, int value);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

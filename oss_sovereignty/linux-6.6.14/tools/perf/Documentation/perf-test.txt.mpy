@@ -1,0 +1,9 @@
+{
+  "module_name": "perf-test.txt",
+  "hash_id": "46591311f9f4ac5ea17cf9afea4d66a70f11d33fd79f9230159dc3cfb454ac53",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/perf-test.txt",
+  "human_readable_source": "perf-test(1)\n============\n\nNAME\n----\nperf-test - Runs sanity tests.\n\nSYNOPSIS\n--------\n[verse]\n'perf test [<options>] [{list <test-name-fragment>|[<test-name-fragments>|<test-numbers>]}]'\n\nDESCRIPTION\n-----------\nThis command does assorted sanity tests, initially through linked routines but\nalso will look for a directory with more tests in the form of scripts.\n\nTo get a list of available tests use 'perf test list', specifying a test name\nfragment will show all tests that have it.\n\nTo run just specific tests, inform test name fragments or the numbers obtained\nfrom 'perf test list'.\n\nOPTIONS\n-------\n-s::\n--skip::\n\tTests to skip (comma separated numeric list).\n\n-v::\n--verbose::\n\tBe more verbose.\n\n-F::\n--dont-fork::\n\tDo not fork child for each test, run all tests within single process.\n\n--dso::\n\tSpecify a DSO for the \"Symbols\" test.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4582057ce65e1ff3df95791f0aaad770e3db5e830bde769cda3a659350cd6b04",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/elx/Kconfig",
+  "human_readable_source": "config SCSI_EFCT\n\ttristate \"Emulex Fibre Channel Target\"\n\tdepends on PCI && SCSI\n\tdepends on TARGET_CORE\n\tdepends on SCSI_FC_ATTRS\n\tselect CRC_T10DIF\n\thelp\n\t  The efct driver provides enhanced SCSI Target Mode\n\t  support for specific SLI-4 adapters.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

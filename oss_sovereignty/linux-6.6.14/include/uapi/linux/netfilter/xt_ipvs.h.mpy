@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_ipvs.h",
+  "hash_id": "43343170e9abe5728f8e8dd3a49b78e564ed4dcd0c5afa69d7456b4129d2bb22",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_ipvs.h",
+  "human_readable_source": " \n#ifndef _XT_IPVS_H\n#define _XT_IPVS_H\n\n#include <linux/types.h>\n#include <linux/netfilter.h>\n\nenum {\n\tXT_IPVS_IPVS_PROPERTY =\t1 << 0,  \n\tXT_IPVS_PROTO =\t\t1 << 1,\n\tXT_IPVS_VADDR =\t\t1 << 2,\n\tXT_IPVS_VPORT =\t\t1 << 3,\n\tXT_IPVS_DIR =\t\t1 << 4,\n\tXT_IPVS_METHOD =\t1 << 5,\n\tXT_IPVS_VPORTCTL =\t1 << 6,\n\tXT_IPVS_MASK =\t\t(1 << 7) - 1,\n\tXT_IPVS_ONCE_MASK =\tXT_IPVS_MASK & ~XT_IPVS_IPVS_PROPERTY\n};\n\nstruct xt_ipvs_mtinfo {\n\tunion nf_inet_addr\tvaddr, vmask;\n\t__be16\t\t\tvport;\n\t__u8\t\t\tl4proto;\n\t__u8\t\t\tfwd_method;\n\t__be16\t\t\tvportctl;\n\n\t__u8\t\t\tinvert;\n\t__u8\t\t\tbitmask;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

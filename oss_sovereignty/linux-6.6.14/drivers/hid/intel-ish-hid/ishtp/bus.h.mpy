@@ -1,0 +1,9 @@
+{
+  "module_name": "bus.h",
+  "hash_id": "c318f9bd1071c62583d05e0625285497b29bb79d4aca23a6da6412961640561b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/intel-ish-hid/ishtp/bus.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_ISHTP_CL_BUS_H\n#define _LINUX_ISHTP_CL_BUS_H\n\n#include <linux/device.h>\n#include <linux/mod_devicetable.h>\n#include <linux/intel-ish-client-if.h>\n\nstruct ishtp_cl;\nstruct ishtp_cl_device;\nstruct ishtp_device;\nstruct ishtp_msg_hdr;\n\n \nstruct ishtp_cl_device {\n\tstruct device\t\tdev;\n\tstruct ishtp_device\t*ishtp_dev;\n\tstruct ishtp_fw_client\t*fw_client;\n\tstruct list_head\tdevice_link;\n\tstruct work_struct\tevent_work;\n\tvoid\t\t\t*driver_data;\n\tint\t\t\treference_count;\n\tvoid (*event_cb)(struct ishtp_cl_device *device);\n};\n\nint\tishtp_bus_new_client(struct ishtp_device *dev);\nvoid\tishtp_remove_all_clients(struct ishtp_device *dev);\nint\tishtp_cl_device_bind(struct ishtp_cl *cl);\nvoid\tishtp_cl_bus_rx_event(struct ishtp_cl_device *device);\n\n \nint\tishtp_send_msg(struct ishtp_device *dev,\n\t\t       struct ishtp_msg_hdr *hdr, void *msg,\n\t\t       void (*ipc_send_compl)(void *),\n\t\t       void *ipc_send_compl_prm);\n\n \nint\tishtp_write_message(struct ishtp_device *dev,\n\t\t\t    struct ishtp_msg_hdr *hdr,\n\t\t\t    void *buf);\n\n \nint ishtp_use_dma_transfer(void);\n\n \nvoid\tishtp_bus_remove_all_clients(struct ishtp_device *ishtp_dev,\n\t\t\t\t     bool warm_reset);\n\nvoid\tishtp_recv(struct ishtp_device *dev);\nvoid\tishtp_reset_handler(struct ishtp_device *dev);\nvoid\tishtp_reset_compl_handler(struct ishtp_device *dev);\n\nint\tishtp_fw_cl_by_uuid(struct ishtp_device *dev, const guid_t *cuuid);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

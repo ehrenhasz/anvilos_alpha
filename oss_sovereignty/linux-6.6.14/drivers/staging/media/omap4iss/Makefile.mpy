@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "55a5c078c2fad32ad83c219d64f9acafec7a199cd337a19b839baa4b54cb3bcb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/omap4iss/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for OMAP4 ISS driver\n#\n\nomap4-iss-objs += \\\n\tiss.o iss_csi2.o iss_csiphy.o iss_ipipeif.o iss_ipipe.o iss_resizer.o iss_video.o\n\nobj-$(CONFIG_VIDEO_OMAP4) += omap4-iss.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

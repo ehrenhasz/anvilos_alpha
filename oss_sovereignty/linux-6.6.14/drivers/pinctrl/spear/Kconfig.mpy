@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "76d2acef0f3775a30f0dd81984d4fd3de9851e9bbbc2207526880ffbc80f9450",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/spear/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# ST Microelectronics SPEAr PINCTRL drivers\n#\n\nif PLAT_SPEAR\n\nconfig PINCTRL_SPEAR\n\tbool\n\tdepends on OF\n\tselect PINMUX\n\thelp\n\t  This enables pin control drivers for SPEAr Platform\n\nconfig PINCTRL_SPEAR3XX\n\tbool\n\tdepends on ARCH_SPEAR3XX\n\tselect PINCTRL_SPEAR\n\nconfig PINCTRL_SPEAR300\n\tbool \"ST Microelectronics SPEAr300 SoC pin controller driver\"\n\tdepends on MACH_SPEAR300\n\tselect PINCTRL_SPEAR3XX\n\nconfig PINCTRL_SPEAR310\n\tbool \"ST Microelectronics SPEAr310 SoC pin controller driver\"\n\tdepends on MACH_SPEAR310\n\tselect PINCTRL_SPEAR3XX\n\tselect PINCTRL_SPEAR_PLGPIO\n\nconfig PINCTRL_SPEAR320\n\tbool \"ST Microelectronics SPEAr320 SoC pin controller driver\"\n\tdepends on MACH_SPEAR320\n\tselect PINCTRL_SPEAR3XX\n\tselect PINCTRL_SPEAR_PLGPIO\n\nconfig PINCTRL_SPEAR1310\n\tbool \"ST Microelectronics SPEAr1310 SoC pin controller driver\"\n\tdepends on MACH_SPEAR1310\n\tselect PINCTRL_SPEAR\n\tselect PINCTRL_SPEAR_PLGPIO\n\nconfig PINCTRL_SPEAR1340\n\tbool \"ST Microelectronics SPEAr1340 SoC pin controller driver\"\n\tdepends on MACH_SPEAR1340\n\tselect PINCTRL_SPEAR\n\tselect PINCTRL_SPEAR_PLGPIO\n\nconfig PINCTRL_SPEAR_PLGPIO\n\tbool \"SPEAr SoC PLGPIO Controller\"\n\tdepends on GPIOLIB && PINCTRL_SPEAR\n\tselect GPIOLIB_IRQCHIP\n\thelp\n\t  Say yes here to support PLGPIO controller on ST Microelectronics SPEAr\n\t  SoCs.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

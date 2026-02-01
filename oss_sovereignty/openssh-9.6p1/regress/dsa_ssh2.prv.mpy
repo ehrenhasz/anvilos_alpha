@@ -1,0 +1,9 @@
+{
+  "module_name": "dsa_ssh2.prv",
+  "hash_id": "b503465420945930375d19cd8ef384db813ac57d896d8b2358143c175167a1f8",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/dsa_ssh2.prv",
+  "human_readable_source": "---- BEGIN SSH2 ENCRYPTED PRIVATE KEY ----\nSubject: ssh-keygen test\nComment: \"1024-bit dsa, Tue Jan 08 2002 22:00:23 +0100\"\nP2/56wAAAgIAAAAmZGwtbW9kcHtzaWdue2RzYS1uaXN0LXNoYTF9LGRoe3BsYWlufX0AAA\nAEbm9uZQAAAcQAAAHAAAAAAAAABACwUfm3AxZTut3icBmwCcD48nY64HzuELlQ+vEqjIcR\nLo49es/DQTeLNQ+kdKRCfouosGNv0WqxRtF0tUsWdXxS37oHGa4QPugBdHRd7YlZGZv8kg\nx7FsoepY7v7E683/97dv2zxL3AGagTEzWr7fl0yPexAaZoDvtQrrjX44BLmwAABACWQkvv\nMxnD8eFkS1konFfMJ1CkuRfTN34CBZ6dY7VTSGemy4QwtFdMKmoufD0eKgy3p5WOeWCYKt\nF4FhjHKZk/aaxFjjIbtkrnlvXg64QI11dSZyBN6/ViQkHPSkUDF+A6AAEhrNbQbAFSvao1\nkTvNtPCtL0AkUIduEMzGQfLCTAAAAKDeC043YVo9Zo0zAEeIA4uZh4LBCQAAA/9aj7Y5ik\nehygJ4qTDSlVypsPuV+n59tMS0e2pfrSG87yf5r94AKBmJeho5OO6wYaXCxsVB7AFbSUD6\n75AK8mHF4v1/+7SWKk5f8xlMCMSPZ9K0+j/W1d/q2qkhnnDZolOHDomLA+U00i5ya/jnTV\nzyDPWLFpWK8u3xGBPAYX324gAAAKDHFvooRnaXdZbeWGTTqmgHB1GU9A==\n---- END SSH2 ENCRYPTED PRIVATE KEY ----\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

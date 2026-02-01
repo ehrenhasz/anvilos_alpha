@@ -1,0 +1,9 @@
+{
+  "module_name": "i915-tgl-flakes.txt",
+  "hash_id": "eb0c10a49c1c8c37c8d6a2031cb596f68ef122548fcabd9e42ee76d0886e555f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/i915-tgl-flakes.txt",
+  "human_readable_source": "kms_draw_crc@.*\nkms_flip@blocking-absolute-wf_vblank\nkms_flip@bo-too-big-interruptible\nkms_flip@busy-flip\nkms_flip@flip-vs-rmfb-interruptible\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

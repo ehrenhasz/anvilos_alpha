@@ -1,0 +1,9 @@
+{
+  "module_name": "loongson_module.h",
+  "hash_id": "88d4894e76352bacff05b044a8de1e8b8592bc85657a41e998a4367b74867c2f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/loongson/loongson_module.h",
+  "human_readable_source": " \n \n\n#ifndef __LOONGSON_MODULE_H__\n#define __LOONGSON_MODULE_H__\n\nextern int loongson_vblank;\nextern struct pci_driver lsdc_pci_driver;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

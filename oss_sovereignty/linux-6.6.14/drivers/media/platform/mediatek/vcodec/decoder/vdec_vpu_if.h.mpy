@@ -1,0 +1,9 @@
+{
+  "module_name": "vdec_vpu_if.h",
+  "hash_id": "ba5229c282e2ae18c7a538d4575c41f39ac64107da2668b47ebe57c6a1989896",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/vcodec/decoder/vdec_vpu_if.h",
+  "human_readable_source": " \n \n\n#ifndef _VDEC_VPU_IF_H_\n#define _VDEC_VPU_IF_H_\n\nstruct mtk_vcodec_dec_ctx;\n\n \nstruct vdec_vpu_inst {\n\tint id;\n\tint core_id;\n\tvoid *vsi;\n\tint32_t failure;\n\tuint32_t inst_addr;\n\tuint32_t fw_abi_version;\n\tuint32_t inst_id;\n\tunsigned int signaled;\n\tstruct mtk_vcodec_dec_ctx *ctx;\n\twait_queue_head_t wq;\n\tmtk_vcodec_ipi_handler handler;\n\tunsigned int codec_type;\n\tunsigned int capture_type;\n\tunsigned int fb_sz[2];\n};\n\n \nint vpu_dec_init(struct vdec_vpu_inst *vpu);\n\n \nint vpu_dec_start(struct vdec_vpu_inst *vpu, uint32_t *data, unsigned int len);\n\n \nint vpu_dec_end(struct vdec_vpu_inst *vpu);\n\n \nint vpu_dec_deinit(struct vdec_vpu_inst *vpu);\n\n \nint vpu_dec_reset(struct vdec_vpu_inst *vpu);\n\n \nint vpu_dec_core(struct vdec_vpu_inst *vpu);\n\n \nint vpu_dec_core_end(struct vdec_vpu_inst *vpu);\n\n \nint vpu_dec_get_param(struct vdec_vpu_inst *vpu, uint32_t *data,\n\t\t      unsigned int len, unsigned int param_type);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

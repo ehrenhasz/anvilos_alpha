@@ -1,0 +1,9 @@
+{
+  "module_name": "cgroupstats.h",
+  "hash_id": "a10e4a19ca67abf6c45ce8e16f0c2ad43799b2c584f9413b42d7a51988d48ac7",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/cgroupstats.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_CGROUPSTATS_H\n#define _LINUX_CGROUPSTATS_H\n\n#include <linux/types.h>\n#include <linux/taskstats.h>\n\n \nstruct cgroupstats {\n\t__u64\tnr_sleeping;\t\t \n\t__u64\tnr_running;\t\t \n\t__u64\tnr_stopped;\t\t \n\t__u64\tnr_uninterruptible;\t \n\t\t\t\t\t \n\t__u64\tnr_io_wait;\t\t \n};\n\n \n\nenum {\n\tCGROUPSTATS_CMD_UNSPEC = __TASKSTATS_CMD_MAX,\t \n\tCGROUPSTATS_CMD_GET,\t\t \n\tCGROUPSTATS_CMD_NEW,\t\t \n\t__CGROUPSTATS_CMD_MAX,\n};\n\n#define CGROUPSTATS_CMD_MAX (__CGROUPSTATS_CMD_MAX - 1)\n\nenum {\n\tCGROUPSTATS_TYPE_UNSPEC = 0,\t \n\tCGROUPSTATS_TYPE_CGROUP_STATS,\t \n\t__CGROUPSTATS_TYPE_MAX,\n};\n\n#define CGROUPSTATS_TYPE_MAX (__CGROUPSTATS_TYPE_MAX - 1)\n\nenum {\n\tCGROUPSTATS_CMD_ATTR_UNSPEC = 0,\n\tCGROUPSTATS_CMD_ATTR_FD,\n\t__CGROUPSTATS_CMD_ATTR_MAX,\n};\n\n#define CGROUPSTATS_CMD_ATTR_MAX (__CGROUPSTATS_CMD_ATTR_MAX - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

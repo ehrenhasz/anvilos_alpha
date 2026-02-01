@@ -1,0 +1,9 @@
+{
+  "module_name": "root_pointers.split",
+  "hash_id": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/root_pointers.split",
+  "human_readable_source": "",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

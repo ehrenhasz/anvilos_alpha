@@ -1,0 +1,9 @@
+{
+  "module_name": "adau1373.h",
+  "hash_id": "0a564c0cf6254773752b287e0814b75bb5b82ec3211f38942a8c3f002fac4ef2",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/adau1373.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_ADAU1373_H__\n#define __SOUND_ADAU1373_H__\n\nenum adau1373_micbias_voltage {\n\tADAU1373_MICBIAS_2_9V = 0,\n\tADAU1373_MICBIAS_2_2V = 1,\n\tADAU1373_MICBIAS_2_6V = 2,\n\tADAU1373_MICBIAS_1_8V = 3,\n};\n\n#define ADAU1373_DRC_SIZE 13\n\nstruct adau1373_platform_data {\n\tbool input_differential[4];\n\tbool lineout_differential;\n\tbool lineout_ground_sense;\n\n\tunsigned int num_drc;\n\tuint8_t drc_setting[3][ADAU1373_DRC_SIZE];\n\n\tenum adau1373_micbias_voltage micbias1;\n\tenum adau1373_micbias_voltage micbias2;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

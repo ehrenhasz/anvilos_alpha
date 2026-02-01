@@ -1,0 +1,9 @@
+{
+  "module_name": "qm1d1b0004.h",
+  "hash_id": "a6d8b211882705a25a3b64d98af53d5871de62a4a60603b93bae93850c97bd2e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/qm1d1b0004.h",
+  "human_readable_source": " \n \n\n#ifndef QM1D1B0004_H\n#define QM1D1B0004_H\n\n#include <media/dvb_frontend.h>\n\nstruct qm1d1b0004_config {\n\tstruct dvb_frontend *fe;\n\n\tu32 lpf_freq;    \n\tbool half_step;  \n};\n\n \n#define QM1D1B0004_CFG_PLL_DFLT 0\n#define QM1D1B0004_CFG_LPF_DFLT 0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

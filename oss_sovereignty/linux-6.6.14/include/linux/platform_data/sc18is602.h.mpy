@@ -1,0 +1,9 @@
+{
+  "module_name": "sc18is602.h",
+  "hash_id": "6582906ee58ae8d17a8427a6aa4d12f3e984c5e934764f5217abecb6676f6e3c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/sc18is602.h",
+  "human_readable_source": " \n \n\n \nstruct sc18is602_platform_data {\n\tu32 clock_frequency;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gen-atomics.sh",
+  "hash_id": "cecb22238896c72109c40ba266c16f5e75af26040bb2e8be9e145f2dd8c99e73",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/gen-atomics.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n#\n# Generate atomic headers\n\nATOMICDIR=$(dirname $0)\nATOMICTBL=${ATOMICDIR}/atomics.tbl\nLINUXDIR=${ATOMICDIR}/../..\n\ncat <<EOF |\ngen-atomic-instrumented.sh      linux/atomic/atomic-instrumented.h\ngen-atomic-long.sh              linux/atomic/atomic-long.h\ngen-atomic-fallback.sh          linux/atomic/atomic-arch-fallback.h\nEOF\nwhile read script header args; do\n\t/bin/sh ${ATOMICDIR}/${script} ${ATOMICTBL} ${args} > ${LINUXDIR}/include/${header}\n\tHASH=\"$(sha1sum ${LINUXDIR}/include/${header})\"\n\tHASH=\"${HASH%% *}\"\n\tprintf \"// %s\\n\" \"${HASH}\" >> ${LINUXDIR}/include/${header}\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

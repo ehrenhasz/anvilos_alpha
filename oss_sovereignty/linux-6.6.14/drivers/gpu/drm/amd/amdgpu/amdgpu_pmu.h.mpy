@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_pmu.h",
+  "hash_id": "7acda2af1cebacfb033ab5adde3ebab01f5c46f82a2e5e256c8ad1346d025bfb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_pmu.h",
+  "human_readable_source": " \n\n#ifndef _AMDGPU_PMU_H_\n#define _AMDGPU_PMU_H_\n\n \nenum amdgpu_pmu_perf_type {\n\tAMDGPU_PMU_PERF_TYPE_NONE = 0,\n\tAMDGPU_PMU_PERF_TYPE_DF,\n\tAMDGPU_PMU_PERF_TYPE_ALL\n};\n\n \nenum amdgpu_pmu_event_config_type {\n\tAMDGPU_PMU_EVENT_CONFIG_TYPE_NONE = 0,\n\tAMDGPU_PMU_EVENT_CONFIG_TYPE_DF,\n\tAMDGPU_PMU_EVENT_CONFIG_TYPE_XGMI,\n\tAMDGPU_PMU_EVENT_CONFIG_TYPE_MAX\n};\n\n#define AMDGPU_PMU_EVENT_CONFIG_TYPE_SHIFT\t56\n#define AMDGPU_PMU_EVENT_CONFIG_TYPE_MASK\t0xff\n\nint amdgpu_pmu_init(struct amdgpu_device *adev);\nvoid amdgpu_pmu_fini(struct amdgpu_device *adev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

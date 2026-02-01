@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_ring.h",
+  "hash_id": "3dbf12981c6c7ae9bab76246cf41a1b8d38db7c2d4b7dffba7cf5cc5b335eb28",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/uapi/linux/virtio_ring.h",
+  "human_readable_source": " \n#ifndef VIRTIO_RING_H\n#define VIRTIO_RING_H\n#include \"../../../../include/uapi/linux/virtio_ring.h\"\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

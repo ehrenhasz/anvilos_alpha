@@ -1,0 +1,9 @@
+{
+  "module_name": "mctp.h",
+  "hash_id": "2caed6f0738f17bcddf5645c8aac0e2070893ecba8d95a69ca8165e880c63f06",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/mctp.h",
+  "human_readable_source": " \n \n\n#ifndef __UAPI_MCTP_H\n#define __UAPI_MCTP_H\n\n#include <linux/types.h>\n#include <linux/socket.h>\n#include <linux/netdevice.h>\n\ntypedef __u8\t\t\tmctp_eid_t;\n\nstruct mctp_addr {\n\tmctp_eid_t\t\ts_addr;\n};\n\nstruct sockaddr_mctp {\n\t__kernel_sa_family_t\tsmctp_family;\n\t__u16\t\t\t__smctp_pad0;\n\tunsigned int\t\tsmctp_network;\n\tstruct mctp_addr\tsmctp_addr;\n\t__u8\t\t\tsmctp_type;\n\t__u8\t\t\tsmctp_tag;\n\t__u8\t\t\t__smctp_pad1;\n};\n\nstruct sockaddr_mctp_ext {\n\tstruct sockaddr_mctp\tsmctp_base;\n\tint\t\t\tsmctp_ifindex;\n\t__u8\t\t\tsmctp_halen;\n\t__u8\t\t\t__smctp_pad0[3];\n\t__u8\t\t\tsmctp_haddr[MAX_ADDR_LEN];\n};\n\n#define MCTP_NET_ANY\t\t0x0\n\n#define MCTP_ADDR_NULL\t\t0x00\n#define MCTP_ADDR_ANY\t\t0xff\n\n#define MCTP_TAG_MASK\t\t0x07\n#define MCTP_TAG_OWNER\t\t0x08\n#define MCTP_TAG_PREALLOC\t0x10\n\n#define MCTP_OPT_ADDR_EXT\t1\n\n#define SIOCMCTPALLOCTAG\t(SIOCPROTOPRIVATE + 0)\n#define SIOCMCTPDROPTAG\t\t(SIOCPROTOPRIVATE + 1)\n\nstruct mctp_ioc_tag_ctl {\n\tmctp_eid_t\tpeer_addr;\n\n\t \n\t__u8\t\ttag;\n\t__u16\t\tflags;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

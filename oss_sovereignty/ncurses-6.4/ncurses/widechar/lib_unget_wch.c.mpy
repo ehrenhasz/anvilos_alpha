@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_unget_wch.c",
+  "hash_id": "745590ad9cd8dbde4be4c9d55cb64a321c79e504642a18fa1b5a264e143f5324",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/widechar/lib_unget_wch.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_unget_wch.c,v 1.17 2020/02/02 23:34:34 tom Exp $\")\n\n \nNCURSES_EXPORT(size_t)\n_nc_wcrtomb(char *target, wchar_t source, mbstate_t * state)\n{\n    int result;\n\n    if (target == 0) {\n\twchar_t temp[2];\n\tconst wchar_t *tempp = temp;\n\ttemp[0] = source;\n\ttemp[1] = 0;\n\tresult = (int) wcsrtombs(NULL, &tempp, (size_t) 0, state);\n    } else {\n\tresult = (int) wcrtomb(target, source, state);\n    }\n    if (!isEILSEQ(result) && (result == 0))\n\tresult = 1;\n    return (size_t) result;\n}\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(unget_wch) (NCURSES_SP_DCLx const wchar_t wch)\n{\n    int result = OK;\n    mbstate_t state;\n    size_t length;\n\n    T((T_CALLED(\"unget_wch(%p, %#lx)\"), (void *) SP_PARM, (unsigned long) wch));\n\n    init_mb(state);\n    length = _nc_wcrtomb(0, wch, &state);\n\n    if (length != (size_t) (-1)\n\t&& length != 0) {\n\tchar *string;\n\n\tif ((string = (char *) malloc(length)) != 0) {\n\t    int n;\n\n\t    init_mb(state);\n\t     \n\t    IGNORE_RC((int) wcrtomb(string, wch, &state));\n\n\t    for (n = (int) (length - 1); n >= 0; --n) {\n\t\tif (NCURSES_SP_NAME(ungetch) (NCURSES_SP_ARGx\n\t\t\t\t\t      UChar(string[n])) !=OK) {\n\t\t    result = ERR;\n\t\t    break;\n\t\t}\n\t    }\n\t    free(string);\n\t} else {\n\t    result = ERR;\n\t}\n    } else {\n\tresult = ERR;\n    }\n\n    returnCode(result);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nunget_wch(const wchar_t wch)\n{\n    return NCURSES_SP_NAME(unget_wch) (CURRENT_SCREEN, wch);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

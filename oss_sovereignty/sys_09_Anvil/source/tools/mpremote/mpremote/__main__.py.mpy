@@ -1,0 +1,9 @@
+{
+  "module_name": "__main__.py",
+  "hash_id": "e2eba5989e7d6b7eded839592701a1774c26c2f2b52874db7839e1056aa916d4",
+  "original_prompt": "Ingested from sys_09_Anvil/source/tools/mpremote/mpremote/__main__.py",
+  "human_readable_source": "#!/usr/bin/env python3\n\nimport sys\nfrom mpremote import main\n\nsys.exit(main.main())\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

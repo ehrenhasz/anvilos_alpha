@@ -1,0 +1,9 @@
+{
+  "module_name": "ethoc.h",
+  "hash_id": "19ea7555fb03fe5492ea7aa738100f7d67e0a1ba6667adf806e78192afe99255",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/ethoc.h",
+  "human_readable_source": " \n \n\n#ifndef LINUX_NET_ETHOC_H\n#define LINUX_NET_ETHOC_H 1\n\n#include <linux/if.h>\n#include <linux/types.h>\n\nstruct ethoc_platform_data {\n\tu8 hwaddr[IFHWADDRLEN];\n\ts8 phy_id;\n\tu32 eth_clkfreq;\n\tbool big_endian;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

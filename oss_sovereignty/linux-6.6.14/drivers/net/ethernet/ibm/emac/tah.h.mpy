@@ -1,0 +1,9 @@
+{
+  "module_name": "tah.h",
+  "hash_id": "e43cc79eb8d79006bd3c2f4efbdf2ec7218745cdd98d7d475059c88af68de33b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ibm/emac/tah.h",
+  "human_readable_source": " \n \n\n#ifndef __IBM_NEWEMAC_TAH_H\n#define __IBM_NEWEMAC_TAH_H\n\n \nstruct tah_regs {\n\tu32 revid;\n\tu32 pad[3];\n\tu32 mr;\n\tu32 ssr0;\n\tu32 ssr1;\n\tu32 ssr2;\n\tu32 ssr3;\n\tu32 ssr4;\n\tu32 ssr5;\n\tu32 tsr;\n};\n\n\n \nstruct tah_instance {\n\tstruct tah_regs __iomem\t\t*base;\n\n\t \n\tstruct mutex\t\t\tlock;\n\n\t \n\tint\t\t\t\tusers;\n\n\t \n\tstruct platform_device\t\t*ofdev;\n};\n\n\n \n#define TAH_MR_CVR\t\t0x80000000\n#define TAH_MR_SR\t\t0x40000000\n#define TAH_MR_ST_256\t\t0x01000000\n#define TAH_MR_ST_512\t\t0x02000000\n#define TAH_MR_ST_768\t\t0x03000000\n#define TAH_MR_ST_1024\t\t0x04000000\n#define TAH_MR_ST_1280\t\t0x05000000\n#define TAH_MR_ST_1536\t\t0x06000000\n#define TAH_MR_TFS_16KB\t\t0x00000000\n#define TAH_MR_TFS_2KB\t\t0x00200000\n#define TAH_MR_TFS_4KB\t\t0x00400000\n#define TAH_MR_TFS_6KB\t\t0x00600000\n#define TAH_MR_TFS_8KB\t\t0x00800000\n#define TAH_MR_TFS_10KB\t\t0x00a00000\n#define TAH_MR_DTFP\t\t0x00100000\n#define TAH_MR_DIG\t\t0x00080000\n\n#ifdef CONFIG_IBM_EMAC_TAH\n\nint tah_init(void);\nvoid tah_exit(void);\nint tah_attach(struct platform_device *ofdev, int channel);\nvoid tah_detach(struct platform_device *ofdev, int channel);\nvoid tah_reset(struct platform_device *ofdev);\nint tah_get_regs_len(struct platform_device *ofdev);\nvoid *tah_dump_regs(struct platform_device *ofdev, void *buf);\n\n#else\n\n# define tah_init()\t\t0\n# define tah_exit()\t\tdo { } while(0)\n# define tah_attach(x,y)\t(-ENXIO)\n# define tah_detach(x,y)\tdo { } while(0)\n# define tah_reset(x)\t\tdo { } while(0)\n# define tah_get_regs_len(x)\t0\n# define tah_dump_regs(x,buf)\t(buf)\n\n#endif\t\t\t\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

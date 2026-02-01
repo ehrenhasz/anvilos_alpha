@@ -1,0 +1,9 @@
+{
+  "module_name": "param.h",
+  "hash_id": "df9bb1cfdb0f9008416451ea2f9363424032f528404cf752846befb47d67e933",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/asm-generic/param.h",
+  "human_readable_source": " \n#ifndef _UAPI__ASM_GENERIC_PARAM_H\n#define _UAPI__ASM_GENERIC_PARAM_H\n\n#ifndef HZ\n#define HZ 100\n#endif\n\n#ifndef EXEC_PAGESIZE\n#define EXEC_PAGESIZE\t4096\n#endif\n\n#ifndef NOGROUP\n#define NOGROUP\t\t(-1)\n#endif\n\n#define MAXHOSTNAMELEN\t64\t \n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

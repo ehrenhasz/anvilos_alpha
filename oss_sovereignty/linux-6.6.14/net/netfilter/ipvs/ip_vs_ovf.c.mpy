@@ -1,0 +1,9 @@
+{
+  "module_name": "ip_vs_ovf.c",
+  "hash_id": "c2ef4a476b38d68bb5fbcdd49b4148964da9afc4c767aff53d713a6456f9a8e7",
+  "original_prompt": "Ingested from linux-6.6.14/net/netfilter/ipvs/ip_vs_ovf.c",
+  "human_readable_source": "\n \n\n#define KMSG_COMPONENT \"IPVS\"\n#define pr_fmt(fmt) KMSG_COMPONENT \": \" fmt\n\n#include <linux/module.h>\n#include <linux/kernel.h>\n\n#include <net/ip_vs.h>\n\n \nstatic struct ip_vs_dest *\nip_vs_ovf_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,\n\t\t   struct ip_vs_iphdr *iph)\n{\n\tstruct ip_vs_dest *dest, *h = NULL;\n\tint hw = 0, w;\n\n\tIP_VS_DBG(6, \"ip_vs_ovf_schedule(): Scheduling...\\n\");\n\t \n\tlist_for_each_entry_rcu(dest, &svc->destinations, n_list) {\n\t\tw = atomic_read(&dest->weight);\n\t\tif ((dest->flags & IP_VS_DEST_F_OVERLOAD) ||\n\t\t    atomic_read(&dest->activeconns) > w ||\n\t\t    w == 0)\n\t\t\tcontinue;\n\t\tif (!h || w > hw) {\n\t\t\th = dest;\n\t\t\thw = w;\n\t\t}\n\t}\n\n\tif (h) {\n\t\tIP_VS_DBG_BUF(6, \"OVF: server %s:%u active %d w %d\\n\",\n\t\t\t      IP_VS_DBG_ADDR(h->af, &h->addr),\n\t\t\t      ntohs(h->port),\n\t\t\t      atomic_read(&h->activeconns),\n\t\t\t      atomic_read(&h->weight));\n\t\treturn h;\n\t}\n\n\tip_vs_scheduler_err(svc, \"no destination available\");\n\treturn NULL;\n}\n\nstatic struct ip_vs_scheduler ip_vs_ovf_scheduler = {\n\t.name =\t\t\t\"ovf\",\n\t.refcnt =\t\tATOMIC_INIT(0),\n\t.module =\t\tTHIS_MODULE,\n\t.n_list =\t\tLIST_HEAD_INIT(ip_vs_ovf_scheduler.n_list),\n\t.schedule =\t\tip_vs_ovf_schedule,\n};\n\nstatic int __init ip_vs_ovf_init(void)\n{\n\treturn register_ip_vs_scheduler(&ip_vs_ovf_scheduler);\n}\n\nstatic void __exit ip_vs_ovf_cleanup(void)\n{\n\tunregister_ip_vs_scheduler(&ip_vs_ovf_scheduler);\n\tsynchronize_rcu();\n}\n\nmodule_init(ip_vs_ovf_init);\nmodule_exit(ip_vs_ovf_cleanup);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

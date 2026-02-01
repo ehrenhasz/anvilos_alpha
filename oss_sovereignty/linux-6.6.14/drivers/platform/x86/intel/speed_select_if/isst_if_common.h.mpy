@@ -1,0 +1,9 @@
+{
+  "module_name": "isst_if_common.h",
+  "hash_id": "d7757dfc7fc9155e9bd8e0ca4d44d409bf0639751dd7c66c3deac7168dedcff6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/speed_select_if/isst_if_common.h",
+  "human_readable_source": " \n \n\n#ifndef __ISST_IF_COMMON_H\n#define __ISST_IF_COMMON_H\n\n#define PCI_DEVICE_ID_INTEL_RAPL_PRIO_DEVID_0\t0x3451\n#define PCI_DEVICE_ID_INTEL_CFG_MBOX_DEVID_0\t0x3459\n\n#define PCI_DEVICE_ID_INTEL_RAPL_PRIO_DEVID_1\t0x3251\n#define PCI_DEVICE_ID_INTEL_CFG_MBOX_DEVID_1\t0x3259\n\n \n#define ISST_IF_CMD_LIMIT\t64\n\n#define ISST_IF_API_VERSION\t0x01\n#define ISST_IF_DRIVER_VERSION\t0x01\n\n#define ISST_IF_DEV_MBOX\t0\n#define ISST_IF_DEV_MMIO\t1\n#define ISST_IF_DEV_TPMI\t2\n#define ISST_IF_DEV_MAX\t\t3\n\n \nstruct isst_if_cmd_cb {\n\tint registered;\n\tint cmd_size;\n\tint offset;\n\tint api_version;\n\tstruct module *owner;\n\tlong (*cmd_callback)(u8 *ptr, int *write_only, int resume);\n\tlong (*def_ioctl)(struct file *file, unsigned int cmd, unsigned long arg);\n};\n\n \nint isst_if_cdev_register(int type, struct isst_if_cmd_cb *cb);\nvoid isst_if_cdev_unregister(int type);\nstruct pci_dev *isst_if_get_pci_dev(int cpu, int bus, int dev, int fn);\nbool isst_if_mbox_cmd_set_req(struct isst_if_mbox_cmd *mbox_cmd);\nbool isst_if_mbox_cmd_invalid(struct isst_if_mbox_cmd *cmd);\nint isst_store_cmd(int cmd, int sub_command, u32 cpu, int mbox_cmd,\n\t\t   u32 param, u64 data);\nvoid isst_resume_common(void);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

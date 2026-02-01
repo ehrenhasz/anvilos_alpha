@@ -1,0 +1,9 @@
+{
+  "module_name": "altera-exprt.h",
+  "hash_id": "eb493001c424d623f745a8e4a4922043cd491756489e9f9e96164fb0d08c5e0a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/altera-stapl/altera-exprt.h",
+  "human_readable_source": " \n \n\n#ifndef ALTERA_EXPRT_H\n#define ALTERA_EXPRT_H\n\n\nu32 altera_shrink(u8 *in, u32 in_length, u8 *out, u32 out_length, s32 version);\nint netup_jtag_io_lpt(void *device, int tms, int tdi, int read_tdo);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

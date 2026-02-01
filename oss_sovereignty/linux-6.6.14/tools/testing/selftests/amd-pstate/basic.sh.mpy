@@ -1,0 +1,9 @@
+{
+  "module_name": "basic.sh",
+  "hash_id": "d69c799d22d43108666f2a97aa13d035c66524c1521694d44899b44c1a89a665",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/amd-pstate/basic.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\n# amd-pstate-ut is a test module for testing the amd-pstate driver.\n# It can only run on x86 architectures and current cpufreq driver\n# must be amd-pstate.\n# (1) It can help all users to verify their processor support\n# (SBIOS/Firmware or Hardware).\n# (2) Kernel can have a basic function test to avoid the kernel\n# regression during the update.\n# (3) We can introduce more functional or performance tests to align\n# the result together, it will benefit power and performance scale optimization.\n\n# protect against multiple inclusion\nif [ $FILE_BASIC ]; then\n\treturn 0\nelse\n\tFILE_BASIC=DONE\nfi\n\namd_pstate_basic()\n{\n\tprintf \"\\n---------------------------------------------\\n\"\n\tprintf \"*** Running AMD P-state ut                ***\"\n\tprintf \"\\n---------------------------------------------\\n\"\n\n\tif ! /sbin/modprobe -q -n amd-pstate-ut; then\n\t\techo \"amd-pstate-ut: module amd-pstate-ut is not found [SKIP]\"\n\t\texit $ksft_skip\n\tfi\n\tif /sbin/modprobe -q amd-pstate-ut; then\n\t\t/sbin/modprobe -q -r amd-pstate-ut\n\t\techo \"amd-pstate-basic: ok\"\n\telse\n\t\techo \"amd-pstate-basic: [FAIL]\"\n\t\texit 1\n\tfi\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

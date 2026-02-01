@@ -1,0 +1,9 @@
+{
+  "module_name": "sclp_ap.c",
+  "hash_id": "39d7d08fc3ba3127ff9f1dee7fa11843c4424990d4fd128a5b1583c263f8e142",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/char/sclp_ap.c",
+  "human_readable_source": "\n \n#define KMSG_COMPONENT \"sclp_cmd\"\n#define pr_fmt(fmt) KMSG_COMPONENT \": \" fmt\n\n#include <linux/export.h>\n#include <linux/slab.h>\n#include <asm/sclp.h>\n#include \"sclp.h\"\n\n#define SCLP_CMDW_CONFIGURE_AP\t\t\t0x001f0001\n#define SCLP_CMDW_DECONFIGURE_AP\t\t0x001e0001\n\nstruct ap_cfg_sccb {\n\tstruct sccb_header header;\n} __packed;\n\nstatic int do_ap_configure(sclp_cmdw_t cmd, u32 apid)\n{\n\tstruct ap_cfg_sccb *sccb;\n\tint rc;\n\n\tif (!SCLP_HAS_AP_RECONFIG)\n\t\treturn -EOPNOTSUPP;\n\n\tsccb = (struct ap_cfg_sccb *) get_zeroed_page(GFP_KERNEL | GFP_DMA);\n\tif (!sccb)\n\t\treturn -ENOMEM;\n\n\tsccb->header.length = PAGE_SIZE;\n\tcmd |= (apid & 0xFF) << 8;\n\trc = sclp_sync_request(cmd, sccb);\n\tif (rc)\n\t\tgoto out;\n\tswitch (sccb->header.response_code) {\n\tcase 0x0020: case 0x0120: case 0x0440: case 0x0450:\n\t\tbreak;\n\tdefault:\n\t\tpr_warn(\"configure AP adapter %u failed: cmd=0x%08x response=0x%04x\\n\",\n\t\t\tapid, cmd, sccb->header.response_code);\n\t\trc = -EIO;\n\t\tbreak;\n\t}\nout:\n\tfree_page((unsigned long) sccb);\n\treturn rc;\n}\n\nint sclp_ap_configure(u32 apid)\n{\n\treturn do_ap_configure(SCLP_CMDW_CONFIGURE_AP, apid);\n}\nEXPORT_SYMBOL(sclp_ap_configure);\n\nint sclp_ap_deconfigure(u32 apid)\n{\n\treturn do_ap_configure(SCLP_CMDW_DECONFIGURE_AP, apid);\n}\nEXPORT_SYMBOL(sclp_ap_deconfigure);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

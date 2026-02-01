@@ -1,0 +1,9 @@
+{
+  "module_name": "tparm_type.c",
+  "hash_id": "afb854851054e6dc124a9b1f6986a08568e59d9886c33a82e69a121e6bfcb3d2",
+  "original_prompt": "Ingested from ncurses-6.4/progs/tparm_type.c",
+  "human_readable_source": " \n\n \n\n#include <tparm_type.h>\n\nMODULE_ID(\"$Id: tparm_type.c,v 1.4 2020/10/24 17:30:32 tom Exp $\")\n\n \nTParams\ntparm_type(const char *name)\n{\n#define TD(code, longname, ti, tc) \\\n    \t{code, {longname} }, \\\n\t{code, {ti} }, \\\n\t{code, {tc} }\n    TParams result = Numbers;\n     \n    static const struct {\n\tTParams code;\n\tconst char name[12];\n    } table[] = {\n\tTD(Num_Str,\t\"pkey_key\",\t\"pfkey\",\t\"pk\"),\n\tTD(Num_Str,\t\"pkey_local\",\t\"pfloc\",\t\"pl\"),\n\tTD(Num_Str,\t\"pkey_xmit\",\t\"pfx\",\t\t\"px\"),\n\tTD(Num_Str,\t\"plab_norm\",\t\"pln\",\t\t\"pn\"),\n\tTD(Num_Str_Str, \"pkey_plab\",\t\"pfxl\",\t\t\"xl\"),\n    };\n     \n\n    unsigned n;\n    for (n = 0; n < SIZEOF(table); n++) {\n\tif (!strcmp(name, table[n].name)) {\n\t    result = table[n].code;\n\t    break;\n\t}\n    }\n    return result;\n}\n\nTParams\nguess_tparm_type(int nparam, char **p_is_s)\n{\n    TParams result = Other;\n    switch (nparam) {\n    case 0:\n    case 1:\n\tif (!p_is_s[0])\n\t    result = Numbers;\n\tbreak;\n    case 2:\n\tif (!p_is_s[0] && !p_is_s[1])\n\t    result = Numbers;\n\tif (!p_is_s[0] && p_is_s[1])\n\t    result = Num_Str;\n\tbreak;\n    case 3:\n\tif (!p_is_s[0] && !p_is_s[1] && !p_is_s[2])\n\t    result = Numbers;\n\tif (!p_is_s[0] && p_is_s[1] && p_is_s[2])\n\t    result = Num_Str_Str;\n\tbreak;\n    default:\n\tbreak;\n    }\n    return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

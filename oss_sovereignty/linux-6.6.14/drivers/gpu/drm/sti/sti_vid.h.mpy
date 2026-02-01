@@ -1,0 +1,9 @@
+{
+  "module_name": "sti_vid.h",
+  "hash_id": "f44b61b08d105828a23175be540920f246912f12df84a67d2f34d8840118f9a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sti/sti_vid.h",
+  "human_readable_source": " \n \n\n#ifndef _STI_VID_H_\n#define _STI_VID_H_\n\n \nstruct sti_vid {\n\tstruct device *dev;\n\tvoid __iomem *regs;\n\tint id;\n};\n\nvoid sti_vid_commit(struct sti_vid *vid,\n\t\t    struct drm_plane_state *state);\nvoid sti_vid_disable(struct sti_vid *vid);\nstruct sti_vid *sti_vid_create(struct device *dev, struct drm_device *drm_dev,\n\t\t\t       int id, void __iomem *baseaddr);\n\nvoid vid_debugfs_init(struct sti_vid *vid, struct drm_minor *minor);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

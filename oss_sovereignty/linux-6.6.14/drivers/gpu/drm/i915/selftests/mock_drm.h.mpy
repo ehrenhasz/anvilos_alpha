@@ -1,0 +1,9 @@
+{
+  "module_name": "mock_drm.h",
+  "hash_id": "d58dba44166b1c332fab9209a7ad2ed71192d0bcd30a249757f23a38e42a5926",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/mock_drm.h",
+  "human_readable_source": " \n\n#ifndef __MOCK_DRM_H\n#define __MOCK_DRM_H\n\n#include <drm/drm_file.h>\n\n#include \"i915_drv.h\"\n\nstruct drm_file;\nstruct file;\n\nstatic inline struct file *mock_file(struct drm_i915_private *i915)\n{\n\treturn mock_drm_getfile(i915->drm.primary, O_RDWR);\n}\n\nstatic inline struct drm_file *to_drm_file(struct file *f)\n{\n\treturn f->private_data;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

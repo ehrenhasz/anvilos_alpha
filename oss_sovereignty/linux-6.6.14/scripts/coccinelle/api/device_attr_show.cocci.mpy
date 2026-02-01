@@ -1,0 +1,9 @@
+{
+  "module_name": "device_attr_show.cocci",
+  "hash_id": "2ccbf63175d7090321303398de94a6924b30ec6d425ba2f77c97ce427c519cb2",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/api/device_attr_show.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0-only\n///\n/// From Documentation/filesystems/sysfs.rst:\n///  show() must not use snprintf() when formatting the value to be\n///  returned to user space. If you can guarantee that an overflow\n///  will never happen you can use sprintf() otherwise you must use\n///  scnprintf().\n///\n// Confidence: High\n// Copyright: (C) 2020 Denis Efremov ISPRAS\n// Options: --no-includes --include-headers\n//\n\nvirtual report\nvirtual org\nvirtual context\nvirtual patch\n\n@r depends on !patch@\nidentifier show, dev, attr, buf;\nposition p;\n@@\n\nssize_t show(struct device *dev, struct device_attribute *attr, char *buf)\n{\n\t<...\n*\treturn snprintf@p(...);\n\t...>\n}\n\n@rp depends on patch@\nidentifier show, dev, attr, buf;\n@@\n\nssize_t show(struct device *dev, struct device_attribute *attr, char *buf)\n{\n\t<...\n\treturn\n-\t\tsnprintf\n+\t\tscnprintf\n\t\t\t(...);\n\t...>\n}\n\n@script: python depends on report@\np << r.p;\n@@\n\ncoccilib.report.print_report(p[0], \"WARNING: use scnprintf or sprintf\")\n\n@script: python depends on org@\np << r.p;\n@@\n\ncoccilib.org.print_todo(p[0], \"WARNING: use scnprintf or sprintf\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

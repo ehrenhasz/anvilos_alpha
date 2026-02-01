@@ -1,0 +1,9 @@
+{
+  "module_name": "M0209.h",
+  "hash_id": "b48d0bcb29979f4b97277fcee974a2683e3e418ed03fe227e6d9abf518dbe68a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/M0209.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_M0209_H__\n#define __NVBIOS_M0209_H__\nu32 nvbios_M0209Te(struct nvkm_bios *,\n\t\t   u8 *ver, u8 *hdr, u8 *cnt, u8 *len, u8 *snr, u8 *ssz);\n\nstruct nvbios_M0209E {\n\tu8 v00_40;\n\tu8 bits;\n\tu8 modulo;\n\tu8 v02_40;\n\tu8 v02_07;\n\tu8 v03;\n};\n\nu32 nvbios_M0209Ee(struct nvkm_bios *, int idx,\n\t\t   u8 *ver, u8 *hdr, u8 *cnt, u8 *len);\nu32 nvbios_M0209Ep(struct nvkm_bios *, int idx,\n\t\t   u8 *ver, u8 *hdr, u8 *cnt, u8 *len, struct nvbios_M0209E *);\n\nstruct nvbios_M0209S {\n\tu32 data[0x200];\n};\n\nu32 nvbios_M0209Se(struct nvkm_bios *, int ent, int idx, u8 *ver, u8 *hdr);\nu32 nvbios_M0209Sp(struct nvkm_bios *, int ent, int idx, u8 *ver, u8 *hdr,\n\t\t   struct nvbios_M0209S *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

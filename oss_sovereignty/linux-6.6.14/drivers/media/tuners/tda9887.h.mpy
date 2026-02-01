@@ -1,0 +1,9 @@
+{
+  "module_name": "tda9887.h",
+  "hash_id": "6e3481c2889a634cff380f81decf5e01d6841d28ceafd51941e8ff436f18e1a5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/tda9887.h",
+  "human_readable_source": " \n \n\n#ifndef __TDA9887_H__\n#define __TDA9887_H__\n\n#include <linux/i2c.h>\n#include <media/dvb_frontend.h>\n\n \n#if IS_REACHABLE(CONFIG_MEDIA_TUNER_TDA9887)\nextern struct dvb_frontend *tda9887_attach(struct dvb_frontend *fe,\n\t\t\t\t\t   struct i2c_adapter *i2c_adap,\n\t\t\t\t\t   u8 i2c_addr);\n#else\nstatic inline struct dvb_frontend *tda9887_attach(struct dvb_frontend *fe,\n\t\t\t\t\t\t  struct i2c_adapter *i2c_adap,\n\t\t\t\t\t\t  u8 i2c_addr)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

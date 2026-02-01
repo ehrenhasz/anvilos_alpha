@@ -1,0 +1,9 @@
+{
+  "module_name": "ufs_bsg.h",
+  "hash_id": "5f5db83d0edcae979349946392620e06391df732bf3ae2e226e5b22f49b63afc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ufs/core/ufs_bsg.h",
+  "human_readable_source": " \n \n#ifndef UFS_BSG_H\n#define UFS_BSG_H\n\nstruct ufs_hba;\n\n#ifdef CONFIG_SCSI_UFS_BSG\nvoid ufs_bsg_remove(struct ufs_hba *hba);\nint ufs_bsg_probe(struct ufs_hba *hba);\n#else\nstatic inline void ufs_bsg_remove(struct ufs_hba *hba) {}\nstatic inline int ufs_bsg_probe(struct ufs_hba *hba) {return 0; }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

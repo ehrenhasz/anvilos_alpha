@@ -1,0 +1,9 @@
+{
+  "module_name": "windows-mutex.h",
+  "hash_id": "d1be7e269eca354f5ad86028538a0b42fa89378bcd6a477ddf9d4642fa1dc685",
+  "original_prompt": "Ingested from coreutils-9.4/lib/windows-mutex.h",
+  "human_readable_source": " \n\n#ifndef _WINDOWS_MUTEX_H\n#define _WINDOWS_MUTEX_H\n\n#define WIN32_LEAN_AND_MEAN   \n#include <windows.h>\n\n#include \"windows-initguard.h\"\n\ntypedef struct\n        {\n          glwthread_initguard_t guard;  \n          CRITICAL_SECTION lock;\n        }\n        glwthread_mutex_t;\n\n#define GLWTHREAD_MUTEX_INIT { GLWTHREAD_INITGUARD_INIT }\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\nextern void glwthread_mutex_init (glwthread_mutex_t *mutex);\nextern int glwthread_mutex_lock (glwthread_mutex_t *mutex);\nextern int glwthread_mutex_trylock (glwthread_mutex_t *mutex);\nextern int glwthread_mutex_unlock (glwthread_mutex_t *mutex);\nextern int glwthread_mutex_destroy (glwthread_mutex_t *mutex);\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

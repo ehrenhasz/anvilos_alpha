@@ -1,0 +1,9 @@
+{
+  "module_name": "sysret_ss_attrs.c",
+  "hash_id": "ed22f1b62b8e2aa32f1e15ddfba042f4af3540facbeb48562041519407b2eb2b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/x86/sysret_ss_attrs.c",
+  "human_readable_source": "\n \n\n#define _GNU_SOURCE\n\n#include <stdlib.h>\n#include <unistd.h>\n#include <stdio.h>\n#include <string.h>\n#include <sys/mman.h>\n#include <err.h>\n#include <stddef.h>\n#include <stdbool.h>\n#include <pthread.h>\n\nstatic void *threadproc(void *ctx)\n{\n\t \n\twhile (true)\n\t\t;\n\n\treturn NULL;\n}\n\n#ifdef __x86_64__\nextern unsigned long call32_from_64(void *stack, void (*function)(void));\n\nasm (\".pushsection .text\\n\\t\"\n     \".code32\\n\\t\"\n     \"test_ss:\\n\\t\"\n     \"pushl $0\\n\\t\"\n     \"popl %eax\\n\\t\"\n     \"ret\\n\\t\"\n     \".code64\");\nextern void test_ss(void);\n#endif\n\nint main()\n{\n\t \n\tcpu_set_t cpuset;\n\tCPU_ZERO(&cpuset);\n\tCPU_SET(0, &cpuset);\n\tif (sched_setaffinity(0, sizeof(cpuset), &cpuset) != 0)\n\t\tprintf(\"[WARN]\\tsched_setaffinity failed\\n\");\n\n\tpthread_t thread;\n\tif (pthread_create(&thread, 0, threadproc, 0) != 0)\n\t\terr(1, \"pthread_create\");\n\n#ifdef __x86_64__\n\tunsigned char *stack32 = mmap(NULL, 4096, PROT_READ | PROT_WRITE,\n\t\t\t\t      MAP_32BIT | MAP_ANONYMOUS | MAP_PRIVATE,\n\t\t\t\t      -1, 0);\n\tif (stack32 == MAP_FAILED)\n\t\terr(1, \"mmap\");\n#endif\n\n\tprintf(\"[RUN]\\tSyscalls followed by SS validation\\n\");\n\n\tfor (int i = 0; i < 1000; i++) {\n\t\t \n\t\tusleep(2);\n\n#ifdef __x86_64__\n\t\t \n\t\tcall32_from_64(stack32 + 4088, test_ss);\n#endif\n\t}\n\n\tprintf(\"[OK]\\tWe survived\\n\");\n\n#ifdef __x86_64__\n\tmunmap(stack32, 4096);\n#endif\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a6aa0d74dbf3846b014a9a3f3ffbe2986bce4ab6e3de0862b34cc59af967f69f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/renesas/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Renesas device configuration\n#\n\nconfig NET_VENDOR_RENESAS\n\tbool \"Renesas devices\"\n\tdefault y\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Renesas devices. If you say Y, you will be asked\n\t  for your specific device in the following questions.\n\nif NET_VENDOR_RENESAS\n\nconfig SH_ETH\n\ttristate \"Renesas SuperH Ethernet support\"\n\tdepends on ARCH_RENESAS || SUPERH || COMPILE_TEST\n\tselect CRC32\n\tselect MII\n\tselect MDIO_BITBANG\n\tselect PHYLIB\n\thelp\n\t  Renesas SuperH Ethernet device driver.\n\t  This driver supporting CPUs are:\n\t\t- SH7619, SH7710, SH7712, SH7724, SH7734, SH7763, SH7757,\n\t\t  R8A7740, R8A774x, R8A777x and R8A779x.\n\nconfig RAVB\n\ttristate \"Renesas Ethernet AVB support\"\n\tdepends on ARCH_RENESAS || COMPILE_TEST\n\tdepends on PTP_1588_CLOCK_OPTIONAL\n\tselect CRC32\n\tselect MII\n\tselect MDIO_BITBANG\n\tselect PHYLIB\n\thelp\n\t  Renesas Ethernet AVB device driver.\n\t  This driver supports the following SoCs:\n\t\t- R8A779x.\n\nconfig RENESAS_ETHER_SWITCH\n\ttristate \"Renesas Ethernet Switch support\"\n\tdepends on ARCH_RENESAS || COMPILE_TEST\n\tdepends on PTP_1588_CLOCK_OPTIONAL\n\tselect CRC32\n\tselect MII\n\tselect PHYLINK\n\thelp\n\t  Renesas Ethernet Switch device driver.\n\t  This driver supports the following SoCs:\n\t\t- R8A779Fx.\n\nendif # NET_VENDOR_RENESAS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

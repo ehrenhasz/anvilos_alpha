@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ba674d2edaf4580f39f2afd1045286f657e913d049a164fcaa86ea51be851a11",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/lima/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0 OR MIT\n# Copyright 2017-2019 Qiang Yu <yuq825@gmail.com>\n\nconfig DRM_LIMA\n       tristate \"LIMA (DRM support for ARM Mali 400/450 GPU)\"\n       depends on DRM\n       depends on ARM || ARM64 || COMPILE_TEST\n       depends on MMU\n       depends on COMMON_CLK\n       depends on OF\n       select DRM_SCHED\n       select DRM_GEM_SHMEM_HELPER\n       select PM_DEVFREQ\n       select DEVFREQ_GOV_SIMPLE_ONDEMAND\n       help\n\t DRM driver for ARM Mali 400/450 GPUs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

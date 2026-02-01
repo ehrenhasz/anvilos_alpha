@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sha1-stream.c",
+  "hash_id": "adc60819f92b579264f0cf5e0461347dc7114454f5dbff6b5bd3fae4d714f16f",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sha1-stream.c",
+  "human_readable_source": " \n  test_digest_on_files (sha1_stream, \"sha1_stream\", 20,\n                        \"\\xda\\x39\\xa3\\xee\\x5e\\x6b\\x4b\\x0d\\x32\\x55\\xbf\\xef\\x95\\x60\\x18\\x90\\xaf\\xd8\\x07\\x09\",\n                        \"\\x9c\\x04\\xcd\\x63\\x72\\x07\\x7e\\x9b\\x11\\xf7\\x0c\\xa1\\x11\\xc9\\x80\\x7d\\xc7\\x13\\x7e\\x4b\",\n                        \"\\x91\\xab\\x6b\\x1b\\x8d\\x29\\x25\\x3c\\xcb\\x8d\\xce\\xb7\\x7a\\x25\\x26\\x2c\\x92\\xc9\\x22\\x09\");\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

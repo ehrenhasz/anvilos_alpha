@@ -1,0 +1,9 @@
+{
+  "module_name": "acompress.h",
+  "hash_id": "408f515aad0783952785d52536f0400fe047aa197eb8a003fd36e650fe8588e1",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/internal/acompress.h",
+  "human_readable_source": " \n \n#ifndef _CRYPTO_ACOMP_INT_H\n#define _CRYPTO_ACOMP_INT_H\n\n#include <crypto/acompress.h>\n#include <crypto/algapi.h>\n\n \nstruct acomp_alg {\n\tint (*compress)(struct acomp_req *req);\n\tint (*decompress)(struct acomp_req *req);\n\tvoid (*dst_free)(struct scatterlist *dst);\n\tint (*init)(struct crypto_acomp *tfm);\n\tvoid (*exit)(struct crypto_acomp *tfm);\n\n\tunsigned int reqsize;\n\n\tunion {\n\t\tstruct COMP_ALG_COMMON;\n\t\tstruct comp_alg_common calg;\n\t};\n};\n\n \nstatic inline void *acomp_request_ctx(struct acomp_req *req)\n{\n\treturn req->__ctx;\n}\n\nstatic inline void *acomp_tfm_ctx(struct crypto_acomp *tfm)\n{\n\treturn tfm->base.__crt_ctx;\n}\n\nstatic inline void acomp_request_complete(struct acomp_req *req,\n\t\t\t\t\t  int err)\n{\n\tcrypto_request_complete(&req->base, err);\n}\n\nstatic inline struct acomp_req *__acomp_request_alloc(struct crypto_acomp *tfm)\n{\n\tstruct acomp_req *req;\n\n\treq = kzalloc(sizeof(*req) + crypto_acomp_reqsize(tfm), GFP_KERNEL);\n\tif (likely(req))\n\t\tacomp_request_set_tfm(req, tfm);\n\treturn req;\n}\n\nstatic inline void __acomp_request_free(struct acomp_req *req)\n{\n\tkfree_sensitive(req);\n}\n\n \nint crypto_register_acomp(struct acomp_alg *alg);\n\n \nvoid crypto_unregister_acomp(struct acomp_alg *alg);\n\nint crypto_register_acomps(struct acomp_alg *algs, int count);\nvoid crypto_unregister_acomps(struct acomp_alg *algs, int count);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

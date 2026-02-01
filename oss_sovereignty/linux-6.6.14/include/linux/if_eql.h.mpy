@@ -1,0 +1,9 @@
+{
+  "module_name": "if_eql.h",
+  "hash_id": "7ce62dd36431d44e098e502d6600e395f486afe8e7e6ab02051fb67db062200a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/if_eql.h",
+  "human_readable_source": " \n#ifndef _LINUX_IF_EQL_H\n#define _LINUX_IF_EQL_H\n\n\n#include <linux/timer.h>\n#include <linux/spinlock.h>\n#include <net/net_trackers.h>\n#include <uapi/linux/if_eql.h>\n\ntypedef struct slave {\n\tstruct list_head\tlist;\n\tstruct net_device\t*dev;\n\tnetdevice_tracker\tdev_tracker;\n\tlong\t\t\tpriority;\n\tlong\t\t\tpriority_bps;\n\tlong\t\t\tpriority_Bps;\n\tlong\t\t\tbytes_queued;\n} slave_t;\n\ntypedef struct slave_queue {\n\tspinlock_t\t\tlock;\n\tstruct list_head\tall_slaves;\n\tint\t\t\tnum_slaves;\n\tstruct net_device\t*master_dev;\n} slave_queue_t;\n\ntypedef struct equalizer {\n\tslave_queue_t\t\tqueue;\n\tint\t\t\tmin_slaves;\n\tint\t\t\tmax_slaves;\n\tstruct timer_list\ttimer;\n} equalizer_t;  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

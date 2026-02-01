@@ -1,0 +1,9 @@
+{
+  "module_name": "dw.h",
+  "hash_id": "8cf2294ed302378160f1584e1c41dec4f5ae56e3beb175c75896df3fd64f4740",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dma/dw.h",
+  "human_readable_source": " \n \n#ifndef _DMA_DW_H\n#define _DMA_DW_H\n\n#include <linux/clk.h>\n#include <linux/device.h>\n#include <linux/dmaengine.h>\n\n#include <linux/platform_data/dma-dw.h>\n\nstruct dw_dma;\n\n \nstruct dw_dma_chip {\n\tstruct device\t*dev;\n\tint\t\tid;\n\tint\t\tirq;\n\tvoid __iomem\t*regs;\n\tstruct clk\t*clk;\n\tstruct dw_dma\t*dw;\n\n\tconst struct dw_dma_platform_data\t*pdata;\n};\n\n \n#if IS_ENABLED(CONFIG_DW_DMAC_CORE)\nint dw_dma_probe(struct dw_dma_chip *chip);\nint dw_dma_remove(struct dw_dma_chip *chip);\nint idma32_dma_probe(struct dw_dma_chip *chip);\nint idma32_dma_remove(struct dw_dma_chip *chip);\n#else\nstatic inline int dw_dma_probe(struct dw_dma_chip *chip) { return -ENODEV; }\nstatic inline int dw_dma_remove(struct dw_dma_chip *chip) { return 0; }\nstatic inline int idma32_dma_probe(struct dw_dma_chip *chip) { return -ENODEV; }\nstatic inline int idma32_dma_remove(struct dw_dma_chip *chip) { return 0; }\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

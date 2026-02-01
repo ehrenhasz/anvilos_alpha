@@ -1,0 +1,9 @@
+{
+  "module_name": "bcom_ata_task.c",
+  "hash_id": "2d49ea5dc47fcd683acc9d28afca1110417d317c026a2f87d1f02ad0a34539d2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/bestcomm/bcom_ata_task.c",
+  "human_readable_source": "\n \n\n#include <asm/types.h>\n\n \n\nu32 bcom_ata_task[] = {\n\t \n\t0x4243544b,\n\t0x0e060709,\n\t0x00000000,\n\t0x00000000,\n\n\t \n\t0x8198009b,  \n\t0x13e00c08,  \n\t0xb8000264,  \n\t0x10000f00,  \n\t0x60140002,  \n\t0x0c8cfc8a,  \n\t0xd8988240,  \n\t0xf845e011,  \n\t0xb845e00a,  \n\t0x0bfecf90,  \n\t0x9898802d,  \n\t0x64000005,  \n\t0x0c0cf849,  \n\t0x000001f8,  \n\n\t \n\t0x40000000,\n\t0x7fff7fff,\n\t0x00000000,\n\t0x00000000,\n\t0x00000000,\n\t0x00000000,\n\n\t \n\t0x40000000,\n\t0xe0000000,\n\t0xe0000000,\n\t0xa000000c,\n\t0x20000000,\n\t0x00000000,\n\t0x00000000,\n};\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

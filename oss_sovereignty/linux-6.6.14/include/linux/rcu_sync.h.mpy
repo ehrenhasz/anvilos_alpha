@@ -1,0 +1,9 @@
+{
+  "module_name": "rcu_sync.h",
+  "hash_id": "a400d11757dc14cc6c8ead65e4bf281489374216f8079542e39292be21f75908",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rcu_sync.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_RCU_SYNC_H_\n#define _LINUX_RCU_SYNC_H_\n\n#include <linux/wait.h>\n#include <linux/rcupdate.h>\n\n \nstruct rcu_sync {\n\tint\t\t\tgp_state;\n\tint\t\t\tgp_count;\n\twait_queue_head_t\tgp_wait;\n\n\tstruct rcu_head\t\tcb_head;\n};\n\n \nstatic inline bool rcu_sync_is_idle(struct rcu_sync *rsp)\n{\n\tRCU_LOCKDEP_WARN(!rcu_read_lock_any_held(),\n\t\t\t \"suspicious rcu_sync_is_idle() usage\");\n\treturn !READ_ONCE(rsp->gp_state);  \n}\n\nextern void rcu_sync_init(struct rcu_sync *);\nextern void rcu_sync_enter_start(struct rcu_sync *);\nextern void rcu_sync_enter(struct rcu_sync *);\nextern void rcu_sync_exit(struct rcu_sync *);\nextern void rcu_sync_dtor(struct rcu_sync *);\n\n#define __RCU_SYNC_INITIALIZER(name) {\t\t\t\t\t\\\n\t\t.gp_state = 0,\t\t\t\t\t\t\\\n\t\t.gp_count = 0,\t\t\t\t\t\t\\\n\t\t.gp_wait = __WAIT_QUEUE_HEAD_INITIALIZER(name.gp_wait),\t\\\n\t}\n\n#define\tDEFINE_RCU_SYNC(name)\t\\\n\tstruct rcu_sync name = __RCU_SYNC_INITIALIZER(name)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

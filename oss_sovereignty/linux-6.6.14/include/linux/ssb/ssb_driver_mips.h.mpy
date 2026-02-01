@@ -1,0 +1,9 @@
+{
+  "module_name": "ssb_driver_mips.h",
+  "hash_id": "36017246b2c7ad38e163a3ec4b6405f0806cdec4d855e3fc115f346907d20355",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ssb/ssb_driver_mips.h",
+  "human_readable_source": " \n#ifndef LINUX_SSB_MIPSCORE_H_\n#define LINUX_SSB_MIPSCORE_H_\n\n#ifdef CONFIG_SSB_DRIVER_MIPS\n\nstruct ssb_device;\n\nstruct ssb_serial_port {\n\tvoid *regs;\n\tunsigned long clockspeed;\n\tunsigned int irq;\n\tunsigned int baud_base;\n\tunsigned int reg_shift;\n};\n\nstruct ssb_pflash {\n\tbool present;\n\tu8 buswidth;\n\tu32 window;\n\tu32 window_size;\n};\n\n#ifdef CONFIG_SSB_SFLASH\nstruct ssb_sflash {\n\tbool present;\n\tu32 window;\n\tu32 blocksize;\n\tu16 numblocks;\n\tu32 size;\n\n\tvoid *priv;\n};\n#endif\n\nstruct ssb_mipscore {\n\tstruct ssb_device *dev;\n\n\tint nr_serial_ports;\n\tstruct ssb_serial_port serial_ports[4];\n\n\tstruct ssb_pflash pflash;\n#ifdef CONFIG_SSB_SFLASH\n\tstruct ssb_sflash sflash;\n#endif\n};\n\nextern void ssb_mipscore_init(struct ssb_mipscore *mcore);\nextern u32 ssb_cpu_clock(struct ssb_mipscore *mcore);\n\nextern unsigned int ssb_mips_irq(struct ssb_device *dev);\n\n\n#else  \n\nstruct ssb_mipscore {\n};\n\nstatic inline\nvoid ssb_mipscore_init(struct ssb_mipscore *mcore)\n{\n}\n\nstatic inline unsigned int ssb_mips_irq(struct ssb_device *dev)\n{\n\treturn 0;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

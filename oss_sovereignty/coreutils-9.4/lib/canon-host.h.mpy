@@ -1,0 +1,9 @@
+{
+  "module_name": "canon-host.h",
+  "hash_id": "d988cd36b740e73c46c4b846ab6d4ed72c80d17d4bb922ef3abd5e091ad2487f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/canon-host.h",
+  "human_readable_source": " \n# if !_GL_CONFIG_H_INCLUDED\n#  error \"Please include config.h first.\"\n# endif\n\n# include <stdlib.h>\n\nchar *canon_host (char const *host)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\nchar *canon_host_r (char const *host, int *cherror)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\n\nconst char *ch_strerror (void);\n# define ch_strerror_r(cherror) gai_strerror (cherror);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

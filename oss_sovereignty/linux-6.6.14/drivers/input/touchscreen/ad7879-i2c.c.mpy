@@ -1,0 +1,9 @@
+{
+  "module_name": "ad7879-i2c.c",
+  "hash_id": "75e71cdec84da9ddf75b6e55619f4583ada8dbdfc1f6730033fc7fe733a38ae8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/touchscreen/ad7879-i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/input.h>\t \n#include <linux/i2c.h>\n#include <linux/module.h>\n#include <linux/types.h>\n#include <linux/of.h>\n#include <linux/pm.h>\n#include <linux/regmap.h>\n\n#include \"ad7879.h\"\n\n#define AD7879_DEVID\t\t0x79\t \n\nstatic const struct regmap_config ad7879_i2c_regmap_config = {\n\t.reg_bits = 8,\n\t.val_bits = 16,\n\t.max_register = 15,\n};\n\nstatic int ad7879_i2c_probe(struct i2c_client *client)\n{\n\tstruct regmap *regmap;\n\n\tif (!i2c_check_functionality(client->adapter,\n\t\t\t\t     I2C_FUNC_SMBUS_WORD_DATA)) {\n\t\tdev_err(&client->dev, \"SMBUS Word Data not Supported\\n\");\n\t\treturn -EIO;\n\t}\n\n\tregmap = devm_regmap_init_i2c(client, &ad7879_i2c_regmap_config);\n\tif (IS_ERR(regmap))\n\t\treturn PTR_ERR(regmap);\n\n\treturn ad7879_probe(&client->dev, regmap, client->irq,\n\t\t\t    BUS_I2C, AD7879_DEVID);\n}\n\nstatic const struct i2c_device_id ad7879_id[] = {\n\t{ \"ad7879\", 0 },\n\t{ \"ad7889\", 0 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, ad7879_id);\n\n#ifdef CONFIG_OF\nstatic const struct of_device_id ad7879_i2c_dt_ids[] = {\n\t{ .compatible = \"adi,ad7879-1\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, ad7879_i2c_dt_ids);\n#endif\n\nstatic struct i2c_driver ad7879_i2c_driver = {\n\t.driver = {\n\t\t.name\t= \"ad7879\",\n\t\t.pm\t= &ad7879_pm_ops,\n\t\t.of_match_table = of_match_ptr(ad7879_i2c_dt_ids),\n\t},\n\t.probe\t\t= ad7879_i2c_probe,\n\t.id_table\t= ad7879_id,\n};\n\nmodule_i2c_driver(ad7879_i2c_driver);\n\nMODULE_AUTHOR(\"Michael Hennerich <michael.hennerich@analog.com>\");\nMODULE_DESCRIPTION(\"AD7879(-1) touchscreen I2C bus driver\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

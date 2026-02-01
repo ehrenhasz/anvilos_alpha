@@ -1,0 +1,9 @@
+{
+  "module_name": "mt8195-clk.h",
+  "hash_id": "e2df9c1ad59c50bdcd34a3a5e962b3111e1176618e1944b8a5294a335e74d3f6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/mediatek/mt8195/mt8195-clk.h",
+  "human_readable_source": " \n\n \n\n#ifndef __MT8195_CLK_H\n#define __MT8195_CLK_H\n\nstruct snd_sof_dev;\n\n \nenum adsp_clk_id {\n\tCLK_TOP_ADSP,\n\tCLK_TOP_CLK26M,\n\tCLK_TOP_AUDIO_LOCAL_BUS,\n\tCLK_TOP_MAINPLL_D7_D2,\n\tCLK_SCP_ADSP_AUDIODSP,\n\tCLK_TOP_AUDIO_H,\n\tADSP_CLK_MAX\n};\n\nint mt8195_adsp_init_clock(struct snd_sof_dev *sdev);\nint adsp_clock_on(struct snd_sof_dev *sdev);\nint adsp_clock_off(struct snd_sof_dev *sdev);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

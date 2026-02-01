@@ -1,0 +1,9 @@
+{
+  "module_name": "ivtv-udma.h",
+  "hash_id": "ae2b8542d130f7d551e7429a60b7bed52450e851d530ca65064db85479021d20",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ivtv/ivtv-udma.h",
+  "human_readable_source": " \n \n\n#ifndef IVTV_UDMA_H\n#define IVTV_UDMA_H\n\n \nvoid ivtv_udma_get_page_info(struct ivtv_dma_page_info *dma_page, unsigned long first, unsigned long size);\nint ivtv_udma_fill_sg_list(struct ivtv_user_dma *dma, struct ivtv_dma_page_info *dma_page, int map_offset);\nvoid ivtv_udma_fill_sg_array(struct ivtv_user_dma *dma, u32 buffer_offset, u32 buffer_offset_2, u32 split);\nint ivtv_udma_setup(struct ivtv *itv, unsigned long ivtv_dest_addr,\n\t\t       void __user *userbuf, int size_in_bytes);\nvoid ivtv_udma_unmap(struct ivtv *itv);\nvoid ivtv_udma_free(struct ivtv *itv);\nvoid ivtv_udma_alloc(struct ivtv *itv);\nvoid ivtv_udma_prepare(struct ivtv *itv);\nvoid ivtv_udma_start(struct ivtv *itv);\n\nstatic inline void ivtv_udma_sync_for_device(struct ivtv *itv)\n{\n\tdma_sync_single_for_device(&itv->pdev->dev, itv->udma.SG_handle,\n\t\t\t\t   sizeof(itv->udma.SGarray), DMA_TO_DEVICE);\n}\n\nstatic inline void ivtv_udma_sync_for_cpu(struct ivtv *itv)\n{\n\tdma_sync_single_for_cpu(&itv->pdev->dev, itv->udma.SG_handle,\n\t\t\t\tsizeof(itv->udma.SGarray), DMA_TO_DEVICE);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "systm.h",
+  "hash_id": "7315da97ec42ab50aea60814216db32e74bd6d9a20516a3d8f078fd9980437e3",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/systm.h",
+  "human_readable_source": " \n\n#ifndef _OPENSOLARIS_SYS_SYSTM_H_\n#define\t_OPENSOLARIS_SYS_SYSTM_H_\n\n#include <sys/endian.h>\n#include_next <sys/systm.h>\n\n#include <sys/string.h>\n\n#define\tPAGESIZE\tPAGE_SIZE\n#define\tPAGEOFFSET\t(PAGESIZE - 1)\n#define\tPAGEMASK\t(~PAGEOFFSET)\n\n#define\tdelay(x)\tpause(\"soldelay\", (x))\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

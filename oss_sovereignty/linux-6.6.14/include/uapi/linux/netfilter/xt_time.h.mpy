@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_time.h",
+  "hash_id": "7a67c655198ce72c2ee9ba2c38019d4827db1f859a5fec688531c01335e1db08",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_time.h",
+  "human_readable_source": " \n#ifndef _XT_TIME_H\n#define _XT_TIME_H 1\n\n#include <linux/types.h>\n\nstruct xt_time_info {\n\t__u32 date_start;\n\t__u32 date_stop;\n\t__u32 daytime_start;\n\t__u32 daytime_stop;\n\t__u32 monthdays_match;\n\t__u8 weekdays_match;\n\t__u8 flags;\n};\n\nenum {\n\t \n\tXT_TIME_LOCAL_TZ = 1 << 0,\n\n\t \n\tXT_TIME_CONTIGUOUS = 1 << 1,\n\n\t \n\tXT_TIME_ALL_MONTHDAYS = 0xFFFFFFFE,\n\tXT_TIME_ALL_WEEKDAYS  = 0xFE,\n\tXT_TIME_MIN_DAYTIME   = 0,\n\tXT_TIME_MAX_DAYTIME   = 24 * 60 * 60 - 1,\n};\n\n#define XT_TIME_ALL_FLAGS (XT_TIME_LOCAL_TZ|XT_TIME_CONTIGUOUS)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

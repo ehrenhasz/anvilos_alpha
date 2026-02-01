@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__modbuiltins.c.qstr",
+  "hash_id": "d8906f87ddb4719c3e7fde5d6018d2cf4de0c157325fe4b0e01c8addeeaa0cbf",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__modbuiltins.c.qstr",
+  "human_readable_source": "Q(_brace_open__colon__hash_b_brace_close_)\nQ(_percent__hash_x)\nQ(key)\nQ(default)\nQ(_percent__hash_o)\nQ(sep)\nQ(_space_)\nQ(end)\nQ(_0x0a_)\nQ(__name__)\nQ(builtins)\nQ(__build_class__)\nQ(__import__)\nQ(__repl_print__)\nQ(bool)\nQ(bytes)\nQ(bytearray)\nQ(complex)\nQ(dict)\nQ(enumerate)\nQ(filter)\nQ(float)\nQ(int)\nQ(list)\nQ(map)\nQ(object)\nQ(property)\nQ(range)\nQ(reversed)\nQ(set)\nQ(slice)\nQ(str)\nQ(super)\nQ(tuple)\nQ(type)\nQ(zip)\nQ(classmethod)\nQ(staticmethod)\nQ(Ellipsis)\nQ(abs)\nQ(all)\nQ(any)\nQ(bin)\nQ(callable)\nQ(chr)\nQ(delattr)\nQ(dir)\nQ(divmod)\nQ(eval)\nQ(exec)\nQ(getattr)\nQ(setattr)\nQ(globals)\nQ(hasattr)\nQ(hash)\nQ(hex)\nQ(id)\nQ(isinstance)\nQ(issubclass)\nQ(iter)\nQ(len)\nQ(locals)\nQ(max)\nQ(min)\nQ(next)\nQ(oct)\nQ(ord)\nQ(pow)\nQ(print)\nQ(repr)\nQ(round)\nQ(sorted)\nQ(sum)\nQ(BaseException)\nQ(ArithmeticError)\nQ(AssertionError)\nQ(AttributeError)\nQ(EOFError)\nQ(Exception)\nQ(GeneratorExit)\nQ(ImportError)\nQ(IndentationError)\nQ(IndexError)\nQ(KeyboardInterrupt)\nQ(KeyError)\nQ(LookupError)\nQ(MemoryError)\nQ(NameError)\nQ(NotImplementedError)\nQ(OSError)\nQ(OverflowError)\nQ(RuntimeError)\nQ(StopAsyncIteration)\nQ(StopIteration)\nQ(SyntaxError)\nQ(SystemExit)\nQ(TypeError)\nQ(UnicodeError)\nQ(ValueError)\nQ(ViperTypeError)\nQ(ZeroDivisionError)\nQ(builtins)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

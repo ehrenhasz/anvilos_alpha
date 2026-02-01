@@ -1,0 +1,9 @@
+{
+  "module_name": "karma.c",
+  "hash_id": "4a42ffea3d092eba3b22a31273cc37776046b0a6210a52ce14967e1e81ab6967",
+  "original_prompt": "Ingested from linux-6.6.14/block/partitions/karma.c",
+  "human_readable_source": "\n \n\n#include \"check.h\"\n#include <linux/compiler.h>\n\n#define KARMA_LABEL_MAGIC\t\t0xAB56\n\nint karma_partition(struct parsed_partitions *state)\n{\n\tint i;\n\tint slot = 1;\n\tSector sect;\n\tunsigned char *data;\n\tstruct disklabel {\n\t\tu8 d_reserved[270];\n\t\tstruct d_partition {\n\t\t\t__le32 p_res;\n\t\t\tu8 p_fstype;\n\t\t\tu8 p_res2[3];\n\t\t\t__le32 p_offset;\n\t\t\t__le32 p_size;\n\t\t} d_partitions[2];\n\t\tu8 d_blank[208];\n\t\t__le16 d_magic;\n\t} __packed *label;\n\tstruct d_partition *p;\n\n\tdata = read_part_sector(state, 0, &sect);\n\tif (!data)\n\t\treturn -1;\n\n\tlabel = (struct disklabel *)data;\n\tif (le16_to_cpu(label->d_magic) != KARMA_LABEL_MAGIC) {\n\t\tput_dev_sector(sect);\n\t\treturn 0;\n\t}\n\n\tp = label->d_partitions;\n\tfor (i = 0 ; i < 2; i++, p++) {\n\t\tif (slot == state->limit)\n\t\t\tbreak;\n\n\t\tif (p->p_fstype == 0x4d && le32_to_cpu(p->p_size)) {\n\t\t\tput_partition(state, slot, le32_to_cpu(p->p_offset),\n\t\t\t\tle32_to_cpu(p->p_size));\n\t\t}\n\t\tslot++;\n\t}\n\tstrlcat(state->pp_buf, \"\\n\", PAGE_SIZE);\n\tput_dev_sector(sect);\n\treturn 1;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

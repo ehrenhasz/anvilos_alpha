@@ -1,0 +1,9 @@
+{
+  "module_name": "pcie_quirks.h",
+  "hash_id": "3a350348202678b27e2518eb34771d6420262550fd6d2663fd20a885c1d86a44",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h",
+  "human_readable_source": " \n \n\n#include \"pcie.h\"\n\n#define QUIRK_FW_RST_D3COLD\tBIT(0)\n\nvoid mwifiex_initialize_quirks(struct pcie_service_card *card);\nint mwifiex_pcie_reset_d3cold_quirk(struct pci_dev *pdev);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

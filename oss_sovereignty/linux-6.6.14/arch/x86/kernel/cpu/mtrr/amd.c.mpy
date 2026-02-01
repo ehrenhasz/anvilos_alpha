@@ -1,0 +1,9 @@
+{
+  "module_name": "amd.c",
+  "hash_id": "407ed5cccd1a891f22d2092d73406bc2fdb61314ec64cefdd1e46d5bf3390ce5",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/cpu/mtrr/amd.c",
+  "human_readable_source": "\n#include <linux/init.h>\n#include <linux/mm.h>\n#include <asm/mtrr.h>\n#include <asm/msr.h>\n\n#include \"mtrr.h\"\n\nstatic void\namd_get_mtrr(unsigned int reg, unsigned long *base,\n\t     unsigned long *size, mtrr_type *type)\n{\n\tunsigned long low, high;\n\n\trdmsr(MSR_K6_UWCCR, low, high);\n\t \n\tif (reg == 1)\n\t\tlow = high;\n\t \n\t*base = (low & 0xFFFE0000) >> PAGE_SHIFT;\n\t*type = 0;\n\tif (low & 1)\n\t\t*type = MTRR_TYPE_UNCACHABLE;\n\tif (low & 2)\n\t\t*type = MTRR_TYPE_WRCOMB;\n\tif (!(low & 3)) {\n\t\t*size = 0;\n\t\treturn;\n\t}\n\t \n\tlow = (~low) & 0x1FFFC;\n\t*size = (low + 4) << (15 - PAGE_SHIFT);\n}\n\n \nstatic void\namd_set_mtrr(unsigned int reg, unsigned long base, unsigned long size, mtrr_type type)\n{\n\tu32 regs[2];\n\n\t \n\trdmsr(MSR_K6_UWCCR, regs[0], regs[1]);\n\t \n\tif (size == 0) {\n\t\tregs[reg] = 0;\n\t} else {\n\t\t \n\t\tregs[reg] = (-size >> (15 - PAGE_SHIFT) & 0x0001FFFC)\n\t\t    | (base << PAGE_SHIFT) | (type + 1);\n\t}\n\n\t \n\twbinvd();\n\twrmsr(MSR_K6_UWCCR, regs[0], regs[1]);\n}\n\nstatic int\namd_validate_add_page(unsigned long base, unsigned long size, unsigned int type)\n{\n\t \n\tif (type > MTRR_TYPE_WRCOMB || size < (1 << (17 - PAGE_SHIFT))\n\t    || (size & ~(size - 1)) - size || (base & (size - 1)))\n\t\treturn -EINVAL;\n\treturn 0;\n}\n\nconst struct mtrr_ops amd_mtrr_ops = {\n\t.var_regs          = 2,\n\t.set               = amd_set_mtrr,\n\t.get               = amd_get_mtrr,\n\t.get_free_region   = generic_get_free_region,\n\t.validate_add_page = amd_validate_add_page,\n\t.have_wrcomb       = positive_have_wrcomb,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

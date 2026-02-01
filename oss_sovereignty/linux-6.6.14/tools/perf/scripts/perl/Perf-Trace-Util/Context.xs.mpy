@@ -1,0 +1,9 @@
+{
+  "module_name": "Context.xs",
+  "hash_id": "9fd66b7f269220d53d4ae1cdc0968b68fa332011d47e21d1b81641762c5c9702",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/perl/Perf-Trace-Util/Context.xs",
+  "human_readable_source": "/*\n * Context.xs.  XS interfaces for perf script.\n *\n * Copyright (C) 2009 Tom Zanussi <tzanussi@gmail.com>\n *\n *  This program is free software; you can redistribute it and/or modify\n *  it under the terms of the GNU General Public License as published by\n *  the Free Software Foundation; either version 2 of the License, or\n *  (at your option) any later version.\n *\n *  This program is distributed in the hope that it will be useful,\n *  but WITHOUT ANY WARRANTY; without even the implied warranty of\n *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n *  GNU General Public License for more details.\n *\n *  You should have received a copy of the GNU General Public License\n *  along with this program; if not, write to the Free Software\n *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n *\n */\n\n#include \"EXTERN.h\"\n#include \"perl.h\"\n#include \"XSUB.h\"\n#include \"../../../perf.h\"\n#include \"../../../util/trace-event.h\"\n\nMODULE = Perf::Trace::Context\t\tPACKAGE = Perf::Trace::Context\nPROTOTYPES: ENABLE\n\nint\ncommon_pc(context)\n\tstruct scripting_context * context\n\nint\ncommon_flags(context)\n\tstruct scripting_context * context\n\nint\ncommon_lock_depth(context)\n\tstruct scripting_context * context\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

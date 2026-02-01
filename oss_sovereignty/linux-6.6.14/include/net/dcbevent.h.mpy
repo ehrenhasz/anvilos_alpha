@@ -1,0 +1,9 @@
+{
+  "module_name": "dcbevent.h",
+  "hash_id": "a8f09442cf8a59e5d3ce3096251255dd856cb4f084dbc25e8953c06097e4cbd8",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/dcbevent.h",
+  "human_readable_source": " \n \n\n#ifndef _DCB_EVENT_H\n#define _DCB_EVENT_H\n\nstruct notifier_block;\n\nenum dcbevent_notif_type {\n\tDCB_APP_EVENT = 1,\n};\n\n#ifdef CONFIG_DCB\nint register_dcbevent_notifier(struct notifier_block *nb);\nint unregister_dcbevent_notifier(struct notifier_block *nb);\nint call_dcbevent_notifiers(unsigned long val, void *v);\n#else\nstatic inline int\nregister_dcbevent_notifier(struct notifier_block *nb)\n{\n\treturn 0;\n}\n\nstatic inline int unregister_dcbevent_notifier(struct notifier_block *nb)\n{\n\treturn 0;\n}\n\nstatic inline int call_dcbevent_notifiers(unsigned long val, void *v)\n{\n\treturn 0;\n}\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

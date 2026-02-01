@@ -1,0 +1,9 @@
+{
+  "module_name": "volt.h",
+  "hash_id": "b1e03d1def59a185518c86b546afcb70c51b69be7d0cb4e66c92ef22d10a121e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/volt.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_VOLT_H__\n#define __NVBIOS_VOLT_H__\n\nenum nvbios_volt_type {\n\tNVBIOS_VOLT_GPIO = 0,\n\tNVBIOS_VOLT_PWM,\n};\n\nstruct nvbios_volt {\n\tenum nvbios_volt_type type;\n\tu32 min;\n\tu32 max;\n\tu32 base;\n\n\t \n\tbool ranged;\n\tu8   vidmask;\n\ts16  step;\n\n\t \n\tu32 pwm_freq;\n\tu32 pwm_range;\n};\n\nu32 nvbios_volt_table(struct nvkm_bios *, u8 *ver, u8 *hdr, u8 *cnt, u8 *len);\nu32 nvbios_volt_parse(struct nvkm_bios *, u8 *ver, u8 *hdr, u8 *cnt, u8 *len,\n\t\t      struct nvbios_volt *);\n\nstruct nvbios_volt_entry {\n\tu32 voltage;\n\tu8  vid;\n};\n\nu32 nvbios_volt_entry(struct nvkm_bios *, int idx, u8 *ver, u8 *len);\nu32 nvbios_volt_entry_parse(struct nvkm_bios *, int idx, u8 *ver, u8 *len,\n\t\t\t    struct nvbios_volt_entry *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

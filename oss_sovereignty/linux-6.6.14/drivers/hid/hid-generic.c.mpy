@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-generic.c",
+  "hash_id": "f6e8c1a45dfb53d69d2155375a23628bb4ee4e13571f5343f97df1c8f1ef57a7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-generic.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/module.h>\n#include <linux/slab.h>\n#include <linux/kernel.h>\n#include <asm/unaligned.h>\n#include <asm/byteorder.h>\n\n#include <linux/hid.h>\n\nstatic struct hid_driver hid_generic;\n\nstatic int __check_hid_generic(struct device_driver *drv, void *data)\n{\n\tstruct hid_driver *hdrv = to_hid_driver(drv);\n\tstruct hid_device *hdev = data;\n\n\tif (hdrv == &hid_generic)\n\t\treturn 0;\n\n\treturn hid_match_device(hdev, hdrv) != NULL;\n}\n\nstatic bool hid_generic_match(struct hid_device *hdev,\n\t\t\t      bool ignore_special_driver)\n{\n\tif (ignore_special_driver)\n\t\treturn true;\n\n\tif (hdev->quirks & HID_QUIRK_HAVE_SPECIAL_DRIVER)\n\t\treturn false;\n\n\t \n\tif (bus_for_each_drv(&hid_bus_type, NULL, hdev, __check_hid_generic))\n\t\treturn false;\n\n\treturn true;\n}\n\nstatic int hid_generic_probe(struct hid_device *hdev,\n\t\t\t     const struct hid_device_id *id)\n{\n\tint ret;\n\n\thdev->quirks |= HID_QUIRK_INPUT_PER_APP;\n\n\tret = hid_parse(hdev);\n\tif (ret)\n\t\treturn ret;\n\n\treturn hid_hw_start(hdev, HID_CONNECT_DEFAULT);\n}\n\nstatic const struct hid_device_id hid_table[] = {\n\t{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY, HID_ANY_ID, HID_ANY_ID) },\n\t{ }\n};\nMODULE_DEVICE_TABLE(hid, hid_table);\n\nstatic struct hid_driver hid_generic = {\n\t.name = \"hid-generic\",\n\t.id_table = hid_table,\n\t.match = hid_generic_match,\n\t.probe = hid_generic_probe,\n};\nmodule_hid_driver(hid_generic);\n\nMODULE_AUTHOR(\"Henrik Rydberg\");\nMODULE_DESCRIPTION(\"HID generic driver\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "compiler-gcc.h",
+  "hash_id": "052d77b81a3962e341619987c310883ab3b817549ef408ac358463498289b6d5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/compiler-gcc.h",
+  "human_readable_source": " \n#ifndef _TOOLS_LINUX_COMPILER_H_\n#error \"Please don't include <linux/compiler-gcc.h> directly, include <linux/compiler.h> instead.\"\n#endif\n\n \n#ifndef GCC_VERSION\n#define GCC_VERSION (__GNUC__ * 10000\t\t\\\n\t\t     + __GNUC_MINOR__ * 100\t\\\n\t\t     + __GNUC_PATCHLEVEL__)\n#endif\n\n#if __has_attribute(__fallthrough__)\n# define fallthrough                    __attribute__((__fallthrough__))\n#else\n# define fallthrough                    do {} while (0)   \n#endif\n\n#if __has_attribute(__error__)\n# define __compiletime_error(message) __attribute__((error(message)))\n#endif\n\n \n#define __must_be_array(a)\tBUILD_BUG_ON_ZERO(__same_type((a), &(a)[0]))\n\n#ifndef __pure\n#define  __pure\t\t__attribute__((pure))\n#endif\n#define  noinline\t__attribute__((noinline))\n#ifndef __packed\n#define __packed\t__attribute__((packed))\n#endif\n#ifndef __noreturn\n#define __noreturn\t__attribute__((noreturn))\n#endif\n#ifndef __aligned\n#define __aligned(x)\t__attribute__((aligned(x)))\n#endif\n#define __printf(a, b)\t__attribute__((format(printf, a, b)))\n#define __scanf(a, b)\t__attribute__((format(scanf, a, b)))\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

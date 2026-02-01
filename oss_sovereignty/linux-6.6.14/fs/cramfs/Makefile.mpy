@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4d83c2a86e38b0c1ae6461fe38ae564ddf7b0d6ea64141dbe8eb4836fce2fd15",
+  "original_prompt": "Ingested from linux-6.6.14/fs/cramfs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the linux cramfs routines.\n#\n\nobj-$(CONFIG_CRAMFS) += cramfs.o\n\ncramfs-objs := inode.o uncompress.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

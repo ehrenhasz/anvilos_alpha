@@ -1,0 +1,9 @@
+{
+  "module_name": "spinlock_types.h",
+  "hash_id": "cfb4435fa5e7fcc3576e38347a8504ba3895e6bffa33c0c66728f632653a65b7",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/spinlock_types.h",
+  "human_readable_source": " \n\n#ifndef __ASM_GENERIC_SPINLOCK_TYPES_H\n#define __ASM_GENERIC_SPINLOCK_TYPES_H\n\n#include <linux/types.h>\ntypedef atomic_t arch_spinlock_t;\n\n \n#include <asm/qrwlock_types.h>\n\n#define __ARCH_SPIN_LOCK_UNLOCKED\tATOMIC_INIT(0)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

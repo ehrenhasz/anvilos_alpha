@@ -1,0 +1,9 @@
+{
+  "module_name": "renameat.m4",
+  "hash_id": "73fe3942dbffdb400b28fc85220d7ce129c525ab7b8020f9fcfc5e4efe5985c1",
+  "original_prompt": "Ingested from coreutils-9.4/m4/renameat.m4",
+  "human_readable_source": "# serial 4\n# See if we need to provide renameat replacement.\n\ndnl Copyright (C) 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n# Written by Eric Blake.\n\nAC_DEFUN([gl_FUNC_RENAMEAT],\n[\n  AC_REQUIRE([gl_FUNC_OPENAT])\n  AC_REQUIRE([gl_FUNC_RENAME])\n  AC_REQUIRE([gl_STDIO_H_DEFAULTS])\n  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])\n  AC_CHECK_HEADERS([linux/fs.h])\n  AC_CHECK_FUNCS_ONCE([renameat])\n  if test $ac_cv_func_renameat = no; then\n    HAVE_RENAMEAT=0\n  elif test $REPLACE_RENAME = 1; then\n    dnl Solaris 9 and 10 have the same bugs in renameat as in rename.\n    REPLACE_RENAMEAT=1\n  fi\n  gl_CHECK_FUNCS_ANDROID([renameat2], [[#include <stdio.h>]])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mdio-mux.h",
+  "hash_id": "3e120192ee3c6fadd1c8b211b74aaed15d5a7ee52b297a31512380dbb147f784",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mdio-mux.h",
+  "human_readable_source": " \n#ifndef __LINUX_MDIO_MUX_H\n#define __LINUX_MDIO_MUX_H\n#include <linux/device.h>\n#include <linux/phy.h>\n\n \nint mdio_mux_init(struct device *dev,\n\t\t  struct device_node *mux_node,\n\t\t  int (*switch_fn) (int cur, int desired, void *data),\n\t\t  void **mux_handle,\n\t\t  void *data,\n\t\t  struct mii_bus *mux_bus);\n\nvoid mdio_mux_uninit(void *mux_handle);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "efe554113b3013a37f82281707318cbe199800b8c73dbee70d26d4bc3c21b055",
+  "original_prompt": "Ingested from linux-6.6.14/lib/crypto/mpi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# MPI multiprecision maths library (from gpg)\n#\n\nobj-$(CONFIG_MPILIB) = mpi.o\n\nmpi-y = \\\n\tgeneric_mpih-lshift.o\t\t\\\n\tgeneric_mpih-mul1.o\t\t\\\n\tgeneric_mpih-mul2.o\t\t\\\n\tgeneric_mpih-mul3.o\t\t\\\n\tgeneric_mpih-rshift.o\t\t\\\n\tgeneric_mpih-sub1.o\t\t\\\n\tgeneric_mpih-add1.o\t\t\\\n\tec.o\t\t\t\t\\\n\tmpicoder.o\t\t\t\\\n\tmpi-add.o\t\t\t\\\n\tmpi-bit.o\t\t\t\\\n\tmpi-cmp.o\t\t\t\\\n\tmpi-sub-ui.o\t\t\t\\\n\tmpi-div.o\t\t\t\\\n\tmpi-inv.o\t\t\t\\\n\tmpi-mod.o\t\t\t\\\n\tmpi-mul.o\t\t\t\\\n\tmpih-cmp.o\t\t\t\\\n\tmpih-div.o\t\t\t\\\n\tmpih-mul.o\t\t\t\\\n\tmpi-pow.o\t\t\t\\\n\tmpiutil.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

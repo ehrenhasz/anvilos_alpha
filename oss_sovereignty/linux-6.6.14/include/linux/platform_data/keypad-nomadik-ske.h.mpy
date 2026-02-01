@@ -1,0 +1,9 @@
+{
+  "module_name": "keypad-nomadik-ske.h",
+  "hash_id": "14ed05b37648a17d5d48e04f214db1c81ada5b0bf9272e792b8d3bb1cbcf7c5a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/keypad-nomadik-ske.h",
+  "human_readable_source": " \n \n\n#ifndef __SKE_H\n#define __SKE_H\n\n#include <linux/input/matrix_keypad.h>\n\n \n#define SKE_CR\t\t0x00\n#define SKE_VAL0\t0x04\n#define SKE_VAL1\t0x08\n#define SKE_DBCR\t0x0C\n#define SKE_IMSC\t0x10\n#define SKE_RIS\t\t0x14\n#define SKE_MIS\t\t0x18\n#define SKE_ICR\t\t0x1C\n\n \n\n \nstruct ske_keypad_platform_data {\n\tint (*init)(void);\n\tint (*exit)(void);\n\tconst struct matrix_keymap_data *keymap_data;\n\tu8 krow;\n\tu8 kcol;\n\tu8 debounce_ms;\n\tbool no_autorepeat;\n\tbool wakeup_enable;\n};\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

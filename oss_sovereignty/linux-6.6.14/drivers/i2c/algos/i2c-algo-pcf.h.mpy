@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-algo-pcf.h",
+  "hash_id": "cff860f71e1d5b93da96e3765f1d930ed7252f0a235ac3f9d095cba1de0fb274",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/i2c/algos/i2c-algo-pcf.h",
+  "human_readable_source": " \n \n \n \n \n \n\n \n\n#ifndef I2C_PCF8584_H\n#define I2C_PCF8584_H 1\n\n \n#define I2C_PCF_PIN\t0x80\n#define I2C_PCF_ESO\t0x40\n#define I2C_PCF_ES1\t0x20\n#define I2C_PCF_ES2\t0x10\n#define I2C_PCF_ENI\t0x08\n#define I2C_PCF_STA\t0x04\n#define I2C_PCF_STO\t0x02\n#define I2C_PCF_ACK\t0x01\n\n#define I2C_PCF_START    (I2C_PCF_PIN | I2C_PCF_ESO | I2C_PCF_STA | I2C_PCF_ACK)\n#define I2C_PCF_STOP     (I2C_PCF_PIN | I2C_PCF_ESO | I2C_PCF_STO | I2C_PCF_ACK)\n#define I2C_PCF_REPSTART (              I2C_PCF_ESO | I2C_PCF_STA | I2C_PCF_ACK)\n#define I2C_PCF_IDLE     (I2C_PCF_PIN | I2C_PCF_ESO               | I2C_PCF_ACK)\n\n \n \n\n#define I2C_PCF_INI 0x40    \n#define I2C_PCF_STS 0x20\n#define I2C_PCF_BER 0x10\n#define I2C_PCF_AD0 0x08\n#define I2C_PCF_LRB 0x08\n#define I2C_PCF_AAS 0x04\n#define I2C_PCF_LAB 0x02\n#define I2C_PCF_BB  0x01\n\n \n#define I2C_PCF_CLK3\t0x00\n#define I2C_PCF_CLK443\t0x10\n#define I2C_PCF_CLK6\t0x14\n#define I2C_PCF_CLK\t0x18\n#define I2C_PCF_CLK12\t0x1c\n\n \n#define I2C_PCF_TRNS90 0x00\t \n#define I2C_PCF_TRNS45 0x01\t \n#define I2C_PCF_TRNS11 0x02\t \n#define I2C_PCF_TRNS15 0x03\t \n\n\n \n \n \n\n#define I2C_PCF_OWNADR\t0\n#define I2C_PCF_INTREG\tI2C_PCF_ES2\n#define I2C_PCF_CLKREG\tI2C_PCF_ES1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

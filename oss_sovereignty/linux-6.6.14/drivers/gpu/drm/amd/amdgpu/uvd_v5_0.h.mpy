@@ -1,0 +1,9 @@
+{
+  "module_name": "uvd_v5_0.h",
+  "hash_id": "6b544440a6fa3957322c13dcedc8e1f2e29449712fb85bcd4cbf6bba6b90f2da",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/uvd_v5_0.h",
+  "human_readable_source": " \n\n#ifndef __UVD_V5_0_H__\n#define __UVD_V5_0_H__\n\nextern const struct amdgpu_ip_block_version uvd_v5_0_ip_block;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

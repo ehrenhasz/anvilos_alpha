@@ -1,0 +1,9 @@
+{
+  "module_name": "test-get_cpuid.c",
+  "hash_id": "5d0d4b239345736b129dc340069bc648f7840633cc3e38f7cdc47a27bb78dc3e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-get_cpuid.c",
+  "human_readable_source": "\n#include <cpuid.h>\n\nint main(void)\n{\n\tunsigned int eax = 0, ebx = 0, ecx = 0, edx = 0;\n\treturn __get_cpuid(0x15, &eax, &ebx, &ecx, &edx);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "34bc8763c6fbb946a90eab011a6d5de0f1c43f7ed2a602454f07cbe98e2d7c08",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/fp/.gitignore",
+  "human_readable_source": "fp-pidbench\nfp-stress\nfpsimd-test\nrdvl-sme\nrdvl-sve\nsve-probe-vls\nsve-ptrace\nsve-test\nssve-test\nvec-syscfg\nvlset\nza-fork\nza-ptrace\nza-test\nzt-ptrace\nzt-test\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

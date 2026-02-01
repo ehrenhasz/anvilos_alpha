@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ebd852d4081c0dd48cac3d587384f463610f53a4ab8117a01aa6d61a3b5ee0eb",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/pxa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# PXA Platform Support\nsnd-soc-pxa2xx-objs := pxa2xx-pcm.o\nsnd-soc-pxa2xx-ac97-objs := pxa2xx-ac97.o\nsnd-soc-pxa2xx-i2s-objs := pxa2xx-i2s.o\nsnd-soc-pxa-ssp-objs := pxa-ssp.o\nsnd-soc-mmp-sspa-objs := mmp-sspa.o\n\nobj-$(CONFIG_SND_PXA2XX_SOC) += snd-soc-pxa2xx.o\nobj-$(CONFIG_SND_PXA2XX_SOC_AC97) += snd-soc-pxa2xx-ac97.o\nobj-$(CONFIG_SND_PXA2XX_SOC_I2S) += snd-soc-pxa2xx-i2s.o\nobj-$(CONFIG_SND_PXA_SOC_SSP) += snd-soc-pxa-ssp.o\nobj-$(CONFIG_SND_MMP_SOC_SSPA) += snd-soc-mmp-sspa.o\n\n# PXA Machine Support\nsnd-soc-spitz-objs := spitz.o\nobj-$(CONFIG_SND_PXA2XX_SOC_SPITZ) += snd-soc-spitz.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

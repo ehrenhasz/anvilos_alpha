@@ -1,0 +1,9 @@
+{
+  "module_name": "extable.c",
+  "hash_id": "acf63f67f8cdaf25237f20281c559bb5921eead2ad66be69091bf5549f5ddde8",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/vdso/extable.c",
+  "human_readable_source": "\n#include <linux/err.h>\n#include <linux/mm.h>\n#include <asm/current.h>\n#include <asm/traps.h>\n#include <asm/vdso.h>\n\nstruct vdso_exception_table_entry {\n\tint insn, fixup;\n};\n\nbool fixup_vdso_exception(struct pt_regs *regs, int trapnr,\n\t\t\t  unsigned long error_code, unsigned long fault_addr)\n{\n\tconst struct vdso_image *image = current->mm->context.vdso_image;\n\tconst struct vdso_exception_table_entry *extable;\n\tunsigned int nr_entries, i;\n\tunsigned long base;\n\n\t \n\tif (trapnr == X86_TRAP_DB || trapnr == X86_TRAP_BP)\n\t\treturn false;\n\n\tif (!current->mm->context.vdso)\n\t\treturn false;\n\n\tbase =  (unsigned long)current->mm->context.vdso + image->extable_base;\n\tnr_entries = image->extable_len / (sizeof(*extable));\n\textable = image->extable;\n\n\tfor (i = 0; i < nr_entries; i++) {\n\t\tif (regs->ip == base + extable[i].insn) {\n\t\t\tregs->ip = base + extable[i].fixup;\n\t\t\tregs->di = trapnr;\n\t\t\tregs->si = error_code;\n\t\t\tregs->dx = fault_addr;\n\t\t\treturn true;\n\t\t}\n\t}\n\n\treturn false;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

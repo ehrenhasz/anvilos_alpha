@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_vou.h",
+  "hash_id": "26ca1ffea90ef76f590b1902db3f6aeeb435e5fb940613fdd8b805c277e2e383",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/drv-intf/sh_vou.h",
+  "human_readable_source": " \n \n#ifndef SH_VOU_H\n#define SH_VOU_H\n\n#include <linux/i2c.h>\n\n \n#define SH_VOU_PCLK_FALLING\t(1 << 0)\n#define SH_VOU_HSYNC_LOW\t(1 << 1)\n#define SH_VOU_VSYNC_LOW\t(1 << 2)\n\nenum sh_vou_bus_fmt {\n\tSH_VOU_BUS_8BIT,\n\tSH_VOU_BUS_16BIT,\n\tSH_VOU_BUS_BT656,\n};\n\nstruct sh_vou_pdata {\n\tenum sh_vou_bus_fmt bus_fmt;\n\tint i2c_adap;\n\tstruct i2c_board_info *board_info;\n\tunsigned long flags;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

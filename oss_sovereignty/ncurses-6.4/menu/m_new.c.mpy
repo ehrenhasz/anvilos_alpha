@@ -1,0 +1,9 @@
+{
+  "module_name": "m_new.c",
+  "hash_id": "7c74225c6011d1bc36a476d32b06abb6884dc0d734e4d16f777a7e664c7260f0",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_new.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_new.c,v 1.27 2021/06/17 21:26:02 tom Exp $\")\n\n \nMENU_EXPORT(MENU *)\nNCURSES_SP_NAME(new_menu) (NCURSES_SP_DCLx ITEM **items)\n{\n  int err = E_SYSTEM_ERROR;\n  MENU *menu = typeCalloc(MENU, 1);\n\n  T((T_CALLED(\"new_menu(%p,%p)\"), (void *)SP_PARM, (void *)items));\n  if (menu)\n    {\n      T((T_CREATE(\"menu %p\"), (void *)menu));\n      *menu = _nc_Default_Menu;\n      menu->status = 0;\n      menu->rows = menu->frows;\n      menu->cols = menu->fcols;\n#if NCURSES_SP_FUNCS\n       \n      menu->userwin = SP_PARM->_stdscr;\n      menu->usersub = SP_PARM->_stdscr;\n#endif\n      if (items && *items)\n\t{\n\t  if (!_nc_Connect_Items(menu, items))\n\t    {\n\t      err = E_NOT_CONNECTED;\n\t      free(menu);\n\t      menu = (MENU *)0;\n\t    }\n\t  else\n\t    err = E_OK;\n\t}\n    }\n\n  if (!menu)\n    SET_ERROR(err);\n\n  returnMenu(menu);\n}\n\n \n#if NCURSES_SP_FUNCS\nMENU_EXPORT(MENU *)\nnew_menu(ITEM **items)\n{\n  return NCURSES_SP_NAME(new_menu) (CURRENT_SCREEN, items);\n}\n#endif\n\n \nMENU_EXPORT(int)\nfree_menu(MENU *menu)\n{\n  T((T_CALLED(\"free_menu(%p)\"), (void *)menu));\n  if (!menu)\n    RETURN(E_BAD_ARGUMENT);\n\n  if (menu->status & _POSTED)\n    RETURN(E_POSTED);\n\n  if (menu->items)\n    _nc_Disconnect_Items(menu);\n\n  if ((menu->status & _MARK_ALLOCATED) && menu->mark)\n    free(menu->mark);\n\n  free(menu);\n  RETURN(E_OK);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

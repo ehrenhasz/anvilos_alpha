@@ -1,0 +1,9 @@
+{
+  "module_name": "gettimeofday.c",
+  "hash_id": "65ec311bad2c50c47a9fdf72a523af5b48a0a7295a40c9178f31c2fe5c7b7450",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/benchmarks/gettimeofday.c",
+  "human_readable_source": "\n \n\n#include <sys/time.h>\n#include <stdio.h>\n\n#include \"utils.h\"\n\nstatic int test_gettimeofday(void)\n{\n\tint i;\n\n\tstruct timeval tv_start, tv_end, tv_diff;\n\n\tgettimeofday(&tv_start, NULL);\n\n\tfor(i = 0; i < 100000000; i++) {\n\t\tgettimeofday(&tv_end, NULL);\n\t}\n\n\ttimersub(&tv_start, &tv_end, &tv_diff);\n\n\tprintf(\"time = %.6f\\n\", tv_diff.tv_sec + (tv_diff.tv_usec) * 1e-6);\n\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(test_gettimeofday, \"gettimeofday\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

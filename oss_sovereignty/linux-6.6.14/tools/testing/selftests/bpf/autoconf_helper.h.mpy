@@ -1,0 +1,9 @@
+{
+  "module_name": "autoconf_helper.h",
+  "hash_id": "4af27685cb9bad5849ba1750e5c5b215317c715644b89b6408cf45613b86894d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/autoconf_helper.h",
+  "human_readable_source": "\n\n#ifdef HAVE_GENHDR\n# include \"autoconf.h\"\n#else\n# if defined(__i386) || defined(__x86_64) || defined(__s390x__) || defined(__aarch64__)\n#  define CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS 1\n# endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

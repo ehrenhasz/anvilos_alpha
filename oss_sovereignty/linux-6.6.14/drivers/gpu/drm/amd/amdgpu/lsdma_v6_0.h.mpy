@@ -1,0 +1,9 @@
+{
+  "module_name": "lsdma_v6_0.h",
+  "hash_id": "a026b899cbce46736539d0d9322a9ad301564f17c2ac24b6b78f855a7cb11e35",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/lsdma_v6_0.h",
+  "human_readable_source": " \n\n#ifndef __LSDMA_V6_0_H__\n#define __LSDMA_V6_0_H__\n\n#include \"soc15_common.h\"\n\nextern const struct amdgpu_lsdma_funcs lsdma_v6_0_funcs;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

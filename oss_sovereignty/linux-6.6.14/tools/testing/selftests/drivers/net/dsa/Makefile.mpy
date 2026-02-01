@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "20dd14de8f0042ee7d7374aa23d8af547b6fe2fa1d0b861830ab9b320228ae66",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/dsa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+ OR MIT\n\nTEST_PROGS = bridge_locked_port.sh \\\n\tbridge_mdb.sh \\\n\tbridge_mld.sh \\\n\tbridge_vlan_aware.sh \\\n\tbridge_vlan_mcast.sh \\\n\tbridge_vlan_unaware.sh \\\n\tlocal_termination.sh \\\n\tno_forwarding.sh \\\n\ttc_actions.sh \\\n\ttest_bridge_fdb_stress.sh\n\nTEST_PROGS_EXTENDED := lib.sh tc_common.sh\n\nTEST_FILES := forwarding.config\n\ninclude ../../../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

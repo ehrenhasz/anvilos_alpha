@@ -1,0 +1,9 @@
+{
+  "module_name": "policy.h",
+  "hash_id": "9d17b3901be63eb2e0f276aee569bd9a2b2d4d4719d3f602967027676447600e",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/zfs/sys/policy.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SYS_POLICY_H\n#define\t_SYS_POLICY_H\n\n#ifdef _KERNEL\n\n#include <sys/cred.h>\n#include <sys/types.h>\n#include <sys/xvattr.h>\n#include <sys/zpl.h>\n\nstruct znode;\n\nint secpolicy_nfs(const cred_t *);\nint secpolicy_sys_config(const cred_t *, boolean_t);\nint secpolicy_vnode_access2(const cred_t *, struct inode *,\n    uid_t, mode_t, mode_t);\nint secpolicy_vnode_any_access(const cred_t *, struct inode *, uid_t);\nint secpolicy_vnode_chown(const cred_t *, uid_t);\nint secpolicy_vnode_create_gid(const cred_t *);\nint secpolicy_vnode_remove(const cred_t *);\nint secpolicy_vnode_setdac(const cred_t *, uid_t);\nint secpolicy_vnode_setid_retain(struct znode *, const cred_t *, boolean_t);\nint secpolicy_vnode_setids_setgids(const cred_t *, gid_t, zidmap_t *,\n    struct user_namespace *);\nint secpolicy_zinject(const cred_t *);\nint secpolicy_zfs(const cred_t *);\nint secpolicy_zfs_proc(const cred_t *, proc_t *);\nvoid secpolicy_setid_clear(vattr_t *, cred_t *);\nint secpolicy_setid_setsticky_clear(struct inode *, vattr_t *,\n    const vattr_t *, cred_t *, zidmap_t *, struct user_namespace *);\nint secpolicy_xvattr(xvattr_t *, uid_t, cred_t *, mode_t);\nint secpolicy_vnode_setattr(cred_t *, struct inode *, struct vattr *,\n    const struct vattr *, int, int (void *, int, cred_t *), void *);\nint secpolicy_basic_link(const cred_t *);\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

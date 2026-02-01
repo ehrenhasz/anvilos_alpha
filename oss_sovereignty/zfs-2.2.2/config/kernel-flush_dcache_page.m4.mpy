@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-flush_dcache_page.m4",
+  "hash_id": "54fbf32683d9a2d220c1fea24c596912bc47661d3b010a7f297cac69909852d2",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-flush_dcache_page.m4",
+  "human_readable_source": "dnl #\ndnl # Starting from Linux 5.13, flush_dcache_page() becomes an inline\ndnl # function and may indirectly referencing GPL-only cpu_feature_keys on\ndnl # powerpc\ndnl #\n\ndnl #\ndnl # Checking if flush_dcache_page is exported GPL-only\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_FLUSH_DCACHE_PAGE], [\n\tZFS_LINUX_TEST_SRC([flush_dcache_page], [\n\t\t#include <asm/cacheflush.h>\n\t], [\n\t\tflush_dcache_page(0);\n\t], [], [ZFS_META_LICENSE])\n])\nAC_DEFUN([ZFS_AC_KERNEL_FLUSH_DCACHE_PAGE], [\n\tAC_MSG_CHECKING([whether flush_dcache_page() is GPL-only])\n\tZFS_LINUX_TEST_RESULT([flush_dcache_page_license], [\n\t\tAC_MSG_RESULT(no)\n\t], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_FLUSH_DCACHE_PAGE_GPL_ONLY, 1,\n\t\t    [flush_dcache_page() is GPL-only])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

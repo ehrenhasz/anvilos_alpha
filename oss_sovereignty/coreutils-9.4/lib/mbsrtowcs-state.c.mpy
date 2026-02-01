@@ -1,0 +1,9 @@
+{
+  "module_name": "mbsrtowcs-state.c",
+  "hash_id": "dd61fca26005ba845bda4f161e7ddb0728c23b2c27b783aa8ba53c6efda84d5b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mbsrtowcs-state.c",
+  "human_readable_source": " \nmbstate_t _gl_mbsrtowcs_state\n \n#if defined __ELF__\n   \n#else\n   \n  = { 0 }\n#endif\n  ;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

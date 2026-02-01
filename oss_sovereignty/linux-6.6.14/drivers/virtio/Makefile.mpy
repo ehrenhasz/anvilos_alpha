@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1ed31fbb4c7a388c7a9b293c3617b1f4bfc227fda57a24d1fca4c193d591f97a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/virtio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_VIRTIO) += virtio.o virtio_ring.o\nobj-$(CONFIG_VIRTIO_ANCHOR) += virtio_anchor.o\nobj-$(CONFIG_VIRTIO_PCI_LIB) += virtio_pci_modern_dev.o\nobj-$(CONFIG_VIRTIO_PCI_LIB_LEGACY) += virtio_pci_legacy_dev.o\nobj-$(CONFIG_VIRTIO_MMIO) += virtio_mmio.o\nobj-$(CONFIG_VIRTIO_PCI) += virtio_pci.o\nvirtio_pci-y := virtio_pci_modern.o virtio_pci_common.o\nvirtio_pci-$(CONFIG_VIRTIO_PCI_LEGACY) += virtio_pci_legacy.o\nobj-$(CONFIG_VIRTIO_BALLOON) += virtio_balloon.o\nobj-$(CONFIG_VIRTIO_INPUT) += virtio_input.o\nobj-$(CONFIG_VIRTIO_VDPA) += virtio_vdpa.o\nobj-$(CONFIG_VIRTIO_MEM) += virtio_mem.o\nobj-$(CONFIG_VIRTIO_DMA_SHARED_BUFFER) += virtio_dma_buf.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "spi-mt65xx.h",
+  "hash_id": "dc88178c97fb2477ddb7bbcc8a6a5a98e68f8f5aaa5d5a6fcf28fb6177b65813",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/spi-mt65xx.h",
+  "human_readable_source": " \n \n\n#ifndef ____LINUX_PLATFORM_DATA_SPI_MTK_H\n#define ____LINUX_PLATFORM_DATA_SPI_MTK_H\n\n \nstruct mtk_chip_config {\n\tu32 sample_sel;\n\tu32 tick_delay;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

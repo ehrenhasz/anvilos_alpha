@@ -1,0 +1,9 @@
+{
+  "module_name": "btree.h",
+  "hash_id": "37ed61f5afe67787399912be854ee608a97612513a87438a26349e2105344951",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nilfs2/btree.h",
+  "human_readable_source": " \n \n\n#ifndef _NILFS_BTREE_H\n#define _NILFS_BTREE_H\n\n#include <linux/types.h>\n#include <linux/buffer_head.h>\n#include <linux/list.h>\n#include <linux/nilfs2_ondisk.h>\t \n#include \"btnode.h\"\n#include \"bmap.h\"\n\n \nstruct nilfs_btree_path {\n\tstruct buffer_head *bp_bh;\n\tstruct buffer_head *bp_sib_bh;\n\tint bp_index;\n\tunion nilfs_bmap_ptr_req bp_oldreq;\n\tunion nilfs_bmap_ptr_req bp_newreq;\n\tstruct nilfs_btnode_chkey_ctxt bp_ctxt;\n\tvoid (*bp_op)(struct nilfs_bmap *, struct nilfs_btree_path *,\n\t\t      int, __u64 *, __u64 *);\n};\n\n#define NILFS_BTREE_ROOT_SIZE\t\tNILFS_BMAP_SIZE\n#define NILFS_BTREE_ROOT_NCHILDREN_MAX\t\t\t\t\t\\\n\t((NILFS_BTREE_ROOT_SIZE - sizeof(struct nilfs_btree_node)) /\t\\\n\t (sizeof(__le64  ) + sizeof(__le64  )))\n#define NILFS_BTREE_ROOT_NCHILDREN_MIN\t0\n#define NILFS_BTREE_NODE_EXTRA_PAD_SIZE\t(sizeof(__le64))\n#define NILFS_BTREE_NODE_NCHILDREN_MAX(nodesize)\t\t\t\\\n\t(((nodesize) - sizeof(struct nilfs_btree_node) -\t\t\\\n\t\tNILFS_BTREE_NODE_EXTRA_PAD_SIZE) /\t\t\t\\\n\t (sizeof(__le64  ) + sizeof(__le64  )))\n#define NILFS_BTREE_NODE_NCHILDREN_MIN(nodesize)\t\t\t\\\n\t((NILFS_BTREE_NODE_NCHILDREN_MAX(nodesize) - 1) / 2 + 1)\n#define NILFS_BTREE_KEY_MIN\t((__u64)0)\n#define NILFS_BTREE_KEY_MAX\t(~(__u64)0)\n\nextern struct kmem_cache *nilfs_btree_path_cache;\n\nint nilfs_btree_init(struct nilfs_bmap *);\nint nilfs_btree_convert_and_insert(struct nilfs_bmap *, __u64, __u64,\n\t\t\t\t   const __u64 *, const __u64 *, int);\nvoid nilfs_btree_init_gc(struct nilfs_bmap *);\n\nint nilfs_btree_broken_node_block(struct buffer_head *bh);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

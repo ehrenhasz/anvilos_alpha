@@ -1,0 +1,9 @@
+{
+  "module_name": "playback.h",
+  "hash_id": "5cf0787d50a135354195dfee9bd4371a5e26eee3c7f327d0e0828a47271c3926",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/line6/playback.h",
+  "human_readable_source": " \n \n\n#ifndef PLAYBACK_H\n#define PLAYBACK_H\n\n#include <sound/pcm.h>\n\n#include \"driver.h\"\n\n \n#define USE_CLEAR_BUFFER_WORKAROUND 1\n\nextern const struct snd_pcm_ops snd_line6_playback_ops;\n\nextern int line6_create_audio_out_urbs(struct snd_line6_pcm *line6pcm);\nextern int line6_submit_audio_out_all_urbs(struct snd_line6_pcm *line6pcm);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

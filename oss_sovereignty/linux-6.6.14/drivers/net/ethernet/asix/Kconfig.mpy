@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "04a66630e83229126acacaa059dd98faa1d10f4021093927239c2af136d77ce2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/asix/Kconfig",
+  "human_readable_source": "#\n# Asix network device configuration\n#\n\nconfig NET_VENDOR_ASIX\n\tbool \"Asix devices\"\n\tdefault y\n\thelp\n\t  If you have a network (Ethernet, non-USB, not NE2000 compatible)\n\t  interface based on a chip from ASIX, say Y.\n\nif NET_VENDOR_ASIX\n\nconfig SPI_AX88796C\n\ttristate \"Asix AX88796C-SPI support\"\n\tselect PHYLIB\n\tdepends on SPI\n\tdepends on GPIOLIB\n\thelp\n\t  Say Y here if you intend to use ASIX AX88796C attached in SPI mode.\n\nconfig SPI_AX88796C_COMPRESSION\n\tbool \"SPI transfer compression\"\n\tdefault n\n\tdepends on SPI_AX88796C\n\thelp\n\t  Say Y here to enable SPI transfer compression. It saves up\n\t  to 24 dummy cycles during each transfer which may noticeably\n\t  speed up short transfers. This sets the default value that is\n\t  inherited by network interfaces during probe. It can be\n\t  changed at run time via spi-compression ethtool tunable.\n\n\t  If unsure say N.\n\nendif # NET_VENDOR_ASIX\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

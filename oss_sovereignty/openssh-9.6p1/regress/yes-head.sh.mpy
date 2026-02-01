@@ -1,0 +1,9 @@
+{
+  "module_name": "yes-head.sh",
+  "hash_id": "d0476dab9700512b00d2691e2d4d528ed33c2d7d28adcda111bd2fddabd7df84",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/yes-head.sh",
+  "human_readable_source": "#\t$OpenBSD: yes-head.sh,v 1.7 2023/01/14 10:05:54 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"yes pipe head\"\n\nlines=`${SSH} -F $OBJ/ssh_proxy thishost 'sh -c \"while true;do echo yes;done | _POSIX2_VERSION=199209 head -2000\"' | (sleep 3 ; wc -l)`\nif [ $? -ne 0 ]; then\n\tfail \"yes|head test failed\"\n+\tlines=0\nfi\nif [ $lines -ne 2000 ]; then\n\tfail \"yes|head returns $lines lines instead of 2000\"\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

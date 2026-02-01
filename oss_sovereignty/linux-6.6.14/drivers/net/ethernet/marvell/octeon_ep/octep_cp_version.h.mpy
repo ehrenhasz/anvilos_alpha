@@ -1,0 +1,9 @@
+{
+  "module_name": "octep_cp_version.h",
+  "hash_id": "648c17be74232860b1068c374bced6a0ab0426d30c87ffc62b8514b1cb74fce2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/octeon_ep/octep_cp_version.h",
+  "human_readable_source": " \n#ifndef __OCTEP_CP_VERSION_H__\n#define __OCTEP_CP_VERSION_H__\n\n#define OCTEP_CP_VERSION(a, b, c)\t((((a) & 0xff) << 16) + \\\n\t\t\t\t\t (((b) & 0xff) << 8) + \\\n\t\t\t\t\t  ((c) & 0xff))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

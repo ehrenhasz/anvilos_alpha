@@ -1,0 +1,9 @@
+{
+  "module_name": "db1000.c",
+  "hash_id": "63fbdfc5039c1b3c3d1ca490de6b6af42965ba7cdb8585fec93852c87bd915f6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/au1x/db1000.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/moduleparam.h>\n#include <linux/timer.h>\n#include <linux/interrupt.h>\n#include <linux/platform_device.h>\n#include <sound/core.h>\n#include <sound/pcm.h>\n#include <sound/soc.h>\n#include <asm/mach-au1x00/au1000.h>\n#include <asm/mach-db1x00/bcsr.h>\n\n#include \"psc.h\"\n\nSND_SOC_DAILINK_DEFS(hifi,\n\tDAILINK_COMP_ARRAY(COMP_CPU(\"alchemy-ac97c\")),\n\tDAILINK_COMP_ARRAY(COMP_CODEC(\"ac97-codec\", \"ac97-hifi\")),\n\tDAILINK_COMP_ARRAY(COMP_PLATFORM(\"alchemy-pcm-dma.0\")));\n\nstatic struct snd_soc_dai_link db1000_ac97_dai = {\n\t.name\t\t= \"AC97\",\n\t.stream_name\t= \"AC97 HiFi\",\n\tSND_SOC_DAILINK_REG(hifi),\n};\n\nstatic struct snd_soc_card db1000_ac97 = {\n\t.name\t\t= \"DB1000_AC97\",\n\t.owner\t\t= THIS_MODULE,\n\t.dai_link\t= &db1000_ac97_dai,\n\t.num_links\t= 1,\n};\n\nstatic int db1000_audio_probe(struct platform_device *pdev)\n{\n\tstruct snd_soc_card *card = &db1000_ac97;\n\tcard->dev = &pdev->dev;\n\treturn devm_snd_soc_register_card(&pdev->dev, card);\n}\n\nstatic struct platform_driver db1000_audio_driver = {\n\t.driver\t= {\n\t\t.name\t= \"db1000-audio\",\n\t\t.pm\t= &snd_soc_pm_ops,\n\t},\n\t.probe\t\t= db1000_audio_probe,\n};\n\nmodule_platform_driver(db1000_audio_driver);\n\nMODULE_LICENSE(\"GPL\");\nMODULE_DESCRIPTION(\"DB1000/DB1500/DB1100 ASoC audio\");\nMODULE_AUTHOR(\"Manuel Lauss\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

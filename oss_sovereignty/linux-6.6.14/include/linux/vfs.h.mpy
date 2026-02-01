@@ -1,0 +1,9 @@
+{
+  "module_name": "vfs.h",
+  "hash_id": "fdf468ed9e22b900bdc8fc903aec8cd1b7b43e0541492b85e387325eba2e7a15",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/vfs.h",
+  "human_readable_source": " \n#ifndef _LINUX_VFS_H\n#define _LINUX_VFS_H\n\n#include <linux/statfs.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

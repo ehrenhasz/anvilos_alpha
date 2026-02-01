@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_bnlm.host.h",
+  "hash_id": "604ce8606764a73b8a25655fcb2e162449f184d698dcfe5eee7caf2f7adb1afa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/bnlm/ia_css_bnlm.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_BNLM_HOST_H\n#define __IA_CSS_BNLM_HOST_H\n\n#include \"ia_css_bnlm_types.h\"\n#include \"ia_css_bnlm_param.h\"\n\nvoid\nia_css_bnlm_vmem_encode(\n    struct bnlm_vmem_params *to,\n    const struct ia_css_bnlm_config *from,\n    size_t size);\n\nvoid\nia_css_bnlm_encode(\n    struct bnlm_dmem_params *to,\n    const struct ia_css_bnlm_config *from,\n    size_t size);\n\n#ifndef IA_CSS_NO_DEBUG\nvoid\nia_css_bnlm_debug_trace(\n    const struct ia_css_bnlm_config *config,\n    unsigned int level);\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

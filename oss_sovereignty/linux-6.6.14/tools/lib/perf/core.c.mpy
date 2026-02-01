@@ -1,0 +1,9 @@
+{
+  "module_name": "core.c",
+  "hash_id": "f137c6fce9ea5988fe93ace562286c0ff5e3fec08cdf552771d0ea6ab81e31b5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/perf/core.c",
+  "human_readable_source": "\n\n#define __printf(a, b)  __attribute__((format(printf, a, b)))\n\n#include <stdio.h>\n#include <stdarg.h>\n#include <unistd.h>\n#include <linux/compiler.h>\n#include <perf/core.h>\n#include <internal/lib.h>\n#include \"internal.h\"\n\nstatic int __base_pr(enum libperf_print_level level __maybe_unused, const char *format,\n\t\t     va_list args)\n{\n\treturn vfprintf(stderr, format, args);\n}\n\nstatic libperf_print_fn_t __libperf_pr = __base_pr;\n\n__printf(2, 3)\nvoid libperf_print(enum libperf_print_level level, const char *format, ...)\n{\n\tva_list args;\n\n\tif (!__libperf_pr)\n\t\treturn;\n\n\tva_start(args, format);\n\t__libperf_pr(level, format, args);\n\tva_end(args);\n}\n\nvoid libperf_init(libperf_print_fn_t fn)\n{\n\tpage_size = sysconf(_SC_PAGE_SIZE);\n\t__libperf_pr = fn;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

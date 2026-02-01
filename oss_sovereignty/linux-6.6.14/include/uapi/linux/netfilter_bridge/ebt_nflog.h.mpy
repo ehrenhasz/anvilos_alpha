@@ -1,0 +1,9 @@
+{
+  "module_name": "ebt_nflog.h",
+  "hash_id": "3e51647137816caa2181dbce8e992d054370fe34c1c67304d8ad75931189c069",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_bridge/ebt_nflog.h",
+  "human_readable_source": " \n#ifndef __LINUX_BRIDGE_EBT_NFLOG_H\n#define __LINUX_BRIDGE_EBT_NFLOG_H\n\n#include <linux/types.h>\n\n#define EBT_NFLOG_MASK 0x0\n\n#define EBT_NFLOG_PREFIX_SIZE 64\n#define EBT_NFLOG_WATCHER \"nflog\"\n\n#define EBT_NFLOG_DEFAULT_GROUP\t\t0x1\n#define EBT_NFLOG_DEFAULT_THRESHOLD\t1\n\nstruct ebt_nflog_info {\n\t__u32 len;\n\t__u16 group;\n\t__u16 threshold;\n\t__u16 flags;\n\t__u16 pad;\n\tchar prefix[EBT_NFLOG_PREFIX_SIZE];\n};\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

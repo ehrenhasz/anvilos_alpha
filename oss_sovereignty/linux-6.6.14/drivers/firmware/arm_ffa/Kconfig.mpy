@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c47ebe5ba1b43a6e1225c59ea48812a5a0821f2b2e2b87afc04fb8f913e8c78c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/arm_ffa/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig ARM_FFA_TRANSPORT\n\ttristate \"Arm Firmware Framework for Armv8-A\"\n\tdepends on OF\n\tdepends on ARM64\n\tdefault n\n\thelp\n\t  This Firmware Framework(FF) for Arm A-profile processors describes\n\t  interfaces that standardize communication between the various\n\t  software images which includes communication between images in\n\t  the Secure world and Normal world. It also leverages the\n\t  virtualization extension to isolate software images provided\n\t  by an ecosystem of vendors from each other.\n\n\t  This driver provides interface for all the client drivers making\n\t  use of the features offered by ARM FF-A.\n\nconfig ARM_FFA_SMCCC\n\tbool\n\tdefault ARM_FFA_TRANSPORT\n\tdepends on ARM64 && HAVE_ARM_SMCCC_DISCOVERY\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

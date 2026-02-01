@@ -1,0 +1,9 @@
+{
+  "module_name": "mock_dmabuf.h",
+  "hash_id": "960e62183e4e3f81a4164135208a153cc4920fbd8553cd3442f5a928ee8ce7b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.h",
+  "human_readable_source": " \n\n#ifndef __MOCK_DMABUF_H__\n#define __MOCK_DMABUF_H__\n\n#include <linux/dma-buf.h>\n\nstruct mock_dmabuf {\n\tint npages;\n\tstruct page *pages[];\n};\n\nstatic inline struct mock_dmabuf *to_mock(struct dma_buf *buf)\n{\n\treturn buf->priv;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

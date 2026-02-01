@@ -1,0 +1,9 @@
+{
+  "module_name": "bmg160_spi.c",
+  "hash_id": "62485b177e2274e3ce83b6cdb07c8dc93be499447c2b510e4474487ab08aafa0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/gyro/bmg160_spi.c",
+  "human_readable_source": "\n#include <linux/spi/spi.h>\n#include <linux/regmap.h>\n#include <linux/iio/iio.h>\n#include <linux/module.h>\n\n#include \"bmg160.h\"\n\nstatic const struct regmap_config bmg160_regmap_spi_conf = {\n\t.reg_bits = 8,\n\t.val_bits = 8,\n\t.max_register = 0x3f,\n};\n\nstatic int bmg160_spi_probe(struct spi_device *spi)\n{\n\tstruct regmap *regmap;\n\tconst struct spi_device_id *id = spi_get_device_id(spi);\n\n\tregmap = devm_regmap_init_spi(spi, &bmg160_regmap_spi_conf);\n\tif (IS_ERR(regmap)) {\n\t\tdev_err(&spi->dev, \"Failed to register spi regmap: %pe\\n\",\n\t\t\tregmap);\n\t\treturn PTR_ERR(regmap);\n\t}\n\n\treturn bmg160_core_probe(&spi->dev, regmap, spi->irq, id->name);\n}\n\nstatic void bmg160_spi_remove(struct spi_device *spi)\n{\n\tbmg160_core_remove(&spi->dev);\n}\n\nstatic const struct spi_device_id bmg160_spi_id[] = {\n\t{\"bmg160\", 0},\n\t{\"bmi055_gyro\", 0},\n\t{\"bmi088_gyro\", 0},\n\t{}\n};\n\nMODULE_DEVICE_TABLE(spi, bmg160_spi_id);\n\nstatic struct spi_driver bmg160_spi_driver = {\n\t.driver = {\n\t\t.name\t= \"bmg160_spi\",\n\t\t.pm\t= &bmg160_pm_ops,\n\t},\n\t.probe\t\t= bmg160_spi_probe,\n\t.remove\t\t= bmg160_spi_remove,\n\t.id_table\t= bmg160_spi_id,\n};\nmodule_spi_driver(bmg160_spi_driver);\n\nMODULE_AUTHOR(\"Markus Pargmann <mpa@pengutronix.de>\");\nMODULE_LICENSE(\"GPL v2\");\nMODULE_DESCRIPTION(\"BMG160 SPI Gyro driver\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

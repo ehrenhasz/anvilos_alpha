@@ -1,0 +1,9 @@
+{
+  "module_name": "port-solaris.h",
+  "hash_id": "24f266c5d74352f3b96e0a56b10ada7f0db0cc15dde0403ca5a5e1afa1bb6ca7",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/port-solaris.h",
+  "human_readable_source": " \n\n#ifndef _PORT_SOLARIS_H\n\n#include <sys/types.h>\n\n#include <pwd.h>\n\nvoid solaris_contract_pre_fork(void);\nvoid solaris_contract_post_fork_child(void);\nvoid solaris_contract_post_fork_parent(pid_t pid);\nvoid solaris_set_default_project(struct passwd *);\n# ifdef USE_SOLARIS_PRIVS\n#include <priv.h>\npriv_set_t *solaris_basic_privset(void);\nvoid solaris_drop_privs_pinfo_net_fork_exec(void);\nvoid solaris_drop_privs_root_pinfo_net(void);\nvoid solaris_drop_privs_root_pinfo_net_exec(void);\n# endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

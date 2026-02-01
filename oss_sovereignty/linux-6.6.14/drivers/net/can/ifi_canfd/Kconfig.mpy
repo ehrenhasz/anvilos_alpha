@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ab79a48bca5b486002c2d50154404e9ef77c4065ca804352975941c0c47e37ff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/ifi_canfd/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CAN_IFI_CANFD\n\tdepends on HAS_IOMEM\n\ttristate \"IFI CAN_FD IP\"\n\thelp\n\t  This driver adds support for the I/F/I CAN_FD soft IP block\n\t  connected to the \"platform bus\" (Linux abstraction for directly\n\t  to the processor attached devices). The CAN_FD is most often\n\t  synthesised into an FPGA or CPLD.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

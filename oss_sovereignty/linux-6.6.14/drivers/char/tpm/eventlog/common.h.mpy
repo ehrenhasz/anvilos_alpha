@@ -1,0 +1,9 @@
+{
+  "module_name": "common.h",
+  "hash_id": "cc03fb6ea37f7cb9eefdf88d700cfe08c6a1db1ea2a5f070a43539510a530f12",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/tpm/eventlog/common.h",
+  "human_readable_source": "#ifndef __TPM_EVENTLOG_COMMON_H__\n#define __TPM_EVENTLOG_COMMON_H__\n\n#include \"../tpm.h\"\n\nextern const struct seq_operations tpm1_ascii_b_measurements_seqops;\nextern const struct seq_operations tpm1_binary_b_measurements_seqops;\nextern const struct seq_operations tpm2_binary_b_measurements_seqops;\n\n#if defined(CONFIG_ACPI)\nint tpm_read_log_acpi(struct tpm_chip *chip);\n#else\nstatic inline int tpm_read_log_acpi(struct tpm_chip *chip)\n{\n\treturn -ENODEV;\n}\n#endif\n#if defined(CONFIG_OF)\nint tpm_read_log_of(struct tpm_chip *chip);\n#else\nstatic inline int tpm_read_log_of(struct tpm_chip *chip)\n{\n\treturn -ENODEV;\n}\n#endif\n#if defined(CONFIG_EFI)\nint tpm_read_log_efi(struct tpm_chip *chip);\n#else\nstatic inline int tpm_read_log_efi(struct tpm_chip *chip)\n{\n\treturn -ENODEV;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "basename.c",
+  "hash_id": "cb33341432710ee372e78dbee59f6b3dc0e6ce7afbe15464b154b04eb574c859",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/basename.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"includes.h\"\n#ifndef HAVE_BASENAME\n#include <errno.h>\n#include <string.h>\n\nchar *\nbasename(const char *path)\n{\n\tstatic char bname[MAXPATHLEN];\n\tsize_t len;\n\tconst char *endp, *startp;\n\n\t \n\tif (path == NULL || *path == '\\0') {\n\t\tbname[0] = '.';\n\t\tbname[1] = '\\0';\n\t\treturn (bname);\n\t}\n\n\t \n\tendp = path + strlen(path) - 1;\n\twhile (endp > path && *endp == '/')\n\t\tendp--;\n\n\t \n\tif (endp == path && *endp == '/') {\n\t\tbname[0] = '/';\n\t\tbname[1] = '\\0';\n\t\treturn (bname);\n\t}\n\n\t \n\tstartp = endp;\n\twhile (startp > path && *(startp - 1) != '/')\n\t\tstartp--;\n\n\tlen = endp - startp + 1;\n\tif (len >= sizeof(bname)) {\n\t\terrno = ENAMETOOLONG;\n\t\treturn (NULL);\n\t}\n\tmemcpy(bname, startp, len);\n\tbname[len] = '\\0';\n\treturn (bname);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

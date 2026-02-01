@@ -1,0 +1,9 @@
+{
+  "module_name": "test-listen.c",
+  "hash_id": "a786599c25ef2d5a1eb793305270bb68c2fb4f282b98bc6d363ee6dd0b95ec7e",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-listen.c",
+  "human_readable_source": " \n#if __GNUC__ >= 13\n# pragma GCC diagnostic ignored \"-Wanalyzer-fd-use-without-check\"\n#endif\n\nint\nmain (void)\n{\n  (void) gl_sockets_startup (SOCKETS_1_1);\n\n   \n  {\n    errno = 0;\n    ASSERT (listen (-1, 1) == -1);\n    ASSERT (errno == EBADF);\n  }\n  {\n    close (99);\n    errno = 0;\n    ASSERT (listen (99 ,1) == -1);\n    ASSERT (errno == EBADF);\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

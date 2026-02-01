@@ -1,0 +1,9 @@
+{
+  "module_name": "aesp8-ppc.h",
+  "hash_id": "9d982eda681829fabeb5356f0db2c5f550d7810938463e072dd4cfdd55ad8483",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/vmx/aesp8-ppc.h",
+  "human_readable_source": " \n#include <linux/types.h>\n#include <crypto/aes.h>\n\nstruct aes_key {\n\tu8 key[AES_MAX_KEYLENGTH];\n\tint rounds;\n};\n\nextern struct shash_alg p8_ghash_alg;\nextern struct crypto_alg p8_aes_alg;\nextern struct skcipher_alg p8_aes_cbc_alg;\nextern struct skcipher_alg p8_aes_ctr_alg;\nextern struct skcipher_alg p8_aes_xts_alg;\n\nint aes_p8_set_encrypt_key(const u8 *userKey, const int bits,\n\t\t\t   struct aes_key *key);\nint aes_p8_set_decrypt_key(const u8 *userKey, const int bits,\n\t\t\t   struct aes_key *key);\nvoid aes_p8_encrypt(const u8 *in, u8 *out, const struct aes_key *key);\nvoid aes_p8_decrypt(const u8 *in, u8 *out, const struct aes_key *key);\nvoid aes_p8_cbc_encrypt(const u8 *in, u8 *out, size_t len,\n\t\t\tconst struct aes_key *key, u8 *iv, const int enc);\nvoid aes_p8_ctr32_encrypt_blocks(const u8 *in, u8 *out,\n\t\t\t\t size_t len, const struct aes_key *key,\n\t\t\t\t const u8 *iv);\nvoid aes_p8_xts_encrypt(const u8 *in, u8 *out, size_t len,\n\t\t\tconst struct aes_key *key1, const struct aes_key *key2, u8 *iv);\nvoid aes_p8_xts_decrypt(const u8 *in, u8 *out, size_t len,\n\t\t\tconst struct aes_key *key1, const struct aes_key *key2, u8 *iv);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

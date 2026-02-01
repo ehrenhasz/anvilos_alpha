@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "fab1002b3aa8fecdee37bd692aa0cd6bfe228783e586f687011ed74647e47db8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/device_handler/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# SCSI Device Handler configuration\n#\n\nmenuconfig SCSI_DH\n\tbool \"SCSI Device Handlers\"\n\tdepends on SCSI\n\tdefault n\n\thelp\n\t  SCSI Device Handlers provide device specific support for\n\t  devices utilized in multipath configurations. Say Y here to\n\t  select support for specific hardware.\n\nconfig SCSI_DH_RDAC\n\ttristate \"LSI RDAC Device Handler\"\n\tdepends on SCSI_DH && SCSI\n\thelp\n\tIf you have a LSI RDAC select y. Otherwise, say N.\n\nconfig SCSI_DH_HP_SW\n\ttristate \"HP/COMPAQ MSA Device Handler\"\n\tdepends on SCSI_DH && SCSI\n\thelp\n\tIf you have a HP/COMPAQ MSA device that requires START_STOP to\n\tbe sent to start it and cannot upgrade the firmware then select y.\n\tOtherwise, say N.\n\nconfig SCSI_DH_EMC\n\ttristate \"EMC CLARiiON Device Handler\"\n\tdepends on SCSI_DH && SCSI\n\thelp\n\tIf you have a EMC CLARiiON select y. Otherwise, say N.\n\nconfig SCSI_DH_ALUA\n\ttristate \"SPC-3 ALUA Device Handler\"\n\tdepends on SCSI_DH && SCSI\n\thelp\n\t  SCSI Device handler for generic SPC-3 Asymmetric Logical Unit\n\t  Access (ALUA).\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

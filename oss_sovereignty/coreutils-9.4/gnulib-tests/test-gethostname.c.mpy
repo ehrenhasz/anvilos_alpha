@@ -1,0 +1,9 @@
+{
+  "module_name": "test-gethostname.c",
+  "hash_id": "59cb9c56dc52a91c25a9478045ee46c67e7a9e453544491d69493d66a71043b3",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-gethostname.c",
+  "human_readable_source": " \n#include <unistd.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (gethostname, int, (char *, size_t));\n\n \n#include <limits.h>\n\n#include <stdio.h>\n#include <string.h>\n#include <errno.h>\n\n#define NOHOSTNAME \"magic-gnulib-test-string\"\n\nint\nmain (int argc, _GL_UNUSED char *argv[])\n{\n  char buf[HOST_NAME_MAX];\n  int rc;\n\n  if (strlen (NOHOSTNAME) >= HOST_NAME_MAX)\n    {\n      printf (\"HOST_NAME_MAX impossibly small?! %d\\n\", HOST_NAME_MAX);\n      return 2;\n    }\n\n  strcpy (buf, NOHOSTNAME);\n\n  rc = gethostname (buf, sizeof (buf));\n\n  if (rc != 0)\n    {\n      printf (\"gethostname failed, rc %d errno %d\\n\", rc, errno);\n      return 1;\n    }\n\n  if (strcmp (buf, NOHOSTNAME) == 0)\n    {\n      printf (\"gethostname left buffer untouched.\\n\");\n      return 1;\n    }\n\n  if (argc > 1)\n    printf (\"hostname: %s\\n\", buf);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

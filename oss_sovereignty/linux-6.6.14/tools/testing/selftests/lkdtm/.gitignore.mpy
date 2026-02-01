@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "26befab346e5813ec97699bc62a8ac8cab89d3e359011d8a10daa47483abf568",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/lkdtm/.gitignore",
+  "human_readable_source": "*.sh\n!run.sh\n!stack-entropy.sh\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

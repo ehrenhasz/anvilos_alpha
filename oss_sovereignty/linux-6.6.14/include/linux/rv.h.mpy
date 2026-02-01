@@ -1,0 +1,9 @@
+{
+  "module_name": "rv.h",
+  "hash_id": "e4d8f323c265bb56d0cecb98299c8749b6926596cf6fca7d7f079b1c792cb90e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rv.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_RV_H\n#define _LINUX_RV_H\n\n#define MAX_DA_NAME_LEN\t24\n\n#ifdef CONFIG_RV\n \nstruct da_monitor {\n\tbool\t\tmonitoring;\n\tunsigned int\tcurr_state;\n};\n\n \n#define RV_PER_TASK_MONITORS\t\t1\n#define RV_PER_TASK_MONITOR_INIT\t(RV_PER_TASK_MONITORS)\n\n \nunion rv_task_monitor {\n\tstruct da_monitor da_mon;\n};\n\n#ifdef CONFIG_RV_REACTORS\nstruct rv_reactor {\n\tconst char\t\t*name;\n\tconst char\t\t*description;\n\tvoid\t\t\t(*react)(char *msg);\n};\n#endif\n\nstruct rv_monitor {\n\tconst char\t\t*name;\n\tconst char\t\t*description;\n\tbool\t\t\tenabled;\n\tint\t\t\t(*enable)(void);\n\tvoid\t\t\t(*disable)(void);\n\tvoid\t\t\t(*reset)(void);\n#ifdef CONFIG_RV_REACTORS\n\tvoid\t\t\t(*react)(char *msg);\n#endif\n};\n\nbool rv_monitoring_on(void);\nint rv_unregister_monitor(struct rv_monitor *monitor);\nint rv_register_monitor(struct rv_monitor *monitor);\nint rv_get_task_monitor_slot(void);\nvoid rv_put_task_monitor_slot(int slot);\n\n#ifdef CONFIG_RV_REACTORS\nbool rv_reacting_on(void);\nint rv_unregister_reactor(struct rv_reactor *reactor);\nint rv_register_reactor(struct rv_reactor *reactor);\n#endif  \n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

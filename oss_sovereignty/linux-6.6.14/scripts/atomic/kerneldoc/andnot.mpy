@@ -1,0 +1,9 @@
+{
+  "module_name": "andnot",
+  "hash_id": "dc8d3f1706b83b805b4fdf36c09719d4b4c0166ae159a4354e9624165cae3bdb",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/kerneldoc/andnot",
+  "human_readable_source": "cat <<EOF\n/**\n * ${class}${atomicname}() - atomic bitwise AND NOT with ${desc_order} ordering\n * @i: ${int} value\n * @v: pointer to ${atomic}_t\n *\n * Atomically updates @v to (@v & ~@i) with ${desc_order} ordering.\n *\n * ${desc_noinstr}\n *\n * ${desc_return}\n */\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "coredump.h",
+  "hash_id": "90108d4102d23516c8ef5fe11c3f4a1f9be3765f778176ad7a69d550c7e4ee03",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt7996/coredump.h",
+  "human_readable_source": " \n \n\n#ifndef _COREDUMP_H_\n#define _COREDUMP_H_\n\n#include \"mt7996.h\"\n\nstruct mt7996_coredump {\n\tchar magic[16];\n\n\tu32 len;\n\n\tguid_t guid;\n\n\t \n\tu64 tv_sec;\n\t \n\tu64 tv_nsec;\n\t \n\tchar kernel[64];\n\t \n\tchar fw_ver[ETHTOOL_FWVERS_LEN];\n\n\tu32 device_id;\n\n\t \n\tchar fw_state[12];\n\n\t \n\tchar pc_current[16];\n\tu32 pc_stack[17];\n\t \n\tu32 lr_stack[16];\n\n\t \n\tu8 data[];\n} __packed;\n\nstruct mt7996_coredump_mem {\n\tu32 len;\n\tu8 data[];\n} __packed;\n\nstruct mt7996_mem_hdr {\n\tu32 start;\n\tu32 len;\n\tu8 data[];\n};\n\nstruct mt7996_mem_region {\n\tu32 start;\n\tsize_t len;\n\n\tconst char *name;\n};\n\n#ifdef CONFIG_DEV_COREDUMP\n\nconst struct mt7996_mem_region *\nmt7996_coredump_get_mem_layout(struct mt7996_dev *dev, u32 *num);\nstruct mt7996_crash_data *mt7996_coredump_new(struct mt7996_dev *dev);\nint mt7996_coredump_submit(struct mt7996_dev *dev);\nint mt7996_coredump_register(struct mt7996_dev *dev);\nvoid mt7996_coredump_unregister(struct mt7996_dev *dev);\n\n#else  \n\nstatic inline const struct mt7996_mem_region *\nmt7996_coredump_get_mem_layout(struct mt7996_dev *dev, u32 *num)\n{\n\treturn NULL;\n}\n\nstatic inline int mt7996_coredump_submit(struct mt7996_dev *dev)\n{\n\treturn 0;\n}\n\nstatic inline struct\nmt7996_crash_data *mt7996_coredump_new(struct mt7996_dev *dev)\n{\n\treturn NULL;\n}\n\nstatic inline int mt7996_coredump_register(struct mt7996_dev *dev)\n{\n\treturn 0;\n}\n\nstatic inline void mt7996_coredump_unregister(struct mt7996_dev *dev)\n{\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

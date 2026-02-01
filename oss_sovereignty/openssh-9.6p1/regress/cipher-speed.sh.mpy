@@ -1,0 +1,9 @@
+{
+  "module_name": "cipher-speed.sh",
+  "hash_id": "9dbea092dddca80d2573484c71ea4e80d0ee69ba58ff33560c5d3b513700dfc7",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/cipher-speed.sh",
+  "human_readable_source": "#\t$OpenBSD: cipher-speed.sh,v 1.14 2017/04/30 23:34:55 djm Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"cipher speed\"\n\n# Enable all supported ciphers and macs.\nciphers=`${SSH} -Q Ciphers | tr '\\n' , | sed 's/,$//'`\nmacs=`${SSH} -Q MACs | tr '\\n' , | sed 's/,$//'`\ncat >>$OBJ/sshd_proxy <<EOD\nCiphers $ciphers\nMACs $macs\nEOD\n\nincrease_datafile_size 10000 # 10MB\n\ngetbytes ()\n{\n\tsed -n -e '/transferred/s/.*secs (\\(.* bytes.sec\\).*/\\1/p' \\\n\t    -e '/copied/s/.*s, \\(.* MB.s\\).*/\\1/p'\n}\n\ntries=\"1 2\"\n\nfor c in `${SSH} -Q cipher`; do n=0; for m in `${SSH} -Q mac`; do\n\ttrace \"cipher $c mac $m\"\n\tfor x in $tries; do\n\t\tprintf \"%-60s\" \"$c/$m:\"\n\t\t( ${SSH} -o 'compression no' \\\n\t\t\t-F $OBJ/ssh_proxy -m $m -c $c somehost \\\n\t\t\texec sh -c \\'\"dd of=/dev/null obs=32k\"\\' \\\n\t\t< ${DATA} ) 2>&1 | getbytes\n\n\t\tif [ $? -ne 0 ]; then\n\t\t\tfail \"ssh failed with mac $m cipher $c\"\n\t\tfi\n\tdone\n\t# No point trying all MACs for AEAD ciphers since they are ignored.\n\tif ${SSH} -Q cipher-auth | grep \"^${c}\\$\" >/dev/null 2>&1 ; then\n\t\tbreak\n\tfi\n\tn=`expr $n + 1`\ndone; done\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

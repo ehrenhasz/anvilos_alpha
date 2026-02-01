@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_clock.h",
+  "hash_id": "441858d44e478012b749e604d56c16df4ea9d910b2b47e994d977eec8679935d",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/trace_clock.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_TRACE_CLOCK_H\n#define _ASM_GENERIC_TRACE_CLOCK_H\n \n\n \n#ifndef ARCH_TRACE_CLOCKS\n# define ARCH_TRACE_CLOCKS\n#endif\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

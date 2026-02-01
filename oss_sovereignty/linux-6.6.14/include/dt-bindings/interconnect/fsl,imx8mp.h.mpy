@@ -1,0 +1,9 @@
+{
+  "module_name": "fsl,imx8mp.h",
+  "hash_id": "21d2f499513fc20c0aa24f2b507a0d18ead7bd5a040b16d138af86d1735948cc",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/interconnect/fsl,imx8mp.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_INTERCONNECT_IMX8MP_H\n#define __DT_BINDINGS_INTERCONNECT_IMX8MP_H\n\n#define IMX8MP_ICN_NOC\t\t0\n#define IMX8MP_ICN_MAIN\t\t1\n#define IMX8MP_ICS_DRAM\t\t2\n#define IMX8MP_ICS_OCRAM\t3\n#define IMX8MP_ICM_A53\t\t4\n#define IMX8MP_ICM_SUPERMIX\t5\n#define IMX8MP_ICM_GIC\t\t6\n#define IMX8MP_ICM_MLMIX\t7\n\n#define IMX8MP_ICN_AUDIO\t8\n#define IMX8MP_ICM_DSP\t\t9\n#define IMX8MP_ICM_SDMA2PER\t10\n#define IMX8MP_ICM_SDMA2BURST\t11\n#define IMX8MP_ICM_SDMA3PER\t12\n#define IMX8MP_ICM_SDMA3BURST\t13\n#define IMX8MP_ICM_EDMA\t\t14\n\n#define IMX8MP_ICN_GPU\t\t15\n#define IMX8MP_ICM_GPU2D\t16\n#define IMX8MP_ICM_GPU3D\t17\n\n#define IMX8MP_ICN_HDMI\t\t18\n#define IMX8MP_ICM_HRV\t\t19\n#define IMX8MP_ICM_LCDIF_HDMI\t20\n#define IMX8MP_ICM_HDCP\t\t21\n\n#define IMX8MP_ICN_HSIO\t\t22\n#define IMX8MP_ICM_NOC_PCIE\t23\n#define IMX8MP_ICM_USB1\t\t24\n#define IMX8MP_ICM_USB2\t\t25\n#define IMX8MP_ICM_PCIE\t\t26\n\n#define IMX8MP_ICN_MEDIA\t27\n#define IMX8MP_ICM_LCDIF_RD\t28\n#define IMX8MP_ICM_LCDIF_WR\t29\n#define IMX8MP_ICM_ISI0\t\t30\n#define IMX8MP_ICM_ISI1\t\t31\n#define IMX8MP_ICM_ISI2\t\t32\n#define IMX8MP_ICM_ISP0\t\t33\n#define IMX8MP_ICM_ISP1\t\t34\n#define IMX8MP_ICM_DWE\t\t35\n\n#define IMX8MP_ICN_VIDEO\t36\n#define IMX8MP_ICM_VPU_G1\t37\n#define IMX8MP_ICM_VPU_G2\t38\n#define IMX8MP_ICM_VPU_H1\t39\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

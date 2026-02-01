@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "37a01ab85b54c176eb5486d6be276386c4fa4d17afa1bbfaffdf16183920f582",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tegra/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nccflags-$(CONFIG_DRM_TEGRA_DEBUG) += -DDEBUG\n\ntegra-drm-y := \\\n\tdrm.o \\\n\tuapi.o \\\n\tsubmit.o \\\n\tfirewall.o \\\n\tgem.o \\\n\tfb.o \\\n\tdp.o \\\n\thub.o \\\n\tplane.o \\\n\tdc.o \\\n\toutput.o \\\n\trgb.o \\\n\thda.o \\\n\thdmi.o \\\n\tmipi-phy.o \\\n\tdsi.o \\\n\tsor.o \\\n\tdpaux.o \\\n\tgr2d.o \\\n\tgr3d.o \\\n\tfalcon.o \\\n\tvic.o \\\n\tnvdec.o \\\n\triscv.o\n\ntegra-drm-y += trace.o\n\ntegra-drm-$(CONFIG_DRM_FBDEV_EMULATION) += fbdev.o\n\nobj-$(CONFIG_DRM_TEGRA) += tegra-drm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

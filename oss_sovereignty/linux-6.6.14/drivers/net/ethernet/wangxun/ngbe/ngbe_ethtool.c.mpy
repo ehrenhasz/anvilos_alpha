@@ -1,0 +1,9 @@
+{
+  "module_name": "ngbe_ethtool.c",
+  "hash_id": "b81a4b3d4beeced125e27f50155e88f3ead3eaad440d54cb7bebdbfad850a62c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/wangxun/ngbe/ngbe_ethtool.c",
+  "human_readable_source": "\n \n\n#include <linux/pci.h>\n#include <linux/phy.h>\n#include <linux/netdevice.h>\n\n#include \"../libwx/wx_ethtool.h\"\n#include \"../libwx/wx_type.h\"\n#include \"ngbe_ethtool.h\"\n\nstatic void ngbe_get_wol(struct net_device *netdev,\n\t\t\t struct ethtool_wolinfo *wol)\n{\n\tstruct wx *wx = netdev_priv(netdev);\n\n\tif (!wx->wol_hw_supported)\n\t\treturn;\n\twol->supported = WAKE_MAGIC;\n\twol->wolopts = 0;\n\tif (wx->wol & WX_PSR_WKUP_CTL_MAG)\n\t\twol->wolopts |= WAKE_MAGIC;\n}\n\nstatic int ngbe_set_wol(struct net_device *netdev,\n\t\t\tstruct ethtool_wolinfo *wol)\n{\n\tstruct wx *wx = netdev_priv(netdev);\n\tstruct pci_dev *pdev = wx->pdev;\n\n\tif (!wx->wol_hw_supported)\n\t\treturn -EOPNOTSUPP;\n\n\twx->wol = 0;\n\tif (wol->wolopts & WAKE_MAGIC)\n\t\twx->wol = WX_PSR_WKUP_CTL_MAG;\n\tnetdev->wol_enabled = !!(wx->wol);\n\twr32(wx, WX_PSR_WKUP_CTL, wx->wol);\n\tdevice_set_wakeup_enable(&pdev->dev, netdev->wol_enabled);\n\n\treturn 0;\n}\n\nstatic const struct ethtool_ops ngbe_ethtool_ops = {\n\t.get_drvinfo\t\t= wx_get_drvinfo,\n\t.get_link\t\t= ethtool_op_get_link,\n\t.get_link_ksettings\t= phy_ethtool_get_link_ksettings,\n\t.set_link_ksettings\t= phy_ethtool_set_link_ksettings,\n\t.nway_reset\t\t= phy_ethtool_nway_reset,\n\t.get_wol\t\t= ngbe_get_wol,\n\t.set_wol\t\t= ngbe_set_wol,\n};\n\nvoid ngbe_set_ethtool_ops(struct net_device *netdev)\n{\n\tnetdev->ethtool_ops = &ngbe_ethtool_ops;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

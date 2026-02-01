@@ -1,0 +1,9 @@
+{
+  "module_name": "user_config.c",
+  "hash_id": "9f5110084e6fe164cc075c4911b3c37ee7c7492f15d94721375982ba369bb385",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/server/mgmt/user_config.c",
+  "human_readable_source": "\n \n\n#include <linux/slab.h>\n#include <linux/mm.h>\n\n#include \"user_config.h\"\n#include \"../transport_ipc.h\"\n\nstruct ksmbd_user *ksmbd_login_user(const char *account)\n{\n\tstruct ksmbd_login_response *resp;\n\tstruct ksmbd_user *user = NULL;\n\n\tresp = ksmbd_ipc_login_request(account);\n\tif (!resp)\n\t\treturn NULL;\n\n\tif (!(resp->status & KSMBD_USER_FLAG_OK))\n\t\tgoto out;\n\n\tuser = ksmbd_alloc_user(resp);\nout:\n\tkvfree(resp);\n\treturn user;\n}\n\nstruct ksmbd_user *ksmbd_alloc_user(struct ksmbd_login_response *resp)\n{\n\tstruct ksmbd_user *user = NULL;\n\n\tuser = kmalloc(sizeof(struct ksmbd_user), GFP_KERNEL);\n\tif (!user)\n\t\treturn NULL;\n\n\tuser->name = kstrdup(resp->account, GFP_KERNEL);\n\tuser->flags = resp->status;\n\tuser->gid = resp->gid;\n\tuser->uid = resp->uid;\n\tuser->passkey_sz = resp->hash_sz;\n\tuser->passkey = kmalloc(resp->hash_sz, GFP_KERNEL);\n\tif (user->passkey)\n\t\tmemcpy(user->passkey, resp->hash, resp->hash_sz);\n\n\tif (!user->name || !user->passkey) {\n\t\tkfree(user->name);\n\t\tkfree(user->passkey);\n\t\tkfree(user);\n\t\tuser = NULL;\n\t}\n\treturn user;\n}\n\nvoid ksmbd_free_user(struct ksmbd_user *user)\n{\n\tksmbd_ipc_logout_request(user->name, user->flags);\n\tkfree(user->name);\n\tkfree(user->passkey);\n\tkfree(user);\n}\n\nint ksmbd_anonymous_user(struct ksmbd_user *user)\n{\n\tif (user->name[0] == '\\0')\n\t\treturn 1;\n\treturn 0;\n}\n\nbool ksmbd_compare_user(struct ksmbd_user *u1, struct ksmbd_user *u2)\n{\n\tif (strcmp(u1->name, u2->name))\n\t\treturn false;\n\tif (memcmp(u1->passkey, u2->passkey, u1->passkey_sz))\n\t\treturn false;\n\n\treturn true;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

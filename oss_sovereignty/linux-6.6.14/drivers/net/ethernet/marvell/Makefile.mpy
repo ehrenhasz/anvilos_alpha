@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "dd743028a48a2a4b4eca4e3bb073854562fbf0f352e5a1be57b24d9358364d42",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Marvell device drivers.\n#\n\nobj-$(CONFIG_MVMDIO) += mvmdio.o\nobj-$(CONFIG_MV643XX_ETH) += mv643xx_eth.o\nobj-$(CONFIG_MVNETA_BM) += mvneta_bm.o\nobj-$(CONFIG_MVNETA) += mvneta.o\nobj-$(CONFIG_MVPP2) += mvpp2/\nobj-$(CONFIG_PXA168_ETH) += pxa168_eth.o\nobj-$(CONFIG_SKGE) += skge.o\nobj-$(CONFIG_SKY2) += sky2.o\nobj-y\t\t+= octeon_ep/\nobj-y\t\t+= octeontx2/\nobj-y\t\t+= prestera/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

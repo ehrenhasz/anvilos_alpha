@@ -1,0 +1,9 @@
+{
+  "module_name": "fw.h",
+  "hash_id": "e05ca8c317434a322fba395253ab27a8db01227a51688cc9edcc951b90b23752",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/fw.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL92C__FW__H__\n#define __RTL92C__FW__H__\n\n#define FW_8192C_SIZE\t\t\t\t\t0x3000\n#define FW_8192C_START_ADDRESS\t\t\t0x1000\n#define FW_8192C_END_ADDRESS\t\t\t0x3FFF\n#define FW_8192C_PAGE_SIZE\t\t\t\t4096\n#define FW_8192C_POLLING_DELAY\t\t\t5\n\n#define IS_FW_HEADER_EXIST(_pfwhdr)\t\\\n\t((_pfwhdr->signature&0xFFFF) == 0x2300 ||\\\n\t(_pfwhdr->signature&0xFFFF) == 0x2301 ||\\\n\t(_pfwhdr->signature&0xFFFF) == 0x2302)\n\n#define pagenum_128(_len)\t(u32)(((_len)>>7) + ((_len)&0x7F ? 1 : 0))\n\n#define SET_H2CCMD_PWRMODE_PARM_MODE(__ph2ccmd, __val)\t\t\t\\\n\t*(u8 *)__ph2ccmd = __val\n#define SET_H2CCMD_PWRMODE_PARM_SMART_PS(__ph2ccmd, __val)\t\t\\\n\t*(u8 *)(__ph2ccmd + 1) = __val\n#define SET_H2CCMD_PWRMODE_PARM_BCN_PASS_TIME(__ph2ccmd, __val)\t\\\n\t*(u8 *)(__ph2ccmd + 2) = __val\n#define SET_H2CCMD_JOINBSSRPT_PARM_OPMODE(__ph2ccmd, __val)\t\t\\\n\t*(u8 *)__ph2ccmd = __val\n#define SET_H2CCMD_RSVDPAGE_LOC_PROBE_RSP(__ph2ccmd, __val)\t\t\\\n\t*(u8 *)__ph2ccmd = __val\n#define SET_H2CCMD_RSVDPAGE_LOC_PSPOLL(__ph2ccmd, __val)\t\t\\\n\t*(u8 *)(__ph2ccmd + 1) = __val\n#define SET_H2CCMD_RSVDPAGE_LOC_NULL_DATA(__ph2ccmd, __val)\t\t\\\n\t*(u8 *)(__ph2ccmd + 2) = __val\n\nvoid rtl8723e_fill_h2c_cmd(struct ieee80211_hw *hw, u8 element_id,\n\t\t\t   u32 cmd_len, u8 *p_cmdbuffer);\nvoid rtl8723e_set_fw_pwrmode_cmd(struct ieee80211_hw *hw, u8 mode);\nvoid rtl8723e_set_fw_rsvdpagepkt(struct ieee80211_hw *hw, bool b_dl_finished);\nvoid rtl8723e_set_fw_joinbss_report_cmd(struct ieee80211_hw *hw, u8 mstatus);\nvoid rtl8723e_set_p2p_ps_offload_cmd(struct ieee80211_hw *hw, u8 p2p_ps_state);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

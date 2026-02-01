@@ -1,0 +1,9 @@
+{
+  "module_name": "initial_sid_to_string.h",
+  "hash_id": "ee51369230202511c8174e63cc682328aa25535c3bab0b61d873d12ace8b0f16",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/include/initial_sid_to_string.h",
+  "human_readable_source": " \n\n#include <linux/stddef.h>\n\nstatic const char *const initial_sid_to_string[] = {\n\tNULL,\n\t\"kernel\",\n\t\"security\",\n\t\"unlabeled\",\n\tNULL,\n\t\"file\",\n\tNULL,\n\tNULL,\n\t\"any_socket\",\n\t\"port\",\n\t\"netif\",\n\t\"netmsg\",\n\t\"node\",\n\tNULL,\n\tNULL,\n\tNULL,\n\tNULL,\n\tNULL,\n\tNULL,\n\tNULL,\n\tNULL,\n\tNULL,\n\tNULL,\n\tNULL,\n\tNULL,\n\tNULL,\n\tNULL,\n\t\"devnull\",\n};\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

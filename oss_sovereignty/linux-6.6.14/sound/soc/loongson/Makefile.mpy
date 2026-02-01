@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b57e1cb98fd86fe20f148ed056ac119b21ccf91cd49cc090c621fbc7367a16bf",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/loongson/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#Platform Support\nsnd-soc-loongson-i2s-pci-objs := loongson_i2s_pci.o loongson_i2s.o loongson_dma.o\nobj-$(CONFIG_SND_SOC_LOONGSON_I2S_PCI) += snd-soc-loongson-i2s-pci.o\n\n#Machine Support\nsnd-soc-loongson-card-objs := loongson_card.o\nobj-$(CONFIG_SND_SOC_LOONGSON_CARD) += snd-soc-loongson-card.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

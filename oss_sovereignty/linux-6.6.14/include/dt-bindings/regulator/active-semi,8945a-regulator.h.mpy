@@ -1,0 +1,9 @@
+{
+  "module_name": "active-semi,8945a-regulator.h",
+  "hash_id": "fb18e3cf99f8f57def119b3071a007e508753462bd572d0197440df0c874fbdb",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/regulator/active-semi,8945a-regulator.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_REGULATOR_ACT8945A_H\n#define _DT_BINDINGS_REGULATOR_ACT8945A_H\n\n \n\n#define ACT8945A_REGULATOR_MODE_FIXED\t\t1\n#define ACT8945A_REGULATOR_MODE_NORMAL\t\t2\n#define ACT8945A_REGULATOR_MODE_LOWPOWER\t3\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

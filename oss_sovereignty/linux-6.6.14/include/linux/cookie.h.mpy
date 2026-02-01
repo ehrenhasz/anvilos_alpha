@@ -1,0 +1,9 @@
+{
+  "module_name": "cookie.h",
+  "hash_id": "768f0b99f70d6a47949692f3c99f2395bb63f6e7601942c8b0f00f0b59acbada",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cookie.h",
+  "human_readable_source": " \n#ifndef __LINUX_COOKIE_H\n#define __LINUX_COOKIE_H\n\n#include <linux/atomic.h>\n#include <linux/percpu.h>\n#include <asm/local.h>\n\nstruct pcpu_gen_cookie {\n\tlocal_t nesting;\n\tu64 last;\n} __aligned(16);\n\nstruct gen_cookie {\n\tstruct pcpu_gen_cookie __percpu *local;\n\tatomic64_t forward_last ____cacheline_aligned_in_smp;\n\tatomic64_t reverse_last;\n};\n\n#define COOKIE_LOCAL_BATCH\t4096\n\n#define DEFINE_COOKIE(name)\t\t\t\t\t\t\\\n\tstatic DEFINE_PER_CPU(struct pcpu_gen_cookie, __##name);\t\\\n\tstatic struct gen_cookie name = {\t\t\t\t\\\n\t\t.local\t\t= &__##name,\t\t\t\t\\\n\t\t.forward_last\t= ATOMIC64_INIT(0),\t\t\t\\\n\t\t.reverse_last\t= ATOMIC64_INIT(0),\t\t\t\\\n\t}\n\nstatic __always_inline u64 gen_cookie_next(struct gen_cookie *gc)\n{\n\tstruct pcpu_gen_cookie *local = this_cpu_ptr(gc->local);\n\tu64 val;\n\n\tif (likely(local_inc_return(&local->nesting) == 1)) {\n\t\tval = local->last;\n\t\tif (__is_defined(CONFIG_SMP) &&\n\t\t    unlikely((val & (COOKIE_LOCAL_BATCH - 1)) == 0)) {\n\t\t\ts64 next = atomic64_add_return(COOKIE_LOCAL_BATCH,\n\t\t\t\t\t\t       &gc->forward_last);\n\t\t\tval = next - COOKIE_LOCAL_BATCH;\n\t\t}\n\t\tlocal->last = ++val;\n\t} else {\n\t\tval = atomic64_dec_return(&gc->reverse_last);\n\t}\n\tlocal_dec(&local->nesting);\n\treturn val;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

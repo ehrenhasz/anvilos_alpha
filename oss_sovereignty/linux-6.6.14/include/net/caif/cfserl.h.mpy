@@ -1,0 +1,9 @@
+{
+  "module_name": "cfserl.h",
+  "hash_id": "41ce468b34e5e7caaea36e81c927f653a3f6b051cc9b8e159fdf2659b09b386e",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/caif/cfserl.h",
+  "human_readable_source": " \n \n\n#ifndef CFSERL_H_\n#define CFSERL_H_\n#include <net/caif/caif_layer.h>\n\nstruct cflayer *cfserl_create(int instance, bool use_stx);\nvoid cfserl_release(struct cflayer *layer);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

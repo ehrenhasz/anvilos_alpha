@@ -1,0 +1,9 @@
+{
+  "module_name": "fmd_serd.h",
+  "hash_id": "bc0e2bf689778e72aa5e5d8a592c3a1e5ab7f64d19a16abf2ff4020b4ad7f76d",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zed/agents/fmd_serd.h",
+  "human_readable_source": " \n \n\n#ifndef\t_FMD_SERD_H\n#define\t_FMD_SERD_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n#include <sys/list.h>\n#include <sys/time.h>\n\ntypedef struct fmd_serd_elem {\n\tlist_node_t\tse_list;\t \n\thrtime_t\tse_hrt;\t\t \n} fmd_serd_elem_t;\n\ntypedef struct fmd_serd_eng {\n\tchar\t\t*sg_name;\t \n\tstruct fmd_serd_eng *sg_next;\t \n\tlist_t\t\tsg_list;\t \n\tuint_t\t\tsg_count;\t \n\tuint_t\t\tsg_flags;\t \n\tuint_t\t\tsg_n;\t\t \n\thrtime_t\tsg_t;\t\t \n} fmd_serd_eng_t;\n\n#define\tFMD_SERD_FIRED\t0x1\t\t \n#define\tFMD_SERD_DIRTY\t0x2\t\t \n\ntypedef void fmd_serd_eng_f(fmd_serd_eng_t *, void *);\n\ntypedef struct fmd_serd_hash {\n\tfmd_serd_eng_t\t**sh_hash;\t \n\tuint_t\t\tsh_hashlen;\t \n\tuint_t\t\tsh_count;\t \n} fmd_serd_hash_t;\n\nextern void fmd_serd_hash_create(fmd_serd_hash_t *);\nextern void fmd_serd_hash_destroy(fmd_serd_hash_t *);\nextern void fmd_serd_hash_apply(fmd_serd_hash_t *, fmd_serd_eng_f *, void *);\n\nextern fmd_serd_eng_t *fmd_serd_eng_insert(fmd_serd_hash_t *,\n    const char *, uint32_t, hrtime_t);\n\nextern fmd_serd_eng_t *fmd_serd_eng_lookup(fmd_serd_hash_t *, const char *);\nextern void fmd_serd_eng_delete(fmd_serd_hash_t *, const char *);\n\nextern int fmd_serd_eng_record(fmd_serd_eng_t *, hrtime_t);\nextern int fmd_serd_eng_fired(fmd_serd_eng_t *);\nextern int fmd_serd_eng_empty(fmd_serd_eng_t *);\n\nextern void fmd_serd_eng_reset(fmd_serd_eng_t *);\nextern void fmd_serd_eng_gc(fmd_serd_eng_t *);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

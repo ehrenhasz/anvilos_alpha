@@ -1,0 +1,9 @@
+{
+  "module_name": "st_sensors_pdata.h",
+  "hash_id": "2d472e8f751a47a22eb498fd3a5d6b3730cc64f416f62834d34a4326cc1b489d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/st_sensors_pdata.h",
+  "human_readable_source": " \n \n\n#ifndef ST_SENSORS_PDATA_H\n#define ST_SENSORS_PDATA_H\n\n \nstruct st_sensors_platform_data {\n\tu8 drdy_int_pin;\n\tbool open_drain;\n\tbool spi_3wire;\n\tbool pullups;\n\tbool wakeup_source;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rltty.h",
+  "hash_id": "39aedefad9cecb2380509d52f973cd299d99d5998f46e706a534514b7eb165fd",
+  "original_prompt": "Ingested from readline-8.2/rltty.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_RLTTY_H_)\n#define _RLTTY_H_\n\n \n#if defined (TERMIOS_TTY_DRIVER)\n#  include <termios.h>\n#endif  \n\n \n#if defined (TERMIO_TTY_DRIVER)\n#  include <termio.h>\n#  if !defined (TCOON)\n#    define TCOON 1\n#  endif\n#endif  \n\n \n#if defined (NEW_TTY_DRIVER)\n#  include <sgtty.h>\n#endif\n\n#include \"rlwinsize.h\"\n\n \n#if !defined (NEW_TTY_DRIVER) && !defined (_POSIX_VDISABLE)\n#  if defined (_SVR4_VDISABLE)\n#    define _POSIX_VDISABLE _SVR4_VDISABLE\n#  else\n#    if defined (_POSIX_VERSION)\n#      define _POSIX_VDISABLE 0\n#    else  \n#      define _POSIX_VDISABLE -1\n#    endif  \n#  endif  \n#endif  \n\ntypedef struct _rl_tty_chars {\n  unsigned char t_eof;\n  unsigned char t_eol;\n  unsigned char t_eol2;\n  unsigned char t_erase;\n  unsigned char t_werase;\n  unsigned char t_kill;\n  unsigned char t_reprint;\n  unsigned char t_intr;\n  unsigned char t_quit;\n  unsigned char t_susp;\n  unsigned char t_dsusp;\n  unsigned char t_start;\n  unsigned char t_stop;\n  unsigned char t_lnext;\n  unsigned char t_flush;\n  unsigned char t_status;\n} _RL_TTY_CHARS;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

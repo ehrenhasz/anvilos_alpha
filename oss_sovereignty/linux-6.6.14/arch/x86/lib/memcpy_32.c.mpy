@@ -1,0 +1,9 @@
+{
+  "module_name": "memcpy_32.c",
+  "hash_id": "3c79a12b7e00511b75c3989f373120a276a1cde6bc63ab4981fbc7c8e3fce4a8",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/lib/memcpy_32.c",
+  "human_readable_source": "\n#include <linux/string.h>\n#include <linux/export.h>\n\n#undef memcpy\n#undef memset\n#undef memmove\n\n__visible void *memcpy(void *to, const void *from, size_t n)\n{\n\treturn __memcpy(to, from, n);\n}\nEXPORT_SYMBOL(memcpy);\n\n__visible void *memset(void *s, int c, size_t count)\n{\n\treturn __memset(s, c, count);\n}\nEXPORT_SYMBOL(memset);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

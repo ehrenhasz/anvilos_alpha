@@ -1,0 +1,9 @@
+{
+  "module_name": "smapi.h",
+  "hash_id": "d6c07a7d9deeb6eca73aa3c25f2217f91c9c5c15c889acde9c9cd2b2ce743484",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/mwave/smapi.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_SMAPI_H\n#define _LINUX_SMAPI_H\n\ntypedef struct {\n\tint bDSPPresent;\n\tint bDSPEnabled;\n\tint bModemEnabled;\n\tint bMIDIEnabled;\n\tint bSblstEnabled;\n\tunsigned short usDspIRQ;\n\tunsigned short usDspDMA;\n\tunsigned short usDspBaseIO;\n\tunsigned short usUartIRQ;\n\tunsigned short usUartBaseIO;\n\tunsigned short usMidiIRQ;\n\tunsigned short usMidiBaseIO;\n\tunsigned short usSndblstIRQ;\n\tunsigned short usSndblstDMA;\n\tunsigned short usSndblstBaseIO;\n} SMAPI_DSP_SETTINGS;\n\nint smapi_init(void);\nint smapi_query_DSP_cfg(SMAPI_DSP_SETTINGS * pSettings);\nint smapi_set_DSP_cfg(void);\nint smapi_set_DSP_power_state(bool bOn);\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

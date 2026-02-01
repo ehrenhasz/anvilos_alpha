@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "354e4aacc7c550ba3a903f0fb87d89d9f1d60c7c213bf9bd59ec00258024b297",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/memfd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCFLAGS += -D_FILE_OFFSET_BITS=64\nCFLAGS += $(KHDR_INCLUDES)\n\nTEST_GEN_PROGS := memfd_test\nTEST_PROGS := run_fuse_test.sh run_hugetlbfs_test.sh\nTEST_GEN_FILES := fuse_test fuse_mnt\n\nVAR_CFLAGS := $(shell pkg-config fuse --cflags 2>/dev/null)\nifeq ($(VAR_CFLAGS),)\nVAR_CFLAGS := -D_FILE_OFFSET_BITS=64 -I/usr/include/fuse\nendif\n\nVAR_LDLIBS := $(shell pkg-config fuse --libs 2>/dev/null)\nifeq ($(VAR_LDLIBS),)\nVAR_LDLIBS := -lfuse -pthread\nendif\n\nfuse_mnt.o: CFLAGS += $(VAR_CFLAGS)\n\ninclude ../lib.mk\n\n$(OUTPUT)/fuse_mnt: LDLIBS += $(VAR_LDLIBS)\n\n$(OUTPUT)/memfd_test: memfd_test.c common.c\n$(OUTPUT)/fuse_test: fuse_test.c common.c\n\nEXTRA_CLEAN = $(OUTPUT)/common.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

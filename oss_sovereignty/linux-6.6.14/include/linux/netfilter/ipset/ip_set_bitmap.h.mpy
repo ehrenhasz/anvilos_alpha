@@ -1,0 +1,9 @@
+{
+  "module_name": "ip_set_bitmap.h",
+  "hash_id": "ce6a00de5035df453367ff8f6cfb0497d65fce088629908afdd5856636162649",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter/ipset/ip_set_bitmap.h",
+  "human_readable_source": " \n#ifndef __IP_SET_BITMAP_H\n#define __IP_SET_BITMAP_H\n\n#include <uapi/linux/netfilter/ipset/ip_set_bitmap.h>\n\n#define IPSET_BITMAP_MAX_RANGE\t0x0000FFFF\n\nenum {\n\tIPSET_ADD_STORE_PLAIN_TIMEOUT = -1,\n\tIPSET_ADD_FAILED = 1,\n\tIPSET_ADD_START_STORED_TIMEOUT,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

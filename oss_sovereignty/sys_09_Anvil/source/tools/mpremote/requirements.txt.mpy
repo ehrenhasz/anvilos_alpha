@@ -1,0 +1,9 @@
+{
+  "module_name": "requirements.txt",
+  "hash_id": "e359fcafb5ab2fd45f9c99f9b9be2552a48ac0a596d4a89b75e16349e1a2bd3c",
+  "original_prompt": "Ingested from sys_09_Anvil/source/tools/mpremote/requirements.txt",
+  "human_readable_source": "pyserial >= 3.3\nimportlib_metadata >= 1.4; python_version < \"3.8\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

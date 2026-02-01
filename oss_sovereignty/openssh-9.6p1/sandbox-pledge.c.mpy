@@ -1,0 +1,9 @@
+{
+  "module_name": "sandbox-pledge.c",
+  "hash_id": "44646ee0c50a325d31ce506b78e2006c056f4a15c32d33f2c9ea1e195762b4a4",
+  "original_prompt": "Ingested from openssh-9.6p1/sandbox-pledge.c",
+  "human_readable_source": " \n \n\n#include \"includes.h\"\n\n#ifdef SANDBOX_PLEDGE\n\n#include <sys/types.h>\n#include <sys/ioctl.h>\n#include <sys/syscall.h>\n#include <sys/socket.h>\n#include <sys/wait.h>\n\n#include <errno.h>\n#include <limits.h>\n#include <stdarg.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n#include <pwd.h>\n\n#include \"log.h\"\n#include \"ssh-sandbox.h\"\n#include \"xmalloc.h\"\n\nstruct ssh_sandbox {\n\tpid_t child_pid;\n};\n\nstruct ssh_sandbox *\nssh_sandbox_init(struct monitor *m)\n{\n\tstruct ssh_sandbox *box;\n\n\tdebug3_f(\"preparing pledge sandbox\");\n\tbox = xcalloc(1, sizeof(*box));\n\tbox->child_pid = 0;\n\n\treturn box;\n}\n\nvoid\nssh_sandbox_child(struct ssh_sandbox *box)\n{\n\tif (pledge(\"stdio\", NULL) == -1)\n\t\tfatal_f(\"pledge()\");\n}\n\nvoid\nssh_sandbox_parent_finish(struct ssh_sandbox *box)\n{\n\tfree(box);\n\tdebug3_f(\"finished\");\n}\n\nvoid\nssh_sandbox_parent_preauth(struct ssh_sandbox *box, pid_t child_pid)\n{\n\tbox->child_pid = child_pid;\n\t \n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

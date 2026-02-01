@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c71feecd3b2194904d05cc13d5866fd62a806936fc510c1924a65df64f66f361",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/aspeed/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_ASPEED_GFX\n\ttristate \"ASPEED BMC Display Controller\"\n\tdepends on DRM && OF\n\tdepends on (COMPILE_TEST || ARCH_ASPEED)\n\tdepends on MMU\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect DMA_CMA if HAVE_DMA_CONTIGUOUS\n\tselect CMA if HAVE_DMA_CONTIGUOUS\n\tselect MFD_SYSCON\n\thelp\n\t  Chose this option if you have an ASPEED AST2500 SOC Display\n\t  Controller (aka GFX).\n\n\t  If M is selected this module will be called aspeed_gfx.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

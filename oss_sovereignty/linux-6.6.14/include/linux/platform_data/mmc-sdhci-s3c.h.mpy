@@ -1,0 +1,9 @@
+{
+  "module_name": "mmc-sdhci-s3c.h",
+  "hash_id": "042d40bcea410bdff1d04b601ef33d74534dd1d3c55276bfd1f8a208a7c318bd",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/mmc-sdhci-s3c.h",
+  "human_readable_source": " \n#ifndef __PLATFORM_DATA_SDHCI_S3C_H\n#define __PLATFORM_DATA_SDHCI_S3C_H\n\nstruct platform_device;\n\nenum cd_types {\n\tS3C_SDHCI_CD_INTERNAL,\t \n\tS3C_SDHCI_CD_EXTERNAL,\t \n\tS3C_SDHCI_CD_GPIO,\t \n\tS3C_SDHCI_CD_NONE,\t \n\tS3C_SDHCI_CD_PERMANENT,\t \n};\n\n \nstruct s3c_sdhci_platdata {\n\tunsigned int\tmax_width;\n\tunsigned int\thost_caps;\n\tunsigned int\thost_caps2;\n\tunsigned int\tpm_caps;\n\tenum cd_types\tcd_type;\n\n\tint\t\text_cd_gpio;\n\tbool\t\text_cd_gpio_invert;\n\tint\t(*ext_cd_init)(void (*notify_func)(struct platform_device *,\n\t\t\t\t\t\t   int state));\n\tint\t(*ext_cd_cleanup)(void (*notify_func)(struct platform_device *,\n\t\t\t\t\t\t      int state));\n\n\tvoid\t(*cfg_gpio)(struct platform_device *dev, int width);\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

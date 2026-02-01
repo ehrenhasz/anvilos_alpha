@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d74aa63e2e8514902b227347b277e5f2ca1b1b18c8a43f7fe721e9df4cf6b48f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tilcdc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nifeq (, $(findstring -W,$(KCFLAGS)))\n\tccflags-y += -Werror\nendif\n\ntilcdc-y := \\\n\ttilcdc_plane.o \\\n\ttilcdc_crtc.o \\\n\ttilcdc_panel.o \\\n\ttilcdc_external.o \\\n\ttilcdc_drv.o\n\nobj-$(CONFIG_DRM_TILCDC)\t+= tilcdc.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

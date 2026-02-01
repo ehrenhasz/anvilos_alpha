@@ -1,0 +1,9 @@
+{
+  "module_name": "brcm-kona-reset.c",
+  "hash_id": "cebc2443ff5ca0d74736507ce353c0c59f5ff149c4e4bcabdec99d37345a7e7f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/power/reset/brcm-kona-reset.c",
+  "human_readable_source": "\n\n\n#include <linux/io.h>\n#include <linux/mod_devicetable.h>\n#include <linux/platform_device.h>\n#include <linux/reboot.h>\n\n#define RSTMGR_REG_WR_ACCESS_OFFSET\t0\n#define RSTMGR_REG_CHIP_SOFT_RST_OFFSET\t4\n\n#define RSTMGR_WR_PASSWORD\t\t0xa5a5\n#define RSTMGR_WR_PASSWORD_SHIFT\t8\n#define RSTMGR_WR_ACCESS_ENABLE\t\t1\n\nstatic void __iomem *kona_reset_base;\n\nstatic int kona_reset_handler(struct notifier_block *this,\n\t\t\t\tunsigned long mode, void *cmd)\n{\n\t \n\twritel((RSTMGR_WR_PASSWORD << RSTMGR_WR_PASSWORD_SHIFT) |\n\t\tRSTMGR_WR_ACCESS_ENABLE,\n\t\tkona_reset_base + RSTMGR_REG_WR_ACCESS_OFFSET);\n\twritel(0, kona_reset_base + RSTMGR_REG_CHIP_SOFT_RST_OFFSET);\n\n\treturn NOTIFY_DONE;\n}\n\nstatic struct notifier_block kona_reset_nb = {\n\t.notifier_call = kona_reset_handler,\n\t.priority = 128,\n};\n\nstatic int kona_reset_probe(struct platform_device *pdev)\n{\n\tkona_reset_base = devm_platform_ioremap_resource(pdev, 0);\n\tif (IS_ERR(kona_reset_base))\n\t\treturn PTR_ERR(kona_reset_base);\n\n\treturn register_restart_handler(&kona_reset_nb);\n}\n\nstatic const struct of_device_id of_match[] = {\n\t{ .compatible = \"brcm,bcm21664-resetmgr\" },\n\t{},\n};\n\nstatic struct platform_driver bcm_kona_reset_driver = {\n\t.probe = kona_reset_probe,\n\t.driver = {\n\t\t.name = \"brcm-kona-reset\",\n\t\t.of_match_table = of_match,\n\t},\n};\n\nbuiltin_platform_driver(bcm_kona_reset_driver);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

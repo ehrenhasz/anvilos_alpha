@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "bf2b1e054f56d11dd8fcbd74f280214237e784934c10a831ff6f5c05b143142e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/nolibc/.gitignore",
+  "human_readable_source": "sysroot\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

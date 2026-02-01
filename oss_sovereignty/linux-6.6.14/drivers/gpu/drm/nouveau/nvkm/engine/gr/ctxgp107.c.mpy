@@ -1,0 +1,9 @@
+{
+  "module_name": "ctxgp107.c",
+  "hash_id": "c220549c335423aaf95fc5e3842ca22fde067d795d8197596a47839100c1fd42",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/gr/ctxgp107.c",
+  "human_readable_source": " \n#include \"ctxgf100.h\"\n\n#include <subdev/fb.h>\n\n \n\nconst struct gf100_grctx_func\ngp107_grctx = {\n\t.main = gf100_grctx_generate_main,\n\t.unkn = gk104_grctx_generate_unkn,\n\t.bundle = gm107_grctx_generate_bundle,\n\t.bundle_size = 0x3000,\n\t.bundle_min_gpm_fifo_depth = 0x180,\n\t.bundle_token_limit = 0x300,\n\t.pagepool = gp100_grctx_generate_pagepool,\n\t.pagepool_size = 0x20000,\n\t.attrib_cb_size = gp102_grctx_generate_attrib_cb_size,\n\t.attrib_cb = gp100_grctx_generate_attrib_cb,\n\t.attrib = gp102_grctx_generate_attrib,\n\t.attrib_nr_max = 0x15de,\n\t.attrib_nr = 0x540,\n\t.alpha_nr_max = 0xc00,\n\t.alpha_nr = 0x800,\n\t.gfxp_nr = 0xe94,\n\t.sm_id = gm107_grctx_generate_sm_id,\n\t.rop_mapping = gf117_grctx_generate_rop_mapping,\n\t.dist_skip_table = gm200_grctx_generate_dist_skip_table,\n\t.r406500 = gm200_grctx_generate_r406500,\n\t.gpc_tpc_nr = gk104_grctx_generate_gpc_tpc_nr,\n\t.tpc_mask = gm200_grctx_generate_tpc_mask,\n\t.smid_config = gp100_grctx_generate_smid_config,\n\t.r419a3c = gm200_grctx_generate_r419a3c,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

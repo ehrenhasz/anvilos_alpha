@@ -1,0 +1,9 @@
+{
+  "module_name": "test_d_path_check_rdonly_mem.c",
+  "hash_id": "5cf6ef3e49ce6873a329690c2caa4c0560f8b767df34d41c1cc0e03e0106635b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_d_path_check_rdonly_mem.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nextern const int bpf_prog_active __ksym;\n\nSEC(\"fentry/security_inode_getattr\")\nint BPF_PROG(d_path_check_rdonly_mem, struct path *path, struct kstat *stat,\n\t     __u32 request_mask, unsigned int query_flags)\n{\n\tvoid *active;\n\t__u32 cpu;\n\n\tcpu = bpf_get_smp_processor_id();\n\tactive = (void *)bpf_per_cpu_ptr(&bpf_prog_active, cpu);\n\tif (active) {\n\t\t \n\t\tbpf_d_path(path, active, sizeof(int));\n\t}\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

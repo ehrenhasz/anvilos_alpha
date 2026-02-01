@@ -1,0 +1,9 @@
+{
+  "module_name": "wait.h",
+  "hash_id": "e3efb6b0a5086b5080483fe0c9c543c24673c8bd5f5ae4a705a944638f8306d0",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/wait.h",
+  "human_readable_source": " \n\n#ifndef _SPL_WAIT_H\n#define\t_SPL_WAIT_H\n\n#include <linux/sched.h>\n#include <linux/wait.h>\n\n#ifndef HAVE_WAIT_ON_BIT_ACTION\n#define\tspl_wait_on_bit(word, bit, mode)\twait_on_bit(word, bit, mode)\n#else\n\nstatic inline int\nspl_bit_wait(void *word)\n{\n\tschedule();\n\treturn (0);\n}\n\n#define\tspl_wait_on_bit(word, bit, mode)\t\t\\\n\twait_on_bit(word, bit, spl_bit_wait, mode)\n\n#endif  \n\n#ifdef HAVE_WAIT_QUEUE_ENTRY_T\ntypedef wait_queue_head_t\tspl_wait_queue_head_t;\ntypedef wait_queue_entry_t\tspl_wait_queue_entry_t;\n#else\ntypedef wait_queue_head_t\tspl_wait_queue_head_t;\ntypedef wait_queue_t\t\tspl_wait_queue_entry_t;\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

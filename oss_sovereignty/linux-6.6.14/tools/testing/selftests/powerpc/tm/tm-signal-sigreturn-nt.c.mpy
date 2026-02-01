@@ -1,0 +1,9 @@
+{
+  "module_name": "tm-signal-sigreturn-nt.c",
+  "hash_id": "9741fa7d8c3500af726abdccd963a49fcd45ed9484bf00ddf8797bc8ae8e9aad",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/tm/tm-signal-sigreturn-nt.c",
+  "human_readable_source": "\n \n\n#define _GNU_SOURCE\n#include <stdio.h>\n#include <stdlib.h>\n#include <signal.h>\n\n#include \"utils.h\"\n#include \"tm.h\"\n\nvoid trap_signal_handler(int signo, siginfo_t *si, void *uc)\n{\n\tucontext_t *ucp = (ucontext_t *) uc;\n\n\tasm(\"tbegin.; tsuspend.;\");\n\n\t \n\tucp->uc_mcontext.regs->nip += 4;\n}\n\nint tm_signal_sigreturn_nt(void)\n{\n\tstruct sigaction trap_sa;\n\n\tSKIP_IF(!have_htm());\n\tSKIP_IF(htm_is_synthetic());\n\n\ttrap_sa.sa_flags = SA_SIGINFO;\n\ttrap_sa.sa_sigaction = trap_signal_handler;\n\n\tsigaction(SIGTRAP, &trap_sa, NULL);\n\n\traise(SIGTRAP);\n\n\treturn EXIT_SUCCESS;\n}\n\nint main(int argc, char **argv)\n{\n\ttest_harness(tm_signal_sigreturn_nt, \"tm_signal_sigreturn_nt\");\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

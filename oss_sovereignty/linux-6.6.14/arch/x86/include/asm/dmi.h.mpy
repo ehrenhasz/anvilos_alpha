@@ -1,0 +1,9 @@
+{
+  "module_name": "dmi.h",
+  "hash_id": "2981ffc0a433bee4806c6334cda1ace5eef34db2e927024283f0f36095a16407",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/dmi.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_DMI_H\n#define _ASM_X86_DMI_H\n\n#include <linux/compiler.h>\n#include <linux/init.h>\n#include <linux/io.h>\n\n#include <asm/setup.h>\n\nstatic __always_inline __init void *dmi_alloc(unsigned len)\n{\n\treturn extend_brk(len, sizeof(int));\n}\n\n \n#define dmi_early_remap\t\tearly_memremap\n#define dmi_early_unmap\t\tearly_memunmap\n#define dmi_remap(_x, _l)\tmemremap(_x, _l, MEMREMAP_WB)\n#define dmi_unmap(_x)\t\tmemunmap(_x)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

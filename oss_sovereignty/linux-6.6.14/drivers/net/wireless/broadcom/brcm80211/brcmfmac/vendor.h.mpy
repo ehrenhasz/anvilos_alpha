@@ -1,0 +1,9 @@
+{
+  "module_name": "vendor.h",
+  "hash_id": "8f4ea2589d7144e602a0303a2b87540f158d9864a5e829784351cea0edd9e83b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/vendor.h",
+  "human_readable_source": "\n \n\n#ifndef _vendor_h_\n#define _vendor_h_\n\n#define BROADCOM_OUI\t0x001018\n\nenum brcmf_vndr_cmds {\n\tBRCMF_VNDR_CMDS_UNSPEC,\n\tBRCMF_VNDR_CMDS_DCMD,\n\tBRCMF_VNDR_CMDS_LAST\n};\n\n \nenum brcmf_nlattrs {\n\tBRCMF_NLATTR_UNSPEC,\n\n\tBRCMF_NLATTR_LEN,\n\tBRCMF_NLATTR_DATA,\n\n\t__BRCMF_NLATTR_AFTER_LAST,\n\tBRCMF_NLATTR_MAX = __BRCMF_NLATTR_AFTER_LAST - 1\n};\n\n \nstruct brcmf_vndr_dcmd_hdr {\n\tuint cmd;\n\tint len;\n\tuint offset;\n\tuint set;\n\tuint magic;\n};\n\nextern const struct wiphy_vendor_command brcmf_vendor_cmds[];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

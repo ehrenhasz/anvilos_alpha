@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_bufq.h",
+  "hash_id": "1aaa14362812bd929bfc8d3df16d8f59e29cd0683a08a4f381ad69d4bebefe1e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/bufq/interface/ia_css_bufq.h",
+  "human_readable_source": " \n \n\n#ifndef _IA_CSS_BUFQ_H\n#define _IA_CSS_BUFQ_H\n\n#include <type_support.h>\n#include \"ia_css_bufq_comm.h\"\n#include \"ia_css_buffer.h\"\n#include \"ia_css_err.h\"\n#define BUFQ_EVENT_SIZE 4\n\n \nbool ia_css_query_internal_queue_id(\n    enum ia_css_buffer_type buf_type,\n    unsigned int thread_id,\n    enum sh_css_queue_id *val\n);\n\n \nvoid ia_css_queue_map(\n    unsigned int thread_id,\n    enum ia_css_buffer_type buf_type,\n    bool map\n);\n\n \nvoid ia_css_queue_map_init(void);\n\n \nvoid ia_css_bufq_init(void);\n\n \nint ia_css_bufq_enqueue_buffer(\n    int thread_index,\n    int queue_id,\n    uint32_t item);\n\n \nint ia_css_bufq_dequeue_buffer(\n    int queue_id,\n    uint32_t *item);\n\n \nint ia_css_bufq_enqueue_psys_event(\n    u8 evt_id,\n    u8 evt_payload_0,\n    u8 evt_payload_1,\n    uint8_t evt_payload_2\n);\n\n \nint ia_css_bufq_dequeue_psys_event(\n    u8 item[BUFQ_EVENT_SIZE]\n\n);\n\n \nint ia_css_bufq_enqueue_isys_event(\n    uint8_t evt_id);\n\n \nint ia_css_bufq_dequeue_isys_event(\n    u8 item[BUFQ_EVENT_SIZE]);\n\n \nint ia_css_bufq_enqueue_tag_cmd(\n    uint32_t item);\n\n \nint ia_css_bufq_deinit(void);\n\n \nvoid ia_css_bufq_dump_queue_info(void);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

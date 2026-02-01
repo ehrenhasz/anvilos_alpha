@@ -1,0 +1,9 @@
+{
+  "module_name": "demangle-ocaml.c",
+  "hash_id": "0f38fa5c1a0004543c05b22ebc907b253d551ab54014b4fd50cec9ab34760e27",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/demangle-ocaml.c",
+  "human_readable_source": "\n#include <string.h>\n#include <stdlib.h>\n#include \"util/string2.h\"\n\n#include \"demangle-ocaml.h\"\n\n#include <linux/ctype.h>\n\nstatic const char *caml_prefix = \"caml\";\nstatic const size_t caml_prefix_len = 4;\n\n \nstatic bool\nocaml_is_mangled(const char *sym)\n{\n\treturn 0 == strncmp(sym, caml_prefix, caml_prefix_len)\n\t\t&& isupper(sym[caml_prefix_len]);\n}\n\n \nchar *\nocaml_demangle_sym(const char *sym)\n{\n\tchar *result;\n\tint j = 0;\n\tint i;\n\tint len;\n\n\tif (!ocaml_is_mangled(sym)) {\n\t\treturn NULL;\n\t}\n\n\tlen = strlen(sym);\n\n\t \n\tresult = malloc(len + 1);\n\tif (!result)\n\t\treturn NULL;\n\n\t \n\ti = caml_prefix_len;\n\n\twhile (i < len) {\n\t\tif (sym[i] == '_' && sym[i + 1] == '_') {\n\t\t\t \n\t\t\tresult[j++] = '.';\n\t\t\ti += 2;\n\t\t}\n\t\telse if (sym[i] == '$' && isxdigit(sym[i + 1]) && isxdigit(sym[i + 2])) {\n\t\t\t \n\t\t\tresult[j++] = (hex(sym[i + 1]) << 4) | hex(sym[i + 2]);\n\t\t\ti += 3;\n\t\t}\n\t\telse {\n\t\t\tresult[j++] = sym[i++];\n\t\t}\n\t}\n\tresult[j] = '\\0';\n\n\treturn result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

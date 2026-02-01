@@ -1,0 +1,9 @@
+{
+  "module_name": "mknod.x",
+  "hash_id": "566d3d01dbdeed0a17a4acd240277c72c0c2936f4c163ce676695708e07d948a",
+  "original_prompt": "Ingested from coreutils-9.4/man/mknod.x",
+  "human_readable_source": "[NAME]\nmknod \\- make block or character special files\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\nmknod(2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

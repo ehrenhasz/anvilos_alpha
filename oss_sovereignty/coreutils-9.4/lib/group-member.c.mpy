@@ -1,0 +1,9 @@
+{
+  "module_name": "group-member.c",
+  "hash_id": "01d33ee066b8cd3da160d8209110c3a24d0a471a44f65d0b944c063abf9a4047",
+  "original_prompt": "Ingested from coreutils-9.4/lib/group-member.c",
+  "human_readable_source": " \n#include <unistd.h>\n\n#include <stdckdint.h>\n#include <stdio.h>\n#include <sys/types.h>\n#include <stdlib.h>\n\n \nenum { GROUPBUF_SIZE = 100 };\n\nstruct group_info\n  {\n    gid_t *group;\n    gid_t groupbuf[GROUPBUF_SIZE];\n  };\n\nstatic void\nfree_group_info (struct group_info const *g)\n{\n  if (g->group != g->groupbuf)\n    free (g->group);\n}\n\nstatic int\nget_group_info (struct group_info *gi)\n{\n  int n_groups = getgroups (GROUPBUF_SIZE, gi->groupbuf);\n  gi->group = gi->groupbuf;\n\n  if (n_groups < 0)\n    {\n      int n_group_slots = getgroups (0, NULL);\n      size_t nbytes;\n      if (! ckd_mul (&nbytes, n_group_slots, sizeof *gi->group))\n        {\n          gi->group = malloc (nbytes);\n          if (gi->group)\n            n_groups = getgroups (n_group_slots, gi->group);\n        }\n    }\n\n   \n  return n_groups;\n}\n\n \n\nint\ngroup_member (gid_t gid)\n{\n  int i;\n  int found;\n  struct group_info gi;\n  int n_groups = get_group_info (&gi);\n\n   \n  found = 0;\n  for (i = 0; i < n_groups; i++)\n    {\n      if (gid == gi.group[i])\n        {\n          found = 1;\n          break;\n        }\n    }\n\n  free_group_info (&gi);\n\n  return found;\n}\n\n#ifdef TEST\n\nint\nmain (int argc, char **argv)\n{\n  int i;\n\n  for (i = 1; i < argc; i++)\n    {\n      gid_t gid;\n\n      gid = atoi (argv[i]);\n      printf (\"%d: %s\\n\", gid, group_member (gid) ? \"yes\" : \"no\");\n    }\n  exit (0);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

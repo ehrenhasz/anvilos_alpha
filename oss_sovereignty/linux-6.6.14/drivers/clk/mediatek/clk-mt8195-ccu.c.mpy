@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-mt8195-ccu.c",
+  "hash_id": "5eacca3a0cde9cac347d4a4156aeba05bcb2b4c46ecffccca427158e4c720833",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mediatek/clk-mt8195-ccu.c",
+  "human_readable_source": "\n\n\n\n\n#include \"clk-gate.h\"\n#include \"clk-mtk.h\"\n\n#include <dt-bindings/clock/mt8195-clk.h>\n#include <linux/clk-provider.h>\n#include <linux/platform_device.h>\n\nstatic const struct mtk_gate_regs ccu_cg_regs = {\n\t.set_ofs = 0x4,\n\t.clr_ofs = 0x8,\n\t.sta_ofs = 0x0,\n};\n\n#define GATE_CCU(_id, _name, _parent, _shift)\t\t\t\\\n\tGATE_MTK(_id, _name, _parent, &ccu_cg_regs, _shift, &mtk_clk_gate_ops_setclr)\n\nstatic const struct mtk_gate ccu_clks[] = {\n\tGATE_CCU(CLK_CCU_LARB18, \"ccu_larb18\", \"top_ccu\", 0),\n\tGATE_CCU(CLK_CCU_AHB, \"ccu_ahb\", \"top_ccu\", 1),\n\tGATE_CCU(CLK_CCU_CCU0, \"ccu_ccu0\", \"top_ccu\", 2),\n\tGATE_CCU(CLK_CCU_CCU1, \"ccu_ccu1\", \"top_ccu\", 3),\n};\n\nstatic const struct mtk_clk_desc ccu_desc = {\n\t.clks = ccu_clks,\n\t.num_clks = ARRAY_SIZE(ccu_clks),\n};\n\nstatic const struct of_device_id of_match_clk_mt8195_ccu[] = {\n\t{\n\t\t.compatible = \"mediatek,mt8195-ccusys\",\n\t\t.data = &ccu_desc,\n\t}, {\n\t\t \n\t}\n};\nMODULE_DEVICE_TABLE(of, of_match_clk_mt8195_ccu);\n\nstatic struct platform_driver clk_mt8195_ccu_drv = {\n\t.probe = mtk_clk_simple_probe,\n\t.remove_new = mtk_clk_simple_remove,\n\t.driver = {\n\t\t.name = \"clk-mt8195-ccu\",\n\t\t.of_match_table = of_match_clk_mt8195_ccu,\n\t},\n};\nmodule_platform_driver(clk_mt8195_ccu_drv);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

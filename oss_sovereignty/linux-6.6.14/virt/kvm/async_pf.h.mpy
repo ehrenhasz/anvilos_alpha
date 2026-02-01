@@ -1,0 +1,9 @@
+{
+  "module_name": "async_pf.h",
+  "hash_id": "45b46eeb807587b67125cd8f4e714ca08724b4268c3fa98cbd34be0d36158aad",
+  "original_prompt": "Ingested from linux-6.6.14/virt/kvm/async_pf.h",
+  "human_readable_source": " \n \n\n#ifndef __KVM_ASYNC_PF_H__\n#define __KVM_ASYNC_PF_H__\n\n#ifdef CONFIG_KVM_ASYNC_PF\nint kvm_async_pf_init(void);\nvoid kvm_async_pf_deinit(void);\nvoid kvm_async_pf_vcpu_init(struct kvm_vcpu *vcpu);\n#else\n#define kvm_async_pf_init() (0)\n#define kvm_async_pf_deinit() do {} while (0)\n#define kvm_async_pf_vcpu_init(C) do {} while (0)\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

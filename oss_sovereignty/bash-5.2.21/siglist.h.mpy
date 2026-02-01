@@ -1,0 +1,9 @@
+{
+  "module_name": "siglist.h",
+  "hash_id": "340ecf6b2a1df279a22870484a8254e954328fcda9d71ad07bc1f4ea75c097a5",
+  "original_prompt": "Ingested from bash-5.2.21/siglist.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_SIGLIST_H_)\n#define _SIGLIST_H_\n\n#if !defined (SYS_SIGLIST_DECLARED) && !defined (HAVE_STRSIGNAL)\n\n#if defined (HAVE_UNDER_SYS_SIGLIST) && !defined (HAVE_SYS_SIGLIST) && !defined (sys_siglist)\n#  define sys_siglist _sys_siglist\n#endif  \n\n#if !defined (sys_siglist)\nextern char *sys_siglist[];\n#endif  \n\n#endif  \n\n#if !defined (strsignal) && !defined (HAVE_STRSIGNAL)\n#  define strsignal(sig) (char *)sys_siglist[sig]\n#endif  \n\n#if !defined (strsignal) && !HAVE_DECL_STRSIGNAL\nextern char *strsignal PARAMS((int));\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

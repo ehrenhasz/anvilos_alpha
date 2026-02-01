@@ -1,0 +1,9 @@
+{
+  "module_name": "cpuidle.h",
+  "hash_id": "36661052ffbf58772da169959d6f5d5dd4d3384d7a3f8b2bf16649cf63837bf1",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/imx/cpuidle.h",
+  "human_readable_source": " \n \n\n#ifndef __SOC_IMX_CPUIDLE_H__\n#define __SOC_IMX_CPUIDLE_H__\n\n#if defined(CONFIG_CPU_IDLE) && defined(CONFIG_SOC_IMX6Q)\nvoid imx6q_cpuidle_fec_irqs_used(void);\nvoid imx6q_cpuidle_fec_irqs_unused(void);\n#else\nstatic inline void imx6q_cpuidle_fec_irqs_used(void) { }\nstatic inline void imx6q_cpuidle_fec_irqs_unused(void) { }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gf100.c",
+  "hash_id": "8da4c071fbe6ce84c44d9a810c76c17120dbbbc61deeb6e93dadfa8a72ddcba3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/ce/gf100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"fuc/gf100.fuc3.h\"\n\n#include <nvif/class.h>\n\nstatic void\ngf100_ce_init(struct nvkm_falcon *ce)\n{\n\tnvkm_wr32(ce->engine.subdev.device, ce->addr + 0x084, ce->engine.subdev.inst);\n}\n\nstatic const struct nvkm_falcon_func\ngf100_ce0 = {\n\t.code.data = gf100_ce_code,\n\t.code.size = sizeof(gf100_ce_code),\n\t.data.data = gf100_ce_data,\n\t.data.size = sizeof(gf100_ce_data),\n\t.init = gf100_ce_init,\n\t.intr = gt215_ce_intr,\n\t.sclass = {\n\t\t{ -1, -1, FERMI_DMA },\n\t\t{}\n\t}\n};\n\nstatic const struct nvkm_falcon_func\ngf100_ce1 = {\n\t.code.data = gf100_ce_code,\n\t.code.size = sizeof(gf100_ce_code),\n\t.data.data = gf100_ce_data,\n\t.data.size = sizeof(gf100_ce_data),\n\t.init = gf100_ce_init,\n\t.intr = gt215_ce_intr,\n\t.sclass = {\n\t\t{ -1, -1, FERMI_DECOMPRESS },\n\t\t{}\n\t}\n};\n\nint\ngf100_ce_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t     struct nvkm_engine **pengine)\n{\n\treturn nvkm_falcon_new_(inst ? &gf100_ce1 : &gf100_ce0, device, type, inst, true,\n\t\t\t\t0x104000 + (inst * 0x1000), pengine);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

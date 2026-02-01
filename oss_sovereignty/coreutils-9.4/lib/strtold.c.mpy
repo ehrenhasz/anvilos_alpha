@@ -1,0 +1,9 @@
+{
+  "module_name": "strtold.c",
+  "hash_id": "b5cb54ec3a9f2771b8680e48b8c7af31aa01e410288312bcc4331634e6bb7ee1",
+  "original_prompt": "Ingested from coreutils-9.4/lib/strtold.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#if HAVE_SAME_LONG_DOUBLE_AS_DOUBLE\n\n \n# include <stdlib.h>\n\nlong double\nstrtold (const char *str, char **endp)\n{\n  return strtod (str, endp);\n}\n\n#else\n\n# define USE_LONG_DOUBLE\n# include \"strtod.c\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

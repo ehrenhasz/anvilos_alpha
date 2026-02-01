@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_translate_dcn315.h",
+  "hash_id": "f05fda7a144ec5bdcbc8ca92b2684b78e76eeee5d02cbd132f91f216e0bd0c8e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/dcn315/hw_translate_dcn315.h",
+  "human_readable_source": " \n#ifndef __DAL_HW_TRANSLATE_DCN315_H__\n#define __DAL_HW_TRANSLATE_DCN315_H__\n\nstruct hw_translate;\n\n \nvoid dal_hw_translate_dcn315_init(struct hw_translate *tr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

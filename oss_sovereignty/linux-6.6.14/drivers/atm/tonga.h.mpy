@@ -1,0 +1,9 @@
+{
+  "module_name": "tonga.h",
+  "hash_id": "88fbbc556b38f22e16c559edb1db4ec323344ea100c6ea5a6694f116f0c8f679",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/atm/tonga.h",
+  "human_readable_source": " \n \n \n \n \n\n#ifndef DRIVER_ATM_TONGA_H\n#define DRIVER_ATM_TONGA_H\n\n#define PCI_TONGA_CTRL\t0x60\t \n\n#define END_SWAP_DMA\t0x80\t \n#define END_SWAP_BYTE\t0x40\t \n#define END_SWAP_WORD\t0x20\t \n#define SEPROM_MAGIC\t0x0c\t \n#define SEPROM_DATA\t0x02\t \n#define SEPROM_CLK\t0x01\t \n\n#define SEPROM_ESI_BASE\t64\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

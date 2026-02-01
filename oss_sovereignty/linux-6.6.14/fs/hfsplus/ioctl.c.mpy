@@ -1,0 +1,9 @@
+{
+  "module_name": "ioctl.c",
+  "hash_id": "09eb7373422ab6f361773372bf1d26b73b177886402fd9ab81cd84157d457370",
+  "original_prompt": "Ingested from linux-6.6.14/fs/hfsplus/ioctl.c",
+  "human_readable_source": "\n \n\n#include <linux/capability.h>\n#include <linux/fs.h>\n#include <linux/mount.h>\n#include <linux/sched.h>\n#include <linux/uaccess.h>\n#include \"hfsplus_fs.h\"\n\n \nstatic int hfsplus_ioctl_bless(struct file *file, int __user *user_flags)\n{\n\tstruct dentry *dentry = file->f_path.dentry;\n\tstruct inode *inode = d_inode(dentry);\n\tstruct hfsplus_sb_info *sbi = HFSPLUS_SB(inode->i_sb);\n\tstruct hfsplus_vh *vh = sbi->s_vhdr;\n\tstruct hfsplus_vh *bvh = sbi->s_backup_vhdr;\n\tu32 cnid = (unsigned long)dentry->d_fsdata;\n\n\tif (!capable(CAP_SYS_ADMIN))\n\t\treturn -EPERM;\n\n\tmutex_lock(&sbi->vh_mutex);\n\n\t \n\tvh->finder_info[0] = bvh->finder_info[0] =\n\t\tcpu_to_be32(parent_ino(dentry));\n\n\t \n\tvh->finder_info[1] = bvh->finder_info[1] = cpu_to_be32(cnid);\n\n\t \n\tvh->finder_info[5] = bvh->finder_info[5] =\n\t\tcpu_to_be32(parent_ino(dentry));\n\n\tmutex_unlock(&sbi->vh_mutex);\n\treturn 0;\n}\n\nlong hfsplus_ioctl(struct file *file, unsigned int cmd, unsigned long arg)\n{\n\tvoid __user *argp = (void __user *)arg;\n\n\tswitch (cmd) {\n\tcase HFSPLUS_IOC_BLESS:\n\t\treturn hfsplus_ioctl_bless(file, argp);\n\tdefault:\n\t\treturn -ENOTTY;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

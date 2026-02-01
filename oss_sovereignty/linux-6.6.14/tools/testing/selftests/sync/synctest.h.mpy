@@ -1,0 +1,9 @@
+{
+  "module_name": "synctest.h",
+  "hash_id": "fcafb7da467a1f36698038e12332958d2695333b35998ca4f54acda3ddafc5d8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/sync/synctest.h",
+  "human_readable_source": " \n\n#ifndef SELFTESTS_SYNCTEST_H\n#define SELFTESTS_SYNCTEST_H\n\n#include <stdio.h>\n#include \"../kselftest.h\"\n\n#define ASSERT(cond, msg) do { \\\n\tif (!(cond)) { \\\n\t\tksft_print_msg(\"[ERROR]\\t%s\", (msg)); \\\n\t\treturn 1; \\\n\t} \\\n} while (0)\n\n#define RUN_TEST(x) run_test((x), #x)\n\n \nint test_alloc_timeline(void);\nint test_alloc_fence(void);\nint test_alloc_fence_negative(void);\n\n \nint test_fence_one_timeline_wait(void);\nint test_fence_one_timeline_merge(void);\n\n \nint test_fence_merge_same_fence(void);\n\n \nint test_fence_multi_timeline_wait(void);\n\n \nint test_stress_two_threads_shared_timeline(void);\n\n \nint test_consumer_stress_multi_producer_single_consumer(void);\n\n \nint test_merge_stress_random_merge(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

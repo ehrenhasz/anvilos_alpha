@@ -1,0 +1,9 @@
+{
+  "module_name": "map_benchmark.h",
+  "hash_id": "26f01ed3625c8b1d4a58aa08325eebca2566deb8633ff72a50f551c79b9c6410",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/map_benchmark.h",
+  "human_readable_source": " \n \n\n#ifndef _KERNEL_DMA_BENCHMARK_H\n#define _KERNEL_DMA_BENCHMARK_H\n\n#define DMA_MAP_BENCHMARK       _IOWR('d', 1, struct map_benchmark)\n#define DMA_MAP_MAX_THREADS     1024\n#define DMA_MAP_MAX_SECONDS     300\n#define DMA_MAP_MAX_TRANS_DELAY (10 * NSEC_PER_MSEC)\n\n#define DMA_MAP_BIDIRECTIONAL   0\n#define DMA_MAP_TO_DEVICE       1\n#define DMA_MAP_FROM_DEVICE     2\n\nstruct map_benchmark {\n\t__u64 avg_map_100ns;  \n\t__u64 map_stddev;  \n\t__u64 avg_unmap_100ns;  \n\t__u64 unmap_stddev;\n\t__u32 threads;  \n\t__u32 seconds;  \n\t__s32 node;  \n\t__u32 dma_bits;  \n\t__u32 dma_dir;  \n\t__u32 dma_trans_ns;  \n\t__u32 granule;   \n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

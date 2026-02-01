@@ -1,0 +1,9 @@
+{
+  "module_name": "misc-check",
+  "hash_id": "aa48354c7ed14d025bcd4b0886acb39ef956c342ca06a87493c2e2d7b7940687",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/misc-check",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0-only\n\nset -e\n\n# Detect files that are tracked but ignored by git. This is checked only when\n# ${KBUILD_EXTRA_WARN} contains 1, git is installed, and the source tree is\n# tracked by git.\ncheck_tracked_ignored_files () {\n\tcase \"${KBUILD_EXTRA_WARN}\" in\n\t*1*) ;;\n\t*) return;;\n\tesac\n\n\tgit -C ${srctree:-.} ls-files -i -c --exclude-per-directory=.gitignore 2>/dev/null |\n\t\tsed 's/$/: warning: ignored by one of the .gitignore files/' >&2\n}\n\ncheck_tracked_ignored_files\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a444fa33152f4138fa513e07e9e2ce52485f6b8f6b98bddb0de788dd8a3ba2d8",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/os-Linux/Makefile",
+  "human_readable_source": "#\n# Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)\n# Licensed under the GPL\n#\n\nobj-y = registers.o task_size.o mcontext.o\n\nobj-$(CONFIG_X86_32) += tls.o\nobj-$(CONFIG_64BIT) += prctl.o\n\nUSER_OBJS := $(obj-y)\n\ninclude $(srctree)/arch/um/scripts/Makefile.rules\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

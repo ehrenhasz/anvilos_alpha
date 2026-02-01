@@ -1,0 +1,9 @@
+{
+  "module_name": "mtdcore.h",
+  "hash_id": "52d8346118ac4ae18184bc244d5d497d2b06b69d7e8169aa3e544e860a248b51",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/mtdcore.h",
+  "human_readable_source": " \n \n\nextern struct mutex mtd_table_mutex;\nextern struct backing_dev_info *mtd_bdi;\n\nstruct mtd_info *__mtd_next_device(int i);\nint __must_check add_mtd_device(struct mtd_info *mtd);\nint del_mtd_device(struct mtd_info *mtd);\nint add_mtd_partitions(struct mtd_info *, const struct mtd_partition *, int);\nint del_mtd_partitions(struct mtd_info *);\nvoid release_mtd_partition(struct mtd_info *mtd);\n\nstruct mtd_partitions;\n\nint parse_mtd_partitions(struct mtd_info *master, const char * const *types,\n\t\t\t struct mtd_part_parser_data *data);\n\nvoid mtd_part_parser_cleanup(struct mtd_partitions *parts);\n\nint __init init_mtdchar(void);\nvoid __exit cleanup_mtdchar(void);\n\n#define mtd_for_each_device(mtd)\t\t\t\\\n\tfor ((mtd) = __mtd_next_device(0);\t\t\\\n\t     (mtd) != NULL;\t\t\t\t\\\n\t     (mtd) = __mtd_next_device(mtd->index + 1))\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

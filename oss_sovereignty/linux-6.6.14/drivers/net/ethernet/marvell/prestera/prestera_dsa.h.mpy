@@ -1,0 +1,9 @@
+{
+  "module_name": "prestera_dsa.h",
+  "hash_id": "0e6f46a379cdaef1d4a4b6844ff479c168e146bcdc28bd8f4e6c55215c222982",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/prestera/prestera_dsa.h",
+  "human_readable_source": " \n \n\n#ifndef __PRESTERA_DSA_H_\n#define __PRESTERA_DSA_H_\n\n#include <linux/types.h>\n\n#define PRESTERA_DSA_HLEN\t16\n\nenum prestera_dsa_cmd {\n\t \n\tPRESTERA_DSA_CMD_TO_CPU = 0,\n\n\t \n\tPRESTERA_DSA_CMD_FROM_CPU,\n};\n\nstruct prestera_dsa_vlan {\n\tu16 vid;\n\tu8 vpt;\n\tu8 cfi_bit;\n\tbool is_tagged;\n};\n\nstruct prestera_dsa {\n\tstruct prestera_dsa_vlan vlan;\n\tu32 hw_dev_num;\n\tu32 port_num;\n\tu8 cpu_code;\n};\n\nint prestera_dsa_parse(struct prestera_dsa *dsa, const u8 *dsa_buf);\nint prestera_dsa_build(const struct prestera_dsa *dsa, u8 *dsa_buf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_guc_print.h",
+  "hash_id": "9fa0d7d2c79d10a1bf8af939ee09dca15dd1d4d65a99735ccd6ae2600b1d0425",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/uc/intel_guc_print.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_GUC_PRINT__\n#define __INTEL_GUC_PRINT__\n\n#include \"gt/intel_gt.h\"\n#include \"gt/intel_gt_print.h\"\n\n#define guc_printk(_guc, _level, _fmt, ...) \\\n\tgt_##_level(guc_to_gt(_guc), \"GUC: \" _fmt, ##__VA_ARGS__)\n\n#define guc_err(_guc, _fmt, ...) \\\n\tguc_printk((_guc), err, _fmt, ##__VA_ARGS__)\n\n#define guc_warn(_guc, _fmt, ...) \\\n\tguc_printk((_guc), warn, _fmt, ##__VA_ARGS__)\n\n#define guc_notice(_guc, _fmt, ...) \\\n\tguc_printk((_guc), notice, _fmt, ##__VA_ARGS__)\n\n#define guc_info(_guc, _fmt, ...) \\\n\tguc_printk((_guc), info, _fmt, ##__VA_ARGS__)\n\n#define guc_dbg(_guc, _fmt, ...) \\\n\tguc_printk((_guc), dbg, _fmt, ##__VA_ARGS__)\n\n#define guc_err_ratelimited(_guc, _fmt, ...) \\\n\tguc_printk((_guc), err_ratelimited, _fmt, ##__VA_ARGS__)\n\n#define guc_notice_ratelimited(_guc, _fmt, ...) \\\n\tguc_printk((_guc), notice_ratelimited, _fmt, ##__VA_ARGS__)\n\n#define guc_probe_error(_guc, _fmt, ...) \\\n\tguc_printk((_guc), probe_error, _fmt, ##__VA_ARGS__)\n\n#define guc_WARN(_guc, _cond, _fmt, ...) \\\n\tgt_WARN(guc_to_gt(_guc), _cond, \"GUC: \" _fmt, ##__VA_ARGS__)\n\n#define guc_WARN_ONCE(_guc, _cond, _fmt, ...) \\\n\tgt_WARN_ONCE(guc_to_gt(_guc), _cond, \"GUC: \" _fmt, ##__VA_ARGS__)\n\n#define guc_WARN_ON(_guc, _cond) \\\n\tgt_WARN(guc_to_gt(_guc), _cond, \"%s(%s)\", \"guc_WARN_ON\", __stringify(_cond))\n\n#define guc_WARN_ON_ONCE(_guc, _cond) \\\n\tgt_WARN_ONCE(guc_to_gt(_guc), _cond, \"%s(%s)\", \"guc_WARN_ON_ONCE\", __stringify(_cond))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

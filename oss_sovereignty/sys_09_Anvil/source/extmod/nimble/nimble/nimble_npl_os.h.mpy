@@ -1,0 +1,9 @@
+{
+  "module_name": "nimble_npl_os.h",
+  "hash_id": "02d94c0dd2a3ee3e3741e605b367b424d313011cfdac39c9fb7d0a97826f389c",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/nimble/nimble/nimble_npl_os.h",
+  "human_readable_source": " \n\n#ifndef MICROPY_INCLUDED_STM32_NIMBLE_NIMBLE_NIMBLE_NPL_OS_H\n#define MICROPY_INCLUDED_STM32_NIMBLE_NIMBLE_NIMBLE_NPL_OS_H\n\n\n\n#include <stdint.h>\n#include <limits.h>\n\n\n\n\n#if __WORDSIZE == 64\n#define BLE_NPL_OS_ALIGNMENT 8\n#else\n#define BLE_NPL_OS_ALIGNMENT 4\n#endif\n#define BLE_NPL_TIME_FOREVER (0xffffffff)\n\n\n\n\n#define OS_CFG_ALIGN_4 (4)\n#define OS_CFG_ALIGN_8 (8)\n#if (ULONG_MAX == 0xffffffffffffffff)\n#define OS_CFG_ALIGNMENT (OS_CFG_ALIGN_8)\n#else\n#define OS_CFG_ALIGNMENT (OS_CFG_ALIGN_4)\n#endif\n\ntypedef uint32_t ble_npl_time_t;\ntypedef int32_t ble_npl_stime_t;\n\nstruct ble_npl_event {\n    ble_npl_event_fn *fn;\n    void *arg;\n    bool pending;\n    struct ble_npl_event *prev;\n    struct ble_npl_event *next;\n};\n\nstruct ble_npl_eventq {\n    struct ble_npl_event *head;\n    struct ble_npl_eventq *nextq;\n};\n\nstruct ble_npl_callout {\n    bool active;\n    uint32_t ticks;\n    struct ble_npl_eventq *evq;\n    struct ble_npl_event ev;\n    struct ble_npl_callout *nextc;\n};\n\nstruct ble_npl_mutex {\n    volatile uint8_t locked;\n};\n\nstruct ble_npl_sem {\n    volatile uint16_t count;\n};\n\n\n\nvoid mp_bluetooth_nimble_os_eventq_run_all(void);\nvoid mp_bluetooth_nimble_os_callout_process(void);\n\n\n\nvoid mp_bluetooth_nimble_hci_uart_wfi(void);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

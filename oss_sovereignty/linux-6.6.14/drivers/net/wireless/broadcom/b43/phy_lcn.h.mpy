@@ -1,0 +1,9 @@
+{
+  "module_name": "phy_lcn.h",
+  "hash_id": "37e83b2a1913a57b1079d1bf3ff4f0ff3cfb66edb75104d48b3b5a3aa2fc25ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/b43/phy_lcn.h",
+  "human_readable_source": " \n#ifndef B43_PHY_LCN_H_\n#define B43_PHY_LCN_H_\n\n#include \"phy_common.h\"\n\n\n#define B43_PHY_LCN_AFE_CTL1\t\t\tB43_PHY_OFDM(0x03B)\n#define B43_PHY_LCN_AFE_CTL2\t\t\tB43_PHY_OFDM(0x03C)\n#define B43_PHY_LCN_RF_CTL1\t\t\tB43_PHY_OFDM(0x04C)\n#define B43_PHY_LCN_RF_CTL2\t\t\tB43_PHY_OFDM(0x04D)\n#define B43_PHY_LCN_TABLE_ADDR\t\t\tB43_PHY_OFDM(0x055)  \n#define B43_PHY_LCN_TABLE_DATALO\t\tB43_PHY_OFDM(0x056)  \n#define B43_PHY_LCN_TABLE_DATAHI\t\tB43_PHY_OFDM(0x057)  \n#define B43_PHY_LCN_RF_CTL3\t\t\tB43_PHY_OFDM(0x0B0)\n#define B43_PHY_LCN_RF_CTL4\t\t\tB43_PHY_OFDM(0x0B1)\n#define B43_PHY_LCN_RF_CTL5\t\t\tB43_PHY_OFDM(0x0B7)\n#define B43_PHY_LCN_RF_CTL6\t\t\tB43_PHY_OFDM(0x0F9)\n#define B43_PHY_LCN_RF_CTL7\t\t\tB43_PHY_OFDM(0x0FA)\n\n\nstruct b43_phy_lcn {\n\tbool hw_pwr_ctl;\n\tbool hw_pwr_ctl_capable;\n\tu8 tx_pwr_curr_idx;\n};\n\n\nstruct b43_phy_operations;\nextern const struct b43_phy_operations b43_phyops_lcn;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

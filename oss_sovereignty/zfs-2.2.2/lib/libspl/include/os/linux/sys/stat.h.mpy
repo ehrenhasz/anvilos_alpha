@@ -1,0 +1,9 @@
+{
+  "module_name": "stat.h",
+  "hash_id": "38ed49eb0ae695fef1f4f17ce701b381138a9ad500dd311661ed13061a00dbda",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/os/linux/sys/stat.h",
+  "human_readable_source": " \n \n\n#ifndef _LIBSPL_SYS_STAT_H\n#define\t_LIBSPL_SYS_STAT_H\n\n#include_next <sys/stat.h>\n\n#include <sys/mount.h>  \n\n \nstatic inline int\nfstat64_blk(int fd, struct stat64 *st)\n{\n\tif (fstat64(fd, st) == -1)\n\t\treturn (-1);\n\n\t \n\tif (S_ISBLK(st->st_mode)) {\n\t\tif (ioctl(fd, BLKGETSIZE64, &st->st_size) != 0)\n\t\t\treturn (-1);\n\t}\n\n\treturn (0);\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

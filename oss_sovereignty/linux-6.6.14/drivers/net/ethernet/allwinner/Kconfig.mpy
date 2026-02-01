@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a5a8d35c22f8e57edc61d6d60d1d88541063a67e563d1ebb02e6dce846aecfae",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/allwinner/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Allwinner device configuration\n#\n\nconfig NET_VENDOR_ALLWINNER\n\tbool \"Allwinner devices\"\n\tdefault y\n\n\tdepends on ARCH_SUNXI\n\thelp\n\t  If you have a network (Ethernet) card belonging to this\n\t  class, say Y here.\n\n\t  Note that the answer to this question doesn't directly\n\t  affect the kernel: saying N will just cause the configurator\n\t  to skip all the questions about Allwinner cards. If you say Y,\n\t  you will be asked for your specific card in the following\n\t  questions.\n\nif NET_VENDOR_ALLWINNER\n\nconfig SUN4I_EMAC\n\ttristate \"Allwinner A10 EMAC support\"\n\tdepends on ARCH_SUNXI\n\tdepends on OF\n\tselect CRC32\n\tselect MII\n\tselect PHYLIB\n\tselect MDIO_SUN4I\n\thelp\n\t  Support for Allwinner A10 EMAC ethernet driver.\n\n\t  To compile this driver as a module, choose M here.  The module\n\t  will be called sun4i-emac.\n\nendif # NET_VENDOR_ALLWINNER\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

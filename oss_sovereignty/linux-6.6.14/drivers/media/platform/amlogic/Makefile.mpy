@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "12b69d0b801bb9fd1e08917c2a2e0cbb9a83e2e269827b3b3eb8fb37529638d1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/amlogic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y += meson-ge2d/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

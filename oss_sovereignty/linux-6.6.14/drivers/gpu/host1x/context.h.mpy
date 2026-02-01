@@ -1,0 +1,9 @@
+{
+  "module_name": "context.h",
+  "hash_id": "c749bd0cd8a8c2f9dbd79cc869b612c54402da05beb6906ee1bf3dbf178e4b1f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/context.h",
+  "human_readable_source": " \n \n\n#ifndef __HOST1X_CONTEXT_H\n#define __HOST1X_CONTEXT_H\n\n#include <linux/mutex.h>\n#include <linux/refcount.h>\n\nstruct host1x;\n\nextern struct bus_type host1x_context_device_bus_type;\n\nstruct host1x_memory_context_list {\n\tstruct mutex lock;\n\tstruct host1x_memory_context *devs;\n\tunsigned int len;\n};\n\n#ifdef CONFIG_IOMMU_API\nint host1x_memory_context_list_init(struct host1x *host1x);\nvoid host1x_memory_context_list_free(struct host1x_memory_context_list *cdl);\n#else\nstatic inline int host1x_memory_context_list_init(struct host1x *host1x)\n{\n\treturn 0;\n}\n\nstatic inline void host1x_memory_context_list_free(struct host1x_memory_context_list *cdl)\n{\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

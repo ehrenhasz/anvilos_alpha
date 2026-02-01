@@ -1,0 +1,9 @@
+{
+  "module_name": "otx2_cptvf.h",
+  "hash_id": "cbe2f2e336f56b22253864f3c9ada947888569184aacd5dc7ff80698bbe7ac93",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/marvell/octeontx2/otx2_cptvf.h",
+  "human_readable_source": " \n\n#ifndef __OTX2_CPTVF_H\n#define __OTX2_CPTVF_H\n\n#include \"mbox.h\"\n#include \"otx2_cptlf.h\"\n\nstruct otx2_cptvf_dev {\n\tvoid __iomem *reg_base;\t\t \n\tvoid __iomem *pfvf_mbox_base;\t \n\tstruct pci_dev *pdev;\t\t \n\tstruct otx2_cptlfs_info lfs;\t \n\tu8 vf_id;\t\t\t \n\n\t \n\tstruct otx2_mbox\tpfvf_mbox;\n\tstruct work_struct\tpfvf_mbox_work;\n\tstruct workqueue_struct *pfvf_mbox_wq;\n\tint blkaddr;\n\tvoid *bbuf_base;\n\tunsigned long cap_flag;\n};\n\nirqreturn_t otx2_cptvf_pfvf_mbox_intr(int irq, void *arg);\nvoid otx2_cptvf_pfvf_mbox_handler(struct work_struct *work);\nint otx2_cptvf_send_eng_grp_num_msg(struct otx2_cptvf_dev *cptvf, int eng_type);\nint otx2_cptvf_send_kvf_limits_msg(struct otx2_cptvf_dev *cptvf);\nint otx2_cpt_mbox_bbuf_init(struct otx2_cptvf_dev *cptvf, struct pci_dev *pdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "23044add78cb208143327e6dbc0ecd96ddc4d19724b578fde3ddbbb012da8e32",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/bpf/Build",
+  "human_readable_source": "libbpf-y := libbpf.o bpf.o nlattr.o btf.o libbpf_errno.o str_error.o \\\n\t    netlink.o bpf_prog_linfo.o libbpf_probes.o hashmap.o \\\n\t    btf_dump.o ringbuf.o strset.o linker.o gen_loader.o relo_core.o \\\n\t    usdt.o zip.o elf.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mtu3_debug.h",
+  "hash_id": "e702809e0cf566ea8cf7ad111b4d82551154da0518bfe2da0caba419cec96525",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/mtu3/mtu3_debug.h",
+  "human_readable_source": " \n \n\n#ifndef __MTU3_DEBUG_H__\n#define __MTU3_DEBUG_H__\n\n#include <linux/debugfs.h>\n\nstruct ssusb_mtk;\n\n#define MTU3_DEBUGFS_NAME_LEN 32\n\nstruct mtu3_regset {\n\tchar name[MTU3_DEBUGFS_NAME_LEN];\n\tstruct debugfs_regset32 regset;\n};\n\nstruct mtu3_file_map {\n\tconst char *name;\n\tint (*show)(struct seq_file *s, void *unused);\n};\n\n#if IS_ENABLED(CONFIG_DEBUG_FS)\nvoid ssusb_dev_debugfs_init(struct ssusb_mtk *ssusb);\nvoid ssusb_dr_debugfs_init(struct ssusb_mtk *ssusb);\nvoid ssusb_debugfs_create_root(struct ssusb_mtk *ssusb);\nvoid ssusb_debugfs_remove_root(struct ssusb_mtk *ssusb);\n\n#else\nstatic inline void ssusb_dev_debugfs_init(struct ssusb_mtk *ssusb) {}\nstatic inline void ssusb_dr_debugfs_init(struct ssusb_mtk *ssusb) {}\nstatic inline void ssusb_debugfs_create_root(struct ssusb_mtk *ssusb) {}\nstatic inline void ssusb_debugfs_remove_root(struct ssusb_mtk *ssusb) {}\n\n#endif  \n\n#if IS_ENABLED(CONFIG_TRACING)\nvoid mtu3_dbg_trace(struct device *dev, const char *fmt, ...);\n\n#else\nstatic inline void mtu3_dbg_trace(struct device *dev, const char *fmt, ...) {}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

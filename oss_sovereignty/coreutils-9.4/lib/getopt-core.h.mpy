@@ -1,0 +1,9 @@
+{
+  "module_name": "getopt-core.h",
+  "hash_id": "b7aa30e7b12a1cf8c5ba5086b87151f15bfdf368e41fe2b734eb1bbea888e0be",
+  "original_prompt": "Ingested from coreutils-9.4/lib/getopt-core.h",
+  "human_readable_source": " \n\n__BEGIN_DECLS\n\n \n\nextern char *optarg;\n\n \n\nextern int optind;\n\n \n\nextern int opterr;\n\n \n\nextern int optopt;\n\n \n\nextern int getopt (int ___argc, char *const *___argv, const char *__shortopts)\n       __THROW _GL_ARG_NONNULL ((2, 3));\n\n__END_DECLS\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

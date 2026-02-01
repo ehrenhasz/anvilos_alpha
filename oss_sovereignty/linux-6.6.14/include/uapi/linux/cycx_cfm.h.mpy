@@ -1,0 +1,9 @@
+{
+  "module_name": "cycx_cfm.h",
+  "hash_id": "d277b0a929db599f74b99d957b32e560fb25030f09319ed80fc138f91baad5d0",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/cycx_cfm.h",
+  "human_readable_source": " \n \n#ifndef\t_CYCX_CFM_H\n#define\t_CYCX_CFM_H\n\n \n\n#define\tCFM_VERSION\t2\n#define\tCFM_SIGNATURE\t\"CFM - Cyclades CYCX Firmware Module\"\n\n \n#define\tCFM_IMAGE_SIZE\t0x20000\t \n#define\tCFM_DESCR_LEN\t256\t \n#define\tCFM_MAX_CYCX\t1\t \n#define\tCFM_LOAD_BUFSZ\t0x400\t \n\n \n#define GEN_POWER_ON\t0x1280\n\n#define GEN_SET_SEG\t0x1401\t \n#define GEN_BOOT_DAT\t0x1402\t \n#define GEN_START\t0x1403\t \n#define GEN_DEFPAR\t0x1404\t \n\n \n#define CYCX_2X\t\t2\n \n#define CYCX_8X\t\t8\n#define CYCX_16X\t16\n\n#define\tCFID_X25_2X\t5200\n\n \nstruct cycx_fw_info {\n\tunsigned short\tcodeid;\n\tunsigned short\tversion;\n\tunsigned short\tadapter[CFM_MAX_CYCX];\n\tunsigned long\tmemsize;\n\tunsigned short\treserved[2];\n\tunsigned short\tstartoffs;\n\tunsigned short\twinoffs;\n\tunsigned short\tcodeoffs;\n\tunsigned long\tcodesize;\n\tunsigned short\tdataoffs;\n\tunsigned long\tdatasize;\n};\n\n \nstruct cycx_firmware {\n\tchar\t\t    signature[80];\n\tunsigned short\t    version;\n\tunsigned short\t    checksum;\n\tunsigned short\t    reserved[6];\n\tchar\t\t    descr[CFM_DESCR_LEN];\n\tstruct cycx_fw_info info;\n\tunsigned char\t    image[];\n};\n\nstruct cycx_fw_header {\n\tunsigned long  reset_size;\n\tunsigned long  data_size;\n\tunsigned long  code_size;\n};\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

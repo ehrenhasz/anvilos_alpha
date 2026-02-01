@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__py__objgenerator.c.qstr",
+  "hash_id": "47387d12df12fec4df06c25ae7883c1dc952d687de83318d0c30b59c114d627a",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/build/genhdr/qstr/@@__py__objgenerator.c.qstr",
+  "human_readable_source": "Q(generator)\nQ(generator)\nQ(close)\nQ(send)\nQ(throw)\nQ(pend_throw)\nQ(generator)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

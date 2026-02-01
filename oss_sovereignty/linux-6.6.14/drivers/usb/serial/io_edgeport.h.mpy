@@ -1,0 +1,9 @@
+{
+  "module_name": "io_edgeport.h",
+  "hash_id": "5c8baac5d886ab09543abd37e8322bee6331b53df40557e955148590fd13b904",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/serial/io_edgeport.h",
+  "human_readable_source": " \n \n\n#if !defined(_IO_EDGEPORT_H_)\n#define\t_IO_EDGEPORT_H_\n\n#define MAX_RS232_PORTS\t\t8\t \n\n \n#ifndef LOW8\n\t#define LOW8(a)\t\t((unsigned char)(a & 0xff))\n#endif\n#ifndef HIGH8\n\t#define HIGH8(a)\t((unsigned char)((a & 0xff00) >> 8))\n#endif\n\n#include \"io_usbvend.h\"\n\n \nstruct edgeport_product_info {\n\t__u16\tProductId;\t\t\t \n\t__u8\tNumPorts;\t\t\t \n\t__u8\tProdInfoVer;\t\t\t \n\n\t__u32\tIsServer        :1;\t\t \n\t__u32\tIsRS232         :1;\t\t \n\t__u32\tIsRS422         :1;\t\t \n\t__u32\tIsRS485         :1;\t\t \n\t__u32\tIsReserved      :28;\t\t \n\n\t__u8\tRomSize;\t\t\t \n\t__u8\tRamSize;\t\t\t \n\t__u8\tCpuRev;\t\t\t\t \n\t__u8\tBoardRev;\t\t\t \n\n\t__u8\tBootMajorVersion;\t\t \n\t__u8\tBootMinorVersion;\t\t \n\t__le16\tBootBuildNumber;\t\t \n\n\t__u8\tFirmwareMajorVersion;\t\t \n\t__u8\tFirmwareMinorVersion;\t\t \n\t__le16\tFirmwareBuildNumber;\t\t \n\n\t__u8\tManufactureDescDate[3];\t\t \n\t__u8\tHardwareType;\n\n\t__u8\tiDownloadFile;\t\t\t \n\t__u8\tEpicVer;\t\t\t \n\n\tstruct edge_compatibility_bits Epic;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

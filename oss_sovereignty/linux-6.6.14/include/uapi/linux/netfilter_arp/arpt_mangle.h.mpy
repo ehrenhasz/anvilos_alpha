@@ -1,0 +1,9 @@
+{
+  "module_name": "arpt_mangle.h",
+  "hash_id": "5f47f587b6e8245a369866d12b77994e950d8d79dc0a007b605447d7abd154a6",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_arp/arpt_mangle.h",
+  "human_readable_source": " \n#ifndef _ARPT_MANGLE_H\n#define _ARPT_MANGLE_H\n#include <linux/netfilter_arp/arp_tables.h>\n\n#define ARPT_MANGLE_ADDR_LEN_MAX sizeof(struct in_addr)\nstruct arpt_mangle\n{\n\tchar src_devaddr[ARPT_DEV_ADDR_LEN_MAX];\n\tchar tgt_devaddr[ARPT_DEV_ADDR_LEN_MAX];\n\tunion {\n\t\tstruct in_addr src_ip;\n\t} u_s;\n\tunion {\n\t\tstruct in_addr tgt_ip;\n\t} u_t;\n\t__u8 flags;\n\tint target;\n};\n\n#define ARPT_MANGLE_SDEV 0x01\n#define ARPT_MANGLE_TDEV 0x02\n#define ARPT_MANGLE_SIP 0x04\n#define ARPT_MANGLE_TIP 0x08\n#define ARPT_MANGLE_MASK 0x0f\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

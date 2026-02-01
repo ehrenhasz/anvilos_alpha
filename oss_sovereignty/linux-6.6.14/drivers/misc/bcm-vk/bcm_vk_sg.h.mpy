@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm_vk_sg.h",
+  "hash_id": "79c0fe2c9853918d68e7690ecdb739d24a95dc0102084380458920bbe9d414a6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/bcm-vk/bcm_vk_sg.h",
+  "human_readable_source": " \n \n\n#ifndef BCM_VK_SG_H\n#define BCM_VK_SG_H\n\n#include <linux/dma-mapping.h>\n\nstruct bcm_vk_dma {\n\t \n\tstruct page **pages;\n\tint nr_pages;\n\n\t \n\tdma_addr_t handle;\n\t \n\tu32 *sglist;\n#define SGLIST_NUM_SG\t\t0\n#define SGLIST_TOTALSIZE\t1\n#define SGLIST_VKDATA_START\t2\n\n\tint sglen;  \n\tint direction;\n};\n\nstruct _vk_data {\n\tu32 size;     \n\tu64 address;  \n} __packed;\n\n \nint bcm_vk_sg_alloc(struct device *dev,\n\t\t    struct bcm_vk_dma *dma,\n\t\t    int dir,\n\t\t    struct _vk_data *vkdata,\n\t\t    int num);\n\nint bcm_vk_sg_free(struct device *dev, struct bcm_vk_dma *dma, int num,\n\t\t   int *proc_cnt);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "wakemain.c",
+  "hash_id": "a489a62e5917a96a25bbab8fba71c2249c12815c8551191959e08b60b5f296cb",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/realmode/rm/wakemain.c",
+  "human_readable_source": "\n#include \"wakeup.h\"\n#include \"boot.h\"\n\nstatic void udelay(int loops)\n{\n\twhile (loops--)\n\t\tio_delay();\t \n}\n\nstatic void beep(unsigned int hz)\n{\n\tu8 enable;\n\n\tif (!hz) {\n\t\tenable = 0x00;\t\t \n\t} else {\n\t\tu16 div = 1193181/hz;\n\n\t\toutb(0xb6, 0x43);\t \n\t\tio_delay();\n\t\toutb(div, 0x42);\t \n\t\tio_delay();\n\t\toutb(div >> 8, 0x42);\t \n\t\tio_delay();\n\n\t\tenable = 0x03;\t\t \n\t}\n\tinb(0x61);\t\t \n\tio_delay();\n\toutb(enable, 0x61);\t \n\tio_delay();\n}\n\n#define DOT_HZ\t\t880\n#define DASH_HZ\t\t587\n#define US_PER_DOT\t125000\n\n \nstatic void send_morse(const char *pattern)\n{\n\tchar s;\n\n\twhile ((s = *pattern++)) {\n\t\tswitch (s) {\n\t\tcase '.':\n\t\t\tbeep(DOT_HZ);\n\t\t\tudelay(US_PER_DOT);\n\t\t\tbeep(0);\n\t\t\tudelay(US_PER_DOT);\n\t\t\tbreak;\n\t\tcase '-':\n\t\t\tbeep(DASH_HZ);\n\t\t\tudelay(US_PER_DOT * 3);\n\t\t\tbeep(0);\n\t\t\tudelay(US_PER_DOT);\n\t\t\tbreak;\n\t\tdefault:\t \n\t\t\tudelay(US_PER_DOT * 3);\n\t\t\tbreak;\n\t\t}\n\t}\n}\n\nstruct port_io_ops pio_ops;\n\nvoid main(void)\n{\n\tinit_default_io_ops();\n\n\t \n\tif (wakeup_header.real_magic != 0x12345678)\n\t\twhile (1)\n\t\t\t;\n\n\tif (wakeup_header.realmode_flags & 4)\n\t\tsend_morse(\"...-\");\n\n\tif (wakeup_header.realmode_flags & 1)\n\t\tasm volatile(\"lcallw   $0xc000,$3\");\n\n\tif (wakeup_header.realmode_flags & 2) {\n\t\t \n\t\tprobe_cards(0);\n\t\tset_mode(wakeup_header.video_mode);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

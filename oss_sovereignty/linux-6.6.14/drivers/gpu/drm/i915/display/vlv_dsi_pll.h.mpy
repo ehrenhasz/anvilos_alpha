@@ -1,0 +1,9 @@
+{
+  "module_name": "vlv_dsi_pll.h",
+  "hash_id": "9e798bf8319ec56d83ca80738f4cbfaaa0adec7f9c2c156a9f2dca8970f25c62",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/vlv_dsi_pll.h",
+  "human_readable_source": " \n \n\n#ifndef __VLV_DSI_PLL_H__\n#define __VLV_DSI_PLL_H__\n\n#include <linux/types.h>\n\nenum port;\nstruct drm_i915_private;\nstruct intel_crtc_state;\nstruct intel_encoder;\n\nint vlv_dsi_pll_compute(struct intel_encoder *encoder,\n\t\t\tstruct intel_crtc_state *config);\nvoid vlv_dsi_pll_enable(struct intel_encoder *encoder,\n\t\t\tconst struct intel_crtc_state *config);\nvoid vlv_dsi_pll_disable(struct intel_encoder *encoder);\nu32 vlv_dsi_get_pclk(struct intel_encoder *encoder,\n\t\t     struct intel_crtc_state *config);\nvoid vlv_dsi_reset_clocks(struct intel_encoder *encoder, enum port port);\n\nbool bxt_dsi_pll_is_enabled(struct drm_i915_private *dev_priv);\nint bxt_dsi_pll_compute(struct intel_encoder *encoder,\n\t\t\tstruct intel_crtc_state *config);\nvoid bxt_dsi_pll_enable(struct intel_encoder *encoder,\n\t\t\tconst struct intel_crtc_state *config);\nvoid bxt_dsi_pll_disable(struct intel_encoder *encoder);\nu32 bxt_dsi_get_pclk(struct intel_encoder *encoder,\n\t\t     struct intel_crtc_state *config);\nvoid bxt_dsi_reset_clocks(struct intel_encoder *encoder, enum port port);\n\nvoid assert_dsi_pll_enabled(struct drm_i915_private *i915);\nvoid assert_dsi_pll_disabled(struct drm_i915_private *i915);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

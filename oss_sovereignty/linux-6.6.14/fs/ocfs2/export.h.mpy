@@ -1,0 +1,9 @@
+{
+  "module_name": "export.h",
+  "hash_id": "8bdbd0f44ae191629643f38db796324629e20bcb0bacf72af8219c606ab16c44",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/export.h",
+  "human_readable_source": " \n \n\n#ifndef OCFS2_EXPORT_H\n#define OCFS2_EXPORT_H\n\n#include <linux/exportfs.h>\n\nextern const struct export_operations ocfs2_export_ops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

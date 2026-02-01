@@ -1,0 +1,9 @@
+{
+  "module_name": "lattice-sysconfig.h",
+  "hash_id": "ebd12785fcc9206a269804a9734e28569498774aa3df56eb10c5e557edd216a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/fpga/lattice-sysconfig.h",
+  "human_readable_source": " \n\n#ifndef\t__LATTICE_SYSCONFIG_H\n#define\t__LATTICE_SYSCONFIG_H\n\n#define\tSYSCONFIG_ISC_ENABLE\t\t{0xC6, 0x00, 0x00, 0x00}\n#define\tSYSCONFIG_ISC_DISABLE\t\t{0x26, 0x00, 0x00, 0x00}\n#define\tSYSCONFIG_ISC_ERASE\t\t{0x0E, 0x01, 0x00, 0x00}\n#define\tSYSCONFIG_LSC_READ_STATUS\t{0x3C, 0x00, 0x00, 0x00}\n#define\tSYSCONFIG_LSC_CHECK_BUSY\t{0xF0, 0x00, 0x00, 0x00}\n#define\tSYSCONFIG_LSC_REFRESH\t\t{0x79, 0x00, 0x00, 0x00}\n#define\tSYSCONFIG_LSC_INIT_ADDR\t\t{0x46, 0x00, 0x00, 0x00}\n#define\tSYSCONFIG_LSC_BITSTREAM_BURST\t{0x7a, 0x00, 0x00, 0x00}\n\n#define\tSYSCONFIG_STATUS_DONE\t\tBIT(8)\n#define\tSYSCONFIG_STATUS_BUSY\t\tBIT(12)\n#define\tSYSCONFIG_STATUS_FAIL\t\tBIT(13)\n#define\tSYSCONFIG_STATUS_ERR\t\tGENMASK(25, 23)\n\n#define\tSYSCONFIG_POLL_INTERVAL_US\t30\n#define\tSYSCONFIG_POLL_BUSY_TIMEOUT_US\t1000000\n#define\tSYSCONFIG_POLL_GPIO_TIMEOUT_US\t100000\n\nstruct sysconfig_priv {\n\tstruct gpio_desc *program;\n\tstruct gpio_desc *init;\n\tstruct gpio_desc *done;\n\tstruct device *dev;\n\tint (*command_transfer)(struct sysconfig_priv *priv, const void *tx_buf,\n\t\t\t\tsize_t tx_len, void *rx_buf, size_t rx_len);\n\tint (*bitstream_burst_write_init)(struct sysconfig_priv *priv);\n\tint (*bitstream_burst_write)(struct sysconfig_priv *priv,\n\t\t\t\t     const char *tx_buf, size_t tx_len);\n\tint (*bitstream_burst_write_complete)(struct sysconfig_priv *priv);\n};\n\nint sysconfig_probe(struct sysconfig_priv *priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

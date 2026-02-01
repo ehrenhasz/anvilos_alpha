@@ -1,0 +1,9 @@
+{
+  "module_name": "rk3188-cru.h",
+  "hash_id": "004c476296a681dd58df3e1b53090df773702c9abcdf96b80c9832411434b018",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/rk3188-cru.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_ROCKCHIP_RK3188_H\n#define _DT_BINDINGS_CLK_ROCKCHIP_RK3188_H\n\n#include <dt-bindings/clock/rk3188-cru-common.h>\n\n \n#define SRST_PTM_CORE2\t\t0\n#define SRST_PTM_CORE3\t\t1\n#define SRST_CORE2\t\t5\n#define SRST_CORE3\t\t6\n#define SRST_CORE2_DBG\t\t10\n#define SRST_CORE3_DBG\t\t11\n\n#define SRST_TIMER2\t\t16\n#define SRST_TIMER4\t\t23\n#define SRST_I2S0\t\t24\n#define SRST_TIMER5\t\t25\n#define SRST_TIMER3\t\t29\n#define SRST_TIMER6\t\t31\n\n#define SRST_PTM3\t\t36\n#define SRST_PTM3_ATB\t\t37\n\n#define SRST_GPS\t\t67\n#define SRST_HSICPHY\t\t75\n#define SRST_TIMER\t\t78\n\n#define SRST_PTM2\t\t92\n#define SRST_CORE2_WDT\t\t94\n#define SRST_CORE3_WDT\t\t95\n\n#define SRST_PTM2_ATB\t\t111\n\n#define SRST_HSIC\t\t117\n#define SRST_CTI2\t\t118\n#define SRST_CTI2_APB\t\t119\n#define SRST_GPU_BRIDGE\t\t121\n#define SRST_CTI3\t\t123\n#define SRST_CTI3_APB\t\t124\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

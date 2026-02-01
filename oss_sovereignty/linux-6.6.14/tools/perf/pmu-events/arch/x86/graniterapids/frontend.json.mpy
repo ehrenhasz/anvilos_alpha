@@ -1,0 +1,9 @@
+{
+  "module_name": "frontend.json",
+  "hash_id": "78795fdc41c3df2ecd558e64d78e101b3e06007a8fcd7ef12c7d625f49e42814",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/graniterapids/frontend.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"This event counts a subset of the Topdown Slots event that were no operation was delivered to the back-end pipeline due to instruction fetch limitations when the back-end could have accepted more operations. Common examples include instruction cache misses or x86 instruction decode limitations.\",\n        \"EventCode\": \"0x9c\",\n        \"EventName\": \"IDQ_BUBBLES.CORE\",\n        \"PublicDescription\": \"This event counts a subset of the Topdown Slots event that were no operation was delivered to the back-end pipeline due to instruction fetch limitations when the back-end could have accepted more operations. Common examples include instruction cache misses or x86 instruction decode limitations.\\nThe count may be distributed among unhalted logical processors (hyper-threads) who share the same physical core, in processors that support Intel Hyper-Threading Technology. Software can use this event as the numerator for the Frontend Bound metric (or top-level category) of the Top-down Microarchitecture Analysis method.\",\n        \"SampleAfterValue\": \"1000003\",\n        \"UMask\": \"0x1\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

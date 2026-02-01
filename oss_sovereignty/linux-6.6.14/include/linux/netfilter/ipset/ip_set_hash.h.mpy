@@ -1,0 +1,9 @@
+{
+  "module_name": "ip_set_hash.h",
+  "hash_id": "d084b717d09b0a1ac52a7c1e6bb99e5b095cbf5f47302d4749eed579a4b3ec5a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter/ipset/ip_set_hash.h",
+  "human_readable_source": " \n#ifndef __IP_SET_HASH_H\n#define __IP_SET_HASH_H\n\n#include <uapi/linux/netfilter/ipset/ip_set_hash.h>\n\n\n#define IPSET_DEFAULT_HASHSIZE\t\t1024\n#define IPSET_MIMINAL_HASHSIZE\t\t64\n#define IPSET_DEFAULT_MAXELEM\t\t65536\n#define IPSET_DEFAULT_PROBES\t\t4\n#define IPSET_DEFAULT_RESIZE\t\t100\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

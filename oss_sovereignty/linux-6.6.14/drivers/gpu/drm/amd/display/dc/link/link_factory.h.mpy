@@ -1,0 +1,9 @@
+{
+  "module_name": "link_factory.h",
+  "hash_id": "e3958596c3729d9a03ff41031f8abeee155d7618362b9575d2af89ca1c7a0589",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/link_factory.h",
+  "human_readable_source": " \n#ifndef __LINK_FACTORY_H__\n#define __LINK_FACTORY_H__\n#include \"link.h\"\nstruct dc_link *link_create(const struct link_init_data *init_params);\nvoid link_destroy(struct dc_link **link);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

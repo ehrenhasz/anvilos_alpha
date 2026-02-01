@@ -1,0 +1,9 @@
+{
+  "module_name": "xattr.h",
+  "hash_id": "c2578a328e248fd4566d4ad0f5cbb17e2343b21954f7deba60c6b6cffc717bbb",
+  "original_prompt": "Ingested from linux-6.6.14/fs/squashfs/xattr.h",
+  "human_readable_source": " \n \n\n#ifdef CONFIG_SQUASHFS_XATTR\nextern __le64 *squashfs_read_xattr_id_table(struct super_block *, u64,\n\t\tu64 *, unsigned int *);\nextern int squashfs_xattr_lookup(struct super_block *, unsigned int, int *,\n\t\tunsigned int *, unsigned long long *);\n#else\nstatic inline __le64 *squashfs_read_xattr_id_table(struct super_block *sb,\n\t\tu64 start, u64 *xattr_table_start, unsigned int *xattr_ids)\n{\n\tstruct squashfs_xattr_id_table *id_table;\n\n\tid_table = squashfs_read_table(sb, start, sizeof(*id_table));\n\tif (IS_ERR(id_table))\n\t\treturn (__le64 *) id_table;\n\n\t*xattr_table_start = le64_to_cpu(id_table->xattr_table_start);\n\tkfree(id_table);\n\n\tERROR(\"Xattrs in filesystem, these will be ignored\\n\");\n\treturn ERR_PTR(-ENOTSUPP);\n}\n\nstatic inline int squashfs_xattr_lookup(struct super_block *sb,\n\t\tunsigned int index, int *count, unsigned int *size,\n\t\tunsigned long long *xattr)\n{\n\treturn 0;\n}\n#define squashfs_listxattr NULL\n#define squashfs_xattr_handlers NULL\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

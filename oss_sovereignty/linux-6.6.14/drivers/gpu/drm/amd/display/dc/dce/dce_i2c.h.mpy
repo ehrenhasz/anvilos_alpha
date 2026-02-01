@@ -1,0 +1,9 @@
+{
+  "module_name": "dce_i2c.h",
+  "hash_id": "9ebe1ec28665cd4fc9f099063f7f42ac72fc488662f63c891f1aad397f4d745b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce/dce_i2c.h",
+  "human_readable_source": " \n\n#ifndef __DCE_I2C_H__\n#define __DCE_I2C_H__\n\n#include \"inc/core_types.h\"\n#include \"dce_i2c_hw.h\"\n#include \"dce_i2c_sw.h\"\n\nbool dce_i2c_oem_device_present(\n\tstruct resource_pool *pool,\n\tstruct ddc_service *ddc,\n\tsize_t slave_address\n);\n\nbool dce_i2c_submit_command(\n\tstruct resource_pool *pool,\n\tstruct ddc *ddc,\n\tstruct i2c_command *cmd);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

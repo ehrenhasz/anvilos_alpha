@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi_mdio.h",
+  "hash_id": "579fc119d540f4bc2462d882c311c1e69f219e1a863ff2ead8b6b32bebe8f288",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/acpi_mdio.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_ACPI_MDIO_H\n#define __LINUX_ACPI_MDIO_H\n\n#include <linux/phy.h>\n\n#if IS_ENABLED(CONFIG_ACPI_MDIO)\nint __acpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode,\n\t\t\t    struct module *owner);\n\nstatic inline int\nacpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *handle)\n{\n\treturn __acpi_mdiobus_register(mdio, handle, THIS_MODULE);\n}\n#else  \nstatic inline int\nacpi_mdiobus_register(struct mii_bus *mdio, struct fwnode_handle *fwnode)\n{\n\t \n\n\treturn mdiobus_register(mdio);\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

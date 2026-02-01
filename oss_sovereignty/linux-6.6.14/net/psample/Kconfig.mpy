@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "312d44aebf9bc4643150d4449bdbe15c3f53d6d04092fed34026247a7e7e039a",
+  "original_prompt": "Ingested from linux-6.6.14/net/psample/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# psample packet sampling configuration\n#\n\nmenuconfig PSAMPLE\n\ttristate \"Packet-sampling netlink channel\"\n\tdefault n\n\thelp\n\t  Say Y here to add support for packet-sampling netlink channel\n\t  This netlink channel allows transferring packets alongside some\n\t  metadata to userspace.\n\n\t  To compile this support as a module, choose M here: the module will\n\t  be called psample.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

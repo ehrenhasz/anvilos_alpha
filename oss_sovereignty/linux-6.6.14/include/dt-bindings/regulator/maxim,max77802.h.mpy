@@ -1,0 +1,9 @@
+{
+  "module_name": "maxim,max77802.h",
+  "hash_id": "584a29abb15ecfbe899bb72869ec95640bf9c1965980fecb4c0beb4f0f227968",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/regulator/maxim,max77802.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_REGULATOR_MAXIM_MAX77802_H\n#define _DT_BINDINGS_REGULATOR_MAXIM_MAX77802_H\n\n \n#define MAX77802_OPMODE_LP\t1\n#define MAX77802_OPMODE_NORMAL\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "api.h",
+  "hash_id": "629535a6660be8ab13414099a29bbb6858320c6343779919adf1b324aeb3a783",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/crypto/api.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_CRYPTO_API_H\n#define\t_SYS_CRYPTO_API_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n#include <sys/zfs_context.h>\n#include <sys/crypto/common.h>\n\ntypedef void *crypto_context_t;\ntypedef void *crypto_ctx_template_t;\n\n \n#define\tCRYPTO_MECH_INVALID\t((uint64_t)-1)\nextern crypto_mech_type_t crypto_mech2id(const char *name);\n\n \nextern int crypto_create_ctx_template(crypto_mechanism_t *mech,\n    crypto_key_t *key, crypto_ctx_template_t *tmpl);\nextern void crypto_destroy_ctx_template(crypto_ctx_template_t tmpl);\n\n \nextern int crypto_mac(crypto_mechanism_t *mech, crypto_data_t *data,\n    crypto_key_t *key, crypto_ctx_template_t tmpl, crypto_data_t *mac);\nextern int crypto_mac_init(crypto_mechanism_t *mech, crypto_key_t *key,\n    crypto_ctx_template_t tmpl, crypto_context_t *ctxp);\nextern int crypto_mac_update(crypto_context_t ctx, crypto_data_t *data);\nextern int crypto_mac_final(crypto_context_t ctx, crypto_data_t *data);\n\n \nextern int crypto_encrypt(crypto_mechanism_t *mech, crypto_data_t *plaintext,\n    crypto_key_t *key, crypto_ctx_template_t tmpl, crypto_data_t *ciphertext);\nextern int crypto_decrypt(crypto_mechanism_t *mech, crypto_data_t *ciphertext,\n    crypto_key_t *key, crypto_ctx_template_t tmpl, crypto_data_t *plaintext);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

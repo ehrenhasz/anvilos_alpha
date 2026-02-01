@@ -1,0 +1,9 @@
+{
+  "module_name": "vxfs_subr.c",
+  "hash_id": "5db1bdd04dd4902da1a393553aea7510068335aa3e68fe88922063222bba2dc3",
+  "original_prompt": "Ingested from linux-6.6.14/fs/freevxfs/vxfs_subr.c",
+  "human_readable_source": "\n \n\n \n#include <linux/fs.h>\n#include <linux/buffer_head.h>\n#include <linux/kernel.h>\n#include <linux/pagemap.h>\n\n#include \"vxfs_extern.h\"\n\n\nstatic int\t\tvxfs_read_folio(struct file *, struct folio *);\nstatic sector_t\t\tvxfs_bmap(struct address_space *, sector_t);\n\nconst struct address_space_operations vxfs_aops = {\n\t.read_folio =\t\tvxfs_read_folio,\n\t.bmap =\t\t\tvxfs_bmap,\n};\n\ninline void\nvxfs_put_page(struct page *pp)\n{\n\tkunmap(pp);\n\tput_page(pp);\n}\n\n \nstruct page *\nvxfs_get_page(struct address_space *mapping, u_long n)\n{\n\tstruct page *\t\t\tpp;\n\n\tpp = read_mapping_page(mapping, n, NULL);\n\n\tif (!IS_ERR(pp)) {\n\t\tkmap(pp);\n\t\t \n\t\t\t \n\t}\n\t\n\treturn (pp);\n}\n\n \nstruct buffer_head *\nvxfs_bread(struct inode *ip, int block)\n{\n\tstruct buffer_head\t*bp;\n\tdaddr_t\t\t\tpblock;\n\n\tpblock = vxfs_bmap1(ip, block);\n\tbp = sb_bread(ip->i_sb, pblock);\n\n\treturn (bp);\n}\n\n \nstatic int\nvxfs_getblk(struct inode *ip, sector_t iblock,\n\t    struct buffer_head *bp, int create)\n{\n\tdaddr_t\t\t\tpblock;\n\n\tpblock = vxfs_bmap1(ip, iblock);\n\tif (pblock != 0) {\n\t\tmap_bh(bp, ip->i_sb, pblock);\n\t\treturn 0;\n\t}\n\n\treturn -EIO;\n}\n\n \nstatic int vxfs_read_folio(struct file *file, struct folio *folio)\n{\n\treturn block_read_full_folio(folio, vxfs_getblk);\n}\n \n \nstatic sector_t\nvxfs_bmap(struct address_space *mapping, sector_t block)\n{\n\treturn generic_block_bmap(mapping, block, vxfs_getblk);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

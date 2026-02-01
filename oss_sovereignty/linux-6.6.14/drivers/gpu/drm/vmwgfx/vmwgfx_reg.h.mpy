@@ -1,0 +1,9 @@
+{
+  "module_name": "vmwgfx_reg.h",
+  "hash_id": "d290a3dadd1debb74dfd54e22426423fbfc825e0ef72b277b9270ae78344288f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/vmwgfx/vmwgfx_reg.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _VMWGFX_REG_H_\n#define _VMWGFX_REG_H_\n\n#include <linux/types.h>\n\nstruct svga_guest_mem_descriptor {\n\tu32 ppn;\n\tu32 num_pages;\n};\n\nstruct svga_fifo_cmd_fence {\n\tu32 fence;\n};\n\n#define SVGA_SYNC_GENERIC         1\n#define SVGA_SYNC_FIFOFULL        2\n\n#include \"device_include/svga3d_reg.h\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

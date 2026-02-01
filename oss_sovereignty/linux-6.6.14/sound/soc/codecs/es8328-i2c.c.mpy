@@ -1,0 +1,9 @@
+{
+  "module_name": "es8328-i2c.c",
+  "hash_id": "9a78996f668132be741f35d319812b252ac603542d69c24ca6ff26e4aa87faa9",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/es8328-i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/i2c.h>\n#include <linux/regmap.h>\n\n#include <sound/soc.h>\n\n#include \"es8328.h\"\n\nstatic const struct i2c_device_id es8328_id[] = {\n\t{ \"es8328\", 0 },\n\t{ \"es8388\", 0 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, es8328_id);\n\nstatic const struct of_device_id es8328_of_match[] = {\n\t{ .compatible = \"everest,es8328\", },\n\t{ .compatible = \"everest,es8388\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, es8328_of_match);\n\nstatic int es8328_i2c_probe(struct i2c_client *i2c)\n{\n\treturn es8328_probe(&i2c->dev,\n\t\t\tdevm_regmap_init_i2c(i2c, &es8328_regmap_config));\n}\n\nstatic struct i2c_driver es8328_i2c_driver = {\n\t.driver = {\n\t\t.name\t\t= \"es8328\",\n\t\t.of_match_table = es8328_of_match,\n\t},\n\t.probe = es8328_i2c_probe,\n\t.id_table = es8328_id,\n};\n\nmodule_i2c_driver(es8328_i2c_driver);\n\nMODULE_DESCRIPTION(\"ASoC ES8328 audio CODEC I2C driver\");\nMODULE_AUTHOR(\"Sean Cross <xobs@kosagi.com>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

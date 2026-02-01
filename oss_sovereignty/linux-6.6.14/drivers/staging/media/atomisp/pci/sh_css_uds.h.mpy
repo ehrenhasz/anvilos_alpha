@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_css_uds.h",
+  "hash_id": "f6e2884311d2d0e856f0a4e0999de8526b7cc616123ec4cebf1f5e0a83817107",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/sh_css_uds.h",
+  "human_readable_source": " \n \n\n#ifndef _SH_CSS_UDS_H_\n#define _SH_CSS_UDS_H_\n\n#include <type_support.h>\n\n#define SIZE_OF_SH_CSS_UDS_INFO_IN_BITS (4 * 16)\n#define SIZE_OF_SH_CSS_CROP_POS_IN_BITS (2 * 16)\n\n \n\nstruct sh_css_uds_info {\n\tu16 curr_dx;\n\tu16 curr_dy;\n\tu16 xc;\n\tu16 yc;\n};\n\nstruct sh_css_crop_pos {\n\tu16 x;\n\tu16 y;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

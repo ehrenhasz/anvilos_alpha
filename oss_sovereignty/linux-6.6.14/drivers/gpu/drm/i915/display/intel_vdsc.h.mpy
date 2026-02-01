@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_vdsc.h",
+  "hash_id": "bd3d78c61b163cadcce61fddeb3fa604dfa8e8911ca2fbe3d8fd4e425c134faf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_vdsc.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_VDSC_H__\n#define __INTEL_VDSC_H__\n\n#include <linux/types.h>\n\nenum transcoder;\nstruct intel_crtc;\nstruct intel_crtc_state;\nstruct intel_encoder;\n\nbool intel_dsc_source_support(const struct intel_crtc_state *crtc_state);\nvoid intel_uncompressed_joiner_enable(const struct intel_crtc_state *crtc_state);\nvoid intel_dsc_enable(const struct intel_crtc_state *crtc_state);\nvoid intel_dsc_disable(const struct intel_crtc_state *crtc_state);\nint intel_dsc_compute_params(struct intel_crtc_state *pipe_config);\nvoid intel_dsc_get_config(struct intel_crtc_state *crtc_state);\nenum intel_display_power_domain\nintel_dsc_power_domain(struct intel_crtc *crtc, enum transcoder cpu_transcoder);\nstruct intel_crtc *intel_dsc_get_bigjoiner_secondary(const struct intel_crtc *primary_crtc);\nint intel_dsc_get_num_vdsc_instances(const struct intel_crtc_state *crtc_state);\nvoid intel_dsc_dsi_pps_write(struct intel_encoder *encoder,\n\t\t\t     const struct intel_crtc_state *crtc_state);\nvoid intel_dsc_dp_pps_write(struct intel_encoder *encoder,\n\t\t\t    const struct intel_crtc_state *crtc_state);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

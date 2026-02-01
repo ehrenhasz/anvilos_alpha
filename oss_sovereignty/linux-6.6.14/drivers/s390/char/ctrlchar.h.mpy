@@ -1,0 +1,9 @@
+{
+  "module_name": "ctrlchar.h",
+  "hash_id": "78bc4f53332e6d83235ea2eb993888e93963556a468245d9e9f69f6061785a45",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/char/ctrlchar.h",
+  "human_readable_source": " \n \n\n#include <linux/tty.h>\n#include <linux/sysrq.h>\n#include <linux/workqueue.h>\n\nextern unsigned int\nctrlchar_handle(const unsigned char *buf, int len, struct tty_struct *tty);\n\n\n#define CTRLCHAR_NONE  (1 << 8)\n#define CTRLCHAR_CTRL  (2 << 8)\n#define CTRLCHAR_SYSRQ (3 << 8)\n\n#define CTRLCHAR_MASK (~0xffu)\n\n\n#ifdef CONFIG_MAGIC_SYSRQ\nstruct sysrq_work {\n\tint key;\n\tstruct work_struct work;\n};\n\nvoid schedule_sysrq_work(struct sysrq_work *sw);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

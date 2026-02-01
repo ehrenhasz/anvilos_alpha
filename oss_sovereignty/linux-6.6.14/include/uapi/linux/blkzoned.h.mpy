@@ -1,0 +1,9 @@
+{
+  "module_name": "blkzoned.h",
+  "hash_id": "cfbf72251d0f34871c0c991a3309ddcacde862bd40f5f87ea4f9091b303a66ac",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/blkzoned.h",
+  "human_readable_source": " \n \n#ifndef _UAPI_BLKZONED_H\n#define _UAPI_BLKZONED_H\n\n#include <linux/types.h>\n#include <linux/ioctl.h>\n\n \nenum blk_zone_type {\n\tBLK_ZONE_TYPE_CONVENTIONAL\t= 0x1,\n\tBLK_ZONE_TYPE_SEQWRITE_REQ\t= 0x2,\n\tBLK_ZONE_TYPE_SEQWRITE_PREF\t= 0x3,\n};\n\n \nenum blk_zone_cond {\n\tBLK_ZONE_COND_NOT_WP\t= 0x0,\n\tBLK_ZONE_COND_EMPTY\t= 0x1,\n\tBLK_ZONE_COND_IMP_OPEN\t= 0x2,\n\tBLK_ZONE_COND_EXP_OPEN\t= 0x3,\n\tBLK_ZONE_COND_CLOSED\t= 0x4,\n\tBLK_ZONE_COND_READONLY\t= 0xD,\n\tBLK_ZONE_COND_FULL\t= 0xE,\n\tBLK_ZONE_COND_OFFLINE\t= 0xF,\n};\n\n \nenum blk_zone_report_flags {\n\tBLK_ZONE_REP_CAPACITY\t= (1 << 0),\n};\n\n \nstruct blk_zone {\n\t__u64\tstart;\t\t \n\t__u64\tlen;\t\t \n\t__u64\twp;\t\t \n\t__u8\ttype;\t\t \n\t__u8\tcond;\t\t \n\t__u8\tnon_seq;\t \n\t__u8\treset;\t\t \n\t__u8\tresv[4];\n\t__u64\tcapacity;\t \n\t__u8\treserved[24];\n};\n\n \nstruct blk_zone_report {\n\t__u64\t\tsector;\n\t__u32\t\tnr_zones;\n\t__u32\t\tflags;\n\tstruct blk_zone zones[];\n};\n\n \nstruct blk_zone_range {\n\t__u64\t\tsector;\n\t__u64\t\tnr_sectors;\n};\n\n \n#define BLKREPORTZONE\t_IOWR(0x12, 130, struct blk_zone_report)\n#define BLKRESETZONE\t_IOW(0x12, 131, struct blk_zone_range)\n#define BLKGETZONESZ\t_IOR(0x12, 132, __u32)\n#define BLKGETNRZONES\t_IOR(0x12, 133, __u32)\n#define BLKOPENZONE\t_IOW(0x12, 134, struct blk_zone_range)\n#define BLKCLOSEZONE\t_IOW(0x12, 135, struct blk_zone_range)\n#define BLKFINISHZONE\t_IOW(0x12, 136, struct blk_zone_range)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

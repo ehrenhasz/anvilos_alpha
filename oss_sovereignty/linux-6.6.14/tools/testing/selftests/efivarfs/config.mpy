@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "7b32a37701b1605e9cc0d28064dd3395d96088835290f0b71db7e69430170c19",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/efivarfs/config",
+  "human_readable_source": "CONFIG_EFIVAR_FS=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

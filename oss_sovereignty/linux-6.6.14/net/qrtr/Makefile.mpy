@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "59700ea3b5202b781428431d09b37f470abde0393c10bb0da57d3863e104baaa",
+  "original_prompt": "Ingested from linux-6.6.14/net/qrtr/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_QRTR) += qrtr.o\nqrtr-y\t:= af_qrtr.o ns.o\n\nobj-$(CONFIG_QRTR_SMD) += qrtr-smd.o\nqrtr-smd-y\t:= smd.o\nobj-$(CONFIG_QRTR_TUN) += qrtr-tun.o\nqrtr-tun-y\t:= tun.o\nobj-$(CONFIG_QRTR_MHI) += qrtr-mhi.o\nqrtr-mhi-y\t:= mhi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cs42l43.h",
+  "hash_id": "85f11b6fc79cc779f2657ae9d1a1e2d31ae57dc2233751fbdb0f917db645cf8f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/cs42l43.h",
+  "human_readable_source": " \n \n\n#include <linux/mfd/cs42l43.h>\n#include <linux/pm.h>\n#include <linux/regmap.h>\n\n#ifndef CS42L43_CORE_INT_H\n#define CS42L43_CORE_INT_H\n\n#define CS42L43_N_DEFAULTS 176\n\nextern const struct dev_pm_ops cs42l43_pm_ops;\nextern const struct reg_default cs42l43_reg_default[CS42L43_N_DEFAULTS];\n\nbool cs42l43_readable_register(struct device *dev, unsigned int reg);\nbool cs42l43_precious_register(struct device *dev, unsigned int reg);\nbool cs42l43_volatile_register(struct device *dev, unsigned int reg);\n\nint cs42l43_dev_probe(struct cs42l43 *cs42l43);\nvoid cs42l43_dev_remove(struct cs42l43 *cs42l43);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

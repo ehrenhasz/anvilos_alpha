@@ -1,0 +1,9 @@
+{
+  "module_name": "test-uc_width.c",
+  "hash_id": "0f495aefb7993ab364e1a1586d4cf8b2de049cac0092d4844896871e8b2ecb5b",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/uniwidth/test-uc_width.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"uniwidth.h\"\n\n#include \"macros.h\"\n\nint\nmain ()\n{\n  ucs4_t uc;\n\n   \n  for (uc = 0x0020; uc < 0x007F; uc++)\n    ASSERT (uc_width (uc, \"ISO-8859-2\") == 1);\n\n   \n  ASSERT (uc_width (0x0301, \"UTF-8\") == 0);\n  ASSERT (uc_width (0x05B0, \"UTF-8\") == 0);\n\n   \n  ASSERT (uc_width (0x200E, \"UTF-8\") == 0);\n  ASSERT (uc_width (0x2060, \"UTF-8\") == 0);\n  ASSERT (uc_width (0xE0001, \"UTF-8\") == 0);\n  ASSERT (uc_width (0xE0044, \"UTF-8\") == 0);\n\n   \n  ASSERT (uc_width (0x200B, \"UTF-8\") == 0);\n  ASSERT (uc_width (0xFEFF, \"UTF-8\") == 0);\n\n   \n  ASSERT (uc_width (0x3000, \"UTF-8\") == 2);\n  ASSERT (uc_width (0xB250, \"UTF-8\") == 2);\n  ASSERT (uc_width (0xFF1A, \"UTF-8\") == 2);\n  ASSERT (uc_width (0x20369, \"UTF-8\") == 2);\n  ASSERT (uc_width (0x2F876, \"UTF-8\") == 2);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

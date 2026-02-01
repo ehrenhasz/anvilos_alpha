@@ -1,0 +1,9 @@
+{
+  "module_name": "armada_ioctlP.h",
+  "hash_id": "a0e7eee9c296a65077836534e703bcc263096450f6023307db8ada0ada522581",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/armada/armada_ioctlP.h",
+  "human_readable_source": " \n \n#ifndef ARMADA_IOCTLP_H\n#define ARMADA_IOCTLP_H\n\n#define ARMADA_IOCTL_PROTO(name)\\\nextern int armada_##name##_ioctl(struct drm_device *, void *, struct drm_file *)\n\nARMADA_IOCTL_PROTO(gem_create);\nARMADA_IOCTL_PROTO(gem_mmap);\nARMADA_IOCTL_PROTO(gem_pwrite);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

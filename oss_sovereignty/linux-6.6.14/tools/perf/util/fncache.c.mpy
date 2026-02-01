@@ -1,0 +1,9 @@
+{
+  "module_name": "fncache.c",
+  "hash_id": "10181f6378226d2a1c512699f2a7db99be015a75aced7cf2eaf940205dde75e5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/fncache.c",
+  "human_readable_source": "\n \n#include <stdlib.h>\n#include <unistd.h>\n#include <string.h>\n#include <linux/list.h>\n#include \"fncache.h\"\n\nstruct fncache {\n\tstruct hlist_node nd;\n\tbool res;\n\tchar name[];\n};\n\n#define FNHSIZE 61\n\nstatic struct hlist_head fncache_hash[FNHSIZE];\n\nunsigned shash(const unsigned char *s)\n{\n\tunsigned h = 0;\n\twhile (*s)\n\t\th = 65599 * h + *s++;\n\treturn h ^ (h >> 16);\n}\n\nstatic bool lookup_fncache(const char *name, bool *res)\n{\n\tint h = shash((const unsigned char *)name) % FNHSIZE;\n\tstruct fncache *n;\n\n\thlist_for_each_entry(n, &fncache_hash[h], nd) {\n\t\tif (!strcmp(n->name, name)) {\n\t\t\t*res = n->res;\n\t\t\treturn true;\n\t\t}\n\t}\n\treturn false;\n}\n\nstatic void update_fncache(const char *name, bool res)\n{\n\tstruct fncache *n = malloc(sizeof(struct fncache) + strlen(name) + 1);\n\tint h = shash((const unsigned char *)name) % FNHSIZE;\n\n\tif (!n)\n\t\treturn;\n\tstrcpy(n->name, name);\n\tn->res = res;\n\thlist_add_head(&n->nd, &fncache_hash[h]);\n}\n\n \nbool file_available(const char *name)\n{\n\tbool res;\n\n\tif (lookup_fncache(name, &res))\n\t\treturn res;\n\tres = access(name, R_OK) == 0;\n\tupdate_fncache(name, res);\n\treturn res;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

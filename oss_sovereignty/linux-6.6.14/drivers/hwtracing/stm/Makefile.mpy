@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5e47ce0cd2926027244b01176e9fa1812481a014b713e109fcc9573682c7250a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwtracing/stm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_STM)\t+= stm_core.o\n\nstm_core-y\t\t:= core.o policy.o\n\nobj-$(CONFIG_STM_PROTO_BASIC) += stm_p_basic.o\nobj-$(CONFIG_STM_PROTO_SYS_T) += stm_p_sys-t.o\n\nstm_p_basic-y\t\t:= p_basic.o\nstm_p_sys-t-y\t\t:= p_sys-t.o\n\nobj-$(CONFIG_STM_DUMMY)\t+= dummy_stm.o\n\nobj-$(CONFIG_STM_SOURCE_CONSOLE)\t+= stm_console.o\nobj-$(CONFIG_STM_SOURCE_HEARTBEAT)\t+= stm_heartbeat.o\nobj-$(CONFIG_STM_SOURCE_FTRACE)\t\t+= stm_ftrace.o\n\nstm_console-y\t\t:= console.o\nstm_heartbeat-y\t\t:= heartbeat.o\nstm_ftrace-y\t\t:= ftrace.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

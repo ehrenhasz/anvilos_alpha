@@ -1,0 +1,9 @@
+{
+  "module_name": "pcm_drm_eld.h",
+  "hash_id": "d0e6cd680c8c1475459e30a7e3081b8826a609c6429288d88ce8176649aed3b0",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/pcm_drm_eld.h",
+  "human_readable_source": " \n#ifndef __SOUND_PCM_DRM_ELD_H\n#define __SOUND_PCM_DRM_ELD_H\n\nint snd_pcm_hw_constraint_eld(struct snd_pcm_runtime *runtime, void *eld);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

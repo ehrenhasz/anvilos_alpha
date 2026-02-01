@@ -1,0 +1,9 @@
+{
+  "module_name": "syscall.h",
+  "hash_id": "625ced19efa06cc8bac8539210e930d0a9ac9b4b2bbf76bb2450449cb2e7c56f",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/syscall.h",
+  "human_readable_source": " \n \n\n#ifndef _ASM_SYSCALL_H\n#define _ASM_SYSCALL_H\t1\n\nstruct task_struct;\nstruct pt_regs;\n\n \nint syscall_get_nr(struct task_struct *task, struct pt_regs *regs);\n\n \nvoid syscall_rollback(struct task_struct *task, struct pt_regs *regs);\n\n \nlong syscall_get_error(struct task_struct *task, struct pt_regs *regs);\n\n \nlong syscall_get_return_value(struct task_struct *task, struct pt_regs *regs);\n\n \nvoid syscall_set_return_value(struct task_struct *task, struct pt_regs *regs,\n\t\t\t      int error, long val);\n\n \nvoid syscall_get_arguments(struct task_struct *task, struct pt_regs *regs,\n\t\t\t   unsigned long *args);\n\n \nint syscall_get_arch(struct task_struct *task);\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

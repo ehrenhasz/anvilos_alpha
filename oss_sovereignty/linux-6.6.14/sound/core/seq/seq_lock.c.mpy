@@ -1,0 +1,9 @@
+{
+  "module_name": "seq_lock.c",
+  "hash_id": "a1bd3568dbfcbca63435e658999d2e86504ca85461de2b84383408d5d84c9e5e",
+  "original_prompt": "Ingested from linux-6.6.14/sound/core/seq/seq_lock.c",
+  "human_readable_source": "\n \n\n#include <linux/export.h>\n#include <sound/core.h>\n#include \"seq_lock.h\"\n\n \nvoid snd_use_lock_sync_helper(snd_use_lock_t *lockp, const char *file, int line)\n{\n\tint warn_count = 5 * HZ;\n\n\tif (atomic_read(lockp) < 0) {\n\t\tpr_warn(\"ALSA: seq_lock: lock trouble [counter = %d] in %s:%d\\n\", atomic_read(lockp), file, line);\n\t\treturn;\n\t}\n\twhile (atomic_read(lockp) > 0) {\n\t\tif (warn_count-- == 0)\n\t\t\tpr_warn(\"ALSA: seq_lock: waiting [%d left] in %s:%d\\n\", atomic_read(lockp), file, line);\n\t\tschedule_timeout_uninterruptible(1);\n\t}\n}\nEXPORT_SYMBOL(snd_use_lock_sync_helper);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

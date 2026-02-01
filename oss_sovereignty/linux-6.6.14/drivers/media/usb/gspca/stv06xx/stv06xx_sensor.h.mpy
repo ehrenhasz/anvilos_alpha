@@ -1,0 +1,9 @@
+{
+  "module_name": "stv06xx_sensor.h",
+  "hash_id": "6433035b001e4b39d8869484d53c733b5d912369fec306a9b0431be727ecaf17",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/gspca/stv06xx/stv06xx_sensor.h",
+  "human_readable_source": " \n \n\n#ifndef STV06XX_SENSOR_H_\n#define STV06XX_SENSOR_H_\n\n#include \"stv06xx.h\"\n\n#define IS_1020(sd)\t((sd)->sensor == &stv06xx_sensor_hdcs1020)\n\nextern const struct stv06xx_sensor stv06xx_sensor_vv6410;\nextern const struct stv06xx_sensor stv06xx_sensor_hdcs1x00;\nextern const struct stv06xx_sensor stv06xx_sensor_hdcs1020;\nextern const struct stv06xx_sensor stv06xx_sensor_pb0100;\nextern const struct stv06xx_sensor stv06xx_sensor_st6422;\n\nstruct stv06xx_sensor {\n\t \n\tchar name[32];\n\n\t \n\tu8 i2c_addr;\n\n\t \n\tu8 i2c_flush;\n\n\t \n\tu8 i2c_len;\n\n\t \n\tint min_packet_size[4];\n\tint max_packet_size[4];\n\n\t \n\tint (*probe)(struct sd *sd);\n\n\t \n\tint (*init)(struct sd *sd);\n\n\t \n\tint (*init_controls)(struct sd *sd);\n\n\t \n\tint (*read_sensor)(struct sd *sd, const u8 address,\n\t      u8 *i2c_data, const u8 len);\n\n\t \n\tint (*write_sensor)(struct sd *sd, const u8 address,\n\t      u8 *i2c_data, const u8 len);\n\n\t \n\tint (*start)(struct sd *sd);\n\n\t \n\tint (*stop)(struct sd *sd);\n\n\t \n\tint (*dump)(struct sd *sd);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

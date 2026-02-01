@@ -1,0 +1,9 @@
+{
+  "module_name": "cpm1-fsl,tsa.h",
+  "hash_id": "4869dcf0bbf53b414ebbb4836abaed6bce1fa231ef1f97af7fe72ef02779a75e",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/soc/cpm1-fsl,tsa.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_SOC_FSL_TSA_H\n#define __DT_BINDINGS_SOC_FSL_TSA_H\n\n#define FSL_CPM_TSA_NU\t\t0\t \n#define FSL_CPM_TSA_SCC2\t1\n#define FSL_CPM_TSA_SCC3\t2\n#define FSL_CPM_TSA_SCC4\t3\n#define FSL_CPM_TSA_SMC1\t4\n#define FSL_CPM_TSA_SMC2\t5\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

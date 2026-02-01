@@ -1,0 +1,9 @@
+{
+  "module_name": "test-reallocarray.c",
+  "hash_id": "1e832b734596c9a45943ebd5503c70ac1b4e3c1b8ace37d7284e89f5d9ce5e48",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-reallocarray.c",
+  "human_readable_source": " \n#include <stdlib.h>\n\n#include <errno.h>\n#include <stdint.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (reallocarray, void *, (void *, size_t, size_t));\n\n#include \"macros.h\"\n\nint\nmain ()\n{\n   \n  for (size_t n = 2; n != 0; n <<= 1)\n    {\n      void *volatile p = NULL;\n\n      if (PTRDIFF_MAX / n + 1 <= SIZE_MAX)\n        {\n          p = reallocarray (p, PTRDIFF_MAX / n + 1, n);\n          ASSERT (p == NULL);\n          ASSERT (errno == ENOMEM);\n        }\n\n      p = reallocarray (p, SIZE_MAX / n + 1, n);\n      ASSERT (p == NULL);\n      ASSERT (errno == ENOMEM\n              || errno == EOVERFLOW  );\n\n       \n      p = reallocarray (p, 0, n);\n      p = reallocarray (p, n, 0);\n      free (p);\n    }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

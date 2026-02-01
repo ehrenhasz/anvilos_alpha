@@ -1,0 +1,9 @@
+{
+  "module_name": "rwtop-report",
+  "hash_id": "b72892cec76a44b1d686463f2f881d9ad8f4b47bca5203e6f561a36648ba20ef",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/perl/bin/rwtop-report",
+  "human_readable_source": "#!/bin/bash\n# description: system-wide r/w top\n# args: [interval]\nn_args=0\nfor i in \"$@\"\ndo\n    if expr match \"$i\" \"-\" > /dev/null ; then\n\tbreak\n    fi\n    n_args=$(( $n_args + 1 ))\ndone\nif [ \"$n_args\" -gt 1 ] ; then\n    echo \"usage: rwtop-report [interval]\"\n    exit\nfi\nif [ \"$n_args\" -gt 0 ] ; then\n    interval=$1\n    shift\nfi\nperf script $@ -s \"$PERF_EXEC_PATH\"/scripts/perl/rwtop.pl $interval\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "025b2a83d532a76331d5c195be06bdbf6382f5803ad5bd8839e2c8e99ffb3b31",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/virt/coco/tdx-guest/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_TDX_GUEST_DRIVER) += tdx-guest.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

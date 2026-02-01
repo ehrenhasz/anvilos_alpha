@@ -1,0 +1,9 @@
+{
+  "module_name": "8250_boca.c",
+  "hash_id": "04af2897df1611b009181ebf410c81e6f8c879ad5f97658bac46e82495a20074",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/serial/8250/8250_boca.c",
+  "human_readable_source": "\n \n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/serial_8250.h>\n\n#include \"8250.h\"\n\nstatic struct plat_serial8250_port boca_data[] = {\n\tSERIAL8250_PORT(0x100, 12),\n\tSERIAL8250_PORT(0x108, 12),\n\tSERIAL8250_PORT(0x110, 12),\n\tSERIAL8250_PORT(0x118, 12),\n\tSERIAL8250_PORT(0x120, 12),\n\tSERIAL8250_PORT(0x128, 12),\n\tSERIAL8250_PORT(0x130, 12),\n\tSERIAL8250_PORT(0x138, 12),\n\tSERIAL8250_PORT(0x140, 12),\n\tSERIAL8250_PORT(0x148, 12),\n\tSERIAL8250_PORT(0x150, 12),\n\tSERIAL8250_PORT(0x158, 12),\n\tSERIAL8250_PORT(0x160, 12),\n\tSERIAL8250_PORT(0x168, 12),\n\tSERIAL8250_PORT(0x170, 12),\n\tSERIAL8250_PORT(0x178, 12),\n\t{ },\n};\n\nstatic struct platform_device boca_device = {\n\t.name\t\t\t= \"serial8250\",\n\t.id\t\t\t= PLAT8250_DEV_BOCA,\n\t.dev\t\t\t= {\n\t\t.platform_data\t= boca_data,\n\t},\n};\n\nstatic int __init boca_init(void)\n{\n\treturn platform_device_register(&boca_device);\n}\n\nmodule_init(boca_init);\n\nMODULE_AUTHOR(\"Russell King\");\nMODULE_DESCRIPTION(\"8250 serial probe module for Boca cards\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

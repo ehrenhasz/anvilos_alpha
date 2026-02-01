@@ -1,0 +1,9 @@
+{
+  "module_name": "dce_v11_0.h",
+  "hash_id": "c8617c23d3be11a0528a092158c8cca8c4477ee71f56b02987d5c1ead04280c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/dce_v11_0.h",
+  "human_readable_source": " \n\n#ifndef __DCE_V11_0_H__\n#define __DCE_V11_0_H__\n\nextern const struct amdgpu_ip_block_version dce_v11_0_ip_block;\nextern const struct amdgpu_ip_block_version dce_v11_2_ip_block;\n\nvoid dce_v11_0_disable_dce(struct amdgpu_device *adev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

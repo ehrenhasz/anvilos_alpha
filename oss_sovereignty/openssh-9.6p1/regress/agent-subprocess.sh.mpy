@@ -1,0 +1,9 @@
+{
+  "module_name": "agent-subprocess.sh",
+  "hash_id": "d8cd26fdc075299d28e046112a2c4c0dba7eb66a8b9155d81e15f4bcdfc77f14",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/agent-subprocess.sh",
+  "human_readable_source": "#\t$OpenBSD: agent-subprocess.sh,v 1.1 2020/06/19 05:07:09 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"agent subprocess\"\n\ntrace \"ensure agent exits when run as subprocess\"\n${SSHAGENT} sh -c \"echo \\$SSH_AGENT_PID >$OBJ/pidfile; sleep 1\"\n\npid=`cat $OBJ/pidfile`\n\n# Currently ssh-agent polls every 10s so we need to wait at least that long.\nn=12\nwhile kill -0 $pid >/dev/null 2>&1 && test \"$n\" -gt \"0\"; do\n\tn=$(($n - 1))\n\tsleep 1\ndone\n\nif test \"$n\" -eq \"0\"; then\n\tfail \"agent still running\"\nfi\n\nrm -f $OBJ/pidfile\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

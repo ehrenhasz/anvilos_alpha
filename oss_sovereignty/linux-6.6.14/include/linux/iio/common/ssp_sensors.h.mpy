@@ -1,0 +1,9 @@
+{
+  "module_name": "ssp_sensors.h",
+  "hash_id": "d2ee59f710d8c17a66f94165acf99960dfb7dc2495b2693c6f926764b7bfc2ba",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/common/ssp_sensors.h",
+  "human_readable_source": " \n \n#ifndef _SSP_SENSORS_H_\n#define _SSP_SENSORS_H_\n\n#include <linux/iio/iio.h>\n\n#define SSP_TIME_SIZE\t\t\t\t4\n#define SSP_ACCELEROMETER_SIZE\t\t\t6\n#define SSP_GYROSCOPE_SIZE\t\t\t6\n#define SSP_BIO_HRM_RAW_SIZE\t\t\t8\n#define SSP_BIO_HRM_RAW_FAC_SIZE\t\t36\n#define SSP_BIO_HRM_LIB_SIZE\t\t\t8\n\n \nenum ssp_sensor_type {\n\tSSP_ACCELEROMETER_SENSOR = 0,\n\tSSP_GYROSCOPE_SENSOR,\n\tSSP_GEOMAGNETIC_UNCALIB_SENSOR,\n\tSSP_GEOMAGNETIC_RAW,\n\tSSP_GEOMAGNETIC_SENSOR,\n\tSSP_PRESSURE_SENSOR,\n\tSSP_GESTURE_SENSOR,\n\tSSP_PROXIMITY_SENSOR,\n\tSSP_TEMPERATURE_HUMIDITY_SENSOR,\n\tSSP_LIGHT_SENSOR,\n\tSSP_PROXIMITY_RAW,\n\tSSP_ORIENTATION_SENSOR,\n\tSSP_STEP_DETECTOR,\n\tSSP_SIG_MOTION_SENSOR,\n\tSSP_GYRO_UNCALIB_SENSOR,\n\tSSP_GAME_ROTATION_VECTOR,\n\tSSP_ROTATION_VECTOR,\n\tSSP_STEP_COUNTER,\n\tSSP_BIO_HRM_RAW,\n\tSSP_BIO_HRM_RAW_FAC,\n\tSSP_BIO_HRM_LIB,\n\tSSP_SENSOR_MAX,\n};\n\nstruct ssp_data;\n\n \nstruct ssp_sensor_data {\n\tint (*process_data)(struct iio_dev *indio_dev, void *buf,\n\t\t\t    int64_t timestamp);\n\tenum ssp_sensor_type type;\n\tu8 *buffer;\n};\n\nvoid ssp_register_consumer(struct iio_dev *indio_dev,\n\t\t\t   enum ssp_sensor_type type);\n\nint ssp_enable_sensor(struct ssp_data *data, enum ssp_sensor_type type,\n\t\t      u32 delay);\n\nint ssp_disable_sensor(struct ssp_data *data, enum ssp_sensor_type type);\n\nu32 ssp_get_sensor_delay(struct ssp_data *data, enum ssp_sensor_type);\n\nint ssp_change_delay(struct ssp_data *data, enum ssp_sensor_type type,\n\t\t     u32 delay);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

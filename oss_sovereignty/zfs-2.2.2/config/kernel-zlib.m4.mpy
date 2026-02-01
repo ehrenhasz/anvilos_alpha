@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-zlib.m4",
+  "hash_id": "f5b563f740959073d971386982bafb2ded0ef143196e60eb3ebd61921754f050",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-zlib.m4",
+  "human_readable_source": "dnl #\ndnl # 2.6.39 API compat,\ndnl\ndnl # The function zlib_deflate_workspacesize() now take 2 arguments.\ndnl # This was done to avoid always having to allocate the maximum size\ndnl # workspace (268K).  The caller can now specific the windowBits and\ndnl # memLevel compression parameters to get a smaller workspace.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_2ARGS_ZLIB_DEFLATE_WORKSPACESIZE], [\n\tZFS_LINUX_TEST_SRC([2args_zlib_deflate_workspacesize], [\n\t\t#include <linux/zlib.h>\n\t],[\n\t\treturn zlib_deflate_workspacesize(MAX_WBITS, MAX_MEM_LEVEL);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_2ARGS_ZLIB_DEFLATE_WORKSPACESIZE], [\n\tAC_MSG_CHECKING([whether zlib_deflate_workspacesize() wants 2 args])\n\tZFS_LINUX_TEST_RESULT([2args_zlib_deflate_workspacesize], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_2ARGS_ZLIB_DEFLATE_WORKSPACESIZE, 1,\n\t\t    [zlib_deflate_workspacesize() wants 2 args])\n\t],[\n\t\tZFS_LINUX_TEST_ERROR([zlib_deflate_workspacesize()])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

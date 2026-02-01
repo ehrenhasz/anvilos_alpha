@@ -1,0 +1,9 @@
+{
+  "module_name": "test_xdp_devmap_helpers.c",
+  "hash_id": "d6e677643663a0b84f592a2919fe5f65a036a904d428e201d1824fc804829c86",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_xdp_devmap_helpers.c",
+  "human_readable_source": "\n \n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nSEC(\"xdp\")\nint xdpdm_devlog(struct xdp_md *ctx)\n{\n\tchar fmt[] = \"devmap redirect: dev %u -> dev %u len %u\\n\";\n\tvoid *data_end = (void *)(long)ctx->data_end;\n\tvoid *data = (void *)(long)ctx->data;\n\tunsigned int len = data_end - data;\n\n\tbpf_trace_printk(fmt, sizeof(fmt),\n\t\t\t ctx->ingress_ifindex, ctx->egress_ifindex, len);\n\n\treturn XDP_PASS;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

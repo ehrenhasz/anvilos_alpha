@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "73352b7712f2d81f9523bb552075bf14a7843e99518a8260887553cf20b3d788",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/v3d/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_V3D\n\ttristate \"Broadcom V3D 3.x and newer\"\n\tdepends on ARCH_BCM || ARCH_BRCMSTB || ARCH_BCM2835 || COMPILE_TEST\n\tdepends on DRM\n\tdepends on COMMON_CLK\n\tdepends on MMU\n\tselect DRM_SCHED\n\tselect DRM_GEM_SHMEM_HELPER\n\thelp\n\t  Choose this option if you have a system that has a Broadcom\n\t  V3D 3.x or newer GPUs. SoCs supported include the BCM2711,\n\t  BCM7268 and BCM7278.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

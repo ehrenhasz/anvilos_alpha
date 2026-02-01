@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-mt2701-g3d.c",
+  "hash_id": "6b626f2a71f28609277acd887410ad7fed3961d547b91f78051d4b75950b2bd3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mediatek/clk-mt2701-g3d.c",
+  "human_readable_source": "\n \n\n#include <linux/clk-provider.h>\n#include <linux/mod_devicetable.h>\n#include <linux/platform_device.h>\n\n#include \"clk-mtk.h\"\n#include \"clk-gate.h\"\n\n#include <dt-bindings/clock/mt2701-clk.h>\n\n#define GATE_G3D(_id, _name, _parent, _shift)\t\t\t\t\\\n\tGATE_MTK(_id, _name, _parent, &g3d_cg_regs, _shift, &mtk_clk_gate_ops_setclr)\n\nstatic const struct mtk_gate_regs g3d_cg_regs = {\n\t.sta_ofs = 0x0,\n\t.set_ofs = 0x4,\n\t.clr_ofs = 0x8,\n};\n\nstatic const struct mtk_gate g3d_clks[] = {\n\tGATE_DUMMY(CLK_DUMMY, \"g3d_dummy\"),\n\tGATE_G3D(CLK_G3DSYS_CORE, \"g3d_core\", \"mfg_sel\", 0),\n};\n\nstatic u16 rst_ofs[] = { 0xc, };\n\nstatic const struct mtk_clk_rst_desc clk_rst_desc = {\n\t.version = MTK_RST_SIMPLE,\n\t.rst_bank_ofs = rst_ofs,\n\t.rst_bank_nr = ARRAY_SIZE(rst_ofs),\n};\n\nstatic const struct mtk_clk_desc g3d_desc = {\n\t.clks = g3d_clks,\n\t.num_clks = ARRAY_SIZE(g3d_clks),\n\t.rst_desc = &clk_rst_desc,\n};\n\nstatic const struct of_device_id of_match_clk_mt2701_g3d[] = {\n\t{ .compatible = \"mediatek,mt2701-g3dsys\", .data = &g3d_desc },\n\t{   }\n};\nMODULE_DEVICE_TABLE(of, of_match_clk_mt2701_g3d);\n\nstatic struct platform_driver clk_mt2701_g3d_drv = {\n\t.probe = mtk_clk_simple_probe,\n\t.remove_new = mtk_clk_simple_remove,\n\t.driver = {\n\t\t.name = \"clk-mt2701-g3d\",\n\t\t.of_match_table = of_match_clk_mt2701_g3d,\n\t},\n};\nmodule_platform_driver(clk_mt2701_g3d_drv);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ima_asymmetric_keys.c",
+  "hash_id": "c06375c9edb23a3c68c422ff5caf4c33b70ec4ada276e58eb3800d7fb9ea14aa",
+  "original_prompt": "Ingested from linux-6.6.14/security/integrity/ima/ima_asymmetric_keys.c",
+  "human_readable_source": "\n \n\n#include <keys/asymmetric-type.h>\n#include <linux/user_namespace.h>\n#include <linux/ima.h>\n#include \"ima.h\"\n\n \nvoid ima_post_key_create_or_update(struct key *keyring, struct key *key,\n\t\t\t\t   const void *payload, size_t payload_len,\n\t\t\t\t   unsigned long flags, bool create)\n{\n\tbool queued = false;\n\n\t \n\tif (key->type != &key_type_asymmetric)\n\t\treturn;\n\n\tif (!payload || (payload_len == 0))\n\t\treturn;\n\n\tif (ima_should_queue_key())\n\t\tqueued = ima_queue_key(keyring, payload, payload_len);\n\n\tif (queued)\n\t\treturn;\n\n\t \n\tprocess_buffer_measurement(&nop_mnt_idmap, NULL, payload, payload_len,\n\t\t\t\t   keyring->description, KEY_CHECK, 0,\n\t\t\t\t   keyring->description, false, NULL, 0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cc_fips.h",
+  "hash_id": "bd2362a672eb0eebae7d83db57470025ab1377cb7b7f2c6cfce598703b5de04d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/ccree/cc_fips.h",
+  "human_readable_source": " \n \n\n#ifndef __CC_FIPS_H__\n#define __CC_FIPS_H__\n\n#ifdef CONFIG_CRYPTO_FIPS\n\nenum cc_fips_status {\n\tCC_FIPS_SYNC_MODULE_OK = 0x0,\n\tCC_FIPS_SYNC_MODULE_ERROR = 0x1,\n\tCC_FIPS_SYNC_REE_STATUS = 0x4,\n\tCC_FIPS_SYNC_TEE_STATUS = 0x8,\n\tCC_FIPS_SYNC_STATUS_RESERVE32B = S32_MAX\n};\n\nint cc_fips_init(struct cc_drvdata *p_drvdata);\nvoid cc_fips_fini(struct cc_drvdata *drvdata);\nvoid fips_handler(struct cc_drvdata *drvdata);\nvoid cc_set_ree_fips_status(struct cc_drvdata *drvdata, bool ok);\nvoid cc_tee_handle_fips_error(struct cc_drvdata *p_drvdata);\n\n#else   \n\nstatic inline int cc_fips_init(struct cc_drvdata *p_drvdata)\n{\n\treturn 0;\n}\n\nstatic inline void cc_fips_fini(struct cc_drvdata *drvdata) {}\nstatic inline void cc_set_ree_fips_status(struct cc_drvdata *drvdata,\n\t\t\t\t\t  bool ok) {}\nstatic inline void fips_handler(struct cc_drvdata *drvdata) {}\nstatic inline void cc_tee_handle_fips_error(struct cc_drvdata *p_drvdata) {}\n\n#endif  \n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

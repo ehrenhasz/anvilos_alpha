@@ -1,0 +1,9 @@
+{
+  "module_name": "dma-hsu.h",
+  "hash_id": "169f093e2fc0ef521d1f5b5ed5a357dbb72461be949f5e215a82b7a95bc22dbc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/dma-hsu.h",
+  "human_readable_source": " \n \n\n#ifndef _PLATFORM_DATA_DMA_HSU_H\n#define _PLATFORM_DATA_DMA_HSU_H\n\nstruct device;\n\nstruct hsu_dma_slave {\n\tstruct device\t*dma_dev;\n\tint\t\tchan_id;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

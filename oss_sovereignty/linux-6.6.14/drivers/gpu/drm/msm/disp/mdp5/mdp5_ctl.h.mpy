@@ -1,0 +1,9 @@
+{
+  "module_name": "mdp5_ctl.h",
+  "hash_id": "68d58662e3e39a6c62a08a7f851eef704a039122ee0b385a5bd445e3bf7a969b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/disp/mdp5/mdp5_ctl.h",
+  "human_readable_source": " \n \n\n#ifndef __MDP5_CTL_H__\n#define __MDP5_CTL_H__\n\n#include \"msm_drv.h\"\n\n \nstruct mdp5_ctl_manager;\nstruct mdp5_ctl_manager *mdp5_ctlm_init(struct drm_device *dev,\n\t\tvoid __iomem *mmio_base, struct mdp5_cfg_handler *cfg_hnd);\nvoid mdp5_ctlm_hw_reset(struct mdp5_ctl_manager *ctlm);\nvoid mdp5_ctlm_destroy(struct mdp5_ctl_manager *ctlm);\n\n \nstruct mdp5_ctl *mdp5_ctlm_request(struct mdp5_ctl_manager *ctlm, int intf_num);\n\nint mdp5_ctl_get_ctl_id(struct mdp5_ctl *ctl);\n\nstruct mdp5_interface;\nstruct mdp5_pipeline;\nint mdp5_ctl_set_pipeline(struct mdp5_ctl *ctl, struct mdp5_pipeline *p);\nint mdp5_ctl_set_encoder_state(struct mdp5_ctl *ctl, struct mdp5_pipeline *p,\n\t\t\t       bool enabled);\n\nint mdp5_ctl_set_cursor(struct mdp5_ctl *ctl, struct mdp5_pipeline *pipeline,\n\t\t\tint cursor_id, bool enable);\nint mdp5_ctl_pair(struct mdp5_ctl *ctlx, struct mdp5_ctl *ctly, bool enable);\n\n#define MAX_PIPE_STAGE\t\t2\n\n \n#define MDP5_CTL_BLEND_OP_FLAG_BORDER_OUT\tBIT(0)\nint mdp5_ctl_blend(struct mdp5_ctl *ctl, struct mdp5_pipeline *pipeline,\n\t\t   enum mdp5_pipe stage[][MAX_PIPE_STAGE],\n\t\t   enum mdp5_pipe r_stage[][MAX_PIPE_STAGE],\n\t\t   u32 stage_cnt, u32 ctl_blend_op_flags);\n\n \nu32 mdp_ctl_flush_mask_lm(int lm);\nu32 mdp_ctl_flush_mask_pipe(enum mdp5_pipe pipe);\nu32 mdp_ctl_flush_mask_cursor(int cursor_id);\nu32 mdp_ctl_flush_mask_encoder(struct mdp5_interface *intf);\n\n \nu32 mdp5_ctl_commit(struct mdp5_ctl *ctl, struct mdp5_pipeline *pipeline,\n\t\t    u32 flush_mask, bool start);\nu32 mdp5_ctl_get_commit_status(struct mdp5_ctl *ctl);\n\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

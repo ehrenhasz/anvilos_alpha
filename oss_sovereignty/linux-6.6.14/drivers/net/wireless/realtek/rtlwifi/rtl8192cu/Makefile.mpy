@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "cceb60ea81033ab43c11dae692d9631b5ccee4de86a35f8b9a9fcbc5ee4448c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nrtl8192cu-objs :=\t\t\\\n\t\tdm.o\t\t\\\n\t\thw.o\t\t\\\n\t\tled.o\t\t\\\n\t\tmac.o\t\t\\\n\t\tphy.o\t\t\\\n\t\trf.o\t\t\\\n\t\tsw.o\t\t\\\n\t\ttable.o\t\t\\\n\t\ttrx.o\n\nobj-$(CONFIG_RTL8192CU) += rtl8192cu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

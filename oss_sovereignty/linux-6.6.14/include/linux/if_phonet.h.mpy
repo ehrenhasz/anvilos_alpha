@@ -1,0 +1,9 @@
+{
+  "module_name": "if_phonet.h",
+  "hash_id": "dfc6b8ea8abaa82832be3a941db155314920fb30bf21b4fee17f5f93238b1369",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/if_phonet.h",
+  "human_readable_source": " \n \n#ifndef LINUX_IF_PHONET_H\n#define LINUX_IF_PHONET_H\n\n#include <uapi/linux/if_phonet.h>\n\nextern const struct header_ops phonet_header_ops;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

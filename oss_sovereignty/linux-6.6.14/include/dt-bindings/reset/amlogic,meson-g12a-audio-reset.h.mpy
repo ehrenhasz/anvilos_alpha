@@ -1,0 +1,9 @@
+{
+  "module_name": "amlogic,meson-g12a-audio-reset.h",
+  "hash_id": "526d52e389d5829f36b88c40fb4be70aa3f4a286ea236b603198046e00ab6e48",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/amlogic,meson-g12a-audio-reset.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_AMLOGIC_MESON_G12A_AUDIO_RESET_H\n#define _DT_BINDINGS_AMLOGIC_MESON_G12A_AUDIO_RESET_H\n\n#define AUD_RESET_PDM\t\t0\n#define AUD_RESET_TDMIN_A\t1\n#define AUD_RESET_TDMIN_B\t2\n#define AUD_RESET_TDMIN_C\t3\n#define AUD_RESET_TDMIN_LB\t4\n#define AUD_RESET_LOOPBACK\t5\n#define AUD_RESET_TODDR_A\t6\n#define AUD_RESET_TODDR_B\t7\n#define AUD_RESET_TODDR_C\t8\n#define AUD_RESET_FRDDR_A\t9\n#define AUD_RESET_FRDDR_B\t10\n#define AUD_RESET_FRDDR_C\t11\n#define AUD_RESET_TDMOUT_A\t12\n#define AUD_RESET_TDMOUT_B\t13\n#define AUD_RESET_TDMOUT_C\t14\n#define AUD_RESET_SPDIFOUT\t15\n#define AUD_RESET_SPDIFOUT_B\t16\n#define AUD_RESET_SPDIFIN\t17\n#define AUD_RESET_EQDRC\t\t18\n#define AUD_RESET_RESAMPLE\t19\n#define AUD_RESET_DDRARB\t20\n#define AUD_RESET_POWDET\t21\n#define AUD_RESET_TORAM\t\t22\n#define AUD_RESET_TOACODEC\t23\n#define AUD_RESET_TOHDMITX\t24\n#define AUD_RESET_CLKTREE\t25\n\n \n#define AUD_RESET_RESAMPLE_B\t26\n#define AUD_RESET_TOVAD\t\t27\n#define AUD_RESET_LOCKER\t28\n#define AUD_RESET_SPDIFIN_LB\t29\n#define AUD_RESET_FRATV\t\t30\n#define AUD_RESET_FRHDMIRX\t31\n#define AUD_RESET_FRDDR_D\t32\n#define AUD_RESET_TODDR_D\t33\n#define AUD_RESET_LOOPBACK_B\t34\n#define AUD_RESET_EARCTX\t35\n#define AUD_RESET_EARCRX\t36\n#define AUD_RESET_FRDDR_E\t37\n#define AUD_RESET_TODDR_E\t38\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

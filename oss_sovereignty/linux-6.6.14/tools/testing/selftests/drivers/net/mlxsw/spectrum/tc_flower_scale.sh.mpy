@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_flower_scale.sh",
+  "hash_id": "f2e6f0fba5bf52d8fa5251eb50e3ac0ef1e9d6662f507d8b35bf1f9e7d865d4e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/spectrum/tc_flower_scale.sh",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsource ../tc_flower_scale.sh\n\ntc_flower_get_target()\n{\n\tlocal should_fail=$1; shift\n\n\t# 6144 (6x1024) is the theoretical maximum.\n\t# One bank of 512 rules is taken by the 18-byte MC router rule.\n\t# One rule is the ACL catch-all.\n\t# 6144 - 512 - 1 = 5631\n\tlocal target=5631\n\n\tif ((! should_fail)); then\n\t\techo $target\n\telse\n\t\techo $((target + 1))\n\tfi\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

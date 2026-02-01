@@ -1,0 +1,9 @@
+{
+  "module_name": "diag_ftp.h",
+  "hash_id": "37b13dd775de808ce7c52b5c2e3be7154875876537c92bc68d2382e6d9a9081e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/char/diag_ftp.h",
+  "human_readable_source": " \n \n\n#ifndef __DIAG_FTP_H__\n#define __DIAG_FTP_H__\n\n#include \"hmcdrv_ftp.h\"\n\nint diag_ftp_startup(void);\nvoid diag_ftp_shutdown(void);\nssize_t diag_ftp_cmd(const struct hmcdrv_ftp_cmdspec *ftp, size_t *fsize);\n\n#endif\t  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

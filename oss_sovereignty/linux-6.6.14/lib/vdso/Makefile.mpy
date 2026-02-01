@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "692df7c14b8ebc6ba337a38e8af9030ba0bb1cd0fdc613b29865ea64e130168a",
+  "original_prompt": "Ingested from linux-6.6.14/lib/vdso/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nGENERIC_VDSO_MK_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))\nGENERIC_VDSO_DIR := $(dir $(GENERIC_VDSO_MK_PATH))\n\nc-gettimeofday-$(CONFIG_GENERIC_GETTIMEOFDAY) := $(addprefix $(GENERIC_VDSO_DIR), gettimeofday.c)\n\n# This cmd checks that the vdso library does not contain dynamic relocations.\n# It has to be called after the linking of the vdso library and requires it\n# as a parameter.\n#\n# As a workaround for some GNU ld ports which produce unneeded R_*_NONE\n# dynamic relocations, ignore R_*_NONE.\nquiet_cmd_vdso_check = VDSOCHK $@\n      cmd_vdso_check = if $(READELF) -rW $@ | grep -v _NONE | grep -q \" R_\\w*_\"; \\\n\t\t       then (echo >&2 \"$@: dynamic relocations are not supported\"; \\\n\t\t\t     rm -f $@; /bin/false); fi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

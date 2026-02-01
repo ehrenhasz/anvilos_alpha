@@ -1,0 +1,9 @@
+{
+  "module_name": "cik_int.h",
+  "hash_id": "71836154325c2c2ec43b26ead8c8b1081637fd02e2354f7e78401c387660a972",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdkfd/cik_int.h",
+  "human_readable_source": " \n\n#ifndef CIK_INT_H_INCLUDED\n#define CIK_INT_H_INCLUDED\n\n#include <linux/types.h>\n\nstruct cik_ih_ring_entry {\n\tuint32_t source_id;\n\tuint32_t data;\n\tuint32_t ring_id;\n\tuint32_t reserved;\n};\n\n#define CIK_INTSRC_CP_END_OF_PIPE\t0xB5\n#define CIK_INTSRC_CP_BAD_OPCODE\t0xB7\n#define CIK_INTSRC_SDMA_TRAP\t\t0xE0\n#define CIK_INTSRC_SQ_INTERRUPT_MSG\t0xEF\n#define CIK_INTSRC_GFX_PAGE_INV_FAULT\t0x92\n#define CIK_INTSRC_GFX_MEM_PROT_FAULT\t0x93\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dcore0_tpc0_cfg_axuser_regs.h",
+  "hash_id": "b9de18b0fb0fe44ad2045f43d8fe220970e5c1a37eabff4a2e6adfe632162209",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/gaudi2/asic_reg/dcore0_tpc0_cfg_axuser_regs.h",
+  "human_readable_source": " \n\n \n\n#ifndef ASIC_REG_DCORE0_TPC0_CFG_AXUSER_REGS_H_\n#define ASIC_REG_DCORE0_TPC0_CFG_AXUSER_REGS_H_\n\n \n\n#define mmDCORE0_TPC0_CFG_AXUSER_HB_ASID 0x400BE00\n\n#define mmDCORE0_TPC0_CFG_AXUSER_HB_MMU_BP 0x400BE04\n\n#define mmDCORE0_TPC0_CFG_AXUSER_HB_STRONG_ORDER 0x400BE08\n\n#define mmDCORE0_TPC0_CFG_AXUSER_HB_NO_SNOOP 0x400BE0C\n\n#define mmDCORE0_TPC0_CFG_AXUSER_HB_WR_REDUCTION 0x400BE10\n\n#define mmDCORE0_TPC0_CFG_AXUSER_HB_RD_ATOMIC 0x400BE14\n\n#define mmDCORE0_TPC0_CFG_AXUSER_HB_QOS 0x400BE18\n\n#define mmDCORE0_TPC0_CFG_AXUSER_HB_RSVD 0x400BE1C\n\n#define mmDCORE0_TPC0_CFG_AXUSER_HB_EMEM_CPAGE 0x400BE20\n\n#define mmDCORE0_TPC0_CFG_AXUSER_HB_CORE 0x400BE24\n\n#define mmDCORE0_TPC0_CFG_AXUSER_E2E_COORD 0x400BE28\n\n#define mmDCORE0_TPC0_CFG_AXUSER_HB_WR_OVRD_LO 0x400BE30\n\n#define mmDCORE0_TPC0_CFG_AXUSER_HB_WR_OVRD_HI 0x400BE34\n\n#define mmDCORE0_TPC0_CFG_AXUSER_HB_RD_OVRD_LO 0x400BE38\n\n#define mmDCORE0_TPC0_CFG_AXUSER_HB_RD_OVRD_HI 0x400BE3C\n\n#define mmDCORE0_TPC0_CFG_AXUSER_LB_COORD 0x400BE40\n\n#define mmDCORE0_TPC0_CFG_AXUSER_LB_LOCK 0x400BE44\n\n#define mmDCORE0_TPC0_CFG_AXUSER_LB_RSVD 0x400BE48\n\n#define mmDCORE0_TPC0_CFG_AXUSER_LB_OVRD 0x400BE4C\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

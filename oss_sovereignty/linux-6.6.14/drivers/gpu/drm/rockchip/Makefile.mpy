@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a5f2cc98892ec4c35bc0c170ec0dac5f0e8c4ae7f06a9b2896445debae3e5be4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/rockchip/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the drm device driver.  This driver provides support for the\n# Direct Rendering Infrastructure (DRI) in XFree86 4.1.0 and higher.\n\nrockchipdrm-y := rockchip_drm_drv.o rockchip_drm_fb.o \\\n\t\trockchip_drm_gem.o\n\nrockchipdrm-$(CONFIG_ROCKCHIP_VOP2) += rockchip_drm_vop2.o rockchip_vop2_reg.o\nrockchipdrm-$(CONFIG_ROCKCHIP_VOP) += rockchip_drm_vop.o rockchip_vop_reg.o\nrockchipdrm-$(CONFIG_ROCKCHIP_ANALOGIX_DP) += analogix_dp-rockchip.o\nrockchipdrm-$(CONFIG_ROCKCHIP_CDN_DP) += cdn-dp-core.o cdn-dp-reg.o\nrockchipdrm-$(CONFIG_ROCKCHIP_DW_HDMI) += dw_hdmi-rockchip.o\nrockchipdrm-$(CONFIG_ROCKCHIP_DW_MIPI_DSI) += dw-mipi-dsi-rockchip.o\nrockchipdrm-$(CONFIG_ROCKCHIP_INNO_HDMI) += inno_hdmi.o\nrockchipdrm-$(CONFIG_ROCKCHIP_LVDS) += rockchip_lvds.o\nrockchipdrm-$(CONFIG_ROCKCHIP_RGB) += rockchip_rgb.o\nrockchipdrm-$(CONFIG_ROCKCHIP_RK3066_HDMI) += rk3066_hdmi.o\n\nobj-$(CONFIG_DRM_ROCKCHIP) += rockchipdrm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

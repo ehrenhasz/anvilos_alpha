@@ -1,0 +1,9 @@
+{
+  "module_name": "is_signed_type_kunit.c",
+  "hash_id": "11d81cc16ad9cc834b39f8a6b13801084d75e45d4375c3dfa351feccaff9cc66",
+  "original_prompt": "Ingested from linux-6.6.14/lib/is_signed_type_kunit.c",
+  "human_readable_source": "\n \n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <kunit/test.h>\n#include <linux/compiler.h>\n\nenum unsigned_enum {\n\tconstant_a = 3,\n};\n\nenum signed_enum {\n\tconstant_b = -1,\n\tconstant_c = 2,\n};\n\nstatic void is_signed_type_test(struct kunit *test)\n{\n\tKUNIT_EXPECT_EQ(test, is_signed_type(bool), false);\n\tKUNIT_EXPECT_EQ(test, is_signed_type(signed char), true);\n\tKUNIT_EXPECT_EQ(test, is_signed_type(unsigned char), false);\n\tKUNIT_EXPECT_EQ(test, is_signed_type(char), false);\n\tKUNIT_EXPECT_EQ(test, is_signed_type(int), true);\n\tKUNIT_EXPECT_EQ(test, is_signed_type(unsigned int), false);\n\tKUNIT_EXPECT_EQ(test, is_signed_type(long), true);\n\tKUNIT_EXPECT_EQ(test, is_signed_type(unsigned long), false);\n\tKUNIT_EXPECT_EQ(test, is_signed_type(long long), true);\n\tKUNIT_EXPECT_EQ(test, is_signed_type(unsigned long long), false);\n\tKUNIT_EXPECT_EQ(test, is_signed_type(enum unsigned_enum), false);\n\tKUNIT_EXPECT_EQ(test, is_signed_type(enum signed_enum), true);\n\tKUNIT_EXPECT_EQ(test, is_signed_type(void *), false);\n\tKUNIT_EXPECT_EQ(test, is_signed_type(const char *), false);\n}\n\nstatic struct kunit_case is_signed_type_test_cases[] = {\n\tKUNIT_CASE(is_signed_type_test),\n\t{}\n};\n\nstatic struct kunit_suite is_signed_type_test_suite = {\n\t.name = \"is_signed_type\",\n\t.test_cases = is_signed_type_test_cases,\n};\n\nkunit_test_suite(is_signed_type_test_suite);\n\nMODULE_LICENSE(\"Dual MIT/GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

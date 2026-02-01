@@ -1,0 +1,9 @@
+{
+  "module_name": "ioremap.c",
+  "hash_id": "fa68eec20f029f336de4352e9886b6c126181b84923ce0d17c240def089e6106",
+  "original_prompt": "Ingested from linux-6.6.14/mm/ioremap.c",
+  "human_readable_source": "\n \n#include <linux/vmalloc.h>\n#include <linux/mm.h>\n#include <linux/io.h>\n#include <linux/export.h>\n#include <linux/ioremap.h>\n\nvoid __iomem *generic_ioremap_prot(phys_addr_t phys_addr, size_t size,\n\t\t\t\t   pgprot_t prot)\n{\n\tunsigned long offset, vaddr;\n\tphys_addr_t last_addr;\n\tstruct vm_struct *area;\n\n\t \n\tif (WARN_ON_ONCE(!slab_is_available()))\n\t\treturn NULL;\n\n\t \n\tlast_addr = phys_addr + size - 1;\n\tif (!size || last_addr < phys_addr)\n\t\treturn NULL;\n\n\t \n\toffset = phys_addr & (~PAGE_MASK);\n\tphys_addr -= offset;\n\tsize = PAGE_ALIGN(size + offset);\n\n\tarea = __get_vm_area_caller(size, VM_IOREMAP, IOREMAP_START,\n\t\t\t\t    IOREMAP_END, __builtin_return_address(0));\n\tif (!area)\n\t\treturn NULL;\n\tvaddr = (unsigned long)area->addr;\n\tarea->phys_addr = phys_addr;\n\n\tif (ioremap_page_range(vaddr, vaddr + size, phys_addr, prot)) {\n\t\tfree_vm_area(area);\n\t\treturn NULL;\n\t}\n\n\treturn (void __iomem *)(vaddr + offset);\n}\n\n#ifndef ioremap_prot\nvoid __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,\n\t\t\t   unsigned long prot)\n{\n\treturn generic_ioremap_prot(phys_addr, size, __pgprot(prot));\n}\nEXPORT_SYMBOL(ioremap_prot);\n#endif\n\nvoid generic_iounmap(volatile void __iomem *addr)\n{\n\tvoid *vaddr = (void *)((unsigned long)addr & PAGE_MASK);\n\n\tif (is_ioremap_addr(vaddr))\n\t\tvunmap(vaddr);\n}\n\n#ifndef iounmap\nvoid iounmap(volatile void __iomem *addr)\n{\n\tgeneric_iounmap(addr);\n}\nEXPORT_SYMBOL(iounmap);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

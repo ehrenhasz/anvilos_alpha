@@ -1,0 +1,9 @@
+{
+  "module_name": "object.h",
+  "hash_id": "047c57e264b9a0cce769b3f312b2dcc45804f81354c94dd2296d0c99a4bb02cd",
+  "original_prompt": "Ingested from linux-6.6.14/security/landlock/object.h",
+  "human_readable_source": " \n \n\n#ifndef _SECURITY_LANDLOCK_OBJECT_H\n#define _SECURITY_LANDLOCK_OBJECT_H\n\n#include <linux/compiler_types.h>\n#include <linux/refcount.h>\n#include <linux/spinlock.h>\n\nstruct landlock_object;\n\n \nstruct landlock_object_underops {\n\t \n\tvoid (*release)(struct landlock_object *const object)\n\t\t__releases(object->lock);\n};\n\n \nstruct landlock_object {\n\t \n\trefcount_t usage;\n\t \n\tspinlock_t lock;\n\t \n\tvoid *underobj;\n\tunion {\n\t\t \n\t\tstruct rcu_head rcu_free;\n\t\t \n\t\tconst struct landlock_object_underops *underops;\n\t};\n};\n\nstruct landlock_object *\nlandlock_create_object(const struct landlock_object_underops *const underops,\n\t\t       void *const underobj);\n\nvoid landlock_put_object(struct landlock_object *const object);\n\nstatic inline void landlock_get_object(struct landlock_object *const object)\n{\n\tif (object)\n\t\trefcount_inc(&object->usage);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

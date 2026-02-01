@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf-event.h",
+  "hash_id": "ed5bb46a5ca7869c16ac7807689f44d0956113551446ef09ce040a19513e36da",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/bpf-event.h",
+  "human_readable_source": " \n#ifndef __PERF_BPF_EVENT_H\n#define __PERF_BPF_EVENT_H\n\n#include <linux/compiler.h>\n#include <linux/rbtree.h>\n#include <api/fd/array.h>\n#include <stdio.h>\n\nstruct bpf_prog_info;\nstruct machine;\nunion perf_event;\nstruct perf_env;\nstruct perf_sample;\nstruct perf_session;\nstruct record_opts;\nstruct evlist;\nstruct target;\n\nstruct bpf_prog_info_node {\n\tstruct perf_bpil\t\t*info_linear;\n\tstruct rb_node\t\t\trb_node;\n};\n\nstruct btf_node {\n\tstruct rb_node\trb_node;\n\tu32\t\tid;\n\tu32\t\tdata_size;\n\tchar\t\tdata[];\n};\n\n#ifdef HAVE_LIBBPF_SUPPORT\nint machine__process_bpf(struct machine *machine, union perf_event *event,\n\t\t\t struct perf_sample *sample);\nint evlist__add_bpf_sb_event(struct evlist *evlist, struct perf_env *env);\nvoid __bpf_event__print_bpf_prog_info(struct bpf_prog_info *info,\n\t\t\t\t      struct perf_env *env,\n\t\t\t\t      FILE *fp);\n#else\nstatic inline int machine__process_bpf(struct machine *machine __maybe_unused,\n\t\t\t\t       union perf_event *event __maybe_unused,\n\t\t\t\t       struct perf_sample *sample __maybe_unused)\n{\n\treturn 0;\n}\n\nstatic inline int evlist__add_bpf_sb_event(struct evlist *evlist __maybe_unused,\n\t\t\t\t\t   struct perf_env *env __maybe_unused)\n{\n\treturn 0;\n}\n\nstatic inline void __bpf_event__print_bpf_prog_info(struct bpf_prog_info *info __maybe_unused,\n\t\t\t\t\t\t    struct perf_env *env __maybe_unused,\n\t\t\t\t\t\t    FILE *fp __maybe_unused)\n{\n\n}\n#endif \n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

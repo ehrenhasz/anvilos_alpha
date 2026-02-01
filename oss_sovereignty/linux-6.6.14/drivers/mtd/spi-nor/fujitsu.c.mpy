@@ -1,0 +1,9 @@
+{
+  "module_name": "fujitsu.c",
+  "hash_id": "95a16a2e74eaf35a1707a933f2eebea4c5366929a37e9b8a22466f792ef37e37",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/spi-nor/fujitsu.c",
+  "human_readable_source": "\n \n\n#include <linux/mtd/spi-nor.h>\n\n#include \"core.h\"\n\nstatic const struct flash_info fujitsu_nor_parts[] = {\n\t \n\t{ \"mb85rs1mt\", INFO(0x047f27, 0, 128 * 1024, 1)\n\t\tFLAGS(SPI_NOR_NO_ERASE) },\n};\n\nconst struct spi_nor_manufacturer spi_nor_fujitsu = {\n\t.name = \"fujitsu\",\n\t.parts = fujitsu_nor_parts,\n\t.nparts = ARRAY_SIZE(fujitsu_nor_parts),\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

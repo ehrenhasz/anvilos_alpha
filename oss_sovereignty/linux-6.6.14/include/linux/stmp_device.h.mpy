@@ -1,0 +1,9 @@
+{
+  "module_name": "stmp_device.h",
+  "hash_id": "eb454592b706dd3c6b3f37189290fcc933384517811c8bd9250c6dc3a18f475f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/stmp_device.h",
+  "human_readable_source": " \n \n\n#ifndef __STMP_DEVICE_H__\n#define __STMP_DEVICE_H__\n\n#define STMP_OFFSET_REG_SET\t0x4\n#define STMP_OFFSET_REG_CLR\t0x8\n#define STMP_OFFSET_REG_TOG\t0xc\n\nextern int stmp_reset_block(void __iomem *);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

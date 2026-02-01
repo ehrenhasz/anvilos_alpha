@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "511d6483eb13feb62cf0c66f39d4c30c5304e8ea6dff733f83dc7a8c2098893e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/dma/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_DMA_PRIV_H__\n#define __NVKM_DMA_PRIV_H__\n#define nvkm_dma(p) container_of((p), struct nvkm_dma, engine)\n#include <engine/dma.h>\n\nstruct nvkm_dmaobj_func {\n\tint (*bind)(struct nvkm_dmaobj *, struct nvkm_gpuobj *, int align,\n\t\t    struct nvkm_gpuobj **);\n};\n\nint nvkm_dma_new_(const struct nvkm_dma_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t  struct nvkm_dma **);\n\nstruct nvkm_dma_func {\n\tint (*class_new)(struct nvkm_dma *, const struct nvkm_oclass *,\n\t\t\t void *data, u32 size, struct nvkm_dmaobj **);\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

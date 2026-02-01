@@ -1,0 +1,9 @@
+{
+  "module_name": "leds-pca9532.h",
+  "hash_id": "7c89e48e07e970a1a8c72274e0d0b52b686a3b9abc9dddbd0ae719e1f6823b31",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/leds-pca9532.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_PCA9532_H\n#define __LINUX_PCA9532_H\n\n#include <linux/leds.h>\n#include <linux/workqueue.h>\n#include <dt-bindings/leds/leds-pca9532.h>\n\nenum pca9532_state {\n\tPCA9532_OFF  = 0x0,\n\tPCA9532_ON   = 0x1,\n\tPCA9532_PWM0 = 0x2,\n\tPCA9532_PWM1 = 0x3,\n\tPCA9532_KEEP = 0xff,\n};\n\nstruct pca9532_led {\n\tu8 id;\n\tstruct i2c_client *client;\n\tconst char *name;\n\tconst char *default_trigger;\n\tstruct led_classdev ldev;\n\tstruct work_struct work;\n\tu32 type;\n\tenum pca9532_state state;\n};\n\nstruct pca9532_platform_data {\n\tstruct pca9532_led leds[16];\n\tu8 pwm[2];\n\tu8 psc[2];\n\tint gpio_base;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

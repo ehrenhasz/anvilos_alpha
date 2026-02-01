@@ -1,0 +1,9 @@
+{
+  "module_name": "ipa_gsi.h",
+  "hash_id": "b0405d007faf0a71f81973466540fe9a73907fa66822dc7552bb644dfb1e7535",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ipa/ipa_gsi.h",
+  "human_readable_source": " \n\n \n#ifndef _IPA_GSI_TRANS_H_\n#define _IPA_GSI_TRANS_H_\n\n#include <linux/types.h>\n\nstruct gsi;\nstruct gsi_trans;\nstruct ipa_gsi_endpoint_data;\n\n \nvoid ipa_gsi_trans_complete(struct gsi_trans *trans);\n\n \nvoid ipa_gsi_trans_release(struct gsi_trans *trans);\n\n \nvoid ipa_gsi_channel_tx_queued(struct gsi *gsi, u32 channel_id, u32 count,\n\t\t\t       u32 byte_count);\n\n \nvoid ipa_gsi_channel_tx_completed(struct gsi *gsi, u32 channel_id, u32 count,\n\t\t\t\t  u32 byte_count);\n\n \nbool ipa_gsi_endpoint_data_empty(const struct ipa_gsi_endpoint_data *data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

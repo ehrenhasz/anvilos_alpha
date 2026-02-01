@@ -1,0 +1,9 @@
+{
+  "module_name": "counts.h",
+  "hash_id": "dc0002b02ccd0fdc4d7e268f8944807b90077274a1f705c76a4d576ae6037872",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/counts.h",
+  "human_readable_source": " \n#ifndef __PERF_COUNTS_H\n#define __PERF_COUNTS_H\n\n#include <linux/types.h>\n#include <internal/xyarray.h>\n#include <perf/evsel.h>\n#include <stdbool.h>\n\nstruct evsel;\n\nstruct perf_counts {\n\ts8\t\t\t  scaled;\n\tstruct xyarray\t\t  *values;\n\tstruct xyarray\t\t  *loaded;\n};\n\n\nstatic inline struct perf_counts_values*\nperf_counts(struct perf_counts *counts, int cpu_map_idx, int thread)\n{\n\treturn xyarray__entry(counts->values, cpu_map_idx, thread);\n}\n\nstatic inline bool\nperf_counts__is_loaded(struct perf_counts *counts, int cpu_map_idx, int thread)\n{\n\treturn *((bool *) xyarray__entry(counts->loaded, cpu_map_idx, thread));\n}\n\nstatic inline void\nperf_counts__set_loaded(struct perf_counts *counts, int cpu_map_idx, int thread, bool loaded)\n{\n\t*((bool *) xyarray__entry(counts->loaded, cpu_map_idx, thread)) = loaded;\n}\n\nstruct perf_counts *perf_counts__new(int ncpus, int nthreads);\nvoid perf_counts__delete(struct perf_counts *counts);\nvoid perf_counts__reset(struct perf_counts *counts);\n\nvoid evsel__reset_counts(struct evsel *evsel);\nint evsel__alloc_counts(struct evsel *evsel);\nvoid evsel__free_counts(struct evsel *evsel);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fsl_hypervisor.h",
+  "hash_id": "76c7533a107eaacce84d73ec07f2f7b9f5760fc7aa3649aecc4f6a1a449b9eeb",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/fsl_hypervisor.h",
+  "human_readable_source": " \n#ifndef FSL_HYPERVISOR_H\n#define FSL_HYPERVISOR_H\n\n#include <uapi/linux/fsl_hypervisor.h>\n\n\n \nint fsl_hv_failover_register(struct notifier_block *nb);\n\n \nint fsl_hv_failover_unregister(struct notifier_block *nb);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

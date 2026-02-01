@@ -1,0 +1,9 @@
+{
+  "module_name": "bdisp-filter.h",
+  "hash_id": "cec09b0f068f988189041d88ce6d3aa661bf669c783f3344ab4af8759cfba298",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/bdisp/bdisp-filter.h",
+  "human_readable_source": " \n \n\n#define BDISP_HF_NB             64\n#define BDISP_VF_NB             40\n\n \nstruct bdisp_filter_h_spec {\n\tconst u16 min;\n\tconst u16 max;\n\tconst u8 coef[BDISP_HF_NB];\n};\n \nstruct bdisp_filter_v_spec {\n\tconst u16 min;\n\tconst u16 max;\n\tconst u8 coef[BDISP_VF_NB];\n};\n\n \nstatic const u32 bdisp_rgb_to_yuv[] = {\n\t\t0x0e1e8bee, 0x08420419, 0xfb5ed471, 0x08004080,\n};\n\nstatic const u32 bdisp_yuv_to_rgb[] = {\n\t\t0x3324a800, 0xe604ab9c, 0x0004a957, 0x32121eeb,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

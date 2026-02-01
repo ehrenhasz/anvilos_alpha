@@ -1,0 +1,9 @@
+{
+  "module_name": "copy_tofrom_user_reference.S",
+  "hash_id": "9b4c9d94247f2da29ab98ed2b04b6eb02ec1bd654a4ee5a8c6e5c73a1ca18d2a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/copyloops/copy_tofrom_user_reference.S",
+  "human_readable_source": "#include <asm/ppc_asm.h>\n\n_GLOBAL(copy_tofrom_user_reference)\n\tcmpdi\tr5,0\n\tbeq\t4f\n\n\tmtctr\tr5\n\n1:\tlbz\tr6,0(r4)\n2:\tstb\tr6,0(r3)\n\taddi\tr3,r3,1\n\taddi\tr4,r4,1\n\tbdnz\t1b\n\n3:\tmfctr\tr3\n\tblr\n\n4:\tmr\tr3,r5\n\tblr\n\n.section __ex_table,\"a\"\n\t.llong\t1b,3b\n\t.llong\t2b,3b\n.text\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

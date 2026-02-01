@@ -1,0 +1,9 @@
+{
+  "module_name": "w1_smem.c",
+  "hash_id": "0c1bf930284b455f1d4ad622b409504d88bd20d643a6206fe32de8ea442e9477",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/w1/slaves/w1_smem.c",
+  "human_readable_source": "\n \n\n#include <asm/types.h>\n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/moduleparam.h>\n#include <linux/device.h>\n#include <linux/types.h>\n\n#include <linux/w1.h>\n\n#define W1_FAMILY_SMEM_01\t0x01\n#define W1_FAMILY_SMEM_81\t0x81\n\nstatic struct w1_family w1_smem_family_01 = {\n\t.fid = W1_FAMILY_SMEM_01,\n};\n\nstatic struct w1_family w1_smem_family_81 = {\n\t.fid = W1_FAMILY_SMEM_81,\n};\n\nstatic int __init w1_smem_init(void)\n{\n\tint err;\n\n\terr = w1_register_family(&w1_smem_family_01);\n\tif (err)\n\t\treturn err;\n\n\terr = w1_register_family(&w1_smem_family_81);\n\tif (err) {\n\t\tw1_unregister_family(&w1_smem_family_01);\n\t\treturn err;\n\t}\n\n\treturn 0;\n}\n\nstatic void __exit w1_smem_fini(void)\n{\n\tw1_unregister_family(&w1_smem_family_01);\n\tw1_unregister_family(&w1_smem_family_81);\n}\n\nmodule_init(w1_smem_init);\nmodule_exit(w1_smem_fini);\n\nMODULE_AUTHOR(\"Evgeniy Polyakov <zbr@ioremap.net>\");\nMODULE_DESCRIPTION(\"Driver for 1-wire Dallas network protocol, 64bit memory family.\");\nMODULE_LICENSE(\"GPL\");\nMODULE_ALIAS(\"w1-family-\" __stringify(W1_FAMILY_SMEM_01));\nMODULE_ALIAS(\"w1-family-\" __stringify(W1_FAMILY_SMEM_81));\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

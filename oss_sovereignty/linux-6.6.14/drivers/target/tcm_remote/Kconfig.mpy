@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7372fa4e169004d5f1a3e6cbc413ceeb2b6b1fc12101a26c6cef3623164b8f1d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/tcm_remote/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig REMOTE_TARGET\n\ttristate \"TCM Virtual Remote target\"\n\tdepends on SCSI\n\thelp\n\t  Say Y here to enable the TCM Virtual Remote fabric\n\t  That fabric is a dummy fabric to tell TCM about configuration\n\t  of TPG/ACL/LUN on peer nodes in a cluster.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

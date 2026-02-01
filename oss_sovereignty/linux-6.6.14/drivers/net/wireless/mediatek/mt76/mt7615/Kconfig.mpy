@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4b5b834a41b2e9d95cd56c071fc767912beb87b2f92ce82b84de5f3566ba16a1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt7615/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig MT7615_COMMON\n\ttristate\n\tselect WANT_DEV_COREDUMP\n\tselect MT76_CONNAC_LIB\n\nconfig MT7615E\n\ttristate \"MediaTek MT7615E and MT7663E (PCIe) support\"\n\tselect MT7615_COMMON\n\tdepends on MAC80211\n\tdepends on PCI\n\thelp\n\t  This adds support for MT7615-based PCIe wireless devices,\n\t  which support concurrent dual-band operation at both 5GHz\n\t  and 2.4GHz, IEEE 802.11ac 4x4:4SS 1733Mbps PHY rate, wave2\n\t  MU-MIMO up to 4 users/group and 160MHz channels.\n\n\t  To compile this driver as a module, choose M here.\n\nconfig MT7622_WMAC\n\tbool \"MT7622 (SoC) WMAC support\"\n\tdepends on MT7615E\n\tdepends on ARCH_MEDIATEK || COMPILE_TEST\n\tselect REGMAP\n\tdefault y\n\thelp\n\t  This adds support for the built-in WMAC on MT7622 SoC devices\n\t  which has the same feature set as a MT7615, but limited to\n\t  2.4 GHz only.\n\nconfig MT7663_USB_SDIO_COMMON\n\ttristate\n\tselect MT7615_COMMON\n\nconfig MT7663U\n\ttristate \"MediaTek MT7663U (USB) support\"\n\tselect MT76_USB\n\tselect MT7663_USB_SDIO_COMMON\n\tdepends on MAC80211\n\tdepends on USB\n\thelp\n\t  This adds support for MT7663U 802.11ac 2x2:2 wireless devices.\n\n\t  To compile this driver as a module, choose M here.\n\nconfig MT7663S\n\ttristate \"MediaTek MT7663S (SDIO) support\"\n\tselect MT76_SDIO\n\tselect MT7663_USB_SDIO_COMMON\n\tdepends on MAC80211\n\tdepends on MMC\n\thelp\n\t  This adds support for MT7663S 802.11ac 2x2:2 wireless devices.\n\n\t  To compile this driver as a module, choose M here.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

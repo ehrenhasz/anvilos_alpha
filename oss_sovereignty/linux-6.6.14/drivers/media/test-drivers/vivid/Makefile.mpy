@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5439d4bb50601b9531ea84a33eab965754e06b12d5dadb9b85230d199cfad198",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vivid/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nvivid-objs := vivid-core.o vivid-ctrls.o vivid-vid-common.o vivid-vbi-gen.o \\\n\t\tvivid-vid-cap.o vivid-vid-out.o vivid-kthread-cap.o vivid-kthread-out.o \\\n\t\tvivid-radio-rx.o vivid-radio-tx.o vivid-radio-common.o \\\n\t\tvivid-rds-gen.o vivid-sdr-cap.o vivid-vbi-cap.o vivid-vbi-out.o \\\n\t\tvivid-osd.o vivid-meta-cap.o vivid-meta-out.o \\\n\t\tvivid-kthread-touch.o vivid-touch-cap.o\nifeq ($(CONFIG_VIDEO_VIVID_CEC),y)\n  vivid-objs += vivid-cec.o\nendif\n\nobj-$(CONFIG_VIDEO_VIVID) += vivid.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

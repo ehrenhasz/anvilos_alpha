@@ -1,0 +1,9 @@
+{
+  "module_name": "crt.h",
+  "hash_id": "b638792a2334cb06c4a46c70c7d05c222150d5dcec88a15cce1eb515540e6aa4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/nolibc/crt.h",
+  "human_readable_source": " \n \n\n#ifndef _NOLIBC_CRT_H\n#define _NOLIBC_CRT_H\n\nchar **environ __attribute__((weak));\nconst unsigned long *_auxv __attribute__((weak));\n\nstatic void __stack_chk_init(void);\nstatic void exit(int);\n\n__attribute__((weak))\nvoid _start_c(long *sp)\n{\n\tlong argc;\n\tchar **argv;\n\tchar **envp;\n\tconst unsigned long *auxv;\n\t \n\tint _nolibc_main(int, char **, char **) __asm__ (\"main\");\n\n\t \n\t__stack_chk_init();\n\n\t \n\n\t \n\targc = *sp;\n\targv = (void *)(sp + 1);\n\n\t \n\tenviron = envp = argv + argc + 1;\n\n\t \n\tfor (auxv = (void *)envp; *auxv++;)\n\t\t;\n\t_auxv = auxv;\n\n\t \n\texit(_nolibc_main(argc, argv, envp));\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

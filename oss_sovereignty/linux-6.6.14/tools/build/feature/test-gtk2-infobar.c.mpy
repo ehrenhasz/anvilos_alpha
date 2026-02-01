@@ -1,0 +1,9 @@
+{
+  "module_name": "test-gtk2-infobar.c",
+  "hash_id": "043669bde9d902462a42cc02035d22eaf8cfeb258229c18a042ef0dead4b734c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-gtk2-infobar.c",
+  "human_readable_source": "\n#pragma GCC diagnostic ignored \"-Wstrict-prototypes\"\n#include <gtk/gtk.h>\n#pragma GCC diagnostic error \"-Wstrict-prototypes\"\n\nint main(int argc, char *argv[])\n{\n\tgtk_init(&argc, &argv);\n\tgtk_info_bar_new();\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "zl10353_priv.h",
+  "hash_id": "6ed88f57a0816e40491ca60bdf7bc50a2ce85819085bfa5d9c385930c92580a2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/zl10353_priv.h",
+  "human_readable_source": " \n \n\n#ifndef _ZL10353_PRIV_\n#define _ZL10353_PRIV_\n\n#define ID_ZL10353\t0x14  \n#define ID_CE6230\t0x18  \n#define ID_CE6231\t0x19  \n\n#define msb(x) (((x) >> 8) & 0xff)\n#define lsb(x) ((x) & 0xff)\n\nenum zl10353_reg_addr {\n\tINTERRUPT_0        = 0x00,\n\tINTERRUPT_1        = 0x01,\n\tINTERRUPT_2        = 0x02,\n\tINTERRUPT_3        = 0x03,\n\tINTERRUPT_4        = 0x04,\n\tINTERRUPT_5        = 0x05,\n\tSTATUS_6           = 0x06,\n\tSTATUS_7           = 0x07,\n\tSTATUS_8           = 0x08,\n\tSTATUS_9           = 0x09,\n\tAGC_GAIN_1         = 0x0A,\n\tAGC_GAIN_0         = 0x0B,\n\tSNR                = 0x10,\n\tRS_ERR_CNT_2       = 0x11,\n\tRS_ERR_CNT_1       = 0x12,\n\tRS_ERR_CNT_0       = 0x13,\n\tRS_UBC_1           = 0x14,\n\tRS_UBC_0           = 0x15,\n\tTPS_RECEIVED_1     = 0x1D,\n\tTPS_RECEIVED_0     = 0x1E,\n\tTPS_CURRENT_1      = 0x1F,\n\tTPS_CURRENT_0      = 0x20,\n\tCLOCK_CTL_0        = 0x51,\n\tCLOCK_CTL_1        = 0x52,\n\tPLL_0              = 0x53,\n\tPLL_1              = 0x54,\n\tRESET              = 0x55,\n\tAGC_TARGET         = 0x56,\n\tMCLK_RATIO         = 0x5C,\n\tACQ_CTL            = 0x5E,\n\tTRL_NOMINAL_RATE_1 = 0x65,\n\tTRL_NOMINAL_RATE_0 = 0x66,\n\tINPUT_FREQ_1       = 0x6C,\n\tINPUT_FREQ_0       = 0x6D,\n\tTPS_GIVEN_1        = 0x6E,\n\tTPS_GIVEN_0        = 0x6F,\n\tTUNER_GO           = 0x70,\n\tFSM_GO             = 0x71,\n\tCHIP_ID            = 0x7F,\n\tCHAN_STEP_1        = 0xE4,\n\tCHAN_STEP_0        = 0xE5,\n\tOFDM_LOCK_TIME     = 0xE7,\n\tFEC_LOCK_TIME      = 0xE8,\n\tACQ_DELAY          = 0xE9,\n};\n\n#endif                           \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

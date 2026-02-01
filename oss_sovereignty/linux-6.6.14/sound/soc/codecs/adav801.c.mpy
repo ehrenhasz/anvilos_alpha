@@ -1,0 +1,9 @@
+{
+  "module_name": "adav801.c",
+  "hash_id": "7c78302f49dbbb1a2b9fcb654e1423d15fb4aad2eb8c408ff1abfb5b0e603e87",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/adav801.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/spi/spi.h>\n#include <linux/regmap.h>\n\n#include <sound/soc.h>\n\n#include \"adav80x.h\"\n\nstatic const struct spi_device_id adav80x_spi_id[] = {\n\t{ \"adav801\", 0 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(spi, adav80x_spi_id);\n\nstatic int adav80x_spi_probe(struct spi_device *spi)\n{\n\tstruct regmap_config config;\n\n\tconfig = adav80x_regmap_config;\n\tconfig.read_flag_mask = 0x01;\n\n\treturn adav80x_bus_probe(&spi->dev, devm_regmap_init_spi(spi, &config));\n}\n\nstatic struct spi_driver adav80x_spi_driver = {\n\t.driver = {\n\t\t.name\t= \"adav801\",\n\t},\n\t.probe\t\t= adav80x_spi_probe,\n\t.id_table\t= adav80x_spi_id,\n};\nmodule_spi_driver(adav80x_spi_driver);\n\nMODULE_DESCRIPTION(\"ASoC ADAV801 driver\");\nMODULE_AUTHOR(\"Lars-Peter Clausen <lars@metafoo.de>\");\nMODULE_AUTHOR(\"Yi Li <yi.li@analog.com>>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

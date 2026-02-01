@@ -1,0 +1,9 @@
+{
+  "module_name": "nvram.h",
+  "hash_id": "000c9638f6421767bdecd942de2032301add682cecd010cceea55501bdad9a36",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/nvram.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_NVRAM_H\n#define _UAPI_LINUX_NVRAM_H\n\n#include <linux/ioctl.h>\n\n \n#define NVRAM_INIT\t_IO('p', 0x40)  \n#define NVRAM_SETCKS\t_IO('p', 0x41)  \n\n \n#define NVRAM_FIRST_BYTE    14\n \n#define NVRAM_OFFSET(x)   ((x)-NVRAM_FIRST_BYTE)\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

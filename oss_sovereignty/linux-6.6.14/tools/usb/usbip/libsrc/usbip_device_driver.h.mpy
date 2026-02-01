@@ -1,0 +1,9 @@
+{
+  "module_name": "usbip_device_driver.h",
+  "hash_id": "a78ceebd67af4ff602f6e39e257443601ae1293b5dc9060611196be3a82d55dc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/usbip/libsrc/usbip_device_driver.h",
+  "human_readable_source": " \n \n\n#ifndef __USBIP_DEVICE_DRIVER_H\n#define __USBIP_DEVICE_DRIVER_H\n\n#include <stdint.h>\n#include \"usbip_common.h\"\n#include \"usbip_host_common.h\"\n#include \"list.h\"\n\nextern struct usbip_host_driver device_driver;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

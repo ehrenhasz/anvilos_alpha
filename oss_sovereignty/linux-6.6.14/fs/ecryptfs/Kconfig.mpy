@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "780c11fdaab585c4f73b9ade17308d5f2b0706d5330e916ed530a9b30f46890a",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ecryptfs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig ECRYPT_FS\n\ttristate \"eCrypt filesystem layer support\"\n\tdepends on KEYS && CRYPTO && (ENCRYPTED_KEYS || ENCRYPTED_KEYS=n)\n\tselect CRYPTO_ECB\n\tselect CRYPTO_CBC\n\tselect CRYPTO_MD5\n\thelp\n\t  Encrypted filesystem that operates on the VFS layer.  See\n\t  <file:Documentation/filesystems/ecryptfs.rst> to learn more about\n\t  eCryptfs.  Userspace components are required and can be\n\t  obtained from <http://ecryptfs.sf.net>.\n\n\t  To compile this file system support as a module, choose M here: the\n\t  module will be called ecryptfs.\n\nconfig ECRYPT_FS_MESSAGING\n\tbool \"Enable notifications for userspace key wrap/unwrap\"\n\tdepends on ECRYPT_FS\n\thelp\n\t  Enables the /dev/ecryptfs entry for use by ecryptfsd. This allows\n\t  for userspace to wrap/unwrap file encryption keys by other\n\t  backends, like OpenSSL.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

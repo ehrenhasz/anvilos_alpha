@@ -1,0 +1,9 @@
+{
+  "module_name": "xc4000.h",
+  "hash_id": "5c921edc9cef3616810acdb1180e397991a266ddf4ebe0d74b7f8d2fa19f79ce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/xc4000.h",
+  "human_readable_source": " \n \n\n#ifndef __XC4000_H__\n#define __XC4000_H__\n\n#include <linux/firmware.h>\n\nstruct dvb_frontend;\nstruct i2c_adapter;\n\nstruct xc4000_config {\n\tu8\ti2c_address;\n\t \n\tu8\tdefault_pm;\n\t \n\tu8\tdvb_amplitude;\n\t \n\tu8\tset_smoothedcvbs;\n\t \n\tu32\tif_khz;\n};\n\n \n#define XC4000_TUNER_RESET\t\t0\n\n \n\n#if IS_REACHABLE(CONFIG_MEDIA_TUNER_XC4000)\nextern struct dvb_frontend *xc4000_attach(struct dvb_frontend *fe,\n\t\t\t\t\t  struct i2c_adapter *i2c,\n\t\t\t\t\t  struct xc4000_config *cfg);\n#else\nstatic inline struct dvb_frontend *xc4000_attach(struct dvb_frontend *fe,\n\t\t\t\t\t\t struct i2c_adapter *i2c,\n\t\t\t\t\t\t struct xc4000_config *cfg)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

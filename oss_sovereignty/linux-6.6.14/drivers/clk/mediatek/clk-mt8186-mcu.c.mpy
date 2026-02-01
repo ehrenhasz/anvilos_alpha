@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-mt8186-mcu.c",
+  "hash_id": "c7d4c28a8f2d5e40a9e1a8f7019a55e33d719ac915db762d7eb64cb4dfddff95",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mediatek/clk-mt8186-mcu.c",
+  "human_readable_source": "\n\n\n\n\n#include <linux/clk-provider.h>\n#include <linux/platform_device.h>\n#include <dt-bindings/clock/mt8186-clk.h>\n\n#include \"clk-mtk.h\"\n\nstatic const char * const mcu_armpll_ll_parents[] = {\n\t\"clk26m\",\n\t\"armpll_ll\",\n\t\"mainpll\",\n\t\"univpll_d2\"\n};\n\nstatic const char * const mcu_armpll_bl_parents[] = {\n\t\"clk26m\",\n\t\"armpll_bl\",\n\t\"mainpll\",\n\t\"univpll_d2\"\n};\n\nstatic const char * const mcu_armpll_bus_parents[] = {\n\t\"clk26m\",\n\t\"ccipll\",\n\t\"mainpll\",\n\t\"univpll_d2\"\n};\n\n \nstatic struct mtk_composite mcu_muxes[] = {\n\t \n\tMUX(CLK_MCU_ARMPLL_LL_SEL, \"mcu_armpll_ll_sel\", mcu_armpll_ll_parents, 0x2A0, 9, 2),\n\t \n\tMUX(CLK_MCU_ARMPLL_BL_SEL, \"mcu_armpll_bl_sel\", mcu_armpll_bl_parents, 0x2A4, 9, 2),\n\t \n\tMUX(CLK_MCU_ARMPLL_BUS_SEL, \"mcu_armpll_bus_sel\", mcu_armpll_bus_parents, 0x2E0, 9, 2),\n};\n\nstatic const struct mtk_clk_desc mcu_desc = {\n\t.composite_clks = mcu_muxes,\n\t.num_composite_clks = ARRAY_SIZE(mcu_muxes),\n};\n\nstatic const struct of_device_id of_match_clk_mt8186_mcu[] = {\n\t{ .compatible = \"mediatek,mt8186-mcusys\", .data = &mcu_desc },\n\t{  }\n};\nMODULE_DEVICE_TABLE(of, of_match_clk_mt8186_mcu);\n\nstatic struct platform_driver clk_mt8186_mcu_drv = {\n\t.driver = {\n\t\t.name = \"clk-mt8186-mcu\",\n\t\t.of_match_table = of_match_clk_mt8186_mcu,\n\t},\n\t.probe = mtk_clk_simple_probe,\n\t.remove_new = mtk_clk_simple_remove,\n};\nmodule_platform_driver(clk_mt8186_mcu_drv);\n\nMODULE_DESCRIPTION(\"MediaTek MT8186 mcusys clocks driver\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

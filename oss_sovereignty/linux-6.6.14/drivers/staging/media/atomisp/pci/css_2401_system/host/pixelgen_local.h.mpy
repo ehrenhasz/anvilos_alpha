@@ -1,0 +1,9 @@
+{
+  "module_name": "pixelgen_local.h",
+  "hash_id": "daf9e212781850ec892375564463899d1120d5fed6a1706d41f1a0977ebe22c9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/css_2401_system/host/pixelgen_local.h",
+  "human_readable_source": " \n \n\n#ifndef __PIXELGEN_LOCAL_H_INCLUDED__\n#define __PIXELGEN_LOCAL_H_INCLUDED__\n\n#include \"pixelgen_global.h\"\n\ntypedef struct pixelgen_ctrl_state_s\tpixelgen_ctrl_state_t;\nstruct pixelgen_ctrl_state_s {\n\thrt_data\tcom_enable;\n\thrt_data\tprbs_rstval0;\n\thrt_data\tprbs_rstval1;\n\thrt_data\tsyng_sid;\n\thrt_data\tsyng_free_run;\n\thrt_data\tsyng_pause;\n\thrt_data\tsyng_nof_frames;\n\thrt_data\tsyng_nof_pixels;\n\thrt_data\tsyng_nof_line;\n\thrt_data\tsyng_hblank_cyc;\n\thrt_data\tsyng_vblank_cyc;\n\thrt_data\tsyng_stat_hcnt;\n\thrt_data\tsyng_stat_vcnt;\n\thrt_data\tsyng_stat_fcnt;\n\thrt_data\tsyng_stat_done;\n\thrt_data\ttpg_mode;\n\thrt_data\ttpg_hcnt_mask;\n\thrt_data\ttpg_vcnt_mask;\n\thrt_data\ttpg_xycnt_mask;\n\thrt_data\ttpg_hcnt_delta;\n\thrt_data\ttpg_vcnt_delta;\n\thrt_data\ttpg_r1;\n\thrt_data\ttpg_g1;\n\thrt_data\ttpg_b1;\n\thrt_data\ttpg_r2;\n\thrt_data\ttpg_g2;\n\thrt_data\ttpg_b2;\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

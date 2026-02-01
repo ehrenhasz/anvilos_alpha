@@ -1,0 +1,9 @@
+{
+  "module_name": "uuid-tree.h",
+  "hash_id": "bd20dd879c139ec25f31e9a446f6c488b36bf561d39a6f81d30ba9d7f311c476",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/uuid-tree.h",
+  "human_readable_source": " \n\n#ifndef BTRFS_UUID_TREE_H\n#define BTRFS_UUID_TREE_H\n\nint btrfs_uuid_tree_add(struct btrfs_trans_handle *trans, u8 *uuid, u8 type,\n\t\t\tu64 subid);\nint btrfs_uuid_tree_remove(struct btrfs_trans_handle *trans, u8 *uuid, u8 type,\n\t\t\tu64 subid);\nint btrfs_uuid_tree_iterate(struct btrfs_fs_info *fs_info);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

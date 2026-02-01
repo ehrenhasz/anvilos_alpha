@@ -1,0 +1,9 @@
+{
+  "module_name": "dce112_resource.h",
+  "hash_id": "ba16a79cdf978caf79d44bd78477e133327f2197fd356545d153ba878f33f917",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce112/dce112_resource.h",
+  "human_readable_source": " \n\n#ifndef __DC_RESOURCE_DCE112_H__\n#define __DC_RESOURCE_DCE112_H__\n\n#include \"core_types.h\"\n\nstruct dc;\nstruct resource_pool;\n\nstruct resource_pool *dce112_create_resource_pool(\n\tuint8_t num_virtual_links,\n\tstruct dc *dc);\n\nenum dc_status dce112_validate_with_context(\n\t\tstruct dc *dc,\n\t\tconst struct dc_validation_set set[],\n\t\tint set_count,\n\t\tstruct dc_state *context,\n\t\tstruct dc_state *old_context);\n\nbool dce112_validate_bandwidth(\n\tstruct dc *dc,\n\tstruct dc_state *context,\n\tbool fast_validate);\n\nenum dc_status dce112_add_stream_to_ctx(\n\t\tstruct dc *dc,\n\t\tstruct dc_state *new_ctx,\n\t\tstruct dc_stream_state *dc_stream);\n\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

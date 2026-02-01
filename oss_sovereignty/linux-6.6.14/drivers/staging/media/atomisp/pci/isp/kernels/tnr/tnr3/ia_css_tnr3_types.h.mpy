@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_tnr3_types.h",
+  "hash_id": "b4155274b4e75755875608c26d37dfb64099139ef959ea2d987840d5288dc352",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/tnr/tnr3/ia_css_tnr3_types.h",
+  "human_readable_source": " \n \n\n#ifndef _IA_CSS_TNR3_TYPES_H\n#define _IA_CSS_TNR3_TYPES_H\n\n \n\n \n#define TNR3_NUM_SEGMENTS    3\n\n \nstruct ia_css_tnr3_kernel_config {\n\tunsigned int maxfb_y;                         \n\tunsigned int maxfb_u;                         \n\tunsigned int maxfb_v;                         \n\tunsigned int round_adj_y;                     \n\tunsigned int round_adj_u;                     \n\tunsigned int round_adj_v;                     \n\tunsigned int knee_y[TNR3_NUM_SEGMENTS - 1];   \n\tunsigned int sigma_y[TNR3_NUM_SEGMENTS +\n\t\t\t\t\t       1];  \n\tunsigned int sigma_u[TNR3_NUM_SEGMENTS +\n\t\t\t\t\t       1];  \n\tunsigned int sigma_v[TNR3_NUM_SEGMENTS +\n\t\t\t\t\t       1];  \n\tunsigned int\n\tref_buf_select;                  \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

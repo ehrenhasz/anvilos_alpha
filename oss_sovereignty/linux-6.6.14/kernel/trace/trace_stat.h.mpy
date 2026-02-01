@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_stat.h",
+  "hash_id": "c30bfb2832abe8ffafefcdea8fb63ea678c5a4a5bbd75f307461a1be1cdf68f3",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/trace/trace_stat.h",
+  "human_readable_source": "\n#ifndef __TRACE_STAT_H\n#define __TRACE_STAT_H\n\n#include <linux/seq_file.h>\n\n \nstruct tracer_stat {\n\t \n\tconst char\t\t*name;\n\t \n\tvoid\t\t\t*(*stat_start)(struct tracer_stat *trace);\n\tvoid\t\t\t*(*stat_next)(void *prev, int idx);\n\t \n\tcmp_func_t\t\tstat_cmp;\n\t \n\tint\t\t\t(*stat_show)(struct seq_file *s, void *p);\n\t \n\tvoid\t\t\t(*stat_release)(void *stat);\n\t \n\tint\t\t\t(*stat_headers)(struct seq_file *s);\n};\n\n \nextern int register_stat_tracer(struct tracer_stat *trace);\nextern void unregister_stat_tracer(struct tracer_stat *trace);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

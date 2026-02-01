@@ -1,0 +1,9 @@
+{
+  "module_name": "pm.c",
+  "hash_id": "884f92465389f8a129086e760b0b2637f48a9cf375d07c5e7e8d1097bbe622d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/ingenic/pm.c",
+  "human_readable_source": "\n \n\n#include \"cgu.h\"\n#include \"pm.h\"\n\n#include <linux/io.h>\n#include <linux/syscore_ops.h>\n\n#define CGU_REG_LCR\t\t0x04\n\n#define LCR_LOW_POWER_MODE\tBIT(0)\n\nstatic void __iomem * __maybe_unused ingenic_cgu_base;\n\nstatic int __maybe_unused ingenic_cgu_pm_suspend(void)\n{\n\tu32 val = readl(ingenic_cgu_base + CGU_REG_LCR);\n\n\twritel(val | LCR_LOW_POWER_MODE, ingenic_cgu_base + CGU_REG_LCR);\n\n\treturn 0;\n}\n\nstatic void __maybe_unused ingenic_cgu_pm_resume(void)\n{\n\tu32 val = readl(ingenic_cgu_base + CGU_REG_LCR);\n\n\twritel(val & ~LCR_LOW_POWER_MODE, ingenic_cgu_base + CGU_REG_LCR);\n}\n\nstatic struct syscore_ops __maybe_unused ingenic_cgu_pm_ops = {\n\t.suspend = ingenic_cgu_pm_suspend,\n\t.resume = ingenic_cgu_pm_resume,\n};\n\nvoid ingenic_cgu_register_syscore_ops(struct ingenic_cgu *cgu)\n{\n\tif (IS_ENABLED(CONFIG_PM_SLEEP)) {\n\t\tingenic_cgu_base = cgu->base;\n\t\tregister_syscore_ops(&ingenic_cgu_pm_ops);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

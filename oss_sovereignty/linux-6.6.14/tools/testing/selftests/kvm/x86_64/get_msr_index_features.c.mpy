@@ -1,0 +1,9 @@
+{
+  "module_name": "get_msr_index_features.c",
+  "hash_id": "8f0eefc20249cde2b7b9e14be2730df22bdf10629fbfafa9d1b6b7adce34ba79",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/x86_64/get_msr_index_features.c",
+  "human_readable_source": "\n \n#include <fcntl.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <sys/ioctl.h>\n\n#include \"test_util.h\"\n#include \"kvm_util.h\"\n#include \"processor.h\"\n\nint main(int argc, char *argv[])\n{\n\tconst struct kvm_msr_list *feature_list;\n\tint i;\n\n\t \n\tTEST_REQUIRE(kvm_has_cap(KVM_CAP_GET_MSR_FEATURES));\n\n\t(void)kvm_get_msr_index_list();\n\n\tfeature_list = kvm_get_feature_msr_index_list();\n\tfor (i = 0; i < feature_list->nmsrs; i++)\n\t\tkvm_get_feature_msr(feature_list->indices[i]);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "02d08f0c22885de97f673a14207b951254dfd38e6a08f97541b70d002958d12e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/events/amd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_CPU_SUP_AMD)\t\t+= core.o lbr.o\nobj-$(CONFIG_PERF_EVENTS_AMD_BRS)\t+= brs.o\nobj-$(CONFIG_PERF_EVENTS_AMD_POWER)\t+= power.o\nobj-$(CONFIG_X86_LOCAL_APIC)\t\t+= ibs.o\nobj-$(CONFIG_PERF_EVENTS_AMD_UNCORE)\t+= amd-uncore.o\namd-uncore-objs\t\t\t\t:= uncore.o\nifdef CONFIG_AMD_IOMMU\nobj-$(CONFIG_CPU_SUP_AMD)\t\t+= iommu.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

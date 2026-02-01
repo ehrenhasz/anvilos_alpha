@@ -1,0 +1,9 @@
+{
+  "module_name": "sysctl.c",
+  "hash_id": "f9e5da657e90b00483887597c579310eb22c9d1b647b43c03bf620e77181851c",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ntfs/sysctl.c",
+  "human_readable_source": "\n \n\n#ifdef DEBUG\n\n#include <linux/module.h>\n\n#ifdef CONFIG_SYSCTL\n\n#include <linux/proc_fs.h>\n#include <linux/sysctl.h>\n\n#include \"sysctl.h\"\n#include \"debug.h\"\n\n \nstatic struct ctl_table ntfs_sysctls[] = {\n\t{\n\t\t.procname\t= \"ntfs-debug\",\n\t\t.data\t\t= &debug_msgs,\t\t \n\t\t.maxlen\t\t= sizeof(debug_msgs),\n\t\t.mode\t\t= 0644,\t\t\t \n\t\t.proc_handler\t= proc_dointvec\n\t},\n\t{}\n};\n\n \nstatic struct ctl_table_header *sysctls_root_table;\n\n \nint ntfs_sysctl(int add)\n{\n\tif (add) {\n\t\tBUG_ON(sysctls_root_table);\n\t\tsysctls_root_table = register_sysctl(\"fs\", ntfs_sysctls);\n\t\tif (!sysctls_root_table)\n\t\t\treturn -ENOMEM;\n\t} else {\n\t\tBUG_ON(!sysctls_root_table);\n\t\tunregister_sysctl_table(sysctls_root_table);\n\t\tsysctls_root_table = NULL;\n\t}\n\treturn 0;\n}\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

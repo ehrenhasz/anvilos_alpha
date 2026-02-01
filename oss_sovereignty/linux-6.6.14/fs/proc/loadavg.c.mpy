@@ -1,0 +1,9 @@
+{
+  "module_name": "loadavg.c",
+  "hash_id": "bbdedef2c7b5de58ae9d722af619ba9e26a6e1f131251817b9cd372c12f46127",
+  "original_prompt": "Ingested from linux-6.6.14/fs/proc/loadavg.c",
+  "human_readable_source": "\n#include <linux/fs.h>\n#include <linux/init.h>\n#include <linux/pid_namespace.h>\n#include <linux/proc_fs.h>\n#include <linux/sched.h>\n#include <linux/sched/loadavg.h>\n#include <linux/sched/stat.h>\n#include <linux/seq_file.h>\n#include <linux/seqlock.h>\n#include <linux/time.h>\n#include \"internal.h\"\n\nstatic int loadavg_proc_show(struct seq_file *m, void *v)\n{\n\tunsigned long avnrun[3];\n\n\tget_avenrun(avnrun, FIXED_1/200, 0);\n\n\tseq_printf(m, \"%lu.%02lu %lu.%02lu %lu.%02lu %u/%d %d\\n\",\n\t\tLOAD_INT(avnrun[0]), LOAD_FRAC(avnrun[0]),\n\t\tLOAD_INT(avnrun[1]), LOAD_FRAC(avnrun[1]),\n\t\tLOAD_INT(avnrun[2]), LOAD_FRAC(avnrun[2]),\n\t\tnr_running(), nr_threads,\n\t\tidr_get_cursor(&task_active_pid_ns(current)->idr) - 1);\n\treturn 0;\n}\n\nstatic int __init proc_loadavg_init(void)\n{\n\tstruct proc_dir_entry *pde;\n\n\tpde = proc_create_single(\"loadavg\", 0, NULL, loadavg_proc_show);\n\tpde_make_permanent(pde);\n\treturn 0;\n}\nfs_initcall(proc_loadavg_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

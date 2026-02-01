@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a61484237afe94025d75dbecf67e7de3cb6ef60a21c138a2885919aecc058d43",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ar5523/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: ISC\nconfig AR5523\n\ttristate \"Atheros AR5523 wireless driver support\"\n\tdepends on MAC80211 && USB\n\tselect ATH_COMMON\n\tselect FW_LOADER\n\thelp\n\t  This module add support for AR5523 based USB dongles such as D-Link\n\t  DWL-G132, Netgear WPN111 and many more.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

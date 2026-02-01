@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "07219c6162a7750a45cd134d877ee0cf2aa176eb36c66238176408b2b67c7ca4",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/aw2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-aw2-objs := aw2-alsa.o aw2-saa7146.o\n\nobj-$(CONFIG_SND_AW2) += snd-aw2.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

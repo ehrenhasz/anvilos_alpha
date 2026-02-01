@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_gemfs.c",
+  "hash_id": "c36bf68375001053b203658672bf4c2c8f503043f0276572e1d36c4f88b76313",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gem/i915_gemfs.c",
+  "human_readable_source": " \n\n#include <linux/fs.h>\n#include <linux/mount.h>\n\n#include \"i915_drv.h\"\n#include \"i915_gemfs.h\"\n#include \"i915_utils.h\"\n\nvoid i915_gemfs_init(struct drm_i915_private *i915)\n{\n\tchar huge_opt[] = \"huge=within_size\";  \n\tstruct file_system_type *type;\n\tstruct vfsmount *gemfs;\n\n\t \n\n\tif (GRAPHICS_VER(i915) < 11 && !i915_vtd_active(i915))\n\t\treturn;\n\n\tif (!IS_ENABLED(CONFIG_TRANSPARENT_HUGEPAGE))\n\t\tgoto err;\n\n\ttype = get_fs_type(\"tmpfs\");\n\tif (!type)\n\t\tgoto err;\n\n\tgemfs = vfs_kern_mount(type, SB_KERNMOUNT, type->name, huge_opt);\n\tif (IS_ERR(gemfs))\n\t\tgoto err;\n\n\ti915->mm.gemfs = gemfs;\n\tdrm_info(&i915->drm, \"Using Transparent Hugepages\\n\");\n\treturn;\n\nerr:\n\tdrm_notice(&i915->drm,\n\t\t   \"Transparent Hugepage support is recommended for optimal performance%s\\n\",\n\t\t   GRAPHICS_VER(i915) >= 11 ? \" on this platform!\" :\n\t\t\t\t\t      \" when IOMMU is enabled!\");\n}\n\nvoid i915_gemfs_fini(struct drm_i915_private *i915)\n{\n\tkern_unmount(i915->mm.gemfs);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ccd3be3d17178a0fbab50fb4a275abc947d0df1ffa7f6b40c204a6be77053e2a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/mgag200/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmgag200-y := \\\n\tmgag200_bmc.o \\\n\tmgag200_drv.o \\\n\tmgag200_g200.o \\\n\tmgag200_g200eh.o \\\n\tmgag200_g200eh3.o \\\n\tmgag200_g200er.o \\\n\tmgag200_g200ev.o \\\n\tmgag200_g200ew3.o \\\n\tmgag200_g200se.o \\\n\tmgag200_g200wb.o \\\n\tmgag200_i2c.o \\\n\tmgag200_mode.o\n\nobj-$(CONFIG_DRM_MGAG200) += mgag200.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

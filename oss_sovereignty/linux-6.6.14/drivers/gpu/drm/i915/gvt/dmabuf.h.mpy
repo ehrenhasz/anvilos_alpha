@@ -1,0 +1,9 @@
+{
+  "module_name": "dmabuf.h",
+  "hash_id": "dd8b86e66e818365fff34d6c570b1738d57b6984cdfef6509fe2fd1ef6df09fc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gvt/dmabuf.h",
+  "human_readable_source": " \n\n#ifndef _GVT_DMABUF_H_\n#define _GVT_DMABUF_H_\n#include <linux/vfio.h>\n\nstruct intel_vgpu_fb_info {\n\t__u64 start;\n\t__u64 start_gpa;\n\t__u64 drm_format_mod;\n\t__u32 drm_format;\t \n\t__u32 width;\t \n\t__u32 height;\t \n\t__u32 stride;\t \n\t__u32 size;\t \n\t__u32 x_pos;\t \n\t__u32 y_pos;\t \n\t__u32 x_hot;     \n\t__u32 y_hot;     \n\tstruct intel_vgpu_dmabuf_obj *obj;\n};\n\n \nstruct intel_vgpu_dmabuf_obj {\n\tstruct intel_vgpu *vgpu;\n\tstruct intel_vgpu_fb_info *info;\n\t__u32 dmabuf_id;\n\tstruct kref kref;\n\tbool initref;\n\tstruct list_head list;\n};\n\nint intel_vgpu_query_plane(struct intel_vgpu *vgpu, void *args);\nint intel_vgpu_get_dmabuf(struct intel_vgpu *vgpu, unsigned int dmabuf_id);\nvoid intel_vgpu_dmabuf_cleanup(struct intel_vgpu *vgpu);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

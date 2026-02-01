@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ccdedf6491162d8a783983eb138e2cc5defce7e09ee81428dcee6200e9a6efbd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/amd/xgbe/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_AMD_XGBE) += amd-xgbe.o\n\namd-xgbe-objs := xgbe-main.o xgbe-drv.o xgbe-dev.o \\\n\t\t xgbe-desc.o xgbe-ethtool.o xgbe-mdio.o \\\n\t\t xgbe-ptp.o \\\n\t\t xgbe-i2c.o xgbe-phy-v1.o xgbe-phy-v2.o \\\n\t\t xgbe-platform.o\n\namd-xgbe-$(CONFIG_PCI) += xgbe-pci.o\namd-xgbe-$(CONFIG_AMD_XGBE_DCB) += xgbe-dcb.o\namd-xgbe-$(CONFIG_DEBUG_FS) += xgbe-debugfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

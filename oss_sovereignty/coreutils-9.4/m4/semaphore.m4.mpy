@@ -1,0 +1,9 @@
+{
+  "module_name": "semaphore.m4",
+  "hash_id": "4a0cdd835c94aff70c48a43342adce7e1e973d40d72a1c8b01ed10c0ef2fa37d",
+  "original_prompt": "Ingested from coreutils-9.4/m4/semaphore.m4",
+  "human_readable_source": "# semaphore.m4 serial 1\ndnl Copyright (C) 2019-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n# Sets LIB_SEMAPHORE to the library needed, in addition to $(LIBMULTITHREAD),\n# for getting the <semaphore.h> functions.\n\nAC_DEFUN([gl_SEMAPHORE],\n[\n  AC_REQUIRE([gl_THREADLIB])\n  dnl sem_post is\n  dnl   - in libc on macOS, FreeBSD, AIX, IRIX, Solaris 11, Haiku, Cygwin,\n  dnl   - in libpthread on glibc systems, OpenBSD,\n  dnl   - in libpthread or librt on NetBSD,\n  dnl   - in librt on HP-UX 11, OSF/1, Solaris 10.\n  dnl On the platforms where -lpthread is needed, it is contained in\n  dnl $LIBMULTITHREAD. Therefore, the only library we need to test for is -lrt.\n  AC_CACHE_CHECK([for library needed for semaphore functions],\n    [gl_cv_semaphore_lib],\n    [save_LIBS=\"$LIBS\"\n     LIBS=\"$LIBS $LIBMULTITHREAD\"\n     AC_LINK_IFELSE(\n       [AC_LANG_PROGRAM(\n          [[#include <semaphore.h>]],\n          [[sem_post ((sem_t *)0);]])],\n       [gl_cv_semaphore_lib=none],\n       [LIBS=\"$LIBS -lrt\"\n        AC_LINK_IFELSE(\n          [AC_LANG_PROGRAM(\n             [[#include <semaphore.h>]],\n             [[sem_post ((sem_t *)0);]])],\n          [gl_cv_semaphore_lib='-lrt'],\n          [gl_cv_semaphore_lib=none])\n       ])\n     LIBS=\"$save_LIBS\"\n    ])\n  if test \"x$gl_cv_semaphore_lib\" = xnone; then\n    LIB_SEMAPHORE=\n  else\n    LIB_SEMAPHORE=\"$gl_cv_semaphore_lib\"\n  fi\n  AC_SUBST([LIB_SEMAPHORE])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

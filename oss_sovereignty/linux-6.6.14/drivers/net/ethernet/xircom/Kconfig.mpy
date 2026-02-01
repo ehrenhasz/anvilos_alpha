@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "608cd7ddba8f377325f5d557c7075ec9df5632cc6e2ea98f78a6f0b2b83524c7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/xircom/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Xircom network device configuration\n#\n\nconfig NET_VENDOR_XIRCOM\n\tbool \"Xircom devices\"\n\tdefault y\n\tdepends on PCMCIA\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Xircom cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif NET_VENDOR_XIRCOM\n\nconfig PCMCIA_XIRC2PS\n\ttristate \"Xircom 16-bit PCMCIA support\"\n\tdepends on PCMCIA\n\thelp\n\t  Say Y here if you intend to attach a Xircom 16-bit PCMCIA (PC-card)\n\t  Ethernet or Fast Ethernet card to your computer.\n\n\t  To compile this driver as a module, choose M here: the module will be\n\t  called xirc2ps_cs.  If unsure, say N.\n\nendif # NET_VENDOR_XIRCOM\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

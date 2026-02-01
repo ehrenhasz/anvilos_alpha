@@ -1,0 +1,9 @@
+{
+  "module_name": "test_klp_callbacks_mod.c",
+  "hash_id": "de406c8dc104c7272b94d91a9f1a7c40585be9c1a449dfce07b8446e5ef8cc4e",
+  "original_prompt": "Ingested from linux-6.6.14/lib/livepatch/test_klp_callbacks_mod.c",
+  "human_readable_source": "\n\n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <linux/module.h>\n#include <linux/kernel.h>\n\nstatic int test_klp_callbacks_mod_init(void)\n{\n\tpr_info(\"%s\\n\", __func__);\n\treturn 0;\n}\n\nstatic void test_klp_callbacks_mod_exit(void)\n{\n\tpr_info(\"%s\\n\", __func__);\n}\n\nmodule_init(test_klp_callbacks_mod_init);\nmodule_exit(test_klp_callbacks_mod_exit);\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Joe Lawrence <joe.lawrence@redhat.com>\");\nMODULE_DESCRIPTION(\"Livepatch test: target module\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

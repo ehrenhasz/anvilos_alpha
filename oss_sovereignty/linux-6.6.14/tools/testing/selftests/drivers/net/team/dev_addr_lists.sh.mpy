@@ -1,0 +1,9 @@
+{
+  "module_name": "dev_addr_lists.sh",
+  "hash_id": "48616dca6409217160e17caaf1f2d744c704c3e47fc1c93ef9d12d69c2b7eef0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/team/dev_addr_lists.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n#\n# Test team device handling of addr lists (dev->uc, mc)\n#\n\nALL_TESTS=\"\n\tteam_cleanup\n\"\n\nREQUIRE_MZ=no\nNUM_NETIFS=0\nlib_dir=$(dirname \"$0\")\nsource \"$lib_dir\"/net_forwarding_lib.sh\n\nsource \"$lib_dir\"/lag_lib.sh\n\n\ndestroy()\n{\n\tlocal ifnames=(dummy1 dummy2 team0 mv0)\n\tlocal ifname\n\n\tfor ifname in \"${ifnames[@]}\"; do\n\t\tip link del \"$ifname\" &>/dev/null\n\tdone\n}\n\ncleanup()\n{\n\tpre_cleanup\n\n\tdestroy\n}\n\n\nteam_cleanup()\n{\n\tRET=0\n\n\ttest_LAG_cleanup \"team\" \"lacp\"\n}\n\n\nrequire_command teamd\n\ntrap cleanup EXIT\n\ntests_run\n\nexit \"$EXIT_STATUS\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

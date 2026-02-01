@@ -1,0 +1,9 @@
+{
+  "module_name": "xdp_dev_bound_only.c",
+  "hash_id": "8e16372f18b4a1480a0ad9d7b46c999cbd0e0dde27ea96c20ad0c898d32d9fcf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/xdp_dev_bound_only.c",
+  "human_readable_source": "\n#include <net/if.h>\n#include <test_progs.h>\n#include <network_helpers.h>\n\n#define LOCAL_NETNS \"xdp_dev_bound_only_netns\"\n\nstatic int load_dummy_prog(char *name, __u32 ifindex, __u32 flags)\n{\n\tstruct bpf_insn insns[] = { BPF_MOV64_IMM(BPF_REG_0, 0), BPF_EXIT_INSN() };\n\tLIBBPF_OPTS(bpf_prog_load_opts, opts);\n\n\topts.prog_flags = flags;\n\topts.prog_ifindex = ifindex;\n\treturn bpf_prog_load(BPF_PROG_TYPE_XDP, name, \"GPL\", insns, ARRAY_SIZE(insns), &opts);\n}\n\n \nvoid test_xdp_dev_bound_only_offdev(void)\n{\n\tstruct nstoken *tok = NULL;\n\t__u32 ifindex;\n\tint fd1 = -1;\n\tint fd2 = -1;\n\n\tSYS(out, \"ip netns add \" LOCAL_NETNS);\n\ttok = open_netns(LOCAL_NETNS);\n\tif (!ASSERT_OK_PTR(tok, \"open_netns\"))\n\t\tgoto out;\n\tSYS(out, \"ip link add eth42 type veth\");\n\tifindex = if_nametoindex(\"eth42\");\n\tif (!ASSERT_NEQ(ifindex, 0, \"if_nametoindex\")) {\n\t\tperror(\"if_nametoindex\");\n\t\tgoto out;\n\t}\n\tfd1 = load_dummy_prog(\"dummy1\", ifindex, BPF_F_XDP_DEV_BOUND_ONLY);\n\tif (!ASSERT_GE(fd1, 0, \"load_dummy_prog #1\")) {\n\t\tperror(\"load_dummy_prog #1\");\n\t\tgoto out;\n\t}\n\t \n\tfd2 = load_dummy_prog(\"dummy2\", ifindex, 0);\n\tASSERT_EQ(fd2, -EINVAL, \"load_dummy_prog #2 (offloaded)\");\n\nout:\n\tclose(fd1);\n\tclose(fd2);\n\tclose_netns(tok);\n\t \n\tSYS_NOFAIL(\"ip netns del \" LOCAL_NETNS);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

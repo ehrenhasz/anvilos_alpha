@@ -1,0 +1,9 @@
+{
+  "module_name": "sst-dsp-priv.h",
+  "hash_id": "143279cb270f5ada4e237c1a806941ab3d186000bd9c88259907f5ab0228ce39",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/common/sst-dsp-priv.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_SOC_SST_DSP_PRIV_H\n#define __SOUND_SOC_SST_DSP_PRIV_H\n\n#include <linux/kernel.h>\n#include <linux/types.h>\n#include <linux/interrupt.h>\n#include <linux/firmware.h>\n\n#include \"../skylake/skl-sst-dsp.h\"\n\n \nstruct sst_ops {\n\t \n\tvoid (*write)(void __iomem *addr, u32 offset, u32 value);\n\tu32 (*read)(void __iomem *addr, u32 offset);\n\n\t \n\tirqreturn_t (*irq_handler)(int irq, void *context);\n\n\t \n\tint (*init)(struct sst_dsp *sst);\n\tvoid (*free)(struct sst_dsp *sst);\n};\n\n \nstruct sst_addr {\n\tu32 sram0_base;\n\tu32 sram1_base;\n\tu32 w0_stat_sz;\n\tu32 w0_up_sz;\n\tvoid __iomem *lpe;\n\tvoid __iomem *shim;\n};\n\n \nstruct sst_mailbox {\n\tvoid __iomem *in_base;\n\tvoid __iomem *out_base;\n\tsize_t in_size;\n\tsize_t out_size;\n};\n\n \nstruct sst_dsp {\n\n\t \n\n\t \n\tstruct sst_dsp_device *sst_dev;\n\tspinlock_t spinlock;\t \n\tstruct mutex mutex;\t \n\tstruct device *dev;\n\tvoid *thread_context;\n\tint irq;\n\tu32 id;\n\n\t \n\tstruct sst_ops *ops;\n\n\t \n\tstruct dentry *debugfs_root;\n\n\t \n\tstruct sst_addr addr;\n\n\t \n\tstruct sst_mailbox mailbox;\n\n\t \n\tstruct list_head module_list;\n\n\t \n\n\tconst char *fw_name;\n\n\t \n\tstruct skl_dsp_loader_ops dsp_ops;\n\tstruct skl_dsp_fw_ops fw_ops;\n\tint sst_state;\n\tstruct skl_cl_dev cl_dev;\n\tu32 intr_status;\n\tconst struct firmware *fw;\n\tstruct snd_dma_buffer dmab;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "adfs_fs.h",
+  "hash_id": "3bb1a8d103ef361f8041ff6702e0f8ed98fcfc8db7b2946aeb8b2ceb0b588767",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/adfs_fs.h",
+  "human_readable_source": " \n#ifndef _ADFS_FS_H\n#define _ADFS_FS_H\n\n#include <uapi/linux/adfs_fs.h>\n\n \nstatic inline int adfs_checkbblk(unsigned char *ptr)\n{\n\tunsigned int result = 0;\n\tunsigned char *p = ptr + 511;\n\n\tdo {\n\t        result = (result & 0xff) + (result >> 8);\n        \tresult = result + *--p;\n\t} while (p != ptr);\n\n\treturn (result & 0xff) != ptr[511];\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

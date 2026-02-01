@@ -1,0 +1,9 @@
+{
+  "module_name": "nc_mingw.h",
+  "hash_id": "3258b6db180eb12585112d583b004083f06d77c0ebfdbf2c07668e67ca3af8c7",
+  "original_prompt": "Ingested from ncurses-6.4/include/nc_mingw.h",
+  "human_readable_source": " \n\n \n\n \n\n#ifndef NC_MINGW_H\n#define NC_MINGW_H 1\n\n#ifdef _WIN32\n\n#ifdef WINVER\n#  if WINVER < 0x0501\n#    error WINVER must at least be 0x0501\n#  endif\n#else\n#  define WINVER 0x0501\n#endif\n#include <windows.h>\n\n#undef sleep\n#define sleep(n) Sleep((n) * 1000)\n\n#undef gettimeofday\n#define gettimeofday(tv,tz) _nc_gettimeofday(tv,tz)\n\n#if HAVE_SYS_TIME_H\n#include <sys/time.h>\t\t \n#endif\n\n#ifdef _MSC_VER\n#include <winsock2.h>\t\t \n#endif\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n#include <ncurses_dll.h>\n\nNCURSES_EXPORT(int) _nc_gettimeofday(struct timeval *, void *);\n\n#undef HAVE_GETTIMEOFDAY\n#define HAVE_GETTIMEOFDAY 1\n\n#define SIGHUP  1\n#define SIGKILL 9\n#define getlogin() \"username\"\n\n#undef wcwidth\n#define wcwidth(ucs) _nc_wcwidth((wchar_t)(ucs))\nNCURSES_EXPORT(int) _nc_wcwidth(wchar_t);\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

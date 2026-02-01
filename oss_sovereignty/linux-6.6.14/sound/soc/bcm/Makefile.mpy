@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f06e158a56afb124b37efec0c75a1ec1a4b7db141c04ae9c60e64495fb74d8ff",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/bcm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# BCM2835 Platform Support\nsnd-soc-bcm2835-i2s-objs := bcm2835-i2s.o\n\nobj-$(CONFIG_SND_BCM2835_SOC_I2S) += snd-soc-bcm2835-i2s.o\n\n# CYGNUS Platform Support\nsnd-soc-cygnus-objs := cygnus-pcm.o cygnus-ssp.o\n\nobj-$(CONFIG_SND_SOC_CYGNUS) += snd-soc-cygnus.o\n\n# BCM63XX Platform Support\nsnd-soc-63xx-objs := bcm63xx-i2s-whistler.o bcm63xx-pcm-whistler.o\n\nobj-$(CONFIG_SND_BCM63XX_I2S_WHISTLER) += snd-soc-63xx.o",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

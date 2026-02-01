@@ -1,0 +1,9 @@
+{
+  "module_name": "umc_6_0_default.h",
+  "hash_id": "4d2e917c974932764adaa0f820643e55c3292fcb9d1afc3d337bb960ea288667",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/asic_reg/umc/umc_6_0_default.h",
+  "human_readable_source": " \n\n#ifndef _umc_6_0_DEFAULT_HEADER\n#define _umc_6_0_DEFAULT_HEADER\n\n#define mmUMCCH0_0_EccCtrl_DEFAULT\t\t\t\t0x00000000\n\n#define mmUMCCH0_0_UMC_CONFIG_DEFAULT\t\t\t\t0x00000203\n\n#define mmUMCCH0_0_UmcLocalCap_DEFAULT\t\t\t\t0x00000000\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

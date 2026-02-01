@@ -1,0 +1,9 @@
+{
+  "module_name": "aegis128-neon.c",
+  "hash_id": "7d38b498b4fb81a6ef08a94ee19a92889449361ebec8b6483a9b9c1895331976",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/aegis128-neon.c",
+  "human_readable_source": "\n \n\n#include <asm/cpufeature.h>\n#include <asm/neon.h>\n\n#include \"aegis.h\"\n#include \"aegis-neon.h\"\n\nint aegis128_have_aes_insn __ro_after_init;\n\nbool crypto_aegis128_have_simd(void)\n{\n\tif (cpu_have_feature(cpu_feature(AES))) {\n\t\taegis128_have_aes_insn = 1;\n\t\treturn true;\n\t}\n\treturn IS_ENABLED(CONFIG_ARM64);\n}\n\nvoid crypto_aegis128_init_simd(struct aegis_state *state,\n\t\t\t       const union aegis_block *key,\n\t\t\t       const u8 *iv)\n{\n\tkernel_neon_begin();\n\tcrypto_aegis128_init_neon(state, key, iv);\n\tkernel_neon_end();\n}\n\nvoid crypto_aegis128_update_simd(struct aegis_state *state, const void *msg)\n{\n\tkernel_neon_begin();\n\tcrypto_aegis128_update_neon(state, msg);\n\tkernel_neon_end();\n}\n\nvoid crypto_aegis128_encrypt_chunk_simd(struct aegis_state *state, u8 *dst,\n\t\t\t\t\tconst u8 *src, unsigned int size)\n{\n\tkernel_neon_begin();\n\tcrypto_aegis128_encrypt_chunk_neon(state, dst, src, size);\n\tkernel_neon_end();\n}\n\nvoid crypto_aegis128_decrypt_chunk_simd(struct aegis_state *state, u8 *dst,\n\t\t\t\t\tconst u8 *src, unsigned int size)\n{\n\tkernel_neon_begin();\n\tcrypto_aegis128_decrypt_chunk_neon(state, dst, src, size);\n\tkernel_neon_end();\n}\n\nint crypto_aegis128_final_simd(struct aegis_state *state,\n\t\t\t       union aegis_block *tag_xor,\n\t\t\t       unsigned int assoclen,\n\t\t\t       unsigned int cryptlen,\n\t\t\t       unsigned int authsize)\n{\n\tint ret;\n\n\tkernel_neon_begin();\n\tret = crypto_aegis128_final_neon(state, tag_xor, assoclen, cryptlen,\n\t\t\t\t\t authsize);\n\tkernel_neon_end();\n\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

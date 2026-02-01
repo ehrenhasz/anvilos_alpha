@@ -1,0 +1,9 @@
+{
+  "module_name": "edac.h",
+  "hash_id": "d24369612616348fa16c18e54ec44a02ecacafb15de99c3b7e3b5d87a356e397",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/edac.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_EDAC_H\n#define _ASM_X86_EDAC_H\n\n \n\nstatic inline void edac_atomic_scrub(void *va, u32 size)\n{\n\tu32 i, *virt_addr = va;\n\n\t \n\tfor (i = 0; i < size / 4; i++, virt_addr++)\n\t\tasm volatile(\"lock; addl $0, %0\"::\"m\" (*virt_addr));\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

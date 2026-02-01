@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_bad_add_dup_node.dtso",
+  "hash_id": "bef59534c0c1aaa06e062a44577dde0db0148101a89f4e4428d14c54e4eb6068",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_bad_add_dup_node.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n/*\n * &electric_1/motor-1 and &spin_ctrl_1 are the same node:\n *   /testcase-data-2/substation@100/motor-1\n *\n * Thus the new node \"controller\" in each fragment will\n * result in an attempt to add the same node twice.\n * This will result in an error and the overlay apply\n * will fail.\n */\n\n&electric_1 {\n\tmotor-1 {\n\t\tcontroller {\n\t\t\tpower_bus = <0x1 0x2>;\n\t\t};\n\t};\n};\n\n&spin_ctrl_1 {\n\tcontroller {\n\t\tpower_bus_emergency = <0x101 0x102>;\n\t};\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

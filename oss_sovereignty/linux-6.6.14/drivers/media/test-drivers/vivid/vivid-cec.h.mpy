@@ -1,0 +1,9 @@
+{
+  "module_name": "vivid-cec.h",
+  "hash_id": "55b2d6b331628e6ddc18cc8c443ea50c35cb9ea58bae85ead73c19a2eb4a8086",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vivid/vivid-cec.h",
+  "human_readable_source": " \n \n\n#ifdef CONFIG_VIDEO_VIVID_CEC\nstruct cec_adapter *vivid_cec_alloc_adap(struct vivid_dev *dev,\n\t\t\t\t\t unsigned int idx,\n\t\t\t\t\t bool is_source);\nint vivid_cec_bus_thread(void *_dev);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

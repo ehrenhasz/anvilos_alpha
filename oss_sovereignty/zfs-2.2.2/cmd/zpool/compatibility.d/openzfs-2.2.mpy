@@ -1,0 +1,9 @@
+{
+  "module_name": "openzfs-2.2",
+  "hash_id": "8b5a635bf7609a0f521b08fe0e389c651dd6a266d33bd53a2e253b99089c3bf7",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/compatibility.d/openzfs-2.2",
+  "human_readable_source": "# Features supported by OpenZFS 2.2 on Linux and FreeBSD\nallocation_classes\nasync_destroy\nblake3\nblock_cloning\nbookmark_v2\nbookmark_written\nbookmarks\ndevice_rebuild\ndevice_removal\ndraid\nedonr\nembedded_data\nempty_bpobj\nenabled_txg\nencryption\nextensible_dataset\nfilesystem_limits\nhead_errlog\nhole_birth\nlarge_blocks\nlarge_dnode\nlivelist\nlog_spacemap\nlz4_compress\nmulti_vdev_crash_dump\nobsolete_counts\nproject_quota\nredacted_datasets\nredaction_bookmarks\nresilver_defer\nsha512\nskein\nspacemap_histogram\nspacemap_v2\nuserobj_accounting\nvdev_zaps_v2\nzilsaxattr\nzpool_checkpoint\nzstd_compress\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

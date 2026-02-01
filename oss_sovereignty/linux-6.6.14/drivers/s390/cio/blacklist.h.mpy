@@ -1,0 +1,9 @@
+{
+  "module_name": "blacklist.h",
+  "hash_id": "677a0697e1da32bff4047d5f34ee04a20aaf32e48bca0907bf7762dd618b25b0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/cio/blacklist.h",
+  "human_readable_source": " \n#ifndef S390_BLACKLIST_H\n#define S390_BLACKLIST_H\n\nextern int is_blacklisted (int ssid, int devno);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

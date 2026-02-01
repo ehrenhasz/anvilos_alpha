@@ -1,0 +1,9 @@
+{
+  "module_name": "g84.c",
+  "hash_id": "6345119545b94a4eedb120f8f60d3b0836f3e6193768a310b109006187afe0b0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/g84.c",
+  "human_readable_source": " \n#include \"mem.h\"\n#include \"vmm.h\"\n\n#include <nvif/class.h>\n\nstatic const struct nvkm_mmu_func\ng84_mmu = {\n\t.dma_bits = 40,\n\t.mmu = {{ -1, -1, NVIF_CLASS_MMU_NV50}},\n\t.mem = {{ -1,  0, NVIF_CLASS_MEM_NV50}, nv50_mem_new, nv50_mem_map },\n\t.vmm = {{ -1, -1, NVIF_CLASS_VMM_NV50}, nv50_vmm_new, false, 0x0200 },\n\t.kind = nv50_mmu_kind,\n\t.kind_sys = true,\n};\n\nint\ng84_mmu_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t    struct nvkm_mmu **pmmu)\n{\n\treturn nvkm_mmu_new_(&g84_mmu, device, type, inst, pmmu);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

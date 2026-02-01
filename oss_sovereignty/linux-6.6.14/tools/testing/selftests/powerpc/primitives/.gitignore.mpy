@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "3f55b2f7ff951d23d3c61b6184a8ed0d3bb797abf3a57841cad09014aed75c46",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/primitives/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nload_unaligned_zeropad\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sgx.h",
+  "hash_id": "45a683b0a4df9793b5342c6834c6a5fe0db27733b758560d8227b55e6c5b0d40",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kvm/vmx/sgx.h",
+  "human_readable_source": " \n#ifndef __KVM_X86_SGX_H\n#define __KVM_X86_SGX_H\n\n#include <linux/kvm_host.h>\n\n#include \"capabilities.h\"\n#include \"vmx_ops.h\"\n\n#ifdef CONFIG_X86_SGX_KVM\nextern bool __read_mostly enable_sgx;\n\nint handle_encls(struct kvm_vcpu *vcpu);\n\nvoid setup_default_sgx_lepubkeyhash(void);\nvoid vcpu_setup_sgx_lepubkeyhash(struct kvm_vcpu *vcpu);\n\nvoid vmx_write_encls_bitmap(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12);\n#else\n#define enable_sgx 0\n\nstatic inline void setup_default_sgx_lepubkeyhash(void) { }\nstatic inline void vcpu_setup_sgx_lepubkeyhash(struct kvm_vcpu *vcpu) { }\n\nstatic inline void vmx_write_encls_bitmap(struct kvm_vcpu *vcpu,\n\t\t\t\t\t  struct vmcs12 *vmcs12)\n{\n\t \n\tif (cpu_has_vmx_encls_vmexit())\n\t\tvmcs_write64(ENCLS_EXITING_BITMAP, -1ull);\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

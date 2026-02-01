@@ -1,0 +1,9 @@
+{
+  "module_name": "cgroup_iter.c",
+  "hash_id": "4b773ccf4a56abd45c8f13f7894d51decbffcf1e89b2d201fb691fc20d001477",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/cgroup_iter.c",
+  "human_readable_source": "\n \n\n#include \"bpf_iter.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\nint terminate_early = 0;\nu64 terminal_cgroup = 0;\n\nstatic inline u64 cgroup_id(struct cgroup *cgrp)\n{\n\treturn cgrp->kn->id;\n}\n\nSEC(\"iter/cgroup\")\nint cgroup_id_printer(struct bpf_iter__cgroup *ctx)\n{\n\tstruct seq_file *seq = ctx->meta->seq;\n\tstruct cgroup *cgrp = ctx->cgroup;\n\n\t \n\tif (cgrp == NULL) {\n\t\tBPF_SEQ_PRINTF(seq, \"epilogue\\n\");\n\t\treturn 0;\n\t}\n\n\t \n\tif (ctx->meta->seq_num == 0)\n\t\tBPF_SEQ_PRINTF(seq, \"prologue\\n\");\n\n\tBPF_SEQ_PRINTF(seq, \"%8llu\\n\", cgroup_id(cgrp));\n\n\tif (terminal_cgroup == cgroup_id(cgrp))\n\t\treturn 1;\n\n\treturn terminate_early ? 1 : 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

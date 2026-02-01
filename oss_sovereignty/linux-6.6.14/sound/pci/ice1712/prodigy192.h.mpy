@@ -1,0 +1,9 @@
+{
+  "module_name": "prodigy192.h",
+  "hash_id": "e369e6ee30de78741b2b1f3022efa35d71dfcfd51b0aa6f78607bdbd41108ebb",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ice1712/prodigy192.h",
+  "human_readable_source": " \n#ifndef __SOUND_PRODIGY192_H\n#define __SOUND_PRODIGY192_H\n\n#define PRODIGY192_DEVICE_DESC \t       \"{AudioTrak,Prodigy 192},\"\n#define PRODIGY192_STAC9460_ADDR\t0x54\n\n#define VT1724_SUBDEVICE_PRODIGY192VE\t 0x34495345\t \n \n#define VT1724_PRODIGY192_CS\t(1 << 8)\t \n#define VT1724_PRODIGY192_CCLK\t(1 << 9)\t \n#define VT1724_PRODIGY192_CDOUT\t(1 << 10)\t \n#define VT1724_PRODIGY192_CDIN\t(1 << 11)\t \n\nextern struct snd_ice1712_card_info  snd_vt1724_prodigy192_cards[];\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

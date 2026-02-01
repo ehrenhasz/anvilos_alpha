@@ -1,0 +1,9 @@
+{
+  "module_name": "checkundef.sh",
+  "hash_id": "2f47e75eb3aea8eb9da15c27ca352a650ccc52ccee401f2f1649e3e71a3639fd",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/vdso/checkundef.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\nnm=\"$1\"\nfile=\"$2\"\n$nm \"$file\" | grep '^ *U' > /dev/null 2>&1\nif [ $? -eq 1 ]; then\n    exit 0\nelse\n    echo \"$file: undefined symbols found\" >&2\n    exit 1\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

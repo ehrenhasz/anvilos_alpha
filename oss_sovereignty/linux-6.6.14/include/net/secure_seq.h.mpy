@@ -1,0 +1,9 @@
+{
+  "module_name": "secure_seq.h",
+  "hash_id": "4b944b7731da4c1772405bc7c3598d6e5694abd21b49ab2ec43e386a03cfc7a3",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/secure_seq.h",
+  "human_readable_source": " \n#ifndef _NET_SECURE_SEQ\n#define _NET_SECURE_SEQ\n\n#include <linux/types.h>\n\nstruct net;\n\nu64 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport);\nu64 secure_ipv6_port_ephemeral(const __be32 *saddr, const __be32 *daddr,\n\t\t\t       __be16 dport);\nu32 secure_tcp_seq(__be32 saddr, __be32 daddr,\n\t\t   __be16 sport, __be16 dport);\nu32 secure_tcp_ts_off(const struct net *net, __be32 saddr, __be32 daddr);\nu32 secure_tcpv6_seq(const __be32 *saddr, const __be32 *daddr,\n\t\t     __be16 sport, __be16 dport);\nu32 secure_tcpv6_ts_off(const struct net *net,\n\t\t\tconst __be32 *saddr, const __be32 *daddr);\nu64 secure_dccp_sequence_number(__be32 saddr, __be32 daddr,\n\t\t\t\t__be16 sport, __be16 dport);\nu64 secure_dccpv6_sequence_number(__be32 *saddr, __be32 *daddr,\n\t\t\t\t  __be16 sport, __be16 dport);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

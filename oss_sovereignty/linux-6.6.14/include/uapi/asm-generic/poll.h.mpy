@@ -1,0 +1,9 @@
+{
+  "module_name": "poll.h",
+  "hash_id": "717ab69a52c71d294926ede9a98082da8b4d368f16294ea50d2344ff7764adea",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/asm-generic/poll.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_POLL_H\n#define __ASM_GENERIC_POLL_H\n\n \n#define POLLIN\t\t0x0001\n#define POLLPRI\t\t0x0002\n#define POLLOUT\t\t0x0004\n#define POLLERR\t\t0x0008\n#define POLLHUP\t\t0x0010\n#define POLLNVAL\t0x0020\n\n \n#define POLLRDNORM\t0x0040\n#define POLLRDBAND\t0x0080\n#ifndef POLLWRNORM\n#define POLLWRNORM\t0x0100\n#endif\n#ifndef POLLWRBAND\n#define POLLWRBAND\t0x0200\n#endif\n#ifndef POLLMSG\n#define POLLMSG\t\t0x0400\n#endif\n#ifndef POLLREMOVE\n#define POLLREMOVE\t0x1000\n#endif\n#ifndef POLLRDHUP\n#define POLLRDHUP       0x2000\n#endif\n\n#define POLLFREE\t(__force __poll_t)0x4000\n\n#define POLL_BUSY_LOOP\t(__force __poll_t)0x8000\n\nstruct pollfd {\n\tint fd;\n\tshort events;\n\tshort revents;\n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "win32_curses.h",
+  "hash_id": "244f512bc911cf16c45dc20e47c1198bfc7247f166d3dd21ecc19b36e72153cc",
+  "original_prompt": "Ingested from ncurses-6.4/include/win32_curses.h",
+  "human_readable_source": " \n\n \n\n \n\n \n\n#if (defined(_WIN32) || defined(_WIN64))\n#ifndef _NC_WIN32_CURSES_H\n#define _NC_WIN32_CURSES_H 1\n\nstruct winconmode\n{\n  unsigned long dwFlagIn;\n  unsigned long dwFlagOut;\n};\n\nextern NCURSES_EXPORT(void*) _nc_console_fd2handle(int fd);\nextern NCURSES_EXPORT(int)   _nc_console_setmode(void* handle, const struct winconmode* arg);\nextern NCURSES_EXPORT(int)   _nc_console_getmode(void* handle, struct winconmode* arg);\nextern NCURSES_EXPORT(int)   _nc_console_flush(void* handle);\n\n \n#define SIGHUP  1\n#define SIGKILL 9\n\n#undef  getlogin\n#define getlogin() getenv(\"USERNAME\")\n\n#undef  ttyname\n#define ttyname(fd) NULL\n\n#undef sleep\n#define sleep(n) Sleep((n) * 1000)\n\n#undef gettimeofday\n#define gettimeofday(tv,tz) _nc_gettimeofday(tv,tz)\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

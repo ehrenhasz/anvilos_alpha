@@ -1,0 +1,9 @@
+{
+  "module_name": "osdep_service.h",
+  "hash_id": "e90a2027e0b0b3382cd8d8e6baa3f57bd1e370bd541ec18daf2b013aee0c5878",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/osdep_service.h",
+  "human_readable_source": " \n \n#ifndef __OSDEP_SERVICE_H_\n#define __OSDEP_SERVICE_H_\n\n#define _SUCCESS\t1\n#define _FAIL\t\t0\n\n#include <linux/spinlock.h>\n\n#include <linux/interrupt.h>\n#include <linux/semaphore.h>\n#include <linux/sched/signal.h>\n#include <linux/sem.h>\n#include <linux/netdevice.h>\n#include <linux/etherdevice.h>\n#include <net/iw_handler.h>\n#include <linux/proc_fs.h>       \n\n#include \"basic_types.h\"\n\nstruct\t__queue\t{\n\tstruct\tlist_head\tqueue;\n\tspinlock_t lock;\n};\n\n#define _pkt struct sk_buff\n#define _buffer unsigned char\n\n#define _init_queue(pqueue)\t\t\t\t\\\n\tdo {\t\t\t\t\t\t\\\n\t\tINIT_LIST_HEAD(&((pqueue)->queue));\t\\\n\t\tspin_lock_init(&((pqueue)->lock));\t\\\n\t} while (0)\n\nstatic inline u32 end_of_queue_search(struct list_head *head,\n\t\t\t\t      struct list_head *plist)\n{\n\treturn (head == plist);\n}\n\nstatic inline void flush_signals_thread(void)\n{\n\tif (signal_pending(current))\n\t\tflush_signals(current);\n}\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

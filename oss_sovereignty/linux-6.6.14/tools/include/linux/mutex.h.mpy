@@ -1,0 +1,9 @@
+{
+  "module_name": "mutex.h",
+  "hash_id": "eb140d6843cd39e95e3682a6a83f896adf6d8c0662ec153177e032e5455b5cec",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/mutex.h",
+  "human_readable_source": "#ifndef _TOOLS_INCLUDE_LINUX_MUTEX_H\n#define _TOOLS_INCLUDE_LINUX_MUTEX_H\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

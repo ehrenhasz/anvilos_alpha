@@ -1,0 +1,9 @@
+{
+  "module_name": "entry-common.h",
+  "hash_id": "94a5329ccb21dcc021a47a69fb15bcf5a000b3d3975ef7851eb915c649d43ccc",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/entry-common.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_ENTRY_COMMON_H\n#define _ASM_X86_ENTRY_COMMON_H\n\n#include <linux/randomize_kstack.h>\n#include <linux/user-return-notifier.h>\n\n#include <asm/nospec-branch.h>\n#include <asm/io_bitmap.h>\n#include <asm/fpu/api.h>\n\n \nstatic __always_inline void arch_enter_from_user_mode(struct pt_regs *regs)\n{\n\tif (IS_ENABLED(CONFIG_DEBUG_ENTRY)) {\n\t\t \n\t\tunsigned long flags = native_save_fl();\n\t\tunsigned long mask = X86_EFLAGS_DF | X86_EFLAGS_NT;\n\n\t\t \n\t\tif (cpu_feature_enabled(X86_FEATURE_SMAP) ||\n\t\t    cpu_feature_enabled(X86_FEATURE_XENPV))\n\t\t\tmask |= X86_EFLAGS_AC;\n\n\t\tWARN_ON_ONCE(flags & mask);\n\n\t\t \n\t\tWARN_ON_ONCE(!user_mode(regs));\n\n\t\t \n\t\tWARN_ON_ONCE(!on_thread_stack());\n\t\tWARN_ON_ONCE(regs != task_pt_regs(current));\n\t}\n}\n#define arch_enter_from_user_mode arch_enter_from_user_mode\n\nstatic inline void arch_exit_to_user_mode_prepare(struct pt_regs *regs,\n\t\t\t\t\t\t  unsigned long ti_work)\n{\n\tif (ti_work & _TIF_USER_RETURN_NOTIFY)\n\t\tfire_user_return_notifiers();\n\n\tif (unlikely(ti_work & _TIF_IO_BITMAP))\n\t\ttss_update_io_bitmap();\n\n\tfpregs_assert_state_consistent();\n\tif (unlikely(ti_work & _TIF_NEED_FPU_LOAD))\n\t\tswitch_fpu_return();\n\n#ifdef CONFIG_COMPAT\n\t \n\tcurrent_thread_info()->status &= ~(TS_COMPAT | TS_I386_REGS_POKED);\n#endif\n\n\t \n\tchoose_random_kstack_offset(rdtsc() & 0xFF);\n}\n#define arch_exit_to_user_mode_prepare arch_exit_to_user_mode_prepare\n\nstatic __always_inline void arch_exit_to_user_mode(void)\n{\n\tmds_user_clear_cpu_buffers();\n\tamd_clear_divider();\n}\n#define arch_exit_to_user_mode arch_exit_to_user_mode\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "armada-37xx-rwtm-mailbox.h",
+  "hash_id": "4e85bdb1a8e91dba01cbf2c6694f36e60c94fa32abe2b5271d1306c9a3ac8c1a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/armada-37xx-rwtm-mailbox.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_ARMADA_37XX_RWTM_MAILBOX_H_\n#define _LINUX_ARMADA_37XX_RWTM_MAILBOX_H_\n\n#include <linux/types.h>\n\nstruct armada_37xx_rwtm_tx_msg {\n\tu16 command;\n\tu32 args[16];\n};\n\nstruct armada_37xx_rwtm_rx_msg {\n\tu32 retval;\n\tu32 status[16];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

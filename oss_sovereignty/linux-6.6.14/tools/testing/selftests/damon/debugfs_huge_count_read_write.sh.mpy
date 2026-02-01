@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs_huge_count_read_write.sh",
+  "hash_id": "4387ac75bf2b4853c8e06881831269beb50d44e75d6e85d97bb8da916f11911b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/damon/debugfs_huge_count_read_write.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nsource _debugfs_common.sh\n\n# Test huge count read write\n# ==========================\n\ndmesg -C\n\nfor file in \"$DBGFS/\"*\ndo\n\t./huge_count_read_write \"$file\"\ndone\n\nif dmesg | grep -q WARNING\nthen\n\tdmesg\n\texit 1\nelse\n\texit 0\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

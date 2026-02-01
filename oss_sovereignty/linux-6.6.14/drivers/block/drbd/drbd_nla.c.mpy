@@ -1,0 +1,9 @@
+{
+  "module_name": "drbd_nla.c",
+  "hash_id": "3c3528364c73b67658a765e4382f2553ebb6b8774776e810bf2ccb1f6c8706ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/block/drbd/drbd_nla.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <net/netlink.h>\n#include <linux/drbd_genl_api.h>\n#include \"drbd_nla.h\"\n\nstatic int drbd_nla_check_mandatory(int maxtype, struct nlattr *nla)\n{\n\tstruct nlattr *head = nla_data(nla);\n\tint len = nla_len(nla);\n\tint rem;\n\n\t \n\n\tnla_for_each_attr(nla, head, len, rem) {\n\t\tif (nla->nla_type & DRBD_GENLA_F_MANDATORY) {\n\t\t\tnla->nla_type &= ~DRBD_GENLA_F_MANDATORY;\n\t\t\tif (nla_type(nla) > maxtype)\n\t\t\t\treturn -EOPNOTSUPP;\n\t\t}\n\t}\n\treturn 0;\n}\n\nint drbd_nla_parse_nested(struct nlattr *tb[], int maxtype, struct nlattr *nla,\n\t\t\t  const struct nla_policy *policy)\n{\n\tint err;\n\n\terr = drbd_nla_check_mandatory(maxtype, nla);\n\tif (!err)\n\t\terr = nla_parse_nested_deprecated(tb, maxtype, nla, policy,\n\t\t\t\t\t\t  NULL);\n\n\treturn err;\n}\n\nstruct nlattr *drbd_nla_find_nested(int maxtype, struct nlattr *nla, int attrtype)\n{\n\tint err;\n\t \n\terr = drbd_nla_check_mandatory(maxtype, nla);\n\tif (err)\n\t\treturn ERR_PTR(err);\n\treturn nla_find_nested(nla, attrtype);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

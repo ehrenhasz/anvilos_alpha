@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8135dfb4063b26bd28b5a9bfe89a9a6dbcd1e38d313e045e619374df1ce27e37",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/spear/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# SPEAr Clock specific Makefile\n#\n\nobj-y\t+= clk.o clk-aux-synth.o clk-frac-synth.o clk-gpt-synth.o clk-vco-pll.o\n\nobj-$(CONFIG_ARCH_SPEAR3XX)\t+= spear3xx_clock.o\nobj-$(CONFIG_ARCH_SPEAR6XX)\t+= spear6xx_clock.o\nobj-$(CONFIG_MACH_SPEAR1310)\t+= spear1310_clock.o\nobj-$(CONFIG_MACH_SPEAR1340)\t+= spear1340_clock.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

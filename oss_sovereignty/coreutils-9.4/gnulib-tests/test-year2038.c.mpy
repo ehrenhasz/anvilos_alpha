@@ -1,0 +1,9 @@
+{
+  "module_name": "test-year2038.c",
+  "hash_id": "b75ae9c0425691215295c0a2af7c62d6d473652f70eaabd76be46c591574ebf4",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-year2038.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#include <sys/types.h>\n#include \"intprops.h\"\n\n \n\nint\nmain (void)\n{\n   \n  return TYPE_MAXIMUM (time_t) >> 31 == 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

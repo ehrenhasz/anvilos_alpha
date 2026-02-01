@@ -1,0 +1,9 @@
+{
+  "module_name": "arc4.h",
+  "hash_id": "17d90b978e7fb620cba7b14bcf0649cee809ed9833ae6dba769bd139dcbd5bf3",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/arc4.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYPTO_ARC4_H\n#define _CRYPTO_ARC4_H\n\n#include <linux/types.h>\n\n#define ARC4_MIN_KEY_SIZE\t1\n#define ARC4_MAX_KEY_SIZE\t256\n#define ARC4_BLOCK_SIZE\t\t1\n\nstruct arc4_ctx {\n\tu32 S[256];\n\tu32 x, y;\n};\n\nint arc4_setkey(struct arc4_ctx *ctx, const u8 *in_key, unsigned int key_len);\nvoid arc4_crypt(struct arc4_ctx *ctx, u8 *out, const u8 *in, unsigned int len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "corgi_lcd.h",
+  "hash_id": "c80ecad47fdb50396d92fc198c2dfaaab473a53014ff76f40ad83ae06f3e36a9",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/corgi_lcd.h",
+  "human_readable_source": " \n#ifndef __LINUX_SPI_CORGI_LCD_H\n#define __LINUX_SPI_CORGI_LCD_H\n\n#define CORGI_LCD_MODE_QVGA\t1\n#define CORGI_LCD_MODE_VGA\t2\n\nstruct corgi_lcd_platform_data {\n\tint\tinit_mode;\n\tint\tmax_intensity;\n\tint\tdefault_intensity;\n\tint\tlimit_mask;\n\n\tvoid (*notify)(int intensity);\n\tvoid (*kick_battery)(void);\n};\n\nvoid corgi_lcd_limit_intensity(int limit);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

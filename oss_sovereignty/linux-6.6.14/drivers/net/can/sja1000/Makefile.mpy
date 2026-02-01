@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "aa771a23bbf0a505fb737199b4e2101c576a24ba3b56f6a313dae394e2cb7d29",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/sja1000/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n#  Makefile for the SJA1000 CAN controller drivers.\n#\n\nobj-$(CONFIG_CAN_EMS_PCI) += ems_pci.o\nobj-$(CONFIG_CAN_EMS_PCMCIA) += ems_pcmcia.o\nobj-$(CONFIG_CAN_F81601) += f81601.o\nobj-$(CONFIG_CAN_KVASER_PCI) += kvaser_pci.o\nobj-$(CONFIG_CAN_PEAK_PCI) += peak_pci.o\nobj-$(CONFIG_CAN_PEAK_PCMCIA) += peak_pcmcia.o\nobj-$(CONFIG_CAN_PLX_PCI) += plx_pci.o\nobj-$(CONFIG_CAN_SJA1000) += sja1000.o\nobj-$(CONFIG_CAN_SJA1000_ISA) += sja1000_isa.o\nobj-$(CONFIG_CAN_SJA1000_PLATFORM) += sja1000_platform.o\nobj-$(CONFIG_CAN_TSCAN1) += tscan1.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

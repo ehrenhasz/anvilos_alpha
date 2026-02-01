@@ -1,0 +1,9 @@
+{
+  "module_name": "volt.h",
+  "hash_id": "08219d136f98f0306846a978c50264ac83cd8fe56b7c125112a72d637a947864",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/volt.h",
+  "human_readable_source": " \n#ifndef __NVKM_VOLT_H__\n#define __NVKM_VOLT_H__\n#include <core/subdev.h>\n\nstruct nvkm_volt {\n\tconst struct nvkm_volt_func *func;\n\tstruct nvkm_subdev subdev;\n\n\tu8 vid_mask;\n\tu8 vid_nr;\n\tstruct {\n\t\tu32 uv;\n\t\tu8 vid;\n\t} vid[256];\n\n\tu32 max_uv;\n\tu32 min_uv;\n\n\t \n\tu8 max0_id;\n\tu8 max1_id;\n\tu8 max2_id;\n\n\tint speedo;\n};\n\nint nvkm_volt_map(struct nvkm_volt *volt, u8 id, u8 temperature);\nint nvkm_volt_map_min(struct nvkm_volt *volt, u8 id);\nint nvkm_volt_get(struct nvkm_volt *);\nint nvkm_volt_set_id(struct nvkm_volt *, u8 id, u8 min_id, u8 temp,\n\t\t     int condition);\n\nint nv40_volt_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_volt **);\nint gf100_volt_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_volt **);\nint gf117_volt_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_volt **);\nint gk104_volt_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_volt **);\nint gk20a_volt_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_volt **);\nint gm20b_volt_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_volt **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

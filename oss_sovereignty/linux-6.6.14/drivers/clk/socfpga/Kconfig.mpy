@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b614d08e2c5f57c7adb19951c2902ccc797ad90d9e004d98a282db55522a3f9e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/socfpga/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig CLK_INTEL_SOCFPGA\n\tbool \"Intel SoCFPGA family clock support\" if COMPILE_TEST && !ARCH_INTEL_SOCFPGA\n\tdefault ARCH_INTEL_SOCFPGA\n\thelp\n\t  Support for the clock controllers present on Intel SoCFPGA and eASIC\n\t  devices like Aria, Cyclone, Stratix 10, Agilex and N5X eASIC.\n\nif CLK_INTEL_SOCFPGA\n\nconfig CLK_INTEL_SOCFPGA32\n\tbool \"Intel Aria / Cyclone clock controller support\" if COMPILE_TEST && (!ARM || !ARCH_INTEL_SOCFPGA)\n\tdefault ARM && ARCH_INTEL_SOCFPGA\n\nconfig CLK_INTEL_SOCFPGA64\n\tbool \"Intel Stratix / Agilex / N5X clock controller support\" if COMPILE_TEST && (!ARM64 || !ARCH_INTEL_SOCFPGA)\n\tdefault ARM64 && ARCH_INTEL_SOCFPGA\n\nendif # CLK_INTEL_SOCFPGA\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

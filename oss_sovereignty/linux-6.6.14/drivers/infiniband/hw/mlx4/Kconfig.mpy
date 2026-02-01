@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "daab3ea8686acec6d0617a276249e58bfa510fed39f1e748d1e83cbf020c6f01",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/mlx4/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig MLX4_INFINIBAND\n\ttristate \"Mellanox ConnectX HCA support\"\n\tdepends on NETDEVICES && ETHERNET && PCI && INET\n\tselect NET_VENDOR_MELLANOX\n\tselect MLX4_CORE\n\thelp\n\t  This driver provides low-level InfiniBand support for\n\t  Mellanox ConnectX PCI Express host channel adapters (HCAs).\n\t  This is required to use InfiniBand protocols such as\n\t  IP-over-IB or SRP with these devices.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

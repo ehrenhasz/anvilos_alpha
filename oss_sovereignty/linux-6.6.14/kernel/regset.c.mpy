@@ -1,0 +1,9 @@
+{
+  "module_name": "regset.c",
+  "hash_id": "ed86009b2d13e57a721d1020c90de30d3b3f83061d69f9d9ca6d1bc5e91e8fdb",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/regset.c",
+  "human_readable_source": "\n#include <linux/export.h>\n#include <linux/slab.h>\n#include <linux/regset.h>\n\nstatic int __regset_get(struct task_struct *target,\n\t\t\tconst struct user_regset *regset,\n\t\t\tunsigned int size,\n\t\t\tvoid **data)\n{\n\tvoid *p = *data, *to_free = NULL;\n\tint res;\n\n\tif (!regset->regset_get)\n\t\treturn -EOPNOTSUPP;\n\tif (size > regset->n * regset->size)\n\t\tsize = regset->n * regset->size;\n\tif (!p) {\n\t\tto_free = p = kzalloc(size, GFP_KERNEL);\n\t\tif (!p)\n\t\t\treturn -ENOMEM;\n\t}\n\tres = regset->regset_get(target, regset,\n\t\t\t   (struct membuf){.p = p, .left = size});\n\tif (res < 0) {\n\t\tkfree(to_free);\n\t\treturn res;\n\t}\n\t*data = p;\n\treturn size - res;\n}\n\nint regset_get(struct task_struct *target,\n\t       const struct user_regset *regset,\n\t       unsigned int size,\n\t       void *data)\n{\n\treturn __regset_get(target, regset, size, &data);\n}\nEXPORT_SYMBOL(regset_get);\n\nint regset_get_alloc(struct task_struct *target,\n\t\t     const struct user_regset *regset,\n\t\t     unsigned int size,\n\t\t     void **data)\n{\n\t*data = NULL;\n\treturn __regset_get(target, regset, size, data);\n}\nEXPORT_SYMBOL(regset_get_alloc);\n\n \nint copy_regset_to_user(struct task_struct *target,\n\t\t\tconst struct user_regset_view *view,\n\t\t\tunsigned int setno,\n\t\t\tunsigned int offset, unsigned int size,\n\t\t\tvoid __user *data)\n{\n\tconst struct user_regset *regset = &view->regsets[setno];\n\tvoid *buf;\n\tint ret;\n\n\tret = regset_get_alloc(target, regset, size, &buf);\n\tif (ret > 0)\n\t\tret = copy_to_user(data, buf, ret) ? -EFAULT : 0;\n\tkfree(buf);\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

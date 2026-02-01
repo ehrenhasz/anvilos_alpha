@@ -1,0 +1,9 @@
+{
+  "module_name": "gm20b.c",
+  "hash_id": "3d79d58966d828c16c7b4dd3d474f2c24ae69021be8e06ae648a7ee090454353",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bar/gm20b.c",
+  "human_readable_source": " \n#include \"gf100.h\"\n\nstatic const struct nvkm_bar_func\ngm20b_bar_func = {\n\t.dtor = gf100_bar_dtor,\n\t.oneinit = gf100_bar_oneinit,\n\t.bar1.init = gf100_bar_bar1_init,\n\t.bar1.wait = gm107_bar_bar1_wait,\n\t.bar1.vmm = gf100_bar_bar1_vmm,\n\t.flush = g84_bar_flush,\n};\n\nint\ngm20b_bar_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_bar **pbar)\n{\n\tint ret = gf100_bar_new_(&gm20b_bar_func, device, type, inst, pbar);\n\tif (ret == 0)\n\t\t(*pbar)->iomap_uncached = true;\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

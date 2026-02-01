@@ -1,0 +1,9 @@
+{
+  "module_name": "sockmap_parse_prog.c",
+  "hash_id": "845a8e041b594dfeb36f478196ab94090115b597cc511fa3069068008b663365",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/sockmap_parse_prog.c",
+  "human_readable_source": "#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n\nSEC(\"sk_skb1\")\nint bpf_prog1(struct __sk_buff *skb)\n{\n\tvoid *data_end = (void *)(long) skb->data_end;\n\tvoid *data = (void *)(long) skb->data;\n\t__u8 *d = data;\n\tint err;\n\n\tif (data + 10 > data_end) {\n\t\terr = bpf_skb_pull_data(skb, 10);\n\t\tif (err)\n\t\t\treturn SK_DROP;\n\n\t\tdata_end = (void *)(long)skb->data_end;\n\t\tdata = (void *)(long)skb->data;\n\t\tif (data + 10 > data_end)\n\t\t\treturn SK_DROP;\n\t}\n\n\t \n\td = data;\n\td[7] = 1;\n\treturn skb->len;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

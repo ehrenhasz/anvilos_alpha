@@ -1,0 +1,9 @@
+{
+  "module_name": "setuid-allowed.c",
+  "hash_id": "f400ebc834639aa7574b6d009bd03fbeddc56b1eccf49acdc5bdb9c794cb9c74",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/setuid-allowed.c",
+  "human_readable_source": " \n\n \n\n#include \"includes.h\"\n\n#include <sys/types.h>\n#ifdef HAVE_SYS_STATVFS_H\n# include <sys/statvfs.h>\n#endif\n#include <stdlib.h>\n#include <stdio.h>\n#include <string.h>\n#include <errno.h>\n\nstatic void\nusage(void)\n{\n\tfprintf(stderr, \"check-setuid [path]\\n\");\n\texit(1);\n}\n\nint\nmain(int argc, char **argv)\n{\n\tconst char *path = \".\";\n\tstruct statvfs sb;\n\n\tif (argc > 2)\n\t\tusage();\n\telse if (argc == 2)\n\t\tpath = argv[1];\n\n\tif (statvfs(path, &sb) != 0) {\n\t\t \n\t\tif (errno == ENOSYS)\n\t\t\treturn 0;\n\t\tfprintf(stderr, \"statvfs for \\\"%s\\\" failed: %s\\n\",\n\t\t     path, strerror(errno));\n\t}\n\treturn (sb.f_flag & ST_NOSUID) ? 1 : 0;\n}\n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

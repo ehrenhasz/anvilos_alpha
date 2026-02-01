@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8f2019d187d6c9cf1db007db9fb9e774edc0d4c9500dd9e16459f2cf19dc9306",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/typec/mux/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_TYPEC_MUX_FSA4480)\t\t+= fsa4480.o\nobj-$(CONFIG_TYPEC_MUX_GPIO_SBU)\t+= gpio-sbu-mux.o\nobj-$(CONFIG_TYPEC_MUX_PI3USB30532)\t+= pi3usb30532.o\nobj-$(CONFIG_TYPEC_MUX_INTEL_PMC)\t+= intel_pmc_mux.o\nobj-$(CONFIG_TYPEC_MUX_NB7VPQ904M)\t+= nb7vpq904m.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

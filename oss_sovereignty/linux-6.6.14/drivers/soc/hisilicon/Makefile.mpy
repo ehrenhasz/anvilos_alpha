@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0a9fd4e64a44e9ca86b6e96298d9b839a078e2b3c80c00e6fe39bd22e897a628",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/hisilicon/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_KUNPENG_HCCS)\t+= kunpeng_hccs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

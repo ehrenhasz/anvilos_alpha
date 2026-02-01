@@ -1,0 +1,9 @@
+{
+  "module_name": "cap.h",
+  "hash_id": "8a0af84b3fb56bed25d5fe52165352f6ed0a279a7246c86d8e1d44140760f111",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/cap.h",
+  "human_readable_source": " \n#ifndef __PERF_CAP_H\n#define __PERF_CAP_H\n\n#include <stdbool.h>\n#include <linux/capability.h>\n#include <linux/compiler.h>\n\n#ifdef HAVE_LIBCAP_SUPPORT\n\n#include <sys/capability.h>\n\nbool perf_cap__capable(cap_value_t cap);\n\n#else\n\n#include <unistd.h>\n#include <sys/types.h>\n\nstatic inline bool perf_cap__capable(int cap __maybe_unused)\n{\n\treturn geteuid() == 0;\n}\n\n#endif  \n\n \n#ifndef CAP_SYSLOG\n#define CAP_SYSLOG\t34\n#endif\n\n#ifndef CAP_PERFMON\n#define CAP_PERFMON\t38\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

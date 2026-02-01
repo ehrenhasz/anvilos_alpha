@@ -1,0 +1,9 @@
+{
+  "module_name": "slab.c",
+  "hash_id": "7869c27b1cd72ff73116cfb235cb978d4f9a77e5b0b5210fc4914c5cd973398a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/memblock/lib/slab.c",
+  "human_readable_source": "\n#include <linux/slab.h>\n\nenum slab_state slab_state;\n\nbool slab_is_available(void)\n{\n\treturn slab_state >= UP;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

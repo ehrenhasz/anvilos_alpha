@@ -1,0 +1,9 @@
+{
+  "module_name": "mrlock.h",
+  "hash_id": "0a4bf38a7c11144d712faf6410fa14a9e0a46f9755eecc0f3bed2148fa9d8478",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/mrlock.h",
+  "human_readable_source": "\n \n#ifndef __XFS_SUPPORT_MRLOCK_H__\n#define __XFS_SUPPORT_MRLOCK_H__\n\n#include <linux/rwsem.h>\n\ntypedef struct {\n\tstruct rw_semaphore\tmr_lock;\n#if defined(DEBUG) || defined(XFS_WARN)\n\tint\t\t\tmr_writer;\n#endif\n} mrlock_t;\n\n#if defined(DEBUG) || defined(XFS_WARN)\n#define mrinit(mrp, name)\t\\\n\tdo { (mrp)->mr_writer = 0; init_rwsem(&(mrp)->mr_lock); } while (0)\n#else\n#define mrinit(mrp, name)\t\\\n\tdo { init_rwsem(&(mrp)->mr_lock); } while (0)\n#endif\n\n#define mrlock_init(mrp, t,n,s)\tmrinit(mrp, n)\n#define mrfree(mrp)\t\tdo { } while (0)\n\nstatic inline void mraccess_nested(mrlock_t *mrp, int subclass)\n{\n\tdown_read_nested(&mrp->mr_lock, subclass);\n}\n\nstatic inline void mrupdate_nested(mrlock_t *mrp, int subclass)\n{\n\tdown_write_nested(&mrp->mr_lock, subclass);\n#if defined(DEBUG) || defined(XFS_WARN)\n\tmrp->mr_writer = 1;\n#endif\n}\n\nstatic inline int mrtryaccess(mrlock_t *mrp)\n{\n\treturn down_read_trylock(&mrp->mr_lock);\n}\n\nstatic inline int mrtryupdate(mrlock_t *mrp)\n{\n\tif (!down_write_trylock(&mrp->mr_lock))\n\t\treturn 0;\n#if defined(DEBUG) || defined(XFS_WARN)\n\tmrp->mr_writer = 1;\n#endif\n\treturn 1;\n}\n\nstatic inline void mrunlock_excl(mrlock_t *mrp)\n{\n#if defined(DEBUG) || defined(XFS_WARN)\n\tmrp->mr_writer = 0;\n#endif\n\tup_write(&mrp->mr_lock);\n}\n\nstatic inline void mrunlock_shared(mrlock_t *mrp)\n{\n\tup_read(&mrp->mr_lock);\n}\n\nstatic inline void mrdemote(mrlock_t *mrp)\n{\n#if defined(DEBUG) || defined(XFS_WARN)\n\tmrp->mr_writer = 0;\n#endif\n\tdowngrade_write(&mrp->mr_lock);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

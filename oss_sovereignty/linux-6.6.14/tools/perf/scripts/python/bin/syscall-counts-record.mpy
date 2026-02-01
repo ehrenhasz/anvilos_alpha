@@ -1,0 +1,9 @@
+{
+  "module_name": "syscall-counts-record",
+  "hash_id": "7ddc18ccd4727f521e00a6c4b90253c6370133883c19f8ca322d4993cbd71b3c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/syscall-counts-record",
+  "human_readable_source": "#!/bin/bash\n(perf record -e raw_syscalls:sys_enter $@ || \\\n perf record -e syscalls:sys_enter $@) 2> /dev/null\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

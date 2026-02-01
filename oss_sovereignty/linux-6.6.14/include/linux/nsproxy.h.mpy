@@ -1,0 +1,9 @@
+{
+  "module_name": "nsproxy.h",
+  "hash_id": "29865b0519713d01dcdb21b259deb73ccaf10caaee438564c684b89d0999b154",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/nsproxy.h",
+  "human_readable_source": " \n#ifndef _LINUX_NSPROXY_H\n#define _LINUX_NSPROXY_H\n\n#include <linux/spinlock.h>\n#include <linux/sched.h>\n\nstruct mnt_namespace;\nstruct uts_namespace;\nstruct ipc_namespace;\nstruct pid_namespace;\nstruct cgroup_namespace;\nstruct fs_struct;\n\n \nstruct nsproxy {\n\trefcount_t count;\n\tstruct uts_namespace *uts_ns;\n\tstruct ipc_namespace *ipc_ns;\n\tstruct mnt_namespace *mnt_ns;\n\tstruct pid_namespace *pid_ns_for_children;\n\tstruct net \t     *net_ns;\n\tstruct time_namespace *time_ns;\n\tstruct time_namespace *time_ns_for_children;\n\tstruct cgroup_namespace *cgroup_ns;\n};\nextern struct nsproxy init_nsproxy;\n\n \nstruct nsset {\n\tunsigned flags;\n\tstruct nsproxy *nsproxy;\n\tstruct fs_struct *fs;\n\tconst struct cred *cred;\n};\n\nstatic inline struct cred *nsset_cred(struct nsset *set)\n{\n\tif (set->flags & CLONE_NEWUSER)\n\t\treturn (struct cred *)set->cred;\n\n\treturn NULL;\n}\n\n \n\nint copy_namespaces(unsigned long flags, struct task_struct *tsk);\nvoid exit_task_namespaces(struct task_struct *tsk);\nvoid switch_task_namespaces(struct task_struct *tsk, struct nsproxy *new);\nint exec_task_namespaces(void);\nvoid free_nsproxy(struct nsproxy *ns);\nint unshare_nsproxy_namespaces(unsigned long, struct nsproxy **,\n\tstruct cred *, struct fs_struct *);\nint __init nsproxy_cache_init(void);\n\nstatic inline void put_nsproxy(struct nsproxy *ns)\n{\n\tif (refcount_dec_and_test(&ns->count))\n\t\tfree_nsproxy(ns);\n}\n\nstatic inline void get_nsproxy(struct nsproxy *ns)\n{\n\trefcount_inc(&ns->count);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

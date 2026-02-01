@@ -1,0 +1,9 @@
+{
+  "module_name": "nlrsetjmp.c",
+  "hash_id": "ad6f4c717d46f50eb534ba0fe74dda46efdecf88231cf5c1bab218eb137b058c",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/nlrsetjmp.c",
+  "human_readable_source": " \n\n#include \"py/mpstate.h\"\n\n#if MICROPY_NLR_SETJMP\n\nvoid nlr_jump(void *val) {\n    MP_NLR_JUMP_HEAD(val, top);\n    longjmp(top->jmpbuf, 1);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "aureon.h",
+  "hash_id": "ad00fe0a5c426aa223abd40904f4c16c4958638fa8c3ece8932b3ab7faec4462",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/ice1712/aureon.h",
+  "human_readable_source": " \n#ifndef __SOUND_AUREON_H\n#define __SOUND_AUREON_H\n\n       \n\n#define  AUREON_DEVICE_DESC \t       \"{Terratec,Aureon 5.1 Sky},\"\\\n\t\t\t\t       \"{Terratec,Aureon 7.1 Space},\"\\\n\t\t\t\t       \"{Terratec,Aureon 7.1 Universe},\" \\\n\t\t\t\t\t\"{AudioTrak,Prodigy 7.1},\" \\\n\t\t\t\t\t\"{AudioTrak,Prodigy 7.1 LT},\"\\\n\t\t\t\t\t\"{AudioTrak,Prodigy 7.1 XT},\"\n\n#define VT1724_SUBDEVICE_AUREON51_SKY\t0x3b154711\t \n#define VT1724_SUBDEVICE_AUREON71_SPACE\t0x3b154511\t \n#define VT1724_SUBDEVICE_AUREON71_UNIVERSE\t0x3b155311\t \n#define VT1724_SUBDEVICE_PRODIGY71\t0x33495345\t \n#define VT1724_SUBDEVICE_PRODIGY71LT\t0x32315441\t \n#define VT1724_SUBDEVICE_PRODIGY71XT\t0x36315441\t \n\nextern struct snd_ice1712_card_info  snd_vt1724_aureon_cards[];\n\n \n#define AUREON_CS8415_CS\t(1 << 22)\n#define AUREON_SPI_MISO\t\t(1 << 21)\n#define AUREON_WM_RESET\t\t(1 << 20)\n#define AUREON_SPI_CLK\t\t(1 << 19)\n#define AUREON_SPI_MOSI\t\t(1 << 18)\n#define AUREON_WM_RW\t\t(1 << 17)\n#define AUREON_AC97_RESET\t(1 << 16)\n#define AUREON_DIGITAL_SEL1\t(1 << 15)\n#define AUREON_HP_SEL\t\t(1 << 14)\n#define AUREON_WM_CS\t\t(1 << 12)\n#define AUREON_AC97_COMMIT\t(1 << 11)\n#define AUREON_AC97_ADDR\t(1 << 10)\n#define AUREON_AC97_DATA_LOW\t(1 << 9)\n#define AUREON_AC97_DATA_HIGH\t(1 << 8)\n#define AUREON_AC97_DATA_MASK\t0xFF\n\n#define PRODIGY_WM_CS\t\t(1 << 8)\n#define PRODIGY_SPI_MOSI\t(1 << 10)\n#define PRODIGY_SPI_CLK\t\t(1 << 9)\n#define PRODIGY_HP_SEL\t\t(1 << 5)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

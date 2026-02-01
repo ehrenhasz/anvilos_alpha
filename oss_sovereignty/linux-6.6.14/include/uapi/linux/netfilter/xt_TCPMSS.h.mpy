@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_TCPMSS.h",
+  "hash_id": "b296b1aacd512c75685c2abaa8ab89fe212670854aced8d21287c60254cfc059",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_TCPMSS.h",
+  "human_readable_source": " \n#ifndef _XT_TCPMSS_H\n#define _XT_TCPMSS_H\n\n#include <linux/types.h>\n\nstruct xt_tcpmss_info {\n\t__u16 mss;\n};\n\n#define XT_TCPMSS_CLAMP_PMTU 0xffff\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vb2-trace.c",
+  "hash_id": "6f8ef27232392db2142059ddcb7db04adcf20534254070aca53a6fd3cb8e146a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/common/videobuf2/vb2-trace.c",
+  "human_readable_source": "\n#include <media/videobuf2-core.h>\n\n#define CREATE_TRACE_POINTS\n#include <trace/events/vb2.h>\n\nEXPORT_TRACEPOINT_SYMBOL_GPL(vb2_buf_done);\nEXPORT_TRACEPOINT_SYMBOL_GPL(vb2_buf_queue);\nEXPORT_TRACEPOINT_SYMBOL_GPL(vb2_dqbuf);\nEXPORT_TRACEPOINT_SYMBOL_GPL(vb2_qbuf);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

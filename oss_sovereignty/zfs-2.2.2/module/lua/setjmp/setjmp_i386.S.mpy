@@ -1,0 +1,9 @@
+{
+  "module_name": "setjmp_i386.S",
+  "hash_id": "001ae05cfd0e10ca5fb0b9acbb7db91a1e0fea8bfb85188d047acf6dbc283a1f",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/setjmp/setjmp_i386.S",
+  "human_readable_source": " \n\n \n\n#define\tENTRY(x) \\\n\t.text; \\\n\t.balign\t8; \\\n\t.globl\tx; \\\n\t.type\tx, @function; \\\nx:\n\n#define\tSET_SIZE(x) \\\n\t.size\tx, [.-x]\n\n \n#ifdef __i386__\n\n\tENTRY(setjmp)\t\t\t \n\tmovl\t%ebp, 0(%eax)\t\t \n\tmovl\t%ebx, 4(%eax)\t\t \n\tmovl\t%esi, 8(%eax)\t\t \n\tmovl\t%edi, 12(%eax)\t\t \n\tmovl\t%esp, 16(%eax)\t\t \n\tmovl\t(%esp), %ecx\t\t \n\tmovl\t%ecx, 20(%eax)\t\t \n\tsubl\t%eax, %eax\t\t \n\tret\n\tSET_SIZE(setjmp)\n\n\tENTRY(longjmp)\t\t\t \n\tmovl\t0(%eax), %ebp\t\t \n\tmovl\t4(%eax), %ebx\t\t \n\tmovl\t8(%eax), %esi\t\t \n\tmovl\t12(%eax), %edi\t\t \n\tmovl\t16(%eax), %esp\t\t \n\tmovl\t20(%eax), %ecx\t\t \n\taddl\t$4, %esp\t\t \n\tjmp\t*%ecx\t\t\t \n\tSET_SIZE(longjmp)\n\n#ifdef __ELF__\n.section .note.GNU-stack,\"\",%progbits\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

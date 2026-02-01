@@ -1,0 +1,9 @@
+{
+  "module_name": "cdc-wdm.h",
+  "hash_id": "621822c0e8e8405215462178d35b42ffce449e3ede407b9a5d85c0904877739f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/cdc-wdm.h",
+  "human_readable_source": "\n \n\n#ifndef __LINUX_USB_CDC_WDM_H\n#define __LINUX_USB_CDC_WDM_H\n\n#include <linux/wwan.h>\n#include <uapi/linux/usb/cdc-wdm.h>\n\nextern struct usb_driver *usb_cdc_wdm_register(struct usb_interface *intf,\n\t\t\t\t\tstruct usb_endpoint_descriptor *ep,\n\t\t\t\t\tint bufsize, enum wwan_port_type type,\n\t\t\t\t\tint (*manage_power)(struct usb_interface *, int));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

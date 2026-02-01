@@ -1,0 +1,9 @@
+{
+  "module_name": "reboot.c",
+  "hash_id": "20ecdb8f8b625b67581928093c5a5d5899f1746eb639350bf5354a5a2d7f4d66",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/reboot.c",
+  "human_readable_source": "\n\n#define pr_fmt(fmt) \"ACPI: \" fmt\n\n#include <linux/pci.h>\n#include <linux/acpi.h>\n#include <acpi/reboot.h>\n#include <linux/delay.h>\n\n#ifdef CONFIG_PCI\nstatic void acpi_pci_reboot(struct acpi_generic_address *rr, u8 reset_value)\n{\n\tunsigned int devfn;\n\tstruct pci_bus *bus0;\n\n\t \n\tbus0 = pci_find_bus(0, 0);\n\tif (!bus0)\n\t\treturn;\n\t \n\tdevfn = PCI_DEVFN((rr->address >> 32) & 0xffff,\n\t\t\t  (rr->address >> 16) & 0xffff);\n\tpr_debug(\"Resetting with ACPI PCI RESET_REG.\\n\");\n\t \n\tpci_bus_write_config_byte(bus0, devfn,\n\t\t\t(rr->address & 0xffff), reset_value);\n}\n#else\nstatic inline void acpi_pci_reboot(struct acpi_generic_address *rr,\n\t\t\t\t   u8 reset_value)\n{\n\tpr_warn_once(\"PCI configuration space access is not supported\\n\");\n}\n#endif\n\nvoid acpi_reboot(void)\n{\n\tstruct acpi_generic_address *rr;\n\tu8 reset_value;\n\n\tif (acpi_disabled)\n\t\treturn;\n\n\trr = &acpi_gbl_FADT.reset_register;\n\n\t \n\n\tif (acpi_gbl_FADT.header.revision < 2)\n\t\treturn;\n\n\t \n\tif (!(acpi_gbl_FADT.flags & ACPI_FADT_RESET_REGISTER))\n\t\treturn;\n\n\treset_value = acpi_gbl_FADT.reset_value;\n\n\t \n\tswitch (rr->space_id) {\n\tcase ACPI_ADR_SPACE_PCI_CONFIG:\n\t\tacpi_pci_reboot(rr, reset_value);\n\t\tbreak;\n\n\tcase ACPI_ADR_SPACE_SYSTEM_MEMORY:\n\tcase ACPI_ADR_SPACE_SYSTEM_IO:\n\t\tpr_debug(\"ACPI MEMORY or I/O RESET_REG.\\n\");\n\t\tacpi_reset();\n\t\tbreak;\n\t}\n\n\t \n\tmdelay(15);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

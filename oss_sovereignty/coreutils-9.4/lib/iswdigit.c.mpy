@@ -1,0 +1,9 @@
+{
+  "module_name": "iswdigit.c",
+  "hash_id": "38ef2b496b6d65a1599bf2669df3ff81e39e80f66c6f991f52495377234ab139",
+  "original_prompt": "Ingested from coreutils-9.4/lib/iswdigit.c",
+  "human_readable_source": " \n#include <wctype.h>\n\nint\niswdigit (wint_t wc)\n{\n  return wc >= '0' && wc <= '9';\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

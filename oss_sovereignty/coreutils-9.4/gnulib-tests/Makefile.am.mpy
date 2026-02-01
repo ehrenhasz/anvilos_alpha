@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "7c2a29021d9946c5f47953268781787948661e94cf337d5bcbdf5dbba03558a9",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/Makefile.am",
+  "human_readable_source": "include gnulib.mk\n\nAM_CFLAGS = $(GNULIB_TEST_WARN_CFLAGS) $(WERROR_CFLAGS)\n\n# A few tests are inherently warning-evoking.\n# In the typical case where we use -Werror, exempt the few offenders.\n\n# test-xvasprintf.c: In function 'test_xasprintf':\n# test-xvasprintf.c:100: error: format not a string literal and no \\\n#   format arguments [-Wformat-security]\ntest_xvasprintf_CFLAGS = $(AM_CFLAGS) \\\n  `test -n '$(WERROR_CFLAGS)' && echo ' -Wno-format-security'`\n\n# test-lock.c: In function 'lock_mutator_thread':\n# test-lock.c:148: error: cast from function call of type 'pthread_t' to \\\n#   non-matching type 'void *' [-Wbad-function-cast]\ntest_lock_CFLAGS = $(AM_CFLAGS) \\\n  `test -n '$(WERROR_CFLAGS)' && echo ' -Wno-bad-function-cast'`\ntest_tls_CFLAGS = $(AM_CFLAGS) \\\n  `test -n '$(WERROR_CFLAGS)' && echo ' -Wno-bad-function-cast'`\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

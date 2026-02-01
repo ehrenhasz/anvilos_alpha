@@ -1,0 +1,9 @@
+{
+  "module_name": "1680x1050.S",
+  "hash_id": "64f8f306fcc0375c0350a379b64e9911c37dc8466f7c0ee28db72a399a60cbe6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/edid/1680x1050.S",
+  "human_readable_source": " \n\n \n#define VERSION 1\n#define REVISION 3\n\n \n#define CLOCK 146250  \n#define XPIX 1680\n#define YPIX 1050\n#define XY_RATIO XY_RATIO_16_10\n#define XBLANK 560\n#define YBLANK 39\n#define XOFFSET 104\n#define XPULSE 176\n#define YOFFSET 3\n#define YPULSE 6\n#define DPI 96\n#define VFREQ 60  \n#define TIMING_NAME \"Linux WSXGA\"\n \n#define HSYNC_POL 1\n#define VSYNC_POL 1\n\n#include \"edid.S\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

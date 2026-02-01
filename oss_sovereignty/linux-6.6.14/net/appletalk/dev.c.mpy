@@ -1,0 +1,9 @@
+{
+  "module_name": "dev.c",
+  "hash_id": "b7a5e76d93950828b08ccb26c4a73e308ea6aeed0121ea070939a1c1e980be81",
+  "original_prompt": "Ingested from linux-6.6.14/net/appletalk/dev.c",
+  "human_readable_source": "\n \n\n#include <linux/errno.h>\n#include <linux/module.h>\n#include <linux/netdevice.h>\n#include <linux/if_arp.h>\n#include <linux/if_ltalk.h>\n\nstatic void ltalk_setup(struct net_device *dev)\n{\n\t \n\n\tdev->type\t\t= ARPHRD_LOCALTLK;\n\tdev->hard_header_len \t= LTALK_HLEN;\n\tdev->mtu\t\t= LTALK_MTU;\n\tdev->addr_len\t\t= LTALK_ALEN;\n\tdev->tx_queue_len\t= 10;\n\n\tdev->broadcast[0]\t= 0xFF;\n\n\tdev->flags\t\t= IFF_BROADCAST|IFF_MULTICAST|IFF_NOARP;\n}\n\n \n\nstruct net_device *alloc_ltalkdev(int sizeof_priv)\n{\n\treturn alloc_netdev(sizeof_priv, \"lt%d\", NET_NAME_UNKNOWN,\n\t\t\t    ltalk_setup);\n}\nEXPORT_SYMBOL(alloc_ltalkdev);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

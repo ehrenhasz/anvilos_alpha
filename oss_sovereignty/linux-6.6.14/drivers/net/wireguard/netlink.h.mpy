@@ -1,0 +1,9 @@
+{
+  "module_name": "netlink.h",
+  "hash_id": "3376da124edaf0195aaee34cb0706c468a92ac2e9e24c385dc0344732c5d6fe4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireguard/netlink.h",
+  "human_readable_source": " \n \n\n#ifndef _WG_NETLINK_H\n#define _WG_NETLINK_H\n\nint wg_genetlink_init(void);\nvoid wg_genetlink_uninit(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

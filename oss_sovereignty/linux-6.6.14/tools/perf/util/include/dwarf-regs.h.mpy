@@ -1,0 +1,9 @@
+{
+  "module_name": "dwarf-regs.h",
+  "hash_id": "ca445f1b25f67d65960858829bbcf2129b682d26e7814a98986bdfa7d8876b25",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/include/dwarf-regs.h",
+  "human_readable_source": " \n#ifndef _PERF_DWARF_REGS_H_\n#define _PERF_DWARF_REGS_H_\n\n#ifdef HAVE_DWARF_SUPPORT\nconst char *get_arch_regstr(unsigned int n);\n \nconst char *get_dwarf_regstr(unsigned int n, unsigned int machine);\n#endif\n\n#ifdef HAVE_ARCH_REGS_QUERY_REGISTER_OFFSET\n \nint regs_query_register_offset(const char *name);\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

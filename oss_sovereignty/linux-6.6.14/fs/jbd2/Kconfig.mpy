@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "511d11406dfcad20177dd88a2da7fd95d5ed708b0969cc2a5171a1bcf625354d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/jbd2/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig JBD2\n\ttristate\n\tselect CRC32\n\tselect CRYPTO\n\tselect CRYPTO_CRC32C\n\thelp\n\t  This is a generic journaling layer for block devices that support\n\t  both 32-bit and 64-bit block numbers.  It is currently used by\n\t  the ext4 and OCFS2 filesystems, but it could also be used to add\n\t  journal support to other file systems or block devices such\n\t  as RAID or LVM.\n\n\t  If you are using ext4 or OCFS2, you need to say Y here.\n\t  If you are not using ext4 or OCFS2 then you will\n\t  probably want to say N.\n\n\t  To compile this device as a module, choose M here. The module will be\n\t  called jbd2.  If you are compiling ext4 or OCFS2 into the kernel,\n\t  you cannot compile this code as a module.\n\nconfig JBD2_DEBUG\n\tbool \"JBD2 (ext4) debugging support\"\n\tdepends on JBD2\n\thelp\n\t  If you are using the ext4 journaled file system (or\n\t  potentially any other filesystem/device using JBD2), this option\n\t  allows you to enable debugging output while the system is running,\n\t  in order to help track down any problems you are having.\n\t  By default, the debugging output will be turned off.\n\n\t  If you select Y here, then you will be able to turn on debugging\n\t  with \"echo N > /sys/module/jbd2/parameters/jbd2_debug\", where N is a\n\t  number between 1 and 5. The higher the number, the more debugging\n\t  output is generated.  To turn debugging off again, do\n\t  \"echo 0 > /sys/module/jbd2/parameters/jbd2_debug\".\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

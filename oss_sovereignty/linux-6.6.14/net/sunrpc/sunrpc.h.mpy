@@ -1,0 +1,9 @@
+{
+  "module_name": "sunrpc.h",
+  "hash_id": "50d693378a5527d74ad22452536eac4dcf386da81df06c6f24db748bd1ce3d59",
+  "original_prompt": "Ingested from linux-6.6.14/net/sunrpc/sunrpc.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _NET_SUNRPC_SUNRPC_H\n#define _NET_SUNRPC_SUNRPC_H\n\n#include <linux/net.h>\n\n \nstruct rpc_buffer {\n\tsize_t\tlen;\n\tchar\tdata[];\n};\n\nstatic inline int sock_is_loopback(struct sock *sk)\n{\n\tstruct dst_entry *dst;\n\tint loopback = 0;\n\trcu_read_lock();\n\tdst = rcu_dereference(sk->sk_dst_cache);\n\tif (dst && dst->dev &&\n\t    (dst->dev->features & NETIF_F_LOOPBACK))\n\t\tloopback = 1;\n\trcu_read_unlock();\n\treturn loopback;\n}\n\nint rpc_clients_notifier_register(void);\nvoid rpc_clients_notifier_unregister(void);\nvoid auth_domain_cleanup(void);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ivc.h",
+  "hash_id": "cd50c95ccd80b276ea8fd649d1a8d373f04b61a2b269cb823609a5a2be4b4240",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/tegra/ivc.h",
+  "human_readable_source": " \n \n\n#ifndef __TEGRA_IVC_H\n#define __TEGRA_IVC_H\n\n#include <linux/device.h>\n#include <linux/dma-mapping.h>\n#include <linux/iosys-map.h>\n#include <linux/types.h>\n\nstruct tegra_ivc_header;\n\nstruct tegra_ivc {\n\tstruct device *peer;\n\n\tstruct {\n\t\tstruct iosys_map map;\n\t\tunsigned int position;\n\t\tdma_addr_t phys;\n\t} rx, tx;\n\n\tvoid (*notify)(struct tegra_ivc *ivc, void *data);\n\tvoid *notify_data;\n\n\tunsigned int num_frames;\n\tsize_t frame_size;\n};\n\n \nint tegra_ivc_read_get_next_frame(struct tegra_ivc *ivc, struct iosys_map *map);\n\n \nint tegra_ivc_read_advance(struct tegra_ivc *ivc);\n\n \nint tegra_ivc_write_get_next_frame(struct tegra_ivc *ivc, struct iosys_map *map);\n\n \nint tegra_ivc_write_advance(struct tegra_ivc *ivc);\n\n \nint tegra_ivc_notified(struct tegra_ivc *ivc);\n\n \nvoid tegra_ivc_reset(struct tegra_ivc *ivc);\n\nsize_t tegra_ivc_align(size_t size);\nunsigned tegra_ivc_total_queue_size(unsigned queue_size);\nint tegra_ivc_init(struct tegra_ivc *ivc, struct device *peer, const struct iosys_map *rx,\n\t\t   dma_addr_t rx_phys, const struct iosys_map *tx, dma_addr_t tx_phys,\n\t\t   unsigned int num_frames, size_t frame_size,\n\t\t   void (*notify)(struct tegra_ivc *ivc, void *data),\n\t\t   void *data);\nvoid tegra_ivc_cleanup(struct tegra_ivc *ivc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

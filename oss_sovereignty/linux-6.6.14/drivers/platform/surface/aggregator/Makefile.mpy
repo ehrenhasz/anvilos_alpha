@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e7be9fe8aa243516e9d728b68bbbf9888806c8864a382cea42abfc3ee4e2114f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/surface/aggregator/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n# Copyright (C) 2019-2022 Maximilian Luz <luzmaximilian@gmail.com>\n\n# For include/trace/define_trace.h to include trace.h\nCFLAGS_core.o = -I$(src)\n\nobj-$(CONFIG_SURFACE_AGGREGATOR) += surface_aggregator.o\n\nsurface_aggregator-y := core.o\nsurface_aggregator-y += ssh_parser.o\nsurface_aggregator-y += ssh_packet_layer.o\nsurface_aggregator-y += ssh_request_layer.o\nsurface_aggregator-$(CONFIG_SURFACE_AGGREGATOR_BUS) += bus.o\nsurface_aggregator-y += controller.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ipa_modem.h",
+  "hash_id": "04ec510d9ac57fab058bde4876a61a464c164d8a94e048523feeef40de62dde1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ipa/ipa_modem.h",
+  "human_readable_source": " \n\n \n#ifndef _IPA_MODEM_H_\n#define _IPA_MODEM_H_\n\nstruct ipa;\nstruct net_device;\nstruct sk_buff;\n\nint ipa_modem_start(struct ipa *ipa);\nint ipa_modem_stop(struct ipa *ipa);\n\nvoid ipa_modem_skb_rx(struct net_device *netdev, struct sk_buff *skb);\n\nvoid ipa_modem_suspend(struct net_device *netdev);\nvoid ipa_modem_resume(struct net_device *netdev);\n\nint ipa_modem_config(struct ipa *ipa);\nvoid ipa_modem_deconfig(struct ipa *ipa);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

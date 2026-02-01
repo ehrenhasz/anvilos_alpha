@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4533d8f21a1119148eb6b57daf8de9eb1201f5cab085bc8d9796c3413bd59b6d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vidtv/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DVB_VIDTV\n\ttristate \"Virtual DVB Driver (vidtv)\"\n\tdepends on DVB_CORE && MEDIA_SUPPORT && I2C\n\thelp\n\t  The virtual DVB test driver serves as a reference DVB driver and helps\n\t  validate the existing APIs in the media subsystem. It can also aid developers\n\t  working on userspace applications.\n\n\t  When in doubt, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

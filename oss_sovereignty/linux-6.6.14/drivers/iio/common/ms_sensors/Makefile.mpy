@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "66b839b31c61978005e13b10d9e0b51bfe6a077094ca94a9d9af8a46031dc2b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/common/ms_sensors/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Measurement Specialties sensor common modules.\n#\n\nobj-$(CONFIG_IIO_MS_SENSORS_I2C) += ms_sensors_i2c.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

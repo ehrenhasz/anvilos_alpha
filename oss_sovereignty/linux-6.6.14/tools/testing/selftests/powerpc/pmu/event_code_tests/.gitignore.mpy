@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "218c7389b3087f7762151b124993c6b8efda33d9422e0f6ebcbdef5ff4ec391e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/event_code_tests/.gitignore",
+  "human_readable_source": "blacklisted_events_test\nevent_alternatives_tests_p10\nevent_alternatives_tests_p9\ngeneric_events_valid_test\ngroup_constraint_cache_test\ngroup_constraint_l2l3_sel_test\ngroup_constraint_mmcra_sample_test\ngroup_constraint_pmc56_test\ngroup_constraint_pmc_count_test\ngroup_constraint_radix_scope_qual_test\ngroup_constraint_repeat_test\ngroup_constraint_thresh_cmp_test\ngroup_constraint_thresh_ctl_test\ngroup_constraint_thresh_sel_test\ngroup_constraint_unit_test\ngroup_pmc56_exclude_constraints_test\nhw_cache_event_type_test\ninvalid_event_code_test\nreserved_bits_mmcra_sample_elig_mode_test\nreserved_bits_mmcra_thresh_ctl_test\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cam.h",
+  "hash_id": "a6154e52e68f564a6e2acd583c7ecb20ffc22eee487ef76d02421caf3646d45e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/cam.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL_CAM_H_\n#define __RTL_CAM_H_\n\n#define CAM_CONTENT_COUNT\t\t\t\t8\n\n#define CFG_VALID\t\t\t\t\tBIT(15)\n\n#define PAIRWISE_KEYIDX\t\t\t\t\t0\n#define CAM_PAIRWISE_KEY_POSITION\t\t\t4\n\n#define\tCAM_CONFIG_NO_USEDK\t\t\t\t0\n\nvoid rtl_cam_reset_all_entry(struct ieee80211_hw *hw);\nu8 rtl_cam_add_one_entry(struct ieee80211_hw *hw, u8 *mac_addr,\n\t\t\t\tu32 ul_key_id, u32 ul_entry_idx, u32 ul_enc_alg,\n\t\t\t\tu32 ul_default_key, u8 *key_content);\nint rtl_cam_delete_one_entry(struct ieee80211_hw *hw, u8 *mac_addr,\n\t\t\t     u32 ul_key_id);\nvoid rtl_cam_mark_invalid(struct ieee80211_hw *hw, u8 uc_index);\nvoid rtl_cam_empty_entry(struct ieee80211_hw *hw, u8 uc_index);\nvoid rtl_cam_reset_sec_info(struct ieee80211_hw *hw);\nu8 rtl_cam_get_free_entry(struct ieee80211_hw *hw, u8 *sta_addr);\nvoid rtl_cam_del_entry(struct ieee80211_hw *hw, u8 *sta_addr);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

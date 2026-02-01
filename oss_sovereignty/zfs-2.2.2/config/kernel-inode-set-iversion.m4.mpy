@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-inode-set-iversion.m4",
+  "hash_id": "c8c06229881dc5940179ccf58f1f2904986ccc4bdd91d72ef3a2f32f9e554c62",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-inode-set-iversion.m4",
+  "human_readable_source": "dnl #\ndnl # 4.16 API change\ndnl # inode_set_iversion introduced to set i_version\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_INODE_SET_IVERSION], [\n\tZFS_LINUX_TEST_SRC([inode_set_iversion], [\n\t\t#include <linux/iversion.h>\n\t],[\n\t\tstruct inode inode;\n\t\tinode_set_iversion(&inode, 1);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_INODE_SET_IVERSION], [\n\tAC_MSG_CHECKING([whether inode_set_iversion() exists])\n\tZFS_LINUX_TEST_RESULT([inode_set_iversion], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_INODE_SET_IVERSION, 1,\n\t\t    [inode_set_iversion() exists])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

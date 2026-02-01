@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e09f27c10c87c607bac0c8170c5ee5fced21d812ba964e04b1aa68a57104ca7f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/broadcom/bnx2x/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for Broadcom 10-Gigabit ethernet driver\n#\n\nobj-$(CONFIG_BNX2X) += bnx2x.o\n\nbnx2x-y := bnx2x_main.o bnx2x_link.o bnx2x_cmn.o bnx2x_ethtool.o bnx2x_stats.o bnx2x_dcb.o bnx2x_sp.o bnx2x_self_test.o\nbnx2x-$(CONFIG_BNX2X_SRIOV) += bnx2x_vfpf.o bnx2x_sriov.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

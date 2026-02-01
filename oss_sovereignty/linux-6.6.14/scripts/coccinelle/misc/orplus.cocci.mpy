@@ -1,0 +1,9 @@
+{
+  "module_name": "orplus.cocci",
+  "hash_id": "7bae7a9ba4810079120eef143b0b0c370a2492050622987676942eef0fe70d71",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/misc/orplus.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0-only\n/// Check for constants that are added but are used elsewhere as bitmasks\n/// The results should be checked manually to ensure that the nonzero\n/// bits in the two constants are actually disjoint.\n///\n// Confidence: Moderate\n// Copyright: (C) 2013 Julia Lawall, INRIA/LIP6.\n// Copyright: (C) 2013 Gilles Muller, INRIA/LIP6.\n// URL: https://coccinelle.gitlabpages.inria.fr/website\n// Comments:\n// Options: --no-includes --include-headers\n\nvirtual org\nvirtual report\nvirtual context\n\n@r@\nconstant c,c1;\nidentifier i,i1;\nposition p;\n@@\n\n(\n c1 + c - 1\n|\n c1@i1 +@p c@i\n)\n\n@s@\nconstant r.c, r.c1;\nidentifier i;\nexpression e;\n@@\n\n(\ne | c@i\n|\ne & c@i\n|\ne |= c@i\n|\ne &= c@i\n|\ne | c1@i\n|\ne & c1@i\n|\ne |= c1@i\n|\ne &= c1@i\n)\n\n@depends on s@\nposition r.p;\nconstant c1,c2;\n@@\n\n* c1 +@p c2\n\n@script:python depends on s && org@\np << r.p;\n@@\n\ncocci.print_main(\"sum of probable bitmasks, consider |\",p)\n\n@script:python depends on s && report@\np << r.p;\n@@\n\nmsg = \"WARNING: sum of probable bitmasks, consider |\"\ncoccilib.report.print_report(p[0],msg)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "orangefs-bufmap.h",
+  "hash_id": "dd73929671ec912de17c791238aaa52440fda5473240fda82c89951b6ae4703a",
+  "original_prompt": "Ingested from linux-6.6.14/fs/orangefs/orangefs-bufmap.h",
+  "human_readable_source": " \n \n\n#ifndef __ORANGEFS_BUFMAP_H\n#define __ORANGEFS_BUFMAP_H\n\nint orangefs_bufmap_size_query(void);\n\nint orangefs_bufmap_shift_query(void);\n\nint orangefs_bufmap_initialize(struct ORANGEFS_dev_map_desc *user_desc);\n\nvoid orangefs_bufmap_finalize(void);\n\nvoid orangefs_bufmap_run_down(void);\n\nint orangefs_bufmap_get(void);\n\nvoid orangefs_bufmap_put(int buffer_index);\n\nint orangefs_readdir_index_get(void);\n\nvoid orangefs_readdir_index_put(int buffer_index);\n\nint orangefs_bufmap_copy_from_iovec(struct iov_iter *iter,\n\t\t\t\tint buffer_index,\n\t\t\t\tsize_t size);\n\nint orangefs_bufmap_copy_to_iovec(struct iov_iter *iter,\n\t\t\t      int buffer_index,\n\t\t\t      size_t size);\n\nvoid orangefs_bufmap_page_fill(void *kaddr, int buffer_index, int slot_index);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

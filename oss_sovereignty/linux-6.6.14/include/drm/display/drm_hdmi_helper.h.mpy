@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_hdmi_helper.h",
+  "hash_id": "609af266fea6d77309659ed8ebc5ad076c2f45786b4f8afebd50ce6ab1c090b5",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/display/drm_hdmi_helper.h",
+  "human_readable_source": " \n\n#ifndef DRM_HDMI_HELPER\n#define DRM_HDMI_HELPER\n\n#include <linux/hdmi.h>\n\nstruct drm_connector;\nstruct drm_connector_state;\nstruct drm_display_mode;\n\nvoid\ndrm_hdmi_avi_infoframe_colorimetry(struct hdmi_avi_infoframe *frame,\n\t\t\t\t   const struct drm_connector_state *conn_state);\n\nvoid\ndrm_hdmi_avi_infoframe_bars(struct hdmi_avi_infoframe *frame,\n\t\t\t    const struct drm_connector_state *conn_state);\n\nint\ndrm_hdmi_infoframe_set_hdr_metadata(struct hdmi_drm_infoframe *frame,\n\t\t\t\t    const struct drm_connector_state *conn_state);\n\nvoid drm_hdmi_avi_infoframe_content_type(struct hdmi_avi_infoframe *frame,\n\t\t\t\t\t const struct drm_connector_state *conn_state);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "urandom_read_aux.c",
+  "hash_id": "e090a4bf15b0dd47842fea1ac039a5c97e81c2edbca464ce2b767e07facee7d5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/urandom_read_aux.c",
+  "human_readable_source": "\n \n#include \"sdt.h\"\n\nvoid urand_read_without_sema(int iter_num, int iter_cnt, int read_sz)\n{\n\t \n\tSTAP_PROBE3(urand, read_without_sema, iter_num, iter_cnt, read_sz);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

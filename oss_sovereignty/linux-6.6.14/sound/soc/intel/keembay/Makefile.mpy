@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "85ec7676c81d7e646bb3a88238289729f4e8e1dee7d8223a5dfc217c35391411",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/keembay/Makefile",
+  "human_readable_source": "snd-soc-kmb_platform-objs := \\\n\t        kmb_platform.o\n\nobj-$(CONFIG_SND_SOC_INTEL_KEEMBAY) += snd-soc-kmb_platform.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

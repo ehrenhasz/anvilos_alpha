@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a5d5f9aee03b93887f5c54f036d6b7eb61ff215e6250eda5bb7a16f8264fe1f6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/i825xx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Intel 82586/82593/82596 chipset device drivers.\n#\n\nobj-$(CONFIG_ARM_ETHER1) += ether1.o\nobj-$(CONFIG_SUN3_82586) += sun3_82586.o\nobj-$(CONFIG_LASI_82596) += lasi_82596.o\nobj-$(CONFIG_SNI_82596) += sni_82596.o\nobj-$(CONFIG_MVME16x_NET) += 82596.o\nobj-$(CONFIG_BVME6000_NET) += 82596.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

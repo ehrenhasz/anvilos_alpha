@@ -1,0 +1,9 @@
+{
+  "module_name": "double_span.h",
+  "hash_id": "fa4d5181957dd77781221cfe474b0d2cffcba591b36cad8dfaf3fcf95572af9a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/iommufd/double_span.h",
+  "human_readable_source": " \n \n#ifndef __IOMMUFD_DOUBLE_SPAN_H\n#define __IOMMUFD_DOUBLE_SPAN_H\n\n#include <linux/interval_tree.h>\n\n \nstruct interval_tree_double_span_iter {\n\tstruct rb_root_cached *itrees[2];\n\tstruct interval_tree_span_iter spans[2];\n\tunion {\n\t\tunsigned long start_hole;\n\t\tunsigned long start_used;\n\t};\n\tunion {\n\t\tunsigned long last_hole;\n\t\tunsigned long last_used;\n\t};\n\t \n\tint is_used;\n};\n\nvoid interval_tree_double_span_iter_update(\n\tstruct interval_tree_double_span_iter *iter);\nvoid interval_tree_double_span_iter_first(\n\tstruct interval_tree_double_span_iter *iter,\n\tstruct rb_root_cached *itree1, struct rb_root_cached *itree2,\n\tunsigned long first_index, unsigned long last_index);\nvoid interval_tree_double_span_iter_next(\n\tstruct interval_tree_double_span_iter *iter);\n\nstatic inline bool\ninterval_tree_double_span_iter_done(struct interval_tree_double_span_iter *state)\n{\n\treturn state->is_used == -1;\n}\n\n#define interval_tree_for_each_double_span(span, itree1, itree2, first_index, \\\n\t\t\t\t\t   last_index)                        \\\n\tfor (interval_tree_double_span_iter_first(span, itree1, itree2,       \\\n\t\t\t\t\t\t  first_index, last_index);   \\\n\t     !interval_tree_double_span_iter_done(span);                      \\\n\t     interval_tree_double_span_iter_next(span))\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mmap_default.c",
+  "hash_id": "3a5124513003f41794f93aa0e10a47d568e5e395142099fa519ea82104b822aa",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/riscv/mm/mmap_default.c",
+  "human_readable_source": "\n#include <sys/mman.h>\n#include <mmap_test.h>\n\n#include \"../../kselftest_harness.h\"\n\nTEST(default_rlimit)\n{\n\n#if __riscv_xlen == 64\n\tstruct addresses mmap_addresses;\n\n\tEXPECT_EQ(TOP_DOWN, memory_layout());\n\n\tdo_mmaps(&mmap_addresses);\n\n\tEXPECT_NE(MAP_FAILED, mmap_addresses.no_hint);\n\tEXPECT_NE(MAP_FAILED, mmap_addresses.on_37_addr);\n\tEXPECT_NE(MAP_FAILED, mmap_addresses.on_38_addr);\n\tEXPECT_NE(MAP_FAILED, mmap_addresses.on_46_addr);\n\tEXPECT_NE(MAP_FAILED, mmap_addresses.on_47_addr);\n\tEXPECT_NE(MAP_FAILED, mmap_addresses.on_55_addr);\n\tEXPECT_NE(MAP_FAILED, mmap_addresses.on_56_addr);\n\n\tEXPECT_GT(1UL << 47, (unsigned long)mmap_addresses.no_hint);\n\tEXPECT_GT(1UL << 38, (unsigned long)mmap_addresses.on_37_addr);\n\tEXPECT_GT(1UL << 38, (unsigned long)mmap_addresses.on_38_addr);\n\tEXPECT_GT(1UL << 38, (unsigned long)mmap_addresses.on_46_addr);\n\tEXPECT_GT(1UL << 47, (unsigned long)mmap_addresses.on_47_addr);\n\tEXPECT_GT(1UL << 47, (unsigned long)mmap_addresses.on_55_addr);\n\tEXPECT_GT(1UL << 56, (unsigned long)mmap_addresses.on_56_addr);\n#endif\n}\n\nTEST_HARNESS_MAIN\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

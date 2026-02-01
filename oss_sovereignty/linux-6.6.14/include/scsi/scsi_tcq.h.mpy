@@ -1,0 +1,9 @@
+{
+  "module_name": "scsi_tcq.h",
+  "hash_id": "d6c4dd96bbf1d9b1f7c077f706471f96a249dd699aeabb15134b21f7abc158f0",
+  "original_prompt": "Ingested from linux-6.6.14/include/scsi/scsi_tcq.h",
+  "human_readable_source": " \n#ifndef _SCSI_SCSI_TCQ_H\n#define _SCSI_SCSI_TCQ_H\n\n#include <linux/blkdev.h>\n#include <scsi/scsi_cmnd.h>\n#include <scsi/scsi_device.h>\n#include <scsi/scsi_host.h>\n\n#define SCSI_NO_TAG\t(-1)     \n\n\n#ifdef CONFIG_BLOCK\n \nstatic inline struct scsi_cmnd *scsi_host_find_tag(struct Scsi_Host *shost,\n\t\tint tag)\n{\n\tstruct request *req = NULL;\n\tu16 hwq;\n\n\tif (tag == SCSI_NO_TAG)\n\t\treturn NULL;\n\n\thwq = blk_mq_unique_tag_to_hwq(tag);\n\tif (hwq < shost->tag_set.nr_hw_queues) {\n\t\treq = blk_mq_tag_to_rq(shost->tag_set.tags[hwq],\n\t\t\t\t\tblk_mq_unique_tag_to_tag(tag));\n\t}\n\n\tif (!req || !blk_mq_request_started(req))\n\t\treturn NULL;\n\treturn blk_mq_rq_to_pdu(req);\n}\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

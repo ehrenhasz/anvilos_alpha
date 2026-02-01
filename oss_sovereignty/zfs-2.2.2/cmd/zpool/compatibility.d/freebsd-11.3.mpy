@@ -1,0 +1,9 @@
+{
+  "module_name": "freebsd-11.3",
+  "hash_id": "8768f92de572cba26fccd0514ec561203518ec0879c422a6124e0593ed561145",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/compatibility.d/freebsd-11.3",
+  "human_readable_source": "# Features supported by FreeBSD 11.3\nasync_destroy\nbookmarks\ndevice_removal\nembedded_data\nempty_bpobj\nenabled_txg\nextensible_dataset\nfilesystem_limits\nhole_birth\nlarge_blocks\nlz4_compress\nmulti_vdev_crash_dump\nobsolete_counts\nsha512\nskein\nspacemap_histogram\nspacemap_v2\nzpool_checkpoint\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "task-analyzer-report",
+  "hash_id": "da549ee65f29c1a1dbeb9593d2d209a0016b6c59c0cb900f5ffb10490719ee1c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/task-analyzer-report",
+  "human_readable_source": "#!/bin/bash\n# description: analyze timings of tasks\nperf script -s \"$PERF_EXEC_PATH\"/scripts/python/task-analyzer.py -- \"$@\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

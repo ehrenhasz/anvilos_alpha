@@ -1,0 +1,9 @@
+{
+  "module_name": "stackcollapse-report",
+  "hash_id": "f69a703696b69145240a3f08bafd754c983147092964a07962e10d2b16b54a8a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/stackcollapse-report",
+  "human_readable_source": "#!/bin/sh\n# description: produce callgraphs in short form for scripting use\nperf script -s \"$PERF_EXEC_PATH\"/scripts/python/stackcollapse.py \"$@\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "signum.c",
+  "hash_id": "2d324f662b3809fba34bdfc0507b80c794691ee794952b08dcd9ec469a047b6c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/signum.c",
+  "human_readable_source": "\n#include <signal.h>\n\nstatic size_t syscall_arg__scnprintf_signum(char *bf, size_t size, struct syscall_arg *arg)\n{\n\tbool show_prefix = arg->show_string_prefix;\n\tconst char *prefix = \"SIG\";\n\tint sig = arg->val;\n\n\tswitch (sig) {\n#define\tP_SIGNUM(n) case SIG##n: return scnprintf(bf, size, \"%s%s\", show_prefix ? prefix : \"\", #n)\n\tP_SIGNUM(HUP);\n\tP_SIGNUM(INT);\n\tP_SIGNUM(QUIT);\n\tP_SIGNUM(ILL);\n\tP_SIGNUM(TRAP);\n\tP_SIGNUM(ABRT);\n\tP_SIGNUM(BUS);\n\tP_SIGNUM(FPE);\n\tP_SIGNUM(KILL);\n\tP_SIGNUM(USR1);\n\tP_SIGNUM(SEGV);\n\tP_SIGNUM(USR2);\n\tP_SIGNUM(PIPE);\n\tP_SIGNUM(ALRM);\n\tP_SIGNUM(TERM);\n\tP_SIGNUM(CHLD);\n\tP_SIGNUM(CONT);\n\tP_SIGNUM(STOP);\n\tP_SIGNUM(TSTP);\n\tP_SIGNUM(TTIN);\n\tP_SIGNUM(TTOU);\n\tP_SIGNUM(URG);\n\tP_SIGNUM(XCPU);\n\tP_SIGNUM(XFSZ);\n\tP_SIGNUM(VTALRM);\n\tP_SIGNUM(PROF);\n\tP_SIGNUM(WINCH);\n\tP_SIGNUM(IO);\n\tP_SIGNUM(PWR);\n\tP_SIGNUM(SYS);\n#ifdef SIGEMT\n\tP_SIGNUM(EMT);\n#endif\n#ifdef SIGSTKFLT\n\tP_SIGNUM(STKFLT);\n#endif\n#ifdef SIGSWI\n\tP_SIGNUM(SWI);\n#endif\n\tdefault: break;\n\t}\n\n\treturn scnprintf(bf, size, \"%#x\", sig);\n}\n\n#define SCA_SIGNUM syscall_arg__scnprintf_signum\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

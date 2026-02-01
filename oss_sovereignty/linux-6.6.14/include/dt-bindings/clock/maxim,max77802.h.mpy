@@ -1,0 +1,9 @@
+{
+  "module_name": "maxim,max77802.h",
+  "hash_id": "52f4b8a51aef938df9eadf6ef7f4874c41a82bfaa5b33d165fa332f3eac36808",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/maxim,max77802.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLOCK_MAXIM_MAX77802_CLOCK_H\n#define _DT_BINDINGS_CLOCK_MAXIM_MAX77802_CLOCK_H\n\n \n\n#define MAX77802_CLK_32K_AP\t\t0\n#define MAX77802_CLK_32K_CP\t\t1\n\n \n#define MAX77802_CLKS_NUM\t\t(MAX77802_CLK_32K_CP + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

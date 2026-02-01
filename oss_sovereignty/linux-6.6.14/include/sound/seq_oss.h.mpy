@@ -1,0 +1,9 @@
+{
+  "module_name": "seq_oss.h",
+  "hash_id": "e5d90cb3f370619748e24406b7c1a5c317a47781e2c9852b7c79c0f3400df555",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/seq_oss.h",
+  "human_readable_source": " \n#ifndef __SOUND_SEQ_OSS_H\n#define __SOUND_SEQ_OSS_H\n\n \n\n#include <sound/asequencer.h>\n#include <sound/seq_kernel.h>\n\n \nstruct snd_seq_oss_arg {\n\t \n\tint app_index;\t \n\tint file_mode;\t \n\tint seq_mode;\t \n\n\t \n\tstruct snd_seq_addr addr;\t \n\tvoid *private_data;\t \n\n\t \n\tint event_passing;\n};\n\n\n \nstruct snd_seq_oss_callback {\n\tstruct module *owner;\n\tint (*open)(struct snd_seq_oss_arg *p, void *closure);\n\tint (*close)(struct snd_seq_oss_arg *p);\n\tint (*ioctl)(struct snd_seq_oss_arg *p, unsigned int cmd, unsigned long arg);\n\tint (*load_patch)(struct snd_seq_oss_arg *p, int format, const char __user *buf, int offs, int count);\n\tint (*reset)(struct snd_seq_oss_arg *p);\n\tint (*raw_event)(struct snd_seq_oss_arg *p, unsigned char *data);\n};\n\n \n#define SNDRV_SEQ_OSS_FILE_ACMODE\t\t3\n#define SNDRV_SEQ_OSS_FILE_READ\t\t1\n#define SNDRV_SEQ_OSS_FILE_WRITE\t\t2\n#define SNDRV_SEQ_OSS_FILE_NONBLOCK\t4\n\n \n#define SNDRV_SEQ_OSS_MODE_SYNTH\t\t0\n#define SNDRV_SEQ_OSS_MODE_MUSIC\t\t1\n\n \n#define SNDRV_SEQ_OSS_PROCESS_EVENTS\t0\t \n#define SNDRV_SEQ_OSS_PASS_EVENTS\t\t1\t \n#define SNDRV_SEQ_OSS_PROCESS_KEYPRESS\t2\t \n\n \n#define SNDRV_SEQ_OSS_CTRLRATE\t\t100\n\n \n#define SNDRV_SEQ_OSS_MAX_QLEN\t\t1024\n\n\n \nstruct snd_seq_oss_reg {\n\tint type;\n\tint subtype;\n\tint nvoices;\n\tstruct snd_seq_oss_callback oper;\n\tvoid *private_data;\n};\n\n \n#define SNDRV_SEQ_DEV_ID_OSS\t\t\"seq-oss\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

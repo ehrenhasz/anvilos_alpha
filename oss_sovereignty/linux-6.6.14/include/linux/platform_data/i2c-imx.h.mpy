@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-imx.h",
+  "hash_id": "33d8c700888579a7c616cdcc1525bf2d1038d2fad73384ffc3fb6ca3abd3eae4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/i2c-imx.h",
+  "human_readable_source": " \n \n\n#ifndef __ASM_ARCH_I2C_H_\n#define __ASM_ARCH_I2C_H_\n\n \nstruct imxi2c_platform_data {\n\tu32 bitrate;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

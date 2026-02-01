@@ -1,0 +1,9 @@
+{
+  "module_name": "powerpc.py",
+  "hash_id": "e97e8220038f4d7ee957c06259bfb2bddb780aeaa79c6a92d5f5a337a2cfe539",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/qemu_configs/powerpc.py",
+  "human_readable_source": "from ..qemu_config import QemuArchParams\n\nQEMU_ARCH = QemuArchParams(linux_arch='powerpc',\n\t\t\t   kconfig='''\nCONFIG_PPC64=y\nCONFIG_SERIAL_8250=y\nCONFIG_SERIAL_8250_CONSOLE=y\nCONFIG_HVC_CONSOLE=y''',\n\t\t\t   qemu_arch='ppc64',\n\t\t\t   kernel_path='vmlinux',\n\t\t\t   kernel_command_line='console=ttyS0',\n\t\t\t   extra_qemu_params=['-M', 'pseries', '-cpu', 'power8'])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "lvb_table.h",
+  "hash_id": "012fcb8eb3fbb438a7d5b0879f2cab9ab0b6b0860eda35c11de35855e4e98ae0",
+  "original_prompt": "Ingested from linux-6.6.14/fs/dlm/lvb_table.h",
+  "human_readable_source": " \n \n\n#ifndef __LVB_TABLE_DOT_H__\n#define __LVB_TABLE_DOT_H__\n\nextern const int dlm_lvb_operations[8][8];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

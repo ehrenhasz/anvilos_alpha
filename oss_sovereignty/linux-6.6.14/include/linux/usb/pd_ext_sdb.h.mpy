@@ -1,0 +1,9 @@
+{
+  "module_name": "pd_ext_sdb.h",
+  "hash_id": "641800ea16237da4494fcc1e8a0271e2c8d81f8f7ef1468f6db5d7cead72a68e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/pd_ext_sdb.h",
+  "human_readable_source": "\n \n\n#ifndef __LINUX_USB_PD_EXT_SDB_H\n#define __LINUX_USB_PD_EXT_SDB_H\n\n \nenum usb_pd_ext_sdb_fields {\n\tUSB_PD_EXT_SDB_INTERNAL_TEMP = 0,\n\tUSB_PD_EXT_SDB_PRESENT_INPUT,\n\tUSB_PD_EXT_SDB_PRESENT_BATT_INPUT,\n\tUSB_PD_EXT_SDB_EVENT_FLAGS,\n\tUSB_PD_EXT_SDB_TEMP_STATUS,\n\tUSB_PD_EXT_SDB_DATA_SIZE,\n};\n\n \n#define USB_PD_EXT_SDB_EVENT_OCP\t\tBIT(1)\n#define USB_PD_EXT_SDB_EVENT_OTP\t\tBIT(2)\n#define USB_PD_EXT_SDB_EVENT_OVP\t\tBIT(3)\n#define USB_PD_EXT_SDB_EVENT_CF_CV_MODE\t\tBIT(4)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

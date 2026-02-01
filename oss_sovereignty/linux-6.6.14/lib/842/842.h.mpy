@@ -1,0 +1,9 @@
+{
+  "module_name": "842.h",
+  "hash_id": "ad2a0dd6ae6c501a3b945e79638b90d95a399e15b3bab177b950436822ab665c",
+  "original_prompt": "Ingested from linux-6.6.14/lib/842/842.h",
+  "human_readable_source": " \n\n#ifndef __842_H__\n#define __842_H__\n\n \n\n#include <linux/module.h>\n#include <linux/kernel.h>\n#include <linux/bitops.h>\n#include <linux/crc32.h>\n#include <asm/unaligned.h>\n\n#include <linux/sw842.h>\n\n \n#define OP_REPEAT\t(0x1B)\n#define OP_ZEROS\t(0x1C)\n#define OP_END\t\t(0x1E)\n\n \n#define OP_SHORT_DATA\t(0x1D)\n\n \n#define OP_BITS\t\t(5)\n#define REPEAT_BITS\t(6)\n#define SHORT_DATA_BITS\t(3)\n#define I2_BITS\t\t(8)\n#define I4_BITS\t\t(9)\n#define I8_BITS\t\t(8)\n#define CRC_BITS\t(32)\n\n#define REPEAT_BITS_MAX\t\t(0x3f)\n#define SHORT_DATA_BITS_MAX\t(0x7)\n\n \n#define OP_ACTION\t(0x70)\n#define OP_ACTION_INDEX\t(0x10)\n#define OP_ACTION_DATA\t(0x20)\n#define OP_ACTION_NOOP\t(0x40)\n#define OP_AMOUNT\t(0x0f)\n#define OP_AMOUNT_0\t(0x00)\n#define OP_AMOUNT_2\t(0x02)\n#define OP_AMOUNT_4\t(0x04)\n#define OP_AMOUNT_8\t(0x08)\n\n#define D2\t\t(OP_ACTION_DATA  | OP_AMOUNT_2)\n#define D4\t\t(OP_ACTION_DATA  | OP_AMOUNT_4)\n#define D8\t\t(OP_ACTION_DATA  | OP_AMOUNT_8)\n#define I2\t\t(OP_ACTION_INDEX | OP_AMOUNT_2)\n#define I4\t\t(OP_ACTION_INDEX | OP_AMOUNT_4)\n#define I8\t\t(OP_ACTION_INDEX | OP_AMOUNT_8)\n#define N0\t\t(OP_ACTION_NOOP  | OP_AMOUNT_0)\n\n \n#define OPS_MAX\t\t(0x1a)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tcm_remote.h",
+  "hash_id": "c640a137baef9298348c48d33bb0bc92d2c65d566a3368b98437a548a85b6604",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/tcm_remote/tcm_remote.h",
+  "human_readable_source": " \n#include <linux/types.h>\n#include <linux/device.h>\n\n#define TCM_REMOTE_VERSION\t\t\"v0.1\"\n#define TL_WWN_ADDR_LEN\t\t\t256\n#define TL_TPGS_PER_HBA\t\t\t32\n\nstruct tcm_remote_tpg {\n\tunsigned short remote_tpgt;\n\tstruct se_portal_group remote_se_tpg;\n\tstruct tcm_remote_hba *remote_hba;\n};\n\nstruct tcm_remote_hba {\n\tu8 remote_proto_id;\n\tunsigned char remote_wwn_address[TL_WWN_ADDR_LEN];\n\tstruct tcm_remote_tpg remote_hba_tpgs[TL_TPGS_PER_HBA];\n\tstruct se_wwn remote_hba_wwn;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

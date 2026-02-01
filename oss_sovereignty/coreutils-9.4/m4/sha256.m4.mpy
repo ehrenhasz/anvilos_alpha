@@ -1,0 +1,9 @@
+{
+  "module_name": "sha256.m4",
+  "hash_id": "b0a98f17dd1355d680ba21c33c3c5672275ed21980df797594e1860911443ff7",
+  "original_prompt": "Ingested from coreutils-9.4/m4/sha256.m4",
+  "human_readable_source": "# sha256.m4 serial 8\ndnl Copyright (C) 2005, 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_SHA256],\n[\n  dnl Prerequisites of lib/sha256.c.\n  AC_REQUIRE([gl_BIGENDIAN])\n\n  dnl Determine HAVE_OPENSSL_SHA256 and LIB_CRYPTO\n  gl_CRYPTO_CHECK([SHA256])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

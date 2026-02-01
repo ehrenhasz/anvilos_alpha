@@ -1,0 +1,9 @@
+{
+  "module_name": "blacklist.h",
+  "hash_id": "3bca103ce4835ce0663abdf9d20a597ebbbed5c2e3de8d92d3a66aa2e404efb7",
+  "original_prompt": "Ingested from linux-6.6.14/certs/blacklist.h",
+  "human_readable_source": "#include <linux/kernel.h>\n#include <linux/errno.h>\n#include <crypto/pkcs7.h>\n\nextern const char __initconst *const blacklist_hashes[];\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

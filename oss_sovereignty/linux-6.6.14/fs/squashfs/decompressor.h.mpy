@@ -1,0 +1,9 @@
+{
+  "module_name": "decompressor.h",
+  "hash_id": "697e0b73047b55e8d2114d0c7a05c4436d1db7254c98a84cccb57490df1c5428",
+  "original_prompt": "Ingested from linux-6.6.14/fs/squashfs/decompressor.h",
+  "human_readable_source": " \n#ifndef DECOMPRESSOR_H\n#define DECOMPRESSOR_H\n \n\n#include <linux/bio.h>\n\nstruct squashfs_decompressor {\n\tvoid\t*(*init)(struct squashfs_sb_info *, void *);\n\tvoid\t*(*comp_opts)(struct squashfs_sb_info *, void *, int);\n\tvoid\t(*free)(void *);\n\tint\t(*decompress)(struct squashfs_sb_info *, void *,\n\t\tstruct bio *, int, int, struct squashfs_page_actor *);\n\tint\tid;\n\tchar\t*name;\n\tint\talloc_buffer;\n\tint\tsupported;\n};\n\nstatic inline void *squashfs_comp_opts(struct squashfs_sb_info *msblk,\n\t\t\t\t\t\t\tvoid *buff, int length)\n{\n\treturn msblk->decompressor->comp_opts ?\n\t\tmsblk->decompressor->comp_opts(msblk, buff, length) : NULL;\n}\n\n#ifdef CONFIG_SQUASHFS_XZ\nextern const struct squashfs_decompressor squashfs_xz_comp_ops;\n#endif\n\n#ifdef CONFIG_SQUASHFS_LZ4\nextern const struct squashfs_decompressor squashfs_lz4_comp_ops;\n#endif\n\n#ifdef CONFIG_SQUASHFS_LZO\nextern const struct squashfs_decompressor squashfs_lzo_comp_ops;\n#endif\n\n#ifdef CONFIG_SQUASHFS_ZLIB\nextern const struct squashfs_decompressor squashfs_zlib_comp_ops;\n#endif\n\n#ifdef CONFIG_SQUASHFS_ZSTD\nextern const struct squashfs_decompressor squashfs_zstd_comp_ops;\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

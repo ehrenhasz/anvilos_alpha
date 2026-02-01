@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_mmu_private.h",
+  "hash_id": "2753ddaf77d6ff8c8c657984903ea676e8d00458f08ff9afefa0dc49eb9af941",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/ia_css_mmu_private.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_MMU_PRIVATE_H\n#define __IA_CSS_MMU_PRIVATE_H\n\n#include \"system_local.h\"\n\n \nvoid\nsh_css_mmu_set_page_table_base_index(hrt_data base_index);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

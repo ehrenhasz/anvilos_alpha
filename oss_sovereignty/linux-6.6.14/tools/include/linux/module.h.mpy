@@ -1,0 +1,9 @@
+{
+  "module_name": "module.h",
+  "hash_id": "514747129474522cbf59a476d8d34649c8cae735561af248e9773808f69b942f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/module.h",
+  "human_readable_source": " \n#ifndef _LIBLOCKDEP_LINUX_MODULE_H_\n#define _LIBLOCKDEP_LINUX_MODULE_H_\n\n#define module_param(name, type, perm)\n\nstatic inline bool __is_module_percpu_address(unsigned long addr, unsigned long *can_addr)\n{\n\treturn false;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

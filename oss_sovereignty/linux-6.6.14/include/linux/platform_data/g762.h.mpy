@@ -1,0 +1,9 @@
+{
+  "module_name": "g762.h",
+  "hash_id": "b306acf2e45e93f9b70700dddccc07e6273399819bdd35df7eb023477c0fb015",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/g762.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_PLATFORM_DATA_G762_H__\n#define __LINUX_PLATFORM_DATA_G762_H__\n\n \n\nstruct g762_platform_data {\n\tu32 fan_startv;\n\tu32 fan_gear_mode;\n\tu32 pwm_polarity;\n\tu32 clk_freq;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pxa2xx-i2s.h",
+  "hash_id": "87a95731f99aba2f453b90b42e60ce7056d887f05013f2d6e910bcf9d352f3c4",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/pxa/pxa2xx-i2s.h",
+  "human_readable_source": " \n \n\n#ifndef _PXA2XX_I2S_H\n#define _PXA2XX_I2S_H\n\n \n#define PXA2XX_I2S_SYSCLK\t\t0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

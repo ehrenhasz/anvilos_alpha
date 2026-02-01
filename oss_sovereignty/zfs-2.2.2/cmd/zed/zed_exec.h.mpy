@@ -1,0 +1,9 @@
+{
+  "module_name": "zed_exec.h",
+  "hash_id": "a3f2e91d02689cb10ed88ac47f49d9e9a79ba52e625ca7f1c7dfb9acdf46b22d",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zed/zed_exec.h",
+  "human_readable_source": " \n\n#ifndef\tZED_EXEC_H\n#define\tZED_EXEC_H\n\n#include <stdint.h>\n#include \"zed_strings.h\"\n#include \"zed_conf.h\"\n\nvoid zed_exec_fini(void);\n\nint zed_exec_process(uint64_t eid, const char *class, const char *subclass,\n    struct zed_conf *zcp, zed_strings_t *envs);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

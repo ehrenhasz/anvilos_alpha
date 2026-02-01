@@ -1,0 +1,9 @@
+{
+  "module_name": "omap-usb.h",
+  "hash_id": "8dabf29574d8930cdae718781e8f6c5bdcc7eced44f6aec4182b278a8091641a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/omap-usb.h",
+  "human_readable_source": "extern int omap_tll_init(struct usbhs_omap_platform_data *pdata);\nextern int omap_tll_enable(struct usbhs_omap_platform_data *pdata);\nextern int omap_tll_disable(struct usbhs_omap_platform_data *pdata);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

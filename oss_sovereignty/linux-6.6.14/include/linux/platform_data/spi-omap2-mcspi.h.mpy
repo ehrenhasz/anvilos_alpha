@@ -1,0 +1,9 @@
+{
+  "module_name": "spi-omap2-mcspi.h",
+  "hash_id": "e28fa3db1d02b322070eb873e5ec629a49ce409504866ff73eab02bad178bfad",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/spi-omap2-mcspi.h",
+  "human_readable_source": " \n#ifndef _OMAP2_MCSPI_H\n#define _OMAP2_MCSPI_H\n\n#define OMAP4_MCSPI_REG_OFFSET 0x100\n\n#define MCSPI_PINDIR_D0_IN_D1_OUT\t0\n#define MCSPI_PINDIR_D0_OUT_D1_IN\t1\n\nstruct omap2_mcspi_platform_config {\n\tunsigned short\tnum_cs;\n\tunsigned int regs_offset;\n\tunsigned int pin_dir:1;\n\tsize_t max_xfer_len;\n};\n\nstruct omap2_mcspi_device_config {\n\tunsigned turbo_mode:1;\n\n\t \n\tunsigned cs_per_word:1;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "table.h",
+  "hash_id": "f4116c7e558929818c73d65f478565fb78d2d50a8e4220feb5154e728615f33e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8188ee/table.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL92CE_TABLE__H_\n#define __RTL92CE_TABLE__H_\n\n#include <linux/types.h>\n#define  RTL8188EEPHY_REG_1TARRAYLEN\t382\nextern u32 RTL8188EEPHY_REG_1TARRAY[];\n#define RTL8188EEPHY_REG_ARRAY_PGLEN 264\nextern u32 RTL8188EEPHY_REG_ARRAY_PG[];\n#define\tRTL8188EE_RADIOA_1TARRAYLEN 190\nextern u32 RTL8188EE_RADIOA_1TARRAY[];\n#define RTL8188EEMAC_1T_ARRAYLEN  180\nextern u32 RTL8188EEMAC_1T_ARRAY[];\n#define RTL8188EEAGCTAB_1TARRAYLEN 256\nextern u32 RTL8188EEAGCTAB_1TARRAY[];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

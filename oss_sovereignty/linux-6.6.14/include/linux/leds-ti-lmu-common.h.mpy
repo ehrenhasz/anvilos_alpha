@@ -1,0 +1,9 @@
+{
+  "module_name": "leds-ti-lmu-common.h",
+  "hash_id": "50e30a8757b62174673684aa49271670977e7756627b8e201fdaca61aa084f8c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/leds-ti-lmu-common.h",
+  "human_readable_source": " \n\n\n\n#ifndef _TI_LMU_COMMON_H_\n#define _TI_LMU_COMMON_H_\n\n#include <linux/delay.h>\n#include <linux/device.h>\n#include <linux/init.h>\n#include <linux/leds.h>\n#include <linux/module.h>\n#include <linux/regmap.h>\n#include <linux/slab.h>\n#include <uapi/linux/uleds.h>\n\n#define LMU_11BIT_LSB_MASK\t(BIT(0) | BIT(1) | BIT(2))\n#define LMU_11BIT_MSB_SHIFT\t3\n\n#define MAX_BRIGHTNESS_8BIT\t255\n#define MAX_BRIGHTNESS_11BIT\t2047\n\nstruct ti_lmu_bank {\n\tstruct regmap *regmap;\n\n\tint max_brightness;\n\n\tu8 lsb_brightness_reg;\n\tu8 msb_brightness_reg;\n\n\tu8 runtime_ramp_reg;\n\tu32 ramp_up_usec;\n\tu32 ramp_down_usec;\n};\n\nint ti_lmu_common_set_brightness(struct ti_lmu_bank *lmu_bank, int brightness);\n\nint ti_lmu_common_set_ramp(struct ti_lmu_bank *lmu_bank);\n\nint ti_lmu_common_get_ramp_params(struct device *dev,\n\t\t\t\t  struct fwnode_handle *child,\n\t\t\t\t  struct ti_lmu_bank *lmu_data);\n\nint ti_lmu_common_get_brt_res(struct device *dev, struct fwnode_handle *child,\n\t\t\t      struct ti_lmu_bank *lmu_data);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

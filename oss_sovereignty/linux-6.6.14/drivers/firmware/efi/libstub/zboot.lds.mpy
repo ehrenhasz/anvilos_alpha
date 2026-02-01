@@ -1,0 +1,9 @@
+{
+  "module_name": "zboot.lds",
+  "hash_id": "c1fa43f431f61ed07cf46663f66a8503a9d479c675a1d9d754fc166c58602d27",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/efi/libstub/zboot.lds",
+  "human_readable_source": "/* SPDX-License-Identifier: GPL-2.0 */\n\nENTRY(__efistub_efi_zboot_header);\n\nPROVIDE(zboot_code_size = ABSOLUTE(0));\n\nSECTIONS\n{\n\t.head : ALIGN(4096) {\n\t\t*(.head)\n\t}\n\n\t.text : {\n\t\t*(.text* .init.text*)\n\t}\n\n\t.rodata : ALIGN(8) {\n\t\t__efistub__gzdata_start = .;\n\t\t*(.gzdata)\n\t\t__efistub__gzdata_end = .;\n\t\t*(.rodata* .init.rodata* .srodata*)\n\n\t\t. = ALIGN(4);\n\t\t__efistub_code_size = .;\n\t\tLONG(zboot_code_size);\n\n\t\t_etext = ALIGN(4096);\n\t\t. = _etext;\n\t}\n\n\t.data : ALIGN(4096) {\n\t\t*(.data* .init.data*)\n\t\t_edata = ALIGN(512);\n\t\t. = _edata;\n\t}\n\n\t.bss : {\n\t\t*(.bss* .init.bss*)\n\t\t_end = ALIGN(512);\n\t\t. = _end;\n\t}\n\n\t/DISCARD/ : {\n\t\t*(.modinfo .init.modinfo)\n\t}\n}\n\nPROVIDE(__efistub__gzdata_size =\n\t\tABSOLUTE(__efistub__gzdata_end - __efistub__gzdata_start));\n\nPROVIDE(__data_rawsize = ABSOLUTE(_edata - _etext));\nPROVIDE(__data_size = ABSOLUTE(_end - _etext));\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

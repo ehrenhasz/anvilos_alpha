@@ -1,0 +1,9 @@
+{
+  "module_name": "ca.h",
+  "hash_id": "cc4e52322ab239b4d359f8caa77b8d80f5ec3401db9d8dcae012c576df397ea9",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/dvb/ca.h",
+  "human_readable_source": " \n \n\n#ifndef _DVBCA_H_\n#define _DVBCA_H_\n\n \n\nstruct ca_slot_info {\n\tint num;\n\tint type;\n#define CA_CI            1\n#define CA_CI_LINK       2\n#define CA_CI_PHYS       4\n#define CA_DESCR         8\n#define CA_SC          128\n\n\tunsigned int flags;\n#define CA_CI_MODULE_PRESENT 1\n#define CA_CI_MODULE_READY   2\n};\n\n\n \nstruct ca_descr_info {\n\tunsigned int num;\n\tunsigned int type;\n#define CA_ECD           1\n#define CA_NDS           2\n#define CA_DSS           4\n};\n\n \nstruct ca_caps {\n\tunsigned int slot_num;\n\tunsigned int slot_type;\n\tunsigned int descr_num;\n\tunsigned int descr_type;\n};\n\n \nstruct ca_msg {\n\tunsigned int index;\n\tunsigned int type;\n\tunsigned int length;\n\tunsigned char msg[256];\n};\n\n \nstruct ca_descr {\n\tunsigned int index;\n\tunsigned int parity;\n\tunsigned char cw[8];\n};\n\n#define CA_RESET          _IO('o', 128)\n#define CA_GET_CAP        _IOR('o', 129, struct ca_caps)\n#define CA_GET_SLOT_INFO  _IOR('o', 130, struct ca_slot_info)\n#define CA_GET_DESCR_INFO _IOR('o', 131, struct ca_descr_info)\n#define CA_GET_MSG        _IOR('o', 132, struct ca_msg)\n#define CA_SEND_MSG       _IOW('o', 133, struct ca_msg)\n#define CA_SET_DESCR      _IOW('o', 134, struct ca_descr)\n\n#if !defined(__KERNEL__)\n\n \ntypedef struct ca_slot_info ca_slot_info_t;\ntypedef struct ca_descr_info  ca_descr_info_t;\ntypedef struct ca_caps  ca_caps_t;\ntypedef struct ca_msg ca_msg_t;\ntypedef struct ca_descr ca_descr_t;\n\n#endif\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

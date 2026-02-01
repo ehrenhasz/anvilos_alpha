@@ -1,0 +1,9 @@
+{
+  "module_name": "bounds.c",
+  "hash_id": "37e99eea177b3c3c1529294f304fa4fa65c1a0329e0a1718b619c9911dd8e544",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/bounds.c",
+  "human_readable_source": "\n \n\n#define __GENERATING_BOUNDS_H\n \n#include <linux/page-flags.h>\n#include <linux/mmzone.h>\n#include <linux/kbuild.h>\n#include <linux/log2.h>\n#include <linux/spinlock_types.h>\n\nint main(void)\n{\n\t \n\tDEFINE(NR_PAGEFLAGS, __NR_PAGEFLAGS);\n\tDEFINE(MAX_NR_ZONES, __MAX_NR_ZONES);\n#ifdef CONFIG_SMP\n\tDEFINE(NR_CPUS_BITS, ilog2(CONFIG_NR_CPUS));\n#endif\n\tDEFINE(SPINLOCK_SIZE, sizeof(spinlock_t));\n#ifdef CONFIG_LRU_GEN\n\tDEFINE(LRU_GEN_WIDTH, order_base_2(MAX_NR_GENS + 1));\n\tDEFINE(__LRU_REFS_WIDTH, MAX_NR_TIERS - 2);\n#else\n\tDEFINE(LRU_GEN_WIDTH, 0);\n\tDEFINE(__LRU_REFS_WIDTH, 0);\n#endif\n\t \n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

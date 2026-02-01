@@ -1,0 +1,9 @@
+{
+  "module_name": "stub_segv.c",
+  "hash_id": "aa97f23ea1126551f634e6ea86f40360b3b19aeae5bf414d9c612aa7eb57a98a",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/stub_segv.c",
+  "human_readable_source": " \n\n#include <sysdep/stub.h>\n#include <sysdep/faultinfo.h>\n#include <sysdep/mcontext.h>\n#include <sys/ucontext.h>\n\nvoid __attribute__ ((__section__ (\".__syscall_stub\")))\nstub_segv_handler(int sig, siginfo_t *info, void *p)\n{\n\tstruct faultinfo *f = get_stub_data();\n\tucontext_t *uc = p;\n\n\tGET_FAULTINFO_FROM_MC(*f, &uc->uc_mcontext);\n\ttrap_myself();\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

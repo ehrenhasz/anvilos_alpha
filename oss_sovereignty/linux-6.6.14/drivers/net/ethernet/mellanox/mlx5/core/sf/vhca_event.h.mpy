@@ -1,0 +1,9 @@
+{
+  "module_name": "vhca_event.h",
+  "hash_id": "e6eff71d1ffc519df10710199f5e260a5732cd36ca27803aff8db8819ad4bc95",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/sf/vhca_event.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_VHCA_EVENT_H__\n#define __MLX5_VHCA_EVENT_H__\n\n#ifdef CONFIG_MLX5_SF\n\nstruct mlx5_vhca_state_event {\n\tu16 function_id;\n\tu16 sw_function_id;\n\tu8 new_vhca_state;\n};\n\nstatic inline bool mlx5_vhca_event_supported(const struct mlx5_core_dev *dev)\n{\n\treturn MLX5_CAP_GEN_MAX(dev, vhca_state);\n}\n\nvoid mlx5_vhca_state_cap_handle(struct mlx5_core_dev *dev, void *set_hca_cap);\nint mlx5_vhca_event_init(struct mlx5_core_dev *dev);\nvoid mlx5_vhca_event_cleanup(struct mlx5_core_dev *dev);\nvoid mlx5_vhca_event_start(struct mlx5_core_dev *dev);\nvoid mlx5_vhca_event_stop(struct mlx5_core_dev *dev);\nint mlx5_vhca_event_notifier_register(struct mlx5_core_dev *dev, struct notifier_block *nb);\nvoid mlx5_vhca_event_notifier_unregister(struct mlx5_core_dev *dev, struct notifier_block *nb);\nint mlx5_modify_vhca_sw_id(struct mlx5_core_dev *dev, u16 function_id, u32 sw_fn_id);\nint mlx5_vhca_event_arm(struct mlx5_core_dev *dev, u16 function_id);\nint mlx5_cmd_query_vhca_state(struct mlx5_core_dev *dev, u16 function_id,\n\t\t\t      u32 *out, u32 outlen);\n#else\n\nstatic inline void mlx5_vhca_state_cap_handle(struct mlx5_core_dev *dev, void *set_hca_cap)\n{\n}\n\nstatic inline int mlx5_vhca_event_init(struct mlx5_core_dev *dev)\n{\n\treturn 0;\n}\n\nstatic inline void mlx5_vhca_event_cleanup(struct mlx5_core_dev *dev)\n{\n}\n\nstatic inline void mlx5_vhca_event_start(struct mlx5_core_dev *dev)\n{\n}\n\nstatic inline void mlx5_vhca_event_stop(struct mlx5_core_dev *dev)\n{\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

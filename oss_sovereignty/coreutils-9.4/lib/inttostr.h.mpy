@@ -1,0 +1,9 @@
+{
+  "module_name": "inttostr.h",
+  "hash_id": "eea64e20ee2606e9ac9e488e9ca2b0863d93d2d4ab910dc8f5a5f7e49e5492d7",
+  "original_prompt": "Ingested from coreutils-9.4/lib/inttostr.h",
+  "human_readable_source": " \n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stdint.h>\n#include <sys/types.h>\n\n#include \"intprops.h\"\n\n_GL_ATTRIBUTE_NODISCARD char *imaxtostr (intmax_t, char *);\n_GL_ATTRIBUTE_NODISCARD char *inttostr (int, char *);\n_GL_ATTRIBUTE_NODISCARD char *offtostr (off_t, char *);\n_GL_ATTRIBUTE_NODISCARD char *uinttostr (unsigned int, char *);\n_GL_ATTRIBUTE_NODISCARD char *umaxtostr (uintmax_t, char *);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

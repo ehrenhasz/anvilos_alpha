@@ -1,0 +1,9 @@
+{
+  "module_name": "exynos_drm_vidi.h",
+  "hash_id": "768e5374f6417153f62f7c98a9f6fda47c5c7e298a313ddd438c380f74ac540d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/exynos/exynos_drm_vidi.h",
+  "human_readable_source": " \n \n\n#ifndef _EXYNOS_DRM_VIDI_H_\n#define _EXYNOS_DRM_VIDI_H_\n\n#ifdef CONFIG_DRM_EXYNOS_VIDI\nint vidi_connection_ioctl(struct drm_device *drm_dev, void *data,\n\t\t\t\tstruct drm_file *file_priv);\n#else\n#define vidi_connection_ioctl\tNULL\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

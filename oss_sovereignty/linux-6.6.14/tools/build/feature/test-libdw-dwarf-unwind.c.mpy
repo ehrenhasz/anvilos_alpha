@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libdw-dwarf-unwind.c",
+  "hash_id": "b0cffddbd8bc3635e0aa19071b07de0145ad9d9549119f8545bf2ac3d2cf28a3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libdw-dwarf-unwind.c",
+  "human_readable_source": "\n\n#include <elfutils/libdwfl.h>\n\nint main(void)\n{\n\t \n\tdwfl_thread_getframes((void *) 1, (void *) 1, NULL);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

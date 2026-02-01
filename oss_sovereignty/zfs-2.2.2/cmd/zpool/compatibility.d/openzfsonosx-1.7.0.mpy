@@ -1,0 +1,9 @@
+{
+  "module_name": "openzfsonosx-1.7.0",
+  "hash_id": "8164022398a02f8bcb2af5f185942fae277f5dc2b177fae615fda02174514457",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/compatibility.d/openzfsonosx-1.7.0",
+  "human_readable_source": "# Features supported by OpenZFSonOSX 1.7.0\nasync_destroy\nbookmarks\nedonr\nembedded_data\nempty_bpobj\nenabled_txg\nextensible_dataset\nfilesystem_limits\nhole_birth\nlarge_blocks\nlz4_compress\nmulti_vdev_crash_dump\nsha512\nskein\nspacemap_histogram\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

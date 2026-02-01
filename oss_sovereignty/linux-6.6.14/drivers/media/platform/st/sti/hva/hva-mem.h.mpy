@@ -1,0 +1,9 @@
+{
+  "module_name": "hva-mem.h",
+  "hash_id": "88d366d01786fa00e841f661ebf0881cc3502235d32a608869c446a037caa488",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/hva/hva-mem.h",
+  "human_readable_source": " \n \n\n#ifndef HVA_MEM_H\n#define HVA_MEM_H\n\n \nstruct hva_buffer {\n\tconst char\t\t*name;\n\tdma_addr_t\t\tpaddr;\n\tvoid\t\t\t*vaddr;\n\tu32\t\t\tsize;\n};\n\nint hva_mem_alloc(struct hva_ctx *ctx,\n\t\t  __u32 size,\n\t\t  const char *name,\n\t\t  struct hva_buffer **buf);\n\nvoid hva_mem_free(struct hva_ctx *ctx,\n\t\t  struct hva_buffer *buf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mft.h",
+  "hash_id": "ddb4c7e1066792a39fc37dbaee7b48da1003f2a8b1286540d1a79e2bc4044c64",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ntfs/mft.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_NTFS_MFT_H\n#define _LINUX_NTFS_MFT_H\n\n#include <linux/fs.h>\n#include <linux/highmem.h>\n#include <linux/pagemap.h>\n\n#include \"inode.h\"\n\nextern MFT_RECORD *map_mft_record(ntfs_inode *ni);\nextern void unmap_mft_record(ntfs_inode *ni);\n\nextern MFT_RECORD *map_extent_mft_record(ntfs_inode *base_ni, MFT_REF mref,\n\t\tntfs_inode **ntfs_ino);\n\nstatic inline void unmap_extent_mft_record(ntfs_inode *ni)\n{\n\tunmap_mft_record(ni);\n\treturn;\n}\n\n#ifdef NTFS_RW\n\n \nstatic inline void flush_dcache_mft_record_page(ntfs_inode *ni)\n{\n\tflush_dcache_page(ni->page);\n}\n\nextern void __mark_mft_record_dirty(ntfs_inode *ni);\n\n \nstatic inline void mark_mft_record_dirty(ntfs_inode *ni)\n{\n\tif (!NInoTestSetDirty(ni))\n\t\t__mark_mft_record_dirty(ni);\n}\n\nextern int ntfs_sync_mft_mirror(ntfs_volume *vol, const unsigned long mft_no,\n\t\tMFT_RECORD *m, int sync);\n\nextern int write_mft_record_nolock(ntfs_inode *ni, MFT_RECORD *m, int sync);\n\n \nstatic inline int write_mft_record(ntfs_inode *ni, MFT_RECORD *m, int sync)\n{\n\tstruct page *page = ni->page;\n\tint err;\n\n\tBUG_ON(!page);\n\tlock_page(page);\n\terr = write_mft_record_nolock(ni, m, sync);\n\tunlock_page(page);\n\treturn err;\n}\n\nextern bool ntfs_may_write_mft_record(ntfs_volume *vol,\n\t\tconst unsigned long mft_no, const MFT_RECORD *m,\n\t\tntfs_inode **locked_ni);\n\nextern ntfs_inode *ntfs_mft_record_alloc(ntfs_volume *vol, const int mode,\n\t\tntfs_inode *base_ni, MFT_RECORD **mrec);\nextern int ntfs_extent_mft_record_free(ntfs_inode *ni, MFT_RECORD *m);\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

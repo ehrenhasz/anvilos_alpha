@@ -1,0 +1,9 @@
+{
+  "module_name": "xhci-rzv2m.c",
+  "hash_id": "0183acb1c4cd4ae743accd1fb9b920a0926cece74fd76768a8a767879c7867f2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/host/xhci-rzv2m.c",
+  "human_readable_source": "\n \n\n#include <linux/usb/rzv2m_usb3drd.h>\n#include \"xhci-plat.h\"\n#include \"xhci-rzv2m.h\"\n\n#define RZV2M_USB3_INTEN\t0x1044\t \n\n#define RZV2M_USB3_INT_XHC_ENA\tBIT(0)\n#define RZV2M_USB3_INT_HSE_ENA\tBIT(2)\n#define RZV2M_USB3_INT_ENA_VAL\t(RZV2M_USB3_INT_XHC_ENA \\\n\t\t\t\t | RZV2M_USB3_INT_HSE_ENA)\n\nint xhci_rzv2m_init_quirk(struct usb_hcd *hcd)\n{\n\tstruct device *dev = hcd->self.controller;\n\n\trzv2m_usb3drd_reset(dev->parent, true);\n\n\treturn 0;\n}\n\nvoid xhci_rzv2m_start(struct usb_hcd *hcd)\n{\n\tu32 int_en;\n\n\tif (hcd->regs) {\n\t\t \n\t\tint_en = readl(hcd->regs + RZV2M_USB3_INTEN);\n\t\tint_en |= RZV2M_USB3_INT_ENA_VAL;\n\t\twritel(int_en, hcd->regs + RZV2M_USB3_INTEN);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

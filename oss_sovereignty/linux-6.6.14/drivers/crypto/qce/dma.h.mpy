@@ -1,0 +1,9 @@
+{
+  "module_name": "dma.h",
+  "hash_id": "8cf5faf7d5abfc347ccc8c66aa56d69bdbe58ba37b82102f7995018686f838f4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/qce/dma.h",
+  "human_readable_source": " \n \n\n#ifndef _DMA_H_\n#define _DMA_H_\n\n#include <linux/dmaengine.h>\n\n \n#define QCE_BAM_BURST_SIZE\t\t64\n\n#define QCE_AUTHIV_REGS_CNT\t\t16\n#define QCE_AUTH_BYTECOUNT_REGS_CNT\t4\n#define QCE_CNTRIV_REGS_CNT\t\t4\n\nstruct qce_result_dump {\n\tu32 auth_iv[QCE_AUTHIV_REGS_CNT];\n\tu32 auth_byte_count[QCE_AUTH_BYTECOUNT_REGS_CNT];\n\tu32 encr_cntr_iv[QCE_CNTRIV_REGS_CNT];\n\tu32 status;\n\tu32 status2;\n};\n\n#define QCE_IGNORE_BUF_SZ\t(2 * QCE_BAM_BURST_SIZE)\n#define QCE_RESULT_BUF_SZ\t\\\n\t\tALIGN(sizeof(struct qce_result_dump), QCE_BAM_BURST_SIZE)\n\nstruct qce_dma_data {\n\tstruct dma_chan *txchan;\n\tstruct dma_chan *rxchan;\n\tstruct qce_result_dump *result_buf;\n\tvoid *ignore_buf;\n};\n\nint qce_dma_request(struct device *dev, struct qce_dma_data *dma);\nvoid qce_dma_release(struct qce_dma_data *dma);\nint qce_dma_prep_sgs(struct qce_dma_data *dma, struct scatterlist *sg_in,\n\t\t     int in_ents, struct scatterlist *sg_out, int out_ents,\n\t\t     dma_async_tx_callback cb, void *cb_param);\nvoid qce_dma_issue_pending(struct qce_dma_data *dma);\nint qce_dma_terminate_all(struct qce_dma_data *dma);\nstruct scatterlist *\nqce_sgtable_add(struct sg_table *sgt, struct scatterlist *sg_add,\n\t\tunsigned int max_len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

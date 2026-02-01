@@ -1,0 +1,9 @@
+{
+  "module_name": "l3_cache.json",
+  "hash_id": "18cca1bc100d7b06d448416ce7185e39b59248f21a0a5cd8b95de0ba18296604",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/neoverse-n1/l3_cache.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"L3D_CACHE_ALLOCATE\",\n        \"PublicDescription\": \"Counts level 3 cache line allocates that do not fetch data from outside the level 3 data or unified cache. For example, allocates due to streaming stores.\"\n    },\n    {\n        \"ArchStdEvent\": \"L3D_CACHE_REFILL\",\n        \"PublicDescription\": \"Counts level 3 accesses that receive data from outside the L3 cache.\"\n    },\n    {\n        \"ArchStdEvent\": \"L3D_CACHE\",\n        \"PublicDescription\": \"Counts level 3 cache accesses. level 3 cache is a unified cache for data and instruction accesses. Accesses are for misses in the lower level caches or translation resolutions due to accesses.\"\n    },\n    {\n        \"ArchStdEvent\": \"L3D_CACHE_RD\",\n        \"PublicDescription\": \"TBD\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

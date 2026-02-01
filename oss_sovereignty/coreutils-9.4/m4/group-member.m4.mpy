@@ -1,0 +1,9 @@
+{
+  "module_name": "group-member.m4",
+  "hash_id": "44a79ccc0e408847369b6b53679841bde7aea275f4d76dd737f24c27d3a773ab",
+  "original_prompt": "Ingested from coreutils-9.4/m4/group-member.m4",
+  "human_readable_source": "# serial 14\n\n# Copyright (C) 1999-2001, 2003-2007, 2009-2023 Free Software Foundation, Inc.\n\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\ndnl Written by Jim Meyering\n\nAC_DEFUN([gl_FUNC_GROUP_MEMBER],\n[\n  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])\n\n  dnl Persuade glibc <unistd.h> to declare group_member().\n  AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])\n\n  dnl Do this replacement check manually because I want the hyphen\n  dnl (not the underscore) in the filename.\n  AC_CHECK_FUNC([group_member], , [\n    HAVE_GROUP_MEMBER=0\n  ])\n])\n\n# Prerequisites of lib/group-member.c.\nAC_DEFUN([gl_PREREQ_GROUP_MEMBER],\n[\n  AC_REQUIRE([AC_FUNC_GETGROUPS])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

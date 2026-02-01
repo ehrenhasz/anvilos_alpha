@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9586e808b1bfe547343c7a20ca790f84eef8552d9b030355acc64e15e3d3a595",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/pci/hisilicon/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_HISI_ACC_VFIO_PCI) += hisi-acc-vfio-pci.o\nhisi-acc-vfio-pci-y := hisi_acc_vfio_pci.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

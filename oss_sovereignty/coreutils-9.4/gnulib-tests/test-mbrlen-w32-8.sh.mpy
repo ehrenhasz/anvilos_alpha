@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrlen-w32-8.sh",
+  "hash_id": "8a968ed30aff1a93a38aae6abde34b1242c53d2e725baa6a45a1f5c5a8a1be5a",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrlen-w32-8.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a GB18030 locale.\n${CHECKER} ./test-mbrlen-w32${EXEEXT} Chinese_China 54936\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

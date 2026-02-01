@@ -1,0 +1,9 @@
+{
+  "module_name": "nfp6000_pcie.h",
+  "hash_id": "38e673ecfaa94bcb3dff0d02f90d1060561921adc24cb713d466d01a02530be0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef NFP6000_PCIE_H\n#define NFP6000_PCIE_H\n\n#include \"nfp_cpp.h\"\n\nstruct nfp_cpp *\nnfp_cpp_from_nfp6000_pcie(struct pci_dev *pdev, const struct nfp_dev_info *dev_info);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

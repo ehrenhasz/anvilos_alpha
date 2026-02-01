@@ -1,0 +1,9 @@
+{
+  "module_name": "tveeprom.h",
+  "hash_id": "e50aacea66c0d5d489e7fe3d84e4f7bd0e202061067397b4de9df8349cd73bcd",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/tveeprom.h",
+  "human_readable_source": " \n\n \n\n#include <uapi/linux/if_ether.h>\n\n \nenum tveeprom_audio_processor {\n\tTVEEPROM_AUDPROC_NONE,\n\tTVEEPROM_AUDPROC_INTERNAL,\n\tTVEEPROM_AUDPROC_MSP,\n\tTVEEPROM_AUDPROC_OTHER,\n};\n\n \nstruct tveeprom {\n\tu32 has_radio;\n\tu32 has_ir;\n\tu32 has_MAC_address;\n\n\tu32 tuner_type;\n\tu32 tuner_formats;\n\tu32 tuner_hauppauge_model;\n\n\tu32 tuner2_type;\n\tu32 tuner2_formats;\n\tu32 tuner2_hauppauge_model;\n\n\tu32 audio_processor;\n\tu32 decoder_processor;\n\n\tu32 model;\n\tu32 revision;\n\tu32 serial_number;\n\tchar rev_str[5];\n\tu8 MAC_address[ETH_ALEN];\n};\n\n \nvoid tveeprom_hauppauge_analog(struct tveeprom *tvee,\n\t\t\t       unsigned char *eeprom_data);\n\n \nint tveeprom_read(struct i2c_client *c, unsigned char *eedata, int len);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

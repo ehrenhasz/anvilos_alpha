@@ -1,0 +1,9 @@
+{
+  "module_name": "probe.c",
+  "hash_id": "b4cd7e9448fc0f526db593082c465783cecb8be1738d81e0006f6b50cc4151ad",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/avs/boards/probe.c",
+  "human_readable_source": "\n\n\n\n\n\n\n\n#include <linux/device.h>\n#include <linux/module.h>\n#include <sound/soc.h>\n#include <sound/soc-acpi.h>\n\nSND_SOC_DAILINK_DEF(dummy, DAILINK_COMP_ARRAY(COMP_DUMMY()));\nSND_SOC_DAILINK_DEF(probe_cp, DAILINK_COMP_ARRAY(COMP_CPU(\"Probe Extraction CPU DAI\")));\nSND_SOC_DAILINK_DEF(platform, DAILINK_COMP_ARRAY(COMP_PLATFORM(\"probe-platform\")));\n\nstatic struct snd_soc_dai_link probe_mb_dai_links[] = {\n\t{\n\t\t.name = \"Compress Probe Capture\",\n\t\t.nonatomic = 1,\n\t\tSND_SOC_DAILINK_REG(probe_cp, dummy, platform),\n\t},\n};\n\nstatic int avs_probe_mb_probe(struct platform_device *pdev)\n{\n\tstruct device *dev = &pdev->dev;\n\tstruct snd_soc_acpi_mach *mach;\n\tstruct snd_soc_card *card;\n\tint ret;\n\n\tmach = dev_get_platdata(dev);\n\n\tcard = devm_kzalloc(dev, sizeof(*card), GFP_KERNEL);\n\tif (!card)\n\t\treturn -ENOMEM;\n\n\tcard->name = \"avs_probe_mb\";\n\tcard->dev = dev;\n\tcard->owner = THIS_MODULE;\n\tcard->dai_link = probe_mb_dai_links;\n\tcard->num_links = ARRAY_SIZE(probe_mb_dai_links);\n\tcard->fully_routed = true;\n\n\tret = snd_soc_fixup_dai_links_platform_name(card, mach->mach_params.platform);\n\tif (ret)\n\t\treturn ret;\n\n\treturn devm_snd_soc_register_card(dev, card);\n}\n\nstatic struct platform_driver avs_probe_mb_driver = {\n\t.probe = avs_probe_mb_probe,\n\t.driver = {\n\t\t.name = \"avs_probe_mb\",\n\t\t.pm = &snd_soc_pm_ops,\n\t},\n};\n\nmodule_platform_driver(avs_probe_mb_driver);\n\nMODULE_LICENSE(\"GPL\");\nMODULE_ALIAS(\"platform:avs_probe_mb\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

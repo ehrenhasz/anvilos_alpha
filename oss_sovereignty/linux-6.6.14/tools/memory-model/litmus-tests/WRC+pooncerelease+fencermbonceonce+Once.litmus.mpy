@@ -1,0 +1,9 @@
+{
+  "module_name": "WRC+pooncerelease+fencermbonceonce+Once.litmus",
+  "hash_id": "1df9e71b8e48a53f9f9d4f9cd90105e3d1da66a3986fef3d8cda2c27800c0406",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/WRC+pooncerelease+fencermbonceonce+Once.litmus",
+  "human_readable_source": "C WRC+pooncerelease+fencermbonceonce+Once\n\n(*\n * Result: Never\n *\n * This litmus test is an extension of the message-passing pattern, where\n * the first write is moved to a separate process.  Because it features\n * a release and a read memory barrier, it should be forbidden.  More\n * specifically, this litmus test is forbidden because smp_store_release()\n * is A-cumulative in LKMM.\n *)\n\n{}\n\nP0(int *x)\n{\n\tWRITE_ONCE(*x, 1);\n}\n\nP1(int *x, int *y)\n{\n\tint r0;\n\n\tr0 = READ_ONCE(*x);\n\tsmp_store_release(y, 1);\n}\n\nP2(int *x, int *y)\n{\n\tint r0;\n\tint r1;\n\n\tr0 = READ_ONCE(*y);\n\tsmp_rmb();\n\tr1 = READ_ONCE(*x);\n}\n\nexists (1:r0=1 /\\ 2:r0=1 /\\ 2:r1=0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

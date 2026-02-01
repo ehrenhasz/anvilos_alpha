@@ -1,0 +1,9 @@
+{
+  "module_name": "adxl.h",
+  "hash_id": "eff90d8f74bf883d1f7b3a6d630cb7dcbbf739b7540997800a9c280358809a6f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/adxl.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_ADXL_H\n#define _LINUX_ADXL_H\n\nconst char * const *adxl_get_component_names(void);\nint adxl_decode(u64 addr, u64 component_values[]);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

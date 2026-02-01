@@ -1,0 +1,9 @@
+{
+  "module_name": "komeda_color_mgmt.h",
+  "hash_id": "565ffbced5fe5c1a6f302c31da0242bc3aca4b2d36c1b17bacbd5d7cc7391d96",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/arm/display/komeda/komeda_color_mgmt.h",
+  "human_readable_source": " \n \n\n#ifndef _KOMEDA_COLOR_MGMT_H_\n#define _KOMEDA_COLOR_MGMT_H_\n\n#include <drm/drm_color_mgmt.h>\n\n#define KOMEDA_N_YUV2RGB_COEFFS\t\t12\n#define KOMEDA_N_RGB2YUV_COEFFS\t\t12\n#define KOMEDA_COLOR_PRECISION\t\t12\n#define KOMEDA_N_GAMMA_COEFFS\t\t65\n#define KOMEDA_COLOR_LUT_SIZE\t\tBIT(KOMEDA_COLOR_PRECISION)\n#define KOMEDA_N_CTM_COEFFS\t\t9\n\nvoid drm_lut_to_fgamma_coeffs(struct drm_property_blob *lut_blob, u32 *coeffs);\nvoid drm_ctm_to_coeffs(struct drm_property_blob *ctm_blob, u32 *coeffs);\n\nconst s32 *komeda_select_yuv2rgb_coeffs(u32 color_encoding, u32 color_range);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

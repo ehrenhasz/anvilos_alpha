@@ -1,0 +1,9 @@
+{
+  "module_name": "disp.h",
+  "hash_id": "985d48a24f332c7647d6a2fbfdcabb112cc878c319a90ff12032d0e8ae69617a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/disp.h",
+  "human_readable_source": "#ifndef __NVIF_DISP_H__\n#define __NVIF_DISP_H__\n#include <nvif/object.h>\nstruct nvif_device;\n\nstruct nvif_disp {\n\tstruct nvif_object object;\n\tunsigned long conn_mask;\n\tunsigned long outp_mask;\n\tunsigned long head_mask;\n};\n\nint nvif_disp_ctor(struct nvif_device *, const char *name, s32 oclass,\n\t\t   struct nvif_disp *);\nvoid nvif_disp_dtor(struct nvif_disp *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

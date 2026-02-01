@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "093d3406e319e1c50b69a660576f56684ca46f658a2f79dfecd3f4a13d75900f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/aspeed/Makefile",
+  "human_readable_source": "hace-hash-$(CONFIG_CRYPTO_DEV_ASPEED_HACE_HASH) := aspeed-hace-hash.o\nhace-crypto-$(CONFIG_CRYPTO_DEV_ASPEED_HACE_CRYPTO) := aspeed-hace-crypto.o\n\nobj-$(CONFIG_CRYPTO_DEV_ASPEED) += aspeed_crypto.o\naspeed_crypto-objs := aspeed-hace.o\t\\\n\t\t      $(hace-hash-y)\t\\\n\t\t      $(hace-crypto-y)\n\naspeed_acry-$(CONFIG_CRYPTO_DEV_ASPEED_ACRY) += aspeed-acry.o\n\nobj-$(CONFIG_CRYPTO_DEV_ASPEED) += $(aspeed_acry-y)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

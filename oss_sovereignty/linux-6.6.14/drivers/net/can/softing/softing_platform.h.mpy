@@ -1,0 +1,9 @@
+{
+  "module_name": "softing_platform.h",
+  "hash_id": "2b1f18367c8ee13dc0f295289b0eb4719ca23d50b07cda9f9fbeb24d406683b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/softing/softing_platform.h",
+  "human_readable_source": " \n\n#include <linux/platform_device.h>\n\n#ifndef _SOFTING_DEVICE_H_\n#define _SOFTING_DEVICE_H_\n\n \n#define fw_dir \"softing-4.6/\"\n\nstruct softing_platform_data {\n\tunsigned int manf;\n\tunsigned int prod;\n\t \n\tint generation;\n\tint nbus;  \n\tunsigned int freq;  \n\tunsigned int max_brp;\n\tunsigned int max_sjw;\n\tunsigned long dpram_size;\n\tconst char *name;\n\tstruct {\n\t\tunsigned long offs;\n\t\tunsigned long addr;\n\t\tconst char *fw;\n\t} boot, load, app;\n\t \n\tint (*reset)(struct platform_device *pdev, int value);\n\tint (*enable_irq)(struct platform_device *pdev, int value);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

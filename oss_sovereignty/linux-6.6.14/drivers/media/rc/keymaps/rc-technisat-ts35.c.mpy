@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-technisat-ts35.c",
+  "hash_id": "7ebf835bf61b888d64abfb28412cdda3488f2d1a4ecc0204681a692e9fec8d1e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-technisat-ts35.c",
+  "human_readable_source": "\n \n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\nstatic struct rc_map_table technisat_ts35[] = {\n\t{0x32, KEY_MUTE},\n\t{0x07, KEY_MEDIA},\n\t{0x1c, KEY_AB},\n\t{0x33, KEY_POWER},\n\n\t{0x3e, KEY_NUMERIC_1},\n\t{0x3d, KEY_NUMERIC_2},\n\t{0x3c, KEY_NUMERIC_3},\n\t{0x3b, KEY_NUMERIC_4},\n\t{0x3a, KEY_NUMERIC_5},\n\t{0x39, KEY_NUMERIC_6},\n\t{0x38, KEY_NUMERIC_7},\n\t{0x37, KEY_NUMERIC_8},\n\t{0x36, KEY_NUMERIC_9},\n\t{0x3f, KEY_NUMERIC_0},\n\t{0x35, KEY_DIGITS},\n\t{0x2c, KEY_TV},\n\n\t{0x20, KEY_INFO},\n\t{0x2d, KEY_MENU},\n\t{0x1f, KEY_UP},\n\t{0x1e, KEY_DOWN},\n\t{0x2e, KEY_LEFT},\n\t{0x2f, KEY_RIGHT},\n\t{0x28, KEY_OK},\n\t{0x10, KEY_EPG},\n\t{0x1d, KEY_BACK},\n\n\t{0x14, KEY_RED},\n\t{0x13, KEY_GREEN},\n\t{0x12, KEY_YELLOW},\n\t{0x11, KEY_BLUE},\n\n\t{0x09, KEY_SELECT},\n\t{0x03, KEY_TEXT},\n\t{0x16, KEY_STOP},\n\t{0x30, KEY_HELP},\n};\n\nstatic struct rc_map_list technisat_ts35_map = {\n\t.map = {\n\t\t.scan     = technisat_ts35,\n\t\t.size     = ARRAY_SIZE(technisat_ts35),\n\t\t.rc_proto = RC_PROTO_UNKNOWN,\n\t\t.name     = RC_MAP_TECHNISAT_TS35,\n\t}\n};\n\nstatic int __init init_rc_map(void)\n{\n\treturn rc_map_register(&technisat_ts35_map);\n}\n\nstatic void __exit exit_rc_map(void)\n{\n\trc_map_unregister(&technisat_ts35_map);\n}\n\nmodule_init(init_rc_map)\nmodule_exit(exit_rc_map)\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

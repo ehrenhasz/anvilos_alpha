@@ -1,0 +1,9 @@
+{
+  "module_name": "static_stub.h",
+  "hash_id": "8d9353624fa663bbd8e16a2ea895dcc1ea31568a89561bbeebb7dfd5cbe53938",
+  "original_prompt": "Ingested from linux-6.6.14/include/kunit/static_stub.h",
+  "human_readable_source": " \n \n#ifndef _KUNIT_STATIC_STUB_H\n#define _KUNIT_STATIC_STUB_H\n\n#if !IS_ENABLED(CONFIG_KUNIT)\n\n \n#define KUNIT_STATIC_STUB_REDIRECT(real_fn_name, args...) do {} while (0)\n\n#else\n\n#include <kunit/test.h>\n#include <kunit/test-bug.h>\n\n#include <linux/compiler.h>  \n#include <linux/sched.h>  \n\n\n \n#define KUNIT_STATIC_STUB_REDIRECT(real_fn_name, args...)\t\t\\\ndo {\t\t\t\t\t\t\t\t\t\\\n\ttypeof(&real_fn_name) replacement;\t\t\t\t\\\n\tstruct kunit *current_test = kunit_get_current_test();\t\t\\\n\t\t\t\t\t\t\t\t\t\\\n\tif (likely(!current_test))\t\t\t\t\t\\\n\t\tbreak;\t\t\t\t\t\t\t\\\n\t\t\t\t\t\t\t\t\t\\\n\treplacement = kunit_hooks.get_static_stub_address(current_test,\t\\\n\t\t\t\t\t\t\t&real_fn_name);\t\\\n\t\t\t\t\t\t\t\t\t\\\n\tif (unlikely(replacement))\t\t\t\t\t\\\n\t\treturn replacement(args);\t\t\t\t\\\n} while (0)\n\n \nvoid __kunit_activate_static_stub(struct kunit *test,\n\t\t\t\t  void *real_fn_addr,\n\t\t\t\t  void *replacement_addr);\n\n \n#define kunit_activate_static_stub(test, real_fn_addr, replacement_addr) do {\t\\\n\ttypecheck_fn(typeof(&real_fn_addr), replacement_addr);\t\t\t\\\n\t__kunit_activate_static_stub(test, real_fn_addr, replacement_addr);\t\\\n} while (0)\n\n\n \nvoid kunit_deactivate_static_stub(struct kunit *test, void *real_fn_addr);\n\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

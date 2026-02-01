@@ -1,0 +1,9 @@
+{
+  "module_name": "auth2-passwd.c",
+  "hash_id": "783a8938d5f0a9a69cefcb2dc0045f11ed2f03d05ad27336a23e3763f08cf325",
+  "original_prompt": "Ingested from openssh-9.6p1/auth2-passwd.c",
+  "human_readable_source": " \n \n\n#include \"includes.h\"\n\n#include <sys/types.h>\n\n#include <stdlib.h>\n#include <string.h>\n#include <stdarg.h>\n#include <stdio.h>\n\n#include \"packet.h\"\n#include \"ssherr.h\"\n#include \"log.h\"\n#include \"sshkey.h\"\n#include \"hostfile.h\"\n#include \"auth.h\"\n#ifdef GSSAPI\n#include \"ssh-gss.h\"\n#endif\n#include \"monitor_wrap.h\"\n#include \"misc.h\"\n#include \"servconf.h\"\n\n \nextern ServerOptions options;\n\nstatic int\nuserauth_passwd(struct ssh *ssh, const char *method)\n{\n\tchar *password = NULL;\n\tint authenticated = 0, r;\n\tu_char change;\n\tsize_t len = 0;\n\n\tif ((r = sshpkt_get_u8(ssh, &change)) != 0 ||\n\t    (r = sshpkt_get_cstring(ssh, &password, &len)) != 0 ||\n\t    (change && (r = sshpkt_get_cstring(ssh, NULL, NULL)) != 0) ||\n\t    (r = sshpkt_get_end(ssh)) != 0) {\n\t\tfreezero(password, len);\n\t\tfatal_fr(r, \"parse packet\");\n\t}\n\n\tif (change)\n\t\tlogit(\"password change not supported\");\n\telse if (PRIVSEP(auth_password(ssh, password)) == 1)\n\t\tauthenticated = 1;\n\tfreezero(password, len);\n\treturn authenticated;\n}\n\nAuthmethod method_passwd = {\n\t\"password\",\n\tNULL,\n\tuserauth_passwd,\n\t&options.password_authentication\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

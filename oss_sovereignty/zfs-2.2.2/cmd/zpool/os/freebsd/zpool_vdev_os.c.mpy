@@ -1,0 +1,9 @@
+{
+  "module_name": "zpool_vdev_os.c",
+  "hash_id": "6ecd06cea5b31236b11c71ecb63d3d71f393e881637d6bd780416bbfd0ed73e3",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/os/freebsd/zpool_vdev_os.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <assert.h>\n#include <errno.h>\n#include <fcntl.h>\n#include <libintl.h>\n#include <libnvpair.h>\n#include <libzutil.h>\n#include <limits.h>\n#include <sys/spa.h>\n#include <stdio.h>\n#include <string.h>\n#include <unistd.h>\n#include <paths.h>\n#include <sys/stat.h>\n#include <sys/disk.h>\n#include <sys/mntent.h>\n#include <libgeom.h>\n\n#include \"zpool_util.h\"\n#include <sys/zfs_context.h>\n\nint\ncheck_device(const char *name, boolean_t force, boolean_t isspare,\n    boolean_t iswholedisk)\n{\n\t(void) iswholedisk;\n\tchar path[MAXPATHLEN];\n\n\tif (strncmp(name, _PATH_DEV, sizeof (_PATH_DEV) - 1) != 0)\n\t\tsnprintf(path, sizeof (path), \"%s%s\", _PATH_DEV, name);\n\telse\n\t\tstrlcpy(path, name, sizeof (path));\n\n\treturn (check_file(path, force, isspare));\n}\n\nboolean_t\ncheck_sector_size_database(char *path, int *sector_size)\n{\n\t(void) path, (void) sector_size;\n\treturn (0);\n}\n\nvoid\nafter_zpool_upgrade(zpool_handle_t *zhp)\n{\n\tchar bootfs[ZPOOL_MAXPROPLEN];\n\n\tif (zpool_get_prop(zhp, ZPOOL_PROP_BOOTFS, bootfs,\n\t    sizeof (bootfs), NULL, B_FALSE) == 0 &&\n\t    strcmp(bootfs, \"-\") != 0) {\n\t\t(void) printf(gettext(\"Pool '%s' has the bootfs \"\n\t\t    \"property set, you might need to update\\nthe boot \"\n\t\t    \"code. See gptzfsboot(8) and loader.efi(8) for \"\n\t\t    \"details.\\n\"), zpool_get_name(zhp));\n\t}\n}\n\nint\ncheck_file(const char *file, boolean_t force, boolean_t isspare)\n{\n\treturn (check_file_generic(file, force, isspare));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "util_macros.h",
+  "hash_id": "fe1ee292c90b476e530e8606af43bcb8032d597721e6a5c8e5fac7c54f3a147e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/util_macros.h",
+  "human_readable_source": " \n#ifndef _LINUX_HELPER_MACROS_H_\n#define _LINUX_HELPER_MACROS_H_\n\n#include <linux/math.h>\n\n#define __find_closest(x, a, as, op)\t\t\t\t\t\\\n({\t\t\t\t\t\t\t\t\t\\\n\ttypeof(as) __fc_i, __fc_as = (as) - 1;\t\t\t\t\\\n\ttypeof(x) __fc_x = (x);\t\t\t\t\t\t\\\n\ttypeof(*a) const *__fc_a = (a);\t\t\t\t\t\\\n\tfor (__fc_i = 0; __fc_i < __fc_as; __fc_i++) {\t\t\t\\\n\t\tif (__fc_x op DIV_ROUND_CLOSEST(__fc_a[__fc_i] +\t\\\n\t\t\t\t\t\t__fc_a[__fc_i + 1], 2))\t\\\n\t\t\tbreak;\t\t\t\t\t\t\\\n\t}\t\t\t\t\t\t\t\t\\\n\t(__fc_i);\t\t\t\t\t\t\t\\\n})\n\n \n#define find_closest(x, a, as) __find_closest(x, a, as, <=)\n\n \n#define find_closest_descending(x, a, as) __find_closest(x, a, as, >=)\n\n \n#define is_insidevar(ptr, var)\t\t\t\t\t\t\\\n\t((uintptr_t)(ptr) >= (uintptr_t)(var) &&\t\t\t\\\n\t (uintptr_t)(ptr) <  (uintptr_t)(var) + sizeof(var))\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

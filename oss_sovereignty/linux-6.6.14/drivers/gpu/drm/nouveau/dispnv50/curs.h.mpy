@@ -1,0 +1,9 @@
+{
+  "module_name": "curs.h",
+  "hash_id": "fc9e45f7ea1cbac8884bd8ed55eb892759fd950d4b9668e2ed62fecd562d7e27",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/curs.h",
+  "human_readable_source": "#ifndef __NV50_KMS_CURS_H__\n#define __NV50_KMS_CURS_H__\n#include \"wndw.h\"\n\nint curs507a_new(struct nouveau_drm *, int, s32, struct nv50_wndw **);\nint curs507a_new_(const struct nv50_wimm_func *, struct nouveau_drm *,\n\t\t  int head, s32 oclass, u32 interlock_data,\n\t\t  struct nv50_wndw **);\n\nint curs907a_new(struct nouveau_drm *, int, s32, struct nv50_wndw **);\nint cursc37a_new(struct nouveau_drm *, int, s32, struct nv50_wndw **);\n\nint nv50_curs_new(struct nouveau_drm *, int head, struct nv50_wndw **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

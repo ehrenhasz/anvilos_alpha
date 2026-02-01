@@ -1,0 +1,9 @@
+{
+  "module_name": "mkancesdirs.m4",
+  "hash_id": "9ad4de5a86ad1f8f7a04843e7a6b3be4b15315b6eee0d8aa85008c94cbf8dd5a",
+  "original_prompt": "Ingested from coreutils-9.4/m4/mkancesdirs.m4",
+  "human_readable_source": "# Make a file's ancestor directories.\ndnl Copyright (C) 2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_MKANCESDIRS],\n[\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

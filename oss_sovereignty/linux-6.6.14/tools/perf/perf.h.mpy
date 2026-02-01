@@ -1,0 +1,9 @@
+{
+  "module_name": "perf.h",
+  "hash_id": "1c866ecbd95ba13c8600cdda14a074322c312e4b8d05015c532e92f9c09843dc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/perf.h",
+  "human_readable_source": " \n#ifndef _PERF_PERF_H\n#define _PERF_PERF_H\n\n#ifndef MAX_NR_CPUS\n#define MAX_NR_CPUS\t\t\t2048\n#endif\n\nenum perf_affinity {\n\tPERF_AFFINITY_SYS = 0,\n\tPERF_AFFINITY_NODE,\n\tPERF_AFFINITY_CPU,\n\tPERF_AFFINITY_MAX\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

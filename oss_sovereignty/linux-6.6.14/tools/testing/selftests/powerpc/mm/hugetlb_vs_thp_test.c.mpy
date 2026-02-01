@@ -1,0 +1,9 @@
+{
+  "module_name": "hugetlb_vs_thp_test.c",
+  "hash_id": "d4728eb45cd53e794e63c426c4106e6e4033ba489638b7cb042df16b34dfb892",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/mm/hugetlb_vs_thp_test.c",
+  "human_readable_source": "\n#include <stdio.h>\n#include <sys/mman.h>\n#include <unistd.h>\n\n#include \"utils.h\"\n\n \n#define SIZE\t(16 * 1024 * 1024)\n\nstatic int test_body(void)\n{\n\tvoid *addr;\n\tchar *p;\n\n\taddr = (void *)0xa0000000;\n\n\tp = mmap(addr, SIZE, PROT_READ | PROT_WRITE,\n\t\t MAP_HUGETLB | MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);\n\tif (p != MAP_FAILED) {\n\t\t \n\t\tif (munmap(addr, SIZE)) {\n\t\t\tperror(\"munmap\");\n\t\t\treturn 1;\n\t\t}\n\t}\n\n\tp = mmap(addr, SIZE, PROT_READ | PROT_WRITE,\n\t\t MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);\n\tif (p == MAP_FAILED) {\n\t\tprintf(\"Mapping failed @ %p\\n\", addr);\n\t\tperror(\"mmap\");\n\t\treturn 1;\n\t}\n\n\t \n\t*p = 0xf;\n\n\tmunmap(addr, SIZE);\n\n\treturn 0;\n}\n\nstatic int test_main(void)\n{\n\tint i;\n\n\t \n\tfor (i = 0; i < 10000; i++)\n\t\tif (test_body())\n\t\t\treturn 1;\n\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(test_main, \"hugetlb_vs_thp\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

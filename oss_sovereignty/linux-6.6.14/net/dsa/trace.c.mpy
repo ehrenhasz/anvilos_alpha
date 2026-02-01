@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "3c4fa7b39fd73762bc42e46bb9f0b23f067a4b5f972b30aabdfc993e28f9b610",
+  "original_prompt": "Ingested from linux-6.6.14/net/dsa/trace.c",
+  "human_readable_source": "\n \n\n#define CREATE_TRACE_POINTS\n#include \"trace.h\"\n\nvoid dsa_db_print(const struct dsa_db *db, char buf[DSA_DB_BUFSIZ])\n{\n\tswitch (db->type) {\n\tcase DSA_DB_PORT:\n\t\tsprintf(buf, \"port %s\", db->dp->name);\n\t\tbreak;\n\tcase DSA_DB_LAG:\n\t\tsprintf(buf, \"lag %s id %d\", db->lag.dev->name, db->lag.id);\n\t\tbreak;\n\tcase DSA_DB_BRIDGE:\n\t\tsprintf(buf, \"bridge %s num %d\", db->bridge.dev->name,\n\t\t\tdb->bridge.num);\n\t\tbreak;\n\tdefault:\n\t\tsprintf(buf, \"unknown\");\n\t\tbreak;\n\t}\n}\n\nconst char *dsa_port_kind(const struct dsa_port *dp)\n{\n\tswitch (dp->type) {\n\tcase DSA_PORT_TYPE_USER:\n\t\treturn \"user\";\n\tcase DSA_PORT_TYPE_CPU:\n\t\treturn \"cpu\";\n\tcase DSA_PORT_TYPE_DSA:\n\t\treturn \"dsa\";\n\tdefault:\n\t\treturn \"unused\";\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

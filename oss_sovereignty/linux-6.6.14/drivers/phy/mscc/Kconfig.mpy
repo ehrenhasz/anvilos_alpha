@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "db9c4b3de75a13cd734f8a3ced48d783047997d918fdd31a0c17e525470bfcf5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/mscc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Phy drivers for Microsemi devices\n#\n\nconfig PHY_OCELOT_SERDES\n\ttristate \"SerDes PHY driver for Microsemi Ocelot\"\n\tselect GENERIC_PHY\n\tdepends on OF\n\tdepends on MFD_SYSCON\n\thelp\n\t  Enable this for supporting SerDes muxing with Microsemi Ocelot.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

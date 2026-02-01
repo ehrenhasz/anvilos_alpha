@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3601ac9572c110f6dc8e6198e02cbb5c509a0ba4fbcf8bc687940b69d3078c1f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/solomon/Kconfig",
+  "human_readable_source": "config DRM_SSD130X\n\ttristate \"DRM support for Solomon SSD130x OLED displays\"\n\tdepends on DRM && MMU\n\tselect BACKLIGHT_CLASS_DEVICE\n\tselect DRM_GEM_SHMEM_HELPER\n\tselect DRM_KMS_HELPER\n\thelp\n\t  DRM driver for the SSD130x Solomon and SINO WEALTH SH110x OLED\n\t  controllers. This is only for the core driver, a driver for the\n\t  appropriate bus transport in your chip also must be selected.\n\n\t  If M is selected the module will be called ssd130x.\n\nconfig DRM_SSD130X_I2C\n\ttristate \"DRM support for Solomon SSD130x OLED displays (I2C bus)\"\n\tdepends on DRM_SSD130X && I2C\n\tselect REGMAP_I2C\n\thelp\n\t  Say Y here if the SSD130x or SH110x OLED display is connected via\n\t  I2C bus.\n\n\t  If M is selected the module will be called ssd130x-i2c.\n\nconfig DRM_SSD130X_SPI\n\ttristate \"DRM support for Solomon SSD130X OLED displays (SPI bus)\"\n\tdepends on DRM_SSD130X && SPI\n\tselect REGMAP\n\thelp\n\t  Say Y here if the SSD130x OLED display is connected via SPI bus.\n\n\t  If M is selected the module will be called ssd130x-spi.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

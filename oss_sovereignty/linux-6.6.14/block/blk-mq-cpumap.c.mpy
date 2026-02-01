@@ -1,0 +1,9 @@
+{
+  "module_name": "blk-mq-cpumap.c",
+  "hash_id": "cf717b1ebaff970adb5f5c7a54f843ca6ce0ad743b53eb10f787b2c18e13cfdc",
+  "original_prompt": "Ingested from linux-6.6.14/block/blk-mq-cpumap.c",
+  "human_readable_source": "\n \n#include <linux/kernel.h>\n#include <linux/threads.h>\n#include <linux/module.h>\n#include <linux/mm.h>\n#include <linux/smp.h>\n#include <linux/cpu.h>\n#include <linux/group_cpus.h>\n\n#include \"blk.h\"\n#include \"blk-mq.h\"\n\nvoid blk_mq_map_queues(struct blk_mq_queue_map *qmap)\n{\n\tconst struct cpumask *masks;\n\tunsigned int queue, cpu;\n\n\tmasks = group_cpus_evenly(qmap->nr_queues);\n\tif (!masks) {\n\t\tfor_each_possible_cpu(cpu)\n\t\t\tqmap->mq_map[cpu] = qmap->queue_offset;\n\t\treturn;\n\t}\n\n\tfor (queue = 0; queue < qmap->nr_queues; queue++) {\n\t\tfor_each_cpu(cpu, &masks[queue])\n\t\t\tqmap->mq_map[cpu] = qmap->queue_offset + queue;\n\t}\n\tkfree(masks);\n}\nEXPORT_SYMBOL_GPL(blk_mq_map_queues);\n\n \nint blk_mq_hw_queue_to_node(struct blk_mq_queue_map *qmap, unsigned int index)\n{\n\tint i;\n\n\tfor_each_possible_cpu(i) {\n\t\tif (index == qmap->mq_map[i])\n\t\t\treturn cpu_to_node(i);\n\t}\n\n\treturn NUMA_NO_NODE;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-omap.h",
+  "hash_id": "6f71b223015274a9cb23d789a1caab71f9ccb7c93ab5144cce1962fc675c9bb7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/i2c-omap.h",
+  "human_readable_source": " \n#ifndef __I2C_OMAP_H__\n#define __I2C_OMAP_H__\n\n#include <linux/platform_device.h>\n\n \n\n#define OMAP_I2C_IP_VERSION_1 1\n#define OMAP_I2C_IP_VERSION_2 2\n\n \n\n#define OMAP_I2C_FLAG_NO_FIFO\t\t\tBIT(0)\n#define OMAP_I2C_FLAG_SIMPLE_CLOCK\t\tBIT(1)\n#define OMAP_I2C_FLAG_16BIT_DATA_REG\t\tBIT(2)\n#define OMAP_I2C_FLAG_ALWAYS_ARMXOR_CLK\tBIT(5)\n#define OMAP_I2C_FLAG_FORCE_19200_INT_CLK\tBIT(6)\n \n#define OMAP_I2C_FLAG_BUS_SHIFT_NONE 0\n#define OMAP_I2C_FLAG_BUS_SHIFT_1\t\tBIT(7)\n#define OMAP_I2C_FLAG_BUS_SHIFT_2\t\tBIT(8)\n#define OMAP_I2C_FLAG_BUS_SHIFT__SHIFT 7\n\nstruct omap_i2c_bus_platform_data {\n\tu32\t\tclkrate;\n\tu32\t\trev;\n\tu32\t\tflags;\n\tvoid\t\t(*set_mpu_wkup_lat)(struct device *dev, long set);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

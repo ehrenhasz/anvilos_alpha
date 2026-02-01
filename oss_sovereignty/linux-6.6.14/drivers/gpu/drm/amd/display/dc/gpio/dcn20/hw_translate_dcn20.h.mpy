@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_translate_dcn20.h",
+  "hash_id": "9a3c3e718292ed7bd095dac2e88f0f1545e9921c6da5ba9fe5a348899aaa33ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/dcn20/hw_translate_dcn20.h",
+  "human_readable_source": " \n#ifndef __DAL_HW_TRANSLATE_DCN20_H__\n#define __DAL_HW_TRANSLATE_DCN20_H__\n\nstruct hw_translate;\n\n \nvoid dal_hw_translate_dcn20_init(struct hw_translate *tr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

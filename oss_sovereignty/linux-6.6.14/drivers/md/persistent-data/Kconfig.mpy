@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ede87173a6d214d2b200415da9c65ee7f29118891cf0561173e7f5c3c0fd9ee6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/persistent-data/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DM_PERSISTENT_DATA\n       tristate\n       depends on BLK_DEV_DM\n       select LIBCRC32C\n       select DM_BUFIO\n\thelp\n\t Library providing immutable on-disk data structure support for\n\t device-mapper targets such as the thin provisioning target.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0fbe8ec194ea8a5fde64a711274e87d7e5a6212b70f7f90906c6367d56e59fbe",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nilfs2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_NILFS2_FS) += nilfs2.o\nnilfs2-y := inode.o file.o dir.o super.o namei.o page.o mdt.o \\\n\tbtnode.o bmap.o btree.o direct.o dat.o recovery.o \\\n\tthe_nilfs.o segbuf.o segment.o cpfile.o sufile.o \\\n\tifile.o alloc.o gcinode.o ioctl.o sysfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

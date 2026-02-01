@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0bb56c4759f57160674ea01f66be094e296a7465cdaba02f6b2a83acaca8f8bc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/capabilities/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nTEST_GEN_FILES := validate_cap\nTEST_GEN_PROGS := test_execve\n\nCFLAGS += -O2 -g -std=gnu99 -Wall\nLDLIBS += -lcap-ng -lrt -ldl\n\ninclude ../lib.mk\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

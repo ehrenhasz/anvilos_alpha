@@ -1,0 +1,9 @@
+{
+  "module_name": "always-system.m4",
+  "hash_id": "c2252fd378324f4c58c0e0fdc3e6cc881c5ffd501d362d9ea39b0af87bfedf43",
+  "original_prompt": "Ingested from zfs-2.2.2/config/always-system.m4",
+  "human_readable_source": "dnl #\ndnl # Set the target system\ndnl #\nAC_DEFUN([ZFS_AC_CONFIG_ALWAYS_SYSTEM], [\n\tAC_MSG_CHECKING([for system type ($host_os)])\n\tcase $host_os in\n\t\t*linux*)\n\t\t\tAC_DEFINE([SYSTEM_LINUX], [1],\n\t\t\t\t[True if ZFS is to be compiled for a Linux system])\n\t\t\tac_system=\"Linux\"\n\t\t\tac_system_l=\"linux\"\n\t\t\t;;\n\t\t*freebsd*)\n\t\t\tAC_DEFINE([SYSTEM_FREEBSD], [1],\n\t\t\t\t[True if ZFS is to be compiled for a FreeBSD system])\n\t\t\tac_system=\"FreeBSD\"\n\t\t\tac_system_l=\"freebsd\"\n\t\t\t;;\n\t\t*)\n\t\t\tac_system=\"unknown\"\n\t\t\tac_system_l=\"unknown\"\n\t\t\t;;\n\tesac\n\tAC_MSG_RESULT([$ac_system])\n\tAC_SUBST([ac_system])\n\tAC_SUBST([ac_system_l])\n\n\tAM_CONDITIONAL([BUILD_LINUX], [test \"x$ac_system\" = \"xLinux\"])\n\tAM_CONDITIONAL([BUILD_FREEBSD], [test \"x$ac_system\" = \"xFreeBSD\"])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

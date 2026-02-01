@@ -1,0 +1,9 @@
+{
+  "module_name": "ga100.c",
+  "hash_id": "e327ded6edb4e918f48c79a6313ad6e8e598c1e3690bfb959dee3a478a75475a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/ce/ga100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <subdev/vfn.h>\n\n#include <nvif/class.h>\n\nstatic irqreturn_t\nga100_ce_intr(struct nvkm_inth *inth)\n{\n\tstruct nvkm_subdev *subdev = container_of(inth, typeof(*subdev), inth);\n\n\t \n\tnvkm_error(subdev, \"intr\\n\");\n\treturn IRQ_NONE;\n}\n\nint\nga100_ce_nonstall(struct nvkm_engine *engine)\n{\n\tstruct nvkm_subdev *subdev = &engine->subdev;\n\tstruct nvkm_device *device = subdev->device;\n\n\treturn nvkm_rd32(device, 0x104424 + (subdev->inst * 0x80)) & 0x00000fff;\n}\n\nint\nga100_ce_fini(struct nvkm_engine *engine, bool suspend)\n{\n\tnvkm_inth_block(&engine->subdev.inth);\n\treturn 0;\n}\n\nint\nga100_ce_init(struct nvkm_engine *engine)\n{\n\tnvkm_inth_allow(&engine->subdev.inth);\n\treturn 0;\n}\n\nint\nga100_ce_oneinit(struct nvkm_engine *engine)\n{\n\tstruct nvkm_subdev *subdev = &engine->subdev;\n\tstruct nvkm_device *device = subdev->device;\n\tu32 vector;\n\n\tvector = nvkm_rd32(device, 0x10442c + (subdev->inst * 0x80)) & 0x00000fff;\n\n\treturn nvkm_inth_add(&device->vfn->intr, vector, NVKM_INTR_PRIO_NORMAL,\n\t\t\t     subdev, ga100_ce_intr, &subdev->inth);\n}\n\nstatic const struct nvkm_engine_func\nga100_ce = {\n\t.oneinit = ga100_ce_oneinit,\n\t.init = ga100_ce_init,\n\t.fini = ga100_ce_fini,\n\t.nonstall = ga100_ce_nonstall,\n\t.cclass = &gv100_ce_cclass,\n\t.sclass = {\n\t\t{ -1, -1, AMPERE_DMA_COPY_A },\n\t\t{}\n\t}\n};\n\nint\nga100_ce_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t     struct nvkm_engine **pengine)\n{\n\treturn nvkm_engine_new_(&ga100_ce, device, type, inst, true, pengine);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "89986691d5a0bd3976f09e9d8d801de585a64c23cad99a4dc8598c58c6f17da6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig WLAN_VENDOR_TI\n\tbool \"Texas Instrument devices\"\n\tdefault y\n\thelp\n\t  If you have a wireless card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all the\n\t  questions about these cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif WLAN_VENDOR_TI\nsource \"drivers/net/wireless/ti/wl1251/Kconfig\"\nsource \"drivers/net/wireless/ti/wl12xx/Kconfig\"\nsource \"drivers/net/wireless/ti/wl18xx/Kconfig\"\n\n# keep last for automatic dependencies\nsource \"drivers/net/wireless/ti/wlcore/Kconfig\"\n\nendif # WLAN_VENDOR_TI\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

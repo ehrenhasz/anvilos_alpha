@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_context_os.h",
+  "hash_id": "c575f20ec4117833c6e111d152da611eae8405b301f53fffa616ad46a0dc69cf",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/os/linux/sys/zfs_context_os.h",
+  "human_readable_source": " \n\n#ifndef ZFS_CONTEXT_OS_H\n#define\tZFS_CONTEXT_OS_H\n\n#define\tHAVE_LARGE_STACKS\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

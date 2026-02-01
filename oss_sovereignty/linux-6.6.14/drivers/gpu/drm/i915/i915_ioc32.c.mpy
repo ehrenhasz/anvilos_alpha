@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_ioc32.c",
+  "hash_id": "531157f7af9ceccfcae1ddc562c1c6444c46d88fcc2b84c0d7ad2dc0e2fd5b9f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_ioc32.c",
+  "human_readable_source": " \n#include <linux/compat.h>\n\n#include <drm/drm_ioctl.h>\n\n#include \"i915_drv.h\"\n#include \"i915_getparam.h\"\n#include \"i915_ioc32.h\"\n\nstruct drm_i915_getparam32 {\n\ts32 param;\n\t \n\tu32 value;\n};\n\nstatic int compat_i915_getparam(struct file *file, unsigned int cmd,\n\t\t\t\tunsigned long arg)\n{\n\tstruct drm_i915_getparam32 req32;\n\tstruct drm_i915_getparam req;\n\n\tif (copy_from_user(&req32, (void __user *)arg, sizeof(req32)))\n\t\treturn -EFAULT;\n\n\treq.param = req32.param;\n\treq.value = compat_ptr(req32.value);\n\n\treturn drm_ioctl_kernel(file, i915_getparam_ioctl, &req,\n\t\t\t\tDRM_RENDER_ALLOW);\n}\n\nstatic drm_ioctl_compat_t *i915_compat_ioctls[] = {\n\t[DRM_I915_GETPARAM] = compat_i915_getparam,\n};\n\n \nlong i915_ioc32_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)\n{\n\tunsigned int nr = DRM_IOCTL_NR(cmd);\n\tdrm_ioctl_compat_t *fn = NULL;\n\tint ret;\n\n\tif (nr < DRM_COMMAND_BASE || nr >= DRM_COMMAND_END)\n\t\treturn drm_compat_ioctl(filp, cmd, arg);\n\n\tif (nr < DRM_COMMAND_BASE + ARRAY_SIZE(i915_compat_ioctls))\n\t\tfn = i915_compat_ioctls[nr - DRM_COMMAND_BASE];\n\n\tif (fn != NULL)\n\t\tret = (*fn) (filp, cmd, arg);\n\telse\n\t\tret = drm_ioctl(filp, cmd, arg);\n\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

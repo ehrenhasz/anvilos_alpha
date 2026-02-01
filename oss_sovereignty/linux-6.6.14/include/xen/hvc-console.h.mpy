@@ -1,0 +1,9 @@
+{
+  "module_name": "hvc-console.h",
+  "hash_id": "f25adf1942cb0ddf7c6048a923ce110a371114a801d704cbc321b593ebd5eaf7",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/hvc-console.h",
+  "human_readable_source": " \n#ifndef XEN_HVC_CONSOLE_H\n#define XEN_HVC_CONSOLE_H\n\nextern struct console xenboot_console;\n\n#ifdef CONFIG_HVC_XEN\nvoid xen_console_resume(void);\nvoid xen_raw_console_write(const char *str);\n__printf(1, 2)\nvoid xen_raw_printk(const char *fmt, ...);\n#else\nstatic inline void xen_console_resume(void) { }\nstatic inline void xen_raw_console_write(const char *str) { }\nstatic inline __printf(1, 2)\nvoid xen_raw_printk(const char *fmt, ...) { }\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

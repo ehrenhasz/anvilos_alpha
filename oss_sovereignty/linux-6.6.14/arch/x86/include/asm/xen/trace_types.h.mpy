@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_types.h",
+  "hash_id": "dd9282a4f41a25e2d0b93af97f6c085e0320e64e29e3ce82d981c4991c9b89fc",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/xen/trace_types.h",
+  "human_readable_source": " \n#ifndef _ASM_XEN_TRACE_TYPES_H\n#define _ASM_XEN_TRACE_TYPES_H\n\nenum xen_mc_flush_reason {\n\tXEN_MC_FL_NONE,\t\t \n\tXEN_MC_FL_BATCH,\t \n\tXEN_MC_FL_ARGS,\t\t \n\tXEN_MC_FL_CALLBACK,\t \n};\n\nenum xen_mc_extend_args {\n\tXEN_MC_XE_OK,\n\tXEN_MC_XE_BAD_OP,\n\tXEN_MC_XE_NO_SPACE\n};\ntypedef void (*xen_mc_callback_fn_t)(void *);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

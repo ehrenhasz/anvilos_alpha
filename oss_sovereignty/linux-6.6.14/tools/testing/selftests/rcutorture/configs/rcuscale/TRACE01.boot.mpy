@@ -1,0 +1,9 @@
+{
+  "module_name": "TRACE01.boot",
+  "hash_id": "ad651ae8d99dbdfb718dc6b39df2bc5bc7b8e942d58cca43bb0bfc2b8e6b43a9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcuscale/TRACE01.boot",
+  "human_readable_source": "rcuscale.scale_type=tasks-tracing\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

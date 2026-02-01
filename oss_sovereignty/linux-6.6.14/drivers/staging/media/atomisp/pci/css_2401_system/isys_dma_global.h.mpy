@@ -1,0 +1,9 @@
+{
+  "module_name": "isys_dma_global.h",
+  "hash_id": "891b2467dd59ea64d0847157ac0f9fc34141450c554fe3b1cc79477dac929530",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/css_2401_system/isys_dma_global.h",
+  "human_readable_source": " \n \n\n#ifndef __ISYS_DMA_GLOBAL_H_INCLUDED__\n#define __ISYS_DMA_GLOBAL_H_INCLUDED__\n\n#include <type_support.h>\n\n#define HIVE_ISYS2401_DMA_IBUF_DDR_CONN\t0\n#define HIVE_ISYS2401_DMA_IBUF_VMEM_CONN\t1\n#define _DMA_V2_ZERO_EXTEND\t\t0\n#define _DMA_V2_SIGN_EXTEND\t\t1\n\n#define _DMA_ZERO_EXTEND     _DMA_V2_ZERO_EXTEND\n#define _DMA_SIGN_EXTEND     _DMA_V2_SIGN_EXTEND\n\n \ntypedef struct isys2401_dma_port_cfg_s isys2401_dma_port_cfg_t;\nstruct isys2401_dma_port_cfg_s {\n\tu32 stride;\n\tu32 elements;\n\tu32 cropping;\n\tu32 width;\n};\n\n \n\n \ntypedef enum {\n\tisys2401_dma_ibuf_to_ddr_connection\t= HIVE_ISYS2401_DMA_IBUF_DDR_CONN,\n\tisys2401_dma_ibuf_to_vmem_connection\t= HIVE_ISYS2401_DMA_IBUF_VMEM_CONN\n} isys2401_dma_connection;\n\ntypedef enum {\n\tisys2401_dma_zero_extension = _DMA_ZERO_EXTEND,\n\tisys2401_dma_sign_extension = _DMA_SIGN_EXTEND\n} isys2401_dma_extension;\n\ntypedef struct isys2401_dma_cfg_s isys2401_dma_cfg_t;\nstruct isys2401_dma_cfg_s {\n\tisys2401_dma_channel\tchannel;\n\tisys2401_dma_connection\tconnection;\n\tisys2401_dma_extension\textension;\n\tu32\t\theight;\n};\n\n \n\n \nextern const isys2401_dma_channel\nN_ISYS2401_DMA_CHANNEL_PROCS[N_ISYS2401_DMA_ID];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

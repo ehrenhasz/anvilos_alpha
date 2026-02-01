@@ -1,0 +1,9 @@
+{
+  "module_name": "vcn_v1_0.h",
+  "hash_id": "2718ef84c5bcab514adad163bcaab72405bcb2c00e564a3c86ec1b1eb31ba464",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/vcn_v1_0.h",
+  "human_readable_source": " \n\n#ifndef __VCN_V1_0_H__\n#define __VCN_V1_0_H__\n\nvoid vcn_v1_0_ring_end_use(struct amdgpu_ring *ring);\nvoid vcn_v1_0_set_pg_for_begin_use(struct amdgpu_ring *ring, bool set_clocks);\n\nextern const struct amdgpu_ip_block_version vcn_v1_0_ip_block;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

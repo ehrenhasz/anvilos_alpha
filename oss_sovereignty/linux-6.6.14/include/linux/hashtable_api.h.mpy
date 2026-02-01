@@ -1,0 +1,9 @@
+{
+  "module_name": "hashtable_api.h",
+  "hash_id": "e25fb87a99add5223acb7cc48583779c589755f031a3dcdf9685eb88879b710c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/hashtable_api.h",
+  "human_readable_source": "#include <linux/hashtable.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

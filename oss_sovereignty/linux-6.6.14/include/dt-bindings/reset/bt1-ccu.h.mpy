@@ -1,0 +1,9 @@
+{
+  "module_name": "bt1-ccu.h",
+  "hash_id": "b4ec8a9fbfc24e8c0fc57f490c33c1367489e6c8d7655655f6c1c0b7f66b65bd",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/bt1-ccu.h",
+  "human_readable_source": " \n \n#ifndef __DT_BINDINGS_RESET_BT1_CCU_H\n#define __DT_BINDINGS_RESET_BT1_CCU_H\n\n#define CCU_AXI_MAIN_RST\t\t0\n#define CCU_AXI_DDR_RST\t\t\t1\n#define CCU_AXI_SATA_RST\t\t2\n#define CCU_AXI_GMAC0_RST\t\t3\n#define CCU_AXI_GMAC1_RST\t\t4\n#define CCU_AXI_XGMAC_RST\t\t5\n#define CCU_AXI_PCIE_M_RST\t\t6\n#define CCU_AXI_PCIE_S_RST\t\t7\n#define CCU_AXI_USB_RST\t\t\t8\n#define CCU_AXI_HWA_RST\t\t\t9\n#define CCU_AXI_SRAM_RST\t\t10\n\n#define CCU_SYS_SATA_REF_RST\t\t0\n#define CCU_SYS_APB_RST\t\t\t1\n#define CCU_SYS_DDR_FULL_RST\t\t2\n#define CCU_SYS_DDR_INIT_RST\t\t3\n#define CCU_SYS_PCIE_PCS_PHY_RST\t4\n#define CCU_SYS_PCIE_PIPE0_RST\t\t5\n#define CCU_SYS_PCIE_CORE_RST\t\t6\n#define CCU_SYS_PCIE_PWR_RST\t\t7\n#define CCU_SYS_PCIE_STICKY_RST\t\t8\n#define CCU_SYS_PCIE_NSTICKY_RST\t9\n#define CCU_SYS_PCIE_HOT_RST\t\t10\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

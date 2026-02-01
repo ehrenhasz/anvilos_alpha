@@ -1,0 +1,9 @@
+{
+  "module_name": "smp_types.h",
+  "hash_id": "38a2df65ffa0545054ecec4bd97d111b66055b94faa1971accbe16ac3c785616",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/smp_types.h",
+  "human_readable_source": " \n#ifndef __LINUX_SMP_TYPES_H\n#define __LINUX_SMP_TYPES_H\n\n#include <linux/llist.h>\n\nenum {\n\tCSD_FLAG_LOCK\t\t= 0x01,\n\n\tIRQ_WORK_PENDING\t= 0x01,\n\tIRQ_WORK_BUSY\t\t= 0x02,\n\tIRQ_WORK_LAZY\t\t= 0x04,  \n\tIRQ_WORK_HARD_IRQ\t= 0x08,  \n\n\tIRQ_WORK_CLAIMED\t= (IRQ_WORK_PENDING | IRQ_WORK_BUSY),\n\n\tCSD_TYPE_ASYNC\t\t= 0x00,\n\tCSD_TYPE_SYNC\t\t= 0x10,\n\tCSD_TYPE_IRQ_WORK\t= 0x20,\n\tCSD_TYPE_TTWU\t\t= 0x30,\n\n\tCSD_FLAG_TYPE_MASK\t= 0xF0,\n};\n\n \n\nstruct __call_single_node {\n\tstruct llist_node\tllist;\n\tunion {\n\t\tunsigned int\tu_flags;\n\t\tatomic_t\ta_flags;\n\t};\n#ifdef CONFIG_64BIT\n\tu16 src, dst;\n#endif\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

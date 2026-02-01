@@ -1,0 +1,9 @@
+{
+  "module_name": "hvm.h",
+  "hash_id": "c246c5c6c8f76c25cdfd78d5d02be61eee45332553ed827454353eeeb019f00f",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/hvm.h",
+  "human_readable_source": " \n \n#ifndef XEN_HVM_H__\n#define XEN_HVM_H__\n\n#include <xen/interface/hvm/params.h>\n#include <asm/xen/hypercall.h>\n\nstatic const char *param_name(int op)\n{\n#define PARAM(x) [HVM_PARAM_##x] = #x\n\tstatic const char *const names[] = {\n\t\tPARAM(CALLBACK_IRQ),\n\t\tPARAM(STORE_PFN),\n\t\tPARAM(STORE_EVTCHN),\n\t\tPARAM(PAE_ENABLED),\n\t\tPARAM(IOREQ_PFN),\n\t\tPARAM(BUFIOREQ_PFN),\n\t\tPARAM(TIMER_MODE),\n\t\tPARAM(HPET_ENABLED),\n\t\tPARAM(IDENT_PT),\n\t\tPARAM(DM_DOMAIN),\n\t\tPARAM(ACPI_S_STATE),\n\t\tPARAM(VM86_TSS),\n\t\tPARAM(VPT_ALIGN),\n\t\tPARAM(CONSOLE_PFN),\n\t\tPARAM(CONSOLE_EVTCHN),\n\t};\n#undef PARAM\n\n\tif (op >= ARRAY_SIZE(names))\n\t\treturn \"unknown\";\n\n\tif (!names[op])\n\t\treturn \"reserved\";\n\n\treturn names[op];\n}\nstatic inline int hvm_get_parameter(int idx, uint64_t *value)\n{\n\tstruct xen_hvm_param xhv;\n\tint r;\n\n\txhv.domid = DOMID_SELF;\n\txhv.index = idx;\n\tr = HYPERVISOR_hvm_op(HVMOP_get_param, &xhv);\n\tif (r < 0) {\n\t\tpr_err(\"Cannot get hvm parameter %s (%d): %d!\\n\",\n\t\t       param_name(idx), idx, r);\n\t\treturn r;\n\t}\n\t*value = xhv.value;\n\treturn r;\n}\n\n#define HVM_CALLBACK_VIA_TYPE_VECTOR 0x2\n#define HVM_CALLBACK_VIA_TYPE_SHIFT 56\n#define HVM_CALLBACK_VECTOR(x) (((uint64_t)HVM_CALLBACK_VIA_TYPE_VECTOR)<<\\\n\t\tHVM_CALLBACK_VIA_TYPE_SHIFT | (x))\n\nvoid xen_setup_callback_vector(void);\n\nint xen_set_upcall_vector(unsigned int cpu);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

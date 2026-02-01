@@ -1,0 +1,9 @@
+{
+  "module_name": "via_aux_sii164.c",
+  "hash_id": "d7f95152d2e3d51cb0709f842c069ebeb3c325838b2d1d3cde0ba4244b89c06a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/via/via_aux_sii164.c",
+  "human_readable_source": "\n \n \n\n#include <linux/slab.h>\n#include \"via_aux.h\"\n\n\nstatic const char *name = \"SiI 164 PanelLink Transmitter\";\n\n\nstatic void probe(struct via_aux_bus *bus, u8 addr)\n{\n\tstruct via_aux_drv drv = {\n\t\t.bus\t=\tbus,\n\t\t.addr\t=\taddr,\n\t\t.name\t=\tname};\n\t \n\tconst u8 id[] = {0x01, 0x00, 0x06, 0x00}, len = ARRAY_SIZE(id);\n\tu8 tmp[ARRAY_SIZE(id)];\n\n\tif (!via_aux_read(&drv, 0x00, tmp, len) || memcmp(id, tmp, len))\n\t\treturn;\n\n\tprintk(KERN_INFO \"viafb: Found %s at address 0x%x\\n\", name, addr);\n\tvia_aux_add(&drv);\n}\n\nvoid via_aux_sii164_probe(struct via_aux_bus *bus)\n{\n\tu8 i;\n\n\tfor (i = 0x38; i <= 0x3F; i++)\n\t\tprobe(bus, i);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "global_data_init.c",
+  "hash_id": "a16e11575a1897dc315e3dd9badcfdec63761a5e7a7e0df3ae0ef4ffa265f826",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/global_data_init.c",
+  "human_readable_source": "\n#include <test_progs.h>\n\nvoid test_global_data_init(void)\n{\n\tconst char *file = \"./test_global_data.bpf.o\";\n\tint err = -ENOMEM, map_fd, zero = 0;\n\t__u8 *buff = NULL, *newval = NULL;\n\tstruct bpf_object *obj;\n\tstruct bpf_map *map;\n        __u32 duration = 0;\n\tsize_t sz;\n\n\tobj = bpf_object__open_file(file, NULL);\n\terr = libbpf_get_error(obj);\n\tif (CHECK_FAIL(err))\n\t\treturn;\n\n\tmap = bpf_object__find_map_by_name(obj, \".rodata\");\n\tif (CHECK_FAIL(!map || !bpf_map__is_internal(map)))\n\t\tgoto out;\n\n\tsz = bpf_map__value_size(map);\n\tnewval = malloc(sz);\n\tif (CHECK_FAIL(!newval))\n\t\tgoto out;\n\n\tmemset(newval, 0, sz);\n\t \n\terr = bpf_map__set_initial_value(map, newval, sz - 1);\n\tif (CHECK(!err, \"reject set initial value wrong size\", \"err %d\\n\", err))\n\t\tgoto out;\n\n\terr = bpf_map__set_initial_value(map, newval, sz);\n\tif (CHECK(err, \"set initial value\", \"err %d\\n\", err))\n\t\tgoto out;\n\n\terr = bpf_object__load(obj);\n\tif (CHECK_FAIL(err))\n\t\tgoto out;\n\n\tmap_fd = bpf_map__fd(map);\n\tif (CHECK_FAIL(map_fd < 0))\n\t\tgoto out;\n\n\tbuff = malloc(sz);\n\tif (buff)\n\t\terr = bpf_map_lookup_elem(map_fd, &zero, buff);\n\tif (CHECK(!buff || err || memcmp(buff, newval, sz),\n\t\t  \"compare .rodata map data override\",\n\t\t  \"err %d errno %d\\n\", err, errno))\n\t\tgoto out;\n\n\tmemset(newval, 1, sz);\n\t \n\terr = bpf_map__set_initial_value(map, newval, sz);\n\tCHECK(!err, \"reject set initial value after load\", \"err %d\\n\", err);\nout:\n\tfree(buff);\n\tfree(newval);\n\tbpf_object__close(obj);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "current_stateid.h",
+  "hash_id": "3c720931f74132bc2f1dfdc55027c7219aab897b4b2ecb7292c817ae1abb604b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfsd/current_stateid.h",
+  "human_readable_source": " \n#ifndef _NFSD4_CURRENT_STATE_H\n#define _NFSD4_CURRENT_STATE_H\n\n#include \"state.h\"\n#include \"xdr4.h\"\n\nextern void clear_current_stateid(struct nfsd4_compound_state *cstate);\n \nextern void nfsd4_set_opendowngradestateid(struct nfsd4_compound_state *,\n\t\tunion nfsd4_op_u *);\nextern void nfsd4_set_openstateid(struct nfsd4_compound_state *,\n\t\tunion nfsd4_op_u *);\nextern void nfsd4_set_lockstateid(struct nfsd4_compound_state *,\n\t\tunion nfsd4_op_u *);\nextern void nfsd4_set_closestateid(struct nfsd4_compound_state *,\n\t\tunion nfsd4_op_u *);\n\n \nextern void nfsd4_get_opendowngradestateid(struct nfsd4_compound_state *,\n\t\tunion nfsd4_op_u *);\nextern void nfsd4_get_delegreturnstateid(struct nfsd4_compound_state *,\n\t\tunion nfsd4_op_u *);\nextern void nfsd4_get_freestateid(struct nfsd4_compound_state *,\n\t\tunion nfsd4_op_u *);\nextern void nfsd4_get_setattrstateid(struct nfsd4_compound_state *,\n\t\tunion nfsd4_op_u *);\nextern void nfsd4_get_closestateid(struct nfsd4_compound_state *,\n\t\tunion nfsd4_op_u *);\nextern void nfsd4_get_lockustateid(struct nfsd4_compound_state *,\n\t\tunion nfsd4_op_u *);\nextern void nfsd4_get_readstateid(struct nfsd4_compound_state *,\n\t\tunion nfsd4_op_u *);\nextern void nfsd4_get_writestateid(struct nfsd4_compound_state *,\n\t\tunion nfsd4_op_u *);\n\n#endif    \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c1bbe40fc4fabc037dfce5ecc8eebf21a828f5a80f3f3fc2b0a81eb75cdc9124",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/vboxvideo/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nvboxvideo-y :=  hgsmi_base.o modesetting.o vbva_base.o \\\n\t\tvbox_drv.o vbox_hgsmi.o vbox_irq.o vbox_main.o \\\n\t\tvbox_mode.o vbox_ttm.o\n\nobj-$(CONFIG_DRM_VBOXVIDEO) += vboxvideo.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

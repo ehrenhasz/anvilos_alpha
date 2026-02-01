@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_st_mem.c",
+  "hash_id": "b924f7230d1e8158e999f3976e22dd74b64fafa3f9e12bc71ae220e77073688c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/verifier/bpf_st_mem.c",
+  "human_readable_source": "{\n\t\"BPF_ST_MEM stack imm non-zero\",\n\t.insns = {\n\tBPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 42),\n\tBPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_10, -8),\n\tBPF_ALU64_IMM(BPF_ADD, BPF_REG_0, -42),\n\t \n\tBPF_EXIT_INSN(),\n\t},\n\t.result = ACCEPT,\n\t \n\t.prog_type = BPF_PROG_TYPE_SK_LOOKUP,\n\t.expected_attach_type = BPF_SK_LOOKUP,\n\t.runs = -1,\n},\n{\n\t\"BPF_ST_MEM stack imm zero\",\n\t.insns = {\n\t \n\tBPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),\n\t \n\tBPF_MOV64_IMM(BPF_REG_0, 0),\n\tBPF_LDX_MEM(BPF_B, BPF_REG_1, BPF_REG_10, -8),\n\tBPF_ALU64_REG(BPF_ADD, BPF_REG_0, BPF_REG_1),\n\tBPF_LDX_MEM(BPF_B, BPF_REG_1, BPF_REG_10, -4),\n\tBPF_ALU64_REG(BPF_ADD, BPF_REG_0, BPF_REG_1),\n\tBPF_LDX_MEM(BPF_B, BPF_REG_1, BPF_REG_10, -1),\n\tBPF_ALU64_REG(BPF_ADD, BPF_REG_0, BPF_REG_1),\n\t \n\tBPF_EXIT_INSN(),\n\t},\n\t.result = ACCEPT,\n\t \n\t.prog_type = BPF_PROG_TYPE_SK_LOOKUP,\n\t.expected_attach_type = BPF_SK_LOOKUP,\n\t.runs = -1,\n},\n{\n\t\"BPF_ST_MEM stack imm zero, variable offset\",\n\t.insns = {\n\t \n\tBPF_ST_MEM(BPF_DW, BPF_REG_10, -16, 0),\n\tBPF_ST_MEM(BPF_DW, BPF_REG_10, -24, 0),\n\t \n\tBPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),\n\tBPF_JMP_IMM(BPF_JLE, BPF_REG_0, 16, 2),\n\tBPF_MOV64_IMM(BPF_REG_0, 0),\n\tBPF_EXIT_INSN(),\n\tBPF_ALU64_IMM(BPF_SUB, BPF_REG_0, 32),\n\t \n\tBPF_ALU64_REG(BPF_ADD, BPF_REG_0, BPF_REG_10),\n\tBPF_ST_MEM(BPF_B, BPF_REG_0, 0, 0),\n\t \n\tBPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_10, -20),\n\t \n\tBPF_EXIT_INSN(),\n\t},\n\t.result = ACCEPT,\n\t \n\t.prog_type = BPF_PROG_TYPE_SK_LOOKUP,\n\t.expected_attach_type = BPF_SK_LOOKUP,\n\t.runs = -1,\n},\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

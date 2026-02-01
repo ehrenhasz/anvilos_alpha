@@ -1,0 +1,9 @@
+{
+  "module_name": "gf100.c",
+  "hash_id": "bd1390276279a7b74fb83810b709afa2b18a9846a44a7059e0396adfc7985926",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/volt/gf100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <subdev/fuse.h>\n\nstatic int\ngf100_volt_speedo_read(struct nvkm_volt *volt)\n{\n\tstruct nvkm_device *device = volt->subdev.device;\n\tstruct nvkm_fuse *fuse = device->fuse;\n\n\tif (!fuse)\n\t\treturn -EINVAL;\n\n\treturn nvkm_fuse_read(fuse, 0x1cc);\n}\n\nint\ngf100_volt_oneinit(struct nvkm_volt *volt)\n{\n\tstruct nvkm_subdev *subdev = &volt->subdev;\n\tif (volt->speedo <= 0)\n\t\tnvkm_error(subdev, \"couldn't find speedo value, volting not \"\n\t\t\t   \"possible\\n\");\n\treturn 0;\n}\n\nstatic const struct nvkm_volt_func\ngf100_volt = {\n\t.oneinit = gf100_volt_oneinit,\n\t.vid_get = nvkm_voltgpio_get,\n\t.vid_set = nvkm_voltgpio_set,\n\t.speedo_read = gf100_volt_speedo_read,\n};\n\nint\ngf100_volt_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t       struct nvkm_volt **pvolt)\n{\n\tstruct nvkm_volt *volt;\n\tint ret;\n\n\tret = nvkm_volt_new_(&gf100_volt, device, type, inst, &volt);\n\t*pvolt = volt;\n\tif (ret)\n\t\treturn ret;\n\n\treturn nvkm_voltgpio_init(volt);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

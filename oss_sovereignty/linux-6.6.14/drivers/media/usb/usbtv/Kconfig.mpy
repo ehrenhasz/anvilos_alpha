@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8f078834bbfdf7918684623cacfe430bde146474810502878a200a1a6557b45f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/usbtv/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_USBTV\n\ttristate \"USBTV007 video capture support\"\n\tdepends on VIDEO_DEV && SND\n\tselect SND_PCM\n\tselect VIDEOBUF2_VMALLOC\n\n\thelp\n\t  This is a video4linux2 driver for USBTV007 based video capture devices.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called usbtv\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

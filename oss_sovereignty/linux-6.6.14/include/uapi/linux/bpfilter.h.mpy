@@ -1,0 +1,9 @@
+{
+  "module_name": "bpfilter.h",
+  "hash_id": "36075aeb56835da234f1b5b29ff885f448f5aa5784bc4b5fb88b6b58337e1ef8",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/bpfilter.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_BPFILTER_H\n#define _UAPI_LINUX_BPFILTER_H\n\n#include <linux/if.h>\n\nenum {\n\tBPFILTER_IPT_SO_SET_REPLACE = 64,\n\tBPFILTER_IPT_SO_SET_ADD_COUNTERS = 65,\n\tBPFILTER_IPT_SET_MAX,\n};\n\nenum {\n\tBPFILTER_IPT_SO_GET_INFO = 64,\n\tBPFILTER_IPT_SO_GET_ENTRIES = 65,\n\tBPFILTER_IPT_SO_GET_REVISION_MATCH = 66,\n\tBPFILTER_IPT_SO_GET_REVISION_TARGET = 67,\n\tBPFILTER_IPT_GET_MAX,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

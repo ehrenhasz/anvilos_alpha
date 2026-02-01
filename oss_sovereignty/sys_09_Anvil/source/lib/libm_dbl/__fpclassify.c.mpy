@@ -1,0 +1,9 @@
+{
+  "module_name": "__fpclassify.c",
+  "hash_id": "8c28ab840854dc60ac302936a94a1ec2ed73788e8010b285dc089627b1186428",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/__fpclassify.c",
+  "human_readable_source": "#include <math.h>\n#include <stdint.h>\n\nint __fpclassifyd(double x)\n{\n\tunion {double f; uint64_t i;} u = {x};\n\tint e = u.i>>52 & 0x7ff;\n\tif (!e) return u.i<<1 ? FP_SUBNORMAL : FP_ZERO;\n\tif (e==0x7ff) return u.i<<12 ? FP_NAN : FP_INFINITE;\n\treturn FP_NORMAL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "getmntany.c",
+  "hash_id": "1677fdd797c39a4c6ecfdac287b0be3ee411e3588b266983c2348f0860f830fa",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/os/freebsd/getmntany.c",
+  "human_readable_source": " \n \n\n \n \n\n#include <stdio.h>\n#include <string.h>\n#include <sys/errno.h>\n#include <sys/mnttab.h>\n#include <sys/types.h>\n#include <sys/sysmacros.h>\n#include <sys/stat.h>\n#include <unistd.h>\n\nint\ngetextmntent(const char *path, struct extmnttab *entry, struct stat64 *statbuf)\n{\n\tstruct statfs sfs;\n\n\tif (strlen(path) >= MAXPATHLEN) {\n\t\t(void) fprintf(stderr, \"invalid object; pathname too long\\n\");\n\t\treturn (-1);\n\t}\n\n\tif (stat64(path, statbuf) != 0) {\n\t\t(void) fprintf(stderr, \"cannot open '%s': %s\\n\",\n\t\t    path, strerror(errno));\n\t\treturn (-1);\n\t}\n\n\tif (statfs(path, &sfs) != 0) {\n\t\t(void) fprintf(stderr, \"%s: %s\\n\", path,\n\t\t    strerror(errno));\n\t\treturn (-1);\n\t}\n\tstatfs2mnttab(&sfs, (struct mnttab *)entry);\n\treturn (0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

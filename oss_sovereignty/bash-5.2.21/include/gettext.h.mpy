@@ -1,0 +1,9 @@
+{
+  "module_name": "gettext.h",
+  "hash_id": "35023f63c7b8e3b8cbd366df9fcd2e8cc0424537d9abef646e79bc74fed3c4a5",
+  "original_prompt": "Ingested from bash-5.2.21/include/gettext.h",
+  "human_readable_source": " \n\n#ifndef _LIBGETTEXT_H\n#define _LIBGETTEXT_H 1\n\n \n#if ENABLE_NLS\n\n \n# include <libintl.h>\n\n#else\n\n \n#if defined(__sun)\n# include <locale.h>\n#endif\n\n \n# define gettext(Msgid) ((const char *) (Msgid))\n# define dgettext(Domainname, Msgid) ((const char *) (Msgid))\n# define dcgettext(Domainname, Msgid, Category) ((const char *) (Msgid))\n# define ngettext(Msgid1, Msgid2, N) \\\n    ((N) == 1 ? (const char *) (Msgid1) : (const char *) (Msgid2))\n# define dngettext(Domainname, Msgid1, Msgid2, N) \\\n    ((N) == 1 ? (const char *) (Msgid1) : (const char *) (Msgid2))\n# define dcngettext(Domainname, Msgid1, Msgid2, N, Category) \\\n    ((N) == 1 ? (const char *) (Msgid1) : (const char *) (Msgid2))\n# define textdomain(Domainname) ((const char *) (Domainname))\n# define bindtextdomain(Domainname, Dirname) ((const char *) (Dirname))\n# define bind_textdomain_codeset(Domainname, Codeset) ((const char *) (Codeset))\n\n#endif\n\n \n#define gettext_noop(String) String\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

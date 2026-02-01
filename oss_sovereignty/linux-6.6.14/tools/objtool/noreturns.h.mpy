@@ -1,0 +1,9 @@
+{
+  "module_name": "noreturns.h",
+  "hash_id": "14620f174d0096c76b6a70fa08779a69c72f2bc7b1864995c2f8bc947cc68e8e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/objtool/noreturns.h",
+  "human_readable_source": " \n\n \nNORETURN(__kunit_abort)\nNORETURN(__module_put_and_kthread_exit)\nNORETURN(__reiserfs_panic)\nNORETURN(__stack_chk_fail)\nNORETURN(__ubsan_handle_builtin_unreachable)\nNORETURN(arch_call_rest_init)\nNORETURN(arch_cpu_idle_dead)\nNORETURN(cpu_bringup_and_idle)\nNORETURN(cpu_startup_entry)\nNORETURN(do_exit)\nNORETURN(do_group_exit)\nNORETURN(do_task_dead)\nNORETURN(ex_handler_msr_mce)\nNORETURN(fortify_panic)\nNORETURN(hlt_play_dead)\nNORETURN(hv_ghcb_terminate)\nNORETURN(kthread_complete_and_exit)\nNORETURN(kthread_exit)\nNORETURN(kunit_try_catch_throw)\nNORETURN(machine_real_restart)\nNORETURN(make_task_dead)\nNORETURN(mpt_halt_firmware)\nNORETURN(nmi_panic_self_stop)\nNORETURN(panic)\nNORETURN(panic_smp_self_stop)\nNORETURN(rest_init)\nNORETURN(rewind_stack_and_make_dead)\nNORETURN(sev_es_terminate)\nNORETURN(snp_abort)\nNORETURN(start_kernel)\nNORETURN(stop_this_cpu)\nNORETURN(usercopy_abort)\nNORETURN(x86_64_start_kernel)\nNORETURN(x86_64_start_reservations)\nNORETURN(xen_cpu_bringup_again)\nNORETURN(xen_start_kernel)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

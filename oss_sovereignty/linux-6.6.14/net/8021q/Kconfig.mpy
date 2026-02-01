@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7dc0f232225635a95f22fe5529f24069dcc123207fc5a4b62deff8eafce34753",
+  "original_prompt": "Ingested from linux-6.6.14/net/8021q/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Configuration for 802.1Q VLAN support\n#\n\nconfig VLAN_8021Q\n\ttristate \"802.1Q/802.1ad VLAN Support\"\n\thelp\n\t  Select this and you will be able to create 802.1Q VLAN interfaces\n\t  on your Ethernet interfaces. 802.1Q VLAN supports almost\n\t  everything a regular Ethernet interface does, including\n\t  firewalling, bridging, and of course IP traffic. You will need\n\t  the 'ip' utility in order to effectively use VLANs.\n\t  See the VLAN web page for more information:\n\t  <http://www.candelatech.com/~greear/vlan.html>\n\n\t  To compile this code as a module, choose M here: the module\n\t  will be called 8021q.\n\n\t  If unsure, say N.\n\nconfig VLAN_8021Q_GVRP\n\tbool \"GVRP (GARP VLAN Registration Protocol) support\"\n\tdepends on VLAN_8021Q\n\tselect GARP\n\thelp\n\t  Select this to enable GVRP end-system support. GVRP is used for\n\t  automatic propagation of registered VLANs to switches.\n\n\t  If unsure, say N.\n\nconfig VLAN_8021Q_MVRP\n\tbool \"MVRP (Multiple VLAN Registration Protocol) support\"\n\tdepends on VLAN_8021Q\n\tselect MRP\n\thelp\n\t  Select this to enable MVRP end-system support. MVRP is used for\n\t  automatic propagation of registered VLANs to switches; it\n\t  supersedes GVRP and is not backwards-compatible.\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

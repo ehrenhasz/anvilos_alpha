@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1c63951360ce975ccc235d415a69c93f6421348e75ab091dcddc4b25e0abb884",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/orientation/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for industrial I/O Inclinometer sensor drivers\n#\n\n# When adding new entries keep the list in alphabetical order\nobj-$(CONFIG_HID_SENSOR_INCLINOMETER_3D) += hid-sensor-incl-3d.o\nobj-$(CONFIG_HID_SENSOR_DEVICE_ROTATION) += hid-sensor-rotation.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

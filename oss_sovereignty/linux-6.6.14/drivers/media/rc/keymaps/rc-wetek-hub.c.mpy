@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-wetek-hub.c",
+  "hash_id": "4ad0560902f290de3c76e7c997918f92991d64fc4c9ffc2714479df6b27dca78",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-wetek-hub.c",
+  "human_readable_source": "\n\n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n\nstatic struct rc_map_table wetek_hub[] = {\n\t{ 0x77f1, KEY_POWER },\n\n\t{ 0x77f2, KEY_HOME },\n\t{ 0x77f3, KEY_MUTE }, \n\n\t{ 0x77f4, KEY_UP },\n\t{ 0x77f5, KEY_DOWN },\n\t{ 0x77f6, KEY_LEFT },\n\t{ 0x77f7, KEY_RIGHT },\n\t{ 0x77f8, KEY_OK },\n\n\t{ 0x77f9, KEY_BACK },\n\t{ 0x77fa, KEY_MENU },\n\n\t{ 0x77fb, KEY_VOLUMEUP },\n\t{ 0x77fc, KEY_VOLUMEDOWN },\n};\n\nstatic struct rc_map_list wetek_hub_map = {\n\t.map = {\n\t\t.scan     = wetek_hub,\n\t\t.size     = ARRAY_SIZE(wetek_hub),\n\t\t.rc_proto = RC_PROTO_NEC,\n\t\t.name     = RC_MAP_WETEK_HUB,\n\t}\n};\n\nstatic int __init init_rc_map_wetek_hub(void)\n{\n\treturn rc_map_register(&wetek_hub_map);\n}\n\nstatic void __exit exit_rc_map_wetek_hub(void)\n{\n\trc_map_unregister(&wetek_hub_map);\n}\n\nmodule_init(init_rc_map_wetek_hub)\nmodule_exit(exit_rc_map_wetek_hub)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Christian Hewitt <christianshewitt@gmail.com>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

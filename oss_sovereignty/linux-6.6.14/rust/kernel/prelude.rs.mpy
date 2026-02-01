@@ -1,0 +1,9 @@
+{
+  "module_name": "prelude.rs",
+  "hash_id": "dfca056e357a30a45bda51255769be9a08081b9189a9121983e6173bd109684d",
+  "original_prompt": "Ingested from linux-6.6.14/rust/kernel/prelude.rs",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n\n//! The `kernel` prelude.\n//!\n//! These are the most common items used by Rust code in the kernel,\n//! intended to be imported by all Rust code, for convenience.\n//!\n//! # Examples\n//!\n//! ```\n//! use kernel::prelude::*;\n//! ```\n\n#[doc(no_inline)]\npub use core::pin::Pin;\n\n#[doc(no_inline)]\npub use alloc::{boxed::Box, vec::Vec};\n\n#[doc(no_inline)]\npub use macros::{module, pin_data, pinned_drop, vtable, Zeroable};\n\npub use super::build_assert;\n\n// `super::std_vendor` is hidden, which makes the macro inline for some reason.\n#[doc(no_inline)]\npub use super::dbg;\npub use super::{pr_alert, pr_crit, pr_debug, pr_emerg, pr_err, pr_info, pr_notice, pr_warn};\n\npub use super::{init, pin_init, try_init, try_pin_init};\n\npub use super::static_assert;\n\npub use super::error::{code::*, Error, Result};\n\npub use super::{str::CStr, ThisModule};\n\npub use super::init::{InPlaceInit, Init, PinInit};\n\npub use super::current;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

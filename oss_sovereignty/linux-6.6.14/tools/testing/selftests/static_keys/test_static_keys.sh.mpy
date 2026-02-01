@@ -1,0 +1,9 @@
+{
+  "module_name": "test_static_keys.sh",
+  "hash_id": "1e26f7063fa42966f7c8f53ff07cb56f09c9b08779d8c185af48ddab30e4525e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/static_keys/test_static_keys.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# Runs static keys kernel module tests\n\n# Kselftest framework requirement - SKIP code is 4.\nksft_skip=4\n\nif ! /sbin/modprobe -q -n test_static_key_base; then\n\techo \"static_key: module test_static_key_base is not found [SKIP]\"\n\texit $ksft_skip\nfi\n\nif ! /sbin/modprobe -q -n test_static_keys; then\n\techo \"static_key: module test_static_keys is not found [SKIP]\"\n\texit $ksft_skip\nfi\n\nif /sbin/modprobe -q test_static_key_base; then\n\tif /sbin/modprobe -q test_static_keys; then\n\t\techo \"static_key: ok\"\n\t\t/sbin/modprobe -q -r test_static_keys\n\t\t/sbin/modprobe -q -r test_static_key_base\n\telse\n\t\techo \"static_keys: [FAIL]\"\n\t\t/sbin/modprobe -q -r test_static_key_base\n\tfi\nelse\n\techo \"static_key: [FAIL]\"\n\texit 1\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

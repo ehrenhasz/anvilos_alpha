@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "165fa1cfc8ee3640304b7c6797f2bb86bcdb9fbcb51824b4b0a9df5ca74e164b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/ioat/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_INTEL_IOATDMA) += ioatdma.o\nioatdma-y := init.o dma.o prep.o dca.o sysfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

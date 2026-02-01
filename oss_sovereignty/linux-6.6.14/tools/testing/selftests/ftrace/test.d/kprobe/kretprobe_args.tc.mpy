@@ -1,0 +1,9 @@
+{
+  "module_name": "kretprobe_args.tc",
+  "hash_id": "4becd0f78c6e28b87cc64929f26ddd8e47c074a90a7a1bd29c2789442684c0a3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/kretprobe_args.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Kretprobe dynamic event with arguments\n# requires: kprobe_events\n\n# Add new kretprobe event\necho \"r:testprobe2 $FUNCTION_FORK \\$retval\" > kprobe_events\ngrep testprobe2 kprobe_events | grep -q 'arg1=\\$retval'\ntest -d events/kprobes/testprobe2\n\necho 1 > events/kprobes/testprobe2/enable\n( echo \"forked\")\n\ncat trace | grep testprobe2 | grep -q \"<- $FUNCTION_FORK\"\n\necho 0 > events/kprobes/testprobe2/enable\necho '-:testprobe2' >> kprobe_events\nclear_trace\ntest -d events/kprobes/testprobe2 && exit_fail || exit_pass\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

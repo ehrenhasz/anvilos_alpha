@@ -1,0 +1,9 @@
+{
+  "module_name": "send_signal_sched_switch.c",
+  "hash_id": "a7d300332a51b55da8ea587c2b88bdae02654fd21bdd55fc91313f16c3f74df3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/send_signal_sched_switch.c",
+  "human_readable_source": "\n#include <test_progs.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <sys/mman.h>\n#include <pthread.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <fcntl.h>\n#include \"test_send_signal_kern.skel.h\"\n\nstatic void sigusr1_handler(int signum)\n{\n}\n\n#define THREAD_COUNT 100\n\nstatic void *worker(void *p)\n{\n\tint i;\n\n\tfor ( i = 0; i < 1000; i++)\n\t\tusleep(1);\n\n\treturn NULL;\n}\n\n \nvoid serial_test_send_signal_sched_switch(void)\n{\n\tstruct test_send_signal_kern *skel;\n\tpthread_t threads[THREAD_COUNT];\n\tu32 duration = 0;\n\tint i, err;\n\n\tsignal(SIGUSR1, sigusr1_handler);\n\n\tskel = test_send_signal_kern__open_and_load();\n\tif (CHECK(!skel, \"skel_open_and_load\", \"skeleton open_and_load failed\\n\"))\n\t\treturn;\n\n\tskel->bss->pid = getpid();\n\tskel->bss->sig = SIGUSR1;\n\n\terr = test_send_signal_kern__attach(skel);\n\tif (CHECK(err, \"skel_attach\", \"skeleton attach failed\\n\"))\n\t\tgoto destroy_skel;\n\n\tfor (i = 0; i < THREAD_COUNT; i++) {\n\t\terr = pthread_create(threads + i, NULL, worker, NULL);\n\t\tif (CHECK(err, \"pthread_create\", \"Error creating thread, %s\\n\",\n\t\t\t  strerror(errno)))\n\t\t\tgoto destroy_skel;\n\t}\n\n\tfor (i = 0; i < THREAD_COUNT; i++)\n\t\tpthread_join(threads[i], NULL);\n\ndestroy_skel:\n\ttest_send_signal_kern__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

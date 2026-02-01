@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "054838913c9f90faa98219dbbc62d6f9ede12fa0afe3a8a317edc69b550ba3c3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/sunxi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\ncomment \"Sunxi media platform drivers\"\n\nsource \"drivers/media/platform/sunxi/sun4i-csi/Kconfig\"\nsource \"drivers/media/platform/sunxi/sun6i-csi/Kconfig\"\nsource \"drivers/media/platform/sunxi/sun6i-mipi-csi2/Kconfig\"\nsource \"drivers/media/platform/sunxi/sun8i-a83t-mipi-csi2/Kconfig\"\nsource \"drivers/media/platform/sunxi/sun8i-di/Kconfig\"\nsource \"drivers/media/platform/sunxi/sun8i-rotate/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

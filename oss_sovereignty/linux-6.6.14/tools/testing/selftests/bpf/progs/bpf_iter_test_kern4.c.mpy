@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_iter_test_kern4.c",
+  "hash_id": "af6e6946d640e7f1cb2f981bc6f6a42607efdc28ead7dd814d379c677dc164fa",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_iter_test_kern4.c",
+  "human_readable_source": "\n \n#include \"bpf_iter.h\"\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\n__u32 map1_id = 0, map2_id = 0;\n__u32 map1_accessed = 0, map2_accessed = 0;\n__u64 map1_seqnum = 0, map2_seqnum1 = 0, map2_seqnum2 = 0;\n\nvolatile const __u32 print_len;\nvolatile const __u32 ret1;\n\nSEC(\"iter/bpf_map\")\nint dump_bpf_map(struct bpf_iter__bpf_map *ctx)\n{\n\tstruct seq_file *seq = ctx->meta->seq;\n\tstruct bpf_map *map = ctx->map;\n\t__u64 seq_num;\n\tint i, ret = 0;\n\n\tif (map == (void *)0)\n\t\treturn 0;\n\n\t \n\tif (map->id != map1_id && map->id != map2_id)\n\t\treturn 0;\n\n\tseq_num = ctx->meta->seq_num;\n\tif (map->id == map1_id) {\n\t\tmap1_seqnum = seq_num;\n\t\tmap1_accessed++;\n\t}\n\n\tif (map->id == map2_id) {\n\t\tif (map2_accessed == 0) {\n\t\t\tmap2_seqnum1 = seq_num;\n\t\t\tif (ret1)\n\t\t\t\tret = 1;\n\t\t} else {\n\t\t\tmap2_seqnum2 = seq_num;\n\t\t}\n\t\tmap2_accessed++;\n\t}\n\n\t \n\tfor (i = 0; i < print_len; i++)\n\t\tbpf_seq_write(seq, &seq_num, sizeof(seq_num));\n\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7f9d3d31e45ccb240652e16c0f9dc110ee22a2207af488d9bbf1d5aa1521401e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/amlogic/meson-ge2d/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nobj-$(CONFIG_VIDEO_MESON_GE2D) += ge2d.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

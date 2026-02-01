@@ -1,0 +1,9 @@
+{
+  "module_name": "gxbb-aoclkc.h",
+  "hash_id": "a2a2fb19085ba7c29b0782e075f301db3e2082cf2bab3a8d83b75c8c4e862ef3",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/gxbb-aoclkc.h",
+  "human_readable_source": " \n\n#ifndef DT_BINDINGS_RESET_AMLOGIC_MESON_GXBB_AOCLK\n#define DT_BINDINGS_RESET_AMLOGIC_MESON_GXBB_AOCLK\n\n#define RESET_AO_REMOTE\t\t0\n#define RESET_AO_I2C_MASTER\t1\n#define RESET_AO_I2C_SLAVE\t2\n#define RESET_AO_UART1\t\t3\n#define RESET_AO_UART2\t\t4\n#define RESET_AO_IR_BLASTER\t5\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

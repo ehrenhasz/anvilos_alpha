@@ -1,0 +1,9 @@
+{
+  "module_name": "malidp_io.h",
+  "hash_id": "30419bf9273e1321ac02fda4ea0d6d5ccd44db78d238151e121067a3ddd66a8c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/arm/display/include/malidp_io.h",
+  "human_readable_source": " \n \n#ifndef _MALIDP_IO_H_\n#define _MALIDP_IO_H_\n\n#include <linux/io.h>\n\nstatic inline u32\nmalidp_read32(u32 __iomem *base, u32 offset)\n{\n\treturn readl((base + (offset >> 2)));\n}\n\nstatic inline void\nmalidp_write32(u32 __iomem *base, u32 offset, u32 v)\n{\n\twritel(v, (base + (offset >> 2)));\n}\n\nstatic inline void\nmalidp_write64(u32 __iomem *base, u32 offset, u64 v)\n{\n\twritel(lower_32_bits(v), (base + (offset >> 2)));\n\twritel(upper_32_bits(v), (base + (offset >> 2) + 1));\n}\n\nstatic inline void\nmalidp_write32_mask(u32 __iomem *base, u32 offset, u32 m, u32 v)\n{\n\tu32 tmp = malidp_read32(base, offset);\n\n\ttmp &= (~m);\n\tmalidp_write32(base, offset, v | tmp);\n}\n\nstatic inline void\nmalidp_write_group(u32 __iomem *base, u32 offset, int num, const u32 *values)\n{\n\tint i;\n\n\tfor (i = 0; i < num; i++)\n\t\tmalidp_write32(base, offset + i * 4, values[i]);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

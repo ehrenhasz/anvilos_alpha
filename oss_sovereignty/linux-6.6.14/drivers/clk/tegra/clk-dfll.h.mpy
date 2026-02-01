@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-dfll.h",
+  "hash_id": "630d5d49d230b6f2ac3a024742a06faea08e2d13e7ee64c6b805b9e3212c083f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/tegra/clk-dfll.h",
+  "human_readable_source": " \n \n\n#ifndef __DRIVERS_CLK_TEGRA_CLK_DFLL_H\n#define __DRIVERS_CLK_TEGRA_CLK_DFLL_H\n\n#include <linux/platform_device.h>\n#include <linux/reset.h>\n#include <linux/types.h>\n\n#include \"cvb.h\"\n\n \nstruct tegra_dfll_soc_data {\n\tstruct device *dev;\n\tunsigned long max_freq;\n\tconst struct cvb_table *cvb;\n\tstruct rail_alignment alignment;\n\n\tvoid (*init_clock_trimmers)(void);\n\tvoid (*set_clock_trimmers_high)(void);\n\tvoid (*set_clock_trimmers_low)(void);\n};\n\nint tegra_dfll_register(struct platform_device *pdev,\n\t\t\tstruct tegra_dfll_soc_data *soc);\nstruct tegra_dfll_soc_data *tegra_dfll_unregister(struct platform_device *pdev);\nint tegra_dfll_runtime_suspend(struct device *dev);\nint tegra_dfll_runtime_resume(struct device *dev);\nint tegra_dfll_suspend(struct device *dev);\nint tegra_dfll_resume(struct device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

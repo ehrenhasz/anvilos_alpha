@@ -1,0 +1,9 @@
+{
+  "module_name": "core827d.c",
+  "hash_id": "8f5b2ddfc6bb0b7a5aa91f24ff847870bfbf8282191dc1e917c0f9c470712a14",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/core827d.c",
+  "human_readable_source": " \n#include \"core.h\"\n#include \"head.h\"\n\nstatic const struct nv50_core_func\ncore827d = {\n\t.init = core507d_init,\n\t.ntfy_init = core507d_ntfy_init,\n\t.caps_init = core507d_caps_init,\n\t.ntfy_wait_done = core507d_ntfy_wait_done,\n\t.update = core507d_update,\n\t.head = &head827d,\n\t.dac = &dac507d,\n\t.sor = &sor507d,\n\t.pior = &pior507d,\n};\n\nint\ncore827d_new(struct nouveau_drm *drm, s32 oclass, struct nv50_core **pcore)\n{\n\treturn core507d_new_(&core827d, drm, oclass, pcore);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_move.c",
+  "hash_id": "73e7c0d539cf1f000e79b217d9ed0f952dee51b22dd1c98f82a76dbe356301b9",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_move.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_move.c,v 1.14 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nwmove(WINDOW *win, int y, int x)\n{\n    T((T_CALLED(\"wmove(%p,%d,%d)\"), (void *) win, y, x));\n\n    if (LEGALYX(win, y, x)) {\n\twin->_curx = (NCURSES_SIZE_T) x;\n\twin->_cury = (NCURSES_SIZE_T) y;\n\n\twin->_flags &= ~_WRAPPED;\n\twin->_flags |= _HASMOVED;\n\treturnCode(OK);\n    } else\n\treturnCode(ERR);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fsync.c",
+  "hash_id": "aa809038e901de14b5e1a5b331d3b6b1a2ff31f3223113e3636311e5d95e5293",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fsync.c",
+  "human_readable_source": " \n# define WIN32_LEAN_AND_MEAN\n# include <windows.h>\n\n# include <errno.h>\n\n \n# if GNULIB_MSVC_NOTHROW\n#  include \"msvc-nothrow.h\"\n# else\n#  include <io.h>\n# endif\n\nint\nfsync (int fd)\n{\n  HANDLE h = (HANDLE) _get_osfhandle (fd);\n  DWORD err;\n\n  if (h == INVALID_HANDLE_VALUE)\n    {\n      errno = EBADF;\n      return -1;\n    }\n\n  if (!FlushFileBuffers (h))\n    {\n       \n      err = GetLastError ();\n      switch (err)\n        {\n        case ERROR_ACCESS_DENIED:\n           \n          return 0;\n\n           \n        case ERROR_INVALID_HANDLE:\n          errno = EINVAL;\n          break;\n\n        default:\n          errno = EIO;\n        }\n      return -1;\n    }\n\n  return 0;\n}\n\n#else  \n\n# error \"This platform lacks fsync function, and Gnulib doesn't provide a replacement. This is a bug in Gnulib.\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

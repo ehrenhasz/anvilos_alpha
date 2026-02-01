@@ -1,0 +1,9 @@
+{
+  "module_name": "loongson_module.c",
+  "hash_id": "193d4e774a99c4a519f8160ffadccef7810d9d2ec4e9cda2201a701b4fafe9e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/loongson/loongson_module.c",
+  "human_readable_source": "\n \n\n#include <linux/pci.h>\n\n#include <video/nomodeset.h>\n\n#include \"loongson_module.h\"\n\nstatic int loongson_modeset = -1;\nMODULE_PARM_DESC(modeset, \"Disable/Enable modesetting\");\nmodule_param_named(modeset, loongson_modeset, int, 0400);\n\nint loongson_vblank = 1;\nMODULE_PARM_DESC(vblank, \"Disable/Enable hw vblank support\");\nmodule_param_named(vblank, loongson_vblank, int, 0400);\n\nstatic int __init loongson_module_init(void)\n{\n\tif (!loongson_modeset || video_firmware_drivers_only())\n\t\treturn -ENODEV;\n\n\treturn pci_register_driver(&lsdc_pci_driver);\n}\nmodule_init(loongson_module_init);\n\nstatic void __exit loongson_module_exit(void)\n{\n\tpci_unregister_driver(&lsdc_pci_driver);\n}\nmodule_exit(loongson_module_exit);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

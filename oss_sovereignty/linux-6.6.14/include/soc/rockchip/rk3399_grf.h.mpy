@@ -1,0 +1,9 @@
+{
+  "module_name": "rk3399_grf.h",
+  "hash_id": "3d997c9d5e91d5a21886746fb62f3a24e5e7a9d2d75832405520bcd5b920f128",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/rockchip/rk3399_grf.h",
+  "human_readable_source": " \n \n\n#ifndef __SOC_RK3399_GRF_H\n#define __SOC_RK3399_GRF_H\n\n \n#define RK3399_PMUGRF_OS_REG2\t\t0x308\n#define RK3399_PMUGRF_DDRTYPE_SHIFT\t13\n#define RK3399_PMUGRF_DDRTYPE_MASK\t7\n#define RK3399_PMUGRF_DDRTYPE_DDR3\t3\n#define RK3399_PMUGRF_DDRTYPE_LPDDR2\t5\n#define RK3399_PMUGRF_DDRTYPE_LPDDR3\t6\n#define RK3399_PMUGRF_DDRTYPE_LPDDR4\t7\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

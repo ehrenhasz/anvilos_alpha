@@ -1,0 +1,9 @@
+{
+  "module_name": "check-blacklist-hashes.awk",
+  "hash_id": "8e3d71ae9cfff9e959e6978ef08f65739912c26d44f07dc4830902f7ef041957",
+  "original_prompt": "Ingested from linux-6.6.14/certs/check-blacklist-hashes.awk",
+  "human_readable_source": "#!/usr/bin/awk -f\n# SPDX-License-Identifier: GPL-2.0\n#\n# Copyright \u00a9 2020, Microsoft Corporation. All rights reserved.\n#\n# Author: Micka\u00ebl Sala\u00fcn <mic@linux.microsoft.com>\n#\n# Check that a CONFIG_SYSTEM_BLACKLIST_HASH_LIST file contains a valid array of\n# hash strings.  Such string must start with a prefix (\"tbs\" or \"bin\"), then a\n# colon (\":\"), and finally an even number of hexadecimal lowercase characters\n# (up to 128).\n\nBEGIN {\n\tRS = \",\"\n}\n{\n\tif (!match($0, \"^[ \\t\\n\\r]*\\\"([^\\\"]*)\\\"[ \\t\\n\\r]*$\", part1)) {\n\t\tprint \"Not a string (item \" NR \"):\", $0;\n\t\texit 1;\n\t}\n\tif (!match(part1[1], \"^(tbs|bin):(.*)$\", part2)) {\n\t\tprint \"Unknown prefix (item \" NR \"):\", part1[1];\n\t\texit 1;\n\t}\n\tif (!match(part2[2], \"^([0-9a-f]+)$\", part3)) {\n\t\tprint \"Not a lowercase hexadecimal string (item \" NR \"):\", part2[2];\n\t\texit 1;\n\t}\n\tif (length(part3[1]) > 128) {\n\t\tprint \"Hash string too long (item \" NR \"):\", part3[1];\n\t\texit 1;\n\t}\n\tif (length(part3[1]) % 2 == 1) {\n\t\tprint \"Not an even number of hexadecimal characters (item \" NR \"):\", part3[1];\n\t\texit 1;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

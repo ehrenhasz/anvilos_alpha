@@ -1,0 +1,9 @@
+{
+  "module_name": "max77714.h",
+  "hash_id": "b6e1c71df3024d0788c007b2dd0b1072b773352da42f58a0fa79e579b75c37a6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/max77714.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MFD_MAX77714_H_\n#define __LINUX_MFD_MAX77714_H_\n\n#include <linux/bits.h>\n\n#define MAX77714_INT_TOP\t0x00\n#define MAX77714_INT_TOPM\t0x07  \n\n#define MAX77714_INT_TOP_ONOFF\t\tBIT(1)\n#define MAX77714_INT_TOP_RTC\t\tBIT(3)\n#define MAX77714_INT_TOP_GPIO\t\tBIT(4)\n#define MAX77714_INT_TOP_LDO\t\tBIT(5)\n#define MAX77714_INT_TOP_SD\t\tBIT(6)\n#define MAX77714_INT_TOP_GLBL\t\tBIT(7)\n\n#define MAX77714_32K_STATUS\t0x30\n#define MAX77714_32K_STATUS_SIOSCOK\tBIT(5)\n#define MAX77714_32K_STATUS_XOSCOK\tBIT(4)\n#define MAX77714_32K_STATUS_32KSOURCE\tBIT(3)\n#define MAX77714_32K_STATUS_32KLOAD_MSK\t0x3\n#define MAX77714_32K_STATUS_32KLOAD_SHF\t1\n#define MAX77714_32K_STATUS_CRYSTAL_CFG\tBIT(0)\n\n#define MAX77714_32K_CONFIG\t0x31\n#define MAX77714_32K_CONFIG_XOSC_RETRY\tBIT(4)\n\n#define MAX77714_CNFG_GLBL2\t0x91\n#define MAX77714_WDTEN\t\t\tBIT(2)\n#define MAX77714_WDTSLPC\t\tBIT(3)\n#define MAX77714_TWD_MASK\t\t0x3\n#define MAX77714_TWD_2s\t\t\t0x0\n#define MAX77714_TWD_16s\t\t0x1\n#define MAX77714_TWD_64s\t\t0x2\n#define MAX77714_TWD_128s\t\t0x3\n\n#define MAX77714_CNFG_GLBL3\t0x92\n#define MAX77714_WDTC\t\t\tBIT(0)\n\n#define MAX77714_CNFG2_ONOFF\t0x94\n#define MAX77714_WD_RST_WK\t\tBIT(5)\n\n \nenum {\n\tMAX77714_IRQ_TOP_ONOFF,\n\tMAX77714_IRQ_TOP_RTC,\t\t \n\tMAX77714_IRQ_TOP_GPIO,\t\t \n\tMAX77714_IRQ_TOP_LDO,\t\t \n\tMAX77714_IRQ_TOP_SD,\t\t \n\tMAX77714_IRQ_TOP_GLBL,\t\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

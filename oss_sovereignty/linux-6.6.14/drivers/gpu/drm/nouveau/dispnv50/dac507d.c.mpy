@@ -1,0 +1,9 @@
+{
+  "module_name": "dac507d.c",
+  "hash_id": "7beb12e3d58e53ea7baa20f8b74bbfbb482faecf59bab17a43dc0d7db9857495",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/dac507d.c",
+  "human_readable_source": " \n#include \"core.h\"\n\n#include <nvif/push507c.h>\n\n#include <nvhw/class/cl507d.h>\n\nstatic int\ndac507d_ctrl(struct nv50_core *core, int or, u32 ctrl,\n\t     struct nv50_head_atom *asyh)\n{\n\tstruct nvif_push *push = core->chan.push;\n\tu32 sync = 0;\n\tint ret;\n\n\tif (asyh) {\n\t\tsync |= NVVAL(NV507D, DAC_SET_POLARITY, HSYNC, asyh->or.nhsync);\n\t\tsync |= NVVAL(NV507D, DAC_SET_POLARITY, VSYNC, asyh->or.nvsync);\n\t}\n\n\tif ((ret = PUSH_WAIT(push, 3)))\n\t\treturn ret;\n\n\tPUSH_MTHD(push, NV507D, DAC_SET_CONTROL(or), ctrl,\n\t\t\t\tDAC_SET_POLARITY(or), sync);\n\treturn 0;\n}\n\nconst struct nv50_outp_func\ndac507d = {\n\t.ctrl = dac507d_ctrl,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "strdup.c",
+  "hash_id": "81b893f11d5aef412b2c5fc84f3607de74ed6ebf6631df36e8f4aed80b3e363c",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/strdup.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n \n#include <string.h>\n#include <stdlib.h>\n\n \nchar *\nstrdup (s)\n     const char *s;\n{\n  size_t len;\n  void *new;\n\n  len = strlen (s) + 1;\n  if ((new = malloc (len)) == NULL)\n    return NULL;\n\n  memcpy (new, s, len);\n  return ((char *)new);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

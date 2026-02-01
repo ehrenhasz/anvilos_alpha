@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio-line-name.c",
+  "hash_id": "a6712c0ee539ed60dff765153862be2b3149d4690ab99ae177bba24ca4146893",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/gpio/gpio-line-name.c",
+  "human_readable_source": "\n \n\n#include <fcntl.h>\n#include <linux/gpio.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <sys/ioctl.h>\n#include <sys/types.h>\n\nstatic void print_usage(void)\n{\n\tprintf(\"usage:\\n\");\n\tprintf(\"  gpio-line-name <chip path> <line offset>\\n\");\n}\n\nint main(int argc, char **argv)\n{\n\tstruct gpio_v2_line_info info;\n\tint fd, ret;\n\tchar *endp;\n\n\tif (argc != 3) {\n\t\tprint_usage();\n\t\treturn EXIT_FAILURE;\n\t}\n\n\tfd = open(argv[1], O_RDWR);\n\tif (fd < 0) {\n\t\tperror(\"unable to open the GPIO chip\");\n\t\treturn EXIT_FAILURE;\n\t}\n\n\tmemset(&info, 0, sizeof(info));\n\tinfo.offset = strtoul(argv[2], &endp, 10);\n\tif (*endp != '\\0') {\n\t\tprint_usage();\n\t\treturn EXIT_FAILURE;\n\t}\n\n\tret = ioctl(fd, GPIO_V2_GET_LINEINFO_IOCTL, &info);\n\tif (ret) {\n\t\tperror(\"line info ioctl failed\");\n\t\treturn EXIT_FAILURE;\n\t}\n\n\tprintf(\"%s\\n\", info.name);\n\n\treturn EXIT_SUCCESS;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

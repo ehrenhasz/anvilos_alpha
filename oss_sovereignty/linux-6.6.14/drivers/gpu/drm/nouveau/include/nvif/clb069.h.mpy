@@ -1,0 +1,9 @@
+{
+  "module_name": "clb069.h",
+  "hash_id": "0e7deaef2929ddab79b6d7cfd78826734c495cf14bb67065393e960715f5c55a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/clb069.h",
+  "human_readable_source": "#ifndef __NVIF_CLB069_H__\n#define __NVIF_CLB069_H__\nstruct nvif_clb069_v0 {\n\t__u8  version;\n\t__u8  pad01[3];\n\t__u32 entries;\n\t__u32 get;\n\t__u32 put;\n};\n\nunion nvif_clb069_event_args {\n\tstruct nvif_clb069_event_vn {\n\t} vn;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "seg6.h",
+  "hash_id": "cc138ad359321f1f3c6e5ea2464f4e518c4a504df27d9a9a4cf052a604d117bc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/uapi/linux/seg6.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_SEG6_H\n#define _UAPI_LINUX_SEG6_H\n\n#include <linux/types.h>\n#include <linux/in6.h>\t\t \n\n \nstruct ipv6_sr_hdr {\n\t__u8\tnexthdr;\n\t__u8\thdrlen;\n\t__u8\ttype;\n\t__u8\tsegments_left;\n\t__u8\tfirst_segment;  \n\t__u8\tflags;\n\t__u16\ttag;\n\n\tstruct in6_addr segments[];\n};\n\n#define SR6_FLAG1_PROTECTED\t(1 << 6)\n#define SR6_FLAG1_OAM\t\t(1 << 5)\n#define SR6_FLAG1_ALERT\t\t(1 << 4)\n#define SR6_FLAG1_HMAC\t\t(1 << 3)\n\n#define SR6_TLV_INGRESS\t\t1\n#define SR6_TLV_EGRESS\t\t2\n#define SR6_TLV_OPAQUE\t\t3\n#define SR6_TLV_PADDING\t\t4\n#define SR6_TLV_HMAC\t\t5\n\n#define sr_has_hmac(srh) ((srh)->flags & SR6_FLAG1_HMAC)\n\nstruct sr6_tlv {\n\t__u8 type;\n\t__u8 len;\n\t__u8 data[];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

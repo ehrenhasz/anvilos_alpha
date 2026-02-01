@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_bnlm_types.h",
+  "hash_id": "dde5063b695901dfaaeb696fd11bf2ce62d7e022ac47af56b8c0bf14c9fbb605",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/bnlm/ia_css_bnlm_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_BNLM_TYPES_H\n#define __IA_CSS_BNLM_TYPES_H\n\n \n\n#include \"type_support.h\"  \n\n \nstruct ia_css_bnlm_config {\n\tbool\t\trad_enable;\t \n\ts32\t\trad_x_origin;\t \n\ts32\t\trad_y_origin;\t \n\t \n\ts32\t\tavg_min_th;\n\t \n\ts32\t\tmax_min_th;\n\n\t \n\t \n\ts32\t\texp_coeff_a;\n\tu32\texp_coeff_b;\n\ts32\t\texp_coeff_c;\n\tu32\texp_exponent;\n\t \n\n\ts32 nl_th[3];\t \n\n\t \n\ts32 match_quality_max_idx[4];\n\n\t \n\t \n\ts32 mu_root_lut_thr[15];\n\ts32 mu_root_lut_val[16];\n\t \n\t \n\t \n\ts32 sad_norm_lut_thr[15];\n\ts32 sad_norm_lut_val[16];\n\t \n\t \n\t \n\ts32 sig_detail_lut_thr[15];\n\ts32 sig_detail_lut_val[16];\n\t \n\t \n\t \n\ts32 sig_rad_lut_thr[15];\n\ts32 sig_rad_lut_val[16];\n\t \n\t \n\t \n\ts32 rad_pow_lut_thr[15];\n\ts32 rad_pow_lut_val[16];\n\t \n\t \n\t \n\t \n\t \n\ts32 nl_0_lut_thr[15];\n\ts32 nl_0_lut_val[16];\n\t \n\t \n\t \n\ts32 nl_1_lut_thr[15];\n\ts32 nl_1_lut_val[16];\n\t \n\t \n\t \n\ts32 nl_2_lut_thr[15];\n\ts32 nl_2_lut_val[16];\n\t \n\t \n\t \n\ts32 nl_3_lut_thr[15];\n\ts32 nl_3_lut_val[16];\n\t \n\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

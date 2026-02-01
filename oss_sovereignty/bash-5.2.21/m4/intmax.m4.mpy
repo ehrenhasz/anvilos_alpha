@@ -1,0 +1,9 @@
+{
+  "module_name": "intmax.m4",
+  "hash_id": "0e6c4627dd751342b9fc2fd389bb2b025c5ae732c6e722a90420bbea886335b8",
+  "original_prompt": "Ingested from bash-5.2.21/m4/intmax.m4",
+  "human_readable_source": "# intmax.m4 serial 6 (gettext-0.18.2)\ndnl Copyright (C) 2002-2005, 2008-2019 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl From Bruno Haible.\ndnl Test whether the system has the 'intmax_t' type, but don't attempt to\ndnl find a replacement if it is lacking.\n\nAC_DEFUN([gt_TYPE_INTMAX_T],\n[\n  AC_REQUIRE([gl_AC_HEADER_INTTYPES_H])\n  AC_REQUIRE([gl_AC_HEADER_STDINT_H])\n  AC_CACHE_CHECK([for intmax_t], [gt_cv_c_intmax_t],\n    [AC_COMPILE_IFELSE(\n       [AC_LANG_PROGRAM(\n          [[\n#include <stddef.h>\n#include <stdlib.h>\n#if HAVE_STDINT_H_WITH_UINTMAX\n#include <stdint.h>\n#endif\n#if HAVE_INTTYPES_H_WITH_UINTMAX\n#include <inttypes.h>\n#endif\n          ]],\n          [[intmax_t x = -1;\n            return !x;]])],\n       [gt_cv_c_intmax_t=yes],\n       [gt_cv_c_intmax_t=no])])\n  if test $gt_cv_c_intmax_t = yes; then\n    AC_DEFINE([HAVE_INTMAX_T], [1],\n      [Define if you have the 'intmax_t' type in <stdint.h> or <inttypes.h>.])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cpufreq_powersave.c",
+  "hash_id": "07cfe170b6153efe3df9b28934c8b2f8e56df66954872867d89c9fa343e2db48",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cpufreq/cpufreq_powersave.c",
+  "human_readable_source": "\n \n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <linux/cpufreq.h>\n#include <linux/init.h>\n#include <linux/module.h>\n\nstatic void cpufreq_gov_powersave_limits(struct cpufreq_policy *policy)\n{\n\tpr_debug(\"setting to %u kHz\\n\", policy->min);\n\t__cpufreq_driver_target(policy, policy->min, CPUFREQ_RELATION_L);\n}\n\nstatic struct cpufreq_governor cpufreq_gov_powersave = {\n\t.name\t\t= \"powersave\",\n\t.limits\t\t= cpufreq_gov_powersave_limits,\n\t.owner\t\t= THIS_MODULE,\n\t.flags\t\t= CPUFREQ_GOV_STRICT_TARGET,\n};\n\nMODULE_AUTHOR(\"Dominik Brodowski <linux@brodo.de>\");\nMODULE_DESCRIPTION(\"CPUfreq policy governor 'powersave'\");\nMODULE_LICENSE(\"GPL\");\n\n#ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_POWERSAVE\nstruct cpufreq_governor *cpufreq_default_governor(void)\n{\n\treturn &cpufreq_gov_powersave;\n}\n#endif\n\ncpufreq_governor_init(cpufreq_gov_powersave);\ncpufreq_governor_exit(cpufreq_gov_powersave);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

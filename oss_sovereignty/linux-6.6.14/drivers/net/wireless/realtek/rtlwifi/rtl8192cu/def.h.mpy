@@ -1,0 +1,9 @@
+{
+  "module_name": "def.h",
+  "hash_id": "83327198adf36781cb6e1479d07e57c439df26242a5a975538cf814ad318a0dc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/def.h",
+  "human_readable_source": " \n \n\n#include \"../rtl8192ce/def.h\"\n\n \n#define NORMAL_CHIP\t\t\tBIT(4)\n#define CHIP_VENDOR_UMC\t\t\tBIT(5)\n#define CHIP_VENDOR_UMC_B_CUT\t\tBIT(6)\n\n#define IS_92C_1T2R(version)\t\t\\\n\t(((version) & CHIP_92C) && ((version) & CHIP_92C_1T2R))\n\n#define IS_VENDOR_UMC(version)\t\t\\\n\t(((version) & CHIP_VENDOR_UMC) ? true : false)\n\n#define CHIP_BONDING_92C_1T2R\t0x1\n#define CHIP_BONDING_IDENTIFIER(_value)\t(((_value) >> 22) & 0x3)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

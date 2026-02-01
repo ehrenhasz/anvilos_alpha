@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm_irqfd.h",
+  "hash_id": "5f4405becee63155d5d2e343b04460dc3fc6d6504f3c63209b67cfd5cdc6f68f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kvm_irqfd.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_KVM_IRQFD_H\n#define __LINUX_KVM_IRQFD_H\n\n#include <linux/kvm_host.h>\n#include <linux/poll.h>\n\n \nstruct kvm_kernel_irqfd_resampler {\n\tstruct kvm *kvm;\n\t \n\tstruct list_head list;\n\tstruct kvm_irq_ack_notifier notifier;\n\t \n\tstruct list_head link;\n};\n\nstruct kvm_kernel_irqfd {\n\t \n\tstruct kvm *kvm;\n\twait_queue_entry_t wait;\n\t \n\tstruct kvm_kernel_irq_routing_entry irq_entry;\n\tseqcount_spinlock_t irq_entry_sc;\n\t \n\tint gsi;\n\tstruct work_struct inject;\n\t \n\tstruct kvm_kernel_irqfd_resampler *resampler;\n\t \n\tstruct eventfd_ctx *resamplefd;\n\t \n\tstruct list_head resampler_link;\n\t \n\tstruct eventfd_ctx *eventfd;\n\tstruct list_head list;\n\tpoll_table pt;\n\tstruct work_struct shutdown;\n\tstruct irq_bypass_consumer consumer;\n\tstruct irq_bypass_producer *producer;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

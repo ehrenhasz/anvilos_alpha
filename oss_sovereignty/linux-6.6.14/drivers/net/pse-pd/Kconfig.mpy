@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b8a4de5cae55066766dbbfaaaa9808a5c55fc3b1f250ebed2687dfb6aae90b66",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/pse-pd/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Ethernet Power Sourcing Equipment drivers\n#\n\nmenuconfig PSE_CONTROLLER\n\tbool \"Ethernet Power Sourcing Equipment Support\"\n\thelp\n\t  Generic Power Sourcing Equipment Controller support.\n\n\t  If unsure, say no.\n\nif PSE_CONTROLLER\n\nconfig PSE_REGULATOR\n\ttristate \"Regulator based PSE controller\"\n\tdepends on REGULATOR || COMPILE_TEST\n\thelp\n\t  This module provides support for simple regulator based Ethernet Power\n\t  Sourcing Equipment without automatic classification support. For\n\t  example for basic implementation of PoDL (802.3bu) specification.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0e014ef3c6484381b540c6d648e2f2e4682b1264268aec4c5ec7ba7c5a5a39fa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/xilinx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Xilinx device configuration\n#\n\nconfig NET_VENDOR_XILINX\n\tbool \"Xilinx devices\"\n\tdefault y\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Xilinx devices. If you say Y, you will be asked\n\t  for your specific card in the following questions.\n\nif NET_VENDOR_XILINX\n\nconfig XILINX_EMACLITE\n\ttristate \"Xilinx 10/100 Ethernet Lite support\"\n\tdepends on HAS_IOMEM\n\tselect PHYLIB\n\thelp\n\t  This driver supports the 10/100 Ethernet Lite from Xilinx.\n\nconfig XILINX_AXI_EMAC\n\ttristate \"Xilinx 10/100/1000 AXI Ethernet support\"\n\tdepends on HAS_IOMEM\n\tselect PHYLINK\n\thelp\n\t  This driver supports the 10/100/1000 Ethernet from Xilinx for the\n\t  AXI bus interface used in Xilinx Virtex FPGAs and Soc's.\n\nconfig XILINX_LL_TEMAC\n\ttristate \"Xilinx LL TEMAC (LocalLink Tri-mode Ethernet MAC) driver\"\n\tdepends on HAS_IOMEM\n\tselect PHYLIB\n\thelp\n\t  This driver supports the Xilinx 10/100/1000 LocalLink TEMAC\n\t  core used in Xilinx Spartan and Virtex FPGAs\n\nendif # NET_VENDOR_XILINX\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

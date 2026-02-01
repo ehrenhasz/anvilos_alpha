@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_keysc.h",
+  "hash_id": "a536a1cb2324b23e98304ff9c1c33d90893e32a543eb3c48e21749f15963f761",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/input/sh_keysc.h",
+  "human_readable_source": " \n#ifndef __SH_KEYSC_H__\n#define __SH_KEYSC_H__\n\n#define SH_KEYSC_MAXKEYS 64\n\nstruct sh_keysc_info {\n\tenum { SH_KEYSC_MODE_1, SH_KEYSC_MODE_2, SH_KEYSC_MODE_3,\n\t       SH_KEYSC_MODE_4, SH_KEYSC_MODE_5, SH_KEYSC_MODE_6 } mode;\n\tint scan_timing;  \n\tint delay;\n\tint kycr2_delay;\n\tint keycodes[SH_KEYSC_MAXKEYS];  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

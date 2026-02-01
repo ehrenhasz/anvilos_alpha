@@ -1,0 +1,9 @@
+{
+  "module_name": "tss.h",
+  "hash_id": "437fb33ed111fa9446eb4b38ccb11732ebfa9be451db046ec5aa4892aad1a612",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kvm/tss.h",
+  "human_readable_source": " \n#ifndef __TSS_SEGMENT_H\n#define __TSS_SEGMENT_H\n\nstruct tss_segment_32 {\n\tu32 prev_task_link;\n\tu32 esp0;\n\tu32 ss0;\n\tu32 esp1;\n\tu32 ss1;\n\tu32 esp2;\n\tu32 ss2;\n\tu32 cr3;\n\tu32 eip;\n\tu32 eflags;\n\tu32 eax;\n\tu32 ecx;\n\tu32 edx;\n\tu32 ebx;\n\tu32 esp;\n\tu32 ebp;\n\tu32 esi;\n\tu32 edi;\n\tu32 es;\n\tu32 cs;\n\tu32 ss;\n\tu32 ds;\n\tu32 fs;\n\tu32 gs;\n\tu32 ldt_selector;\n\tu16 t;\n\tu16 io_map;\n};\n\nstruct tss_segment_16 {\n\tu16 prev_task_link;\n\tu16 sp0;\n\tu16 ss0;\n\tu16 sp1;\n\tu16 ss1;\n\tu16 sp2;\n\tu16 ss2;\n\tu16 ip;\n\tu16 flag;\n\tu16 ax;\n\tu16 cx;\n\tu16 dx;\n\tu16 bx;\n\tu16 sp;\n\tu16 bp;\n\tu16 si;\n\tu16 di;\n\tu16 es;\n\tu16 cs;\n\tu16 ss;\n\tu16 ds;\n\tu16 ldt;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

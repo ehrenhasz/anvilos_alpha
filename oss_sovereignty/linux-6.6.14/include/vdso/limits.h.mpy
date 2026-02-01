@@ -1,0 +1,9 @@
+{
+  "module_name": "limits.h",
+  "hash_id": "2ab1e8ff4cf2a02fee4602b25704ef8d148d68f93aa5ce6ebfc7d5c62218cd39",
+  "original_prompt": "Ingested from linux-6.6.14/include/vdso/limits.h",
+  "human_readable_source": " \n#ifndef __VDSO_LIMITS_H\n#define __VDSO_LIMITS_H\n\n#define USHRT_MAX\t((unsigned short)~0U)\n#define SHRT_MAX\t((short)(USHRT_MAX >> 1))\n#define SHRT_MIN\t((short)(-SHRT_MAX - 1))\n#define INT_MAX\t\t((int)(~0U >> 1))\n#define INT_MIN\t\t(-INT_MAX - 1)\n#define UINT_MAX\t(~0U)\n#define LONG_MAX\t((long)(~0UL >> 1))\n#define LONG_MIN\t(-LONG_MAX - 1)\n#define ULONG_MAX\t(~0UL)\n#define LLONG_MAX\t((long long)(~0ULL >> 1))\n#define LLONG_MIN\t(-LLONG_MAX - 1)\n#define ULLONG_MAX\t(~0ULL)\n#define UINTPTR_MAX\tULONG_MAX\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

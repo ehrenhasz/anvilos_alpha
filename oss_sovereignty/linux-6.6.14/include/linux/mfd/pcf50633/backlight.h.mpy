@@ -1,0 +1,9 @@
+{
+  "module_name": "backlight.h",
+  "hash_id": "706153a0ce1132688e4189283d3b26afe39057e24f48c52c2b7cf6c0d4186f9e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/pcf50633/backlight.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MFD_PCF50633_BACKLIGHT\n#define __LINUX_MFD_PCF50633_BACKLIGHT\n\n \nstruct pcf50633_bl_platform_data {\n\tunsigned int\tdefault_brightness;\n\tunsigned int\tdefault_brightness_limit;\n\tuint8_t\t\tramp_time;\n};\n\n\nstruct pcf50633;\n\nint pcf50633_bl_set_brightness_limit(struct pcf50633 *pcf, unsigned int limit);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

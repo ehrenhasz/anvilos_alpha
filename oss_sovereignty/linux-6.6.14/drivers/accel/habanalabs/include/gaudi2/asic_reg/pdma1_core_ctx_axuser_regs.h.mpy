@@ -1,0 +1,9 @@
+{
+  "module_name": "pdma1_core_ctx_axuser_regs.h",
+  "hash_id": "87a9d4cbf61ebb4ecc1db0ccd6b02c657b3d8f9ecfd7816315fcfa7cc61e07fb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/gaudi2/asic_reg/pdma1_core_ctx_axuser_regs.h",
+  "human_readable_source": " \n\n \n\n#ifndef ASIC_REG_PDMA1_CORE_CTX_AXUSER_REGS_H_\n#define ASIC_REG_PDMA1_CORE_CTX_AXUSER_REGS_H_\n\n \n\n#define mmPDMA1_CORE_CTX_AXUSER_HB_ASID 0x4C9B800\n\n#define mmPDMA1_CORE_CTX_AXUSER_HB_MMU_BP 0x4C9B804\n\n#define mmPDMA1_CORE_CTX_AXUSER_HB_STRONG_ORDER 0x4C9B808\n\n#define mmPDMA1_CORE_CTX_AXUSER_HB_NO_SNOOP 0x4C9B80C\n\n#define mmPDMA1_CORE_CTX_AXUSER_HB_WR_REDUCTION 0x4C9B810\n\n#define mmPDMA1_CORE_CTX_AXUSER_HB_RD_ATOMIC 0x4C9B814\n\n#define mmPDMA1_CORE_CTX_AXUSER_HB_QOS 0x4C9B818\n\n#define mmPDMA1_CORE_CTX_AXUSER_HB_RSVD 0x4C9B81C\n\n#define mmPDMA1_CORE_CTX_AXUSER_HB_EMEM_CPAGE 0x4C9B820\n\n#define mmPDMA1_CORE_CTX_AXUSER_HB_CORE 0x4C9B824\n\n#define mmPDMA1_CORE_CTX_AXUSER_E2E_COORD 0x4C9B828\n\n#define mmPDMA1_CORE_CTX_AXUSER_HB_WR_OVRD_LO 0x4C9B830\n\n#define mmPDMA1_CORE_CTX_AXUSER_HB_WR_OVRD_HI 0x4C9B834\n\n#define mmPDMA1_CORE_CTX_AXUSER_HB_RD_OVRD_LO 0x4C9B838\n\n#define mmPDMA1_CORE_CTX_AXUSER_HB_RD_OVRD_HI 0x4C9B83C\n\n#define mmPDMA1_CORE_CTX_AXUSER_LB_COORD 0x4C9B840\n\n#define mmPDMA1_CORE_CTX_AXUSER_LB_LOCK 0x4C9B844\n\n#define mmPDMA1_CORE_CTX_AXUSER_LB_RSVD 0x4C9B848\n\n#define mmPDMA1_CORE_CTX_AXUSER_LB_OVRD 0x4C9B84C\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "irq.c",
+  "hash_id": "baaf84cba0212690faeed6fa7b6be6783ca0add7cd9e641cd2c31e33ffdddb79",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/irq.c",
+  "human_readable_source": "\n \n\n#include <linux/device.h>\n#include <linux/kernel.h>\n#include <linux/export.h>\n#include <linux/pci.h>\n\n \nint pci_request_irq(struct pci_dev *dev, unsigned int nr, irq_handler_t handler,\n\t\tirq_handler_t thread_fn, void *dev_id, const char *fmt, ...)\n{\n\tva_list ap;\n\tint ret;\n\tchar *devname;\n\tunsigned long irqflags = IRQF_SHARED;\n\n\tif (!handler)\n\t\tirqflags |= IRQF_ONESHOT;\n\n\tva_start(ap, fmt);\n\tdevname = kvasprintf(GFP_KERNEL, fmt, ap);\n\tva_end(ap);\n\tif (!devname)\n\t\treturn -ENOMEM;\n\n\tret = request_threaded_irq(pci_irq_vector(dev, nr), handler, thread_fn,\n\t\t\t\t   irqflags, devname, dev_id);\n\tif (ret)\n\t\tkfree(devname);\n\treturn ret;\n}\nEXPORT_SYMBOL(pci_request_irq);\n\n \nvoid pci_free_irq(struct pci_dev *dev, unsigned int nr, void *dev_id)\n{\n\tkfree(free_irq(pci_irq_vector(dev, nr), dev_id));\n}\nEXPORT_SYMBOL(pci_free_irq);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

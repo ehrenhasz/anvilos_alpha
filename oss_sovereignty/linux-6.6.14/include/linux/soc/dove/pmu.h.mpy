@@ -1,0 +1,9 @@
+{
+  "module_name": "pmu.h",
+  "hash_id": "549520098d90049ea110420240d7a1583d35f53b6dde79c33d1c31af1b0975a6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/dove/pmu.h",
+  "human_readable_source": " \n#ifndef LINUX_SOC_DOVE_PMU_H\n#define LINUX_SOC_DOVE_PMU_H\n\n#include <linux/types.h>\n\nstruct dove_pmu_domain_initdata {\n\tu32 pwr_mask;\n\tu32 rst_mask;\n\tu32 iso_mask;\n\tconst char *name;\n};\n\nstruct dove_pmu_initdata {\n\tvoid __iomem *pmc_base;\n\tvoid __iomem *pmu_base;\n\tint irq;\n\tint irq_domain_start;\n\tconst struct dove_pmu_domain_initdata *domains;\n};\n\nint dove_init_pmu_legacy(const struct dove_pmu_initdata *);\n\nint dove_init_pmu(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

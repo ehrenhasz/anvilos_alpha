@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_cksum.h",
+  "hash_id": "c5858471a2939bb95abab5b2127ca36b8a99b4f6474d9f818d007db8723b25fe",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/libxfs/xfs_cksum.h",
+  "human_readable_source": " \n#ifndef _XFS_CKSUM_H\n#define _XFS_CKSUM_H 1\n\n#define XFS_CRC_SEED\t(~(uint32_t)0)\n\n \nstatic inline uint32_t\nxfs_start_cksum_safe(char *buffer, size_t length, unsigned long cksum_offset)\n{\n\tuint32_t zero = 0;\n\tuint32_t crc;\n\n\t \n\tcrc = crc32c(XFS_CRC_SEED, buffer, cksum_offset);\n\n\t \n\tcrc = crc32c(crc, &zero, sizeof(__u32));\n\n\t \n\treturn crc32c(crc, &buffer[cksum_offset + sizeof(__be32)],\n\t\t      length - (cksum_offset + sizeof(__be32)));\n}\n\n \nstatic inline uint32_t\nxfs_start_cksum_update(char *buffer, size_t length, unsigned long cksum_offset)\n{\n\t \n\t*(__le32 *)(buffer + cksum_offset) = 0;\n\n\t \n\treturn crc32c(XFS_CRC_SEED, buffer, length);\n}\n\n \nstatic inline __le32\nxfs_end_cksum(uint32_t crc)\n{\n\treturn ~cpu_to_le32(crc);\n}\n\n \nstatic inline void\nxfs_update_cksum(char *buffer, size_t length, unsigned long cksum_offset)\n{\n\tuint32_t crc = xfs_start_cksum_update(buffer, length, cksum_offset);\n\n\t*(__le32 *)(buffer + cksum_offset) = xfs_end_cksum(crc);\n}\n\n \nstatic inline int\nxfs_verify_cksum(char *buffer, size_t length, unsigned long cksum_offset)\n{\n\tuint32_t crc = xfs_start_cksum_safe(buffer, length, cksum_offset);\n\n\treturn *(__le32 *)(buffer + cksum_offset) == xfs_end_cksum(crc);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "adau1372.h",
+  "hash_id": "13f2c1649d1cc6ff957a567ab20aff2446b604b9dad5b5b694c029f4cef65627",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/adau1372.h",
+  "human_readable_source": " \n \n\n#ifndef SOUND_SOC_CODECS_ADAU1372_H\n#define SOUND_SOC_CODECS_ADAU1372_H\n\n#include <linux/regmap.h>\n\nstruct device;\n\nint adau1372_probe(struct device *dev, struct regmap *regmap,\n\t\t   void (*switch_mode)(struct device *dev));\n\nextern const struct regmap_config adau1372_regmap_config;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

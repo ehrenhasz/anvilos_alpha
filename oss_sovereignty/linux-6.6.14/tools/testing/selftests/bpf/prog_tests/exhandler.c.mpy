@@ -1,0 +1,9 @@
+{
+  "module_name": "exhandler.c",
+  "hash_id": "40535f86b306800a6b505f7e6929f6720404a8a2ab21a90edda90abae428ec28",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/exhandler.c",
+  "human_readable_source": "\n \n\n#include <test_progs.h>\n\n \n#include \"exhandler_kern.skel.h\"\n\nvoid test_exhandler(void)\n{\n\tint err = 0, duration = 0, status;\n\tstruct exhandler_kern *skel;\n\tpid_t cpid;\n\n\tskel = exhandler_kern__open_and_load();\n\tif (CHECK(!skel, \"skel_load\", \"skeleton failed: %d\\n\", err))\n\t\tgoto cleanup;\n\n\tskel->bss->test_pid = getpid();\n\n\terr = exhandler_kern__attach(skel);\n\tif (!ASSERT_OK(err, \"attach\"))\n\t\tgoto cleanup;\n\tcpid = fork();\n\tif (!ASSERT_GT(cpid, -1, \"fork failed\"))\n\t\tgoto cleanup;\n\tif (cpid == 0)\n\t\t_exit(0);\n\twaitpid(cpid, &status, 0);\n\n\tASSERT_NEQ(skel->bss->exception_triggered, 0, \"verify exceptions occurred\");\ncleanup:\n\texhandler_kern__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

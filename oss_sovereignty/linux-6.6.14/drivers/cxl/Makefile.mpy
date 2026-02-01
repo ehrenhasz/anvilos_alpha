@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a5ac4d70e49f56263e9bd69515dd72dd3a6903138f0bedc85512118ba9aa6470",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cxl/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y += core/\nobj-$(CONFIG_CXL_PCI) += cxl_pci.o\nobj-$(CONFIG_CXL_MEM) += cxl_mem.o\nobj-$(CONFIG_CXL_ACPI) += cxl_acpi.o\nobj-$(CONFIG_CXL_PMEM) += cxl_pmem.o\nobj-$(CONFIG_CXL_PORT) += cxl_port.o\n\ncxl_mem-y := mem.o\ncxl_pci-y := pci.o\ncxl_acpi-y := acpi.o\ncxl_pmem-y := pmem.o security.o\ncxl_port-y := port.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

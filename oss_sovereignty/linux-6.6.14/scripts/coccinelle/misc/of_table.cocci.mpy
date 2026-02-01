@@ -1,0 +1,9 @@
+{
+  "module_name": "of_table.cocci",
+  "hash_id": "416a5d431d572846554fd84641757e6a9b04a5611b922dd0b26da9d91e366378",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/misc/of_table.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/// Make sure (of/i2c/platform)_device_id tables are NULL terminated\n//\n// Keywords: of_table i2c_table platform_table\n// Confidence: Medium\n// Options: --include-headers\n\nvirtual patch\nvirtual context\nvirtual org\nvirtual report\n\n@depends on context@\nidentifier var, arr;\nexpression E;\n@@\n(\nstruct \\(of_device_id \\| i2c_device_id \\| platform_device_id\\) arr[] = {\n\t...,\n\t{\n\t.var = E,\n*\t}\n};\n|\nstruct \\(of_device_id \\| i2c_device_id \\| platform_device_id\\) arr[] = {\n\t...,\n*\t{ ..., E, ... },\n};\n)\n\n@depends on patch@\nidentifier var, arr;\nexpression E;\n@@\n(\nstruct \\(of_device_id \\| i2c_device_id \\| platform_device_id\\) arr[] = {\n\t...,\n\t{\n\t.var = E,\n-\t}\n+\t},\n+\t{ }\n};\n|\nstruct \\(of_device_id \\| i2c_device_id \\| platform_device_id\\) arr[] = {\n\t...,\n\t{ ..., E, ... },\n+\t{ },\n};\n)\n\n@r depends on org || report@\nposition p1;\nidentifier var, arr;\nexpression E;\n@@\n(\nstruct \\(of_device_id \\| i2c_device_id \\| platform_device_id\\) arr[] = {\n\t...,\n\t{\n\t.var = E,\n\t}\n\t@p1\n};\n|\nstruct \\(of_device_id \\| i2c_device_id \\| platform_device_id\\) arr[] = {\n\t...,\n\t{ ..., E, ... }\n\t@p1\n};\n)\n\n@script:python depends on org@\np1 << r.p1;\narr << r.arr;\n@@\n\ncocci.print_main(arr,p1)\n\n@script:python depends on report@\np1 << r.p1;\narr << r.arr;\n@@\n\nmsg = \"%s is not NULL terminated at line %s\" % (arr, p1[0].line)\ncoccilib.report.print_report(p1[0],msg)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

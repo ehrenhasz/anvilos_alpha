@@ -1,0 +1,9 @@
+{
+  "module_name": "ga100.c",
+  "hash_id": "636a47fc03221625ba6625892949a312c1c9a4871a7d30847ec235f71bc5c911",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/vfn/ga100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <nvif/class.h>\n\nstatic const struct nvkm_intr_data\nga100_vfn_intrs[] = {\n\t{ NVKM_ENGINE_DISP    , 0, 4, 0x04000000, true },\n\t{ NVKM_SUBDEV_GPIO    , 0, 4, 0x00200000, true },\n\t{ NVKM_SUBDEV_I2C     , 0, 4, 0x00200000, true },\n\t{ NVKM_SUBDEV_PRIVRING, 0, 4, 0x40000000, true },\n\t{}\n};\n\nstatic const struct nvkm_vfn_func\nga100_vfn = {\n\t.intr = &tu102_vfn_intr,\n\t.intrs = ga100_vfn_intrs,\n\t.user = { 0x030000, 0x010000, { -1, -1, AMPERE_USERMODE_A } },\n};\n\nint\nga100_vfn_new(struct nvkm_device *device,\n\t      enum nvkm_subdev_type type, int inst, struct nvkm_vfn **pvfn)\n{\n\treturn nvkm_vfn_new_(&ga100_vfn, device, type, inst, 0xb80000, pvfn);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

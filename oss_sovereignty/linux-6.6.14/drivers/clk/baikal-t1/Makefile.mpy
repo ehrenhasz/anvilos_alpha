@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1c003da410432c024ecc0eedfbb8335b6fad8dc997b8659c99a90fe980e60682",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/baikal-t1/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CLK_BT1_CCU_PLL) += ccu-pll.o clk-ccu-pll.o\nobj-$(CONFIG_CLK_BT1_CCU_DIV) += ccu-div.o clk-ccu-div.o\nobj-$(CONFIG_CLK_BT1_CCU_RST) += ccu-rst.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

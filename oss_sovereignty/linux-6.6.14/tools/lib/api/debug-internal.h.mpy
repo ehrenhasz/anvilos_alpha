@@ -1,0 +1,9 @@
+{
+  "module_name": "debug-internal.h",
+  "hash_id": "08bd7783436a20eab292754bb89edf645a10847c31140ec31a7cdb8dd80db8fc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/api/debug-internal.h",
+  "human_readable_source": " \n#ifndef __API_DEBUG_INTERNAL_H__\n#define __API_DEBUG_INTERNAL_H__\n\n#include \"debug.h\"\n\n#define __pr(func, fmt, ...)\t\\\ndo {\t\t\t\t\\\n\tif ((func))\t\t\\\n\t\t(func)(\"libapi: \" fmt, ##__VA_ARGS__); \\\n} while (0)\n\nextern libapi_print_fn_t __pr_warn;\nextern libapi_print_fn_t __pr_info;\nextern libapi_print_fn_t __pr_debug;\n\n#define pr_warn(fmt, ...)\t__pr(__pr_warn, fmt, ##__VA_ARGS__)\n#define pr_info(fmt, ...)\t__pr(__pr_info, fmt, ##__VA_ARGS__)\n#define pr_debug(fmt, ...)\t__pr(__pr_debug, fmt, ##__VA_ARGS__)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

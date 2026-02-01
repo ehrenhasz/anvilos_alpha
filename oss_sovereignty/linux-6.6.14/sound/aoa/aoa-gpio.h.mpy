@@ -1,0 +1,9 @@
+{
+  "module_name": "aoa-gpio.h",
+  "hash_id": "03593bc846521c2894b2845fce116aaccea2e7aeb6dfada60da63552daa82927",
+  "original_prompt": "Ingested from linux-6.6.14/sound/aoa/aoa-gpio.h",
+  "human_readable_source": " \n \n\n#ifndef __AOA_GPIO_H\n#define __AOA_GPIO_H\n#include <linux/workqueue.h>\n#include <linux/mutex.h>\n#include <asm/prom.h>\n\ntypedef void (*notify_func_t)(void *data);\n\nenum notify_type {\n\tAOA_NOTIFY_HEADPHONE,\n\tAOA_NOTIFY_LINE_IN,\n\tAOA_NOTIFY_LINE_OUT,\n};\n\nstruct gpio_runtime;\nstruct gpio_methods {\n\t \n\tvoid (*init)(struct gpio_runtime *rt);\n\tvoid (*exit)(struct gpio_runtime *rt);\n\n\t \n\tvoid (*all_amps_off)(struct gpio_runtime *rt);\n\t \n\tvoid (*all_amps_restore)(struct gpio_runtime *rt);\n\n\tvoid (*set_headphone)(struct gpio_runtime *rt, int on);\n\tvoid (*set_speakers)(struct gpio_runtime *rt, int on);\n\tvoid (*set_lineout)(struct gpio_runtime *rt, int on);\n\tvoid (*set_master)(struct gpio_runtime *rt, int on);\n\n\tint (*get_headphone)(struct gpio_runtime *rt);\n\tint (*get_speakers)(struct gpio_runtime *rt);\n\tint (*get_lineout)(struct gpio_runtime *rt);\n\tint (*get_master)(struct gpio_runtime *rt);\n\n\tvoid (*set_hw_reset)(struct gpio_runtime *rt, int on);\n\n\t \n\tint (*set_notify)(struct gpio_runtime *rt,\n\t\t\t  enum notify_type type,\n\t\t\t  notify_func_t notify,\n\t\t\t  void *data);\n\t \n\tint (*get_detect)(struct gpio_runtime *rt,\n\t\t\t  enum notify_type type);\n};\n\nstruct gpio_notification {\n\tstruct delayed_work work;\n\tnotify_func_t notify;\n\tvoid *data;\n\tvoid *gpio_private;\n\tstruct mutex mutex;\n};\n\nstruct gpio_runtime {\n\t \n\tstruct device_node *node;\n\t \n\tstruct gpio_methods *methods;\n\t \n\tint implementation_private;\n\tstruct gpio_notification headphone_notify;\n\tstruct gpio_notification line_in_notify;\n\tstruct gpio_notification line_out_notify;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

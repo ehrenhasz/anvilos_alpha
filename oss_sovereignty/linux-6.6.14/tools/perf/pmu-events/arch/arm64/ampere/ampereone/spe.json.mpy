@@ -1,0 +1,9 @@
+{
+  "module_name": "spe.json",
+  "hash_id": "dbaf495198f06e595454d2981181dbe2475236b68b81643efa7eabce20337fac",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/ampere/ampereone/spe.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"SAMPLE_POP\"\n    },\n    {\n        \"ArchStdEvent\": \"SAMPLE_FEED\"\n    },\n    {\n        \"ArchStdEvent\": \"SAMPLE_FILTRATE\"\n    },\n    {\n        \"ArchStdEvent\": \"SAMPLE_COLLISION\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

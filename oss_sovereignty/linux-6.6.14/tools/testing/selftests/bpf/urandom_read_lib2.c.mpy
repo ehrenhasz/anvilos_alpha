@@ -1,0 +1,9 @@
+{
+  "module_name": "urandom_read_lib2.c",
+  "hash_id": "e2cab758ea6a1e529672766a810224425328c32c250a490e52134079b467905a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/urandom_read_lib2.c",
+  "human_readable_source": "\n \n#include \"sdt.h\"\n\nvoid urandlib_read_without_sema(int iter_num, int iter_cnt, int read_sz)\n{\n\tSTAP_PROBE3(urandlib, read_without_sema, iter_num, iter_cnt, read_sz);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

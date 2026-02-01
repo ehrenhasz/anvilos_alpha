@@ -1,0 +1,9 @@
+{
+  "module_name": "logname.x",
+  "hash_id": "3e102b7786a47d5a374290f01fdc7941a702d2d981af5e161f5e9cee1be30e69",
+  "original_prompt": "Ingested from coreutils-9.4/man/logname.x",
+  "human_readable_source": "[NAME]\nlogname \\- print user\\'s login name\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ngetlogin(3)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

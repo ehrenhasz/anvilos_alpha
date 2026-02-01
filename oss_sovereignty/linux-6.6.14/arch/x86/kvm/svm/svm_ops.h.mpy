@@ -1,0 +1,9 @@
+{
+  "module_name": "svm_ops.h",
+  "hash_id": "757d7bba91236acffa7d20d45027cfbe813b48ab396a6c65dfb8f3212ecd2999",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kvm/svm/svm_ops.h",
+  "human_readable_source": " \n#ifndef __KVM_X86_SVM_OPS_H\n#define __KVM_X86_SVM_OPS_H\n\n#include <linux/compiler_types.h>\n\n#include \"x86.h\"\n\n#define svm_asm(insn, clobber...)\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\\\n\tasm_volatile_goto(\"1: \" __stringify(insn) \"\\n\\t\"\t\\\n\t\t\t  _ASM_EXTABLE(1b, %l[fault])\t\t\\\n\t\t\t  ::: clobber : fault);\t\t\t\\\n\treturn;\t\t\t\t\t\t\t\\\nfault:\t\t\t\t\t\t\t\t\\\n\tkvm_spurious_fault();\t\t\t\t\t\\\n} while (0)\n\n#define svm_asm1(insn, op1, clobber...)\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\\\n\tasm_volatile_goto(\"1: \"  __stringify(insn) \" %0\\n\\t\"\t\\\n\t\t\t  _ASM_EXTABLE(1b, %l[fault])\t\t\\\n\t\t\t  :: op1 : clobber : fault);\t\t\\\n\treturn;\t\t\t\t\t\t\t\\\nfault:\t\t\t\t\t\t\t\t\\\n\tkvm_spurious_fault();\t\t\t\t\t\\\n} while (0)\n\n#define svm_asm2(insn, op1, op2, clobber...)\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\t\\\n\tasm_volatile_goto(\"1: \"  __stringify(insn) \" %1, %0\\n\\t\"\t\\\n\t\t\t  _ASM_EXTABLE(1b, %l[fault])\t\t\t\\\n\t\t\t  :: op1, op2 : clobber : fault);\t\t\\\n\treturn;\t\t\t\t\t\t\t\t\\\nfault:\t\t\t\t\t\t\t\t\t\\\n\tkvm_spurious_fault();\t\t\t\t\t\t\\\n} while (0)\n\nstatic inline void clgi(void)\n{\n\tsvm_asm(clgi);\n}\n\nstatic inline void stgi(void)\n{\n\tsvm_asm(stgi);\n}\n\nstatic inline void invlpga(unsigned long addr, u32 asid)\n{\n\tsvm_asm2(invlpga, \"c\"(asid), \"a\"(addr));\n}\n\n \nstatic __always_inline void vmsave(unsigned long pa)\n{\n\tsvm_asm1(vmsave, \"a\" (pa), \"memory\");\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

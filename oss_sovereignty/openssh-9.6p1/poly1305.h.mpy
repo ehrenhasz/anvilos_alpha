@@ -1,0 +1,9 @@
+{
+  "module_name": "poly1305.h",
+  "hash_id": "e3b8b3f6635b263512217709a5822aac812605817fa5d9f26fe1dce5b723b5fe",
+  "original_prompt": "Ingested from openssh-9.6p1/poly1305.h",
+  "human_readable_source": " \n\n \n\n#ifndef POLY1305_H\n#define POLY1305_H\n\n#include <sys/types.h>\n\n#define POLY1305_KEYLEN\t\t32\n#define POLY1305_TAGLEN\t\t16\n\nvoid poly1305_auth(u_char out[POLY1305_TAGLEN], const u_char *m, size_t inlen,\n    const u_char key[POLY1305_KEYLEN])\n    __attribute__((__bounded__(__minbytes__, 1, POLY1305_TAGLEN)))\n    __attribute__((__bounded__(__buffer__, 2, 3)))\n    __attribute__((__bounded__(__minbytes__, 4, POLY1305_KEYLEN)));\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

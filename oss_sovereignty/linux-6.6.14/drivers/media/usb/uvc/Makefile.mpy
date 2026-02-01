@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a577b4a0b1bcad08052a7542f8331169ed9d523693ed32ebe99ea6eb53793ef3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/uvc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nuvcvideo-objs  := uvc_driver.o uvc_queue.o uvc_v4l2.o uvc_video.o uvc_ctrl.o \\\n\t\t  uvc_status.o uvc_isight.o uvc_debugfs.o uvc_metadata.o\nifeq ($(CONFIG_MEDIA_CONTROLLER),y)\nuvcvideo-objs  += uvc_entity.o\nendif\nobj-$(CONFIG_USB_VIDEO_CLASS) += uvcvideo.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

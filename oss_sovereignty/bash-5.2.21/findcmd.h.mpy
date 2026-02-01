@@ -1,0 +1,9 @@
+{
+  "module_name": "findcmd.h",
+  "hash_id": "2d25713b49a3f0429ff4c9206266e03ac4075edd1b03915974fc3b41f691b273",
+  "original_prompt": "Ingested from bash-5.2.21/findcmd.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_FINDCMD_H_)\n#define _FINDCMD_H_\n\n#include \"stdc.h\"\n\n \n#define CMDSRCH_HASH\t\t0x01\n#define CMDSRCH_STDPATH\t\t0x02\n#define CMDSRCH_TEMPENV\t\t0x04\n\nextern int file_status PARAMS((const char *));\nextern int executable_file PARAMS((const char *));\nextern int is_directory PARAMS((const char *));\nextern int executable_or_directory PARAMS((const char *));\nextern char *find_user_command PARAMS((const char *));\nextern char *find_in_path PARAMS((const char *, char *, int));\nextern char *find_path_file PARAMS((const char *));\nextern char *search_for_command PARAMS((const char *, int));\nextern char *user_command_matches PARAMS((const char *, int, int));\nextern void setup_exec_ignore PARAMS((char *));\n\nextern int dot_found_in_search;\n\n \nextern int check_hashed_filenames;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

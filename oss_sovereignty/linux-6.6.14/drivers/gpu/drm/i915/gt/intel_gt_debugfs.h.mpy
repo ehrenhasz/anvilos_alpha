@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_gt_debugfs.h",
+  "hash_id": "4955b01b0f8c25048e6f8a538f1b5c23b4c78c3ccdc1839f9afc23bf0bcee3c9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_gt_debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef INTEL_GT_DEBUGFS_H\n#define INTEL_GT_DEBUGFS_H\n\n#include <linux/file.h>\n\nstruct intel_gt;\n\n#define __GT_DEBUGFS_ATTRIBUTE_FOPS(__name)\t\t\t\t\\\nstatic const struct file_operations __name ## _fops = {\t\t\t\\\n\t.owner = THIS_MODULE,\t\t\t\t\t\t\\\n\t.open = __name ## _open,\t\t\t\t\t\\\n\t.read = seq_read,\t\t\t\t\t\t\\\n\t.llseek = seq_lseek,\t\t\t\t\t\t\\\n\t.release = single_release,\t\t\t\t\t\\\n}\n\n#define DEFINE_INTEL_GT_DEBUGFS_ATTRIBUTE(__name)\t\t\t\\\nstatic int __name ## _open(struct inode *inode, struct file *file)\t\\\n{\t\t\t\t\t\t\t\t\t\\\n\treturn single_open(file, __name ## _show, inode->i_private);\t\\\n}\t\t\t\t\t\t\t\t\t\\\n__GT_DEBUGFS_ATTRIBUTE_FOPS(__name)\n\n#define DEFINE_INTEL_GT_DEBUGFS_ATTRIBUTE_WITH_SIZE(__name, __size_vf)\t\t\\\nstatic int __name ## _open(struct inode *inode, struct file *file)\t\t\\\n{\t\t\t\t\t\t\t\t\t\t\\\n\treturn single_open_size(file, __name ## _show, inode->i_private,\t\\\n\t\t\t    __size_vf(inode->i_private));\t\t\t\\\n}\t\t\t\t\t\t\t\t\t\t\\\n__GT_DEBUGFS_ATTRIBUTE_FOPS(__name)\n\nvoid intel_gt_debugfs_register(struct intel_gt *gt);\n\nstruct intel_gt_debugfs_file {\n\tconst char *name;\n\tconst struct file_operations *fops;\n\tbool (*eval)(void *data);\n};\n\nvoid intel_gt_debugfs_register_files(struct dentry *root,\n\t\t\t\t     const struct intel_gt_debugfs_file *files,\n\t\t\t\t     unsigned long count, void *data);\n\n \nint intel_gt_debugfs_reset_show(struct intel_gt *gt, u64 *val);\nvoid intel_gt_debugfs_reset_store(struct intel_gt *gt, u64 val);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "2e170c5097088337535e4bd921d6dcb5ae363e86e59046b741f20f6a0ebef4a0",
+  "original_prompt": "Ingested from sys_09_Anvil/source/tools/.gitignore",
+  "human_readable_source": "tinytest/.gitignore\ntinytest/.travis.yml\ntinytest/Makefile\ntinytest/Makefile.arm-cortex-m3-qemu\ntinytest/Makefile.avr\ntinytest/TODO\ntinytest/portable_demo.c\ntinytest/tinytest_demo.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

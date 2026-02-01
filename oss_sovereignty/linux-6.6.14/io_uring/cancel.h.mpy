@@ -1,0 +1,9 @@
+{
+  "module_name": "cancel.h",
+  "hash_id": "874f12c44aacc81a8610cdcd18743d8936a73f0700e47778cfc7929af3f12b44",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/cancel.h",
+  "human_readable_source": "\n\n#include <linux/io_uring_types.h>\n\nstruct io_cancel_data {\n\tstruct io_ring_ctx *ctx;\n\tunion {\n\t\tu64 data;\n\t\tstruct file *file;\n\t};\n\tu8 opcode;\n\tu32 flags;\n\tint seq;\n};\n\nint io_async_cancel_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_async_cancel(struct io_kiocb *req, unsigned int issue_flags);\n\nint io_try_cancel(struct io_uring_task *tctx, struct io_cancel_data *cd,\n\t\t  unsigned int issue_flags);\nvoid init_hash_table(struct io_hash_table *table, unsigned size);\n\nint io_sync_cancel(struct io_ring_ctx *ctx, void __user *arg);\nbool io_cancel_req_match(struct io_kiocb *req, struct io_cancel_data *cd);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

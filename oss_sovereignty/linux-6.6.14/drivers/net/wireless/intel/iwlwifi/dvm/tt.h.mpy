@@ -1,0 +1,9 @@
+{
+  "module_name": "tt.h",
+  "hash_id": "567e91a6ab0a0c5b496701ba17c569ee5c4afa93834740dcf9b3d46c00f01756",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/dvm/tt.h",
+  "human_readable_source": " \n \n#ifndef __iwl_tt_setting_h__\n#define __iwl_tt_setting_h__\n\n#include \"commands.h\"\n\n#define IWL_ABSOLUTE_ZERO\t\t0\n#define IWL_ABSOLUTE_MAX\t\t0xFFFFFFFF\n#define IWL_TT_INCREASE_MARGIN\t5\n#define IWL_TT_CT_KILL_MARGIN\t3\n\nenum iwl_antenna_ok {\n\tIWL_ANT_OK_NONE,\n\tIWL_ANT_OK_SINGLE,\n\tIWL_ANT_OK_MULTI,\n};\n\n \nenum  iwl_tt_state {\n\tIWL_TI_0,\t \n\tIWL_TI_1,\t \n\tIWL_TI_2,\t \n\tIWL_TI_CT_KILL,  \n\tIWL_TI_STATE_MAX\n};\n\n \nstruct iwl_tt_restriction {\n\tenum iwl_antenna_ok tx_stream;\n\tenum iwl_antenna_ok rx_stream;\n\tbool is_ht;\n};\n\n \nstruct iwl_tt_trans {\n\tenum iwl_tt_state next_state;\n\tu32 tt_low;\n\tu32 tt_high;\n};\n\n \nstruct iwl_tt_mgmt {\n\tenum iwl_tt_state state;\n\tbool advanced_tt;\n\tu8 tt_power_mode;\n\tbool ct_kill_toggle;\n#ifdef CONFIG_IWLWIFI_DEBUG\n\ts32 tt_previous_temp;\n#endif\n\tstruct iwl_tt_restriction *restriction;\n\tstruct iwl_tt_trans *transaction;\n\tstruct timer_list ct_kill_exit_tm;\n\tstruct timer_list ct_kill_waiting_tm;\n};\n\nu8 iwl_tt_current_power_mode(struct iwl_priv *priv);\nbool iwl_tt_is_low_power_state(struct iwl_priv *priv);\nbool iwl_ht_enabled(struct iwl_priv *priv);\nenum iwl_antenna_ok iwl_tx_ant_restriction(struct iwl_priv *priv);\nenum iwl_antenna_ok iwl_rx_ant_restriction(struct iwl_priv *priv);\nvoid iwl_tt_enter_ct_kill(struct iwl_priv *priv);\nvoid iwl_tt_exit_ct_kill(struct iwl_priv *priv);\nvoid iwl_tt_handler(struct iwl_priv *priv);\nvoid iwl_tt_initialize(struct iwl_priv *priv);\nvoid iwl_tt_exit(struct iwl_priv *priv);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

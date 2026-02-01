@@ -1,0 +1,9 @@
+{
+  "module_name": "cn23xx_pf_device.h",
+  "hash_id": "366be643027ffc077613a63c5386da17ecb37732fcb8ef9d9f1890a6cf6ddd77",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cavium/liquidio/cn23xx_pf_device.h",
+  "human_readable_source": " \n \n\n#ifndef __CN23XX_PF_DEVICE_H__\n#define __CN23XX_PF_DEVICE_H__\n\n#include \"cn23xx_pf_regs.h\"\n\n \nstruct octeon_cn23xx_pf {\n\t \n\tu8 __iomem *intr_sum_reg64;\n\n\t \n\tu8 __iomem *intr_enb_reg64;\n\n\t \n\tu64 intr_mask64;\n\n\tstruct octeon_config *conf;\n};\n\n#define CN23XX_SLI_DEF_BP\t\t\t0x40\n\nstruct oct_vf_stats {\n\tu64 rx_packets;\n\tu64 tx_packets;\n\tu64 rx_bytes;\n\tu64 tx_bytes;\n\tu64 broadcast;\n\tu64 multicast;\n};\n\nint setup_cn23xx_octeon_pf_device(struct octeon_device *oct);\n\nint validate_cn23xx_pf_config_info(struct octeon_device *oct,\n\t\t\t\t   struct octeon_config *conf23xx);\n\nu32 cn23xx_pf_get_oq_ticks(struct octeon_device *oct, u32 time_intr_in_us);\n\nvoid cn23xx_dump_pf_initialized_regs(struct octeon_device *oct);\n\nint cn23xx_sriov_config(struct octeon_device *oct);\n\nint cn23xx_fw_loaded(struct octeon_device *oct);\n\nvoid cn23xx_tell_vf_its_macaddr_changed(struct octeon_device *oct, int vfidx,\n\t\t\t\t\tu8 *mac);\n\nint cn23xx_get_vf_stats(struct octeon_device *oct, int ifidx,\n\t\t\tstruct oct_vf_stats *stats);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

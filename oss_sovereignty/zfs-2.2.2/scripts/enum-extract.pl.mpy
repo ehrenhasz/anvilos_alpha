@@ -1,0 +1,9 @@
+{
+  "module_name": "enum-extract.pl",
+  "hash_id": "10016184555258735d73dd6c58a26c36a7c6260605d1b92df9cbdcbbcd5d6749",
+  "original_prompt": "Ingested from zfs-2.2.2/scripts/enum-extract.pl",
+  "human_readable_source": "#!/usr/bin/env perl\n\nmy $usage = <<EOT;\nusage: config-enum enum [file ...]\n\nReturns the elements from an enum declaration.\n\n\"Best effort\": we're not building an entire C interpreter here!\nEOT\n\nuse warnings;\nuse strict;\nuse Getopt::Std;\n\nmy %opts;\n\nif (!getopts(\"\", \\%opts) || @ARGV < 1) {\n\tprint $usage;\n\texit 2;\n}\n\nmy $enum = shift;\n\nmy $in_enum = 0;\n\nwhile (<>) {\n\t# comments\n\ts/\\/\\*.*\\*\\///;\n\tif (m/\\/\\*/) {\n\t\twhile ($_ .= <>) {\n\t\t\tlast if s/\\/\\*.*\\*\\///s;\n\t\t}\n\t}\n\n\t# preprocessor stuff\n\tnext if /^#/;\n\n\t# find our enum\n\t$in_enum = 1 if s/^\\s*enum\\s+${enum}(?:\\s|$)//;\n\tnext unless $in_enum;\n\n\t# remove explicit values\n\ts/\\s*=[^,]+,/,/g;\n\n\t# extract each identifier\n\twhile (m/\\b([a-z_][a-z0-9_]*)\\b/ig) {\n\t\tprint $1, \"\\n\";\n\t}\n\n\t#\n\t# don't exit: there may be multiple versions of the same enum, e.g.\n\t# inside different #ifdef blocks. Let's explicitly return all of\n\t# them and let external tooling deal with it.\n\t#\n\t$in_enum = 0 if m/}\\s*;/;\n}\n\nexit 0;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

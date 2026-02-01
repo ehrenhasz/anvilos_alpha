@@ -1,0 +1,9 @@
+{
+  "module_name": "srq.h",
+  "hash_id": "204008f945ee7ea1f5c60faf779982864aa3c4902e7cddc2b5dcf4037d8a7a64",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/sw/rdmavt/srq.h",
+  "human_readable_source": " \n \n\n#ifndef DEF_RVTSRQ_H\n#define DEF_RVTSRQ_H\n\n#include <rdma/rdma_vt.h>\nvoid rvt_driver_srq_init(struct rvt_dev_info *rdi);\nint rvt_create_srq(struct ib_srq *ibsrq, struct ib_srq_init_attr *srq_init_attr,\n\t\t   struct ib_udata *udata);\nint rvt_modify_srq(struct ib_srq *ibsrq, struct ib_srq_attr *attr,\n\t\t   enum ib_srq_attr_mask attr_mask,\n\t\t   struct ib_udata *udata);\nint rvt_query_srq(struct ib_srq *ibsrq, struct ib_srq_attr *attr);\nint rvt_destroy_srq(struct ib_srq *ibsrq, struct ib_udata *udata);\n\n#endif           \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

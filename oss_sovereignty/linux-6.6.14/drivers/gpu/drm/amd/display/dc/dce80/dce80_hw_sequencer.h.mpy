@@ -1,0 +1,9 @@
+{
+  "module_name": "dce80_hw_sequencer.h",
+  "hash_id": "33e6769df8070e069329f92b33b59e504b55358b7f794313117ba58dd851d52a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce80/dce80_hw_sequencer.h",
+  "human_readable_source": " \n\n#ifndef __DC_HWSS_DCE80_H__\n#define __DC_HWSS_DCE80_H__\n\n#include \"core_types.h\"\n#include \"hw_sequencer_private.h\"\n\nstruct dc;\n\nvoid dce80_hw_sequencer_construct(struct dc *dc);\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

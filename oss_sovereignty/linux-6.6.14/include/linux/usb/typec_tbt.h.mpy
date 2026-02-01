@@ -1,0 +1,9 @@
+{
+  "module_name": "typec_tbt.h",
+  "hash_id": "38a2b66569cca52d37923f3e8f4fda72d17c4d0e054cb0eed9529ddec5a67d4e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/typec_tbt.h",
+  "human_readable_source": " \n#ifndef __USB_TYPEC_TBT_H\n#define __USB_TYPEC_TBT_H\n\n#include <linux/usb/typec_altmode.h>\n\n#define USB_TYPEC_VENDOR_INTEL\t\t0x8087\n \n#define USB_TYPEC_TBT_SID\t\tUSB_TYPEC_VENDOR_INTEL\n\n \n#define TYPEC_TBT_MODE\t\t\tTYPEC_STATE_MODAL\n\n \nstruct typec_thunderbolt_data {\n\tu32 device_mode;\n\tu32 cable_mode;\n\tu32 enter_vdo;\n};\n\n \n#define TBT_MODE\t\t\tBIT(0)\n#define TBT_ADAPTER(_vdo_)\t\t(((_vdo_) & BIT(16)) >> 16)\n#define   TBT_ADAPTER_LEGACY\t\t0\n#define   TBT_ADAPTER_TBT3\t\t1\n#define TBT_INTEL_SPECIFIC_B0\t\tBIT(26)\n#define TBT_VENDOR_SPECIFIC_B0\t\tBIT(30)\n#define TBT_VENDOR_SPECIFIC_B1\t\tBIT(31)\n\n#define TBT_SET_ADAPTER(a)\t\t(((a) & 1) << 16)\n\n \n#define TBT_CABLE_SPEED(_vdo_)\t\t(((_vdo_) & GENMASK(18, 16)) >> 16)\n#define   TBT_CABLE_USB3_GEN1\t\t1\n#define   TBT_CABLE_USB3_PASSIVE\t2\n#define   TBT_CABLE_10_AND_20GBPS\t3\n#define TBT_CABLE_ROUNDED_SUPPORT(_vdo_) \\\n\t\t\t\t\t(((_vdo_) & GENMASK(20, 19)) >> 19)\n#define   TBT_GEN3_NON_ROUNDED                 0\n#define   TBT_GEN3_GEN4_ROUNDED_NON_ROUNDED    1\n#define TBT_CABLE_OPTICAL\t\tBIT(21)\n#define TBT_CABLE_RETIMER\t\tBIT(22)\n#define TBT_CABLE_LINK_TRAINING\t\tBIT(23)\n\n#define TBT_SET_CABLE_SPEED(_s_)\t(((_s_) & GENMASK(2, 0)) << 16)\n#define TBT_SET_CABLE_ROUNDED(_g_)\t(((_g_) & GENMASK(1, 0)) << 19)\n\n \n#define TBT_ENTER_MODE_CABLE_SPEED(s)\tTBT_SET_CABLE_SPEED(s)\n#define TBT_ENTER_MODE_ACTIVE_CABLE\tBIT(24)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

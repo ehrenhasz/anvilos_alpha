@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "db89f2b209bd4b6b1fca0b4a66de41f661c292320551a5e506868dee444154bd",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/platform/scx200/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SCx200)\t\t+= scx200.o\nscx200-y\t\t\t+= scx200_32.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a9fba436c50a09443142901b7389f37ea048e511a2375233e31b40f41b35d019",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/marvell/mwifiex/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Copyright 2011-2020 NXP\n#\n\n\nmwifiex-y += main.o\nmwifiex-y += init.o\nmwifiex-y += cfp.o\nmwifiex-y += cmdevt.o\nmwifiex-y += util.o\nmwifiex-y += txrx.o\nmwifiex-y += wmm.o\nmwifiex-y += 11n.o\nmwifiex-y += 11ac.o\nmwifiex-y += 11n_aggr.o\nmwifiex-y += 11n_rxreorder.o\nmwifiex-y += scan.o\nmwifiex-y += join.o\nmwifiex-y += sta_ioctl.o\nmwifiex-y += sta_cmd.o\nmwifiex-y += uap_cmd.o\nmwifiex-y += ie.o\nmwifiex-y += sta_cmdresp.o\nmwifiex-y += sta_event.o\nmwifiex-y += uap_event.o\nmwifiex-y += sta_tx.o\nmwifiex-y += sta_rx.o\nmwifiex-y += uap_txrx.o\nmwifiex-y += cfg80211.o\nmwifiex-y += ethtool.o\nmwifiex-y += 11h.o\nmwifiex-y += tdls.o\nmwifiex-$(CONFIG_DEBUG_FS) += debugfs.o\nobj-$(CONFIG_MWIFIEX) += mwifiex.o\n\nmwifiex_sdio-y += sdio.o\nobj-$(CONFIG_MWIFIEX_SDIO) += mwifiex_sdio.o\n\nmwifiex_pcie-y += pcie.o\nmwifiex_pcie-y += pcie_quirks.o\nobj-$(CONFIG_MWIFIEX_PCIE) += mwifiex_pcie.o\n\nmwifiex_usb-y += usb.o\nobj-$(CONFIG_MWIFIEX_USB) += mwifiex_usb.o\n\nccflags-y += -D__CHECK_ENDIAN\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

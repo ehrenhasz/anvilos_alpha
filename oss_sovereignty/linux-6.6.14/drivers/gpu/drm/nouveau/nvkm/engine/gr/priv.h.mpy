@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "1d5dc4a4508a3c62fe3b04e9a2c5da15764f9477759551dab91d4930830d997e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/gr/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_GR_PRIV_H__\n#define __NVKM_GR_PRIV_H__\n#define nvkm_gr(p) container_of((p), struct nvkm_gr, engine)\n#include <engine/gr.h>\n#include <core/enum.h>\nstruct nvkm_fb_tile;\nstruct nvkm_chan;\n\nint nvkm_gr_ctor(const struct nvkm_gr_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t bool enable, struct nvkm_gr *);\n\nbool nv04_gr_idle(struct nvkm_gr *);\n\nstruct nvkm_gr_func {\n\tvoid *(*dtor)(struct nvkm_gr *);\n\tint (*oneinit)(struct nvkm_gr *);\n\tint (*init)(struct nvkm_gr *);\n\tint (*fini)(struct nvkm_gr *, bool);\n\tint (*reset)(struct nvkm_gr *);\n\tint (*nonstall)(struct nvkm_gr *);\n\tvoid (*intr)(struct nvkm_gr *);\n\tvoid (*tile)(struct nvkm_gr *, int region, struct nvkm_fb_tile *);\n\tint (*tlb_flush)(struct nvkm_gr *);\n\tint (*chan_new)(struct nvkm_gr *, struct nvkm_chan *,\n\t\t\tconst struct nvkm_oclass *, struct nvkm_object **);\n\tint (*object_get)(struct nvkm_gr *, int, struct nvkm_sclass *);\n\t \n\tu64 (*units)(struct nvkm_gr *);\n\tbool (*chsw_load)(struct nvkm_gr *);\n\tstruct {\n\t\tint (*pause)(struct nvkm_gr *);\n\t\tint (*resume)(struct nvkm_gr *);\n\t\tu32 (*inst)(struct nvkm_gr *);\n\t} ctxsw;\n\tstruct nvkm_sclass sclass[];\n};\n\nextern const struct nvkm_bitfield nv04_gr_nsource[];\nextern const struct nvkm_object_func nv04_gr_object;\n\nextern const struct nvkm_bitfield nv10_gr_intr_name[];\nextern const struct nvkm_bitfield nv10_gr_nstatus[];\n\nextern const struct nvkm_enum nv50_data_error_names[];\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

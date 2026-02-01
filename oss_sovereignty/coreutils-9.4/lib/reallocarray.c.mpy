@@ -1,0 +1,9 @@
+{
+  "module_name": "reallocarray.c",
+  "hash_id": "53077fc79d9fb62cd111e61d3b7dc05558a3c70515ded352af43d279b90731a9",
+  "original_prompt": "Ingested from coreutils-9.4/lib/reallocarray.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdckdint.h>\n#include <stdlib.h>\n#include <errno.h>\n\nvoid *\nreallocarray (void *ptr, size_t nmemb, size_t size)\n{\n  size_t nbytes;\n  if (ckd_mul (&nbytes, nmemb, size))\n    {\n      errno = ENOMEM;\n      return NULL;\n    }\n\n   \n  return realloc (ptr, nbytes);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

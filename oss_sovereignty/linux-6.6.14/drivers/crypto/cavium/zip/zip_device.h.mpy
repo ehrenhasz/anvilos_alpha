@@ -1,0 +1,9 @@
+{
+  "module_name": "zip_device.h",
+  "hash_id": "77e570f279d28a5e880fe33e5da5a87da8c2ef705a76b26637cdcf53dbf22118",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/cavium/zip/zip_device.h",
+  "human_readable_source": " \n\n#ifndef __ZIP_DEVICE_H__\n#define __ZIP_DEVICE_H__\n\n#include <linux/types.h>\n#include \"zip_main.h\"\n\nstruct sg_info {\n\t \n\tunion zip_zptr_s *gather;\n\n\t \n\tunion zip_zptr_s *scatter;\n\n\t \n\tu64 scatter_buf_size;\n\n\t \n\tu64 gather_enable;\n\n\t \n\tu64 scatter_enable;\n\n\t \n\tu32 gbuf_cnt;\n\n\t \n\tu32 sbuf_cnt;\n\n\t \n\tu8 alloc_state;\n};\n\n \nstruct zip_state {\n\tunion zip_inst_s zip_cmd;\n\tunion zip_zres_s result;\n\tunion zip_zptr_s *ctx;\n\tunion zip_zptr_s *history;\n\tstruct sg_info   sginfo;\n};\n\n#define ZIP_CONTEXT_SIZE          2048\n#define ZIP_INFLATE_HISTORY_SIZE  32768\n#define ZIP_DEFLATE_HISTORY_SIZE  32768\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

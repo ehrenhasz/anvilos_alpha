@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_timestamp.h",
+  "hash_id": "ea031549bca63633ec7284aec4ff917130c5dd4841d770bef0a4b65717063b3e",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nf_conntrack_timestamp.h",
+  "human_readable_source": " \n#ifndef _NF_CONNTRACK_TSTAMP_H\n#define _NF_CONNTRACK_TSTAMP_H\n\n#include <net/net_namespace.h>\n#include <linux/netfilter/nf_conntrack_common.h>\n#include <linux/netfilter/nf_conntrack_tuple_common.h>\n#include <net/netfilter/nf_conntrack.h>\n#include <net/netfilter/nf_conntrack_extend.h>\n\nstruct nf_conn_tstamp {\n\tu_int64_t start;\n\tu_int64_t stop;\n};\n\nstatic inline\nstruct nf_conn_tstamp *nf_conn_tstamp_find(const struct nf_conn *ct)\n{\n#ifdef CONFIG_NF_CONNTRACK_TIMESTAMP\n\treturn nf_ct_ext_find(ct, NF_CT_EXT_TSTAMP);\n#else\n\treturn NULL;\n#endif\n}\n\nstatic inline\nstruct nf_conn_tstamp *nf_ct_tstamp_ext_add(struct nf_conn *ct, gfp_t gfp)\n{\n#ifdef CONFIG_NF_CONNTRACK_TIMESTAMP\n\tstruct net *net = nf_ct_net(ct);\n\n\tif (!net->ct.sysctl_tstamp)\n\t\treturn NULL;\n\n\treturn nf_ct_ext_add(ct, NF_CT_EXT_TSTAMP, gfp);\n#else\n\treturn NULL;\n#endif\n};\n\n#ifdef CONFIG_NF_CONNTRACK_TIMESTAMP\nvoid nf_conntrack_tstamp_pernet_init(struct net *net);\n#else\nstatic inline void nf_conntrack_tstamp_pernet_init(struct net *net) {}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "6bbda017cbbabfa833b9e3925531a4afc45e9b1970a861d6369d2ed71482db72",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/async_tx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig ASYNC_CORE\n\ttristate\n\nconfig ASYNC_MEMCPY\n\ttristate\n\tselect ASYNC_CORE\n\nconfig ASYNC_XOR\n\ttristate\n\tselect ASYNC_CORE\n\tselect XOR_BLOCKS\n\nconfig ASYNC_PQ\n\ttristate\n\tselect ASYNC_CORE\n\nconfig ASYNC_RAID6_RECOV\n\ttristate\n\tselect ASYNC_CORE\n\tselect ASYNC_PQ\n\tselect ASYNC_XOR\n\nconfig ASYNC_TX_DISABLE_PQ_VAL_DMA\n\tbool\n\nconfig ASYNC_TX_DISABLE_XOR_VAL_DMA\n\tbool\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

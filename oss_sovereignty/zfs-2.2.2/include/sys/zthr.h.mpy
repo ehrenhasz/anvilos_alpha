@@ -1,0 +1,9 @@
+{
+  "module_name": "zthr.h",
+  "hash_id": "95a2cb66f4c454645db5d1829ed049e3c9c2aa0967bc1f65cccb95de65fa2adb",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zthr.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SYS_ZTHR_H\n#define\t_SYS_ZTHR_H\n\ntypedef struct zthr zthr_t;\ntypedef void (zthr_func_t)(void *, zthr_t *);\ntypedef boolean_t (zthr_checkfunc_t)(void *, zthr_t *);\n\nextern zthr_t *zthr_create(const char *zthr_name,\n    zthr_checkfunc_t checkfunc, zthr_func_t *func, void *arg,\n\tpri_t pri);\nextern zthr_t *zthr_create_timer(const char *zthr_name,\n    zthr_checkfunc_t *checkfunc, zthr_func_t *func, void *arg,\n\thrtime_t nano_wait, pri_t pri);\nextern void zthr_destroy(zthr_t *t);\n\nextern void zthr_wakeup(zthr_t *t);\nextern void zthr_cancel(zthr_t *t);\nextern void zthr_resume(zthr_t *t);\nextern void zthr_wait_cycle_done(zthr_t *t);\n\nextern boolean_t zthr_iscancelled(zthr_t *t);\nextern boolean_t zthr_iscurthread(zthr_t *t);\nextern boolean_t zthr_has_waiters(zthr_t *t);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

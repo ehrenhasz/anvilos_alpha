@@ -1,0 +1,9 @@
+{
+  "module_name": "md-multipath.h",
+  "hash_id": "3420b19a0dcb36ff3d5d2c53a559ba44f8e1f9732352fb66885c1edcabc1e977",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/md-multipath.h",
+  "human_readable_source": " \n#ifndef _MULTIPATH_H\n#define _MULTIPATH_H\n\nstruct multipath_info {\n\tstruct md_rdev\t*rdev;\n};\n\nstruct mpconf {\n\tstruct mddev\t\t\t*mddev;\n\tstruct multipath_info\t*multipaths;\n\tint\t\t\traid_disks;\n\tspinlock_t\t\tdevice_lock;\n\tstruct list_head\tretry_list;\n\n\tmempool_t\t\tpool;\n};\n\n \n\nstruct multipath_bh {\n\tstruct mddev\t\t\t*mddev;\n\tstruct bio\t\t*master_bio;\n\tstruct bio\t\tbio;\n\tint\t\t\tpath;\n\tstruct list_head\tretry_list;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

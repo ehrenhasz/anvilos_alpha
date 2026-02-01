@@ -1,0 +1,9 @@
+{
+  "module_name": "strnlen1.c",
+  "hash_id": "cb56628e5f1ee37915f671710d76eb603687983fef85e39225061608d4c6bbac",
+  "original_prompt": "Ingested from coreutils-9.4/lib/strnlen1.c",
+  "human_readable_source": " \n#include \"strnlen1.h\"\n\n#include <string.h>\n\n \n \nsize_t\nstrnlen1 (const char *string, size_t maxlen)\n{\n  const char *end = (const char *) memchr (string, '\\0', maxlen);\n  if (end != NULL)\n    return end - string + 1;\n  else\n    return maxlen;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

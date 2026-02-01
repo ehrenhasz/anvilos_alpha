@@ -1,0 +1,9 @@
+{
+  "module_name": "unaligned.h",
+  "hash_id": "9bd1909e05287fefcd79610fa9708eb708d174fca8de9a32989e8c5a1fbd6954",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/asm-generic/unaligned.h",
+  "human_readable_source": " \n \n\n#ifndef __TOOLS_LINUX_ASM_GENERIC_UNALIGNED_H\n#define __TOOLS_LINUX_ASM_GENERIC_UNALIGNED_H\n\n#define __get_unaligned_t(type, ptr) ({\t\t\t\t\t\t\\\n\tconst struct { type x; } __packed *__pptr = (typeof(__pptr))(ptr);\t\\\n\t__pptr->x;\t\t\t\t\t\t\t\t\\\n})\n\n#define __put_unaligned_t(type, val, ptr) do {\t\t\t\t\t\\\n\tstruct { type x; } __packed *__pptr = (typeof(__pptr))(ptr);\t\t\\\n\t__pptr->x = (val);\t\t\t\t\t\t\t\\\n} while (0)\n\n#define get_unaligned(ptr)\t__get_unaligned_t(typeof(*(ptr)), (ptr))\n#define put_unaligned(val, ptr) __put_unaligned_t(typeof(*(ptr)), (val), (ptr))\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

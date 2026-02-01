@@ -1,0 +1,9 @@
+{
+  "module_name": "openat-priv.h",
+  "hash_id": "772a5a075ef0cb25f62c7b90ac1dce1b68406ce727f5c2a150d7c1525411d105",
+  "original_prompt": "Ingested from coreutils-9.4/lib/openat-priv.h",
+  "human_readable_source": " \n\n#ifndef _GL_HEADER_OPENAT_PRIV\n#define _GL_HEADER_OPENAT_PRIV\n\n#include <errno.h>\n#include <limits.h>\n#include <stdlib.h>\n\n \n#define SAFER_ALLOCA_MAX (4096 - 64)\n\n#define SAFER_ALLOCA(m) ((m) < SAFER_ALLOCA_MAX ? (m) : SAFER_ALLOCA_MAX)\n\n#if defined PATH_MAX\n# define OPENAT_BUFFER_SIZE SAFER_ALLOCA (PATH_MAX)\n#elif defined _XOPEN_PATH_MAX\n# define OPENAT_BUFFER_SIZE SAFER_ALLOCA (_XOPEN_PATH_MAX)\n#else\n# define OPENAT_BUFFER_SIZE SAFER_ALLOCA (1024)\n#endif\n\nchar *openat_proc_name (char buf[OPENAT_BUFFER_SIZE], int fd, char const *file);\n\n \n#define EXPECTED_ERRNO(Errno)                   \\\n  ((Errno) == ENOTDIR || (Errno) == ENOENT      \\\n   || (Errno) == EPERM || (Errno) == EACCES     \\\n   || (Errno) == ENOSYS           \\\n   || (Errno) == EOPNOTSUPP  )\n\n \nint at_func2 (int fd1, char const *file1,\n              int fd2, char const *file2,\n              int (*func) (char const *file1, char const *file2));\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

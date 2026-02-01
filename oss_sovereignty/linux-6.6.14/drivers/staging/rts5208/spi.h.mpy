@@ -1,0 +1,9 @@
+{
+  "module_name": "spi.h",
+  "hash_id": "e24e67947240f9deb61cb625ab6c068bfb841d0b3f4ba8b0c98fa1f33a6f149e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rts5208/spi.h",
+  "human_readable_source": " \n \n\n#ifndef __REALTEK_RTSX_SPI_H\n#define __REALTEK_RTSX_SPI_H\n\n \n#define SPI_NO_ERR\t\t0x00\n#define SPI_HW_ERR\t\t0x01\n#define SPI_INVALID_COMMAND\t0x02\n#define SPI_READ_ERR\t\t0x03\n#define SPI_WRITE_ERR\t\t0x04\n#define SPI_ERASE_ERR\t\t0x05\n#define SPI_BUSY_ERR\t\t0x06\n\n \n#define SPI_READ\t\t0x03\n#define SPI_FAST_READ\t\t0x0B\n#define SPI_WREN\t\t0x06\n#define SPI_WRDI\t\t0x04\n#define SPI_RDSR\t\t0x05\n\n#define SF_PAGE_LEN\t\t256\n\n#define BYTE_PROGRAM\t\t0\n#define AAI_PROGRAM\t\t1\n#define PAGE_PROGRAM\t\t2\n\n#define PAGE_ERASE\t\t0\n#define CHIP_ERASE\t\t1\n\nint spi_erase_eeprom_chip(struct rtsx_chip *chip);\nint spi_erase_eeprom_byte(struct rtsx_chip *chip, u16 addr);\nint spi_read_eeprom(struct rtsx_chip *chip, u16 addr, u8 *val);\nint spi_write_eeprom(struct rtsx_chip *chip, u16 addr, u8 val);\nint spi_get_status(struct scsi_cmnd *srb, struct rtsx_chip *chip);\nint spi_set_parameter(struct scsi_cmnd *srb, struct rtsx_chip *chip);\nint spi_read_flash_id(struct scsi_cmnd *srb, struct rtsx_chip *chip);\nint spi_read_flash(struct scsi_cmnd *srb, struct rtsx_chip *chip);\nint spi_write_flash(struct scsi_cmnd *srb, struct rtsx_chip *chip);\nint spi_erase_flash(struct scsi_cmnd *srb, struct rtsx_chip *chip);\nint spi_write_flash_status(struct scsi_cmnd *srb, struct rtsx_chip *chip);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

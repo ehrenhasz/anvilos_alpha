@@ -1,0 +1,9 @@
+{
+  "module_name": "tegra186-hsp.h",
+  "hash_id": "509490f6c3ebc5b610821e697a35f865e6749da3289e5f1edb1a49681b66ec84",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/mailbox/tegra186-hsp.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_MAILBOX_TEGRA186_HSP_H\n#define _DT_BINDINGS_MAILBOX_TEGRA186_HSP_H\n\n \n#define TEGRA_HSP_MBOX_TYPE_DB 0x0\n#define TEGRA_HSP_MBOX_TYPE_SM 0x1\n#define TEGRA_HSP_MBOX_TYPE_SS 0x2\n#define TEGRA_HSP_MBOX_TYPE_AS 0x3\n\n \n#define TEGRA_HSP_MBOX_TYPE_SM_128BIT (1 << 8)\n\n \n#define TEGRA_HSP_DB_MASTER_CCPLEX 17\n#define TEGRA_HSP_DB_MASTER_BPMP 19\n\n \n#define TEGRA_HSP_SM_MASK 0x00ffffff\n#define TEGRA_HSP_SM_FLAG_RX (0 << 31)\n#define TEGRA_HSP_SM_FLAG_TX (1 << 31)\n\n#define TEGRA_HSP_SM_RX(x) (TEGRA_HSP_SM_FLAG_RX | ((x) & TEGRA_HSP_SM_MASK))\n#define TEGRA_HSP_SM_TX(x) (TEGRA_HSP_SM_FLAG_TX | ((x) & TEGRA_HSP_SM_MASK))\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

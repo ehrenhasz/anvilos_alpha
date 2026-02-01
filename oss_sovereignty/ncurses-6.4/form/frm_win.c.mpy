@@ -1,0 +1,9 @@
+{
+  "module_name": "frm_win.c",
+  "hash_id": "954215425ab84a3fc05bcd980e5961d0fd33b2ba711a332db8e332a3cb6d55cf",
+  "original_prompt": "Ingested from ncurses-6.4/form/frm_win.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: frm_win.c,v 1.19 2021/06/17 21:20:30 tom Exp $\")\n\n \nFORM_EXPORT(int)\nset_form_win(FORM *form, WINDOW *win)\n{\n  T((T_CALLED(\"set_form_win(%p,%p)\"), (void *)form, (void *)win));\n\n  if (form && (form->status & _POSTED))\n    RETURN(E_POSTED);\n  else\n    {\n#if NCURSES_SP_FUNCS\n      FORM *f = Normalize_Form(form);\n\n      f->win = win ? win : StdScreen(Get_Form_Screen(f));\n      RETURN(E_OK);\n#else\n      Normalize_Form(form)->win = win;\n      RETURN(E_OK);\n#endif\n    }\n}\n\n \nFORM_EXPORT(WINDOW *)\nform_win(const FORM *form)\n{\n  WINDOW *result;\n  const FORM *f;\n\n  T((T_CALLED(\"form_win(%p)\"), (const void *)form));\n\n  f = Normalize_Form(form);\n#if NCURSES_SP_FUNCS\n  result = (f->win ? f->win : StdScreen(Get_Form_Screen(f)));\n#else\n  result = (f->win ? f->win : stdscr);\n#endif\n  returnWin(result);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

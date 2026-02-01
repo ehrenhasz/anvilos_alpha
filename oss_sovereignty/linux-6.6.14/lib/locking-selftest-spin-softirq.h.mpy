@@ -1,0 +1,9 @@
+{
+  "module_name": "locking-selftest-spin-softirq.h",
+  "hash_id": "3141ab41bf183cbcfea3b1cbdecc4ca15ef0dc8674b46bc22676acf433c217de",
+  "original_prompt": "Ingested from linux-6.6.14/lib/locking-selftest-spin-softirq.h",
+  "human_readable_source": "#include \"locking-selftest-spin.h\"\n#include \"locking-selftest-softirq.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

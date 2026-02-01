@@ -1,0 +1,9 @@
+{
+  "module_name": "hid_bpf_attach.bpf.c",
+  "hash_id": "c11beee0c77904e7723bdf934d6cf28a86d4eab44881885534a0a51b8cfa8389",
+  "original_prompt": "Ingested from linux-6.6.14/samples/hid/hid_bpf_attach.bpf.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n#include \"hid_bpf_attach.h\"\n#include \"hid_bpf_helpers.h\"\n\nSEC(\"syscall\")\nint attach_prog(struct attach_prog_args *ctx)\n{\n\tctx->retval = hid_bpf_attach_prog(ctx->hid,\n\t\t\t\t\t  ctx->prog_fd,\n\t\t\t\t\t  0);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

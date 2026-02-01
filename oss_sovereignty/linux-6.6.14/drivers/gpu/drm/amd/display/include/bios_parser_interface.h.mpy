@@ -1,0 +1,9 @@
+{
+  "module_name": "bios_parser_interface.h",
+  "hash_id": "2d47018dc63e23750aad5f5a38f6537d82d689785f29a6075f12c99b20345b10",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/include/bios_parser_interface.h",
+  "human_readable_source": " \n\n#ifndef __DAL_BIOS_PARSER_INTERFACE_H__\n#define __DAL_BIOS_PARSER_INTERFACE_H__\n\n#include \"dc_bios_types.h\"\n\nstruct bios_parser;\n\nstruct bp_init_data {\n\tstruct dc_context *ctx;\n\tuint8_t *bios;\n};\n\nstruct dc_bios *dal_bios_parser_create(\n\tstruct bp_init_data *init,\n\tenum dce_version dce_version);\n\nvoid dal_bios_parser_destroy(struct dc_bios **dcb);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hmem_public.h",
+  "hash_id": "4aca137c56120a951be6f77c619a47aed7ef2a3a7d6a73b56a9df08eb79470b2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/host/hmem_public.h",
+  "human_readable_source": " \n \n\n#ifndef __HMEM_PUBLIC_H_INCLUDED__\n#define __HMEM_PUBLIC_H_INCLUDED__\n\n#include <linux/types.h>\t\t \n\n \nSTORAGE_CLASS_HMEM_H size_t sizeof_hmem(\n    const hmem_ID_t\t\tID);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

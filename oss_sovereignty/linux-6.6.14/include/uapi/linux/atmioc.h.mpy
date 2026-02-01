@@ -1,0 +1,9 @@
+{
+  "module_name": "atmioc.h",
+  "hash_id": "8ebd4779557eb718fd638ee48ceb66196fe2b1b06662c8fdd6f3ce0eb94fcc64",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/atmioc.h",
+  "human_readable_source": " \n \n \n \n\n\n \n\n\n#ifndef _LINUX_ATMIOC_H\n#define _LINUX_ATMIOC_H\n\n#include <asm/ioctl.h>\n\t\t \n\n#define ATMIOC_PHYCOM\t  0x00  \n#define ATMIOC_PHYCOM_END 0x0f\n#define ATMIOC_PHYTYP\t  0x10  \n#define ATMIOC_PHYTYP_END 0x2f\n#define ATMIOC_PHYPRV\t  0x30  \n#define ATMIOC_PHYPRV_END 0x4f\n#define ATMIOC_SARCOM\t  0x50  \n#define ATMIOC_SARCOM_END 0x50\n#define ATMIOC_SARPRV\t  0x60  \n#define ATMIOC_SARPRV_END 0x7f\n#define ATMIOC_ITF\t  0x80  \n#define ATMIOC_ITF_END\t  0x8f\n#define ATMIOC_BACKEND\t  0x90  \n#define ATMIOC_BACKEND_END 0xaf\n \n#define ATMIOC_AREQUIPA\t  0xc0  \n#define ATMIOC_LANE\t  0xd0  \n#define ATMIOC_MPOA       0xd8  \n#define\tATMIOC_CLIP\t  0xe0  \n#define\tATMIOC_CLIP_END\t  0xef\n#define\tATMIOC_SPECIAL\t  0xf0  \n#define\tATMIOC_SPECIAL_END 0xff\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

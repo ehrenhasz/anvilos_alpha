@@ -1,0 +1,9 @@
+{
+  "module_name": "ivtv-version.h",
+  "hash_id": "a69c75eb7cae1300f27ec6d16f53fc51417ec0d51c201e3075453f0d66516ffd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ivtv/ivtv-version.h",
+  "human_readable_source": " \n \n\n#ifndef IVTV_VERSION_H\n#define IVTV_VERSION_H\n\n#define IVTV_DRIVER_NAME \"ivtv\"\n#define IVTV_VERSION \"1.4.3\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

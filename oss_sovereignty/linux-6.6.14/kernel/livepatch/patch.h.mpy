@@ -1,0 +1,9 @@
+{
+  "module_name": "patch.h",
+  "hash_id": "a89e61142585a718f54652ff10588cd27c2b91f70b30412baa9f62f559e50d8d",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/livepatch/patch.h",
+  "human_readable_source": " \n#ifndef _LIVEPATCH_PATCH_H\n#define _LIVEPATCH_PATCH_H\n\n#include <linux/livepatch.h>\n#include <linux/list.h>\n#include <linux/ftrace.h>\n\n \nstruct klp_ops {\n\tstruct list_head node;\n\tstruct list_head func_stack;\n\tstruct ftrace_ops fops;\n};\n\nstruct klp_ops *klp_find_ops(void *old_func);\n\nint klp_patch_object(struct klp_object *obj);\nvoid klp_unpatch_object(struct klp_object *obj);\nvoid klp_unpatch_objects(struct klp_patch *patch);\nvoid klp_unpatch_objects_dynamic(struct klp_patch *patch);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

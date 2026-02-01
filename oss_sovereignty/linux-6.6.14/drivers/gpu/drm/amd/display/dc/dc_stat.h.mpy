@@ -1,0 +1,9 @@
+{
+  "module_name": "dc_stat.h",
+  "hash_id": "e2f948710f09321a9480f55942f05d33b60c6be3a1200f30f00dceda41e7b02b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dc_stat.h",
+  "human_readable_source": " \n\n#ifndef _DC_STAT_H_\n#define _DC_STAT_H_\n\n \n\n#include \"dc.h\"\n#include \"dmub/dmub_srv.h\"\n\nvoid dc_stat_get_dmub_notification(const struct dc *dc, struct dmub_notification *notify);\nvoid dc_stat_get_dmub_dataout(const struct dc *dc, uint32_t *dataout);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

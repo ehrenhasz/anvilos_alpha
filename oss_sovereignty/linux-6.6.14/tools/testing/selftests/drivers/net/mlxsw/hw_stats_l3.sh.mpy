@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_stats_l3.sh",
+  "hash_id": "18247334c073bf26a352f26706b9e3c1a071b8f7e700b231ab0244ea34c7c912",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/hw_stats_l3.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nlib_dir=$(dirname $0)/../../../net/forwarding\n\nALL_TESTS=\"\n\tl3_monitor_test\n\"\nNUM_NETIFS=0\nsource $lib_dir/lib.sh\n\nswp=$NETIF_NO_CABLE\n\ncleanup()\n{\n\tpre_cleanup\n}\n\nl3_monitor_test()\n{\n\thw_stats_monitor_test $swp l3\t\t    \\\n\t\t\"ip addr add dev $swp 192.0.2.1/28\" \\\n\t\t\"ip addr del dev $swp 192.0.2.1/28\"\n}\n\ntrap cleanup EXIT\n\nsetup_wait\ntests_run\n\nexit $EXIT_STATUS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

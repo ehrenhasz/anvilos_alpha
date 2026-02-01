@@ -1,0 +1,9 @@
+{
+  "module_name": "gfxhub_v1_1.h",
+  "hash_id": "80181aad46879265174b903bb214e515ea1020d1124490f215224f1a93ab3562",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/gfxhub_v1_1.h",
+  "human_readable_source": " \n\n#ifndef __GFXHUB_V1_1_H__\n#define __GFXHUB_V1_1_H__\n\nint gfxhub_v1_1_get_xgmi_info(struct amdgpu_device *adev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

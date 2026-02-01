@@ -1,0 +1,9 @@
+{
+  "module_name": "header.h",
+  "hash_id": "a19679ab58c87647666db4ebe600704fd15c9b3d7005dae5edcfb9c0f41ea2fe",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/sound/sof/header.h",
+  "human_readable_source": " \n \n\n#ifndef __INCLUDE_UAPI_SOUND_SOF_USER_HEADER_H__\n#define __INCLUDE_UAPI_SOUND_SOF_USER_HEADER_H__\n\n#include <linux/types.h>\n\n \nstruct sof_abi_hdr {\n\t__u32 magic;\n\t__u32 type;\n\t__u32 size;\n\t__u32 abi;\n\t__u32 reserved[4];\n\t__u32 data[];\n}  __packed;\n\n#define SOF_MANIFEST_DATA_TYPE_NHLT 1\n\n \nstruct sof_manifest_tlv {\n\t__le32 type;\n\t__le32 size;\n\t__u8 data[];\n};\n\n \nstruct sof_manifest {\n\t__le16 abi_major;\n\t__le16 abi_minor;\n\t__le16 abi_patch;\n\t__le16 count;\n\tstruct sof_manifest_tlv items[];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

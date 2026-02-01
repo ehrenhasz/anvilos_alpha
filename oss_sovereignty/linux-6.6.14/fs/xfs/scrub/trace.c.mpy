@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "3467e7d4e24ae2cf58b779864efef10895575036e0cc31860c7db78936482467",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/scrub/trace.c",
+  "human_readable_source": "\n \n#include \"xfs.h\"\n#include \"xfs_fs.h\"\n#include \"xfs_shared.h\"\n#include \"xfs_format.h\"\n#include \"xfs_log_format.h\"\n#include \"xfs_trans_resv.h\"\n#include \"xfs_mount.h\"\n#include \"xfs_inode.h\"\n#include \"xfs_btree.h\"\n#include \"xfs_ag.h\"\n#include \"scrub/scrub.h\"\n#include \"scrub/xfile.h\"\n#include \"scrub/xfarray.h\"\n\n \nstatic inline xfs_fsblock_t\nxchk_btree_cur_fsbno(\n\tstruct xfs_btree_cur\t*cur,\n\tint\t\t\tlevel)\n{\n\tif (level < cur->bc_nlevels && cur->bc_levels[level].bp)\n\t\treturn XFS_DADDR_TO_FSB(cur->bc_mp,\n\t\t\t\txfs_buf_daddr(cur->bc_levels[level].bp));\n\n\tif (level == cur->bc_nlevels - 1 &&\n\t    (cur->bc_flags & XFS_BTREE_ROOT_IN_INODE))\n\t\treturn XFS_INO_TO_FSB(cur->bc_mp, cur->bc_ino.ip->i_ino);\n\n\treturn NULLFSBLOCK;\n}\n\n \n#define CREATE_TRACE_POINTS\n#include \"scrub/trace.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

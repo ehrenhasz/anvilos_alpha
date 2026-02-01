@@ -1,0 +1,9 @@
+{
+  "module_name": "limits.h",
+  "hash_id": "55a07caaf7208e43dedd635b4017ce92854b584f7166b8f54dd88633ebd7d910",
+  "original_prompt": "Ingested from linux-6.6.14/security/landlock/limits.h",
+  "human_readable_source": " \n \n\n#ifndef _SECURITY_LANDLOCK_LIMITS_H\n#define _SECURITY_LANDLOCK_LIMITS_H\n\n#include <linux/bitops.h>\n#include <linux/limits.h>\n#include <uapi/linux/landlock.h>\n\n \n\n#define LANDLOCK_MAX_NUM_LAYERS\t\t16\n#define LANDLOCK_MAX_NUM_RULES\t\tU32_MAX\n\n#define LANDLOCK_LAST_ACCESS_FS\t\tLANDLOCK_ACCESS_FS_TRUNCATE\n#define LANDLOCK_MASK_ACCESS_FS\t\t((LANDLOCK_LAST_ACCESS_FS << 1) - 1)\n#define LANDLOCK_NUM_ACCESS_FS\t\t__const_hweight64(LANDLOCK_MASK_ACCESS_FS)\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

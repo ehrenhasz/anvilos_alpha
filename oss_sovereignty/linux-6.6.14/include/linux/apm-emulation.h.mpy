@@ -1,0 +1,9 @@
+{
+  "module_name": "apm-emulation.h",
+  "hash_id": "2852c672e2f3501684dde62ac9f73f5b0c3ccf233b9ab1d96d30a258710d66a3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/apm-emulation.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_APM_EMULATION_H\n#define __LINUX_APM_EMULATION_H\n\n#include <linux/apm_bios.h>\n\n \nstruct apm_power_info {\n\tunsigned char\tac_line_status;\n#define APM_AC_OFFLINE\t\t\t0\n#define APM_AC_ONLINE\t\t\t1\n#define APM_AC_BACKUP\t\t\t2\n#define APM_AC_UNKNOWN\t\t\t0xff\n\n\tunsigned char\tbattery_status;\n#define APM_BATTERY_STATUS_HIGH\t\t0\n#define APM_BATTERY_STATUS_LOW\t\t1\n#define APM_BATTERY_STATUS_CRITICAL\t2\n#define APM_BATTERY_STATUS_CHARGING\t3\n#define APM_BATTERY_STATUS_NOT_PRESENT\t4\n#define APM_BATTERY_STATUS_UNKNOWN\t0xff\n\n\tunsigned char\tbattery_flag;\n#define APM_BATTERY_FLAG_HIGH\t\t(1 << 0)\n#define APM_BATTERY_FLAG_LOW\t\t(1 << 1)\n#define APM_BATTERY_FLAG_CRITICAL\t(1 << 2)\n#define APM_BATTERY_FLAG_CHARGING\t(1 << 3)\n#define APM_BATTERY_FLAG_NOT_PRESENT\t(1 << 7)\n#define APM_BATTERY_FLAG_UNKNOWN\t0xff\n\n\tint\t\tbattery_life;\n\tint\t\ttime;\n\tint\t\tunits;\n#define APM_UNITS_MINS\t\t\t0\n#define APM_UNITS_SECS\t\t\t1\n#define APM_UNITS_UNKNOWN\t\t-1\n\n};\n\n \nextern void (*apm_get_power_status)(struct apm_power_info *);\n\n \nvoid apm_queue_event(apm_event_t event);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

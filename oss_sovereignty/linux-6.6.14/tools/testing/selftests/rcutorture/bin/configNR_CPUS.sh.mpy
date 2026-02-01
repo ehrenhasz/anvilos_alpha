@@ -1,0 +1,9 @@
+{
+  "module_name": "configNR_CPUS.sh",
+  "hash_id": "fdebb07891bfabfd8e8582559ffc4ec09cd8e47cbb6be81806a1e34fc9273ad4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/bin/configNR_CPUS.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Extract the number of CPUs expected from the specified Kconfig-file\n# fragment by checking CONFIG_SMP and CONFIG_NR_CPUS.  If the specified\n# file gives no clue, base the number on the number of idle CPUs on\n# the system.\n#\n# Usage: configNR_CPUS.sh config-frag\n#\n# Copyright (C) IBM Corporation, 2013\n#\n# Authors: Paul E. McKenney <paulmck@linux.ibm.com>\n\ncf=$1\nif test ! -r $cf\nthen\n\techo Unreadable config fragment $cf 1>&2\n\texit -1\nfi\nif grep -q '^CONFIG_SMP=n$' $cf\nthen\n\techo 1\n\texit 0\nfi\nif grep -q '^CONFIG_NR_CPUS=' $cf\nthen\n\tgrep '^CONFIG_NR_CPUS=' $cf | \n\t\tsed -e 's/^CONFIG_NR_CPUS=\\([0-9]*\\).*$/\\1/'\n\texit 0\nfi\ncpus2use.sh\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

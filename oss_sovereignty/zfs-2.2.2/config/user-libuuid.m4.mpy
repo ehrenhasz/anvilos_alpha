@@ -1,0 +1,9 @@
+{
+  "module_name": "user-libuuid.m4",
+  "hash_id": "757514c0a2f27903dc63cc9194b8a5939e3a4ac30ef912579b1fa7dc5b2aceb0",
+  "original_prompt": "Ingested from zfs-2.2.2/config/user-libuuid.m4",
+  "human_readable_source": "dnl #\ndnl # Check for libuuid\ndnl #\nAC_DEFUN([ZFS_AC_CONFIG_USER_LIBUUID], [\n\tZFS_AC_FIND_SYSTEM_LIBRARY(LIBUUID, [uuid], [uuid/uuid.h], [], [uuid], [uuid_generate uuid_is_null], [], [\n\t    AC_MSG_FAILURE([*** libuuid-devel package required])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

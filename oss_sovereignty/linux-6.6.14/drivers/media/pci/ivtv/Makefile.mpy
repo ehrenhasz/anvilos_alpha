@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "99bddf6ebacc2f71061617f0f461bae952fe5e9eb5c9edd404653d59ea485cf4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ivtv/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nivtv-objs\t:= ivtv-routing.o ivtv-cards.o ivtv-controls.o \\\n\t\t   ivtv-driver.o ivtv-fileops.o ivtv-firmware.o \\\n\t\t   ivtv-gpio.o ivtv-i2c.o ivtv-ioctl.o ivtv-irq.o \\\n\t\t   ivtv-mailbox.o ivtv-queue.o ivtv-streams.o ivtv-udma.o \\\n\t\t   ivtv-vbi.o ivtv-yuv.o\nivtv-alsa-objs := ivtv-alsa-main.o ivtv-alsa-pcm.o\n\nobj-$(CONFIG_VIDEO_IVTV) += ivtv.o\nobj-$(CONFIG_VIDEO_IVTV_ALSA) += ivtv-alsa.o\nobj-$(CONFIG_VIDEO_FB_IVTV) += ivtvfb.o\n\nccflags-y += -I$(srctree)/drivers/media/tuners\nccflags-y += -I$(srctree)/drivers/media/dvb-frontends\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

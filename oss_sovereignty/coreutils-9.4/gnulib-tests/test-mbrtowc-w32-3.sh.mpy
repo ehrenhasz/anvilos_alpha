@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrtowc-w32-3.sh",
+  "hash_id": "6f0bbf87fe5f3a52e998bede0fd46ed93e7992c3e97751a15d82b099fcae2598",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrtowc-w32-3.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a CP1256 locale.\n${CHECKER} ./test-mbrtowc-w32${EXEEXT} \"Arabic_Saudi Arabia\" 1256\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

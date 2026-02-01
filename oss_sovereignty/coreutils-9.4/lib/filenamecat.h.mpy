@@ -1,0 +1,9 @@
+{
+  "module_name": "filenamecat.h",
+  "hash_id": "90a0b143161c89dddb5d994ae1c2d001083ed9b64e64245eaaaac26935b9c401",
+  "original_prompt": "Ingested from coreutils-9.4/lib/filenamecat.h",
+  "human_readable_source": " \n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stdlib.h>\n\n#if GNULIB_FILENAMECAT\nchar *file_name_concat (char const *dir, char const *base,\n                        char **base_in_result)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE\n  _GL_ATTRIBUTE_RETURNS_NONNULL;\n#endif\n\nchar *mfile_name_concat (char const *dir, char const *base,\n                         char **base_in_result)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

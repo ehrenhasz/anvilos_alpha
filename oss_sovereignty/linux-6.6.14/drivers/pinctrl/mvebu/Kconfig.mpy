@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a9ccf21160d15f0ad3c05cb68aa70b2b9954a69ddf63c9b1f4fb1223c1d90ab2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/mvebu/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig PINCTRL_MVEBU\n\tbool\n\tselect PINMUX\n\tselect PINCONF\n\nconfig PINCTRL_DOVE\n\tbool\n\tselect PINCTRL_MVEBU\n\tselect MFD_SYSCON\n\nconfig PINCTRL_KIRKWOOD\n\tbool\n\tselect PINCTRL_MVEBU\n\nconfig PINCTRL_ARMADA_370\n\tbool\n\tselect PINCTRL_MVEBU\n\nconfig PINCTRL_ARMADA_375\n\tbool\n\tselect PINCTRL_MVEBU\n\nconfig PINCTRL_ARMADA_38X\n\tbool\n\tselect PINCTRL_MVEBU\n\nconfig PINCTRL_ARMADA_39X\n\tbool\n\tselect PINCTRL_MVEBU\n\nconfig PINCTRL_ARMADA_AP806\n\tbool\n\tselect PINCTRL_MVEBU\n\nconfig PINCTRL_ARMADA_CP110\n\tbool\n\tselect PINCTRL_MVEBU\n\nconfig PINCTRL_ARMADA_XP\n\tbool\n\tselect PINCTRL_MVEBU\n\nconfig PINCTRL_ORION\n\tbool\n\tselect PINCTRL_MVEBU\n\nconfig PINCTRL_AC5\n\tbool\n\tselect PINCTRL_MVEBU\n\nconfig PINCTRL_ARMADA_37XX\n\tbool\n\tselect GENERIC_PINCONF\n\tselect MFD_SYSCON\n\tselect PINCONF\n\tselect PINMUX\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

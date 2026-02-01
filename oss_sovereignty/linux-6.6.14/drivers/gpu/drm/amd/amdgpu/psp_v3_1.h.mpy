@@ -1,0 +1,9 @@
+{
+  "module_name": "psp_v3_1.h",
+  "hash_id": "68e567c7a0b71b41e800af2c7dbbb8ba5a7086e40949e7815dc90fcef776ecb8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/psp_v3_1.h",
+  "human_readable_source": " \n#ifndef __PSP_V3_1_H__\n#define __PSP_V3_1_H__\n\n#include \"amdgpu_psp.h\"\n\nenum { PSP_DIRECTORY_TABLE_ENTRIES = 4 };\nenum { PSP_BINARY_ALIGNMENT = 64 };\nenum { PSP_BOOTLOADER_1_MEG_ALIGNMENT = 0x100000 };\nenum { PSP_BOOTLOADER_8_MEM_ALIGNMENT = 0x800000 };\n\nvoid psp_v3_1_set_psp_funcs(struct psp_context *psp);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

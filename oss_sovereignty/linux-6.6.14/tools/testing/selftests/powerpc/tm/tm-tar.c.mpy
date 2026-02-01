@@ -1,0 +1,9 @@
+{
+  "module_name": "tm-tar.c",
+  "hash_id": "ea7ae26a367f7e6569bfdab697eb1b92762e817c457b0e230753d04b9d3e15d7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/tm/tm-tar.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n#include <string.h>\n\n#include \"tm.h\"\n#include \"utils.h\"\n\nint\tnum_loops\t= 10000;\n\nint test_tar(void)\n{\n\tint i;\n\n\tSKIP_IF(!have_htm());\n\tSKIP_IF(htm_is_synthetic());\n\tSKIP_IF(!is_ppc64le());\n\n\tfor (i = 0; i < num_loops; i++)\n\t{\n\t\tuint64_t result = 0;\n\t\tasm __volatile__(\n\t\t\t\"li\t7, 1;\"\n\t\t\t\"mtspr\t%[tar], 7;\"\t \n\t\t\t\"tbegin.;\"\n\t\t\t\"beq\t3f;\"\n\t\t\t\"li\t4, 0x7000;\"\t \n\t\t\t\"2:;\"\t\t\t \n\t\t\t\"li\t7, 2;\"\n\t\t\t\"mtspr\t%[tar], 7;\"\t \n\t\t\t\"tsuspend.;\"\n\t\t\t\"li\t7, 3;\"\n\t\t\t\"mtspr\t%[tar], 7;\"\t \n\t\t\t\"tresume.;\"\n\t\t\t\"subi\t4, 4, 1;\"\n\t\t\t\"cmpdi\t4, 0;\"\n\t\t\t\"bne\t2b;\"\n\t\t\t\"tend.;\"\n\n\t\t\t \n\t\t\t\"mfspr  7, %[tar];\"\n\t\t\t\"ori\t%[res], 7, 4;\"  \n\t\t\t\"b\t4f;\"\n\n\t\t\t \n\t\t\t\"3:;\"\n\t\t\t\"mfspr  7, %[tar];\"\n\t\t\t\"ori\t%[res], 7, 8;\"\t\n\t\t\t\"4:;\"\n\n\t\t\t: [res]\"=r\"(result)\n\t\t\t: [tar]\"i\"(SPRN_TAR)\n\t\t\t   : \"memory\", \"r0\", \"r4\", \"r7\");\n\n\t\t \n\t\tif ((result != 7) && (result != 9))\n\t\t\treturn 1;\n\t}\n\treturn 0;\n}\n\nint main(int argc, char *argv[])\n{\n\t \n\tif (argc > 1) {\n\t\tif (strcmp(argv[1], \"-h\") == 0) {\n\t\t\tprintf(\"Syntax:\\n\\t%s [<num loops>]\\n\",\n\t\t\t       argv[0]);\n\t\t\treturn 1;\n\t\t} else {\n\t\t\tnum_loops = atoi(argv[1]);\n\t\t}\n\t}\n\n\tprintf(\"Starting, %d loops\\n\", num_loops);\n\n\treturn test_harness(test_tar, \"tm_tar\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

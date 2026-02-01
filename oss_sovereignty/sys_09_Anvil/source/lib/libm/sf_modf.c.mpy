@@ -1,0 +1,9 @@
+{
+  "module_name": "sf_modf.c",
+  "hash_id": "c203ab8d5db7f46a536d37d307738273dcba8e70e91656aaeb0db86484a9c690",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/sf_modf.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"fdlibm.h\"\n\n#ifdef __STDC__\nstatic const float one = 1.0f;\n#else\nstatic float one = 1.0f;\n#endif\n\n#ifdef __STDC__\n\tfloat modff(float x, float *iptr)\n#else\n\tfloat modff(x, iptr)\n\tfloat x,*iptr;\n#endif\n{\n\t__int32_t i0,j0;\n\t__uint32_t i;\n\tGET_FLOAT_WORD(i0,x);\n\tj0 = ((i0>>23)&0xff)-0x7f;\t \n\tif(j0<23) {\t\t\t \n\t    if(j0<0) {\t\t\t \n\t        SET_FLOAT_WORD(*iptr,i0&0x80000000);\t \n\t\treturn x;\n\t    } else {\n\t\ti = (0x007fffff)>>j0;\n\t\tif((i0&i)==0) {\t\t\t \n\t\t    __uint32_t ix;\n\t\t    *iptr = x;\n\t\t    GET_FLOAT_WORD(ix,x);\n\t\t    SET_FLOAT_WORD(x,ix&0x80000000);\t \n\t\t    return x;\n\t\t} else {\n\t\t    SET_FLOAT_WORD(*iptr,i0&(~i));\n\t\t    return x - *iptr;\n\t\t}\n\t    }\n\t} else {\t\t\t \n\t    __uint32_t ix;\n\t    *iptr = x*one;\n\t    GET_FLOAT_WORD(ix,x);\n\t    SET_FLOAT_WORD(x,ix&0x80000000);\t \n\t    return x;\n\t}\n}\n\n#ifdef _DOUBLE_IS_32BITS\n\n#ifdef __STDC__\n\tdouble modf(double x, double *iptr)\n#else\n\tdouble modf(x, iptr)\n\tdouble x,*iptr;\n#endif\n{\n\treturn (double) modff((float) x, (float *) iptr);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

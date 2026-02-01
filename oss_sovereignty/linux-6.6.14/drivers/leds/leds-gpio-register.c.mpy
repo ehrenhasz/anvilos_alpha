@@ -1,0 +1,9 @@
+{
+  "module_name": "leds-gpio-register.c",
+  "hash_id": "708c16865ca77ebde6934ce2e85457cec560db8f71311cff5bd7713b242c5ffd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/leds-gpio-register.c",
+  "human_readable_source": "\n \n#include <linux/err.h>\n#include <linux/leds.h>\n#include <linux/platform_device.h>\n#include <linux/slab.h>\n\n \nstruct platform_device *__init gpio_led_register_device(\n\t\tint id, const struct gpio_led_platform_data *pdata)\n{\n\tstruct platform_device *ret;\n\tstruct gpio_led_platform_data _pdata = *pdata;\n\n\tif (!pdata->num_leds)\n\t\treturn ERR_PTR(-EINVAL);\n\n\t_pdata.leds = kmemdup(pdata->leds,\n\t\t\tpdata->num_leds * sizeof(*pdata->leds), GFP_KERNEL);\n\tif (!_pdata.leds)\n\t\treturn ERR_PTR(-ENOMEM);\n\n\tret = platform_device_register_resndata(NULL, \"leds-gpio\", id,\n\t\t\tNULL, 0, &_pdata, sizeof(_pdata));\n\tif (IS_ERR(ret))\n\t\tkfree(_pdata.leds);\n\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

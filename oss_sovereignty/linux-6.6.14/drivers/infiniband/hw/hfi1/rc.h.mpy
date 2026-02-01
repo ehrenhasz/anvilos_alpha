@@ -1,0 +1,9 @@
+{
+  "module_name": "rc.h",
+  "hash_id": "fadcf46dbd09a030eb3dcea10772c7018ac1046f3ad5a40b6451dda43180096d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/hfi1/rc.h",
+  "human_readable_source": " \n \n\n#ifndef HFI1_RC_H\n#define HFI1_RC_H\n\n \n#define OP(x) IB_OPCODE_RC_##x\n\nstatic inline void update_ack_queue(struct rvt_qp *qp, unsigned int n)\n{\n\tunsigned int next;\n\n\tnext = n + 1;\n\tif (next > rvt_size_atomic(ib_to_rvt(qp->ibqp.device)))\n\t\tnext = 0;\n\tqp->s_tail_ack_queue = next;\n\tqp->s_acked_ack_queue = next;\n\tqp->s_ack_state = OP(ACKNOWLEDGE);\n}\n\nstatic inline void rc_defered_ack(struct hfi1_ctxtdata *rcd,\n\t\t\t\t  struct rvt_qp *qp)\n{\n\tif (list_empty(&qp->rspwait)) {\n\t\tqp->r_flags |= RVT_R_RSP_NAK;\n\t\trvt_get_qp(qp);\n\t\tlist_add_tail(&qp->rspwait, &rcd->qp_wait_list);\n\t}\n}\n\nstatic inline u32 restart_sge(struct rvt_sge_state *ss, struct rvt_swqe *wqe,\n\t\t\t      u32 psn, u32 pmtu)\n{\n\tu32 len;\n\n\tlen = delta_psn(psn, wqe->psn) * pmtu;\n\treturn rvt_restart_sge(ss, wqe, len);\n}\n\nstatic inline void release_rdma_sge_mr(struct rvt_ack_entry *e)\n{\n\tif (e->rdma_sge.mr) {\n\t\trvt_put_mr(e->rdma_sge.mr);\n\t\te->rdma_sge.mr = NULL;\n\t}\n}\n\nstruct rvt_ack_entry *find_prev_entry(struct rvt_qp *qp, u32 psn, u8 *prev,\n\t\t\t\t      u8 *prev_ack, bool *scheduled);\nint do_rc_ack(struct rvt_qp *qp, u32 aeth, u32 psn, int opcode, u64 val,\n\t      struct hfi1_ctxtdata *rcd);\nstruct rvt_swqe *do_rc_completion(struct rvt_qp *qp, struct rvt_swqe *wqe,\n\t\t\t\t  struct hfi1_ibport *ibp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

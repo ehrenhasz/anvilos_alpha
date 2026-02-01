@@ -1,0 +1,9 @@
+{
+  "module_name": ".prev-version",
+  "hash_id": "8b452b0cf2882a61e8d672441cb7e2d610d1b786e0fb48f97c1aaa15d5127f72",
+  "original_prompt": "Ingested from coreutils-9.4/.prev-version",
+  "human_readable_source": "9.3\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

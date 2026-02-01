@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm2835-pm.h",
+  "hash_id": "ae28c2c8bb4095c781e0e3c8ef00de6e7b37a4708cf6e6c8ce0afe9b827575bd",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/soc/bcm2835-pm.h",
+  "human_readable_source": " \n\n#ifndef _DT_BINDINGS_ARM_BCM2835_PM_H\n#define _DT_BINDINGS_ARM_BCM2835_PM_H\n\n#define BCM2835_POWER_DOMAIN_GRAFX\t\t0\n#define BCM2835_POWER_DOMAIN_GRAFX_V3D\t\t1\n#define BCM2835_POWER_DOMAIN_IMAGE\t\t2\n#define BCM2835_POWER_DOMAIN_IMAGE_PERI\t\t3\n#define BCM2835_POWER_DOMAIN_IMAGE_ISP\t\t4\n#define BCM2835_POWER_DOMAIN_IMAGE_H264\t\t5\n#define BCM2835_POWER_DOMAIN_USB\t\t6\n#define BCM2835_POWER_DOMAIN_DSI0\t\t7\n#define BCM2835_POWER_DOMAIN_DSI1\t\t8\n#define BCM2835_POWER_DOMAIN_CAM0\t\t9\n#define BCM2835_POWER_DOMAIN_CAM1\t\t10\n#define BCM2835_POWER_DOMAIN_CCP2TX\t\t11\n#define BCM2835_POWER_DOMAIN_HDMI\t\t12\n\n#define BCM2835_POWER_DOMAIN_COUNT\t\t13\n\n#define BCM2835_RESET_V3D\t\t\t0\n#define BCM2835_RESET_ISP\t\t\t1\n#define BCM2835_RESET_H264\t\t\t2\n\n#define BCM2835_RESET_COUNT\t\t\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

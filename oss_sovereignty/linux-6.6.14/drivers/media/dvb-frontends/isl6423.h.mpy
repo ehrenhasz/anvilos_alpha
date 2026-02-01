@@ -1,0 +1,9 @@
+{
+  "module_name": "isl6423.h",
+  "hash_id": "9bea4056df4269f21324740e8a8e5ab83c722047c54e89ee0c05c5b0f15d730e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/isl6423.h",
+  "human_readable_source": " \n \n\n#ifndef __ISL_6423_H\n#define __ISL_6423_H\n\n#include <linux/dvb/frontend.h>\n\nenum isl6423_current {\n\tSEC_CURRENT_275m = 0,\n\tSEC_CURRENT_515m,\n\tSEC_CURRENT_635m,\n\tSEC_CURRENT_800m,\n};\n\nenum isl6423_curlim {\n\tSEC_CURRENT_LIM_ON = 1,\n\tSEC_CURRENT_LIM_OFF\n};\n\nstruct isl6423_config {\n\tenum isl6423_current current_max;\n\tenum isl6423_curlim curlim;\n\tu8 addr;\n\tu8 mod_extern;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_ISL6423)\n\n\nextern struct dvb_frontend *isl6423_attach(struct dvb_frontend *fe,\n\t\t\t\t\t   struct i2c_adapter *i2c,\n\t\t\t\t\t   const struct isl6423_config *config);\n\n#else\nstatic inline struct dvb_frontend *isl6423_attach(struct dvb_frontend *fe,\n\t\t\t\t\t\t  struct i2c_adapter *i2c,\n\t\t\t\t\t\t  const struct isl6423_config *config)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bb788c711bf5f7502e8a2b644b44e3e6016698b367d33f54c3acf98381368f3e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/ocelot/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_NET_DSA_MSCC_FELIX_DSA_LIB) += mscc_felix_dsa_lib.o\nobj-$(CONFIG_NET_DSA_MSCC_FELIX) += mscc_felix.o\nobj-$(CONFIG_NET_DSA_MSCC_OCELOT_EXT) += mscc_ocelot_ext.o\nobj-$(CONFIG_NET_DSA_MSCC_SEVILLE) += mscc_seville.o\n\nmscc_felix_dsa_lib-objs := felix.o\nmscc_felix-objs := felix_vsc9959.o\nmscc_ocelot_ext-objs := ocelot_ext.o\nmscc_seville-objs := seville_vsc9953.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

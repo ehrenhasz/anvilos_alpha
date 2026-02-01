@@ -1,0 +1,9 @@
+{
+  "module_name": "chsc_sch.h",
+  "hash_id": "5b65a4fdd7f21ea1e18db83b4823117b3195bf82736e0ed08c06fcca346f4b94",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/cio/chsc_sch.h",
+  "human_readable_source": " \n#ifndef _CHSC_SCH_H\n#define _CHSC_SCH_H\n\nstruct chsc_request {\n\tstruct completion completion;\n\tstruct irb irb;\n};\n\nstruct chsc_private {\n\tstruct chsc_request *request;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

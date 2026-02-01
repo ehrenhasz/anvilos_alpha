@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e3ced0b083683e2d1c5ea2c29ab5df154cd5d638a4e045bebcf3e68867a65cc4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt7915/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: ISC\nconfig MT7915E\n\ttristate \"MediaTek MT7915E (PCIe) support\"\n\tselect MT76_CONNAC_LIB\n\tselect WANT_DEV_COREDUMP\n\tdepends on MAC80211\n\tdepends on PCI\n\tselect RELAY\n\thelp\n\t  This adds support for MT7915-based PCIe wireless devices,\n\t  which support concurrent dual-band operation at both 5GHz\n\t  and 2.4GHz IEEE 802.11ax 4x4:4SS 1024-QAM, 160MHz channels,\n\t  OFDMA, spatial reuse and dual carrier modulation.\n\n\t  To compile this driver as a module, choose M here.\n\nconfig MT798X_WMAC\n\tbool \"MT798x (SoC) WMAC support\"\n\tdepends on MT7915E\n\tdepends on ARCH_MEDIATEK || COMPILE_TEST\n\tselect REGMAP\n\thelp\n\t  This adds support for the built-in WMAC on MT7981 and MT7986 SoC device\n\t  which has the same feature set as a MT7915, but enables 6E\n\t  support.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

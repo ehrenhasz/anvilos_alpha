@@ -1,0 +1,9 @@
+{
+  "module_name": "SB+fencembonceonces.litmus",
+  "hash_id": "11dbee9bc79de6594e8e4275fbb4937981f6656c39a524030fd2df2a18f63405",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/SB+fencembonceonces.litmus",
+  "human_readable_source": "C SB+fencembonceonces\n\n(*\n * Result: Never\n *\n * This litmus test demonstrates that full memory barriers suffice to\n * order the store-buffering pattern, where each process writes to the\n * variable that the preceding process reads.  (Locking and RCU can also\n * suffice, but not much else.)\n *)\n\n{}\n\nP0(int *x, int *y)\n{\n\tint r0;\n\n\tWRITE_ONCE(*x, 1);\n\tsmp_mb();\n\tr0 = READ_ONCE(*y);\n}\n\nP1(int *x, int *y)\n{\n\tint r0;\n\n\tWRITE_ONCE(*y, 1);\n\tsmp_mb();\n\tr0 = READ_ONCE(*x);\n}\n\nexists (0:r0=0 /\\ 1:r0=0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_hmm.h",
+  "hash_id": "15f002bd87d5713f51b35136b9bd328ead8aa89cd1bfcfcf526fd9c87e89b5fe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_hmm.h",
+  "human_readable_source": " \n#ifndef __AMDGPU_MN_H__\n#define __AMDGPU_MN_H__\n\n#include <linux/types.h>\n#include <linux/hmm.h>\n#include <linux/rwsem.h>\n#include <linux/workqueue.h>\n#include <linux/interval_tree.h>\n#include <linux/mmu_notifier.h>\n\nint amdgpu_hmm_range_get_pages(struct mmu_interval_notifier *notifier,\n\t\t\t       uint64_t start, uint64_t npages, bool readonly,\n\t\t\t       void *owner, struct page **pages,\n\t\t\t       struct hmm_range **phmm_range);\nbool amdgpu_hmm_range_get_pages_done(struct hmm_range *hmm_range);\n\n#if defined(CONFIG_HMM_MIRROR)\nint amdgpu_hmm_register(struct amdgpu_bo *bo, unsigned long addr);\nvoid amdgpu_hmm_unregister(struct amdgpu_bo *bo);\n#else\nstatic inline int amdgpu_hmm_register(struct amdgpu_bo *bo, unsigned long addr)\n{\n\tDRM_WARN_ONCE(\"HMM_MIRROR kernel config option is not enabled, \"\n\t\t      \"add CONFIG_ZONE_DEVICE=y in config file to fix this\\n\");\n\treturn -ENODEV;\n}\nstatic inline void amdgpu_hmm_unregister(struct amdgpu_bo *bo) {}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

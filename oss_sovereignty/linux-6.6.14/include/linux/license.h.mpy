@@ -1,0 +1,9 @@
+{
+  "module_name": "license.h",
+  "hash_id": "1a83053c9839e1aff04ed8032d92dd83ab3a475797a0433c132dbfc0955437c5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/license.h",
+  "human_readable_source": " \n#ifndef __LICENSE_H\n#define __LICENSE_H\n\nstatic inline int license_is_gpl_compatible(const char *license)\n{\n\treturn (strcmp(license, \"GPL\") == 0\n\t\t|| strcmp(license, \"GPL v2\") == 0\n\t\t|| strcmp(license, \"GPL and additional rights\") == 0\n\t\t|| strcmp(license, \"Dual BSD/GPL\") == 0\n\t\t|| strcmp(license, \"Dual MIT/GPL\") == 0\n\t\t|| strcmp(license, \"Dual MPL/GPL\") == 0);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

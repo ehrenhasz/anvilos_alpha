@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrlen-w32-4.sh",
+  "hash_id": "cb7cecd3854f927789f1659c8dcba088e2a2a966b384ff1aae84b12f6fdf0911",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrlen-w32-4.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test some UTF-8 locales.\n${CHECKER} ./test-mbrlen-w32${EXEEXT} French_France Japanese_Japan Chinese_Taiwan Chinese_China 65001\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

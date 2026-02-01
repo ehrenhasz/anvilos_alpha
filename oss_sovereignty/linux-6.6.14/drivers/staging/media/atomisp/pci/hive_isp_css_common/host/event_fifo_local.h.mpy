@@ -1,0 +1,9 @@
+{
+  "module_name": "event_fifo_local.h",
+  "hash_id": "93e4a6b3747256bae5fadc65be22114536d72090863eecabf415a51dd69c24b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/host/event_fifo_local.h",
+  "human_readable_source": " \n \n\n#ifndef _EVENT_FIFO_LOCAL_H\n#define _EVENT_FIFO_LOCAL_H\n\n \n#include \"event_fifo_global.h\"\n\ntypedef enum {\n\tSP0_EVENT_ID,\n\tISP0_EVENT_ID,\n\tSTR2MIPI_EVENT_ID,\n\tN_EVENT_ID\n} event_ID_t;\n\n#define\tEVENT_QUERY_BIT\t\t0\n\n \nstatic const hrt_address event_source_addr[N_EVENT_ID] = {\n\t0x0000000000380000ULL,\n\t0x0000000000380004ULL,\n\t0xffffffffffffffffULL\n};\n\n \nstatic const hrt_address event_source_query_addr[N_EVENT_ID] = {\n\t0x0000000000380010ULL,\n\t0x0000000000380014ULL,\n\t0xffffffffffffffffULL\n};\n\n \nstatic const hrt_address event_sink_addr[N_EVENT_ID] = {\n\t0x0000000000380008ULL,\n\t0x000000000038000CULL,\n\t0x0000000000090104ULL\n};\n\n \nstatic const hrt_address event_sink_query_addr[N_EVENT_ID] = {\n\t0x0000000000380018ULL,\n\t0x000000000038001CULL,\n\t0x000000000009010CULL\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "firewire.h",
+  "hash_id": "874ad619d732707c5adbc1514b31af777d6342e27c420e4e379592cfb8d312e2",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/firewire.h",
+  "human_readable_source": " \n#ifndef _NET_FIREWIRE_H\n#define _NET_FIREWIRE_H\n\n#include <linux/types.h>\n\n \n#define FWNET_ALEN\t16\nunion fwnet_hwaddr {\n\tu8 u[FWNET_ALEN];\n\t \n\tstruct {\n\t\t__be64 uniq_id;\t\t \n\t\tu8 max_rec;\t\t \n\t\tu8 sspd;\t\t \n\t\tu8 fifo[6];\t\t \n\t} __packed uc;\n};\n\n \n#define FWNET_HLEN\t18\nstruct fwnet_header {\n\tu8 h_dest[FWNET_ALEN];\t \n\t__be16 h_proto;\t\t \n} __packed;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

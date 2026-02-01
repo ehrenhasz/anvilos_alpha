@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfs.c",
+  "hash_id": "eb0b64916687482c8954b143876828ec7ac8e2368d643b372da230ee7e91db4c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/catpt/sysfs.c",
+  "human_readable_source": "\n\n\n\n\n\n\n#include <linux/pm_runtime.h>\n#include \"core.h\"\n\nstatic ssize_t fw_version_show(struct device *dev,\n\t\t\t       struct device_attribute *attr, char *buf)\n{\n\tstruct catpt_dev *cdev = dev_get_drvdata(dev);\n\tstruct catpt_fw_version version;\n\tint ret;\n\n\tret = pm_runtime_resume_and_get(cdev->dev);\n\tif (ret < 0 && ret != -EACCES)\n\t\treturn ret;\n\n\tret = catpt_ipc_get_fw_version(cdev, &version);\n\n\tpm_runtime_mark_last_busy(cdev->dev);\n\tpm_runtime_put_autosuspend(cdev->dev);\n\n\tif (ret)\n\t\treturn CATPT_IPC_ERROR(ret);\n\n\treturn sysfs_emit(buf, \"%d.%d.%d.%d\\n\", version.type, version.major,\n\t\t\t  version.minor, version.build);\n}\nstatic DEVICE_ATTR_RO(fw_version);\n\nstatic ssize_t fw_info_show(struct device *dev,\n\t\t\t    struct device_attribute *attr, char *buf)\n{\n\tstruct catpt_dev *cdev = dev_get_drvdata(dev);\n\n\treturn sysfs_emit(buf, \"%s\\n\", cdev->ipc.config.fw_info);\n}\nstatic DEVICE_ATTR_RO(fw_info);\n\nstatic struct attribute *catpt_attrs[] = {\n\t&dev_attr_fw_version.attr,\n\t&dev_attr_fw_info.attr,\n\tNULL\n};\n\nstatic const struct attribute_group catpt_attr_group = {\n\t.attrs = catpt_attrs,\n};\n\nconst struct attribute_group *catpt_attr_groups[] = {\n\t&catpt_attr_group,\n\tNULL\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

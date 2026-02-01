@@ -1,0 +1,9 @@
+{
+  "module_name": "di-set.h",
+  "hash_id": "385795d23cecb1898c8915abe1897af897000f01ea2d0b0eb71faf1e26bfb32b",
+  "original_prompt": "Ingested from coreutils-9.4/lib/di-set.h",
+  "human_readable_source": " \n\n#ifndef _GL_DI_SET_H\n# define _GL_DI_SET_H\n\n \n# if !_GL_CONFIG_H_INCLUDED\n#  error \"Please include config.h first.\"\n# endif\n\n# include <sys/types.h>\n\nstruct di_set;\n\nvoid di_set_free (struct di_set *) _GL_ATTRIBUTE_NONNULL ((1));\n\nstruct di_set *di_set_alloc (void)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC (di_set_free, 1);\n\nint di_set_insert (struct di_set *, dev_t, ino_t) _GL_ATTRIBUTE_NONNULL ((1));\n\nint di_set_lookup (struct di_set *dis, dev_t dev, ino_t ino)\n  _GL_ATTRIBUTE_NONNULL ((1));\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

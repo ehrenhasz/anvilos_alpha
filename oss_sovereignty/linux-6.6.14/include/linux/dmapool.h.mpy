@@ -1,0 +1,9 @@
+{
+  "module_name": "dmapool.h",
+  "hash_id": "b7564adf938530a0347a3cb7ab67e5fa0b8a05c9206542aeff0228c91ad9b16d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dmapool.h",
+  "human_readable_source": " \n\n#ifndef LINUX_DMAPOOL_H\n#define\tLINUX_DMAPOOL_H\n\n#include <linux/scatterlist.h>\n#include <asm/io.h>\n\nstruct device;\n\n#ifdef CONFIG_HAS_DMA\n\nstruct dma_pool *dma_pool_create(const char *name, struct device *dev, \n\t\t\tsize_t size, size_t align, size_t allocation);\n\nvoid dma_pool_destroy(struct dma_pool *pool);\n\nvoid *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,\n\t\t     dma_addr_t *handle);\nvoid dma_pool_free(struct dma_pool *pool, void *vaddr, dma_addr_t addr);\n\n \nstruct dma_pool *dmam_pool_create(const char *name, struct device *dev,\n\t\t\t\t  size_t size, size_t align, size_t allocation);\nvoid dmam_pool_destroy(struct dma_pool *pool);\n\n#else  \nstatic inline struct dma_pool *dma_pool_create(const char *name,\n\tstruct device *dev, size_t size, size_t align, size_t allocation)\n{ return NULL; }\nstatic inline void dma_pool_destroy(struct dma_pool *pool) { }\nstatic inline void *dma_pool_alloc(struct dma_pool *pool, gfp_t mem_flags,\n\t\t\t\t   dma_addr_t *handle) { return NULL; }\nstatic inline void dma_pool_free(struct dma_pool *pool, void *vaddr,\n\t\t\t\t dma_addr_t addr) { }\nstatic inline struct dma_pool *dmam_pool_create(const char *name,\n\tstruct device *dev, size_t size, size_t align, size_t allocation)\n{ return NULL; }\nstatic inline void dmam_pool_destroy(struct dma_pool *pool) { }\n#endif  \n\nstatic inline void *dma_pool_zalloc(struct dma_pool *pool, gfp_t mem_flags,\n\t\t\t\t    dma_addr_t *handle)\n{\n\treturn dma_pool_alloc(pool, mem_flags | __GFP_ZERO, handle);\n}\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

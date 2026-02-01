@@ -1,0 +1,9 @@
+{
+  "module_name": "imx-audmux.h",
+  "hash_id": "923aca5ca97d18cc0db0edfa32d5dfb7646e66926a8cfd7a58858568998c9b9d",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/fsl/imx-audmux.h",
+  "human_readable_source": " \n#ifndef __IMX_AUDMUX_H\n#define __IMX_AUDMUX_H\n\n#include <dt-bindings/sound/fsl-imx-audmux.h>\n\nint imx_audmux_v1_configure_port(unsigned int port, unsigned int pcr);\n\nint imx_audmux_v2_configure_port(unsigned int port, unsigned int ptcr,\n\t\tunsigned int pdcr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_bitfields___just_big_enough.c",
+  "hash_id": "e929ea513b10f7d284edde34174fa7c6daba67ccb71924a2196c2d957c9bc603",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_bitfields___just_big_enough.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_bitfields___just_big_enough x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

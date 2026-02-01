@@ -1,0 +1,9 @@
+{
+  "module_name": "errname.h",
+  "hash_id": "2daa0358827e3d2922360c7c9cb07ae11240c67ed6650b4994da47b61df685e6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/errname.h",
+  "human_readable_source": " \n#ifndef _LINUX_ERRNAME_H\n#define _LINUX_ERRNAME_H\n\n#include <linux/stddef.h>\n\n#ifdef CONFIG_SYMBOLIC_ERRNAME\nconst char *errname(int err);\n#else\nstatic inline const char *errname(int err)\n{\n\treturn NULL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

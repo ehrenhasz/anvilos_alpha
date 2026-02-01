@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objreversed.c.qstr",
+  "hash_id": "2dde04f7b7f676a35661aba62452960936c81c59e83c93ad11a238d09225e293",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objreversed.c.qstr",
+  "human_readable_source": "Q(__reversed__)\nQ(reversed)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

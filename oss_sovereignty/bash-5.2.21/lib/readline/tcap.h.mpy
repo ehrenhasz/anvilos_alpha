@@ -1,0 +1,9 @@
+{
+  "module_name": "tcap.h",
+  "hash_id": "b83959e9729d657bcd451b7928a7860c8f74035a40bf02a92e7e3ec9cf7fd45d",
+  "original_prompt": "Ingested from bash-5.2.21/lib/readline/tcap.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_RLTCAP_H_)\n#define _RLTCAP_H_\n\n#if defined (HAVE_CONFIG_H)\n#  include \"config.h\"\n#endif\n\n#if defined (HAVE_TERMCAP_H)\n#  if defined (__linux__) && !defined (SPEED_T_IN_SYS_TYPES)\n#    include \"rltty.h\"\n#  endif\n#  include <termcap.h>\n#elif defined (HAVE_NCURSES_TERMCAP_H)\n#  include <ncurses/termcap.h>\n#else\n\n \n#ifdef PC\n#  undef PC\n#endif\n\nextern char PC;\nextern char *UP, *BC;\n\nextern short ospeed;\n\nextern int tgetent ();\nextern int tgetflag ();\nextern int tgetnum ();\nextern char *tgetstr ();\n\nextern int tputs ();\n\nextern char *tgoto ();\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

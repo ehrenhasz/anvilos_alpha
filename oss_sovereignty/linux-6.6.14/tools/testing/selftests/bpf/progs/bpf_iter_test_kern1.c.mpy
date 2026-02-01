@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_iter_test_kern1.c",
+  "hash_id": "9b2591feccc53531cc302f27fd8e9a890eb1cf20c384f3a69f7179dbd94a5deb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_iter_test_kern1.c",
+  "human_readable_source": "\n \n#define START_CHAR 'a'\n#include \"bpf_iter_test_kern_common.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5789129b724bca191b35904f9cd1fcf9e0c84e650bb13b4f3bb5fee94abfd4d8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ntb/hw/mscc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NTB_SWITCHTEC\n\ttristate \"MicroSemi Switchtec Non-Transparent Bridge Support\"\n\tselect PCI_SW_SWITCHTEC\n\thelp\n\t Enables NTB support for Switchtec PCI switches. This also\n\t selects the Switchtec management driver as they share the same\n\t hardware interface.\n\n\t If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "monitor_stats.h",
+  "hash_id": "d176f956960f37feaf745b74a6d223bb1ae0ee0dae1dc3d510634e26f700d2fb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/monitor_stats.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_MONITOR_H__\n#define __MLX5_MONITOR_H__\n\nint  mlx5e_monitor_counter_supported(struct mlx5e_priv *priv);\nvoid mlx5e_monitor_counter_init(struct mlx5e_priv *priv);\nvoid mlx5e_monitor_counter_cleanup(struct mlx5e_priv *priv);\nvoid mlx5e_monitor_counter_arm(struct mlx5e_priv *priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

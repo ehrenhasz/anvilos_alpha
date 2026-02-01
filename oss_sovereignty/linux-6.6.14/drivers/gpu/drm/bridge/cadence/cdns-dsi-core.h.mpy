@@ -1,0 +1,9 @@
+{
+  "module_name": "cdns-dsi-core.h",
+  "hash_id": "f623262d5687f2be639424137216bb9813d09da1bfe972fab376177c167b7b2c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/bridge/cadence/cdns-dsi-core.h",
+  "human_readable_source": " \n \n\n#ifndef __CDNS_DSI_H__\n#define __CDNS_DSI_H__\n\n#include <drm/drm_bridge.h>\n#include <drm/drm_mipi_dsi.h>\n#include <drm/drm_panel.h>\n\n#include <linux/bits.h>\n#include <linux/completion.h>\n#include <linux/phy/phy.h>\n\nstruct clk;\nstruct reset_control;\n\nstruct cdns_dsi_output {\n\tstruct mipi_dsi_device *dev;\n\tstruct drm_panel *panel;\n\tstruct drm_bridge *bridge;\n\tunion phy_configure_opts phy_opts;\n};\n\nenum cdns_dsi_input_id {\n\tCDNS_SDI_INPUT,\n\tCDNS_DPI_INPUT,\n\tCDNS_DSC_INPUT,\n};\n\nstruct cdns_dsi_cfg {\n\tunsigned int hfp;\n\tunsigned int hsa;\n\tunsigned int hbp;\n\tunsigned int hact;\n\tunsigned int htotal;\n};\n\nstruct cdns_dsi_input {\n\tenum cdns_dsi_input_id id;\n\tstruct drm_bridge bridge;\n};\n\nstruct cdns_dsi;\n\n \nstruct cdns_dsi_platform_ops {\n\tint (*init)(struct cdns_dsi *dsi);\n\tvoid (*deinit)(struct cdns_dsi *dsi);\n\tvoid (*enable)(struct cdns_dsi *dsi);\n\tvoid (*disable)(struct cdns_dsi *dsi);\n};\n\nstruct cdns_dsi {\n\tstruct mipi_dsi_host base;\n\tvoid __iomem *regs;\n#ifdef CONFIG_DRM_CDNS_DSI_J721E\n\tvoid __iomem *j721e_regs;\n#endif\n\tconst struct cdns_dsi_platform_ops *platform_ops;\n\tstruct cdns_dsi_input input;\n\tstruct cdns_dsi_output output;\n\tunsigned int direct_cmd_fifo_depth;\n\tunsigned int rx_fifo_depth;\n\tstruct completion direct_cmd_comp;\n\tstruct clk *dsi_p_clk;\n\tstruct reset_control *dsi_p_rst;\n\tstruct clk *dsi_sys_clk;\n\tbool link_initialized;\n\tbool phy_initialized;\n\tstruct phy *dphy;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

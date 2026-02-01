@@ -1,0 +1,9 @@
+{
+  "module_name": "disp.c",
+  "hash_id": "17c4f2624d2313bb1b662a1b01ebd1d1fa5740b18e15439db46cd0f4e08258c9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvif/disp.c",
+  "human_readable_source": " \n#include <nvif/disp.h>\n#include <nvif/device.h>\n#include <nvif/printf.h>\n\n#include <nvif/class.h>\n#include <nvif/if0010.h>\n\nvoid\nnvif_disp_dtor(struct nvif_disp *disp)\n{\n\tnvif_object_dtor(&disp->object);\n}\n\nint\nnvif_disp_ctor(struct nvif_device *device, const char *name, s32 oclass, struct nvif_disp *disp)\n{\n\tstatic const struct nvif_mclass disps[] = {\n\t\t{ GA102_DISP, 0 },\n\t\t{ TU102_DISP, 0 },\n\t\t{ GV100_DISP, 0 },\n\t\t{ GP102_DISP, 0 },\n\t\t{ GP100_DISP, 0 },\n\t\t{ GM200_DISP, 0 },\n\t\t{ GM107_DISP, 0 },\n\t\t{ GK110_DISP, 0 },\n\t\t{ GK104_DISP, 0 },\n\t\t{ GF110_DISP, 0 },\n\t\t{ GT214_DISP, 0 },\n\t\t{ GT206_DISP, 0 },\n\t\t{ GT200_DISP, 0 },\n\t\t{   G82_DISP, 0 },\n\t\t{  NV50_DISP, 0 },\n\t\t{  NV04_DISP, 0 },\n\t\t{}\n\t};\n\tstruct nvif_disp_v0 args;\n\tint cid, ret;\n\n\tcid = nvif_sclass(&device->object, disps, oclass);\n\tdisp->object.client = NULL;\n\tif (cid < 0) {\n\t\tNVIF_ERRON(cid, &device->object, \"[NEW disp%04x] not supported\", oclass);\n\t\treturn cid;\n\t}\n\n\targs.version = 0;\n\n\tret = nvif_object_ctor(&device->object, name ?: \"nvifDisp\", 0,\n\t\t\t       disps[cid].oclass, &args, sizeof(args), &disp->object);\n\tNVIF_ERRON(ret, &device->object, \"[NEW disp%04x]\", disps[cid].oclass);\n\tif (ret)\n\t\treturn ret;\n\n\tNVIF_DEBUG(&disp->object, \"[NEW] conn_mask:%08x outp_mask:%08x head_mask:%08x\",\n\t\t   args.conn_mask, args.outp_mask, args.head_mask);\n\tdisp->conn_mask = args.conn_mask;\n\tdisp->outp_mask = args.outp_mask;\n\tdisp->head_mask = args.head_mask;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

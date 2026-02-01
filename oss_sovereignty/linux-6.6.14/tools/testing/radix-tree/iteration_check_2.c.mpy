@@ -1,0 +1,9 @@
+{
+  "module_name": "iteration_check_2.c",
+  "hash_id": "a35926984d79a32524c0911328b917662b413c18a812f1e736bbdc1386104fc5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/radix-tree/iteration_check_2.c",
+  "human_readable_source": "\n \n#include <pthread.h>\n#include \"test.h\"\n\nstatic volatile bool test_complete;\n\nstatic void *iterator(void *arg)\n{\n\tXA_STATE(xas, arg, 0);\n\tvoid *entry;\n\n\trcu_register_thread();\n\n\twhile (!test_complete) {\n\t\txas_set(&xas, 0);\n\t\trcu_read_lock();\n\t\txas_for_each_marked(&xas, entry, ULONG_MAX, XA_MARK_0)\n\t\t\t;\n\t\trcu_read_unlock();\n\t\tassert(xas.xa_index >= 100);\n\t}\n\n\trcu_unregister_thread();\n\treturn NULL;\n}\n\nstatic void *throbber(void *arg)\n{\n\tstruct xarray *xa = arg;\n\n\trcu_register_thread();\n\n\twhile (!test_complete) {\n\t\tint i;\n\n\t\tfor (i = 0; i < 100; i++) {\n\t\t\txa_store(xa, i, xa_mk_value(i), GFP_KERNEL);\n\t\t\txa_set_mark(xa, i, XA_MARK_0);\n\t\t}\n\t\tfor (i = 0; i < 100; i++)\n\t\t\txa_erase(xa, i);\n\t}\n\n\trcu_unregister_thread();\n\treturn NULL;\n}\n\nvoid iteration_test2(unsigned test_duration)\n{\n\tpthread_t threads[2];\n\tDEFINE_XARRAY(array);\n\tint i;\n\n\tprintv(1, \"Running iteration test 2 for %d seconds\\n\", test_duration);\n\n\ttest_complete = false;\n\n\txa_store(&array, 100, xa_mk_value(100), GFP_KERNEL);\n\txa_set_mark(&array, 100, XA_MARK_0);\n\n\tif (pthread_create(&threads[0], NULL, iterator, &array)) {\n\t\tperror(\"create iterator thread\");\n\t\texit(1);\n\t}\n\tif (pthread_create(&threads[1], NULL, throbber, &array)) {\n\t\tperror(\"create throbber thread\");\n\t\texit(1);\n\t}\n\n\tsleep(test_duration);\n\ttest_complete = true;\n\n\tfor (i = 0; i < 2; i++) {\n\t\tif (pthread_join(threads[i], NULL)) {\n\t\t\tperror(\"pthread_join\");\n\t\t\texit(1);\n\t\t}\n\t}\n\n\txa_destroy(&array);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

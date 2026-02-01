@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9e790bb4b4d612031598b192533d6477bf55c2df2690fb6a753a5e8a016681a4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/thermal/thermometer/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Makefile for cgroup tools\n\nifeq ($(srctree),)\nsrctree := $(patsubst %/,%,$(dir $(CURDIR)))\nsrctree := $(patsubst %/,%,$(dir $(srctree)))\nsrctree := $(patsubst %/,%,$(dir $(srctree)))\n# $(info Determined 'srctree' to be $(srctree))\nendif\n\nCFLAGS = -Wall -Wextra\nCFLAGS += -I$(srctree)/tools/thermal/lib\n\nLDFLAGS = -L$(srctree)/tools/thermal/lib\nLDFLAGS += -lthermal_tools\nLDFLAGS += -lconfig\n\nVERSION = 0.0.1\nTARGET=thermometer\n\nall: $(TARGET)\n%: %.c\n\t$(CC) $(CFLAGS) -D VERSION=\\\"$(VERSION)\\\" -o $@ $^ $(LDFLAGS)\n\nclean:\n\t$(RM) $(TARGET)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

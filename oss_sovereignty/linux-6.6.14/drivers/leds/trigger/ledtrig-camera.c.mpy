@@ -1,0 +1,9 @@
+{
+  "module_name": "ledtrig-camera.c",
+  "hash_id": "086e9055b8d2029f0e959133cd13ff4652bf63e223a054f1c8be5f1150fef83d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/trigger/ledtrig-camera.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/kernel.h>\n#include <linux/init.h>\n#include <linux/leds.h>\n\nDEFINE_LED_TRIGGER(ledtrig_flash);\nDEFINE_LED_TRIGGER(ledtrig_torch);\n\nvoid ledtrig_flash_ctrl(bool on)\n{\n\tenum led_brightness brt = on ? LED_FULL : LED_OFF;\n\n\tled_trigger_event(ledtrig_flash, brt);\n}\nEXPORT_SYMBOL_GPL(ledtrig_flash_ctrl);\n\nvoid ledtrig_torch_ctrl(bool on)\n{\n\tenum led_brightness brt = on ? LED_FULL : LED_OFF;\n\n\tled_trigger_event(ledtrig_torch, brt);\n}\nEXPORT_SYMBOL_GPL(ledtrig_torch_ctrl);\n\nstatic int __init ledtrig_camera_init(void)\n{\n\tled_trigger_register_simple(\"flash\", &ledtrig_flash);\n\tled_trigger_register_simple(\"torch\", &ledtrig_torch);\n\treturn 0;\n}\nmodule_init(ledtrig_camera_init);\n\nstatic void __exit ledtrig_camera_exit(void)\n{\n\tled_trigger_unregister_simple(ledtrig_torch);\n\tled_trigger_unregister_simple(ledtrig_flash);\n}\nmodule_exit(ledtrig_camera_exit);\n\nMODULE_DESCRIPTION(\"LED Trigger for Camera Flash/Torch Control\");\nMODULE_AUTHOR(\"Milo Kim\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

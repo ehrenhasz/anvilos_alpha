@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-lan966x-serdes.h",
+  "hash_id": "a192a967c05fb87e3d8fd7edf7f91cb2583639905151b765fe2f07fd19d9aa37",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/phy/phy-lan966x-serdes.h",
+  "human_readable_source": " \n\n#ifndef __PHY_LAN966X_SERDES_H__\n#define __PHY_LAN966X_SERDES_H__\n\n#define CU(x)\t\t(x)\n#define CU_MAX\t\tCU(2)\n#define SERDES6G(x)\t(CU_MAX + 1 + (x))\n#define SERDES6G_MAX\tSERDES6G(3)\n#define RGMII(x)\t(SERDES6G_MAX + 1 + (x))\n#define RGMII_MAX\tRGMII(2)\n#define SERDES_MAX\t(RGMII_MAX + 1)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cx23885-av.c",
+  "hash_id": "0699c00d1dfdb274dc66c6bc9a42e49706926f404d881755f68778e86f13149d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx23885/cx23885-av.c",
+  "human_readable_source": "\n \n\n#include \"cx23885.h\"\n#include \"cx23885-av.h\"\n#include \"cx23885-video.h\"\n\nvoid cx23885_av_work_handler(struct work_struct *work)\n{\n\tstruct cx23885_dev *dev =\n\t\t\t   container_of(work, struct cx23885_dev, cx25840_work);\n\tbool handled = false;\n\n\tv4l2_subdev_call(dev->sd_cx25840, core, interrupt_service_routine,\n\t\t\t PCI_MSK_AV_CORE, &handled);\n\n\t \n\tif (!handled) {\n\t\t \n\t\tcx23885_flatiron_write(dev, 0x1f,\n\t\t\tcx23885_flatiron_read(dev, 0x1f) | 0x80);\n\t\tcx23885_flatiron_write(dev, 0x23,\n\t\t\tcx23885_flatiron_read(dev, 0x23) | 0x80);\n\t}\n\n\tcx23885_irq_enable(dev, PCI_MSK_AV_CORE);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

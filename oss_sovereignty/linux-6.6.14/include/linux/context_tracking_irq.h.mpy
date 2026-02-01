@@ -1,0 +1,9 @@
+{
+  "module_name": "context_tracking_irq.h",
+  "hash_id": "0f9b2d819a998cc34c79a9506b90d2704bb3e481c583d55c09b0a2c24ece6dcf",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/context_tracking_irq.h",
+  "human_readable_source": " \n#ifndef _LINUX_CONTEXT_TRACKING_IRQ_H\n#define _LINUX_CONTEXT_TRACKING_IRQ_H\n\n#ifdef CONFIG_CONTEXT_TRACKING_IDLE\nvoid ct_irq_enter(void);\nvoid ct_irq_exit(void);\nvoid ct_irq_enter_irqson(void);\nvoid ct_irq_exit_irqson(void);\nvoid ct_nmi_enter(void);\nvoid ct_nmi_exit(void);\n#else\nstatic inline void ct_irq_enter(void) { }\nstatic inline void ct_irq_exit(void) { }\nstatic inline void ct_irq_enter_irqson(void) { }\nstatic inline void ct_irq_exit_irqson(void) { }\nstatic inline void ct_nmi_enter(void) { }\nstatic inline void ct_nmi_exit(void) { }\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

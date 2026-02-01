@@ -1,0 +1,9 @@
+{
+  "module_name": "closefromtest.c",
+  "hash_id": "6ec5961970f3eebd8ab1b0a64ab112acbd857a5b27a125b089047640aa40ae05",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/regress/closefromtest.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#include <sys/types.h>\n#include <sys/stat.h>\n\n#include <fcntl.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n\n#define NUM_OPENS 10\n\nvoid\nfail(char *msg)\n{\n\tfprintf(stderr, \"closefrom: %s\\n\", msg);\n\texit(1);\n}\n\nint\nmain(void)\n{\n\tint i, max, fds[NUM_OPENS];\n\tchar buf[512];\n\n\tfor (i = 0; i < NUM_OPENS; i++)\n\t\tif ((fds[i] = open(\"/dev/null\", O_RDONLY)) == -1)\n\t\t\texit(0);\t \n\tmax = i - 1;\n\n\t \n\tclosefrom(fds[max]);\n\tif (close(fds[max]) != -1)\n\t\tfail(\"failed to close highest fd\");\n\n\t \n\tfor (i = 0; i < max; i++)\n\t\tif (read(fds[i], buf, sizeof(buf)) == -1)\n\t\t\tfail(\"closed descriptors it should not have\");\n\n\t \n\tclosefrom(fds[0]);\n\tfor (i = 0; i < NUM_OPENS; i++)\n\t\tif (close(fds[i]) != -1)\n\t\t\tfail(\"failed to close from lowest fd\");\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

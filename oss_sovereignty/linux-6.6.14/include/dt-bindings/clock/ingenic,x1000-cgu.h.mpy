@@ -1,0 +1,9 @@
+{
+  "module_name": "ingenic,x1000-cgu.h",
+  "hash_id": "905a5197c9e82efd1b7c974e458d1f59902ce5fd04b40ce2319f08d07d6a0fc5",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/ingenic,x1000-cgu.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_CLOCK_X1000_CGU_H__\n#define __DT_BINDINGS_CLOCK_X1000_CGU_H__\n\n#define X1000_CLK_EXCLK\t\t\t0\n#define X1000_CLK_RTCLK\t\t\t1\n#define X1000_CLK_APLL\t\t\t2\n#define X1000_CLK_MPLL\t\t\t3\n#define X1000_CLK_OTGPHY\t\t4\n#define X1000_CLK_SCLKA\t\t\t5\n#define X1000_CLK_CPUMUX\t\t6\n#define X1000_CLK_CPU\t\t\t7\n#define X1000_CLK_L2CACHE\t\t8\n#define X1000_CLK_AHB0\t\t\t9\n#define X1000_CLK_AHB2PMUX\t\t10\n#define X1000_CLK_AHB2\t\t\t11\n#define X1000_CLK_PCLK\t\t\t12\n#define X1000_CLK_DDR\t\t\t13\n#define X1000_CLK_MAC\t\t\t14\n#define X1000_CLK_LCD\t\t\t15\n#define X1000_CLK_MSCMUX\t\t16\n#define X1000_CLK_MSC0\t\t\t17\n#define X1000_CLK_MSC1\t\t\t18\n#define X1000_CLK_OTG\t\t\t19\n#define X1000_CLK_SSIPLL\t\t20\n#define X1000_CLK_SSIPLL_DIV2\t21\n#define X1000_CLK_SSIMUX\t\t22\n#define X1000_CLK_EMC\t\t\t23\n#define X1000_CLK_EFUSE\t\t\t24\n#define X1000_CLK_SFC\t\t\t25\n#define X1000_CLK_I2C0\t\t\t26\n#define X1000_CLK_I2C1\t\t\t27\n#define X1000_CLK_I2C2\t\t\t28\n#define X1000_CLK_UART0\t\t\t29\n#define X1000_CLK_UART1\t\t\t30\n#define X1000_CLK_UART2\t\t\t31\n#define X1000_CLK_TCU\t\t\t32\n#define X1000_CLK_SSI\t\t\t33\n#define X1000_CLK_OST\t\t\t34\n#define X1000_CLK_PDMA\t\t\t35\n#define X1000_CLK_EXCLK_DIV512\t36\n#define X1000_CLK_RTC\t\t\t37\n#define X1000_CLK_AIC\t\t\t38\n#define X1000_CLK_I2SPLLMUX\t\t39\n#define X1000_CLK_I2SPLL\t\t40\n#define X1000_CLK_I2S\t\t\t41\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xts.h",
+  "hash_id": "aac78558f57153df244e569bb21ac87ba275eddcd0248a6f0c7a308dab483ddc",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/xts.h",
+  "human_readable_source": " \n#ifndef _CRYPTO_XTS_H\n#define _CRYPTO_XTS_H\n\n#include <crypto/b128ops.h>\n#include <crypto/internal/skcipher.h>\n#include <linux/fips.h>\n\n#define XTS_BLOCK_SIZE 16\n\nstatic inline int xts_verify_key(struct crypto_skcipher *tfm,\n\t\t\t\t const u8 *key, unsigned int keylen)\n{\n\t \n\tif (keylen % 2)\n\t\treturn -EINVAL;\n\n\t \n\tif (fips_enabled && keylen != 32 && keylen != 64)\n\t\treturn -EINVAL;\n\n\t \n\tif ((fips_enabled || (crypto_skcipher_get_flags(tfm) &\n\t\t\t      CRYPTO_TFM_REQ_FORBID_WEAK_KEYS)) &&\n\t    !crypto_memneq(key, key + (keylen / 2), keylen / 2))\n\t\treturn -EINVAL;\n\n\treturn 0;\n}\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vmxnet3_xdp.h",
+  "hash_id": "308adce6b350752803a9f2ba25cbc5f58ba17d36687ebc93a12e29802fe47ff5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/vmxnet3/vmxnet3_xdp.h",
+  "human_readable_source": " \n\n#ifndef _VMXNET3_XDP_H\n#define _VMXNET3_XDP_H\n\n#include <linux/filter.h>\n#include <linux/bpf_trace.h>\n#include <linux/netlink.h>\n\n#include \"vmxnet3_int.h\"\n\n#define VMXNET3_XDP_HEADROOM\t(XDP_PACKET_HEADROOM + NET_IP_ALIGN)\n#define VMXNET3_XDP_RX_TAILROOM\tSKB_DATA_ALIGN(sizeof(struct skb_shared_info))\n#define VMXNET3_XDP_RX_OFFSET\tVMXNET3_XDP_HEADROOM\n#define VMXNET3_XDP_MAX_FRSIZE\t(PAGE_SIZE - VMXNET3_XDP_HEADROOM - \\\n\t\t\t\t VMXNET3_XDP_RX_TAILROOM)\n#define VMXNET3_XDP_MAX_MTU\t(VMXNET3_XDP_MAX_FRSIZE - ETH_HLEN - \\\n\t\t\t\t 2 * VLAN_HLEN - ETH_FCS_LEN)\n\nint vmxnet3_xdp(struct net_device *netdev, struct netdev_bpf *bpf);\nint vmxnet3_xdp_xmit(struct net_device *dev, int n, struct xdp_frame **frames,\n\t\t     u32 flags);\nint vmxnet3_process_xdp(struct vmxnet3_adapter *adapter,\n\t\t\tstruct vmxnet3_rx_queue *rq,\n\t\t\tstruct Vmxnet3_RxCompDesc *rcd,\n\t\t\tstruct vmxnet3_rx_buf_info *rbi,\n\t\t\tstruct Vmxnet3_RxDesc *rxd,\n\t\t\tstruct sk_buff **skb_xdp_pass);\nint vmxnet3_process_xdp_small(struct vmxnet3_adapter *adapter,\n\t\t\t      struct vmxnet3_rx_queue *rq,\n\t\t\t      void *data, int len,\n\t\t\t      struct sk_buff **skb_xdp_pass);\nvoid *vmxnet3_pp_get_buff(struct page_pool *pp, dma_addr_t *dma_addr,\n\t\t\t  gfp_t gfp_mask);\n\nstatic inline bool vmxnet3_xdp_enabled(struct vmxnet3_adapter *adapter)\n{\n\treturn !!rcu_access_pointer(adapter->xdp_bpf_prog);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

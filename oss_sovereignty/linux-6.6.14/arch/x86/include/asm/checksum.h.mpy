@@ -1,0 +1,9 @@
+{
+  "module_name": "checksum.h",
+  "hash_id": "1f7e50b11593943c3131cc4e5945b9aecf77bf937b15a2b25b5444bfa2035b56",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/checksum.h",
+  "human_readable_source": " \n#ifdef CONFIG_GENERIC_CSUM\n# include <asm-generic/checksum.h>\n#else\n# define  _HAVE_ARCH_COPY_AND_CSUM_FROM_USER 1\n# define HAVE_CSUM_COPY_USER\n# define _HAVE_ARCH_CSUM_AND_COPY\n# ifdef CONFIG_X86_32\n#  include <asm/checksum_32.h>\n# else\n#  include <asm/checksum_64.h>\n# endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

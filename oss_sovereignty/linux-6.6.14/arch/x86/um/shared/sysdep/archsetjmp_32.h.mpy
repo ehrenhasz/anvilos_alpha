@@ -1,0 +1,9 @@
+{
+  "module_name": "archsetjmp_32.h",
+  "hash_id": "6340c418942c65ce3b900c732cdafdbfc1b4c1bd558d0b010e2ec3db3ca8d59d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/shared/sysdep/archsetjmp_32.h",
+  "human_readable_source": " \n \n\n#ifndef _KLIBC_ARCHSETJMP_H\n#define _KLIBC_ARCHSETJMP_H\n\nstruct __jmp_buf {\n\tunsigned int __ebx;\n\tunsigned int __esp;\n\tunsigned int __ebp;\n\tunsigned int __esi;\n\tunsigned int __edi;\n\tunsigned int __eip;\n};\n\ntypedef struct __jmp_buf jmp_buf[1];\n\n#define JB_IP __eip\n#define JB_SP __esp\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

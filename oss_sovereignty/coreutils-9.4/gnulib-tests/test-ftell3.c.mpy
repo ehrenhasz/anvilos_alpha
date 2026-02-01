@@ -1,0 +1,9 @@
+{
+  "module_name": "test-ftell3.c",
+  "hash_id": "3ebc0142693911ca663a0a0c5995478d081d71f6aec243e51f389a32547bf004",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-ftell3.c",
+  "human_readable_source": " \n#define _GL_NO_LARGE_FILES\n#include <stdio.h>\n\n#include <string.h>\n\n#include \"macros.h\"\n\n#define TESTFILE \"t-ftell3.tmp\"\n\nint\nmain (void)\n{\n  FILE *fp;\n\n   \n  fp = fopen (TESTFILE, \"w\");\n  if (fp == NULL)\n    goto skip;\n  if (fwrite (\"foogarsh\", 1, 8, fp) < 8)\n    goto skip;\n  if (fclose (fp))\n    goto skip;\n\n   \n\n   \n  fp = fopen (TESTFILE, \"r+\");\n  if (fp == NULL)\n    goto skip;\n  if (fseek (fp, -1, SEEK_END))\n    goto skip;\n  ASSERT (getc (fp) == 'h');\n  ASSERT (getc (fp) == EOF);\n  ASSERT (ftell (fp) == 8);\n  ASSERT (ftell (fp) == 8);\n  ASSERT (putc ('!', fp) == '!');\n  ASSERT (ftell (fp) == 9);\n  ASSERT (fclose (fp) == 0);\n  fp = fopen (TESTFILE, \"r\");\n  if (fp == NULL)\n    goto skip;\n  {\n    char buf[10];\n    ASSERT (fread (buf, 1, 10, fp) == 9);\n    ASSERT (memcmp (buf, \"foogarsh!\", 9) == 0);\n  }\n  ASSERT (fclose (fp) == 0);\n\n   \n\n  remove (TESTFILE);\n  return 0;\n\n skip:\n  fprintf (stderr, \"Skipping test: prerequisite file operations failed.\\n\");\n  remove (TESTFILE);\n  return 77;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

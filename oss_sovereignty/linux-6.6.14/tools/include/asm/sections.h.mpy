@@ -1,0 +1,9 @@
+{
+  "module_name": "sections.h",
+  "hash_id": "c1c8b64b2d59e11bc45aa7139202bd342e13b2a7ca4a6949e470d8ddece0dfc9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/asm/sections.h",
+  "human_readable_source": "#ifndef __TOOLS_INCLUDE_LINUX_ASM_SECTIONS_H\n#define __TOOLS_INCLUDE_LINUX_ASM_SECTIONS_H\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

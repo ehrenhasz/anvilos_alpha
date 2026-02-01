@@ -1,0 +1,9 @@
+{
+  "module_name": "sleep.h",
+  "hash_id": "6ddb4753fa0b6ed58390d81883d04ae26d5928748a267e90bebd7f3f7d8bf99e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/acpi/sleep.h",
+  "human_readable_source": " \n \n\n#include <linux/linkage.h>\n\nextern unsigned long saved_video_mode;\nextern long saved_magic;\n\nextern int wakeup_pmode_return;\n\nextern u8 wake_sleep_flags;\n\nextern void wakeup_long64(void);\n\nextern void do_suspend_lowlevel(void);\n\nextern int x86_acpi_suspend_lowlevel(void);\n\nasmlinkage acpi_status x86_acpi_enter_sleep_state(u8 state);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

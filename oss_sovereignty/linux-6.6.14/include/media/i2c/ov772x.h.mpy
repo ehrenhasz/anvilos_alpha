@@ -1,0 +1,9 @@
+{
+  "module_name": "ov772x.h",
+  "hash_id": "8a8a6747150da6c14b4115d81cf7191dcf0ac467ea211fc099fb64c1cd8ca5b0",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/ov772x.h",
+  "human_readable_source": " \n \n\n#ifndef __OV772X_H__\n#define __OV772X_H__\n\n \n#define OV772X_FLAG_VFLIP\t(1 << 0)  \n#define OV772X_FLAG_HFLIP\t(1 << 1)  \n\n \nstruct ov772x_edge_ctrl {\n\tunsigned char strength;\n\tunsigned char threshold;\n\tunsigned char upper;\n\tunsigned char lower;\n};\n\n#define OV772X_MANUAL_EDGE_CTRL\t\t0x80  \n#define OV772X_EDGE_STRENGTH_MASK\t0x1F\n#define OV772X_EDGE_THRESHOLD_MASK\t0x0F\n#define OV772X_EDGE_UPPER_MASK\t\t0xFF\n#define OV772X_EDGE_LOWER_MASK\t\t0xFF\n\n#define OV772X_AUTO_EDGECTRL(u, l)\t\\\n{\t\t\t\t\t\\\n\t.upper = (u & OV772X_EDGE_UPPER_MASK),\t\\\n\t.lower = (l & OV772X_EDGE_LOWER_MASK),\t\\\n}\n\n#define OV772X_MANUAL_EDGECTRL(s, t)\t\t\t\\\n{\t\t\t\t\t\t\t\\\n\t.strength  = (s & OV772X_EDGE_STRENGTH_MASK) |\t\\\n\t\t\tOV772X_MANUAL_EDGE_CTRL,\t\\\n\t.threshold = (t & OV772X_EDGE_THRESHOLD_MASK),\t\\\n}\n\n \nstruct ov772x_camera_info {\n\tunsigned long\t\tflags;\n\tstruct ov772x_edge_ctrl\tedgectrl;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "coda_fs_i.h",
+  "hash_id": "6f57c9615464e2cb83daa18257baa9dc5fee43a1a32071a30f270d6a271267da",
+  "original_prompt": "Ingested from linux-6.6.14/fs/coda/coda_fs_i.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_CODA_FS_I\n#define _LINUX_CODA_FS_I\n\n#include <linux/types.h>\n#include <linux/list.h>\n#include <linux/spinlock.h>\n#include <linux/coda.h>\n\n \nstruct coda_inode_info {\n\tstruct CodaFid\t   c_fid;\t \n\tu_short\t           c_flags;      \n\tunsigned int\t   c_mapcount;   \n\tunsigned int\t   c_cached_epoch;  \n\tkuid_t\t\t   c_uid;\t \n\tunsigned int       c_cached_perm;  \n\tspinlock_t\t   c_lock;\n\tstruct inode\t   vfs_inode;\n};\n\n \n#define CODA_MAGIC 0xC0DAC0DA\nstruct coda_file_info {\n\tint\t\t   cfi_magic;\t   \n\tstruct file\t  *cfi_container;  \n\tunsigned int\t   cfi_mapcount;   \n\tbool\t\t   cfi_access_intent;  \n};\n\n \n#define C_VATTR       0x1    \n#define C_FLUSH       0x2    \n#define C_DYING       0x4    \n#define C_PURGE       0x8\n\nstruct inode *coda_cnode_make(struct CodaFid *, struct super_block *);\nstruct inode *coda_iget(struct super_block *sb, struct CodaFid *fid, struct coda_vattr *attr);\nstruct inode *coda_cnode_makectl(struct super_block *sb);\nstruct inode *coda_fid_to_inode(struct CodaFid *fid, struct super_block *sb);\nstruct coda_file_info *coda_ftoc(struct file *file);\nvoid coda_replace_fid(struct inode *, struct CodaFid *, struct CodaFid *);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

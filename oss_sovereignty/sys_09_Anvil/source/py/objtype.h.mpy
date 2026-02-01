@@ -1,0 +1,9 @@
+{
+  "module_name": "objtype.h",
+  "hash_id": "60f9d2467a113bb046c7bd79c164ab40d8f1364ddf0b9275cab6472a366046ca",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/objtype.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_OBJTYPE_H\n#define MICROPY_INCLUDED_PY_OBJTYPE_H\n\n#include \"py/obj.h\"\n\n\n\ntypedef struct _mp_obj_instance_t {\n    mp_obj_base_t base;\n    mp_map_t members;\n    mp_obj_t subobj[];\n    \n} mp_obj_instance_t;\n\n#if MICROPY_CPYTHON_COMPAT\n\nmp_obj_instance_t *mp_obj_new_instance(const mp_obj_type_t *cls, const mp_obj_type_t **native_base);\n#endif\n\n\nbool mp_obj_instance_is_callable(mp_obj_t self_in);\nmp_obj_t mp_obj_instance_call(mp_obj_t self_in, size_t n_args, size_t n_kw, const mp_obj_t *args);\n\n#define mp_obj_is_instance_type(type) ((type)->flags & MP_TYPE_FLAG_INSTANCE_TYPE)\n#define mp_obj_is_native_type(type) (!((type)->flags & MP_TYPE_FLAG_INSTANCE_TYPE))\n\n\nmp_obj_t mp_obj_instance_getiter(mp_obj_t self_in, mp_obj_iter_buf_t *iter_buf);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

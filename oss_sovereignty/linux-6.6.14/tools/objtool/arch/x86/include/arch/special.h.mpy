@@ -1,0 +1,9 @@
+{
+  "module_name": "special.h",
+  "hash_id": "00f2a08905aca65238feb29dee1d3b61b77299bc3c893cb84f1283dbca7d3532",
+  "original_prompt": "Ingested from linux-6.6.14/tools/objtool/arch/x86/include/arch/special.h",
+  "human_readable_source": " \n#ifndef _X86_ARCH_SPECIAL_H\n#define _X86_ARCH_SPECIAL_H\n\n#define EX_ENTRY_SIZE\t\t12\n#define EX_ORIG_OFFSET\t\t0\n#define EX_NEW_OFFSET\t\t4\n\n#define JUMP_ENTRY_SIZE\t\t16\n#define JUMP_ORIG_OFFSET\t0\n#define JUMP_NEW_OFFSET\t\t4\n#define JUMP_KEY_OFFSET\t\t8\n\n#define ALT_ENTRY_SIZE\t\t14\n#define ALT_ORIG_OFFSET\t\t0\n#define ALT_NEW_OFFSET\t\t4\n#define ALT_FEATURE_OFFSET\t8\n#define ALT_ORIG_LEN_OFFSET\t12\n#define ALT_NEW_LEN_OFFSET\t13\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

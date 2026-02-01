@@ -1,0 +1,9 @@
+{
+  "module_name": "gt215.c",
+  "hash_id": "1f81f54d7df39cbec6f16a0d4ce0da722cb5a5afa564552a571aee1b65a706c0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/therm/gt215.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <subdev/gpio.h>\n\nint\ngt215_therm_fan_sense(struct nvkm_therm *therm)\n{\n\tstruct nvkm_device *device = therm->subdev.device;\n\tu32 tach = nvkm_rd32(device, 0x00e728) & 0x0000ffff;\n\tu32 ctrl = nvkm_rd32(device, 0x00e720);\n\tif (ctrl & 0x00000001)\n\t\treturn tach * 60 / 2;\n\treturn -ENODEV;\n}\n\nstatic void\ngt215_therm_init(struct nvkm_therm *therm)\n{\n\tstruct nvkm_device *device = therm->subdev.device;\n\tstruct dcb_gpio_func *tach = &therm->fan->tach;\n\n\tg84_sensor_setup(therm);\n\n\t \n\tnvkm_mask(device, 0x00e720, 0x00000003, 0x00000002);\n\tif (tach->func != DCB_GPIO_UNUSED) {\n\t\tnvkm_wr32(device, 0x00e724, device->crystal * 1000);\n\t\tnvkm_mask(device, 0x00e720, 0x001f0000, tach->line << 16);\n\t\tnvkm_mask(device, 0x00e720, 0x00000001, 0x00000001);\n\t}\n\tnvkm_mask(device, 0x00e720, 0x00000002, 0x00000000);\n}\n\nstatic const struct nvkm_therm_func\ngt215_therm = {\n\t.init = gt215_therm_init,\n\t.fini = g84_therm_fini,\n\t.pwm_ctrl = nv50_fan_pwm_ctrl,\n\t.pwm_get = nv50_fan_pwm_get,\n\t.pwm_set = nv50_fan_pwm_set,\n\t.pwm_clock = nv50_fan_pwm_clock,\n\t.temp_get = g84_temp_get,\n\t.fan_sense = gt215_therm_fan_sense,\n\t.program_alarms = nvkm_therm_program_alarms_polling,\n};\n\nint\ngt215_therm_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t\tstruct nvkm_therm **ptherm)\n{\n\treturn nvkm_therm_new_(&gt215_therm, device, type, inst, ptherm);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

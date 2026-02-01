@@ -1,0 +1,9 @@
+{
+  "module_name": "c_varargs_to_ada.c",
+  "hash_id": "7f7ab4250490f023e64760a9ee09ef911f4973f4f0cd8e24ab2971f6d5f58dbb",
+  "original_prompt": "Ingested from ncurses-6.4/Ada95/src/c_varargs_to_ada.c",
+  "human_readable_source": " \n\n \n\n \n \n\n#include \"c_varargs_to_ada.h\"\n\nint\nset_field_type_alnum(FIELD *field,\n\t\t     int minimum_width)\n{\n  return set_field_type(field, TYPE_ALNUM, minimum_width);\n}\n\nint\nset_field_type_alpha(FIELD *field,\n\t\t     int minimum_width)\n{\n  return set_field_type(field, TYPE_ALPHA, minimum_width);\n}\n\nint\nset_field_type_enum(FIELD *field,\n\t\t    char **value_list,\n\t\t    int case_sensitive,\n\t\t    int unique_match)\n{\n  return set_field_type(field, TYPE_ENUM, value_list, case_sensitive,\n\t\t\tunique_match);\n}\n\nint\nset_field_type_integer(FIELD *field,\n\t\t       int precision,\n\t\t       long minimum,\n\t\t       long maximum)\n{\n  return set_field_type(field, TYPE_INTEGER, precision, minimum, maximum);\n}\n\nint\nset_field_type_numeric(FIELD *field,\n\t\t       int precision,\n\t\t       double minimum,\n\t\t       double maximum)\n{\n  return set_field_type(field, TYPE_NUMERIC, precision, minimum, maximum);\n}\n\nint\nset_field_type_regexp(FIELD *field,\n\t\t      char *regular_expression)\n{\n  return set_field_type(field, TYPE_REGEXP, regular_expression);\n}\n\nint\nset_field_type_ipv4(FIELD *field)\n{\n  return set_field_type(field, TYPE_IPV4);\n}\n\nint\nset_field_type_user(FIELD *field,\n\t\t    FIELDTYPE *fieldtype,\n\t\t    void *arg)\n{\n  return set_field_type(field, fieldtype, arg);\n}\n\nvoid *\nvoid_star_make_arg(va_list *list)\n{\n  return va_arg(*list, void *);\n}\n\n#ifdef TRACE\nvoid\n_traces(const char *fmt, char *arg)\n{\n  _tracef(fmt, arg);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

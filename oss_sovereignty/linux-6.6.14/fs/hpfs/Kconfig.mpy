@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "159d4e47e0a995768abf62dc4da51fee29c882a20c7680a80de0bdca50dfe35a",
+  "original_prompt": "Ingested from linux-6.6.14/fs/hpfs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig HPFS_FS\n\ttristate \"OS/2 HPFS file system support\"\n\tdepends on BLOCK\n\tselect BUFFER_HEAD\n\tselect FS_IOMAP\n\thelp\n\t  OS/2 is IBM's operating system for PC's, the same as Warp, and HPFS\n\t  is the file system used for organizing files on OS/2 hard disk\n\t  partitions. Say Y if you want to be able to read files from and\n\t  write files to an OS/2 HPFS partition on your hard drive. OS/2\n\t  floppies however are in regular MSDOS format, so you don't need this\n\t  option in order to be able to read them. Read\n\t  <file:Documentation/filesystems/hpfs.rst>.\n\n\t  To compile this file system support as a module, choose M here: the\n\t  module will be called hpfs.  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

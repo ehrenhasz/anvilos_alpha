@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bc9d4af48beb8175ae7ecfd650d37b8155f514223d9ae5ca707f80b2bbfeb9a8",
+  "original_prompt": "Ingested from linux-6.6.14/net/ceph/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for CEPH filesystem.\n#\nobj-$(CONFIG_CEPH_LIB) += libceph.o\n\nlibceph-y := ceph_common.o messenger.o msgpool.o buffer.o pagelist.o \\\n\tmon_client.o decode.o \\\n\tcls_lock_client.o \\\n\tosd_client.o osdmap.o crush/crush.o crush/mapper.o crush/hash.o \\\n\tstriper.o \\\n\tdebugfs.o \\\n\tauth.o auth_none.o \\\n\tcrypto.o armor.o \\\n\tauth_x.o \\\n\tceph_strings.o ceph_hash.o \\\n\tpagevec.o snapshot.o string_table.o \\\n\tmessenger_v1.o messenger_v2.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

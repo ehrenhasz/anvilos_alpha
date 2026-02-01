@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pch_refclk.h",
+  "hash_id": "c07a92c1708e7e0c83b0b0c0bea30228022bc528973d79d38c2452f9071e02e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_pch_refclk.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_PCH_REFCLK_H_\n#define _INTEL_PCH_REFCLK_H_\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\nstruct intel_crtc_state;\n\nvoid lpt_program_iclkip(const struct intel_crtc_state *crtc_state);\nvoid lpt_disable_iclkip(struct drm_i915_private *dev_priv);\nint lpt_get_iclkip(struct drm_i915_private *dev_priv);\nint lpt_iclkip(const struct intel_crtc_state *crtc_state);\n\nvoid intel_init_pch_refclk(struct drm_i915_private *dev_priv);\nvoid lpt_disable_clkout_dp(struct drm_i915_private *dev_priv);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

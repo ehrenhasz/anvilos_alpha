@@ -1,0 +1,9 @@
+{
+  "module_name": "GCC-exception-2.0",
+  "hash_id": "0dca50b78073055447d02e8f6ae4fa94c1d0e6d7fbb4c874c9db5eb960c8b3d4",
+  "original_prompt": "Ingested from linux-6.6.14/LICENSES/exceptions/GCC-exception-2.0",
+  "human_readable_source": "SPDX-Exception-Identifier: GCC-exception-2.0\nSPDX-URL: https://spdx.org/licenses/GCC-exception-2.0.html\nSPDX-Licenses: GPL-2.0, GPL-2.0+, GPL-2.0-only, GPL-2.0-or-later\nUsage-Guide:\n  This exception is used together with one of the above SPDX-Licenses to\n  allow linking the compiled version of code to non GPL compliant code.\n  To use this exception add it with the keyword WITH to one of the\n  identifiers in the SPDX-Licenses tag:\n    SPDX-License-Identifier: <SPDX-License> WITH GCC-exception-2.0\nLicense-Text:\n\nIn addition to the permissions in the GNU Library General Public License,\nthe Free Software Foundation gives you unlimited permission to link the\ncompiled version of this file into combinations with other programs, and to\ndistribute those programs without any restriction coming from the use of\nthis file. (The General Public License restrictions do apply in other\nrespects; for example, they cover modification of the file, and\ndistribution when not linked into another program.)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

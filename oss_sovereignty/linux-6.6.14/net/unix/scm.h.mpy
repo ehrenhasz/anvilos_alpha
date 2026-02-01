@@ -1,0 +1,9 @@
+{
+  "module_name": "scm.h",
+  "hash_id": "7dfaf35ac8dd97ab606f9429aeb24c0447422d48585858d25857fc76c8938a3c",
+  "original_prompt": "Ingested from linux-6.6.14/net/unix/scm.h",
+  "human_readable_source": "#ifndef NET_UNIX_SCM_H\n#define NET_UNIX_SCM_H\n\nextern struct list_head gc_inflight_list;\nextern spinlock_t unix_gc_lock;\n\nint unix_attach_fds(struct scm_cookie *scm, struct sk_buff *skb);\nvoid unix_detach_fds(struct scm_cookie *scm, struct sk_buff *skb);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "chdir-long.m4",
+  "hash_id": "043fbb32322b16e13de92ebfcedcfeb4be4d631da84ca20f96f83005c7621e59",
+  "original_prompt": "Ingested from coreutils-9.4/m4/chdir-long.m4",
+  "human_readable_source": "#serial 17\n\n# Use Gnulib's robust chdir function.\n# It can handle arbitrarily long directory names, which means\n# that when it is given the name of an existing directory, it\n# never fails with ENAMETOOLONG.\n# Arrange to compile chdir-long.c only on systems that define PATH_MAX.\n\ndnl Copyright (C) 2004-2007, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n# Written by Jim Meyering.\n\nAC_DEFUN([gl_FUNC_CHDIR_LONG],\n[\n  AC_REQUIRE([gl_PATHMAX_SNIPPET_PREREQ])\n  AC_CACHE_CHECK([whether this system supports file names of any length],\n    [gl_cv_have_unlimited_file_name_length],\n    [AC_EGREP_CPP([have_arbitrary_file_name_length_limit],\n                  gl_PATHMAX_SNIPPET[\n#ifdef PATH_MAX\nhave_arbitrary_file_name_length_limit\n#endif],\n    [gl_cv_have_unlimited_file_name_length=no],\n    [gl_cv_have_unlimited_file_name_length=yes])])\n])\n\nAC_DEFUN([gl_PREREQ_CHDIR_LONG], [:])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

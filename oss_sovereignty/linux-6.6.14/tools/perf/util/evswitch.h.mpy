@@ -1,0 +1,9 @@
+{
+  "module_name": "evswitch.h",
+  "hash_id": "9e0085786f75dd8483621209a5b80f6aec60bc6ea4186ad7d153487e664ea720",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/evswitch.h",
+  "human_readable_source": "\n\n#ifndef __PERF_EVSWITCH_H\n#define __PERF_EVSWITCH_H 1\n\n#include <stdbool.h>\n#include <stdio.h>\n\nstruct evsel;\nstruct evlist;\n\nstruct evswitch {\n\tstruct evsel *on, *off;\n\tconst char   *on_name, *off_name;\n\tbool\t     discarding;\n\tbool\t     show_on_off_events;\n};\n\nint evswitch__init(struct evswitch *evswitch, struct evlist *evlist, FILE *fp);\n\nbool evswitch__discard(struct evswitch *evswitch, struct evsel *evsel);\n\n#define OPTS_EVSWITCH(evswitch)\t\t\t\t\t\t\t\t  \\\n\tOPT_STRING(0, \"switch-on\", &(evswitch)->on_name,\t\t\t\t  \\\n\t\t   \"event\", \"Consider events after the occurrence of this event\"),\t  \\\n\tOPT_STRING(0, \"switch-off\", &(evswitch)->off_name,\t\t\t\t  \\\n\t\t   \"event\", \"Stop considering events after the occurrence of this event\"), \\\n\tOPT_BOOLEAN(0, \"show-on-off-events\", &(evswitch)->show_on_off_events,\t\t  \\\n\t\t    \"Show the on/off switch events, used with --switch-on and --switch-off\")\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

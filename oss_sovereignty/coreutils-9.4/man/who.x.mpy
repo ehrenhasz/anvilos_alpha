@@ -1,0 +1,9 @@
+{
+  "module_name": "who.x",
+  "hash_id": "bbedf3c47f6f56d4173d827203384d92b740b43adcf31762c4040ff1c3bebf7e",
+  "original_prompt": "Ingested from coreutils-9.4/man/who.x",
+  "human_readable_source": "[NAME]\nwho \\- show who is logged on\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

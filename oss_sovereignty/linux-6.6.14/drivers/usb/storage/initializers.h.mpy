@@ -1,0 +1,9 @@
+{
+  "module_name": "initializers.h",
+  "hash_id": "67e18cecac3c22932a07771e8138400c5b93b4bb7a26ae9a4e9f13da583d06dd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/storage/initializers.h",
+  "human_readable_source": " \n \n\n#include \"usb.h\"\n#include \"transport.h\"\n\n \nint usb_stor_euscsi_init(struct us_data *us);\n\n \nint usb_stor_ucr61s2b_init(struct us_data *us);\n\n \nint usb_stor_huawei_e220_init(struct us_data *us);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

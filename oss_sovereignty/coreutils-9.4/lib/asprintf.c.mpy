@@ -1,0 +1,9 @@
+{
+  "module_name": "asprintf.c",
+  "hash_id": "76ad5cfd7dc0f4f47384b3f5883f56c1edea0c218abb4fba1555790dabcd6eb3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/asprintf.c",
+  "human_readable_source": " \n#ifdef IN_LIBASPRINTF\n# include \"vasprintf.h\"\n#else\n# include <stdio.h>\n#endif\n\n#include <stdarg.h>\n\nint\nasprintf (char **resultp, const char *format, ...)\n{\n  va_list args;\n  int result;\n\n  va_start (args, format);\n  result = vasprintf (resultp, format, args);\n  va_end (args);\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

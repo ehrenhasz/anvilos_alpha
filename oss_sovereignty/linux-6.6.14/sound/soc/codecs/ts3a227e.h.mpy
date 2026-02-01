@@ -1,0 +1,9 @@
+{
+  "module_name": "ts3a227e.h",
+  "hash_id": "cd19f6af0c4a970a7d169d2e448582a813f2187203c73ec805788e7136d7fc4b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/ts3a227e.h",
+  "human_readable_source": " \n \n\n#ifndef _TS3A227E_H\n#define _TS3A227E_H\n\nint ts3a227e_enable_jack_detect(struct snd_soc_component *component,\n\t\t\t\tstruct snd_soc_jack *jack);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_uc_fw_abi.h",
+  "hash_id": "d0b88c71571a06012d662f7b6624b9978ad6b4dd489264a453895e7aa4f86ecc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/uc/intel_uc_fw_abi.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_UC_FW_ABI_H\n#define _INTEL_UC_FW_ABI_H\n\n#include <linux/types.h>\n#include <linux/build_bug.h>\n\n \n\nstruct uc_css_header {\n\tu32 module_type;\n\t \n\tu32 header_size_dw;\n\tu32 header_version;\n\tu32 module_id;\n\tu32 module_vendor;\n\tu32 date;\n#define CSS_DATE_DAY\t\t\t(0xFF << 0)\n#define CSS_DATE_MONTH\t\t\t(0xFF << 8)\n#define CSS_DATE_YEAR\t\t\t(0xFFFF << 16)\n\tu32 size_dw;  \n\tu32 key_size_dw;\n\tu32 modulus_size_dw;\n\tu32 exponent_size_dw;\n\tu32 time;\n#define CSS_TIME_HOUR\t\t\t(0xFF << 0)\n#define CSS_DATE_MIN\t\t\t(0xFF << 8)\n#define CSS_DATE_SEC\t\t\t(0xFFFF << 16)\n\tchar username[8];\n\tchar buildnumber[12];\n\tu32 sw_version;\n#define CSS_SW_VERSION_UC_MAJOR\t\t(0xFF << 16)\n#define CSS_SW_VERSION_UC_MINOR\t\t(0xFF << 8)\n#define CSS_SW_VERSION_UC_PATCH\t\t(0xFF << 0)\n\tu32 vf_version;\n\tu32 reserved0[12];\n\tunion {\n\t\tu32 private_data_size;  \n\t\tu32 reserved1;\n\t};\n\tu32 header_info;\n} __packed;\nstatic_assert(sizeof(struct uc_css_header) == 128);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

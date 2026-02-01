@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_pcidev.h",
+  "hash_id": "92efe73d03532cff3987175195b24900f344a1562d4a5c9d08842c8de675cdc5",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/virtio_pcidev.h",
+  "human_readable_source": " \n \n#ifndef _UAPI_LINUX_VIRTIO_PCIDEV_H\n#define _UAPI_LINUX_VIRTIO_PCIDEV_H\n#include <linux/types.h>\n\n \nenum virtio_pcidev_ops {\n\tVIRTIO_PCIDEV_OP_RESERVED = 0,\n\tVIRTIO_PCIDEV_OP_CFG_READ,\n\tVIRTIO_PCIDEV_OP_CFG_WRITE,\n\tVIRTIO_PCIDEV_OP_MMIO_READ,\n\tVIRTIO_PCIDEV_OP_MMIO_WRITE,\n\tVIRTIO_PCIDEV_OP_MMIO_MEMSET,\n\tVIRTIO_PCIDEV_OP_INT,\n\tVIRTIO_PCIDEV_OP_MSI,\n\tVIRTIO_PCIDEV_OP_PME,\n};\n\n \nstruct virtio_pcidev_msg {\n\t__u8 op;\n\t__u8 bar;\n\t__u16 reserved;\n\t__u32 size;\n\t__u64 addr;\n\t__u8 data[];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

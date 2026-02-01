@@ -1,0 +1,9 @@
+{
+  "module_name": "cleanup.sh",
+  "hash_id": "76b7aced302d4e4f12b2ba84469a23e469c1a4568917ef2c19d064d1b1b02f89",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/usbip/cleanup.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\nif [ -r Makefile ]; then\n\tmake distclean\nfi\n\nFILES=\"aclocal.m4 autom4te.cache compile config.guess config.h.in config.log \\\n       config.status config.sub configure cscope.out depcomp install-sh      \\\n       libsrc/Makefile libsrc/Makefile.in libtool ltmain.sh Makefile         \\\n       Makefile.in missing src/Makefile src/Makefile.in\"\n\nrm -vRf $FILES\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

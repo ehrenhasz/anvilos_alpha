@@ -1,0 +1,9 @@
+{
+  "module_name": "rblist.h",
+  "hash_id": "481679f701ac85b0068e4e3480efbe8b3e0830502258432fc5c84e9fb0c74fca",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/rblist.h",
+  "human_readable_source": " \n#ifndef __PERF_RBLIST_H\n#define __PERF_RBLIST_H\n\n#include <linux/rbtree.h>\n#include <stdbool.h>\n\n \n\nstruct rblist {\n\tstruct rb_root_cached entries;\n\tunsigned int   nr_entries;\n\n\tint (*node_cmp)(struct rb_node *rbn, const void *entry);\n\tstruct rb_node *(*node_new)(struct rblist *rlist, const void *new_entry);\n\tvoid (*node_delete)(struct rblist *rblist, struct rb_node *rb_node);\n};\n\nvoid rblist__init(struct rblist *rblist);\nvoid rblist__exit(struct rblist *rblist);\nvoid rblist__delete(struct rblist *rblist);\nint rblist__add_node(struct rblist *rblist, const void *new_entry);\nvoid rblist__remove_node(struct rblist *rblist, struct rb_node *rb_node);\nstruct rb_node *rblist__find(struct rblist *rblist, const void *entry);\nstruct rb_node *rblist__findnew(struct rblist *rblist, const void *entry);\nstruct rb_node *rblist__entry(const struct rblist *rblist, unsigned int idx);\n\nstatic inline bool rblist__empty(const struct rblist *rblist)\n{\n\treturn rblist->nr_entries == 0;\n}\n\nstatic inline unsigned int rblist__nr_entries(const struct rblist *rblist)\n{\n\treturn rblist->nr_entries;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

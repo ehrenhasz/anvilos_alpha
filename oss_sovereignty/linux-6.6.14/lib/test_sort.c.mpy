@@ -1,0 +1,9 @@
+{
+  "module_name": "test_sort.c",
+  "hash_id": "a7c5ad46ba9f4e713eb4b545bce07e4b6edd7865c7f6aeb1d98f42d7dc4d6769",
+  "original_prompt": "Ingested from linux-6.6.14/lib/test_sort.c",
+  "human_readable_source": "\n\n#include <kunit/test.h>\n\n#include <linux/sort.h>\n#include <linux/slab.h>\n#include <linux/module.h>\n\n \n\n#define TEST_LEN 1000\n\nstatic int cmpint(const void *a, const void *b)\n{\n\treturn *(int *)a - *(int *)b;\n}\n\nstatic void test_sort(struct kunit *test)\n{\n\tint *a, i, r = 1;\n\n\ta = kunit_kmalloc_array(test, TEST_LEN, sizeof(*a), GFP_KERNEL);\n\tKUNIT_ASSERT_NOT_ERR_OR_NULL(test, a);\n\n\tfor (i = 0; i < TEST_LEN; i++) {\n\t\tr = (r * 725861) % 6599;\n\t\ta[i] = r;\n\t}\n\n\tsort(a, TEST_LEN, sizeof(*a), cmpint, NULL);\n\n\tfor (i = 0; i < TEST_LEN-1; i++)\n\t\tKUNIT_ASSERT_LE(test, a[i], a[i + 1]);\n}\n\nstatic struct kunit_case sort_test_cases[] = {\n\tKUNIT_CASE(test_sort),\n\t{}\n};\n\nstatic struct kunit_suite sort_test_suite = {\n\t.name = \"lib_sort\",\n\t.test_cases = sort_test_cases,\n};\n\nkunit_test_suites(&sort_test_suite);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

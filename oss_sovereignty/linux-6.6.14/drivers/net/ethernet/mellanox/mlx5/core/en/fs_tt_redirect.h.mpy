@@ -1,0 +1,9 @@
+{
+  "module_name": "fs_tt_redirect.h",
+  "hash_id": "bc241e56fd42645abe2eb371077d746cd4140c912d90bd5125a254c97707a520",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/fs_tt_redirect.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5E_FS_TT_REDIRECT_H__\n#define __MLX5E_FS_TT_REDIRECT_H__\n\n#include \"en/fs.h\"\n\nvoid mlx5e_fs_tt_redirect_del_rule(struct mlx5_flow_handle *rule);\n\n \nstruct mlx5_flow_handle *\nmlx5e_fs_tt_redirect_udp_add_rule(struct mlx5e_flow_steering *fs,\n\t\t\t\t  enum mlx5_traffic_types ttc_type,\n\t\t\t\t  u32 tir_num, u16 d_port);\nvoid mlx5e_fs_tt_redirect_udp_destroy(struct mlx5e_flow_steering *fs);\nint mlx5e_fs_tt_redirect_udp_create(struct mlx5e_flow_steering *fs);\n\n \nstruct mlx5_flow_handle *\nmlx5e_fs_tt_redirect_any_add_rule(struct mlx5e_flow_steering *fs,\n\t\t\t\t  u32 tir_num, u16 ether_type);\nvoid mlx5e_fs_tt_redirect_any_destroy(struct mlx5e_flow_steering *fs);\nint mlx5e_fs_tt_redirect_any_create(struct mlx5e_flow_steering *fs);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

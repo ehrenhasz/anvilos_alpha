@@ -1,0 +1,9 @@
+{
+  "module_name": "blk-mq-pci.h",
+  "hash_id": "c1a28f79c0b7fad636665b633c85fe96a73a0f1d3e6310db37f79024b0724ed6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/blk-mq-pci.h",
+  "human_readable_source": " \n#ifndef _LINUX_BLK_MQ_PCI_H\n#define _LINUX_BLK_MQ_PCI_H\n\nstruct blk_mq_queue_map;\nstruct pci_dev;\n\nvoid blk_mq_pci_map_queues(struct blk_mq_queue_map *qmap, struct pci_dev *pdev,\n\t\t\t   int offset);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

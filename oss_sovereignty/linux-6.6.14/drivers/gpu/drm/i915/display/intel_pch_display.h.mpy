@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pch_display.h",
+  "hash_id": "d887ad48f9c883a58e4e3717a82d7e64132319998f85705431dc91d1e699149f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_pch_display.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_PCH_DISPLAY_H_\n#define _INTEL_PCH_DISPLAY_H_\n\n#include <linux/types.h>\n\nenum pipe;\nstruct drm_i915_private;\nstruct intel_atomic_state;\nstruct intel_crtc;\nstruct intel_crtc_state;\nstruct intel_link_m_n;\n\nbool intel_has_pch_trancoder(struct drm_i915_private *i915,\n\t\t\t     enum pipe pch_transcoder);\nenum pipe intel_crtc_pch_transcoder(struct intel_crtc *crtc);\n\nvoid ilk_pch_pre_enable(struct intel_atomic_state *state,\n\t\t\tstruct intel_crtc *crtc);\nvoid ilk_pch_enable(struct intel_atomic_state *state,\n\t\t    struct intel_crtc *crtc);\nvoid ilk_pch_disable(struct intel_atomic_state *state,\n\t\t     struct intel_crtc *crtc);\nvoid ilk_pch_post_disable(struct intel_atomic_state *state,\n\t\t\t  struct intel_crtc *crtc);\nvoid ilk_pch_get_config(struct intel_crtc_state *crtc_state);\n\nvoid lpt_pch_enable(struct intel_atomic_state *state,\n\t\t    struct intel_crtc *crtc);\nvoid lpt_pch_disable(struct intel_atomic_state *state,\n\t\t     struct intel_crtc *crtc);\nvoid lpt_pch_get_config(struct intel_crtc_state *crtc_state);\n\nvoid intel_pch_transcoder_get_m1_n1(struct intel_crtc *crtc,\n\t\t\t\t    struct intel_link_m_n *m_n);\nvoid intel_pch_transcoder_get_m2_n2(struct intel_crtc *crtc,\n\t\t\t\t    struct intel_link_m_n *m_n);\n\nvoid intel_pch_sanitize(struct drm_i915_private *i915);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

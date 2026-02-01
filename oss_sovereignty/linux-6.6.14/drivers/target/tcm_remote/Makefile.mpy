@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "385baaa67654536f7700b29b85b8e11a19ad0bba19fd02e72bca289918190384",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/tcm_remote/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_REMOTE_TARGET)\t+= tcm_remote.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

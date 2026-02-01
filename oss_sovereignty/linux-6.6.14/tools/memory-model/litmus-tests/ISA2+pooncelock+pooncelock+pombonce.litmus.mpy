@@ -1,0 +1,9 @@
+{
+  "module_name": "ISA2+pooncelock+pooncelock+pombonce.litmus",
+  "hash_id": "083ba9d9bf0356b33a80d7d1a3453b8040748e46f9002ddf45c004256f85d5b8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/ISA2+pooncelock+pooncelock+pombonce.litmus",
+  "human_readable_source": "C ISA2+pooncelock+pooncelock+pombonce\n\n(*\n * Result: Never\n *\n * This test shows that write-write ordering provided by locks\n * (in P0() and P1()) is visible to external process P2().\n *)\n\n{}\n\nP0(int *x, int *y, spinlock_t *mylock)\n{\n\tspin_lock(mylock);\n\tWRITE_ONCE(*x, 1);\n\tWRITE_ONCE(*y, 1);\n\tspin_unlock(mylock);\n}\n\nP1(int *y, int *z, spinlock_t *mylock)\n{\n\tint r0;\n\n\tspin_lock(mylock);\n\tr0 = READ_ONCE(*y);\n\tWRITE_ONCE(*z, 1);\n\tspin_unlock(mylock);\n}\n\nP2(int *x, int *z)\n{\n\tint r1;\n\tint r2;\n\n\tr2 = READ_ONCE(*z);\n\tsmp_mb();\n\tr1 = READ_ONCE(*x);\n}\n\nexists (1:r0=1 /\\ 2:r2=1 /\\ 2:r1=0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

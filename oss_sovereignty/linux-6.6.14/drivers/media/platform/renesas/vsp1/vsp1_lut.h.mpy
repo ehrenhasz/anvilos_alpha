@@ -1,0 +1,9 @@
+{
+  "module_name": "vsp1_lut.h",
+  "hash_id": "28b15117c0fa4db97415c1c42c8f95c0cdf5c23521761349f9a7f995470bb101",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/renesas/vsp1/vsp1_lut.h",
+  "human_readable_source": " \n \n#ifndef __VSP1_LUT_H__\n#define __VSP1_LUT_H__\n\n#include <linux/spinlock.h>\n\n#include <media/media-entity.h>\n#include <media/v4l2-ctrls.h>\n#include <media/v4l2-subdev.h>\n\n#include \"vsp1_entity.h\"\n\nstruct vsp1_device;\n\n#define LUT_PAD_SINK\t\t\t\t0\n#define LUT_PAD_SOURCE\t\t\t\t1\n\nstruct vsp1_lut {\n\tstruct vsp1_entity entity;\n\n\tstruct v4l2_ctrl_handler ctrls;\n\n\tspinlock_t lock;\n\tstruct vsp1_dl_body *lut;\n\tstruct vsp1_dl_body_pool *pool;\n};\n\nstatic inline struct vsp1_lut *to_lut(struct v4l2_subdev *subdev)\n{\n\treturn container_of(subdev, struct vsp1_lut, entity.subdev);\n}\n\nstruct vsp1_lut *vsp1_lut_create(struct vsp1_device *vsp1);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

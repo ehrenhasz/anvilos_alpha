@@ -1,0 +1,9 @@
+{
+  "module_name": "tests-address.dtsi",
+  "hash_id": "a51d19e011aeddeff568f9f2d88f026b47fc0a2f177bf524f18eae52ecd2d76e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/tests-address.dtsi",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n\n/ {\n\t#address-cells = <1>;\n\t#size-cells = <1>;\n\n\ttestcase-data {\n\t\t#address-cells = <1>;\n\t\t#size-cells = <1>;\n\t\tranges;\n\n\t\taddress-tests {\n\t\t\t#address-cells = <1>;\n\t\t\t#size-cells = <1>;\n\t\t\t/* ranges here is to make sure we don't use it for\n\t\t\t * dma-ranges translation */\n\t\t\tranges = <0x70000000 0x70000000 0x50000000>,\n\t\t\t\t <0x00000000 0xd0000000 0x20000000>;\n\t\t\tdma-ranges = <0x0 0x20000000 0x40000000>;\n\n\t\t\tdevice@70000000 {\n\t\t\t\treg = <0x70000000 0x1000>;\n\t\t\t};\n\n\t\t\tbus@80000000 {\n\t\t\t\t#address-cells = <2>;\n\t\t\t\t#size-cells = <2>;\n\t\t\t\tranges = <0x0 0x0 0x80000000 0x0 0x100000>;\n\t\t\t\tdma-ranges = <0x1 0x0 0x0 0x20 0x0>;\n\n\t\t\t\tdevice@1000 {\n\t\t\t\t\treg = <0x0 0x1000 0x0 0x1000>;\n\t\t\t\t};\n\t\t\t};\n\n\t\t\tpci@90000000 {\n\t\t\t\tdevice_type = \"pci\";\n\t\t\t\t#address-cells = <3>;\n\t\t\t\t#size-cells = <2>;\n\t\t\t\treg = <0x90000000 0x1000>;\n\t\t\t\tranges = <0x42000000 0x0 0x40000000 0x40000000 0x0 0x10000000>;\n\t\t\t\tdma-ranges = <0x42000000 0x0 0x80000000 0x00000000 0x0 0x10000000>,\n\t\t\t\t\t     <0x42000000 0x0 0xc0000000 0x20000000 0x0 0x10000000>;\n\t\t\t};\n\n\t\t\tbus@a0000000 {\n\t\t\t\t#address-cells = <3>;\n\t\t\t\t#size-cells = <2>;\n\t\t\t\tranges = <0xf00baa 0x0 0x0 0xa0000000 0x0 0x100000>,\n\t\t\t\t\t <0xf00bee 0x1 0x0 0xb0000000 0x0 0x200000>;\n\t\t\t};\n\n\t\t};\n\t};\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

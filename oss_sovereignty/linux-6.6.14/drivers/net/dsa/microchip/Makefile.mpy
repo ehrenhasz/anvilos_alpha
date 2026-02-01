@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "29b2d232671957e555b50c555d6ed517c37c50e4db136378e337f3e98ed541be",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/microchip/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_NET_DSA_MICROCHIP_KSZ_COMMON)\t+= ksz_switch.o\nksz_switch-objs := ksz_common.o\nksz_switch-objs += ksz9477.o\nksz_switch-objs += ksz8795.o\nksz_switch-objs += lan937x_main.o\n\nifdef CONFIG_NET_DSA_MICROCHIP_KSZ_PTP\nksz_switch-objs += ksz_ptp.o\nendif\n\nobj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477_I2C)\t+= ksz9477_i2c.o\nobj-$(CONFIG_NET_DSA_MICROCHIP_KSZ_SPI)\t\t+= ksz_spi.o\nobj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8863_SMI)\t+= ksz8863_smi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

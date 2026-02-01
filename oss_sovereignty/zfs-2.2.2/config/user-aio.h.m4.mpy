@@ -1,0 +1,9 @@
+{
+  "module_name": "user-aio.h.m4",
+  "hash_id": "449c7e25155184c068d365630167185e23b36f3587ecdcc292fff48301ac6863",
+  "original_prompt": "Ingested from zfs-2.2.2/config/user-aio.h.m4",
+  "human_readable_source": "dnl #\ndnl # POSIX specifies <aio.h> as part of realtime extensions,\ndnl # and is missing from at least uClibc \u2013 force fallbacks there\ndnl #\nAC_DEFUN([ZFS_AC_CONFIG_USER_AIO_H], [\n\tZFS_AC_FIND_SYSTEM_LIBRARY(AIO_H, [], [aio.h], [], [rt], [lio_listio])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

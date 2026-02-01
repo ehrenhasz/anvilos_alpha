@@ -1,0 +1,9 @@
+{
+  "module_name": "getpass.h",
+  "hash_id": "a88c77daf1f5d4bb77b157ced4ba5088452fda0c38bab4f3b9208cf78f1ec7ed",
+  "original_prompt": "Ingested from coreutils-9.4/lib/getpass.h",
+  "human_readable_source": " \n\n \n#include <unistd.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

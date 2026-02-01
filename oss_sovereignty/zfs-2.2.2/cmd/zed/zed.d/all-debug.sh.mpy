@@ -1,0 +1,9 @@
+{
+  "module_name": "all-debug.sh",
+  "hash_id": "d3ffd79c19c58cdcfbfea2c1dbb0c8c4f766e9803e2f197f0b9df3ed04e1333a",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zed/zed.d/all-debug.sh",
+  "human_readable_source": "#!/bin/sh\n# shellcheck disable=SC2154\n#\n# Log all environment variables to ZED_DEBUG_LOG.\n#\n# This can be a useful aid when developing/debugging ZEDLETs since it shows the\n# environment variables defined for each zevent.\n\n[ -f \"${ZED_ZEDLET_DIR}/zed.rc\" ] && . \"${ZED_ZEDLET_DIR}/zed.rc\"\n. \"${ZED_ZEDLET_DIR}/zed-functions.sh\"\n\n: \"${ZED_DEBUG_LOG:=\"${TMPDIR:=\"/tmp\"}/zed.debug.log\"}\"\n\nzed_exit_if_ignoring_this_event\n\nzed_lock \"${ZED_DEBUG_LOG}\"\n{\n\tenv | sort\n\techo\n} 1>&\"${ZED_FLOCK_FD}\"\nzed_unlock \"${ZED_DEBUG_LOG}\"\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

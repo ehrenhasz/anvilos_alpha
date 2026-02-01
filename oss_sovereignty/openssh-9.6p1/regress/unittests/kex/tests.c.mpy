@@ -1,0 +1,9 @@
+{
+  "module_name": "tests.c",
+  "hash_id": "882e1f53a64c4f1b101ac3c205aac0d37ebfc5e38e6e0e5e26be049c39813853",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/kex/tests.c",
+  "human_readable_source": " \n \n\n#include \"../test_helper/test_helper.h\"\n\nvoid kex_tests(void);\nvoid kex_proposal_tests(void);\nvoid kex_proposal_populate_tests(void);\n\nvoid\ntests(void)\n{\n\tkex_tests();\n\tkex_proposal_tests();\n\tkex_proposal_populate_tests();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

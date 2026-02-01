@@ -1,0 +1,9 @@
+{
+  "module_name": "pcm.h",
+  "hash_id": "1f91f09266801998126ea423afdacf8f68863426e8cb02d7851e44237f1e404a",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/hiface/pcm.h",
+  "human_readable_source": " \n \n\n#ifndef HIFACE_PCM_H\n#define HIFACE_PCM_H\n\nstruct hiface_chip;\n\nint hiface_pcm_init(struct hiface_chip *chip, u8 extra_freq);\nvoid hiface_pcm_abort(struct hiface_chip *chip);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

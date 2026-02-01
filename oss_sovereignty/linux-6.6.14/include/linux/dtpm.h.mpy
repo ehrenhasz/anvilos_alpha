@@ -1,0 +1,9 @@
+{
+  "module_name": "dtpm.h",
+  "hash_id": "4aafdeacb9f389b1e6771b291a416906f81d20f63125aed66a0027d683f128b7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dtpm.h",
+  "human_readable_source": " \n \n#ifndef ___DTPM_H__\n#define ___DTPM_H__\n\n#include <linux/powercap.h>\n\n#define MAX_DTPM_DESCR 8\n#define MAX_DTPM_CONSTRAINTS 1\n\nstruct dtpm {\n\tstruct powercap_zone zone;\n\tstruct dtpm *parent;\n\tstruct list_head sibling;\n\tstruct list_head children;\n\tstruct dtpm_ops *ops;\n\tunsigned long flags;\n\tu64 power_limit;\n\tu64 power_max;\n\tu64 power_min;\n\tint weight;\n};\n\nstruct dtpm_ops {\n\tu64 (*set_power_uw)(struct dtpm *, u64);\n\tu64 (*get_power_uw)(struct dtpm *);\n\tint (*update_power_uw)(struct dtpm *);\n\tvoid (*release)(struct dtpm *);\n};\n\nstruct device_node;\n\nstruct dtpm_subsys_ops {\n\tconst char *name;\n\tint (*init)(void);\n\tvoid (*exit)(void);\n\tint (*setup)(struct dtpm *, struct device_node *);\n};\n\nenum DTPM_NODE_TYPE {\n\tDTPM_NODE_VIRTUAL = 0,\n\tDTPM_NODE_DT,\n};\n\nstruct dtpm_node {\n\tenum DTPM_NODE_TYPE type;\n\tconst char *name;\n\tstruct dtpm_node *parent;\n};\n\nstatic inline struct dtpm *to_dtpm(struct powercap_zone *zone)\n{\n\treturn container_of(zone, struct dtpm, zone);\n}\n\nint dtpm_update_power(struct dtpm *dtpm);\n\nint dtpm_release_zone(struct powercap_zone *pcz);\n\nvoid dtpm_init(struct dtpm *dtpm, struct dtpm_ops *ops);\n\nvoid dtpm_unregister(struct dtpm *dtpm);\n\nint dtpm_register(const char *name, struct dtpm *dtpm, struct dtpm *parent);\n\nint dtpm_create_hierarchy(struct of_device_id *dtpm_match_table);\n\nvoid dtpm_destroy_hierarchy(void);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

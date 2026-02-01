@@ -1,0 +1,9 @@
+{
+  "module_name": "bnxt_dim.c",
+  "hash_id": "a6025d35347d24cec1bc77f5b207c0f4a7d917e128fecd3a7319d7007dd7c954",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/broadcom/bnxt/bnxt_dim.c",
+  "human_readable_source": " \n\n#include <linux/dim.h>\n#include \"bnxt_hsi.h\"\n#include \"bnxt.h\"\n\nvoid bnxt_dim_work(struct work_struct *work)\n{\n\tstruct dim *dim = container_of(work, struct dim, work);\n\tstruct bnxt_cp_ring_info *cpr = container_of(dim,\n\t\t\t\t\t\t     struct bnxt_cp_ring_info,\n\t\t\t\t\t\t     dim);\n\tstruct bnxt_napi *bnapi = container_of(cpr,\n\t\t\t\t\t       struct bnxt_napi,\n\t\t\t\t\t       cp_ring);\n\tstruct dim_cq_moder cur_moder =\n\t\tnet_dim_get_rx_moderation(dim->mode, dim->profile_ix);\n\n\tcpr->rx_ring_coal.coal_ticks = cur_moder.usec;\n\tcpr->rx_ring_coal.coal_bufs = cur_moder.pkts;\n\n\tbnxt_hwrm_set_ring_coal(bnapi->bp, bnapi);\n\tdim->state = DIM_START_MEASURE;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4d11ccb41d09c410dd2f8d6cdc3daf796476a2f0c9b1ab2cb7759723b16082a0",
+  "original_prompt": "Ingested from linux-6.6.14/net/can/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n#  Makefile for the Linux Controller Area Network core.\n#\n\nobj-$(CONFIG_CAN)\t+= can.o\ncan-y\t\t\t:= af_can.o\ncan-$(CONFIG_PROC_FS)\t+= proc.o\n\nobj-$(CONFIG_CAN_RAW)\t+= can-raw.o\ncan-raw-y\t\t:= raw.o\n\nobj-$(CONFIG_CAN_BCM)\t+= can-bcm.o\ncan-bcm-y\t\t:= bcm.o\n\nobj-$(CONFIG_CAN_GW)\t+= can-gw.o\ncan-gw-y\t\t:= gw.o\n\nobj-$(CONFIG_CAN_J1939)\t+= j1939/\n\nobj-$(CONFIG_CAN_ISOTP)\t+= can-isotp.o\ncan-isotp-y\t\t:= isotp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

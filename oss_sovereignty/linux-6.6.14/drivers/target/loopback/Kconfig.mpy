@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "84a35c7d9185face00214fa70eb156ba5d0d03f78035571e7988ada2c79992ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/loopback/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig LOOPBACK_TARGET\n\ttristate \"TCM Virtual SAS target and Linux/SCSI LDD fabric loopback module\"\n\tdepends on SCSI\n\thelp\n\t  Say Y here to enable the TCM Virtual SAS target and Linux/SCSI LLD\n\t  fabric loopback module.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

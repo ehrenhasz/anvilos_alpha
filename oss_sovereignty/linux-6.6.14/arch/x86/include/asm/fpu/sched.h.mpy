@@ -1,0 +1,9 @@
+{
+  "module_name": "sched.h",
+  "hash_id": "627ca58f6133dc34c58c872f415850d52856a1360ad6ab3d0389f7c1f0573049",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/fpu/sched.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_FPU_SCHED_H\n#define _ASM_X86_FPU_SCHED_H\n\n#include <linux/sched.h>\n\n#include <asm/cpufeature.h>\n#include <asm/fpu/types.h>\n\n#include <asm/trace/fpu.h>\n\nextern void save_fpregs_to_fpstate(struct fpu *fpu);\nextern void fpu__drop(struct fpu *fpu);\nextern int  fpu_clone(struct task_struct *dst, unsigned long clone_flags, bool minimal,\n\t\t      unsigned long shstk_addr);\nextern void fpu_flush_thread(void);\n\n \nstatic inline void switch_fpu_prepare(struct fpu *old_fpu, int cpu)\n{\n\tif (cpu_feature_enabled(X86_FEATURE_FPU) &&\n\t    !(current->flags & (PF_KTHREAD | PF_USER_WORKER))) {\n\t\tsave_fpregs_to_fpstate(old_fpu);\n\t\t \n\t\told_fpu->last_cpu = cpu;\n\n\t\ttrace_x86_fpu_regs_deactivated(old_fpu);\n\t}\n}\n\n \nstatic inline void switch_fpu_finish(void)\n{\n\tif (cpu_feature_enabled(X86_FEATURE_FPU))\n\t\tset_thread_flag(TIF_NEED_FPU_LOAD);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

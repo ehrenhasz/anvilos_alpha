@@ -1,0 +1,9 @@
+{
+  "module_name": "qca_debug.h",
+  "hash_id": "38a9a25ede6841d0b94f33fd05d63c7ec216d5321aadfee17d206ef879b55b7d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qualcomm/qca_debug.h",
+  "human_readable_source": " \n\n \n\n#ifndef _QCA_DEBUG_H\n#define _QCA_DEBUG_H\n\n#include \"qca_spi.h\"\n\nvoid qcaspi_init_device_debugfs(struct qcaspi *qca);\n\nvoid qcaspi_remove_device_debugfs(struct qcaspi *qca);\n\nvoid qcaspi_set_ethtool_ops(struct net_device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

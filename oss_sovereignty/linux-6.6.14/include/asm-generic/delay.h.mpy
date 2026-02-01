@@ -1,0 +1,9 @@
+{
+  "module_name": "delay.h",
+  "hash_id": "8db5cd9c0cb3f5042da2657b38a520f632a353080bb81d3ff25a6727fa59c765",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/delay.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_DELAY_H\n#define __ASM_GENERIC_DELAY_H\n\n \nextern void __bad_udelay(void);\nextern void __bad_ndelay(void);\n\nextern void __udelay(unsigned long usecs);\nextern void __ndelay(unsigned long nsecs);\nextern void __const_udelay(unsigned long xloops);\nextern void __delay(unsigned long loops);\n\n \n\n \n#define udelay(n)\t\t\t\t\t\t\t\\\n\t({\t\t\t\t\t\t\t\t\\\n\t\tif (__builtin_constant_p(n)) {\t\t\t\t\\\n\t\t\tif ((n) / 20000 >= 1)\t\t\t\t\\\n\t\t\t\t __bad_udelay();\t\t\t\\\n\t\t\telse\t\t\t\t\t\t\\\n\t\t\t\t__const_udelay((n) * 0x10c7ul);\t\t\\\n\t\t} else {\t\t\t\t\t\t\\\n\t\t\t__udelay(n);\t\t\t\t\t\\\n\t\t}\t\t\t\t\t\t\t\\\n\t})\n\n \n#define ndelay(n)\t\t\t\t\t\t\t\\\n\t({\t\t\t\t\t\t\t\t\\\n\t\tif (__builtin_constant_p(n)) {\t\t\t\t\\\n\t\t\tif ((n) / 20000 >= 1)\t\t\t\t\\\n\t\t\t\t__bad_ndelay();\t\t\t\t\\\n\t\t\telse\t\t\t\t\t\t\\\n\t\t\t\t__const_udelay((n) * 5ul);\t\t\\\n\t\t} else {\t\t\t\t\t\t\\\n\t\t\t__ndelay(n);\t\t\t\t\t\\\n\t\t}\t\t\t\t\t\t\t\\\n\t})\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

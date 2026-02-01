@@ -1,0 +1,9 @@
+{
+  "module_name": "securebits.h",
+  "hash_id": "e50ef0137f8f431e70b804649d35310f452ad4f0c7421e5e9b1944708aa2f522",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/securebits.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_SECUREBITS_H\n#define _UAPI_LINUX_SECUREBITS_H\n\n \n#define issecure_mask(X)\t(1 << (X))\n\n#define SECUREBITS_DEFAULT 0x00000000\n\n \n#define SECURE_NOROOT\t\t\t0\n#define SECURE_NOROOT_LOCKED\t\t1   \n\n#define SECBIT_NOROOT\t\t(issecure_mask(SECURE_NOROOT))\n#define SECBIT_NOROOT_LOCKED\t(issecure_mask(SECURE_NOROOT_LOCKED))\n\n \n#define SECURE_NO_SETUID_FIXUP\t\t2\n#define SECURE_NO_SETUID_FIXUP_LOCKED\t3   \n\n#define SECBIT_NO_SETUID_FIXUP\t(issecure_mask(SECURE_NO_SETUID_FIXUP))\n#define SECBIT_NO_SETUID_FIXUP_LOCKED \\\n\t\t\t(issecure_mask(SECURE_NO_SETUID_FIXUP_LOCKED))\n\n \n#define SECURE_KEEP_CAPS\t\t4\n#define SECURE_KEEP_CAPS_LOCKED\t\t5   \n\n#define SECBIT_KEEP_CAPS\t(issecure_mask(SECURE_KEEP_CAPS))\n#define SECBIT_KEEP_CAPS_LOCKED (issecure_mask(SECURE_KEEP_CAPS_LOCKED))\n\n \n#define SECURE_NO_CAP_AMBIENT_RAISE\t\t6\n#define SECURE_NO_CAP_AMBIENT_RAISE_LOCKED\t7   \n\n#define SECBIT_NO_CAP_AMBIENT_RAISE (issecure_mask(SECURE_NO_CAP_AMBIENT_RAISE))\n#define SECBIT_NO_CAP_AMBIENT_RAISE_LOCKED \\\n\t\t\t(issecure_mask(SECURE_NO_CAP_AMBIENT_RAISE_LOCKED))\n\n#define SECURE_ALL_BITS\t\t(issecure_mask(SECURE_NOROOT) | \\\n\t\t\t\t issecure_mask(SECURE_NO_SETUID_FIXUP) | \\\n\t\t\t\t issecure_mask(SECURE_KEEP_CAPS) | \\\n\t\t\t\t issecure_mask(SECURE_NO_CAP_AMBIENT_RAISE))\n#define SECURE_ALL_LOCKS\t(SECURE_ALL_BITS << 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

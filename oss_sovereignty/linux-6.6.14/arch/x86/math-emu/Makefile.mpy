@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "69f1d336c40461066922d2868b91acdcb52ad523a7a68aba40e9205b22812496",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/math-emu/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n#               Makefile for wm-FPU-emu\n#\n\n#DEBUG\t= -DDEBUGGING\nDEBUG\t=\nPARANOID = -DPARANOID\nccflags-y += $(PARANOID) $(DEBUG) -fno-builtin $(MATH_EMULATION)\nasflags-y += $(PARANOID)\n\n# From 'C' language sources:\nC_OBJS =fpu_entry.o errors.o \\\n\tfpu_arith.o fpu_aux.o fpu_etc.o fpu_tags.o fpu_trig.o \\\n\tload_store.o get_address.o \\\n\tpoly_atan.o poly_l2.o poly_2xm1.o poly_sin.o poly_tan.o \\\n\treg_add_sub.o reg_compare.o reg_constant.o reg_convert.o \\\n\treg_ld_str.o reg_divide.o reg_mul.o\n\n# From 80x86 assembler sources:\nA_OBJS =reg_u_add.o reg_u_div.o reg_u_mul.o reg_u_sub.o \\\n\tdiv_small.o reg_norm.o reg_round.o \\\n\twm_shrx.o wm_sqrt.o \\\n\tdiv_Xsig.o polynom_Xsig.o round_Xsig.o \\\n\tshr_Xsig.o mul_Xsig.o\n\nobj-y =$(C_OBJS) $(A_OBJS)\n\nproto:\n\tcproto -e -DMAKING_PROTO *.c >fpu_proto.h\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

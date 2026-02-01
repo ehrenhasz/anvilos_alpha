@@ -1,0 +1,9 @@
+{
+  "module_name": "test_global_map_resize.c",
+  "hash_id": "f7e765223efc55f9cc13dcb59f9a178212a40cfc0ffca181942a3465e395e17e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_global_map_resize.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\n \nconst volatile pid_t pid;\nconst volatile size_t bss_array_len;\nconst volatile size_t data_array_len;\n\n \nint sum = 0;\nint array[1];\n\n \nint my_array[1] SEC(\".data.custom\");\n\n \nint my_int SEC(\".data.non_array\");\n\n \nint my_array_first[1] SEC(\".data.array_not_last\");\nint my_int_last SEC(\".data.array_not_last\");\n\nint percpu_arr[1] SEC(\".data.percpu_arr\");\n\nSEC(\"tp/syscalls/sys_enter_getpid\")\nint bss_array_sum(void *ctx)\n{\n\tif (pid != (bpf_get_current_pid_tgid() >> 32))\n\t\treturn 0;\n\n\t \n\tsum = percpu_arr[bpf_get_smp_processor_id()];\n\n\tfor (size_t i = 0; i < bss_array_len; ++i)\n\t\tsum += array[i];\n\n\treturn 0;\n}\n\nSEC(\"tp/syscalls/sys_enter_getuid\")\nint data_array_sum(void *ctx)\n{\n\tif (pid != (bpf_get_current_pid_tgid() >> 32))\n\t\treturn 0;\n\n\t \n\tsum = percpu_arr[bpf_get_smp_processor_id()];\n\n\tfor (size_t i = 0; i < data_array_len; ++i)\n\t\tsum += my_array[i];\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

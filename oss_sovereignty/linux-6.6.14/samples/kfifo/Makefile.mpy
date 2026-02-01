@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "934ef50c11d16f12d3a25c5615fca65dcbf5382e2db9b22b8c5d58a4304bce15",
+  "original_prompt": "Ingested from linux-6.6.14/samples/kfifo/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SAMPLE_KFIFO) += bytestream-example.o dma-example.o inttype-example.o record-example.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vdso.h",
+  "hash_id": "bb1c41151615a9a9c0042381c8f13f55e63699b0c2b90fc8a68a3ed2abe9c988",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/vdso.h",
+  "human_readable_source": " \n#ifndef __PERF_VDSO__\n#define __PERF_VDSO__\n\n#include <linux/types.h>\n#include <string.h>\n#include <stdbool.h>\n\n#define VDSO__MAP_NAME \"[vdso]\"\n\n#define DSO__NAME_VDSO    \"[vdso]\"\n#define DSO__NAME_VDSO32  \"[vdso32]\"\n#define DSO__NAME_VDSOX32 \"[vdsox32]\"\n\nstatic inline bool is_vdso_map(const char *filename)\n{\n\treturn !strcmp(filename, VDSO__MAP_NAME);\n}\n\nstruct dso;\n\nbool dso__is_vdso(struct dso *dso);\n\nstruct machine;\nstruct thread;\n\nstruct dso *machine__findnew_vdso(struct machine *machine, struct thread *thread);\nvoid machine__exit_vdso(struct machine *machine);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

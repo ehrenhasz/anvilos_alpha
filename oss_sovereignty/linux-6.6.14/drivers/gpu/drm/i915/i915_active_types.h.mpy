@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_active_types.h",
+  "hash_id": "88d1f6fa39a3c28d545ec5e6dae8c7049baec06bab82465841f34c5dceb48c51",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_active_types.h",
+  "human_readable_source": " \n\n#ifndef _I915_ACTIVE_TYPES_H_\n#define _I915_ACTIVE_TYPES_H_\n\n#include <linux/atomic.h>\n#include <linux/dma-fence.h>\n#include <linux/llist.h>\n#include <linux/mutex.h>\n#include <linux/rbtree.h>\n#include <linux/rcupdate.h>\n#include <linux/workqueue.h>\n\nstruct i915_active_fence {\n\tstruct dma_fence __rcu *fence;\n\tstruct dma_fence_cb cb;\n};\n\nstruct active_node;\n\nstruct i915_active {\n\tatomic_t count;\n\tstruct mutex mutex;\n\n\tspinlock_t tree_lock;\n\tstruct active_node *cache;\n\tstruct rb_root tree;\n\n\t \n\tstruct i915_active_fence excl;\n\n\tunsigned long flags;\n#define I915_ACTIVE_RETIRE_SLEEPS BIT(0)\n\n\tint (*active)(struct i915_active *ref);\n\tvoid (*retire)(struct i915_active *ref);\n\n\tstruct work_struct work;\n\n\tstruct llist_head preallocated_barriers;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

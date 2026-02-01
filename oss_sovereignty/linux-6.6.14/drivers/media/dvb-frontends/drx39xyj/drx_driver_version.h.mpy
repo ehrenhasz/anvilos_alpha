@@ -1,0 +1,9 @@
+{
+  "module_name": "drx_driver_version.h",
+  "hash_id": "75c92db59e260f4268557363a7727155c407dc9e61fbe78e58e314714293ae11",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/drx39xyj/drx_driver_version.h",
+  "human_readable_source": " \n\n \n\n#ifndef __DRX_DRIVER_VERSION__H__\n#define __DRX_DRIVER_VERSION__H__ INCLUDED\n\n#ifdef _REGISTERTABLE_\n#include <registertable.h>\n\textern register_table_t drx_driver_version[];\n\textern register_table_info_t drx_driver_version_info[];\n#endif\t\t\t\t \n\n \n\n#define VERSION__A      0x0\n#define   VERSION_MAJOR 1\n#define   VERSION_MINOR 0\n#define   VERSION_PATCH 56\n\n#endif\t\t\t\t \n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

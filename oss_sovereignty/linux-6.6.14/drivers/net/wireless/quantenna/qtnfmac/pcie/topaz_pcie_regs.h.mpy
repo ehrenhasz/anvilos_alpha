@@ -1,0 +1,9 @@
+{
+  "module_name": "topaz_pcie_regs.h",
+  "hash_id": "5d17d53692e42d41ebfe8da440a6de904cfe431bb75e8e94dddc973b449b941d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/quantenna/qtnfmac/pcie/topaz_pcie_regs.h",
+  "human_readable_source": " \n \n\n#ifndef __TOPAZ_PCIE_H\n#define __TOPAZ_PCIE_H\n\n \n#define PCIE_DMA_WR_INTR_STATUS(base)\t\t((base) + 0x9bc)\n#define PCIE_DMA_WR_INTR_MASK(base)\t\t((base) + 0x9c4)\n#define PCIE_DMA_WR_INTR_CLR(base)\t\t((base) + 0x9c8)\n#define PCIE_DMA_WR_ERR_STATUS(base)\t\t((base) + 0x9cc)\n#define PCIE_DMA_WR_DONE_IMWR_ADDR_LOW(base)\t((base) + 0x9D0)\n#define PCIE_DMA_WR_DONE_IMWR_ADDR_HIGH(base)\t((base) + 0x9d4)\n\n#define PCIE_DMA_RD_INTR_STATUS(base)\t\t((base) + 0x310)\n#define PCIE_DMA_RD_INTR_MASK(base)\t\t((base) + 0x319)\n#define PCIE_DMA_RD_INTR_CLR(base)\t\t((base) + 0x31c)\n#define PCIE_DMA_RD_ERR_STATUS_LOW(base)\t((base) + 0x324)\n#define PCIE_DMA_RD_ERR_STATUS_HIGH(base)\t((base) + 0x328)\n#define PCIE_DMA_RD_DONE_IMWR_ADDR_LOW(base)\t((base) + 0x33c)\n#define PCIE_DMA_RD_DONE_IMWR_ADDR_HIGH(base)\t((base) + 0x340)\n\n \n#define TOPAZ_LH_IPC4_INT(base)\t\t\t((base) + 0x13C)\n#define TOPAZ_LH_IPC4_INT_MASK(base)\t\t((base) + 0x140)\n\n#define TOPAZ_RC_TX_DONE_IRQ\t\t\t(0)\n#define TOPAZ_RC_RST_EP_IRQ\t\t\t(1)\n#define TOPAZ_RC_TX_STOP_IRQ\t\t\t(2)\n#define TOPAZ_RC_RX_DONE_IRQ\t\t\t(3)\n#define TOPAZ_RC_PM_EP_IRQ\t\t\t(4)\n\n \n#define TOPAZ_CTL_M2L_INT(base)\t\t\t((base) + 0x2C)\n#define TOPAZ_CTL_M2L_INT_MASK(base)\t\t((base) + 0x30)\n\n#define TOPAZ_RC_CTRL_IRQ\t\t\t(6)\n\n#define TOPAZ_IPC_IRQ_WORD(irq)\t\t\t(BIT(irq) | BIT(irq + 16))\n\n \n#define TOPAZ_PCIE_CFG0_OFFSET\t(0x6C)\n#define TOPAZ_ASSERT_INTX\tBIT(9)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

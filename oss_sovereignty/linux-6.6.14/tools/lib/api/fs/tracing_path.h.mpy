@@ -1,0 +1,9 @@
+{
+  "module_name": "tracing_path.h",
+  "hash_id": "27403c0cc2cf35b2b73c1c27fafcc129e253a349d698675047685038c628c0c5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/api/fs/tracing_path.h",
+  "human_readable_source": " \n#ifndef __API_FS_TRACING_PATH_H\n#define __API_FS_TRACING_PATH_H\n\n#include <linux/types.h>\n#include <dirent.h>\n\nDIR *tracing_events__opendir(void);\nint tracing_events__scandir_alphasort(struct dirent ***namelist);\n\nvoid tracing_path_set(const char *mountpoint);\nconst char *tracing_path_mount(void);\n\nchar *get_tracing_file(const char *name);\nvoid put_tracing_file(char *file);\n\nchar *get_events_file(const char *name);\nvoid put_events_file(char *file);\n\n#define zput_events_file(ptr) ({ free(*ptr); *ptr = NULL; })\n\nint tracing_path__strerror_open_tp(int err, char *buf, size_t size, const char *sys, const char *name);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

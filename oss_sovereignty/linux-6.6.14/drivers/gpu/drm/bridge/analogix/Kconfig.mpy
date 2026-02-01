@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2178c2cf55ed12b7348770b4fb1f87a184f6c28c415518b92acda27d75d66e1c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/bridge/analogix/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_ANALOGIX_ANX6345\n\ttristate \"Analogix ANX6345 bridge\"\n\tdepends on OF\n\tselect DRM_ANALOGIX_DP\n\tselect DRM_DISPLAY_DP_HELPER\n\tselect DRM_DISPLAY_HELPER\n\tselect DRM_KMS_HELPER\n\tselect REGMAP_I2C\n\thelp\n\t  ANX6345 is an ultra-low power Full-HD DisplayPort/eDP\n\t  transmitter designed for portable devices. The\n\t  ANX6345 transforms the LVTTL RGB output of an\n\t  application processor to eDP or DisplayPort.\n\nconfig DRM_ANALOGIX_ANX78XX\n\ttristate \"Analogix ANX78XX bridge\"\n\tselect DRM_ANALOGIX_DP\n\tselect DRM_DISPLAY_DP_HELPER\n\tselect DRM_DISPLAY_HELPER\n\tselect DRM_KMS_HELPER\n\tselect REGMAP_I2C\n\thelp\n\t  ANX78XX is an ultra-low power Full-HD SlimPort transmitter\n\t  designed for portable devices. The ANX78XX transforms\n\t  the HDMI output of an application processor to MyDP\n\t  or DisplayPort.\n\nconfig DRM_ANALOGIX_DP\n\ttristate\n\tdepends on DRM\n\nconfig DRM_ANALOGIX_ANX7625\n\ttristate \"Analogix Anx7625 MIPI to DP interface support\"\n\tdepends on DRM\n\tdepends on OF\n\tselect DRM_DISPLAY_DP_HELPER\n\tselect DRM_DISPLAY_HDCP_HELPER\n\tselect DRM_DISPLAY_HELPER\n\tselect DRM_DP_AUX_BUS\n\tselect DRM_MIPI_DSI\n\thelp\n\t  ANX7625 is an ultra-low power 4K mobile HD transmitter\n\t  designed for portable devices. It converts MIPI/DPI to\n\t  DisplayPort1.3 4K.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

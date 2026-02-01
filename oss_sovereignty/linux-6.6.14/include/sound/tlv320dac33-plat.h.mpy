@@ -1,0 +1,9 @@
+{
+  "module_name": "tlv320dac33-plat.h",
+  "hash_id": "0483196a9140d9750350e71eca04f607a8f32a8af77dbe936824a152e9bc7487",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/tlv320dac33-plat.h",
+  "human_readable_source": " \n \n\n#ifndef __TLV320DAC33_PLAT_H\n#define __TLV320DAC33_PLAT_H\n\nstruct tlv320dac33_platform_data {\n\tint power_gpio;\n\tint mode1_latency;  \n\tint auto_fifo_config;  \n\tint keep_bclk;\t \n\tu8 burst_bclkdiv;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

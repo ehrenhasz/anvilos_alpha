@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "60dfc039177e47543e37ec2a9ab5a93e0ea84bab0a605ce6317e321507f93f9b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/filesystems/epoll/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nCFLAGS += $(KHDR_INCLUDES)\nLDLIBS += -lpthread\nTEST_GEN_PROGS := epoll_wakeup_test\n\ninclude ../../lib.mk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

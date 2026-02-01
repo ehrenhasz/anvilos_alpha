@@ -1,0 +1,9 @@
+{
+  "module_name": "lima_bcast.h",
+  "hash_id": "51619c341947994f4678d42229e057308e05be427aec061a7dda002dba9ab7b7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/lima/lima_bcast.h",
+  "human_readable_source": " \n \n\n#ifndef __LIMA_BCAST_H__\n#define __LIMA_BCAST_H__\n\nstruct lima_ip;\n\nint lima_bcast_resume(struct lima_ip *ip);\nvoid lima_bcast_suspend(struct lima_ip *ip);\nint lima_bcast_init(struct lima_ip *ip);\nvoid lima_bcast_fini(struct lima_ip *ip);\n\nvoid lima_bcast_enable(struct lima_device *dev, int num_pp);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

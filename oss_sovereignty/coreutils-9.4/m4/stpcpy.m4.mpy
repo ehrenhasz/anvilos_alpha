@@ -1,0 +1,9 @@
+{
+  "module_name": "stpcpy.m4",
+  "hash_id": "0461e42c81b86ae94a04a352440ea75f88008b15ed36404b91f8b4014386b5c5",
+  "original_prompt": "Ingested from coreutils-9.4/m4/stpcpy.m4",
+  "human_readable_source": "# stpcpy.m4 serial 11\ndnl Copyright (C) 2002, 2007, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_STPCPY],\n[\n  dnl Persuade glibc <string.h> to declare stpcpy().\n  AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])\n\n  dnl The stpcpy() declaration in lib/string.in.h uses 'restrict'.\n  AC_REQUIRE([AC_C_RESTRICT])\n\n  AC_REQUIRE([gl_STRING_H_DEFAULTS])\n  gl_CHECK_FUNCS_ANDROID([stpcpy], [[#include <string.h>]])\n  if test $ac_cv_func_stpcpy = no; then\n    HAVE_STPCPY=0\n    case \"$gl_cv_onwards_func_stpcpy\" in\n      future*) REPLACE_STPCPY=1 ;;\n    esac\n  fi\n])\n\n# Prerequisites of lib/stpcpy.c.\nAC_DEFUN([gl_PREREQ_STPCPY], [\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

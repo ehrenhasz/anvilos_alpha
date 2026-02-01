@@ -1,0 +1,9 @@
+{
+  "module_name": "instrumentation.h",
+  "hash_id": "1a70664ab2c742c118da1a087fb34c3a8d724f6adf795a16e164a8871a6bb3d4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/instrumentation.h",
+  "human_readable_source": " \n#ifndef __LINUX_INSTRUMENTATION_H\n#define __LINUX_INSTRUMENTATION_H\n\n#ifdef CONFIG_NOINSTR_VALIDATION\n\n#include <linux/stringify.h>\n\n \n#define __instrumentation_begin(c) ({\t\t\t\t\t\\\n\tasm volatile(__stringify(c) \": nop\\n\\t\"\t\t\t\t\\\n\t\t     \".pushsection .discard.instr_begin\\n\\t\"\t\t\\\n\t\t     \".long \" __stringify(c) \"b - .\\n\\t\"\t\t\\\n\t\t     \".popsection\\n\\t\" : : \"i\" (c));\t\t\t\\\n})\n#define instrumentation_begin() __instrumentation_begin(__COUNTER__)\n\n \n#define __instrumentation_end(c) ({\t\t\t\t\t\\\n\tasm volatile(__stringify(c) \": nop\\n\\t\"\t\t\t\t\\\n\t\t     \".pushsection .discard.instr_end\\n\\t\"\t\t\\\n\t\t     \".long \" __stringify(c) \"b - .\\n\\t\"\t\t\\\n\t\t     \".popsection\\n\\t\" : : \"i\" (c));\t\t\t\\\n})\n#define instrumentation_end() __instrumentation_end(__COUNTER__)\n#else  \n# define instrumentation_begin()\tdo { } while(0)\n# define instrumentation_end()\t\tdo { } while(0)\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

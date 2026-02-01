@@ -1,0 +1,9 @@
+{
+  "module_name": "vdev_trim.h",
+  "hash_id": "df4991ef828227afb2b6290e5a2b764560981d6f254f27b8ab68bf66aac7ba4a",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/vdev_trim.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SYS_VDEV_TRIM_H\n#define\t_SYS_VDEV_TRIM_H\n\n#include <sys/spa.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\nextern unsigned int zfs_trim_metaslab_skip;\n\nextern void vdev_trim(vdev_t *vd, uint64_t rate, boolean_t partial,\n    boolean_t secure);\nextern void vdev_trim_stop(vdev_t *vd, vdev_trim_state_t tgt, list_t *vd_list);\nextern void vdev_trim_stop_all(vdev_t *vd, vdev_trim_state_t tgt_state);\nextern void vdev_trim_stop_wait(spa_t *spa, list_t *vd_list);\nextern void vdev_trim_restart(vdev_t *vd);\nextern void vdev_autotrim(spa_t *spa);\nextern void vdev_autotrim_kick(spa_t *spa);\nextern void vdev_autotrim_stop_all(spa_t *spa);\nextern void vdev_autotrim_stop_wait(vdev_t *vd);\nextern void vdev_autotrim_restart(spa_t *spa);\nextern int vdev_trim_simple(vdev_t *vd, uint64_t start, uint64_t size);\nextern void vdev_trim_l2arc(spa_t *spa);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

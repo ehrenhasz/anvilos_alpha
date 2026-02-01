@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs_schemes.sh",
+  "hash_id": "cad1a9c3f130b16e9383f846b01cf5e8b3ccc37ffacfe8b7b377c8a19f777ab1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/damon/debugfs_schemes.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nsource _debugfs_common.sh\n\n# Test schemes file\n# =================\n\nfile=\"$DBGFS/schemes\"\norig_content=$(cat \"$file\")\n\ntest_write_succ \"$file\" \"1 2 3 4 5 6 4 0 0 0 1 2 3 1 100 3 2 1\" \\\n\t\"$orig_content\" \"valid input\"\ntest_write_fail \"$file\" \"1 2\n3 4 5 6 3 0 0 0 1 2 3 1 100 3 2 1\" \"$orig_content\" \"multi lines\"\ntest_write_succ \"$file\" \"\" \"$orig_content\" \"disabling\"\ntest_write_fail \"$file\" \"2 1 2 1 10 1 3 10 1 1 1 1 1 1 1 1 2 3\" \\\n\t\"$orig_content\" \"wrong condition ranges\"\necho \"$orig_content\" > \"$file\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

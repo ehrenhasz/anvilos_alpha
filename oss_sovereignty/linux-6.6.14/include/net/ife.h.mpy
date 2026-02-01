@@ -1,0 +1,9 @@
+{
+  "module_name": "ife.h",
+  "hash_id": "7f3f84043d3db630f56738988d88cfb4bdc2ec994cd191c0259be527d68a5be3",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/ife.h",
+  "human_readable_source": " \n#ifndef __NET_IFE_H\n#define __NET_IFE_H\n\n#include <linux/etherdevice.h>\n#include <linux/rtnetlink.h>\n#include <uapi/linux/ife.h>\n\n#if IS_ENABLED(CONFIG_NET_IFE)\n\nvoid *ife_encode(struct sk_buff *skb, u16 metalen);\nvoid *ife_decode(struct sk_buff *skb, u16 *metalen);\n\nvoid *ife_tlv_meta_decode(void *skbdata, const void *ifehdr_end, u16 *attrtype,\n\t\t\t  u16 *dlen, u16 *totlen);\nint ife_tlv_meta_encode(void *skbdata, u16 attrtype, u16 dlen,\n\t\t\tconst void *dval);\n\nvoid *ife_tlv_meta_next(void *skbdata);\n\n#else\n\nstatic inline void *ife_encode(struct sk_buff *skb, u16 metalen)\n{\n\treturn NULL;\n}\n\nstatic inline void *ife_decode(struct sk_buff *skb, u16 *metalen)\n{\n\treturn NULL;\n}\n\nstatic inline void *ife_tlv_meta_decode(void *skbdata, u16 *attrtype, u16 *dlen,\n\t\t\t\t\tu16 *totlen)\n{\n\treturn NULL;\n}\n\nstatic inline int ife_tlv_meta_encode(void *skbdata, u16 attrtype, u16 dlen,\n\t\t\tconst void *dval)\n{\n\treturn 0;\n}\n\nstatic inline void *ife_tlv_meta_next(void *skbdata)\n{\n\treturn NULL;\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

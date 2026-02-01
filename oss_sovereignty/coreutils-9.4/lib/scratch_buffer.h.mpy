@@ -1,0 +1,9 @@
+{
+  "module_name": "scratch_buffer.h",
+  "hash_id": "eca672926efbd3f5715dcabb4ebf6524cad11986886b1e677e580807f8f4e966",
+  "original_prompt": "Ingested from coreutils-9.4/lib/scratch_buffer.h",
+  "human_readable_source": " \n\n#ifndef _GL_SCRATCH_BUFFER_H\n#define _GL_SCRATCH_BUFFER_H\n\n \n\n \nstruct scratch_buffer;\n\n \n#if 0\nextern void scratch_buffer_init (struct scratch_buffer *buffer);\n#endif\n\n \n#if 0\nextern void scratch_buffer_free (struct scratch_buffer *buffer);\n#endif\n\n \n#if 0\nextern bool scratch_buffer_grow (struct scratch_buffer *buffer);\n#endif\n\n \n#if 0\nextern bool scratch_buffer_grow_preserve (struct scratch_buffer *buffer);\n#endif\n\n \n#if 0\nextern bool scratch_buffer_set_array_size (struct scratch_buffer *buffer,\n                                           size_t nelem, size_t size);\n#endif\n\n\n \n\n \n#define __libc_scratch_buffer_grow gl_scratch_buffer_grow\n#define __libc_scratch_buffer_grow_preserve gl_scratch_buffer_grow_preserve\n#define __libc_scratch_buffer_set_array_size gl_scratch_buffer_set_array_size\n\n#ifndef _GL_LIKELY\n \n# define _GL_LIKELY(cond) __builtin_expect ((cond), 1)\n# define _GL_UNLIKELY(cond) __builtin_expect ((cond), 0)\n#endif\n\n#include <malloc/scratch_buffer.gl.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

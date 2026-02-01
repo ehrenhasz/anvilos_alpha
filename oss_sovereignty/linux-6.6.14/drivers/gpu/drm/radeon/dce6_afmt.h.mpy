@@ -1,0 +1,9 @@
+{
+  "module_name": "dce6_afmt.h",
+  "hash_id": "fc6d6e8909b974cab3119fab1b3334efbdb2282feafa8325389b9ac6c1e6d02b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/dce6_afmt.h",
+  "human_readable_source": " \n\n#ifndef __DCE6_AFMT_H__\n#define __DCE6_AFMT_H__\n\nstruct cea_sad;\nstruct drm_connector;\nstruct drm_display_mode;\nstruct drm_encoder;\nstruct radeon_crtc;\nstruct radeon_device;\n\nu32 dce6_endpoint_rreg(struct radeon_device *rdev, u32 offset, u32 reg);\nvoid dce6_endpoint_wreg(struct radeon_device *rdev, u32 offset, u32 reg, u32 v);\nvoid dce6_afmt_write_sad_regs(struct drm_encoder *encoder,\n\t\t\t      struct cea_sad *sads, int sad_count);\nvoid dce6_afmt_hdmi_write_speaker_allocation(struct drm_encoder *encoder,\n\t\t\t\t\t     u8 *sadb, int sad_count);\nvoid dce6_afmt_dp_write_speaker_allocation(struct drm_encoder *encoder,\n\t\t\t\t\t   u8 *sadb, int sad_count);\nvoid dce6_afmt_write_latency_fields(struct drm_encoder *encoder,\n\t\t\t\t    struct drm_connector *connector,\n\t\t\t\t    struct drm_display_mode *mode);\nvoid dce6_afmt_select_pin(struct drm_encoder *encoder);\nvoid dce6_hdmi_audio_set_dto(struct radeon_device *rdev,\n\t\t\t     struct radeon_crtc *crtc, unsigned int clock);\nvoid dce6_dp_audio_set_dto(struct radeon_device *rdev,\n\t\t\t   struct radeon_crtc *crtc, unsigned int clock);\n\n#endif                          \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

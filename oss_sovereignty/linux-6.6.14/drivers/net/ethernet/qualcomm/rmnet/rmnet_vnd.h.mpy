@@ -1,0 +1,9 @@
+{
+  "module_name": "rmnet_vnd.h",
+  "hash_id": "d75e856531e1f13e6ee0316b7ff4cdbbd48985bfa2aa7eb97fc9d60da877db55",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.h",
+  "human_readable_source": " \n \n\n#ifndef _RMNET_VND_H_\n#define _RMNET_VND_H_\n\nint rmnet_vnd_do_flow_control(struct net_device *dev, int enable);\nint rmnet_vnd_newlink(u8 id, struct net_device *rmnet_dev,\n\t\t      struct rmnet_port *port,\n\t\t      struct net_device *real_dev,\n\t\t      struct rmnet_endpoint *ep,\n\t\t      struct netlink_ext_ack *extack);\nint rmnet_vnd_dellink(u8 id, struct rmnet_port *port,\n\t\t      struct rmnet_endpoint *ep);\nvoid rmnet_vnd_rx_fixup(struct sk_buff *skb, struct net_device *dev);\nvoid rmnet_vnd_tx_fixup_len(unsigned int len, struct net_device *dev);\nvoid rmnet_vnd_tx_fixup(struct sk_buff *skb, struct net_device *dev);\nvoid rmnet_vnd_setup(struct net_device *dev);\nint rmnet_vnd_validate_real_dev_mtu(struct net_device *real_dev);\nint rmnet_vnd_update_dev_mtu(struct rmnet_port *port,\n\t\t\t     struct net_device *real_dev);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

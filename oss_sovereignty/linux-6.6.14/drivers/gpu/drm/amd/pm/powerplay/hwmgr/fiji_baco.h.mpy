@@ -1,0 +1,9 @@
+{
+  "module_name": "fiji_baco.h",
+  "hash_id": "6fe5a5b527df1421118b3675e9a5c73c637b081ad1f41f390903f4f32f053858",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/fiji_baco.h",
+  "human_readable_source": " \n#ifndef __FIJI_BACO_H__\n#define __FIJI_BACO_H__\n#include \"smu7_baco.h\"\n\nextern int fiji_baco_set_state(struct pp_hwmgr *hwmgr, enum BACO_STATE state);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

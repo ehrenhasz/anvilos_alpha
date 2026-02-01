@@ -1,0 +1,9 @@
+{
+  "module_name": "ctype.h",
+  "hash_id": "c822725981d84abff9b94ac1b3ddb5e5346e9ba6b68f7f3c13df45087f134a87",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/ctype.h",
+  "human_readable_source": " \n\n\n#ifndef _SPL_SYS_CTYPE_H_\n#define\t_SPL_SYS_CTYPE_H_\n#include_next <sys/ctype.h>\n\n#define\tisalnum(ch)\t(isalpha(ch) || isdigit(ch))\n#define\tiscntrl(C)\t(uchar(C) <= 0x1f || uchar(C) == 0x7f)\n#define\tisgraph(C)\t((C) >= 0x21 && (C) <= 0x7E)\n#define\tispunct(C)\t\t\t\t\t\t\t\\\n\t(((C) >= 0x21 && (C) <= 0x2F) ||\t\t\t\t\\\n\t\t((C) >= 0x3A && (C) <= 0x40) ||\t\t\t\t\\\n\t\t((C) >= 0x5B && (C) <= 0x60) ||\t\t\t\t\\\n\t\t((C) >= 0x7B && (C) <= 0x7E))\n#define\tisspace(C)\t((C) == 0x20 || ((C) >= 0x9 && (C) <= 0xD))\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

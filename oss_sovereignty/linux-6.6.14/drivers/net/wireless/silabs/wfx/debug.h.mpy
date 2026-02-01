@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "7e151e7fc79e79f1731fd231e671f671bdb82dace293d8f4e1de0f222e1c24ad",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/silabs/wfx/debug.h",
+  "human_readable_source": " \n \n#ifndef WFX_DEBUG_H\n#define WFX_DEBUG_H\n\nstruct wfx_dev;\n\nint wfx_debug_init(struct wfx_dev *wdev);\n\nconst char *wfx_get_hif_name(unsigned long id);\nconst char *wfx_get_mib_name(unsigned long id);\nconst char *wfx_get_reg_name(unsigned long id);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

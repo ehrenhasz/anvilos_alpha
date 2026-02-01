@@ -1,0 +1,9 @@
+{
+  "module_name": "simd.h",
+  "hash_id": "c328022399f9a2532a19e531df2121803ff43861da6e36c825fe6339e0d10586",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/simd.h",
+  "human_readable_source": " \n\n#ifndef _FREEBSD_SIMD_H\n#define\t_FREEBSD_SIMD_H\n\n#if defined(__amd64__) || defined(__i386__)\n#include <sys/simd_x86.h>\n\n#elif defined(__arm__)\n#include <sys/simd_arm.h>\n\n#elif defined(__aarch64__)\n#include <sys/simd_aarch64.h>\n\n#elif defined(__powerpc__)\n#include <sys/simd_powerpc.h>\n\n#else\n#define\tkfpu_allowed()\t\t0\n#define\tkfpu_initialize(tsk)\tdo {} while (0)\n#define\tkfpu_begin()\t\tdo {} while (0)\n#define\tkfpu_end()\t\tdo {} while (0)\n#define\tkfpu_init()\t\t(0)\n#define\tkfpu_fini()\t\tdo {} while (0)\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

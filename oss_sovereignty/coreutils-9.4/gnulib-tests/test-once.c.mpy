@@ -1,0 +1,9 @@
+{
+  "module_name": "test-once.c",
+  "hash_id": "18c9bd94575a901bdf6b725ca34bd4ace61ee02063570eeac6c64e53816e42ae",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-once.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"glthread/lock.h\"\n\n#include \"macros.h\"\n\ngl_once_define(static, a_once)\n\nstatic int a;\n\nstatic void\na_init (void)\n{\n  a = 42;\n}\n\nint\nmain ()\n{\n  gl_once (a_once, a_init);\n\n  ASSERT (a == 42);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

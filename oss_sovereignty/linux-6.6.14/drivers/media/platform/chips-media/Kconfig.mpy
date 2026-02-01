@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "7618aa17b31bd575130ee5b0768c7aaec060eb0851844dfb79fa748e30d6c610",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/chips-media/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\ncomment \"Chips&Media media platform drivers\"\n\nconfig VIDEO_CODA\n\ttristate \"Chips&Media Coda multi-standard codec IP\"\n\tdepends on V4L_MEM2MEM_DRIVERS\n\tdepends on VIDEO_DEV && OF && (ARCH_MXC || COMPILE_TEST)\n\tselect SRAM\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect VIDEOBUF2_VMALLOC\n\tselect V4L2_JPEG_HELPER\n\tselect V4L2_MEM2MEM_DEV\n\tselect GENERIC_ALLOCATOR\n\thelp\n\t   Coda is a range of video codec IPs that supports\n\t   H.264, MPEG-4, and other video formats.\n\nconfig VIDEO_IMX_VDOA\n\tdef_tristate VIDEO_CODA if SOC_IMX6Q || COMPILE_TEST\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

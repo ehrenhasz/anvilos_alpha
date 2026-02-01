@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fseeko3.c",
+  "hash_id": "27e6f8fd0be99fe5fcb52f972324cfb4b9ac8f372694117a29ba2bfabf8292f4",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fseeko3.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdio.h>\n\n#include <stdlib.h>\n\n#include \"macros.h\"\n\nint\nmain (int argc, char **argv)\n{\n  int do_initial_ftell = atoi (argv[1]);\n  const char *filename = argv[2];\n  FILE *fp = fopen (filename, \"r\");\n  ASSERT (fp != NULL);\n\n  if (do_initial_ftell)\n    {\n      off_t pos = ftell (fp);\n      ASSERT (pos == 0);\n    }\n\n  ASSERT (fseeko (fp, 0, SEEK_END) == 0);\n\n  {\n    off_t pos = ftell (fp);\n    ASSERT (pos > 0);\n  }\n\n  ASSERT (fclose (fp) == 0);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

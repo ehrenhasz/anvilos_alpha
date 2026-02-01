@@ -1,0 +1,9 @@
+{
+  "module_name": "pcitest.h",
+  "hash_id": "5ae4d4d73987d3fa318896ec1aa240f61796d726bdd2954ee9af4275616e54ac",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/pcitest.h",
+  "human_readable_source": " \n \n\n#ifndef __UAPI_LINUX_PCITEST_H\n#define __UAPI_LINUX_PCITEST_H\n\n#define PCITEST_BAR\t\t_IO('P', 0x1)\n#define PCITEST_LEGACY_IRQ\t_IO('P', 0x2)\n#define PCITEST_MSI\t\t_IOW('P', 0x3, int)\n#define PCITEST_WRITE\t\t_IOW('P', 0x4, unsigned long)\n#define PCITEST_READ\t\t_IOW('P', 0x5, unsigned long)\n#define PCITEST_COPY\t\t_IOW('P', 0x6, unsigned long)\n#define PCITEST_MSIX\t\t_IOW('P', 0x7, int)\n#define PCITEST_SET_IRQTYPE\t_IOW('P', 0x8, int)\n#define PCITEST_GET_IRQTYPE\t_IO('P', 0x9)\n#define PCITEST_CLEAR_IRQ\t_IO('P', 0x10)\n\n#define PCITEST_FLAGS_USE_DMA\t0x00000001\n\nstruct pci_endpoint_test_xfer_param {\n\tunsigned long size;\n\tunsigned char flags;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

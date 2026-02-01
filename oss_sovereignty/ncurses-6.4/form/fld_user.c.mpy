@@ -1,0 +1,9 @@
+{
+  "module_name": "fld_user.c",
+  "hash_id": "fceebcea0dff531de51e781772b5d449907c718d741c1962f8e4e36a92f38d8d",
+  "original_prompt": "Ingested from ncurses-6.4/form/fld_user.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: fld_user.c,v 1.20 2021/06/17 21:20:30 tom Exp $\")\n\n \nFORM_EXPORT(int)\nset_field_userptr(FIELD *field, void *usrptr)\n{\n  T((T_CALLED(\"set_field_userptr(%p,%p)\"), (void *)field, (void *)usrptr));\n\n  Normalize_Field(field)->usrptr = usrptr;\n  RETURN(E_OK);\n}\n\n \nFORM_EXPORT(void *)\nfield_userptr(const FIELD *field)\n{\n  T((T_CALLED(\"field_userptr(%p)\"), (const void *)field));\n  returnVoidPtr(Normalize_Field(field)->usrptr);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

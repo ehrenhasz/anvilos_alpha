@@ -1,0 +1,9 @@
+{
+  "module_name": "mt2701-afe-clock-ctrl.h",
+  "hash_id": "326566c07d624c3cbdb7237c5cc378d4d2098b3dc641de1ab31b2cb5cde5a4cf",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/mt2701/mt2701-afe-clock-ctrl.h",
+  "human_readable_source": " \n \n\n#ifndef _MT2701_AFE_CLOCK_CTRL_H_\n#define _MT2701_AFE_CLOCK_CTRL_H_\n\nstruct mtk_base_afe;\nstruct mt2701_i2s_path;\n\nint mt2701_init_clock(struct mtk_base_afe *afe);\nint mt2701_afe_enable_clock(struct mtk_base_afe *afe);\nint mt2701_afe_disable_clock(struct mtk_base_afe *afe);\n\nint mt2701_afe_enable_i2s(struct mtk_base_afe *afe,\n\t\t\t  struct mt2701_i2s_path *i2s_path,\n\t\t\t  int dir);\nvoid mt2701_afe_disable_i2s(struct mtk_base_afe *afe,\n\t\t\t    struct mt2701_i2s_path *i2s_path,\n\t\t\t    int dir);\nint mt2701_afe_enable_mclk(struct mtk_base_afe *afe, int id);\nvoid mt2701_afe_disable_mclk(struct mtk_base_afe *afe, int id);\n\nint mt2701_enable_btmrg_clk(struct mtk_base_afe *afe);\nvoid mt2701_disable_btmrg_clk(struct mtk_base_afe *afe);\n\nint mt2701_mclk_configuration(struct mtk_base_afe *afe, int id);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

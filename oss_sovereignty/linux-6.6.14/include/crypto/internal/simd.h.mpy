@@ -1,0 +1,9 @@
+{
+  "module_name": "simd.h",
+  "hash_id": "cb76c0161c66968ae3c75b78eaed1616bb0db3a7c15b89be0bd91e2377686039",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/internal/simd.h",
+  "human_readable_source": " \n \n\n#ifndef _CRYPTO_INTERNAL_SIMD_H\n#define _CRYPTO_INTERNAL_SIMD_H\n\n#include <linux/percpu.h>\n#include <linux/types.h>\n\n \n\nstruct simd_skcipher_alg;\nstruct skcipher_alg;\n\nstruct simd_skcipher_alg *simd_skcipher_create_compat(const char *algname,\n\t\t\t\t\t\t      const char *drvname,\n\t\t\t\t\t\t      const char *basename);\nstruct simd_skcipher_alg *simd_skcipher_create(const char *algname,\n\t\t\t\t\t       const char *basename);\nvoid simd_skcipher_free(struct simd_skcipher_alg *alg);\n\nint simd_register_skciphers_compat(struct skcipher_alg *algs, int count,\n\t\t\t\t   struct simd_skcipher_alg **simd_algs);\n\nvoid simd_unregister_skciphers(struct skcipher_alg *algs, int count,\n\t\t\t       struct simd_skcipher_alg **simd_algs);\n\n \n\nstruct simd_aead_alg;\nstruct aead_alg;\n\nstruct simd_aead_alg *simd_aead_create_compat(const char *algname,\n\t\t\t\t\t      const char *drvname,\n\t\t\t\t\t      const char *basename);\nstruct simd_aead_alg *simd_aead_create(const char *algname,\n\t\t\t\t       const char *basename);\nvoid simd_aead_free(struct simd_aead_alg *alg);\n\nint simd_register_aeads_compat(struct aead_alg *algs, int count,\n\t\t\t       struct simd_aead_alg **simd_algs);\n\nvoid simd_unregister_aeads(struct aead_alg *algs, int count,\n\t\t\t   struct simd_aead_alg **simd_algs);\n\n \n#ifdef CONFIG_CRYPTO_MANAGER_EXTRA_TESTS\nDECLARE_PER_CPU(bool, crypto_simd_disabled_for_test);\n#define crypto_simd_usable() \\\n\t(may_use_simd() && !this_cpu_read(crypto_simd_disabled_for_test))\n#else\n#define crypto_simd_usable() may_use_simd()\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

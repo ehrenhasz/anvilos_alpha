@@ -1,0 +1,9 @@
+{
+  "module_name": "g450_pll.h",
+  "hash_id": "f204a2ac548026d7bbc8b10ad9557afcc03aa14a39d35c00bf996589491cd971",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/matrox/g450_pll.h",
+  "human_readable_source": " \n#ifndef __G450_PLL_H__\n#define __G450_PLL_H__\n\n#include \"matroxfb_base.h\"\n\nint matroxfb_g450_setclk(struct matrox_fb_info *minfo, unsigned int fout,\n\t\t\t unsigned int pll);\nunsigned int g450_mnp2f(const struct matrox_fb_info *minfo, unsigned int mnp);\nvoid matroxfb_g450_setpll_cond(struct matrox_fb_info *minfo, unsigned int mnp,\n\t\t\t       unsigned int pll);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

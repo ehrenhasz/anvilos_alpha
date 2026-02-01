@@ -1,0 +1,9 @@
+{
+  "module_name": "nsc_gpio.h",
+  "hash_id": "adf42f1a07a835682b79fd5bc0e6550376fdb97c50ff64750fbc112cffb24412",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/nsc_gpio.h",
+  "human_readable_source": " \n \n\nstruct nsc_gpio_ops {\n\tstruct module*\towner;\n\tu32\t(*gpio_config)\t(unsigned iminor, u32 mask, u32 bits);\n\tvoid\t(*gpio_dump)\t(struct nsc_gpio_ops *amp, unsigned iminor);\n\tint\t(*gpio_get)\t(unsigned iminor);\n\tvoid\t(*gpio_set)\t(unsigned iminor, int state);\n\tvoid\t(*gpio_change)\t(unsigned iminor);\n\tint\t(*gpio_current)\t(unsigned iminor);\n\tstruct device*\tdev;\t \n};\n\nextern ssize_t nsc_gpio_write(struct file *file, const char __user *data,\n\t\t\t      size_t len, loff_t *ppos);\n\nextern ssize_t nsc_gpio_read(struct file *file, char __user *buf,\n\t\t\t     size_t len, loff_t *ppos);\n\nextern void nsc_gpio_dump(struct nsc_gpio_ops *amp, unsigned index);\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ebt_log.h",
+  "hash_id": "08cfd97026f82422dd66162032cd760889bc6d47a39a0fcc532a4a42f2958577",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_bridge/ebt_log.h",
+  "human_readable_source": " \n#ifndef __LINUX_BRIDGE_EBT_LOG_H\n#define __LINUX_BRIDGE_EBT_LOG_H\n\n#include <linux/types.h>\n\n#define EBT_LOG_IP 0x01  \n#define EBT_LOG_ARP 0x02\n#define EBT_LOG_NFLOG 0x04\n#define EBT_LOG_IP6 0x08\n#define EBT_LOG_MASK (EBT_LOG_IP | EBT_LOG_ARP | EBT_LOG_IP6)\n#define EBT_LOG_PREFIX_SIZE 30\n#define EBT_LOG_WATCHER \"log\"\n\nstruct ebt_log_info {\n\t__u8 loglevel;\n\t__u8 prefix[EBT_LOG_PREFIX_SIZE];\n\t__u32 bitmask;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dpu_hw_interrupts.h",
+  "hash_id": "7f4615ff33fb8674e739bf59b715b46ef934f18a7eb4070baefbb84dd5e32f77",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_interrupts.h",
+  "human_readable_source": " \n \n\n#ifndef _DPU_HW_INTERRUPTS_H\n#define _DPU_HW_INTERRUPTS_H\n\n#include <linux/types.h>\n\n#include \"dpu_hwio.h\"\n#include \"dpu_hw_catalog.h\"\n#include \"dpu_hw_util.h\"\n#include \"dpu_hw_mdss.h\"\n\n \nenum dpu_hw_intr_reg {\n\tMDP_SSPP_TOP0_INTR,\n\tMDP_SSPP_TOP0_INTR2,\n\tMDP_SSPP_TOP0_HIST_INTR,\n\t \n\tMDP_INTF0_INTR,\n\tMDP_INTF1_INTR,\n\tMDP_INTF2_INTR,\n\tMDP_INTF3_INTR,\n\tMDP_INTF4_INTR,\n\tMDP_INTF5_INTR,\n\tMDP_INTF6_INTR,\n\tMDP_INTF7_INTR,\n\tMDP_INTF8_INTR,\n\tMDP_INTF1_TEAR_INTR,\n\tMDP_INTF2_TEAR_INTR,\n\tMDP_AD4_0_INTR,\n\tMDP_AD4_1_INTR,\n\tMDP_INTR_MAX,\n};\n\n#define MDP_INTFn_INTR(intf)\t(MDP_INTF0_INTR + (intf - INTF_0))\n\n#define DPU_IRQ_IDX(reg_idx, offset)\t(reg_idx * 32 + offset)\n\n \nstruct dpu_hw_intr {\n\tstruct dpu_hw_blk_reg_map hw;\n\tu32 cache_irq_mask[MDP_INTR_MAX];\n\tu32 *save_irq_status;\n\tu32 total_irqs;\n\tspinlock_t irq_lock;\n\tunsigned long irq_mask;\n\tconst struct dpu_intr_reg *intr_set;\n\n\tstruct {\n\t\tvoid (*cb)(void *arg, int irq_idx);\n\t\tvoid *arg;\n\t\tatomic_t count;\n\t} irq_tbl[];\n};\n\n \nstruct dpu_hw_intr *dpu_hw_intr_init(void __iomem *addr,\n\t\tconst struct dpu_mdss_cfg *m);\n\n \nvoid dpu_hw_intr_destroy(struct dpu_hw_intr *intr);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

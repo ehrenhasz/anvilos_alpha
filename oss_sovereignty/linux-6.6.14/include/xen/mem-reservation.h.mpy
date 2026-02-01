@@ -1,0 +1,9 @@
+{
+  "module_name": "mem-reservation.h",
+  "hash_id": "92fb146945993fe863881ef50bfa95c33dd9d4a23ade05dfc53569fef6b4fec0",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/mem-reservation.h",
+  "human_readable_source": " \n\n \n\n#ifndef _XENMEM_RESERVATION_H\n#define _XENMEM_RESERVATION_H\n\n#include <linux/highmem.h>\n\n#include <xen/page.h>\n\nextern bool xen_scrub_pages;\n\nstatic inline void xenmem_reservation_scrub_page(struct page *page)\n{\n\tif (xen_scrub_pages)\n\t\tclear_highpage(page);\n}\n\n#ifdef CONFIG_XEN_HAVE_PVMMU\nvoid __xenmem_reservation_va_mapping_update(unsigned long count,\n\t\t\t\t\t    struct page **pages,\n\t\t\t\t\t    xen_pfn_t *frames);\n\nvoid __xenmem_reservation_va_mapping_reset(unsigned long count,\n\t\t\t\t\t   struct page **pages);\n#endif\n\nstatic inline void xenmem_reservation_va_mapping_update(unsigned long count,\n\t\t\t\t\t\t\tstruct page **pages,\n\t\t\t\t\t\t\txen_pfn_t *frames)\n{\n#ifdef CONFIG_XEN_HAVE_PVMMU\n\tif (!xen_feature(XENFEAT_auto_translated_physmap))\n\t\t__xenmem_reservation_va_mapping_update(count, pages, frames);\n#endif\n}\n\nstatic inline void xenmem_reservation_va_mapping_reset(unsigned long count,\n\t\t\t\t\t\t       struct page **pages)\n{\n#ifdef CONFIG_XEN_HAVE_PVMMU\n\tif (!xen_feature(XENFEAT_auto_translated_physmap))\n\t\t__xenmem_reservation_va_mapping_reset(count, pages);\n#endif\n}\n\nint xenmem_reservation_increase(int count, xen_pfn_t *frames);\n\nint xenmem_reservation_decrease(int count, xen_pfn_t *frames);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

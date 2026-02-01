@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "44a5134cfbee5632e5dd53539921934d6a041198befdc4d90b6a82ad3ae83f2a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/pn533/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NFC_PN533\n\ttristate\n\thelp\n\t  NXP PN533 core driver.\n\t  This driver provides core functionality for NXP PN533 NFC devices.\n\nconfig NFC_PN533_USB\n\ttristate \"NFC PN533 device support (USB)\"\n\tdepends on USB\n\tselect NFC_PN533\n\thelp\n\t  This module adds support for the NXP pn533 USB interface.\n\t  Select this if your platform is using the USB bus.\n\n\t  If you choose to build a module, it'll be called pn533_usb.\n\t  Say N if unsure.\n\nconfig NFC_PN533_I2C\n\ttristate \"NFC PN533 device support (I2C)\"\n\tdepends on I2C\n\tselect NFC_PN533\n\thelp\n\t  This module adds support for the NXP pn533 I2C interface.\n\t  Select this if your platform is using the I2C bus.\n\n\t  If you choose to build a module, it'll be called pn533_i2c.\n\t  Say N if unsure.\n\nconfig NFC_PN532_UART\n\ttristate \"NFC PN532 device support (UART)\"\n\tdepends on SERIAL_DEV_BUS\n\tselect NFC_PN533\n\thelp\n\t  This module adds support for the NXP pn532 UART interface.\n\t  Select this if your platform is using the UART bus.\n\n\t  If you choose to build a module, it'll be called pn532_uart.\n\t  Say N if unsure.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

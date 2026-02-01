@@ -1,0 +1,9 @@
+{
+  "module_name": "xlnx-zynqmp-power.h",
+  "hash_id": "d142abb6db287be6f01d90658b6d2ad4b9b80b1067fbba08ae798fe0d63fd227",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/xlnx-zynqmp-power.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_ZYNQMP_POWER_H\n#define _DT_BINDINGS_ZYNQMP_POWER_H\n\n#define\t\tPD_RPU_0\t7\n#define\t\tPD_RPU_1\t8\n#define\t\tPD_R5_0_ATCM\t15\n#define\t\tPD_R5_0_BTCM\t16\n#define\t\tPD_R5_1_ATCM\t17\n#define\t\tPD_R5_1_BTCM\t18\n#define\t\tPD_USB_0\t22\n#define\t\tPD_USB_1\t23\n#define\t\tPD_TTC_0\t24\n#define\t\tPD_TTC_1\t25\n#define\t\tPD_TTC_2\t26\n#define\t\tPD_TTC_3\t27\n#define\t\tPD_SATA\t\t28\n#define\t\tPD_ETH_0\t29\n#define\t\tPD_ETH_1\t30\n#define\t\tPD_ETH_2\t31\n#define\t\tPD_ETH_3\t32\n#define\t\tPD_UART_0\t33\n#define\t\tPD_UART_1\t34\n#define\t\tPD_SPI_0\t35\n#define\t\tPD_SPI_1\t36\n#define\t\tPD_I2C_0\t37\n#define\t\tPD_I2C_1\t38\n#define\t\tPD_SD_0\t\t39\n#define\t\tPD_SD_1\t\t40\n#define\t\tPD_DP\t\t41\n#define\t\tPD_GDMA\t\t42\n#define\t\tPD_ADMA\t\t43\n#define\t\tPD_NAND\t\t44\n#define\t\tPD_QSPI\t\t45\n#define\t\tPD_GPIO\t\t46\n#define\t\tPD_CAN_0\t47\n#define\t\tPD_CAN_1\t48\n#define\t\tPD_GPU\t\t58\n#define\t\tPD_PCIE\t\t59\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

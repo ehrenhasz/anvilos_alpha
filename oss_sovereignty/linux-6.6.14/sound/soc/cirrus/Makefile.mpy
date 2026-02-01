@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1e55c5a82df934dc4f56006382bb8ab67a7088d600d349e887870bc16db0b4a2",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/cirrus/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# EP93xx Platform Support\nsnd-soc-ep93xx-objs\t\t\t\t:= ep93xx-pcm.o\nsnd-soc-ep93xx-i2s-objs\t \t\t\t:= ep93xx-i2s.o\n\nobj-$(CONFIG_SND_EP93XX_SOC)\t\t\t+= snd-soc-ep93xx.o\nobj-$(CONFIG_SND_EP93XX_SOC_I2S)\t\t+= snd-soc-ep93xx-i2s.o\n\n# EP93XX Machine Support\nsnd-soc-edb93xx-objs\t\t\t\t:= edb93xx.o\n\nobj-$(CONFIG_SND_EP93XX_SOC_EDB93XX)\t\t+= snd-soc-edb93xx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sh.py",
+  "hash_id": "07b0c8c78701aeb99e2a2cd59d21566418c35af83ac9f9800602a2c97a815947",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/qemu_configs/sh.py",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nfrom ..qemu_config import QemuArchParams\n\nQEMU_ARCH = QemuArchParams(linux_arch='sh',\n\t\t\t   kconfig='''\nCONFIG_CPU_SUBTYPE_SH7751R=y\nCONFIG_MEMORY_START=0x0c000000\nCONFIG_SH_RTS7751R2D=y\nCONFIG_RTS7751R2D_PLUS=y\nCONFIG_SERIAL_SH_SCI=y''',\n\t\t\t   qemu_arch='sh4',\n\t\t\t   kernel_path='arch/sh/boot/zImage',\n\t\t\t   kernel_command_line='console=ttySC1',\n\t\t\t   serial='null',\n\t\t\t   extra_qemu_params=[\n\t\t\t\t\t    '-machine', 'r2d',\n\t\t\t\t\t    '-serial', 'mon:stdio'])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

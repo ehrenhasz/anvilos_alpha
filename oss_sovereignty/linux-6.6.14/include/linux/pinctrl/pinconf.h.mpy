@@ -1,0 +1,9 @@
+{
+  "module_name": "pinconf.h",
+  "hash_id": "c41321bbe43841876dd93674ff727e8c147e1432c78e829fd8fa51c960c25025",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pinctrl/pinconf.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_PINCTRL_PINCONF_H\n#define __LINUX_PINCTRL_PINCONF_H\n\n#include <linux/types.h>\n\nstruct pinctrl_dev;\nstruct seq_file;\n\n \nstruct pinconf_ops {\n#ifdef CONFIG_GENERIC_PINCONF\n\tbool is_generic;\n#endif\n\tint (*pin_config_get) (struct pinctrl_dev *pctldev,\n\t\t\t       unsigned pin,\n\t\t\t       unsigned long *config);\n\tint (*pin_config_set) (struct pinctrl_dev *pctldev,\n\t\t\t       unsigned pin,\n\t\t\t       unsigned long *configs,\n\t\t\t       unsigned num_configs);\n\tint (*pin_config_group_get) (struct pinctrl_dev *pctldev,\n\t\t\t\t     unsigned selector,\n\t\t\t\t     unsigned long *config);\n\tint (*pin_config_group_set) (struct pinctrl_dev *pctldev,\n\t\t\t\t     unsigned selector,\n\t\t\t\t     unsigned long *configs,\n\t\t\t\t     unsigned num_configs);\n\tvoid (*pin_config_dbg_show) (struct pinctrl_dev *pctldev,\n\t\t\t\t     struct seq_file *s,\n\t\t\t\t     unsigned offset);\n\tvoid (*pin_config_group_dbg_show) (struct pinctrl_dev *pctldev,\n\t\t\t\t\t   struct seq_file *s,\n\t\t\t\t\t   unsigned selector);\n\tvoid (*pin_config_config_dbg_show) (struct pinctrl_dev *pctldev,\n\t\t\t\t\t    struct seq_file *s,\n\t\t\t\t\t    unsigned long config);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

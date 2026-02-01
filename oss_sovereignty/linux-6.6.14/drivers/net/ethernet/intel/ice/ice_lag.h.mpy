@@ -1,0 +1,9 @@
+{
+  "module_name": "ice_lag.h",
+  "hash_id": "8d2c796046bc4b184921251975d17f5f1e0dca4fee224f30cd9211e386e0449f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/ice/ice_lag.h",
+  "human_readable_source": " \n \n\n#ifndef _ICE_LAG_H_\n#define _ICE_LAG_H_\n\n#include <linux/netdevice.h>\n\n \nenum ice_lag_role {\n\tICE_LAG_NONE,\n\tICE_LAG_PRIMARY,\n\tICE_LAG_BACKUP,\n\tICE_LAG_UNSET\n};\n\n#define ICE_LAG_INVALID_PORT 0xFF\n\n#define ICE_LAG_RESET_RETRIES\t\t5\n\nstruct ice_pf;\nstruct ice_vf;\n\nstruct ice_lag_netdev_list {\n\tstruct list_head node;\n\tstruct net_device *netdev;\n};\n\n \nstruct ice_lag {\n\tstruct ice_pf *pf;  \n\tstruct net_device *netdev;  \n\tstruct net_device *upper_netdev;  \n\tstruct list_head *netdev_head;\n\tstruct notifier_block notif_block;\n\ts32 bond_mode;\n\tu16 bond_swid;  \n\tu8 active_port;  \n\tu8 bonded:1;  \n\tu8 primary:1;  \n\tu16 pf_recipe;\n\tu16 pf_rule_id;\n\tu16 cp_rule_idx;\n\tu8 role;\n};\n\n \nstruct ice_lag_work {\n\tstruct work_struct lag_task;\n\tstruct ice_lag_netdev_list netdev_list;\n\tstruct ice_lag *lag;\n\tunsigned long event;\n\tstruct net_device *event_netdev;\n\tunion {\n\t\tstruct netdev_notifier_changeupper_info changeupper_info;\n\t\tstruct netdev_notifier_bonding_info bonding_info;\n\t\tstruct netdev_notifier_info notifier_info;\n\t} info;\n};\n\nvoid ice_lag_move_new_vf_nodes(struct ice_vf *vf);\nint ice_init_lag(struct ice_pf *pf);\nvoid ice_deinit_lag(struct ice_pf *pf);\nvoid ice_lag_rebuild(struct ice_pf *pf);\nbool ice_lag_is_switchdev_running(struct ice_pf *pf);\nvoid ice_lag_move_vf_nodes_cfg(struct ice_lag *lag, u8 src_prt, u8 dst_prt);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

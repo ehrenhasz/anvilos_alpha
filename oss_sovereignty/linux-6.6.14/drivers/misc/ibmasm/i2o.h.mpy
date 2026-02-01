@@ -1,0 +1,9 @@
+{
+  "module_name": "i2o.h",
+  "hash_id": "99d48399b6641b620e89afff6a99b52ffb363b9be80ef530ffd4e54bd98c111d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/ibmasm/i2o.h",
+  "human_readable_source": " \n \n\n#pragma pack(1)\nstruct i2o_header {\n\tu8\tversion;\n\tu8\tmessage_flags;\n\tu16\tmessage_size;\n\tu8\ttarget;\n\tu8\tinitiator_and_target;\n\tu8\tinitiator;\n\tu8\tfunction;\n\tu32\tinitiator_context;\n};\n#pragma pack()\n\n#define I2O_HEADER_TEMPLATE \\\n      { .version              = 0x01, \\\n\t.message_flags        = 0x00, \\\n\t.function             = 0xFF, \\\n\t.initiator            = 0x00, \\\n\t.initiator_and_target = 0x40, \\\n\t.target               = 0x00, \\\n\t.initiator_context    = 0x0 }\n\n#define I2O_MESSAGE_SIZE\t0x1000\n#define I2O_COMMAND_SIZE\t(I2O_MESSAGE_SIZE - sizeof(struct i2o_header))\n\n#pragma pack(1)\nstruct i2o_message {\n\tstruct i2o_header\theader;\n\tvoid\t\t\t*data;\n};\n#pragma pack()\n\nstatic inline unsigned short outgoing_message_size(unsigned int data_size)\n{\n\tunsigned int size;\n\tunsigned short i2o_size;\n\n\tif (data_size > I2O_COMMAND_SIZE)\n\t\tdata_size = I2O_COMMAND_SIZE;\n\n\tsize = sizeof(struct i2o_header) + data_size;\n\n\ti2o_size = size / sizeof(u32);\n\n\tif (size % sizeof(u32))\n\t       i2o_size++;\n\n\treturn i2o_size;\n}\n\nstatic inline u32 incoming_data_size(struct i2o_message *i2o_message)\n{\n\treturn (sizeof(u32) * i2o_message->header.message_size);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

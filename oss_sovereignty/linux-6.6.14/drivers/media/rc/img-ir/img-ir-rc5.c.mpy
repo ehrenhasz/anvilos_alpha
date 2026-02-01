@@ -1,0 +1,9 @@
+{
+  "module_name": "img-ir-rc5.c",
+  "hash_id": "89bb43e20dda33fae4718e35abdd01ff3dfc7cc2f04ffbdbf200d7b610af0aa7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/img-ir/img-ir-rc5.c",
+  "human_readable_source": "\n \n\n#include \"img-ir-hw.h\"\n\n \nstatic int img_ir_rc5_scancode(int len, u64 raw, u64 enabled_protocols,\n\t\t\t\tstruct img_ir_scancode_req *request)\n{\n\tunsigned int addr, cmd, tgl, start;\n\n\t \n\traw   >>= 2;\n\n\tstart\t=  (raw >> 13)\t& 0x01;\n\ttgl\t=  (raw >> 11)\t& 0x01;\n\taddr\t=  (raw >>  6)\t& 0x1f;\n\tcmd\t=   raw\t\t& 0x3f;\n\t \n\tcmd\t+= ((raw >> 12) & 0x01) ? 0 : 0x40;\n\n\tif (!start)\n\t\treturn -EINVAL;\n\n\trequest->protocol = RC_PROTO_RC5;\n\trequest->scancode = addr << 8 | cmd;\n\trequest->toggle   = tgl;\n\treturn IMG_IR_SCANCODE;\n}\n\n \nstatic int img_ir_rc5_filter(const struct rc_scancode_filter *in,\n\t\t\t\t struct img_ir_filter *out, u64 protocols)\n{\n\t \n\treturn -EINVAL;\n}\n\n \nstruct img_ir_decoder img_ir_rc5 = {\n\t.type      = RC_PROTO_BIT_RC5,\n\t.control   = {\n\t\t.bitoriend2\t= 1,\n\t\t.code_type\t= IMG_IR_CODETYPE_BIPHASE,\n\t\t.decodend2\t= 1,\n\t},\n\t \n\t.tolerance\t= 16,\n\t.unit\t\t= 888888,  \n\t.timings\t= {\n\t\t \n\t\t.s10 = {\n\t\t\t.pulse\t= { 1 },\n\t\t\t.space\t= { 1 },\n\t\t},\n\n\t\t \n\t\t.s11 = {\n\t\t\t.pulse\t= { 1 },\n\t\t\t.space\t= { 1 },\n\t\t},\n\n\t\t \n\t\t.ft  = {\n\t\t\t.minlen = 14,\n\t\t\t.maxlen = 14,\n\t\t\t.ft_min = 5,\n\t\t},\n\t},\n\n\t \n\t.scancode\t= img_ir_rc5_scancode,\n\t.filter\t\t= img_ir_rc5_filter,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

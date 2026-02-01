@@ -1,0 +1,9 @@
+{
+  "module_name": "string.c",
+  "hash_id": "174297f09259eaf3067cdc1334de7d9242809bc0aefc98709657f9f56260c6b5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/stringloops/string.c",
+  "human_readable_source": "\n \n\n#include <stddef.h>\n\n \nsize_t test_strlen(const char *s)\n{\n\tconst char *sc;\n\n\tfor (sc = s; *sc != '\\0'; ++sc)\n\t\t ;\n\treturn sc - s;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

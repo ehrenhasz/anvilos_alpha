@@ -1,0 +1,9 @@
+{
+  "module_name": "hi6421-pmic.h",
+  "hash_id": "6dc197949b0f91d13612b4910e4a447b6b6b531165a1102bd0712d7e789c0537",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/hi6421-pmic.h",
+  "human_readable_source": " \n \n\n#ifndef\t__HI6421_PMIC_H\n#define\t__HI6421_PMIC_H\n\n \n#define HI6421_REG_TO_BUS_ADDR(x)\t(x << 2)\n\n \n#define HI6421_REG_MAX\t\t\t0xFF\n\n \n#define\tHI6421_OCP_DEB_CTRL_REG\t\tHI6421_REG_TO_BUS_ADDR(0x51)\n#define\tHI6421_OCP_DEB_SEL_MASK\t\t0x0C\n#define HI6421_OCP_DEB_SEL_8MS\t\t0x00\n#define HI6421_OCP_DEB_SEL_16MS\t\t0x04\n#define HI6421_OCP_DEB_SEL_32MS\t\t0x08\n#define HI6421_OCP_DEB_SEL_64MS\t\t0x0C\n#define HI6421_OCP_EN_DEBOUNCE_MASK\t0x02\n#define HI6421_OCP_EN_DEBOUNCE_ENABLE\t0x02\n#define HI6421_OCP_AUTO_STOP_MASK\t0x01\n#define HI6421_OCP_AUTO_STOP_ENABLE\t0x01\n\nstruct hi6421_pmic {\n\tstruct regmap\t\t*regmap;\n};\n\nenum hi6421_type {\n\tHI6421 = 0,\n\tHI6421_V530,\n};\n\n#endif\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

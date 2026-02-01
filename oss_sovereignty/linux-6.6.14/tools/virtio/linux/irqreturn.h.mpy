@@ -1,0 +1,9 @@
+{
+  "module_name": "irqreturn.h",
+  "hash_id": "e4dd02b7c4c74b3c0ba617151a025c83ece2506c35633c580e148df155b5d498",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/linux/irqreturn.h",
+  "human_readable_source": "#include \"../../../include/linux/irqreturn.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

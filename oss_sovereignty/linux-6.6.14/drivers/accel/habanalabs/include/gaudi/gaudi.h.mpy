@@ -1,0 +1,9 @@
+{
+  "module_name": "gaudi.h",
+  "hash_id": "3950b75cb42c49f41e97374e8af0d02d76ad55c4ff06549e856c2b080e17a69a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/gaudi/gaudi.h",
+  "human_readable_source": " \n\n#ifndef GAUDI_H\n#define GAUDI_H\n\n#define SRAM_BAR_ID\t\t0\n#define CFG_BAR_ID\t\t2\n#define HBM_BAR_ID\t\t4\n\n#define SRAM_BAR_SIZE\t\t0x4000000ull\t\t \n#define CFG_BAR_SIZE\t\t0x8000000ull\t\t \n\n#define CFG_BASE\t\t0x7FFC000000ull\n#define CFG_SIZE\t\t0x4000000\t\t \n\n#define SRAM_BASE_ADDR\t\t0x7FF0000000ull\n#define SRAM_SIZE\t\t0x1400000\t\t \n\n#define SPI_FLASH_BASE_ADDR\t0x7FF8000000ull\n\n#define PSOC_SCRATCHPAD_ADDR\t0x7FFBFE0000ull\n#define PSOC_SCRATCHPAD_SIZE\t0x10000\t\t\t \n\n#define PCIE_FW_SRAM_ADDR\t0x7FFBFF0000ull\n#define PCIE_FW_SRAM_SIZE\t0x8000\t\t\t \n\n#define DRAM_PHYS_BASE\t\t0x0ull\n\n#define HOST_PHYS_BASE\t\t0x8000000000ull\t\t \n#define HOST_PHYS_SIZE\t\t0x1000000000000ull\t \n\n#define GAUDI_MSI_ENTRIES\t32\n\n#define QMAN_PQ_ENTRY_SIZE\t16\t\t\t \n\n#define MAX_ASID\t\t2\n\n#define PROT_BITS_OFFS\t\t0xF80\n\n#define MME_NUMBER_OF_MASTER_ENGINES\t2\n\n#define MME_NUMBER_OF_SLAVE_ENGINES\t2\n\n#define TPC_NUMBER_OF_ENGINES\t8\n\n#define DMA_NUMBER_OF_CHANNELS\t8\n\n#define NIC_NUMBER_OF_MACROS\t5\n\n#define NIC_NUMBER_OF_ENGINES\t(NIC_NUMBER_OF_MACROS * 2)\n\n#define NUMBER_OF_IF\t\t8\n\n#define DEVICE_CACHE_LINE_SIZE\t128\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

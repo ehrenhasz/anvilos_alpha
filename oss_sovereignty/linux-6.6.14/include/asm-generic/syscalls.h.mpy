@@ -1,0 +1,9 @@
+{
+  "module_name": "syscalls.h",
+  "hash_id": "88fbdf771c8be0155e3338854e6522c4a25ba1682489cc43c2c8836f15d2fbbb",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/syscalls.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_SYSCALLS_H\n#define __ASM_GENERIC_SYSCALLS_H\n\n#include <linux/compiler.h>\n#include <linux/linkage.h>\n\n \n\n#ifndef sys_mmap2\nasmlinkage long sys_mmap2(unsigned long addr, unsigned long len,\n\t\t\tunsigned long prot, unsigned long flags,\n\t\t\tunsigned long fd, unsigned long pgoff);\n#endif\n\n#ifndef sys_mmap\nasmlinkage long sys_mmap(unsigned long addr, unsigned long len,\n\t\t\tunsigned long prot, unsigned long flags,\n\t\t\tunsigned long fd, off_t pgoff);\n#endif\n\n#ifndef sys_rt_sigreturn\nasmlinkage long sys_rt_sigreturn(struct pt_regs *regs);\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

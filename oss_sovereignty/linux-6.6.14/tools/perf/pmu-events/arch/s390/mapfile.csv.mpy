@@ -1,0 +1,9 @@
+{
+  "module_name": "mapfile.csv",
+  "hash_id": "f56d24f02fd54c969ea215c068fc83616ec7b308d48362356c0a57c3e200175b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/s390/mapfile.csv",
+  "human_readable_source": "Family-model,Version,Filename,EventType\n^IBM.209[78].*[13]\\.[1-5].[[:xdigit:]]+$,1,cf_z10,core\n^IBM.281[78].*[13]\\.[1-5].[[:xdigit:]]+$,1,cf_z196,core\n^IBM.282[78].*[13]\\.[1-5].[[:xdigit:]]+$,1,cf_zec12,core\n^IBM.296[45].*[13]\\.[1-5].[[:xdigit:]]+$,1,cf_z13,core\n^IBM.390[67].*[13]\\.[1-5].[[:xdigit:]]+$,3,cf_z14,core\n^IBM.856[12].*3\\.6.[[:xdigit:]]+$,3,cf_z15,core\n^IBM.393[12].*3\\.7.[[:xdigit:]]+$,3,cf_z16,core\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "aclocal.m4",
+  "hash_id": "b2618689a62e72fe91fc5463a7fb3c314dea08ef846973f50a8b9f3e16b232e4",
+  "original_prompt": "Ingested from openssh-9.6p1/aclocal.m4",
+  "human_readable_source": "# generated automatically by aclocal 1.16.5 -*- Autoconf -*-\n\n# Copyright (C) 1996-2021 Free Software Foundation, Inc.\n\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\n# This program is distributed in the hope that it will be useful,\n# but WITHOUT ANY WARRANTY, to the extent permitted by law; without\n# even the implied warranty of MERCHANTABILITY or FITNESS FOR A\n# PARTICULAR PURPOSE.\n\nm4_ifndef([AC_CONFIG_MACRO_DIRS], [m4_defun([_AM_CONFIG_MACRO_DIRS], [])m4_defun([AC_CONFIG_MACRO_DIRS], [_AM_CONFIG_MACRO_DIRS($@)])])\nm4_include([m4/openssh.m4])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

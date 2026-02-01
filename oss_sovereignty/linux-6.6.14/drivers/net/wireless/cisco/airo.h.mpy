@@ -1,0 +1,9 @@
+{
+  "module_name": "airo.h",
+  "hash_id": "1084a2ea9e45e50b0d22545e0ab5d342ce1636090d081b829ef7c6cdc24745d9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/cisco/airo.h",
+  "human_readable_source": " \n#ifndef _AIRO_H_\n#define _AIRO_H_\n\nstruct net_device *init_airo_card(unsigned short irq, int port, int is_pcmcia,\n\t\t\t\t  struct device *dmdev);\nint reset_airo_card(struct net_device *dev);\nvoid stop_airo_card(struct net_device *dev, int freeres);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

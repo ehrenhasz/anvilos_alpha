@@ -1,0 +1,9 @@
+{
+  "module_name": "loongarch-stub.c",
+  "hash_id": "4c67347b993a53db35ca6a386663ee0485d6e521b881ae6d5c2ff4099e87a569",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/efi/libstub/loongarch-stub.c",
+  "human_readable_source": "\n \n\n#include <asm/efi.h>\n#include <asm/addrspace.h>\n#include \"efistub.h\"\n\nextern int kernel_asize;\nextern int kernel_fsize;\nextern int kernel_offset;\nextern int kernel_entry;\n\nefi_status_t handle_kernel_image(unsigned long *image_addr,\n\t\t\t\t unsigned long *image_size,\n\t\t\t\t unsigned long *reserve_addr,\n\t\t\t\t unsigned long *reserve_size,\n\t\t\t\t efi_loaded_image_t *image,\n\t\t\t\t efi_handle_t image_handle)\n{\n\tefi_status_t status;\n\tunsigned long kernel_addr = 0;\n\n\tkernel_addr = (unsigned long)&kernel_offset - kernel_offset;\n\n\tstatus = efi_relocate_kernel(&kernel_addr, kernel_fsize, kernel_asize,\n\t\t     EFI_KIMG_PREFERRED_ADDRESS, efi_get_kimg_min_align(), 0x0);\n\n\t*image_addr = kernel_addr;\n\t*image_size = kernel_asize;\n\n\treturn status;\n}\n\nunsigned long kernel_entry_address(unsigned long kernel_addr)\n{\n\tunsigned long base = (unsigned long)&kernel_offset - kernel_offset;\n\n\treturn (unsigned long)&kernel_entry - base + kernel_addr;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

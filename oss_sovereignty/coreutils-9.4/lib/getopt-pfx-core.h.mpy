@@ -1,0 +1,9 @@
+{
+  "module_name": "getopt-pfx-core.h",
+  "hash_id": "7e9e1633913476350722d7785713f686be5c40e635e07af4664bbba3b127802f",
+  "original_prompt": "Ingested from coreutils-9.4/lib/getopt-pfx-core.h",
+  "human_readable_source": " \n\n \n#ifdef __GETOPT_PREFIX\n# ifndef __GETOPT_ID\n#  define __GETOPT_CONCAT(x, y) x ## y\n#  define __GETOPT_XCONCAT(x, y) __GETOPT_CONCAT (x, y)\n#  define __GETOPT_ID(y) __GETOPT_XCONCAT (__GETOPT_PREFIX, y)\n# endif\n# undef getopt\n# undef optarg\n# undef opterr\n# undef optind\n# undef optopt\n# define getopt __GETOPT_ID (getopt)\n# define optarg __GETOPT_ID (optarg)\n# define opterr __GETOPT_ID (opterr)\n# define optind __GETOPT_ID (optind)\n# define optopt __GETOPT_ID (optopt)\n\n \n# undef _GETOPT_CORE_H\n#endif\n\n#include <getopt-core.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

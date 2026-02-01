@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_clock.c",
+  "hash_id": "53c1d230492943783b4288f09d604f9efec16d7e5f903717cce34301a4a62876",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/trace_clock.c",
+  "human_readable_source": "\n \n#include <asm/trace_clock.h>\n#include <asm/barrier.h>\n#include <asm/msr.h>\n\n \nu64 notrace trace_clock_x86_tsc(void)\n{\n\treturn rdtsc_ordered();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

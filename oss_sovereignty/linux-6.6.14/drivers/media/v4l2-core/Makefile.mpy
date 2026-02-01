@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4516a8f2d6d81cd0241d101040534c65dfbfa830fc0f282bd4d007042a77aa39",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/v4l2-core/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the V4L2 core\n#\n\nccflags-y += -I$(srctree)/drivers/media/dvb-frontends\nccflags-y += -I$(srctree)/drivers/media/tuners\n\ntuner-objs\t:=\ttuner-core.o\n\nvideodev-objs\t:=\tv4l2-dev.o v4l2-ioctl.o v4l2-device.o v4l2-fh.o \\\n\t\t\tv4l2-event.o v4l2-subdev.o v4l2-common.o \\\n\t\t\tv4l2-ctrls-core.o v4l2-ctrls-api.o \\\n\t\t\tv4l2-ctrls-request.o v4l2-ctrls-defs.o\n\n# Please keep it alphabetically sorted by Kconfig name\n# (e. g. LC_ALL=C sort Makefile)\nvideodev-$(CONFIG_COMPAT) += v4l2-compat-ioctl32.o\nvideodev-$(CONFIG_MEDIA_CONTROLLER) += v4l2-mc.o\nvideodev-$(CONFIG_SPI) += v4l2-spi.o\nvideodev-$(CONFIG_TRACEPOINTS) += v4l2-trace.o\nvideodev-$(CONFIG_VIDEO_V4L2_I2C) += v4l2-i2c.o\n\n# Please keep it alphabetically sorted by Kconfig name\n# (e. g. LC_ALL=C sort Makefile)\n\nobj-$(CONFIG_V4L2_ASYNC) += v4l2-async.o\nobj-$(CONFIG_V4L2_CCI) += v4l2-cci.o\nobj-$(CONFIG_V4L2_FLASH_LED_CLASS) += v4l2-flash-led-class.o\nobj-$(CONFIG_V4L2_FWNODE) += v4l2-fwnode.o\nobj-$(CONFIG_V4L2_H264) += v4l2-h264.o\nobj-$(CONFIG_V4L2_JPEG_HELPER) += v4l2-jpeg.o\nobj-$(CONFIG_V4L2_MEM2MEM_DEV) += v4l2-mem2mem.o\nobj-$(CONFIG_V4L2_VP9) += v4l2-vp9.o\n\nobj-$(CONFIG_VIDEOBUF_DMA_CONTIG) += videobuf-dma-contig.o\nobj-$(CONFIG_VIDEOBUF_DMA_SG) += videobuf-dma-sg.o\nobj-$(CONFIG_VIDEOBUF_GEN) += videobuf-core.o\nobj-$(CONFIG_VIDEOBUF_VMALLOC) += videobuf-vmalloc.o\n\nobj-$(CONFIG_VIDEO_TUNER) += tuner.o\nobj-$(CONFIG_VIDEO_DEV) += v4l2-dv-timings.o videodev.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

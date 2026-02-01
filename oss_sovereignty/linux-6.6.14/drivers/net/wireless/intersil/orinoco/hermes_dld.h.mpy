@@ -1,0 +1,9 @@
+{
+  "module_name": "hermes_dld.h",
+  "hash_id": "9f2d82c3190ae1b5deca90c7eb3def7d6efeef6c27a697bfd30108cd9245d67f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intersil/orinoco/hermes_dld.h",
+  "human_readable_source": " \n#ifndef _HERMES_DLD_H\n#define _HERMES_DLD_H\n\n#include \"hermes.h\"\n\nint hermesi_program_init(struct hermes *hw, u32 offset);\nint hermesi_program_end(struct hermes *hw);\nint hermes_program(struct hermes *hw, const char *first_block, const void *end);\n\nint hermes_read_pda(struct hermes *hw,\n\t\t    __le16 *pda,\n\t\t    u32 pda_addr,\n\t\t    u16 pda_len,\n\t\t    int use_eeprom);\nint hermes_apply_pda(struct hermes *hw,\n\t\t     const char *first_pdr,\n\t\t     const void *pdr_end,\n\t\t     const __le16 *pda,\n\t\t     const void *pda_end);\nint hermes_apply_pda_with_defaults(struct hermes *hw,\n\t\t\t\t   const char *first_pdr,\n\t\t\t\t   const void *pdr_end,\n\t\t\t\t   const __le16 *pda,\n\t\t\t\t   const void *pda_end);\n\nsize_t hermes_blocks_length(const char *first_block, const void *end);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

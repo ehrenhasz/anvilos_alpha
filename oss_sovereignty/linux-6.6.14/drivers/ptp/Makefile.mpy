@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c6752a77f8954c9e3aece12e3b2b001b31ad113eba500ccec25ea61d8f20842e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ptp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for PTP 1588 clock support.\n#\n\nptp-y\t\t\t\t\t:= ptp_clock.o ptp_chardev.o ptp_sysfs.o ptp_vclock.o\nptp_kvm-$(CONFIG_X86)\t\t\t:= ptp_kvm_x86.o ptp_kvm_common.o\nptp_kvm-$(CONFIG_HAVE_ARM_SMCCC)\t:= ptp_kvm_arm.o ptp_kvm_common.o\nobj-$(CONFIG_PTP_1588_CLOCK)\t\t+= ptp.o\nobj-$(CONFIG_PTP_1588_CLOCK_DTE)\t+= ptp_dte.o\nobj-$(CONFIG_PTP_1588_CLOCK_INES)\t+= ptp_ines.o\nobj-$(CONFIG_PTP_1588_CLOCK_PCH)\t+= ptp_pch.o\nobj-$(CONFIG_PTP_1588_CLOCK_KVM)\t+= ptp_kvm.o\nobj-$(CONFIG_PTP_1588_CLOCK_QORIQ)\t+= ptp-qoriq.o\nptp-qoriq-y\t\t\t\t+= ptp_qoriq.o\nptp-qoriq-$(CONFIG_DEBUG_FS)\t\t+= ptp_qoriq_debugfs.o\nobj-$(CONFIG_PTP_1588_CLOCK_IDTCM)\t+= ptp_clockmatrix.o\nobj-$(CONFIG_PTP_1588_CLOCK_IDT82P33)\t+= ptp_idt82p33.o\nobj-$(CONFIG_PTP_1588_CLOCK_MOCK)\t+= ptp_mock.o\nobj-$(CONFIG_PTP_1588_CLOCK_VMW)\t+= ptp_vmw.o\nobj-$(CONFIG_PTP_1588_CLOCK_OCP)\t+= ptp_ocp.o\nobj-$(CONFIG_PTP_DFL_TOD)\t\t+= ptp_dfl_tod.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

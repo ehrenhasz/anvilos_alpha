@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "0d589a6c135fb83752abe184f82487e5db3cd6c8b83c3859336481f75f45694a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/mspdec/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\nnvkm-y += nvkm/engine/mspdec/base.o\nnvkm-y += nvkm/engine/mspdec/g98.o\nnvkm-y += nvkm/engine/mspdec/gt215.o\nnvkm-y += nvkm/engine/mspdec/gf100.o\nnvkm-y += nvkm/engine/mspdec/gk104.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

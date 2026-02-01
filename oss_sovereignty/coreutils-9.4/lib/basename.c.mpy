@@ -1,0 +1,9 @@
+{
+  "module_name": "basename.c",
+  "hash_id": "2e2842c7dff72af85ce780ea06ef4c532568c3e4c383b2649b983fe2c54af311",
+  "original_prompt": "Ingested from coreutils-9.4/lib/basename.c",
+  "human_readable_source": " \n      length += ISSLASH (base[length]);\n\n       \n      dotslash_len = FILE_SYSTEM_PREFIX_LEN (base) != 0 ? 2 : 0;\n    }\n  else\n    {\n       \n      base = name;\n      length = base_len (base);\n      dotslash_len = 0;\n    }\n\n  char *p = ximalloc (dotslash_len + length + 1);\n  if (dotslash_len)\n    {\n      p[0] = '.';\n      p[1] = '/';\n    }\n\n   \n  memcpy (p + dotslash_len, base, length);\n  p[dotslash_len + length] = '\\0';\n  return p;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

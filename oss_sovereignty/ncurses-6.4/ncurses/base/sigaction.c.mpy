@@ -1,0 +1,9 @@
+{
+  "module_name": "sigaction.c",
+  "hash_id": "27ee5c1f193be87af1002a414b7bc4cb14a90bd4d01fc4cddcdb3c90bd3557a6",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/sigaction.c",
+  "human_readable_source": " \n\n \n\n \n \n\nMODULE_ID(\"$Id: sigaction.c,v 1.15 2020/02/02 23:34:34 tom Exp $\")\n\nstatic int\n_nc_sigaction(int sig, sigaction_t * sigact, sigaction_t * osigact)\n{\n    return sigvec(sig, sigact, osigact);\n}\n\nstatic int\n_nc_sigemptyset(sigset_t * mask)\n{\n    *mask = 0;\n    return 0;\n}\n\nstatic int\n_nc_sigprocmask(int mode, sigset_t * mask, sigset_t * omask)\n{\n    sigset_t current = sigsetmask(0);\n\n    if (omask)\n\t*omask = current;\n\n    if (mode == SIG_BLOCK)\n\tcurrent |= *mask;\n    else if (mode == SIG_UNBLOCK)\n\tcurrent &= ~*mask;\n    else if (mode == SIG_SETMASK)\n\tcurrent = *mask;\n\n    sigsetmask(current);\n    return 0;\n}\n\nstatic int\n_nc_sigaddset(sigset_t * mask, int sig)\n{\n    *mask |= sigmask(sig);\n    return 0;\n}\n\n \n#if 0\nstatic int\n_nc_sigsuspend(sigset_t * mask)\n{\n    return sigpause(*mask);\n}\n\nstatic int\n_nc_sigdelset(sigset_t * mask, int sig)\n{\n    *mask &= ~sigmask(sig);\n    return 0;\n}\n\nstatic int\n_nc_sigismember(sigset_t * mask, int sig)\n{\n    return (*mask & sigmask(sig)) != 0;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c87660136bfe42fb789f7dbebce796ec6630bdd5bd55c990c4318bad90742c2e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/pci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-y\t\t\t\t:= i386.o init.o\n\nobj-$(CONFIG_PCI_BIOS)\t\t+= pcbios.o\nobj-$(CONFIG_PCI_MMCONFIG)\t+= mmconfig_$(BITS).o direct.o mmconfig-shared.o\nobj-$(CONFIG_PCI_DIRECT)\t+= direct.o\nobj-$(CONFIG_PCI_OLPC)\t\t+= olpc.o\nobj-$(CONFIG_PCI_XEN)\t\t+= xen.o\n\nobj-y\t\t\t\t+= fixup.o\nobj-$(CONFIG_X86_INTEL_CE)      += ce4100.o\nobj-$(CONFIG_ACPI)\t\t+= acpi.o\nobj-y\t\t\t\t+= legacy.o irq.o\n\nobj-$(CONFIG_STA2X11)           += sta2x11-fixup.o\n\nobj-$(CONFIG_X86_NUMACHIP)\t+= numachip.o\n\nobj-$(CONFIG_X86_INTEL_MID)\t+= intel_mid_pci.o\n\nobj-y\t\t\t\t+= common.o early.o\nobj-y\t\t\t\t+= bus_numa.o\n\nobj-$(CONFIG_AMD_NB)\t\t+= amd_bus.o\nobj-$(CONFIG_PCI_CNB20LE_QUIRK)\t+= broadcom_bus.o\n\nccflags-$(CONFIG_PCI_DEBUG)\t+= -DDEBUG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

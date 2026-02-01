@@ -1,0 +1,9 @@
+{
+  "module_name": "seg6_local.h",
+  "hash_id": "f25edac85a2ca5e8d7efacaaea8bcee88e199c8f94fff9a8a31fa51672ddf944",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/seg6_local.h",
+  "human_readable_source": "#ifndef _LINUX_SEG6_LOCAL_H\n#define _LINUX_SEG6_LOCAL_H\n\n#include <uapi/linux/seg6_local.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

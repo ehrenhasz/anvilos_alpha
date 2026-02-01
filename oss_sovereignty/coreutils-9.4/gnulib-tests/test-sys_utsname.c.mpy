@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sys_utsname.c",
+  "hash_id": "84d969621c163200b20ed1379cc263c6d54d2d020f33a3f2bc1f79d1f946876b",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sys_utsname.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sys/utsname.h>\n\n#include <string.h>\n\nint\nmain ()\n{\n  struct utsname buf;\n\n  strcpy (buf.sysname, \"Linux\");\n  strcpy (buf.nodename, \"hobbybox\");\n  strcpy (buf.release, \"3.141.592\");\n  strcpy (buf.version, \"GENERIC\");\n  strcpy (buf.machine, \"i586\");\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "setjmp_s390x.S",
+  "hash_id": "2342abe52aa3f03e32c4f8a2911879dce590ebe82c3b409107cccdd5e8118efb",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/setjmp/setjmp_s390x.S",
+  "human_readable_source": " \n\n\t.global setjmp\n\t.type   setjmp,@function\nsetjmp:\n\tstmg %r6, %r15, 0(%r2)\n\n\tstd  %f8,  10*8(%r2)\n\tstd  %f9,  11*8(%r2)\n\tstd  %f10, 12*8(%r2)\n\tstd  %f11, 13*8(%r2)\n\tstd  %f12, 14*8(%r2)\n\tstd  %f13, 15*8(%r2)\n\tstd  %f14, 16*8(%r2)\n\tstd  %f15, 17*8(%r2)\n\n\tlghi %r2, 0\n\tbr   %r14\n\n\t.global longjmp\n\t.type   longjmp,@function\nlongjmp:\n\n1:\n\tlmg %r6, %r15, 0(%r2)\n\n\tld  %f8, 10*8(%r2)\n\tld  %f9, 11*8(%r2)\n\tld %f10, 12*8(%r2)\n\tld %f11, 13*8(%r2)\n\tld %f12, 14*8(%r2)\n\tld %f13, 15*8(%r2)\n\tld %f14, 16*8(%r2)\n\tld %f15, 17*8(%r2)\n\n\tltgr %r2, %r3\n\tbnzr %r14\n\tlhi  %r2, 1\n\tbr   %r14\n\n#ifdef __ELF__\n.section .note.GNU-stack,\"\",%progbits\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

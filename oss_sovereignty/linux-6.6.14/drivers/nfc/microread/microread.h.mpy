@@ -1,0 +1,9 @@
+{
+  "module_name": "microread.h",
+  "hash_id": "6883688c043a45d41d6c4df78491256e1c848aee5a48c89c7dd79de468ce282c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/microread/microread.h",
+  "human_readable_source": " \n \n\n#ifndef __LOCAL_MICROREAD_H_\n#define __LOCAL_MICROREAD_H_\n\n#include <net/nfc/hci.h>\n\n#define DRIVER_DESC \"NFC driver for microread\"\n\nint microread_probe(void *phy_id, const struct nfc_phy_ops *phy_ops,\n\t\t    const char *llc_name, int phy_headroom, int phy_tailroom,\n\t\t    int phy_payload, struct nfc_hci_dev **hdev);\n\nvoid microread_remove(struct nfc_hci_dev *hdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

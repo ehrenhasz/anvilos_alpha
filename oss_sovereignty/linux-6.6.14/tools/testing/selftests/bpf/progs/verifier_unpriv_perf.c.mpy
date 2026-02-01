@@ -1,0 +1,9 @@
+{
+  "module_name": "verifier_unpriv_perf.c",
+  "hash_id": "f612255089330a013c076fba2b75951013466c8cf3d98054fe6642a52d0281e7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/verifier_unpriv_perf.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nSEC(\"perf_event\")\n__description(\"unpriv: spill/fill of different pointers ldx\")\n__failure __msg(\"same insn cannot be used with different pointers\")\n__naked void fill_of_different_pointers_ldx(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tr6 = r10;\t\t\t\t\t\\\n\tr6 += -8;\t\t\t\t\t\\\n\tif r1 == 0 goto l0_%=;\t\t\t\t\\\n\tr2 = r10;\t\t\t\t\t\\\n\tr2 += %[__imm_0];\t\t\t\t\\\n\t*(u64*)(r6 + 0) = r2;\t\t\t\t\\\nl0_%=:\tif r1 != 0 goto l1_%=;\t\t\t\t\\\n\t*(u64*)(r6 + 0) = r1;\t\t\t\t\\\nl1_%=:\tr1 = *(u64*)(r6 + 0);\t\t\t\t\\\n\tr1 = *(u64*)(r1 + %[sample_period]);\t\t\\\n\tr0 = 0;\t\t\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t:\n\t: __imm_const(__imm_0,\n\t\t      -(__s32) offsetof(struct bpf_perf_event_data, sample_period) - 8),\n\t  __imm_const(sample_period,\n\t\t      offsetof(struct bpf_perf_event_data, sample_period))\n\t: __clobber_all);\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

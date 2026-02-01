@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__modbuiltins.c.module",
+  "hash_id": "0524e5c25289ec0b01c2833bec7e5f73dec3e4ebc7b3e3326a372b3226318114",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/module/@@__@@__py__modbuiltins.c.module",
+  "human_readable_source": "MP_REGISTER_MODULE(MP_QSTR_builtins, mp_module_builtins);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "98206a1123c634239afadf92360c3cb2c2edc1889041510b68ca2d02a66f52e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Intel network device drivers.\n#\n\nobj-$(CONFIG_E100) += e100.o\nobj-$(CONFIG_E1000) += e1000/\nobj-$(CONFIG_E1000E) += e1000e/\nobj-$(CONFIG_IGB) += igb/\nobj-$(CONFIG_IGC) += igc/\nobj-$(CONFIG_IGBVF) += igbvf/\nobj-$(CONFIG_IXGBE) += ixgbe/\nobj-$(CONFIG_IXGBEVF) += ixgbevf/\nobj-$(CONFIG_I40E) += i40e/\nobj-$(CONFIG_IAVF) += iavf/\nobj-$(CONFIG_FM10K) += fm10k/\nobj-$(CONFIG_ICE) += ice/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

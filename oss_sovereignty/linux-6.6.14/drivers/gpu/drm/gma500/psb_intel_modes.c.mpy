@@ -1,0 +1,9 @@
+{
+  "module_name": "psb_intel_modes.c",
+  "hash_id": "3633124145ad9d4c13c1debe4f4b66771c28f9a1a487d32e00945e0e2f036255",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/gma500/psb_intel_modes.c",
+  "human_readable_source": "\n \n\n#include <linux/i2c.h>\n\n#include <drm/drm_edid.h>\n\n#include \"psb_intel_drv.h\"\n\n \nbool psb_intel_ddc_probe(struct i2c_adapter *adapter)\n{\n\tu8 out_buf[] = { 0x0, 0x0 };\n\tu8 buf[2];\n\tint ret;\n\tstruct i2c_msg msgs[] = {\n\t\t{\n\t\t .addr = 0x50,\n\t\t .flags = 0,\n\t\t .len = 1,\n\t\t .buf = out_buf,\n\t\t },\n\t\t{\n\t\t .addr = 0x50,\n\t\t .flags = I2C_M_RD,\n\t\t .len = 1,\n\t\t .buf = buf,\n\t\t }\n\t};\n\n\tret = i2c_transfer(adapter, msgs, 2);\n\tif (ret == 2)\n\t\treturn true;\n\n\treturn false;\n}\n\n \nint psb_intel_ddc_get_modes(struct drm_connector *connector,\n\t\t\t    struct i2c_adapter *adapter)\n{\n\tstruct edid *edid;\n\tint ret = 0;\n\n\tedid = drm_get_edid(connector, adapter);\n\tif (edid) {\n\t\tdrm_connector_update_edid_property(connector, edid);\n\t\tret = drm_add_edid_modes(connector, edid);\n\t\tkfree(edid);\n\t}\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

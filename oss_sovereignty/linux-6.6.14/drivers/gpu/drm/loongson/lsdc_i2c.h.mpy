@@ -1,0 +1,9 @@
+{
+  "module_name": "lsdc_i2c.h",
+  "hash_id": "cc4eb55f5b98bfeb1cd287bbf7e5f92c63ad9ec0e8dae22df0348b3b6b48668b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/loongson/lsdc_i2c.h",
+  "human_readable_source": " \n \n\n#ifndef __LSDC_I2C_H__\n#define __LSDC_I2C_H__\n\n#include <linux/i2c.h>\n#include <linux/i2c-algo-bit.h>\n\nstruct lsdc_i2c {\n\tstruct i2c_adapter adapter;\n\tstruct i2c_algo_bit_data bit;\n\tstruct drm_device *ddev;\n\tvoid __iomem *dir_reg;\n\tvoid __iomem *dat_reg;\n\t \n\tu8 sda;\n\tu8 scl;\n};\n\nstruct lsdc_display_pipe;\n\nint lsdc_create_i2c_chan(struct drm_device *ddev,\n\t\t\t struct lsdc_display_pipe *dispipe,\n\t\t\t unsigned int index);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

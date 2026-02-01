@@ -1,0 +1,9 @@
+{
+  "module_name": "omap_irq.h",
+  "hash_id": "11a34a91dbd927656d963331402c3408a84cba384df7720484b9e5870425fe0d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/omapdrm/omap_irq.h",
+  "human_readable_source": " \n \n\n#ifndef __OMAPDRM_IRQ_H__\n#define __OMAPDRM_IRQ_H__\n\n#include <linux/types.h>\n\nstruct drm_crtc;\nstruct drm_device;\nstruct omap_irq_wait;\n\nint omap_irq_enable_vblank(struct drm_crtc *crtc);\nint omap_irq_enable_framedone(struct drm_crtc *crtc, bool enable);\nvoid omap_irq_disable_vblank(struct drm_crtc *crtc);\nvoid omap_drm_irq_uninstall(struct drm_device *dev);\nint omap_drm_irq_install(struct drm_device *dev);\n\nstruct omap_irq_wait *omap_irq_wait_init(struct drm_device *dev,\n\t\tu32 irqmask, int count);\nint omap_irq_wait(struct drm_device *dev, struct omap_irq_wait *wait,\n\t\tunsigned long timeout);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

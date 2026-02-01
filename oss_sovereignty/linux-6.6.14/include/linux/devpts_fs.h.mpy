@@ -1,0 +1,9 @@
+{
+  "module_name": "devpts_fs.h",
+  "hash_id": "bdbbfab1c6b6f9a2a44d16a8bddeb0343aa1adcab24be636185b1911205fd6f6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/devpts_fs.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_DEVPTS_FS_H\n#define _LINUX_DEVPTS_FS_H\n\n#include <linux/errno.h>\n\n#ifdef CONFIG_UNIX98_PTYS\n\nstruct pts_fs_info;\n\nstruct vfsmount *devpts_mntget(struct file *, struct pts_fs_info *);\nstruct pts_fs_info *devpts_acquire(struct file *);\nvoid devpts_release(struct pts_fs_info *);\n\nint devpts_new_index(struct pts_fs_info *);\nvoid devpts_kill_index(struct pts_fs_info *, int);\n\n \nstruct dentry *devpts_pty_new(struct pts_fs_info *, int, void *);\n \nvoid *devpts_get_priv(struct dentry *);\n \nvoid devpts_pty_kill(struct dentry *);\n\n \nint ptm_open_peer(struct file *master, struct tty_struct *tty, int flags);\n\n#else\nstatic inline int\nptm_open_peer(struct file *master, struct tty_struct *tty, int flags)\n{\n\treturn -EIO;\n}\n#endif\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

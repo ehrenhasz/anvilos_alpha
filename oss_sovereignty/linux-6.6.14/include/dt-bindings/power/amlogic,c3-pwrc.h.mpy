@@ -1,0 +1,9 @@
+{
+  "module_name": "amlogic,c3-pwrc.h",
+  "hash_id": "4107a0838005896d3ab0485e6a84aa61c79416ace27a9815faa7a5f3cb64f261",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/amlogic,c3-pwrc.h",
+  "human_readable_source": " \n \n#ifndef _DT_BINDINGS_AMLOGIC_C3_POWER_H\n#define _DT_BINDINGS_AMLOGIC_C3_POWER_H\n\n#define PWRC_C3_NNA_ID\t\t\t\t0\n#define PWRC_C3_AUDIO_ID\t\t\t1\n#define PWRC_C3_RESV_SEC_ID\t\t\t2\n#define PWRC_C3_SDIOA_ID\t\t\t3\n#define PWRC_C3_EMMC_ID\t\t\t\t4\n#define PWRC_C3_USB_COMB_ID\t\t\t5\n#define PWRC_C3_SDCARD_ID\t\t\t6\n#define PWRC_C3_ETH_ID\t\t\t\t7\n#define PWRC_C3_RESV0_ID\t\t\t8\n#define PWRC_C3_GE2D_ID\t\t\t\t9\n#define PWRC_C3_CVE_ID\t\t\t\t10\n#define PWRC_C3_GDC_WRAP_ID\t\t\t11\n#define PWRC_C3_ISP_TOP_ID\t\t\t12\n#define PWRC_C3_MIPI_ISP_WRAP_ID\t\t13\n#define PWRC_C3_VCODEC_ID\t\t\t14\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

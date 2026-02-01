@@ -1,0 +1,9 @@
+{
+  "module_name": "test-unicodeio1.sh",
+  "hash_id": "f40e1aa8fffd9bbbd2d701353abbf25feb96258cba5fa5daacededbf99c2090f",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-unicodeio1.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test in the C locale.\nLC_ALL=C \\\n${CHECKER} ./test-unicodeio${EXEEXT} 1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

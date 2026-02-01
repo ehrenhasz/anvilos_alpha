@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__argcheck.c.compress",
+  "hash_id": "ae9dca32b4ad86628d72a37136e119a1f106f17f9db590e7a4a59e52f4421d6d",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__argcheck.c.compress",
+  "human_readable_source": "function doesn't take keyword arguments\nfunction takes %d positional arguments but %d were given\nfunction missing %d required positional arguments\nfunction expected at most %d arguments, got %d\n'%q' argument required\nextra positional arguments given\nextra keyword arguments given\nargument num/types mismatch\nkeyword argument(s) not implemented - use normal args instead\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

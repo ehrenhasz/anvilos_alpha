@@ -1,0 +1,9 @@
+{
+  "module_name": "smiapp.h",
+  "hash_id": "91bb2d7374a9fd4d743f9210e98e67648471462502c39ab8903317480fd99add",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/smiapp.h",
+  "human_readable_source": " \n \n\n#ifndef __UAPI_LINUX_SMIAPP_H_\n#define __UAPI_LINUX_SMIAPP_H_\n\n#define V4L2_SMIAPP_TEST_PATTERN_MODE_DISABLED\t\t\t0\n#define V4L2_SMIAPP_TEST_PATTERN_MODE_SOLID_COLOUR\t\t1\n#define V4L2_SMIAPP_TEST_PATTERN_MODE_COLOUR_BARS\t\t2\n#define V4L2_SMIAPP_TEST_PATTERN_MODE_COLOUR_BARS_GREY\t\t3\n#define V4L2_SMIAPP_TEST_PATTERN_MODE_PN9\t\t\t4\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

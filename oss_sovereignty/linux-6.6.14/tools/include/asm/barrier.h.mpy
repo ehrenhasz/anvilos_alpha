@@ -1,0 +1,9 @@
+{
+  "module_name": "barrier.h",
+  "hash_id": "b2d37f35f12dc64f4ad80c92f4c62ba06d6992fddece4c6962b3bfc74e345cb2",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/asm/barrier.h",
+  "human_readable_source": " \n#include <linux/compiler.h>\n#if defined(__i386__) || defined(__x86_64__)\n#include \"../../arch/x86/include/asm/barrier.h\"\n#elif defined(__arm__)\n#include \"../../arch/arm/include/asm/barrier.h\"\n#elif defined(__aarch64__)\n#include \"../../arch/arm64/include/asm/barrier.h\"\n#elif defined(__powerpc__)\n#include \"../../arch/powerpc/include/asm/barrier.h\"\n#elif defined(__s390__)\n#include \"../../arch/s390/include/asm/barrier.h\"\n#elif defined(__sh__)\n#include \"../../arch/sh/include/asm/barrier.h\"\n#elif defined(__sparc__)\n#include \"../../arch/sparc/include/asm/barrier.h\"\n#elif defined(__tile__)\n#include \"../../arch/tile/include/asm/barrier.h\"\n#elif defined(__alpha__)\n#include \"../../arch/alpha/include/asm/barrier.h\"\n#elif defined(__mips__)\n#include \"../../arch/mips/include/asm/barrier.h\"\n#elif defined(__ia64__)\n#include \"../../arch/ia64/include/asm/barrier.h\"\n#elif defined(__xtensa__)\n#include \"../../arch/xtensa/include/asm/barrier.h\"\n#else\n#include <asm-generic/barrier.h>\n#endif\n\n \n\n#ifndef smp_rmb\n# define smp_rmb()\trmb()\n#endif\n\n#ifndef smp_wmb\n# define smp_wmb()\twmb()\n#endif\n\n#ifndef smp_mb\n# define smp_mb()\tmb()\n#endif\n\n#ifndef smp_store_release\n# define smp_store_release(p, v)\t\t\\\ndo {\t\t\t\t\t\t\\\n\tsmp_mb();\t\t\t\t\\\n\tWRITE_ONCE(*p, v);\t\t\t\\\n} while (0)\n#endif\n\n#ifndef smp_load_acquire\n# define smp_load_acquire(p)\t\t\t\\\n({\t\t\t\t\t\t\\\n\ttypeof(*p) ___p1 = READ_ONCE(*p);\t\\\n\tsmp_mb();\t\t\t\t\\\n\t___p1;\t\t\t\t\t\\\n})\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

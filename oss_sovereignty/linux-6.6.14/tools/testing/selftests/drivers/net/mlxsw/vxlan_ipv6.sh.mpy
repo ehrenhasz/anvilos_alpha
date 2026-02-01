@@ -1,0 +1,9 @@
+{
+  "module_name": "vxlan_ipv6.sh",
+  "hash_id": "ebda6bc5df03c54dfb5b1db0c8c31f968f1edeb4467e95a1b1d81b20a2f9c583",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/mlxsw/vxlan_ipv6.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# A wrapper to run VXLAN test for IPv6.\n\nADDR_FAMILY=ipv6\nLOCAL_IP_1=2001:db8:1::1\nLOCAL_IP_2=2001:db8:1::2\nPREFIX_LEN=128\nUDPCSUM_FLAFS=\"udp6zerocsumrx udp6zerocsumtx\"\nMC_IP=FF02::2\nIP_FLAG=\"-6\"\n\nALL_TESTS=\"\n\tsanitization_test\n\toffload_indication_test\n\tsanitization_vlan_aware_test\n\toffload_indication_vlan_aware_test\n\"\n\nsanitization_single_dev_learning_enabled_ipv6_test()\n{\n\tRET=0\n\n\tip link add dev br0 type bridge mcast_snooping 0\n\n\tip link add name vxlan0 up type vxlan id 10 learning $UDPCSUM_FLAFS \\\n\t\tttl 20 tos inherit local $LOCAL_IP_1 dstport 4789\n\n\tsanitization_single_dev_test_fail\n\n\tip link del dev vxlan0\n\tip link del dev br0\n\n\tlog_test \"vxlan device with learning enabled\"\n}\n\nsanitization_single_dev_udp_checksum_ipv6_test()\n{\n\tRET=0\n\n\tip link add dev br0 type bridge mcast_snooping 0\n\n\tip link add name vxlan0 up type vxlan id 10 nolearning \\\n\t\tnoudp6zerocsumrx udp6zerocsumtx ttl 20 tos inherit \\\n\t\tlocal $LOCAL_IP_1 dstport 4789\n\n\tsanitization_single_dev_test_fail\n\tlog_test \"vxlan device without zero udp checksum at RX\"\n\n\tip link del dev vxlan0\n\n\tip link add name vxlan0 up type vxlan id 10 nolearning \\\n\t\tudp6zerocsumrx noudp6zerocsumtx ttl 20 tos inherit \\\n\t\tlocal $LOCAL_IP_1 dstport 4789\n\n\tsanitization_single_dev_test_fail\n\tlog_test \"vxlan device without zero udp checksum at TX\"\n\n\tip link del dev vxlan0\n\tip link del dev br0\n\n}\n\nsource vxlan.sh\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

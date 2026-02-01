@@ -1,0 +1,9 @@
+{
+  "module_name": "fld_attr.c",
+  "hash_id": "6de0ab84699c4fb3bc3609da082f3327d4e05458ce01119f422776bdeedd2ec5",
+  "original_prompt": "Ingested from ncurses-6.4/form/fld_attr.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: fld_attr.c,v 1.15 2020/12/11 22:05:24 tom Exp $\")\n\n \n \n#define GEN_FIELD_ATTR_SET_FCT( name ) \\\nFORM_IMPEXP int NCURSES_API set_field_ ## name (FIELD * field, chtype attr)\\\n{\\\n   int res = E_BAD_ARGUMENT;\\\n   T((T_CALLED(\"set_field_\" #name \"(%p,%s)\"), (void *)field, _traceattr(attr)));\\\n   if ( attr==A_NORMAL || ((attr & A_ATTRIBUTES)==attr) )\\\n     {\\\n       Normalize_Field( field );\\\n       if (field != 0) \\\n\t { \\\n\t if ((field -> name) != attr)\\\n\t   {\\\n\t     field -> name = attr;\\\n\t     res = _nc_Synchronize_Attributes( field );\\\n\t   }\\\n\t else\\\n\t   {\\\n\t     res = E_OK;\\\n\t   }\\\n\t }\\\n     }\\\n   RETURN(res);\\\n}\n\n \n#define GEN_FIELD_ATTR_GET_FCT( name ) \\\nFORM_IMPEXP chtype NCURSES_API field_ ## name (const FIELD * field)\\\n{\\\n   T((T_CALLED(\"field_\" #name \"(%p)\"), (const void *) field));\\\n   returnAttr( A_ATTRIBUTES & (Normalize_Field( field ) -> name) );\\\n}\n\n \nGEN_FIELD_ATTR_SET_FCT(fore)\n\n \nGEN_FIELD_ATTR_GET_FCT(fore)\n\n \nGEN_FIELD_ATTR_SET_FCT(back)\n\n \nGEN_FIELD_ATTR_GET_FCT(back)\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

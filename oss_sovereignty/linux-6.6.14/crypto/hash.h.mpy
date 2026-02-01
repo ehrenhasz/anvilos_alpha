@@ -1,0 +1,9 @@
+{
+  "module_name": "hash.h",
+  "hash_id": "9093656069893b1e242b371b4742e684c283edb947c4e3f7e1dcd9549a045573",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/hash.h",
+  "human_readable_source": " \n \n#ifndef _LOCAL_CRYPTO_HASH_H\n#define _LOCAL_CRYPTO_HASH_H\n\n#include <crypto/internal/hash.h>\n#include <linux/cryptouser.h>\n\n#include \"internal.h\"\n\nstatic inline int crypto_hash_report_stat(struct sk_buff *skb,\n\t\t\t\t\t  struct crypto_alg *alg,\n\t\t\t\t\t  const char *type)\n{\n\tstruct hash_alg_common *halg = __crypto_hash_alg_common(alg);\n\tstruct crypto_istat_hash *istat = hash_get_stat(halg);\n\tstruct crypto_stat_hash rhash;\n\n\tmemset(&rhash, 0, sizeof(rhash));\n\n\tstrscpy(rhash.type, type, sizeof(rhash.type));\n\n\trhash.stat_hash_cnt = atomic64_read(&istat->hash_cnt);\n\trhash.stat_hash_tlen = atomic64_read(&istat->hash_tlen);\n\trhash.stat_err_cnt = atomic64_read(&istat->err_cnt);\n\n\treturn nla_put(skb, CRYPTOCFGA_STAT_HASH, sizeof(rhash), &rhash);\n}\n\nint crypto_init_shash_ops_async(struct crypto_tfm *tfm);\nstruct crypto_ahash *crypto_clone_shash_ops_async(struct crypto_ahash *nhash,\n\t\t\t\t\t\t  struct crypto_ahash *hash);\n\nint hash_prepare_alg(struct hash_alg_common *alg);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ptrace-abi.h",
+  "hash_id": "6922470dc5b2558a832acfc4ed12bee5259f2a939f932147f5682d3654a247ea",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/ptrace-abi.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PTRACE_ABI_H\n#define _ASM_X86_PTRACE_ABI_H\n\n#ifdef __i386__\n\n#define EBX 0\n#define ECX 1\n#define EDX 2\n#define ESI 3\n#define EDI 4\n#define EBP 5\n#define EAX 6\n#define DS 7\n#define ES 8\n#define FS 9\n#define GS 10\n#define ORIG_EAX 11\n#define EIP 12\n#define CS  13\n#define EFL 14\n#define UESP 15\n#define SS   16\n#define FRAME_SIZE 17\n\n#else  \n\n#if defined(__ASSEMBLY__) || defined(__FRAME_OFFSETS)\n \n#define R15 0\n#define R14 8\n#define R13 16\n#define R12 24\n#define RBP 32\n#define RBX 40\n \n#define R11 48\n#define R10 56\n#define R9 64\n#define R8 72\n#define RAX 80\n#define RCX 88\n#define RDX 96\n#define RSI 104\n#define RDI 112\n \n#define ORIG_RAX 120\n \n#define RIP 128\n#define CS 136\n#define EFLAGS 144\n#define RSP 152\n#define SS 160\n#endif  \n\n \n#define FRAME_SIZE 168\n\n#endif  \n\n \n#define PTRACE_GETREGS            12\n#define PTRACE_SETREGS            13\n#define PTRACE_GETFPREGS          14\n#define PTRACE_SETFPREGS          15\n#define PTRACE_GETFPXREGS         18\n#define PTRACE_SETFPXREGS         19\n\n#define PTRACE_OLDSETOPTIONS      21\n\n \n#define PTRACE_GET_THREAD_AREA    25\n#define PTRACE_SET_THREAD_AREA    26\n\n#ifdef __x86_64__\n# define PTRACE_ARCH_PRCTL\t  30\n#endif\n\n#define PTRACE_SYSEMU\t\t  31\n#define PTRACE_SYSEMU_SINGLESTEP  32\n\n#define PTRACE_SINGLEBLOCK\t33\t \n\n#ifndef __ASSEMBLY__\n#include <linux/types.h>\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

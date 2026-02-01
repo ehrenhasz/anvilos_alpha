@@ -1,0 +1,9 @@
+{
+  "module_name": "port-linux.h",
+  "hash_id": "421c340bd952a6ebd70932de42e51c1106a4922604fde499775ca327e18d405f",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/port-linux.h",
+  "human_readable_source": " \n\n#ifndef _PORT_LINUX_H\n#define _PORT_LINUX_H\n\n#ifdef WITH_SELINUX\nint ssh_selinux_enabled(void);\nvoid ssh_selinux_setup_pty(char *, const char *);\nvoid ssh_selinux_setup_exec_context(char *);\nvoid ssh_selinux_change_context(const char *);\nvoid ssh_selinux_setfscreatecon(const char *);\n#endif\n\n#ifdef LINUX_OOM_ADJUST\nvoid oom_adjust_restore(void);\nvoid oom_adjust_setup(void);\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

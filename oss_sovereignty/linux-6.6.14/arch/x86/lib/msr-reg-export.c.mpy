@@ -1,0 +1,9 @@
+{
+  "module_name": "msr-reg-export.c",
+  "hash_id": "abf7fb86be1b9e38fde65453b92880d3496610a60fc56fe8a528830fbe1c0fcf",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/lib/msr-reg-export.c",
+  "human_readable_source": "\n#include <linux/export.h>\n#include <asm/msr.h>\n\nEXPORT_SYMBOL(rdmsr_safe_regs);\nEXPORT_SYMBOL(wrmsr_safe_regs);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

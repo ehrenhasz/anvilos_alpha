@@ -1,0 +1,9 @@
+{
+  "module_name": "prune-kernel",
+  "hash_id": "f1d27a1dcb8886243e061007baa1adff7ec072844fbc2b6413e09e8a949898fe",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/prune-kernel",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# because I use CONFIG_LOCALVERSION_AUTO, not the same version again and\n# again, /boot and /lib/modules/ eventually fill up.\n# Dumb script to purge that stuff:\n\nfor f in \"$@\"\ndo\n        if rpm -qf \"/lib/modules/$f\" >/dev/null; then\n                echo \"keeping $f (installed from rpm)\"\n        elif [ $(uname -r) = \"$f\" ]; then\n                echo \"keeping $f (running kernel) \"\n        else\n                echo \"removing $f\"\n                rm -f \"/boot/initramfs-$f.img\" \"/boot/System.map-$f\"\n                rm -f \"/boot/vmlinuz-$f\"   \"/boot/config-$f\"\n                rm -rf \"/lib/modules/$f\"\n                if [ -x \"$(command -v new-kernel-pkg)\" ]; then\n                        new-kernel-pkg --remove $f\n                elif [ -x \"$(command -v kernel-install)\" ]; then\n                        kernel-install remove $f\n                fi\n        fi\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

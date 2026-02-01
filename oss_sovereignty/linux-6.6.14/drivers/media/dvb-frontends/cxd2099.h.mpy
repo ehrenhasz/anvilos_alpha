@@ -1,0 +1,9 @@
+{
+  "module_name": "cxd2099.h",
+  "hash_id": "d79acc14580526976eff08d2756d9716ec0628401d017612b2ca0a1dd6bf75d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cxd2099.h",
+  "human_readable_source": " \n \n\n#ifndef _CXD2099_H_\n#define _CXD2099_H_\n\n#include <media/dvb_ca_en50221.h>\n\nstruct cxd2099_cfg {\n\tu32 bitrate;\n\tu8  polarity;\n\tu8  clock_mode;\n\n\tu32 max_i2c;\n\n\t \n\tstruct dvb_ca_en50221 **en;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

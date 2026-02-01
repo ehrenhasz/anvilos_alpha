@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "645063b4a143e5ccc14e32cf78355f68cd83d66dc6f21d21aa2c2b93418e5de9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/sprd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_PINCTRL_SPRD)\t\t+= pinctrl-sprd.o\nobj-$(CONFIG_PINCTRL_SPRD_SC9860)\t+= pinctrl-sprd-sc9860.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

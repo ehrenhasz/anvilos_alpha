@@ -1,0 +1,9 @@
+{
+  "module_name": "latencytop.h",
+  "hash_id": "fc8e5177a78be48e65c6b4720fed1722603fcc48c91755b8721cfa715b5ab960",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/latencytop.h",
+  "human_readable_source": " \n \n\n#ifndef _INCLUDE_GUARD_LATENCYTOP_H_\n#define _INCLUDE_GUARD_LATENCYTOP_H_\n\n#include <linux/compiler.h>\nstruct task_struct;\n\n#ifdef CONFIG_LATENCYTOP\n\n#define LT_SAVECOUNT\t\t32\n#define LT_BACKTRACEDEPTH\t12\n\nstruct latency_record {\n\tunsigned long\tbacktrace[LT_BACKTRACEDEPTH];\n\tunsigned int\tcount;\n\tunsigned long\ttime;\n\tunsigned long\tmax;\n};\n\n\n\nextern int latencytop_enabled;\nvoid __account_scheduler_latency(struct task_struct *task, int usecs, int inter);\nstatic inline void\naccount_scheduler_latency(struct task_struct *task, int usecs, int inter)\n{\n\tif (unlikely(latencytop_enabled))\n\t\t__account_scheduler_latency(task, usecs, inter);\n}\n\nvoid clear_tsk_latency_tracing(struct task_struct *p);\n\n#else\n\nstatic inline void\naccount_scheduler_latency(struct task_struct *task, int usecs, int inter)\n{\n}\n\nstatic inline void clear_tsk_latency_tracing(struct task_struct *p)\n{\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "atomisp_common.h",
+  "hash_id": "209c04ead3c11bebc1b343d27777783e326162fad365f70a8016540669519771",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/atomisp_common.h",
+  "human_readable_source": " \n \n\n#ifndef\t__ATOMISP_COMMON_H__\n#define\t__ATOMISP_COMMON_H__\n\n#include \"../../include/linux/atomisp.h\"\n\n#include <linux/v4l2-mediabus.h>\n\n#include <media/videobuf2-v4l2.h>\n\n#include \"atomisp_compat.h\"\n\n#include \"ia_css.h\"\n\nextern int dbg_level;\nextern int dbg_func;\nextern int mipicsi_flag;\nextern int pad_w;\nextern int pad_h;\n\n \n#define ISP2400_MIN_PAD_W\t\t12\n#define ISP2400_MIN_PAD_H\t\t12\n\n#define CSS_DTRACE_VERBOSITY_LEVEL\t5\t \n#define CSS_DTRACE_VERBOSITY_TIMEOUT\t9\t \n#define MRFLD_MAX_ZOOM_FACTOR\t1024\n\n \n#define ATOMISP_CSS_ISP_PIPE_VERSION_2_7    1\n\nstruct atomisp_format_bridge {\n\tunsigned int pixelformat;\n\tunsigned int depth;\n\tu32 mbus_code;\n\tenum ia_css_frame_format sh_fmt;\n\tunsigned char description[32];\t \n\tbool planar;\n};\n\nstruct atomisp_fmt {\n\tu32 pixelformat;\n\tu32 depth;\n\tu32 bytesperline;\n\tu32 framesize;\n\tu32 imagesize;\n\tu32 width;\n\tu32 height;\n\tu32 bayer_order;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

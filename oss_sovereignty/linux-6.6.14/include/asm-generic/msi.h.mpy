@@ -1,0 +1,9 @@
+{
+  "module_name": "msi.h",
+  "hash_id": "82ab41d97e99a6d57ef99cf4e5d8ca02da6fe68df1fca6fca41fb89c3d003470",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/msi.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_MSI_H\n#define __ASM_GENERIC_MSI_H\n\n#include <linux/types.h>\n\n#ifdef CONFIG_GENERIC_MSI_IRQ\n\n#ifndef NUM_MSI_ALLOC_SCRATCHPAD_REGS\n# define NUM_MSI_ALLOC_SCRATCHPAD_REGS\t2\n#endif\n\nstruct msi_desc;\n\n \ntypedef struct msi_alloc_info {\n\tstruct msi_desc\t\t\t*desc;\n\tirq_hw_number_t\t\t\thwirq;\n\tunsigned long\t\t\tflags;\n\tunion {\n\t\tunsigned long\t\tul;\n\t\tvoid\t\t\t*ptr;\n\t} scratchpad[NUM_MSI_ALLOC_SCRATCHPAD_REGS];\n} msi_alloc_info_t;\n\n \n#define MSI_ALLOC_FLAGS_PROXY_DEVICE\t(1UL << 0)\n\n#define GENERIC_MSI_DOMAIN_OPS\t\t1\n\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

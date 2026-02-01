@@ -1,0 +1,9 @@
+{
+  "module_name": "zoran_device.h",
+  "hash_id": "e34dc10369659064a2d5ba0c5ea89e4b9adf567eb98818b7191d0f188371ad1a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/zoran/zoran_device.h",
+  "human_readable_source": " \n \n\n#ifndef __ZORAN_DEVICE_H__\n#define __ZORAN_DEVICE_H__\n\n \nvoid GPIO(struct zoran *zr, int bit, unsigned int value);\n\n \nint post_office_wait(struct zoran *zr);\nint post_office_write(struct zoran *zr, unsigned int guest, unsigned int reg,\n\t\t      unsigned int value);\nint post_office_read(struct zoran *zr, unsigned int guest, unsigned int reg);\n\nvoid jpeg_codec_sleep(struct zoran *zr, int sleep);\nint jpeg_codec_reset(struct zoran *zr);\n\n \nvoid zr36057_set_memgrab(struct zoran *zr, int mode);\nint wait_grab_pending(struct zoran *zr);\n\n \nvoid print_interrupts(struct zoran *zr);\nvoid clear_interrupt_counters(struct zoran *zr);\nirqreturn_t zoran_irq(int irq, void *dev_id);\n\n \nvoid jpeg_start(struct zoran *zr);\nvoid zr36057_enable_jpg(struct zoran *zr, enum zoran_codec_mode mode);\nvoid zoran_feed_stat_com(struct zoran *zr);\n\n \nvoid zoran_set_pci_master(struct zoran *zr, int set_master);\nvoid zoran_init_hardware(struct zoran *zr);\nvoid zr36057_restart(struct zoran *zr);\n\nextern const struct zoran_format zoran_formats[];\n\nextern int pass_through;\n\n \n#define decoder_call(zr, o, f, args...) \\\n\tv4l2_subdev_call((zr)->decoder, o, f, ##args)\n#define encoder_call(zr, o, f, args...) \\\n\tv4l2_subdev_call((zr)->encoder, o, f, ##args)\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

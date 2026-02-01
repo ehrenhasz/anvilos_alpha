@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a10522ef8b21b8e65cfd4969ddc49e10a976e5a2130c2d6aa04fc714545ac3ee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/msi2500/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig USB_MSI2500\n\ttristate \"Mirics MSi2500\"\n\tdepends on VIDEO_DEV && SPI\n\tselect VIDEOBUF2_VMALLOC\n\tselect MEDIA_TUNER_MSI001\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "color.h",
+  "hash_id": "68b881e0b286b151cae31d32d70c9e9b4f796335691a815bf954de15d5f1e650",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/color.h",
+  "human_readable_source": " \n#ifndef __PERF_COLOR_H\n#define __PERF_COLOR_H\n\n#include <stdio.h>\n#include <stdarg.h>\n\n \n#define COLOR_MAXLEN 24\n\n#define PERF_COLOR_NORMAL\t\"\"\n#define PERF_COLOR_RESET\t\"\\033[m\"\n#define PERF_COLOR_BOLD\t\t\"\\033[1m\"\n#define PERF_COLOR_RED\t\t\"\\033[31m\"\n#define PERF_COLOR_GREEN\t\"\\033[32m\"\n#define PERF_COLOR_YELLOW\t\"\\033[33m\"\n#define PERF_COLOR_BLUE\t\t\"\\033[34m\"\n#define PERF_COLOR_MAGENTA\t\"\\033[35m\"\n#define PERF_COLOR_CYAN\t\t\"\\033[36m\"\n#define PERF_COLOR_BG_RED\t\"\\033[41m\"\n\n#define MIN_GREEN\t0.5\n#define MIN_RED\t\t5.0\n\n \nextern int perf_use_color_default;\n\n\n \nint perf_color_default_config(const char *var, const char *value, void *cb);\n\nint perf_config_colorbool(const char *var, const char *value, int stdout_is_tty);\nint color_vsnprintf(char *bf, size_t size, const char *color,\n\t\t    const char *fmt, va_list args);\nint color_vfprintf(FILE *fp, const char *color, const char *fmt, va_list args);\nint color_fprintf(FILE *fp, const char *color, const char *fmt, ...);\nint color_snprintf(char *bf, size_t size, const char *color, const char *fmt, ...);\nint color_fwrite_lines(FILE *fp, const char *color, size_t count, const char *buf);\nint value_color_snprintf(char *bf, size_t size, const char *fmt, double value);\nint percent_color_snprintf(char *bf, size_t size, const char *fmt, ...);\nint percent_color_len_snprintf(char *bf, size_t size, const char *fmt, ...);\nint percent_color_fprintf(FILE *fp, const char *fmt, double percent);\nconst char *get_percent_color(double percent);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

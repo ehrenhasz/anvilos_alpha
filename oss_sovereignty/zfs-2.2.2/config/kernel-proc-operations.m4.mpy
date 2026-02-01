@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-proc-operations.m4",
+  "hash_id": "10a8ffcb175b6f168c7ea2028468e637ed29d5a412bae1e53015575037d1dd25",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-proc-operations.m4",
+  "human_readable_source": "dnl #\ndnl # 5.6 API Change\ndnl # The proc_ops structure was introduced to replace the use of\ndnl # of the file_operations structure when registering proc handlers.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_PROC_OPERATIONS], [\n\tZFS_LINUX_TEST_SRC([proc_ops_struct], [\n\t\t#include <linux/proc_fs.h>\n\n\t\tint test_open(struct inode *ip, struct file *fp) { return 0; }\n\t\tssize_t test_read(struct file *fp, char __user *ptr,\n\t\t    size_t size, loff_t *offp) { return 0; }\n\t\tssize_t test_write(struct file *fp, const char __user *ptr,\n\t\t    size_t size, loff_t *offp) { return 0; }\n\t\tloff_t test_lseek(struct file *fp, loff_t off, int flag)\n\t\t    { return 0; }\n\t\tint test_release(struct inode *ip, struct file *fp)\n\t\t    { return 0; }\n\n\t\tconst struct proc_ops test_ops __attribute__ ((unused)) = {\n\t\t\t.proc_open      = test_open,\n\t\t\t.proc_read      = test_read,\n\t\t\t.proc_write\t= test_write,\n\t\t\t.proc_lseek     = test_lseek,\n\t\t\t.proc_release   = test_release,\n\t\t};\n\t], [\n\t\tstruct proc_dir_entry *entry __attribute__ ((unused)) =\n\t\t    proc_create_data(\"test\", 0444, NULL, &test_ops, NULL);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_PROC_OPERATIONS], [\n\tAC_MSG_CHECKING([whether proc_ops structure exists])\n\tZFS_LINUX_TEST_RESULT([proc_ops_struct], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_PROC_OPS_STRUCT, 1, [proc_ops structure exists])\n\t], [\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

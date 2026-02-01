@@ -1,0 +1,9 @@
+{
+  "module_name": "callo.h",
+  "hash_id": "f3336cb20654fbf797314e58be80b68010c307b1f5963449a984bca7fee316a1",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/callo.h",
+  "human_readable_source": " \n\n#ifndef _SPL_CALLO_H\n#define\t_SPL_CALLO_H\n\n \n#define\tCALLOUT_FLAG_ROUNDUP\t\t0x1\n#define\tCALLOUT_FLAG_ABSOLUTE\t\t0x2\n#define\tCALLOUT_FLAG_HRESTIME\t\t0x4\n#define\tCALLOUT_FLAG_32BIT\t\t0x8\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

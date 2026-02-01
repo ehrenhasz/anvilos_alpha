@@ -1,0 +1,9 @@
+{
+  "module_name": "scsi_sas_internal.h",
+  "hash_id": "a4b9705ba37242a38736ca9952178fe9bdd811e4778e792e999f8f180bbf2b42",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/scsi_sas_internal.h",
+  "human_readable_source": " \n#ifndef _SCSI_SAS_INTERNAL_H\n#define _SCSI_SAS_INTERNAL_H\n\n#define SAS_HOST_ATTRS\t\t0\n#define SAS_PHY_ATTRS\t\t17\n#define SAS_PORT_ATTRS\t\t1\n#define SAS_RPORT_ATTRS\t\t8\n#define SAS_END_DEV_ATTRS\t5\n#define SAS_EXPANDER_ATTRS\t7\n\nstruct sas_internal {\n\tstruct scsi_transport_template t;\n\tstruct sas_function_template *f;\n\tstruct sas_domain_function_template *dft;\n\n\tstruct device_attribute private_host_attrs[SAS_HOST_ATTRS];\n\tstruct device_attribute private_phy_attrs[SAS_PHY_ATTRS];\n\tstruct device_attribute private_port_attrs[SAS_PORT_ATTRS];\n\tstruct device_attribute private_rphy_attrs[SAS_RPORT_ATTRS];\n\tstruct device_attribute private_end_dev_attrs[SAS_END_DEV_ATTRS];\n\tstruct device_attribute private_expander_attrs[SAS_EXPANDER_ATTRS];\n\n\tstruct transport_container phy_attr_cont;\n\tstruct transport_container port_attr_cont;\n\tstruct transport_container rphy_attr_cont;\n\tstruct transport_container end_dev_attr_cont;\n\tstruct transport_container expander_attr_cont;\n\n\t \n\tstruct device_attribute *host_attrs[SAS_HOST_ATTRS + 1];\n\tstruct device_attribute *phy_attrs[SAS_PHY_ATTRS + 1];\n\tstruct device_attribute *port_attrs[SAS_PORT_ATTRS + 1];\n\tstruct device_attribute *rphy_attrs[SAS_RPORT_ATTRS + 1];\n\tstruct device_attribute *end_dev_attrs[SAS_END_DEV_ATTRS + 1];\n\tstruct device_attribute *expander_attrs[SAS_EXPANDER_ATTRS + 1];\n};\n#define to_sas_internal(tmpl)\tcontainer_of(tmpl, struct sas_internal, t)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

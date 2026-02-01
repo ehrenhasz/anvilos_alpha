@@ -1,0 +1,9 @@
+{
+  "module_name": "stack.S",
+  "hash_id": "a11b9def68daaa5506e3b2c708d94fd580fb544ebd77398d89e334eba507fbe1",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/purgatory/stack.S",
+  "human_readable_source": " \n \n\n#include <linux/linkage.h>\n\n\t \n\t.data\n\t.balign 4096\n\nSYM_DATA_START(stack)\n\t.skip 4096\nSYM_DATA_END_LABEL(stack, SYM_L_GLOBAL, stack_end)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

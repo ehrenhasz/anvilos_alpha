@@ -1,0 +1,9 @@
+{
+  "module_name": "tcp_basertt_kern.c",
+  "hash_id": "74ad1857b5079fb3c365d56b3160f4a2da7d501d6d7e49e789e97fffaa4ed054",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/tcp_basertt_kern.c",
+  "human_readable_source": " \n\n#include <uapi/linux/bpf.h>\n#include <uapi/linux/tcp.h>\n#include <uapi/linux/if_ether.h>\n#include <uapi/linux/if_packet.h>\n#include <uapi/linux/ip.h>\n#include <linux/socket.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n\n#define DEBUG 1\n\nSEC(\"sockops\")\nint bpf_basertt(struct bpf_sock_ops *skops)\n{\n\tchar cong[20];\n\tchar nv[] = \"nv\";\n\tint rv = 0, n;\n\tint op;\n\n\top = (int) skops->op;\n\n#ifdef DEBUG\n\tbpf_printk(\"BPF command: %d\\n\", op);\n#endif\n\n\t \n\tif (skops->family == AF_INET6 &&\n\t    skops->local_ip6[0] == skops->remote_ip6[0] &&\n\t    (bpf_ntohl(skops->local_ip6[1]) & 0xfff00000) ==\n\t    (bpf_ntohl(skops->remote_ip6[1]) & 0xfff00000)) {\n\t\tswitch (op) {\n\t\tcase BPF_SOCK_OPS_BASE_RTT:\n\t\t\tn = bpf_getsockopt(skops, SOL_TCP, TCP_CONGESTION,\n\t\t\t\t\t   cong, sizeof(cong));\n\t\t\tif (!n && !__builtin_memcmp(cong, nv, sizeof(nv))) {\n\t\t\t\t \n\t\t\t\trv = 80;\n\t\t\t} else if (n) {\n\t\t\t\trv = n;\n\t\t\t} else {\n\t\t\t\trv = -1;\n\t\t\t}\n\t\t\tbreak;\n\t\tdefault:\n\t\t\trv = -1;\n\t\t}\n\t} else {\n\t\trv = -1;\n\t}\n#ifdef DEBUG\n\tbpf_printk(\"Returning %d\\n\", rv);\n#endif\n\tskops->reply = rv;\n\treturn 1;\n}\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3ec777a65df0a86fd1c1de0249d2ef42b4139f11cbb219632a47b7005e13a4ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/vkms/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nvkms-y := \\\n\tvkms_drv.o \\\n\tvkms_plane.o \\\n\tvkms_output.o \\\n\tvkms_formats.o \\\n\tvkms_crtc.o \\\n\tvkms_composer.o \\\n\tvkms_writeback.o\n\nobj-$(CONFIG_DRM_VKMS) += vkms.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

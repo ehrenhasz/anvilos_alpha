@@ -1,0 +1,9 @@
+{
+  "module_name": "ads7828.h",
+  "hash_id": "ccd088bbc70f301f776aa2c3344a189985c7ff6dd1b964a5a3977c66daebb820",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/ads7828.h",
+  "human_readable_source": " \n \n\n#ifndef _PDATA_ADS7828_H\n#define _PDATA_ADS7828_H\n\n \nstruct ads7828_platform_data {\n\tbool diff_input;\n\tbool ext_vref;\n\tunsigned int vref_mv;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

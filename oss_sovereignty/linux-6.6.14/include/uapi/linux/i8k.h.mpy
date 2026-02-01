@@ -1,0 +1,9 @@
+{
+  "module_name": "i8k.h",
+  "hash_id": "bf23d7d6badc8575c647eea5c3a4765c36c705776b19e52fdbe324cabd65fab4",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/i8k.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_I8K_H\n#define _LINUX_I8K_H\n\n#define I8K_PROC\t\t\"/proc/i8k\"\n#define I8K_PROC_FMT\t\t\"1.0\"\n\n#define I8K_BIOS_VERSION\t_IOR ('i', 0x80, int)\t \n#define I8K_MACHINE_ID\t\t_IOR ('i', 0x81, int)\t \n#define I8K_POWER_STATUS\t_IOR ('i', 0x82, size_t)\n#define I8K_FN_STATUS\t\t_IOR ('i', 0x83, size_t)\n#define I8K_GET_TEMP\t\t_IOR ('i', 0x84, size_t)\n#define I8K_GET_SPEED\t\t_IOWR('i', 0x85, size_t)\n#define I8K_GET_FAN\t\t_IOWR('i', 0x86, size_t)\n#define I8K_SET_FAN\t\t_IOWR('i', 0x87, size_t)\n\n#define I8K_FAN_LEFT\t\t1\n#define I8K_FAN_RIGHT\t\t0\n#define I8K_FAN_OFF\t\t0\n#define I8K_FAN_LOW\t\t1\n#define I8K_FAN_HIGH\t\t2\n#define I8K_FAN_TURBO\t\t3\n#define I8K_FAN_MAX\t\tI8K_FAN_TURBO\n\n#define I8K_VOL_UP\t\t1\n#define I8K_VOL_DOWN\t\t2\n#define I8K_VOL_MUTE\t\t4\n\n#define I8K_AC\t\t\t1\n#define I8K_BATTERY\t\t0\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

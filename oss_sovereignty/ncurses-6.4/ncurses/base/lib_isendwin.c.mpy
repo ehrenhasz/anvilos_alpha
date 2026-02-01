@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_isendwin.c",
+  "hash_id": "7093ed9d9571e48fb4c4a964c49ed06d576cadb2c44e6e48498624a8b37aa47f",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_isendwin.c",
+  "human_readable_source": " \n\n \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_isendwin.c,v 1.9 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(bool)\nNCURSES_SP_NAME(isendwin) (NCURSES_SP_DCL0)\n{\n    if (SP_PARM == NULL)\n\treturn FALSE;\n    return (SP_PARM->_endwin == ewSuspend);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(bool)\nisendwin(void)\n{\n    return NCURSES_SP_NAME(isendwin) (CURRENT_SCREEN);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

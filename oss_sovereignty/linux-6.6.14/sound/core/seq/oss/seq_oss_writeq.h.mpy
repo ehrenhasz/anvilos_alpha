@@ -1,0 +1,9 @@
+{
+  "module_name": "seq_oss_writeq.h",
+  "hash_id": "6994f797db4c33b3a737d8b8d8bfc16df66e4b18e2d620a2b0c78f02d97f48d2",
+  "original_prompt": "Ingested from linux-6.6.14/sound/core/seq/oss/seq_oss_writeq.h",
+  "human_readable_source": " \n \n\n#ifndef __SEQ_OSS_WRITEQ_H\n#define __SEQ_OSS_WRITEQ_H\n\n#include \"seq_oss_device.h\"\n\n\nstruct seq_oss_writeq {\n\tstruct seq_oss_devinfo *dp;\n\tint maxlen;\n\tabstime_t sync_time;\n\tint sync_event_put;\n\twait_queue_head_t sync_sleep;\n\tspinlock_t sync_lock;\n};\n\n\n \nstruct seq_oss_writeq *snd_seq_oss_writeq_new(struct seq_oss_devinfo *dp, int maxlen);\nvoid snd_seq_oss_writeq_delete(struct seq_oss_writeq *q);\nvoid snd_seq_oss_writeq_clear(struct seq_oss_writeq *q);\nint snd_seq_oss_writeq_sync(struct seq_oss_writeq *q);\nvoid snd_seq_oss_writeq_wakeup(struct seq_oss_writeq *q, abstime_t time);\nint snd_seq_oss_writeq_get_free_size(struct seq_oss_writeq *q);\nvoid snd_seq_oss_writeq_set_output(struct seq_oss_writeq *q, int size);\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

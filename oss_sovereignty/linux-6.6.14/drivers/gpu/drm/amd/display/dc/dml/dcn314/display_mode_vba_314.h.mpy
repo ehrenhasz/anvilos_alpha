@@ -1,0 +1,9 @@
+{
+  "module_name": "display_mode_vba_314.h",
+  "hash_id": "46ebf557c9be07bb586637ef3e91c1386598871039a0e67c101536ced99536b5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dml/dcn314/display_mode_vba_314.h",
+  "human_readable_source": " \n \n\n#ifndef __DML314_DISPLAY_MODE_VBA_H__\n#define __DML314_DISPLAY_MODE_VBA_H__\n\nvoid dml314_recalculate(struct display_mode_lib *mode_lib);\nvoid dml314_ModeSupportAndSystemConfigurationFull(struct display_mode_lib *mode_lib);\ndouble dml314_CalculateWriteBackDISPCLK(\n\t\tenum source_format_class WritebackPixelFormat,\n\t\tdouble PixelClock,\n\t\tdouble WritebackHRatio,\n\t\tdouble WritebackVRatio,\n\t\tunsigned int WritebackHTaps,\n\t\tunsigned int WritebackVTaps,\n\t\tlong   WritebackSourceWidth,\n\t\tlong   WritebackDestinationWidth,\n\t\tunsigned int HTotal,\n\t\tunsigned int WritebackLineBufferSize);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

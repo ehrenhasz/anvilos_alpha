@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "129fdc5a4b794ebdedc9ac1447fa2e42595508a2501e1c55cf154cc415718605",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwmon/occ/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nocc-hwmon-common-objs := common.o sysfs.o\nocc-p8-hwmon-objs := p8_i2c.o\nocc-p9-hwmon-objs := p9_sbe.o\n\nobj-$(CONFIG_SENSORS_OCC) += occ-hwmon-common.o\nobj-$(CONFIG_SENSORS_OCC_P8_I2C) += occ-p8-hwmon.o\nobj-$(CONFIG_SENSORS_OCC_P9_SBE) += occ-p9-hwmon.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

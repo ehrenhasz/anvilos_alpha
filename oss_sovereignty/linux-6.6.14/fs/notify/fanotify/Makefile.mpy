@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "172bb5662be0d27f6e52ba03fe58545d2e0b98b30d6441a354acdf2ac2d240f2",
+  "original_prompt": "Ingested from linux-6.6.14/fs/notify/fanotify/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_FANOTIFY)\t\t+= fanotify.o fanotify_user.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

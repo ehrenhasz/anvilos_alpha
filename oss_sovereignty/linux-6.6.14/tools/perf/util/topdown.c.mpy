@@ -1,0 +1,9 @@
+{
+  "module_name": "topdown.c",
+  "hash_id": "ddcc1e57e09ba2c38ea92e6d2537f06a988e717d0af36aa8d8413c40597e911f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/topdown.c",
+  "human_readable_source": "\n#include \"topdown.h\"\n#include <linux/kernel.h>\n\n__weak bool arch_topdown_sample_read(struct evsel *leader __maybe_unused)\n{\n\treturn false;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

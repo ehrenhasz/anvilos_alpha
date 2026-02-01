@@ -1,0 +1,9 @@
+{
+  "module_name": "microtek.h",
+  "hash_id": "bb7352d170f2fc4bd84eaba6be7264c44fe6aa8a21311a96f2a03e42919a56ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/image/microtek.h",
+  "human_readable_source": " \n  \n\ntypedef void (*mts_scsi_cmnd_callback)(struct scsi_cmnd *);\n\n\nstruct mts_transfer_context\n{\n\tstruct mts_desc *instance;\n\tmts_scsi_cmnd_callback final_callback;\n\tstruct scsi_cmnd *srb;\n\t\n\tvoid *data;\n\tunsigned data_length;\n\tint data_pipe;\n\tstruct scatterlist *curr_sg;\n\n\tu8 *scsi_status;  \n};\n\n\nstruct mts_desc {\n\tstruct mts_desc *next;\n\tstruct mts_desc *prev;\n\n\tstruct usb_device *usb_dev;\n\tstruct usb_interface *usb_intf;\n\n\t \n\tu8 ep_out;\n\tu8 ep_response;\n\tu8 ep_image;\n\n\tstruct Scsi_Host *host;\n\n\tstruct urb *urb;\n\tstruct mts_transfer_context context;\n};\n\n\n#define MTS_EP_OUT\t0x1\n#define MTS_EP_RESPONSE\t0x2\n#define MTS_EP_IMAGE\t0x3\n#define MTS_EP_TOTAL\t0x3\n\n#define MTS_SCSI_ERR_MASK ~0x3fu\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

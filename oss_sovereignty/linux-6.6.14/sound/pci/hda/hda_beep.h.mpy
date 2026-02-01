@@ -1,0 +1,9 @@
+{
+  "module_name": "hda_beep.h",
+  "hash_id": "7c8b60470ddfd625eab5f2074d7accf75bd896bd380e2eea7bb0bfba556ad10c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/hda/hda_beep.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_HDA_BEEP_H\n#define __SOUND_HDA_BEEP_H\n\n#include <sound/hda_codec.h>\n\n#define HDA_BEEP_MODE_OFF\t0\n#define HDA_BEEP_MODE_ON\t1\n\n \nstruct hda_beep {\n\tstruct input_dev *dev;\n\tstruct hda_codec *codec;\n\tchar phys[32];\n\tint tone;\n\thda_nid_t nid;\n\tunsigned int registered:1;\n\tunsigned int enabled:1;\n\tunsigned int linear_tone:1;\t \n\tunsigned int playing:1;\n\tunsigned int keep_power_at_enable:1;\t \n\tstruct work_struct beep_work;  \n\tstruct mutex mutex;\n\tvoid (*power_hook)(struct hda_beep *beep, bool on);\n};\n\n#ifdef CONFIG_SND_HDA_INPUT_BEEP\nint snd_hda_enable_beep_device(struct hda_codec *codec, int enable);\nint snd_hda_attach_beep_device(struct hda_codec *codec, int nid);\nvoid snd_hda_detach_beep_device(struct hda_codec *codec);\n#else\nstatic inline int snd_hda_attach_beep_device(struct hda_codec *codec, int nid)\n{\n\treturn 0;\n}\nstatic inline void snd_hda_detach_beep_device(struct hda_codec *codec)\n{\n}\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

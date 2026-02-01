@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfs_btf.c",
+  "hash_id": "52d8ec783cf04cc09cea3af75b9d1aa1c186eca4b4bc59811a4bcdd96b493b25",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/bpf/sysfs_btf.c",
+  "human_readable_source": "\n \n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/kobject.h>\n#include <linux/init.h>\n#include <linux/sysfs.h>\n\n \nextern char __weak __start_BTF[];\nextern char __weak __stop_BTF[];\n\nstatic ssize_t\nbtf_vmlinux_read(struct file *file, struct kobject *kobj,\n\t\t struct bin_attribute *bin_attr,\n\t\t char *buf, loff_t off, size_t len)\n{\n\tmemcpy(buf, __start_BTF + off, len);\n\treturn len;\n}\n\nstatic struct bin_attribute bin_attr_btf_vmlinux __ro_after_init = {\n\t.attr = { .name = \"vmlinux\", .mode = 0444, },\n\t.read = btf_vmlinux_read,\n};\n\nstruct kobject *btf_kobj;\n\nstatic int __init btf_vmlinux_init(void)\n{\n\tbin_attr_btf_vmlinux.size = __stop_BTF - __start_BTF;\n\n\tif (!__start_BTF || bin_attr_btf_vmlinux.size == 0)\n\t\treturn 0;\n\n\tbtf_kobj = kobject_create_and_add(\"btf\", kernel_kobj);\n\tif (!btf_kobj)\n\t\treturn -ENOMEM;\n\n\treturn sysfs_create_bin_file(btf_kobj, &bin_attr_btf_vmlinux);\n}\n\nsubsys_initcall(btf_vmlinux_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

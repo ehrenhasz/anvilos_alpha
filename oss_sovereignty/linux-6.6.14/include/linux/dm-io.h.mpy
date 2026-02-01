@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-io.h",
+  "hash_id": "a7fbf6941d4b886c45dc91f394533fbdf43bbd25364c51ee9e0cf807f23f2018",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dm-io.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_DM_IO_H\n#define _LINUX_DM_IO_H\n\n#ifdef __KERNEL__\n\n#include <linux/types.h>\n#include <linux/blk_types.h>\n\nstruct dm_io_region {\n\tstruct block_device *bdev;\n\tsector_t sector;\n\tsector_t count;\t\t \n};\n\nstruct page_list {\n\tstruct page_list *next;\n\tstruct page *page;\n};\n\ntypedef void (*io_notify_fn)(unsigned int long error, void *context);\n\nenum dm_io_mem_type {\n\tDM_IO_PAGE_LIST, \n\tDM_IO_BIO,\t \n\tDM_IO_VMA,\t \n\tDM_IO_KMEM,\t \n};\n\nstruct dm_io_memory {\n\tenum dm_io_mem_type type;\n\n\tunsigned int offset;\n\n\tunion {\n\t\tstruct page_list *pl;\n\t\tstruct bio *bio;\n\t\tvoid *vma;\n\t\tvoid *addr;\n\t} ptr;\n};\n\nstruct dm_io_notify {\n\tio_notify_fn fn;\t \n\tvoid *context;\t\t \n};\n\n \nstruct dm_io_client;\nstruct dm_io_request {\n\tblk_opf_t\t    bi_opf;\t \n\tstruct dm_io_memory mem;\t \n\tstruct dm_io_notify notify;\t \n\tstruct dm_io_client *client;\t \n};\n\n \nstruct dm_io_client *dm_io_client_create(void);\nvoid dm_io_client_destroy(struct dm_io_client *client);\n\n \nint dm_io(struct dm_io_request *io_req, unsigned int num_regions,\n\t  struct dm_io_region *region, unsigned int long *sync_error_bits);\n\n#endif\t \n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

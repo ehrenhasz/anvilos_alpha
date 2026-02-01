@@ -1,0 +1,9 @@
+{
+  "module_name": "ad7793.h",
+  "hash_id": "ee98f9522024a7ecd2d3840e7ca10afa1b4f18c2c97b78c0b0aac4fed89ed78f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/ad7793.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_PLATFORM_DATA_AD7793_H__\n#define __LINUX_PLATFORM_DATA_AD7793_H__\n\n \nenum ad7793_clock_source {\n\tAD7793_CLK_SRC_INT,\n\tAD7793_CLK_SRC_INT_CO,\n\tAD7793_CLK_SRC_EXT,\n\tAD7793_CLK_SRC_EXT_DIV2,\n};\n\n \nenum ad7793_bias_voltage {\n\tAD7793_BIAS_VOLTAGE_DISABLED,\n\tAD7793_BIAS_VOLTAGE_AIN1,\n\tAD7793_BIAS_VOLTAGE_AIN2,\n\tAD7793_BIAS_VOLTAGE_AIN3,\n};\n\n \nenum ad7793_refsel {\n\tAD7793_REFSEL_REFIN1 = 0,\n\tAD7793_REFSEL_REFIN2 = 1,\n\tAD7793_REFSEL_INTERNAL = 2,\n};\n\n \nenum ad7793_current_source_direction {\n\tAD7793_IEXEC1_IOUT1_IEXEC2_IOUT2 = 0,\n\tAD7793_IEXEC1_IOUT2_IEXEC2_IOUT1 = 1,\n\tAD7793_IEXEC1_IEXEC2_IOUT1 = 2,\n\tAD7793_IEXEC1_IEXEC2_IOUT2 = 3,\n};\n\n \nenum ad7793_excitation_current {\n\tAD7793_IX_DISABLED = 0,\n\tAD7793_IX_10uA = 1,\n\tAD7793_IX_210uA = 2,\n\tAD7793_IX_1mA = 3,\n};\n\n \nstruct ad7793_platform_data {\n\tenum ad7793_clock_source clock_src;\n\tbool burnout_current;\n\tbool boost_enable;\n\tbool buffered;\n\tbool unipolar;\n\n\tenum ad7793_refsel refsel;\n\tenum ad7793_bias_voltage bias_voltage;\n\tenum ad7793_excitation_current exitation_current;\n\tenum ad7793_current_source_direction current_source_direction;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

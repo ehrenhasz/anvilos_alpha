@@ -1,0 +1,9 @@
+{
+  "module_name": "inc_and_test",
+  "hash_id": "6d82fccfd8b754668b6f964bcc7ee1f06b7e4be79518186c6c7c51c05aedde41",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/fallbacks/inc_and_test",
+  "human_readable_source": "cat <<EOF\n\treturn raw_${atomic}_inc_return(v) == 0;\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

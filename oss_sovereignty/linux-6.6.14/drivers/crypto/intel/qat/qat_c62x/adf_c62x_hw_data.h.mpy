@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_c62x_hw_data.h",
+  "hash_id": "31fe5423b23a99ee37628dfc13ca013a70804852ee1b1833785a0a41d31f8c19",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_c62x/adf_c62x_hw_data.h",
+  "human_readable_source": " \n \n#ifndef ADF_C62X_HW_DATA_H_\n#define ADF_C62X_HW_DATA_H_\n\n#include <linux/units.h>\n\n \n#define ADF_C62X_SRAM_BAR 0\n#define ADF_C62X_PMISC_BAR 1\n#define ADF_C62X_ETR_BAR 2\n#define ADF_C62X_MAX_ACCELERATORS 5\n#define ADF_C62X_MAX_ACCELENGINES 10\n#define ADF_C62X_ACCELERATORS_REG_OFFSET 16\n#define ADF_C62X_ACCELERATORS_MASK 0x1F\n#define ADF_C62X_ACCELENGINES_MASK 0x3FF\n#define ADF_C62X_ETR_MAX_BANKS 16\n#define ADF_C62X_SOFTSTRAP_CSR_OFFSET 0x2EC\n\n \n#define ADF_C62X_AE2FUNC_MAP_GRP_A_NUM_REGS 80\n#define ADF_C62X_AE2FUNC_MAP_GRP_B_NUM_REGS 10\n\n \n#define ADF_C62X_AE_FREQ (685 * HZ_PER_MHZ)\n#define ADF_C62X_MIN_AE_FREQ (533 * HZ_PER_MHZ)\n#define ADF_C62X_MAX_AE_FREQ (800 * HZ_PER_MHZ)\n\n \n#define ADF_C62X_FW \"qat_c62x.bin\"\n#define ADF_C62X_MMP \"qat_c62x_mmp.bin\"\n\nvoid adf_init_hw_data_c62x(struct adf_hw_device_data *hw_data);\nvoid adf_clean_hw_data_c62x(struct adf_hw_device_data *hw_data);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

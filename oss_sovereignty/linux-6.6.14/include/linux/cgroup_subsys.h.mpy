@@ -1,0 +1,9 @@
+{
+  "module_name": "cgroup_subsys.h",
+  "hash_id": "05df7b8d405892a18c19183c91f43f4d5a5231d70850813eefc83d33fc525404",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cgroup_subsys.h",
+  "human_readable_source": " \n \n\n \n\n#if IS_ENABLED(CONFIG_CPUSETS)\nSUBSYS(cpuset)\n#endif\n\n#if IS_ENABLED(CONFIG_CGROUP_SCHED)\nSUBSYS(cpu)\n#endif\n\n#if IS_ENABLED(CONFIG_CGROUP_CPUACCT)\nSUBSYS(cpuacct)\n#endif\n\n#if IS_ENABLED(CONFIG_BLK_CGROUP)\nSUBSYS(io)\n#endif\n\n#if IS_ENABLED(CONFIG_MEMCG)\nSUBSYS(memory)\n#endif\n\n#if IS_ENABLED(CONFIG_CGROUP_DEVICE)\nSUBSYS(devices)\n#endif\n\n#if IS_ENABLED(CONFIG_CGROUP_FREEZER)\nSUBSYS(freezer)\n#endif\n\n#if IS_ENABLED(CONFIG_CGROUP_NET_CLASSID)\nSUBSYS(net_cls)\n#endif\n\n#if IS_ENABLED(CONFIG_CGROUP_PERF)\nSUBSYS(perf_event)\n#endif\n\n#if IS_ENABLED(CONFIG_CGROUP_NET_PRIO)\nSUBSYS(net_prio)\n#endif\n\n#if IS_ENABLED(CONFIG_CGROUP_HUGETLB)\nSUBSYS(hugetlb)\n#endif\n\n#if IS_ENABLED(CONFIG_CGROUP_PIDS)\nSUBSYS(pids)\n#endif\n\n#if IS_ENABLED(CONFIG_CGROUP_RDMA)\nSUBSYS(rdma)\n#endif\n\n#if IS_ENABLED(CONFIG_CGROUP_MISC)\nSUBSYS(misc)\n#endif\n\n \n#if IS_ENABLED(CONFIG_CGROUP_DEBUG)\nSUBSYS(debug)\n#endif\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

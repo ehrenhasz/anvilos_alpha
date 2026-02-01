@@ -1,0 +1,9 @@
+{
+  "module_name": "amdgpu_connectors.h",
+  "hash_id": "4519f7ad4b6b34999d2f81333c835f637167aba9f99f80e6aeb854cd7344d091",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/amdgpu_connectors.h",
+  "human_readable_source": " \n\n#ifndef __AMDGPU_CONNECTORS_H__\n#define __AMDGPU_CONNECTORS_H__\n\nstruct edid *amdgpu_connector_edid(struct drm_connector *connector);\nvoid amdgpu_connector_hotplug(struct drm_connector *connector);\nint amdgpu_connector_get_monitor_bpc(struct drm_connector *connector);\nu16 amdgpu_connector_encoder_get_dp_bridge_encoder_id(struct drm_connector *connector);\nbool amdgpu_connector_is_dp12_capable(struct drm_connector *connector);\nvoid\namdgpu_connector_add(struct amdgpu_device *adev,\n\t\t      uint32_t connector_id,\n\t\t      uint32_t supported_device,\n\t\t      int connector_type,\n\t\t      struct amdgpu_i2c_bus_rec *i2c_bus,\n\t\t      uint16_t connector_object_id,\n\t\t      struct amdgpu_hpd *hpd,\n\t\t      struct amdgpu_router *router);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

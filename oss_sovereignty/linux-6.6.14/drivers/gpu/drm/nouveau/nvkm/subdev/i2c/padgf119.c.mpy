@@ -1,0 +1,9 @@
+{
+  "module_name": "padgf119.c",
+  "hash_id": "287322c7779700aa41995e4a608745beb58f00067034f9ab5bd5f9928b9818a3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/i2c/padgf119.c",
+  "human_readable_source": " \n#include \"pad.h\"\n#include \"aux.h\"\n#include \"bus.h\"\n\nstatic const struct nvkm_i2c_pad_func\ngf119_i2c_pad_s_func = {\n\t.bus_new_4 = gf119_i2c_bus_new,\n\t.aux_new_6 = gf119_i2c_aux_new,\n\t.mode = g94_i2c_pad_mode,\n};\n\nint\ngf119_i2c_pad_s_new(struct nvkm_i2c *i2c, int id, struct nvkm_i2c_pad **ppad)\n{\n\treturn nvkm_i2c_pad_new_(&gf119_i2c_pad_s_func, i2c, id, ppad);\n}\n\nstatic const struct nvkm_i2c_pad_func\ngf119_i2c_pad_x_func = {\n\t.bus_new_4 = gf119_i2c_bus_new,\n\t.aux_new_6 = gf119_i2c_aux_new,\n};\n\nint\ngf119_i2c_pad_x_new(struct nvkm_i2c *i2c, int id, struct nvkm_i2c_pad **ppad)\n{\n\treturn nvkm_i2c_pad_new_(&gf119_i2c_pad_x_func, i2c, id, ppad);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "trapnr.h",
+  "hash_id": "c3c4573b822f44dfc0c1d77ce5e5c50c3e6989bf0eb9da000461e9a90051e6b8",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/trapnr.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_TRAPNR_H\n#define _ASM_X86_TRAPNR_H\n\n \n\n#define X86_TRAP_DE\t\t 0\t \n#define X86_TRAP_DB\t\t 1\t \n#define X86_TRAP_NMI\t\t 2\t \n#define X86_TRAP_BP\t\t 3\t \n#define X86_TRAP_OF\t\t 4\t \n#define X86_TRAP_BR\t\t 5\t \n#define X86_TRAP_UD\t\t 6\t \n#define X86_TRAP_NM\t\t 7\t \n#define X86_TRAP_DF\t\t 8\t \n#define X86_TRAP_OLD_MF\t\t 9\t \n#define X86_TRAP_TS\t\t10\t \n#define X86_TRAP_NP\t\t11\t \n#define X86_TRAP_SS\t\t12\t \n#define X86_TRAP_GP\t\t13\t \n#define X86_TRAP_PF\t\t14\t \n#define X86_TRAP_SPURIOUS\t15\t \n#define X86_TRAP_MF\t\t16\t \n#define X86_TRAP_AC\t\t17\t \n#define X86_TRAP_MC\t\t18\t \n#define X86_TRAP_XF\t\t19\t \n#define X86_TRAP_VE\t\t20\t \n#define X86_TRAP_CP\t\t21\t \n#define X86_TRAP_VC\t\t29\t \n#define X86_TRAP_IRET\t\t32\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

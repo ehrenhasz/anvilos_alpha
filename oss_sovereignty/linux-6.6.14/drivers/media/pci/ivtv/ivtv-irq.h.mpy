@@ -1,0 +1,9 @@
+{
+  "module_name": "ivtv-irq.h",
+  "hash_id": "61333bf4f520567adae4416edd9aaa7382478a2f66ab41059cbb2755ec039d32",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ivtv/ivtv-irq.h",
+  "human_readable_source": " \n \n\n#ifndef IVTV_IRQ_H\n#define IVTV_IRQ_H\n\n#define IVTV_IRQ_ENC_START_CAP\t\tBIT(31)\n#define IVTV_IRQ_ENC_EOS\t\tBIT(30)\n#define IVTV_IRQ_ENC_VBI_CAP\t\tBIT(29)\n#define IVTV_IRQ_ENC_VIM_RST\t\tBIT(28)\n#define IVTV_IRQ_ENC_DMA_COMPLETE\tBIT(27)\n#define IVTV_IRQ_ENC_PIO_COMPLETE\tBIT(25)\n#define IVTV_IRQ_DEC_AUD_MODE_CHG\tBIT(24)\n#define IVTV_IRQ_DEC_DATA_REQ\t\tBIT(22)\n#define IVTV_IRQ_DEC_DMA_COMPLETE\tBIT(20)\n#define IVTV_IRQ_DEC_VBI_RE_INSERT\tBIT(19)\n#define IVTV_IRQ_DMA_ERR\t\tBIT(18)\n#define IVTV_IRQ_DMA_WRITE\t\tBIT(17)\n#define IVTV_IRQ_DMA_READ\t\tBIT(16)\n#define IVTV_IRQ_DEC_VSYNC\t\tBIT(10)\n\n \n#define IVTV_IRQ_MASK_INIT (IVTV_IRQ_DMA_ERR|IVTV_IRQ_ENC_DMA_COMPLETE|\\\n\t\tIVTV_IRQ_DMA_READ|IVTV_IRQ_ENC_PIO_COMPLETE)\n\n#define IVTV_IRQ_MASK_CAPTURE (IVTV_IRQ_ENC_START_CAP | IVTV_IRQ_ENC_EOS)\n#define IVTV_IRQ_MASK_DECODE  (IVTV_IRQ_DEC_DATA_REQ|IVTV_IRQ_DEC_AUD_MODE_CHG)\n\nirqreturn_t ivtv_irq_handler(int irq, void *dev_id);\n\nvoid ivtv_irq_work_handler(struct kthread_work *work);\nvoid ivtv_dma_stream_dec_prepare(struct ivtv_stream *s, u32 offset, int lock);\nvoid ivtv_unfinished_dma(struct timer_list *t);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

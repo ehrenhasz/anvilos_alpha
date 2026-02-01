@@ -1,0 +1,9 @@
+{
+  "module_name": "main.c",
+  "hash_id": "0393b645e347aac933f01c714586664a1a0ee17723674aa58f69f33ca786a638",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/ocxl/main.c",
+  "human_readable_source": "\n\n#include <linux/module.h>\n#include <linux/pci.h>\n#include <asm/mmu.h>\n#include \"ocxl_internal.h\"\n\nstatic int __init init_ocxl(void)\n{\n\tint rc = 0;\n\n\tif (!tlbie_capable)\n\t\treturn -EINVAL;\n\n\trc = ocxl_file_init();\n\tif (rc)\n\t\treturn rc;\n\n\trc = pci_register_driver(&ocxl_pci_driver);\n\tif (rc) {\n\t\tocxl_file_exit();\n\t\treturn rc;\n\t}\n\treturn 0;\n}\n\nstatic void exit_ocxl(void)\n{\n\tpci_unregister_driver(&ocxl_pci_driver);\n\tocxl_file_exit();\n}\n\nmodule_init(init_ocxl);\nmodule_exit(exit_ocxl);\n\nMODULE_DESCRIPTION(\"Open Coherent Accelerator\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

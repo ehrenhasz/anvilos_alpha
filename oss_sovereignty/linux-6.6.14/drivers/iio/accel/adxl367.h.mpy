@@ -1,0 +1,9 @@
+{
+  "module_name": "adxl367.h",
+  "hash_id": "d5ea8c3ae759cdd91dfbb03cb6e20fc762fdd7bc9649c2a5bbb7d79e5c91fee1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/accel/adxl367.h",
+  "human_readable_source": " \n \n\n#ifndef _ADXL367_H_\n#define _ADXL367_H_\n\n#include <linux/types.h>\n\nstruct device;\nstruct regmap;\n\nstruct adxl367_ops {\n\tint (*read_fifo)(void *context, __be16 *fifo_buf,\n\t\t\t unsigned int fifo_entries);\n};\n\nint adxl367_probe(struct device *dev, const struct adxl367_ops *ops,\n\t\t  void *context, struct regmap *regmap, int irq);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

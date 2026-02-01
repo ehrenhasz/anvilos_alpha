@@ -1,0 +1,9 @@
+{
+  "module_name": "ssh-pkcs11.h",
+  "hash_id": "1eae672e0deb52b6eb6bad4ae0e77b7df4e9bcbb61b1589a775bc42c6ec997d7",
+  "original_prompt": "Ingested from openssh-9.6p1/ssh-pkcs11.h",
+  "human_readable_source": " \n \n\n \n#define\tSSH_PKCS11_ERR_GENERIC\t\t\t1\n#define\tSSH_PKCS11_ERR_LOGIN_FAIL\t\t2\n#define\tSSH_PKCS11_ERR_NO_SLOTS\t\t\t3\n#define\tSSH_PKCS11_ERR_PIN_REQUIRED\t\t4\n#define\tSSH_PKCS11_ERR_PIN_LOCKED\t\t5\n\nint\tpkcs11_init(int);\nvoid\tpkcs11_terminate(void);\nint\tpkcs11_add_provider(char *, char *, struct sshkey ***, char ***);\nint\tpkcs11_del_provider(char *);\n#ifdef WITH_PKCS11_KEYGEN\nstruct sshkey *\n\tpkcs11_gakp(char *, char *, unsigned int, char *, unsigned int,\n\t    unsigned int, unsigned char, u_int32_t *);\nstruct sshkey *\n\tpkcs11_destroy_keypair(char *, char *, unsigned long, unsigned char,\n\t    u_int32_t *);\n#endif\n\n \nint pkcs11_make_cert(const struct sshkey *,\n    const struct sshkey *, struct sshkey **);\n#if !defined(WITH_OPENSSL) && defined(ENABLE_PKCS11)\n#undef ENABLE_PKCS11\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

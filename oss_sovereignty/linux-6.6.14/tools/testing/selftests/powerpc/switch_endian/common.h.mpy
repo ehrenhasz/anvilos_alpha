@@ -1,0 +1,9 @@
+{
+  "module_name": "common.h",
+  "hash_id": "95add7744c713a18f0faa6b95ebcbf524bd10056c967d44e755c3153fd6afaf0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/switch_endian/common.h",
+  "human_readable_source": " \n#include <ppc-asm.h>\n#include <asm/unistd.h>\n\n#ifndef __NR_switch_endian\n#define __NR_switch_endian 363\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

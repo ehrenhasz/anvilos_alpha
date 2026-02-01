@@ -1,0 +1,9 @@
+{
+  "module_name": "arm-cci.h",
+  "hash_id": "749bcb98c4ff7f3b3fe29680c1eb5df254534ab8d08608d670cb995da04120cb",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/arm-cci.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_ARM_CCI_H\n#define __LINUX_ARM_CCI_H\n\n#include <linux/errno.h>\n#include <linux/types.h>\n\n#include <asm/arm-cci.h>\n\nstruct device_node;\n\n#ifdef CONFIG_ARM_CCI\nextern bool cci_probed(void);\n#else\nstatic inline bool cci_probed(void) { return false; }\n#endif\n\n#ifdef CONFIG_ARM_CCI400_PORT_CTRL\nextern int cci_ace_get_port(struct device_node *dn);\nextern int cci_disable_port_by_cpu(u64 mpidr);\nextern int __cci_control_port_by_device(struct device_node *dn, bool enable);\nextern int __cci_control_port_by_index(u32 port, bool enable);\n#else\nstatic inline int cci_ace_get_port(struct device_node *dn)\n{\n\treturn -ENODEV;\n}\nstatic inline int cci_disable_port_by_cpu(u64 mpidr) { return -ENODEV; }\nstatic inline int __cci_control_port_by_device(struct device_node *dn,\n\t\t\t\t\t       bool enable)\n{\n\treturn -ENODEV;\n}\nstatic inline int __cci_control_port_by_index(u32 port, bool enable)\n{\n\treturn -ENODEV;\n}\n#endif\n\nvoid cci_enable_port_for_self(void);\n\n#define cci_disable_port_by_device(dev) \\\n\t__cci_control_port_by_device(dev, false)\n#define cci_enable_port_by_device(dev) \\\n\t__cci_control_port_by_device(dev, true)\n#define cci_disable_port_by_index(dev) \\\n\t__cci_control_port_by_index(dev, false)\n#define cci_enable_port_by_index(dev) \\\n\t__cci_control_port_by_index(dev, true)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

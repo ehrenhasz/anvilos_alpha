@@ -1,0 +1,9 @@
+{
+  "module_name": "uname-uname.c",
+  "hash_id": "45a9391e1f313d2fd3c6b8edb9f27f4888539de5efe9bd5107f72320fdaf2670",
+  "original_prompt": "Ingested from coreutils-9.4/src/uname-uname.c",
+  "human_readable_source": "#include \"uname.h\"\nint uname_mode = UNAME_UNAME;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

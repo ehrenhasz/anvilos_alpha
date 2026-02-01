@@ -1,0 +1,9 @@
+{
+  "module_name": "vfs.h",
+  "hash_id": "645bd807de4dba67324a6fcea757b1f175496412e8a5729e2785fc877e8d8bc6",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/os/freebsd/sys/vfs.h",
+  "human_readable_source": " \n\n#ifndef ZFS_SYS_VFS_H_\n#define\tZFS_SYS_VFS_H_\n\n#include_next <sys/statvfs.h>\n\nint fsshare(const char *, const char *, const char *);\nint fsunshare(const char *, const char *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "memchr2.valgrind",
+  "hash_id": "f193f8c40ef3586aa19008d10319fbe469531ddbc30906ea06adf3bc47343dc2",
+  "original_prompt": "Ingested from coreutils-9.4/lib/memchr2.valgrind",
+  "human_readable_source": "# Suppress a valgrind message about use of uninitialized memory in memchr2().\n\n# Copyright (C) 2009-2023 Free Software Foundation, Inc.\n#\n# This file is free software: you can redistribute it and/or modify\n# it under the terms of the GNU Lesser General Public License as\n# published by the Free Software Foundation; either version 2.1 of the\n# License, or (at your option) any later version.\n#\n# This file is distributed in the hope that it will be useful,\n# but WITHOUT ANY WARRANTY; without even the implied warranty of\n# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n# GNU Lesser General Public License for more details.\n#\n# You should have received a copy of the GNU Lesser General Public License\n# along with this program.  If not, see <https://www.gnu.org/licenses/>.\n\n# Like memchr, it is safe to overestimate the length when the terminator\n# is guaranteed to be found.  In this case, we may end up reading a word\n# that is partially uninitialized, but this use is OK for a speedup.\n{\n    memchr2-value4\n    Memcheck:Value4\n    fun:memchr2\n}\n{\n    memchr2-value8\n    Memcheck:Value8\n    fun:memchr2\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test_subskeleton.c",
+  "hash_id": "29858766e1faae6d1adbe0989cd75d3eb45d6be826602ef09e4c3f9982a441c6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_subskeleton.c",
+  "human_readable_source": "\n \n\n#include <stdbool.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\n \nconst volatile int rovar1;\nint out1;\n\n \nint var5 = 5;\n\nextern volatile bool CONFIG_BPF_SYSCALL __kconfig;\n\nextern int lib_routine(void);\n\nSEC(\"raw_tp/sys_enter\")\nint handler1(const void *ctx)\n{\n\t(void) CONFIG_BPF_SYSCALL;\n\n\tout1 = lib_routine() * rovar1;\n\treturn 0;\n}\n\nchar LICENSE[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Z6.0+pooncelock+poonceLock+pombonce.litmus",
+  "hash_id": "fac11f3917a9a294e327d5d2483efdddcf7d39f18d9b4c648761e20091269b32",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/Z6.0+pooncelock+poonceLock+pombonce.litmus",
+  "human_readable_source": "C Z6.0+pooncelock+poonceLock+pombonce\n\n(*\n * Result: Never\n *\n * This litmus test demonstrates how smp_mb__after_spinlock() may be\n * used to ensure that accesses in different critical sections for a\n * given lock running on different CPUs are nevertheless seen in order\n * by CPUs not holding that lock.\n *)\n\n{}\n\nP0(int *x, int *y, spinlock_t *mylock)\n{\n\tspin_lock(mylock);\n\tWRITE_ONCE(*x, 1);\n\tWRITE_ONCE(*y, 1);\n\tspin_unlock(mylock);\n}\n\nP1(int *y, int *z, spinlock_t *mylock)\n{\n\tint r0;\n\n\tspin_lock(mylock);\n\tsmp_mb__after_spinlock();\n\tr0 = READ_ONCE(*y);\n\tWRITE_ONCE(*z, 1);\n\tspin_unlock(mylock);\n}\n\nP2(int *x, int *z)\n{\n\tint r1;\n\n\tWRITE_ONCE(*z, 2);\n\tsmp_mb();\n\tr1 = READ_ONCE(*x);\n}\n\nexists (1:r0=1 /\\ z=2 /\\ 2:r1=0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

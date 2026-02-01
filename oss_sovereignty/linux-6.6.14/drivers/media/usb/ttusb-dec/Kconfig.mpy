@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "86c7ae7abbe3b089e04fb0167b6f2cb3e02ced5d8594c7b120c432194532facf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/ttusb-dec/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DVB_TTUSB_DEC\n\ttristate \"Technotrend/Hauppauge USB DEC devices\"\n\tdepends on DVB_CORE && USB && INPUT && PCI\n\tselect CRC32\n\thelp\n\t  Support for external USB adapters designed by Technotrend and\n\t  produced by Hauppauge, shipped under the brand name 'DEC2000-t'\n\t  and 'DEC3000-s'.\n\n\t  Even if these devices have a MPEG decoder built in, they transmit\n\t  only compressed MPEG data over the USB bus, so you need\n\t  an external software decoder to watch TV on your computer.\n\n\t  This driver needs external firmware. Please use the commands\n\t  \"<kerneldir>/scripts/get_dvb_firmware dec2000t\",\n\t  \"<kerneldir>/scripts/get_dvb_firmware dec2540t\",\n\t  \"<kerneldir>/scripts/get_dvb_firmware dec3000s\",\n\t  download/extract them, and then copy them to /usr/lib/hotplug/firmware\n\t  or /lib/firmware (depending on configuration of firmware hotplug).\n\n\t  Say Y if you own such a device and want to use it.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

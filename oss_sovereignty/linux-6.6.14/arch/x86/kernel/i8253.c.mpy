@@ -1,0 +1,9 @@
+{
+  "module_name": "i8253.c",
+  "hash_id": "839dc6666b916adc15629ee5707774617afbb2154bad96055dd89c2a97134360",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/i8253.c",
+  "human_readable_source": "\n \n#include <linux/clockchips.h>\n#include <linux/init.h>\n#include <linux/timex.h>\n#include <linux/i8253.h>\n\n#include <asm/apic.h>\n#include <asm/hpet.h>\n#include <asm/time.h>\n#include <asm/smp.h>\n\n \nstruct clock_event_device *global_clock_event;\n\n \nstatic bool __init use_pit(void)\n{\n\tif (!IS_ENABLED(CONFIG_X86_TSC) || !boot_cpu_has(X86_FEATURE_TSC))\n\t\treturn true;\n\n\t \n\treturn apic_needs_pit();\n}\n\nbool __init pit_timer_init(void)\n{\n\tif (!use_pit())\n\t\treturn false;\n\n\tclockevent_i8253_init(true);\n\tglobal_clock_event = &i8253_clockevent;\n\treturn true;\n}\n\n#ifndef CONFIG_X86_64\nstatic int __init init_pit_clocksource(void)\n{\n\t  \n\tif (num_possible_cpus() > 1 || is_hpet_enabled() ||\n\t    !clockevent_state_periodic(&i8253_clockevent))\n\t\treturn 0;\n\n\treturn clocksource_i8253_init();\n}\narch_initcall(init_pit_clocksource);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

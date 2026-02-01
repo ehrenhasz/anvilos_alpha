@@ -1,0 +1,9 @@
+{
+  "module_name": "oti6858.h",
+  "hash_id": "25a6bd4ad1f4905614cbfd7a55c26a0fd8de570b2c208bffac3336e64e787bff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/serial/oti6858.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_USB_SERIAL_OTI6858_H\n#define __LINUX_USB_SERIAL_OTI6858_H\n\n#define OTI6858_VENDOR_ID\t0x0ea0\n#define OTI6858_PRODUCT_ID\t0x6858\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

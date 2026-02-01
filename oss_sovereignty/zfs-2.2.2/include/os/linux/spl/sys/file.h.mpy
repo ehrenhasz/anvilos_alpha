@@ -1,0 +1,9 @@
+{
+  "module_name": "file.h",
+  "hash_id": "08a11da8d1433022ff2c1a50101fbf769ed9a1c02bc0510743ad80e3d34c2c0e",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/file.h",
+  "human_readable_source": " \n\n#ifndef _SPL_FILE_H\n#define\t_SPL_FILE_H\n\n#define\tFIGNORECASE\t\t0x00080000\n#define\tFKIOCTL\t\t\t0x80000000\n#define\tED_CASE_CONFLICT\t0x10\n\n#ifdef HAVE_INODE_LOCK_SHARED\n#define\tspl_inode_lock(ip)\t\tinode_lock(ip)\n#define\tspl_inode_unlock(ip)\t\tinode_unlock(ip)\n#define\tspl_inode_lock_shared(ip)\tinode_lock_shared(ip)\n#define\tspl_inode_unlock_shared(ip)\tinode_unlock_shared(ip)\n#define\tspl_inode_trylock(ip)\t\tinode_trylock(ip)\n#define\tspl_inode_trylock_shared(ip)\tinode_trylock_shared(ip)\n#define\tspl_inode_is_locked(ip)\t\tinode_is_locked(ip)\n#define\tspl_inode_lock_nested(ip, s)\tinode_lock_nested(ip, s)\n#else\n#define\tspl_inode_lock(ip)\t\tmutex_lock(&(ip)->i_mutex)\n#define\tspl_inode_unlock(ip)\t\tmutex_unlock(&(ip)->i_mutex)\n#define\tspl_inode_lock_shared(ip)\tmutex_lock(&(ip)->i_mutex)\n#define\tspl_inode_unlock_shared(ip)\tmutex_unlock(&(ip)->i_mutex)\n#define\tspl_inode_trylock(ip)\t\tmutex_trylock(&(ip)->i_mutex)\n#define\tspl_inode_trylock_shared(ip)\tmutex_trylock(&(ip)->i_mutex)\n#define\tspl_inode_is_locked(ip)\t\tmutex_is_locked(&(ip)->i_mutex)\n#define\tspl_inode_lock_nested(ip, s)\tmutex_lock_nested(&(ip)->i_mutex, s)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

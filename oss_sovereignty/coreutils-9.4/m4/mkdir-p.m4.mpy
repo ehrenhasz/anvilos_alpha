@@ -1,0 +1,9 @@
+{
+  "module_name": "mkdir-p.m4",
+  "hash_id": "ddc60787212444bb67f63bc7eb78fa0ba17f160648f315540d93455ccf0f7e94",
+  "original_prompt": "Ingested from coreutils-9.4/m4/mkdir-p.m4",
+  "human_readable_source": "# mkdir-p.m4 serial 15\ndnl Copyright (C) 2002-2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_MKDIR_PARENTS],\n[\n  dnl Prerequisites of lib/dirchownmod.c.\n  AC_CHECK_FUNCS_ONCE([fchmod])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

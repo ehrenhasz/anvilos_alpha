@@ -1,0 +1,9 @@
+{
+  "module_name": "inc_and_test",
+  "hash_id": "98d0d3242f0896615d2a3e33c1dc7028abad81dcf5adb58b1976556c73bcfa98",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/kerneldoc/inc_and_test",
+  "human_readable_source": "cat <<EOF\n/**\n * ${class}${atomicname}() - atomic increment and test if zero with ${desc_order} ordering\n * @v: pointer to ${atomic}_t\n *\n * Atomically updates @v to (@v + 1) with ${desc_order} ordering.\n *\n * ${desc_noinstr}\n *\n * Return: @true if the resulting value of @v is zero, @false otherwise.\n */\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

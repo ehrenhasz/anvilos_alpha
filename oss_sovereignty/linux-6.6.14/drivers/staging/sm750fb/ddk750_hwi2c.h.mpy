@@ -1,0 +1,9 @@
+{
+  "module_name": "ddk750_hwi2c.h",
+  "hash_id": "06e771a27d0ba3d61607703f47c5ea9063c7138133fbc6646fc542c7811dcb4f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/sm750fb/ddk750_hwi2c.h",
+  "human_readable_source": " \n#ifndef DDK750_HWI2C_H__\n#define DDK750_HWI2C_H__\n\n \nint sm750_hw_i2c_init(unsigned char bus_speed_mode);\nvoid sm750_hw_i2c_close(void);\n\nunsigned char sm750_hw_i2c_read_reg(unsigned char addr, unsigned char reg);\nint sm750_hw_i2c_write_reg(unsigned char addr, unsigned char reg,\n\t\t\t   unsigned char data);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

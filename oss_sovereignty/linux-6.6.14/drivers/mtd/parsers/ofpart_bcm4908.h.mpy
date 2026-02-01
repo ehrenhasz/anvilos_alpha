@@ -1,0 +1,9 @@
+{
+  "module_name": "ofpart_bcm4908.h",
+  "hash_id": "71cd970bf51228457a1d51c3619864eaa6c193f31539dbaf2471123813aec5b1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/parsers/ofpart_bcm4908.h",
+  "human_readable_source": " \n#ifndef __BCM4908_PARTITIONS_H\n#define __BCM4908_PARTITIONS_H\n\n#ifdef CONFIG_MTD_OF_PARTS_BCM4908\nint bcm4908_partitions_post_parse(struct mtd_info *mtd, struct mtd_partition *parts, int nr_parts);\n#else\nstatic inline int bcm4908_partitions_post_parse(struct mtd_info *mtd, struct mtd_partition *parts,\n\t\t\t\t\t\tint nr_parts)\n{\n\treturn -EOPNOTSUPP;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

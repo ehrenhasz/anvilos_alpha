@@ -1,0 +1,9 @@
+{
+  "module_name": "pll.h",
+  "hash_id": "752a1ffec208948421d0d685b211dedf571f7cf4b71d9c68b67a1f59c91c0350",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/visconti/pll.h",
+  "human_readable_source": " \n \n\n#ifndef _VISCONTI_PLL_H_\n#define _VISCONTI_PLL_H_\n\n#include <linux/clk-provider.h>\n#include <linux/regmap.h>\n#include <linux/spinlock.h>\n\nstruct visconti_pll_provider {\n\tvoid __iomem *reg_base;\n\tstruct device_node *node;\n\n\t \n\tstruct clk_hw_onecell_data clk_data;\n};\n\n#define VISCONTI_PLL_RATE(_rate, _dacen, _dsmen, \\\n\t_refdiv, _intin, _fracin, _postdiv1, _postdiv2) \\\n{\t\t\t\t\\\n\t.rate = _rate,\t\t\\\n\t.dacen = _dacen,\t\\\n\t.dsmen = _dsmen,\t\\\n\t.refdiv = _refdiv,\t\\\n\t.intin = _intin,\t\\\n\t.fracin = _fracin,\t\\\n\t.postdiv1 = _postdiv1,\t\\\n\t.postdiv2 = _postdiv2\t\\\n}\n\nstruct visconti_pll_rate_table {\n\tunsigned long rate;\n\tunsigned int dacen;\n\tunsigned int dsmen;\n\tunsigned int refdiv;\n\tunsigned long intin;\n\tunsigned long fracin;\n\tunsigned int postdiv1;\n\tunsigned int postdiv2;\n};\n\nstruct visconti_pll_info {\n\tunsigned int id;\n\tconst char *name;\n\tconst char *parent;\n\tunsigned long base_reg;\n\tconst struct visconti_pll_rate_table *rate_table;\n};\n\nstruct visconti_pll_provider * __init visconti_init_pll(struct device_node *np,\n\t\t\t\t\t\t\tvoid __iomem *base,\n\t\t\t\t\t\t\tunsigned long nr_plls);\nvoid visconti_register_plls(struct visconti_pll_provider *ctx,\n\t\t\t    const struct visconti_pll_info *list,\n\t\t\t    unsigned int nr_plls, spinlock_t *lock);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

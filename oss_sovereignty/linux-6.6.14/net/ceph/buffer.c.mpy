@@ -1,0 +1,9 @@
+{
+  "module_name": "buffer.c",
+  "hash_id": "5ab576a6ba4ca3dbce1fae516388aafca913826204f9ee99daa3e53cdf230781",
+  "original_prompt": "Ingested from linux-6.6.14/net/ceph/buffer.c",
+  "human_readable_source": "\n\n#include <linux/ceph/ceph_debug.h>\n\n#include <linux/module.h>\n#include <linux/slab.h>\n\n#include <linux/ceph/buffer.h>\n#include <linux/ceph/decode.h>\n#include <linux/ceph/libceph.h>  \n\nstruct ceph_buffer *ceph_buffer_new(size_t len, gfp_t gfp)\n{\n\tstruct ceph_buffer *b;\n\n\tb = kmalloc(sizeof(*b), gfp);\n\tif (!b)\n\t\treturn NULL;\n\n\tb->vec.iov_base = kvmalloc(len, gfp);\n\tif (!b->vec.iov_base) {\n\t\tkfree(b);\n\t\treturn NULL;\n\t}\n\n\tkref_init(&b->kref);\n\tb->alloc_len = len;\n\tb->vec.iov_len = len;\n\tdout(\"buffer_new %p\\n\", b);\n\treturn b;\n}\nEXPORT_SYMBOL(ceph_buffer_new);\n\nvoid ceph_buffer_release(struct kref *kref)\n{\n\tstruct ceph_buffer *b = container_of(kref, struct ceph_buffer, kref);\n\n\tdout(\"buffer_release %p\\n\", b);\n\tkvfree(b->vec.iov_base);\n\tkfree(b);\n}\nEXPORT_SYMBOL(ceph_buffer_release);\n\nint ceph_decode_buffer(struct ceph_buffer **b, void **p, void *end)\n{\n\tsize_t len;\n\n\tceph_decode_need(p, end, sizeof(u32), bad);\n\tlen = ceph_decode_32(p);\n\tdout(\"decode_buffer len %d\\n\", (int)len);\n\tceph_decode_need(p, end, len, bad);\n\t*b = ceph_buffer_new(len, GFP_NOFS);\n\tif (!*b)\n\t\treturn -ENOMEM;\n\tceph_decode_copy(p, (*b)->vec.iov_base, len);\n\treturn 0;\nbad:\n\treturn -EINVAL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "reactor_panic.c",
+  "hash_id": "2c1fba30babc6124b02690911430487d63bae2c27c301c77bfdee853cfd4f16d",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/trace/rv/reactor_panic.c",
+  "human_readable_source": "\n \n\n#include <linux/ftrace.h>\n#include <linux/tracepoint.h>\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/rv.h>\n\nstatic void rv_panic_reaction(char *msg)\n{\n\tpanic(msg);\n}\n\nstatic struct rv_reactor rv_panic = {\n\t.name = \"panic\",\n\t.description = \"panic the system if an exception is found.\",\n\t.react = rv_panic_reaction\n};\n\nstatic int __init register_react_panic(void)\n{\n\trv_register_reactor(&rv_panic);\n\treturn 0;\n}\n\nstatic void __exit unregister_react_panic(void)\n{\n\trv_unregister_reactor(&rv_panic);\n}\n\nmodule_init(register_react_panic);\nmodule_exit(unregister_react_panic);\n\nMODULE_AUTHOR(\"Daniel Bristot de Oliveira\");\nMODULE_DESCRIPTION(\"panic rv reactor: panic if an exception is found.\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

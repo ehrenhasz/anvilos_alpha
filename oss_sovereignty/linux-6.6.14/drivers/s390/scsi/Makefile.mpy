@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9f99f7472553a45838a15027b8f22d22cb28182054aade6fad2417ae44c03516",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/scsi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the S/390 specific device drivers\n#\n\nzfcp-objs := zfcp_aux.o zfcp_ccw.o zfcp_dbf.o zfcp_erp.o \\\n\t     zfcp_fc.o zfcp_fsf.o zfcp_qdio.o zfcp_scsi.o zfcp_sysfs.o \\\n\t     zfcp_unit.o zfcp_diag.o\n\nobj-$(CONFIG_ZFCP) += zfcp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

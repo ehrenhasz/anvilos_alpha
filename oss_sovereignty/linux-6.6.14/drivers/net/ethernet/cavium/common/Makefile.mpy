@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7f4bd20427cec0828efae18f16f3cb0e718d8d72fe71baf9cb620094594c92cf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cavium/common/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CAVIUM_PTP) += cavium_ptp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

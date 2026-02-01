@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ee6f04569646ac2110e2f10c92e9909311d37900b8c18ebf4056475caa399ddc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/loongarch/Kconfig",
+  "human_readable_source": "#\n# LoongArch Platform Specific Drivers\n#\n\nmenuconfig LOONGARCH_PLATFORM_DEVICES\n\tbool \"LoongArch Platform Specific Device Drivers\"\n\tdefault y\n\tdepends on LOONGARCH\n\thelp\n\t  Say Y here to get to see options for device drivers of various\n\t  LoongArch platforms, including vendor-specific laptop/desktop\n\t  extension and hardware monitor drivers. This option itself does\n\t  not add any kernel code.\n\n\t  If you say N, all options in this submenu will be skipped and disabled.\n\nif LOONGARCH_PLATFORM_DEVICES\n\nconfig LOONGSON_LAPTOP\n\ttristate \"Generic Loongson-3 Laptop Driver\"\n\tdepends on ACPI\n\tdepends on BACKLIGHT_CLASS_DEVICE\n\tdepends on INPUT\n\tdepends on MACH_LOONGSON64\n\tselect ACPI_VIDEO\n\tselect INPUT_SPARSEKMAP\n\tdefault y\n\thelp\n\t  ACPI-based Loongson-3 family laptops generic driver.\n\nendif # LOONGARCH_PLATFORM_DEVICES\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

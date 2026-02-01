@@ -1,0 +1,9 @@
+{
+  "module_name": "asn1_encoder.h",
+  "hash_id": "733defd51a4754c16fe0d189403694712d1e9e0fba9eb4c0b87d61684c17dafc",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/asn1_encoder.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_ASN1_ENCODER_H\n#define _LINUX_ASN1_ENCODER_H\n\n#include <linux/types.h>\n#include <linux/asn1.h>\n#include <linux/asn1_ber_bytecode.h>\n#include <linux/bug.h>\n\n#define asn1_oid_len(oid) (sizeof(oid)/sizeof(u32))\nunsigned char *\nasn1_encode_integer(unsigned char *data, const unsigned char *end_data,\n\t\t    s64 integer);\nunsigned char *\nasn1_encode_oid(unsigned char *data, const unsigned char *end_data,\n\t\tu32 oid[], int oid_len);\nunsigned char *\nasn1_encode_tag(unsigned char *data, const unsigned char *end_data,\n\t\tu32 tag, const unsigned char *string, int len);\nunsigned char *\nasn1_encode_octet_string(unsigned char *data,\n\t\t\t const unsigned char *end_data,\n\t\t\t const unsigned char *string, u32 len);\nunsigned char *\nasn1_encode_sequence(unsigned char *data, const unsigned char *end_data,\n\t\t     const unsigned char *seq, int len);\nunsigned char *\nasn1_encode_boolean(unsigned char *data, const unsigned char *end_data,\n\t\t    bool val);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

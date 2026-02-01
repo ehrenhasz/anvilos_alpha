@@ -1,0 +1,9 @@
+{
+  "module_name": "xvasprintf.h",
+  "hash_id": "4d2fa2ec87d631ef36c2880f15b5d684214e95c1782519af66782ecfdcc4795e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xvasprintf.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n#include <stdarg.h>\n\n \n#include <stdio.h>\n\n \n#include <stdlib.h>\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n \nextern char *xasprintf (const char *format, ...)\n       _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE\n       _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_STANDARD, 1, 2));\nextern char *xvasprintf (const char *format, va_list args)\n       _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE\n       _GL_ATTRIBUTE_FORMAT ((_GL_ATTRIBUTE_SPEC_PRINTF_STANDARD, 1, 0));\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

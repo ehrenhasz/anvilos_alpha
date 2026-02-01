@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d92779bddb6a71795e9795557b1c95023eeed6fd6352c5e8cb768ad503592ee9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/peak_canfd/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CAN_PEAK_PCIEFD\n\tdepends on PCI\n\ttristate \"PEAK-System PCAN-PCIe FD cards\"\n\thelp\n\t  This driver adds support for the PEAK-System PCI Express FD\n\t  CAN-FD cards family.\n\t  These 1x or 2x CAN-FD channels cards offer CAN 2.0 a/b as well as\n\t  CAN-FD access to the CAN bus. Besides the nominal bitrate of up to\n\t  1 Mbit/s, the data bytes of CAN-FD frames can be transmitted with\n\t  up to 12 Mbit/s. A galvanic isolation of the CAN ports protects the\n\t  electronics of the card and the respective computer against\n\t  disturbances of up to 500 Volts. The PCAN-PCI Express FD can be\n\t  operated with ambient temperatures in a range of -40 to +85 \u00b0C.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

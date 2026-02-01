@@ -1,0 +1,9 @@
+{
+  "module_name": "ibpkey.h",
+  "hash_id": "c08649822b9b7aa81db773438a8d8e4e36f62ec13bfa1e70f7214be36db95933",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/include/ibpkey.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _SELINUX_IB_PKEY_H\n#define _SELINUX_IB_PKEY_H\n\n#include <linux/types.h>\n#include \"flask.h\"\n\n#ifdef CONFIG_SECURITY_INFINIBAND\nvoid sel_ib_pkey_flush(void);\nint sel_ib_pkey_sid(u64 subnet_prefix, u16 pkey, u32 *sid);\n#else\nstatic inline void sel_ib_pkey_flush(void)\n{\n\treturn;\n}\nstatic inline int sel_ib_pkey_sid(u64 subnet_prefix, u16 pkey, u32 *sid)\n{\n\t*sid = SECINITSID_UNLABELED;\n\treturn 0;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

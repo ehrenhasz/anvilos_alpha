@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "bb2d60f348ca4360cb8ef26f915c2d02b7cda21ea97585fa2aabba63c9cf87c6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nbind_bhash\nbind_timewait\nbind_wildcard\ncsum\ncmsg_sender\ndiag_uid\nfin_ack_lat\ngro\nhwtstamp_config\nio_uring_zerocopy_tx\nioam6_parser\nip_defrag\nip_local_port_range\nipsec\nipv6_flowlabel\nipv6_flowlabel_mgr\nlog.txt\nmsg_zerocopy\nnettest\npsock_fanout\npsock_snd\npsock_tpacket\nreuseaddr_conflict\nreuseaddr_ports_exhausted\nreuseport_addr_any\nreuseport_bpf\nreuseport_bpf_cpu\nreuseport_bpf_numa\nreuseport_dualstack\nrxtimestamp\nsctp_hello\nscm_pidfd\nsk_bind_sendto_listen\nsk_connect_zero_addr\nsocket\nso_incoming_cpu\nso_netns_cookie\nso_txtime\nstress_reuseport_listen\ntap\ntcp_fastopen_backup_key\ntcp_inq\ntcp_mmap\ntest_unix_oob\ntimestamping\ntls\ntoeplitz\ntools\ntun\ntxring_overwrite\ntxtimestamp\nudpgso\nudpgso_bench_rx\nudpgso_bench_tx\nunix_connect\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

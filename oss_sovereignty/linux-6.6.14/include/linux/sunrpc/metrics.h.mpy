@@ -1,0 +1,9 @@
+{
+  "module_name": "metrics.h",
+  "hash_id": "26d96b140e06b971588c11bbee4a06c7f0fd2d85a3f1166540643cc9c480b6b4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sunrpc/metrics.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_SUNRPC_METRICS_H\n#define _LINUX_SUNRPC_METRICS_H\n\n#include <linux/seq_file.h>\n#include <linux/ktime.h>\n#include <linux/spinlock.h>\n\n#define RPC_IOSTATS_VERS\t\"1.1\"\n\nstruct rpc_iostats {\n\tspinlock_t\t\tom_lock;\n\n\t \n\tunsigned long\t\tom_ops,\t\t \n\t\t\t\tom_ntrans,\t \n\t\t\t\tom_timeouts;\t \n\n\t \n\tunsigned long long      om_bytes_sent,\t \n\t\t\t\tom_bytes_recv;\t \n\n\t \n\tktime_t\t\t\tom_queue,\t \n\t\t\t\tom_rtt,\t\t \n\t\t\t\tom_execute;\t \n\t \n\tunsigned long           om_error_status;\n} ____cacheline_aligned;\n\nstruct rpc_task;\nstruct rpc_clnt;\n\n \n\n#ifdef CONFIG_PROC_FS\n\nstruct rpc_iostats *\trpc_alloc_iostats(struct rpc_clnt *);\nvoid\t\t\trpc_count_iostats(const struct rpc_task *,\n\t\t\t\t\t  struct rpc_iostats *);\nvoid\t\t\trpc_count_iostats_metrics(const struct rpc_task *,\n\t\t\t\t\t  struct rpc_iostats *);\nvoid\t\t\trpc_clnt_show_stats(struct seq_file *, struct rpc_clnt *);\nvoid\t\t\trpc_free_iostats(struct rpc_iostats *);\n\n#else   \n\nstatic inline struct rpc_iostats *rpc_alloc_iostats(struct rpc_clnt *clnt) { return NULL; }\nstatic inline void rpc_count_iostats(const struct rpc_task *task,\n\t\t\t\t     struct rpc_iostats *stats) {}\nstatic inline void rpc_count_iostats_metrics(const struct rpc_task *task,\n\t\t\t\t\t     struct rpc_iostats *stats)\n{\n}\n\nstatic inline void rpc_clnt_show_stats(struct seq_file *seq, struct rpc_clnt *clnt) {}\nstatic inline void rpc_free_iostats(struct rpc_iostats *stats) {}\n\n#endif   \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

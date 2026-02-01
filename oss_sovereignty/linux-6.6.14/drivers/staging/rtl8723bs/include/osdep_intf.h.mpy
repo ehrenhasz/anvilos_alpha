@@ -1,0 +1,9 @@
+{
+  "module_name": "osdep_intf.h",
+  "hash_id": "b7a3bd85eec2e79d7635f77f71a2be907b1cab2c858e166cbe9238dc24242b78",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/osdep_intf.h",
+  "human_readable_source": " \n \n\n#ifndef __OSDEP_INTF_H_\n#define __OSDEP_INTF_H_\n\n\nstruct intf_priv {\n\n\tu8 *intf_dev;\n\tu32 max_iosz;\t \n\tu32 max_xmitsz;  \n\tu32 max_recvsz;  \n\n\tvolatile u8 *io_rwmem;\n\tvolatile u8 *allocated_io_rwmem;\n\tu32 io_wsz;  \n\tu32 io_rsz; \n\tu8 intf_status;\n\n\tvoid (*_bus_io)(u8 *priv);\n\n \n\n\tstruct mutex ioctl_mutex;\n};\n\nstruct dvobj_priv *devobj_init(void);\nvoid devobj_deinit(struct dvobj_priv *pdvobj);\n\nu8 rtw_init_drv_sw(struct adapter *padapter);\nu8 rtw_free_drv_sw(struct adapter *padapter);\nvoid rtw_reset_drv_sw(struct adapter *padapter);\nvoid rtw_dev_unload(struct adapter *padapter);\n\nu32 rtw_start_drv_threads(struct adapter *padapter);\nvoid rtw_stop_drv_threads(struct adapter *padapter);\nvoid rtw_cancel_all_timer(struct adapter *padapter);\n\nint rtw_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);\n\nint rtw_init_netdev_name(struct net_device *pnetdev, const char *ifname);\nstruct net_device *rtw_init_netdev(struct adapter *padapter);\nvoid rtw_unregister_netdevs(struct dvobj_priv *dvobj);\n\nu16 rtw_recv_select_queue(struct sk_buff *skb);\n\nint rtw_ndev_notifier_register(void);\nvoid rtw_ndev_notifier_unregister(void);\n\nvoid rtw_ips_dev_unload(struct adapter *padapter);\n\nint rtw_ips_pwr_up(struct adapter *padapter);\nvoid rtw_ips_pwr_down(struct adapter *padapter);\n\nint rtw_drv_register_netdev(struct adapter *padapter);\nvoid rtw_ndev_destructor(struct net_device *ndev);\n\nvoid rtw_suspend_common(struct adapter *padapter);\nint rtw_resume_common(struct adapter *padapter);\n\nint netdev_open(struct net_device *pnetdev);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

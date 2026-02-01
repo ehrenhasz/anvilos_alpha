@@ -1,0 +1,9 @@
+{
+  "module_name": "sbshc.h",
+  "hash_id": "074ed3b5e98535baf299edbc53fb7024eefc60c80503d686095e918da6e476ab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/acpi/sbshc.h",
+  "human_readable_source": " \nstruct acpi_smb_hc;\nenum acpi_smb_protocol {\n\tSMBUS_WRITE_QUICK = 2,\n\tSMBUS_READ_QUICK = 3,\n\tSMBUS_SEND_BYTE = 4,\n\tSMBUS_RECEIVE_BYTE = 5,\n\tSMBUS_WRITE_BYTE = 6,\n\tSMBUS_READ_BYTE = 7,\n\tSMBUS_WRITE_WORD  = 8,\n\tSMBUS_READ_WORD  = 9,\n\tSMBUS_WRITE_BLOCK = 0xa,\n\tSMBUS_READ_BLOCK = 0xb,\n\tSMBUS_PROCESS_CALL = 0xc,\n\tSMBUS_BLOCK_PROCESS_CALL = 0xd,\n};\n\nenum acpi_sbs_device_addr {\n\tACPI_SBS_CHARGER = 0x9,\n\tACPI_SBS_MANAGER = 0xa,\n\tACPI_SBS_BATTERY = 0xb,\n};\n\ntypedef void (*smbus_alarm_callback)(void *context);\n\nextern int acpi_smbus_read(struct acpi_smb_hc *hc, u8 protocol, u8 address,\n\t\tu8 command, u8 *data);\nextern int acpi_smbus_write(struct acpi_smb_hc *hc, u8 protocol, u8 slave_address,\n\t\tu8 command, u8 *data, u8 length);\nextern int acpi_smbus_register_callback(struct acpi_smb_hc *hc,\n\t\tsmbus_alarm_callback callback, void *context);\nextern int acpi_smbus_unregister_callback(struct acpi_smb_hc *hc);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

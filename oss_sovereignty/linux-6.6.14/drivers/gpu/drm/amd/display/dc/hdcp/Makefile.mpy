@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4738becbc13c65e049f1239da9edb54a9b984fdda737f2060114acc32b20ff49",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/hdcp/Makefile",
+  "human_readable_source": "# Copyright 2019 Advanced Micro Devices, Inc.\n#\n# Permission is hereby granted, free of charge, to any person obtaining a\n# copy of this software and associated documentation files (the \"Software\"),\n# to deal in the Software without restriction, including without limitation\n# the rights to use, copy, modify, merge, publish, distribute, sublicense,\n# and/or sell copies of the Software, and to permit persons to whom the\n# Software is furnished to do so, subject to the following conditions:\n#\n# The above copyright notice and this permission notice shall be included in\n# all copies or substantial portions of the Software.\n#\n# THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL\n# THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR\n# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,\n# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR\n# OTHER DEALINGS IN THE SOFTWARE.\n#\n# Makefile for the 'hdcp' sub-component of DAL.\n#\n\nHDCP_MSG = hdcp_msg.o\n\nAMD_DAL_HDCP_MSG = $(addprefix $(AMDDALPATH)/dc/hdcp/,$(HDCP_MSG))\n\nAMD_DISPLAY_FILES += $(AMD_DAL_HDCP_MSG)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

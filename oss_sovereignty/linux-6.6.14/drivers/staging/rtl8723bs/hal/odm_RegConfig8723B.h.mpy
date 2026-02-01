@@ -1,0 +1,9 @@
+{
+  "module_name": "odm_RegConfig8723B.h",
+  "hash_id": "eb9f3564d368c2e0a2eb406e9d4059cd4df8004590645072233a364db0804a07",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/hal/odm_RegConfig8723B.h",
+  "human_readable_source": " \n \n#ifndef __INC_ODM_REGCONFIG_H_8723B\n#define __INC_ODM_REGCONFIG_H_8723B\n\nvoid odm_ConfigRFReg_8723B(struct dm_odm_t *pDM_Odm,\n\t\t\t   u32 Addr,\n\t\t\t   u32 Data,\n\t\t\t   enum rf_path RF_PATH,\n\t\t\t   u32 RegAddr\n);\n\nvoid odm_ConfigRF_RadioA_8723B(struct dm_odm_t *pDM_Odm, u32 Addr, u32 Data);\n\nvoid odm_ConfigMAC_8723B(struct dm_odm_t *pDM_Odm, u32 Addr, u8 Data);\n\nvoid odm_ConfigBB_AGC_8723B(struct dm_odm_t *pDM_Odm,\n\t\t\t    u32 Addr,\n\t\t\t    u32 Bitmask,\n\t\t\t    u32 Data\n);\n\nvoid odm_ConfigBB_PHY_REG_PG_8723B(struct dm_odm_t *pDM_Odm, u32 RfPath, u32 Addr,\n\t\t\t\t   u32 Bitmask, u32 Data);\n\nvoid odm_ConfigBB_PHY_8723B(struct dm_odm_t *pDM_Odm,\n\t\t\t    u32 Addr,\n\t\t\t    u32 Bitmask,\n\t\t\t    u32 Data\n);\n\nvoid odm_ConfigBB_TXPWR_LMT_8723B(struct dm_odm_t *pDM_Odm,\n\t\t\t\t  u8 *Regulation,\n\t\t\t\t  u8 *Bandwidth,\n\t\t\t\t  u8 *RateSection,\n\t\t\t\t  u8 *RfPath,\n\t\t\t\t  u8 *Channel,\n\t\t\t\t  u8 *PowerLimit\n);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

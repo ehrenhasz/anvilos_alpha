@@ -1,0 +1,9 @@
+{
+  "module_name": "export.h",
+  "hash_id": "99cb60ebbe3097fa7088327c51415777bbad26df690b62bdd84229e7cc855793",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/export.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_EXPORT_H\n#define __ASM_GENERIC_EXPORT_H\n\n \n#include <linux/export.h>\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

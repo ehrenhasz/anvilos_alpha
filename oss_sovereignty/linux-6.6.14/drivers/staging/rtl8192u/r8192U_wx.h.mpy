@@ -1,0 +1,9 @@
+{
+  "module_name": "r8192U_wx.h",
+  "hash_id": "5d3c59f63faf2c2bd37ae8f25a2c43929c59d8fda96d028e897187546f32b5a3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192u/r8192U_wx.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef R8180_WX_H\n#define R8180_WX_H\n\nextern const struct iw_handler_def r8192_wx_handlers_def;\n \nstruct iw_statistics *r8192_get_wireless_stats(struct net_device *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

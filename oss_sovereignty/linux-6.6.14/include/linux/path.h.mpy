@@ -1,0 +1,9 @@
+{
+  "module_name": "path.h",
+  "hash_id": "c67f11ffed193e30c715987688784720c235cbf573cf8e4d2f8cb83d75c05ac9",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/path.h",
+  "human_readable_source": " \n#ifndef _LINUX_PATH_H\n#define _LINUX_PATH_H\n\nstruct dentry;\nstruct vfsmount;\n\nstruct path {\n\tstruct vfsmount *mnt;\n\tstruct dentry *dentry;\n} __randomize_layout;\n\nextern void path_get(const struct path *);\nextern void path_put(const struct path *);\n\nstatic inline int path_equal(const struct path *path1, const struct path *path2)\n{\n\treturn path1->mnt == path2->mnt && path1->dentry == path2->dentry;\n}\n\nstatic inline void path_put_init(struct path *path)\n{\n\tpath_put(path);\n\t*path = (struct path) { };\n}\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

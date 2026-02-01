@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_hashmap_lookup.c",
+  "hash_id": "859deef3d8d4077a4e29d3d60a522ce1ee46e72475a941ea0dc70e8683df9fe5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_hashmap_lookup.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_HASH);\n} hash_map_bench SEC(\".maps\");\n\n \n#define NR_SLOTS 32\n#define NR_CPUS 256\n#define CPU_MASK (NR_CPUS-1)\n\n \nu64 nr_entries;\nu64 nr_loops;\nu32 __attribute__((__aligned__(8))) key[NR_CPUS];\n\n \nu64 __attribute__((__aligned__(256))) percpu_times_index[NR_CPUS];\nu64 __attribute__((__aligned__(256))) percpu_times[NR_CPUS][NR_SLOTS];\n\nstatic inline void patch_key(u32 i)\n{\n#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__\n\tkey[0] = i + 1;\n#else\n\tkey[0] = __builtin_bswap32(i + 1);\n#endif\n\t \n}\n\nstatic int lookup_callback(__u32 index, u32 *unused)\n{\n\tpatch_key(index);\n\treturn bpf_map_lookup_elem(&hash_map_bench, key) ? 0 : 1;\n}\n\nstatic int loop_lookup_callback(__u32 index, u32 *unused)\n{\n\treturn bpf_loop(nr_entries, lookup_callback, NULL, 0) ? 0 : 1;\n}\n\nSEC(\"fentry/\" SYS_PREFIX \"sys_getpgid\")\nint benchmark(void *ctx)\n{\n\tu32 cpu = bpf_get_smp_processor_id();\n\tu32 times_index;\n\tu64 start_time;\n\n\ttimes_index = percpu_times_index[cpu & CPU_MASK] % NR_SLOTS;\n\tstart_time = bpf_ktime_get_ns();\n\tbpf_loop(nr_loops, loop_lookup_callback, NULL, 0);\n\tpercpu_times[cpu & CPU_MASK][times_index] = bpf_ktime_get_ns() - start_time;\n\tpercpu_times_index[cpu & CPU_MASK] += 1;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

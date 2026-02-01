@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "cbf9681abf0e9e41c7ae414cfc7afab0446236e6a09377ca8ced849190e47135",
+  "original_prompt": "Ingested from linux-6.6.14/lib/vdso/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nconfig HAVE_GENERIC_VDSO\n\tbool\n\nif HAVE_GENERIC_VDSO\n\nconfig GENERIC_GETTIMEOFDAY\n\tbool\n\thelp\n\t  This is a generic implementation of gettimeofday vdso.\n\t  Each architecture that enables this feature has to\n\t  provide the fallback implementation.\n\nconfig GENERIC_VDSO_32\n\tbool\n\tdepends on GENERIC_GETTIMEOFDAY && !64BIT\n\thelp\n\t  This config option helps to avoid possible performance issues\n\t  in 32 bit only architectures.\n\nconfig GENERIC_COMPAT_VDSO\n\tbool\n\thelp\n\t  This config option enables the compat VDSO layer.\n\nconfig GENERIC_VDSO_TIME_NS\n\tbool\n\thelp\n\t  Selected by architectures which support time namespaces in the\n\t  VDSO\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

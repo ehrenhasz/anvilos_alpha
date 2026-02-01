@@ -1,0 +1,9 @@
+{
+  "module_name": "version.c",
+  "hash_id": "1a7d30d8bc568abb59b22f6332d6e84e7e96d5f27a41398abab329275b9e056e",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/version.c",
+  "human_readable_source": " \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: version.c,v 1.7 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(const char *)\ncurses_version(void)\n{\n    T((T_CALLED(\"curses_version()\")));\n    returnCPtr(\"ncurses \" NCURSES_VERSION_STRING);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

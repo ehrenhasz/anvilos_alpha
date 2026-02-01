@@ -1,0 +1,9 @@
+{
+  "module_name": "pnvm.h",
+  "hash_id": "e8f34a3419411a31b22fa0086b380ae70d856689a7c746e36fc367fed95ff97c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/fw/pnvm.h",
+  "human_readable_source": " \n \n#ifndef __IWL_PNVM_H__\n#define __IWL_PNVM_H__\n\n#include \"iwl-drv.h\"\n#include \"fw/notif-wait.h\"\n\n#define MVM_UCODE_PNVM_TIMEOUT\t(HZ / 4)\n\n#define MAX_PNVM_NAME  64\n\nint iwl_pnvm_load(struct iwl_trans *trans,\n\t\t  struct iwl_notif_wait_data *notif_wait,\n\t\t  const struct iwl_ucode_capabilities *capa);\n\nstatic inline\nvoid iwl_pnvm_get_fs_name(struct iwl_trans *trans,\n\t\t\t  u8 *pnvm_name, size_t max_len)\n{\n\tchar _fw_name_pre[FW_NAME_PRE_BUFSIZE];\n\n\tsnprintf(pnvm_name, max_len, \"%s.pnvm\",\n\t\t iwl_drv_get_fwname_pre(trans, _fw_name_pre));\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

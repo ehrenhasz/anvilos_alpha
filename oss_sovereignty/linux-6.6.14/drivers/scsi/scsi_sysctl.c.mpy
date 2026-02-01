@@ -1,0 +1,9 @@
+{
+  "module_name": "scsi_sysctl.c",
+  "hash_id": "ba5162c6ecaba81c7939112d492ffb5d210c25cb78b4deda7b6e4091a104eaf2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/scsi_sysctl.c",
+  "human_readable_source": "\n \n\n#include <linux/errno.h>\n#include <linux/init.h>\n#include <linux/kernel.h>\n#include <linux/sysctl.h>\n\n#include \"scsi_logging.h\"\n#include \"scsi_priv.h\"\n\n\nstatic struct ctl_table scsi_table[] = {\n\t{ .procname\t= \"logging_level\",\n\t  .data\t\t= &scsi_logging_level,\n\t  .maxlen\t= sizeof(scsi_logging_level),\n\t  .mode\t\t= 0644,\n\t  .proc_handler\t= proc_dointvec },\n\t{ }\n};\n\nstatic struct ctl_table_header *scsi_table_header;\n\nint __init scsi_init_sysctl(void)\n{\n\tscsi_table_header = register_sysctl(\"dev/scsi\", scsi_table);\n\tif (!scsi_table_header)\n\t\treturn -ENOMEM;\n\treturn 0;\n}\n\nvoid scsi_exit_sysctl(void)\n{\n\tunregister_sysctl_table(scsi_table_header);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

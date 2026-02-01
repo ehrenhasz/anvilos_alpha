@@ -1,0 +1,9 @@
+{
+  "module_name": "writev.c",
+  "hash_id": "29f11af664517fbbbf28e87e4313145128bbd6798e61b4908dada991c80169a5",
+  "original_prompt": "Ingested from linux-6.6.14/fs/jffs2/writev.c",
+  "human_readable_source": " \n\n#include <linux/kernel.h>\n#include <linux/mtd/mtd.h>\n#include \"nodelist.h\"\n\nint jffs2_flash_direct_writev(struct jffs2_sb_info *c, const struct kvec *vecs,\n\t\t\t      unsigned long count, loff_t to, size_t *retlen)\n{\n\tif (!jffs2_is_writebuffered(c)) {\n\t\tif (jffs2_sum_active()) {\n\t\t\tint res;\n\t\t\tres = jffs2_sum_add_kvec(c, vecs, count, (uint32_t) to);\n\t\t\tif (res) {\n\t\t\t\treturn res;\n\t\t\t}\n\t\t}\n\t}\n\n\treturn mtd_writev(c->mtd, vecs, count, to, retlen);\n}\n\nint jffs2_flash_direct_write(struct jffs2_sb_info *c, loff_t ofs, size_t len,\n\t\t\tsize_t *retlen, const u_char *buf)\n{\n\tint ret;\n\tret = mtd_write(c->mtd, ofs, len, retlen, buf);\n\n\tif (jffs2_sum_active()) {\n\t\tstruct kvec vecs[1];\n\t\tint res;\n\n\t\tvecs[0].iov_base = (unsigned char *) buf;\n\t\tvecs[0].iov_len = len;\n\n\t\tres = jffs2_sum_add_kvec(c, vecs, 1, (uint32_t) ofs);\n\t\tif (res) {\n\t\t\treturn res;\n\t\t}\n\t}\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

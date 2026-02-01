@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6d303e26ff5d9562e3cf3ee7e89169a9244a73eecd4cadb2718317d1766ff8f6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/litex/Makefile",
+  "human_readable_source": "# SPDX-License_Identifier: GPL-2.0\n\nobj-$(CONFIG_LITEX_SOC_CONTROLLER)\t+= litex_soc_ctrl.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

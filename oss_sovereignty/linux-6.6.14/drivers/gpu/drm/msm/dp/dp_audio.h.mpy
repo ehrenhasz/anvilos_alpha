@@ -1,0 +1,9 @@
+{
+  "module_name": "dp_audio.h",
+  "hash_id": "816008794edb8624f3d59f63818378fd672d0eb2e967b6e4ae738a2a89720389",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/dp/dp_audio.h",
+  "human_readable_source": " \n \n\n#ifndef _DP_AUDIO_H_\n#define _DP_AUDIO_H_\n\n#include <linux/platform_device.h>\n\n#include \"dp_panel.h\"\n#include \"dp_catalog.h\"\n#include <sound/hdmi-codec.h>\n\n \nstruct dp_audio {\n\tu32 lane_count;\n\tu32 bw_code;\n};\n\n \nstruct dp_audio *dp_audio_get(struct platform_device *pdev,\n\t\t\tstruct dp_panel *panel,\n\t\t\tstruct dp_catalog *catalog);\n\n \nint dp_register_audio_driver(struct device *dev,\n\t\tstruct dp_audio *dp_audio);\n\nvoid dp_unregister_audio_driver(struct device *dev, struct dp_audio *dp_audio);\n\n \nvoid dp_audio_put(struct dp_audio *dp_audio);\n\nint dp_audio_hw_params(struct device *dev,\n\tvoid *data,\n\tstruct hdmi_codec_daifmt *daifmt,\n\tstruct hdmi_codec_params *params);\n\n#endif  \n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

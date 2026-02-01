@@ -1,0 +1,9 @@
+{
+  "module_name": "TASKS02.boot",
+  "hash_id": "fe40c1d9a322163902813f428dd682350a5cc3f6058890b991521aca3c9ad5f6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/TASKS02.boot",
+  "human_readable_source": "rcutorture.torture_type=tasks\nrcutorture.stat_interval=60\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

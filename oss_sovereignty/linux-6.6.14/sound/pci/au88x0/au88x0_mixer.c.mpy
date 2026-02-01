@@ -1,0 +1,9 @@
+{
+  "module_name": "au88x0_mixer.c",
+  "hash_id": "e136ab47c9cceca1ef46ef074bae990a1c9ee84da40b43e30e2f4a4d6b103dd8",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/au88x0/au88x0_mixer.c",
+  "human_readable_source": "\n \n\n#include <linux/time.h>\n#include <linux/init.h>\n#include <sound/core.h>\n#include \"au88x0.h\"\n\nstatic int remove_ctl(struct snd_card *card, const char *name)\n{\n\tstruct snd_ctl_elem_id id;\n\tmemset(&id, 0, sizeof(id));\n\tstrcpy(id.name, name);\n\tid.iface = SNDRV_CTL_ELEM_IFACE_MIXER;\n\treturn snd_ctl_remove_id(card, &id);\n}\n\nstatic int snd_vortex_mixer(vortex_t *vortex)\n{\n\tstruct snd_ac97_bus *pbus;\n\tstruct snd_ac97_template ac97;\n\tint err;\n\tstatic const struct snd_ac97_bus_ops ops = {\n\t\t.write = vortex_codec_write,\n\t\t.read = vortex_codec_read,\n\t};\n\n\terr = snd_ac97_bus(vortex->card, 0, &ops, NULL, &pbus);\n\tif (err < 0)\n\t\treturn err;\n\tmemset(&ac97, 0, sizeof(ac97));\n\t\n\tac97.private_data = vortex;\n\tac97.scaps = AC97_SCAP_NO_SPDIF;\n\terr = snd_ac97_mixer(pbus, &ac97, &vortex->codec);\n\tvortex->isquad = ((vortex->codec == NULL) ?  0 : (vortex->codec->ext_id&0x80));\n\tremove_ctl(vortex->card, \"Master Mono Playback Volume\");\n\tremove_ctl(vortex->card, \"Master Mono Playback Switch\");\n\treturn err;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

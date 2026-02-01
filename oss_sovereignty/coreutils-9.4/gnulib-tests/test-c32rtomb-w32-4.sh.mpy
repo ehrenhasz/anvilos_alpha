@@ -1,0 +1,9 @@
+{
+  "module_name": "test-c32rtomb-w32-4.sh",
+  "hash_id": "e2c5a34c1eff36732113b1b09c38079b3df2b29ccbed7cac74691767a6144442",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-c32rtomb-w32-4.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test some UTF-8 locales.\n${CHECKER} ./test-c32rtomb-w32${EXEEXT} French_France Japanese_Japan Chinese_Taiwan Chinese_China 65001\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

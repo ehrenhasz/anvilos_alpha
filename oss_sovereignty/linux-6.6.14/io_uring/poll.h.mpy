@@ -1,0 +1,9 @@
+{
+  "module_name": "poll.h",
+  "hash_id": "c63decc1dd573f80e1cf5460f293fdda95a64b6e1a7a85c03709fc5cd5b2f77e",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/poll.h",
+  "human_readable_source": "\n\n#include \"alloc_cache.h\"\n\nenum {\n\tIO_APOLL_OK,\n\tIO_APOLL_ABORTED,\n\tIO_APOLL_READY\n};\n\nstruct io_poll {\n\tstruct file\t\t\t*file;\n\tstruct wait_queue_head\t\t*head;\n\t__poll_t\t\t\tevents;\n\tint\t\t\t\tretries;\n\tstruct wait_queue_entry\t\twait;\n};\n\nstruct async_poll {\n\tunion {\n\t\tstruct io_poll\t\tpoll;\n\t\tstruct io_cache_entry\tcache;\n\t};\n\tstruct io_poll\t\t*double_poll;\n};\n\nint io_poll_add_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_poll_add(struct io_kiocb *req, unsigned int issue_flags);\n\nint io_poll_remove_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_poll_remove(struct io_kiocb *req, unsigned int issue_flags);\n\nstruct io_cancel_data;\nint io_poll_cancel(struct io_ring_ctx *ctx, struct io_cancel_data *cd,\n\t\t   unsigned issue_flags);\nint io_arm_poll_handler(struct io_kiocb *req, unsigned issue_flags);\nbool io_poll_remove_all(struct io_ring_ctx *ctx, struct task_struct *tsk,\n\t\t\tbool cancel_all);\n\nvoid io_apoll_cache_free(struct io_cache_entry *entry);\n\nvoid io_poll_task_func(struct io_kiocb *req, struct io_tw_state *ts);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

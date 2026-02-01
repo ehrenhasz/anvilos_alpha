@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_trace_points.c",
+  "hash_id": "5e6770325d2721f34b508fe7e86008b6a4f5ad9936ad3475d9b25db2e7d82abf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/drm_trace_points.c",
+  "human_readable_source": "\n#include <drm/drm_file.h>\n\n#define CREATE_TRACE_POINTS\n#include \"drm_trace.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

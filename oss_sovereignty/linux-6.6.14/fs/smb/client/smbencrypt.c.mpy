@@ -1,0 +1,9 @@
+{
+  "module_name": "smbencrypt.c",
+  "hash_id": "b7c4993bb6e2c16b0fee320cc3d0899a6495a8cd0bb470f1e8c6bbf43516678b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/client/smbencrypt.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/slab.h>\n#include <linux/fips.h>\n#include <linux/fs.h>\n#include <linux/string.h>\n#include <linux/kernel.h>\n#include <linux/random.h>\n#include \"cifs_fs_sb.h\"\n#include \"cifs_unicode.h\"\n#include \"cifspdu.h\"\n#include \"cifsglob.h\"\n#include \"cifs_debug.h\"\n#include \"cifsproto.h\"\n#include \"../common/md4.h\"\n\n#ifndef false\n#define false 0\n#endif\n#ifndef true\n#define true 1\n#endif\n\n \n#define CVAL(buf,pos) (((unsigned char *)(buf))[pos])\n#define SSVALX(buf,pos,val) (CVAL(buf,pos)=(val)&0xFF,CVAL(buf,pos+1)=(val)>>8)\n#define SSVAL(buf,pos,val) SSVALX((buf),(pos),((__u16)(val)))\n\n \nstatic int\nmdfour(unsigned char *md4_hash, unsigned char *link_str, int link_len)\n{\n\tint rc;\n\tstruct md4_ctx mctx;\n\n\trc = cifs_md4_init(&mctx);\n\tif (rc) {\n\t\tcifs_dbg(VFS, \"%s: Could not init MD4\\n\", __func__);\n\t\tgoto mdfour_err;\n\t}\n\trc = cifs_md4_update(&mctx, link_str, link_len);\n\tif (rc) {\n\t\tcifs_dbg(VFS, \"%s: Could not update MD4\\n\", __func__);\n\t\tgoto mdfour_err;\n\t}\n\trc = cifs_md4_final(&mctx, md4_hash);\n\tif (rc)\n\t\tcifs_dbg(VFS, \"%s: Could not finalize MD4\\n\", __func__);\n\n\nmdfour_err:\n\treturn rc;\n}\n\n \n\nint\nE_md4hash(const unsigned char *passwd, unsigned char *p16,\n\tconst struct nls_table *codepage)\n{\n\tint rc;\n\tint len;\n\t__le16 wpwd[129];\n\n\t \n\tif (passwd)  \n\t\tlen = cifs_strtoUTF16(wpwd, passwd, 128, codepage);\n\telse {\n\t\tlen = 0;\n\t\t*wpwd = 0;  \n\t}\n\n\trc = mdfour(p16, (unsigned char *) wpwd, len * sizeof(__le16));\n\tmemzero_explicit(wpwd, sizeof(wpwd));\n\n\treturn rc;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

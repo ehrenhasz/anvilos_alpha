@@ -1,0 +1,9 @@
+{
+  "module_name": "zmii.h",
+  "hash_id": "30cbf87c043693391fe93276a66d24c2d80eeb1f75e21ef180a11cee5c26c6ee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ibm/emac/zmii.h",
+  "human_readable_source": " \n \n#ifndef __IBM_NEWEMAC_ZMII_H\n#define __IBM_NEWEMAC_ZMII_H\n\n \nstruct zmii_regs {\n\tu32 fer;\t\t \n\tu32 ssr;\t\t \n\tu32 smiirs;\t\t \n};\n\n \nstruct zmii_instance {\n\tstruct zmii_regs __iomem\t*base;\n\n\t \n\tstruct mutex\t\t\tlock;\n\n\t \n\tint\t\t\t\tmode;\n\n\t \n\tint\t\t\t\tusers;\n\n\t \n\tu32\t\t\t\tfer_save;\n\n\t \n\tstruct platform_device\t\t*ofdev;\n};\n\n#ifdef CONFIG_IBM_EMAC_ZMII\n\nint zmii_init(void);\nvoid zmii_exit(void);\nint zmii_attach(struct platform_device *ofdev, int input,\n\t\tphy_interface_t *mode);\nvoid zmii_detach(struct platform_device *ofdev, int input);\nvoid zmii_get_mdio(struct platform_device *ofdev, int input);\nvoid zmii_put_mdio(struct platform_device *ofdev, int input);\nvoid zmii_set_speed(struct platform_device *ofdev, int input, int speed);\nint zmii_get_regs_len(struct platform_device *ocpdev);\nvoid *zmii_dump_regs(struct platform_device *ofdev, void *buf);\n\n#else\n# define zmii_init()\t\t0\n# define zmii_exit()\t\tdo { } while(0)\n# define zmii_attach(x,y,z)\t(-ENXIO)\n# define zmii_detach(x,y)\tdo { } while(0)\n# define zmii_get_mdio(x,y)\tdo { } while(0)\n# define zmii_put_mdio(x,y)\tdo { } while(0)\n# define zmii_set_speed(x,y,z)\tdo { } while(0)\n# define zmii_get_regs_len(x)\t0\n# define zmii_dump_regs(x,buf)\t(buf)\n#endif\t\t\t\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_host1x08_common.h",
+  "hash_id": "5879c6a915580d9f78995ede90fedf26a3aff8287c3da5a023ca0c99f1835a58",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/hw/hw_host1x08_common.h",
+  "human_readable_source": " \n \n\n#define HOST1X_COMMON_OFA_MLOCK\t\t\t0x4050\n#define HOST1X_COMMON_NVJPG1_MLOCK\t\t0x4070\n#define HOST1X_COMMON_VIC_MLOCK\t\t\t0x4078\n#define HOST1X_COMMON_NVENC_MLOCK\t\t0x407c\n#define HOST1X_COMMON_NVDEC_MLOCK\t\t0x4080\n#define HOST1X_COMMON_NVJPG_MLOCK\t\t0x4084\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

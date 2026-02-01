@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9e66bfc15fc59d2e0b643409b908a35c8cbdaa52740d995aacc03253b9797949",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/broadcom/asp2/Makefile",
+  "human_readable_source": "obj-$(CONFIG_BCMASP) += bcm-asp.o\nbcm-asp-objs := bcmasp.o bcmasp_intf.o bcmasp_ethtool.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

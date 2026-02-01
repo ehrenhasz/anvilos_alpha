@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl2832.h",
+  "hash_id": "2ee0a4565db520151e7db6e9be03cba13eeae18889838c645ddbdf2299299efe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/rtl2832.h",
+  "human_readable_source": " \n \n\n#ifndef RTL2832_H\n#define RTL2832_H\n\n#include <linux/dvb/frontend.h>\n#include <linux/i2c-mux.h>\n\n \nstruct rtl2832_platform_data {\n\tu32 clk;\n\t \n#define RTL2832_TUNER_FC2580    0x21\n#define RTL2832_TUNER_TUA9001   0x24\n#define RTL2832_TUNER_FC0012    0x26\n#define RTL2832_TUNER_E4000     0x27\n#define RTL2832_TUNER_FC0013    0x29\n#define RTL2832_TUNER_R820T     0x2a\n#define RTL2832_TUNER_R828D     0x2b\n#define RTL2832_TUNER_SI2157    0x2c\n\tu8 tuner;\n\n\tstruct dvb_frontend* (*get_dvb_frontend)(struct i2c_client *);\n\tstruct i2c_adapter* (*get_i2c_adapter)(struct i2c_client *);\n\tint (*slave_ts_ctrl)(struct i2c_client *, bool);\n\tint (*pid_filter)(struct dvb_frontend *, u8, u16, int);\n\tint (*pid_filter_ctrl)(struct dvb_frontend *, int);\n \n\tstruct regmap *regmap;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fault.h",
+  "hash_id": "8617f6a504ea2bff4716d561a69450cfd7e5dad5e0f3e0154543d56548541510",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/fault.h",
+  "human_readable_source": "#ifndef __NVKM_FAULT_H__\n#define __NVKM_FAULT_H__\n#include <core/subdev.h>\n#include <core/event.h>\n\nstruct nvkm_fault {\n\tconst struct nvkm_fault_func *func;\n\tstruct nvkm_subdev subdev;\n\n\tstruct nvkm_inth info_fault;\n\n\tstruct nvkm_fault_buffer *buffer[2];\n\tint buffer_nr;\n\n#define NVKM_FAULT_BUFFER_EVENT_PENDING BIT(0)\n\tstruct nvkm_event event;\n\n\tstruct nvkm_event_ntfy nrpfb;\n\tstruct work_struct nrpfb_work;\n\n\tstruct nvkm_device_oclass user;\n};\n\nstruct nvkm_fault_data {\n\tu64  addr;\n\tu64  inst;\n\tu64  time;\n\tu8 engine;\n\tu8  valid;\n\tu8    gpc;\n\tu8    hub;\n\tu8 access;\n\tu8 client;\n\tu8 reason;\n};\n\nint gp100_fault_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_fault **);\nint gp10b_fault_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_fault **);\nint gv100_fault_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_fault **);\nint tu102_fault_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_fault **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

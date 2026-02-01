@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e1839a9d058958433e45aa0aef181185e3a3a9a44b9f54bd111b8b0f5840a0ec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dma/sh/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# DMA Engine Helpers\n#\n\nobj-$(CONFIG_SH_DMAE_BASE) += shdma-base.o\n\n#\n# DMA Controllers\n#\n\nshdma-y := shdmac.o\nshdma-objs := $(shdma-y)\nobj-$(CONFIG_SH_DMAE) += shdma.o\n\nobj-$(CONFIG_RCAR_DMAC) += rcar-dmac.o\nobj-$(CONFIG_RENESAS_USB_DMAC) += usb-dmac.o\nobj-$(CONFIG_RZ_DMAC) += rz-dmac.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

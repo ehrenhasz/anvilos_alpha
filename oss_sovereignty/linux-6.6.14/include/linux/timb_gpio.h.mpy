@@ -1,0 +1,9 @@
+{
+  "module_name": "timb_gpio.h",
+  "hash_id": "5be6f3bd9b07446f1fde271df1c0e92fa0b4564106edcbc2432f112c77988b94",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/timb_gpio.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_TIMB_GPIO_H\n#define _LINUX_TIMB_GPIO_H\n\n \nstruct timbgpio_platform_data {\n\tint gpio_base;\n\tint nr_pins;\n\tint irq_base;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

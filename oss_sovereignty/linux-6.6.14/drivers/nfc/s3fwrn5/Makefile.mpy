@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3a59705794bfcee5469000a6b182a38d6c8843375f0e98f6623fef700aca9bf2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/s3fwrn5/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for Samsung S3FWRN5 NFC driver\n#\n\ns3fwrn5-objs = core.o firmware.o nci.o phy_common.o\ns3fwrn5_i2c-objs = i2c.o\ns3fwrn82_uart-objs = uart.o\n\nobj-$(CONFIG_NFC_S3FWRN5) += s3fwrn5.o\nobj-$(CONFIG_NFC_S3FWRN5_I2C) += s3fwrn5_i2c.o\nobj-$(CONFIG_NFC_S3FWRN82_UART) += s3fwrn82_uart.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

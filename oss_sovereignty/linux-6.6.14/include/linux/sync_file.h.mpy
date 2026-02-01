@@ -1,0 +1,9 @@
+{
+  "module_name": "sync_file.h",
+  "hash_id": "59fb676c7b4df4ada77f518182da84afa3c5617efcc5a6ce02f421d939e63de0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sync_file.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_SYNC_FILE_H\n#define _LINUX_SYNC_FILE_H\n\n#include <linux/types.h>\n#include <linux/ktime.h>\n#include <linux/list.h>\n#include <linux/spinlock.h>\n#include <linux/dma-fence.h>\n#include <linux/dma-fence-array.h>\n\n \nstruct sync_file {\n\tstruct file\t\t*file;\n\t \n\tchar\t\t\tuser_name[32];\n#ifdef CONFIG_DEBUG_FS\n\tstruct list_head\tsync_file_list;\n#endif\n\n\twait_queue_head_t\twq;\n\tunsigned long\t\tflags;\n\n\tstruct dma_fence\t*fence;\n\tstruct dma_fence_cb cb;\n};\n\n#define POLL_ENABLED 0\n\nstruct sync_file *sync_file_create(struct dma_fence *fence);\nstruct dma_fence *sync_file_get_fence(int fd);\nchar *sync_file_get_name(struct sync_file *sync_file, char *buf, int len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "string_override.c",
+  "hash_id": "fa91b8b7ec25cc6e024c178aba07127b5e93f767d89a7ddd420ea8bc906ba246",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/kvm/lib/string_override.c",
+  "human_readable_source": "\n#include <stddef.h>\n\n \nint memcmp(const void *cs, const void *ct, size_t count)\n{\n\tconst unsigned char *su1, *su2;\n\tint res = 0;\n\n\tfor (su1 = cs, su2 = ct; 0 < count; ++su1, ++su2, count--) {\n\t\tif ((res = *su1 - *su2) != 0)\n\t\t\tbreak;\n\t}\n\treturn res;\n}\n\nvoid *memcpy(void *dest, const void *src, size_t count)\n{\n\tchar *tmp = dest;\n\tconst char *s = src;\n\n\twhile (count--)\n\t\t*tmp++ = *s++;\n\treturn dest;\n}\n\nvoid *memset(void *s, int c, size_t count)\n{\n\tchar *xs = s;\n\n\twhile (count--)\n\t\t*xs++ = c;\n\treturn s;\n}\n\nsize_t strnlen(const char *s, size_t count)\n{\n\tconst char *sc;\n\n\tfor (sc = s; count-- && *sc != '\\0'; ++sc)\n\t\t ;\n\treturn sc - s;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

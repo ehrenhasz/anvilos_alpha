@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "aafac8eaba8e16b08b3ad5fc1ea054283b148ac879881e715ac0d7c5efa0d700",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ufs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Linux ufs filesystem routines.\n#\n\nobj-$(CONFIG_UFS_FS) += ufs.o\n\nufs-objs := balloc.o cylinder.o dir.o file.o ialloc.o inode.o \\\n\t    namei.o super.o util.o\nccflags-$(CONFIG_UFS_DEBUG)    += -DDEBUG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

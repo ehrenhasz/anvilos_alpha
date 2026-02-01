@@ -1,0 +1,9 @@
+{
+  "module_name": "exynos-chipid.h",
+  "hash_id": "7e30c6548683dfc6493e244a37e79249c3744f4456aebb41590b2cea8bf5f2a9",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/samsung/exynos-chipid.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_SOC_EXYNOS_CHIPID_H\n#define __LINUX_SOC_EXYNOS_CHIPID_H\n\n#define EXYNOS_CHIPID_REG_PRO_ID\t0x00\n#define EXYNOS_REV_PART_MASK\t\t0xf\n#define EXYNOS_REV_PART_SHIFT\t\t4\n#define EXYNOS_MASK\t\t\t0xfffff000\n\n#define EXYNOS_CHIPID_REG_PKG_ID\t0x04\n \n#define EXYNOS5422_IDS_OFFSET\t\t24\n#define EXYNOS5422_IDS_MASK\t\t0xff\n#define EXYNOS5422_USESG_OFFSET\t3\n#define EXYNOS5422_USESG_MASK\t\t0x01\n#define EXYNOS5422_SG_OFFSET\t\t0\n#define EXYNOS5422_SG_MASK\t\t0x07\n#define EXYNOS5422_TABLE_OFFSET\t8\n#define EXYNOS5422_TABLE_MASK\t\t0x03\n#define EXYNOS5422_SG_A_OFFSET\t\t17\n#define EXYNOS5422_SG_A_MASK\t\t0x0f\n#define EXYNOS5422_SG_B_OFFSET\t\t21\n#define EXYNOS5422_SG_B_MASK\t\t0x03\n#define EXYNOS5422_SG_BSIGN_OFFSET\t23\n#define EXYNOS5422_SG_BSIGN_MASK\t0x01\n#define EXYNOS5422_BIN2_OFFSET\t\t12\n#define EXYNOS5422_BIN2_MASK\t\t0x01\n\n#define EXYNOS_CHIPID_REG_LOT_ID\t0x14\n\n#define EXYNOS_CHIPID_REG_AUX_INFO\t0x1c\n \n#define EXYNOS5422_TMCB_OFFSET\t\t0\n#define EXYNOS5422_TMCB_MASK\t\t0x7f\n#define EXYNOS5422_ARM_UP_OFFSET\t8\n#define EXYNOS5422_ARM_UP_MASK\t\t0x03\n#define EXYNOS5422_ARM_DN_OFFSET\t10\n#define EXYNOS5422_ARM_DN_MASK\t\t0x03\n#define EXYNOS5422_KFC_UP_OFFSET\t12\n#define EXYNOS5422_KFC_UP_MASK\t\t0x03\n#define EXYNOS5422_KFC_DN_OFFSET\t14\n#define EXYNOS5422_KFC_DN_MASK\t\t0x03\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

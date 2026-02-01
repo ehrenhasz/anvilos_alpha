@@ -1,0 +1,9 @@
+{
+  "module_name": "test-exclude.c",
+  "hash_id": "f0d8fe2e3b8c96569b846df70c8d70d9cee362f288d942cf2c8d77f2fcf88e97",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-exclude.c",
+  "human_readable_source": " \n#ifdef ARGMATCH_DIE_DECL\n\n_Noreturn ARGMATCH_DIE_DECL;\nARGMATCH_DIE_DECL { exit (1); }\n\n#endif\n\nint\nmain (int argc, char **argv)\n{\n  int exclude_options = 0;\n  struct exclude *exclude = new_exclude ();\n\n  if (argc == 1)\n    error (1, 0, \"usage: %s file -- words...\", argv[0]);\n\n  while (--argc)\n    {\n      char *opt = *++argv;\n      if (opt[0] == '-')\n        {\n          int neg = 0;\n          int flag;\n          char *s = opt + 1;\n\n          if (opt[1] == '-' && opt[2] == 0)\n            {\n              argc--;\n              break;\n            }\n          if (strlen (s) > 3 && memcmp (s, \"no-\", 3) == 0)\n            {\n              neg = 1;\n              s += 3;\n            }\n          flag = XARGMATCH (opt, s, exclude_keywords, exclude_flags);\n          if (neg)\n            exclude_options &= ~flag;\n          else\n            exclude_options |= flag;\n\n           \n          if (strcmp (s, \"leading_dir\") == 0 && FNM_LEADING_DIR == 0)\n            exit (77);\n\n           \n          if (strcmp (s, \"casefold\") == 0 && FNM_CASEFOLD == 0)\n            exit (77);\n        }\n      else if (add_exclude_file (add_exclude, exclude, opt,\n                                 exclude_options, '\\n') != 0)\n        error (1, errno, \"error loading %s\", opt);\n    }\n\n  for (; argc; --argc)\n    {\n      char *word = *++argv;\n\n      printf (\"%s: %d\\n\", word, excluded_file_name (exclude, word));\n    }\n\n  free_exclude (exclude);\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

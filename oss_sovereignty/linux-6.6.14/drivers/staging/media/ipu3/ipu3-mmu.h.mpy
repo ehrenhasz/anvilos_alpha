@@ -1,0 +1,9 @@
+{
+  "module_name": "ipu3-mmu.h",
+  "hash_id": "1cb7ec30c78685736343d4e12a6c43ee0ca4235851b6515aaea85ba114fb029d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/ipu3/ipu3-mmu.h",
+  "human_readable_source": " \n \n \n\n#ifndef __IPU3_MMU_H\n#define __IPU3_MMU_H\n\n#define IPU3_PAGE_SHIFT\t\t12\n#define IPU3_PAGE_SIZE\t\t(1UL << IPU3_PAGE_SHIFT)\n\n \nstruct imgu_mmu_info {\n\tdma_addr_t aperture_start;\n\tdma_addr_t aperture_end;\n};\n\nstruct device;\nstruct scatterlist;\n\nstruct imgu_mmu_info *imgu_mmu_init(struct device *parent, void __iomem *base);\nvoid imgu_mmu_exit(struct imgu_mmu_info *info);\nvoid imgu_mmu_suspend(struct imgu_mmu_info *info);\nvoid imgu_mmu_resume(struct imgu_mmu_info *info);\n\nint imgu_mmu_map(struct imgu_mmu_info *info, unsigned long iova,\n\t\t phys_addr_t paddr, size_t size);\nsize_t imgu_mmu_unmap(struct imgu_mmu_info *info, unsigned long iova,\n\t\t      size_t size);\nsize_t imgu_mmu_map_sg(struct imgu_mmu_info *info, unsigned long iova,\n\t\t       struct scatterlist *sg, unsigned int nents);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "amd_asic_type.h",
+  "hash_id": "a144128e50cc2d6768578fda757775b6ef1b9be2c0997d788c28b4510fb52b49",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/amd_asic_type.h",
+  "human_readable_source": " \n\n#ifndef __AMD_ASIC_TYPE_H__\n#define __AMD_ASIC_TYPE_H__\n \nenum amd_asic_type {\n\tCHIP_TAHITI = 0,\n\tCHIP_PITCAIRN,\t \n\tCHIP_VERDE,\t \n\tCHIP_OLAND,\t \n\tCHIP_HAINAN,\t \n\tCHIP_BONAIRE,\t \n\tCHIP_KAVERI,\t \n\tCHIP_KABINI,\t \n\tCHIP_HAWAII,\t \n\tCHIP_MULLINS,\t \n\tCHIP_TOPAZ,\t \n\tCHIP_TONGA,\t \n\tCHIP_FIJI,\t \n\tCHIP_CARRIZO,\t \n\tCHIP_STONEY,\t \n\tCHIP_POLARIS10,\t \n\tCHIP_POLARIS11,\t \n\tCHIP_POLARIS12,\t \n\tCHIP_VEGAM,\t \n\tCHIP_VEGA10,\t \n\tCHIP_VEGA12,\t \n\tCHIP_VEGA20,\t \n\tCHIP_RAVEN,\t \n\tCHIP_ARCTURUS,\t \n\tCHIP_RENOIR,\t \n\tCHIP_ALDEBARAN,  \n\tCHIP_NAVI10,\t \n\tCHIP_CYAN_SKILLFISH,\t \n\tCHIP_NAVI14,\t \n\tCHIP_NAVI12,\t \n\tCHIP_SIENNA_CICHLID,\t \n\tCHIP_NAVY_FLOUNDER,\t \n\tCHIP_VANGOGH,\t \n\tCHIP_DIMGREY_CAVEFISH,\t \n\tCHIP_BEIGE_GOBY,\t \n\tCHIP_YELLOW_CARP,\t \n\tCHIP_IP_DISCOVERY,\t \n\tCHIP_LAST,\n};\n\nextern const char *amdgpu_asic_name[];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

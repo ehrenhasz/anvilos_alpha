@@ -1,0 +1,9 @@
+{
+  "module_name": "coreutils.x",
+  "hash_id": "53e21fc4c83ef0c12061b0300bb78dac9be156f4fddf138f3965038991563dd9",
+  "original_prompt": "Ingested from coreutils-9.4/man/coreutils.x",
+  "human_readable_source": "[NAME]\ncoreutils \\- single binary for coreutils programs\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bar.h",
+  "hash_id": "3c63efe4773e130e1de6342cefbb6bd406d0fccbf27d47916b3230f0a94498a2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bar.h",
+  "human_readable_source": " \n#ifndef __NVKM_BAR_H__\n#define __NVKM_BAR_H__\n#include <core/subdev.h>\nstruct nvkm_vma;\n\nstruct nvkm_bar {\n\tconst struct nvkm_bar_func *func;\n\tstruct nvkm_subdev subdev;\n\n\tspinlock_t lock;\n\tbool bar2;\n\n\t \n\tbool iomap_uncached;\n};\n\nstruct nvkm_vmm *nvkm_bar_bar1_vmm(struct nvkm_device *);\nvoid nvkm_bar_bar1_reset(struct nvkm_device *);\nvoid nvkm_bar_bar2_init(struct nvkm_device *);\nvoid nvkm_bar_bar2_fini(struct nvkm_device *);\nvoid nvkm_bar_bar2_reset(struct nvkm_device *);\nstruct nvkm_vmm *nvkm_bar_bar2_vmm(struct nvkm_device *);\nvoid nvkm_bar_flush(struct nvkm_bar *);\n\nint nv50_bar_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_bar **);\nint g84_bar_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_bar **);\nint gf100_bar_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_bar **);\nint gk20a_bar_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_bar **);\nint gm107_bar_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_bar **);\nint gm20b_bar_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_bar **);\nint tu102_bar_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_bar **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

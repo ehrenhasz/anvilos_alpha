@@ -1,0 +1,9 @@
+{
+  "module_name": "test-physmem.c",
+  "hash_id": "a0935166ca1dc4dcb7e32fb3109497b08e7a6228829c52e8dc9b01927fc11624",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-physmem.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"physmem.h\"\n\n#include <stdio.h>\n\n#include \"macros.h\"\n\nint\nmain (int argc, char *argv[])\n{\n  printf (\"Total memory:     %12.f B = %6.f MiB\\n\",\n          physmem_total (), physmem_total () / (1024.0 * 1024.0));\n  printf (\"Available memory: %12.f B = %6.f MiB\\n\",\n          physmem_available (), physmem_available () / (1024.0 * 1024.0));\n  ASSERT (physmem_total () >= physmem_available ());\n  ASSERT (physmem_available () >= 4 * 1024 * 1024);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

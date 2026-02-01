@@ -1,0 +1,9 @@
+{
+  "module_name": "inv_mpu_aux.h",
+  "hash_id": "21fc94d9fa410ac3e55bf03ee103e33ab0be83d2659aa0e44698d95d7eefa69d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/inv_mpu6050/inv_mpu_aux.h",
+  "human_readable_source": " \n \n\n#ifndef INV_MPU_AUX_H_\n#define INV_MPU_AUX_H_\n\n#include \"inv_mpu_iio.h\"\n\nint inv_mpu_aux_init(const struct inv_mpu6050_state *st);\n\nint inv_mpu_aux_read(const struct inv_mpu6050_state *st, uint8_t addr,\n\t\t     uint8_t reg, uint8_t *val, size_t size);\n\nint inv_mpu_aux_write(const struct inv_mpu6050_state *st, uint8_t addr,\n\t\t      uint8_t reg, uint8_t val);\n\n#endif\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

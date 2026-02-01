@@ -1,0 +1,9 @@
+{
+  "module_name": "tiocl.h",
+  "hash_id": "76c24e2748e5ffc36cc2c6db6933dad28fa3632ed1d4cbab5a4638a54adac0f9",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/tiocl.h",
+  "human_readable_source": " \n#ifndef _LINUX_TIOCL_H\n#define _LINUX_TIOCL_H\n\n#define TIOCL_SETSEL\t2\t \n#define \tTIOCL_SELCHAR\t0\t \n#define \tTIOCL_SELWORD\t1\t \n#define \tTIOCL_SELLINE\t2\t \n#define \tTIOCL_SELPOINTER\t3\t \n#define \tTIOCL_SELCLEAR\t4\t \n#define \tTIOCL_SELMOUSEREPORT\t16\t \n#define \tTIOCL_SELBUTTONMASK\t15\t \n \nstruct tiocl_selection {\n\tunsigned short xs;\t \n\tunsigned short ys;\t \n\tunsigned short xe;\t \n\tunsigned short ye;\t \n\tunsigned short sel_mode;\t \n};\n\n#define TIOCL_PASTESEL\t3\t \n#define TIOCL_UNBLANKSCREEN\t4\t \n\n#define TIOCL_SELLOADLUT\t5\n\t \n\t \n\n \n#define TIOCL_GETSHIFTSTATE\t6\t \n#define TIOCL_GETMOUSEREPORTING\t7\t \n#define TIOCL_SETVESABLANK\t10\t \n#define TIOCL_SETKMSGREDIRECT\t11\t \n#define TIOCL_GETFGCONSOLE\t12\t \n#define TIOCL_SCROLLCONSOLE\t13\t \n#define TIOCL_BLANKSCREEN\t14\t \n#define TIOCL_BLANKEDSCREEN\t15\t \n#define TIOCL_GETKMSGREDIRECT\t17\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

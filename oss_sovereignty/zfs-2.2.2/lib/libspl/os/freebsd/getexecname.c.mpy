@@ -1,0 +1,9 @@
+{
+  "module_name": "getexecname.c",
+  "hash_id": "15ecabd951e3f8357e693665b0053873cda4d038b9035b7c5326e5bc9a10f432",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/os/freebsd/getexecname.c",
+  "human_readable_source": " \n\n#include <stdint.h>\n#include <limits.h>\n#include <sys/param.h>\n#include <sys/sysctl.h>\n#include <sys/types.h>\n#include \"../../libspl_impl.h\"\n\n__attribute__((visibility(\"hidden\"))) ssize_t\ngetexecname_impl(char *execname)\n{\n\tsize_t len = PATH_MAX;\n\tint name[4] = {CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1};\n\n\tif (sysctl(name, nitems(name), execname, &len, NULL, 0) != 0)\n\t\treturn (-1);\n\n\treturn (len);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

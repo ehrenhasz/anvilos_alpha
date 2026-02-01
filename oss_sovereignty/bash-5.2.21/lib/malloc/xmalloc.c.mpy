@@ -1,0 +1,9 @@
+{
+  "module_name": "xmalloc.c",
+  "hash_id": "13d4e2a4ef06ab9562664b9391f2ffc61b5097f3e8364a7497e33db94cd2b397",
+  "original_prompt": "Ingested from bash-5.2.21/lib/malloc/xmalloc.c",
+  "human_readable_source": " \n\n \n\n#if defined (HAVE_CONFIG_H)\n#include <config.h>\n#endif\n\n#include <stdio.h>\n\n#if defined (HAVE_STDLIB_H)\n#  include <stdlib.h>\n#else\n#  include \"ansi_stdlib.h\"\n#endif  \n\n \n#ifndef PTR_T\n\n#if defined (__STDC__)\n#  define PTR_T void *\n#else\n#  define PTR_T char *\n#endif\n\n#endif  \n\n \n \n \n \n \n\nstatic void\nmemory_error_and_abort (fname)\n     char *fname;\n{\n  fprintf (stderr, \"%s: out of virtual memory\\n\", fname);\n  exit (2);\n}\n\n \nPTR_T\nxmalloc (bytes)\n     size_t bytes;\n{\n  PTR_T temp;\n\n  temp = malloc (bytes);\n  if (temp == 0)\n    memory_error_and_abort (\"xmalloc\");\n  return (temp);\n}\n\nPTR_T\nxrealloc (pointer, bytes)\n     PTR_T pointer;\n     size_t bytes;\n{\n  PTR_T temp;\n\n  temp = pointer ? realloc (pointer, bytes) : malloc (bytes);\n\n  if (temp == 0)\n    memory_error_and_abort (\"xrealloc\");\n  return (temp);\n}\n\nvoid\nxfree (string)\n     PTR_T string;\n{\n  if (string)\n    free (string);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

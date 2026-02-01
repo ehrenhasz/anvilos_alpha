@@ -1,0 +1,9 @@
+{
+  "module_name": "hclgevf_devlink.h",
+  "hash_id": "24bc18a3c304d94a44a85f648ea84262260380751a2327930eac88904f07d5ca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_devlink.h",
+  "human_readable_source": " \n \n\n#ifndef __HCLGEVF_DEVLINK_H\n#define __HCLGEVF_DEVLINK_H\n\n#include \"hclgevf_main.h\"\n\nstruct hclgevf_devlink_priv {\n\tstruct hclgevf_dev *hdev;\n};\n\nint hclgevf_devlink_init(struct hclgevf_dev *hdev);\nvoid hclgevf_devlink_uninit(struct hclgevf_dev *hdev);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

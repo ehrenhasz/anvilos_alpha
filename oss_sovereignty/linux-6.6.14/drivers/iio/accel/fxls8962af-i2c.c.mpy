@@ -1,0 +1,9 @@
+{
+  "module_name": "fxls8962af-i2c.c",
+  "hash_id": "613e3a4b35c92185eb17290ef1ce6bb484cfd27c31f0c4f9901f9758a9d4c9b5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/accel/fxls8962af-i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/dev_printk.h>\n#include <linux/err.h>\n#include <linux/i2c.h>\n#include <linux/mod_devicetable.h>\n#include <linux/module.h>\n#include <linux/regmap.h>\n\n#include \"fxls8962af.h\"\n\nstatic int fxls8962af_probe(struct i2c_client *client)\n{\n\tstruct regmap *regmap;\n\n\tregmap = devm_regmap_init_i2c(client, &fxls8962af_i2c_regmap_conf);\n\tif (IS_ERR(regmap)) {\n\t\tdev_err(&client->dev, \"Failed to initialize i2c regmap\\n\");\n\t\treturn PTR_ERR(regmap);\n\t}\n\n\treturn fxls8962af_core_probe(&client->dev, regmap, client->irq);\n}\n\nstatic const struct i2c_device_id fxls8962af_id[] = {\n\t{ \"fxls8962af\", fxls8962af },\n\t{ \"fxls8964af\", fxls8964af },\n\t{}\n};\nMODULE_DEVICE_TABLE(i2c, fxls8962af_id);\n\nstatic const struct of_device_id fxls8962af_of_match[] = {\n\t{ .compatible = \"nxp,fxls8962af\" },\n\t{ .compatible = \"nxp,fxls8964af\" },\n\t{}\n};\nMODULE_DEVICE_TABLE(of, fxls8962af_of_match);\n\nstatic struct i2c_driver fxls8962af_driver = {\n\t.driver = {\n\t\t   .name = \"fxls8962af_i2c\",\n\t\t   .of_match_table = fxls8962af_of_match,\n\t\t   .pm = pm_ptr(&fxls8962af_pm_ops),\n\t\t   },\n\t.probe = fxls8962af_probe,\n\t.id_table = fxls8962af_id,\n};\nmodule_i2c_driver(fxls8962af_driver);\n\nMODULE_AUTHOR(\"Sean Nyekjaer <sean@geanix.com>\");\nMODULE_DESCRIPTION(\"NXP FXLS8962AF/FXLS8964AF accelerometer i2c driver\");\nMODULE_LICENSE(\"GPL v2\");\nMODULE_IMPORT_NS(IIO_FXLS8962AF);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

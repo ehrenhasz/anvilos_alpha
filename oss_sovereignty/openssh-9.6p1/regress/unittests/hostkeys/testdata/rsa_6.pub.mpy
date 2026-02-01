@@ -1,0 +1,9 @@
+{
+  "module_name": "rsa_6.pub",
+  "hash_id": "05b0b450a9eab68ff87d13cea00213dc421c585d50ffe5e468e3e31310c830aa",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/hostkeys/testdata/rsa_6.pub",
+  "human_readable_source": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQClu/3I6GG1Ai89Imnw0vXmWJ2OW0ftQwRrsbIAD0qzLFYpkJ76QWnzpCehvK9u0L5hcw7z2Y6mRLcSBsqONc+HVU73Qi7M4zHRvtjprPs3SOyLpf0J9sL1WiHBDwg2P0miHMCdqHDd5nVXkJB2d4eeecmgezGLa29NOHZjbza5yw== RSA #6\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "vmlinux-gdb.py",
+  "hash_id": "b5b286dd3b9095a317b715870d940dca054205dc6f0d805d61316674c0ce501c",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/gdb/vmlinux-gdb.py",
+  "human_readable_source": "#\n# gdb helper commands and functions for Linux kernel debugging\n#\n#  loader module\n#\n# Copyright (c) Siemens AG, 2012, 2013\n#\n# Authors:\n#  Jan Kiszka <jan.kiszka@siemens.com>\n#\n# This work is licensed under the terms of the GNU GPL version 2.\n#\n\nimport os\n\nsys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + \"/scripts/gdb\")\n\ntry:\n    gdb.parse_and_eval(\"0\")\n    gdb.execute(\"\", to_string=True)\nexcept:\n    gdb.write(\"NOTE: gdb 7.2 or later required for Linux helper scripts to \"\n              \"work.\\n\")\nelse:\n    import linux.constants\n    if linux.constants.LX_CONFIG_DEBUG_INFO_REDUCED:\n        raise gdb.GdbError(\"Reduced debug information will prevent GDB \"\n                           \"from having complete types.\\n\")\n    import linux.utils\n    import linux.symbols\n    import linux.modules\n    import linux.dmesg\n    import linux.tasks\n    import linux.config\n    import linux.cpus\n    import linux.lists\n    import linux.rbtree\n    import linux.proc\n    import linux.timerlist\n    import linux.clk\n    import linux.genpd\n    import linux.device\n    import linux.vfs\n    import linux.pgtable\n    import linux.radixtree\n    import linux.interrupts\n    import linux.mm\n    import linux.stackdepot\n    import linux.page_owner\n    import linux.slab\n    import linux.vmalloc\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

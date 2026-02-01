@@ -1,0 +1,9 @@
+{
+  "module_name": "ramnv44.c",
+  "hash_id": "423c56d6ee8c4156393def7f88d1eaa2f46738bb542e655edfa73aa96455fa68",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/ramnv44.c",
+  "human_readable_source": " \n#include \"ramnv40.h\"\n\nint\nnv44_ram_new(struct nvkm_fb *fb, struct nvkm_ram **pram)\n{\n\tstruct nvkm_device *device = fb->subdev.device;\n\tu32  size = nvkm_rd32(device, 0x10020c) & 0xff000000;\n\tu32 fb474 = nvkm_rd32(device, 0x100474);\n\tenum nvkm_ram_type type = NVKM_RAM_TYPE_UNKNOWN;\n\n\tif (fb474 & 0x00000004)\n\t\ttype = NVKM_RAM_TYPE_GDDR3;\n\tif (fb474 & 0x00000002)\n\t\ttype = NVKM_RAM_TYPE_DDR2;\n\tif (fb474 & 0x00000001)\n\t\ttype = NVKM_RAM_TYPE_DDR1;\n\n\treturn nv40_ram_new_(fb, type, size, pram);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

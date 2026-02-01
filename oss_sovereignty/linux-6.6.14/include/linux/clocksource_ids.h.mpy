@@ -1,0 +1,9 @@
+{
+  "module_name": "clocksource_ids.h",
+  "hash_id": "78c6f3ece73eacac0fbb240d8c93f21b1d09e8687ad3b5c8e667163e0c4fa5fe",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/clocksource_ids.h",
+  "human_readable_source": " \n#ifndef _LINUX_CLOCKSOURCE_IDS_H\n#define _LINUX_CLOCKSOURCE_IDS_H\n\n \nenum clocksource_ids {\n\tCSID_GENERIC\t\t= 0,\n\tCSID_ARM_ARCH_COUNTER,\n\tCSID_MAX,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

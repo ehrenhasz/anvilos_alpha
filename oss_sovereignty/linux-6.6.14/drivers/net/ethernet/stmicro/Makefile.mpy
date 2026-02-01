@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "86f8f23f7590561640692f627c4e68638c68ca1665410ee4d11892611f5230f7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/stmicro/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the STMicroelectronics device drivers.\n#\n\nobj-$(CONFIG_STMMAC_ETH) += stmmac/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

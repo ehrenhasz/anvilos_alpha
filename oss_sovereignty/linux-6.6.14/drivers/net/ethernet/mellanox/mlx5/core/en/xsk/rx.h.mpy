@@ -1,0 +1,9 @@
+{
+  "module_name": "rx.h",
+  "hash_id": "b40c71ecbbc1c68fe5b3f5167206e1cee9cf38dcffa46940c1b6bf4c08851d09",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_EN_XSK_RX_H__\n#define __MLX5_EN_XSK_RX_H__\n\n#include \"en.h\"\n\n \n\nint mlx5e_xsk_alloc_rx_mpwqe(struct mlx5e_rq *rq, u16 ix);\nint mlx5e_xsk_alloc_rx_wqes_batched(struct mlx5e_rq *rq, u16 ix, int wqe_bulk);\nint mlx5e_xsk_alloc_rx_wqes(struct mlx5e_rq *rq, u16 ix, int wqe_bulk);\nstruct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,\n\t\t\t\t\t\t    struct mlx5e_mpw_info *wi,\n\t\t\t\t\t\t    struct mlx5_cqe64 *cqe,\n\t\t\t\t\t\t    u16 cqe_bcnt,\n\t\t\t\t\t\t    u32 head_offset,\n\t\t\t\t\t\t    u32 page_idx);\nstruct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,\n\t\t\t\t\t      struct mlx5e_wqe_frag_info *wi,\n\t\t\t\t\t      struct mlx5_cqe64 *cqe,\n\t\t\t\t\t      u32 cqe_bcnt);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

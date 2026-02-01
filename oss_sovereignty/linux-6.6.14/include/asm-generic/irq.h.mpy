@@ -1,0 +1,9 @@
+{
+  "module_name": "irq.h",
+  "hash_id": "d64265476852bca0685aea4ee6d1f7f26980bf9733c96ff4644a9d8a0ba22ae4",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/irq.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_IRQ_H\n#define __ASM_GENERIC_IRQ_H\n\n \n#ifndef NR_IRQS\n#define NR_IRQS 64\n#endif\n\nstatic inline int irq_canonicalize(int irq)\n{\n\treturn irq;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

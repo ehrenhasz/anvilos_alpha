@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2ca26331717d1488d3b17d03d06e74247587cd78f2f116e0b8767adffdfb20f4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/rocker/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Rocker device configuration\n#\n\nconfig NET_VENDOR_ROCKER\n\tbool \"Rocker devices\"\n\tdefault y\n\thelp\n\t  If you have a network device belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Rocker devices. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif NET_VENDOR_ROCKER\n\nconfig ROCKER\n\ttristate \"Rocker switch driver (EXPERIMENTAL)\"\n\tdepends on PCI && NET_SWITCHDEV && BRIDGE\n\tselect CRC32\n\thelp\n\t  This driver supports Rocker switch device.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called rocker.\n\nendif # NET_VENDOR_ROCKER\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

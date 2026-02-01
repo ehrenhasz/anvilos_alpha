@@ -1,0 +1,9 @@
+{
+  "module_name": "thread.m4",
+  "hash_id": "32698211f6e8e18df9dc3a34cd3c72c97a6d3177fb1d82bc83c3016c7437ff00",
+  "original_prompt": "Ingested from coreutils-9.4/m4/thread.m4",
+  "human_readable_source": "# thread.m4 serial 4\ndnl Copyright (C) 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_THREAD],\n[\n  AC_REQUIRE([gl_THREADLIB])\n\n  if test $gl_threads_api = posix; then\n    gl_save_LIBS=\"$LIBS\"\n    LIBS=\"$LIBS $LIBMULTITHREAD\"\n    gl_CHECK_FUNCS_ANDROID([pthread_atfork], [[#include <pthread.h>]])\n    LIBS=\"$gl_save_LIBS\"\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

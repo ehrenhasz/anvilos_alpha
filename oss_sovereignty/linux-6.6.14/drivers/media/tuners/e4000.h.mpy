@@ -1,0 +1,9 @@
+{
+  "module_name": "e4000.h",
+  "hash_id": "37c7b780b6af616c56aedc4787cbe61aca18b09a24714572df5e99869355db9d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/e4000.h",
+  "human_readable_source": " \n \n\n#ifndef E4000_H\n#define E4000_H\n\n#include <media/dvb_frontend.h>\n\n \nstruct e4000_config {\n\t \n\tstruct dvb_frontend *fe;\n\n\t \n\tu32 clock;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

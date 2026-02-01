@@ -1,0 +1,9 @@
+{
+  "module_name": "toplevel-enable.tc",
+  "hash_id": "a8bdcaa560842dfda0547eadc2c4aab5b0c0b3b81b9225a9a1ef5b86aeb0bb0a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/event/toplevel-enable.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event tracing - enable/disable with top level files\n# requires: available_events set_event events/enable\n\ndo_reset() {\n    echo > set_event\n    clear_trace\n}\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\necho '*:*' > set_event\n\nyield\n\necho 0 > tracing_on\n\ncount=`head -n 128 trace | grep -v ^# | wc -l`\nif [ $count -eq 0 ]; then\n    fail \"none of events are recorded\"\nfi\n\ndo_reset\n\necho 1 > events/enable\necho 1 > tracing_on\n\nyield\n\necho 0 > tracing_on\ncount=`head -n 128 trace | grep -v ^# | wc -l`\nif [ $count -eq 0 ]; then\n    fail \"none of events are recorded\"\nfi\n\ndo_reset\n\necho 0 > events/enable\n\nyield\n\ncount=`cat trace | grep -v ^# | wc -l`\nif [ $count -ne 0 ]; then\n    fail \"any of events should not be recorded\"\nfi\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

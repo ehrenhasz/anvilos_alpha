@@ -1,0 +1,9 @@
+{
+  "module_name": "mux.h",
+  "hash_id": "d8e5726a4ad8002e6f01717cb7e49ea526270176b96089e1ba4b2cdc5db1be6b",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/mux/mux.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_MUX_MUX_H\n#define _DT_BINDINGS_MUX_MUX_H\n\n#define MUX_IDLE_AS_IS      (-1)\n#define MUX_IDLE_DISCONNECT (-2)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

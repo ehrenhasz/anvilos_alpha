@@ -1,0 +1,9 @@
+{
+  "module_name": "dwarf-regs-table.h",
+  "hash_id": "924d9046bd729925b9c4702fc333e5e7bdf1f41559348006bf8c492b3fc60ed8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/powerpc/include/dwarf-regs-table.h",
+  "human_readable_source": " \n#ifdef DEFINE_DWARF_REGSTR_TABLE\n \n\n \n#define REG_DWARFNUM_NAME(reg, idx)\t[idx] = \"%\" #reg\n\nstatic const char * const powerpc_regstr_tbl[] = {\n\t\"%gpr0\", \"%gpr1\", \"%gpr2\", \"%gpr3\", \"%gpr4\",\n\t\"%gpr5\", \"%gpr6\", \"%gpr7\", \"%gpr8\", \"%gpr9\",\n\t\"%gpr10\", \"%gpr11\", \"%gpr12\", \"%gpr13\", \"%gpr14\",\n\t\"%gpr15\", \"%gpr16\", \"%gpr17\", \"%gpr18\", \"%gpr19\",\n\t\"%gpr20\", \"%gpr21\", \"%gpr22\", \"%gpr23\", \"%gpr24\",\n\t\"%gpr25\", \"%gpr26\", \"%gpr27\", \"%gpr28\", \"%gpr29\",\n\t\"%gpr30\", \"%gpr31\",\n\tREG_DWARFNUM_NAME(msr,   66),\n\tREG_DWARFNUM_NAME(ctr,   109),\n\tREG_DWARFNUM_NAME(link,  108),\n\tREG_DWARFNUM_NAME(xer,   101),\n\tREG_DWARFNUM_NAME(dar,   119),\n\tREG_DWARFNUM_NAME(dsisr, 118),\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

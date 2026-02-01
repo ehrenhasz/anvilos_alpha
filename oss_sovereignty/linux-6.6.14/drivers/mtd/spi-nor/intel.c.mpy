@@ -1,0 +1,9 @@
+{
+  "module_name": "intel.c",
+  "hash_id": "588abcaeef29690b24361fd2f76bea35a42b4a5392fe76ee5b06cc95a2547684",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/spi-nor/intel.c",
+  "human_readable_source": "\n \n\n#include <linux/mtd/spi-nor.h>\n\n#include \"core.h\"\n\nstatic const struct flash_info intel_nor_parts[] = {\n\t \n\t{ \"160s33b\",  INFO(0x898911, 0, 64 * 1024,  32)\n\t\tFLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE) },\n\t{ \"320s33b\",  INFO(0x898912, 0, 64 * 1024,  64)\n\t\tFLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE) },\n\t{ \"640s33b\",  INFO(0x898913, 0, 64 * 1024, 128)\n\t\tFLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_SWP_IS_VOLATILE) },\n};\n\nconst struct spi_nor_manufacturer spi_nor_intel = {\n\t.name = \"intel\",\n\t.parts = intel_nor_parts,\n\t.nparts = ARRAY_SIZE(intel_nor_parts),\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

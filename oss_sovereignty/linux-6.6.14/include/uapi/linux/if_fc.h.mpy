@@ -1,0 +1,9 @@
+{
+  "module_name": "if_fc.h",
+  "hash_id": "7b7491c745fb0049f89102ae52d525d1360388b0299eeace985ab0168ce45e86",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/if_fc.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_IF_FC_H\n#define _LINUX_IF_FC_H\n\n#include <linux/types.h>\n\n#define FC_ALEN\t6\t\t \n#define FC_HLEN   (sizeof(struct fch_hdr)+sizeof(struct fcllc))\n#define FC_ID_LEN 3\t\t \n\n \n#define EXTENDED_SAP 0xAA\n#define UI_CMD       0x03\n\n \n\nstruct fch_hdr {\n\t__u8  daddr[FC_ALEN];\t\t \n\t__u8  saddr[FC_ALEN];\t\t \n};\n\n \nstruct fcllc {\n\t__u8  dsap;\t\t\t \n\t__u8  ssap;\t\t\t \n\t__u8  llc;\t\t\t \n\t__u8  protid[3];\t\t \n\t__be16 ethertype;\t\t \n};\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

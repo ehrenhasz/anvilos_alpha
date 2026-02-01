@@ -1,0 +1,9 @@
+{
+  "module_name": "sigact.h",
+  "hash_id": "add18262286b62cbb34984e48b6a124583c2fb10e4cfd739381c27574aaee93f",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/sigact.h",
+  "human_readable_source": " \n\n \n\n \n\n \n\n \n\n#ifndef _SIGACTION_H\n#define _SIGACTION_H\n\n#if !defined(HAVE_SIGACTION) && defined(HAVE_SIGVEC)\n\n#undef  SIG_BLOCK\n#define SIG_BLOCK       00\n\n#undef  SIG_UNBLOCK\n#define SIG_UNBLOCK     01\n\n#undef  SIG_SETMASK\n#define SIG_SETMASK     02\n\n \n#if HAVE_BSD_SIGNAL_H\n# include <bsd/signal.h>\n#endif\n\nstruct sigaction\n{\n\tstruct sigvec sv;\n};\n\ntypedef unsigned long sigset_t;\n\n#undef  sa_mask\n#define sa_mask sv.sv_mask\n#undef  sa_handler\n#define sa_handler sv.sv_handler\n#undef  sa_flags\n#define sa_flags sv.sv_flags\n\nint sigaction(int sig, struct sigaction *sigact, struct sigaction *osigact);\nint sigprocmask (int how, sigset_t *mask, sigset_t *omask);\nint sigemptyset (sigset_t *mask);\nint sigsuspend (sigset_t *mask);\nint sigdelset (sigset_t *mask, int sig);\nint sigaddset (sigset_t *mask, int sig);\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

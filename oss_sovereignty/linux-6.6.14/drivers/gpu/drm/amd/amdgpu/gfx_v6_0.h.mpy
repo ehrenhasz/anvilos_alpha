@@ -1,0 +1,9 @@
+{
+  "module_name": "gfx_v6_0.h",
+  "hash_id": "2da6e4577045af2e5c0108258074845c5e3713a9ef1490c225df512e35ef7a4d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/gfx_v6_0.h",
+  "human_readable_source": " \n\n#ifndef __GFX_V6_0_H__\n#define __GFX_V6_0_H__\n\nextern const struct amdgpu_ip_block_version gfx_v6_0_ip_block;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

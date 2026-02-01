@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_tnr_param.h",
+  "hash_id": "1163c8be9015380952be5f5b16ada6f8ca464b472011383ec7d08bd8542bb9d4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/tnr/tnr_1.0/ia_css_tnr_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_TNR_PARAM_H\n#define __IA_CSS_TNR_PARAM_H\n\n#include \"type_support.h\"\n#include \"sh_css_defs.h\"\n#include \"dma.h\"\n\n \nstruct sh_css_isp_tnr_params {\n\ts32 coef;\n\ts32 threshold_Y;\n\ts32 threshold_C;\n};\n\nstruct ia_css_tnr_configuration {\n\tconst struct ia_css_frame *tnr_frames[NUM_VIDEO_TNR_FRAMES];\n};\n\nstruct sh_css_isp_tnr_isp_config {\n\tu32 width_a_over_b;\n\tu32 frame_height;\n\tstruct dma_port_config port_b;\n\tia_css_ptr tnr_frame_addr[NUM_VIDEO_TNR_FRAMES];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

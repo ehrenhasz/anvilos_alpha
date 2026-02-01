@@ -1,0 +1,9 @@
+{
+  "module_name": "test_queue_map.c",
+  "hash_id": "4ee1e5a49ac36bf19c78c97cf50683d51f162f7ccb2a56b2d2f6fc128bc14917",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_queue_map.c",
+  "human_readable_source": "\n\n#define MAP_TYPE BPF_MAP_TYPE_QUEUE\n#include \"test_queue_stack_map.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

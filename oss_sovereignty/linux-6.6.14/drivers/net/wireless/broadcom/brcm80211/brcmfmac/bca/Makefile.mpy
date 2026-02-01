@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "90b14ffaef775198fa006ebef01b5f96097bc95f4f01d74cd69a195ea87f56d0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/bca/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: ISC\n#\n# Copyright (c) 2022 Broadcom Corporation\n\nccflags-y += \\\n\t-I $(srctree)/$(src) \\\n\t-I $(srctree)/$(src)/.. \\\n\t-I $(srctree)/$(src)/../../include\n\nobj-m += brcmfmac-bca.o\nbrcmfmac-bca-objs += \\\n\t\tcore.o module.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

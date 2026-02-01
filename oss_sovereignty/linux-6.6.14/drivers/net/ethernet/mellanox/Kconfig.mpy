@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e53e093a4ac3abdd0889fdd8d86a4edb63a6be3a25f737f5bcab0e6ac5f928a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Mellanox driver configuration\n#\n\nconfig NET_VENDOR_MELLANOX\n\tbool \"Mellanox devices\"\n\tdefault y\n\tdepends on PCI || I2C\n\thelp\n\t  If you have a network (Ethernet or RDMA) device belonging to this\n\t  class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about Mellanox cards. If you say Y, you will be asked\n\t  for your specific card in the following questions.\n\nif NET_VENDOR_MELLANOX\n\nsource \"drivers/net/ethernet/mellanox/mlx4/Kconfig\"\nsource \"drivers/net/ethernet/mellanox/mlx5/core/Kconfig\"\nsource \"drivers/net/ethernet/mellanox/mlxsw/Kconfig\"\nsource \"drivers/net/ethernet/mellanox/mlxfw/Kconfig\"\nsource \"drivers/net/ethernet/mellanox/mlxbf_gige/Kconfig\"\n\nendif # NET_VENDOR_MELLANOX\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

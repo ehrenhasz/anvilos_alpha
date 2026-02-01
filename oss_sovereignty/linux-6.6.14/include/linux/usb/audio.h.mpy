@@ -1,0 +1,9 @@
+{
+  "module_name": "audio.h",
+  "hash_id": "b56d6bbdb5aff24ee77e1ba0492a59a43c171498d96eab2a712dffde2eb70ccd",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/audio.h",
+  "human_readable_source": "\n \n#ifndef __LINUX_USB_AUDIO_H\n#define __LINUX_USB_AUDIO_H\n\n#include <uapi/linux/usb/audio.h>\n\n\nstruct usb_audio_control {\n\tstruct list_head list;\n\tconst char *name;\n\tu8 type;\n\tint data[5];\n\tint (*set)(struct usb_audio_control *con, u8 cmd, int value);\n\tint (*get)(struct usb_audio_control *con, u8 cmd);\n};\n\nstruct usb_audio_control_selector {\n\tstruct list_head list;\n\tstruct list_head control;\n\tu8 id;\n\tconst char *name;\n\tu8 type;\n\tstruct usb_descriptor_header *desc;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

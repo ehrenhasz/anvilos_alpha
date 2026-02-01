@@ -1,0 +1,9 @@
+{
+  "module_name": "crc7.h",
+  "hash_id": "d8f62c14565cf4c4e21a7578a85162723d5956b40b7cef903cc94a9718f685be",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/crc7.h",
+  "human_readable_source": " \n#ifndef _LINUX_CRC7_H\n#define _LINUX_CRC7_H\n#include <linux/types.h>\n\nextern const u8 crc7_be_syndrome_table[256];\n\nstatic inline u8 crc7_be_byte(u8 crc, u8 data)\n{\n\treturn crc7_be_syndrome_table[crc ^ data];\n}\n\nextern u8 crc7_be(u8 crc, const u8 *buffer, size_t len);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

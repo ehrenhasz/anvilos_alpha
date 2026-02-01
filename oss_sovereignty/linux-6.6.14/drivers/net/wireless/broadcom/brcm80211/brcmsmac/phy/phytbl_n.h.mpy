@@ -1,0 +1,9 @@
+{
+  "module_name": "phytbl_n.h",
+  "hash_id": "dc8b668b95256b547a218179ec71b463e0e0e55ebfbbd0317fd73214ca28cecf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phytbl_n.h",
+  "human_readable_source": "\n \n\n#define ANT_SWCTRL_TBL_REV3_IDX (0)\n\n#include <types.h>\n#include \"phy_int.h\"\n\nextern const struct phytbl_info mimophytbl_info_rev0[],\n\t\t\t\tmimophytbl_info_rev0_volatile[];\n\nextern const u32 mimophytbl_info_sz_rev0,\n\t\t mimophytbl_info_sz_rev0_volatile;\n\nextern const struct phytbl_info mimophytbl_info_rev3[],\n\t\t\t\tmimophytbl_info_rev3_volatile[],\n\t\t\t\tmimophytbl_info_rev3_volatile1[],\n\t\t\t\tmimophytbl_info_rev3_volatile2[],\n\t\t\t\tmimophytbl_info_rev3_volatile3[];\n\nextern const u32 mimophytbl_info_sz_rev3,\n\t\t mimophytbl_info_sz_rev3_volatile,\n\t\t mimophytbl_info_sz_rev3_volatile1,\n\t\t mimophytbl_info_sz_rev3_volatile2,\n\t\t mimophytbl_info_sz_rev3_volatile3;\n\nextern const u32 noise_var_tbl_rev3[];\n\nextern const struct phytbl_info mimophytbl_info_rev7[];\n\nextern const u32 mimophytbl_info_sz_rev7;\n\nextern const u32 noise_var_tbl_rev7[];\n\nextern const struct phytbl_info mimophytbl_info_rev16[];\n\nextern const u32 mimophytbl_info_sz_rev16;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

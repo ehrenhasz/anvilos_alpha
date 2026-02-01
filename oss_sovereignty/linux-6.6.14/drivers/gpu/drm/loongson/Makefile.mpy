@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "14f966a5502a51096ac9f368eb50a766dfc7e1d27c2f3ab7b627a650a300838e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/loongson/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nloongson-y := \\\n\tlsdc_benchmark.o \\\n\tlsdc_crtc.o \\\n\tlsdc_debugfs.o \\\n\tlsdc_drv.o \\\n\tlsdc_gem.o \\\n\tlsdc_gfxpll.o \\\n\tlsdc_i2c.o \\\n\tlsdc_irq.o \\\n\tlsdc_output_7a1000.o \\\n\tlsdc_output_7a2000.o \\\n\tlsdc_plane.o \\\n\tlsdc_pixpll.o \\\n\tlsdc_probe.o \\\n\tlsdc_ttm.o\n\nloongson-y += loongson_device.o \\\n\t      loongson_module.o\n\nobj-$(CONFIG_DRM_LOONGSON) += loongson.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

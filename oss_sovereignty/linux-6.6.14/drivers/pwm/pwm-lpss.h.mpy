@@ -1,0 +1,9 @@
+{
+  "module_name": "pwm-lpss.h",
+  "hash_id": "6c66ce6bc42d2d26954e315cfeb601045a46752efcff18aa856201e4d9486426",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pwm/pwm-lpss.h",
+  "human_readable_source": " \n \n\n#ifndef __PWM_LPSS_H\n#define __PWM_LPSS_H\n\n#include <linux/pwm.h>\n#include <linux/types.h>\n\n#include <linux/platform_data/x86/pwm-lpss.h>\n\n#define LPSS_MAX_PWMS\t\t\t4\n\nstruct pwm_lpss_chip {\n\tstruct pwm_chip chip;\n\tvoid __iomem *regs;\n\tconst struct pwm_lpss_boardinfo *info;\n};\n\nextern const struct pwm_lpss_boardinfo pwm_lpss_byt_info;\nextern const struct pwm_lpss_boardinfo pwm_lpss_bsw_info;\nextern const struct pwm_lpss_boardinfo pwm_lpss_bxt_info;\nextern const struct pwm_lpss_boardinfo pwm_lpss_tng_info;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "10abe87fc5555d6f36f780c295945b0257d59bfcfc31f4a833d8cd0c9e548620",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/tegra/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_PINCTRL_TEGRA)\t\t+= pinctrl-tegra.o\nobj-$(CONFIG_PINCTRL_TEGRA20)\t\t+= pinctrl-tegra20.o\nobj-$(CONFIG_PINCTRL_TEGRA30)\t\t+= pinctrl-tegra30.o\nobj-$(CONFIG_PINCTRL_TEGRA114)\t\t+= pinctrl-tegra114.o\nobj-$(CONFIG_PINCTRL_TEGRA124)\t\t+= pinctrl-tegra124.o\nobj-$(CONFIG_PINCTRL_TEGRA210)\t\t+= pinctrl-tegra210.o\nobj-$(CONFIG_PINCTRL_TEGRA194)\t\t+= pinctrl-tegra194.o\nobj-$(CONFIG_PINCTRL_TEGRA234)\t\t+= pinctrl-tegra234.o\nobj-$(CONFIG_PINCTRL_TEGRA_XUSB)\t+= pinctrl-tegra-xusb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

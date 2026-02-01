@@ -1,0 +1,9 @@
+{
+  "module_name": "vsockmon.h",
+  "hash_id": "627e62f55980fb70996bdb4f025ba9257b0d5373504aebdc82085d33ced5198d",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/vsockmon.h",
+  "human_readable_source": " \n#ifndef _UAPI_VSOCKMON_H\n#define _UAPI_VSOCKMON_H\n\n#include <linux/virtio_vsock.h>\n\n \n\nstruct af_vsockmon_hdr {\n\t__le64 src_cid;\n\t__le64 dst_cid;\n\t__le32 src_port;\n\t__le32 dst_port;\n\t__le16 op;\t\t\t \n\t__le16 transport;\t\t \n\t__le16 len;\t\t\t \n\t__u8 reserved[2];\n};\n\nenum af_vsockmon_op {\n\tAF_VSOCK_OP_UNKNOWN = 0,\n\tAF_VSOCK_OP_CONNECT = 1,\n\tAF_VSOCK_OP_DISCONNECT = 2,\n\tAF_VSOCK_OP_CONTROL = 3,\n\tAF_VSOCK_OP_PAYLOAD = 4,\n};\n\nenum af_vsockmon_transport {\n\tAF_VSOCK_TRANSPORT_UNKNOWN = 0,\n\tAF_VSOCK_TRANSPORT_NO_INFO = 1,\t \n\n\t \n\tAF_VSOCK_TRANSPORT_VIRTIO = 2,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

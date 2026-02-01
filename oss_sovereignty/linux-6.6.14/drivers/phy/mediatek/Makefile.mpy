@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1129df7a850a95dc6024e203f01ce2ea896c681da7ad102b9b747484f30db696",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/mediatek/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the phy drivers.\n#\n\nobj-$(CONFIG_PHY_MTK_DP)\t\t+= phy-mtk-dp.o\nobj-$(CONFIG_PHY_MTK_PCIE)\t\t+= phy-mtk-pcie.o\nobj-$(CONFIG_PHY_MTK_TPHY)\t\t+= phy-mtk-tphy.o\nobj-$(CONFIG_PHY_MTK_UFS)\t\t+= phy-mtk-ufs.o\nobj-$(CONFIG_PHY_MTK_XSPHY)\t\t+= phy-mtk-xsphy.o\n\nphy-mtk-hdmi-drv-y\t\t\t:= phy-mtk-hdmi.o\nphy-mtk-hdmi-drv-y\t\t\t+= phy-mtk-hdmi-mt2701.o\nphy-mtk-hdmi-drv-y\t\t\t+= phy-mtk-hdmi-mt8173.o\nphy-mtk-hdmi-drv-y\t\t\t+= phy-mtk-hdmi-mt8195.o\nobj-$(CONFIG_PHY_MTK_HDMI)\t\t+= phy-mtk-hdmi-drv.o\n\nphy-mtk-mipi-dsi-drv-y\t\t\t:= phy-mtk-mipi-dsi.o\nphy-mtk-mipi-dsi-drv-y\t\t\t+= phy-mtk-mipi-dsi-mt8173.o\nphy-mtk-mipi-dsi-drv-y\t\t\t+= phy-mtk-mipi-dsi-mt8183.o\nobj-$(CONFIG_PHY_MTK_MIPI_DSI)\t\t+= phy-mtk-mipi-dsi-drv.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

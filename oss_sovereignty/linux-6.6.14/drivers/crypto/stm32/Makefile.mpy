@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "99559895abb6ee38c9b58bafdc914a5bd2995fa5f141602b3049568c9e81574f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/stm32/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CRYPTO_DEV_STM32_CRC) += stm32-crc32.o\nobj-$(CONFIG_CRYPTO_DEV_STM32_HASH) += stm32-hash.o\nobj-$(CONFIG_CRYPTO_DEV_STM32_CRYP) += stm32-cryp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

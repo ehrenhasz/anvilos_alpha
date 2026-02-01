@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0fef058ec810bd5324947225ffc6aa648479cc8c4f8c0505d36c65e3c997237c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/c67x00/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Cypress C67X00 USB Controller\n#\n\nobj-$(CONFIG_USB_C67X00_HCD)\t+= c67x00.o\n\nc67x00-y := c67x00-drv.o c67x00-ll-hpi.o c67x00-hcd.o c67x00-sched.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

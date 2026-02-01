@@ -1,0 +1,9 @@
+{
+  "module_name": "abi.h",
+  "hash_id": "cea872252eec1bb418552f2a39295ba8772076c8dc17b421f7afd4e64e7b520a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/sound/sof/abi.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef __INCLUDE_UAPI_SOUND_SOF_ABI_H__\n#define __INCLUDE_UAPI_SOUND_SOF_ABI_H__\n\n#include <linux/types.h>\n\n \n#define SOF_ABI_MAJOR 3\n#define SOF_ABI_MINOR 23\n#define SOF_ABI_PATCH 0\n\n \n#define SOF_ABI_MAJOR_SHIFT\t24\n#define SOF_ABI_MAJOR_MASK\t0xff\n#define SOF_ABI_MINOR_SHIFT\t12\n#define SOF_ABI_MINOR_MASK\t0xfff\n#define SOF_ABI_PATCH_SHIFT\t0\n#define SOF_ABI_PATCH_MASK\t0xfff\n\n#define SOF_ABI_VER(major, minor, patch) \\\n\t(((major) << SOF_ABI_MAJOR_SHIFT) | \\\n\t((minor) << SOF_ABI_MINOR_SHIFT) | \\\n\t((patch) << SOF_ABI_PATCH_SHIFT))\n\n#define SOF_ABI_VERSION_MAJOR(version) \\\n\t(((version) >> SOF_ABI_MAJOR_SHIFT) & SOF_ABI_MAJOR_MASK)\n#define SOF_ABI_VERSION_MINOR(version)\t\\\n\t(((version) >> SOF_ABI_MINOR_SHIFT) & SOF_ABI_MINOR_MASK)\n#define SOF_ABI_VERSION_PATCH(version)\t\\\n\t(((version) >> SOF_ABI_PATCH_SHIFT) & SOF_ABI_PATCH_MASK)\n\n#define SOF_ABI_VERSION_INCOMPATIBLE(sof_ver, client_ver)\t\t\\\n\t(SOF_ABI_VERSION_MAJOR((sof_ver)) !=\t\t\t\t\\\n\t\tSOF_ABI_VERSION_MAJOR((client_ver))\t\t\t\\\n\t)\n\n#define SOF_ABI_VERSION SOF_ABI_VER(SOF_ABI_MAJOR, SOF_ABI_MINOR, SOF_ABI_PATCH)\n\n \n#define SOF_ABI_MAGIC\t\t0x00464F53\n \n#define SOF_IPC4_ABI_MAGIC\t0x34464F53\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

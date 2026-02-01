@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "29de9c6a360cb5e0cf7984e348180d781fa88355bb4e84700a761823e93624ac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/pi433/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig PI433\n\ttristate \"Pi433 - a 433MHz radio module for Raspberry Pi\"\n\tdepends on SPI\n\thelp\n\t  This option allows you to enable support for the radio module Pi433.\n\n\t  Pi433 is a shield that fits onto the GPIO header of a Raspberry Pi\n\t  or compatible. It extends the Raspberry Pi with the option, to\n\t  send and receive data in the 433MHz ISM band - for example to\n\t  communicate between two systems without using ethernet or bluetooth\n\t  or for control or read sockets, actors, sensors, widely available\n\t  for low price.\n\n\t  For details or the option to buy, please visit https://pi433.de/en.html\n\n\t  If in doubt, say N here, but saying yes most probably won't hurt\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

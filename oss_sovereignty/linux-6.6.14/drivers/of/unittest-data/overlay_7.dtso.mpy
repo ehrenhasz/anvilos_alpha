@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_7.dtso",
+  "hash_id": "98cedfb5ad7fbb962db5f251926f017186afebe99087df8b6caaf1fb899a3a1c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_7.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n/* overlay_7 */\n/* overlays 6, 7 application and removal in sequence */\n\n&unittest7 {\n\tstatus = \"okay\";\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

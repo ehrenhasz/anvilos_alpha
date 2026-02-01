@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-kcopyd.h",
+  "hash_id": "1c0fdbe7cdff01ff7bfd186b7629f47f62e4c33db022c28a2ecfff78c893109f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dm-kcopyd.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_DM_KCOPYD_H\n#define _LINUX_DM_KCOPYD_H\n\n#ifdef __KERNEL__\n\n#include <linux/dm-io.h>\n\n \n#define DM_KCOPYD_MAX_REGIONS 8\n\n#define DM_KCOPYD_IGNORE_ERROR 1\n#define DM_KCOPYD_WRITE_SEQ    2\n\nstruct dm_kcopyd_throttle {\n\tunsigned int throttle;\n\tunsigned int num_io_jobs;\n\tunsigned int io_period;\n\tunsigned int total_period;\n\tunsigned int last_jiffies;\n};\n\n \n#define DECLARE_DM_KCOPYD_THROTTLE_WITH_MODULE_PARM(name, description)\t\\\nstatic struct dm_kcopyd_throttle dm_kcopyd_throttle = { 100, 0, 0, 0, 0 }; \\\nmodule_param_named(name, dm_kcopyd_throttle.throttle, uint, 0644); \\\nMODULE_PARM_DESC(name, description)\n\n \nstruct dm_kcopyd_client;\nstruct dm_kcopyd_client *dm_kcopyd_client_create(struct dm_kcopyd_throttle *throttle);\nvoid dm_kcopyd_client_destroy(struct dm_kcopyd_client *kc);\nvoid dm_kcopyd_client_flush(struct dm_kcopyd_client *kc);\n\n \ntypedef void (*dm_kcopyd_notify_fn)(int read_err, unsigned int long write_err,\n\t\t\t\t    void *context);\n\nvoid dm_kcopyd_copy(struct dm_kcopyd_client *kc, struct dm_io_region *from,\n\t\t    unsigned int num_dests, struct dm_io_region *dests,\n\t\t    unsigned int flags, dm_kcopyd_notify_fn fn, void *context);\n\n \nvoid *dm_kcopyd_prepare_callback(struct dm_kcopyd_client *kc,\n\t\t\t\t dm_kcopyd_notify_fn fn, void *context);\nvoid dm_kcopyd_do_callback(void *job, int read_err, unsigned int long write_err);\n\nvoid dm_kcopyd_zero(struct dm_kcopyd_client *kc,\n\t\t    unsigned int num_dests, struct dm_io_region *dests,\n\t\t    unsigned int flags, dm_kcopyd_notify_fn fn, void *context);\n\n#endif\t \n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

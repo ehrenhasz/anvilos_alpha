@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_fpn_types.h",
+  "hash_id": "facb0d62651655087bd997a0edba6e1bf37c9b8b7eb09bb8b894a728119ee1c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/fpn/fpn_1.0/ia_css_fpn_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_FPN_TYPES_H\n#define __IA_CSS_FPN_TYPES_H\n\n \n\n \n\nstruct ia_css_fpn_table {\n\ts16 *data;\t\t \n\tu32 width;\t\t \n\tu32 height;\t \n\tu32 shift;\t\t \n\tu32 enabled;\t \n};\n\nstruct ia_css_fpn_configuration {\n\tconst struct ia_css_frame_info *info;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

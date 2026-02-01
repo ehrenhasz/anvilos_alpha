@@ -1,0 +1,9 @@
+{
+  "module_name": "lock.h",
+  "hash_id": "5701f8056c24df87855ca514ea21124ba28169bf580dbac9876d7d9038dc236c",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/bitops/lock.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_BITOPS_LOCK_H_\n#define _ASM_GENERIC_BITOPS_LOCK_H_\n\n#include <linux/atomic.h>\n#include <linux/compiler.h>\n#include <asm/barrier.h>\n\n \nstatic __always_inline int\narch_test_and_set_bit_lock(unsigned int nr, volatile unsigned long *p)\n{\n\tlong old;\n\tunsigned long mask = BIT_MASK(nr);\n\n\tp += BIT_WORD(nr);\n\tif (READ_ONCE(*p) & mask)\n\t\treturn 1;\n\n\told = raw_atomic_long_fetch_or_acquire(mask, (atomic_long_t *)p);\n\treturn !!(old & mask);\n}\n\n\n \nstatic __always_inline void\narch_clear_bit_unlock(unsigned int nr, volatile unsigned long *p)\n{\n\tp += BIT_WORD(nr);\n\traw_atomic_long_fetch_andnot_release(BIT_MASK(nr), (atomic_long_t *)p);\n}\n\n \nstatic inline void\narch___clear_bit_unlock(unsigned int nr, volatile unsigned long *p)\n{\n\tunsigned long old;\n\n\tp += BIT_WORD(nr);\n\told = READ_ONCE(*p);\n\told &= ~BIT_MASK(nr);\n\traw_atomic_long_set_release((atomic_long_t *)p, old);\n}\n\n \n#ifndef arch_clear_bit_unlock_is_negative_byte\nstatic inline bool arch_clear_bit_unlock_is_negative_byte(unsigned int nr,\n\t\t\t\t\t\t\t  volatile unsigned long *p)\n{\n\tlong old;\n\tunsigned long mask = BIT_MASK(nr);\n\n\tp += BIT_WORD(nr);\n\told = raw_atomic_long_fetch_andnot_release(mask, (atomic_long_t *)p);\n\treturn !!(old & BIT(7));\n}\n#define arch_clear_bit_unlock_is_negative_byte arch_clear_bit_unlock_is_negative_byte\n#endif\n\n#include <asm-generic/bitops/instrumented-lock.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

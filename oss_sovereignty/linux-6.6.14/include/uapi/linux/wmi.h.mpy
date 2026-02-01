@@ -1,0 +1,9 @@
+{
+  "module_name": "wmi.h",
+  "hash_id": "9726daacabf040641efc32454531dcc8631f6c410662b6e6d2cb8bd81530b444",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/wmi.h",
+  "human_readable_source": " \n \n#ifndef _UAPI_LINUX_WMI_H\n#define _UAPI_LINUX_WMI_H\n\n#include <linux/ioctl.h>\n#include <linux/types.h>\n\n \n#define WMI_IOC 'W'\n\n \nstruct wmi_ioctl_buffer {\n\t__u64\tlength;\n\t__u8\tdata[];\n};\n\n \nstruct calling_interface_buffer {\n\t__u16 cmd_class;\n\t__u16 cmd_select;\n\tvolatile __u32 input[4];\n\tvolatile __u32 output[4];\n} __packed;\n\nstruct dell_wmi_extensions {\n\t__u32 argattrib;\n\t__u32 blength;\n\t__u8 data[];\n} __packed;\n\nstruct dell_wmi_smbios_buffer {\n\t__u64 length;\n\tstruct calling_interface_buffer std;\n\tstruct dell_wmi_extensions\text;\n} __packed;\n\n \n#define CLASS_TOKEN_READ\t0\n#define CLASS_TOKEN_WRITE\t1\n#define SELECT_TOKEN_STD\t0\n#define SELECT_TOKEN_BAT\t1\n#define SELECT_TOKEN_AC\t\t2\n#define CLASS_FLASH_INTERFACE\t7\n#define SELECT_FLASH_INTERFACE\t3\n#define CLASS_ADMIN_PROP\t10\n#define SELECT_ADMIN_PROP\t3\n#define CLASS_INFO\t\t17\n#define SELECT_RFKILL\t\t11\n#define SELECT_APP_REGISTRATION\t3\n#define SELECT_DOCK\t\t22\n\n \n#define CAPSULE_EN_TOKEN\t0x0461\n#define CAPSULE_DIS_TOKEN\t0x0462\n#define WSMT_EN_TOKEN\t\t0x04EC\n#define WSMT_DIS_TOKEN\t\t0x04ED\n\n \n#define DELL_WMI_SMBIOS_CMD\t_IOWR(WMI_IOC, 0, struct dell_wmi_smbios_buffer)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

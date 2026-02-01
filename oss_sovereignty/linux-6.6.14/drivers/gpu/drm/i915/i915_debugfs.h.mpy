@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_debugfs.h",
+  "hash_id": "c8d540e165db521000330309762afda4cd143363adff8804c835d638ccf8a060",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/i915_debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef __I915_DEBUGFS_H__\n#define __I915_DEBUGFS_H__\n\nstruct drm_connector;\nstruct drm_i915_gem_object;\nstruct drm_i915_private;\nstruct seq_file;\n\n#ifdef CONFIG_DEBUG_FS\nvoid i915_debugfs_register(struct drm_i915_private *dev_priv);\nvoid i915_debugfs_describe_obj(struct seq_file *m, struct drm_i915_gem_object *obj);\n#else\nstatic inline void i915_debugfs_register(struct drm_i915_private *dev_priv) {}\nstatic inline void i915_debugfs_describe_obj(struct seq_file *m, struct drm_i915_gem_object *obj) {}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

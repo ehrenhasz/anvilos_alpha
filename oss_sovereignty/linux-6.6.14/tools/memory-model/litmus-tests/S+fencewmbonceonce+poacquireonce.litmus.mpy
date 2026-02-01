@@ -1,0 +1,9 @@
+{
+  "module_name": "S+fencewmbonceonce+poacquireonce.litmus",
+  "hash_id": "b527abf96e613d6caa758b9199265767bbedd30111b01760dbd3b68df31a41cf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/S+fencewmbonceonce+poacquireonce.litmus",
+  "human_readable_source": "C S+fencewmbonceonce+poacquireonce\n\n(*\n * Result: Never\n *\n * Can a smp_wmb(), instead of a release, and an acquire order a prior\n * store against a subsequent store?\n *)\n\n{}\n\nP0(int *x, int *y)\n{\n\tWRITE_ONCE(*x, 2);\n\tsmp_wmb();\n\tWRITE_ONCE(*y, 1);\n}\n\nP1(int *x, int *y)\n{\n\tint r0;\n\n\tr0 = smp_load_acquire(y);\n\tWRITE_ONCE(*x, 1);\n}\n\nexists (x=2 /\\ 1:r0=1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

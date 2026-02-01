@@ -1,0 +1,9 @@
+{
+  "module_name": "ppp-comp.h",
+  "hash_id": "427abaaacfb4c1a7d22c9160145ca9659b58b2abf1c98c01ab7c615f615923e8",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/ppp-comp.h",
+  "human_readable_source": " \n \n#ifndef _UAPI_NET_PPP_COMP_H\n#define _UAPI_NET_PPP_COMP_H\n\n\n \n\n#define CCP_CONFREQ\t1\n#define CCP_CONFACK\t2\n#define CCP_TERMREQ\t5\n#define CCP_TERMACK\t6\n#define CCP_RESETREQ\t14\n#define CCP_RESETACK\t15\n\n \n\n#define CCP_MAX_OPTION_LENGTH\t32\n\n \n\n#define CCP_CODE(dp)\t\t((dp)[0])\n#define CCP_ID(dp)\t\t((dp)[1])\n#define CCP_LENGTH(dp)\t\t(((dp)[2] << 8) + (dp)[3])\n#define CCP_HDRLEN\t\t4\n\n#define CCP_OPT_CODE(dp)\t((dp)[0])\n#define CCP_OPT_LENGTH(dp)\t((dp)[1])\n#define CCP_OPT_MINLEN\t\t2\n\n \n\n#define CI_BSD_COMPRESS\t\t21\t \n#define CILEN_BSD_COMPRESS\t3\t \n\n \n#define BSD_NBITS(x)\t\t((x) & 0x1F)\t \n#define BSD_VERSION(x)\t\t((x) >> 5)\t \n#define BSD_CURRENT_VERSION\t1\t\t \n#define BSD_MAKE_OPT(v, n)\t(((v) << 5) | (n))\n\n#define BSD_MIN_BITS\t\t9\t \n#define BSD_MAX_BITS\t\t15\t \n\n \n\n#define CI_DEFLATE\t\t26\t \n#define CI_DEFLATE_DRAFT\t24\t \n#define CILEN_DEFLATE\t\t4\t \n\n#define DEFLATE_MIN_SIZE\t9\n#define DEFLATE_MAX_SIZE\t15\n#define DEFLATE_METHOD_VAL\t8\n#define DEFLATE_SIZE(x)\t\t(((x) >> 4) + 8)\n#define DEFLATE_METHOD(x)\t((x) & 0x0F)\n#define DEFLATE_MAKE_OPT(w)\t((((w) - 8) << 4) + DEFLATE_METHOD_VAL)\n#define DEFLATE_CHK_SEQUENCE\t0\n\n \n\n#define CI_MPPE                18       \n#define CILEN_MPPE              6       \n\n \n\n#define CI_PREDICTOR_1\t\t1\t \n#define CILEN_PREDICTOR_1\t2\t \n#define CI_PREDICTOR_2\t\t2\t \n#define CILEN_PREDICTOR_2\t2\t \n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

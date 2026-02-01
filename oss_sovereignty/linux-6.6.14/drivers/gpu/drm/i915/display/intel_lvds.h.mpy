@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_lvds.h",
+  "hash_id": "d3a9ec99a79fe4178fa11d298818c12458e59e07eb0544e900f10664f78a47fe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_lvds.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_LVDS_H__\n#define __INTEL_LVDS_H__\n\n#include <linux/types.h>\n\n#include \"i915_reg_defs.h\"\n\nenum pipe;\nstruct drm_i915_private;\n\nbool intel_lvds_port_enabled(struct drm_i915_private *dev_priv,\n\t\t\t     i915_reg_t lvds_reg, enum pipe *pipe);\nvoid intel_lvds_init(struct drm_i915_private *dev_priv);\nstruct intel_encoder *intel_get_lvds_encoder(struct drm_i915_private *dev_priv);\nbool intel_is_dual_link_lvds(struct drm_i915_private *dev_priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

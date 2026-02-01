@@ -1,0 +1,9 @@
+{
+  "module_name": "virtual-memory.json",
+  "hash_id": "27b2af081c63cb7b223ca66a3a354d6c6dae97e7c8ea1bea17dcb88af26d5fca",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/graniterapids/virtual-memory.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"Load miss in all TLB levels causes a page walk that completes. (All page sizes)\",\n        \"EventCode\": \"0x12\",\n        \"EventName\": \"DTLB_LOAD_MISSES.WALK_COMPLETED\",\n        \"PublicDescription\": \"Counts completed page walks  (all page sizes) caused by demand data loads. This implies it missed in the DTLB and further levels of TLB. The page walk can end with or without a fault.\",\n        \"SampleAfterValue\": \"100003\",\n        \"UMask\": \"0xe\"\n    },\n    {\n        \"BriefDescription\": \"Store misses in all TLB levels causes a page walk that completes. (All page sizes)\",\n        \"EventCode\": \"0x13\",\n        \"EventName\": \"DTLB_STORE_MISSES.WALK_COMPLETED\",\n        \"PublicDescription\": \"Counts completed page walks  (all page sizes) caused by demand data stores. This implies it missed in the DTLB and further levels of TLB. The page walk can end with or without a fault.\",\n        \"SampleAfterValue\": \"100003\",\n        \"UMask\": \"0xe\"\n    },\n    {\n        \"BriefDescription\": \"Code miss in all TLB levels causes a page walk that completes. (All page sizes)\",\n        \"EventCode\": \"0x11\",\n        \"EventName\": \"ITLB_MISSES.WALK_COMPLETED\",\n        \"PublicDescription\": \"Counts completed page walks (all page sizes) caused by a code fetch. This implies it missed in the ITLB (Instruction TLB) and further levels of TLB. The page walk can end with or without a fault.\",\n        \"SampleAfterValue\": \"100003\",\n        \"UMask\": \"0xe\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

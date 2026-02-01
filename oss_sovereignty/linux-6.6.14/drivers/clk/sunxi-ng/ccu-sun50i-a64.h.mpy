@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu-sun50i-a64.h",
+  "hash_id": "85dd2116367cf080d9529f8cbd1bb41311be0cb4ddc4d92cf9bfa4165628b0d3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu-sun50i-a64.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_SUN50I_A64_H_\n#define _CCU_SUN50I_A64_H_\n\n#include <dt-bindings/clock/sun50i-a64-ccu.h>\n#include <dt-bindings/reset/sun50i-a64-ccu.h>\n\n#define CLK_OSC_12M\t\t\t0\n#define CLK_PLL_CPUX\t\t\t1\n#define CLK_PLL_AUDIO_BASE\t\t2\n#define CLK_PLL_AUDIO\t\t\t3\n#define CLK_PLL_AUDIO_2X\t\t4\n#define CLK_PLL_AUDIO_4X\t\t5\n#define CLK_PLL_AUDIO_8X\t\t6\n\n \n\n#define CLK_PLL_VIDEO0_2X\t\t8\n#define CLK_PLL_VE\t\t\t9\n#define CLK_PLL_DDR0\t\t\t10\n\n \n\n#define CLK_PLL_PERIPH0_2X\t\t12\n#define CLK_PLL_PERIPH1\t\t\t13\n#define CLK_PLL_PERIPH1_2X\t\t14\n#define CLK_PLL_VIDEO1\t\t\t15\n#define CLK_PLL_GPU\t\t\t16\n#define CLK_PLL_MIPI\t\t\t17\n#define CLK_PLL_HSIC\t\t\t18\n#define CLK_PLL_DE\t\t\t19\n#define CLK_PLL_DDR1\t\t\t20\n#define CLK_AXI\t\t\t\t22\n#define CLK_APB\t\t\t\t23\n#define CLK_AHB1\t\t\t24\n#define CLK_APB1\t\t\t25\n#define CLK_APB2\t\t\t26\n#define CLK_AHB2\t\t\t27\n\n \n\n \n\n#define CLK_USB_OHCI0_12M\t\t90\n\n#define CLK_USB_OHCI1_12M\t\t92\n\n \n\n \n\n#define CLK_NUMBER\t\t\t(CLK_GPU + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

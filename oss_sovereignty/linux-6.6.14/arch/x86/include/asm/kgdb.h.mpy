@@ -1,0 +1,9 @@
+{
+  "module_name": "kgdb.h",
+  "hash_id": "8396e472353101cacab1ad8dd99d000bcc26bc010bbf6092ea587f1d5352a4db",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/kgdb.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_KGDB_H\n#define _ASM_X86_KGDB_H\n\n \n\n#include <asm/ptrace.h>\n\n \n#define BUFMAX\t\t\t1024\n\n \n#ifdef CONFIG_X86_32\nenum regnames {\n\tGDB_AX,\t\t\t \n\tGDB_CX,\t\t\t \n\tGDB_DX,\t\t\t \n\tGDB_BX,\t\t\t \n\tGDB_SP,\t\t\t \n\tGDB_BP,\t\t\t \n\tGDB_SI,\t\t\t \n\tGDB_DI,\t\t\t \n\tGDB_PC,\t\t\t \n\tGDB_PS,\t\t\t \n\tGDB_CS,\t\t\t \n\tGDB_SS,\t\t\t \n\tGDB_DS,\t\t\t \n\tGDB_ES,\t\t\t \n\tGDB_FS,\t\t\t \n\tGDB_GS,\t\t\t \n};\n#define GDB_ORIG_AX\t\t41\n#define DBG_MAX_REG_NUM\t\t16\n#define NUMREGBYTES\t\t((GDB_GS+1)*4)\n#else  \nenum regnames {\n\tGDB_AX,\t\t\t \n\tGDB_BX,\t\t\t \n\tGDB_CX,\t\t\t \n\tGDB_DX,\t\t\t \n\tGDB_SI,\t\t\t \n\tGDB_DI,\t\t\t \n\tGDB_BP,\t\t\t \n\tGDB_SP,\t\t\t \n\tGDB_R8,\t\t\t \n\tGDB_R9,\t\t\t \n\tGDB_R10,\t\t \n\tGDB_R11,\t\t \n\tGDB_R12,\t\t \n\tGDB_R13,\t\t \n\tGDB_R14,\t\t \n\tGDB_R15,\t\t \n\tGDB_PC,\t\t\t \n\tGDB_PS,\t\t\t \n\tGDB_CS,\t\t\t \n\tGDB_SS,\t\t\t \n\tGDB_DS,\t\t\t \n\tGDB_ES,\t\t\t \n\tGDB_FS,\t\t\t \n\tGDB_GS,\t\t\t \n};\n#define GDB_ORIG_AX\t\t57\n#define DBG_MAX_REG_NUM\t\t24\n \n#define NUMREGBYTES\t\t((17 * 8) + (5 * 4))\n#endif  \n\nstatic inline void arch_kgdb_breakpoint(void)\n{\n\tasm(\"   int $3\");\n}\n#define BREAK_INSTR_SIZE\t1\n#define CACHE_FLUSH_IS_SAFE\t1\n#define GDB_ADJUSTS_BREAK_OFFSET\n\nextern int kgdb_ll_trap(int cmd, const char *str,\n\t\t\tstruct pt_regs *regs, long err, int trap, int sig);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "time.h",
+  "hash_id": "c207270221d019272a2e33a7009c2a65cc1fb5efc7fe4d5b2976c413356dce30",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/time.h",
+  "human_readable_source": " \n \n\n#ifndef _LIBSPL_SYS_TIME_H\n#define\t_LIBSPL_SYS_TIME_H\n\n#include <time.h>\n#include <sys/types.h>\n#include_next <sys/time.h>\n\n#ifndef SEC\n#define\tSEC\t\t1\n#endif\n\n#ifndef MILLISEC\n#define\tMILLISEC\t1000\n#endif\n\n#ifndef MICROSEC\n#define\tMICROSEC\t1000000\n#endif\n\n#ifndef NANOSEC\n#define\tNANOSEC\t\t1000000000\n#endif\n\n#ifndef NSEC_PER_USEC\n#define\tNSEC_PER_USEC\t1000L\n#endif\n\n#ifndef MSEC2NSEC\n#define\tMSEC2NSEC(m)\t((hrtime_t)(m) * (NANOSEC / MILLISEC))\n#endif\n\n#ifndef NSEC2MSEC\n#define\tNSEC2MSEC(n)\t((n) / (NANOSEC / MILLISEC))\n#endif\n\n#ifndef USEC2NSEC\n#define\tUSEC2NSEC(m)\t((hrtime_t)(m) * (NANOSEC / MICROSEC))\n#endif\n\n#ifndef NSEC2USEC\n#define\tNSEC2USEC(n)\t((n) / (NANOSEC / MICROSEC))\n#endif\n\n#ifndef NSEC2SEC\n#define\tNSEC2SEC(n)\t((n) / (NANOSEC / SEC))\n#endif\n\n#ifndef SEC2NSEC\n#define\tSEC2NSEC(m)\t((hrtime_t)(m) * (NANOSEC / SEC))\n#endif\n\ntypedef\tlong long\t\thrtime_t;\ntypedef\tstruct timespec\t\ttimespec_t;\ntypedef struct timespec\t\tinode_timespec_t;\n\nstatic inline void\ngethrestime(inode_timespec_t *ts)\n{\n\tstruct timeval tv;\n\t(void) gettimeofday(&tv, NULL);\n\tts->tv_sec = tv.tv_sec;\n\tts->tv_nsec = tv.tv_usec * NSEC_PER_USEC;\n}\n\nstatic inline uint64_t\ngethrestime_sec(void)\n{\n\tstruct timeval tv;\n\t(void) gettimeofday(&tv, NULL);\n\treturn (tv.tv_sec);\n}\n\nstatic inline hrtime_t\ngethrtime(void)\n{\n\tstruct timespec ts;\n\t(void) clock_gettime(CLOCK_MONOTONIC, &ts);\n\treturn ((((u_int64_t)ts.tv_sec) * NANOSEC) + ts.tv_nsec);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

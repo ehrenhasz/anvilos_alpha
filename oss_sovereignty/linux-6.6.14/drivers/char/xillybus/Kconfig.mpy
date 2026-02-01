@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "f20055d7c0eec6ce5fffe854760c4f45d47f5d465b6fb66ca8dc280820deeb95",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/xillybus/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Xillybus devices\n#\n\nconfig XILLYBUS_CLASS\n\ttristate\n\nconfig XILLYBUS\n\ttristate \"Xillybus generic FPGA interface\"\n\tdepends on PCI || OF\n\tselect CRC32\n\tselect XILLYBUS_CLASS\n\thelp\n\t  Xillybus is a generic interface for peripherals designed on\n\t  programmable logic (FPGA). The driver probes the hardware for\n\t  its capabilities, and creates device files accordingly.\n\n\t  If unsure, say N.\n\nif XILLYBUS\n\nconfig XILLYBUS_PCIE\n\ttristate \"Xillybus over PCIe\"\n\tdepends on PCI_MSI\n\thelp\n\t  Set to M if you want Xillybus to use PCI Express for communicating\n\t  with the FPGA. The module will be called xillybus_pcie.\n\nconfig XILLYBUS_OF\n\ttristate \"Xillybus over Device Tree\"\n\tdepends on OF && HAS_DMA && HAS_IOMEM\n\thelp\n\t  Set to M if you want Xillybus to find its resources from the\n\t  Open Firmware Flattened Device Tree. If the target is an embedded\n\t  system, say M. The module will be called xillybus_of.\n\nendif # if XILLYBUS\n\n# XILLYUSB doesn't depend on XILLYBUS\n\nconfig XILLYUSB\n\ttristate \"XillyUSB: Xillybus generic FPGA interface for USB\"\n\tdepends on USB\n\tselect CRC32\n\tselect XILLYBUS_CLASS\n\thelp\n\t  XillyUSB is the Xillybus variant which uses USB for communicating\n\t  with the FPGA.\n\n\t  Set to M if you want Xillybus to use USB for communicating with\n\t  the FPGA. The module will be called xillyusb.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

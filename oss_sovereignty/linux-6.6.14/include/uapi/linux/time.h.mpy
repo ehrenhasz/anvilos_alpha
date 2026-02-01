@@ -1,0 +1,9 @@
+{
+  "module_name": "time.h",
+  "hash_id": "fcba458262a31704d62cde2534dd54e06bb88fba61036766b8b6a75d542c892a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/time.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_TIME_H\n#define _UAPI_LINUX_TIME_H\n\n#include <linux/types.h>\n#include <linux/time_types.h>\n\n#ifndef __KERNEL__\n#ifndef _STRUCT_TIMESPEC\n#define _STRUCT_TIMESPEC\nstruct timespec {\n\t__kernel_old_time_t\ttv_sec;\t\t \n\tlong\t\t\ttv_nsec;\t \n};\n#endif\n\nstruct timeval {\n\t__kernel_old_time_t\ttv_sec;\t\t \n\t__kernel_suseconds_t\ttv_usec;\t \n};\n\nstruct itimerspec {\n\tstruct timespec it_interval; \n\tstruct timespec it_value;\t \n};\n\nstruct itimerval {\n\tstruct timeval it_interval; \n\tstruct timeval it_value;\t \n};\n#endif\n\nstruct timezone {\n\tint\ttz_minuteswest;\t \n\tint\ttz_dsttime;\t \n};\n\n \n#define\tITIMER_REAL\t\t0\n#define\tITIMER_VIRTUAL\t\t1\n#define\tITIMER_PROF\t\t2\n\n \n#define CLOCK_REALTIME\t\t\t0\n#define CLOCK_MONOTONIC\t\t\t1\n#define CLOCK_PROCESS_CPUTIME_ID\t2\n#define CLOCK_THREAD_CPUTIME_ID\t\t3\n#define CLOCK_MONOTONIC_RAW\t\t4\n#define CLOCK_REALTIME_COARSE\t\t5\n#define CLOCK_MONOTONIC_COARSE\t\t6\n#define CLOCK_BOOTTIME\t\t\t7\n#define CLOCK_REALTIME_ALARM\t\t8\n#define CLOCK_BOOTTIME_ALARM\t\t9\n \n#define CLOCK_SGI_CYCLE\t\t\t10\n#define CLOCK_TAI\t\t\t11\n\n#define MAX_CLOCKS\t\t\t16\n#define CLOCKS_MASK\t\t\t(CLOCK_REALTIME | CLOCK_MONOTONIC)\n#define CLOCKS_MONO\t\t\tCLOCK_MONOTONIC\n\n \n#define TIMER_ABSTIME\t\t\t0x01\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

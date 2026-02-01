@@ -1,0 +1,9 @@
+{
+  "module_name": "misc.h",
+  "hash_id": "3905ddd044b93bd99d10196970ebb6dc005dce6957bf29ab1944481062f74417",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/misc.h",
+  "human_readable_source": " \n\n#ifndef _OS_LINUX_SPL_MISC_H\n#define\t_OS_LINUX_SPL_MISC_H\n\n#include <linux/kobject.h>\n\nextern void spl_signal_kobj_evt(struct block_device *bdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

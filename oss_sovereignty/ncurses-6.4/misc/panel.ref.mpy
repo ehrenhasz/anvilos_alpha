@@ -1,0 +1,9 @@
+{
+  "module_name": "panel.ref",
+  "hash_id": "0a2aab098d007e576a89ec05730e0b0b5bea1ae8a2ae95e09cbd7bba23e0468d",
+  "original_prompt": "Ingested from ncurses-6.4/misc/panel.ref",
+  "human_readable_source": "LIBRARY panel2 INITINSTANCE\nDESCRIPTION 'NCurses 1.9.9e-1 for OS/2 - panel library'\nEXPORTS\n\t\"panel_window\"\t\t@1\n\t\"update_panels\"\t\t@2\n\t\"hide_panel\"\t\t@3\n\t\"show_panel\"\t\t@4\n\t\"del_panel\"\t\t@5\n\t\"top_panel\"\t\t@6\n\t\"bottom_panel\"\t\t@7\n\t\"new_panel\"\t\t@8\n\t\"panel_above\"\t\t@9\n\t\"panel_below\"\t\t@10\n\t\"set_panel_userptr\"\t@11\n\t\"panel_userptr\"\t\t@12\n\t\"move_panel\"\t\t@13\n\t\"replace_panel\"\t\t@14\n\t\"panel_hidden\"\t\t@15\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

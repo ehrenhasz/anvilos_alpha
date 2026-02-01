@@ -1,0 +1,9 @@
+{
+  "module_name": "socinfo.h",
+  "hash_id": "7c39c641b12dbb64d9749683a6fa0a7231a2b0bc2d2e6b43692a508d6c559b2a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/qcom/socinfo.h",
+  "human_readable_source": " \n\n#ifndef __QCOM_SOCINFO_H__\n#define __QCOM_SOCINFO_H__\n\n \n#define SMEM_HW_SW_BUILD_ID\t\t137\n\n#define SMEM_SOCINFO_BUILD_ID_LENGTH\t32\n#define SMEM_SOCINFO_CHIP_ID_LENGTH\t32\n\n \nstruct socinfo {\n\t__le32 fmt;\n\t__le32 id;\n\t__le32 ver;\n\tchar build_id[SMEM_SOCINFO_BUILD_ID_LENGTH];\n\t \n\t__le32 raw_id;\n\t__le32 raw_ver;\n\t \n\t__le32 hw_plat;\n\t \n\t__le32 plat_ver;\n\t \n\t__le32 accessory_chip;\n\t \n\t__le32 hw_plat_subtype;\n\t \n\t__le32 pmic_model;\n\t__le32 pmic_die_rev;\n\t \n\t__le32 pmic_model_1;\n\t__le32 pmic_die_rev_1;\n\t__le32 pmic_model_2;\n\t__le32 pmic_die_rev_2;\n\t \n\t__le32 foundry_id;\n\t \n\t__le32 serial_num;\n\t \n\t__le32 num_pmics;\n\t__le32 pmic_array_offset;\n\t \n\t__le32 chip_family;\n\t__le32 raw_device_family;\n\t__le32 raw_device_num;\n\t \n\t__le32 nproduct_id;\n\tchar chip_id[SMEM_SOCINFO_CHIP_ID_LENGTH];\n\t \n\t__le32 num_clusters;\n\t__le32 ncluster_array_offset;\n\t__le32 num_subset_parts;\n\t__le32 nsubset_parts_array_offset;\n\t \n\t__le32 nmodem_supported;\n\t \n\t__le32  feature_code;\n\t__le32  pcode;\n\t__le32  npartnamemap_offset;\n\t__le32  nnum_partname_mapping;\n\t \n\t__le32 oem_variant;\n\t \n\t__le32 num_kvps;\n\t__le32 kvps_offset;\n\t \n\t__le32 num_func_clusters;\n\t__le32 boot_cluster;\n\t__le32 boot_core;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

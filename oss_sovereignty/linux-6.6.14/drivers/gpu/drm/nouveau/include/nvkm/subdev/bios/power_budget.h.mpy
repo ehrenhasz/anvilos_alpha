@@ -1,0 +1,9 @@
+{
+  "module_name": "power_budget.h",
+  "hash_id": "2032b864b74511623adeb5884c1a209f092410b41b8c864ed964cb8a49187aa1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/power_budget.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_POWER_BUDGET_H__\n#define __NVBIOS_POWER_BUDGET_H__\n\n#include <nvkm/subdev/bios.h>\n\nstruct nvbios_power_budget_entry {\n\tu32 min_w;\n\tu32 avg_w;\n\tu32 max_w;\n};\n\nstruct nvbios_power_budget {\n\tu32 offset;\n\tu8  ver;\n\tu8  hlen;\n\tu8  elen;\n\tu8  ecount;\n\tu8  cap_entry;\n};\n\nint nvbios_power_budget_header(struct nvkm_bios *,\n                               struct nvbios_power_budget *);\nint nvbios_power_budget_entry(struct nvkm_bios *, struct nvbios_power_budget *,\n                              u8 idx, struct nvbios_power_budget_entry *);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "comm.h",
+  "hash_id": "f903aa4e9863f7f9be75e75b38e47f72b5f076ebd499150e38391c3a7dc41045",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/6fire/comm.h",
+  "human_readable_source": " \n \n#ifndef USB6FIRE_COMM_H\n#define USB6FIRE_COMM_H\n\n#include \"common.h\"\n\nenum  \n{\n\tCOMM_RECEIVER_BUFSIZE = 64,\n};\n\nstruct comm_runtime {\n\tstruct sfire_chip *chip;\n\n\tstruct urb receiver;\n\tu8 *receiver_buffer;\n\n\tu8 serial;  \n\n\tvoid (*init_urb)(struct comm_runtime *rt, struct urb *urb, u8 *buffer,\n\t\t\tvoid *context, void(*handler)(struct urb *urb));\n\t \n\tint (*write8)(struct comm_runtime *rt, u8 request, u8 reg, u8 value);\n\tint (*write16)(struct comm_runtime *rt, u8 request, u8 reg,\n\t\t\tu8 vh, u8 vl);\n};\n\nint usb6fire_comm_init(struct sfire_chip *chip);\nvoid usb6fire_comm_abort(struct sfire_chip *chip);\nvoid usb6fire_comm_destroy(struct sfire_chip *chip);\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

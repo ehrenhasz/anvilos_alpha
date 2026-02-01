@@ -1,0 +1,9 @@
+{
+  "module_name": "arcfb.h",
+  "hash_id": "6f53a34c34a23a3792f093be6d9a76b9ea0ad1158f814fd2165e934e5d2a6fce",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/arcfb.h",
+  "human_readable_source": " \n#ifndef __LINUX_ARCFB_H__\n#define __LINUX_ARCFB_H__\n\n#define FBIO_WAITEVENT\t\t_IO('F', 0x88)\n#define FBIO_GETCONTROL2\t_IOR('F', 0x89, size_t)\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

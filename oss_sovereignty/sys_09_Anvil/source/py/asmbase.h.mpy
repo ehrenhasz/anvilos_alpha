@@ -1,0 +1,9 @@
+{
+  "module_name": "asmbase.h",
+  "hash_id": "7eac68d8568d193076287a940f6b2b7c4637e39baebc8a81d8d441078c923523",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/asmbase.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_ASMBASE_H\n#define MICROPY_INCLUDED_PY_ASMBASE_H\n\n#include <stdint.h>\n#include <stdbool.h>\n\n#define MP_ASM_PASS_COMPUTE (1)\n#define MP_ASM_PASS_EMIT    (2)\n\ntypedef struct _mp_asm_base_t {\n    uint8_t pass;\n\n    \n    \n    bool suppress;\n\n    size_t code_offset;\n    size_t code_size;\n    uint8_t *code_base;\n\n    size_t max_num_labels;\n    size_t *label_offsets;\n} mp_asm_base_t;\n\nvoid mp_asm_base_init(mp_asm_base_t *as, size_t max_num_labels);\nvoid mp_asm_base_deinit(mp_asm_base_t *as, bool free_code);\nvoid mp_asm_base_start_pass(mp_asm_base_t *as, int pass);\nuint8_t *mp_asm_base_get_cur_to_write_bytes(void *as, size_t num_bytes_to_write);\nvoid mp_asm_base_label_assign(mp_asm_base_t *as, size_t label);\nvoid mp_asm_base_align(mp_asm_base_t *as, unsigned int align);\nvoid mp_asm_base_data(mp_asm_base_t *as, unsigned int bytesize, uintptr_t val);\n\nstatic inline void mp_asm_base_suppress_code(mp_asm_base_t *as) {\n    as->suppress = true;\n}\n\nstatic inline size_t mp_asm_base_get_code_pos(mp_asm_base_t *as) {\n    return as->code_offset;\n}\n\nstatic inline size_t mp_asm_base_get_code_size(mp_asm_base_t *as) {\n    return as->code_size;\n}\n\nstatic inline void *mp_asm_base_get_code(mp_asm_base_t *as) {\n    #if defined(MP_PLAT_COMMIT_EXEC)\n    return MP_PLAT_COMMIT_EXEC(as->code_base, as->code_size, NULL);\n    #else\n    return as->code_base;\n    #endif\n}\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

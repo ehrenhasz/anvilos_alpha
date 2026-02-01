@@ -1,0 +1,9 @@
+{
+  "module_name": "tda1002x.h",
+  "hash_id": "af52bb4b1d2442a3e1f6ec3f28dbf362cc39a14efc946d75cf482bf7252ba1cd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/tda1002x.h",
+  "human_readable_source": " \n \n\n#ifndef TDA1002x_H\n#define TDA1002x_H\n\n#include <linux/dvb/frontend.h>\n\nstruct tda1002x_config {\n\t \n\tu8 demod_address;\n\tu8 invert;\n};\n\nenum tda10023_output_mode {\n\tTDA10023_OUTPUT_MODE_PARALLEL_A = 0xe0,\n\tTDA10023_OUTPUT_MODE_PARALLEL_B = 0xa1,\n\tTDA10023_OUTPUT_MODE_PARALLEL_C = 0xa0,\n\tTDA10023_OUTPUT_MODE_SERIAL,  \n};\n\nstruct tda10023_config {\n\t \n\tu8 demod_address;\n\tu8 invert;\n\n\t \n\tu32 xtal;  \n\tu8 pll_m;  \n\tu8 pll_p;  \n\tu8 pll_n;  \n\n\t \n\tu8 output_mode;\n\n\t \n\tu16 deltaf;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_TDA10021)\nextern struct dvb_frontend* tda10021_attach(const struct tda1002x_config* config,\n\t\t\t\t\t    struct i2c_adapter* i2c, u8 pwm);\n#else\nstatic inline struct dvb_frontend* tda10021_attach(const struct tda1002x_config* config,\n\t\t\t\t\t    struct i2c_adapter* i2c, u8 pwm)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif \n\n#if IS_REACHABLE(CONFIG_DVB_TDA10023)\nextern struct dvb_frontend *tda10023_attach(\n\tconst struct tda10023_config *config,\n\tstruct i2c_adapter *i2c, u8 pwm);\n#else\nstatic inline struct dvb_frontend *tda10023_attach(\n\tconst struct tda10023_config *config,\n\tstruct i2c_adapter *i2c, u8 pwm)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif \n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

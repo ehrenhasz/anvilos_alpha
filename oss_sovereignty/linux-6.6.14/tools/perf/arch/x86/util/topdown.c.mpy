@@ -1,0 +1,9 @@
+{
+  "module_name": "topdown.c",
+  "hash_id": "7ba67b224a1391c12e0c0c3b7919c25c618be3a483ede9c60eb77f012ff6a480",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/x86/util/topdown.c",
+  "human_readable_source": "\n#include \"api/fs/fs.h\"\n#include \"util/evsel.h\"\n#include \"util/pmu.h\"\n#include \"util/pmus.h\"\n#include \"util/topdown.h\"\n#include \"topdown.h\"\n#include \"evsel.h\"\n\n \nbool topdown_sys_has_perf_metrics(void)\n{\n\tstatic bool has_perf_metrics;\n\tstatic bool cached;\n\tstruct perf_pmu *pmu;\n\n\tif (cached)\n\t\treturn has_perf_metrics;\n\n\t \n\tpmu = perf_pmus__find_by_type(PERF_TYPE_RAW);\n\tif (pmu && perf_pmu__have_event(pmu, \"slots\"))\n\t\thas_perf_metrics = true;\n\n\tcached = true;\n\treturn has_perf_metrics;\n}\n\n#define TOPDOWN_SLOTS\t\t0x0400\n\n \nbool arch_topdown_sample_read(struct evsel *leader)\n{\n\tif (!evsel__sys_has_perf_metrics(leader))\n\t\treturn false;\n\n\tif (leader->core.attr.config == TOPDOWN_SLOTS)\n\t\treturn true;\n\n\treturn false;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

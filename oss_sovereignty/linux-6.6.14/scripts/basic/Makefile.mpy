@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f4e289bcd59a324a25a1d30aa6dddabbe76e5234c9b073c0a5bf2e8d6072715a",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/basic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# fixdep: used to generate dependency information during build process\n\nhostprogs-always-y\t+= fixdep\n\n# randstruct: the seed is needed before building the gcc-plugin or\n# before running a Clang kernel build.\ngen-randstruct-seed\t:= $(srctree)/scripts/gen-randstruct-seed.sh\nquiet_cmd_create_randstruct_seed = GENSEED $@\ncmd_create_randstruct_seed = \\\n\t$(CONFIG_SHELL) $(gen-randstruct-seed) \\\n\t\t$@ $(objtree)/include/generated/randstruct_hash.h\n$(obj)/randstruct.seed: $(gen-randstruct-seed) FORCE\n\t$(call if_changed,create_randstruct_seed)\nalways-$(CONFIG_RANDSTRUCT) += randstruct.seed\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

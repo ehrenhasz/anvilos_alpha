@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_vf.host.h",
+  "hash_id": "533824038f6db7f60214cfefc9ad64e13053becda00b9d92698f0c24ccf6a283",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/vf/vf_1.0/ia_css_vf.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_VF_HOST_H\n#define __IA_CSS_VF_HOST_H\n\n#include \"ia_css_frame_public.h\"\n#include \"ia_css_binary.h\"\n\n#include \"ia_css_vf_types.h\"\n#include \"ia_css_vf_param.h\"\n\n \nint\nsh_css_vf_downscale_log2(\n    const struct ia_css_frame_info *out_info,\n    const struct ia_css_frame_info *vf_info,\n    unsigned int *downscale_log2);\n\nint ia_css_vf_config(struct sh_css_isp_vf_isp_config *to,\n\t\t     const struct ia_css_vf_configuration *from,\n\t\t     unsigned int size);\n\nint\nia_css_vf_configure(\n    const struct ia_css_binary *binary,\n    const struct ia_css_frame_info *out_info,\n    struct ia_css_frame_info *vf_info,\n    unsigned int *downscale_log2);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "nfp_dev.h",
+  "hash_id": "6ccaef5d0ed0afa7c21eda32f8b31b36c95064cbce5ee8839367bed29fddc3cf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/netronome/nfp/nfpcore/nfp_dev.h",
+  "human_readable_source": " \n \n\n#ifndef _NFP_DEV_H_\n#define _NFP_DEV_H_\n\n#include <linux/types.h>\n\n#define PCI_VENDOR_ID_CORIGINE\t0x1da8\n#define PCI_DEVICE_ID_NFP3800\t0x3800\n#define PCI_DEVICE_ID_NFP4000\t0x4000\n#define PCI_DEVICE_ID_NFP5000\t0x5000\n#define PCI_DEVICE_ID_NFP6000\t0x6000\n#define PCI_DEVICE_ID_NFP3800_VF\t0x3803\n#define PCI_DEVICE_ID_NFP6000_VF\t0x6003\n\nenum nfp_dev_id {\n\tNFP_DEV_NFP3800,\n\tNFP_DEV_NFP3800_VF,\n\tNFP_DEV_NFP6000,\n\tNFP_DEV_NFP6000_VF,\n\tNFP_DEV_CNT,\n};\n\nstruct nfp_dev_info {\n\t \n\tu64 dma_mask;\n\tu32 qc_idx_mask;\n\tu32 qc_addr_offset;\n\tu32 min_qc_size;\n\tu32 max_qc_size;\n\n\t \n\tconst char *chip_names;\n\tu32 pcie_cfg_expbar_offset;\n\tu32 pcie_expl_offset;\n\tu32 qc_area_sz;\n};\n\nextern const struct nfp_dev_info nfp_dev_info[NFP_DEV_CNT];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

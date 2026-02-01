@@ -1,0 +1,9 @@
+{
+  "module_name": "opl4.h",
+  "hash_id": "b2c9c1fea63bd07319956f1810ea00833e87931f9ae829593dd90cf72e5d6ca6",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/opl4.h",
+  "human_readable_source": " \n#ifndef __SOUND_OPL4_H\n#define __SOUND_OPL4_H\n\n \n\n#include <sound/opl3.h>\n\nstruct snd_opl4;\n\nextern int snd_opl4_create(struct snd_card *card,\n\t\t\t   unsigned long fm_port, unsigned long pcm_port,\n\t\t\t   int seq_device,\n\t\t\t   struct snd_opl3 **opl3, struct snd_opl4 **opl4);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

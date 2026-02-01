@@ -1,0 +1,9 @@
+{
+  "module_name": "main.h",
+  "hash_id": "4c9331a37c81b8529de2c358ed7077484c15ddf1fc180718d5fed66a7cf20cea",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intersil/orinoco/main.h",
+  "human_readable_source": " \n#ifndef _ORINOCO_MAIN_H_\n#define _ORINOCO_MAIN_H_\n\n#include <linux/ieee80211.h>\n#include \"orinoco.h\"\n\n \n \n \n\n \n#ifdef WIRELESS_SPY\n#define SPY_NUMBER(priv)\t(priv->spy_data.spy_number)\n#else\n#define SPY_NUMBER(priv)\t0\n#endif  \n\n \n\n \nextern int force_monitor;\n\n \nstruct net_device;\nstruct work_struct;\n\nvoid set_port_type(struct orinoco_private *priv);\nint orinoco_commit(struct orinoco_private *priv);\nvoid orinoco_reset(struct work_struct *work);\n\n \n#define WPA_OUI_TYPE\t\"\\x00\\x50\\xF2\\x01\"\n#define WPA_SELECTOR_LEN 4\nstatic inline u8 *orinoco_get_wpa_ie(u8 *data, size_t len)\n{\n\tu8 *p = data;\n\twhile ((p + 2 + WPA_SELECTOR_LEN) < (data + len)) {\n\t\tif ((p[0] == WLAN_EID_VENDOR_SPECIFIC) &&\n\t\t    (memcmp(&p[2], WPA_OUI_TYPE, WPA_SELECTOR_LEN) == 0))\n\t\t\treturn p;\n\t\tp += p[1] + 2;\n\t}\n\treturn NULL;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

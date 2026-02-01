@@ -1,0 +1,9 @@
+{
+  "module_name": "test-dirent.c",
+  "hash_id": "94874083fc5fbc5465dcb1a408a52805417a07dbdb50b323ed56d17374bf7dd2",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-dirent.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <dirent.h>\n\n \n_GL_UNUSED static DIR *dir;\nstatic struct dirent d;\nstatic ino_t i;\n\nint\nmain (void)\n{\n  return d.d_name[0] + i;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

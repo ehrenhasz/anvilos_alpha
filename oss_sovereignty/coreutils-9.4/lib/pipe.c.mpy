@@ -1,0 +1,9 @@
+{
+  "module_name": "pipe.c",
+  "hash_id": "2b200c34bd2f2a23df0b36cbf0948bd8ac51f9e57ee8580150c1a9c661740fef",
+  "original_prompt": "Ingested from coreutils-9.4/lib/pipe.c",
+  "human_readable_source": " \n#include <unistd.h>\n\n#if defined _WIN32 && ! defined __CYGWIN__\n \n\n \n# include <io.h>\n\n \n# include <fcntl.h>\n\nint\npipe (int fd[2])\n{\n  /* Mingw changes fd to {-1,-1} on failure, but this violates\n     http:\n  int tmp[2];\n  int result = _pipe (tmp, 4096, _O_BINARY);\n  if (!result)\n    {\n      fd[0] = tmp[0];\n      fd[1] = tmp[1];\n    }\n  return result;\n}\n\n#else\n\n# error \"This platform lacks a pipe function, and Gnulib doesn't provide a replacement. This is a bug in Gnulib.\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

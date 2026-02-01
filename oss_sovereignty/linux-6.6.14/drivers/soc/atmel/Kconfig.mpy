@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "929473fb593f2920ffc772e4c7cca6a0776ee3928c09b32cb2f65b0d71ce2929",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/atmel/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig AT91_SOC_ID\n\tbool \"SoC bus for Atmel ARM SoCs\"\n\tdepends on ARCH_AT91 || COMPILE_TEST\n\tdefault ARCH_AT91\n\thelp\n\t  Include support for the SoC bus on the Atmel ARM SoCs.\n\nconfig AT91_SOC_SFR\n\ttristate \"Special Function Registers support\"\n\tdepends on ARCH_AT91 || COMPILE_TEST\n\thelp\n\t  This is a driver for the Special Function Registers available on\n\t  Atmel SAMA5Dx SoCs, providing access to specific aspects of the\n\t  integrated memory, bridge implementations, processor etc.\n\n\t  This driver can also be built as a module. If so, the module\n\t  will be called sfr.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

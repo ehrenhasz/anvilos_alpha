@@ -1,0 +1,9 @@
+{
+  "module_name": "pipe.m4",
+  "hash_id": "f54c5a6cb79e2a951d04976541001a54eaa0faf2b7daf3c9e16c2be14da8104f",
+  "original_prompt": "Ingested from coreutils-9.4/m4/pipe.m4",
+  "human_readable_source": "# pipe.m4 serial 2\ndnl Copyright (C) 2010-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_PIPE],\n[\n  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])\n\n  AC_CHECK_FUNCS_ONCE([pipe])\n  if test $ac_cv_func_pipe != yes; then\n    HAVE_PIPE=0\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

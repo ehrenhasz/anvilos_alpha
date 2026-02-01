@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom_adm.h",
+  "hash_id": "e04174bd700455836160b044bbcb4fa2fc3a625978e521c88e23cccee52e2963",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dma/qcom_adm.h",
+  "human_readable_source": "\n#ifndef __LINUX_DMA_QCOM_ADM_H\n#define __LINUX_DMA_QCOM_ADM_H\n\n#include <linux/types.h>\n\nstruct qcom_adm_peripheral_config {\n\tu32 crci;\n\tu32 mux;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "afs_cm.h",
+  "hash_id": "5b1249623c6840829ca2c09ca4942d35c60f95637160474e8e70155540b8d9fa",
+  "original_prompt": "Ingested from linux-6.6.14/fs/afs/afs_cm.h",
+  "human_readable_source": " \n \n\n#ifndef AFS_CM_H\n#define AFS_CM_H\n\n#define AFS_CM_PORT\t\t7001\t \n#define CM_SERVICE\t\t1\t \n\nenum AFS_CM_Operations {\n\tCBCallBack\t\t= 204,\t \n\tCBInitCallBackState\t= 205,\t \n\tCBProbe\t\t\t= 206,\t \n\tCBGetLock\t\t= 207,\t \n\tCBGetCE\t\t\t= 208,\t \n\tCBGetXStatsVersion\t= 209,\t \n\tCBGetXStats\t\t= 210,\t \n\tCBInitCallBackState3\t= 213,\t \n\tCBProbeUuid\t\t= 214,\t \n\tCBTellMeAboutYourself\t= 65538,  \n};\n\n#define AFS_CAP_ERROR_TRANSLATION\t0x1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

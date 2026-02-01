@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fa170e1ae8459425e005793ad92c956765c2e7cd27d31dab38a3927f6e498ff1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qlogic/qede/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)\n# Copyright (c) 2019-2020 Marvell International Ltd.\n\nobj-$(CONFIG_QEDE) := qede.o\n\nqede-y := qede_main.o qede_fp.o qede_filter.o qede_ethtool.o qede_ptp.o\nqede-$(CONFIG_DCB) += qede_dcbnl.o\nqede-$(CONFIG_QED_RDMA) += qede_rdma.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "cast6.h",
+  "hash_id": "2cacc75bb07986fcef62726c9daa2f98e614f21af93ae43307a515172a1aad70",
+  "original_prompt": "Ingested from linux-6.6.14/include/crypto/cast6.h",
+  "human_readable_source": " \n#ifndef _CRYPTO_CAST6_H\n#define _CRYPTO_CAST6_H\n\n#include <linux/types.h>\n#include <linux/crypto.h>\n#include <crypto/cast_common.h>\n\n#define CAST6_BLOCK_SIZE 16\n#define CAST6_MIN_KEY_SIZE 16\n#define CAST6_MAX_KEY_SIZE 32\n\nstruct cast6_ctx {\n\tu32 Km[12][4];\n\tu8 Kr[12][4];\n};\n\nint __cast6_setkey(struct cast6_ctx *ctx, const u8 *key, unsigned int keylen);\nint cast6_setkey(struct crypto_tfm *tfm, const u8 *key, unsigned int keylen);\n\nvoid __cast6_encrypt(const void *ctx, u8 *dst, const u8 *src);\nvoid __cast6_decrypt(const void *ctx, u8 *dst, const u8 *src);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

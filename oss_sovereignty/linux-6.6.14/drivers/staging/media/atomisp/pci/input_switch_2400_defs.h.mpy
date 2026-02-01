@@ -1,0 +1,9 @@
+{
+  "module_name": "input_switch_2400_defs.h",
+  "hash_id": "6b9d69cdb636a91d7406a10cc4b07316017aee02dfe4e11fc68111a22746b747",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/input_switch_2400_defs.h",
+  "human_readable_source": " \n \n\n#ifndef _input_switch_2400_defs_h\n#define _input_switch_2400_defs_h\n\n#define _HIVE_INPUT_SWITCH_GET_LUT_REG_ID(ch_id, fmt_type) (((ch_id) * 2) + ((fmt_type) >= 16))\n#define _HIVE_INPUT_SWITCH_GET_LUT_REG_LSB(fmt_type)        (((fmt_type) % 16) * 2)\n\n#define HIVE_INPUT_SWITCH_SELECT_NO_OUTPUT   0\n#define HIVE_INPUT_SWITCH_SELECT_IF_PRIM     1\n#define HIVE_INPUT_SWITCH_SELECT_IF_SEC      2\n#define HIVE_INPUT_SWITCH_SELECT_STR_TO_MEM  3\n#define HIVE_INPUT_SWITCH_VSELECT_NO_OUTPUT  0\n#define HIVE_INPUT_SWITCH_VSELECT_IF_PRIM    1\n#define HIVE_INPUT_SWITCH_VSELECT_IF_SEC     2\n#define HIVE_INPUT_SWITCH_VSELECT_STR_TO_MEM 4\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

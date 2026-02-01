@@ -1,0 +1,9 @@
+{
+  "module_name": "remove-stale-files",
+  "hash_id": "eba6dbdcf50da125e5a9959acc5772f89d9d0ae858b793e759769db706188d29",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/remove-stale-files",
+  "human_readable_source": "#!/bin/sh\n\nset -e\n\n# When you move, remove or rename generated files, you probably also update\n# .gitignore and cleaning rules in the Makefile. This is the right thing\n# to do. However, people usually do 'git pull', 'git bisect', etc. without\n# running 'make clean'. Then, the stale generated files are left over, often\n# causing build issues.\n#\n# Also, 'git status' shows such stale build artifacts as untracked files.\n# What is worse, some people send a wrong patch to get them back to .gitignore\n# without checking the commit history.\n#\n# So, when you (re)move generated files, please move the cleaning rules from\n# the Makefile to this script. This is run before Kbuild starts building\n# anything, so people will not be annoyed by such garbage files.\n#\n# This script is not intended to grow endlessly. Rather, it is a temporary scrap\n# yard. Stale files stay in this file for a while (for some release cycles?),\n# then will be really dead and removed from the code base entirely.\n\nrm -f arch/powerpc/purgatory/kexec-purgatory.c\nrm -f arch/riscv/purgatory/kexec-purgatory.c\nrm -f arch/x86/purgatory/kexec-purgatory.c\n\nrm -f scripts/extract-cert\n\nrm -f scripts/kconfig/[gmnq]conf-cfg\n\nrm -f rust/target.json\n\nrm -f scripts/bin2c\n\nrm -f .scmversion\n\nrm -rf include/ksym\n\nfind . -name '*.usyms' | xargs rm -f\n\nrm -f binkernel.spec\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

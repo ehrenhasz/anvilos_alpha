@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e218d3d2c00a69aa0463104e4f3b6c7ae5f1cc3567b9cbe14fe0324f03634e9b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rts5208/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_RTS5208) := rts5208.o\n\nrts5208-y := rtsx.o rtsx_chip.o rtsx_transport.o rtsx_scsi.o \\\n\trtsx_card.o general.o sd.o xd.o ms.o spi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

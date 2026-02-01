@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_modeset_setup.h",
+  "hash_id": "3c1b1d1838aeb465699134250d28c34d78b797de32a4b6c3e03d7a2c066b8c96",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_modeset_setup.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_MODESET_SETUP_H__\n#define __INTEL_MODESET_SETUP_H__\n\nstruct drm_i915_private;\nstruct drm_modeset_acquire_ctx;\n\nvoid intel_modeset_setup_hw_state(struct drm_i915_private *i915,\n\t\t\t\t  struct drm_modeset_acquire_ctx *ctx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

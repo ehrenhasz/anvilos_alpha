@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_xnr3_types.h",
+  "hash_id": "bcddeefb466a3f925f028d3c6f154e1c2b73a09d75835d5ebd5b31950cd0ede4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/xnr/xnr_3.0/ia_css_xnr3_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_XNR3_TYPES_H\n#define __IA_CSS_XNR3_TYPES_H\n\n \n\n \n#define IA_CSS_XNR3_SIGMA_SCALE  BIT(10)\n\n \n#define IA_CSS_XNR3_CORING_SCALE BIT(15)\n\n \n#define IA_CSS_XNR3_BLENDING_SCALE BIT(11)\n\n \nstruct ia_css_xnr3_sigma_params {\n\tint y0;      \n\tint y1;      \n\tint u0;      \n\tint u1;      \n\tint v0;      \n\tint v1;      \n};\n\n \nstruct ia_css_xnr3_coring_params {\n\tint u0;      \n\tint u1;      \n\tint v0;      \n\tint v1;      \n};\n\n \nstruct ia_css_xnr3_blending_params {\n\tint strength;    \n};\n\n \nstruct ia_css_xnr3_config {\n\tstruct ia_css_xnr3_sigma_params    sigma;     \n\tstruct ia_css_xnr3_coring_params   coring;    \n\tstruct ia_css_xnr3_blending_params blending;  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

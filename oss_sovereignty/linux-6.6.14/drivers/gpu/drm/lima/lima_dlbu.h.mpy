@@ -1,0 +1,9 @@
+{
+  "module_name": "lima_dlbu.h",
+  "hash_id": "9b324cffc35aef00697df3ac9f72775c2724998538cc3be03b0db6155b19abac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/lima/lima_dlbu.h",
+  "human_readable_source": " \n \n\n#ifndef __LIMA_DLBU_H__\n#define __LIMA_DLBU_H__\n\nstruct lima_ip;\nstruct lima_device;\n\nvoid lima_dlbu_enable(struct lima_device *dev, int num_pp);\nvoid lima_dlbu_disable(struct lima_device *dev);\n\nvoid lima_dlbu_set_reg(struct lima_ip *ip, u32 *reg);\n\nint lima_dlbu_resume(struct lima_ip *ip);\nvoid lima_dlbu_suspend(struct lima_ip *ip);\nint lima_dlbu_init(struct lima_ip *ip);\nvoid lima_dlbu_fini(struct lima_ip *ip);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

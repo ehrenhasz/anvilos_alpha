@@ -1,0 +1,9 @@
+{
+  "module_name": "accept.c",
+  "hash_id": "c84d8aa2dc2dd9219c339816abeac355ce0cbcb003aee8d8f6cd40394ffd9c85",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/accept.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#define WIN32_LEAN_AND_MEAN\n \n#include <sys/socket.h>\n\n \n#include \"w32sock.h\"\n\n#undef accept\n\nint\nrpl_accept (int fd, struct sockaddr *addr, socklen_t *addrlen)\n{\n  SOCKET sock = FD_TO_SOCKET (fd);\n\n  if (sock == INVALID_SOCKET)\n    {\n      errno = EBADF;\n      return -1;\n    }\n  else\n    {\n      SOCKET fh = accept (sock, addr, addrlen);\n      if (fh == INVALID_SOCKET)\n        {\n          set_winsock_errno ();\n          return -1;\n        }\n      else\n        return SOCKET_TO_FD (fh);\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

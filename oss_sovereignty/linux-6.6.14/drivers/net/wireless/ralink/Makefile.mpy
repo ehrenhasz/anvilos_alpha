@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "71950032e7fdb222da0c70795162aab50521edd2b43eb34caad141df792a2562",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ralink/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_RT2X00)\t+= rt2x00/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

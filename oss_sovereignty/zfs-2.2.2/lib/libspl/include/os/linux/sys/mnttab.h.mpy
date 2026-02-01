@@ -1,0 +1,9 @@
+{
+  "module_name": "mnttab.h",
+  "hash_id": "a3caf2ccaf7f48afd1cd3e50a61fddacbbbe9b5365dbe5d3b9d145bca7f23bfe",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/os/linux/sys/mnttab.h",
+  "human_readable_source": " \n \n \n \n \n\n#ifndef _SYS_MNTTAB_H\n#define\t_SYS_MNTTAB_H\n\n#include <stdio.h>\n#include <mntent.h>\n#include <sys/stat.h>\n#include <sys/types.h>\n\n#ifdef MNTTAB\n#undef MNTTAB\n#endif  \n\n#define\tMNTTAB\t\t\"/proc/self/mounts\"\n#define\tMNT_LINE_MAX\t4108\n\n#define\tMNT_TOOLONG\t1\t \n#define\tMNT_TOOMANY\t2\t \n#define\tMNT_TOOFEW\t3\t \n\nstruct mnttab {\n\tchar *mnt_special;\n\tchar *mnt_mountp;\n\tchar *mnt_fstype;\n\tchar *mnt_mntopts;\n};\n\n \n\nstruct extmnttab {\n\tchar *mnt_special;\n\tchar *mnt_mountp;\n\tchar *mnt_fstype;\n\tchar *mnt_mntopts;\n\tuint_t mnt_major;\n\tuint_t mnt_minor;\n};\n\nstruct statfs;\n\nextern int getmntany(FILE *fp, struct mnttab *mp, struct mnttab *mpref);\nextern int _sol_getmntent(FILE *fp, struct mnttab *mp);\nextern int getextmntent(const char *path, struct extmnttab *mp,\n    struct stat64 *statbuf);\nstatic inline char *_sol_hasmntopt(struct mnttab *mnt, const char *opt)\n{\n\tstruct mntent mnt_new;\n\n\tmnt_new.mnt_opts = mnt->mnt_mntopts;\n\n\treturn (hasmntopt(&mnt_new, opt));\n}\n\n#define\thasmntopt\t_sol_hasmntopt\n#define\tgetmntent\t_sol_getmntent\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

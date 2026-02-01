@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fnmatch-1.sh",
+  "hash_id": "541ced4d551e23c7345e5b1bd6b203e3dcc446f5a55d78b13ee5d35a38d5677b",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fnmatch-1.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test in the POSIX locale.\nLC_ALL=C \\\n${CHECKER} ./test-fnmatch${EXEEXT} 1 || exit 1\nLC_ALL=POSIX \\\n${CHECKER} ./test-fnmatch${EXEEXT} 1 || exit 1\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

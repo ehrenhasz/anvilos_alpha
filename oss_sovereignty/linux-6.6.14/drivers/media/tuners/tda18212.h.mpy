@@ -1,0 +1,9 @@
+{
+  "module_name": "tda18212.h",
+  "hash_id": "f20c00ca3eeabf8f664c1fd0c443c8463420f5a56cfeed2b7597f821fe53bfc4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/tda18212.h",
+  "human_readable_source": " \n \n\n#ifndef TDA18212_H\n#define TDA18212_H\n\n#include <media/dvb_frontend.h>\n\nstruct tda18212_config {\n\tu16 if_dvbt_6;\n\tu16 if_dvbt_7;\n\tu16 if_dvbt_8;\n\tu16 if_dvbt2_5;\n\tu16 if_dvbt2_6;\n\tu16 if_dvbt2_7;\n\tu16 if_dvbt2_8;\n\tu16 if_dvbc;\n\tu16 if_atsc_vsb;\n\tu16 if_atsc_qam;\n\n\t \n\tstruct dvb_frontend *fe;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

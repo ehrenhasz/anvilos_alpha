@@ -1,0 +1,9 @@
+{
+  "module_name": "ipu3-css-params.h",
+  "hash_id": "7ec6f4bf4a06099912be5a4d8f84a940a7729e2ba754d050198ffbc2fc125489",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/ipu3/ipu3-css-params.h",
+  "human_readable_source": " \n \n\n#ifndef __IPU3_PARAMS_H\n#define __IPU3_PARAMS_H\n\nint imgu_css_cfg_acc(struct imgu_css *css, unsigned int pipe,\n\t\t     struct ipu3_uapi_flags *use,\n\t\t     struct imgu_abi_acc_param *acc,\n\t\t     struct imgu_abi_acc_param *acc_old,\n\t\t     struct ipu3_uapi_acc_param *acc_user);\n\nint imgu_css_cfg_vmem0(struct imgu_css *css, unsigned int pipe,\n\t\t       struct ipu3_uapi_flags *use,\n\t\t       void *vmem0, void *vmem0_old,\n\t\t       struct ipu3_uapi_params *user);\n\nint imgu_css_cfg_dmem0(struct imgu_css *css, unsigned int pipe,\n\t\t       struct ipu3_uapi_flags *use,\n\t\t       void *dmem0, void *dmem0_old,\n\t\t       struct ipu3_uapi_params *user);\n\nvoid imgu_css_cfg_gdc_table(struct imgu_abi_gdc_warp_param *gdc,\n\t\t\t    int frame_in_x, int frame_in_y,\n\t\t\t    int frame_out_x, int frame_out_y,\n\t\t\t    int env_w, int env_h);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sve-probe-vls.c",
+  "hash_id": "8d46564477d02339f7e7a1f696fcc12b73ed8174d5c04ff5b1839a687fb5a815",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/fp/sve-probe-vls.c",
+  "human_readable_source": "\n \n#include <assert.h>\n#include <errno.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <sys/auxv.h>\n#include <sys/prctl.h>\n#include <asm/sigcontext.h>\n\n#include \"../../kselftest.h\"\n#include \"rdvl.h\"\n\nint main(int argc, char **argv)\n{\n\tunsigned int vq;\n\tint vl;\n\tstatic unsigned int vqs[SVE_VQ_MAX];\n\tunsigned int nvqs = 0;\n\n\tksft_print_header();\n\tksft_set_plan(2);\n\n\tif (!(getauxval(AT_HWCAP) & HWCAP_SVE))\n\t\tksft_exit_skip(\"SVE not available\\n\");\n\n\t \n\tfor (vq = SVE_VQ_MAX; vq > 0; --vq) {\n\t\tvl = prctl(PR_SVE_SET_VL, vq * 16);\n\t\tif (vl == -1)\n\t\t\tksft_exit_fail_msg(\"PR_SVE_SET_VL failed: %s (%d)\\n\",\n\t\t\t\t\t   strerror(errno), errno);\n\n\t\tvl &= PR_SVE_VL_LEN_MASK;\n\n\t\tif (rdvl_sve() != vl)\n\t\t\tksft_exit_fail_msg(\"PR_SVE_SET_VL reports %d, RDVL %d\\n\",\n\t\t\t\t\t   vl, rdvl_sve());\n\n\t\tif (!sve_vl_valid(vl))\n\t\t\tksft_exit_fail_msg(\"VL %d invalid\\n\", vl);\n\t\tvq = sve_vq_from_vl(vl);\n\n\t\tif (!(nvqs < SVE_VQ_MAX))\n\t\t\tksft_exit_fail_msg(\"Too many VLs %u >= SVE_VQ_MAX\\n\",\n\t\t\t\t\t   nvqs);\n\t\tvqs[nvqs++] = vq;\n\t}\n\tksft_test_result_pass(\"Enumerated %d vector lengths\\n\", nvqs);\n\tksft_test_result_pass(\"All vector lengths valid\\n\");\n\n\t \n\twhile (nvqs--)\n\t\tksft_print_msg(\"%u\\n\", 16 * vqs[nvqs]);\n\n\tksft_exit_pass();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

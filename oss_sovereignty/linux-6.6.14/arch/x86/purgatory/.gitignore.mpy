@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "3f166b6f71c7e19b2f0debebe6e4847240e065d68fc21a4814c0e26adac8528b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/purgatory/.gitignore",
+  "human_readable_source": "purgatory.chk\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

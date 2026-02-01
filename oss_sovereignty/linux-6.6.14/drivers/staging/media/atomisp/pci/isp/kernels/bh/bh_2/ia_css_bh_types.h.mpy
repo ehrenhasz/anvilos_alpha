@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_bh_types.h",
+  "hash_id": "a275e529d0320df1a94d4de725a14f44a94015ae4b869d1e96b33841e51c288d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/bh/bh_2/ia_css_bh_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_BH_TYPES_H\n#define __IA_CSS_BH_TYPES_H\n\n \n#define IA_CSS_HMEM_BH_TABLE_SIZE\tISP_HIST_DEPTH\n#define IA_CSS_HMEM_BH_UNIT_SIZE\t(ISP_HIST_DEPTH / ISP_HIST_COMPONENTS)\n\n#define BH_COLOR_R\t(0)\n#define BH_COLOR_G\t(1)\n#define BH_COLOR_B\t(2)\n#define BH_COLOR_Y\t(3)\n#define BH_COLOR_NUM\t(4)\n\n \nstruct ia_css_bh_table {\n\tu32 hmem[ISP_HIST_COMPONENTS][IA_CSS_HMEM_BH_UNIT_SIZE];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

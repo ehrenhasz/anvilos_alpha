@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f1b6dbb83407dbf753ea3db804e1fe7baea985f0b8675cb48a70fbdbac89f8c2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_B43)\t\t+= b43/\nobj-$(CONFIG_B43LEGACY)\t\t+= b43legacy/\n\nobj-$(CONFIG_BRCMFMAC)\t+= brcm80211/\nobj-$(CONFIG_BRCMSMAC)\t+= brcm80211/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

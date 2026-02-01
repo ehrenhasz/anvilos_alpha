@@ -1,0 +1,9 @@
+{
+  "module_name": "uvc_video.h",
+  "hash_id": "7b0153a6314d926c481129d28bc25e799d3b072e014a92207a043635c9fbaa47",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/function/uvc_video.h",
+  "human_readable_source": " \n \n#ifndef __UVC_VIDEO_H__\n#define __UVC_VIDEO_H__\n\nstruct uvc_video;\n\nint uvcg_video_enable(struct uvc_video *video, int enable);\n\nint uvcg_video_init(struct uvc_video *video, struct uvc_device *uvc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

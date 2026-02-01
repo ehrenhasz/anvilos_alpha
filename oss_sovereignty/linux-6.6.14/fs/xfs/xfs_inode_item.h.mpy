@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_inode_item.h",
+  "hash_id": "aa2db3f7d1a736d8c83d79d75bf3604d03495bb7fe2c6c7b77127a1576b34156",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_inode_item.h",
+  "human_readable_source": "\n \n#ifndef\t__XFS_INODE_ITEM_H__\n#define\t__XFS_INODE_ITEM_H__\n\n \n\nstruct xfs_buf;\nstruct xfs_bmbt_rec;\nstruct xfs_inode;\nstruct xfs_mount;\n\nstruct xfs_inode_log_item {\n\tstruct xfs_log_item\tili_item;\t    \n\tstruct xfs_inode\t*ili_inode;\t    \n\tunsigned short\t\tili_lock_flags;\t    \n\tunsigned int\t\tili_dirty_flags;    \n\t \n\tspinlock_t\t\tili_lock;\t    \n\tunsigned int\t\tili_last_fields;    \n\tunsigned int\t\tili_fields;\t    \n\tunsigned int\t\tili_fsync_fields;   \n\txfs_lsn_t\t\tili_flush_lsn;\t    \n\txfs_csn_t\t\tili_commit_seq;\t    \n};\n\nstatic inline int xfs_inode_clean(struct xfs_inode *ip)\n{\n\treturn !ip->i_itemp || !(ip->i_itemp->ili_fields & XFS_ILOG_ALL);\n}\n\nextern void xfs_inode_item_init(struct xfs_inode *, struct xfs_mount *);\nextern void xfs_inode_item_destroy(struct xfs_inode *);\nextern void xfs_iflush_abort(struct xfs_inode *);\nextern void xfs_iflush_shutdown_abort(struct xfs_inode *);\nextern int xfs_inode_item_format_convert(xfs_log_iovec_t *,\n\t\t\t\t\t struct xfs_inode_log_format *);\n\nextern struct kmem_cache\t*xfs_ili_cache;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mctp.h",
+  "hash_id": "74880196aa71be59f10198f2d43bd77251047c52e03dbf4b47f498519c7cfd1d",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netns/mctp.h",
+  "human_readable_source": " \n \n\n#ifndef __NETNS_MCTP_H__\n#define __NETNS_MCTP_H__\n\n#include <linux/mutex.h>\n#include <linux/types.h>\n\nstruct netns_mctp {\n\t \n\tstruct list_head routes;\n\n\t \n\tstruct mutex bind_lock;\n\tstruct hlist_head binds;\n\n\t \n\tspinlock_t keys_lock;\n\tstruct hlist_head keys;\n\n\t \n\tunsigned int default_net;\n\n\t \n\tstruct mutex neigh_lock;\n\tstruct list_head neighbours;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

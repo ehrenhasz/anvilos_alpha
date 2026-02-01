@@ -1,0 +1,9 @@
+{
+  "module_name": "mmhub_v3_0_1.h",
+  "hash_id": "31f063047b65b083112765b3894f363e141747d39339e8da3f965d644af76756",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/mmhub_v3_0_1.h",
+  "human_readable_source": " \n#ifndef __MMHUB_V3_0_1_H__\n#define __MMHUB_V3_0_1_H__\n\nextern const struct amdgpu_mmhub_funcs mmhub_v3_0_1_funcs;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

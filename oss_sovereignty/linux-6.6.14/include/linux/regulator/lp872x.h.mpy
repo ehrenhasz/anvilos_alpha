@@ -1,0 +1,9 @@
+{
+  "module_name": "lp872x.h",
+  "hash_id": "fcb4204874013e9b6e3e7d84ee2d3782a02365d6917382ba30ecc4c9996515f6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/lp872x.h",
+  "human_readable_source": " \n \n\n#ifndef __LP872X_REGULATOR_H__\n#define __LP872X_REGULATOR_H__\n\n#include <linux/regulator/machine.h>\n#include <linux/platform_device.h>\n#include <linux/gpio/consumer.h>\n\n#define LP872X_MAX_REGULATORS\t\t9\n\n#define LP8720_ENABLE_DELAY\t\t200\n#define LP8725_ENABLE_DELAY\t\t30000\n\nenum lp872x_regulator_id {\n\tLP8720_ID_BASE,\n\tLP8720_ID_LDO1 = LP8720_ID_BASE,\n\tLP8720_ID_LDO2,\n\tLP8720_ID_LDO3,\n\tLP8720_ID_LDO4,\n\tLP8720_ID_LDO5,\n\tLP8720_ID_BUCK,\n\n\tLP8725_ID_BASE,\n\tLP8725_ID_LDO1 = LP8725_ID_BASE,\n\tLP8725_ID_LDO2,\n\tLP8725_ID_LDO3,\n\tLP8725_ID_LDO4,\n\tLP8725_ID_LDO5,\n\tLP8725_ID_LILO1,\n\tLP8725_ID_LILO2,\n\tLP8725_ID_BUCK1,\n\tLP8725_ID_BUCK2,\n\n\tLP872X_ID_MAX,\n};\n\nenum lp872x_dvs_sel {\n\tSEL_V1,\n\tSEL_V2,\n};\n\n \nstruct lp872x_dvs {\n\tstruct gpio_desc *gpio;\n\tenum lp872x_dvs_sel vsel;\n\tenum gpiod_flags init_state;\n};\n\n \nstruct lp872x_regulator_data {\n\tenum lp872x_regulator_id id;\n\tstruct regulator_init_data *init_data;\n};\n\n \nstruct lp872x_platform_data {\n\tu8 general_config;\n\tbool update_config;\n\tstruct lp872x_regulator_data regulator_data[LP872X_MAX_REGULATORS];\n\tstruct lp872x_dvs *dvs;\n\tstruct gpio_desc *enable_gpio;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-unistd.c",
+  "hash_id": "0032bbe9fff7b04d5b4cb1bdf674b1019a21d3f53427afa0d36227934779fac2",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-unistd.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <unistd.h>\n\n \nstatic_assert (sizeof NULL == sizeof (void *));\n\n \nint sk[] = { SEEK_CUR, SEEK_END, SEEK_SET };\n\n \n#if ! (defined STDIN_FILENO                                     \\\n       && (STDIN_FILENO + STDOUT_FILENO + STDERR_FILENO == 3))\nmissing or broken *_FILENO macros\n#endif\n\n \nsize_t t1;\nssize_t t2;\n#ifdef TODO  \nuid_t t3;\ngid_t t4;\n#endif\noff_t t5;\npid_t t6;\n#ifdef TODO\nuseconds_t t7;\nintptr_t t8;\n#endif\n\nint\nmain (void)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

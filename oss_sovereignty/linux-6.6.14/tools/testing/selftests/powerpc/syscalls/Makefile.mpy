@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a787de176cfbd7b7c01d637e812a5bbacdb9857ef3dace473ff41010351f5334",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/syscalls/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nTEST_GEN_PROGS := ipc_unmuxed rtas_filter\n\nCFLAGS += $(KHDR_INCLUDES)\n\ntop_srcdir = ../../../../..\ninclude ../../lib.mk\n\n$(TEST_GEN_PROGS): ../harness.c ../utils.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pfn.h",
+  "hash_id": "2d0452100bde43c4310e6dd421fdb9bcc079e5cc90f820146c3d2630eeffba99",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pfn.h",
+  "human_readable_source": " \n#ifndef _LINUX_PFN_H_\n#define _LINUX_PFN_H_\n\n#ifndef __ASSEMBLY__\n#include <linux/types.h>\n\n \ntypedef struct {\n\tu64 val;\n} pfn_t;\n#endif\n\n#define PFN_ALIGN(x)\t(((unsigned long)(x) + (PAGE_SIZE - 1)) & PAGE_MASK)\n#define PFN_UP(x)\t(((x) + PAGE_SIZE-1) >> PAGE_SHIFT)\n#define PFN_DOWN(x)\t((x) >> PAGE_SHIFT)\n#define PFN_PHYS(x)\t((phys_addr_t)(x) << PAGE_SHIFT)\n#define PHYS_PFN(x)\t((unsigned long)((x) >> PAGE_SHIFT))\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

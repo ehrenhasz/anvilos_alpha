@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bd540d50691f20ef496f1754f6a3d29ba6c4c6400b12eb04fc27dfff524bf462",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/allwinner/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_PHY_SUN4I_USB)\t\t+= phy-sun4i-usb.o\nobj-$(CONFIG_PHY_SUN6I_MIPI_DPHY)\t+= phy-sun6i-mipi-dphy.o\nobj-$(CONFIG_PHY_SUN9I_USB)\t\t+= phy-sun9i-usb.o\nobj-$(CONFIG_PHY_SUN50I_USB3)\t\t+= phy-sun50i-usb3.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

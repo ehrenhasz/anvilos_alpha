@@ -1,0 +1,9 @@
+{
+  "module_name": "ascii85.h",
+  "hash_id": "edbf59b2dc64e4fc6fd691e80292921390d02a2d1926dc31776b596740cb9031",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ascii85.h",
+  "human_readable_source": " \n\n#ifndef _ASCII85_H_\n#define _ASCII85_H_\n\n#include <linux/math.h>\n#include <linux/types.h>\n\n#define ASCII85_BUFSZ 6\n\nstatic inline long\nascii85_encode_len(long len)\n{\n\treturn DIV_ROUND_UP(len, 4);\n}\n\nstatic inline const char *\nascii85_encode(u32 in, char *out)\n{\n\tint i;\n\n\tif (in == 0)\n\t\treturn \"z\";\n\n\tout[5] = '\\0';\n\tfor (i = 5; i--; ) {\n\t\tout[i] = '!' + in % 85;\n\t\tin /= 85;\n\t}\n\n\treturn out;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

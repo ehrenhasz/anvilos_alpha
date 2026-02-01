@@ -1,0 +1,9 @@
+{
+  "module_name": "imx-drm.h",
+  "hash_id": "3fe2d8bfc37fe8578b45a0fa37033c49439488c5201454616d80fd2f8319628e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/imx/ipuv3/imx-drm.h",
+  "human_readable_source": " \n#ifndef _IMX_DRM_H_\n#define _IMX_DRM_H_\n\nstruct device_node;\nstruct drm_crtc;\nstruct drm_connector;\nstruct drm_device;\nstruct drm_display_mode;\nstruct drm_encoder;\nstruct drm_framebuffer;\nstruct drm_plane;\nstruct platform_device;\n\nstruct imx_crtc_state {\n\tstruct drm_crtc_state\t\t\tbase;\n\tu32\t\t\t\t\tbus_format;\n\tu32\t\t\t\t\tbus_flags;\n\tint\t\t\t\t\tdi_hsync_pin;\n\tint\t\t\t\t\tdi_vsync_pin;\n};\n\nstatic inline struct imx_crtc_state *to_imx_crtc_state(struct drm_crtc_state *s)\n{\n\treturn container_of(s, struct imx_crtc_state, base);\n}\nint imx_drm_init_drm(struct platform_device *pdev,\n\t\tint preferred_bpp);\nint imx_drm_exit_drm(void);\n\nextern struct platform_driver ipu_drm_driver;\n\nvoid imx_drm_mode_config_init(struct drm_device *drm);\n\nstruct drm_gem_dma_object *imx_drm_fb_get_obj(struct drm_framebuffer *fb);\n\nint imx_drm_encoder_parse_of(struct drm_device *drm,\n\tstruct drm_encoder *encoder, struct device_node *np);\n\nvoid imx_drm_connector_destroy(struct drm_connector *connector);\n\nint ipu_planes_assign_pre(struct drm_device *dev,\n\t\t\t  struct drm_atomic_state *state);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

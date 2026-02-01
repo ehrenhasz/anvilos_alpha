@@ -1,0 +1,9 @@
+{
+  "module_name": "clz_ctz.c",
+  "hash_id": "c29da8eb7afa0f8acb593e38d762360de39d80ff904d15503aa5bbb224c1dda5",
+  "original_prompt": "Ingested from linux-6.6.14/lib/clz_ctz.c",
+  "human_readable_source": "\n \n\n#include <linux/export.h>\n#include <linux/kernel.h>\n\nint __weak __ctzsi2(int val);\nint __weak __ctzsi2(int val)\n{\n\treturn __ffs(val);\n}\nEXPORT_SYMBOL(__ctzsi2);\n\nint __weak __clzsi2(int val);\nint __weak __clzsi2(int val)\n{\n\treturn 32 - fls(val);\n}\nEXPORT_SYMBOL(__clzsi2);\n\nint __weak __clzdi2(u64 val);\nint __weak __clzdi2(u64 val)\n{\n\treturn 64 - fls64(val);\n}\nEXPORT_SYMBOL(__clzdi2);\n\nint __weak __ctzdi2(u64 val);\nint __weak __ctzdi2(u64 val)\n{\n\treturn __ffs64(val);\n}\nEXPORT_SYMBOL(__ctzdi2);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

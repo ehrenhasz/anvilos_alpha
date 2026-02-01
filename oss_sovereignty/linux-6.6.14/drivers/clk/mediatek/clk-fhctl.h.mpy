@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-fhctl.h",
+  "hash_id": "31f2aedee17c1a947e76b81207a7a0aed6f60f89dff0fb1fa1fa3052ca0db1f4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mediatek/clk-fhctl.h",
+  "human_readable_source": " \n \n\n#ifndef __CLK_FHCTL_H\n#define __CLK_FHCTL_H\n\n#include \"clk-pllfh.h\"\n\nenum fhctl_variant {\n\tFHCTL_PLLFH_V1,\n\tFHCTL_PLLFH_V2,\n};\n\nstruct fhctl_offset {\n\tu32 offset_hp_en;\n\tu32 offset_clk_con;\n\tu32 offset_rst_con;\n\tu32 offset_slope0;\n\tu32 offset_slope1;\n\tu32 offset_cfg;\n\tu32 offset_updnlmt;\n\tu32 offset_dds;\n\tu32 offset_dvfs;\n\tu32 offset_mon;\n};\nconst struct fhctl_offset *fhctl_get_offset_table(enum fhctl_variant v);\nconst struct fh_operation *fhctl_get_ops(void);\nvoid fhctl_hw_init(struct mtk_fh *fh);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "50-zfs.preset",
+  "hash_id": "a5887ea01797f57ac5d6b0019c285efd01bce7d262f148423787199cbb600d80",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/systemd/system/50-zfs.preset",
+  "human_readable_source": "# ZFS is enabled by default\nenable zfs-import-cache.service\ndisable zfs-import-scan.service\nenable zfs-import.target\nenable zfs-mount.service\nenable zfs-share.service\nenable zfs-zed.service\nenable zfs-volume-wait.service\nenable zfs.target\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "i8042.h",
+  "hash_id": "ea7bd1c75910f5af5cd94b698c9ebc93fd922d000514fa56fc170d85765ca681",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/serio/i8042.h",
+  "human_readable_source": " \n#ifndef _I8042_H\n#define _I8042_H\n\n\n \n\n \n\n#if defined(CONFIG_MACH_JAZZ)\n#include \"i8042-jazzio.h\"\n#elif defined(CONFIG_SGI_HAS_I8042)\n#include \"i8042-ip22io.h\"\n#elif defined(CONFIG_SNI_RM)\n#include \"i8042-snirm.h\"\n#elif defined(CONFIG_SPARC)\n#include \"i8042-sparcio.h\"\n#elif defined(CONFIG_X86) || defined(CONFIG_IA64) || defined(CONFIG_LOONGARCH)\n#include \"i8042-acpipnpio.h\"\n#else\n#include \"i8042-io.h\"\n#endif\n\n \n\n#define I8042_CTL_TIMEOUT\t10000\n\n \n\n#define I8042_RET_CTL_TEST\t0x55\n\n \n\n#define I8042_BUFFER_SIZE\t16\n\n \n\n#define I8042_NUM_MUX_PORTS\t4\n\n \n\n#ifdef DEBUG\nstatic unsigned long i8042_start_time;\n#define dbg_init() do { i8042_start_time = jiffies; } while (0)\n#define dbg(format, arg...)\t\t\t\t\t\t\t\\\n\tdo {\t\t\t\t\t\t\t\t\t\\\n\t\tif (i8042_debug)\t\t\t\t\t\t\\\n\t\t\tprintk(KERN_DEBUG KBUILD_MODNAME \": [%d] \" format,\t\\\n\t\t\t       (int) (jiffies - i8042_start_time), ##arg);\t\\\n\t} while (0)\n\n#define filter_dbg(filter, data, format, args...)\t\t\\\n\tdo {\t\t\t\t\t\t\t\\\n\t\tif (!i8042_debug)\t\t\t\t\\\n\t\t\tbreak;\t\t\t\t\t\\\n\t\t\t\t\t\t\t\t\\\n\t\tif (!filter || i8042_unmask_kbd_data)\t\t\\\n\t\t\tdbg(\"%02x \" format, data, ##args);\t\\\n\t\telse\t\t\t\t\t\t\\\n\t\t\tdbg(\"** \" format, ##args);\t\t\\\n\t} while (0)\n#else\n#define dbg_init() do { } while (0)\n#define dbg(format, arg...)\t\t\t\t\t\t\t\\\n\tdo {\t\t\t\t\t\t\t\t\t\\\n\t\tif (0)\t\t\t\t\t\t\t\t\\\n\t\t\tprintk(KERN_DEBUG pr_fmt(format), ##arg);\t\t\\\n\t} while (0)\n\n#define filter_dbg(filter, data, format, args...) do { } while (0)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

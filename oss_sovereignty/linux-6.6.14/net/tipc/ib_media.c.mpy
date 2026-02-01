@@ -1,0 +1,9 @@
+{
+  "module_name": "ib_media.c",
+  "hash_id": "6aaff8f8cb30391f685bc6a8fd7bd1a28989b6f203efdf6833c90b32347f1c0e",
+  "original_prompt": "Ingested from linux-6.6.14/net/tipc/ib_media.c",
+  "human_readable_source": " \n\n#include <linux/if_infiniband.h>\n#include \"core.h\"\n#include \"bearer.h\"\n\n#define TIPC_MAX_IB_LINK_WIN 500\n\n \nstatic int tipc_ib_addr2str(struct tipc_media_addr *a, char *str_buf,\n\t\t\t    int str_size)\n{\n\tif (str_size < 60)\t \n\t\treturn 1;\n\n\tsprintf(str_buf, \"%20phC\", a->value);\n\n\treturn 0;\n}\n\n \nstatic int tipc_ib_addr2msg(char *msg, struct tipc_media_addr *addr)\n{\n\tmemset(msg, 0, TIPC_MEDIA_INFO_SIZE);\n\tmemcpy(msg, addr->value, INFINIBAND_ALEN);\n\treturn 0;\n}\n\n \nstatic int tipc_ib_raw2addr(struct tipc_bearer *b,\n\t\t\t    struct tipc_media_addr *addr,\n\t\t\t    const char *msg)\n{\n\tmemset(addr, 0, sizeof(*addr));\n\tmemcpy(addr->value, msg, INFINIBAND_ALEN);\n\taddr->media_id = TIPC_MEDIA_TYPE_IB;\n\taddr->broadcast = !memcmp(msg, b->bcast_addr.value,\n\t\t\t\t  INFINIBAND_ALEN);\n\treturn 0;\n}\n\n \nstatic int tipc_ib_msg2addr(struct tipc_bearer *b,\n\t\t\t    struct tipc_media_addr *addr,\n\t\t\t    char *msg)\n{\n\treturn tipc_ib_raw2addr(b, addr, msg);\n}\n\n \nstruct tipc_media ib_media_info = {\n\t.send_msg\t= tipc_l2_send_msg,\n\t.enable_media\t= tipc_enable_l2_media,\n\t.disable_media\t= tipc_disable_l2_media,\n\t.addr2str\t= tipc_ib_addr2str,\n\t.addr2msg\t= tipc_ib_addr2msg,\n\t.msg2addr\t= tipc_ib_msg2addr,\n\t.raw2addr\t= tipc_ib_raw2addr,\n\t.priority\t= TIPC_DEF_LINK_PRI,\n\t.tolerance\t= TIPC_DEF_LINK_TOL,\n\t.min_win\t= TIPC_DEF_LINK_WIN,\n\t.max_win\t= TIPC_MAX_IB_LINK_WIN,\n\t.type_id\t= TIPC_MEDIA_TYPE_IB,\n\t.hwaddr_len\t= INFINIBAND_ALEN,\n\t.name\t\t= \"ib\"\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

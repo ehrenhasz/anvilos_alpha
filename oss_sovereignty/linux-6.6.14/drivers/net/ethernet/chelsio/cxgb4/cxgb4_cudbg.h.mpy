@@ -1,0 +1,9 @@
+{
+  "module_name": "cxgb4_cudbg.h",
+  "hash_id": "a761e9340bb0c36e50108e1ca3ad7d11dd5721583be97b3745c858343a47b53d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.h",
+  "human_readable_source": " \n \n\n#ifndef __CXGB4_CUDBG_H__\n#define __CXGB4_CUDBG_H__\n\n#include \"cudbg_if.h\"\n#include \"cudbg_lib_common.h\"\n#include \"cudbg_entity.h\"\n#include \"cudbg_lib.h\"\n\n#define CUDBG_DUMP_BUFF_SIZE (32 * 1024 * 1024)  \n#define CUDBG_COMPRESS_BUFF_SIZE (4 * 1024 * 1024)  \n\ntypedef int (*cudbg_collect_callback_t)(struct cudbg_init *pdbg_init,\n\t\t\t\t\tstruct cudbg_buffer *dbg_buff,\n\t\t\t\t\tstruct cudbg_error *cudbg_err);\n\nstruct cxgb4_collect_entity {\n\tenum cudbg_dbg_entity_type entity;\n\tcudbg_collect_callback_t collect_cb;\n};\n\nenum CXGB4_ETHTOOL_DUMP_FLAGS {\n\tCXGB4_ETH_DUMP_NONE = ETH_FW_DUMP_DISABLE,\n\tCXGB4_ETH_DUMP_MEM = (1 << 0),  \n\tCXGB4_ETH_DUMP_HW = (1 << 1),  \n\tCXGB4_ETH_DUMP_FLASH = (1 << 2),  \n};\n\n#define CXGB4_ETH_DUMP_ALL (CXGB4_ETH_DUMP_MEM | CXGB4_ETH_DUMP_HW)\n\nu32 cxgb4_get_dump_length(struct adapter *adap, u32 flag);\nint cxgb4_cudbg_collect(struct adapter *adap, void *buf, u32 *buf_size,\n\t\t\tu32 flag);\nvoid cxgb4_init_ethtool_dump(struct adapter *adapter);\nint cxgb4_cudbg_vmcore_add_dump(struct adapter *adap);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

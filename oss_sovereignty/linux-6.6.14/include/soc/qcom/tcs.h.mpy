@@ -1,0 +1,9 @@
+{
+  "module_name": "tcs.h",
+  "hash_id": "baec35071374b175203667a01c081ee890f5a6828c7c7293dac5335656e91d88",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/qcom/tcs.h",
+  "human_readable_source": " \n \n\n#ifndef __SOC_QCOM_TCS_H__\n#define __SOC_QCOM_TCS_H__\n\n#define MAX_RPMH_PAYLOAD\t16\n\n \nenum rpmh_state {\n\tRPMH_SLEEP_STATE,\n\tRPMH_WAKE_ONLY_STATE,\n\tRPMH_ACTIVE_ONLY_STATE,\n};\n\n \nstruct tcs_cmd {\n\tu32 addr;\n\tu32 data;\n\tu32 wait;\n};\n\n \nstruct tcs_request {\n\tenum rpmh_state state;\n\tu32 wait_for_compl;\n\tu32 num_cmds;\n\tstruct tcs_cmd *cmds;\n};\n\n#define BCM_TCS_CMD_COMMIT_SHFT\t\t30\n#define BCM_TCS_CMD_COMMIT_MASK\t\t0x40000000\n#define BCM_TCS_CMD_VALID_SHFT\t\t29\n#define BCM_TCS_CMD_VALID_MASK\t\t0x20000000\n#define BCM_TCS_CMD_VOTE_X_SHFT\t\t14\n#define BCM_TCS_CMD_VOTE_MASK\t\t0x3fff\n#define BCM_TCS_CMD_VOTE_Y_SHFT\t\t0\n#define BCM_TCS_CMD_VOTE_Y_MASK\t\t0xfffc000\n\n \n#define BCM_TCS_CMD(commit, valid, vote_x, vote_y)\t\t\\\n\t(((commit) << BCM_TCS_CMD_COMMIT_SHFT) |\t\t\\\n\t((valid) << BCM_TCS_CMD_VALID_SHFT) |\t\t\t\\\n\t((cpu_to_le32(vote_x) &\t\t\t\t\t\\\n\tBCM_TCS_CMD_VOTE_MASK) << BCM_TCS_CMD_VOTE_X_SHFT) |\t\\\n\t((cpu_to_le32(vote_y) &\t\t\t\t\t\\\n\tBCM_TCS_CMD_VOTE_MASK) << BCM_TCS_CMD_VOTE_Y_SHFT))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

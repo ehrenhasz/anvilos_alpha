@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl2832_sdr.h",
+  "hash_id": "d2dc7757909844ea6e269b81a2a515e9527ed2f8caa7e31a56534fe737e5932f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/rtl2832_sdr.h",
+  "human_readable_source": " \n \n\n#ifndef RTL2832_SDR_H\n#define RTL2832_SDR_H\n\n#include <linux/i2c.h>\n#include <media/v4l2-subdev.h>\n#include <media/dvb_frontend.h>\n\n \nstruct rtl2832_sdr_platform_data {\n\tu32 clk;\n\t \n#define RTL2832_SDR_TUNER_FC2580    0x21\n#define RTL2832_SDR_TUNER_TUA9001   0x24\n#define RTL2832_SDR_TUNER_FC0012    0x26\n#define RTL2832_SDR_TUNER_E4000     0x27\n#define RTL2832_SDR_TUNER_FC0013    0x29\n#define RTL2832_SDR_TUNER_R820T     0x2a\n#define RTL2832_SDR_TUNER_R828D     0x2b\n\tu8 tuner;\n\n\tstruct regmap *regmap;\n\tstruct dvb_frontend *dvb_frontend;\n\tstruct v4l2_subdev *v4l2_subdev;\n\tstruct dvb_usb_device *dvb_usb_device;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

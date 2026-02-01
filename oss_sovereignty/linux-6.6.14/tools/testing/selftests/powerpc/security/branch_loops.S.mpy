@@ -1,0 +1,9 @@
+{
+  "module_name": "branch_loops.S",
+  "hash_id": "d6c4b1853a68ec9e741e67b5f5873d68b796763c8db8ed22a12dcd6e7a194e95",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/security/branch_loops.S",
+  "human_readable_source": " \n\n \n\n#include <ppc-asm.h>\n\n\t.data\n\njump_table:\n\t.long\t0x0\n\t.long\t(.Lstate_1 - .Lstate_0)\n\t.long\t(.Lstate_2 - .Lstate_0)\n\t.long\t(.Lstate_3 - .Lstate_0)\n\t.long\t(.Lstate_4 - .Lstate_0)\n\t.long\t(.Lstate_5 - .Lstate_0)\n\t.long\t(.Lstate_6 - .Lstate_0)\n\t.long\t(.Lstate_7 - .Lstate_0)\n\n\t.text\n\n#define ITER_SHIFT\t31\n\n.macro state number\n\t.balign\t32\n.Lstate_\\number:\n\t.if\t\\number==7\n\tli\tr3, 0\n\t.else\n\tli\tr3, \\number+1\n\t.endif\n\tb\t.Lloop\n.endm\n\nFUNC_START(pattern_cache_loop)\n\tli\tr3, 0\n\tli\tr4, 1\n\tsldi\tr4, r4, ITER_SHIFT\n\n.Lloop:\tcmpdi\tr4, 0\n\tbeqlr\n\n\taddi\tr4, r4, -1\n\n\tld\tr6, jump_table@got(%r2)\n\tsldi\tr5, r3, 2\n\tlwax\tr6, r5, r6\n\tld\tr7, .Lstate_0@got(%r2)\n\tadd\tr6, r6, r7\n\tmtctr\tr6\n\tbctr\n\n\tstate\t0\n\tstate\t1\n\tstate\t2\n\tstate\t3\n\tstate\t4\n\tstate\t5\n\tstate\t6\n\tstate\t7\n\nFUNC_END(pattern_cache_loop)\n\n\nFUNC_START(indirect_branch_loop)\n\tli\tr3, 1\n\tsldi\tr3, r3, ITER_SHIFT\n\n1:\tcmpdi\tr3, 0\n\tbeqlr\n\n\taddi\tr3, r3, -1\n\n\tld\tr4, 2f@got(%r2)\n\tmtctr\tr4\n\tbctr\n\n\t.balign 32\n2:\tb\t1b\n\nFUNC_END(indirect_branch_loop)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

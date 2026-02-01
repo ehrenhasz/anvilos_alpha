@@ -1,0 +1,9 @@
+{
+  "module_name": ".rustfmt.toml",
+  "hash_id": "b2aaa0727b5c31d2caed8a6865347de1def4b99bb95f844e158351b07cdc7974",
+  "original_prompt": "Ingested from linux-6.6.14/.rustfmt.toml",
+  "human_readable_source": "edition = \"2021\"\nnewline_style = \"Unix\"\n\n# Unstable options that help catching some mistakes in formatting and that we may want to enable\n# when they become stable.\n#\n# They are kept here since they are useful to run from time to time.\n#format_code_in_doc_comments = true\n#reorder_impl_items = true\n#comment_width = 100\n#wrap_comments = true\n#normalize_comments = true\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

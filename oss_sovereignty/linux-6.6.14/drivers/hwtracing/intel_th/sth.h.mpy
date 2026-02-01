@@ -1,0 +1,9 @@
+{
+  "module_name": "sth.h",
+  "hash_id": "99d60d62b9d400dac45c04d753b42b08d419cb2cd2a63075018bb4ae3ae8537a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwtracing/intel_th/sth.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_TH_STH_H__\n#define __INTEL_TH_STH_H__\n\nenum {\n\tREG_STH_STHCAP0\t\t= 0x0000,  \n\tREG_STH_STHCAP1\t\t= 0x0004,  \n\tREG_STH_TRIG\t\t= 0x0008,  \n\tREG_STH_TRIG_TS\t\t= 0x000c,  \n\tREG_STH_XSYNC\t\t= 0x0010,  \n\tREG_STH_XSYNC_TS\t= 0x0014,  \n\tREG_STH_GERR\t\t= 0x0018,  \n};\n\nstruct intel_th_channel {\n\tu64\tDn;\n\tu64\tDnM;\n\tu64\tDnTS;\n\tu64\tDnMTS;\n\tu64\tUSER;\n\tu64\tUSER_TS;\n\tu32\tFLAG;\n\tu32\tFLAG_TS;\n\tu32\tMERR;\n\tu32\t__unused;\n} __packed;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

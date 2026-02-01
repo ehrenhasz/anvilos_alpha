@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5ea42f903218ae4f3cdf37d2e3f9c9dbfe1796db5058730c1d49c5ef3085548f",
+  "original_prompt": "Ingested from linux-6.6.14/fs/hfs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig HFS_FS\n\ttristate \"Apple Macintosh file system support\"\n\tdepends on BLOCK\n\tselect BUFFER_HEAD\n\tselect NLS\n\tselect LEGACY_DIRECT_IO\n\thelp\n\t  If you say Y here, you will be able to mount Macintosh-formatted\n\t  floppy disks and hard drive partitions with full read-write access.\n\t  Please read <file:Documentation/filesystems/hfs.rst> to learn about\n\t  the available mount options.\n\n\t  To compile this file system support as a module, choose M here: the\n\t  module will be called hfs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

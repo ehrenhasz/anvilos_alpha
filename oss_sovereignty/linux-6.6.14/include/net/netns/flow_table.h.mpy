@@ -1,0 +1,9 @@
+{
+  "module_name": "flow_table.h",
+  "hash_id": "ee8166d4f18cfca31ddf9b98a94db98a8585d6ae360bd9b492d853b11d7d15ca",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netns/flow_table.h",
+  "human_readable_source": " \n#ifndef __NETNS_FLOW_TABLE_H\n#define __NETNS_FLOW_TABLE_H\n\nstruct nf_flow_table_stat {\n\tunsigned int count_wq_add;\n\tunsigned int count_wq_del;\n\tunsigned int count_wq_stats;\n};\n\nstruct netns_ft {\n\tstruct nf_flow_table_stat __percpu *stat;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

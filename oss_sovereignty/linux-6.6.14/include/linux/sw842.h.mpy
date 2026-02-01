@@ -1,0 +1,9 @@
+{
+  "module_name": "sw842.h",
+  "hash_id": "8dc35e449ef2bbfc119e7e6aa0ead56c6fe358c856c48041832965f786e8013f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sw842.h",
+  "human_readable_source": " \n#ifndef __SW842_H__\n#define __SW842_H__\n\n#define SW842_MEM_COMPRESS\t(0xf000)\n\nint sw842_compress(const u8 *src, unsigned int srclen,\n\t\t   u8 *dst, unsigned int *destlen, void *wmem);\n\nint sw842_decompress(const u8 *src, unsigned int srclen,\n\t\t     u8 *dst, unsigned int *destlen);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

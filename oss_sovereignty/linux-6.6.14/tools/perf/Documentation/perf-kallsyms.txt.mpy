@@ -1,0 +1,9 @@
+{
+  "module_name": "perf-kallsyms.txt",
+  "hash_id": "90388bdf680f0278b3eb132e057a6528d78839dd4fa7c0cfc5443b29f2de3fbe",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/perf-kallsyms.txt",
+  "human_readable_source": "perf-kallsyms(1)\n================\n\nNAME\n----\nperf-kallsyms - Searches running kernel for symbols\n\nSYNOPSIS\n--------\n[verse]\n'perf kallsyms' [<options>] symbol_name[,symbol_name...]\n\nDESCRIPTION\n-----------\nThis command searches the running kernel kallsyms file for the given symbol(s)\nand prints information about it, including the DSO, the kallsyms begin/end\naddresses and the addresses in the ELF kallsyms symbol table (for symbols in\nmodules).\n\nOPTIONS\n-------\n-v::\n--verbose::\n\tIncrease verbosity level, showing details about symbol table loading, etc.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

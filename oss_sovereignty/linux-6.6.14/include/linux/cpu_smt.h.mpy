@@ -1,0 +1,9 @@
+{
+  "module_name": "cpu_smt.h",
+  "hash_id": "466f94da82d8507c59e225a794663c744e1c7ccf1f88da50babcb8c5aa2bed77",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cpu_smt.h",
+  "human_readable_source": " \n#ifndef _LINUX_CPU_SMT_H_\n#define _LINUX_CPU_SMT_H_\n\nenum cpuhp_smt_control {\n\tCPU_SMT_ENABLED,\n\tCPU_SMT_DISABLED,\n\tCPU_SMT_FORCE_DISABLED,\n\tCPU_SMT_NOT_SUPPORTED,\n\tCPU_SMT_NOT_IMPLEMENTED,\n};\n\n#if defined(CONFIG_SMP) && defined(CONFIG_HOTPLUG_SMT)\nextern enum cpuhp_smt_control cpu_smt_control;\nextern unsigned int cpu_smt_num_threads;\nextern void cpu_smt_disable(bool force);\nextern void cpu_smt_set_num_threads(unsigned int num_threads,\n\t\t\t\t    unsigned int max_threads);\nextern bool cpu_smt_possible(void);\nextern int cpuhp_smt_enable(void);\nextern int cpuhp_smt_disable(enum cpuhp_smt_control ctrlval);\n#else\n# define cpu_smt_control               (CPU_SMT_NOT_IMPLEMENTED)\n# define cpu_smt_num_threads 1\nstatic inline void cpu_smt_disable(bool force) { }\nstatic inline void cpu_smt_set_num_threads(unsigned int num_threads,\n\t\t\t\t\t   unsigned int max_threads) { }\nstatic inline bool cpu_smt_possible(void) { return false; }\nstatic inline int cpuhp_smt_enable(void) { return 0; }\nstatic inline int cpuhp_smt_disable(enum cpuhp_smt_control ctrlval) { return 0; }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

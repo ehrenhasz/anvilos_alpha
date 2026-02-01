@@ -1,0 +1,9 @@
+{
+  "module_name": "test_overhead_kprobe.bpf.c",
+  "hash_id": "a5c25d1b2b4f98a8994159e2b0bba9c02444cf86dbc42583c5360e55ea7fb99a",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/test_overhead_kprobe.bpf.c",
+  "human_readable_source": " \n#include \"vmlinux.h\"\n#include <linux/version.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n#include <bpf/bpf_core_read.h>\n\nSEC(\"kprobe/__set_task_comm\")\nint prog(struct pt_regs *ctx)\n{\n\tstruct signal_struct *signal;\n\tstruct task_struct *tsk;\n\tchar oldcomm[TASK_COMM_LEN] = {};\n\tchar newcomm[TASK_COMM_LEN] = {};\n\tu16 oom_score_adj;\n\tu32 pid;\n\n\ttsk = (void *)PT_REGS_PARM1_CORE(ctx);\n\n\tpid = BPF_CORE_READ(tsk, pid);\n\tbpf_core_read_str(oldcomm, sizeof(oldcomm), &tsk->comm);\n\tbpf_core_read_str(newcomm, sizeof(newcomm),\n\t\t\t\t  (void *)PT_REGS_PARM2(ctx));\n\tsignal = BPF_CORE_READ(tsk, signal);\n\toom_score_adj = BPF_CORE_READ(signal, oom_score_adj);\n\treturn 0;\n}\n\nSEC(\"kprobe/fib_table_lookup\")\nint prog2(struct pt_regs *ctx)\n{\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\nu32 _version SEC(\"version\") = LINUX_VERSION_CODE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

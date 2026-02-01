@@ -1,0 +1,9 @@
+{
+  "module_name": "scx200.h",
+  "hash_id": "059c68b041227242087644ebc5b321dd0de1911a395dc460c79fe871ddb55980",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/scx200.h",
+  "human_readable_source": " \n \n\n \n\nextern unsigned scx200_cb_base;\n\n#define scx200_cb_present() (scx200_cb_base!=0)\n\n \n#define SCx200_DOCCS_BASE 0x78\t \n#define SCx200_DOCCS_CTRL 0x7c\t \n\n \n#define SCx200_GPIO_SIZE 0x2c\t \n\n \n#define SCx200_CB_BASE_FIXED 0x9000\t \n\n \n#define SCx200_WDT_OFFSET 0x00\t \n#define SCx200_WDT_SIZE 0x05\t \n\n#define SCx200_WDT_WDTO 0x00\t \n#define SCx200_WDT_WDCNFG 0x02\t \n#define SCx200_WDT_WDSTS 0x04\t \n#define SCx200_WDT_WDSTS_WDOVF (1<<0)  \n\n \n#define SCx200_TIMER_OFFSET 0x08\n#define SCx200_TIMER_SIZE 0x06\n\n \n#define SCx200_CLOCKGEN_OFFSET 0x10\n#define SCx200_CLOCKGEN_SIZE 0x10\n\n \n#define SCx200_MISC_OFFSET 0x30\n#define SCx200_MISC_SIZE 0x10\n\n#define SCx200_PMR 0x30\t\t \n#define SCx200_MCR 0x34\t\t \n#define SCx200_INTSEL 0x38\t \n#define SCx200_IID 0x3c\t\t \n#define SCx200_REV 0x3d\t\t \n#define SCx200_CBA 0x3e\t\t \n#define SCx200_CBA_SCRATCH 0x64\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

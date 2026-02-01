@@ -1,0 +1,9 @@
+{
+  "module_name": "test-setsockopt.c",
+  "hash_id": "7b30210a83c120e62d68137e63e03b48a1701cd8dc575481dbfbf621f2284d1f",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-setsockopt.c",
+  "human_readable_source": " \n  {\n    int value = 1;\n\n    errno = 0;\n    ASSERT (setsockopt (-1, SOL_SOCKET, SO_REUSEADDR, &value, sizeof (value))\n            == -1);\n    ASSERT (errno == EBADF);\n  }\n  {\n    int value = 1;\n\n    close (99);\n    errno = 0;\n    ASSERT (setsockopt (99, SOL_SOCKET, SO_REUSEADDR, &value, sizeof (value))\n            == -1);\n    ASSERT (errno == EBADF);\n  }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

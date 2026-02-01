@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "231e2cad4ab94fe5309a086ef5ba939c06ed53c97edddfd28270a967493694cf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/visl/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\nconfig VIDEO_VISL\n\ttristate \"Virtual Stateless Decoder Driver (visl)\"\n\tdepends on VIDEO_DEV\n\tselect FONT_SUPPORT\n\tselect FONT_8x16\n\tselect VIDEOBUF2_VMALLOC\n\tselect V4L2_MEM2MEM_DEV\n\tselect MEDIA_CONTROLLER\n\tselect MEDIA_CONTROLLER_REQUEST_API\n\tselect VIDEO_V4L2_TPG\n\thelp\n\n\t  A virtual stateless decoder device for uAPI development purposes.\n\n\t  A userspace implementation can use visl to run a decoding loop even\n\t  when no hardware is available or when the kernel uAPI for the codec\n\t  has not been upstreamed yet. This can reveal bugs at an early stage.\n\n\t  When in doubt, say N.\n\nconfig VISL_DEBUGFS\n\tbool \"Enable debugfs for visl\"\n\tdepends on VIDEO_VISL\n\tdepends on DEBUG_FS\n\n\thelp\n\t  Choose Y to dump the bitstream buffers through debugfs.\n\t  When in doubt, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

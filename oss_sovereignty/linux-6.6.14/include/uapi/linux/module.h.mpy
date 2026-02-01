@@ -1,0 +1,9 @@
+{
+  "module_name": "module.h",
+  "hash_id": "74b467684c400fde8b58b96541dc26af59ca08b7d11164eb8b14e91c6a1d2648",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/module.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_MODULE_H\n#define _UAPI_LINUX_MODULE_H\n\n \n#define MODULE_INIT_IGNORE_MODVERSIONS\t1\n#define MODULE_INIT_IGNORE_VERMAGIC\t2\n#define MODULE_INIT_COMPRESSED_FILE\t4\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

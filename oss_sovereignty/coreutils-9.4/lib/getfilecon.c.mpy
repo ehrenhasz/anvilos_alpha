@@ -1,0 +1,9 @@
+{
+  "module_name": "getfilecon.c",
+  "hash_id": "26c11f65302be89da8ca7a6b2f3e67db6cae4fcf9985b850c16750cebb82fa5d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/getfilecon.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <selinux/selinux.h>\n\n#include <sys/types.h>\n#include <errno.h>\n#include <string.h>\n\n \n#ifndef ENODATA\n# define ENODATA ENOTSUP\n#endif\n\n#undef getfilecon\n#undef lgetfilecon\n#undef fgetfilecon\nint getfilecon (char const *file, char **con);\nint lgetfilecon (char const *file, char **con);\nint fgetfilecon (int fd, char **con);\n\n \n\nstatic int\nmap_to_failure (int ret, char **con)\n{\n  if (ret == 0)\n    {\n      errno = ENOTSUP;\n      return -1;\n    }\n\n  if (ret == 10 && strcmp (*con, \"unlabeled\") == 0)\n    {\n      freecon (*con);\n      *con = NULL;\n      errno = ENODATA;\n      return -1;\n    }\n\n  return ret;\n}\n\nint\nrpl_getfilecon (char const *file, char **con)\n{\n  int ret = getfilecon (file, con);\n  return map_to_failure (ret, con);\n}\n\nint\nrpl_lgetfilecon (char const *file, char **con)\n{\n  int ret = lgetfilecon (file, con);\n  return map_to_failure (ret, con);\n}\n\nint\nrpl_fgetfilecon (int fd, char**con)\n{\n  int ret = fgetfilecon (fd, con);\n  return map_to_failure (ret, con);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

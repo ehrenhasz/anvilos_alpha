@@ -1,0 +1,9 @@
+{
+  "module_name": "addi_watchdog.h",
+  "hash_id": "ff8d42fe4889e8345296c8e78fa24708c8944871cd50fe8e91f27f05d28e38eb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/comedi/drivers/addi_watchdog.h",
+  "human_readable_source": " \n#ifndef _ADDI_WATCHDOG_H\n#define _ADDI_WATCHDOG_H\n\nstruct comedi_subdevice;\n\nvoid addi_watchdog_reset(unsigned long iobase);\nint addi_watchdog_init(struct comedi_subdevice *s, unsigned long iobase);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

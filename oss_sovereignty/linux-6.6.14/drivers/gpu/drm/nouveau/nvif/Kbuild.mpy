@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "a89a3d526d33845a106c3546d3e3ae4e98f99cd9b1c8106089e3593d8f75008e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvif/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\nnvif-y := nvif/object.o\nnvif-y += nvif/client.o\nnvif-y += nvif/conn.o\nnvif-y += nvif/device.o\nnvif-y += nvif/disp.o\nnvif-y += nvif/driver.o\nnvif-y += nvif/event.o\nnvif-y += nvif/fifo.o\nnvif-y += nvif/head.o\nnvif-y += nvif/mem.o\nnvif-y += nvif/mmu.o\nnvif-y += nvif/outp.o\nnvif-y += nvif/timer.o\nnvif-y += nvif/vmm.o\n\n# Usermode classes\nnvif-y += nvif/user.o\nnvif-y += nvif/userc361.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

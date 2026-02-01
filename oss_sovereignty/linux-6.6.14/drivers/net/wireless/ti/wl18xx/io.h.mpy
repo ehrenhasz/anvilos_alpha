@@ -1,0 +1,9 @@
+{
+  "module_name": "io.h",
+  "hash_id": "d756c45801662859a2979623de7be84889d6623d2675791d23ab2952b4ae4fec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wl18xx/io.h",
+  "human_readable_source": " \n \n\n#ifndef __WL18XX_IO_H__\n#define __WL18XX_IO_H__\n\nint __must_check wl18xx_top_reg_write(struct wl1271 *wl, int addr, u16 val);\nint __must_check wl18xx_top_reg_read(struct wl1271 *wl, int addr, u16 *out);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

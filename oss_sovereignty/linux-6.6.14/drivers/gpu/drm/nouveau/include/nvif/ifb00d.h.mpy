@@ -1,0 +1,9 @@
+{
+  "module_name": "ifb00d.h",
+  "hash_id": "6c9a996ef1884de95496c1d54e107b751495ecaa3f3e2d99f8b1add52d65f745",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/ifb00d.h",
+  "human_readable_source": "#ifndef __NVIF_IFB00D_H__\n#define __NVIF_IFB00D_H__\n#include \"if000c.h\"\n\nstruct gm200_vmm_vn {\n\t \n};\n\nstruct gm200_vmm_v0 {\n\t \n\t__u8  version;\n\t__u8  bigpage;\n};\n\nstruct gm200_vmm_map_vn {\n\t \n};\n\nstruct gm200_vmm_map_v0 {\n\t \n\t__u8  version;\n\t__u8  vol;\n\t__u8  ro;\n\t__u8  priv;\n\t__u8  kind;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

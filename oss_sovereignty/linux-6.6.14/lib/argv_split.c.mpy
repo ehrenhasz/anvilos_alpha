@@ -1,0 +1,9 @@
+{
+  "module_name": "argv_split.c",
+  "hash_id": "02ea8d24787809c7c1e38a7c835e3ccec29865c6f00a0355f46da95b934f73f7",
+  "original_prompt": "Ingested from linux-6.6.14/lib/argv_split.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/ctype.h>\n#include <linux/string.h>\n#include <linux/slab.h>\n#include <linux/export.h>\n\nstatic int count_argc(const char *str)\n{\n\tint count = 0;\n\tbool was_space;\n\n\tfor (was_space = true; *str; str++) {\n\t\tif (isspace(*str)) {\n\t\t\twas_space = true;\n\t\t} else if (was_space) {\n\t\t\twas_space = false;\n\t\t\tcount++;\n\t\t}\n\t}\n\n\treturn count;\n}\n\n \nvoid argv_free(char **argv)\n{\n\targv--;\n\tkfree(argv[0]);\n\tkfree(argv);\n}\nEXPORT_SYMBOL(argv_free);\n\n \nchar **argv_split(gfp_t gfp, const char *str, int *argcp)\n{\n\tchar *argv_str;\n\tbool was_space;\n\tchar **argv, **argv_ret;\n\tint argc;\n\n\targv_str = kstrndup(str, KMALLOC_MAX_SIZE - 1, gfp);\n\tif (!argv_str)\n\t\treturn NULL;\n\n\targc = count_argc(argv_str);\n\targv = kmalloc_array(argc + 2, sizeof(*argv), gfp);\n\tif (!argv) {\n\t\tkfree(argv_str);\n\t\treturn NULL;\n\t}\n\n\t*argv = argv_str;\n\targv_ret = ++argv;\n\tfor (was_space = true; *argv_str; argv_str++) {\n\t\tif (isspace(*argv_str)) {\n\t\t\twas_space = true;\n\t\t\t*argv_str = 0;\n\t\t} else if (was_space) {\n\t\t\twas_space = false;\n\t\t\t*argv++ = argv_str;\n\t\t}\n\t}\n\t*argv = NULL;\n\n\tif (argcp)\n\t\t*argcp = argc;\n\treturn argv_ret;\n}\nEXPORT_SYMBOL(argv_split);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

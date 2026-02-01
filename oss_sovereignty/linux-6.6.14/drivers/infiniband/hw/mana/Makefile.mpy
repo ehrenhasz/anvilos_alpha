@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8dd090d5841ad90f3bccce2d594536fce5ace7db6c73f46e610e9d09336a10df",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/mana/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_MANA_INFINIBAND) += mana_ib.o\n\nmana_ib-y := device.o main.o wq.o qp.o cq.o mr.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

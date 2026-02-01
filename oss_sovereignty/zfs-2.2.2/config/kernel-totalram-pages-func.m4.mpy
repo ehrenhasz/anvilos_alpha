@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-totalram-pages-func.m4",
+  "hash_id": "8dac12caaeee9cf4478d4908b5e9f32aeb3ec3a04b260b4bdd466b88eb456792",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-totalram-pages-func.m4",
+  "human_readable_source": "dnl #\ndnl # Linux 5.0: totalram_pages is no longer a global variable, and must be\ndnl # read via the totalram_pages() helper function.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_TOTALRAM_PAGES_FUNC], [\n\tZFS_LINUX_TEST_SRC([totalram_pages], [\n\t\t#include <linux/mm.h>\n\t],[\n\t\tunsigned long pages __attribute__ ((unused));\n\t\tpages = totalram_pages();\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_TOTALRAM_PAGES_FUNC], [\n\tAC_MSG_CHECKING([whether totalram_pages() exists])\n\tZFS_LINUX_TEST_RESULT([totalram_pages], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_TOTALRAM_PAGES_FUNC, 1,\n\t\t    [kernel has totalram_pages()])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

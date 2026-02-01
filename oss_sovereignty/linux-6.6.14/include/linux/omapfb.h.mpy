@@ -1,0 +1,9 @@
+{
+  "module_name": "omapfb.h",
+  "hash_id": "97175a3aabae2fd06ab70bc272c8334e3f460bd260d136e5d37659de1b3de437",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/omapfb.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_OMAPFB_H__\n#define __LINUX_OMAPFB_H__\n\n#include <uapi/linux/omapfb.h>\n\n\nstruct omap_lcd_config {\n\tchar panel_name[16];\n\tchar ctrl_name[16];\n\ts16  nreset_gpio;\n\tu8   data_lines;\n};\n\nstruct omapfb_platform_data {\n\tstruct omap_lcd_config\t\tlcd;\n};\n\nvoid __init omapfb_set_lcd_config(const struct omap_lcd_config *config);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hv_spinlock.c",
+  "hash_id": "3ed9199ebfe594be445d8038badf26f4e32ab0655da3e6e45fa35a2e186b7b4d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/hyperv/hv_spinlock.c",
+  "human_readable_source": "\n\n \n\n#define pr_fmt(fmt) \"Hyper-V: \" fmt\n\n#include <linux/spinlock.h>\n\n#include <asm/mshyperv.h>\n#include <asm/paravirt.h>\n#include <asm/apic.h>\n\nstatic bool __initdata hv_pvspin = true;\n\nstatic void hv_qlock_kick(int cpu)\n{\n\t__apic_send_IPI(cpu, X86_PLATFORM_IPI_VECTOR);\n}\n\nstatic void hv_qlock_wait(u8 *byte, u8 val)\n{\n\tunsigned long flags;\n\n\tif (in_nmi())\n\t\treturn;\n\n\t \n\tlocal_irq_save(flags);\n\t \n\tif (READ_ONCE(*byte) == val) {\n\t\tunsigned long msr_val;\n\n\t\trdmsrl(HV_X64_MSR_GUEST_IDLE, msr_val);\n\n\t\t(void)msr_val;\n\t}\n\tlocal_irq_restore(flags);\n}\n\n \n__visible bool hv_vcpu_is_preempted(int vcpu)\n{\n\treturn false;\n}\nPV_CALLEE_SAVE_REGS_THUNK(hv_vcpu_is_preempted);\n\nvoid __init hv_init_spinlocks(void)\n{\n\tif (!hv_pvspin || !apic ||\n\t    !(ms_hyperv.hints & HV_X64_CLUSTER_IPI_RECOMMENDED) ||\n\t    !(ms_hyperv.features & HV_MSR_GUEST_IDLE_AVAILABLE)) {\n\t\tpr_info(\"PV spinlocks disabled\\n\");\n\t\treturn;\n\t}\n\tpr_info(\"PV spinlocks enabled\\n\");\n\n\t__pv_init_lock_hash();\n\tpv_ops.lock.queued_spin_lock_slowpath = __pv_queued_spin_lock_slowpath;\n\tpv_ops.lock.queued_spin_unlock = PV_CALLEE_SAVE(__pv_queued_spin_unlock);\n\tpv_ops.lock.wait = hv_qlock_wait;\n\tpv_ops.lock.kick = hv_qlock_kick;\n\tpv_ops.lock.vcpu_is_preempted = PV_CALLEE_SAVE(hv_vcpu_is_preempted);\n}\n\nstatic __init int hv_parse_nopvspin(char *arg)\n{\n\thv_pvspin = false;\n\treturn 0;\n}\nearly_param(\"hv_nopvspin\", hv_parse_nopvspin);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

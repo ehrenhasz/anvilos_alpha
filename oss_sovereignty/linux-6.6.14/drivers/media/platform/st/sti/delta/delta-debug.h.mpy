@@ -1,0 +1,9 @@
+{
+  "module_name": "delta-debug.h",
+  "hash_id": "730c61a123ca49ca88e2b7e83e7cd3a04f09881fbb7b7adf336a70a71f215d5d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/delta/delta-debug.h",
+  "human_readable_source": " \n \n\n#ifndef DELTA_DEBUG_H\n#define DELTA_DEBUG_H\n\nchar *delta_streaminfo_str(struct delta_streaminfo *s, char *str,\n\t\t\t   unsigned int len);\nchar *delta_frameinfo_str(struct delta_frameinfo *f, char *str,\n\t\t\t  unsigned int len);\nvoid delta_trace_summary(struct delta_ctx *ctx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

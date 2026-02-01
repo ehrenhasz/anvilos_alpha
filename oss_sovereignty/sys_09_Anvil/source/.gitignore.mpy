@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "f16b59c153edb6eae8169e8397cd5b9315117bfd77e8f7cd648431239569adae",
+  "original_prompt": "Ingested from sys_09_Anvil/source/.gitignore",
+  "human_readable_source": "# This .gitignore file is intended to be minimal.\n#\n# If you find that you need additional rules, such as IDE temporary\n# files, please do so either via a global .gitignore file (registered\n# with core.excludesFile), or by adding private repository-specific\n# rules to .git/info/exclude.  See https://git-scm.com/docs/gitignore\n# for more information.\n\n# Build directories\nbuild/\nbuild-*/\ndocs/genrst/\n\n# Test failure outputs\ntests/results/*\n\n# Python cache files\n__pycache__/\n\n# Customized Makefile/project overrides\nGNUmakefile\nuser.props\n\n# MacOS desktop metadata files\n.DS_Store\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

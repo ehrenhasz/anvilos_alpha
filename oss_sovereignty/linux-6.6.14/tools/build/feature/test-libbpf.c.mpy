@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libbpf.c",
+  "hash_id": "36a317c9d8d224ab4cd34308245c8be7fa72921f6af54634cb44638908d1eada",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libbpf.c",
+  "human_readable_source": "\n#include <bpf/libbpf.h>\n\n#if !defined(LIBBPF_MAJOR_VERSION) || (LIBBPF_MAJOR_VERSION < 1)\n#error At least libbpf 1.0 is required for Linux tools.\n#endif\n\nint main(void)\n{\n\treturn bpf_object__open(\"test\") ? 0 : -1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

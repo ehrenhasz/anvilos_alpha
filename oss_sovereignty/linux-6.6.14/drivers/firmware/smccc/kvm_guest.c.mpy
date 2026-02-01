@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm_guest.c",
+  "hash_id": "c9e46e40dfabcf7a39a375f58b3d0e85f4019b5cf5111efe353b300962d7be59",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/smccc/kvm_guest.c",
+  "human_readable_source": "\n\n#define pr_fmt(fmt) \"smccc: KVM: \" fmt\n\n#include <linux/arm-smccc.h>\n#include <linux/bitmap.h>\n#include <linux/cache.h>\n#include <linux/kernel.h>\n#include <linux/string.h>\n\n#include <asm/hypervisor.h>\n\nstatic DECLARE_BITMAP(__kvm_arm_hyp_services, ARM_SMCCC_KVM_NUM_FUNCS) __ro_after_init = { };\n\nvoid __init kvm_init_hyp_services(void)\n{\n\tstruct arm_smccc_res res;\n\tu32 val[4];\n\n\tif (arm_smccc_1_1_get_conduit() != SMCCC_CONDUIT_HVC)\n\t\treturn;\n\n\tarm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_CALL_UID_FUNC_ID, &res);\n\tif (res.a0 != ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_0 ||\n\t    res.a1 != ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_1 ||\n\t    res.a2 != ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_2 ||\n\t    res.a3 != ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_3)\n\t\treturn;\n\n\tmemset(&res, 0, sizeof(res));\n\tarm_smccc_1_1_invoke(ARM_SMCCC_VENDOR_HYP_KVM_FEATURES_FUNC_ID, &res);\n\n\tval[0] = lower_32_bits(res.a0);\n\tval[1] = lower_32_bits(res.a1);\n\tval[2] = lower_32_bits(res.a2);\n\tval[3] = lower_32_bits(res.a3);\n\n\tbitmap_from_arr32(__kvm_arm_hyp_services, val, ARM_SMCCC_KVM_NUM_FUNCS);\n\n\tpr_info(\"hypervisor services detected (0x%08lx 0x%08lx 0x%08lx 0x%08lx)\\n\",\n\t\t res.a3, res.a2, res.a1, res.a0);\n}\n\nbool kvm_arm_hyp_service_available(u32 func_id)\n{\n\tif (func_id >= ARM_SMCCC_KVM_NUM_FUNCS)\n\t\treturn false;\n\n\treturn test_bit(func_id, __kvm_arm_hyp_services);\n}\nEXPORT_SYMBOL_GPL(kvm_arm_hyp_service_available);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

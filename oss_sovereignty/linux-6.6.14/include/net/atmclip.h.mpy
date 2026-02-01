@@ -1,0 +1,9 @@
+{
+  "module_name": "atmclip.h",
+  "hash_id": "79255329644b1957427459e2624bf3ef94642871fba1e362c6e942ae24da8e02",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/atmclip.h",
+  "human_readable_source": " \n \n \n \n \n \n#ifndef _ATMCLIP_H\n#define _ATMCLIP_H\n\n#include <linux/netdevice.h>\n#include <linux/atm.h>\n#include <linux/atmdev.h>\n#include <linux/atmarp.h>\n#include <linux/spinlock.h>\n#include <net/neighbour.h>\n\n\n#define CLIP_VCC(vcc) ((struct clip_vcc *) ((vcc)->user_back))\n\nstruct sk_buff;\n\nstruct clip_vcc {\n\tstruct atm_vcc\t*vcc;\t\t \n\tstruct atmarp_entry *entry;\t \n\tint\t\txoff;\t\t \n\tunsigned char\tencap;\t\t \n\tunsigned long\tlast_use;\t \n\tunsigned long\tidle_timeout;\t \n\tvoid (*old_push)(struct atm_vcc *vcc,struct sk_buff *skb);\n\t\t\t\t\t \n\tvoid (*old_pop)(struct atm_vcc *vcc,struct sk_buff *skb);\n\t\t\t\t\t \n\tstruct clip_vcc\t*next;\t\t \n};\n\n\nstruct atmarp_entry {\n\tstruct clip_vcc\t*vccs;\t\t \n\tunsigned long\texpires;\t \n\tstruct neighbour *neigh;\t \n};\n\n#define PRIV(dev) ((struct clip_priv *) netdev_priv(dev))\n\nstruct clip_priv {\n\tint number;\t\t\t \n\tspinlock_t xoff_lock;\t\t \n\tstruct net_device *next;\t \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

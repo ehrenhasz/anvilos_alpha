@@ -1,0 +1,9 @@
+{
+  "module_name": "buffer.h",
+  "hash_id": "1d982bcce40cd4031a89f60a842a168ce777529dc6553cab06bb7674a4574fa5",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/iio/buffer.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_IIO_BUFFER_H_\n#define _UAPI_IIO_BUFFER_H_\n\n#define IIO_BUFFER_GET_FD_IOCTL\t\t\t_IOWR('i', 0x91, int)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

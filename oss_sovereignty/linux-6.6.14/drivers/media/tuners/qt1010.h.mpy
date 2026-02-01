@@ -1,0 +1,9 @@
+{
+  "module_name": "qt1010.h",
+  "hash_id": "52147d8749d7acdf4d7009309424570292ecebddc08edfbca30e0f553db3ab58",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/tuners/qt1010.h",
+  "human_readable_source": " \n \n\n#ifndef QT1010_H\n#define QT1010_H\n\n#include <media/dvb_frontend.h>\n\nstruct qt1010_config {\n\tu8 i2c_address;\n};\n\n \n#if IS_REACHABLE(CONFIG_MEDIA_TUNER_QT1010)\nextern struct dvb_frontend *qt1010_attach(struct dvb_frontend *fe,\n\t\t\t\t\t  struct i2c_adapter *i2c,\n\t\t\t\t\t  struct qt1010_config *cfg);\n#else\nstatic inline struct dvb_frontend *qt1010_attach(struct dvb_frontend *fe,\n\t\t\t\t\t\t struct i2c_adapter *i2c,\n\t\t\t\t\t\t struct qt1010_config *cfg)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

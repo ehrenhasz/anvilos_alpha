@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "14d49a7feadf3896510fd453c3398ff36ff6007caa10063f7e06b96f3d264dbb",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/apple/Kconfig",
+  "human_readable_source": "config SND_SOC_APPLE_MCA\n\ttristate \"Apple Silicon MCA driver\"\n\tdepends on ARCH_APPLE || COMPILE_TEST\n\tselect SND_DMAENGINE_PCM\n\tdefault ARCH_APPLE\n\thelp\n\t  This option enables an ASoC platform driver for MCA peripherals found\n\t  on Apple Silicon SoCs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

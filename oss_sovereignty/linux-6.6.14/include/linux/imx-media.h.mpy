@@ -1,0 +1,9 @@
+{
+  "module_name": "imx-media.h",
+  "hash_id": "707e3895cdf1e0141ee670d0af69312f8e5cf5db5ce95296cb9d7cb5ce7f116f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/imx-media.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_IMX_MEDIA_H__\n#define __LINUX_IMX_MEDIA_H__\n\n \n#define V4L2_EVENT_IMX_CLASS                V4L2_EVENT_PRIVATE_START\n#define V4L2_EVENT_IMX_FRAME_INTERVAL_ERROR (V4L2_EVENT_IMX_CLASS + 1)\n\nenum imx_ctrl_id {\n\tV4L2_CID_IMX_FIM_ENABLE = (V4L2_CID_USER_IMX_BASE + 0),\n\tV4L2_CID_IMX_FIM_NUM,\n\tV4L2_CID_IMX_FIM_TOLERANCE_MIN,\n\tV4L2_CID_IMX_FIM_TOLERANCE_MAX,\n\tV4L2_CID_IMX_FIM_NUM_SKIP,\n\tV4L2_CID_IMX_FIM_ICAP_EDGE,\n\tV4L2_CID_IMX_FIM_ICAP_CHANNEL,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

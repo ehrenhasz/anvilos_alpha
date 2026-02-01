@@ -1,0 +1,9 @@
+{
+  "module_name": "mpl115_i2c.c",
+  "hash_id": "b47d666c01df0350b6a264dd05b6b8b945c51eb60e4710b9aef72723a13aed13",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/pressure/mpl115_i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/i2c.h>\n\n#include \"mpl115.h\"\n\nstatic int mpl115_i2c_init(struct device *dev)\n{\n\treturn 0;\n}\n\nstatic int mpl115_i2c_read(struct device *dev, u8 address)\n{\n\treturn i2c_smbus_read_word_swapped(to_i2c_client(dev), address);\n}\n\nstatic int mpl115_i2c_write(struct device *dev, u8 address, u8 value)\n{\n\treturn i2c_smbus_write_byte_data(to_i2c_client(dev), address, value);\n}\n\nstatic const struct mpl115_ops mpl115_i2c_ops = {\n\t.init = mpl115_i2c_init,\n\t.read = mpl115_i2c_read,\n\t.write = mpl115_i2c_write,\n};\n\nstatic int mpl115_i2c_probe(struct i2c_client *client)\n{\n\tconst struct i2c_device_id *id = i2c_client_get_device_id(client);\n\tif (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))\n\t\treturn -EOPNOTSUPP;\n\n\treturn mpl115_probe(&client->dev, id->name, &mpl115_i2c_ops);\n}\n\nstatic const struct i2c_device_id mpl115_i2c_id[] = {\n\t{ \"mpl115\", 0 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, mpl115_i2c_id);\n\nstatic struct i2c_driver mpl115_i2c_driver = {\n\t.driver = {\n\t\t.name\t= \"mpl115\",\n\t\t.pm = pm_ptr(&mpl115_dev_pm_ops),\n\t},\n\t.probe = mpl115_i2c_probe,\n\t.id_table = mpl115_i2c_id,\n};\nmodule_i2c_driver(mpl115_i2c_driver);\n\nMODULE_AUTHOR(\"Peter Meerwald <pmeerw@pmeerw.net>\");\nMODULE_DESCRIPTION(\"Freescale MPL115A2 pressure/temperature driver\");\nMODULE_LICENSE(\"GPL\");\nMODULE_IMPORT_NS(IIO_MPL115);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

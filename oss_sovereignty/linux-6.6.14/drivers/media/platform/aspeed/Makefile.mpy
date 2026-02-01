@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8740961b93df637b2a33ccb5a227f8ddee5d2eba8379b72e9f87269eafb0a568",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/aspeed/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_VIDEO_ASPEED) += aspeed-video.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

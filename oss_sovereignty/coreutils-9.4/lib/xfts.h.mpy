@@ -1,0 +1,9 @@
+{
+  "module_name": "xfts.h",
+  "hash_id": "53cc781f793c68b2490d515233cdcc2b49dd464238757c4ff79be79549b64e5e",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xfts.h",
+  "human_readable_source": "#include \"fts_.h\"\n\nFTS *\nxfts_open (char * const *, int options,\n           int (*) (const FTSENT **, const FTSENT **))\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC (fts_close, 1)\n  _GL_ATTRIBUTE_NONNULL ((1)) _GL_ATTRIBUTE_RETURNS_NONNULL;\n\nbool\ncycle_warning_required (FTS const *fts, FTSENT const *ent)\n  _GL_ATTRIBUTE_NONNULL () _GL_ATTRIBUTE_PURE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

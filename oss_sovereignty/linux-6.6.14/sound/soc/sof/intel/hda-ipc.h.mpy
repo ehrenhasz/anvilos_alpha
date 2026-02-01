@@ -1,0 +1,9 @@
+{
+  "module_name": "hda-ipc.h",
+  "hash_id": "b2464f9889bc0c3e668b54b0f7002a8ed0466af5629e772d679aaab734dfc1fa",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/intel/hda-ipc.h",
+  "human_readable_source": " \n \n\n#ifndef __SOF_INTEL_HDA_IPC_H\n#define __SOF_INTEL_HDA_IPC_H\n\n \n\n \n\n \n#define HDA_IPC_RSVD_31\t\tBIT(31)\n \n#define HDA_IPC_MSG_COMPACT\tBIT(30)\n \n#define HDA_IPC_RSP\t\tBIT(29)\n\n#define HDA_IPC_TYPE_SHIFT\t24\n#define HDA_IPC_TYPE_MASK\tGENMASK(28, 24)\n#define HDA_IPC_TYPE(x)\t\t((x) << HDA_IPC_TYPE_SHIFT)\n\n#define HDA_IPC_PM_GATE\t\tHDA_IPC_TYPE(0x8U)\n\n \n\n \n#define HDA_PM_NO_DMA_TRACE\tBIT(4)\n \n#define HDA_PM_PCG\t\tBIT(3)\n \n#define HDA_PM_PPG\t\tBIT(2)\n \n#define HDA_PM_PG_STREAMING\tBIT(1)\n#define HDA_PM_PG_RSVD\t\tBIT(0)\n\nirqreturn_t cnl_ipc_irq_thread(int irq, void *context);\nint cnl_ipc_send_msg(struct snd_sof_dev *sdev, struct snd_sof_ipc_msg *msg);\nvoid cnl_ipc_dump(struct snd_sof_dev *sdev);\nvoid cnl_ipc4_dump(struct snd_sof_dev *sdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

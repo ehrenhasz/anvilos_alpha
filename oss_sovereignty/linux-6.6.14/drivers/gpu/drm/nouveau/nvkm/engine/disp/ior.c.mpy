@@ -1,0 +1,9 @@
+{
+  "module_name": "ior.c",
+  "hash_id": "bf8f691cc240d4b4159c682bd70a37b5d7f0f98be6bf07a0617d97b66f17308a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/disp/ior.c",
+  "human_readable_source": " \n#include \"ior.h\"\n\nstatic const char *\nnvkm_ior_name[] = {\n\t[DAC] = \"DAC\",\n\t[SOR] = \"SOR\",\n\t[PIOR] = \"PIOR\",\n};\n\nstruct nvkm_ior *\nnvkm_ior_find(struct nvkm_disp *disp, enum nvkm_ior_type type, int id)\n{\n\tstruct nvkm_ior *ior;\n\tlist_for_each_entry(ior, &disp->iors, head) {\n\t\tif (ior->type == type && (id < 0 || ior->id == id))\n\t\t\treturn ior;\n\t}\n\treturn NULL;\n}\n\nvoid\nnvkm_ior_del(struct nvkm_ior **pior)\n{\n\tstruct nvkm_ior *ior = *pior;\n\tif (ior) {\n\t\tIOR_DBG(ior, \"dtor\");\n\t\tlist_del(&ior->head);\n\t\tkfree(*pior);\n\t\t*pior = NULL;\n\t}\n}\n\nint\nnvkm_ior_new_(const struct nvkm_ior_func *func, struct nvkm_disp *disp,\n\t      enum nvkm_ior_type type, int id, bool hda)\n{\n\tstruct nvkm_ior *ior;\n\tif (!(ior = kzalloc(sizeof(*ior), GFP_KERNEL)))\n\t\treturn -ENOMEM;\n\tior->func = func;\n\tior->disp = disp;\n\tior->type = type;\n\tior->id = id;\n\tior->hda = hda;\n\tsnprintf(ior->name, sizeof(ior->name), \"%s-%d\", nvkm_ior_name[ior->type], ior->id);\n\tlist_add_tail(&ior->head, &disp->iors);\n\tIOR_DBG(ior, \"ctor\");\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

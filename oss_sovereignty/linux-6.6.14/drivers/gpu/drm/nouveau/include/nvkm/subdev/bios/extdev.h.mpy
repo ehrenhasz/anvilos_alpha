@@ -1,0 +1,9 @@
+{
+  "module_name": "extdev.h",
+  "hash_id": "83eda7562524973ad16b0b2efcf2db3d30b7b39ec6176ed9c99373f9d7edae29",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/extdev.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_EXTDEV_H__\n#define __NVBIOS_EXTDEV_H__\nenum nvbios_extdev_type {\n\tNVBIOS_EXTDEV_LM89\t\t= 0x02,\n\tNVBIOS_EXTDEV_VT1103M\t\t= 0x40,\n\tNVBIOS_EXTDEV_PX3540\t\t= 0x41,\n\tNVBIOS_EXTDEV_VT1105M\t\t= 0x42,  \n\tNVBIOS_EXTDEV_INA219\t\t= 0x4c,\n\tNVBIOS_EXTDEV_INA209\t\t= 0x4d,\n\tNVBIOS_EXTDEV_INA3221\t\t= 0x4e,\n\tNVBIOS_EXTDEV_ADT7473\t\t= 0x70,  \n\tNVBIOS_EXTDEV_HDCP_EEPROM\t= 0x90,\n\tNVBIOS_EXTDEV_NONE\t\t= 0xff,\n};\n\nstruct nvbios_extdev_func {\n\tu8 type;\n\tu8 addr;\n\tu8 bus;\n};\n\nint\nnvbios_extdev_parse(struct nvkm_bios *, int, struct nvbios_extdev_func *);\n\nint\nnvbios_extdev_find(struct nvkm_bios *, enum nvbios_extdev_type,\n\t\t   struct nvbios_extdev_func *);\n\nbool nvbios_extdev_skip_probe(struct nvkm_bios *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

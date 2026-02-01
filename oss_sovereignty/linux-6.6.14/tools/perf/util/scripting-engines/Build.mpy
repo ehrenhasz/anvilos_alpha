@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "af66e6980fdfd3f16a734822cc2f524b8802c57ea5451a51bf3e4caab52788f8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/scripting-engines/Build",
+  "human_readable_source": "ifeq ($(CONFIG_LIBTRACEEVENT),y)\n  perf-$(CONFIG_LIBPERL)   += trace-event-perl.o\nendif\nperf-$(CONFIG_LIBPYTHON) += trace-event-python.o\n\nCFLAGS_trace-event-perl.o += $(PERL_EMBED_CCOPTS) -Wno-redundant-decls -Wno-strict-prototypes -Wno-unused-parameter -Wno-shadow -Wno-nested-externs -Wno-undef -Wno-switch-default -Wno-bad-function-cast -Wno-declaration-after-statement -Wno-switch-enum\n\n# -Wno-declaration-after-statement: The python headers have mixed code with declarations (decls after asserts, for instance)\nCFLAGS_trace-event-python.o += $(PYTHON_EMBED_CCOPTS) -Wno-redundant-decls -Wno-strict-prototypes -Wno-unused-parameter -Wno-shadow -Wno-deprecated-declarations -Wno-switch-enum -Wno-declaration-after-statement\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

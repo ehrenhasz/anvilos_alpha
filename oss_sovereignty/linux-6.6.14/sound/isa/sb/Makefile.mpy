@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2361da0daede4bc3b4d51074b082a975f37c5a463639ba597b2fe2cb0379e961",
+  "original_prompt": "Ingested from linux-6.6.14/sound/isa/sb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-sb-common-objs := sb_common.o sb_mixer.o\nsnd-sb8-dsp-objs := sb8_main.o sb8_midi.o\nsnd-sb16-dsp-objs := sb16_main.o\nsnd-sb16-csp-objs := sb16_csp.o\nsnd-sb8-objs := sb8.o\nsnd-sb16-objs := sb16.o\nsnd-sbawe-objs := sbawe.o emu8000.o\nsnd-emu8000-synth-objs := emu8000_synth.o emu8000_callback.o emu8000_patch.o emu8000_pcm.o\nsnd-jazz16-objs := jazz16.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_SB_COMMON) += snd-sb-common.o\nobj-$(CONFIG_SND_SB16_DSP) += snd-sb16-dsp.o\nobj-$(CONFIG_SND_SB8_DSP) += snd-sb8-dsp.o\nobj-$(CONFIG_SND_SB8) += snd-sb8.o\nobj-$(CONFIG_SND_SB16) += snd-sb16.o\nobj-$(CONFIG_SND_SBAWE) += snd-sbawe.o\nobj-$(CONFIG_SND_JAZZ16) += snd-jazz16.o\nifeq ($(CONFIG_SND_SB16_CSP),y)\n  obj-$(CONFIG_SND_SB16) += snd-sb16-csp.o\n  obj-$(CONFIG_SND_SBAWE) += snd-sb16-csp.o\nendif\nobj-$(CONFIG_SND_SBAWE_SEQ) += snd-emu8000-synth.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

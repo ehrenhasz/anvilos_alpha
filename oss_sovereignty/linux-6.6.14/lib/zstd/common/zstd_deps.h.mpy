@@ -1,0 +1,9 @@
+{
+  "module_name": "zstd_deps.h",
+  "hash_id": "2ee441e872eca8bab3fb7bddf023288d0459db59c380fdd590b615d7dd4a9719",
+  "original_prompt": "Ingested from linux-6.6.14/lib/zstd/common/zstd_deps.h",
+  "human_readable_source": " \n \n\n \n\n \n#ifndef ZSTD_DEPS_COMMON\n#define ZSTD_DEPS_COMMON\n\n#include <linux/limits.h>\n#include <linux/stddef.h>\n\n#define ZSTD_memcpy(d,s,n) __builtin_memcpy((d),(s),(n))\n#define ZSTD_memmove(d,s,n) __builtin_memmove((d),(s),(n))\n#define ZSTD_memset(d,s,n) __builtin_memset((d),(s),(n))\n\n#endif  \n\n \n#ifdef ZSTD_DEPS_NEED_MALLOC\n#ifndef ZSTD_DEPS_MALLOC\n#define ZSTD_DEPS_MALLOC\n\n#define ZSTD_malloc(s) ({ (void)(s); NULL; })\n#define ZSTD_free(p) ((void)(p))\n#define ZSTD_calloc(n,s) ({ (void)(n); (void)(s); NULL; })\n\n#endif  \n#endif  \n\n \n#ifdef ZSTD_DEPS_NEED_MATH64\n#ifndef ZSTD_DEPS_MATH64\n#define ZSTD_DEPS_MATH64\n\n#include <linux/math64.h>\n\nstatic uint64_t ZSTD_div64(uint64_t dividend, uint32_t divisor) {\n  return div_u64(dividend, divisor);\n}\n\n#endif  \n#endif  \n\n \n#ifdef ZSTD_DEPS_NEED_ASSERT\n#ifndef ZSTD_DEPS_ASSERT\n#define ZSTD_DEPS_ASSERT\n\n#include <linux/kernel.h>\n\n#define assert(x) WARN_ON(!(x))\n\n#endif  \n#endif  \n\n \n#ifdef ZSTD_DEPS_NEED_IO\n#ifndef ZSTD_DEPS_IO\n#define ZSTD_DEPS_IO\n\n#include <linux/printk.h>\n\n#define ZSTD_DEBUG_PRINT(...) pr_debug(__VA_ARGS__)\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

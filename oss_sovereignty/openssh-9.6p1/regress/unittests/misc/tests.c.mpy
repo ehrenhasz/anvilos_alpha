@@ -1,0 +1,9 @@
+{
+  "module_name": "tests.c",
+  "hash_id": "333e52f20e149172c55b42cf01c4d652a82737e8ee397ecc4a768b8f7095dbc8",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/misc/tests.c",
+  "human_readable_source": " \n \n\n#include \"includes.h\"\n\n#include <sys/types.h>\n#include <stdio.h>\n#ifdef HAVE_STDINT_H\n#include <stdint.h>\n#endif\n#include <stdlib.h>\n#include <string.h>\n\n#include \"../test_helper/test_helper.h\"\n\n#include \"log.h\"\n#include \"misc.h\"\n\nvoid test_parse(void);\nvoid test_convtime(void);\nvoid test_expand(void);\nvoid test_argv(void);\nvoid test_strdelim(void);\nvoid test_hpdelim(void);\nvoid test_ptimeout(void);\n\nvoid\ntests(void)\n{\n\ttest_parse();\n\ttest_convtime();\n\ttest_expand();\n\ttest_argv();\n\ttest_strdelim();\n\ttest_hpdelim();\n\ttest_ptimeout();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

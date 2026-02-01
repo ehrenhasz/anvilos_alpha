@@ -1,0 +1,9 @@
+{
+  "module_name": "stats.h",
+  "hash_id": "218ede2a870479b21cb46af96207a713688428186584e8e2a432eb1e793c708c",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/scrub/stats.h",
+  "human_readable_source": "\n \n#ifndef __XFS_SCRUB_STATS_H__\n#define __XFS_SCRUB_STATS_H__\n\nstruct xchk_stats_run {\n\tu64\t\t\tscrub_ns;\n\tu64\t\t\trepair_ns;\n\tunsigned int\t\tretries;\n\tbool\t\t\trepair_attempted;\n\tbool\t\t\trepair_succeeded;\n};\n\n#ifdef CONFIG_XFS_ONLINE_SCRUB_STATS\nstruct xchk_stats;\n\nint __init xchk_global_stats_setup(struct dentry *parent);\nvoid xchk_global_stats_teardown(void);\n\nint xchk_mount_stats_alloc(struct xfs_mount *mp);\nvoid xchk_mount_stats_free(struct xfs_mount *mp);\n\nvoid xchk_stats_register(struct xchk_stats *cs, struct dentry *parent);\nvoid xchk_stats_unregister(struct xchk_stats *cs);\n\nvoid xchk_stats_merge(struct xfs_mount *mp, const struct xfs_scrub_metadata *sm,\n\t\tconst struct xchk_stats_run *run);\n\nstatic inline u64 xchk_stats_now(void) { return ktime_get_ns(); }\nstatic inline u64 xchk_stats_elapsed_ns(u64 since)\n{\n\tu64 now = xchk_stats_now();\n\n\t \n\tif (now == since)\n\t\treturn 1;\n\n\treturn now - since;\n}\n#else\n# define xchk_global_stats_setup(parent)\t(0)\n# define xchk_global_stats_teardown()\t\t((void)0)\n# define xchk_mount_stats_alloc(mp)\t\t(0)\n# define xchk_mount_stats_free(mp)\t\t((void)0)\n# define xchk_stats_register(cs, parent)\t((void)0)\n# define xchk_stats_unregister(cs)\t\t((void)0)\n# define xchk_stats_now()\t\t\t(0)\n# define xchk_stats_elapsed_ns(x)\t\t(0 * (x))\n# define xchk_stats_merge(mp, sm, run)\t\t((void)0)\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

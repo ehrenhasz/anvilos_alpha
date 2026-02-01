@@ -1,0 +1,9 @@
+{
+  "module_name": "test_fortify.h",
+  "hash_id": "dc4ad68a2c4fc35f739f8ca51a0fd3d388d9b94380ba418605ed21febbe9b34d",
+  "original_prompt": "Ingested from linux-6.6.14/lib/test_fortify/test_fortify.h",
+  "human_readable_source": " \n#include <linux/kernel.h>\n#include <linux/printk.h>\n#include <linux/slab.h>\n#include <linux/string.h>\n\nvoid do_fortify_tests(void);\n\n#define __BUF_SMALL\t16\n#define __BUF_LARGE\t32\nstruct fortify_object {\n\tint a;\n\tchar buf[__BUF_SMALL];\n\tint c;\n};\n\n#define LITERAL_SMALL \"AAAAAAAAAAAAAAA\"\n#define LITERAL_LARGE \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"\nconst char small_src[__BUF_SMALL] = LITERAL_SMALL;\nconst char large_src[__BUF_LARGE] = LITERAL_LARGE;\n\nchar small[__BUF_SMALL];\nchar large[__BUF_LARGE];\nstruct fortify_object instance;\nsize_t size;\n\nvoid do_fortify_tests(void)\n{\n\t \n\tmemset(&instance, 0x32, sizeof(instance));\n\tmemset(small, 0xA5, sizeof(small));\n\tmemset(large, 0x5A, sizeof(large));\n\n\tTEST;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

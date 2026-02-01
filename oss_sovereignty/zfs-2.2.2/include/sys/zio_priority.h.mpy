@@ -1,0 +1,9 @@
+{
+  "module_name": "zio_priority.h",
+  "hash_id": "b8e2876023aafb19feb7fb9fed844de51f9a5784370fa7078c0e36f56c7b6b2d",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zio_priority.h",
+  "human_readable_source": " \n \n#ifndef\t_ZIO_PRIORITY_H\n#define\t_ZIO_PRIORITY_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\ntypedef enum zio_priority {\n\tZIO_PRIORITY_SYNC_READ,\n\tZIO_PRIORITY_SYNC_WRITE,\t \n\tZIO_PRIORITY_ASYNC_READ,\t \n\tZIO_PRIORITY_ASYNC_WRITE,\t \n\tZIO_PRIORITY_SCRUB,\t\t \n\tZIO_PRIORITY_REMOVAL,\t\t \n\tZIO_PRIORITY_INITIALIZING,\t \n\tZIO_PRIORITY_TRIM,\t\t \n\tZIO_PRIORITY_REBUILD,\t\t \n\tZIO_PRIORITY_NUM_QUEUEABLE,\n\tZIO_PRIORITY_NOW,\t\t \n} zio_priority_t;\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

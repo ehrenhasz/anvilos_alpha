@@ -1,0 +1,9 @@
+{
+  "module_name": "rdma.h",
+  "hash_id": "46d9d2f42409e2aafacd0214309280c501274d68a64d726202118b9adaa24d03",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/rdma.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_RDMA_H__\n#define __MLX5_RDMA_H__\n\n#include \"mlx5_core.h\"\n\n#ifdef CONFIG_MLX5_ESWITCH\n\nvoid mlx5_rdma_enable_roce(struct mlx5_core_dev *dev);\nvoid mlx5_rdma_disable_roce(struct mlx5_core_dev *dev);\n\n#else  \n\nstatic inline void mlx5_rdma_enable_roce(struct mlx5_core_dev *dev) {}\nstatic inline void mlx5_rdma_disable_roce(struct mlx5_core_dev *dev) {}\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

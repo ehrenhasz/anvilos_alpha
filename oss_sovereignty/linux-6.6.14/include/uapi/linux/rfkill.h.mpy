@@ -1,0 +1,9 @@
+{
+  "module_name": "rfkill.h",
+  "hash_id": "ee3433eb3d58c3450fdbb5579c517938e60cedf47aed0de4d63594e9aa277410",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/rfkill.h",
+  "human_readable_source": " \n#ifndef _UAPI__RFKILL_H\n#define _UAPI__RFKILL_H\n\n\n#include <linux/types.h>\n\n \n#define RFKILL_STATE_SOFT_BLOCKED\t0\n#define RFKILL_STATE_UNBLOCKED\t\t1\n#define RFKILL_STATE_HARD_BLOCKED\t2\n\n \nenum rfkill_type {\n\tRFKILL_TYPE_ALL = 0,\n\tRFKILL_TYPE_WLAN,\n\tRFKILL_TYPE_BLUETOOTH,\n\tRFKILL_TYPE_UWB,\n\tRFKILL_TYPE_WIMAX,\n\tRFKILL_TYPE_WWAN,\n\tRFKILL_TYPE_GPS,\n\tRFKILL_TYPE_FM,\n\tRFKILL_TYPE_NFC,\n\tNUM_RFKILL_TYPES,\n};\n\n \nenum rfkill_operation {\n\tRFKILL_OP_ADD = 0,\n\tRFKILL_OP_DEL,\n\tRFKILL_OP_CHANGE,\n\tRFKILL_OP_CHANGE_ALL,\n};\n\n \nenum rfkill_hard_block_reasons {\n\tRFKILL_HARD_BLOCK_SIGNAL\t= 1 << 0,\n\tRFKILL_HARD_BLOCK_NOT_OWNER\t= 1 << 1,\n};\n\n \nstruct rfkill_event {\n\t__u32 idx;\n\t__u8  type;\n\t__u8  op;\n\t__u8  soft;\n\t__u8  hard;\n} __attribute__((packed));\n\n \nstruct rfkill_event_ext {\n\t__u32 idx;\n\t__u8  type;\n\t__u8  op;\n\t__u8  soft;\n\t__u8  hard;\n\n\t \n\n\t__u8  hard_block_reasons;\n} __attribute__((packed));\n\n \n#define RFKILL_EVENT_SIZE_V1\tsizeof(struct rfkill_event)\n\n \n#define RFKILL_IOC_MAGIC\t'R'\n#define RFKILL_IOC_NOINPUT\t1\n#define RFKILL_IOCTL_NOINPUT\t_IO(RFKILL_IOC_MAGIC, RFKILL_IOC_NOINPUT)\n#define RFKILL_IOC_MAX_SIZE\t2\n#define RFKILL_IOCTL_MAX_SIZE\t_IOW(RFKILL_IOC_MAGIC, RFKILL_IOC_MAX_SIZE, __u32)\n\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

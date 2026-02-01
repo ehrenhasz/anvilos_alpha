@@ -1,0 +1,9 @@
+{
+  "module_name": "usb-ohci-pxa27x.h",
+  "hash_id": "6e12718cc51cbc268dcdb0e95f82ea2ecc5c1ec1f43a279e75e401ebc692eb86",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/usb-ohci-pxa27x.h",
+  "human_readable_source": " \n#ifndef ASMARM_ARCH_OHCI_H\n#define ASMARM_ARCH_OHCI_H\n\nstruct device;\n\nstruct pxaohci_platform_data {\n\tint (*init)(struct device *);\n\tvoid (*exit)(struct device *);\n\n\tunsigned long flags;\n#define ENABLE_PORT1\t\t(1 << 0)\n#define ENABLE_PORT2\t\t(1 << 1)\n#define ENABLE_PORT3\t\t(1 << 2)\n#define ENABLE_PORT_ALL\t\t(ENABLE_PORT1 | ENABLE_PORT2 | ENABLE_PORT3)\n\n#define POWER_SENSE_LOW\t\t(1 << 3)\n#define POWER_CONTROL_LOW\t(1 << 4)\n#define NO_OC_PROTECTION\t(1 << 5)\n#define OC_MODE_GLOBAL\t\t(0 << 6)\n#define OC_MODE_PERPORT\t\t(1 << 6)\n\n\tint power_on_delay;\t \n\tint port_mode;\n#define PMM_NPS_MODE           1\n#define PMM_GLOBAL_MODE        2\n#define PMM_PERPORT_MODE       3\n\n\tint power_budget;\n};\n\nextern void pxa_set_ohci_info(struct pxaohci_platform_data *info);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

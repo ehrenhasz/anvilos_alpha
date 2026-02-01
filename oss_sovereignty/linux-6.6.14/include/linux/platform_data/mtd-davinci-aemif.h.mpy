@@ -1,0 +1,9 @@
+{
+  "module_name": "mtd-davinci-aemif.h",
+  "hash_id": "99dc5bfc9547c5710647513deb922ba5713a3b75a00fe5d8216b0c6ad7af86c9",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/mtd-davinci-aemif.h",
+  "human_readable_source": " \n#ifndef _MACH_DAVINCI_AEMIF_H\n#define _MACH_DAVINCI_AEMIF_H\n\n#include <linux/platform_device.h>\n\n#define NRCSR_OFFSET\t\t0x00\n#define AWCCR_OFFSET\t\t0x04\n#define A1CR_OFFSET\t\t0x10\n\n#define ACR_ASIZE_MASK\t\t0x3\n#define ACR_EW_MASK\t\tBIT(30)\n#define ACR_SS_MASK\t\tBIT(31)\n\n \nstruct davinci_aemif_timing {\n\tu8\twsetup;\n\tu8\twstrobe;\n\tu8\twhold;\n\n\tu8\trsetup;\n\tu8\trstrobe;\n\tu8\trhold;\n\n\tu8\tta;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

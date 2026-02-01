@@ -1,0 +1,9 @@
+{
+  "module_name": "m_item_use.c",
+  "hash_id": "9a2fef7d0ad0a7a9483a6c260691071cf4ab0961cfb7f02c970d83898add4e3f",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_item_use.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_item_use.c,v 1.21 2020/12/12 00:38:08 tom Exp $\")\n\n \nMENU_EXPORT(int)\nset_item_userptr(ITEM *item, void *userptr)\n{\n  T((T_CALLED(\"set_item_userptr(%p,%p)\"), (void *)item, (void *)userptr));\n  Normalize_Item(item)->userptr = userptr;\n  RETURN(E_OK);\n}\n\n \nMENU_EXPORT(void *)\nitem_userptr(const ITEM *item)\n{\n  T((T_CALLED(\"item_userptr(%p)\"), (const void *)item));\n  returnVoidPtr(Normalize_Item(item)->userptr);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

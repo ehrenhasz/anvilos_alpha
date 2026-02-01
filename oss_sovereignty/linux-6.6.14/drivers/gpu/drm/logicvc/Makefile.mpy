@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "764961c1a7f1d588253942fd59c3ee8bc168a74a04b11edda1ad103ab30cb41f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/logicvc/Makefile",
+  "human_readable_source": "logicvc-drm-y += \\\n\tlogicvc_crtc.o \\\n\tlogicvc_drm.o \\\n\tlogicvc_interface.o \\\n\tlogicvc_layer.o \\\n\tlogicvc_mode.o \\\n\tlogicvc_of.o\n\nobj-$(CONFIG_DRM_LOGICVC) += logicvc-drm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

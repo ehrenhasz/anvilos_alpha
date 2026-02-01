@@ -1,0 +1,9 @@
+{
+  "module_name": "sor507d.c",
+  "hash_id": "61e4caca5e57b7b0742da9c9e051147ba49175c5dcdd960d705de165f7947507",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/sor507d.c",
+  "human_readable_source": " \n#include \"core.h\"\n\n#include <nvif/push507c.h>\n\n#include <nvhw/class/cl507d.h>\n#include <nvhw/class/cl837d.h>\n\nstatic int\nsor507d_ctrl(struct nv50_core *core, int or, u32 ctrl,\n\t     struct nv50_head_atom *asyh)\n{\n\tstruct nvif_push *push = core->chan.push;\n\tint ret;\n\n\tif (asyh) {\n\t\tctrl |= NVVAL(NV507D, SOR_SET_CONTROL, HSYNC_POLARITY, asyh->or.nhsync);\n\t\tctrl |= NVVAL(NV507D, SOR_SET_CONTROL, VSYNC_POLARITY, asyh->or.nvsync);\n\t\tctrl |= NVVAL(NV837D, SOR_SET_CONTROL, PIXEL_DEPTH, asyh->or.depth);\n\t}\n\n\tif ((ret = PUSH_WAIT(push, 2)))\n\t\treturn ret;\n\n\tPUSH_MTHD(push, NV507D, SOR_SET_CONTROL(or), ctrl);\n\treturn 0;\n}\n\nstatic void\nsor507d_get_caps(struct nv50_disp *core, struct nouveau_encoder *outp, int or)\n{\n\toutp->caps.dp_interlace = true;\n}\n\nconst struct nv50_outp_func\nsor507d = {\n\t.ctrl = sor507d_ctrl,\n\t.get_caps = sor507d_get_caps,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

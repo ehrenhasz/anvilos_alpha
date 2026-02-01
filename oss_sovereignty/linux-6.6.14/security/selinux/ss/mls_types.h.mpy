@@ -1,0 +1,9 @@
+{
+  "module_name": "mls_types.h",
+  "hash_id": "254ecc011ae1e41d520c2d8861219309b05ffd9d2c2cfa6dbb363cbc8bf8563a",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/ss/mls_types.h",
+  "human_readable_source": " \n \n \n\n#ifndef _SS_MLS_TYPES_H_\n#define _SS_MLS_TYPES_H_\n\n#include \"security.h\"\n#include \"ebitmap.h\"\n\nstruct mls_level {\n\tu32 sens;\t\t \n\tstruct ebitmap cat;\t \n};\n\nstruct mls_range {\n\tstruct mls_level level[2];  \n};\n\nstatic inline int mls_level_eq(const struct mls_level *l1, const struct mls_level *l2)\n{\n\treturn ((l1->sens == l2->sens) &&\n\t\tebitmap_cmp(&l1->cat, &l2->cat));\n}\n\nstatic inline int mls_level_dom(const struct mls_level *l1, const struct mls_level *l2)\n{\n\treturn ((l1->sens >= l2->sens) &&\n\t\tebitmap_contains(&l1->cat, &l2->cat, 0));\n}\n\n#define mls_level_incomp(l1, l2) \\\n(!mls_level_dom((l1), (l2)) && !mls_level_dom((l2), (l1)))\n\n#define mls_level_between(l1, l2, l3) \\\n(mls_level_dom((l1), (l2)) && mls_level_dom((l3), (l1)))\n\n#define mls_range_contains(r1, r2) \\\n(mls_level_dom(&(r2).level[0], &(r1).level[0]) && \\\n mls_level_dom(&(r1).level[1], &(r2).level[1]))\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

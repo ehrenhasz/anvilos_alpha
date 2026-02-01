@@ -1,0 +1,9 @@
+{
+  "module_name": "libzfs_core.suppr",
+  "hash_id": "6b5d18edadfa90e2354f172f223c6ab05b221fa729e1389fc1638dca5a7e7fcf",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libzfs_core/libzfs_core.suppr",
+  "human_readable_source": "[suppress_type]\n\tname = FILE*\n\n[suppress_type]\n\tname = pthread_cond_t\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

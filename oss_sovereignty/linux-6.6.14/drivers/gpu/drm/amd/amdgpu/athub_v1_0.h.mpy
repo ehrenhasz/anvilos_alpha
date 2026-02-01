@@ -1,0 +1,9 @@
+{
+  "module_name": "athub_v1_0.h",
+  "hash_id": "bbd8682c49ebf3f06b617b82b307dc49d3f03f41c5fec3d17b21da29e29d84a8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/athub_v1_0.h",
+  "human_readable_source": " \n#ifndef __ATHUB_V1_0_H__\n#define __ATHUB_V1_0_H__\n\nint athub_v1_0_set_clockgating(struct amdgpu_device *adev,\n\t\t\t       enum amd_clockgating_state state);\nvoid athub_v1_0_get_clockgating(struct amdgpu_device *adev, u64 *flags);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "setup_arch.h",
+  "hash_id": "5b78087545f7d0d5ea5aaaed3dbe1b77e472cb6880f5dbc22018210dee1580fc",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/setup_arch.h",
+  "human_readable_source": " \n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

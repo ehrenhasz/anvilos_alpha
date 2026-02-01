@@ -1,0 +1,9 @@
+{
+  "module_name": "sysctl_net_atalk.c",
+  "hash_id": "c428a8579035af904eb9b01995ae85b628f159c863f64251a9e5d6591737fb37",
+  "original_prompt": "Ingested from linux-6.6.14/net/appletalk/sysctl_net_atalk.c",
+  "human_readable_source": "\n \n\n#include <linux/sysctl.h>\n#include <net/sock.h>\n#include <linux/atalk.h>\n\nstatic struct ctl_table atalk_table[] = {\n\t{\n\t\t.procname\t= \"aarp-expiry-time\",\n\t\t.data\t\t= &sysctl_aarp_expiry_time,\n\t\t.maxlen\t\t= sizeof(int),\n\t\t.mode\t\t= 0644,\n\t\t.proc_handler\t= proc_dointvec_jiffies,\n\t},\n\t{\n\t\t.procname\t= \"aarp-tick-time\",\n\t\t.data\t\t= &sysctl_aarp_tick_time,\n\t\t.maxlen\t\t= sizeof(int),\n\t\t.mode\t\t= 0644,\n\t\t.proc_handler\t= proc_dointvec_jiffies,\n\t},\n\t{\n\t\t.procname\t= \"aarp-retransmit-limit\",\n\t\t.data\t\t= &sysctl_aarp_retransmit_limit,\n\t\t.maxlen\t\t= sizeof(int),\n\t\t.mode\t\t= 0644,\n\t\t.proc_handler\t= proc_dointvec,\n\t},\n\t{\n\t\t.procname\t= \"aarp-resolve-time\",\n\t\t.data\t\t= &sysctl_aarp_resolve_time,\n\t\t.maxlen\t\t= sizeof(int),\n\t\t.mode\t\t= 0644,\n\t\t.proc_handler\t= proc_dointvec_jiffies,\n\t},\n\t{ },\n};\n\nstatic struct ctl_table_header *atalk_table_header;\n\nint __init atalk_register_sysctl(void)\n{\n\tatalk_table_header = register_net_sysctl(&init_net, \"net/appletalk\", atalk_table);\n\tif (!atalk_table_header)\n\t\treturn -ENOMEM;\n\treturn 0;\n}\n\nvoid atalk_unregister_sysctl(void)\n{\n\tunregister_net_sysctl_table(atalk_table_header);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "dir_f.h",
+  "hash_id": "49061bbe53254dbc78a303eca9f4f6ccfa28cb53a0868b7cb677af3752d2429d",
+  "original_prompt": "Ingested from linux-6.6.14/fs/adfs/dir_f.h",
+  "human_readable_source": " \n \n#ifndef ADFS_DIR_F_H\n#define ADFS_DIR_F_H\n\n \nstruct adfs_dirheader {\n\t__u8 startmasseq;\n\t__u8 startname[4];\n} __attribute__((packed));\n\n#define ADFS_NEWDIR_SIZE\t2048\n#define ADFS_NUM_DIR_ENTRIES\t77\n\n \nstruct adfs_direntry {\n#define ADFS_F_NAME_LEN 10\n\tchar dirobname[ADFS_F_NAME_LEN];\n\t__u8 dirload[4];\n\t__u8 direxec[4];\n\t__u8 dirlen[4];\n\t__u8 dirinddiscadd[3];\n\t__u8 newdiratts;\n} __attribute__((packed));\n\n \nstruct adfs_olddirtail {\n\t__u8 dirlastmask;\n\tchar dirname[10];\n\t__u8 dirparent[3];\n\tchar dirtitle[19];\n\t__u8 reserved[14];\n\t__u8 endmasseq;\n\t__u8 endname[4];\n\t__u8 dircheckbyte;\n} __attribute__((packed));\n\nstruct adfs_newdirtail {\n\t__u8 dirlastmask;\n\t__u8 reserved[2];\n\t__u8 dirparent[3];\n\tchar dirtitle[19];\n\tchar dirname[10];\n\t__u8 endmasseq;\n\t__u8 endname[4];\n\t__u8 dircheckbyte;\n} __attribute__((packed));\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

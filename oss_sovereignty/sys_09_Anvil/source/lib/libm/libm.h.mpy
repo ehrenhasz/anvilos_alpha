@@ -1,0 +1,9 @@
+{
+  "module_name": "libm.h",
+  "hash_id": "d34d42859d7a71c9b0a886b245b5248dd495737952666c0205676770d35e6b69",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/libm.h",
+  "human_readable_source": " \n \n\n \n \n\n \n \n\n#include <stdint.h>\n#include <math.h>\n\n#define FLT_EVAL_METHOD 0\n\n#define FORCE_EVAL(x) do {                        \\\n\tif (sizeof(x) == sizeof(float)) {         \\\n\t\tvolatile float __x;               \\\n\t\t__x = (x);                        \\\n                (void)__x;                        \\\n\t} else if (sizeof(x) == sizeof(double)) { \\\n\t\tvolatile double __x;              \\\n\t\t__x = (x);                        \\\n                (void)__x;                        \\\n\t} else {                                  \\\n\t\tvolatile long double __x;         \\\n\t\t__x = (x);                        \\\n                (void)__x;                        \\\n\t}                                         \\\n} while(0)\n\n \n#define GET_FLOAT_WORD(w,d)                       \\\ndo {                                              \\\n  union {float f; uint32_t i;} __u;               \\\n  __u.f = (d);                                    \\\n  (w) = __u.i;                                    \\\n} while (0)\n\n \n#define SET_FLOAT_WORD(d,w)                       \\\ndo {                                              \\\n      union {float f; uint32_t i;} __u;           \\\n      __u.i = (w);                                \\\n      (d) = __u.f;                                \\\n} while (0)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

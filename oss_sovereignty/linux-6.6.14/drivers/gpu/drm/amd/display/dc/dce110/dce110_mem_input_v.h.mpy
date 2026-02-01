@@ -1,0 +1,9 @@
+{
+  "module_name": "dce110_mem_input_v.h",
+  "hash_id": "189deac113507cbafe3bd363a41f6200443d7ea2d48a32b8522118603fa55bfe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce110/dce110_mem_input_v.h",
+  "human_readable_source": " \n\n#ifndef __DC_MEM_INPUT_V_DCE110_H__\n#define __DC_MEM_INPUT_V_DCE110_H__\n\n#include \"mem_input.h\"\n#include \"dce/dce_mem_input.h\"\n\nvoid dce110_mem_input_v_construct(\n\tstruct dce_mem_input *dce_mi,\n\tstruct dc_context *ctx);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "floating-point.json",
+  "hash_id": "d1e779f615a68d70e546553cbe8a4b9a9261b766010d4d4a49d964b8b7021962",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/silvermont/floating-point.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"Stalls due to FP assists\",\n        \"EventCode\": \"0xC3\",\n        \"EventName\": \"MACHINE_CLEARS.FP_ASSIST\",\n        \"PublicDescription\": \"This event counts the number of times that pipeline stalled due to FP operations needing assists.\",\n        \"SampleAfterValue\": \"200003\",\n        \"UMask\": \"0x4\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

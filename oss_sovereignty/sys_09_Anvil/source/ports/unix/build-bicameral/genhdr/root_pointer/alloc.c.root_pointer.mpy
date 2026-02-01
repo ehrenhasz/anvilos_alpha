@@ -1,0 +1,9 @@
+{
+  "module_name": "alloc.c.root_pointer",
+  "hash_id": "d40e3656c739b9f5b91ee842fbe9506f6d98a1253e872abc8c2238521211e583",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/root_pointer/alloc.c.root_pointer",
+  "human_readable_source": "MP_REGISTER_ROOT_POINTER(void *mmap_region_head);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

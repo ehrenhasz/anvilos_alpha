@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1342f48af6e2a7636c1ddbfcf6790266a5eb617b05f88336b14b634e3da35756",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/bpf/preload/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig USERMODE_DRIVER\n\tbool\n\tdefault n\n\nmenuconfig BPF_PRELOAD\n\tbool \"Preload BPF file system with kernel specific program and map iterators\"\n\tdepends on BPF\n\tdepends on BPF_SYSCALL\n\t# The dependency on !COMPILE_TEST prevents it from being enabled\n\t# in allmodconfig or allyesconfig configurations\n\tdepends on !COMPILE_TEST\n\tselect USERMODE_DRIVER\n\thelp\n\t  This builds kernel module with several embedded BPF programs that are\n\t  pinned into BPF FS mount point as human readable files that are\n\t  useful in debugging and introspection of BPF programs and maps.\n\nif BPF_PRELOAD\nconfig BPF_PRELOAD_UMD\n\ttristate \"bpf_preload kernel module\"\n\tdefault m\n\thelp\n\t  This builds bpf_preload kernel module with embedded BPF programs for\n\t  introspection in bpffs.\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

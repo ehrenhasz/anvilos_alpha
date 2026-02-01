@@ -1,0 +1,9 @@
+{
+  "module_name": "pl111_debugfs.c",
+  "hash_id": "23199a3f6e5f9582ea8e93ae6f9731c7e8051025b8fb10bf4514f95e8df3fff2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/pl111/pl111_debugfs.c",
+  "human_readable_source": "\n \n\n#include <linux/seq_file.h>\n\n#include <drm/drm_debugfs.h>\n#include <drm/drm_file.h>\n\n#include \"pl111_drm.h\"\n\n#define REGDEF(reg) { reg, #reg }\nstatic const struct {\n\tu32 reg;\n\tconst char *name;\n} pl111_reg_defs[] = {\n\tREGDEF(CLCD_TIM0),\n\tREGDEF(CLCD_TIM1),\n\tREGDEF(CLCD_TIM2),\n\tREGDEF(CLCD_TIM3),\n\tREGDEF(CLCD_UBAS),\n\tREGDEF(CLCD_LBAS),\n\tREGDEF(CLCD_PL111_CNTL),\n\tREGDEF(CLCD_PL111_IENB),\n\tREGDEF(CLCD_PL111_RIS),\n\tREGDEF(CLCD_PL111_MIS),\n\tREGDEF(CLCD_PL111_ICR),\n\tREGDEF(CLCD_PL111_UCUR),\n\tREGDEF(CLCD_PL111_LCUR),\n};\n\nstatic int pl111_debugfs_regs(struct seq_file *m, void *unused)\n{\n\tstruct drm_info_node *node = (struct drm_info_node *)m->private;\n\tstruct drm_device *dev = node->minor->dev;\n\tstruct pl111_drm_dev_private *priv = dev->dev_private;\n\tint i;\n\n\tfor (i = 0; i < ARRAY_SIZE(pl111_reg_defs); i++) {\n\t\tseq_printf(m, \"%s (0x%04x): 0x%08x\\n\",\n\t\t\t   pl111_reg_defs[i].name, pl111_reg_defs[i].reg,\n\t\t\t   readl(priv->regs + pl111_reg_defs[i].reg));\n\t}\n\n\treturn 0;\n}\n\nstatic const struct drm_info_list pl111_debugfs_list[] = {\n\t{\"regs\", pl111_debugfs_regs, 0},\n};\n\nvoid\npl111_debugfs_init(struct drm_minor *minor)\n{\n\tdrm_debugfs_create_files(pl111_debugfs_list,\n\t\t\t\t ARRAY_SIZE(pl111_debugfs_list),\n\t\t\t\t minor->debugfs_root, minor);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

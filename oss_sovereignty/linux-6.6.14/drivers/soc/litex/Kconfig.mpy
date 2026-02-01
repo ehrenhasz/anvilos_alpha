@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3ce915b0acc1d70034b4d8ff403a5955295572390e230b8d9bcf5ff656d926d1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/litex/Kconfig",
+  "human_readable_source": "# SPDX-License_Identifier: GPL-2.0\n\nmenu \"Enable LiteX SoC Builder specific drivers\"\n\nconfig LITEX\n\tbool\n\nconfig LITEX_SOC_CONTROLLER\n\ttristate \"Enable LiteX SoC Controller driver\"\n\tdepends on OF || COMPILE_TEST\n\tdepends on HAS_IOMEM\n\tselect LITEX\n\thelp\n\t  This option enables the SoC Controller Driver which verifies\n\t  LiteX CSR access and provides common litex_[read|write]*\n\t  accessors.\n\t  All drivers that use functions from litex.h must depend on\n\t  LITEX.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

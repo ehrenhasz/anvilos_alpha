@@ -1,0 +1,9 @@
+{
+  "module_name": "zone.h",
+  "hash_id": "11d183894ec30edd203be009b09bd13850f2c099525958db9e9acaca4a6c30fb",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/zone.h",
+  "human_readable_source": " \n \n\n#ifndef _LIBSPL_SYS_ZONE_H\n#define\t_LIBSPL_SYS_ZONE_H\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

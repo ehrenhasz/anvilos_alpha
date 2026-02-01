@@ -1,0 +1,9 @@
+{
+  "module_name": "samsung-sdi-battery.h",
+  "hash_id": "761f60ce90352ebffd6325ef2a8769e90c32729a80e31496dada7e5ccf3bcffc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/power/supply/samsung-sdi-battery.h",
+  "human_readable_source": " \n#if IS_ENABLED(CONFIG_BATTERY_SAMSUNG_SDI)\nextern int samsung_sdi_battery_get_info(struct device *dev,\n\t\t\t\tconst char *compatible,\n\t\t\t\tstruct power_supply_battery_info **info);\n#else\nstatic inline int samsung_sdi_battery_get_info(struct device *dev,\n\t\t\t\tconst char *compatible,\n\t\t\t\tstruct power_supply_battery_info **info)\n{\n\treturn -ENODEV;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

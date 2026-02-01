@@ -1,0 +1,9 @@
+{
+  "module_name": "setlinebuf.c",
+  "hash_id": "078d80f2dd215a7926ee0d0986f2bf4dd25f37c1db6822c63f0eb682cea9d9af",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/setlinebuf.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#include <stdio.h>\n\n#include <xmalloc.h>\n\n#if defined (USING_BASH_MALLOC)\n#  define LBUF_BUFSIZE\t2016\n#else\n#  define LBUF_BUFSIZE\tBUFSIZ\n#endif\n\nstatic char *stdoutbuf = 0;\nstatic char *stderrbuf = 0;\n\n \nint\nsh_setlinebuf (stream)\n     FILE *stream;\n{\n#if !defined (HAVE_SETLINEBUF) && !defined (HAVE_SETVBUF)\n  return (0);\n#endif\n\n#if defined (HAVE_SETVBUF)\n  char *local_linebuf;\n\n#if defined (USING_BASH_MALLOC)\n  if (stream == stdout && stdoutbuf == 0)\n    local_linebuf = stdoutbuf = (char *)xmalloc (LBUF_BUFSIZE);\n  else if (stream == stderr && stderrbuf == 0)\n    local_linebuf = stderrbuf = (char *)xmalloc (LBUF_BUFSIZE);\n  else\n    local_linebuf = (char *)NULL;\t \n#else\n  local_linebuf = (char *)NULL;\n#endif\n\n  return (setvbuf (stream, local_linebuf, _IOLBF, LBUF_BUFSIZE));\n#else  \n\n  setlinebuf (stream);\n  return (0);\n\n#endif  \n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

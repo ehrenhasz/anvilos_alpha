@@ -1,0 +1,9 @@
+{
+  "module_name": "test_lwt_reroute.c",
+  "hash_id": "d2daf5eef8d6ddbc0674ada1631e173ca3aba984cbe192621132381f3e32c232",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_lwt_reroute.c",
+  "human_readable_source": "\n#include <inttypes.h>\n#include <linux/bpf.h>\n#include <bpf/bpf_endian.h>\n#include <bpf/bpf_helpers.h>\n#include <linux/if_ether.h>\n#include <linux/ip.h>\n\n \nSEC(\"lwt_xmit\")\nint test_lwt_reroute(struct __sk_buff *skb)\n{\n\tstruct iphdr *iph = NULL;\n\tvoid *start = (void *)(long)skb->data;\n\tvoid *end = (void *)(long)skb->data_end;\n\n\t \n\tif (skb->mark != 0)\n\t\treturn BPF_OK;\n\n\tif (start + sizeof(*iph) > end)\n\t\treturn BPF_DROP;\n\n\tiph = (struct iphdr *)start;\n\tskb->mark = bpf_ntohl(iph->daddr) & 0xff;\n\n\t \n\tif (skb->mark == 0)\n\t\treturn BPF_OK;\n\n\treturn BPF_LWT_REROUTE;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

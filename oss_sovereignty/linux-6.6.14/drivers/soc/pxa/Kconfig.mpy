@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "20a50a15335b161e7994f99a9026d539f434171d8eb7187c14fb40ecee010e4c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/pxa/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig PLAT_PXA\n\tbool\n\nconfig PXA_SSP\n\ttristate\n\thelp\n\t  Enable support for PXA2xx SSP ports\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

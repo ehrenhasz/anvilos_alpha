@@ -1,0 +1,9 @@
+{
+  "module_name": "invpcid.h",
+  "hash_id": "6e8cd7f393ebfb2f9c839e8895cd7987db9ed5b0a0b6b631443c982ae41fd380",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/invpcid.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_INVPCID\n#define _ASM_X86_INVPCID\n\nstatic inline void __invpcid(unsigned long pcid, unsigned long addr,\n\t\t\t     unsigned long type)\n{\n\tstruct { u64 d[2]; } desc = { { pcid, addr } };\n\n\t \n\tasm volatile(\"invpcid %[desc], %[type]\"\n\t\t     :: [desc] \"m\" (desc), [type] \"r\" (type) : \"memory\");\n}\n\n#define INVPCID_TYPE_INDIV_ADDR\t\t0\n#define INVPCID_TYPE_SINGLE_CTXT\t1\n#define INVPCID_TYPE_ALL_INCL_GLOBAL\t2\n#define INVPCID_TYPE_ALL_NON_GLOBAL\t3\n\n \nstatic inline void invpcid_flush_one(unsigned long pcid,\n\t\t\t\t     unsigned long addr)\n{\n\t__invpcid(pcid, addr, INVPCID_TYPE_INDIV_ADDR);\n}\n\n \nstatic inline void invpcid_flush_single_context(unsigned long pcid)\n{\n\t__invpcid(pcid, 0, INVPCID_TYPE_SINGLE_CTXT);\n}\n\n \nstatic inline void invpcid_flush_all(void)\n{\n\t__invpcid(0, 0, INVPCID_TYPE_ALL_INCL_GLOBAL);\n}\n\n \nstatic inline void invpcid_flush_all_nonglobals(void)\n{\n\t__invpcid(0, 0, INVPCID_TYPE_ALL_NON_GLOBAL);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

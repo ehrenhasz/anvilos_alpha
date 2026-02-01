@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-verity-loadpin.h",
+  "hash_id": "b77e1fc35894f28e2ad9a435d553314996a21fbde779ef18b9f630b1f93991e0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dm-verity-loadpin.h",
+  "human_readable_source": " \n\n#ifndef __LINUX_DM_VERITY_LOADPIN_H\n#define __LINUX_DM_VERITY_LOADPIN_H\n\n#include <linux/list.h>\n\nstruct block_device;\n\nextern struct list_head dm_verity_loadpin_trusted_root_digests;\n\nstruct dm_verity_loadpin_trusted_root_digest {\n\tstruct list_head node;\n\tunsigned int len;\n\tu8 data[] __counted_by(len);\n};\n\n#if IS_ENABLED(CONFIG_SECURITY_LOADPIN_VERITY)\nbool dm_verity_loadpin_is_bdev_trusted(struct block_device *bdev);\n#else\nstatic inline bool dm_verity_loadpin_is_bdev_trusted(struct block_device *bdev)\n{\n\treturn false;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

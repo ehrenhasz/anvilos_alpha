@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_ddc.h",
+  "hash_id": "85eb821a4c02dc6a36c1a212937a3a6fcd7f204fd399136ae66df7d6198c9c6a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/hw_ddc.h",
+  "human_readable_source": " \n\n#ifndef __DAL_HW_DDC_H__\n#define __DAL_HW_DDC_H__\n\n#include \"ddc_regs.h\"\n\nstruct hw_ddc {\n\tstruct hw_gpio base;\n\tconst struct ddc_registers *regs;\n\tconst struct ddc_sh_mask *shifts;\n\tconst struct ddc_sh_mask *masks;\n};\n\n#define HW_DDC_FROM_BASE(hw_gpio) \\\n\tcontainer_of((HW_GPIO_FROM_BASE(hw_gpio)), struct hw_ddc, base)\n\nvoid dal_hw_ddc_init(\n\tstruct hw_ddc **hw_ddc,\n\tstruct dc_context *ctx,\n\tenum gpio_id id,\n\tuint32_t en);\n\nstruct hw_gpio_pin *dal_hw_ddc_get_pin(struct gpio *gpio);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

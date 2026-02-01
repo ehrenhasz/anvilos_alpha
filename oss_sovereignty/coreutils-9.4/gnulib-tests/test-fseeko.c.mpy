@@ -1,0 +1,9 @@
+{
+  "module_name": "test-fseeko.c",
+  "hash_id": "645c59dc4bd0d1f90cf4953c7a042a299580b76d51a0fe6951386481cc9845e1",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-fseeko.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#define _GL_NO_LARGE_FILES\n#include <stdio.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (fseeko, int, (FILE *, off_t, int));\n\n\n#include \"macros.h\"\n\n#ifndef FUNC_UNGETC_BROKEN\n# define FUNC_UNGETC_BROKEN 0\n#endif\n\nint\nmain (int argc, _GL_UNUSED char **argv)\n{\n   \n  int expected = argc > 1 ? 0 : -1;\n   \n  int r1 = fseeko (stdin, 0, SEEK_CUR);\n  int r2 = fseek (stdin, 0, SEEK_CUR);\n  ASSERT (r1 == r2 && r1 == expected);\n  if (argc > 1)\n    {\n       \n      int ch = fgetc (stdin);\n      ASSERT (ch == '#');\n      ASSERT (ungetc (ch, stdin) == ch);\n      ASSERT (fseeko (stdin, 2, SEEK_SET) == 0);\n      ch = fgetc (stdin);\n      ASSERT (ch == '/');\n      if (2 < argc)\n        {\n          if (FUNC_UNGETC_BROKEN)\n            {\n              fputs (\"Skipping test: ungetc cannot handle arbitrary bytes\\n\",\n                     stderr);\n              return 77;\n            }\n           \n          ASSERT (ungetc (ch ^ 0xff, stdin) == (ch ^ 0xff));\n        }\n      ASSERT (fseeko (stdin, 0, SEEK_END) == 0);\n      ASSERT (fgetc (stdin) == EOF);\n       \n      ASSERT (feof (stdin));\n      ASSERT (fseeko (stdin, 0, SEEK_END) == 0);\n      ASSERT (!feof (stdin));\n    }\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

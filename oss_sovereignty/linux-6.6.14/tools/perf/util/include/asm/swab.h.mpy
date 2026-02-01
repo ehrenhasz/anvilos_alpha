@@ -1,0 +1,9 @@
+{
+  "module_name": "swab.h",
+  "hash_id": "e16f1596201850fd4a63680b27f603cb64e67176159be3d8ed78a4403fdb1700",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/include/asm/swab.h",
+  "human_readable_source": " \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

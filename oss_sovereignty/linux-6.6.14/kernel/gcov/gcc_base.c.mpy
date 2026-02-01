@@ -1,0 +1,9 @@
+{
+  "module_name": "gcc_base.c",
+  "hash_id": "d7c50e314b5fddad1f0030cfe6c818e7069fa31649033c202965f914625a128e",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/gcov/gcc_base.c",
+  "human_readable_source": "\n\n#include <linux/export.h>\n#include <linux/kernel.h>\n#include <linux/mutex.h>\n#include \"gcov.h\"\n\n \nvoid __gcov_init(struct gcov_info *info)\n{\n\tstatic unsigned int gcov_version;\n\n\tmutex_lock(&gcov_lock);\n\tif (gcov_version == 0) {\n\t\tgcov_version = gcov_info_version(info);\n\t\t \n\t\tpr_info(\"version magic: 0x%x\\n\", gcov_version);\n\t}\n\t \n\tgcov_info_link(info);\n\tif (gcov_events_enabled)\n\t\tgcov_event(GCOV_ADD, info);\n\tmutex_unlock(&gcov_lock);\n}\nEXPORT_SYMBOL(__gcov_init);\n\n \nvoid __gcov_flush(void)\n{\n\t \n}\nEXPORT_SYMBOL(__gcov_flush);\n\nvoid __gcov_merge_add(gcov_type *counters, unsigned int n_counters)\n{\n\t \n}\nEXPORT_SYMBOL(__gcov_merge_add);\n\nvoid __gcov_merge_single(gcov_type *counters, unsigned int n_counters)\n{\n\t \n}\nEXPORT_SYMBOL(__gcov_merge_single);\n\nvoid __gcov_merge_delta(gcov_type *counters, unsigned int n_counters)\n{\n\t \n}\nEXPORT_SYMBOL(__gcov_merge_delta);\n\nvoid __gcov_merge_ior(gcov_type *counters, unsigned int n_counters)\n{\n\t \n}\nEXPORT_SYMBOL(__gcov_merge_ior);\n\nvoid __gcov_merge_time_profile(gcov_type *counters, unsigned int n_counters)\n{\n\t \n}\nEXPORT_SYMBOL(__gcov_merge_time_profile);\n\nvoid __gcov_merge_icall_topn(gcov_type *counters, unsigned int n_counters)\n{\n\t \n}\nEXPORT_SYMBOL(__gcov_merge_icall_topn);\n\nvoid __gcov_exit(void)\n{\n\t \n}\nEXPORT_SYMBOL(__gcov_exit);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

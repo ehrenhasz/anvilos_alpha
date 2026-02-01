@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8723b_recv.h",
+  "hash_id": "3937a44068c7502bf36e1f9b342c82532db6e06a195583e42a701e4e2a2b7037",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/rtl8723b_recv.h",
+  "human_readable_source": " \n \n#ifndef __RTL8723B_RECV_H__\n#define __RTL8723B_RECV_H__\n\n#include <rtl8192c_recv.h>\n\nstruct rxreport_8723b {\n\t \n\tu32 pktlen:14;\n\tu32 crc32:1;\n\tu32 icverr:1;\n\tu32 drvinfosize:4;\n\tu32 security:3;\n\tu32 qos:1;\n\tu32 shift:2;\n\tu32 physt:1;\n\tu32 swdec:1;\n\tu32 rsvd0028:2;\n\tu32 eor:1;\n\tu32 rsvd0031:1;\n\n\t \n\tu32 macid:7;\n\tu32 rsvd0407:1;\n\tu32 tid:4;\n\tu32 macid_vld:1;\n\tu32 amsdu:1;\n\tu32 rxid_match:1;\n\tu32 paggr:1;\n\tu32 a1fit:4;\n\tu32 chkerr:1;   \n\tu32 rx_ipv:1;\n\tu32 rx_is_tcp_udp:1;\n\tu32 chk_vld:1;    \n\tu32 pam:1;\n\tu32 pwr:1;\n\tu32 md:1;\n\tu32 mf:1;\n\tu32 type:2;\n\tu32 mc:1;\n\tu32 bc:1;\n\n\t \n\tu32 seq:12;\n\tu32 frag:4;\n\tu32 rx_is_qos:1;\n\tu32 rsvd0817:1;\n\tu32 wlanhd_iv_len:6;\n\tu32 hwrsvd0824:4;\n\tu32 c2h_ind:1;\n\tu32 rsvd0829:2;\n\tu32 fcs_ok:1;\n\n\t \n\tu32 rx_rate:7;\n\tu32 rsvd1207:3;\n\tu32 htc:1;\n\tu32 esop:1;\n\tu32 bssid_fit:2;\n\tu32 rsvd1214:2;\n\tu32 dma_agg_num:8;\n\tu32 rsvd1224:5;\n\tu32 patternmatch:1;\n\tu32 unicastwake:1;\n\tu32 magicwake:1;\n\n\t \n\tu32 splcp:1;\t \n\tu32 ldpc:1;\n\tu32 stbc:1;\n\tu32 not_sounding:1;\n\tu32 bw:2;\n\tu32 rsvd1606:26;\n\n\t \n\tu32 tsfl;\n};\n\ns32 rtl8723bs_init_recv_priv(struct adapter *padapter);\nvoid rtl8723bs_free_recv_priv(struct adapter *padapter);\n\nvoid rtl8723b_query_rx_phy_status(union recv_frame *prframe, struct phy_stat *pphy_stat);\nvoid rtl8723b_process_phy_info(struct adapter *padapter, void *prframe);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

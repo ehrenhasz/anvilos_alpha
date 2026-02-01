@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "364fb4ba0ede82027530186df15820e4fb6f2ad54a3a5bbc324f75550c79c06a",
+  "original_prompt": "Ingested from linux-6.6.14/net/sunrpc/auth_gss/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Linux kernel rpcsec_gss implementation\n#\n\nobj-$(CONFIG_SUNRPC_GSS) += auth_rpcgss.o\n\nauth_rpcgss-y := auth_gss.o gss_generic_token.o \\\n\tgss_mech_switch.o svcauth_gss.o \\\n\tgss_rpc_upcall.o gss_rpc_xdr.o trace.o\n\nobj-$(CONFIG_RPCSEC_GSS_KRB5) += rpcsec_gss_krb5.o\n\nrpcsec_gss_krb5-y := gss_krb5_mech.o gss_krb5_seal.o gss_krb5_unseal.o \\\n\tgss_krb5_wrap.o gss_krb5_crypto.o gss_krb5_keys.o\n\nobj-$(CONFIG_RPCSEC_GSS_KRB5_KUNIT_TEST) += gss_krb5_test.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

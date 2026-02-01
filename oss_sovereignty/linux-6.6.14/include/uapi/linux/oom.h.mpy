@@ -1,0 +1,9 @@
+{
+  "module_name": "oom.h",
+  "hash_id": "29a0f6d6542265713d310cf15109ad0723cc24f6e62dfb89b30a2abc78eead0c",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/oom.h",
+  "human_readable_source": " \n#ifndef _UAPI__INCLUDE_LINUX_OOM_H\n#define _UAPI__INCLUDE_LINUX_OOM_H\n\n \n#define OOM_SCORE_ADJ_MIN\t(-1000)\n#define OOM_SCORE_ADJ_MAX\t1000\n\n \n#define OOM_DISABLE (-17)\n \n#define OOM_ADJUST_MIN (-16)\n#define OOM_ADJUST_MAX 15\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

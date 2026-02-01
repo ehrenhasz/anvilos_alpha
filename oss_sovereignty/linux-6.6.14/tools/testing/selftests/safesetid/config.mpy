@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "de41c36834dce19cf33f0132e7d33e9f2e60d1e54d11852a6e19e70f3c3dfb78",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/safesetid/config",
+  "human_readable_source": "CONFIG_SECURITY=y\nCONFIG_SECURITYFS=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

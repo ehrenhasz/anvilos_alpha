@@ -1,0 +1,9 @@
+{
+  "module_name": "reset-simple.h",
+  "hash_id": "2d36dadffb41c68b1d7fda4d1130bdbe98c599261b632535bf5335ddd6bc5cbf",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/reset/reset-simple.h",
+  "human_readable_source": " \n \n\n#ifndef __RESET_SIMPLE_H__\n#define __RESET_SIMPLE_H__\n\n#include <linux/io.h>\n#include <linux/reset-controller.h>\n#include <linux/spinlock.h>\n\n \nstruct reset_simple_data {\n\tspinlock_t\t\t\tlock;\n\tvoid __iomem\t\t\t*membase;\n\tstruct reset_controller_dev\trcdev;\n\tbool\t\t\t\tactive_low;\n\tbool\t\t\t\tstatus_active_low;\n\tunsigned int\t\t\treset_us;\n};\n\nextern const struct reset_control_ops reset_simple_ops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

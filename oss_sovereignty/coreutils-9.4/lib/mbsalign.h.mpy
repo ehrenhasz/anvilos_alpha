@@ -1,0 +1,9 @@
+{
+  "module_name": "mbsalign.h",
+  "hash_id": "32ca7af456e9adb7f38a46bdb69af175b9d78bab708e9c25f0bdf382ff140b14",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mbsalign.h",
+  "human_readable_source": " \n  MBA_UNIBYTE_FALLBACK = 0x0001,\n\n   \n  MBA_UNIBYTE_ONLY = 0x0002,\n\n   \n  MBA_NO_LEFT_PAD = 0x0004,\n\n   \n  MBA_NO_RIGHT_PAD = 0x0008\n\n#if 0  \n   \n  MBA_IGNORE_INVALID\n\n   \n  MBA_USE_FIGURE_SPACE\n\n   \n  MBA_NO_TRUNCATE\n\n   \n  MBA_LSTRIP\n\n   \n  MBA_RSTRIP\n#endif\n};\n\nsize_t\nmbsalign (char const *src, char *dest, size_t dest_size,\n          size_t *width, mbs_align_t align, int flags)\n  _GL_ATTRIBUTE_NONNULL ();\n\nchar *\nambsalign (char const *src, size_t *width, mbs_align_t align, int flags)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE\n  _GL_ATTRIBUTE_NONNULL ();\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

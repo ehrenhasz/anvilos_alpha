@@ -1,0 +1,9 @@
+{
+  "module_name": "vm86.h",
+  "hash_id": "6094b4ea5287638c683bf32ee30ddc624783d61031829996d085f5d7a96f4e3b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/vm86.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_VM86_H\n#define _ASM_X86_VM86_H\n\n#include <asm/ptrace.h>\n#include <uapi/asm/vm86.h>\n\n \n\nstruct kernel_vm86_regs {\n \n\tstruct pt_regs pt;\n \n\tunsigned short es, __esh;\n\tunsigned short ds, __dsh;\n\tunsigned short fs, __fsh;\n\tunsigned short gs, __gsh;\n};\n\nstruct vm86 {\n\tstruct vm86plus_struct __user *user_vm86;\n\tstruct pt_regs regs32;\n\tunsigned long veflags;\n\tunsigned long veflags_mask;\n\tunsigned long saved_sp0;\n\n\tunsigned long flags;\n\tunsigned long cpu_type;\n\tstruct revectored_struct int_revectored;\n\tstruct revectored_struct int21_revectored;\n\tstruct vm86plus_info_struct vm86plus;\n};\n\n#ifdef CONFIG_VM86\n\nvoid handle_vm86_fault(struct kernel_vm86_regs *, long);\nint handle_vm86_trap(struct kernel_vm86_regs *, long, int);\nvoid save_v86_state(struct kernel_vm86_regs *, int);\n\nstruct task_struct;\n\n#define free_vm86(t) do {\t\t\t\t\\\n\tstruct thread_struct *__t = (t);\t\t\\\n\tif (__t->vm86 != NULL) {\t\t\t\\\n\t\tkfree(__t->vm86);\t\t\t\\\n\t\t__t->vm86 = NULL;\t\t\t\\\n\t}\t\t\t\t\t\t\\\n} while (0)\n\n \n#define FIRST_VM86_IRQ\t\t 3\n#define LAST_VM86_IRQ\t\t15\n\nstatic inline int invalid_vm86_irq(int irq)\n{\n\treturn irq < FIRST_VM86_IRQ || irq > LAST_VM86_IRQ;\n}\n\nvoid release_vm86_irqs(struct task_struct *);\n\n#else\n\n#define handle_vm86_fault(a, b)\n#define release_vm86_irqs(a)\n\nstatic inline int handle_vm86_trap(struct kernel_vm86_regs *a, long b, int c)\n{\n\treturn 0;\n}\n\nstatic inline void save_v86_state(struct kernel_vm86_regs *a, int b) { }\n\n#define free_vm86(t) do { } while(0)\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_fsmap.h",
+  "hash_id": "8db67aba386a46c7d1278da8c1ea4e047a8cad2920ff31a056cb8f69a2f27de9",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_fsmap.h",
+  "human_readable_source": "\n \n#ifndef __XFS_FSMAP_H__\n#define __XFS_FSMAP_H__\n\nstruct fsmap;\n\n \nstruct xfs_fsmap {\n\tdev_t\t\tfmr_device;\t \n\tuint32_t\tfmr_flags;\t \n\tuint64_t\tfmr_physical;\t \n\tuint64_t\tfmr_owner;\t \n\txfs_fileoff_t\tfmr_offset;\t \n\txfs_filblks_t\tfmr_length;\t \n};\n\nstruct xfs_fsmap_head {\n\tuint32_t\tfmh_iflags;\t \n\tuint32_t\tfmh_oflags;\t \n\tunsigned int\tfmh_count;\t \n\tunsigned int\tfmh_entries;\t \n\n\tstruct xfs_fsmap fmh_keys[2];\t \n};\n\nvoid xfs_fsmap_to_internal(struct xfs_fsmap *dest, struct fsmap *src);\n\nint xfs_getfsmap(struct xfs_mount *mp, struct xfs_fsmap_head *head,\n\t\tstruct fsmap *out_recs);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

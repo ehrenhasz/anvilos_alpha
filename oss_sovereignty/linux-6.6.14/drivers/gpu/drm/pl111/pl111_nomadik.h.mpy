@@ -1,0 +1,9 @@
+{
+  "module_name": "pl111_nomadik.h",
+  "hash_id": "eb539b2dfdccc7caf9af8b26e8c0ae424ae4fcdb984b16de44ad3fc1445a435a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/pl111/pl111_nomadik.h",
+  "human_readable_source": "\n\n#ifndef PL111_NOMADIK_H\n#define PL111_NOMADIK_H\n#endif\n\nstruct device;\n\n#ifdef CONFIG_ARCH_NOMADIK\n\nvoid pl111_nomadik_init(struct device *dev);\n\n#else\n\nstatic inline void pl111_nomadik_init(struct device *dev)\n{\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

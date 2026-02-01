@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_bit.c",
+  "hash_id": "26b5f44dae100c4b18ded88f05d77787e29af98906d31e92f11a07e18c56eb8c",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/libxfs/xfs_bit.c",
+  "human_readable_source": "\n \n#include \"xfs.h\"\n#include \"xfs_log_format.h\"\n#include \"xfs_bit.h\"\n\n \n\n \nint\nxfs_bitmap_empty(uint *map, uint size)\n{\n\tuint i;\n\n\tfor (i = 0; i < size; i++) {\n\t\tif (map[i] != 0)\n\t\t\treturn 0;\n\t}\n\n\treturn 1;\n}\n\n \nint\nxfs_contig_bits(uint *map, uint\tsize, uint start_bit)\n{\n\tuint * p = ((unsigned int *) map) + (start_bit >> BIT_TO_WORD_SHIFT);\n\tuint result = 0;\n\tuint tmp;\n\n\tsize <<= BIT_TO_WORD_SHIFT;\n\n\tASSERT(start_bit < size);\n\tsize -= start_bit & ~(NBWORD - 1);\n\tstart_bit &= (NBWORD - 1);\n\tif (start_bit) {\n\t\ttmp = *p++;\n\t\t \n\t\ttmp |= (~0U >> (NBWORD-start_bit));\n\t\tif (tmp != ~0U)\n\t\t\tgoto found;\n\t\tresult += NBWORD;\n\t\tsize -= NBWORD;\n\t}\n\twhile (size) {\n\t\tif ((tmp = *p++) != ~0U)\n\t\t\tgoto found;\n\t\tresult += NBWORD;\n\t\tsize -= NBWORD;\n\t}\n\treturn result - start_bit;\nfound:\n\treturn result + ffz(tmp) - start_bit;\n}\n\n \nint xfs_next_bit(uint *map, uint size, uint start_bit)\n{\n\tuint * p = ((unsigned int *) map) + (start_bit >> BIT_TO_WORD_SHIFT);\n\tuint result = start_bit & ~(NBWORD - 1);\n\tuint tmp;\n\n\tsize <<= BIT_TO_WORD_SHIFT;\n\n\tif (start_bit >= size)\n\t\treturn -1;\n\tsize -= result;\n\tstart_bit &= (NBWORD - 1);\n\tif (start_bit) {\n\t\ttmp = *p++;\n\t\t \n\t\ttmp &= (~0U << start_bit);\n\t\tif (tmp != 0U)\n\t\t\tgoto found;\n\t\tresult += NBWORD;\n\t\tsize -= NBWORD;\n\t}\n\twhile (size) {\n\t\tif ((tmp = *p++) != 0U)\n\t\t\tgoto found;\n\t\tresult += NBWORD;\n\t\tsize -= NBWORD;\n\t}\n\treturn -1;\nfound:\n\treturn result + ffs(tmp) - 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

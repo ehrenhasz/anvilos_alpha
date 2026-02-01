@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e0d6b0f04ba94d25a5a191d956fa4ebdb9351a7161f44dd7f7760aecb387b988",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/powercap/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_DTPM) += dtpm.o\nobj-$(CONFIG_DTPM_CPU) += dtpm_cpu.o\nobj-$(CONFIG_DTPM_DEVFREQ) += dtpm_devfreq.o\nobj-$(CONFIG_POWERCAP)\t+= powercap_sys.o\nobj-$(CONFIG_INTEL_RAPL_CORE) += intel_rapl_common.o\nobj-$(CONFIG_INTEL_RAPL) += intel_rapl_msr.o\nobj-$(CONFIG_INTEL_RAPL_TPMI) += intel_rapl_tpmi.o\nobj-$(CONFIG_IDLE_INJECT) += idle_inject.o\nobj-$(CONFIG_ARM_SCMI_POWERCAP) += arm_scmi_powercap.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

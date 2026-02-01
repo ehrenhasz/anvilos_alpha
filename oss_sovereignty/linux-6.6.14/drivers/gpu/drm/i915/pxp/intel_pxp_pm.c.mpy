@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pxp_pm.c",
+  "hash_id": "8792bd89996bdfa58804e61873319f107e1c78e85153a133f71c7dafd07804a3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/pxp/intel_pxp_pm.c",
+  "human_readable_source": "\n \n\n#include \"i915_drv.h\"\n\n#include \"intel_pxp.h\"\n#include \"intel_pxp_irq.h\"\n#include \"intel_pxp_pm.h\"\n#include \"intel_pxp_session.h\"\n#include \"intel_pxp_types.h\"\n\nvoid intel_pxp_suspend_prepare(struct intel_pxp *pxp)\n{\n\tif (!intel_pxp_is_enabled(pxp))\n\t\treturn;\n\n\tintel_pxp_end(pxp);\n\n\tintel_pxp_invalidate(pxp);\n}\n\nvoid intel_pxp_suspend(struct intel_pxp *pxp)\n{\n\tintel_wakeref_t wakeref;\n\n\tif (!intel_pxp_is_enabled(pxp))\n\t\treturn;\n\n\twith_intel_runtime_pm(&pxp->ctrl_gt->i915->runtime_pm, wakeref) {\n\t\tintel_pxp_fini_hw(pxp);\n\t\tpxp->hw_state_invalidated = false;\n\t}\n}\n\nvoid intel_pxp_resume_complete(struct intel_pxp *pxp)\n{\n\tif (!intel_pxp_is_enabled(pxp))\n\t\treturn;\n\n\t \n\tif (!HAS_ENGINE(pxp->ctrl_gt, GSC0) && !pxp->pxp_component)\n\t\treturn;\n\n\tintel_pxp_init_hw(pxp);\n}\n\nvoid intel_pxp_runtime_suspend(struct intel_pxp *pxp)\n{\n\tif (!intel_pxp_is_enabled(pxp))\n\t\treturn;\n\n\tpxp->arb_is_valid = false;\n\n\tintel_pxp_fini_hw(pxp);\n\n\tpxp->hw_state_invalidated = false;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

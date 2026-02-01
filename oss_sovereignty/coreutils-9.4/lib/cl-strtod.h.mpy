@@ -1,0 +1,9 @@
+{
+  "module_name": "cl-strtod.h",
+  "hash_id": "3e9125f207765bc1ea867f9bf7f220f9cddf122dc86dd1ab1e9f3e32811d27fd",
+  "original_prompt": "Ingested from coreutils-9.4/lib/cl-strtod.h",
+  "human_readable_source": "double cl_strtod (char const *, char **restrict)\n  _GL_ATTRIBUTE_NONNULL ((1));\nlong double cl_strtold (char const *, char **restrict)\n  _GL_ATTRIBUTE_NONNULL ((1));\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

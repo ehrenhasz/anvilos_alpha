@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_frame.h",
+  "hash_id": "ad30e3c4d80b596be6dd951c58ff41a027f0b26f0a81db1573561cf57f4c11cd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/runtime/frame/interface/ia_css_frame.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_FRAME_H__\n#define __IA_CSS_FRAME_H__\n\n \n#include <ia_css_types.h>\n\n#include <ia_css_frame_format.h>\n#include <ia_css_frame_public.h>\n#include \"dma.h\"\n\n \n \nvoid ia_css_frame_info_set_width(struct ia_css_frame_info *info,\n\t\t\t\t unsigned int width,\n\t\t\t\t unsigned int min_padded_width);\n\n \nvoid ia_css_frame_info_set_format(struct ia_css_frame_info *info,\n\t\t\t\t  enum ia_css_frame_format format);\n\n \nvoid ia_css_frame_info_init(struct ia_css_frame_info *info,\n\t\t\t    unsigned int width,\n\t\t\t    unsigned int height,\n\t\t\t    enum ia_css_frame_format format,\n\t\t\t    unsigned int aligned);\n\n \nbool ia_css_frame_info_is_same_resolution(\n    const struct ia_css_frame_info *info_a,\n    const struct ia_css_frame_info *info_b);\n\n \nint ia_css_frame_check_info(const struct ia_css_frame_info *info);\n\n \n\n \nint ia_css_frame_init_planes(struct ia_css_frame *frame);\n\n \nvoid ia_css_frame_free_multiple(unsigned int num_frames,\n\t\t\t\tstruct ia_css_frame **frames_array);\n\n \nint ia_css_frame_allocate_with_buffer_size(struct ia_css_frame **frame,\n\t\t\t\t\t   const unsigned int size_bytes);\n\n \nbool ia_css_frame_is_same_type(\n    const struct ia_css_frame *frame_a,\n    const struct ia_css_frame *frame_b);\n\n \nint ia_css_dma_configure_from_info(struct dma_port_config *config,\n\t\t\t\t   const struct ia_css_frame_info *info);\n\nunsigned int ia_css_frame_pad_width(unsigned int width, enum ia_css_frame_format format);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "LOCK03.boot",
+  "hash_id": "3b61a6ee0fe2b80c510432d96147fbc41fbf3d1a1bfa459cc7ee687ea785eba9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/lock/LOCK03.boot",
+  "human_readable_source": "locktorture.torture_type=rwsem_lock\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

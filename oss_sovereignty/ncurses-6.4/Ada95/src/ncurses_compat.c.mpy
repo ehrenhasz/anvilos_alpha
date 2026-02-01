@@ -1,0 +1,9 @@
+{
+  "module_name": "ncurses_compat.c",
+  "hash_id": "2fcdb957cf917b36db4803d50391a317e08c01a74fbb16c1ee9b5ea3caebfa54",
+  "original_prompt": "Ingested from ncurses-6.4/Ada95/src/ncurses_compat.c",
+  "human_readable_source": " \n\n \n\n \n\n \n#include <ncurses_cfg.h>\n\n#if HAVE_INTTYPES_H\n# include <inttypes.h>\n#else\n# if HAVE_STDINT_H\n#  include <stdint.h>\n# endif\n#endif\n\n#include <curses.h>\n\n#if defined(NCURSES_VERSION_PATCH)\n\n#if NCURSES_VERSION_PATCH < 20081122\nextern bool has_mouse(void);\nextern int _nc_has_mouse(void);\n\nbool\nhas_mouse(void)\n{\n  return (bool)_nc_has_mouse();\n}\n#endif\n\n \n#if NCURSES_VERSION_PATCH < 20070331\nextern bool (is_keypad) (const WINDOW *);\nextern bool (is_scrollok) (const WINDOW *);\n\nbool\nis_keypad(const WINDOW *win)\n{\n  return ((win)->_use_keypad);\n}\n\nbool\n  (is_scrollok) (const WINDOW *win)\n{\n  return ((win)->_scroll);\n}\n#endif\n\n#if NCURSES_VERSION_PATCH < 20060107\nextern int (getbegx) (WINDOW *);\nextern int (getbegy) (WINDOW *);\nextern int (getcurx) (WINDOW *);\nextern int (getcury) (WINDOW *);\nextern int (getmaxx) (WINDOW *);\nextern int (getmaxy) (WINDOW *);\nextern int (getparx) (WINDOW *);\nextern int (getpary) (WINDOW *);\n\nint\n  (getbegy) (WINDOW *win)\n{\n  return ((win) ? (win)->_begy : ERR);\n}\n\nint\n  (getbegx) (WINDOW *win)\n{\n  return ((win) ? (win)->_begx : ERR);\n}\n\nint\n  (getcury) (WINDOW *win)\n{\n  return ((win) ? (win)->_cury : ERR);\n}\n\nint\n  (getcurx) (WINDOW *win)\n{\n  return ((win) ? (win)->_curx : ERR);\n}\n\nint\n  (getmaxy) (WINDOW *win)\n{\n  return ((win) ? ((win)->_maxy + 1) : ERR);\n}\n\nint\n  (getmaxx) (WINDOW *win)\n{\n  return ((win) ? ((win)->_maxx + 1) : ERR);\n}\n\nint\n  (getpary) (WINDOW *win)\n{\n  return ((win) ? (win)->_pary : ERR);\n}\n\nint\n  (getparx) (WINDOW *win)\n{\n  return ((win) ? (win)->_parx : ERR);\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

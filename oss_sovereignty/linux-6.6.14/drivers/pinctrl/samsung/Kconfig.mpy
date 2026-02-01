@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3ce04874850287eaa93912ab7552c1da4ad9047093d17eb16a7f909dda891d11",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/samsung/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Samsung Pin control drivers\n#\nconfig PINCTRL_SAMSUNG\n\tbool\n\tselect GPIOLIB\n\tselect PINMUX\n\tselect PINCONF\n\nconfig PINCTRL_EXYNOS\n\tbool \"Pinctrl common driver part for Samsung Exynos SoCs\"\n\tdepends on ARCH_EXYNOS || ARCH_S5PV210 || (COMPILE_TEST && OF)\n\tselect PINCTRL_SAMSUNG\n\tselect PINCTRL_EXYNOS_ARM if ARM && (ARCH_EXYNOS || ARCH_S5PV210)\n\tselect PINCTRL_EXYNOS_ARM64 if ARM64 && ARCH_EXYNOS\n\nconfig PINCTRL_EXYNOS_ARM\n\tbool \"ARMv7-specific pinctrl driver for Samsung Exynos SoCs\" if COMPILE_TEST\n\tdepends on PINCTRL_EXYNOS\n\nconfig PINCTRL_EXYNOS_ARM64\n\tbool \"ARMv8-specific pinctrl driver for Samsung Exynos SoCs\" if COMPILE_TEST\n\tdepends on PINCTRL_EXYNOS\n\nconfig PINCTRL_S3C64XX\n\tbool \"Samsung S3C64XX SoC pinctrl driver\"\n\tdepends on ARCH_S3C64XX || (COMPILE_TEST && OF)\n\tselect PINCTRL_SAMSUNG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

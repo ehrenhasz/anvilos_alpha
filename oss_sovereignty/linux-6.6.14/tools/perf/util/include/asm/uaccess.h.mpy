@@ -1,0 +1,9 @@
+{
+  "module_name": "uaccess.h",
+  "hash_id": "102ec84b697df63a4aa9a9d04aa448c7c62121cc43609109b963de2325ea7dbe",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/include/asm/uaccess.h",
+  "human_readable_source": " \n#ifndef _PERF_ASM_UACCESS_H_\n#define _PERF_ASM_UACCESS_H_\n\n#define __get_user(src, dest)\t\t\t\t\t\t\\\n({\t\t\t\t\t\t\t\t\t\\\n\t(src) = *dest;\t\t\t\t\t\t\t\\\n\t0;\t\t\t\t\t\t\t\t\\\n})\n\n#define get_user\t__get_user\n\n#define access_ok(addr, size)\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "target_core_file.h",
+  "hash_id": "28e61842411a396f6a67a2663172a64b3454aaff07accc4b63372fb51a410689",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/target_core_file.h",
+  "human_readable_source": " \n#ifndef TARGET_CORE_FILE_H\n#define TARGET_CORE_FILE_H\n\n#include <target/target_core_base.h>\n\n#define FD_VERSION\t\t\"4.0\"\n\n#define FD_MAX_DEV_NAME\t\t256\n#define FD_MAX_DEV_PROT_NAME\tFD_MAX_DEV_NAME + 16\n#define FD_DEVICE_QUEUE_DEPTH\t32\n#define FD_MAX_DEVICE_QUEUE_DEPTH 128\n#define FD_BLOCKSIZE\t\t512\n \n#define FD_MAX_BYTES\t\t8388608\n\n#define RRF_EMULATE_CDB\t\t0x01\n#define RRF_GOT_LBA\t\t0x02\n\n#define FBDF_HAS_PATH\t\t0x01\n#define FBDF_HAS_SIZE\t\t0x02\n#define FDBD_HAS_BUFFERED_IO_WCE 0x04\n#define FDBD_HAS_ASYNC_IO\t 0x08\n#define FDBD_FORMAT_UNIT_SIZE\t2048\n\nstruct fd_dev {\n\tstruct se_device dev;\n\n\tu32\t\tfbd_flags;\n\tunsigned char\tfd_dev_name[FD_MAX_DEV_NAME];\n\t \n\tu32\t\tfd_dev_id;\n\t \n\tu32\t\tfd_table_count;\n\tu32\t\tfd_queue_depth;\n\tu32\t\tfd_block_size;\n\tunsigned long long fd_dev_size;\n\tstruct file\t*fd_file;\n\tstruct file\t*fd_prot_file;\n\t \n\tstruct fd_host *fd_host;\n} ____cacheline_aligned;\n\nstruct fd_host {\n\tu32\t\tfd_host_dev_id_count;\n\t \n\tu32\t\tfd_host_id;\n} ____cacheline_aligned;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

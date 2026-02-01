@@ -1,0 +1,9 @@
+{
+  "module_name": "lx6464es.h",
+  "hash_id": "6a71b8084e6df6953eff031b68846e6f42dc66e2ef1a245e3fc85b08bb525f7d",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/lx6464es/lx6464es.h",
+  "human_readable_source": " \n \n\n#ifndef LX6464ES_H\n#define LX6464ES_H\n\n#include <linux/spinlock.h>\n#include <linux/atomic.h>\n\n#include <sound/core.h>\n#include <sound/pcm.h>\n\n#include \"lx_core.h\"\n\n#define LXP \"LX6464ES: \"\n\nenum {\n    ES_cmd_free         = 0,     \n    ES_cmd_processing   = 1,\t \n    ES_read_pending     = 2,     \n    ES_read_finishing   = 3,     \n};\n\nenum lx_stream_status {\n\tLX_STREAM_STATUS_FREE,\n \n\tLX_STREAM_STATUS_SCHEDULE_RUN,\n \n\tLX_STREAM_STATUS_RUNNING,\n\tLX_STREAM_STATUS_SCHEDULE_STOP,\n \n \n};\n\n\nstruct lx_stream {\n\tstruct snd_pcm_substream  *stream;\n\tsnd_pcm_uframes_t          frame_pos;\n\tenum lx_stream_status      status;  \n\tunsigned int               is_capture:1;\n};\n\n\nstruct lx6464es {\n\tstruct snd_card        *card;\n\tstruct pci_dev         *pci;\n\tint\t\t\tirq;\n\n\tu8\t\t\tmac_address[6];\n\n\tstruct mutex\t\tlock;         \n\tstruct mutex            setup_mutex;  \n\n\t \n\tunsigned long\t\tport_plx;\t    \n\tvoid __iomem           *port_plx_remapped;  \n\tvoid __iomem           *port_dsp_bar;       \n\n\t \n\tstruct mutex\t\tmsg_lock;           \n\tstruct lx_rmh           rmh;\n\tu32\t\t\tirqsrc;\n\n\t \n\tuint\t\t\tfreq_ratio : 2;\n\tuint                    playback_mute : 1;\n\tuint                    hardware_running[2];\n\tu32                     board_sample_rate;  \n\tu16                     pcm_granularity;    \n\n\t \n\tstruct snd_dma_buffer   capture_dma_buf;\n\tstruct snd_dma_buffer   playback_dma_buf;\n\n\t \n\tstruct snd_pcm         *pcm;\n\n\t \n\tstruct lx_stream        capture_stream;\n\tstruct lx_stream        playback_stream;\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

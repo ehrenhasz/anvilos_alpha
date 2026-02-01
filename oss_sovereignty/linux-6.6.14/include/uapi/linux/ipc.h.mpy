@@ -1,0 +1,9 @@
+{
+  "module_name": "ipc.h",
+  "hash_id": "acfafda79c3f4b440c3af2e0f30ae1072a7d8c065613afe5fcea38c1144ccc08",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/ipc.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_IPC_H\n#define _UAPI_LINUX_IPC_H\n\n#include <linux/types.h>\n\n#define IPC_PRIVATE ((__kernel_key_t) 0)  \n\n \nstruct ipc_perm\n{\n\t__kernel_key_t\tkey;\n\t__kernel_uid_t\tuid;\n\t__kernel_gid_t\tgid;\n\t__kernel_uid_t\tcuid;\n\t__kernel_gid_t\tcgid;\n\t__kernel_mode_t\tmode; \n\tunsigned short\tseq;\n};\n\n \n#include <asm/ipcbuf.h>\n\n \n#define IPC_CREAT  00001000    \n#define IPC_EXCL   00002000    \n#define IPC_NOWAIT 00004000    \n\n \n   \n#define IPC_DIPC 00010000   \n#define IPC_OWN  00020000   \n\n \n#define IPC_RMID 0      \n#define IPC_SET  1      \n#define IPC_STAT 2      \n#define IPC_INFO 3      \n\n \n#define IPC_OLD 0\t \n#define IPC_64  0x0100   \n\n \nstruct ipc_kludge {\n\tstruct msgbuf __user *msgp;\n\tlong msgtyp;\n};\n\n#define SEMOP\t\t 1\n#define SEMGET\t\t 2\n#define SEMCTL\t\t 3\n#define SEMTIMEDOP\t 4\n#define MSGSND\t\t11\n#define MSGRCV\t\t12\n#define MSGGET\t\t13\n#define MSGCTL\t\t14\n#define SHMAT\t\t21\n#define SHMDT\t\t22\n#define SHMGET\t\t23\n#define SHMCTL\t\t24\n\n \n#define DIPC            25\n\n#define IPCCALL(version,op)\t((version)<<16 | (op))\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

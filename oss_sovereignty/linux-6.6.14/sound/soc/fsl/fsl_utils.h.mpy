@@ -1,0 +1,9 @@
+{
+  "module_name": "fsl_utils.h",
+  "hash_id": "ff9f944afc5446b85e3f54c24038283688a1eca0124864d3f4a0c6dbe13cd5bc",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/fsl/fsl_utils.h",
+  "human_readable_source": " \n \n\n#ifndef _FSL_UTILS_H\n#define _FSL_UTILS_H\n\n#define DAI_NAME_SIZE\t32\n\nstruct snd_soc_dai_link;\nstruct device_node;\n\nint fsl_asoc_get_dma_channel(struct device_node *ssi_np, const char *name,\n\t\t\t     struct snd_soc_dai_link *dai,\n\t\t\t     unsigned int *dma_channel_id,\n\t\t\t     unsigned int *dma_id);\n\nvoid fsl_asoc_get_pll_clocks(struct device *dev, struct clk **pll8k_clk,\n\t\t\t     struct clk **pll11k_clk);\n\nvoid fsl_asoc_reparent_pll_clocks(struct device *dev, struct clk *clk,\n\t\t\t\t  struct clk *pll8k_clk,\n\t\t\t\t  struct clk *pll11k_clk, u64 ratio);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

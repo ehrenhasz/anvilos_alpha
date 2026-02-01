@@ -1,0 +1,9 @@
+{
+  "module_name": "omap4iss.h",
+  "hash_id": "291223e8e175e70938f3384403145b2a03857bd5aa362998cf131dc1d902d46a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/media/omap4iss.h",
+  "human_readable_source": " \n#ifndef ARCH_ARM_PLAT_OMAP4_ISS_H\n#define ARCH_ARM_PLAT_OMAP4_ISS_H\n\n#include <linux/i2c.h>\n\nstruct iss_device;\n\nenum iss_interface_type {\n\tISS_INTERFACE_CSI2A_PHY1,\n\tISS_INTERFACE_CSI2B_PHY2,\n};\n\n \nstruct iss_csiphy_lane {\n\tu8 pos;\n\tu8 pol;\n};\n\n#define ISS_CSIPHY1_NUM_DATA_LANES\t4\n#define ISS_CSIPHY2_NUM_DATA_LANES\t1\n\n \nstruct iss_csiphy_lanes_cfg {\n\tstruct iss_csiphy_lane data[ISS_CSIPHY1_NUM_DATA_LANES];\n\tstruct iss_csiphy_lane clk;\n};\n\n \nstruct iss_csi2_platform_data {\n\tunsigned crc:1;\n\tunsigned vpclk_div:2;\n\tstruct iss_csiphy_lanes_cfg lanecfg;\n};\n\nstruct iss_subdev_i2c_board_info {\n\tstruct i2c_board_info *board_info;\n\tint i2c_adapter_id;\n};\n\nstruct iss_v4l2_subdevs_group {\n\tstruct iss_subdev_i2c_board_info *subdevs;\n\tenum iss_interface_type interface;\n\tunion {\n\t\tstruct iss_csi2_platform_data csi2;\n\t} bus;  \n};\n\nstruct iss_platform_data {\n\tstruct iss_v4l2_subdevs_group *subdevs;\n\tvoid (*set_constraints)(struct iss_device *iss, bool enable);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

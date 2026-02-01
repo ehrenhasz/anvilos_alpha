@@ -1,0 +1,9 @@
+{
+  "module_name": "smu7_dyn_defaults.h",
+  "hash_id": "3baff5c96b13d4e1e943f189391c0b413c3a65823e37ac88818d10b3511f5a03",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/smu7_dyn_defaults.h",
+  "human_readable_source": " \n\n#ifndef _SMU7_DYN_DEFAULTS_H\n#define _SMU7_DYN_DEFAULTS_H\n\n\n \n\n\n#define SMU7_VOTINGRIGHTSCLIENTS_DFLT0              0x3FFFC102\n#define SMU7_VOTINGRIGHTSCLIENTS_DFLT1              0x000400\n#define SMU7_VOTINGRIGHTSCLIENTS_DFLT2              0xC00080\n#define SMU7_VOTINGRIGHTSCLIENTS_DFLT3              0xC00200\n#define SMU7_VOTINGRIGHTSCLIENTS_DFLT4              0xC01680\n#define SMU7_VOTINGRIGHTSCLIENTS_DFLT5              0xC00033\n#define SMU7_VOTINGRIGHTSCLIENTS_DFLT6              0xC00033\n#define SMU7_VOTINGRIGHTSCLIENTS_DFLT7              0x3FFFC000\n\n\n#define SMU7_THERMALPROTECTCOUNTER_DFLT            0x200\n#define SMU7_STATICSCREENTHRESHOLDUNIT_DFLT        0\n#define SMU7_STATICSCREENTHRESHOLD_DFLT            0x00C8\n#define SMU7_GFXIDLECLOCKSTOPTHRESHOLD_DFLT        0x200\n#define SMU7_REFERENCEDIVIDER_DFLT                  4\n\n#define SMU7_ULVVOLTAGECHANGEDELAY_DFLT             1687\n\n#define SMU7_CGULVPARAMETER_DFLT                    0x00040035\n#define SMU7_CGULVCONTROL_DFLT                      0x00007450\n#define SMU7_TARGETACTIVITY_DFLT                     50\n#define SMU7_MCLK_TARGETACTIVITY_DFLT                10\n#define SMU7_SCLK_TARGETACTIVITY_DFLT                30\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

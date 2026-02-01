@@ -1,0 +1,9 @@
+{
+  "module_name": "lsm.h",
+  "hash_id": "5b27d83f9c7fc227d3b0d2c45a46eb1b955a9fdf4b21c9c4daab804fbaa32d04",
+  "original_prompt": "Ingested from linux-6.6.14/security/safesetid/lsm.h",
+  "human_readable_source": " \n \n#ifndef _SAFESETID_H\n#define _SAFESETID_H\n\n#include <linux/types.h>\n#include <linux/uidgid.h>\n#include <linux/hashtable.h>\n\n \nextern int safesetid_initialized __initdata;\n\nenum sid_policy_type {\n\tSIDPOL_DEFAULT,  \n\tSIDPOL_CONSTRAINED,  \n\tSIDPOL_ALLOWED  \n};\n\ntypedef union {\n\tkuid_t uid;\n\tkgid_t gid;\n} kid_t;\n\nenum setid_type {\n\tUID,\n\tGID\n};\n\n \nstruct setid_rule {\n\tstruct hlist_node next;\n\tkid_t src_id;\n\tkid_t dst_id;\n\n\t \n\tenum setid_type type;\n};\n\n#define SETID_HASH_BITS 8  \n\n \n#define INVALID_ID (kid_t){.uid = INVALID_UID}\n\nstruct setid_ruleset {\n\tDECLARE_HASHTABLE(rules, SETID_HASH_BITS);\n\tchar *policy_str;\n\tstruct rcu_head rcu;\n\n\t\n\tenum setid_type type;\n};\n\nenum sid_policy_type _setid_policy_lookup(struct setid_ruleset *policy,\n\t\tkid_t src, kid_t dst);\n\nextern struct setid_ruleset __rcu *safesetid_setuid_rules;\nextern struct setid_ruleset __rcu *safesetid_setgid_rules;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

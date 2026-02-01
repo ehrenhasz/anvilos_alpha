@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "512118fe693e80b1fd7869053a097223d967fcc9e3738ca8aa61ac28942565c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ibm/emac/debug.h",
+  "human_readable_source": " \n \n#ifndef __IBM_NEWEMAC_DEBUG_H\n#define __IBM_NEWEMAC_DEBUG_H\n\n#include <linux/init.h>\n\n#include \"core.h\"\n\n#if defined(CONFIG_IBM_EMAC_DEBUG)\n# define DBG_LEVEL\t\t1\n#else\n# define DBG_LEVEL\t\t0\n#endif\n\n#define EMAC_DBG(d, name, fmt, arg...) \\\n\tprintk(KERN_DEBUG #name \"%pOF: \" fmt, d->ofdev->dev.of_node, ## arg)\n\n#if DBG_LEVEL > 0\n#  define DBG(d,f,x...)\t\tEMAC_DBG(d, emac, f, ##x)\n#  define MAL_DBG(d,f,x...)\tEMAC_DBG(d, mal, f, ##x)\n#  define ZMII_DBG(d,f,x...)\tEMAC_DBG(d, zmii, f, ##x)\n#  define RGMII_DBG(d,f,x...)\tEMAC_DBG(d, rgmii, f, ##x)\n#  define NL\t\t\t\"\\n\"\n#else\n#  define DBG(f,x...)\t\t((void)0)\n#  define MAL_DBG(d,f,x...)\t((void)0)\n#  define ZMII_DBG(d,f,x...)\t((void)0)\n#  define RGMII_DBG(d,f,x...)\t((void)0)\n#endif\n#if DBG_LEVEL > 1\n#  define DBG2(d,f,x...) \tDBG(d,f, ##x)\n#  define MAL_DBG2(d,f,x...) \tMAL_DBG(d,f, ##x)\n#  define ZMII_DBG2(d,f,x...) \tZMII_DBG(d,f, ##x)\n#  define RGMII_DBG2(d,f,x...) \tRGMII_DBG(d,f, ##x)\n#else\n#  define DBG2(f,x...) \t\t((void)0)\n#  define MAL_DBG2(d,f,x...) \t((void)0)\n#  define ZMII_DBG2(d,f,x...) \t((void)0)\n#  define RGMII_DBG2(d,f,x...) \t((void)0)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "8d724a01967984b5d30bdb06eebba33b9b58f2db8dc7723aea29fb2908600140",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/team/config",
+  "human_readable_source": "CONFIG_NET_TEAM=y\nCONFIG_NET_TEAM_MODE_LOADBALANCE=y\nCONFIG_MACVLAN=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

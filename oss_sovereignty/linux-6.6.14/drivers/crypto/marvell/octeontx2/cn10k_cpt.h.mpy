@@ -1,0 +1,9 @@
+{
+  "module_name": "cn10k_cpt.h",
+  "hash_id": "8937c681007a24e7c45aa41519bdea1df7cda63ed8da68694c44cd7385f61cfd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/marvell/octeontx2/cn10k_cpt.h",
+  "human_readable_source": " \n#ifndef __CN10K_CPT_H\n#define __CN10K_CPT_H\n\n#include \"otx2_cpt_common.h\"\n#include \"otx2_cptpf.h\"\n#include \"otx2_cptvf.h\"\n\nstatic inline u8 cn10k_cpt_get_compcode(union otx2_cpt_res_s *result)\n{\n\treturn ((struct cn10k_cpt_res_s *)result)->compcode;\n}\n\nstatic inline u8 cn10k_cpt_get_uc_compcode(union otx2_cpt_res_s *result)\n{\n\treturn ((struct cn10k_cpt_res_s *)result)->uc_compcode;\n}\n\nstatic inline u8 otx2_cpt_get_compcode(union otx2_cpt_res_s *result)\n{\n\treturn ((struct cn9k_cpt_res_s *)result)->compcode;\n}\n\nstatic inline u8 otx2_cpt_get_uc_compcode(union otx2_cpt_res_s *result)\n{\n\treturn ((struct cn9k_cpt_res_s *)result)->uc_compcode;\n}\n\nint cn10k_cptpf_lmtst_init(struct otx2_cptpf_dev *cptpf);\nint cn10k_cptvf_lmtst_init(struct otx2_cptvf_dev *cptvf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

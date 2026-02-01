@@ -1,0 +1,9 @@
+{
+  "module_name": "failed-syscalls-report",
+  "hash_id": "bb4ff5158292e217d3aa05fc5c12da15691737d6532868dc7aebe7cdb74eaa1e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/perl/bin/failed-syscalls-report",
+  "human_readable_source": "#!/bin/bash\n# description: system-wide failed syscalls\n# args: [comm]\nif [ $# -gt 0 ] ; then\n    if ! expr match \"$1\" \"-\" > /dev/null ; then\n\tcomm=$1\n\tshift\n    fi\nfi\nperf script $@ -s \"$PERF_EXEC_PATH\"/scripts/perl/failed-syscalls.pl $comm\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

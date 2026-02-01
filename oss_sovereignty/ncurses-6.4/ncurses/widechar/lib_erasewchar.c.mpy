@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_erasewchar.c",
+  "hash_id": "9f389e142c36b2d0fcfc8f3c7f58f7a1c59b79a9fb6bad468acb7760d12105c2",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/widechar/lib_erasewchar.c",
+  "human_readable_source": " \n\n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_erasewchar.c,v 1.5 2021/05/22 23:51:14 tom Exp $\")\n\n \n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(erasewchar) (NCURSES_SP_DCLx wchar_t *wch);\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(erasewchar) (NCURSES_SP_DCLx wchar_t *wch)\n{\n    int value;\n    int result = ERR;\n\n    T((T_CALLED(\"erasewchar()\")));\n    if ((value = NCURSES_SP_NAME(erasechar) (NCURSES_SP_ARG)) != ERR) {\n\t*wch = (wchar_t) value;\n\tresult = OK;\n    }\n    returnCode(result);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nerasewchar(wchar_t *wch)\n{\n    return NCURSES_SP_NAME(erasewchar) (CURRENT_SCREEN, wch);\n}\n#endif\n\n \n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(killwchar) (NCURSES_SP_DCLx wchar_t *wch);\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(killwchar) (NCURSES_SP_DCLx wchar_t *wch)\n{\n    int value;\n    int result = ERR;\n\n    T((T_CALLED(\"killwchar()\")));\n    if ((value = NCURSES_SP_NAME(killchar) (NCURSES_SP_ARG)) != ERR) {\n\t*wch = (wchar_t) value;\n\tresult = OK;\n    }\n    returnCode(result);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nkillwchar(wchar_t *wch)\n{\n    return NCURSES_SP_NAME(killwchar) (CURRENT_SCREEN, wch);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

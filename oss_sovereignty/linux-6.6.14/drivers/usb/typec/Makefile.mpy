@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d7fa7bf538595b0d969ec96d3afe1040fb556994561dee395a77b5ba9eba0c7d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/typec/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_TYPEC)\t\t+= typec.o\ntypec-y\t\t\t\t:= class.o mux.o bus.o pd.o retimer.o\ntypec-$(CONFIG_ACPI)\t\t+= port-mapper.o\nobj-$(CONFIG_TYPEC)\t\t+= altmodes/\nobj-$(CONFIG_TYPEC_TCPM)\t+= tcpm/\nobj-$(CONFIG_TYPEC_UCSI)\t+= ucsi/\nobj-$(CONFIG_TYPEC_TPS6598X)\t+= tipd/\nobj-$(CONFIG_TYPEC_ANX7411)\t+= anx7411.o\nobj-$(CONFIG_TYPEC_HD3SS3220)\t+= hd3ss3220.o\nobj-$(CONFIG_TYPEC_STUSB160X) \t+= stusb160x.o\nobj-$(CONFIG_TYPEC_RT1719)\t+= rt1719.o\nobj-$(CONFIG_TYPEC_WUSB3801)\t+= wusb3801.o\nobj-$(CONFIG_TYPEC)\t\t+= mux/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

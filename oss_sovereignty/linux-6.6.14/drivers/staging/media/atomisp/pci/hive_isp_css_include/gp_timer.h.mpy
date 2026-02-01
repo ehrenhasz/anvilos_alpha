@@ -1,0 +1,9 @@
+{
+  "module_name": "gp_timer.h",
+  "hash_id": "4b40baf735ef088eb52e887adacd4e5982c0eaa57197272dac2ebe1490e40870",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/gp_timer.h",
+  "human_readable_source": " \n \n\n#ifndef __GP_TIMER_H_INCLUDED__\n#define __GP_TIMER_H_INCLUDED__\n\n \n\n#include \"system_local.h\"     \n#include \"gp_timer_local.h\"   \n\n#ifndef __INLINE_GP_TIMER__\n#define STORAGE_CLASS_GP_TIMER_H extern\n#define STORAGE_CLASS_GP_TIMER_C\n#include \"gp_timer_public.h\"    \n#else   \n#define STORAGE_CLASS_GP_TIMER_H static inline\n#define STORAGE_CLASS_GP_TIMER_C static inline\n#include \"gp_timer_private.h\"   \n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fail.tc",
+  "hash_id": "df9af06d06404608c384a7139a48ec529c5bb9eb04fd3c2f7480f40ac44b7035",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/samples/fail.tc",
+  "human_readable_source": "#!/bin/sh\n# description: failure-case example\ncat non-exist-file\necho \"this is not executed\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

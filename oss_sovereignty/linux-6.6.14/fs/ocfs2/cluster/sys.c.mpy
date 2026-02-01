@@ -1,0 +1,9 @@
+{
+  "module_name": "sys.c",
+  "hash_id": "8e8b0d585fe153b5ea6e5a1ff60940b32298420c05b2a9cae7a32c5d9acd003a",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ocfs2/cluster/sys.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/kobject.h>\n#include <linux/sysfs.h>\n#include <linux/fs.h>\n\n#include \"ocfs2_nodemanager.h\"\n#include \"masklog.h\"\n#include \"sys.h\"\n\n\nstatic ssize_t version_show(struct kobject *kobj, struct kobj_attribute *attr,\n\t\t\t    char *buf)\n{\n\treturn snprintf(buf, PAGE_SIZE, \"%u\\n\", O2NM_API_VERSION);\n}\nstatic struct kobj_attribute attr_version =\n\t__ATTR(interface_revision, S_IRUGO, version_show, NULL);\n\nstatic struct attribute *o2cb_attrs[] = {\n\t&attr_version.attr,\n\tNULL,\n};\n\nstatic struct attribute_group o2cb_attr_group = {\n\t.attrs = o2cb_attrs,\n};\n\nstatic struct kset *o2cb_kset;\n\nvoid o2cb_sys_shutdown(void)\n{\n\tmlog_sys_shutdown();\n\tkset_unregister(o2cb_kset);\n}\n\nint o2cb_sys_init(void)\n{\n\tint ret;\n\n\to2cb_kset = kset_create_and_add(\"o2cb\", NULL, fs_kobj);\n\tif (!o2cb_kset)\n\t\treturn -ENOMEM;\n\n\tret = sysfs_create_group(&o2cb_kset->kobj, &o2cb_attr_group);\n\tif (ret)\n\t\tgoto error;\n\n\tret = mlog_sys_init(o2cb_kset);\n\tif (ret)\n\t\tgoto error;\n\treturn 0;\nerror:\n\tkset_unregister(o2cb_kset);\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

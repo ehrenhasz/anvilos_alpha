@@ -1,0 +1,9 @@
+{
+  "module_name": "si.h",
+  "hash_id": "4e9039a0055ff4e215dc09c0c6516a7febac5f753dbdb211f0a9990850147f97",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/si.h",
+  "human_readable_source": " \n\n#ifndef __SI_H__\n#define __SI_H__\n\nstruct radeon_device;\nstruct radeon_mc;\n\nint si_mc_load_microcode(struct radeon_device *rdev);\nu32 si_gpu_check_soft_reset(struct radeon_device *rdev);\nvoid si_vram_gtt_location(struct radeon_device *rdev, struct radeon_mc *mc);\nvoid si_rlc_reset(struct radeon_device *rdev);\nvoid si_init_uvd_internal_cg(struct radeon_device *rdev);\nu32 si_get_csb_size(struct radeon_device *rdev);\nvoid si_get_csb_buffer(struct radeon_device *rdev, volatile u32 *buffer);\n\n#endif                          \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

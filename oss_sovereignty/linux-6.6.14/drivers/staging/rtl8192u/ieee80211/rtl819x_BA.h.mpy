@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl819x_BA.h",
+  "hash_id": "052ded1a3c495cd335250676da4de9edf669bb4e4827b3db9cd9330d78016dc8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192u/ieee80211/rtl819x_BA.h",
+  "human_readable_source": " \n#ifndef _BATYPE_H_\n#define _BATYPE_H_\n\n#define\tBA_SETUP_TIMEOUT\t       200\n\n#define\tBA_POLICY_DELAYED\t\t 0\n#define\tBA_POLICY_IMMEDIATE\t         1\n\n#define\tADDBA_STATUS_SUCCESS\t\t 0\n#define\tADDBA_STATUS_REFUSED\t\t37\n#define\tADDBA_STATUS_INVALID_PARAM\t38\n\n#define\tDELBA_REASON_END_BA\t\t37\n#define\tDELBA_REASON_UNKNOWN_BA\t        38\n#define\tDELBA_REASON_TIMEOUT\t\t39\n\nunion sequence_control {\n\tu16 short_data;\n\tstruct {\n\t\tu16\tfrag_num:4;\n\t\tu16\tseq_num:12;\n\t} field;\n};\n\nunion ba_param_set {\n\tu16 short_data;\n\tstruct {\n\t\tu16\tamsdu_support:1;\n\t\tu16\tba_policy:1;\n\t\tu16\ttid:4;\n\t\tu16\tbuffer_size:10;\n\t} field;\n};\n\nunion delba_param_set {\n\tu16 short_data;\n\tstruct {\n\t\tu16\treserved:11;\n\t\tu16\tinitiator:1;\n\t\tu16\ttid:4;\n\t} field;\n};\n\nstruct ba_record {\n\tstruct timer_list\ttimer;\n\tu8\t\t\tvalid;\n\tu8\t\t\tdialog_token;\n\tunion ba_param_set\tparam_set;\n\tu16\t\t\ttimeout_value;\n\tunion sequence_control\tstart_seq_ctrl;\n};\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

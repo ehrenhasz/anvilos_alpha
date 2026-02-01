@@ -1,0 +1,9 @@
+{
+  "module_name": "string.h",
+  "hash_id": "2241f6b69bcb8583ba1a9d815eb4a48bea23f5a67f217dc067e6f80ac24381fe",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/include/string.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_ZSTD_STRING_H\n#define\t_ZSTD_STRING_H\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n#ifdef _KERNEL\n\n#if defined(__FreeBSD__)\n#include <sys/types.h>     \n#include <sys/systm.h>     \n#elif defined(__linux__)\n#include <linux/string.h>  \n#else\n#error \"Unsupported platform\"\n#endif\n\n#else  \n#include_next <string.h>\n#endif  \n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "seq.h",
+  "hash_id": "a9a3f041a8b205de31b96df5279c47adbe4c1c61aa64d16244dca6e485ff0349",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/clk/seq.h",
+  "human_readable_source": " \n#ifndef __NVKM_CLK_SEQ_H__\n#define __NVKM_CLK_SEQ_H__\n#include <subdev/bus/hwsq.h>\n\n#define clk_init(s,p)       hwsq_init(&(s)->base, (p))\n#define clk_exec(s,e)       hwsq_exec(&(s)->base, (e))\n#define clk_have(s,r)       ((s)->r_##r.addr != 0x000000)\n#define clk_rd32(s,r)       hwsq_rd32(&(s)->base, &(s)->r_##r)\n#define clk_wr32(s,r,d)     hwsq_wr32(&(s)->base, &(s)->r_##r, (d))\n#define clk_mask(s,r,m,d)   hwsq_mask(&(s)->base, &(s)->r_##r, (m), (d))\n#define clk_setf(s,f,d)     hwsq_setf(&(s)->base, (f), (d))\n#define clk_wait(s,f,d)     hwsq_wait(&(s)->base, (f), (d))\n#define clk_nsec(s,n)       hwsq_nsec(&(s)->base, (n))\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_pfvf_pf_msg.h",
+  "hash_id": "275cedd2a361aa33cc9654f1521236d6b91b81f5482fb540b92a4d3c686766e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/adf_pfvf_pf_msg.h",
+  "human_readable_source": " \n \n#ifndef ADF_PFVF_PF_MSG_H\n#define ADF_PFVF_PF_MSG_H\n\n#include \"adf_accel_devices.h\"\n\nvoid adf_pf2vf_notify_restarting(struct adf_accel_dev *accel_dev);\n\ntypedef int (*adf_pf2vf_blkmsg_provider)(struct adf_accel_dev *accel_dev,\n\t\t\t\t\t u8 *buffer, u8 compat);\n\nint adf_pf_capabilities_msg_provider(struct adf_accel_dev *accel_dev,\n\t\t\t\t     u8 *buffer, u8 comapt);\nint adf_pf_ring_to_svc_msg_provider(struct adf_accel_dev *accel_dev,\n\t\t\t\t    u8 *buffer, u8 comapt);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

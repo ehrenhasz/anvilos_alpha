@@ -1,0 +1,9 @@
+{
+  "module_name": "ads7846.h",
+  "hash_id": "daeb333e84278524142db53612b499683bacdb1f298534c154cf5e1c0ff8f297",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/spi/ads7846.h",
+  "human_readable_source": " \n \n\nstruct ads7846_platform_data {\n\tu16\tmodel;\t\t\t \n\tu16\tvref_delay_usecs;\t \n\tu16\tvref_mv;\t\t \n\tbool\tkeep_vref_on;\t\t \n\tbool\tswap_xy;\t\t \n\n\t \n\tu16\tsettle_delay_usecs;\n\n\t \n\tu16\tpenirq_recheck_delay_usecs;\n\n\tu16\tx_plate_ohms;\n\tu16\ty_plate_ohms;\n\n\tu16\tx_min, x_max;\n\tu16\ty_min, y_max;\n\tu16\tpressure_min, pressure_max;\n\n\tu16\tdebounce_max;\t\t \n\tu16\tdebounce_tol;\t\t \n\tu16\tdebounce_rep;\t\t \n\tint\tgpio_pendown_debounce;\t \n\tint\t(*get_pendown_state)(void);\n\tvoid\t(*wait_for_sync)(void);\n\tbool\twakeup;\n\tunsigned long irq_flags;\n};\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

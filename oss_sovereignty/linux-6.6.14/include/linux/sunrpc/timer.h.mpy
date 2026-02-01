@@ -1,0 +1,9 @@
+{
+  "module_name": "timer.h",
+  "hash_id": "9e90e6e619473e5d007399122c2e6c1f0bd81eec7c8f0bfaaf94fbf92c73c768",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sunrpc/timer.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_SUNRPC_TIMER_H\n#define _LINUX_SUNRPC_TIMER_H\n\n#include <linux/atomic.h>\n\nstruct rpc_rtt {\n\tunsigned long timeo;\t \n\tunsigned long srtt[5];\t \n\tunsigned long sdrtt[5];\t \n\tint ntimeouts[5];\t \n};\n\n\nextern void rpc_init_rtt(struct rpc_rtt *rt, unsigned long timeo);\nextern void rpc_update_rtt(struct rpc_rtt *rt, unsigned timer, long m);\nextern unsigned long rpc_calc_rto(struct rpc_rtt *rt, unsigned timer);\n\nstatic inline void rpc_set_timeo(struct rpc_rtt *rt, int timer, int ntimeo)\n{\n\tint *t;\n\tif (!timer)\n\t\treturn;\n\tt = &rt->ntimeouts[timer-1];\n\tif (ntimeo < *t) {\n\t\tif (*t > 0)\n\t\t\t(*t)--;\n\t} else {\n\t\tif (ntimeo > 8)\n\t\t\tntimeo = 8;\n\t\t*t = ntimeo;\n\t}\n}\n\nstatic inline int rpc_ntimeo(struct rpc_rtt *rt, int timer)\n{\n\tif (!timer)\n\t\treturn 0;\n\treturn rt->ntimeouts[timer-1];\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

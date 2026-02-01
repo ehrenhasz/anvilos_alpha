@@ -1,0 +1,9 @@
+{
+  "module_name": "run_bench_bpf_hashmap_full_update.sh",
+  "hash_id": "bf3da1b98d12cd42f96b60b1e48e3bfa121fe824ae11aea816dcfcd5f67934de",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/benchs/run_bench_bpf_hashmap_full_update.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nsource ./benchs/run_common.sh\n\nset -eufo pipefail\n\nnr_threads=`expr $(cat /proc/cpuinfo | grep \"processor\"| wc -l) - 1`\nsummary=$($RUN_BENCH -p $nr_threads bpf-hashmap-full-update)\nprintf \"$summary\"\nprintf \"\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tps65912-spi.c",
+  "hash_id": "12d5deb0d2f7e1be4b657adbd8b454af3ee5813da541264e6365befbdb588968",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/tps65912-spi.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/regmap.h>\n#include <linux/spi/spi.h>\n\n#include <linux/mfd/tps65912.h>\n\nstatic const struct of_device_id tps65912_spi_of_match_table[] = {\n\t{ .compatible = \"ti,tps65912\", },\n\t{   }\n};\nMODULE_DEVICE_TABLE(of, tps65912_spi_of_match_table);\n\nstatic int tps65912_spi_probe(struct spi_device *spi)\n{\n\tstruct tps65912 *tps;\n\n\ttps = devm_kzalloc(&spi->dev, sizeof(*tps), GFP_KERNEL);\n\tif (!tps)\n\t\treturn -ENOMEM;\n\n\tspi_set_drvdata(spi, tps);\n\ttps->dev = &spi->dev;\n\ttps->irq = spi->irq;\n\n\ttps->regmap = devm_regmap_init_spi(spi, &tps65912_regmap_config);\n\tif (IS_ERR(tps->regmap)) {\n\t\tdev_err(tps->dev, \"Failed to initialize register map\\n\");\n\t\treturn PTR_ERR(tps->regmap);\n\t}\n\n\treturn tps65912_device_init(tps);\n}\n\nstatic void tps65912_spi_remove(struct spi_device *spi)\n{\n\tstruct tps65912 *tps = spi_get_drvdata(spi);\n\n\ttps65912_device_exit(tps);\n}\n\nstatic const struct spi_device_id tps65912_spi_id_table[] = {\n\t{ \"tps65912\", 0 },\n\t{   }\n};\nMODULE_DEVICE_TABLE(spi, tps65912_spi_id_table);\n\nstatic struct spi_driver tps65912_spi_driver = {\n\t.driver\t\t= {\n\t\t.name\t= \"tps65912\",\n\t\t.of_match_table = tps65912_spi_of_match_table,\n\t},\n\t.probe\t\t= tps65912_spi_probe,\n\t.remove\t\t= tps65912_spi_remove,\n\t.id_table       = tps65912_spi_id_table,\n};\nmodule_spi_driver(tps65912_spi_driver);\n\nMODULE_AUTHOR(\"Andrew F. Davis <afd@ti.com>\");\nMODULE_DESCRIPTION(\"TPS65912x SPI Interface Driver\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

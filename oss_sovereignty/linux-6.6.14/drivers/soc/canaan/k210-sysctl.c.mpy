@@ -1,0 +1,9 @@
+{
+  "module_name": "k210-sysctl.c",
+  "hash_id": "9d020ac9fc84c20272080dc69c0ba42fc7097de3798acc70421d8716686f01fd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/canaan/k210-sysctl.c",
+  "human_readable_source": "\n \n#include <linux/io.h>\n#include <linux/platform_device.h>\n#include <linux/of_platform.h>\n#include <linux/clk.h>\n#include <asm/soc.h>\n\n#include <soc/canaan/k210-sysctl.h>\n\nstatic int k210_sysctl_probe(struct platform_device *pdev)\n{\n\tstruct device *dev = &pdev->dev;\n\tstruct clk *pclk;\n\tint ret;\n\n\tdev_info(dev, \"K210 system controller\\n\");\n\n\t \n\tpclk = devm_clk_get(dev, NULL);\n\tif (IS_ERR(pclk))\n\t\treturn dev_err_probe(dev, PTR_ERR(pclk),\n\t\t\t\t     \"Get bus clock failed\\n\");\n\n\tret = clk_prepare_enable(pclk);\n\tif (ret) {\n\t\tdev_err(dev, \"Enable bus clock failed\\n\");\n\t\treturn ret;\n\t}\n\n\t \n\tret = devm_of_platform_populate(dev);\n\tif (ret)\n\t\tdev_err(dev, \"Populate platform failed %d\\n\", ret);\n\n\treturn ret;\n}\n\nstatic const struct of_device_id k210_sysctl_of_match[] = {\n\t{ .compatible = \"canaan,k210-sysctl\", },\n\t{   },\n};\n\nstatic struct platform_driver k210_sysctl_driver = {\n\t.driver\t= {\n\t\t.name\t\t= \"k210-sysctl\",\n\t\t.of_match_table\t= k210_sysctl_of_match,\n\t},\n\t.probe\t\t\t= k210_sysctl_probe,\n};\nbuiltin_platform_driver(k210_sysctl_driver);\n\n \n#define K210_SYSCTL_BASE_ADDR\t0x50440000ULL\n#define K210_SYSCTL_BASE_SIZE\t0x1000\n\n \nstatic void __init k210_soc_early_init(const void *fdt)\n{\n\tvoid __iomem *sysctl_base;\n\n\tsysctl_base = ioremap(K210_SYSCTL_BASE_ADDR, K210_SYSCTL_BASE_SIZE);\n\tif (!sysctl_base)\n\t\tpanic(\"k210-sysctl: ioremap failed\");\n\n\tk210_clk_early_init(sysctl_base);\n\n\tiounmap(sysctl_base);\n}\nSOC_EARLY_INIT_DECLARE(k210_soc, \"canaan,kendryte-k210\", k210_soc_early_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

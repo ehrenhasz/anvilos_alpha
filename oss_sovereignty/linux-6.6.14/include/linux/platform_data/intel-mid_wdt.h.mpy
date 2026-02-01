@@ -1,0 +1,9 @@
+{
+  "module_name": "intel-mid_wdt.h",
+  "hash_id": "1474b28dbc4ac40dcf9da0bf7feaed4b42adbd44cfb163df041b4888eddbd47a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/intel-mid_wdt.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_MID_WDT_H__\n#define __INTEL_MID_WDT_H__\n\n#include <linux/platform_device.h>\n\nstruct intel_mid_wdt_pdata {\n\tint irq;\n\tint (*probe)(struct platform_device *pdev);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

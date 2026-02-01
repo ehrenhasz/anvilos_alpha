@@ -1,0 +1,9 @@
+{
+  "module_name": "i9xx_plane.h",
+  "hash_id": "f80b387b25592f37d939af7d350e6b0af2794da001277672951c29ebeb62ab99",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/i9xx_plane.h",
+  "human_readable_source": " \n \n\n#ifndef _I9XX_PLANE_H_\n#define _I9XX_PLANE_H_\n\n#include <linux/types.h>\n\nenum pipe;\nstruct drm_i915_private;\nstruct intel_crtc;\nstruct intel_initial_plane_config;\nstruct intel_plane;\nstruct intel_plane_state;\n\nunsigned int i965_plane_max_stride(struct intel_plane *plane,\n\t\t\t\t   u32 pixel_format, u64 modifier,\n\t\t\t\t   unsigned int rotation);\nint i9xx_check_plane_surface(struct intel_plane_state *plane_state);\n\nstruct intel_plane *\nintel_primary_plane_create(struct drm_i915_private *dev_priv, enum pipe pipe);\n\nvoid i9xx_get_initial_plane_config(struct intel_crtc *crtc,\n\t\t\t\t   struct intel_initial_plane_config *plane_config);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

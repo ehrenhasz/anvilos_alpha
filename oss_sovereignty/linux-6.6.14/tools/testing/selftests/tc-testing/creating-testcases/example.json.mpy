@@ -1,0 +1,9 @@
+{
+  "module_name": "example.json",
+  "hash_id": "1cb1688dda9065b242298f45a349c710991a855a945c290fcb4188c083be0755",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tc-testing/creating-testcases/example.json",
+  "human_readable_source": "[\n    {\n        \"id\": \"1f\",\n        \"name\": \"simple test to test framework\",\n        \"category\": [\n            \"example\"\n        ],\n        \"setup\": [\n            \"mkdir mytest\"\n        ],\n        \"cmdUnderTest\": \"touch mytest/blorfl\",\n        \"expExitCode\": \"0\",\n        \"verifyCmd\": \"ls mytest/* | grep '[b]lorfl'\",\n        \"matchPattern\": \"orfl\",\n        \"matchCount\": \"1\",\n        \"teardown\": [\n            \"rm -rf mytest\"\n        ]\n    },\n    {\n        \"id\": \"2f\",\n        \"name\": \"simple test, no need for verify\",\n        \"category\": [\n            \"example\"\n        ],\n        \"setup\": [\n            \"mkdir mytest\",\n            \"touch mytest/blorfl\"\n        ],\n        \"cmdUnderTest\": \"ls mytest/blorfl\",\n        \"expExitCode\": \"0\",\n        \"verifyCmd\": \"/bin/true\",\n        \"matchPattern\": \" \",\n        \"matchCount\": \"0\",\n        \"teardown\": [\n            \"rm -rf mytest\"\n        ]\n    },\n    {\n        \"id\": \"3f\",\n        \"name\": \"simple test, no need for setup or teardown (or verify)\",\n        \"category\": [\n            \"example\"\n        ],\n        \"setup\": [\n        ],\n        \"cmdUnderTest\": \"ip l l lo\",\n        \"expExitCode\": \"0\",\n        \"verifyCmd\": \"/bin/true\",\n        \"matchPattern\": \" \",\n        \"matchCount\": \"0\",\n        \"teardown\": [\n        ]\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

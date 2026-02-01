@@ -1,0 +1,9 @@
+{
+  "module_name": "igt_atomic.h",
+  "hash_id": "d93a0aa1aa741d54b43e1b00c06358129d25d520728e1251005eda82afa4a06b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/igt_atomic.h",
+  "human_readable_source": " \n \n\n#ifndef IGT_ATOMIC_H\n#define IGT_ATOMIC_H\n\nstruct igt_atomic_section {\n\tconst char *name;\n\tvoid (*critical_section_begin)(void);\n\tvoid (*critical_section_end)(void);\n};\n\nextern const struct igt_atomic_section igt_atomic_phases[];\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gfx_v9_4_3.h",
+  "hash_id": "2c01c13926489858d7c8ad3c0283b3a75958dd5f54440f9cbbd9a1df55910c40",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/gfx_v9_4_3.h",
+  "human_readable_source": " \n\n#ifndef __GFX_V9_4_3_H__\n#define __GFX_V9_4_3_H__\n\nextern const struct amdgpu_ip_block_version gfx_v9_4_3_ip_block;\n\nextern struct amdgpu_xcp_ip_funcs gfx_v9_4_3_xcp_funcs;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "elf-randomize.h",
+  "hash_id": "4bda7d7d1f242acf8e731644b8032fbcc60ba4ee7bc3e9649a7467754c7b6e31",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/elf-randomize.h",
+  "human_readable_source": " \n#ifndef _ELF_RANDOMIZE_H\n#define _ELF_RANDOMIZE_H\n\nstruct mm_struct;\n\n#ifndef CONFIG_ARCH_HAS_ELF_RANDOMIZE\nstatic inline unsigned long arch_mmap_rnd(void) { return 0; }\n# if defined(arch_randomize_brk) && defined(CONFIG_COMPAT_BRK)\n#  define compat_brk_randomized\n# endif\n# ifndef arch_randomize_brk\n#  define arch_randomize_brk(mm)\t(mm->brk)\n# endif\n#else\nextern unsigned long arch_mmap_rnd(void);\nextern unsigned long arch_randomize_brk(struct mm_struct *mm);\n# ifdef CONFIG_COMPAT_BRK\n#  define compat_brk_randomized\n# endif\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

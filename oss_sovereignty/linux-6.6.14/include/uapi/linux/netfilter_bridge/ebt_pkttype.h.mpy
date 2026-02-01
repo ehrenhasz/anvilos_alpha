@@ -1,0 +1,9 @@
+{
+  "module_name": "ebt_pkttype.h",
+  "hash_id": "a452f8fb888b50068f27602a0f47b9eb78d2ed2090e288aacc1bdfe19d441ec9",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_bridge/ebt_pkttype.h",
+  "human_readable_source": " \n#ifndef __LINUX_BRIDGE_EBT_PKTTYPE_H\n#define __LINUX_BRIDGE_EBT_PKTTYPE_H\n\n#include <linux/types.h>\n\nstruct ebt_pkttype_info {\n\t__u8 pkt_type;\n\t__u8 invert;\n};\n#define EBT_PKTTYPE_MATCH \"pkttype\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

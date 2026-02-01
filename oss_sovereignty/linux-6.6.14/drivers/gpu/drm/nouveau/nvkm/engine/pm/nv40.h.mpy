@@ -1,0 +1,9 @@
+{
+  "module_name": "nv40.h",
+  "hash_id": "d0094571da226c1add97f0d495bd281efb8994ecfb1139646ef28a7e2300293f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/pm/nv40.h",
+  "human_readable_source": " \n#ifndef __NVKM_PM_NV40_H__\n#define __NVKM_PM_NV40_H__\n#define nv40_pm(p) container_of((p), struct nv40_pm, base)\n#include \"priv.h\"\n\nstruct nv40_pm {\n\tstruct nvkm_pm base;\n\tu32 sequence;\n};\n\nint nv40_pm_new_(const struct nvkm_specdom *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t struct nvkm_pm **);\nextern const struct nvkm_funcdom nv40_perfctr_func;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

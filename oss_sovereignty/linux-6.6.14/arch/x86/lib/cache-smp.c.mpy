@@ -1,0 +1,9 @@
+{
+  "module_name": "cache-smp.c",
+  "hash_id": "fab454a4dfcb38710f369b650edce1cf65e3a99dc42a0b10e08fd8de12ba9310",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/lib/cache-smp.c",
+  "human_readable_source": "\n#include <linux/smp.h>\n#include <linux/export.h>\n\nstatic void __wbinvd(void *dummy)\n{\n\twbinvd();\n}\n\nvoid wbinvd_on_cpu(int cpu)\n{\n\tsmp_call_function_single(cpu, __wbinvd, NULL, 1);\n}\nEXPORT_SYMBOL(wbinvd_on_cpu);\n\nint wbinvd_on_all_cpus(void)\n{\n\ton_each_cpu(__wbinvd, NULL, 1);\n\treturn 0;\n}\nEXPORT_SYMBOL(wbinvd_on_all_cpus);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

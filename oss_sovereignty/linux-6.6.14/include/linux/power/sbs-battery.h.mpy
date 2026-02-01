@@ -1,0 +1,9 @@
+{
+  "module_name": "sbs-battery.h",
+  "hash_id": "27ae14b850d640025d57da97c22856cf60a2657e7f88c8cf62133a93dfaddaad",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/power/sbs-battery.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_POWER_SBS_BATTERY_H_\n#define __LINUX_POWER_SBS_BATTERY_H_\n\n#include <linux/power_supply.h>\n#include <linux/types.h>\n\n \nstruct sbs_platform_data {\n\tu32 i2c_retry_count;\n\tu32 poll_retry_count;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

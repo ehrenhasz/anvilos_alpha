@@ -1,0 +1,9 @@
+{
+  "module_name": "proc-fsconfig-hidepid.c",
+  "hash_id": "8500079dc3ff8778f8d68d18d3072ef4d973af41eada37b4d521a499d49a7ace",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/proc/proc-fsconfig-hidepid.c",
+  "human_readable_source": " \n#include <assert.h>\n#include <unistd.h>\n#include <stdlib.h>\n#include <errno.h>\n#include <linux/mount.h>\n#include <linux/unistd.h>\n\nstatic inline int fsopen(const char *fsname, unsigned int flags)\n{\n\treturn syscall(__NR_fsopen, fsname, flags);\n}\n\nstatic inline int fsconfig(int fd, unsigned int cmd, const char *key, const void *val, int aux)\n{\n\treturn syscall(__NR_fsconfig, fd, cmd, key, val, aux);\n}\n\nint main(void)\n{\n\tint fsfd, ret;\n\tint hidepid = 2;\n\n\tassert((fsfd = fsopen(\"proc\", 0)) != -1);\n\n\tret = fsconfig(fsfd, FSCONFIG_SET_BINARY, \"hidepid\", &hidepid, 0);\n\tassert(ret == -1);\n\tassert(errno == EINVAL);\n\n\tassert(!fsconfig(fsfd, FSCONFIG_SET_STRING, \"hidepid\", \"2\", 0));\n\tassert(!fsconfig(fsfd, FSCONFIG_SET_STRING, \"hidepid\", \"invisible\", 0));\n\n\tassert(!close(fsfd));\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

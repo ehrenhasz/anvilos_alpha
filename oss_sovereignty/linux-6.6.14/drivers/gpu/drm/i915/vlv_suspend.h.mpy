@@ -1,0 +1,9 @@
+{
+  "module_name": "vlv_suspend.h",
+  "hash_id": "df277fd21362c57064c1d33c7315242709ce205d69170bbbee7f4df6d6c98e67",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/vlv_suspend.h",
+  "human_readable_source": " \n \n\n#ifndef __VLV_SUSPEND_H__\n#define __VLV_SUSPEND_H__\n\n#include <linux/types.h>\n\nstruct drm_i915_private;\n\nint vlv_suspend_init(struct drm_i915_private *i915);\nvoid vlv_suspend_cleanup(struct drm_i915_private *i915);\nint vlv_suspend_complete(struct drm_i915_private *i915);\nint vlv_resume_prepare(struct drm_i915_private *i915, bool rpm_resume);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

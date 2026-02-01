@@ -1,0 +1,9 @@
+{
+  "module_name": "dw_apb_timer.h",
+  "hash_id": "c99f8d958b6598ac8168c366112b353a7a11d94448b20517ed791419d9919270",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dw_apb_timer.h",
+  "human_readable_source": " \n \n#ifndef __DW_APB_TIMER_H__\n#define __DW_APB_TIMER_H__\n\n#include <linux/clockchips.h>\n#include <linux/clocksource.h>\n#include <linux/interrupt.h>\n\n#define APBTMRS_REG_SIZE       0x14\n\nstruct dw_apb_timer {\n\tvoid __iomem\t\t\t\t*base;\n\tunsigned long\t\t\t\tfreq;\n\tint\t\t\t\t\tirq;\n};\n\nstruct dw_apb_clock_event_device {\n\tstruct clock_event_device\t\tced;\n\tstruct dw_apb_timer\t\t\ttimer;\n\tvoid\t\t\t\t\t(*eoi)(struct dw_apb_timer *);\n};\n\nstruct dw_apb_clocksource {\n\tstruct dw_apb_timer\t\t\ttimer;\n\tstruct clocksource\t\t\tcs;\n};\n\nvoid dw_apb_clockevent_register(struct dw_apb_clock_event_device *dw_ced);\nvoid dw_apb_clockevent_pause(struct dw_apb_clock_event_device *dw_ced);\nvoid dw_apb_clockevent_resume(struct dw_apb_clock_event_device *dw_ced);\nvoid dw_apb_clockevent_stop(struct dw_apb_clock_event_device *dw_ced);\n\nstruct dw_apb_clock_event_device *\ndw_apb_clockevent_init(int cpu, const char *name, unsigned rating,\n\t\t       void __iomem *base, int irq, unsigned long freq);\nstruct dw_apb_clocksource *\ndw_apb_clocksource_init(unsigned rating, const char *name, void __iomem *base,\n\t\t\tunsigned long freq);\nvoid dw_apb_clocksource_register(struct dw_apb_clocksource *dw_cs);\nvoid dw_apb_clocksource_start(struct dw_apb_clocksource *dw_cs);\nu64 dw_apb_clocksource_read(struct dw_apb_clocksource *dw_cs);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

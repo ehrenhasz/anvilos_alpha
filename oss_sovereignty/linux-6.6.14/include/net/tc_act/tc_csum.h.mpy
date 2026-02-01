@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_csum.h",
+  "hash_id": "65440b37f359c1baa09fd594eec69028168113dc2338b1eaeabeb865d7fb77f3",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/tc_act/tc_csum.h",
+  "human_readable_source": " \n#ifndef __NET_TC_CSUM_H\n#define __NET_TC_CSUM_H\n\n#include <linux/types.h>\n#include <net/act_api.h>\n#include <linux/tc_act/tc_csum.h>\n\nstruct tcf_csum_params {\n\tu32 update_flags;\n\tstruct rcu_head rcu;\n};\n\nstruct tcf_csum {\n\tstruct tc_action common;\n\n\tstruct tcf_csum_params __rcu *params;\n};\n#define to_tcf_csum(a) ((struct tcf_csum *)a)\n\nstatic inline bool is_tcf_csum(const struct tc_action *a)\n{\n#ifdef CONFIG_NET_CLS_ACT\n\tif (a->ops && a->ops->id == TCA_ID_CSUM)\n\t\treturn true;\n#endif\n\treturn false;\n}\n\nstatic inline u32 tcf_csum_update_flags(const struct tc_action *a)\n{\n\tu32 update_flags;\n\n\trcu_read_lock();\n\tupdate_flags = rcu_dereference(to_tcf_csum(a)->params)->update_flags;\n\trcu_read_unlock();\n\n\treturn update_flags;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

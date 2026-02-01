@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d536362ee0391e5d3c27a10f4779d80705ad9b2b3bd508860ade35516090fbd8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb3/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Chelsio T3 driver\n#\n\nobj-$(CONFIG_CHELSIO_T3) += cxgb3.o\n\ncxgb3-objs := cxgb3_main.o ael1002.o vsc8211.o t3_hw.o mc5.o \\\n\t      xgmac.o sge.o l2t.o cxgb3_offload.o aq100x.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

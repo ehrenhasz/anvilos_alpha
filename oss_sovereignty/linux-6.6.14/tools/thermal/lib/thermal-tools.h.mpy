@@ -1,0 +1,9 @@
+{
+  "module_name": "thermal-tools.h",
+  "hash_id": "ec3e0648c64c81d5c7d31f6c05f82a934a20685ec891257721b131aaa7154246",
+  "original_prompt": "Ingested from linux-6.6.14/tools/thermal/lib/thermal-tools.h",
+  "human_readable_source": " \n \n#ifndef __THERMAL_TOOLS\n#define __THERMAL_TOOLS\n\n#include \"log.h\"\n#include \"mainloop.h\"\n#include \"uptimeofday.h\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

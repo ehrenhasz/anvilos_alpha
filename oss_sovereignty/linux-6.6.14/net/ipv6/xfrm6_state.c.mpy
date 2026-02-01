@@ -1,0 +1,9 @@
+{
+  "module_name": "xfrm6_state.c",
+  "hash_id": "6fe3efc33120203761932bd3d5f24a76b38b920a254e53c639b1b30bd9d57e1f",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv6/xfrm6_state.c",
+  "human_readable_source": "\n \n\n#include <net/xfrm.h>\n\nstatic struct xfrm_state_afinfo xfrm6_state_afinfo = {\n\t.family\t\t\t= AF_INET6,\n\t.proto\t\t\t= IPPROTO_IPV6,\n\t.output\t\t\t= xfrm6_output,\n\t.transport_finish\t= xfrm6_transport_finish,\n\t.local_error\t\t= xfrm6_local_error,\n};\n\nint __init xfrm6_state_init(void)\n{\n\treturn xfrm_state_register_afinfo(&xfrm6_state_afinfo);\n}\n\nvoid xfrm6_state_fini(void)\n{\n\txfrm_state_unregister_afinfo(&xfrm6_state_afinfo);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

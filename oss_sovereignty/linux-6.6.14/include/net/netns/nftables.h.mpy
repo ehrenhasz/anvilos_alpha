@@ -1,0 +1,9 @@
+{
+  "module_name": "nftables.h",
+  "hash_id": "5a49a040edef84f5af69a338ebb7ec269b44b0f6a51ed259f82dfecf3d4c423b",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netns/nftables.h",
+  "human_readable_source": " \n#ifndef _NETNS_NFTABLES_H_\n#define _NETNS_NFTABLES_H_\n\nstruct netns_nftables {\n\tu8\t\t\tgencursor;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

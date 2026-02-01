@@ -1,0 +1,9 @@
+{
+  "module_name": "lowcomms.h",
+  "hash_id": "dcd209d0a0139cbc18986c01381adc57372c92480c48bb536f7e6b95b15c75c0",
+  "original_prompt": "Ingested from linux-6.6.14/fs/dlm/lowcomms.h",
+  "human_readable_source": " \n \n\n#ifndef __LOWCOMMS_DOT_H__\n#define __LOWCOMMS_DOT_H__\n\n#include \"dlm_internal.h\"\n\n#define DLM_MIDCOMMS_OPT_LEN\t\tsizeof(struct dlm_opts)\n#define DLM_MAX_APP_BUFSIZE\t\t(DLM_MAX_SOCKET_BUFSIZE - \\\n\t\t\t\t\t DLM_MIDCOMMS_OPT_LEN)\n\n#define CONN_HASH_SIZE 32\n\n \nstatic inline int nodeid_hash(int nodeid)\n{\n\treturn nodeid & (CONN_HASH_SIZE-1);\n}\n\n \nbool dlm_lowcomms_is_running(void);\n\nint dlm_lowcomms_start(void);\nvoid dlm_lowcomms_shutdown(void);\nvoid dlm_lowcomms_shutdown_node(int nodeid, bool force);\nvoid dlm_lowcomms_stop(void);\nvoid dlm_lowcomms_init(void);\nvoid dlm_lowcomms_exit(void);\nint dlm_lowcomms_close(int nodeid);\nstruct dlm_msg *dlm_lowcomms_new_msg(int nodeid, int len, gfp_t allocation,\n\t\t\t\t     char **ppc, void (*cb)(void *data),\n\t\t\t\t     void *data);\nvoid dlm_lowcomms_commit_msg(struct dlm_msg *msg);\nvoid dlm_lowcomms_put_msg(struct dlm_msg *msg);\nint dlm_lowcomms_resend_msg(struct dlm_msg *msg);\nint dlm_lowcomms_connect_node(int nodeid);\nint dlm_lowcomms_nodes_set_mark(int nodeid, unsigned int mark);\nint dlm_lowcomms_addr(int nodeid, struct sockaddr_storage *addr, int len);\nvoid dlm_midcomms_receive_done(int nodeid);\nstruct kmem_cache *dlm_lowcomms_writequeue_cache_create(void);\nstruct kmem_cache *dlm_lowcomms_msg_cache_create(void);\n\n#endif\t\t\t\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

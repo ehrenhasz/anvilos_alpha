@@ -1,0 +1,9 @@
+{
+  "module_name": "stv0900.h",
+  "hash_id": "5c90cc5f466d6ee1b410e25b95e3b5e00576f8a7a27696fe06607805e2559588",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/stv0900.h",
+  "human_readable_source": " \n \n\n#ifndef STV0900_H\n#define STV0900_H\n\n#include <linux/dvb/frontend.h>\n#include <media/dvb_frontend.h>\n\nstruct stv0900_reg {\n\tu16 addr;\n\tu8  val;\n};\n\nstruct stv0900_config {\n\tu8 demod_address;\n\tu8 demod_mode;\n\tu32 xtal;\n\tu8 clkmode; \n\n\tu8 diseqc_mode;\n\n\tu8 path1_mode;\n\tu8 path2_mode;\n\tstruct stv0900_reg *ts_config_regs;\n\tu8 tun1_maddress; \n\tu8 tun2_maddress;\n\tu8 tun1_adc; \n\tu8 tun2_adc;\n\tu8 tun1_type; \n\tu8 tun2_type;\n\t \n\tint (*set_ts_params)(struct dvb_frontend *fe, int is_punctured);\n\t \n\tvoid (*set_lock_led)(struct dvb_frontend *fe, int offon);\n};\n\n#if IS_REACHABLE(CONFIG_DVB_STV0900)\nextern struct dvb_frontend *stv0900_attach(const struct stv0900_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c, int demod);\n#else\nstatic inline struct dvb_frontend *stv0900_attach(const struct stv0900_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c, int demod)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

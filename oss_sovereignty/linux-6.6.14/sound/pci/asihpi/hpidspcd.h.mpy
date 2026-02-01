@@ -1,0 +1,9 @@
+{
+  "module_name": "hpidspcd.h",
+  "hash_id": "db075a616613c1ee154b1601cd05e48044522d327854682f1646e8277fe1b23e",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/asihpi/hpidspcd.h",
+  "human_readable_source": " \n \n \n \n#ifndef _HPIDSPCD_H_\n#define _HPIDSPCD_H_\n\n#include \"hpi_internal.h\"\n\n \n \n \n \nstruct code_header {\n\t \n\tu32 size;\n\t \n\tu32 type;\n\t \n\tu32 adapter;\n\t \n\tu32 version;\n\t \n\tu32 checksum;\n};\n \n \n \n\n \ncompile_time_assert((sizeof(struct code_header) == 20), code_header_size);\n\n \nstruct dsp_code {\n\t \n\tstruct code_header header;\n\t \n\tu32 block_length;\n\t \n\tu32 word_count;\n\n\t \n\tstruct dsp_code_private *pvt;\n};\n\n \nshort hpi_dsp_code_open(\n\t \n\tu32 adapter, void *pci_dev,\n\t \n\tstruct dsp_code *ps_dsp_code,\n\t \n\tu32 *pos_error_code);\n\n \nvoid hpi_dsp_code_close(struct dsp_code *ps_dsp_code);\n\n \nvoid hpi_dsp_code_rewind(struct dsp_code *ps_dsp_code);\n\n \nshort hpi_dsp_code_read_word(struct dsp_code *ps_dsp_code,\n\t\t\t\t       \n\tu32 *pword  \n\t);\n\n \nshort hpi_dsp_code_read_block(size_t words_requested,\n\tstruct dsp_code *ps_dsp_code,\n\t \n\tu32 **ppblock);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

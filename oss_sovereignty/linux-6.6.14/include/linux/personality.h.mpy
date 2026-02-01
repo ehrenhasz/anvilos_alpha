@@ -1,0 +1,9 @@
+{
+  "module_name": "personality.h",
+  "hash_id": "3392b2716fccd0e6df790356904c8b5287d8c7777350db4051c8c6768eea216f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/personality.h",
+  "human_readable_source": " \n#ifndef _LINUX_PERSONALITY_H\n#define _LINUX_PERSONALITY_H\n\n#include <uapi/linux/personality.h>\n\n \n#define personality(pers)\t(pers & PER_MASK)\n\n \n#define set_personality(pers)\t(current->personality = (pers))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

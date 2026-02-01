@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn301_hubbub.h",
+  "hash_id": "881146cc255b27727cd2c1c5dfec8d3a93b8013f169740ec47dd1cad08d0fdbd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_hubbub.h",
+  "human_readable_source": " \n#ifndef DAL_DC_DCN301_DCN301_HUBBUB_H_\n#define DAL_DC_DCN301_DCN301_HUBBUB_H_\n\n#include \"dcn30/dcn30_hubbub.h\"\n\n\n#define HUBBUB_REG_LIST_DCN301(id)\\\n\tHUBBUB_REG_LIST_DCN30(id), \\\n\tHUBBUB_HVM_REG_LIST()\n\n\n#define HUBBUB_MASK_SH_LIST_DCN301(mask_sh)\\\n\tHUBBUB_MASK_SH_LIST_DCN30(mask_sh), \\\n\tHUBBUB_SF(DCHVM_CTRL0, HOSTVM_INIT_REQ, mask_sh), \\\n\tHUBBUB_SF(DCHVM_MEM_CTRL, HVM_GPUVMRET_PWR_REQ_DIS, mask_sh), \\\n\tHUBBUB_SF(DCHVM_MEM_CTRL, HVM_GPUVMRET_FORCE_REQ, mask_sh), \\\n\tHUBBUB_SF(DCHVM_MEM_CTRL, HVM_GPUVMRET_POWER_STATUS, mask_sh), \\\n\tHUBBUB_SF(DCHVM_CLK_CTRL, HVM_DISPCLK_R_GATE_DIS, mask_sh), \\\n\tHUBBUB_SF(DCHVM_CLK_CTRL, HVM_DISPCLK_G_GATE_DIS, mask_sh), \\\n\tHUBBUB_SF(DCHVM_CLK_CTRL, HVM_DCFCLK_R_GATE_DIS, mask_sh), \\\n\tHUBBUB_SF(DCHVM_CLK_CTRL, HVM_DCFCLK_G_GATE_DIS, mask_sh), \\\n\tHUBBUB_SF(DCHVM_CLK_CTRL, TR_REQ_REQCLKREQ_MODE, mask_sh), \\\n\tHUBBUB_SF(DCHVM_CLK_CTRL, TW_RSP_COMPCLKREQ_MODE, mask_sh), \\\n\tHUBBUB_SF(DCHVM_RIOMMU_CTRL0, HOSTVM_PREFETCH_REQ, mask_sh), \\\n\tHUBBUB_SF(DCHVM_RIOMMU_CTRL0, HOSTVM_POWERSTATUS, mask_sh), \\\n\tHUBBUB_SF(DCHVM_RIOMMU_STAT0, RIOMMU_ACTIVE, mask_sh), \\\n\tHUBBUB_SF(DCHVM_RIOMMU_STAT0, HOSTVM_PREFETCH_DONE, mask_sh)\n\nvoid hubbub301_construct(struct dcn20_hubbub *hubbub3,\n\tstruct dc_context *ctx,\n\tconst struct dcn_hubbub_registers *hubbub_regs,\n\tconst struct dcn_hubbub_shift *hubbub_shift,\n\tconst struct dcn_hubbub_mask *hubbub_mask);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

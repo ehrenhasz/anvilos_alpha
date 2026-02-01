@@ -1,0 +1,9 @@
+{
+  "module_name": "mt7623a-power.h",
+  "hash_id": "244cee1d0ab92ad56575d66ce69af28b0ed8c78017288998487505cc563ae1da",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/mt7623a-power.h",
+  "human_readable_source": " \n#ifndef _DT_BINDINGS_POWER_MT7623A_POWER_H\n#define _DT_BINDINGS_POWER_MT7623A_POWER_H\n\n#define MT7623A_POWER_DOMAIN_CONN\t0\n#define MT7623A_POWER_DOMAIN_ETH\t1\n#define MT7623A_POWER_DOMAIN_HIF\t2\n#define MT7623A_POWER_DOMAIN_IFR_MSC\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

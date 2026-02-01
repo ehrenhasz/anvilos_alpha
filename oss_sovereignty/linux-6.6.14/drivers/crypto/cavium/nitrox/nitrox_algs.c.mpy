@@ -1,0 +1,9 @@
+{
+  "module_name": "nitrox_algs.c",
+  "hash_id": "12de84e365f9d63f97d12e89c3b1a3e7e83a1c6f80dcb2cd81a17073c3ae87c7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/cavium/nitrox/nitrox_algs.c",
+  "human_readable_source": "#include \"nitrox_common.h\"\n\nint nitrox_crypto_register(void)\n{\n\tint err;\n\n\terr = nitrox_register_skciphers();\n\tif (err)\n\t\treturn err;\n\n\terr = nitrox_register_aeads();\n\tif (err) {\n\t\tnitrox_unregister_skciphers();\n\t\treturn err;\n\t}\n\n\treturn 0;\n}\n\nvoid nitrox_crypto_unregister(void)\n{\n\tnitrox_unregister_aeads();\n\tnitrox_unregister_skciphers();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

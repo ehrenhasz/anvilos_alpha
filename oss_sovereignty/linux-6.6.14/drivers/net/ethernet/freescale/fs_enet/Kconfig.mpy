@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "632e288102ce585dfc6d5be38f817de50f77480ad79b87a33ea9001ec42bfb0f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/fs_enet/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig FS_ENET\n\ttristate \"Freescale Ethernet Driver\"\n\tdepends on NET_VENDOR_FREESCALE && (CPM1 || CPM2 || PPC_MPC512x)\n\tselect MII\n\tselect PHYLIB\n\nconfig FS_ENET_MPC5121_FEC\n\tdef_bool y if (FS_ENET && PPC_MPC512x)\n\tselect FS_ENET_HAS_FEC\n\nconfig FS_ENET_HAS_SCC\n\tbool \"Chip has an SCC usable for ethernet\"\n\tdepends on FS_ENET && (CPM1 || CPM2)\n\tdefault y\n\nconfig FS_ENET_HAS_FCC\n\tbool \"Chip has an FCC usable for ethernet\"\n\tdepends on FS_ENET && CPM2\n\tdefault y\n\nconfig FS_ENET_HAS_FEC\n\tbool \"Chip has an FEC usable for ethernet\"\n\tdepends on FS_ENET && (CPM1 || FS_ENET_MPC5121_FEC)\n\tselect FS_ENET_MDIO_FEC\n\tdefault y\n\nconfig FS_ENET_MDIO_FEC\n\ttristate \"MDIO driver for FEC\"\n\tdepends on FS_ENET && (CPM1 || FS_ENET_MPC5121_FEC)\n\nconfig FS_ENET_MDIO_FCC\n\ttristate \"MDIO driver for FCC\"\n\tdepends on FS_ENET && CPM2\n\tselect MDIO_BITBANG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

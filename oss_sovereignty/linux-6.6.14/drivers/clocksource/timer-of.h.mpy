@@ -1,0 +1,9 @@
+{
+  "module_name": "timer-of.h",
+  "hash_id": "c2f040d61b107bd5370feb7c10d5339e52f7a933d9ef456df55882e6fe2515fa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clocksource/timer-of.h",
+  "human_readable_source": " \n#ifndef __TIMER_OF_H__\n#define __TIMER_OF_H__\n\n#include <linux/clockchips.h>\n\n#define TIMER_OF_BASE\t0x1\n#define TIMER_OF_CLOCK\t0x2\n#define TIMER_OF_IRQ\t0x4\n\nstruct of_timer_irq {\n\tint irq;\n\tint index;\n\tint percpu;\n\tconst char *name;\n\tunsigned long flags;\n\tirq_handler_t handler;\n};\n\nstruct of_timer_base {\n\tvoid __iomem *base;\n\tconst char *name;\n\tint index;\n};\n\nstruct of_timer_clk {\n\tstruct clk *clk;\n\tconst char *name;\n\tint index;\n\tunsigned long rate;\n\tunsigned long period;\n};\n\nstruct timer_of {\n\tunsigned int flags;\n\tstruct device_node *np;\n\tstruct clock_event_device clkevt;\n\tstruct of_timer_base of_base;\n\tstruct of_timer_irq  of_irq;\n\tstruct of_timer_clk  of_clk;\n\tvoid *private_data;\n};\n\nstatic inline struct timer_of *to_timer_of(struct clock_event_device *clkevt)\n{\n\treturn container_of(clkevt, struct timer_of, clkevt);\n}\n\nstatic inline void __iomem *timer_of_base(struct timer_of *to)\n{\n\treturn to->of_base.base;\n}\n\nstatic inline int timer_of_irq(struct timer_of *to)\n{\n\treturn to->of_irq.irq;\n}\n\nstatic inline unsigned long timer_of_rate(struct timer_of *to)\n{\n\treturn to->of_clk.rate;\n}\n\nstatic inline unsigned long timer_of_period(struct timer_of *to)\n{\n\treturn to->of_clk.period;\n}\n\nextern int __init timer_of_init(struct device_node *np,\n\t\t\t\tstruct timer_of *to);\n\nextern void __init timer_of_cleanup(struct timer_of *to);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8b24bb5cdafcb557ec015dc1f5cf7673301378bade5ddd8f06190604aab30abd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/bridge/cadence/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_CDNS_DSI\n\ttristate \"Cadence DPI/DSI bridge\"\n\tselect DRM_KMS_HELPER\n\tselect DRM_MIPI_DSI\n\tselect DRM_PANEL_BRIDGE\n\tselect GENERIC_PHY\n\tselect GENERIC_PHY_MIPI_DPHY\n\tdepends on OF\n\thelp\n\t  Support Cadence DPI to DSI bridge. This is an internal\n\t  bridge and is meant to be directly embedded in a SoC.\n\nif DRM_CDNS_DSI\n\nconfig DRM_CDNS_DSI_J721E\n\tbool \"J721E Cadence DSI wrapper support\"\n\tdefault y\n\thelp\n\t  Support J721E Cadence DSI wrapper. The wrapper manages\n\t  the routing of the DSS DPI signal to the Cadence DSI.\nendif\n\nconfig DRM_CDNS_MHDP8546\n\ttristate \"Cadence DPI/DP bridge\"\n\tselect DRM_DISPLAY_DP_HELPER\n\tselect DRM_DISPLAY_HDCP_HELPER\n\tselect DRM_DISPLAY_HELPER\n\tselect DRM_KMS_HELPER\n\tselect DRM_PANEL_BRIDGE\n\tdepends on OF\n\thelp\n\t  Support Cadence DPI to DP bridge. This is an internal\n\t  bridge and is meant to be directly embedded in a SoC.\n\t  It takes a DPI stream as input and outputs it encoded\n\t  in DP format.\n\nif DRM_CDNS_MHDP8546\n\nconfig DRM_CDNS_MHDP8546_J721E\n\tdepends on ARCH_K3 || COMPILE_TEST\n\tbool \"J721E Cadence DPI/DP wrapper support\"\n\tdefault y\n\thelp\n\t  Support J721E Cadence DPI/DP wrapper. This is a wrapper\n\t  which adds support for J721E related platform ops. It\n\t  initializes the J721E Display Port and sets up the\n\t  clock and data muxes.\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

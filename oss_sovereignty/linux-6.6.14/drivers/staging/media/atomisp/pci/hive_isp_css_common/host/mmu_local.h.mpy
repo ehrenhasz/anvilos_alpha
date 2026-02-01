@@ -1,0 +1,9 @@
+{
+  "module_name": "mmu_local.h",
+  "hash_id": "45fa93a832fe27bf2b5920d2593c34552fb2763ca2d9e6bcc54e43e8f49084f4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/host/mmu_local.h",
+  "human_readable_source": " \n \n\n#ifndef __MMU_LOCAL_H_INCLUDED__\n#define __MMU_LOCAL_H_INCLUDED__\n\n#include \"mmu_global.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

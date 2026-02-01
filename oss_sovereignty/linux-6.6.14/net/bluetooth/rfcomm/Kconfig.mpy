@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "698cff91c7d7e22aba79abf842c3c1ded84dd0839bebc20c1f3333c49b8a64fb",
+  "original_prompt": "Ingested from linux-6.6.14/net/bluetooth/rfcomm/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig BT_RFCOMM\n\ttristate \"RFCOMM protocol support\"\n\tdepends on BT_BREDR\n\thelp\n\t  RFCOMM provides connection oriented stream transport.  RFCOMM\n\t  support is required for Dialup Networking, OBEX and other Bluetooth\n\t  applications.\n\n\t  Say Y here to compile RFCOMM support into the kernel or say M to\n\t  compile it as module (rfcomm).\n\nconfig BT_RFCOMM_TTY\n\tbool \"RFCOMM TTY support\"\n\tdepends on BT_RFCOMM\n\tdepends on TTY\n\thelp\n\t  This option enables TTY emulation support for RFCOMM channels.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

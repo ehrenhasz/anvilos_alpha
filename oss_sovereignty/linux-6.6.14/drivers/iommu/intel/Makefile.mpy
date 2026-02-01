@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "85091eebfe161abc537d4536692013e98ee0590c2dfb399c19d6fc1c3daf5c4f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/intel/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_DMAR_TABLE) += dmar.o\nobj-$(CONFIG_INTEL_IOMMU) += iommu.o pasid.o\nobj-$(CONFIG_DMAR_TABLE) += trace.o cap_audit.o\nobj-$(CONFIG_DMAR_PERF) += perf.o\nobj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += debugfs.o\nobj-$(CONFIG_INTEL_IOMMU_SVM) += svm.o\nobj-$(CONFIG_IRQ_REMAP) += irq_remapping.o\nobj-$(CONFIG_INTEL_IOMMU_PERF_EVENTS) += perfmon.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2b83adb43c03c1285de08b39a3473cd9501a03bc98402a65fb009785b3a1d285",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/math/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nTEST_GEN_PROGS := fpu_syscall fpu_preempt fpu_signal fpu_denormal vmx_syscall vmx_preempt vmx_signal vsx_preempt mma\n\ntop_srcdir = ../../../../..\ninclude ../../lib.mk\n\n$(TEST_GEN_PROGS): ../harness.c\n$(TEST_GEN_PROGS): CFLAGS += -O2 -g -pthread -m64 -maltivec\n\n$(OUTPUT)/fpu_syscall: fpu_asm.S\n$(OUTPUT)/fpu_preempt: fpu_asm.S\n$(OUTPUT)/fpu_signal:  fpu_asm.S\n\n$(OUTPUT)/vmx_syscall: vmx_asm.S ../utils.c\n$(OUTPUT)/vmx_preempt: vmx_asm.S ../utils.c\n$(OUTPUT)/vmx_signal: vmx_asm.S ../utils.c\n\n$(OUTPUT)/vsx_preempt: CFLAGS += -mvsx\n$(OUTPUT)/vsx_preempt: vsx_asm.S ../utils.c\n\n$(OUTPUT)/mma: mma.c mma.S ../utils.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

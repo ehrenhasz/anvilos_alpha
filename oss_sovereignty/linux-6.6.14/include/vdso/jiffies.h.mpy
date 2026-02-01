@@ -1,0 +1,9 @@
+{
+  "module_name": "jiffies.h",
+  "hash_id": "0861801118bb5b2a63e9d20de47e04b91da864748e4793c60dc2cca26db96afd",
+  "original_prompt": "Ingested from linux-6.6.14/include/vdso/jiffies.h",
+  "human_readable_source": " \n#ifndef __VDSO_JIFFIES_H\n#define __VDSO_JIFFIES_H\n\n#include <asm/param.h>\t\t\t \n#include <vdso/time64.h>\n\n \n#define TICK_NSEC ((NSEC_PER_SEC+HZ/2)/HZ)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

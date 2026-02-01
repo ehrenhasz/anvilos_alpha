@@ -1,0 +1,9 @@
+{
+  "module_name": "mxs.h",
+  "hash_id": "1649cdcc27c5dd69b18450156b65eceb274eeefa0296c6eb7429f9499bf1aa72",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/clk/mxs.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_CLK_MXS_H\n#define __LINUX_CLK_MXS_H\n\nint mxs_saif_clkmux_select(unsigned int clkmux);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

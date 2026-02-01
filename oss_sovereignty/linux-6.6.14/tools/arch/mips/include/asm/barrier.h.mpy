@@ -1,0 +1,9 @@
+{
+  "module_name": "barrier.h",
+  "hash_id": "b4b03ded79b5ba28497093060ab88aee72ecd27710494cb88f0ac26826174039",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/mips/include/asm/barrier.h",
+  "human_readable_source": " \n#ifndef _TOOLS_LINUX_ASM_MIPS_BARRIER_H\n#define _TOOLS_LINUX_ASM_MIPS_BARRIER_H\n \n#define mb()\t\tasm volatile(\t\t\t\t\t\\\n\t\t\t\t\".set\tmips2\\n\\t\"\t\t\t\\\n\t\t\t\t\"sync\\n\\t\"\t\t\t\t\\\n\t\t\t\t\".set\tmips0\"\t\t\t\t\\\n\t\t\t\t:  \t\t\t\\\n\t\t\t\t:  \t\t\t\\\n\t\t\t\t: \"memory\")\n#define wmb()\tmb()\n#define rmb()\tmb()\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

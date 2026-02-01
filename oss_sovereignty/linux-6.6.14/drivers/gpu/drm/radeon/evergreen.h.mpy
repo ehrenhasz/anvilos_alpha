@@ -1,0 +1,9 @@
+{
+  "module_name": "evergreen.h",
+  "hash_id": "b3dab294b2dd0a050f144bfc21f533b3b56b087d15a99206234a07c1d09ecd29",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/evergreen.h",
+  "human_readable_source": " \n\n#ifndef __RADEON_EVERGREEN_H__\n#define __RADEON_EVERGREEN_H__\n\nstruct evergreen_mc_save;\nstruct evergreen_power_info;\nstruct radeon_device;\n\nbool evergreen_is_display_hung(struct radeon_device *rdev);\nvoid evergreen_print_gpu_status_regs(struct radeon_device *rdev);\nvoid evergreen_mc_stop(struct radeon_device *rdev, struct evergreen_mc_save *save);\nvoid evergreen_mc_resume(struct radeon_device *rdev, struct evergreen_mc_save *save);\nint evergreen_mc_wait_for_idle(struct radeon_device *rdev);\nvoid evergreen_mc_program(struct radeon_device *rdev);\nvoid evergreen_irq_suspend(struct radeon_device *rdev);\nint evergreen_mc_init(struct radeon_device *rdev);\nvoid evergreen_fix_pci_max_read_req_size(struct radeon_device *rdev);\nvoid evergreen_pcie_gen2_enable(struct radeon_device *rdev);\nvoid evergreen_program_aspm(struct radeon_device *rdev);\nvoid sumo_rlc_fini(struct radeon_device *rdev);\nint sumo_rlc_init(struct radeon_device *rdev);\nvoid evergreen_gpu_pci_config_reset(struct radeon_device *rdev);\nu32 evergreen_get_number_of_dram_channels(struct radeon_device *rdev);\nu32 evergreen_gpu_check_soft_reset(struct radeon_device *rdev);\nint evergreen_rlc_resume(struct radeon_device *rdev);\nstruct evergreen_power_info *evergreen_get_pi(struct radeon_device *rdev);\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "tls.c",
+  "hash_id": "567832ff71d1fcfd3e2f4c3bafc45edb1ba2636a016b88a8c5d53b579956ebc9",
+  "original_prompt": "Ingested from coreutils-9.4/lib/glthread/tls.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"glthread/tls.h\"\n\n \n\n#if USE_ISOC_THREADS || USE_ISOC_AND_POSIX_THREADS\n\n#endif\n\n \n\n#if USE_POSIX_THREADS\n\n#endif\n\n \n\n#if USE_WINDOWS_THREADS\n\n#endif\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

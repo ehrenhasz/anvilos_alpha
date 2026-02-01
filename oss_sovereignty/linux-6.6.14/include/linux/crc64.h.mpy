@@ -1,0 +1,9 @@
+{
+  "module_name": "crc64.h",
+  "hash_id": "359c3078515ae221fe2f6d6ef55622323445672538ba054456c1d47eee6cd365",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/crc64.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_CRC64_H\n#define _LINUX_CRC64_H\n\n#include <linux/types.h>\n\n#define CRC64_ROCKSOFT_STRING \"crc64-rocksoft\"\n\nu64 __pure crc64_be(u64 crc, const void *p, size_t len);\nu64 __pure crc64_rocksoft_generic(u64 crc, const void *p, size_t len);\n\nu64 crc64_rocksoft(const unsigned char *buffer, size_t len);\nu64 crc64_rocksoft_update(u64 crc, const unsigned char *buffer, size_t len);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

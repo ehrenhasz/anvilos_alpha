@@ -1,0 +1,9 @@
+{
+  "module_name": "sm750_cursor.h",
+  "hash_id": "9a5394868725f2fdf947017aa122a018054aaf0bd6a982f4db53c25a6b069661",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/sm750fb/sm750_cursor.h",
+  "human_readable_source": " \n#ifndef LYNX_CURSOR_H__\n#define LYNX_CURSOR_H__\n\n \nvoid sm750_hw_cursor_enable(struct lynx_cursor *cursor);\nvoid sm750_hw_cursor_disable(struct lynx_cursor *cursor);\nvoid sm750_hw_cursor_setSize(struct lynx_cursor *cursor, int w, int h);\nvoid sm750_hw_cursor_setPos(struct lynx_cursor *cursor, int x, int y);\nvoid sm750_hw_cursor_setColor(struct lynx_cursor *cursor, u32 fg, u32 bg);\nvoid sm750_hw_cursor_setData(struct lynx_cursor *cursor, u16 rop,\n\t\t\t     const u8 *data, const u8 *mask);\nvoid sm750_hw_cursor_setData2(struct lynx_cursor *cursor, u16 rop,\n\t\t\t      const u8 *data, const u8 *mask);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fb58fd934f8b7a696038008bdd071b428ba2752c95bb53700d35dabe462a8a3f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/cio/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the S/390 common i/o drivers\n#\n\n# The following is required for define_trace.h to find ./trace.h\nCFLAGS_trace.o := -I$(src)\nCFLAGS_vfio_ccw_trace.o := -I$(src)\n\nobj-y += airq.o blacklist.o chsc.o cio.o css.o chp.o idset.o isc.o \\\n\tfcx.o itcw.o crw.o ccwreq.o trace.o ioasm.o cio_debugfs.o\nccw_device-objs += device.o device_fsm.o device_ops.o\nccw_device-objs += device_id.o device_pgid.o device_status.o\nobj-y += ccw_device.o cmf.o\nobj-$(CONFIG_CHSC_SCH) += chsc_sch.o\nobj-$(CONFIG_EADM_SCH) += eadm_sch.o\nobj-$(CONFIG_SCM_BUS) += scm.o\nobj-$(CONFIG_CCWGROUP) += ccwgroup.o\n\nqdio-objs := qdio_main.o qdio_thinint.o qdio_debug.o qdio_setup.o\nobj-$(CONFIG_QDIO) += qdio.o\n\nvfio_ccw-objs += vfio_ccw_drv.o vfio_ccw_cp.o vfio_ccw_ops.o vfio_ccw_fsm.o \\\n\tvfio_ccw_async.o vfio_ccw_trace.o vfio_ccw_chp.o\nobj-$(CONFIG_VFIO_CCW) += vfio_ccw.o\n\nobj-$(CONFIG_CIO_INJECT) += cio_inject.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

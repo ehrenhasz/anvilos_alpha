@@ -1,0 +1,9 @@
+{
+  "module_name": "read-file.h",
+  "hash_id": "19f4130a27d4aa8f0ca0f8a3579b2707a3807217acacdd661eaeded521eb6ccf",
+  "original_prompt": "Ingested from coreutils-9.4/lib/read-file.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n#include <stdlib.h>\n\n \n#include <stdio.h>\n\n \n#define RF_BINARY 0x1\n\n \n#define RF_SENSITIVE 0x2\n\nextern char *fread_file (FILE * stream, int flags, size_t * length)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\n\nextern char *read_file (const char *filename, int flags, size_t * length)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

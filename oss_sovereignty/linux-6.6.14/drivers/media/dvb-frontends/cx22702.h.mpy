@@ -1,0 +1,9 @@
+{
+  "module_name": "cx22702.h",
+  "hash_id": "3f0e5125a9a4ac57395e046cb75ec3db834b8100ee61902215bc3fbbf750db6d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cx22702.h",
+  "human_readable_source": " \n \n\n#ifndef CX22702_H\n#define CX22702_H\n\n#include <linux/dvb/frontend.h>\n\nstruct cx22702_config {\n\t \n\tu8 demod_address;\n\n\t \n#define CX22702_PARALLEL_OUTPUT 0\n#define CX22702_SERIAL_OUTPUT   1\n\tu8 output_mode;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_CX22702)\nextern struct dvb_frontend *cx22702_attach(\n\tconst struct cx22702_config *config,\n\tstruct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *cx22702_attach(\n\tconst struct cx22702_config *config,\n\tstruct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

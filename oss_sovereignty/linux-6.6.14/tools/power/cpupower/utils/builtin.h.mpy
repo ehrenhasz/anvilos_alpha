@@ -1,0 +1,9 @@
+{
+  "module_name": "builtin.h",
+  "hash_id": "56f3f04973eabb7b555bea857c375ce93b2e73a5757504ce1810ddbdbabb25ad",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/utils/builtin.h",
+  "human_readable_source": " \n#ifndef BUILTIN_H\n#define BUILTIN_H\n\nextern int cmd_set(int argc, const char **argv);\nextern int cmd_info(int argc, const char **argv);\nextern int cmd_freq_set(int argc, const char **argv);\nextern int cmd_freq_info(int argc, const char **argv);\nextern int cmd_idle_set(int argc, const char **argv);\nextern int cmd_idle_info(int argc, const char **argv);\nextern int cmd_cap_info(int argc, const char **argv);\nextern int cmd_cap_set(int argc, const char **argv);\nextern int cmd_monitor(int argc, const char **argv);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

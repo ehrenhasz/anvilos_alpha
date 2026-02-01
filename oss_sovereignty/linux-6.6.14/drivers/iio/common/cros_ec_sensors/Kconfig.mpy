@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "d57eb35262fd172f9e22639565885b53795939221747f75400382b66c3b9da08",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/common/cros_ec_sensors/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Chrome OS Embedded Controller managed sensors library\n#\nconfig IIO_CROS_EC_SENSORS_CORE\n\ttristate \"ChromeOS EC Sensors Core\"\n\tdepends on SYSFS && CROS_EC_SENSORHUB\n\tselect IIO_BUFFER\n\tselect IIO_TRIGGERED_BUFFER\n\thelp\n\t  Base module for the ChromeOS EC Sensors module.\n\t  Contains core functions used by other IIO CrosEC sensor\n\t  drivers.\n\t  Define common attributes and sysfs interrupt handler.\n\nconfig IIO_CROS_EC_SENSORS\n\ttristate \"ChromeOS EC Contiguous Sensors\"\n\tdepends on IIO_CROS_EC_SENSORS_CORE\n\thelp\n\t  Module to handle 3d contiguous sensors like\n\t  Accelerometers, Gyroscope and Magnetometer that are\n\t  presented by the ChromeOS EC Sensor hub.\n\t  Creates an IIO device for each functions.\n\nconfig IIO_CROS_EC_SENSORS_LID_ANGLE\n\ttristate \"ChromeOS EC Sensor for lid angle\"\n\tdepends on IIO_CROS_EC_SENSORS_CORE\n\thelp\n\t  Module to report the angle between lid and base for some\n\t  convertible devices.\n\t  This module is loaded when the EC can calculate the angle between the base\n\t  and the lid.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

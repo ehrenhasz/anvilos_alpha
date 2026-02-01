@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_mods___mod_swap.c",
+  "hash_id": "f75a09a514284a96ff61e1cd016aa1dac99ead7ef8a7b876825820fd4a1665d6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_mods___mod_swap.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_mods___mod_swap x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

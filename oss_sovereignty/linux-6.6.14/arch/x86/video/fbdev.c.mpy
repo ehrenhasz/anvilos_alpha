@@ -1,0 +1,9 @@
+{
+  "module_name": "fbdev.c",
+  "hash_id": "d611aa86504b23afcda01a47209023f7c81ee86a4c75e794c6d3100d1aeadc8e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/video/fbdev.c",
+  "human_readable_source": " \n\n#include <linux/fb.h>\n#include <linux/module.h>\n#include <linux/pci.h>\n#include <linux/vgaarb.h>\n#include <asm/fb.h>\n\nvoid fb_pgprotect(struct file *file, struct vm_area_struct *vma, unsigned long off)\n{\n\tunsigned long prot;\n\n\tprot = pgprot_val(vma->vm_page_prot) & ~_PAGE_CACHE_MASK;\n\tif (boot_cpu_data.x86 > 3)\n\t\tpgprot_val(vma->vm_page_prot) =\n\t\t\tprot | cachemode2protval(_PAGE_CACHE_MODE_UC_MINUS);\n}\nEXPORT_SYMBOL(fb_pgprotect);\n\nint fb_is_primary_device(struct fb_info *info)\n{\n\tstruct device *device = info->device;\n\tstruct pci_dev *pci_dev;\n\n\tif (!device || !dev_is_pci(device))\n\t\treturn 0;\n\n\tpci_dev = to_pci_dev(device);\n\n\tif (pci_dev == vga_default_device())\n\t\treturn 1;\n\treturn 0;\n}\nEXPORT_SYMBOL(fb_is_primary_device);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

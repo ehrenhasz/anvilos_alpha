@@ -1,0 +1,9 @@
+{
+  "module_name": "cio_debug.h",
+  "hash_id": "4438c2b83e2230402d1553927ca2a850a72934160f3dd3f76eaf93cc9b3a5c0e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/cio/cio_debug.h",
+  "human_readable_source": " \n#ifndef CIO_DEBUG_H\n#define CIO_DEBUG_H\n\n#include <asm/debug.h>\n\n \nextern debug_info_t *cio_debug_msg_id;\nextern debug_info_t *cio_debug_trace_id;\nextern debug_info_t *cio_debug_crw_id;\n\n#define CIO_TRACE_EVENT(imp, txt) do {\t\t\t\t\\\n\t\tdebug_text_event(cio_debug_trace_id, imp, txt); \\\n\t} while (0)\n\n#define CIO_MSG_EVENT(imp, args...) do {\t\t\t\t\\\n\t\tdebug_sprintf_event(cio_debug_msg_id, imp , ##args);\t\\\n\t} while (0)\n\n#define CIO_CRW_EVENT(imp, args...) do {\t\t\t\t\\\n\t\tdebug_sprintf_event(cio_debug_crw_id, imp , ##args);\t\\\n\t} while (0)\n\nstatic inline void CIO_HEX_EVENT(int level, void *data, int length)\n{\n\tdebug_event(cio_debug_trace_id, level, data, length);\n}\n\n \nextern struct dentry *cio_debugfs_dir;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

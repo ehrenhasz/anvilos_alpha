@@ -1,0 +1,9 @@
+{
+  "module_name": "nft_set_pipapo_avx2.h",
+  "hash_id": "4472d7d2594d1d7b16a75a7c689f13e86d4b29fc735b1bca53bd17c18f7ddcfe",
+  "original_prompt": "Ingested from linux-6.6.14/net/netfilter/nft_set_pipapo_avx2.h",
+  "human_readable_source": " \n#ifndef _NFT_SET_PIPAPO_AVX2_H\n\n#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)\n#include <asm/fpu/xstate.h>\n#define NFT_PIPAPO_ALIGN\t(XSAVE_YMM_SIZE / BITS_PER_BYTE)\n\nbool nft_pipapo_avx2_estimate(const struct nft_set_desc *desc, u32 features,\n\t\t\t      struct nft_set_estimate *est);\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

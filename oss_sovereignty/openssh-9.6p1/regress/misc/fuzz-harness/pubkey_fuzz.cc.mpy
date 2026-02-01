@@ -1,0 +1,9 @@
+{
+  "module_name": "pubkey_fuzz.cc",
+  "hash_id": "fd2139278b40623744b8a9fe80d179e1eacbbaf7ef970bc73717c19a4f41ea10",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/misc/fuzz-harness/pubkey_fuzz.cc",
+  "human_readable_source": "#include <stddef.h>\n#include <stdio.h>\n#include <stdint.h>\n\nextern \"C\" {\n\n#include \"sshkey.h\"\n\nint LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)\n{\n\tstruct sshkey *k = NULL;\n\tint r = sshkey_from_blob(data, size, &k);\n\tif (r == 0) sshkey_free(k);\n\treturn 0;\n}\n\n} \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

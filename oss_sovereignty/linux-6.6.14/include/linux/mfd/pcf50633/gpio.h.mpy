@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio.h",
+  "hash_id": "a77d60fe65dbe1eb5f6ef58679ecc82c31b4a548c05c65b51b128f167a174115",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/pcf50633/gpio.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MFD_PCF50633_GPIO_H\n#define __LINUX_MFD_PCF50633_GPIO_H\n\n#include <linux/mfd/pcf50633/core.h>\n\n#define PCF50633_GPIO1\t\t1\n#define PCF50633_GPIO2\t\t2\n#define PCF50633_GPIO3\t\t3\n#define PCF50633_GPO\t\t4\n\n#define PCF50633_REG_GPIO1CFG\t0x14\n#define PCF50633_REG_GPIO2CFG\t0x15\n#define PCF50633_REG_GPIO3CFG\t0x16\n#define PCF50633_REG_GPOCFG \t0x17\n\n#define PCF50633_GPOCFG_GPOSEL_MASK\t0x07\n\nenum pcf50633_reg_gpocfg {\n\tPCF50633_GPOCFG_GPOSEL_0\t= 0x00,\n\tPCF50633_GPOCFG_GPOSEL_LED_NFET\t= 0x01,\n\tPCF50633_GPOCFG_GPOSEL_SYSxOK\t= 0x02,\n\tPCF50633_GPOCFG_GPOSEL_CLK32K\t= 0x03,\n\tPCF50633_GPOCFG_GPOSEL_ADAPUSB\t= 0x04,\n\tPCF50633_GPOCFG_GPOSEL_USBxOK\t= 0x05,\n\tPCF50633_GPOCFG_GPOSEL_ACTPH4\t= 0x06,\n\tPCF50633_GPOCFG_GPOSEL_1\t= 0x07,\n\tPCF50633_GPOCFG_GPOSEL_INVERSE\t= 0x08,\n};\n\nint pcf50633_gpio_set(struct pcf50633 *pcf, int gpio, u8 val);\nu8 pcf50633_gpio_get(struct pcf50633 *pcf, int gpio);\n\nint pcf50633_gpio_invert_set(struct pcf50633 *, int gpio, int invert);\nint pcf50633_gpio_invert_get(struct pcf50633 *pcf, int gpio);\n\nint pcf50633_gpio_power_supply_set(struct pcf50633 *,\n\t\t\t\t\tint gpio, int regulator, int on);\n#endif  \n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

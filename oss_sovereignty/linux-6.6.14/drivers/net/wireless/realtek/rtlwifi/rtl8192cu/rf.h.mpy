@@ -1,0 +1,9 @@
+{
+  "module_name": "rf.h",
+  "hash_id": "8d08ae39d7a2e50c237fcf6d74a33ec75bb2290b96549685a0b5935516213797",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/rf.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL92CU_RF_H__\n#define __RTL92CU_RF_H__\n\n#define RF6052_MAX_TX_PWR\t\t0x3F\n#define RF6052_MAX_PATH\t\t\t2\n\nvoid rtl92cu_phy_rf6052_set_bandwidth(struct ieee80211_hw *hw, u8 bandwidth);\nvoid rtl92c_phy_rf6052_set_cck_txpower(struct ieee80211_hw *hw,\n\t\t\t\t       u8 *ppowerlevel);\nvoid rtl92c_phy_rf6052_set_ofdm_txpower(struct ieee80211_hw *hw,\n\t\t\t\t\tu8 *ppowerlevel, u8 channel);\nbool rtl92cu_phy_rf6052_config(struct ieee80211_hw *hw);\nbool rtl92cu_phy_config_rf_with_headerfile(struct ieee80211_hw *hw,\n\t\t\t\t\t   enum radio_path rfpath);\nvoid rtl92cu_phy_rf6052_set_cck_txpower(struct ieee80211_hw *hw,\n\t\t\t\t\tu8 *ppowerlevel);\nvoid rtl92cu_phy_rf6052_set_ofdm_txpower(struct ieee80211_hw *hw,\n\t\t\t\t\t u8 *ppowerlevel, u8 channel);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

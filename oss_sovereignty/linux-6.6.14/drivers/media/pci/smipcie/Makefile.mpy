@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "78e48cd93aaef08ed131138de9e5bc4144c0b69898620e131b745d10c6911e20",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/smipcie/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nsmipcie-objs\t:= smipcie-main.o smipcie-ir.o\n\nobj-$(CONFIG_DVB_SMIPCIE) += smipcie.o\n\nccflags-y += -I $(srctree)/drivers/media/tuners\nccflags-y += -I $(srctree)/drivers/media/dvb-frontends\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

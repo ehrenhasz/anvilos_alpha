@@ -1,0 +1,9 @@
+{
+  "module_name": "asm_goto_workaround.h",
+  "hash_id": "db9f3bb98d00f54762f2117c718020e0466ea31f995c211097eccd487c028f9e",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/asm_goto_workaround.h",
+  "human_readable_source": " \n \n#ifndef __ASM_GOTO_WORKAROUND_H\n#define __ASM_GOTO_WORKAROUND_H\n\n \n#include <linux/types.h>\n\n#ifdef asm_volatile_goto\n#undef asm_volatile_goto\n#define asm_volatile_goto(x...) asm volatile(\"invalid use of asm_volatile_goto\")\n#endif\n\n \n#ifdef asm_inline\n#undef asm_inline\n#define asm_inline asm\n#endif\n\n#define volatile(x...) volatile(\"\")\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

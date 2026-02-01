@@ -1,0 +1,9 @@
+{
+  "module_name": "pid.c",
+  "hash_id": "a052735b74141bf079e0f06939410e8f5b1fb8c8acca2b48d3a6c0a2174c8814",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/pid.c",
+  "human_readable_source": "\n\nsize_t syscall_arg__scnprintf_pid(char *bf, size_t size, struct syscall_arg *arg)\n{\n\tint pid = arg->val;\n\tstruct trace *trace = arg->trace;\n\tsize_t printed = scnprintf(bf, size, \"%d\", pid);\n\tstruct thread *thread = machine__findnew_thread(trace->host, pid, pid);\n\n\tif (thread != NULL) {\n\t\tif (!thread__comm_set(thread))\n\t\t\tthread__set_comm_from_proc(thread);\n\n\t\tif (thread__comm_set(thread))\n\t\t\tprinted += scnprintf(bf + printed, size - printed,\n\t\t\t\t\t     \" (%s)\", thread__comm_str(thread));\n\t\tthread__put(thread);\n\t}\n\n\treturn printed;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "earlycon-semihost.c",
+  "hash_id": "e8606cbfba2a31de145425e5f12e764944f194be54cdf61e02acf6cf38cb25ff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/serial/earlycon-semihost.c",
+  "human_readable_source": "\n \n#include <linux/kernel.h>\n#include <linux/console.h>\n#include <linux/init.h>\n#include <linux/serial_core.h>\n#include <asm/semihost.h>\n\nstatic void smh_write(struct console *con, const char *s, unsigned n)\n{\n\tstruct earlycon_device *dev = con->data;\n\tuart_console_write(&dev->port, s, n, smh_putc);\n}\n\nstatic int\n__init early_smh_setup(struct earlycon_device *device, const char *opt)\n{\n\tdevice->con->write = smh_write;\n\treturn 0;\n}\nEARLYCON_DECLARE(smh, early_smh_setup);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

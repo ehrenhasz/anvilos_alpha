@@ -1,0 +1,9 @@
+{
+  "module_name": "memory.json",
+  "hash_id": "fbb69a762d955deb1f8533a0f0e7d76a92c90082ce3ab81ae905bb87ac275b46",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a57-a72/memory.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS\"\n    },\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS_RD\"\n    },\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS_WR\"\n    },\n    {\n        \"ArchStdEvent\": \"UNALIGNED_LD_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"UNALIGNED_ST_SPEC\"\n    },\n    {\n        \"ArchStdEvent\": \"UNALIGNED_LDST_SPEC\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

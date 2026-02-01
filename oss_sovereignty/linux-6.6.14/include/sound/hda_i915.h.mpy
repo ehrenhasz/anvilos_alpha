@@ -1,0 +1,9 @@
+{
+  "module_name": "hda_i915.h",
+  "hash_id": "8bd7758ad03de7928e44ccffae1404ba3c9c3cd3a0f9928e31fae9b4e469d3a6",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/hda_i915.h",
+  "human_readable_source": " \n \n#ifndef __SOUND_HDA_I915_H\n#define __SOUND_HDA_I915_H\n\n#include \"hda_component.h\"\n\n#ifdef CONFIG_SND_HDA_I915\nvoid snd_hdac_i915_set_bclk(struct hdac_bus *bus);\nint snd_hdac_i915_init(struct hdac_bus *bus);\n#else\nstatic inline void snd_hdac_i915_set_bclk(struct hdac_bus *bus)\n{\n}\nstatic inline int snd_hdac_i915_init(struct hdac_bus *bus)\n{\n\treturn -ENODEV;\n}\n#endif\nstatic inline int snd_hdac_i915_exit(struct hdac_bus *bus)\n{\n\treturn snd_hdac_acomp_exit(bus);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

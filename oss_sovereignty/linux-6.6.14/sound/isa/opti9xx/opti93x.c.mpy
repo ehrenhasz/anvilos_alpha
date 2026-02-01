@@ -1,0 +1,9 @@
+{
+  "module_name": "opti93x.c",
+  "hash_id": "94e25ffd041870d5f25a982e02ba0d86013bd0ef019c33c47f97f366ac8bfc1e",
+  "original_prompt": "Ingested from linux-6.6.14/sound/isa/opti9xx/opti93x.c",
+  "human_readable_source": "#define OPTi93X\n#include \"opti92x-ad1848.c\"\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

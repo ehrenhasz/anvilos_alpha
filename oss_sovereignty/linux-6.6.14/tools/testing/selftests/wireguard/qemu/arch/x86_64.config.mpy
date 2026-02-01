@@ -1,0 +1,9 @@
+{
+  "module_name": "x86_64.config",
+  "hash_id": "0ad2ad764f10a690cc8f08f0b3d0e138ea81c7892be8778ca02258c7dae91c75",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/wireguard/qemu/arch/x86_64.config",
+  "human_readable_source": "CONFIG_SERIAL_8250=y\nCONFIG_SERIAL_8250_CONSOLE=y\nCONFIG_VIRTIO_MENU=y\nCONFIG_VIRTIO_MMIO=y\nCONFIG_VIRTIO_CONSOLE=y\nCONFIG_VIRTIO_MMIO_CMDLINE_DEVICES=y\nCONFIG_CMDLINE_BOOL=y\nCONFIG_CMDLINE=\"console=ttyS0 wg.success=vport0p1 panic_on_warn=1 reboot=t\"\nCONFIG_FRAME_WARN=1280\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

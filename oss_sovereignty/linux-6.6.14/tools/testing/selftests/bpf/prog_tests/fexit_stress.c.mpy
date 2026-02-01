@@ -1,0 +1,9 @@
+{
+  "module_name": "fexit_stress.c",
+  "hash_id": "9503c68f6fc5aafd4250658d23fcb2fa554b2be4bf4203962f8f97a5e6b6b34f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/fexit_stress.c",
+  "human_readable_source": "\n \n#include <test_progs.h>\n\nvoid serial_test_fexit_stress(void)\n{\n\tint bpf_max_tramp_links, err, i;\n\tint *fd, *fexit_fd, *link_fd;\n\n\tbpf_max_tramp_links = get_bpf_max_tramp_links();\n\tif (!ASSERT_GE(bpf_max_tramp_links, 1, \"bpf_max_tramp_links\"))\n\t\treturn;\n\tfd = calloc(bpf_max_tramp_links * 2, sizeof(*fd));\n\tif (!ASSERT_OK_PTR(fd, \"fd\"))\n\t\treturn;\n\tfexit_fd = fd;\n\tlink_fd = fd + bpf_max_tramp_links;\n\n\tconst struct bpf_insn trace_program[] = {\n\t\tBPF_MOV64_IMM(BPF_REG_0, 0),\n\t\tBPF_EXIT_INSN(),\n\t};\n\n\tLIBBPF_OPTS(bpf_prog_load_opts, trace_opts,\n\t\t.expected_attach_type = BPF_TRACE_FEXIT,\n\t);\n\n\tLIBBPF_OPTS(bpf_test_run_opts, topts);\n\n\terr = libbpf_find_vmlinux_btf_id(\"bpf_fentry_test1\",\n\t\t\t\t\t trace_opts.expected_attach_type);\n\tif (!ASSERT_GT(err, 0, \"find_vmlinux_btf_id\"))\n\t\tgoto out;\n\ttrace_opts.attach_btf_id = err;\n\n\tfor (i = 0; i < bpf_max_tramp_links; i++) {\n\t\tfexit_fd[i] = bpf_prog_load(BPF_PROG_TYPE_TRACING, NULL, \"GPL\",\n\t\t\t\t\t    trace_program,\n\t\t\t\t\t    sizeof(trace_program) / sizeof(struct bpf_insn),\n\t\t\t\t\t    &trace_opts);\n\t\tif (!ASSERT_GE(fexit_fd[i], 0, \"fexit load\"))\n\t\t\tgoto out;\n\t\tlink_fd[i] = bpf_link_create(fexit_fd[i], 0, BPF_TRACE_FEXIT, NULL);\n\t\tif (!ASSERT_GE(link_fd[i], 0, \"fexit attach\"))\n\t\t\tgoto out;\n\t}\n\n\terr = bpf_prog_test_run_opts(fexit_fd[0], &topts);\n\tASSERT_OK(err, \"bpf_prog_test_run_opts\");\n\nout:\n\tfor (i = 0; i < bpf_max_tramp_links; i++) {\n\t\tif (link_fd[i])\n\t\t\tclose(link_fd[i]);\n\t\tif (fexit_fd[i])\n\t\t\tclose(fexit_fd[i]);\n\t}\n\tfree(fd);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

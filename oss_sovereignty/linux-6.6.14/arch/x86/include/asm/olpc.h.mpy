@@ -1,0 +1,9 @@
+{
+  "module_name": "olpc.h",
+  "hash_id": "3aae55a5cee295074fa90997db27800457a86556b38bc75d5eadf133d5f6d956",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/olpc.h",
+  "human_readable_source": " \n \n\n#ifndef _ASM_X86_OLPC_H\n#define _ASM_X86_OLPC_H\n\n#include <asm/geode.h>\n\nstruct olpc_platform_t {\n\tint flags;\n\tuint32_t boardrev;\n};\n\n#define OLPC_F_PRESENT\t\t0x01\n#define OLPC_F_DCON\t\t0x02\n\n#ifdef CONFIG_OLPC\n\nextern struct olpc_platform_t olpc_platform_info;\n\n \n\nstatic inline uint32_t olpc_board(uint8_t id)\n{\n\treturn (id << 4) | 0x8;\n}\n\nstatic inline uint32_t olpc_board_pre(uint8_t id)\n{\n\treturn id << 4;\n}\n\nstatic inline int machine_is_olpc(void)\n{\n\treturn (olpc_platform_info.flags & OLPC_F_PRESENT) ? 1 : 0;\n}\n\n \nstatic inline int olpc_has_dcon(void)\n{\n\treturn (olpc_platform_info.flags & OLPC_F_DCON) ? 1 : 0;\n}\n\n \nstatic inline int olpc_board_at_least(uint32_t rev)\n{\n\treturn olpc_platform_info.boardrev >= rev;\n}\n\n#else\n\nstatic inline int machine_is_olpc(void)\n{\n\treturn 0;\n}\n\nstatic inline int olpc_has_dcon(void)\n{\n\treturn 0;\n}\n\n#endif\n\n#ifdef CONFIG_OLPC_XO1_PM\nextern void do_olpc_suspend_lowlevel(void);\nextern void olpc_xo1_pm_wakeup_set(u16 value);\nextern void olpc_xo1_pm_wakeup_clear(u16 value);\n#endif\n\nextern int pci_olpc_init(void);\n\n \n\n#define OLPC_GPIO_MIC_AC\t1\n#define OLPC_GPIO_DCON_STAT0\t5\n#define OLPC_GPIO_DCON_STAT1\t6\n#define OLPC_GPIO_DCON_IRQ\t7\n#define OLPC_GPIO_THRM_ALRM\tgeode_gpio(10)\n#define OLPC_GPIO_DCON_LOAD    11\n#define OLPC_GPIO_DCON_BLANK   12\n#define OLPC_GPIO_SMB_CLK      14\n#define OLPC_GPIO_SMB_DATA     15\n#define OLPC_GPIO_WORKAUX\tgeode_gpio(24)\n#define OLPC_GPIO_LID\t\t26\n#define OLPC_GPIO_ECSCI\t\t27\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

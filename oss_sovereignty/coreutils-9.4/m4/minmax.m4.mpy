@@ -1,0 +1,9 @@
+{
+  "module_name": "minmax.m4",
+  "hash_id": "2283438ccfa6d068641fd9bc897080c4d7e53fae7255d7f60222fdee7ae77154",
+  "original_prompt": "Ingested from coreutils-9.4/m4/minmax.m4",
+  "human_readable_source": "# minmax.m4 serial 4\ndnl Copyright (C) 2005, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_PREREQ([2.53])\n\nAC_DEFUN([gl_MINMAX],\n[\n  AC_REQUIRE([gl_PREREQ_MINMAX])\n])\n\n# Prerequisites of lib/minmax.h.\nAC_DEFUN([gl_PREREQ_MINMAX],\n[\n  gl_MINMAX_IN_HEADER([limits.h])\n  gl_MINMAX_IN_HEADER([sys/param.h])\n])\n\ndnl gl_MINMAX_IN_HEADER(HEADER)\ndnl The parameter has to be a literal header name; it cannot be macro,\ndnl nor a shell variable. (Because autoheader collects only AC_DEFINE\ndnl invocations with a literal macro name.)\nAC_DEFUN([gl_MINMAX_IN_HEADER],\n[\n  m4_pushdef([header], AS_TR_SH([$1]))\n  m4_pushdef([HEADER], AS_TR_CPP([$1]))\n  AC_CACHE_CHECK([whether <$1> defines MIN and MAX],\n    [gl_cv_minmax_in_]header,\n    [AC_COMPILE_IFELSE(\n       [AC_LANG_PROGRAM(\n          [[#include <$1>\n            int x = MIN (42, 17);]],\n          [[]])],\n       [gl_cv_minmax_in_]header[=yes],\n       [gl_cv_minmax_in_]header[=no])])\n  if test $gl_cv_minmax_in_[]header = yes; then\n    AC_DEFINE([HAVE_MINMAX_IN_]HEADER, 1,\n      [Define to 1 if <$1> defines the MIN and MAX macros.])\n  fi\n  m4_popdef([HEADER])\n  m4_popdef([header])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

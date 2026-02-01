@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libslang.c",
+  "hash_id": "5381e07e7c0b2422780cd684aa6540c99106f0610be8fd2a305bc31cee4b937c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libslang.c",
+  "human_readable_source": "\n#include <slang.h>\n\nint main(void)\n{\n\treturn SLsmg_init_smg();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

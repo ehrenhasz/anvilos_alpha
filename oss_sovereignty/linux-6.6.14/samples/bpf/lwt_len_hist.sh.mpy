@@ -1,0 +1,9 @@
+{
+  "module_name": "lwt_len_hist.sh",
+  "hash_id": "fd281628b8a4873c98f7ebea2605b487a95957820ed5fc457d5f400fd1424a42",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/lwt_len_hist.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nNS1=lwt_ns1\nVETH0=tst_lwt1a\nVETH1=tst_lwt1b\nBPF_PROG=lwt_len_hist.bpf.o\nTRACE_ROOT=/sys/kernel/tracing\n\nfunction cleanup {\n\t# To reset saved histogram, remove pinned map\n\trm /sys/fs/bpf/tc/globals/lwt_len_hist_map\n\tip route del 192.168.253.2/32 dev $VETH0 2> /dev/null\n\tip link del $VETH0 2> /dev/null\n\tip link del $VETH1 2> /dev/null\n\tip netns exec $NS1 killall netserver\n\tip netns delete $NS1 2> /dev/null\n}\n\ncleanup\n\nip netns add $NS1\nip link add $VETH0 type veth peer name $VETH1\nip link set dev $VETH0 up\nip addr add 192.168.253.1/24 dev $VETH0\nip link set $VETH1 netns $NS1\nip netns exec $NS1 ip link set dev $VETH1 up\nip netns exec $NS1 ip addr add 192.168.253.2/24 dev $VETH1\nip netns exec $NS1 netserver\n\necho 1 > ${TRACE_ROOT}/tracing_on\ncp /dev/null ${TRACE_ROOT}/trace\nip route add 192.168.253.2/32 encap bpf out obj $BPF_PROG section len_hist dev $VETH0\nnetperf -H 192.168.253.2 -t TCP_STREAM\ncat ${TRACE_ROOT}/trace | grep -v '^#'\n./lwt_len_hist\ncleanup\necho 0 > ${TRACE_ROOT}/tracing_on\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

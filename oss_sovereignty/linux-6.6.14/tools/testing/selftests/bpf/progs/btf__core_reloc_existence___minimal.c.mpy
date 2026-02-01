@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_existence___minimal.c",
+  "hash_id": "b24c3c2ec6b539258ebbcbe44f50577e566170f8048d6cc764ac27f1a4a20e09",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_existence___minimal.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_existence___minimal x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

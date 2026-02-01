@@ -1,0 +1,9 @@
+{
+  "module_name": "internal.h",
+  "hash_id": "01c79ced88e5c8a44773f908237fca5e968d2010a3b3bdc33469967876f127e7",
+  "original_prompt": "Ingested from linux-6.6.14/fs/pstore/internal.h",
+  "human_readable_source": " \n#ifndef __PSTORE_INTERNAL_H__\n#define __PSTORE_INTERNAL_H__\n\n#include <linux/types.h>\n#include <linux/time.h>\n#include <linux/pstore.h>\n\nextern unsigned long kmsg_bytes;\n\n#ifdef CONFIG_PSTORE_FTRACE\nextern void pstore_register_ftrace(void);\nextern void pstore_unregister_ftrace(void);\nssize_t pstore_ftrace_combine_log(char **dest_log, size_t *dest_log_size,\n\t\t\t\t  const char *src_log, size_t src_log_size);\n#else\nstatic inline void pstore_register_ftrace(void) {}\nstatic inline void pstore_unregister_ftrace(void) {}\nstatic inline ssize_t\npstore_ftrace_combine_log(char **dest_log, size_t *dest_log_size,\n\t\t\t  const char *src_log, size_t src_log_size)\n{\n\t*dest_log_size = 0;\n\treturn 0;\n}\n#endif\n\n#ifdef CONFIG_PSTORE_PMSG\nextern void pstore_register_pmsg(void);\nextern void pstore_unregister_pmsg(void);\n#else\nstatic inline void pstore_register_pmsg(void) {}\nstatic inline void pstore_unregister_pmsg(void) {}\n#endif\n\nextern struct pstore_info *psinfo;\n\nextern void\tpstore_set_kmsg_bytes(int);\nextern void\tpstore_get_records(int);\nextern void\tpstore_get_backend_records(struct pstore_info *psi,\n\t\t\t\t\t   struct dentry *root, int quiet);\nextern int\tpstore_put_backend_records(struct pstore_info *psi);\nextern int\tpstore_mkfile(struct dentry *root,\n\t\t\t      struct pstore_record *record);\nextern void\tpstore_record_init(struct pstore_record *record,\n\t\t\t\t   struct pstore_info *psi);\n\n \nint __init\tpstore_init_fs(void);\nvoid __exit\tpstore_exit_fs(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

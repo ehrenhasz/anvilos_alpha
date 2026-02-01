@@ -1,0 +1,9 @@
+{
+  "module_name": "hibmc_drm_drv.h",
+  "hash_id": "996b0928f722cb5ee7ce1a101ffc0431f764d195043a0eecea456f5db20f65d9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/hisilicon/hibmc/hibmc_drm_drv.h",
+  "human_readable_source": " \n \n\n#ifndef HIBMC_DRM_DRV_H\n#define HIBMC_DRM_DRV_H\n\n#include <linux/gpio/consumer.h>\n#include <linux/i2c-algo-bit.h>\n#include <linux/i2c.h>\n\n#include <drm/drm_edid.h>\n#include <drm/drm_framebuffer.h>\n\nstruct hibmc_connector {\n\tstruct drm_connector base;\n\n\tstruct i2c_adapter adapter;\n\tstruct i2c_algo_bit_data bit_data;\n};\n\nstruct hibmc_drm_private {\n\t \n\tvoid __iomem   *mmio;\n\n\t \n\tstruct drm_device dev;\n\tstruct drm_plane primary_plane;\n\tstruct drm_crtc crtc;\n\tstruct drm_encoder encoder;\n\tstruct hibmc_connector connector;\n};\n\nstatic inline struct hibmc_connector *to_hibmc_connector(struct drm_connector *connector)\n{\n\treturn container_of(connector, struct hibmc_connector, base);\n}\n\nstatic inline struct hibmc_drm_private *to_hibmc_drm_private(struct drm_device *dev)\n{\n\treturn container_of(dev, struct hibmc_drm_private, dev);\n}\n\nvoid hibmc_set_power_mode(struct hibmc_drm_private *priv,\n\t\t\t  u32 power_mode);\nvoid hibmc_set_current_gate(struct hibmc_drm_private *priv,\n\t\t\t    u32 gate);\n\nint hibmc_de_init(struct hibmc_drm_private *priv);\nint hibmc_vdac_init(struct hibmc_drm_private *priv);\n\nint hibmc_mm_init(struct hibmc_drm_private *hibmc);\nint hibmc_ddc_create(struct drm_device *drm_dev, struct hibmc_connector *connector);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

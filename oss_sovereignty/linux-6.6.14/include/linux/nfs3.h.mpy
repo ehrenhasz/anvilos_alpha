@@ -1,0 +1,9 @@
+{
+  "module_name": "nfs3.h",
+  "hash_id": "1af63e7cf87dd03134afe989a4583b456559a6cfa80165e73549d40493f5c663",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/nfs3.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_NFS3_H\n#define _LINUX_NFS3_H\n\n#include <uapi/linux/nfs3.h>\n\n\n \n#define NFS3_POST_OP_ATTR_WORDS\t\t22\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

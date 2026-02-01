@@ -1,0 +1,9 @@
+{
+  "module_name": "gfxhub_v1_2.h",
+  "hash_id": "cac477f4d9b1348bd87c0f5e5823f9e641ae04eba6fc6c5c89d1d5d7003e2c46",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/gfxhub_v1_2.h",
+  "human_readable_source": " \n\n#ifndef __GFXHUB_V1_2_H__\n#define __GFXHUB_V1_2_H__\n\nextern const struct amdgpu_gfxhub_funcs gfxhub_v1_2_funcs;\n\nextern struct amdgpu_xcp_ip_funcs gfxhub_v1_2_xcp_funcs;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

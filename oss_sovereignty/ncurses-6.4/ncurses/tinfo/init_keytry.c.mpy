@@ -1,0 +1,9 @@
+{
+  "module_name": "init_keytry.c",
+  "hash_id": "fcb5b65fb2053d8302132ebfe774e44268bf9dea539b2a1f235de525d826d345",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/tinfo/init_keytry.c",
+  "human_readable_source": " \n\n#include <curses.priv.h>\n#include <tic.h>\t\t \n\nMODULE_ID(\"$Id: init_keytry.c,v 1.19 2020/02/02 23:34:34 tom Exp $\")\n\n \n\n \n#undef CUR\n#define CUR SP_TERMTYPE\n\n#if\tBROKEN_LINKER\n#undef\t_nc_tinfo_fkeys\n#endif\n\n \n#include <init_keytry.h>\n \n\n#if\tBROKEN_LINKER\nconst struct tinfo_fkeys *\n_nc_tinfo_fkeysf(void)\n{\n    return _nc_tinfo_fkeys;\n}\n#endif\n\nNCURSES_EXPORT(void)\n_nc_init_keytry(SCREEN *sp)\n{\n     \n\n    if (sp != 0) {\n\tunsigned n;\n\n\tfor (n = 0; _nc_tinfo_fkeys[n].code; n++) {\n\t    if (_nc_tinfo_fkeys[n].offset < STRCOUNT) {\n\t\t(void) _nc_add_to_try(&(sp->_keytry),\n\t\t\t\t      CUR Strings[_nc_tinfo_fkeys[n].offset],\n\t\t\t\t      _nc_tinfo_fkeys[n].code);\n\t    }\n\t}\n#if NCURSES_XNAMES\n\t \n\t{\n\t    TERMTYPE *tp = &(sp->_term->type);\n\t    for (n = STRCOUNT; n < NUM_STRINGS(tp); ++n) {\n\t\tconst char *name = ExtStrname(tp, (int) n, strnames);\n\t\tchar *value = tp->Strings[n];\n\t\tif (name != 0\n\t\t    && *name == 'k'\n\t\t    && value != 0\n\t\t    && NCURSES_SP_NAME(key_defined) (NCURSES_SP_ARGx\n\t\t\t\t\t\t     value) == 0) {\n\t\t    (void) _nc_add_to_try(&(sp->_keytry),\n\t\t\t\t\t  value,\n\t\t\t\t\t  n - STRCOUNT + KEY_MAX);\n\t\t}\n\t    }\n\t}\n#endif\n#ifdef TRACE\n\t_nc_trace_tries(sp->_keytry);\n#endif\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

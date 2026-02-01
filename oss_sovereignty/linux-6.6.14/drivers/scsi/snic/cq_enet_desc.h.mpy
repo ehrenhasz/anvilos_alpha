@@ -1,0 +1,9 @@
+{
+  "module_name": "cq_enet_desc.h",
+  "hash_id": "9d42eb034084beaf215691e4304c4a49397eee970834da1789b6021e9ce11d56",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/snic/cq_enet_desc.h",
+  "human_readable_source": " \n \n\n#ifndef _CQ_ENET_DESC_H_\n#define _CQ_ENET_DESC_H_\n\n#include \"cq_desc.h\"\n\n \nstruct cq_enet_wq_desc {\n\t__le16 completed_index;\n\t__le16 q_number;\n\tu8 reserved[11];\n\tu8 type_color;\n};\n\nstatic inline void cq_enet_wq_desc_dec(struct cq_enet_wq_desc *desc,\n\tu8 *type, u8 *color, u16 *q_number, u16 *completed_index)\n{\n\tcq_desc_dec((struct cq_desc *)desc, type,\n\t\tcolor, q_number, completed_index);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

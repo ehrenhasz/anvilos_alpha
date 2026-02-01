@@ -1,0 +1,9 @@
+{
+  "module_name": "lpass-wsa-macro.h",
+  "hash_id": "6025a90b76df2db1aaae14bfc47c4f803528ca57f2410649fae7517df40945dc",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/lpass-wsa-macro.h",
+  "human_readable_source": " \n\n#ifndef __LPASS_WSA_MACRO_H__\n#define __LPASS_WSA_MACRO_H__\n\n \nenum {\n\tWSA_MACRO_SPKR_MODE_DEFAULT,\n\tWSA_MACRO_SPKR_MODE_1,  \n};\n\nint wsa_macro_set_spkr_mode(struct snd_soc_component *component, int mode);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

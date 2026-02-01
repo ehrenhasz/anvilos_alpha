@@ -1,0 +1,9 @@
+{
+  "module_name": "systeminfo.h",
+  "hash_id": "cf8af657135e1f1e4b1759c4a879ed301cf9be0fbc44caa165769eed26c46d09",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/systeminfo.h",
+  "human_readable_source": " \n\n#ifndef _SYS_SYSTEMINFO_H_\n#define\t_SYS_SYSTEMINFO_H_\n\n#define\tHW_HOSTID_LEN\t11\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

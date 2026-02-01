@@ -1,0 +1,9 @@
+{
+  "module_name": "devlink_in_netns.sh",
+  "hash_id": "539da3084870530fc1c4e3b8f4f70ffc09eed84d6cb88dc32503512dc3a62c59",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/netdevsim/devlink_in_netns.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nlib_dir=$(dirname $0)/../../../net/forwarding\n\nALL_TESTS=\"check_devlink_test check_ports_test\"\nNUM_NETIFS=0\nsource $lib_dir/lib.sh\n\nBUS_ADDR=10\nPORT_COUNT=4\nDEV_NAME=netdevsim$BUS_ADDR\nSYSFS_NET_DIR=/sys/bus/netdevsim/devices/$DEV_NAME/net/\nDL_HANDLE=netdevsim/$DEV_NAME\nNETNS_NAME=testns1\n\nport_netdev_get()\n{\n\tlocal port_index=$1\n\n\tcmd_jq \"devlink -N $NETNS_NAME port show -j\" \\\n\t       \".[][\\\"$DL_HANDLE/$port_index\\\"].netdev\" \"-e\"\n}\n\ncheck_ports_test()\n{\n\tRET=0\n\n\tfor i in $(seq 0 $(expr $PORT_COUNT - 1)); do\n\t\tnetdev_name=$(port_netdev_get $i)\n\t\tcheck_err $? \"Failed to get netdev name for port $DL_HANDLE/$i\"\n\t\tip -n $NETNS_NAME link show $netdev_name &> /dev/null\n\t\tcheck_err $? \"Failed to find netdev $netdev_name\"\n\tdone\n\n\tlog_test \"check ports test\"\n}\n\ncheck_devlink_test()\n{\n\tRET=0\n\n\tdevlink -N $NETNS_NAME dev show $DL_HANDLE &> /dev/null\n\tcheck_err $? \"Failed to show devlink instance\"\n\n\tlog_test \"check devlink test\"\n}\n\nsetup_prepare()\n{\n\tmodprobe netdevsim\n\tip netns add $NETNS_NAME\n\tip netns exec $NETNS_NAME \\\n\t\techo \"$BUS_ADDR $PORT_COUNT\" > /sys/bus/netdevsim/new_device\n\twhile [ ! -d $SYSFS_NET_DIR ] ; do :; done\n}\n\ncleanup()\n{\n\tpre_cleanup\n\techo \"$BUS_ADDR\" > /sys/bus/netdevsim/del_device\n\tip netns del $NETNS_NAME\n\tmodprobe -r netdevsim\n}\n\ntrap cleanup EXIT\n\nsetup_prepare\n\ntests_run\n\nexit $EXIT_STATUS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

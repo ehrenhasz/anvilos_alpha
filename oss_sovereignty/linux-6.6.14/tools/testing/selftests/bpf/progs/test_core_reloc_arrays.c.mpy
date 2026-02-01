@@ -1,0 +1,9 @@
+{
+  "module_name": "test_core_reloc_arrays.c",
+  "hash_id": "1853951918add8ded82f17a10a90196eaa897d19ba1fafca90fef42f9f226a2b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_core_reloc_arrays.c",
+  "human_readable_source": "\n\n\n#include <linux/bpf.h>\n#include <stdint.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_core_read.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\tchar in[256];\n\tchar out[256];\n} data = {};\n\nstruct core_reloc_arrays_output {\n\tint a2;\n\tchar b123;\n\tint c1c;\n\tint d00d;\n\tint f01c;\n};\n\nstruct core_reloc_arrays_substruct {\n\tint c;\n\tint d;\n};\n\nstruct core_reloc_arrays {\n\tint a[5];\n\tchar b[2][3][4];\n\tstruct core_reloc_arrays_substruct c[3];\n\tstruct core_reloc_arrays_substruct d[1][2];\n\tstruct core_reloc_arrays_substruct f[][2];\n};\n\n#define CORE_READ(dst, src) bpf_core_read(dst, sizeof(*(dst)), src)\n\nSEC(\"raw_tracepoint/sys_enter\")\nint test_core_arrays(void *ctx)\n{\n\tstruct core_reloc_arrays *in = (void *)&data.in;\n\tstruct core_reloc_arrays_output *out = (void *)&data.out;\n\n\tif (CORE_READ(&out->a2, &in->a[2]))\n\t\treturn 1;\n\tif (CORE_READ(&out->b123, &in->b[1][2][3]))\n\t\treturn 1;\n\tif (CORE_READ(&out->c1c, &in->c[1].c))\n\t\treturn 1;\n\tif (CORE_READ(&out->d00d, &in->d[0][0].d))\n\t\treturn 1;\n\tif (CORE_READ(&out->f01c, &in->f[0][1].c))\n\t\treturn 1;\n\n\treturn 0;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

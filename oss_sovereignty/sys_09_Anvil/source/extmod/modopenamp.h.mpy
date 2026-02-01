@@ -1,0 +1,9 @@
+{
+  "module_name": "modopenamp.h",
+  "hash_id": "ec7b762b35c2449a318f12c4370f3b51dbc15be89dd076b6624b7c2b262db1b6",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/modopenamp.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_MODOPENAMP_H\n#define MICROPY_INCLUDED_MODOPENAMP_H\n\n \n#ifdef MICROPY_PY_OPENAMP_CONFIG_FILE\n#include MICROPY_PY_OPENAMP_CONFIG_FILE\n#endif\n\n \n \n \n#ifndef MICROPY_PY_OPENAMP_RSC_TABLE_ENABLE\n#define MICROPY_PY_OPENAMP_RSC_TABLE_ENABLE   (1)\n#endif\n\n \n \n \n#ifndef MICROPY_PY_OPENAMP_TRACE_BUF_ENABLE\n#define MICROPY_PY_OPENAMP_TRACE_BUF_ENABLE (1)\n#endif\n\n\n\n#ifndef MICROPY_PY_OPENAMP_REMOTEPROC_STORE_ENABLE\n#define MICROPY_PY_OPENAMP_REMOTEPROC_STORE_ENABLE (1)\n#endif\n\n\n\n#ifndef MICROPY_PY_OPENAMP_REMOTEPROC_ELFLD_ENABLE\n#define MICROPY_PY_OPENAMP_REMOTEPROC_ELFLD_ENABLE (1)\n#endif\n\n\n\n\n\n#if MICROPY_PY_OPENAMP_RSC_TABLE_ENABLE\ntypedef struct openamp_rsc_table {\n    unsigned int version;\n    unsigned int num;\n    unsigned int reserved[2];\n    #if MICROPY_PY_OPENAMP_TRACE_BUF_ENABLE\n    unsigned int offset[2];\n    #else\n    unsigned int offset[1];\n    #endif\n    struct fw_rsc_vdev vdev;\n    struct fw_rsc_vdev_vring vring0;\n    struct fw_rsc_vdev_vring vring1;\n    #if MICROPY_PY_OPENAMP_TRACE_BUF_ENABLE\n    struct fw_rsc_trace trace;\n    #endif\n} openamp_rsc_table_t;\n#endif \n\n\n\nvoid openamp_init(void);\n\n\n\nvoid openamp_remoteproc_notified(mp_sched_node_t *node);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

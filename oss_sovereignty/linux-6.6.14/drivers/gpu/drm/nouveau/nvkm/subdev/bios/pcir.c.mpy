@@ -1,0 +1,9 @@
+{
+  "module_name": "pcir.c",
+  "hash_id": "9c917308ad5df4e14fef23a480dcc572168fc7d30ce96d17ae636cf47ba420de",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bios/pcir.c",
+  "human_readable_source": " \n#include <subdev/bios.h>\n#include <subdev/bios/pcir.h>\n\nu32\nnvbios_pcirTe(struct nvkm_bios *bios, u32 base, u8 *ver, u16 *hdr)\n{\n\tu32 data = nvbios_rd16(bios, base + 0x18);\n\tif (data) {\n\t\tdata += base;\n\t\tswitch (nvbios_rd32(bios, data + 0x00)) {\n\t\tcase 0x52494350:  \n\t\tcase 0x53494752:  \n\t\tcase 0x5344504e:  \n\t\t\t*hdr = nvbios_rd16(bios, data + 0x0a);\n\t\t\t*ver = nvbios_rd08(bios, data + 0x0c);\n\t\t\tbreak;\n\t\tdefault:\n\t\t\tnvkm_debug(&bios->subdev,\n\t\t\t\t   \"%08x: PCIR signature (%08x) unknown\\n\",\n\t\t\t\t   data, nvbios_rd32(bios, data + 0x00));\n\t\t\tdata = 0;\n\t\t\tbreak;\n\t\t}\n\t}\n\treturn data;\n}\n\nu32\nnvbios_pcirTp(struct nvkm_bios *bios, u32 base, u8 *ver, u16 *hdr,\n\t      struct nvbios_pcirT *info)\n{\n\tu32 data = nvbios_pcirTe(bios, base, ver, hdr);\n\tmemset(info, 0x00, sizeof(*info));\n\tif (data) {\n\t\tinfo->vendor_id = nvbios_rd16(bios, data + 0x04);\n\t\tinfo->device_id = nvbios_rd16(bios, data + 0x06);\n\t\tinfo->class_code[0] = nvbios_rd08(bios, data + 0x0d);\n\t\tinfo->class_code[1] = nvbios_rd08(bios, data + 0x0e);\n\t\tinfo->class_code[2] = nvbios_rd08(bios, data + 0x0f);\n\t\tinfo->image_size = nvbios_rd16(bios, data + 0x10) * 512;\n\t\tinfo->image_rev = nvbios_rd16(bios, data + 0x12);\n\t\tinfo->image_type = nvbios_rd08(bios, data + 0x14);\n\t\tinfo->last = nvbios_rd08(bios, data + 0x15) & 0x80;\n\t}\n\treturn data;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

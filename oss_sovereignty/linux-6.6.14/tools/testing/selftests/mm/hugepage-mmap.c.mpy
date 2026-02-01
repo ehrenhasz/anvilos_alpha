@@ -1,0 +1,9 @@
+{
+  "module_name": "hugepage-mmap.c",
+  "hash_id": "c44d92c28d1dfdae47fdd437b1438c5b1b1c7945606daaf79651a7f24a91b62b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/mm/hugepage-mmap.c",
+  "human_readable_source": "\n \n#define _GNU_SOURCE\n#include <stdlib.h>\n#include <stdio.h>\n#include <unistd.h>\n#include <sys/mman.h>\n#include <fcntl.h>\n\n#define LENGTH (256UL*1024*1024)\n#define PROTECTION (PROT_READ | PROT_WRITE)\n\n \n#ifdef __ia64__\n#define ADDR (void *)(0x8000000000000000UL)\n#define FLAGS (MAP_SHARED | MAP_FIXED)\n#else\n#define ADDR (void *)(0x0UL)\n#define FLAGS (MAP_SHARED)\n#endif\n\nstatic void check_bytes(char *addr)\n{\n\tprintf(\"First hex is %x\\n\", *((unsigned int *)addr));\n}\n\nstatic void write_bytes(char *addr)\n{\n\tunsigned long i;\n\n\tfor (i = 0; i < LENGTH; i++)\n\t\t*(addr + i) = (char)i;\n}\n\nstatic int read_bytes(char *addr)\n{\n\tunsigned long i;\n\n\tcheck_bytes(addr);\n\tfor (i = 0; i < LENGTH; i++)\n\t\tif (*(addr + i) != (char)i) {\n\t\t\tprintf(\"Mismatch at %lu\\n\", i);\n\t\t\treturn 1;\n\t\t}\n\treturn 0;\n}\n\nint main(void)\n{\n\tvoid *addr;\n\tint fd, ret;\n\n\tfd = memfd_create(\"hugepage-mmap\", MFD_HUGETLB);\n\tif (fd < 0) {\n\t\tperror(\"memfd_create() failed\");\n\t\texit(1);\n\t}\n\n\taddr = mmap(ADDR, LENGTH, PROTECTION, FLAGS, fd, 0);\n\tif (addr == MAP_FAILED) {\n\t\tperror(\"mmap\");\n\t\tclose(fd);\n\t\texit(1);\n\t}\n\n\tprintf(\"Returned address is %p\\n\", addr);\n\tcheck_bytes(addr);\n\twrite_bytes(addr);\n\tret = read_bytes(addr);\n\n\tmunmap(addr, LENGTH);\n\tclose(fd);\n\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

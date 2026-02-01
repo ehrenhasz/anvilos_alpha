@@ -1,0 +1,9 @@
+{
+  "module_name": "nv40.h",
+  "hash_id": "3d86d27da785434f0cb676794a3505ebe563652ae8951a5bf8fb179a75fe9771",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/gr/nv40.h",
+  "human_readable_source": " \n#ifndef __NV40_GR_H__\n#define __NV40_GR_H__\n#define nv40_gr(p) container_of((p), struct nv40_gr, base)\n#include \"priv.h\"\n\nstruct nv40_gr {\n\tstruct nvkm_gr base;\n\tu32 size;\n\tstruct list_head chan;\n};\n\nint nv40_gr_new_(const struct nvkm_gr_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t struct nvkm_gr **);\nint nv40_gr_init(struct nvkm_gr *);\nvoid nv40_gr_intr(struct nvkm_gr *);\nu64 nv40_gr_units(struct nvkm_gr *);\n\n#define nv40_gr_chan(p) container_of((p), struct nv40_gr_chan, object)\n#include <core/object.h>\n\nstruct nv40_gr_chan {\n\tstruct nvkm_object object;\n\tstruct nv40_gr *gr;\n\tstruct nvkm_chan *fifo;\n\tu32 inst;\n\tstruct list_head head;\n};\n\nint nv40_gr_chan_new(struct nvkm_gr *, struct nvkm_chan *,\n\t\t     const struct nvkm_oclass *, struct nvkm_object **);\n\nextern const struct nvkm_object_func nv40_gr_object;\n\n \nstatic inline int\nnv44_gr_class(struct nvkm_device *device)\n{\n\tif ((device->chipset & 0xf0) == 0x60)\n\t\treturn 1;\n\n\treturn !(0x0aaf & (1 << (device->chipset & 0x0f)));\n}\n\nint  nv40_grctx_init(struct nvkm_device *, u32 *size);\nvoid nv40_grctx_fill(struct nvkm_device *, struct nvkm_gpuobj *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "buildid.h",
+  "hash_id": "e142b9d8d8b213dc07ef483429c610602bf23a653eaf924daf6230f2f39176d5",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/buildid.h",
+  "human_readable_source": " \n#ifndef _LINUX_BUILDID_H\n#define _LINUX_BUILDID_H\n\n#include <linux/mm_types.h>\n\n#define BUILD_ID_SIZE_MAX 20\n\nint build_id_parse(struct vm_area_struct *vma, unsigned char *build_id,\n\t\t   __u32 *size);\nint build_id_parse_buf(const void *buf, unsigned char *build_id, u32 buf_size);\n\n#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID) || IS_ENABLED(CONFIG_CRASH_CORE)\nextern unsigned char vmlinux_build_id[BUILD_ID_SIZE_MAX];\nvoid init_vmlinux_build_id(void);\n#else\nstatic inline void init_vmlinux_build_id(void) { }\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

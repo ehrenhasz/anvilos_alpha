@@ -1,0 +1,9 @@
+{
+  "module_name": "recallocarray.c",
+  "hash_id": "e78c3e4cda768ac5fd19080d0b26bde4eacc1d51b2efd25bc7ed3768f9a530a7",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/recallocarray.c",
+  "human_readable_source": " \n \n\n \n\n#include \"includes.h\"\n#ifndef HAVE_RECALLOCARRAY\n\n#include <errno.h>\n#include <stdlib.h>\n#ifdef HAVE_STDINT_H\n#include <stdint.h>\n#endif\n#include <string.h>\n#include <unistd.h>\n\n \n#define MUL_NO_OVERFLOW ((size_t)1 << (sizeof(size_t) * 4))\n\nvoid *\nrecallocarray(void *ptr, size_t oldnmemb, size_t newnmemb, size_t size)\n{\n\tsize_t oldsize, newsize;\n\tvoid *newptr;\n\n\tif (ptr == NULL)\n\t\treturn calloc(newnmemb, size);\n\n\tif ((newnmemb >= MUL_NO_OVERFLOW || size >= MUL_NO_OVERFLOW) &&\n\t    newnmemb > 0 && SIZE_MAX / newnmemb < size) {\n\t\terrno = ENOMEM;\n\t\treturn NULL;\n\t}\n\tnewsize = newnmemb * size;\n\n\tif ((oldnmemb >= MUL_NO_OVERFLOW || size >= MUL_NO_OVERFLOW) &&\n\t    oldnmemb > 0 && SIZE_MAX / oldnmemb < size) {\n\t\terrno = EINVAL;\n\t\treturn NULL;\n\t}\n\toldsize = oldnmemb * size;\n\t\n\t \n\tif (newsize <= oldsize) {\n\t\tsize_t d = oldsize - newsize;\n\n\t\tif (d < oldsize / 2 && d < (size_t)getpagesize()) {\n\t\t\tmemset((char *)ptr + newsize, 0, d);\n\t\t\treturn ptr;\n\t\t}\n\t}\n\n\tnewptr = malloc(newsize);\n\tif (newptr == NULL)\n\t\treturn NULL;\n\n\tif (newsize > oldsize) {\n\t\tmemcpy(newptr, ptr, oldsize);\n\t\tmemset((char *)newptr + oldsize, 0, newsize - oldsize);\n\t} else\n\t\tmemcpy(newptr, ptr, newsize);\n\n\texplicit_bzero(ptr, oldsize);\n\tfree(ptr);\n\n\treturn newptr;\n}\n \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

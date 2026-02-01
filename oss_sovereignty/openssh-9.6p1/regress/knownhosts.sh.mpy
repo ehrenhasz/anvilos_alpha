@@ -1,0 +1,9 @@
+{
+  "module_name": "knownhosts.sh",
+  "hash_id": "9746584b382a6999923a57b9370c45d9c6e0cd71790b4179b54a3416eb7dffd3",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/knownhosts.sh",
+  "human_readable_source": "#\t$OpenBSD: knownhosts.sh,v 1.2 2023/02/09 09:55:33 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"known hosts\"\n\nopts=\"-F $OBJ/ssh_proxy\"\n\ntrace \"test initial connection\"\n${SSH} $opts somehost true || fail \"initial connection\"\n\ntrace \"learn hashed known host\"\n>$OBJ/known_hosts\n${SSH} -ohashknownhosts=yes -o stricthostkeychecking=no $opts somehost true \\\n   || fail \"learn hashed known_hosts\"\n\ntrace \"test hashed known hosts\"\n${SSH} $opts somehost true || fail \"reconnect with hashed known hosts\"\n\ntrace \"no newline at end of known_hosts\"\nprintf \"something\" >$OBJ/known_hosts\n${SSH} $opts -ostricthostkeychecking=no somehost true \\\n    || fail \"hostkey update, missing newline, no strict\"\n${SSH} $opts -ostricthostkeychecking=yes somehost true \\\n    || fail \"reconnect after adding with missing newline\"\n\ntrace \"newline at end of known_hosts\"\nprintf \"something\\n\" >$OBJ/known_hosts\n${SSH} $opts -ostricthostkeychecking=no somehost true \\\n    || fail \"hostkey update, newline, no strict\"\n${SSH} $opts -ostricthostkeychecking=yes somehost true \\\n    || fail \"reconnect after adding without missing newline\"\nlines=`wc -l <$OBJ/known_hosts`\nif [ $lines -ne 2 ]; then\n\tfail \"expected 2 lines in known_hosts, found $lines\"\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

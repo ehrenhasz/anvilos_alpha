@@ -1,0 +1,9 @@
+{
+  "module_name": "c-strcasestr.h",
+  "hash_id": "43f3e8b2172c29c89d83b02a6c8406c28831a62b07f301782f32303c62d54286",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/c-strcasestr.h",
+  "human_readable_source": " \nextern char *c_strcasestr (const char *haystack, const char *needle);\n\n\n#ifdef __cplusplus\n}\n#endif\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4ff532066fa4d8cf552a660af7ba6c5ea276cd5729f2e409eecde0d5fe532af0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/alignment/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nTEST_GEN_PROGS := copy_first_unaligned alignment_handler\n\ntop_srcdir = ../../../../..\ninclude ../../lib.mk\n\n$(TEST_GEN_PROGS): ../harness.c ../utils.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

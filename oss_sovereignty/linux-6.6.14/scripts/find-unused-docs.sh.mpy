@@ -1,0 +1,9 @@
+{
+  "module_name": "find-unused-docs.sh",
+  "hash_id": "9dbe5567b3b4d83741d107ced327b49e303d921e97b6f6ef31c20b98e7c6d6a7",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/find-unused-docs.sh",
+  "human_readable_source": "#!/bin/bash\n# (c) 2017, Jonathan Corbet <corbet@lwn.net>\n#           sayli karnik <karniksayli1995@gmail.com>\n#\n# This script detects files with kernel-doc comments for exported functions\n# that are not included in documentation.\n#\n# usage: Run 'scripts/find-unused-docs.sh directory' from top level of kernel\n# \t tree.\n#\n# example: $scripts/find-unused-docs.sh drivers/scsi\n#\n# Licensed under the terms of the GNU GPL License\n\nif ! [ -d \"Documentation\" ]; then\n\techo \"Run from top level of kernel tree\"\n\texit 1\nfi\n\nif [ \"$#\" -ne 1 ]; then\n\techo \"Usage: scripts/find-unused-docs.sh directory\"\n\texit 1\nfi\n\nif ! [ -d \"$1\" ]; then\n\techo \"Directory $1 doesn't exist\"\n\texit 1\nfi\n\ncd \"$( dirname \"${BASH_SOURCE[0]}\" )\"\ncd ..\n\ncd Documentation/\n\necho \"The following files contain kerneldoc comments for exported functions \\\nthat are not used in the formatted documentation\"\n\n# FILES INCLUDED\n\nfiles_included=($(grep -rHR \".. kernel-doc\" --include \\*.rst | cut -d \" \" -f 3))\n\ndeclare -A FILES_INCLUDED\n\nfor each in \"${files_included[@]}\"; do\n\tFILES_INCLUDED[$each]=\"$each\"\n\tdone\n\ncd ..\n\n# FILES NOT INCLUDED\n\nfor file in `find $1 -name '*.c'`; do\n\n\tif [[ ${FILES_INCLUDED[$file]+_} ]]; then\n\tcontinue;\n\tfi\n\tstr=$(scripts/kernel-doc -export \"$file\" 2>/dev/null)\n\tif [[ -n \"$str\" ]]; then\n\techo \"$file\"\n\tfi\n\tdone\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

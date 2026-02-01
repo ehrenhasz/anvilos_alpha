@@ -1,0 +1,9 @@
+{
+  "module_name": "smbios.c",
+  "hash_id": "043cd09acf01fdea596a897f9fd06a78bda35d767709abdb0e9ed693c1f1641a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/efi/libstub/smbios.c",
+  "human_readable_source": "\n\n\n\n#include <linux/efi.h>\n\n#include \"efistub.h\"\n\ntypedef struct efi_smbios_protocol efi_smbios_protocol_t;\n\nstruct efi_smbios_protocol {\n\tefi_status_t (__efiapi *add)(efi_smbios_protocol_t *, efi_handle_t,\n\t\t\t\t     u16 *, struct efi_smbios_record *);\n\tefi_status_t (__efiapi *update_string)(efi_smbios_protocol_t *, u16 *,\n\t\t\t\t\t       unsigned long *, u8 *);\n\tefi_status_t (__efiapi *remove)(efi_smbios_protocol_t *, u16);\n\tefi_status_t (__efiapi *get_next)(efi_smbios_protocol_t *, u16 *, u8 *,\n\t\t\t\t\t  struct efi_smbios_record **,\n\t\t\t\t\t  efi_handle_t *);\n\n\tu8 major_version;\n\tu8 minor_version;\n};\n\nconst struct efi_smbios_record *efi_get_smbios_record(u8 type)\n{\n\tstruct efi_smbios_record *record;\n\tefi_smbios_protocol_t *smbios;\n\tefi_status_t status;\n\tu16 handle = 0xfffe;\n\n\tstatus = efi_bs_call(locate_protocol, &EFI_SMBIOS_PROTOCOL_GUID, NULL,\n\t\t\t     (void **)&smbios) ?:\n\t\t efi_call_proto(smbios, get_next, &handle, &type, &record, NULL);\n\tif (status != EFI_SUCCESS)\n\t\treturn NULL;\n\treturn record;\n}\n\nconst u8 *__efi_get_smbios_string(const struct efi_smbios_record *record,\n\t\t\t\t  u8 type, int offset)\n{\n\tconst u8 *strtable;\n\n\tif (!record)\n\t\treturn NULL;\n\n\tstrtable = (u8 *)record + record->length;\n\tfor (int i = 1; i < ((u8 *)record)[offset]; i++) {\n\t\tint len = strlen(strtable);\n\n\t\tif (!len)\n\t\t\treturn NULL;\n\t\tstrtable += len + 1;\n\t}\n\treturn strtable;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

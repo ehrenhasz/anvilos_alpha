@@ -1,0 +1,9 @@
+{
+  "module_name": "kcs_bmc_device.h",
+  "hash_id": "cba165247a8d2901af1ab4ee7a5851811ee53fa9370a2ad3322ea66f8229c171",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/char/ipmi/kcs_bmc_device.h",
+  "human_readable_source": " \n \n\n#ifndef __KCS_BMC_DEVICE_H__\n#define __KCS_BMC_DEVICE_H__\n\n#include <linux/irqreturn.h>\n\n#include \"kcs_bmc.h\"\n\nstruct kcs_bmc_device_ops {\n\tvoid (*irq_mask_update)(struct kcs_bmc_device *kcs_bmc, u8 mask, u8 enable);\n\tu8 (*io_inputb)(struct kcs_bmc_device *kcs_bmc, u32 reg);\n\tvoid (*io_outputb)(struct kcs_bmc_device *kcs_bmc, u32 reg, u8 b);\n\tvoid (*io_updateb)(struct kcs_bmc_device *kcs_bmc, u32 reg, u8 mask, u8 b);\n};\n\nirqreturn_t kcs_bmc_handle_event(struct kcs_bmc_device *kcs_bmc);\nint kcs_bmc_add_device(struct kcs_bmc_device *kcs_bmc);\nvoid kcs_bmc_remove_device(struct kcs_bmc_device *kcs_bmc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

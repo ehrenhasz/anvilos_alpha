@@ -1,0 +1,9 @@
+{
+  "module_name": "bpqether.h",
+  "hash_id": "7263e1f0a0115e705eac2fefa3d1cd7b72d2792d296d6f69d487de68ea69088b",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/bpqether.h",
+  "human_readable_source": " \n#ifndef\t__BPQETHER_H\n#define\t__BPQETHER_H\n\n \n\n#include <linux/if_ether.h>\n\n#define SIOCSBPQETHOPT\t\t(SIOCDEVPRIVATE+0)\t \n#define SIOCSBPQETHADDR\t\t(SIOCDEVPRIVATE+1)\n \nstruct bpq_ethaddr {\n\tunsigned char destination[ETH_ALEN];\n\tunsigned char accept[ETH_ALEN];\n};\n\n \n\n#define SIOCGBPQETHPARAM\t0x5000   \n#define SIOCSBPQETHPARAM\t0x5001   \n\nstruct bpq_req  {\n    int cmd;\n    int speed;\t\t\t \n    int clockmode;\t\t \n    int txdelay;\n    unsigned char persist;\t \n    int slotime;\t\t \n    int squeldelay;\n    int dmachan;\t\t \n    int irq;\t\t\t \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

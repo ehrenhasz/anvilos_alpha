@@ -1,0 +1,9 @@
+{
+  "module_name": "user-sysvinit.m4",
+  "hash_id": "6728804a3c40362d9e07aae5d0e7736708c753f5ad5960067a58cd7d269b8cdd",
+  "original_prompt": "Ingested from zfs-2.2.2/config/user-sysvinit.m4",
+  "human_readable_source": "AC_DEFUN([ZFS_AC_CONFIG_USER_SYSVINIT], [\n\tAC_ARG_ENABLE(sysvinit,\n\t\tAS_HELP_STRING([--enable-sysvinit],\n\t\t[install SysV init scripts [default: yes]]),\n\t\t[], enable_sysvinit=yes)\n\n\tZFS_INIT_SYSV=$enable_sysvinit\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

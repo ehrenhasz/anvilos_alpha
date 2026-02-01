@@ -1,0 +1,9 @@
+{
+  "module_name": "cksum.h",
+  "hash_id": "417fcfe9fed4f7656cf687470c40dbfdc0b7521c8aa0e9399c76bd41cb949d69",
+  "original_prompt": "Ingested from coreutils-9.4/src/cksum.h",
+  "human_readable_source": "#ifndef __CKSUM_H__\n# define __CKSUM_H__\n\nextern bool cksum_debug;\n\nextern int\ncrc_sum_stream (FILE *stream, void *resstream, uintmax_t *length);\n\nextern void\noutput_crc (char const *file, int binary_file, void const *digest, bool raw,\n            bool tagged, unsigned char delim, bool args, uintmax_t length)\n  _GL_ATTRIBUTE_NONNULL ((3));\n\nextern bool\ncksum_pclmul (FILE *fp, uint_fast32_t *crc_out, uintmax_t *length_out);\n\nextern uint_fast32_t const crctab[8][256];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

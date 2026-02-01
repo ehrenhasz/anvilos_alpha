@@ -1,0 +1,9 @@
+{
+  "module_name": "ulonglong.m4",
+  "hash_id": "8c3572391e9e7980a2c868be789a17362a4bdc682675c6ab34e858cf57185b17",
+  "original_prompt": "Ingested from bash-5.2.21/m4/ulonglong.m4",
+  "human_readable_source": "# ulonglong.m4 serial 10\ndnl Copyright (C) 1999-2007, 2009-2019 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

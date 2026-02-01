@@ -1,0 +1,9 @@
+{
+  "module_name": "ssh_config",
+  "hash_id": "d12f4f223cd089cc47121cdfcd10463965db41e63c425c68e9a2bbf7b3e26a3f",
+  "original_prompt": "Ingested from openssh-9.6p1/ssh_config",
+  "human_readable_source": "#\t$OpenBSD: ssh_config,v 1.36 2023/08/02 23:04:38 djm Exp $\n\n# This is the ssh client system-wide configuration file.  See\n# ssh_config(5) for more information.  This file provides defaults for\n# users, and the values can be changed in per-user configuration files\n# or on the command line.\n\n# Configuration data is parsed as follows:\n#  1. command line options\n#  2. user-specific file\n#  3. system-wide file\n# Any configuration value is only changed the first time it is set.\n# Thus, host-specific definitions should be at the beginning of the\n# configuration file, and defaults at the end.\n\n# Site-wide defaults for some commonly used options.  For a comprehensive\n# list of available options, their meanings and defaults, please see the\n# ssh_config(5) man page.\n\n# Host *\n#   ForwardAgent no\n#   ForwardX11 no\n#   PasswordAuthentication yes\n#   HostbasedAuthentication no\n#   GSSAPIAuthentication no\n#   GSSAPIDelegateCredentials no\n#   BatchMode no\n#   CheckHostIP no\n#   AddressFamily any\n#   ConnectTimeout 0\n#   StrictHostKeyChecking ask\n#   IdentityFile ~/.ssh/id_rsa\n#   IdentityFile ~/.ssh/id_dsa\n#   IdentityFile ~/.ssh/id_ecdsa\n#   IdentityFile ~/.ssh/id_ed25519\n#   Port 22\n#   Ciphers aes128-ctr,aes192-ctr,aes256-ctr,aes128-cbc,3des-cbc\n#   MACs hmac-md5,hmac-sha1,umac-64@openssh.com\n#   EscapeChar ~\n#   Tunnel no\n#   TunnelDevice any:any\n#   PermitLocalCommand no\n#   VisualHostKey no\n#   ProxyCommand ssh -q -W %h:%p gateway.example.com\n#   RekeyLimit 1G 1h\n#   UserKnownHostsFile ~/.ssh/known_hosts.d/%k\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

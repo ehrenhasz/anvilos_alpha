@@ -1,0 +1,9 @@
+{
+  "module_name": "wait.h",
+  "hash_id": "ff3ef2907f79d9cc57d03b61139c52c1bb8bd9a358868ec2b95b3fa2959a7be1",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/wait.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_WAIT_H\n#define _UAPI_LINUX_WAIT_H\n\n#define WNOHANG\t\t0x00000001\n#define WUNTRACED\t0x00000002\n#define WSTOPPED\tWUNTRACED\n#define WEXITED\t\t0x00000004\n#define WCONTINUED\t0x00000008\n#define WNOWAIT\t\t0x01000000\t \n\n#define __WNOTHREAD\t0x20000000\t \n#define __WALL\t\t0x40000000\t \n#define __WCLONE\t0x80000000\t \n\n \n#define P_ALL\t\t0\n#define P_PID\t\t1\n#define P_PGID\t\t2\n#define P_PIDFD\t\t3\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

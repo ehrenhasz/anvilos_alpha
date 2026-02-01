@@ -1,0 +1,9 @@
+{
+  "module_name": "mempcpy.m4",
+  "hash_id": "1690136a2d625c7dc1a703b0c14cc60d0eeae3b608d278e6b84460c35f25661c",
+  "original_prompt": "Ingested from coreutils-9.4/m4/mempcpy.m4",
+  "human_readable_source": "# mempcpy.m4 serial 14\ndnl Copyright (C) 2003-2004, 2006-2007, 2009-2023 Free Software Foundation,\ndnl Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_MEMPCPY],\n[\n  dnl Persuade glibc <string.h> to declare mempcpy().\n  AC_REQUIRE([AC_USE_SYSTEM_EXTENSIONS])\n\n  dnl The mempcpy() declaration in lib/string.in.h uses 'restrict'.\n  AC_REQUIRE([AC_C_RESTRICT])\n\n  AC_REQUIRE([gl_STRING_H_DEFAULTS])\n  gl_CHECK_FUNCS_ANDROID([mempcpy], [[#include <string.h>]])\n  if test $ac_cv_func_mempcpy = no; then\n    HAVE_MEMPCPY=0\n    case \"$gl_cv_onwards_func_mempcpy\" in\n      future*) REPLACE_MEMPCPY=1 ;;\n    esac\n  fi\n])\n\n# Prerequisites of lib/mempcpy.c.\nAC_DEFUN([gl_PREREQ_MEMPCPY], [\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

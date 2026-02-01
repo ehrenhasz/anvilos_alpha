@@ -1,0 +1,9 @@
+{
+  "module_name": "sockmap_tcp_msg_prog.c",
+  "hash_id": "c98c4d9a0962ceb37516d39fec71b99506088f87c62a782246fc440d4bd762e8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/sockmap_tcp_msg_prog.c",
+  "human_readable_source": "#include <linux/bpf.h>\n\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n\nSEC(\"sk_msg1\")\nint bpf_prog1(struct sk_msg_md *msg)\n{\n\treturn SK_PASS;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

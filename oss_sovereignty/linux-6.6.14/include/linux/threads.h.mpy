@@ -1,0 +1,9 @@
+{
+  "module_name": "threads.h",
+  "hash_id": "2c3efd709b2b50fe8bf1756c967bdadcd4768956bc6ce9408e402d1718dd6842",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/threads.h",
+  "human_readable_source": " \n#ifndef _LINUX_THREADS_H\n#define _LINUX_THREADS_H\n\n\n \n\n \n#ifndef CONFIG_NR_CPUS\n \n#define CONFIG_NR_CPUS\t1\n#endif\n\n \n#define NR_CPUS\t\tCONFIG_NR_CPUS\n\n#define MIN_THREADS_LEFT_FOR_ROOT 4\n\n \n#define PID_MAX_DEFAULT (CONFIG_BASE_SMALL ? 0x1000 : 0x8000)\n\n \n#define PID_MAX_LIMIT (CONFIG_BASE_SMALL ? PAGE_SIZE * 8 : \\\n\t(sizeof(long) > 4 ? 4 * 1024 * 1024 : PID_MAX_DEFAULT))\n\n \n#define PIDS_PER_CPU_DEFAULT\t1024\n#define PIDS_PER_CPU_MIN\t8\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

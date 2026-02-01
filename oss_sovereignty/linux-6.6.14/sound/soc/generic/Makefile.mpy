@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d07f8d90c3b2e96024dfc7be23c87c9f31f8e0e7437a9e60e6bf5172f1912e14",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/generic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nsnd-soc-simple-card-utils-objs\t:= simple-card-utils.o\nsnd-soc-simple-card-objs\t:= simple-card.o\nsnd-soc-audio-graph-card-objs\t:= audio-graph-card.o\nsnd-soc-audio-graph-card2-objs\t:= audio-graph-card2.o\nsnd-soc-audio-graph-card2-custom-sample-objs := audio-graph-card2-custom-sample.o\nsnd-soc-test-component-objs\t:= test-component.o\n\nobj-$(CONFIG_SND_SIMPLE_CARD_UTILS)\t+= snd-soc-simple-card-utils.o\nobj-$(CONFIG_SND_SIMPLE_CARD)\t\t+= snd-soc-simple-card.o\nobj-$(CONFIG_SND_AUDIO_GRAPH_CARD)\t+= snd-soc-audio-graph-card.o\nobj-$(CONFIG_SND_AUDIO_GRAPH_CARD2)\t+= snd-soc-audio-graph-card2.o\nobj-$(CONFIG_SND_AUDIO_GRAPH_CARD2_CUSTOM_SAMPLE) += snd-soc-audio-graph-card2-custom-sample.o\nobj-$(CONFIG_SND_TEST_COMPONENT)\t+= snd-soc-test-component.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

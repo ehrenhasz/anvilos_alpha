@@ -1,0 +1,9 @@
+{
+  "module_name": "mediatek-mt8183-fails.txt",
+  "hash_id": "b54050dc6fd11add0abd10d4875cd852252a6b508e9c7c4911ca57d3a05c5486",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ci/xfails/mediatek-mt8183-fails.txt",
+  "human_readable_source": "kms_addfb_basic@addfb25-bad-modifier,Fail\nkms_bw@linear-tiling-1-displays-2560x1440p,Fail\nkms_bw@linear-tiling-2-displays-1920x1080p,Fail\nkms_bw@linear-tiling-2-displays-2560x1440p,Fail\nkms_bw@linear-tiling-2-displays-3840x2160p,Fail\nkms_bw@linear-tiling-3-displays-2560x1440p,Fail\nkms_bw@linear-tiling-3-displays-3840x2160p,Fail\nkms_color@pipe-A-invalid-gamma-lut-sizes,Fail\nkms_plane_scaling@upscale-with-rotation-20x20,Fail\nkms_rmfb@close-fd,Fail",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

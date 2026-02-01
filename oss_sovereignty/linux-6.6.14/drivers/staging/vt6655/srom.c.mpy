@@ -1,0 +1,9 @@
+{
+  "module_name": "srom.c",
+  "hash_id": "378d29f874cf146da69d5d8f9b4aef0165a96f30ea0d25a1a505743338363398",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vt6655/srom.c",
+  "human_readable_source": "\n \n\n#include \"device.h\"\n#include \"mac.h\"\n#include \"srom.h\"\n\n \n\n \n\n \n\n \n\n \n\n \n\n \nunsigned char SROMbyReadEmbedded(void __iomem *iobase,\n\t\t\t\t unsigned char contnt_offset)\n{\n\tunsigned short wDelay, wNoACK;\n\tunsigned char byWait;\n\tunsigned char byData;\n\tunsigned char byOrg;\n\n\tbyData = 0xFF;\n\tbyOrg = ioread8(iobase + MAC_REG_I2MCFG);\n\t \n\tiowrite8(byOrg & (~I2MCFG_NORETRY), iobase + MAC_REG_I2MCFG);\n\tfor (wNoACK = 0; wNoACK < W_MAX_I2CRETRY; wNoACK++) {\n\t\tiowrite8(EEP_I2C_DEV_ID, iobase + MAC_REG_I2MTGID);\n\t\tiowrite8(contnt_offset, iobase + MAC_REG_I2MTGAD);\n\n\t\t \n\t\tiowrite8(I2MCSR_EEMR, iobase + MAC_REG_I2MCSR);\n\t\t \n\t\tfor (wDelay = 0; wDelay < W_MAX_TIMEOUT; wDelay++) {\n\t\t\tbyWait = ioread8(iobase + MAC_REG_I2MCSR);\n\t\t\tif (byWait & (I2MCSR_DONE | I2MCSR_NACK))\n\t\t\t\tbreak;\n\t\t\tudelay(CB_DELAY_LOOP_WAIT);\n\t\t}\n\t\tif ((wDelay < W_MAX_TIMEOUT) &&\n\t\t    (!(byWait & I2MCSR_NACK))) {\n\t\t\tbreak;\n\t\t}\n\t}\n\tbyData = ioread8(iobase + MAC_REG_I2MDIPT);\n\tiowrite8(byOrg, iobase + MAC_REG_I2MCFG);\n\treturn byData;\n}\n\n \nvoid SROMvReadAllContents(void __iomem *iobase, unsigned char *pbyEepromRegs)\n{\n\tint     ii;\n\n\t \n\tfor (ii = 0; ii < EEP_MAX_CONTEXT_SIZE; ii++) {\n\t\t*pbyEepromRegs = SROMbyReadEmbedded(iobase,\n\t\t\t\t\t\t    (unsigned char)ii);\n\t\tpbyEepromRegs++;\n\t}\n}\n\n \nvoid SROMvReadEtherAddress(void __iomem *iobase,\n\t\t\t   unsigned char *pbyEtherAddress)\n{\n\tunsigned char ii;\n\n\t \n\tfor (ii = 0; ii < ETH_ALEN; ii++) {\n\t\t*pbyEtherAddress = SROMbyReadEmbedded(iobase, ii);\n\t\tpbyEtherAddress++;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

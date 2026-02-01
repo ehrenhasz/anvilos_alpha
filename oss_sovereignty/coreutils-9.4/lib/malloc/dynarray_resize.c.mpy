@@ -1,0 +1,9 @@
+{
+  "module_name": "dynarray_resize.c",
+  "hash_id": "3744929c025e9361ab4fbd0ff17f24ec2cdb367acf9170d187addd14219d4659",
+  "original_prompt": "Ingested from coreutils-9.4/lib/malloc/dynarray_resize.c",
+  "human_readable_source": " \n  if (size <= list->allocated)\n    {\n      list->used = size;\n      return true;\n    }\n\n   \n\n  size_t new_size_bytes;\n  if (ckd_mul (&new_size_bytes, size, element_size))\n    {\n       \n      __set_errno (ENOMEM);\n      return false;\n    }\n  void *new_array;\n  if (list->array == scratch)\n    {\n       \n      new_array = malloc (new_size_bytes);\n      if (new_array != NULL && list->array != NULL)\n        memcpy (new_array, list->array, list->used * element_size);\n    }\n  else\n    new_array = realloc (list->array, new_size_bytes);\n  if (new_array == NULL)\n    return false;\n  list->array = new_array;\n  list->allocated = size;\n  list->used = size;\n  return true;\n}\nlibc_hidden_def (__libc_dynarray_resize)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

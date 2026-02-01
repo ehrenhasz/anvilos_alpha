@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fd8b785cb7dabb78ef2bf02a8a20ff6d938db47afc1e7ae7bc5729121bf1c51d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/net/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# S/390 network devices\n#\n\nctcm-y += ctcm_main.o ctcm_fsms.o ctcm_mpc.o ctcm_sysfs.o ctcm_dbug.o\nobj-$(CONFIG_CTCM) += ctcm.o fsm.o\nobj-$(CONFIG_NETIUCV) += netiucv.o fsm.o\nobj-$(CONFIG_SMSGIUCV) += smsgiucv.o\nobj-$(CONFIG_SMSGIUCV_EVENT) += smsgiucv_app.o\nobj-$(CONFIG_LCS) += lcs.o\nqeth-y += qeth_core_sys.o qeth_core_main.o qeth_core_mpc.o qeth_ethtool.o\nobj-$(CONFIG_QETH) += qeth.o\nqeth_l2-y += qeth_l2_main.o qeth_l2_sys.o\nobj-$(CONFIG_QETH_L2) += qeth_l2.o\nqeth_l3-y += qeth_l3_main.o qeth_l3_sys.o\nobj-$(CONFIG_QETH_L3) += qeth_l3.o\n\nism-y := ism_drv.o\nobj-$(CONFIG_ISM) += ism.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

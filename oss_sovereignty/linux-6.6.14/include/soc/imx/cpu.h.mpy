@@ -1,0 +1,9 @@
+{
+  "module_name": "cpu.h",
+  "hash_id": "15942048bb5412703609b71264f221c60b34f777a828134916a922ebcdd751a8",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/imx/cpu.h",
+  "human_readable_source": " \n\n#ifndef __IMX_CPU_H__\n#define __IMX_CPU_H__\n\n#define MXC_CPU_MX1\t\t1\n#define MXC_CPU_MX21\t\t21\n#define MXC_CPU_MX25\t\t25\n#define MXC_CPU_MX27\t\t27\n#define MXC_CPU_MX31\t\t31\n#define MXC_CPU_MX35\t\t35\n#define MXC_CPU_MX50\t\t50\n#define MXC_CPU_MX51\t\t51\n#define MXC_CPU_MX53\t\t53\n#define MXC_CPU_IMX6SL\t\t0x60\n#define MXC_CPU_IMX6DL\t\t0x61\n#define MXC_CPU_IMX6SX\t\t0x62\n#define MXC_CPU_IMX6Q\t\t0x63\n#define MXC_CPU_IMX6UL\t\t0x64\n#define MXC_CPU_IMX6ULL\t\t0x65\n \n#define MXC_CPU_IMX6ULZ\t\t0x6b\n#define MXC_CPU_IMX6SLL\t\t0x67\n#define MXC_CPU_IMX7D\t\t0x72\n#define MXC_CPU_IMX7ULP\t\t0xff\n\n#define MXC_CPU_VFx10\t\t0x010\n#define MXC_CPU_VF500\t\t0x500\n#define MXC_CPU_VF510\t\t(MXC_CPU_VF500 | MXC_CPU_VFx10)\n#define MXC_CPU_VF600\t\t0x600\n#define MXC_CPU_VF610\t\t(MXC_CPU_VF600 | MXC_CPU_VFx10)\n\n#ifndef __ASSEMBLY__\nextern unsigned int __mxc_cpu_type;\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

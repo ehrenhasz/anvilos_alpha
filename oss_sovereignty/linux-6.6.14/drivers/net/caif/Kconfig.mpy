@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "cd224f1e18bbe1e45596584818e7440b890b7733d8cb71598e23732287316e31",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/caif/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# CAIF physical drivers\n#\n\nmenuconfig CAIF_DRIVERS\n\tbool \"CAIF transport drivers\"\n\tdepends on CAIF\n\thelp\n\t  Enable this to see CAIF physical drivers.\n\nif CAIF_DRIVERS\n\nconfig CAIF_TTY\n\ttristate \"CAIF TTY transport driver\"\n\tdepends on CAIF && TTY\n\tdefault n\n\thelp\n\t  The CAIF TTY transport driver is a Line Discipline (ldisc)\n\t  identified as N_CAIF. When this ldisc is opened from user space\n\t  it will redirect the TTY's traffic into the CAIF stack.\n\nconfig CAIF_VIRTIO\n\ttristate \"CAIF virtio transport driver\"\n\tdepends on CAIF && HAS_DMA\n\tselect VHOST_RING\n\tselect VIRTIO\n\tselect GENERIC_ALLOCATOR\n\tdefault n\n\thelp\n\t  The CAIF driver for CAIF over Virtio.\n\nendif # CAIF_DRIVERS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "94f75772a2a593e83f712c2830ba10c5b556d586ffcfd59289279535d75b58a0",
+  "original_prompt": "Ingested from linux-6.6.14/net/rds/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_RDS) += rds.o\nrds-y :=\taf_rds.o bind.o cong.o connection.o info.o message.o   \\\n\t\t\trecv.o send.o stats.o sysctl.o threads.o transport.o \\\n\t\t\tloop.o page.o rdma.o\n\nobj-$(CONFIG_RDS_RDMA) += rds_rdma.o\nrds_rdma-y :=\trdma_transport.o \\\n\t\t\tib.o ib_cm.o ib_recv.o ib_ring.o ib_send.o ib_stats.o \\\n\t\t\tib_sysctl.o ib_rdma.o ib_frmr.o\n\n\nobj-$(CONFIG_RDS_TCP) += rds_tcp.o\nrds_tcp-y :=\t\ttcp.o tcp_connect.o tcp_listen.o tcp_recv.o \\\n\t\t\ttcp_send.o tcp_stats.o\n\nccflags-$(CONFIG_RDS_DEBUG)\t:=\t-DRDS_DEBUG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

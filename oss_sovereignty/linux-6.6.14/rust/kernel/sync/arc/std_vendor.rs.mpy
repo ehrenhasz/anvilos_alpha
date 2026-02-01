@@ -1,0 +1,9 @@
+{
+  "module_name": "std_vendor.rs",
+  "hash_id": "c5c88945a10392dd5cdaff13d1c0882c69bcbb6da69cbff1409ebd15e36f527c",
+  "original_prompt": "Ingested from linux-6.6.14/rust/kernel/sync/arc/std_vendor.rs",
+  "human_readable_source": "// SPDX-License-Identifier: Apache-2.0 OR MIT\n\n//! The contents of this file come from the Rust standard library, hosted in\n//! the <https://github.com/rust-lang/rust> repository, licensed under\n//! \"Apache-2.0 OR MIT\" and adapted for kernel use. For copyright details,\n//! see <https://github.com/rust-lang/rust/blob/master/COPYRIGHT>.\n\nuse crate::sync::{arc::ArcInner, Arc};\nuse core::any::Any;\n\nimpl Arc<dyn Any + Send + Sync> {\n    /// Attempt to downcast the `Arc<dyn Any + Send + Sync>` to a concrete type.\n    pub fn downcast<T>(self) -> core::result::Result<Arc<T>, Self>\n    where\n        T: Any + Send + Sync,\n    {\n        if (*self).is::<T>() {\n            // SAFETY: We have just checked that the type is correct, so we can cast the pointer.\n            unsafe {\n                let ptr = self.ptr.cast::<ArcInner<T>>();\n                core::mem::forget(self);\n                Ok(Arc::from_inner(ptr))\n            }\n        } else {\n            Err(self)\n        }\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

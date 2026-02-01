@@ -1,0 +1,9 @@
+{
+  "module_name": "main.c",
+  "hash_id": "583f0fd7bc57d2c09a0cc9df105d167ecfddb40c0b9d06ff47bf13b31799c7cc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8192c/main.c",
+  "human_readable_source": "\n \n\n#include \"../wifi.h\"\n#include <linux/module.h>\n\nMODULE_AUTHOR(\"lizhaoming\t<chaoming_li@realsil.com.cn>\");\nMODULE_AUTHOR(\"Realtek WlanFAE\t<wlanfae@realtek.com>\");\nMODULE_AUTHOR(\"Georgia\t\t<georgia@realtek.com>\");\nMODULE_AUTHOR(\"Ziv Huang\t<ziv_huang@realtek.com>\");\nMODULE_AUTHOR(\"Larry Finger\t<Larry.Finger@lwfinger.net>\");\nMODULE_LICENSE(\"GPL\");\nMODULE_DESCRIPTION(\"Realtek 8192C/8188C 802.11n PCI wireless\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

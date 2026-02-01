@@ -1,0 +1,9 @@
+{
+  "module_name": "fmt.x",
+  "hash_id": "4402f317b6df93a046ae7599a26cd3470b3c129c40c5e42c0be2b3a1ed0d6d6a",
+  "original_prompt": "Ingested from coreutils-9.4/man/fmt.x",
+  "human_readable_source": "[NAME]\nfmt \\- simple optimal text formatter\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

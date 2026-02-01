@@ -1,0 +1,9 @@
+{
+  "module_name": "xgetcwd.h",
+  "hash_id": "3d0501aeb7c53660a89d9a9a8d1f8fe775f50cb2762e17507606f8b10f965289",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xgetcwd.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stdlib.h>\n\nextern char *xgetcwd (void)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

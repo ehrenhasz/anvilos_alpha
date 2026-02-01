@@ -1,0 +1,9 @@
+{
+  "module_name": "lsm_cgroup_nonvoid.c",
+  "hash_id": "5a08381bfeb2780b120f97c3b6d21c950313346518fafd346acd202f10470492",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/lsm_cgroup_nonvoid.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"lsm_cgroup/inet_csk_clone\")\nint BPF_PROG(nonvoid_socket_clone, struct sock *newsk, const struct request_sock *req)\n{\n\t \n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "14b68de18f714660bcb7362ccdc7952d5a3da32fc7a1bfeae9402d08a55c1538",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/brocade/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the QLogic BR-series device drivers.\n#\n\nobj-$(CONFIG_BNA) += bna/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

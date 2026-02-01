@@ -1,0 +1,9 @@
+{
+  "module_name": "kf_cos.c",
+  "hash_id": "98935983454f0e02adca0409eaa5047f275e68e70152821e9be622b31abac46b",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/kf_cos.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"fdlibm.h\"\n\n#ifdef __STDC__\nstatic const float \n#else\nstatic float \n#endif\none =  1.0000000000e+00f,  \nC1  =  4.1666667908e-02f,  \nC2  = -1.3888889225e-03f,  \nC3  =  2.4801587642e-05f,  \nC4  = -2.7557314297e-07f,  \nC5  =  2.0875723372e-09f,  \nC6  = -1.1359647598e-11f;  \n\n#ifdef __STDC__\n\tfloat __kernel_cosf(float x, float y)\n#else\n\tfloat __kernel_cosf(x, y)\n\tfloat x,y;\n#endif\n{\n\tfloat a,hz,z,r,qx;\n\t__int32_t ix;\n\tGET_FLOAT_WORD(ix,x);\n\tix &= 0x7fffffff;\t\t\t \n\tif(ix<0x32000000) {\t\t\t \n\t    if(((int)x)==0) return one;\t\t \n\t}\n\tz  = x*x;\n\tr  = z*(C1+z*(C2+z*(C3+z*(C4+z*(C5+z*C6)))));\n\tif(ix < 0x3e99999a) \t\t\t  \n\t    return one - ((float)0.5*z - (z*r - x*y));\n\telse {\n\t    if(ix > 0x3f480000) {\t\t \n\t\tqx = (float)0.28125;\n\t    } else {\n\t        SET_FLOAT_WORD(qx,ix-0x01000000);\t \n\t    }\n\t    hz = (float)0.5*z-qx;\n\t    a  = one-qx;\n\t    return a - (hz - (z*r-x*y));\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

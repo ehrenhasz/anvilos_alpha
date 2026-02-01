@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_device_access.h",
+  "hash_id": "775c5085f050a52d2c99c9bb3fae5380a741defc4363c303ab466ddeecae9734",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/ia_css_device_access.h",
+  "human_readable_source": " \n \n\n#ifndef _IA_CSS_DEVICE_ACCESS_H\n#define _IA_CSS_DEVICE_ACCESS_H\n\n \n\n#include <type_support.h>  \n#include <system_local.h>  \n#include <ia_css_env.h>    \n\nvoid\nia_css_device_access_init(const struct ia_css_hw_access_env *env);\n\nuint8_t\nia_css_device_load_uint8(const hrt_address addr);\n\nuint16_t\nia_css_device_load_uint16(const hrt_address addr);\n\nuint32_t\nia_css_device_load_uint32(const hrt_address addr);\n\nuint64_t\nia_css_device_load_uint64(const hrt_address addr);\n\nvoid\nia_css_device_store_uint8(const hrt_address addr, const uint8_t data);\n\nvoid\nia_css_device_store_uint16(const hrt_address addr, const uint16_t data);\n\nvoid\nia_css_device_store_uint32(const hrt_address addr, const uint32_t data);\n\nvoid\nia_css_device_store_uint64(const hrt_address addr, const uint64_t data);\n\nvoid\nia_css_device_load(const hrt_address addr, void *data, const size_t size);\n\nvoid\nia_css_device_store(const hrt_address addr, const void *data,\n\t\t    const size_t size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

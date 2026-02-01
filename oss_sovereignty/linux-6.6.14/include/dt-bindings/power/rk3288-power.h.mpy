@@ -1,0 +1,9 @@
+{
+  "module_name": "rk3288-power.h",
+  "hash_id": "90ca6faabb8446ae8bdb77e5c7d81ca14353e2139d9167184e6b12fa735c6e89",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/rk3288-power.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_POWER_RK3288_POWER_H__\n#define __DT_BINDINGS_POWER_RK3288_POWER_H__\n\n \n\n \n#define RK3288_PD_A17_0\t\t0\n#define RK3288_PD_A17_1\t\t1\n#define RK3288_PD_A17_2\t\t2\n#define RK3288_PD_A17_3\t\t3\n#define RK3288_PD_SCU\t\t4\n#define RK3288_PD_DEBUG\t\t5\n#define RK3288_PD_MEM\t\t6\n\n \n#define RK3288_PD_BUS\t\t7\n#define RK3288_PD_PERI\t\t8\n#define RK3288_PD_VIO\t\t9\n#define RK3288_PD_ALIVE\t\t10\n#define RK3288_PD_HEVC\t\t11\n#define RK3288_PD_VIDEO\t\t12\n\n \n#define RK3288_PD_GPU\t\t13\n\n \n#define RK3288_PD_PMU\t\t14\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

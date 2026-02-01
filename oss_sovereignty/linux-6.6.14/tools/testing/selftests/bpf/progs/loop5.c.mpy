@@ -1,0 +1,9 @@
+{
+  "module_name": "loop5.c",
+  "hash_id": "bea6a76860da46a4fdb18b9ff8d571b71e6d8e07c7314854d4b777bab54ebadb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/loop5.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nSEC(\"socket\")\nint while_true(volatile struct __sk_buff* skb)\n{\n\tint i = 0;\n\n\twhile (1) {\n\t\tif (skb->len)\n\t\t\ti += 3;\n\t\telse\n\t\t\ti += 7;\n\t\tif (i == 9)\n\t\t\tbreak;\n\t\tbarrier();\n\t\tif (i == 10)\n\t\t\tbreak;\n\t\tbarrier();\n\t\tif (i == 13)\n\t\t\tbreak;\n\t\tbarrier();\n\t\tif (i == 14)\n\t\t\tbreak;\n\t}\n\treturn i;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

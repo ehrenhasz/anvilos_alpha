@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn301_optc.h",
+  "hash_id": "413ac8684a214418dd25fcc101da2ad3175dbd272c46b996528e2e5b49bd98c9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn301/dcn301_optc.h",
+  "human_readable_source": " \n\n#ifndef __DC_OPTC_DCN301_H__\n#define __DC_OPTC_DCN301_H__\n\n#include \"dcn20/dcn20_optc.h\"\n#include \"dcn30/dcn30_optc.h\"\n\nvoid dcn301_timing_generator_init(struct optc *optc1);\nvoid optc301_setup_manual_trigger(struct timing_generator *optc);\nvoid optc301_set_drr(struct timing_generator *optc, const struct drr_params *params);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

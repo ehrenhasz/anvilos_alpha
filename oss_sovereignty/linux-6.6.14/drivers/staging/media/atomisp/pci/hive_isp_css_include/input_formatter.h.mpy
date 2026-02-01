@@ -1,0 +1,9 @@
+{
+  "module_name": "input_formatter.h",
+  "hash_id": "09ff82b2d39fe137015fcb9e4826358e1b64a69418f65cb594b34acde2321153",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/input_formatter.h",
+  "human_readable_source": " \n \n\n#ifndef __INPUT_FORMATTER_H_INCLUDED__\n#define __INPUT_FORMATTER_H_INCLUDED__\n\n \n\n#include \"system_local.h\"\n#include \"input_formatter_local.h\"\n\n#ifndef __INLINE_INPUT_FORMATTER__\n#define STORAGE_CLASS_INPUT_FORMATTER_H extern\n#define STORAGE_CLASS_INPUT_FORMATTER_C\n#include \"input_formatter_public.h\"\n#else   \n#define STORAGE_CLASS_INPUT_FORMATTER_H static inline\n#define STORAGE_CLASS_INPUT_FORMATTER_C static inline\n#include \"input_formatter_private.h\"\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

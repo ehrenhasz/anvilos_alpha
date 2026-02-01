@@ -1,0 +1,9 @@
+{
+  "module_name": "vcap_tc.h",
+  "hash_id": "99ebc16237bc010eea7731c67ee14d98861af482fe3f310219048e4965f17f62",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/microchip/vcap/vcap_tc.h",
+  "human_readable_source": " \n \n\n#ifndef __VCAP_TC__\n#define __VCAP_TC__\n\nstruct vcap_tc_flower_parse_usage {\n\tstruct flow_cls_offload *fco;\n\tstruct flow_rule *frule;\n\tstruct vcap_rule *vrule;\n\tstruct vcap_admin *admin;\n\tu16 l3_proto;\n\tu8 l4_proto;\n\tu16 tpid;\n\tunsigned long long used_keys;\n};\n\nint vcap_tc_flower_handler_ethaddr_usage(struct vcap_tc_flower_parse_usage *st);\nint vcap_tc_flower_handler_ipv4_usage(struct vcap_tc_flower_parse_usage *st);\nint vcap_tc_flower_handler_ipv6_usage(struct vcap_tc_flower_parse_usage *st);\nint vcap_tc_flower_handler_portnum_usage(struct vcap_tc_flower_parse_usage *st);\nint vcap_tc_flower_handler_cvlan_usage(struct vcap_tc_flower_parse_usage *st);\nint vcap_tc_flower_handler_vlan_usage(struct vcap_tc_flower_parse_usage *st,\n\t\t\t\t      enum vcap_key_field vid_key,\n\t\t\t\t      enum vcap_key_field pcp_key);\nint vcap_tc_flower_handler_tcp_usage(struct vcap_tc_flower_parse_usage *st);\nint vcap_tc_flower_handler_arp_usage(struct vcap_tc_flower_parse_usage *st);\nint vcap_tc_flower_handler_ip_usage(struct vcap_tc_flower_parse_usage *st);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

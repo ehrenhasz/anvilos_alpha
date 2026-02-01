@@ -1,0 +1,9 @@
+{
+  "module_name": "__inline.m4",
+  "hash_id": "7d86f56a177a61e55e2f5b773a6ac90d1e9c4298a5c7505348df064260e834fc",
+  "original_prompt": "Ingested from coreutils-9.4/m4/__inline.m4",
+  "human_readable_source": "# Test for __inline keyword\ndnl Copyright 2017-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl___INLINE],\n[\n  AC_CACHE_CHECK([whether the compiler supports the __inline keyword],\n    [gl_cv_c___inline],\n    [AC_COMPILE_IFELSE(\n       [AC_LANG_PROGRAM(\n         [[typedef int foo_t;\n           static __inline foo_t foo (void) { return 0; }]],\n         [[return foo ();]])],\n       [gl_cv_c___inline=yes],\n       [gl_cv_c___inline=no])])\n  if test $gl_cv_c___inline = yes; then\n    AC_DEFINE([HAVE___INLINE], [1],\n      [Define to 1 if the compiler supports the keyword '__inline'.])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

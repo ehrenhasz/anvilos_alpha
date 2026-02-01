@@ -1,0 +1,9 @@
+{
+  "module_name": "mcu.h",
+  "hash_id": "e695140b62afb472511b8cab43073670a1df6d05af29bcb45d583b28f8181010",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/mt7921/mcu.h",
+  "human_readable_source": " \n \n\n#ifndef __MT7921_MCU_H\n#define __MT7921_MCU_H\n\n#include \"../mt76_connac_mcu.h\"\n\nstruct mt7921_mcu_tx_done_event {\n\tu8 pid;\n\tu8 status;\n\t__le16 seq;\n\n\tu8 wlan_idx;\n\tu8 tx_cnt;\n\t__le16 tx_rate;\n\n\tu8 flag;\n\tu8 tid;\n\tu8 rsp_rate;\n\tu8 mcs;\n\n\tu8 bw;\n\tu8 tx_pwr;\n\tu8 reason;\n\tu8 rsv0[1];\n\n\t__le32 delay;\n\t__le32 timestamp;\n\t__le32 applied_flag;\n\tu8 txs[28];\n\n\tu8 rsv1[32];\n} __packed;\n\n \nenum {\n\tMCU_EXT_EVENT_RATE_REPORT = 0x87,\n};\n\nstruct mt7921_mcu_eeprom_info {\n\t__le32 addr;\n\t__le32 valid;\n\tu8 data[MT7921_EEPROM_BLOCK_SIZE];\n} __packed;\n\n#define MT_RA_RATE_NSS\t\t\tGENMASK(8, 6)\n#define MT_RA_RATE_MCS\t\t\tGENMASK(3, 0)\n#define MT_RA_RATE_TX_MODE\t\tGENMASK(12, 9)\n#define MT_RA_RATE_DCM_EN\t\tBIT(4)\n#define MT_RA_RATE_BW\t\t\tGENMASK(14, 13)\n\nenum {\n\tMT_EBF = BIT(0),\t \n\tMT_IBF = BIT(1)\t\t \n};\n\nstruct mt7921_mcu_ant_id_config {\n\tu8 ant_id[4];\n} __packed;\n\nstruct mt7921_txpwr_req {\n\tu8 ver;\n\tu8 action;\n\t__le16 len;\n\tu8 dbdc_idx;\n\tu8 rsv[3];\n} __packed;\n\nstruct mt7921_txpwr_event {\n\tu8 ver;\n\tu8 action;\n\t__le16 len;\n\tstruct mt7921_txpwr txpwr;\n} __packed;\n\nenum {\n\tTM_SWITCH_MODE,\n\tTM_SET_AT_CMD,\n\tTM_QUERY_AT_CMD,\n};\n\nenum {\n\tMT7921_TM_NORMAL,\n\tMT7921_TM_TESTMODE,\n\tMT7921_TM_ICAP,\n\tMT7921_TM_ICAP_OVERLAP,\n\tMT7921_TM_WIFISPECTRUM,\n};\n\nstruct mt7921_rftest_cmd {\n\tu8 action;\n\tu8 rsv[3];\n\t__le32 param0;\n\t__le32 param1;\n} __packed;\n\nstruct mt7921_rftest_evt {\n\t__le32 param0;\n\t__le32 param1;\n} __packed;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

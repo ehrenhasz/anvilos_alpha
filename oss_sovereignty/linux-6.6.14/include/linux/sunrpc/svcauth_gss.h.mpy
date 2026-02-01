@@ -1,0 +1,9 @@
+{
+  "module_name": "svcauth_gss.h",
+  "hash_id": "510142555a2b4c85084158c2f9cbb88cbb6aa8365c092f2a19cd207acc582a6f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sunrpc/svcauth_gss.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_SUNRPC_SVCAUTH_GSS_H\n#define _LINUX_SUNRPC_SVCAUTH_GSS_H\n\n#include <linux/sched.h>\n#include <linux/sunrpc/types.h>\n#include <linux/sunrpc/xdr.h>\n#include <linux/sunrpc/svcauth.h>\n#include <linux/sunrpc/svcsock.h>\n#include <linux/sunrpc/auth_gss.h>\n\nint gss_svc_init(void);\nvoid gss_svc_shutdown(void);\nint gss_svc_init_net(struct net *net);\nvoid gss_svc_shutdown_net(struct net *net);\nstruct auth_domain *svcauth_gss_register_pseudoflavor(u32 pseudoflavor,\n\t\t\t\t\t\t      char *name);\nu32 svcauth_gss_flavor(struct auth_domain *dom);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

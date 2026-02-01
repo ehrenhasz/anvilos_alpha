@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "cb6c8a67f4f90deb72f1ba7b6ddd8eacde4331310d3c087d85d1baecbe44e33f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/mchp_pci1xxxx/Kconfig",
+  "human_readable_source": "config GP_PCI1XXXX\n       tristate \"Microchip PCI1XXXX PCIe to GPIO Expander + OTP/EEPROM manager\"\n       depends on PCI\n       depends on GPIOLIB\n       depends on NVMEM_SYSFS\n       select GPIOLIB_IRQCHIP\n       select AUXILIARY_BUS\n       help\n         PCI1XXXX is a PCIe GEN 3 switch with one of the endpoints having\n         multiple functions and one of the functions is a GPIO controller\n         which also has registers to interface with the OTP and EEPROM.\n         Select yes, no or module here to include or exclude the driver\n         for the GPIO function.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

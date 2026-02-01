@@ -1,0 +1,9 @@
+{
+  "module_name": "errors.h",
+  "hash_id": "3cd7eafd1aa36de044c46671f335670bcb49ee52035ff6b1e90aec0c2b4cf4d4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/most/dim2/errors.h",
+  "human_readable_source": " \n \n\n#ifndef _MOST_DIM_ERRORS_H\n#define _MOST_DIM_ERRORS_H\n\n \nenum dim_errors_t {\n\t \n\tDIM_NO_ERROR = 0,\n\n\t \n\tDIM_INIT_ERR_DIM_ADDR = 0x10,\n\n\t \n\tDIM_INIT_ERR_MLB_CLOCK,\n\n\t \n\tDIM_INIT_ERR_CHANNEL_ADDRESS,\n\n\t \n\tDIM_INIT_ERR_OUT_OF_MEMORY,\n\n\t \n\tDIM_ERR_DRIVER_NOT_INITIALIZED = 0x20,\n\n\t \n\tDIM_ERR_BAD_CONFIG,\n\n\t \n\tDIM_ERR_BAD_BUFFER_SIZE,\n\n\tDIM_ERR_UNDERFLOW,\n\n\tDIM_ERR_OVERFLOW,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

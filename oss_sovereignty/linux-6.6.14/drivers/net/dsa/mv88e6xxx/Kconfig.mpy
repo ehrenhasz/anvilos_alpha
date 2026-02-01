@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5afc7cae67bcef50533c247ced49246cee691a8f8c6a4550db8ce4ff730d26b5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/mv88e6xxx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NET_DSA_MV88E6XXX\n\ttristate \"Marvell 88E6xxx Ethernet switch fabric support\"\n\tdepends on NET_DSA\n\tselect IRQ_DOMAIN\n\tselect NET_DSA_TAG_EDSA\n\tselect NET_DSA_TAG_DSA\n\thelp\n\t  This driver adds support for most of the Marvell 88E6xxx models of\n\t  Ethernet switch chips, except 88E6060.\n\nconfig NET_DSA_MV88E6XXX_PTP\n\tbool \"PTP support for Marvell 88E6xxx\"\n\tdefault n\n\tdepends on (NET_DSA_MV88E6XXX = y && PTP_1588_CLOCK = y) || \\\n\t           (NET_DSA_MV88E6XXX = m && PTP_1588_CLOCK)\n\thelp\n\t  Say Y to enable PTP hardware timestamping on Marvell 88E6xxx switch\n\t  chips that support it.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

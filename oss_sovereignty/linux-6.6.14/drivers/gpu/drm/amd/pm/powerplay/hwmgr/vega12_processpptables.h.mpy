@@ -1,0 +1,9 @@
+{
+  "module_name": "vega12_processpptables.h",
+  "hash_id": "1285bb359ef9118e79ad0649d37359b26ad1f2a733efaaa8fb5853ea0622912c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/hwmgr/vega12_processpptables.h",
+  "human_readable_source": " \n\n#ifndef VEGA12_PROCESSPPTABLES_H\n#define VEGA12_PROCESSPPTABLES_H\n\n#include \"hwmgr.h\"\n\nenum Vega12_I2CLineID {\n\tVega12_I2CLineID_DDC1 = 0x90,\n\tVega12_I2CLineID_DDC2 = 0x91,\n\tVega12_I2CLineID_DDC3 = 0x92,\n\tVega12_I2CLineID_DDC4 = 0x93,\n\tVega12_I2CLineID_DDC5 = 0x94,\n\tVega12_I2CLineID_DDC6 = 0x95,\n\tVega12_I2CLineID_SCLSDA = 0x96,\n\tVega12_I2CLineID_DDCVGA = 0x97\n};\n\n#define Vega12_I2C_DDC1DATA          0\n#define Vega12_I2C_DDC1CLK           1\n#define Vega12_I2C_DDC2DATA          2\n#define Vega12_I2C_DDC2CLK           3\n#define Vega12_I2C_DDC3DATA          4\n#define Vega12_I2C_DDC3CLK           5\n#define Vega12_I2C_SDA               40\n#define Vega12_I2C_SCL               41\n#define Vega12_I2C_DDC4DATA          65\n#define Vega12_I2C_DDC4CLK           66\n#define Vega12_I2C_DDC5DATA          0x48\n#define Vega12_I2C_DDC5CLK           0x49\n#define Vega12_I2C_DDC6DATA          0x4a\n#define Vega12_I2C_DDC6CLK           0x4b\n#define Vega12_I2C_DDCVGADATA        0x4c\n#define Vega12_I2C_DDCVGACLK         0x4d\n\nextern const struct pp_table_func vega12_pptable_funcs;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

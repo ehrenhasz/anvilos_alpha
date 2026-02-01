@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_common.h",
+  "hash_id": "285e5332d68f06853c71410fa3305d3912194908f6b5ad30aa6e8390102091bc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/uapi/linux/bpf_common.h",
+  "human_readable_source": " \n#ifndef _UAPI__LINUX_BPF_COMMON_H__\n#define _UAPI__LINUX_BPF_COMMON_H__\n\n \n#define BPF_CLASS(code) ((code) & 0x07)\n#define\t\tBPF_LD\t\t0x00\n#define\t\tBPF_LDX\t\t0x01\n#define\t\tBPF_ST\t\t0x02\n#define\t\tBPF_STX\t\t0x03\n#define\t\tBPF_ALU\t\t0x04\n#define\t\tBPF_JMP\t\t0x05\n#define\t\tBPF_RET\t\t0x06\n#define\t\tBPF_MISC        0x07\n\n \n#define BPF_SIZE(code)  ((code) & 0x18)\n#define\t\tBPF_W\t\t0x00  \n#define\t\tBPF_H\t\t0x08  \n#define\t\tBPF_B\t\t0x10  \n \n#define BPF_MODE(code)  ((code) & 0xe0)\n#define\t\tBPF_IMM\t\t0x00\n#define\t\tBPF_ABS\t\t0x20\n#define\t\tBPF_IND\t\t0x40\n#define\t\tBPF_MEM\t\t0x60\n#define\t\tBPF_LEN\t\t0x80\n#define\t\tBPF_MSH\t\t0xa0\n\n \n#define BPF_OP(code)    ((code) & 0xf0)\n#define\t\tBPF_ADD\t\t0x00\n#define\t\tBPF_SUB\t\t0x10\n#define\t\tBPF_MUL\t\t0x20\n#define\t\tBPF_DIV\t\t0x30\n#define\t\tBPF_OR\t\t0x40\n#define\t\tBPF_AND\t\t0x50\n#define\t\tBPF_LSH\t\t0x60\n#define\t\tBPF_RSH\t\t0x70\n#define\t\tBPF_NEG\t\t0x80\n#define\t\tBPF_MOD\t\t0x90\n#define\t\tBPF_XOR\t\t0xa0\n\n#define\t\tBPF_JA\t\t0x00\n#define\t\tBPF_JEQ\t\t0x10\n#define\t\tBPF_JGT\t\t0x20\n#define\t\tBPF_JGE\t\t0x30\n#define\t\tBPF_JSET        0x40\n#define BPF_SRC(code)   ((code) & 0x08)\n#define\t\tBPF_K\t\t0x00\n#define\t\tBPF_X\t\t0x08\n\n#ifndef BPF_MAXINSNS\n#define BPF_MAXINSNS 4096\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

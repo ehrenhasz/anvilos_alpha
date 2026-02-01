@@ -1,0 +1,9 @@
+{
+  "module_name": "THIRDPARTYLICENSE",
+  "hash_id": "3a865082a80ec884d2333bb9a1fc110286835fdaf8cbb7d5810e1a7c98123edc",
+  "original_prompt": "Ingested from zfs-2.2.2/module/icp/algs/skein/THIRDPARTYLICENSE",
+  "human_readable_source": "Implementation of the Skein hash function.\nSource code author: Doug Whiting, 2008.\nThis algorithm and source code is released to the public domain.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

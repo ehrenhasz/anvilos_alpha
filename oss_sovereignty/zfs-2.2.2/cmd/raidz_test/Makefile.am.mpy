@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "1321831a7a8ccebba810b69254db8e766bce854c510c46a53c4e9b07438806c1",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/raidz_test/Makefile.am",
+  "human_readable_source": "raidz_test_CFLAGS   = $(AM_CFLAGS)   $(KERNEL_CFLAGS)\nraidz_test_CPPFLAGS = $(AM_CPPFLAGS) $(FORCEDEBUG_CPPFLAGS)\n\nbin_PROGRAMS    += raidz_test\nCPPCHECKTARGETS += raidz_test\n\nraidz_test_SOURCES = \\\n\t%D%/raidz_bench.c \\\n\t%D%/raidz_test.c \\\n\t%D%/raidz_test.h\n\nraidz_test_LDADD = \\\n\tlibzpool.la \\\n\tlibzfs_core.la\n\nraidz_test_LDADD += -lm\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

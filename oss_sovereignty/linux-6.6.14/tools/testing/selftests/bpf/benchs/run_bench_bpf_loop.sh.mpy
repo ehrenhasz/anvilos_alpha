@@ -1,0 +1,9 @@
+{
+  "module_name": "run_bench_bpf_loop.sh",
+  "hash_id": "f3c9acd4bcda5a5943d74a5272ccd26a1587d955d4364664863b6f5e8afd0c38",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/benchs/run_bench_bpf_loop.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nsource ./benchs/run_common.sh\n\nset -eufo pipefail\n\nfor t in 1 4 8 12 16; do\nfor i in 10 100 500 1000 5000 10000 50000 100000 500000 1000000; do\nsubtitle \"nr_loops: $i, nr_threads: $t\"\n\tsummarize_ops \"bpf_loop: \" \\\n\t    \"$($RUN_BENCH -p $t --nr_loops $i bpf-loop)\"\n\tprintf \"\\n\"\ndone\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

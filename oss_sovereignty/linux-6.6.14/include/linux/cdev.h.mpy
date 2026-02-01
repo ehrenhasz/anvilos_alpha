@@ -1,0 +1,9 @@
+{
+  "module_name": "cdev.h",
+  "hash_id": "79c5af8d43c4c3709710bba52f595a730936497aa00c3f11d71efc4586d53a05",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cdev.h",
+  "human_readable_source": " \n#ifndef _LINUX_CDEV_H\n#define _LINUX_CDEV_H\n\n#include <linux/kobject.h>\n#include <linux/kdev_t.h>\n#include <linux/list.h>\n#include <linux/device.h>\n\nstruct file_operations;\nstruct inode;\nstruct module;\n\nstruct cdev {\n\tstruct kobject kobj;\n\tstruct module *owner;\n\tconst struct file_operations *ops;\n\tstruct list_head list;\n\tdev_t dev;\n\tunsigned int count;\n} __randomize_layout;\n\nvoid cdev_init(struct cdev *, const struct file_operations *);\n\nstruct cdev *cdev_alloc(void);\n\nvoid cdev_put(struct cdev *p);\n\nint cdev_add(struct cdev *, dev_t, unsigned);\n\nvoid cdev_set_parent(struct cdev *p, struct kobject *kobj);\nint cdev_device_add(struct cdev *cdev, struct device *dev);\nvoid cdev_device_del(struct cdev *cdev, struct device *dev);\n\nvoid cdev_del(struct cdev *);\n\nvoid cd_forget(struct inode *);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

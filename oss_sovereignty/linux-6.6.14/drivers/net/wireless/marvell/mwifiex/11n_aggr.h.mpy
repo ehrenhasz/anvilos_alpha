@@ -1,0 +1,9 @@
+{
+  "module_name": "11n_aggr.h",
+  "hash_id": "2f4f9ebd3e0031a636d8402406d99aa93c6e37069f0329a51d19bb0e7ce6fb60",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/marvell/mwifiex/11n_aggr.h",
+  "human_readable_source": " \n \n\n#ifndef _MWIFIEX_11N_AGGR_H_\n#define _MWIFIEX_11N_AGGR_H_\n\n#define PKT_TYPE_AMSDU\t0xE6\n#define MIN_NUM_AMSDU 2\n\nint mwifiex_11n_deaggregate_pkt(struct mwifiex_private *priv,\n\t\t\t\tstruct sk_buff *skb);\nint mwifiex_11n_aggregate_pkt(struct mwifiex_private *priv,\n\t\t\t      struct mwifiex_ra_list_tbl *ptr,\n\t\t\t      int ptr_index)\n\t\t\t      __releases(&priv->wmm.ra_list_spinlock);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

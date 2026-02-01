@@ -1,0 +1,9 @@
+{
+  "module_name": "sti_awg_utils.h",
+  "hash_id": "b20618b03f78dc6dbddf8dc9a876fa455ec73d7be16c519f675712d4f2ec3aa3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sti/sti_awg_utils.h",
+  "human_readable_source": " \n \n\n#ifndef _STI_AWG_UTILS_H_\n#define _STI_AWG_UTILS_H_\n\n#include <linux/types.h>\n\n#define AWG_MAX_INST 64\n\nstruct awg_code_generation_params {\n\tu32 *ram_code;\n\tu8 instruction_offset;\n};\n\nstruct awg_timing {\n\tu32 total_lines;\n\tu32 active_lines;\n\tu32 blanking_lines;\n\tu32 trailing_lines;\n\tu32 total_pixels;\n\tu32 active_pixels;\n\tu32 blanking_pixels;\n\tu32 trailing_pixels;\n\tu32 blanking_level;\n};\n\nint sti_awg_generate_code_data_enable_mode(\n\t\tstruct awg_code_generation_params *fw_gen_params,\n\t\tstruct awg_timing *timing);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

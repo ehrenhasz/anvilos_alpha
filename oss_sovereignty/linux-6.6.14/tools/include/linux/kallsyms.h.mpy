@@ -1,0 +1,9 @@
+{
+  "module_name": "kallsyms.h",
+  "hash_id": "6abb81dafaa664a7960e25eb8f97ee68b9d23228c13136976931492ffa96e45c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/kallsyms.h",
+  "human_readable_source": " \n#ifndef _LIBLOCKDEP_LINUX_KALLSYMS_H_\n#define _LIBLOCKDEP_LINUX_KALLSYMS_H_\n\n#include <linux/kernel.h>\n#include <stdio.h>\n#include <unistd.h>\n\n#define KSYM_NAME_LEN 512\n\nstruct module;\n\nstatic inline const char *kallsyms_lookup(unsigned long addr,\n\t\t\t\t\t  unsigned long *symbolsize,\n\t\t\t\t\t  unsigned long *offset,\n\t\t\t\t\t  char **modname, char *namebuf)\n{\n\treturn NULL;\n}\n\n#include <execinfo.h>\n#include <stdlib.h>\nstatic inline void print_ip_sym(const char *loglvl, unsigned long ip)\n{\n\tchar **name;\n\n\tname = backtrace_symbols((void **)&ip, 1);\n\n\tdprintf(STDOUT_FILENO, \"%s\\n\", *name);\n\n\tfree(name);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0abb2f0b3387c2f9128aafc129a0d074ede03b5c379b332203ece3862fa6040d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ipvlan/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Ethernet Ipvlan driver\n#\n\nobj-$(CONFIG_IPVLAN) += ipvlan.o\nobj-$(CONFIG_IPVTAP) += ipvtap.o\n\nipvlan-objs-$(CONFIG_IPVLAN_L3S) += ipvlan_l3s.o\nipvlan-objs := ipvlan_core.o ipvlan_main.o $(ipvlan-objs-y)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

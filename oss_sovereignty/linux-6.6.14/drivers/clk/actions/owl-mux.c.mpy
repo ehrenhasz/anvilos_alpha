@@ -1,0 +1,9 @@
+{
+  "module_name": "owl-mux.c",
+  "hash_id": "c85c02ea140c5cd695578537c0bbf6bfa2f2c0c96d9636984f31c61ded70ca4e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/actions/owl-mux.c",
+  "human_readable_source": "\n\n\n\n\n\n\n\n\n\n#include <linux/clk-provider.h>\n#include <linux/regmap.h>\n\n#include \"owl-mux.h\"\n\nu8 owl_mux_helper_get_parent(const struct owl_clk_common *common,\n\t\t\t     const struct owl_mux_hw *mux_hw)\n{\n\tu32 reg;\n\tu8 parent;\n\n\tregmap_read(common->regmap, mux_hw->reg, &reg);\n\tparent = reg >> mux_hw->shift;\n\tparent &= BIT(mux_hw->width) - 1;\n\n\treturn parent;\n}\n\nstatic u8 owl_mux_get_parent(struct clk_hw *hw)\n{\n\tstruct owl_mux *mux = hw_to_owl_mux(hw);\n\n\treturn owl_mux_helper_get_parent(&mux->common, &mux->mux_hw);\n}\n\nint owl_mux_helper_set_parent(const struct owl_clk_common *common,\n\t\t\t      struct owl_mux_hw *mux_hw, u8 index)\n{\n\tu32 reg;\n\n\tregmap_read(common->regmap, mux_hw->reg, &reg);\n\treg &= ~GENMASK(mux_hw->width + mux_hw->shift - 1, mux_hw->shift);\n\tregmap_write(common->regmap, mux_hw->reg,\n\t\t\treg | (index << mux_hw->shift));\n\n\treturn 0;\n}\n\nstatic int owl_mux_set_parent(struct clk_hw *hw, u8 index)\n{\n\tstruct owl_mux *mux = hw_to_owl_mux(hw);\n\n\treturn owl_mux_helper_set_parent(&mux->common, &mux->mux_hw, index);\n}\n\nconst struct clk_ops owl_mux_ops = {\n\t.get_parent = owl_mux_get_parent,\n\t.set_parent = owl_mux_set_parent,\n\t.determine_rate = __clk_mux_determine_rate,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

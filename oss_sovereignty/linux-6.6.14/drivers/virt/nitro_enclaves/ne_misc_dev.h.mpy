@@ -1,0 +1,9 @@
+{
+  "module_name": "ne_misc_dev.h",
+  "hash_id": "823fc72230ff1b7fafdcc4c508e4011adf7cf7c353eb27ecf555f40ce2f1ef42",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/virt/nitro_enclaves/ne_misc_dev.h",
+  "human_readable_source": " \n \n\n#ifndef _NE_MISC_DEV_H_\n#define _NE_MISC_DEV_H_\n\n#include <linux/cpumask.h>\n#include <linux/list.h>\n#include <linux/miscdevice.h>\n#include <linux/mm.h>\n#include <linux/mutex.h>\n#include <linux/pci.h>\n#include <linux/wait.h>\n\n#include \"ne_pci_dev.h\"\n\n \nstruct ne_mem_region {\n\tstruct list_head\tmem_region_list_entry;\n\tu64\t\t\tmemory_size;\n\tunsigned long\t\tnr_pages;\n\tstruct page\t\t**pages;\n\tu64\t\t\tuserspace_addr;\n};\n\n \nstruct ne_enclave {\n\tstruct mutex\t\tenclave_info_mutex;\n\tstruct list_head\tenclave_list_entry;\n\twait_queue_head_t\teventq;\n\tbool\t\t\thas_event;\n\tu64\t\t\tmax_mem_regions;\n\tstruct list_head\tmem_regions_list;\n\tu64\t\t\tmem_size;\n\tstruct mm_struct\t*mm;\n\tunsigned int\t\tnr_mem_regions;\n\tunsigned int\t\tnr_parent_vm_cores;\n\tunsigned int\t\tnr_threads_per_core;\n\tunsigned int\t\tnr_vcpus;\n\tint\t\t\tnuma_node;\n\tu64\t\t\tslot_uid;\n\tu16\t\t\tstate;\n\tcpumask_var_t\t\t*threads_per_core;\n\tcpumask_var_t\t\tvcpu_ids;\n};\n\n \nenum ne_state {\n\tNE_STATE_INIT\t\t= 0,\n\tNE_STATE_RUNNING\t= 2,\n\tNE_STATE_STOPPED\t= U16_MAX,\n};\n\n \nstruct ne_devs {\n\tstruct miscdevice\t*ne_misc_dev;\n\tstruct ne_pci_dev\t*ne_pci_dev;\n};\n\n \nextern struct ne_devs ne_devs;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

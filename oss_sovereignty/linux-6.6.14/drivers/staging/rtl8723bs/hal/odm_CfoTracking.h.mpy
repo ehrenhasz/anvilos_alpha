@@ -1,0 +1,9 @@
+{
+  "module_name": "odm_CfoTracking.h",
+  "hash_id": "0e00b85f43586c3ebdbb4862dfa4bdfc3a25b9aebd17cfe46076ec19329599e9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/hal/odm_CfoTracking.h",
+  "human_readable_source": " \n \n\n#ifndef\t__ODMCFOTRACK_H__\n#define    __ODMCFOTRACK_H__\n\n#define\t\tCFO_TH_XTAL_HIGH\t\t20\t\t \n#define\t\tCFO_TH_XTAL_LOW\t\t\t10\t\t \n#define\t\tCFO_TH_ATC\t\t\t80\t\t \n\nstruct cfo_tracking {\n\tbool bATCStatus;\n\tbool largeCFOHit;\n\tbool bAdjust;\n\tu8 CrystalCap;\n\tu8 DefXCap;\n\tint CFO_tail[2];\n\tint CFO_ave_pre;\n\tu32 packetCount;\n\tu32 packetCount_pre;\n\n\tbool bForceXtalCap;\n\tbool bReset;\n};\n\nvoid ODM_CfoTrackingReset(void *pDM_VOID\n);\n\nvoid ODM_CfoTrackingInit(void *pDM_VOID);\n\nvoid ODM_CfoTracking(void *pDM_VOID);\n\nvoid odm_parsing_cfo(void *pDM_VOID, void *pPktinfo_VOID, s8 *pcfotail);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

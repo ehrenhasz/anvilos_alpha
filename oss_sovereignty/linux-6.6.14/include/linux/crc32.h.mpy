@@ -1,0 +1,9 @@
+{
+  "module_name": "crc32.h",
+  "hash_id": "92372df1352934d27010fb90d3eb1b8b6ae72fb59d4ff6704bc8926b33c2a087",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/crc32.h",
+  "human_readable_source": " \n#ifndef _LINUX_CRC32_H\n#define _LINUX_CRC32_H\n\n#include <linux/types.h>\n#include <linux/bitrev.h>\n\nu32 __pure crc32_le(u32 crc, unsigned char const *p, size_t len);\nu32 __pure crc32_be(u32 crc, unsigned char const *p, size_t len);\n\n \nu32 __attribute_const__ crc32_le_shift(u32 crc, size_t len);\n\nstatic inline u32 crc32_le_combine(u32 crc1, u32 crc2, size_t len2)\n{\n\treturn crc32_le_shift(crc1, len2) ^ crc2;\n}\n\nu32 __pure __crc32c_le(u32 crc, unsigned char const *p, size_t len);\n\n \nu32 __attribute_const__ __crc32c_le_shift(u32 crc, size_t len);\n\nstatic inline u32 __crc32c_le_combine(u32 crc1, u32 crc2, size_t len2)\n{\n\treturn __crc32c_le_shift(crc1, len2) ^ crc2;\n}\n\n#define crc32(seed, data, length)  crc32_le(seed, (unsigned char const *)(data), length)\n\n \n#define ether_crc(length, data)    bitrev32(crc32_le(~0, data, length))\n#define ether_crc_le(length, data) crc32_le(~0, data, length)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

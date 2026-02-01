@@ -1,0 +1,9 @@
+{
+  "module_name": "bus.h",
+  "hash_id": "9425be8b5e91784355d614a59f9f910f525d77653e026cd0cdc4802b0c25339e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mmc/core/bus.h",
+  "human_readable_source": " \n \n#ifndef _MMC_CORE_BUS_H\n#define _MMC_CORE_BUS_H\n\n#include <linux/device.h>\n#include <linux/sysfs.h>\n\nstruct mmc_host;\nstruct mmc_card;\n\n#define MMC_DEV_ATTR(name, fmt, args...)\t\t\t\t\t\\\nstatic ssize_t mmc_##name##_show (struct device *dev, struct device_attribute *attr, char *buf)\t\\\n{\t\t\t\t\t\t\t\t\t\t\\\n\tstruct mmc_card *card = mmc_dev_to_card(dev);\t\t\t\t\\\n\treturn sysfs_emit(buf, fmt, args);\t\t\t\t\t\\\n}\t\t\t\t\t\t\t\t\t\t\\\nstatic DEVICE_ATTR(name, S_IRUGO, mmc_##name##_show, NULL)\n\nstruct mmc_card *mmc_alloc_card(struct mmc_host *host,\n\tstruct device_type *type);\nint mmc_add_card(struct mmc_card *card);\nvoid mmc_remove_card(struct mmc_card *card);\n\nint mmc_register_bus(void);\nvoid mmc_unregister_bus(void);\n\nstruct mmc_driver {\n\tstruct device_driver drv;\n\tint (*probe)(struct mmc_card *card);\n\tvoid (*remove)(struct mmc_card *card);\n\tvoid (*shutdown)(struct mmc_card *card);\n};\n\nint mmc_register_driver(struct mmc_driver *drv);\nvoid mmc_unregister_driver(struct mmc_driver *drv);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

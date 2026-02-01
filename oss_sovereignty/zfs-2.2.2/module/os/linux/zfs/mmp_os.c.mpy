@@ -1,0 +1,9 @@
+{
+  "module_name": "mmp_os.c",
+  "hash_id": "5e309eeaf2290ef7a8da07006c3047a17c8f87eca4307df975cd9d2a311bdac3",
+  "original_prompt": "Ingested from zfs-2.2.2/module/os/linux/zfs/mmp_os.c",
+  "human_readable_source": " \n \n\n#include <sys/zfs_context.h>\n#include <sys/mmp.h>\n\nint\nparam_set_multihost_interval(const char *val, zfs_kernel_param_t *kp)\n{\n\tint ret;\n\n\tret = spl_param_set_u64(val, kp);\n\tif (ret < 0)\n\t\treturn (ret);\n\n\tif (spa_mode_global != SPA_MODE_UNINIT)\n\t\tmmp_signal_all_threads();\n\n\treturn (ret);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

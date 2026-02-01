@@ -1,0 +1,9 @@
+{
+  "module_name": "fq_pie.json",
+  "hash_id": "64a7335d4b1171cb5620f8325818d761aeff5ef457fd5f7d42f2d5309aebe0b7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/tc-testing/tc-tests/qdiscs/fq_pie.json",
+  "human_readable_source": "[\n    {\n        \"id\": \"83be\",\n        \"name\": \"Create FQ-PIE with invalid number of flows\",\n        \"category\": [\n            \"qdisc\",\n            \"fq_pie\"\n        ],\n        \"setup\": [\n            \"$IP link add dev $DUMMY type dummy || /bin/true\"\n        ],\n        \"cmdUnderTest\": \"$TC qdisc add dev $DUMMY handle 1: root fq_pie flows 65536\",\n        \"expExitCode\": \"0\",\n        \"verifyCmd\": \"$TC qdisc show dev $DUMMY\",\n        \"matchPattern\": \"qdisc fq_pie 1: root refcnt 2 limit 10240p flows 65536\",\n        \"matchCount\": \"1\",\n        \"teardown\": [\n            \"$IP link del dev $DUMMY\"\n        ]\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

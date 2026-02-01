@@ -1,0 +1,9 @@
+{
+  "module_name": "pci-doe.h",
+  "hash_id": "f25321435bed70416c399362168c684b0d2c74567a71c0ebcbbe6bdc4cfa454b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pci-doe.h",
+  "human_readable_source": " \n \n\n#ifndef LINUX_PCI_DOE_H\n#define LINUX_PCI_DOE_H\n\nstruct pci_doe_mb;\n\nstruct pci_doe_mb *pci_find_doe_mailbox(struct pci_dev *pdev, u16 vendor,\n\t\t\t\t\tu8 type);\n\nint pci_doe(struct pci_doe_mb *doe_mb, u16 vendor, u8 type,\n\t    const void *request, size_t request_sz,\n\t    void *response, size_t response_sz);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

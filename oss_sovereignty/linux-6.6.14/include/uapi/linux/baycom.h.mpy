@@ -1,0 +1,9 @@
+{
+  "module_name": "baycom.h",
+  "hash_id": "c9f25d86a5afc57382a1cd8a610378b22979625582bb46c84f1f22924ca23f67",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/baycom.h",
+  "human_readable_source": " \n \n\n#ifndef _BAYCOM_H\n#define _BAYCOM_H\n\n \n \n\nstruct baycom_debug_data {\n\tunsigned long debug1;\n\tunsigned long debug2;\n\tlong debug3;\n};\n\nstruct baycom_ioctl {\n\tint cmd;\n\tunion {\n\t\tstruct baycom_debug_data dbg;\n\t} data;\n};\n\n \n\n \n#define BAYCOMCTL_GETDEBUG       0x92\n\n \n\n#endif  \n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

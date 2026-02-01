@@ -1,0 +1,9 @@
+{
+  "module_name": "clock.h",
+  "hash_id": "42e80e201e123b8dab6b7ab68fa2a5a5a4a0bb7fd835ed046d7c3c09346bf945",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/sched/clock.h",
+  "human_readable_source": "#ifndef _TOOLS_PERF_LINUX_SCHED_CLOCK_H\n#define _TOOLS_PERF_LINUX_SCHED_CLOCK_H\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_iter_bpf_percpu_array_map.c",
+  "hash_id": "a4f8b8396f2c070c82c47045eaf9b6ffafaccce1bf926507f36e1e7483e331b5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_iter_bpf_percpu_array_map.c",
+  "human_readable_source": "\n \n#include \"bpf_iter.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct key_t {\n\tint a;\n\tint b;\n\tint c;\n};\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);\n\t__uint(max_entries, 3);\n\t__type(key, __u32);\n\t__type(value, __u32);\n} arraymap1 SEC(\".maps\");\n\n \nvolatile const __u32 num_cpus = 0;\n\n__u32 key_sum = 0, val_sum = 0;\n\nSEC(\"iter/bpf_map_elem\")\nint dump_bpf_percpu_array_map(struct bpf_iter__bpf_map_elem *ctx)\n{\n\t__u32 *key = ctx->key;\n\tvoid *pptr = ctx->value;\n\t__u32 step;\n\tint i;\n\n\tif (key == (void *)0 || pptr == (void *)0)\n\t\treturn 0;\n\n\tkey_sum += *key;\n\n\tstep = 8;\n\tfor (i = 0; i < num_cpus; i++) {\n\t\tval_sum += *(__u32 *)pptr;\n\t\tpptr += step;\n\t}\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

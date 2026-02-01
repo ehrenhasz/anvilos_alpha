@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn303_resource.h",
+  "hash_id": "3b76d6fbfc1d421fd098472594f26cd5933d4528d7ccaaf93db988418661148f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn303/dcn303_resource.h",
+  "human_readable_source": "\n \n\n#ifndef _DCN303_RESOURCE_H_\n#define _DCN303_RESOURCE_H_\n\n#include \"core_types.h\"\n\nextern struct _vcs_dpi_ip_params_st dcn3_03_ip;\nextern struct _vcs_dpi_soc_bounding_box_st dcn3_03_soc;\n\nstruct resource_pool *dcn303_create_resource_pool(const struct dc_init_data *init_data, struct dc *dc);\n\nvoid dcn303_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_params);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "disp.h",
+  "hash_id": "25d355b826bb74dbda5e0c47176f6003b1f769ae7ebd7e226468d7a63b4e3b91",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/spl/sys/disp.h",
+  "human_readable_source": " \n\n#ifndef _SPL_DISP_H\n#define\t_SPL_DISP_H\n\n#include <linux/preempt.h>\n\n#define\tKPREEMPT_SYNC\t\t(-1)\n\n#define\tkpreempt(unused)\tcond_resched()\n#define\tkpreempt_disable()\tpreempt_disable()\n#define\tkpreempt_enable()\tpreempt_enable()\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

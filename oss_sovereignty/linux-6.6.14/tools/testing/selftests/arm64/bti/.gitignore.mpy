@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "bec02f9bace47172034c9d2f250778a27612bd22598be06a171032a8e5a156df",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/bti/.gitignore",
+  "human_readable_source": "btitest\nnobtitest\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

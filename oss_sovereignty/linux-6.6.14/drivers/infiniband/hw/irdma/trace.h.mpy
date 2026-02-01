@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.h",
+  "hash_id": "186da742866e0007426f1dba4747ad153a8d3f596e6a13ddafec4c2dcf448d21",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/irdma/trace.h",
+  "human_readable_source": " \n \n#include \"trace_cm.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

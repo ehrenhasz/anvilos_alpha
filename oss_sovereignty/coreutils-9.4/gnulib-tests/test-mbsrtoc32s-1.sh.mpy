@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbsrtoc32s-1.sh",
+  "hash_id": "930a958eb84dc1b5c52c6bf5283997c4741a7cbfca1348469faf85f98bce6f45",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbsrtoc32s-1.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test whether the POSIX locale has encoding errors.\nLC_ALL=C \\\n${CHECKER} ./test-mbsrtoc32s${EXEEXT} 1 || exit 1\nLC_ALL=POSIX \\\n${CHECKER} ./test-mbsrtoc32s${EXEEXT} 1 || exit 1\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

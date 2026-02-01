@@ -1,0 +1,9 @@
+{
+  "module_name": "mib.h",
+  "hash_id": "f3b40da00db138bdc142e773b823fec54984c75bbb69c7981ad30216a4c466d8",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netns/mib.h",
+  "human_readable_source": " \n#ifndef __NETNS_MIB_H__\n#define __NETNS_MIB_H__\n\n#include <net/snmp.h>\n\nstruct netns_mib {\n\tDEFINE_SNMP_STAT(struct ipstats_mib, ip_statistics);\n#if IS_ENABLED(CONFIG_IPV6)\n\tDEFINE_SNMP_STAT(struct ipstats_mib, ipv6_statistics);\n#endif\n\n\tDEFINE_SNMP_STAT(struct tcp_mib, tcp_statistics);\n\tDEFINE_SNMP_STAT(struct linux_mib, net_statistics);\n\n\tDEFINE_SNMP_STAT(struct udp_mib, udp_statistics);\n#if IS_ENABLED(CONFIG_IPV6)\n\tDEFINE_SNMP_STAT(struct udp_mib, udp_stats_in6);\n#endif\n\n#ifdef CONFIG_XFRM_STATISTICS\n\tDEFINE_SNMP_STAT(struct linux_xfrm_mib, xfrm_statistics);\n#endif\n#if IS_ENABLED(CONFIG_TLS)\n\tDEFINE_SNMP_STAT(struct linux_tls_mib, tls_statistics);\n#endif\n#ifdef CONFIG_MPTCP\n\tDEFINE_SNMP_STAT(struct mptcp_mib, mptcp_statistics);\n#endif\n\n\tDEFINE_SNMP_STAT(struct udp_mib, udplite_statistics);\n#if IS_ENABLED(CONFIG_IPV6)\n\tDEFINE_SNMP_STAT(struct udp_mib, udplite_stats_in6);\n#endif\n\n\tDEFINE_SNMP_STAT(struct icmp_mib, icmp_statistics);\n\tDEFINE_SNMP_STAT_ATOMIC(struct icmpmsg_mib, icmpmsg_statistics);\n#if IS_ENABLED(CONFIG_IPV6)\n\tDEFINE_SNMP_STAT(struct icmpv6_mib, icmpv6_statistics);\n\tDEFINE_SNMP_STAT_ATOMIC(struct icmpv6msg_mib, icmpv6msg_statistics);\n\tstruct proc_dir_entry *proc_net_devsnmp6;\n#endif\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

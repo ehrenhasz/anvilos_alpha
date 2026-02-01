@@ -1,0 +1,9 @@
+{
+  "module_name": "hs.h",
+  "hash_id": "319ffedfa63b6944dae1bbde680e01f3d8d446342b3a9d3c6250e336245cfdda",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvfw/hs.h",
+  "human_readable_source": " \n#ifndef __NVFW_HS_H__\n#define __NVFW_HS_H__\n#include <core/os.h>\nstruct nvkm_subdev;\n\nstruct nvfw_hs_header {\n\tu32 sig_dbg_offset;\n\tu32 sig_dbg_size;\n\tu32 sig_prod_offset;\n\tu32 sig_prod_size;\n\tu32 patch_loc;\n\tu32 patch_sig;\n\tu32 hdr_offset;\n\tu32 hdr_size;\n};\n\nconst struct nvfw_hs_header *nvfw_hs_header(struct nvkm_subdev *, const void *);\n\nstruct nvfw_hs_header_v2 {\n\tu32 sig_prod_offset;\n\tu32 sig_prod_size;\n\tu32 patch_loc;\n\tu32 patch_sig;\n\tu32 meta_data_offset;\n\tu32 meta_data_size;\n\tu32 num_sig;\n\tu32 header_offset;\n\tu32 header_size;\n};\n\nconst struct nvfw_hs_header_v2 *nvfw_hs_header_v2(struct nvkm_subdev *, const void *);\n\nstruct nvfw_hs_load_header {\n\tu32 non_sec_code_off;\n\tu32 non_sec_code_size;\n\tu32 data_dma_base;\n\tu32 data_size;\n\tu32 num_apps;\n\tu32 apps[];\n};\n\nconst struct nvfw_hs_load_header *\nnvfw_hs_load_header(struct nvkm_subdev *, const void *);\n\nstruct nvfw_hs_load_header_v2 {\n\tu32 os_code_offset;\n\tu32 os_code_size;\n\tu32 os_data_offset;\n\tu32 os_data_size;\n\tu32 num_apps;\n\tstruct {\n\t\tu32 offset;\n\t\tu32 size;\n\t} app[];\n};\n\nconst struct nvfw_hs_load_header_v2 *nvfw_hs_load_header_v2(struct nvkm_subdev *, const void *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__nativeglue.c.compress",
+  "hash_id": "fce8f7d1564c5dda5e1a3c050ce4d4cd3d6b57c6b622ef41b2af254016854875",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__nativeglue.c.compress",
+  "human_readable_source": "float unsupported\nfloat unsupported\nfloat unsupported\nfloat unsupported\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

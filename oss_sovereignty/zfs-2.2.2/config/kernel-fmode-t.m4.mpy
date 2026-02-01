@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-fmode-t.m4",
+  "hash_id": "215b2de982bb0b624a0452f920826fd7a8c3c0f399210a24742b0450a3d7cba6",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-fmode-t.m4",
+  "human_readable_source": "dnl #\ndnl # 2.6.28 API change,\ndnl # check if fmode_t typedef is defined\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_FMODE_T], [\n\tZFS_LINUX_TEST_SRC([type_fmode_t], [\n\t\t#include <linux/types.h>\n\t],[\n\t\tfmode_t *ptr __attribute__ ((unused));\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_FMODE_T], [\n\tAC_MSG_CHECKING([whether kernel defines fmode_t])\n\tZFS_LINUX_TEST_RESULT([type_fmode_t], [\n\t\tAC_MSG_RESULT([yes])\n\t],[\n\t\tZFS_LINUX_TEST_ERROR([type_fmode_t])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

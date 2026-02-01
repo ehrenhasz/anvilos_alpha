@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-qcom-qmp-pcs-usb-v6.h",
+  "hash_id": "03629fbde656d22b7ae45ca3e00b81ce8c037808f3e70673b6b8f8b9d8bf294a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/qualcomm/phy-qcom-qmp-pcs-usb-v6.h",
+  "human_readable_source": " \n \n\n#ifndef QCOM_PHY_QMP_PCS_USB_V6_H_\n#define QCOM_PHY_QMP_PCS_USB_V6_H_\n\n \n#define QPHY_USB_V6_PCS_LOCK_DETECT_CONFIG1\t\t0xc4\n#define QPHY_USB_V6_PCS_LOCK_DETECT_CONFIG2\t\t0xc8\n#define QPHY_USB_V6_PCS_LOCK_DETECT_CONFIG3\t\t0xcc\n#define QPHY_USB_V6_PCS_LOCK_DETECT_CONFIG6\t\t0xd8\n#define QPHY_USB_V6_PCS_REFGEN_REQ_CONFIG1\t\t0xdc\n#define QPHY_USB_V6_PCS_POWER_STATE_CONFIG1\t\t0x90\n#define QPHY_USB_V6_PCS_RX_SIGDET_LVL\t\t\t0x188\n#define QPHY_USB_V6_PCS_RCVR_DTCT_DLY_P1U2_L\t\t0x190\n#define QPHY_USB_V6_PCS_RCVR_DTCT_DLY_P1U2_H\t\t0x194\n#define QPHY_USB_V6_PCS_CDR_RESET_TIME\t\t\t0x1b0\n#define QPHY_USB_V6_PCS_ALIGN_DETECT_CONFIG1\t\t0x1c0\n#define QPHY_USB_V6_PCS_ALIGN_DETECT_CONFIG2\t\t0x1c4\n#define QPHY_USB_V6_PCS_PCS_TX_RX_CONFIG\t\t0x1d0\n#define QPHY_USB_V6_PCS_EQ_CONFIG1\t\t\t0x1dc\n#define QPHY_USB_V6_PCS_EQ_CONFIG5\t\t\t0x1ec\n\n#define QPHY_USB_V6_PCS_USB3_POWER_STATE_CONFIG1\t0x00\n#define QPHY_USB_V6_PCS_USB3_LFPS_DET_HIGH_COUNT_VAL\t0x18\n#define QPHY_USB_V6_PCS_USB3_RXEQTRAINING_DFE_TIME_S2\t0x3c\n#define QPHY_USB_V6_PCS_USB3_RCVR_DTCT_DLY_U3_L\t\t0x40\n#define QPHY_USB_V6_PCS_USB3_RCVR_DTCT_DLY_U3_H\t\t0x44\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

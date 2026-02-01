@@ -1,0 +1,9 @@
+{
+  "module_name": "via_aux_vt1636.c",
+  "hash_id": "4fa7222213ccbda7b0ebf82ae353c4fcc7aef6fbce8fe88a0df40095bbcad175",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/via/via_aux_vt1636.c",
+  "human_readable_source": "\n \n \n\n#include <linux/slab.h>\n#include \"via_aux.h\"\n\n\nstatic const char *name = \"VT1636 LVDS Transmitter\";\n\n\nvoid via_aux_vt1636_probe(struct via_aux_bus *bus)\n{\n\tstruct via_aux_drv drv = {\n\t\t.bus\t=\tbus,\n\t\t.addr\t=\t0x40,\n\t\t.name\t=\tname};\n\t \n\tconst u8 id[] = {0x06, 0x11, 0x45, 0x33}, len = ARRAY_SIZE(id);\n\tu8 tmp[ARRAY_SIZE(id)];\n\n\tif (!via_aux_read(&drv, 0x00, tmp, len) || memcmp(id, tmp, len))\n\t\treturn;\n\n\tprintk(KERN_INFO \"viafb: Found %s\\n\", name);\n\tvia_aux_add(&drv);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

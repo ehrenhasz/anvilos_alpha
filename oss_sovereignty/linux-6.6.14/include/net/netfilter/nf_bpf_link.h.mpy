@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_bpf_link.h",
+  "hash_id": "8f38972baa559a62bef7dd8dd9121288ef017e38c8a45787065cb4308e01b370",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nf_bpf_link.h",
+  "human_readable_source": " \n\nstruct bpf_nf_ctx {\n\tconst struct nf_hook_state *state;\n\tstruct sk_buff *skb;\n};\n\n#if IS_ENABLED(CONFIG_NETFILTER_BPF_LINK)\nint bpf_nf_link_attach(const union bpf_attr *attr, struct bpf_prog *prog);\n#else\nstatic inline int bpf_nf_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)\n{\n\treturn -EOPNOTSUPP;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

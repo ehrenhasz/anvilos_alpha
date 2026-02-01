@@ -1,0 +1,9 @@
+{
+  "module_name": "c32isspace.c",
+  "hash_id": "e50ce9d8532e68979860d05b6c4f953ccac16e3803575b6d0689b74f2f250a87",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c32isspace.c",
+  "human_readable_source": " \n#include <uchar.h>\n\n#define FUNC c32isspace\n#define WCHAR_FUNC iswspace\n#define UCS_FUNC uc_is_space\n#include \"c32is-impl.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

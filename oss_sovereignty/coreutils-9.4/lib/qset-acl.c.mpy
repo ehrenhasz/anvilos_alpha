@@ -1,0 +1,9 @@
+{
+  "module_name": "qset-acl.c",
+  "hash_id": "5ad1d78c53bea93d2df590e6db667916288589706718230afadd197cbeb0894c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/qset-acl.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#define ACL_INTERNAL_INLINE _GL_EXTERN_INLINE\n\n#include <string.h>\n#include \"acl.h\"\n\n#include \"acl-internal.h\"\n\n \n\nint\nqset_acl (char const *name, int desc, mode_t mode)\n{\n  struct permission_context ctx;\n  int ret;\n\n  memset (&ctx, 0, sizeof ctx);\n  ctx.mode = mode;\n  ret = set_permissions (&ctx, name, desc);\n  free_permission_context (&ctx);\n  return ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

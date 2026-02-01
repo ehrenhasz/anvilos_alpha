@@ -1,0 +1,9 @@
+{
+  "module_name": "meson_vclk.h",
+  "hash_id": "eab280e1d64482406152f57d25a225bd02bd4309ed53ca632454f6f17b45e4c4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/meson/meson_vclk.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef __MESON_VCLK_H\n#define __MESON_VCLK_H\n\n#include <drm/drm_modes.h>\n\nstruct meson_drm;\n\nenum {\n\tMESON_VCLK_TARGET_CVBS = 0,\n\tMESON_VCLK_TARGET_HDMI = 1,\n\tMESON_VCLK_TARGET_DMT = 2,\n};\n\n \n#define MESON_VCLK_CVBS\t\t\t27000\n\nenum drm_mode_status\nmeson_vclk_dmt_supported_freq(struct meson_drm *priv, unsigned int freq);\nenum drm_mode_status\nmeson_vclk_vic_supported_freq(struct meson_drm *priv, unsigned int phy_freq,\n\t\t\t      unsigned int vclk_freq);\n\nvoid meson_vclk_setup(struct meson_drm *priv, unsigned int target,\n\t\t      unsigned int phy_freq, unsigned int vclk_freq,\n\t\t      unsigned int venc_freq, unsigned int dac_freq,\n\t\t      bool hdmi_use_enci);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_lease.h",
+  "hash_id": "4572b8f6991a7cb22c7f6803ac1ad4cd1b2d5efd6f0beb674ba2584a9674b013",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_lease.h",
+  "human_readable_source": " \n \n\n#ifndef _DRM_LEASE_H_\n#define _DRM_LEASE_H_\n\nstruct drm_file;\nstruct drm_device;\nstruct drm_master;\n\nstruct drm_master *drm_lease_owner(struct drm_master *master);\n\nvoid drm_lease_destroy(struct drm_master *lessee);\n\nbool drm_lease_held(struct drm_file *file_priv, int id);\n\nbool _drm_lease_held(struct drm_file *file_priv, int id);\n\nvoid drm_lease_revoke(struct drm_master *master);\n\nuint32_t drm_lease_filter_crtcs(struct drm_file *file_priv, uint32_t crtcs);\n\nint drm_mode_create_lease_ioctl(struct drm_device *dev,\n\t\t\t\tvoid *data, struct drm_file *file_priv);\n\nint drm_mode_list_lessees_ioctl(struct drm_device *dev,\n\t\t\t\tvoid *data, struct drm_file *file_priv);\n\nint drm_mode_get_lease_ioctl(struct drm_device *dev,\n\t\t\t     void *data, struct drm_file *file_priv);\n\nint drm_mode_revoke_lease_ioctl(struct drm_device *dev,\n\t\t\t\tvoid *data, struct drm_file *file_priv);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

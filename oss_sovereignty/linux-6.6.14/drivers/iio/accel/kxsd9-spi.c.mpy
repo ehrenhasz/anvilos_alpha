@@ -1,0 +1,9 @@
+{
+  "module_name": "kxsd9-spi.c",
+  "hash_id": "32503ac832c8aa3f6d9fd421c7169d451bf3fddbb90e91517e47b1b1ab7729a6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/accel/kxsd9-spi.c",
+  "human_readable_source": "\n#include <linux/device.h>\n#include <linux/kernel.h>\n#include <linux/of.h>\n#include <linux/spi/spi.h>\n#include <linux/module.h>\n#include <linux/slab.h>\n#include <linux/regmap.h>\n\n#include \"kxsd9.h\"\n\nstatic int kxsd9_spi_probe(struct spi_device *spi)\n{\n\tstatic const struct regmap_config config = {\n\t\t.reg_bits = 8,\n\t\t.val_bits = 8,\n\t\t.max_register = 0x0e,\n\t};\n\tstruct regmap *regmap;\n\n\tspi->mode = SPI_MODE_0;\n\tregmap = devm_regmap_init_spi(spi, &config);\n\tif (IS_ERR(regmap)) {\n\t\tdev_err(&spi->dev, \"%s: regmap allocation failed: %ld\\n\",\n\t\t\t__func__, PTR_ERR(regmap));\n\t\treturn PTR_ERR(regmap);\n\t}\n\n\treturn kxsd9_common_probe(&spi->dev,\n\t\t\t\t  regmap,\n\t\t\t\t  spi_get_device_id(spi)->name);\n}\n\nstatic void kxsd9_spi_remove(struct spi_device *spi)\n{\n\tkxsd9_common_remove(&spi->dev);\n}\n\nstatic const struct spi_device_id kxsd9_spi_id[] = {\n\t{\"kxsd9\", 0},\n\t{ },\n};\nMODULE_DEVICE_TABLE(spi, kxsd9_spi_id);\n\nstatic const struct of_device_id kxsd9_of_match[] = {\n\t{ .compatible = \"kionix,kxsd9\" },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, kxsd9_of_match);\n\nstatic struct spi_driver kxsd9_spi_driver = {\n\t.driver = {\n\t\t.name = \"kxsd9\",\n\t\t.pm = pm_ptr(&kxsd9_dev_pm_ops),\n\t\t.of_match_table = kxsd9_of_match,\n\t},\n\t.probe = kxsd9_spi_probe,\n\t.remove = kxsd9_spi_remove,\n\t.id_table = kxsd9_spi_id,\n};\nmodule_spi_driver(kxsd9_spi_driver);\n\nMODULE_AUTHOR(\"Jonathan Cameron <jic23@kernel.org>\");\nMODULE_DESCRIPTION(\"Kionix KXSD9 SPI driver\");\nMODULE_LICENSE(\"GPL v2\");\nMODULE_IMPORT_NS(IIO_KXSD9);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

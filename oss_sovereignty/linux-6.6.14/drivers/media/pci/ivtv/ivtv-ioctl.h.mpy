@@ -1,0 +1,9 @@
+{
+  "module_name": "ivtv-ioctl.h",
+  "hash_id": "06bb43c2c7ec7c261e1eff9825e22155b1cc1a90f85ddbe211637b218825f4b6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ivtv/ivtv-ioctl.h",
+  "human_readable_source": " \n \n\n#ifndef IVTV_IOCTL_H\n#define IVTV_IOCTL_H\n\nu16 ivtv_service2vbi(int type);\nvoid ivtv_expand_service_set(struct v4l2_sliced_vbi_format *fmt, int is_pal);\nu16 ivtv_get_service_set(struct v4l2_sliced_vbi_format *fmt);\nvoid ivtv_set_osd_alpha(struct ivtv *itv);\nint ivtv_set_speed(struct ivtv *itv, int speed);\nvoid ivtv_set_funcs(struct video_device *vdev);\nvoid ivtv_s_std_enc(struct ivtv *itv, v4l2_std_id std);\nvoid ivtv_s_std_dec(struct ivtv *itv, v4l2_std_id std);\nint ivtv_s_frequency(struct file *file, void *fh, const struct v4l2_frequency *vf);\nint ivtv_s_input(struct file *file, void *fh, unsigned int inp);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

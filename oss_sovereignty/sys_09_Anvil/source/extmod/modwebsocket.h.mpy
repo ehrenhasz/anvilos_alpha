@@ -1,0 +1,9 @@
+{
+  "module_name": "modwebsocket.h",
+  "hash_id": "18ac197a147fddac9010df2e805450330d464ed5a939f8273606f4b2ac7c06c8",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/modwebsocket.h",
+  "human_readable_source": "#ifndef MICROPY_INCLUDED_EXTMOD_MODWEBSOCKET_H\n#define MICROPY_INCLUDED_EXTMOD_MODWEBSOCKET_H\n\n#define FRAME_OPCODE_MASK 0x0f\nenum {\n    FRAME_CONT, FRAME_TXT, FRAME_BIN,\n    FRAME_CLOSE = 0x8, FRAME_PING, FRAME_PONG\n};\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

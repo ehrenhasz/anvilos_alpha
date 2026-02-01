@@ -1,0 +1,9 @@
+{
+  "module_name": "gpiolib-of.h",
+  "hash_id": "00af71e93a256a630732d080afc87515b6b5ee6caa679fc52fd7a05cafc1df3c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpio/gpiolib-of.h",
+  "human_readable_source": " \n\n#ifndef GPIOLIB_OF_H\n#define GPIOLIB_OF_H\n\n#include <linux/err.h>\n#include <linux/types.h>\n\n#include <linux/notifier.h>\n\nstruct device;\n\nstruct gpio_chip;\nstruct gpio_desc;\nstruct gpio_device;\n\n#ifdef CONFIG_OF_GPIO\nstruct gpio_desc *of_find_gpio(struct device_node *np,\n\t\t\t       const char *con_id,\n\t\t\t       unsigned int idx,\n\t\t\t       unsigned long *lookupflags);\nint of_gpiochip_add(struct gpio_chip *gc);\nvoid of_gpiochip_remove(struct gpio_chip *gc);\nint of_gpio_get_count(struct device *dev, const char *con_id);\n#else\nstatic inline struct gpio_desc *of_find_gpio(struct device_node *np,\n\t\t\t\t\t     const char *con_id,\n\t\t\t\t\t     unsigned int idx,\n\t\t\t\t\t     unsigned long *lookupflags)\n{\n\treturn ERR_PTR(-ENOENT);\n}\nstatic inline int of_gpiochip_add(struct gpio_chip *gc) { return 0; }\nstatic inline void of_gpiochip_remove(struct gpio_chip *gc) { }\nstatic inline int of_gpio_get_count(struct device *dev, const char *con_id)\n{\n\treturn 0;\n}\n#endif  \n\nextern struct notifier_block gpio_of_notifier;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

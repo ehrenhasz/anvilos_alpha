@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_btf.h",
+  "hash_id": "c49617fed602a5c92b294a1d9c83f7495d78e3db9711209613abf3b24b91b7f8",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/trace/trace_btf.h",
+  "human_readable_source": " \n#include <linux/btf.h>\n\nconst struct btf_type *btf_find_func_proto(const char *func_name,\n\t\t\t\t\t   struct btf **btf_p);\nconst struct btf_param *btf_get_func_param(const struct btf_type *func_proto,\n\t\t\t\t\t   s32 *nr);\nconst struct btf_member *btf_find_struct_member(struct btf *btf,\n\t\t\t\t\t\tconst struct btf_type *type,\n\t\t\t\t\t\tconst char *member_name,\n\t\t\t\t\t\tu32 *anon_offset);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

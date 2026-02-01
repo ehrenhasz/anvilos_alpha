@@ -1,0 +1,9 @@
+{
+  "module_name": "od.x",
+  "hash_id": "e035faca35b6c95359ff5eefe0738bdd14b24b799b9006121500a9e9ee6db78f",
+  "original_prompt": "Ingested from coreutils-9.4/man/od.x",
+  "human_readable_source": "[NAME]\nod \\- dump files in octal and other formats\n[DESCRIPTION]\n.\\\" Add any additional description here\n[EXAMPLES]\n.TP\n.B od -A x -t x1z -v\nDisplay hexdump format output\n.TP\n.B od -A o -t oS -w16\nThe default output format used by od\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

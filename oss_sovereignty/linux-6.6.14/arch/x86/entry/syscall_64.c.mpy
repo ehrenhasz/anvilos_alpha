@@ -1,0 +1,9 @@
+{
+  "module_name": "syscall_64.c",
+  "hash_id": "39ac7dae0964dd951428c16d611f2f441c8911e3a3484013921e87ee71be4936",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/syscall_64.c",
+  "human_readable_source": "\n \n\n#include <linux/linkage.h>\n#include <linux/sys.h>\n#include <linux/cache.h>\n#include <linux/syscalls.h>\n#include <asm/syscall.h>\n\n#define __SYSCALL(nr, sym) extern long __x64_##sym(const struct pt_regs *);\n#include <asm/syscalls_64.h>\n#undef __SYSCALL\n\n#define __SYSCALL(nr, sym) __x64_##sym,\n\nasmlinkage const sys_call_ptr_t sys_call_table[] = {\n#include <asm/syscalls_64.h>\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "bc92968f21cca9e1b972b8661af3e64bbf2aae23c9b29109a235f423e03b85e1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/octeontx2/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Marvell RVU Network drivers configuration\n#\n\nconfig OCTEONTX2_MBOX\n\ttristate\n\nconfig OCTEONTX2_AF\n\ttristate \"Marvell OcteonTX2 RVU Admin Function driver\"\n\tselect OCTEONTX2_MBOX\n\tselect NET_DEVLINK\n\tdepends on (64BIT && COMPILE_TEST) || ARM64\n\tdepends on PCI\n\tdepends on PTP_1588_CLOCK_OPTIONAL\n\thelp\n\t  This driver supports Marvell's OcteonTX2 Resource Virtualization\n\t  Unit's admin function manager which manages all RVU HW resources\n\t  and provides a medium to other PF/VFs to configure HW. Should be\n\t  enabled for other RVU device drivers to work.\n\nconfig NDC_DIS_DYNAMIC_CACHING\n\tbool \"Disable caching of dynamic entries in NDC\"\n\tdepends on OCTEONTX2_AF\n\tdefault n\n\thelp\n\t  This config option disables caching of dynamic entries such as NIX SQEs\n\t  , NPA stack pages etc in NDC. Also locks down NIX SQ/CQ/RQ/RSS and\n\t  NPA Aura/Pool contexts.\n\nconfig OCTEONTX2_PF\n\ttristate \"Marvell OcteonTX2 NIC Physical Function driver\"\n\tselect OCTEONTX2_MBOX\n\tselect NET_DEVLINK\n\tselect PAGE_POOL\n\tdepends on (64BIT && COMPILE_TEST) || ARM64\n\tselect DIMLIB\n\tdepends on PCI\n\tdepends on PTP_1588_CLOCK_OPTIONAL\n\tdepends on MACSEC || !MACSEC\n\thelp\n\t  This driver supports Marvell's OcteonTX2 NIC physical function.\n\nconfig OCTEONTX2_VF\n\ttristate \"Marvell OcteonTX2 NIC Virtual Function driver\"\n\tdepends on OCTEONTX2_PF\n\thelp\n\t  This driver supports Marvell's OcteonTX2 NIC virtual function.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

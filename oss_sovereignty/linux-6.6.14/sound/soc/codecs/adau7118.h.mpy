@@ -1,0 +1,9 @@
+{
+  "module_name": "adau7118.h",
+  "hash_id": "c8690675a199661f82ca27dbad417c6ead4435fc53fbb8ac12edf30122ca6f26",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/adau7118.h",
+  "human_readable_source": " \n#ifndef _LINUX_ADAU7118_H\n#define _LINUX_ADAU7118_H\n\nstruct regmap;\nstruct device;\n\n \n#define ADAU7118_REG_VENDOR_ID\t\t0x00\n#define ADAU7118_REG_DEVICE_ID1\t\t0x01\n#define ADAU7118_REG_DEVICE_ID2\t\t0x02\n#define ADAU7118_REG_REVISION_ID\t0x03\n#define ADAU7118_REG_ENABLES\t\t0x04\n#define ADAU7118_REG_DEC_RATIO_CLK_MAP\t0x05\n#define ADAU7118_REG_HPF_CONTROL\t0x06\n#define ADAU7118_REG_SPT_CTRL1\t\t0x07\n#define ADAU7118_REG_SPT_CTRL2\t\t0x08\n#define ADAU7118_REG_SPT_CX(num)\t(0x09 + (num))\n#define ADAU7118_REG_DRIVE_STRENGTH\t0x11\n#define ADAU7118_REG_RESET\t\t0x12\n\nint adau7118_probe(struct device *dev, struct regmap *map, bool hw_mode);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "smp_processor_id.c",
+  "hash_id": "2fb231f761921aa66476d09554127408326a5778185157cb4ae4769674141a7f",
+  "original_prompt": "Ingested from linux-6.6.14/lib/smp_processor_id.c",
+  "human_readable_source": "\n \n#include <linux/export.h>\n#include <linux/kprobes.h>\n#include <linux/sched.h>\n\nnoinstr static\nunsigned int check_preemption_disabled(const char *what1, const char *what2)\n{\n\tint this_cpu = raw_smp_processor_id();\n\n\tif (likely(preempt_count()))\n\t\tgoto out;\n\n\tif (irqs_disabled())\n\t\tgoto out;\n\n\tif (is_percpu_thread())\n\t\tgoto out;\n\n#ifdef CONFIG_SMP\n\tif (current->migration_disabled)\n\t\tgoto out;\n#endif\n\n\t \n\tif (system_state < SYSTEM_SCHEDULING)\n\t\tgoto out;\n\n\t \n\tpreempt_disable_notrace();\n\n\tinstrumentation_begin();\n\tif (!printk_ratelimit())\n\t\tgoto out_enable;\n\n\tprintk(KERN_ERR \"BUG: using %s%s() in preemptible [%08x] code: %s/%d\\n\",\n\t\twhat1, what2, preempt_count() - 1, current->comm, current->pid);\n\n\tprintk(\"caller is %pS\\n\", __builtin_return_address(0));\n\tdump_stack();\n\nout_enable:\n\tinstrumentation_end();\n\tpreempt_enable_no_resched_notrace();\nout:\n\treturn this_cpu;\n}\n\nnoinstr unsigned int debug_smp_processor_id(void)\n{\n\treturn check_preemption_disabled(\"smp_processor_id\", \"\");\n}\nEXPORT_SYMBOL(debug_smp_processor_id);\n\nnoinstr void __this_cpu_preempt_check(const char *op)\n{\n\tcheck_preemption_disabled(\"__this_cpu_\", op);\n}\nEXPORT_SYMBOL(__this_cpu_preempt_check);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

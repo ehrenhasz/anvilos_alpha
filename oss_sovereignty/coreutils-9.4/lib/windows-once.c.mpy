@@ -1,0 +1,9 @@
+{
+  "module_name": "windows-once.c",
+  "hash_id": "09fdf0dc86e305b73da28a17a37b9f4db721ce22e1b1af5d4fc8b2a9072dc0ab",
+  "original_prompt": "Ingested from coreutils-9.4/lib/windows-once.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include \"windows-once.h\"\n\n#include <stdlib.h>\n\nvoid\nglwthread_once (glwthread_once_t *once_control, void (*initfunction) (void))\n{\n  if (once_control->inited <= 0)\n    {\n      if (InterlockedIncrement (&once_control->started) == 0)\n        {\n           \n          InitializeCriticalSection (&once_control->lock);\n          EnterCriticalSection (&once_control->lock);\n          once_control->inited = 0;\n          initfunction ();\n          once_control->inited = 1;\n          LeaveCriticalSection (&once_control->lock);\n        }\n      else\n        {\n           \n          InterlockedDecrement (&once_control->started);\n           \n          while (once_control->inited < 0)\n            Sleep (0);\n          if (once_control->inited <= 0)\n            {\n               \n              EnterCriticalSection (&once_control->lock);\n              LeaveCriticalSection (&once_control->lock);\n              if (!(once_control->inited > 0))\n                abort ();\n            }\n        }\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "camss-ispif.h",
+  "hash_id": "4cfa6642280a564563785768036143d83c855f868f831dc88a59b64f209145b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/qcom/camss/camss-ispif.h",
+  "human_readable_source": " \n \n#ifndef QC_MSM_CAMSS_ISPIF_H\n#define QC_MSM_CAMSS_ISPIF_H\n\n#include <linux/clk.h>\n#include <media/media-entity.h>\n#include <media/v4l2-device.h>\n#include <media/v4l2-subdev.h>\n\n#define MSM_ISPIF_PAD_SINK 0\n#define MSM_ISPIF_PAD_SRC 1\n#define MSM_ISPIF_PADS_NUM 2\n\n#define MSM_ISPIF_VFE_NUM 2\n\nenum ispif_intf {\n\tPIX0,\n\tRDI0,\n\tPIX1,\n\tRDI1,\n\tRDI2\n};\n\nstruct ispif_intf_cmd_reg {\n\tu32 cmd_0;\n\tu32 cmd_1;\n};\n\nstruct ispif_line {\n\tstruct ispif_device *ispif;\n\tu8 id;\n\tu8 csid_id;\n\tu8 vfe_id;\n\tenum ispif_intf interface;\n\tstruct v4l2_subdev subdev;\n\tstruct media_pad pads[MSM_ISPIF_PADS_NUM];\n\tstruct v4l2_mbus_framefmt fmt[MSM_ISPIF_PADS_NUM];\n\tconst u32 *formats;\n\tunsigned int nformats;\n};\n\nstruct ispif_device {\n\tvoid __iomem *base;\n\tvoid __iomem *base_clk_mux;\n\tu32 irq;\n\tchar irq_name[30];\n\tstruct camss_clock *clock;\n\tint nclocks;\n\tstruct camss_clock  *clock_for_reset;\n\tint nclocks_for_reset;\n\tstruct completion reset_complete[MSM_ISPIF_VFE_NUM];\n\tint power_count;\n\tstruct mutex power_lock;\n\tstruct ispif_intf_cmd_reg intf_cmd[MSM_ISPIF_VFE_NUM];\n\tstruct mutex config_lock;\n\tunsigned int line_num;\n\tstruct ispif_line *line;\n\tstruct camss *camss;\n};\n\nstruct resources_ispif;\n\nint msm_ispif_subdev_init(struct camss *camss,\n\t\t\t  const struct resources_ispif *res);\n\nint msm_ispif_register_entities(struct ispif_device *ispif,\n\t\t\t\tstruct v4l2_device *v4l2_dev);\n\nvoid msm_ispif_unregister_entities(struct ispif_device *ispif);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

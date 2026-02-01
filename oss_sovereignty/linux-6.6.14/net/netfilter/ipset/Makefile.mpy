@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7b5180746e1d02bdc2f67732c9177ba81513a46e034761ad3674df650d407108",
+  "original_prompt": "Ingested from linux-6.6.14/net/netfilter/ipset/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the ipset modules\n#\n\nip_set-y := ip_set_core.o ip_set_getport.o pfxlen.o\n\n# ipset core\nobj-$(CONFIG_IP_SET) += ip_set.o\n\n# bitmap types\nobj-$(CONFIG_IP_SET_BITMAP_IP) += ip_set_bitmap_ip.o\nobj-$(CONFIG_IP_SET_BITMAP_IPMAC) += ip_set_bitmap_ipmac.o\nobj-$(CONFIG_IP_SET_BITMAP_PORT) += ip_set_bitmap_port.o\n\n# hash types\nobj-$(CONFIG_IP_SET_HASH_IP) += ip_set_hash_ip.o\nobj-$(CONFIG_IP_SET_HASH_IPMAC) += ip_set_hash_ipmac.o\nobj-$(CONFIG_IP_SET_HASH_IPMARK) += ip_set_hash_ipmark.o\nobj-$(CONFIG_IP_SET_HASH_IPPORT) += ip_set_hash_ipport.o\nobj-$(CONFIG_IP_SET_HASH_IPPORTIP) += ip_set_hash_ipportip.o\nobj-$(CONFIG_IP_SET_HASH_IPPORTNET) += ip_set_hash_ipportnet.o\nobj-$(CONFIG_IP_SET_HASH_MAC) += ip_set_hash_mac.o\nobj-$(CONFIG_IP_SET_HASH_NET) += ip_set_hash_net.o\nobj-$(CONFIG_IP_SET_HASH_NETPORT) += ip_set_hash_netport.o\nobj-$(CONFIG_IP_SET_HASH_NETIFACE) += ip_set_hash_netiface.o\nobj-$(CONFIG_IP_SET_HASH_NETNET) += ip_set_hash_netnet.o\nobj-$(CONFIG_IP_SET_HASH_NETPORTNET) += ip_set_hash_netportnet.o\n\n# list types\nobj-$(CONFIG_IP_SET_LIST_SET) += ip_set_list_set.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

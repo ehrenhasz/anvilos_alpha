@@ -1,0 +1,9 @@
+{
+  "module_name": "percpu_compat.h",
+  "hash_id": "768030ba698039bfb642566aed69b748b992640c668562757ce879b3ed8f0679",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/kernel/linux/percpu_compat.h",
+  "human_readable_source": " \n\n \n\n#ifndef _ZFS_PERCPU_H\n#define\t_ZFS_PERCPU_H\n\n#include <linux/percpu_counter.h>\n\n \n#ifdef HAVE_PERCPU_COUNTER_INIT_WITH_GFP\n#define\tpercpu_counter_init_common(counter, n, gfp) \\\n\tpercpu_counter_init(counter, n, gfp)\n#else\n#define\tpercpu_counter_init_common(counter, n, gfp) \\\n\tpercpu_counter_init(counter, n)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

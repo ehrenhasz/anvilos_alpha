@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "054c67515395a8b18dc77c20d9cbd0798cfc955bdfdd9a098b46b6b284eb2444",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/apple/Makefile",
+  "human_readable_source": "snd-soc-apple-mca-objs\t:= mca.o\n\nobj-$(CONFIG_SND_SOC_APPLE_MCA)\t+= snd-soc-apple-mca.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

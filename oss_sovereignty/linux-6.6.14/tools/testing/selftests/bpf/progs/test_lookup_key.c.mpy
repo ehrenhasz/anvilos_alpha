@@ -1,0 +1,9 @@
+{
+  "module_name": "test_lookup_key.c",
+  "hash_id": "ad843e1b21b1713c33c7c7019e582f0475a3fd7b89cc71db4c33a4f3df56425b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_lookup_key.c",
+  "human_readable_source": "\n\n \n\n#include \"vmlinux.h\"\n#include <errno.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\n__u32 monitored_pid;\n__u32 key_serial;\n__u32 key_id;\n__u64 flags;\n\nextern struct bpf_key *bpf_lookup_user_key(__u32 serial, __u64 flags) __ksym;\nextern struct bpf_key *bpf_lookup_system_key(__u64 id) __ksym;\nextern void bpf_key_put(struct bpf_key *key) __ksym;\n\nSEC(\"lsm.s/bpf\")\nint BPF_PROG(bpf, int cmd, union bpf_attr *attr, unsigned int size)\n{\n\tstruct bpf_key *bkey;\n\t__u32 pid;\n\n\tpid = bpf_get_current_pid_tgid() >> 32;\n\tif (pid != monitored_pid)\n\t\treturn 0;\n\n\tif (key_serial)\n\t\tbkey = bpf_lookup_user_key(key_serial, flags);\n\telse\n\t\tbkey = bpf_lookup_system_key(key_id);\n\n\tif (!bkey)\n\t\treturn -ENOENT;\n\n\tbpf_key_put(bkey);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

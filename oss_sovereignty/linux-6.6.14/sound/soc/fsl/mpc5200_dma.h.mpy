@@ -1,0 +1,9 @@
+{
+  "module_name": "mpc5200_dma.h",
+  "hash_id": "ade88d05e484995c2f53ebc56df066b1bcbfb9da3adbf9ac0bd13a9bbf432f38",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/fsl/mpc5200_dma.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_SOC_FSL_MPC5200_DMA_H__\n#define __SOUND_SOC_FSL_MPC5200_DMA_H__\n\n#define PSC_STREAM_NAME_LEN 32\n\n \nstruct psc_dma_stream {\n\tstruct snd_pcm_runtime *runtime;\n\tint active;\n\tstruct psc_dma *psc_dma;\n\tstruct bcom_task *bcom_task;\n\tint irq;\n\tstruct snd_pcm_substream *stream;\n\tint period_next;\n\tint period_current;\n\tint period_bytes;\n\tint period_count;\n\n\t \n\tu32 ac97_slot_bits;\n};\n\n \nstruct psc_dma {\n\tchar name[32];\n\tstruct mpc52xx_psc __iomem *psc_regs;\n\tstruct mpc52xx_psc_fifo __iomem *fifo_regs;\n\tunsigned int irq;\n\tstruct device *dev;\n\tspinlock_t lock;\n\tstruct mutex mutex;\n\tu32 sicr;\n\tuint sysclk;\n\tint imr;\n\tint id;\n\tunsigned int slots;\n\n\t \n\tstruct psc_dma_stream playback;\n\tstruct psc_dma_stream capture;\n\n\t \n\tstruct {\n\t\tunsigned long overrun_count;\n\t\tunsigned long underrun_count;\n\t} stats;\n};\n\n \nstatic inline struct psc_dma_stream *\nto_psc_dma_stream(struct snd_pcm_substream *substream, struct psc_dma *psc_dma)\n{\n\tif (substream->pstr->stream == SNDRV_PCM_STREAM_CAPTURE)\n\t\treturn &psc_dma->capture;\n\treturn &psc_dma->playback;\n}\n\nint mpc5200_audio_dma_create(struct platform_device *op);\nint mpc5200_audio_dma_destroy(struct platform_device *op);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

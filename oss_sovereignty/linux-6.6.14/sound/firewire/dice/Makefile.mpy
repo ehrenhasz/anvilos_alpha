@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "35b2171c6e3e2b64a21aeb004bb1a449bec39dcd4f711e82cce1135c57d62039",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/dice/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-dice-objs := dice-transaction.o dice-stream.o dice-proc.o dice-midi.o \\\n\t\t dice-pcm.o dice-hwdep.o dice.o dice-tcelectronic.o \\\n\t\t dice-alesis.o dice-extension.o dice-mytek.o dice-presonus.o \\\n\t\t dice-harman.o dice-focusrite.o dice-weiss.o\nobj-$(CONFIG_SND_DICE) += snd-dice.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

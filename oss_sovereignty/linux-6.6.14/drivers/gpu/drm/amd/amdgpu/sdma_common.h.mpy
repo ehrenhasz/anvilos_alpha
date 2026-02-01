@@ -1,0 +1,9 @@
+{
+  "module_name": "sdma_common.h",
+  "hash_id": "0b950b7c95cf1e2a70d60267173cf6dca61e1e21655206ea9de088fc7f7bd2c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/sdma_common.h",
+  "human_readable_source": " \n\n#ifndef __SDMA_COMMON_H__\n#define __SDMA_COMMON_H__\n\nenum sdma_utcl2_cache_read_policy {\n\tCACHE_READ_POLICY_L2__LRU    = 0x00000000,\n\tCACHE_READ_POLICY_L2__STREAM = 0x00000001,\n\tCACHE_READ_POLICY_L2__NOA    = 0x00000002,\n\tCACHE_READ_POLICY_L2__DEFAULT = CACHE_READ_POLICY_L2__NOA,\n};\n\nenum sdma_utcl2_cache_write_policy {\n\tCACHE_WRITE_POLICY_L2__LRU    = 0x00000000,\n\tCACHE_WRITE_POLICY_L2__STREAM = 0x00000001,\n\tCACHE_WRITE_POLICY_L2__NOA    = 0x00000002,\n\tCACHE_WRITE_POLICY_L2__BYPASS = 0x00000003,\n\tCACHE_WRITE_POLICY_L2__DEFAULT = CACHE_WRITE_POLICY_L2__BYPASS,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

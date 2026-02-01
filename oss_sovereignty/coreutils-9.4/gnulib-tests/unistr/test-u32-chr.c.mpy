@@ -1,0 +1,9 @@
+{
+  "module_name": "test-u32-chr.c",
+  "hash_id": "d90713d567271a4390f21d9617c3fe3cf2e91346245b0334af3f72b0a192c4b1",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/unistr/test-u32-chr.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"unistr.h\"\n\n#include <stdlib.h>\n#include <string.h>\n\n#include \"zerosize-ptr.h\"\n#include \"macros.h\"\n\n#define UNIT uint32_t\n#define U_UCTOMB(s, uc, n) (*(s) = (uc), 1)\n#define U32_TO_U(s, n, result, length) (*(length) = (n), (s))\n#define U_CHR u32_chr\n#define U_SET u32_set\n#include \"test-chr.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1707d1c9093bc07d42d11cdcda06afd661c4c80a23719dcf7ed0d207cb662c0a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/saa7146/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_VIDEO_MXB) += mxb.o\nobj-$(CONFIG_VIDEO_HEXIUM_ORION) += hexium_orion.o\nobj-$(CONFIG_VIDEO_HEXIUM_GEMINI) += hexium_gemini.o\n\nccflags-y += -I$(srctree)/drivers/media/i2c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

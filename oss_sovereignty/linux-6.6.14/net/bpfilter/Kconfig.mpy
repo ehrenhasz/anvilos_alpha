@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "04e0474a8af6c102592d7bda7fd60a5d2eafb74500744ff2b3ea8a6397348e7b",
+  "original_prompt": "Ingested from linux-6.6.14/net/bpfilter/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig BPFILTER\n\tbool \"BPF based packet filtering framework (BPFILTER)\"\n\tdepends on BPF && INET\n\tselect USERMODE_DRIVER\n\thelp\n\t  This builds experimental bpfilter framework that is aiming to\n\t  provide netfilter compatible functionality via BPF\n\nif BPFILTER\nconfig BPFILTER_UMH\n\ttristate \"bpfilter kernel module with user mode helper\"\n\tdepends on CC_CAN_LINK\n\tdepends on m || CC_CAN_LINK_STATIC\n\tdefault m\n\thelp\n\t  This builds bpfilter kernel module with embedded user mode helper\n\n\t  Note: To compile this as built-in, your toolchain must support\n\t  building static binaries, since rootfs isn't mounted at the time\n\t  when __init functions are called and do_execv won't be able to find\n\t  the elf interpreter.\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

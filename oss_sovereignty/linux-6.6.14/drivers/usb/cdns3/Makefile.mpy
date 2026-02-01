@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c058aef6f71d26383c8125427d3a802f193338e2dc88729c90b4bf29297822db",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/cdns3/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# define_trace.h needs to know how to find our header\nCFLAGS_cdns3-trace.o\t\t\t\t:= -I$(src)\nCFLAGS_cdnsp-trace.o\t\t\t\t:= -I$(src)\n\ncdns-usb-common-y\t\t\t\t:= core.o drd.o\ncdns3-y\t\t\t\t\t\t:= cdns3-plat.o\n\nifeq ($(CONFIG_USB),m)\nobj-m\t\t\t\t\t\t+= cdns-usb-common.o\nobj-m\t\t\t\t\t\t+= cdns3.o\nelse\nobj-$(CONFIG_USB_CDNS_SUPPORT)\t\t\t+= cdns-usb-common.o\nobj-$(CONFIG_USB_CDNS3)\t\t\t\t+= cdns3.o\nendif\n\ncdns-usb-common-$(CONFIG_USB_CDNS_HOST) \t+= host.o\ncdns3-$(CONFIG_USB_CDNS3_GADGET)\t\t+= cdns3-gadget.o cdns3-ep0.o\n\nifneq ($(CONFIG_USB_CDNS3_GADGET),)\ncdns3-$(CONFIG_TRACING)\t\t\t\t+= cdns3-trace.o\nendif\n\nobj-$(CONFIG_USB_CDNS3_PCI_WRAP)\t\t+= cdns3-pci-wrap.o\nobj-$(CONFIG_USB_CDNS3_TI)\t\t\t+= cdns3-ti.o\nobj-$(CONFIG_USB_CDNS3_IMX)\t\t\t+= cdns3-imx.o\nobj-$(CONFIG_USB_CDNS3_STARFIVE)\t\t+= cdns3-starfive.o\n\ncdnsp-udc-pci-y\t\t\t\t\t:= cdnsp-pci.o\n\nifdef CONFIG_USB_CDNSP_PCI\nifeq ($(CONFIG_USB),m)\nobj-m\t\t\t\t\t\t+= cdnsp-udc-pci.o\nelse\nobj-$(CONFIG_USB_CDNSP_PCI) \t\t\t+= cdnsp-udc-pci.o\nendif\nendif\n\ncdnsp-udc-pci-$(CONFIG_USB_CDNSP_GADGET)\t+= cdnsp-ring.o cdnsp-gadget.o \\\n\t\t\t\t\t\t   cdnsp-mem.o cdnsp-ep0.o\n\nifneq ($(CONFIG_USB_CDNSP_GADGET),)\ncdnsp-udc-pci-$(CONFIG_TRACING)\t\t\t+= cdnsp-trace.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pixelgen_global.h",
+  "hash_id": "3cd47ad19287ee4d81df39f3a3326d2e453a6b899f6febcaec9c5493492a9591",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/css_2401_system/pixelgen_global.h",
+  "human_readable_source": " \n \n\n#ifndef __PIXELGEN_GLOBAL_H_INCLUDED__\n#define __PIXELGEN_GLOBAL_H_INCLUDED__\n\n#include <type_support.h>\n\n \n \ntypedef struct isp2401_sync_generator_cfg_s isp2401_sync_generator_cfg_t;\nstruct isp2401_sync_generator_cfg_s {\n\tu32\thblank_cycles;\n\tu32\tvblank_cycles;\n\tu32\tpixels_per_clock;\n\tu32\tnr_of_frames;\n\tu32\tpixels_per_line;\n\tu32\tlines_per_frame;\n};\n\ntypedef enum {\n\tPIXELGEN_TPG_MODE_RAMP = 0,\n\tPIXELGEN_TPG_MODE_CHBO,\n\tPIXELGEN_TPG_MODE_MONO,\n\tN_PIXELGEN_TPG_MODE\n} pixelgen_tpg_mode_t;\n\n \ntypedef struct pixelgen_tpg_cfg_s pixelgen_tpg_cfg_t;\nstruct pixelgen_tpg_cfg_s {\n\tpixelgen_tpg_mode_t\tmode;\t \n\n\tstruct {\n\t\t \n\t\tu32 R1;\n\t\tu32 G1;\n\t\tu32 B1;\n\n\t\t \n\t\tu32 R2;\n\t\tu32 G2;\n\t\tu32 B2;\n\t} color_cfg;\n\n\tstruct {\n\t\tu32\th_mask;\t\t \n\t\tu32\tv_mask;\t\t \n\t\tu32\thv_mask;\t \n\t} mask_cfg;\n\n\tstruct {\n\t\ts32\th_delta;\t \n\t\ts32\tv_delta;\t \n\t} delta_cfg;\n\n\tisp2401_sync_generator_cfg_t\t sync_gen_cfg;\n};\n\n \ntypedef struct pixelgen_prbs_cfg_s pixelgen_prbs_cfg_t;\nstruct pixelgen_prbs_cfg_s {\n\ts32\tseed0;\n\ts32\tseed1;\n\n\tisp2401_sync_generator_cfg_t\tsync_gen_cfg;\n};\n\n \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "wm9090.h",
+  "hash_id": "f4fa945d208c4aee62ecb47007b93435678bbd7a42fc1facc641a416cacda43c",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/wm9090.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_SND_WM9090_H\n#define __LINUX_SND_WM9090_H\n\nstruct wm9090_platform_data {\n\t \n\tunsigned int lin1_diff:1;\n\tunsigned int lin2_diff:1;\n\n\t \n\tunsigned int agc_ena:1;\n\tu16 agc[3];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

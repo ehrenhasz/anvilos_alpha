@@ -1,0 +1,9 @@
+{
+  "module_name": "virtio_caif.h",
+  "hash_id": "dfb74a2653c817d3f8a5a7c6d17ca9197d919a06aa7286783821c32844fc8218",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/virtio_caif.h",
+  "human_readable_source": " \n\n#ifndef VIRTIO_CAIF_H\n#define VIRTIO_CAIF_H\n\n#include <linux/types.h>\nstruct virtio_caif_transf_config {\n\t__virtio16 headroom;\n\t__virtio16 tailroom;\n\t__virtio32 mtu;\n\tu8 reserved[4];\n};\n\nstruct virtio_caif_config {\n\tstruct virtio_caif_transf_config uplink, downlink;\n\tu8 reserved[8];\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

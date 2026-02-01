@@ -1,0 +1,9 @@
+{
+  "module_name": "quotearg.m4",
+  "hash_id": "85f660d77226f9893f265a1cdcb3f20afd5baa9cb9e743d2f3b3af8887a4a1b2",
+  "original_prompt": "Ingested from coreutils-9.4/m4/quotearg.m4",
+  "human_readable_source": "# quotearg.m4 serial 10\ndnl Copyright (C) 2002, 2004-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_QUOTEARG],\n[\n  AC_REQUIRE([AC_C_RESTRICT])\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

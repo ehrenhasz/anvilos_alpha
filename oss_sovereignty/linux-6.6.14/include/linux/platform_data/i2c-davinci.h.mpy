@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-davinci.h",
+  "hash_id": "52093de4dd09585a4962578b577a911d7a212dec9b870911b9baed8fca4d412a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/i2c-davinci.h",
+  "human_readable_source": " \n\n#ifndef __ASM_ARCH_I2C_H\n#define __ASM_ARCH_I2C_H\n\n \nstruct davinci_i2c_platform_data {\n\tunsigned int\tbus_freq;\t \n\tunsigned int\tbus_delay;\t \n\tbool\t\tgpio_recovery;\t \n\tbool\t\thas_pfunc;\t \n};\n\n \nvoid davinci_init_i2c(struct davinci_i2c_platform_data *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

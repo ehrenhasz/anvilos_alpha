@@ -1,0 +1,9 @@
+{
+  "module_name": "gf100.h",
+  "hash_id": "896a00c8bba1606a7f8992f367bf8ea354b3a1293e6dfaf49179df2b12abbc98",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/pm/gf100.h",
+  "human_readable_source": " \n#ifndef __NVKM_PM_NVC0_H__\n#define __NVKM_PM_NVC0_H__\n#include \"priv.h\"\n\nstruct gf100_pm_func {\n\tconst struct nvkm_specdom *doms_hub;\n\tconst struct nvkm_specdom *doms_gpc;\n\tconst struct nvkm_specdom *doms_part;\n};\n\nint gf100_pm_new_(const struct gf100_pm_func *, struct nvkm_device *, enum nvkm_subdev_type, int,\n\t\t  struct nvkm_pm **);\n\nextern const struct nvkm_funcdom gf100_perfctr_func;\nextern const struct nvkm_specdom gf100_pm_gpc[];\n\nextern const struct nvkm_specsrc gf100_pbfb_sources[];\nextern const struct nvkm_specsrc gf100_pmfb_sources[];\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

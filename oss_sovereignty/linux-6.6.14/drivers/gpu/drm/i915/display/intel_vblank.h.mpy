@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_vblank.h",
+  "hash_id": "e8b27642d89210ffc47e6a88a0767bd23b77fea034ae3ccbc45f2183dab1841b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_vblank.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_VBLANK_H__\n#define __INTEL_VBLANK_H__\n\n#include <linux/ktime.h>\n#include <linux/types.h>\n\nstruct drm_crtc;\nstruct intel_crtc;\nstruct intel_crtc_state;\n\nu32 i915_get_vblank_counter(struct drm_crtc *crtc);\nu32 g4x_get_vblank_counter(struct drm_crtc *crtc);\nbool intel_crtc_get_vblank_timestamp(struct drm_crtc *crtc, int *max_error,\n\t\t\t\t     ktime_t *vblank_time, bool in_vblank_irq);\nint intel_get_crtc_scanline(struct intel_crtc *crtc);\nvoid intel_wait_for_pipe_scanline_stopped(struct intel_crtc *crtc);\nvoid intel_wait_for_pipe_scanline_moving(struct intel_crtc *crtc);\nvoid intel_crtc_update_active_timings(const struct intel_crtc_state *crtc_state,\n\t\t\t\t      bool vrr_enable);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

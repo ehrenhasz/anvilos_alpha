@@ -1,0 +1,9 @@
+{
+  "module_name": "st_sensors_spi.h",
+  "hash_id": "0746c3e47ecafb364a0f2b66a0825b3643a5aa0e815de56015a63b72215cfc0a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/common/st_sensors_spi.h",
+  "human_readable_source": " \n \n\n#ifndef ST_SENSORS_SPI_H\n#define ST_SENSORS_SPI_H\n\n#include <linux/spi/spi.h>\n#include <linux/iio/common/st_sensors.h>\n\nint st_sensors_spi_configure(struct iio_dev *indio_dev,\n\t\t\t     struct spi_device *spi);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

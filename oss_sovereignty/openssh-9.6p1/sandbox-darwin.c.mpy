@@ -1,0 +1,9 @@
+{
+  "module_name": "sandbox-darwin.c",
+  "hash_id": "c91732b4c806333a28735332807ed3e776131f09c27d73684d6c279ad019f37f",
+  "original_prompt": "Ingested from openssh-9.6p1/sandbox-darwin.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#ifdef SANDBOX_DARWIN\n\n#include <sys/types.h>\n\n#include <sandbox.h>\n\n#include <errno.h>\n#include <stdarg.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n\n#include \"log.h\"\n#include \"ssh-sandbox.h\"\n#include \"monitor.h\"\n#include \"xmalloc.h\"\n\n \n\nstruct ssh_sandbox {\n\tpid_t child_pid;\n};\n\nstruct ssh_sandbox *\nssh_sandbox_init(struct monitor *monitor)\n{\n\tstruct ssh_sandbox *box;\n\n\t \n\tdebug3(\"%s: preparing Darwin sandbox\", __func__);\n\tbox = xcalloc(1, sizeof(*box));\n\tbox->child_pid = 0;\n\n\treturn box;\n}\n\nvoid\nssh_sandbox_child(struct ssh_sandbox *box)\n{\n\tchar *errmsg;\n\tstruct rlimit rl_zero;\n\n\tdebug3(\"%s: starting Darwin sandbox\", __func__);\n\tif (sandbox_init(kSBXProfilePureComputation, SANDBOX_NAMED,\n\t    &errmsg) == -1)\n\t\tfatal(\"%s: sandbox_init: %s\", __func__, errmsg);\n\n\t \n\trl_zero.rlim_cur = rl_zero.rlim_max = 0;\n\tif (setrlimit(RLIMIT_FSIZE, &rl_zero) == -1)\n\t\tfatal(\"%s: setrlimit(RLIMIT_FSIZE, { 0, 0 }): %s\",\n\t\t\t__func__, strerror(errno));\n\tif (setrlimit(RLIMIT_NOFILE, &rl_zero) == -1)\n\t\tfatal(\"%s: setrlimit(RLIMIT_NOFILE, { 0, 0 }): %s\",\n\t\t\t__func__, strerror(errno));\n\tif (setrlimit(RLIMIT_NPROC, &rl_zero) == -1)\n\t\tfatal(\"%s: setrlimit(RLIMIT_NPROC, { 0, 0 }): %s\",\n\t\t\t__func__, strerror(errno));\n}\n\nvoid\nssh_sandbox_parent_finish(struct ssh_sandbox *box)\n{\n\tfree(box);\n\tdebug3(\"%s: finished\", __func__);\n}\n\nvoid\nssh_sandbox_parent_preauth(struct ssh_sandbox *box, pid_t child_pid)\n{\n\tbox->child_pid = child_pid;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

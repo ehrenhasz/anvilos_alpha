@@ -1,0 +1,9 @@
+{
+  "module_name": "fwvid.h",
+  "hash_id": "3f070613eec82fa8b7de6e6f409c355f66ab8637fdd82fed4844c7cd89158866",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwvid.h",
+  "human_readable_source": " \n \n#ifndef FWVID_H_\n#define FWVID_H_\n\n#include \"firmware.h\"\n\nstruct brcmf_pub;\n\nstruct brcmf_fwvid_ops {\n\tint (*attach)(struct brcmf_pub *drvr);\n\tvoid (*detach)(struct brcmf_pub *drvr);\n};\n\n \nint brcmf_fwvid_register_vendor(enum brcmf_fwvendor fwvid, struct module *mod,\n\t\t\t\tconst struct brcmf_fwvid_ops *ops);\nint brcmf_fwvid_unregister_vendor(enum brcmf_fwvendor fwvid, struct module *mod);\n\n \nint brcmf_fwvid_attach_ops(struct brcmf_pub *drvr);\nvoid brcmf_fwvid_detach_ops(struct brcmf_pub *drvr);\nconst char *brcmf_fwvid_vendor_name(struct brcmf_pub *drvr);\n\nstatic inline int brcmf_fwvid_attach(struct brcmf_pub *drvr)\n{\n\tint ret;\n\n\tret = brcmf_fwvid_attach_ops(drvr);\n\tif (ret)\n\t\treturn ret;\n\n\treturn drvr->vops->attach(drvr);\n}\n\nstatic inline void brcmf_fwvid_detach(struct brcmf_pub *drvr)\n{\n\tif (!drvr->vops)\n\t\treturn;\n\n\tdrvr->vops->detach(drvr);\n\tbrcmf_fwvid_detach_ops(drvr);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

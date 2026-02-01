@@ -1,0 +1,9 @@
+{
+  "module_name": "posix_memalign.c",
+  "hash_id": "ff15284ebf08b88b4eee239cc533222b85939322f8fde8fecf9287717c57a7c1",
+  "original_prompt": "Ingested from coreutils-9.4/lib/posix_memalign.c",
+  "human_readable_source": " \n#include <stdlib.h>\n\n#include <errno.h>\n\nint\nposix_memalign (void **memptr, size_t alignment, size_t size)\n#undef posix_memalign\n{\n   \n  size += alignment - 1;\n  if (size >= alignment - 1)  \n    return posix_memalign (memptr, alignment, size & ~(size_t)(alignment - 1));\n  else\n    return ENOMEM;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

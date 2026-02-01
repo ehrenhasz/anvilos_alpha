@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "dc5e46efe642b1c9bcd884a4124618f31db8c10fcd2db884534d5bfc6d8fdaf7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/joystick/iforce/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# I-Force driver configuration\n#\nconfig JOYSTICK_IFORCE\n\ttristate \"I-Force devices\"\n\tdepends on INPUT && INPUT_JOYSTICK\n\thelp\n\t  Say Y here if you have an I-Force joystick or steering wheel\n\n\t  You also must choose at least one of the two options below.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called iforce.\n\nconfig JOYSTICK_IFORCE_USB\n\ttristate \"I-Force USB joysticks and wheels\"\n\tdepends on JOYSTICK_IFORCE && USB\n\thelp\n\t  Say Y here if you have an I-Force joystick or steering wheel\n\t  connected to your USB port.\n\nconfig JOYSTICK_IFORCE_232\n\ttristate \"I-Force Serial joysticks and wheels\"\n\tdepends on JOYSTICK_IFORCE && SERIO\n\thelp\n\t  Say Y here if you have an I-Force joystick or steering wheel\n\t  connected to your serial (COM) port.\n\n\t  You will need an additional utility called inputattach, see\n\t  <file:Documentation/input/joydev/joystick.rst>\n\t  and <file:Documentation/input/ff.rst>.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

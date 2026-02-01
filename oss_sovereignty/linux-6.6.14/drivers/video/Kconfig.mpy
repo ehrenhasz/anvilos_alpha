@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ba11d0ce87f332fa50e469f3190e3dbd1d2f838b3409e2de6621396712b92244",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Video configuration\n#\n\nmenu \"Graphics support\"\n\nconfig APERTURE_HELPERS\n\tbool\n\thelp\n\t  Support tracking and hand-over of aperture ownership. Required\n\t  by graphics drivers for firmware-provided framebuffers.\n\nconfig STI_CORE\n\tbool\n\tdepends on PARISC\n\thelp\n\t  STI refers to the HP \"Standard Text Interface\" which is a set of\n\t  BIOS routines contained in a ROM chip in HP PA-RISC based machines.\n\nconfig VIDEO_CMDLINE\n\tbool\n\nconfig VIDEO_NOMODESET\n\tbool\n\tdefault n\n\nsource \"drivers/auxdisplay/Kconfig\"\n\nif HAS_IOMEM\n\nconfig HAVE_FB_ATMEL\n\tbool\n\nsource \"drivers/char/agp/Kconfig\"\n\nsource \"drivers/gpu/vga/Kconfig\"\n\nsource \"drivers/gpu/host1x/Kconfig\"\nsource \"drivers/gpu/ipu-v3/Kconfig\"\n\nsource \"drivers/gpu/drm/Kconfig\"\n\nmenu \"Frame buffer Devices\"\nsource \"drivers/video/fbdev/Kconfig\"\nendmenu\n\nsource \"drivers/video/backlight/Kconfig\"\n\nconfig VGASTATE\n       tristate\n       default n\n\nconfig VIDEOMODE_HELPERS\n\tbool\n\nconfig HDMI\n\tbool\n\nendif # HAS_IOMEM\n\nif VT\n\tsource \"drivers/video/console/Kconfig\"\nendif\n\nif FB_CORE || SGI_NEWPORT_CONSOLE\n\tsource \"drivers/video/logo/Kconfig\"\n\nendif\n\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

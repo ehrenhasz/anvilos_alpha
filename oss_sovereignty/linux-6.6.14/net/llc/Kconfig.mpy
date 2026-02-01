@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9a13a35f13329306b74c7cba8a4701f85a15ce2f6e0604254d4690aabb37ac46",
+  "original_prompt": "Ingested from linux-6.6.14/net/llc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig LLC\n\ttristate\n\nconfig LLC2\n\ttristate \"ANSI/IEEE 802.2 LLC type 2 Support\"\n\tselect LLC\n\thelp\n\t  This is a Logical Link Layer type 2, connection oriented support.\n\t  Select this if you want to have support for PF_LLC sockets.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

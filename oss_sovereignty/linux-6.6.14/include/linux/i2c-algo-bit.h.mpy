@@ -1,0 +1,9 @@
+{
+  "module_name": "i2c-algo-bit.h",
+  "hash_id": "2d99302ad0f14c2e06a7f55687b5bd5c84dc14db374c68be6f4aecf03012b2e0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/i2c-algo-bit.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_I2C_ALGO_BIT_H\n#define _LINUX_I2C_ALGO_BIT_H\n\n#include <linux/i2c.h>\n\n \n \nstruct i2c_algo_bit_data {\n\tvoid *data;\t\t \n\tvoid (*setsda) (void *data, int state);\n\tvoid (*setscl) (void *data, int state);\n\tint  (*getsda) (void *data);\n\tint  (*getscl) (void *data);\n\tint  (*pre_xfer)  (struct i2c_adapter *);\n\tvoid (*post_xfer) (struct i2c_adapter *);\n\n\t \n\tint udelay;\t\t \n\tint timeout;\t\t \n\tbool can_do_atomic;\t \n};\n\nint i2c_bit_add_bus(struct i2c_adapter *);\nint i2c_bit_add_numbered_bus(struct i2c_adapter *);\nextern const struct i2c_algorithm i2c_bit_algo;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "u8-uctomb.c",
+  "hash_id": "e9eee8dd1a002e8af5dcf6e3008e28657078e96783706cf794c61b480ea80543",
+  "original_prompt": "Ingested from coreutils-9.4/lib/unistr/u8-uctomb.c",
+  "human_readable_source": " \n# include \"unistring-notinline.h\"\n#endif\n\n \n#include \"unistr.h\"\n\n#include \"attribute.h\"\n\n#if !HAVE_INLINE\n\nint\nu8_uctomb (uint8_t *s, ucs4_t uc, ptrdiff_t n)\n{\n  if (uc < 0x80)\n    {\n      if (n > 0)\n        {\n          s[0] = uc;\n          return 1;\n        }\n       \n    }\n  else\n    {\n      int count;\n\n      if (uc < 0x800)\n        count = 2;\n      else if (uc < 0x10000)\n        {\n          if (uc < 0xd800 || uc >= 0xe000)\n            count = 3;\n          else\n            return -1;\n        }\n      else if (uc < 0x110000)\n        count = 4;\n      else\n        return -1;\n\n      if (n >= count)\n        {\n          switch (count)  \n            {\n            case 4: s[3] = 0x80 | (uc & 0x3f); uc = uc >> 6; uc |= 0x10000;\n              FALLTHROUGH;\n            case 3: s[2] = 0x80 | (uc & 0x3f); uc = uc >> 6; uc |= 0x800;\n              FALLTHROUGH;\n            case 2: s[1] = 0x80 | (uc & 0x3f); uc = uc >> 6; uc |= 0xc0;\n            s[0] = uc;\n            }\n          return count;\n        }\n    }\n  return -2;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

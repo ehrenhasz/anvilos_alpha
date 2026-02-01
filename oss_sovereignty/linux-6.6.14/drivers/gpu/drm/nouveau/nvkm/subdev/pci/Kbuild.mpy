@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "d17ad91c1a2693eb4157ff4cda7e90bc618f7929e96f1947b0c87f15a6732b88",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/pci/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\nnvkm-y += nvkm/subdev/pci/agp.o\nnvkm-y += nvkm/subdev/pci/base.o\nnvkm-y += nvkm/subdev/pci/pcie.o\nnvkm-y += nvkm/subdev/pci/nv04.o\nnvkm-y += nvkm/subdev/pci/nv40.o\nnvkm-y += nvkm/subdev/pci/nv46.o\nnvkm-y += nvkm/subdev/pci/nv4c.o\nnvkm-y += nvkm/subdev/pci/g84.o\nnvkm-y += nvkm/subdev/pci/g92.o\nnvkm-y += nvkm/subdev/pci/g94.o\nnvkm-y += nvkm/subdev/pci/gf100.o\nnvkm-y += nvkm/subdev/pci/gf106.o\nnvkm-y += nvkm/subdev/pci/gk104.o\nnvkm-y += nvkm/subdev/pci/gp100.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

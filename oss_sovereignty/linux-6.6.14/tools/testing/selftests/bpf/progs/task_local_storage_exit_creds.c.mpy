@@ -1,0 +1,9 @@
+{
+  "module_name": "task_local_storage_exit_creds.c",
+  "hash_id": "d8f13fecff97bd7aadc7fe1a2d2e8e35551644d0c51868c327bb9d917912a207",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/task_local_storage_exit_creds.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_TASK_STORAGE);\n\t__uint(map_flags, BPF_F_NO_PREALLOC);\n\t__type(key, int);\n\t__type(value, __u64);\n} task_storage SEC(\".maps\");\n\nint run_count = 0;\nint valid_ptr_count = 0;\nint null_ptr_count = 0;\n\nSEC(\"fentry/exit_creds\")\nint BPF_PROG(trace_exit_creds, struct task_struct *task)\n{\n\t__u64 *ptr;\n\n\tptr = bpf_task_storage_get(&task_storage, task, 0,\n\t\t\t\t   BPF_LOCAL_STORAGE_GET_F_CREATE);\n\tif (ptr)\n\t\t__sync_fetch_and_add(&valid_ptr_count, 1);\n\telse\n\t\t__sync_fetch_and_add(&null_ptr_count, 1);\n\n\t__sync_fetch_and_add(&run_count, 1);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

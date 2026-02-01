@@ -1,0 +1,9 @@
+{
+  "module_name": "proc-uptime-001.c",
+  "hash_id": "01c9659afc32d2c4a9527f7690bb90db123c477af52b9000a8e5f81622c8a593",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/proc/proc-uptime-001.c",
+  "human_readable_source": " \n\n\n\n#undef NDEBUG\n#include <assert.h>\n#include <stdint.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n#include <fcntl.h>\n\n#include \"proc-uptime.h\"\n\nint main(void)\n{\n\tuint64_t start, u0, u1, c0, c1;\n\tint fd;\n\n\tfd = open(\"/proc/uptime\", O_RDONLY);\n\tassert(fd >= 0);\n\n\tu0 = proc_uptime(fd);\n\tstart = u0;\n\tc0 = clock_boottime();\n\n\tdo {\n\t\tu1 = proc_uptime(fd);\n\t\tc1 = clock_boottime();\n\n\t\t \n\t\tassert(u1 >= u0);\n\n\t\t \n\t\tassert(c1 >= c0);\n\n\t\t \n\t\tassert(c0 >= u0);\n\n\t\tu0 = u1;\n\t\tc0 = c1;\n\t} while (u1 - start < 100);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

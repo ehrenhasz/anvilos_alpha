@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e61cd4794caec14c2fef8fe6eb460ecff965d162e132bace38aebb451a54b1e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/memstick/host/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for MemoryStick host controller drivers\n#\n\nobj-$(CONFIG_MEMSTICK_TIFM_MS)\t\t+= tifm_ms.o\nobj-$(CONFIG_MEMSTICK_JMICRON_38X)\t+= jmb38x_ms.o\nobj-$(CONFIG_MEMSTICK_R592)\t\t+= r592.o\nobj-$(CONFIG_MEMSTICK_REALTEK_PCI)\t+= rtsx_pci_ms.o\nobj-$(CONFIG_MEMSTICK_REALTEK_USB)\t+= rtsx_usb_ms.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

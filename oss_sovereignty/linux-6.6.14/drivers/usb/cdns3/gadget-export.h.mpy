@@ -1,0 +1,9 @@
+{
+  "module_name": "gadget-export.h",
+  "hash_id": "32a9c77cb1191eb3cf382f42ff44f09ab950d82023269cadd51343264addfddb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/cdns3/gadget-export.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_CDNS3_GADGET_EXPORT\n#define __LINUX_CDNS3_GADGET_EXPORT\n\n#if IS_ENABLED(CONFIG_USB_CDNSP_GADGET)\n\nint cdnsp_gadget_init(struct cdns *cdns);\n#else\n\nstatic inline int cdnsp_gadget_init(struct cdns *cdns)\n{\n\treturn -ENXIO;\n}\n\n#endif  \n\n#if IS_ENABLED(CONFIG_USB_CDNS3_GADGET)\n\nint cdns3_gadget_init(struct cdns *cdns);\n#else\n\nstatic inline int cdns3_gadget_init(struct cdns *cdns)\n{\n\treturn -ENXIO;\n}\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "init.h",
+  "hash_id": "907fa18dd2c838835ac34aa8600712b7dd9bcecbf695460013b62c0ee917e4c6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/subdev/bios/init.h",
+  "human_readable_source": " \n#ifndef __NVBIOS_INIT_H__\n#define __NVBIOS_INIT_H__\n\nstruct nvbios_init {\n\tstruct nvkm_subdev *subdev;\n\tu32 offset;\n\n\tstruct dcb_output *outp;\n\tint or;\n\tint link;\n\tint head;\n\n\t \n\tu8 execute;\n\tu32 nested;\n\tu32 repeat;\n\tu32 repend;\n\tu32 ramcfg;\n};\n\n#define nvbios_init(s,o,ARGS...) ({                                            \\\n\tstruct nvbios_init init = {                                            \\\n\t\t.subdev = (s),                                                 \\\n\t\t.offset = (o),                                                 \\\n\t\t.or = -1,                                                      \\\n\t\t.link = 0,                                                     \\\n\t\t.head = -1,                                                    \\\n\t\t.execute = 1,                                                  \\\n\t};                                                                     \\\n\tARGS                                                                   \\\n\tnvbios_exec(&init);                                                    \\\n})\nint nvbios_exec(struct nvbios_init *);\n\nint nvbios_post(struct nvkm_subdev *, bool execute);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

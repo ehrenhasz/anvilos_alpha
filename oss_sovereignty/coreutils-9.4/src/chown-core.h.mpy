@@ -1,0 +1,9 @@
+{
+  "module_name": "chown-core.h",
+  "hash_id": "32603ce10291795e686f0ff5dda88f260c15664146e0eb21b9e68b236820cac9",
+  "original_prompt": "Ingested from coreutils-9.4/src/chown-core.h",
+  "human_readable_source": " \n  V_high,\n\n   \n  V_changes_only,\n\n   \n  V_off\n};\n\nstruct Chown_option\n{\n   \n  enum Verbosity verbosity;\n\n   \n  bool recurse;\n\n   \n  struct dev_ino *root_dev_ino;\n\n   \n  bool affect_symlink_referent;\n\n   \n  bool force_silent;\n\n   \n  char *user_name;\n\n   \n  char *group_name;\n};\n\nvoid\nchopt_init (struct Chown_option *);\n\nvoid\nchopt_free (struct Chown_option *);\n\nchar *\ngid_to_name (gid_t)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE\n  _GL_ATTRIBUTE_RETURNS_NONNULL;\n\nchar *\nuid_to_name (uid_t)\n  _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC_FREE\n  _GL_ATTRIBUTE_RETURNS_NONNULL;\n\nbool\nchown_files (char **files, int bit_flags,\n             uid_t uid, gid_t gid,\n             uid_t required_uid, gid_t required_gid,\n             struct Chown_option const *chopt)\n  _GL_ATTRIBUTE_NONNULL ();\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

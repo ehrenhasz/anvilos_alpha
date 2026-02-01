@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom,q6asm.h",
+  "hash_id": "9424d86930a21008d9a54af02f479b59bafcd01414c2d6f9c5c6957e5c9fd312",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/sound/qcom,q6asm.h",
+  "human_readable_source": " \n#ifndef __DT_BINDINGS_Q6_ASM_H__\n#define __DT_BINDINGS_Q6_ASM_H__\n\n#define\tMSM_FRONTEND_DAI_MULTIMEDIA1\t0\n#define\tMSM_FRONTEND_DAI_MULTIMEDIA2\t1\n#define\tMSM_FRONTEND_DAI_MULTIMEDIA3\t2\n#define\tMSM_FRONTEND_DAI_MULTIMEDIA4\t3\n#define\tMSM_FRONTEND_DAI_MULTIMEDIA5\t4\n#define\tMSM_FRONTEND_DAI_MULTIMEDIA6\t5\n#define\tMSM_FRONTEND_DAI_MULTIMEDIA7\t6\n#define\tMSM_FRONTEND_DAI_MULTIMEDIA8\t7\n#define\tMSM_FRONTEND_DAI_MULTIMEDIA9\t8\n#define\tMSM_FRONTEND_DAI_MULTIMEDIA10\t9\n#define\tMSM_FRONTEND_DAI_MULTIMEDIA11\t10\n#define\tMSM_FRONTEND_DAI_MULTIMEDIA12\t11\n#define\tMSM_FRONTEND_DAI_MULTIMEDIA13\t12\n#define\tMSM_FRONTEND_DAI_MULTIMEDIA14\t13\n#define\tMSM_FRONTEND_DAI_MULTIMEDIA15\t14\n#define\tMSM_FRONTEND_DAI_MULTIMEDIA16\t15\n\n#define Q6ASM_DAI_TX_RX\t0\n#define Q6ASM_DAI_TX\t1\n#define Q6ASM_DAI_RX\t2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

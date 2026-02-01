@@ -1,0 +1,9 @@
+{
+  "module_name": "interrupts.c",
+  "hash_id": "3ec859e02d3feb25c238fefc6548b9ba619a05202a42e0d0c353f23fdc9ab8de",
+  "original_prompt": "Ingested from linux-6.6.14/fs/proc/interrupts.c",
+  "human_readable_source": "\n#include <linux/fs.h>\n#include <linux/init.h>\n#include <linux/interrupt.h>\n#include <linux/irqnr.h>\n#include <linux/proc_fs.h>\n#include <linux/seq_file.h>\n\n \nstatic void *int_seq_start(struct seq_file *f, loff_t *pos)\n{\n\treturn (*pos <= nr_irqs) ? pos : NULL;\n}\n\nstatic void *int_seq_next(struct seq_file *f, void *v, loff_t *pos)\n{\n\t(*pos)++;\n\tif (*pos > nr_irqs)\n\t\treturn NULL;\n\treturn pos;\n}\n\nstatic void int_seq_stop(struct seq_file *f, void *v)\n{\n\t \n}\n\nstatic const struct seq_operations int_seq_ops = {\n\t.start = int_seq_start,\n\t.next  = int_seq_next,\n\t.stop  = int_seq_stop,\n\t.show  = show_interrupts\n};\n\nstatic int __init proc_interrupts_init(void)\n{\n\tproc_create_seq(\"interrupts\", 0, NULL, &int_seq_ops);\n\treturn 0;\n}\nfs_initcall(proc_interrupts_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

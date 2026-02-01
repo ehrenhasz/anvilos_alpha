@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_u32.h",
+  "hash_id": "48284ea8423dde10d7edf765fd505c1b0dde3e2b5ff12dc4a7895686e8b552b8",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_u32.h",
+  "human_readable_source": " \n#ifndef _XT_U32_H\n#define _XT_U32_H 1\n\n#include <linux/types.h>\n\nenum xt_u32_ops {\n\tXT_U32_AND,\n\tXT_U32_LEFTSH,\n\tXT_U32_RIGHTSH,\n\tXT_U32_AT,\n};\n\nstruct xt_u32_location_element {\n\t__u32 number;\n\t__u8 nextop;\n};\n\nstruct xt_u32_value_element {\n\t__u32 min;\n\t__u32 max;\n};\n\n \n#define XT_U32_MAXSIZE 10\n\nstruct xt_u32_test {\n\tstruct xt_u32_location_element location[XT_U32_MAXSIZE+1];\n\tstruct xt_u32_value_element value[XT_U32_MAXSIZE+1];\n\t__u8 nnums;\n\t__u8 nvalues;\n};\n\nstruct xt_u32 {\n\tstruct xt_u32_test tests[XT_U32_MAXSIZE+1];\n\t__u8 ntests;\n\t__u8 invert;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

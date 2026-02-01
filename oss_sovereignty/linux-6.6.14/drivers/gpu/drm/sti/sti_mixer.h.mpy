@@ -1,0 +1,9 @@
+{
+  "module_name": "sti_mixer.h",
+  "hash_id": "c102161f73008a666ae457b5be52b3ef7161ec0775e0ecf5ffb8de1d4f342f72",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sti/sti_mixer.h",
+  "human_readable_source": " \n \n\n#ifndef _STI_MIXER_H_\n#define _STI_MIXER_H_\n\n#include <drm/drm_crtc.h>\n\n#include <drm/drm_debugfs.h>\n#include <drm/drm_file.h>\n\n#include \"sti_plane.h\"\n\nstruct device;\n\n#define to_sti_mixer(x) container_of(x, struct sti_mixer, drm_crtc)\n\nenum sti_mixer_status {\n\tSTI_MIXER_READY,\n\tSTI_MIXER_DISABLING,\n\tSTI_MIXER_DISABLED,\n};\n\n \nstruct sti_mixer {\n\tstruct device *dev;\n\tvoid __iomem *regs;\n\tint id;\n\tstruct drm_crtc drm_crtc;\n\tenum sti_mixer_status status;\n};\n\nconst char *sti_mixer_to_str(struct sti_mixer *mixer);\n\nstruct sti_mixer *sti_mixer_create(struct device *dev,\n\t\t\t\t   struct drm_device *drm_dev,\n\t\t\t\t   int id,\n\t\t\t\t   void __iomem *baseaddr);\n\nint sti_mixer_set_plane_status(struct sti_mixer *mixer,\n\t\t\t       struct sti_plane *plane, bool status);\nint sti_mixer_set_plane_depth(struct sti_mixer *mixer, struct sti_plane *plane);\nint sti_mixer_active_video_area(struct sti_mixer *mixer,\n\t\t\t\tstruct drm_display_mode *mode);\n\nvoid sti_mixer_set_background_status(struct sti_mixer *mixer, bool enable);\n\nvoid sti_mixer_debugfs_init(struct sti_mixer *mixer, struct drm_minor *minor);\n\n \n#define GAM_MIXER_NB_DEPTH_LEVEL 6\n\n#define STI_MIXER_MAIN 0\n#define STI_MIXER_AUX  1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

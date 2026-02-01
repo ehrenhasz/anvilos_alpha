@@ -1,0 +1,9 @@
+{
+  "module_name": "cut.x",
+  "hash_id": "7a429d8bfc21facf15b1822e1a18aa259135f3b98fa62666fab5d62231cca25a",
+  "original_prompt": "Ingested from coreutils-9.4/man/cut.x",
+  "human_readable_source": "[NAME]\ncut \\- remove sections from each line of files\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

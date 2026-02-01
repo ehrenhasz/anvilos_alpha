@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "f5166439ae1903d053b72b9e6ccbcfbec4906b5b233ed5b50d68055d5d679cbc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/hisilicon/kirin/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_HISI_KIRIN\n\ttristate \"DRM Support for Hisilicon Kirin series SoCs Platform\"\n\tdepends on DRM && OF && ARM64\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect DRM_MIPI_DSI\n\thelp\n\t  Choose this option if you have a hisilicon Kirin chipsets(hi6220).\n\t  If M is selected the module will be called kirin-drm.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mpconfigvariant.h",
+  "hash_id": "a9b653de1f1042b3a6b21e1f9ac0c9fac55c40212709e3049f0fcf2865b57e32",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/nanbox/mpconfigvariant.h",
+  "human_readable_source": " \n\n\n\n\n\n#define MICROPY_CONFIG_ROM_LEVEL (MICROPY_CONFIG_ROM_LEVEL_EXTRA_FEATURES)\n\n\n#include \"../mpconfigvariant_common.h\"\n\n\n#define MICROPY_OBJ_REPR (MICROPY_OBJ_REPR_D)\n\n\n#define MICROPY_EMIT_X86 (0)\n#define MICROPY_EMIT_X64 (0)\n#define MICROPY_EMIT_THUMB (0)\n#define MICROPY_EMIT_ARM (0)\n\n#include <stdint.h>\n\ntypedef int64_t mp_int_t;\ntypedef uint64_t mp_uint_t;\n#define UINT_FMT \"%llu\"\n#define INT_FMT \"%lld\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

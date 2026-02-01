@@ -1,0 +1,9 @@
+{
+  "module_name": "proc-tid0.c",
+  "hash_id": "b070ee23e2ce5ac3dd8540d6ead250b6ea61ae2e4c606ed36af30139eec6edcf",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/proc/proc-tid0.c",
+  "human_readable_source": " \n\n#include <sys/types.h>\n#include <dirent.h>\n#include <signal.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n#include <pthread.h>\n\nstatic pid_t pid = -1;\n\nstatic void atexit_hook(void)\n{\n\tif (pid > 0) {\n\t\tkill(pid, SIGKILL);\n\t}\n}\n\nstatic void *f(void *_)\n{\n\treturn NULL;\n}\n\nstatic void sigalrm(int _)\n{\n\texit(0);\n}\n\nint main(void)\n{\n\tpid = fork();\n\tif (pid == 0) {\n\t\t \n\t\twhile (1) {\n\t\t\tpthread_t pth;\n\t\t\tpthread_create(&pth, NULL, f, NULL);\n\t\t\tpthread_join(pth, NULL);\n\t\t}\n\t} else if (pid > 0) {\n\t\t \n\t\tatexit(atexit_hook);\n\n\t\tchar buf[64];\n\t\tsnprintf(buf, sizeof(buf), \"/proc/%u/task\", pid);\n\n\t\tsignal(SIGALRM, sigalrm);\n\t\talarm(1);\n\n\t\twhile (1) {\n\t\t\tDIR *d = opendir(buf);\n\t\t\tstruct dirent *de;\n\t\t\twhile ((de = readdir(d))) {\n\t\t\t\tif (strcmp(de->d_name, \"0\") == 0) {\n\t\t\t\t\texit(1);\n\t\t\t\t}\n\t\t\t}\n\t\t\tclosedir(d);\n\t\t}\n\n\t\treturn 0;\n\t} else {\n\t\tperror(\"fork\");\n\t\treturn 1;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

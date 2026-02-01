@@ -1,0 +1,9 @@
+{
+  "module_name": "mbedtls_config_port.h",
+  "hash_id": "e72e1696d27ab31555bce2c49e61ae8eea5c2fb92cbdba9c553afe6c8772bf59",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/mbedtls/mbedtls_config_port.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_MBEDTLS_CONFIG_H\n#define MICROPY_INCLUDED_MBEDTLS_CONFIG_H\n\n\n#define MBEDTLS_CIPHER_MODE_CTR \n\n\n#define MBEDTLS_TIMING_C\n\n\n#include \"extmod/mbedtls/mbedtls_config_common.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

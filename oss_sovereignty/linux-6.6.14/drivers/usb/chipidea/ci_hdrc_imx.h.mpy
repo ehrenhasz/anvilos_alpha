@@ -1,0 +1,9 @@
+{
+  "module_name": "ci_hdrc_imx.h",
+  "hash_id": "e28c29167636aa4acac99d5785a92498e6cfb93411e7109f8ca1bf86032311f9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/chipidea/ci_hdrc_imx.h",
+  "human_readable_source": " \n \n\n#ifndef __DRIVER_USB_CHIPIDEA_CI_HDRC_IMX_H\n#define __DRIVER_USB_CHIPIDEA_CI_HDRC_IMX_H\n\nstruct imx_usbmisc_data {\n\tstruct device *dev;\n\tint index;\n\n\tunsigned int disable_oc:1;  \n\n\t \n\tunsigned int oc_pol_active_low:1;\n\n\t \n\tunsigned int oc_pol_configured:1;\n\n\tunsigned int pwr_pol:1;  \n\tunsigned int evdo:1;  \n\tunsigned int ulpi:1;  \n\tunsigned int hsic:1;  \n\tunsigned int ext_id:1;  \n\tunsigned int ext_vbus:1;  \n\tstruct usb_phy *usb_phy;\n\tenum usb_dr_mode available_role;  \n\tint emp_curr_control;\n\tint dc_vol_level_adjust;\n\tint rise_fall_time_adjust;\n};\n\nint imx_usbmisc_init(struct imx_usbmisc_data *data);\nint imx_usbmisc_init_post(struct imx_usbmisc_data *data);\nint imx_usbmisc_hsic_set_connect(struct imx_usbmisc_data *data);\nint imx_usbmisc_charger_detection(struct imx_usbmisc_data *data, bool connect);\nint imx_usbmisc_suspend(struct imx_usbmisc_data *data, bool wakeup);\nint imx_usbmisc_resume(struct imx_usbmisc_data *data, bool wakeup);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

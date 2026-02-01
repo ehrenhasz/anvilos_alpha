@@ -1,0 +1,9 @@
+{
+  "module_name": "date.x",
+  "hash_id": "857c0ee9d8513e2b068dd085df3bf50f515ac7593f0645a5c0721bec4b01f607",
+  "original_prompt": "Ingested from coreutils-9.4/man/date.x",
+  "human_readable_source": "[NAME]\ndate \\- print or set the system date and time\n[DESCRIPTION]\n.\\\" Add any additional description here\n[DATE STRING]\n.\\\" NOTE: keep this paragraph in sync with the one in touch.x\nThe --date=STRING is a mostly free format human readable date string\nsuch as \"Sun, 29 Feb 2004 16:21:42 -0800\" or \"2004-02-29 16:21:42\" or\neven \"next Thursday\".  A date string may contain items indicating\ncalendar date, time of day, time zone, day of week, relative time,\nrelative date, and numbers.  An empty string indicates the beginning\nof the day.  The date string format is more complex than is easily\ndocumented here but is fully described in the info documentation.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

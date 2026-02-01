@@ -1,0 +1,9 @@
+{
+  "module_name": "frm_page.c",
+  "hash_id": "d5171fad163699c51c0cd0c8a4b8d4dbf09ecca37f58860a0c284167e0cb904b",
+  "original_prompt": "Ingested from ncurses-6.4/form/frm_page.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: frm_page.c,v 1.15 2021/06/17 21:20:30 tom Exp $\")\n\n \nFORM_EXPORT(int)\nset_form_page(FORM *form, int page)\n{\n  int err = E_OK;\n\n  T((T_CALLED(\"set_form_page(%p,%d)\"), (void *)form, page));\n\n  if (!form || (page < 0) || (page >= form->maxpage))\n    RETURN(E_BAD_ARGUMENT);\n\n  if (!(form->status & _POSTED))\n    {\n      form->curpage = (short)page;\n      form->current = _nc_First_Active_Field(form);\n    }\n  else\n    {\n      if (form->status & _IN_DRIVER)\n\terr = E_BAD_STATE;\n      else\n\t{\n\t  if (form->curpage != page)\n\t    {\n\t      if (!_nc_Internal_Validation(form))\n\t\terr = E_INVALID_FIELD;\n\t      else\n\t\t{\n\t\t  Call_Hook(form, fieldterm);\n\t\t  Call_Hook(form, formterm);\n\t\t  err = _nc_Set_Form_Page(form, page, (FIELD *)0);\n\t\t  Call_Hook(form, forminit);\n\t\t  Call_Hook(form, fieldinit);\n\t\t  _nc_Refresh_Current_Field(form);\n\t\t}\n\t    }\n\t}\n    }\n  RETURN(err);\n}\n\n \nFORM_EXPORT(int)\nform_page(const FORM *form)\n{\n  T((T_CALLED(\"form_page(%p)\"), (const void *)form));\n\n  returnCode(Normalize_Form(form)->curpage);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

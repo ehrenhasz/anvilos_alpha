@@ -1,0 +1,9 @@
+{
+  "module_name": "bnx2fc_debug.h",
+  "hash_id": "3ff77abc15b2179e60ccf20b05d8da17ec1d9e5d7c098c8e59a42140572dd27c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/bnx2fc/bnx2fc_debug.h",
+  "human_readable_source": " \n\n#ifndef __BNX2FC_DEBUG__\n#define __BNX2FC_DEBUG__\n\n \n#define LOG_IO\t\t0x01\t \n#define LOG_TGT\t\t0x02\t \n#define LOG_HBA\t\t0x04\t \n#define LOG_ELS\t\t0x08\t \n#define LOG_MISC\t0x10\t \n#define LOG_ALL\t\t0xff\t \n\nextern unsigned int bnx2fc_debug_level;\n\n#define BNX2FC_ELS_DBG(fmt, ...)\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\\\n\tif (unlikely(bnx2fc_debug_level & LOG_ELS))\t\t\\\n\t\tpr_info(fmt, ##__VA_ARGS__);\t\t\t\\\n} while (0)\n\n#define BNX2FC_MISC_DBG(fmt, ...)\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\\\n\tif (unlikely(bnx2fc_debug_level & LOG_MISC))\t\t\\\n\t\tpr_info(fmt, ##__VA_ARGS__);\t\t\t\\\n} while (0)\n\n__printf(2, 3)\nvoid BNX2FC_IO_DBG(const struct bnx2fc_cmd *io_req, const char *fmt, ...);\n__printf(2, 3)\nvoid BNX2FC_TGT_DBG(const struct bnx2fc_rport *tgt, const char *fmt, ...);\n__printf(2, 3)\nvoid BNX2FC_HBA_DBG(const struct fc_lport *lport, const char *fmt, ...);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

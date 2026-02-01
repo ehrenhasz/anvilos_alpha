@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "93e9123874f1f568e380d02d6b4dec585f8cb031f7daf204f9cdbfa1aa331de8",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ntfs3/debug.h",
+  "human_readable_source": " \n \n\n\n#ifndef _LINUX_NTFS3_DEBUG_H\n#define _LINUX_NTFS3_DEBUG_H\n\nstruct super_block;\nstruct inode;\n\n#ifndef Add2Ptr\n#define Add2Ptr(P, I)\t\t((void *)((u8 *)(P) + (I)))\n#define PtrOffset(B, O)\t\t((size_t)((size_t)(O) - (size_t)(B)))\n#endif\n\n#ifdef CONFIG_PRINTK\n__printf(2, 3)\nvoid ntfs_printk(const struct super_block *sb, const char *fmt, ...);\n__printf(2, 3)\nvoid ntfs_inode_printk(struct inode *inode, const char *fmt, ...);\n#else\nstatic inline __printf(2, 3)\nvoid ntfs_printk(const struct super_block *sb, const char *fmt, ...)\n{\n}\n\nstatic inline __printf(2, 3)\nvoid ntfs_inode_printk(struct inode *inode, const char *fmt, ...)\n{\n}\n#endif\n\n \n\n#define ntfs_err(sb, fmt, ...)  ntfs_printk(sb, KERN_ERR fmt, ##__VA_ARGS__)\n#define ntfs_warn(sb, fmt, ...) ntfs_printk(sb, KERN_WARNING fmt, ##__VA_ARGS__)\n#define ntfs_info(sb, fmt, ...) ntfs_printk(sb, KERN_INFO fmt, ##__VA_ARGS__)\n#define ntfs_notice(sb, fmt, ...)                                              \\\n\tntfs_printk(sb, KERN_NOTICE fmt, ##__VA_ARGS__)\n\n#define ntfs_inode_err(inode, fmt, ...)                                        \\\n\tntfs_inode_printk(inode, KERN_ERR fmt, ##__VA_ARGS__)\n#define ntfs_inode_warn(inode, fmt, ...)                                       \\\n\tntfs_inode_printk(inode, KERN_WARNING fmt, ##__VA_ARGS__)\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

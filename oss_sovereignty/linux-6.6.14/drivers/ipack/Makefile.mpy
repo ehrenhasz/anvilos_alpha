@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b702eced59721a11e5ca7ee5f2ae81393af91d237f105d75dc6b2e5bd785eded",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ipack/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the IPACK bridge device drivers.\n#\nobj-$(CONFIG_IPACK_BUS)\t\t+= ipack.o\nobj-y\t\t\t\t+= devices/\nobj-y\t\t\t\t+= carriers/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "18c6251128260d0f71f0c7a9bc68e3c652ef1e3c22cc63c992c9e80ba4102168",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/i2c/et8ek8/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_ET8EK8\n\ttristate \"ET8EK8 camera sensor support\"\n\thelp\n\t  This is a driver for the Toshiba ET8EK8 5 MP camera sensor.\n\t  It is used for example in Nokia N900 (RX-51).\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

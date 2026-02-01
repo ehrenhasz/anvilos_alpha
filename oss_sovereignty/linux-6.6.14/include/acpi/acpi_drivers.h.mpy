@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi_drivers.h",
+  "hash_id": "a7b8bbb2e159ec3085e65cbf73cfb09f7a31e1777bc49dd7a6710df71da219c5",
+  "original_prompt": "Ingested from linux-6.6.14/include/acpi/acpi_drivers.h",
+  "human_readable_source": " \n \n\n#ifndef __ACPI_DRIVERS_H__\n#define __ACPI_DRIVERS_H__\n\n#define ACPI_MAX_STRING\t\t\t80\n\n \n\n#define ACPI_POWER_HID\t\t\t\"LNXPOWER\"\n#define ACPI_PROCESSOR_OBJECT_HID\t\"LNXCPU\"\n#define ACPI_SYSTEM_HID\t\t\t\"LNXSYSTM\"\n#define ACPI_THERMAL_HID\t\t\"LNXTHERM\"\n#define ACPI_BUTTON_HID_POWERF\t\t\"LNXPWRBN\"\n#define ACPI_BUTTON_HID_SLEEPF\t\t\"LNXSLPBN\"\n#define ACPI_VIDEO_HID\t\t\t\"LNXVIDEO\"\n#define ACPI_BAY_HID\t\t\t\"LNXIOBAY\"\n#define ACPI_DOCK_HID\t\t\t\"LNXDOCK\"\n#define ACPI_ECDT_HID\t\t\t\"LNXEC\"\n \n#define ACPI_SMBUS_MS_HID\t\t\"SMB0001\"\n \n#define ACPI_SMBUS_IBM_HID\t\t\"SMBUSIBM\"\n\n \n#define ACPI_FIXED_HARDWARE_EVENT\t0x100\n\n \n\n\n \n\nint acpi_irq_penalty_init(void);\nint acpi_pci_link_allocate_irq(acpi_handle handle, int index, int *triggering,\n\t\t\t       int *polarity, char **name);\nint acpi_pci_link_free_irq(acpi_handle handle);\n\n \n\nstruct pci_bus;\n\n#ifdef CONFIG_PCI\nstruct pci_dev *acpi_get_pci_dev(acpi_handle);\n#else\nstatic inline struct pci_dev *acpi_get_pci_dev(acpi_handle handle)\n{\n\treturn NULL;\n}\n#endif\n\n \n\nstruct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root);\n\n#ifdef CONFIG_X86\nvoid pci_acpi_crs_quirks(void);\n#else\nstatic inline void pci_acpi_crs_quirks(void) { }\n#endif\n\n \n\n#ifdef CONFIG_ACPI_DOCK\nextern int is_dock_device(struct acpi_device *adev);\n#else\nstatic inline int is_dock_device(struct acpi_device *adev)\n{\n\treturn 0;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

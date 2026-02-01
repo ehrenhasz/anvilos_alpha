@@ -1,0 +1,9 @@
+{
+  "module_name": "dsa_n",
+  "hash_id": "db691de6aa454ec8aa45c84c58022a54611427f6f44c20d152ac05e0ea2284ba",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshkey/testdata/dsa_n",
+  "human_readable_source": "-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAABswAAAAdzc2gtZH\nNzAAAAgQD6kutNFRsHTwEAv6d39Lhsqy1apdHBZ9c2HfyRr7WmypyGIy2mKa43vzXI8CNw\nmRSYs+A6d0vJC7Pl+f9QzJ/04NWOA+MiwfurwrR3CRe61QRYb8PymcHOxueHs95IcjrbIP\nNn86cjnPP5qvv/guUzCjuww4zBdJOXpligrGt2XwAAABUAowP/nSpDLuPwloyT7X5e2DWk\nrTUAAACBAO7l9QVVbSSoy5lq6cOtvpf8UlwOa6+zBwblo4gmFd1RwX1yWkA8kQ7RrhCSg8\nHc6mIGnKRgKRli/3LgbSfZ0obFJehkRtEWtN4Ph8fVUeS74iQbIwFQeKlYHIlNTRoGtAbd\ni3nHdV+BBkEQc1V3rjqYqhjOoz/yNsgzLND26HrdAAAAgQDnV6cn5qGxAWjqmQLr4I9T9L\noYxtj99VH7q79thVjwVNwPaq5MWzl8BNC8L4wr67EFf5a2ISc/7YsrONFXmobpVmROUgBz\nFxiH/eS4i0oGlzI5KO46KLfiyvOJbS8psGeEDJ2I52UknJX9VLskDHFLW9+PiNLvWHJ8oa\ndpkhbELQAAAdhWTOFbVkzhWwAAAAdzc2gtZHNzAAAAgQD6kutNFRsHTwEAv6d39Lhsqy1a\npdHBZ9c2HfyRr7WmypyGIy2mKa43vzXI8CNwmRSYs+A6d0vJC7Pl+f9QzJ/04NWOA+Miwf\nurwrR3CRe61QRYb8PymcHOxueHs95IcjrbIPNn86cjnPP5qvv/guUzCjuww4zBdJOXplig\nrGt2XwAAABUAowP/nSpDLuPwloyT7X5e2DWkrTUAAACBAO7l9QVVbSSoy5lq6cOtvpf8Ul\nwOa6+zBwblo4gmFd1RwX1yWkA8kQ7RrhCSg8Hc6mIGnKRgKRli/3LgbSfZ0obFJehkRtEW\ntN4Ph8fVUeS74iQbIwFQeKlYHIlNTRoGtAbdi3nHdV+BBkEQc1V3rjqYqhjOoz/yNsgzLN\nD26HrdAAAAgQDnV6cn5qGxAWjqmQLr4I9T9LoYxtj99VH7q79thVjwVNwPaq5MWzl8BNC8\nL4wr67EFf5a2ISc/7YsrONFXmobpVmROUgBzFxiH/eS4i0oGlzI5KO46KLfiyvOJbS8psG\neEDJ2I52UknJX9VLskDHFLW9+PiNLvWHJ8oadpkhbELQAAABRYIbQ5KfXsZuBPuWe5FJz3\nldaEgwAAAAAB\n-----END OPENSSH PRIVATE KEY-----\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "iwcm.h",
+  "hash_id": "c110869bca3295cfdf036bee418408540038f0fb47738e906ec0bbb1c2d076e0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/core/iwcm.h",
+  "human_readable_source": " \n#ifndef IWCM_H\n#define IWCM_H\n\nenum iw_cm_state {\n\tIW_CM_STATE_IDLE,              \n\tIW_CM_STATE_LISTEN,            \n\tIW_CM_STATE_CONN_RECV,         \n\tIW_CM_STATE_CONN_SENT,         \n\tIW_CM_STATE_ESTABLISHED,       \n\tIW_CM_STATE_CLOSING,\t       \n\tIW_CM_STATE_DESTROYING         \n};\n\nstruct iwcm_id_private {\n\tstruct iw_cm_id\tid;\n\tenum iw_cm_state state;\n\tunsigned long flags;\n\tstruct ib_qp *qp;\n\tstruct completion destroy_comp;\n\twait_queue_head_t connect_wait;\n\tstruct list_head work_list;\n\tspinlock_t lock;\n\trefcount_t refcount;\n\tstruct list_head work_free_list;\n};\n\n#define IWCM_F_DROP_EVENTS\t  1\n#define IWCM_F_CONNECT_WAIT       2\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "args.h",
+  "hash_id": "28e8990e591cdfd6eb521c0bda9a95444e99027934599290c1a803628835ce4c",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/args.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_ARGS_H\n#define _LINUX_ARGS_H\n\n \n\n \n#define __COUNT_ARGS(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _n, X...) _n\n#define COUNT_ARGS(X...) __COUNT_ARGS(, ##X, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)\n\n \n#define __CONCAT(a, b) a ## b\n#define CONCATENATE(a, b) __CONCAT(a, b)\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

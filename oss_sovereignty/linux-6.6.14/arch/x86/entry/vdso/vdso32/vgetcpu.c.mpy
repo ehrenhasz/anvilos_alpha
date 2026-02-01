@@ -1,0 +1,9 @@
+{
+  "module_name": "vgetcpu.c",
+  "hash_id": "e77df229410fa8200ee99e6e3cbeaeec5caca485b2007044d766180ba20bffe9",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/entry/vdso/vdso32/vgetcpu.c",
+  "human_readable_source": "\n#include \"fake_32bit_build.h\"\n#include \"../vgetcpu.c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "r8152.h",
+  "hash_id": "e47dba9d32f1ecacfed92aac32c10d365e37c14f4e2a83de562d12e208a9ea05",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/r8152.h",
+  "human_readable_source": " \n \n\n#ifndef\t__LINUX_R8152_H\n#define __LINUX_R8152_H\n\n#define RTL8152_REQT_READ\t\t0xc0\n#define RTL8152_REQT_WRITE\t\t0x40\n#define RTL8152_REQ_GET_REGS\t\t0x05\n#define RTL8152_REQ_SET_REGS\t\t0x05\n\n#define BYTE_EN_DWORD\t\t\t0xff\n#define BYTE_EN_WORD\t\t\t0x33\n#define BYTE_EN_BYTE\t\t\t0x11\n#define BYTE_EN_SIX_BYTES\t\t0x3f\n#define BYTE_EN_START_MASK\t\t0x0f\n#define BYTE_EN_END_MASK\t\t0xf0\n\n#define MCU_TYPE_PLA\t\t\t0x0100\n#define MCU_TYPE_USB\t\t\t0x0000\n\n \n#define VENDOR_ID_REALTEK\t\t0x0bda\n#define VENDOR_ID_MICROSOFT\t\t0x045e\n#define VENDOR_ID_SAMSUNG\t\t0x04e8\n#define VENDOR_ID_LENOVO\t\t0x17ef\n#define VENDOR_ID_LINKSYS\t\t0x13b1\n#define VENDOR_ID_NVIDIA\t\t0x0955\n#define VENDOR_ID_TPLINK\t\t0x2357\n#define VENDOR_ID_DLINK\t\t\t0x2001\n#define VENDOR_ID_ASUS\t\t\t0x0b05\n\n#if IS_REACHABLE(CONFIG_USB_RTL8152)\nextern u8 rtl8152_get_version(struct usb_interface *intf);\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

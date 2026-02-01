@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c521c9b5576ee58adfc9e3a2295b68759996d62630af666738c9af654a8f654a",
+  "original_prompt": "Ingested from linux-6.6.14/security/smack/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the SMACK LSM\n#\n\nobj-$(CONFIG_SECURITY_SMACK) := smack.o\n\nsmack-y := smack_lsm.o smack_access.o smackfs.o\nsmack-$(CONFIG_SECURITY_SMACK_NETFILTER) += smack_netfilter.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

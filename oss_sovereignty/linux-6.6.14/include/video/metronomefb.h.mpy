@@ -1,0 +1,9 @@
+{
+  "module_name": "metronomefb.h",
+  "hash_id": "dfb13be56e0a8b3b9800a089bbc5ed61860ff471f44479253a76696a538b5344",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/metronomefb.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_METRONOMEFB_H_\n#define _LINUX_METRONOMEFB_H_\n\n \nstruct metromem_cmd {\n\tu16 opcode;\n\tu16 args[((64-2)/2)];\n\tu16 csum;\n};\n\n \nstruct metronomefb_par {\n\tstruct metromem_cmd *metromem_cmd;\n\tunsigned char *metromem_wfm;\n\tunsigned char *metromem_img;\n\tu16 *metromem_img_csum;\n\tu16 *csum_table;\n\tdma_addr_t metromem_dma;\n\tstruct fb_info *info;\n\tstruct metronome_board *board;\n\twait_queue_head_t waitq;\n\tu8 frame_count;\n\tint extra_size;\n\tint dt;\n};\n\n \nstruct metronome_board {\n\tstruct module *owner;  \n\tvoid (*set_rst)(struct metronomefb_par *, int);\n\tvoid (*set_stdby)(struct metronomefb_par *, int);\n\tvoid (*cleanup)(struct metronomefb_par *);\n\tint (*met_wait_event)(struct metronomefb_par *);\n\tint (*met_wait_event_intr)(struct metronomefb_par *);\n\tint (*setup_irq)(struct fb_info *);\n\tint (*setup_fb)(struct metronomefb_par *);\n\tint (*setup_io)(struct metronomefb_par *);\n\tint (*get_panel_type)(void);\n\tunsigned char *metromem;\n\tint fw;\n\tint fh;\n\tint wfm_size;\n\tstruct fb_info *host_fbinfo;  \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

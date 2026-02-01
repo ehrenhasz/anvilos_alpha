@@ -1,0 +1,9 @@
+{
+  "module_name": "dma-mv_xor.h",
+  "hash_id": "89f9d7046c733678796f746359330eaf2892aaa31dba3ce9688d017d169030d1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/dma-mv_xor.h",
+  "human_readable_source": " \n \n\n#ifndef __DMA_MV_XOR_H\n#define __DMA_MV_XOR_H\n\n#include <linux/dmaengine.h>\n#include <linux/mbus.h>\n\n#define MV_XOR_NAME\t\"mv_xor\"\n\nstruct mv_xor_channel_data {\n\tdma_cap_mask_t\t\t\tcap_mask;\n};\n\nstruct mv_xor_platform_data {\n\tstruct mv_xor_channel_data    *channels;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

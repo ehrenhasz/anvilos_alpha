@@ -1,0 +1,9 @@
+{
+  "module_name": "megaraid_mm.h",
+  "hash_id": "9a127d06b4b480d1da2963b1a87ae842555df92f4db86dbad2cece75e86ef1cd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/megaraid/megaraid_mm.h",
+  "human_readable_source": " \n \n\n#ifndef MEGARAID_MM_H\n#define MEGARAID_MM_H\n\n#include <linux/spinlock.h>\n#include <linux/fs.h>\n#include <linux/uaccess.h>\n#include <linux/module.h>\n#include <linux/moduleparam.h>\n#include <linux/pci.h>\n#include <linux/list.h>\n#include <linux/miscdevice.h>\n\n#include \"mbox_defs.h\"\n#include \"megaraid_ioctl.h\"\n\n\n#define LSI_COMMON_MOD_VERSION\t\"2.20.2.7\"\n#define LSI_COMMON_MOD_EXT_VERSION\t\\\n\t\t\"(Release Date: Sun Jul 16 00:01:03 EST 2006)\"\n\n\n#define LSI_DBGLVL\t\t\tdbglevel\n\n\n#define MRAID_MM_INIT_BUFF_SIZE\t\t4096\n\n \n\ntypedef struct mimd {\n\n\tuint32_t inlen;\n\tuint32_t outlen;\n\n\tunion {\n\t\tuint8_t fca[16];\n\t\tstruct {\n\t\t\tuint8_t opcode;\n\t\t\tuint8_t subopcode;\n\t\t\tuint16_t adapno;\n#if BITS_PER_LONG == 32\n\t\t\tuint8_t __user *buffer;\n\t\t\tuint8_t pad[4];\n#endif\n#if BITS_PER_LONG == 64\n\t\t\tuint8_t __user *buffer;\n#endif\n\t\t\tuint32_t length;\n\t\t} __attribute__ ((packed)) fcs;\n\t} __attribute__ ((packed)) ui;\n\n\tuint8_t mbox[18];\t\t \n\tmraid_passthru_t pthru;\n\n#if BITS_PER_LONG == 32\n\tchar __user *data;\t\t \n\tchar pad[4];\n#endif\n#if BITS_PER_LONG == 64\n\tchar __user *data;\n#endif\n\n} __attribute__ ((packed))mimd_t;\n\n#endif \n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

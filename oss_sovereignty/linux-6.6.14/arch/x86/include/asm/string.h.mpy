@@ -1,0 +1,9 @@
+{
+  "module_name": "string.h",
+  "hash_id": "f6101d7fe4cfd07d9863d1a00227b0a833482dcc28bcffacdf4eea161beecae6",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/string.h",
+  "human_readable_source": " \n#ifdef CONFIG_X86_32\n# include <asm/string_32.h>\n#else\n# include <asm/string_64.h>\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

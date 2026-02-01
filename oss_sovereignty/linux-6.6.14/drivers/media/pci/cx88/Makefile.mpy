@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5c1bcd1eb0e858004e5e9644d9d596eb8679438f32d6ffea1644e1436d5fdda2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cx88/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\ncx88xx-objs\t:= cx88-cards.o cx88-core.o cx88-i2c.o cx88-tvaudio.o \\\n\t\t   cx88-dsp.o cx88-input.o\ncx8800-objs\t:= cx88-video.o cx88-vbi.o\ncx8802-objs\t:= cx88-mpeg.o\n\nobj-$(CONFIG_VIDEO_CX88) += cx88xx.o cx8800.o\nobj-$(CONFIG_VIDEO_CX88_MPEG) += cx8802.o\nobj-$(CONFIG_VIDEO_CX88_ALSA) += cx88-alsa.o\nobj-$(CONFIG_VIDEO_CX88_BLACKBIRD) += cx88-blackbird.o\nobj-$(CONFIG_VIDEO_CX88_DVB) += cx88-dvb.o\nobj-$(CONFIG_VIDEO_CX88_VP3054) += cx88-vp3054-i2c.o\nccflags-y += -I $(srctree)/drivers/media/tuners\nccflags-y += -I $(srctree)/drivers/media/dvb-frontends\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

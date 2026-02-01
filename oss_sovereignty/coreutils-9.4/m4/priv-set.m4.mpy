@@ -1,0 +1,9 @@
+{
+  "module_name": "priv-set.m4",
+  "hash_id": "1132334ca9be8ba795445f32cfb3de3e82c0ba2e78bbecfc599a30cd7a27060c",
+  "original_prompt": "Ingested from coreutils-9.4/m4/priv-set.m4",
+  "human_readable_source": "# serial 8\n\n# Copyright (C) 2009-2023 Free Software Foundation, Inc.\n#\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\n# Written by David Bartley.\n\nAC_DEFUN([gl_PRIV_SET],\n[\n  AC_CHECK_FUNCS([getppriv])\n  AC_CHECK_HEADERS_ONCE([priv.h])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

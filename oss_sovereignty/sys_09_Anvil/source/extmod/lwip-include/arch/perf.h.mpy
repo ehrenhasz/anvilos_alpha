@@ -1,0 +1,9 @@
+{
+  "module_name": "perf.h",
+  "hash_id": "a4f3fc07c595932242df3f4b74af8c5744aa7ae2d23ccfc9b1bea2897c4fa410",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/lwip-include/arch/perf.h",
+  "human_readable_source": "#ifndef MICROPY_INCLUDED_EXTMOD_LWIP_INCLUDE_ARCH_PERF_H\n#define MICROPY_INCLUDED_EXTMOD_LWIP_INCLUDE_ARCH_PERF_H\n\n#define PERF_START     \n#define PERF_STOP(x)   \n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

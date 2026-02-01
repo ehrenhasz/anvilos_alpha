@@ -1,0 +1,9 @@
+{
+  "module_name": "ip_set_bitmap.h",
+  "hash_id": "311c0f094e5438ce6ed5384e198b312379268b8e5cf999f643b523c8b5e62181",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/ipset/ip_set_bitmap.h",
+  "human_readable_source": " \n#ifndef _UAPI__IP_SET_BITMAP_H\n#define _UAPI__IP_SET_BITMAP_H\n\n#include <linux/netfilter/ipset/ip_set.h>\n\n \nenum {\n\t \n\tIPSET_ERR_BITMAP_RANGE = IPSET_ERR_TYPE_SPECIFIC,\n\t \n\tIPSET_ERR_BITMAP_RANGE_SIZE,\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

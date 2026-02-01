@@ -1,0 +1,9 @@
+{
+  "module_name": "zstream.h",
+  "hash_id": "9ca2592e20c9a0317172301b3e6c8b27c9d86b179c81d74dd737447c60258ee7",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zstream/zstream.h",
+  "human_readable_source": " \n\n \n\n#ifndef\t_ZSTREAM_H\n#define\t_ZSTREAM_H\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\nextern void *safe_calloc(size_t n);\nextern int sfread(void *buf, size_t size, FILE *fp);\nextern void *safe_malloc(size_t size);\nextern int zstream_do_redup(int, char *[]);\nextern int zstream_do_dump(int, char *[]);\nextern int zstream_do_decompress(int argc, char *argv[]);\nextern int zstream_do_recompress(int argc, char *argv[]);\nextern int zstream_do_token(int, char *[]);\nextern void zstream_usage(void);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

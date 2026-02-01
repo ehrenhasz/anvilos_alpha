@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "88a13a9cdb0a7b382ddaa09ca707e9e674c7fe7f60d3d8d549eebae79b49bd67",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the kernel multimedia device drivers.\n#\n\n#\n# I2C drivers should come before other drivers, otherwise they'll fail\n# when compiled as builtin drivers\n#\nobj-y += i2c/ tuners/\nobj-$(CONFIG_DVB_CORE) += dvb-frontends/\n\n#\n# Now, let's link-in the media controller core\n#\nifeq ($(CONFIG_MEDIA_CONTROLLER),y)\n  obj-$(CONFIG_MEDIA_SUPPORT) += mc/\nendif\n\nobj-$(CONFIG_VIDEO_DEV) += v4l2-core/\nobj-$(CONFIG_DVB_CORE) += dvb-core/\n\n# There are both core and drivers at RC subtree - merge before drivers\nobj-y += rc/\n\nobj-$(CONFIG_CEC_CORE) += cec/\n\n#\n# Finally, merge the drivers that require the core\n#\n\nobj-y += common/ platform/ pci/ usb/ mmc/ firewire/ spi/ test-drivers/\nobj-$(CONFIG_VIDEO_DEV) += radio/\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

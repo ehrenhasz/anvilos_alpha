@@ -1,0 +1,9 @@
+{
+  "module_name": "mpeg.h",
+  "hash_id": "193898b84e5c564af766817506ab0cf1d678e10a951a99f60965d7ad20fb6f76",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/engine/mpeg.h",
+  "human_readable_source": " \n#ifndef __NVKM_MPEG_H__\n#define __NVKM_MPEG_H__\n#include <core/engine.h>\nint nv31_mpeg_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_engine **);\nint nv40_mpeg_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_engine **);\nint nv44_mpeg_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_engine **);\nint nv50_mpeg_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_engine **);\nint g84_mpeg_new(struct nvkm_device *, enum nvkm_subdev_type, int inst, struct nvkm_engine **);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

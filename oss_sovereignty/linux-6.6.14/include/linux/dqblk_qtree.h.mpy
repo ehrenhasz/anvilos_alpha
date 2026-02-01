@@ -1,0 +1,9 @@
+{
+  "module_name": "dqblk_qtree.h",
+  "hash_id": "41fb3fba6dadf4e68b3c423c0d72acc769e529bea72e9ce8bfd4a5c9c5ea6394",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dqblk_qtree.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_DQBLK_QTREE_H\n#define _LINUX_DQBLK_QTREE_H\n\n#include <linux/types.h>\n\n \n#define QTREE_INIT_ALLOC 4\n#define QTREE_INIT_REWRITE 2\n#define QTREE_DEL_ALLOC 0\n#define QTREE_DEL_REWRITE 6\n\nstruct dquot;\nstruct kqid;\n\n \nstruct qtree_fmt_operations {\n\tvoid (*mem2disk_dqblk)(void *disk, struct dquot *dquot);\t \n\tvoid (*disk2mem_dqblk)(struct dquot *dquot, void *disk);\t \n\tint (*is_id)(void *disk, struct dquot *dquot);\t \n};\n\n \nstruct qtree_mem_dqinfo {\n\tstruct super_block *dqi_sb;\t \n\tint dqi_type;\t\t\t \n\tunsigned int dqi_blocks;\t \n\tunsigned int dqi_free_blk;\t \n\tunsigned int dqi_free_entry;\t \n\tunsigned int dqi_blocksize_bits;\t \n\tunsigned int dqi_entry_size;\t \n\tunsigned int dqi_usable_bs;\t \n\tunsigned int dqi_qtree_depth;\t \n\tconst struct qtree_fmt_operations *dqi_ops;  \n};\n\nint qtree_write_dquot(struct qtree_mem_dqinfo *info, struct dquot *dquot);\nint qtree_read_dquot(struct qtree_mem_dqinfo *info, struct dquot *dquot);\nint qtree_delete_dquot(struct qtree_mem_dqinfo *info, struct dquot *dquot);\nint qtree_release_dquot(struct qtree_mem_dqinfo *info, struct dquot *dquot);\nint qtree_entry_unused(struct qtree_mem_dqinfo *info, char *disk);\nstatic inline int qtree_depth(struct qtree_mem_dqinfo *info)\n{\n\tunsigned int epb = info->dqi_usable_bs >> 2;\n\tunsigned long long entries = epb;\n\tint i;\n\n\tfor (i = 1; entries < (1ULL << 32); i++)\n\t\tentries *= epb;\n\treturn i;\n}\nint qtree_get_next_id(struct qtree_mem_dqinfo *info, struct kqid *qid);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

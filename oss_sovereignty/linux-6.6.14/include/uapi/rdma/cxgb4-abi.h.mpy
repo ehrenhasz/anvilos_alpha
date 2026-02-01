@@ -1,0 +1,9 @@
+{
+  "module_name": "cxgb4-abi.h",
+  "hash_id": "17a86f4620a5d7dd77df256786d18798a6c0b9e2c74c636b84d975a4caf5285a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/rdma/cxgb4-abi.h",
+  "human_readable_source": " \n \n#ifndef CXGB4_ABI_USER_H\n#define CXGB4_ABI_USER_H\n\n#include <linux/types.h>\n\n#define C4IW_UVERBS_ABI_VERSION\t3\n\n \n\nenum {\n\tC4IW_64B_CQE = (1 << 0)\n};\n\nstruct c4iw_create_cq {\n\t__u32 flags;\n\t__u32 reserved;\n};\n\nstruct c4iw_create_cq_resp {\n\t__aligned_u64 key;\n\t__aligned_u64 gts_key;\n\t__aligned_u64 memsize;\n\t__u32 cqid;\n\t__u32 size;\n\t__u32 qid_mask;\n\t__u32 flags;\n};\n\nenum {\n\tC4IW_QPF_ONCHIP\t= (1 << 0),\n\tC4IW_QPF_WRITE_W_IMM = (1 << 1)\n};\n\nstruct c4iw_create_qp_resp {\n\t__aligned_u64 ma_sync_key;\n\t__aligned_u64 sq_key;\n\t__aligned_u64 rq_key;\n\t__aligned_u64 sq_db_gts_key;\n\t__aligned_u64 rq_db_gts_key;\n\t__aligned_u64 sq_memsize;\n\t__aligned_u64 rq_memsize;\n\t__u32 sqid;\n\t__u32 rqid;\n\t__u32 sq_size;\n\t__u32 rq_size;\n\t__u32 qid_mask;\n\t__u32 flags;\n};\n\nstruct c4iw_create_srq_resp {\n\t__aligned_u64 srq_key;\n\t__aligned_u64 srq_db_gts_key;\n\t__aligned_u64 srq_memsize;\n\t__u32 srqid;\n\t__u32 srq_size;\n\t__u32 rqt_abs_idx;\n\t__u32 qid_mask;\n\t__u32 flags;\n\t__u32 reserved;  \n};\n\nenum {\n\t \n\tT4_SRQ_LIMIT_SUPPORT = 1 << 0,\n};\n\nstruct c4iw_alloc_ucontext_resp {\n\t__aligned_u64 status_page_key;\n\t__u32 status_page_size;\n\t__u32 reserved;  \n};\n\nstruct c4iw_alloc_pd_resp {\n\t__u32 pdid;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

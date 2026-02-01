@@ -1,0 +1,9 @@
+{
+  "module_name": "func-filter-stacktrace.tc",
+  "hash_id": "34f07025d5ece26c1920492cc62738e9d4a3f629d74349ae3b1b0616252bdf63",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/ftrace/func-filter-stacktrace.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: ftrace - stacktrace filter command\n# requires: set_ftrace_filter\n# flags: instance\n\necho $FUNCTION_FORK:stacktrace >> set_ftrace_filter\n\ngrep -q \"$FUNCTION_FORK:stacktrace:unlimited\" set_ftrace_filter\n\n(echo \"forked\"; sleep 1)\n\ngrep -q \"<stack trace>\" trace\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs_ratelimit.h",
+  "hash_id": "df9305b627bf365728e2d92cd28bade0a9c31d4521802e3ddb8cf89f44cb3cf0",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zfs_ratelimit.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SYS_ZFS_RATELIMIT_H\n#define\t_SYS_ZFS_RATELIMIT_H\n\n#include <sys/zfs_context.h>\n\ntypedef struct {\n\thrtime_t start;\n\tunsigned int count;\n\n\t \n\tunsigned int *burst;\n\n\tunsigned int interval;\t \n\tkmutex_t lock;\n} zfs_ratelimit_t;\n\nint zfs_ratelimit(zfs_ratelimit_t *rl);\nvoid zfs_ratelimit_init(zfs_ratelimit_t *rl, unsigned int *burst,\n    unsigned int interval);\nvoid zfs_ratelimit_fini(zfs_ratelimit_t *rl);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

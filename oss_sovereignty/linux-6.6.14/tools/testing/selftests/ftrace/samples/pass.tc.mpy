@@ -1,0 +1,9 @@
+{
+  "module_name": "pass.tc",
+  "hash_id": "14fe72aa0f1ea9213d94a18a9a3eb04dea61f5204f86e70ef4903d344ac0d7ac",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/samples/pass.tc",
+  "human_readable_source": "#!/bin/sh\n# description: pass-case example\nreturn 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

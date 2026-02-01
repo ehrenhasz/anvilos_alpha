@@ -1,0 +1,9 @@
+{
+  "module_name": "gc.h",
+  "hash_id": "dbce49692bec1ff48c4b87b965f437bd51c8ee4757aacd3ebdf7e4ca9d358d95",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/gc.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_PY_GC_H\n#define MICROPY_INCLUDED_PY_GC_H\n\n#include <stdbool.h>\n#include <stddef.h>\n#include \"py/mpprint.h\"\n\nvoid gc_init(void *start, void *end);\n\n#if MICROPY_GC_SPLIT_HEAP\n\nvoid gc_add(void *start, void *end);\n\n#if MICROPY_GC_SPLIT_HEAP_AUTO\n\n\nsize_t gc_get_max_new_split(void);\n#endif \n#endif \n\n\n\nvoid gc_lock(void);\nvoid gc_unlock(void);\nbool gc_is_locked(void);\n\n\nvoid gc_collect(void);\nvoid gc_collect_start(void);\nvoid gc_collect_root(void **ptrs, size_t len);\nvoid gc_collect_end(void);\n\n\nvoid gc_sweep_all(void);\n\nenum {\n    GC_ALLOC_FLAG_HAS_FINALISER = 1,\n};\n\nvoid *gc_alloc(size_t n_bytes, unsigned int alloc_flags);\nvoid gc_free(void *ptr); \nsize_t gc_nbytes(const void *ptr);\nvoid *gc_realloc(void *ptr, size_t n_bytes, bool allow_move);\n\ntypedef struct _gc_info_t {\n    size_t total;\n    size_t used;\n    size_t free;\n    size_t max_free;\n    size_t num_1block;\n    size_t num_2block;\n    size_t max_block;\n    #if MICROPY_GC_SPLIT_HEAP_AUTO\n    size_t max_new_split;\n    #endif\n} gc_info_t;\n\nvoid gc_info(gc_info_t *info);\nvoid gc_dump_info(const mp_print_t *print);\nvoid gc_dump_alloc_table(const mp_print_t *print);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "usnic.h",
+  "hash_id": "a4d965760063b2f040ed02fcc663e23e543acfca25b15c04939f7e5fd44b43bf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/usnic/usnic.h",
+  "human_readable_source": " \n\n#ifndef USNIC_H_\n#define USNIC_H_\n\n#define DRV_NAME\t\"usnic_verbs\"\n\n#define PCI_DEVICE_ID_CISCO_VIC_USPACE_NIC\t0x00cf\t \n\n#define DRV_VERSION    \"1.0.3\"\n#define DRV_RELDATE    \"December 19, 2013\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

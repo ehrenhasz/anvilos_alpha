@@ -1,0 +1,9 @@
+{
+  "module_name": "xalignalloc.c",
+  "hash_id": "97b12330a4d9acebfd3c9f88a2fbc40f0f5f10979d9006870befaad5820b2fa9",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xalignalloc.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"alignalloc.h\"\n\n#include \"xalloc.h\"\n\nvoid *\nxalignalloc (idx_t alignment, idx_t size)\n{\n  void *p = alignalloc (alignment, size);\n  if (!p)\n    xalloc_die ();\n  return p;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

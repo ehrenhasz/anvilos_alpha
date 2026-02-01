@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "959f8ef8516caeb46858780163ac6739260a3fe0d0a98d66ec45c2ebbe0cfefa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/ccree/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (C) 2012-2019 ARM Limited (or its affiliates).\n\nobj-$(CONFIG_CRYPTO_DEV_CCREE) := ccree.o\nccree-y := cc_driver.o cc_buffer_mgr.o cc_request_mgr.o cc_cipher.o cc_hash.o cc_aead.o cc_sram_mgr.o\nccree-$(CONFIG_CRYPTO_FIPS) += cc_fips.o\nccree-$(CONFIG_DEBUG_FS) += cc_debugfs.o\nccree-$(CONFIG_PM) += cc_pm.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

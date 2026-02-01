@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "beb4488bf5035b2a78603b85fa266d9a534ebbd2a8c0b4992209d6d8e43fd4a6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/jz4740/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Jz4740 Platform Support\n#\nsnd-soc-jz4740-i2s-objs := jz4740-i2s.o\n\nobj-$(CONFIG_SND_JZ4740_SOC_I2S) += snd-soc-jz4740-i2s.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

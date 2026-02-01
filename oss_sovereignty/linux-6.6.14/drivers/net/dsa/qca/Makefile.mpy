@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a264289bae566d8f4a723d58d5776a408dfda1e47f8b9e17e88599e96ae18a49",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/qca/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_NET_DSA_AR9331)\t+= ar9331.o\nobj-$(CONFIG_NET_DSA_QCA8K)\t+= qca8k.o\nqca8k-y \t\t\t+= qca8k-common.o qca8k-8xxx.o\nifdef CONFIG_NET_DSA_QCA8K_LEDS_SUPPORT\nqca8k-y\t\t\t\t+= qca8k-leds.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "isapipe.h",
+  "hash_id": "a34f75872e981ccad711edf0755c58c8cbb3c1128805c32310c7871f0046c0e6",
+  "original_prompt": "Ingested from coreutils-9.4/lib/isapipe.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n#ifndef HAVE_FIFO_PIPES\n# define HAVE_FIFO_PIPES (-1)\n#endif\n\nint isapipe (int fd);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "insn-eval.h",
+  "hash_id": "824aae480c5c8b4995a41fc6e43b4f57e3f029b8bc205639816ab32c5cb8e7a4",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/insn-eval.h",
+  "human_readable_source": "#ifndef _ASM_X86_INSN_EVAL_H\n#define _ASM_X86_INSN_EVAL_H\n \n\n#include <linux/compiler.h>\n#include <linux/bug.h>\n#include <linux/err.h>\n#include <asm/ptrace.h>\n\n#define INSN_CODE_SEG_ADDR_SZ(params) ((params >> 4) & 0xf)\n#define INSN_CODE_SEG_OPND_SZ(params) (params & 0xf)\n#define INSN_CODE_SEG_PARAMS(oper_sz, addr_sz) (oper_sz | (addr_sz << 4))\n\nint pt_regs_offset(struct pt_regs *regs, int regno);\n\nbool insn_has_rep_prefix(struct insn *insn);\nvoid __user *insn_get_addr_ref(struct insn *insn, struct pt_regs *regs);\nint insn_get_modrm_rm_off(struct insn *insn, struct pt_regs *regs);\nint insn_get_modrm_reg_off(struct insn *insn, struct pt_regs *regs);\nunsigned long *insn_get_modrm_reg_ptr(struct insn *insn, struct pt_regs *regs);\nunsigned long insn_get_seg_base(struct pt_regs *regs, int seg_reg_idx);\nint insn_get_code_seg_params(struct pt_regs *regs);\nint insn_get_effective_ip(struct pt_regs *regs, unsigned long *ip);\nint insn_fetch_from_user(struct pt_regs *regs,\n\t\t\t unsigned char buf[MAX_INSN_SIZE]);\nint insn_fetch_from_user_inatomic(struct pt_regs *regs,\n\t\t\t\t  unsigned char buf[MAX_INSN_SIZE]);\nbool insn_decode_from_regs(struct insn *insn, struct pt_regs *regs,\n\t\t\t   unsigned char buf[MAX_INSN_SIZE], int buf_size);\n\nenum insn_mmio_type {\n\tINSN_MMIO_DECODE_FAILED,\n\tINSN_MMIO_WRITE,\n\tINSN_MMIO_WRITE_IMM,\n\tINSN_MMIO_READ,\n\tINSN_MMIO_READ_ZERO_EXTEND,\n\tINSN_MMIO_READ_SIGN_EXTEND,\n\tINSN_MMIO_MOVS,\n};\n\nenum insn_mmio_type insn_decode_mmio(struct insn *insn, int *bytes);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

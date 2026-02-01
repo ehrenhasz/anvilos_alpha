@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "832c9a4d8982674a62e3c2d7841a0143a20819cce7f9094eac2078cdd6056b8b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/actions/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_PINCTRL_OWL)\t+= pinctrl-owl.o\nobj-$(CONFIG_PINCTRL_S500) \t+= pinctrl-s500.o\nobj-$(CONFIG_PINCTRL_S700) \t+= pinctrl-s700.o\nobj-$(CONFIG_PINCTRL_S900) \t+= pinctrl-s900.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

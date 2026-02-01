@@ -1,0 +1,9 @@
+{
+  "module_name": "atp870u.h",
+  "hash_id": "eaeefd7a7c1cedcb9ba2245712c32c6190cea2c1334e2972dc62d654219e7e3d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/atp870u.h",
+  "human_readable_source": " \n#ifndef _ATP870U_H\n#define _ATP870U_H\n\n#include <linux/types.h>\n#include <linux/kdev_t.h>\n\n \n\n#define MAX_CDB\t\t12\n#define MAX_SENSE\t14\n#define qcnt\t\t32\n#define ATP870U_SCATTER\t128\n\n#define MAX_ADAPTER\t8\n#define MAX_SCSI_ID\t16\n#define ATP870U_MAX_SECTORS 128\n\n#define ATP885_DEVID 0x808A\n#define ATP880_DEVID1 0x8080\n#define ATP880_DEVID2 0x8081\n\n\n\nstruct atp_unit\n{\n\tunsigned long baseport;\n\tunsigned long ioport[2];\n\tunsigned long pciport[2];\n\tunsigned char last_cmd[2];\n\tunsigned char in_snd[2];\n\tunsigned char in_int[2];\n\tunsigned char quhd[2];\n\tunsigned char quend[2];\n\tunsigned char global_map[2];\n\tunsigned char host_id[2];\n\tunsigned int working[2];\n\tunsigned short wide_id[2];\n\tunsigned short active_id[2];\n\tunsigned short ultra_map[2];\n\tunsigned short async[2];\n\tunsigned char sp[2][16];\n\tunsigned char r1f[2][16];\n\tstruct scsi_cmnd *quereq[2][qcnt];\n\tstruct atp_id\n\t{\n\t\tunsigned char dirct;\n\t\tunsigned char devsp;\n\t\tunsigned char devtype;\n\t\tunsigned long tran_len;\n\t\tunsigned long last_len;\n\t\tunsigned char *prd_pos;\n\t\tunsigned char *prd_table;\t \n\t\tdma_addr_t prd_bus;\t\t \n\t\tdma_addr_t prdaddr;\t\t \n\t\tstruct scsi_cmnd *curr_req;\n\t} id[2][16];\n\tstruct Scsi_Host *host;\n\tstruct pci_dev *pdev;\n\tunsigned int unit;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

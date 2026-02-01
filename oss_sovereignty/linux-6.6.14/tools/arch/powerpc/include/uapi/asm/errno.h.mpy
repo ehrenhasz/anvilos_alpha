@@ -1,0 +1,9 @@
+{
+  "module_name": "errno.h",
+  "hash_id": "6e0ae1eb9024060f34f84716449a14b3b1e30afbc736b427075cea5818338e56",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/powerpc/include/uapi/asm/errno.h",
+  "human_readable_source": " \n#ifndef _ASM_POWERPC_ERRNO_H\n#define _ASM_POWERPC_ERRNO_H\n\n#undef\tEDEADLOCK\n#include <asm-generic/errno.h>\n\n#undef\tEDEADLOCK\n#define\tEDEADLOCK\t58\t \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

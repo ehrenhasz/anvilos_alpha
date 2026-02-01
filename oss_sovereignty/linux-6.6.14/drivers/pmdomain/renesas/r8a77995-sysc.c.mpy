@@ -1,0 +1,9 @@
+{
+  "module_name": "r8a77995-sysc.c",
+  "hash_id": "229d774ebde7ad91f6f0289e1c01dc7024bad08535ca5e00a36855ef4dd89c43",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pmdomain/renesas/r8a77995-sysc.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n\n#include <dt-bindings/power/r8a77995-sysc.h>\n\n#include \"rcar-sysc.h\"\n\nstatic const struct rcar_sysc_area r8a77995_areas[] __initconst = {\n\t{ \"always-on\",     0, 0, R8A77995_PD_ALWAYS_ON, -1, PD_ALWAYS_ON },\n\t{ \"ca53-scu\",  0x140, 0, R8A77995_PD_CA53_SCU,  R8A77995_PD_ALWAYS_ON,\n\t  PD_SCU },\n\t{ \"ca53-cpu0\", 0x200, 0, R8A77995_PD_CA53_CPU0, R8A77995_PD_CA53_SCU,\n\t  PD_CPU_NOCR },\n};\n\n\nconst struct rcar_sysc_info r8a77995_sysc_info __initconst = {\n\t.areas = r8a77995_areas,\n\t.num_areas = ARRAY_SIZE(r8a77995_areas),\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

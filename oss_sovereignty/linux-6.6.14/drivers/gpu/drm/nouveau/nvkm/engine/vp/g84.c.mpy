@@ -1,0 +1,9 @@
+{
+  "module_name": "g84.c",
+  "hash_id": "14bb6992495b6054210a8b972787532aaca4df8b054862b6fb89e34a2866ee81",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/vp/g84.c",
+  "human_readable_source": " \n#include <engine/vp.h>\n\n#include <nvif/class.h>\n\nstatic const struct nvkm_xtensa_func\ng84_vp = {\n\t.fifo_val = 0x111,\n\t.unkd28 = 0x9c544,\n\t.sclass = {\n\t\t{ -1, -1, NV74_VP2 },\n\t\t{}\n\t}\n};\n\nint\ng84_vp_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t   struct nvkm_engine **pengine)\n{\n\treturn nvkm_xtensa_new_(&g84_vp, device, type, inst, true, 0x00f000, pengine);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "acl.h",
+  "hash_id": "d0609c101b9b47fe564b9546c1785ddc601bd6896d355695809f47f4fe7a5cc3",
+  "original_prompt": "Ingested from linux-6.6.14/fs/f2fs/acl.h",
+  "human_readable_source": " \n \n#ifndef __F2FS_ACL_H__\n#define __F2FS_ACL_H__\n\n#include <linux/posix_acl_xattr.h>\n\n#define F2FS_ACL_VERSION\t0x0001\n\nstruct f2fs_acl_entry {\n\t__le16 e_tag;\n\t__le16 e_perm;\n\t__le32 e_id;\n};\n\nstruct f2fs_acl_entry_short {\n\t__le16 e_tag;\n\t__le16 e_perm;\n};\n\nstruct f2fs_acl_header {\n\t__le32 a_version;\n};\n\n#ifdef CONFIG_F2FS_FS_POSIX_ACL\n\nextern struct posix_acl *f2fs_get_acl(struct inode *, int, bool);\nextern int f2fs_set_acl(struct mnt_idmap *, struct dentry *,\n\t\t\tstruct posix_acl *, int);\nextern int f2fs_init_acl(struct inode *, struct inode *, struct page *,\n\t\t\t\t\t\t\tstruct page *);\n#else\n#define f2fs_get_acl\tNULL\n#define f2fs_set_acl\tNULL\n\nstatic inline int f2fs_init_acl(struct inode *inode, struct inode *dir,\n\t\t\t\tstruct page *ipage, struct page *dpage)\n{\n\treturn 0;\n}\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

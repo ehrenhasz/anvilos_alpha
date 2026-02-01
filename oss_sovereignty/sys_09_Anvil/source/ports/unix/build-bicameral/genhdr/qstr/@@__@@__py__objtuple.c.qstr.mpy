@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objtuple.c.qstr",
+  "hash_id": "cd1c3002d912edc615622067cbd7bfd47a22fbd79bb2b096d6be29b5a175066f",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objtuple.c.qstr",
+  "human_readable_source": "Q(count)\nQ(index)\nQ(tuple)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

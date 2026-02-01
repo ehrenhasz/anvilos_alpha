@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bd5cc43ff8a95871e024838082ba56da91d3f127848c554569d0aac44d8f8638",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/utf8/Makefile",
+  "human_readable_source": "#\t$OpenBSD: Makefile,v 1.5 2017/12/21 00:41:22 djm Exp $\n\nPROG=test_utf8\nSRCS=tests.c\n\n# From usr.bin/ssh\nSRCS+=utf8.c atomicio.c\n\nREGRESS_TARGETS=run-regress-${PROG}\n\nrun-regress-${PROG}: ${PROG}\n\tenv ${TEST_ENV} ./${PROG}\n\n.include <bsd.regress.mk>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

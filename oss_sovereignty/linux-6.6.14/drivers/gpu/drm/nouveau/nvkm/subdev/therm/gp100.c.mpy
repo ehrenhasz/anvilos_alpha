@@ -1,0 +1,9 @@
+{
+  "module_name": "gp100.c",
+  "hash_id": "15de71968642b7645d29237597bb12868f7678940e8b57b0cd74d7c4745cd14e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/therm/gp100.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic int\ngp100_temp_get(struct nvkm_therm *therm)\n{\n\tstruct nvkm_device *device = therm->subdev.device;\n\tstruct nvkm_subdev *subdev = &therm->subdev;\n\tu32 tsensor = nvkm_rd32(device, 0x020460);\n\tu32 inttemp = (tsensor & 0x0001fff8);\n\n\t \n\tif (tsensor & 0x40000000)\n\t\tnvkm_trace(subdev, \"reading temperature from SHADOWed sensor\\n\");\n\n\t \n\tif (tsensor & 0x20000000)\n\t\treturn (inttemp >> 8);\n\telse\n\t\treturn -ENODEV;\n}\n\nstatic const struct nvkm_therm_func\ngp100_therm = {\n\t.temp_get = gp100_temp_get,\n\t.program_alarms = nvkm_therm_program_alarms_polling,\n};\n\nint\ngp100_therm_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t\tstruct nvkm_therm **ptherm)\n{\n\treturn nvkm_therm_new_(&gp100_therm, device, type, inst, ptherm);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

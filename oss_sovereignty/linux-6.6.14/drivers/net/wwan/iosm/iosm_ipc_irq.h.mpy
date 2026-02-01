@@ -1,0 +1,9 @@
+{
+  "module_name": "iosm_ipc_irq.h",
+  "hash_id": "bef69ecd5bb2490125724084888a676f96f16b36d182d92a1f12498f619b03eb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wwan/iosm/iosm_ipc_irq.h",
+  "human_readable_source": " \n\n#ifndef IOSM_IPC_IRQ_H\n#define IOSM_IPC_IRQ_H\n\nstruct iosm_pcie;\n\n \nvoid ipc_doorbell_fire(struct iosm_pcie *ipc_pcie, int irq_n, u32 data);\n\n \nvoid ipc_release_irq(struct iosm_pcie *ipc_pcie);\n\n \nint ipc_acquire_irq(struct iosm_pcie *ipc_pcie);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

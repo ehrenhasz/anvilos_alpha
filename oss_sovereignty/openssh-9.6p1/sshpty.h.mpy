@@ -1,0 +1,9 @@
+{
+  "module_name": "sshpty.h",
+  "hash_id": "2da823add68d2c9c54491ed0bb0ebb14d0b3918b0fd1a838503894f4e24c9dfd",
+  "original_prompt": "Ingested from openssh-9.6p1/sshpty.h",
+  "human_readable_source": " \n\n \n\n#include <termios.h>\n\nstruct termios *get_saved_tio(void);\nvoid\t leave_raw_mode(int);\nvoid\t enter_raw_mode(int);\n\nint\t pty_allocate(int *, int *, char *, size_t);\nvoid\t pty_release(const char *);\nvoid\t pty_make_controlling_tty(int *, const char *);\nvoid\t pty_change_window_size(int, u_int, u_int, u_int, u_int);\nvoid\t pty_setowner(struct passwd *, const char *);\nvoid\t disconnect_controlling_tty(void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

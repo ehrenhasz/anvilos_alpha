@@ -1,0 +1,9 @@
+{
+  "module_name": "simplefb.h",
+  "hash_id": "e3fd1e73a6bfb137c0af18d60450f81c5548769f69e910bff11d5cfdbeb13f44",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/simplefb.h",
+  "human_readable_source": " \n \n\n#ifndef __PLATFORM_DATA_SIMPLEFB_H__\n#define __PLATFORM_DATA_SIMPLEFB_H__\n\n#include <drm/drm_fourcc.h>\n#include <linux/fb.h>\n#include <linux/types.h>\n\n \n#define SIMPLEFB_FORMATS \\\n{ \\\n\t{ \"r5g6b5\", 16, {11, 5}, {5, 6}, {0, 5}, {0, 0}, DRM_FORMAT_RGB565 }, \\\n\t{ \"r5g5b5a1\", 16, {11, 5}, {6, 5}, {1, 5}, {0, 1}, DRM_FORMAT_RGBA5551 }, \\\n\t{ \"x1r5g5b5\", 16, {10, 5}, {5, 5}, {0, 5}, {0, 0}, DRM_FORMAT_XRGB1555 }, \\\n\t{ \"a1r5g5b5\", 16, {10, 5}, {5, 5}, {0, 5}, {15, 1}, DRM_FORMAT_ARGB1555 }, \\\n\t{ \"r8g8b8\", 24, {16, 8}, {8, 8}, {0, 8}, {0, 0}, DRM_FORMAT_RGB888 }, \\\n\t{ \"x8r8g8b8\", 32, {16, 8}, {8, 8}, {0, 8}, {0, 0}, DRM_FORMAT_XRGB8888 }, \\\n\t{ \"a8r8g8b8\", 32, {16, 8}, {8, 8}, {0, 8}, {24, 8}, DRM_FORMAT_ARGB8888 }, \\\n\t{ \"x8b8g8r8\", 32, {0, 8}, {8, 8}, {16, 8}, {0, 0}, DRM_FORMAT_XBGR8888 }, \\\n\t{ \"a8b8g8r8\", 32, {0, 8}, {8, 8}, {16, 8}, {24, 8}, DRM_FORMAT_ABGR8888 }, \\\n\t{ \"x2r10g10b10\", 32, {20, 10}, {10, 10}, {0, 10}, {0, 0}, DRM_FORMAT_XRGB2101010 }, \\\n\t{ \"a2r10g10b10\", 32, {20, 10}, {10, 10}, {0, 10}, {30, 2}, DRM_FORMAT_ARGB2101010 }, \\\n}\n\n \nstruct simplefb_format {\n\tconst char *name;\n\tu32 bits_per_pixel;\n\tstruct fb_bitfield red;\n\tstruct fb_bitfield green;\n\tstruct fb_bitfield blue;\n\tstruct fb_bitfield transp;\n\tu32 fourcc;\n};\n\n \nstruct simplefb_platform_data {\n\tu32 width;\n\tu32 height;\n\tu32 stride;\n\tconst char *format;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

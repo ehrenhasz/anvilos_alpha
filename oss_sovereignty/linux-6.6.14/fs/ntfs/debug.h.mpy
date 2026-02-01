@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "f14319bb80690805a273a8362ea6128b9f466ab347ed23570ccfa04242cf802b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ntfs/debug.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_NTFS_DEBUG_H\n#define _LINUX_NTFS_DEBUG_H\n\n#include <linux/fs.h>\n\n#include \"runlist.h\"\n\n#ifdef DEBUG\n\nextern int debug_msgs;\n\nextern __printf(4, 5)\nvoid __ntfs_debug(const char *file, int line, const char *function,\n\t\t  const char *format, ...);\n \n#define ntfs_debug(f, a...)\t\t\t\t\t\t\\\n\t__ntfs_debug(__FILE__, __LINE__, __func__, f, ##a)\n\nextern void ntfs_debug_dump_runlist(const runlist_element *rl);\n\n#else\t \n\n#define ntfs_debug(fmt, ...)\t\t\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\t\\\n\tif (0)\t\t\t\t\t\t\t\t\\\n\t\tno_printk(fmt, ##__VA_ARGS__);\t\t\t\t\\\n} while (0)\n\n#define ntfs_debug_dump_runlist(rl)\tdo {} while (0)\n\n#endif\t \n\nextern  __printf(3, 4)\nvoid __ntfs_warning(const char *function, const struct super_block *sb,\n\t\t    const char *fmt, ...);\n#define ntfs_warning(sb, f, a...)\t__ntfs_warning(__func__, sb, f, ##a)\n\nextern  __printf(3, 4)\nvoid __ntfs_error(const char *function, const struct super_block *sb,\n\t\t  const char *fmt, ...);\n#define ntfs_error(sb, f, a...)\t\t__ntfs_error(__func__, sb, f, ##a)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

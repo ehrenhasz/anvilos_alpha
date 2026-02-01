@@ -1,0 +1,9 @@
+{
+  "module_name": "control.h",
+  "hash_id": "29fc642f4d630533fd143596b1e8639d025056bc7af7f866358a0d9149d562d7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/vsock/control.h",
+  "human_readable_source": " \n#ifndef CONTROL_H\n#define CONTROL_H\n\n#include <stdbool.h>\n\nvoid control_init(const char *control_host, const char *control_port,\n\t\t  bool server);\nvoid control_cleanup(void);\nvoid control_writeln(const char *str);\nchar *control_readln(void);\nunsigned long control_readulong(void);\nvoid control_expectln(const char *str);\nbool control_cmpln(char *line, const char *str, bool fail);\nvoid control_writeulong(unsigned long value);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

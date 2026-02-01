@@ -1,0 +1,9 @@
+{
+  "module_name": "profile.h",
+  "hash_id": "428b0158205eb86e2829ee88fb38ab4acab62fdc3d7e92a69d6f21cb715f65e9",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/profile.h",
+  "human_readable_source": " \n\n#ifndef MICROPY_INCLUDED_PY_PROFILING_H\n#define MICROPY_INCLUDED_PY_PROFILING_H\n\n#include \"py/emitglue.h\"\n\n#if MICROPY_PY_SYS_SETTRACE\n\n#define mp_prof_is_executing MP_STATE_THREAD(prof_callback_is_executing)\n\ntypedef struct _mp_obj_code_t {\n    \n    mp_obj_base_t base;\n    const mp_module_context_t *context;\n    const mp_raw_code_t *rc;\n    mp_obj_dict_t *dict_locals;\n    mp_obj_t lnotab;\n} mp_obj_code_t;\n\ntypedef struct _mp_obj_frame_t {\n    mp_obj_base_t base;\n    const mp_code_state_t *code_state;\n    struct _mp_obj_frame_t *back;\n    mp_obj_t callback;\n    mp_obj_code_t *code;\n    mp_uint_t lasti;\n    mp_uint_t lineno;\n    bool trace_opcodes;\n} mp_obj_frame_t;\n\nvoid mp_prof_extract_prelude(const byte *bytecode, mp_bytecode_prelude_t *prelude);\n\nmp_obj_t mp_obj_new_code(const mp_module_context_t *mc, const mp_raw_code_t *rc);\nmp_obj_t mp_obj_new_frame(const mp_code_state_t *code_state);\n\n\nmp_obj_t mp_prof_settrace(mp_obj_t callback);\n\nmp_obj_t mp_prof_frame_enter(mp_code_state_t *code_state);\nmp_obj_t mp_prof_frame_update(const mp_code_state_t *code_state);\n\n\nmp_obj_t mp_prof_instr_tick(mp_code_state_t *code_state, bool is_exception);\n\n\n\n#define MICROPY_PROF_INSTR_DEBUG_PRINT_ENABLE 0\n#if MICROPY_PROF_INSTR_DEBUG_PRINT_ENABLE\nvoid mp_prof_print_instr(const byte *ip, mp_code_state_t *code_state);\n#define MP_PROF_INSTR_DEBUG_PRINT(current_ip) mp_prof_print_instr((current_ip), code_state)\n#else\n#define MP_PROF_INSTR_DEBUG_PRINT(current_ip)\n#endif\n\n#endif \n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "l1i_cache.json",
+  "hash_id": "a2b98dff23424f90452cbcc6b1d316d93fe5bea4059af89a24aee4a74eeb9308",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/neoverse-n2-v2/l1i_cache.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"L1I_CACHE_REFILL\",\n        \"PublicDescription\": \"Counts cache line refills in the level 1 instruction cache caused by a missed instruction fetch. Instruction fetches may include accessing multiple instructions, but the single cache line allocation is counted once.\"\n    },\n    {\n        \"ArchStdEvent\": \"L1I_CACHE\",\n        \"PublicDescription\": \"Counts instruction fetches which access the level 1 instruction cache. Instruction cache accesses caused by cache maintenance operations are not counted.\"\n    },\n    {\n        \"ArchStdEvent\": \"L1I_CACHE_LMISS\",\n        \"PublicDescription\": \"Counts cache line refills into the level 1 instruction cache, that incurred additional latency.\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

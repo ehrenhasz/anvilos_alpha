@@ -1,0 +1,9 @@
+{
+  "module_name": "hash-triple.h",
+  "hash_id": "25e5ce9cd773a5750fc0742995abe2b989fcb2a6264a21a8372f746de55f8348",
+  "original_prompt": "Ingested from coreutils-9.4/lib/hash-triple.h",
+  "human_readable_source": " \n\n#ifndef HASH_TRIPLE_H\n#define HASH_TRIPLE_H\n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <sys/types.h>\n#include <sys/stat.h>\n\n \nstruct F_triple\n{\n  char *name;\n  ino_t st_ino;\n  dev_t st_dev;\n};\n\n \n\nextern size_t triple_hash (void const *x, size_t table_size) _GL_ATTRIBUTE_PURE;\nextern bool triple_compare_ino_str (void const *x, void const *y)\n  _GL_ATTRIBUTE_PURE;\nextern void triple_free (void *x);\n\n \nextern size_t triple_hash_no_name (void const *x, size_t table_size)\n  _GL_ATTRIBUTE_PURE;\nextern bool triple_compare (void const *x, void const *y);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "117141ff08b7a60e6884763ea23922a201947b064f2fbd4b1696797b2fbe7ae8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/sprd/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nsprd-drm-y := sprd_drm.o \\\n\tsprd_dpu.o \\\n\tsprd_dsi.o \\\n\tmegacores_pll.o\n\nobj-$(CONFIG_DRM_SPRD) += sprd-drm.o",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

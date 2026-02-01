@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-rwsem.m4",
+  "hash_id": "da444d5145399cc9bd5b21ecc5e5d6b646abfff49eaac3613b24578ac30e3e9b",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-rwsem.m4",
+  "human_readable_source": "dnl #\ndnl # 3.16 API Change\ndnl #\ndnl # rwsem-spinlock \"->activity\" changed to \"->count\"\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_RWSEM_ACTIVITY], [\n\tZFS_LINUX_TEST_SRC([rwsem_activity], [\n\t\t#include <linux/rwsem.h>\n\t],[\n\t\tstruct rw_semaphore dummy_semaphore __attribute__ ((unused));\n\t\tdummy_semaphore.activity = 0;\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_RWSEM_ACTIVITY], [\n\tAC_MSG_CHECKING([whether struct rw_semaphore has member activity])\n\tZFS_LINUX_TEST_RESULT([rwsem_activity], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_RWSEM_ACTIVITY, 1,\n\t\t    [struct rw_semaphore has member activity])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n\ndnl #\ndnl # 4.8 API Change\ndnl #\ndnl # rwsem \"->count\" changed to atomic_long_t type\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_RWSEM_ATOMIC_LONG_COUNT], [\n\tZFS_LINUX_TEST_SRC([rwsem_atomic_long_count], [\n\t\t#include <linux/rwsem.h>\n\t],[\n\t\tDECLARE_RWSEM(dummy_semaphore);\n\t\t(void) atomic_long_read(&dummy_semaphore.count);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_RWSEM_ATOMIC_LONG_COUNT], [\n\tAC_MSG_CHECKING(\n\t    [whether struct rw_semaphore has atomic_long_t member count])\n\tZFS_LINUX_TEST_RESULT([rwsem_atomic_long_count], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_RWSEM_ATOMIC_LONG_COUNT, 1,\n\t\t    [struct rw_semaphore has atomic_long_t member count])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_SRC_RWSEM], [\n\tZFS_AC_KERNEL_SRC_RWSEM_ACTIVITY\n\tZFS_AC_KERNEL_SRC_RWSEM_ATOMIC_LONG_COUNT\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_RWSEM], [\n\tZFS_AC_KERNEL_RWSEM_ACTIVITY\n\tZFS_AC_KERNEL_RWSEM_ATOMIC_LONG_COUNT\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

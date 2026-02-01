@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2b9dfbf4254a272fa9469ed69a1478a190fd7cc082064e3e0870cd7a5983a8fd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/iscsi/cxgbit/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nccflags-y := -I $(srctree)/drivers/net/ethernet/chelsio/cxgb4\nccflags-y += -I $(srctree)/drivers/net/ethernet/chelsio/libcxgb\nccflags-y += -I $(srctree)/drivers/target/iscsi\n\nobj-$(CONFIG_ISCSI_TARGET_CXGB4)  += cxgbit.o\n\ncxgbit-y  := cxgbit_main.o cxgbit_cm.o cxgbit_target.o cxgbit_ddp.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

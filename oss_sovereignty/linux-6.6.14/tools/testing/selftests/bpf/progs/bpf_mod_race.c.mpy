@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_mod_race.c",
+  "hash_id": "1f9d084f8f02fb589f3ebd6e8e0d312d5d62d8236f0d78fd9deaf887c3aff715",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_mod_race.c",
+  "human_readable_source": "\n#include <vmlinux.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nconst volatile struct {\n\t \n\tpid_t tgid;\n\t \n\tint inject_error;\n\t \n\tvoid *fault_addr;\n} bpf_mod_race_config = { -1 };\n\nint bpf_blocking = 0;\nint res_try_get_module = -1;\n\nstatic __always_inline bool check_thread_id(void)\n{\n\tstruct task_struct *task = bpf_get_current_task_btf();\n\n\treturn task->tgid == bpf_mod_race_config.tgid;\n}\n\n \n\nSEC(\"fmod_ret.s/bpf_fentry_test1\")\nint BPF_PROG(widen_race, int a, int ret)\n{\n\tchar dst;\n\n\tif (!check_thread_id())\n\t\treturn 0;\n\t \n\tbpf_blocking = 1;\n\tbpf_copy_from_user(&dst, 1, bpf_mod_race_config.fault_addr);\n\treturn bpf_mod_race_config.inject_error;\n}\n\nSEC(\"fexit/do_init_module\")\nint BPF_PROG(fexit_init_module, struct module *mod, int ret)\n{\n\tif (!check_thread_id())\n\t\treturn 0;\n\t \n\tbpf_blocking = 2;\n\treturn 0;\n}\n\nSEC(\"fexit/btf_try_get_module\")\nint BPF_PROG(fexit_module_get, const struct btf *btf, struct module *mod)\n{\n\tres_try_get_module = !!mod;\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sha512.m4",
+  "hash_id": "799d9bd9d9f81664c5cc12478388270d7c5b99fea9b03c19637e5622dcbd1f1d",
+  "original_prompt": "Ingested from coreutils-9.4/m4/sha512.m4",
+  "human_readable_source": "# sha512.m4 serial 9\ndnl Copyright (C) 2005-2006, 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_SHA512],\n[\n  dnl Prerequisites of lib/sha512.c.\n  AC_REQUIRE([gl_BIGENDIAN])\n\n  dnl Determine HAVE_OPENSSL_SHA512 and LIB_CRYPTO\n  gl_CRYPTO_CHECK([SHA512])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl_wx.h",
+  "hash_id": "c26fc8b175fe6dd4c3bb95ee41db0debea0a583577f0594730f4a2eac3684c10",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8192e/rtl8192e/rtl_wx.h",
+  "human_readable_source": " \n \n#ifndef R819x_WX_H\n#define R819x_WX_H\n\nstruct iw_handler_def;\n\nextern const struct iw_handler_def r8192_wx_handlers_def;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

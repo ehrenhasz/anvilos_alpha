@@ -1,0 +1,9 @@
+{
+  "module_name": "surface_acpi_notify.h",
+  "hash_id": "aa68849704e3847aa117dbb4c22147252e0dd0d58a25dca3efe0cb8eef4d259e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/surface_acpi_notify.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_SURFACE_ACPI_NOTIFY_H\n#define _LINUX_SURFACE_ACPI_NOTIFY_H\n\n#include <linux/notifier.h>\n#include <linux/types.h>\n\n \nstruct san_dgpu_event {\n\tu8 category;\n\tu8 target;\n\tu8 command;\n\tu8 instance;\n\tu16 length;\n\tu8 *payload;\n};\n\nint san_client_link(struct device *client);\nint san_dgpu_notifier_register(struct notifier_block *nb);\nint san_dgpu_notifier_unregister(struct notifier_block *nb);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

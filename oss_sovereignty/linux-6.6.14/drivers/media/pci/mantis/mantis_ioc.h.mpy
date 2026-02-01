@@ -1,0 +1,9 @@
+{
+  "module_name": "mantis_ioc.h",
+  "hash_id": "9ee0b1e3b61c344760bd54f29a3f47a37a7ae7731e8942c473fae30e4f1bb6b2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/mantis/mantis_ioc.h",
+  "human_readable_source": " \n \n\n#ifndef __MANTIS_IOC_H\n#define __MANTIS_IOC_H\n\n#define GPIF_A00\t\t0x00\n#define GPIF_A01\t\t0x01\n#define GPIF_A02\t\t0x02\n#define GPIF_A03\t\t0x03\n#define GPIF_A04\t\t0x04\n#define GPIF_A05\t\t0x05\n#define GPIF_A06\t\t0x06\n#define GPIF_A07\t\t0x07\n#define GPIF_A08\t\t0x08\n#define GPIF_A09\t\t0x09\n#define GPIF_A10\t\t0x0a\n#define GPIF_A11\t\t0x0b\n\n#define GPIF_A12\t\t0x0c\n#define GPIF_A13\t\t0x0d\n#define GPIF_A14\t\t0x0e\n\nenum mantis_stream_control {\n\tSTREAM_TO_HIF = 0,\n\tSTREAM_TO_CAM\n};\n\nextern int mantis_get_mac(struct mantis_pci *mantis);\nextern void mantis_gpio_set_bits(struct mantis_pci *mantis, u32 bitpos, u8 value);\n\nextern int mantis_stream_control(struct mantis_pci *mantis, enum mantis_stream_control stream_ctl);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

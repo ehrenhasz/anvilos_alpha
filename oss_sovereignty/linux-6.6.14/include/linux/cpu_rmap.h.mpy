@@ -1,0 +1,9 @@
+{
+  "module_name": "cpu_rmap.h",
+  "hash_id": "cb50a814336e13cf9ae170e7d85a62bbf3ca91552f2ee8e8b2eec89c550ae7b2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cpu_rmap.h",
+  "human_readable_source": " \n#ifndef __LINUX_CPU_RMAP_H\n#define __LINUX_CPU_RMAP_H\n\n \n\n#include <linux/cpumask.h>\n#include <linux/gfp.h>\n#include <linux/slab.h>\n#include <linux/kref.h>\n\n \nstruct cpu_rmap {\n\tstruct kref\trefcount;\n\tu16\t\tsize;\n\tvoid\t\t**obj;\n\tstruct {\n\t\tu16\tindex;\n\t\tu16\tdist;\n\t}\t\tnear[];\n};\n#define CPU_RMAP_DIST_INF 0xffff\n\nextern struct cpu_rmap *alloc_cpu_rmap(unsigned int size, gfp_t flags);\nextern int cpu_rmap_put(struct cpu_rmap *rmap);\n\nextern int cpu_rmap_add(struct cpu_rmap *rmap, void *obj);\nextern int cpu_rmap_update(struct cpu_rmap *rmap, u16 index,\n\t\t\t   const struct cpumask *affinity);\n\nstatic inline u16 cpu_rmap_lookup_index(struct cpu_rmap *rmap, unsigned int cpu)\n{\n\treturn rmap->near[cpu].index;\n}\n\nstatic inline void *cpu_rmap_lookup_obj(struct cpu_rmap *rmap, unsigned int cpu)\n{\n\treturn rmap->obj[rmap->near[cpu].index];\n}\n\n \nstatic inline struct cpu_rmap *alloc_irq_cpu_rmap(unsigned int size)\n{\n\treturn alloc_cpu_rmap(size, GFP_KERNEL);\n}\nextern void free_irq_cpu_rmap(struct cpu_rmap *rmap);\n\nint irq_cpu_rmap_remove(struct cpu_rmap *rmap, int irq);\nextern int irq_cpu_rmap_add(struct cpu_rmap *rmap, int irq);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

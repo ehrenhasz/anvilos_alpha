@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "698fad282c7b56a9927e5591483c31321e88946f3b2e28c4e6cee29f4845532c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/saa7164/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_SAA7164\n\ttristate \"NXP SAA7164 support\"\n\tdepends on DVB_CORE && VIDEO_DEV && PCI && I2C\n\tselect I2C_ALGOBIT\n\tselect FW_LOADER\n\tselect VIDEO_TUNER\n\tselect VIDEO_TVEEPROM\n\tselect DVB_TDA10048 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_S5H1411 if MEDIA_SUBDRV_AUTOSELECT\n\tselect MEDIA_TUNER_TDA18271 if MEDIA_SUBDRV_AUTOSELECT\n\thelp\n\t  This is a video4linux driver for NXP SAA7164 based\n\t  TV cards.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called saa7164\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

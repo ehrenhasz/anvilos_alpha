@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c1206cac2d989e4b0be61b2f7d1669f7458303392bcebfd745348fb7a448d2f2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/psci/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\nobj-$(CONFIG_ARM_PSCI_FW)\t+= psci.o\nobj-$(CONFIG_ARM_PSCI_CHECKER)\t+= psci_checker.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

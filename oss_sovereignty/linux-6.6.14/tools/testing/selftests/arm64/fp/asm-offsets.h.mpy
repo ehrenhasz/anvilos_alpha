@@ -1,0 +1,9 @@
+{
+  "module_name": "asm-offsets.h",
+  "hash_id": "e89e96441f7dd2396d240b28b9f69b30e3c51a23eed30cd53de9a18b52f4b52d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/fp/asm-offsets.h",
+  "human_readable_source": "#define sa_sz 32\n#define sa_flags 8\n#define sa_handler 0\n#define sa_mask_sz 8\n#define SIGUSR1 10\n#define SIGUSR2 12\n#define SIGTERM 15\n#define SIGINT 2\n#define SIGABRT 6\n#define SA_NODEFER 1073741824\n#define SA_SIGINFO 4\n#define ucontext_regs 184\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ec168.h",
+  "hash_id": "ad81c5006c129ce8187e75a69d4199de0f30f90b09a9e0c2d8429bf8459d1e19",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/dvb-usb-v2/ec168.h",
+  "human_readable_source": " \n \n\n#ifndef EC168_H\n#define EC168_H\n\n#include \"dvb_usb.h\"\n\n#define EC168_USB_TIMEOUT 1000\n#define EC168_FIRMWARE \"dvb-usb-ec168.fw\"\n\nstruct ec168_req {\n\tu8  cmd;        \n\tu16 value;      \n\tu16 index;      \n\tu16 size;       \n\tu8  *data;\n};\n\nenum ec168_cmd {\n\tDOWNLOAD_FIRMWARE    = 0x00,\n\tCONFIG               = 0x01,\n\tDEMOD_RW             = 0x03,\n\tGPIO                 = 0x04,\n\tSTREAMING_CTRL       = 0x10,\n\tREAD_I2C             = 0x20,\n\tWRITE_I2C            = 0x21,\n\tHID_DOWNLOAD         = 0x30,\n\tGET_CONFIG,\n\tSET_CONFIG,\n\tREAD_DEMOD,\n\tWRITE_DEMOD,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

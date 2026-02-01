@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8d190c149def11e48a071afe250e8d43fce2e3fc16882457e5becc2a8d2720d6",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv4/netfilter/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the netfilter modules on top of IPv4.\n#\n\n# defrag\nobj-$(CONFIG_NF_DEFRAG_IPV4) += nf_defrag_ipv4.o\n\nobj-$(CONFIG_NF_SOCKET_IPV4) += nf_socket_ipv4.o\nobj-$(CONFIG_NF_TPROXY_IPV4) += nf_tproxy_ipv4.o\n\n# reject\nobj-$(CONFIG_NF_REJECT_IPV4) += nf_reject_ipv4.o\n\n# NAT helpers (nf_conntrack)\nobj-$(CONFIG_NF_NAT_H323) += nf_nat_h323.o\nobj-$(CONFIG_NF_NAT_PPTP) += nf_nat_pptp.o\n\nnf_nat_snmp_basic-y := nf_nat_snmp_basic.asn1.o nf_nat_snmp_basic_main.o\n$(obj)/nf_nat_snmp_basic_main.o: $(obj)/nf_nat_snmp_basic.asn1.h\nobj-$(CONFIG_NF_NAT_SNMP_BASIC) += nf_nat_snmp_basic.o\n\nobj-$(CONFIG_NFT_REJECT_IPV4) += nft_reject_ipv4.o\nobj-$(CONFIG_NFT_FIB_IPV4) += nft_fib_ipv4.o\nobj-$(CONFIG_NFT_DUP_IPV4) += nft_dup_ipv4.o\n\n# generic IP tables\nobj-$(CONFIG_IP_NF_IPTABLES) += ip_tables.o\n\n# the three instances of ip_tables\nobj-$(CONFIG_IP_NF_FILTER) += iptable_filter.o\nobj-$(CONFIG_IP_NF_MANGLE) += iptable_mangle.o\nobj-$(CONFIG_IP_NF_NAT) += iptable_nat.o\nobj-$(CONFIG_IP_NF_RAW) += iptable_raw.o\nobj-$(CONFIG_IP_NF_SECURITY) += iptable_security.o\n\n# matches\nobj-$(CONFIG_IP_NF_MATCH_AH) += ipt_ah.o\nobj-$(CONFIG_IP_NF_MATCH_RPFILTER) += ipt_rpfilter.o\n\n# targets\nobj-$(CONFIG_IP_NF_TARGET_ECN) += ipt_ECN.o\nobj-$(CONFIG_IP_NF_TARGET_REJECT) += ipt_REJECT.o\nobj-$(CONFIG_IP_NF_TARGET_SYNPROXY) += ipt_SYNPROXY.o\n\n# generic ARP tables\nobj-$(CONFIG_IP_NF_ARPTABLES) += arp_tables.o\nobj-$(CONFIG_IP_NF_ARP_MANGLE) += arpt_mangle.o\n\n# just filtering instance of ARP tables for now\nobj-$(CONFIG_IP_NF_ARPFILTER) += arptable_filter.o\n\nobj-$(CONFIG_NF_DUP_IPV4) += nf_dup_ipv4.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

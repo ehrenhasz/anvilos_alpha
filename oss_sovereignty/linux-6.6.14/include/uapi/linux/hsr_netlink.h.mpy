@@ -1,0 +1,9 @@
+{
+  "module_name": "hsr_netlink.h",
+  "hash_id": "d42215720f26541ee5654c631886c51ebabe60a6135a73ca06bf1b48ce7ede0d",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/hsr_netlink.h",
+  "human_readable_source": " \n \n\n#ifndef __UAPI_HSR_NETLINK_H\n#define __UAPI_HSR_NETLINK_H\n\n \n\n \nenum {\n\tHSR_A_UNSPEC,\n\tHSR_A_NODE_ADDR,\n\tHSR_A_IFINDEX,\n\tHSR_A_IF1_AGE,\n\tHSR_A_IF2_AGE,\n\tHSR_A_NODE_ADDR_B,\n\tHSR_A_IF1_SEQ,\n\tHSR_A_IF2_SEQ,\n\tHSR_A_IF1_IFINDEX,\n\tHSR_A_IF2_IFINDEX,\n\tHSR_A_ADDR_B_IFINDEX,\n\t__HSR_A_MAX,\n};\n#define HSR_A_MAX (__HSR_A_MAX - 1)\n\n\n \nenum {\n\tHSR_C_UNSPEC,\n\tHSR_C_RING_ERROR,\n\tHSR_C_NODE_DOWN,\n\tHSR_C_GET_NODE_STATUS,\n\tHSR_C_SET_NODE_STATUS,\n\tHSR_C_GET_NODE_LIST,\n\tHSR_C_SET_NODE_LIST,\n\t__HSR_C_MAX,\n};\n#define HSR_C_MAX (__HSR_C_MAX - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ec100.h",
+  "hash_id": "4d03000f355c5ada15246a5febf04c65a1a7f90a85a7284f0e0233f155a7a0c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/ec100.h",
+  "human_readable_source": " \n \n\n#ifndef EC100_H\n#define EC100_H\n\n#include <linux/dvb/frontend.h>\n\nstruct ec100_config {\n\t \n\tu8 demod_address;\n};\n\n\n#if IS_REACHABLE(CONFIG_DVB_EC100)\nextern struct dvb_frontend *ec100_attach(const struct ec100_config *config,\n\tstruct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *ec100_attach(\n\tconst struct ec100_config *config, struct i2c_adapter *i2c)\n{\n\tpr_warn(\"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

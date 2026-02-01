@@ -1,0 +1,9 @@
+{
+  "module_name": "skc_to_unix_sock.c",
+  "hash_id": "b09eeeebcc8014dd68c8e94be6de0d519c9cb5009514df98368c19d389f0c159",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/skc_to_unix_sock.c",
+  "human_readable_source": " \n \n\n#include <test_progs.h>\n#include <sys/un.h>\n#include \"test_skc_to_unix_sock.skel.h\"\n\nstatic const char *sock_path = \"@skc_to_unix_sock\";\n\nvoid test_skc_to_unix_sock(void)\n{\n\tstruct test_skc_to_unix_sock *skel;\n\tstruct sockaddr_un sockaddr;\n\tint err, sockfd = 0;\n\n\tskel = test_skc_to_unix_sock__open();\n\tif (!ASSERT_OK_PTR(skel, \"could not open BPF object\"))\n\t\treturn;\n\n\tskel->rodata->my_pid = getpid();\n\n\terr = test_skc_to_unix_sock__load(skel);\n\tif (!ASSERT_OK(err, \"could not load BPF object\"))\n\t\tgoto cleanup;\n\n\terr = test_skc_to_unix_sock__attach(skel);\n\tif (!ASSERT_OK(err, \"could not attach BPF object\"))\n\t\tgoto cleanup;\n\n\t \n\tsockfd = socket(AF_UNIX, SOCK_STREAM, 0);\n\tif (!ASSERT_GT(sockfd, 0, \"socket failed\"))\n\t\tgoto cleanup;\n\n\tmemset(&sockaddr, 0, sizeof(sockaddr));\n\tsockaddr.sun_family = AF_UNIX;\n\tstrncpy(sockaddr.sun_path, sock_path, strlen(sock_path));\n\tsockaddr.sun_path[0] = '\\0';\n\n\terr = bind(sockfd, (struct sockaddr *)&sockaddr, sizeof(sockaddr));\n\tif (!ASSERT_OK(err, \"bind failed\"))\n\t\tgoto cleanup;\n\n\terr = listen(sockfd, 1);\n\tif (!ASSERT_OK(err, \"listen failed\"))\n\t\tgoto cleanup;\n\n\tASSERT_EQ(strcmp(skel->bss->path, sock_path), 0, \"bpf_skc_to_unix_sock failed\");\n\ncleanup:\n\tif (sockfd)\n\t\tclose(sockfd);\n\ttest_skc_to_unix_sock__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

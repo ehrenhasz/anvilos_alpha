@@ -1,0 +1,9 @@
+{
+  "module_name": "nouveau_crtc.h",
+  "hash_id": "35c3bbcaa247915ee694e34e1946a263b761ef9e1b0425b5eee4ce04fff55a10",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nouveau_crtc.h",
+  "human_readable_source": " \n\n#ifndef __NOUVEAU_CRTC_H__\n#define __NOUVEAU_CRTC_H__\n#include <drm/drm_crtc.h>\n\n#include <nvif/head.h>\n#include <nvif/event.h>\n\nstruct nouveau_crtc {\n\tstruct drm_crtc base;\n\n\tstruct nvif_head head;\n\tint index;\n\tstruct nvif_event vblank;\n\n\tuint32_t dpms_saved_fp_control;\n\tuint32_t fp_users;\n\tint saturation;\n\tint sharpness;\n\tint last_dpms;\n\n\tint cursor_saved_x, cursor_saved_y;\n\n\tstruct {\n\t\tint cpp;\n\t\tbool blanked;\n\t\tuint32_t offset;\n\t\tuint32_t handle;\n\t} fb;\n\n\tstruct {\n\t\tstruct nouveau_bo *nvbo;\n\t\tuint32_t offset;\n\t\tvoid (*set_offset)(struct nouveau_crtc *, uint32_t offset);\n\t\tvoid (*set_pos)(struct nouveau_crtc *, int x, int y);\n\t\tvoid (*hide)(struct nouveau_crtc *, bool update);\n\t\tvoid (*show)(struct nouveau_crtc *, bool update);\n\t} cursor;\n\n\tstruct {\n\t\tint depth;\n\t} lut;\n\n\tvoid (*save)(struct drm_crtc *crtc);\n\tvoid (*restore)(struct drm_crtc *crtc);\n};\n\nstatic inline struct nouveau_crtc *nouveau_crtc(struct drm_crtc *crtc)\n{\n\treturn crtc ? container_of(crtc, struct nouveau_crtc, base) : NULL;\n}\n\nstatic inline struct drm_crtc *to_drm_crtc(struct nouveau_crtc *crtc)\n{\n\treturn &crtc->base;\n}\n\nint nv04_cursor_init(struct nouveau_crtc *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

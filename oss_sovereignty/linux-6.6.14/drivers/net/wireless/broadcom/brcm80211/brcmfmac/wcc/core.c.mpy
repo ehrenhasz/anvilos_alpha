@@ -1,0 +1,9 @@
+{
+  "module_name": "core.c",
+  "hash_id": "a46caf018e216ede179d83eec64e7809bdded6934b148e701d6c64485fc69b0f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/brcm80211/brcmfmac/wcc/core.c",
+  "human_readable_source": "\n \n#include <linux/errno.h>\n#include <linux/types.h>\n#include <core.h>\n#include <bus.h>\n#include <fwvid.h>\n\n#include \"vops.h\"\n\nstatic int brcmf_wcc_attach(struct brcmf_pub *drvr)\n{\n\tpr_debug(\"%s: executing\\n\", __func__);\n\treturn 0;\n}\n\nstatic void brcmf_wcc_detach(struct brcmf_pub *drvr)\n{\n\tpr_debug(\"%s: executing\\n\", __func__);\n}\n\nconst struct brcmf_fwvid_ops brcmf_wcc_ops = {\n\t.attach = brcmf_wcc_attach,\n\t.detach = brcmf_wcc_detach,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

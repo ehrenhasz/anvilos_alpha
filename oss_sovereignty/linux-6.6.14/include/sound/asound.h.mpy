@@ -1,0 +1,9 @@
+{
+  "module_name": "asound.h",
+  "hash_id": "8d58827c79b234e173fe4e81d323b40065da282cef64f576a7a96b0114f29e86",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/asound.h",
+  "human_readable_source": " \n \n#ifndef __SOUND_ASOUND_H\n#define __SOUND_ASOUND_H\n\n#include <linux/ioctl.h>\n#include <linux/time.h>\n#include <asm/byteorder.h>\n\n#ifdef  __LITTLE_ENDIAN\n#define SNDRV_LITTLE_ENDIAN\n#else\n#ifdef __BIG_ENDIAN\n#define SNDRV_BIG_ENDIAN\n#else\n#error \"Unsupported endian...\"\n#endif\n#endif\n\n#include <uapi/sound/asound.h>\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

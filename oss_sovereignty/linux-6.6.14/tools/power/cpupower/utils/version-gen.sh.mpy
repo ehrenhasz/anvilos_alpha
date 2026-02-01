@@ -1,0 +1,9 @@
+{
+  "module_name": "version-gen.sh",
+  "hash_id": "f4f6885e0b1bad4d97741334cf07be69f325a5c4d5277eadde408f5d039fe06f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/utils/version-gen.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n#\n# Script which prints out the version to use for building cpupowerutils.\n# Must be called from tools/power/cpupower/\n# \n# Heavily based on tools/perf/util/PERF-VERSION-GEN .\n\nLF='\n'\n\n# First check if there is a .git to get the version from git describe\n# otherwise try to get the version from the kernel makefile\nif test -d ../../../.git -o -f ../../../.git &&\n\tVN=$(git describe --abbrev=4 HEAD 2>/dev/null) &&\n\tcase \"$VN\" in\n\t*$LF*) (exit 1) ;;\n\tv[0-9]*)\n\t\tgit update-index -q --refresh\n\t\ttest -z \"$(git diff-index --name-only HEAD --)\" ||\n\t\tVN=\"$VN-dirty\" ;;\n\tesac\nthen\n\tVN=$(echo \"$VN\" | sed -e 's/-/./g');\nelse\n\teval $(grep '^VERSION[[:space:]]*=' ../../../Makefile|tr -d ' ')\n\teval $(grep '^PATCHLEVEL[[:space:]]*=' ../../../Makefile|tr -d ' ')\n\teval $(grep '^SUBLEVEL[[:space:]]*=' ../../../Makefile|tr -d ' ')\n\teval $(grep '^EXTRAVERSION[[:space:]]*=' ../../../Makefile|tr -d ' ')\n\n\tVN=\"${VERSION}.${PATCHLEVEL}.${SUBLEVEL}${EXTRAVERSION}\"\nfi\n\nVN=$(expr \"$VN\" : v*'\\(.*\\)')\n\necho $VN\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "metadata_used.c",
+  "hash_id": "30c87902d05e09daa11c6e95da909d3ca16adf759d07fd67ab4add6f02c41975",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/metadata_used.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\nvolatile const char bpf_metadata_a[] SEC(\".rodata\") = \"bar\";\nvolatile const int bpf_metadata_b SEC(\".rodata\") = 2;\n\nSEC(\"cgroup_skb/egress\")\nint prog(struct xdp_md *ctx)\n{\n\treturn bpf_metadata_b ? 1 : 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "lzbe_util.c",
+  "hash_id": "69716b3b7c0482b1c815adc4696ae0b71988e8bd4efe9cb28d87e239111b4442",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libzfsbootenv/lzbe_util.c",
+  "human_readable_source": " \n \n\n#include <sys/types.h>\n#include <string.h>\n#include <libzfs.h>\n#include <libzfsbootenv.h>\n\n \nint\nlzbe_bootenv_print(const char *pool, const char *nvlist, FILE *of)\n{\n\tnvlist_t *nv;\n\tint rv = -1;\n\n\tif (pool == NULL || *pool == '\\0' || of == NULL)\n\t\treturn (rv);\n\n\trv = lzbe_nvlist_get(pool, nvlist, (void **)&nv);\n\tif (rv == 0) {\n\t\tnvlist_print(of, nv);\n\t\tnvlist_free(nv);\n\t}\n\n\treturn (rv);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

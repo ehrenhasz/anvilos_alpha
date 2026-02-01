@@ -1,0 +1,9 @@
+{
+  "module_name": "bonding_priv.h",
+  "hash_id": "3cac809c660d7171fda4996583339f5c127a8b5614a93b97402e6e8c63f4d6ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/bonding/bonding_priv.h",
+  "human_readable_source": " \n \n\n#ifndef _BONDING_PRIV_H\n#define _BONDING_PRIV_H\n#include <generated/utsrelease.h>\n\n#define DRV_NAME\t\"bonding\"\n#define DRV_DESCRIPTION\t\"Ethernet Channel Bonding Driver\"\n\n#define bond_version DRV_DESCRIPTION \": v\" UTS_RELEASE \"\\n\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

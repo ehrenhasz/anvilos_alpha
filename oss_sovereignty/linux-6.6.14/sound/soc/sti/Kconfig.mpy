@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "61bf74deea8875868a48fef8d333075e0d2bb7a4d3c1d765a188b30043aac02c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sti/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# STM SoC audio configuration\n#\nmenuconfig SND_SOC_STI\n\ttristate \"SoC Audio support for STI System-On-Chip\"\n\tdepends on SND_SOC\n\tdepends on ARCH_STI || COMPILE_TEST\n\tselect SND_SOC_GENERIC_DMAENGINE_PCM\n\thelp\n\t\tSay Y if you want to enable ASoC-support for\n\t\tany of the STI platforms (e.g. STIH416).\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

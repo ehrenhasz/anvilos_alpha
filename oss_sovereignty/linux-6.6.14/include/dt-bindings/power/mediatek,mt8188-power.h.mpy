@@ -1,0 +1,9 @@
+{
+  "module_name": "mediatek,mt8188-power.h",
+  "hash_id": "f1ac4f91b184ff4927842e1cdb569a2f401b250e0be563502e054ac27fb275b2",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/mediatek,mt8188-power.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_POWER_MT8188_POWER_H\n#define _DT_BINDINGS_POWER_MT8188_POWER_H\n\n#define MT8188_POWER_DOMAIN_MFG0\t\t\t0\n#define MT8188_POWER_DOMAIN_MFG1\t\t\t1\n#define MT8188_POWER_DOMAIN_MFG2\t\t\t2\n#define MT8188_POWER_DOMAIN_MFG3\t\t\t3\n#define MT8188_POWER_DOMAIN_MFG4\t\t\t4\n#define MT8188_POWER_DOMAIN_PEXTP_MAC_P0\t\t5\n#define MT8188_POWER_DOMAIN_PEXTP_PHY_TOP\t\t6\n#define MT8188_POWER_DOMAIN_CSIRX_TOP\t\t\t7\n#define MT8188_POWER_DOMAIN_ETHER\t\t\t8\n#define MT8188_POWER_DOMAIN_HDMI_TX\t\t\t9\n#define MT8188_POWER_DOMAIN_ADSP_AO\t\t\t10\n#define MT8188_POWER_DOMAIN_ADSP_INFRA\t\t\t11\n#define MT8188_POWER_DOMAIN_ADSP\t\t\t12\n#define MT8188_POWER_DOMAIN_AUDIO\t\t\t13\n#define MT8188_POWER_DOMAIN_AUDIO_ASRC\t\t\t14\n#define MT8188_POWER_DOMAIN_VPPSYS0\t\t\t15\n#define MT8188_POWER_DOMAIN_VDOSYS0\t\t\t16\n#define MT8188_POWER_DOMAIN_VDOSYS1\t\t\t17\n#define MT8188_POWER_DOMAIN_DP_TX\t\t\t18\n#define MT8188_POWER_DOMAIN_EDP_TX\t\t\t19\n#define MT8188_POWER_DOMAIN_VPPSYS1\t\t\t20\n#define MT8188_POWER_DOMAIN_WPE\t\t\t\t21\n#define MT8188_POWER_DOMAIN_VDEC0\t\t\t22\n#define MT8188_POWER_DOMAIN_VDEC1\t\t\t23\n#define MT8188_POWER_DOMAIN_VENC\t\t\t24\n#define MT8188_POWER_DOMAIN_IMG_VCORE\t\t\t25\n#define MT8188_POWER_DOMAIN_IMG_MAIN\t\t\t26\n#define MT8188_POWER_DOMAIN_DIP\t\t\t\t27\n#define MT8188_POWER_DOMAIN_IPE\t\t\t\t28\n#define MT8188_POWER_DOMAIN_CAM_VCORE\t\t\t29\n#define MT8188_POWER_DOMAIN_CAM_MAIN\t\t\t30\n#define MT8188_POWER_DOMAIN_CAM_SUBA\t\t\t31\n#define MT8188_POWER_DOMAIN_CAM_SUBB\t\t\t32\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

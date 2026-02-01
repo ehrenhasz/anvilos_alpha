@@ -1,0 +1,9 @@
+{
+  "module_name": "test-wcrtomb-w32-4.sh",
+  "hash_id": "2528b9b5f18e681d6edb957b310c3cddcfeab6122d3957bb3902cbc6f5a29a02",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-wcrtomb-w32-4.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test some UTF-8 locales.\n${CHECKER} ./test-wcrtomb-w32${EXEEXT} French_France Japanese_Japan Chinese_Taiwan Chinese_China 65001\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

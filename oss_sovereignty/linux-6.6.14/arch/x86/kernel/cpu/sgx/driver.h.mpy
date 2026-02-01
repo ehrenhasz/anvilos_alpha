@@ -1,0 +1,9 @@
+{
+  "module_name": "driver.h",
+  "hash_id": "e733fc3eda9a55e489ae6d6182b25e591af09a3935e744c87517a462cecf0208",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/cpu/sgx/driver.h",
+  "human_readable_source": " \n#ifndef __ARCH_SGX_DRIVER_H__\n#define __ARCH_SGX_DRIVER_H__\n\n#include <crypto/hash.h>\n#include <linux/kref.h>\n#include <linux/mmu_notifier.h>\n#include <linux/radix-tree.h>\n#include <linux/rwsem.h>\n#include <linux/sched.h>\n#include <linux/workqueue.h>\n#include <uapi/asm/sgx.h>\n#include \"sgx.h\"\n\n#define SGX_EINIT_SPIN_COUNT\t20\n#define SGX_EINIT_SLEEP_COUNT\t50\n#define SGX_EINIT_SLEEP_TIME\t20\n\nextern u64 sgx_attributes_reserved_mask;\nextern u64 sgx_xfrm_reserved_mask;\nextern u32 sgx_misc_reserved_mask;\n\nextern const struct file_operations sgx_provision_fops;\n\nlong sgx_ioctl(struct file *filep, unsigned int cmd, unsigned long arg);\n\nint sgx_drv_init(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

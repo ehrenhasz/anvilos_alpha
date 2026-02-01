@@ -1,0 +1,9 @@
+{
+  "module_name": "udp_impl.h",
+  "hash_id": "6bd898771a1f3560382634c1138129e8a465953023888b7da4a24779f2d26e7d",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv4/udp_impl.h",
+  "human_readable_source": " \n#ifndef _UDP4_IMPL_H\n#define _UDP4_IMPL_H\n#include <net/udp.h>\n#include <net/udplite.h>\n#include <net/protocol.h>\n#include <net/inet_common.h>\n\nint __udp4_lib_rcv(struct sk_buff *, struct udp_table *, int);\nint __udp4_lib_err(struct sk_buff *, u32, struct udp_table *);\n\nint udp_v4_get_port(struct sock *sk, unsigned short snum);\nvoid udp_v4_rehash(struct sock *sk);\n\nint udp_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,\n\t\t   unsigned int optlen);\nint udp_getsockopt(struct sock *sk, int level, int optname,\n\t\t   char __user *optval, int __user *optlen);\n\nint udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int flags,\n\t\tint *addr_len);\nvoid udp_destroy_sock(struct sock *sk);\n\n#ifdef CONFIG_PROC_FS\nint udp4_seq_show(struct seq_file *seq, void *v);\n#endif\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

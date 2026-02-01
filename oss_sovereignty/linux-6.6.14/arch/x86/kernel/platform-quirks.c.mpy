@@ -1,0 +1,9 @@
+{
+  "module_name": "platform-quirks.c",
+  "hash_id": "5a309ce63f5463be11f6700ad57a5bce27247b053ad0ec0800bd02b1d71cb14d",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/platform-quirks.c",
+  "human_readable_source": "\n#include <linux/kernel.h>\n#include <linux/init.h>\n#include <linux/pnp.h>\n\n#include <asm/setup.h>\n#include <asm/bios_ebda.h>\n\nvoid __init x86_early_init_platform_quirks(void)\n{\n\tx86_platform.legacy.i8042 = X86_LEGACY_I8042_EXPECTED_PRESENT;\n\tx86_platform.legacy.rtc = 1;\n\tx86_platform.legacy.warm_reset = 1;\n\tx86_platform.legacy.reserve_bios_regions = 0;\n\tx86_platform.legacy.devices.pnpbios = 1;\n\n\tswitch (boot_params.hdr.hardware_subarch) {\n\tcase X86_SUBARCH_PC:\n\t\tx86_platform.legacy.reserve_bios_regions = 1;\n\t\tbreak;\n\tcase X86_SUBARCH_XEN:\n\t\tx86_platform.legacy.devices.pnpbios = 0;\n\t\tx86_platform.legacy.rtc = 0;\n\t\tbreak;\n\tcase X86_SUBARCH_INTEL_MID:\n\tcase X86_SUBARCH_CE4100:\n\t\tx86_platform.legacy.devices.pnpbios = 0;\n\t\tx86_platform.legacy.rtc = 0;\n\t\tx86_platform.legacy.i8042 = X86_LEGACY_I8042_PLATFORM_ABSENT;\n\t\tbreak;\n\t}\n\n\tif (x86_platform.set_legacy_features)\n\t\tx86_platform.set_legacy_features();\n}\n\nbool __init x86_pnpbios_disabled(void)\n{\n\treturn x86_platform.legacy.devices.pnpbios == 0;\n}\n\n#if defined(CONFIG_PNPBIOS)\nbool __init arch_pnpbios_disabled(void)\n{\n\treturn x86_pnpbios_disabled();\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "aio.h",
+  "hash_id": "f865496e32b4cba90354e4efe815835dd427d2b85f8315789258884aa559bbb6",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/aio.h",
+  "human_readable_source": " \n#ifndef __LINUX__AIO_H\n#define __LINUX__AIO_H\n\n#include <linux/aio_abi.h>\n\nstruct kioctx;\nstruct kiocb;\nstruct mm_struct;\n\ntypedef int (kiocb_cancel_fn)(struct kiocb *);\n\n \n#ifdef CONFIG_AIO\nextern void exit_aio(struct mm_struct *mm);\nvoid kiocb_set_cancel_fn(struct kiocb *req, kiocb_cancel_fn *cancel);\n#else\nstatic inline void exit_aio(struct mm_struct *mm) { }\nstatic inline void kiocb_set_cancel_fn(struct kiocb *req,\n\t\t\t\t       kiocb_cancel_fn *cancel) { }\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

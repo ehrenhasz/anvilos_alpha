@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "68fc4376ecfa5d452ac99c122e2dc0491c52f9df1f4e012f407b87f4206b2f73",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/nuvoton/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_CLK_MA35D1) += clk-ma35d1.o\nobj-$(CONFIG_CLK_MA35D1) += clk-ma35d1-divider.o\nobj-$(CONFIG_CLK_MA35D1) += clk-ma35d1-pll.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

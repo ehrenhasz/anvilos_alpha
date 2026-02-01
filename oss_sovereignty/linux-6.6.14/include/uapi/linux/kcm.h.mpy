@@ -1,0 +1,9 @@
+{
+  "module_name": "kcm.h",
+  "hash_id": "c82f7d688f529eb3da91300e7858332ab46b78d89c833c60695e99c97e3afcf4",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/kcm.h",
+  "human_readable_source": " \n \n\n#ifndef KCM_KERNEL_H\n#define KCM_KERNEL_H\n\nstruct kcm_attach {\n\tint fd;\n\tint bpf_fd;\n};\n\nstruct kcm_unattach {\n\tint fd;\n};\n\nstruct kcm_clone {\n\tint fd;\n};\n\n#define SIOCKCMATTACH\t(SIOCPROTOPRIVATE + 0)\n#define SIOCKCMUNATTACH\t(SIOCPROTOPRIVATE + 1)\n#define SIOCKCMCLONE\t(SIOCPROTOPRIVATE + 2)\n\n#define KCMPROTO_CONNECTED\t0\n\n \n#define KCM_RECV_DISABLE\t1\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

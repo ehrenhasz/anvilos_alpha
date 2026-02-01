@@ -1,0 +1,9 @@
+{
+  "module_name": "cs-etm.h",
+  "hash_id": "4d24e6bb58c8baf163349602fd4aea53c5fb925d7a461749da145f18609dafba",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arm/util/cs-etm.h",
+  "human_readable_source": " \n \n\n#ifndef INCLUDE__PERF_CS_ETM_H__\n#define INCLUDE__PERF_CS_ETM_H__\n\nstruct auxtrace_record *cs_etm_record_init(int *err);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

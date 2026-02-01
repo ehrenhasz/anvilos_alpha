@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c4f13282fcb964180c0d78b67f4dce23bed81d423eec2b880d836d88113f4547",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/magnetometer/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for industrial I/O Magnetometer sensor drivers\n#\n\n# When adding new entries keep the list in alphabetical order\nobj-$(CONFIG_AK8974)\t+= ak8974.o\nobj-$(CONFIG_AK8975)\t+= ak8975.o\nobj-$(CONFIG_BMC150_MAGN) += bmc150_magn.o\nobj-$(CONFIG_BMC150_MAGN_I2C) += bmc150_magn_i2c.o\nobj-$(CONFIG_BMC150_MAGN_SPI) += bmc150_magn_spi.o\n\nobj-$(CONFIG_MAG3110)\t+= mag3110.o\nobj-$(CONFIG_HID_SENSOR_MAGNETOMETER_3D) += hid-sensor-magn-3d.o\nobj-$(CONFIG_MMC35240)\t+= mmc35240.o\n\nobj-$(CONFIG_IIO_ST_MAGN_3AXIS) += st_magn.o\nst_magn-y := st_magn_core.o\nst_magn-$(CONFIG_IIO_BUFFER) += st_magn_buffer.o\n\nobj-$(CONFIG_IIO_ST_MAGN_I2C_3AXIS) += st_magn_i2c.o\nobj-$(CONFIG_IIO_ST_MAGN_SPI_3AXIS) += st_magn_spi.o\n\nobj-$(CONFIG_SENSORS_HMC5843)\t\t+= hmc5843_core.o\nobj-$(CONFIG_SENSORS_HMC5843_I2C)\t+= hmc5843_i2c.o\nobj-$(CONFIG_SENSORS_HMC5843_SPI)\t+= hmc5843_spi.o\n\nobj-$(CONFIG_SENSORS_RM3100)\t\t+= rm3100-core.o\nobj-$(CONFIG_SENSORS_RM3100_I2C)\t+= rm3100-i2c.o\nobj-$(CONFIG_SENSORS_RM3100_SPI)\t+= rm3100-spi.o\n\nobj-$(CONFIG_TI_TMAG5273)\t\t+= tmag5273.o\n\nobj-$(CONFIG_YAMAHA_YAS530)\t\t+= yamaha-yas530.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

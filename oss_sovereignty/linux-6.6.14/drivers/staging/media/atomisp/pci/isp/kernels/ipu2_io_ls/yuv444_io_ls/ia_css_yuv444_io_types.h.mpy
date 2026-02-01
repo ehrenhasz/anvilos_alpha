@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_yuv444_io_types.h",
+  "hash_id": "df7364a70fee0076c621588d18e6f75d7526eb53b84c02d3cfe20085ec4046b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ipu2_io_ls/yuv444_io_ls/ia_css_yuv444_io_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_YUV444_IO_TYPES\n#define __IA_CSS_YUV444_IO_TYPES\n\n#include \"../common/ia_css_common_io_types.h\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

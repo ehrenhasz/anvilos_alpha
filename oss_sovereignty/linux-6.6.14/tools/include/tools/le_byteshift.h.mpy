@@ -1,0 +1,9 @@
+{
+  "module_name": "le_byteshift.h",
+  "hash_id": "73b938cd564f4f02cd0667df46406d99c84900206e85c051056c4ab9d12a8fe6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/tools/le_byteshift.h",
+  "human_readable_source": " \n#ifndef _TOOLS_LE_BYTESHIFT_H\n#define _TOOLS_LE_BYTESHIFT_H\n\n#include <stdint.h>\n\nstatic inline uint16_t __get_unaligned_le16(const uint8_t *p)\n{\n\treturn p[0] | p[1] << 8;\n}\n\nstatic inline uint32_t __get_unaligned_le32(const uint8_t *p)\n{\n\treturn p[0] | p[1] << 8 | p[2] << 16 | p[3] << 24;\n}\n\nstatic inline uint64_t __get_unaligned_le64(const uint8_t *p)\n{\n\treturn (uint64_t)__get_unaligned_le32(p + 4) << 32 |\n\t       __get_unaligned_le32(p);\n}\n\nstatic inline void __put_unaligned_le16(uint16_t val, uint8_t *p)\n{\n\t*p++ = val;\n\t*p++ = val >> 8;\n}\n\nstatic inline void __put_unaligned_le32(uint32_t val, uint8_t *p)\n{\n\t__put_unaligned_le16(val >> 16, p + 2);\n\t__put_unaligned_le16(val, p);\n}\n\nstatic inline void __put_unaligned_le64(uint64_t val, uint8_t *p)\n{\n\t__put_unaligned_le32(val >> 32, p + 4);\n\t__put_unaligned_le32(val, p);\n}\n\nstatic inline uint16_t get_unaligned_le16(const void *p)\n{\n\treturn __get_unaligned_le16((const uint8_t *)p);\n}\n\nstatic inline uint32_t get_unaligned_le32(const void *p)\n{\n\treturn __get_unaligned_le32((const uint8_t *)p);\n}\n\nstatic inline uint64_t get_unaligned_le64(const void *p)\n{\n\treturn __get_unaligned_le64((const uint8_t *)p);\n}\n\nstatic inline void put_unaligned_le16(uint16_t val, void *p)\n{\n\t__put_unaligned_le16(val, p);\n}\n\nstatic inline void put_unaligned_le32(uint32_t val, void *p)\n{\n\t__put_unaligned_le32(val, p);\n}\n\nstatic inline void put_unaligned_le64(uint64_t val, void *p)\n{\n\t__put_unaligned_le64(val, p);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_trace.h",
+  "hash_id": "a80983ec36297a56444e9bafae65f9f8a1511319461fb18d5aaec87639bc4300",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bpf_trace.h",
+  "human_readable_source": " \n#ifndef __LINUX_BPF_TRACE_H__\n#define __LINUX_BPF_TRACE_H__\n\n#include <trace/events/xdp.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

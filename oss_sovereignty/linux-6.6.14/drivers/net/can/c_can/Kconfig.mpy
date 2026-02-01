@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e6169849738b9dbc795582a02f64f994731ed91e31dadd62ef9a8c12c00a463a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/c_can/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig CAN_C_CAN\n\ttristate \"Bosch C_CAN/D_CAN devices\"\n\tdepends on HAS_IOMEM\n\nif CAN_C_CAN\n\nconfig CAN_C_CAN_PLATFORM\n\ttristate \"Generic Platform Bus based C_CAN/D_CAN driver\"\n\thelp\n\t  This driver adds support for the C_CAN/D_CAN chips connected\n\t  to the \"platform bus\" (Linux abstraction for directly to the\n\t  processor attached devices) which can be found on various\n\t  boards from ST Microelectronics (http://www.st.com) like the\n\t  SPEAr1310 and SPEAr320 evaluation boards & TI (www.ti.com)\n\t  boards like am335x, dm814x, dm813x and dm811x.\n\nconfig CAN_C_CAN_PCI\n\ttristate \"Generic PCI Bus based C_CAN/D_CAN driver\"\n\tdepends on PCI\n\thelp\n\t  This driver adds support for the C_CAN/D_CAN chips connected\n\t  to the PCI bus. E.g. for the C_CAN controller IP inside the\n\t  Intel Atom E6xx series IOH (aka EG20T 'PCH CAN').\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

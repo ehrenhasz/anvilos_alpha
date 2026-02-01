@@ -1,0 +1,9 @@
+{
+  "module_name": "if_caif.h",
+  "hash_id": "5d059d12a2e6aca7ccbf24d77d97ce27982e8802b98f62d279850563ee00e37f",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/caif/if_caif.h",
+  "human_readable_source": " \n \n\n#ifndef IF_CAIF_H_\n#define IF_CAIF_H_\n#include <linux/sockios.h>\n#include <linux/types.h>\n#include <linux/socket.h>\n\n \nenum ifla_caif {\n\t__IFLA_CAIF_UNSPEC,\n\tIFLA_CAIF_IPV4_CONNID,\n\tIFLA_CAIF_IPV6_CONNID,\n\tIFLA_CAIF_LOOPBACK,\n\t__IFLA_CAIF_MAX\n};\n#define\tIFLA_CAIF_MAX (__IFLA_CAIF_MAX-1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

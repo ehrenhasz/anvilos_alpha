@@ -1,0 +1,9 @@
+{
+  "module_name": "q6dsp-common.h",
+  "hash_id": "59ea22d38e3bd54d1175f31860e285abcb4d93eca6af0b8621fdcf89378f79e8",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/qcom/qdsp6/q6dsp-common.h",
+  "human_readable_source": " \n\n#ifndef __Q6DSP_COMMON_H__\n#define __Q6DSP_COMMON_H__\n\n#include <linux/kernel.h>\n\n#define PCM_MAX_NUM_CHANNEL  8\n#define PCM_CHANNEL_NULL 0\n\n#define PCM_CHANNEL_FL    1\t \n#define PCM_CHANNEL_FR    2\t \n#define PCM_CHANNEL_FC    3\t \n#define PCM_CHANNEL_LS   4\t \n#define PCM_CHANNEL_RS   5\t \n#define PCM_CHANNEL_LFE  6\t \n#define PCM_CHANNEL_CS   7\t \n#define PCM_CHANNEL_LB   8\t \n#define PCM_CHANNEL_RB   9\t \n#define PCM_CHANNELS   10\t \n\nint q6dsp_map_channels(u8 ch_map[PCM_MAX_NUM_CHANNEL], int ch);\nint q6dsp_get_channel_allocation(int channels);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

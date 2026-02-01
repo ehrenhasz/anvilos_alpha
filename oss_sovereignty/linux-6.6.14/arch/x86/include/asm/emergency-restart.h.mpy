@@ -1,0 +1,9 @@
+{
+  "module_name": "emergency-restart.h",
+  "hash_id": "fc67c1cec884781c61fa483e00ffbee80113c00d29d1dba0e83bb4a3f69c2ce7",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/emergency-restart.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_EMERGENCY_RESTART_H\n#define _ASM_X86_EMERGENCY_RESTART_H\n\nextern void machine_emergency_restart(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

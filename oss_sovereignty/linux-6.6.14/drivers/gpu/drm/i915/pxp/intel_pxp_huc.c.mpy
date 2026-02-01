@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pxp_huc.c",
+  "hash_id": "a24b9574ba3b331e01c17cf525ea57ece0f9443a88e7d0b09eaf62babee4a89a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/pxp/intel_pxp_huc.c",
+  "human_readable_source": "\n \n\n#include \"i915_drv.h\"\n\n#include \"gem/i915_gem_region.h\"\n#include \"gt/intel_gt.h\"\n\n#include \"intel_pxp.h\"\n#include \"intel_pxp_huc.h\"\n#include \"intel_pxp_tee.h\"\n#include \"intel_pxp_types.h\"\n#include \"intel_pxp_cmd_interface_43.h\"\n\nint intel_pxp_huc_load_and_auth(struct intel_pxp *pxp)\n{\n\tstruct intel_gt *gt;\n\tstruct intel_huc *huc;\n\tstruct pxp43_start_huc_auth_in huc_in = {0};\n\tstruct pxp43_huc_auth_out huc_out = {0};\n\tdma_addr_t huc_phys_addr;\n\tu8 client_id = 0;\n\tu8 fence_id = 0;\n\tint err;\n\n\tif (!pxp || !pxp->pxp_component)\n\t\treturn -ENODEV;\n\n\tgt = pxp->ctrl_gt;\n\thuc = &gt->uc.huc;\n\n\thuc_phys_addr = i915_gem_object_get_dma_address(huc->fw.obj, 0);\n\n\t \n\thuc_in.header.api_version = PXP_APIVER(4, 3);\n\thuc_in.header.command_id  = PXP43_CMDID_START_HUC_AUTH;\n\thuc_in.header.status      = 0;\n\thuc_in.header.buffer_len  = sizeof(huc_in.huc_base_address);\n\thuc_in.huc_base_address   = cpu_to_le64(huc_phys_addr);\n\n\terr = intel_pxp_tee_stream_message(pxp, client_id, fence_id,\n\t\t\t\t\t   &huc_in, sizeof(huc_in),\n\t\t\t\t\t   &huc_out, sizeof(huc_out));\n\tif (err < 0) {\n\t\tdrm_err(&gt->i915->drm,\n\t\t\t\"Failed to send HuC load and auth command to GSC [%d]!\\n\",\n\t\t\terr);\n\t\treturn err;\n\t}\n\n\t \n\tif (huc_out.header.status != PXP_STATUS_SUCCESS &&\n\t    huc_out.header.status != PXP_STATUS_OP_NOT_PERMITTED) {\n\t\tdrm_err(&gt->i915->drm,\n\t\t\t\"HuC load failed with GSC error = 0x%x\\n\",\n\t\t\thuc_out.header.status);\n\t\treturn -EPROTO;\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

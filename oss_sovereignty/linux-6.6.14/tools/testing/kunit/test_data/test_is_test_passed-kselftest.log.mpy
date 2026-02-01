@@ -1,0 +1,9 @@
+{
+  "module_name": "test_is_test_passed-kselftest.log",
+  "hash_id": "a5def6eb1ff4ddedd4784679fa5fa772b1776e7f0e6502c2387a1fb568f044dd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/test_data/test_is_test_passed-kselftest.log",
+  "human_readable_source": "TAP version 13\n1..2\n# selftests: membarrier: membarrier_test_single_thread\n# TAP version 13\n# 1..2\n# ok 1 sys_membarrier available\n# ok 2 sys membarrier invalid command test: command = -1, flags = 0, errno = 22. Failed as expected\nok 1 selftests: membarrier: membarrier_test_single_thread\n# selftests: membarrier: membarrier_test_multi_thread\n# TAP version 13\n# 1..2\n# ok 1 sys_membarrier available\n# ok 2 sys membarrier invalid command test: command = -1, flags = 0, errno = 22. Failed as expected\nok 2 selftests: membarrier: membarrier_test_multi_thread\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "basic_call.c",
+  "hash_id": "dfd13031fb04ef67acd856bb9842cac35ec8bb957daa47ba33ca52c4da59e7fa",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/verifier/basic_call.c",
+  "human_readable_source": "{\n\t\"invalid call insn1\",\n\t.insns = {\n\tBPF_RAW_INSN(BPF_JMP | BPF_CALL | BPF_X, 0, 0, 0, 0),\n\tBPF_EXIT_INSN(),\n\t},\n\t.errstr = \"unknown opcode 8d\",\n\t.result = REJECT,\n},\n{\n\t\"invalid call insn2\",\n\t.insns = {\n\tBPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 1, 0),\n\tBPF_EXIT_INSN(),\n\t},\n\t.errstr = \"BPF_CALL uses reserved\",\n\t.result = REJECT,\n},\n{\n\t\"invalid function call\",\n\t.insns = {\n\tBPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, 1234567),\n\tBPF_EXIT_INSN(),\n\t},\n\t.errstr = \"invalid func unknown#1234567\",\n\t.result = REJECT,\n},\n{\n\t\"invalid argument register\",\n\t.insns = {\n\tBPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_cgroup_classid),\n\tBPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_cgroup_classid),\n\tBPF_EXIT_INSN(),\n\t},\n\t.errstr = \"R1 !read_ok\",\n\t.result = REJECT,\n\t.prog_type = BPF_PROG_TYPE_SCHED_CLS,\n},\n{\n\t\"non-invalid argument register\",\n\t.insns = {\n\tBPF_ALU64_REG(BPF_MOV, BPF_REG_6, BPF_REG_1),\n\tBPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_cgroup_classid),\n\tBPF_ALU64_REG(BPF_MOV, BPF_REG_1, BPF_REG_6),\n\tBPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_get_cgroup_classid),\n\tBPF_EXIT_INSN(),\n\t},\n\t.result = ACCEPT,\n\t.prog_type = BPF_PROG_TYPE_SCHED_CLS,\n},\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pci-ep-cfs.h",
+  "hash_id": "6eecae0612ccc8bdf34fc2d7cd2fcc2ad134ee7e36be4c2dcaf1efa4c2b75d9d",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pci-ep-cfs.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_PCI_EP_CFS_H\n#define __LINUX_PCI_EP_CFS_H\n\n#include <linux/configfs.h>\n\n#ifdef CONFIG_PCI_ENDPOINT_CONFIGFS\nstruct config_group *pci_ep_cfs_add_epc_group(const char *name);\nvoid pci_ep_cfs_remove_epc_group(struct config_group *group);\nstruct config_group *pci_ep_cfs_add_epf_group(const char *name);\nvoid pci_ep_cfs_remove_epf_group(struct config_group *group);\n#else\nstatic inline struct config_group *pci_ep_cfs_add_epc_group(const char *name)\n{\n\treturn NULL;\n}\n\nstatic inline void pci_ep_cfs_remove_epc_group(struct config_group *group)\n{\n}\n\nstatic inline struct config_group *pci_ep_cfs_add_epf_group(const char *name)\n{\n\treturn NULL;\n}\n\nstatic inline void pci_ep_cfs_remove_epf_group(struct config_group *group)\n{\n}\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

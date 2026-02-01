@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "1e22ea68f6173de2b9581ff029d1537db6cf5237803faf2a67eae69570b05863",
+  "original_prompt": "Ingested from linux-6.6.14/fs/coda/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig CODA_FS\n\ttristate \"Coda file system support (advanced network fs)\"\n\tdepends on INET\n\thelp\n\t  Coda is an advanced network file system, similar to NFS in that it\n\t  enables you to mount file systems of a remote server and access them\n\t  with regular Unix commands as if they were sitting on your hard\n\t  disk.  Coda has several advantages over NFS: support for\n\t  disconnected operation (e.g. for laptops), read/write server\n\t  replication, security model for authentication and encryption,\n\t  persistent client caches and write back caching.\n\n\t  If you say Y here, your Linux box will be able to act as a Coda\n\t  *client*.  You will need user level code as well, both for the\n\t  client and server.  Servers are currently user level, i.e. they need\n\t  no kernel support.  Please read\n\t  <file:Documentation/filesystems/coda.rst> and check out the Coda\n\t  home page <http://www.coda.cs.cmu.edu/>.\n\n\t  To compile the coda client support as a module, choose M here: the\n\t  module will be called coda.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

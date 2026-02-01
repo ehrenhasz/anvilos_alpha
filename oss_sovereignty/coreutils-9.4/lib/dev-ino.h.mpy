@@ -1,0 +1,9 @@
+{
+  "module_name": "dev-ino.h",
+  "hash_id": "6daa55c2afc2da76c0359b4e04e03beff1f3c30d8f78453f2dd5fea25ae4f027",
+  "original_prompt": "Ingested from coreutils-9.4/lib/dev-ino.h",
+  "human_readable_source": " \n\n#ifndef DEV_INO_H\n# define DEV_INO_H 1\n\n# include <sys/types.h>\n# include <sys/stat.h>\n\nstruct dev_ino\n{\n  ino_t st_ino;\n  dev_t st_dev;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

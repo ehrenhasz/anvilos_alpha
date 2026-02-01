@@ -1,0 +1,9 @@
+{
+  "module_name": "upd64031a.h",
+  "hash_id": "571903a680db0f79868bb4e825b115442350222ebedad8b17f3b3b840949c027",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/upd64031a.h",
+  "human_readable_source": " \n \n\n#ifndef _UPD64031A_H_\n#define _UPD64031A_H_\n\n \n#define UPD64031A_GR_ON\t\t0\n#define UPD64031A_GR_OFF\t1\n#define UPD64031A_GR_THROUGH\t3\n\n \n#define UPD64031A_3DYCS_DISABLE   (0 << 2)\n#define UPD64031A_3DYCS_COMPOSITE (2 << 2)\n#define UPD64031A_3DYCS_SVIDEO    (3 << 2)\n\n \n#define UPD64031A_COMPOSITE_EXTERNAL (1 << 4)\n\n \n#define UPD64031A_VERTICAL_EXTERNAL (1 << 5)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

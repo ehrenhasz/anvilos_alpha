@@ -1,0 +1,9 @@
+{
+  "module_name": "cputopo.h",
+  "hash_id": "bb887953fe157d0f671d51d2019869aaedd1b619b687ec0cdb54a1c960c3fd8d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/cputopo.h",
+  "human_readable_source": " \n#ifndef __PERF_CPUTOPO_H\n#define __PERF_CPUTOPO_H\n\n#include <linux/types.h>\n\nstruct cpu_topology {\n\t \n\tu32\t  package_cpus_lists;\n\t \n\tu32\t  die_cpus_lists;\n\t \n\tu32\t  core_cpus_lists;\n\t \n\tconst char **package_cpus_list;\n\t \n\tconst char **die_cpus_list;\n\t \n\tconst char **core_cpus_list;\n};\n\nstruct numa_topology_node {\n\tchar\t\t*cpus;\n\tu32\t\t node;\n\tu64\t\t mem_total;\n\tu64\t\t mem_free;\n};\n\nstruct numa_topology {\n\tu32\t\t\t\tnr;\n\tstruct numa_topology_node\tnodes[];\n};\n\nstruct hybrid_topology_node {\n\tchar\t\t*pmu_name;\n\tchar\t\t*cpus;\n};\n\nstruct hybrid_topology {\n\tu32\t\t\t\tnr;\n\tstruct hybrid_topology_node\tnodes[];\n};\n\n \nconst struct cpu_topology *online_topology(void);\n\nstruct cpu_topology *cpu_topology__new(void);\nvoid cpu_topology__delete(struct cpu_topology *tp);\n \nbool cpu_topology__smt_on(const struct cpu_topology *topology);\n \nbool cpu_topology__core_wide(const struct cpu_topology *topology,\n\t\t\t     const char *user_requested_cpu_list);\n\nstruct numa_topology *numa_topology__new(void);\nvoid numa_topology__delete(struct numa_topology *tp);\n\nstruct hybrid_topology *hybrid_topology__new(void);\nvoid hybrid_topology__delete(struct hybrid_topology *tp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "conn.h",
+  "hash_id": "cb510c07c707bdcb44567e2c2885e7c659385b5113e6075fec6b3d8f53534302",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/conn.h",
+  "human_readable_source": " \n#ifndef __NVIF_CONN_H__\n#define __NVIF_CONN_H__\n#include <nvif/object.h>\n#include <nvif/event.h>\nstruct nvif_disp;\n\nstruct nvif_conn {\n\tstruct nvif_object object;\n};\n\nint nvif_conn_ctor(struct nvif_disp *, const char *name, int id, struct nvif_conn *);\nvoid nvif_conn_dtor(struct nvif_conn *);\n\nstatic inline int\nnvif_conn_id(struct nvif_conn *conn)\n{\n\treturn conn->object.handle;\n}\n\n#define NVIF_CONN_HPD_STATUS_UNSUPPORTED 0  \n#define NVIF_CONN_HPD_STATUS_NOT_PRESENT 1\n#define NVIF_CONN_HPD_STATUS_PRESENT     2\nint nvif_conn_hpd_status(struct nvif_conn *);\n\nint nvif_conn_event_ctor(struct nvif_conn *, const char *name, nvif_event_func, u8 types,\n\t\t\t struct nvif_event *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

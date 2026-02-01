@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a91de80b5186ffec8f663e9a42bea1ca80a47ac6361e166c860b481b6779ec29",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/sw/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_INFINIBAND_RDMAVT)\t\t+= rdmavt/\nobj-$(CONFIG_RDMA_RXE)\t\t\t+= rxe/\nobj-$(CONFIG_RDMA_SIW)\t\t\t+= siw/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

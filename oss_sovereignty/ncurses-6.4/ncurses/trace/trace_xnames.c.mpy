@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_xnames.c",
+  "hash_id": "a10ae76f93ea4ad04e134066626695485ee94e3ca1dd1551558480caa834f88b",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/trace/trace_xnames.c",
+  "human_readable_source": " \n\n \n \n\n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: trace_xnames.c,v 1.8 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(void)\n_nc_trace_xnames(TERMTYPE *tp GCC_UNUSED)\n{\n#ifdef TRACE\n#if NCURSES_XNAMES\n    int limit = tp->ext_Booleans + tp->ext_Numbers + tp->ext_Strings;\n\n    if (limit) {\n\tint n;\n\tint begin_num = tp->ext_Booleans;\n\tint begin_str = tp->ext_Booleans + tp->ext_Numbers;\n\n\t_tracef(\"extended names (%s) %d = %d+%d+%d of %d+%d+%d\",\n\t\ttp->term_names,\n\t\tlimit,\n\t\ttp->ext_Booleans, tp->ext_Numbers, tp->ext_Strings,\n\t\ttp->num_Booleans, tp->num_Numbers, tp->num_Strings);\n\n\tfor (n = 0; n < limit; n++) {\n\t    int m;\n\n\t    if ((m = n - begin_str) >= 0) {\n\t\t_tracef(\"[%d] %s = %s\", n,\n\t\t\ttp->ext_Names[n],\n\t\t\t_nc_visbuf(tp->Strings[tp->num_Strings + m - tp->ext_Strings]));\n\t    } else if ((m = n - begin_num) >= 0) {\n\t\t_tracef(\"[%d] %s = %d (num)\", n,\n\t\t\ttp->ext_Names[n],\n\t\t\ttp->Numbers[tp->num_Numbers + m - tp->ext_Numbers]);\n\t    } else {\n\t\t_tracef(\"[%d] %s = %d (bool)\", n,\n\t\t\ttp->ext_Names[n],\n\t\t\ttp->Booleans[tp->num_Booleans + n - tp->ext_Booleans]);\n\t    }\n\t}\n    }\n#endif\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

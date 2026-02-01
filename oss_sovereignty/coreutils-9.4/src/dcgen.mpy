@@ -1,0 +1,9 @@
+{
+  "module_name": "dcgen",
+  "hash_id": "fc3d63cefc465e3c91466776684280f67f8c6e994cbc459445d2e630a02b4540",
+  "original_prompt": "Ingested from coreutils-9.4/src/dcgen",
+  "human_readable_source": "#!/usr/bin/perl -w\n# dcgen -- convert dircolors.hin to dircolors.h.\n\n# Copyright (C) 1996-2023 Free Software Foundation, Inc.\n\n# This program is free software: you can redistribute it and/or modify\n# it under the terms of the GNU General Public License as published by\n# the Free Software Foundation, either version 3 of the License, or\n# (at your option) any later version.\n\n# This program is distributed in the hope that it will be useful,\n# but WITHOUT ANY WARRANTY; without even the implied warranty of\n# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n# GNU General Public License for more details.\n\n# You should have received a copy of the GNU General Public License\n# along with this program.  If not, see <https://www.gnu.org/licenses/>.\n\n# written by Jim Meyering\n\nrequire 5.002;\nuse strict;\n(my $ME = $0) =~ s|.*/||;\n\n# A global destructor to close standard output with error checking.\nsub END\n{\n  defined fileno STDOUT\n    or return;\n  close STDOUT\n    and return;\n  warn \"$ME: closing standard output: $!\\n\";\n  $? ||= 1;\n}\n\nmy @line;\nwhile (<>)\n  {\n    chomp;\n    s/[[:blank:]]+/ /g;\n    $_\n      and push @line, $_;\n  }\n\nmy $indent = '  ';\n\nprint \"static char const G_line[] =\\n{\\n\";\nforeach (@line)\n  {\n    s/./'$&',/g;\n    s/'\\\\'/'\\\\\\\\'/g;\n    s/'''/'\\\\''/g;\n    print \"$indent${_}0,\\n\";\n  }\nprint \"};\\n\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

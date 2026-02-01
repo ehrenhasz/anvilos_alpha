@@ -1,0 +1,9 @@
+{
+  "module_name": "logicvc_layer.h",
+  "hash_id": "ac81c9f5ac113ffd629c2356e4deed4bb4f3bf721e667a22293b0fd59992a975",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/logicvc/logicvc_layer.h",
+  "human_readable_source": " \n \n\n#ifndef _LOGICVC_LAYER_H_\n#define _LOGICVC_LAYER_H_\n\n#include <linux/of.h>\n#include <linux/types.h>\n#include <drm/drm_plane.h>\n\n#define LOGICVC_LAYER_COLORSPACE_RGB\t\t0\n#define LOGICVC_LAYER_COLORSPACE_YUV\t\t1\n\n#define LOGICVC_LAYER_ALPHA_LAYER\t\t0\n#define LOGICVC_LAYER_ALPHA_PIXEL\t\t1\n\nstruct logicvc_layer_buffer_setup {\n\tu8 buffer_sel;\n\tu16 voffset;\n\tu16 hoffset;\n};\n\nstruct logicvc_layer_config {\n\tu32 colorspace;\n\tu32 depth;\n\tu32 alpha_mode;\n\tu32 base_offset;\n\tu32 buffer_offset;\n\tbool primary;\n};\n\nstruct logicvc_layer_formats {\n\tu32 colorspace;\n\tu32 depth;\n\tbool alpha;\n\tuint32_t *formats;\n};\n\nstruct logicvc_layer {\n\tstruct logicvc_layer_config config;\n\tstruct logicvc_layer_formats *formats;\n\tstruct device_node *of_node;\n\n\tstruct drm_plane drm_plane;\n\tstruct list_head list;\n\tu32 index;\n};\n\nint logicvc_layer_buffer_find_setup(struct logicvc_drm *logicvc,\n\t\t\t\t    struct logicvc_layer *layer,\n\t\t\t\t    struct drm_plane_state *state,\n\t\t\t\t    struct logicvc_layer_buffer_setup *setup);\nstruct logicvc_layer *logicvc_layer_get_from_index(struct logicvc_drm *logicvc,\n\t\t\t\t\t\t   u32 index);\nstruct logicvc_layer *logicvc_layer_get_from_type(struct logicvc_drm *logicvc,\n\t\t\t\t\t\t  enum drm_plane_type type);\nstruct logicvc_layer *logicvc_layer_get_primary(struct logicvc_drm *logicvc);\nvoid logicvc_layers_attach_crtc(struct logicvc_drm *logicvc);\nint logicvc_layers_init(struct logicvc_drm *logicvc);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

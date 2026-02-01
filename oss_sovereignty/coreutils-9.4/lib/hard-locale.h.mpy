@@ -1,0 +1,9 @@
+{
+  "module_name": "hard-locale.h",
+  "hash_id": "ed3954d8b618a1f5fcf90ecc11ee16395214608c7f8ae308ee3b5feede416ba3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/hard-locale.h",
+  "human_readable_source": " \nextern bool hard_locale (int category);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

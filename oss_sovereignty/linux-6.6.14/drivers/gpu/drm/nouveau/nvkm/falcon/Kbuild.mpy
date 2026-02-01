@@ -1,0 +1,9 @@
+{
+  "module_name": "Kbuild",
+  "hash_id": "c6f922b5086da1009960de061e586b3e146bf92dc07433224c8fae4e0c3b4ab9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/falcon/Kbuild",
+  "human_readable_source": "# SPDX-License-Identifier: MIT\nnvkm-y += nvkm/falcon/base.o\nnvkm-y += nvkm/falcon/cmdq.o\nnvkm-y += nvkm/falcon/fw.o\nnvkm-y += nvkm/falcon/msgq.o\nnvkm-y += nvkm/falcon/qmgr.o\nnvkm-y += nvkm/falcon/v1.o\n\nnvkm-y += nvkm/falcon/gm200.o\nnvkm-y += nvkm/falcon/gp102.o\nnvkm-y += nvkm/falcon/ga100.o\nnvkm-y += nvkm/falcon/ga102.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gm200.c",
+  "hash_id": "c3af17978e8dbee0defe1eb7f2d314d74e8720f59da34a3e08ff2cf42923a7f6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/fifo/gm200.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <nvif/class.h>\n\nint\ngm200_fifo_runq_nr(struct nvkm_fifo *fifo)\n{\n\treturn nvkm_rd32(fifo->engine.subdev.device, 0x002004) & 0x000000ff;\n}\n\nint\ngm200_fifo_chid_nr(struct nvkm_fifo *fifo)\n{\n\treturn nvkm_rd32(fifo->engine.subdev.device, 0x002008);\n}\n\nstatic const struct nvkm_fifo_func\ngm200_fifo = {\n\t.chid_nr = gm200_fifo_chid_nr,\n\t.chid_ctor = gk110_fifo_chid_ctor,\n\t.runq_nr = gm200_fifo_runq_nr,\n\t.runl_ctor = gk104_fifo_runl_ctor,\n\t.init = gk104_fifo_init,\n\t.init_pbdmas = gk104_fifo_init_pbdmas,\n\t.intr = gk104_fifo_intr,\n\t.intr_mmu_fault_unit = gm107_fifo_intr_mmu_fault_unit,\n\t.intr_ctxsw_timeout = gf100_fifo_intr_ctxsw_timeout,\n\t.mmu_fault = &gm107_fifo_mmu_fault,\n\t.nonstall = &gf100_fifo_nonstall,\n\t.runl = &gm107_runl,\n\t.runq = &gk208_runq,\n\t.engn = &gk104_engn,\n\t.engn_ce = &gk104_engn_ce,\n\t.cgrp = {{ 0, 0,  KEPLER_CHANNEL_GROUP_A  }, &gk110_cgrp },\n\t.chan = {{ 0, 0, MAXWELL_CHANNEL_GPFIFO_A }, &gm107_chan },\n};\n\nint\ngm200_fifo_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t       struct nvkm_fifo **pfifo)\n{\n\treturn nvkm_fifo_new_(&gm200_fifo, device, type, inst, pfifo);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

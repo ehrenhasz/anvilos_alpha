@@ -1,0 +1,9 @@
+{
+  "module_name": "tests-lifecycle.dtsi",
+  "hash_id": "060ab8087071587a8132038d92fff6e58cd3ded06283fcee87a174218eab1ef8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/tests-lifecycle.dtsi",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n\n/ {\n\ttestcase-data {\n\t\trefcount-node {\n\t\t};\n\t};\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

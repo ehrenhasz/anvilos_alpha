@@ -1,0 +1,9 @@
+{
+  "module_name": "dup-safer-flag.c",
+  "hash_id": "05483938c151a98688d1f20275c32cbaa72c066d8e198d96464d96f8462345d8",
+  "original_prompt": "Ingested from coreutils-9.4/lib/dup-safer-flag.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include \"unistd-safer.h\"\n\n#include <fcntl.h>\n#include <unistd.h>\n\n \n\nint\ndup_safer_flag (int fd, int flag)\n{\n  return fcntl (fd, (flag & O_CLOEXEC) ? F_DUPFD_CLOEXEC : F_DUPFD,\n                STDERR_FILENO + 1);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

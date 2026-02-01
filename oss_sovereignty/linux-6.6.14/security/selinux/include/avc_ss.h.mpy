@@ -1,0 +1,9 @@
+{
+  "module_name": "avc_ss.h",
+  "hash_id": "0f249b6d16beebfa7ff8605c6900b5bb882b8e250c84186f1563462866e2ebbc",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/include/avc_ss.h",
+  "human_readable_source": " \n \n#ifndef _SELINUX_AVC_SS_H_\n#define _SELINUX_AVC_SS_H_\n\n#include <linux/types.h>\n\nint avc_ss_reset(u32 seqno);\n\n \nstruct security_class_mapping {\n\tconst char *name;\n\tconst char *perms[sizeof(u32) * 8 + 1];\n};\n\nextern const struct security_class_mapping secclass_map[];\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

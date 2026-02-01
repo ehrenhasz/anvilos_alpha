@@ -1,0 +1,9 @@
+{
+  "module_name": "build-xed.txt",
+  "hash_id": "9536b3a316aa8adc72e862600ea3be83ef0398460e46649d898894fba21b1a02",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/build-xed.txt",
+  "human_readable_source": "\nFor --xed the xed tool is needed. Here is how to install it:\n\n  $ git clone https://github.com/intelxed/mbuild.git mbuild\n  $ git clone https://github.com/intelxed/xed\n  $ cd xed\n  $ ./mfile.py --share\n  $ ./mfile.py examples\n  $ sudo ./mfile.py --prefix=/usr/local install\n  $ sudo ldconfig\n  $ sudo cp obj/examples/xed /usr/local/bin\n\nBasic xed testing:\n\n  $ xed | head -3\n  ERROR: required argument(s) were missing\n  Copyright (C) 2017, Intel Corporation. All rights reserved.\n  XED version: [v10.0-328-g7d62c8c49b7b]\n  $\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

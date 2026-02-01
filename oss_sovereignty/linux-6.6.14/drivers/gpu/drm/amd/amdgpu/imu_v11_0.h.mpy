@@ -1,0 +1,9 @@
+{
+  "module_name": "imu_v11_0.h",
+  "hash_id": "19d811e3f1df47d035efafea55ee8af128936236d0be3d55f5e4d5da4789e25f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/imu_v11_0.h",
+  "human_readable_source": " \n\n#ifndef __IMU_V11_0_H__\n#define __IMU_V11_0_H__\n\nextern const struct amdgpu_imu_funcs gfx_v11_0_imu_funcs;\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

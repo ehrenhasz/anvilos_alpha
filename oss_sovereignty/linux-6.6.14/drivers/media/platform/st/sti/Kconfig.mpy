@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "aa169cbea6c6360bf1be417d50dc305c142713cf2d27c63394abe4f136b773f8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/st/sti/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsource \"drivers/media/platform/st/sti/bdisp/Kconfig\"\nsource \"drivers/media/platform/st/sti/c8sectpfe/Kconfig\"\nsource \"drivers/media/platform/st/sti/delta/Kconfig\"\nsource \"drivers/media/platform/st/sti/hva/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

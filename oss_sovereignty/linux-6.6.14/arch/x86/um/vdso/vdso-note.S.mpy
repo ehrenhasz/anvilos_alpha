@@ -1,0 +1,9 @@
+{
+  "module_name": "vdso-note.S",
+  "hash_id": "7d57d71e0ee93523455384af1bac20479b2a69040e6cc6abee20de7500cd1a8a",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/vdso/vdso-note.S",
+  "human_readable_source": " \n\n#include <linux/uts.h>\n#include <linux/version.h>\n#include <linux/elfnote.h>\n\nELFNOTE_START(Linux, 0, \"a\")\n\t.long LINUX_VERSION_CODE\nELFNOTE_END\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

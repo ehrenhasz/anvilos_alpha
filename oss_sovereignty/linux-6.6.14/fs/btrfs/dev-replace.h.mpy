@@ -1,0 +1,9 @@
+{
+  "module_name": "dev-replace.h",
+  "hash_id": "79a83163cff7b4ee6d4deea49e82651fea22396bf2aca22db5057297873a318b",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/dev-replace.h",
+  "human_readable_source": " \n \n\n#ifndef BTRFS_DEV_REPLACE_H\n#define BTRFS_DEV_REPLACE_H\n\nstruct btrfs_ioctl_dev_replace_args;\nstruct btrfs_fs_info;\nstruct btrfs_trans_handle;\nstruct btrfs_dev_replace;\nstruct btrfs_block_group;\n\nint btrfs_init_dev_replace(struct btrfs_fs_info *fs_info);\nint btrfs_run_dev_replace(struct btrfs_trans_handle *trans);\nint btrfs_dev_replace_by_ioctl(struct btrfs_fs_info *fs_info,\n\t\t\t    struct btrfs_ioctl_dev_replace_args *args);\nvoid btrfs_dev_replace_status(struct btrfs_fs_info *fs_info,\n\t\t\t      struct btrfs_ioctl_dev_replace_args *args);\nint btrfs_dev_replace_cancel(struct btrfs_fs_info *fs_info);\nvoid btrfs_dev_replace_suspend_for_unmount(struct btrfs_fs_info *fs_info);\nint btrfs_resume_dev_replace_async(struct btrfs_fs_info *fs_info);\nint __pure btrfs_dev_replace_is_ongoing(struct btrfs_dev_replace *dev_replace);\nbool btrfs_finish_block_group_to_copy(struct btrfs_device *srcdev,\n\t\t\t\t      struct btrfs_block_group *cache,\n\t\t\t\t      u64 physical);\nvoid btrfs_bio_counter_inc_blocked(struct btrfs_fs_info *fs_info);\nvoid btrfs_bio_counter_sub(struct btrfs_fs_info *fs_info, s64 amount);\n\nstatic inline void btrfs_bio_counter_dec(struct btrfs_fs_info *fs_info)\n{\n\tbtrfs_bio_counter_sub(fs_info, 1);\n}\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

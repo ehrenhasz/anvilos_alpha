@@ -1,0 +1,9 @@
+{
+  "module_name": "boot.h",
+  "hash_id": "adb5098ba09b26087a7b6d2ceca3726da37bf49a4abec0006e7db30aa264a805",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/boot.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_BOOT_H\n#define _ASM_X86_BOOT_H\n\n\n#include <asm/pgtable_types.h>\n#include <uapi/asm/boot.h>\n\n \n#define LOAD_PHYSICAL_ADDR ((CONFIG_PHYSICAL_START \\\n\t\t\t\t+ (CONFIG_PHYSICAL_ALIGN - 1)) \\\n\t\t\t\t& ~(CONFIG_PHYSICAL_ALIGN - 1))\n\n \n#ifdef CONFIG_X86_64\n# define MIN_KERNEL_ALIGN_LG2\tPMD_SHIFT\n#else\n# define MIN_KERNEL_ALIGN_LG2\t(PAGE_SHIFT + THREAD_SIZE_ORDER)\n#endif\n#define MIN_KERNEL_ALIGN\t(_AC(1, UL) << MIN_KERNEL_ALIGN_LG2)\n\n#if (CONFIG_PHYSICAL_ALIGN & (CONFIG_PHYSICAL_ALIGN-1)) || \\\n\t(CONFIG_PHYSICAL_ALIGN < MIN_KERNEL_ALIGN)\n# error \"Invalid value for CONFIG_PHYSICAL_ALIGN\"\n#endif\n\n#if defined(CONFIG_KERNEL_BZIP2)\n# define BOOT_HEAP_SIZE\t\t0x400000\n#elif defined(CONFIG_KERNEL_ZSTD)\n \n# define BOOT_HEAP_SIZE\t\t 0x30000\n#else\n# define BOOT_HEAP_SIZE\t\t 0x10000\n#endif\n\n#ifdef CONFIG_X86_64\n# define BOOT_STACK_SIZE\t0x4000\n\n \n# define BOOT_INIT_PGT_SIZE\t(6*4096)\n\n \n# define BOOT_PGT_SIZE_WARN\t(28*4096)\n# define BOOT_PGT_SIZE\t\t(32*4096)\n\n#else  \n# define BOOT_STACK_SIZE\t0x1000\n#endif\n\n#ifndef __ASSEMBLY__\nextern unsigned int output_len;\nextern const unsigned long kernel_total_size;\n\nunsigned long decompress_kernel(unsigned char *outbuf, unsigned long virt_addr,\n\t\t\t\tvoid (*error)(char *x));\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

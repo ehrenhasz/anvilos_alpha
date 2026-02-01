@@ -1,0 +1,9 @@
+{
+  "module_name": "test_skb_pkt_end.c",
+  "hash_id": "0330af01b6a03048808c323208c9455d109f76e5785ebba50e582c179d12f5f7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/test_skb_pkt_end.c",
+  "human_readable_source": "\n \n#include <test_progs.h>\n#include <network_helpers.h>\n#include \"skb_pkt_end.skel.h\"\n\nstatic int sanity_run(struct bpf_program *prog)\n{\n\tint err, prog_fd;\n\tLIBBPF_OPTS(bpf_test_run_opts, topts,\n\t\t.data_in = &pkt_v4,\n\t\t.data_size_in = sizeof(pkt_v4),\n\t\t.repeat = 1,\n\t);\n\n\tprog_fd = bpf_program__fd(prog);\n\terr = bpf_prog_test_run_opts(prog_fd, &topts);\n\tif (!ASSERT_OK(err, \"test_run\"))\n\t\treturn -1;\n\tif (!ASSERT_EQ(topts.retval, 123, \"test_run retval\"))\n\t\treturn -1;\n\treturn 0;\n}\n\nvoid test_test_skb_pkt_end(void)\n{\n\tstruct skb_pkt_end *skb_pkt_end_skel = NULL;\n\t__u32 duration = 0;\n\tint err;\n\n\tskb_pkt_end_skel = skb_pkt_end__open_and_load();\n\tif (CHECK(!skb_pkt_end_skel, \"skb_pkt_end_skel_load\", \"skb_pkt_end skeleton failed\\n\"))\n\t\tgoto cleanup;\n\n\terr = skb_pkt_end__attach(skb_pkt_end_skel);\n\tif (CHECK(err, \"skb_pkt_end_attach\", \"skb_pkt_end attach failed: %d\\n\", err))\n\t\tgoto cleanup;\n\n\tif (sanity_run(skb_pkt_end_skel->progs.main_prog))\n\t\tgoto cleanup;\n\ncleanup:\n\tskb_pkt_end__destroy(skb_pkt_end_skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

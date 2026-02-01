@@ -1,0 +1,9 @@
+{
+  "module_name": "signalfd.h",
+  "hash_id": "deaf905a9e0bf0efab61e1adf23b2aeba1b0b74eef1b4f57b35d726c1774987c",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/signalfd.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_SIGNALFD_H\n#define _UAPI_LINUX_SIGNALFD_H\n\n#include <linux/types.h>\n \n#include <linux/fcntl.h>\n\n \n#define SFD_CLOEXEC O_CLOEXEC\n#define SFD_NONBLOCK O_NONBLOCK\n\nstruct signalfd_siginfo {\n\t__u32 ssi_signo;\n\t__s32 ssi_errno;\n\t__s32 ssi_code;\n\t__u32 ssi_pid;\n\t__u32 ssi_uid;\n\t__s32 ssi_fd;\n\t__u32 ssi_tid;\n\t__u32 ssi_band;\n\t__u32 ssi_overrun;\n\t__u32 ssi_trapno;\n\t__s32 ssi_status;\n\t__s32 ssi_int;\n\t__u64 ssi_ptr;\n\t__u64 ssi_utime;\n\t__u64 ssi_stime;\n\t__u64 ssi_addr;\n\t__u16 ssi_addr_lsb;\n\t__u16 __pad2;\n\t__s32 ssi_syscall;\n\t__u64 ssi_call_addr;\n\t__u32 ssi_arch;\n\n\t \n\t__u8 __pad[28];\n};\n\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

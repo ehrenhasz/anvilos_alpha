@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "13a294038bb095e33d026cd8b1f419fe3b14ea1e508d90c27935bedd2fe00f8e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/apm/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsource \"drivers/net/ethernet/apm/xgene/Kconfig\"\nsource \"drivers/net/ethernet/apm/xgene-v2/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_gen4_pfvf.h",
+  "hash_id": "82ec98e64b66ab5ce392bb4c0b07b78d0b5ebdd4263f104d6f3e6a862f86546a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/adf_gen4_pfvf.h",
+  "human_readable_source": " \n \n#ifndef ADF_GEN4_PFVF_H\n#define ADF_GEN4_PFVF_H\n\n#include \"adf_accel_devices.h\"\n\n#ifdef CONFIG_PCI_IOV\nvoid adf_gen4_init_pf_pfvf_ops(struct adf_pfvf_ops *pfvf_ops);\n#else\nstatic inline void adf_gen4_init_pf_pfvf_ops(struct adf_pfvf_ops *pfvf_ops)\n{\n\tpfvf_ops->enable_comms = adf_pfvf_comms_disabled;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

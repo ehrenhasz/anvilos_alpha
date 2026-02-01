@@ -1,0 +1,9 @@
+{
+  "module_name": "cxd2880_tnrdmd_mon.h",
+  "hash_id": "96b3a29460ca602e07958d9f56cecacf16d9e99c7d041d662f9eae7acca6d120",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cxd2880/cxd2880_tnrdmd_mon.h",
+  "human_readable_source": " \n \n\n#ifndef CXD2880_TNRDMD_MON_H\n#define CXD2880_TNRDMD_MON_H\n\n#include \"cxd2880_common.h\"\n#include \"cxd2880_tnrdmd.h\"\n\nint cxd2880_tnrdmd_mon_rf_lvl(struct cxd2880_tnrdmd *tnr_dmd,\n\t\t\t      int *rf_lvl_db);\n\nint cxd2880_tnrdmd_mon_rf_lvl_sub(struct cxd2880_tnrdmd *tnr_dmd,\n\t\t\t\t  int *rf_lvl_db);\n\nint cxd2880_tnrdmd_mon_internal_cpu_status(struct cxd2880_tnrdmd\n\t\t\t\t\t   *tnr_dmd, u16 *status);\n\nint cxd2880_tnrdmd_mon_internal_cpu_status_sub(struct\n\t\t\t\t\t       cxd2880_tnrdmd\n\t\t\t\t\t       *tnr_dmd,\n\t\t\t\t\t       u16 *status);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

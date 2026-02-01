@@ -1,0 +1,9 @@
+{
+  "module_name": "tw5864-util.c",
+  "hash_id": "8f31ff04d58a81f4654c323ed29d4d645401bdd2f420493b62b60e486872c81d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/tw5864/tw5864-util.c",
+  "human_readable_source": "\n#include \"tw5864.h\"\n\nvoid tw5864_indir_writeb(struct tw5864_dev *dev, u16 addr, u8 data)\n{\n\tint retries = 30000;\n\n\twhile (tw_readl(TW5864_IND_CTL) & BIT(31) && --retries)\n\t\t;\n\tif (!retries)\n\t\tdev_err(&dev->pci->dev,\n\t\t\t\"tw_indir_writel() retries exhausted before writing\\n\");\n\n\ttw_writel(TW5864_IND_DATA, data);\n\ttw_writel(TW5864_IND_CTL, addr << 2 | TW5864_RW | TW5864_ENABLE);\n}\n\nu8 tw5864_indir_readb(struct tw5864_dev *dev, u16 addr)\n{\n\tint retries = 30000;\n\n\twhile (tw_readl(TW5864_IND_CTL) & BIT(31) && --retries)\n\t\t;\n\tif (!retries)\n\t\tdev_err(&dev->pci->dev,\n\t\t\t\"tw_indir_readl() retries exhausted before reading\\n\");\n\n\ttw_writel(TW5864_IND_CTL, addr << 2 | TW5864_ENABLE);\n\n\tretries = 30000;\n\twhile (tw_readl(TW5864_IND_CTL) & BIT(31) && --retries)\n\t\t;\n\tif (!retries)\n\t\tdev_err(&dev->pci->dev,\n\t\t\t\"tw_indir_readl() retries exhausted at reading\\n\");\n\n\treturn tw_readl(TW5864_IND_DATA);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

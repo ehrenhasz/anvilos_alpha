@@ -1,0 +1,9 @@
+{
+  "module_name": "mbswidth.h",
+  "hash_id": "9e6d7ca337be2ab12650fba3d28eaba0427c54e4e5676c78b43fab388927b4ee",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mbswidth.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <stddef.h>\n\n \n#if HAVE_DECL_MBSWIDTH_IN_WCHAR_H\n# include <wchar.h>\n#endif\n\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n\n \n\n \n#define MBSW_REJECT_INVALID 1\n\n \n#define MBSW_REJECT_UNPRINTABLE 2\n\n\n \n#define mbswidth gnu_mbswidth   \nextern int mbswidth (const char *string, int flags);\n\n \nextern int mbsnwidth (const char *buf, size_t nbytes, int flags);\n\n\n#ifdef __cplusplus\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

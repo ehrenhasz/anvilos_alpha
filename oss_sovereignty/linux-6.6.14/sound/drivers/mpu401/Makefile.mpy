@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "02a67667d828faf21e3ef3463932d7d97826f20cb6736de59bae5cc6c8e00d05",
+  "original_prompt": "Ingested from linux-6.6.14/sound/drivers/mpu401/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-mpu401-objs := mpu401.o\nsnd-mpu401-uart-objs := mpu401_uart.o\n\nobj-$(CONFIG_SND_MPU401_UART) += snd-mpu401-uart.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_MPU401) += snd-mpu401.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

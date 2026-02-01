@@ -1,0 +1,9 @@
+{
+  "module_name": "renesas-rpc-if.h",
+  "hash_id": "e7fc1b7c2b2dad1e1f8f8dade5ee98d37be6694a4c11557e29ec668d7e8b4520",
+  "original_prompt": "Ingested from linux-6.6.14/include/memory/renesas-rpc-if.h",
+  "human_readable_source": " \n \n\n#ifndef __RENESAS_RPC_IF_H\n#define __RENESAS_RPC_IF_H\n\n#include <linux/pm_runtime.h>\n#include <linux/types.h>\n\nenum rpcif_data_dir {\n\tRPCIF_NO_DATA,\n\tRPCIF_DATA_IN,\n\tRPCIF_DATA_OUT,\n};\n\nstruct rpcif_op {\n\tstruct {\n\t\tu8 buswidth;\n\t\tu8 opcode;\n\t\tbool ddr;\n\t} cmd, ocmd;\n\n\tstruct {\n\t\tu8 nbytes;\n\t\tu8 buswidth;\n\t\tbool ddr;\n\t\tu64 val;\n\t} addr;\n\n\tstruct {\n\t\tu8 ncycles;\n\t\tu8 buswidth;\n\t} dummy;\n\n\tstruct {\n\t\tu8 nbytes;\n\t\tu8 buswidth;\n\t\tbool ddr;\n\t\tu32 val;\n\t} option;\n\n\tstruct {\n\t\tu8 buswidth;\n\t\tunsigned int nbytes;\n\t\tenum rpcif_data_dir dir;\n\t\tbool ddr;\n\t\tunion {\n\t\t\tvoid *in;\n\t\t\tconst void *out;\n\t\t} buf;\n\t} data;\n};\n\nenum rpcif_type {\n\tRPCIF_RCAR_GEN3,\n\tRPCIF_RCAR_GEN4,\n\tRPCIF_RZ_G2L,\n};\n\nstruct rpcif {\n\tstruct device *dev;\n\tvoid __iomem *dirmap;\n\tsize_t size;\n};\n\nint rpcif_sw_init(struct rpcif *rpc, struct device *dev);\nint rpcif_hw_init(struct device *dev, bool hyperflash);\nvoid rpcif_prepare(struct device *dev, const struct rpcif_op *op, u64 *offs,\n\t\t   size_t *len);\nint rpcif_manual_xfer(struct device *dev);\nssize_t rpcif_dirmap_read(struct device *dev, u64 offs, size_t len, void *buf);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

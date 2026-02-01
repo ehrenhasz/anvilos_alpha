@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__extmod__vfs_fat.c.qstr",
+  "hash_id": "718f34ab542327b1af31786a64c1d90e0379cbd47fe8718ffa843e43ca8b44d6",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__extmod__vfs_fat.c.qstr",
+  "human_readable_source": "Q(mkfs)\nQ(open)\nQ(ilistdir)\nQ(mkdir)\nQ(rmdir)\nQ(chdir)\nQ(getcwd)\nQ(remove)\nQ(rename)\nQ(stat)\nQ(statvfs)\nQ(mount)\nQ(umount)\nQ(VfsFat)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

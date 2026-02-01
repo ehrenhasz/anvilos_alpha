@@ -1,0 +1,9 @@
+{
+  "module_name": "aead.h",
+  "hash_id": "b2a2569df9a9e9ebc171e090a6e9457d3b16e3f3558409d973eb4c2eacdf35bb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/qce/aead.h",
+  "human_readable_source": " \n \n\n#ifndef _AEAD_H_\n#define _AEAD_H_\n\n#include \"common.h\"\n#include \"core.h\"\n\n#define QCE_MAX_KEY_SIZE\t\t64\n#define QCE_CCM4309_SALT_SIZE\t\t3\n\nstruct qce_aead_ctx {\n\tu8 enc_key[QCE_MAX_KEY_SIZE];\n\tu8 auth_key[QCE_MAX_KEY_SIZE];\n\tu8 ccm4309_salt[QCE_CCM4309_SALT_SIZE];\n\tunsigned int enc_keylen;\n\tunsigned int auth_keylen;\n\tunsigned int authsize;\n\tbool need_fallback;\n\tstruct crypto_aead *fallback;\n};\n\nstruct qce_aead_reqctx {\n\tunsigned long flags;\n\tu8 *iv;\n\tunsigned int ivsize;\n\tint src_nents;\n\tint dst_nents;\n\tstruct scatterlist result_sg;\n\tstruct scatterlist adata_sg;\n\tstruct sg_table dst_tbl;\n\tstruct sg_table src_tbl;\n\tstruct scatterlist *dst_sg;\n\tstruct scatterlist *src_sg;\n\tunsigned int cryptlen;\n\tunsigned int assoclen;\n\tunsigned char *adata;\n\tu8 ccm_nonce[QCE_MAX_NONCE];\n\tu8 ccmresult_buf[QCE_BAM_BURST_SIZE];\n\tu8 ccm_rfc4309_iv[QCE_MAX_IV_SIZE];\n\tstruct aead_request fallback_req;\n};\n\nstatic inline struct qce_alg_template *to_aead_tmpl(struct crypto_aead *tfm)\n{\n\tstruct aead_alg *alg = crypto_aead_alg(tfm);\n\n\treturn container_of(alg, struct qce_alg_template, alg.aead);\n}\n\nextern const struct qce_algo_ops aead_ops;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d59af419013daecd3af953240da3309aec6ad937d8cb5564a490ca1f9cb5becd",
+  "original_prompt": "Ingested from linux-6.6.14/samples/hw_breakpoint/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_SAMPLE_HW_BREAKPOINT) += data_breakpoint.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

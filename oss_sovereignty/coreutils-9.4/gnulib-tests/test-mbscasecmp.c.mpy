@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbscasecmp.c",
+  "hash_id": "99275bd3a4cf246360dc4756dd3a8e33ba4fe0a8877166b82e75017a5abd5684",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbscasecmp.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <string.h>\n\n#include <locale.h>\n\n#include \"macros.h\"\n\nint\nmain ()\n{\n   \n  if (setlocale (LC_ALL, \"\") == NULL)\n    return 1;\n\n  ASSERT (mbscasecmp (\"paragraph\", \"Paragraph\") == 0);\n\n  ASSERT (mbscasecmp (\"paragrapH\", \"parAgRaph\") == 0);\n\n  ASSERT (mbscasecmp (\"paragraph\", \"paraLyzed\") < 0);\n  ASSERT (mbscasecmp (\"paraLyzed\", \"paragraph\") > 0);\n\n  ASSERT (mbscasecmp (\"para\", \"paragraph\") < 0);\n  ASSERT (mbscasecmp (\"paragraph\", \"para\") > 0);\n\n   \n\n  ASSERT (mbscasecmp (\"\\303\\266zg\\303\\274r\", \"\\303\\226ZG\\303\\234R\") == 0);  \n  ASSERT (mbscasecmp (\"\\303\\226ZG\\303\\234R\", \"\\303\\266zg\\303\\274r\") == 0);  \n\n   \n  ASSERT (mbscasecmp (\"turkish\", \"TURK\\304\\260SH\") == 0);\n  ASSERT (mbscasecmp (\"TURK\\304\\260SH\", \"turkish\") == 0);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

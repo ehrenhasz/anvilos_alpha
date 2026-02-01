@@ -1,0 +1,9 @@
+{
+  "module_name": "cp-hash.h",
+  "hash_id": "8821518b7390a007625d5edf79a7cf5e8cdebd7579049aa94a35fb708dd44b5e",
+  "original_prompt": "Ingested from coreutils-9.4/src/cp-hash.h",
+  "human_readable_source": "void hash_init (void);\nvoid forget_created (ino_t ino, dev_t dev);\nchar *remember_copied (char const *node, ino_t ino, dev_t dev)\n  _GL_ATTRIBUTE_NONNULL ();\nchar *src_to_dest_lookup (ino_t ino, dev_t dev);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

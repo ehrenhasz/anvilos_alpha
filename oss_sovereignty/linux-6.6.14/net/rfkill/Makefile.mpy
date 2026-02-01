@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5d385c709621a86d13a021506062d4922f20f23f81e15662874d718a1e09afe9",
+  "original_prompt": "Ingested from linux-6.6.14/net/rfkill/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the RF switch subsystem.\n#\n\nrfkill-y\t\t\t+= core.o\nrfkill-$(CONFIG_RFKILL_INPUT)\t+= input.o\nobj-$(CONFIG_RFKILL)\t\t+= rfkill.o\nobj-$(CONFIG_RFKILL_GPIO)\t+= rfkill-gpio.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

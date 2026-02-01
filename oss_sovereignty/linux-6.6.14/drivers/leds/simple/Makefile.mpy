@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6fdbfde853837614373a0e6815971534ef910eb4075bdb2bf4104962d310a2b8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/simple/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_LEDS_SIEMENS_SIMATIC_IPC)\t\t\t+= simatic-ipc-leds.o\nobj-$(CONFIG_LEDS_SIEMENS_SIMATIC_IPC_APOLLOLAKE)\t+= simatic-ipc-leds-gpio-core.o simatic-ipc-leds-gpio-apollolake.o\nobj-$(CONFIG_LEDS_SIEMENS_SIMATIC_IPC_F7188X)\t\t+= simatic-ipc-leds-gpio-core.o simatic-ipc-leds-gpio-f7188x.o\nobj-$(CONFIG_LEDS_SIEMENS_SIMATIC_IPC_ELKHARTLAKE)\t+= simatic-ipc-leds-gpio-core.o simatic-ipc-leds-gpio-elkhartlake.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

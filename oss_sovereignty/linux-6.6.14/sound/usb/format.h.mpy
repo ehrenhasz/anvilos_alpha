@@ -1,0 +1,9 @@
+{
+  "module_name": "format.h",
+  "hash_id": "9617baffa818d056e640d1e3231b5ae99e4acb878b30286846333972833ddad3",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/format.h",
+  "human_readable_source": " \n#ifndef __USBAUDIO_FORMAT_H\n#define __USBAUDIO_FORMAT_H\n\nint snd_usb_parse_audio_format(struct snd_usb_audio *chip,\n\t\t\t       struct audioformat *fp, u64 format,\n\t\t\t       struct uac_format_type_i_continuous_descriptor *fmt,\n\t\t\t       int stream);\n\nint snd_usb_parse_audio_format_v3(struct snd_usb_audio *chip,\n\t\t\t       struct audioformat *fp,\n\t\t\t       struct uac3_as_header_descriptor *as,\n\t\t\t       int stream);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

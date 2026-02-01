@@ -1,0 +1,9 @@
+{
+  "module_name": "filemode.m4",
+  "hash_id": "06e9392decf7938f1a49d4d9ab9de48c64c051c6a0158567d023f55712141561",
+  "original_prompt": "Ingested from coreutils-9.4/m4/filemode.m4",
+  "human_readable_source": "# filemode.m4 serial 9\ndnl Copyright (C) 2002, 2005-2006, 2009-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FILEMODE],\n[\n  AC_CHECK_DECLS_ONCE([strmode])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

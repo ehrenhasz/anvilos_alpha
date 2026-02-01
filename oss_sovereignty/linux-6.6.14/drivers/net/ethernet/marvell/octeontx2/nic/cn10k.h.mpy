@@ -1,0 +1,9 @@
+{
+  "module_name": "cn10k.h",
+  "hash_id": "5dbbaeb8248ccb9e7fc77c39bee0b36174934e0fb1116d3558221362619f80e6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.h",
+  "human_readable_source": " \n \n\n#ifndef CN10K_H\n#define CN10K_H\n\n#include \"otx2_common.h\"\n\nstatic inline int mtu_to_dwrr_weight(struct otx2_nic *pfvf, int mtu)\n{\n\tu32 weight;\n\n\t \n\tweight = mtu / pfvf->hw.dwrr_mtu;\n\tif (mtu % pfvf->hw.dwrr_mtu)\n\t\tweight += 1;\n\n\treturn weight;\n}\n\nint cn10k_refill_pool_ptrs(void *dev, struct otx2_cq_queue *cq);\nvoid cn10k_sqe_flush(void *dev, struct otx2_snd_queue *sq, int size, int qidx);\nint cn10k_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura);\nint cn10k_lmtst_init(struct otx2_nic *pfvf);\nint cn10k_free_all_ipolicers(struct otx2_nic *pfvf);\nint cn10k_alloc_matchall_ipolicer(struct otx2_nic *pfvf);\nint cn10k_free_matchall_ipolicer(struct otx2_nic *pfvf);\nint cn10k_set_matchall_ipolicer_rate(struct otx2_nic *pfvf,\n\t\t\t\t     u32 burst, u64 rate);\nint cn10k_map_unmap_rq_policer(struct otx2_nic *pfvf, int rq_idx,\n\t\t\t       u16 policer, bool map);\nint cn10k_alloc_leaf_profile(struct otx2_nic *pfvf, u16 *leaf);\nint cn10k_set_ipolicer_rate(struct otx2_nic *pfvf, u16 profile,\n\t\t\t    u32 burst, u64 rate, bool pps);\nint cn10k_free_leaf_profile(struct otx2_nic *pfvf, u16 leaf);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf-prologue.h",
+  "hash_id": "44ce093892fa6c52a60f0d13717bea987684b0f69c558e721ef23c85928046c8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/bpf-prologue.h",
+  "human_readable_source": " \n \n#ifndef __BPF_PROLOGUE_H\n#define __BPF_PROLOGUE_H\n\nstruct probe_trace_arg;\nstruct bpf_insn;\n\n#define BPF_PROLOGUE_MAX_ARGS 3\n#define BPF_PROLOGUE_START_ARG_REG BPF_REG_3\n#define BPF_PROLOGUE_FETCH_RESULT_REG BPF_REG_2\n\n#ifdef HAVE_BPF_PROLOGUE\nint bpf__gen_prologue(struct probe_trace_arg *args, int nargs,\n\t\t      struct bpf_insn *new_prog, size_t *new_cnt,\n\t\t      size_t cnt_space);\n#else\n#include <linux/compiler.h>\n#include <errno.h>\n\nstatic inline int\nbpf__gen_prologue(struct probe_trace_arg *args __maybe_unused,\n\t\t  int nargs __maybe_unused,\n\t\t  struct bpf_insn *new_prog __maybe_unused,\n\t\t  size_t *new_cnt,\n\t\t  size_t cnt_space __maybe_unused)\n{\n\tif (!new_cnt)\n\t\treturn -EINVAL;\n\t*new_cnt = 0;\n\treturn -ENOTSUP;\n}\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

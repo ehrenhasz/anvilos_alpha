@@ -1,0 +1,9 @@
+{
+  "module_name": "video-fast-forward.rst",
+  "hash_id": "278bc511f70f69abdff5e940dd21bfed0cf7cae8f3d8a86f435926ac1cc05d7e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/video-fast-forward.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n.. c:namespace:: DTV.video\n\n.. _VIDEO_FAST_FORWARD:\n\n==================\nVIDEO_FAST_FORWARD\n==================\n\nName\n----\n\nVIDEO_FAST_FORWARD\n\n.. attention:: This ioctl is deprecated.\n\nSynopsis\n--------\n\n.. c:macro:: VIDEO_FAST_FORWARD\n\n``int ioctl(fd, VIDEO_FAST_FORWARD, int nFrames)``\n\nArguments\n---------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -  .. row 1\n\n       -  int fd\n\n       -  File descriptor returned by a previous call to open().\n\n    -  .. row 2\n\n       -  int request\n\n       -  Equals VIDEO_FAST_FORWARD for this command.\n\n    -  .. row 3\n\n       -  int nFrames\n\n       -  The number of frames to skip.\n\nDescription\n-----------\n\nThis ioctl call asks the Video Device to skip decoding of N number of\nI-frames. This call can only be used if VIDEO_SOURCE_MEMORY is\nselected.\n\nReturn Value\n------------\n\nOn success 0 is returned, on error -1 and the ``errno`` variable is set\nappropriately. The generic error codes are described at the\n:ref:`Generic Error Codes <gen-errors>` chapter.\n\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -  .. row 1\n\n       -  ``EPERM``\n\n       -  Mode VIDEO_SOURCE_MEMORY not selected.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

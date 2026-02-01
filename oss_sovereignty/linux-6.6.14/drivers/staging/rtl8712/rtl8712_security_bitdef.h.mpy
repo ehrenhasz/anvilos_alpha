@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_security_bitdef.h",
+  "hash_id": "9ded4b992e0b2b349c85f48612c2733e4035103bf6e56abed285a85c6f30801f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_security_bitdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_SECURITY_BITDEF_H__\n#define __RTL8712_SECURITY_BITDEF_H__\n\n \n#define\t_SECCAM_POLLING\t\t\t\tBIT(31)\n#define\t_SECCAM_CLR\t\t\t\t\tBIT(30)\n#define\t_SECCAM_WE\t\t\t\t\tBIT(16)\n#define\t_SECCAM_ADR_MSK\t\t\t\t0x000000FF\n#define\t_SECCAM_ADR_SHT\t\t\t\t0\n\n \n#define\t_SECCAM_INFO\t\t\t\tBIT(31)\n#define\t_SEC_KEYFOUND\t\t\t\tBIT(30)\n#define\t_SEC_CONFIG_MSK\t\t\t\t0x3F000000\n#define\t_SEC_CONFIG_SHT\t\t\t\t24\n#define\t_SEC_KEYCONTENT_MSK\t\t\t0x00FFFFFF\n#define\t_SEC_KEYCONTENT_SHT\t\t\t0\n\n \n#define\t_NOSKMC\t\t\t\t\t\tBIT(5)\n#define\t_SKBYA2\t\t\t\t\t\tBIT(4)\n#define\t_RXDEC\t\t\t\t\t\tBIT(3)\n#define\t_TXENC\t\t\t\t\t\tBIT(2)\n#define\t_RXUSEDK\t\t\t\t\tBIT(1)\n#define\t_TXUSEDK\t\t\t\t\tBIT(0)\n\n#endif\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

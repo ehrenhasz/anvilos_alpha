@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "bc08d22d8c8a1d14b5228eff198aa7f49d90f451e89ff2e4e75d96ac0c9264b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/chrome/wilco_ec/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig WILCO_EC\n\ttristate \"ChromeOS Wilco Embedded Controller\"\n\tdepends on X86 || COMPILE_TEST\n\tdepends on ACPI && CROS_EC_LPC && LEDS_CLASS\n\thelp\n\t  If you say Y here, you get support for talking to the ChromeOS\n\t  Wilco EC over an eSPI bus. This uses a simple byte-level protocol\n\t  with a checksum.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called wilco_ec.\n\nconfig WILCO_EC_DEBUGFS\n\ttristate \"Enable raw access to EC via debugfs\"\n\tdepends on WILCO_EC\n\thelp\n\t  If you say Y here, you get support for sending raw commands to\n\t  the Wilco EC via debugfs.  These commands do not do any byte\n\t  manipulation and allow for testing arbitrary commands.  This\n\t  interface is intended for debug only and will not be present\n\t  on production devices.\n\nconfig WILCO_EC_EVENTS\n\ttristate \"Enable event forwarding from EC to userspace\"\n\tdepends on WILCO_EC\n\thelp\n\t  If you say Y here, you get support for the EC to send events\n\t  (such as power state changes) to userspace. The EC sends the events\n\t  over ACPI, and a driver queues up the events to be read by a\n\t  userspace daemon from /dev/wilco_event using read() and poll().\n\nconfig WILCO_EC_TELEMETRY\n\ttristate \"Enable querying telemetry data from EC\"\n\tdepends on WILCO_EC\n\thelp\n\t  If you say Y here, you get support to query EC telemetry data from\n\t  /dev/wilco_telem0 using write() and then read().\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

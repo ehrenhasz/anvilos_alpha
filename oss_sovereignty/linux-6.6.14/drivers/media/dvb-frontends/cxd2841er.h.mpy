@@ -1,0 +1,9 @@
+{
+  "module_name": "cxd2841er.h",
+  "hash_id": "c95aa3fb80c2c14eccd750beacd47c62ee883d8f9621f27e0660ea3d54b07dc2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/cxd2841er.h",
+  "human_readable_source": " \n \n\n#ifndef CXD2841ER_H\n#define CXD2841ER_H\n\n#include <linux/dvb/frontend.h>\n\n#define CXD2841ER_USE_GATECTRL\t1\t \n#define CXD2841ER_AUTO_IFHZ\t2\t \n#define CXD2841ER_TS_SERIAL\t4\t \n#define CXD2841ER_ASCOT\t\t8\t \n#define CXD2841ER_EARLY_TUNE\t16\t \n#define CXD2841ER_NO_WAIT_LOCK\t32\t \n#define CXD2841ER_NO_AGCNEG\t64\t \n#define CXD2841ER_TSBITS\t128\t \n\nenum cxd2841er_xtal {\n\tSONY_XTAL_20500,  \n\tSONY_XTAL_24000,  \n\tSONY_XTAL_41000  \n};\n\nstruct cxd2841er_config {\n\tu8\ti2c_addr;\n\tenum cxd2841er_xtal\txtal;\n\tu32\tflags;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_CXD2841ER)\nextern struct dvb_frontend *cxd2841er_attach_s(struct cxd2841er_config *cfg,\n\t\t\t\t\t       struct i2c_adapter *i2c);\n\nextern struct dvb_frontend *cxd2841er_attach_t_c(struct cxd2841er_config *cfg,\n\t\t\t\t\t       struct i2c_adapter *i2c);\n#else\nstatic inline struct dvb_frontend *cxd2841er_attach_s(\n\t\t\t\t\tstruct cxd2841er_config *cfg,\n\t\t\t\t\tstruct i2c_adapter *i2c)\n{\n\tpr_warn(\"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n\nstatic inline struct dvb_frontend *cxd2841er_attach_t_c(\n\t\tstruct cxd2841er_config *cfg, struct i2c_adapter *i2c)\n{\n\tpr_warn(\"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

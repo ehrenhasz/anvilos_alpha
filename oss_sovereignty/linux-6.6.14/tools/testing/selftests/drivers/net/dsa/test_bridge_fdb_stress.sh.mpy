@@ -1,0 +1,9 @@
+{
+  "module_name": "test_bridge_fdb_stress.sh",
+  "hash_id": "fb162370a69c392879f85aad5da09185daf46768a4f542205ca2022545612efa",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/drivers/net/dsa/test_bridge_fdb_stress.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\n# Bridge FDB entries can be offloaded to DSA switches without holding the\n# rtnl_mutex. Traditionally this mutex has conferred drivers implicit\n# serialization, which means their code paths are not well tested in the\n# presence of concurrency.\n# This test creates a background task that stresses the FDB by adding and\n# deleting an entry many times in a row without the rtnl_mutex held.\n# It then tests the driver resistance to concurrency by calling .ndo_fdb_dump\n# (with rtnl_mutex held) from a foreground task.\n# Since either the FDB dump or the additions/removals can fail, but the\n# additions and removals are performed in deferred as opposed to process\n# context, we cannot simply check for user space error codes.\n\nWAIT_TIME=1\nNUM_NETIFS=1\nREQUIRE_JQ=\"no\"\nREQUIRE_MZ=\"no\"\nNETIF_CREATE=\"no\"\nlib_dir=$(dirname \"$0\")\nsource \"$lib_dir\"/lib.sh\n\ncleanup() {\n\techo \"Cleaning up\"\n\tkill $pid && wait $pid &> /dev/null\n\tip link del br0\n\techo \"Please check kernel log for errors\"\n}\ntrap 'cleanup' EXIT\n\neth=${NETIFS[p1]}\n\nip link del br0 2>&1 >/dev/null || :\nip link add br0 type bridge && ip link set $eth master br0\n\n(while :; do\n\tbridge fdb add 00:01:02:03:04:05 dev $eth master static\n\tbridge fdb del 00:01:02:03:04:05 dev $eth master static\ndone) &\npid=$!\n\nfor i in $(seq 1 50); do\n\tbridge fdb show > /dev/null\n\tsleep 3\n\techo \"$((${i} * 2))% complete...\"\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "at91.h",
+  "hash_id": "8e85d2c03cb83b808a40c7b8b364633d3993c68bbb3e2b52fd61a6d42a95284c",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/at91.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_CLK_AT91_H\n#define _DT_BINDINGS_CLK_AT91_H\n\n#define PMC_TYPE_CORE\t\t0\n#define PMC_TYPE_SYSTEM\t\t1\n#define PMC_TYPE_PERIPHERAL\t2\n#define PMC_TYPE_GCK\t\t3\n#define PMC_TYPE_PROGRAMMABLE\t4\n\n#define PMC_SLOW\t\t0\n#define PMC_MCK\t\t\t1\n#define PMC_UTMI\t\t2\n#define PMC_MAIN\t\t3\n#define PMC_MCK2\t\t4\n#define PMC_I2S0_MUX\t\t5\n#define PMC_I2S1_MUX\t\t6\n#define PMC_PLLACK\t\t7\n#define PMC_PLLBCK\t\t8\n#define PMC_AUDIOPLLCK\t\t9\n#define PMC_AUDIOPINCK\t\t10\n\n \n#define PMC_CPUPLL\t\t(PMC_MAIN + 1)\n#define PMC_SYSPLL\t\t(PMC_MAIN + 2)\n#define PMC_DDRPLL\t\t(PMC_MAIN + 3)\n#define PMC_IMGPLL\t\t(PMC_MAIN + 4)\n#define PMC_BAUDPLL\t\t(PMC_MAIN + 5)\n#define PMC_AUDIOPMCPLL\t\t(PMC_MAIN + 6)\n#define PMC_AUDIOIOPLL\t\t(PMC_MAIN + 7)\n#define PMC_ETHPLL\t\t(PMC_MAIN + 8)\n#define PMC_CPU\t\t\t(PMC_MAIN + 9)\n#define PMC_MCK1\t\t(PMC_MAIN + 10)\n\n#ifndef AT91_PMC_MOSCS\n#define AT91_PMC_MOSCS\t\t0\t\t \n#define AT91_PMC_LOCKA\t\t1\t\t \n#define AT91_PMC_LOCKB\t\t2\t\t \n#define AT91_PMC_MCKRDY\t\t3\t\t \n#define AT91_PMC_LOCKU\t\t6\t\t \n#define AT91_PMC_PCKRDY(id)\t(8 + (id))\t \n#define AT91_PMC_MOSCSELS\t16\t\t \n#define AT91_PMC_MOSCRCS\t17\t\t \n#define AT91_PMC_CFDEV\t\t18\t\t \n#define AT91_PMC_GCKRDY\t\t24\t\t \n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

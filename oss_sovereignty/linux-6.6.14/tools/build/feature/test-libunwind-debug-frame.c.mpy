@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libunwind-debug-frame.c",
+  "hash_id": "136c751c9e8f9ae2269c9ad7763089a4b6f6e4b0406675508036f97bf640bc2a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libunwind-debug-frame.c",
+  "human_readable_source": "\n#include <libunwind.h>\n#include <stdlib.h>\n\nextern int\nUNW_OBJ(dwarf_find_debug_frame) (int found, unw_dyn_info_t *di_debug,\n\t\t\t\t unw_word_t ip, unw_word_t segbase,\n\t\t\t\t const char *obj_name, unw_word_t start,\n\t\t\t\t unw_word_t end);\n\n#define dwarf_find_debug_frame UNW_OBJ(dwarf_find_debug_frame)\n\nint main(void)\n{\n\tdwarf_find_debug_frame(0, NULL, 0, 0, NULL, 0, 0);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

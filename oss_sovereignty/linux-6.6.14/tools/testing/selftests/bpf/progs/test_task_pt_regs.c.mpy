@@ -1,0 +1,9 @@
+{
+  "module_name": "test_task_pt_regs.c",
+  "hash_id": "0bf5ee1118046adf6b49de3cd4652942b3c8cbfeaef0f626e410f30410922928",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_task_pt_regs.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\n#define PT_REGS_SIZE sizeof(struct pt_regs)\n\n \nchar current_regs[PT_REGS_SIZE] = {};\nchar ctx_regs[PT_REGS_SIZE] = {};\nint uprobe_res = 0;\n\nSEC(\"uprobe\")\nint handle_uprobe(struct pt_regs *ctx)\n{\n\tstruct task_struct *current;\n\tstruct pt_regs *regs;\n\n\tcurrent = bpf_get_current_task_btf();\n\tregs = (struct pt_regs *) bpf_task_pt_regs(current);\n\tif (bpf_probe_read_kernel(current_regs, PT_REGS_SIZE, regs))\n\t\treturn 0;\n\tif (bpf_probe_read_kernel(ctx_regs, PT_REGS_SIZE, ctx))\n\t\treturn 0;\n\n\t \n\tuprobe_res = 1;\n\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

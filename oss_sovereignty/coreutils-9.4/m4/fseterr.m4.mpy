@@ -1,0 +1,9 @@
+{
+  "module_name": "fseterr.m4",
+  "hash_id": "213bb6f134a64b17db29e2f511a553b8a9f40f8fd553af7ac0cd34d7682a3732",
+  "original_prompt": "Ingested from coreutils-9.4/m4/fseterr.m4",
+  "human_readable_source": "# fseterr.m4 serial 2\ndnl Copyright (C) 2012-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_FSETERR],\n[\n  gl_CHECK_FUNCS_ANDROID([__fseterr],\n    [[#include <stdio.h>\n      #include <stdio_ext.h>\n    ]])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

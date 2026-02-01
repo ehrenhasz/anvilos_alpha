@@ -1,0 +1,9 @@
+{
+  "module_name": "mount.h",
+  "hash_id": "7f2c9482ff207481e44ff38bdf2bdf1e301dc317fd3c6944cc2a80ba060ff9ce",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/os/linux/sys/mount.h",
+  "human_readable_source": " \n \n\n#include_next <sys/mount.h>\n\n#ifndef _LIBSPL_SYS_MOUNT_H\n#define\t_LIBSPL_SYS_MOUNT_H\n\n#include <assert.h>\n#include <string.h>\n#include <stdlib.h>\n\n \n#if !defined(BLKGETSIZE64)\n#define\tBLKGETSIZE64\t\t_IOR(0x12, 114, size_t)\n#endif\n\n \n#if !defined(MS_DIRSYNC)\n#define\tMS_DIRSYNC\t\tS_WRITE\n#endif\n\n \n#if !defined(MS_POSIXACL)\n#define\tMS_POSIXACL\t\t(1<<16)\n#endif\n\n#define\tMS_USERS\t(MS_NOEXEC|MS_NOSUID|MS_NODEV)\n#define\tMS_OWNER\t(MS_NOSUID|MS_NODEV)\n#define\tMS_GROUP\t(MS_NOSUID|MS_NODEV)\n#define\tMS_COMMENT\t0\n\n \n#ifdef MNT_FORCE\n#define\tMS_FORCE\tMNT_FORCE\n#else\n#define\tMS_FORCE\t0x00000001\n#endif  \n\n#ifdef MNT_DETACH\n#define\tMS_DETACH\tMNT_DETACH\n#else\n#define\tMS_DETACH\t0x00000002\n#endif  \n\n \n#define\tMS_OVERLAY\t0x00000004\n\n \n#define\tMS_CRYPT\t0x00000008\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

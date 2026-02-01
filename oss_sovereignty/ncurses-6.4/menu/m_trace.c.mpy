@@ -1,0 +1,9 @@
+{
+  "module_name": "m_trace.c",
+  "hash_id": "2e34d508df398b86d73a23c941cd4ab6f6088c768fa5af0031fd3493d7e5b753",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_trace.c",
+  "human_readable_source": " \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_trace.c,v 1.9 2020/12/12 00:38:14 tom Exp $\")\n\nMENU_EXPORT(ITEM *)\n_nc_retrace_item(ITEM *code)\n{\n  T((T_RETURN(\"%p\"), (void *)code));\n  return code;\n}\n\nMENU_EXPORT(ITEM **)\n_nc_retrace_item_ptr(ITEM **code)\n{\n  T((T_RETURN(\"%p\"), (void *)code));\n  return code;\n}\n\nMENU_EXPORT(Item_Options)\n_nc_retrace_item_opts(Item_Options code)\n{\n  T((T_RETURN(\"%d\"), code));\n  return code;\n}\n\nMENU_EXPORT(MENU *)\n_nc_retrace_menu(MENU *code)\n{\n  T((T_RETURN(\"%p\"), (void *)code));\n  return code;\n}\n\nMENU_EXPORT(Menu_Hook)\n_nc_retrace_menu_hook(Menu_Hook code)\n{\n  TR_FUNC_BFR(1);\n  T((T_RETURN(\"%s\"), TR_FUNC_ARG(0, code)));\n  return code;\n}\n\nMENU_EXPORT(Menu_Options)\n_nc_retrace_menu_opts(Menu_Options code)\n{\n  T((T_RETURN(\"%d\"), code));\n  return code;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "iopoll.h",
+  "hash_id": "b6301e57c9dd0e7d7d46bdd9f4eff54b5862e0ac1cfa3943d31721acc8f2f6b0",
+  "original_prompt": "Ingested from coreutils-9.4/src/iopoll.h",
+  "human_readable_source": "#define IOPOLL_BROKEN_OUTPUT -2\n#define IOPOLL_ERROR         -3\n\nint iopoll (int fdin, int fdout, bool block);\nbool iopoll_input_ok (int fdin);\nbool iopoll_output_ok (int fdout);\n\nbool fclose_wait (FILE *f);\nbool fwrite_wait (char const *buf, ssize_t size, FILE *f);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

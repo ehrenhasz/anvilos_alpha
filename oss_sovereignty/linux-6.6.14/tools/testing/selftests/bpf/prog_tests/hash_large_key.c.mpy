@@ -1,0 +1,9 @@
+{
+  "module_name": "hash_large_key.c",
+  "hash_id": "a53bb89da77c6b09dfbd34cc68811011afca6e36c0ef6ca464e74bd93011ace1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/hash_large_key.c",
+  "human_readable_source": "\n\n#include <test_progs.h>\n#include \"test_hash_large_key.skel.h\"\n\nvoid test_hash_large_key(void)\n{\n\tint err, value = 21, duration = 0, hash_map_fd;\n\tstruct test_hash_large_key *skel;\n\n\tstruct bigelement {\n\t\tint a;\n\t\tchar b[4096];\n\t\tlong long c;\n\t} key;\n\tbzero(&key, sizeof(key));\n\n\tskel = test_hash_large_key__open_and_load();\n\tif (CHECK(!skel, \"skel_open_and_load\", \"skeleton open/load failed\\n\"))\n\t\treturn;\n\n\thash_map_fd = bpf_map__fd(skel->maps.hash_map);\n\tif (CHECK(hash_map_fd < 0, \"bpf_map__fd\", \"failed\\n\"))\n\t\tgoto cleanup;\n\n\terr = test_hash_large_key__attach(skel);\n\tif (CHECK(err, \"attach_raw_tp\", \"err %d\\n\", err))\n\t\tgoto cleanup;\n\n\terr = bpf_map_update_elem(hash_map_fd, &key, &value, BPF_ANY);\n\tif (CHECK(err, \"bpf_map_update_elem\", \"errno=%d\\n\", errno))\n\t\tgoto cleanup;\n\n\tkey.c = 1;\n\terr = bpf_map_lookup_elem(hash_map_fd, &key, &value);\n\tif (CHECK(err, \"bpf_map_lookup_elem\", \"errno=%d\\n\", errno))\n\t\tgoto cleanup;\n\n\tCHECK_FAIL(value != 42);\n\ncleanup:\n\ttest_hash_large_key__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

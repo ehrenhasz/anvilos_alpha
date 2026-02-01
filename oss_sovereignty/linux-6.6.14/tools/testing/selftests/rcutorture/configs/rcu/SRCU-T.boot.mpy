@@ -1,0 +1,9 @@
+{
+  "module_name": "SRCU-T.boot",
+  "hash_id": "3ac5f427cd03fd9f905b98600da5aecfcc71ae5513969374aa905f54698741ea",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/SRCU-T.boot",
+  "human_readable_source": "rcutorture.torture_type=srcu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

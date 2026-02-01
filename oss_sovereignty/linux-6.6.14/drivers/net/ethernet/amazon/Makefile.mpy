@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "af5ab3696d60a8e079d3936072ce437e784ff40c1bb3153632e854ef0cb4029a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/amazon/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Amazon network device drivers.\n#\n\nobj-$(CONFIG_ENA_ETHERNET) += ena/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

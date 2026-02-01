@@ -1,0 +1,9 @@
+{
+  "module_name": "syscalltbl.h",
+  "hash_id": "fe59cd039fb23a76091cb077f91775922f148c239a0aa66e5b72aef5f3e67acb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/syscalltbl.h",
+  "human_readable_source": " \n#ifndef __PERF_SYSCALLTBL_H\n#define __PERF_SYSCALLTBL_H\n\nstruct syscalltbl {\n\tint audit_machine;\n\tstruct {\n\t\tint max_id;\n\t\tint nr_entries;\n\t\tvoid *entries;\n\t} syscalls;\n};\n\nstruct syscalltbl *syscalltbl__new(void);\nvoid syscalltbl__delete(struct syscalltbl *tbl);\n\nconst char *syscalltbl__name(const struct syscalltbl *tbl, int id);\nint syscalltbl__id(struct syscalltbl *tbl, const char *name);\n\nint syscalltbl__strglobmatch_first(struct syscalltbl *tbl, const char *syscall_glob, int *idx);\nint syscalltbl__strglobmatch_next(struct syscalltbl *tbl, const char *syscall_glob, int *idx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

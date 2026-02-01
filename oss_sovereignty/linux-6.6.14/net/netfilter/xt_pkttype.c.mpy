@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_pkttype.c",
+  "hash_id": "bbcf1706999dc855ef34da0bd70ee9c421d828c998b45ae2f280485538d7b6b4",
+  "original_prompt": "Ingested from linux-6.6.14/net/netfilter/xt_pkttype.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/skbuff.h>\n#include <linux/if_ether.h>\n#include <linux/if_packet.h>\n#include <linux/in.h>\n#include <linux/ip.h>\n#include <linux/ipv6.h>\n\n#include <linux/netfilter/xt_pkttype.h>\n#include <linux/netfilter/x_tables.h>\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Michal Ludvig <michal@logix.cz>\");\nMODULE_DESCRIPTION(\"Xtables: link layer packet type match\");\nMODULE_ALIAS(\"ipt_pkttype\");\nMODULE_ALIAS(\"ip6t_pkttype\");\n\nstatic bool\npkttype_mt(const struct sk_buff *skb, struct xt_action_param *par)\n{\n\tconst struct xt_pkttype_info *info = par->matchinfo;\n\tu_int8_t type;\n\n\tif (skb->pkt_type != PACKET_LOOPBACK)\n\t\ttype = skb->pkt_type;\n\telse if (xt_family(par) == NFPROTO_IPV4 &&\n\t    ipv4_is_multicast(ip_hdr(skb)->daddr))\n\t\ttype = PACKET_MULTICAST;\n\telse if (xt_family(par) == NFPROTO_IPV6)\n\t\ttype = PACKET_MULTICAST;\n\telse\n\t\ttype = PACKET_BROADCAST;\n\n\treturn (type == info->pkttype) ^ info->invert;\n}\n\nstatic struct xt_match pkttype_mt_reg __read_mostly = {\n\t.name      = \"pkttype\",\n\t.revision  = 0,\n\t.family    = NFPROTO_UNSPEC,\n\t.match     = pkttype_mt,\n\t.matchsize = sizeof(struct xt_pkttype_info),\n\t.me        = THIS_MODULE,\n};\n\nstatic int __init pkttype_mt_init(void)\n{\n\treturn xt_register_match(&pkttype_mt_reg);\n}\n\nstatic void __exit pkttype_mt_exit(void)\n{\n\txt_unregister_match(&pkttype_mt_reg);\n}\n\nmodule_init(pkttype_mt_init);\nmodule_exit(pkttype_mt_exit);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

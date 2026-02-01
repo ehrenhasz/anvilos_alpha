@@ -1,0 +1,9 @@
+{
+  "module_name": "sockios.h",
+  "hash_id": "1389c7dfcb66d2fc0192ca8ec9865ab96ce92758d41abeec41c539c21a1813d9",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/asm-generic/sockios.h",
+  "human_readable_source": " \n#ifndef __ASM_GENERIC_SOCKIOS_H\n#define __ASM_GENERIC_SOCKIOS_H\n\n \n#define FIOSETOWN\t0x8901\n#define SIOCSPGRP\t0x8902\n#define FIOGETOWN\t0x8903\n#define SIOCGPGRP\t0x8904\n#define SIOCATMARK\t0x8905\n#define SIOCGSTAMP_OLD\t0x8906\t\t \n#define SIOCGSTAMPNS_OLD 0x8907\t\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

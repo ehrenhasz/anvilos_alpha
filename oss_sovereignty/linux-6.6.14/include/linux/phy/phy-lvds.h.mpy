@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-lvds.h",
+  "hash_id": "452228b14ffad6a3b1c423c980bee5a2d9477c66467250a84ad26764ac26849e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/phy/phy-lvds.h",
+  "human_readable_source": " \n \n\n#ifndef __PHY_LVDS_H_\n#define __PHY_LVDS_H_\n\n \nstruct phy_configure_opts_lvds {\n\tunsigned int\tbits_per_lane_and_dclk_cycle;\n\tunsigned long\tdifferential_clk_rate;\n\tunsigned int\tlanes;\n\tbool\t\tis_slave;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

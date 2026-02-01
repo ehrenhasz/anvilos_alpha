@@ -1,0 +1,9 @@
+{
+  "module_name": "pcxhr_mixer.h",
+  "hash_id": "a853088df853a572a10403c9ed681c69298d2ff6622309af3b52103e0fc08697",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/pcxhr/pcxhr_mixer.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_PCXHR_MIXER_H\n#define __SOUND_PCXHR_MIXER_H\n\n \nint pcxhr_create_mixer(struct pcxhr_mgr *mgr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

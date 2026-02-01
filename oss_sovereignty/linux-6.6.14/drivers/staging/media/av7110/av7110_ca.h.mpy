@@ -1,0 +1,9 @@
+{
+  "module_name": "av7110_ca.h",
+  "hash_id": "66f1ef39b6f3222a9e51847e98a330a281805b00543771303cae30685f516f50",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/av7110_ca.h",
+  "human_readable_source": " \n#ifndef _AV7110_CA_H_\n#define _AV7110_CA_H_\n\nstruct av7110;\n\nextern void CI_handle(struct av7110 *av7110, u8 *data, u16 len);\nextern void ci_get_data(struct dvb_ringbuffer *cibuf, u8 *data, int len);\n\nextern int av7110_ca_register(struct av7110 *av7110);\nextern void av7110_ca_unregister(struct av7110 *av7110);\nextern int av7110_ca_init(struct av7110* av7110);\nextern void av7110_ca_exit(struct av7110* av7110);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

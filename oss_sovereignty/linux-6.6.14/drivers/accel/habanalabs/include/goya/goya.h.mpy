@@ -1,0 +1,9 @@
+{
+  "module_name": "goya.h",
+  "hash_id": "0f0b6739659407c2f9f0ccaac33c1bceb5e29d6001c23b3086717c4a4d9c8b7c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/goya/goya.h",
+  "human_readable_source": " \n\n#ifndef GOYA_H\n#define GOYA_H\n\n#define SRAM_CFG_BAR_ID\t\t0\n#define MSIX_BAR_ID\t\t2\n#define DDR_BAR_ID\t\t4\n\n#define CFG_BAR_SIZE\t\t0x10000000ull\t\t \n#define MSIX_BAR_SIZE\t\t0x1000ull\t\t \n\n#define CFG_BASE\t\t0x7FFC000000ull\n#define CFG_SIZE\t\t0x4000000\t\t \n\n#define SRAM_BASE_ADDR\t\t0x7FF0000000ull\n#define SRAM_SIZE\t\t0x32A0000\t\t \n\n#define DRAM_PHYS_BASE\t\t0x0ull\n\n#define HOST_PHYS_BASE\t\t0x8000000000ull\t\t \n#define HOST_PHYS_SIZE\t\t0x1000000000000ull\t \n\n#define GOYA_MSIX_ENTRIES\t8\n\n#define QMAN_PQ_ENTRY_SIZE\t16\t\t\t \n\n#define MAX_ASID\t\t2\n\n#define PROT_BITS_OFFS\t\t0xF80\n\n#define DMA_MAX_NUM\t\t5\n\n#define TPC_MAX_NUM\t\t8\n\n#define MME_MAX_NUM\t\t1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

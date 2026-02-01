@@ -1,0 +1,9 @@
+{
+  "module_name": "oimm.h",
+  "hash_id": "84c83bdf82a472dfe0dda9b4b90dd38a518df8a75ef33794f7f068f574ab47da",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/oimm.h",
+  "human_readable_source": "#ifndef __NV50_KMS_OIMM_H__\n#define __NV50_KMS_OIMM_H__\n#include \"wndw.h\"\n\nint oimm507b_init(struct nouveau_drm *, s32, struct nv50_wndw *);\n\nint nv50_oimm_init(struct nouveau_drm *, struct nv50_wndw *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "remove.h",
+  "hash_id": "901ac1c6a7b1f86df2c12a8a28dcace8ebbc00c03a3604b36a1a9473357d2448",
+  "original_prompt": "Ingested from coreutils-9.4/src/remove.h",
+  "human_readable_source": " \n  RMI_ALWAYS = 3,\n  RMI_SOMETIMES,\n  RMI_NEVER\n};\n\nstruct rm_options\n{\n   \n  bool ignore_missing_files;\n\n   \n  enum rm_interactive interactive;\n\n   \n   \n  bool one_file_system;\n\n   \n  bool recursive;\n\n   \n  bool remove_empty_directories;\n\n   \n  struct dev_ino *root_dev_ino;\n\n   \n  bool preserve_all_root;\n\n   \n  bool stdin_tty;\n\n   \n  bool verbose;\n\n   \n  bool require_restore_cwd;\n};\n\nenum RM_status\n{\n   \n  RM_OK = 2,\n  RM_USER_ACCEPTED,\n  RM_USER_DECLINED,\n  RM_ERROR,\n  RM_NONEMPTY_DIR\n};\n\n# define VALID_STATUS(S) \\\n  ((S) == RM_OK || (S) == RM_USER_ACCEPTED || (S) == RM_USER_DECLINED \\\n   || (S) == RM_ERROR)\n\n# define UPDATE_STATUS(S, New_value)\t\t\t\t\\\n  do\t\t\t\t\t\t\t\t\\\n    {\t\t\t\t\t\t\t\t\\\n      if ((New_value) == RM_ERROR\t\t\t\t\\\n          || ((New_value) == RM_USER_DECLINED && (S) == RM_OK))\t\\\n        (S) = (New_value);\t\t\t\t\t\\\n    }\t\t\t\t\t\t\t\t\\\n  while (0)\n\nextern enum RM_status rm (char *const *file, struct rm_options const *x);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

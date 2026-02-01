@@ -1,0 +1,9 @@
+{
+  "module_name": "minix_fs.h",
+  "hash_id": "0ed5ada1f77ebca5b51a8a000a882f680188fa686c54c18b3449a7009d7dac46",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/minix_fs.h",
+  "human_readable_source": " \n#ifndef _LINUX_MINIX_FS_H\n#define _LINUX_MINIX_FS_H\n\n#include <linux/types.h>\n#include <linux/magic.h>\n\n \n\n \n\n#define MINIX_ROOT_INO 1\n\n \n#define MINIX_LINK_MAX\t250\n#define MINIX2_LINK_MAX\t65530\n\n#define MINIX_I_MAP_SLOTS\t8\n#define MINIX_Z_MAP_SLOTS\t64\n#define MINIX_VALID_FS\t\t0x0001\t\t \n#define MINIX_ERROR_FS\t\t0x0002\t\t \n\n#define MINIX_INODES_PER_BLOCK ((BLOCK_SIZE)/(sizeof (struct minix_inode)))\n\n \nstruct minix_inode {\n\t__u16 i_mode;\n\t__u16 i_uid;\n\t__u32 i_size;\n\t__u32 i_time;\n\t__u8  i_gid;\n\t__u8  i_nlinks;\n\t__u16 i_zone[9];\n};\n\n \nstruct minix2_inode {\n\t__u16 i_mode;\n\t__u16 i_nlinks;\n\t__u16 i_uid;\n\t__u16 i_gid;\n\t__u32 i_size;\n\t__u32 i_atime;\n\t__u32 i_mtime;\n\t__u32 i_ctime;\n\t__u32 i_zone[10];\n};\n\n \nstruct minix_super_block {\n\t__u16 s_ninodes;\n\t__u16 s_nzones;\n\t__u16 s_imap_blocks;\n\t__u16 s_zmap_blocks;\n\t__u16 s_firstdatazone;\n\t__u16 s_log_zone_size;\n\t__u32 s_max_size;\n\t__u16 s_magic;\n\t__u16 s_state;\n\t__u32 s_zones;\n};\n\n \nstruct minix3_super_block {\n\t__u32 s_ninodes;\n\t__u16 s_pad0;\n\t__u16 s_imap_blocks;\n\t__u16 s_zmap_blocks;\n\t__u16 s_firstdatazone;\n\t__u16 s_log_zone_size;\n\t__u16 s_pad1;\n\t__u32 s_max_size;\n\t__u32 s_zones;\n\t__u16 s_magic;\n\t__u16 s_pad2;\n\t__u16 s_blocksize;\n\t__u8  s_disk_version;\n};\n\nstruct minix_dir_entry {\n\t__u16 inode;\n\tchar name[];\n};\n\nstruct minix3_dir_entry {\n\t__u32 inode;\n\tchar name[];\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

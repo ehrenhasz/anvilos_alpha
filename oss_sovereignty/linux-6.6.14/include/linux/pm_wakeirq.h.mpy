@@ -1,0 +1,9 @@
+{
+  "module_name": "pm_wakeirq.h",
+  "hash_id": "ee42df3047c4e365e5116b9a4774b2f178df6b9bc2933844c7d7a7396e63d611",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pm_wakeirq.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_PM_WAKEIRQ_H\n#define _LINUX_PM_WAKEIRQ_H\n\n#ifdef CONFIG_PM\n\nextern int dev_pm_set_wake_irq(struct device *dev, int irq);\nextern int dev_pm_set_dedicated_wake_irq(struct device *dev, int irq);\nextern int dev_pm_set_dedicated_wake_irq_reverse(struct device *dev, int irq);\nextern void dev_pm_clear_wake_irq(struct device *dev);\n\n#else\t \n\nstatic inline int dev_pm_set_wake_irq(struct device *dev, int irq)\n{\n\treturn 0;\n}\n\nstatic inline int dev_pm_set_dedicated_wake_irq(struct device *dev, int irq)\n{\n\treturn 0;\n}\n\nstatic inline int dev_pm_set_dedicated_wake_irq_reverse(struct device *dev, int irq)\n{\n\treturn 0;\n}\n\nstatic inline void dev_pm_clear_wake_irq(struct device *dev)\n{\n}\n\n#endif\t \n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

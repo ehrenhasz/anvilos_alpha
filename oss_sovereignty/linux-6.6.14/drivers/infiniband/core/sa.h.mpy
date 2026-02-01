@@ -1,0 +1,9 @@
+{
+  "module_name": "sa.h",
+  "hash_id": "1e2b4e90201e2c57ca8dfaef591fef59eb6bda352f823328cbdb51696cc5dc3d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/core/sa.h",
+  "human_readable_source": " \n\n#ifndef SA_H\n#define SA_H\n\n#include <rdma/ib_sa.h>\n\nstatic inline void ib_sa_client_get(struct ib_sa_client *client)\n{\n\tatomic_inc(&client->users);\n}\n\nstatic inline void ib_sa_client_put(struct ib_sa_client *client)\n{\n\tif (atomic_dec_and_test(&client->users))\n\t\tcomplete(&client->comp);\n}\n\nint ib_sa_mcmember_rec_query(struct ib_sa_client *client,\n\t\t\t     struct ib_device *device, u32 port_num, u8 method,\n\t\t\t     struct ib_sa_mcmember_rec *rec,\n\t\t\t     ib_sa_comp_mask comp_mask,\n\t\t\t     unsigned long timeout_ms, gfp_t gfp_mask,\n\t\t\t     void (*callback)(int status,\n\t\t\t\t\t      struct ib_sa_mcmember_rec *resp,\n\t\t\t\t\t      void *context),\n\t\t\t     void *context, struct ib_sa_query **sa_query);\n\nint mcast_init(void);\nvoid mcast_cleanup(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

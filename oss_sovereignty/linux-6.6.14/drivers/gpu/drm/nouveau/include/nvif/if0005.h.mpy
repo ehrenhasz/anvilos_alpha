@@ -1,0 +1,9 @@
+{
+  "module_name": "if0005.h",
+  "hash_id": "46a06d264073f833e5043678337324a90e599f57182c18f81e73383af6775aab",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/if0005.h",
+  "human_readable_source": " \n#ifndef __NVIF_IF0005_H__\n#define __NVIF_IF0005_H__\n#define NV10_NVSW_NTFY_UEVENT                                              0x00\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

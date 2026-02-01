@@ -1,0 +1,9 @@
+{
+  "module_name": "dwxlgmac2.h",
+  "hash_id": "aa2f2f4c079a784e3fe0fae23f59a3e0d9229dde85862f4833768e9e8f65a4aa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/stmicro/stmmac/dwxlgmac2.h",
+  "human_readable_source": " \n \n\n#ifndef __STMMAC_DWXLGMAC2_H__\n#define __STMMAC_DWXLGMAC2_H__\n\n \n#define XLGMAC_CONFIG_SS\t\tGENMASK(30, 28)\n#define XLGMAC_CONFIG_SS_SHIFT\t\t28\n#define XLGMAC_CONFIG_SS_40G\t\t(0x0 << XLGMAC_CONFIG_SS_SHIFT)\n#define XLGMAC_CONFIG_SS_25G\t\t(0x1 << XLGMAC_CONFIG_SS_SHIFT)\n#define XLGMAC_CONFIG_SS_50G\t\t(0x2 << XLGMAC_CONFIG_SS_SHIFT)\n#define XLGMAC_CONFIG_SS_100G\t\t(0x3 << XLGMAC_CONFIG_SS_SHIFT)\n#define XLGMAC_CONFIG_SS_10G\t\t(0x4 << XLGMAC_CONFIG_SS_SHIFT)\n#define XLGMAC_CONFIG_SS_2500\t\t(0x6 << XLGMAC_CONFIG_SS_SHIFT)\n#define XLGMAC_CONFIG_SS_1000\t\t(0x7 << XLGMAC_CONFIG_SS_SHIFT)\n#define XLGMAC_RXQ_ENABLE_CTRL0\t\t0x00000140\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

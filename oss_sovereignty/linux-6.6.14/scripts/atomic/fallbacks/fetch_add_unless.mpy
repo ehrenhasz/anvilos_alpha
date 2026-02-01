@@ -1,0 +1,9 @@
+{
+  "module_name": "fetch_add_unless",
+  "hash_id": "5b7baa7b28271490a7ff3a1524e7b30e6c73ad4377f1db635b705f874b725926",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/fallbacks/fetch_add_unless",
+  "human_readable_source": "cat << EOF\n\t${int} c = raw_${atomic}_read(v);\n\n\tdo {\n\t\tif (unlikely(c == u))\n\t\t\tbreak;\n\t} while (!raw_${atomic}_try_cmpxchg(v, &c, c + a));\n\n\treturn c;\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

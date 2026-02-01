@@ -1,0 +1,9 @@
+{
+  "module_name": "bad-array-space-comment.bconf",
+  "hash_id": "e0cf1cb53355da1576b133b2d4ad75708c9fe7aece3fd601a09f7f7bcb2c5d95",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bootconfig/samples/bad-array-space-comment.bconf",
+  "human_readable_source": "key =\t# comment\n\t\"value1\",\t  # comment1\n\t\"value2\" \t  # comment2\n,\n\t\"value3\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

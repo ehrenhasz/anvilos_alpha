@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_connector.h",
+  "hash_id": "aaa804a298c2568fe311ac983fa15857ccd9268cab76a2e1d39b7a2d34860de3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_connector.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_CONNECTOR_H__\n#define __INTEL_CONNECTOR_H__\n\n#include <linux/types.h>\n\nstruct drm_connector;\nstruct drm_edid;\nstruct i2c_adapter;\nstruct intel_connector;\nstruct intel_encoder;\n\nint intel_connector_init(struct intel_connector *connector);\nstruct intel_connector *intel_connector_alloc(void);\nvoid intel_connector_free(struct intel_connector *connector);\nvoid intel_connector_destroy(struct drm_connector *connector);\nint intel_connector_register(struct drm_connector *connector);\nvoid intel_connector_unregister(struct drm_connector *connector);\nvoid intel_connector_attach_encoder(struct intel_connector *connector,\n\t\t\t\t    struct intel_encoder *encoder);\nbool intel_connector_get_hw_state(struct intel_connector *connector);\nenum pipe intel_connector_get_pipe(struct intel_connector *connector);\nint intel_connector_update_modes(struct drm_connector *connector,\n\t\t\t\t const struct drm_edid *drm_edid);\nint intel_ddc_get_modes(struct drm_connector *c, struct i2c_adapter *adapter);\nvoid intel_attach_force_audio_property(struct drm_connector *connector);\nvoid intel_attach_broadcast_rgb_property(struct drm_connector *connector);\nvoid intel_attach_aspect_ratio_property(struct drm_connector *connector);\nvoid intel_attach_hdmi_colorspace_property(struct drm_connector *connector);\nvoid intel_attach_dp_colorspace_property(struct drm_connector *connector);\nvoid intel_attach_scaling_mode_property(struct drm_connector *connector);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

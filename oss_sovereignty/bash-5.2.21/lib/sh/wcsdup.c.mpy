@@ -1,0 +1,9 @@
+{
+  "module_name": "wcsdup.c",
+  "hash_id": "eb02da0863a9669f1fcbc6cd9fb2df5c06ec0802c8f147457cbb22593f1867cb",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/wcsdup.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#if !defined (HAVE_WCSDUP) && defined (HANDLE_MULTIBYTE)\n\n#include <stdc.h>\n#include <wchar.h>\n#include <bashansi.h>\n#include <xmalloc.h>\n\nwchar_t *\nwcsdup (ws)\n     const wchar_t *ws;\n{\n  wchar_t *ret;\n  size_t len;\n\n  len = wcslen (ws);\n  ret = xmalloc ((len + 1) * sizeof (wchar_t));\n  if (ret == 0)\n    return ret;\n  \n  return (wcscpy (ret, ws));\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

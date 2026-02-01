@@ -1,0 +1,9 @@
+{
+  "module_name": "compat-2018",
+  "hash_id": "57744873caa31bbc6ac5a6e86317893640713c2d5aab17667c3e1609d5c1bc95",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/compatibility.d/compat-2018",
+  "human_readable_source": "# Features supported by all Tier 1 platforms as of 2018\nasync_destroy\nbookmarks\nembedded_data\nempty_bpobj\nenabled_txg\nextensible_dataset\nfilesystem_limits\nhole_birth\nlarge_blocks\nlz4_compress\nspacemap_histogram\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

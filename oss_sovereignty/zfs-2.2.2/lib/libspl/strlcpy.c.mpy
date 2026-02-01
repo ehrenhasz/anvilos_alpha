@@ -1,0 +1,9 @@
+{
+  "module_name": "strlcpy.c",
+  "hash_id": "9a5517ccd7e3b5088df95d0f3f8b78e57500624c3954892b8d27fcd88944a0a0",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/strlcpy.c",
+  "human_readable_source": " \n\n \n\n#ifndef HAVE_STRLCPY\n\n#include <string.h>\n#include <sys/types.h>\n\n \n\nsize_t\nstrlcpy(char *dst, const char *src, size_t len)\n{\n\tsize_t slen = strlen(src);\n\tsize_t copied;\n\n\tif (len == 0)\n\t\treturn (slen);\n\n\tif (slen >= len)\n\t\tcopied = len - 1;\n\telse\n\t\tcopied = slen;\n\t(void) memcpy(dst, src, copied);\n\tdst[copied] = '\\0';\n\treturn (slen);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

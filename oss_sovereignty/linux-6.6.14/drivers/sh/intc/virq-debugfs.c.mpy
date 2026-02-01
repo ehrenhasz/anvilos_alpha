@@ -1,0 +1,9 @@
+{
+  "module_name": "virq-debugfs.c",
+  "hash_id": "f15c86f6a63af26a250a3d3eab9326de1955608e4fe5f81c0811a2d4c7cd59ae",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/sh/intc/virq-debugfs.c",
+  "human_readable_source": " \n#include <linux/seq_file.h>\n#include <linux/fs.h>\n#include <linux/init.h>\n#include <linux/irq.h>\n#include <linux/debugfs.h>\n#include \"internals.h\"\n\nstatic int intc_irq_xlate_show(struct seq_file *m, void *priv)\n{\n\tint i;\n\n\tseq_printf(m, \"%-5s  %-7s  %-15s\\n\", \"irq\", \"enum\", \"chip name\");\n\n\tfor (i = 1; i < nr_irqs; i++) {\n\t\tstruct intc_map_entry *entry = intc_irq_xlate_get(i);\n\t\tstruct intc_desc_int *desc = entry->desc;\n\n\t\tif (!desc)\n\t\t\tcontinue;\n\n\t\tseq_printf(m, \"%5d  \", i);\n\t\tseq_printf(m, \"0x%05x  \", entry->enum_id);\n\t\tseq_printf(m, \"%-15s\\n\", desc->chip.name);\n\t}\n\n\treturn 0;\n}\n\nDEFINE_SHOW_ATTRIBUTE(intc_irq_xlate);\n\nstatic int __init intc_irq_xlate_init(void)\n{\n\t \n\tif (debugfs_create_file(\"intc_irq_xlate\", S_IRUGO, NULL, NULL,\n\t\t\t\t&intc_irq_xlate_fops) == NULL)\n\t\treturn -ENOMEM;\n\n\treturn 0;\n}\nfs_initcall(intc_irq_xlate_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

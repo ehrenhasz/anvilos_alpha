@@ -1,0 +1,9 @@
+{
+  "module_name": "meson8-ddr-clkc.h",
+  "hash_id": "300e69963a98e83a98443a6f38c078a5543fe33ea2c02b8c6fdf48760a54c91f",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/meson8-ddr-clkc.h",
+  "human_readable_source": " \n\n#define DDR_CLKID_DDR_PLL_DCO\t\t\t0\n#define DDR_CLKID_DDR_PLL\t\t\t1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

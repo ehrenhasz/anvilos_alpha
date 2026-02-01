@@ -1,0 +1,9 @@
+{
+  "module_name": "sigreturn_unaligned.c",
+  "hash_id": "2cafc6d9dd6fd606ef13e77cc24f7e46deeb3f6d8bfc6683bc8cff70c5a9aab9",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/signal/sigreturn_unaligned.c",
+  "human_readable_source": "\n \n\n#include <signal.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <ucontext.h>\n#include <unistd.h>\n\n#include \"utils.h\"\n\n\nstatic void sigusr1_handler(int signo, siginfo_t *info, void *ptr)\n{\n\tucontext_t *uc = ptr;\n\n\tUCONTEXT_NIA(uc) |= 3;\n}\n\nstatic int test_sigreturn_unaligned(void)\n{\n\tstruct sigaction action;\n\n\tmemset(&action, 0, sizeof(action));\n\taction.sa_sigaction = sigusr1_handler;\n\taction.sa_flags = SA_SIGINFO;\n\n\tFAIL_IF(sigaction(SIGUSR1, &action, NULL) == -1);\n\n\traise(SIGUSR1);\n\n\treturn 0;\n}\n\nint main(void)\n{\n\treturn test_harness(test_sigreturn_unaligned, \"sigreturn_unaligned\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

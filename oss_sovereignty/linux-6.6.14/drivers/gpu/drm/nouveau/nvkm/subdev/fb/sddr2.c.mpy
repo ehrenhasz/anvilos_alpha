@@ -1,0 +1,9 @@
+{
+  "module_name": "sddr2.c",
+  "hash_id": "c586e68064bf1a0dfc4f936034994f205df65cc401c657f771903de5d7f39119",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/sddr2.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"ram.h\"\n\nstruct ramxlat {\n\tint id;\n\tu8 enc;\n};\n\nstatic inline int\nramxlat(const struct ramxlat *xlat, int id)\n{\n\twhile (xlat->id >= 0) {\n\t\tif (xlat->id == id)\n\t\t\treturn xlat->enc;\n\t\txlat++;\n\t}\n\treturn -EINVAL;\n}\n\nstatic const struct ramxlat\nramddr2_cl[] = {\n\t{ 2, 2 }, { 3, 3 }, { 4, 4 }, { 5, 5 }, { 6, 6 },\n\t \n\t{ 7, 7 },\n\t{ -1 }\n};\n\nstatic const struct ramxlat\nramddr2_wr[] = {\n\t{ 2, 1 }, { 3, 2 }, { 4, 3 }, { 5, 4 }, { 6, 5 },\n\t \n\t{ 7, 6 },\n\t{ -1 }\n};\n\nint\nnvkm_sddr2_calc(struct nvkm_ram *ram)\n{\n\tint CL, WR, DLL = 0, ODT = 0;\n\n\tswitch (ram->next->bios.timing_ver) {\n\tcase 0x10:\n\t\tCL  = ram->next->bios.timing_10_CL;\n\t\tWR  = ram->next->bios.timing_10_WR;\n\t\tDLL = !ram->next->bios.ramcfg_DLLoff;\n\t\tODT = ram->next->bios.timing_10_ODT & 3;\n\t\tbreak;\n\tcase 0x20:\n\t\tCL  = (ram->next->bios.timing[1] & 0x0000001f);\n\t\tWR  = (ram->next->bios.timing[2] & 0x007f0000) >> 16;\n\t\tbreak;\n\tdefault:\n\t\treturn -ENOSYS;\n\t}\n\n\tif (ram->next->bios.timing_ver == 0x20 ||\n\t    ram->next->bios.ramcfg_timing == 0xff) {\n\t\tODT =  (ram->mr[1] & 0x004) >> 2 |\n\t\t       (ram->mr[1] & 0x040) >> 5;\n\t}\n\n\tCL  = ramxlat(ramddr2_cl, CL);\n\tWR  = ramxlat(ramddr2_wr, WR);\n\tif (CL < 0 || WR < 0)\n\t\treturn -EINVAL;\n\n\tram->mr[0] &= ~0xf70;\n\tram->mr[0] |= (WR & 0x07) << 9;\n\tram->mr[0] |= (CL & 0x07) << 4;\n\n\tram->mr[1] &= ~0x045;\n\tram->mr[1] |= (ODT & 0x1) << 2;\n\tram->mr[1] |= (ODT & 0x2) << 5;\n\tram->mr[1] |= !DLL;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

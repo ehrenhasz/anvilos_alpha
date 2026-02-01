@@ -1,0 +1,9 @@
+{
+  "module_name": "cred.h",
+  "hash_id": "65d44fffb42e5df7db1ca6669a00d5921a5d9023c8dda67392d872d550efd4ec",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/cred.h",
+  "human_readable_source": " \n \n\n \n \n\n \n\n#ifndef _SYS_CRED_H\n#define\t_SYS_CRED_H\n\n#include <sys/types.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \n\ntypedef struct ucred cred_t;\n\n#define\tCRED()\t\tcurthread->td_ucred\n\n \n#define\tkcred\t(thread0.td_ucred)\n\n#define\tKUID_TO_SUID(x)\t\t(x)\n#define\tKGID_TO_SGID(x)\t\t(x)\n#define\tcrgetuid(cr)\t\t((cr)->cr_uid)\n#define\tcrgetruid(cr)\t\t((cr)->cr_ruid)\n#define\tcrgetgid(cr)\t\t((cr)->cr_gid)\n#define\tcrgetgroups(cr)\t\t((cr)->cr_groups)\n#define\tcrgetngroups(cr)\t((cr)->cr_ngroups)\n#define\tcrgetzoneid(cr) \t((cr)->cr_prison->pr_id)\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

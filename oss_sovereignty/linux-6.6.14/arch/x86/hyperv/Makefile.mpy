@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d08a6c5aae599cd6fdac47f62c17afd3e11b948b1a333be2fdcedd056d132547",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/hyperv/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-y\t\t\t:= hv_init.o mmu.o nested.o irqdomain.o ivm.o\nobj-$(CONFIG_X86_64)\t+= hv_apic.o hv_proc.o\nobj-$(CONFIG_HYPERV_VTL_MODE)\t+= hv_vtl.o\n\nifdef CONFIG_X86_64\nobj-$(CONFIG_PARAVIRT_SPINLOCKS)\t+= hv_spinlock.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

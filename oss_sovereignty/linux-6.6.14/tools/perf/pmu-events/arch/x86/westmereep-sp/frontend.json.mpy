@@ -1,0 +1,9 @@
+{
+  "module_name": "frontend.json",
+  "hash_id": "c1e1c6ae24b40f3780c7d00f556f7e1fdf9b54dfa65d8794bda134c0f54b3cd6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/westmereep-sp/frontend.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"Instructions decoded\",\n        \"EventCode\": \"0xD0\",\n        \"EventName\": \"MACRO_INSTS.DECODED\",\n        \"SampleAfterValue\": \"2000000\",\n        \"UMask\": \"0x1\"\n    },\n    {\n        \"BriefDescription\": \"Macro-fused instructions decoded\",\n        \"EventCode\": \"0xA6\",\n        \"EventName\": \"MACRO_INSTS.FUSIONS_DECODED\",\n        \"SampleAfterValue\": \"2000000\",\n        \"UMask\": \"0x1\"\n    },\n    {\n        \"BriefDescription\": \"Two Uop instructions decoded\",\n        \"EventCode\": \"0x19\",\n        \"EventName\": \"TWO_UOP_INSTS_DECODED\",\n        \"SampleAfterValue\": \"2000000\",\n        \"UMask\": \"0x1\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

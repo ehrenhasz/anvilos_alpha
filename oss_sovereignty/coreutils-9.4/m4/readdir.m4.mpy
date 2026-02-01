@@ -1,0 +1,9 @@
+{
+  "module_name": "readdir.m4",
+  "hash_id": "720d283eb0b3227ebcd47d74121d082fecf5e9c7d6def33692c42c6f0c45f7ef",
+  "original_prompt": "Ingested from coreutils-9.4/m4/readdir.m4",
+  "human_readable_source": "# readdir.m4 serial 2\ndnl Copyright (C) 2011-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_READDIR],\n[\n  AC_REQUIRE([gl_DIRENT_H_DEFAULTS])\n\n  AC_CHECK_FUNCS([readdir])\n  if test $ac_cv_func_readdir = no; then\n    HAVE_READDIR=0\n  else\n    dnl Replace readdir() on native Windows, to support fdopendir().\n    AC_REQUIRE([gl_DIRENT_DIR])\n    if test $DIR_HAS_FD_MEMBER = 0; then\n      REPLACE_READDIR=1\n    fi\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

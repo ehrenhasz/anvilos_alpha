@@ -1,0 +1,9 @@
+{
+  "module_name": "andnot",
+  "hash_id": "7951643ea94e818b82192337433110c8b4e0dc22891cf7ce5b3536cb50100f3c",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/fallbacks/andnot",
+  "human_readable_source": "cat <<EOF\n\t${retstmt}raw_${atomic}_${pfx}and${sfx}${order}(~i, v);\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

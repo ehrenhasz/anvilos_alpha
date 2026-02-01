@@ -1,0 +1,9 @@
+{
+  "module_name": "pvrusb2-std.h",
+  "hash_id": "880c1dc11e9d242e42d361980eb4fc9f7c3bad2cb6d423db42697e3a65fcc978",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pvrusb2/pvrusb2-std.h",
+  "human_readable_source": " \n \n#ifndef __PVRUSB2_STD_H\n#define __PVRUSB2_STD_H\n\n#include <linux/videodev2.h>\n\n\n\n\n\n\nint pvr2_std_str_to_id(v4l2_std_id *idPtr,const char *bufPtr,\n\t\t       unsigned int bufSize);\n\n\n\n\n\nunsigned int pvr2_std_id_to_str(char *bufPtr, unsigned int bufSize,\n\t\t\t\tv4l2_std_id id);\n\n\n\n\nstruct v4l2_standard *pvr2_std_create_enum(unsigned int *countptr,\n\t\t\t\t\t   v4l2_std_id id);\n\n\nv4l2_std_id pvr2_std_get_usable(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

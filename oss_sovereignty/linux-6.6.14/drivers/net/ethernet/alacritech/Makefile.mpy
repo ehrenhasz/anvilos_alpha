@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9c1e851a68e9fd11910ca6bb3aaa6419df0efa2cdc2b80122fcdd8464256cdca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/alacritech/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Alacritech Slicoss driver\n#\nobj-$(CONFIG_SLICOSS) += slicoss.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

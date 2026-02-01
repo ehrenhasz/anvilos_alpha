@@ -1,0 +1,9 @@
+{
+  "module_name": "nouveau_hwmon.h",
+  "hash_id": "edcaf78876f166ebe558259b7ac51008ea7b79910a4398242283efad379c0bc7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nouveau_hwmon.h",
+  "human_readable_source": " \n\n#ifndef __NOUVEAU_PM_H__\n#define __NOUVEAU_PM_H__\n\nstruct nouveau_hwmon {\n\tstruct drm_device *dev;\n\tstruct device *hwmon;\n};\n\nstatic inline struct nouveau_hwmon *\nnouveau_hwmon(struct drm_device *dev)\n{\n\treturn nouveau_drm(dev)->hwmon;\n}\n\n \nint  nouveau_hwmon_init(struct drm_device *dev);\nvoid nouveau_hwmon_fini(struct drm_device *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

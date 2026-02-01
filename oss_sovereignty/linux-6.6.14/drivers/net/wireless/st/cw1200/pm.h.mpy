@@ -1,0 +1,9 @@
+{
+  "module_name": "pm.h",
+  "hash_id": "b19a61ac83d26ae47a191e8d95b58313a70ed32fb369e4667210c5131bd50fe6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/st/cw1200/pm.h",
+  "human_readable_source": " \n \n\n#ifndef PM_H_INCLUDED\n#define PM_H_INCLUDED\n\n \n \n\n   struct cw1200_common;\n  struct cw1200_suspend_state;\n\nstruct cw1200_pm_state {\n\tstruct cw1200_suspend_state *suspend_state;\n\tstruct timer_list stay_awake;\n\tstruct platform_device *pm_dev;\n\tspinlock_t lock;  \n};\n\n#ifdef CONFIG_PM\nint cw1200_pm_init(struct cw1200_pm_state *pm,\n\t\t    struct cw1200_common *priv);\nvoid cw1200_pm_deinit(struct cw1200_pm_state *pm);\nint cw1200_wow_suspend(struct ieee80211_hw *hw,\n\t\t       struct cfg80211_wowlan *wowlan);\nint cw1200_can_suspend(struct cw1200_common *priv);\nint cw1200_wow_resume(struct ieee80211_hw *hw);\nvoid cw1200_pm_stay_awake(struct cw1200_pm_state *pm,\n\t\t\t  unsigned long tmo);\n#else\nstatic inline void cw1200_pm_stay_awake(struct cw1200_pm_state *pm,\n\t\t\t\t\tunsigned long tmo)\n{\n}\nstatic inline int cw1200_can_suspend(struct cw1200_common *priv)\n{\n\treturn 0;\n}\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

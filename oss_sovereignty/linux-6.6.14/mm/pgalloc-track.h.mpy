@@ -1,0 +1,9 @@
+{
+  "module_name": "pgalloc-track.h",
+  "hash_id": "a16e1208e6cb531ba905870d9e50c5c05d334c4f3194e9ae5848de73e5623ea6",
+  "original_prompt": "Ingested from linux-6.6.14/mm/pgalloc-track.h",
+  "human_readable_source": " \n#ifndef _LINUX_PGALLOC_TRACK_H\n#define _LINUX_PGALLOC_TRACK_H\n\n#if defined(CONFIG_MMU)\nstatic inline p4d_t *p4d_alloc_track(struct mm_struct *mm, pgd_t *pgd,\n\t\t\t\t     unsigned long address,\n\t\t\t\t     pgtbl_mod_mask *mod_mask)\n{\n\tif (unlikely(pgd_none(*pgd))) {\n\t\tif (__p4d_alloc(mm, pgd, address))\n\t\t\treturn NULL;\n\t\t*mod_mask |= PGTBL_PGD_MODIFIED;\n\t}\n\n\treturn p4d_offset(pgd, address);\n}\n\nstatic inline pud_t *pud_alloc_track(struct mm_struct *mm, p4d_t *p4d,\n\t\t\t\t     unsigned long address,\n\t\t\t\t     pgtbl_mod_mask *mod_mask)\n{\n\tif (unlikely(p4d_none(*p4d))) {\n\t\tif (__pud_alloc(mm, p4d, address))\n\t\t\treturn NULL;\n\t\t*mod_mask |= PGTBL_P4D_MODIFIED;\n\t}\n\n\treturn pud_offset(p4d, address);\n}\n\nstatic inline pmd_t *pmd_alloc_track(struct mm_struct *mm, pud_t *pud,\n\t\t\t\t     unsigned long address,\n\t\t\t\t     pgtbl_mod_mask *mod_mask)\n{\n\tif (unlikely(pud_none(*pud))) {\n\t\tif (__pmd_alloc(mm, pud, address))\n\t\t\treturn NULL;\n\t\t*mod_mask |= PGTBL_PUD_MODIFIED;\n\t}\n\n\treturn pmd_offset(pud, address);\n}\n#endif  \n\n#define pte_alloc_kernel_track(pmd, address, mask)\t\t\t\\\n\t((unlikely(pmd_none(*(pmd))) &&\t\t\t\t\t\\\n\t  (__pte_alloc_kernel(pmd) || ({*(mask)|=PGTBL_PMD_MODIFIED;0;})))?\\\n\t\tNULL: pte_offset_kernel(pmd, address))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

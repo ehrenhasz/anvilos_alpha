@@ -1,0 +1,9 @@
+{
+  "module_name": "rtrs-srv-trace.c",
+  "hash_id": "a59f233b908c8d627c3a47720851a556b9043593fc937da44e6c5cbb326f4407",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/ulp/rtrs/rtrs-srv-trace.c",
+  "human_readable_source": "\n \n#include \"rtrs.h\"\n#include \"rtrs-pri.h\"\n#include \"rtrs-srv.h\"\n\n \n#define CREATE_TRACE_POINTS\n#include \"rtrs-srv-trace.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

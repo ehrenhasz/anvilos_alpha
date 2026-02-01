@@ -1,0 +1,9 @@
+{
+  "module_name": "hw_factory_dce120.h",
+  "hash_id": "7af5a736970c1b03609837374b3b99370789b3fe6e09b02965f9d97488e3eba0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/gpio/dce120/hw_factory_dce120.h",
+  "human_readable_source": " \n\n#ifndef __DAL_HW_FACTORY_DCE120_H__\n#define __DAL_HW_FACTORY_DCE120_H__\n\n \nvoid dal_hw_factory_dce120_init(struct hw_factory *factory);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

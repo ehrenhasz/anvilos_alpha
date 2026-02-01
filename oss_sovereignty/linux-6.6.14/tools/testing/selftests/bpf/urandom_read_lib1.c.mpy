@@ -1,0 +1,9 @@
+{
+  "module_name": "urandom_read_lib1.c",
+  "hash_id": "e9ab539f27c264ff77d841cfe8489d2f86f4dcdfe72853cb02083b6cba3239a7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/urandom_read_lib1.c",
+  "human_readable_source": "\n \n#define _SDT_HAS_SEMAPHORES 1\n#include \"sdt.h\"\n\n#define SEC(name) __attribute__((section(name), used))\n\nunsigned short urandlib_read_with_sema_semaphore SEC(\".probes\");\n\nvoid urandlib_read_with_sema(int iter_num, int iter_cnt, int read_sz)\n{\n\tSTAP_PROBE3(urandlib, read_with_sema, iter_num, iter_cnt, read_sz);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

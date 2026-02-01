@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5fb858ffc92d55d201a0ef0c5343e51f20a7d3a6b69460705386fbe3cd3eaa53",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/platform/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Platform specific code goes here\nobj-y\t+= atom/\nobj-y\t+= ce4100/\nobj-y\t+= efi/\nobj-y\t+= geode/\nobj-y\t+= iris/\nobj-y\t+= intel/\nobj-y\t+= intel-mid/\nobj-y\t+= intel-quark/\nobj-y\t+= olpc/\nobj-y\t+= scx200/\nobj-y\t+= ts5500/\nobj-y\t+= uv/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

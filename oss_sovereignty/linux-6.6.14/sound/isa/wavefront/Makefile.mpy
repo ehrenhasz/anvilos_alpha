@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a91d320ccef8a344ad64b1950733abd16049b1f4d9dfdf4ed4f2150370feac9a",
+  "original_prompt": "Ingested from linux-6.6.14/sound/isa/wavefront/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-wavefront-objs := wavefront.o wavefront_fx.o wavefront_synth.o wavefront_midi.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_WAVEFRONT) += snd-wavefront.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

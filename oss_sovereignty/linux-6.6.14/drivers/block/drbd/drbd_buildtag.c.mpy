@@ -1,0 +1,9 @@
+{
+  "module_name": "drbd_buildtag.c",
+  "hash_id": "291040c89e39e3631286842ecc4dfae5233e886623059da2df1ab750915b83e2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/block/drbd/drbd_buildtag.c",
+  "human_readable_source": "\n#include <linux/drbd_config.h>\n#include <linux/module.h>\n\nconst char *drbd_buildtag(void)\n{\n\t \n\n\tstatic char buildtag[38] = \"\\0uilt-in\";\n\n\tif (buildtag[0] == 0) {\n#ifdef MODULE\n\t\tsprintf(buildtag, \"srcversion: %-24s\", THIS_MODULE->srcversion);\n#else\n\t\tbuildtag[0] = 'b';\n#endif\n\t}\n\n\treturn buildtag;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

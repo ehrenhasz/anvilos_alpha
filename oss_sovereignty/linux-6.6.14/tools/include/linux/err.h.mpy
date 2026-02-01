@@ -1,0 +1,9 @@
+{
+  "module_name": "err.h",
+  "hash_id": "8fee7f4e2609c3bf52ef4daf611af7075eb4308b31bdf7ade08a9019f73e7a70",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/err.h",
+  "human_readable_source": " \n#ifndef __TOOLS_LINUX_ERR_H\n#define __TOOLS_LINUX_ERR_H\n\n#include <linux/compiler.h>\n#include <linux/types.h>\n\n#include <asm/errno.h>\n\n \n#define MAX_ERRNO\t4095\n\n#define IS_ERR_VALUE(x) unlikely((x) >= (unsigned long)-MAX_ERRNO)\n\nstatic inline void * __must_check ERR_PTR(long error_)\n{\n\treturn (void *) error_;\n}\n\nstatic inline long __must_check PTR_ERR(__force const void *ptr)\n{\n\treturn (long) ptr;\n}\n\nstatic inline bool __must_check IS_ERR(__force const void *ptr)\n{\n\treturn IS_ERR_VALUE((unsigned long)ptr);\n}\n\nstatic inline bool __must_check IS_ERR_OR_NULL(__force const void *ptr)\n{\n\treturn unlikely(!ptr) || IS_ERR_VALUE((unsigned long)ptr);\n}\n\nstatic inline int __must_check PTR_ERR_OR_ZERO(__force const void *ptr)\n{\n\tif (IS_ERR(ptr))\n\t\treturn PTR_ERR(ptr);\n\telse\n\t\treturn 0;\n}\n\n \nstatic inline void * __must_check ERR_CAST(__force const void *ptr)\n{\n\t \n\treturn (void *) ptr;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

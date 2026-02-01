@@ -1,0 +1,9 @@
+{
+  "module_name": "delta,tn48m-reset.h",
+  "hash_id": "f7a7fa52ca4c831da94a3a6418f4fb8a3b54e6dc9833b7e6743eb4d421929de8",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/delta,tn48m-reset.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_RESET_TN48M_H\n#define _DT_BINDINGS_RESET_TN48M_H\n\n#define CPU_88F7040_RESET\t0\n#define CPU_88F6820_RESET\t1\n#define MAC_98DX3265_RESET\t2\n#define PHY_88E1680_RESET\t3\n#define PHY_88E1512_RESET\t4\n#define POE_RESET\t\t5\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

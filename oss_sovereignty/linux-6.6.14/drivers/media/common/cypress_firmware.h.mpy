@@ -1,0 +1,9 @@
+{
+  "module_name": "cypress_firmware.h",
+  "hash_id": "174c276598e720bc15474410c5bac6df737c5d45ef31c2f9f56595de3c0885b2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/common/cypress_firmware.h",
+  "human_readable_source": " \n \n\n#ifndef CYPRESS_FIRMWARE_H\n#define CYPRESS_FIRMWARE_H\n\n#define CYPRESS_AN2135  0\n#define CYPRESS_AN2235  1\n#define CYPRESS_FX2     2\n\n \nstruct hexline {\n\tu8 len;\n\tu32 addr;\n\tu8 type;\n\tu8 data[255];\n\tu8 chk;\n};\n\nint cypress_load_firmware(struct usb_device *, const struct firmware *, int);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

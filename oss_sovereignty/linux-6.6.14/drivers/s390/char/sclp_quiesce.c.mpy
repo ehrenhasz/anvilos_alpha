@@ -1,0 +1,9 @@
+{
+  "module_name": "sclp_quiesce.c",
+  "hash_id": "3eb56e471328ab3707b0b570b1e4d97b809d1d9078fb8c6718422bc9a78da651",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/char/sclp_quiesce.c",
+  "human_readable_source": "\n \n\n#include <linux/types.h>\n#include <linux/cpumask.h>\n#include <linux/smp.h>\n#include <linux/init.h>\n#include <linux/reboot.h>\n#include <linux/atomic.h>\n#include <asm/ptrace.h>\n#include <asm/smp.h>\n\n#include \"sclp.h\"\n\n \nstatic void do_machine_quiesce(void)\n{\n\tpsw_t quiesce_psw;\n\n\tsmp_send_stop();\n\tquiesce_psw.mask =\n\t\tPSW_MASK_BASE | PSW_MASK_EA | PSW_MASK_BA | PSW_MASK_WAIT;\n\tquiesce_psw.addr = 0xfff;\n\t__load_psw(quiesce_psw);\n}\n\n \nstatic void sclp_quiesce_handler(struct evbuf_header *evbuf)\n{\n\t_machine_restart = (void *) do_machine_quiesce;\n\t_machine_halt = do_machine_quiesce;\n\t_machine_power_off = do_machine_quiesce;\n\tctrl_alt_del();\n}\n\nstatic struct sclp_register sclp_quiesce_event = {\n\t.receive_mask = EVTYP_SIGQUIESCE_MASK,\n\t.receiver_fn = sclp_quiesce_handler,\n};\n\n \nstatic int __init sclp_quiesce_init(void)\n{\n\treturn sclp_register(&sclp_quiesce_event);\n}\ndevice_initcall(sclp_quiesce_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sigaction.m4",
+  "hash_id": "b92c021e70afbaab83efddfd20ac27ce757323fd787f6ec496fdb4ed75dc150f",
+  "original_prompt": "Ingested from coreutils-9.4/m4/sigaction.m4",
+  "human_readable_source": "# sigaction.m4 serial 7\ndnl Copyright (C) 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\n# Determine if sigaction interface is present.\nAC_DEFUN([gl_SIGACTION],\n[\n  AC_REQUIRE([gl_SIGNAL_H_DEFAULTS])\n  AC_CHECK_FUNCS_ONCE([sigaction])\n  if test $ac_cv_func_sigaction = yes; then\n    AC_CHECK_MEMBERS([struct sigaction.sa_sigaction], , ,\n                     [[#include <signal.h>]])\n    if test $ac_cv_member_struct_sigaction_sa_sigaction = no; then\n      HAVE_STRUCT_SIGACTION_SA_SIGACTION=0\n    fi\n  else\n    HAVE_SIGACTION=0\n  fi\n])\n\n# Prerequisites of the part of lib/signal.in.h and of lib/sigaction.c.\nAC_DEFUN([gl_PREREQ_SIGACTION],\n[\n  AC_REQUIRE([gl_SIGNAL_H_DEFAULTS])\n  AC_REQUIRE([AC_C_RESTRICT])\n  AC_REQUIRE([AC_TYPE_UID_T])\n  AC_REQUIRE([gl_PREREQ_SIG_HANDLER_H])\n  AC_CHECK_FUNCS_ONCE([sigaltstack siginterrupt])\n  AC_CHECK_TYPES([siginfo_t], [], [], [[\n#include <signal.h>\n  ]])\n  if test $ac_cv_type_siginfo_t = no; then\n    HAVE_SIGINFO_T=0\n  fi\n])\n\n# Prerequisites of lib/sig-handler.h.\nAC_DEFUN([gl_PREREQ_SIG_HANDLER_H], [:])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

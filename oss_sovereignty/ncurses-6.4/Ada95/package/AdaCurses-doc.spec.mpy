@@ -1,0 +1,9 @@
+{
+  "module_name": "AdaCurses-doc.spec",
+  "hash_id": "078a482057697b12d83ce142c847a8e15bc084d053b74a363f8ad7bedc916866",
+  "original_prompt": "Ingested from ncurses-6.4/Ada95/package/AdaCurses-doc.spec",
+  "human_readable_source": "Summary: AdaCurses - Ada95 binding documentation for ncurses\n%define AppProgram AdaCurses\n%define AppVersion MAJOR.MINOR\n%define AppRelease YYYYMMDD\n%define AppPackage %{AppProgram}-doc\n# $Id: AdaCurses-doc.spec,v 1.7 2019/11/23 21:15:53 tom Exp $\nName: %{AppPackage}\nVersion: %{AppVersion}\nRelease: %{AppRelease}\nLicense: MIT\nGroup: Applications/Development\nURL: ftp://ftp.invisible-island.net/%{AppProgram}\nSource0: %{AppProgram}-%{AppRelease}.tgz\nPackager: Thomas Dickey <dickey@invisible-island.net>\n\n%description\nThis is the Ada95 binding documentation from the ncurses MAJOR.MINOR\ndistribution, for patch-date YYYYMMDD.\n%prep\n\n%define debug_package %{nil}\n\n%setup -q -n %{AppProgram}-%{AppRelease}\n\n%build\n\nINSTALL_PROGRAM='${INSTALL}' \\\n%configure \\\n\t--target %{_target_platform} \\\n\t--prefix=%{_prefix} \\\n\t--datadir=%{_datadir} \\\n\t--with-ada-sharedlib\n\n%install\n[ \"$RPM_BUILD_ROOT\" != \"/\" ] && rm -rf $RPM_BUILD_ROOT\n\n(cd doc && make install.html DESTDIR=$RPM_BUILD_ROOT )\n\n%clean\nif rm -rf $RPM_BUILD_ROOT; then\n  echo OK\nelse\n  find $RPM_BUILD_ROOT -type f | grep -F -v /.nfs && exit 1\nfi\nexit 0\n\n%files\n%defattr(-,root,root)\n%{_datadir}/doc/%{AppProgram}\n\n%changelog\n# each patch should add its ChangeLog entries here\n\n* Sat Nov 16 2019 Thomas Dickey\n- modify clean-rule to work around Fedora NFS bugs.\n\n* Sat Sep 07 2019 Thomas Dickey\n- use AppProgram to replace \"AdaCurses\" globally\n\n* Sat Mar 26 2011 Thomas Dickey\n- initial version\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

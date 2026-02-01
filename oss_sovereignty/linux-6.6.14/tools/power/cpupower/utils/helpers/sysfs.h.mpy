@@ -1,0 +1,9 @@
+{
+  "module_name": "sysfs.h",
+  "hash_id": "5996bc73412c200a4f92426cfa0bb957d35b8366a7697c6ae9e6dba1dd3ae71d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/utils/helpers/sysfs.h",
+  "human_readable_source": " \n#ifndef __CPUPOWER_HELPERS_SYSFS_H__\n#define __CPUPOWER_HELPERS_SYSFS_H__\n\n#define PATH_TO_CPU \"/sys/devices/system/cpu/\"\n#define MAX_LINE_LEN 255\n#define SYSFS_PATH_MAX 255\n\nextern unsigned int sysfs_read_file(const char *path, char *buf, size_t buflen);\n\nextern unsigned int sysfs_idlestate_file_exists(unsigned int cpu,\n\t\t\t\t\t\tunsigned int idlestate,\n\t\t\t\t\t\tconst char *fname);\n\nextern int sysfs_is_cpu_online(unsigned int cpu);\n\nextern int sysfs_is_idlestate_disabled(unsigned int cpu,\n\t\t\t\t       unsigned int idlestate);\nextern int sysfs_idlestate_disable(unsigned int cpu, unsigned int idlestate,\n\t\t\t\t   unsigned int disable);\nextern unsigned long sysfs_get_idlestate_latency(unsigned int cpu,\n\t\t\t\t\t\tunsigned int idlestate);\nextern unsigned long sysfs_get_idlestate_usage(unsigned int cpu,\n\t\t\t\t\tunsigned int idlestate);\nextern unsigned long long sysfs_get_idlestate_time(unsigned int cpu,\n\t\t\t\t\t\tunsigned int idlestate);\nextern char *sysfs_get_idlestate_name(unsigned int cpu,\n\t\t\t\tunsigned int idlestate);\nextern char *sysfs_get_idlestate_desc(unsigned int cpu,\n\t\t\t\tunsigned int idlestate);\nextern unsigned int sysfs_get_idlestate_count(unsigned int cpu);\n\nextern char *sysfs_get_cpuidle_governor(void);\nextern char *sysfs_get_cpuidle_driver(void);\n\nextern int sysfs_get_sched(const char *smt_mc);\nextern int sysfs_set_sched(const char *smt_mc, int val);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

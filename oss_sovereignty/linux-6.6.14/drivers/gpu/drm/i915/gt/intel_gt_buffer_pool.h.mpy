@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_gt_buffer_pool.h",
+  "hash_id": "a00efff0baae25233f10f46f0b09fa5bbd9014015f9e9802a4fee3f92b863b01",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_gt_buffer_pool.h",
+  "human_readable_source": " \n \n\n#ifndef INTEL_GT_BUFFER_POOL_H\n#define INTEL_GT_BUFFER_POOL_H\n\n#include <linux/types.h>\n\n#include \"i915_active.h\"\n#include \"intel_gt_buffer_pool_types.h\"\n\nstruct intel_gt;\nstruct i915_request;\n\nstruct intel_gt_buffer_pool_node *\nintel_gt_get_buffer_pool(struct intel_gt *gt, size_t size,\n\t\t\t enum i915_map_type type);\n\nvoid intel_gt_buffer_pool_mark_used(struct intel_gt_buffer_pool_node *node);\n\nstatic inline int\nintel_gt_buffer_pool_mark_active(struct intel_gt_buffer_pool_node *node,\n\t\t\t\t struct i915_request *rq)\n{\n\t \n\tGEM_WARN_ON(!node->pinned);\n\n\treturn i915_active_add_request(&node->active, rq);\n}\n\nstatic inline void\nintel_gt_buffer_pool_put(struct intel_gt_buffer_pool_node *node)\n{\n\ti915_active_release(&node->active);\n}\n\nvoid intel_gt_init_buffer_pool(struct intel_gt *gt);\nvoid intel_gt_flush_buffer_pool(struct intel_gt *gt);\nvoid intel_gt_fini_buffer_pool(struct intel_gt *gt);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

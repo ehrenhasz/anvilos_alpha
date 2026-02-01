@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-qcom-qmp-pcs-ufs-v2.h",
+  "hash_id": "f203c89b504640295f05237e2c71c8e2cbc3f1741750e062d962fda20df25c37",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/qualcomm/phy-qcom-qmp-pcs-ufs-v2.h",
+  "human_readable_source": " \n \n\n#ifndef QCOM_PHY_QMP_PCS_UFS_V2_H_\n#define QCOM_PHY_QMP_PCS_UFS_V2_H_\n\n#define QPHY_V2_PCS_UFS_PHY_START\t\t\t0x000\n#define QPHY_V2_PCS_UFS_POWER_DOWN_CONTROL\t\t0x004\n\n#define QPHY_V2_PCS_UFS_TX_LARGE_AMP_DRV_LVL\t\t0x034\n#define QPHY_V2_PCS_UFS_TX_LARGE_AMP_POST_EMP_LVL\t0x038\n#define QPHY_V2_PCS_UFS_TX_SMALL_AMP_DRV_LVL\t\t0x03c\n#define QPHY_V2_PCS_UFS_TX_SMALL_AMP_POST_EMP_LVL\t0x040\n\n#define QPHY_V2_PCS_UFS_RX_MIN_STALL_NOCONFIG_TIME_CAP\t0x0cc\n#define QPHY_V2_PCS_UFS_RX_SYM_RESYNC_CTRL\t\t\t0x13c\n#define QPHY_V2_PCS_UFS_RX_MIN_HIBERN8_TIME\t\t\t0x140\n#define QPHY_V2_PCS_UFS_RX_SIGDET_CTRL2\t\t\t0x148\n#define QPHY_V2_PCS_UFS_RX_PWM_GEAR_BAND\t\t\t0x154\n\n#define QPHY_V2_PCS_UFS_READY_STATUS\t\t\t0x168\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

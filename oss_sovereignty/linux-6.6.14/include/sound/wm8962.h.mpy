@@ -1,0 +1,9 @@
+{
+  "module_name": "wm8962.h",
+  "hash_id": "86477af1c7e49b48107fabbe0c1bef7cef4cca8faf28b563fa75427c4d64fc12",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/wm8962.h",
+  "human_readable_source": " \n \n\n#ifndef _WM8962_PDATA_H\n#define _WM8962_PDATA_H\n\n#define WM8962_MAX_GPIO 6\n\n \n#define WM8962_GPIO_SET 0x10000\n\n#define WM8962_GPIO_FN_CLKOUT           0\n#define WM8962_GPIO_FN_LOGIC            1\n#define WM8962_GPIO_FN_SDOUT            2\n#define WM8962_GPIO_FN_IRQ              3\n#define WM8962_GPIO_FN_THERMAL          4\n#define WM8962_GPIO_FN_PLL2_LOCK        6\n#define WM8962_GPIO_FN_PLL3_LOCK        7\n#define WM8962_GPIO_FN_FLL_LOCK         9\n#define WM8962_GPIO_FN_DRC_ACT         10\n#define WM8962_GPIO_FN_WSEQ_DONE       11\n#define WM8962_GPIO_FN_ALC_NG_ACT      12\n#define WM8962_GPIO_FN_ALC_PEAK_LIMIT  13\n#define WM8962_GPIO_FN_ALC_SATURATION  14\n#define WM8962_GPIO_FN_ALC_LEVEL_THR   15\n#define WM8962_GPIO_FN_ALC_LEVEL_LOCK  16\n#define WM8962_GPIO_FN_FIFO_ERR        17\n#define WM8962_GPIO_FN_OPCLK           18\n#define WM8962_GPIO_FN_DMICCLK         19\n#define WM8962_GPIO_FN_DMICDAT         20\n#define WM8962_GPIO_FN_MICD            21\n#define WM8962_GPIO_FN_MICSCD          22\n\nstruct wm8962_pdata {\n\tstruct clk *mclk;\n\tint gpio_base;\n\tu32 gpio_init[WM8962_MAX_GPIO];\n\n\t \n\tu32 mic_cfg;\n\n\tbool irq_active_low;\n\n\tbool spk_mono;    \n\n\t \n\tbool in4_dc_measure;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "flat.h",
+  "hash_id": "c983a2e2c8474e00317b8b79113153b1a0e055a07c40f11bb4411ffabb716b5b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/flat.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_FLAT_H\n#define _LINUX_FLAT_H\n\n#define\tFLAT_VERSION\t\t\t0x00000004L\n\n \n\nstruct flat_hdr {\n\tchar\tmagic[4];\n\t__be32\trev;           \n\t__be32\tentry;         \n\t__be32\tdata_start;    \n\t__be32\tdata_end;      \n\t__be32\tbss_end;       \n\n\t \n\n\t__be32\tstack_size;    \n\t__be32\treloc_start;   \n\t__be32\treloc_count;   \n\t__be32\tflags;\n\t__be32\tbuild_date;    \n\t__u32\tfiller[5];     \n};\n\n#define FLAT_FLAG_RAM    0x0001  \n#define FLAT_FLAG_GOTPIC 0x0002  \n#define FLAT_FLAG_GZIP   0x0004  \n#define FLAT_FLAG_GZDATA 0x0008  \n#define FLAT_FLAG_KTRACE 0x0010  \n\n \n\n#define\tOLD_FLAT_VERSION\t\t\t0x00000002L\n#define OLD_FLAT_RELOC_TYPE_TEXT\t0\n#define OLD_FLAT_RELOC_TYPE_DATA\t1\n#define OLD_FLAT_RELOC_TYPE_BSS\t\t2\n\ntypedef union {\n\tu32\t\tvalue;\n\tstruct {\n#if defined(__LITTLE_ENDIAN_BITFIELD) || \\\n    (defined(mc68000) && !defined(CONFIG_COLDFIRE))\n\t\ts32\toffset : 30;\n\t\tu32\ttype : 2;\n# elif defined(__BIG_ENDIAN_BITFIELD)\n\t\tu32\ttype : 2;\n\t\ts32\toffset : 30;\n# else\n#   \terror \"Unknown bitfield order for flat files.\"\n# endif\n\t} reloc;\n} flat_v2_reloc_t;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

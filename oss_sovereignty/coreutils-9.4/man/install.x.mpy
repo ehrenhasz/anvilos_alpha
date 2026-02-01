@@ -1,0 +1,9 @@
+{
+  "module_name": "install.x",
+  "hash_id": "ce48151b49320aeb08c0818b90cb24ec9c4a91eeca349ec6c19f3e4349666b84",
+  "original_prompt": "Ingested from coreutils-9.4/man/install.x",
+  "human_readable_source": "[NAME]\ninstall \\- copy files and set attributes\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ncp(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_regs.h",
+  "hash_id": "567a8614433acfe289906b0ef2f58ddb076dde0962197dbf022cd4dee7f8a552",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/csky/include/uapi/asm/perf_regs.h",
+  "human_readable_source": " \n\n\n#ifndef _ASM_CSKY_PERF_REGS_H\n#define _ASM_CSKY_PERF_REGS_H\n\n \nenum perf_event_csky_regs {\n\tPERF_REG_CSKY_TLS,\n\tPERF_REG_CSKY_LR,\n\tPERF_REG_CSKY_PC,\n\tPERF_REG_CSKY_SR,\n\tPERF_REG_CSKY_SP,\n\tPERF_REG_CSKY_ORIG_A0,\n\tPERF_REG_CSKY_A0,\n\tPERF_REG_CSKY_A1,\n\tPERF_REG_CSKY_A2,\n\tPERF_REG_CSKY_A3,\n\tPERF_REG_CSKY_REGS0,\n\tPERF_REG_CSKY_REGS1,\n\tPERF_REG_CSKY_REGS2,\n\tPERF_REG_CSKY_REGS3,\n\tPERF_REG_CSKY_REGS4,\n\tPERF_REG_CSKY_REGS5,\n\tPERF_REG_CSKY_REGS6,\n\tPERF_REG_CSKY_REGS7,\n\tPERF_REG_CSKY_REGS8,\n\tPERF_REG_CSKY_REGS9,\n#if defined(__CSKYABIV2__)\n\tPERF_REG_CSKY_EXREGS0,\n\tPERF_REG_CSKY_EXREGS1,\n\tPERF_REG_CSKY_EXREGS2,\n\tPERF_REG_CSKY_EXREGS3,\n\tPERF_REG_CSKY_EXREGS4,\n\tPERF_REG_CSKY_EXREGS5,\n\tPERF_REG_CSKY_EXREGS6,\n\tPERF_REG_CSKY_EXREGS7,\n\tPERF_REG_CSKY_EXREGS8,\n\tPERF_REG_CSKY_EXREGS9,\n\tPERF_REG_CSKY_EXREGS10,\n\tPERF_REG_CSKY_EXREGS11,\n\tPERF_REG_CSKY_EXREGS12,\n\tPERF_REG_CSKY_EXREGS13,\n\tPERF_REG_CSKY_EXREGS14,\n\tPERF_REG_CSKY_HI,\n\tPERF_REG_CSKY_LO,\n\tPERF_REG_CSKY_DCSR,\n#endif\n\tPERF_REG_CSKY_MAX,\n};\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

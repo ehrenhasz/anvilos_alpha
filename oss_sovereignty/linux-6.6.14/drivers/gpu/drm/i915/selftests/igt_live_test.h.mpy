@@ -1,0 +1,9 @@
+{
+  "module_name": "igt_live_test.h",
+  "hash_id": "531c2863193a621aaf89912c527eb7421b145134bb8f11f3071a15999f1fdc86",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/selftests/igt_live_test.h",
+  "human_readable_source": " \n\n#ifndef IGT_LIVE_TEST_H\n#define IGT_LIVE_TEST_H\n\n#include \"gt/intel_gt_defines.h\"  \n#include \"gt/intel_engine.h\"  \n\nstruct drm_i915_private;\n\nstruct igt_live_test {\n\tstruct drm_i915_private *i915;\n\tconst char *func;\n\tconst char *name;\n\n\tunsigned int reset_global;\n\tunsigned int reset_engine[I915_MAX_GT][I915_NUM_ENGINES];\n};\n\n \nint igt_live_test_begin(struct igt_live_test *t,\n\t\t\tstruct drm_i915_private *i915,\n\t\t\tconst char *func,\n\t\t\tconst char *name);\nint igt_live_test_end(struct igt_live_test *t);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

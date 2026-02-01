@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2d53d3597d8905d811be8716cd9508887fb7e886acf6e1eeaac346c0d52ed82a",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/intel/atom/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-soc-sst-atom-hifi2-platform-objs :=\tsst-mfld-platform-pcm.o \\\n\t\t\t\t\tsst-mfld-platform-compress.o \\\n\t\t\t\t\tsst-atom-controls.o\n\nobj-$(CONFIG_SND_SST_ATOM_HIFI2_PLATFORM) += snd-soc-sst-atom-hifi2-platform.o\n\n# DSP driver\nobj-$(CONFIG_SND_SST_ATOM_HIFI2_PLATFORM) += sst/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

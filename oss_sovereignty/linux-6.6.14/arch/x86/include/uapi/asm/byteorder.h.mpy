@@ -1,0 +1,9 @@
+{
+  "module_name": "byteorder.h",
+  "hash_id": "706caf5b120bfa1bb63dda8ef8beaeb5db2cdc442607ae2a933c0e348be6f24b",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/byteorder.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_BYTEORDER_H\n#define _ASM_X86_BYTEORDER_H\n\n#include <linux/byteorder/little_endian.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

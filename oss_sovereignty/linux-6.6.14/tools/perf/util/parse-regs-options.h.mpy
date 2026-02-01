@@ -1,0 +1,9 @@
+{
+  "module_name": "parse-regs-options.h",
+  "hash_id": "03327eabdb358830ce3d99c9af6b341389350d040e627339653324b8260fab18",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/parse-regs-options.h",
+  "human_readable_source": " \n#ifndef _PERF_PARSE_REGS_OPTIONS_H\n#define _PERF_PARSE_REGS_OPTIONS_H 1\nstruct option;\nint parse_user_regs(const struct option *opt, const char *str, int unset);\nint parse_intr_regs(const struct option *opt, const char *str, int unset);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

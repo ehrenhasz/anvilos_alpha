@@ -1,0 +1,9 @@
+{
+  "module_name": "cx20442.h",
+  "hash_id": "9e08ca27973fe6e0906a842c7c9f9b0c7e388d00a6d616ab598be5aa31a340e7",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/cx20442.h",
+  "human_readable_source": " \n \n\n#ifndef _CX20442_CODEC_H\n#define _CX20442_CODEC_H\n\nextern struct tty_ldisc_ops v253_ops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

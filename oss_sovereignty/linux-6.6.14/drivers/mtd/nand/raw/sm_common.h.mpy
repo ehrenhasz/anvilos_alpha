@@ -1,0 +1,9 @@
+{
+  "module_name": "sm_common.h",
+  "hash_id": "a63258478919a9d6c3e4db3bf4d1fa9042a6e00fe5b54518c899230fb189950f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/nand/raw/sm_common.h",
+  "human_readable_source": " \n \n#include <linux/bitops.h>\n#include <linux/mtd/mtd.h>\n\n \nstruct sm_oob {\n\tuint32_t reserved;\n\tuint8_t data_status;\n\tuint8_t block_status;\n\tuint8_t lba_copy1[2];\n\tuint8_t ecc2[3];\n\tuint8_t lba_copy2[2];\n\tuint8_t ecc1[3];\n} __packed;\n\n\n \n#define SM_SECTOR_SIZE\t\t512\n\n \n#define SM_OOB_SIZE\t\t16\n\n \n#define SM_MAX_ZONE_SIZE \t1024\n\n \n#define SM_SMALL_PAGE \t\t256\n#define SM_SMALL_OOB_SIZE\t8\n\n\nint sm_register_device(struct mtd_info *mtd, int smartmedia);\n\n\nstatic inline int sm_sector_valid(struct sm_oob *oob)\n{\n\treturn hweight16(oob->data_status) >= 5;\n}\n\nstatic inline int sm_block_valid(struct sm_oob *oob)\n{\n\treturn hweight16(oob->block_status) >= 7;\n}\n\nstatic inline int sm_block_erased(struct sm_oob *oob)\n{\n\tstatic const uint32_t erased_pattern[4] = {\n\t\t0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF };\n\n\t \n\tif (!memcmp(oob, erased_pattern, sizeof(*oob)))\n\t\treturn 1;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

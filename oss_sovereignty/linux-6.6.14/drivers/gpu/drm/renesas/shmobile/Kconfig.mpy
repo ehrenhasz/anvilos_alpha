@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "de908714a3c0a63f8782e734050aaa218a46b785710004f3534e446354f5a1ca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/renesas/shmobile/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig DRM_SHMOBILE\n\ttristate \"DRM Support for SH Mobile\"\n\tdepends on DRM\n\tdepends on ARCH_RENESAS || ARCH_SHMOBILE || COMPILE_TEST\n\tselect BACKLIGHT_CLASS_DEVICE\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\thelp\n\t  Choose this option if you have an SH Mobile chipset.\n\t  If M is selected the module will be called shmob-drm.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "irq-gic-common.h",
+  "hash_id": "690b2e4d4af83f9ed93b67cb54d36ee8c27262613fd3414e8ec71aff51bbad73",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/irqchip/irq-gic-common.h",
+  "human_readable_source": " \n \n\n#ifndef _IRQ_GIC_COMMON_H\n#define _IRQ_GIC_COMMON_H\n\n#include <linux/of.h>\n#include <linux/irqdomain.h>\n#include <linux/irqchip/arm-gic-common.h>\n\nstruct gic_quirk {\n\tconst char *desc;\n\tconst char *compatible;\n\tconst char *property;\n\tbool (*init)(void *data);\n\tu32 iidr;\n\tu32 mask;\n};\n\nint gic_configure_irq(unsigned int irq, unsigned int type,\n                       void __iomem *base, void (*sync_access)(void));\nvoid gic_dist_config(void __iomem *base, int gic_irqs,\n\t\t     void (*sync_access)(void));\nvoid gic_cpu_config(void __iomem *base, int nr, void (*sync_access)(void));\nvoid gic_enable_quirks(u32 iidr, const struct gic_quirk *quirks,\n\t\tvoid *data);\nvoid gic_enable_of_quirks(const struct device_node *np,\n\t\t\t  const struct gic_quirk *quirks, void *data);\n\n#define RDIST_FLAGS_PROPBASE_NEEDS_FLUSHING    (1 << 0)\n#define RDIST_FLAGS_RD_TABLES_PREALLOCATED     (1 << 1)\n#define RDIST_FLAGS_FORCE_NON_SHAREABLE        (1 << 2)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

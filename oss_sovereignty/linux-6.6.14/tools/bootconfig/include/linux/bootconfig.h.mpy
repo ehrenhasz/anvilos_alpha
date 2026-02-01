@@ -1,0 +1,9 @@
+{
+  "module_name": "bootconfig.h",
+  "hash_id": "d73855ee3298d78a0862b99c6da418c53880f92ca9679bebbd1704de97c5b3df",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bootconfig/include/linux/bootconfig.h",
+  "human_readable_source": " \n#ifndef _BOOTCONFIG_LINUX_BOOTCONFIG_H\n#define _BOOTCONFIG_LINUX_BOOTCONFIG_H\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <stdint.h>\n#include <stdbool.h>\n#include <ctype.h>\n#include <errno.h>\n#include <string.h>\n\n\n#ifndef fallthrough\n# define fallthrough\n#endif\n\n#define WARN_ON(cond)\t\\\n\t((cond) ? printf(\"Internal warning(%s:%d, %s): %s\\n\",\t\\\n\t\t\t__FILE__, __LINE__, __func__, #cond) : 0)\n\n#define unlikely(cond)\t(cond)\n\n \nstatic inline char *skip_spaces(const char *str)\n{\n\twhile (isspace(*str))\n\t\t++str;\n\treturn (char *)str;\n}\n\nstatic inline char *strim(char *s)\n{\n\tsize_t size;\n\tchar *end;\n\n\tsize = strlen(s);\n\tif (!size)\n\t\treturn s;\n\n\tend = s + size - 1;\n\twhile (end >= s && isspace(*end))\n\t\tend--;\n\t*(end + 1) = '\\0';\n\n\treturn skip_spaces(s);\n}\n\n#define __init\n#define __initdata\n\n#include \"../../../../include/linux/bootconfig.h\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

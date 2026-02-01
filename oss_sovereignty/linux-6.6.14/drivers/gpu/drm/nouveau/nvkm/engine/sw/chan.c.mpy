@@ -1,0 +1,9 @@
+{
+  "module_name": "chan.c",
+  "hash_id": "7aa4a58e5fb1d8d8d738a00d907aa6fca8698185c10bbb7880898fe93f84beb8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/sw/chan.c",
+  "human_readable_source": " \n#include \"chan.h\"\n\n#include <engine/fifo.h>\n\n#include <nvif/event.h>\n#include <nvif/unpack.h>\n\nbool\nnvkm_sw_chan_mthd(struct nvkm_sw_chan *chan, int subc, u32 mthd, u32 data)\n{\n\tswitch (mthd) {\n\tcase 0x0000:\n\t\treturn true;\n\tcase 0x0500:\n\t\tnvkm_event_ntfy(&chan->event, 0, NVKM_SW_CHAN_EVENT_PAGE_FLIP);\n\t\treturn true;\n\tdefault:\n\t\tif (chan->func->mthd)\n\t\t\treturn chan->func->mthd(chan, subc, mthd, data);\n\t\tbreak;\n\t}\n\treturn false;\n}\n\nstatic const struct nvkm_event_func\nnvkm_sw_chan_event = {\n};\n\nstatic void *\nnvkm_sw_chan_dtor(struct nvkm_object *object)\n{\n\tstruct nvkm_sw_chan *chan = nvkm_sw_chan(object);\n\tstruct nvkm_sw *sw = chan->sw;\n\tunsigned long flags;\n\tvoid *data = chan;\n\n\tif (chan->func->dtor)\n\t\tdata = chan->func->dtor(chan);\n\tnvkm_event_fini(&chan->event);\n\n\tspin_lock_irqsave(&sw->engine.lock, flags);\n\tlist_del(&chan->head);\n\tspin_unlock_irqrestore(&sw->engine.lock, flags);\n\treturn data;\n}\n\nstatic const struct nvkm_object_func\nnvkm_sw_chan = {\n\t.dtor = nvkm_sw_chan_dtor,\n};\n\nint\nnvkm_sw_chan_ctor(const struct nvkm_sw_chan_func *func, struct nvkm_sw *sw,\n\t\t  struct nvkm_chan *fifo, const struct nvkm_oclass *oclass,\n\t\t  struct nvkm_sw_chan *chan)\n{\n\tunsigned long flags;\n\n\tnvkm_object_ctor(&nvkm_sw_chan, oclass, &chan->object);\n\tchan->func = func;\n\tchan->sw = sw;\n\tchan->fifo = fifo;\n\tspin_lock_irqsave(&sw->engine.lock, flags);\n\tlist_add(&chan->head, &sw->chan);\n\tspin_unlock_irqrestore(&sw->engine.lock, flags);\n\n\treturn nvkm_event_init(&nvkm_sw_chan_event, &sw->engine.subdev, 1, 1, &chan->event);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

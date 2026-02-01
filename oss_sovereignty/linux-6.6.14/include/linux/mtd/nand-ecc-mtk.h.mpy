@@ -1,0 +1,9 @@
+{
+  "module_name": "nand-ecc-mtk.h",
+  "hash_id": "aed7656571cbfee0d35d6669db3656e0c07a18e256a40c463649dc2306dda20b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/nand-ecc-mtk.h",
+  "human_readable_source": " \n \n\n#ifndef __DRIVERS_MTD_NAND_MTK_ECC_H__\n#define __DRIVERS_MTD_NAND_MTK_ECC_H__\n\n#include <linux/types.h>\n\nenum mtk_ecc_mode {ECC_DMA_MODE = 0, ECC_NFI_MODE = 1};\nenum mtk_ecc_operation {ECC_ENCODE, ECC_DECODE};\n\nstruct device_node;\nstruct mtk_ecc;\n\nstruct mtk_ecc_stats {\n\tu32 corrected;\n\tu32 bitflips;\n\tu32 failed;\n};\n\nstruct mtk_ecc_config {\n\tenum mtk_ecc_operation op;\n\tenum mtk_ecc_mode mode;\n\tdma_addr_t addr;\n\tu32 strength;\n\tu32 sectors;\n\tu32 len;\n};\n\nint mtk_ecc_encode(struct mtk_ecc *, struct mtk_ecc_config *, u8 *, u32);\nvoid mtk_ecc_get_stats(struct mtk_ecc *, struct mtk_ecc_stats *, int);\nint mtk_ecc_wait_done(struct mtk_ecc *, enum mtk_ecc_operation);\nint mtk_ecc_enable(struct mtk_ecc *, struct mtk_ecc_config *);\nvoid mtk_ecc_disable(struct mtk_ecc *);\nvoid mtk_ecc_adjust_strength(struct mtk_ecc *ecc, u32 *p);\nunsigned int mtk_ecc_get_parity_bits(struct mtk_ecc *ecc);\n\nstruct mtk_ecc *of_mtk_ecc_get(struct device_node *);\nvoid mtk_ecc_release(struct mtk_ecc *);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

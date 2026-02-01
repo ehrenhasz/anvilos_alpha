@@ -1,0 +1,9 @@
+{
+  "module_name": "sdma_v4_4.h",
+  "hash_id": "251fdd4c0df3e60f1f6d774c5b105e4a2b94368275635495342a424de8707d3d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/sdma_v4_4.h",
+  "human_readable_source": " \n#ifndef __SDMA_V4_4_H__\n#define __SDMA_V4_4_H__\n\nextern struct amdgpu_sdma_ras sdma_v4_4_ras;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

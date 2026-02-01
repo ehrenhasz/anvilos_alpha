@@ -1,0 +1,9 @@
+{
+  "module_name": "driver_chipcommon_nflash.c",
+  "hash_id": "a82166622495bf42e8a18b616b14a7eb4a35eb2794f1558c5912bd7deefa3ae1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bcma/driver_chipcommon_nflash.c",
+  "human_readable_source": " \n\n#include \"bcma_private.h\"\n\n#include <linux/bitops.h>\n#include <linux/platform_device.h>\n#include <linux/platform_data/brcmnand.h>\n#include <linux/bcma/bcma.h>\n\n \nstatic const char *bcma_nflash_alt_name = \"bcma_brcmnand\";\n\nstruct platform_device bcma_nflash_dev = {\n\t.name\t\t= \"bcma_nflash\",\n\t.num_resources\t= 0,\n};\n\nstatic const char *probes[] = { \"bcm47xxpart\", NULL };\n\n \nint bcma_nflash_init(struct bcma_drv_cc *cc)\n{\n\tstruct bcma_bus *bus = cc->core->bus;\n\tu32 reg;\n\n\tif (bus->chipinfo.id != BCMA_CHIP_ID_BCM4706 &&\n\t    cc->core->id.rev != 38) {\n\t\tbcma_err(bus, \"NAND flash on unsupported board!\\n\");\n\t\treturn -ENOTSUPP;\n\t}\n\n\tif (!(cc->capabilities & BCMA_CC_CAP_NFLASH)) {\n\t\tbcma_err(bus, \"NAND flash not present according to ChipCommon\\n\");\n\t\treturn -ENODEV;\n\t}\n\n\tcc->nflash.present = true;\n\tif (cc->core->id.rev == 38 &&\n\t    (cc->status & BCMA_CC_CHIPST_5357_NAND_BOOT)) {\n\t\tcc->nflash.boot = true;\n\t\t \n\t\treg = bcma_cc_read32(cc, BCMA_CC_NAND_CS_NAND_SELECT) & 0xff;\n\t\tcc->nflash.brcmnand_info.chip_select = ffs(reg) - 1;\n\t\tcc->nflash.brcmnand_info.part_probe_types = probes;\n\t\tcc->nflash.brcmnand_info.ecc_stepsize = 512;\n\t\tcc->nflash.brcmnand_info.ecc_strength = 1;\n\t\tbcma_nflash_dev.name = bcma_nflash_alt_name;\n\t}\n\n\t \n\tbcma_nflash_dev.dev.platform_data = &cc->nflash;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

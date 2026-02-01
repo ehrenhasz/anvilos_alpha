@@ -1,0 +1,9 @@
+{
+  "module_name": "highmem_32.c",
+  "hash_id": "c6d85e185f1e1e5f65d313b845556ae52924b44d704967e9cd126ce1f6c8fa09",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/mm/highmem_32.c",
+  "human_readable_source": "\n#include <linux/highmem.h>\n#include <linux/export.h>\n#include <linux/swap.h>  \n#include <linux/memblock.h>\n#include <asm/numa.h>\n\nvoid __init set_highmem_pages_init(void)\n{\n\tstruct zone *zone;\n\tint nid;\n\n\t \n\treset_all_zones_managed_pages();\n\tfor_each_zone(zone) {\n\t\tunsigned long zone_start_pfn, zone_end_pfn;\n\n\t\tif (!is_highmem(zone))\n\t\t\tcontinue;\n\n\t\tzone_start_pfn = zone->zone_start_pfn;\n\t\tzone_end_pfn = zone_start_pfn + zone->spanned_pages;\n\n\t\tnid = zone_to_nid(zone);\n\t\tprintk(KERN_INFO \"Initializing %s for node %d (%08lx:%08lx)\\n\",\n\t\t\t\tzone->name, nid, zone_start_pfn, zone_end_pfn);\n\n\t\tadd_highpages_with_active_regions(nid, zone_start_pfn,\n\t\t\t\t zone_end_pfn);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

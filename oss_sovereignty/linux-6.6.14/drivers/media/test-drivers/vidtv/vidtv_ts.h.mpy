@@ -1,0 +1,9 @@
+{
+  "module_name": "vidtv_ts.h",
+  "hash_id": "8d1ff605bb69932bd55f853490b98cfafb187ced1c1766590450484057685529",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/test-drivers/vidtv/vidtv_ts.h",
+  "human_readable_source": " \n \n\n#ifndef VIDTV_TS_H\n#define VIDTV_TS_H\n\n#include <linux/types.h>\n\n#define TS_SYNC_BYTE 0x47\n#define TS_PACKET_LEN 188\n#define TS_PAYLOAD_LEN 184\n#define TS_NULL_PACKET_PID 0x1fff\n#define TS_CC_MAX_VAL 0x0f  \n#define TS_LAST_VALID_PID 8191\n#define TS_FILL_BYTE 0xff  \n\nstruct vidtv_mpeg_ts_adaption {\n\tu8 length;\n\tstruct {\n\t\tu8 extension:1;\n\t\tu8 private_data:1;\n\t\tu8 splicing_point:1;\n\t\tu8 OPCR:1;\n\t\tu8 PCR:1;\n\t\tu8 priority:1;\n\t\tu8 random_access:1;\n\t\tu8 discontinued:1;\n\t} __packed;\n\tu8 data[];\n} __packed;\n\nstruct vidtv_mpeg_ts {\n\tu8 sync_byte;\n\t__be16 bitfield;  \n\tstruct {\n\t\tu8 continuity_counter:4;\n\t\tu8 payload:1;\n\t\tu8 adaptation_field:1;\n\t\tu8 scrambling:2;\n\t} __packed;\n} __packed;\n\n \nstruct pcr_write_args {\n\tvoid *dest_buf;\n\tu32 dest_offset;\n\tu16 pid;\n\tu32 buf_sz;\n\tu8 *continuity_counter;\n\tu64 pcr;\n};\n\n \nstruct null_packet_write_args {\n\tvoid *dest_buf;\n\tu32 dest_offset;\n\tu32 buf_sz;\n\tu8 *continuity_counter;\n};\n\n \nvoid vidtv_ts_inc_cc(u8 *continuity_counter);\n\n \nu32 vidtv_ts_null_write_into(struct null_packet_write_args args);\n\n \nu32 vidtv_ts_pcr_write_into(struct pcr_write_args args);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

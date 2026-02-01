@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "edd814179ad32cb721442f065a97b7caefff9e4db9e6b2011679f23911a4255e",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/fireface/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nsnd-fireface-objs := ff.o ff-transaction.o ff-midi.o ff-proc.o amdtp-ff.o \\\n\t\t     ff-stream.o ff-pcm.o ff-hwdep.o ff-protocol-former.o \\\n\t\t     ff-protocol-latter.o\nobj-$(CONFIG_SND_FIREFACE) += snd-fireface.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

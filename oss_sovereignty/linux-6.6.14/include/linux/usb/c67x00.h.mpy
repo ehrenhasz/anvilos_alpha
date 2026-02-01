@@ -1,0 +1,9 @@
+{
+  "module_name": "c67x00.h",
+  "hash_id": "968c4c23998e377c8fd2b32a1e3b4455bcb526791ad99f1a652606a079afeaca",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/usb/c67x00.h",
+  "human_readable_source": "\n \n\n#ifndef _LINUX_USB_C67X00_H\n#define _LINUX_USB_C67X00_H\n\n \n#define C67X00_SIE_UNUSED\t0\n#define C67X00_SIE_HOST\t\t1\n#define C67X00_SIE_PERIPHERAL_A\t2\t \n#define C67X00_SIE_PERIPHERAL_B\t3\t \n\n#define c67x00_sie_config(config, n)  (((config)>>(4*(n)))&0x3)\n\n#define C67X00_SIE1_UNUSED\t        (C67X00_SIE_UNUSED\t\t<< 0)\n#define C67X00_SIE1_HOST\t        (C67X00_SIE_HOST\t\t<< 0)\n#define C67X00_SIE1_PERIPHERAL_A\t(C67X00_SIE_PERIPHERAL_A\t<< 0)\n#define C67X00_SIE1_PERIPHERAL_B\t(C67X00_SIE_PERIPHERAL_B\t<< 0)\n\n#define C67X00_SIE2_UNUSED\t\t(C67X00_SIE_UNUSED\t\t<< 4)\n#define C67X00_SIE2_HOST\t\t(C67X00_SIE_HOST\t\t<< 4)\n#define C67X00_SIE2_PERIPHERAL_A\t(C67X00_SIE_PERIPHERAL_A\t<< 4)\n#define C67X00_SIE2_PERIPHERAL_B\t(C67X00_SIE_PERIPHERAL_B\t<< 4)\n\nstruct c67x00_platform_data {\n\tint sie_config;\t\t\t \n\tunsigned long hpi_regstep;\t \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

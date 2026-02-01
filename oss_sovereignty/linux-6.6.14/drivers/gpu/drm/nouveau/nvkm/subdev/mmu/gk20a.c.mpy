@@ -1,0 +1,9 @@
+{
+  "module_name": "gk20a.c",
+  "hash_id": "128d4482e3bc62617fbd8e694cd4063e7d3281969d33a9c17b7dd9ffc01e17d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/mmu/gk20a.c",
+  "human_readable_source": " \n#include \"mem.h\"\n#include \"vmm.h\"\n\n#include <nvif/class.h>\n\nstatic const struct nvkm_mmu_func\ngk20a_mmu = {\n\t.dma_bits = 40,\n\t.mmu = {{ -1, -1, NVIF_CLASS_MMU_GF100}},\n\t.mem = {{ -1, -1, NVIF_CLASS_MEM_GF100}, .umap = gf100_mem_map },\n\t.vmm = {{ -1, -1, NVIF_CLASS_VMM_GF100}, gk20a_vmm_new },\n\t.kind = gf100_mmu_kind,\n\t.kind_sys = true,\n};\n\nint\ngk20a_mmu_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t      struct nvkm_mmu **pmmu)\n{\n\treturn nvkm_mmu_new_(&gk20a_mmu, device, type, inst, pmmu);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

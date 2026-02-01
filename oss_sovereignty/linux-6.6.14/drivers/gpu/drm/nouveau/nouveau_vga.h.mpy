@@ -1,0 +1,9 @@
+{
+  "module_name": "nouveau_vga.h",
+  "hash_id": "9c3ecccda74ed55d156c7b08ab0f16ee7b4e2eb2e980f87990e6e56ca5b8df78",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nouveau_vga.h",
+  "human_readable_source": " \n#ifndef __NOUVEAU_VGA_H__\n#define __NOUVEAU_VGA_H__\n\nvoid nouveau_vga_init(struct nouveau_drm *);\nvoid nouveau_vga_fini(struct nouveau_drm *);\nvoid nouveau_vga_lastclose(struct drm_device *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

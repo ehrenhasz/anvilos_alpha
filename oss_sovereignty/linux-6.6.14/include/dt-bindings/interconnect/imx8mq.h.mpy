@@ -1,0 +1,9 @@
+{
+  "module_name": "imx8mq.h",
+  "hash_id": "f6ccfc32f8e2b31386270d2cc322ff100ed9c439b787bc7166e1aacd2dc1b498",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/interconnect/imx8mq.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_INTERCONNECT_IMX8MQ_H\n#define __DT_BINDINGS_INTERCONNECT_IMX8MQ_H\n\n#define IMX8MQ_ICN_NOC\t\t1\n#define IMX8MQ_ICS_DRAM\t\t2\n#define IMX8MQ_ICS_OCRAM\t3\n#define IMX8MQ_ICM_A53\t\t4\n\n#define IMX8MQ_ICM_VPU\t\t5\n#define IMX8MQ_ICN_VIDEO\t6\n\n#define IMX8MQ_ICM_GPU\t\t7\n#define IMX8MQ_ICN_GPU\t\t8\n\n#define IMX8MQ_ICM_DCSS\t\t9\n#define IMX8MQ_ICN_DCSS\t\t10\n\n#define IMX8MQ_ICM_USB1\t\t11\n#define IMX8MQ_ICM_USB2\t\t12\n#define IMX8MQ_ICN_USB\t\t13\n\n#define IMX8MQ_ICM_CSI1\t\t14\n#define IMX8MQ_ICM_CSI2\t\t15\n#define IMX8MQ_ICM_LCDIF\t16\n#define IMX8MQ_ICN_DISPLAY\t17\n\n#define IMX8MQ_ICM_SDMA2\t18\n#define IMX8MQ_ICN_AUDIO\t19\n\n#define IMX8MQ_ICN_ENET\t\t20\n#define IMX8MQ_ICM_ENET\t\t21\n\n#define IMX8MQ_ICM_SDMA1\t22\n#define IMX8MQ_ICM_NAND\t\t23\n#define IMX8MQ_ICM_USDHC1\t24\n#define IMX8MQ_ICM_USDHC2\t25\n#define IMX8MQ_ICM_PCIE1\t26\n#define IMX8MQ_ICM_PCIE2\t27\n#define IMX8MQ_ICN_MAIN\t\t28\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

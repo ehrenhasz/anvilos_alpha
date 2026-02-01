@@ -1,0 +1,9 @@
+{
+  "module_name": "fadvise.h",
+  "hash_id": "ceb6bc1426622ee021863bd69345bd03810b1e1dbcc465e0271c43f0ae52d969",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/uapi/linux/fadvise.h",
+  "human_readable_source": " \n#ifndef FADVISE_H_INCLUDED\n#define FADVISE_H_INCLUDED\n\n#define POSIX_FADV_NORMAL\t0  \n#define POSIX_FADV_RANDOM\t1  \n#define POSIX_FADV_SEQUENTIAL\t2  \n#define POSIX_FADV_WILLNEED\t3  \n\n \n#if defined(__s390x__)\n#define POSIX_FADV_DONTNEED\t6  \n#define POSIX_FADV_NOREUSE\t7  \n#else\n#define POSIX_FADV_DONTNEED\t4  \n#define POSIX_FADV_NOREUSE\t5  \n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

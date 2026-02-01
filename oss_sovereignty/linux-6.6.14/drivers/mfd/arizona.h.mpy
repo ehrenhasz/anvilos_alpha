@@ -1,0 +1,9 @@
+{
+  "module_name": "arizona.h",
+  "hash_id": "ad5abe595fd8c8bebf9146df680b014c5cce5b30eedf4a9a2b04ad02a4ce4ecb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/arizona.h",
+  "human_readable_source": " \n \n\n#ifndef _WM5102_H\n#define _WM5102_H\n\n#include <linux/of.h>\n#include <linux/regmap.h>\n#include <linux/pm.h>\n\nextern const struct regmap_config wm5102_i2c_regmap;\nextern const struct regmap_config wm5102_spi_regmap;\n\nextern const struct regmap_config wm5110_i2c_regmap;\nextern const struct regmap_config wm5110_spi_regmap;\n\nextern const struct regmap_config cs47l24_spi_regmap;\n\nextern const struct regmap_config wm8997_i2c_regmap;\n\nextern const struct regmap_config wm8998_i2c_regmap;\n\nextern const struct dev_pm_ops arizona_pm_ops;\n\nextern const struct regmap_irq_chip wm5102_aod;\nextern const struct regmap_irq_chip wm5102_irq;\n\nextern const struct regmap_irq_chip wm5110_aod;\nextern const struct regmap_irq_chip wm5110_irq;\nextern const struct regmap_irq_chip wm5110_revd_irq;\n\nextern const struct regmap_irq_chip cs47l24_irq;\n\nextern const struct regmap_irq_chip wm8997_aod;\nextern const struct regmap_irq_chip wm8997_irq;\n\nextern struct regmap_irq_chip wm8998_aod;\nextern struct regmap_irq_chip wm8998_irq;\n\nint arizona_dev_init(struct arizona *arizona);\nint arizona_dev_exit(struct arizona *arizona);\nint arizona_irq_init(struct arizona *arizona);\nint arizona_irq_exit(struct arizona *arizona);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

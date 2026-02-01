@@ -1,0 +1,9 @@
+{
+  "module_name": "base64.c",
+  "hash_id": "cbb9dfaebacbae071b63ecfd9f20a499352bb91f96c98d98e76e2613b7a73df6",
+  "original_prompt": "Ingested from linux-6.6.14/lib/base64.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/types.h>\n#include <linux/export.h>\n#include <linux/string.h>\n#include <linux/base64.h>\n\nstatic const char base64_table[65] =\n\t\"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/\";\n\n \nint base64_encode(const u8 *src, int srclen, char *dst)\n{\n\tu32 ac = 0;\n\tint bits = 0;\n\tint i;\n\tchar *cp = dst;\n\n\tfor (i = 0; i < srclen; i++) {\n\t\tac = (ac << 8) | src[i];\n\t\tbits += 8;\n\t\tdo {\n\t\t\tbits -= 6;\n\t\t\t*cp++ = base64_table[(ac >> bits) & 0x3f];\n\t\t} while (bits >= 6);\n\t}\n\tif (bits) {\n\t\t*cp++ = base64_table[(ac << (6 - bits)) & 0x3f];\n\t\tbits -= 6;\n\t}\n\twhile (bits < 0) {\n\t\t*cp++ = '=';\n\t\tbits += 2;\n\t}\n\treturn cp - dst;\n}\nEXPORT_SYMBOL_GPL(base64_encode);\n\n \nint base64_decode(const char *src, int srclen, u8 *dst)\n{\n\tu32 ac = 0;\n\tint bits = 0;\n\tint i;\n\tu8 *bp = dst;\n\n\tfor (i = 0; i < srclen; i++) {\n\t\tconst char *p = strchr(base64_table, src[i]);\n\n\t\tif (src[i] == '=') {\n\t\t\tac = (ac << 6);\n\t\t\tbits += 6;\n\t\t\tif (bits >= 8)\n\t\t\t\tbits -= 8;\n\t\t\tcontinue;\n\t\t}\n\t\tif (p == NULL || src[i] == 0)\n\t\t\treturn -1;\n\t\tac = (ac << 6) | (p - base64_table);\n\t\tbits += 6;\n\t\tif (bits >= 8) {\n\t\t\tbits -= 8;\n\t\t\t*bp++ = (u8)(ac >> bits);\n\t\t}\n\t}\n\tif (ac & ((1 << bits) - 1))\n\t\treturn -1;\n\treturn bp - dst;\n}\nEXPORT_SYMBOL_GPL(base64_decode);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

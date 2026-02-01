@@ -1,0 +1,9 @@
+{
+  "module_name": "rio_ids.h",
+  "hash_id": "afcf7eb07454d084c49e2d8cd624ace5bbd027597cd5162e9364cd2dc968eda3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rio_ids.h",
+  "human_readable_source": " \n \n\n#ifndef LINUX_RIO_IDS_H\n#define LINUX_RIO_IDS_H\n\n#define RIO_VID_IDT\t\t\t0x0038\n#define RIO_DID_IDT70K200\t\t0x0310\n#define RIO_DID_IDTCPS8\t\t\t0x035c\n#define RIO_DID_IDTCPS12\t\t0x035d\n#define RIO_DID_IDTCPS16\t\t0x035b\n#define RIO_DID_IDTCPS6Q\t\t0x035f\n#define RIO_DID_IDTCPS10Q\t\t0x035e\n#define RIO_DID_IDTCPS1848\t\t0x0374\n#define RIO_DID_IDTCPS1432\t\t0x0375\n#define RIO_DID_IDTCPS1616\t\t0x0379\n#define RIO_DID_IDTVPS1616\t\t0x0377\n#define RIO_DID_IDTSPS1616\t\t0x0378\n#define RIO_DID_IDTRXS1632\t\t0x80e5\n#define RIO_DID_IDTRXS2448\t\t0x80e6\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

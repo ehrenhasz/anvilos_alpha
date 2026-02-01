@@ -1,0 +1,9 @@
+{
+  "module_name": "rcar_cmm.h",
+  "hash_id": "2eaa6ba4845d10a16e56d4a65a2d6e976448fc6b7689a8c940ea3404d3992cd7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/renesas/rcar-du/rcar_cmm.h",
+  "human_readable_source": " \n \n\n#ifndef __RCAR_CMM_H__\n#define __RCAR_CMM_H__\n\n#define CM2_LUT_SIZE\t\t256\n\nstruct drm_color_lut;\nstruct platform_device;\n\n \nstruct rcar_cmm_config {\n\tstruct {\n\t\tstruct drm_color_lut *table;\n\t} lut;\n};\n\n#if IS_ENABLED(CONFIG_DRM_RCAR_CMM)\nint rcar_cmm_init(struct platform_device *pdev);\n\nint rcar_cmm_enable(struct platform_device *pdev);\nvoid rcar_cmm_disable(struct platform_device *pdev);\n\nint rcar_cmm_setup(struct platform_device *pdev,\n\t\t   const struct rcar_cmm_config *config);\n#else\nstatic inline int rcar_cmm_init(struct platform_device *pdev)\n{\n\treturn -ENODEV;\n}\n\nstatic inline int rcar_cmm_enable(struct platform_device *pdev)\n{\n\treturn 0;\n}\n\nstatic inline void rcar_cmm_disable(struct platform_device *pdev)\n{\n}\n\nstatic inline int rcar_cmm_setup(struct platform_device *pdev,\n\t\t\t\t const struct rcar_cmm_config *config)\n{\n\treturn 0;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

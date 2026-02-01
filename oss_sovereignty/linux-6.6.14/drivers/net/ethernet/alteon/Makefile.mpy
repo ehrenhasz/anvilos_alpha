@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "47673f653ec8a8272bee75d5e633099053abb319a16466cd3aba63ec569e3098",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/alteon/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Alteon network device drivers.\n#\n\nobj-$(CONFIG_ACENIC) += acenic.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

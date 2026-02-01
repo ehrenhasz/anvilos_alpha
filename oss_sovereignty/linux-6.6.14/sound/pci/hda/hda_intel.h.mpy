@@ -1,0 +1,9 @@
+{
+  "module_name": "hda_intel.h",
+  "hash_id": "14813d525cc57a684be2ed0309341e849563035d668f707c96cfb4612c13833b",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/hda/hda_intel.h",
+  "human_readable_source": " \n \n#ifndef __SOUND_HDA_INTEL_H\n#define __SOUND_HDA_INTEL_H\n\n#include \"hda_controller.h\"\n\nstruct hda_intel {\n\tstruct azx chip;\n\n\t \n\tstruct work_struct irq_pending_work;\n\n\t \n\tstruct completion probe_wait;\n\tstruct delayed_work probe_work;\n\n\t \n\tstruct list_head list;\n\n\t \n\tunsigned int irq_pending_warned:1;\n\tunsigned int probe_continued:1;\n\n\t \n\tunsigned int use_vga_switcheroo:1;\n\tunsigned int vga_switcheroo_registered:1;\n\tunsigned int init_failed:1;  \n\tunsigned int freed:1;  \n\n\tbool need_i915_power:1;  \n\n\tint probe_retry;\t \n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

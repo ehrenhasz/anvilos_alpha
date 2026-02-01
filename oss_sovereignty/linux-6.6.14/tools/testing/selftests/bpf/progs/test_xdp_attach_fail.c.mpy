@@ -1,0 +1,9 @@
+{
+  "module_name": "test_xdp_attach_fail.c",
+  "hash_id": "1a20dba73689e74685367ec1284be0198acfb0eae419d985378a734a8c01a4ce",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_xdp_attach_fail.c",
+  "human_readable_source": "\n \n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n\n#define ERRMSG_LEN 64\n\nstruct xdp_errmsg {\n\tchar msg[ERRMSG_LEN];\n};\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);\n\t__type(key, int);\n\t__type(value, int);\n} xdp_errmsg_pb SEC(\".maps\");\n\nstruct xdp_attach_error_ctx {\n\tunsigned long unused;\n\n\t \n\t__u32 msg; \n};\n\n \n\nSEC(\"tp/xdp/bpf_xdp_link_attach_failed\")\nint tp__xdp__bpf_xdp_link_attach_failed(struct xdp_attach_error_ctx *ctx)\n{\n\tchar *msg = (void *)(__u64) ((void *) ctx + (__u16) ctx->msg);\n\tstruct xdp_errmsg errmsg = {};\n\n\tbpf_probe_read_kernel_str(&errmsg.msg, ERRMSG_LEN, msg);\n\tbpf_perf_event_output(ctx, &xdp_errmsg_pb, BPF_F_CURRENT_CPU, &errmsg,\n\t\t\t      ERRMSG_LEN);\n\treturn 0;\n}\n\n \n\nchar LICENSE[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

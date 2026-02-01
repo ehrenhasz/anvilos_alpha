@@ -1,0 +1,9 @@
+{
+  "module_name": "sa1100fb.h",
+  "hash_id": "1616a6d91ea42caafc9f6868346c44f9e0ac97033703690e43849d8e8016ef0a",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/sa1100fb.h",
+  "human_readable_source": " \n#ifndef _VIDEO_SA1100FB_H\n#define _VIDEO_SA1100FB_H\n\n#include <linux/fb.h>\n#include <linux/types.h>\n\n#define RGB_4\t0\n#define RGB_8\t1\n#define RGB_16\t2\n#define NR_RGB\t3\n\n \nstruct sa1100fb_rgb {\n\tstruct fb_bitfield\tred;\n\tstruct fb_bitfield\tgreen;\n\tstruct fb_bitfield\tblue;\n\tstruct fb_bitfield\ttransp;\n};\n\n \nstruct sa1100fb_mach_info {\n\tu_long\t\tpixclock;\n\n\tu_short\t\txres;\n\tu_short\t\tyres;\n\n\tu_char\t\tbpp;\n\tu_char\t\thsync_len;\n\tu_char\t\tleft_margin;\n\tu_char\t\tright_margin;\n\n\tu_char\t\tvsync_len;\n\tu_char\t\tupper_margin;\n\tu_char\t\tlower_margin;\n\tu_char\t\tsync;\n\n\tu_int\t\tcmap_greyscale:1,\n\t\t\tcmap_inverse:1,\n\t\t\tcmap_static:1,\n\t\t\tunused:29;\n\n\tu_int\t\tlccr0;\n\tu_int\t\tlccr3;\n\n\t \n\tconst struct sa1100fb_rgb *rgb[NR_RGB];\n\n\tvoid (*backlight_power)(int);\n\tvoid (*lcd_power)(int);\n\tvoid (*set_visual)(u32);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

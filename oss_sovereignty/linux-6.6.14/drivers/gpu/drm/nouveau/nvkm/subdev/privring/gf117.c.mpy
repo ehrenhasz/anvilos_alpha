@@ -1,0 +1,9 @@
+{
+  "module_name": "gf117.c",
+  "hash_id": "b69f0589fcb6969b78f8962e0830ee5f762bb81adf6acf8ef53b9b6a03ca1933",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/privring/gf117.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nstatic int\ngf117_privring_init(struct nvkm_subdev *privring)\n{\n\tstruct nvkm_device *device = privring->device;\n\tnvkm_mask(device, 0x122310, 0x0003ffff, 0x00000800);\n\tnvkm_mask(device, 0x122348, 0x0003ffff, 0x00000100);\n\tnvkm_mask(device, 0x1223b0, 0x0003ffff, 0x00000fff);\n\treturn 0;\n}\n\nstatic const struct nvkm_subdev_func\ngf117_privring = {\n\t.init = gf117_privring_init,\n\t.intr = gf100_privring_intr,\n};\n\nint\ngf117_privring_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t\t   struct nvkm_subdev **pprivring)\n{\n\treturn nvkm_subdev_new_(&gf117_privring, device, type, inst, pprivring);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

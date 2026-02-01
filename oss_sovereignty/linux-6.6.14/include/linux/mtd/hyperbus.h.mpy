@@ -1,0 +1,9 @@
+{
+  "module_name": "hyperbus.h",
+  "hash_id": "20abcf99526097b234d2cffb2f4b0701219c790fe8b1c09d5844dae4256bb031",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/hyperbus.h",
+  "human_readable_source": " \n\n#ifndef __LINUX_MTD_HYPERBUS_H__\n#define __LINUX_MTD_HYPERBUS_H__\n\n#include <linux/mtd/map.h>\n\n \n#define HYPERBUS_RW\t0x80\t \n#define HYPERBUS_RW_WRITE 0\n#define HYPERBUS_RW_READ 0x80\n#define HYPERBUS_AS\t0x40\t \n#define HYPERBUS_AS_MEM\t0\n#define HYPERBUS_AS_REG\t0x40\n#define HYPERBUS_BT\t0x20\t \n#define HYPERBUS_BT_WRAPPED 0\n#define HYPERBUS_BT_LINEAR 0x20\n\nenum hyperbus_memtype {\n\tHYPERFLASH,\n\tHYPERRAM,\n};\n\n \n\nstruct hyperbus_device {\n\tstruct map_info map;\n\tstruct device_node *np;\n\tstruct mtd_info *mtd;\n\tstruct hyperbus_ctlr *ctlr;\n\tenum hyperbus_memtype memtype;\n\tvoid *priv;\n};\n\n \n\nstruct hyperbus_ops {\n\tu16 (*read16)(struct hyperbus_device *hbdev, unsigned long addr);\n\tvoid (*write16)(struct hyperbus_device *hbdev,\n\t\t\tunsigned long addr, u16 val);\n\tvoid (*copy_from)(struct hyperbus_device *hbdev, void *to,\n\t\t\t  unsigned long from, ssize_t len);\n\tvoid (*copy_to)(struct hyperbus_device *dev, unsigned long to,\n\t\t\tconst void *from, ssize_t len);\n\tint (*calibrate)(struct hyperbus_device *dev);\n};\n\n \nstruct hyperbus_ctlr {\n\tstruct device *dev;\n\tbool calibrated;\n\n\tconst struct hyperbus_ops *ops;\n};\n\n \nint hyperbus_register_device(struct hyperbus_device *hbdev);\n\n \nvoid hyperbus_unregister_device(struct hyperbus_device *hbdev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

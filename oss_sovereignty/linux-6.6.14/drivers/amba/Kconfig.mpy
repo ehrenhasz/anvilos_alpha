@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b13d198aa0816aee4b7bbd2a47121d7b47d514ed03cd7b5d1f879ff4a4eff3ce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/amba/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nconfig ARM_AMBA\n\tbool\n\nif ARM_AMBA\n\nconfig TEGRA_AHB\n\tbool\n\tdefault y if ARCH_TEGRA\n\thelp\n\t  Adds AHB configuration functionality for NVIDIA Tegra SoCs,\n\t  which controls AHB bus master arbitration and some performance\n\t  parameters (priority, prefetch size).\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

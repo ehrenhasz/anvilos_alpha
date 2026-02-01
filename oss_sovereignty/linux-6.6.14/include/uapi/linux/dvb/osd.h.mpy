@@ -1,0 +1,9 @@
+{
+  "module_name": "osd.h",
+  "hash_id": "ae5df75c5c84ed6a5f1bae93f2a84f580bcfe8fbb67f903cdda47faa628d6886",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/dvb/osd.h",
+  "human_readable_source": " \n \n\n#ifndef _DVBOSD_H_\n#define _DVBOSD_H_\n\n#include <linux/compiler.h>\n\ntypedef enum {\n\t \n\tOSD_Close = 1,\t \n\t \n\tOSD_Open,\t \n\t \n\tOSD_Show,\t \n\t \n\tOSD_Hide,\t \n\t \n\tOSD_Clear,\t \n\t \n\tOSD_Fill,\t \n\t \n\tOSD_SetColor,\t \n\t \n\tOSD_SetPalette,\t \n\t \n\tOSD_SetTrans,\t \n\t \n\tOSD_SetPixel,\t \n\t \n\tOSD_GetPixel,\t \n\t \n\tOSD_SetRow,\t \n\t \n\tOSD_SetBlock,\t \n\t \n\tOSD_FillRow,\t \n\t \n\tOSD_FillBlock,\t \n\t \n\tOSD_Line,\t \n\t \n\tOSD_Query,\t \n\t \n\tOSD_Test,        \n\t \n\tOSD_Text,\t \n\tOSD_SetWindow,\t \n\tOSD_MoveWindow,\t \n\tOSD_OpenRaw,\t \n} OSD_Command;\n\ntypedef struct osd_cmd_s {\n\tOSD_Command cmd;\n\tint x0;\n\tint y0;\n\tint x1;\n\tint y1;\n\tint color;\n\tvoid __user *data;\n} osd_cmd_t;\n\n \ntypedef enum {\n\tOSD_BITMAP1,            \n\tOSD_BITMAP2,            \n\tOSD_BITMAP4,            \n\tOSD_BITMAP8,            \n\tOSD_BITMAP1HR,          \n\tOSD_BITMAP2HR,          \n\tOSD_BITMAP4HR,          \n\tOSD_BITMAP8HR,          \n\tOSD_YCRCB422,           \n\tOSD_YCRCB444,           \n\tOSD_YCRCB444HR,         \n\tOSD_VIDEOTSIZE,         \n\tOSD_VIDEOHSIZE,         \n\tOSD_VIDEOQSIZE,         \n\tOSD_VIDEODSIZE,         \n\tOSD_VIDEOTHSIZE,        \n\tOSD_VIDEOTQSIZE,        \n\tOSD_VIDEOTDSIZE,        \n\tOSD_VIDEONSIZE,         \n\tOSD_CURSOR              \n} osd_raw_window_t;\n\ntypedef struct osd_cap_s {\n\tint  cmd;\n#define OSD_CAP_MEMSIZE         1   \n\tlong val;\n} osd_cap_t;\n\n\n#define OSD_SEND_CMD            _IOW('o', 160, osd_cmd_t)\n#define OSD_GET_CAPABILITY      _IOR('o', 161, osd_cap_t)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

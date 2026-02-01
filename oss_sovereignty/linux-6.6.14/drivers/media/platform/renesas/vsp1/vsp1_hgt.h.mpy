@@ -1,0 +1,9 @@
+{
+  "module_name": "vsp1_hgt.h",
+  "hash_id": "d9862b8fbc33891f9519f9dfd064adb69175173521f2fcf69f8644ce98c2142c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/renesas/vsp1/vsp1_hgt.h",
+  "human_readable_source": " \n \n#ifndef __VSP1_HGT_H__\n#define __VSP1_HGT_H__\n\n#include <media/media-entity.h>\n#include <media/v4l2-ctrls.h>\n#include <media/v4l2-subdev.h>\n\n#include \"vsp1_histo.h\"\n\nstruct vsp1_device;\n\n#define HGT_NUM_HUE_AREAS\t\t\t6\n\nstruct vsp1_hgt {\n\tstruct vsp1_histogram histo;\n\n\tstruct v4l2_ctrl_handler ctrls;\n\n\tu8 hue_areas[HGT_NUM_HUE_AREAS * 2];\n};\n\nstatic inline struct vsp1_hgt *to_hgt(struct v4l2_subdev *subdev)\n{\n\treturn container_of(subdev, struct vsp1_hgt, histo.entity.subdev);\n}\n\nstruct vsp1_hgt *vsp1_hgt_create(struct vsp1_device *vsp1);\nvoid vsp1_hgt_frame_end(struct vsp1_entity *hgt);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

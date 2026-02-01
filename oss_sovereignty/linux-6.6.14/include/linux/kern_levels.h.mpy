@@ -1,0 +1,9 @@
+{
+  "module_name": "kern_levels.h",
+  "hash_id": "b1517d7f13aa1b8681fbfc19741debd3fa64ef56d5330b74dbc1813f7300a589",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kern_levels.h",
+  "human_readable_source": " \n#ifndef __KERN_LEVELS_H__\n#define __KERN_LEVELS_H__\n\n#define KERN_SOH\t\"\\001\"\t\t \n#define KERN_SOH_ASCII\t'\\001'\n\n#define KERN_EMERG\tKERN_SOH \"0\"\t \n#define KERN_ALERT\tKERN_SOH \"1\"\t \n#define KERN_CRIT\tKERN_SOH \"2\"\t \n#define KERN_ERR\tKERN_SOH \"3\"\t \n#define KERN_WARNING\tKERN_SOH \"4\"\t \n#define KERN_NOTICE\tKERN_SOH \"5\"\t \n#define KERN_INFO\tKERN_SOH \"6\"\t \n#define KERN_DEBUG\tKERN_SOH \"7\"\t \n\n#define KERN_DEFAULT\t\"\"\t\t \n\n \n#define KERN_CONT\tKERN_SOH \"c\"\n\n \n#define LOGLEVEL_SCHED\t\t-2\t \n#define LOGLEVEL_DEFAULT\t-1\t \n#define LOGLEVEL_EMERG\t\t0\t \n#define LOGLEVEL_ALERT\t\t1\t \n#define LOGLEVEL_CRIT\t\t2\t \n#define LOGLEVEL_ERR\t\t3\t \n#define LOGLEVEL_WARNING\t4\t \n#define LOGLEVEL_NOTICE\t\t5\t \n#define LOGLEVEL_INFO\t\t6\t \n#define LOGLEVEL_DEBUG\t\t7\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

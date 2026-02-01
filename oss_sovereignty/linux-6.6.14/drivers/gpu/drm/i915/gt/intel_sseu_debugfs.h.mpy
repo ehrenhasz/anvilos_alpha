@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_sseu_debugfs.h",
+  "hash_id": "e87c376a94ea43faba8e64e9f6eb3c2d13b4a67cea3b69397b85dbde889b817a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_sseu_debugfs.h",
+  "human_readable_source": " \n\n \n\n#ifndef INTEL_SSEU_DEBUGFS_H\n#define INTEL_SSEU_DEBUGFS_H\n\nstruct intel_gt;\nstruct dentry;\nstruct seq_file;\n\nint intel_sseu_status(struct seq_file *m, struct intel_gt *gt);\nvoid intel_sseu_debugfs_register(struct intel_gt *gt, struct dentry *root);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

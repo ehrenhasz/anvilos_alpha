@@ -1,0 +1,9 @@
+{
+  "module_name": "fifo_monitor_public.h",
+  "hash_id": "6afda66d3fcfb8aaf91cf77694aae15fb1fb8ebeb1859198ed32451f54e3cdf0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/host/fifo_monitor_public.h",
+  "human_readable_source": " \n \n\n#ifndef __FIFO_MONITOR_PUBLIC_H_INCLUDED__\n#define __FIFO_MONITOR_PUBLIC_H_INCLUDED__\n\n#include \"system_local.h\"\n\ntypedef struct fifo_channel_state_s\t\tfifo_channel_state_t;\ntypedef struct fifo_switch_state_s\t\tfifo_switch_state_t;\ntypedef struct fifo_monitor_state_s\t\tfifo_monitor_state_t;\n\n \nSTORAGE_CLASS_FIFO_MONITOR_H void fifo_switch_set(\n    const fifo_monitor_ID_t\t\tID,\n    const fifo_switch_t\t\t\tswitch_id,\n    const hrt_data\t\t\t\tsel);\n\n \nSTORAGE_CLASS_FIFO_MONITOR_H hrt_data fifo_switch_get(\n    const fifo_monitor_ID_t\t\tID,\n    const fifo_switch_t\t\t\tswitch_id);\n\n \nvoid fifo_monitor_get_state(\n    const fifo_monitor_ID_t\t\tID,\n    fifo_monitor_state_t\t\t*state);\n\n \nvoid fifo_channel_get_state(\n    const fifo_monitor_ID_t\t\tID,\n    const fifo_channel_t\t\tchannel_id,\n    fifo_channel_state_t\t\t*state);\n\n \nvoid fifo_switch_get_state(\n    const fifo_monitor_ID_t\t\tID,\n    const fifo_switch_t\t\t\tswitch_id,\n    fifo_switch_state_t\t\t\t*state);\n\n \nSTORAGE_CLASS_FIFO_MONITOR_H void fifo_monitor_reg_store(\n    const fifo_monitor_ID_t\t\tID,\n    const unsigned int\t\t\treg,\n    const hrt_data\t\t\t\tvalue);\n\n \nSTORAGE_CLASS_FIFO_MONITOR_H hrt_data fifo_monitor_reg_load(\n    const fifo_monitor_ID_t\t\tID,\n    const unsigned int\t\t\treg);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

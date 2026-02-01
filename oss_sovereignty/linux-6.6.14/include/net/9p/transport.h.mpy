@@ -1,0 +1,9 @@
+{
+  "module_name": "transport.h",
+  "hash_id": "0b44895ef90daf35975bd81bc8dc6aa11fd87f3ee0853eebe5b44a31580dbc62",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/9p/transport.h",
+  "human_readable_source": " \n \n\n#ifndef NET_9P_TRANSPORT_H\n#define NET_9P_TRANSPORT_H\n\n#include <linux/module.h>\n\n#define P9_DEF_MIN_RESVPORT\t(665U)\n#define P9_DEF_MAX_RESVPORT\t(1023U)\n\n \n\nstruct p9_trans_module {\n\tstruct list_head list;\n\tchar *name;\t\t \n\tint maxsize;\t\t \n\tbool pooled_rbuffers;\n\tint def;\t\t \n\tstruct module *owner;\n\tint (*create)(struct p9_client *client,\n\t\t      const char *devname, char *args);\n\tvoid (*close)(struct p9_client *client);\n\tint (*request)(struct p9_client *client, struct p9_req_t *req);\n\tint (*cancel)(struct p9_client *client, struct p9_req_t *req);\n\tint (*cancelled)(struct p9_client *client, struct p9_req_t *req);\n\tint (*zc_request)(struct p9_client *client, struct p9_req_t *req,\n\t\t\t  struct iov_iter *uidata, struct iov_iter *uodata,\n\t\t\t  int inlen, int outlen, int in_hdr_len);\n\tint (*show_options)(struct seq_file *m, struct p9_client *client);\n};\n\nvoid v9fs_register_trans(struct p9_trans_module *m);\nvoid v9fs_unregister_trans(struct p9_trans_module *m);\nstruct p9_trans_module *v9fs_get_trans_by_name(const char *s);\nstruct p9_trans_module *v9fs_get_default_trans(void);\nvoid v9fs_put_trans(struct p9_trans_module *m);\n\n#define MODULE_ALIAS_9P(transport) \\\n\tMODULE_ALIAS(\"9p-\" transport)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

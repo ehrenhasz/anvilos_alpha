@@ -1,0 +1,9 @@
+{
+  "module_name": "dup-safer.c",
+  "hash_id": "6ccaa0d92948623404110308f61927d17ba6041d7faae14230a0e7fea9e7751d",
+  "original_prompt": "Ingested from coreutils-9.4/lib/dup-safer.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"unistd-safer.h\"\n\n#include <fcntl.h>\n#include <unistd.h>\n\n \n\nint\ndup_safer (int fd)\n{\n  return fcntl (fd, F_DUPFD, STDERR_FILENO + 1);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

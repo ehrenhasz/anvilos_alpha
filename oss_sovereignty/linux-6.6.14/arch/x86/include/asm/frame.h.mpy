@@ -1,0 +1,9 @@
+{
+  "module_name": "frame.h",
+  "hash_id": "bed6a1bbafc91049daee50563c142072c6f17de95cd626b7c7aaab86d832f6d2",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/frame.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_FRAME_H\n#define _ASM_X86_FRAME_H\n\n#include <asm/asm.h>\n\n \n\n#ifdef CONFIG_FRAME_POINTER\n\n#ifdef __ASSEMBLY__\n\n.macro FRAME_BEGIN\n\tpush %_ASM_BP\n\t_ASM_MOV %_ASM_SP, %_ASM_BP\n.endm\n\n.macro FRAME_END\n\tpop %_ASM_BP\n.endm\n\n#ifdef CONFIG_X86_64\n \n.macro ENCODE_FRAME_POINTER ptregs_offset=0\n\tleaq 1+\\ptregs_offset(%rsp), %rbp\n.endm\n#else  \n \n.macro ENCODE_FRAME_POINTER\n\tmov %esp, %ebp\n\tandl $0x7fffffff, %ebp\n.endm\n#endif  \n\n#else  \n\n#define FRAME_BEGIN\t\t\t\t\\\n\t\"push %\" _ASM_BP \"\\n\"\t\t\t\\\n\t_ASM_MOV \"%\" _ASM_SP \", %\" _ASM_BP \"\\n\"\n\n#define FRAME_END \"pop %\" _ASM_BP \"\\n\"\n\n#ifdef CONFIG_X86_64\n\n#define ENCODE_FRAME_POINTER\t\t\t\\\n\t\"lea 1(%rsp), %rbp\\n\\t\"\n\nstatic inline unsigned long encode_frame_pointer(struct pt_regs *regs)\n{\n\treturn (unsigned long)regs + 1;\n}\n\n#else  \n\n#define ENCODE_FRAME_POINTER\t\t\t\\\n\t\"movl %esp, %ebp\\n\\t\"\t\t\t\\\n\t\"andl $0x7fffffff, %ebp\\n\\t\"\n\nstatic inline unsigned long encode_frame_pointer(struct pt_regs *regs)\n{\n\treturn (unsigned long)regs & 0x7fffffff;\n}\n\n#endif  \n\n#endif  \n\n#define FRAME_OFFSET __ASM_SEL(4, 8)\n\n#else  \n\n#ifdef __ASSEMBLY__\n\n.macro ENCODE_FRAME_POINTER ptregs_offset=0\n.endm\n\n#else  \n\n#define ENCODE_FRAME_POINTER\n\nstatic inline unsigned long encode_frame_pointer(struct pt_regs *regs)\n{\n\treturn 0;\n}\n\n#endif\n\n#define FRAME_BEGIN\n#define FRAME_END\n#define FRAME_OFFSET 0\n\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "idt_handlers_64.S",
+  "hash_id": "953499048dd5273fb42555f9e0ec9d60e836bfeaede0fb9ed4d08ac43abcc5c8",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/compressed/idt_handlers_64.S",
+  "human_readable_source": " \n \n\n#include <asm/segment.h>\n\n \n#include \"../../entry/calling.h\"\n\n.macro EXCEPTION_HANDLER name function error_code=0\nSYM_FUNC_START(\\name)\n\n\t \n\t.if \\error_code == 0\n\tpushq   $0\n\t.endif\n\n\tpushq   %rdi\n\tpushq   %rsi\n\tpushq   %rdx\n\tpushq   %rcx\n\tpushq   %rax\n\tpushq   %r8\n\tpushq   %r9\n\tpushq   %r10\n\tpushq   %r11\n\tpushq   %rbx\n\tpushq   %rbp\n\tpushq   %r12\n\tpushq   %r13\n\tpushq   %r14\n\tpushq   %r15\n\n\t \n\tmovq    %rsp, %rdi\n\t \n\tmovq\tORIG_RAX(%rsp), %rsi\n\tcall    \\function\n\n\t \n\tpopq    %r15\n\tpopq    %r14\n\tpopq    %r13\n\tpopq    %r12\n\tpopq    %rbp\n\tpopq    %rbx\n\tpopq    %r11\n\tpopq    %r10\n\tpopq    %r9\n\tpopq    %r8\n\tpopq    %rax\n\tpopq    %rcx\n\tpopq    %rdx\n\tpopq    %rsi\n\tpopq    %rdi\n\n\t \n\taddq    $8, %rsp\n\n\tiretq\nSYM_FUNC_END(\\name)\n\t.endm\n\n\t.text\n\t.code64\n\nEXCEPTION_HANDLER\tboot_page_fault do_boot_page_fault error_code=1\n\n#ifdef CONFIG_AMD_MEM_ENCRYPT\nEXCEPTION_HANDLER\tboot_stage1_vc do_vc_no_ghcb\t\terror_code=1\nEXCEPTION_HANDLER\tboot_stage2_vc do_boot_stage2_vc\terror_code=1\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8fe93a74f3fbc3463052e3a4147f93411c8dabece060b0c14b4d3bc2c651200c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/idle/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig INTEL_IDLE\n\tbool \"Cpuidle Driver for Intel Processors\"\n\tdepends on CPU_IDLE\n\tdepends on X86\n\tdepends on CPU_SUP_INTEL\n\thelp\n\t  Enable intel_idle, a cpuidle driver that includes knowledge of\n\t  native Intel hardware idle features.  The acpi_idle driver\n\t  can be configured at the same time, in order to handle\n\t  processors intel_idle does not support.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ds3000.h",
+  "hash_id": "89f65dde1a9592bf6d464813760bdc0cfd15f1e8f28731955965358dc2579153",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/ds3000.h",
+  "human_readable_source": " \n \n\n#ifndef DS3000_H\n#define DS3000_H\n\n#include <linux/dvb/frontend.h>\n\nstruct ds3000_config {\n\t \n\tu8 demod_address;\n\tu8 ci_mode;\n\t \n\tint (*set_ts_params)(struct dvb_frontend *fe, int is_punctured);\n\t \n\tvoid (*set_lock_led)(struct dvb_frontend *fe, int offon);\n};\n\n#if IS_REACHABLE(CONFIG_DVB_DS3000)\nextern struct dvb_frontend *ds3000_attach(const struct ds3000_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c);\n#else\nstatic inline\nstruct dvb_frontend *ds3000_attach(const struct ds3000_config *config,\n\t\t\t\t\tstruct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

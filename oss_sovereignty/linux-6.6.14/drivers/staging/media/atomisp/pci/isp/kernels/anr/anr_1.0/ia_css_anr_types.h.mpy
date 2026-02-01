@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_anr_types.h",
+  "hash_id": "b1a59a1bca611db857ccb5707e44034a794b938bbb5ccb314061ca00a5c2ab2c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/anr/anr_1.0/ia_css_anr_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_ANR_TYPES_H\n#define __IA_CSS_ANR_TYPES_H\n\n \n\n \n#define ANR_BPP                 10\n#define ANR_ELEMENT_BITS        ((CEIL_DIV(ANR_BPP, 8)) * 8)\n\n \nstruct ia_css_anr_config {\n\ts32 threshold;  \n\ts32 thresholds[4 * 4 * 4];\n\ts32 factors[3];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

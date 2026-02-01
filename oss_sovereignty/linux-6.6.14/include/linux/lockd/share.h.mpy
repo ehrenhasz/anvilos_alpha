@@ -1,0 +1,9 @@
+{
+  "module_name": "share.h",
+  "hash_id": "ec62bcaa3485f616fddc7eac3803066a238281037b85aedbdb0689a77ca7683a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/lockd/share.h",
+  "human_readable_source": " \n \n\n#ifndef LINUX_LOCKD_SHARE_H\n#define LINUX_LOCKD_SHARE_H\n\n \nstruct nlm_share {\n\tstruct nlm_share *\ts_next;\t\t \n\tstruct nlm_host *\ts_host;\t\t \n\tstruct nlm_file *\ts_file;\t\t \n\tstruct xdr_netobj\ts_owner;\t \n\tu32\t\t\ts_access;\t \n\tu32\t\t\ts_mode;\t\t \n};\n\n__be32\tnlmsvc_share_file(struct nlm_host *, struct nlm_file *,\n\t\t\t\t\t       struct nlm_args *);\n__be32\tnlmsvc_unshare_file(struct nlm_host *, struct nlm_file *,\n\t\t\t\t\t       struct nlm_args *);\nvoid\tnlmsvc_traverse_shares(struct nlm_host *, struct nlm_file *,\n\t\t\t\t\t       nlm_host_match_fn_t);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

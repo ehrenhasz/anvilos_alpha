@@ -1,0 +1,9 @@
+{
+  "module_name": "brcmstb.h",
+  "hash_id": "dfacb88682fcc1b33173af0a25fc1c231094f4f2363c75877250e64301df75da",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/soc/brcmstb/brcmstb.h",
+  "human_readable_source": " \n#ifndef __BRCMSTB_SOC_H\n#define __BRCMSTB_SOC_H\n\n#include <linux/kconfig.h>\n\nstatic inline u32 BRCM_ID(u32 reg)\n{\n\treturn reg >> 28 ? reg >> 16 : reg >> 8;\n}\n\nstatic inline u32 BRCM_REV(u32 reg)\n{\n\treturn reg & 0xff;\n}\n\n#if IS_ENABLED(CONFIG_SOC_BRCMSTB)\n\n \nu32 brcmstb_get_family_id(void);\nu32 brcmstb_get_product_id(void);\n\n#else\nstatic inline u32 brcmstb_get_family_id(void)\n{\n\treturn 0;\n}\n\nstatic inline u32 brcmstb_get_product_id(void)\n{\n\treturn 0;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

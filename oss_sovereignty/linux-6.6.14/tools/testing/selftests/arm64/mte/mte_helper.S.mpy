@@ -1,0 +1,9 @@
+{
+  "module_name": "mte_helper.S",
+  "hash_id": "4712a0d28de009b5b077529ed94bf3eca58af71311ebb9caba644a8607488f6b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/mte/mte_helper.S",
+  "human_readable_source": " \n \n\n#include \"mte_def.h\"\n\n.arch\tarmv8.5-a+memtag\n\n#define ENTRY(name) \\\n\t.globl name ;\\\n\t.p2align 2;\\\n\t.type name, @function ;\\\nname:\n\n#define ENDPROC(name) \\\n\t.size name, .-name ;\n\n\t.text\n \nENTRY(mte_insert_random_tag)\n\tirg\tx0, x0, xzr\n\tret\nENDPROC(mte_insert_random_tag)\n\n \nENTRY(mte_insert_new_tag)\n\tgmi\tx1, x0, xzr\n\tirg\tx0, x0, x1\n\tret\nENDPROC(mte_insert_new_tag)\n\n \nENTRY(mte_get_tag_address)\n\tldg\tx0, [x0]\n\tret\nENDPROC(mte_get_tag_address)\n\n \nENTRY(mte_set_tag_address_range)\n\tcbz\tx1, 2f\n1:\n\tstg\tx0, [x0, #0x0]\n\tadd\tx0, x0, #MT_GRANULE_SIZE\n\tsub\tx1, x1, #MT_GRANULE_SIZE\n\tcbnz\tx1, 1b\n2:\n\tret\nENDPROC(mte_set_tag_address_range)\n\n \nENTRY(mte_clear_tag_address_range)\n\tcbz\tx1, 2f\n1:\n\tstzg\tx0, [x0, #0x0]\n\tadd\tx0, x0, #MT_GRANULE_SIZE\n\tsub\tx1, x1, #MT_GRANULE_SIZE\n\tcbnz\tx1, 1b\n2:\n\tret\nENDPROC(mte_clear_tag_address_range)\n\n \nENTRY(mte_enable_pstate_tco)\n\tmsr\ttco, #MT_PSTATE_TCO_EN\n\tret\nENDPROC(mte_enable_pstate_tco)\n\n \nENTRY(mte_disable_pstate_tco)\n\tmsr\ttco, #MT_PSTATE_TCO_DIS\n\tret\nENDPROC(mte_disable_pstate_tco)\n\n \nENTRY(mte_get_pstate_tco)\n\tmrs\tx0, tco\n\tubfx\tx0, x0, #MT_PSTATE_TCO_SHIFT, #1\n\tret\nENDPROC(mte_get_pstate_tco)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

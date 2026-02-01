@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8fe2e25b38c89499f75918f290fecffec1719867ab452595a14983f0e0618f1a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/dec/tulip/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux \"Tulip\" family network device drivers.\n#\n\nccflags-$(CONFIG_NET_TULIP)\t:= -DDEBUG\n\nobj-$(CONFIG_PCMCIA_XIRCOM)\t+= xircom_cb.o\nobj-$(CONFIG_DM9102)\t\t+= dmfe.o\nobj-$(CONFIG_WINBOND_840)\t+= winbond-840.o\nobj-$(CONFIG_DE2104X)\t\t+= de2104x.o\nobj-$(CONFIG_TULIP)\t\t+= tulip.o\nobj-$(CONFIG_ULI526X)\t\t+= uli526x.o\n\n# Declare multi-part drivers.\n\ntulip-objs\t\t\t:= eeprom.o interrupt.o media.o \\\n\t\t\t\t   timer.o tulip_core.o\t\t\\\n\t\t\t\t   21142.o pnic.o pnic2.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

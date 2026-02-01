@@ -1,0 +1,9 @@
+{
+  "module_name": "ip6t_NPT.h",
+  "hash_id": "0bd78337b5c83ff4158b99fce1e6e061d3c2b4493c9cc20fc1518282034f1af1",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_ipv6/ip6t_NPT.h",
+  "human_readable_source": " \n#ifndef __NETFILTER_IP6T_NPT\n#define __NETFILTER_IP6T_NPT\n\n#include <linux/types.h>\n#include <linux/netfilter.h>\n\nstruct ip6t_npt_tginfo {\n\tunion nf_inet_addr\tsrc_pfx;\n\tunion nf_inet_addr\tdst_pfx;\n\t__u8\t\t\tsrc_pfx_len;\n\t__u8\t\t\tdst_pfx_len;\n\t \n\t__sum16\t\t\tadjustment;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

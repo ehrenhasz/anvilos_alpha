@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_CONNSECMARK.h",
+  "hash_id": "bd658806294332ce327acd99d109a3f5884adce276099f86bd0c25e2989dd5a8",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_CONNSECMARK.h",
+  "human_readable_source": " \n#ifndef _XT_CONNSECMARK_H_target\n#define _XT_CONNSECMARK_H_target\n\n#include <linux/types.h>\n\nenum {\n\tCONNSECMARK_SAVE = 1,\n\tCONNSECMARK_RESTORE,\n};\n\nstruct xt_connsecmark_target_info {\n\t__u8 mode;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

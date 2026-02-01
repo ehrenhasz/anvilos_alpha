@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8a2e5c8f03416765e325f00a018f983d866bb80a5050fa486ec755a04bc1c22b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/flash/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nobj-$(CONFIG_LEDS_MT6360)\t+= leds-mt6360.o\nobj-$(CONFIG_LEDS_MT6370_FLASH)\t+= leds-mt6370-flash.o\nobj-$(CONFIG_LEDS_AAT1290)\t+= leds-aat1290.o\nobj-$(CONFIG_LEDS_AS3645A)\t+= leds-as3645a.o\nobj-$(CONFIG_LEDS_KTD2692)\t+= leds-ktd2692.o\nobj-$(CONFIG_LEDS_LM3601X)\t+= leds-lm3601x.o\nobj-$(CONFIG_LEDS_MAX77693)\t+= leds-max77693.o\nobj-$(CONFIG_LEDS_QCOM_FLASH)\t+= leds-qcom-flash.o\nobj-$(CONFIG_LEDS_RT4505)\t+= leds-rt4505.o\nobj-$(CONFIG_LEDS_RT8515)\t+= leds-rt8515.o\nobj-$(CONFIG_LEDS_SGM3140)\t+= leds-sgm3140.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

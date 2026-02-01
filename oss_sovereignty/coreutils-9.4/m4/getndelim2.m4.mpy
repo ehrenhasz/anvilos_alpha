@@ -1,0 +1,9 @@
+{
+  "module_name": "getndelim2.m4",
+  "hash_id": "41f162b6356b7b240e45aa7a05da929cfa71abb74ae173806e4cb1b19333a235",
+  "original_prompt": "Ingested from coreutils-9.4/m4/getndelim2.m4",
+  "human_readable_source": "# getndelim2.m4 serial 8\ndnl Copyright (C) 2003, 2006, 2008-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_GETNDELIM2],\n[\n  gl_PREREQ_GETNDELIM2\n  AC_CHECK_FUNCS_ONCE([flockfile])\n  AC_CHECK_FUNCS_ONCE([funlockfile])\n])\n\n# Prerequisites of lib/getndelim2.h and lib/getndelim2.c.\nAC_DEFUN([gl_PREREQ_GETNDELIM2],\n[\n  dnl Prerequisites of lib/getndelim2.h.\n  AC_REQUIRE([gt_TYPE_SSIZE_T])\n  dnl No prerequisites of lib/getndelim2.c.\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

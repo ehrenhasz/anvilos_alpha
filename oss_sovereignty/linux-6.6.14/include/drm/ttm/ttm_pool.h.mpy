@@ -1,0 +1,9 @@
+{
+  "module_name": "ttm_pool.h",
+  "hash_id": "7dd631d5777f99ed5e0de1f865a46afe18d75da6c6f50bce9e0005812b917523",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/ttm/ttm_pool.h",
+  "human_readable_source": " \n \n\n#ifndef _TTM_PAGE_POOL_H_\n#define _TTM_PAGE_POOL_H_\n\n#include <linux/mmzone.h>\n#include <linux/llist.h>\n#include <linux/spinlock.h>\n#include <drm/ttm/ttm_caching.h>\n\nstruct device;\nstruct ttm_tt;\nstruct ttm_pool;\nstruct ttm_operation_ctx;\n\n \nstruct ttm_pool_type {\n\tstruct ttm_pool *pool;\n\tunsigned int order;\n\tenum ttm_caching caching;\n\n\tstruct list_head shrinker_list;\n\n\tspinlock_t lock;\n\tstruct list_head pages;\n};\n\n \nstruct ttm_pool {\n\tstruct device *dev;\n\tint nid;\n\n\tbool use_dma_alloc;\n\tbool use_dma32;\n\n\tstruct {\n\t\tstruct ttm_pool_type orders[MAX_ORDER + 1];\n\t} caching[TTM_NUM_CACHING_TYPES];\n};\n\nint ttm_pool_alloc(struct ttm_pool *pool, struct ttm_tt *tt,\n\t\t   struct ttm_operation_ctx *ctx);\nvoid ttm_pool_free(struct ttm_pool *pool, struct ttm_tt *tt);\n\nvoid ttm_pool_init(struct ttm_pool *pool, struct device *dev,\n\t\t   int nid, bool use_dma_alloc, bool use_dma32);\nvoid ttm_pool_fini(struct ttm_pool *pool);\n\nint ttm_pool_debugfs(struct ttm_pool *pool, struct seq_file *m);\n\nint ttm_pool_mgr_init(unsigned long num_pages);\nvoid ttm_pool_mgr_fini(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

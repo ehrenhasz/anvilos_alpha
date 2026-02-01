@@ -1,0 +1,9 @@
+{
+  "module_name": "virtpin.h",
+  "hash_id": "b2f95a5b8c6bbe4f3dd1470b75404c1733f0414e6c4d04dc5d80b69b043a1ce6",
+  "original_prompt": "Ingested from sys_09_Anvil/source/extmod/virtpin.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_EXTMOD_VIRTPIN_H\n#define MICROPY_INCLUDED_EXTMOD_VIRTPIN_H\n\n#include \"py/obj.h\"\n\n#define MP_PIN_READ   (1)\n#define MP_PIN_WRITE  (2)\n#define MP_PIN_INPUT  (3)\n#define MP_PIN_OUTPUT (4)\n\n\ntypedef struct _mp_pin_p_t {\n    mp_uint_t (*ioctl)(mp_obj_t obj, mp_uint_t request, uintptr_t arg, int *errcode);\n} mp_pin_p_t;\n\nint mp_virtual_pin_read(mp_obj_t pin);\nvoid mp_virtual_pin_write(mp_obj_t pin, int value);\n\n\nmp_obj_t mp_pin_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

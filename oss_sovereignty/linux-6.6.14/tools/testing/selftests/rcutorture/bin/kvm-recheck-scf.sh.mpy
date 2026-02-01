@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm-recheck-scf.sh",
+  "hash_id": "64c2795831553d983d4691c7137250663ba6409fb3115a974572b51af9a7be70",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/bin/kvm-recheck-scf.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0+\n#\n# Analyze a given results directory for rcutorture progress.\n#\n# Usage: kvm-recheck-rcu.sh resdir\n#\n# Copyright (C) Facebook, 2020\n#\n# Authors: Paul E. McKenney <paulmck@kernel.org>\n\ni=\"$1\"\nif test -d \"$i\" -a -r \"$i\"\nthen\n\t:\nelse\n\techo Unreadable results directory: $i\n\texit 1\nfi\n. functions.sh\n\nconfigfile=`echo $i | sed -e 's/^.*\\///'`\nnscfs=\"`grep 'scf_invoked_count ver:' $i/console.log 2> /dev/null | tail -1 | sed -e 's/^.* scf_invoked_count ver: //' -e 's/ .*$//' | tr -d '\\015'`\"\nif test -z \"$nscfs\"\nthen\n\techo \"$configfile ------- \"\nelse\n\tdur=\"`grep -v '^#' $i/qemu-cmd | sed -e 's/^.* scftorture.shutdown_secs=//' -e 's/ .*$//' 2> /dev/null`\"\n\tif test -z \"$dur\"\n\tthen\n\t\trate=\"\"\n\telse\n\t\tnscfss=`awk -v nscfs=$nscfs -v dur=$dur '\n\t\t\tBEGIN { print nscfs / dur }' < /dev/null`\n\t\trate=\" ($nscfss/s)\"\n\tfi\n\techo \"${configfile} ------- ${nscfs} SCF handler invocations$rate\"\nfi\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

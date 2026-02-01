@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "2922ada7e1529860a0bdd3b0096697518831a56e261e12cf763f8442610f4988",
+  "original_prompt": "Ingested from linux-6.6.14/net/mac80211/trace.c",
+  "human_readable_source": "\n \n#include <linux/module.h>\n\n \n#ifndef __CHECKER__\n#include <net/cfg80211.h>\n#include \"driver-ops.h\"\n#include \"debug.h\"\n#define CREATE_TRACE_POINTS\n#include \"trace.h\"\n#include \"trace_msg.h\"\n\n#ifdef CONFIG_MAC80211_MESSAGE_TRACING\nvoid __sdata_info(const char *fmt, ...)\n{\n\tstruct va_format vaf = {\n\t\t.fmt = fmt,\n\t};\n\tva_list args;\n\n\tva_start(args, fmt);\n\tvaf.va = &args;\n\n\tpr_info(\"%pV\", &vaf);\n\ttrace_mac80211_info(&vaf);\n\tva_end(args);\n}\n\nvoid __sdata_dbg(bool print, const char *fmt, ...)\n{\n\tstruct va_format vaf = {\n\t\t.fmt = fmt,\n\t};\n\tva_list args;\n\n\tva_start(args, fmt);\n\tvaf.va = &args;\n\n\tif (print)\n\t\tpr_debug(\"%pV\", &vaf);\n\ttrace_mac80211_dbg(&vaf);\n\tva_end(args);\n}\n\nvoid __sdata_err(const char *fmt, ...)\n{\n\tstruct va_format vaf = {\n\t\t.fmt = fmt,\n\t};\n\tva_list args;\n\n\tva_start(args, fmt);\n\tvaf.va = &args;\n\n\tpr_err(\"%pV\", &vaf);\n\ttrace_mac80211_err(&vaf);\n\tva_end(args);\n}\n\nvoid __wiphy_dbg(struct wiphy *wiphy, bool print, const char *fmt, ...)\n{\n\tstruct va_format vaf = {\n\t\t.fmt = fmt,\n\t};\n\tva_list args;\n\n\tva_start(args, fmt);\n\tvaf.va = &args;\n\n\tif (print)\n\t\twiphy_dbg(wiphy, \"%pV\", &vaf);\n\ttrace_mac80211_dbg(&vaf);\n\tva_end(args);\n}\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

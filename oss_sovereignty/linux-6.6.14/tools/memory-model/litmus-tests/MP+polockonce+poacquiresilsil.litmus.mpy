@@ -1,0 +1,9 @@
+{
+  "module_name": "MP+polockonce+poacquiresilsil.litmus",
+  "hash_id": "7d9162c5e8052660b13100eee9d8256e0f0fd0d7a8823585c5c8dd63c3356242",
+  "original_prompt": "Ingested from linux-6.6.14/tools/memory-model/litmus-tests/MP+polockonce+poacquiresilsil.litmus",
+  "human_readable_source": "C MP+polockonce+poacquiresilsil\n\n(*\n * Result: Sometimes\n *\n * Do spinlocks provide order to outside observers using spin_is_locked()\n * to sense the lock-held state, ordered by acquire?  Note that when the\n * first spin_is_locked() returns false and the second true, we know that\n * the smp_load_acquire() executed before the lock was acquired (loosely\n * speaking).\n *)\n\n{}\n\nP0(spinlock_t *lo, int *x) // Producer\n{\n\tspin_lock(lo);\n\tWRITE_ONCE(*x, 1);\n\tspin_unlock(lo);\n}\n\nP1(spinlock_t *lo, int *x) // Consumer\n{\n\tint r1;\n\tint r2;\n\tint r3;\n\n\tr1 = smp_load_acquire(x);\n\tr2 = spin_is_locked(lo);\n\tr3 = spin_is_locked(lo);\n}\n\nexists (1:r1=1 /\\ 1:r2=0 /\\ 1:r3=1) (* Bad outcome. *)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

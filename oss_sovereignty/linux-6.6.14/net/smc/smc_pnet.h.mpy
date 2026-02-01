@@ -1,0 +1,9 @@
+{
+  "module_name": "smc_pnet.h",
+  "hash_id": "a3515fa5b7941caf81d26109f4f1cb5109dd0b02e129cd66c8fc3110c9397911",
+  "original_prompt": "Ingested from linux-6.6.14/net/smc/smc_pnet.h",
+  "human_readable_source": " \n \n\n#ifndef _SMC_PNET_H\n#define _SMC_PNET_H\n\n#include <net/smc.h>\n\n#if IS_ENABLED(CONFIG_HAVE_PNETID)\n#include <asm/pnet.h>\n#endif\n\nstruct smc_ib_device;\nstruct smcd_dev;\nstruct smc_init_info;\nstruct smc_link_group;\n\n \nstruct smc_pnettable {\n\tstruct mutex lock;\n\tstruct list_head pnetlist;\n};\n\nstruct smc_pnetids_ndev {\t \n\tstruct list_head\tlist;\n\trwlock_t\t\tlock;\n};\n\nstruct smc_pnetids_ndev_entry {\n\tstruct list_head\tlist;\n\tu8\t\t\tpnetid[SMC_MAX_PNETID_LEN];\n\trefcount_t\t\trefcnt;\n};\n\nstatic inline int smc_pnetid_by_dev_port(struct device *dev,\n\t\t\t\t\t unsigned short port, u8 *pnetid)\n{\n#if IS_ENABLED(CONFIG_HAVE_PNETID)\n\treturn pnet_id_by_dev_port(dev, port, pnetid);\n#else\n\treturn -ENOENT;\n#endif\n}\n\nint smc_pnet_init(void) __init;\nint smc_pnet_net_init(struct net *net);\nvoid smc_pnet_exit(void);\nvoid smc_pnet_net_exit(struct net *net);\nvoid smc_pnet_find_roce_resource(struct sock *sk, struct smc_init_info *ini);\nvoid smc_pnet_find_ism_resource(struct sock *sk, struct smc_init_info *ini);\nint smc_pnetid_by_table_ib(struct smc_ib_device *smcibdev, u8 ib_port);\nint smc_pnetid_by_table_smcd(struct smcd_dev *smcd);\nvoid smc_pnet_find_alt_roce(struct smc_link_group *lgr,\n\t\t\t    struct smc_init_info *ini,\n\t\t\t    struct smc_ib_device *known_dev);\nbool smc_pnet_is_ndev_pnetid(struct net *net, u8 *pnetid);\nbool smc_pnet_is_pnetid_set(u8 *pnetid);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

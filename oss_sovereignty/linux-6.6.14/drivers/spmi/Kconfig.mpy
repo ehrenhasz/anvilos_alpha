@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "77134bb43f11f0b911972f4fb189e47b8684845e01ab08177e8ec8ee032f32b9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/spmi/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# SPMI driver configuration\n#\nmenuconfig SPMI\n\ttristate \"SPMI support\"\n\thelp\n\t  SPMI (System Power Management Interface) is a two-wire\n\t  serial interface between baseband and application processors\n\t  and Power Management Integrated Circuits (PMIC).\n\nif SPMI\n\nconfig SPMI_HISI3670\n\ttristate \"Hisilicon 3670 SPMI Controller\"\n\tselect IRQ_DOMAIN_HIERARCHY\n\tdepends on HAS_IOMEM\n\thelp\n\t  If you say yes to this option, support will be included for the\n\t  built-in SPMI PMIC Arbiter interface on Hisilicon 3670\n\t  processors.\n\nconfig SPMI_MSM_PMIC_ARB\n\ttristate \"Qualcomm MSM SPMI Controller (PMIC Arbiter)\"\n\tselect IRQ_DOMAIN_HIERARCHY\n\tdepends on ARCH_QCOM || COMPILE_TEST\n\tdepends on HAS_IOMEM\n\tdefault ARCH_QCOM\n\thelp\n\t  If you say yes to this option, support will be included for the\n\t  built-in SPMI PMIC Arbiter interface on Qualcomm MSM family\n\t  processors.\n\n\t  This is required for communicating with Qualcomm PMICs and\n\t  other devices that have the SPMI interface.\n\nconfig SPMI_MTK_PMIF\n\ttristate \"Mediatek SPMI Controller (PMIC Arbiter)\"\n\tdepends on ARCH_MEDIATEK || COMPILE_TEST\n\thelp\n\t  If you say yes to this option, support will be included for the\n\t  built-in SPMI PMIC Arbiter interface on Mediatek family\n\t  processors.\n\n\t  This is required for communicating with Mediatek PMICs and\n\t  other devices that have the SPMI interface.\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

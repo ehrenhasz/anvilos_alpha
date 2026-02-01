@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_bh.host.c",
+  "hash_id": "b4b25303e190121d63badc039efa4b871faf87b277e255410cee8098efbffdc5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/bh/bh_2/ia_css_bh.host.c",
+  "human_readable_source": "\n \n\n\n#include \"ia_css_types.h\"\n#include \"sh_css_internal.h\"\n#include \"assert_support.h\"\n#include \"sh_css_frac.h\"\n\n#include \"ia_css_bh.host.h\"\n\nvoid\nia_css_bh_hmem_decode(\n    struct ia_css_3a_rgby_output *out_ptr,\n    const struct ia_css_bh_table *hmem_buf)\n{\n\tint i;\n\n\t \n\tif (!hmem_buf)\n\t\treturn;\n\tassert(sizeof_hmem(HMEM0_ID) == sizeof(*hmem_buf));\n\n\t \n\tfor (i = 0; i < HMEM_UNIT_SIZE; i++) {\n\t\tout_ptr[i].r = hmem_buf->hmem[BH_COLOR_R][i];\n\t\tout_ptr[i].g = hmem_buf->hmem[BH_COLOR_G][i];\n\t\tout_ptr[i].b = hmem_buf->hmem[BH_COLOR_B][i];\n\t\tout_ptr[i].y = hmem_buf->hmem[BH_COLOR_Y][i];\n\t\t \n\t}\n}\n\nvoid\nia_css_bh_encode(\n    struct sh_css_isp_bh_params *to,\n    const struct ia_css_3a_config *from,\n    unsigned int size)\n{\n\t(void)size;\n\t \n\tto->y_coef_r =\n\t    uDIGIT_FITTING(from->ae_y_coef_r, 16, SH_CSS_AE_YCOEF_SHIFT);\n\tto->y_coef_g =\n\t    uDIGIT_FITTING(from->ae_y_coef_g, 16, SH_CSS_AE_YCOEF_SHIFT);\n\tto->y_coef_b =\n\t    uDIGIT_FITTING(from->ae_y_coef_b, 16, SH_CSS_AE_YCOEF_SHIFT);\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

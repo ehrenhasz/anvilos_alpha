@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "083acc432fd4e01698d4896df145e176bfe413b9a4083c62a34858a63163626d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/peci/controller/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig PECI_ASPEED\n\ttristate \"ASPEED PECI support\"\n\tdepends on ARCH_ASPEED || COMPILE_TEST\n\tdepends on OF\n\tdepends on HAS_IOMEM\n\tdepends on COMMON_CLK\n\thelp\n\t  This option enables PECI controller driver for ASPEED AST2400,\n\t  AST2500 and AST2600 SoCs. It allows BMC to discover devices\n\t  connected to it, and communicate with them using PECI protocol.\n\n\t  Say Y here if your system runs on ASPEED SoC and you are using it\n\t  as BMC for Intel platform.\n\n\t  This driver can also be built as a module. If so, the module will\n\t  be called peci-aspeed.\n\nconfig PECI_NPCM\n\ttristate \"Nuvoton NPCM PECI support\"\n\tdepends on ARCH_NPCM || COMPILE_TEST\n\tdepends on OF\n\tselect REGMAP_MMIO\n\thelp\n\t  This option enables PECI controller driver for Nuvoton NPCM7XX\n\t  and NPCM8XX SoCs. It allows BMC to discover devices connected\n\t  to it and communicate with them using PECI protocol.\n\n\t  Say Y here if you want support for the Platform Environment Control\n\t  Interface (PECI) bus adapter driver on the Nuvoton NPCM SoCs.\n\n\t  This support is also available as a module. If so, the module\n\t  will be called peci-npcm.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-freopen.c",
+  "hash_id": "360658ee02005ddd15489cbb2397ecc458aa468e3cc7c730bd034a1d3ae60878",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-freopen.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdio.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (freopen, FILE *, (char const *, char const *, FILE *));\n\n#include <errno.h>\n#include <unistd.h>\n\n#include \"macros.h\"\n\nint\nmain ()\n{\n  const char *filename = \"test-freopen.txt\";\n\n  close (STDIN_FILENO);\n  ASSERT (freopen (\"/dev/null\", \"r\", stdin) != NULL);\n  ASSERT (getchar () == EOF);\n  ASSERT (!ferror (stdin));\n  ASSERT (feof (stdin));\n\n#if 0  \n   \n  {\n    FILE *fp = fopen (filename, \"w+\");\n    ASSERT (fp != NULL);\n    ASSERT (close (fileno (fp)) == 0);\n    errno = 0;\n    ASSERT (freopen (NULL, \"r\", fp) == NULL);\n    perror(\"freopen\");\n    ASSERT (errno == EBADF);\n    fclose (fp);\n  }\n\n   \n  {\n    FILE *fp = fdopen (-1, \"w+\");\n    if (fp != NULL)\n      {\n        errno = 0;\n        ASSERT (freopen (NULL, \"r\", fp) == NULL);\n        ASSERT (errno == EBADF);\n        fclose (fp);\n      }\n  }\n  {\n    FILE *fp;\n    close (99);\n    fp = fdopen (99, \"w+\");\n    if (fp != NULL)\n      {\n        errno = 0;\n        ASSERT (freopen (NULL, \"r\", fp) == NULL);\n        ASSERT (errno == EBADF);\n        fclose (fp);\n      }\n  }\n#endif\n\n   \n  unlink (filename);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-setlocale_null.c",
+  "hash_id": "a5cf77b201c19a5edef8786d65ab39ab91f8e41585e04ed439eb927f6ee66e59",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-setlocale_null.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#include <locale.h>\n\n \nstatic char buf[SETLOCALE_NULL_ALL_MAX];\n\nint\nmain ()\n{\n   \n  return setlocale_null_r (LC_ALL, buf, sizeof (buf)) != 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

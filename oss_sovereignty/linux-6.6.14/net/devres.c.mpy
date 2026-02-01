@@ -1,0 +1,9 @@
+{
+  "module_name": "devres.c",
+  "hash_id": "94b9895ae71cdfee01d33ce928832860cfbfed82166c499511a09c775bc8c45c",
+  "original_prompt": "Ingested from linux-6.6.14/net/devres.c",
+  "human_readable_source": "\n \n\n#include <linux/device.h>\n#include <linux/etherdevice.h>\n#include <linux/netdevice.h>\n\nstruct net_device_devres {\n\tstruct net_device *ndev;\n};\n\nstatic void devm_free_netdev(struct device *dev, void *this)\n{\n\tstruct net_device_devres *res = this;\n\n\tfree_netdev(res->ndev);\n}\n\nstruct net_device *devm_alloc_etherdev_mqs(struct device *dev, int sizeof_priv,\n\t\t\t\t\t   unsigned int txqs, unsigned int rxqs)\n{\n\tstruct net_device_devres *dr;\n\n\tdr = devres_alloc(devm_free_netdev, sizeof(*dr), GFP_KERNEL);\n\tif (!dr)\n\t\treturn NULL;\n\n\tdr->ndev = alloc_etherdev_mqs(sizeof_priv, txqs, rxqs);\n\tif (!dr->ndev) {\n\t\tdevres_free(dr);\n\t\treturn NULL;\n\t}\n\n\tdevres_add(dev, dr);\n\n\treturn dr->ndev;\n}\nEXPORT_SYMBOL(devm_alloc_etherdev_mqs);\n\nstatic void devm_unregister_netdev(struct device *dev, void *this)\n{\n\tstruct net_device_devres *res = this;\n\n\tunregister_netdev(res->ndev);\n}\n\nstatic int netdev_devres_match(struct device *dev, void *this, void *match_data)\n{\n\tstruct net_device_devres *res = this;\n\tstruct net_device *ndev = match_data;\n\n\treturn ndev == res->ndev;\n}\n\n \nint devm_register_netdev(struct device *dev, struct net_device *ndev)\n{\n\tstruct net_device_devres *dr;\n\tint ret;\n\n\t \n\tif (WARN_ON(!devres_find(dev, devm_free_netdev,\n\t\t\t\t netdev_devres_match, ndev)))\n\t\treturn -EINVAL;\n\n\tdr = devres_alloc(devm_unregister_netdev, sizeof(*dr), GFP_KERNEL);\n\tif (!dr)\n\t\treturn -ENOMEM;\n\n\tret = register_netdev(ndev);\n\tif (ret) {\n\t\tdevres_free(dr);\n\t\treturn ret;\n\t}\n\n\tdr->ndev = ndev;\n\tdevres_add(ndev->dev.parent, dr);\n\n\treturn 0;\n}\nEXPORT_SYMBOL(devm_register_netdev);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

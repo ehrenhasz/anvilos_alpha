@@ -1,0 +1,9 @@
+{
+  "module_name": "opl3_voice.h",
+  "hash_id": "2642f8597dd746d7d07fe2a6f22e2ef7bd7732493aae56a8c23ea2c575e84cd6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/drivers/opl3/opl3_voice.h",
+  "human_readable_source": " \n#ifndef __OPL3_VOICE_H\n#define __OPL3_VOICE_H\n\n \n\n#include <sound/opl3.h>\n\n \nint snd_opl3_synth_use_inc(struct snd_opl3 * opl3);\nvoid snd_opl3_synth_use_dec(struct snd_opl3 * opl3);\nint snd_opl3_synth_setup(struct snd_opl3 * opl3);\nvoid snd_opl3_synth_cleanup(struct snd_opl3 * opl3);\n\n \nvoid snd_opl3_note_on(void *p, int note, int vel, struct snd_midi_channel *chan);\nvoid snd_opl3_note_off(void *p, int note, int vel, struct snd_midi_channel *chan);\nvoid snd_opl3_key_press(void *p, int note, int vel, struct snd_midi_channel *chan);\nvoid snd_opl3_terminate_note(void *p, int note, struct snd_midi_channel *chan);\nvoid snd_opl3_control(void *p, int type, struct snd_midi_channel *chan);\nvoid snd_opl3_nrpn(void *p, struct snd_midi_channel *chan, struct snd_midi_channel_set *chset);\nvoid snd_opl3_sysex(void *p, unsigned char *buf, int len, int parsed, struct snd_midi_channel_set *chset);\n\nvoid snd_opl3_calc_volume(unsigned char *reg, int vel, struct snd_midi_channel *chan);\nvoid snd_opl3_timer_func(struct timer_list *t);\n\n \nvoid snd_opl3_load_drums(struct snd_opl3 *opl3);\nvoid snd_opl3_drum_switch(struct snd_opl3 *opl3, int note, int vel, int on_off, struct snd_midi_channel *chan);\n\n \n#if IS_ENABLED(CONFIG_SND_SEQUENCER_OSS)\nvoid snd_opl3_init_seq_oss(struct snd_opl3 *opl3, char *name);\nvoid snd_opl3_free_seq_oss(struct snd_opl3 *opl3);\n#else\n#define snd_opl3_init_seq_oss(opl3, name)  \n#define snd_opl3_free_seq_oss(opl3)  \n#endif\n\nextern char snd_opl3_regmap[MAX_OPL2_VOICES][4];\nextern bool use_internal_drums;\nextern const struct snd_midi_op opl3_ops;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

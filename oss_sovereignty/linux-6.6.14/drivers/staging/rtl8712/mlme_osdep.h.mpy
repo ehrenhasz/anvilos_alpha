@@ -1,0 +1,9 @@
+{
+  "module_name": "mlme_osdep.h",
+  "hash_id": "6f9facda87e3a453fc44472e005e3b72f9c692fcdaf596236ff1367a8e39bb24",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/mlme_osdep.h",
+  "human_readable_source": " \n \n#ifndef\t__MLME_OSDEP_H_\n#define __MLME_OSDEP_H_\n\n#include \"osdep_service.h\"\n#include \"drv_types.h\"\n\nvoid r8712_init_mlme_timer(struct _adapter *padapter);\nvoid r8712_os_indicate_disconnect(struct _adapter *adapter);\nvoid r8712_os_indicate_connect(struct _adapter *adapter);\nvoid r8712_report_sec_ie(struct _adapter *adapter, u8 authmode, u8 *sec_ie);\nint r8712_recv_indicatepkts_in_order(struct _adapter *adapter,\n\t\t\t\t     struct recv_reorder_ctrl *precvreorder_ctrl,\n\t\t\t\t     int bforced);\nvoid r8712_indicate_wx_assoc_event(struct _adapter *padapter);\nvoid r8712_indicate_wx_disassoc_event(struct _adapter *padapter);\n\n#endif\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

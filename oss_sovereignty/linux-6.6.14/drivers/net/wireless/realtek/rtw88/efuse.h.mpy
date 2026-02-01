@@ -1,0 +1,9 @@
+{
+  "module_name": "efuse.h",
+  "hash_id": "48e5e2762920723d6eb7841041390fb48ecbf939e0195b45b479405204549e2d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw88/efuse.h",
+  "human_readable_source": " \n \n\n#ifndef __RTW_EFUSE_H__\n#define __RTW_EFUSE_H__\n\n#define EFUSE_HW_CAP_IGNORE\t\t0\n#define EFUSE_HW_CAP_PTCL_VHT\t\t3\n#define EFUSE_HW_CAP_SUPP_BW80\t\t7\n#define EFUSE_HW_CAP_SUPP_BW40\t\t6\n\n#define EFUSE_READ_FAIL\t\t\t0xff\n\n#define GET_EFUSE_HW_CAP_HCI(hw_cap)\t\t\t\t\t       \\\n\tle32_get_bits(*((__le32 *)(hw_cap) + 0x01), GENMASK(3, 0))\n#define GET_EFUSE_HW_CAP_BW(hw_cap)\t\t\t\t\t       \\\n\tle32_get_bits(*((__le32 *)(hw_cap) + 0x01), GENMASK(18, 16))\n#define GET_EFUSE_HW_CAP_NSS(hw_cap)\t\t\t\t\t       \\\n\tle32_get_bits(*((__le32 *)(hw_cap) + 0x01), GENMASK(20, 19))\n#define GET_EFUSE_HW_CAP_ANT_NUM(hw_cap)\t\t\t\t       \\\n\tle32_get_bits(*((__le32 *)(hw_cap) + 0x01), GENMASK(23, 21))\n#define GET_EFUSE_HW_CAP_PTCL(hw_cap)\t\t\t\t\t       \\\n\tle32_get_bits(*((__le32 *)(hw_cap) + 0x01), GENMASK(27, 26))\n\nint rtw_parse_efuse_map(struct rtw_dev *rtwdev);\nint rtw_read8_physical_efuse(struct rtw_dev *rtwdev, u16 addr, u8 *data);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

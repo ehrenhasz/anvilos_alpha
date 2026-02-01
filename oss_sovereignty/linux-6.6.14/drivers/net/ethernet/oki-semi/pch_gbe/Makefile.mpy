@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "129a7b10297cdc95419de917901b37ac5d11202c70e96d35b05df8bde24b2bd1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/oki-semi/pch_gbe/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_PCH_GBE) += pch_gbe.o\n\npch_gbe-y := pch_gbe_phy.o pch_gbe_ethtool.o pch_gbe_param.o\npch_gbe-y += pch_gbe_main.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

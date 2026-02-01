@@ -1,0 +1,9 @@
+{
+  "module_name": "STANDALONE",
+  "hash_id": "b0b375a65db8a0156c163fa988825fd51314ac08462c7cf29548c894f17e688d",
+  "original_prompt": "Ingested from bash-5.2.21/lib/readline/STANDALONE",
+  "human_readable_source": "This is not to be built as a standalone library to be installed in some\npublic place; get the full readline distribution instead.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

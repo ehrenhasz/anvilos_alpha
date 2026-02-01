@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "4c21656a4c32b1c85f11b251317d2fb38102d5a29c294da6f03ae8f45de86a08",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/amlogic/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\ncomment \"Amlogic media platform drivers\"\n\nsource \"drivers/media/platform/amlogic/meson-ge2d/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

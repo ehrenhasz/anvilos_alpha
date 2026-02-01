@@ -1,0 +1,9 @@
+{
+  "module_name": "unwind-libunwind.c",
+  "hash_id": "5b182e914e2fd6d32419c1f28f88ba782324ad0a85f1c2289251add0d5f61329",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/mips/util/unwind-libunwind.c",
+  "human_readable_source": "\n\n#include <errno.h>\n#include <libunwind.h>\n#include \"perf_regs.h\"\n#include \"../../util/unwind.h\"\n#include \"util/debug.h\"\n\nint libunwind__arch_reg_id(int regnum)\n{\n\tswitch (regnum) {\n\tcase UNW_MIPS_R1 ... UNW_MIPS_R25:\n\t\treturn regnum - UNW_MIPS_R1 + PERF_REG_MIPS_R1;\n\tcase UNW_MIPS_R28 ... UNW_MIPS_R31:\n\t\treturn regnum - UNW_MIPS_R28 + PERF_REG_MIPS_R28;\n\tcase UNW_MIPS_PC:\n\t\treturn PERF_REG_MIPS_PC;\n\tdefault:\n\t\tpr_err(\"unwind: invalid reg id %d\\n\", regnum);\n\t\treturn -EINVAL;\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel-pt.h",
+  "hash_id": "ef50da4cdc0d15c2637fe13d8a2dc32a11bf3be8a9a96480d3e1084ac795ade4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/intel-pt.h",
+  "human_readable_source": " \n \n\n#ifndef INCLUDE__PERF_INTEL_PT_H__\n#define INCLUDE__PERF_INTEL_PT_H__\n\n#define INTEL_PT_PMU_NAME \"intel_pt\"\n\nenum {\n\tINTEL_PT_PMU_TYPE,\n\tINTEL_PT_TIME_SHIFT,\n\tINTEL_PT_TIME_MULT,\n\tINTEL_PT_TIME_ZERO,\n\tINTEL_PT_CAP_USER_TIME_ZERO,\n\tINTEL_PT_TSC_BIT,\n\tINTEL_PT_NORETCOMP_BIT,\n\tINTEL_PT_HAVE_SCHED_SWITCH,\n\tINTEL_PT_SNAPSHOT_MODE,\n\tINTEL_PT_PER_CPU_MMAPS,\n\tINTEL_PT_MTC_BIT,\n\tINTEL_PT_MTC_FREQ_BITS,\n\tINTEL_PT_TSC_CTC_N,\n\tINTEL_PT_TSC_CTC_D,\n\tINTEL_PT_CYC_BIT,\n\tINTEL_PT_MAX_NONTURBO_RATIO,\n\tINTEL_PT_FILTER_STR_LEN,\n\tINTEL_PT_AUXTRACE_PRIV_MAX,\n};\n\nstruct auxtrace_record;\nstruct perf_tool;\nunion perf_event;\nstruct perf_session;\nstruct perf_event_attr;\nstruct perf_pmu;\n\nstruct auxtrace_record *intel_pt_recording_init(int *err);\n\nint intel_pt_process_auxtrace_info(union perf_event *event,\n\t\t\t\t   struct perf_session *session);\n\nstruct perf_event_attr *intel_pt_pmu_default_config(struct perf_pmu *pmu);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

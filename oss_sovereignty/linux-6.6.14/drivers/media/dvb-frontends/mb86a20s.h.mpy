@@ -1,0 +1,9 @@
+{
+  "module_name": "mb86a20s.h",
+  "hash_id": "c9d7acb013e113068e20ea45c6146654e4f9af55cfe707b5336a1010639ce506",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/dvb-frontends/mb86a20s.h",
+  "human_readable_source": " \n \n\n#ifndef MB86A20S_H\n#define MB86A20S_H\n\n#include <linux/dvb/frontend.h>\n\n \nstruct mb86a20s_config {\n\tu32\tfclk;\n\tu8\tdemod_address;\n\tbool\tis_serial;\n};\n\n#if IS_REACHABLE(CONFIG_DVB_MB86A20S)\n \nextern struct dvb_frontend *mb86a20s_attach(const struct mb86a20s_config *config,\n\t\t\t\t\t   struct i2c_adapter *i2c);\n\n#else\nstatic inline struct dvb_frontend *mb86a20s_attach(\n\tconst struct mb86a20s_config *config, struct i2c_adapter *i2c)\n{\n\tprintk(KERN_WARNING \"%s: driver disabled by Kconfig\\n\", __func__);\n\treturn NULL;\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

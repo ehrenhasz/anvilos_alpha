@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "dd80a596b8454b1e09c18d01d46ac5abcba40057c339c07dfc9b7f2e612d8724",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wwan/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux WWAN device drivers.\n#\n\nobj-$(CONFIG_WWAN) += wwan.o\nwwan-objs += wwan_core.o\n\nobj-$(CONFIG_WWAN_HWSIM) += wwan_hwsim.o\n\nobj-$(CONFIG_MHI_WWAN_CTRL) += mhi_wwan_ctrl.o\nobj-$(CONFIG_MHI_WWAN_MBIM) += mhi_wwan_mbim.o\nobj-$(CONFIG_QCOM_BAM_DMUX) += qcom_bam_dmux.o\nobj-$(CONFIG_RPMSG_WWAN_CTRL) += rpmsg_wwan_ctrl.o\nobj-$(CONFIG_IOSM) += iosm/\nobj-$(CONFIG_MTK_T7XX) += t7xx/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

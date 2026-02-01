@@ -1,0 +1,9 @@
+{
+  "module_name": "reset.h",
+  "hash_id": "3c418a7261945fd45a9605ae43c906e121cc18c7a8ca610f39c974bd46e442d1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mediatek/reset.h",
+  "human_readable_source": " \n \n\n#ifndef __DRV_CLK_MTK_RESET_H\n#define __DRV_CLK_MTK_RESET_H\n\n#include <linux/reset-controller.h>\n#include <linux/types.h>\n\n#define RST_NR_PER_BANK 32\n\n \n#define INFRA_RST0_SET_OFFSET 0x120\n#define INFRA_RST1_SET_OFFSET 0x130\n#define INFRA_RST2_SET_OFFSET 0x140\n#define INFRA_RST3_SET_OFFSET 0x150\n#define INFRA_RST4_SET_OFFSET 0x730\n\n \nenum mtk_reset_version {\n\tMTK_RST_SIMPLE = 0,\n\tMTK_RST_SET_CLR,\n\tMTK_RST_MAX,\n};\n\n \nstruct mtk_clk_rst_desc {\n\tenum mtk_reset_version version;\n\tu16 *rst_bank_ofs;\n\tu32 rst_bank_nr;\n\tu16 *rst_idx_map;\n\tu32 rst_idx_map_nr;\n};\n\n \nstruct mtk_clk_rst_data {\n\tstruct regmap *regmap;\n\tstruct reset_controller_dev rcdev;\n\tconst struct mtk_clk_rst_desc *desc;\n};\n\n \nint mtk_register_reset_controller(struct device_node *np,\n\t\t\t\t  const struct mtk_clk_rst_desc *desc);\n\n \nint mtk_register_reset_controller_with_dev(struct device *dev,\n\t\t\t\t\t   const struct mtk_clk_rst_desc *desc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

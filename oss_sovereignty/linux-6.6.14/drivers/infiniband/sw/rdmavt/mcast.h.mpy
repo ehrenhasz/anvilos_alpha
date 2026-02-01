@@ -1,0 +1,9 @@
+{
+  "module_name": "mcast.h",
+  "hash_id": "7b72051e155e206eb63fcd3212f258de06c0e8fc678f8d8618a2b7c1e463dc68",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/sw/rdmavt/mcast.h",
+  "human_readable_source": " \n \n\n#ifndef DEF_RVTMCAST_H\n#define DEF_RVTMCAST_H\n\n#include <rdma/rdma_vt.h>\n\nvoid rvt_driver_mcast_init(struct rvt_dev_info *rdi);\nint rvt_attach_mcast(struct ib_qp *ibqp, union ib_gid *gid, u16 lid);\nint rvt_detach_mcast(struct ib_qp *ibqp, union ib_gid *gid, u16 lid);\nint rvt_mcast_tree_empty(struct rvt_dev_info *rdi);\n\n#endif           \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

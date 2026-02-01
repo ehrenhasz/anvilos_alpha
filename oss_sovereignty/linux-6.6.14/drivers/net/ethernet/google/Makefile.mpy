@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "06b1d0808652b63186b851442bd496fbddefca6bbf4fa00cff65a9d1b3f2aebf",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/google/Makefile",
+  "human_readable_source": "#\n# Makefile for the Google network device drivers.\n#\n\nobj-$(CONFIG_GVE) += gve/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

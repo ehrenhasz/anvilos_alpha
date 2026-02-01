@@ -1,0 +1,9 @@
+{
+  "module_name": "logname.c",
+  "hash_id": "de13b594d91cbaead85e65fde2740a4619447f9cc263282901fdc679632abd90",
+  "original_prompt": "Ingested from coreutils-9.4/src/logname.c",
+  "human_readable_source": " \n\n#include <config.h>\n#include <stdio.h>\n#include <sys/types.h>\n\n#include \"system.h\"\n#include \"long-options.h\"\n#include \"quote.h\"\n\n \n#define PROGRAM_NAME \"logname\"\n\n#define AUTHORS proper_name (\"FIXME: unknown\")\n\nvoid\nusage (int status)\n{\n  if (status != EXIT_SUCCESS)\n    emit_try_help ();\n  else\n    {\n      printf (_(\"Usage: %s [OPTION]\\n\"), program_name);\n      fputs (_(\"\\\nPrint the user's login name.\\n\\\n\\n\\\n\"), stdout);\n      fputs (HELP_OPTION_DESCRIPTION, stdout);\n      fputs (VERSION_OPTION_DESCRIPTION, stdout);\n      emit_ancillary_info (PROGRAM_NAME);\n    }\n  exit (status);\n}\n\nint\nmain (int argc, char **argv)\n{\n  char *cp;\n\n  initialize_main (&argc, &argv);\n  set_program_name (argv[0]);\n  setlocale (LC_ALL, \"\");\n  bindtextdomain (PACKAGE, LOCALEDIR);\n  textdomain (PACKAGE);\n\n  atexit (close_stdout);\n\n  parse_gnu_standard_options_only (argc, argv, PROGRAM_NAME, PACKAGE_NAME,\n                                   Version, true, usage, AUTHORS,\n                                   (char const *) nullptr);\n\n  if (optind < argc)\n    {\n      error (0, 0, _(\"extra operand %s\"), quote (argv[optind]));\n      usage (EXIT_FAILURE);\n    }\n\n  /* POSIX requires using getlogin (or equivalent code) and prohibits\n     using a fallback technique.  */\n  cp = getlogin ();\n  if (! cp)\n    error (EXIT_FAILURE, 0, _(\"no login name\"));\n\n  puts (cp);\n  return EXIT_SUCCESS;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

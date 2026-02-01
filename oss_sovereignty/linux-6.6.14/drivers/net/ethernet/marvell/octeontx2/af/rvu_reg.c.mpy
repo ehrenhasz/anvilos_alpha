@@ -1,0 +1,9 @@
+{
+  "module_name": "rvu_reg.c",
+  "hash_id": "04d8a1e0c12ea1e876e1ea7f08e63af28b2c2c468643030a55017519b56c701e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/pci.h>\n\n#include \"rvu_struct.h\"\n#include \"common.h\"\n#include \"mbox.h\"\n#include \"rvu.h\"\n\nstruct reg_range {\n\tu64  start;\n\tu64  end;\n};\n\nstruct hw_reg_map {\n\tu8\tregblk;\n\tu8\tnum_ranges;\n\tu64\tmask;\n#define\t MAX_REG_RANGES\t8\n\tstruct reg_range range[MAX_REG_RANGES];\n};\n\nstatic struct hw_reg_map txsch_reg_map[NIX_TXSCH_LVL_CNT] = {\n\t{NIX_TXSCH_LVL_SMQ, 2, 0xFFFF, {{0x0700, 0x0708}, {0x1400, 0x14C8} } },\n\t{NIX_TXSCH_LVL_TL4, 3, 0xFFFF, {{0x0B00, 0x0B08}, {0x0B10, 0x0B18},\n\t\t\t      {0x1200, 0x12E0} } },\n\t{NIX_TXSCH_LVL_TL3, 4, 0xFFFF, {{0x1000, 0x10E0}, {0x1600, 0x1608},\n\t\t\t      {0x1610, 0x1618}, {0x1700, 0x17C8} } },\n\t{NIX_TXSCH_LVL_TL2, 2, 0xFFFF, {{0x0E00, 0x0EE0}, {0x1700, 0x17C8} } },\n\t{NIX_TXSCH_LVL_TL1, 1, 0xFFFF, {{0x0C00, 0x0D98} } },\n};\n\nbool rvu_check_valid_reg(int regmap, int regblk, u64 reg)\n{\n\tint idx;\n\tstruct hw_reg_map *map;\n\n\t \n\tif (reg & 0x07)\n\t\treturn false;\n\n\tif (regmap == TXSCHQ_HWREGMAP) {\n\t\tif (regblk >= NIX_TXSCH_LVL_CNT)\n\t\t\treturn false;\n\t\tmap = &txsch_reg_map[regblk];\n\t} else {\n\t\treturn false;\n\t}\n\n\t \n\tif (map->regblk != regblk)\n\t\treturn false;\n\n\treg &= map->mask;\n\n\tfor (idx = 0; idx < map->num_ranges; idx++) {\n\t\tif (reg >= map->range[idx].start &&\n\t\t    reg < map->range[idx].end)\n\t\t\treturn true;\n\t}\n\treturn false;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "au0828-cards.h",
+  "hash_id": "8d67f88333d00c2815919f6d0d4d66527353b0d7ddae8bcb31872a01818f36c5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/au0828/au0828-cards.h",
+  "human_readable_source": " \n \n\n#define AU0828_BOARD_UNKNOWN\t\t0\n#define AU0828_BOARD_HAUPPAUGE_HVR950Q\t1\n#define AU0828_BOARD_HAUPPAUGE_HVR850\t2\n#define AU0828_BOARD_DVICO_FUSIONHDTV7\t3\n#define AU0828_BOARD_HAUPPAUGE_HVR950Q_MXL\t4\n#define AU0828_BOARD_HAUPPAUGE_WOODBURY\t5\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

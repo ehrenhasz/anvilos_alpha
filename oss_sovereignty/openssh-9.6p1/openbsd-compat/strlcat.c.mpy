@@ -1,0 +1,9 @@
+{
+  "module_name": "strlcat.c",
+  "hash_id": "791109ed9bcd6b4a4870465253acdb68a31c3b3349e503957e893436e203b7bc",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/strlcat.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"includes.h\"\n#ifndef HAVE_STRLCAT\n\n#include <sys/types.h>\n#include <string.h>\n\n \nsize_t\nstrlcat(char *dst, const char *src, size_t siz)\n{\n\tchar *d = dst;\n\tconst char *s = src;\n\tsize_t n = siz;\n\tsize_t dlen;\n\n\t \n\twhile (n-- != 0 && *d != '\\0')\n\t\td++;\n\tdlen = d - dst;\n\tn = siz - dlen;\n\n\tif (n == 0)\n\t\treturn(dlen + strlen(s));\n\twhile (*s != '\\0') {\n\t\tif (n != 1) {\n\t\t\t*d++ = *s;\n\t\t\tn--;\n\t\t}\n\t\ts++;\n\t}\n\t*d = '\\0';\n\n\treturn(dlen + (s - src));\t \n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

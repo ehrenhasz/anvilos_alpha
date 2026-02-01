@@ -1,0 +1,9 @@
+{
+  "module_name": "pmem-dax.c",
+  "hash_id": "c522531e249d51ef0439b3f41e0d04a1c3363ba44b6757eca8f217ec06a2949a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/nvdimm/pmem-dax.c",
+  "human_readable_source": "\n \n#include \"test/nfit_test.h\"\n#include <linux/blkdev.h>\n#include <linux/dax.h>\n#include <pmem.h>\n#include <nd.h>\n\nlong __pmem_direct_access(struct pmem_device *pmem, pgoff_t pgoff,\n\t\tlong nr_pages, enum dax_access_mode mode, void **kaddr,\n\t\tpfn_t *pfn)\n{\n\tresource_size_t offset = PFN_PHYS(pgoff) + pmem->data_offset;\n\n\tif (unlikely(is_bad_pmem(&pmem->bb, PFN_PHYS(pgoff) / 512,\n\t\t\t\t\tPFN_PHYS(nr_pages))))\n\t\treturn -EIO;\n\n\t \n\tif (get_nfit_res(pmem->phys_addr + offset)) {\n\t\tstruct page *page;\n\n\t\tif (kaddr)\n\t\t\t*kaddr = pmem->virt_addr + offset;\n\t\tpage = vmalloc_to_page(pmem->virt_addr + offset);\n\t\tif (pfn)\n\t\t\t*pfn = page_to_pfn_t(page);\n\t\tpr_debug_ratelimited(\"%s: pmem: %p pgoff: %#lx pfn: %#lx\\n\",\n\t\t\t\t__func__, pmem, pgoff, page_to_pfn(page));\n\n\t\treturn 1;\n\t}\n\n\tif (kaddr)\n\t\t*kaddr = pmem->virt_addr + offset;\n\tif (pfn)\n\t\t*pfn = phys_to_pfn_t(pmem->phys_addr + offset, pmem->pfn_flags);\n\n\t \n\tif (unlikely(pmem->bb.count))\n\t\treturn nr_pages;\n\treturn PHYS_PFN(pmem->size - pmem->pfn_pad - offset);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

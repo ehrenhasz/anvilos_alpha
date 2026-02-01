@@ -1,0 +1,9 @@
+{
+  "module_name": "cobalt-cpld.h",
+  "hash_id": "6fc9748520d4a15773f991d740beffa517cce165c03390f27ca6e90429ad9ac5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/cobalt/cobalt-cpld.h",
+  "human_readable_source": " \n \n\n#ifndef COBALT_CPLD_H\n#define COBALT_CPLD_H\n\n#include \"cobalt-driver.h\"\n\nvoid cobalt_cpld_status(struct cobalt *cobalt);\nbool cobalt_cpld_set_freq(struct cobalt *cobalt, unsigned freq);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

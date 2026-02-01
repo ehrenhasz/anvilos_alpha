@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b97722c5922ad128d02651eb3c62ab69854606138b809f322bdb92c23f315d14",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/exec/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nCFLAGS = -Wall\nCFLAGS += -Wno-nonnull\nCFLAGS += -D_GNU_SOURCE\n\nTEST_PROGS := binfmt_script.py\nTEST_GEN_PROGS := execveat load_address_4096 load_address_2097152 load_address_16777216 non-regular\nTEST_GEN_FILES := execveat.symlink execveat.denatured script subdir\n# Makefile is a run-time dependency, since it's accessed by the execveat test\nTEST_FILES := Makefile\n\nTEST_GEN_PROGS += recursion-depth\nTEST_GEN_PROGS += null-argv\n\nEXTRA_CLEAN := $(OUTPUT)/subdir.moved $(OUTPUT)/execveat.moved $(OUTPUT)/xxxxx*\t\\\n\t       $(OUTPUT)/S_I*.test\n\ninclude ../lib.mk\n\n$(OUTPUT)/subdir:\n\tmkdir -p $@\n$(OUTPUT)/script:\n\techo '#!/bin/sh' > $@\n\techo 'exit $$*' >> $@\n\tchmod +x $@\n$(OUTPUT)/execveat.symlink: $(OUTPUT)/execveat\n\tcd $(OUTPUT) && ln -s -f $(shell basename $<) $(shell basename $@)\n$(OUTPUT)/execveat.denatured: $(OUTPUT)/execveat\n\tcp $< $@\n\tchmod -x $@\n$(OUTPUT)/load_address_4096: load_address.c\n\t$(CC) $(CFLAGS) $(LDFLAGS) -Wl,-z,max-page-size=0x1000 -pie -static $< -o $@\n$(OUTPUT)/load_address_2097152: load_address.c\n\t$(CC) $(CFLAGS) $(LDFLAGS) -Wl,-z,max-page-size=0x200000 -pie -static $< -o $@\n$(OUTPUT)/load_address_16777216: load_address.c\n\t$(CC) $(CFLAGS) $(LDFLAGS) -Wl,-z,max-page-size=0x1000000 -pie -static $< -o $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

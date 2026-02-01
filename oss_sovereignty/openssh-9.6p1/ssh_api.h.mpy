@@ -1,0 +1,9 @@
+{
+  "module_name": "ssh_api.h",
+  "hash_id": "840beb4e0e243fec9f7b1a6b58f6b8ee9ad54d9dbb26018185aa4b5419ee6f79",
+  "original_prompt": "Ingested from openssh-9.6p1/ssh_api.h",
+  "human_readable_source": " \n \n\n#ifndef API_H\n#define API_H\n\n#include <sys/types.h>\n#include <signal.h>\n\n#include \"openbsd-compat/sys-queue.h\"\n\n#include \"cipher.h\"\n#include \"sshkey.h\"\n#include \"kex.h\"\n#include \"ssh.h\"\n#include \"ssh2.h\"\n#include \"packet.h\"\n\nstruct kex_params {\n\tchar *proposal[PROPOSAL_MAX];\n};\n\n \n\n \nint\tssh_init(struct ssh **, int is_server, struct kex_params *kex_params);\n\n \nvoid\tssh_free(struct ssh *);\n\n \nvoid\tssh_set_app_data(struct ssh *, void *);\nvoid\t*ssh_get_app_data(struct ssh *);\n\n \nint\tssh_add_hostkey(struct ssh *ssh, struct sshkey *key);\n\n \nint\tssh_set_verify_host_key_callback(struct ssh *ssh,\n    int (*cb)(struct sshkey *, struct ssh *));\n\n \nint\tssh_packet_next(struct ssh *ssh, u_char *typep);\n\n \nconst u_char\t*ssh_packet_payload(struct ssh *ssh, size_t *lenp);\n\n \nint\tssh_packet_put(struct ssh *ssh, int type, const u_char *data,\n    size_t len);\n\n \nint\tssh_input_space(struct ssh *ssh, size_t len);\n\n \nint\tssh_input_append(struct ssh *ssh, const u_char *data, size_t len);\n\n \nint\tssh_output_space(struct ssh *ssh, size_t len);\n\n \nconst u_char\t*ssh_output_ptr(struct ssh *ssh, size_t *len);\n\n \nint\tssh_output_consume(struct ssh *ssh, size_t len);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

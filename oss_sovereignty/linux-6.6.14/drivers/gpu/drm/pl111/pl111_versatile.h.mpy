@@ -1,0 +1,9 @@
+{
+  "module_name": "pl111_versatile.h",
+  "hash_id": "8008502610a7bbda727e08245cc9f07eaa03cef50cc69f971b7d20d15cfe2f25",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/pl111/pl111_versatile.h",
+  "human_readable_source": "#include <linux/device.h>\n#include \"pl111_drm.h\"\n\n#ifndef PL111_VERSATILE_H\n#define PL111_VERSATILE_H\n\nstruct device;\nstruct pl111_drm_dev_private;\n\nint pl111_versatile_init(struct device *dev, struct pl111_drm_dev_private *priv);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

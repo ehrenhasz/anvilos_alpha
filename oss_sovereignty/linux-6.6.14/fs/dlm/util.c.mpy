@@ -1,0 +1,9 @@
+{
+  "module_name": "util.c",
+  "hash_id": "0e44fdd8c60d4b9bec8a9d4ee135ac5157925c5df34e73f8900e6cffb893feb9",
+  "original_prompt": "Ingested from linux-6.6.14/fs/dlm/util.c",
+  "human_readable_source": "\n \n\n#include \"dlm_internal.h\"\n#include \"rcom.h\"\n#include \"util.h\"\n\n#define DLM_ERRNO_EDEADLK\t\t35\n#define DLM_ERRNO_EBADR\t\t\t53\n#define DLM_ERRNO_EBADSLT\t\t57\n#define DLM_ERRNO_EPROTO\t\t71\n#define DLM_ERRNO_EOPNOTSUPP\t\t95\n#define DLM_ERRNO_ETIMEDOUT\t       110\n#define DLM_ERRNO_EINPROGRESS\t       115\n\n \n\nint to_dlm_errno(int err)\n{\n\tswitch (err) {\n\tcase -EDEADLK:\n\t\treturn -DLM_ERRNO_EDEADLK;\n\tcase -EBADR:\n\t\treturn -DLM_ERRNO_EBADR;\n\tcase -EBADSLT:\n\t\treturn -DLM_ERRNO_EBADSLT;\n\tcase -EPROTO:\n\t\treturn -DLM_ERRNO_EPROTO;\n\tcase -EOPNOTSUPP:\n\t\treturn -DLM_ERRNO_EOPNOTSUPP;\n\tcase -ETIMEDOUT:\n\t\treturn -DLM_ERRNO_ETIMEDOUT;\n\tcase -EINPROGRESS:\n\t\treturn -DLM_ERRNO_EINPROGRESS;\n\t}\n\treturn err;\n}\n\nint from_dlm_errno(int err)\n{\n\tswitch (err) {\n\tcase -DLM_ERRNO_EDEADLK:\n\t\treturn -EDEADLK;\n\tcase -DLM_ERRNO_EBADR:\n\t\treturn -EBADR;\n\tcase -DLM_ERRNO_EBADSLT:\n\t\treturn -EBADSLT;\n\tcase -DLM_ERRNO_EPROTO:\n\t\treturn -EPROTO;\n\tcase -DLM_ERRNO_EOPNOTSUPP:\n\t\treturn -EOPNOTSUPP;\n\tcase -DLM_ERRNO_ETIMEDOUT:\n\t\treturn -ETIMEDOUT;\n\tcase -DLM_ERRNO_EINPROGRESS:\n\t\treturn -EINPROGRESS;\n\t}\n\treturn err;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

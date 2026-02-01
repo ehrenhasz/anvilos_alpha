@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "7985e76d332eed19d658a374452fadce002941d57471add381e9383b9a902063",
+  "original_prompt": "Ingested from linux-6.6.14/tools/counter/Build",
+  "human_readable_source": "counter_example-y += counter_example.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

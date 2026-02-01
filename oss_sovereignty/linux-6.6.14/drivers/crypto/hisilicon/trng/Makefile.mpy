@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "135ade659a52b5eb9398d5e4b5ffee136436cc8a0aae683c02e18b4ebf3bd39e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/hisilicon/trng/Makefile",
+  "human_readable_source": "obj-$(CONFIG_CRYPTO_DEV_HISI_TRNG) += hisi-trng-v2.o\nhisi-trng-v2-objs = trng.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

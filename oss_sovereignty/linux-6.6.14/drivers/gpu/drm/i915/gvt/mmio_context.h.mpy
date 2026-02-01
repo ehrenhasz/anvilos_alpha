@@ -1,0 +1,9 @@
+{
+  "module_name": "mmio_context.h",
+  "hash_id": "5d9d892e6432235b080c7f06a7f83892abc3e3d816922009bf19ddc723285d56",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gvt/mmio_context.h",
+  "human_readable_source": " \n\n#ifndef __GVT_RENDER_H__\n#define __GVT_RENDER_H__\n\n#include <linux/types.h>\n\n#include \"gt/intel_engine_regs.h\"\n#include \"gt/intel_engine_types.h\"\n#include \"gt/intel_lrc_reg.h\"\n\nstruct i915_request;\nstruct intel_context;\nstruct intel_engine_cs;\nstruct intel_gvt;\nstruct intel_vgpu;\n\nstruct engine_mmio {\n\tenum intel_engine_id id;\n\ti915_reg_t reg;\n\tu32 mask;\n\tbool in_context;\n\tu32 value;\n};\n\nvoid intel_gvt_switch_mmio(struct intel_vgpu *pre,\n\t\t\t   struct intel_vgpu *next,\n\t\t\t   const struct intel_engine_cs *engine);\n\nvoid intel_gvt_init_engine_mmio_context(struct intel_gvt *gvt);\n\nbool is_inhibit_context(struct intel_context *ce);\n\nint intel_vgpu_restore_inhibit_context(struct intel_vgpu *vgpu,\n\t\t\t\t       struct i915_request *req);\n\n#define IS_RESTORE_INHIBIT(a) \\\n\tIS_MASKED_BITS_ENABLED(a, CTX_CTRL_ENGINE_CTX_RESTORE_INHIBIT)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

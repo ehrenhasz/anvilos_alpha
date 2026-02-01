@@ -1,0 +1,9 @@
+{
+  "module_name": "imx8mn.h",
+  "hash_id": "60433b812ce5bc74bf548ba22efac62556984a15711f582750375b62b018f0af",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/interconnect/imx8mn.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_INTERCONNECT_IMX8MN_H\n#define __DT_BINDINGS_INTERCONNECT_IMX8MN_H\n\n#define IMX8MN_ICN_NOC\t\t1\n#define IMX8MN_ICS_DRAM\t\t2\n#define IMX8MN_ICS_OCRAM\t3\n#define IMX8MN_ICM_A53\t\t4\n\n#define IMX8MN_ICM_GPU\t\t5\n#define IMX8MN_ICN_GPU\t\t6\n\n#define IMX8MN_ICM_CSI1\t\t7\n#define IMX8MN_ICM_CSI2\t\t8\n#define IMX8MN_ICM_ISI\t\t9\n#define IMX8MN_ICM_LCDIF\t10\n#define IMX8MN_ICN_MIPI\t\t11\n\n#define IMX8MN_ICM_USB\t\t12\n\n#define IMX8MN_ICM_SDMA2\t13\n#define IMX8MN_ICM_SDMA3\t14\n#define IMX8MN_ICN_AUDIO\t15\n\n#define IMX8MN_ICN_ENET\t\t16\n#define IMX8MN_ICM_ENET\t\t17\n\n#define IMX8MN_ICM_NAND\t\t18\n#define IMX8MN_ICM_SDMA1\t19\n#define IMX8MN_ICM_USDHC1\t20\n#define IMX8MN_ICM_USDHC2\t21\n#define IMX8MN_ICM_USDHC3\t22\n#define IMX8MN_ICN_MAIN\t\t23\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

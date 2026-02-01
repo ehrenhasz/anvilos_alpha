@@ -1,0 +1,9 @@
+{
+  "module_name": "test.x",
+  "hash_id": "e6f4334059664e62d365a349dedc7d2cf00a4ced263f59575e328aa972e082ef",
+  "original_prompt": "Ingested from coreutils-9.4/man/test.x",
+  "human_readable_source": "'\\\" Copyright (C) 1998-2023 Free Software Foundation, Inc.\n'\\\"\n'\\\" This is free software.  You may redistribute copies of it under the terms\n'\\\" of the GNU General Public License <https://www.gnu.org/licenses/gpl.html>.\n'\\\" There is NO WARRANTY, to the extent permitted by law.\n[NAME]\ntest \\- check file types and compare values\n[SYNOPSIS]\n.B test\n.I EXPRESSION\n.br\n.B test\n.br\n.\\\" \\& tells doclifter the brackets are literal (Bug#31803).\n.B [\\&\n.I EXPRESSION\n.B ]\\&\n.br\n.B \"[\\& ]\\&\"\n.br\n.B [\\&\n.I OPTION\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\naccess(2)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

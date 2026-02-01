@@ -1,0 +1,9 @@
+{
+  "module_name": "mk_elfconfig.c",
+  "hash_id": "cf1fcde8e1745cb87a147f1890714ab22662957b5465f1864c84a3ab132eb9b9",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/mod/mk_elfconfig.c",
+  "human_readable_source": "\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <elf.h>\n\nint\nmain(int argc, char **argv)\n{\n\tunsigned char ei[EI_NIDENT];\n\tunion { short s; char c[2]; } endian_test;\n\n\tif (fread(ei, 1, EI_NIDENT, stdin) != EI_NIDENT) {\n\t\tfprintf(stderr, \"Error: input truncated\\n\");\n\t\treturn 1;\n\t}\n\tif (memcmp(ei, ELFMAG, SELFMAG) != 0) {\n\t\tfprintf(stderr, \"Error: not ELF\\n\");\n\t\treturn 1;\n\t}\n\tswitch (ei[EI_CLASS]) {\n\tcase ELFCLASS32:\n\t\tprintf(\"#define KERNEL_ELFCLASS ELFCLASS32\\n\");\n\t\tbreak;\n\tcase ELFCLASS64:\n\t\tprintf(\"#define KERNEL_ELFCLASS ELFCLASS64\\n\");\n\t\tbreak;\n\tdefault:\n\t\texit(1);\n\t}\n\tswitch (ei[EI_DATA]) {\n\tcase ELFDATA2LSB:\n\t\tprintf(\"#define KERNEL_ELFDATA ELFDATA2LSB\\n\");\n\t\tbreak;\n\tcase ELFDATA2MSB:\n\t\tprintf(\"#define KERNEL_ELFDATA ELFDATA2MSB\\n\");\n\t\tbreak;\n\tdefault:\n\t\texit(1);\n\t}\n\n\tif (sizeof(unsigned long) == 4) {\n\t\tprintf(\"#define HOST_ELFCLASS ELFCLASS32\\n\");\n\t} else if (sizeof(unsigned long) == 8) {\n\t\tprintf(\"#define HOST_ELFCLASS ELFCLASS64\\n\");\n\t}\n\n\tendian_test.s = 0x0102;\n\tif (memcmp(endian_test.c, \"\\x01\\x02\", 2) == 0)\n\t\tprintf(\"#define HOST_ELFDATA ELFDATA2MSB\\n\");\n\telse if (memcmp(endian_test.c, \"\\x02\\x01\", 2) == 0)\n\t\tprintf(\"#define HOST_ELFDATA ELFDATA2LSB\\n\");\n\telse\n\t\texit(1);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

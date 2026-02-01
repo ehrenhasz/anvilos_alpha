@@ -1,0 +1,9 @@
+{
+  "module_name": "pxa3xx-gcu.h",
+  "hash_id": "b3bae9156d8ea6eb9c2913cb4b034175bcb52a14243741af78eefeb772f25912",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/pxa3xx-gcu.h",
+  "human_readable_source": " \n#ifndef __PXA3XX_GCU_H__\n#define __PXA3XX_GCU_H__\n\n#include <linux/types.h>\n\n \n#define PXA3XX_GCU_BUFFER_WORDS  ((256 * 1024 - 256) / 4)\n\n \n#define PXA3XX_GCU_SHARED_MAGIC  0x30000001\n\n#define PXA3XX_GCU_BATCH_WORDS   8192\n\nstruct pxa3xx_gcu_shared {\n\tu32            buffer[PXA3XX_GCU_BUFFER_WORDS];\n\n\tbool           hw_running;\n\n\tunsigned long  buffer_phys;\n\n\tunsigned int   num_words;\n\tunsigned int   num_writes;\n\tunsigned int   num_done;\n\tunsigned int   num_interrupts;\n\tunsigned int   num_wait_idle;\n\tunsigned int   num_wait_free;\n\tunsigned int   num_idle;\n\n\tu32            magic;\n};\n\n \n#define PXA3XX_GCU_IOCTL_RESET\t\t_IO('G', 0)\n#define PXA3XX_GCU_IOCTL_WAIT_IDLE\t_IO('G', 2)\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

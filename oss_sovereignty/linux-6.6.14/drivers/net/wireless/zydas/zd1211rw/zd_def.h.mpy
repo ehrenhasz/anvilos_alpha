@@ -1,0 +1,9 @@
+{
+  "module_name": "zd_def.h",
+  "hash_id": "efce3437c20c4f6dff6bf332b16833ac7fd5ea85611021baecb72b417b533f6d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/zydas/zd1211rw/zd_def.h",
+  "human_readable_source": " \n \n\n#ifndef _ZD_DEF_H\n#define _ZD_DEF_H\n\n#include <linux/kernel.h>\n#include <linux/stringify.h>\n#include <linux/device.h>\n\ntypedef u16 __nocast zd_addr_t;\n\n#define dev_printk_f(level, dev, fmt, args...) \\\n\tdev_printk(level, dev, \"%s() \" fmt, __func__, ##args)\n\n#ifdef DEBUG\n#  define dev_dbg_f(dev, fmt, args...) \\\n\t  dev_printk_f(KERN_DEBUG, dev, fmt, ## args)\n#  define dev_dbg_f_limit(dev, fmt, args...) do { \\\n\tif (net_ratelimit()) \\\n\t\tdev_printk_f(KERN_DEBUG, dev, fmt, ## args); \\\n} while (0)\n#  define dev_dbg_f_cond(dev, cond, fmt, args...) ({ \\\n\tbool __cond = !!(cond); \\\n\tif (unlikely(__cond)) \\\n\t\tdev_printk_f(KERN_DEBUG, dev, fmt, ## args); \\\n})\n#else\n#  define dev_dbg_f(dev, fmt, args...) do { (void)(dev); } while (0)\n#  define dev_dbg_f_limit(dev, fmt, args...) do { (void)(dev); } while (0)\n#  define dev_dbg_f_cond(dev, cond, fmt, args...) do { (void)(dev); } while (0)\n#endif  \n\n#ifdef DEBUG\n#  define ZD_ASSERT(x) \\\ndo { \\\n\tif (unlikely(!(x))) { \\\n\t\tpr_debug(\"%s:%d ASSERT %s VIOLATED!\\n\", \\\n\t\t\t__FILE__, __LINE__, __stringify(x)); \\\n\t\tdump_stack(); \\\n\t} \\\n} while (0)\n#else\n#  define ZD_ASSERT(x) do { } while (0)\n#endif\n\n#ifdef DEBUG\n#  define ZD_MEMCLEAR(pointer, size) memset((pointer), 0xff, (size))\n#else\n#  define ZD_MEMCLEAR(pointer, size) do { } while (0)\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

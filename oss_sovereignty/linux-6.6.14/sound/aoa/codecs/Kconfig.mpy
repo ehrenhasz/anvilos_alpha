@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b4121d75f320682f46b2f6506e053e812880339cdf0fe516bc1a9cee6a6ef068",
+  "original_prompt": "Ingested from linux-6.6.14/sound/aoa/codecs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SND_AOA_ONYX\n\ttristate \"support Onyx chip\"\n\tselect I2C\n\tselect I2C_POWERMAC\n\thelp\n\tThis option enables support for the Onyx (pcm3052)\n\tcodec chip found in the latest Apple machines\n\t(most of those with digital audio output).\n\nconfig SND_AOA_TAS\n\ttristate \"support TAS chips\"\n\tselect I2C\n\tselect I2C_POWERMAC\n\thelp\n\tThis option enables support for the tas chips\n\tfound in a lot of Apple Machines, especially\n\tiBooks and PowerBooks without digital.\n\nconfig SND_AOA_TOONIE\n\ttristate \"support Toonie chip\"\n\thelp\n\tThis option enables support for the toonie codec\n\tfound in the Mac Mini. If you have a Mac Mini and\n\twant to hear sound, select this option.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

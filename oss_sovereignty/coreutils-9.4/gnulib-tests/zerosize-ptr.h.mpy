@@ -1,0 +1,9 @@
+{
+  "module_name": "zerosize-ptr.h",
+  "hash_id": "76645522dcc9c0b18f3b29a0ad1c0fa859bba847452b6d7f3c734c61213ff679",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/zerosize-ptr.h",
+  "human_readable_source": " \n\n \n#if defined __ANDROID__\n# undef _FILE_OFFSET_BITS\n# undef __USE_FILE_OFFSET64\n#endif\n\n#include <stdlib.h>\n\n \n#if HAVE_SYS_MMAN_H && HAVE_MPROTECT && !defined __KLIBC__\n# include <fcntl.h>\n# include <unistd.h>\n# include <sys/types.h>\n# include <sys/mman.h>\n \n# ifndef MAP_FILE\n#  define MAP_FILE 0\n# endif\n#endif\n\n \n\nstatic void *\nzerosize_ptr (void)\n{\n \n#if HAVE_SYS_MMAN_H && HAVE_MPROTECT && !defined __KLIBC__\n# if HAVE_MAP_ANONYMOUS\n  const int flags = MAP_ANONYMOUS | MAP_PRIVATE;\n  const int fd = -1;\n# else  \n  const int flags = MAP_FILE | MAP_PRIVATE;\n  int fd = open (\"/dev/zero\", O_RDONLY, 0666);\n  if (fd >= 0)\n# endif\n    {\n      int pagesize = getpagesize ();\n      char *two_pages =\n        (char *) mmap (NULL, 2 * pagesize, PROT_READ | PROT_WRITE,\n                       flags, fd, 0);\n      if (two_pages != (char *)(-1)\n          && mprotect (two_pages + pagesize, pagesize, PROT_NONE) == 0)\n        return two_pages + pagesize;\n    }\n#endif\n  return NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "acenv.h",
+  "hash_id": "7a30968ab6119cb652fb880f5abb41ab31c2b5155770bc75279557a83de66575",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/acenv.h",
+  "human_readable_source": " \n \n\n#ifndef _ASM_X86_ACENV_H\n#define _ASM_X86_ACENV_H\n\n#include <asm/special_insns.h>\n\n \n\n \n#define ACPI_FLUSH_CPU_CACHE()\t\t\t\t\t\\\ndo {\t\t\t\t\t\t\t\t\\\n\tif (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))\t\\\n\t\twbinvd();\t\t\t\t\t\\\n} while (0)\n\nint __acpi_acquire_global_lock(unsigned int *lock);\nint __acpi_release_global_lock(unsigned int *lock);\n\n#define ACPI_ACQUIRE_GLOBAL_LOCK(facs, Acq) \\\n\t((Acq) = __acpi_acquire_global_lock(&facs->global_lock))\n\n#define ACPI_RELEASE_GLOBAL_LOCK(facs, Acq) \\\n\t((Acq) = __acpi_release_global_lock(&facs->global_lock))\n\n \n#define ACPI_DIV_64_BY_32(n_hi, n_lo, d32, q32, r32) \\\n\tasm(\"divl %2;\"\t\t\t\t     \\\n\t    : \"=a\"(q32), \"=d\"(r32)\t\t     \\\n\t    : \"r\"(d32),\t\t\t\t     \\\n\t     \"0\"(n_lo), \"1\"(n_hi))\n\n#define ACPI_SHIFT_RIGHT_64(n_hi, n_lo) \\\n\tasm(\"shrl   $1,%2\t;\"\t\\\n\t    \"rcrl   $1,%3;\"\t\t\\\n\t    : \"=r\"(n_hi), \"=r\"(n_lo)\t\\\n\t    : \"0\"(n_hi), \"1\"(n_lo))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

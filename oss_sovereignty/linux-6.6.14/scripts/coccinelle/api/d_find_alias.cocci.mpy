@@ -1,0 +1,9 @@
+{
+  "module_name": "d_find_alias.cocci",
+  "hash_id": "497ae76ec50c7a91d66985e71dbf4f5c546bff4390a0f40448e407f14d268aa8",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/api/d_find_alias.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/// Make sure calls to d_find_alias() have a corresponding call to dput().\n//\n// Keywords: d_find_alias, dput\n//\n// Confidence: Moderate\n// URL: https://coccinelle.gitlabpages.inria.fr/website\n// Options: --include-headers\n\nvirtual context\nvirtual org\nvirtual patch\nvirtual report\n\n@r exists@\nlocal idexpression struct dentry *dent;\nexpression E, E1;\nstatement S1, S2;\nposition p1, p2;\n@@\n(\n\tif (!(dent@p1 = d_find_alias(...))) S1\n|\n\tdent@p1 = d_find_alias(...)\n)\n\n<...when != dput(dent)\n    when != if (...) { <+... dput(dent) ...+> }\n    when != true !dent || ...\n    when != dent = E\n    when != E = dent\nif (!dent || ...) S2\n...>\n(\n\treturn <+...dent...+>;\n|\n\treturn @p2 ...;\n|\n\tdent@p2 = E1;\n|\n\tE1 = dent;\n)\n\n@depends on context@\nlocal idexpression struct dentry *r.dent;\nposition r.p1,r.p2;\n@@\n* dent@p1 = ...\n  ...\n(\n* return@p2 ...;\n|\n* dent@p2\n)\n\n\n@script:python depends on org@\np1 << r.p1;\np2 << r.p2;\n@@\ncocci.print_main(\"Missing call to dput()\",p1)\ncocci.print_secs(\"\",p2)\n\n@depends on patch@\nlocal idexpression struct dentry *r.dent;\nposition r.p2;\n@@\n(\n+ dput(dent);\n  return @p2 ...;\n|\n+ dput(dent);\n  dent@p2 = ...;\n)\n\n@script:python depends on report@\np1 << r.p1;\np2 << r.p2;\n@@\nmsg = \"Missing call to dput() at line %s.\"\ncoccilib.report.print_report(p1[0], msg % (p2[0].line))\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

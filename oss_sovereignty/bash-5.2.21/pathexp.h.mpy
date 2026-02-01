@@ -1,0 +1,9 @@
+{
+  "module_name": "pathexp.h",
+  "hash_id": "dc3133156f56e039d2343ca68a47e610f543dc79128257e4dd0756f3d395b009",
+  "original_prompt": "Ingested from bash-5.2.21/pathexp.h",
+  "human_readable_source": " \n\n \n\n#if !defined (_PATHEXP_H_)\n#define _PATHEXP_H_\n\n#define GLOB_FAILED(glist)\t(glist) == (char **)&glob_error_return\n\nextern int noglob_dot_filenames;\nextern char *glob_error_return;\n\n \n#define QGLOB_CVTNULL\t0x01\t \n#define QGLOB_FILENAME\t0x02\t \n#define QGLOB_REGEXP\t0x04\t \n#define QGLOB_CTLESC\t0x08\t \n#define QGLOB_DEQUOTE\t0x10\t \n\n#if defined (EXTENDED_GLOB)\n \n#  define FNMATCH_EXTFLAG\t(extended_glob ? FNM_EXTMATCH : 0)\n#else\n#  define FNMATCH_EXTFLAG\t0\n#endif  \n\n#define FNMATCH_IGNCASE\t\t(match_ignore_case ? FNM_CASEFOLD : 0)\n#define FNMATCH_NOCASEGLOB\t(glob_ignore_case ? FNM_CASEFOLD : 0)\n\nextern int glob_dot_filenames;\nextern int extended_glob;\nextern int glob_star;\nextern int match_ignore_case;\t \n\nextern int unquoted_glob_pattern_p PARAMS((char *));\n\n \nextern char *quote_string_for_globbing PARAMS((const char *, int));\n\nextern int glob_char_p PARAMS((const char *));\nextern char *quote_globbing_chars PARAMS((const char *));\n\n \nextern char **shell_glob_filename PARAMS((const char *, int));\n\n \n\nstruct ign {\n  char *val;\n  int len, flags;\n};\n\ntypedef int sh_iv_item_func_t PARAMS((struct ign *));\n\nstruct ignorevar {\n  char *varname;\t \n  struct ign *ignores;\t \n  int num_ignores;\t \n  char *last_ignoreval;\t \n  sh_iv_item_func_t *item_func;  \n};\n\nextern void setup_ignore_patterns PARAMS((struct ignorevar *));\n\nextern void setup_glob_ignore PARAMS((char *));\nextern int should_ignore_glob_matches PARAMS((void));\nextern void ignore_glob_matches PARAMS((char **));\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bind_perm.c",
+  "hash_id": "07db7e2138f03c91e9f0f5d3c0c775af8920a0aabbc24d1837ba3d2cd9b27de1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bind_perm.c",
+  "human_readable_source": "\n\n#include <linux/stddef.h>\n#include <linux/bpf.h>\n#include <sys/types.h>\n#include <sys/socket.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n\nstatic __always_inline int bind_prog(struct bpf_sock_addr *ctx, int family)\n{\n\tstruct bpf_sock *sk;\n\n\tsk = ctx->sk;\n\tif (!sk)\n\t\treturn 0;\n\n\tif (sk->family != family)\n\t\treturn 0;\n\n\tif (ctx->type != SOCK_STREAM)\n\t\treturn 0;\n\n\t \n\tif (ctx->user_port == bpf_htons(111))\n\t\treturn (1 | 2);\n\n\treturn 1;\n}\n\nSEC(\"cgroup/bind4\")\nint bind_v4_prog(struct bpf_sock_addr *ctx)\n{\n\treturn bind_prog(ctx, AF_INET);\n}\n\nSEC(\"cgroup/bind6\")\nint bind_v6_prog(struct bpf_sock_addr *ctx)\n{\n\treturn bind_prog(ctx, AF_INET6);\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

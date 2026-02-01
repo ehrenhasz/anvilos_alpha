@@ -1,0 +1,9 @@
+{
+  "module_name": "qla_version.h",
+  "hash_id": "7ae8b827a75352ee44f41f3782c0bc9dc0aa91c7192735abd8da1e6f0db47d5c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/qla2xxx/qla_version.h",
+  "human_readable_source": " \n \n \n#define QLA2XXX_VERSION      \"10.02.09.100-k\"\n\n#define QLA_DRIVER_MAJOR_VER\t10\n#define QLA_DRIVER_MINOR_VER\t2\n#define QLA_DRIVER_PATCH_VER\t9\n#define QLA_DRIVER_BETA_VER\t100\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mktime-internal.h",
+  "hash_id": "97dba183c5b6f332213148ec15456107112fa7a697ce2d8528931a124c01cefb",
+  "original_prompt": "Ingested from coreutils-9.4/lib/mktime-internal.h",
+  "human_readable_source": " \n#ifdef _LIBC\ntypedef long int mktime_offset_t;\n#elif defined TIME_T_IS_SIGNED\ntypedef time_t mktime_offset_t;\n#else\ntypedef int mktime_offset_t;\n#endif\n\n \n#if ! (defined _LIBC && __TIMESIZE != 64)\n# undef __time64_t\n# define __time64_t time_t\n# define __gmtime64_r __gmtime_r\n# define __localtime64_r __localtime_r\n# define __mktime64 mktime\n# define __timegm64 timegm\n#endif\n\n#ifndef _LIBC\n\n \n\n# undef __gmtime_r\n# undef __localtime_r\n# define __gmtime_r gmtime_r\n# define __localtime_r localtime_r\n\n# define __mktime_internal mktime_internal\n\n#endif\n\n \nextern __time64_t __mktime_internal (struct tm *tp,\n                                     struct tm *(*func) (__time64_t const *,\n                                                         struct tm *),\n                                     mktime_offset_t *offset) attribute_hidden;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

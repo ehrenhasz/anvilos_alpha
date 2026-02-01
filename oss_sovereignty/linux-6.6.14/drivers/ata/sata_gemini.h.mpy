@@ -1,0 +1,9 @@
+{
+  "module_name": "sata_gemini.h",
+  "hash_id": "6980dbe0f9a2bc843451dd1a341470d3b5c7bf6147898e7cedeeff2d2ce4629e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ata/sata_gemini.h",
+  "human_readable_source": " \n \n#ifndef SATA_GEMINI_H\n#define SATA_GEMINI_H\n\nstruct sata_gemini;\n\nenum gemini_muxmode {\n\tGEMINI_MUXMODE_0 = 0,\n\tGEMINI_MUXMODE_1,\n\tGEMINI_MUXMODE_2,\n\tGEMINI_MUXMODE_3,\n};\n\nstruct sata_gemini *gemini_sata_bridge_get(void);\nbool gemini_sata_bridge_enabled(struct sata_gemini *sg, bool is_ata1);\nenum gemini_muxmode gemini_sata_get_muxmode(struct sata_gemini *sg);\nint gemini_sata_start_bridge(struct sata_gemini *sg, unsigned int bridge);\nvoid gemini_sata_stop_bridge(struct sata_gemini *sg, unsigned int bridge);\nint gemini_sata_reset_bridge(struct sata_gemini *sg, unsigned int bridge);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

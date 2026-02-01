@@ -1,0 +1,9 @@
+{
+  "module_name": "thunks.S",
+  "hash_id": "ef6e5f8cf9850a5656d65e3a8151b37a9c07889e5659ef120ae0624274fbcd17",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/x86/thunks.S",
+  "human_readable_source": " \n \n\n\t.text\n\n\t.global call32_from_64\n\t.type call32_from_64, @function\ncall32_from_64:\n\t \n\t \n\n\t \n\tpushq %rbx\n\tpushq %rbp\n\tpushq %r12\n\tpushq %r13\n\tpushq %r14\n\tpushq %r15\n\tpushfq\n\n\t \n\tmov %rsp,(%rdi)\n\tmov %rdi,%rsp\n\n\t \n\tpushq $0x23   \n\tpushq $1f\n\tlretq\n\n1:\n\t.code32\n\t \n\tcall *%esi\n\t \n\tjmp $0x33,$1f\n\t.code64\n\n1:\n\t \n\tmov (%rsp),%rsp\n\n\t \n\tpopfq\n\tpopq %r15\n\tpopq %r14\n\tpopq %r13\n\tpopq %r12\n\tpopq %rbp\n\tpopq %rbx\n\n\tret\n\n.size call32_from_64, .-call32_from_64\n\n.section .note.GNU-stack,\"\",%progbits\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

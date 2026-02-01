@@ -1,0 +1,9 @@
+{
+  "module_name": "lm7000.h",
+  "hash_id": "01d9d7adcd51699f4bddc3e1886cdaf888167a9278027e29479a902f65e802bb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/radio/lm7000.h",
+  "human_readable_source": " \n#ifndef __LM7000_H\n#define __LM7000_H\n\n \n\n#define LM7000_DATA\t(1 << 0)\n#define LM7000_CLK\t(1 << 1)\n#define LM7000_CE\t(1 << 2)\n\n#define LM7000_FM_100\t(0 << 20)\n#define LM7000_FM_50\t(1 << 20)\n#define LM7000_FM_25\t(2 << 20)\n#define LM7000_BIT_FM\t(1 << 23)\n\nstatic inline void lm7000_set_freq(u32 freq, void *handle,\n\t\t\t\tvoid (*set_pins)(void *handle, u8 pins))\n{\n\tint i;\n\tu8 data;\n\tu32 val;\n\n\tfreq += 171200;\t\t \n\tfreq /= 400;\t\t \n\tval = freq | LM7000_FM_25 | LM7000_BIT_FM;\n\t \n\tfor (i = 0; i < 24; i++) {\n\t\tdata = val & (1 << i) ? LM7000_DATA : 0;\n\t\tset_pins(handle, data | LM7000_CE);\n\t\tudelay(2);\n\t\tset_pins(handle, data | LM7000_CE | LM7000_CLK);\n\t\tudelay(2);\n\t\tset_pins(handle, data | LM7000_CE);\n\t\tudelay(2);\n\t}\n\tset_pins(handle, 0);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

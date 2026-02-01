@@ -1,0 +1,9 @@
+{
+  "module_name": "skb_helpers.c",
+  "hash_id": "a8b641e21ed60f176129290e744906ff1b43549258d75b45ac3049e6e36724e0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/skb_helpers.c",
+  "human_readable_source": "\n#include <test_progs.h>\n#include <network_helpers.h>\n\nvoid test_skb_helpers(void)\n{\n\tstruct __sk_buff skb = {\n\t\t.wire_len = 100,\n\t\t.gso_segs = 8,\n\t\t.gso_size = 10,\n\t};\n\tLIBBPF_OPTS(bpf_test_run_opts, topts,\n\t\t.data_in = &pkt_v4,\n\t\t.data_size_in = sizeof(pkt_v4),\n\t\t.ctx_in = &skb,\n\t\t.ctx_size_in = sizeof(skb),\n\t\t.ctx_out = &skb,\n\t\t.ctx_size_out = sizeof(skb),\n\t);\n\tstruct bpf_object *obj;\n\tint err, prog_fd;\n\n\terr = bpf_prog_test_load(\"./test_skb_helpers.bpf.o\",\n\t\t\t\t BPF_PROG_TYPE_SCHED_CLS, &obj, &prog_fd);\n\tif (!ASSERT_OK(err, \"load\"))\n\t\treturn;\n\terr = bpf_prog_test_run_opts(prog_fd, &topts);\n\tASSERT_OK(err, \"test_run\");\n\tbpf_object__close(obj);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

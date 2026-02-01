@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6192f7f436a288a28b1e63502a0e6d461a7862079ec64af8bb50c44aa23878d6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/dummy/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the IIO Dummy Driver\n#\n\nobj-$(CONFIG_IIO_SIMPLE_DUMMY) += iio_dummy.o\niio_dummy-y := iio_simple_dummy.o\niio_dummy-$(CONFIG_IIO_SIMPLE_DUMMY_EVENTS) += iio_simple_dummy_events.o\niio_dummy-$(CONFIG_IIO_SIMPLE_DUMMY_BUFFER) += iio_simple_dummy_buffer.o\n\nobj-$(CONFIG_IIO_DUMMY_EVGEN) += iio_dummy_evgen.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

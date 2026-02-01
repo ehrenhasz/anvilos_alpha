@@ -1,0 +1,9 @@
+{
+  "module_name": "ebt_redirect.h",
+  "hash_id": "67c7998299947145a11ef205634f67ae5e99d3177c5bc97474aed3b01143009d",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_bridge/ebt_redirect.h",
+  "human_readable_source": " \n#ifndef __LINUX_BRIDGE_EBT_REDIRECT_H\n#define __LINUX_BRIDGE_EBT_REDIRECT_H\n\nstruct ebt_redirect_info {\n\t \n\tint target;\n};\n#define EBT_REDIRECT_TARGET \"redirect\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

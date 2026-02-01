@@ -1,0 +1,9 @@
+{
+  "module_name": "verifier_reg_equal.c",
+  "hash_id": "6f77604987cdd67af9128982883a6e6afd8de7735d78732bf7632fc4c17f66b5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/verifier_reg_equal.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\nSEC(\"socket\")\n__description(\"check w reg equal if r reg upper32 bits 0\")\n__success\n__naked void subreg_equality_1(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tcall %[bpf_ktime_get_ns];\t\t\t\\\n\t*(u64 *)(r10 - 8) = r0;\t\t\t\t\\\n\tr2 = *(u32 *)(r10 - 8);\t\t\t\t\\\n\t \t\t\t\t\t\t\\\n\tw3 = w2;\t\t\t\t\t\\\n\tif w2 < 9 goto l0_%=;\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\nl0_%=:\tif r3 < 9 goto l1_%=;\t\t\t\t\\\n\t \t\t\\\n\tr0 -= r1;\t\t\t\t\t\\\nl1_%=:\texit;\t\t\t\t\t\t\\\n\"\t:\n\t: __imm(bpf_ktime_get_ns)\n\t: __clobber_all);\n}\n\nSEC(\"socket\")\n__description(\"check w reg not equal if r reg upper32 bits not 0\")\n__failure __msg(\"R1 !read_ok\")\n__naked void subreg_equality_2(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tcall %[bpf_ktime_get_ns];\t\t\t\\\n\tr2 = r0;\t\t\t\t\t\\\n\t \t\t\t\t\t\t\\\n\tw3 = w2;\t\t\t\t\t\\\n\tif w2 < 9 goto l0_%=;\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\nl0_%=:\tif r3 < 9 goto l1_%=;\t\t\t\t\\\n\t \t\t\\\n\tr0 -= r1;\t\t\t\t\t\\\nl1_%=:\texit;\t\t\t\t\t\t\\\n\"\t:\n\t: __imm(bpf_ktime_get_ns)\n\t: __clobber_all);\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

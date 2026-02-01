@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "da26730cdfe2212c7db6107ec4b140386731be46f592812f86f56b5f50c8728f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/sym53c8xx_2/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n# Makefile for the NCR/SYMBIOS/LSI 53C8XX PCI SCSI controllers driver.\n\nsym53c8xx-objs := sym_fw.o sym_glue.o sym_hipd.o sym_malloc.o sym_nvram.o\nobj-$(CONFIG_SCSI_SYM53C8XX_2) := sym53c8xx.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

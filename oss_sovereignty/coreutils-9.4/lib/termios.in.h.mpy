@@ -1,0 +1,9 @@
+{
+  "module_name": "termios.in.h",
+  "hash_id": "39139beae420b4c0a647e42a2d48be179d40e0d0cf6a3c57dbc5e716f86f32b3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/termios.in.h",
+  "human_readable_source": " \n#if defined __hpux && defined __cplusplus\n# include <sys/types.h>\n# include <sys/ioctl.h>\nextern \"C\" {\n# include <sys/termio.h>\n}\n#endif\n\n \n#if @HAVE_TERMIOS_H@\n# @INCLUDE_NEXT@ @NEXT_TERMIOS_H@\n#endif\n\n#ifndef _@GUARD_PREFIX@_TERMIOS_H\n#define _@GUARD_PREFIX@_TERMIOS_H\n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n#include <sys/types.h>\n\n \n\n \n\n\n \n\n#if @GNULIB_TCGETSID@\n \n# if !@HAVE_DECL_TCGETSID@\n_GL_FUNCDECL_SYS (tcgetsid, pid_t, (int fd));\n# endif\n_GL_CXXALIAS_SYS (tcgetsid, pid_t, (int fd));\n_GL_CXXALIASWARN (tcgetsid);\n#elif defined GNULIB_POSIXCHECK\n# undef tcgetsid\n# if HAVE_RAW_DECL_TCGETSID\n_GL_WARN_ON_USE (tcgetsid, \"tcgetsid is not portable - \"\n                 \"use gnulib module tcgetsid for portability\");\n# endif\n#endif\n\n\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

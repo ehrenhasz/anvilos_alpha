@@ -1,0 +1,9 @@
+{
+  "module_name": "mt6315-regulator.h",
+  "hash_id": "f1fa3ad231b351284b6838ee98e3f8ce7f3e00d9373644ccdc42a5205cbef52e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/mt6315-regulator.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_REGULATOR_MT6315_H\n#define __LINUX_REGULATOR_MT6315_H\n\n#define MT6315_RP\t3\n#define MT6315_PP\t6\n#define MT6315_SP\t7\n\nenum {\n\tMT6315_VBUCK1 = 0,\n\tMT6315_VBUCK2,\n\tMT6315_VBUCK3,\n\tMT6315_VBUCK4,\n\tMT6315_VBUCK_MAX,\n};\n\n \n#define MT6315_TOP2_ELR7\t\t\t0x139\n#define MT6315_TOP_TMA_KEY\t\t\t0x39F\n#define MT6315_TOP_TMA_KEY_H\t\t\t0x3A0\n#define MT6315_BUCK_TOP_CON0\t\t\t0x1440\n#define MT6315_BUCK_TOP_CON1\t\t\t0x1443\n#define MT6315_BUCK_TOP_ELR0\t\t\t0x1449\n#define MT6315_BUCK_TOP_ELR2\t\t\t0x144B\n#define MT6315_BUCK_TOP_ELR4\t\t\t0x144D\n#define MT6315_BUCK_TOP_ELR6\t\t\t0x144F\n#define MT6315_VBUCK1_DBG0\t\t\t0x1499\n#define MT6315_VBUCK1_DBG4\t\t\t0x149D\n#define MT6315_VBUCK2_DBG0\t\t\t0x1519\n#define MT6315_VBUCK2_DBG4\t\t\t0x151D\n#define MT6315_VBUCK3_DBG0\t\t\t0x1599\n#define MT6315_VBUCK3_DBG4\t\t\t0x159D\n#define MT6315_VBUCK4_DBG0\t\t\t0x1619\n#define MT6315_VBUCK4_DBG4\t\t\t0x161D\n#define MT6315_BUCK_TOP_4PHASE_ANA_CON42\t0x16B1\n\n#define PROTECTION_KEY_H\t\t\t0x9C\n#define PROTECTION_KEY\t\t\t\t0xEA\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

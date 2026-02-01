@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbsinit.sh",
+  "hash_id": "5d4613c92a31faf3cf8f8cc6b810645d834328f4b60e786226a060185b726796",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbsinit.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test whether a specific UTF-8 locale is installed.\n: \"${LOCALE_FR_UTF8=fr_FR.UTF-8}\"\nif test $LOCALE_FR_UTF8 = none; then\n  if test -f /usr/bin/localedef; then\n    echo \"Skipping test: no french Unicode locale is installed\"\n  else\n    echo \"Skipping test: no french Unicode locale is supported\"\n  fi\n  exit 77\nfi\n\nLC_ALL=$LOCALE_FR_UTF8 \\\n${CHECKER} ./test-mbsinit${EXEEXT}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

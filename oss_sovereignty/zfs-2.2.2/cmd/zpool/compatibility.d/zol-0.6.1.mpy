@@ -1,0 +1,9 @@
+{
+  "module_name": "zol-0.6.1",
+  "hash_id": "4da0677a6affe06fe8637bc0385db1153b65efee670d0a04e92f99d584a0f63f",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zpool/compatibility.d/zol-0.6.1",
+  "human_readable_source": "# Features supported by ZFSonLinux v0.6.1\nasync_destroy\nempty_bpobj\nlz4_compress\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

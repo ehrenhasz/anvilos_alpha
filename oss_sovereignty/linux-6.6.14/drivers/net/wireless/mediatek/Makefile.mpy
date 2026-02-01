@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7947470d6cf0724dcf1da9b45e3fbc4a78470f5b85a4de21ff1872ac66d1be26",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_MT7601U)\t+= mt7601u/\nobj-$(CONFIG_MT76_CORE)\t+= mt76/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

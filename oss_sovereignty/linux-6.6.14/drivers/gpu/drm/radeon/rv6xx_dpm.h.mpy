@@ -1,0 +1,9 @@
+{
+  "module_name": "rv6xx_dpm.h",
+  "hash_id": "0138c7bc6691b16a76a1ee3affeac9fe01146578b45c3363f70b621d5b2ba4e1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/rv6xx_dpm.h",
+  "human_readable_source": " \n\n#ifndef __RV6XX_DPM_H__\n#define __RV6XX_DPM_H__\n\n#include \"r600_dpm.h\"\n\n \nstruct rv6xx_sclk_stepping\n{\n    u32 vco_frequency;\n    u32 post_divider;\n};\n\nstruct rv6xx_pm_hw_state {\n\tu32 sclks[R600_PM_NUMBER_OF_ACTIVITY_LEVELS];\n\tu32 mclks[R600_PM_NUMBER_OF_MCLKS];\n\tu16 vddc[R600_PM_NUMBER_OF_VOLTAGE_LEVELS];\n\tbool backbias[R600_PM_NUMBER_OF_VOLTAGE_LEVELS];\n\tbool pcie_gen2[R600_PM_NUMBER_OF_ACTIVITY_LEVELS];\n\tu8 high_sclk_index;\n\tu8 medium_sclk_index;\n\tu8 low_sclk_index;\n\tu8 high_mclk_index;\n\tu8 medium_mclk_index;\n\tu8 low_mclk_index;\n\tu8 high_vddc_index;\n\tu8 medium_vddc_index;\n\tu8 low_vddc_index;\n\tu8 rp[R600_PM_NUMBER_OF_ACTIVITY_LEVELS];\n\tu8 lp[R600_PM_NUMBER_OF_ACTIVITY_LEVELS];\n};\n\nstruct rv6xx_power_info {\n\t \n\tbool voltage_control;\n\tbool sclk_ss;\n\tbool mclk_ss;\n\tbool dynamic_ss;\n\tbool dynamic_pcie_gen2;\n\tbool thermal_protection;\n\tbool display_gap;\n\tbool gfx_clock_gating;\n\t \n\tu32 fb_div_scale;\n\tu32 spll_ref_div;\n\tu32 mpll_ref_div;\n\tu32 bsu;\n\tu32 bsp;\n\t \n\tu32 active_auto_throttle_sources;\n\t \n\tu32 restricted_levels;\n\tstruct rv6xx_pm_hw_state hw;\n};\n\nstruct rv6xx_pl {\n\tu32 sclk;\n\tu32 mclk;\n\tu16 vddc;\n\tu32 flags;\n};\n\nstruct rv6xx_ps {\n\tstruct rv6xx_pl high;\n\tstruct rv6xx_pl medium;\n\tstruct rv6xx_pl low;\n};\n\n#define RV6XX_DEFAULT_VCLK_FREQ  40000  \n#define RV6XX_DEFAULT_DCLK_FREQ  30000  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

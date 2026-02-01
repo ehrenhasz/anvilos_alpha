@@ -1,0 +1,9 @@
+{
+  "module_name": "rtw8821c_table.h",
+  "hash_id": "f7b0e3e1bb0e40bd86c619221168217c9c96caaca0d9c33082841c7ee37b6884",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw88/rtw8821c_table.h",
+  "human_readable_source": " \n \n\n#ifndef __RTW8821C_TABLE_H__\n#define __RTW8821C_TABLE_H__\n\nextern const struct rtw_table rtw8821c_mac_tbl;\nextern const struct rtw_table rtw8821c_agc_tbl;\nextern const struct rtw_table rtw8821c_agc_btg_type2_tbl;\nextern const struct rtw_table rtw8821c_bb_tbl;\nextern const struct rtw_table rtw8821c_bb_pg_type0_tbl;\nextern const struct rtw_table rtw8821c_rf_a_tbl;\nextern const struct rtw_table rtw8821c_txpwr_lmt_type0_tbl;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "file-type.c",
+  "hash_id": "37f3416dbde8805af790682010ce37f2039c1e3f9e83e446ee7599f4d5131525",
+  "original_prompt": "Ingested from coreutils-9.4/lib/file-type.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"file-type.h\"\n\n#include <gettext.h>\n\nchar const *\nfile_type (struct stat const *st)\n{\n  return gettext (c_file_type (st));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "m_item_top.c",
+  "hash_id": "e433ab8aa49a86b8c321eb70c8a92aba30a1b06897c2e11464db6b05776cb87c",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_item_top.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_item_top.c,v 1.16 2021/06/17 21:11:08 tom Exp $\")\n\n \nMENU_EXPORT(int)\nset_top_row(MENU *menu, int row)\n{\n  T((T_CALLED(\"set_top_row(%p,%d)\"), (void *)menu, row));\n\n  if (menu)\n    {\n      if (menu->status & _IN_DRIVER)\n\tRETURN(E_BAD_STATE);\n      if (menu->items == (ITEM **)0)\n\tRETURN(E_NOT_CONNECTED);\n\n      if ((row < 0) || (row > (menu->rows - menu->arows)))\n\tRETURN(E_BAD_ARGUMENT);\n    }\n  else\n    RETURN(E_BAD_ARGUMENT);\n\n  if (row != menu->toprow)\n    {\n      ITEM *item;\n\n      if (menu->status & _LINK_NEEDED)\n\t_nc_Link_Items(menu);\n\n      item = menu->items[(menu->opt & O_ROWMAJOR) ? (row * menu->cols) : row];\n      assert(menu->pattern);\n      Reset_Pattern(menu);\n      _nc_New_TopRow_and_CurrentItem(menu, row, item);\n    }\n\n  RETURN(E_OK);\n}\n\n \nMENU_EXPORT(int)\ntop_row(const MENU *menu)\n{\n  T((T_CALLED(\"top_row(%p)\"), (const void *)menu));\n  if (menu && menu->items && *(menu->items))\n    {\n      assert((menu->toprow >= 0) && (menu->toprow < menu->rows));\n      returnCode(menu->toprow);\n    }\n  else\n    returnCode(ERR);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

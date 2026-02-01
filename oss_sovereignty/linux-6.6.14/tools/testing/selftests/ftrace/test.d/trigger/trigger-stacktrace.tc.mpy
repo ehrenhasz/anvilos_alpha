@@ -1,0 +1,9 @@
+{
+  "module_name": "trigger-stacktrace.tc",
+  "hash_id": "2fdf0a0891d1aba7c1faabcd728f4bc815d11148360f532c2b133ef1650656a7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/trigger/trigger-stacktrace.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event trigger - test stacktrace-trigger\n# requires: set_event events/sched/sched_process_fork/trigger\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\nFEATURE=`grep stacktrace events/sched/sched_process_fork/trigger`\nif [ -z \"$FEATURE\" ]; then\n    echo \"stacktrace trigger is not supported\"\n    exit_unsupported\nfi\n\necho \"Test stacktrace trigger\"\necho 0 > trace\necho 0 > options/stacktrace\necho 'stacktrace' > events/sched/sched_process_fork/trigger\n( echo \"forked\")\ngrep \"<stack trace>\" trace > /dev/null || \\\n    fail \"stacktrace trigger on sched_process_fork did not work\"\n\nreset_trigger\n\necho \"Test stacktrace semantic errors\"\n\n! echo \"stacktrace:foo\" > events/sched/sched_process_fork/trigger\necho \"stacktrace\" > events/sched/sched_process_fork/trigger\n! echo \"stacktrace\" > events/sched/sched_process_fork/trigger\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

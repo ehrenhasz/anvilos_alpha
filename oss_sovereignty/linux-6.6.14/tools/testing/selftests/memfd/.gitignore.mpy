@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "3af066559ba7089ac8ed5d98aaffe289165257af06ccb2977ba90f9d4942922f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/memfd/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nfuse_mnt\nfuse_test\nmemfd_test\nmemfd-test-file\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

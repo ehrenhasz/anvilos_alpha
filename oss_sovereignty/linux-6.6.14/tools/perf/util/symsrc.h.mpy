@@ -1,0 +1,9 @@
+{
+  "module_name": "symsrc.h",
+  "hash_id": "7be3bd2d20fe2c501b0f7d433c6139238f64449c755c1b47f438013bed8e473a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/symsrc.h",
+  "human_readable_source": " \n#ifndef __PERF_SYMSRC_\n#define __PERF_SYMSRC_ 1\n\n#include <stdbool.h>\n#include <stddef.h>\n#include \"dso.h\"\n\n#ifdef HAVE_LIBELF_SUPPORT\n#include <libelf.h>\n#include <gelf.h>\n#endif\n#include <elf.h>\n\nstruct symsrc {\n\tchar\t\t     *name;\n\tint\t\t     fd;\n\tenum dso_binary_type type;\n\n#ifdef HAVE_LIBELF_SUPPORT\n\tElf\t\t     *elf;\n\tGElf_Ehdr\t     ehdr;\n\n\tElf_Scn\t\t     *opdsec;\n\tsize_t\t\t     opdidx;\n\tGElf_Shdr\t     opdshdr;\n\n\tElf_Scn\t\t     *symtab;\n\tsize_t\t\t     symtab_idx;\n\tGElf_Shdr\t     symshdr;\n\n\tElf_Scn\t\t     *dynsym;\n\tsize_t\t\t     dynsym_idx;\n\tGElf_Shdr\t     dynshdr;\n\n\tbool\t\t     adjust_symbols;\n\tbool\t\t     is_64_bit;\n#endif\n};\n\nint symsrc__init(struct symsrc *ss, struct dso *dso, const char *name, enum dso_binary_type type);\nvoid symsrc__destroy(struct symsrc *ss);\n\nbool symsrc__has_symtab(struct symsrc *ss);\nbool symsrc__possibly_runtime(struct symsrc *ss);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

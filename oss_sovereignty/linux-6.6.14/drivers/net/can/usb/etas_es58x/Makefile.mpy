@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4ac7cb3fa8fe1bc7f04fdb5744e2e6b3dfa20c94a8284a39798a752c4dcc3427",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/usb/etas_es58x/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_CAN_ETAS_ES58X) += etas_es58x.o\netas_es58x-y = es58x_core.o es58x_devlink.o es581_4.o es58x_fd.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

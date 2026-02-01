@@ -1,0 +1,9 @@
+{
+  "module_name": "tcp_bpf.readme",
+  "hash_id": "9f244551e7f8401f5644ca9b98cf6f2dc429d4e817917caf0f114b5b2ba3b67e",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/tcp_bpf.readme",
+  "human_readable_source": "This file describes how to run the tcp_*_kern.o tcp_bpf (or socket_ops)\nprograms. These programs attach to a cgroupv2. The following commands create\na cgroupv2 and attach a bash shell to the group.\n\n  mkdir -p /tmp/cgroupv2\n  mount -t cgroup2 none /tmp/cgroupv2\n  mkdir -p /tmp/cgroupv2/foo\n  bash\n  echo $$ >> /tmp/cgroupv2/foo/cgroup.procs\n\nAnything that runs under this shell belongs to the foo cgroupv2. To load\n(attach) one of the tcp_*_kern.o programs:\n\n  bpftool prog load tcp_basertt_kern.o /sys/fs/bpf/tcp_prog\n  bpftool cgroup attach /tmp/cgroupv2/foo sock_ops pinned /sys/fs/bpf/tcp_prog\n  bpftool prog tracelog\n\n\"bpftool prog tracelog\" will continue to run printing the BPF log buffer.\nThe tcp_*_kern.o programs use special print functions to print logging\ninformation (if enabled by the ifdef).\n\nIf using netperf/netserver to create traffic, you need to run them under the\ncgroupv2 to which the BPF programs are attached (i.e. under bash shell\nattached to the cgroupv2).\n\nTo remove (unattach) a socket_ops BPF program from a cgroupv2:\n\n  bpftool cgroup detach /tmp/cgroupv2/foo sock_ops pinned /sys/fs/bpf/tcp_prog\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

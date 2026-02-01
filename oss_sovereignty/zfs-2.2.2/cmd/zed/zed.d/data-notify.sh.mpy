@@ -1,0 +1,9 @@
+{
+  "module_name": "data-notify.sh",
+  "hash_id": "d0f3bbe69a50f67b2176d269ee8229e4d36bcc154a3a4d82ab3937d8904e9bc6",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zed/zed.d/data-notify.sh",
+  "human_readable_source": "#!/bin/sh\n# shellcheck disable=SC2154\n#\n# Send notification in response to a DATA error.\n#\n# Only one notification per ZED_NOTIFY_INTERVAL_SECS will be sent for a given\n# class/pool/[vdev] combination.  This protects against spamming the recipient\n# should multiple events occur together in time for the same pool/[vdev].\n#\n# Exit codes:\n#   0: notification sent\n#   1: notification failed\n#   2: notification not configured\n#   3: notification suppressed\n#   9: internal error\n\n[ -f \"${ZED_ZEDLET_DIR}/zed.rc\" ] && . \"${ZED_ZEDLET_DIR}/zed.rc\"\n. \"${ZED_ZEDLET_DIR}/zed-functions.sh\"\n\n[ -n \"${ZEVENT_POOL}\" ] || exit 9\n[ -n \"${ZEVENT_SUBCLASS}\" ] || exit 9\n[ -n \"${ZED_NOTIFY_DATA}\" ] || exit 3\n\nrate_limit_tag=\"${ZEVENT_POOL};${ZEVENT_VDEV_GUID:-0};${ZEVENT_SUBCLASS};notify\"\nzed_rate_limit \"${rate_limit_tag}\" || exit 3\n\numask 077\nnote_subject=\"ZFS ${ZEVENT_SUBCLASS} error for ${ZEVENT_POOL} on $(hostname)\"\nnote_pathname=\"$(mktemp)\"\n{\n    echo \"ZFS has detected a data error:\"\n    echo\n    echo \"   eid: ${ZEVENT_EID}\"\n    echo \" class: ${ZEVENT_SUBCLASS}\"\n    echo \"  host: $(hostname)\"\n    echo \"  time: ${ZEVENT_TIME_STRING}\"\n    echo \" error: ${ZEVENT_ZIO_ERR}\"\n    echo \" objid: ${ZEVENT_ZIO_OBJSET}:${ZEVENT_ZIO_OBJECT}\"\n    echo \"  pool: ${ZEVENT_POOL}\"\n} > \"${note_pathname}\"\n\nzed_notify \"${note_subject}\" \"${note_pathname}\"; rv=$?\nrm -f \"${note_pathname}\"\nexit \"${rv}\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

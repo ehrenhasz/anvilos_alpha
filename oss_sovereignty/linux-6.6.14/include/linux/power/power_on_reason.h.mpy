@@ -1,0 +1,9 @@
+{
+  "module_name": "power_on_reason.h",
+  "hash_id": "8fa3cb9fc5f873412896b0e2e0cc2e756ccb8fddd2d190f199d9c64c1ab3c336",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/power/power_on_reason.h",
+  "human_readable_source": " \n \n\n#ifndef POWER_ON_REASON_H\n#define POWER_ON_REASON_H\n\n#define POWER_ON_REASON_REGULAR \"regular power-up\"\n#define POWER_ON_REASON_RTC \"RTC wakeup\"\n#define POWER_ON_REASON_WATCHDOG \"watchdog timeout\"\n#define POWER_ON_REASON_SOFTWARE \"software reset\"\n#define POWER_ON_REASON_RST_BTN \"reset button action\"\n#define POWER_ON_REASON_CPU_CLK_FAIL \"CPU clock failure\"\n#define POWER_ON_REASON_XTAL_FAIL \"crystal oscillator failure\"\n#define POWER_ON_REASON_BROWN_OUT \"brown-out reset\"\n#define POWER_ON_REASON_UNKNOWN \"unknown reason\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

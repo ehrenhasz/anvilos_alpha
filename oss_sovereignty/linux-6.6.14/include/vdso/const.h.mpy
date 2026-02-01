@@ -1,0 +1,9 @@
+{
+  "module_name": "const.h",
+  "hash_id": "1a198a4b1b3106298f7926f808b6012c3cc552ae1e3c3b804a1a0c5464c113e7",
+  "original_prompt": "Ingested from linux-6.6.14/include/vdso/const.h",
+  "human_readable_source": " \n#ifndef __VDSO_CONST_H\n#define __VDSO_CONST_H\n\n#include <uapi/linux/const.h>\n\n#define UL(x)\t\t(_UL(x))\n#define ULL(x)\t\t(_ULL(x))\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

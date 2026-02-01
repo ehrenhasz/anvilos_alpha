@@ -1,0 +1,9 @@
+{
+  "module_name": "thumb_vfp_sqrtf.c",
+  "hash_id": "822b0daa476ae8ff3d711670a6839228a0dba7408027b9772e0993aedfec6e3d",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/thumb_vfp_sqrtf.c",
+  "human_readable_source": "\n\n#include <math.h>\n\nfloat sqrtf(float x) {\n    __asm__ volatile (\n            \"vsqrt.f32  %[r], %[x]\\n\"\n            : [r] \"=t\" (x)\n            : [x] \"t\"  (x));\n    return x;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

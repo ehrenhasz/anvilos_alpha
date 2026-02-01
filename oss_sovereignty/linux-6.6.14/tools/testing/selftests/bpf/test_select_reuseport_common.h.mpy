@@ -1,0 +1,9 @@
+{
+  "module_name": "test_select_reuseport_common.h",
+  "hash_id": "bc6bfceb9154828f7abf546aee55e48af76da69233eecaba287abaea71f025ff",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/test_select_reuseport_common.h",
+  "human_readable_source": " \n \n\n#ifndef __TEST_SELECT_REUSEPORT_COMMON_H\n#define __TEST_SELECT_REUSEPORT_COMMON_H\n\n#include <linux/types.h>\n\nenum result {\n\tDROP_ERR_INNER_MAP,\n\tDROP_ERR_SKB_DATA,\n\tDROP_ERR_SK_SELECT_REUSEPORT,\n\tDROP_MISC,\n\tPASS,\n\tPASS_ERR_SK_SELECT_REUSEPORT,\n\tNR_RESULTS,\n};\n\nstruct cmd {\n\t__u32 reuseport_index;\n\t__u32 pass_on_failure;\n};\n\nstruct data_check {\n\t__u32 ip_protocol;\n\t__u32 skb_addrs[8];\n\t__u16 skb_ports[2];\n\t__u16 eth_protocol;\n\t__u8  bind_inany;\n\t__u8  equal_check_end[0];\n\n\t__u32 len;\n\t__u32 hash;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

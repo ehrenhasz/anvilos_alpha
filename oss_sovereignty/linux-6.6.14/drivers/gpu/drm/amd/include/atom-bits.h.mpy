@@ -1,0 +1,9 @@
+{
+  "module_name": "atom-bits.h",
+  "hash_id": "b63b6b7d2449e32e974ccec476a9e0e39b2d5fee70cc9c29cfe248bc03386306",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/atom-bits.h",
+  "human_readable_source": " \n\n#ifndef ATOM_BITS_H\n#define ATOM_BITS_H\n\nstatic inline uint8_t get_u8(void *bios, int ptr)\n{\n    return ((unsigned char *)bios)[ptr];\n}\n#define U8(ptr) get_u8(ctx->ctx->bios, (ptr))\n#define CU8(ptr) get_u8(ctx->bios, (ptr))\nstatic inline uint16_t get_u16(void *bios, int ptr)\n{\n    return get_u8(bios ,ptr)|(((uint16_t)get_u8(bios, ptr+1))<<8);\n}\n#define U16(ptr) get_u16(ctx->ctx->bios, (ptr))\n#define CU16(ptr) get_u16(ctx->bios, (ptr))\nstatic inline uint32_t get_u32(void *bios, int ptr)\n{\n    return get_u16(bios, ptr)|(((uint32_t)get_u16(bios, ptr+2))<<16);\n}\n#define U32(ptr) get_u32(ctx->ctx->bios, (ptr))\n#define CU32(ptr) get_u32(ctx->bios, (ptr))\n#define CSTR(ptr) (((char *)(ctx->bios))+(ptr))\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

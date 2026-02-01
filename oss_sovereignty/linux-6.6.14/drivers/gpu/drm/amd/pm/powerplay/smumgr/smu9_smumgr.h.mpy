@@ -1,0 +1,9 @@
+{
+  "module_name": "smu9_smumgr.h",
+  "hash_id": "a030a7b547a9725ca7d01c9886570ed3476bf2032486d1d6cfa8bf1431fb96d9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/pm/powerplay/smumgr/smu9_smumgr.h",
+  "human_readable_source": " \n#ifndef _SMU9_SMUMANAGER_H_\n#define _SMU9_SMUMANAGER_H_\n\nbool smu9_is_smc_ram_running(struct pp_hwmgr *hwmgr);\nint smu9_send_msg_to_smc(struct pp_hwmgr *hwmgr, uint16_t msg);\nint smu9_send_msg_to_smc_with_parameter(struct pp_hwmgr *hwmgr,\n\t\t\t\t\tuint16_t msg, uint32_t parameter);\nuint32_t smu9_get_argument(struct pp_hwmgr *hwmgr);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

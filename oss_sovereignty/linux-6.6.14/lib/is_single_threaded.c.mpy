@@ -1,0 +1,9 @@
+{
+  "module_name": "is_single_threaded.c",
+  "hash_id": "f844e49f986b967332d9a0969dd37fc84c3da5ff13006b692316cf348db46e4e",
+  "original_prompt": "Ingested from linux-6.6.14/lib/is_single_threaded.c",
+  "human_readable_source": "\n \n#include <linux/sched/signal.h>\n#include <linux/sched/task.h>\n#include <linux/sched/mm.h>\n\n \nbool current_is_single_threaded(void)\n{\n\tstruct task_struct *task = current;\n\tstruct mm_struct *mm = task->mm;\n\tstruct task_struct *p, *t;\n\tbool ret;\n\n\tif (atomic_read(&task->signal->live) != 1)\n\t\treturn false;\n\n\tif (atomic_read(&mm->mm_users) == 1)\n\t\treturn true;\n\n\tret = false;\n\trcu_read_lock();\n\tfor_each_process(p) {\n\t\tif (unlikely(p->flags & PF_KTHREAD))\n\t\t\tcontinue;\n\t\tif (unlikely(p == task->group_leader))\n\t\t\tcontinue;\n\n\t\tfor_each_thread(p, t) {\n\t\t\tif (unlikely(t->mm == mm))\n\t\t\t\tgoto found;\n\t\t\tif (likely(t->mm))\n\t\t\t\tbreak;\n\t\t\t \n\t\t\tsmp_rmb();\n\t\t}\n\t}\n\tret = true;\nfound:\n\trcu_read_unlock();\n\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

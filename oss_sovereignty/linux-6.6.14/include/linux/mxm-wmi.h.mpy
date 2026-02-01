@@ -1,0 +1,9 @@
+{
+  "module_name": "mxm-wmi.h",
+  "hash_id": "8ce206de0867f76df36b888e29a009a5dfa8d2aa4eb5dc4460d079ac66bf1554",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mxm-wmi.h",
+  "human_readable_source": " \n \n\n#ifndef MXM_WMI_H\n#define MXM_WMI_H\n\n \n#define MXM_MXDS_ADAPTER_0 0x0\n#define MXM_MXDS_ADAPTER_1 0x0\n \n#define MXM_MXDS_ADAPTER_IGD 0x10\nint mxm_wmi_call_mxds(int adapter);\nint mxm_wmi_call_mxmx(int adapter);\nbool mxm_wmi_supported(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

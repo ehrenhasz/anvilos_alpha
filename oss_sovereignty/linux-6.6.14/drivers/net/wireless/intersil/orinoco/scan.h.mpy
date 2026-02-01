@@ -1,0 +1,9 @@
+{
+  "module_name": "scan.h",
+  "hash_id": "58b1dbee12da9fab566460bf4a77d780ae56a97126e6e1bbd6e2ed00e138e2fd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intersil/orinoco/scan.h",
+  "human_readable_source": " \n#ifndef _ORINOCO_SCAN_H_\n#define _ORINOCO_SCAN_H_\n\n \nstruct orinoco_private;\nstruct agere_ext_scan_info;\n\n \nvoid orinoco_add_extscan_result(struct orinoco_private *priv,\n\t\t\t\tstruct agere_ext_scan_info *atom,\n\t\t\t\tsize_t len);\nvoid orinoco_add_hostscan_results(struct orinoco_private *dev,\n\t\t\t\t  unsigned char *buf,\n\t\t\t\t  size_t len);\nvoid orinoco_scan_done(struct orinoco_private *priv, bool abort);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

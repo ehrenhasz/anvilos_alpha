@@ -1,0 +1,9 @@
+{
+  "module_name": "icl_dsi.h",
+  "hash_id": "b16438d9309f0ee927d83c80d8880ca887bbe0f876b9c82b86f108b941408c63",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/icl_dsi.h",
+  "human_readable_source": " \n \n\n#ifndef __ICL_DSI_H__\n#define __ICL_DSI_H__\n\nstruct drm_i915_private;\nstruct intel_bios_encoder_data;\nstruct intel_crtc_state;\n\nvoid icl_dsi_init(struct drm_i915_private *dev_priv,\n\t\t  const struct intel_bios_encoder_data *devdata);\nvoid icl_dsi_frame_update(struct intel_crtc_state *crtc_state);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

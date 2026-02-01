@@ -1,0 +1,9 @@
+{
+  "module_name": "c_varargs_to_ada.h",
+  "hash_id": "cb05130f66795374685afbeedb5f982318a6214b806edf6cd942d54774637ac0",
+  "original_prompt": "Ingested from ncurses-6.4/Ada95/src/c_varargs_to_ada.h",
+  "human_readable_source": " \n\n \n\n#ifndef __C_VARARGS_TO_ADA_H\n#define __C_VARARGS_TO_ADA_H\n\n#ifdef HAVE_CONFIG_H\n#include <ncurses_cfg.h>\n#else\n#include <ncurses.h>\n#endif\n\n#include <stdlib.h>\n\n#include <form.h>\n\nextern int set_field_type_alnum(FIELD *   ,\n\t\t\t\tint   );\n\nextern int set_field_type_alpha(FIELD *   ,\n\t\t\t\tint   );\n\nextern int set_field_type_enum(FIELD *   ,\n\t\t\t       char **   ,\n\t\t\t       int   ,\n\t\t\t       int   );\n\nextern int set_field_type_integer(FIELD *   ,\n\t\t\t\t  int   ,\n\t\t\t\t  long   ,\n\t\t\t\t  long   );\n\nextern int set_field_type_numeric(FIELD *   ,\n\t\t\t\t  int   ,\n\t\t\t\t  double   ,\n\t\t\t\t  double   );\n\nextern int set_field_type_regexp(FIELD *   ,\n\t\t\t\t char *   );\n\nextern int set_field_type_ipv4(FIELD *   );\n\nextern int set_field_type_user(FIELD *   ,\n\t\t\t       FIELDTYPE *   ,\n\t\t\t       void *   );\n\nextern void *void_star_make_arg(va_list *   );\n\n#ifdef TRACE\nextern void _traces(const char *\t \n\t\t    ,char *   );\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

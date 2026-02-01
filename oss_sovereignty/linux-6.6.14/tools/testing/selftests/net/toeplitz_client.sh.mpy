@@ -1,0 +1,9 @@
+{
+  "module_name": "toeplitz_client.sh",
+  "hash_id": "39eeebc3a1f36d7ad90353161ef041b70ce3f5c5c0e4bca2bb5dee405336c277",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/toeplitz_client.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n#\n# A simple program for generating traffic for the toeplitz test.\n#\n# This program sends packets periodically for, conservatively, 20 seconds. The\n# intent is for the calling program to kill this program once it is no longer\n# needed, rather than waiting for the 20 second expiration.\n\nsend_traffic() {\n\texpiration=$((SECONDS+20))\n\twhile [[ \"${SECONDS}\" -lt \"${expiration}\" ]]\n\tdo\n\t\tif [[ \"${PROTO}\" == \"-u\" ]]; then\n\t\t\techo \"msg $i\" | nc \"${IPVER}\" -u -w 0 \"${ADDR}\" \"${PORT}\"\n\t\telse\n\t\t\techo \"msg $i\" | nc \"${IPVER}\" -w 0 \"${ADDR}\" \"${PORT}\"\n\t\tfi\n\t\tsleep 0.001\n\tdone\n}\n\nPROTO=$1\nIPVER=$2\nADDR=$3\nPORT=$4\n\nsend_traffic\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

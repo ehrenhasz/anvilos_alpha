@@ -1,0 +1,9 @@
+{
+  "module_name": "dfs.h",
+  "hash_id": "924c7404e08dde65db7856f4ece69d1b204f9bb83bb428d206085af864d3bdff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ath9k/dfs.h",
+  "human_readable_source": " \n\n#ifndef ATH9K_DFS_H\n#define ATH9K_DFS_H\n#include \"../dfs_pattern_detector.h\"\n\n#if defined(CONFIG_ATH9K_DFS_CERTIFIED)\n \nvoid ath9k_dfs_process_phyerr(struct ath_softc *sc, void *data,\n\t\t\t      struct ath_rx_status *rs, u64 mactime);\n#else\nstatic inline void\nath9k_dfs_process_phyerr(struct ath_softc *sc, void *data,\n\t\t\t struct ath_rx_status *rs, u64 mactime) { }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

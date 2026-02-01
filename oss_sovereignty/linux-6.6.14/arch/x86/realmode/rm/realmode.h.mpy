@@ -1,0 +1,9 @@
+{
+  "module_name": "realmode.h",
+  "hash_id": "9f7cf2d8d99d59035fb1de34ad75e18c8446a3799959081d57b4f8ab5b4c1497",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/realmode/rm/realmode.h",
+  "human_readable_source": " \n#ifndef ARCH_X86_REALMODE_RM_REALMODE_H\n#define ARCH_X86_REALMODE_RM_REALMODE_H\n\n#ifdef __ASSEMBLY__\n\n \n#define LJMPW_RM(to)\t.byte 0xea ; .word (to), real_mode_seg\n\n#endif  \n\n \n#define REALMODE_END_SIGNATURE\t0x65a22c82\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

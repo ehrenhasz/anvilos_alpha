@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "dca8a748af4a065dd88fa421ce35f04c91d4ee04a651ea9dbfabde7970190ac6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/usnic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nccflags-y := -I $(srctree)/drivers/net/ethernet/cisco/enic\n\nobj-$(CONFIG_INFINIBAND_USNIC)+= usnic_verbs.o\n\nusnic_verbs-y=\\\nusnic_fwd.o \\\nusnic_transport.o \\\nusnic_uiom.o \\\nusnic_uiom_interval_tree.o \\\nusnic_vnic.o \\\nusnic_ib_main.o \\\nusnic_ib_qp_grp.o \\\nusnic_ib_sysfs.o \\\nusnic_ib_verbs.o \\\nusnic_debugfs.o \\\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

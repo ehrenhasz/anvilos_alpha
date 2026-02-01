@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "04f3473bc2956617e4ba29d409cdd4ae134ec20b1fe1b57f86e3af858464182e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/inv_mpu6050/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for Invensense MPU6050 device.\n#\n\nobj-$(CONFIG_INV_MPU6050_IIO) += inv-mpu6050.o\ninv-mpu6050-y := inv_mpu_core.o inv_mpu_ring.o inv_mpu_trigger.o \\\n\t\t inv_mpu_aux.o inv_mpu_magn.o\n\nobj-$(CONFIG_INV_MPU6050_I2C) += inv-mpu6050-i2c.o\ninv-mpu6050-i2c-y := inv_mpu_i2c.o inv_mpu_acpi.o\n\nobj-$(CONFIG_INV_MPU6050_SPI) += inv-mpu6050-spi.o\ninv-mpu6050-spi-y := inv_mpu_spi.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

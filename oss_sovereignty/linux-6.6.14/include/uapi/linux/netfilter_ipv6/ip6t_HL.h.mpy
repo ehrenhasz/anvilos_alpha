@@ -1,0 +1,9 @@
+{
+  "module_name": "ip6t_HL.h",
+  "hash_id": "d896cc548afad2579ae4076b28d6e24afcfbe6c40a02881747e3d2c76951054c",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_ipv6/ip6t_HL.h",
+  "human_readable_source": " \n \n\n#ifndef _IP6T_HL_H\n#define _IP6T_HL_H\n\n#include <linux/types.h>\n\nenum {\n\tIP6T_HL_SET = 0,\n\tIP6T_HL_INC,\n\tIP6T_HL_DEC\n};\n\n#define IP6T_HL_MAXMODE\tIP6T_HL_DEC\n\nstruct ip6t_HL_info {\n\t__u8\tmode;\n\t__u8\thop_limit;\n};\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "atomisp_dfs_tables.h",
+  "hash_id": "2d2cde8089bc01fe98846bcbc22ad76e00b5923274b1a9809374dcd688077f62",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/atomisp_dfs_tables.h",
+  "human_readable_source": " \n \n#ifndef\t__ATOMISP_DFS_TABLES_H__\n#define\t__ATOMISP_DFS_TABLES_H__\n\n#include <linux/kernel.h>\n\nstruct atomisp_freq_scaling_rule {\n\tunsigned int width;\n\tunsigned int height;\n\tunsigned short fps;\n\tunsigned int isp_freq;\n\tunsigned int run_mode;\n};\n\nstruct atomisp_dfs_config {\n\tunsigned int lowest_freq;\n\tunsigned int max_freq_at_vmin;\n\tunsigned int highest_freq;\n\tconst struct atomisp_freq_scaling_rule *dfs_table;\n\tunsigned int dfs_table_size;\n};\n\nextern const struct atomisp_dfs_config dfs_config_cht_soc;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

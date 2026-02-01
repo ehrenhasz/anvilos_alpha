@@ -1,0 +1,9 @@
+{
+  "module_name": "xstrtol.h",
+  "hash_id": "2b7c4d34d38d3c28603060cb18d8cbcb734b46d8f2cdc401c88ac10239d2c264",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xstrtol.h",
+  "human_readable_source": " \n# include <stdint.h>\n\n# ifndef _STRTOL_ERROR\nenum strtol_error\n  {\n    LONGINT_OK = 0,\n\n     \n    LONGINT_OVERFLOW = 1,\n    LONGINT_INVALID_SUFFIX_CHAR = 2,\n\n    LONGINT_INVALID_SUFFIX_CHAR_WITH_OVERFLOW = (LONGINT_INVALID_SUFFIX_CHAR\n                                                 | LONGINT_OVERFLOW),\n    LONGINT_INVALID = 4\n  };\ntypedef enum strtol_error strtol_error;\n# endif\n\n# define _DECLARE_XSTRTOL(name, type) \\\n  strtol_error name (const char *, char **, int, type *, const char *);\n_DECLARE_XSTRTOL (xstrtol, long int)\n_DECLARE_XSTRTOL (xstrtoul, unsigned long int)\n_DECLARE_XSTRTOL (xstrtoll, long long int)\n_DECLARE_XSTRTOL (xstrtoull, unsigned long long int)\n_DECLARE_XSTRTOL (xstrtoimax, intmax_t)\n_DECLARE_XSTRTOL (xstrtoumax, uintmax_t)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

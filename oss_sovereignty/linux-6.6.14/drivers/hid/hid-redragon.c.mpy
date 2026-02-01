@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-redragon.c",
+  "hash_id": "985ae78f2a070dacc2166558c7266100bf83e14b6cb81fe5dc409431b00ac5ce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hid/hid-redragon.c",
+  "human_readable_source": " \n\n \n\n#include <linux/device.h>\n#include <linux/hid.h>\n#include <linux/module.h>\n\n#include \"hid-ids.h\"\n\n\n \n\nstatic __u8 *redragon_report_fixup(struct hid_device *hdev, __u8 *rdesc,\n\tunsigned int *rsize)\n{\n\tif (*rsize >= 102 && rdesc[100] == 0x81 && rdesc[101] == 0x00) {\n\t\tdev_info(&hdev->dev, \"Fixing Redragon ASURA report descriptor.\\n\");\n\t\trdesc[101] = 0x02;\n\t}\n\n\treturn rdesc;\n}\n\nstatic const struct hid_device_id redragon_devices[] = {\n\t{HID_USB_DEVICE(USB_VENDOR_ID_JESS, USB_DEVICE_ID_REDRAGON_ASURA)},\n\t{}\n};\n\nMODULE_DEVICE_TABLE(hid, redragon_devices);\n\nstatic struct hid_driver redragon_driver = {\n\t.name = \"redragon\",\n\t.id_table = redragon_devices,\n\t.report_fixup = redragon_report_fixup\n};\n\nmodule_hid_driver(redragon_driver);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

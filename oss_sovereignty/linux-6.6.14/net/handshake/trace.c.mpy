@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "65967862ffebb147ffd31eb4057157e4d48c7de6e27cb720f7bb39c0f9f0f717",
+  "original_prompt": "Ingested from linux-6.6.14/net/handshake/trace.c",
+  "human_readable_source": "\n \n\n#include <linux/types.h>\n#include <linux/ipv6.h>\n\n#include <net/sock.h>\n#include <net/inet_sock.h>\n#include <net/netlink.h>\n#include <net/genetlink.h>\n\n#include \"handshake.h\"\n\n#define CREATE_TRACE_POINTS\n\n#include <trace/events/handshake.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

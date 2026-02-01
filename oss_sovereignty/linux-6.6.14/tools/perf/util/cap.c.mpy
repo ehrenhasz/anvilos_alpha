@@ -1,0 +1,9 @@
+{
+  "module_name": "cap.c",
+  "hash_id": "33af5258f9429aa25f0055fcfdd28c2d3e2969b41622e577acd0f63f48ad6fbc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/cap.c",
+  "human_readable_source": "\n \n\n#ifdef HAVE_LIBCAP_SUPPORT\n\n#include \"cap.h\"\n#include <stdbool.h>\n#include <sys/capability.h>\n\nbool perf_cap__capable(cap_value_t cap)\n{\n\tcap_flag_value_t val;\n\tcap_t caps = cap_get_proc();\n\n\tif (!caps)\n\t\treturn false;\n\n\tif (cap_get_flag(caps, cap, CAP_EFFECTIVE, &val) != 0)\n\t\tval = CAP_CLEAR;\n\n\tif (cap_free(caps) != 0)\n\t\treturn false;\n\n\treturn val == CAP_SET;\n}\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

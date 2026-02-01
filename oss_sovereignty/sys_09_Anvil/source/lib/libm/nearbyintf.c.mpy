@@ -1,0 +1,9 @@
+{
+  "module_name": "nearbyintf.c",
+  "hash_id": "2024c6f03ea50f563f3da99d994656aac63f4a7fdf3520d8b5e26c9c4bd6b709",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/nearbyintf.c",
+  "human_readable_source": "\n\n#include \"libm.h\"\n\nfloat nearbyintf(float x)\n{\n\tunion {float f; uint32_t i;} u = {x};\n\tint e = u.i>>23 & 0xff;\n\tint s = u.i>>31;\n\tfloat_t y;\n\n\tif (e >= 0x7f+23)\n\t\treturn x;\n\tif (s)\n\t\ty = x - 0x1p23f + 0x1p23f;\n\telse\n\t\ty = x + 0x1p23f - 0x1p23f;\n\tif (y == 0)\n\t\treturn s ? -0.0f : 0.0f;\n\treturn y;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

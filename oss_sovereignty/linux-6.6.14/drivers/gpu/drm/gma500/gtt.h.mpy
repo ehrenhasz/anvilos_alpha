@@ -1,0 +1,9 @@
+{
+  "module_name": "gtt.h",
+  "hash_id": "87d607e348db46b8119cf10ba4eddc41c46185afa67cfc5435d892a1e9c237bd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/gma500/gtt.h",
+  "human_readable_source": " \n \n\n#ifndef _PSB_GTT_H_\n#define _PSB_GTT_H_\n\n#include <drm/drm_gem.h>\n\nstruct drm_psb_private;\n\n \nstruct psb_gtt {\n\tuint32_t gatt_start;\n\tuint32_t mmu_gatt_start;\n\tuint32_t gtt_start;\n\tuint32_t gtt_phys_start;\n\tunsigned gtt_pages;\n\tunsigned gatt_pages;\n\tunsigned long stolen_size;\n\tunsigned long vram_stolen_size;\n};\n\n \nint psb_gtt_init(struct drm_device *dev);\nvoid psb_gtt_fini(struct drm_device *dev);\nint psb_gtt_resume(struct drm_device *dev);\n\nint psb_gtt_allocate_resource(struct drm_psb_private *pdev, struct resource *res,\n\t\t\t      const char *name, resource_size_t size, resource_size_t align,\n\t\t\t      bool stolen, u32 *offset);\n\nuint32_t psb_gtt_mask_pte(uint32_t pfn, int type);\nvoid psb_gtt_insert_pages(struct drm_psb_private *pdev, const struct resource *res,\n\t\t\t  struct page **pages);\nvoid psb_gtt_remove_pages(struct drm_psb_private *pdev, const struct resource *res);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

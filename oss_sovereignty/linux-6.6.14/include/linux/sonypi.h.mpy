@@ -1,0 +1,9 @@
+{
+  "module_name": "sonypi.h",
+  "hash_id": "debbdf46330a1c0e175ba3139e262354b41cdd02dd846821e3cfcd5fde1668f8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sonypi.h",
+  "human_readable_source": " \n \n#ifndef _SONYPI_H_\n#define _SONYPI_H_\n\n#include <uapi/linux/sonypi.h>\n\n\n \n\n#define SONYPI_COMMAND_GETCAMERA\t\t 1\t \n#define SONYPI_COMMAND_SETCAMERA\t\t 2\n#define SONYPI_COMMAND_GETCAMERABRIGHTNESS\t 3\t \n#define SONYPI_COMMAND_SETCAMERABRIGHTNESS\t 4\n#define SONYPI_COMMAND_GETCAMERACONTRAST\t 5\t \n#define SONYPI_COMMAND_SETCAMERACONTRAST\t 6\n#define SONYPI_COMMAND_GETCAMERAHUE\t\t 7\t \n#define SONYPI_COMMAND_SETCAMERAHUE\t\t 8\n#define SONYPI_COMMAND_GETCAMERACOLOR\t\t 9\t \n#define SONYPI_COMMAND_SETCAMERACOLOR\t\t10\n#define SONYPI_COMMAND_GETCAMERASHARPNESS\t11\t \n#define SONYPI_COMMAND_SETCAMERASHARPNESS\t12\n#define SONYPI_COMMAND_GETCAMERAPICTURE\t\t13\t \n#define SONYPI_COMMAND_SETCAMERAPICTURE\t\t14\n#define SONYPI_COMMAND_GETCAMERAAGC\t\t15\t \n#define SONYPI_COMMAND_SETCAMERAAGC\t\t16\n#define SONYPI_COMMAND_GETCAMERADIRECTION\t17\t \n#define SONYPI_COMMAND_GETCAMERAROMVERSION\t18\t \n#define SONYPI_COMMAND_GETCAMERAREVISION\t19\t \n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

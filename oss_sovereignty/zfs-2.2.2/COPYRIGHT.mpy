@@ -1,0 +1,9 @@
+{
+  "module_name": "COPYRIGHT",
+  "hash_id": "f125a37c829705eff3e6f77a9f6c58fd71060f84ab54180b98fafdf94a2021eb",
+  "original_prompt": "Ingested from zfs-2.2.2/COPYRIGHT",
+  "human_readable_source": "Refer to the git commit log for authoritative copyright attribution.\n\nThe original ZFS source code was obtained from Open Solaris which was\nreleased under the terms of the CDDL open source license.  Additional\nchanges have been included from OpenZFS and the Illumos project which\nare similarly licensed.  These projects can be found on Github at:\n\n  * https://github.com/illumos/illumos-gate\n  * https://github.com/openzfs/openzfs\n\nUnless otherwise noted, all files in this distribution are released\nunder the Common Development and Distribution License (CDDL).\n\nExceptions are noted within the associated source files headers and\nby including a THIRDPARTYLICENSE file with the license terms.  A few\nnotable exceptions and their respective licenses include:\n\n  * Skein Checksum Implementation: module/icp/algs/skein/THIRDPARTYLICENSE\n  * AES Implementation: module/icp/asm-x86_64/aes/THIRDPARTYLICENSE.gladman\n  * AES Implementation: module/icp/asm-x86_64/aes/THIRDPARTYLICENSE.openssl\n  * PBKDF2 Implementation: lib/libzfs/THIRDPARTYLICENSE.openssl\n  * SPL Implementation: module/os/linux/spl/THIRDPARTYLICENSE.gplv2\n  * GCM Implementation: module/icp/asm-x86_64/modes/THIRDPARTYLICENSE.cryptogams\n  * GCM Implementation: module/icp/asm-x86_64/modes/THIRDPARTYLICENSE.openssl\n  * GHASH Implementation: module/icp/asm-x86_64/modes/THIRDPARTYLICENSE.cryptogams\n  * GHASH Implementation: module/icp/asm-x86_64/modes/THIRDPARTYLICENSE.openssl\n\nThis product includes software developed by the OpenSSL Project for use\nin the OpenSSL Toolkit (http://www.openssl.org/)\n\nSee the LICENSE and NOTICE for more information.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

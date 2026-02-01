@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f51bcf0518acb188fc0bddc164c7aa5b7a50f6bc649ff4f9539e5d6b81e2f607",
+  "original_prompt": "Ingested from linux-6.6.14/net/netfilter/ipvs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the IPVS modules on top of IPv4.\n#\n\n# IPVS transport protocol load balancing support\nip_vs_proto-objs-y :=\nip_vs_proto-objs-$(CONFIG_IP_VS_PROTO_TCP) += ip_vs_proto_tcp.o\nip_vs_proto-objs-$(CONFIG_IP_VS_PROTO_UDP) += ip_vs_proto_udp.o\nip_vs_proto-objs-$(CONFIG_IP_VS_PROTO_AH_ESP) += ip_vs_proto_ah_esp.o\nip_vs_proto-objs-$(CONFIG_IP_VS_PROTO_SCTP) += ip_vs_proto_sctp.o\n\nip_vs-extra_objs-y :=\nip_vs-extra_objs-$(CONFIG_IP_VS_NFCT) += ip_vs_nfct.o\n\nip_vs-objs :=\tip_vs_conn.o ip_vs_core.o ip_vs_ctl.o ip_vs_sched.o\t   \\\n\t\tip_vs_xmit.o ip_vs_app.o ip_vs_sync.o\t   \t\t   \\\n\t\tip_vs_est.o ip_vs_proto.o ip_vs_pe.o\t\t\t   \\\n\t\t$(ip_vs_proto-objs-y) $(ip_vs-extra_objs-y)\n\n\n# IPVS core\nobj-$(CONFIG_IP_VS) += ip_vs.o\n\n# IPVS schedulers\nobj-$(CONFIG_IP_VS_RR) += ip_vs_rr.o\nobj-$(CONFIG_IP_VS_WRR) += ip_vs_wrr.o\nobj-$(CONFIG_IP_VS_LC) += ip_vs_lc.o\nobj-$(CONFIG_IP_VS_WLC) += ip_vs_wlc.o\nobj-$(CONFIG_IP_VS_FO) += ip_vs_fo.o\nobj-$(CONFIG_IP_VS_OVF) += ip_vs_ovf.o\nobj-$(CONFIG_IP_VS_LBLC) += ip_vs_lblc.o\nobj-$(CONFIG_IP_VS_LBLCR) += ip_vs_lblcr.o\nobj-$(CONFIG_IP_VS_DH) += ip_vs_dh.o\nobj-$(CONFIG_IP_VS_SH) += ip_vs_sh.o\nobj-$(CONFIG_IP_VS_MH) += ip_vs_mh.o\nobj-$(CONFIG_IP_VS_SED) += ip_vs_sed.o\nobj-$(CONFIG_IP_VS_NQ) += ip_vs_nq.o\nobj-$(CONFIG_IP_VS_TWOS) += ip_vs_twos.o\n\n# IPVS application helpers\nobj-$(CONFIG_IP_VS_FTP) += ip_vs_ftp.o\n\n# IPVS connection template retrievers\nobj-$(CONFIG_IP_VS_PE_SIP) += ip_vs_pe_sip.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

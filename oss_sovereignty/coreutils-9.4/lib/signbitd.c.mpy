@@ -1,0 +1,9 @@
+{
+  "module_name": "signbitd.c",
+  "hash_id": "897573ab85b4d20739768bcb0b317ff400aa6bdd9be2b1d45e844d609b178192",
+  "original_prompt": "Ingested from coreutils-9.4/lib/signbitd.c",
+  "human_readable_source": " \n#include <math.h>\n\n#include <string.h>\n#include \"isnand-nolibm.h\"\n#include \"float+.h\"\n\n#ifdef gl_signbitd_OPTIMIZED_MACRO\n# undef gl_signbitd\n#endif\n\nint\ngl_signbitd (double arg)\n{\n#if defined DBL_SIGNBIT_WORD && defined DBL_SIGNBIT_BIT\n   \n# define NWORDS \\\n    ((sizeof (double) + sizeof (unsigned int) - 1) / sizeof (unsigned int))\n  union { double value; unsigned int word[NWORDS]; } m;\n  m.value = arg;\n  return (m.word[DBL_SIGNBIT_WORD] >> DBL_SIGNBIT_BIT) & 1;\n#elif HAVE_COPYSIGN_IN_LIBC\n  return copysign (1.0, arg) < 0;\n#else\n   \n  if (isnand (arg))\n    return 0;\n  if (arg < 0.0)\n    return 1;\n  else if (arg == 0.0)\n    {\n       \n      static double plus_zero = 0.0;\n      double arg_mem = arg;\n      return (memcmp (&plus_zero, &arg_mem, SIZEOF_DBL) != 0);\n    }\n  else\n    return 0;\n#endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

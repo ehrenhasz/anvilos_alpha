@@ -1,0 +1,9 @@
+{
+  "module_name": "iosm_ipc_debugfs.h",
+  "hash_id": "cf5a6b37c32f8ddc24218f2b409d3ade58075dba194825f2b771a1d64f7d4344",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wwan/iosm/iosm_ipc_debugfs.h",
+  "human_readable_source": " \n\n#ifndef IOSM_IPC_DEBUGFS_H\n#define IOSM_IPC_DEBUGFS_H\n\n#ifdef CONFIG_WWAN_DEBUGFS\nvoid ipc_debugfs_init(struct iosm_imem *ipc_imem);\nvoid ipc_debugfs_deinit(struct iosm_imem *ipc_imem);\n#else\nstatic inline void ipc_debugfs_init(struct iosm_imem *ipc_imem) {}\nstatic inline void ipc_debugfs_deinit(struct iosm_imem *ipc_imem) {}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ethtool.h",
+  "hash_id": "29e461824bb2b532acfcd2d002a319725603adaa0f911b3c1a8068f6b8594844",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/apm/xgene-v2/ethtool.h",
+  "human_readable_source": " \n \n\n#ifndef __XGENE_ENET_V2_ETHTOOL_H__\n#define __XGENE_ENET_V2_ETHTOOL_H__\n\nstruct xge_gstrings_stats {\n\tchar name[ETH_GSTRING_LEN];\n\tint offset;\n};\n\nstruct xge_gstrings_extd_stats {\n\tchar name[ETH_GSTRING_LEN];\n\tu32 addr;\n\tu32 value;\n};\n\n#define TR64\t\t\t0xa080\n#define TR127\t\t\t0xa084\n#define TR255\t\t\t0xa088\n#define TR511\t\t\t0xa08c\n#define TR1K\t\t\t0xa090\n#define TRMAX\t\t\t0xa094\n#define TRMGV\t\t\t0xa098\n#define RFCS\t\t\t0xa0a4\n#define RMCA\t\t\t0xa0a8\n#define RBCA\t\t\t0xa0ac\n#define RXCF\t\t\t0xa0b0\n#define RXPF\t\t\t0xa0b4\n#define RXUO\t\t\t0xa0b8\n#define RALN\t\t\t0xa0bc\n#define RFLR\t\t\t0xa0c0\n#define RCDE\t\t\t0xa0c4\n#define RCSE\t\t\t0xa0c8\n#define RUND\t\t\t0xa0cc\n#define ROVR\t\t\t0xa0d0\n#define RFRG\t\t\t0xa0d4\n#define RJBR\t\t\t0xa0d8\n#define RDRP\t\t\t0xa0dc\n#define TMCA\t\t\t0xa0e8\n#define TBCA\t\t\t0xa0ec\n#define TXPF\t\t\t0xa0f0\n#define TDFR\t\t\t0xa0f4\n#define TEDF\t\t\t0xa0f8\n#define TSCL\t\t\t0xa0fc\n#define TMCL\t\t\t0xa100\n#define TLCL\t\t\t0xa104\n#define TXCL\t\t\t0xa108\n#define TNCL\t\t\t0xa10c\n#define TPFH\t\t\t0xa110\n#define TDRP\t\t\t0xa114\n#define TJBR\t\t\t0xa118\n#define TFCS\t\t\t0xa11c\n#define TXCF\t\t\t0xa120\n#define TOVR\t\t\t0xa124\n#define TUND\t\t\t0xa128\n#define TFRG\t\t\t0xa12c\n\nvoid xge_set_ethtool_ops(struct net_device *ndev);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

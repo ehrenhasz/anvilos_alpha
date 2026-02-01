@@ -1,0 +1,9 @@
+{
+  "module_name": "add_namespace.cocci",
+  "hash_id": "0315f99b173db1169fb955717b630b82d3cf93c6d6bc292271c5cd4b15711dbd",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/coccinelle/misc/add_namespace.cocci",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0-only\n//\n/// Adds missing MODULE_IMPORT_NS statements to source files\n///\n/// This script is usually called from scripts/nsdeps with -D ns=<namespace> to\n/// add a missing namespace tag to a module source file.\n///\n\nvirtual nsdeps\nvirtual report\n\n@has_ns_import@\ndeclarer name MODULE_IMPORT_NS;\nidentifier virtual.ns;\n@@\nMODULE_IMPORT_NS(ns);\n\n// Add missing imports, but only adjacent to a MODULE_LICENSE statement.\n// That ensures we are adding it only to the main module source file.\n@do_import depends on !has_ns_import && nsdeps@\ndeclarer name MODULE_LICENSE;\nexpression license;\nidentifier virtual.ns;\n@@\nMODULE_LICENSE(license);\n+ MODULE_IMPORT_NS(ns);\n\n// Dummy rule for report mode that would otherwise be empty and make spatch\n// fail (\"No rules apply.\")\n@script:python depends on report@\n@@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

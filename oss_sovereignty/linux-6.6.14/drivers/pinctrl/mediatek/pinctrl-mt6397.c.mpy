@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-mt6397.c",
+  "hash_id": "f447118223917505352b465a86ea052916315c89bc1ad592fb1d5b6651b399e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/mediatek/pinctrl-mt6397.c",
+  "human_readable_source": "\n \n\n#include <linux/init.h>\n#include <linux/platform_device.h>\n#include <linux/of.h>\n#include <linux/pinctrl/pinctrl.h>\n#include <linux/pinctrl/pinconf-generic.h>\n#include <linux/mfd/mt6397/core.h>\n\n#include \"pinctrl-mtk-common.h\"\n#include \"pinctrl-mtk-mt6397.h\"\n\n#define MT6397_PIN_REG_BASE  0xc000\n\nstatic const struct mtk_pinctrl_devdata mt6397_pinctrl_data = {\n\t.pins = mtk_pins_mt6397,\n\t.npins = ARRAY_SIZE(mtk_pins_mt6397),\n\t.dir_offset = (MT6397_PIN_REG_BASE + 0x000),\n\t.ies_offset = MTK_PINCTRL_NOT_SUPPORT,\n\t.smt_offset = MTK_PINCTRL_NOT_SUPPORT,\n\t.pullen_offset = (MT6397_PIN_REG_BASE + 0x020),\n\t.pullsel_offset = (MT6397_PIN_REG_BASE + 0x040),\n\t.dout_offset = (MT6397_PIN_REG_BASE + 0x080),\n\t.din_offset = (MT6397_PIN_REG_BASE + 0x0a0),\n\t.pinmux_offset = (MT6397_PIN_REG_BASE + 0x0c0),\n\t.type1_start = 41,\n\t.type1_end = 41,\n\t.port_shf = 3,\n\t.port_mask = 0x3,\n\t.port_align = 2,\n\t.mode_mask = 0xf,\n\t.mode_per_reg = 5,\n\t.mode_shf = 4,\n};\n\nstatic int mt6397_pinctrl_probe(struct platform_device *pdev)\n{\n\tstruct mt6397_chip *mt6397;\n\n\tmt6397 = dev_get_drvdata(pdev->dev.parent);\n\treturn mtk_pctrl_init(pdev, &mt6397_pinctrl_data, mt6397->regmap);\n}\n\nstatic const struct of_device_id mt6397_pctrl_match[] = {\n\t{ .compatible = \"mediatek,mt6397-pinctrl\", },\n\t{ }\n};\n\nstatic struct platform_driver mtk_pinctrl_driver = {\n\t.probe = mt6397_pinctrl_probe,\n\t.driver = {\n\t\t.name = \"mediatek-mt6397-pinctrl\",\n\t\t.of_match_table = mt6397_pctrl_match,\n\t},\n};\n\nbuiltin_platform_driver(mtk_pinctrl_driver);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

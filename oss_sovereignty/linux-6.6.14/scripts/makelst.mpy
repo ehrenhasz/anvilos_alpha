@@ -1,0 +1,9 @@
+{
+  "module_name": "makelst",
+  "hash_id": "c8441e76ee7953ab89f815130ce540aae9f40011121a7b499bb297d28060e669",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/makelst",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# A script to dump mixed source code & assembly\n# with correct relocations from System.map\n# Requires the following lines in makefile:\n#%.lst: %.c\n#\t$(CC) $(c_flags) -g -c -o $*.o $< &&\n#\t$(srctree)/scripts/makelst $*.o System.map $(OBJDUMP) > $@\n#\n# Copyright (C) 2000 IBM Corporation\n# Author(s): DJ Barrow (djbarrow@de.ibm.com,barrow_dj@yahoo.com)\n#            William Stearns <wstearns@pobox.com>\n#\n\n# awk style field access\nfield() {\n  shift $1 ; echo $1\n}\n\nt1=`$3 --syms $1 | grep .text | grep -m1 \" F \"`\nif [ -n \"$t1\" ]; then\n  t2=`field 6 $t1`\n  if [ ! -r $2 ]; then\n    echo \"No System.map\" >&2\n  else\n    t3=`grep $t2 $2`\n    t4=`field 1 $t3`\n    t5=`field 1 $t1`\n    t6=`printf \"%lu\" $((0x$t4 - 0x$t5))`\n  fi\nfi\n$3 -r --source --adjust-vma=${t6:-0} $1\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

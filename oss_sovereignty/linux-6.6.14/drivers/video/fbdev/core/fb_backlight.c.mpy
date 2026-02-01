@@ -1,0 +1,9 @@
+{
+  "module_name": "fb_backlight.c",
+  "hash_id": "6abe132bb6b2609a956f1f96fb3db4759a6f650ccf1ae1dca3df34a011552ef1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/core/fb_backlight.c",
+  "human_readable_source": "\n\n#include <linux/export.h>\n#include <linux/fb.h>\n#include <linux/mutex.h>\n\n#if IS_ENABLED(CONFIG_FB_BACKLIGHT)\n \nvoid fb_bl_default_curve(struct fb_info *fb_info, u8 off, u8 min, u8 max)\n{\n\tunsigned int i, flat, count, range = (max - min);\n\n\tmutex_lock(&fb_info->bl_curve_mutex);\n\n\tfb_info->bl_curve[0] = off;\n\n\tfor (flat = 1; flat < (FB_BACKLIGHT_LEVELS / 16); ++flat)\n\t\tfb_info->bl_curve[flat] = min;\n\n\tcount = FB_BACKLIGHT_LEVELS * 15 / 16;\n\tfor (i = 0; i < count; ++i)\n\t\tfb_info->bl_curve[flat + i] = min + (range * (i + 1) / count);\n\n\tmutex_unlock(&fb_info->bl_curve_mutex);\n}\nEXPORT_SYMBOL_GPL(fb_bl_default_curve);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

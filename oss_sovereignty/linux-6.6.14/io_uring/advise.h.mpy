@@ -1,0 +1,9 @@
+{
+  "module_name": "advise.h",
+  "hash_id": "f2236f4756c7c159a9b13523c81e82b7d1d3ac3db8ca62996fe88313f957ea8a",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/advise.h",
+  "human_readable_source": "\n\nint io_madvise_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_madvise(struct io_kiocb *req, unsigned int issue_flags);\n\nint io_fadvise_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_fadvise(struct io_kiocb *req, unsigned int issue_flags);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

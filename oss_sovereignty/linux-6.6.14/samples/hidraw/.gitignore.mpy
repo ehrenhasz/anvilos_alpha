@@ -1,0 +1,9 @@
+{
+  "module_name": ".gitignore",
+  "hash_id": "1ffe53d744d8b072e0c32fa2b8d0ad6bcebbf0c04d0cf397e15bd01d119ffb15",
+  "original_prompt": "Ingested from linux-6.6.14/samples/hidraw/.gitignore",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n/hid-example\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

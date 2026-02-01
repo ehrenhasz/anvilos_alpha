@@ -1,0 +1,9 @@
+{
+  "module_name": "lib.rs",
+  "hash_id": "2b44e8cf2ee54e8395458c527bd5c5034d31f12ddfb33aa3d3e3c55c63329291",
+  "original_prompt": "Ingested from linux-6.6.14/rust/bindings/lib.rs",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n\n//! Bindings.\n//!\n//! Imports the generated bindings by `bindgen`.\n//!\n//! This crate may not be directly used. If you need a kernel C API that is\n//! not ported or wrapped in the `kernel` crate, then do so first instead of\n//! using this crate.\n\n#![no_std]\n// See <https://github.com/rust-lang/rust-bindgen/issues/1651>.\n#![cfg_attr(test, allow(deref_nullptr))]\n#![cfg_attr(test, allow(unaligned_references))]\n#![cfg_attr(test, allow(unsafe_op_in_unsafe_fn))]\n#![allow(\n    clippy::all,\n    missing_docs,\n    non_camel_case_types,\n    non_upper_case_globals,\n    non_snake_case,\n    improper_ctypes,\n    unreachable_pub,\n    unsafe_op_in_unsafe_fn\n)]\n\nmod bindings_raw {\n    // Use glob import here to expose all helpers.\n    // Symbols defined within the module will take precedence to the glob import.\n    pub use super::bindings_helper::*;\n    include!(concat!(\n        env!(\"OBJTREE\"),\n        \"/rust/bindings/bindings_generated.rs\"\n    ));\n}\n\n// When both a directly exposed symbol and a helper exists for the same function,\n// the directly exposed symbol is preferred and the helper becomes dead code, so\n// ignore the warning here.\n#[allow(dead_code)]\nmod bindings_helper {\n    // Import the generated bindings for types.\n    use super::bindings_raw::*;\n    include!(concat!(\n        env!(\"OBJTREE\"),\n        \"/rust/bindings/bindings_helpers_generated.rs\"\n    ));\n}\n\npub use bindings_raw::*;\n\npub const GFP_KERNEL: gfp_t = BINDINGS_GFP_KERNEL;\npub const __GFP_ZERO: gfp_t = BINDINGS___GFP_ZERO;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

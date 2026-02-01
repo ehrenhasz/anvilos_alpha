@@ -1,0 +1,9 @@
+{
+  "module_name": "remove.c",
+  "hash_id": "089032c09a01d3b6b5b172b9e9be71e1df391876a65bf0771ac29e1a0e216d99",
+  "original_prompt": "Ingested from coreutils-9.4/lib/remove.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdio.h>\n\n#include <errno.h>\n#include <unistd.h>\n\n#undef remove\n\n \nint\nrpl_remove (char const *name)\n{\n   \n  int result = rmdir (name);\n  if (result && errno == ENOTDIR)\n    result = unlink (name);\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

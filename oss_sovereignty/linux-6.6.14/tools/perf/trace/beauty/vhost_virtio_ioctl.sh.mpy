@@ -1,0 +1,9 @@
+{
+  "module_name": "vhost_virtio_ioctl.sh",
+  "hash_id": "e72049d5e6e0cc51e38a71a2aa0dd457619fb625d17385f7d4ab050d038faa18",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/vhost_virtio_ioctl.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n\n[ $# -eq 1 ] && header_dir=$1 || header_dir=tools/include/uapi/linux/\n\nprintf \"static const char *vhost_virtio_ioctl_cmds[] = {\\n\"\nregex='^#[[:space:]]*define[[:space:]]+VHOST_(\\w+)[[:space:]]+_IOW?\\([[:space:]]*VHOST_VIRTIO[[:space:]]*,[[:space:]]*(0x[[:xdigit:]]+).*'\ngrep -E $regex ${header_dir}/vhost.h | \\\n\tsed -r \"s/$regex/\\2 \\1/g\"\t| \\\n\tsort | xargs printf \"\\t[%s] = \\\"%s\\\",\\n\"\nprintf \"};\\n\"\n\nprintf \"static const char *vhost_virtio_ioctl_read_cmds[] = {\\n\"\nregex='^#[[:space:]]*define[[:space:]]+VHOST_(\\w+)[[:space:]]+_IOW?R\\([[:space:]]*VHOST_VIRTIO[[:space:]]*,[[:space:]]*(0x[[:xdigit:]]+).*'\ngrep -E $regex ${header_dir}/vhost.h | \\\n\tsed -r \"s/$regex/\\2 \\1/g\"\t| \\\n\tsort | xargs printf \"\\t[%s] = \\\"%s\\\",\\n\"\nprintf \"};\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

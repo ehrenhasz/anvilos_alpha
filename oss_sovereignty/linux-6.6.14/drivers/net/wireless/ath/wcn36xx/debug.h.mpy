@@ -1,0 +1,9 @@
+{
+  "module_name": "debug.h",
+  "hash_id": "497cf5bb9ca4a086f06d977728ea3899dcc4b652ee409d18911a3a62b7a1c39b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/wcn36xx/debug.h",
+  "human_readable_source": " \n\n#ifndef _WCN36XX_DEBUG_H_\n#define _WCN36XX_DEBUG_H_\n\n#include <linux/kernel.h>\n\n#define WCN36xx_MAX_DUMP_ARGS\t5\n\n#ifdef CONFIG_WCN36XX_DEBUGFS\nstruct wcn36xx_dfs_file {\n\tstruct dentry *dentry;\n\tu32 value;\n};\n\nstruct wcn36xx_dfs_entry {\n\tstruct dentry *rootdir;\n\tstruct wcn36xx_dfs_file file_bmps_switcher;\n\tstruct wcn36xx_dfs_file file_dump;\n\tstruct wcn36xx_dfs_file file_firmware_feat_caps;\n};\n\nvoid wcn36xx_debugfs_init(struct wcn36xx *wcn);\nvoid wcn36xx_debugfs_exit(struct wcn36xx *wcn);\n\n#else\nstatic inline void wcn36xx_debugfs_init(struct wcn36xx *wcn)\n{\n}\nstatic inline void wcn36xx_debugfs_exit(struct wcn36xx *wcn)\n{\n}\n\n#endif  \n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

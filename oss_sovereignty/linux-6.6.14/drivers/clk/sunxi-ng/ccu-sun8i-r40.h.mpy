@@ -1,0 +1,9 @@
+{
+  "module_name": "ccu-sun8i-r40.h",
+  "hash_id": "aa41732be35599e5bfe3775cd9948d82a94d19054f0c979f4aa8293651f2bf15",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sunxi-ng/ccu-sun8i-r40.h",
+  "human_readable_source": " \n \n\n#ifndef _CCU_SUN8I_R40_H_\n#define _CCU_SUN8I_R40_H_\n\n#include <dt-bindings/clock/sun8i-r40-ccu.h>\n#include <dt-bindings/reset/sun8i-r40-ccu.h>\n\n#define CLK_OSC_12M\t\t0\n#define CLK_PLL_CPU\t\t1\n#define CLK_PLL_AUDIO_BASE\t2\n#define CLK_PLL_AUDIO\t\t3\n#define CLK_PLL_AUDIO_2X\t4\n#define CLK_PLL_AUDIO_4X\t5\n#define CLK_PLL_AUDIO_8X\t6\n\n \n\n#define CLK_PLL_VIDEO0_2X\t8\n#define CLK_PLL_VE\t\t9\n#define CLK_PLL_DDR0\t\t10\n#define CLK_PLL_PERIPH0\t\t11\n#define CLK_PLL_PERIPH0_SATA\t12\n#define CLK_PLL_PERIPH0_2X\t13\n#define CLK_PLL_PERIPH1\t\t14\n#define CLK_PLL_PERIPH1_2X\t15\n\n \n\n#define CLK_PLL_VIDEO1_2X\t17\n#define CLK_PLL_SATA\t\t18\n#define CLK_PLL_SATA_OUT\t19\n#define CLK_PLL_GPU\t\t20\n#define CLK_PLL_MIPI\t\t21\n#define CLK_PLL_DE\t\t22\n#define CLK_PLL_DDR1\t\t23\n\n \n\n#define CLK_AXI\t\t\t25\n#define CLK_AHB1\t\t26\n#define CLK_APB1\t\t27\n#define CLK_APB2\t\t28\n\n \n\n \n\n#define CLK_DRAM\t\t132\n\n \n\n \n\n#define CLK_NUMBER\t\t(CLK_OUTB + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

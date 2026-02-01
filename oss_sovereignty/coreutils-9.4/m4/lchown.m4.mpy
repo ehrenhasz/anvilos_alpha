@@ -1,0 +1,9 @@
+{
+  "module_name": "lchown.m4",
+  "hash_id": "5eaae7f2a542a301c12b90fd6cc22a79f8b4dfeac72489097811c8a17e01306d",
+  "original_prompt": "Ingested from coreutils-9.4/m4/lchown.m4",
+  "human_readable_source": "# serial 17\n# Determine whether we need the lchown wrapper.\n\ndnl Copyright (C) 1998, 2001, 2003-2007, 2009-2023 Free Software Foundation,\ndnl Inc.\n\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl From Jim Meyering.\ndnl Provide lchown on systems that lack it, and work around bugs\ndnl on systems that have it.\n\nAC_DEFUN([gl_FUNC_LCHOWN],\n[\n  AC_REQUIRE([gl_UNISTD_H_DEFAULTS])\n  AC_REQUIRE([gl_FUNC_CHOWN])\n  AC_CHECK_FUNCS_ONCE([lchmod])\n  AC_CHECK_FUNCS([lchown])\n  if test $ac_cv_func_lchown = no; then\n    HAVE_LCHOWN=0\n  else\n    dnl Trailing slash and ctime bugs in chown also occur in lchown.\n    case \"$gl_cv_func_chown_slash_works\" in\n      *yes) ;;\n      *)\n        REPLACE_LCHOWN=1\n        ;;\n    esac\n    case \"$gl_cv_func_chown_ctime_works\" in\n      *yes) ;;\n      *)\n        REPLACE_LCHOWN=1\n        ;;\n    esac\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

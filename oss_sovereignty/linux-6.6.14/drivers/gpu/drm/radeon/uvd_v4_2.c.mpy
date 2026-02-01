@@ -1,0 +1,9 @@
+{
+  "module_name": "uvd_v4_2.c",
+  "hash_id": "c3d2ca10069520116f5d745fee38441cff44e75835c04d97018df499904c49de",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/uvd_v4_2.c",
+  "human_readable_source": " \n\n#include <linux/firmware.h>\n\n#include \"radeon.h\"\n#include \"radeon_asic.h\"\n#include \"cikd.h\"\n\n \nint uvd_v4_2_resume(struct radeon_device *rdev)\n{\n\tuint64_t addr;\n\tuint32_t size;\n\n\t \n\n\t \n\tif (rdev->uvd.fw_header_present)\n\t\taddr = (rdev->uvd.gpu_addr + 0x200) >> 3;\n\telse\n\t\taddr = rdev->uvd.gpu_addr >> 3;\n\n\tsize = RADEON_GPU_PAGE_ALIGN(rdev->uvd_fw->size + 4) >> 3;\n\tWREG32(UVD_VCPU_CACHE_OFFSET0, addr);\n\tWREG32(UVD_VCPU_CACHE_SIZE0, size);\n\n\taddr += size;\n\tsize = RADEON_UVD_HEAP_SIZE >> 3;\n\tWREG32(UVD_VCPU_CACHE_OFFSET1, addr);\n\tWREG32(UVD_VCPU_CACHE_SIZE1, size);\n\n\taddr += size;\n\tsize = (RADEON_UVD_STACK_SIZE +\n\t       (RADEON_UVD_SESSION_SIZE * rdev->uvd.max_handles)) >> 3;\n\tWREG32(UVD_VCPU_CACHE_OFFSET2, addr);\n\tWREG32(UVD_VCPU_CACHE_SIZE2, size);\n\n\t \n\taddr = (rdev->uvd.gpu_addr >> 28) & 0xF;\n\tWREG32(UVD_LMI_ADDR_EXT, (addr << 12) | (addr << 0));\n\n\t \n\taddr = (rdev->uvd.gpu_addr >> 32) & 0xFF;\n\tWREG32(UVD_LMI_EXT40_ADDR, addr | (0x9 << 16) | (0x1 << 31));\n\n\tif (rdev->uvd.fw_header_present)\n\t\tWREG32(UVD_GP_SCRATCH4, rdev->uvd.max_handles);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0a7b61e6ae53dbd36af69047ebacbee712e300f56d826e7b23733c84761aa4b1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/nx-gzip/Makefile",
+  "human_readable_source": "CFLAGS = -O3 -m64 -I./include -I../include\n\nTEST_GEN_FILES := gzfht_test gunz_test\nTEST_PROGS := nx-gzip-test.sh\n\ninclude ../../lib.mk\n\n$(TEST_GEN_FILES): gzip_vas.c ../utils.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

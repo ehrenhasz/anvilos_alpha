@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_ob2_param.h",
+  "hash_id": "bc94a8b60e55ecb776098c4f96c62a398f6b6acb7c8c87a5dd7e1893014a658e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ob/ob2/ia_css_ob2_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_OB2_PARAM_H\n#define __IA_CSS_OB2_PARAM_H\n\n#include \"type_support.h\"\n\n \nstruct sh_css_isp_ob2_params {\n\ts32 blacklevel_gr;\n\ts32 blacklevel_r;\n\ts32 blacklevel_b;\n\ts32 blacklevel_gb;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

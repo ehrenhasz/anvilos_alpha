@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "60903344b9e663f50ca788af584119395504fbe38653a119e6f78eb8a6b1bcb4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vdpa/solidrun/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_SNET_VDPA) += snet_vdpa.o\nsnet_vdpa-$(CONFIG_SNET_VDPA) += snet_main.o\nsnet_vdpa-$(CONFIG_SNET_VDPA) += snet_ctrl.o\nifdef CONFIG_HWMON\nsnet_vdpa-$(CONFIG_SNET_VDPA) += snet_hwmon.o\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

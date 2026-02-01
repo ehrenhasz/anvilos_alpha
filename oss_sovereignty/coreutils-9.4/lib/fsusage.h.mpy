@@ -1,0 +1,9 @@
+{
+  "module_name": "fsusage.h",
+  "hash_id": "f4cbcfd544f0a8b89d699233f92601aa12284cf0d33f9b093dd362af1f87c1a7",
+  "original_prompt": "Ingested from coreutils-9.4/lib/fsusage.h",
+  "human_readable_source": " \n\n#if !defined FSUSAGE_H_\n# define FSUSAGE_H_\n\n# include <stdint.h>\n\nstruct fs_usage\n{\n  uintmax_t fsu_blocksize;       \n  uintmax_t fsu_blocks;          \n  uintmax_t fsu_bfree;           \n  uintmax_t fsu_bavail;          \n  bool fsu_bavail_top_bit_set;   \n  uintmax_t fsu_files;           \n  uintmax_t fsu_ffree;           \n};\n\nint get_fs_usage (char const *file, char const *disk, struct fs_usage *fsp);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

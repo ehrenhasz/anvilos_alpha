@@ -1,0 +1,9 @@
+{
+  "module_name": "bpf_iter_test_kern6.c",
+  "hash_id": "b0eac9ae94913d6a5cc9a637a71b964553b98ecc1f8ab757b4329db7c925c14d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/bpf_iter_test_kern6.c",
+  "human_readable_source": "\n \n#include \"bpf_iter.h\"\n#include <bpf/bpf_helpers.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\n__u32 value_sum = 0;\n\nSEC(\"iter/bpf_map_elem\")\nint dump_bpf_hash_map(struct bpf_iter__bpf_map_elem *ctx)\n{\n\tvoid *value = ctx->value;\n\n\tif (value == (void *)0)\n\t\treturn 0;\n\n\t \n\tvalue_sum += *(__u32 *)(value - 4);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

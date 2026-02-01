@@ -1,0 +1,9 @@
+{
+  "module_name": "bugs_64.c",
+  "hash_id": "2560bf5f20102905783d8f4b3ea4653027e7a730b32c64f755aede80ea6a2849",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/bugs_64.c",
+  "human_readable_source": " \n\n#include <sysdep/ptrace.h>\n\nvoid arch_check_bugs(void)\n{\n}\n\nvoid arch_examine_signal(int sig, struct uml_pt_regs *regs)\n{\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

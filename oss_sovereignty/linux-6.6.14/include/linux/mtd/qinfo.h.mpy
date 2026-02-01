@@ -1,0 +1,9 @@
+{
+  "module_name": "qinfo.h",
+  "hash_id": "fa9ca2dbee2e7744b7bb83e0ed1f595416102fdf9e8ea91aac6953d03790917a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mtd/qinfo.h",
+  "human_readable_source": " \n#ifndef __LINUX_MTD_QINFO_H\n#define __LINUX_MTD_QINFO_H\n\n#include <linux/mtd/map.h>\n#include <linux/wait.h>\n#include <linux/spinlock.h>\n#include <linux/delay.h>\n#include <linux/mtd/mtd.h>\n#include <linux/mtd/flashchip.h>\n#include <linux/mtd/partitions.h>\n\n \nstruct lpddr_private {\n\tuint16_t ManufactId;\n\tuint16_t DevId;\n\tstruct qinfo_chip *qinfo;\n\tint numchips;\n\tunsigned long chipshift;\n\tstruct flchip chips[];\n};\n\n \nstruct qinfo_query_info {\n\tuint8_t\tmajor;\n\tuint8_t\tminor;\n\tchar *id_str;\n\tchar *desc;\n};\n\n \nstruct qinfo_chip {\n\t \n\tuint16_t DevSizeShift;\n\tuint16_t BufSizeShift;\n\t \n\tuint16_t TotalBlocksNum;\n\tuint16_t UniformBlockSizeShift;\n\t \n\tuint16_t HWPartsNum;\n\t \n\tuint16_t SuspEraseSupp;\n\t \n\tuint16_t SingleWordProgTime;\n\tuint16_t ProgBufferTime;\n\tuint16_t BlockEraseTime;\n};\n\n \n#define LPDDR_MFR_ANY\t\t0xffff\n#define LPDDR_ID_ANY\t\t0xffff\n#define NUMONYX_MFGR_ID\t\t0x0089\n#define R18_DEVICE_ID_1G\t0x893c\n\nstatic inline map_word lpddr_build_cmd(u_long cmd, struct map_info *map)\n{\n\tmap_word val = { {0} };\n\tval.x[0] = cmd;\n\treturn val;\n}\n\n#define CMD(x) lpddr_build_cmd(x, map)\n#define CMDVAL(cmd) cmd.x[0]\n\nstruct mtd_info *lpddr_cmdset(struct map_info *);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

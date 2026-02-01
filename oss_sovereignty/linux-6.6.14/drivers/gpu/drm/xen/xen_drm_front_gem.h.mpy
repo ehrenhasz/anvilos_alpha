@@ -1,0 +1,9 @@
+{
+  "module_name": "xen_drm_front_gem.h",
+  "hash_id": "698c9af69c302da3a2377694e39cbe045b361e6d7a1f818014c3bd0d2447afb8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/xen/xen_drm_front_gem.h",
+  "human_readable_source": " \n\n \n\n#ifndef __XEN_DRM_FRONT_GEM_H\n#define __XEN_DRM_FRONT_GEM_H\n\nstruct dma_buf_attachment;\nstruct iosys_map;\nstruct drm_device;\nstruct drm_gem_object;\nstruct sg_table;\n\nstruct drm_gem_object *xen_drm_front_gem_create(struct drm_device *dev,\n\t\t\t\t\t\tsize_t size);\n\nstruct drm_gem_object *\nxen_drm_front_gem_import_sg_table(struct drm_device *dev,\n\t\t\t\t  struct dma_buf_attachment *attach,\n\t\t\t\t  struct sg_table *sgt);\n\nstruct sg_table *xen_drm_front_gem_get_sg_table(struct drm_gem_object *gem_obj);\n\nstruct page **xen_drm_front_gem_get_pages(struct drm_gem_object *obj);\n\nvoid xen_drm_front_gem_free_object_unlocked(struct drm_gem_object *gem_obj);\n\nint xen_drm_front_gem_prime_vmap(struct drm_gem_object *gem_obj,\n\t\t\t\t struct iosys_map *map);\n\nvoid xen_drm_front_gem_prime_vunmap(struct drm_gem_object *gem_obj,\n\t\t\t\t    struct iosys_map *map);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

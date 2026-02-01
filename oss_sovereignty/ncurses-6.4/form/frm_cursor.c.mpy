@@ -1,0 +1,9 @@
+{
+  "module_name": "frm_cursor.c",
+  "hash_id": "bb6e87fa301f03eb8d6cab6abf7e6816616b53854b94b905f95e71b5b89ec55d",
+  "original_prompt": "Ingested from ncurses-6.4/form/frm_cursor.c",
+  "human_readable_source": " \n\n \n\n#include \"form.priv.h\"\n\nMODULE_ID(\"$Id: frm_cursor.c,v 1.13 2021/06/17 21:20:30 tom Exp $\")\n\n \nFORM_EXPORT(int)\npos_form_cursor(FORM *form)\n{\n  int res;\n\n  T((T_CALLED(\"pos_form_cursor(%p)\"), (void *)form));\n\n  if (!form)\n    res = E_BAD_ARGUMENT;\n  else\n    {\n      if (!(form->status & _POSTED))\n\tres = E_NOT_POSTED;\n      else\n\tres = _nc_Position_Form_Cursor(form);\n    }\n  RETURN(res);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

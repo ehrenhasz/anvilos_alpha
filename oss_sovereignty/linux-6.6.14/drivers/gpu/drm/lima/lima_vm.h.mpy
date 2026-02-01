@@ -1,0 +1,9 @@
+{
+  "module_name": "lima_vm.h",
+  "hash_id": "8d68e8103aaa2b03fcaefe9306076b27d286c4e99dc42119836e180f39cfd0d0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/lima/lima_vm.h",
+  "human_readable_source": " \n \n\n#ifndef __LIMA_VM_H__\n#define __LIMA_VM_H__\n\n#include <drm/drm_mm.h>\n#include <linux/kref.h>\n\n#define LIMA_PAGE_SIZE    4096\n#define LIMA_PAGE_MASK    (LIMA_PAGE_SIZE - 1)\n#define LIMA_PAGE_ENT_NUM (LIMA_PAGE_SIZE / sizeof(u32))\n\n#define LIMA_VM_NUM_PT_PER_BT_SHIFT 3\n#define LIMA_VM_NUM_PT_PER_BT (1 << LIMA_VM_NUM_PT_PER_BT_SHIFT)\n#define LIMA_VM_NUM_BT (LIMA_PAGE_ENT_NUM >> LIMA_VM_NUM_PT_PER_BT_SHIFT)\n\n#define LIMA_VA_RESERVE_START  0x0FFF00000ULL\n#define LIMA_VA_RESERVE_DLBU   LIMA_VA_RESERVE_START\n#define LIMA_VA_RESERVE_END    0x100000000ULL\n\nstruct lima_device;\n\nstruct lima_vm_page {\n\tu32 *cpu;\n\tdma_addr_t dma;\n};\n\nstruct lima_vm {\n\tstruct mutex lock;\n\tstruct kref refcount;\n\n\tstruct drm_mm mm;\n\n\tstruct lima_device *dev;\n\n\tstruct lima_vm_page pd;\n\tstruct lima_vm_page bts[LIMA_VM_NUM_BT];\n};\n\nint lima_vm_bo_add(struct lima_vm *vm, struct lima_bo *bo, bool create);\nvoid lima_vm_bo_del(struct lima_vm *vm, struct lima_bo *bo);\n\nu32 lima_vm_get_va(struct lima_vm *vm, struct lima_bo *bo);\n\nstruct lima_vm *lima_vm_create(struct lima_device *dev);\nvoid lima_vm_release(struct kref *kref);\n\nstatic inline struct lima_vm *lima_vm_get(struct lima_vm *vm)\n{\n\tkref_get(&vm->refcount);\n\treturn vm;\n}\n\nstatic inline void lima_vm_put(struct lima_vm *vm)\n{\n\tif (vm)\n\t\tkref_put(&vm->refcount, lima_vm_release);\n}\n\nvoid lima_vm_print(struct lima_vm *vm);\nint lima_vm_map_bo(struct lima_vm *vm, struct lima_bo *bo, int pageoff);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

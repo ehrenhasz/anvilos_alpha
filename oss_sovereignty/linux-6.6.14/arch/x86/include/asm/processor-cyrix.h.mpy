@@ -1,0 +1,9 @@
+{
+  "module_name": "processor-cyrix.h",
+  "hash_id": "e9ed23456c77dc8ca15ef2bb18aacbd5726c8ea8518cc7489ca308666b7c663e",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/processor-cyrix.h",
+  "human_readable_source": " \n \n\n#include <asm/pc-conf-reg.h>\n\nstatic inline u8 getCx86(u8 reg)\n{\n\treturn pc_conf_get(reg);\n}\n\nstatic inline void setCx86(u8 reg, u8 data)\n{\n\tpc_conf_set(reg, data);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

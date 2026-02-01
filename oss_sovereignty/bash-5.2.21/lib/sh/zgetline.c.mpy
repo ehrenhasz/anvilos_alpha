@@ -1,0 +1,9 @@
+{
+  "module_name": "zgetline.c",
+  "hash_id": "ab7d9eab9414ef0a16e9c732c37dd63add5f4e14ce38afb63f4b104170c7410d",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/zgetline.c",
+  "human_readable_source": " \n\n \n\n#include <config.h>\n\n#include <sys/types.h>\n\n#if defined (HAVE_UNISTD_H)\n#  include <unistd.h>\n#endif\n\n#include <errno.h>\n#include \"xmalloc.h\"\n\n#if !defined (errno)\nextern int errno;\n#endif\n\nextern ssize_t zread PARAMS((int, char *, size_t));\nextern ssize_t zreadc PARAMS((int, char *));\nextern ssize_t zreadintr PARAMS((int, char *, size_t));\nextern ssize_t zreadcintr PARAMS((int, char *));\n\ntypedef ssize_t breadfunc_t PARAMS((int, char *, size_t));\ntypedef ssize_t creadfunc_t PARAMS((int, char *));\n\n \n#define GET_LINE_INITIAL_ALLOCATION 16\n\n \n\nssize_t\nzgetline (fd, lineptr, n, delim, unbuffered_read)\n     int fd;\n     char **lineptr;\n     size_t *n;\n     int delim;\n     int unbuffered_read;\n{\n  int retval;\n  size_t nr;\n  char *line, c;\n\n  if (lineptr == 0 || n == 0 || (*lineptr == 0 && *n != 0))\n    return -1;\n\n  nr = 0;\n  line = *lineptr;\n  \n  while (1)\n    {\n      retval = unbuffered_read ? zread (fd, &c, 1) : zreadc(fd, &c);\n\n      if (retval <= 0)\n\t{\n\t  if (line && nr > 0)\n\t    line[nr] = '\\0';\n\t  break;\n\t}\n\n      if (nr + 2 >= *n)\n\t{\n\t  size_t new_size;\n\n\t  new_size = (*n == 0) ? GET_LINE_INITIAL_ALLOCATION : *n * 2;\n\t  line = (*n >= new_size) ? NULL : xrealloc (*lineptr, new_size);\n\n\t  if (line)\n\t    {\n\t      *lineptr = line;\n\t      *n = new_size;\n\t    }\n\t  else\n\t    {\n\t      if (*n > 0)\n\t\t{\n\t\t  (*lineptr)[*n - 1] = '\\0';\n\t\t  nr = *n - 2;\n\t\t}\n\t      break;\n\t    }\n\t}\n\n      line[nr] = c;\n      nr++;\n\n      if (c == delim)\n\t{\n\t  line[nr] = '\\0';\n\t  break;\n\t}\n    }\n\n  return nr - 1;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

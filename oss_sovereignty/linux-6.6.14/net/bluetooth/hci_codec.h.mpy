@@ -1,0 +1,9 @@
+{
+  "module_name": "hci_codec.h",
+  "hash_id": "acfd724acd9b3fe55b6152708e425f2b82d61af1514020abeabbdc98f43e281a",
+  "original_prompt": "Ingested from linux-6.6.14/net/bluetooth/hci_codec.h",
+  "human_readable_source": " \n\n \n\nvoid hci_read_supported_codecs(struct hci_dev *hdev);\nvoid hci_read_supported_codecs_v2(struct hci_dev *hdev);\nvoid hci_codec_list_clear(struct list_head *codec_list);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

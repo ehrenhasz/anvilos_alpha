@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1964201068183966b7fa4966ad74e52c09f955dabc800599979a04dfafbc58a9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/sh/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the SuperH specific drivers.\n#\nobj-$(CONFIG_SH_INTC)\t\t\t+= intc/\nifneq ($(CONFIG_COMMON_CLK),y)\nobj-$(CONFIG_HAVE_CLK)\t\t\t+= clk/\nendif\nobj-$(CONFIG_MAPLE)\t\t\t+= maple/\nobj-$(CONFIG_SUPERHYWAY)\t\t+= superhyway/\n\nobj-y\t\t\t\t\t+= pm_runtime.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

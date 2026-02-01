@@ -1,0 +1,9 @@
+{
+  "module_name": "conch-ciphers.sh",
+  "hash_id": "e9ec101a4f9419bf64b18963ae25de1fec9722ee895b1c4ab17454ea0069db43",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/conch-ciphers.sh",
+  "human_readable_source": "#\t$OpenBSD: conch-ciphers.sh,v 1.7 2023/10/26 12:44:07 dtucker Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"conch ciphers\"\n\nif test \"x$REGRESS_INTEROP_CONCH\" != \"xyes\" ; then\n\tskip \"conch interop tests not enabled\"\nfi\n\nif ! [ -t 0 ]; then\n\tskip \"conch interop tests requires a controlling terminal\"\nfi\n\nstart_sshd\n\nfor c in aes256-ctr aes256-cbc aes192-ctr aes192-cbc aes128-ctr aes128-cbc \\\n         cast128-cbc blowfish 3des-cbc ; do\n\tverbose \"$tid: cipher $c\"\n\trm -f ${COPY}\n\t# XXX the 2nd \"cat\" seems to be needed because of buggy FD handling\n\t# in conch\n\t${CONCH} --identity $OBJ/ssh-ed25519 --port $PORT --user $USER -e none \\\n\t    --known-hosts $OBJ/known_hosts --notty --noagent --nox11 -n \\\n\t    127.0.0.1 \"cat ${DATA}\" 2>/dev/null | cat > ${COPY}\n\tif [ $? -ne 0 ]; then\n\t\tfail \"ssh cat $DATA failed\"\n\tfi\n\tcmp ${DATA} ${COPY}\t\t|| fail \"corrupted copy\"\ndone\nrm -f ${COPY}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "spi-ep93xx.h",
+  "hash_id": "94bd7a6fe138a15646f94ae2cf60f959c00af6a417e2db79d4756c645cec1870",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/spi-ep93xx.h",
+  "human_readable_source": " \n#ifndef __ASM_MACH_EP93XX_SPI_H\n#define __ASM_MACH_EP93XX_SPI_H\n\nstruct spi_device;\n\n \nstruct ep93xx_spi_info {\n\tbool\tuse_dma;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

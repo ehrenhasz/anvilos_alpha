@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_size___diff_offs.c",
+  "hash_id": "9e0d4309b2d37add70cc4928c0528361303771071a5c203f6aebe5bda55c5ffd",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_size___diff_offs.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_size___diff_offs x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

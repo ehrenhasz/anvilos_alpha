@@ -1,0 +1,9 @@
+{
+  "module_name": "panic_notifier.h",
+  "hash_id": "bac282543336499acfb0a32b58d3abe5b278e4ea0cb1962ab024eead2ae35a13",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/panic_notifier.h",
+  "human_readable_source": " \n#ifndef _LINUX_PANIC_NOTIFIERS_H\n#define _LINUX_PANIC_NOTIFIERS_H\n\n#include <linux/notifier.h>\n#include <linux/types.h>\n\nextern struct atomic_notifier_head panic_notifier_list;\n\nextern bool crash_kexec_post_notifiers;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

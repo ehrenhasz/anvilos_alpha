@@ -1,0 +1,9 @@
+{
+  "module_name": "pmecc.h",
+  "hash_id": "67ccf1f741e14fa7b42d2de04f71a7b5ce602a5a5df8862e3acf2597d80cf46f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/nand/raw/atmel/pmecc.h",
+  "human_readable_source": " \n \n\n#ifndef ATMEL_PMECC_H\n#define ATMEL_PMECC_H\n\n#define ATMEL_PMECC_MAXIMIZE_ECC_STRENGTH\t0\n#define ATMEL_PMECC_SECTOR_SIZE_AUTO\t\t0\n#define ATMEL_PMECC_OOBOFFSET_AUTO\t\t-1\n\nstruct atmel_pmecc_user_req {\n\tint pagesize;\n\tint oobsize;\n\tstruct {\n\t\tint strength;\n\t\tint bytes;\n\t\tint sectorsize;\n\t\tint nsectors;\n\t\tint ooboffset;\n\t} ecc;\n};\n\nstruct atmel_pmecc *devm_atmel_pmecc_get(struct device *dev);\n\nstruct atmel_pmecc_user *\natmel_pmecc_create_user(struct atmel_pmecc *pmecc,\n\t\t\tstruct atmel_pmecc_user_req *req);\nvoid atmel_pmecc_destroy_user(struct atmel_pmecc_user *user);\n\nvoid atmel_pmecc_reset(struct atmel_pmecc *pmecc);\nint atmel_pmecc_enable(struct atmel_pmecc_user *user, int op);\nvoid atmel_pmecc_disable(struct atmel_pmecc_user *user);\nint atmel_pmecc_wait_rdy(struct atmel_pmecc_user *user);\nint atmel_pmecc_correct_sector(struct atmel_pmecc_user *user, int sector,\n\t\t\t       void *data, void *ecc);\nbool atmel_pmecc_correct_erased_chunks(struct atmel_pmecc_user *user);\nvoid atmel_pmecc_get_generated_eccbytes(struct atmel_pmecc_user *user,\n\t\t\t\t\tint sector, void *ecc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

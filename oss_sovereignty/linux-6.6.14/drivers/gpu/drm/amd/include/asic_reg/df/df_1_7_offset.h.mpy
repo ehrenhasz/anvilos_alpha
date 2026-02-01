@@ -1,0 +1,9 @@
+{
+  "module_name": "df_1_7_offset.h",
+  "hash_id": "3df7b92f75d93feb56e89e87d17dc1cb2b7750103efa699a0908204456d76621",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/include/asic_reg/df/df_1_7_offset.h",
+  "human_readable_source": " \n#ifndef _df_1_7_OFFSET_HEADER\n#define _df_1_7_OFFSET_HEADER\n\n#define mmFabricConfigAccessControl\t\t\t\t\t\t\t\t\t0x0410\n#define mmFabricConfigAccessControl_BASE_IDX\t\t\t\t\t\t\t\t0\n\n#define mmDF_PIE_AON0_DfGlobalClkGater\t\t\t\t\t\t\t\t\t0x00fc\n#define mmDF_PIE_AON0_DfGlobalClkGater_BASE_IDX\t\t\t\t\t\t\t\t0\n\n#define mmDF_CS_AON0_DramBaseAddress0\t\t\t\t\t\t\t\t\t0x0044\n#define mmDF_CS_AON0_DramBaseAddress0_BASE_IDX\t\t\t\t\t\t\t\t0\n\n#define mmDF_CS_AON0_CoherentSlaveModeCtrlA0\t\t\t\t\t\t\t\t0x0214\n#define mmDF_CS_AON0_CoherentSlaveModeCtrlA0_BASE_IDX\t\t\t\t\t\t\t0\n\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

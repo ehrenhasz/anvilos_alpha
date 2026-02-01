@@ -1,0 +1,9 @@
+{
+  "module_name": "b43_pci_bridge.c",
+  "hash_id": "48ada20317d519bb0173eabca738d6e11856e9c55a572379618f4f5aac5d2cef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ssb/b43_pci_bridge.c",
+  "human_readable_source": " \n\n#include \"ssb_private.h\"\n\n#include <linux/pci.h>\n#include <linux/module.h>\n#include <linux/ssb/ssb.h>\n\n\nstatic const struct pci_device_id b43_pci_bridge_tbl[] = {\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4301) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4306) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4307) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4311) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4312) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4315) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4318) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BCM_GVC,  0x4318) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4319) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4320) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4321) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4322) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 43222) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4324) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4325) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4328) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4329) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x432b) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x432c) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4350) },\n\t{ PCI_DEVICE(PCI_VENDOR_ID_BROADCOM, 0x4351) },\n\t{ 0, },\n};\nMODULE_DEVICE_TABLE(pci, b43_pci_bridge_tbl);\n\nstatic struct pci_driver b43_pci_bridge_driver = {\n\t.name = \"b43-pci-bridge\",\n\t.id_table = b43_pci_bridge_tbl,\n};\n\n\nint __init b43_pci_ssb_bridge_init(void)\n{\n\treturn ssb_pcihost_register(&b43_pci_bridge_driver);\n}\n\nvoid __exit b43_pci_ssb_bridge_exit(void)\n{\n\tssb_pcihost_unregister(&b43_pci_bridge_driver);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

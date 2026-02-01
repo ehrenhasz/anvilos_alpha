@@ -1,0 +1,9 @@
+{
+  "module_name": "i8253.h",
+  "hash_id": "0dc17e6b10ec225d15c0a03699376d5d892f5b0eb8843c4bdd08c63c81e2dab8",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/i8253.h",
+  "human_readable_source": " \n#ifndef __LINUX_I8253_H\n#define __LINUX_I8253_H\n\n#include <linux/param.h>\n#include <linux/spinlock.h>\n#include <linux/timex.h>\n\n \n#define PIT_MODE\t0x43\n#define PIT_CH0\t\t0x40\n#define PIT_CH2\t\t0x42\n\n#define PIT_LATCH\t((PIT_TICK_RATE + HZ/2) / HZ)\n\nextern raw_spinlock_t i8253_lock;\nextern bool i8253_clear_counter_on_shutdown;\nextern struct clock_event_device i8253_clockevent;\nextern void clockevent_i8253_init(bool oneshot);\n\nextern void setup_pit_timer(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

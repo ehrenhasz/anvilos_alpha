@@ -1,0 +1,9 @@
+{
+  "module_name": "spi.h",
+  "hash_id": "80ff751ca983809e0578ce305e4c5f80b22d4efbe2ec749b9a078a3377457535",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wl1251/spi.h",
+  "human_readable_source": " \n \n\n#ifndef __WL1251_SPI_H__\n#define __WL1251_SPI_H__\n\n#include \"cmd.h\"\n#include \"acx.h\"\n#include \"reg.h\"\n\n#define WSPI_CMD_READ                 0x40000000\n#define WSPI_CMD_WRITE                0x00000000\n#define WSPI_CMD_FIXED                0x20000000\n#define WSPI_CMD_BYTE_LENGTH          0x1FFE0000\n#define WSPI_CMD_BYTE_LENGTH_OFFSET   17\n#define WSPI_CMD_BYTE_ADDR            0x0001FFFF\n\n#define WSPI_INIT_CMD_CRC_LEN       5\n\n#define WSPI_INIT_CMD_START         0x00\n#define WSPI_INIT_CMD_TX            0x40\n \n#define WSPI_INIT_CMD_BYPASS_BIT    0x80\n#define WSPI_INIT_CMD_FIXEDBUSY_LEN 0x07\n#define WSPI_INIT_CMD_EN_FIXEDBUSY  0x80\n#define WSPI_INIT_CMD_DIS_FIXEDBUSY 0x00\n#define WSPI_INIT_CMD_IOD           0x40\n#define WSPI_INIT_CMD_IP            0x20\n#define WSPI_INIT_CMD_CS            0x10\n#define WSPI_INIT_CMD_WS            0x08\n#define WSPI_INIT_CMD_WSPI          0x01\n#define WSPI_INIT_CMD_END           0x01\n\n#define WSPI_INIT_CMD_LEN           8\n\n#define HW_ACCESS_WSPI_FIXED_BUSY_LEN \\\n\t\t((WL1251_BUSY_WORD_LEN - 4) / sizeof(u32))\n#define HW_ACCESS_WSPI_INIT_CMD_MASK  0\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

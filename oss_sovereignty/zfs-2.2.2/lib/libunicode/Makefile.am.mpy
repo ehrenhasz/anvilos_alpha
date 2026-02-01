@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "acbbe54891ea8ab162efeaa71bd8717956b89decd0868b024770cfbd51655da9",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libunicode/Makefile.am",
+  "human_readable_source": "libunicode_la_CFLAGS = $(AM_CFLAGS) $(KERNEL_CFLAGS) $(LIBRARY_CFLAGS)\n\nnoinst_LTLIBRARIES += libunicode.la\n\nnodist_libunicode_la_SOURCES = \\\n\tmodule/unicode/u8_textprep.c \\\n\tmodule/unicode/uconv.c\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

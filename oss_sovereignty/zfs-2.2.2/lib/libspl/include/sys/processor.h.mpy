@@ -1,0 +1,9 @@
+{
+  "module_name": "processor.h",
+  "hash_id": "3a5a32cd9cd7371e642b15b84236cee8ad85b833e4933f4c745c4e4567392a51",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/processor.h",
+  "human_readable_source": " \n \n\n#ifndef _LIBSPL_SYS_PROCESSOR_H\n#define\t_LIBSPL_SYS_PROCESSOR_H\n\n#define\tgetcpuid() (-1)\n\ntypedef int\tprocessorid_t;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

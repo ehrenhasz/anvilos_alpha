@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6e580bc06f898f2269b0607d9ab5208945e525154653d6fe2f8191a2bbecc0ce",
+  "original_prompt": "Ingested from linux-6.6.14/sound/isa/cs423x/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n# Copyright (c) 2001 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-cs4231-objs := cs4231.o\nsnd-cs4236-objs := cs4236.o cs4236_lib.o\n\n# Toplevel Module Dependency\nobj-$(CONFIG_SND_CS4231) += snd-cs4231.o\nobj-$(CONFIG_SND_CS4236) += snd-cs4236.o\n\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

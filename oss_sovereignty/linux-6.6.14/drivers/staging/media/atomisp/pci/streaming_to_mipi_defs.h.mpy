@@ -1,0 +1,9 @@
+{
+  "module_name": "streaming_to_mipi_defs.h",
+  "hash_id": "c994a2fb22703f93d10afed6f20cc39083cd84193793324180ade29efb35abb8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/streaming_to_mipi_defs.h",
+  "human_readable_source": " \n \n\n#ifndef _streaming_to_mipi_defs_h\n#define _streaming_to_mipi_defs_h\n\n#define HIVE_STR_TO_MIPI_VALID_A_BIT 0\n#define HIVE_STR_TO_MIPI_VALID_B_BIT 1\n#define HIVE_STR_TO_MIPI_SOL_BIT     2\n#define HIVE_STR_TO_MIPI_EOL_BIT     3\n#define HIVE_STR_TO_MIPI_SOF_BIT     4\n#define HIVE_STR_TO_MIPI_EOF_BIT     5\n#define HIVE_STR_TO_MIPI_CH_ID_LSB   6\n\n#define HIVE_STR_TO_MIPI_DATA_A_LSB  (HIVE_STR_TO_MIPI_VALID_B_BIT + 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

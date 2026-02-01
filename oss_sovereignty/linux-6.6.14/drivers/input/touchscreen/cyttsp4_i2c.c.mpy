@@ -1,0 +1,9 @@
+{
+  "module_name": "cyttsp4_i2c.c",
+  "hash_id": "fa564200c61af9123e085dae245393b452c04fc84211768c0cf5a79c81901b10",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/input/touchscreen/cyttsp4_i2c.c",
+  "human_readable_source": "\n \n\n#include \"cyttsp4_core.h\"\n\n#include <linux/i2c.h>\n#include <linux/input.h>\n\n#define CYTTSP4_I2C_DATA_SIZE\t(3 * 256)\n\nstatic const struct cyttsp4_bus_ops cyttsp4_i2c_bus_ops = {\n\t.bustype\t= BUS_I2C,\n\t.write\t\t= cyttsp_i2c_write_block_data,\n\t.read           = cyttsp_i2c_read_block_data,\n};\n\nstatic int cyttsp4_i2c_probe(struct i2c_client *client)\n{\n\tstruct cyttsp4 *ts;\n\n\tif (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {\n\t\tdev_err(&client->dev, \"I2C functionality not Supported\\n\");\n\t\treturn -EIO;\n\t}\n\n\tts = cyttsp4_probe(&cyttsp4_i2c_bus_ops, &client->dev, client->irq,\n\t\t\t  CYTTSP4_I2C_DATA_SIZE);\n\n\treturn PTR_ERR_OR_ZERO(ts);\n}\n\nstatic void cyttsp4_i2c_remove(struct i2c_client *client)\n{\n\tstruct cyttsp4 *ts = i2c_get_clientdata(client);\n\n\tcyttsp4_remove(ts);\n}\n\nstatic const struct i2c_device_id cyttsp4_i2c_id[] = {\n\t{ CYTTSP4_I2C_NAME, 0 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, cyttsp4_i2c_id);\n\nstatic struct i2c_driver cyttsp4_i2c_driver = {\n\t.driver = {\n\t\t.name\t= CYTTSP4_I2C_NAME,\n\t\t.pm\t= pm_ptr(&cyttsp4_pm_ops),\n\t},\n\t.probe\t\t= cyttsp4_i2c_probe,\n\t.remove\t\t= cyttsp4_i2c_remove,\n\t.id_table\t= cyttsp4_i2c_id,\n};\n\nmodule_i2c_driver(cyttsp4_i2c_driver);\n\nMODULE_LICENSE(\"GPL\");\nMODULE_DESCRIPTION(\"Cypress TrueTouch(R) Standard Product (TTSP) I2C driver\");\nMODULE_AUTHOR(\"Cypress\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

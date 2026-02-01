@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_host_data.h",
+  "hash_id": "35e532df637b901064be7bc05125552778b9e964ea4a336fa1b4017d5985adf9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/ia_css_host_data.h",
+  "human_readable_source": " \n \n \n\n#ifndef __SH_CSS_HOST_DATA_H\n#define __SH_CSS_HOST_DATA_H\n\n#include <ia_css_types.h>\t \n\n \nstruct ia_css_host_data *\nia_css_host_data_allocate(size_t size);\n\n \nvoid ia_css_host_data_free(struct ia_css_host_data *me);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

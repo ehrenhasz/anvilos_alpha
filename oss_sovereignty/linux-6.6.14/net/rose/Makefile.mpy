@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a3fce6d231dfceeaa3767b951e733637f6bac6bc959f83559b0f2df4044ba32a",
+  "original_prompt": "Ingested from linux-6.6.14/net/rose/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Linux Rose (X.25 PLP) layer.\n#\n\nobj-$(CONFIG_ROSE) += rose.o\n\nrose-y\t  := af_rose.o rose_dev.o rose_in.o rose_link.o rose_loopback.o \\\n\t     rose_out.o rose_route.o rose_subr.o rose_timer.o\nrose-$(CONFIG_SYSCTL) += sysctl_net_rose.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

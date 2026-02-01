@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "de807cffe8bf7b5e97fe9a7d166b2ede9ad8c5a4f8831d84cc790bf28045b244",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/nand/raw/ingenic/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_MTD_NAND_JZ4780) += ingenic_nand.o\n\ningenic_nand-y += ingenic_nand_drv.o\ningenic_nand-$(CONFIG_MTD_NAND_INGENIC_ECC) += ingenic_ecc.o\n\nobj-$(CONFIG_MTD_NAND_JZ4740_ECC) += jz4740_ecc.o\nobj-$(CONFIG_MTD_NAND_JZ4725B_BCH) += jz4725b_bch.o\nobj-$(CONFIG_MTD_NAND_JZ4780_BCH) += jz4780_bch.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

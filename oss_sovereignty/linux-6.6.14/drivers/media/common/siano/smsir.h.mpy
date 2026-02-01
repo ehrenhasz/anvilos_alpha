@@ -1,0 +1,9 @@
+{
+  "module_name": "smsir.h",
+  "hash_id": "54afd61fc7896f70585e791ea3c3df3647086dd6afcb7069d346b46f6041a407",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/common/siano/smsir.h",
+  "human_readable_source": " \n \n\n#ifndef __SMS_IR_H__\n#define __SMS_IR_H__\n\n#include <linux/input.h>\n#include <media/rc-core.h>\n\nstruct smscore_device_t;\n\nstruct ir_t {\n\tstruct rc_dev *dev;\n\tchar name[40];\n\tchar phys[32];\n\n\tchar *rc_codes;\n\n\tu32 timeout;\n\tu32 controller;\n};\n\n#ifdef CONFIG_SMS_SIANO_RC\nint sms_ir_init(struct smscore_device_t *coredev);\nvoid sms_ir_exit(struct smscore_device_t *coredev);\nvoid sms_ir_event(struct smscore_device_t *coredev,\n\t\t\tconst char *buf, int len);\n#else\ninline static int sms_ir_init(struct smscore_device_t *coredev) {\n\treturn 0;\n}\ninline static void sms_ir_exit(struct smscore_device_t *coredev) {};\ninline static void sms_ir_event(struct smscore_device_t *coredev,\n\t\t\tconst char *buf, int len) {};\n#endif\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

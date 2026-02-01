@@ -1,0 +1,9 @@
+{
+  "module_name": "event_fifo.h",
+  "hash_id": "f2428f6b0e6979f16bc26f17c5ca94b282a15f6bd2e0bec9c9b5a8b8d88cbeee",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/event_fifo.h",
+  "human_readable_source": " \n \n\n#ifndef __EVENT_FIFO_H\n#define __EVENT_FIFO_H\n\n \n\n#include \"system_local.h\"\n#include \"event_fifo_local.h\"\n\n#ifndef __INLINE_EVENT__\n#define STORAGE_CLASS_EVENT_H extern\n#define STORAGE_CLASS_EVENT_C\n#include \"event_fifo_public.h\"\n#else   \n#define STORAGE_CLASS_EVENT_H static inline\n#define STORAGE_CLASS_EVENT_C static inline\n#include \"event_fifo_private.h\"\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

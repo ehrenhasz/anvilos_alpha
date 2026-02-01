@@ -1,0 +1,9 @@
+{
+  "module_name": "rtw8851b_table.h",
+  "hash_id": "aca88ce88c7c5249de4fca9e002239376c3603f44978148455875866000438fc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw89/rtw8851b_table.h",
+  "human_readable_source": " \n \n\n#ifndef __RTW89_8851B_TABLE_H__\n#define __RTW89_8851B_TABLE_H__\n\n#include \"core.h\"\n\nextern const struct rtw89_phy_table rtw89_8851b_phy_bb_table;\nextern const struct rtw89_phy_table rtw89_8851b_phy_bb_gain_table;\nextern const struct rtw89_phy_table rtw89_8851b_phy_radioa_table;\nextern const struct rtw89_phy_table rtw89_8851b_phy_nctl_table;\nextern const struct rtw89_txpwr_table rtw89_8851b_byr_table;\nextern const struct rtw89_txpwr_track_cfg rtw89_8851b_trk_cfg;\nextern const u8 rtw89_8851b_tx_shape[RTW89_BAND_NUM][RTW89_RS_TX_SHAPE_NUM]\n\t\t\t\t    [RTW89_REGD_NUM];\nextern const struct rtw89_rfe_parms rtw89_8851b_dflt_parms;\nextern const struct rtw89_rfe_parms_conf rtw89_8851b_rfe_parms_conf[];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

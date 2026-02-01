@@ -1,0 +1,9 @@
+{
+  "module_name": "pci-quirks.h",
+  "hash_id": "1683377e0720dc1c5df97b7668b47a6546b2034f8b52a20cacbc7d9b322f124d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/host/pci-quirks.h",
+  "human_readable_source": " \n#ifndef __LINUX_USB_PCI_QUIRKS_H\n#define __LINUX_USB_PCI_QUIRKS_H\n\n#ifdef CONFIG_USB_PCI\nvoid uhci_reset_hc(struct pci_dev *pdev, unsigned long base);\nint uhci_check_and_reset_hc(struct pci_dev *pdev, unsigned long base);\nint usb_hcd_amd_remote_wakeup_quirk(struct pci_dev *pdev);\nbool usb_amd_hang_symptom_quirk(void);\nbool usb_amd_prefetch_quirk(void);\nvoid usb_amd_dev_put(void);\nbool usb_amd_quirk_pll_check(void);\nvoid usb_amd_quirk_pll_disable(void);\nvoid usb_amd_quirk_pll_enable(void);\nvoid usb_asmedia_modifyflowcontrol(struct pci_dev *pdev);\nvoid usb_enable_intel_xhci_ports(struct pci_dev *xhci_pdev);\nvoid usb_disable_xhci_ports(struct pci_dev *xhci_pdev);\nvoid sb800_prefetch(struct device *dev, int on);\nbool usb_amd_pt_check_port(struct device *device, int port);\n#else\nstruct pci_dev;\nstatic inline void usb_amd_quirk_pll_disable(void) {}\nstatic inline void usb_amd_quirk_pll_enable(void) {}\nstatic inline void usb_asmedia_modifyflowcontrol(struct pci_dev *pdev) {}\nstatic inline void usb_amd_dev_put(void) {}\nstatic inline void usb_disable_xhci_ports(struct pci_dev *xhci_pdev) {}\nstatic inline void sb800_prefetch(struct device *dev, int on) {}\nstatic inline bool usb_amd_pt_check_port(struct device *device, int port)\n{\n\treturn false;\n}\n#endif   \n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

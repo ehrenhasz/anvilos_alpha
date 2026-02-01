@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "7065484e4a6f5dbe3fb84fad525ff229b4559671be410d7d5e7511f614c0056c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/hisilicon/sec/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_CRYPTO_DEV_HISI_SEC) += hisi_sec.o\nhisi_sec-y = sec_algs.o sec_drv.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

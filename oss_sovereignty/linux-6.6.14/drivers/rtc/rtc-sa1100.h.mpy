@@ -1,0 +1,9 @@
+{
+  "module_name": "rtc-sa1100.h",
+  "hash_id": "5d83a2e4dcd954b379c7c6e6b9ecd5bac555c867c154e86b61dab3e47dc19d28",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/rtc/rtc-sa1100.h",
+  "human_readable_source": " \n#ifndef __RTC_SA1100_H__\n#define __RTC_SA1100_H__\n\n#include <linux/kernel.h>\n\nstruct clk;\nstruct platform_device;\n\nstruct sa1100_rtc {\n\tspinlock_t\t\tlock;\n\tvoid __iomem\t\t*rcnr;\n\tvoid __iomem\t\t*rtar;\n\tvoid __iomem\t\t*rtsr;\n\tvoid __iomem\t\t*rttr;\n\tint\t\t\tirq_1hz;\n\tint\t\t\tirq_alarm;\n\tstruct rtc_device\t*rtc;\n\tstruct clk\t\t*clk;\n};\n\nint sa1100_rtc_init(struct platform_device *pdev, struct sa1100_rtc *info);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

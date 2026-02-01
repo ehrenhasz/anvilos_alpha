@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "e691f88630cc43cfb9690915d4e9688bde85216e71a732bd7667234b2d8470b6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/hwmon/occ/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# On-Chip Controller configuration\n#\n\nconfig SENSORS_OCC_P8_I2C\n\ttristate \"POWER8 OCC through I2C\"\n\tdepends on I2C\n\tselect SENSORS_OCC\n\thelp\n\t This option enables support for monitoring sensors provided by the\n\t On-Chip Controller (OCC) on a POWER8 processor. However, this driver\n\t can only run on a baseboard management controller (BMC) connected to\n\t the P8, not the POWER processor itself. Communications with the OCC are\n\t established through I2C bus.\n\n\t This driver can also be built as a module. If so, the module will be\n\t called occ-p8-hwmon.\n\nconfig SENSORS_OCC_P9_SBE\n\ttristate \"POWER9 OCC through SBE\"\n\tdepends on FSI_OCC\n\tselect SENSORS_OCC\n\thelp\n\t This option enables support for monitoring sensors provided by the\n\t On-Chip Controller (OCC) on a POWER9 processor. However, this driver\n\t can only run on a baseboard management controller (BMC) connected to\n\t the P9, not the POWER processor itself. Communications with the OCC are\n\t established through SBE fifo on an FSI bus.\n\n\t This driver can also be built as a module. If so, the module will be\n\t called occ-p9-hwmon.\n\nconfig SENSORS_OCC\n\ttristate\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "elf-em.h",
+  "hash_id": "6eef5c4d1cd6920c1a6990ec1da8176c2b4bc2f0544609bfb0b02d8d20f5f88a",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/elf-em.h",
+  "human_readable_source": " \n#ifndef _LINUX_ELF_EM_H\n#define _LINUX_ELF_EM_H\n\n \n#define EM_NONE\t\t0\n#define EM_M32\t\t1\n#define EM_SPARC\t2\n#define EM_386\t\t3\n#define EM_68K\t\t4\n#define EM_88K\t\t5\n#define EM_486\t\t6\t \n#define EM_860\t\t7\n#define EM_MIPS\t\t8\t \n\t\t\t\t \n#define EM_MIPS_RS3_LE\t10\t \n#define EM_MIPS_RS4_BE\t10\t \n\n#define EM_PARISC\t15\t \n#define EM_SPARC32PLUS\t18\t \n#define EM_PPC\t\t20\t \n#define EM_PPC64\t21\t  \n#define EM_SPU\t\t23\t \n#define EM_ARM\t\t40\t \n#define EM_SH\t\t42\t \n#define EM_SPARCV9\t43\t \n#define EM_H8_300\t46\t \n#define EM_IA_64\t50\t \n#define EM_X86_64\t62\t \n#define EM_S390\t\t22\t \n#define EM_CRIS\t\t76\t \n#define EM_M32R\t\t88\t \n#define EM_MN10300\t89\t \n#define EM_OPENRISC     92      \n#define EM_ARCOMPACT\t93\t \n#define EM_XTENSA\t94\t \n#define EM_BLACKFIN     106      \n#define EM_UNICORE\t110\t \n#define EM_ALTERA_NIOS2\t113\t \n#define EM_TI_C6000\t140\t \n#define EM_HEXAGON\t164\t \n#define EM_NDS32\t167\t \n#define EM_AARCH64\t183\t \n#define EM_TILEPRO\t188\t \n#define EM_MICROBLAZE\t189\t \n#define EM_TILEGX\t191\t \n#define EM_ARCV2\t195\t \n#define EM_RISCV\t243\t \n#define EM_BPF\t\t247\t \n#define EM_CSKY\t\t252\t \n#define EM_LOONGARCH\t258\t \n#define EM_FRV\t\t0x5441\t \n\n \n#define EM_ALPHA\t0x9026\n\n \n#define EM_CYGNUS_M32R\t0x9041\n \n#define EM_S390_OLD\t0xA390\n \n#define EM_CYGNUS_MN10300 0xbeef\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

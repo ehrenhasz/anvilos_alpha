@@ -1,0 +1,9 @@
+{
+  "module_name": "hi6421-spmi-pmic.c",
+  "hash_id": "5534104efb183bb835b66f5a738a310f3835be84cf89c2d5b4be0fc1e09b9a33",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mfd/hi6421-spmi-pmic.c",
+  "human_readable_source": "\n \n\n#include <linux/mfd/core.h>\n#include <linux/module.h>\n#include <linux/platform_device.h>\n#include <linux/regmap.h>\n#include <linux/slab.h>\n#include <linux/spmi.h>\n\nstatic const struct mfd_cell hi6421v600_devs[] = {\n\t{ .name = \"hi6421v600-irq\", },\n\t{ .name = \"hi6421v600-regulator\", },\n};\n\nstatic const struct regmap_config regmap_config = {\n\t.reg_bits\t= 16,\n\t.val_bits\t= BITS_PER_BYTE,\n\t.max_register\t= 0xffff,\n\t.fast_io\t= true\n};\n\nstatic int hi6421_spmi_pmic_probe(struct spmi_device *sdev)\n{\n\tstruct device *dev = &sdev->dev;\n\tstruct regmap *regmap;\n\tint ret;\n\n\tregmap = devm_regmap_init_spmi_ext(sdev, &regmap_config);\n\tif (IS_ERR(regmap))\n\t\treturn PTR_ERR(regmap);\n\n\tdev_set_drvdata(&sdev->dev, regmap);\n\n\tret = devm_mfd_add_devices(&sdev->dev, PLATFORM_DEVID_NONE,\n\t\t\t\t   hi6421v600_devs, ARRAY_SIZE(hi6421v600_devs),\n\t\t\t\t   NULL, 0, NULL);\n\tif (ret < 0)\n\t\tdev_err(dev, \"Failed to add child devices: %d\\n\", ret);\n\n\treturn ret;\n}\n\nstatic const struct of_device_id pmic_spmi_id_table[] = {\n\t{ .compatible = \"hisilicon,hi6421-spmi\" },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, pmic_spmi_id_table);\n\nstatic struct spmi_driver hi6421_spmi_pmic_driver = {\n\t.driver = {\n\t\t.name\t= \"hi6421-spmi-pmic\",\n\t\t.of_match_table = pmic_spmi_id_table,\n\t},\n\t.probe\t= hi6421_spmi_pmic_probe,\n};\nmodule_spmi_driver(hi6421_spmi_pmic_driver);\n\nMODULE_DESCRIPTION(\"HiSilicon Hi6421v600 SPMI PMIC driver\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

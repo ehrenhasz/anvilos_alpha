@@ -1,0 +1,9 @@
+{
+  "module_name": "getopt-cdefs.in.h",
+  "hash_id": "923307bc1c7b1aa79aee8432b83350b949c56321d5474ec639076ab07a63a7b3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/getopt-cdefs.in.h",
+  "human_readable_source": " \n\n \n#if @HAVE_SYS_CDEFS_H@\n# include <sys/cdefs.h>\n#endif\n\n#ifndef __BEGIN_DECLS\n# ifdef __cplusplus\n#  define __BEGIN_DECLS extern \"C\" {\n# else\n#  define __BEGIN_DECLS  \n# endif\n#endif\n#ifndef __END_DECLS\n# ifdef __cplusplus\n#  define __END_DECLS }\n# else\n#  define __END_DECLS  \n# endif\n#endif\n\n#ifndef __GNUC_PREREQ\n# if defined __GNUC__ && defined __GNUC_VERSION__\n# define __GNUC_PREREQ(maj, min) \\\n        ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))\n# else\n#  define __GNUC_PREREQ(maj, min) 0\n# endif\n#endif\n\n#ifndef __THROW\n# if defined __cplusplus && (__GNUC_PREREQ (2,8) || __clang_major__ >= 4)\n#  define __THROW       throw ()\n# else\n#  define __THROW\n# endif\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "isl9305.h",
+  "hash_id": "05c4c81c96bc87b9821b9a3d6a22e22c4f11ea2ff4254d280a83e689048abc17",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/isl9305.h",
+  "human_readable_source": " \n \n\n#ifndef __ISL9305_H\n#define __ISL9305_H\n\n#define ISL9305_DCD1 0\n#define ISL9305_DCD2 1\n#define ISL9305_LDO1 2\n#define ISL9305_LDO2 3\n\n#define ISL9305_MAX_REGULATOR ISL9305_LDO2\n\nstruct regulator_init_data;\n\nstruct isl9305_pdata {\n\tstruct regulator_init_data *init_data[ISL9305_MAX_REGULATOR + 1];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

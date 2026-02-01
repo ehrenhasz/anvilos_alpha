@@ -1,0 +1,9 @@
+{
+  "module_name": "radeon_device.h",
+  "hash_id": "10c6eb2ae700bf08aef75aa64f2758d75d4b0070d835585a66db3b4ab6cf7c62",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/radeon/radeon_device.h",
+  "human_readable_source": " \n\n#ifndef __RADEON_DEVICE_H__\n#define __RADEON_DEVICE_H__\n\nbool radeon_device_is_virtual(void);\n\n#endif                          \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

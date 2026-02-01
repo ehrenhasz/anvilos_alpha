@@ -1,0 +1,9 @@
+{
+  "module_name": "ak881x.h",
+  "hash_id": "c9e1d31f241e32a7667b24f34e553b39a593038a823b9c91b75a0124cfbbbab4",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/i2c/ak881x.h",
+  "human_readable_source": " \n \n\n#ifndef AK881X_H\n#define AK881X_H\n\n#define AK881X_IF_MODE_MASK\t(3 << 0)\n#define AK881X_IF_MODE_BT656\t(0 << 0)\n#define AK881X_IF_MODE_MASTER\t(1 << 0)\n#define AK881X_IF_MODE_SLAVE\t(2 << 0)\n#define AK881X_FIELD\t\t(1 << 2)\n#define AK881X_COMPONENT\t(1 << 3)\n\nstruct ak881x_pdata {\n\tunsigned long flags;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

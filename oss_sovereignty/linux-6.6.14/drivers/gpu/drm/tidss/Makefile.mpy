@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "0f85f3b3f5ba177c589eec892b10f4f5718ca6c28ca0b6935db50a3ee1591d13",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tidss/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\ntidss-y := tidss_crtc.o \\\n\ttidss_drv.o \\\n\ttidss_encoder.o \\\n\ttidss_kms.o \\\n\ttidss_irq.o \\\n\ttidss_plane.o \\\n\ttidss_scale_coefs.o \\\n\ttidss_dispc.o\n\nobj-$(CONFIG_DRM_TIDSS) += tidss.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

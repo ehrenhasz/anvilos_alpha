@@ -1,0 +1,9 @@
+{
+  "module_name": "altera_msgdma.h",
+  "hash_id": "799a99e436de282eb42bfcf965f89b4d726a237e9585843fa7635b6864b116b2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/altera/altera_msgdma.h",
+  "human_readable_source": " \n \n\n#ifndef __ALTERA_MSGDMA_H__\n#define __ALTERA_MSGDMA_H__\n\nvoid msgdma_reset(struct altera_tse_private *);\nvoid msgdma_enable_txirq(struct altera_tse_private *);\nvoid msgdma_enable_rxirq(struct altera_tse_private *);\nvoid msgdma_disable_rxirq(struct altera_tse_private *);\nvoid msgdma_disable_txirq(struct altera_tse_private *);\nvoid msgdma_clear_rxirq(struct altera_tse_private *);\nvoid msgdma_clear_txirq(struct altera_tse_private *);\nu32 msgdma_tx_completions(struct altera_tse_private *);\nvoid msgdma_add_rx_desc(struct altera_tse_private *, struct tse_buffer *);\nint msgdma_tx_buffer(struct altera_tse_private *, struct tse_buffer *);\nu32 msgdma_rx_status(struct altera_tse_private *);\nint msgdma_initialize(struct altera_tse_private *);\nvoid msgdma_uninitialize(struct altera_tse_private *);\nvoid msgdma_start_rxdma(struct altera_tse_private *);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

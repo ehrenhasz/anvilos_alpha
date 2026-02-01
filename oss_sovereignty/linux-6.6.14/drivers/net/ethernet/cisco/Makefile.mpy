@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ba6c53e0c5be0d472ac85849573b0939429019d0ea5a7be464c7c9d71b0251bd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/cisco/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Cisco device drivers.\n#\n\nobj-$(CONFIG_ENIC) += enic/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

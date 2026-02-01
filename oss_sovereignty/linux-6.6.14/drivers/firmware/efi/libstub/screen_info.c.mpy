@@ -1,0 +1,9 @@
+{
+  "module_name": "screen_info.c",
+  "hash_id": "8a93862e5f339c2538d06dc45b7a19f55b0a5f6448c502b5a523c7b69851d0bb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/efi/libstub/screen_info.c",
+  "human_readable_source": "\n\n#include <linux/efi.h>\n#include <linux/screen_info.h>\n\n#include <asm/efi.h>\n\n#include \"efistub.h\"\n\n \n\nstatic efi_guid_t screen_info_guid = LINUX_EFI_SCREEN_INFO_TABLE_GUID;\n\nstruct screen_info *__alloc_screen_info(void)\n{\n\tstruct screen_info *si;\n\tefi_status_t status;\n\n\tstatus = efi_bs_call(allocate_pool, EFI_ACPI_RECLAIM_MEMORY,\n\t\t\t     sizeof(*si), (void **)&si);\n\n\tif (status != EFI_SUCCESS)\n\t\treturn NULL;\n\n\tstatus = efi_bs_call(install_configuration_table,\n\t\t\t     &screen_info_guid, si);\n\tif (status == EFI_SUCCESS)\n\t\treturn si;\n\n\tefi_bs_call(free_pool, si);\n\treturn NULL;\n}\n\nvoid free_screen_info(struct screen_info *si)\n{\n\tif (!si)\n\t\treturn;\n\n\tefi_bs_call(install_configuration_table, &screen_info_guid, NULL);\n\tefi_bs_call(free_pool, si);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

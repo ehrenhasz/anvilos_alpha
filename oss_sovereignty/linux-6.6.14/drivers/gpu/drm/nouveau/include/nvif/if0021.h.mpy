@@ -1,0 +1,9 @@
+{
+  "module_name": "if0021.h",
+  "hash_id": "a36f36730b8b3df68d2a38a4f3b18ad1e597808b783e4a0c523f55b4f338940b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/if0021.h",
+  "human_readable_source": " \n#ifndef __NVIF_IF0021_H__\n#define __NVIF_IF0021_H__\n\nunion nvif_cgrp_args {\n\tstruct nvif_cgrp_v0 {\n\t\t__u8  version;\n\t\t__u8  namelen;\n\t\t__u8  runlist;\n\t\t__u8  pad03[3];\n\t\t__u16 cgid;\n\t\t__u64 vmm;\n\t\t__u8  name[];\n\t} v0;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

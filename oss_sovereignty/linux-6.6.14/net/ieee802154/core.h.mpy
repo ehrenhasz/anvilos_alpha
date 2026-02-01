@@ -1,0 +1,9 @@
+{
+  "module_name": "core.h",
+  "hash_id": "9bf544e592f2a08d6eae3cf6725b33d79e6fcc3f7f6eb4f96309366424f40600",
+  "original_prompt": "Ingested from linux-6.6.14/net/ieee802154/core.h",
+  "human_readable_source": " \n#ifndef __IEEE802154_CORE_H\n#define __IEEE802154_CORE_H\n\n#include <net/cfg802154.h>\n\nstruct cfg802154_registered_device {\n\tconst struct cfg802154_ops *ops;\n\tstruct list_head list;\n\n\t \n\tint wpan_phy_idx;\n\n\t \n\tint opencount;\n\twait_queue_head_t dev_wait;\n\n\t \n\tint num_running_ifaces;\n\n\t \n\tstruct list_head wpan_dev_list;\n\tint devlist_generation, wpan_dev_id;\n\n\t \n\tstruct wpan_phy wpan_phy __aligned(NETDEV_ALIGN);\n};\n\nstatic inline struct cfg802154_registered_device *\nwpan_phy_to_rdev(struct wpan_phy *wpan_phy)\n{\n\tBUG_ON(!wpan_phy);\n\treturn container_of(wpan_phy, struct cfg802154_registered_device,\n\t\t\t    wpan_phy);\n}\n\nextern struct list_head cfg802154_rdev_list;\nextern int cfg802154_rdev_list_generation;\n\nint cfg802154_switch_netns(struct cfg802154_registered_device *rdev,\n\t\t\t   struct net *net);\n \nvoid cfg802154_dev_free(struct cfg802154_registered_device *rdev);\nstruct cfg802154_registered_device *\ncfg802154_rdev_by_wpan_phy_idx(int wpan_phy_idx);\nstruct wpan_phy *wpan_phy_idx_to_wpan_phy(int wpan_phy_idx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

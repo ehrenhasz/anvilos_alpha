@@ -1,0 +1,9 @@
+{
+  "module_name": "table.h",
+  "hash_id": "72c838676dd65470fe39962d391982d24e57f041549ba144d8a2ef98c2aea931",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8192de/table.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL92DE_TABLE__H_\n#define __RTL92DE_TABLE__H_\n\n \n\n#define PHY_REG_2T_ARRAYLENGTH 380\nextern u32 rtl8192de_phy_reg_2tarray[PHY_REG_2T_ARRAYLENGTH];\n#define PHY_REG_ARRAY_PG_LENGTH 624\nextern u32 rtl8192de_phy_reg_array_pg[PHY_REG_ARRAY_PG_LENGTH];\n#define RADIOA_2T_ARRAYLENGTH 378\nextern u32 rtl8192de_radioa_2tarray[RADIOA_2T_ARRAYLENGTH];\n#define RADIOB_2T_ARRAYLENGTH 384\nextern u32 rtl8192de_radiob_2tarray[RADIOB_2T_ARRAYLENGTH];\n#define RADIOA_2T_INT_PA_ARRAYLENGTH 378\nextern u32 rtl8192de_radioa_2t_int_paarray[RADIOA_2T_INT_PA_ARRAYLENGTH];\n#define RADIOB_2T_INT_PA_ARRAYLENGTH 384\nextern u32 rtl8192de_radiob_2t_int_paarray[RADIOB_2T_INT_PA_ARRAYLENGTH];\n#define MAC_2T_ARRAYLENGTH 160\nextern u32 rtl8192de_mac_2tarray[MAC_2T_ARRAYLENGTH];\n#define AGCTAB_ARRAYLENGTH 386\nextern u32 rtl8192de_agctab_array[AGCTAB_ARRAYLENGTH];\n#define AGCTAB_5G_ARRAYLENGTH 194\nextern u32 rtl8192de_agctab_5garray[AGCTAB_5G_ARRAYLENGTH];\n#define AGCTAB_2G_ARRAYLENGTH 194\nextern u32 rtl8192de_agctab_2garray[AGCTAB_2G_ARRAYLENGTH];\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

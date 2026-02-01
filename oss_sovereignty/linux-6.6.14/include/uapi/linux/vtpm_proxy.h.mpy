@@ -1,0 +1,9 @@
+{
+  "module_name": "vtpm_proxy.h",
+  "hash_id": "2769f8be620cff382b317f8b1a96fa5095e5af1190a6406484afd1e83d7ed661",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/vtpm_proxy.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_VTPM_PROXY_H\n#define _UAPI_LINUX_VTPM_PROXY_H\n\n#include <linux/types.h>\n#include <linux/ioctl.h>\n\n \nenum vtpm_proxy_flags {\n\tVTPM_PROXY_FLAG_TPM2\t= 1,\n};\n\n \nstruct vtpm_proxy_new_dev {\n\t__u32 flags;          \n\t__u32 tpm_num;        \n\t__u32 fd;             \n\t__u32 major;          \n\t__u32 minor;          \n};\n\n#define VTPM_PROXY_IOC_NEW_DEV\t_IOWR(0xa1, 0x00, struct vtpm_proxy_new_dev)\n\n \n#define TPM2_CC_SET_LOCALITY\t0x20001000\n#define TPM_ORD_SET_LOCALITY\t0x20001000\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

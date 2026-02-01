@@ -1,0 +1,9 @@
+{
+  "module_name": "cmd_osdep.h",
+  "hash_id": "a92332334c73370eb4710039c95f25df75a4151ff819b581b97c4e3c2e7f0b2f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/cmd_osdep.h",
+  "human_readable_source": " \n \n#ifndef __CMD_OSDEP_H_\n#define __CMD_OSDEP_H_\n\n\nint rtw_init_cmd_priv(struct\tcmd_priv *pcmdpriv);\nint rtw_init_evt_priv(struct evt_priv *pevtpriv);\nextern void _rtw_free_evt_priv(struct\tevt_priv *pevtpriv);\nextern void _rtw_free_cmd_priv(struct\tcmd_priv *pcmdpriv);\nint _rtw_enqueue_cmd(struct __queue *queue, struct cmd_obj *obj);\nextern struct\tcmd_obj\t*_rtw_dequeue_cmd(struct __queue *queue);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

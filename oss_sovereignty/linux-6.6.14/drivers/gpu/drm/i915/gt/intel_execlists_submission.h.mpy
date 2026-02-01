@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_execlists_submission.h",
+  "hash_id": "ae57281767b4dd3a76dab4fe165f0a5476a3a2600f4d01936c077dbe6c81be05",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_execlists_submission.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_EXECLISTS_SUBMISSION_H__\n#define __INTEL_EXECLISTS_SUBMISSION_H__\n\n#include <linux/llist.h>\n#include <linux/types.h>\n\nstruct drm_printer;\n\nstruct i915_request;\nstruct intel_context;\nstruct intel_engine_cs;\nstruct intel_gt;\n\nenum {\n\tINTEL_CONTEXT_SCHEDULE_IN = 0,\n\tINTEL_CONTEXT_SCHEDULE_OUT,\n\tINTEL_CONTEXT_SCHEDULE_PREEMPTED,\n};\n\nint intel_execlists_submission_setup(struct intel_engine_cs *engine);\n\nvoid intel_execlists_show_requests(struct intel_engine_cs *engine,\n\t\t\t\t   struct drm_printer *m,\n\t\t\t\t   void (*show_request)(struct drm_printer *m,\n\t\t\t\t\t\t\tconst struct i915_request *rq,\n\t\t\t\t\t\t\tconst char *prefix,\n\t\t\t\t\t\t\tint indent),\n\t\t\t\t   unsigned int max);\n\nvoid intel_execlists_dump_active_requests(struct intel_engine_cs *engine,\n\t\t\t\t\t  struct i915_request *hung_rq,\n\t\t\t\t\t  struct drm_printer *m);\n\nbool\nintel_engine_in_execlists_submission_mode(const struct intel_engine_cs *engine);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "se-label.in.h",
+  "hash_id": "5176d57c359b8111bc06c246de9f208ddb884b4fb96a3704791231f3146c4d12",
+  "original_prompt": "Ingested from coreutils-9.4/lib/se-label.in.h",
+  "human_readable_source": " \n\n#ifndef SELINUX_LABEL_H\n#define SELINUX_LABEL_H\n\n \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n#include <selinux/selinux.h>\n#include <errno.h>\n\n_GL_INLINE_HEADER_BEGIN\n#ifndef SE_LABEL_INLINE\n# define SE_LABEL_INLINE _GL_INLINE\n#endif\n\n \n#ifndef _GL_ATTRIBUTE_MAYBE_UNUSED\n# if 0  \n#  define _GL_ATTRIBUTE_MAYBE_UNUSED [[__maybe_unused__]]\n# elif defined __GNUC__ || defined __clang__\n#  define _GL_ATTRIBUTE_MAYBE_UNUSED __attribute__ ((__unused__))\n# else\n#  define _GL_ATTRIBUTE_MAYBE_UNUSED\n# endif\n#endif\n\n#define SELABEL_CTX_FILE 0\n\nstruct selabel_handle;\n\nSE_LABEL_INLINE int\nselabel_lookup (_GL_ATTRIBUTE_MAYBE_UNUSED struct selabel_handle *hnd,\n                _GL_ATTRIBUTE_MAYBE_UNUSED char **context,\n                _GL_ATTRIBUTE_MAYBE_UNUSED char const *key,\n                _GL_ATTRIBUTE_MAYBE_UNUSED int type)\n{ errno = ENOTSUP; return -1; }\n\nSE_LABEL_INLINE struct selabel_handle *\nselabel_open (_GL_ATTRIBUTE_MAYBE_UNUSED int backend,\n              _GL_ATTRIBUTE_MAYBE_UNUSED struct selinux_opt *options,\n              _GL_ATTRIBUTE_MAYBE_UNUSED unsigned nopt)\n{ errno = ENOTSUP; return 0; }\n\nSE_LABEL_INLINE void\nselabel_close (_GL_ATTRIBUTE_MAYBE_UNUSED struct selabel_handle *hnd)\n{ errno = ENOTSUP; }\n\n_GL_INLINE_HEADER_END\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

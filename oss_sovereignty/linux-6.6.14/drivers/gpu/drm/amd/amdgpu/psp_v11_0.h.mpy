@@ -1,0 +1,9 @@
+{
+  "module_name": "psp_v11_0.h",
+  "hash_id": "bdf584a12f4fe8e532622f8642ed8835053e1aa8ce72c8c3c3a6ab7446b69812",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/psp_v11_0.h",
+  "human_readable_source": " \n#ifndef __PSP_V11_0_H__\n#define __PSP_V11_0_H__\n\n#include \"amdgpu_psp.h\"\n\nvoid psp_v11_0_set_psp_funcs(struct psp_context *psp);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

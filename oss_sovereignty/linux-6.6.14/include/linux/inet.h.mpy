@@ -1,0 +1,9 @@
+{
+  "module_name": "inet.h",
+  "hash_id": "d6bd849500ecbcb26b8ab733aa460c49d3ad67a4885b7f5954a9e375378aa1df",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/inet.h",
+  "human_readable_source": " \n \n#ifndef _LINUX_INET_H\n#define _LINUX_INET_H\n\n#include <linux/types.h>\n#include <net/net_namespace.h>\n#include <linux/socket.h>\n\n \n#define INET_ADDRSTRLEN\t\t(16)\n#define INET6_ADDRSTRLEN\t(48)\n\nextern __be32 in_aton(const char *str);\nextern int in4_pton(const char *src, int srclen, u8 *dst, int delim, const char **end);\nextern int in6_pton(const char *src, int srclen, u8 *dst, int delim, const char **end);\n\nextern int inet_pton_with_scope(struct net *net, unsigned short af,\n\t\tconst char *src, const char *port, struct sockaddr_storage *addr);\nextern bool inet_addr_is_any(struct sockaddr *addr);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

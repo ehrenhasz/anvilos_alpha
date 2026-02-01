@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9fdf0ac8af4f8f2eaaf958cd63bad84d6fae80d93172c46af52b13c1e02b3aaa",
+  "original_prompt": "Ingested from linux-6.6.14/samples/nitro_enclaves/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.\n\n# Enclave lifetime management support for Nitro Enclaves (NE) - ioctl sample\n# usage.\n\n.PHONY: all clean\n\nCFLAGS += -Wall\n\nall:\n\t$(CC) $(CFLAGS) -o ne_ioctl_sample ne_ioctl_sample.c -lpthread\n\nclean:\n\trm -f ne_ioctl_sample\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

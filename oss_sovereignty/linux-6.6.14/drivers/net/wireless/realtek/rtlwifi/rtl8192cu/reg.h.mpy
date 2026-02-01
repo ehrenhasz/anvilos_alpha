@@ -1,0 +1,9 @@
+{
+  "module_name": "reg.h",
+  "hash_id": "860d449b67340e7596518529d96b241917915ab6e17faba35d29f8d9da85e28d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/reg.h",
+  "human_readable_source": " \n \n\n#include \"../rtl8192ce/reg.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

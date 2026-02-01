@@ -1,0 +1,9 @@
+{
+  "module_name": "testptp.mk",
+  "hash_id": "40af7a0d604a66cf78e0a75defa956b6b58286b0f570afc1b2d135f4481b2676",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ptp/testptp.mk",
+  "human_readable_source": "# PTP 1588 clock support - User space test program\n#\n# Copyright (C) 2010 OMICRON electronics GmbH\n#\n#  This program is free software; you can redistribute it and/or modify\n#  it under the terms of the GNU General Public License as published by\n#  the Free Software Foundation; either version 2 of the License, or\n#  (at your option) any later version.\n#\n#  This program is distributed in the hope that it will be useful,\n#  but WITHOUT ANY WARRANTY; without even the implied warranty of\n#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n#  GNU General Public License for more details.\n#\n#  You should have received a copy of the GNU General Public License\n#  along with this program; if not, write to the Free Software\n#  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.\n\nCC        = $(CROSS_COMPILE)gcc\nINC       = -I$(KBUILD_OUTPUT)/usr/include\nCFLAGS    = -Wall $(INC)\nLDLIBS    = -lrt\nPROGS     = testptp\n\nall: $(PROGS)\n\ntestptp: testptp.o\n\nclean:\n\trm -f testptp.o\n\ndistclean: clean\n\trm -f $(PROGS)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

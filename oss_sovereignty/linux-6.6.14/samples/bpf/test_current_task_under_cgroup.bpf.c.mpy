@@ -1,0 +1,9 @@
+{
+  "module_name": "test_current_task_under_cgroup.bpf.c",
+  "hash_id": "50affaddb91da673ff8689a5f76846a06b9f936f3d2e52476fc2ed65100f1cad",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/test_current_task_under_cgroup.bpf.c",
+  "human_readable_source": " \n\n#include \"vmlinux.h\"\n#include <linux/version.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n#include <bpf/bpf_core_read.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_CGROUP_ARRAY);\n\t__uint(key_size, sizeof(u32));\n\t__uint(value_size, sizeof(u32));\n\t__uint(max_entries, 1);\n} cgroup_map SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__type(key, u32);\n\t__type(value, u64);\n\t__uint(max_entries, 1);\n} perf_map SEC(\".maps\");\n\n \nSEC(\"ksyscall/sync\")\nint BPF_KSYSCALL(bpf_prog1)\n{\n\tu64 pid = bpf_get_current_pid_tgid();\n\tint idx = 0;\n\n\tif (!bpf_current_task_under_cgroup(&cgroup_map, 0))\n\t\treturn 0;\n\n\tbpf_map_update_elem(&perf_map, &idx, &pid, BPF_ANY);\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\nu32 _version SEC(\"version\") = LINUX_VERSION_CODE;\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

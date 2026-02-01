@@ -1,0 +1,9 @@
+{
+  "module_name": "unistd.h",
+  "hash_id": "bdeebdc3732e4cdc9772858a8cbd14b2059c75e938fb94fa3fe580d67269f5d6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/arch/arc/include/uapi/asm/unistd.h",
+  "human_readable_source": " \n \n\n \n\n \n#if !defined(_UAPI_ASM_ARC_UNISTD_H) || defined(__SYSCALL)\n#define _UAPI_ASM_ARC_UNISTD_H\n\n#define __ARCH_WANT_RENAMEAT\n#define __ARCH_WANT_STAT64\n#define __ARCH_WANT_SET_GET_RLIMIT\n#define __ARCH_WANT_SYS_EXECVE\n#define __ARCH_WANT_SYS_CLONE\n#define __ARCH_WANT_SYS_VFORK\n#define __ARCH_WANT_SYS_FORK\n#define __ARCH_WANT_TIME32_SYSCALLS\n\n#define sys_mmap2 sys_mmap_pgoff\n\n#include <asm-generic/unistd.h>\n\n#define NR_syscalls\t__NR_syscalls\n\n \n#define __NR_sysfs\t\t(__NR_arch_specific_syscall + 3)\n\n \n#define __NR_cacheflush\t\t(__NR_arch_specific_syscall + 0)\n#define __NR_arc_settls\t\t(__NR_arch_specific_syscall + 1)\n#define __NR_arc_gettls\t\t(__NR_arch_specific_syscall + 2)\n#define __NR_arc_usr_cmpxchg\t(__NR_arch_specific_syscall + 4)\n\n__SYSCALL(__NR_cacheflush, sys_cacheflush)\n__SYSCALL(__NR_arc_settls, sys_arc_settls)\n__SYSCALL(__NR_arc_gettls, sys_arc_gettls)\n__SYSCALL(__NR_arc_usr_cmpxchg, sys_arc_usr_cmpxchg)\n__SYSCALL(__NR_sysfs, sys_sysfs)\n\n#undef __SYSCALL\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

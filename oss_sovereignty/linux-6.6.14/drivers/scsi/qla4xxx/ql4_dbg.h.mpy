@@ -1,0 +1,9 @@
+{
+  "module_name": "ql4_dbg.h",
+  "hash_id": "4ad9f36ed07e984a1be32f31d2fb5b6e983d57a39198b72656c942379fe57c3e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/qla4xxx/ql4_dbg.h",
+  "human_readable_source": " \n \n\n \n \t\t\t \n \t\t \n \n \n \n \n\n#define QL_DEBUG_LEVEL_2\t \n#if defined(QL_DEBUG)\n#define DEBUG(x)   do {x;} while (0);\n#else\n#define DEBUG(x)\tdo {} while (0);\n#endif\n\n#if defined(QL_DEBUG_LEVEL_2)\n#define DEBUG2(x)      do {if(ql4xextended_error_logging == 2) x;} while (0);\n#define DEBUG2_3(x)   do {x;} while (0);\n#else\t\t\t\t \n#define DEBUG2(x)\tdo {} while (0);\n#endif\t\t\t\t \n\n#if defined(QL_DEBUG_LEVEL_3)\n#define DEBUG3(x)      do {if(ql4xextended_error_logging == 3) x;} while (0);\n#else\t\t\t\t \n#define DEBUG3(x)\tdo {} while (0);\n#if !defined(QL_DEBUG_LEVEL_2)\n#define DEBUG2_3(x)\tdo {} while (0);\n#endif\t\t\t\t \n#endif\t\t\t\t \n#if defined(QL_DEBUG_LEVEL_4)\n#define DEBUG4(x)\tdo {x;} while (0);\n#else\t\t\t\t \n#define DEBUG4(x)\tdo {} while (0);\n#endif\t\t\t\t \n\n#if defined(QL_DEBUG_LEVEL_5)\n#define DEBUG5(x)\tdo {x;} while (0);\n#else\t\t\t\t \n#define DEBUG5(x)\tdo {} while (0);\n#endif\t\t\t\t \n\n#if defined(QL_DEBUG_LEVEL_7)\n#define DEBUG7(x)\tdo {x; } while (0)\n#else\t\t\t\t \n#define DEBUG7(x)\tdo {} while (0)\n#endif\t\t\t\t \n\n#if defined(QL_DEBUG_LEVEL_9)\n#define DEBUG9(x)\tdo {x;} while (0);\n#else\t\t\t\t \n#define DEBUG9(x)\tdo {} while (0);\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

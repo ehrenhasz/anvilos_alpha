@@ -1,0 +1,9 @@
+{
+  "module_name": "sun6i_csi_bridge.h",
+  "hash_id": "fe9f716ad4f1f2e19859723886bb33c34f5e06d4c893d160cedba45200ab1370",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi_bridge.h",
+  "human_readable_source": " \n \n\n#ifndef _SUN6I_CSI_BRIDGE_H_\n#define _SUN6I_CSI_BRIDGE_H_\n\n#include <media/v4l2-device.h>\n#include <media/v4l2-fwnode.h>\n\n#define SUN6I_CSI_BRIDGE_NAME\t\"sun6i-csi-bridge\"\n\nenum sun6i_csi_bridge_pad {\n\tSUN6I_CSI_BRIDGE_PAD_SINK\t= 0,\n\tSUN6I_CSI_BRIDGE_PAD_SOURCE\t= 1,\n\tSUN6I_CSI_BRIDGE_PAD_COUNT\t= 2,\n};\n\nstruct sun6i_csi_device;\n\nstruct sun6i_csi_bridge_format {\n\tu32\tmbus_code;\n\tu8\tinput_format;\n\tu8\tinput_yuv_seq;\n\tu8\tinput_yuv_seq_invert;\n};\n\nstruct sun6i_csi_bridge_source {\n\tstruct v4l2_subdev\t\t*subdev;\n\tstruct v4l2_fwnode_endpoint\tendpoint;\n\tbool\t\t\t\texpected;\n};\n\nstruct sun6i_csi_bridge_async_subdev {\n\tstruct v4l2_async_connection\tasync_subdev;\n\tstruct sun6i_csi_bridge_source\t*source;\n};\n\nstruct sun6i_csi_bridge {\n\tstruct v4l2_subdev\t\tsubdev;\n\tstruct v4l2_async_notifier\tnotifier;\n\tstruct media_pad\t\tpads[2];\n\tstruct v4l2_mbus_framefmt\tmbus_format;\n\tstruct mutex\t\t\tlock;  \n\n\tstruct sun6i_csi_bridge_source\tsource_parallel;\n\tstruct sun6i_csi_bridge_source\tsource_mipi_csi2;\n};\n\n \n\nvoid sun6i_csi_bridge_dimensions(struct sun6i_csi_device *csi_dev,\n\t\t\t\t unsigned int *width, unsigned int *height);\nvoid sun6i_csi_bridge_format(struct sun6i_csi_device *csi_dev,\n\t\t\t     u32 *mbus_code, u32 *field);\n\n \n\nconst struct sun6i_csi_bridge_format *\nsun6i_csi_bridge_format_find(u32 mbus_code);\n\n \n\nint sun6i_csi_bridge_setup(struct sun6i_csi_device *csi_dev);\nvoid sun6i_csi_bridge_cleanup(struct sun6i_csi_device *csi_dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

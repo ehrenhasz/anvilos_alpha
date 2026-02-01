@@ -1,0 +1,9 @@
+{
+  "module_name": "pthread_mutex_timedlock.c",
+  "hash_id": "f906e2ad73b56cc6806ea3058d13e6dcf76e428a448de8d68368d03894586e84",
+  "original_prompt": "Ingested from coreutils-9.4/lib/pthread_mutex_timedlock.c",
+  "human_readable_source": " \n#include <pthread.h>\n\n#include <errno.h>\n#include <limits.h>\n#include <sys/time.h>\n#include <time.h>\n\n#ifndef MIN\n# define MIN(a, b) ((a) < (b) ? (a) : (b))\n#endif\n\nint\npthread_mutex_timedlock (pthread_mutex_t *mutex, const struct timespec *abstime)\n{\n   \n   \n  for (;;)\n    {\n      int err;\n      struct timeval currtime;\n      unsigned long remaining;\n\n      err = pthread_mutex_trylock (mutex);\n      if (err != EBUSY)\n        return err;\n\n      gettimeofday (&currtime, NULL);\n\n      if (currtime.tv_sec > abstime->tv_sec)\n        remaining = 0;\n      else\n        {\n          unsigned long seconds = abstime->tv_sec - currtime.tv_sec;\n          remaining = seconds * 1000000000;\n          if (remaining / 1000000000 != seconds)  \n            remaining = ULONG_MAX;\n          else\n            {\n              long nanoseconds =\n                abstime->tv_nsec - currtime.tv_usec * 1000;\n              if (nanoseconds >= 0)\n                {\n                  remaining += nanoseconds;\n                  if (remaining < nanoseconds)  \n                    remaining = ULONG_MAX;\n                }\n              else\n                {\n                  if (remaining >= - nanoseconds)\n                    remaining -= (- nanoseconds);\n                  else\n                    remaining = 0;\n                }\n            }\n        }\n      if (remaining == 0)\n        return ETIMEDOUT;\n\n       \n      struct timespec duration =\n        {\n          .tv_sec = 0,\n          .tv_nsec = MIN (1000000, remaining)\n        };\n      nanosleep (&duration, NULL);\n    }\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

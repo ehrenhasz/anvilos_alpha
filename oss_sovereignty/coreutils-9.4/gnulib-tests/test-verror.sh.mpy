@@ -1,0 +1,9 @@
+{
+  "module_name": "test-verror.sh",
+  "hash_id": "ecb049ce404915559bf00000d0dd4a6471b60355e933a33967218539e086fc5c",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-verror.sh",
+  "human_readable_source": "#!/bin/sh\n# Test of the 'verror' module.\n\n. \"${srcdir=.}/init.sh\"; path_prepend_ .\n\n${CHECKER} test-verror${EXEEXT} > out 2> err\n# Verify the exit code.\ncase $? in\n  4) ;;\n  *) Exit 1;;\nesac\n\n# Normalize the stderr output on Windows platforms.\ntr -d '\\015' < err | sed 's,.*test-verror[.ex]*:,test-verror:,' > err2 || Exit 1\n\n# Verify the stderr output.\ncompare - err2 <<\\EOF || Exit 1\ntest-verror: bummer\ntest-verror: Zonk 123 is too large\ntest-verror: Pok\u00e9mon started\ntest-verror:d1/foo.c:10: invalid blub\ntest-verror:d1/foo.c:10: invalid blarn\ntest-verror:d1/foo.c:10: unsupported glink\ntest-verror:d1/foo.c:13: invalid brump\ntest-verror:d2/foo.c:13: unsupported flinge\nhammer\nboing 123 is too large\nd2/bar.c:11: bark too loud\ntest-verror: can't steal: Permission denied\ntest-verror: fatal error\nEOF\n\n# Verify the stdout output.\ntest -s out && Exit 1\n\nExit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

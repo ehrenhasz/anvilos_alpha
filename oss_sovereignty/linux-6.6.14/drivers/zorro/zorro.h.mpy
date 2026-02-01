@@ -1,0 +1,9 @@
+{
+  "module_name": "zorro.h",
+  "hash_id": "27533b1d8b1e1f0a108b6b0937fcbbdd91a9166bcd7121a420dc64d7459ae3de",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/zorro/zorro.h",
+  "human_readable_source": " \n\n     \n\nextern struct bus_type zorro_bus_type;\n\n\n#ifdef CONFIG_ZORRO_NAMES\nextern void zorro_name_device(struct zorro_dev *z);\n#else\nstatic inline void zorro_name_device(struct zorro_dev *dev) { }\n#endif\n\nextern const struct attribute_group *zorro_device_attribute_groups[];\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

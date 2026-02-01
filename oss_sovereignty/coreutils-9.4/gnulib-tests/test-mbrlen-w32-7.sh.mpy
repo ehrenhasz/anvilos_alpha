@@ -1,0 +1,9 @@
+{
+  "module_name": "test-mbrlen-w32-7.sh",
+  "hash_id": "21ff1b57c72e706ec685202c394309d3d822c75cbbd9b9b31c0482f64af101fc",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-mbrlen-w32-7.sh",
+  "human_readable_source": "#!/bin/sh\n\n# Test a CP936 locale.\n${CHECKER} ./test-mbrlen-w32${EXEEXT} Chinese_China 936\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

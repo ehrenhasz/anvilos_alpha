@@ -1,0 +1,9 @@
+{
+  "module_name": "trampoline.S",
+  "hash_id": "e99746b686f37b3866fbf19645a536f909167bfe981becf93fc6a055e0fd9d9d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/bti/trampoline.S",
+  "human_readable_source": " \n \n\n#include \"assembler.h\"\n\nstartfn call_using_br_x0\n\tbti\tc\n\tbr\tx0\nendfn\n\nstartfn call_using_br_x16\n\tbti\tc\n\tmov\tx16, x0\n\tbr\tx16\nendfn\n\nstartfn call_using_blr\n\tpaciasp\n\tstp\tx29, x30, [sp, #-16]!\n\tblr\tx0\n\tldp\tx29, x30, [sp], #16\n\tautiasp\n\tret\nendfn\n\nemit_aarch64_feature_1_and\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

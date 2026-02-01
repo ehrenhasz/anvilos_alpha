@@ -1,0 +1,9 @@
+{
+  "module_name": "pinctrl-tegra-xusb.h",
+  "hash_id": "e5640e23ba4171ab7cfd27f4cf93f31b3fe43e6a963cd205bb4726051aaabbcf",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/pinctrl/pinctrl-tegra-xusb.h",
+  "human_readable_source": " \n#ifndef _DT_BINDINGS_PINCTRL_TEGRA_XUSB_H\n#define _DT_BINDINGS_PINCTRL_TEGRA_XUSB_H 1\n\n#define TEGRA_XUSB_PADCTL_PCIE 0\n#define TEGRA_XUSB_PADCTL_SATA 1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

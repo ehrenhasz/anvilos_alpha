@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pcode.h",
+  "hash_id": "62337d9ac57450d49da210e53b0cb4d76df79064ae6796cfe2dee302e3d39fca",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/intel_pcode.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_PCODE_H_\n#define _INTEL_PCODE_H_\n\n#include <linux/types.h>\n\nstruct intel_uncore;\n\nint snb_pcode_read(struct intel_uncore *uncore, u32 mbox, u32 *val, u32 *val1);\nint snb_pcode_write_timeout(struct intel_uncore *uncore, u32 mbox, u32 val,\n\t\t\t    int fast_timeout_us, int slow_timeout_ms);\n#define snb_pcode_write(uncore, mbox, val) \\\n\tsnb_pcode_write_timeout(uncore, mbox, val, 500, 0)\n\nint skl_pcode_request(struct intel_uncore *uncore, u32 mbox, u32 request,\n\t\t      u32 reply_mask, u32 reply, int timeout_base_ms);\n\nint intel_pcode_init(struct intel_uncore *uncore);\n\n \nint snb_pcode_read_p(struct intel_uncore *uncore, u32 mbcmd, u32 p1, u32 p2, u32 *val);\nint snb_pcode_write_p(struct intel_uncore *uncore, u32 mbcmd, u32 p1, u32 p2, u32 val);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

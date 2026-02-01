@@ -1,0 +1,9 @@
+{
+  "module_name": "msm_iommu.h",
+  "hash_id": "0bce65232b4732a79c2e3e2efcd6961594c170fb6adc9acd88bd613165be9b88",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/msm_iommu.h",
+  "human_readable_source": " \n \n\n#ifndef MSM_IOMMU_H\n#define MSM_IOMMU_H\n\n#include <linux/interrupt.h>\n#include <linux/iommu.h>\n#include <linux/clk.h>\n\n \n#define MSM_IOMMU_ATTR_NON_SH\t\t0x0\n#define MSM_IOMMU_ATTR_SH\t\t0x4\n\n \n#define MSM_IOMMU_ATTR_NONCACHED\t0x0\n#define MSM_IOMMU_ATTR_CACHED_WB_WA\t0x1\n#define MSM_IOMMU_ATTR_CACHED_WB_NWA\t0x2\n#define MSM_IOMMU_ATTR_CACHED_WT\t0x3\n\n \n#define MSM_IOMMU_CP_MASK\t\t0x03\n\n \n#define MAX_NUM_MIDS\t32\n\n \n#define IOMMU_MAX_CBS\t128\n\n \nstruct msm_iommu_dev {\n\tvoid __iomem *base;\n\tint ncb;\n\tstruct device *dev;\n\tint irq;\n\tstruct clk *clk;\n\tstruct clk *pclk;\n\tstruct list_head dev_node;\n\tstruct list_head dom_node;\n\tstruct list_head ctx_list;\n\tDECLARE_BITMAP(context_map, IOMMU_MAX_CBS);\n\n\tstruct iommu_device iommu;\n};\n\n \nstruct msm_iommu_ctx_dev {\n\tstruct device_node *of_node;\n\tint num;\n\tint mids[MAX_NUM_MIDS];\n\tint num_mids;\n\tstruct list_head list;\n};\n\n \nirqreturn_t msm_iommu_fault_handler(int irq, void *dev_id);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

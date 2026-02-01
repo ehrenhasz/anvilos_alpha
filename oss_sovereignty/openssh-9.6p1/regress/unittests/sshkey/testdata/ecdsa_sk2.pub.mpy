@@ -1,0 +1,9 @@
+{
+  "module_name": "ecdsa_sk2.pub",
+  "hash_id": "fdd8a69a2faa2667fd0208d68c9a1e2bd02837266d1f4569b006aa045c69f6f0",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshkey/testdata/ecdsa_sk2.pub",
+  "human_readable_source": "sk-ecdsa-sha2-nistp256@openssh.com AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTYAAABBBJOX5JHqtOCU5mZxCQK0nc936VaKd7Oj+AeTihl1lxNCyYRizvroGVYa4HYHPepBEtrpxew/7gr2QCMAnvN2gVQAAAAEc3NoOg== ECDSA-SK test key #2\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

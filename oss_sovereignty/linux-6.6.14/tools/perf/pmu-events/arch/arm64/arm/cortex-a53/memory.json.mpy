@@ -1,0 +1,9 @@
+{
+  "module_name": "memory.json",
+  "hash_id": "a28e2e50a894c32f286101f514df380bd6723a859701213dd2249b75c20fbced",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a53/memory.json",
+  "human_readable_source": "[\n  {\n    \"EventCode\": \"0xC0\",\n    \"EventName\": \"EXT_MEM_REQ\",\n    \"BriefDescription\": \"External memory request\"\n  },\n  {\n    \"EventCode\": \"0xC1\",\n    \"EventName\": \"EXT_MEM_REQ_NC\",\n    \"BriefDescription\": \"Non-cacheable external memory request\"\n  }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

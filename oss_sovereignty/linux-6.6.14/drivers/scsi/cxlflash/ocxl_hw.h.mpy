@@ -1,0 +1,9 @@
+{
+  "module_name": "ocxl_hw.h",
+  "hash_id": "5616418704ad65ebfd2c7122f57ab8cbc35dd4d1180278737de205677245b982",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/cxlflash/ocxl_hw.h",
+  "human_readable_source": " \n \n\n#define OCXL_MAX_IRQS\t4\t \n\nstruct ocxlflash_irqs {\n\tint hwirq;\n\tu32 virq;\n\tvoid __iomem *vtrig;\n};\n\n \nstruct ocxl_hw_afu {\n\tstruct ocxlflash_context *ocxl_ctx;  \n\tstruct pci_dev *pdev;\t\t \n\tstruct device *dev;\t\t \n\tbool perst_same_image;\t\t \n\n\tstruct ocxl_fn_config fcfg;\t \n\tstruct ocxl_afu_config acfg;\t \n\n\tint fn_actag_base;\t\t \n\tint fn_actag_enabled;\t\t \n\tint afu_actag_base;\t\t \n\tint afu_actag_enabled;\t\t \n\n\tphys_addr_t ppmmio_phys;\t \n\tphys_addr_t gmmio_phys;\t\t \n\tvoid __iomem *gmmio_virt;\t \n\n\tvoid *link_token;\t\t \n\tstruct idr idr;\t\t\t \n\tint max_pasid;\t\t\t \n\tbool is_present;\t\t \n};\n\nenum ocxlflash_ctx_state {\n\tCLOSED,\n\tOPENED,\n\tSTARTED\n};\n\nstruct ocxlflash_context {\n\tstruct ocxl_hw_afu *hw_afu;\t \n\tstruct address_space *mapping;\t \n\tbool master;\t\t\t \n\tint pe;\t\t\t\t \n\n\tphys_addr_t psn_phys;\t\t \n\tu64 psn_size;\t\t\t \n\n\tspinlock_t slock;\t\t \n\twait_queue_head_t wq;\t\t \n\tstruct mutex state_mutex;\t \n\tenum ocxlflash_ctx_state state;\t \n\n\tstruct ocxlflash_irqs *irqs;\t \n\tint num_irqs;\t\t\t \n\tbool pending_irq;\t\t \n\tulong irq_bitmap;\t\t \n\n\tu64 fault_addr;\t\t\t \n\tu64 fault_dsisr;\t\t \n\tbool pending_fault;\t\t \n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

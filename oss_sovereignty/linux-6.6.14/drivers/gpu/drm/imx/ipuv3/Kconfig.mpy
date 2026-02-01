@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "97f37ff8b1819bd1a895452311ca5dc1ba9fad5d7c0d00bc48f6520e604652c9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/imx/ipuv3/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_IMX\n\ttristate \"DRM Support for Freescale i.MX\"\n\tselect DRM_KMS_HELPER\n\tselect VIDEOMODE_HELPERS\n\tselect DRM_GEM_DMA_HELPER\n\tdepends on DRM && (ARCH_MXC || COMPILE_TEST)\n\tdepends on IMX_IPUV3_CORE\n\thelp\n\t  enable i.MX graphics support\n\nconfig DRM_IMX_PARALLEL_DISPLAY\n\ttristate \"Support for parallel displays\"\n\tselect DRM_PANEL\n\tdepends on DRM_IMX\n\tselect VIDEOMODE_HELPERS\n\nconfig DRM_IMX_TVE\n\ttristate \"Support for TV and VGA displays\"\n\tdepends on DRM_IMX\n\tdepends on COMMON_CLK\n\tselect REGMAP_MMIO\n\thelp\n\t  Choose this to enable the internal Television Encoder (TVe)\n\t  found on i.MX53 processors.\n\nconfig DRM_IMX_LDB\n\ttristate \"Support for LVDS displays\"\n\tdepends on DRM_IMX && MFD_SYSCON\n\tdepends on COMMON_CLK\n\tselect DRM_PANEL\n\thelp\n\t  Choose this to enable the internal LVDS Display Bridge (LDB)\n\t  found on i.MX53 and i.MX6 processors.\n\nconfig DRM_IMX_HDMI\n\ttristate \"Freescale i.MX DRM HDMI\"\n\tselect DRM_DW_HDMI\n\tdepends on DRM_IMX && OF\n\thelp\n\t  Choose this if you want to use HDMI on i.MX6.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ce431936c0a096f28de150b94d0911dc3df5c8e15370c72d909a258de700abf0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/freescale/fs_enet/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Freescale Ethernet controllers\n#\n\nobj-$(CONFIG_FS_ENET) += fs_enet.o\n\nfs_enet-$(CONFIG_FS_ENET_HAS_SCC) += mac-scc.o\nfs_enet-$(CONFIG_FS_ENET_HAS_FEC) += mac-fec.o\nfs_enet-$(CONFIG_FS_ENET_HAS_FCC) += mac-fcc.o\n\nobj-$(CONFIG_FS_ENET_MDIO_FEC) += mii-fec.o\nobj-$(CONFIG_FS_ENET_MDIO_FCC) += mii-bitbang.o\n\nfs_enet-objs := fs_enet-main.o $(fs_enet-m)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

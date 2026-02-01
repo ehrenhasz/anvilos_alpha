@@ -1,0 +1,9 @@
+{
+  "module_name": "test_sockmap_update.c",
+  "hash_id": "07a074667768dddc15874a18b72d04618c4ffb2b9b8a1182dd5661eafe5b0bc4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_sockmap_update.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SOCKMAP);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} src SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SOCKMAP);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} dst_sock_map SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SOCKHASH);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} dst_sock_hash SEC(\".maps\");\n\nSEC(\"tc\")\nint copy_sock_map(void *ctx)\n{\n\tstruct bpf_sock *sk;\n\tbool failed = false;\n\t__u32 key = 0;\n\n\tsk = bpf_map_lookup_elem(&src, &key);\n\tif (!sk)\n\t\treturn SK_DROP;\n\n\tif (bpf_map_update_elem(&dst_sock_map, &key, sk, 0))\n\t\tfailed = true;\n\n\tif (bpf_map_update_elem(&dst_sock_hash, &key, sk, 0))\n\t\tfailed = true;\n\n\tbpf_sk_release(sk);\n\treturn failed ? SK_DROP : SK_PASS;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

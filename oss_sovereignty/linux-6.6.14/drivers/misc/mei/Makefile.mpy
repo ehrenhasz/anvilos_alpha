@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "577df557a8cd52dac33879ce3eab51dd3b3d4c4d3f4889fa6a41244a054ad3f7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/mei/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Copyright (c) 2010-2019, Intel Corporation. All rights reserved.\n# Makefile - Intel Management Engine Interface (Intel MEI) Linux driver\n#\nobj-$(CONFIG_INTEL_MEI) += mei.o\nmei-objs := init.o\nmei-objs += hbm.o\nmei-objs += interrupt.o\nmei-objs += client.o\nmei-objs += main.o\nmei-objs += dma-ring.o\nmei-objs += bus.o\nmei-objs += bus-fixup.o\nmei-$(CONFIG_DEBUG_FS) += debugfs.o\n\nobj-$(CONFIG_INTEL_MEI_ME) += mei-me.o\nmei-me-objs := pci-me.o\nmei-me-objs += hw-me.o\n\nobj-$(CONFIG_INTEL_MEI_GSC) += mei-gsc.o\nmei-gsc-objs := gsc-me.o\n\nobj-$(CONFIG_INTEL_MEI_TXE) += mei-txe.o\nmei-txe-objs := pci-txe.o\nmei-txe-objs += hw-txe.o\n\nmei-$(CONFIG_EVENT_TRACING) += mei-trace.o\nCFLAGS_mei-trace.o = -I$(src)\n\nobj-$(CONFIG_INTEL_MEI_HDCP) += hdcp/\nobj-$(CONFIG_INTEL_MEI_PXP) += pxp/\nobj-$(CONFIG_INTEL_MEI_GSC_PROXY) += gsc_proxy/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

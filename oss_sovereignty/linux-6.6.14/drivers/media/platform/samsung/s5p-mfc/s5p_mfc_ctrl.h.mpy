@@ -1,0 +1,9 @@
+{
+  "module_name": "s5p_mfc_ctrl.h",
+  "hash_id": "4b38128475bfd6969582bfa6b9df53d059f9d76684e77aebb7017906b0cb809c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/samsung/s5p-mfc/s5p_mfc_ctrl.h",
+  "human_readable_source": " \n \n\n#ifndef S5P_MFC_CTRL_H\n#define S5P_MFC_CTRL_H\n\n#include \"s5p_mfc_common.h\"\n\nint s5p_mfc_release_firmware(struct s5p_mfc_dev *dev);\nint s5p_mfc_alloc_firmware(struct s5p_mfc_dev *dev);\nint s5p_mfc_load_firmware(struct s5p_mfc_dev *dev);\n\nint s5p_mfc_init_hw(struct s5p_mfc_dev *dev);\nvoid s5p_mfc_deinit_hw(struct s5p_mfc_dev *dev);\n\nint s5p_mfc_sleep(struct s5p_mfc_dev *dev);\nint s5p_mfc_wakeup(struct s5p_mfc_dev *dev);\n\nint s5p_mfc_reset(struct s5p_mfc_dev *dev);\n\nint s5p_mfc_open_mfc_inst(struct s5p_mfc_dev *dev, struct s5p_mfc_ctx *ctx);\nvoid s5p_mfc_close_mfc_inst(struct s5p_mfc_dev *dev, struct s5p_mfc_ctx *ctx);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

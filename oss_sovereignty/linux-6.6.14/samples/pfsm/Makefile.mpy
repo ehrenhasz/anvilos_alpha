@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "836604406204fee1d18f3828a9f30d453f09e220187b264100de66cf27310131",
+  "original_prompt": "Ingested from linux-6.6.14/samples/pfsm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nuserprogs-always-y += pfsm-wakeup\n\nuserccflags += -I usr/include\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

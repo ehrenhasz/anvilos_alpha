@@ -1,0 +1,9 @@
+{
+  "module_name": "utils_header.h",
+  "hash_id": "8538c5a09483ed329cc2c38b7b85b5d358a8d7f23babb726636ec1ef147fced8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/powerpc/util/utils_header.h",
+  "human_readable_source": " \n#ifndef __PERF_UTIL_HEADER_H\n#define __PERF_UTIL_HEADER_H\n\n#include <linux/stringify.h>\n\n#define mfspr(rn)       ({unsigned long rval; \\\n\t\t\tasm volatile(\"mfspr %0,\" __stringify(rn) \\\n\t\t\t\t: \"=r\" (rval)); rval; })\n\n#define SPRN_PVR        0x11F    \n#define PVR_VER(pvr)    (((pvr) >>  16) & 0xFFFF)  \n#define PVR_REV(pvr)    (((pvr) >>   0) & 0xFFFF)  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

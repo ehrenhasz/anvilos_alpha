@@ -1,0 +1,9 @@
+{
+  "module_name": "textsearch_fsm.h",
+  "hash_id": "baf007f188bd47b3f73d4fc846f0ce624b0620a21f87c1710abc4b947882b00b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/textsearch_fsm.h",
+  "human_readable_source": " \n#ifndef __LINUX_TEXTSEARCH_FSM_H\n#define __LINUX_TEXTSEARCH_FSM_H\n\n#include <linux/types.h>\n\nenum {\n\tTS_FSM_SPECIFIC,\t \n\tTS_FSM_WILDCARD,\t \n\tTS_FSM_DIGIT,\t\t \n\tTS_FSM_XDIGIT,\t\t \n\tTS_FSM_PRINT,\t\t \n\tTS_FSM_ALPHA,\t\t \n\tTS_FSM_ALNUM,\t\t \n\tTS_FSM_ASCII,\t\t \n\tTS_FSM_CNTRL,\t\t \n\tTS_FSM_GRAPH,\t\t \n\tTS_FSM_LOWER,\t\t \n\tTS_FSM_UPPER,\t\t \n\tTS_FSM_PUNCT,\t\t \n\tTS_FSM_SPACE,\t\t \n\t__TS_FSM_TYPE_MAX,\n};\n#define TS_FSM_TYPE_MAX (__TS_FSM_TYPE_MAX - 1)\n\nenum {\n\tTS_FSM_SINGLE,\t\t \n\tTS_FSM_PERHAPS,\t\t \n\tTS_FSM_ANY,\t\t \n\tTS_FSM_MULTI,\t\t \n\tTS_FSM_HEAD_IGNORE,\t \n\t__TS_FSM_RECUR_MAX,\n};\n#define TS_FSM_RECUR_MAX (__TS_FSM_RECUR_MAX - 1)\n\n \nstruct ts_fsm_token\n{\n\t__u16\t\ttype;\n\t__u8\t\trecur;\n\t__u8\t\tvalue;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

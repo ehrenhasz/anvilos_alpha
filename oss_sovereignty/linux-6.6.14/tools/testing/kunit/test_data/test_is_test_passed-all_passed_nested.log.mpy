@@ -1,0 +1,9 @@
+{
+  "module_name": "test_is_test_passed-all_passed_nested.log",
+  "hash_id": "7c4eaf1d33ade7ca106aa735c0b532b064c42befb4ecb12fa3e40f43447eb9b6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/test_data/test_is_test_passed-all_passed_nested.log",
+  "human_readable_source": "TAP version 14\n1..2\n\t# Subtest: sysctl_test\n\t1..4\n\t# sysctl_test_dointvec_null_tbl_data: sysctl_test_dointvec_null_tbl_data passed\n\tok 1 - sysctl_test_dointvec_null_tbl_data\n\t\t# Subtest: example\n\t\t1..2\n\tinit_suite\n\t\t# example_simple_test: initializing\n\t\t# example_simple_test: example_simple_test passed\n\t\tok 1 - example_simple_test\n\t\t# example_mock_test: initializing\n\t\t# example_mock_test: example_mock_test passed\n\t\tok 2 - example_mock_test\n\tkunit example: all tests passed\n\tok 2 - example\n\t# sysctl_test_dointvec_table_len_is_zero: sysctl_test_dointvec_table_len_is_zero passed\n\tok 3 - sysctl_test_dointvec_table_len_is_zero\n\t# sysctl_test_dointvec_table_read_but_position_set: sysctl_test_dointvec_table_read_but_position_set passed\n\tok 4 - sysctl_test_dointvec_table_read_but_position_set\nkunit sysctl_test: all tests passed\nok 1 - sysctl_test\n\t# Subtest: example\n\t1..2\ninit_suite\n\t# example_simple_test: initializing\n\t# example_simple_test: example_simple_test passed\n\tok 1 - example_simple_test\n\t# example_mock_test: initializing\n\t# example_mock_test: example_mock_test passed\n\tok 2 - example_mock_test\nkunit example: all tests passed\nok 2 - example\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

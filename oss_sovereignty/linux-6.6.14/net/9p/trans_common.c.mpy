@@ -1,0 +1,9 @@
+{
+  "module_name": "trans_common.c",
+  "hash_id": "908d9744ca4aec9382e50fc615a89d871772d2e248901ba9fe610dcde314d475",
+  "original_prompt": "Ingested from linux-6.6.14/net/9p/trans_common.c",
+  "human_readable_source": "\n \n\n#include <linux/mm.h>\n#include <linux/module.h>\n#include \"trans_common.h\"\n\n \nvoid p9_release_pages(struct page **pages, int nr_pages)\n{\n\tint i;\n\n\tfor (i = 0; i < nr_pages; i++)\n\t\tif (pages[i])\n\t\t\tput_page(pages[i]);\n}\nEXPORT_SYMBOL(p9_release_pages);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

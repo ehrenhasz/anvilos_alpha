@@ -1,0 +1,9 @@
+{
+  "module_name": "zcp_global.h",
+  "hash_id": "4e01d4de936dc191642f4668a30310e457ec08de5277ebe2d71493dc3a913d61",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/zcp_global.h",
+  "human_readable_source": " \n\n \n\n#ifndef _SYS_ZCP_GLOBALS_H\n#define\t_SYS_ZCP_GLOBALS_H\n\n#include <sys/lua/lua.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\nvoid zcp_load_globals(lua_State *);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

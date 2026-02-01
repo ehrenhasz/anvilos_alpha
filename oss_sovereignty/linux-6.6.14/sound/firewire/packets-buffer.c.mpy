@@ -1,0 +1,9 @@
+{
+  "module_name": "packets-buffer.c",
+  "hash_id": "26b79d41be6ed4d970449093057b755d780df9f101176bd9329f84926592ab8f",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/packets-buffer.c",
+  "human_readable_source": "\n \n\n#include <linux/firewire.h>\n#include <linux/export.h>\n#include <linux/slab.h>\n#include \"packets-buffer.h\"\n\n \nint iso_packets_buffer_init(struct iso_packets_buffer *b, struct fw_unit *unit,\n\t\t\t    unsigned int count, unsigned int packet_size,\n\t\t\t    enum dma_data_direction direction)\n{\n\tunsigned int packets_per_page, pages;\n\tunsigned int i, page_index, offset_in_page;\n\tvoid *p;\n\tint err;\n\n\tb->packets = kmalloc_array(count, sizeof(*b->packets), GFP_KERNEL);\n\tif (!b->packets) {\n\t\terr = -ENOMEM;\n\t\tgoto error;\n\t}\n\n\tpacket_size = L1_CACHE_ALIGN(packet_size);\n\tpackets_per_page = PAGE_SIZE / packet_size;\n\tif (WARN_ON(!packets_per_page)) {\n\t\terr = -EINVAL;\n\t\tgoto err_packets;\n\t}\n\tpages = DIV_ROUND_UP(count, packets_per_page);\n\n\terr = fw_iso_buffer_init(&b->iso_buffer, fw_parent_device(unit)->card,\n\t\t\t\t pages, direction);\n\tif (err < 0)\n\t\tgoto err_packets;\n\n\tfor (i = 0; i < count; ++i) {\n\t\tpage_index = i / packets_per_page;\n\t\tp = page_address(b->iso_buffer.pages[page_index]);\n\t\toffset_in_page = (i % packets_per_page) * packet_size;\n\t\tb->packets[i].buffer = p + offset_in_page;\n\t\tb->packets[i].offset = page_index * PAGE_SIZE + offset_in_page;\n\t}\n\n\treturn 0;\n\nerr_packets:\n\tkfree(b->packets);\nerror:\n\treturn err;\n}\nEXPORT_SYMBOL(iso_packets_buffer_init);\n\n \nvoid iso_packets_buffer_destroy(struct iso_packets_buffer *b,\n\t\t\t\tstruct fw_unit *unit)\n{\n\tfw_iso_buffer_destroy(&b->iso_buffer, fw_parent_device(unit)->card);\n\tkfree(b->packets);\n}\nEXPORT_SYMBOL(iso_packets_buffer_destroy);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

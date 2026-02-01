@@ -1,0 +1,9 @@
+{
+  "module_name": "mhi_controller.h",
+  "hash_id": "01509bfcd1c076fcb20b9d789ef05b15bc56148bade29e443a23c8b700489b01",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/qaic/mhi_controller.h",
+  "human_readable_source": " \n\n#ifndef MHICONTROLLERQAIC_H_\n#define MHICONTROLLERQAIC_H_\n\nstruct mhi_controller *qaic_mhi_register_controller(struct pci_dev *pci_dev, void __iomem *mhi_bar,\n\t\t\t\t\t\t    int mhi_irq);\nvoid qaic_mhi_free_controller(struct mhi_controller *mhi_cntrl, bool link_up);\nvoid qaic_mhi_start_reset(struct mhi_controller *mhi_cntrl);\nvoid qaic_mhi_reset_done(struct mhi_controller *mhi_cntrl);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

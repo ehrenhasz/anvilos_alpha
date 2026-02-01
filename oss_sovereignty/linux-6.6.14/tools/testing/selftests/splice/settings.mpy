@@ -1,0 +1,9 @@
+{
+  "module_name": "settings",
+  "hash_id": "3e74f0f7a1c0e1906df71432cdbc76bd23451256dcf66c50ee301879451a4cb5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/splice/settings",
+  "human_readable_source": "timeout=5\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

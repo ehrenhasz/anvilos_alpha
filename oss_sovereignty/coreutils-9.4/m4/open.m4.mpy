@@ -1,0 +1,9 @@
+{
+  "module_name": "open.m4",
+  "hash_id": "f661b244082ce3b5ba62488bed5e187270a6fe3b01132bbf14d7c05e28351ff6",
+  "original_prompt": "Ingested from coreutils-9.4/m4/open.m4",
+  "human_readable_source": "# open.m4 serial 16\ndnl Copyright (C) 2007-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_OPEN],\n[\n  AC_REQUIRE([AC_CANONICAL_HOST])\n  AC_REQUIRE([gl_PREPROC_O_CLOEXEC])\n  case \"$host_os\" in\n    mingw* | windows* | pw*)\n      REPLACE_OPEN=1\n      ;;\n    *)\n      dnl open(\"foo/\") should not create a file when the file name has a\n      dnl trailing slash.  FreeBSD only has the problem on symlinks.\n      AC_CHECK_FUNCS_ONCE([lstat])\n      if test \"$gl_cv_macro_O_CLOEXEC\" != yes; then\n        REPLACE_OPEN=1\n      fi\n      gl_OPEN_TRAILING_SLASH_BUG\n      case \"$gl_cv_func_open_slash\" in\n        *no)\n          REPLACE_OPEN=1\n          ;;\n      esac\n      ;;\n  esac\n  dnl Replace open() for supporting the gnulib-defined fchdir() function,\n  dnl to keep fchdir's bookkeeping up-to-date.\n  m4_ifdef([gl_FUNC_FCHDIR], [\n    if test $REPLACE_OPEN = 0; then\n      gl_TEST_FCHDIR\n      if test $HAVE_FCHDIR = 0; then\n        REPLACE_OPEN=1\n      fi\n    fi\n  ])\n  dnl Replace open() for supporting the gnulib-defined O_NONBLOCK flag.\n  m4_ifdef([gl_NONBLOCKING_IO], [\n    if test $REPLACE_OPEN = 0; then\n      gl_NONBLOCKING_IO\n      if test $gl_cv_have_open_O_NONBLOCK != yes; then\n        REPLACE_OPEN=1\n      fi\n    fi\n  ])\n])\n\n# Prerequisites of lib/open.c.\nAC_DEFUN([gl_PREREQ_OPEN],\n[\n  AC_REQUIRE([gl_PROMOTED_TYPE_MODE_T])\n  :\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

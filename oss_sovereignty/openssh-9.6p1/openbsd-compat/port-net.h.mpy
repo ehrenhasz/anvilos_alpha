@@ -1,0 +1,9 @@
+{
+  "module_name": "port-net.h",
+  "hash_id": "dcfa2323ef20c0766f40892cb0f4efe66a96e482602643b9dce7f49388a9228b",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/port-net.h",
+  "human_readable_source": " \n\n#ifndef _PORT_TUN_H\n#define _PORT_TUN_H\n\nstruct Channel;\nstruct ssh;\n\n#if defined(SSH_TUN_LINUX) || defined(SSH_TUN_FREEBSD)\n# define CUSTOM_SYS_TUN_OPEN\nint\t  sys_tun_open(int, int, char **);\n#endif\n\n#if defined(SSH_TUN_COMPAT_AF) || defined(SSH_TUN_PREPEND_AF)\n# define SSH_TUN_FILTER\nint\t sys_tun_infilter(struct ssh *, struct Channel *, char *, int);\nu_char\t*sys_tun_outfilter(struct ssh *, struct Channel *, u_char **, size_t *);\n#endif\n\n#if defined(SYS_RDOMAIN_LINUX)\n# define HAVE_SYS_GET_RDOMAIN\n# define HAVE_SYS_SET_RDOMAIN\n# define HAVE_SYS_VALID_RDOMAIN\nchar *sys_get_rdomain(int fd);\nint sys_set_rdomain(int fd, const char *name);\nint sys_valid_rdomain(const char *name);\n#endif\n\n#if defined(SYS_RDOMAIN_XXX)\n# define HAVE_SYS_SET_PROCESS_RDOMAIN\nvoid sys_set_process_rdomain(const char *name);\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

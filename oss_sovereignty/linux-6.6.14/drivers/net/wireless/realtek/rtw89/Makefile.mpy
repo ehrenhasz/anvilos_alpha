@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "f3220c784a7b8d22544df9e727f16a75ba21676299e94c469f73ff475dd759cc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw89/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause\n\nobj-$(CONFIG_RTW89_CORE) += rtw89_core.o\nrtw89_core-y += core.o \\\n\t\tmac80211.o \\\n\t\tmac.o \\\n\t\tphy.o \\\n\t\tfw.o \\\n\t\tcam.o \\\n\t\tefuse.o \\\n\t\tregd.o \\\n\t\tsar.o \\\n\t\tcoex.o \\\n\t\tps.o \\\n\t\tchan.o \\\n\t\tser.o \\\n\t\tacpi.o\n\nrtw89_core-$(CONFIG_PM) += wow.o\n\nobj-$(CONFIG_RTW89_8851B) += rtw89_8851b.o\nrtw89_8851b-objs := rtw8851b.o \\\n\t\t    rtw8851b_table.o \\\n\t\t    rtw8851b_rfk.o \\\n\t\t    rtw8851b_rfk_table.o\n\nobj-$(CONFIG_RTW89_8851BE) += rtw89_8851be.o\nrtw89_8851be-objs := rtw8851be.o\n\nobj-$(CONFIG_RTW89_8852A) += rtw89_8852a.o\nrtw89_8852a-objs := rtw8852a.o \\\n\t\t    rtw8852a_table.o \\\n\t\t    rtw8852a_rfk.o \\\n\t\t    rtw8852a_rfk_table.o\n\nobj-$(CONFIG_RTW89_8852AE) += rtw89_8852ae.o\nrtw89_8852ae-objs := rtw8852ae.o\n\nobj-$(CONFIG_RTW89_8852B) += rtw89_8852b.o\nrtw89_8852b-objs := rtw8852b.o \\\n\t\t    rtw8852b_table.o \\\n\t\t    rtw8852b_rfk.o \\\n\t\t    rtw8852b_rfk_table.o\n\nobj-$(CONFIG_RTW89_8852BE) += rtw89_8852be.o\nrtw89_8852be-objs := rtw8852be.o\n\nobj-$(CONFIG_RTW89_8852C) += rtw89_8852c.o\nrtw89_8852c-objs := rtw8852c.o \\\n\t\t    rtw8852c_table.o \\\n\t\t    rtw8852c_rfk.o \\\n\t\t    rtw8852c_rfk_table.o\n\nobj-$(CONFIG_RTW89_8852CE) += rtw89_8852ce.o\nrtw89_8852ce-objs := rtw8852ce.o\n\nrtw89_core-$(CONFIG_RTW89_DEBUG) += debug.o\n\nobj-$(CONFIG_RTW89_PCI) += rtw89_pci.o\nrtw89_pci-y := pci.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

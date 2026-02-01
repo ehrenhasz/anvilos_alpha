@@ -1,0 +1,9 @@
+{
+  "module_name": "hpipcida.h",
+  "hash_id": "cf68e05b31fa0cf7a89c60e4ec5b0ba0ca24f29f894c08bdc32aa1420e45db3f",
+  "original_prompt": "Ingested from linux-6.6.14/sound/pci/asihpi/hpipcida.h",
+  "human_readable_source": " \n \n\n \n\n{\nHPI_PCI_VENDOR_ID_TI, HPI_PCI_DEV_ID_DSP6205,\n\t\tHPI_PCI_VENDOR_ID_AUDIOSCIENCE, PCI_ANY_ID, 0, 0,\n\t\t(kernel_ulong_t) HPI_6205}\n, {\nHPI_PCI_VENDOR_ID_TI, HPI_PCI_DEV_ID_PCI2040,\n\t\tHPI_PCI_VENDOR_ID_AUDIOSCIENCE, PCI_ANY_ID, 0, 0,\n\t\t(kernel_ulong_t) HPI_6000}\n, {\n0}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

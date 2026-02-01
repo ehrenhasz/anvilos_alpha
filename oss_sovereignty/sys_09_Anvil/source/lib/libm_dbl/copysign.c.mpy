@@ -1,0 +1,9 @@
+{
+  "module_name": "copysign.c",
+  "hash_id": "bbc475a5fea369682014c905a0c83889093e0e860bfe69b64b212ee28a3cd038",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm_dbl/copysign.c",
+  "human_readable_source": " \n\n#include \"libm.h\"\n\n#ifndef NDEBUG\ntypedef union {\n    double d;\n    struct {\n        uint64_t m : 52;\n        uint64_t e : 11;\n        uint64_t s : 1;\n    };\n} double_s_t;\n\ndouble copysign(double x, double y) {\n    double_s_t dx={.d = x};\n    double_s_t dy={.d = y};\n\n    \n    dx.s = dy.s;\n\n    return dx.d;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

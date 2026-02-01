@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_efuse.h",
+  "hash_id": "54a81757c7b8b1debb9f2577f607f57c915a397029a1f7009c63ec849e70790d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_efuse.h",
+  "human_readable_source": " \n#ifndef __RTL8712_EFUSE_H__\n#define __RTL8712_EFUSE_H__\n\n#include \"osdep_service.h\"\n\n#define _REPEAT_THRESHOLD_\t3\n\n#define EFUSE_MAX_SIZE\t\t512\n#define EFUSE_MAP_MAX_SIZE\t128\n\n#define PGPKG_MAX_WORDS\t4\n#define PGPKT_DATA_SIZE\t8  \n#define MAX_PGPKT_SIZE\t9  \n\n#define GET_EFUSE_OFFSET(header)\t((header & 0xF0) >> 4)\n#define GET_EFUSE_WORD_EN(header)\t(header & 0x0F)\n#define MAKE_EFUSE_HEADER(offset, word_en)\t((((offset) & 0x0F) << 4) | \\\n\t\t\t\t\t\t((word_en) & 0x0F))\n \nstruct PGPKT_STRUCT {\n\tu8 offset;\n\tu8 word_en;\n\tu8 data[PGPKT_DATA_SIZE];\n};\n\n \nu8 r8712_efuse_reg_init(struct _adapter *padapter);\nvoid r8712_efuse_reg_uninit(struct _adapter *padapter);\nu16 r8712_efuse_get_current_size(struct _adapter *padapter);\nint r8712_efuse_get_max_size(struct _adapter *padapter);\nvoid r8712_efuse_change_max_size(struct _adapter *padapter);\nu8 r8712_efuse_pg_packet_read(struct _adapter *padapter,\n\t\t\t      u8 offset, u8 *data);\nu8 r8712_efuse_pg_packet_write(struct _adapter *padapter,\n\t\t\t       const u8 offset, const u8 word_en,\n\t\t\t       const u8 *data);\nu8 r8712_efuse_access(struct _adapter *padapter, u8 bRead,\n\t\t      u16 start_addr, u16 cnts, u8 *data);\nu8 r8712_efuse_map_read(struct _adapter *padapter, u16 addr,\n\t\t\tu16 cnts, u8 *data);\nu8 r8712_efuse_map_write(struct _adapter *padapter, u16 addr,\n\t\t\t u16 cnts, u8 *data);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

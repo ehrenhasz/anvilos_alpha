@@ -1,0 +1,9 @@
+{
+  "module_name": "gchelper_native.c",
+  "hash_id": "db4649c7af6257a01c3f204501add9cdb08a16e105a9fe6148cf07cd88edb2a1",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/runtime/gchelper_native.c",
+  "human_readable_source": " \n\n#include <stdio.h>\n\n#include \"py/mpstate.h\"\n#include \"py/gc.h\"\n#include \"shared/runtime/gchelper.h\"\n\n#if MICROPY_ENABLE_GC\n\n\nuintptr_t gc_helper_get_regs_and_sp(uintptr_t *regs);\n\nMP_NOINLINE void gc_helper_collect_regs_and_stack(void) {\n    \n    gc_helper_regs_t regs;\n    uintptr_t sp = gc_helper_get_regs_and_sp(regs);\n\n    \n    gc_collect_root((void **)sp, ((uintptr_t)MP_STATE_THREAD(stack_top) - sp) / sizeof(uintptr_t));\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

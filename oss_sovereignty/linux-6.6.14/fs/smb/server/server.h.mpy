@@ -1,0 +1,9 @@
+{
+  "module_name": "server.h",
+  "hash_id": "7059ce1dc2b8ff02f061361e6dd4d3fcb7d9e809180f51fd1cc989bd105a7c2a",
+  "original_prompt": "Ingested from linux-6.6.14/fs/smb/server/server.h",
+  "human_readable_source": " \n \n\n#ifndef __SERVER_H__\n#define __SERVER_H__\n\n#include \"smbacl.h\"\n\n \nenum {\n\tSERVER_STATE_STARTING_UP,\n\tSERVER_STATE_RUNNING,\n\tSERVER_STATE_RESETTING,\n\tSERVER_STATE_SHUTTING_DOWN,\n};\n\n \nenum {\n\tSERVER_CONF_NETBIOS_NAME,\n\tSERVER_CONF_SERVER_STRING,\n\tSERVER_CONF_WORK_GROUP,\n};\n\nstruct ksmbd_server_config {\n\tunsigned int\t\tflags;\n\tunsigned int\t\tstate;\n\tshort\t\t\tsigning;\n\tshort\t\t\tenforced_signing;\n\tshort\t\t\tmin_protocol;\n\tshort\t\t\tmax_protocol;\n\tunsigned short\t\ttcp_port;\n\tunsigned short\t\tipc_timeout;\n\tunsigned long\t\tipc_last_active;\n\tunsigned long\t\tdeadtime;\n\tunsigned int\t\tshare_fake_fscaps;\n\tstruct smb_sid\t\tdomain_sid;\n\tunsigned int\t\tauth_mechs;\n\tunsigned int\t\tmax_connections;\n\n\tchar\t\t\t*conf[SERVER_CONF_WORK_GROUP + 1];\n};\n\nextern struct ksmbd_server_config server_conf;\n\nint ksmbd_set_netbios_name(char *v);\nint ksmbd_set_server_string(char *v);\nint ksmbd_set_work_group(char *v);\n\nchar *ksmbd_netbios_name(void);\nchar *ksmbd_server_string(void);\nchar *ksmbd_work_group(void);\n\nstatic inline int ksmbd_server_running(void)\n{\n\treturn READ_ONCE(server_conf.state) == SERVER_STATE_RUNNING;\n}\n\nstatic inline int ksmbd_server_configurable(void)\n{\n\treturn READ_ONCE(server_conf.state) < SERVER_STATE_RESETTING;\n}\n\nint server_queue_ctrl_init_work(void);\nint server_queue_ctrl_reset_work(void);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

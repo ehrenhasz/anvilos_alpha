@@ -1,0 +1,9 @@
+{
+  "module_name": "bits.h",
+  "hash_id": "f8b26e0f916a69bf927e05422b587c5406d74a34470254229df17d0ba4241cb1",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bits.h",
+  "human_readable_source": " \n#ifndef __LINUX_BITS_H\n#define __LINUX_BITS_H\n\n#include <linux/const.h>\n#include <vdso/bits.h>\n#include <asm/bitsperlong.h>\n\n#define BIT_MASK(nr)\t\t(UL(1) << ((nr) % BITS_PER_LONG))\n#define BIT_WORD(nr)\t\t((nr) / BITS_PER_LONG)\n#define BIT_ULL_MASK(nr)\t(ULL(1) << ((nr) % BITS_PER_LONG_LONG))\n#define BIT_ULL_WORD(nr)\t((nr) / BITS_PER_LONG_LONG)\n#define BITS_PER_BYTE\t\t8\n\n \n#if !defined(__ASSEMBLY__)\n#include <linux/build_bug.h>\n#define GENMASK_INPUT_CHECK(h, l) \\\n\t(BUILD_BUG_ON_ZERO(__builtin_choose_expr( \\\n\t\t__is_constexpr((l) > (h)), (l) > (h), 0)))\n#else\n \n#define GENMASK_INPUT_CHECK(h, l) 0\n#endif\n\n#define __GENMASK(h, l) \\\n\t(((~UL(0)) - (UL(1) << (l)) + 1) & \\\n\t (~UL(0) >> (BITS_PER_LONG - 1 - (h))))\n#define GENMASK(h, l) \\\n\t(GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))\n\n#define __GENMASK_ULL(h, l) \\\n\t(((~ULL(0)) - (ULL(1) << (l)) + 1) & \\\n\t (~ULL(0) >> (BITS_PER_LONG_LONG - 1 - (h))))\n#define GENMASK_ULL(h, l) \\\n\t(GENMASK_INPUT_CHECK(h, l) + __GENMASK_ULL(h, l))\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

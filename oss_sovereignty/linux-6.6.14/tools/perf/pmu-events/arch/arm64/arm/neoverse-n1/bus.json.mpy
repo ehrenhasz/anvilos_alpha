@@ -1,0 +1,9 @@
+{
+  "module_name": "bus.json",
+  "hash_id": "7684e518a2c4efef626ea72f6e19a24523c43e8b216d330655b9d3ec222b2602",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/neoverse-n1/bus.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS\",\n        \"PublicDescription\": \"Counts memory transactions issued by the CPU to the external bus, including snoop requests and snoop responses. Each beat of data is counted individually.\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_CYCLES\",\n        \"PublicDescription\": \"Counts bus cycles in the CPU. Bus cycles represent a clock cycle in which a transaction could be sent or received on the interface from the CPU to the external bus. Since that interface is driven at the same clock speed as the CPU, this event is a duplicate of CPU_CYCLES.\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS_RD\",\n        \"PublicDescription\": \"Counts memory read transactions seen on the external bus. Each beat of data is counted individually.\"\n    },\n    {\n        \"ArchStdEvent\": \"BUS_ACCESS_WR\",\n        \"PublicDescription\": \"Counts memory write transactions seen on the external bus. Each beat of data is counted individually.\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

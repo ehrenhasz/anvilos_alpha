@@ -1,0 +1,9 @@
+{
+  "module_name": "printf-posix.m4",
+  "hash_id": "6f1d51dfbd13bfe6a74d3c071d2903a4d3ad48c011746ddc1f707bc655cc873b",
+  "original_prompt": "Ingested from bash-5.2.21/m4/printf-posix.m4",
+  "human_readable_source": "# printf-posix.m4 serial 6 (gettext-0.18.2)\ndnl Copyright (C) 2003, 2007, 2009-2019 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\ndnl From Bruno Haible.\ndnl Test whether the printf() function supports POSIX/XSI format strings with\ndnl positions.\n\nAC_DEFUN([gt_PRINTF_POSIX],\n[\n  AC_REQUIRE([AC_PROG_CC])\n  AC_CACHE_CHECK([whether printf() supports POSIX/XSI format strings],\n    gt_cv_func_printf_posix,\n    [\n      AC_RUN_IFELSE(\n        [AC_LANG_SOURCE([[\n#include <stdio.h>\n#include <string.h>\n/* The string \"%2$d %1$d\", with dollar characters protected from the shell's\n   dollar expansion (possibly an autoconf bug).  */\nstatic char format[] = { '%', '2', '$', 'd', ' ', '%', '1', '$', 'd', '\\0' };\nstatic char buf[100];\nint main ()\n{\n  sprintf (buf, format, 33, 55);\n  return (strcmp (buf, \"55 33\") != 0);\n}]])],\n        [gt_cv_func_printf_posix=yes],\n        [gt_cv_func_printf_posix=no],\n        [\n          AC_EGREP_CPP([notposix], [\n#if defined __NetBSD__ || defined __BEOS__ || defined _MSC_VER || defined __MINGW32__ || defined __CYGWIN__\n  notposix\n#endif\n            ],\n            [gt_cv_func_printf_posix=\"guessing no\"],\n            [gt_cv_func_printf_posix=\"guessing yes\"])\n        ])\n    ])\n  case $gt_cv_func_printf_posix in\n    *yes)\n      AC_DEFINE([HAVE_POSIX_PRINTF], [1],\n        [Define if your printf() function supports format strings with positions.])\n      ;;\n  esac\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

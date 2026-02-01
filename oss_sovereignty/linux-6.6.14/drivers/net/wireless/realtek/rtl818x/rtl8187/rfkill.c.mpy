@@ -1,0 +1,9 @@
+{
+  "module_name": "rfkill.c",
+  "hash_id": "c67ccecda48220e6febce5ae3b285b834b66a9281b5037b75cbe026258c42ed9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtl818x/rtl8187/rfkill.c",
+  "human_readable_source": "\n \n\n#include <linux/types.h>\n#include <linux/usb.h>\n#include <net/mac80211.h>\n\n#include \"rtl8187.h\"\n#include \"rfkill.h\"\n\nstatic bool rtl8187_is_radio_enabled(struct rtl8187_priv *priv)\n{\n\tu8 gpio;\n\n\tgpio = rtl818x_ioread8(priv, &priv->map->GPIO0);\n\trtl818x_iowrite8(priv, &priv->map->GPIO0, gpio & ~priv->rfkill_mask);\n\tgpio = rtl818x_ioread8(priv, &priv->map->GPIO1);\n\n\treturn gpio & priv->rfkill_mask;\n}\n\nvoid rtl8187_rfkill_init(struct ieee80211_hw *hw)\n{\n\tstruct rtl8187_priv *priv = hw->priv;\n\n\tpriv->rfkill_off = rtl8187_is_radio_enabled(priv);\n\tprintk(KERN_INFO \"rtl8187: wireless switch is %s\\n\",\n\t       priv->rfkill_off ? \"on\" : \"off\");\n\twiphy_rfkill_set_hw_state(hw->wiphy, !priv->rfkill_off);\n\twiphy_rfkill_start_polling(hw->wiphy);\n}\n\nvoid rtl8187_rfkill_poll(struct ieee80211_hw *hw)\n{\n\tbool enabled;\n\tstruct rtl8187_priv *priv = hw->priv;\n\n\tmutex_lock(&priv->conf_mutex);\n\tenabled = rtl8187_is_radio_enabled(priv);\n\tif (unlikely(enabled != priv->rfkill_off)) {\n\t\tpriv->rfkill_off = enabled;\n\t\tprintk(KERN_INFO \"rtl8187: wireless radio switch turned %s\\n\",\n\t\t       enabled ? \"on\" : \"off\");\n\t\twiphy_rfkill_set_hw_state(hw->wiphy, !enabled);\n\t}\n\tmutex_unlock(&priv->conf_mutex);\n}\n\nvoid rtl8187_rfkill_exit(struct ieee80211_hw *hw)\n{\n\twiphy_rfkill_stop_polling(hw->wiphy);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

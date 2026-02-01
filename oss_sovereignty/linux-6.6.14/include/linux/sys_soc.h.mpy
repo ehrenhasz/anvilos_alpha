@@ -1,0 +1,9 @@
+{
+  "module_name": "sys_soc.h",
+  "hash_id": "c93f14720ebeb3b4831d7f7d280d4ffc02a7b9700698cbb536571112d8872e16",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/sys_soc.h",
+  "human_readable_source": " \n \n#ifndef __SOC_BUS_H\n#define __SOC_BUS_H\n\n#include <linux/device.h>\n\nstruct soc_device_attribute {\n\tconst char *machine;\n\tconst char *family;\n\tconst char *revision;\n\tconst char *serial_number;\n\tconst char *soc_id;\n\tconst void *data;\n\tconst struct attribute_group *custom_attr_group;\n};\n\n \nstruct soc_device *soc_device_register(\n\tstruct soc_device_attribute *soc_plat_dev_attr);\n\n \nvoid soc_device_unregister(struct soc_device *soc_dev);\n\n \nstruct device *soc_device_to_device(struct soc_device *soc);\n\n#ifdef CONFIG_SOC_BUS\nconst struct soc_device_attribute *soc_device_match(\n\tconst struct soc_device_attribute *matches);\n#else\nstatic inline const struct soc_device_attribute *soc_device_match(\n\tconst struct soc_device_attribute *matches) { return NULL; }\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

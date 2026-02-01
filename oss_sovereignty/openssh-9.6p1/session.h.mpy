@@ -1,0 +1,9 @@
+{
+  "module_name": "session.h",
+  "hash_id": "88e60e7ec6b35ba21b422d9a50c6cef1c9154ce45ed7a89a3db9216a00478ed2",
+  "original_prompt": "Ingested from openssh-9.6p1/session.h",
+  "human_readable_source": " \n\n \n#ifndef SESSION_H\n#define SESSION_H\n\n#define TTYSZ 64\ntypedef struct Session Session;\nstruct Session {\n\tint\tused;\n\tint\tself;\n\tint\tnext_unused;\n\tstruct passwd *pw;\n\tAuthctxt *authctxt;\n\tpid_t\tpid;\n\tint\tforced;\n\n\t \n\tchar\t*term;\n\tint\tptyfd, ttyfd, ptymaster;\n\tu_int\trow, col, xpixel, ypixel;\n\tchar\ttty[TTYSZ];\n\n\t \n\tu_int\tdisplay_number;\n\tchar\t*display;\n\tu_int\tscreen;\n\tchar\t*auth_display;\n\tchar\t*auth_proto;\n\tchar\t*auth_data;\n\tint\tsingle_connection;\n\n\tint\tchanid;\n\tint\t*x11_chanids;\n\tint\tis_subsystem;\n\tchar\t*subsys;\n\tu_int\tnum_env;\n\tstruct {\n\t\tchar\t*name;\n\t\tchar\t*val;\n\t} *env;\n};\n\nvoid\t do_authenticated(struct ssh *, Authctxt *);\nvoid\t do_cleanup(struct ssh *, Authctxt *);\n\nint\t session_open(Authctxt *, int);\nvoid\t session_unused(int);\nint\t session_input_channel_req(struct ssh *, Channel *, const char *);\nvoid\t session_close_by_pid(struct ssh *ssh, pid_t, int);\nvoid\t session_close_by_channel(struct ssh *, int, int, void *);\nvoid\t session_destroy_all(struct ssh *, void (*)(Session *));\nvoid\t session_pty_cleanup2(Session *);\n\nSession\t*session_new(void);\nSession\t*session_by_tty(char *);\nvoid\t session_close(struct ssh *, Session *);\nvoid\t do_setusercontext(struct passwd *);\n\nconst char\t*session_get_remote_name_or_ip(struct ssh *, u_int, int);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

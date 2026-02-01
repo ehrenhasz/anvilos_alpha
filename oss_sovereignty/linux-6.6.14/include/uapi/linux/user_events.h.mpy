@@ -1,0 +1,9 @@
+{
+  "module_name": "user_events.h",
+  "hash_id": "03aa2b34118e74bcfd5c6fd69e213174aef7c005f02c076475d13b9362223152",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/user_events.h",
+  "human_readable_source": " \n \n#ifndef _UAPI_LINUX_USER_EVENTS_H\n#define _UAPI_LINUX_USER_EVENTS_H\n\n#include <linux/types.h>\n#include <linux/ioctl.h>\n\n#define USER_EVENTS_SYSTEM \"user_events\"\n#define USER_EVENTS_PREFIX \"u:\"\n\n \n#define DYN_LOC(offset, size) ((size) << 16 | (offset))\n\n \nstruct user_reg {\n\n\t \n\t__u32\tsize;\n\n\t \n\t__u8\tenable_bit;\n\n\t \n\t__u8\tenable_size;\n\n\t \n\t__u16\tflags;\n\n\t \n\t__u64\tenable_addr;\n\n\t \n\t__u64\tname_args;\n\n\t \n\t__u32\twrite_index;\n} __attribute__((__packed__));\n\n \nstruct user_unreg {\n\t \n\t__u32\tsize;\n\n\t \n\t__u8\tdisable_bit;\n\n\t \n\t__u8\t__reserved;\n\n\t \n\t__u16\t__reserved2;\n\n\t \n\t__u64\tdisable_addr;\n} __attribute__((__packed__));\n\n#define DIAG_IOC_MAGIC '*'\n\n \n#define DIAG_IOCSREG _IOWR(DIAG_IOC_MAGIC, 0, struct user_reg *)\n\n \n#define DIAG_IOCSDEL _IOW(DIAG_IOC_MAGIC, 1, char *)\n\n \n#define DIAG_IOCSUNREG _IOW(DIAG_IOC_MAGIC, 2, struct user_unreg*)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

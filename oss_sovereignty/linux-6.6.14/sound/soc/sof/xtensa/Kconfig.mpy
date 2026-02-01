@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "5c1316cd30f67a0f0c8ebb3cf511c501dde1dcfbbfde8619290020f13d0057f5",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/xtensa/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SND_SOC_SOF_XTENSA\n\ttristate\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

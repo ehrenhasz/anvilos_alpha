@@ -1,0 +1,9 @@
+{
+  "module_name": "sshsig_fuzz.cc",
+  "hash_id": "25ec5f5ce065e749974306ff945a56edf269fa641994cab833a2291567ab0073",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/misc/fuzz-harness/sshsig_fuzz.cc",
+  "human_readable_source": "\n\n#include <stddef.h>\n#include <stdio.h>\n#include <stdint.h>\n#include <stdlib.h>\n#include <string.h>\n\nextern \"C\" {\n\n#include \"includes.h\"\n#include \"sshkey.h\"\n#include \"ssherr.h\"\n#include \"sshbuf.h\"\n#include \"sshsig.h\"\n#include \"log.h\"\n\nint LLVMFuzzerTestOneInput(const uint8_t* sig, size_t slen)\n{\n  static const char *data = \"If everyone started announcing his nose had \"\n      \"run away, I don\u2019t know how it would all end\";\n  struct sshbuf *signature = sshbuf_from(sig, slen);\n  struct sshbuf *message = sshbuf_from(data, strlen(data));\n  struct sshkey *k = NULL;\n  struct sshkey_sig_details *details = NULL;\n  extern char *__progname;\n\n  log_init(__progname, SYSLOG_LEVEL_QUIET, SYSLOG_FACILITY_USER, 1);\n  sshsig_verifyb(signature, message, \"castle\", &k, &details);\n  sshkey_sig_details_free(details);\n  sshkey_free(k);\n  sshbuf_free(signature);\n  sshbuf_free(message);\n  return 0;\n}\n\n} \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

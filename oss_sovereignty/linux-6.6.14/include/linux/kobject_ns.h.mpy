@@ -1,0 +1,9 @@
+{
+  "module_name": "kobject_ns.h",
+  "hash_id": "f5dacccb121aefa97e49cc3e881b010d607fdd129fd7146131bd5744d606db4f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/kobject_ns.h",
+  "human_readable_source": "\n \n\n#ifndef _LINUX_KOBJECT_NS_H\n#define _LINUX_KOBJECT_NS_H\n\nstruct sock;\nstruct kobject;\n\n \nenum kobj_ns_type {\n\tKOBJ_NS_TYPE_NONE = 0,\n\tKOBJ_NS_TYPE_NET,\n\tKOBJ_NS_TYPES\n};\n\n \nstruct kobj_ns_type_operations {\n\tenum kobj_ns_type type;\n\tbool (*current_may_mount)(void);\n\tvoid *(*grab_current_ns)(void);\n\tconst void *(*netlink_ns)(struct sock *sk);\n\tconst void *(*initial_ns)(void);\n\tvoid (*drop_ns)(void *);\n};\n\nint kobj_ns_type_register(const struct kobj_ns_type_operations *ops);\nint kobj_ns_type_registered(enum kobj_ns_type type);\nconst struct kobj_ns_type_operations *kobj_child_ns_ops(const struct kobject *parent);\nconst struct kobj_ns_type_operations *kobj_ns_ops(const struct kobject *kobj);\n\nbool kobj_ns_current_may_mount(enum kobj_ns_type type);\nvoid *kobj_ns_grab_current(enum kobj_ns_type type);\nconst void *kobj_ns_netlink(enum kobj_ns_type type, struct sock *sk);\nconst void *kobj_ns_initial(enum kobj_ns_type type);\nvoid kobj_ns_drop(enum kobj_ns_type type, void *ns);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

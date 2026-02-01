@@ -1,0 +1,9 @@
+{
+  "module_name": "ast_mm.c",
+  "hash_id": "f68aed5a0d93c6661df0063c0baefdd26e45e440c7532ec99c5bfb6a8adb498a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/ast/ast_mm.c",
+  "human_readable_source": " \n \n\n#include <linux/pci.h>\n\n#include <drm/drm_managed.h>\n#include <drm/drm_print.h>\n\n#include \"ast_drv.h\"\n\nstatic u32 ast_get_vram_size(struct ast_device *ast)\n{\n\tu8 jreg;\n\tu32 vram_size;\n\n\tvram_size = AST_VIDMEM_DEFAULT_SIZE;\n\tjreg = ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0xaa, 0xff);\n\tswitch (jreg & 3) {\n\tcase 0:\n\t\tvram_size = AST_VIDMEM_SIZE_8M;\n\t\tbreak;\n\tcase 1:\n\t\tvram_size = AST_VIDMEM_SIZE_16M;\n\t\tbreak;\n\tcase 2:\n\t\tvram_size = AST_VIDMEM_SIZE_32M;\n\t\tbreak;\n\tcase 3:\n\t\tvram_size = AST_VIDMEM_SIZE_64M;\n\t\tbreak;\n\t}\n\n\tjreg = ast_get_index_reg_mask(ast, AST_IO_CRTC_PORT, 0x99, 0xff);\n\tswitch (jreg & 0x03) {\n\tcase 1:\n\t\tvram_size -= 0x100000;\n\t\tbreak;\n\tcase 2:\n\t\tvram_size -= 0x200000;\n\t\tbreak;\n\tcase 3:\n\t\tvram_size -= 0x400000;\n\t\tbreak;\n\t}\n\n\treturn vram_size;\n}\n\nint ast_mm_init(struct ast_device *ast)\n{\n\tstruct drm_device *dev = &ast->base;\n\tstruct pci_dev *pdev = to_pci_dev(dev->dev);\n\tresource_size_t base, size;\n\tu32 vram_size;\n\n\tbase = pci_resource_start(pdev, 0);\n\tsize = pci_resource_len(pdev, 0);\n\n\t \n\tdevm_arch_io_reserve_memtype_wc(dev->dev, base, size);\n\tdevm_arch_phys_wc_add(dev->dev, base, size);\n\n\tvram_size = ast_get_vram_size(ast);\n\n\tast->vram = devm_ioremap_wc(dev->dev, base, vram_size);\n\tif (!ast->vram)\n\t\treturn -ENOMEM;\n\n\tast->vram_base = base;\n\tast->vram_size = vram_size;\n\tast->vram_fb_available = vram_size;\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

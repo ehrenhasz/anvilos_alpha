@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "93e335a85a5b92bfc22fb88f7066e6c0371f38622d99f9ad99fc5e45f1e83836",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/dca/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_DCA) += dca.o\ndca-objs := dca-core.o dca-sysfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sof-acpi-dev.h",
+  "hash_id": "d55cc02523040ab658e7b13ddf6d9f97d9bbd41302c1f3c4331317105bfc4a79",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/sof-acpi-dev.h",
+  "human_readable_source": " \n \n\n#ifndef __SOUND_SOC_SOF_ACPI_H\n#define __SOUND_SOC_SOF_ACPI_H\n\nextern const struct dev_pm_ops sof_acpi_pm;\nint sof_acpi_probe(struct platform_device *pdev, const struct sof_dev_desc *desc);\nint sof_acpi_remove(struct platform_device *pdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

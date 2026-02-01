@@ -1,0 +1,9 @@
+{
+  "module_name": "ipv6_flowlabel.sh",
+  "hash_id": "d9f5cb702b5aa9cb1e471039af368b96666c43cecb8b0758b6e8fb2b74207f42",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/ipv6_flowlabel.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n#\n# Regression tests for IPv6 flowlabels\n#\n# run in separate namespaces to avoid mgmt db conflicts betweent tests\n\nset -e\n\necho \"TEST management\"\n./in_netns.sh ./ipv6_flowlabel_mgr\n\necho \"TEST datapath\"\n./in_netns.sh \\\n  sh -c 'sysctl -q -w net.ipv6.auto_flowlabels=0 && ./ipv6_flowlabel -l 1'\n\necho \"TEST datapath (with auto-flowlabels)\"\n./in_netns.sh \\\n  sh -c 'sysctl -q -w net.ipv6.auto_flowlabels=1 && ./ipv6_flowlabel -l 1'\n\necho \"TEST datapath (with ping-sockets)\"\n./in_netns.sh \\\n  sh -c 'sysctl -q -w net.ipv6.flowlabel_reflect=4 && \\\n    sysctl -q -w net.ipv4.ping_group_range=\"0 2147483647\" && \\\n    ./ipv6_flowlabel -l 1 -p'\n\necho \"TEST datapath (with flowinfo-send)\"\n./in_netns.sh \\\n  sh -c './ipv6_flowlabel -l 1 -s'\n\necho \"TEST datapath (with ping-sockets flowinfo-send)\"\n./in_netns.sh \\\n  sh -c 'sysctl -q -w net.ipv6.flowlabel_reflect=4 && \\\n    sysctl -q -w net.ipv4.ping_group_range=\"0 2147483647\" && \\\n    ./ipv6_flowlabel -l 1 -p -s'\n\necho OK. All tests passed\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

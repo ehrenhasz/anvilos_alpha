@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "74fb46862db2e2bc6ef6dabde100798453d09cfd178be3937cebb2311a5d1ef2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vc04_services/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_BCM2835_VCHIQ)\t+= vchiq.o\n\nvchiq-objs := \\\n   interface/vchiq_arm/vchiq_core.o  \\\n   interface/vchiq_arm/vchiq_arm.o \\\n   interface/vchiq_arm/vchiq_debugfs.o \\\n   interface/vchiq_arm/vchiq_connected.o \\\n\nifdef CONFIG_VCHIQ_CDEV\nvchiq-objs += interface/vchiq_arm/vchiq_dev.o\nendif\n\nobj-$(CONFIG_SND_BCM2835)\t\t+= bcm2835-audio/\nobj-$(CONFIG_VIDEO_BCM2835)\t\t+= bcm2835-camera/\nobj-$(CONFIG_BCM2835_VCHIQ_MMAL)\t+= vchiq-mmal/\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

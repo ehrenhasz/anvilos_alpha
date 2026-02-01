@@ -1,0 +1,9 @@
+{
+  "module_name": "buffer.h",
+  "hash_id": "ccbf3e6db4acf5656f830128c2e7f270f21c1dad69a005b2e53869ee3556117a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/buffer.h",
+  "human_readable_source": " \n \n\n#ifndef _IIO_BUFFER_GENERIC_H_\n#define _IIO_BUFFER_GENERIC_H_\n#include <linux/sysfs.h>\n#include <linux/iio/iio.h>\n\nstruct iio_buffer;\n\nenum iio_buffer_direction {\n\tIIO_BUFFER_DIRECTION_IN,\n\tIIO_BUFFER_DIRECTION_OUT,\n};\n\nint iio_push_to_buffers(struct iio_dev *indio_dev, const void *data);\n\nint iio_pop_from_buffer(struct iio_buffer *buffer, void *data);\n\n \nstatic inline int iio_push_to_buffers_with_timestamp(struct iio_dev *indio_dev,\n\tvoid *data, int64_t timestamp)\n{\n\tif (indio_dev->scan_timestamp) {\n\t\tsize_t ts_offset = indio_dev->scan_bytes / sizeof(int64_t) - 1;\n\t\t((int64_t *)data)[ts_offset] = timestamp;\n\t}\n\n\treturn iio_push_to_buffers(indio_dev, data);\n}\n\nint iio_push_to_buffers_with_ts_unaligned(struct iio_dev *indio_dev,\n\t\t\t\t\t  const void *data, size_t data_sz,\n\t\t\t\t\t  int64_t timestamp);\n\nbool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,\n\t\t\t\t   const unsigned long *mask);\n\nint iio_device_attach_buffer(struct iio_dev *indio_dev,\n\t\t\t     struct iio_buffer *buffer);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

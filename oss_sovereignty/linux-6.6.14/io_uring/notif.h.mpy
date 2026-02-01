@@ -1,0 +1,9 @@
+{
+  "module_name": "notif.h",
+  "hash_id": "d62abf95ada0a52f3677f3bd1855768943a98475153e45159c5ff5c9f69f673d",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/notif.h",
+  "human_readable_source": "\n\n#include <linux/net.h>\n#include <linux/uio.h>\n#include <net/sock.h>\n#include <linux/nospec.h>\n\n#include \"rsrc.h\"\n\n#define IO_NOTIF_UBUF_FLAGS\t(SKBFL_ZEROCOPY_FRAG | SKBFL_DONT_ORPHAN)\n#define IO_NOTIF_SPLICE_BATCH\t32\n\nstruct io_notif_data {\n\tstruct file\t\t*file;\n\tstruct ubuf_info\tuarg;\n\tunsigned long\t\taccount_pages;\n\tbool\t\t\tzc_report;\n\tbool\t\t\tzc_used;\n\tbool\t\t\tzc_copied;\n};\n\nstruct io_kiocb *io_alloc_notif(struct io_ring_ctx *ctx);\nvoid io_notif_set_extended(struct io_kiocb *notif);\n\nstatic inline struct io_notif_data *io_notif_to_data(struct io_kiocb *notif)\n{\n\treturn io_kiocb_to_cmd(notif, struct io_notif_data);\n}\n\nstatic inline void io_notif_flush(struct io_kiocb *notif)\n\t__must_hold(&notif->ctx->uring_lock)\n{\n\tstruct io_notif_data *nd = io_notif_to_data(notif);\n\n\t \n\tif (refcount_dec_and_test(&nd->uarg.refcnt))\n\t\t__io_req_task_work_add(notif, IOU_F_TWQ_LAZY_WAKE);\n}\n\nstatic inline int io_notif_account_mem(struct io_kiocb *notif, unsigned len)\n{\n\tstruct io_ring_ctx *ctx = notif->ctx;\n\tstruct io_notif_data *nd = io_notif_to_data(notif);\n\tunsigned nr_pages = (len >> PAGE_SHIFT) + 2;\n\tint ret;\n\n\tif (ctx->user) {\n\t\tret = __io_account_mem(ctx->user, nr_pages);\n\t\tif (ret)\n\t\t\treturn ret;\n\t\tnd->account_pages += nr_pages;\n\t}\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

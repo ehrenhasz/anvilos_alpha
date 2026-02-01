@@ -1,0 +1,9 @@
+{
+  "module_name": "cgroup_refcnt.h",
+  "hash_id": "e3074cfdf482600a944150490e71725cc1b93bea65b21d71b400131b820e108b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cgroup_refcnt.h",
+  "human_readable_source": " \nCGROUP_REF_FN_ATTRS\nvoid css_get(struct cgroup_subsys_state *css)\n{\n\tif (!(css->flags & CSS_NO_REF))\n\t\tpercpu_ref_get(&css->refcnt);\n}\nCGROUP_REF_EXPORT(css_get)\n\n \nCGROUP_REF_FN_ATTRS\nvoid css_get_many(struct cgroup_subsys_state *css, unsigned int n)\n{\n\tif (!(css->flags & CSS_NO_REF))\n\t\tpercpu_ref_get_many(&css->refcnt, n);\n}\nCGROUP_REF_EXPORT(css_get_many)\n\n \nCGROUP_REF_FN_ATTRS\nbool css_tryget(struct cgroup_subsys_state *css)\n{\n\tif (!(css->flags & CSS_NO_REF))\n\t\treturn percpu_ref_tryget(&css->refcnt);\n\treturn true;\n}\nCGROUP_REF_EXPORT(css_tryget)\n\n \nCGROUP_REF_FN_ATTRS\nbool css_tryget_online(struct cgroup_subsys_state *css)\n{\n\tif (!(css->flags & CSS_NO_REF))\n\t\treturn percpu_ref_tryget_live(&css->refcnt);\n\treturn true;\n}\nCGROUP_REF_EXPORT(css_tryget_online)\n\n \nCGROUP_REF_FN_ATTRS\nvoid css_put(struct cgroup_subsys_state *css)\n{\n\tif (!(css->flags & CSS_NO_REF))\n\t\tpercpu_ref_put(&css->refcnt);\n}\nCGROUP_REF_EXPORT(css_put)\n\n \nCGROUP_REF_FN_ATTRS\nvoid css_put_many(struct cgroup_subsys_state *css, unsigned int n)\n{\n\tif (!(css->flags & CSS_NO_REF))\n\t\tpercpu_ref_put_many(&css->refcnt, n);\n}\nCGROUP_REF_EXPORT(css_put_many)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

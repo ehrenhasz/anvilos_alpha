@@ -1,0 +1,9 @@
+{
+  "module_name": "zdb.h",
+  "hash_id": "6cc6f1f1d535f8536dca676da732d615787c8e573188ae7e15f84e79add6541c",
+  "original_prompt": "Ingested from zfs-2.2.2/cmd/zdb/zdb.h",
+  "human_readable_source": " \n \n\n\n#ifndef\t_ZDB_H\n#define\t_ZDB_H\n\nvoid dump_intent_log(zilog_t *);\nextern uint8_t dump_opt[256];\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

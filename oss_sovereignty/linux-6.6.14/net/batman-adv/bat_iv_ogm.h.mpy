@@ -1,0 +1,9 @@
+{
+  "module_name": "bat_iv_ogm.h",
+  "hash_id": "805766750e8cd0cb3136461c7fa538db0075e00f599a1f2c17b6b33772ed857c",
+  "original_prompt": "Ingested from linux-6.6.14/net/batman-adv/bat_iv_ogm.h",
+  "human_readable_source": " \n \n\n#ifndef _NET_BATMAN_ADV_BAT_IV_OGM_H_\n#define _NET_BATMAN_ADV_BAT_IV_OGM_H_\n\n#include \"main.h\"\n\nint batadv_iv_init(void);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

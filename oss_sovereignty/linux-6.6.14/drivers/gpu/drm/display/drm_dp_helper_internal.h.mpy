@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_dp_helper_internal.h",
+  "hash_id": "3b3a8b4609e71caaa256f5482fbc6356899fa41a4572490dcbafcf04772fef33",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/display/drm_dp_helper_internal.h",
+  "human_readable_source": " \n\n#ifndef DRM_DP_HELPER_INTERNAL_H\n#define DRM_DP_HELPER_INTERNAL_H\n\nstruct drm_dp_aux;\n\n#ifdef CONFIG_DRM_DP_AUX_CHARDEV\nint drm_dp_aux_dev_init(void);\nvoid drm_dp_aux_dev_exit(void);\nint drm_dp_aux_register_devnode(struct drm_dp_aux *aux);\nvoid drm_dp_aux_unregister_devnode(struct drm_dp_aux *aux);\n#else\nstatic inline int drm_dp_aux_dev_init(void)\n{\n\treturn 0;\n}\n\nstatic inline void drm_dp_aux_dev_exit(void)\n{\n}\n\nstatic inline int drm_dp_aux_register_devnode(struct drm_dp_aux *aux)\n{\n\treturn 0;\n}\n\nstatic inline void drm_dp_aux_unregister_devnode(struct drm_dp_aux *aux)\n{\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

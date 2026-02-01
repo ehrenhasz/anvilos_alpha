@@ -1,0 +1,9 @@
+{
+  "module_name": "uu_alloc.c",
+  "hash_id": "e75adfcf7d356bbde52706b4c09d86f5f4e985128b94597e748a01937c7ff257",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libuutil/uu_alloc.c",
+  "human_readable_source": " \n \n\n#include \"libuutil_common.h\"\n\n#include <stdarg.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\nvoid *\nuu_zalloc(size_t n)\n{\n\tvoid *p = malloc(n);\n\n\tif (p == NULL) {\n\t\tuu_set_error(UU_ERROR_SYSTEM);\n\t\treturn (NULL);\n\t}\n\n\t(void) memset(p, 0, n);\n\n\treturn (p);\n}\n\nvoid\nuu_free(void *p)\n{\n\tfree(p);\n}\n\nchar *\nuu_strdup(const char *str)\n{\n\tchar *buf = NULL;\n\n\tif (str != NULL) {\n\t\tsize_t sz;\n\n\t\tsz = strlen(str) + 1;\n\t\tbuf = uu_zalloc(sz);\n\t\tif (buf != NULL)\n\t\t\t(void) memcpy(buf, str, sz);\n\t}\n\treturn (buf);\n}\n\n \nchar *\nuu_strndup(const char *s, size_t n)\n{\n\tsize_t len;\n\tchar *p;\n\n\tlen = strnlen(s, n);\n\tp = uu_zalloc(len + 1);\n\tif (p == NULL)\n\t\treturn (NULL);\n\n\tif (len > 0)\n\t\t(void) memcpy(p, s, len);\n\tp[len] = '\\0';\n\n\treturn (p);\n}\n\n \nvoid *\nuu_memdup(const void *buf, size_t sz)\n{\n\tvoid *p;\n\n\tp = uu_zalloc(sz);\n\tif (p == NULL)\n\t\treturn (NULL);\n\t(void) memcpy(p, buf, sz);\n\treturn (p);\n}\n\nchar *\nuu_msprintf(const char *format, ...)\n{\n\tva_list args;\n\tchar attic[1];\n\tuint_t M, m;\n\tchar *b;\n\n\tva_start(args, format);\n\tM = vsnprintf(attic, 1, format, args);\n\tva_end(args);\n\n\tfor (;;) {\n\t\tm = M;\n\t\tif ((b = uu_zalloc(m + 1)) == NULL)\n\t\t\treturn (NULL);\n\n\t\tva_start(args, format);\n\t\tM = vsnprintf(b, m + 1, format, args);\n\t\tva_end(args);\n\n\t\tif (M == m)\n\t\t\tbreak;\t\t \n\n\t\tuu_free(b);\n\t}\n\n\treturn (b);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

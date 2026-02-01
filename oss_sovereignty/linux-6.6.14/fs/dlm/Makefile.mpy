@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3cde07bf01ec9aae6c88cbf4bacd3e1203af4ff2cc5256e0a0d5a6ec499eb4d9",
+  "original_prompt": "Ingested from linux-6.6.14/fs/dlm/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_DLM) +=\t\tdlm.o\ndlm-y :=\t\t\tast.o \\\n\t\t\t\tconfig.o \\\n\t\t\t\tdir.o \\\n\t\t\t\tlock.o \\\n\t\t\t\tlockspace.o \\\n\t\t\t\tmain.o \\\n\t\t\t\tmember.o \\\n\t\t\t\tmemory.o \\\n\t\t\t\tmidcomms.o \\\n\t\t\t\tlowcomms.o \\\n\t\t\t\tplock.o \\\n\t\t\t\trcom.o \\\n\t\t\t\trecover.o \\\n\t\t\t\trecoverd.o \\\n\t\t\t\trequestqueue.o \\\n\t\t\t\tuser.o \\\n\t\t\t\tutil.o \ndlm-$(CONFIG_DLM_DEBUG) +=\tdebug_fs.o\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

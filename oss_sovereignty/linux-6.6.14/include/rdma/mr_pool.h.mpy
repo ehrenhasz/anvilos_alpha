@@ -1,0 +1,9 @@
+{
+  "module_name": "mr_pool.h",
+  "hash_id": "0baeec10033b4b925820148b0c4fc7009d4cc0a4995d5ce2065b7d87a78061b8",
+  "original_prompt": "Ingested from linux-6.6.14/include/rdma/mr_pool.h",
+  "human_readable_source": " \n \n#ifndef _RDMA_MR_POOL_H\n#define _RDMA_MR_POOL_H 1\n\n#include <rdma/ib_verbs.h>\n\nstruct ib_mr *ib_mr_pool_get(struct ib_qp *qp, struct list_head *list);\nvoid ib_mr_pool_put(struct ib_qp *qp, struct list_head *list, struct ib_mr *mr);\n\nint ib_mr_pool_init(struct ib_qp *qp, struct list_head *list, int nr,\n\t\tenum ib_mr_type type, u32 max_num_sg, u32 max_num_meta_sg);\nvoid ib_mr_pool_destroy(struct ib_qp *qp, struct list_head *list);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

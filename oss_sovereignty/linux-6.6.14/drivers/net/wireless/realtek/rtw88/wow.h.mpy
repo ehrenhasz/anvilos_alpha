@@ -1,0 +1,9 @@
+{
+  "module_name": "wow.h",
+  "hash_id": "2a77625dfc1671e8b210feff621457f707fa66c6127dd0bc5d94ccb021fc5788",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtw88/wow.h",
+  "human_readable_source": " \n \n\n#ifndef __RTW_WOW_H__\n#define __RTW_WOW_H__\n\n#define PNO_CHECK_BYTE 4\n\nenum rtw_wow_pattern_type {\n\tRTW_PATTERN_BROADCAST = 0,\n\tRTW_PATTERN_MULTICAST,\n\tRTW_PATTERN_UNICAST,\n\tRTW_PATTERN_VALID,\n\tRTW_PATTERN_INVALID,\n};\n\nenum rtw_wake_reason {\n\tRTW_WOW_RSN_RX_PTK_REKEY = 0x1,\n\tRTW_WOW_RSN_RX_GTK_REKEY = 0x2,\n\tRTW_WOW_RSN_RX_DEAUTH = 0x8,\n\tRTW_WOW_RSN_DISCONNECT = 0x10,\n\tRTW_WOW_RSN_RX_MAGIC_PKT = 0x21,\n\tRTW_WOW_RSN_RX_PATTERN_MATCH = 0x23,\n\tRTW_WOW_RSN_RX_NLO = 0x55,\n};\n\nstruct rtw_fw_media_status_iter_data {\n\tstruct rtw_dev *rtwdev;\n\tu8 connect;\n};\n\nstruct rtw_fw_key_type_iter_data {\n\tstruct rtw_dev *rtwdev;\n\tu8 group_key_type;\n\tu8 pairwise_key_type;\n};\n\nstatic inline bool rtw_wow_mgd_linked(struct rtw_dev *rtwdev)\n{\n\tstruct ieee80211_vif *wow_vif = rtwdev->wow.wow_vif;\n\tstruct rtw_vif *rtwvif = (struct rtw_vif *)wow_vif->drv_priv;\n\n\treturn (rtwvif->net_type == RTW_NET_MGD_LINKED);\n}\n\nstatic inline bool rtw_wow_no_link(struct rtw_dev *rtwdev)\n{\n\tstruct ieee80211_vif *wow_vif = rtwdev->wow.wow_vif;\n\tstruct rtw_vif *rtwvif = (struct rtw_vif *)wow_vif->drv_priv;\n\n\treturn (rtwvif->net_type == RTW_NET_NO_LINK);\n}\n\nint rtw_wow_suspend(struct rtw_dev *rtwdev, struct cfg80211_wowlan *wowlan);\nint rtw_wow_resume(struct rtw_dev *rtwdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

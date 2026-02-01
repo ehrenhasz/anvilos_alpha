@@ -1,0 +1,9 @@
+{
+  "module_name": "perf_regs.h",
+  "hash_id": "c464de2a98b0acbba6390fab37544347ab3433ba2ab604d4b177684b7732ef17",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/loongarch/include/perf_regs.h",
+  "human_readable_source": " \n#ifndef ARCH_PERF_REGS_H\n#define ARCH_PERF_REGS_H\n\n#include <stdlib.h>\n#include <linux/types.h>\n#include <asm/perf_regs.h>\n\n#define PERF_REGS_MAX PERF_REG_LOONGARCH_MAX\n\n#define PERF_REGS_MASK ((1ULL << PERF_REG_LOONGARCH_MAX) - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "prctl_option.sh",
+  "hash_id": "8410aed88fa016f093f9d07e4ea200ebf677d72aa609f21381e641a44f74fafb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/prctl_option.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n\n[ $# -eq 1 ] && header_dir=$1 || header_dir=tools/include/uapi/linux/\n\nprintf \"static const char *prctl_options[] = {\\n\"\nregex='^#define[[:space:]]{1}PR_(\\w+)[[:space:]]*([[:xdigit:]]+)([[:space:]]*\\/.*)?$'\ngrep -E $regex ${header_dir}/prctl.h | grep -v PR_SET_PTRACER | \\\n\tsed -r \"s/$regex/\\2 \\1/g\"\t| \\\n\tsort -n | xargs printf \"\\t[%s] = \\\"%s\\\",\\n\"\nprintf \"};\\n\"\n\nprintf \"static const char *prctl_set_mm_options[] = {\\n\"\nregex='^#[[:space:]]+define[[:space:]]+PR_SET_MM_(\\w+)[[:space:]]*([[:digit:]]+).*'\ngrep -E $regex ${header_dir}/prctl.h | \\\n\tsed -r \"s/$regex/\\2 \\1/g\"\t| \\\n\tsort -n | xargs printf \"\\t[%s] = \\\"%s\\\",\\n\"\nprintf \"};\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

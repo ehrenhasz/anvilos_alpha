@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1f981d66eede88feed59889eb89ffbd2fa863881a829b07bda5fc5c4666527bc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/tundra/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Tundra network device drivers.\n#\n\nobj-$(CONFIG_TSI108_ETH) += tsi108_eth.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "timerlat.c",
+  "hash_id": "f9721cfa0edf405606206b0eaf4aababfa59f259ad33e12b1f3d77a64ce6ba5c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/tracing/rtla/src/timerlat.c",
+  "human_readable_source": "\n \n#include <sys/types.h>\n#include <sys/stat.h>\n#include <pthread.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n#include <errno.h>\n#include <fcntl.h>\n#include <stdio.h>\n\n#include \"timerlat.h\"\n\nstatic void timerlat_usage(int err)\n{\n\tint i;\n\n\tstatic const char * const msg[] = {\n\t\t\"\",\n\t\t\"timerlat version \" VERSION,\n\t\t\"\",\n\t\t\"  usage: [rtla] timerlat [MODE] ...\",\n\t\t\"\",\n\t\t\"  modes:\",\n\t\t\"     top   - prints the summary from timerlat tracer\",\n\t\t\"     hist  - prints a histogram of timer latencies\",\n\t\t\"\",\n\t\t\"if no MODE is given, the top mode is called, passing the arguments\",\n\t\tNULL,\n\t};\n\n\tfor (i = 0; msg[i]; i++)\n\t\tfprintf(stderr, \"%s\\n\", msg[i]);\n\texit(err);\n}\n\nint timerlat_main(int argc, char *argv[])\n{\n\tif (argc == 0)\n\t\tgoto usage;\n\n\t \n\tif (argc == 1) {\n\t\ttimerlat_top_main(argc, argv);\n\t\texit(0);\n\t}\n\n\tif ((strcmp(argv[1], \"-h\") == 0) || (strcmp(argv[1], \"--help\") == 0)) {\n\t\ttimerlat_usage(0);\n\t} else if (strncmp(argv[1], \"-\", 1) == 0) {\n\t\t \n\t\ttimerlat_top_main(argc, argv);\n\t\texit(0);\n\t} else if (strcmp(argv[1], \"top\") == 0) {\n\t\ttimerlat_top_main(argc-1, &argv[1]);\n\t\texit(0);\n\t} else if (strcmp(argv[1], \"hist\") == 0) {\n\t\ttimerlat_hist_main(argc-1, &argv[1]);\n\t\texit(0);\n\t}\n\nusage:\n\ttimerlat_usage(1);\n\texit(1);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

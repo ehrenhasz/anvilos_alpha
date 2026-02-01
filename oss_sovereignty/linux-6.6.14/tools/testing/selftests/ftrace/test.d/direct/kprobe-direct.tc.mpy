@@ -1,0 +1,9 @@
+{
+  "module_name": "kprobe-direct.tc",
+  "hash_id": "b38eacf089dd2e9eaed5b6990c4379770fe650991a6ea0eeb809bb7cf2be7539",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/direct/kprobe-direct.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Test ftrace direct functions against kprobes\n# requires: kprobe_events\n\nrmmod ftrace-direct ||:\nif ! modprobe ftrace-direct ; then\n  echo \"No ftrace-direct sample module - please build with CONFIG_SAMPLE_FTRACE_DIRECT=m\"\n  exit_unresolved;\nfi\n\necho \"Let the module run a little\"\nsleep 1\n\ngrep -q \"my_direct_func: waking up\" trace\n\nrmmod ftrace-direct\n\necho 'p:kwake wake_up_process task=$arg1' > kprobe_events\n\nstart_direct() {\n\techo > trace\n\tmodprobe ftrace-direct\n\tsleep 1\n\tgrep -q \"my_direct_func: waking up\" trace\n}\n\nstop_direct() {\n\trmmod ftrace-direct\n}\n\nenable_probe() {\n\techo > trace\n\techo 1 > events/kprobes/kwake/enable\n\tsleep 1\n\tgrep -q \"kwake:\" trace\n}\n\ndisable_probe() {\n\techo 0 > events/kprobes/kwake/enable\n}\n\ntest_kprobes() {\n\t# probe -> direct -> no direct > no probe\n\tenable_probe\n\tstart_direct\n\tstop_direct\n\tdisable_probe\n\n\t# probe -> direct -> no probe > no direct\n\tenable_probe\n\tstart_direct\n\tdisable_probe\n\tstop_direct\n\n\t# direct -> probe -> no probe > no direct\n\tstart_direct\n\tenable_probe\n\tdisable_probe\n\tstop_direct\n\n\t# direct -> probe -> no direct > no noprobe\n\tstart_direct\n\tenable_probe\n\tstop_direct\n\tdisable_probe\n}\n\ntest_kprobes\n\n# Now do this with a second registered direct function\necho \"Running with another ftrace direct function\"\n\nmodprobe ftrace-direct-too\n\ntest_kprobes\n\nrmmod ftrace-direct-too\n\necho > kprobe_events\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

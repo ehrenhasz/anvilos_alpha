@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_seqadj.h",
+  "hash_id": "cc461de9f9feddb76c281697092de2e4594360be76bb565aa7b1845123532220",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/nf_conntrack_seqadj.h",
+  "human_readable_source": " \n#ifndef _NF_CONNTRACK_SEQADJ_H\n#define _NF_CONNTRACK_SEQADJ_H\n\n#include <net/netfilter/nf_conntrack_extend.h>\n\n \nstruct nf_ct_seqadj {\n\tu32\t\tcorrection_pos;\n\ts32\t\toffset_before;\n\ts32\t\toffset_after;\n};\n\nstruct nf_conn_seqadj {\n\tstruct nf_ct_seqadj\tseq[IP_CT_DIR_MAX];\n};\n\nstatic inline struct nf_conn_seqadj *nfct_seqadj(const struct nf_conn *ct)\n{\n\treturn nf_ct_ext_find(ct, NF_CT_EXT_SEQADJ);\n}\n\nstatic inline struct nf_conn_seqadj *nfct_seqadj_ext_add(struct nf_conn *ct)\n{\n\treturn nf_ct_ext_add(ct, NF_CT_EXT_SEQADJ, GFP_ATOMIC);\n}\n\nint nf_ct_seqadj_init(struct nf_conn *ct, enum ip_conntrack_info ctinfo,\n\t\t      s32 off);\nint nf_ct_seqadj_set(struct nf_conn *ct, enum ip_conntrack_info ctinfo,\n\t\t     __be32 seq, s32 off);\nvoid nf_ct_tcp_seqadj_set(struct sk_buff *skb, struct nf_conn *ct,\n\t\t\t  enum ip_conntrack_info ctinfo, s32 off);\n\nint nf_ct_seq_adjust(struct sk_buff *skb, struct nf_conn *ct,\n\t\t     enum ip_conntrack_info ctinfo, unsigned int protoff);\ns32 nf_ct_seq_offset(const struct nf_conn *ct, enum ip_conntrack_dir, u32 seq);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

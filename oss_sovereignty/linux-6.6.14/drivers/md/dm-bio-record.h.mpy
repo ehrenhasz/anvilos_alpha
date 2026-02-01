@@ -1,0 +1,9 @@
+{
+  "module_name": "dm-bio-record.h",
+  "hash_id": "5bfceb32b2c6059bdfb162f6c82e8a66a5abf37546517584198b698a71ed3ead",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/dm-bio-record.h",
+  "human_readable_source": " \n \n\n#ifndef DM_BIO_RECORD_H\n#define DM_BIO_RECORD_H\n\n#include <linux/bio.h>\n#include <linux/blk-integrity.h>\n\n \n\nstruct dm_bio_details {\n\tstruct block_device *bi_bdev;\n\tint __bi_remaining;\n\tunsigned long bi_flags;\n\tstruct bvec_iter bi_iter;\n\tbio_end_io_t *bi_end_io;\n#if defined(CONFIG_BLK_DEV_INTEGRITY)\n\tstruct bio_integrity_payload *bi_integrity;\n#endif\n};\n\nstatic inline void dm_bio_record(struct dm_bio_details *bd, struct bio *bio)\n{\n\tbd->bi_bdev = bio->bi_bdev;\n\tbd->bi_flags = bio->bi_flags;\n\tbd->bi_iter = bio->bi_iter;\n\tbd->__bi_remaining = atomic_read(&bio->__bi_remaining);\n\tbd->bi_end_io = bio->bi_end_io;\n#if defined(CONFIG_BLK_DEV_INTEGRITY)\n\tbd->bi_integrity = bio_integrity(bio);\n#endif\n}\n\nstatic inline void dm_bio_restore(struct dm_bio_details *bd, struct bio *bio)\n{\n\tbio->bi_bdev = bd->bi_bdev;\n\tbio->bi_flags = bd->bi_flags;\n\tbio->bi_iter = bd->bi_iter;\n\tatomic_set(&bio->__bi_remaining, bd->__bi_remaining);\n\tbio->bi_end_io = bd->bi_end_io;\n#if defined(CONFIG_BLK_DEV_INTEGRITY)\n\tbio->bi_integrity = bd->bi_integrity;\n#endif\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

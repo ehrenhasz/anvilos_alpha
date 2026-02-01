@@ -1,0 +1,9 @@
+{
+  "module_name": "mmu_global.h",
+  "hash_id": "1c4a29e66db96a8b100f34b5ec427936330def33ba4587beeff8cbe584f39a09",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_common/mmu_global.h",
+  "human_readable_source": " \n \n\n#ifndef __MMU_GLOBAL_H_INCLUDED__\n#define __MMU_GLOBAL_H_INCLUDED__\n\n#define IS_MMU_VERSION_2\n\n#include <mmu_defs.h>\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

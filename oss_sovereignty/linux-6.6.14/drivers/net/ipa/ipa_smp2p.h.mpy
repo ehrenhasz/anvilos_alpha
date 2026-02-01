@@ -1,0 +1,9 @@
+{
+  "module_name": "ipa_smp2p.h",
+  "hash_id": "fe5ad2ad17a67311f3edd6bbef23d8d0e573d58d28af057ccbeaf7d76402fda0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ipa/ipa_smp2p.h",
+  "human_readable_source": " \n\n \n#ifndef _IPA_SMP2P_H_\n#define _IPA_SMP2P_H_\n\n#include <linux/types.h>\n\nstruct ipa;\n\n \nint ipa_smp2p_init(struct ipa *ipa, bool modem_init);\n\n \nvoid ipa_smp2p_exit(struct ipa *ipa);\n\n \nvoid ipa_smp2p_irq_disable_setup(struct ipa *ipa);\n\n \nvoid ipa_smp2p_notify_reset(struct ipa *ipa);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

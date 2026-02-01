@@ -1,0 +1,9 @@
+{
+  "module_name": "resource.c",
+  "hash_id": "c8d89886e4947a9daa0adffec281154936690d7386c403520044fc122a84388f",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/resource.c",
+  "human_readable_source": "\n#include <linux/ioport.h>\n#include <linux/printk.h>\n#include <asm/e820/api.h>\n#include <asm/pci_x86.h>\n\nstatic void resource_clip(struct resource *res, resource_size_t start,\n\t\t\t  resource_size_t end)\n{\n\tresource_size_t low = 0, high = 0;\n\n\tif (res->end < start || res->start > end)\n\t\treturn;\t\t \n\n\tif (res->start < start)\n\t\tlow = start - res->start;\n\n\tif (res->end > end)\n\t\thigh = res->end - end;\n\n\t \n\tif (low > high)\n\t\tres->end = start - 1;\n\telse\n\t\tres->start = end + 1;\n}\n\nstatic void remove_e820_regions(struct resource *avail)\n{\n\tint i;\n\tstruct e820_entry *entry;\n\tu64 e820_start, e820_end;\n\tstruct resource orig = *avail;\n\n\tif (!pci_use_e820)\n\t\treturn;\n\n\tfor (i = 0; i < e820_table->nr_entries; i++) {\n\t\tentry = &e820_table->entries[i];\n\t\te820_start = entry->addr;\n\t\te820_end = entry->addr + entry->size - 1;\n\n\t\tresource_clip(avail, e820_start, e820_end);\n\t\tif (orig.start != avail->start || orig.end != avail->end) {\n\t\t\tpr_info(\"resource: avoiding allocation from e820 entry [mem %#010Lx-%#010Lx]\\n\",\n\t\t\t\te820_start, e820_end);\n\t\t\tif (avail->end > avail->start)\n\t\t\t\t \n\t\t\t\tpr_info(\"resource: remaining [mem %pa-%pa] available\\n\",\n\t\t\t\t\t&avail->start, &avail->end);\n\t\t\torig = *avail;\n\t\t}\n\t}\n}\n\nvoid arch_remove_reservations(struct resource *avail)\n{\n\t \n\tif (avail->flags & IORESOURCE_MEM) {\n\t\tresource_clip(avail, BIOS_ROM_BASE, BIOS_ROM_END);\n\n\t\tremove_e820_regions(avail);\n\t}\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bc1703ac29f9f3624840a6bc82e56b4d11829ec356cebc2327336a6146e15b86",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/wangxun/txgbe/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (c) 2015 - 2022 Beijing WangXun Technology Co., Ltd.\n#\n# Makefile for the Wangxun(R) 10GbE PCI Express ethernet driver\n#\n\nobj-$(CONFIG_TXGBE) += txgbe.o\n\ntxgbe-objs := txgbe_main.o \\\n              txgbe_hw.o \\\n              txgbe_phy.o \\\n              txgbe_ethtool.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

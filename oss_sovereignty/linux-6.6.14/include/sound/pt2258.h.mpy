@@ -1,0 +1,9 @@
+{
+  "module_name": "pt2258.h",
+  "hash_id": "415dda79cb36d94286b0c1745b99d424c83f46d992d170bfd24778fac4bf4d10",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/pt2258.h",
+  "human_readable_source": " \n       \n\n#ifndef __SOUND_PT2258_H\n#define __SOUND_PT2258_H\n\nstruct snd_pt2258 {\n\tstruct snd_card *card;\n\tstruct snd_i2c_bus *i2c_bus;\n\tstruct snd_i2c_device *i2c_dev;\n\n\tunsigned char volume[6];\n\tint mute;\n};\n\nextern int snd_pt2258_reset(struct snd_pt2258 *pt);\nextern int snd_pt2258_build_controls(struct snd_pt2258 *pt);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

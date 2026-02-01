@@ -1,0 +1,9 @@
+{
+  "module_name": "nfs3_fs.h",
+  "hash_id": "78b2c99d1734db69c71be622051cb4a6ba5748682a1ff0511658a19c80acab39",
+  "original_prompt": "Ingested from linux-6.6.14/fs/nfs/nfs3_fs.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_FS_NFS_NFS3_FS_H\n#define __LINUX_FS_NFS_NFS3_FS_H\n\n \n#ifdef CONFIG_NFS_V3_ACL\nextern struct posix_acl *nfs3_get_acl(struct inode *inode, int type, bool rcu);\nextern int nfs3_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,\n\t\t\tstruct posix_acl *acl, int type);\nextern int nfs3_proc_setacls(struct inode *inode, struct posix_acl *acl,\n\t\tstruct posix_acl *dfacl);\nextern ssize_t nfs3_listxattr(struct dentry *, char *, size_t);\n#else\nstatic inline int nfs3_proc_setacls(struct inode *inode, struct posix_acl *acl,\n\t\tstruct posix_acl *dfacl)\n{\n\treturn 0;\n}\n#define nfs3_listxattr NULL\n#endif  \n\n \nstruct nfs_server *nfs3_create_server(struct fs_context *);\nstruct nfs_server *nfs3_clone_server(struct nfs_server *, struct nfs_fh *,\n\t\t\t\t     struct nfs_fattr *, rpc_authflavor_t);\n\n \nextern struct nfs_subversion nfs_v3;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

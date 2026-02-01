@@ -1,0 +1,9 @@
+{
+  "module_name": "qcom_glink.h",
+  "hash_id": "ad22c4ef513a3f2e6e674202d9df7761705028e5763a01aa825986290395ae4f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/rpmsg/qcom_glink.h",
+  "human_readable_source": " \n\n#ifndef _LINUX_RPMSG_QCOM_GLINK_H\n#define _LINUX_RPMSG_QCOM_GLINK_H\n\n#include <linux/device.h>\n\nstruct qcom_glink_smem;\n\n#if IS_ENABLED(CONFIG_RPMSG_QCOM_GLINK)\nvoid qcom_glink_ssr_notify(const char *ssr_name);\n#else\nstatic inline void qcom_glink_ssr_notify(const char *ssr_name) {}\n#endif\n\n#if IS_ENABLED(CONFIG_RPMSG_QCOM_GLINK_SMEM)\n\nstruct qcom_glink_smem *qcom_glink_smem_register(struct device *parent,\n\t\t\t\t\t\t struct device_node *node);\nvoid qcom_glink_smem_unregister(struct qcom_glink_smem *glink);\n\n#else\n\nstatic inline struct qcom_glink_smem *\nqcom_glink_smem_register(struct device *parent,\n\t\t\t struct device_node *node)\n{\n\treturn NULL;\n}\n\nstatic inline void qcom_glink_smem_unregister(struct qcom_glink_smem *glink) {}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

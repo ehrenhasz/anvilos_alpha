@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk-adsp-common.h",
+  "hash_id": "47fadadb575438821525c33c3e2361e083e9ce5b42ab488528774508e8ac0b1d",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sof/mediatek/mtk-adsp-common.h",
+  "human_readable_source": " \n\n#ifndef __MEDIATEK_ADSP_COMMON_H__\n#define __MEDIATEK_ADSP_COMMON_H__\n\n#define EXCEPT_MAX_HDR_SIZE\t0x400\n#define MTK_ADSP_STACK_DUMP_SIZE 32\n\nvoid mtk_adsp_dump(struct snd_sof_dev *sdev, u32 flags);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "pushc37b.h",
+  "hash_id": "fa7c4c67712fb5f88f82e5140b077e77bf1a5077d537aa618a17d68f03d6cf38",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvif/pushc37b.h",
+  "human_readable_source": "#ifndef __NVIF_PUSHC37B_H__\n#define __NVIF_PUSHC37B_H__\n#include <nvif/push.h>\n\n#include <nvhw/class/clc37b.h>\n\n#define PUSH_HDR(p,m,c) do {                                                    \\\n        PUSH_ASSERT(!((m) & ~DRF_SMASK(NVC37B_DMA_METHOD_OFFSET)), \"mthd\");     \\\n        PUSH_ASSERT(!((c) & ~DRF_MASK(NVC37B_DMA_METHOD_COUNT)), \"size\");       \\\n        PUSH_DATA__((p), NVDEF(NVC37B, DMA, OPCODE, METHOD) |                   \\\n\t\t\t NVVAL(NVC37B, DMA, METHOD_COUNT, (c)) |                \\\n\t\t\t NVVAL(NVC37B, DMA, METHOD_OFFSET, (m) >> 2),           \\\n\t\t    \" mthd 0x%04x size %d - %s\", (u32)(m), (u32)(c), __func__); \\\n} while(0)\n\n#define PUSH_MTHD_HDR(p,s,m,c) PUSH_HDR(p,m,c)\n#define PUSH_MTHD_INC 4:4\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

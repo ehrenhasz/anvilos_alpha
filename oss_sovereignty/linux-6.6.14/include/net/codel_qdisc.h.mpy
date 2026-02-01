@@ -1,0 +1,9 @@
+{
+  "module_name": "codel_qdisc.h",
+  "hash_id": "49633ed9141be9f7add834ade926c3f39a0690d1ac41a1ba4857b78d42ef29e4",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/codel_qdisc.h",
+  "human_readable_source": "#ifndef __NET_SCHED_CODEL_QDISC_H\n#define __NET_SCHED_CODEL_QDISC_H\n\n \n\n \n\n#include <net/codel.h>\n#include <net/pkt_sched.h>\n\n \nstruct codel_skb_cb {\n\tcodel_time_t enqueue_time;\n\tunsigned int mem_usage;\n};\n\nstatic struct codel_skb_cb *get_codel_cb(const struct sk_buff *skb)\n{\n\tqdisc_cb_private_validate(skb, sizeof(struct codel_skb_cb));\n\treturn (struct codel_skb_cb *)qdisc_skb_cb(skb)->data;\n}\n\nstatic codel_time_t codel_get_enqueue_time(const struct sk_buff *skb)\n{\n\treturn get_codel_cb(skb)->enqueue_time;\n}\n\nstatic void codel_set_enqueue_time(struct sk_buff *skb)\n{\n\tget_codel_cb(skb)->enqueue_time = codel_get_time();\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

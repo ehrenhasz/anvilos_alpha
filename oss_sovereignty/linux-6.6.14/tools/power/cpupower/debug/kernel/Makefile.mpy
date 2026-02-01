@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6d2973e1df0304274cc0399f5caf98210cab2753bed935c2b59a16c83e8379ec",
+  "original_prompt": "Ingested from linux-6.6.14/tools/power/cpupower/debug/kernel/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-m\t:=\n\nKDIR\t:= /lib/modules/$(shell uname -r)/build\nKMISC   := /lib/modules/$(shell uname -r)/cpufrequtils/\n\nifeq (\"$(CONFIG_X86_TSC)\", \"y\")\n  obj-m\t += cpufreq-test_tsc.o\nendif\n\ndefault:\n\t$(MAKE) -C $(KDIR) M=$(CURDIR)\n\nclean:\n\t- rm -rf *.o *.ko .*.cmd .*.mod.* *.mod.c\n\t- rm -rf Module.symvers modules.order\n\ninstall: default\n\tinstall -d $(KMISC)\n\tinstall -m 644 -c *.ko $(KMISC)\n\t/sbin/depmod -a\n\nall:\tdefault\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

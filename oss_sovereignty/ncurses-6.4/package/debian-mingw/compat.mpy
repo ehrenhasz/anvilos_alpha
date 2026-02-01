@@ -1,0 +1,9 @@
+{
+  "module_name": "compat",
+  "hash_id": "a1fb50e6c86fae1679ef3351296fd6713411a08cf8dd1790a4fd05fae8688164",
+  "original_prompt": "Ingested from ncurses-6.4/package/debian-mingw/compat",
+  "human_readable_source": "12\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ras.c",
+  "hash_id": "90217dd6fa550a8e225b3d14c5053b967e2a3b486b2e52e5a86d506d54a22a30",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ras/ras.c",
+  "human_readable_source": "\n \n\n#include <linux/init.h>\n#include <linux/ras.h>\n#include <linux/uuid.h>\n\n#define CREATE_TRACE_POINTS\n#define TRACE_INCLUDE_PATH ../../include/ras\n#include <ras/ras_event.h>\n\nvoid log_non_standard_event(const guid_t *sec_type, const guid_t *fru_id,\n\t\t\t    const char *fru_text, const u8 sev, const u8 *err,\n\t\t\t    const u32 len)\n{\n\ttrace_non_standard_event(sec_type, fru_id, fru_text, sev, err, len);\n}\n\nvoid log_arm_hw_error(struct cper_sec_proc_arm *err)\n{\n\ttrace_arm_event(err);\n}\n\nstatic int __init ras_init(void)\n{\n\tint rc = 0;\n\n\tras_debugfs_init();\n\trc = ras_add_daemon_trace();\n\n\treturn rc;\n}\nsubsys_initcall(ras_init);\n\n#if defined(CONFIG_ACPI_EXTLOG) || defined(CONFIG_ACPI_EXTLOG_MODULE)\nEXPORT_TRACEPOINT_SYMBOL_GPL(extlog_mem_event);\n#endif\nEXPORT_TRACEPOINT_SYMBOL_GPL(mc_event);\nEXPORT_TRACEPOINT_SYMBOL_GPL(non_standard_event);\nEXPORT_TRACEPOINT_SYMBOL_GPL(arm_event);\n\nstatic int __init parse_ras_param(char *str)\n{\n#ifdef CONFIG_RAS_CEC\n\tparse_cec_param(str);\n#endif\n\n\treturn 1;\n}\n__setup(\"ras\", parse_ras_param);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

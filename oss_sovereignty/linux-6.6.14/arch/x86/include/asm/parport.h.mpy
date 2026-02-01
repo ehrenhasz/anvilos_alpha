@@ -1,0 +1,9 @@
+{
+  "module_name": "parport.h",
+  "hash_id": "bb6c84c7061e185da532d7b1ccce8359799700e4141dc4b9989f3bb541840b05",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/parport.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_PARPORT_H\n#define _ASM_X86_PARPORT_H\n\nstatic int parport_pc_find_isa_ports(int autoirq, int autodma);\nstatic int parport_pc_find_nonpci_ports(int autoirq, int autodma)\n{\n\treturn parport_pc_find_isa_ports(autoirq, autodma);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

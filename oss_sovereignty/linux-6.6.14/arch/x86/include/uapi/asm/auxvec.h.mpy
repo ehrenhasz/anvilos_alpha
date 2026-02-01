@@ -1,0 +1,9 @@
+{
+  "module_name": "auxvec.h",
+  "hash_id": "d60d739221e0c439a2d4c68c760a984c49beb0d2bcee5929581121c40549eaaf",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/auxvec.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_AUXVEC_H\n#define _ASM_X86_AUXVEC_H\n \n#ifdef __i386__\n#define AT_SYSINFO\t\t32\n#endif\n#define AT_SYSINFO_EHDR\t\t33\n\n \n#if defined(CONFIG_IA32_EMULATION) || !defined(CONFIG_X86_64)\n# define AT_VECTOR_SIZE_ARCH 3\n#else  \n# define AT_VECTOR_SIZE_ARCH 2\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

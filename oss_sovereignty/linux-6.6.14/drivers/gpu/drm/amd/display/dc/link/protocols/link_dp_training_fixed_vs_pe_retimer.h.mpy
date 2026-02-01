@@ -1,0 +1,9 @@
+{
+  "module_name": "link_dp_training_fixed_vs_pe_retimer.h",
+  "hash_id": "bfab56c30036fb1d695b396c336491f0d5beea8a07d3a424f89c31aaf8576fd5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/protocols/link_dp_training_fixed_vs_pe_retimer.h",
+  "human_readable_source": " \n\n\n#ifndef __DC_LINK_DP_FIXED_VS_PE_RETIMER_H__\n#define __DC_LINK_DP_FIXED_VS_PE_RETIMER_H__\n#include \"link_dp_training.h\"\n\nenum link_training_result dp_perform_fixed_vs_pe_training_sequence_legacy(\n\tstruct dc_link *link,\n\tconst struct link_resource *link_res,\n\tstruct link_training_settings *lt_settings);\n\nenum link_training_result dp_perform_fixed_vs_pe_training_sequence(\n\tstruct dc_link *link,\n\tconst struct link_resource *link_res,\n\tstruct link_training_settings *lt_settings);\n\nvoid dp_fixed_vs_pe_set_retimer_lane_settings(\n\tstruct dc_link *link,\n\tconst union dpcd_training_lane dpcd_lane_adjust[LANE_COUNT_DP_MAX],\n\tuint8_t lane_count);\n\nvoid dp_fixed_vs_pe_read_lane_adjust(\n\tstruct dc_link *link,\n\tunion dpcd_training_lane dpcd_lane_adjust[LANE_COUNT_DP_MAX]);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

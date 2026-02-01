@@ -1,0 +1,9 @@
+{
+  "module_name": "atomic.h",
+  "hash_id": "cf23eea99a3db9958fc4c0db2eb72976329c9ddf57d1c9b8d94e24d51a7f0cff",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/linux/atomic.h",
+  "human_readable_source": " \n#ifndef __TOOLS_LINUX_ATOMIC_H\n#define __TOOLS_LINUX_ATOMIC_H\n\n#include <asm/atomic.h>\n\nvoid atomic_long_set(atomic_long_t *v, long i);\n\n \n#ifndef atomic_cmpxchg_relaxed\n#define  atomic_cmpxchg_relaxed\t\tatomic_cmpxchg\n#define  atomic_cmpxchg_release         atomic_cmpxchg\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

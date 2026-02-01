@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b99f614fcfc2b14c592299d462eabb2df6e127c4c7d81da91e5aae01bd39a9e1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/typec/tipd/Kconfig",
+  "human_readable_source": "config TYPEC_TPS6598X\n\ttristate \"TI TPS6598x USB Power Delivery controller driver\"\n\tdepends on I2C\n\tselect POWER_SUPPLY\n\tselect REGMAP_I2C\n\tselect USB_ROLE_SWITCH\n\thelp\n\t  Say Y or M here if your system has TI TPS65982 or TPS65983 USB Power\n\t  Delivery controller.\n\n\t  If you choose to build this driver as a dynamically linked module, the\n\t  module will be called tps6598x.ko.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

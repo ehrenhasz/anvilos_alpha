@@ -1,0 +1,9 @@
+{
+  "module_name": "c32isxdigit.c",
+  "hash_id": "e0e364c1bc270957148b5784e7d18f77dae63701733a70b593d6bafd02bb63e3",
+  "original_prompt": "Ingested from coreutils-9.4/lib/c32isxdigit.c",
+  "human_readable_source": " \n#include <uchar.h>\n\n#define FUNC c32isxdigit\n#define WCHAR_FUNC iswxdigit\n#define UCS_FUNC uc_is_xdigit\n#include \"c32is-impl.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ivtv.h",
+  "hash_id": "171f744e033a860fe0af04478759ebc7deb24c8d4d90c82e8b659807beb17c99",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/ivtv.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_IVTV_H__\n#define __LINUX_IVTV_H__\n\n#include <linux/compiler.h>\n#include <linux/types.h>\n#include <linux/videodev2.h>\n\n \n\nstruct ivtv_dma_frame {\n\tenum v4l2_buf_type type;  \n\t__u32 pixelformat;\t  \n\tvoid __user *y_source;    \n\tvoid __user *uv_source;   \n\tstruct v4l2_rect src;\n\tstruct v4l2_rect dst;\n\t__u32 src_width;\n\t__u32 src_height;\n};\n\n#define IVTV_IOC_DMA_FRAME\t\t_IOW ('V', BASE_VIDIOC_PRIVATE+0, struct ivtv_dma_frame)\n\n \n#define IVTV_IOC_PASSTHROUGH_MODE\t_IOW ('V', BASE_VIDIOC_PRIVATE+1, int)\n\n \n#define IVTV_SLICED_TYPE_TELETEXT_B     V4L2_MPEG_VBI_IVTV_TELETEXT_B\n#define IVTV_SLICED_TYPE_CAPTION_525    V4L2_MPEG_VBI_IVTV_CAPTION_525\n#define IVTV_SLICED_TYPE_WSS_625        V4L2_MPEG_VBI_IVTV_WSS_625\n#define IVTV_SLICED_TYPE_VPS            V4L2_MPEG_VBI_IVTV_VPS\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

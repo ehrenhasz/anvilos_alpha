@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_conntrack_sane.h",
+  "hash_id": "b3a69f4da18f5a9f0e9a91abe00b69eeaaff94a8b3930ba26b34e1358c6b0cec",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter/nf_conntrack_sane.h",
+  "human_readable_source": " \n#ifndef _NF_CONNTRACK_SANE_H\n#define _NF_CONNTRACK_SANE_H\n \n\n#define SANE_PORT\t6566\n\nenum sane_state {\n\tSANE_STATE_NORMAL,\n\tSANE_STATE_START_REQUESTED,\n};\n\n \nstruct nf_ct_sane_master {\n\tenum sane_state state;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

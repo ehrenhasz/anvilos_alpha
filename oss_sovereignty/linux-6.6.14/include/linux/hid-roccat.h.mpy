@@ -1,0 +1,9 @@
+{
+  "module_name": "hid-roccat.h",
+  "hash_id": "a30e1d975139c7a5ee1021175d563bb27fc00507f894e12791b04f025fa5cf91",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/hid-roccat.h",
+  "human_readable_source": " \n#ifndef __HID_ROCCAT_H\n#define __HID_ROCCAT_H\n\n \n\n \n\n#include <linux/hid.h>\n#include <linux/types.h>\n\n#define ROCCATIOCGREPSIZE _IOR('H', 0xf1, int)\n\n#ifdef __KERNEL__\n\nint roccat_connect(const struct class *klass, struct hid_device *hid,\n\t\tint report_size);\nvoid roccat_disconnect(int minor);\nint roccat_report_event(int minor, u8 const *data);\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

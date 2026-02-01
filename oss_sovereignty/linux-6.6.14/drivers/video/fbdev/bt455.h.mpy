@@ -1,0 +1,9 @@
+{
+  "module_name": "bt455.h",
+  "hash_id": "d62cc8b8437117f2b235724a8f397a02e979c08c50af481ccfb648c9e226691f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/video/fbdev/bt455.h",
+  "human_readable_source": " \n#include <linux/types.h>\n\n \nstruct bt455_regs {\n\tvolatile u8 addr_cmap;\n\tu8 pad0[3];\n\tvolatile u8 addr_cmap_data;\n\tu8 pad1[3];\n\tvolatile u8 addr_clr;\n\tu8 pad2[3];\n\tvolatile u8 addr_ovly;\n\tu8 pad3[3];\n};\n\nstatic inline void bt455_select_reg(struct bt455_regs *regs, int ir)\n{\n\tmb();\n\tregs->addr_cmap = ir & 0x0f;\n}\n\nstatic inline void bt455_reset_reg(struct bt455_regs *regs)\n{\n\tmb();\n\tregs->addr_clr = 0;\n}\n\n \nstatic inline void bt455_read_cmap_next(struct bt455_regs *regs, u8 *grey)\n{\n\tmb();\n\tregs->addr_cmap_data;\n\trmb();\n\t*grey = regs->addr_cmap_data & 0xf;\n\trmb();\n\tregs->addr_cmap_data;\n}\n\nstatic inline void bt455_write_cmap_next(struct bt455_regs *regs, u8 grey)\n{\n\twmb();\n\tregs->addr_cmap_data = 0x0;\n\twmb();\n\tregs->addr_cmap_data = grey & 0xf;\n\twmb();\n\tregs->addr_cmap_data = 0x0;\n}\n\nstatic inline void bt455_write_ovly_next(struct bt455_regs *regs, u8 grey)\n{\n\twmb();\n\tregs->addr_ovly = 0x0;\n\twmb();\n\tregs->addr_ovly = grey & 0xf;\n\twmb();\n\tregs->addr_ovly = 0x0;\n}\n\nstatic inline void bt455_read_cmap_entry(struct bt455_regs *regs,\n\t\t\t\t\t int cr, u8 *grey)\n{\n\tbt455_select_reg(regs, cr);\n\tbt455_read_cmap_next(regs, grey);\n}\n\nstatic inline void bt455_write_cmap_entry(struct bt455_regs *regs,\n\t\t\t\t\t  int cr, u8 grey)\n{\n\tbt455_select_reg(regs, cr);\n\tbt455_write_cmap_next(regs, grey);\n}\n\nstatic inline void bt455_write_ovly_entry(struct bt455_regs *regs, u8 grey)\n{\n\tbt455_reset_reg(regs);\n\tbt455_write_ovly_next(regs, grey);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

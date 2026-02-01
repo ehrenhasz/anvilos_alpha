@@ -1,0 +1,9 @@
+{
+  "module_name": "rockchip,rk808.h",
+  "hash_id": "4ea63ee9b8d7a86c82edffc549a5501a483109d129867fcc28fadcd0f7182137",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/rockchip,rk808.h",
+  "human_readable_source": " \n \n#ifndef _CLK_ROCKCHIP_RK808\n#define _CLK_ROCKCHIP_RK808\n\n \n#define RK808_CLKOUT0\t\t0\n#define RK808_CLKOUT1\t\t1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

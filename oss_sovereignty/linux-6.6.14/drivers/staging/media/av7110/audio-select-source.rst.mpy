@@ -1,0 +1,9 @@
+{
+  "module_name": "audio-select-source.rst",
+  "hash_id": "d3b13f510b6c22f13c9364c166895a758a78f144444081af1e48a1271190b905",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/audio-select-source.rst",
+  "human_readable_source": ".. SPDX-License-Identifier: GFDL-1.1-no-invariants-or-later\n.. c:namespace:: DTV.audio\n\n.. _AUDIO_SELECT_SOURCE:\n\n===================\nAUDIO_SELECT_SOURCE\n===================\n\nName\n----\n\nAUDIO_SELECT_SOURCE\n\n.. attention:: This ioctl is deprecated\n\nSynopsis\n--------\n\n.. c:macro:: AUDIO_SELECT_SOURCE\n\n``int ioctl(int fd, AUDIO_SELECT_SOURCE, struct audio_stream_source *source)``\n\nArguments\n---------\n\n.. flat-table::\n    :header-rows:  0\n    :stub-columns: 0\n\n    -\n\n       -  int fd\n\n       -  File descriptor returned by a previous call to open().\n\n    -\n\n       -  audio_stream_source_t source\n\n       -  Indicates the source that shall be used for the Audio stream.\n\nDescription\n-----------\n\nThis ioctl call informs the audio device which source shall be used for\nthe input data. The possible sources are demux or memory. If\nAUDIO_SOURCE_MEMORY is selected, the data is fed to the Audio Device\nthrough the write command.\n\nReturn Value\n------------\n\nOn success 0 is returned, on error -1 and the ``errno`` variable is set\nappropriately. The generic error codes are described at the\n:ref:`Generic Error Codes <gen-errors>` chapter.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "6f69a9cda9e1a542a2fd9fcc6d652ed3005ae52fad229d3c889d3a7d42ff67de",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n#  Makefile for the Linux Controller Area Network drivers.\n#\n\nobj-$(CONFIG_CAN_VCAN)\t\t+= vcan.o\nobj-$(CONFIG_CAN_VXCAN)\t\t+= vxcan.o\nobj-$(CONFIG_CAN_SLCAN)\t\t+= slcan/\n\nobj-y\t\t\t\t+= dev/\nobj-y\t\t\t\t+= rcar/\nobj-y\t\t\t\t+= spi/\nobj-y\t\t\t\t+= usb/\nobj-y\t\t\t\t+= softing/\n\nobj-$(CONFIG_CAN_AT91)\t\t+= at91_can.o\nobj-$(CONFIG_CAN_BXCAN)\t\t+= bxcan.o\nobj-$(CONFIG_CAN_CAN327)\t+= can327.o\nobj-$(CONFIG_CAN_CC770)\t\t+= cc770/\nobj-$(CONFIG_CAN_C_CAN)\t\t+= c_can/\nobj-$(CONFIG_CAN_CTUCANFD)\t+= ctucanfd/\nobj-$(CONFIG_CAN_FLEXCAN)\t+= flexcan/\nobj-$(CONFIG_CAN_GRCAN)\t\t+= grcan.o\nobj-$(CONFIG_CAN_IFI_CANFD)\t+= ifi_canfd/\nobj-$(CONFIG_CAN_JANZ_ICAN3)\t+= janz-ican3.o\nobj-$(CONFIG_CAN_KVASER_PCIEFD)\t+= kvaser_pciefd.o\nobj-$(CONFIG_CAN_MSCAN)\t\t+= mscan/\nobj-$(CONFIG_CAN_M_CAN)\t\t+= m_can/\nobj-$(CONFIG_CAN_PEAK_PCIEFD)\t+= peak_canfd/\nobj-$(CONFIG_CAN_SJA1000)\t+= sja1000/\nobj-$(CONFIG_CAN_SUN4I)\t\t+= sun4i_can.o\nobj-$(CONFIG_CAN_TI_HECC)\t+= ti_hecc.o\nobj-$(CONFIG_CAN_XILINXCAN)\t+= xilinx_can.o\n\nsubdir-ccflags-$(CONFIG_CAN_DEBUG_DEVICES) += -DDEBUG\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

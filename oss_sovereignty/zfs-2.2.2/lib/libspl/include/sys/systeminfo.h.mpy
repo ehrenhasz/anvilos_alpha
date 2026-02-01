@@ -1,0 +1,9 @@
+{
+  "module_name": "systeminfo.h",
+  "hash_id": "651aed7a547bc235be0548c28f46e8438ac8a1012534e5546a264a450f969e33",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/systeminfo.h",
+  "human_readable_source": " \n \n\n#ifndef _LIBSPL_SYS_SYSTEMINFO_H\n#define\t_LIBSPL_SYS_SYSTEMINFO_H\n\n#define\tHOSTID_MASK\t\t0xFFFFFFFF\n#define\tHW_INVALID_HOSTID\t0xFFFFFFFF\t \n#define\tHW_HOSTID_LEN\t\t11\t\t \n\t\t\t\t\t\t \n\t\t\t\t\t\t \n\nunsigned long get_system_hostid(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

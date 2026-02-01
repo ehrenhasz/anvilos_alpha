@@ -1,0 +1,9 @@
+{
+  "module_name": "ioasm.h",
+  "hash_id": "97a1164c76e2185253c89c7774761445889faf3e651439c4b34594eecab01a23",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/s390/cio/ioasm.h",
+  "human_readable_source": " \n#ifndef S390_CIO_IOASM_H\n#define S390_CIO_IOASM_H\n\n#include <asm/chpid.h>\n#include <asm/schid.h>\n#include <asm/crw.h>\n#include \"orb.h\"\n#include \"cio.h\"\n#include \"trace.h\"\n\n \n\nint stsch(struct subchannel_id schid, struct schib *addr);\nint msch(struct subchannel_id schid, struct schib *addr);\nint tsch(struct subchannel_id schid, struct irb *addr);\nint ssch(struct subchannel_id schid, union orb *addr);\nint csch(struct subchannel_id schid);\nint tpi(struct tpi_info *addr);\nint chsc(void *chsc_area);\nint rsch(struct subchannel_id schid);\nint hsch(struct subchannel_id schid);\nint xsch(struct subchannel_id schid);\nint stcrw(struct crw *crw);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

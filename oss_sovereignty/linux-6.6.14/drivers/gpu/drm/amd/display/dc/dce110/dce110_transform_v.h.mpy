@@ -1,0 +1,9 @@
+{
+  "module_name": "dce110_transform_v.h",
+  "hash_id": "86ac774939dcd1b2c2bfd8d07c1cb007b2b9224c8e8ae551cfde47f6b585d5b3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce110/dce110_transform_v.h",
+  "human_readable_source": " \n\n#ifndef __DAL_TRANSFORM_V_DCE110_H__\n#define __DAL_TRANSFORM_V_DCE110_H__\n\n#include \"../dce/dce_transform.h\"\n\n#define LB_TOTAL_NUMBER_OF_ENTRIES 1712\n#define LB_BITS_PER_ENTRY 144\n\nbool dce110_transform_v_construct(\n\tstruct dce_transform *xfm110,\n\tstruct dc_context *ctx);\n\nvoid dce110_opp_v_set_csc_default(\n\tstruct transform *xfm,\n\tconst struct default_adjustment *default_adjust);\n\nvoid dce110_opp_v_set_csc_adjustment(\n\t\tstruct transform *xfm,\n\tconst struct out_csc_color_matrix *tbl_entry);\n\n\nvoid dce110_opp_program_regamma_pwl_v(\n\tstruct transform *xfm,\n\tconst struct pwl_params *params);\n\nvoid dce110_opp_power_on_regamma_lut_v(\n\tstruct transform *xfm,\n\tbool power_on);\n\nvoid dce110_opp_set_regamma_mode_v(\n\tstruct transform *xfm,\n\tenum opp_regamma mode);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

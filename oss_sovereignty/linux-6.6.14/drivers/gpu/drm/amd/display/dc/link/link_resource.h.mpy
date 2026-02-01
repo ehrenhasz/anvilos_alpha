@@ -1,0 +1,9 @@
+{
+  "module_name": "link_resource.h",
+  "hash_id": "f183f3abb5551208af96e8e4ef6a9b0fb9a25128c700068246a4d5f347d107d8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/link_resource.h",
+  "human_readable_source": " \n#ifndef __LINK_RESOURCE_H__\n#define __LINK_RESOURCE_H__\n#include \"link.h\"\nvoid link_get_cur_res_map(const struct dc *dc, uint32_t *map);\nvoid link_restore_res_map(const struct dc *dc, uint32_t *map);\nvoid link_get_cur_link_res(const struct dc_link *link,\n\t\tstruct link_resource *link_res);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rl6347a.h",
+  "hash_id": "1bf759bf17204b45621dfb883c399528b5e344e533494b6fa80ead9675fb88db",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/rl6347a.h",
+  "human_readable_source": " \n \n#ifndef __RL6347A_H__\n#define __RL6347A_H__\n\n#include <sound/hda_verbs.h>\n\n#define VERB_CMD(V, N, D) ((N << 20) | (V << 8) | D)\n\n#define RL6347A_VENDOR_REGISTERS\t0x20\n\n#define RL6347A_COEF_INDEX\\\n\tVERB_CMD(AC_VERB_SET_COEF_INDEX, RL6347A_VENDOR_REGISTERS, 0)\n#define RL6347A_PROC_COEF\\\n\tVERB_CMD(AC_VERB_SET_PROC_COEF, RL6347A_VENDOR_REGISTERS, 0)\n\nstruct rl6347a_priv {\n\tstruct reg_default *index_cache;\n\tint index_cache_size;\n};\n\nint rl6347a_hw_write(void *context, unsigned int reg, unsigned int value);\nint rl6347a_hw_read(void *context, unsigned int reg, unsigned int *value);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

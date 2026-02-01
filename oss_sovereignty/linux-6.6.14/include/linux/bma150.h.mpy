@@ -1,0 +1,9 @@
+{
+  "module_name": "bma150.h",
+  "hash_id": "7a1917f46a8c143a69e3b184d47feb84b58fd1d16785578473e021a71f7e6168",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/bma150.h",
+  "human_readable_source": " \n \n\n#ifndef _BMA150_H_\n#define _BMA150_H_\n\n#define BMA150_DRIVER\t\t\"bma150\"\n\n#define BMA150_RANGE_2G\t\t0\n#define BMA150_RANGE_4G\t\t1\n#define BMA150_RANGE_8G\t\t2\n\n#define BMA150_BW_25HZ\t\t0\n#define BMA150_BW_50HZ\t\t1\n#define BMA150_BW_100HZ\t\t2\n#define BMA150_BW_190HZ\t\t3\n#define BMA150_BW_375HZ\t\t4\n#define BMA150_BW_750HZ\t\t5\n#define BMA150_BW_1500HZ\t6\n\nstruct bma150_cfg {\n\tbool any_motion_int;\t\t \n\tbool hg_int;\t\t\t \n\tbool lg_int;\t\t\t \n\tunsigned char any_motion_dur;\t \n\tunsigned char any_motion_thres;\t \n\tunsigned char hg_hyst;\t\t \n\tunsigned char hg_dur;\t\t \n\tunsigned char hg_thres;\t\t \n\tunsigned char lg_hyst;\t\t \n\tunsigned char lg_dur;\t\t \n\tunsigned char lg_thres;\t\t \n\tunsigned char range;\t\t \n\tunsigned char bandwidth;\t \n};\n\nstruct bma150_platform_data {\n\tstruct bma150_cfg cfg;\n\tint (*irq_gpio_cfg)(void);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

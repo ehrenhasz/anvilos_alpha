@@ -1,0 +1,9 @@
+{
+  "module_name": "timer-versatile.c",
+  "hash_id": "7cc89ea7f3d41efe561424f8b12b5bd0ea84753e174a454708c698e55e234d14",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clocksource/timer-versatile.c",
+  "human_readable_source": "\n \n\n#include <linux/clocksource.h>\n#include <linux/io.h>\n#include <linux/of.h>\n#include <linux/of_address.h>\n#include <linux/sched_clock.h>\n\n#define SYS_24MHZ 0x05c\n\nstatic void __iomem *versatile_sys_24mhz;\n\nstatic u64 notrace versatile_sys_24mhz_read(void)\n{\n\treturn readl(versatile_sys_24mhz);\n}\n\nstatic int __init versatile_sched_clock_init(struct device_node *node)\n{\n\tvoid __iomem *base = of_iomap(node, 0);\n\n\tof_node_clear_flag(node, OF_POPULATED);\n\n\tif (!base)\n\t\treturn -ENXIO;\n\n\tversatile_sys_24mhz = base + SYS_24MHZ;\n\n\tsched_clock_register(versatile_sys_24mhz_read, 32, 24000000);\n\n\treturn 0;\n}\nTIMER_OF_DECLARE(vexpress, \"arm,vexpress-sysreg\",\n\t\t       versatile_sched_clock_init);\nTIMER_OF_DECLARE(versatile, \"arm,versatile-sysreg\",\n\t\t       versatile_sched_clock_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

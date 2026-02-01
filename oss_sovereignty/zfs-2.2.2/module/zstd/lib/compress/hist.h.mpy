@@ -1,0 +1,9 @@
+{
+  "module_name": "hist.h",
+  "hash_id": "edefddd69410030f3ba5357ef2fa19d8cbad959279ce8bc82991266581ad4a2b",
+  "original_prompt": "Ingested from zfs-2.2.2/module/zstd/lib/compress/hist.h",
+  "human_readable_source": " \n\n \n#include <stddef.h>    \n\n\n \n\n \nsize_t HIST_count(unsigned* count, unsigned* maxSymbolValuePtr,\n                  const void* src, size_t srcSize);\n\nunsigned HIST_isError(size_t code);   \n\n\n \n\n#define HIST_WKSP_SIZE_U32 1024\n#define HIST_WKSP_SIZE    (HIST_WKSP_SIZE_U32 * sizeof(unsigned))\n \nsize_t HIST_count_wksp(unsigned* count, unsigned* maxSymbolValuePtr,\n                       const void* src, size_t srcSize,\n                       void* workSpace, size_t workSpaceSize);\n\n \nsize_t HIST_countFast(unsigned* count, unsigned* maxSymbolValuePtr,\n                      const void* src, size_t srcSize);\n\n \nsize_t HIST_countFast_wksp(unsigned* count, unsigned* maxSymbolValuePtr,\n                           const void* src, size_t srcSize,\n                           void* workSpace, size_t workSpaceSize);\n\n \nunsigned HIST_count_simple(unsigned* count, unsigned* maxSymbolValuePtr,\n                           const void* src, size_t srcSize);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "reg.h",
+  "hash_id": "667f5946d9915176481ef2c28de0d22e4c7c3011aa048e0a7137f77aed1c5e03",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/reg.h",
+  "human_readable_source": " \n\n#ifndef ATH_REGISTERS_H\n#define ATH_REGISTERS_H\n\n#define AR_MIBC\t\t\t0x0040\n#define AR_MIBC_COW\t\t0x00000001\n#define AR_MIBC_FMC\t\t0x00000002\n#define AR_MIBC_CMC\t\t0x00000004\n#define AR_MIBC_MCS\t\t0x00000008\n\n#define AR_STA_ID0\t\t0x8000\n#define AR_STA_ID1\t\t0x8004\n#define AR_STA_ID1_SADH_MASK\t0x0000ffff\n\n \n#define AR_BSSMSKL\t\t0x80e0\n#define AR_BSSMSKU\t\t0x80e4\n\n#define AR_TFCNT\t\t0x80ec\n#define AR_RFCNT\t\t0x80f0\n#define AR_RCCNT\t\t0x80f4\n#define AR_CCCNT\t\t0x80f8\n\n#define AR_KEYTABLE_0           0x8800\n#define AR_KEYTABLE(_n)         (AR_KEYTABLE_0 + ((_n)*32))\n#define AR_KEY_CACHE_SIZE       128\n#define AR_RSVD_KEYTABLE_ENTRIES 4\n#define AR_KEY_TYPE             0x00000007\n#define AR_KEYTABLE_TYPE_40     0x00000000\n#define AR_KEYTABLE_TYPE_104    0x00000001\n#define AR_KEYTABLE_TYPE_128    0x00000003\n#define AR_KEYTABLE_TYPE_TKIP   0x00000004\n#define AR_KEYTABLE_TYPE_AES    0x00000005\n#define AR_KEYTABLE_TYPE_CCM    0x00000006\n#define AR_KEYTABLE_TYPE_CLR    0x00000007\n#define AR_KEYTABLE_ANT         0x00000008\n#define AR_KEYTABLE_VALID       0x00008000\n#define AR_KEYTABLE_KEY0(_n)    (AR_KEYTABLE(_n) + 0)\n#define AR_KEYTABLE_KEY1(_n)    (AR_KEYTABLE(_n) + 4)\n#define AR_KEYTABLE_KEY2(_n)    (AR_KEYTABLE(_n) + 8)\n#define AR_KEYTABLE_KEY3(_n)    (AR_KEYTABLE(_n) + 12)\n#define AR_KEYTABLE_KEY4(_n)    (AR_KEYTABLE(_n) + 16)\n#define AR_KEYTABLE_TYPE(_n)    (AR_KEYTABLE(_n) + 20)\n#define AR_KEYTABLE_MAC0(_n)    (AR_KEYTABLE(_n) + 24)\n#define AR_KEYTABLE_MAC1(_n)    (AR_KEYTABLE(_n) + 28)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

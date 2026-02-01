@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_fb_pin.h",
+  "hash_id": "4af57311e7b041e170df2e388333ab7ed0b95342cdc24296ee2b4c84177376ce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_fb_pin.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_FB_PIN_H__\n#define __INTEL_FB_PIN_H__\n\n#include <linux/types.h>\n\nstruct drm_framebuffer;\nstruct i915_vma;\nstruct intel_plane_state;\nstruct i915_gtt_view;\n\nstruct i915_vma *\nintel_pin_and_fence_fb_obj(struct drm_framebuffer *fb,\n\t\t\t   bool phys_cursor,\n\t\t\t   const struct i915_gtt_view *view,\n\t\t\t   bool uses_fence,\n\t\t\t   unsigned long *out_flags);\n\nvoid intel_unpin_fb_vma(struct i915_vma *vma, unsigned long flags);\n\nint intel_plane_pin_fb(struct intel_plane_state *plane_state);\nvoid intel_plane_unpin_fb(struct intel_plane_state *old_plane_state);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

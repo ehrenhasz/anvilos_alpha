@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "98692312d890029fe1688556fe629d66e2eb61c9509303f269ae9f83b4002dab",
+  "original_prompt": "Ingested from linux-6.6.14/sound/core/seq/oss/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ALSA\n# Copyright (c) 1999 by Jaroslav Kysela <perex@perex.cz>\n#\n\nsnd-seq-oss-objs  := seq_oss.o seq_oss_init.o seq_oss_timer.o seq_oss_ioctl.o \\\n\t\t     seq_oss_event.o seq_oss_rw.o seq_oss_synth.o \\\n\t\t     seq_oss_midi.o seq_oss_readq.o seq_oss_writeq.o\n\nobj-$(CONFIG_SND_SEQUENCER_OSS) += snd-seq-oss.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b6eca3642c871a23ee4f3a4d5227151104f490abe0b617169903dd69ee486a41",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/target/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nmenuconfig TARGET_CORE\n\ttristate \"Generic Target Core Mod (TCM) and ConfigFS Infrastructure\"\n\tdepends on BLOCK\n\tselect CONFIGFS_FS\n\tselect CRC_T10DIF\n\tselect SCSI_COMMON\n\tselect SGL_ALLOC\n\tdefault n\n\thelp\n\tSay Y or M here to enable the TCM Storage Engine and ConfigFS enabled\n\tcontrol path for target_core_mod.  This includes built-in TCM RAMDISK\n\tsubsystem logic for virtual LUN 0 access\n\nif TARGET_CORE\n\nconfig TCM_IBLOCK\n\ttristate \"TCM/IBLOCK Subsystem Plugin for Linux/BLOCK\"\n\tselect BLK_DEV_INTEGRITY\n\thelp\n\tSay Y here to enable the TCM/IBLOCK subsystem plugin for non-buffered\n\taccess to Linux/Block devices using BIO\n\nconfig TCM_FILEIO\n\ttristate \"TCM/FILEIO Subsystem Plugin for Linux/VFS\"\n\thelp\n\tSay Y here to enable the TCM/FILEIO subsystem plugin for buffered\n\taccess to Linux/VFS struct file or struct block_device\n\nconfig TCM_PSCSI\n\ttristate \"TCM/pSCSI Subsystem Plugin for Linux/SCSI\"\n\tdepends on SCSI\n\thelp\n\tSay Y here to enable the TCM/pSCSI subsystem plugin for non-buffered\n\tpassthrough access to Linux/SCSI device\n\nconfig TCM_USER2\n\ttristate \"TCM/USER Subsystem Plugin for Linux\"\n\tdepends on UIO && NET\n\thelp\n\tSay Y here to enable the TCM/USER subsystem plugin for a userspace\n\tprocess to handle requests. This is version 2 of the ABI; version 1\n\tis obsolete.\n\nsource \"drivers/target/loopback/Kconfig\"\nsource \"drivers/target/tcm_fc/Kconfig\"\nsource \"drivers/target/iscsi/Kconfig\"\nsource \"drivers/target/sbp/Kconfig\"\nsource \"drivers/target/tcm_remote/Kconfig\"\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

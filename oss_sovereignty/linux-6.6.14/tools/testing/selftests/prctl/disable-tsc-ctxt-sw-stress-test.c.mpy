@@ -1,0 +1,9 @@
+{
+  "module_name": "disable-tsc-ctxt-sw-stress-test.c",
+  "hash_id": "6cf62d08d65b097dd1085cea2382e46cf18ffd5d9053886bee1e2c66a50884c3",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/prctl/disable-tsc-ctxt-sw-stress-test.c",
+  "human_readable_source": "\n \n\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n#include <signal.h>\n#include <inttypes.h>\n#include <wait.h>\n\n\n#include <sys/prctl.h>\n#include <linux/prctl.h>\n\n \n#ifndef PR_GET_TSC\n#define PR_GET_TSC 25\n#define PR_SET_TSC 26\n# define PR_TSC_ENABLE\t\t1    \n# define PR_TSC_SIGSEGV\t\t2    \n#endif\n\nstatic uint64_t rdtsc(void)\n{\nuint32_t lo, hi;\n \n__asm__ __volatile__ (\"rdtsc\" : \"=a\" (lo), \"=d\" (hi));\nreturn (uint64_t)hi << 32 | lo;\n}\n\nstatic void sigsegv_expect(int sig)\n{\n\t \n}\n\nstatic void segvtask(void)\n{\n\tif (prctl(PR_SET_TSC, PR_TSC_SIGSEGV) < 0)\n\t{\n\t\tperror(\"prctl\");\n\t\texit(0);\n\t}\n\tsignal(SIGSEGV, sigsegv_expect);\n\talarm(10);\n\trdtsc();\n\tfprintf(stderr, \"FATAL ERROR, rdtsc() succeeded while disabled\\n\");\n\texit(0);\n}\n\n\nstatic void sigsegv_fail(int sig)\n{\n\tfprintf(stderr, \"FATAL ERROR, rdtsc() failed while enabled\\n\");\n\texit(0);\n}\n\nstatic void rdtsctask(void)\n{\n\tif (prctl(PR_SET_TSC, PR_TSC_ENABLE) < 0)\n\t{\n\t\tperror(\"prctl\");\n\t\texit(0);\n\t}\n\tsignal(SIGSEGV, sigsegv_fail);\n\talarm(10);\n\tfor(;;) rdtsc();\n}\n\n\nint main(void)\n{\n\tint n_tasks = 100, i;\n\n\tfprintf(stderr, \"[No further output means we're all right]\\n\");\n\n\tfor (i=0; i<n_tasks; i++)\n\t\tif (fork() == 0)\n\t\t{\n\t\t\tif (i & 1)\n\t\t\t\tsegvtask();\n\t\t\telse\n\t\t\t\trdtsctask();\n\t\t}\n\n\tfor (i=0; i<n_tasks; i++)\n\t\twait(NULL);\n\n\texit(0);\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "test-chdir.c",
+  "hash_id": "da288118616a32172f22122480b1e384540eb6497b46f237e944112b0634bc99",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-chdir.c",
+  "human_readable_source": " \n#include <unistd.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (chdir, int, (const char *));\n\n#include \"macros.h\"\n\nint\nmain (void)\n{\n  ASSERT (chdir (\"/\") == 0);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

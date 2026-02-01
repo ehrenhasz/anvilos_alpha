@@ -1,0 +1,9 @@
+{
+  "module_name": "coverage_uml.config",
+  "hash_id": "10b16513da3e51e10fc52426200035de8d8afc2f797730fd6b86b0d6bd2823d8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/configs/coverage_uml.config",
+  "human_readable_source": "# This config fragment enables coverage on UML, which is different from the\n# normal gcov used in other arches (no debugfs).\n# Example usage:\n# ./tools/testing/kunit/kunit.py run \\\n#   --kunitconfig=tools/testing/kunit/configs/all_tests_uml.config \\\n#   --kunitconfig=tools/testing/kunit/configs/coverage_uml.config\n\nCONFIG_DEBUG_KERNEL=y\nCONFIG_DEBUG_INFO=y\nCONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y\nCONFIG_GCOV=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

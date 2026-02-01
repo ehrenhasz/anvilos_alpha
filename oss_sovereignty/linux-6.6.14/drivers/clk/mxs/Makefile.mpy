@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5c114a72d08a556e86ca34fe2e53b35bedcab95677f78748858dce4643d84d26",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mxs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for mxs specific clk\n#\n\nobj-y += clk.o clk-pll.o clk-ref.o clk-div.o clk-frac.o clk-ssp.o\n\nobj-$(CONFIG_SOC_IMX23) += clk-imx23.o\nobj-$(CONFIG_SOC_IMX28) += clk-imx28.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

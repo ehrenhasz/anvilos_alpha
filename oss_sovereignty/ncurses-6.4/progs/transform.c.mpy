@@ -1,0 +1,9 @@
+{
+  "module_name": "transform.c",
+  "hash_id": "6f947fb6df86d31b81acddb506e247ff796a286e1e349d6c57ec767ca79b787a",
+  "original_prompt": "Ingested from ncurses-6.4/progs/transform.c",
+  "human_readable_source": " \n\n \n#include <progs.priv.h>\n#include <string.h>\n\n#include <transform.h>\n\nMODULE_ID(\"$Id: transform.c,v 1.4 2020/02/02 23:34:34 tom Exp $\")\n\n#ifdef SUFFIX_IGNORED\nstatic void\ntrim_suffix(const char *a, size_t *len)\n{\n    const char ignore[] = SUFFIX_IGNORED;\n\n    if (sizeof(ignore) != 0) {\n\tbool trim = FALSE;\n\tsize_t need = (sizeof(ignore) - 1);\n\n\tif (*len > need) {\n\t    size_t first = *len - need;\n\t    size_t n;\n\t    trim = TRUE;\n\t    for (n = first; n < *len; ++n) {\n\t\tif (tolower(UChar(a[n])) != tolower(UChar(ignore[n - first]))) {\n\t\t    trim = FALSE;\n\t\t    break;\n\t\t}\n\t    }\n\t    if (trim) {\n\t\t*len -= need;\n\t    }\n\t}\n    }\n}\n#else\n#define trim_suffix(a, len)\t \n#endif\n\nbool\nsame_program(const char *a, const char *b)\n{\n    size_t len_a = strlen(a);\n    size_t len_b = strlen(b);\n\n    trim_suffix(a, &len_a);\n    trim_suffix(b, &len_b);\n\n    return (len_a == len_b) && (strncmp(a, b, len_a) == 0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

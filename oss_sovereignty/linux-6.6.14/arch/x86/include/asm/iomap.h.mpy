@@ -1,0 +1,9 @@
+{
+  "module_name": "iomap.h",
+  "hash_id": "07e7065f77e287a46d21fb062ec8789e8c53ffcab2b4be1ac7b48c8066b906b9",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/iomap.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_IOMAP_H\n#define _ASM_X86_IOMAP_H\n\n \n\n#include <linux/fs.h>\n#include <linux/mm.h>\n#include <linux/uaccess.h>\n#include <linux/highmem.h>\n#include <asm/cacheflush.h>\n#include <asm/tlbflush.h>\n\nvoid __iomem *__iomap_local_pfn_prot(unsigned long pfn, pgprot_t prot);\n\nint iomap_create_wc(resource_size_t base, unsigned long size, pgprot_t *prot);\n\nvoid iomap_free(resource_size_t base, unsigned long size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "iTCO_vendor.h",
+  "hash_id": "83f74efc7e2a2582caa1e63725b0d092926e22a82c9d831043c7b7ab40130b93",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/watchdog/iTCO_vendor.h",
+  "human_readable_source": " \n \n#ifdef CONFIG_ITCO_VENDOR_SUPPORT\nextern int iTCO_vendorsupport;\nextern void iTCO_vendor_pre_start(struct resource *, unsigned int);\nextern void iTCO_vendor_pre_stop(struct resource *);\nextern int iTCO_vendor_check_noreboot_on(void);\n#else\n#define iTCO_vendorsupport\t\t\t\t0\n#define iTCO_vendor_pre_start(acpibase, heartbeat)\t{}\n#define iTCO_vendor_pre_stop(acpibase)\t\t\t{}\n#define iTCO_vendor_check_noreboot_on()\t\t\t1\n\t\t\t\t \n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

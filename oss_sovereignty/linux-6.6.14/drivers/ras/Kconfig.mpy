@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0386162e5aaa72de3bb73d35cc684bbe33e04ac50f274d87125566d610ca1f59",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ras/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenuconfig RAS\n\tbool \"Reliability, Availability and Serviceability (RAS) features\"\n\thelp\n\t  Reliability, availability and serviceability (RAS) is a computer\n\t  hardware engineering term. Computers designed with higher levels\n\t  of RAS have a multitude of features that protect data integrity\n\t  and help them stay available for long periods of time without\n\t  failure.\n\n\t  Reliability can be defined as the probability that the system will\n\t  produce correct outputs up to some given time. Reliability is\n\t  enhanced by features that help to avoid, detect and repair hardware\n\t  faults.\n\n\t  Availability is the probability a system is operational at a given\n\t  time, i.e. the amount of time a device is actually operating as the\n\t  percentage of total time it should be operating.\n\n\t  Serviceability or maintainability is the simplicity and speed with\n\t  which a system can be repaired or maintained; if the time to repair\n\t  a failed system increases, then availability will decrease.\n\n\t  Note that Reliability and Availability are distinct concepts:\n\t  Reliability is a measure of the ability of a system to function\n\t  correctly, including avoiding data corruption, whereas Availability\n\t  measures how often it is available for use, even though it may not\n\t  be functioning correctly. For example, a server may run forever and\n\t  so have ideal availability, but may be unreliable, with frequent\n\t  data corruption.\n\nif RAS\n\nsource \"arch/x86/ras/Kconfig\"\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

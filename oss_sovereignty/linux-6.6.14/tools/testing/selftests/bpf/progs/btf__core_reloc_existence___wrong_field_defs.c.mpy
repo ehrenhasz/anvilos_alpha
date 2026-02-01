@@ -1,0 +1,9 @@
+{
+  "module_name": "btf__core_reloc_existence___wrong_field_defs.c",
+  "hash_id": "338980eb22f28a429bab06c81211d3017aa7f03cbf7f618829d7b114a71e5c02",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/btf__core_reloc_existence___wrong_field_defs.c",
+  "human_readable_source": "#include \"core_reloc_types.h\"\n\nvoid f(struct core_reloc_existence___wrong_field_defs x) {}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

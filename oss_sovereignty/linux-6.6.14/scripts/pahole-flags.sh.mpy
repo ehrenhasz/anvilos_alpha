@@ -1,0 +1,9 @@
+{
+  "module_name": "pahole-flags.sh",
+  "hash_id": "e886248e955a3a74f6e310ffe2e6568dc154bef85277ca1725f6eda3f0dfaebe",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/pahole-flags.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n\nextra_paholeopt=\n\nif ! [ -x \"$(command -v ${PAHOLE})\" ]; then\n\texit 0\nfi\n\npahole_ver=$($(dirname $0)/pahole-version.sh ${PAHOLE})\n\nif [ \"${pahole_ver}\" -ge \"118\" ] && [ \"${pahole_ver}\" -le \"121\" ]; then\n\t# pahole 1.18 through 1.21 can't handle zero-sized per-CPU vars\n\textra_paholeopt=\"${extra_paholeopt} --skip_encoding_btf_vars\"\nfi\nif [ \"${pahole_ver}\" -ge \"121\" ]; then\n\textra_paholeopt=\"${extra_paholeopt} --btf_gen_floats\"\nfi\nif [ \"${pahole_ver}\" -ge \"122\" ]; then\n\textra_paholeopt=\"${extra_paholeopt} -j\"\nfi\nif [ \"${pahole_ver}\" -ge \"124\" ]; then\n\t# see PAHOLE_HAS_LANG_EXCLUDE\n\textra_paholeopt=\"${extra_paholeopt} --lang_exclude=rust\"\nfi\nif [ \"${pahole_ver}\" -ge \"125\" ]; then\n\textra_paholeopt=\"${extra_paholeopt} --skip_encoding_btf_inconsistent_proto --btf_gen_optimized\"\nfi\n\necho ${extra_paholeopt}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

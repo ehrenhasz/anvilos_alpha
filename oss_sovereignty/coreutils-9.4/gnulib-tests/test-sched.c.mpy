@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sched.c",
+  "hash_id": "ec7b822be7f4cd2e00bfcfea0fb1e6c075ef6fad9d5a6f8c2db01ff0b662fdb9",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sched.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <sched.h>\n\n \nstatic struct sched_param a;\n\n \nint b[] = { SCHED_FIFO, SCHED_RR, SCHED_OTHER };\n\n \npid_t t1;\n\nint f1;\n\nint\nmain ()\n{\n   \n  f1 = a.sched_priority;\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

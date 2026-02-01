@@ -1,0 +1,9 @@
+{
+  "module_name": "ivtv-alsa-pcm.h",
+  "hash_id": "5d3d591c3e6f63ba850d0245aff7a0814ba70ea99ad4df7b96442c2e2ffc32cc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/ivtv/ivtv-alsa-pcm.h",
+  "human_readable_source": " \n \n\nint snd_ivtv_pcm_create(struct snd_ivtv_card *itvsc);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

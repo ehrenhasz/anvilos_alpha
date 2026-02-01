@@ -1,0 +1,9 @@
+{
+  "module_name": "system_certificates.S",
+  "hash_id": "bc3e48b4e88894d1ceb338177b799eea784e053bb1cb1366861c8d6a4cdf6e7d",
+  "original_prompt": "Ingested from linux-6.6.14/certs/system_certificates.S",
+  "human_readable_source": " \n#include <linux/export.h>\n#include <linux/init.h>\n\n\t__INITRODATA\n\n\t.align 8\n\t.globl system_certificate_list\nsystem_certificate_list:\n__cert_list_start:\n__module_cert_start:\n\t.incbin \"certs/signing_key.x509\"\n__module_cert_end:\n\t.incbin \"certs/x509_certificate_list\"\n__cert_list_end:\n\n#ifdef CONFIG_SYSTEM_EXTRA_CERTIFICATE\n\t.globl system_extra_cert\n\t.size system_extra_cert, CONFIG_SYSTEM_EXTRA_CERTIFICATE_SIZE\nsystem_extra_cert:\n\t.fill CONFIG_SYSTEM_EXTRA_CERTIFICATE_SIZE, 1, 0\n\n\t.align 4\n\t.globl system_extra_cert_used\nsystem_extra_cert_used:\n\t.int 0\n\n#endif  \n\n\t.align 8\n\t.globl system_certificate_list_size\nsystem_certificate_list_size:\n#ifdef CONFIG_64BIT\n\t.quad __cert_list_end - __cert_list_start\n#else\n\t.long __cert_list_end - __cert_list_start\n#endif\n\n\t.align 8\n\t.globl module_cert_size\nmodule_cert_size:\n#ifdef CONFIG_64BIT\n\t.quad __module_cert_end - __module_cert_start\n#else\n\t.long __module_cert_end - __module_cert_start\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

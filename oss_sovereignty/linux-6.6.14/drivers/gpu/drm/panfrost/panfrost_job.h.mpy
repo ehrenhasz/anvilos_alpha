@@ -1,0 +1,9 @@
+{
+  "module_name": "panfrost_job.h",
+  "hash_id": "76ea1485728b9a9a57067f524681ea3c51c61a1b145f1ee53b12b9830fe53aa9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/panfrost/panfrost_job.h",
+  "human_readable_source": " \n \n\n#ifndef __PANFROST_JOB_H__\n#define __PANFROST_JOB_H__\n\n#include <uapi/drm/panfrost_drm.h>\n#include <drm/gpu_scheduler.h>\n\nstruct panfrost_device;\nstruct panfrost_gem_object;\nstruct panfrost_file_priv;\n\nstruct panfrost_job {\n\tstruct drm_sched_job base;\n\n\tstruct kref refcount;\n\n\tstruct panfrost_device *pfdev;\n\tstruct panfrost_mmu *mmu;\n\n\t \n\tstruct dma_fence *done_fence;\n\n\t__u64 jc;\n\t__u32 requirements;\n\t__u32 flush_id;\n\n\tstruct panfrost_gem_mapping **mappings;\n\tstruct drm_gem_object **bos;\n\tu32 bo_count;\n\n\t \n\tstruct dma_fence *render_done_fence;\n};\n\nint panfrost_job_init(struct panfrost_device *pfdev);\nvoid panfrost_job_fini(struct panfrost_device *pfdev);\nint panfrost_job_open(struct panfrost_file_priv *panfrost_priv);\nvoid panfrost_job_close(struct panfrost_file_priv *panfrost_priv);\nint panfrost_job_get_slot(struct panfrost_job *job);\nint panfrost_job_push(struct panfrost_job *job);\nvoid panfrost_job_put(struct panfrost_job *job);\nvoid panfrost_job_enable_interrupts(struct panfrost_device *pfdev);\nint panfrost_job_is_idle(struct panfrost_device *pfdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

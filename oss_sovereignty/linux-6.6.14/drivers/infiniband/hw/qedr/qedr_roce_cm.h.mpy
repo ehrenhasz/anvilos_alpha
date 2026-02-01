@@ -1,0 +1,9 @@
+{
+  "module_name": "qedr_roce_cm.h",
+  "hash_id": "5845ec63847a9cf9fe4670c9740ac11a3b6bfbd6786366a0230bee0fee823f63",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/qedr/qedr_roce_cm.h",
+  "human_readable_source": " \n#ifndef LINUX_QEDR_CM_H_\n#define LINUX_QEDR_CM_H_\n\n#define QEDR_GSI_MAX_RECV_WR\t(4096)\n#define QEDR_GSI_MAX_SEND_WR\t(4096)\n\n#define QEDR_GSI_MAX_RECV_SGE\t(1)\t \n\n#define QEDR_ROCE_V2_UDP_SPORT\t(0000)\n\nstatic inline u32 qedr_get_ipv4_from_gid(const u8 *gid)\n{\n\treturn *(u32 *)(void *)&gid[12];\n}\n\n \nint qedr_gsi_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *wc);\nint qedr_gsi_post_recv(struct ib_qp *ibqp, const struct ib_recv_wr *wr,\n\t\t       const struct ib_recv_wr **bad_wr);\nint qedr_gsi_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,\n\t\t       const struct ib_send_wr **bad_wr);\nint qedr_create_gsi_qp(struct qedr_dev *dev, struct ib_qp_init_attr *attrs,\n\t\t       struct qedr_qp *qp);\nvoid qedr_store_gsi_qp_cq(struct qedr_dev *dev,\n\t\t\t  struct qedr_qp *qp, struct ib_qp_init_attr *attrs);\nint qedr_destroy_gsi_qp(struct qedr_dev *dev);\nvoid qedr_inc_sw_gsi_cons(struct qedr_qp_hwq_info *info);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "selinux-at.c",
+  "hash_id": "601216ab36c7d84e31ee2bc794b1fa3650d7114800778b0eebb4bad0c9859ef6",
+  "original_prompt": "Ingested from coreutils-9.4/lib/selinux-at.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"selinux-at.h\"\n#include \"openat.h\"\n\n#include <stdlib.h>\n#include <unistd.h>\n#include <errno.h>\n#include <fcntl.h>\n\n#include \"save-cwd.h\"\n\n#include \"openat-priv.h\"\n\n#define AT_FUNC_NAME getfileconat\n#define AT_FUNC_F1 getfilecon\n#define AT_FUNC_POST_FILE_PARAM_DECLS , char **con\n#define AT_FUNC_POST_FILE_ARGS        , con\n#include \"at-func.c\"\n#undef AT_FUNC_NAME\n#undef AT_FUNC_F1\n#undef AT_FUNC_POST_FILE_PARAM_DECLS\n#undef AT_FUNC_POST_FILE_ARGS\n\n#define AT_FUNC_NAME lgetfileconat\n#define AT_FUNC_F1 lgetfilecon\n#define AT_FUNC_POST_FILE_PARAM_DECLS , char **con\n#define AT_FUNC_POST_FILE_ARGS        , con\n#include \"at-func.c\"\n#undef AT_FUNC_NAME\n#undef AT_FUNC_F1\n#undef AT_FUNC_POST_FILE_PARAM_DECLS\n#undef AT_FUNC_POST_FILE_ARGS\n\n#define AT_FUNC_NAME setfileconat\n#define AT_FUNC_F1 setfilecon\n#define AT_FUNC_POST_FILE_PARAM_DECLS , char const *con\n#define AT_FUNC_POST_FILE_ARGS        , con\n#include \"at-func.c\"\n#undef AT_FUNC_NAME\n#undef AT_FUNC_F1\n#undef AT_FUNC_POST_FILE_PARAM_DECLS\n#undef AT_FUNC_POST_FILE_ARGS\n\n#define AT_FUNC_NAME lsetfileconat\n#define AT_FUNC_F1 lsetfilecon\n#define AT_FUNC_POST_FILE_PARAM_DECLS , char const *con\n#define AT_FUNC_POST_FILE_ARGS        , con\n#include \"at-func.c\"\n#undef AT_FUNC_NAME\n#undef AT_FUNC_F1\n#undef AT_FUNC_POST_FILE_PARAM_DECLS\n#undef AT_FUNC_POST_FILE_ARGS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_vcodec_fw.h",
+  "hash_id": "f510f8ce8fce8e47b5218f1aeac2430fa005b6ab1c0b2b90b20dfab6a821e01a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/vcodec/common/mtk_vcodec_fw.h",
+  "human_readable_source": " \n\n#ifndef _MTK_VCODEC_FW_H_\n#define _MTK_VCODEC_FW_H_\n\n#include <linux/remoteproc.h>\n#include <linux/remoteproc/mtk_scp.h>\n\n#include \"../../vpu/mtk_vpu.h\"\n\nstruct mtk_vcodec_dec_dev;\nstruct mtk_vcodec_enc_dev;\n\nenum mtk_vcodec_fw_type {\n\tVPU,\n\tSCP,\n};\n\nenum mtk_vcodec_fw_use {\n\tDECODER,\n\tENCODER,\n};\n\nstruct mtk_vcodec_fw;\n\ntypedef void (*mtk_vcodec_ipi_handler) (void *data,\n\tunsigned int len, void *priv);\n\nstruct mtk_vcodec_fw *mtk_vcodec_fw_select(void *priv, enum mtk_vcodec_fw_type type,\n\t\t\t\t\t   enum mtk_vcodec_fw_use fw_use);\nvoid mtk_vcodec_fw_release(struct mtk_vcodec_fw *fw);\n\nint mtk_vcodec_fw_load_firmware(struct mtk_vcodec_fw *fw);\nunsigned int mtk_vcodec_fw_get_vdec_capa(struct mtk_vcodec_fw *fw);\nunsigned int mtk_vcodec_fw_get_venc_capa(struct mtk_vcodec_fw *fw);\nvoid *mtk_vcodec_fw_map_dm_addr(struct mtk_vcodec_fw *fw, u32 mem_addr);\nint mtk_vcodec_fw_ipi_register(struct mtk_vcodec_fw *fw, int id,\n\t\t\t       mtk_vcodec_ipi_handler handler,\n\t\t\t       const char *name, void *priv);\nint mtk_vcodec_fw_ipi_send(struct mtk_vcodec_fw *fw, int id,\n\t\t\t   void *buf, unsigned int len, unsigned int wait);\nint mtk_vcodec_fw_get_type(struct mtk_vcodec_fw *fw);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

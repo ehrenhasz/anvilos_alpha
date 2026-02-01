@@ -1,0 +1,9 @@
+{
+  "module_name": "csi_rx.h",
+  "hash_id": "3f0431c5982fb43a2c4ddc3c8b18cafbcbdd2a1c11e0d528dbc425809d2ccf71",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/csi_rx.h",
+  "human_readable_source": " \n \n\n#ifndef __CSI_RX_H_INCLUDED__\n#define __CSI_RX_H_INCLUDED__\n\n \n\n#include \"system_local.h\"\n#include \"csi_rx_local.h\"\n\n#ifndef __INLINE_CSI_RX__\n#include \"csi_rx_public.h\"\n#else   \n#include \"csi_rx_private.h\"\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mbuf.h",
+  "hash_id": "550d9d485c0e5e1b15325801626f904711cbbec2a8005e5e583cbbb3fa759f1a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/fddi/skfp/h/mbuf.h",
+  "human_readable_source": " \n \n\n#ifndef\t_MBUF_\n#define _MBUF_\n\n#define M_SIZE\t4504\n\n#ifndef MAX_MBUF\n#define MAX_MBUF\t4\n#endif\n\n#ifndef NO_STD_MBUF\n#define sm_next         m_next\n#define sm_off          m_off\n#define sm_len          m_len\n#define sm_data         m_data\n#define SMbuf           Mbuf\n#define mtod\t\tsmtod\n#define mtodoff\t\tsmtodoff\n#endif\n\nstruct s_mbuf {\n\tstruct s_mbuf\t*sm_next ;\t\t \n\tshort\t\tsm_off ;\t\t\t \n\tu_int\t\tsm_len ;\t\t\t \n#ifdef\tPCI\n\tint\t\tsm_use_count ;\n#endif\n\tchar\t\tsm_data[M_SIZE] ;\n} ;\n\ntypedef struct s_mbuf SMbuf ;\n\n \n#define\tsmtod(x,t)\t((t)((x)->sm_data + (x)->sm_off))\n#define\tsmtodoff(x,t,o)\t((t)((x)->sm_data + (o)))\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

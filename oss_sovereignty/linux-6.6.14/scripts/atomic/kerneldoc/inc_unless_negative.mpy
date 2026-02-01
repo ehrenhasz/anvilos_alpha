@@ -1,0 +1,9 @@
+{
+  "module_name": "inc_unless_negative",
+  "hash_id": "5ddb780046bb7e8837a68984bd37903a13253862b3086985249cbbc638ee22e3",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/kerneldoc/inc_unless_negative",
+  "human_readable_source": "cat <<EOF\n/**\n * ${class}${atomicname}() - atomic increment unless negative with ${desc_order} ordering\n * @v: pointer to ${atomic}_t\n *\n * If (@v >= 0), atomically updates @v to (@v + 1) with ${desc_order} ordering.\n *\n * ${desc_noinstr}\n *\n * Return: @true if @v was updated, @false otherwise.\n */\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

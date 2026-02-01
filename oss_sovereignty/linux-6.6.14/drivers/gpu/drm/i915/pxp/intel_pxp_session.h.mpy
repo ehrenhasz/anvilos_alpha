@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pxp_session.h",
+  "hash_id": "11446eaf862e279cee4d117bbb0d56ef26c685dd0b122ec7e8c9dd4364f502ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/pxp/intel_pxp_session.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_PXP_SESSION_H__\n#define __INTEL_PXP_SESSION_H__\n\n#include <linux/types.h>\n\nstruct intel_pxp;\n\n#ifdef CONFIG_DRM_I915_PXP\nvoid intel_pxp_session_management_init(struct intel_pxp *pxp);\nvoid intel_pxp_terminate(struct intel_pxp *pxp, bool post_invalidation_needs_restart);\n#else\nstatic inline void intel_pxp_session_management_init(struct intel_pxp *pxp)\n{\n}\n\nstatic inline void intel_pxp_terminate(struct intel_pxp *pxp, bool post_invalidation_needs_restart)\n{\n}\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

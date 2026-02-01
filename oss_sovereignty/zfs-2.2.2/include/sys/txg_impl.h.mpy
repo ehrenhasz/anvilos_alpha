@@ -1,0 +1,9 @@
+{
+  "module_name": "txg_impl.h",
+  "hash_id": "fa5f045975e811672c5ba0278b0ed89eca8c4df30fb0d228536caeccdf9cbefe",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/txg_impl.h",
+  "human_readable_source": " \n\n \n\n \n\n#ifndef _SYS_TXG_IMPL_H\n#define\t_SYS_TXG_IMPL_H\n\n#include <sys/spa.h>\n#include <sys/txg.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \nstruct tx_cpu {\n\tkmutex_t\ttc_open_lock;\t \n\tkmutex_t\ttc_lock;\t \n\tkcondvar_t\ttc_cv[TXG_SIZE];\n\tuint64_t\ttc_count[TXG_SIZE];\t \n\tlist_t\t\ttc_callbacks[TXG_SIZE];  \n} ____cacheline_aligned;\n\n \ntypedef struct tx_state {\n\ttx_cpu_t\t*tx_cpu;\t \n\tkmutex_t\ttx_sync_lock;\t \n\n\tuint64_t\ttx_open_txg;\t \n\tuint64_t\ttx_quiescing_txg;  \n\tuint64_t\ttx_quiesced_txg;  \n\tuint64_t\ttx_syncing_txg;\t \n\tuint64_t\ttx_synced_txg;\t \n\n\thrtime_t\ttx_open_time;\t \n\n\tuint64_t\ttx_sync_txg_waiting;  \n\tuint64_t\ttx_quiesce_txg_waiting;  \n\n\tkcondvar_t\ttx_sync_more_cv;\n\tkcondvar_t\ttx_sync_done_cv;\n\tkcondvar_t\ttx_quiesce_more_cv;\n\tkcondvar_t\ttx_quiesce_done_cv;\n\tkcondvar_t\ttx_timeout_cv;\n\tkcondvar_t\ttx_exit_cv;\t \n\n\tuint8_t\t\ttx_threads;\t \n\tuint8_t\t\ttx_exiting;\t \n\n\tkthread_t\t*tx_sync_thread;\n\tkthread_t\t*tx_quiesce_thread;\n\n\ttaskq_t\t\t*tx_commit_cb_taskq;  \n} tx_state_t;\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

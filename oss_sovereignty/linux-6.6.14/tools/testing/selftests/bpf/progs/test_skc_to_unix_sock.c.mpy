@@ -1,0 +1,9 @@
+{
+  "module_name": "test_skc_to_unix_sock.c",
+  "hash_id": "a4749413967757eff10c0b09100b05afaf941380a67c53c22bd34707150464ff",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_skc_to_unix_sock.c",
+  "human_readable_source": " \n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n#include \"bpf_tracing_net.h\"\n\nconst volatile pid_t my_pid = 0;\nchar path[256] = {};\n\nSEC(\"fentry/unix_listen\")\nint BPF_PROG(unix_listen, struct socket *sock, int backlog)\n{\n\tpid_t pid = bpf_get_current_pid_tgid() >> 32;\n\tstruct unix_sock *unix_sk;\n\tint i, len;\n\n\tif (pid != my_pid)\n\t\treturn 0;\n\n\tunix_sk = (struct unix_sock *)bpf_skc_to_unix_sock(sock->sk);\n\tif (!unix_sk)\n\t\treturn 0;\n\n\tif (unix_sk->addr->name->sun_path[0])\n\t\treturn 0;\n\n\tlen = unix_sk->addr->len - sizeof(short);\n\tpath[0] = '@';\n\tfor (i = 1; i < len; i++) {\n\t\tif (i >= sizeof(struct sockaddr_un))\n\t\t\tbreak;\n\n\t\tpath[i] = unix_sk->addr->name->sun_path[i];\n\t}\n\treturn 0;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

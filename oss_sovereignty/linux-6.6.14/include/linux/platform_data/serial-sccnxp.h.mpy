@@ -1,0 +1,9 @@
+{
+  "module_name": "serial-sccnxp.h",
+  "hash_id": "791e5af53a05d6a69b3486bf0eefb7c2e6601f7d7395e297940c18dd3c08e4c0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/serial-sccnxp.h",
+  "human_readable_source": " \n \n\n#ifndef _PLATFORM_DATA_SERIAL_SCCNXP_H_\n#define _PLATFORM_DATA_SERIAL_SCCNXP_H_\n\n#define SCCNXP_MAX_UARTS\t2\n\n \n#define LINE_OP0\t\t1\n#define LINE_OP1\t\t2\n#define LINE_OP2\t\t3\n#define LINE_OP3\t\t4\n#define LINE_OP4\t\t5\n#define LINE_OP5\t\t6\n#define LINE_OP6\t\t7\n#define LINE_OP7\t\t8\n\n \n#define LINE_IP0\t\t9\n#define LINE_IP1\t\t10\n#define LINE_IP2\t\t11\n#define LINE_IP3\t\t12\n#define LINE_IP4\t\t13\n#define LINE_IP5\t\t14\n#define LINE_IP6\t\t15\n\n \n#define DTR_OP\t\t\t0\t \n#define RTS_OP\t\t\t4\t \n#define DSR_IP\t\t\t8\t \n#define CTS_IP\t\t\t12\t \n#define DCD_IP\t\t\t16\t \n#define RNG_IP\t\t\t20\t \n\n#define DIR_OP\t\t\t24\t \n\n \n#define MCTRL_SIG(sig, line)\t((line) << (sig))\n\n \n\n \nstruct sccnxp_pdata {\n\t \n\tconst u8\t\treg_shift;\n\t \n\tconst u32\t\tmctrl_cfg[SCCNXP_MAX_UARTS];\n\t \n\tconst unsigned int\tpoll_time_us;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "probe_64.c",
+  "hash_id": "f1ba2e678dab9b309b6c0f1bf8be04adfe4810b90327cc1490b5723a46387aa6",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/kernel/apic/probe_64.c",
+  "human_readable_source": "\n \n#include <linux/thread_info.h>\n#include <asm/apic.h>\n\n#include \"local.h\"\n\n \nvoid __init x86_64_probe_apic(void)\n{\n\tstruct apic **drv;\n\n\tenable_IR_x2apic();\n\n\tfor (drv = __apicdrivers; drv < __apicdrivers_end; drv++) {\n\t\tif ((*drv)->probe && (*drv)->probe()) {\n\t\t\tapic_install_driver(*drv);\n\t\t\tbreak;\n\t\t}\n\t}\n}\n\nint __init default_acpi_madt_oem_check(char *oem_id, char *oem_table_id)\n{\n\tstruct apic **drv;\n\n\tfor (drv = __apicdrivers; drv < __apicdrivers_end; drv++) {\n\t\tif ((*drv)->acpi_madt_oem_check(oem_id, oem_table_id)) {\n\t\t\tapic_install_driver(*drv);\n\t\t\treturn 1;\n\t\t}\n\t}\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "c0fd826fd35d7dc1cd1cc0754a03f510c7f2cf7746d3a13622cd514876f39569",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/seeq/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the SEEQ network device drivers\n#\n\nobj-$(CONFIG_ARM_ETHER3) += ether3.o\nobj-$(CONFIG_SGISEEQ) += sgiseeq.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

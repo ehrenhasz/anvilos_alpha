@@ -1,0 +1,9 @@
+{
+  "module_name": "sun8i-adda-pr-regmap.h",
+  "hash_id": "8916571a7b14b8a1d4238a06150cf7434492bbe8eb7efd2bd2f3f39afdd3493c",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/sunxi/sun8i-adda-pr-regmap.h",
+  "human_readable_source": " \n \n\nstruct regmap *sun8i_adda_pr_regmap_init(struct device *dev,\n\t\t\t\t\t void __iomem *base);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

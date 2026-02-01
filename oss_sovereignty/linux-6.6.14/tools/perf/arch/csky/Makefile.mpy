@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "eb8a124c18072e72b7f6ea2cfb9bac3d237704a65142651046b25832366fd797",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/csky/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nifndef NO_DWARF\nPERF_HAVE_DWARF_REGS := 1\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

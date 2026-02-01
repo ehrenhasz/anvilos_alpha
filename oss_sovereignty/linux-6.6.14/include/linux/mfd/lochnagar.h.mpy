@@ -1,0 +1,9 @@
+{
+  "module_name": "lochnagar.h",
+  "hash_id": "88bb8ff4f7103a712c1a04c03c3e9e31a5b20d781a8f959c23af488d3f6c4b52",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/lochnagar.h",
+  "human_readable_source": " \n \n\n#include <linux/device.h>\n#include <linux/mutex.h>\n#include <linux/regmap.h>\n\n#ifndef CIRRUS_LOCHNAGAR_H\n#define CIRRUS_LOCHNAGAR_H\n\nenum lochnagar_type {\n\tLOCHNAGAR1,\n\tLOCHNAGAR2,\n};\n\n \nstruct lochnagar {\n\tenum lochnagar_type type;\n\tstruct device *dev;\n\tstruct regmap *regmap;\n\n\t \n\tstruct mutex analogue_config_lock;\n};\n\n \n#define LOCHNAGAR_SOFTWARE_RESET                             0x00\n#define LOCHNAGAR_FIRMWARE_ID1                               0x01\n#define LOCHNAGAR_FIRMWARE_ID2                               0x02\n\n \n#define LOCHNAGAR_DEVICE_ID_MASK                           0xFFFC\n#define LOCHNAGAR_DEVICE_ID_SHIFT                               2\n#define LOCHNAGAR_REV_ID_MASK                              0x0003\n#define LOCHNAGAR_REV_ID_SHIFT                                  0\n\nint lochnagar_update_config(struct lochnagar *lochnagar);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

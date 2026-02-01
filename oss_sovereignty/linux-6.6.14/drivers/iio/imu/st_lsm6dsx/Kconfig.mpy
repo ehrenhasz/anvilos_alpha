@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "cfe3034d4257fea4770e2dc1d779d461692b85508bde2a9657d37f5ce77fe214",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/imu/st_lsm6dsx/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig IIO_ST_LSM6DSX\n\ttristate \"ST_LSM6DSx driver for STM 6-axis IMU MEMS sensors\"\n\tdepends on (I2C || SPI || I3C)\n\tselect IIO_BUFFER\n\tselect IIO_TRIGGERED_BUFFER\n\tselect IIO_KFIFO_BUF\n\tselect IIO_ST_LSM6DSX_I2C if (I2C)\n\tselect IIO_ST_LSM6DSX_SPI if (SPI_MASTER)\n\tselect IIO_ST_LSM6DSX_I3C if (I3C)\n\thelp\n\t  Say yes here to build support for STMicroelectronics LSM6DSx imu\n\t  sensor. Supported devices: lsm6ds3, lsm6ds3h, lsm6dsl, lsm6dsm,\n\t  ism330dlc, lsm6dso, lsm6dsox, asm330lhh, asm330lhhx, lsm6dsr,\n\t  lsm6ds3tr-c, ism330dhcx, lsm6dsrx, lsm6ds0, lsm6dsop, lsm6dstx,\n\t  lsm6dsv, lsm6dsv16x, lsm6dso16is, ism330is, asm330lhb, lsm6dst\n\t  and the accelerometer/gyroscope of lsm9ds1.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called st_lsm6dsx.\n\nconfig IIO_ST_LSM6DSX_I2C\n\ttristate\n\tdepends on IIO_ST_LSM6DSX\n\tselect REGMAP_I2C\n\nconfig IIO_ST_LSM6DSX_SPI\n\ttristate\n\tdepends on IIO_ST_LSM6DSX\n\tselect REGMAP_SPI\n\nconfig IIO_ST_LSM6DSX_I3C\n\ttristate\n\tdepends on IIO_ST_LSM6DSX\n\tselect REGMAP_I3C\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

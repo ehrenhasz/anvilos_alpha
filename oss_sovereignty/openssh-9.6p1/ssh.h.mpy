@@ -1,0 +1,9 @@
+{
+  "module_name": "ssh.h",
+  "hash_id": "2943381625c0de907a39c179fe03181515807f0777b1925bf3a739090f3c7c31",
+  "original_prompt": "Ingested from openssh-9.6p1/ssh.h",
+  "human_readable_source": " \n\n \n\n \n#define SSH_AUTHFILE_CIPHER\tSSH_CIPHER_3DES\n\n \n#define SSH_DEFAULT_PORT\t22\n\n \n#define SSH_MAX_CERTIFICATE_FILES\t100\n\n \n#define SSH_MAX_IDENTITY_FILES\t\t100\n\n \n#define PROTOCOL_MAJOR_1\t1\n#define PROTOCOL_MINOR_1\t5\n\n \n#define PROTOCOL_MAJOR_2\t2\n#define PROTOCOL_MINOR_2\t0\n\n \n#define SSH_SERVICE_NAME\t\"ssh\"\n\n \n#define SSH_AGENTPID_ENV_NAME\t\"SSH_AGENT_PID\"\n\n \n#define SSH_AUTHSOCKET_ENV_NAME \"SSH_AUTH_SOCK\"\n\n \n#define SSH_ASKPASS_ENV\t\t\"SSH_ASKPASS\"\n\n \n#define SSH_ASKPASS_REQUIRE_ENV\t\t\"SSH_ASKPASS_REQUIRE\"\n\n \n#define SSH_KEY_BITS_RESERVED\t\t128\n\n \n#define SSH_SESSION_KEY_LENGTH\t\t32\n\n \n#define SSH_ESCAPECHAR_NONE\t\t-2\n\n \n#ifndef SSH_PRIVSEP_USER\n#define SSH_PRIVSEP_USER\t\t\"sshd\"\n#endif\n\n \n#define SSH_LISTEN_BACKLOG\t\t128\n\n \n#define SSH_MAX_BANNER_LEN\t\t8192\n#define SSH_MAX_PRE_BANNER_LINES\t1024\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

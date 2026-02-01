@@ -1,0 +1,9 @@
+{
+  "module_name": "oimm507b.c",
+  "hash_id": "d671ecf70b86854dd40d73e1e6228d2b40c834a3a19ee02017223f6a0f61721f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/dispnv50/oimm507b.c",
+  "human_readable_source": " \n#include \"oimm.h\"\n\n#include <nvif/if0014.h>\n\nstatic int\noimm507b_init_(const struct nv50_wimm_func *func, struct nouveau_drm *drm,\n\t       s32 oclass, struct nv50_wndw *wndw)\n{\n\tstruct nvif_disp_chan_v0 args = {\n\t\t.id = wndw->id,\n\t};\n\tstruct nv50_disp *disp = nv50_disp(drm->dev);\n\tint ret;\n\n\tret = nvif_object_ctor(&disp->disp->object, \"kmsOvim\", 0, oclass,\n\t\t\t       &args, sizeof(args), &wndw->wimm.base.user);\n\tif (ret) {\n\t\tNV_ERROR(drm, \"oimm%04x allocation failed: %d\\n\", oclass, ret);\n\t\treturn ret;\n\t}\n\n\tnvif_object_map(&wndw->wimm.base.user, NULL, 0);\n\twndw->immd = func;\n\treturn 0;\n}\n\nint\noimm507b_init(struct nouveau_drm *drm, s32 oclass, struct nv50_wndw *wndw)\n{\n\treturn oimm507b_init_(&curs507a, drm, oclass, wndw);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

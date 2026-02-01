@@ -1,0 +1,9 @@
+{
+  "module_name": "acpi.h",
+  "hash_id": "50356b0a563749e5f7d5ffd8644d6873df543fecbe85aa11bc8178f816c5d889",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/acpi.h",
+  "human_readable_source": " \n\n#ifndef _XEN_ACPI_H\n#define _XEN_ACPI_H\n\n#include <linux/types.h>\n\n#ifdef CONFIG_XEN_DOM0\n#include <asm/xen/hypervisor.h>\n#include <xen/xen.h>\n#include <linux/acpi.h>\n\nint xen_acpi_notify_hypervisor_sleep(u8 sleep_state,\n\t\t\t\t     u32 pm1a_cnt, u32 pm1b_cnd);\nint xen_acpi_notify_hypervisor_extended_sleep(u8 sleep_state,\n\t\t\t\t     u32 val_a, u32 val_b);\n\nstatic inline int xen_acpi_suspend_lowlevel(void)\n{\n\t \n\tacpi_enter_sleep_state(ACPI_STATE_S3);\n\treturn 0;\n}\n\nstatic inline void xen_acpi_sleep_register(void)\n{\n\tif (xen_initial_domain()) {\n\t\tacpi_os_set_prepare_sleep(\n\t\t\t&xen_acpi_notify_hypervisor_sleep);\n\t\tacpi_os_set_prepare_extended_sleep(\n\t\t\t&xen_acpi_notify_hypervisor_extended_sleep);\n\n\t\tacpi_suspend_lowlevel = xen_acpi_suspend_lowlevel;\n\t}\n}\n#else\nstatic inline void xen_acpi_sleep_register(void)\n{\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

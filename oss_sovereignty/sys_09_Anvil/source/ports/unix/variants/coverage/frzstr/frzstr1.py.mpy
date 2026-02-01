@@ -1,0 +1,9 @@
+{
+  "module_name": "frzstr1.py",
+  "hash_id": "0faff91cf55eeab77fa423f16b741a6a7cba35bcdda8ed622b4e8543c6845ff0",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/variants/coverage/frzstr/frzstr1.py",
+  "human_readable_source": "print(\"frzstr1\")\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

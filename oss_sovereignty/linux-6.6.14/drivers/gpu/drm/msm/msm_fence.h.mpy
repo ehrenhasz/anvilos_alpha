@@ -1,0 +1,9 @@
+{
+  "module_name": "msm_fence.h",
+  "hash_id": "681f779afefd22625ed1cba0760061ae8bc2068d4b609879d1ed106449029c14",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/msm/msm_fence.h",
+  "human_readable_source": " \n \n\n#ifndef __MSM_FENCE_H__\n#define __MSM_FENCE_H__\n\n#include \"msm_drv.h\"\n\n \nstruct msm_fence_context {\n\tstruct drm_device *dev;\n\t \n\tchar name[32];\n\t \n\tunsigned context;\n\t \n\tunsigned index;\n\n\t \n\tuint32_t last_fence;\n\n\t \n\tuint32_t completed_fence;\n\n\t \n\tvolatile uint32_t *fenceptr;\n\n\tspinlock_t spinlock;\n\n\t \n\n\t \n\tktime_t next_deadline;\n\n\t \n\tuint32_t next_deadline_fence;\n\n\tstruct hrtimer deadline_timer;\n\tstruct kthread_work deadline_work;\n};\n\nstruct msm_fence_context * msm_fence_context_alloc(struct drm_device *dev,\n\t\tvolatile uint32_t *fenceptr, const char *name);\nvoid msm_fence_context_free(struct msm_fence_context *fctx);\n\nbool msm_fence_completed(struct msm_fence_context *fctx, uint32_t fence);\nvoid msm_update_fence(struct msm_fence_context *fctx, uint32_t fence);\n\nstruct dma_fence * msm_fence_alloc(void);\nvoid msm_fence_init(struct dma_fence *fence, struct msm_fence_context *fctx);\n\nstatic inline bool\nfence_before(uint32_t a, uint32_t b)\n{\n   return (int32_t)(a - b) < 0;\n}\n\nstatic inline bool\nfence_after(uint32_t a, uint32_t b)\n{\n   return (int32_t)(a - b) > 0;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

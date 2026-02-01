@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_pxp_pm.h",
+  "hash_id": "d46a7f80361db821accdd7399c95c7db2879d9b8e2dfb4ac3a5bcd00256c9300",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/pxp/intel_pxp_pm.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_PXP_PM_H__\n#define __INTEL_PXP_PM_H__\n\nstruct intel_pxp;\n\n#ifdef CONFIG_DRM_I915_PXP\nvoid intel_pxp_suspend_prepare(struct intel_pxp *pxp);\nvoid intel_pxp_suspend(struct intel_pxp *pxp);\nvoid intel_pxp_resume_complete(struct intel_pxp *pxp);\nvoid intel_pxp_runtime_suspend(struct intel_pxp *pxp);\n#else\nstatic inline void intel_pxp_suspend_prepare(struct intel_pxp *pxp)\n{\n}\n\nstatic inline void intel_pxp_suspend(struct intel_pxp *pxp)\n{\n}\n\nstatic inline void intel_pxp_resume_complete(struct intel_pxp *pxp)\n{\n}\n\nstatic inline void intel_pxp_runtime_suspend(struct intel_pxp *pxp)\n{\n}\n#endif\nstatic inline void intel_pxp_runtime_resume(struct intel_pxp *pxp)\n{\n\tintel_pxp_resume_complete(pxp);\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

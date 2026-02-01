@@ -1,0 +1,9 @@
+{
+  "module_name": "max14577.h",
+  "hash_id": "22939ac452b06330886a7d5144ce16754427b57b5c29717c31ff80bc75011a61",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/max14577.h",
+  "human_readable_source": " \n \n\n#ifndef __MAX14577_H__\n#define __MAX14577_H__\n\n#include <linux/regulator/consumer.h>\n\n \nenum max14577_regulators {\n\tMAX14577_SAFEOUT = 0,\n\tMAX14577_CHARGER,\n\n\tMAX14577_REGULATOR_NUM,\n};\n\n \nenum max77836_regulators {\n\tMAX77836_SAFEOUT = 0,\n\tMAX77836_CHARGER,\n\tMAX77836_LDO1,\n\tMAX77836_LDO2,\n\n\tMAX77836_REGULATOR_NUM,\n};\n\nstruct max14577_regulator_platform_data {\n\tint id;\n\tstruct regulator_init_data *initdata;\n\tstruct device_node *of_node;\n};\n\nstruct max14577_charger_platform_data {\n\tu32 constant_uvolt;\n\tu32 fast_charge_uamp;\n\tu32 eoc_uamp;\n\tu32 ovp_uvolt;\n};\n\n \nstruct max14577_platform_data {\n\t \n\tint irq_base;\n\n\t \n\tint gpio_pogo_vbatt_en;\n\tint gpio_pogo_vbus_en;\n\n\t \n\tint (*set_gpio_pogo_vbatt_en) (int gpio_val);\n\tint (*set_gpio_pogo_vbus_en) (int gpio_val);\n\n\tint (*set_gpio_pogo_cb) (int new_dev);\n\n\tstruct max14577_regulator_platform_data *regulators;\n};\n\n \nstruct maxim_charger_current {\n\t \n\tunsigned int min;\n\t \n\tunsigned int high_start;\n\t \n\tunsigned int high_step;\n\t \n\tunsigned int max;\n};\n\nextern const struct maxim_charger_current maxim_charger_currents[];\nextern int maxim_charger_calc_reg_current(const struct maxim_charger_current *limits,\n\t\tunsigned int min_ua, unsigned int max_ua, u8 *dst);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

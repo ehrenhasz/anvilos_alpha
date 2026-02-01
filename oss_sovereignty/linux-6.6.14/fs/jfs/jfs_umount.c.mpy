@@ -1,0 +1,9 @@
+{
+  "module_name": "jfs_umount.c",
+  "hash_id": "ce8ca729de22c1a7b4abcf3fb79c82e6de5934c046df28cd4e8f1a90fffd5400",
+  "original_prompt": "Ingested from linux-6.6.14/fs/jfs/jfs_umount.c",
+  "human_readable_source": "\n \n\n \n\n#include <linux/fs.h>\n#include \"jfs_incore.h\"\n#include \"jfs_filsys.h\"\n#include \"jfs_superblock.h\"\n#include \"jfs_dmap.h\"\n#include \"jfs_imap.h\"\n#include \"jfs_metapage.h\"\n#include \"jfs_debug.h\"\n\n \nint jfs_umount(struct super_block *sb)\n{\n\tstruct jfs_sb_info *sbi = JFS_SBI(sb);\n\tstruct inode *ipbmap = sbi->ipbmap;\n\tstruct inode *ipimap = sbi->ipimap;\n\tstruct inode *ipaimap = sbi->ipaimap;\n\tstruct inode *ipaimap2 = sbi->ipaimap2;\n\tstruct jfs_log *log;\n\tint rc = 0;\n\n\tjfs_info(\"UnMount JFS: sb:0x%p\", sb);\n\n\t \n\tif ((log = sbi->log))\n\t\t \n\t\tjfs_flush_journal(log, 2);\n\n\t \n\tdiUnmount(ipimap, 0);\n\n\tdiFreeSpecial(ipimap);\n\tsbi->ipimap = NULL;\n\n\t \n\tif (ipaimap2) {\n\t\tdiUnmount(ipaimap2, 0);\n\t\tdiFreeSpecial(ipaimap2);\n\t\tsbi->ipaimap2 = NULL;\n\t}\n\n\t \n\tdiUnmount(ipaimap, 0);\n\tdiFreeSpecial(ipaimap);\n\tsbi->ipaimap = NULL;\n\n\t \n\tdbUnmount(ipbmap, 0);\n\n\tdiFreeSpecial(ipbmap);\n\tsbi->ipbmap = NULL;\n\n\t \n\tfilemap_write_and_wait(sbi->direct_inode->i_mapping);\n\n\t \n\tif (log) {\t\t \n\t\tupdateSuper(sb, FM_CLEAN);\n\n\t\t \n\t\trc = lmLogClose(sb);\n\t}\n\tjfs_info(\"UnMount JFS Complete: rc = %d\", rc);\n\treturn rc;\n}\n\n\nint jfs_umount_rw(struct super_block *sb)\n{\n\tstruct jfs_sb_info *sbi = JFS_SBI(sb);\n\tstruct jfs_log *log = sbi->log;\n\n\tif (!log)\n\t\treturn 0;\n\n\t \n\tjfs_flush_journal(log, 2);\n\n\t \n\tdbSync(sbi->ipbmap);\n\tdiSync(sbi->ipimap);\n\n\t \n\tfilemap_write_and_wait(sbi->direct_inode->i_mapping);\n\n\tupdateSuper(sb, FM_CLEAN);\n\n\treturn lmLogClose(sb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

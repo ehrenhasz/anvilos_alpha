@@ -1,0 +1,9 @@
+{
+  "module_name": "of_regulator.h",
+  "hash_id": "80473cd5e9221c706c2790b988e20f01505fb23abd0f194bb4238b311cfde85e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/regulator/of_regulator.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_OF_REG_H\n#define __LINUX_OF_REG_H\n\nstruct regulator_desc;\n\nstruct of_regulator_match {\n\tconst char *name;\n\tvoid *driver_data;\n\tstruct regulator_init_data *init_data;\n\tstruct device_node *of_node;\n\tconst struct regulator_desc *desc;\n};\n\n#if defined(CONFIG_OF)\nextern struct regulator_init_data\n\t*of_get_regulator_init_data(struct device *dev,\n\t\t\t\t    struct device_node *node,\n\t\t\t\t    const struct regulator_desc *desc);\nextern int of_regulator_match(struct device *dev, struct device_node *node,\n\t\t\t      struct of_regulator_match *matches,\n\t\t\t      unsigned int num_matches);\n#else\nstatic inline struct regulator_init_data\n\t*of_get_regulator_init_data(struct device *dev,\n\t\t\t\t    struct device_node *node,\n\t\t\t\t    const struct regulator_desc *desc)\n{\n\treturn NULL;\n}\n\nstatic inline int of_regulator_match(struct device *dev,\n\t\t\t\t     struct device_node *node,\n\t\t\t\t     struct of_regulator_match *matches,\n\t\t\t\t     unsigned int num_matches)\n{\n\treturn 0;\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

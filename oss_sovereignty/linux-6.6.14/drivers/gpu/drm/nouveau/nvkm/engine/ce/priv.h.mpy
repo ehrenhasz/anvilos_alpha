@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "31f1d63da38ba413d0612bc653e5f4895ee915d384235eef20ad69909c1673ff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/ce/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_CE_PRIV_H__\n#define __NVKM_CE_PRIV_H__\n#include <engine/ce.h>\n\nvoid gt215_ce_intr(struct nvkm_falcon *, struct nvkm_chan *);\nvoid gk104_ce_intr(struct nvkm_engine *);\nvoid gp100_ce_intr(struct nvkm_engine *);\n\nextern const struct nvkm_object_func gv100_ce_cclass;\n\nint ga100_ce_oneinit(struct nvkm_engine *);\nint ga100_ce_init(struct nvkm_engine *);\nint ga100_ce_fini(struct nvkm_engine *, bool);\nint ga100_ce_nonstall(struct nvkm_engine *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

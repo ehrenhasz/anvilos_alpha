@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_de_types.h",
+  "hash_id": "8d6de7415590f39d5ab4559bcd6b2e2697936032c2e90f54fb61c863c1ed8165",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/de/de_1.0/ia_css_de_types.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_DE_TYPES_H\n#define __IA_CSS_DE_TYPES_H\n\n \n\n \nstruct ia_css_de_config {\n\tia_css_u0_16 pixelnoise;  \n\tia_css_u0_16 c1_coring_threshold;  \n\tia_css_u0_16 c2_coring_threshold;  \n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

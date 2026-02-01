@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "5288bacd960829b4acfeebc9b12f81ac2afcfb5c8a9341b7ca70c7ffd25ac89b",
+  "original_prompt": "Ingested from linux-6.6.14/samples/kmemleak/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nobj-$(CONFIG_SAMPLE_KMEMLEAK) += kmemleak-test.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

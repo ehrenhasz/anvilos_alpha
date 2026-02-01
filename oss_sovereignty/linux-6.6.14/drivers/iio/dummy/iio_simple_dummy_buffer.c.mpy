@@ -1,0 +1,9 @@
+{
+  "module_name": "iio_simple_dummy_buffer.c",
+  "hash_id": "c21c9dc63e6d1ef544b0b5f5d28d2958dc9d66b6cc6e29533078a37e9da4ebe2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/dummy/iio_simple_dummy_buffer.c",
+  "human_readable_source": "\n \n\n#include <linux/kernel.h>\n#include <linux/export.h>\n#include <linux/slab.h>\n#include <linux/interrupt.h>\n#include <linux/irq.h>\n#include <linux/bitmap.h>\n\n#include <linux/iio/iio.h>\n#include <linux/iio/buffer.h>\n#include <linux/iio/trigger_consumer.h>\n#include <linux/iio/triggered_buffer.h>\n\n#include \"iio_simple_dummy.h\"\n\n \n\nstatic const s16 fakedata[] = {\n\t[DUMMY_INDEX_VOLTAGE_0] = 7,\n\t[DUMMY_INDEX_DIFFVOLTAGE_1M2] = -33,\n\t[DUMMY_INDEX_DIFFVOLTAGE_3M4] = -2,\n\t[DUMMY_INDEX_ACCELX] = 344,\n};\n\n \nstatic irqreturn_t iio_simple_dummy_trigger_h(int irq, void *p)\n{\n\tstruct iio_poll_func *pf = p;\n\tstruct iio_dev *indio_dev = pf->indio_dev;\n\tint i = 0, j;\n\tu16 *data;\n\n\tdata = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);\n\tif (!data)\n\t\tgoto done;\n\n\t \n\tfor_each_set_bit(j, indio_dev->active_scan_mask, indio_dev->masklength)\n\t\tdata[i++] = fakedata[j];\n\n\tiio_push_to_buffers_with_timestamp(indio_dev, data,\n\t\t\t\t\t   iio_get_time_ns(indio_dev));\n\n\tkfree(data);\n\ndone:\n\t \n\tiio_trigger_notify_done(indio_dev->trig);\n\n\treturn IRQ_HANDLED;\n}\n\nstatic const struct iio_buffer_setup_ops iio_simple_dummy_buffer_setup_ops = {\n};\n\nint iio_simple_dummy_configure_buffer(struct iio_dev *indio_dev)\n{\n\treturn iio_triggered_buffer_setup(indio_dev, NULL,\n\t\t\t\t\t  iio_simple_dummy_trigger_h,\n\t\t\t\t\t  &iio_simple_dummy_buffer_setup_ops);\n}\n\n \nvoid iio_simple_dummy_unconfigure_buffer(struct iio_dev *indio_dev)\n{\n\tiio_triggered_buffer_cleanup(indio_dev);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

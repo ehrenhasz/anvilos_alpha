@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objlist.c.compress",
+  "hash_id": "272b4c39ee1785225dd495d5afd26191300c70cb824765d34a9b7b29946fbaf0",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/compress/@@__@@__py__objlist.c.compress",
+  "human_readable_source": "pop from empty list\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

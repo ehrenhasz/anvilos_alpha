@@ -1,0 +1,9 @@
+{
+  "module_name": "ufshcd-dwc.h",
+  "hash_id": "e08ebc4697e8f72e9076afc6fa06d1cce389fa5858447db3e478634a051a1b31",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/ufs/host/ufshcd-dwc.h",
+  "human_readable_source": " \n \n\n#ifndef _UFSHCD_DWC_H\n#define _UFSHCD_DWC_H\n\n#include <ufs/ufshcd.h>\n\nstruct ufshcd_dme_attr_val {\n\tu32 attr_sel;\n\tu32 mib_val;\n\tu8 peer;\n};\n\nint ufshcd_dwc_link_startup_notify(struct ufs_hba *hba,\n\t\t\t\t\tenum ufs_notify_change_status status);\nint ufshcd_dwc_dme_set_attrs(struct ufs_hba *hba,\n\t\t\t\tconst struct ufshcd_dme_attr_val *v, int n);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "of_display_timing.h",
+  "hash_id": "fa0ce6348e372c75b6d1325c42d8c31949fee89feda98bfa0d55cbbdb1062d76",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/of_display_timing.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_OF_DISPLAY_TIMING_H\n#define __LINUX_OF_DISPLAY_TIMING_H\n\n#include <linux/errno.h>\n\nstruct device_node;\nstruct display_timing;\nstruct display_timings;\n\n#define OF_USE_NATIVE_MODE -1\n\n#ifdef CONFIG_OF\nint of_get_display_timing(const struct device_node *np, const char *name,\n\t\tstruct display_timing *dt);\nstruct display_timings *of_get_display_timings(const struct device_node *np);\n#else\nstatic inline int of_get_display_timing(const struct device_node *np,\n\t\tconst char *name, struct display_timing *dt)\n{\n\treturn -ENOSYS;\n}\nstatic inline struct display_timings *\nof_get_display_timings(const struct device_node *np)\n{\n\treturn NULL;\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

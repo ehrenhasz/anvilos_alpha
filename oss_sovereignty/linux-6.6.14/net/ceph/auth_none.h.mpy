@@ -1,0 +1,9 @@
+{
+  "module_name": "auth_none.h",
+  "hash_id": "824bcbe4eb7fdd282f5d767d658e7586742c908e3b31a47584e6b1d78d76f71e",
+  "original_prompt": "Ingested from linux-6.6.14/net/ceph/auth_none.h",
+  "human_readable_source": " \n#ifndef _FS_CEPH_AUTH_NONE_H\n#define _FS_CEPH_AUTH_NONE_H\n\n#include <linux/slab.h>\n#include <linux/ceph/auth.h>\n\n \n\nstruct ceph_none_authorizer {\n\tstruct ceph_authorizer base;\n\tchar buf[128];\n\tint buf_len;\n};\n\nstruct ceph_auth_none_info {\n\tbool starting;\n};\n\nint ceph_auth_none_init(struct ceph_auth_client *ac);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

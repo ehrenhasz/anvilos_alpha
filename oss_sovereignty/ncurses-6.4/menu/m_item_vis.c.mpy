@@ -1,0 +1,9 @@
+{
+  "module_name": "m_item_vis.c",
+  "hash_id": "c84ca5cc0aefb0b38451d3f1f70503dc301fe7e42959476473eaf2f63396cf88",
+  "original_prompt": "Ingested from ncurses-6.4/menu/m_item_vis.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"menu.priv.h\"\n\nMODULE_ID(\"$Id: m_item_vis.c,v 1.20 2021/06/17 21:20:30 tom Exp $\")\n\n \nMENU_EXPORT(bool)\nitem_visible(const ITEM *item)\n{\n  MENU *menu;\n\n  T((T_CALLED(\"item_visible(%p)\"), (const void *)item));\n  if (item &&\n      (menu = item->imenu) &&\n      (menu->status & _POSTED) &&\n      ((menu->toprow + menu->arows) > (item->y)) &&\n      (item->y >= menu->toprow))\n    returnBool(TRUE);\n  else\n    returnBool(FALSE);\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "qedi_fw_scsi.h",
+  "hash_id": "def5d49e7e9a4ee338e55ad0e03c8169f95c515a7553358adb1bef014108e4a8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/qedi/qedi_fw_scsi.h",
+  "human_readable_source": " \n \n\n#ifndef _QEDI_FW_SCSI_H_\n#define _QEDI_FW_SCSI_H_\n\n#include <linux/types.h>\n#include <asm/byteorder.h>\n#include \"qedi_hsi.h\"\n#include <linux/qed/qed_if.h>\n\nstruct scsi_sgl_task_params {\n\tstruct scsi_sge\t*sgl;\n\tstruct regpair\tsgl_phys_addr;\n\tu32\t\ttotal_buffer_size;\n\tu16\t\tnum_sges;\n\tbool\t\tsmall_mid_sge;\n};\n\nstruct scsi_dif_task_params {\n\tu32\tinitial_ref_tag;\n\tbool\tinitial_ref_tag_is_valid;\n\tu16\tapplication_tag;\n\tu16\tapplication_tag_mask;\n\tu16\tdif_block_size_log;\n\tbool\tdif_on_network;\n\tbool\tdif_on_host;\n\tu8\thost_guard_type;\n\tu8\tprotection_type;\n\tu8\tref_tag_mask;\n\tbool\tcrc_seed;\n\tbool\ttx_dif_conn_err_en;\n\tbool\tignore_app_tag;\n\tbool\tkeep_ref_tag_const;\n\tbool\tvalidate_guard;\n\tbool\tvalidate_app_tag;\n\tbool\tvalidate_ref_tag;\n\tbool\tforward_guard;\n\tbool\tforward_app_tag;\n\tbool\tforward_ref_tag;\n\tbool\tforward_app_tag_with_mask;\n\tbool\tforward_ref_tag_with_mask;\n};\n\nstruct scsi_initiator_cmd_params {\n\tstruct scsi_sge\textended_cdb_sge;\n\tstruct regpair\tsense_data_buffer_phys_addr;\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

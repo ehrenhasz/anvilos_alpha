@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "52528c8be0e9add8e923558e0ff6d7399d8d6bb47da1173d080366bf868c93a1",
+  "original_prompt": "Ingested from linux-6.6.14/fs/proc/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the Linux proc filesystem routines.\n#\n\nobj-y   += proc.o\n\nCFLAGS_task_mmu.o\t+= $(call cc-option,-Wno-override-init,)\nproc-y\t\t\t:= nommu.o task_nommu.o\nproc-$(CONFIG_MMU)\t:= task_mmu.o\n\nproc-y       += inode.o root.o base.o generic.o array.o \\\n\t\tfd.o\nproc-$(CONFIG_TTY)      += proc_tty.o\nproc-y\t+= cmdline.o\nproc-y\t+= consoles.o\nproc-y\t+= cpuinfo.o\nproc-y\t+= devices.o\nproc-y\t+= interrupts.o\nproc-y\t+= loadavg.o\nproc-y\t+= meminfo.o\nproc-y\t+= stat.o\nproc-y\t+= uptime.o\nproc-y\t+= util.o\nproc-y\t+= version.o\nproc-y\t+= softirqs.o\nproc-y\t+= namespaces.o\nproc-y\t+= self.o\nproc-y\t+= thread_self.o\nproc-$(CONFIG_PROC_SYSCTL)\t+= proc_sysctl.o\nproc-$(CONFIG_NET)\t\t+= proc_net.o\nproc-$(CONFIG_PROC_KCORE)\t+= kcore.o\nproc-$(CONFIG_PROC_VMCORE)\t+= vmcore.o\nproc-$(CONFIG_PRINTK)\t+= kmsg.o\nproc-$(CONFIG_PROC_PAGE_MONITOR)\t+= page.o\nproc-$(CONFIG_BOOT_CONFIG)\t+= bootconfig.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

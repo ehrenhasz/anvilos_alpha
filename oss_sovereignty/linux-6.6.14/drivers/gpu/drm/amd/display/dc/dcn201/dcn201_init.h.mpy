@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn201_init.h",
+  "hash_id": "b7e0adf9931d8370d060305df2a82352bf54b2b4313cc4c3ba74a673f359f1e6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dcn201/dcn201_init.h",
+  "human_readable_source": " \n\n#ifndef __DC_DCN201_INIT_H__\n#define __DC_DCN201_INIT_H__\n\nstruct dc;\n\nvoid dcn201_hw_sequencer_construct(struct dc *dc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

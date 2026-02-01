@@ -1,0 +1,9 @@
+{
+  "module_name": "gfx_v11_0_3.h",
+  "hash_id": "cd8138ae9c38ba8cff7299c4397935ea0418187ce051a947afcc4b214ba22cac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/amdgpu/gfx_v11_0_3.h",
+  "human_readable_source": " \n\n#ifndef __GFX_V11_0_3_H__\n#define __GFX_V11_0_3_H__\n\nextern struct amdgpu_gfx_ras gfx_v11_0_3_ras;\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

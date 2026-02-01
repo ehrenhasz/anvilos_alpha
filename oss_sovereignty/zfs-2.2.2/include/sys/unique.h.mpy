@@ -1,0 +1,9 @@
+{
+  "module_name": "unique.h",
+  "hash_id": "08c769aa08eae4c0251e278e9901184791d2cf22d1f0864216035f5c431914f4",
+  "original_prompt": "Ingested from zfs-2.2.2/include/sys/unique.h",
+  "human_readable_source": " \n \n\n#ifndef\t_SYS_UNIQUE_H\n#define\t_SYS_UNIQUE_H\n\n#include <sys/zfs_context.h>\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \n#define\tUNIQUE_BITS\t56\n\nvoid unique_init(void);\nvoid unique_fini(void);\n\n \nuint64_t unique_create(void);\n\n \nuint64_t unique_insert(uint64_t value);\n\n \nvoid unique_remove(uint64_t value);\n\n#ifdef\t__cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

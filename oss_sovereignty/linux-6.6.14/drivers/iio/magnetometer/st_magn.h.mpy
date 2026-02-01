@@ -1,0 +1,9 @@
+{
+  "module_name": "st_magn.h",
+  "hash_id": "5f88e497607529ad7243aeed93350d8c0efaca7ad39c0d098b3824e12468d1a4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/magnetometer/st_magn.h",
+  "human_readable_source": " \n \n\n#ifndef ST_MAGN_H\n#define ST_MAGN_H\n\n#include <linux/types.h>\n#include <linux/iio/common/st_sensors.h>\n\n#define LSM303DLH_MAGN_DEV_NAME\t\t\"lsm303dlh_magn\"\n#define LSM303DLHC_MAGN_DEV_NAME\t\"lsm303dlhc_magn\"\n#define LSM303DLM_MAGN_DEV_NAME\t\t\"lsm303dlm_magn\"\n#define LIS3MDL_MAGN_DEV_NAME\t\t\"lis3mdl\"\n#define LSM303AGR_MAGN_DEV_NAME\t\t\"lsm303agr_magn\"\n#define LIS2MDL_MAGN_DEV_NAME\t\t\"lis2mdl\"\n#define LSM9DS1_MAGN_DEV_NAME\t\t\"lsm9ds1_magn\"\n#define IIS2MDC_MAGN_DEV_NAME\t\t\"iis2mdc\"\n#define LSM303C_MAGN_DEV_NAME\t\t\"lsm303c_magn\"\n\n#ifdef CONFIG_IIO_BUFFER\nint st_magn_allocate_ring(struct iio_dev *indio_dev);\nint st_magn_trig_set_state(struct iio_trigger *trig, bool state);\n#define ST_MAGN_TRIGGER_SET_STATE (&st_magn_trig_set_state)\n#else  \nstatic inline int st_magn_allocate_ring(struct iio_dev *indio_dev)\n{\n\treturn 0;\n}\n#define ST_MAGN_TRIGGER_SET_STATE NULL\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

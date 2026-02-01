@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_s3a_param.h",
+  "hash_id": "c1d4b3d8715888cc904e5f76466b7fd1373416f7c60994b252f9c744031f9c57",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/s3a/s3a_1.0/ia_css_s3a_param.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_S3A_PARAM_H\n#define __IA_CSS_S3A_PARAM_H\n\n#include \"type_support.h\"\n\n \nstruct sh_css_isp_ae_params {\n\t \n\ts32 y_coef_r;\n\ts32 y_coef_g;\n\ts32 y_coef_b;\n};\n\n \nstruct sh_css_isp_awb_params {\n\ts32 lg_high_raw;\n\ts32 lg_low;\n\ts32 lg_high;\n};\n\n \nstruct sh_css_isp_af_params {\n\ts32 fir1[7];\n\ts32 fir2[7];\n};\n\n \nstruct sh_css_isp_s3a_params {\n\t \n\tstruct sh_css_isp_ae_params ae;\n\n\t \n\tstruct sh_css_isp_awb_params awb;\n\n\t \n\tstruct sh_css_isp_af_params af;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

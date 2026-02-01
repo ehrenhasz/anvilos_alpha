@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a9d602fa3e759faa4d6f1a6b1ef496ac0b7ed94f286cc73ad0770448d857d4ce",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/bt8xx/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nbttv-objs      :=      bttv-driver.o bttv-cards.o bttv-if.o \\\n\t\t       bttv-risc.o bttv-vbi.o bttv-i2c.o bttv-gpio.o \\\n\t\t       bttv-input.o bttv-audio-hook.o btcx-risc.o\n\nobj-$(CONFIG_VIDEO_BT848) += bttv.o\nobj-$(CONFIG_DVB_BT8XX) += bt878.o dvb-bt8xx.o dst.o dst_ca.o\n\nccflags-y += -I $(srctree)/drivers/media/dvb-frontends\nccflags-y += -I $(srctree)/drivers/media/tuners\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

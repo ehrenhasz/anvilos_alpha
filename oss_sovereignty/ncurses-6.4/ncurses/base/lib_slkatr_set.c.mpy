@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_slkatr_set.c",
+  "hash_id": "3a1f49b8f74a5001ec6a5c28da7558cbfe7af99b38282d5e436c5adcb149955e",
+  "original_prompt": "Ingested from ncurses-6.4/ncurses/base/lib_slkatr_set.c",
+  "human_readable_source": " \n\n \n\n \n#include <curses.priv.h>\n\nMODULE_ID(\"$Id: lib_slkatr_set.c,v 1.17 2020/02/02 23:34:34 tom Exp $\")\n\nNCURSES_EXPORT(int)\nNCURSES_SP_NAME(slk_attr_set) (NCURSES_SP_DCLx\n\t\t\t       const attr_t attr,\n\t\t\t       NCURSES_PAIRS_T pair_arg,\n\t\t\t       void *opts)\n{\n    int code = ERR;\n    int color_pair = pair_arg;\n\n    T((T_CALLED(\"slk_attr_set(%p,%s,%d)\"),\n       (void *) SP_PARM,\n       _traceattr(attr),\n       color_pair));\n\n    set_extended_pair(opts, color_pair);\n    if (SP_PARM != 0\n\t&& SP_PARM->_slk != 0\n\t&& color_pair >= 0\n\t&& color_pair < SP_PARM->_pair_limit) {\n\tTR(TRACE_ATTRS, (\"... current %s\", _tracech_t(CHREF(SP_PARM->_slk->attr))));\n\tSetAttr(SP_PARM->_slk->attr, attr);\n\tif (color_pair > 0) {\n\t    SetPair(SP_PARM->_slk->attr, color_pair);\n\t}\n\tTR(TRACE_ATTRS, (\"new attribute is %s\", _tracech_t(CHREF(SP_PARM->_slk->attr))));\n\tcode = OK;\n    }\n    returnCode(code);\n}\n\n#if NCURSES_SP_FUNCS\nNCURSES_EXPORT(int)\nslk_attr_set(const attr_t attr, NCURSES_COLOR_T pair_arg, void *opts)\n{\n    return NCURSES_SP_NAME(slk_attr_set) (CURRENT_SCREEN, attr,\n\t\t\t\t\t  pair_arg, opts);\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "stdbuf.x",
+  "hash_id": "8b5f7e878c2f8a14db0fe4196315b4e9ee448e8f3fe1b5e2e9627cd8eeac5415",
+  "original_prompt": "Ingested from coreutils-9.4/man/stdbuf.x",
+  "human_readable_source": "'\\\" Copyright (C) 2009-2023 Free Software Foundation, Inc.\n'\\\"\n'\\\" This is free software.  You may redistribute copies of it under the terms\n'\\\" of the GNU General Public License <https://www.gnu.org/licenses/gpl.html>.\n'\\\" There is NO WARRANTY, to the extent permitted by law.\n[NAME]\nstdbuf \\-\nRun COMMAND, with modified buffering operations for its standard streams.\n[DESCRIPTION]\n.\\\" Add any additional description here\n[EXAMPLES]\n.B tail -f access.log | stdbuf -oL cut -d \\(aq \\(aq -f1 | uniq\n.br\nThis will immediately display unique entries from access.log\n[BUGS]\nOn GLIBC platforms, specifying a buffer size, i.e., using fully buffered mode\nwill result in undefined operation.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

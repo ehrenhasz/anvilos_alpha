@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "52a3fd0ef4a5ea6e2cf52ffda2b391b3836ae4058cf33ba515c460eccfe81a59",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nvmem/layouts/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for nvmem layouts.\n#\n\nobj-$(CONFIG_NVMEM_LAYOUT_SL28_VPD) += sl28vpd.o\nobj-$(CONFIG_NVMEM_LAYOUT_ONIE_TLV) += onie-tlv.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

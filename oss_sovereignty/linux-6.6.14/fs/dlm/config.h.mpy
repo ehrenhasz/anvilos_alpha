@@ -1,0 +1,9 @@
+{
+  "module_name": "config.h",
+  "hash_id": "8f112a8e0cc063bddea448be75abeee45024b7f6f54bd7d82136252799a669c7",
+  "original_prompt": "Ingested from linux-6.6.14/fs/dlm/config.h",
+  "human_readable_source": " \n \n\n#ifndef __CONFIG_DOT_H__\n#define __CONFIG_DOT_H__\n\n#define DLM_MAX_SOCKET_BUFSIZE\t4096\n\nstruct dlm_config_node {\n\tint nodeid;\n\tint weight;\n\tint new;\n\tuint32_t comm_seq;\n};\n\n#define DLM_MAX_ADDR_COUNT 3\n\n#define DLM_PROTO_TCP\t0\n#define DLM_PROTO_SCTP\t1\n\nstruct dlm_config_info {\n\tint ci_tcp_port;\n\tint ci_buffer_size;\n\tint ci_rsbtbl_size;\n\tint ci_recover_timer;\n\tint ci_toss_secs;\n\tint ci_scan_secs;\n\tint ci_log_debug;\n\tint ci_log_info;\n\tint ci_protocol;\n\tint ci_mark;\n\tint ci_new_rsb_count;\n\tint ci_recover_callbacks;\n\tchar ci_cluster_name[DLM_LOCKSPACE_LEN];\n};\n\nextern struct dlm_config_info dlm_config;\n\nint dlm_config_init(void);\nvoid dlm_config_exit(void);\nint dlm_config_nodes(char *lsname, struct dlm_config_node **nodes_out,\n\t\t     int *count_out);\nint dlm_comm_seq(int nodeid, uint32_t *seq);\nint dlm_our_nodeid(void);\nint dlm_our_addr(struct sockaddr_storage *addr, int num);\n\n#endif\t\t\t\t \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

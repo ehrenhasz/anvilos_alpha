@@ -1,0 +1,9 @@
+{
+  "module_name": "av7110_ipack.h",
+  "hash_id": "b757dee134979836ba277d8fde6e792501f93764910b3b0a8b9750eaf6f3f9c1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/av7110/av7110_ipack.h",
+  "human_readable_source": " \n#ifndef _AV7110_IPACK_H_\n#define _AV7110_IPACK_H_\n\nextern int av7110_ipack_init(struct ipack *p, int size,\n\t\t\t     void (*func)(u8 *buf,  int size, void *priv));\n\nextern void av7110_ipack_reset(struct ipack *p);\nextern int  av7110_ipack_instant_repack(const u8 *buf, int count, struct ipack *p);\nextern void av7110_ipack_free(struct ipack * p);\nextern void av7110_ipack_flush(struct ipack *p);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

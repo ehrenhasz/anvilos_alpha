@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "447b90e18e6cd1d12ba0d4f5e7cbaaf42cffb460299266e96cfc1a8f7c300967",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlxfw/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_MLXFW)\t+= mlxfw.o\nmlxfw-objs\t\t:= mlxfw_fsm.o mlxfw_mfa2_tlv_multi.o mlxfw_mfa2.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

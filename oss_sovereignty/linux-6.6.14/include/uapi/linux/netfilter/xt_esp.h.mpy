@@ -1,0 +1,9 @@
+{
+  "module_name": "xt_esp.h",
+  "hash_id": "79e632cf112abd45593e6b9181e4c3b2b99e008e4bde50bdefffe558cb55fd14",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter/xt_esp.h",
+  "human_readable_source": " \n#ifndef _XT_ESP_H\n#define _XT_ESP_H\n\n#include <linux/types.h>\n\nstruct xt_esp {\n\t__u32 spis[2];\t \n\t__u8  invflags;\t \n};\n\n \n#define XT_ESP_INV_SPI\t0x01\t \n#define XT_ESP_INV_MASK\t0x01\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

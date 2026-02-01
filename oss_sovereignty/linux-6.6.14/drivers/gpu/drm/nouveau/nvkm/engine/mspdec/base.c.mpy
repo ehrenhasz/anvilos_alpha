@@ -1,0 +1,9 @@
+{
+  "module_name": "base.c",
+  "hash_id": "2bbbd435672da68d87d2c325f01a946eb6444e37d68c30b17343e586a7fd9f48",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/mspdec/base.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\nint\nnvkm_mspdec_new_(const struct nvkm_falcon_func *func, struct nvkm_device *device,\n\t\t enum nvkm_subdev_type type, int inst, struct nvkm_engine **pengine)\n{\n\treturn nvkm_falcon_new_(func, device, type, inst, true, 0x085000, pengine);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

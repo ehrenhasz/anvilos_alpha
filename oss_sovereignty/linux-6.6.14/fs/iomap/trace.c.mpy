@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "71c44381250b81b9aaa0a87c9c3797902d64bb83132e659db275a8313d20c891",
+  "original_prompt": "Ingested from linux-6.6.14/fs/iomap/trace.c",
+  "human_readable_source": "\n \n#include <linux/iomap.h>\n#include <linux/uio.h>\n\n \n#define CREATE_TRACE_POINTS\n#include \"trace.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

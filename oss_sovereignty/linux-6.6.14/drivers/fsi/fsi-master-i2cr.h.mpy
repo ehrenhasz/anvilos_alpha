@@ -1,0 +1,9 @@
+{
+  "module_name": "fsi-master-i2cr.h",
+  "hash_id": "c4da896cf783d14ae1b28a09a99e39f687ab30d57e740576109f7c74ef8d3b75",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/fsi/fsi-master-i2cr.h",
+  "human_readable_source": " \n \n\n#ifndef DRIVERS_FSI_MASTER_I2CR_H\n#define DRIVERS_FSI_MASTER_I2CR_H\n\n#include <linux/i2c.h>\n#include <linux/mutex.h>\n\n#include \"fsi-master.h\"\n\nstruct i2c_client;\n\nstruct fsi_master_i2cr {\n\tstruct fsi_master master;\n\tstruct mutex lock;\t \n\tstruct i2c_client *client;\n};\n\n#define to_fsi_master_i2cr(m)\tcontainer_of(m, struct fsi_master_i2cr, master)\n\nint fsi_master_i2cr_read(struct fsi_master_i2cr *i2cr, u32 addr, u64 *data);\nint fsi_master_i2cr_write(struct fsi_master_i2cr *i2cr, u32 addr, u64 data);\n\nstatic inline bool is_fsi_master_i2cr(struct fsi_master *master)\n{\n\tif (master->dev.parent && master->dev.parent->type == &i2c_client_type)\n\t\treturn true;\n\n\treturn false;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

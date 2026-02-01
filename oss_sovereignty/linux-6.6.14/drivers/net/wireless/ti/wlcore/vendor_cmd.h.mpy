@@ -1,0 +1,9 @@
+{
+  "module_name": "vendor_cmd.h",
+  "hash_id": "69cd2b72eb19da06e100e9e9716c034bfbb21dbb3be664e422f7fc61f50e2b67",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wlcore/vendor_cmd.h",
+  "human_readable_source": " \n \n\n#ifndef __WLCORE_VENDOR_H__\n#define __WLCORE_VENDOR_H__\n\n#ifdef __KERNEL__\nvoid wlcore_set_vendor_commands(struct wiphy *wiphy);\n#endif\n\n#define TI_OUI\t0x080028\n\nenum wlcore_vendor_commands {\n\tWLCORE_VENDOR_CMD_SMART_CONFIG_START,\n\tWLCORE_VENDOR_CMD_SMART_CONFIG_STOP,\n\tWLCORE_VENDOR_CMD_SMART_CONFIG_SET_GROUP_KEY,\n\n\tNUM_WLCORE_VENDOR_CMD,\n\tMAX_WLCORE_VENDOR_CMD = NUM_WLCORE_VENDOR_CMD - 1\n};\n\nenum wlcore_vendor_attributes {\n\tWLCORE_VENDOR_ATTR_FREQ,\n\tWLCORE_VENDOR_ATTR_PSK,\n\tWLCORE_VENDOR_ATTR_SSID,\n\tWLCORE_VENDOR_ATTR_GROUP_ID,\n\tWLCORE_VENDOR_ATTR_GROUP_KEY,\n\n\tNUM_WLCORE_VENDOR_ATTR,\n\tMAX_WLCORE_VENDOR_ATTR = NUM_WLCORE_VENDOR_ATTR - 1\n};\n\nenum wlcore_vendor_events {\n\tWLCORE_VENDOR_EVENT_SC_SYNC,\n\tWLCORE_VENDOR_EVENT_SC_DECODE,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

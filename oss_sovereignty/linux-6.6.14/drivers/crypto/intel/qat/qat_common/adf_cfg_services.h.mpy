@@ -1,0 +1,9 @@
+{
+  "module_name": "adf_cfg_services.h",
+  "hash_id": "c211313caf90abe1fc661c2356eaaa027bc71bd6e56d52a5dbf24d6a32861ead",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/intel/qat/qat_common/adf_cfg_services.h",
+  "human_readable_source": " \n \n#ifndef _ADF_CFG_SERVICES_H_\n#define _ADF_CFG_SERVICES_H_\n\n#include \"adf_cfg_strings.h\"\n\nenum adf_services {\n\tSVC_CY = 0,\n\tSVC_CY2,\n\tSVC_DC,\n\tSVC_DCC,\n\tSVC_SYM,\n\tSVC_ASYM,\n\tSVC_DC_ASYM,\n\tSVC_ASYM_DC,\n\tSVC_DC_SYM,\n\tSVC_SYM_DC,\n};\n\nstatic const char *const adf_cfg_services[] = {\n\t[SVC_CY] = ADF_CFG_CY,\n\t[SVC_CY2] = ADF_CFG_ASYM_SYM,\n\t[SVC_DC] = ADF_CFG_DC,\n\t[SVC_DCC] = ADF_CFG_DCC,\n\t[SVC_SYM] = ADF_CFG_SYM,\n\t[SVC_ASYM] = ADF_CFG_ASYM,\n\t[SVC_DC_ASYM] = ADF_CFG_DC_ASYM,\n\t[SVC_ASYM_DC] = ADF_CFG_ASYM_DC,\n\t[SVC_DC_SYM] = ADF_CFG_DC_SYM,\n\t[SVC_SYM_DC] = ADF_CFG_SYM_DC,\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

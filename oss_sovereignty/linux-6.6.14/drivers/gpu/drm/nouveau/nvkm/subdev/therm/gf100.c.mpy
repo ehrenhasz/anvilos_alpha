@@ -1,0 +1,9 @@
+{
+  "module_name": "gf100.c",
+  "hash_id": "aa82818a5cc75f389637cc2f0fc7bca4b333b4fea2c895bec1a807841fd63c28",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/therm/gf100.c",
+  "human_readable_source": " \n#include <core/device.h>\n\n#include \"priv.h\"\n\n#define pack_for_each_init(init, pack, head)                          \\\n\tfor (pack = head; pack && pack->init; pack++)                 \\\n\t\t  for (init = pack->init; init && init->count; init++)\nvoid\ngf100_clkgate_init(struct nvkm_therm *therm,\n\t\t   const struct nvkm_therm_clkgate_pack *p)\n{\n\tstruct nvkm_device *device = therm->subdev.device;\n\tconst struct nvkm_therm_clkgate_pack *pack;\n\tconst struct nvkm_therm_clkgate_init *init;\n\tu32 next, addr;\n\n\tpack_for_each_init(init, pack, p) {\n\t\tnext = init->addr + init->count * 8;\n\t\taddr = init->addr;\n\n\t\tnvkm_trace(&therm->subdev, \"{ 0x%06x, %d, 0x%08x }\\n\",\n\t\t\t   init->addr, init->count, init->data);\n\t\twhile (addr < next) {\n\t\t\tnvkm_trace(&therm->subdev, \"\\t0x%06x = 0x%08x\\n\",\n\t\t\t\t   addr, init->data);\n\t\t\tnvkm_wr32(device, addr, init->data);\n\t\t\taddr += 8;\n\t\t}\n\t}\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

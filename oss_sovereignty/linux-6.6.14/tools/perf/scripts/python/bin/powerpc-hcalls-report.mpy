@@ -1,0 +1,9 @@
+{
+  "module_name": "powerpc-hcalls-report",
+  "hash_id": "6eccb718f305dc19fc088943588a25b0dbe2745be65adb3f2fea3f59c0cc6412",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/powerpc-hcalls-report",
+  "human_readable_source": "#!/bin/bash\nperf script $@ -s \"$PERF_EXEC_PATH\"/scripts/python/powerpc-hcalls.py\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

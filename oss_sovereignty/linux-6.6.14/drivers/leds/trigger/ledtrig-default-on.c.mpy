@@ -1,0 +1,9 @@
+{
+  "module_name": "ledtrig-default-on.c",
+  "hash_id": "8a6f8b8eef5738c6a912decd696797291997633e09ffe75d454d996f851c862f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/trigger/ledtrig-default-on.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/kernel.h>\n#include <linux/init.h>\n#include <linux/leds.h>\n#include \"../leds.h\"\n\nstatic int defon_trig_activate(struct led_classdev *led_cdev)\n{\n\tled_set_brightness_nosleep(led_cdev, led_cdev->max_brightness);\n\treturn 0;\n}\n\nstatic struct led_trigger defon_led_trigger = {\n\t.name     = \"default-on\",\n\t.activate = defon_trig_activate,\n};\nmodule_led_trigger(defon_led_trigger);\n\nMODULE_AUTHOR(\"Nick Forbes <nick.forbes@incepta.com>\");\nMODULE_DESCRIPTION(\"Default-ON LED trigger\");\nMODULE_LICENSE(\"GPL v2\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

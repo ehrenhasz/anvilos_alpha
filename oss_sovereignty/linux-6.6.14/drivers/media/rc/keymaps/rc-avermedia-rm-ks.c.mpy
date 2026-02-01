@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-avermedia-rm-ks.c",
+  "hash_id": "ee7fc493299bbfa6d27ac14e59979d6d9fe6d737fa591d54276d12b3be7cce9c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-avermedia-rm-ks.c",
+  "human_readable_source": "\n \n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\n \n \nstatic struct rc_map_table avermedia_rm_ks[] = {\n\t{ 0x0501, KEY_POWER2 },  \n\t{ 0x0502, KEY_CHANNELUP },  \n\t{ 0x0503, KEY_CHANNELDOWN },  \n\t{ 0x0504, KEY_VOLUMEUP },  \n\t{ 0x0505, KEY_VOLUMEDOWN },  \n\t{ 0x0506, KEY_MUTE },  \n\t{ 0x0507, KEY_AGAIN },  \n\t{ 0x0508, KEY_VIDEO },  \n\t{ 0x0509, KEY_NUMERIC_1 },  \n\t{ 0x050a, KEY_NUMERIC_2 },  \n\t{ 0x050b, KEY_NUMERIC_3 },  \n\t{ 0x050c, KEY_NUMERIC_4 },  \n\t{ 0x050d, KEY_NUMERIC_5 },  \n\t{ 0x050e, KEY_NUMERIC_6 },  \n\t{ 0x050f, KEY_NUMERIC_7 },  \n\t{ 0x0510, KEY_NUMERIC_8 },  \n\t{ 0x0511, KEY_NUMERIC_9 },  \n\t{ 0x0512, KEY_NUMERIC_0 },  \n\t{ 0x0513, KEY_AUDIO },  \n\t{ 0x0515, KEY_EPG },  \n\t{ 0x0516, KEY_PLAYPAUSE },  \n\t{ 0x0517, KEY_RECORD },  \n\t{ 0x0518, KEY_STOP },  \n\t{ 0x051c, KEY_BACK },  \n\t{ 0x051d, KEY_FORWARD },  \n\t{ 0x054d, KEY_INFO },  \n\t{ 0x0556, KEY_ZOOM },  \n};\n\nstatic struct rc_map_list avermedia_rm_ks_map = {\n\t.map = {\n\t\t.scan     = avermedia_rm_ks,\n\t\t.size     = ARRAY_SIZE(avermedia_rm_ks),\n\t\t.rc_proto = RC_PROTO_NEC,\n\t\t.name     = RC_MAP_AVERMEDIA_RM_KS,\n\t}\n};\n\nstatic int __init init_rc_map_avermedia_rm_ks(void)\n{\n\treturn rc_map_register(&avermedia_rm_ks_map);\n}\n\nstatic void __exit exit_rc_map_avermedia_rm_ks(void)\n{\n\trc_map_unregister(&avermedia_rm_ks_map);\n}\n\nmodule_init(init_rc_map_avermedia_rm_ks)\nmodule_exit(exit_rc_map_avermedia_rm_ks)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Antti Palosaari <crope@iki.fi>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

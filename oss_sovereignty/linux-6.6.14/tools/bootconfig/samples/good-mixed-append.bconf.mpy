@@ -1,0 +1,9 @@
+{
+  "module_name": "good-mixed-append.bconf",
+  "hash_id": "f7170bf611358b5c8e6ce9ef817470a290d75d1010f07029bd8793e41acfea9c",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bootconfig/samples/good-mixed-append.bconf",
+  "human_readable_source": "key = foo\nkeyx.subkey = value\nkey += bar\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

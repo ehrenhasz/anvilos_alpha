@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_guc_capture.h",
+  "hash_id": "8c96e458316ef90bc93fbc85187e4e255460c2cbf859521a428c8c6b4be94601",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/uc/intel_guc_capture.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_GUC_CAPTURE_H\n#define _INTEL_GUC_CAPTURE_H\n\n#include <linux/types.h>\n\nstruct drm_i915_error_state_buf;\nstruct guc_gt_system_info;\nstruct intel_engine_coredump;\nstruct intel_engine_cs;\nstruct intel_context;\nstruct intel_gt;\nstruct intel_guc;\n\nvoid intel_guc_capture_free_node(struct intel_engine_coredump *ee);\nint intel_guc_capture_print_engine_node(struct drm_i915_error_state_buf *m,\n\t\t\t\t\tconst struct intel_engine_coredump *ee);\nvoid intel_guc_capture_get_matching_node(struct intel_gt *gt, struct intel_engine_coredump *ee,\n\t\t\t\t\t struct intel_context *ce);\nbool intel_guc_capture_is_matching_engine(struct intel_gt *gt, struct intel_context *ce,\n\t\t\t\t\t  struct intel_engine_cs *engine);\nvoid intel_guc_capture_process(struct intel_guc *guc);\nint intel_guc_capture_getlist(struct intel_guc *guc, u32 owner, u32 type, u32 classid,\n\t\t\t      void **outptr);\nint intel_guc_capture_getlistsize(struct intel_guc *guc, u32 owner, u32 type, u32 classid,\n\t\t\t\t  size_t *size);\nint intel_guc_capture_getnullheader(struct intel_guc *guc, void **outptr, size_t *size);\nvoid intel_guc_capture_destroy(struct intel_guc *guc);\nint intel_guc_capture_init(struct intel_guc *guc);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

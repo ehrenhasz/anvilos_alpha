@@ -1,0 +1,9 @@
+{
+  "module_name": "sme_vl.c",
+  "hash_id": "5e6b7cf545995ec1ab6361e3e79f5c219560ae5221872d9ca698096bb2210612",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/arm64/signal/testcases/sme_vl.c",
+  "human_readable_source": "\n \n\n#include <signal.h>\n#include <ucontext.h>\n#include <sys/prctl.h>\n\n#include \"test_signals_utils.h\"\n#include \"testcases.h\"\n\nstruct fake_sigframe sf;\nunsigned int vl;\n\nstatic bool get_sme_vl(struct tdescr *td)\n{\n\tint ret = prctl(PR_SME_GET_VL);\n\tif (ret == -1)\n\t\treturn false;\n\n\tvl = ret;\n\n\treturn true;\n}\n\nstatic int sme_vl(struct tdescr *td, siginfo_t *si, ucontext_t *uc)\n{\n\tsize_t resv_sz, offset;\n\tstruct _aarch64_ctx *head = GET_SF_RESV_HEAD(sf);\n\tstruct za_context *za;\n\n\t \n\tif (!get_current_context(td, &sf.uc, sizeof(sf.uc)))\n\t\treturn 1;\n\n\tresv_sz = GET_SF_RESV_SIZE(sf);\n\thead = get_header(head, ZA_MAGIC, resv_sz, &offset);\n\tif (!head) {\n\t\tfprintf(stderr, \"No ZA context\\n\");\n\t\treturn 1;\n\t}\n\tza = (struct za_context *)head;\n\n\tif (za->vl != vl) {\n\t\tfprintf(stderr, \"ZA sigframe VL %u, expected %u\\n\",\n\t\t\tza->vl, vl);\n\t\treturn 1;\n\t} else {\n\t\tfprintf(stderr, \"got expected VL %u\\n\", vl);\n\t}\n\n\ttd->pass = 1;\n\n\treturn 0;\n}\n\nstruct tdescr tde = {\n\t.name = \"SME VL\",\n\t.descr = \"Check that we get the right SME VL reported\",\n\t.feats_required = FEAT_SME,\n\t.timeout = 3,\n\t.init = get_sme_vl,\n\t.run = sme_vl,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

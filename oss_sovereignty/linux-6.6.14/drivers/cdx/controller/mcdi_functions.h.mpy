@@ -1,0 +1,9 @@
+{
+  "module_name": "mcdi_functions.h",
+  "hash_id": "0b920db42b8103608be1f0f73c6bd0eb2a2c98b7fc15feac438fe0b2e80f45f7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/cdx/controller/mcdi_functions.h",
+  "human_readable_source": " \n\n#ifndef CDX_MCDI_FUNCTIONS_H\n#define CDX_MCDI_FUNCTIONS_H\n\n#include \"mcdi.h\"\n#include \"../cdx.h\"\n\n \nint cdx_mcdi_get_num_buses(struct cdx_mcdi *cdx);\n\n \nint cdx_mcdi_get_num_devs(struct cdx_mcdi *cdx, int bus_num);\n\n \nint cdx_mcdi_get_dev_config(struct cdx_mcdi *cdx,\n\t\t\t    u8 bus_num, u8 dev_num,\n\t\t\t    struct cdx_dev_params *dev_params);\n\n \nint cdx_mcdi_reset_device(struct cdx_mcdi *cdx,\n\t\t\t  u8 bus_num, u8 dev_num);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

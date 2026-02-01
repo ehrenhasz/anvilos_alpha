@@ -1,0 +1,9 @@
+{
+  "module_name": "halbt_precomp.h",
+  "hash_id": "b7663906eb5b1f583ca8ecca2c36e09aeb035c5bd8d59376da302a80a4e2e119",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbt_precomp.h",
+  "human_readable_source": " \n \n\n#ifndef\t__HALBT_PRECOMP_H__\n#define __HALBT_PRECOMP_H__\n \n#include \"../wifi.h\"\n#include \"../efuse.h\"\n#include \"../base.h\"\n#include \"../regd.h\"\n#include \"../cam.h\"\n#include \"../ps.h\"\n#include \"../pci.h\"\n\n#include \"halbtcoutsrc.h\"\n\n \n#define RT_PCI_INTERFACE\t1\n#define RT_USB_INTERFACE\t2\n#define RT_SDIO_INTERFACE\t3\n#define DEV_BUS_TYPE\t\tRT_PCI_INTERFACE\n\n#include \"halbtc8192e2ant.h\"\n#include \"halbtc8723b1ant.h\"\n#include \"halbtc8723b2ant.h\"\n#include \"halbtc8821a2ant.h\"\n#include \"halbtc8821a1ant.h\"\n\n#define BIT0\t0x00000001\n#define BIT1\t0x00000002\n#define BIT2\t0x00000004\n#define BIT3\t0x00000008\n#define BIT4\t0x00000010\n#define BIT5\t0x00000020\n#define BIT6\t0x00000040\n#define BIT7\t0x00000080\n#define BIT8\t0x00000100\n#define BIT9\t0x00000200\n#define BIT10\t0x00000400\n#define BIT11\t0x00000800\n#define BIT12\t0x00001000\n#define BIT13\t0x00002000\n#define BIT14\t0x00004000\n#define BIT15\t0x00008000\n#define BIT16\t0x00010000\n#define BIT17\t0x00020000\n#define BIT18\t0x00040000\n#define BIT19\t0x00080000\n#define BIT20\t0x00100000\n#define BIT21\t0x00200000\n#define BIT22\t0x00400000\n#define BIT23\t0x00800000\n#define BIT24\t0x01000000\n#define BIT25\t0x02000000\n#define BIT26\t0x04000000\n#define BIT27\t0x08000000\n#define BIT28\t0x10000000\n#define BIT29\t0x20000000\n#define BIT30\t0x40000000\n#define BIT31\t0x80000000\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

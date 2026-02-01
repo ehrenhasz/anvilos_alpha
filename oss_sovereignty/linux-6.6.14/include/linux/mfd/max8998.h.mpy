@@ -1,0 +1,9 @@
+{
+  "module_name": "max8998.h",
+  "hash_id": "0aaa77f45595193a025120383738475e184a31b47abc33303093e77e87ec0ade",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/mfd/max8998.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_MFD_MAX8998_H\n#define __LINUX_MFD_MAX8998_H\n\n#include <linux/regulator/machine.h>\n\n \nenum {\n\tMAX8998_LDO2 = 2,\n\tMAX8998_LDO3,\n\tMAX8998_LDO4,\n\tMAX8998_LDO5,\n\tMAX8998_LDO6,\n\tMAX8998_LDO7,\n\tMAX8998_LDO8,\n\tMAX8998_LDO9,\n\tMAX8998_LDO10,\n\tMAX8998_LDO11,\n\tMAX8998_LDO12,\n\tMAX8998_LDO13,\n\tMAX8998_LDO14,\n\tMAX8998_LDO15,\n\tMAX8998_LDO16,\n\tMAX8998_LDO17,\n\tMAX8998_BUCK1,\n\tMAX8998_BUCK2,\n\tMAX8998_BUCK3,\n\tMAX8998_BUCK4,\n\tMAX8998_EN32KHZ_AP,\n\tMAX8998_EN32KHZ_CP,\n\tMAX8998_ENVICHG,\n\tMAX8998_ESAFEOUT1,\n\tMAX8998_ESAFEOUT2,\n\tMAX8998_CHARGER,\n};\n\n \nstruct max8998_regulator_data {\n\tint\t\t\t\tid;\n\tstruct regulator_init_data\t*initdata;\n\tstruct device_node\t\t*reg_node;\n};\n\n \nstruct max8998_platform_data {\n\tstruct max8998_regulator_data\t*regulators;\n\tint\t\t\t\tnum_regulators;\n\tunsigned int\t\t\tirq_base;\n\tint\t\t\t\tono;\n\tbool\t\t\t\tbuck_voltage_lock;\n\tint\t\t\t\tbuck1_voltage[4];\n\tint\t\t\t\tbuck2_voltage[2];\n\tint\t\t\t\tbuck1_set1;\n\tint\t\t\t\tbuck1_set2;\n\tint\t\t\t\tbuck1_default_idx;\n\tint\t\t\t\tbuck2_set3;\n\tint\t\t\t\tbuck2_default_idx;\n\tbool\t\t\t\twakeup;\n\tbool\t\t\t\trtc_delay;\n\tint\t\t\t\teoc;\n\tint\t\t\t\trestart;\n\tint\t\t\t\ttimeout;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

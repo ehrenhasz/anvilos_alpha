@@ -1,0 +1,9 @@
+{
+  "module_name": "test-jvmti-cmlr.c",
+  "hash_id": "56f9c80dad1f361711db6f1465dc7071a1a0540e22572db1494a40987694f488",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-jvmti-cmlr.c",
+  "human_readable_source": "\n#include <jvmti.h>\n#include <jvmticmlr.h>\n\nint main(void)\n{\n\tjvmtiCompiledMethodLoadInlineRecord\trec __attribute__((unused));\n\tjvmtiCompiledMethodLoadRecordHeader\thdr __attribute__((unused));\n\tPCStackInfo\t\t\t\tp   __attribute__((unused));\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

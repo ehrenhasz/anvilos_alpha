@@ -1,0 +1,9 @@
+{
+  "module_name": "xfts.c",
+  "hash_id": "f016fdbf4e589fe8ad2cc027ce207232608be0fa88d96eda07e083998e558876",
+  "original_prompt": "Ingested from coreutils-9.4/lib/xfts.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <stdlib.h>\n#include <errno.h>\n\n#include \"assure.h\"\n#include \"xalloc.h\"\n#include \"xfts.h\"\n\n \n\nFTS *\nxfts_open (char * const *argv, int options,\n           int (*compar) (const FTSENT **, const FTSENT **))\n{\n  FTS *fts = fts_open (argv, options | FTS_CWDFD, compar);\n  if (fts == nullptr)\n    {\n       \n      affirm (errno != EINVAL);\n      xalloc_die ();\n    }\n\n  return fts;\n}\n\n \nbool\ncycle_warning_required (FTS const *fts, FTSENT const *ent)\n{\n#define ISSET(Fts,Opt) ((Fts)->fts_options & (Opt))\n   \n  return ((ISSET (fts, FTS_PHYSICAL) && !ISSET (fts, FTS_COMFOLLOW))\n          || (ISSET (fts, FTS_PHYSICAL) && ISSET (fts, FTS_COMFOLLOW)\n              && ent->fts_level != FTS_ROOTLEVEL));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

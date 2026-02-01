@@ -1,0 +1,9 @@
+{
+  "module_name": "pkey_alloc_access_rights.sh",
+  "hash_id": "9c246f0a45a9ae12d767c996da6ea9308fc00b940546f67748234cda02c818c4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/pkey_alloc_access_rights.sh",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: LGPL-2.1\n\n[ $# -eq 1 ] && header_dir=$1 || header_dir=tools/include/uapi/asm-generic/\n\nprintf \"static const char *pkey_alloc_access_rights[] = {\\n\"\nregex='^[[:space:]]*#[[:space:]]*define[[:space:]]+PKEY_([[:alnum:]_]+)[[:space:]]+(0x[[:xdigit:]]+)[[:space:]]*'\ngrep -E $regex ${header_dir}/mman-common.h\t| \\\n\tsed -r \"s/$regex/\\2 \\2 \\1/g\"\t| \\\n\tsort | xargs printf \"\\t[%s ? (ilog2(%s) + 1) : 0] = \\\"%s\\\",\\n\"\nprintf \"};\\n\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

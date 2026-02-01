@@ -1,0 +1,9 @@
+{
+  "module_name": "mipi-phy.h",
+  "hash_id": "f728719e1af4b6d1e70f5fe61464bfde6494dc6dfd2246357a982f478edc0ce0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/tegra/mipi-phy.h",
+  "human_readable_source": " \n \n\n#ifndef DRM_TEGRA_MIPI_PHY_H\n#define DRM_TEGRA_MIPI_PHY_H\n\n \nstruct mipi_dphy_timing {\n\tunsigned int clkmiss;\n\tunsigned int clkpost;\n\tunsigned int clkpre;\n\tunsigned int clkprepare;\n\tunsigned int clksettle;\n\tunsigned int clktermen;\n\tunsigned int clktrail;\n\tunsigned int clkzero;\n\tunsigned int dtermen;\n\tunsigned int eot;\n\tunsigned int hsexit;\n\tunsigned int hsprepare;\n\tunsigned int hszero;\n\tunsigned int hssettle;\n\tunsigned int hsskip;\n\tunsigned int hstrail;\n\tunsigned int init;\n\tunsigned int lpx;\n\tunsigned int taget;\n\tunsigned int tago;\n\tunsigned int tasure;\n\tunsigned int wakeup;\n};\n\nint mipi_dphy_timing_get_default(struct mipi_dphy_timing *timing,\n\t\t\t\t unsigned long period);\nint mipi_dphy_timing_validate(struct mipi_dphy_timing *timing,\n\t\t\t      unsigned long period);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

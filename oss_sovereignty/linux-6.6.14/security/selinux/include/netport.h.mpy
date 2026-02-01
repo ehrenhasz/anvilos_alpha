@@ -1,0 +1,9 @@
+{
+  "module_name": "netport.h",
+  "hash_id": "af02d1823159cbe5c8cbba504c6bf4e0240ceeb7ac3cacc7ac8bed01a14951ce",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/include/netport.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef _SELINUX_NETPORT_H\n#define _SELINUX_NETPORT_H\n\n#include <linux/types.h>\n\nvoid sel_netport_flush(void);\n\nint sel_netport_sid(u8 protocol, u16 pnum, u32 *sid);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

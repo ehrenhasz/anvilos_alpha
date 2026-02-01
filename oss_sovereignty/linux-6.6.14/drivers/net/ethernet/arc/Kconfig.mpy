@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c42f1ed6af8cc4ec35ac6d0b3878c9031530d8a1e521d1291b3ee5da1b261278",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/arc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# ARC EMAC network device configuration\n#\n\nconfig NET_VENDOR_ARC\n\tbool \"ARC devices\"\n\tdefault y\n\thelp\n\t  If you have a network (Ethernet) card belonging to this class, say Y.\n\n\t  Note that the answer to this question doesn't directly affect the\n\t  kernel: saying N will just cause the configurator to skip all\n\t  the questions about ARC cards. If you say Y, you will be asked for\n\t  your specific card in the following questions.\n\nif NET_VENDOR_ARC\n\nconfig ARC_EMAC_CORE\n\ttristate\n\tdepends on ARC || ARCH_ROCKCHIP || COMPILE_TEST\n\tselect MII\n\tselect PHYLIB\n\tselect CRC32\n\nconfig ARC_EMAC\n\ttristate \"ARC EMAC support\"\n\tselect ARC_EMAC_CORE\n\tdepends on OF_IRQ\n\tdepends on ARC || COMPILE_TEST\n\thelp\n\t  On some legacy ARC (Synopsys) FPGA boards such as ARCAngel4/ML50x\n\t  non-standard on-chip ethernet device ARC EMAC 10/100 is used.\n\t  Say Y here if you have such a board.  If unsure, say N.\n\nconfig EMAC_ROCKCHIP\n\ttristate \"Rockchip EMAC support\"\n\tselect ARC_EMAC_CORE\n\tdepends on OF_IRQ && REGULATOR\n\tdepends on ARCH_ROCKCHIP || COMPILE_TEST\n\thelp\n\t  Support for Rockchip RK3036/RK3066/RK3188 EMAC ethernet controllers.\n\t  This selects Rockchip SoC glue layer support for the\n\t  emac device driver. This driver is used for RK3036/RK3066/RK3188\n\t  EMAC ethernet controller.\n\nendif # NET_VENDOR_ARC\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

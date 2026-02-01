@@ -1,0 +1,9 @@
+{
+  "module_name": "cpufeature.h",
+  "hash_id": "f28ac5aba687fc888a3d5955ffb52a4843cb12e9dfbcba4dc054c6fbd7b1bb24",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/cpufeature.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_CPUFEATURE_H\n#define __LINUX_CPUFEATURE_H\n\n#ifdef CONFIG_GENERIC_CPU_AUTOPROBE\n\n#include <linux/init.h>\n#include <linux/mod_devicetable.h>\n#include <asm/cpufeature.h>\n\n \n\n#ifndef CPU_FEATURE_TYPEFMT\n#define CPU_FEATURE_TYPEFMT\t\"%s\"\n#endif\n\n#ifndef CPU_FEATURE_TYPEVAL\n#define CPU_FEATURE_TYPEVAL\tELF_PLATFORM\n#endif\n\n \n#define module_cpu_feature_match(x, __initfunc)\t\t\t\\\nstatic struct cpu_feature const __maybe_unused cpu_feature_match_ ## x[] = \\\n\t{ { .feature = cpu_feature(x) }, { } };\t\t\t\\\nMODULE_DEVICE_TABLE(cpu, cpu_feature_match_ ## x);\t\t\\\n\t\t\t\t\t\t\t\t\\\nstatic int __init cpu_feature_match_ ## x ## _init(void)\t\\\n{\t\t\t\t\t\t\t\t\\\n\tif (!cpu_have_feature(cpu_feature(x)))\t\t\t\\\n\t\treturn -ENODEV;\t\t\t\t\t\\\n\treturn __initfunc();\t\t\t\t\t\\\n}\t\t\t\t\t\t\t\t\\\nmodule_init(cpu_feature_match_ ## x ## _init)\n\n#endif\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

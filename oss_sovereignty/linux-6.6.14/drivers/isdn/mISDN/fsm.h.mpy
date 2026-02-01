@@ -1,0 +1,9 @@
+{
+  "module_name": "fsm.h",
+  "hash_id": "e08ef6730f35f3f4790783ddc7e0a60e32fec8e6e7e48610f382b3263f9fc805",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/isdn/mISDN/fsm.h",
+  "human_readable_source": " \n \n\n#ifndef _MISDN_FSM_H\n#define _MISDN_FSM_H\n\n#include <linux/timer.h>\n\n \n\nstruct FsmInst;\n\ntypedef void (*FSMFNPTR)(struct FsmInst *, int, void *);\n\nstruct Fsm {\n\tFSMFNPTR *jumpmatrix;\n\tint state_count, event_count;\n\tchar **strEvent, **strState;\n};\n\nstruct FsmInst {\n\tstruct Fsm *fsm;\n\tint state;\n\tint debug;\n\tvoid *userdata;\n\tint userint;\n\tvoid (*printdebug) (struct FsmInst *, char *, ...);\n};\n\nstruct FsmNode {\n\tint state, event;\n\tvoid (*routine) (struct FsmInst *, int, void *);\n};\n\nstruct FsmTimer {\n\tstruct FsmInst *fi;\n\tstruct timer_list tl;\n\tint event;\n\tvoid *arg;\n};\n\nextern int mISDN_FsmNew(struct Fsm *, struct FsmNode *, int);\nextern void mISDN_FsmFree(struct Fsm *);\nextern int mISDN_FsmEvent(struct FsmInst *, int , void *);\nextern void mISDN_FsmChangeState(struct FsmInst *, int);\nextern void mISDN_FsmInitTimer(struct FsmInst *, struct FsmTimer *);\nextern int mISDN_FsmAddTimer(struct FsmTimer *, int, int, void *, int);\nextern void mISDN_FsmRestartTimer(struct FsmTimer *, int, int, void *, int);\nextern void mISDN_FsmDelTimer(struct FsmTimer *, int);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

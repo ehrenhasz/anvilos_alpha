@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "512f3db3a59323bfce307cddbbaa04d7ba8b95843258dac0df885143a6c12641",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Mellanox device drivers.\n#\n\nobj-$(CONFIG_MLX4_CORE) += mlx4/\nobj-$(CONFIG_MLX5_CORE) += mlx5/core/\nobj-$(CONFIG_MLXSW_CORE) += mlxsw/\nobj-$(CONFIG_MLXFW) += mlxfw/\nobj-$(CONFIG_MLXBF_GIGE) += mlxbf_gige/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

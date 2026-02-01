@@ -1,0 +1,9 @@
+{
+  "module_name": "priv.h",
+  "hash_id": "60ad8b7b684bff869d2b83854f6425cc0f73b69961e781998a6a61176a9f1395",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/msppp/priv.h",
+  "human_readable_source": " \n#ifndef __NVKM_MSPPP_PRIV_H__\n#define __NVKM_MSPPP_PRIV_H__\n#include <engine/msppp.h>\n\nint nvkm_msppp_new_(const struct nvkm_falcon_func *, struct nvkm_device *, enum nvkm_subdev_type,\n\t\t    int, struct nvkm_engine **);\n\nvoid g98_msppp_init(struct nvkm_falcon *);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

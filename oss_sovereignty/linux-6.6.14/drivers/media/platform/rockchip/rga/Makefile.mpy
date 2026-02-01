@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "a79f7d07a04e1d34e107376085765b0766f11514565860fede49290ad8601e25",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/rockchip/rga/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nrockchip-rga-objs := rga.o rga-hw.o rga-buf.o\n\nobj-$(CONFIG_VIDEO_ROCKCHIP_RGA) += rockchip-rga.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

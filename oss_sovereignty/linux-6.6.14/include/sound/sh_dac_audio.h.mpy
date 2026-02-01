@@ -1,0 +1,9 @@
+{
+  "module_name": "sh_dac_audio.h",
+  "hash_id": "111973fa96387ef55426ac969a620480ea80d3046b2627f0c2a308123018d629",
+  "original_prompt": "Ingested from linux-6.6.14/include/sound/sh_dac_audio.h",
+  "human_readable_source": " \n \n\n#ifndef __INCLUDE_SH_DAC_AUDIO_H\n#define __INCLUDE_SH_DAC_AUDIO_H\n\nstruct dac_audio_pdata {\n\tint buffer_size;\n\tint channel;\n\tvoid (*start)(struct dac_audio_pdata *pd);\n\tvoid (*stop)(struct dac_audio_pdata *pd);\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

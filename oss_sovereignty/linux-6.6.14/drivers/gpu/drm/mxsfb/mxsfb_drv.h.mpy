@@ -1,0 +1,9 @@
+{
+  "module_name": "mxsfb_drv.h",
+  "hash_id": "6c971f440414b39e1ed6e8dd8c4828a8cedf1674873ca9682e6dc2d27d9a3e79",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/mxsfb/mxsfb_drv.h",
+  "human_readable_source": " \n \n\n#ifndef __MXSFB_DRV_H__\n#define __MXSFB_DRV_H__\n\n#include <drm/drm_crtc.h>\n#include <drm/drm_device.h>\n#include <drm/drm_encoder.h>\n#include <drm/drm_plane.h>\n\nstruct clk;\n\nstruct mxsfb_devdata {\n\tunsigned int\ttransfer_count;\n\tunsigned int\tcur_buf;\n\tunsigned int\tnext_buf;\n\tunsigned int\ths_wdth_mask;\n\tunsigned int\ths_wdth_shift;\n\tbool\t\thas_overlay;\n\tbool\t\thas_ctrl2;\n\tbool\t\thas_crc32;\n};\n\nstruct mxsfb_drm_private {\n\tconst struct mxsfb_devdata\t*devdata;\n\n\tvoid __iomem\t\t\t*base;\t \n\tstruct clk\t\t\t*clk;\n\tstruct clk\t\t\t*clk_axi;\n\tstruct clk\t\t\t*clk_disp_axi;\n\n\tunsigned int\t\t\tirq;\n\n\tstruct drm_device\t\t*drm;\n\tstruct {\n\t\tstruct drm_plane\tprimary;\n\t\tstruct drm_plane\toverlay;\n\t} planes;\n\tstruct drm_crtc\t\t\tcrtc;\n\tstruct drm_encoder\t\tencoder;\n\tstruct drm_connector\t\t*connector;\n\tstruct drm_bridge\t\t*bridge;\n\n\tbool\t\t\t\tcrc_active;\n};\n\nstatic inline struct mxsfb_drm_private *\nto_mxsfb_drm_private(struct drm_device *drm)\n{\n\treturn drm->dev_private;\n}\n\nvoid mxsfb_enable_axi_clk(struct mxsfb_drm_private *mxsfb);\nvoid mxsfb_disable_axi_clk(struct mxsfb_drm_private *mxsfb);\n\nint mxsfb_kms_init(struct mxsfb_drm_private *mxsfb);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

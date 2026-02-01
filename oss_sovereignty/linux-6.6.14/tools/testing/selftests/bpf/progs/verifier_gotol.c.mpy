@@ -1,0 +1,9 @@
+{
+  "module_name": "verifier_gotol.c",
+  "hash_id": "f3e5540c865ca205260f4813ef8219acb4ebcb1c020b9ec0779c69472ca32abb",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/verifier_gotol.c",
+  "human_readable_source": "\n\n#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include \"bpf_misc.h\"\n\n#if (defined(__TARGET_ARCH_arm64) || defined(__TARGET_ARCH_x86) || \\\n     (defined(__TARGET_ARCH_riscv) && __riscv_xlen == 64)) && __clang_major__ >= 18\n\nSEC(\"socket\")\n__description(\"gotol, small_imm\")\n__success __success_unpriv __retval(1)\n__naked void gotol_small_imm(void)\n{\n\tasm volatile (\"\t\t\t\t\t\\\n\tcall %[bpf_ktime_get_ns];\t\t\t\\\n\tif r0 == 0 goto l0_%=;\t\t\t\t\\\n\tgotol l1_%=;\t\t\t\t\t\\\nl2_%=:\t\t\t\t\t\t\t\\\n\tgotol l3_%=;\t\t\t\t\t\\\nl1_%=:\t\t\t\t\t\t\t\\\n\tr0 = 1;\t\t\t\t\t\t\\\n\tgotol l2_%=;\t\t\t\t\t\\\nl0_%=:\t\t\t\t\t\t\t\\\n\tr0 = 2;\t\t\t\t\t\t\\\nl3_%=:\t\t\t\t\t\t\t\\\n\texit;\t\t\t\t\t\t\\\n\"\t:\n\t: __imm(bpf_ktime_get_ns)\n\t: __clobber_all);\n}\n\n#else\n\nSEC(\"socket\")\n__description(\"cpuv4 is not supported by compiler or jit, use a dummy test\")\n__success\nint dummy_test(void)\n{\n\treturn 0;\n}\n\n#endif\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

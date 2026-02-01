@@ -1,0 +1,9 @@
+{
+  "module_name": "CFLIST",
+  "hash_id": "19bf6bd1ff5b1bbec71ea4cf4fcba9d6e6d2d9e53c0787bc39a3d0602c5b00a7",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/lock/CFLIST",
+  "human_readable_source": "LOCK01\nLOCK02\nLOCK03\nLOCK04\nLOCK05\nLOCK06\nLOCK07\nLOCK08\nLOCK09\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

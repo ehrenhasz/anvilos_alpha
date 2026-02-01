@@ -1,0 +1,9 @@
+{
+  "module_name": "common.h",
+  "hash_id": "fe22a5ca5d479b2c36ad95d88f81c0ebab7f122998047618db852e78ec328942",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/sprd/common.h",
+  "human_readable_source": " \n\n\n\n\n\n\n#ifndef _SPRD_CLK_COMMON_H_\n#define _SPRD_CLK_COMMON_H_\n\n#include <linux/clk-provider.h>\n#include <linux/of_platform.h>\n#include <linux/regmap.h>\n\nstruct device_node;\n\nstruct sprd_clk_common {\n\tstruct regmap\t*regmap;\n\tu32\t\treg;\n\tstruct clk_hw\thw;\n};\n\nstruct sprd_clk_desc {\n\tstruct sprd_clk_common\t\t**clk_clks;\n\tunsigned long\t\t\tnum_clk_clks;\n\tstruct clk_hw_onecell_data      *hw_clks;\n};\n\nstatic inline struct sprd_clk_common *\n\thw_to_sprd_clk_common(const struct clk_hw *hw)\n{\n\treturn container_of(hw, struct sprd_clk_common, hw);\n}\nint sprd_clk_regmap_init(struct platform_device *pdev,\n\t\t\t const struct sprd_clk_desc *desc);\nint sprd_clk_probe(struct device *dev, struct clk_hw_onecell_data *clkhw);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

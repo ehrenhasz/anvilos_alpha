@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_reject.h",
+  "hash_id": "e8f7875a4661dda22398c5927e9e6ad2162ed691ed4e970f07225f58008e2d26",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/netfilter/ipv6/nf_reject.h",
+  "human_readable_source": " \n#ifndef _IPV6_NF_REJECT_H\n#define _IPV6_NF_REJECT_H\n\n#include <linux/icmpv6.h>\n#include <net/netfilter/nf_reject.h>\n\nvoid nf_send_unreach6(struct net *net, struct sk_buff *skb_in, unsigned char code,\n\t\t      unsigned int hooknum);\nvoid nf_send_reset6(struct net *net, struct sock *sk, struct sk_buff *oldskb,\n\t\t    int hook);\nconst struct tcphdr *nf_reject_ip6_tcphdr_get(struct sk_buff *oldskb,\n\t\t\t\t\t      struct tcphdr *otcph,\n\t\t\t\t\t      unsigned int *otcplen, int hook);\nstruct ipv6hdr *nf_reject_ip6hdr_put(struct sk_buff *nskb,\n\t\t\t\t     const struct sk_buff *oldskb,\n\t\t\t\t     __u8 protocol, int hoplimit);\nvoid nf_reject_ip6_tcphdr_put(struct sk_buff *nskb,\n\t\t\t      const struct sk_buff *oldskb,\n\t\t\t      const struct tcphdr *oth, unsigned int otcplen);\n\nstruct sk_buff *nf_reject_skb_v6_tcp_reset(struct net *net,\n\t\t\t\t\t   struct sk_buff *oldskb,\n\t\t\t\t\t   const struct net_device *dev,\n\t\t\t\t\t   int hook);\nstruct sk_buff *nf_reject_skb_v6_unreach(struct net *net,\n\t\t\t\t\t struct sk_buff *oldskb,\n\t\t\t\t\t const struct net_device *dev,\n\t\t\t\t\t int hook, u8 code);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "817cb8a4119e5a4e897059fe7ae00c7895a667c10777f3f623bd3c6c9575ec67",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/wmi/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Intel x86 Platform Specific Drivers\n#\n\nintel-wmi-sbl-fw-update-y\t\t\t\t:= sbl-fw-update.o\nobj-$(CONFIG_INTEL_WMI_SBL_FW_UPDATE)\t+= intel-wmi-sbl-fw-update.o\nintel-wmi-thunderbolt-y\t\t\t\t\t:= thunderbolt.o\nobj-$(CONFIG_INTEL_WMI_THUNDERBOLT)\t+= intel-wmi-thunderbolt.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

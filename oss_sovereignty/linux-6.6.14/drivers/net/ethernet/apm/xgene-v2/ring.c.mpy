@@ -1,0 +1,9 @@
+{
+  "module_name": "ring.c",
+  "hash_id": "c10a9d1669c0b8e27e989091c0568e52a81d273201f41ac65944ba495becb807",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/apm/xgene-v2/ring.c",
+  "human_readable_source": "\n \n\n#include \"main.h\"\n\n \nvoid xge_setup_desc(struct xge_desc_ring *ring)\n{\n\tstruct xge_raw_desc *raw_desc;\n\tdma_addr_t dma_h, next_dma;\n\tu16 offset;\n\tint i;\n\n\tfor (i = 0; i < XGENE_ENET_NUM_DESC; i++) {\n\t\traw_desc = &ring->raw_desc[i];\n\n\t\toffset = (i + 1) & (XGENE_ENET_NUM_DESC - 1);\n\t\tnext_dma = ring->dma_addr + (offset * XGENE_ENET_DESC_SIZE);\n\n\t\traw_desc->m0 = cpu_to_le64(SET_BITS(E, 1) |\n\t\t\t\t\t   SET_BITS(PKT_SIZE, SLOT_EMPTY));\n\t\tdma_h = upper_32_bits(next_dma);\n\t\traw_desc->m1 = cpu_to_le64(SET_BITS(NEXT_DESC_ADDRL, next_dma) |\n\t\t\t\t\t   SET_BITS(NEXT_DESC_ADDRH, dma_h));\n\t}\n}\n\nvoid xge_update_tx_desc_addr(struct xge_pdata *pdata)\n{\n\tstruct xge_desc_ring *ring = pdata->tx_ring;\n\tdma_addr_t dma_addr = ring->dma_addr;\n\n\txge_wr_csr(pdata, DMATXDESCL, dma_addr);\n\txge_wr_csr(pdata, DMATXDESCH, upper_32_bits(dma_addr));\n\n\tring->head = 0;\n\tring->tail = 0;\n}\n\nvoid xge_update_rx_desc_addr(struct xge_pdata *pdata)\n{\n\tstruct xge_desc_ring *ring = pdata->rx_ring;\n\tdma_addr_t dma_addr = ring->dma_addr;\n\n\txge_wr_csr(pdata, DMARXDESCL, dma_addr);\n\txge_wr_csr(pdata, DMARXDESCH, upper_32_bits(dma_addr));\n\n\tring->head = 0;\n\tring->tail = 0;\n}\n\nvoid xge_intr_enable(struct xge_pdata *pdata)\n{\n\tu32 data;\n\n\tdata = RX_PKT_RCVD | TX_PKT_SENT;\n\txge_wr_csr(pdata, DMAINTRMASK, data);\n}\n\nvoid xge_intr_disable(struct xge_pdata *pdata)\n{\n\txge_wr_csr(pdata, DMAINTRMASK, 0);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

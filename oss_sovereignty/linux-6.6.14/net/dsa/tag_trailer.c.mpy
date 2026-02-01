@@ -1,0 +1,9 @@
+{
+  "module_name": "tag_trailer.c",
+  "hash_id": "914bf5979d939f26b9514521fcc5de6d32f196cc7761fe8b2c96aba438e56581",
+  "original_prompt": "Ingested from linux-6.6.14/net/dsa/tag_trailer.c",
+  "human_readable_source": "\n \n\n#include <linux/etherdevice.h>\n#include <linux/list.h>\n#include <linux/slab.h>\n\n#include \"tag.h\"\n\n#define TRAILER_NAME \"trailer\"\n\nstatic struct sk_buff *trailer_xmit(struct sk_buff *skb, struct net_device *dev)\n{\n\tstruct dsa_port *dp = dsa_slave_to_port(dev);\n\tu8 *trailer;\n\n\ttrailer = skb_put(skb, 4);\n\ttrailer[0] = 0x80;\n\ttrailer[1] = 1 << dp->index;\n\ttrailer[2] = 0x10;\n\ttrailer[3] = 0x00;\n\n\treturn skb;\n}\n\nstatic struct sk_buff *trailer_rcv(struct sk_buff *skb, struct net_device *dev)\n{\n\tu8 *trailer;\n\tint source_port;\n\n\tif (skb_linearize(skb))\n\t\treturn NULL;\n\n\ttrailer = skb_tail_pointer(skb) - 4;\n\tif (trailer[0] != 0x80 || (trailer[1] & 0xf8) != 0x00 ||\n\t    (trailer[2] & 0xef) != 0x00 || trailer[3] != 0x00)\n\t\treturn NULL;\n\n\tsource_port = trailer[1] & 7;\n\n\tskb->dev = dsa_master_find_slave(dev, 0, source_port);\n\tif (!skb->dev)\n\t\treturn NULL;\n\n\tif (pskb_trim_rcsum(skb, skb->len - 4))\n\t\treturn NULL;\n\n\treturn skb;\n}\n\nstatic const struct dsa_device_ops trailer_netdev_ops = {\n\t.name\t= TRAILER_NAME,\n\t.proto\t= DSA_TAG_PROTO_TRAILER,\n\t.xmit\t= trailer_xmit,\n\t.rcv\t= trailer_rcv,\n\t.needed_tailroom = 4,\n};\n\nMODULE_LICENSE(\"GPL\");\nMODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_TRAILER, TRAILER_NAME);\n\nmodule_dsa_tag_driver(trailer_netdev_ops);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

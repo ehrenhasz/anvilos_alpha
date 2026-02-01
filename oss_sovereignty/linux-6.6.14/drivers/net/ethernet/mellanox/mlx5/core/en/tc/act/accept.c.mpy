@@ -1,0 +1,9 @@
+{
+  "module_name": "accept.c",
+  "hash_id": "ca726b02b7ef4927dcb21daca8ea0c8beb853a41d2bdf907e1ac7351f688fc7a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/accept.c",
+  "human_readable_source": "\n\n\n#include \"act.h\"\n#include \"en/tc_priv.h\"\n\nstatic int\ntc_act_parse_accept(struct mlx5e_tc_act_parse_state *parse_state,\n\t\t    const struct flow_action_entry *act,\n\t\t    struct mlx5e_priv *priv,\n\t\t    struct mlx5_flow_attr *attr)\n{\n\tattr->action |= MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;\n\tattr->flags |= MLX5_ATTR_FLAG_ACCEPT;\n\n\treturn 0;\n}\n\nstruct mlx5e_tc_act mlx5e_tc_act_accept = {\n\t.parse_action = tc_act_parse_accept,\n\t.is_terminating_action = true,\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

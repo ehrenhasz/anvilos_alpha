@@ -1,0 +1,9 @@
+{
+  "module_name": "hif_rx.h",
+  "hash_id": "ab9d3e339b374f8bd14ee5e7e67710ce736a76aed38721f4dd6ca7fe7259566f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/silabs/wfx/hif_rx.h",
+  "human_readable_source": " \n \n#ifndef WFX_HIF_RX_H\n#define WFX_HIF_RX_H\n\nstruct wfx_dev;\nstruct sk_buff;\n\nvoid wfx_handle_rx(struct wfx_dev *wdev, struct sk_buff *skb);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

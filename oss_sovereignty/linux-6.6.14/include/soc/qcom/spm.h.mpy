@@ -1,0 +1,9 @@
+{
+  "module_name": "spm.h",
+  "hash_id": "8e08220f8da06474c7b37af8f4e8d24fdde9f1c6a8356f5a84937232a1ab9f76",
+  "original_prompt": "Ingested from linux-6.6.14/include/soc/qcom/spm.h",
+  "human_readable_source": " \n \n\n#ifndef __SPM_H__\n#define __SPM_H__\n\n#include <linux/cpuidle.h>\n\n#define MAX_PMIC_DATA\t\t2\n#define MAX_SEQ_DATA\t\t64\n\nenum pm_sleep_mode {\n\tPM_SLEEP_MODE_STBY,\n\tPM_SLEEP_MODE_RET,\n\tPM_SLEEP_MODE_SPC,\n\tPM_SLEEP_MODE_PC,\n\tPM_SLEEP_MODE_NR,\n};\n\nstruct spm_reg_data {\n\tconst u16 *reg_offset;\n\tu32 spm_cfg;\n\tu32 spm_dly;\n\tu32 pmic_dly;\n\tu32 pmic_data[MAX_PMIC_DATA];\n\tu32 avs_ctl;\n\tu32 avs_limit;\n\tu8 seq[MAX_SEQ_DATA];\n\tu8 start_index[PM_SLEEP_MODE_NR];\n};\n\nstruct spm_driver_data {\n\tvoid __iomem *reg_base;\n\tconst struct spm_reg_data *reg_data;\n};\n\nvoid spm_set_low_power_mode(struct spm_driver_data *drv,\n\t\t\t    enum pm_sleep_mode mode);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

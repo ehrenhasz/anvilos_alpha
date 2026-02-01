@@ -1,0 +1,9 @@
+{
+  "module_name": "dsp_hwec.h",
+  "hash_id": "dfae97ca6c4373ab86eddfebf4e44dcff88826ea31ca6ebb8efae3e9aeaca807",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/isdn/mISDN/dsp_hwec.h",
+  "human_readable_source": " \n \n\nextern struct mISDN_dsp_element *dsp_hwec;\nextern void dsp_hwec_enable(struct dsp *dsp, const char *arg);\nextern void dsp_hwec_disable(struct dsp *dsp);\nextern int  dsp_hwec_init(void);\nextern void dsp_hwec_exit(void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

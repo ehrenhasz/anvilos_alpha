@@ -1,0 +1,9 @@
+{
+  "module_name": "relocs.h",
+  "hash_id": "47c54457a58c15f6eaaccbb9a46deb8bc2931d03033f44e984906e7a1af45216",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/tools/relocs.h",
+  "human_readable_source": " \n#ifndef RELOCS_H\n#define RELOCS_H\n\n#include <stdio.h>\n#include <stdarg.h>\n#include <stdlib.h>\n#include <stdint.h>\n#include <inttypes.h>\n#include <string.h>\n#include <errno.h>\n#include <unistd.h>\n#include <elf.h>\n#include <byteswap.h>\n#define USE_BSD\n#include <endian.h>\n#include <regex.h>\n#include <tools/le_byteshift.h>\n\n__attribute__((__format__(printf, 1, 2)))\nvoid die(char *fmt, ...) __attribute__((noreturn));\n\n#define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))\n\nenum symtype {\n\tS_ABS,\n\tS_REL,\n\tS_SEG,\n\tS_LIN,\n\tS_NSYMTYPES\n};\n\nvoid process_32(FILE *fp, int use_real_mode, int as_text,\n\t\tint show_absolute_syms, int show_absolute_relocs,\n\t\tint show_reloc_info);\nvoid process_64(FILE *fp, int use_real_mode, int as_text,\n\t\tint show_absolute_syms, int show_absolute_relocs,\n\t\tint show_reloc_info);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

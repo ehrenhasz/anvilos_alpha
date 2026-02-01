@@ -1,0 +1,9 @@
+{
+  "module_name": "hypervisor.h",
+  "hash_id": "6845ea67412b6ae13182f5bde98dc6de8977264a8b5579e79edf0d6b50100847",
+  "original_prompt": "Ingested from linux-6.6.14/include/xen/arm/hypervisor.h",
+  "human_readable_source": " \n#ifndef _ASM_ARM_XEN_HYPERVISOR_H\n#define _ASM_ARM_XEN_HYPERVISOR_H\n\n#include <linux/init.h>\n\nextern struct shared_info *HYPERVISOR_shared_info;\nextern struct start_info *xen_start_info;\n\n#ifdef CONFIG_XEN\nvoid __init xen_early_init(void);\n#else\nstatic inline void xen_early_init(void) { return; }\n#endif\n\n#ifdef CONFIG_HOTPLUG_CPU\nstatic inline void xen_arch_register_cpu(int num)\n{\n}\n\nstatic inline void xen_arch_unregister_cpu(int num)\n{\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

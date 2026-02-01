@@ -1,0 +1,9 @@
+{
+  "module_name": "stack.S",
+  "hash_id": "c543c2d091d1def45810ce2918da1f84335737b2ce226b2d09c976b3f13c73cc",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/realmode/rm/stack.S",
+  "human_readable_source": " \n \n\n#include <linux/linkage.h>\n\n\t.data\nSYM_DATA(HEAP,\t\t.long rm_heap)\nSYM_DATA(heap_end,\t.long rm_stack)\n\n\t.bss\n\t.balign\t16\nSYM_DATA(rm_heap,\t.space 2048)\n\nSYM_DATA_START(rm_stack)\n\t.space\t2048\nSYM_DATA_END_LABEL(rm_stack, SYM_L_GLOBAL, rm_stack_end)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

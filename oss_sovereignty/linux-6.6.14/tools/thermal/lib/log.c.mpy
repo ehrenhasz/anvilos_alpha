@@ -1,0 +1,9 @@
+{
+  "module_name": "log.c",
+  "hash_id": "1146456cc5b936f2111175ad9a3ef5e89153516bbe354f544043e25607b60cda",
+  "original_prompt": "Ingested from linux-6.6.14/tools/thermal/lib/log.c",
+  "human_readable_source": "\n\n#include <stdarg.h>\n#include <stdio.h>\n#include <string.h>\n#include <syslog.h>\n#include \"log.h\"\n\nstatic const char *__ident = \"unknown\";\nstatic int __options;\n\nstatic const char * const loglvl[] = {\n\t[LOG_DEBUG]\t= \"DEBUG\",\n\t[LOG_INFO]\t= \"INFO\",\n\t[LOG_NOTICE]\t= \"NOTICE\",\n\t[LOG_WARNING]\t= \"WARN\",\n\t[LOG_ERR]\t= \"ERROR\",\n\t[LOG_CRIT]\t= \"CRITICAL\",\n\t[LOG_ALERT]\t= \"ALERT\",\n\t[LOG_EMERG]\t= \"EMERG\",\n};\n\nint log_str2level(const char *lvl)\n{\n\tint i;\n\n\tfor (i = 0; i < sizeof(loglvl) / sizeof(loglvl[LOG_DEBUG]); i++)\n\t\tif (!strcmp(lvl, loglvl[i]))\n\t\t\treturn i;\n\n\treturn LOG_DEBUG;\n}\n\nextern void logit(int level, const char *format, ...)\n{\n\tva_list args;\n\n\tva_start(args, format);\n\n\tif (__options & TO_SYSLOG)\n\t\tvsyslog(level, format, args);\n\n\tif (__options & TO_STDERR)\n\t\tvfprintf(stderr, format, args);\n\n\tif (__options & TO_STDOUT)\n\t\tvfprintf(stdout, format, args);\n\n\tva_end(args);\n}\n\nint log_init(int level, const char *ident, int options)\n{\n\tif (!options)\n\t\treturn -1;\n\n\tif (level > LOG_DEBUG)\n\t\treturn -1;\n\n\tif (!ident)\n\t\treturn -1;\n\n\t__ident = ident;\n\t__options = options;\n\n\tif (options & TO_SYSLOG) {\n\t\topenlog(__ident, options | LOG_NDELAY, LOG_USER);\n\t\tsetlogmask(LOG_UPTO(level));\n\t}\n\n\treturn 0;\n}\n\nvoid log_exit(void)\n{\n\tcloselog();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

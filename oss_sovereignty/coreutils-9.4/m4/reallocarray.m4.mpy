@@ -1,0 +1,9 @@
+{
+  "module_name": "reallocarray.m4",
+  "hash_id": "e386e8df75840a1fbdadda917bf32b56feb1d7121b0f814a3440ad4f966456c2",
+  "original_prompt": "Ingested from coreutils-9.4/m4/reallocarray.m4",
+  "human_readable_source": "# reallocarray.m4 serial 5\ndnl Copyright (C) 2017-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_REALLOCARRAY],\n[\n  dnl Persuade glibc <stdlib.h> to declare reallocarray.\n  AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])\n\n  AC_REQUIRE([gl_STDLIB_H_DEFAULTS])\n  AC_REQUIRE([gl_CHECK_MALLOC_PTRDIFF])\n  gl_CHECK_FUNCS_ANDROID([reallocarray], [[#include <stdlib.h>]])\n  if test \"$ac_cv_func_reallocarray\" = no; then\n    HAVE_REALLOCARRAY=0\n    case \"$gl_cv_onwards_func_reallocarray\" in\n      future*) REPLACE_REALLOCARRAY=1 ;;\n    esac\n  elif test \"$gl_cv_malloc_ptrdiff\" = no; then\n    REPLACE_REALLOCARRAY=1\n  fi\n])\n\n# Prerequisites of lib/reallocarray.c.\nAC_DEFUN([gl_PREREQ_REALLOCARRAY], [:])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

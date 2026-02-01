@@ -1,0 +1,9 @@
+{
+  "module_name": "ihex.h",
+  "hash_id": "37267df5627efeb4478e4fee7672b5c19eed5a3b0d8e450869c62ac80a83ccb4",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/ihex.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_IHEX_H__\n#define __LINUX_IHEX_H__\n\n#include <linux/types.h>\n#include <linux/firmware.h>\n#include <linux/device.h>\n\n \nstruct ihex_binrec {\n\t__be32 addr;\n\t__be16 len;\n\tuint8_t data[];\n} __attribute__((packed));\n\nstatic inline uint16_t ihex_binrec_size(const struct ihex_binrec *p)\n{\n\treturn be16_to_cpu(p->len) + sizeof(*p);\n}\n\n \nstatic inline const struct ihex_binrec *\n__ihex_next_binrec(const struct ihex_binrec *rec)\n{\n\tconst void *p = rec;\n\n\treturn p + ALIGN(ihex_binrec_size(rec), 4);\n}\n\nstatic inline const struct ihex_binrec *\nihex_next_binrec(const struct ihex_binrec *rec)\n{\n\trec = __ihex_next_binrec(rec);\n\n\treturn be16_to_cpu(rec->len) ? rec : NULL;\n}\n\n \nstatic inline int ihex_validate_fw(const struct firmware *fw)\n{\n\tconst struct ihex_binrec *end, *rec;\n\n\trec = (const void *)fw->data;\n\tend = (const void *)&fw->data[fw->size - sizeof(*end)];\n\n\tfor (; rec <= end; rec = __ihex_next_binrec(rec)) {\n\t\t \n\t\tif (rec == end && !be16_to_cpu(rec->len))\n\t\t\treturn 0;\n\t}\n\treturn -EINVAL;\n}\n\n \nstatic inline int request_ihex_firmware(const struct firmware **fw,\n\t\t\t\t\tconst char *fw_name,\n\t\t\t\t\tstruct device *dev)\n{\n\tconst struct firmware *lfw;\n\tint ret;\n\n\tret = request_firmware(&lfw, fw_name, dev);\n\tif (ret)\n\t\treturn ret;\n\tret = ihex_validate_fw(lfw);\n\tif (ret) {\n\t\tdev_err(dev, \"Firmware \\\"%s\\\" not valid IHEX records\\n\",\n\t\t\tfw_name);\n\t\trelease_firmware(lfw);\n\t\treturn ret;\n\t}\n\t*fw = lfw;\n\treturn 0;\n}\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

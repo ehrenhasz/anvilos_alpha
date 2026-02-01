@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "b8d66cc9afa471db8a79d2c05646f4d3d1e1dd2213c130bc6de6bf65113babc7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/soc/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nmenu \"SOC (System On Chip) specific Drivers\"\n\nsource \"drivers/soc/actions/Kconfig\"\nsource \"drivers/soc/amlogic/Kconfig\"\nsource \"drivers/soc/apple/Kconfig\"\nsource \"drivers/soc/aspeed/Kconfig\"\nsource \"drivers/soc/atmel/Kconfig\"\nsource \"drivers/soc/bcm/Kconfig\"\nsource \"drivers/soc/canaan/Kconfig\"\nsource \"drivers/soc/fsl/Kconfig\"\nsource \"drivers/soc/fujitsu/Kconfig\"\nsource \"drivers/soc/hisilicon/Kconfig\"\nsource \"drivers/soc/imx/Kconfig\"\nsource \"drivers/soc/ixp4xx/Kconfig\"\nsource \"drivers/soc/litex/Kconfig\"\nsource \"drivers/soc/loongson/Kconfig\"\nsource \"drivers/soc/mediatek/Kconfig\"\nsource \"drivers/soc/microchip/Kconfig\"\nsource \"drivers/soc/nuvoton/Kconfig\"\nsource \"drivers/soc/pxa/Kconfig\"\nsource \"drivers/soc/qcom/Kconfig\"\nsource \"drivers/soc/renesas/Kconfig\"\nsource \"drivers/soc/rockchip/Kconfig\"\nsource \"drivers/soc/samsung/Kconfig\"\nsource \"drivers/soc/sifive/Kconfig\"\nsource \"drivers/soc/starfive/Kconfig\"\nsource \"drivers/soc/sunxi/Kconfig\"\nsource \"drivers/soc/tegra/Kconfig\"\nsource \"drivers/soc/ti/Kconfig\"\nsource \"drivers/soc/ux500/Kconfig\"\nsource \"drivers/soc/versatile/Kconfig\"\nsource \"drivers/soc/xilinx/Kconfig\"\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

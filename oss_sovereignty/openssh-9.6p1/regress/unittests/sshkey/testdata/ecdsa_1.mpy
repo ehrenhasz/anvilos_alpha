@@ -1,0 +1,9 @@
+{
+  "module_name": "ecdsa_1",
+  "hash_id": "42a90746ef5975c6ef98c6d56305dad0bc698a1b05c83518bc90584c83935d5c",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/unittests/sshkey/testdata/ecdsa_1",
+  "human_readable_source": "-----BEGIN EC PRIVATE KEY-----\nMHcCAQEEIPPNyUAnjvFr+eT/7t/IyjuQQd/aLFiTY92LB9gIjyrMoAoGCCqGSM49\nAwEHoUQDQgAEDFlblkOrW9ydKVhtM+9AY3c9saBE7SG3lFx38nBavkADDaI9jh3/\nkvG/Jt9vpm22qwoklTCGDfzCkXkIKaWlBw==\n-----END EC PRIVATE KEY-----\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

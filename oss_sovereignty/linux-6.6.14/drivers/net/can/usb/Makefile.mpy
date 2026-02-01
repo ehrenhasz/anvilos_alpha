@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "8e29671e4b87cd1b84d0572cb34eefa491953473a81f38fa67fe616b2e4c9629",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/can/usb/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n#  Makefile for the Linux Controller Area Network USB drivers.\n#\n\nobj-$(CONFIG_CAN_8DEV_USB) += usb_8dev.o\nobj-$(CONFIG_CAN_EMS_USB) += ems_usb.o\nobj-$(CONFIG_CAN_ESD_USB) += esd_usb.o\nobj-$(CONFIG_CAN_ETAS_ES58X) += etas_es58x/\nobj-$(CONFIG_CAN_F81604) += f81604.o\nobj-$(CONFIG_CAN_GS_USB) += gs_usb.o\nobj-$(CONFIG_CAN_KVASER_USB) += kvaser_usb/\nobj-$(CONFIG_CAN_MCBA_USB) += mcba_usb.o\nobj-$(CONFIG_CAN_PEAK_USB) += peak_usb/\nobj-$(CONFIG_CAN_UCAN) += ucan.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

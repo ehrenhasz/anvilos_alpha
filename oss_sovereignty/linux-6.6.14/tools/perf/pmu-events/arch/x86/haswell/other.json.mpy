@@ -1,0 +1,9 @@
+{
+  "module_name": "other.json",
+  "hash_id": "db10b66691951d8602fec207aa046b2531b9bd193c836eb1114da6987b6af0d0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/x86/haswell/other.json",
+  "human_readable_source": "[\n    {\n        \"BriefDescription\": \"Unhalted core cycles when the thread is in ring 0\",\n        \"EventCode\": \"0x5C\",\n        \"EventName\": \"CPL_CYCLES.RING0\",\n        \"PublicDescription\": \"Unhalted core cycles when the thread is in ring 0.\",\n        \"SampleAfterValue\": \"2000003\",\n        \"UMask\": \"0x1\"\n    },\n    {\n        \"BriefDescription\": \"Number of intervals between processor halts while thread is in ring 0.\",\n        \"CounterMask\": \"1\",\n        \"EdgeDetect\": \"1\",\n        \"EventCode\": \"0x5C\",\n        \"EventName\": \"CPL_CYCLES.RING0_TRANS\",\n        \"SampleAfterValue\": \"100003\",\n        \"UMask\": \"0x1\"\n    },\n    {\n        \"BriefDescription\": \"Unhalted core cycles when thread is in rings 1, 2, or 3\",\n        \"EventCode\": \"0x5C\",\n        \"EventName\": \"CPL_CYCLES.RING123\",\n        \"PublicDescription\": \"Unhalted core cycles when the thread is not in ring 0.\",\n        \"SampleAfterValue\": \"2000003\",\n        \"UMask\": \"0x2\"\n    },\n    {\n        \"BriefDescription\": \"Cycles when L1 and L2 are locked due to UC or split lock\",\n        \"EventCode\": \"0x63\",\n        \"EventName\": \"LOCK_CYCLES.SPLIT_LOCK_UC_LOCK_DURATION\",\n        \"PublicDescription\": \"Cycles in which the L1D and L2 are locked, due to a UC lock or split lock.\",\n        \"SampleAfterValue\": \"2000003\",\n        \"UMask\": \"0x1\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

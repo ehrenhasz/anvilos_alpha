@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "449287ca977f69a56b8e4186c6de937287eb32044a39254adadb2f335a104c1a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/tegra-video/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig VIDEO_TEGRA\n\ttristate \"NVIDIA Tegra VI driver\"\n\tdepends on TEGRA_HOST1X\n\tdepends on VIDEO_DEV\n\tselect MEDIA_CONTROLLER\n\tselect VIDEOBUF2_DMA_CONTIG\n\tselect V4L2_FWNODE\n\thelp\n\t  Choose this option if you have an NVIDIA Tegra SoC.\n\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called tegra-video.\n\nconfig VIDEO_TEGRA_TPG\n\tbool \"NVIDIA Tegra VI driver TPG mode\"\n\tdepends on VIDEO_TEGRA\n\tdepends on ARCH_TEGRA_210_SOC\n\thelp\n\t  Say yes here to enable Tegra internal TPG mode\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

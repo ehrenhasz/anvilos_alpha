@@ -1,0 +1,9 @@
+{
+  "module_name": "md-linear.h",
+  "hash_id": "b2bc36ecff763394c462ec900c72139df8a0e832f685be317699e9992f77e7ba",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/md/md-linear.h",
+  "human_readable_source": " \n#ifndef _LINEAR_H\n#define _LINEAR_H\n\nstruct dev_info {\n\tstruct md_rdev\t*rdev;\n\tsector_t\tend_sector;\n};\n\nstruct linear_conf\n{\n\tstruct rcu_head\t\trcu;\n\tsector_t\t\tarray_sectors;\n\tint\t\t\traid_disks;  \n\tstruct dev_info\t\tdisks[];\n};\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

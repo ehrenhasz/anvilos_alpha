@@ -1,0 +1,9 @@
+{
+  "module_name": "udp_impl.h",
+  "hash_id": "93a93ad29442bf172d47269857dcce7373d51021ee2a0f9fe4d6e7ffd5db9eaf",
+  "original_prompt": "Ingested from linux-6.6.14/net/ipv6/udp_impl.h",
+  "human_readable_source": " \n#ifndef _UDP6_IMPL_H\n#define _UDP6_IMPL_H\n#include <net/udp.h>\n#include <net/udplite.h>\n#include <net/protocol.h>\n#include <net/addrconf.h>\n#include <net/inet_common.h>\n#include <net/transp_v6.h>\n\nint __udp6_lib_rcv(struct sk_buff *, struct udp_table *, int);\nint __udp6_lib_err(struct sk_buff *, struct inet6_skb_parm *, u8, u8, int,\n\t\t   __be32, struct udp_table *);\n\nint udpv6_init_sock(struct sock *sk);\nint udp_v6_get_port(struct sock *sk, unsigned short snum);\nvoid udp_v6_rehash(struct sock *sk);\n\nint udpv6_getsockopt(struct sock *sk, int level, int optname,\n\t\t     char __user *optval, int __user *optlen);\nint udpv6_setsockopt(struct sock *sk, int level, int optname, sockptr_t optval,\n\t\t     unsigned int optlen);\nint udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len);\nint udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int flags,\n\t\t  int *addr_len);\nvoid udpv6_destroy_sock(struct sock *sk);\n\n#ifdef CONFIG_PROC_FS\nint udp6_seq_show(struct seq_file *seq, void *v);\n#endif\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

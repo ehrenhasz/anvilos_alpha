@@ -1,0 +1,9 @@
+{
+  "module_name": "expr.x",
+  "hash_id": "1658acde283d878f7c28417cf86eff06d5c6b9d024029c43d0f65c3eea9f85ba",
+  "original_prompt": "Ingested from coreutils-9.4/man/expr.x",
+  "human_readable_source": "[NAME]\nexpr \\- evaluate expressions\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

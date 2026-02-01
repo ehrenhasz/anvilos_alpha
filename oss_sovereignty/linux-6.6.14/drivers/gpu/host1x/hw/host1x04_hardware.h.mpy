@@ -1,0 +1,9 @@
+{
+  "module_name": "host1x04_hardware.h",
+  "hash_id": "a59a9a2ed32b5fc8ce171a1067ba15411dfb3c767d8de6cb23867e886d3f0180",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/host1x/hw/host1x04_hardware.h",
+  "human_readable_source": " \n \n\n#ifndef __HOST1X_HOST1X04_HARDWARE_H\n#define __HOST1X_HOST1X04_HARDWARE_H\n\n#include <linux/types.h>\n#include <linux/bitops.h>\n\n#include \"hw_host1x04_channel.h\"\n#include \"hw_host1x04_sync.h\"\n#include \"hw_host1x04_uclass.h\"\n\n#include \"opcodes.h\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

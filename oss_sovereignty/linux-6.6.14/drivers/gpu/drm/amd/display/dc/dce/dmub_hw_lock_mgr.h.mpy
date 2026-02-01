@@ -1,0 +1,9 @@
+{
+  "module_name": "dmub_hw_lock_mgr.h",
+  "hash_id": "464d04b367b2cfa7c3cfcafe77fbd550c84a33eeda5caeb65b96d9dd11ccb48f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dce/dmub_hw_lock_mgr.h",
+  "human_readable_source": " \n\n#ifndef _DMUB_HW_LOCK_MGR_H_\n#define _DMUB_HW_LOCK_MGR_H_\n\n#include \"dc_dmub_srv.h\"\n#include \"core_types.h\"\n\nvoid dmub_hw_lock_mgr_cmd(struct dc_dmub_srv *dmub_srv,\n\t\t\t\tbool lock,\n\t\t\t\tunion dmub_hw_lock_flags *hw_locks,\n\t\t\t\tstruct dmub_hw_lock_inst_flags *inst_flags);\n\nvoid dmub_hw_lock_mgr_inbox0_cmd(struct dc_dmub_srv *dmub_srv,\n\t\tunion dmub_inbox0_cmd_lock_hw hw_lock_cmd);\n\nbool should_use_dmub_lock(struct dc_link *link);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

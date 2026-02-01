@@ -1,0 +1,9 @@
+{
+  "module_name": "getcwd-lgpl.c",
+  "hash_id": "5d8a8f121f8b2548782e85d2ac3815b1cb079b4d89ba34cb51dc7ae373818e6c",
+  "original_prompt": "Ingested from coreutils-9.4/lib/getcwd-lgpl.c",
+  "human_readable_source": " \n#include <unistd.h>\n\n#include <errno.h>\n#include <stdlib.h>\n#include <string.h>\n\n#if GNULIB_GETCWD\n \ntypedef int dummy;\n#else\n\n \n\n# undef getcwd\n# if defined _WIN32 && !defined __CYGWIN__\n#  define getcwd _getcwd\n# endif\n\nchar *\nrpl_getcwd (char *buf, size_t size)\n{\n  char *ptr;\n  char *result;\n\n   \n  if (buf)\n    {\n      if (!size)\n        {\n          errno = EINVAL;\n          return NULL;\n        }\n      return getcwd (buf, size);\n    }\n\n  if (size)\n    {\n      buf = malloc (size);\n      if (!buf)\n        {\n          errno = ENOMEM;\n          return NULL;\n        }\n      result = getcwd (buf, size);\n      if (!result)\n        free (buf);\n      return result;\n    }\n\n   \n  {\n    char tmp[4032];\n    size = sizeof tmp;\n    ptr = getcwd (tmp, size);\n    if (ptr)\n      {\n        result = strdup (ptr);\n        if (!result)\n          errno = ENOMEM;\n        return result;\n      }\n    if (errno != ERANGE)\n      return NULL;\n  }\n\n   \n  do\n    {\n      size <<= 1;\n      ptr = realloc (buf, size);\n      if (ptr == NULL)\n        {\n          free (buf);\n          errno = ENOMEM;\n          return NULL;\n        }\n      buf = ptr;\n      result = getcwd (buf, size);\n    }\n  while (!result && errno == ERANGE);\n\n  if (!result)\n    free (buf);\n  else\n    {\n       \n       \n      size_t actual_size = strlen (result) + 1;\n      if (actual_size < size)\n        {\n          char *shrinked_result = realloc (result, actual_size);\n          if (shrinked_result != NULL)\n            result = shrinked_result;\n        }\n    }\n  return result;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

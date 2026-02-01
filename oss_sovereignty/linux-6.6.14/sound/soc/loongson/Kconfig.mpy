@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3c2dc8bf36f99a36ad51f2e6f6c0500b87087ad90615ad26a6bfe528c42132d6",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/loongson/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nmenu \"SoC Audio for Loongson CPUs\"\n\tdepends on LOONGARCH || COMPILE_TEST\n\nconfig SND_SOC_LOONGSON_I2S_PCI\n\ttristate \"Loongson I2S-PCI Device Driver\"\n\tselect REGMAP_MMIO\n\tdepends on PCI\n\thelp\n\t  Say Y or M if you want to add support for I2S driver for\n\t  Loongson I2S controller.\n\n\t  The controller is found in loongson bridge chips or SoCs,\n\t  and work as a PCI device.\n\nconfig SND_SOC_LOONGSON_CARD\n\ttristate \"Loongson Sound Card Driver\"\n\tselect SND_SOC_LOONGSON_I2S_PCI\n\tdepends on PCI\n\thelp\n\t  Say Y or M if you want to add support for SoC audio using\n\t  loongson I2S controller.\n\n\t  The driver add support for ALSA SoC Audio support using\n\t  loongson I2S controller.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

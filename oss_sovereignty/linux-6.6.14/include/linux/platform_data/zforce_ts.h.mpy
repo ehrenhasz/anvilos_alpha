@@ -1,0 +1,9 @@
+{
+  "module_name": "zforce_ts.h",
+  "hash_id": "9caf20bef19f03a10d4d6c6d4980b7d15bddedadbd276d45a213582af80fafb2",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/zforce_ts.h",
+  "human_readable_source": " \n \n\n#ifndef _LINUX_INPUT_ZFORCE_TS_H\n#define _LINUX_INPUT_ZFORCE_TS_H\n\nstruct zforce_ts_platdata {\n\tunsigned int x_max;\n\tunsigned int y_max;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

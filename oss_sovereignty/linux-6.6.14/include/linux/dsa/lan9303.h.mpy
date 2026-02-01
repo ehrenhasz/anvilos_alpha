@@ -1,0 +1,9 @@
+{
+  "module_name": "lan9303.h",
+  "hash_id": "18a51465d8fc3627bc0929fd57dbc525eb4dc92fe3e847f99a602dce7fa7b002",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dsa/lan9303.h",
+  "human_readable_source": " \n#include <linux/if_ether.h>\n\nstruct lan9303;\n\nstruct lan9303_phy_ops {\n\t \n\tint\t(*phy_read)(struct lan9303 *chip, int port, int regnum);\n\tint\t(*phy_write)(struct lan9303 *chip, int port,\n\t\t\t     int regnum, u16 val);\n};\n\n#define LAN9303_NUM_ALR_RECORDS 512\nstruct lan9303_alr_cache_entry {\n\tu8  mac_addr[ETH_ALEN];\n\tu8  port_map;          \n\tu8  stp_override;      \n};\n\nstruct lan9303 {\n\tstruct device *dev;\n\tstruct regmap *regmap;\n\tstruct regmap_irq_chip_data *irq_data;\n\tstruct gpio_desc *reset_gpio;\n\tu32 reset_duration;  \n\tint phy_addr_base;\n\tstruct dsa_switch *ds;\n\tstruct mutex indirect_mutex;  \n\tstruct mutex alr_mutex;  \n\tconst struct lan9303_phy_ops *ops;\n\tbool is_bridged;  \n\n\t \n\tu32 swe_port_state;\n\t \n\tstruct lan9303_alr_cache_entry alr_cache[LAN9303_NUM_ALR_RECORDS];\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

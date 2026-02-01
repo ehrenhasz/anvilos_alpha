@@ -1,0 +1,9 @@
+{
+  "module_name": "utsname_compat.h",
+  "hash_id": "ba6ce53d5be6af2d60c2973e100b13bf4c714147241ebd8209eb26a1d5c40764",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/linux/kernel/linux/utsname_compat.h",
+  "human_readable_source": " \n\n#ifndef\t_ZFS_UTSNAME_H\n#define\t_ZFS_UTSNAME_H\n\n#include <linux/utsname.h>\n\ntypedef struct new_utsname\tutsname_t;\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

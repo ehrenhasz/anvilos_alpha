@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libunwind-x86.c",
+  "hash_id": "fbf0433d519213f6dadb2b157a7bbdc581b99a8ff543e8543b9f3b55ccc77ef1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libunwind-x86.c",
+  "human_readable_source": "\n#include <libunwind-x86.h>\n#include <stdlib.h>\n\nextern int UNW_OBJ(dwarf_search_unwind_table) (unw_addr_space_t as,\n\t\t\t\t\t       unw_word_t ip,\n\t\t\t\t\t       unw_dyn_info_t *di,\n\t\t\t\t\t       unw_proc_info_t *pi,\n\t\t\t\t\t       int need_unwind_info, void *arg);\n\n\n#define dwarf_search_unwind_table UNW_OBJ(dwarf_search_unwind_table)\n\nstatic unw_accessors_t accessors;\n\nint main(void)\n{\n\tunw_addr_space_t addr_space;\n\n\taddr_space = unw_create_addr_space(&accessors, 0);\n\tif (addr_space)\n\t\treturn 0;\n\n\tunw_init_remote(NULL, addr_space, NULL);\n\tdwarf_search_unwind_table(addr_space, 0, NULL, NULL, 0, NULL);\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

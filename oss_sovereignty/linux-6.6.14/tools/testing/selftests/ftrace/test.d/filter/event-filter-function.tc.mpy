@@ -1,0 +1,9 @@
+{
+  "module_name": "event-filter-function.tc",
+  "hash_id": "19bae8a4475ce3eec90fe11fcebe5df2ea8573319269d449b0a27ef7abdb6268",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/filter/event-filter-function.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: event filter function - test event filtering on functions\n# requires: set_event events/kmem/kmem_cache_free/filter\n# flags: instance\n\nfail() { #msg\n    echo $1\n    exit_fail\n}\n\nsample_events() {\n    echo > trace\n    echo 1 > events/kmem/kmem_cache_free/enable\n    echo 1 > tracing_on\n    ls > /dev/null\n    echo 0 > tracing_on\n    echo 0 > events/kmem/kmem_cache_free/enable\n}\n\necho 0 > tracing_on\necho 0 > events/enable\n\necho \"Get the most frequently calling function\"\nsample_events\n\ntarget_func=`cut -d: -f3 trace | sed 's/call_site=\\([^+]*\\)+0x.*/\\1/' | sort | uniq -c | sort | tail -n 1 | sed 's/^[ 0-9]*//'`\nif [ -z \"$target_func\" ]; then\n    exit_fail\nfi\necho > trace\n\necho \"Test event filter function name\"\necho \"call_site.function == $target_func\" > events/kmem/kmem_cache_free/filter\nsample_events\n\nhitcnt=`grep kmem_cache_free trace| grep $target_func | wc -l`\nmisscnt=`grep kmem_cache_free trace| grep -v $target_func | wc -l`\n\nif [ $hitcnt -eq 0 ]; then\n\texit_fail\nfi\n\nif [ $misscnt -gt 0 ]; then\n\texit_fail\nfi\n\naddress=`grep \" ${target_func}\\$\" /proc/kallsyms | cut -d' ' -f1`\n\necho \"Test event filter function address\"\necho \"call_site.function == 0x$address\" > events/kmem/kmem_cache_free/filter\nsample_events\n\nhitcnt=`grep kmem_cache_free trace| grep $target_func | wc -l`\nmisscnt=`grep kmem_cache_free trace| grep -v $target_func | wc -l`\n\nif [ $hitcnt -eq 0 ]; then\n\texit_fail\nfi\n\nif [ $misscnt -gt 0 ]; then\n\texit_fail\nfi\n\nreset_events_filter\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

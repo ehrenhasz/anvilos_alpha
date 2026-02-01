@@ -1,0 +1,9 @@
+{
+  "module_name": "gru.h",
+  "hash_id": "ed50c55f31e3eb0b4e48f23ff49bf35faed28530e06f680d51ec6050e7fdf3fb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/sgi-gru/gru.h",
+  "human_readable_source": " \n\n#ifndef __GRU_H__\n#define __GRU_H__\n\n \n#define GRU_CACHE_LINE_BYTES\t\t64\n#define GRU_HANDLE_STRIDE\t\t256\n#define GRU_CB_BASE\t\t\t0\n#define GRU_DS_BASE\t\t\t0x20000\n\n \n#if defined(CONFIG_IA64)\n#define GRU_GSEG_PAGESIZE\t(256 * 1024UL)\n#elif defined(CONFIG_X86_64)\n#define GRU_GSEG_PAGESIZE\t(256 * 1024UL)\t\t \n#else\n#error \"Unsupported architecture\"\n#endif\n\n \nstruct gru_chiplet_info {\n\tint\tnode;\n\tint\tchiplet;\n\tint\tblade;\n\tint\ttotal_dsr_bytes;\n\tint\ttotal_cbr;\n\tint\ttotal_user_dsr_bytes;\n\tint\ttotal_user_cbr;\n\tint\tfree_user_dsr_bytes;\n\tint\tfree_user_cbr;\n};\n\n \nstruct gru_gseg_statistics {\n\tunsigned long\tfmm_tlbmiss;\n\tunsigned long\tupm_tlbmiss;\n\tunsigned long\ttlbdropin;\n\tunsigned long\tcontext_stolen;\n\tunsigned long\treserved[10];\n};\n\n \n \n#define GRU_OPT_MISS_DEFAULT\t0x0000\t \n#define GRU_OPT_MISS_USER_POLL\t0x0001\t \n#define GRU_OPT_MISS_FMM_INTR\t0x0002\t \n#define GRU_OPT_MISS_FMM_POLL\t0x0003\t \n#define GRU_OPT_MISS_MASK\t0x0003\t \n\n\n\n#endif\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "bfef558e53cb6dbdc248d331a2c7d2b2b899b0dd436866e3a8c2a561221b4b33",
+  "original_prompt": "Ingested from linux-6.6.14/fs/9p/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig 9P_FS\n\ttristate \"Plan 9 Resource Sharing Support (9P2000)\"\n\tdepends on NET_9P\n\tselect NETFS_SUPPORT\n\thelp\n\t  If you say Y here, you will get experimental support for\n\t  Plan 9 resource sharing via the 9P2000 protocol.\n\n\t  See <http://v9fs.sf.net> for more information.\n\n\t  If unsure, say N.\n\nif 9P_FS\nconfig 9P_FSCACHE\n\tbool \"Enable 9P client caching support\"\n\tdepends on 9P_FS=m && FSCACHE || 9P_FS=y && FSCACHE=y\n\thelp\n\t  Choose Y here to enable persistent, read-only local\n\t  caching support for 9p clients using FS-Cache\n\n\nconfig 9P_FS_POSIX_ACL\n\tbool \"9P POSIX Access Control Lists\"\n\tselect FS_POSIX_ACL\n\thelp\n\t  POSIX Access Control Lists (ACLs) support permissions for users and\n\t  groups beyond the owner/group/world scheme.\n\n\t  If you don't know what Access Control Lists are, say N\n\nendif\n\n\nconfig 9P_FS_SECURITY\n\tbool \"9P Security Labels\"\n\tdepends on 9P_FS\n\thelp\n\t  Security labels support alternative access control models\n\t  implemented by security modules like SELinux.  This option\n\t  enables an extended attribute handler for file security\n\t  labels in the 9P filesystem.\n\n\t  If you are not using a security module that requires using\n\t  extended attributes for file security labels, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

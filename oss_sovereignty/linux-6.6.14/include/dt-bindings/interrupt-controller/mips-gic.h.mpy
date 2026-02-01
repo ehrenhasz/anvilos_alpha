@@ -1,0 +1,9 @@
+{
+  "module_name": "mips-gic.h",
+  "hash_id": "372cfd6f1d4ff5f5ab840bb9c88277af7e0a44c94b85a49aed52353854e4b671",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/interrupt-controller/mips-gic.h",
+  "human_readable_source": " \n#ifndef _DT_BINDINGS_INTERRUPT_CONTROLLER_MIPS_GIC_H\n#define _DT_BINDINGS_INTERRUPT_CONTROLLER_MIPS_GIC_H\n\n#include <dt-bindings/interrupt-controller/irq.h>\n\n#define GIC_SHARED 0\n#define GIC_LOCAL 1\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

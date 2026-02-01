@@ -1,0 +1,9 @@
+{
+  "module_name": "version.h",
+  "hash_id": "778954104f96bf2f9232742a1a1784b7872a0513d500464ceb5d0622f8217c7c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb3/version.h",
+  "human_readable_source": " \n \n#ifndef __CHELSIO_VERSION_H\n#define __CHELSIO_VERSION_H\n#define DRV_DESC \"Chelsio T3 Network Driver\"\n#define DRV_NAME \"cxgb3\"\n\n \n#define FW_VERSION_MAJOR 7\n#define FW_VERSION_MINOR 12\n#define FW_VERSION_MICRO 0\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

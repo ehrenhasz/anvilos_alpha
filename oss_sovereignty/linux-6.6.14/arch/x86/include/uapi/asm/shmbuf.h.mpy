@@ -1,0 +1,9 @@
+{
+  "module_name": "shmbuf.h",
+  "hash_id": "1228bfca9c0080a90ada280f9c31b694259d3ab48fa4366f64d8d4767490111a",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/uapi/asm/shmbuf.h",
+  "human_readable_source": " \n#ifndef __ASM_X86_SHMBUF_H\n#define __ASM_X86_SHMBUF_H\n\n#if !defined(__x86_64__) || !defined(__ILP32__)\n#include <asm-generic/shmbuf.h>\n#else\n\n#include <asm/ipcbuf.h>\n#include <asm/posix_types.h>\n\n \n\nstruct shmid64_ds {\n\tstruct ipc64_perm\tshm_perm;\t \n\t__kernel_size_t\t\tshm_segsz;\t \n\t__kernel_long_t\t\tshm_atime;\t \n\t__kernel_long_t\t\tshm_dtime;\t \n\t__kernel_long_t\t\tshm_ctime;\t \n\t__kernel_pid_t\t\tshm_cpid;\t \n\t__kernel_pid_t\t\tshm_lpid;\t \n\t__kernel_ulong_t\tshm_nattch;\t \n\t__kernel_ulong_t\t__unused4;\n\t__kernel_ulong_t\t__unused5;\n};\n\nstruct shminfo64 {\n\t__kernel_ulong_t\tshmmax;\n\t__kernel_ulong_t\tshmmin;\n\t__kernel_ulong_t\tshmmni;\n\t__kernel_ulong_t\tshmseg;\n\t__kernel_ulong_t\tshmall;\n\t__kernel_ulong_t\t__unused1;\n\t__kernel_ulong_t\t__unused2;\n\t__kernel_ulong_t\t__unused3;\n\t__kernel_ulong_t\t__unused4;\n};\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "bfa711a727ca6f4f1739b6efbc3fe863d0e7f429c11b02fbbf43d2d9917312a1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/interconnect/samsung/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig INTERCONNECT_SAMSUNG\n\tbool \"Samsung SoC interconnect drivers\"\n\tdepends on ARCH_EXYNOS || COMPILE_TEST\n\thelp\n\t  Interconnect drivers for Samsung SoCs.\n\nconfig INTERCONNECT_EXYNOS\n\ttristate \"Exynos SoC generic interconnect driver\"\n\tdepends on INTERCONNECT_SAMSUNG\n\tdefault y if ARCH_EXYNOS\n\thelp\n\t  Generic interconnect driver for Samsung Exynos SoCs (e.g. Exynos3250,\n\t  Exynos4210, Exynos4412, Exynos542x, Exynos5433).\n\t  Choose Y here only if you build for such Samsung SoC.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

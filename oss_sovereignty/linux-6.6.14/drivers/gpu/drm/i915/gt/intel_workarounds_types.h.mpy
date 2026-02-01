@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_workarounds_types.h",
+  "hash_id": "0b9472e328e6531c7f50e720306482fcfd15ec36146fcb64702885807836e180",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/intel_workarounds_types.h",
+  "human_readable_source": " \n \n\n#ifndef __INTEL_WORKAROUNDS_TYPES_H__\n#define __INTEL_WORKAROUNDS_TYPES_H__\n\n#include <linux/types.h>\n\n#include \"i915_reg_defs.h\"\n\nstruct intel_gt;\n\nstruct i915_wa {\n\tunion {\n\t\ti915_reg_t\treg;\n\t\ti915_mcr_reg_t\tmcr_reg;\n\t};\n\tu32\t\tclr;\n\tu32\t\tset;\n\tu32\t\tread;\n\n\tu32\t\tmasked_reg:1;\n\tu32\t\tis_mcr:1;\n};\n\nstruct i915_wa_list {\n\tstruct intel_gt\t*gt;\n\tconst char\t*name;\n\tconst char\t*engine_name;\n\tstruct i915_wa\t*list;\n\tunsigned int\tcount;\n\tunsigned int\twa_count;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

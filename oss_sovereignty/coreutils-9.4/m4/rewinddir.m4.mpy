@@ -1,0 +1,9 @@
+{
+  "module_name": "rewinddir.m4",
+  "hash_id": "c5de327d63368bfcc173d661e3401bbb676d38c7541fc68b0ed0ac06052f530a",
+  "original_prompt": "Ingested from coreutils-9.4/m4/rewinddir.m4",
+  "human_readable_source": "# rewinddir.m4 serial 2\ndnl Copyright (C) 2011-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_REWINDDIR],\n[\n  AC_REQUIRE([gl_DIRENT_H_DEFAULTS])\n\n  AC_CHECK_FUNCS([rewinddir])\n  if test $ac_cv_func_rewinddir = no; then\n    HAVE_REWINDDIR=0\n  else\n    dnl Replace rewinddir() on native Windows, to support fdopendir().\n    AC_REQUIRE([gl_DIRENT_DIR])\n    if test $DIR_HAS_FD_MEMBER = 0; then\n      REPLACE_REWINDDIR=1\n    fi\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "sha512sum.x",
+  "hash_id": "1d7caf87f31f79cc1a4c4a4931fbac0e0c80e8abaacf0ae1c632af0d7cbccd1d",
+  "original_prompt": "Ingested from coreutils-9.4/man/sha512sum.x",
+  "human_readable_source": "[NAME]\nsha512sum \\- compute and check SHA512 message digest\n[DESCRIPTION]\n.\\\" Add any additional description here\n[SEE ALSO]\ncksum(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

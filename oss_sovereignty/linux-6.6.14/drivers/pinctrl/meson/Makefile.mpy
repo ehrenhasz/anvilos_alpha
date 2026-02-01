@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "fef8d264e32fd47642d6f7e984056af00cb32bddf9f49daecefd22dbc7b782be",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/meson/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_PINCTRL_MESON) += pinctrl-meson.o\nobj-$(CONFIG_PINCTRL_MESON8_PMX) += pinctrl-meson8-pmx.o\nobj-$(CONFIG_PINCTRL_MESON8) += pinctrl-meson8.o\nobj-$(CONFIG_PINCTRL_MESON8B) += pinctrl-meson8b.o\nobj-$(CONFIG_PINCTRL_MESON_GXBB) += pinctrl-meson-gxbb.o\nobj-$(CONFIG_PINCTRL_MESON_GXL) += pinctrl-meson-gxl.o\nobj-$(CONFIG_PINCTRL_MESON_AXG_PMX) += pinctrl-meson-axg-pmx.o\nobj-$(CONFIG_PINCTRL_MESON_AXG) += pinctrl-meson-axg.o\nobj-$(CONFIG_PINCTRL_MESON_G12A) += pinctrl-meson-g12a.o\nobj-$(CONFIG_PINCTRL_MESON_A1) += pinctrl-meson-a1.o\nobj-$(CONFIG_PINCTRL_MESON_S4) += pinctrl-meson-s4.o\nobj-$(CONFIG_PINCTRL_AMLOGIC_C3) += pinctrl-amlogic-c3.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

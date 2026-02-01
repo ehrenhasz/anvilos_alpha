@@ -1,0 +1,9 @@
+{
+  "module_name": "spinlock.h",
+  "hash_id": "de7351904c9a4829a329e512e4eca5cab3cd4350709e689938597beba94afd4e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/virtio/linux/spinlock.h",
+  "human_readable_source": "#ifndef SPINLOCK_H_STUB\n#define SPINLOCK_H_STUB\n\n#include <pthread.h>\n\ntypedef pthread_spinlock_t  spinlock_t;\n\nstatic inline void spin_lock_init(spinlock_t *lock)\n{\n\tint r = pthread_spin_init(lock, 0);\n\tassert(!r);\n}\n\nstatic inline void spin_lock(spinlock_t *lock)\n{\n\tint ret = pthread_spin_lock(lock);\n\tassert(!ret);\n}\n\nstatic inline void spin_unlock(spinlock_t *lock)\n{\n\tint ret = pthread_spin_unlock(lock);\n\tassert(!ret);\n}\n\nstatic inline void spin_lock_bh(spinlock_t *lock)\n{\n\tspin_lock(lock);\n}\n\nstatic inline void spin_unlock_bh(spinlock_t *lock)\n{\n\tspin_unlock(lock);\n}\n\nstatic inline void spin_lock_irq(spinlock_t *lock)\n{\n\tspin_lock(lock);\n}\n\nstatic inline void spin_unlock_irq(spinlock_t *lock)\n{\n\tspin_unlock(lock);\n}\n\nstatic inline void spin_lock_irqsave(spinlock_t *lock, unsigned long f)\n{\n\tspin_lock(lock);\n}\n\nstatic inline void spin_unlock_irqrestore(spinlock_t *lock, unsigned long f)\n{\n\tspin_unlock(lock);\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

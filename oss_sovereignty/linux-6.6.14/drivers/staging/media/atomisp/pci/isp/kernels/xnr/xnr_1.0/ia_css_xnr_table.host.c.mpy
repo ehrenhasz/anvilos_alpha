@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_xnr_table.host.c",
+  "hash_id": "da2708b3b2be9a2bcb8a88ebf83a53fb3a5157cd2dabbba7f2992b2e7305542d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/xnr/xnr_1.0/ia_css_xnr_table.host.c",
+  "human_readable_source": "\n \n\n#include <linux/string.h>  \n\n#include <type_support.h>\n#include \"system_global.h\"\n#include \"vamem.h\"\n#include \"ia_css_types.h\"\n#include \"ia_css_xnr_table.host.h\"\n\nstruct ia_css_xnr_table default_xnr_table;\n\n\nstatic const uint16_t\ndefault_xnr_table_data[IA_CSS_VAMEM_2_XNR_TABLE_SIZE] = {\n\t \n\t8191 >> 1, 4096 >> 1, 2730 >> 1, 2048 >> 1, 1638 >> 1, 1365 >> 1, 1170 >> 1, 1024 >> 1, 910 >> 1, 819 >> 1, 744 >> 1, 682 >> 1, 630 >> 1, 585 >> 1,\n\t     546 >> 1, 512 >> 1,\n\n\t      \n\t     481 >> 1, 455 >> 1, 431 >> 1, 409 >> 1, 390 >> 1, 372 >> 1, 356 >> 1, 341 >> 1, 327 >> 1, 315 >> 1, 303 >> 1, 292 >> 1, 282 >> 1, 273 >> 1, 264 >> 1,\n\t     256 >> 1,\n\n\t      \n\t     248 >> 1, 240 >> 1, 234 >> 1, 227 >> 1, 221 >> 1, 215 >> 1, 210 >> 1, 204 >> 1, 199 >> 1, 195 >> 1, 190 >> 1, 186 >> 1, 182 >> 1, 178 >> 1, 174 >> 1,\n\t     170 >> 1,\n\n\t      \n\t     167 >> 1, 163 >> 1, 160 >> 1, 157 >> 1, 154 >> 1, 151 >> 1, 148 >> 1, 146 >> 1, 143 >> 1, 141 >> 1, 138 >> 1, 136 >> 1, 134 >> 1, 132 >> 1, 130 >> 1, 128 >> 1\n};\n\n\nvoid\nia_css_config_xnr_table(void)\n{\n\tmemcpy(default_xnr_table.data.vamem_2, default_xnr_table_data,\n\t       sizeof(default_xnr_table_data));\n\tdefault_xnr_table.vamem_type     = IA_CSS_VAMEM_TYPE_2;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

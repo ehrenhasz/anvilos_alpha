@@ -1,0 +1,9 @@
+{
+  "module_name": "sprd-dma.h",
+  "hash_id": "3c67583463b995b7a911a1161403ff616eefad72b89d02cc29ecd230a5ac99ee",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/dma/sprd-dma.h",
+  "human_readable_source": " \n\n#ifndef _SPRD_DMA_H_\n#define _SPRD_DMA_H_\n\n#define SPRD_DMA_REQ_SHIFT\t8\n#define SPRD_DMA_TRG_MODE_SHIFT\t16\n#define SPRD_DMA_CHN_MODE_SHIFT\t24\n#define SPRD_DMA_FLAGS(chn_mode, trg_mode, req_mode, int_type) \\\n\t((chn_mode) << SPRD_DMA_CHN_MODE_SHIFT | \\\n\t(trg_mode) << SPRD_DMA_TRG_MODE_SHIFT | \\\n\t(req_mode) << SPRD_DMA_REQ_SHIFT | (int_type))\n\n \n\n \nenum sprd_dma_chn_mode {\n\tSPRD_DMA_CHN_MODE_NONE,\n\tSPRD_DMA_SRC_CHN0,\n\tSPRD_DMA_SRC_CHN1,\n\tSPRD_DMA_DST_CHN0,\n\tSPRD_DMA_DST_CHN1,\n};\n\n \nenum sprd_dma_trg_mode {\n\tSPRD_DMA_NO_TRG,\n\tSPRD_DMA_FRAG_DONE_TRG,\n\tSPRD_DMA_BLOCK_DONE_TRG,\n\tSPRD_DMA_TRANS_DONE_TRG,\n\tSPRD_DMA_LIST_DONE_TRG,\n};\n\n \nenum sprd_dma_req_mode {\n\tSPRD_DMA_FRAG_REQ,\n\tSPRD_DMA_BLK_REQ,\n\tSPRD_DMA_TRANS_REQ,\n\tSPRD_DMA_LIST_REQ,\n};\n\n \nenum sprd_dma_int_type {\n\tSPRD_DMA_NO_INT,\n\tSPRD_DMA_FRAG_INT,\n\tSPRD_DMA_BLK_INT,\n\tSPRD_DMA_BLK_FRAG_INT,\n\tSPRD_DMA_TRANS_INT,\n\tSPRD_DMA_TRANS_FRAG_INT,\n\tSPRD_DMA_TRANS_BLK_INT,\n\tSPRD_DMA_LIST_INT,\n\tSPRD_DMA_CFGERR_INT,\n};\n\n \nstruct sprd_dma_linklist {\n\tunsigned long virt_addr;\n\tphys_addr_t phy_addr;\n\tphys_addr_t wrap_addr;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

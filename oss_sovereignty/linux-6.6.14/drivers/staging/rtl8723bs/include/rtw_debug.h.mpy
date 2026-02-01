@@ -1,0 +1,9 @@
+{
+  "module_name": "rtw_debug.h",
+  "hash_id": "2c9b091fbdf4823855c93594293a2bc78f01d40d59b9594b7f9a530d69c5a795",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/include/rtw_debug.h",
+  "human_readable_source": " \n \n#ifndef __RTW_DEBUG_H__\n#define __RTW_DEBUG_H__\n\nvoid mac_reg_dump(struct adapter *adapter);\nvoid bb_reg_dump(struct adapter *adapter);\nvoid rf_reg_dump(struct adapter *adapter);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

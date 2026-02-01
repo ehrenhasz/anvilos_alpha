@@ -1,0 +1,9 @@
+{
+  "module_name": "iosm_ipc_uevent.h",
+  "hash_id": "406b4e481513cd3cace2ffd72cff8fc8b5c03f47a9742b5f089f9f5c209c79c3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wwan/iosm/iosm_ipc_uevent.h",
+  "human_readable_source": " \n\n#ifndef IOSM_IPC_UEVENT_H\n#define IOSM_IPC_UEVENT_H\n\n \n#define UEVENT_MDM_NOT_READY \"MDM_NOT_READY\"\n#define UEVENT_ROM_READY \"ROM_READY\"\n#define UEVENT_MDM_READY \"MDM_READY\"\n#define UEVENT_CRASH \"CRASH\"\n#define UEVENT_CD_READY \"CD_READY\"\n#define UEVENT_CD_READY_LINK_DOWN \"CD_READY_LINK_DOWN\"\n#define UEVENT_MDM_TIMEOUT \"MDM_TIMEOUT\"\n\n \n#define MAX_UEVENT_LEN 64\n\n \nstruct ipc_uevent_info {\n\tstruct device *dev;\n\tchar uevent[MAX_UEVENT_LEN];\n\tstruct work_struct work;\n};\n\n \nvoid ipc_uevent_send(struct device *dev, char *uevent);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

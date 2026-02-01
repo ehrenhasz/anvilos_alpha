@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_util.h",
+  "hash_id": "a4e0334ab0b475d518eb59a83276b4187d2fbe61c9a58fa951f9b36c1bce6c6c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/camera/util/interface/ia_css_util.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_UTIL_H__\n#define __IA_CSS_UTIL_H__\n\n#include <linux/errno.h>\n\n#include <ia_css_err.h>\n#include <type_support.h>\n#include <ia_css_frame_public.h>\n#include <ia_css_stream_public.h>\n#include <ia_css_stream_format.h>\n\n \nint ia_css_convert_errno(\n    int in_err);\n\n \nint ia_css_util_check_vf_info(\n    const struct ia_css_frame_info *const info);\n\n \nint ia_css_util_check_input(\n    const struct ia_css_stream_config *const stream_config,\n    bool must_be_raw,\n    bool must_be_yuv);\n\n \nint ia_css_util_check_vf_out_info(\n    const struct ia_css_frame_info *const out_info,\n    const struct ia_css_frame_info *const vf_info);\n\n \nint ia_css_util_check_res(\n    unsigned int width,\n    unsigned int height);\n\n \n \nbool ia_css_util_res_leq(\n    struct ia_css_resolution a,\n    struct ia_css_resolution b);\n\n \n \nbool ia_css_util_resolution_is_zero(\n    const struct ia_css_resolution resolution);\n\n \n \nbool ia_css_util_resolution_is_even(\n    const struct ia_css_resolution resolution);\n\n \nunsigned int ia_css_util_input_format_bpp(\n    enum atomisp_input_format stream_format,\n    bool two_ppc);\n\n \nbool ia_css_util_is_input_format_raw(\n    enum atomisp_input_format stream_format);\n\n \nbool ia_css_util_is_input_format_yuv(\n    enum atomisp_input_format stream_format);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

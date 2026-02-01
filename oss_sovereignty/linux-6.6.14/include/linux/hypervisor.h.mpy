@@ -1,0 +1,9 @@
+{
+  "module_name": "hypervisor.h",
+  "hash_id": "9bbe6544fdd18dd368c187dd72e77d4b58b4f0dc82c6c5bdd6c578bc84845af3",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/hypervisor.h",
+  "human_readable_source": " \n#ifndef __LINUX_HYPEVISOR_H\n#define __LINUX_HYPEVISOR_H\n\n \n\n#ifdef CONFIG_X86\n\n#include <asm/jailhouse_para.h>\n#include <asm/x86_init.h>\n\nstatic inline void hypervisor_pin_vcpu(int cpu)\n{\n\tx86_platform.hyper.pin_vcpu(cpu);\n}\n\n#else  \n\n#include <linux/of.h>\n\nstatic inline void hypervisor_pin_vcpu(int cpu)\n{\n}\n\nstatic inline bool jailhouse_paravirt(void)\n{\n\treturn of_find_compatible_node(NULL, NULL, \"jailhouse,cell\");\n}\n\n#endif  \n\nstatic inline bool hypervisor_isolated_pci_functions(void)\n{\n\tif (IS_ENABLED(CONFIG_S390))\n\t\treturn true;\n\n\treturn jailhouse_paravirt();\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

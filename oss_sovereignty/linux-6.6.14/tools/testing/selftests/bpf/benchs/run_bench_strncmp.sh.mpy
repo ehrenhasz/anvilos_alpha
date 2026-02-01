@@ -1,0 +1,9 @@
+{
+  "module_name": "run_bench_strncmp.sh",
+  "hash_id": "7f9576f6601ee255ea43e5eeb9191f2220e971c1f7d536671f938a9bff61701b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/benchs/run_bench_strncmp.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nsource ./benchs/run_common.sh\n\nset -eufo pipefail\n\nfor s in 1 8 64 512 2048 4095; do\n\tfor b in no-helper helper; do\n\t\tsummarize ${b}-${s} \"$($RUN_BENCH --cmp-str-len=$s strncmp-${b})\"\n\tdone\ndone\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "jump_label.h",
+  "hash_id": "fcd80f410ef3760b1e744bab6337b7fef4eacdb9acec1acfc802b3973e771f19",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/jump_label.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_JUMP_LABEL_H\n#define _ASM_X86_JUMP_LABEL_H\n\n#define HAVE_JUMP_LABEL_BATCH\n\n#include <asm/asm.h>\n#include <asm/nops.h>\n\n#ifndef __ASSEMBLY__\n\n#include <linux/stringify.h>\n#include <linux/types.h>\n\n#define JUMP_TABLE_ENTRY\t\t\t\t\\\n\t\".pushsection __jump_table,  \\\"aw\\\" \\n\\t\"\t\\\n\t_ASM_ALIGN \"\\n\\t\"\t\t\t\t\\\n\t\".long 1b - . \\n\\t\"\t\t\t\t\\\n\t\".long %l[l_yes] - . \\n\\t\"\t\t\t\\\n\t_ASM_PTR \"%c0 + %c1 - .\\n\\t\"\t\t\t\\\n\t\".popsection \\n\\t\"\n\n#ifdef CONFIG_HAVE_JUMP_LABEL_HACK\n\nstatic __always_inline bool arch_static_branch(struct static_key *key, bool branch)\n{\n\tasm_volatile_goto(\"1:\"\n\t\t\"jmp %l[l_yes] # objtool NOPs this \\n\\t\"\n\t\tJUMP_TABLE_ENTRY\n\t\t: :  \"i\" (key), \"i\" (2 | branch) : : l_yes);\n\n\treturn false;\nl_yes:\n\treturn true;\n}\n\n#else  \n\nstatic __always_inline bool arch_static_branch(struct static_key * const key, const bool branch)\n{\n\tasm_volatile_goto(\"1:\"\n\t\t\".byte \" __stringify(BYTES_NOP5) \"\\n\\t\"\n\t\tJUMP_TABLE_ENTRY\n\t\t: :  \"i\" (key), \"i\" (branch) : : l_yes);\n\n\treturn false;\nl_yes:\n\treturn true;\n}\n\n#endif  \n\nstatic __always_inline bool arch_static_branch_jump(struct static_key * const key, const bool branch)\n{\n\tasm_volatile_goto(\"1:\"\n\t\t\"jmp %l[l_yes]\\n\\t\"\n\t\tJUMP_TABLE_ENTRY\n\t\t: :  \"i\" (key), \"i\" (branch) : : l_yes);\n\n\treturn false;\nl_yes:\n\treturn true;\n}\n\nextern int arch_jump_entry_size(struct jump_entry *entry);\n\n#endif\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

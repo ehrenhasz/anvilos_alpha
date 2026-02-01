@@ -1,0 +1,9 @@
+{
+  "module_name": "timer.h",
+  "hash_id": "93c8138afdc57c02f36f8db0575bbf73c4cb7a3bb8f7da86a2b7ce9ea062f67d",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/timer.h",
+  "human_readable_source": " \n\n#ifndef _SPL_TIMER_H_\n#define\t_SPL_TIMER_H_\n#define\tddi_time_after(a, b) ((a) > (b))\n#define\tddi_time_after64(a, b) ((a) > (b))\n#define\tusleep_range(wakeup, wakeupepsilon)\t\t\t\t   \\\n\tpause_sbt(\"usleep_range\", ustosbt(wakeup), \\\n\tustosbt(wakeupepsilon - wakeup), 0)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

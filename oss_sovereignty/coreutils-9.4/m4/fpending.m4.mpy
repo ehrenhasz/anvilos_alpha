@@ -1,0 +1,9 @@
+{
+  "module_name": "fpending.m4",
+  "hash_id": "395faa94c81fb752d35708093dee8201aab1248456399180d9f424aa68c4656d",
+  "original_prompt": "Ingested from coreutils-9.4/m4/fpending.m4",
+  "human_readable_source": "# serial 23\n\n# Copyright (C) 2000-2001, 2004-2023 Free Software Foundation, Inc.\n# This file is free software; the Free Software Foundation\n# gives unlimited permission to copy and/or distribute it,\n# with or without modifications, as long as this notice is preserved.\n\ndnl From Jim Meyering\ndnl Using code from emacs, based on suggestions from Paul Eggert\ndnl and Ulrich Drepper.\n\ndnl Find out how to determine the number of pending output bytes on a stream.\ndnl glibc (2.1.93 and newer) and Solaris provide __fpending.  On other systems,\ndnl we have to grub around in the (possibly opaque) FILE struct.\n\nAC_DEFUN([gl_FUNC_FPENDING],\n[\n  AC_CHECK_HEADERS_ONCE([stdio_ext.h])\n  fp_headers='\n    #include <stdio.h>\n    #if HAVE_STDIO_EXT_H\n    # include <stdio_ext.h>\n    #endif\n  '\n  AC_CACHE_CHECK([for __fpending], [gl_cv_func___fpending],\n    [\n      AC_LINK_IFELSE(\n        [AC_LANG_PROGRAM([[$fp_headers]],\n           [[return ! __fpending (stdin);]])],\n        [gl_cv_func___fpending=yes],\n        [gl_cv_func___fpending=no])\n    ])\n  if test $gl_cv_func___fpending = yes; then\n    AC_CHECK_DECLS([__fpending], [], [], [$fp_headers])\n  fi\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

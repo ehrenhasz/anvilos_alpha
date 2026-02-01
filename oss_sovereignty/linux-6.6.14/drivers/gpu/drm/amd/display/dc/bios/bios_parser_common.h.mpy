@@ -1,0 +1,9 @@
+{
+  "module_name": "bios_parser_common.h",
+  "hash_id": "2dc37829ccc6f39ea70a852bf69fcf32c0eeb052368e92cfda0f5c9dd7e0f6d8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/bios/bios_parser_common.h",
+  "human_readable_source": " \n\n#ifndef __BIOS_PARSER_COMMON_H__\n#define __BIOS_PARSER_COMMON_H__\n\n#include \"dm_services.h\"\n#include \"ObjectID.h\"\n\nstruct graphics_object_id object_id_from_bios_object_id(uint32_t bios_object_id);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

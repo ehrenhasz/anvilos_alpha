@@ -1,0 +1,9 @@
+{
+  "module_name": "tea6415c.h",
+  "hash_id": "e8c19d20d7b8616e8cbdae7c8137a88715d0535d3b76c2bc2872dee21d60cff2",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/i2c/tea6415c.h",
+  "human_readable_source": " \n#ifndef __INCLUDED_TEA6415C__\n#define __INCLUDED_TEA6415C__\n\n \n\n \n#define TEA6415C_OUTPUT1 18\n#define TEA6415C_OUTPUT2 14\n#define TEA6415C_OUTPUT3 16\n#define TEA6415C_OUTPUT4 17\n#define TEA6415C_OUTPUT5 13\n#define TEA6415C_OUTPUT6 15\n\n \n#define TEA6415C_INPUT1 5\n#define TEA6415C_INPUT2 8\n#define TEA6415C_INPUT3 3\n#define TEA6415C_INPUT4 20\n#define TEA6415C_INPUT5 6\n#define TEA6415C_INPUT6 10\n#define TEA6415C_INPUT7 1\n#define TEA6415C_INPUT8 11\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

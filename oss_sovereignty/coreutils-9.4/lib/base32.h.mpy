@@ -1,0 +1,9 @@
+{
+  "module_name": "base32.h",
+  "hash_id": "a975ce50bdc8da9f1974e096af58e5219daa65413481cb1d6bfb711b11fd2065",
+  "original_prompt": "Ingested from coreutils-9.4/lib/base32.h",
+  "human_readable_source": " \n#if !_GL_CONFIG_H_INCLUDED\n #error \"Please include config.h first.\"\n#endif\n\n \n# include <idx.h>\n\n \n# define BASE32_LENGTH(inlen) ((((inlen) + 4) / 5) * 8)\n\nstruct base32_decode_context\n{\n  int i;\n  char buf[8];\n};\n\nextern bool isbase32 (char ch) _GL_ATTRIBUTE_CONST;\n\nextern void base32_encode (const char *restrict in, idx_t inlen,\n                           char *restrict out, idx_t outlen);\n\nextern idx_t base32_encode_alloc (const char *in, idx_t inlen, char **out);\n\nextern void base32_decode_ctx_init (struct base32_decode_context *ctx);\n\nextern bool base32_decode_ctx (struct base32_decode_context *ctx,\n                               const char *restrict in, idx_t inlen,\n                               char *restrict out, idx_t *outlen);\n\nextern bool base32_decode_alloc_ctx (struct base32_decode_context *ctx,\n                                     const char *in, idx_t inlen,\n                                     char **out, idx_t *outlen);\n\n#define base32_decode(in, inlen, out, outlen) \\\n        base32_decode_ctx (NULL, in, inlen, out, outlen)\n\n#define base32_decode_alloc(in, inlen, out, outlen) \\\n        base32_decode_alloc_ctx (NULL, in, inlen, out, outlen)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

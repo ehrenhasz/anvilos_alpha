@@ -1,0 +1,9 @@
+{
+  "module_name": "error-injection.h",
+  "hash_id": "40a6cdf4673a3107db3f031fb7756e5e21dbd0eb53be6c55f138f42bcdf495d8",
+  "original_prompt": "Ingested from linux-6.6.14/include/asm-generic/error-injection.h",
+  "human_readable_source": " \n#ifndef _ASM_GENERIC_ERROR_INJECTION_H\n#define _ASM_GENERIC_ERROR_INJECTION_H\n\n#if defined(__KERNEL__) && !defined(__ASSEMBLY__)\nenum {\n\tEI_ETYPE_NULL,\t\t \n\tEI_ETYPE_ERRNO,\t\t \n\tEI_ETYPE_ERRNO_NULL,\t \n\tEI_ETYPE_TRUE,\t\t \n};\n\nstruct error_injection_entry {\n\tunsigned long\taddr;\n\tint\t\tetype;\n};\n\nstruct pt_regs;\n\n#ifdef CONFIG_FUNCTION_ERROR_INJECTION\n \n#define ALLOW_ERROR_INJECTION(fname, _etype)\t\t\t\t\\\nstatic struct error_injection_entry __used\t\t\t\t\\\n\t__section(\"_error_injection_whitelist\")\t\t\t\t\\\n\t_eil_addr_##fname = {\t\t\t\t\t\t\\\n\t\t.addr = (unsigned long)fname,\t\t\t\t\\\n\t\t.etype = EI_ETYPE_##_etype,\t\t\t\t\\\n\t}\n\nvoid override_function_with_return(struct pt_regs *regs);\n#else\n#define ALLOW_ERROR_INJECTION(fname, _etype)\n\nstatic inline void override_function_with_return(struct pt_regs *regs) { }\n#endif\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "hvc_udbg.c",
+  "hash_id": "522f90a54681d5e6e3b7223ab1bfc338da31c5cbff9358e1d793bce927339d2d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/tty/hvc/hvc_udbg.c",
+  "human_readable_source": "\n \n\n#include <linux/console.h>\n#include <linux/delay.h>\n#include <linux/err.h>\n#include <linux/init.h>\n#include <linux/moduleparam.h>\n#include <linux/types.h>\n#include <linux/irq.h>\n\n#include <asm/udbg.h>\n\n#include \"hvc_console.h\"\n\nstatic struct hvc_struct *hvc_udbg_dev;\n\nstatic int hvc_udbg_put(uint32_t vtermno, const char *buf, int count)\n{\n\tint i;\n\n\tfor (i = 0; i < count && udbg_putc; i++)\n\t\tudbg_putc(buf[i]);\n\n\treturn i;\n}\n\nstatic int hvc_udbg_get(uint32_t vtermno, char *buf, int count)\n{\n\tint i, c;\n\n\tif (!udbg_getc_poll)\n\t\treturn 0;\n\n\tfor (i = 0; i < count; i++) {\n\t\tif ((c = udbg_getc_poll()) == -1)\n\t\t\tbreak;\n\t\tbuf[i] = c;\n\t}\n\n\treturn i;\n}\n\nstatic const struct hv_ops hvc_udbg_ops = {\n\t.get_chars = hvc_udbg_get,\n\t.put_chars = hvc_udbg_put,\n};\n\nstatic int __init hvc_udbg_init(void)\n{\n\tstruct hvc_struct *hp;\n\n\tif (!udbg_putc)\n\t\treturn -ENODEV;\n\n\tBUG_ON(hvc_udbg_dev);\n\n\thp = hvc_alloc(0, 0, &hvc_udbg_ops, 16);\n\tif (IS_ERR(hp))\n\t\treturn PTR_ERR(hp);\n\n\thvc_udbg_dev = hp;\n\n\treturn 0;\n}\ndevice_initcall(hvc_udbg_init);\n\nstatic int __init hvc_udbg_console_init(void)\n{\n\tif (!udbg_putc)\n\t\treturn -ENODEV;\n\n\thvc_instantiate(0, 0, &hvc_udbg_ops);\n\tadd_preferred_console(\"hvc\", 0, NULL);\n\n\treturn 0;\n}\nconsole_initcall(hvc_udbg_console_init);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_qplane.host.c",
+  "hash_id": "62e476c588c86108afcb855bcceeb0cbc210033cf73d21475722a9f2283650e0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/qplane/qplane_2/ia_css_qplane.host.c",
+  "human_readable_source": "\n \n\n#include \"ia_css_frame.h\"\n#include \"ia_css_types.h\"\n#include \"sh_css_defs.h\"\n#include \"ia_css_debug.h\"\n#include \"assert_support.h\"\n#define IA_CSS_INCLUDE_CONFIGURATIONS\n#include \"ia_css_isp_configs.h\"\n#include \"isp.h\"\n\n#include \"ia_css_qplane.host.h\"\n\nstatic const struct ia_css_qplane_configuration default_config = {\n\t.pipe = (struct sh_css_sp_pipeline *)NULL,\n};\n\nint ia_css_qplane_config(struct sh_css_isp_qplane_isp_config *to,\n\t\t\t const struct ia_css_qplane_configuration  *from,\n\t\t\t unsigned int size)\n{\n\tunsigned int elems_a = ISP_VEC_NELEMS;\n\tint ret;\n\n\tret = ia_css_dma_configure_from_info(&to->port_b, from->info);\n\tif (ret)\n\t\treturn ret;\n\n\tto->width_a_over_b = elems_a / to->port_b.elems;\n\n\t \n\tif (elems_a % to->port_b.elems != 0)\n\t\treturn -EINVAL;\n\n\tto->inout_port_config = from->pipe->inout_port_config;\n\tto->format = from->info->format;\n\n\treturn 0;\n}\n\nint ia_css_qplane_configure(const struct sh_css_sp_pipeline *pipe,\n\t\t\t    const struct ia_css_binary      *binary,\n\t\t\t    const struct ia_css_frame_info  *info)\n{\n\tstruct ia_css_qplane_configuration config = default_config;\n\n\tconfig.pipe = pipe;\n\tconfig.info = info;\n\n\treturn ia_css_configure_qplane(binary, &config);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

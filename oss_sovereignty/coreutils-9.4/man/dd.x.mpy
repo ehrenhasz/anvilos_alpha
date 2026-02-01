@@ -1,0 +1,9 @@
+{
+  "module_name": "dd.x",
+  "hash_id": "cd6ea8274e602ec460e8da79b7ea60e1b0968d28fc3f16658e82c75eb4b7eb4e",
+  "original_prompt": "Ingested from coreutils-9.4/man/dd.x",
+  "human_readable_source": "[NAME]\ndd \\- convert and copy a file\n[DESCRIPTION]\n.\\\" Add any additional description here\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

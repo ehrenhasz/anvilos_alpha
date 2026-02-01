@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_sample.h",
+  "hash_id": "5f33c9502bdc20cef8be077df09f98c62cae8285e517c153fe8d9c24c378adb6",
+  "original_prompt": "Ingested from linux-6.6.14/include/net/tc_act/tc_sample.h",
+  "human_readable_source": " \n#ifndef __NET_TC_SAMPLE_H\n#define __NET_TC_SAMPLE_H\n\n#include <net/act_api.h>\n#include <linux/tc_act/tc_sample.h>\n#include <net/psample.h>\n\nstruct tcf_sample {\n\tstruct tc_action common;\n\tu32 rate;\n\tbool truncate;\n\tu32 trunc_size;\n\tstruct psample_group __rcu *psample_group;\n\tu32 psample_group_num;\n\tstruct list_head tcfm_list;\n};\n#define to_sample(a) ((struct tcf_sample *)a)\n\nstatic inline bool is_tcf_sample(const struct tc_action *a)\n{\n#ifdef CONFIG_NET_CLS_ACT\n\treturn a->ops && a->ops->id == TCA_ID_SAMPLE;\n#else\n\treturn false;\n#endif\n}\n\nstatic inline __u32 tcf_sample_rate(const struct tc_action *a)\n{\n\treturn to_sample(a)->rate;\n}\n\nstatic inline bool tcf_sample_truncate(const struct tc_action *a)\n{\n\treturn to_sample(a)->truncate;\n}\n\nstatic inline int tcf_sample_trunc_size(const struct tc_action *a)\n{\n\treturn to_sample(a)->trunc_size;\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

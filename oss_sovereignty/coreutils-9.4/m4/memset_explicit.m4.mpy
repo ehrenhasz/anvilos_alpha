@@ -1,0 +1,9 @@
+{
+  "module_name": "memset_explicit.m4",
+  "hash_id": "ae7c2626445b6e829f3148d53649a0cd5193594bb730110a7edf1a6584525dd3",
+  "original_prompt": "Ingested from coreutils-9.4/m4/memset_explicit.m4",
+  "human_readable_source": "dnl Copyright 2022-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_MEMSET_EXPLICIT],\n[\n  AC_REQUIRE([gl_STRING_H_DEFAULTS])\n\n  AC_CHECK_FUNCS_ONCE([memset_explicit])\n  if test $ac_cv_func_memset_explicit = no; then\n    HAVE_MEMSET_EXPLICIT=0\n  fi\n])\n\nAC_DEFUN([gl_PREREQ_MEMSET_EXPLICIT],\n[\n  AC_CHECK_FUNCS([explicit_memset])\n  AC_CHECK_FUNCS_ONCE([memset_s])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

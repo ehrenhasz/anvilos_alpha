@@ -1,0 +1,9 @@
+{
+  "module_name": "musb_debug.h",
+  "hash_id": "b6047247764a3b3ad971a202fc1c4d12a572be15647e5c5a5ef56da8aab45aed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/musb/musb_debug.h",
+  "human_readable_source": " \n \n\n#ifndef __MUSB_LINUX_DEBUG_H__\n#define __MUSB_LINUX_DEBUG_H__\n\n#define yprintk(facility, format, args...) \\\n\tdo { printk(facility \"%s %d: \" format , \\\n\t__func__, __LINE__ , ## args); } while (0)\n#define WARNING(fmt, args...) yprintk(KERN_WARNING, fmt, ## args)\n#define INFO(fmt, args...) yprintk(KERN_INFO, fmt, ## args)\n#define ERR(fmt, args...) yprintk(KERN_ERR, fmt, ## args)\n\nvoid musb_dbg(struct musb *musb, const char *fmt, ...);\n\n#ifdef CONFIG_DEBUG_FS\nvoid musb_init_debugfs(struct musb *musb);\nvoid musb_exit_debugfs(struct musb *musb);\n#else\nstatic inline void musb_init_debugfs(struct musb *musb)\n{\n}\nstatic inline void musb_exit_debugfs(struct musb *musb)\n{\n}\n#endif\n\n#endif\t\t\t\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

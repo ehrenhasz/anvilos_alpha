@@ -1,0 +1,9 @@
+{
+  "module_name": "try_cmpxchg",
+  "hash_id": "9fd921ae8de06b43430eba7b993ee5f43cbff30ce7a8dadf08e067f477f32840",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/kerneldoc/try_cmpxchg",
+  "human_readable_source": "cat <<EOF\n/**\n * ${class}${atomicname}() - atomic compare and exchange with ${desc_order} ordering\n * @v: pointer to ${atomic}_t\n * @old: pointer to ${int} value to compare with\n * @new: ${int} value to assign\n *\n * If (@v == @old), atomically updates @v to @new with ${desc_order} ordering.\n * Otherwise, updates @old to the current value of @v.\n *\n * ${desc_noinstr}\n *\n * Return: @true if the exchange occured, @false otherwise.\n */\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

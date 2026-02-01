@@ -1,0 +1,9 @@
+{
+  "module_name": "dcn_calc_auto.h",
+  "hash_id": "15a22c991112d54c79810236b8f717dd1929b187f268ed37efac752efc998402",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/dml/calcs/dcn_calc_auto.h",
+  "human_readable_source": " \n\n#ifndef _DCN_CALC_AUTO_H_\n#define _DCN_CALC_AUTO_H_\n\n#include \"dc.h\"\n#include \"dcn_calcs.h\"\n\nvoid scaler_settings_calculation(struct dcn_bw_internal_vars *v);\nvoid mode_support_and_system_configuration(struct dcn_bw_internal_vars *v);\nvoid display_pipe_configuration(struct dcn_bw_internal_vars *v);\nvoid dispclkdppclkdcfclk_deep_sleep_prefetch_parameters_watermarks_and_performance_calculation(\n\t\tstruct dcn_bw_internal_vars *v);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

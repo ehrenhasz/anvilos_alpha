@@ -1,0 +1,9 @@
+{
+  "module_name": "eventfd.c",
+  "hash_id": "3548d7fd14ec533bddb72fb6d948c2dba1f3b2517c0441086977c01cf7dd275d",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/trace/beauty/eventfd.c",
+  "human_readable_source": "\n#ifndef EFD_SEMAPHORE\n#define EFD_SEMAPHORE\t\t1\n#endif\n\n#ifndef EFD_NONBLOCK\n#define EFD_NONBLOCK\t\t00004000\n#endif\n\n#ifndef EFD_CLOEXEC\n#define EFD_CLOEXEC\t\t02000000\n#endif\n\nstatic size_t syscall_arg__scnprintf_eventfd_flags(char *bf, size_t size, struct syscall_arg *arg)\n{\n\tbool show_prefix = arg->show_string_prefix;\n\tconst char *prefix = \"EFD_\";\n\tint printed = 0, flags = arg->val;\n\n\tif (flags == 0)\n\t\treturn scnprintf(bf, size, \"NONE\");\n#define\tP_FLAG(n) \\\n\tif (flags & EFD_##n) { \\\n\t\tprinted += scnprintf(bf + printed, size - printed, \"%s%s%s\", printed ? \"|\" : \"\", show_prefix ? prefix : \"\", #n); \\\n\t\tflags &= ~EFD_##n; \\\n\t}\n\n\tP_FLAG(SEMAPHORE);\n\tP_FLAG(CLOEXEC);\n\tP_FLAG(NONBLOCK);\n#undef P_FLAG\n\n\tif (flags)\n\t\tprinted += scnprintf(bf + printed, size - printed, \"%s%#x\", printed ? \"|\" : \"\", flags);\n\n\treturn printed;\n}\n\n#define SCA_EFD_FLAGS syscall_arg__scnprintf_eventfd_flags\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

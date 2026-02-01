@@ -1,0 +1,9 @@
+{
+  "module_name": "mei_phy.h",
+  "hash_id": "fe44187b0a644d2feeab18df9a7cf6c8813eff957d0a57b42a76427e3fb33793",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/mei_phy.h",
+  "human_readable_source": " \n#ifndef __LOCAL_MEI_PHY_H_\n#define __LOCAL_MEI_PHY_H_\n\n#include <linux/mei_cl_bus.h>\n#include <net/nfc/hci.h>\n#include <linux/uuid.h>\n\n#define MEI_NFC_UUID UUID_LE(0x0bb17a78, 0x2a8e, 0x4c50, \\\n\t\t0x94, 0xd4, 0x50, 0x26, 0x67, 0x23, 0x77, 0x5c)\n#define MEI_NFC_HEADER_SIZE 10\n#define MEI_NFC_MAX_HCI_PAYLOAD 300\n\n \nstruct nfc_mei_phy {\n\tstruct mei_cl_device *cldev;\n\tstruct nfc_hci_dev *hdev;\n\n\twait_queue_head_t send_wq;\n\tu8 fw_ivn;\n\tu8 vendor_id;\n\tu8 radio_type;\n\tu8 reserved;\n\n\tu16 req_id;\n\tu16 recv_req_id;\n\n\tint powered;\n\tint hard_fault;\n};\n\nextern const struct nfc_phy_ops mei_phy_ops;\n\nstruct nfc_mei_phy *nfc_mei_phy_alloc(struct mei_cl_device *device);\nvoid nfc_mei_phy_free(struct nfc_mei_phy *phy);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_output.h",
+  "hash_id": "1d3d2dcdfeb07e8aed1b732144a525c100018be2702215baedf25c2723a4cec3",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/trace/trace_output.h",
+  "human_readable_source": "\n#ifndef __TRACE_EVENTS_H\n#define __TRACE_EVENTS_H\n\n#include <linux/trace_seq.h>\n#include \"trace.h\"\n\nextern enum print_line_t\ntrace_print_bputs_msg_only(struct trace_iterator *iter);\nextern enum print_line_t\ntrace_print_bprintk_msg_only(struct trace_iterator *iter);\nextern enum print_line_t\ntrace_print_printk_msg_only(struct trace_iterator *iter);\n\nextern int\nseq_print_ip_sym(struct trace_seq *s, unsigned long ip,\n\t\tunsigned long sym_flags);\n\nextern void trace_seq_print_sym(struct trace_seq *s, unsigned long address, bool offset);\nextern int trace_print_context(struct trace_iterator *iter);\nextern int trace_print_lat_context(struct trace_iterator *iter);\nextern enum print_line_t print_event_fields(struct trace_iterator *iter,\n\t\t\t\t\t    struct trace_event *event);\n\nextern void trace_event_read_lock(void);\nextern void trace_event_read_unlock(void);\nextern struct trace_event *ftrace_find_event(int type);\n\nextern enum print_line_t trace_nop_print(struct trace_iterator *iter,\n\t\t\t\t\t int flags, struct trace_event *event);\nextern int\ntrace_print_lat_fmt(struct trace_seq *s, struct trace_entry *entry);\n\n \nextern int __unregister_trace_event(struct trace_event *event);\nextern struct rw_semaphore trace_event_sem;\n\n#define SEQ_PUT_FIELD(s, x)\t\t\t\t\\\n\ttrace_seq_putmem(s, &(x), sizeof(x))\n\n#define SEQ_PUT_HEX_FIELD(s, x)\t\t\t\t\\\n\ttrace_seq_putmem_hex(s, &(x), sizeof(x))\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

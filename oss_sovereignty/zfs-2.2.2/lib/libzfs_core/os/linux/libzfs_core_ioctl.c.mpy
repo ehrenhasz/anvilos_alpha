@@ -1,0 +1,9 @@
+{
+  "module_name": "libzfs_core_ioctl.c",
+  "hash_id": "ada67a4c710c7ad53ea150088742c367b654a86cc0af247e3ece78123c5b356b",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libzfs_core/os/linux/libzfs_core_ioctl.c",
+  "human_readable_source": " \n#include <sys/types.h>\n#include <sys/param.h>\n#include <sys/zfs_ioctl.h>\n#include <libzfs_core.h>\n\nint\nlzc_ioctl_fd(int fd, unsigned long request, zfs_cmd_t *zc)\n{\n\treturn (ioctl(fd, request, zc));\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

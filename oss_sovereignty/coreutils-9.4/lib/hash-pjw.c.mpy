@@ -1,0 +1,9 @@
+{
+  "module_name": "hash-pjw.c",
+  "hash_id": "72ba74fe5ae485e049e655587c742d87dcbab6a65b03a7edc3f3e841fe26b8f2",
+  "original_prompt": "Ingested from coreutils-9.4/lib/hash-pjw.c",
+  "human_readable_source": "/* hash-pjw.c -- compute a hash value from a NUL-terminated string.\n\n   Copyright (C) 2001, 2003, 2006, 2009-2023 Free Software Foundation, Inc.\n\n   This file is free software: you can redistribute it and/or modify\n   it under the terms of the GNU Lesser General Public License as\n   published by the Free Software Foundation; either version 2.1 of the\n   License, or (at your option) any later version.\n\n   This file is distributed in the hope that it will be useful,\n   but WITHOUT ANY WARRANTY; without even the implied warranty of\n   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n   GNU Lesser General Public License for more details.\n\n   You should have received a copy of the GNU Lesser General Public License\n   along with this program.  If not, see <https:\n\n#include <config.h>\n\n#include \"hash-pjw.h\"\n\n#include <limits.h>\n\n#define SIZE_BITS (sizeof (size_t) * CHAR_BIT)\n\n/* A hash function for NUL-terminated char* strings using\n   the method described by Bruno Haible.\n   See https:\n\nsize_t\nhash_pjw (const void *x, size_t tablesize)\n{\n  const char *s;\n  size_t h = 0;\n\n  for (s = x; *s; s++)\n    h = *s + ((h << 9) | (h >> (SIZE_BITS - 9)));\n\n  return h % tablesize;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

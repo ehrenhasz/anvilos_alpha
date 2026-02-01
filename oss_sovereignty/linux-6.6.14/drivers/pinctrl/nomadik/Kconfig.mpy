@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "ba312949b77358915a964873fc0eb14b44dda6e976788adc7b059760c4b5685a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pinctrl/nomadik/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nif ARCH_U8500\n\nconfig PINCTRL_ABX500\n\tbool \"ST-Ericsson ABx500 family Mixed Signal Circuit gpio functions\"\n\tdepends on AB8500_CORE\n\tselect GENERIC_PINCONF\n\thelp\n\t  Select this to enable the ABx500 family IC GPIO driver\n\nconfig PINCTRL_AB8500\n\tbool \"AB8500 pin controller driver\"\n\tdepends on PINCTRL_ABX500 && ARCH_U8500\n\nconfig PINCTRL_AB8505\n\tbool \"AB8505 pin controller driver\"\n\tdepends on PINCTRL_ABX500 && ARCH_U8500\n\nendif\n\nif (ARCH_U8500 || ARCH_NOMADIK)\n\nconfig PINCTRL_NOMADIK\n\tbool \"Nomadik pin controller driver\"\n\tdepends on OF && GPIOLIB\n\tselect PINMUX\n\tselect PINCONF\n\tselect OF_GPIO\n\tselect GPIOLIB_IRQCHIP\n\nconfig PINCTRL_STN8815\n\tbool \"STN8815 pin controller driver\"\n\tdepends on PINCTRL_NOMADIK && ARCH_NOMADIK\n\nconfig PINCTRL_DB8500\n\tbool \"DB8500 pin controller driver\"\n\tdepends on PINCTRL_NOMADIK && ARCH_U8500\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

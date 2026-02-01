@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_vprintk.c",
+  "hash_id": "4a13efff44c68d9d270abe0cc9221efe29546d650c7c70abebf44cffd6e4aa36",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/trace_vprintk.c",
+  "human_readable_source": "\n \n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n#include \"bpf_misc.h\"\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nint null_data_vprintk_ret = 0;\nint trace_vprintk_ret = 0;\nint trace_vprintk_ran = 0;\n\nSEC(\"fentry/\" SYS_PREFIX \"sys_nanosleep\")\nint sys_enter(void *ctx)\n{\n\tstatic const char one[] = \"1\";\n\tstatic const char three[] = \"3\";\n\tstatic const char five[] = \"5\";\n\tstatic const char seven[] = \"7\";\n\tstatic const char nine[] = \"9\";\n\tstatic const char f[] = \"%pS\\n\";\n\n\t \n\tbpf_printk(\"\\t\");\n\n\ttrace_vprintk_ret = __bpf_vprintk(\"%s,%d,%s,%d,%s,%d,%s,%d,%s,%d %d\\n\",\n\t\tone, 2, three, 4, five, 6, seven, 8, nine, 10, ++trace_vprintk_ran);\n\n\t \n\tnull_data_vprintk_ret = bpf_trace_vprintk(f, sizeof(f), NULL, 0);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

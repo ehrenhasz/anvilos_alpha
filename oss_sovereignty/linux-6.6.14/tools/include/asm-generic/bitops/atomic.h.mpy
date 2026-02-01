@@ -1,0 +1,9 @@
+{
+  "module_name": "atomic.h",
+  "hash_id": "b32490ad57f16fa62421eb605bca20237a444288ae78a7726e1e2c3a874f3094",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/asm-generic/bitops/atomic.h",
+  "human_readable_source": " \n#ifndef _TOOLS_LINUX_ASM_GENERIC_BITOPS_ATOMIC_H_\n#define _TOOLS_LINUX_ASM_GENERIC_BITOPS_ATOMIC_H_\n\n#include <asm/types.h>\n#include <asm/bitsperlong.h>\n\n \n#define set_bit test_and_set_bit\n#define clear_bit test_and_clear_bit\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

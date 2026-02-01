@@ -1,0 +1,9 @@
+{
+  "module_name": "pvrusb2-sysfs.h",
+  "hash_id": "10ddacdaeb620d6cf66aef6b848c871bfbc71cfa9726bc042a29c53f5b59c053",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/pvrusb2/pvrusb2-sysfs.h",
+  "human_readable_source": " \n \n#ifndef __PVRUSB2_SYSFS_H\n#define __PVRUSB2_SYSFS_H\n\n#include <linux/list.h>\n#include <linux/sysfs.h>\n#include \"pvrusb2-context.h\"\n\n#ifdef CONFIG_VIDEO_PVRUSB2_SYSFS\nvoid pvr2_sysfs_class_create(void);\nvoid pvr2_sysfs_class_destroy(void);\nvoid pvr2_sysfs_create(struct pvr2_context *mp);\n#else\nstatic inline void pvr2_sysfs_class_create(void) { }\nstatic inline void pvr2_sysfs_class_destroy(void) { }\nstatic inline void pvr2_sysfs_create(struct pvr2_context *mp) { }\n#endif\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bebob_terratec.c",
+  "hash_id": "0082b801882ad88f6da64560d818257839196d0b364597540840ad21c3daa682",
+  "original_prompt": "Ingested from linux-6.6.14/sound/firewire/bebob/bebob_terratec.c",
+  "human_readable_source": "\n \n\n#include \"./bebob.h\"\n\nstatic const enum snd_bebob_clock_type phase88_rack_clk_src_types[] = {\n\tSND_BEBOB_CLOCK_TYPE_INTERNAL,\n\tSND_BEBOB_CLOCK_TYPE_EXTERNAL,\t \n\tSND_BEBOB_CLOCK_TYPE_EXTERNAL,\t \n};\nstatic int\nphase88_rack_clk_src_get(struct snd_bebob *bebob, unsigned int *id)\n{\n\tunsigned int enable_ext, enable_word;\n\tint err;\n\n\terr = avc_audio_get_selector(bebob->unit, 0, 9, &enable_ext);\n\tif (err < 0)\n\t\tgoto end;\n\terr = avc_audio_get_selector(bebob->unit, 0, 8, &enable_word);\n\tif (err < 0)\n\t\tgoto end;\n\n\tif (enable_ext == 0)\n\t\t*id = 0;\n\telse if (enable_word == 0)\n\t\t*id = 1;\n\telse\n\t\t*id = 2;\nend:\n\treturn err;\n}\n\nstatic const struct snd_bebob_rate_spec phase_series_rate_spec = {\n\t.get\t= &snd_bebob_stream_get_rate,\n\t.set\t= &snd_bebob_stream_set_rate,\n};\n\n \nstatic const struct snd_bebob_clock_spec phase88_rack_clk = {\n\t.num\t= ARRAY_SIZE(phase88_rack_clk_src_types),\n\t.types\t= phase88_rack_clk_src_types,\n\t.get\t= &phase88_rack_clk_src_get,\n};\nconst struct snd_bebob_spec phase88_rack_spec = {\n\t.clock\t= &phase88_rack_clk,\n\t.rate\t= &phase_series_rate_spec,\n\t.meter\t= NULL\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

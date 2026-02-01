@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "f56dcb16709a587e6f549e5e811e8b2a8c2323c6ac26bdd407ac436449d592e7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/virtio/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_VIRTIO_GPU\n\ttristate \"Virtio GPU driver\"\n\tdepends on DRM && VIRTIO_MENU && MMU\n\tselect VIRTIO\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_SHMEM_HELPER\n\tselect VIRTIO_DMA_SHARED_BUFFER\n\thelp\n\t   This is the virtual GPU driver for virtio.  It can be used with\n\t   QEMU based VMMs (like KVM or Xen).\n\n\t   If unsure say M.\n\nconfig DRM_VIRTIO_GPU_KMS\n\tbool \"Virtio GPU driver modesetting support\"\n\tdepends on DRM_VIRTIO_GPU\n\tdefault y\n\thelp\n\t   Enable modesetting support for virtio GPU driver.  This can be\n\t   disabled in cases where only \"headless\" usage of the GPU is\n\t   required.\n\n\t   If unsure, say Y.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

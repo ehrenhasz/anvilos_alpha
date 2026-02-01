@@ -1,0 +1,9 @@
+{
+  "module_name": "vchiq_connected.c",
+  "hash_id": "3d1863de0d3cf9b3768bda13c62fbb877e095b2cab3711f0954edc7e36ac5814",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_connected.c",
+  "human_readable_source": "\n \n\n#include \"vchiq_connected.h\"\n#include \"vchiq_core.h\"\n#include <linux/module.h>\n#include <linux/mutex.h>\n\n#define  MAX_CALLBACKS  10\n\nstatic   int                        g_connected;\nstatic   int                        g_num_deferred_callbacks;\nstatic   void (*g_deferred_callback[MAX_CALLBACKS])(void);\nstatic   int                        g_once_init;\nstatic   DEFINE_MUTEX(g_connected_mutex);\n\n \nstatic void connected_init(void)\n{\n\tif (!g_once_init)\n\t\tg_once_init = 1;\n}\n\n \nvoid vchiq_add_connected_callback(void (*callback)(void))\n{\n\tconnected_init();\n\n\tif (mutex_lock_killable(&g_connected_mutex))\n\t\treturn;\n\n\tif (g_connected) {\n\t\t \n\t\tcallback();\n\t} else {\n\t\tif (g_num_deferred_callbacks >= MAX_CALLBACKS) {\n\t\t\tvchiq_log_error(vchiq_core_log_level,\n\t\t\t\t\t\"There already %d callback registered - please increase MAX_CALLBACKS\",\n\t\t\t\t\tg_num_deferred_callbacks);\n\t\t} else {\n\t\t\tg_deferred_callback[g_num_deferred_callbacks] =\n\t\t\t\tcallback;\n\t\t\tg_num_deferred_callbacks++;\n\t\t}\n\t}\n\tmutex_unlock(&g_connected_mutex);\n}\nEXPORT_SYMBOL(vchiq_add_connected_callback);\n\n \nvoid vchiq_call_connected_callbacks(void)\n{\n\tint i;\n\n\tconnected_init();\n\n\tif (mutex_lock_killable(&g_connected_mutex))\n\t\treturn;\n\n\tfor (i = 0; i <  g_num_deferred_callbacks; i++)\n\t\tg_deferred_callback[i]();\n\n\tg_num_deferred_callbacks = 0;\n\tg_connected = 1;\n\tmutex_unlock(&g_connected_mutex);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

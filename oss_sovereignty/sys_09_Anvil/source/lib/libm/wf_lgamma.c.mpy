@@ -1,0 +1,9 @@
+{
+  "module_name": "wf_lgamma.c",
+  "hash_id": "4b515c4414fbfeaf3070eb88bda8fd203a3674c76b0fa361d326e3347519eee7",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/wf_lgamma.c",
+  "human_readable_source": " \n\n \n\n \n\n#include \"fdlibm.h\"\n#define _IEEE_LIBM 1\n\n#ifdef __STDC__\n\tfloat lgammaf(float x)\n#else\n\tfloat lgammaf(x)\n\tfloat x;\n#endif\n{\n#ifdef _IEEE_LIBM\n        int sign;\n\treturn __ieee754_lgammaf_r(x,&sign);\n#else\n        float y;\n\tstruct exception exc;\n        y = __ieee754_lgammaf_r(x,&(_REENT_SIGNGAM(_REENT)));\n        if(_LIB_VERSION == _IEEE_) return y;\n        if(!finitef(y)&&finitef(x)) {\n#ifndef HUGE_VAL \n#define HUGE_VAL inf\n\t    double inf = 0.0;\n\n\t    SET_HIGH_WORD(inf,0x7ff00000);\t \n#endif\n\t    exc.name = \"lgammaf\";\n\t    exc.err = 0;\n\t    exc.arg1 = exc.arg2 = (double)x;\n            if (_LIB_VERSION == _SVID_)\n               exc.retval = HUGE;\n            else\n               exc.retval = HUGE_VAL;\n\t    if(floorf(x)==x&&x<=(float)0.0) {\n\t\t \n\t\texc.type = SING;\n\t\tif (_LIB_VERSION == _POSIX_)\n\t\t   errno = EDOM;\n\t\telse if (!matherr(&exc)) {\n\t\t   errno = EDOM;\n\t\t}\n\n            } else {\n\t\t \n\t\texc.type = OVERFLOW;\n                if (_LIB_VERSION == _POSIX_)\n\t\t   errno = ERANGE;\n                else if (!matherr(&exc)) {\n                   errno = ERANGE;\n\t\t}\n            }\n\t    if (exc.err != 0)\n\t       errno = exc.err;\n            return (float)exc.retval; \n        } else\n            return y;\n#endif\n}             \n\n#ifdef _DOUBLE_IS_32BITS\n\n#ifdef __STDC__\n\tdouble lgamma(double x)\n#else\n\tdouble lgamma(x)\n\tdouble x;\n#endif\n{\n\treturn (double) lgammaf((float) x);\n}\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "54eb74c9047fdf367a17f4db3942b715f2076410c0af882d65c77c901c6c9cff",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/gma500/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_GMA500\n\ttristate \"Intel GMA500/600/3600/3650 KMS Framebuffer\"\n\tdepends on DRM && PCI && X86 && MMU\n\tselect DRM_KMS_HELPER\n\tselect FB_IOMEM_HELPERS if DRM_FBDEV_EMULATION\n\tselect I2C\n\tselect I2C_ALGOBIT\n\t# GMA500 depends on ACPI_VIDEO when ACPI is enabled, just like i915\n\tselect ACPI_VIDEO if ACPI\n\tselect BACKLIGHT_CLASS_DEVICE if ACPI\n\tselect INPUT if ACPI\n\tselect X86_PLATFORM_DEVICES if ACPI\n\tselect ACPI_WMI if ACPI\n\thelp\n\t  Say yes for an experimental 2D KMS framebuffer driver for the\n\t  Intel GMA500 (Poulsbo), Intel GMA600 (Moorestown/Oak Trail) and\n\t  Intel GMA3600/3650 (Cedar Trail).\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

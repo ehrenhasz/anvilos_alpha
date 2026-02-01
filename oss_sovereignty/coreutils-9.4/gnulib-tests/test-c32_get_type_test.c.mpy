@@ -1,0 +1,9 @@
+{
+  "module_name": "test-c32_get_type_test.c",
+  "hash_id": "77510dce61a6d151ff78feccc7b106acf6a027534fb5b32b8cedcd0efb5d2c64",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-c32_get_type_test.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <uchar.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (c32_get_type_test, c32_type_test_t, (const char *));\n\n#include \"macros.h\"\n\nint\nmain (int argc, char *argv[])\n{\n  c32_type_test_t desc;\n\n  desc = c32_get_type_test (\"any\");\n  ASSERT (desc == (c32_type_test_t) 0);\n\n  desc = c32_get_type_test (\"blank\");\n  ASSERT (desc != (c32_type_test_t) 0);\n\n  desc = c32_get_type_test (\"space\");\n  ASSERT (desc != (c32_type_test_t) 0);\n\n  desc = c32_get_type_test (\"punct\");\n  ASSERT (desc != (c32_type_test_t) 0);\n\n  desc = c32_get_type_test (\"lower\");\n  ASSERT (desc != (c32_type_test_t) 0);\n\n  desc = c32_get_type_test (\"upper\");\n  ASSERT (desc != (c32_type_test_t) 0);\n\n  desc = c32_get_type_test (\"alpha\");\n  ASSERT (desc != (c32_type_test_t) 0);\n\n  desc = c32_get_type_test (\"digit\");\n  ASSERT (desc != (c32_type_test_t) 0);\n\n  desc = c32_get_type_test (\"xdigit\");\n  ASSERT (desc != (c32_type_test_t) 0);\n\n  desc = c32_get_type_test (\"alnum\");\n  ASSERT (desc != (c32_type_test_t) 0);\n\n  desc = c32_get_type_test (\"cntrl\");\n  ASSERT (desc != (c32_type_test_t) 0);\n\n  desc = c32_get_type_test (\"graph\");\n  ASSERT (desc != (c32_type_test_t) 0);\n\n  desc = c32_get_type_test (\"print\");\n  ASSERT (desc != (c32_type_test_t) 0);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

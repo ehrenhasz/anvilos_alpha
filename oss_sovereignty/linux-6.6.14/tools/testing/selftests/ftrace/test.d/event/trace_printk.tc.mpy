@@ -1,0 +1,9 @@
+{
+  "module_name": "trace_printk.tc",
+  "hash_id": "8606c7aceada0730c873674bc355fa3ea96a855015480372016d4c3439772160",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/event/trace_printk.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Test trace_printk from module\n\nrmmod trace-printk ||:\nif ! modprobe trace-printk ; then\n  echo \"No trace-printk sample module - please make CONFIG_SAMPLE_TRACE_PRINTK=m\"\n  exit_unresolved;\nfi\n\necho \"Waiting for irq work\"\nsleep 1\n\ngrep -q \": This .* trace_bputs\" trace\ngrep -q \": This .* trace_puts\" trace\ngrep -q \": This .* trace_bprintk\" trace\ngrep -q \": This .* trace_printk\" trace\n\ngrep -q \": (irq) .* trace_bputs\" trace\ngrep -q \": (irq) .* trace_puts\" trace\ngrep -q \": (irq) .* trace_bprintk\" trace\ngrep -q \": (irq) .* trace_printk\" trace\n\ngrep -q \"This is a %s that will use trace_bprintk\" printk_formats\ngrep -q \"(irq) This is a static string that will use trace_bputs\" printk_formats\n\nrmmod trace-printk ||:\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

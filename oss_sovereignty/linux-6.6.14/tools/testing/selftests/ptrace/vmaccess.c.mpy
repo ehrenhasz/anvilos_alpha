@@ -1,0 +1,9 @@
+{
+  "module_name": "vmaccess.c",
+  "hash_id": "c94aeaec7a028d84798bc9360d174ddc7ce944e90932617ce15c0e24b4b0e703",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ptrace/vmaccess.c",
+  "human_readable_source": "\n \n\n#include \"../kselftest_harness.h\"\n#include <stdio.h>\n#include <fcntl.h>\n#include <pthread.h>\n#include <signal.h>\n#include <unistd.h>\n#include <sys/ptrace.h>\n\nstatic void *thread(void *arg)\n{\n\tptrace(PTRACE_TRACEME, 0, 0L, 0L);\n\treturn NULL;\n}\n\nTEST(vmaccess)\n{\n\tint f, pid = fork();\n\tchar mm[64];\n\n\tif (!pid) {\n\t\tpthread_t pt;\n\n\t\tpthread_create(&pt, NULL, thread, NULL);\n\t\tpthread_join(pt, NULL);\n\t\texeclp(\"true\", \"true\", NULL);\n\t}\n\n\tsleep(1);\n\tsprintf(mm, \"/proc/%d/mem\", pid);\n\tf = open(mm, O_RDONLY);\n\tASSERT_GE(f, 0);\n\tclose(f);\n\tf = kill(pid, SIGCONT);\n\tASSERT_EQ(f, 0);\n}\n\nTEST(attach)\n{\n\tint s, k, pid = fork();\n\n\tif (!pid) {\n\t\tpthread_t pt;\n\n\t\tpthread_create(&pt, NULL, thread, NULL);\n\t\tpthread_join(pt, NULL);\n\t\texeclp(\"sleep\", \"sleep\", \"2\", NULL);\n\t}\n\n\tsleep(1);\n\tk = ptrace(PTRACE_ATTACH, pid, 0L, 0L);\n\tASSERT_EQ(errno, EAGAIN);\n\tASSERT_EQ(k, -1);\n\tk = waitpid(-1, &s, WNOHANG);\n\tASSERT_NE(k, -1);\n\tASSERT_NE(k, 0);\n\tASSERT_NE(k, pid);\n\tASSERT_EQ(WIFEXITED(s), 1);\n\tASSERT_EQ(WEXITSTATUS(s), 0);\n\tsleep(1);\n\tk = ptrace(PTRACE_ATTACH, pid, 0L, 0L);\n\tASSERT_EQ(k, 0);\n\tk = waitpid(-1, &s, 0);\n\tASSERT_EQ(k, pid);\n\tASSERT_EQ(WIFSTOPPED(s), 1);\n\tASSERT_EQ(WSTOPSIG(s), SIGSTOP);\n\tk = ptrace(PTRACE_DETACH, pid, 0L, 0L);\n\tASSERT_EQ(k, 0);\n\tk = waitpid(-1, &s, 0);\n\tASSERT_EQ(k, pid);\n\tASSERT_EQ(WIFEXITED(s), 1);\n\tASSERT_EQ(WEXITSTATUS(s), 0);\n\tk = waitpid(-1, NULL, 0);\n\tASSERT_EQ(k, -1);\n\tASSERT_EQ(errno, ECHILD);\n}\n\nTEST_HARNESS_MAIN\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

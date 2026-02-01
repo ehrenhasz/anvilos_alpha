@@ -1,0 +1,9 @@
+{
+  "module_name": "nouveau_exec.h",
+  "hash_id": "e65a8bf966e40b83d72b039bdb364e085241f8f80c56a84bd339fefca88f8ce8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nouveau_exec.h",
+  "human_readable_source": " \n\n#ifndef __NOUVEAU_EXEC_H__\n#define __NOUVEAU_EXEC_H__\n\n#include <drm/drm_exec.h>\n\n#include \"nouveau_drv.h\"\n#include \"nouveau_sched.h\"\n\nstruct nouveau_exec_job_args {\n\tstruct drm_file *file_priv;\n\tstruct nouveau_sched_entity *sched_entity;\n\n\tstruct drm_exec exec;\n\tstruct nouveau_channel *chan;\n\n\tstruct {\n\t\tstruct drm_nouveau_sync *s;\n\t\tu32 count;\n\t} in_sync;\n\n\tstruct {\n\t\tstruct drm_nouveau_sync *s;\n\t\tu32 count;\n\t} out_sync;\n\n\tstruct {\n\t\tstruct drm_nouveau_exec_push *s;\n\t\tu32 count;\n\t} push;\n};\n\nstruct nouveau_exec_job {\n\tstruct nouveau_job base;\n\tstruct nouveau_fence *fence;\n\tstruct nouveau_channel *chan;\n\n\tstruct {\n\t\tstruct drm_nouveau_exec_push *s;\n\t\tu32 count;\n\t} push;\n};\n\n#define to_nouveau_exec_job(job)\t\t\\\n\t\tcontainer_of((job), struct nouveau_exec_job, base)\n\nint nouveau_exec_job_init(struct nouveau_exec_job **job,\n\t\t\t  struct nouveau_exec_job_args *args);\n\nint nouveau_exec_ioctl_exec(struct drm_device *dev, void *data,\n\t\t\t    struct drm_file *file_priv);\n\nstatic inline unsigned int\nnouveau_exec_push_max_from_ib_max(int ib_max)\n{\n\t \n\treturn ib_max > 1 ? ib_max / 2 - 1 : 0;\n}\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

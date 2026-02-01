@@ -1,0 +1,9 @@
+{
+  "module_name": "crc32hash.c",
+  "hash_id": "7dedbba49d1f83ad4c297839cf81939b71ee3d17a216a9fbcae4f8a7dfa58e6f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/pcmcia/crc32hash.c",
+  "human_readable_source": "\n \n \n\n#include <string.h>\n#include <stdio.h>\n#include <ctype.h>\n#include <stdlib.h>\n\nstatic unsigned int crc32(unsigned char const *p, unsigned int len)\n{\n\tint i;\n\tunsigned int crc = 0;\n\twhile (len--) {\n\t\tcrc ^= *p++;\n\t\tfor (i = 0; i < 8; i++)\n\t\t\tcrc = (crc >> 1) ^ ((crc & 1) ? 0xedb88320 : 0);\n\t}\n\treturn crc;\n}\n\nint main(int argc, char **argv) {\n\tunsigned int result;\n\tif (argc != 2) {\n\t\tprintf(\"no string passed as argument\\n\");\n\t\treturn -1;\n\t}\n\tresult = crc32((unsigned char const *)argv[1], strlen(argv[1]));\n\tprintf(\"0x%x\\n\", result);\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "timecounter.c",
+  "hash_id": "ff37b417e23eea1fd271859eefce2a0d88f6e9b0601dd140f9a55535249e9e5c",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/time/timecounter.c",
+  "human_readable_source": "\n \n#include <linux/export.h>\n#include <linux/timecounter.h>\n\nvoid timecounter_init(struct timecounter *tc,\n\t\t      const struct cyclecounter *cc,\n\t\t      u64 start_tstamp)\n{\n\ttc->cc = cc;\n\ttc->cycle_last = cc->read(cc);\n\ttc->nsec = start_tstamp;\n\ttc->mask = (1ULL << cc->shift) - 1;\n\ttc->frac = 0;\n}\nEXPORT_SYMBOL_GPL(timecounter_init);\n\n \nstatic u64 timecounter_read_delta(struct timecounter *tc)\n{\n\tu64 cycle_now, cycle_delta;\n\tu64 ns_offset;\n\n\t \n\tcycle_now = tc->cc->read(tc->cc);\n\n\t \n\tcycle_delta = (cycle_now - tc->cycle_last) & tc->cc->mask;\n\n\t \n\tns_offset = cyclecounter_cyc2ns(tc->cc, cycle_delta,\n\t\t\t\t\ttc->mask, &tc->frac);\n\n\t \n\ttc->cycle_last = cycle_now;\n\n\treturn ns_offset;\n}\n\nu64 timecounter_read(struct timecounter *tc)\n{\n\tu64 nsec;\n\n\t \n\tnsec = timecounter_read_delta(tc);\n\tnsec += tc->nsec;\n\ttc->nsec = nsec;\n\n\treturn nsec;\n}\nEXPORT_SYMBOL_GPL(timecounter_read);\n\n \nstatic u64 cc_cyc2ns_backwards(const struct cyclecounter *cc,\n\t\t\t       u64 cycles, u64 mask, u64 frac)\n{\n\tu64 ns = (u64) cycles;\n\n\tns = ((ns * cc->mult) - frac) >> cc->shift;\n\n\treturn ns;\n}\n\nu64 timecounter_cyc2time(const struct timecounter *tc,\n\t\t\t u64 cycle_tstamp)\n{\n\tu64 delta = (cycle_tstamp - tc->cycle_last) & tc->cc->mask;\n\tu64 nsec = tc->nsec, frac = tc->frac;\n\n\t \n\tif (delta > tc->cc->mask / 2) {\n\t\tdelta = (tc->cycle_last - cycle_tstamp) & tc->cc->mask;\n\t\tnsec -= cc_cyc2ns_backwards(tc->cc, delta, tc->mask, frac);\n\t} else {\n\t\tnsec += cyclecounter_cyc2ns(tc->cc, delta, tc->mask, &frac);\n\t}\n\n\treturn nsec;\n}\nEXPORT_SYMBOL_GPL(timecounter_cyc2time);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "key.h",
+  "hash_id": "a218d6cc326f27fac91a586b680ba6ac0726da7f1e0a76635b8b245d505dd6b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/vt6655/key.h",
+  "human_readable_source": " \n \n\n#ifndef __KEY_H__\n#define __KEY_H__\n\n#include <net/mac80211.h>\n\n \n#define MAX_GROUP_KEY       4\n#define MAX_KEY_TABLE       11\n#define MAX_KEY_LEN         32\n#define AES_KEY_LEN         16\n\n#define AUTHENTICATOR_KEY   0x10000000\n#define USE_KEYRSC          0x20000000\n#define PAIRWISE_KEY        0x40000000\n#define TRANSMIT_KEY        0x80000000\n\n#define GROUP_KEY           0x00000000\n\n#define KEY_CTL_WEP         0x00\n#define KEY_CTL_NONE        0x01\n#define KEY_CTL_TKIP        0x02\n#define KEY_CTL_CCMP        0x03\n#define KEY_CTL_INVALID     0xFF\n\n#define VNT_KEY_DEFAULTKEY\t0x1\n#define VNT_KEY_GROUP_ADDRESS\t0x2\n#define VNT_KEY_ALLGROUP\t0x4\n#define VNT_KEY_GROUP\t\t0x40\n#define VNT_KEY_PAIRWISE\t0x00\n#define VNT_KEY_ONFLY\t\t0x8000\n#define VNT_KEY_ONFLY_ALL\t0x4000\n\nstruct vnt_private;\n\nint vnt_set_keys(struct ieee80211_hw *hw, struct ieee80211_sta *sta,\n\t\t struct ieee80211_vif *vif, struct ieee80211_key_conf *key);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

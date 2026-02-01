@@ -1,0 +1,9 @@
+{
+  "module_name": "common.h",
+  "hash_id": "8b7948e430894424c09f70997ebf5977bfa37856a7aed96151525c67e203f682",
+  "original_prompt": "Ingested from linux-6.6.14/net/atm/common.h",
+  "human_readable_source": " \n \n\n \n\n\n#ifndef NET_ATM_COMMON_H\n#define NET_ATM_COMMON_H\n\n#include <linux/net.h>\n#include <linux/poll.h>  \n\n\nint vcc_create(struct net *net, struct socket *sock, int protocol, int family, int kern);\nint vcc_release(struct socket *sock);\nint vcc_connect(struct socket *sock, int itf, short vpi, int vci);\nint vcc_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,\n\t\tint flags);\nint vcc_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len);\n__poll_t vcc_poll(struct file *file, struct socket *sock, poll_table *wait);\nint vcc_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg);\nint vcc_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg);\nint vcc_setsockopt(struct socket *sock, int level, int optname,\n\t\t   sockptr_t optval, unsigned int optlen);\nint vcc_getsockopt(struct socket *sock, int level, int optname,\n\t\t   char __user *optval, int __user *optlen);\nvoid vcc_process_recv_queue(struct atm_vcc *vcc);\n\nint atmpvc_init(void);\nvoid atmpvc_exit(void);\nint atmsvc_init(void);\nvoid atmsvc_exit(void);\nint atm_sysfs_init(void);\nvoid atm_sysfs_exit(void);\n\n#ifdef CONFIG_PROC_FS\nint atm_proc_init(void);\nvoid atm_proc_exit(void);\n#else\nstatic inline int atm_proc_init(void)\n{\n\treturn 0;\n}\n\nstatic inline void atm_proc_exit(void)\n{\n\t \n}\n#endif  \n\n \nint svc_change_qos(struct atm_vcc *vcc,struct atm_qos *qos);\n\nvoid atm_dev_release_vccs(struct atm_dev *dev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

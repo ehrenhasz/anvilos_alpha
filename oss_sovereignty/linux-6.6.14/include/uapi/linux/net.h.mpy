@@ -1,0 +1,9 @@
+{
+  "module_name": "net.h",
+  "hash_id": "42d201f4e231d3f71c3c66d9747b697f69006646218c4cf9b30defde23f9f600",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/net.h",
+  "human_readable_source": " \n \n#ifndef _UAPI_LINUX_NET_H\n#define _UAPI_LINUX_NET_H\n\n#include <linux/socket.h>\n#include <asm/socket.h>\n\n#define NPROTO\t\tAF_MAX\n\n#define SYS_SOCKET\t1\t\t \n#define SYS_BIND\t2\t\t \n#define SYS_CONNECT\t3\t\t \n#define SYS_LISTEN\t4\t\t \n#define SYS_ACCEPT\t5\t\t \n#define SYS_GETSOCKNAME\t6\t\t \n#define SYS_GETPEERNAME\t7\t\t \n#define SYS_SOCKETPAIR\t8\t\t \n#define SYS_SEND\t9\t\t \n#define SYS_RECV\t10\t\t \n#define SYS_SENDTO\t11\t\t \n#define SYS_RECVFROM\t12\t\t \n#define SYS_SHUTDOWN\t13\t\t \n#define SYS_SETSOCKOPT\t14\t\t \n#define SYS_GETSOCKOPT\t15\t\t \n#define SYS_SENDMSG\t16\t\t \n#define SYS_RECVMSG\t17\t\t \n#define SYS_ACCEPT4\t18\t\t \n#define SYS_RECVMMSG\t19\t\t \n#define SYS_SENDMMSG\t20\t\t \n\ntypedef enum {\n\tSS_FREE = 0,\t\t\t \n\tSS_UNCONNECTED,\t\t\t \n\tSS_CONNECTING,\t\t\t \n\tSS_CONNECTED,\t\t\t \n\tSS_DISCONNECTING\t\t \n} socket_state;\n\n#define __SO_ACCEPTCON\t(1 << 16)\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "fsl,imx93-power.h",
+  "hash_id": "74e0add8c4146c151555ff71fc3c0a61707f9f1cfd213ecfdc308a6928f68bf3",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/power/fsl,imx93-power.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_IMX93_POWER_H__\n#define __DT_BINDINGS_IMX93_POWER_H__\n\n#define IMX93_MEDIABLK_PD_MIPI_DSI\t\t0\n#define IMX93_MEDIABLK_PD_MIPI_CSI\t\t1\n#define IMX93_MEDIABLK_PD_PXP\t\t\t2\n#define IMX93_MEDIABLK_PD_LCDIF\t\t\t3\n#define IMX93_MEDIABLK_PD_ISI\t\t\t4\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

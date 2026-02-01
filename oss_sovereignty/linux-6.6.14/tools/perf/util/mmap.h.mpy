@@ -1,0 +1,9 @@
+{
+  "module_name": "mmap.h",
+  "hash_id": "c5de1dd62da51c65c05fc1fc8e1609205330f82f7fa021653e1af7a4ec09d221",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/mmap.h",
+  "human_readable_source": "#ifndef __PERF_MMAP_H\n#define __PERF_MMAP_H 1\n\n#include <internal/mmap.h>\n#include <linux/types.h>\n#include <linux/bitops.h>\n#include <perf/cpumap.h>\n#ifdef HAVE_AIO_SUPPORT\n#include <aio.h>\n#endif\n#include \"auxtrace.h\"\n#include \"util/compress.h\"\n\nstruct aiocb;\n\nstruct mmap_cpu_mask {\n\tunsigned long *bits;\n\tsize_t nbits;\n};\n\n#define MMAP_CPU_MASK_BYTES(m) \\\n\t(BITS_TO_LONGS(((struct mmap_cpu_mask *)m)->nbits) * sizeof(unsigned long))\n\n \nstruct mmap {\n\tstruct perf_mmap\tcore;\n\tstruct auxtrace_mmap auxtrace_mmap;\n#ifdef HAVE_AIO_SUPPORT\n\tstruct {\n\t\tvoid\t\t **data;\n\t\tstruct aiocb\t *cblocks;\n\t\tstruct aiocb\t **aiocb;\n\t\tint\t\t nr_cblocks;\n\t} aio;\n#endif\n\tstruct mmap_cpu_mask\taffinity_mask;\n\tvoid\t\t*data;\n\tint\t\tcomp_level;\n\tstruct perf_data_file *file;\n\tstruct zstd_data      zstd_data;\n};\n\nstruct mmap_params {\n\tstruct perf_mmap_param core;\n\tint nr_cblocks, affinity, flush, comp_level;\n\tstruct auxtrace_mmap_params auxtrace_mp;\n};\n\nint mmap__mmap(struct mmap *map, struct mmap_params *mp, int fd, struct perf_cpu cpu);\nvoid mmap__munmap(struct mmap *map);\n\nunion perf_event *perf_mmap__read_forward(struct mmap *map);\n\nint perf_mmap__push(struct mmap *md, void *to,\n\t\t    int push(struct mmap *map, void *to, void *buf, size_t size));\n\nsize_t mmap__mmap_len(struct mmap *map);\n\nvoid mmap_cpu_mask__scnprintf(struct mmap_cpu_mask *mask, const char *tag);\n\nint mmap_cpu_mask__duplicate(struct mmap_cpu_mask *original,\n\t\t\t\tstruct mmap_cpu_mask *clone);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

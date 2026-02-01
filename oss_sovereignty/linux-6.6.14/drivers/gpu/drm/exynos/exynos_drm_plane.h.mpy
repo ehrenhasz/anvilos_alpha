@@ -1,0 +1,9 @@
+{
+  "module_name": "exynos_drm_plane.h",
+  "hash_id": "6edf58e1c7fe76da40cde45cf4f01ae654e42aac0fa2382040260a579a518caa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/exynos/exynos_drm_plane.h",
+  "human_readable_source": " \n \n\nint exynos_plane_init(struct drm_device *dev,\n\t\t      struct exynos_drm_plane *exynos_plane, unsigned int index,\n\t\t      const struct exynos_drm_plane_config *config);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "atm_idt77105.h",
+  "hash_id": "3499b8b60d27a47fb3543fd60035525927a4a66f63fc8bad752da39134c86098",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/atm_idt77105.h",
+  "human_readable_source": " \n \n\n \n\n\n#ifndef LINUX_ATM_IDT77105_H\n#define LINUX_ATM_IDT77105_H\n\n#include <linux/types.h>\n#include <linux/atmioc.h>\n#include <linux/atmdev.h>\n\n \nstruct idt77105_stats {\n        __u32 symbol_errors;   \n        __u32 tx_cells;        \n        __u32 rx_cells;        \n        __u32 rx_hec_errors;   \n};\n\n#define IDT77105_GETSTAT\t_IOW('a',ATMIOC_PHYPRV+2,struct atmif_sioc)\t \n#define IDT77105_GETSTATZ\t_IOW('a',ATMIOC_PHYPRV+3,struct atmif_sioc)\t \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

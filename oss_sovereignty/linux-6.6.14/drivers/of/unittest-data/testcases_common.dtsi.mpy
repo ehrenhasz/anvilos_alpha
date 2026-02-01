@@ -1,0 +1,9 @@
+{
+  "module_name": "testcases_common.dtsi",
+  "hash_id": "22908ad2920656ec4f3504b96a1e96184f2830aa1a091d62aab74105d8c979ac",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/testcases_common.dtsi",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n\n/ {\n\ttestcase-data {\n\t\tchangeset {\n\t\t\tprop-update = \"hello\";\n\t\t\tprop-remove = \"world\";\n\n\t\t\tnode-remove {\n\t\t\t};\n\t\t};\n\t};\n};\n\n#include \"tests-phandle.dtsi\"\n#include \"tests-interrupts.dtsi\"\n#include \"tests-match.dtsi\"\n#include \"tests-address.dtsi\"\n#include \"tests-platform.dtsi\"\n#include \"tests-overlay.dtsi\"\n#include \"tests-lifecycle.dtsi\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

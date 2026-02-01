@@ -1,0 +1,9 @@
+{
+  "module_name": "BUSTED",
+  "hash_id": "367d8268a36c98563dd60e542ec1e8762207d8a0b92483e391cd708571f28d82",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/rcu/BUSTED",
+  "human_readable_source": "CONFIG_RCU_TRACE=n\nCONFIG_SMP=y\nCONFIG_NR_CPUS=4\nCONFIG_HOTPLUG_CPU=y\nCONFIG_PREEMPT_NONE=n\nCONFIG_PREEMPT_VOLUNTARY=n\nCONFIG_PREEMPT=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

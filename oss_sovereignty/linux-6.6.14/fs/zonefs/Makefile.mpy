@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2c3ee24a49b74d62bdc401b602ff5c2254f287c284a1c797f7d7112fbab32787",
+  "original_prompt": "Ingested from linux-6.6.14/fs/zonefs/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nccflags-y\t\t\t\t+= -I$(src)\n\nobj-$(CONFIG_ZONEFS_FS) += zonefs.o\n\nzonefs-y\t:= super.o file.o sysfs.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

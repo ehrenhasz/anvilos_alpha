@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8f3e1185ed297d96b9de608da9d7e729393ffb3ab8fce6b595970e2a8f2ccee8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/x86/intel/int1092/Kconfig",
+  "human_readable_source": "config INTEL_SAR_INT1092\n\ttristate \"Intel Specific Absorption Rate Driver\"\n\tdepends on ACPI\n\thelp\n\t  This driver helps to limit the exposure of human body to RF frequency by\n\t  providing information to userspace application that will inform the Intel\n\t  M.2 modem to regulate the RF power based on SAR data obtained from the\n\t  sensors captured in the BIOS. ACPI interface exposes this data from the BIOS\n\t  to SAR driver. The front end application in userspace will interact with SAR\n\t  driver to obtain information like the device mode, Antenna index, baseband index,\n\t  SAR table index and use available communication like MBIM interface to enable\n\t  data communication to modem for RF power regulation. Enable this config when\n\t  given platform needs to support \"Dynamic SAR\" configuration for a modem available\n\t  on the platform.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "testmode.h",
+  "hash_id": "80e02312fd174cb32131d7a1900b51cd085e50ebed189ec2387c09b52cecf2d9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/mvm/testmode.h",
+  "human_readable_source": " \n\n#ifndef __IWL_MVM_TESTMODE_H__\n#define __IWL_MVM_TESTMODE_H__\n\n \nenum iwl_mvm_testmode_attrs {\n\tIWL_MVM_TM_ATTR_UNSPEC,\n\tIWL_MVM_TM_ATTR_CMD,\n\tIWL_MVM_TM_ATTR_NOA_DURATION,\n\tIWL_MVM_TM_ATTR_BEACON_FILTER_STATE,\n\n\t \n\tNUM_IWL_MVM_TM_ATTRS,\n\tIWL_MVM_TM_ATTR_MAX = NUM_IWL_MVM_TM_ATTRS - 1,\n};\n\n \nenum iwl_mvm_testmode_commands {\n\tIWL_MVM_TM_CMD_SET_NOA,\n\tIWL_MVM_TM_CMD_SET_BEACON_FILTER,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

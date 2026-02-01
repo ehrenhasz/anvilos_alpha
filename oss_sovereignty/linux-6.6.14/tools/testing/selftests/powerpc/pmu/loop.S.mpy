@@ -1,0 +1,9 @@
+{
+  "module_name": "loop.S",
+  "hash_id": "8c7cc97ad42782a4713cb28320238d0ec2e3b12ea1f42e85e3bb07161809a74a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/pmu/loop.S",
+  "human_readable_source": " \n \n\n#include <ppc-asm.h>\n\n\t.text\n\nFUNC_START(thirty_two_instruction_loop)\n\tcmpdi\tr3,0\n\tbeqlr\n\taddi\tr4,r3,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\n\taddi\tr4,r4,1\t# 28 addi's\n\tsubi\tr3,r3,1\n\tb\tFUNC_NAME(thirty_two_instruction_loop)\nFUNC_END(thirty_two_instruction_loop)\n\nFUNC_START(thirty_two_instruction_loop_with_ll_sc)\n\tcmpdi\tr3,0\n\tbeqlr\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\t\t# 5\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\n1:\tldarx\tr6,0,r4\t\t# 10\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\t\t# 15\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\n\tstdcx.\tr6,0,r4\n\tbne-\t1b\n\taddi\tr5,r5,1\t\t# 20\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\t\t# 25\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\n\taddi\tr5,r5,1\t\t# 30\n\tsubi\tr3,r3,1\n\tb\tFUNC_NAME(thirty_two_instruction_loop_with_ll_sc)\nFUNC_END(thirty_two_instruction_loop_with_ll_sc)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

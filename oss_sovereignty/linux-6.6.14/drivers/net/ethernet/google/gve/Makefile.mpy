@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "761c66e05e3131105aac38987a224f561002903f209b4ca4974267c46554cdb6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/google/gve/Makefile",
+  "human_readable_source": "# Makefile for the Google virtual Ethernet (gve) driver\n\nobj-$(CONFIG_GVE) += gve.o\ngve-objs := gve_main.o gve_tx.o gve_tx_dqo.o gve_rx.o gve_rx_dqo.o gve_ethtool.o gve_adminq.o gve_utils.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

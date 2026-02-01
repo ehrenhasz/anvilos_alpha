@@ -1,0 +1,9 @@
+{
+  "module_name": "tm-signal-stack.c",
+  "hash_id": "c28f4b9fc8c3013cd643e459987f9cd2524577b019b3f862ed6090978bdbf295",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/powerpc/tm/tm-signal-stack.c",
+  "human_readable_source": "\n \n\n#include <unistd.h>\n#include <sys/types.h>\n#include <sys/wait.h>\n#include <stdlib.h>\n#include <stdio.h>\n#include <signal.h>\n\n#include \"utils.h\"\n#include \"tm.h\"\n\nvoid signal_segv(int signum)\n{\n\t \n\texit(1);\n}\n\nint tm_signal_stack()\n{\n\tint pid;\n\n\tSKIP_IF(!have_htm());\n\tSKIP_IF(htm_is_synthetic());\n\n\tpid = fork();\n\tif (pid < 0)\n\t\texit(1);\n\n\tif (pid) {  \n\t\t \n\t\twait(NULL);\n\t\treturn 0;\n\t}\n\n\t \n\tif (signal(SIGSEGV, signal_segv) == SIG_ERR)\n\t\texit(1);\n\tasm volatile(\"li 1, 0 ;\"\t\t \n\t\t     \"1:\"\n\t\t     \"tbegin.;\"\n\t\t     \"beq 1b ;\"\t\t\t \n\t\t     \"tsuspend.;\"\n\t\t     \"ld 2, 0(1) ;\"\t\t \n\t\t     : : : \"memory\");\n\n\t \n\treturn 1;\n}\n\nint main(void)\n{\n\treturn test_harness(tm_signal_stack, \"tm_signal_stack\");\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

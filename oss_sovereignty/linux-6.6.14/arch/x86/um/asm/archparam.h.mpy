@@ -1,0 +1,9 @@
+{
+  "module_name": "archparam.h",
+  "hash_id": "14b6a1a4bbfb59b7561f5bb9fd21c64c8a9845b2b04f1805bf23a579a7d8add2",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/um/asm/archparam.h",
+  "human_readable_source": " \n\n#ifndef __UM_ARCHPARAM_H\n#define __UM_ARCHPARAM_H\n\n#ifdef CONFIG_X86_32\n\n#ifdef CONFIG_X86_PAE\n#define LAST_PKMAP 512\n#else\n#define LAST_PKMAP 1024\n#endif\n\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

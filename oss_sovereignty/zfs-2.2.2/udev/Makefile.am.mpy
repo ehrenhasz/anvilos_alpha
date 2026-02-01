@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "f5bc930c3e4db68e5f6d6b6529556a81805baafc9b27aa1d3888d43978f34f0e",
+  "original_prompt": "Ingested from zfs-2.2.2/udev/Makefile.am",
+  "human_readable_source": "udevrule_DATA = \\\n\t%D%/rules.d/69-vdev.rules \\\n\t%D%/rules.d/60-zvol.rules \\\n\t%D%/rules.d/90-zfs.rules\n\nSUBSTFILES += $(udevrule_DATA)\n\n\ndist_udev_SCRIPTS = %D%/vdev_id\n# TODO: #12084: SHELLCHECKSCRIPTS += %D%/vdev_id\n\n\nudev_PROGRAMS    = %D%/zvol_id\nCPPCHECKTARGETS += %D%/zvol_id\n\n\nPHONY += udev\nudev: $(dist_udev_SCRIPTS) $(udev_PROGRAMS)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

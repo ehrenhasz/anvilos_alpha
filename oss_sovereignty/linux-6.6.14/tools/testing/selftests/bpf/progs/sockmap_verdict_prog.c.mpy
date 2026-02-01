@@ -1,0 +1,9 @@
+{
+  "module_name": "sockmap_verdict_prog.c",
+  "hash_id": "12d691406397fdf1e574cc407f9937c5d1036316a85044e7f70552d346526e2e",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/sockmap_verdict_prog.c",
+  "human_readable_source": "#include <linux/bpf.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_endian.h>\n#include \"bpf_misc.h\"\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SOCKMAP);\n\t__uint(max_entries, 20);\n\t__type(key, int);\n\t__type(value, int);\n} sock_map_rx SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SOCKMAP);\n\t__uint(max_entries, 20);\n\t__type(key, int);\n\t__type(value, int);\n} sock_map_tx SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SOCKMAP);\n\t__uint(max_entries, 20);\n\t__type(key, int);\n\t__type(value, int);\n} sock_map_msg SEC(\".maps\");\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_ARRAY);\n\t__uint(max_entries, 20);\n\t__type(key, int);\n\t__type(value, int);\n} sock_map_break SEC(\".maps\");\n\nSEC(\"sk_skb2\")\nint bpf_prog2(struct __sk_buff *skb)\n{\n\tvoid *data_end = (void *)(long) skb->data_end;\n\tvoid *data = (void *)(long) skb->data;\n\t__u32 lport = skb->local_port;\n\t__u32 rport = skb->remote_port;\n\t__u8 *d = data;\n\t__u8 sk, map;\n\n\t__sink(lport);\n\t__sink(rport);\n\n\tif (data + 8 > data_end)\n\t\treturn SK_DROP;\n\n\tmap = d[0];\n\tsk = d[1];\n\n\td[0] = 0xd;\n\td[1] = 0xe;\n\td[2] = 0xa;\n\td[3] = 0xd;\n\td[4] = 0xb;\n\td[5] = 0xe;\n\td[6] = 0xe;\n\td[7] = 0xf;\n\n\tif (!map)\n\t\treturn bpf_sk_redirect_map(skb, &sock_map_rx, sk, 0);\n\treturn bpf_sk_redirect_map(skb, &sock_map_tx, sk, 0);\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

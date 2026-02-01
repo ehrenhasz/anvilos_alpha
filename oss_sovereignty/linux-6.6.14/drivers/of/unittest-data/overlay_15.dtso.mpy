@@ -1,0 +1,9 @@
+{
+  "module_name": "overlay_15.dtso",
+  "hash_id": "311e359ac6e219f4257f47dd939bdd2a3abc404efc5ed65f708849330d2be537",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/of/unittest-data/overlay_15.dtso",
+  "human_readable_source": "// SPDX-License-Identifier: GPL-2.0\n/dts-v1/;\n/plugin/;\n\n/* overlay_15 - mux overlay */\n\n&unittest_i2c_test_bus {\n\t#address-cells = <1>;\n\t#size-cells = <0>;\n\n\ttest-unittest15 {\n\t\treg = <11>;\n\t\tcompatible = \"unittest-i2c-mux\";\n\t\tstatus = \"okay\";\n\n\t\t#address-cells = <1>;\n\t\t#size-cells = <0>;\n\n\t\ti2c@0 {\n\t\t\t#address-cells = <1>;\n\t\t\t#size-cells = <0>;\n\t\t\treg = <0>;\n\n\t\t\ttest-mux-dev@20 {\n\t\t\t\treg = <0x20>;\n\t\t\t\tcompatible = \"unittest-i2c-dev\";\n\t\t\t\tstatus = \"okay\";\n\t\t\t};\n\t\t};\n\t};\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

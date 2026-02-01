@@ -1,0 +1,9 @@
+{
+  "module_name": "ila.h",
+  "hash_id": "9366b57294d43a240d22800cce12c386aa000b7dde6f7f005441b1ca4f722563",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/ila.h",
+  "human_readable_source": " \n \n\n#ifndef _UAPI_LINUX_ILA_H\n#define _UAPI_LINUX_ILA_H\n\n \n#define ILA_GENL_NAME\t\t\"ila\"\n#define ILA_GENL_VERSION\t0x1\n\nenum {\n\tILA_ATTR_UNSPEC,\n\tILA_ATTR_LOCATOR,\t\t\t \n\tILA_ATTR_IDENTIFIER,\t\t\t \n\tILA_ATTR_LOCATOR_MATCH,\t\t\t \n\tILA_ATTR_IFINDEX,\t\t\t \n\tILA_ATTR_DIR,\t\t\t\t \n\tILA_ATTR_PAD,\n\tILA_ATTR_CSUM_MODE,\t\t\t \n\tILA_ATTR_IDENT_TYPE,\t\t\t \n\tILA_ATTR_HOOK_TYPE,\t\t\t \n\n\t__ILA_ATTR_MAX,\n};\n\n#define ILA_ATTR_MAX\t\t(__ILA_ATTR_MAX - 1)\n\nenum {\n\tILA_CMD_UNSPEC,\n\tILA_CMD_ADD,\n\tILA_CMD_DEL,\n\tILA_CMD_GET,\n\tILA_CMD_FLUSH,\n\n\t__ILA_CMD_MAX,\n};\n\n#define ILA_CMD_MAX\t(__ILA_CMD_MAX - 1)\n\n#define ILA_DIR_IN\t(1 << 0)\n#define ILA_DIR_OUT\t(1 << 1)\n\nenum {\n\tILA_CSUM_ADJUST_TRANSPORT,\n\tILA_CSUM_NEUTRAL_MAP,\n\tILA_CSUM_NO_ACTION,\n\tILA_CSUM_NEUTRAL_MAP_AUTO,\n};\n\nenum {\n\tILA_ATYPE_IID = 0,\n\tILA_ATYPE_LUID,\n\tILA_ATYPE_VIRT_V4,\n\tILA_ATYPE_VIRT_UNI_V6,\n\tILA_ATYPE_VIRT_MULTI_V6,\n\tILA_ATYPE_NONLOCAL_ADDR,\n\tILA_ATYPE_RSVD_1,\n\tILA_ATYPE_RSVD_2,\n\n\tILA_ATYPE_USE_FORMAT = 32,  \n};\n\nenum {\n\tILA_HOOK_ROUTE_OUTPUT,\n\tILA_HOOK_ROUTE_INPUT,\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

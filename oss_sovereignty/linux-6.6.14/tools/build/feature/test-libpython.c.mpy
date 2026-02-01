@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libpython.c",
+  "hash_id": "d85f73569bef54acb19e7f4a6060d6af2e00c657547bfedcf85f1caa60ac5993",
+  "original_prompt": "Ingested from linux-6.6.14/tools/build/feature/test-libpython.c",
+  "human_readable_source": "\n#include <Python.h>\n\nint main(void)\n{\n\tPy_Initialize();\n\n\treturn 0;\n}\n#undef _GNU_SOURCE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

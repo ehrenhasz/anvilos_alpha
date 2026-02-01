@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "31ab4c9a530255c371be803e90b8e579c63229fc358c11033497933518002f63",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pci/switch/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nmenu \"PCI switch controller drivers\"\n\tdepends on PCI\n\nconfig PCI_SW_SWITCHTEC\n\ttristate \"MicroSemi Switchtec PCIe Switch Management Driver\"\n\thelp\n\t Enables support for the management interface for the MicroSemi\n\t Switchtec series of PCIe switches. Supports userspace access\n\t to submit MRPC commands to the switch via /dev/switchtecX\n\t devices. See <file:Documentation/driver-api/switchtec.rst> for more\n\t information.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

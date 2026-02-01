@@ -1,0 +1,9 @@
+{
+  "module_name": "tcp_ca_incompl_cong_ops.c",
+  "hash_id": "5ef1814a62ce853c885cd7577626b2035be81152516ad328bec9a475636e6c74",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/tcp_ca_incompl_cong_ops.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstatic inline struct tcp_sock *tcp_sk(const struct sock *sk)\n{\n\treturn (struct tcp_sock *)sk;\n}\n\nSEC(\"struct_ops/incompl_cong_ops_ssthresh\")\n__u32 BPF_PROG(incompl_cong_ops_ssthresh, struct sock *sk)\n{\n\treturn tcp_sk(sk)->snd_ssthresh;\n}\n\nSEC(\"struct_ops/incompl_cong_ops_undo_cwnd\")\n__u32 BPF_PROG(incompl_cong_ops_undo_cwnd, struct sock *sk)\n{\n\treturn tcp_sk(sk)->snd_cwnd;\n}\n\nSEC(\".struct_ops\")\nstruct tcp_congestion_ops incompl_cong_ops = {\n\t \n\t.ssthresh = (void *)incompl_cong_ops_ssthresh,\n\t.undo_cwnd = (void *)incompl_cong_ops_undo_cwnd,\n\t.name = \"bpf_incompl_ops\",\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

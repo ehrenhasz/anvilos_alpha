@@ -1,0 +1,9 @@
+{
+  "module_name": "i40e_devids.h",
+  "hash_id": "600940d1746749f134778d5214e8a7ebc3a19f11166a14fbd53e22e08139e198",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/intel/i40e/i40e_devids.h",
+  "human_readable_source": " \n \n\n#ifndef _I40E_DEVIDS_H_\n#define _I40E_DEVIDS_H_\n\n \n#define I40E_DEV_ID_X710_N3000\t\t0x0CF8\n#define I40E_DEV_ID_XXV710_N3000\t0x0D58\n#define I40E_DEV_ID_SFP_XL710\t\t0x1572\n#define I40E_DEV_ID_QEMU\t\t0x1574\n#define I40E_DEV_ID_KX_B\t\t0x1580\n#define I40E_DEV_ID_KX_C\t\t0x1581\n#define I40E_DEV_ID_QSFP_A\t\t0x1583\n#define I40E_DEV_ID_QSFP_B\t\t0x1584\n#define I40E_DEV_ID_QSFP_C\t\t0x1585\n#define I40E_DEV_ID_10G_BASE_T\t\t0x1586\n#define I40E_DEV_ID_20G_KR2\t\t0x1587\n#define I40E_DEV_ID_20G_KR2_A\t\t0x1588\n#define I40E_DEV_ID_10G_BASE_T4\t\t0x1589\n#define I40E_DEV_ID_25G_B\t\t0x158A\n#define I40E_DEV_ID_25G_SFP28\t\t0x158B\n#define I40E_DEV_ID_10G_BASE_T_BC\t0x15FF\n#define I40E_DEV_ID_10G_B\t\t0x104F\n#define I40E_DEV_ID_10G_SFP\t\t0x104E\n#define I40E_DEV_ID_5G_BASE_T_BC\t0x101F\n#define I40E_DEV_ID_1G_BASE_T_BC\t0x0DD2\n#define I40E_IS_X710TL_DEVICE(d) \\\n\t(((d) == I40E_DEV_ID_1G_BASE_T_BC) || \\\n\t ((d) == I40E_DEV_ID_5G_BASE_T_BC) || \\\n\t ((d) == I40E_DEV_ID_10G_BASE_T_BC))\n#define I40E_DEV_ID_KX_X722\t\t0x37CE\n#define I40E_DEV_ID_QSFP_X722\t\t0x37CF\n#define I40E_DEV_ID_SFP_X722\t\t0x37D0\n#define I40E_DEV_ID_1G_BASE_T_X722\t0x37D1\n#define I40E_DEV_ID_10G_BASE_T_X722\t0x37D2\n#define I40E_DEV_ID_SFP_I_X722\t\t0x37D3\n#define I40E_DEV_ID_SFP_X722_A\t\t0x0DDA\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

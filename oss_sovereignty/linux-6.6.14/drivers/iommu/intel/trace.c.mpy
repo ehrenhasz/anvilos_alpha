@@ -1,0 +1,9 @@
+{
+  "module_name": "trace.c",
+  "hash_id": "74c8f5eec57d2b4041f0f7f7f6d35cc9bde45f2b464c09cfb10edd4df414c3c5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iommu/intel/trace.c",
+  "human_readable_source": "\n \n\n#include <linux/string.h>\n#include <linux/types.h>\n\n#define CREATE_TRACE_POINTS\n#include \"trace.h\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

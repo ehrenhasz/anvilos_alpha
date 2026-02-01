@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "3694d43e5f78267ae861eb27a1ceaf2e949197c9b332506c004cd93cf018126c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/qca/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NET_DSA_AR9331\n\ttristate \"Qualcomm Atheros AR9331 Ethernet switch support\"\n\tdepends on NET_DSA\n\tselect NET_DSA_TAG_AR9331\n\tselect REGMAP\n\thelp\n\t  This enables support for the Qualcomm Atheros AR9331 built-in Ethernet\n\t  switch.\n\nconfig NET_DSA_QCA8K\n\ttristate \"Qualcomm Atheros QCA8K Ethernet switch family support\"\n\tselect NET_DSA_TAG_QCA\n\tselect REGMAP\n\thelp\n\t  This enables support for the Qualcomm Atheros QCA8K Ethernet\n\t  switch chips.\n\nconfig NET_DSA_QCA8K_LEDS_SUPPORT\n\tbool \"Qualcomm Atheros QCA8K Ethernet switch family LEDs support\"\n\tdepends on NET_DSA_QCA8K\n\tdepends on LEDS_CLASS=y || LEDS_CLASS=NET_DSA_QCA8K\n\tdepends on LEDS_TRIGGERS\n\thelp\n\t  This enabled support for LEDs present on the Qualcomm Atheros\n\t  QCA8K Ethernet switch chips.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

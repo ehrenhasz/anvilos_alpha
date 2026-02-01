@@ -1,0 +1,9 @@
+{
+  "module_name": "memory.json",
+  "hash_id": "99b8a07f3ee049b7d9b4ee54a154bf03fd0fc302339a751f2ea19d25e65931f4",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/pmu-events/arch/arm64/arm/cortex-a510/memory.json",
+  "human_readable_source": "[\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS\"\n    },\n    {\n        \"ArchStdEvent\": \"REMOTE_ACCESS_RD\"\n    },\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS_RD\"\n    },\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS_WR\"\n    },\n    {\n        \"ArchStdEvent\": \"LDST_ALIGN_LAT\"\n    },\n    {\n        \"ArchStdEvent\": \"LD_ALIGN_LAT\"\n    },\n    {\n        \"ArchStdEvent\": \"ST_ALIGN_LAT\"\n    },\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS_CHECKED\"\n    },\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS_CHECKED_RD\"\n    },\n    {\n        \"ArchStdEvent\": \"MEM_ACCESS_CHECKED_WR\"\n    }\n]\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

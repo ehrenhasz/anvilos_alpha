@@ -1,0 +1,9 @@
+{
+  "module_name": "test_sockmap_progs_query.c",
+  "hash_id": "cf89c9ee415c0208b4f297085be903c3d847a147014db9c3faacdddc108a88f8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_sockmap_progs_query.c",
+  "human_readable_source": "\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n\nstruct {\n\t__uint(type, BPF_MAP_TYPE_SOCKMAP);\n\t__uint(max_entries, 1);\n\t__type(key, __u32);\n\t__type(value, __u64);\n} sock_map SEC(\".maps\");\n\nSEC(\"sk_skb\")\nint prog_skb_verdict(struct __sk_buff *skb)\n{\n\treturn SK_PASS;\n}\n\nSEC(\"sk_msg\")\nint prog_skmsg_verdict(struct sk_msg_md *msg)\n{\n\treturn SK_PASS;\n}\n\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

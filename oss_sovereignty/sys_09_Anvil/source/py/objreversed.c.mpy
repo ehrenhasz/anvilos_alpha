@@ -1,0 +1,9 @@
+{
+  "module_name": "objreversed.c",
+  "hash_id": "145ed5617d5d855a7380e4328f805d4846adab74bc66e36bcaef45a8e6ce5809",
+  "original_prompt": "Ingested from sys_09_Anvil/source/py/objreversed.c",
+  "human_readable_source": " \n\n#include <stdlib.h>\n#include <assert.h>\n\n#include \"py/runtime.h\"\n\n#if MICROPY_PY_BUILTINS_REVERSED\n\ntypedef struct _mp_obj_reversed_t {\n    mp_obj_base_t base;\n    mp_obj_t seq;           \n    mp_uint_t cur_index;    \n} mp_obj_reversed_t;\n\nstatic mp_obj_t reversed_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {\n    mp_arg_check_num(n_args, n_kw, 1, 1, false);\n\n    \n    mp_obj_t dest[2];\n    mp_load_method_maybe(args[0], MP_QSTR___reversed__, dest);\n    if (dest[0] != MP_OBJ_NULL) {\n        return mp_call_method_n_kw(0, 0, dest);\n    }\n\n    mp_obj_reversed_t *o = mp_obj_malloc(mp_obj_reversed_t, type);\n    o->seq = args[0];\n    o->cur_index = mp_obj_get_int(mp_obj_len(args[0])); \n\n    return MP_OBJ_FROM_PTR(o);\n}\n\nstatic mp_obj_t reversed_iternext(mp_obj_t self_in) {\n    mp_check_self(mp_obj_is_type(self_in, &mp_type_reversed));\n    mp_obj_reversed_t *self = MP_OBJ_TO_PTR(self_in);\n\n    \n    if (self->cur_index == 0) {\n        return MP_OBJ_STOP_ITERATION;\n    }\n\n    \n    self->cur_index -= 1;\n    return mp_obj_subscr(self->seq, MP_OBJ_NEW_SMALL_INT(self->cur_index), MP_OBJ_SENTINEL);\n}\n\nMP_DEFINE_CONST_OBJ_TYPE(\n    mp_type_reversed,\n    MP_QSTR_reversed,\n    MP_TYPE_FLAG_ITER_IS_ITERNEXT,\n    make_new, reversed_make_new,\n    iter, reversed_iternext\n    );\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

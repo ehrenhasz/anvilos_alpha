@@ -1,0 +1,9 @@
+{
+  "module_name": "i915_component.h",
+  "hash_id": "a95e0d59467e66490ffd626a6a298ef2edfa9f44f0ebcd0c2b06d7a3db1e7c00",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/i915_component.h",
+  "human_readable_source": " \n\n#ifndef _I915_COMPONENT_H_\n#define _I915_COMPONENT_H_\n\n#include \"drm_audio_component.h\"\n\nenum i915_component_type {\n\tI915_COMPONENT_AUDIO = 1,\n\tI915_COMPONENT_HDCP,\n\tI915_COMPONENT_PXP,\n\tI915_COMPONENT_GSC_PROXY,\n};\n\n \n#define MAX_PORTS 9\n\n \nstruct i915_audio_component {\n\t \n\tstruct drm_audio_component\tbase;\n\n\t \n\tint aud_sample_rate[MAX_PORTS];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

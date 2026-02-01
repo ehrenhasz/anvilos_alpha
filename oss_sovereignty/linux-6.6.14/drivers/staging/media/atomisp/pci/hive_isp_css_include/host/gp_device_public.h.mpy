@@ -1,0 +1,9 @@
+{
+  "module_name": "gp_device_public.h",
+  "hash_id": "1dd2e226b2751b78a1f692e68b522beb126738d12809d423dff5a68123e9d4c7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/hive_isp_css_include/host/gp_device_public.h",
+  "human_readable_source": " \n \n\n#ifndef __GP_DEVICE_PUBLIC_H_INCLUDED__\n#define __GP_DEVICE_PUBLIC_H_INCLUDED__\n\n#include \"system_local.h\"\n\ntypedef struct gp_device_state_s\t\tgp_device_state_t;\n\n \nvoid gp_device_get_state(\n    const gp_device_ID_t\t\tID,\n    gp_device_state_t\t\t\t*state);\n\n \nSTORAGE_CLASS_GP_DEVICE_H void gp_device_reg_store(\n    const gp_device_ID_t\tID,\n    const unsigned int\t\treg_addr,\n    const hrt_data\t\t\tvalue);\n\n \nSTORAGE_CLASS_GP_DEVICE_H hrt_data gp_device_reg_load(\n    const gp_device_ID_t\tID,\n    const hrt_address\treg_addr);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

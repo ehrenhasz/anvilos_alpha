@@ -1,0 +1,9 @@
+{
+  "module_name": "common.c",
+  "hash_id": "82c6409c72e581be2cd6624763a8ddb86d600fd48c793cec4309ae6dd42f1ab5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/memfd/common.c",
+  "human_readable_source": "\n#define _GNU_SOURCE\n#define __EXPORTED_HEADERS__\n\n#include <stdio.h>\n#include <stdlib.h>\n#include <linux/fcntl.h>\n#include <linux/memfd.h>\n#include <unistd.h>\n#include <sys/syscall.h>\n\n#include \"common.h\"\n\nint hugetlbfs_test = 0;\n\n \nunsigned long default_huge_page_size(void)\n{\n\tunsigned long hps = 0;\n\tchar *line = NULL;\n\tsize_t linelen = 0;\n\tFILE *f = fopen(\"/proc/meminfo\", \"r\");\n\n\tif (!f)\n\t\treturn 0;\n\twhile (getline(&line, &linelen, f) > 0) {\n\t\tif (sscanf(line, \"Hugepagesize:       %lu kB\", &hps) == 1) {\n\t\t\thps <<= 10;\n\t\t\tbreak;\n\t\t}\n\t}\n\n\tfree(line);\n\tfclose(f);\n\treturn hps;\n}\n\nint sys_memfd_create(const char *name, unsigned int flags)\n{\n\tif (hugetlbfs_test)\n\t\tflags |= MFD_HUGETLB;\n\n\treturn syscall(__NR_memfd_create, name, flags);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

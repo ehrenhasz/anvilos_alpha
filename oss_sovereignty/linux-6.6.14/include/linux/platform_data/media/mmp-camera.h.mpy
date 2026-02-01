@@ -1,0 +1,9 @@
+{
+  "module_name": "mmp-camera.h",
+  "hash_id": "d69f05328debe07c06fb99a77a324865dfecfc105c93530ed5e95923aae226e7",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/media/mmp-camera.h",
+  "human_readable_source": " \n \n\n#include <media/v4l2-mediabus.h>\n\nenum dphy3_algo {\n\tDPHY3_ALGO_DEFAULT = 0,\n\tDPHY3_ALGO_PXA910,\n\tDPHY3_ALGO_PXA2128\n};\n\nstruct mmp_camera_platform_data {\n\tenum v4l2_mbus_type bus_type;\n\tint mclk_src;\t \n\tint mclk_div;\t \n\t \n\tint dphy[3];\t\t \n\tenum dphy3_algo dphy3_algo;\t \n\tint lane;\t\t \n\tint lane_clk;\n};\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

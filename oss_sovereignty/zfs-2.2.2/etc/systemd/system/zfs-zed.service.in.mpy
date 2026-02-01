@@ -1,0 +1,9 @@
+{
+  "module_name": "zfs-zed.service.in",
+  "hash_id": "53d4e4d90d4f3a202d405d783eb27c81407dda264af1c8945289cff609499a52",
+  "original_prompt": "Ingested from zfs-2.2.2/etc/systemd/system/zfs-zed.service.in",
+  "human_readable_source": "[Unit]\nDescription=ZFS Event Daemon (zed)\nDocumentation=man:zed(8)\nConditionPathIsDirectory=/sys/module/zfs\n\n[Service]\nEnvironmentFile=-@initconfdir@/zfs\nExecStart=@sbindir@/zed -F\nRestart=always\n\n[Install]\nAlias=zed.service\nWantedBy=zfs.target\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

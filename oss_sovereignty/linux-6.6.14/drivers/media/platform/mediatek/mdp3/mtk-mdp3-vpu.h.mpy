@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk-mdp3-vpu.h",
+  "hash_id": "6950ba07d71ce9cb002a61482a5c2a16a6ed20a81e6c1f0cf6c3347a5adba565",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/mdp3/mtk-mdp3-vpu.h",
+  "human_readable_source": " \n \n\n#ifndef __MTK_MDP3_VPU_H__\n#define __MTK_MDP3_VPU_H__\n\n#include <linux/platform_device.h>\n#include \"mtk-img-ipi.h\"\n\nenum mdp_ipi_result {\n\tMDP_IPI_SUCCESS\t= 0,\n\tMDP_IPI_ENOMEM\t= 12,\n\tMDP_IPI_EBUSY\t= 16,\n\tMDP_IPI_EINVAL\t= 22,\n\tMDP_IPI_EMINST\t= 24,\n\tMDP_IPI_ERANGE\t= 34,\n\tMDP_IPI_NR_ERRNO,\n\n\tMDP_IPI_EOTHER\t= MDP_IPI_NR_ERRNO,\n\tMDP_IPI_PATH_CANT_MERGE,\n\tMDP_IPI_OP_FAIL,\n};\n\nstruct mdp_ipi_init_msg {\n\tu32\tstatus;\n\tu64\tdrv_data;\n\tu32\twork_addr;\t \n\tu32\twork_size;\t \n} __packed;\n\nstruct mdp_ipi_deinit_msg {\n\tu32\tstatus;\n\tu64\tdrv_data;\n\tu32\twork_addr;\n} __packed;\n\nstruct mdp_vpu_dev {\n\t \n\tstruct mutex\t\t*lock;\n\tstruct mtk_scp\t\t*scp;\n\tstruct completion\tipi_acked;\n\tvoid\t\t\t*param;\n\tdma_addr_t\t\tparam_addr;\n\tsize_t\t\t\tparam_size;\n\tvoid\t\t\t*work;\n\tdma_addr_t\t\twork_addr;\n\tsize_t\t\t\twork_size;\n\tvoid\t\t\t*config;\n\tdma_addr_t\t\tconfig_addr;\n\tsize_t\t\t\tconfig_size;\n\tu32\t\t\tstatus;\n};\n\nvoid mdp_vpu_shared_mem_free(struct mdp_vpu_dev *vpu);\nint mdp_vpu_dev_init(struct mdp_vpu_dev *vpu, struct mtk_scp *scp,\n\t\t     struct mutex *lock  );\nint mdp_vpu_dev_deinit(struct mdp_vpu_dev *vpu);\nint mdp_vpu_process(struct mdp_vpu_dev *vpu, struct img_ipi_frameparam *param);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

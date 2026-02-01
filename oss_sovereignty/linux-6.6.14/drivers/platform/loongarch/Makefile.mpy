@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "014e8a6eabe4ae6350dd12cd8daea31b2950ce2d30893536cd3616cf653f289d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/platform/loongarch/Makefile",
+  "human_readable_source": "obj-$(CONFIG_LOONGSON_LAPTOP) += loongson-laptop.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

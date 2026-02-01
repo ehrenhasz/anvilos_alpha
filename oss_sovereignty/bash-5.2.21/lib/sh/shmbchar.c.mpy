@@ -1,0 +1,9 @@
+{
+  "module_name": "shmbchar.c",
+  "hash_id": "eb8870bbe1549a9842358748ae578037ed834f86816aedde468a445776910921",
+  "original_prompt": "Ingested from bash-5.2.21/lib/sh/shmbchar.c",
+  "human_readable_source": " \nconst unsigned int is_basic_table [UCHAR_MAX / 32 + 1] =\n{\n  0x00001a00,            \n  0xffffffef,            \n  0xfffffffe,            \n  0x7ffffffe             \n   \n};\n\n#endif  \n\nextern int locale_utf8locale;\n\nextern char *utf8_mbsmbchar (const char *);\nextern int utf8_mblen (const char *, size_t);\n\n \nsize_t\nmbstrlen (s)\n     const char *s;\n{\n  size_t clen, nc;\n  mbstate_t mbs = { 0 }, mbsbak = { 0 };\n  int f, mb_cur_max;\n\n  nc = 0;\n  mb_cur_max = MB_CUR_MAX;\n  while (*s && (clen = (f = is_basic (*s)) ? 1 : mbrlen(s, mb_cur_max, &mbs)) != 0)\n    {\n      if (MB_INVALIDCH(clen))\n\t{\n\t  clen = 1;\t \n\t  mbs = mbsbak;\n\t}\n\n      if (f == 0)\n\tmbsbak = mbs;\n\n      s += clen;\n      nc++;\n    }\n  return nc;\n}\n\n \n \nchar *\nmbsmbchar (s)\n     const char *s;\n{\n  char *t;\n  size_t clen;\n  mbstate_t mbs = { 0 };\n  int mb_cur_max;\n\n  if (locale_utf8locale)\n    return (utf8_mbsmbchar (s));\t \n\n  mb_cur_max = MB_CUR_MAX;\n  for (t = (char *)s; *t; t++)\n    {\n      if (is_basic (*t))\n\tcontinue;\n\n      if (locale_utf8locale)\t\t \n\tclen = utf8_mblen (t, mb_cur_max);\n      else\n\tclen = mbrlen (t, mb_cur_max, &mbs);\n\n      if (clen == 0)\n        return 0;\n      if (MB_INVALIDCH(clen))\n\tcontinue;\n\n      if (clen > 1)\n\treturn t;\n    }\n  return 0;\n}\n\nint\nsh_mbsnlen(src, srclen, maxlen)\n     const char *src;\n     size_t srclen;\n     int maxlen;\n{\n  int count;\n  int sind;\n  DECLARE_MBSTATE;\n\n  for (sind = count = 0; src[sind]; )\n    {\n      count++;\t\t \n      ADVANCE_CHAR (src, srclen, sind);\n      if (sind > maxlen)\n        break;\n    }\n\n  return count;\n}\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

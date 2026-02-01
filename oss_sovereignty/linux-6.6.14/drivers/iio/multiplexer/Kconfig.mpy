@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "9ad5d41eb216c4251b2965c70e6289175f26719e79eb0181932caa36281dc768",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/multiplexer/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Multiplexer drivers\n#\n# When adding new entries keep the list in alphabetical order\n\nmenu \"Multiplexers\"\n\nconfig IIO_MUX\n\ttristate \"IIO multiplexer driver\"\n\tselect MULTIPLEXER\n\thelp\n\t  Say yes here to build support for the IIO multiplexer.\n\n\t  To compile this driver as a module, choose M here: the\n\t  module will be called iio-mux.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

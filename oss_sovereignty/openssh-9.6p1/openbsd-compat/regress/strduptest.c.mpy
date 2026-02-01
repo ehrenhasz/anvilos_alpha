@@ -1,0 +1,9 @@
+{
+  "module_name": "strduptest.c",
+  "hash_id": "073916b62c11a08f6ef7831717f9de9ca6961387ebbc3a7029c4709b907c4909",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/regress/strduptest.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#include <stdlib.h>\n#include <string.h>\n\nstatic int fail = 0;\n\nvoid\ntest(const char *a)\n{\n\tchar *b;\n\n\tb = strdup(a);\n\tif (b == 0) {\n\t\tfail = 1;\n\t\treturn;\n\t}\n\tif (strcmp(a, b) != 0)\n\t\tfail = 1;\n\tfree(b);\n}\n\nint\nmain(void)\n{\n\ttest(\"\");\n\ttest(\"a\");\n\ttest(\"\\0\");\n\ttest(\"abcdefghijklmnopqrstuvwxyz\");\n\treturn fail;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "gchelper.h",
+  "hash_id": "64c00eba1ef0a06c6b080c4776358d16baea433237299116788fff29c56d9479",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/runtime/gchelper.h",
+  "human_readable_source": " \n#ifndef MICROPY_INCLUDED_LIB_UTILS_GCHELPER_H\n#define MICROPY_INCLUDED_LIB_UTILS_GCHELPER_H\n\n#include <stdint.h>\n\n#if MICROPY_GCREGS_SETJMP\n#include <setjmp.h>\ntypedef jmp_buf gc_helper_regs_t;\n#else\n\n#if defined(__x86_64__)\ntypedef uintptr_t gc_helper_regs_t[6];\n#elif defined(__i386__)\ntypedef uintptr_t gc_helper_regs_t[4];\n#elif defined(__thumb2__) || defined(__thumb__) || defined(__arm__)\ntypedef uintptr_t gc_helper_regs_t[10];\n#elif defined(__aarch64__)\ntypedef uintptr_t gc_helper_regs_t[11]; \n#endif\n\n#endif\n\nvoid gc_helper_collect_regs_and_stack(void);\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

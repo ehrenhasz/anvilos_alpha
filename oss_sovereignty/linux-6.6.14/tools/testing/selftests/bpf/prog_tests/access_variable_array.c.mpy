@@ -1,0 +1,9 @@
+{
+  "module_name": "access_variable_array.c",
+  "hash_id": "46f12d4fe8beef259922abb189ef1d425d4208ea692af2cee48c89a7ac884a2a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/access_variable_array.c",
+  "human_readable_source": "\n \n\n#include <test_progs.h>\n#include \"test_access_variable_array.skel.h\"\n\nvoid test_access_variable_array(void)\n{\n\tstruct test_access_variable_array *skel;\n\n\tskel = test_access_variable_array__open_and_load();\n\tif (!ASSERT_OK_PTR(skel, \"test_access_variable_array__open_and_load\"))\n\t\treturn;\n\n\ttest_access_variable_array__destroy(skel);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

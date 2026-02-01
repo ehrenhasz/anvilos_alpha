@@ -1,0 +1,9 @@
+{
+  "module_name": "dma.h",
+  "hash_id": "98b10658daad7472546f92e009268d0acf7191b0be58d521e7f8cdf654e4c758",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/mediatek/mt76/dma.h",
+  "human_readable_source": " \n \n#ifndef __MT76_DMA_H\n#define __MT76_DMA_H\n\n#define DMA_DUMMY_DATA\t\t\t((void *)~0)\n\n#define MT_RING_SIZE\t\t\t0x10\n\n#define MT_DMA_CTL_SD_LEN1\t\tGENMASK(13, 0)\n#define MT_DMA_CTL_LAST_SEC1\t\tBIT(14)\n#define MT_DMA_CTL_BURST\t\tBIT(15)\n#define MT_DMA_CTL_SD_LEN0\t\tGENMASK(29, 16)\n#define MT_DMA_CTL_LAST_SEC0\t\tBIT(30)\n#define MT_DMA_CTL_DMA_DONE\t\tBIT(31)\n#define MT_DMA_CTL_TO_HOST\t\tBIT(8)\n#define MT_DMA_CTL_TO_HOST_A\t\tBIT(12)\n#define MT_DMA_CTL_DROP\t\t\tBIT(14)\n#define MT_DMA_CTL_TOKEN\t\tGENMASK(31, 16)\n#define MT_DMA_CTL_WO_DROP\t\tBIT(8)\n\n#define MT_DMA_PPE_CPU_REASON\t\tGENMASK(15, 11)\n#define MT_DMA_PPE_ENTRY\t\tGENMASK(30, 16)\n#define MT_DMA_INFO_PPE_VLD\t\tBIT(31)\n\n#define MT_DMA_HDR_LEN\t\t\t4\n#define MT_RX_INFO_LEN\t\t\t4\n#define MT_FCE_INFO_LEN\t\t\t4\n#define MT_RX_RXWI_LEN\t\t\t32\n\nstruct mt76_desc {\n\t__le32 buf0;\n\t__le32 ctrl;\n\t__le32 buf1;\n\t__le32 info;\n} __packed __aligned(4);\n\nenum mt76_qsel {\n\tMT_QSEL_MGMT,\n\tMT_QSEL_HCCA,\n\tMT_QSEL_EDCA,\n\tMT_QSEL_EDCA_2,\n};\n\nenum mt76_mcu_evt_type {\n\tEVT_CMD_DONE,\n\tEVT_CMD_ERROR,\n\tEVT_CMD_RETRY,\n\tEVT_EVENT_PWR_RSP,\n\tEVT_EVENT_WOW_RSP,\n\tEVT_EVENT_CARRIER_DETECT_RSP,\n\tEVT_EVENT_DFS_DETECT_RSP,\n};\n\nint mt76_dma_rx_poll(struct napi_struct *napi, int budget);\nvoid mt76_dma_attach(struct mt76_dev *dev);\nvoid mt76_dma_cleanup(struct mt76_dev *dev);\nint mt76_dma_wed_setup(struct mt76_dev *dev, struct mt76_queue *q, bool reset);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

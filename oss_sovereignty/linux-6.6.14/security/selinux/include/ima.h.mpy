@@ -1,0 +1,9 @@
+{
+  "module_name": "ima.h",
+  "hash_id": "ff62af804c677b000b98cb5b290fc9e1c6a2339e4045d0db2b7a41f78b541c99",
+  "original_prompt": "Ingested from linux-6.6.14/security/selinux/include/ima.h",
+  "human_readable_source": " \n \n\n#ifndef _SELINUX_IMA_H_\n#define _SELINUX_IMA_H_\n\n#include \"security.h\"\n\n#ifdef CONFIG_IMA\nextern void selinux_ima_measure_state(void);\nextern void selinux_ima_measure_state_locked(void);\n#else\nstatic inline void selinux_ima_measure_state(void)\n{\n}\nstatic inline void selinux_ima_measure_state_locked(void)\n{\n}\n#endif\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

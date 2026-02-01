@@ -1,0 +1,9 @@
+{
+  "module_name": "arm-gic-common.h",
+  "hash_id": "a4759745368f26087717e29ec167776dc86ac32b535806c1a7d413e40b9d102e",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/irqchip/arm-gic-common.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_IRQCHIP_ARM_GIC_COMMON_H\n#define __LINUX_IRQCHIP_ARM_GIC_COMMON_H\n\n#include <linux/irqchip/arm-vgic-info.h>\n\n#define GICD_INT_DEF_PRI\t\t0xa0\n#define GICD_INT_DEF_PRI_X4\t\t((GICD_INT_DEF_PRI << 24) |\\\n\t\t\t\t\t(GICD_INT_DEF_PRI << 16) |\\\n\t\t\t\t\t(GICD_INT_DEF_PRI << 8) |\\\n\t\t\t\t\tGICD_INT_DEF_PRI)\n\nstruct irq_domain;\nstruct fwnode_handle;\nint gicv2m_init(struct fwnode_handle *parent_handle,\n\t\tstruct irq_domain *parent);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

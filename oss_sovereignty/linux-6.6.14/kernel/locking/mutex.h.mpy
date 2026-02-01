@@ -1,0 +1,9 @@
+{
+  "module_name": "mutex.h",
+  "hash_id": "2434780fd2abb20d4f7d1880de6eb74dca935203181667ed5a7c5c98118f276e",
+  "original_prompt": "Ingested from linux-6.6.14/kernel/locking/mutex.h",
+  "human_readable_source": " \n \n\n \nstruct mutex_waiter {\n\tstruct list_head\tlist;\n\tstruct task_struct\t*task;\n\tstruct ww_acquire_ctx\t*ww_ctx;\n#ifdef CONFIG_DEBUG_MUTEXES\n\tvoid\t\t\t*magic;\n#endif\n};\n\n#ifdef CONFIG_DEBUG_MUTEXES\nextern void debug_mutex_lock_common(struct mutex *lock,\n\t\t\t\t    struct mutex_waiter *waiter);\nextern void debug_mutex_wake_waiter(struct mutex *lock,\n\t\t\t\t    struct mutex_waiter *waiter);\nextern void debug_mutex_free_waiter(struct mutex_waiter *waiter);\nextern void debug_mutex_add_waiter(struct mutex *lock,\n\t\t\t\t   struct mutex_waiter *waiter,\n\t\t\t\t   struct task_struct *task);\nextern void debug_mutex_remove_waiter(struct mutex *lock, struct mutex_waiter *waiter,\n\t\t\t\t      struct task_struct *task);\nextern void debug_mutex_unlock(struct mutex *lock);\nextern void debug_mutex_init(struct mutex *lock, const char *name,\n\t\t\t     struct lock_class_key *key);\n#else  \n# define debug_mutex_lock_common(lock, waiter)\t\tdo { } while (0)\n# define debug_mutex_wake_waiter(lock, waiter)\t\tdo { } while (0)\n# define debug_mutex_free_waiter(waiter)\t\tdo { } while (0)\n# define debug_mutex_add_waiter(lock, waiter, ti)\tdo { } while (0)\n# define debug_mutex_remove_waiter(lock, waiter, ti)\tdo { } while (0)\n# define debug_mutex_unlock(lock)\t\t\tdo { } while (0)\n# define debug_mutex_init(lock, name, key)\t\tdo { } while (0)\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

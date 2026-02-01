@@ -1,0 +1,9 @@
+{
+  "module_name": "parse-datetime-gen.h",
+  "hash_id": "f212421ed4f907d94e1895d29c48f9905a5e01e50ce6e78de852e51d9932d483",
+  "original_prompt": "Ingested from coreutils-9.4/lib/parse-datetime-gen.h",
+  "human_readable_source": " \n\n \n\n \n\n#ifndef YY_YY_PARSE_DATETIME_TAB_H_INCLUDED\n# define YY_YY_PARSE_DATETIME_TAB_H_INCLUDED\n \n#ifndef YYDEBUG\n# define YYDEBUG 0\n#endif\n#if YYDEBUG\nextern int yydebug;\n#endif\n\n \n#ifndef YYTOKENTYPE\n# define YYTOKENTYPE\n  enum yytokentype\n  {\n    YYEMPTY = -2,\n    YYEOF = 0,                      \n    YYerror = 256,                  \n    YYUNDEF = 257,                  \n    tAGO = 258,                     \n    tDST = 259,                     \n    tYEAR_UNIT = 260,               \n    tMONTH_UNIT = 261,              \n    tHOUR_UNIT = 262,               \n    tMINUTE_UNIT = 263,             \n    tSEC_UNIT = 264,                \n    tDAY_UNIT = 265,                \n    tDAY_SHIFT = 266,               \n    tDAY = 267,                     \n    tDAYZONE = 268,                 \n    tLOCAL_ZONE = 269,              \n    tMERIDIAN = 270,                \n    tMONTH = 271,                   \n    tORDINAL = 272,                 \n    tZONE = 273,                    \n    tSNUMBER = 274,                 \n    tUNUMBER = 275,                 \n    tSDECIMAL_NUMBER = 276,         \n    tUDECIMAL_NUMBER = 277          \n  };\n  typedef enum yytokentype yytoken_kind_t;\n#endif\n\n \n#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED\nunion YYSTYPE\n{\n#line 565 \"parse-datetime.y\"\n\n  intmax_t intval;\n  textint textintval;\n  struct timespec timespec;\n  relative_time rel;\n\n#line 93 \"parse-datetime-gen.h\"\n\n};\ntypedef union YYSTYPE YYSTYPE;\n# define YYSTYPE_IS_TRIVIAL 1\n# define YYSTYPE_IS_DECLARED 1\n#endif\n\n\n\n\nint yyparse (parser_control *pc);\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "otg_fsm.h",
+  "hash_id": "1b32969b477ba6a75bb8a1f0d1e4263104acda1649d61dd428925a3bf5e8183f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/chipidea/otg_fsm.h",
+  "human_readable_source": " \n \n\n#ifndef __DRIVERS_USB_CHIPIDEA_OTG_FSM_H\n#define __DRIVERS_USB_CHIPIDEA_OTG_FSM_H\n\n#include <linux/usb/otg-fsm.h>\n\n \n\n \n#define TA_WAIT_VRISE        (100)\t \n \n#define TA_WAIT_VFALL        (1000)\t \n \n#define TA_WAIT_BCON         (10000)\t \n \n#define TA_AIDL_BDIS         (5000)\t \n \n#define TA_BIDL_ADIS         (500)\t \n\n \n\n \n#define TB_DATA_PLS          (10)\t \n \n#define TB_SRP_FAIL          (6000)\t \n \n#define TB_ASE0_BRST         (155)\t \n \n#define TB_SE0_SRP           (1000)\t \n \n#define TB_SSEND_SRP         (1500)\t \n\n#define TB_AIDL_BDIS         (20)\t \n\n#if IS_ENABLED(CONFIG_USB_OTG_FSM)\n\nint ci_hdrc_otg_fsm_init(struct ci_hdrc *ci);\nint ci_otg_fsm_work(struct ci_hdrc *ci);\nirqreturn_t ci_otg_fsm_irq(struct ci_hdrc *ci);\nvoid ci_hdrc_otg_fsm_start(struct ci_hdrc *ci);\nvoid ci_hdrc_otg_fsm_remove(struct ci_hdrc *ci);\n\n#else\n\nstatic inline int ci_hdrc_otg_fsm_init(struct ci_hdrc *ci)\n{\n\treturn 0;\n}\n\nstatic inline int ci_otg_fsm_work(struct ci_hdrc *ci)\n{\n\treturn -ENXIO;\n}\n\nstatic inline irqreturn_t ci_otg_fsm_irq(struct ci_hdrc *ci)\n{\n\treturn IRQ_NONE;\n}\n\nstatic inline void ci_hdrc_otg_fsm_start(struct ci_hdrc *ci)\n{\n\n}\n\nstatic inline void ci_hdrc_otg_fsm_remove(struct ci_hdrc *ci)\n{\n\n}\n\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

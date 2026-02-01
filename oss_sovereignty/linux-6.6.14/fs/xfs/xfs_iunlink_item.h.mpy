@@ -1,0 +1,9 @@
+{
+  "module_name": "xfs_iunlink_item.h",
+  "hash_id": "0caa42201d5f523f08e00bf327e740991b0a9d8e734b61ed931c13ea229b1b7a",
+  "original_prompt": "Ingested from linux-6.6.14/fs/xfs/xfs_iunlink_item.h",
+  "human_readable_source": "\n \n#ifndef XFS_IUNLINK_ITEM_H\n#define XFS_IUNLINK_ITEM_H\t1\n\nstruct xfs_trans;\nstruct xfs_inode;\nstruct xfs_perag;\n\n \nstruct xfs_iunlink_item {\n\tstruct xfs_log_item\titem;\n\tstruct xfs_inode\t*ip;\n\tstruct xfs_perag\t*pag;\n\txfs_agino_t\t\tnext_agino;\n\txfs_agino_t\t\told_agino;\n};\n\nextern struct kmem_cache *xfs_iunlink_cache;\n\nint xfs_iunlink_log_inode(struct xfs_trans *tp, struct xfs_inode *ip,\n\t\t\tstruct xfs_perag *pag, xfs_agino_t next_agino);\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mp_usbd.c",
+  "hash_id": "8cafdaf99a8a67eb84da37104d4b415be27ef69e75feed5822d1fbebf571063f",
+  "original_prompt": "Ingested from sys_09_Anvil/source/shared/tinyusb/mp_usbd.c",
+  "human_readable_source": " \n\n#include \"py/mpconfig.h\"\n\n#if MICROPY_HW_ENABLE_USBDEV\n\n#include \"mp_usbd.h\"\n\n#ifndef NO_QSTR\n#include \"device/dcd.h\"\n#endif\n\n#if !MICROPY_HW_ENABLE_USB_RUNTIME_DEVICE\n\nvoid mp_usbd_task(void) {\n    tud_task_ext(0, false);\n}\n\nvoid mp_usbd_task_callback(mp_sched_node_t *node) {\n    (void)node;\n    mp_usbd_task();\n}\n\n#endif \n\nextern void __real_dcd_event_handler(dcd_event_t const *event, bool in_isr);\n\n\n\n\nTU_ATTR_FAST_FUNC void __wrap_dcd_event_handler(dcd_event_t const *event, bool in_isr) {\n    __real_dcd_event_handler(event, in_isr);\n    mp_usbd_schedule_task();\n}\n\nTU_ATTR_FAST_FUNC void mp_usbd_schedule_task(void) {\n    static mp_sched_node_t usbd_task_node;\n    mp_sched_schedule_node(&usbd_task_node, mp_usbd_task_callback);\n}\n\nvoid mp_usbd_hex_str(char *out_str, const uint8_t *bytes, size_t bytes_len) {\n    size_t hex_len = bytes_len * 2;\n    for (int i = 0; i < hex_len; i += 2) {\n        static const char *hexdig = \"0123456789abcdef\";\n        out_str[i] = hexdig[bytes[i / 2] >> 4];\n        out_str[i + 1] = hexdig[bytes[i / 2] & 0x0f];\n    }\n    out_str[hex_len] = 0;\n}\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

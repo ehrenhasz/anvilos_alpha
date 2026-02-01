@@ -1,0 +1,9 @@
+{
+  "module_name": "videobuf-dma-contig.h",
+  "hash_id": "cbb081b50c47c12befa24e3d21d7bfffac5477f32438f44cca8081b3a4e2d62e",
+  "original_prompt": "Ingested from linux-6.6.14/include/media/videobuf-dma-contig.h",
+  "human_readable_source": " \n \n#ifndef _VIDEOBUF_DMA_CONTIG_H\n#define _VIDEOBUF_DMA_CONTIG_H\n\n#include <linux/dma-mapping.h>\n#include <media/videobuf-core.h>\n\nvoid videobuf_queue_dma_contig_init(struct videobuf_queue *q,\n\t\t\t\t    const struct videobuf_queue_ops *ops,\n\t\t\t\t    struct device *dev,\n\t\t\t\t    spinlock_t *irqlock,\n\t\t\t\t    enum v4l2_buf_type type,\n\t\t\t\t    enum v4l2_field field,\n\t\t\t\t    unsigned int msize,\n\t\t\t\t    void *priv,\n\t\t\t\t    struct mutex *ext_lock);\n\ndma_addr_t videobuf_to_dma_contig(struct videobuf_buffer *buf);\nvoid videobuf_dma_contig_free(struct videobuf_queue *q,\n\t\t\t      struct videobuf_buffer *buf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

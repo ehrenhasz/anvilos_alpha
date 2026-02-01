@@ -1,0 +1,9 @@
+{
+  "module_name": "rseq-generic-thread-pointer.h",
+  "hash_id": "b891465c3490491c3d362808c35a3d1f396da60858cf765bfdd7e8e8a66ae630",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rseq/rseq-generic-thread-pointer.h",
+  "human_readable_source": " \n \n\n#ifndef _RSEQ_GENERIC_THREAD_POINTER\n#define _RSEQ_GENERIC_THREAD_POINTER\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\n \nstatic inline void *rseq_thread_pointer(void)\n{\n\treturn __builtin_thread_pointer();\n}\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

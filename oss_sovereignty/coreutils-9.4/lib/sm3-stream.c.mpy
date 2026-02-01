@@ -1,0 +1,9 @@
+{
+  "module_name": "sm3-stream.c",
+  "hash_id": "47899ed2fa4b2fe6154c440099856454d653504b5c738fb58d826983c539eb27",
+  "original_prompt": "Ingested from coreutils-9.4/lib/sm3-stream.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n \n#if HAVE_OPENSSL_SM3\n# define GL_OPENSSL_INLINE _GL_EXTERN_INLINE\n#endif\n#include \"sm3.h\"\n\n#include <stdlib.h>\n\n#if USE_UNLOCKED_IO\n# include \"unlocked-io.h\"\n#endif\n\n#define BLOCKSIZE 32768\n#if BLOCKSIZE % 64 != 0\n# error \"invalid BLOCKSIZE\"\n#endif\n\n \nint\nsm3_stream (FILE *stream, void *resblock)\n{\n  struct sm3_ctx ctx;\n  size_t sum;\n\n  char *buffer = malloc (BLOCKSIZE + 72);\n  if (!buffer)\n    return 1;\n\n   \n  sm3_init_ctx (&ctx);\n\n   \n  while (1)\n    {\n       \n      size_t n;\n      sum = 0;\n\n       \n      while (1)\n        {\n          n = fread (buffer + sum, 1, BLOCKSIZE - sum, stream);\n\n          sum += n;\n\n          if (sum == BLOCKSIZE)\n            break;\n\n          if (n == 0)\n            {\n               \n              if (ferror (stream))\n                {\n                  free (buffer);\n                  return 1;\n                }\n              goto process_partial_block;\n            }\n\n           \n          if (feof (stream))\n            goto process_partial_block;\n        }\n\n       \n      sm3_process_block (buffer, BLOCKSIZE, &ctx);\n    }\n\n process_partial_block:;\n\n   \n  if (sum > 0)\n    sm3_process_bytes (buffer, sum, &ctx);\n\n   \n  sm3_finish_ctx (&ctx, resblock);\n  free (buffer);\n  return 0;\n}\n\n \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

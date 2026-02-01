@@ -1,0 +1,9 @@
+{
+  "module_name": "manifest.h",
+  "hash_id": "ded64683d7fca33a89b3a06b2221e8bdeb89a2821270262a504cd10495040c83",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/greybus/manifest.h",
+  "human_readable_source": " \n \n\n#ifndef __MANIFEST_H\n#define __MANIFEST_H\n\n#include <linux/types.h>\n\nstruct gb_interface;\nbool gb_manifest_parse(struct gb_interface *intf, void *data, size_t size);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-inode-lookup.m4",
+  "hash_id": "e800ac7c251ab48044954edcc4ac3a29c93c804eb7d261213947247e05dd540e",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-inode-lookup.m4",
+  "human_readable_source": "dnl #\ndnl # 3.6 API change\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_LOOKUP_FLAGS], [\n\tZFS_LINUX_TEST_SRC([lookup_flags], [\n\t\t#include <linux/fs.h>\n\t\t#include <linux/sched.h>\n\n\t\tstruct dentry *inode_lookup(struct inode *inode,\n\t\t    struct dentry *dentry, unsigned int flags) { return NULL; }\n\n\t\tstatic const struct inode_operations iops\n\t\t    __attribute__ ((unused)) = {\n\t\t\t.lookup\t= inode_lookup,\n\t\t};\n\t],[])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_LOOKUP_FLAGS], [\n\tAC_MSG_CHECKING([whether iops->lookup() passes flags])\n\tZFS_LINUX_TEST_RESULT([lookup_flags], [\n\t\tAC_MSG_RESULT(yes)\n\t],[\n\t\tZFS_LINUX_TEST_ERROR([iops->lookup()])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

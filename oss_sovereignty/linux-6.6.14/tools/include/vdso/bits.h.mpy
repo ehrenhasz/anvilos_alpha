@@ -1,0 +1,9 @@
+{
+  "module_name": "bits.h",
+  "hash_id": "0dd4d76e4c563bd5e27b3745877796eea7ecbd89fb8a4e3d6d9fc9c43b0725e1",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/vdso/bits.h",
+  "human_readable_source": " \n#ifndef __VDSO_BITS_H\n#define __VDSO_BITS_H\n\n#include <vdso/const.h>\n\n#define BIT(nr)\t\t\t(UL(1) << (nr))\n#define BIT_ULL(nr)\t\t(ULL(1) << (nr))\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

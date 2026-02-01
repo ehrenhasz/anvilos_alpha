@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "9b01193738632afa17c517383969234d0404708b9326ac81be3e2d8e70322d14",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/perf/hisilicon/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_HISI_PMU) += hisi_uncore_pmu.o hisi_uncore_l3c_pmu.o \\\n\t\t\t  hisi_uncore_hha_pmu.o hisi_uncore_ddrc_pmu.o hisi_uncore_sllc_pmu.o \\\n\t\t\t  hisi_uncore_pa_pmu.o hisi_uncore_cpa_pmu.o hisi_uncore_uc_pmu.o\n\nobj-$(CONFIG_HISI_PCIE_PMU) += hisi_pcie_pmu.o\nobj-$(CONFIG_HNS3_PMU) += hns3_pmu.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

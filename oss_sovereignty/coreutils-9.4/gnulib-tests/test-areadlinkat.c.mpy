@@ -1,0 +1,9 @@
+{
+  "module_name": "test-areadlinkat.c",
+  "hash_id": "02fc0e86100beec6a0270941dc9e9653ebd0f7d7d5de2b43bc8f9235734ea6c6",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-areadlinkat.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"areadlink.h\"\n\n#include <fcntl.h>\n#include <errno.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <sys/stat.h>\n#include <unistd.h>\n\n#include \"ignore-value.h\"\n#include \"macros.h\"\n\n#define BASE \"test-areadlinkat.t\"\n\n#include \"test-areadlink.h\"\n\nstatic int dfd = AT_FDCWD;\n\n \nstatic char *\ndo_areadlinkat (char const *name, _GL_UNUSED size_t ignored)\n{\n  return areadlinkat (dfd, name);\n}\n\nint\nmain (void)\n{\n  int result;\n\n   \n  ignore_value (system (\"rm -rf \" BASE \"*\"));\n\n   \n  result = test_areadlink (do_areadlinkat, false);\n  dfd = open (\".\", O_RDONLY);\n  ASSERT (0 <= dfd);\n  ASSERT (test_areadlink (do_areadlinkat, false) == result);\n\n   \n  if (result == 77)\n    fputs (\"skipping test: symlinks not supported on this file system\\n\",\n           stderr);\n  else\n    {\n      char *buf;\n      ASSERT (symlink (\"nowhere\", BASE \"link\") == 0);\n      ASSERT (mkdir (BASE \"dir\", 0700) == 0);\n      ASSERT (chdir (BASE \"dir\") == 0);\n      buf = areadlinkat (dfd, BASE \"link\");\n      ASSERT (buf);\n      ASSERT (strcmp (buf, \"nowhere\") == 0);\n      free (buf);\n      errno = 0;\n      ASSERT (areadlinkat (-1, BASE \"link\") == NULL);\n      ASSERT (errno == EBADF);\n      errno = 0;\n      ASSERT (areadlinkat (AT_FDCWD, BASE \"link\") == NULL);\n      ASSERT (errno == ENOENT);\n      ASSERT (chdir (\"..\") == 0);\n      ASSERT (rmdir (BASE \"dir\") == 0);\n      ASSERT (unlink (BASE \"link\") == 0);\n    }\n\n  ASSERT (close (dfd) == 0);\n  return result;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

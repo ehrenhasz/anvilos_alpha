@@ -1,0 +1,9 @@
+{
+  "module_name": "hyperv_drm.h",
+  "hash_id": "394aeec8c592bebb0f56c8b12f9aa3bf6525b899f80a24b12148a9eb98a2f11a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/hyperv/hyperv_drm.h",
+  "human_readable_source": " \n \n\n#ifndef _HYPERV_DRM_H_\n#define _HYPERV_DRM_H_\n\n#define VMBUS_MAX_PACKET_SIZE 0x4000\n\nstruct hyperv_drm_device {\n\t \n\tstruct drm_device dev;\n\tstruct drm_simple_display_pipe pipe;\n\tstruct drm_connector connector;\n\n\t \n\tu32 screen_width_max;\n\tu32 screen_height_max;\n\tu32 preferred_width;\n\tu32 preferred_height;\n\tu32 screen_depth;\n\n\t \n\tstruct resource *mem;\n\tvoid __iomem *vram;\n\tunsigned long fb_base;\n\tunsigned long fb_size;\n\tstruct completion wait;\n\tu32 synthvid_version;\n\tu32 mmio_megabytes;\n\tbool dirt_needed;\n\n\tu8 init_buf[VMBUS_MAX_PACKET_SIZE];\n\tu8 recv_buf[VMBUS_MAX_PACKET_SIZE];\n\n\tstruct hv_device *hdev;\n};\n\n#define to_hv(_dev) container_of(_dev, struct hyperv_drm_device, dev)\n\n \nint hyperv_mode_config_init(struct hyperv_drm_device *hv);\n\n \nint hyperv_update_vram_location(struct hv_device *hdev, phys_addr_t vram_pp);\nint hyperv_update_situation(struct hv_device *hdev, u8 active, u32 bpp,\n\t\t\t    u32 w, u32 h, u32 pitch);\nint hyperv_hide_hw_ptr(struct hv_device *hdev);\nint hyperv_update_dirt(struct hv_device *hdev, struct drm_rect *rect);\nint hyperv_connect_vsp(struct hv_device *hdev);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

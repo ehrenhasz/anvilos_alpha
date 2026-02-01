@@ -1,0 +1,9 @@
+{
+  "module_name": "test_is_test_passed-no_tests_no_plan.log",
+  "hash_id": "41f481fd0631553bde574944e542344f422e8af2632b692068a221fea6bd9dcc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/kunit/test_data/test_is_test_passed-no_tests_no_plan.log",
+  "human_readable_source": "TAP version 14\n1..1\n  # Subtest: suite\n  1..1\n    # Subtest: case\n  ok 1 - case\nok 1 - suite\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

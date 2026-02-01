@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "8d8714740ec1d52cdc1ab1ad730b17eb5e137730d57556216e4b669622e745f3",
+  "original_prompt": "Ingested from linux-6.6.14/sound/usb/line6/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig SND_USB_LINE6\n\ttristate\n\tselect SND_RAWMIDI\n\tselect SND_PCM\n\tselect SND_HWDEP\n\nconfig SND_USB_POD\n\ttristate \"Line 6 POD USB support\"\n\tselect SND_USB_LINE6\n\thelp\n\t  This is a driver for PODxt and other similar devices,\n\t  supporting the following features:\n\t    * Reading/writing individual parameters\n\t    * Reading/writing complete channel, effects setup, and amp\n\t      setup data\n\t    * Channel switching\n\t    * Virtual MIDI interface\n\t    * Tuner access\n\t    * Playback/capture/mixer device for any ALSA-compatible PCM\n\t      audio application\n\t    * Signal routing (record clean/processed guitar signal,\n\t      re-amping)\n\nconfig SND_USB_PODHD\n\ttristate \"Line 6 POD X3/HD300/400/500 USB support\"\n\tselect SND_USB_LINE6\n\thelp\n\t  This is a driver for POD X3, HD300, 400 and 500 devices.\n\nconfig SND_USB_TONEPORT\n\ttristate \"TonePort GX, UX1 and UX2 USB support\"\n\tselect SND_USB_LINE6\n\tselect NEW_LEDS\n\tselect LEDS_CLASS\n\thelp\n\t  This is a driver for TonePort GX, UX1 and UX2 devices.\n\nconfig SND_USB_VARIAX\n\ttristate \"Variax Workbench USB support\"\n\tselect SND_USB_LINE6\n\thelp\n\t  This is a driver for Variax Workbench device.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

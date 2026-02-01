@@ -1,0 +1,9 @@
+{
+  "module_name": "test-libgmp.c",
+  "hash_id": "695a478a36e82a8d6697e3630bd8437a41c51a75f5eac1cc72decc32961e3b54",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-libgmp.c",
+  "human_readable_source": " \n#include <gmp.h>\n\n#include <limits.h>\n#include <string.h>\n\n#include \"macros.h\"\n\n#ifndef MINI_GMP_LIMB_TYPE\n \nstatic_assert (GMP_NUMB_BITS == sizeof (mp_limb_t) * CHAR_BIT);\n#endif\n\nint\nmain ()\n{\n#ifndef MINI_GMP_LIMB_TYPE\n   \n  {\n    char gmp_header_version[32];\n    sprintf (gmp_header_version, \"%d.%d.%d\", __GNU_MP_VERSION,\n             __GNU_MP_VERSION_MINOR, __GNU_MP_VERSION_PATCHLEVEL);\n    if (strcmp (gmp_version, gmp_header_version) != 0)\n      {\n        char gmp_header_version2[32];\n        if (__GNU_MP_VERSION_PATCHLEVEL > 0\n            || (sprintf (gmp_header_version2, \"%d.%d\", __GNU_MP_VERSION,\n                         __GNU_MP_VERSION_MINOR),\n                strcmp (gmp_version, gmp_header_version2) != 0))\n          {\n            fprintf (stderr,\n                     \"gmp header version (%s) does not match gmp library version (%s).\\n\",\n                     gmp_header_version, gmp_version);\n            exit (1);\n          }\n      }\n  }\n#endif\n\n   \n  static mp_limb_t const twobody[] = { 2 };\n  static mpz_t const two = MPZ_ROINIT_N ((mp_limb_t *) twobody, 1);\n  ASSERT (mpz_fits_slong_p (two));\n  ASSERT (mpz_get_si (two) == 2);\n\n  mpz_t four;\n  mpz_init (four);\n  mpz_add (four, two, two);\n  ASSERT (mpz_fits_slong_p (four));\n  ASSERT (mpz_get_si (four) == 4);\n  mpz_clear (four);\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

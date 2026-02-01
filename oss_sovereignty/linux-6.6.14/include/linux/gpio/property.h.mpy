@@ -1,0 +1,9 @@
+{
+  "module_name": "property.h",
+  "hash_id": "fc820620c54c4bcb47995e2d96d9069041349d7a4bea24acc5d65cbd3cd65a32",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/gpio/property.h",
+  "human_readable_source": "\n#ifndef __LINUX_GPIO_PROPERTY_H\n#define __LINUX_GPIO_PROPERTY_H\n\n#include <dt-bindings/gpio/gpio.h>  \n#include <linux/property.h>\n\n#define PROPERTY_ENTRY_GPIO(_name_, _chip_node_, _idx_, _flags_) \\\n\tPROPERTY_ENTRY_REF(_name_, _chip_node_, _idx_, _flags_)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

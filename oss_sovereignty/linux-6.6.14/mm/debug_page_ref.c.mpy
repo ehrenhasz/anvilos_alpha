@@ -1,0 +1,9 @@
+{
+  "module_name": "debug_page_ref.c",
+  "hash_id": "342423caeba36ebc8130d37469771fb3d8d1c9a570be32d3544d83acdbd8ca90",
+  "original_prompt": "Ingested from linux-6.6.14/mm/debug_page_ref.c",
+  "human_readable_source": "\n#include <linux/mm_types.h>\n#include <linux/tracepoint.h>\n\n#define CREATE_TRACE_POINTS\n#include <trace/events/page_ref.h>\n\nvoid __page_ref_set(struct page *page, int v)\n{\n\ttrace_page_ref_set(page, v);\n}\nEXPORT_SYMBOL(__page_ref_set);\nEXPORT_TRACEPOINT_SYMBOL(page_ref_set);\n\nvoid __page_ref_mod(struct page *page, int v)\n{\n\ttrace_page_ref_mod(page, v);\n}\nEXPORT_SYMBOL(__page_ref_mod);\nEXPORT_TRACEPOINT_SYMBOL(page_ref_mod);\n\nvoid __page_ref_mod_and_test(struct page *page, int v, int ret)\n{\n\ttrace_page_ref_mod_and_test(page, v, ret);\n}\nEXPORT_SYMBOL(__page_ref_mod_and_test);\nEXPORT_TRACEPOINT_SYMBOL(page_ref_mod_and_test);\n\nvoid __page_ref_mod_and_return(struct page *page, int v, int ret)\n{\n\ttrace_page_ref_mod_and_return(page, v, ret);\n}\nEXPORT_SYMBOL(__page_ref_mod_and_return);\nEXPORT_TRACEPOINT_SYMBOL(page_ref_mod_and_return);\n\nvoid __page_ref_mod_unless(struct page *page, int v, int u)\n{\n\ttrace_page_ref_mod_unless(page, v, u);\n}\nEXPORT_SYMBOL(__page_ref_mod_unless);\nEXPORT_TRACEPOINT_SYMBOL(page_ref_mod_unless);\n\nvoid __page_ref_freeze(struct page *page, int v, int ret)\n{\n\ttrace_page_ref_freeze(page, v, ret);\n}\nEXPORT_SYMBOL(__page_ref_freeze);\nEXPORT_TRACEPOINT_SYMBOL(page_ref_freeze);\n\nvoid __page_ref_unfreeze(struct page *page, int v)\n{\n\ttrace_page_ref_unfreeze(page, v);\n}\nEXPORT_SYMBOL(__page_ref_unfreeze);\nEXPORT_TRACEPOINT_SYMBOL(page_ref_unfreeze);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

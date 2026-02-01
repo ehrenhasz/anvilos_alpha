@@ -1,0 +1,9 @@
+{
+  "module_name": "client.h",
+  "hash_id": "f5eda7aa305327ce2b71f1b6e032e2593d33536753122b7fd860d2c84668e3bb",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/include/nvkm/core/client.h",
+  "human_readable_source": " \n#ifndef __NVKM_CLIENT_H__\n#define __NVKM_CLIENT_H__\n#define nvkm_client(p) container_of((p), struct nvkm_client, object)\n#include <core/object.h>\n\nstruct nvkm_client {\n\tstruct nvkm_object object;\n\tchar name[32];\n\tu64 device;\n\tu32 debug;\n\n\tstruct rb_root objroot;\n\n\tvoid *data;\n\tint (*event)(u64 token, void *argv, u32 argc);\n\n\tstruct list_head umem;\n\tspinlock_t lock;\n};\n\nint  nvkm_client_new(const char *name, u64 device, const char *cfg, const char *dbg,\n\t\t     int (*)(u64, void *, u32), struct nvkm_client **);\nstruct nvkm_client *nvkm_client_search(struct nvkm_client *, u64 handle);\n\n \n#define nvif_printk(o,l,p,f,a...) do {                                         \\\n\tconst struct nvkm_object *_object = (o);                               \\\n\tconst struct nvkm_client *_client = _object->client;                   \\\n\tif (_client->debug >= NV_DBG_##l)                                      \\\n\t\tprintk(KERN_##p \"nouveau: %s:%08x:%08x: \"f, _client->name,     \\\n\t\t       _object->handle, _object->oclass, ##a);                 \\\n} while(0)\n#define nvif_fatal(o,f,a...) nvif_printk((o), FATAL, CRIT, f, ##a)\n#define nvif_error(o,f,a...) nvif_printk((o), ERROR,  ERR, f, ##a)\n#define nvif_debug(o,f,a...) nvif_printk((o), DEBUG, INFO, f, ##a)\n#define nvif_trace(o,f,a...) nvif_printk((o), TRACE, INFO, f, ##a)\n#define nvif_info(o,f,a...)  nvif_printk((o),  INFO, INFO, f, ##a)\n#define nvif_ioctl(o,f,a...) nvif_trace((o), \"ioctl: \"f, ##a)\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

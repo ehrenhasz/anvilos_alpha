@@ -1,0 +1,9 @@
+{
+  "module_name": "kexec-purgatory.S",
+  "hash_id": "0239a2e160957e1c6ae56e726f077c81bf377bea0854ebef67f5b6bf3142dc24",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/purgatory/kexec-purgatory.S",
+  "human_readable_source": " \n\n\t.section .rodata, \"a\"\n\n\t.align\t8\nkexec_purgatory:\n\t.globl\tkexec_purgatory\n\t.incbin\t\"arch/x86/purgatory/purgatory.ro\"\n.Lkexec_purgatory_end:\n\n\t.align\t8\nkexec_purgatory_size:\n\t.globl\tkexec_purgatory_size\n\t.quad\t.Lkexec_purgatory_end - kexec_purgatory\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

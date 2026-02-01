@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_qp_tables.h",
+  "hash_id": "32d3e5f13467d702d6d44940adef8d6395d08a41d9baa0b3916f56a5b7463359",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/display/intel_qp_tables.h",
+  "human_readable_source": " \n \n\n#ifndef _INTEL_QP_TABLES_H_\n#define _INTEL_QP_TABLES_H_\n\n#include <linux/types.h>\n\nu8 intel_lookup_range_min_qp(int bpc, int buf_i, int bpp_i, bool is_420);\nu8 intel_lookup_range_max_qp(int bpc, int buf_i, int bpp_i, bool is_420);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

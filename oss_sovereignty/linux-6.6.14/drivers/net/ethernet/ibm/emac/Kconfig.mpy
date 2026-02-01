@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "367b4c3da97c875355cfc4793330af2e1b7f8046490f6ac9a0d7731b757b1b3a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/ibm/emac/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig IBM_EMAC\n\ttristate \"IBM EMAC Ethernet support\"\n\tdepends on PPC_DCR\n\tselect CRC32\n\tselect PHYLIB\n\thelp\n\t  This driver supports the IBM EMAC family of Ethernet controllers\n\t  typically found on 4xx embedded PowerPC chips, but also on the\n\t  Axon southbridge for Cell.\n\nconfig IBM_EMAC_RXB\n\tint \"Number of receive buffers\"\n\tdepends on IBM_EMAC\n\tdefault \"128\"\n\nconfig IBM_EMAC_TXB\n\tint \"Number of transmit buffers\"\n\tdepends on IBM_EMAC\n\tdefault \"64\"\n\nconfig IBM_EMAC_POLL_WEIGHT\n\tint \"MAL NAPI polling weight\"\n\tdepends on IBM_EMAC\n\tdefault \"32\"\n\nconfig IBM_EMAC_RX_COPY_THRESHOLD\n\tint \"RX skb copy threshold (bytes)\"\n\tdepends on IBM_EMAC\n\tdefault \"256\"\n\nconfig IBM_EMAC_DEBUG\n\tbool \"Debugging\"\n\tdepends on IBM_EMAC\n\tdefault n\n\n# The options below has to be select'ed by the respective\n# processor types or platforms\n\nconfig IBM_EMAC_ZMII\n\tbool\n\tdefault n\n\nconfig IBM_EMAC_RGMII\n\tbool\n\tdefault n\n\nconfig IBM_EMAC_TAH\n\tbool\n\tdefault n\n\nconfig IBM_EMAC_EMAC4\n\tbool\n\tdefault n\n\nconfig IBM_EMAC_NO_FLOW_CTRL\n\tbool\n\tdefault n\n\nconfig IBM_EMAC_MAL_CLR_ICINTSTAT\n\tbool\n\tdefault n\n\nconfig IBM_EMAC_MAL_COMMON_ERR\n\tbool\n\tdefault n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

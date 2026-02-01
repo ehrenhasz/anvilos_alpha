@@ -1,0 +1,9 @@
+{
+  "module_name": "soc_common.h",
+  "hash_id": "b8aac66e52f448f20528cfe79c2ef7147a0ad195652674d5908631dd5881c1e3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pcmcia/soc_common.h",
+  "human_readable_source": " \n \n#ifndef _ASM_ARCH_PCMCIA\n#define _ASM_ARCH_PCMCIA\n\n \n#include <linux/clk.h>\n#include <linux/cpufreq.h>\n#include <pcmcia/cistpl.h>\n#include <pcmcia/soc_common.h>\n\nstruct device;\nstruct gpio_desc;\nstruct pcmcia_low_level;\nstruct regulator;\n\nstruct skt_dev_info {\n\tint nskt;\n\tstruct soc_pcmcia_socket skt[];\n};\n\nstruct soc_pcmcia_timing {\n\tunsigned short io;\n\tunsigned short mem;\n\tunsigned short attr;\n};\n\nextern void soc_common_pcmcia_get_timing(struct soc_pcmcia_socket *, struct soc_pcmcia_timing *);\n\nvoid soc_pcmcia_init_one(struct soc_pcmcia_socket *skt,\n\tconst struct pcmcia_low_level *ops, struct device *dev);\nvoid soc_pcmcia_remove_one(struct soc_pcmcia_socket *skt);\nint soc_pcmcia_add_one(struct soc_pcmcia_socket *skt);\nint soc_pcmcia_request_gpiods(struct soc_pcmcia_socket *skt);\n\nvoid soc_common_cf_socket_state(struct soc_pcmcia_socket *skt,\n\tstruct pcmcia_state *state);\n\nint soc_pcmcia_regulator_set(struct soc_pcmcia_socket *skt,\n\tstruct soc_pcmcia_regulator *r, int v);\n\n#ifdef CONFIG_PCMCIA_DEBUG\n\nextern void soc_pcmcia_debug(struct soc_pcmcia_socket *skt, const char *func,\n\t\t\t     int lvl, const char *fmt, ...);\n\n#define debug(skt, lvl, fmt, arg...) \\\n\tsoc_pcmcia_debug(skt, __func__, lvl, fmt , ## arg)\n\n#else\n#define debug(skt, lvl, fmt, arg...) do { } while (0)\n#endif\n\n\n \n#define SOC_PCMCIA_IO_ACCESS\t\t(165)\n#define SOC_PCMCIA_5V_MEM_ACCESS\t(150)\n#define SOC_PCMCIA_3V_MEM_ACCESS\t(300)\n#define SOC_PCMCIA_ATTR_MEM_ACCESS\t(300)\n\n \n#define SOC_PCMCIA_POLL_PERIOD    (2*HZ)\n\n\n \n#define iostschg bvd1\n#define iospkr   bvd2\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

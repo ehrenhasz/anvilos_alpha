@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "de946a7a5a7d1908da5a5f475c80fb65858ba94f94b260f2c3d5eb1fec14453f",
+  "original_prompt": "Ingested from linux-6.6.14/fs/notify/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig FSNOTIFY\n\tdef_bool n\n\nsource \"fs/notify/dnotify/Kconfig\"\nsource \"fs/notify/inotify/Kconfig\"\nsource \"fs/notify/fanotify/Kconfig\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

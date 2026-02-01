@@ -1,0 +1,9 @@
+{
+  "module_name": "adxl372_spi.c",
+  "hash_id": "c0c658cb09e83aac51b63e9b1f0c9d849c08564c0d2c1e3b76b0633abc744c36",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/accel/adxl372_spi.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/regmap.h>\n#include <linux/of.h>\n#include <linux/spi/spi.h>\n\n#include \"adxl372.h\"\n\nstatic const struct regmap_config adxl372_spi_regmap_config = {\n\t.reg_bits = 7,\n\t.pad_bits = 1,\n\t.val_bits = 8,\n\t.read_flag_mask = BIT(0),\n\t.readable_noinc_reg = adxl372_readable_noinc_reg,\n};\n\nstatic int adxl372_spi_probe(struct spi_device *spi)\n{\n\tconst struct spi_device_id *id = spi_get_device_id(spi);\n\tstruct regmap *regmap;\n\n\tregmap = devm_regmap_init_spi(spi, &adxl372_spi_regmap_config);\n\tif (IS_ERR(regmap))\n\t\treturn PTR_ERR(regmap);\n\n\treturn adxl372_probe(&spi->dev, regmap, spi->irq, id->name);\n}\n\nstatic const struct spi_device_id adxl372_spi_id[] = {\n\t{ \"adxl372\", 0 },\n\t{}\n};\nMODULE_DEVICE_TABLE(spi, adxl372_spi_id);\n\nstatic const struct of_device_id adxl372_of_match[] = {\n\t{ .compatible = \"adi,adxl372\" },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, adxl372_of_match);\n\nstatic struct spi_driver adxl372_spi_driver = {\n\t.driver = {\n\t\t.name = \"adxl372_spi\",\n\t\t.of_match_table = adxl372_of_match,\n\t},\n\t.probe = adxl372_spi_probe,\n\t.id_table = adxl372_spi_id,\n};\n\nmodule_spi_driver(adxl372_spi_driver);\n\nMODULE_AUTHOR(\"Stefan Popa <stefan.popa@analog.com>\");\nMODULE_DESCRIPTION(\"Analog Devices ADXL372 3-axis accelerometer SPI driver\");\nMODULE_LICENSE(\"GPL\");\nMODULE_IMPORT_NS(IIO_ADXL372);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

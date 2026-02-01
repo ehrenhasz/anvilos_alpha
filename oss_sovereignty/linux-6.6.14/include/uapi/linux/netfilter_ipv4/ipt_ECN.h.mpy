@@ -1,0 +1,9 @@
+{
+  "module_name": "ipt_ECN.h",
+  "hash_id": "9b88eb806106ef1e7b1f50116a3ee5293f620ba8dd8a81303bc84fd465970876",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_ipv4/ipt_ECN.h",
+  "human_readable_source": " \n \n#ifndef _IPT_ECN_TARGET_H\n#define _IPT_ECN_TARGET_H\n\n#include <linux/types.h>\n#include <linux/netfilter/xt_DSCP.h>\n\n#define IPT_ECN_IP_MASK\t(~XT_DSCP_MASK)\n\n#define IPT_ECN_OP_SET_IP\t0x01\t \n#define IPT_ECN_OP_SET_ECE\t0x10\t \n#define IPT_ECN_OP_SET_CWR\t0x20\t \n\n#define IPT_ECN_OP_MASK\t\t0xce\n\nstruct ipt_ECN_info {\n\t__u8 operation;\t \n\t__u8 ip_ect;\t \n\tunion {\n\t\tstruct {\n\t\t\t__u8 ece:1, cwr:1;  \n\t\t} tcp;\n\t} proto;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

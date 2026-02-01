@@ -1,0 +1,9 @@
+{
+  "module_name": "kexec-bzimage64.h",
+  "hash_id": "37f1c51b10f6a8cf32c931d18dd5f18ff485ec4b9ddecf863f6c16bbc2afa274",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/kexec-bzimage64.h",
+  "human_readable_source": " \n#ifndef _ASM_KEXEC_BZIMAGE64_H\n#define _ASM_KEXEC_BZIMAGE64_H\n\nextern const struct kexec_file_ops kexec_bzImage64_ops;\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

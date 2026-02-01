@@ -1,0 +1,9 @@
+{
+  "module_name": "chmod.c",
+  "hash_id": "eb0a309b0c841e581d665af5b689a842830b228bfaa25ae25e5f08528e81b185",
+  "original_prompt": "Ingested from coreutils-9.4/lib/chmod.c",
+  "human_readable_source": " \n#include <sys/stat.h>\n\n#include <errno.h>\n#include <string.h>\n\nint\nrpl_chmod (const char *filename, mode_t mode)\n#undef chmod\n#if defined _WIN32 && !defined __CYGWIN__\n# define chmod _chmod\n#endif\n{\n  size_t len = strlen (filename);\n  if (len > 0 && filename[len - 1] == '/')\n    {\n      struct stat st;\n      if (lstat (filename, &st) < 0)\n        return -1;\n      if (!S_ISDIR (st.st_mode))\n        {\n          errno = ENOTDIR;\n          return -1;\n        }\n    }\n\n  return chmod (filename, mode);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

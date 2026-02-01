@@ -1,0 +1,9 @@
+{
+  "module_name": "n2_asm.S",
+  "hash_id": "2164732aaffdf54b4c937108324363128098a8988de17a023977088eca66f738",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/n2_asm.S",
+  "human_readable_source": " \n \n\n#include <linux/linkage.h>\n#include <asm/hypervisor.h>\n#include \"n2_core.h\"\n\n\t \nENTRY(sun4v_ncs_qconf)\n\tmov\tHV_FAST_NCS_QCONF, %o5\n\tta\tHV_FAST_TRAP\n\tstx\t%o1, [%o3]\n\tretl\n\t nop\nENDPROC(sun4v_ncs_qconf)\n\n\t \nENTRY(sun4v_ncs_qinfo)\n\tmov\t%o1, %g1\n\tmov\t%o2, %g2\n\tmov\t%o3, %g3\n\tmov\tHV_FAST_NCS_QINFO, %o5\n\tta\tHV_FAST_TRAP\n\tstx\t%o1, [%g1]\n\tstx\t%o2, [%g2]\n\tstx\t%o3, [%g3]\n\tretl\n\t nop\nENDPROC(sun4v_ncs_qinfo)\n\n\t \nENTRY(sun4v_ncs_gethead)\n\tmov\t%o1, %o2\n\tmov\tHV_FAST_NCS_GETHEAD, %o5\n\tta\tHV_FAST_TRAP\n\tstx\t%o1, [%o2]\n\tretl\n\t nop\nENDPROC(sun4v_ncs_gethead)\n\n\t \nENTRY(sun4v_ncs_gettail)\n\tmov\t%o1, %o2\n\tmov\tHV_FAST_NCS_GETTAIL, %o5\n\tta\tHV_FAST_TRAP\n\tstx\t%o1, [%o2]\n\tretl\n\t nop\nENDPROC(sun4v_ncs_gettail)\n\n\t \nENTRY(sun4v_ncs_settail)\n\tmov\tHV_FAST_NCS_SETTAIL, %o5\n\tta\tHV_FAST_TRAP\n\tretl\n\t nop\nENDPROC(sun4v_ncs_settail)\n\n\t \nENTRY(sun4v_ncs_qhandle_to_devino)\n\tmov\t%o1, %o2\n\tmov\tHV_FAST_NCS_QHANDLE_TO_DEVINO, %o5\n\tta\tHV_FAST_TRAP\n\tstx\t%o1, [%o2]\n\tretl\n\t nop\nENDPROC(sun4v_ncs_qhandle_to_devino)\n\n\t \nENTRY(sun4v_ncs_sethead_marker)\n\tmov\tHV_FAST_NCS_SETHEAD_MARKER, %o5\n\tta\tHV_FAST_TRAP\n\tretl\n\t nop\nENDPROC(sun4v_ncs_sethead_marker)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

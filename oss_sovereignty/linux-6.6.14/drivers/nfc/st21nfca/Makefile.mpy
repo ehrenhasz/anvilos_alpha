@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "4b61910a94e5e4a0ad683f4227846bc383474856a1c9fe8878d3fab038e2763c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/st21nfca/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for ST21NFCA HCI based NFC driver\n#\n\nst21nfca_hci-objs = core.o dep.o se.o vendor_cmds.o\nobj-$(CONFIG_NFC_ST21NFCA)     += st21nfca_hci.o\n\nst21nfca_i2c-objs  = i2c.o\nobj-$(CONFIG_NFC_ST21NFCA_I2C) += st21nfca_i2c.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

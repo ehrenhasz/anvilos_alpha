@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_edcasetting_bitdef.h",
+  "hash_id": "dac86e1e270c838bf2b7f83c58d7c8aeffa04e4ff36a8dff8f09da6d0a05128c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_edcasetting_bitdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_EDCASETTING_BITDEF_H__\n#define __RTL8712_EDCASETTING_BITDEF_H__\n\n \n#define\t_TXOPLIMIT_MSK\t\t0xFFFF0000\n#define\t_TXOPLIMIT_SHT\t\t16\n#define\t_ECWIN_MSK\t\t0x0000FF00\n#define\t_ECWIN_SHT\t\t8\n#define\t_AIFS_MSK\t\t0x000000FF\n#define\t_AIFS_SHT\t\t0\n\n \n#define\t_BCNECW_MSK\t\t0xFF00\n#define\t_BCNECW_SHT\t\t8\n#define\t_BCNIFS_MSK\t\t0x00FF\n#define\t_BCNIFS_SHT\t\t0\n\n \n#define\t_CWRR_MSK\t\t0x03FF\n\n \n#define\t_AVG_TIME_UP\t\tBIT(3)\n#define\t_AVGPERIOD_MSK\t\t0x03\n\n \n#define\t_VOQ_ACM_STATUS\t\tBIT(6)\n#define\t_VIQ_ACM_STATUS\t\tBIT(5)\n#define\t_BEQ_ACM_STATUS\t\tBIT(4)\n#define\t_VOQ_ACM_EN\t\tBIT(3)\n#define\t_VIQ_ACM_EN\t\tBIT(2)\n#define\t_BEQ_ACM_EN\t\tBIT(1)\n#define\t_ACMHWEN\t\tBIT(0)\n\n \n#define\t_VO_ACM_RUT\t\tBIT(18)\n#define\t_VO_ADMTIME_MSK\t\t0x0003FFF\n\n \n#define\t_VI_ACM_RUT\t\tBIT(18)\n#define\t_VI_ADMTIME_MSK\t\t0x0003FFF\n\n \n#define\t_BE_ACM_RUT\t\tBIT(18)\n#define\t_BE_ADMTIME_MSK\t\t0x0003FFF\n\n \n#define\t_SRL_MSK\t\t0xFF00\n#define\t_SRL_SHT\t\t8\n#define\t_LRL_MSK\t\t0x00FF\n#define\t_LRL_SHT\t\t0\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

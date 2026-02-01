@@ -1,0 +1,9 @@
+{
+  "module_name": "vfio_dev.h",
+  "hash_id": "5763ae5f4348705b9c9d424f61d27ce17d0e280be0890ab2c617ce8a1a0ca4ef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/vfio/pci/pds/vfio_dev.h",
+  "human_readable_source": " \n \n\n#ifndef _VFIO_DEV_H_\n#define _VFIO_DEV_H_\n\n#include <linux/pci.h>\n#include <linux/vfio_pci_core.h>\n\n#include \"dirty.h\"\n#include \"lm.h\"\n\nstruct pds_vfio_pci_device {\n\tstruct vfio_pci_core_device vfio_coredev;\n\n\tstruct pds_vfio_lm_file *save_file;\n\tstruct pds_vfio_lm_file *restore_file;\n\tstruct pds_vfio_dirty dirty;\n\tstruct mutex state_mutex;  \n\tenum vfio_device_mig_state state;\n\tstruct mutex reset_mutex;  \n\tu8 deferred_reset;\n\tenum vfio_device_mig_state deferred_reset_state;\n\tstruct notifier_block nb;\n\n\tint vf_id;\n\tu16 client_id;\n};\n\nvoid pds_vfio_state_mutex_unlock(struct pds_vfio_pci_device *pds_vfio);\n\nconst struct vfio_device_ops *pds_vfio_ops_info(void);\nstruct pds_vfio_pci_device *pds_vfio_pci_drvdata(struct pci_dev *pdev);\nvoid pds_vfio_reset(struct pds_vfio_pci_device *pds_vfio);\n\nstruct pci_dev *pds_vfio_to_pci_dev(struct pds_vfio_pci_device *pds_vfio);\nstruct device *pds_vfio_to_dev(struct pds_vfio_pci_device *pds_vfio);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

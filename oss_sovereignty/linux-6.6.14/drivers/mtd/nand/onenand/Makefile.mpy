@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b4830a1f3ec9578b998ae58c372480c2ec2e49a8d9876da154b97b55dbee7703",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/mtd/nand/onenand/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the OneNAND MTD\n#\n\n# Core functionality.\nobj-$(CONFIG_MTD_ONENAND)\t\t+= onenand.o\n\n# Board specific.\nobj-$(CONFIG_MTD_ONENAND_GENERIC)\t+= generic.o\nobj-$(CONFIG_MTD_ONENAND_OMAP2)\t\t+= onenand_omap2.o\nobj-$(CONFIG_MTD_ONENAND_SAMSUNG)       += onenand_samsung.o\n\nonenand-objs = onenand_base.o onenand_bbt.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

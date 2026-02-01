@@ -1,0 +1,9 @@
+{
+  "module_name": "cam.h",
+  "hash_id": "50b4ee92e3d890b48600c99ad968a3941389359fb54b54a5999488451423b416",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/aic7xxx/cam.h",
+  "human_readable_source": " \n\n#ifndef _AIC7XXX_CAM_H\n#define _AIC7XXX_CAM_H 1\n\n#include <linux/types.h>\n\n#define\tCAM_BUS_WILDCARD ((u_int)~0)\n#define\tCAM_TARGET_WILDCARD ((u_int)~0)\n#define\tCAM_LUN_WILDCARD ((u_int)~0)\n\n \ntypedef enum {\n\tCAM_REQ_INPROG,\t\t \n\tCAM_REQ_CMP,\t\t \n\tCAM_REQ_ABORTED,\t \n\tCAM_UA_ABORT,\t\t \n\tCAM_REQ_CMP_ERR,\t \n\tCAM_BUSY,\t\t \n\tCAM_REQ_INVALID,\t \n\tCAM_PATH_INVALID,\t \n\tCAM_SEL_TIMEOUT,\t \n\tCAM_CMD_TIMEOUT,\t \n\tCAM_SCSI_STATUS_ERROR,\t \n\tCAM_SCSI_BUS_RESET,\t \n\tCAM_UNCOR_PARITY,\t \n\tCAM_AUTOSENSE_FAIL,\t \n\tCAM_NO_HBA,\t\t \n\tCAM_DATA_RUN_ERR,\t \n\tCAM_UNEXP_BUSFREE,\t \n\tCAM_SEQUENCE_FAIL,\t \n\tCAM_CCB_LEN_ERR,\t \n\tCAM_PROVIDE_FAIL,\t \n\tCAM_BDR_SENT,\t\t \n\tCAM_REQ_TERMIO,\t\t \n\tCAM_UNREC_HBA_ERROR,\t \n\tCAM_REQ_TOO_BIG,\t \n\tCAM_UA_TERMIO,\t\t \n\tCAM_MSG_REJECT_REC,\t \n\tCAM_DEV_NOT_THERE,\t \n\tCAM_RESRC_UNAVAIL,\t \n\t \n\tCAM_REQUEUE_REQ,\n\tCAM_DEV_QFRZN\t\t= 0x40,\n\n\tCAM_STATUS_MASK\t\t= 0x3F\n} cam_status;\n\n \ntypedef enum {\n\tAC_GETDEV_CHANGED\t= 0x800, \n\tAC_INQ_CHANGED\t\t= 0x400, \n\tAC_TRANSFER_NEG\t\t= 0x200, \n\tAC_LOST_DEVICE\t\t= 0x100, \n\tAC_FOUND_DEVICE\t\t= 0x080, \n\tAC_PATH_DEREGISTERED\t= 0x040, \n\tAC_PATH_REGISTERED\t= 0x020, \n\tAC_SENT_BDR\t\t= 0x010, \n\tAC_SCSI_AEN\t\t= 0x008, \n\tAC_UNSOL_RESEL\t\t= 0x002, \n\tAC_BUS_RESET\t\t= 0x001  \n} ac_code;\n\ntypedef enum {\n\tCAM_DIR_IN\t\t= DMA_FROM_DEVICE,\n\tCAM_DIR_OUT\t\t= DMA_TO_DEVICE,\n\tCAM_DIR_NONE\t\t= DMA_NONE,\n} ccb_flags;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

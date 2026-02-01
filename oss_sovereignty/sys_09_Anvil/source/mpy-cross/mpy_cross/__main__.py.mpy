@@ -1,0 +1,9 @@
+{
+  "module_name": "__main__.py",
+  "hash_id": "9ba4d2173a5184e54ee1a21bd2237027bd3c8bea7f3f2402fed59951e9300428",
+  "original_prompt": "Ingested from sys_09_Anvil/source/mpy-cross/mpy_cross/__main__.py",
+  "human_readable_source": "#!/usr/bin/env python3\n#\n# This file is part of the MicroPython project, http://micropython.org/\n#\n# The MIT License (MIT)\n#\n# Copyright (c) 2022 Andrew Leech\n# Copyright (c) 2022 Jim Mussared\n#\n# Permission is hereby granted, free of charge, to any person obtaining a copy\n# of this software and associated documentation files (the \"Software\"), to deal\n# in the Software without restriction, including without limitation the rights\n# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\n# copies of the Software, and to permit persons to whom the Software is\n# furnished to do so, subject to the following conditions:\n#\n# The above copyright notice and this permission notice shall be included in\n# all copies or substantial portions of the Software.\n#\n# THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\n# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\n# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\n# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\n# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\n# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\n# THE SOFTWARE.\n\nfrom __future__ import print_function\nimport argparse\nimport sys\n\nfrom . import run, CrossCompileError\n\ntry:\n    print(run(sys.argv[1:]))\nexcept CrossCompileError as er:\n    print(er.args[0], file=sys.stderr)\n    raise SystemExit(1)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

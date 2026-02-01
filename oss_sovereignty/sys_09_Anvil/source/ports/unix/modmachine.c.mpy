@@ -1,0 +1,9 @@
+{
+  "module_name": "modmachine.c",
+  "hash_id": "50d969511c4e2ab391087bc5799fc7a1365f78c614a8f2b7f658480cdcfb9b6d",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/modmachine.c",
+  "human_readable_source": " \n\n\n\n\n#if MICROPY_PLAT_DEV_MEM\n#include <errno.h>\n#include <fcntl.h>\n#include <sys/mman.h>\n#define MICROPY_PAGE_SIZE 4096\n#define MICROPY_PAGE_MASK (MICROPY_PAGE_SIZE - 1)\n#endif\n\n\nint pyexec_system_exit = 0;\n\nuintptr_t mod_machine_mem_get_addr(mp_obj_t addr_o, uint align) {\n    uintptr_t addr = mp_obj_get_int_truncated(addr_o);\n    if ((addr & (align - 1)) != 0) {\n        mp_raise_msg_varg(&mp_type_ValueError, MP_ERROR_TEXT(\"address %08x is not aligned to %d bytes\"), addr, align);\n    }\n    #if MICROPY_PLAT_DEV_MEM\n    {\n        \n        static int fd;\n        static uintptr_t last_base = (uintptr_t)-1;\n        static uintptr_t map_page;\n        if (!fd) {\n            int _fd = open(\"/dev/mem\", O_RDWR | O_SYNC);\n            if (_fd == -1) {\n                mp_raise_OSError(errno);\n            }\n            fd = _fd;\n        }\n\n        uintptr_t cur_base = addr & ~MICROPY_PAGE_MASK;\n        if (cur_base != last_base) {\n            map_page = (uintptr_t)mmap(NULL, MICROPY_PAGE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, cur_base);\n            last_base = cur_base;\n        }\n        addr = map_page + (addr & MICROPY_PAGE_MASK);\n    }\n    #endif\n\n    return addr;\n}\n\nstatic void mp_machine_idle(void) {\n    #ifdef MICROPY_UNIX_MACHINE_IDLE\n    MICROPY_UNIX_MACHINE_IDLE\n    #else\n    \n    #endif\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

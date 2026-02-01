@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-discard-granularity.m4",
+  "hash_id": "3383ee40fb73017093ecff33a5f709eefacb84de38146559bee28986e1bd8be1",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-discard-granularity.m4",
+  "human_readable_source": "dnl #\ndnl # 2.6.33 API change\ndnl # Discard granularity and alignment restrictions may now be set.\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_DISCARD_GRANULARITY], [\n\tZFS_LINUX_TEST_SRC([discard_granularity], [\n\t\t#include <linux/blkdev.h>\n\t],[\n\t\tstruct queue_limits ql __attribute__ ((unused));\n\t\tql.discard_granularity = 0;\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_DISCARD_GRANULARITY], [\n\tAC_MSG_CHECKING([whether ql->discard_granularity is available])\n\tZFS_LINUX_TEST_RESULT([discard_granularity], [\n\t\tAC_MSG_RESULT(yes)\n\t],[\n\t\tZFS_LINUX_TEST_ERROR([ql->discard_granularity])\n\t])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

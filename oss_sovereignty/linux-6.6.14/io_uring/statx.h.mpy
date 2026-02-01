@@ -1,0 +1,9 @@
+{
+  "module_name": "statx.h",
+  "hash_id": "c8793f5d8a1f9324512844ad7b2826b95153145ddd8d6086768b69a5b899fa53",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/statx.h",
+  "human_readable_source": "\n\nint io_statx_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_statx(struct io_kiocb *req, unsigned int issue_flags);\nvoid io_statx_cleanup(struct io_kiocb *req);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

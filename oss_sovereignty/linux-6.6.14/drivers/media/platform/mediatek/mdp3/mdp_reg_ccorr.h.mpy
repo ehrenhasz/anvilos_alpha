@@ -1,0 +1,9 @@
+{
+  "module_name": "mdp_reg_ccorr.h",
+  "hash_id": "b9bb4071cfdd1e77866cf7e5921511dcaf77a4a8617ad01ddc8f23c9a71702e1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/platform/mediatek/mdp3/mdp_reg_ccorr.h",
+  "human_readable_source": " \n \n\n#ifndef __MDP_REG_CCORR_H__\n#define __MDP_REG_CCORR_H__\n\n#define MDP_CCORR_EN                0x000\n#define MDP_CCORR_CFG               0x020\n#define MDP_CCORR_SIZE              0x030\n\n \n#define MDP_CCORR_EN_MASK           0x00000001\n#define MDP_CCORR_CFG_MASK          0x70001317\n#define MDP_CCORR_SIZE_MASK         0x1fff1fff\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

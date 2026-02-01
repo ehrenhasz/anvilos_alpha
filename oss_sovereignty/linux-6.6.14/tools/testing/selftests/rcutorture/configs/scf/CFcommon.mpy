@@ -1,0 +1,9 @@
+{
+  "module_name": "CFcommon",
+  "hash_id": "4338ea80e029583d7a6968e7546cd3e0b0fa713a7ac2aaac0a2ad47066860247",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/rcutorture/configs/scf/CFcommon",
+  "human_readable_source": "CONFIG_SCF_TORTURE_TEST=y\nCONFIG_PRINTK_TIME=y\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "time32.h",
+  "hash_id": "da84ec5dfb769db8120aabf6b3b86fc7d47c1c9233a28ccfc0acb4e3e2a400c3",
+  "original_prompt": "Ingested from linux-6.6.14/include/vdso/time32.h",
+  "human_readable_source": " \n#ifndef __VDSO_TIME32_H\n#define __VDSO_TIME32_H\n\ntypedef s32\t\told_time32_t;\n\nstruct old_timespec32 {\n\told_time32_t\ttv_sec;\n\ts32\t\ttv_nsec;\n};\n\nstruct old_timeval32 {\n\told_time32_t\ttv_sec;\n\ts32\t\ttv_usec;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

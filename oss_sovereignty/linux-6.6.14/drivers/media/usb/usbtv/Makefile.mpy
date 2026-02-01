@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "63dce2d43e5ef0f1f07286ddbcfbab12fe8b690e1738256ab945b7b1bc25490a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/usb/usbtv/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nusbtv-y := usbtv-core.o \\\n\tusbtv-video.o \\\n\tusbtv-audio.o\n\nobj-$(CONFIG_VIDEO_USBTV) += usbtv.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

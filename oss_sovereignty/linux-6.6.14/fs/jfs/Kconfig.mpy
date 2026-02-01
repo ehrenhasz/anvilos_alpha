@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "c1a6e7cd3ac40f98853846d6a883eb556f6982042673deebbcd75c95a005df02",
+  "original_prompt": "Ingested from linux-6.6.14/fs/jfs/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig JFS_FS\n\ttristate \"JFS filesystem support\"\n\tselect BUFFER_HEAD\n\tselect NLS\n\tselect NLS_UCS2_UTILS\n\tselect CRC32\n\tselect LEGACY_DIRECT_IO\n\thelp\n\t  This is a port of IBM's Journaled Filesystem .  More information is\n\t  available in the file <file:Documentation/admin-guide/jfs.rst>.\n\n\t  If you do not intend to use the JFS filesystem, say N.\n\nconfig JFS_POSIX_ACL\n\tbool \"JFS POSIX Access Control Lists\"\n\tdepends on JFS_FS\n\tselect FS_POSIX_ACL\n\thelp\n\t  Posix Access Control Lists (ACLs) support permissions for users and\n\t  groups beyond the owner/group/world scheme.\n\n\t  If you don't know what Access Control Lists are, say N\n\nconfig JFS_SECURITY\n\tbool \"JFS Security Labels\"\n\tdepends on JFS_FS\n\thelp\n\t  Security labels support alternative access control models\n\t  implemented by security modules like SELinux.  This option\n\t  enables an extended attribute handler for file security\n\t  labels in the jfs filesystem.\n\n\t  If you are not using a security module that requires using\n\t  extended attributes for file security labels, say N.\n\nconfig JFS_DEBUG\n\tbool \"JFS debugging\"\n\tdepends on JFS_FS\n\thelp\n\t  If you are experiencing any problems with the JFS filesystem, say\n\t  Y here.  This will result in additional debugging messages to be\n\t  written to the system log.  Under normal circumstances, this\n\t  results in very little overhead.\n\nconfig JFS_STATISTICS\n\tbool \"JFS statistics\"\n\tdepends on JFS_FS\n\thelp\n\t  Enabling this option will cause statistics from the JFS file system\n\t  to be made available to the user in the /proc/fs/jfs/ directory.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

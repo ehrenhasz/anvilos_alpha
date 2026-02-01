@@ -1,0 +1,9 @@
+{
+  "module_name": "test-dirent-safer.c",
+  "hash_id": "e323277df2bc1d6ca65f7aee4e7f566233abc655f593ea5da04283c9ab94e26f",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-dirent-safer.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"dirent--.h\"\n\n#include <errno.h>\n#include <fcntl.h>\n#include <stdio.h>\n#include <unistd.h>\n\n \n\n#define BACKUP_STDERR_FILENO 10\n#define ASSERT_STREAM myerr\n#include \"macros.h\"\n\nstatic FILE *myerr;\n\nint\nmain (void)\n{\n  int i;\n  DIR *dp;\n   \n#if HAVE_FDOPENDIR || GNULIB_TEST_FDOPENDIR\n  int dfd;\n#endif\n\n   \n  if (dup2 (STDERR_FILENO, BACKUP_STDERR_FILENO) != BACKUP_STDERR_FILENO\n      || (myerr = fdopen (BACKUP_STDERR_FILENO, \"w\")) == NULL)\n    return 2;\n\n#if HAVE_FDOPENDIR || GNULIB_TEST_FDOPENDIR\n  dfd = open (\".\", O_RDONLY);\n  ASSERT (STDERR_FILENO < dfd);\n#endif\n\n   \n  for (i = -1; i <= STDERR_FILENO; i++)\n    {\n      if (0 <= i)\n        ASSERT (close (i) == 0);\n      dp = opendir (\".\");\n      ASSERT (dp);\n      ASSERT (dirfd (dp) == -1 || STDERR_FILENO < dirfd (dp));\n      ASSERT (closedir (dp) == 0);\n\n#if HAVE_FDOPENDIR || GNULIB_TEST_FDOPENDIR\n      {\n        int fd = fcntl (dfd, F_DUPFD_CLOEXEC, STDERR_FILENO + 1);\n        ASSERT (STDERR_FILENO < fd);\n        dp = fdopendir (fd);\n        ASSERT (dp);\n        ASSERT (dirfd (dp) == -1 || STDERR_FILENO < dirfd (dp));\n        ASSERT (closedir (dp) == 0);\n        errno = 0;\n        ASSERT (close (fd) == -1);\n        ASSERT (errno == EBADF);\n      }\n#endif\n    }\n\n#if HAVE_FDOPENDIR || GNULIB_TEST_FDOPENDIR\n  ASSERT (close (dfd) == 0);\n#endif\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kvm-x86-pmu-ops.h",
+  "hash_id": "372d899d6207b4bb169600061e20c47618549b61cb24e14c312dd90eeeb6459c",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/kvm-x86-pmu-ops.h",
+  "human_readable_source": " \n#if !defined(KVM_X86_PMU_OP) || !defined(KVM_X86_PMU_OP_OPTIONAL)\nBUILD_BUG_ON(1)\n#endif\n\n \nKVM_X86_PMU_OP(hw_event_available)\nKVM_X86_PMU_OP(pmc_idx_to_pmc)\nKVM_X86_PMU_OP(rdpmc_ecx_to_pmc)\nKVM_X86_PMU_OP(msr_idx_to_pmc)\nKVM_X86_PMU_OP(is_valid_rdpmc_ecx)\nKVM_X86_PMU_OP(is_valid_msr)\nKVM_X86_PMU_OP(get_msr)\nKVM_X86_PMU_OP(set_msr)\nKVM_X86_PMU_OP(refresh)\nKVM_X86_PMU_OP(init)\nKVM_X86_PMU_OP_OPTIONAL(reset)\nKVM_X86_PMU_OP_OPTIONAL(deliver_pmi)\nKVM_X86_PMU_OP_OPTIONAL(cleanup)\n\n#undef KVM_X86_PMU_OP\n#undef KVM_X86_PMU_OP_OPTIONAL\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

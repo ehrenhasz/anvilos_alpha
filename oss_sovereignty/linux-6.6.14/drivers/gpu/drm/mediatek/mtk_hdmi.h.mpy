@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk_hdmi.h",
+  "hash_id": "b97450013fd099504eb601f4553bae4336a5ebd76ad096dde5d0c4bb18ff4824",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/mediatek/mtk_hdmi.h",
+  "human_readable_source": " \n \n#ifndef _MTK_HDMI_CTRL_H\n#define _MTK_HDMI_CTRL_H\n\nstruct platform_driver;\n\nextern struct platform_driver mtk_cec_driver;\nextern struct platform_driver mtk_hdmi_ddc_driver;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

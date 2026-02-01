@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b5bf1f2c0ba0f1bf7566eafd561798fafc3426b29e35f898a0966106a25bafa6",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/arm/display/komeda/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n\nccflags-y := \\\n\t-I $(srctree)/$(src)/../include \\\n\t-I $(srctree)/$(src)\n\nkomeda-y := \\\n\tkomeda_drv.o \\\n\tkomeda_dev.o \\\n\tkomeda_format_caps.o \\\n\tkomeda_color_mgmt.o \\\n\tkomeda_pipeline.o \\\n\tkomeda_pipeline_state.o \\\n\tkomeda_framebuffer.o \\\n\tkomeda_kms.o \\\n\tkomeda_crtc.o \\\n\tkomeda_plane.o \\\n\tkomeda_wb_connector.o \\\n\tkomeda_private_obj.o \\\n\tkomeda_event.o\n\nkomeda-y += \\\n\td71/d71_dev.o \\\n\td71/d71_component.o\n\nobj-$(CONFIG_DRM_KOMEDA) += komeda.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "60c804a5f24ad282bda45684b3c3d246eeb0d57829f7e35730b12b4a2b6fd827",
+  "original_prompt": "Ingested from linux-6.6.14/sound/virtio/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0+\n# Sound card driver for virtio\n\nconfig SND_VIRTIO\n\ttristate \"Virtio sound driver\"\n\tdepends on VIRTIO\n\tselect SND_PCM\n\tselect SND_JACK\n\thelp\n          This is the virtual sound driver for virtio. Say Y or M.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

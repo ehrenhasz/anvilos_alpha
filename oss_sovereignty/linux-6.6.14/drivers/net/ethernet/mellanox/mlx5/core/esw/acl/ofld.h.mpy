@@ -1,0 +1,9 @@
+{
+  "module_name": "ofld.h",
+  "hash_id": "145b1d34b20a73b1eb4879c90ee494ea0e33d35998b7ce24fe5afb40ab351e0f",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/ofld.h",
+  "human_readable_source": " \n \n\n#ifndef __MLX5_ESWITCH_ACL_OFLD_H__\n#define __MLX5_ESWITCH_ACL_OFLD_H__\n\n#include \"eswitch.h\"\n\n#ifdef CONFIG_MLX5_ESWITCH\n \nint esw_acl_egress_ofld_setup(struct mlx5_eswitch *esw, struct mlx5_vport *vport);\nvoid esw_acl_egress_ofld_cleanup(struct mlx5_vport *vport);\nvoid esw_acl_egress_ofld_bounce_rule_destroy(struct mlx5_vport *vport, int rule_index);\nint mlx5_esw_acl_egress_vport_bond(struct mlx5_eswitch *esw, u16 active_vport_num,\n\t\t\t\t   u16 passive_vport_num);\nint mlx5_esw_acl_egress_vport_unbond(struct mlx5_eswitch *esw, u16 vport_num);\n\nstatic inline bool mlx5_esw_acl_egress_fwd2vport_supported(struct mlx5_eswitch *esw)\n{\n\treturn esw && esw->mode == MLX5_ESWITCH_OFFLOADS &&\n\t\tmlx5_eswitch_vport_match_metadata_enabled(esw) &&\n\t\tMLX5_CAP_ESW_FLOWTABLE(esw->dev, egress_acl_forward_to_vport);\n}\n\n \nint esw_acl_ingress_ofld_setup(struct mlx5_eswitch *esw, struct mlx5_vport *vport);\nvoid esw_acl_ingress_ofld_cleanup(struct mlx5_eswitch *esw, struct mlx5_vport *vport);\nint mlx5_esw_acl_ingress_vport_metadata_update(struct mlx5_eswitch *esw, u16 vport_num,\n\t\t\t\t\t       u32 metadata);\nvoid mlx5_esw_acl_ingress_vport_drop_rule_destroy(struct mlx5_eswitch *esw, u16 vport_num);\nint mlx5_esw_acl_ingress_vport_drop_rule_create(struct mlx5_eswitch *esw, u16 vport_num);\n\n#else  \nstatic void\nmlx5_esw_acl_ingress_vport_drop_rule_destroy(struct mlx5_eswitch *esw,\n\t\t\t\t\t     u16 vport_num)\n{}\n\nstatic int mlx5_esw_acl_ingress_vport_drop_rule_create(struct mlx5_eswitch *esw,\n\t\t\t\t\t\t       u16 vport_num)\n{\n\treturn 0;\n}\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

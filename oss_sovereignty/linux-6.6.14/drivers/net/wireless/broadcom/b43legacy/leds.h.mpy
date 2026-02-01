@@ -1,0 +1,9 @@
+{
+  "module_name": "leds.h",
+  "hash_id": "a22054e29bf1b056d336e8e84386a5ecedaa5f960cfd9b32a3c699e8bb83db3d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/broadcom/b43legacy/leds.h",
+  "human_readable_source": " \n#ifndef B43legacy_LEDS_H_\n#define B43legacy_LEDS_H_\n\nstruct b43legacy_wldev;\n\n#ifdef CONFIG_B43LEGACY_LEDS\n\n#include <linux/types.h>\n#include <linux/leds.h>\n\n\n#define B43legacy_LED_MAX_NAME_LEN\t31\n\nstruct b43legacy_led {\n\tstruct b43legacy_wldev *dev;\n\t \n\tstruct led_classdev led_dev;\n\t \n\tu8 index;\n\t \n\tbool activelow;\n\t \n\tchar name[B43legacy_LED_MAX_NAME_LEN + 1];\n};\n\n#define B43legacy_LED_BEHAVIOUR\t\t0x7F\n#define B43legacy_LED_ACTIVELOW\t\t0x80\n \nenum b43legacy_led_behaviour {\n\tB43legacy_LED_OFF,\n\tB43legacy_LED_ON,\n\tB43legacy_LED_ACTIVITY,\n\tB43legacy_LED_RADIO_ALL,\n\tB43legacy_LED_RADIO_A,\n\tB43legacy_LED_RADIO_B,\n\tB43legacy_LED_MODE_BG,\n\tB43legacy_LED_TRANSFER,\n\tB43legacy_LED_APTRANSFER,\n\tB43legacy_LED_WEIRD,\n\tB43legacy_LED_ASSOC,\n\tB43legacy_LED_INACTIVE,\n};\n\nvoid b43legacy_leds_init(struct b43legacy_wldev *dev);\nvoid b43legacy_leds_exit(struct b43legacy_wldev *dev);\n\n#else  \n \n\nstruct b43legacy_led {\n\t \n};\n\nstatic inline void b43legacy_leds_init(struct b43legacy_wldev *dev)\n{\n}\nstatic inline void b43legacy_leds_exit(struct b43legacy_wldev *dev)\n{\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

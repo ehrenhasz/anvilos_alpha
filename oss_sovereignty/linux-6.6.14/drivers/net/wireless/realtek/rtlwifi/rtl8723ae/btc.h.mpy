@@ -1,0 +1,9 @@
+{
+  "module_name": "btc.h",
+  "hash_id": "9561f0e942bce84a550e92cc952853ff78a2cb5e91ea567463901d31e39660bd",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/btc.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL8723E_BTC_H__\n#define __RTL8723E_BTC_H__\n\n#include \"../wifi.h\"\n#include \"hal_bt_coexist.h\"\n\nstruct bt_coexist_c2h_info {\n\tu8 no_parse_c2h;\n\tu8 has_c2h;\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

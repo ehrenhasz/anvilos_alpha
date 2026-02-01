@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3b2eb11c2b192904a1fb4ffb3319818aa16fe84e123ed9c5caa16359e82aaef8",
+  "original_prompt": "Ingested from linux-6.6.14/net/batman-adv/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Copyright (C) B.A.T.M.A.N. contributors:\n#\n# Marek Lindner, Simon Wunderlich\n\nobj-$(CONFIG_BATMAN_ADV) += batman-adv.o\nbatman-adv-y += bat_algo.o\nbatman-adv-y += bat_iv_ogm.o\nbatman-adv-$(CONFIG_BATMAN_ADV_BATMAN_V) += bat_v.o\nbatman-adv-$(CONFIG_BATMAN_ADV_BATMAN_V) += bat_v_elp.o\nbatman-adv-$(CONFIG_BATMAN_ADV_BATMAN_V) += bat_v_ogm.o\nbatman-adv-y += bitarray.o\nbatman-adv-$(CONFIG_BATMAN_ADV_BLA) += bridge_loop_avoidance.o\nbatman-adv-$(CONFIG_BATMAN_ADV_DAT) += distributed-arp-table.o\nbatman-adv-y += fragmentation.o\nbatman-adv-y += gateway_client.o\nbatman-adv-y += gateway_common.o\nbatman-adv-y += hard-interface.o\nbatman-adv-y += hash.o\nbatman-adv-$(CONFIG_BATMAN_ADV_DEBUG) += log.o\nbatman-adv-y += main.o\nbatman-adv-$(CONFIG_BATMAN_ADV_MCAST) += multicast.o\nbatman-adv-y += netlink.o\nbatman-adv-$(CONFIG_BATMAN_ADV_NC) += network-coding.o\nbatman-adv-y += originator.o\nbatman-adv-y += routing.o\nbatman-adv-y += send.o\nbatman-adv-y += soft-interface.o\nbatman-adv-$(CONFIG_BATMAN_ADV_TRACING) += trace.o\nbatman-adv-y += tp_meter.o\nbatman-adv-y += translation-table.o\nbatman-adv-y += tvlv.o\n\nCFLAGS_trace.o := -I$(src)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

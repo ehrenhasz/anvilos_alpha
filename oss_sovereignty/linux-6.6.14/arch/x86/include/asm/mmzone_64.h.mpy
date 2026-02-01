@@ -1,0 +1,9 @@
+{
+  "module_name": "mmzone_64.h",
+  "hash_id": "f26117491079ebfd5007ebcb9b794e56786f5556a09b2199767717ebdf608bcd",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/mmzone_64.h",
+  "human_readable_source": " \n \n \n \n#ifndef _ASM_X86_MMZONE_64_H\n#define _ASM_X86_MMZONE_64_H\n\n#ifdef CONFIG_NUMA\n\n#include <linux/mmdebug.h>\n#include <asm/smp.h>\n\nextern struct pglist_data *node_data[];\n\n#define NODE_DATA(nid)\t\t(node_data[nid])\n\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

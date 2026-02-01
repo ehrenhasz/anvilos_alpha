@@ -1,0 +1,9 @@
+{
+  "module_name": "string.h",
+  "hash_id": "7c7dfb862fbd4063378bb2086e49db0857322c3de8cb9d570f175da1d253a682",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/include/sys/string.h",
+  "human_readable_source": "#include <string.h>\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

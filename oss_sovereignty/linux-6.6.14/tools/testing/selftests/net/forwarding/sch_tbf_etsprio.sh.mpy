@@ -1,0 +1,9 @@
+{
+  "module_name": "sch_tbf_etsprio.sh",
+  "hash_id": "2d153e01e7e1f8fad1199576dd88024d659d01591205169c13e1a153e9ef70b0",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/net/forwarding/sch_tbf_etsprio.sh",
+  "human_readable_source": "#!/bin/bash\n# SPDX-License-Identifier: GPL-2.0\n\nALL_TESTS=\"\n\tping_ipv4\n\ttbf_test\n\ttbf_root_test\n\"\nsource $lib_dir/sch_tbf_core.sh\n\nQDISC_TYPE=${QDISC% *}\n\ntbf_test_one()\n{\n\tlocal bs=$1; shift\n\n\ttc qdisc replace dev $swp2 parent 10:3 handle 103: tbf \\\n\t   rate 400Mbit burst $bs limit 1M\n\ttc qdisc replace dev $swp2 parent 10:2 handle 102: tbf \\\n\t   rate 800Mbit burst $bs limit 1M\n\n\tdo_tbf_test 10 400 $bs\n\tdo_tbf_test 11 800 $bs\n}\n\ntbf_test()\n{\n\tlog_info \"Testing root-$QDISC_TYPE-tbf\"\n\n\t# This test is used for both ETS and PRIO. Even though we only need two\n\t# bands, PRIO demands a minimum of three.\n\ttc qdisc add dev $swp2 root handle 10: $QDISC 3 priomap 2 1 0\n\ttbf_test_one 128K\n\ttc qdisc del dev $swp2 root\n}\n\ntbf_root_test()\n{\n\tlocal bs=128K\n\n\tlog_info \"Testing root-tbf-$QDISC_TYPE\"\n\n\ttc qdisc replace dev $swp2 root handle 1: \\\n\t\ttbf rate 400Mbit burst $bs limit 1M\n\ttc qdisc replace dev $swp2 parent 1:1 handle 10: \\\n\t\t$QDISC 3 priomap 2 1 0\n\ttc qdisc replace dev $swp2 parent 10:3 handle 103: \\\n\t\tbfifo limit 1M\n\ttc qdisc replace dev $swp2 parent 10:2 handle 102: \\\n\t\tbfifo limit 1M\n\ttc qdisc replace dev $swp2 parent 10:1 handle 101: \\\n\t\tbfifo limit 1M\n\n\tdo_tbf_test 10 400 $bs\n\tdo_tbf_test 11 400 $bs\n\n\ttc qdisc del dev $swp2 root\n}\n\nif type -t sch_tbf_pre_hook >/dev/null; then\n\tsch_tbf_pre_hook\nfi\n\ntrap cleanup EXIT\n\nsetup_prepare\nsetup_wait\n\ntests_run\n\nexit $EXIT_STATUS\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

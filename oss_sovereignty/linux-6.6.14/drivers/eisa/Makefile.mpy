@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d84db5f6e7834028758560b88308cf232152d514766449b0816a4b918ee6434d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/eisa/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n# Makefile for the Linux device tree\n\nobj-$(CONFIG_EISA)\t        += eisa-bus.o\nobj-${CONFIG_EISA_PCI_EISA}     += pci_eisa.o\n\n# virtual_root.o should be the last EISA root device to initialize,\n# so leave it at the end of the list.\nobj-${CONFIG_EISA_VIRTUAL_ROOT} += virtual_root.o\n\n\n# Ugly hack to get DEVICE_NAME_SIZE value...\nDEVICE_NAME_SIZE = 50\n\n$(obj)/eisa-bus.o: $(obj)/devlist.h\n\nquiet_cmd_eisaid = GEN     $@\n      cmd_eisaid = sed -e '/^\\#/D' -e 's/^\\([[:alnum:]]\\{7\\}\\) \\+\"\\([^\"]\\{1,$(DEVICE_NAME_SIZE)\\}\\).*\"/EISA_DEVINFO (\"\\1\", \"\\2\"),/' $< > $@\n\nclean-files := devlist.h\n$(obj)/devlist.h: $(src)/eisa.ids include/linux/device.h\n\t$(call cmd,eisaid)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

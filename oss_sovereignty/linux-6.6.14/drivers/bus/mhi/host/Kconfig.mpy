@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "093d51971e275a742ef8db39dfdaef0b896c4287507166344f2b51edcccd5f3b",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/bus/mhi/host/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# MHI bus\n#\n# Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.\n#\n\nconfig MHI_BUS\n\ttristate \"Modem Host Interface (MHI) bus\"\n\thelp\n\t  Bus driver for MHI protocol. Modem Host Interface (MHI) is a\n\t  communication protocol used by the host processors to control\n\t  and communicate with modem devices over a high speed peripheral\n\t  bus or shared memory.\n\nconfig MHI_BUS_DEBUG\n\tbool \"Debugfs support for the MHI bus\"\n\tdepends on MHI_BUS && DEBUG_FS\n\thelp\n\t  Enable debugfs support for use with the MHI transport. Allows\n\t  reading and/or modifying some values within the MHI controller\n\t  for debug and test purposes.\n\nconfig MHI_BUS_PCI_GENERIC\n\ttristate \"MHI PCI controller driver\"\n\tdepends on MHI_BUS\n\tdepends on PCI\n\thelp\n\t  This driver provides MHI PCI controller driver for devices such as\n\t  Qualcomm SDX55 based PCIe modems.\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

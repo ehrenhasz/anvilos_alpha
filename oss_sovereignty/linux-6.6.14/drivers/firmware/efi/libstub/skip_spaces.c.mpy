@@ -1,0 +1,9 @@
+{
+  "module_name": "skip_spaces.c",
+  "hash_id": "cb4a4af222bbe8bbce1aa411171cea14141f32ff71a8156f6acf6fb05e805ab1",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/firmware/efi/libstub/skip_spaces.c",
+  "human_readable_source": "\n\n#include <linux/ctype.h>\n#include <linux/string.h>\n#include <linux/types.h>\n\nchar *skip_spaces(const char *str)\n{\n\twhile (isspace(*str))\n\t\t++str;\n\treturn (char *)str;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

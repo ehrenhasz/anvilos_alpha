@@ -1,0 +1,9 @@
+{
+  "module_name": "r8a7790-cpg-mssr.h",
+  "hash_id": "ae0b4ab6fc1a090b53656d4ce9b45fdfa418902a2140433d96ebf50dc31d08b3",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/r8a7790-cpg-mssr.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_CLOCK_R8A7790_CPG_MSSR_H__\n#define __DT_BINDINGS_CLOCK_R8A7790_CPG_MSSR_H__\n\n#include <dt-bindings/clock/renesas-cpg-mssr.h>\n\n \n#define R8A7790_CLK_Z\t\t\t0\n#define R8A7790_CLK_Z2\t\t\t1\n#define R8A7790_CLK_ZG\t\t\t2\n#define R8A7790_CLK_ZTR\t\t\t3\n#define R8A7790_CLK_ZTRD2\t\t4\n#define R8A7790_CLK_ZT\t\t\t5\n#define R8A7790_CLK_ZX\t\t\t6\n#define R8A7790_CLK_ZS\t\t\t7\n#define R8A7790_CLK_HP\t\t\t8\n#define R8A7790_CLK_I\t\t\t9\n#define R8A7790_CLK_B\t\t\t10\n#define R8A7790_CLK_LB\t\t\t11\n#define R8A7790_CLK_P\t\t\t12\n#define R8A7790_CLK_CL\t\t\t13\n#define R8A7790_CLK_M2\t\t\t14\n#define R8A7790_CLK_ADSP\t\t15\n#define R8A7790_CLK_IMP\t\t\t16\n#define R8A7790_CLK_ZB3\t\t\t17\n#define R8A7790_CLK_ZB3D2\t\t18\n#define R8A7790_CLK_DDR\t\t\t19\n#define R8A7790_CLK_SDH\t\t\t20\n#define R8A7790_CLK_SD0\t\t\t21\n#define R8A7790_CLK_SD1\t\t\t22\n#define R8A7790_CLK_SD2\t\t\t23\n#define R8A7790_CLK_SD3\t\t\t24\n#define R8A7790_CLK_MMC0\t\t25\n#define R8A7790_CLK_MMC1\t\t26\n#define R8A7790_CLK_MP\t\t\t27\n#define R8A7790_CLK_SSP\t\t\t28\n#define R8A7790_CLK_SSPRS\t\t29\n#define R8A7790_CLK_QSPI\t\t30\n#define R8A7790_CLK_CP\t\t\t31\n#define R8A7790_CLK_RCAN\t\t32\n#define R8A7790_CLK_R\t\t\t33\n#define R8A7790_CLK_OSC\t\t\t34\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

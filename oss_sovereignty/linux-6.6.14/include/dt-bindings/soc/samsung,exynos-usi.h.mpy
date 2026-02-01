@@ -1,0 +1,9 @@
+{
+  "module_name": "samsung,exynos-usi.h",
+  "hash_id": "3a6a2f662c98129a346032edec4a733343d1152157b3d0f6c75afba7ca309afe",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/soc/samsung,exynos-usi.h",
+  "human_readable_source": " \n \n\n#ifndef __DT_BINDINGS_SAMSUNG_EXYNOS_USI_H\n#define __DT_BINDINGS_SAMSUNG_EXYNOS_USI_H\n\n#define USI_V2_NONE\t\t0\n#define USI_V2_UART\t\t1\n#define USI_V2_SPI\t\t2\n#define USI_V2_I2C\t\t3\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

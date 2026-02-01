@@ -1,0 +1,9 @@
+{
+  "module_name": "log1pf.c",
+  "hash_id": "23f54a3eaeaecea7569c7afe2a6ee14f8e211cb21afa7d090e4523d7e11582f1",
+  "original_prompt": "Ingested from sys_09_Anvil/source/lib/libm/log1pf.c",
+  "human_readable_source": " \n \n\n \n \n\n \n \n\n#include \"libm.h\"\n\nstatic const float\nln2_hi = 6.9313812256e-01f,  \nln2_lo = 9.0580006145e-06f,  \n \nLg1 = 0xaaaaaa.0p-24f,  \nLg2 = 0xccce13.0p-25f,  \nLg3 = 0x91e9ee.0p-25f,  \nLg4 = 0xf89e26.0p-26f;  \n\nfloat log1pf(float x)\n{\n\tunion {float f; uint32_t i;} u = {x};\n\tfloat_t hfsq,f,c,s,z,R,w,t1,t2,dk;\n\tuint32_t ix,iu;\n\tint k;\n\n\tix = u.i;\n\tk = 1;\n\tif (ix < 0x3ed413d0 || ix>>31) {   \n\t\tif (ix >= 0xbf800000) {   \n\t\t\tif (x == -1)\n\t\t\t\treturn x/0.0f;  \n\t\t\treturn (x-x)/0.0f;      \n\t\t}\n\t\tif (ix<<1 < 0x33800000<<1) {    \n\t\t\t \n\t\t\tif ((ix&0x7f800000) == 0)\n\t\t\t\tFORCE_EVAL(x*x);\n\t\t\treturn x;\n\t\t}\n\t\tif (ix <= 0xbe95f619) {  \n\t\t\tk = 0;\n\t\t\tc = 0;\n\t\t\tf = x;\n\t\t}\n\t} else if (ix >= 0x7f800000)\n\t\treturn x;\n\tif (k) {\n\t\tu.f = 1 + x;\n\t\tiu = u.i;\n\t\tiu += 0x3f800000 - 0x3f3504f3;\n\t\tk = (int)(iu>>23) - 0x7f;\n\t\t \n\t\tif (k < 25) {\n\t\t\tc = k >= 2 ? 1-(u.f-x) : x-(u.f-1);\n\t\t\tc /= u.f;\n\t\t} else\n\t\t\tc = 0;\n\t\t \n\t\tiu = (iu&0x007fffff) + 0x3f3504f3;\n\t\tu.i = iu;\n\t\tf = u.f - 1;\n\t}\n\ts = f/(2.0f + f);\n\tz = s*s;\n\tw = z*z;\n\tt1= w*(Lg2+w*Lg4);\n\tt2= z*(Lg1+w*Lg3);\n\tR = t2 + t1;\n\thfsq = 0.5f*f*f;\n\tdk = k;\n\treturn s*(hfsq+R) + (dk*ln2_lo+c) - hfsq + f + dk*ln2_hi;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

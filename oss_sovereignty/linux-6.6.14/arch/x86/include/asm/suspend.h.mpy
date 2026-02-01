@@ -1,0 +1,9 @@
+{
+  "module_name": "suspend.h",
+  "hash_id": "240487defd05e822a9c73f675ba6930da531cc028ef0d9e95cbda1943a09e7f6",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/suspend.h",
+  "human_readable_source": " \n#ifdef CONFIG_X86_32\n# include <asm/suspend_32.h>\n#else\n# include <asm/suspend_64.h>\n#endif\nextern unsigned long restore_jump_address __visible;\nextern unsigned long jump_address_phys;\nextern unsigned long restore_cr3 __visible;\nextern unsigned long temp_pgt __visible;\nextern unsigned long relocated_restore_code __visible;\nextern int relocate_restore_code(void);\n \nextern asmlinkage __visible int restore_image(void);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "twl6040.h",
+  "hash_id": "e5c95bdf247ed6e9bfa89227a266bbf01a4397fc8d43242967b620045371bf04",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/twl6040.h",
+  "human_readable_source": " \n \n\n#ifndef __TWL6040_H__\n#define __TWL6040_H__\n\nenum twl6040_trim {\n\tTWL6040_TRIM_TRIM1 = 0,\n\tTWL6040_TRIM_TRIM2,\n\tTWL6040_TRIM_TRIM3,\n\tTWL6040_TRIM_HSOTRIM,\n\tTWL6040_TRIM_HFOTRIM,\n\tTWL6040_TRIM_INVAL,\n};\n\n#define TWL6040_HSF_TRIM_LEFT(x)\t(x & 0x0f)\n#define TWL6040_HSF_TRIM_RIGHT(x)\t((x >> 4) & 0x0f)\n\nint twl6040_get_dl1_gain(struct snd_soc_component *component);\nvoid twl6040_hs_jack_detect(struct snd_soc_component *component,\n\t\t\t    struct snd_soc_jack *jack, int report);\nint twl6040_get_clk_id(struct snd_soc_component *component);\nint twl6040_get_trim_value(struct snd_soc_component *component, enum twl6040_trim trim);\nint twl6040_get_hs_step_size(struct snd_soc_component *component);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

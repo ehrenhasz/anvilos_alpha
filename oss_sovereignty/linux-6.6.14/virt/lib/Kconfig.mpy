@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2b5c72386d0418b837f0c068794f4a29541eb5dc86a4dbb8312fd41b1d014217",
+  "original_prompt": "Ingested from linux-6.6.14/virt/lib/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig IRQ_BYPASS_MANAGER\n\ttristate\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

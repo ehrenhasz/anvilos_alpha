@@ -1,0 +1,9 @@
+{
+  "module_name": "flowcont.h",
+  "hash_id": "d334b9437cffe3d235b7c940004039f8c97e0d8cbf199319eef91e2055b14791",
+  "original_prompt": "Ingested from sys_09_Anvil/source/drivers/cc3100/inc/flowcont.h",
+  "human_readable_source": " \n\n#ifndef __FLOWCONT_H__\n#define __FLOWCONT_H__\n\n\n#ifdef\t__cplusplus\nextern \"C\" {\n#endif\n\n \n \n \n#define FLOW_CONT_MIN 1\n\n \n \n \nextern void _SlDrvFlowContInit(void);\nextern void _SlDrvFlowContDeinit(void);\n\n#ifdef  __cplusplus\n}\n#endif  \n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

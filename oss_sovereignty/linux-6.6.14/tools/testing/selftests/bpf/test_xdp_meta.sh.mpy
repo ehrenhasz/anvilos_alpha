@@ -1,0 +1,9 @@
+{
+  "module_name": "test_xdp_meta.sh",
+  "hash_id": "4a34e938cff0a7b550399d92392c40c7015152160cbebab3a4b36db9daa9b835",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/test_xdp_meta.sh",
+  "human_readable_source": "#!/bin/sh\n\nBPF_FILE=\"test_xdp_meta.bpf.o\"\n# Kselftest framework requirement - SKIP code is 4.\nreadonly KSFT_SKIP=4\nreadonly NS1=\"ns1-$(mktemp -u XXXXXX)\"\nreadonly NS2=\"ns2-$(mktemp -u XXXXXX)\"\n\ncleanup()\n{\n\tif [ \"$?\" = \"0\" ]; then\n\t\techo \"selftests: test_xdp_meta [PASS]\";\n\telse\n\t\techo \"selftests: test_xdp_meta [FAILED]\";\n\tfi\n\n\tset +e\n\tip link del veth1 2> /dev/null\n\tip netns del ${NS1} 2> /dev/null\n\tip netns del ${NS2} 2> /dev/null\n}\n\nip link set dev lo xdp off 2>/dev/null > /dev/null\nif [ $? -ne 0 ];then\n\techo \"selftests: [SKIP] Could not run test without the ip xdp support\"\n\texit $KSFT_SKIP\nfi\nset -e\n\nip netns add ${NS1}\nip netns add ${NS2}\n\ntrap cleanup 0 2 3 6 9\n\nip link add veth1 type veth peer name veth2\n\nip link set veth1 netns ${NS1}\nip link set veth2 netns ${NS2}\n\nip netns exec ${NS1} ip addr add 10.1.1.11/24 dev veth1\nip netns exec ${NS2} ip addr add 10.1.1.22/24 dev veth2\n\nip netns exec ${NS1} tc qdisc add dev veth1 clsact\nip netns exec ${NS2} tc qdisc add dev veth2 clsact\n\nip netns exec ${NS1} tc filter add dev veth1 ingress bpf da obj ${BPF_FILE} sec t\nip netns exec ${NS2} tc filter add dev veth2 ingress bpf da obj ${BPF_FILE} sec t\n\nip netns exec ${NS1} ip link set dev veth1 xdp obj ${BPF_FILE} sec x\nip netns exec ${NS2} ip link set dev veth2 xdp obj ${BPF_FILE} sec x\n\nip netns exec ${NS1} ip link set dev veth1 up\nip netns exec ${NS2} ip link set dev veth2 up\n\nip netns exec ${NS1} ping -c 1 10.1.1.22\nip netns exec ${NS2} ping -c 1 10.1.1.11\n\nexit 0\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

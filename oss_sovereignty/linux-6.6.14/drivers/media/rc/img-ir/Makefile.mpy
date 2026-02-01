@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "e71c25f3670543642ea7d0770534b691eccd9ea75ada1f12c5990dddc5fdd8ef",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/img-ir/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nimg-ir-y\t\t\t:= img-ir-core.o\nimg-ir-$(CONFIG_IR_IMG_RAW)\t+= img-ir-raw.o\nimg-ir-$(CONFIG_IR_IMG_HW)\t+= img-ir-hw.o\nimg-ir-$(CONFIG_IR_IMG_NEC)\t+= img-ir-nec.o\nimg-ir-$(CONFIG_IR_IMG_JVC)\t+= img-ir-jvc.o\nimg-ir-$(CONFIG_IR_IMG_SONY)\t+= img-ir-sony.o\nimg-ir-$(CONFIG_IR_IMG_SHARP)\t+= img-ir-sharp.o\nimg-ir-$(CONFIG_IR_IMG_SANYO)\t+= img-ir-sanyo.o\nimg-ir-$(CONFIG_IR_IMG_RC5)\t+= img-ir-rc5.o\nimg-ir-$(CONFIG_IR_IMG_RC6)\t+= img-ir-rc6.o\nimg-ir-objs\t\t\t:= $(img-ir-y)\n\nobj-$(CONFIG_IR_IMG)\t\t+= img-ir.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

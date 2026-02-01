@@ -1,0 +1,9 @@
+{
+  "module_name": "drbd_interval.h",
+  "hash_id": "8b1b512935164942b8bff8dd35cf26fdf1ed688e23385b79834af9c19fdd861e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/block/drbd/drbd_interval.h",
+  "human_readable_source": " \n#ifndef __DRBD_INTERVAL_H\n#define __DRBD_INTERVAL_H\n\n#include <linux/types.h>\n#include <linux/rbtree.h>\n\nstruct drbd_interval {\n\tstruct rb_node rb;\n\tsector_t sector;\t\t \n\tunsigned int size;\t\t \n\tsector_t end;\t\t\t \n\tunsigned int local:1\t\t ;\n\tunsigned int waiting:1;\t\t \n\tunsigned int completed:1;\t \n};\n\nstatic inline void drbd_clear_interval(struct drbd_interval *i)\n{\n\tRB_CLEAR_NODE(&i->rb);\n}\n\nstatic inline bool drbd_interval_empty(struct drbd_interval *i)\n{\n\treturn RB_EMPTY_NODE(&i->rb);\n}\n\nextern bool drbd_insert_interval(struct rb_root *, struct drbd_interval *);\nextern bool drbd_contains_interval(struct rb_root *, sector_t,\n\t\t\t\t   struct drbd_interval *);\nextern void drbd_remove_interval(struct rb_root *, struct drbd_interval *);\nextern struct drbd_interval *drbd_find_overlap(struct rb_root *, sector_t,\n\t\t\t\t\tunsigned int);\nextern struct drbd_interval *drbd_next_overlap(struct drbd_interval *, sector_t,\n\t\t\t\t\tunsigned int);\n\n#define drbd_for_each_overlap(i, root, sector, size)\t\t\\\n\tfor (i = drbd_find_overlap(root, sector, size);\t\t\\\n\t     i;\t\t\t\t\t\t\t\\\n\t     i = drbd_next_overlap(i, sector, size))\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

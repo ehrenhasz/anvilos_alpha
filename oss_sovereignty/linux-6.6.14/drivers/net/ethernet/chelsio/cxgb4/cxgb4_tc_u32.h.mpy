@@ -1,0 +1,9 @@
+{
+  "module_name": "cxgb4_tc_u32.h",
+  "hash_id": "23b2d98090f9a0f5c3ce74a1ce87892f7c8b43e767b1172463698b8a69389258",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.h",
+  "human_readable_source": " \n\n#ifndef __CXGB4_TC_U32_H\n#define __CXGB4_TC_U32_H\n\n#include <net/pkt_cls.h>\n\nstatic inline bool can_tc_u32_offload(struct net_device *dev)\n{\n\tstruct adapter *adap = netdev2adap(dev);\n\n\treturn (dev->features & NETIF_F_HW_TC) && adap->tc_u32 ? true : false;\n}\n\nint cxgb4_config_knode(struct net_device *dev, struct tc_cls_u32_offload *cls);\nint cxgb4_delete_knode(struct net_device *dev, struct tc_cls_u32_offload *cls);\n\nvoid cxgb4_cleanup_tc_u32(struct adapter *adapter);\nstruct cxgb4_tc_u32_table *cxgb4_init_tc_u32(struct adapter *adap);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

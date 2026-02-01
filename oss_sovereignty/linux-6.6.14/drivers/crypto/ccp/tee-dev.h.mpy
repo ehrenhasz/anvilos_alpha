@@ -1,0 +1,9 @@
+{
+  "module_name": "tee-dev.h",
+  "hash_id": "5b20eb0529486acddde63c761536656705e0b3f98d65dd442bf7c7cd7bb86320",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/ccp/tee-dev.h",
+  "human_readable_source": " \n \n\n \n\n#ifndef __TEE_DEV_H__\n#define __TEE_DEV_H__\n\n#include <linux/device.h>\n#include <linux/mutex.h>\n\n#define TEE_DEFAULT_TIMEOUT\t\t10\n#define MAX_BUFFER_SIZE\t\t\t988\n\n \nenum tee_ring_cmd_id {\n\tTEE_RING_INIT_CMD\t\t= 0x00010000,\n\tTEE_RING_DESTROY_CMD\t\t= 0x00020000,\n\tTEE_RING_MAX_CMD\t\t= 0x000F0000,\n};\n\n \nstruct tee_init_ring_cmd {\n\tu32 low_addr;\n\tu32 hi_addr;\n\tu32 size;\n};\n\n#define MAX_RING_BUFFER_ENTRIES\t\t32\n\n \nstruct ring_buf_manager {\n\tstruct mutex mutex;\t \n\tvoid *ring_start;\n\tu32 ring_size;\n\tphys_addr_t ring_pa;\n\tu32 wptr;\n};\n\nstruct psp_tee_device {\n\tstruct device *dev;\n\tstruct psp_device *psp;\n\tvoid __iomem *io_regs;\n\tstruct tee_vdata *vdata;\n\tstruct ring_buf_manager rb_mgr;\n};\n\n \nenum tee_cmd_state {\n\tTEE_CMD_STATE_INIT,\n\tTEE_CMD_STATE_PROCESS,\n\tTEE_CMD_STATE_COMPLETED,\n};\n\n \nenum cmd_resp_state {\n\tCMD_RESPONSE_INVALID,\n\tCMD_WAITING_FOR_RESPONSE,\n\tCMD_RESPONSE_TIMEDOUT,\n\tCMD_RESPONSE_COPIED,\n};\n\n \nstruct tee_ring_cmd {\n\tu32 cmd_id;\n\tu32 cmd_state;\n\tu32 status;\n\tu32 res0[1];\n\tu64 pdata;\n\tu32 res1[2];\n\tu8 buf[MAX_BUFFER_SIZE];\n\tu32 flag;\n\n\t \n} __packed;\n\nint tee_dev_init(struct psp_device *psp);\nvoid tee_dev_destroy(struct psp_device *psp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

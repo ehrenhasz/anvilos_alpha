@@ -1,0 +1,9 @@
+{
+  "module_name": "mt2712-resets.h",
+  "hash_id": "8938ab8e750f5806cdbe16447b5fcee5755cdb9a2902a10c75a1cb058788f370",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/reset/mt2712-resets.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_RESET_CONTROLLER_MT2712\n#define _DT_BINDINGS_RESET_CONTROLLER_MT2712\n\n#define MT2712_TOPRGU_INFRA_SW_RST\t\t\t\t0\n#define MT2712_TOPRGU_MM_SW_RST\t\t\t\t\t1\n#define MT2712_TOPRGU_MFG_SW_RST\t\t\t\t2\n#define MT2712_TOPRGU_VENC_SW_RST\t\t\t\t3\n#define MT2712_TOPRGU_VDEC_SW_RST\t\t\t\t4\n#define MT2712_TOPRGU_IMG_SW_RST\t\t\t\t5\n#define MT2712_TOPRGU_INFRA_AO_SW_RST\t\t\t\t8\n#define MT2712_TOPRGU_USB_SW_RST\t\t\t\t9\n#define MT2712_TOPRGU_APMIXED_SW_RST\t\t\t\t10\n\n#define MT2712_TOPRGU_SW_RST_NUM\t\t\t\t11\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

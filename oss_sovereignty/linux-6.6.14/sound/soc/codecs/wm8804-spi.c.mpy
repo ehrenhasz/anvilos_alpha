@@ -1,0 +1,9 @@
+{
+  "module_name": "wm8804-spi.c",
+  "hash_id": "b09b787547cb2d4c7ff39a6cc0e7553f03661038993911259b4d586d8f4bbbf0",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/codecs/wm8804-spi.c",
+  "human_readable_source": "\n \n\n#include <linux/init.h>\n#include <linux/module.h>\n#include <linux/spi/spi.h>\n\n#include \"wm8804.h\"\n\nstatic int wm8804_spi_probe(struct spi_device *spi)\n{\n\tstruct regmap *regmap;\n\n\tregmap = devm_regmap_init_spi(spi, &wm8804_regmap_config);\n\tif (IS_ERR(regmap))\n\t\treturn PTR_ERR(regmap);\n\n\treturn wm8804_probe(&spi->dev, regmap);\n}\n\nstatic void wm8804_spi_remove(struct spi_device *spi)\n{\n\twm8804_remove(&spi->dev);\n}\n\nstatic const struct of_device_id wm8804_of_match[] = {\n\t{ .compatible = \"wlf,wm8804\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, wm8804_of_match);\n\nstatic struct spi_driver wm8804_spi_driver = {\n\t.driver = {\n\t\t.name = \"wm8804\",\n\t\t.pm = &wm8804_pm,\n\t\t.of_match_table = wm8804_of_match,\n\t},\n\t.probe = wm8804_spi_probe,\n\t.remove = wm8804_spi_remove\n};\n\nmodule_spi_driver(wm8804_spi_driver);\n\nMODULE_DESCRIPTION(\"ASoC WM8804 driver - SPI\");\nMODULE_AUTHOR(\"Charles Keepax <ckeepax@opensource.wolfsonmicro.com>\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

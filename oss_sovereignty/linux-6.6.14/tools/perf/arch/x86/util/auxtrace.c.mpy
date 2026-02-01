@@ -1,0 +1,9 @@
+{
+  "module_name": "auxtrace.c",
+  "hash_id": "5ec908e46a6e7faa8e0a3bf3f8c9d32b19cd654be19ceb368f249a34bc603b3f",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/x86/util/auxtrace.c",
+  "human_readable_source": "\n \n\n#include <errno.h>\n#include <stdbool.h>\n\n#include \"../../../util/header.h\"\n#include \"../../../util/debug.h\"\n#include \"../../../util/pmu.h\"\n#include \"../../../util/pmus.h\"\n#include \"../../../util/auxtrace.h\"\n#include \"../../../util/intel-pt.h\"\n#include \"../../../util/intel-bts.h\"\n#include \"../../../util/evlist.h\"\n\nstatic\nstruct auxtrace_record *auxtrace_record__init_intel(struct evlist *evlist,\n\t\t\t\t\t\t    int *err)\n{\n\tstruct perf_pmu *intel_pt_pmu;\n\tstruct perf_pmu *intel_bts_pmu;\n\tstruct evsel *evsel;\n\tbool found_pt = false;\n\tbool found_bts = false;\n\n\tintel_pt_pmu = perf_pmus__find(INTEL_PT_PMU_NAME);\n\tintel_bts_pmu = perf_pmus__find(INTEL_BTS_PMU_NAME);\n\n\tevlist__for_each_entry(evlist, evsel) {\n\t\tif (intel_pt_pmu && evsel->core.attr.type == intel_pt_pmu->type)\n\t\t\tfound_pt = true;\n\t\tif (intel_bts_pmu && evsel->core.attr.type == intel_bts_pmu->type)\n\t\t\tfound_bts = true;\n\t}\n\n\tif (found_pt && found_bts) {\n\t\tpr_err(\"intel_pt and intel_bts may not be used together\\n\");\n\t\t*err = -EINVAL;\n\t\treturn NULL;\n\t}\n\n\tif (found_pt)\n\t\treturn intel_pt_recording_init(err);\n\n\tif (found_bts)\n\t\treturn intel_bts_recording_init(err);\n\n\treturn NULL;\n}\n\nstruct auxtrace_record *auxtrace_record__init(struct evlist *evlist,\n\t\t\t\t\t      int *err)\n{\n\tchar buffer[64];\n\tint ret;\n\n\t*err = 0;\n\n\tret = get_cpuid(buffer, sizeof(buffer));\n\tif (ret) {\n\t\t*err = ret;\n\t\treturn NULL;\n\t}\n\n\tif (!strncmp(buffer, \"GenuineIntel,\", 13))\n\t\treturn auxtrace_record__init_intel(evlist, err);\n\n\treturn NULL;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

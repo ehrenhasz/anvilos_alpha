@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2e35ce2c121a8d0049e391b2151994239a5ba573ca1dc41d7e1adfa3830eeb8a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/mantis/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig MANTIS_CORE\n\ttristate \"Mantis/Hopper PCI bridge based devices\"\n\tdepends on PCI && I2C && INPUT && RC_CORE && DVB_CORE\n\n\thelp\n\t  Support for PCI cards based on the Mantis and Hopper PCi bridge.\n\n\t  Say Y if you own such a device and want to use it.\n\nconfig DVB_MANTIS\n\ttristate \"MANTIS based cards\"\n\tdepends on MANTIS_CORE && DVB_CORE && PCI && I2C\n\tselect DVB_MB86A16 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_ZL10353 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_STV0299 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_LNBP21 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_STB0899 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_STB6100 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_TDA665x if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_TDA10021 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_TDA10023 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_PLL\n\thelp\n\t  Support for PCI cards based on the Mantis PCI bridge.\n\t  Say Y when you have a Mantis based DVB card and want to use it.\n\n\t  If unsure say N.\n\nconfig DVB_HOPPER\n\ttristate \"HOPPER based cards\"\n\tdepends on MANTIS_CORE && DVB_CORE && PCI && I2C\n\tselect DVB_ZL10353 if MEDIA_SUBDRV_AUTOSELECT\n\tselect DVB_PLL\n\thelp\n\t  Support for PCI cards based on the Hopper  PCI bridge.\n\t  Say Y when you have a Hopper based DVB card and want to use it.\n\n\t  If unsure say N\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

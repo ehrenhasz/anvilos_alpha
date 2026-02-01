@@ -1,0 +1,9 @@
+{
+  "module_name": "cacheline.h",
+  "hash_id": "83386be3df17e6ca34fedcb16a60f180a724b731e8cb621e3a691e38a3600444",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/cacheline.h",
+  "human_readable_source": " \n#ifndef PERF_CACHELINE_H\n#define PERF_CACHELINE_H\n\n#include <linux/compiler.h>\n\nint __pure cacheline_size(void);\n\n\n \nstatic inline u64 cl_address(u64 address, bool double_cl)\n{\n\tu64 size = cacheline_size();\n\n\tif (double_cl)\n\t\tsize *= 2;\n\n\t \n\treturn (address & ~(size - 1));\n}\n\nstatic inline u64 cl_offset(u64 address, bool double_cl)\n{\n\tu64 size = cacheline_size();\n\n\tif (double_cl)\n\t\tsize *= 2;\n\n\t \n\treturn (address & (size - 1));\n}\n\n#endif \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

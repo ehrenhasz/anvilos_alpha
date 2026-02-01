@@ -1,0 +1,9 @@
+{
+  "module_name": "phy-qcom-qmp-pcs-pcie-v5_20.h",
+  "hash_id": "5760b323695e100bc49821111a9d1fa8a765dd60c1dbc190238206f9e7945fd7",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/phy/qualcomm/phy-qcom-qmp-pcs-pcie-v5_20.h",
+  "human_readable_source": " \n \n\n#ifndef QCOM_PHY_QMP_PCS_PCIE_V5_20_H_\n#define QCOM_PHY_QMP_PCS_PCIE_V5_20_H_\n\n \n#define QPHY_V5_20_PCS_PCIE_POWER_STATE_CONFIG2\t\t0x00c\n#define QPHY_V5_20_PCS_PCIE_ENDPOINT_REFCLK_DRIVE\t0x01c\n#define QPHY_V5_20_PCS_PCIE_OSC_DTCT_MODE2_CONFIG5\t0x084\n#define QPHY_V5_20_PCS_PCIE_OSC_DTCT_ACTIONS\t\t0x090\n#define QPHY_V5_20_PCS_PCIE_EQ_CONFIG1\t\t\t0x0a0\n#define QPHY_V5_20_PCS_PCIE_PRESET_P10_POST\t\t0x0e0\n#define QPHY_V5_20_PCS_PCIE_G4_EQ_CONFIG2\t\t0x0fc\n#define QPHY_V5_20_PCS_PCIE_G4_EQ_CONFIG5\t\t0x108\n#define QPHY_V5_20_PCS_PCIE_G4_PRE_GAIN\t\t\t0x15c\n#define QPHY_V5_20_PCS_PCIE_RX_MARGINING_CONFIG3\t0x184\n#define QPHY_V5_20_PCS_LANE1_INSIG_SW_CTRL2\t\t0xa24\n#define QPHY_V5_20_PCS_LANE1_INSIG_MX_CTRL2\t\t0xa28\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

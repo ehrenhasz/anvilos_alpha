@@ -1,0 +1,9 @@
+{
+  "module_name": "nv1a.c",
+  "hash_id": "776b410699eda7eb390c2231f38b528fc25d0e0fb24ab60ef2546b7d095f965d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/nv1a.c",
+  "human_readable_source": " \n#include \"priv.h\"\n#include \"ram.h\"\n\nstatic const struct nvkm_fb_func\nnv1a_fb = {\n\t.tile.regions = 8,\n\t.tile.init = nv10_fb_tile_init,\n\t.tile.fini = nv10_fb_tile_fini,\n\t.tile.prog = nv10_fb_tile_prog,\n\t.ram_new = nv1a_ram_new,\n};\n\nint\nnv1a_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn nvkm_fb_new_(&nv1a_fb, device, type, inst, pfb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

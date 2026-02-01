@@ -1,0 +1,9 @@
+{
+  "module_name": "sram.h",
+  "hash_id": "bf737151aa1321f640d7dab6d643ac1d414f0fe6be05225c7d29f6f47d739468",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/sram.h",
+  "human_readable_source": " \n \n#ifndef __SRAM_H\n#define __SRAM_H\n\nstruct sram_config {\n\tint (*init)(void);\n\tbool map_only_reserved;\n};\n\nstruct sram_partition {\n\tvoid __iomem *base;\n\n\tstruct gen_pool *pool;\n\tstruct bin_attribute battr;\n\tstruct mutex lock;\n\tstruct list_head list;\n};\n\nstruct sram_dev {\n\tconst struct sram_config *config;\n\n\tstruct device *dev;\n\tvoid __iomem *virt_base;\n\tbool no_memory_wc;\n\n\tstruct gen_pool *pool;\n\n\tstruct sram_partition *partition;\n\tu32 partitions;\n};\n\nstruct sram_reserve {\n\tstruct list_head list;\n\tu32 start;\n\tu32 size;\n\tstruct resource res;\n\tbool export;\n\tbool pool;\n\tbool protect_exec;\n\tconst char *label;\n};\n\n#ifdef CONFIG_SRAM_EXEC\nint sram_check_protect_exec(struct sram_dev *sram, struct sram_reserve *block,\n\t\t\t    struct sram_partition *part);\nint sram_add_protect_exec(struct sram_partition *part);\n#else\nstatic inline int sram_check_protect_exec(struct sram_dev *sram,\n\t\t\t\t\t  struct sram_reserve *block,\n\t\t\t\t\t  struct sram_partition *part)\n{\n\treturn -ENODEV;\n}\n\nstatic inline int sram_add_protect_exec(struct sram_partition *part)\n{\n\treturn -ENODEV;\n}\n#endif  \n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

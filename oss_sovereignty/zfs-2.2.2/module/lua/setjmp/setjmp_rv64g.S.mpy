@@ -1,0 +1,9 @@
+{
+  "module_name": "setjmp_rv64g.S",
+  "hash_id": "c6b69ea9c7b51c55ab5a86eb7c798a001a334ec42e331afb4c4701a3f1893d04",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/setjmp/setjmp_rv64g.S",
+  "human_readable_source": " \n\n#define ENTRY(sym)                                              \\\n        .text; .globl sym; .type sym,@function; sym:\n#define END(sym) .size sym, . - sym\n\n\nENTRY(setjmp)\n\t \n\tsd\tsp, (0 * 8)(a0)\n\taddi\ta0, a0, (1 * 8)\n\n\t \n\tsd\ts0, (0 * 8)(a0)\n\tsd\ts1, (1 * 8)(a0)\n\tsd\ts2, (2 * 8)(a0)\n\tsd\ts3, (3 * 8)(a0)\n\tsd\ts4, (4 * 8)(a0)\n\tsd\ts5, (5 * 8)(a0)\n\tsd\ts6, (6 * 8)(a0)\n\tsd\ts7, (7 * 8)(a0)\n\tsd\ts8, (8 * 8)(a0)\n\tsd\ts9, (9 * 8)(a0)\n\tsd\ts10, (10 * 8)(a0)\n\tsd\ts11, (11 * 8)(a0)\n\tsd\tra, (12 * 8)(a0)\n\taddi\ta0, a0, (13 * 8)\n\n\t \n\tli\ta0, 0\n\tret\nEND(setjmp)\n\nENTRY(longjmp)\n\t \n\tld\tt0, 0(a0)\n\tmv\tsp, t0\n\taddi\ta0, a0, (1 * 8)\n\n\t \n\tld\ts0, (0 * 8)(a0)\n\tld\ts1, (1 * 8)(a0)\n\tld\ts2, (2 * 8)(a0)\n\tld\ts3, (3 * 8)(a0)\n\tld\ts4, (4 * 8)(a0)\n\tld\ts5, (5 * 8)(a0)\n\tld\ts6, (6 * 8)(a0)\n\tld\ts7, (7 * 8)(a0)\n\tld\ts8, (8 * 8)(a0)\n\tld\ts9, (9 * 8)(a0)\n\tld\ts10, (10 * 8)(a0)\n\tld\ts11, (11 * 8)(a0)\n\tld\tra, (12 * 8)(a0)\n\taddi\ta0, a0, (13 * 8)\n\n\t \n\tmv\ta0, a1\n\tret\nEND(longjmp)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

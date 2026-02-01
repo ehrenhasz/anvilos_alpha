@@ -1,0 +1,9 @@
+{
+  "module_name": "tsc2007.h",
+  "hash_id": "7d67544763548a599859491ba38f387958b93189faf62c4c3488fb085fdf9792",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/tsc2007.h",
+  "human_readable_source": " \n#ifndef __LINUX_I2C_TSC2007_H\n#define __LINUX_I2C_TSC2007_H\n\n \n\nstruct tsc2007_platform_data {\n\tu16\tmodel;\t\t\t\t \n\tu16\tx_plate_ohms;\t \n\tu16\tmax_rt;  \n\tunsigned long poll_period;  \n\tint\tfuzzx;  \n\tint\tfuzzy;\n\tint\tfuzzz;\n\n\tint\t(*get_pendown_state)(struct device *);\n\t \n\tvoid\t(*clear_penirq)(void);\n\tint\t(*init_platform_hw)(void);\n\tvoid\t(*exit_platform_hw)(void);\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

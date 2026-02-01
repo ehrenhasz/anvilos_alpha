@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "86fe754d07cf33aafcdbe2531d9b6a4436257dd7dc540eb7dfda1a4d5cf4af9d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/qualcomm/rmnet/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# RMNET MAP driver\n#\n\nmenuconfig RMNET\n\ttristate \"RmNet MAP driver\"\n\tdefault n\n\tselect GRO_CELLS\n\thelp\n\t  If you select this, you will enable the RMNET module which is used\n\t  for handling data in the multiplexing and aggregation protocol (MAP)\n\t  format in the embedded data path. RMNET devices can be attached to\n\t  any IP mode physical device.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

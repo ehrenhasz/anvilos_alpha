@@ -1,0 +1,9 @@
+{
+  "module_name": "guest-files.txt",
+  "hash_id": "af0ff1d844158d2fc46ec445a3f7ff90c418813b5bc7a2900aaf55223a29b226",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/Documentation/guest-files.txt",
+  "human_readable_source": "include::guestmount.txt[]\n\n--guestkallsyms=<path>::\n\tGuest OS /proc/kallsyms file copy. perf reads it to get guest\n\tkernel symbols. Users copy it out from guest OS.\n\n--guestmodules=<path>::\n\tGuest OS /proc/modules file copy. perf reads it to get guest\n\tkernel module information. Users copy it out from guest OS.\n\n--guestvmlinux=<path>::\n\tGuest OS kernel vmlinux.\n\n--guest-code::\n\tIndicate that guest code can be found in the hypervisor process,\n\twhich is a common case for KVM test programs.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

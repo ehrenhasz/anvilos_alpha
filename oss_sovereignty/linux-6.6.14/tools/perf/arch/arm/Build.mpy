@@ -1,0 +1,9 @@
+{
+  "module_name": "Build",
+  "hash_id": "c824db84ddb1082428b37f3fb17502c75ce830464e365be74b3fa86dac661920",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/arch/arm/Build",
+  "human_readable_source": "perf-y += util/\nperf-$(CONFIG_DWARF_UNWIND) += tests/\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

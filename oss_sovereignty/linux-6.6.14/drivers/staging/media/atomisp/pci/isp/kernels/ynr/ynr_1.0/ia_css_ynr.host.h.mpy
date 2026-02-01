@@ -1,0 +1,9 @@
+{
+  "module_name": "ia_css_ynr.host.h",
+  "hash_id": "88dc1c36cbd3f2016c8d850175b627feee0f6b3315e2e70642abb7ef388fc78d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/media/atomisp/pci/isp/kernels/ynr/ynr_1.0/ia_css_ynr.host.h",
+  "human_readable_source": " \n \n\n#ifndef __IA_CSS_YNR_HOST_H\n#define __IA_CSS_YNR_HOST_H\n\n#include \"ia_css_ynr_types.h\"\n#include \"ia_css_ynr_param.h\"\n\nextern const struct ia_css_nr_config default_nr_config;\nextern const struct ia_css_ee_config default_ee_config;\n\nvoid\nia_css_nr_encode(\n    struct sh_css_isp_ynr_params *to,\n    const struct ia_css_nr_config *from,\n    unsigned int size);\n\nvoid\nia_css_yee_encode(\n    struct sh_css_isp_yee_params *to,\n    const struct ia_css_yee_config *from,\n    unsigned int size);\n\nvoid\nia_css_nr_dump(\n    const struct sh_css_isp_ynr_params *ynr,\n    unsigned int level);\n\nvoid\nia_css_yee_dump(\n    const struct sh_css_isp_yee_params *yee,\n    unsigned int level);\n\nvoid\nia_css_nr_debug_dtrace(\n    const struct ia_css_nr_config *config,\n    unsigned int level);\n\nvoid\nia_css_ee_debug_dtrace(\n    const struct ia_css_ee_config *config,\n    unsigned int level);\n\nvoid\nia_css_init_ynr_state(\n    void  * state,\n    size_t size);\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

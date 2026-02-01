@@ -1,0 +1,9 @@
+{
+  "module_name": "tx_common.h",
+  "hash_id": "914973ab506e8f255ea224b0458eb1cec270042d2e4c7de0ff575c439f5be506",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/sfc/siena/tx_common.h",
+  "human_readable_source": " \n \n\n#ifndef EFX_TX_COMMON_H\n#define EFX_TX_COMMON_H\n\nint efx_siena_probe_tx_queue(struct efx_tx_queue *tx_queue);\nvoid efx_siena_init_tx_queue(struct efx_tx_queue *tx_queue);\nvoid efx_siena_fini_tx_queue(struct efx_tx_queue *tx_queue);\nvoid efx_siena_remove_tx_queue(struct efx_tx_queue *tx_queue);\n\nstatic inline bool efx_tx_buffer_in_use(struct efx_tx_buffer *buffer)\n{\n\treturn buffer->len || (buffer->flags & EFX_TX_BUF_OPTION);\n}\n\nvoid efx_siena_xmit_done_check_empty(struct efx_tx_queue *tx_queue);\nvoid efx_siena_xmit_done(struct efx_tx_queue *tx_queue, unsigned int index);\n\nvoid efx_siena_enqueue_unwind(struct efx_tx_queue *tx_queue,\n\t\t\t      unsigned int insert_count);\n\nstruct efx_tx_buffer *efx_siena_tx_map_chunk(struct efx_tx_queue *tx_queue,\n\t\t\t\t\t     dma_addr_t dma_addr, size_t len);\nint efx_siena_tx_map_data(struct efx_tx_queue *tx_queue, struct sk_buff *skb,\n\t\t\t  unsigned int segment_count);\n\nunsigned int efx_siena_tx_max_skb_descs(struct efx_nic *efx);\nint efx_siena_tx_tso_fallback(struct efx_tx_queue *tx_queue, struct sk_buff *skb);\n\nextern bool efx_siena_separate_tx_channels;\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "12c4741ea429bc42ceeebc2ae44a4a9a1044542378ea4be37caf010f5e29ebd8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nfc/microread/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig NFC_MICROREAD\n\ttristate\n\tselect CRC_CCITT\n\thelp\n\t  This module contains the main code for Inside Secure microread\n\t  NFC chipsets. It implements the chipset HCI logic and hooks into\n\t  the NFC kernel APIs. Physical layers will register against it.\n\nconfig NFC_MICROREAD_I2C\n\ttristate \"Inside Secure Microread device support (I2C)\"\n\tdepends on NFC_HCI && I2C && NFC_SHDLC\n\tselect NFC_MICROREAD\n\thelp\n\t  This module adds support for the i2c interface of adapters using\n\t  Inside microread chipsets.  Select this if your platform is using\n\t  the i2c bus.\n\n\t  If you choose to build a module, it'll be called microread_i2c.\n\t  Say N if unsure.\n\nconfig NFC_MICROREAD_MEI\n\ttristate \"Inside Secure Microread device support (MEI)\"\n\tdepends on NFC_HCI && NFC_MEI_PHY\n\tselect NFC_MICROREAD\n\thelp\n\t  This module adds support for the mei interface of adapters using\n\t  Inside microread chipsets.  Select this if your microread chipset\n\t  is handled by Intel's Management Engine Interface on your platform.\n\n\t  If you choose to build a module, it'll be called microread_mei.\n\t  Say N if unsure.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

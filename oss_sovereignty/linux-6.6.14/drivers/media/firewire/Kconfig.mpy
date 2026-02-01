@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "dbcc5cd70c990beee697cfaa65e01e18c275134c5392f04444fa3170d3443f01",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/firewire/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nif DVB_CORE && FIREWIRE\ncomment \"FireWire (IEEE 1394) Adapters\"\n\nconfig DVB_FIREDTV\n\ttristate \"FireDTV and FloppyDTV\"\n\thelp\n\t  Support for DVB receivers from Digital Everywhere\n\t  which are connected via IEEE 1394 (FireWire).\n\n\t  These devices don't have an MPEG decoder built in,\n\t  so you need an external software decoder to watch TV.\n\n\t  To compile this driver as a module, say M here:\n\t  the module will be called firedtv.\n\nif DVB_FIREDTV\n\nconfig DVB_FIREDTV_INPUT\n\tdef_bool INPUT = y || (INPUT = m && DVB_FIREDTV = m)\n\nendif # DVB_FIREDTV\nendif # DVB_CORE && FIREWIRE\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

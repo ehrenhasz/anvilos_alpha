@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "ed9a6e7f290ae10b016e87c9946e2785542ca8ed0f87bdfdc51d93b08f415bcb",
+  "original_prompt": "Ingested from linux-6.6.14/fs/ntfs3/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the ntfs3 filesystem support.\n#\n\n# to check robot warnings\nccflags-y += -Wint-to-pointer-cast \\\n\t$(call cc-option,-Wunused-but-set-variable,-Wunused-const-variable) \\\n\t$(call cc-option,-Wold-style-declaration,-Wout-of-line-declaration)\n\nobj-$(CONFIG_NTFS3_FS) += ntfs3.o\n\nntfs3-y :=\tattrib.o \\\n\t\tattrlist.o \\\n\t\tbitfunc.o \\\n\t\tbitmap.o \\\n\t\tdir.o \\\n\t\tfsntfs.o \\\n\t\tfrecord.o \\\n\t\tfile.o \\\n\t\tfslog.o \\\n\t\tinode.o \\\n\t\tindex.o \\\n\t\tlznt.o \\\n\t\tnamei.o \\\n\t\trecord.o \\\n\t\trun.o \\\n\t\tsuper.o \\\n\t\tupcase.o \\\n\t\txattr.o\n\nntfs3-$(CONFIG_NTFS3_LZX_XPRESS) += $(addprefix lib/,\\\n\t\tdecompress_common.o \\\n\t\tlzx_decompress.o \\\n\t\txpress_decompress.o \\\n\t\t)",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

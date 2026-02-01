@@ -1,0 +1,9 @@
+{
+  "module_name": "test-wcwidth.c",
+  "hash_id": "7d50659a26ec31f3a722437288a78f3f5d46a1d9d43c21150ffb763966cb6c12",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-wcwidth.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include <wchar.h>\n\n#include \"signature.h\"\nSIGNATURE_CHECK (wcwidth, int, (wchar_t));\n\n#include <locale.h>\n#include <string.h>\n\n#include \"c-ctype.h\"\n#include \"localcharset.h\"\n#include \"macros.h\"\n\nint\nmain ()\n{\n  wchar_t wc;\n\n#if !GNULIB_WCHAR_SINGLE_LOCALE\n# ifdef C_CTYPE_ASCII\n   \n  for (wc = 0x20; wc < 0x7F; wc++)\n    ASSERT (wcwidth (wc) == 1);\n# endif\n#endif\n\n   \n  if (setlocale (LC_ALL, \"fr_FR.UTF-8\") != NULL\n       \n      && strcmp (locale_charset (), \"UTF-8\") == 0)\n    {\n       \n      for (wc = 0x20; wc < 0x7F; wc++)\n        ASSERT (wcwidth (wc) == 1);\n\n       \n      ASSERT (wcwidth (0x0301) == 0);\n      ASSERT (wcwidth (0x05B0) == 0);\n\n       \n      ASSERT (wcwidth (0x200E) <= 0);\n      ASSERT (wcwidth (0x2060) <= 0);\n#if 0   \n      ASSERT (wcwidth (0xE0001) <= 0);\n      ASSERT (wcwidth (0xE0044) <= 0);\n#endif\n\n       \n       \n      ASSERT (wcwidth (0x200B) <= 0);\n      ASSERT (wcwidth (0xFEFF) <= 0);\n\n       \n      ASSERT (wcwidth (0x2202) == 1);\n\n       \n      ASSERT (wcwidth (0x3000) == 2);\n      ASSERT (wcwidth (0xB250) == 2);\n      ASSERT (wcwidth (0xFF1A) == 2);\n#if 0   \n      ASSERT (wcwidth (0x20369) == 2);\n      ASSERT (wcwidth (0x2F876) == 2);\n#endif\n    }\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

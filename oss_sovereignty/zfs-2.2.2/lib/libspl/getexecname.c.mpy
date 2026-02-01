@@ -1,0 +1,9 @@
+{
+  "module_name": "getexecname.c",
+  "hash_id": "bbdc5844982f90d294025d674b08e33235c2973fca38316c6fdf1aea0d2be318",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libspl/getexecname.c",
+  "human_readable_source": " \n \n\n\n#include <limits.h>\n#include <pthread.h>\n#include <stdlib.h>\n#include <string.h>\n#include <unistd.h>\n#include \"libspl_impl.h\"\n\n\nconst char *\ngetexecname(void)\n{\n\tstatic char execname[PATH_MAX + 1] = \"\";\n\tstatic pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;\n\n\tchar *ptr = execname;\n\tssize_t rc;\n\n\t(void) pthread_mutex_lock(&mtx);\n\n\tif (strlen(execname) == 0) {\n\t\trc = getexecname_impl(execname);\n\t\tif (rc == -1) {\n\t\t\texecname[0] = '\\0';\n\t\t\tptr = NULL;\n\t\t} else {\n\t\t\texecname[rc] = '\\0';\n\t\t}\n\t}\n\n\t(void) pthread_mutex_unlock(&mtx);\n\treturn (ptr);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mount.h",
+  "hash_id": "9c7d880d57d3dc14f14595a7c2f8178747d1fc638c52a3326f6ccdb18440ce1b",
+  "original_prompt": "Ingested from linux-6.6.14/security/apparmor/include/mount.h",
+  "human_readable_source": " \n \n\n#ifndef __AA_MOUNT_H\n#define __AA_MOUNT_H\n\n#include <linux/fs.h>\n#include <linux/path.h>\n\n#include \"domain.h\"\n#include \"policy.h\"\n\n \n#define AA_MAY_PIVOTROOT\t0x01\n#define AA_MAY_MOUNT\t\t0x02\n#define AA_MAY_UMOUNT\t\t0x04\n#define AA_AUDIT_DATA\t\t0x40\n#define AA_MNT_CONT_MATCH\t0x40\n\n#define AA_MS_IGNORE_MASK (MS_KERNMOUNT | MS_NOSEC | MS_ACTIVE | MS_BORN)\n\nint aa_remount(const struct cred *subj_cred,\n\t       struct aa_label *label, const struct path *path,\n\t       unsigned long flags, void *data);\n\nint aa_bind_mount(const struct cred *subj_cred,\n\t\t  struct aa_label *label, const struct path *path,\n\t\t  const char *old_name, unsigned long flags);\n\n\nint aa_mount_change_type(const struct cred *subj_cred,\n\t\t\t struct aa_label *label, const struct path *path,\n\t\t\t unsigned long flags);\n\nint aa_move_mount_old(const struct cred *subj_cred,\n\t\t      struct aa_label *label, const struct path *path,\n\t\t      const char *old_name);\nint aa_move_mount(const struct cred *subj_cred,\n\t\t  struct aa_label *label, const struct path *from_path,\n\t\t  const struct path *to_path);\n\nint aa_new_mount(const struct cred *subj_cred,\n\t\t struct aa_label *label, const char *dev_name,\n\t\t const struct path *path, const char *type, unsigned long flags,\n\t\t void *data);\n\nint aa_umount(const struct cred *subj_cred,\n\t      struct aa_label *label, struct vfsmount *mnt, int flags);\n\nint aa_pivotroot(const struct cred *subj_cred,\n\t\t struct aa_label *label, const struct path *old_path,\n\t\t const struct path *new_path);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

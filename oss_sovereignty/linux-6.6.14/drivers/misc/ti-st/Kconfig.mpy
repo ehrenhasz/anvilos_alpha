@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "0e78b03561af43733e413dbaa1491fa078c965e246075868c574f77cbbfddf75",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/misc/ti-st/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# TI's shared transport line discipline and the protocol\n# drivers (BT, FM and GPS)\n#\nmenu \"Texas Instruments shared transport line discipline\"\nconfig TI_ST\n\ttristate \"Shared transport core driver\"\n\tdepends on NET && TTY\n\tdepends on GPIOLIB || COMPILE_TEST\n\tselect FW_LOADER\n\thelp\n\t  This enables the shared transport core driver for TI\n\t  BT / FM and GPS combo chips. This enables protocol drivers\n\t  to register themselves with core and send data, the responses\n\t  are returned to relevant protocol drivers based on their\n\t  packet types.\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

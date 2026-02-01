@@ -1,0 +1,9 @@
+{
+  "module_name": "ioctl.h",
+  "hash_id": "2f676b9133b3a2caf59af827db89d9d57a4b2bad2092c8e3bedee03d476b08cb",
+  "original_prompt": "Ingested from linux-6.6.14/fs/btrfs/ioctl.h",
+  "human_readable_source": " \n\n#ifndef BTRFS_IOCTL_H\n#define BTRFS_IOCTL_H\n\nlong btrfs_ioctl(struct file *file, unsigned int cmd, unsigned long arg);\nlong btrfs_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg);\nint btrfs_fileattr_get(struct dentry *dentry, struct fileattr *fa);\nint btrfs_fileattr_set(struct mnt_idmap *idmap,\n\t\t       struct dentry *dentry, struct fileattr *fa);\nint btrfs_ioctl_get_supported_features(void __user *arg);\nvoid btrfs_sync_inode_flags_to_i_flags(struct inode *inode);\nint __pure btrfs_is_empty_uuid(u8 *uuid);\nvoid btrfs_update_ioctl_balance_args(struct btrfs_fs_info *fs_info,\n\t\t\t\t     struct btrfs_ioctl_balance_args *bargs);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

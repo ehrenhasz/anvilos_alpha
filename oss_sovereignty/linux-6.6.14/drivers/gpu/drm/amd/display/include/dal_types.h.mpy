@@ -1,0 +1,9 @@
+{
+  "module_name": "dal_types.h",
+  "hash_id": "dd78c4fde99124258f4e0ec5b298feef4191b7b908b201e40987c4ace673231a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/include/dal_types.h",
+  "human_readable_source": " \n\n#ifndef __DAL_TYPES_H__\n#define __DAL_TYPES_H__\n\n#include \"signal_types.h\"\n#include \"dc_types.h\"\n\nstruct dal_logger;\nstruct dc_bios;\n\nenum dce_version {\n\tDCE_VERSION_UNKNOWN = (-1),\n\tDCE_VERSION_6_0,\n\tDCE_VERSION_6_1,\n\tDCE_VERSION_6_4,\n\tDCE_VERSION_8_0,\n\tDCE_VERSION_8_1,\n\tDCE_VERSION_8_3,\n\tDCE_VERSION_10_0,\n\tDCE_VERSION_11_0,\n\tDCE_VERSION_11_2,\n\tDCE_VERSION_11_22,\n\tDCE_VERSION_12_0,\n\tDCE_VERSION_12_1,\n\tDCE_VERSION_MAX,\n\tDCN_VERSION_1_0,\n\tDCN_VERSION_1_01,\n\tDCN_VERSION_2_0,\n\tDCN_VERSION_2_01,\n\tDCN_VERSION_2_1,\n\tDCN_VERSION_3_0,\n\tDCN_VERSION_3_01,\n\tDCN_VERSION_3_02,\n\tDCN_VERSION_3_03,\n\tDCN_VERSION_3_1,\n\tDCN_VERSION_3_14,\n\tDCN_VERSION_3_15,\n\tDCN_VERSION_3_16,\n\tDCN_VERSION_3_2,\n\tDCN_VERSION_3_21,\n\tDCN_VERSION_MAX\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ipt_LOG.h",
+  "hash_id": "9bc91cb53fac6a5e9fdc2a85dfe09668f4b9ea518c8567c8a8f44500fad1c6df",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_ipv4/ipt_LOG.h",
+  "human_readable_source": " \n#ifndef _IPT_LOG_H\n#define _IPT_LOG_H\n\n \n#define IPT_LOG_TCPSEQ\t\t0x01\t \n#define IPT_LOG_TCPOPT\t\t0x02\t \n#define IPT_LOG_IPOPT\t\t0x04\t \n#define IPT_LOG_UID\t\t0x08\t \n#define IPT_LOG_NFLOG\t\t0x10\t \n#define IPT_LOG_MACDECODE\t0x20\t \n#define IPT_LOG_MASK\t\t0x2f\n\nstruct ipt_log_info {\n\tunsigned char level;\n\tunsigned char logflags;\n\tchar prefix[30];\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

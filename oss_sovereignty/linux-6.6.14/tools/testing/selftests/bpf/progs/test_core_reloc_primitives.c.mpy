@@ -1,0 +1,9 @@
+{
+  "module_name": "test_core_reloc_primitives.c",
+  "hash_id": "e5a6c5219d4c983e0b78698ac9b769384b06d125bdaa81d545d4661ee91620ac",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/test_core_reloc_primitives.c",
+  "human_readable_source": "\n\n\n#include <linux/bpf.h>\n#include <stdint.h>\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_core_read.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nstruct {\n\tchar in[256];\n\tchar out[256];\n} data = {};\n\nenum core_reloc_primitives_enum {\n\tA = 0,\n\tB = 1,\n};\n\nstruct core_reloc_primitives {\n\tchar a;\n\tint b;\n\tenum core_reloc_primitives_enum c;\n\tvoid *d;\n\tint (*f)(const char *);\n};\n\n#define CORE_READ(dst, src) bpf_core_read(dst, sizeof(*(dst)), src)\n\nSEC(\"raw_tracepoint/sys_enter\")\nint test_core_primitives(void *ctx)\n{\n\tstruct core_reloc_primitives *in = (void *)&data.in;\n\tstruct core_reloc_primitives *out = (void *)&data.out;\n\n\tif (CORE_READ(&out->a, &in->a) ||\n\t    CORE_READ(&out->b, &in->b) ||\n\t    CORE_READ(&out->c, &in->c) ||\n\t    CORE_READ(&out->d, &in->d) ||\n\t    CORE_READ(&out->f, &in->f))\n\t\treturn 1;\n\n\treturn 0;\n}\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

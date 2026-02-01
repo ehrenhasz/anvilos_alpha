@@ -1,0 +1,9 @@
+{
+  "module_name": "enable_stats.c",
+  "hash_id": "d56fdc517d4514dc8c3f8bfe9b2d26fa5f5adb789d7b50624b1aa294ddd28e7a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/prog_tests/enable_stats.c",
+  "human_readable_source": "\n#include <test_progs.h>\n#include \"test_enable_stats.skel.h\"\n\nvoid test_enable_stats(void)\n{\n\tstruct test_enable_stats *skel;\n\tint stats_fd, err, prog_fd;\n\tstruct bpf_prog_info info;\n\t__u32 info_len = sizeof(info);\n\tint duration = 0;\n\n\tskel = test_enable_stats__open_and_load();\n\tif (CHECK(!skel, \"skel_open_and_load\", \"skeleton open/load failed\\n\"))\n\t\treturn;\n\n\tstats_fd = bpf_enable_stats(BPF_STATS_RUN_TIME);\n\tif (CHECK(stats_fd < 0, \"get_stats_fd\", \"failed %d\\n\", errno)) {\n\t\ttest_enable_stats__destroy(skel);\n\t\treturn;\n\t}\n\n\terr = test_enable_stats__attach(skel);\n\tif (CHECK(err, \"attach_raw_tp\", \"err %d\\n\", err))\n\t\tgoto cleanup;\n\n\ttest_enable_stats__detach(skel);\n\n\tprog_fd = bpf_program__fd(skel->progs.test_enable_stats);\n\tmemset(&info, 0, info_len);\n\terr = bpf_prog_get_info_by_fd(prog_fd, &info, &info_len);\n\tif (CHECK(err, \"get_prog_info\",\n\t\t  \"failed to get bpf_prog_info for fd %d\\n\", prog_fd))\n\t\tgoto cleanup;\n\tif (CHECK(info.run_time_ns == 0, \"check_stats_enabled\",\n\t\t  \"failed to enable run_time_ns stats\\n\"))\n\t\tgoto cleanup;\n\n\tCHECK(info.run_cnt != skel->bss->count, \"check_run_cnt_valid\",\n\t      \"invalid run_cnt stats\\n\");\n\ncleanup:\n\ttest_enable_stats__destroy(skel);\n\tclose(stats_fd);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

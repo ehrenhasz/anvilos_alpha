@@ -1,0 +1,9 @@
+{
+  "module_name": "6lowpan_i.h",
+  "hash_id": "bc4903ae51a4544d83c2e65994d34dfff5d5caf07fee64bcc10ac7b367e02f67",
+  "original_prompt": "Ingested from linux-6.6.14/net/ieee802154/6lowpan/6lowpan_i.h",
+  "human_readable_source": " \n#ifndef __IEEE802154_6LOWPAN_I_H__\n#define __IEEE802154_6LOWPAN_I_H__\n\n#include <linux/list.h>\n\n#include <net/ieee802154_netdev.h>\n#include <net/inet_frag.h>\n#include <net/6lowpan.h>\n\ntypedef unsigned __bitwise lowpan_rx_result;\n#define RX_CONTINUE\t\t((__force lowpan_rx_result) 0u)\n#define RX_DROP_UNUSABLE\t((__force lowpan_rx_result) 1u)\n#define RX_DROP\t\t\t((__force lowpan_rx_result) 2u)\n#define RX_QUEUED\t\t((__force lowpan_rx_result) 3u)\n\n#define LOWPAN_DISPATCH_FRAG1           0xc0\n#define LOWPAN_DISPATCH_FRAGN           0xe0\n\nstruct frag_lowpan_compare_key {\n\tu16 tag;\n\tu16 d_size;\n\tstruct ieee802154_addr src;\n\tstruct ieee802154_addr dst;\n};\n\n \nstruct lowpan_frag_queue {\n\tstruct inet_frag_queue\tq;\n};\n\nint lowpan_frag_rcv(struct sk_buff *skb, const u8 frag_type);\nvoid lowpan_net_frag_exit(void);\nint lowpan_net_frag_init(void);\n\nvoid lowpan_rx_init(void);\nvoid lowpan_rx_exit(void);\n\nint lowpan_header_create(struct sk_buff *skb, struct net_device *dev,\n\t\t\t unsigned short type, const void *_daddr,\n\t\t\t const void *_saddr, unsigned int len);\nnetdev_tx_t lowpan_xmit(struct sk_buff *skb, struct net_device *dev);\n\nint lowpan_iphc_decompress(struct sk_buff *skb);\nlowpan_rx_result lowpan_rx_h_ipv6(struct sk_buff *skb);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

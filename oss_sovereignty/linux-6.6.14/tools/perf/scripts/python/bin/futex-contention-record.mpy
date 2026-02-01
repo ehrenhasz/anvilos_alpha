@@ -1,0 +1,9 @@
+{
+  "module_name": "futex-contention-record",
+  "hash_id": "8e4c0356a7131309b8098bfe0a37c3dab35bcfbbfc5bd5454e268e07cae02da8",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/scripts/python/bin/futex-contention-record",
+  "human_readable_source": "#!/bin/bash\nperf record -e syscalls:sys_enter_futex -e syscalls:sys_exit_futex $@\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

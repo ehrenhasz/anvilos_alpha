@@ -1,0 +1,9 @@
+{
+  "module_name": "setjmp_arm.S",
+  "hash_id": "870cbe7e1aea64765750d1fc0ad098689cf5139c338898c28e3e0a8fce20b08e",
+  "original_prompt": "Ingested from zfs-2.2.2/module/lua/setjmp/setjmp_arm.S",
+  "human_readable_source": " \n\n\n#if defined(__arm__) && !defined(__aarch64__)\n\n#if defined(__thumb2__)\n#define\t_FUNC_MODE\t.code 16; .thumb_func\n#else\n#define\t_FUNC_MODE\t.code 32\n#endif\n\n#define\tENTRY(x) \\\n\t.text; \\\n\t.syntax unified; \\\n\t.balign 2; \\\n\t.global x; \\\n\t.type x,#function; \\\n\t_FUNC_MODE; \\\nx:\n\n#define\tEND(x) \\\n\t.size x, . - x;\n\n#define\tRET\tbx\tlr\n\n\n \nENTRY(setjmp)\n#if defined(__thumb2__)\n\tmov\tip, sp\n\tstmia\tr0, {r4-r12,r14}\n#else\n\tstmia\tr0, {r4-r14}\n#endif\n\tmov\tr0, #0x00000000\n\tRET\nEND(setjmp)\n\nENTRY(longjmp)\n#if defined(__thumb2__)\n\tldmia\tr0, {r4-r12,r14}\n\tmov\tsp, ip\n#else\n\tldmia\tr0, {r4-r14}\n#endif\n\tmov\tr0, #0x00000001\n\tRET\nEND(longjmp)\n\n#ifdef __ELF__\n.section .note.GNU-stack,\"\",%progbits\n#endif\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

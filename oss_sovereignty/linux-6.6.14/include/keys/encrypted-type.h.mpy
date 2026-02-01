@@ -1,0 +1,9 @@
+{
+  "module_name": "encrypted-type.h",
+  "hash_id": "52999bef2660d440ae5af326f26eabf6f39678411d4dce7aca6c67c7fce10522",
+  "original_prompt": "Ingested from linux-6.6.14/include/keys/encrypted-type.h",
+  "human_readable_source": " \n \n\n#ifndef _KEYS_ENCRYPTED_TYPE_H\n#define _KEYS_ENCRYPTED_TYPE_H\n\n#include <linux/key.h>\n#include <linux/rcupdate.h>\n\nstruct encrypted_key_payload {\n\tstruct rcu_head rcu;\n\tchar *format;\t\t \n\tchar *master_desc;\t \n\tchar *datalen;\t\t \n\tu8 *iv;\t\t\t \n\tu8 *encrypted_data;\t \n\tunsigned short datablob_len;\t \n\tunsigned short decrypted_datalen;\t \n\tunsigned short payload_datalen;\t\t \n\tunsigned short encrypted_key_format;\t \n\tu8 *decrypted_data;\t \n\tu8 payload_data[];\t \n};\n\nextern struct key_type key_type_encrypted;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

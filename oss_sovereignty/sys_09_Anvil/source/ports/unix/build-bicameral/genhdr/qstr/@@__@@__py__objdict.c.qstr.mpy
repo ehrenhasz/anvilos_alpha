@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__py__objdict.c.qstr",
+  "hash_id": "5c37def5bacb54159317f47ab027825a5e87b5b54bc98beb0475fd9706ff043a",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__py__objdict.c.qstr",
+  "human_readable_source": "Q(iterator)\nQ(dict_view)\nQ(clear)\nQ(copy)\nQ(fromkeys)\nQ(get)\nQ(items)\nQ(keys)\nQ(pop)\nQ(popitem)\nQ(setdefault)\nQ(update)\nQ(values)\nQ(__getitem__)\nQ(__setitem__)\nQ(__delitem__)\nQ(dict)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

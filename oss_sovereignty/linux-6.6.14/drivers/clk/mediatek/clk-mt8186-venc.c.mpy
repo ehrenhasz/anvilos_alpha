@@ -1,0 +1,9 @@
+{
+  "module_name": "clk-mt8186-venc.c",
+  "hash_id": "720964fad8fdde6b1f8773dac48d0175fc0f8463e88eddea48fe233ec14bb974",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/clk/mediatek/clk-mt8186-venc.c",
+  "human_readable_source": "\n\n\n\n\n#include <linux/clk-provider.h>\n#include <linux/platform_device.h>\n#include <dt-bindings/clock/mt8186-clk.h>\n\n#include \"clk-gate.h\"\n#include \"clk-mtk.h\"\n\nstatic const struct mtk_gate_regs venc_cg_regs = {\n\t.set_ofs = 0x4,\n\t.clr_ofs = 0x8,\n\t.sta_ofs = 0x0,\n};\n\n#define GATE_VENC(_id, _name, _parent, _shift)\t\t\t\\\n\tGATE_MTK(_id, _name, _parent, &venc_cg_regs, _shift, &mtk_clk_gate_ops_setclr_inv)\n\nstatic const struct mtk_gate venc_clks[] = {\n\tGATE_VENC(CLK_VENC_CKE0_LARB, \"venc_cke0_larb\", \"top_venc\", 0),\n\tGATE_VENC(CLK_VENC_CKE1_VENC, \"venc_cke1_venc\", \"top_venc\", 4),\n\tGATE_VENC(CLK_VENC_CKE2_JPGENC, \"venc_cke2_jpgenc\", \"top_venc\", 8),\n\tGATE_VENC(CLK_VENC_CKE5_GALS, \"venc_cke5_gals\", \"top_venc\", 28),\n};\n\nstatic const struct mtk_clk_desc venc_desc = {\n\t.clks = venc_clks,\n\t.num_clks = ARRAY_SIZE(venc_clks),\n};\n\nstatic const struct of_device_id of_match_clk_mt8186_venc[] = {\n\t{\n\t\t.compatible = \"mediatek,mt8186-vencsys\",\n\t\t.data = &venc_desc,\n\t}, {\n\t\t \n\t}\n};\nMODULE_DEVICE_TABLE(of, of_match_clk_mt8186_venc);\n\nstatic struct platform_driver clk_mt8186_venc_drv = {\n\t.probe = mtk_clk_simple_probe,\n\t.remove_new = mtk_clk_simple_remove,\n\t.driver = {\n\t\t.name = \"clk-mt8186-venc\",\n\t\t.of_match_table = of_match_clk_mt8186_venc,\n\t},\n};\nmodule_platform_driver(clk_mt8186_venc_drv);\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

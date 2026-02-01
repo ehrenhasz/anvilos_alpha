@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile.am",
+  "hash_id": "d2bceabc972636189a9cb49e2e1907b961473b2a4818d7b6b96a9e7cf0207499",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libzfsbootenv/Makefile.am",
+  "human_readable_source": "libzfsbootenv_la_CFLAGS  = $(AM_CFLAGS) $(LIBRARY_CFLAGS)\nlibzfsbootenv_la_CFLAGS += -fvisibility=hidden\n\nlib_LTLIBRARIES += libzfsbootenv.la\nCPPCHECKTARGETS += libzfsbootenv.la\n\nlibzfsbootenv_la_CPPFLAGS  = $(AM_CPPFLAGS)\nlibzfsbootenv_la_CPPFLAGS += -I$(srcdir)/include/os/@ac_system_l@/zfs\n\ndist_libzfsbootenv_la_SOURCES = \\\n\t%D%/lzbe_device.c \\\n\t%D%/lzbe_pair.c \\\n\t%D%/lzbe_util.c\n\nlibzfsbootenv_la_LIBADD = \\\n\tlibzfs.la \\\n\tlibnvpair.la\n\nlibzfsbootenv_la_LDFLAGS =\n\nif !ASAN_ENABLED\nlibzfsbootenv_la_LDFLAGS += -Wl,-z,defs\nendif\n\nlibzfsbootenv_la_LDFLAGS += -version-info 1:0:0\n\npkgconfig_DATA += %D%/libzfsbootenv.pc\n\ndist_noinst_DATA += %D%/libzfsbootenv.abi %D%/libzfsbootenv.suppr\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

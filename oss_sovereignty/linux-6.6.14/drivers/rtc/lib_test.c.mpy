@@ -1,0 +1,9 @@
+{
+  "module_name": "lib_test.c",
+  "hash_id": "4e3b9594c152a4d1c68a2dd38902368ec8970a958485d807516b037da7363b2e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/rtc/lib_test.c",
+  "human_readable_source": "\n\n#include <kunit/test.h>\n#include <linux/rtc.h>\n\n \nstatic void advance_date(int *year, int *month, int *mday, int *yday)\n{\n\tif (*mday != rtc_month_days(*month - 1, *year)) {\n\t\t++*mday;\n\t\t++*yday;\n\t\treturn;\n\t}\n\n\t*mday = 1;\n\tif (*month != 12) {\n\t\t++*month;\n\t\t++*yday;\n\t\treturn;\n\t}\n\n\t*month = 1;\n\t*yday  = 1;\n\t++*year;\n}\n\n \nstatic void rtc_time64_to_tm_test_date_range(struct kunit *test)\n{\n\t \n\ttime64_t total_secs = ((time64_t) 160000) / 400 * 146097 * 86400;\n\n\tint year\t= 1970;\n\tint month\t= 1;\n\tint mday\t= 1;\n\tint yday\t= 1;\n\n\tstruct rtc_time result;\n\ttime64_t secs;\n\ts64 days;\n\n\tfor (secs = 0; secs <= total_secs; secs += 86400) {\n\n\t\trtc_time64_to_tm(secs, &result);\n\n\t\tdays = div_s64(secs, 86400);\n\n\t\t#define FAIL_MSG \"%d/%02d/%02d (%2d) : %ld\", \\\n\t\t\tyear, month, mday, yday, days\n\n\t\tKUNIT_ASSERT_EQ_MSG(test, year - 1900, result.tm_year, FAIL_MSG);\n\t\tKUNIT_ASSERT_EQ_MSG(test, month - 1, result.tm_mon, FAIL_MSG);\n\t\tKUNIT_ASSERT_EQ_MSG(test, mday, result.tm_mday, FAIL_MSG);\n\t\tKUNIT_ASSERT_EQ_MSG(test, yday, result.tm_yday, FAIL_MSG);\n\n\t\tadvance_date(&year, &month, &mday, &yday);\n\t}\n}\n\nstatic struct kunit_case rtc_lib_test_cases[] = {\n\tKUNIT_CASE(rtc_time64_to_tm_test_date_range),\n\t{}\n};\n\nstatic struct kunit_suite rtc_lib_test_suite = {\n\t.name = \"rtc_lib_test_cases\",\n\t.test_cases = rtc_lib_test_cases,\n};\n\nkunit_test_suite(rtc_lib_test_suite);\n\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

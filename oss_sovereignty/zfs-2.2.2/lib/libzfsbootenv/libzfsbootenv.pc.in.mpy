@@ -1,0 +1,9 @@
+{
+  "module_name": "libzfsbootenv.pc.in",
+  "hash_id": "60b9ead01c02115c4f2ebc4cf3b6b3285cceb3c6096f0249961c321885e24a1d",
+  "original_prompt": "Ingested from zfs-2.2.2/lib/libzfsbootenv/libzfsbootenv.pc.in",
+  "human_readable_source": "prefix=@prefix@\nexec_prefix=@exec_prefix@\nlibdir=@libdir@\nincludedir=@includedir@\n\nName: libzfsbootenv\nDescription: LibZFSBootENV library\nVersion: @VERSION@\nURL: https://github.com/openzfs/zfs\nRequires: libzfs\nCflags: -I${includedir}\nLibs: -L${libdir} -lzfsbootenv\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

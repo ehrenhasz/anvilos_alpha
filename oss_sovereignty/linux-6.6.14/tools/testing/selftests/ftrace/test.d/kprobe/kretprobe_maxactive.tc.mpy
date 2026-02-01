@@ -1,0 +1,9 @@
+{
+  "module_name": "kretprobe_maxactive.tc",
+  "hash_id": "7604f0d5d730db6e799319bb227af6cd1d266ab59236fca5c612b80b440f55ca",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/ftrace/test.d/kprobe/kretprobe_maxactive.tc",
+  "human_readable_source": "#!/bin/sh\n# SPDX-License-Identifier: GPL-2.0\n# description: Kretprobe dynamic event with maxactive\n# requires: kprobe_events 'r[maxactive]':README\n\n# Test if we successfully reject unknown messages\nif echo 'a:myprobeaccept inet_csk_accept' > kprobe_events; then false; else true; fi\n\n# Test if we successfully reject too big maxactive\nif echo 'r1000000:myprobeaccept inet_csk_accept' > kprobe_events; then false; else true; fi\n\n# Test if we successfully reject unparsable numbers for maxactive\nif echo 'r10fuzz:myprobeaccept inet_csk_accept' > kprobe_events; then false; else true; fi\n\n# Test for kretprobe with event name without maxactive\necho 'r:myprobeaccept inet_csk_accept' > kprobe_events\ngrep myprobeaccept kprobe_events\ntest -d events/kprobes/myprobeaccept\necho '-:myprobeaccept' >> kprobe_events\n\n# Test for kretprobe with event name with a small maxactive\necho 'r10:myprobeaccept inet_csk_accept' > kprobe_events\ngrep myprobeaccept kprobe_events\ntest -d events/kprobes/myprobeaccept\necho '-:myprobeaccept' >> kprobe_events\n\n# Test for kretprobe without event name without maxactive\necho 'r inet_csk_accept' > kprobe_events\ngrep inet_csk_accept kprobe_events\necho > kprobe_events\n\n# Test for kretprobe without event name with a small maxactive\necho 'r10 inet_csk_accept' > kprobe_events\ngrep inet_csk_accept kprobe_events\necho > kprobe_events\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

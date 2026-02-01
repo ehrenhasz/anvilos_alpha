@@ -1,0 +1,9 @@
+{
+  "module_name": "runqslower.h",
+  "hash_id": "f47df8b69385f7b0a9e56c5f5b165d5f215d8c276c30744b7cae7b3c6cffde9a",
+  "original_prompt": "Ingested from linux-6.6.14/tools/bpf/runqslower/runqslower.h",
+  "human_readable_source": " \n#ifndef __RUNQSLOWER_H\n#define __RUNQSLOWER_H\n\n#define TASK_COMM_LEN 16\n\nstruct runq_event {\n\tchar task[TASK_COMM_LEN];\n\t__u64 delta_us;\n\tpid_t pid;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

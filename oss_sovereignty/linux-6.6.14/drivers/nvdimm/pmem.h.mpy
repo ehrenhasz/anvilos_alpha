@@ -1,0 +1,9 @@
+{
+  "module_name": "pmem.h",
+  "hash_id": "38564a0e52cd2c481e7e4469e2e42d3fbcc359d122a087a96df9dcbce14132a0",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/nvdimm/pmem.h",
+  "human_readable_source": " \n#ifndef __NVDIMM_PMEM_H__\n#define __NVDIMM_PMEM_H__\n#include <linux/page-flags.h>\n#include <linux/badblocks.h>\n#include <linux/memremap.h>\n#include <linux/types.h>\n#include <linux/pfn_t.h>\n#include <linux/fs.h>\n\nenum dax_access_mode;\n\n \nstruct pmem_device {\n\t \n\tphys_addr_t\t\tphys_addr;\n\t \n\tphys_addr_t\t\tdata_offset;\n\tu64\t\t\tpfn_flags;\n\tvoid\t\t\t*virt_addr;\n\t \n\tsize_t\t\t\tsize;\n\t \n\tu32\t\t\tpfn_pad;\n\tstruct kernfs_node\t*bb_state;\n\tstruct badblocks\tbb;\n\tstruct dax_device\t*dax_dev;\n\tstruct gendisk\t\t*disk;\n\tstruct dev_pagemap\tpgmap;\n};\n\nlong __pmem_direct_access(struct pmem_device *pmem, pgoff_t pgoff,\n\t\tlong nr_pages, enum dax_access_mode mode, void **kaddr,\n\t\tpfn_t *pfn);\n\n#ifdef CONFIG_MEMORY_FAILURE\nstatic inline bool test_and_clear_pmem_poison(struct page *page)\n{\n\treturn TestClearPageHWPoison(page);\n}\n#else\nstatic inline bool test_and_clear_pmem_poison(struct page *page)\n{\n\treturn false;\n}\n#endif\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

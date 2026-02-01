@@ -1,0 +1,9 @@
+{
+  "module_name": "ebt_mark_t.h",
+  "hash_id": "ecabeb41e4c25ed58b135a49fd8c0c2235d91c9b8197238b598ed59a3737cbc6",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_bridge/ebt_mark_t.h",
+  "human_readable_source": " \n#ifndef __LINUX_BRIDGE_EBT_MARK_T_H\n#define __LINUX_BRIDGE_EBT_MARK_T_H\n\n \n#define MARK_SET_VALUE (0xfffffff0)\n#define MARK_OR_VALUE  (0xffffffe0)\n#define MARK_AND_VALUE (0xffffffd0)\n#define MARK_XOR_VALUE (0xffffffc0)\n\nstruct ebt_mark_t_info {\n\tunsigned long mark;\n\t \n\tint target;\n};\n#define EBT_MARK_TARGET \"mark\"\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

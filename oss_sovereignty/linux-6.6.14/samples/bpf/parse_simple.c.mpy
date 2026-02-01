@@ -1,0 +1,9 @@
+{
+  "module_name": "parse_simple.c",
+  "hash_id": "61b783677844155c1fd950ca0e67a90a702990031d1382ff6b068052096bbbb6",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/parse_simple.c",
+  "human_readable_source": " \n#define KBUILD_MODNAME \"foo\"\n#include <linux/ip.h>\n#include <linux/ipv6.h>\n#include <linux/in.h>\n#include <linux/tcp.h>\n#include <linux/udp.h>\n#include <uapi/linux/bpf.h>\n#include <net/ip.h>\n#include <bpf/bpf_helpers.h>\n\n#define DEFAULT_PKTGEN_UDP_PORT 9\n\n \nstruct eth_hdr {\n\tunsigned char   h_dest[ETH_ALEN];\n\tunsigned char   h_source[ETH_ALEN];\n\tunsigned short  h_proto;\n};\n\nSEC(\"simple\")\nint handle_ingress(struct __sk_buff *skb)\n{\n\tvoid *data = (void *)(long)skb->data;\n\tstruct eth_hdr *eth = data;\n\tstruct iphdr *iph = data + sizeof(*eth);\n\tstruct udphdr *udp = data + sizeof(*eth) + sizeof(*iph);\n\tvoid *data_end = (void *)(long)skb->data_end;\n\n\t \n\tif (data + sizeof(*eth) + sizeof(*iph) + sizeof(*udp) > data_end)\n\t\treturn 0;\n\n\tif (eth->h_proto != htons(ETH_P_IP))\n\t\treturn 0;\n\tif (iph->protocol != IPPROTO_UDP || iph->ihl != 5)\n\t\treturn 0;\n\tif (ip_is_fragment(iph))\n\t\treturn 0;\n\tif (udp->dest == htons(DEFAULT_PKTGEN_UDP_PORT))\n\t\treturn TC_ACT_SHOT;\n\treturn 0;\n}\nchar _license[] SEC(\"license\") = \"GPL\";\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

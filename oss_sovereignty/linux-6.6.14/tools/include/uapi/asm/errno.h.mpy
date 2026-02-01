@@ -1,0 +1,9 @@
+{
+  "module_name": "errno.h",
+  "hash_id": "c384041bedbd624c91fb4cad07b425d5ecd7443494933095c555e8b71b59d557",
+  "original_prompt": "Ingested from linux-6.6.14/tools/include/uapi/asm/errno.h",
+  "human_readable_source": " \n#if defined(__i386__) || defined(__x86_64__)\n#include \"../../../arch/x86/include/uapi/asm/errno.h\"\n#elif defined(__powerpc__)\n#include \"../../../arch/powerpc/include/uapi/asm/errno.h\"\n#elif defined(__sparc__)\n#include \"../../../arch/sparc/include/uapi/asm/errno.h\"\n#elif defined(__alpha__)\n#include \"../../../arch/alpha/include/uapi/asm/errno.h\"\n#elif defined(__mips__)\n#include \"../../../arch/mips/include/uapi/asm/errno.h\"\n#elif defined(__hppa__)\n#include \"../../../arch/parisc/include/uapi/asm/errno.h\"\n#else\n#include <asm-generic/errno.h>\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

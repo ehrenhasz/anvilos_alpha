@@ -1,0 +1,9 @@
+{
+  "module_name": "drm_fb_dma_helper.h",
+  "hash_id": "cd6633e2cbbe900c8948dcf26dbc9bb89b30d1dc6778f37073c5c88d6bf97b2f",
+  "original_prompt": "Ingested from linux-6.6.14/include/drm/drm_fb_dma_helper.h",
+  "human_readable_source": " \n#ifndef __DRM_FB_DMA_HELPER_H__\n#define __DRM_FB_DMA_HELPER_H__\n\n#include <linux/types.h>\n\nstruct drm_device;\nstruct drm_framebuffer;\nstruct drm_plane_state;\n\nstruct drm_gem_dma_object *drm_fb_dma_get_gem_obj(struct drm_framebuffer *fb,\n\tunsigned int plane);\n\ndma_addr_t drm_fb_dma_get_gem_addr(struct drm_framebuffer *fb,\n\t\t\t\t   struct drm_plane_state *state,\n\t\t\t\t   unsigned int plane);\n\nvoid drm_fb_dma_sync_non_coherent(struct drm_device *drm,\n\t\t\t\t  struct drm_plane_state *old_state,\n\t\t\t\t  struct drm_plane_state *state);\n\n#endif\n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "172300ae2742d90cc3c3793efe4d804fb6d8a779dd7f749a97d8829d827b66c8",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Compute Acceleration device configuration\n#\n# This framework provides support for compute acceleration devices, such\n# as, but not limited to, Machine-Learning and Deep-Learning acceleration\n# devices\n#\nif DRM\n\nmenuconfig DRM_ACCEL\n\tbool \"Compute Acceleration Framework\"\n\thelp\n\t  Framework for device drivers of compute acceleration devices, such\n\t  as, but not limited to, Machine-Learning and Deep-Learning\n\t  acceleration devices.\n\t  If you say Y here, you need to select the module that's right for\n\t  your acceleration device from the list below.\n\t  This framework is integrated with the DRM subsystem as compute\n\t  accelerators and GPUs share a lot in common and can use almost the\n\t  same infrastructure code.\n\t  Having said that, acceleration devices will have a different\n\t  major number than GPUs, and will be exposed to user-space using\n\t  different device files, called accel/accel* (in /dev, sysfs\n\t  and debugfs).\n\nsource \"drivers/accel/habanalabs/Kconfig\"\nsource \"drivers/accel/ivpu/Kconfig\"\nsource \"drivers/accel/qaic/Kconfig\"\n\nendif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

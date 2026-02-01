@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "81f9f2dd853b126ed9df5ca46cc9e9ac4ccca32a7d9b817fbab863b2eb407331",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ath/ar5523/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: ISC\nobj-$(CONFIG_AR5523)   := ar5523.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

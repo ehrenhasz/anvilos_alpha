@@ -1,0 +1,9 @@
+{
+  "module_name": "kmem_cache.h",
+  "hash_id": "c6c1c27a620b9eff9205397ee8c22455a1081bdac852590a1ce3aebee2a4c2db",
+  "original_prompt": "Ingested from zfs-2.2.2/include/os/freebsd/spl/sys/kmem_cache.h",
+  "human_readable_source": " \n\n\n#ifndef _SPL_KMEM_CACHE_H\n#define\t_SPL_KMEM_CACHE_H\n\n#ifdef _KERNEL\n#include <sys/taskq.h>\n\n \ntypedef enum kmem_cbrc {\n\tKMEM_CBRC_YES\t\t= 0,\t \n\tKMEM_CBRC_NO\t\t= 1,\t \n\tKMEM_CBRC_LATER\t\t= 2,\t \n\tKMEM_CBRC_DONT_NEED\t= 3,\t \n\tKMEM_CBRC_DONT_KNOW\t= 4,\t \n} kmem_cbrc_t;\n\nextern void spl_kmem_cache_set_move(kmem_cache_t *,\n    kmem_cbrc_t (*)(void *, void *, size_t, void *));\n\n#define\tkmem_cache_set_move(skc, move)\tspl_kmem_cache_set_move(skc, move)\n\n#endif  \n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

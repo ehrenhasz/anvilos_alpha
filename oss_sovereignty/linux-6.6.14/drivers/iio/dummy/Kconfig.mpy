@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "a5683e5d1cdcd0edd0520e4f8aef7c8c5fc4b5f7aaae4be700af3138ecb5ff98",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/dummy/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Industrial I/O subsystem Dummy Driver configuration\n#\nmenu \"IIO dummy driver\"\n\tdepends on IIO\n\nconfig IIO_DUMMY_EVGEN\n\tselect IRQ_SIM\n\ttristate\n\nconfig IIO_SIMPLE_DUMMY\n\ttristate \"An example driver with no hardware requirements\"\n\tdepends on IIO_SW_DEVICE\n\thelp\n\t  Driver intended mainly as documentation for how to write\n\t  a driver. May also be useful for testing userspace code\n\t  without hardware.\n\nif IIO_SIMPLE_DUMMY\n\nconfig IIO_SIMPLE_DUMMY_EVENTS\n\tbool \"Event generation support\"\n\tselect IIO_DUMMY_EVGEN\n\thelp\n\t  Add some dummy events to the simple dummy driver.\n\n\t  The purpose of this is to generate 'fake' event interrupts thus\n\t  allowing that driver's code to be as close as possible to that\n\t  a normal driver talking to hardware.\n\nconfig IIO_SIMPLE_DUMMY_BUFFER\n\tbool \"Buffered capture support\"\n\tselect IIO_BUFFER\n\tselect IIO_TRIGGER\n\tselect IIO_KFIFO_BUF\n\tselect IIO_TRIGGERED_BUFFER\n\thelp\n\t  Add buffered data capture to the simple dummy driver.\n\n\t  Buffer handling elements of industrial I/O reference driver.\n\t  Uses the kfifo buffer.\n\nendif # IIO_SIMPLE_DUMMY\n\nendmenu\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

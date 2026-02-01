@@ -1,0 +1,9 @@
+{
+  "module_name": "gpio-i8255.h",
+  "hash_id": "f74cbef8b5a42164b0c83ba9accba0f07a31b01a258afe3c774abb34f0443e35",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpio/gpio-i8255.h",
+  "human_readable_source": " \n \n#ifndef _I8255_H_\n#define _I8255_H_\n\nstruct device;\nstruct irq_domain;\nstruct regmap;\n\n#define i8255_volatile_regmap_range(_base) regmap_reg_range(_base, _base + 0x2)\n\n \nstruct i8255_regmap_config {\n\tstruct device *parent;\n\tstruct regmap *map;\n\tint num_ppi;\n\tconst char *const *names;\n\tstruct irq_domain *domain;\n};\n\nint devm_i8255_regmap_register(struct device *dev,\n\t\t\t       const struct i8255_regmap_config *config);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

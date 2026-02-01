@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "b220aee0665b88d1ef30b0fc6ed42e8e216b2a238bffdc178b7054adbc2f984c",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/vxlan/Makefile",
+  "human_readable_source": "#\n# Makefile for the vxlan driver\n#\n\nobj-$(CONFIG_VXLAN) += vxlan.o\n\nvxlan-objs := vxlan_core.o vxlan_multicast.o vxlan_vnifilter.o vxlan_mdb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

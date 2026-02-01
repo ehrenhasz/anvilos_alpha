@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "d526838debc375c39f805e855c3dd11609eb118f1acd98e55e36ab20a1baf668",
+  "original_prompt": "Ingested from linux-6.6.14/net/bluetooth/bnep/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n#\n# Makefile for the Linux Bluetooth BNEP layer.\n#\n\nobj-$(CONFIG_BT_BNEP) += bnep.o\n\nbnep-objs := core.o sock.o netdev.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

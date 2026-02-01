@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "2b04061d06297db39cb714fd3fd24fefcd3004e83f7b66d11f0012fac8144409",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/stm/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nconfig DRM_STM\n\ttristate \"DRM Support for STMicroelectronics SoC Series\"\n\tdepends on DRM && ARCH_STM32\n\tselect DRM_KMS_HELPER\n\tselect DRM_GEM_DMA_HELPER\n\tselect DRM_PANEL_BRIDGE\n\tselect VIDEOMODE_HELPERS\n\tselect FB_PROVIDE_GET_FB_UNMAPPED_AREA if FB\n\n\thelp\n\t  Enable support for the on-chip display controller on\n\t  STMicroelectronics STM32 MCUs.\n\t  To compile this driver as a module, choose M here: the module\n\t  will be called stm-drm.\n\nconfig DRM_STM_DSI\n\ttristate \"STMicroelectronics specific extensions for Synopsys MIPI DSI\"\n\tdepends on DRM_STM\n\tselect DRM_DW_MIPI_DSI\n\thelp\n\t  Choose this option for MIPI DSI support on STMicroelectronics SoC.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

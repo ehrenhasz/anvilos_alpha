@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "2eef3edd59d226f3242308ae61b59bdd858d36d8d18a71fb103f908e4b6b65f5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/sw/rxe/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_RDMA_RXE) += rdma_rxe.o\n\nrdma_rxe-y := \\\n\trxe.o \\\n\trxe_comp.o \\\n\trxe_req.o \\\n\trxe_resp.o \\\n\trxe_recv.o \\\n\trxe_pool.o \\\n\trxe_queue.o \\\n\trxe_verbs.o \\\n\trxe_av.o \\\n\trxe_srq.o \\\n\trxe_qp.o \\\n\trxe_cq.o \\\n\trxe_mr.o \\\n\trxe_mw.o \\\n\trxe_opcode.o \\\n\trxe_mmap.o \\\n\trxe_icrc.o \\\n\trxe_mcast.o \\\n\trxe_task.o \\\n\trxe_net.o \\\n\trxe_hw_counters.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

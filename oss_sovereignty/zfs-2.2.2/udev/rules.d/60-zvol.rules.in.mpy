@@ -1,0 +1,9 @@
+{
+  "module_name": "60-zvol.rules.in",
+  "hash_id": "9c380d23beeaf90cb7dc6b60551293d287caa447bd80ad31eaccfb1fe1eb34ed",
+  "original_prompt": "Ingested from zfs-2.2.2/udev/rules.d/60-zvol.rules.in",
+  "human_readable_source": "# Persistent links for zvol\n#\n# persistent disk links: /dev/zvol/dataset_name\n#\n# NOTE: We used to also create an additional tree of zvol symlinks located at\n#       /dev/dataset_name (i.e. without the 'zvol' path component) for\n#       compatibility reasons. These are no longer created anymore, and should\n#       not be relied upon.\n#       \n\nKERNEL==\"zd*\", SUBSYSTEM==\"block\", ACTION==\"add|change\", PROGRAM==\"@udevdir@/zvol_id $devnode\", SYMLINK+=\"zvol/%c\"\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

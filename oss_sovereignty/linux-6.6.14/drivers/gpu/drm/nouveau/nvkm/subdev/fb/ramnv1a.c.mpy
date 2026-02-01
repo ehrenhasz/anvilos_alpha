@@ -1,0 +1,9 @@
+{
+  "module_name": "ramnv1a.c",
+  "hash_id": "c1893e15139dbf8bd1cfd878d4419d8163e2bf9194d360c7b3f96c93c03a25fe",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/ramnv1a.c",
+  "human_readable_source": " \n#include \"ram.h\"\n\nint\nnv1a_ram_new(struct nvkm_fb *fb, struct nvkm_ram **pram)\n{\n\tstruct pci_dev *bridge;\n\tu32 mem, mib;\n\tint domain = 0;\n\tstruct pci_dev *pdev = NULL;\n\n\tif (dev_is_pci(fb->subdev.device->dev))\n\t\tpdev = to_pci_dev(fb->subdev.device->dev);\n\n\tif (pdev)\n\t\tdomain = pci_domain_nr(pdev->bus);\n\n\tbridge = pci_get_domain_bus_and_slot(domain, 0, PCI_DEVFN(0, 1));\n\tif (!bridge) {\n\t\tnvkm_error(&fb->subdev, \"no bridge device\\n\");\n\t\treturn -ENODEV;\n\t}\n\n\tif (fb->subdev.device->chipset == 0x1a) {\n\t\tpci_read_config_dword(bridge, 0x7c, &mem);\n\t\tmib = ((mem >> 6) & 31) + 1;\n\t} else {\n\t\tpci_read_config_dword(bridge, 0x84, &mem);\n\t\tmib = ((mem >> 4) & 127) + 1;\n\t}\n\n\treturn nvkm_ram_new_(&nv04_ram_func, fb, NVKM_RAM_TYPE_STOLEN,\n\t\t\t     mib * 1024 * 1024, pram);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

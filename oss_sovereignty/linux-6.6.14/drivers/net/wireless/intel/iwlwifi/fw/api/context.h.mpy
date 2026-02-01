@@ -1,0 +1,9 @@
+{
+  "module_name": "context.h",
+  "hash_id": "b757976f017eb904758012ff69db2aaafffb1bada2560c93e5d9e3d5b80cfc3d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intel/iwlwifi/fw/api/context.h",
+  "human_readable_source": " \n \n#ifndef __iwl_fw_api_context_h__\n#define __iwl_fw_api_context_h__\n\n \nenum iwl_ctxt_id_and_color {\n\tFW_CTXT_ID_POS\t\t= 0,\n\tFW_CTXT_ID_MSK\t\t= 0xff << FW_CTXT_ID_POS,\n\tFW_CTXT_COLOR_POS\t= 8,\n\tFW_CTXT_COLOR_MSK\t= 0xff << FW_CTXT_COLOR_POS,\n\tFW_CTXT_INVALID\t\t= 0xffffffff,\n};\n\n#define FW_CMD_ID_AND_COLOR(_id, _color) (((_id) << FW_CTXT_ID_POS) |\\\n\t\t\t\t\t  ((_color) << FW_CTXT_COLOR_POS))\n\n \nenum iwl_ctxt_action {\n\tFW_CTXT_ACTION_INVALID = 0,\n\tFW_CTXT_ACTION_ADD,\n\tFW_CTXT_ACTION_MODIFY,\n\tFW_CTXT_ACTION_REMOVE,\n};  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

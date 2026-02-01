@@ -1,0 +1,9 @@
+{
+  "module_name": "test-file-has-acl.c",
+  "hash_id": "cb6747c497d4c9407973327ffb6a62a796a12e5da7b8c96463cb372ae1a576c8",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-file-has-acl.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"acl.h\"\n\n#include <signal.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n#include <sys/types.h>\n#include <sys/stat.h>\n\n#include \"macros.h\"\n\nint\nmain (int argc, char *argv[])\n{\n  const char *file;\n  struct stat statbuf;\n\n  ASSERT (argc == 2);\n\n  file = argv[1];\n\n  if (stat (file, &statbuf) < 0)\n    {\n      fprintf (stderr, \"could not access file \\\"%s\\\"\\n\", file);\n      exit (EXIT_FAILURE);\n    }\n\n   \n#if HAVE_DECL_ALARM\n   \n  {\n    int alarm_value = 5;\n    signal (SIGALRM, SIG_DFL);\n    alarm (alarm_value);\n  }\n#endif\n\n#if USE_ACL\n  {\n    int ret = file_has_acl (file, &statbuf);\n    if (ret < 0)\n      {\n        fprintf (stderr, \"could not access the ACL of file \\\"%s\\\"\\n\", file);\n        exit (EXIT_FAILURE);\n      }\n    printf (\"%s\\n\", ret ? \"yes\" : \"no\");\n  }\n#else\n  printf (\"no\\n\");\n#endif\n\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "netfilter_ipv6.h",
+  "hash_id": "dbc480d87ec94b1133f7afb2e52cd9521fda5ea8bdf0bb91329c02477cc6c662",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_ipv6.h",
+  "human_readable_source": " \n \n#ifndef _UAPI__LINUX_IP6_NETFILTER_H\n#define _UAPI__LINUX_IP6_NETFILTER_H\n\n\n#include <linux/netfilter.h>\n\n \n#ifndef __KERNEL__\n\n#include <limits.h>  \n\n \n \n#define NF_IP6_PRE_ROUTING\t0\n \n#define NF_IP6_LOCAL_IN\t\t1\n \n#define NF_IP6_FORWARD\t\t2\n \n#define NF_IP6_LOCAL_OUT\t\t3\n \n#define NF_IP6_POST_ROUTING\t4\n#define NF_IP6_NUMHOOKS\t\t5\n#endif  \n\n\nenum nf_ip6_hook_priorities {\n\tNF_IP6_PRI_FIRST = INT_MIN,\n\tNF_IP6_PRI_RAW_BEFORE_DEFRAG = -450,\n\tNF_IP6_PRI_CONNTRACK_DEFRAG = -400,\n\tNF_IP6_PRI_RAW = -300,\n\tNF_IP6_PRI_SELINUX_FIRST = -225,\n\tNF_IP6_PRI_CONNTRACK = -200,\n\tNF_IP6_PRI_MANGLE = -150,\n\tNF_IP6_PRI_NAT_DST = -100,\n\tNF_IP6_PRI_FILTER = 0,\n\tNF_IP6_PRI_SECURITY = 50,\n\tNF_IP6_PRI_NAT_SRC = 100,\n\tNF_IP6_PRI_SELINUX_LAST = 225,\n\tNF_IP6_PRI_CONNTRACK_HELPER = 300,\n\tNF_IP6_PRI_LAST = INT_MAX,\n};\n\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

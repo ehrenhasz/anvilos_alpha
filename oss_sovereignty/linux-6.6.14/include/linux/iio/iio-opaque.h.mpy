@@ -1,0 +1,9 @@
+{
+  "module_name": "iio-opaque.h",
+  "hash_id": "447aa00b6f82071fe6858da1971509ccefe8df22fff1900b080c5ce18a72434b",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/iio/iio-opaque.h",
+  "human_readable_source": " \n\n#ifndef _INDUSTRIAL_IO_OPAQUE_H_\n#define _INDUSTRIAL_IO_OPAQUE_H_\n\n \nstruct iio_dev_opaque {\n\tstruct iio_dev\t\t\tindio_dev;\n\tint\t\t\t\tcurrentmode;\n\tint\t\t\t\tid;\n\tstruct module\t\t\t*driver_module;\n\tstruct mutex\t\t\tmlock;\n\tstruct lock_class_key\t\tmlock_key;\n\tstruct mutex\t\t\tinfo_exist_lock;\n\tbool\t\t\t\ttrig_readonly;\n\tstruct iio_event_interface\t*event_interface;\n\tstruct iio_buffer\t\t**attached_buffers;\n\tunsigned int\t\t\tattached_buffers_cnt;\n\tstruct iio_ioctl_handler\t*buffer_ioctl_handler;\n\tstruct list_head\t\tbuffer_list;\n\tstruct list_head\t\tchannel_attr_list;\n\tstruct attribute_group\t\tchan_attr_group;\n\tstruct list_head\t\tioctl_handlers;\n\tconst struct attribute_group\t**groups;\n\tint\t\t\t\tgroupcounter;\n\tstruct attribute_group\t\tlegacy_scan_el_group;\n\tstruct attribute_group\t\tlegacy_buffer_group;\n\tvoid\t\t\t\t*bounce_buffer;\n\tsize_t\t\t\t\tbounce_buffer_size;\n\n\tunsigned int\t\t\tscan_index_timestamp;\n\tclockid_t\t\t\tclock_id;\n\tstruct cdev\t\t\tchrdev;\n\tunsigned long\t\t\tflags;\n\n#if defined(CONFIG_DEBUG_FS)\n\tstruct dentry\t\t\t*debugfs_dentry;\n\tunsigned\t\t\tcached_reg_addr;\n\tchar\t\t\t\tread_buf[20];\n\tunsigned int\t\t\tread_buf_len;\n#endif\n};\n\n#define to_iio_dev_opaque(_indio_dev)\t\t\\\n\tcontainer_of((_indio_dev), struct iio_dev_opaque, indio_dev)\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

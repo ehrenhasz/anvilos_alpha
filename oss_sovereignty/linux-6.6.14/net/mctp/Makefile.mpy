@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "1fa804a3b74703858b01f7cd754341e8342f5b8310db39cfd32f1d7f91eb458a",
+  "original_prompt": "Ingested from linux-6.6.14/net/mctp/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nobj-$(CONFIG_MCTP) += mctp.o\nmctp-objs := af_mctp.o device.o route.o neigh.o\n\n# tests\nobj-$(CONFIG_MCTP_TEST) += test/utils.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

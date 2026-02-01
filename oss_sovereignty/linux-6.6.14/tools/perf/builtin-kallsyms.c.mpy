@@ -1,0 +1,9 @@
+{
+  "module_name": "builtin-kallsyms.c",
+  "hash_id": "6831e47a794f257b93a2b811069dd1e06054b943bbd574cfe8af1800c3322950",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/builtin-kallsyms.c",
+  "human_readable_source": "\n \n#include <inttypes.h>\n#include \"builtin.h\"\n#include <linux/compiler.h>\n#include <subcmd/parse-options.h>\n#include \"debug.h\"\n#include \"dso.h\"\n#include \"machine.h\"\n#include \"map.h\"\n#include \"symbol.h\"\n\nstatic int __cmd_kallsyms(int argc, const char **argv)\n{\n\tint i;\n\tstruct machine *machine = machine__new_kallsyms();\n\n\tif (machine == NULL) {\n\t\tpr_err(\"Couldn't read /proc/kallsyms\\n\");\n\t\treturn -1;\n\t}\n\n\tfor (i = 0; i < argc; ++i) {\n\t\tstruct map *map;\n\t\tconst struct dso *dso;\n\t\tstruct symbol *symbol = machine__find_kernel_symbol_by_name(machine, argv[i], &map);\n\n\t\tif (symbol == NULL) {\n\t\t\tprintf(\"%s: not found\\n\", argv[i]);\n\t\t\tcontinue;\n\t\t}\n\n\t\tdso = map__dso(map);\n\t\tprintf(\"%s: %s %s %#\" PRIx64 \"-%#\" PRIx64 \" (%#\" PRIx64 \"-%#\" PRIx64\")\\n\",\n\t\t\tsymbol->name, dso->short_name, dso->long_name,\n\t\t\tmap__unmap_ip(map, symbol->start), map__unmap_ip(map, symbol->end),\n\t\t\tsymbol->start, symbol->end);\n\t}\n\n\tmachine__delete(machine);\n\treturn 0;\n}\n\nint cmd_kallsyms(int argc, const char **argv)\n{\n\tconst struct option options[] = {\n\tOPT_INCR('v', \"verbose\", &verbose, \"be more verbose (show counter open errors, etc)\"),\n\tOPT_END()\n\t};\n\tconst char * const kallsyms_usage[] = {\n\t\t\"perf kallsyms [<options>] symbol_name\",\n\t\tNULL\n\t};\n\n\targc = parse_options(argc, argv, options, kallsyms_usage, 0);\n\tif (argc < 1)\n\t\tusage_with_options(kallsyms_usage, options);\n\n\tsymbol_conf.try_vmlinux_path = (symbol_conf.vmlinux_name == NULL);\n\tif (symbol__init(NULL) < 0)\n\t\treturn -1;\n\n\treturn __cmd_kallsyms(argc, argv);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

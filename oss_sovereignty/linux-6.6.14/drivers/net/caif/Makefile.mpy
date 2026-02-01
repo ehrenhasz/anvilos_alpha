@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "bbfccb98187d2a98850b33b527e2d9f281dd28a96f7b40ad1a5f5d311ba2acc3",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/caif/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\nccflags-$(CONFIG_CAIF_DEBUG) := -DDEBUG\n\n# Serial interface\nobj-$(CONFIG_CAIF_TTY) += caif_serial.o\n\n# Virtio interface\nobj-$(CONFIG_CAIF_VIRTIO) += caif_virtio.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

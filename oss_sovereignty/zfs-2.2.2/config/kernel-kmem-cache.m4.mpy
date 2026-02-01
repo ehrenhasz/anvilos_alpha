@@ -1,0 +1,9 @@
+{
+  "module_name": "kernel-kmem-cache.m4",
+  "hash_id": "589bd49b5fdd5181eeee3a4f2c09d6ba50a809b1e4f96789f984dbad7ee92da3",
+  "original_prompt": "Ingested from zfs-2.2.2/config/kernel-kmem-cache.m4",
+  "human_readable_source": "dnl #\ndnl # grsecurity API change,\ndnl # kmem_cache_create() with SLAB_USERCOPY flag replaced by\ndnl # kmem_cache_create_usercopy().\ndnl #\nAC_DEFUN([ZFS_AC_KERNEL_SRC_KMEM_CACHE_CREATE_USERCOPY], [\n\tZFS_LINUX_TEST_SRC([kmem_cache_create_usercopy], [\n\t\t#include <linux/slab.h>\n\t\tstatic void ctor(void *foo) { /* fake ctor */ }\n\t],[\n\t\tstruct kmem_cache *skc_linux_cache;\n\t\tconst char *name = \"test\";\n\t\tsize_t size = 4096;\n\t\tsize_t align = 8;\n\t\tunsigned long flags = 0;\n\t\tsize_t useroffset = 0;\n\t\tsize_t usersize = size - useroffset;\n\n\t\tskc_linux_cache = kmem_cache_create_usercopy(\n\t\t    name, size, align, flags, useroffset, usersize, ctor);\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_KMEM_CACHE_CREATE_USERCOPY], [\n\tAC_MSG_CHECKING([whether kmem_cache_create_usercopy() exists])\n\tZFS_LINUX_TEST_RESULT([kmem_cache_create_usercopy], [\n\t\tAC_MSG_RESULT(yes)\n\t\tAC_DEFINE(HAVE_KMEM_CACHE_CREATE_USERCOPY, 1,\n\t\t    [kmem_cache_create_usercopy() exists])\n\t],[\n\t\tAC_MSG_RESULT(no)\n\t])\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_SRC_KMEM_CACHE], [\n\tZFS_AC_KERNEL_SRC_KMEM_CACHE_CREATE_USERCOPY\n])\n\nAC_DEFUN([ZFS_AC_KERNEL_KMEM_CACHE], [\n\tZFS_AC_KERNEL_KMEM_CACHE_CREATE_USERCOPY\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

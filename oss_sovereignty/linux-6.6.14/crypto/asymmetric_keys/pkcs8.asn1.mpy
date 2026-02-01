@@ -1,0 +1,9 @@
+{
+  "module_name": "pkcs8.asn1",
+  "hash_id": "600fe3e5ad3c831310744a39c51a4550853e6cfab051583eca3fca313efbf354",
+  "original_prompt": "Ingested from linux-6.6.14/crypto/asymmetric_keys/pkcs8.asn1",
+  "human_readable_source": "--\n-- This is the unencrypted variant\n--\nPrivateKeyInfo ::= SEQUENCE {\n\tversion\t\t\tVersion,\n\tprivateKeyAlgorithm\tPrivateKeyAlgorithmIdentifier,\n\tprivateKey\t\tPrivateKey,\n\tattributes\t\t[0] IMPLICIT Attributes OPTIONAL\n}\n\nVersion ::= INTEGER  ({ pkcs8_note_version })\n\nPrivateKeyAlgorithmIdentifier ::= AlgorithmIdentifier ({ pkcs8_note_algo })\n\nPrivateKey ::= OCTET STRING ({ pkcs8_note_key })\n\nAttributes ::= SET OF Attribute\n\nAttribute ::= ANY\n\nAlgorithmIdentifier ::= SEQUENCE {\n\talgorithm   OBJECT IDENTIFIER ({ pkcs8_note_OID }),\n\tparameters  ANY OPTIONAL\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

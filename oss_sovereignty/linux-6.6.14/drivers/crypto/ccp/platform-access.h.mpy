@@ -1,0 +1,9 @@
+{
+  "module_name": "platform-access.h",
+  "hash_id": "97d6d9c5c0c0c0acf09fe62cdb6def841fc5edbf316590fd3a78eb2550ecf697",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/crypto/ccp/platform-access.h",
+  "human_readable_source": " \n \n\n#ifndef __PSP_PLATFORM_ACCESS_H__\n#define __PSP_PLATFORM_ACCESS_H__\n\n#include <linux/device.h>\n#include <linux/miscdevice.h>\n#include <linux/mutex.h>\n#include <linux/psp-platform-access.h>\n\n#include \"psp-dev.h\"\n\nstruct psp_platform_access_device {\n\tstruct device *dev;\n\tstruct psp_device *psp;\n\n\tstruct platform_access_vdata *vdata;\n\n\tstruct mutex mailbox_mutex;\n\tstruct mutex doorbell_mutex;\n\n\tvoid *platform_access_data;\n};\n\nvoid platform_access_dev_destroy(struct psp_device *psp);\nint platform_access_dev_init(struct psp_device *psp);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

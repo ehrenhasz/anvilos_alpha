@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "22e413dae2347c760cedb4930cc0dd4b06a27bf89b98a6c5dd99a74031a0e823",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/pci/sta2x11/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\nobj-$(CONFIG_STA2X11_VIP) += sta2x11_vip.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

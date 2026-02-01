@@ -1,0 +1,9 @@
+{
+  "module_name": "ip6t_rt.h",
+  "hash_id": "d3fc2e7cc314eaf7d21d66dc1d38df8e785ad462bb9e0e2f807eb539921040ba",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/netfilter_ipv6/ip6t_rt.h",
+  "human_readable_source": " \n#ifndef _IP6T_RT_H\n#define _IP6T_RT_H\n\n#include <linux/types.h>\n#include <linux/in6.h>\n\n#define IP6T_RT_HOPS 16\n\nstruct ip6t_rt {\n\t__u32 rt_type;\t\t\t \n\t__u32 segsleft[2];\t\t\t \n\t__u32 hdrlen;\t\t\t \n\t__u8  flags;\t\t\t \n\t__u8  invflags;\t\t\t \n\tstruct in6_addr addrs[IP6T_RT_HOPS];\t \n\t__u8 addrnr;\t\t\t \n};\n\n#define IP6T_RT_TYP \t\t0x01\n#define IP6T_RT_SGS \t\t0x02\n#define IP6T_RT_LEN \t\t0x04\n#define IP6T_RT_RES \t\t0x08\n#define IP6T_RT_FST_MASK\t0x30\n#define IP6T_RT_FST \t\t0x10\n#define IP6T_RT_FST_NSTRICT\t0x20\n\n \n#define IP6T_RT_INV_TYP\t\t0x01\t \n#define IP6T_RT_INV_SGS\t\t0x02\t \n#define IP6T_RT_INV_LEN\t\t0x04\t \n#define IP6T_RT_INV_MASK\t0x07\t \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "rc-streamzap.c",
+  "hash_id": "ff1f92861d5cfb5361006ed0732502856437ad964201918506e95fbf56aa7e78",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/media/rc/keymaps/rc-streamzap.c",
+  "human_readable_source": "\n \n\n#include <media/rc-map.h>\n#include <linux/module.h>\n\nstatic struct rc_map_table streamzap[] = {\n \n\t{ 0x28c0, KEY_NUMERIC_0 },\n\t{ 0x28c1, KEY_NUMERIC_1 },\n\t{ 0x28c2, KEY_NUMERIC_2 },\n\t{ 0x28c3, KEY_NUMERIC_3 },\n\t{ 0x28c4, KEY_NUMERIC_4 },\n\t{ 0x28c5, KEY_NUMERIC_5 },\n\t{ 0x28c6, KEY_NUMERIC_6 },\n\t{ 0x28c7, KEY_NUMERIC_7 },\n\t{ 0x28c8, KEY_NUMERIC_8 },\n\t{ 0x28c9, KEY_NUMERIC_9 },\n\t{ 0x28ca, KEY_POWER },\n\t{ 0x28cb, KEY_MUTE },\n\t{ 0x28cc, KEY_CHANNELUP },\n\t{ 0x28cd, KEY_VOLUMEUP },\n\t{ 0x28ce, KEY_CHANNELDOWN },\n\t{ 0x28cf, KEY_VOLUMEDOWN },\n\t{ 0x28d0, KEY_UP },\n\t{ 0x28d1, KEY_LEFT },\n\t{ 0x28d2, KEY_OK },\n\t{ 0x28d3, KEY_RIGHT },\n\t{ 0x28d4, KEY_DOWN },\n\t{ 0x28d5, KEY_MENU },\n\t{ 0x28d6, KEY_EXIT },\n\t{ 0x28d7, KEY_PLAY },\n\t{ 0x28d8, KEY_PAUSE },\n\t{ 0x28d9, KEY_STOP },\n\t{ 0x28da, KEY_BACK },\n\t{ 0x28db, KEY_FORWARD },\n\t{ 0x28dc, KEY_RECORD },\n\t{ 0x28dd, KEY_REWIND },\n\t{ 0x28de, KEY_FASTFORWARD },\n\t{ 0x28e0, KEY_RED },\n\t{ 0x28e1, KEY_GREEN },\n\t{ 0x28e2, KEY_YELLOW },\n\t{ 0x28e3, KEY_BLUE },\n\n};\n\nstatic struct rc_map_list streamzap_map = {\n\t.map = {\n\t\t.scan     = streamzap,\n\t\t.size     = ARRAY_SIZE(streamzap),\n\t\t.rc_proto = RC_PROTO_RC5_SZ,\n\t\t.name     = RC_MAP_STREAMZAP,\n\t}\n};\n\nstatic int __init init_rc_map_streamzap(void)\n{\n\treturn rc_map_register(&streamzap_map);\n}\n\nstatic void __exit exit_rc_map_streamzap(void)\n{\n\trc_map_unregister(&streamzap_map);\n}\n\nmodule_init(init_rc_map_streamzap)\nmodule_exit(exit_rc_map_streamzap)\n\nMODULE_LICENSE(\"GPL\");\nMODULE_AUTHOR(\"Jarod Wilson <jarod@redhat.com>\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

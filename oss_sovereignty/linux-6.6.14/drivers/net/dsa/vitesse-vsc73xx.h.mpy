@@ -1,0 +1,9 @@
+{
+  "module_name": "vitesse-vsc73xx.h",
+  "hash_id": "735f075682866bc6d4ec4cb8ece61ae43103c6d1bffca2bf866b4fdcf8db1c67",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/vitesse-vsc73xx.h",
+  "human_readable_source": " \n#include <linux/device.h>\n#include <linux/etherdevice.h>\n#include <linux/gpio/driver.h>\n\n \nstruct vsc73xx {\n\tstruct device\t\t\t*dev;\n\tstruct gpio_desc\t\t*reset;\n\tstruct dsa_switch\t\t*ds;\n\tstruct gpio_chip\t\tgc;\n\tu16\t\t\t\tchipid;\n\tu8\t\t\t\taddr[ETH_ALEN];\n\tconst struct vsc73xx_ops\t*ops;\n\tvoid\t\t\t\t*priv;\n};\n\nstruct vsc73xx_ops {\n\tint (*read)(struct vsc73xx *vsc, u8 block, u8 subblock, u8 reg,\n\t\t    u32 *val);\n\tint (*write)(struct vsc73xx *vsc, u8 block, u8 subblock, u8 reg,\n\t\t     u32 val);\n};\n\nint vsc73xx_is_addr_valid(u8 block, u8 subblock);\nint vsc73xx_probe(struct vsc73xx *vsc);\nvoid vsc73xx_remove(struct vsc73xx *vsc);\nvoid vsc73xx_shutdown(struct vsc73xx *vsc);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

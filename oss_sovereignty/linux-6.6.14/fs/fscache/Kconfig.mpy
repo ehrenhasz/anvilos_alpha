@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "19b6c57e92703b7a6965fe5268e9322704e569459ec8726a926a5c93ba4c2679",
+  "original_prompt": "Ingested from linux-6.6.14/fs/fscache/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig FSCACHE\n\ttristate \"General filesystem local caching manager\"\n\tselect NETFS_SUPPORT\n\thelp\n\t  This option enables a generic filesystem caching manager that can be\n\t  used by various network and other filesystems to cache data locally.\n\t  Different sorts of caches can be plugged in, depending on the\n\t  resources available.\n\n\t  See Documentation/filesystems/caching/fscache.rst for more information.\n\nconfig FSCACHE_STATS\n\tbool \"Gather statistical information on local caching\"\n\tdepends on FSCACHE && PROC_FS\n\tselect NETFS_STATS\n\thelp\n\t  This option causes statistical information to be gathered on local\n\t  caching and exported through file:\n\n\t\t/proc/fs/fscache/stats\n\n\t  The gathering of statistics adds a certain amount of overhead to\n\t  execution as there are a quite a few stats gathered, and on a\n\t  multi-CPU system these may be on cachelines that keep bouncing\n\t  between CPUs.  On the other hand, the stats are very useful for\n\t  debugging purposes.  Saying 'Y' here is recommended.\n\n\t  See Documentation/filesystems/caching/fscache.rst for more information.\n\nconfig FSCACHE_DEBUG\n\tbool \"Debug FS-Cache\"\n\tdepends on FSCACHE\n\thelp\n\t  This permits debugging to be dynamically enabled in the local caching\n\t  management module.  If this is set, the debugging output may be\n\t  enabled by setting bits in /sys/modules/fscache/parameter/debug.\n\n\t  See Documentation/filesystems/caching/fscache.rst for more information.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

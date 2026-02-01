@@ -1,0 +1,9 @@
+{
+  "module_name": "mtk-dsp-sof-common.h",
+  "hash_id": "0bd9f87f22294dcaa817c64677a45ec0ab833c28a528a34ca30417626464c858",
+  "original_prompt": "Ingested from linux-6.6.14/sound/soc/mediatek/common/mtk-dsp-sof-common.h",
+  "human_readable_source": " \n \n\n#ifndef _MTK_DSP_SOF_COMMON_H_\n#define _MTK_DSP_SOF_COMMON_H_\n\n#include <sound/soc.h>\n\nstruct sof_conn_stream {\n\tconst char *normal_link;\n\tconst char *sof_link;\n\tconst char *sof_dma;\n\tint stream_dir;\n};\n\nstruct mtk_sof_priv {\n\tconst struct sof_conn_stream *conn_streams;\n\tint num_streams;\n\tint (*sof_dai_link_fixup)(struct snd_soc_pcm_runtime *rtd,\n\t\t\t\t  struct snd_pcm_hw_params *params);\n};\n\nint mtk_sof_dai_link_fixup(struct snd_soc_pcm_runtime *rtd,\n\t\t\t   struct snd_pcm_hw_params *params);\nint mtk_sof_card_probe(struct snd_soc_card *card);\nint mtk_sof_card_late_probe(struct snd_soc_card *card);\nint mtk_sof_dailink_parse_of(struct snd_soc_card *card, struct device_node *np,\n\t\t\t     const char *propname, struct snd_soc_dai_link *pre_dai_links,\n\t\t\t     int pre_num_links);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

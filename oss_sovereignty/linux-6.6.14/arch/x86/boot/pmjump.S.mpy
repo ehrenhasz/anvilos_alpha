@@ -1,0 +1,9 @@
+{
+  "module_name": "pmjump.S",
+  "hash_id": "ba2aa93147f4c5d53c27ce7919222c7244672927a12e5b69fce8f2784e299990",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/boot/pmjump.S",
+  "human_readable_source": " \n \n\n \n\n#include <asm/boot.h>\n#include <asm/processor-flags.h>\n#include <asm/segment.h>\n#include <linux/linkage.h>\n\n\t.text\n\t.code16\n\n \nSYM_FUNC_START_NOALIGN(protected_mode_jump)\n\tmovl\t%edx, %esi\t\t# Pointer to boot_params table\n\n\txorl\t%ebx, %ebx\n\tmovw\t%cs, %bx\n\tshll\t$4, %ebx\n\taddl\t%ebx, 2f\n\tjmp\t1f\t\t\t# Short jump to serialize on 386/486\n1:\n\n\tmovw\t$__BOOT_DS, %cx\n\tmovw\t$__BOOT_TSS, %di\n\n\tmovl\t%cr0, %edx\n\torb\t$X86_CR0_PE, %dl\t# Protected mode\n\tmovl\t%edx, %cr0\n\n\t# Transition to 32-bit mode\n\t.byte\t0x66, 0xea\t\t# ljmpl opcode\n2:\t.long\t.Lin_pm32\t\t# offset\n\t.word\t__BOOT_CS\t\t# segment\nSYM_FUNC_END(protected_mode_jump)\n\n\t.code32\n\t.section \".text32\",\"ax\"\nSYM_FUNC_START_LOCAL_NOALIGN(.Lin_pm32)\n\t# Set up data segments for flat 32-bit mode\n\tmovl\t%ecx, %ds\n\tmovl\t%ecx, %es\n\tmovl\t%ecx, %fs\n\tmovl\t%ecx, %gs\n\tmovl\t%ecx, %ss\n\t# The 32-bit code sets up its own stack, but this way we do have\n\t# a valid stack if some debugging hack wants to use it.\n\taddl\t%ebx, %esp\n\n\t# Set up TR to make Intel VT happy\n\tltr\t%di\n\n\t# Clear registers to allow for future extensions to the\n\t# 32-bit boot protocol\n\txorl\t%ecx, %ecx\n\txorl\t%edx, %edx\n\txorl\t%ebx, %ebx\n\txorl\t%ebp, %ebp\n\txorl\t%edi, %edi\n\n\t# Set up LDTR to make Intel VT happy\n\tlldt\t%cx\n\n\tjmpl\t*%eax\t\t\t# Jump to the 32-bit entrypoint\nSYM_FUNC_END(.Lin_pm32)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

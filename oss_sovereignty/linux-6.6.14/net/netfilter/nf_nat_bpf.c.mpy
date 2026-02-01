@@ -1,0 +1,9 @@
+{
+  "module_name": "nf_nat_bpf.c",
+  "hash_id": "937de8f01c6245ab7be94bbdb5610918606f399dfa7e903ac4d0dcd65231972c",
+  "original_prompt": "Ingested from linux-6.6.14/net/netfilter/nf_nat_bpf.c",
+  "human_readable_source": "\n \n\n#include <linux/bpf.h>\n#include <linux/btf_ids.h>\n#include <net/netfilter/nf_conntrack_bpf.h>\n#include <net/netfilter/nf_conntrack_core.h>\n#include <net/netfilter/nf_nat.h>\n\n__diag_push();\n__diag_ignore_all(\"-Wmissing-prototypes\",\n\t\t  \"Global functions as their definitions will be in nf_nat BTF\");\n\n \n__bpf_kfunc int bpf_ct_set_nat_info(struct nf_conn___init *nfct,\n\t\t\t\t    union nf_inet_addr *addr, int port,\n\t\t\t\t    enum nf_nat_manip_type manip)\n{\n\tstruct nf_conn *ct = (struct nf_conn *)nfct;\n\tu16 proto = nf_ct_l3num(ct);\n\tstruct nf_nat_range2 range;\n\n\tif (proto != NFPROTO_IPV4 && proto != NFPROTO_IPV6)\n\t\treturn -EINVAL;\n\n\tmemset(&range, 0, sizeof(struct nf_nat_range2));\n\trange.flags = NF_NAT_RANGE_MAP_IPS;\n\trange.min_addr = *addr;\n\trange.max_addr = range.min_addr;\n\tif (port > 0) {\n\t\trange.flags |= NF_NAT_RANGE_PROTO_SPECIFIED;\n\t\trange.min_proto.all = cpu_to_be16(port);\n\t\trange.max_proto.all = range.min_proto.all;\n\t}\n\n\treturn nf_nat_setup_info(ct, &range, manip) == NF_DROP ? -ENOMEM : 0;\n}\n\n__diag_pop()\n\nBTF_SET8_START(nf_nat_kfunc_set)\nBTF_ID_FLAGS(func, bpf_ct_set_nat_info, KF_TRUSTED_ARGS)\nBTF_SET8_END(nf_nat_kfunc_set)\n\nstatic const struct btf_kfunc_id_set nf_bpf_nat_kfunc_set = {\n\t.owner = THIS_MODULE,\n\t.set   = &nf_nat_kfunc_set,\n};\n\nint register_nf_nat_bpf(void)\n{\n\tint ret;\n\n\tret = register_btf_kfunc_id_set(BPF_PROG_TYPE_XDP,\n\t\t\t\t\t&nf_bpf_nat_kfunc_set);\n\tif (ret)\n\t\treturn ret;\n\n\treturn register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS,\n\t\t\t\t\t &nf_bpf_nat_kfunc_set);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

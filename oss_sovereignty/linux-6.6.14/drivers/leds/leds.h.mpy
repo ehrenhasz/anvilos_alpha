@@ -1,0 +1,9 @@
+{
+  "module_name": "leds.h",
+  "hash_id": "b39dfd281f734120b54cd41b01f30400ef2be7cdcf6cd5f5c276c1fbf5fc5b28",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/leds/leds.h",
+  "human_readable_source": " \n \n#ifndef __LEDS_H_INCLUDED\n#define __LEDS_H_INCLUDED\n\n#include <linux/rwsem.h>\n#include <linux/leds.h>\n\nstatic inline int led_get_brightness(struct led_classdev *led_cdev)\n{\n\treturn led_cdev->brightness;\n}\n\nvoid led_init_core(struct led_classdev *led_cdev);\nvoid led_stop_software_blink(struct led_classdev *led_cdev);\nvoid led_set_brightness_nopm(struct led_classdev *led_cdev, unsigned int value);\nvoid led_set_brightness_nosleep(struct led_classdev *led_cdev, unsigned int value);\nssize_t led_trigger_read(struct file *filp, struct kobject *kobj,\n\t\t\tstruct bin_attribute *attr, char *buf,\n\t\t\tloff_t pos, size_t count);\nssize_t led_trigger_write(struct file *filp, struct kobject *kobj,\n\t\t\tstruct bin_attribute *bin_attr, char *buf,\n\t\t\tloff_t pos, size_t count);\n\nextern struct rw_semaphore leds_list_lock;\nextern struct list_head leds_list;\nextern struct list_head trigger_list;\nextern const char * const led_colors[LED_COLOR_ID_MAX];\n\n#endif\t \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

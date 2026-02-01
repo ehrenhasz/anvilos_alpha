@@ -1,0 +1,9 @@
+{
+  "module_name": "timeout.h",
+  "hash_id": "6ea1ed3d898a23096be552f7104e9672063ed90f46f06eead12b95721b3b0ac9",
+  "original_prompt": "Ingested from linux-6.6.14/io_uring/timeout.h",
+  "human_readable_source": "\n\nstruct io_timeout_data {\n\tstruct io_kiocb\t\t\t*req;\n\tstruct hrtimer\t\t\ttimer;\n\tstruct timespec64\t\tts;\n\tenum hrtimer_mode\t\tmode;\n\tu32\t\t\t\tflags;\n};\n\nstruct io_kiocb *__io_disarm_linked_timeout(struct io_kiocb *req,\n\t\t\t\t\t    struct io_kiocb *link);\n\nstatic inline struct io_kiocb *io_disarm_linked_timeout(struct io_kiocb *req)\n{\n\tstruct io_kiocb *link = req->link;\n\n\tif (link && link->opcode == IORING_OP_LINK_TIMEOUT)\n\t\treturn __io_disarm_linked_timeout(req, link);\n\n\treturn NULL;\n}\n\n__cold void io_flush_timeouts(struct io_ring_ctx *ctx);\nstruct io_cancel_data;\nint io_timeout_cancel(struct io_ring_ctx *ctx, struct io_cancel_data *cd);\n__cold bool io_kill_timeouts(struct io_ring_ctx *ctx, struct task_struct *tsk,\n\t\t\t     bool cancel_all);\nvoid io_queue_linked_timeout(struct io_kiocb *req);\nvoid io_disarm_next(struct io_kiocb *req);\n\nint io_timeout_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_link_timeout_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_timeout(struct io_kiocb *req, unsigned int issue_flags);\nint io_timeout_remove_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);\nint io_timeout_remove(struct io_kiocb *req, unsigned int issue_flags);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "intel_uc_debugfs.h",
+  "hash_id": "652ce757778c1602139150c499384027e2e910a51655cb6c7457c7c6e146c26a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/uc/intel_uc_debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef DEBUGFS_UC_H\n#define DEBUGFS_UC_H\n\nstruct intel_uc;\nstruct dentry;\n\nvoid intel_uc_debugfs_register(struct intel_uc *uc, struct dentry *gt_root);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

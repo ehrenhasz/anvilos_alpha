@@ -1,0 +1,9 @@
+{
+  "module_name": "crc4.h",
+  "hash_id": "27a93db0ee78ec6213d409ea163f2ba75e86c4414f03a01e266b048302649a29",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/crc4.h",
+  "human_readable_source": " \n#ifndef _LINUX_CRC4_H\n#define _LINUX_CRC4_H\n\n#include <linux/types.h>\n\nextern uint8_t crc4(uint8_t c, uint64_t x, int bits);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

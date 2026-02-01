@@ -1,0 +1,9 @@
+{
+  "module_name": "debugfs.h",
+  "hash_id": "b0a28ccc8843244288bbd64b5c10b50852c0b0b18dd373d0be18d5cff482aefa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/ti/wl1251/debugfs.h",
+  "human_readable_source": " \n \n\n#ifndef WL1251_DEBUGFS_H\n#define WL1251_DEBUGFS_H\n\n#include \"wl1251.h\"\n\nint wl1251_debugfs_init(struct wl1251 *wl);\nvoid wl1251_debugfs_exit(struct wl1251 *wl);\nvoid wl1251_debugfs_reset(struct wl1251 *wl);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

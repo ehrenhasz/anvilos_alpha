@@ -1,0 +1,9 @@
+{
+  "module_name": "comm.h",
+  "hash_id": "7e1c6af2bf983e32682b7f6b3f13ccfc9c25a2284195ce56da18054c05ae8efc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/util/comm.h",
+  "human_readable_source": " \n#ifndef __PERF_COMM_H\n#define __PERF_COMM_H\n\n#include <linux/list.h>\n#include <linux/types.h>\n#include <stdbool.h>\n\nstruct comm_str;\n\nstruct comm {\n\tstruct comm_str *comm_str;\n\tu64 start;\n\tstruct list_head list;\n\tbool exec;\n\tunion {  \n\t\tvoid\t*priv;\n\t\tu64\tdb_id;\n\t};\n};\n\nvoid comm__free(struct comm *comm);\nstruct comm *comm__new(const char *str, u64 timestamp, bool exec);\nconst char *comm__str(const struct comm *comm);\nint comm__override(struct comm *comm, const char *str, u64 timestamp,\n\t\t   bool exec);\n\n#endif   \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

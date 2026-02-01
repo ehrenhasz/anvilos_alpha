@@ -1,0 +1,9 @@
+{
+  "module_name": "u_phonet.h",
+  "hash_id": "3a1e82dca523c6e47321b2dd4791906a0866a8ae3312dc33895a23e13945e537",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/function/u_phonet.h",
+  "human_readable_source": " \n \n\n#ifndef __U_PHONET_H\n#define __U_PHONET_H\n\n#include <linux/usb/composite.h>\n#include <linux/usb/cdc.h>\n\nstruct f_phonet_opts {\n\tstruct usb_function_instance func_inst;\n\tbool bound;\n\tstruct net_device *net;\n};\n\nstruct net_device *gphonet_setup_default(void);\nvoid gphonet_set_gadget(struct net_device *net, struct usb_gadget *g);\nint gphonet_register_netdev(struct net_device *net);\nvoid gphonet_cleanup(struct net_device *dev);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "libfdt.h",
+  "hash_id": "3e66edae89decf40fed4cc34e2303fe5a62a5fd10b34c2e6fa86309e5969575a",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/libfdt.h",
+  "human_readable_source": " \n#ifndef _INCLUDE_LIBFDT_H_\n#define _INCLUDE_LIBFDT_H_\n\n#include <linux/libfdt_env.h>\n#include \"../../scripts/dtc/libfdt/libfdt.h\"\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

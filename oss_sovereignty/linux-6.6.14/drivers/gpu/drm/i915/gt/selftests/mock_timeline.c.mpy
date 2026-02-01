@@ -1,0 +1,9 @@
+{
+  "module_name": "mock_timeline.c",
+  "hash_id": "10fa599554444950c5554b2578e478cca22686d21779dd101d240c7a0db1bc0a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/i915/gt/selftests/mock_timeline.c",
+  "human_readable_source": " \n\n#include \"../intel_timeline.h\"\n\n#include \"mock_timeline.h\"\n\nvoid mock_timeline_init(struct intel_timeline *timeline, u64 context)\n{\n\ttimeline->gt = NULL;\n\ttimeline->fence_context = context;\n\n\tmutex_init(&timeline->mutex);\n\n\tINIT_ACTIVE_FENCE(&timeline->last_request);\n\tINIT_LIST_HEAD(&timeline->requests);\n\n\ti915_syncmap_init(&timeline->sync);\n\n\tINIT_LIST_HEAD(&timeline->link);\n}\n\nvoid mock_timeline_fini(struct intel_timeline *timeline)\n{\n\ti915_syncmap_free(&timeline->sync);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

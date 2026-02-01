@@ -1,0 +1,9 @@
+{
+  "module_name": "rtl8712_debugctrl_regdef.h",
+  "hash_id": "cdd6da89a2889671313beafd5355fe2edaed717d255faf1a245db19c8da9eb11",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8712/rtl8712_debugctrl_regdef.h",
+  "human_readable_source": " \n \n#ifndef __RTL8712_DEBUGCTRL_REGDEF_H__\n#define __RTL8712_DEBUGCTRL_REGDEF_H__\n\n#define BIST\t\t\t(RTL8712_DEBUGCTRL_ + 0x00)\n#define DBS\t\t\t(RTL8712_DEBUGCTRL_ + 0x04)\n#define LMS\t\t\t(RTL8712_DEBUGCTRL_ + 0x05)\n#define CPUINST\t\t\t(RTL8712_DEBUGCTRL_ + 0x08)\n#define CPUCAUSE\t\t(RTL8712_DEBUGCTRL_ + 0x0C)\n#define LBUS_ERR_ADDR\t\t(RTL8712_DEBUGCTRL_ + 0x10)\n#define LBUS_ERR_CMD\t\t(RTL8712_DEBUGCTRL_ + 0x14)\n#define LBUS_ERR_DATA_L\t\t(RTL8712_DEBUGCTRL_ + 0x18)\n#define LBUS_ERR_DATA_H\t\t(RTL8712_DEBUGCTRL_ + 0x1C)\n#define LBUS_EXCEPTION_ADDR\t(RTL8712_DEBUGCTRL_ + 0x20)\n#define WDG_CTRL\t\t(RTL8712_DEBUGCTRL_ + 0x24)\n#define INTMTU\t\t\t(RTL8712_DEBUGCTRL_ + 0x28)\n#define INTM\t\t\t(RTL8712_DEBUGCTRL_ + 0x2A)\n#define FDLOCKTURN0\t\t(RTL8712_DEBUGCTRL_ + 0x2C)\n#define FDLOCKTURN1\t\t(RTL8712_DEBUGCTRL_ + 0x2D)\n#define FDLOCKFLAG0\t\t(RTL8712_DEBUGCTRL_ + 0x2E)\n#define FDLOCKFLAG1\t\t(RTL8712_DEBUGCTRL_ + 0x2F)\n#define TRXPKTBUF_DBG_DATA\t(RTL8712_DEBUGCTRL_ + 0x30)\n#define TRXPKTBUF_DBG_CTRL\t(RTL8712_DEBUGCTRL_ + 0x38)\n#define DPLL_MON\t\t(RTL8712_DEBUGCTRL_ + 0x3A)\n\n#endif  \n\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

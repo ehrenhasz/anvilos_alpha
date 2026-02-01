@@ -1,0 +1,9 @@
+{
+  "module_name": "tc_l2_redirect_user.c",
+  "hash_id": "9e7adb5a766b2a8f0e07a3c049c19d387894b83986a67aa6c8a5d18b5d01c522",
+  "original_prompt": "Ingested from linux-6.6.14/samples/bpf/tc_l2_redirect_user.c",
+  "human_readable_source": "\n \n#include <linux/unistd.h>\n#include <linux/bpf.h>\n\n#include <stdlib.h>\n#include <stdio.h>\n#include <unistd.h>\n#include <string.h>\n#include <errno.h>\n\n#include <bpf/bpf.h>\n\nstatic void usage(void)\n{\n\tprintf(\"Usage: tc_l2_ipip_redirect [...]\\n\");\n\tprintf(\"       -U <file>   Update an already pinned BPF array\\n\");\n\tprintf(\"       -i <ifindex> Interface index\\n\");\n\tprintf(\"       -h          Display this help\\n\");\n}\n\nint main(int argc, char **argv)\n{\n\tconst char *pinned_file = NULL;\n\tint ifindex = -1;\n\tint array_key = 0;\n\tint array_fd = -1;\n\tint ret = -1;\n\tint opt;\n\n\twhile ((opt = getopt(argc, argv, \"F:U:i:\")) != -1) {\n\t\tswitch (opt) {\n\t\t \n\t\tcase 'U':\n\t\t\tpinned_file = optarg;\n\t\t\tbreak;\n\t\tcase 'i':\n\t\t\tifindex = atoi(optarg);\n\t\t\tbreak;\n\t\tdefault:\n\t\t\tusage();\n\t\t\tgoto out;\n\t\t}\n\t}\n\n\tif (ifindex < 0 || !pinned_file) {\n\t\tusage();\n\t\tgoto out;\n\t}\n\n\tarray_fd = bpf_obj_get(pinned_file);\n\tif (array_fd < 0) {\n\t\tfprintf(stderr, \"bpf_obj_get(%s): %s(%d)\\n\",\n\t\t\tpinned_file, strerror(errno), errno);\n\t\tgoto out;\n\t}\n\n\t \n\tret = bpf_map_update_elem(array_fd, &array_key, &ifindex, 0);\n\tif (ret) {\n\t\tperror(\"bpf_map_update_elem\");\n\t\tgoto out;\n\t}\n\nout:\n\tif (array_fd != -1)\n\t\tclose(array_fd);\n\treturn ret;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

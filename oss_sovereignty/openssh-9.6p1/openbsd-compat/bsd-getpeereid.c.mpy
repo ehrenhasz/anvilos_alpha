@@ -1,0 +1,9 @@
+{
+  "module_name": "bsd-getpeereid.c",
+  "hash_id": "ec6e9246d741e253fef0635cdb397a70a8c6c1ff0995569221625139df718cbe",
+  "original_prompt": "Ingested from openssh-9.6p1/openbsd-compat/bsd-getpeereid.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#if !defined(HAVE_GETPEEREID)\n\n#include <sys/types.h>\n#include <sys/socket.h>\n\n#include <unistd.h>\n\n#if defined(SO_PEERCRED)\nint\ngetpeereid(int s, uid_t *euid, gid_t *gid)\n{\n\tstruct ucred cred;\n\tsocklen_t len = sizeof(cred);\n\n\tif (getsockopt(s, SOL_SOCKET, SO_PEERCRED, &cred, &len) < 0)\n\t\treturn (-1);\n\t*euid = cred.uid;\n\t*gid = cred.gid;\n\n\treturn (0);\n}\n#elif defined(HAVE_GETPEERUCRED)\n\n#ifdef HAVE_UCRED_H\n# include <ucred.h>\n#endif\n\nint\ngetpeereid(int s, uid_t *euid, gid_t *gid)\n{\n\tucred_t *ucred = NULL;\n\n\tif (getpeerucred(s, &ucred) == -1)\n\t\treturn (-1);\n\tif ((*euid = ucred_geteuid(ucred)) == -1)\n\t\treturn (-1);\n\tif ((*gid = ucred_getrgid(ucred)) == -1)\n\t\treturn (-1);\n\n\tucred_free(ucred);\n\n\treturn (0);\n}\n#else\nint\ngetpeereid(int s, uid_t *euid, gid_t *gid)\n{\n\t*euid = geteuid();\n\t*gid = getgid();\n\n\treturn (0);\n}\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

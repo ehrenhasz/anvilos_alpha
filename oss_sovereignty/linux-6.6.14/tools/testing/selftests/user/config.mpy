@@ -1,0 +1,9 @@
+{
+  "module_name": "config",
+  "hash_id": "287902e4df2dd67f7cc35ab4767c3157429da921797d686c28296a3e9033a4cc",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/user/config",
+  "human_readable_source": "CONFIG_TEST_USER_COPY=m\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "str_error.c",
+  "hash_id": "b85176e1c27de542845058269b08e5443a2c6c2532784bde0d72a4339756f8f6",
+  "original_prompt": "Ingested from linux-6.6.14/tools/lib/bpf/str_error.c",
+  "human_readable_source": "\n#undef _GNU_SOURCE\n#include <string.h>\n#include <stdio.h>\n#include \"str_error.h\"\n\n \n#pragma GCC poison u8 u16 u32 u64 s8 s16 s32 s64\n\n \nchar *libbpf_strerror_r(int err, char *dst, int len)\n{\n\tint ret = strerror_r(err < 0 ? -err : err, dst, len);\n\tif (ret)\n\t\tsnprintf(dst, len, \"ERROR: strerror_r(%d)=%d\", err, ret);\n\treturn dst;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

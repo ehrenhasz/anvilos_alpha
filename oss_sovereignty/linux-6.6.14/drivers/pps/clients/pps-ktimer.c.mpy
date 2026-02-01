@@ -1,0 +1,9 @@
+{
+  "module_name": "pps-ktimer.c",
+  "hash_id": "4d88861aed3bf09e7472ea719959d66695641d81045b17196f918906b94f1630",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/pps/clients/pps-ktimer.c",
+  "human_readable_source": "\n \n\n#define pr_fmt(fmt) KBUILD_MODNAME \": \" fmt\n\n#include <linux/kernel.h>\n#include <linux/module.h>\n#include <linux/init.h>\n#include <linux/time.h>\n#include <linux/timer.h>\n#include <linux/pps_kernel.h>\n\n \n\nstatic struct pps_device *pps;\nstatic struct timer_list ktimer;\n\n \n\nstatic void pps_ktimer_event(struct timer_list *unused)\n{\n\tstruct pps_event_time ts;\n\n\t \n\tpps_get_ts(&ts);\n\n\tpps_event(pps, &ts, PPS_CAPTUREASSERT, NULL);\n\n\tmod_timer(&ktimer, jiffies + HZ);\n}\n\n \n\nstatic struct pps_source_info pps_ktimer_info = {\n\t.name\t\t= \"ktimer\",\n\t.path\t\t= \"\",\n\t.mode\t\t= PPS_CAPTUREASSERT | PPS_OFFSETASSERT |\n\t\t\t  PPS_ECHOASSERT |\n\t\t\t  PPS_CANWAIT | PPS_TSFMT_TSPEC,\n\t.owner\t\t= THIS_MODULE,\n};\n\n \n\nstatic void __exit pps_ktimer_exit(void)\n{\n\tdev_info(pps->dev, \"ktimer PPS source unregistered\\n\");\n\n\tdel_timer_sync(&ktimer);\n\tpps_unregister_source(pps);\n}\n\nstatic int __init pps_ktimer_init(void)\n{\n\tpps = pps_register_source(&pps_ktimer_info,\n\t\t\t\tPPS_CAPTUREASSERT | PPS_OFFSETASSERT);\n\tif (IS_ERR(pps)) {\n\t\tpr_err(\"cannot register PPS source\\n\");\n\t\treturn PTR_ERR(pps);\n\t}\n\n\ttimer_setup(&ktimer, pps_ktimer_event, 0);\n\tmod_timer(&ktimer, jiffies + HZ);\n\n\tdev_info(pps->dev, \"ktimer PPS source registered\\n\");\n\n\treturn 0;\n}\n\nmodule_init(pps_ktimer_init);\nmodule_exit(pps_ktimer_exit);\n\nMODULE_AUTHOR(\"Rodolfo Giometti <giometti@linux.it>\");\nMODULE_DESCRIPTION(\"dummy PPS source by using a kernel timer (just for debug)\");\nMODULE_LICENSE(\"GPL\");\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

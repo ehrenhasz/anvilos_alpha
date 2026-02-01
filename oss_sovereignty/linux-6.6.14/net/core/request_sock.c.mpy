@@ -1,0 +1,9 @@
+{
+  "module_name": "request_sock.c",
+  "hash_id": "8fc11395f884ac9a234f516709628071f5c4d0f5eee1d0c1e3c4fb80f29aded8",
+  "original_prompt": "Ingested from linux-6.6.14/net/core/request_sock.c",
+  "human_readable_source": "\n \n\n#include <linux/module.h>\n#include <linux/random.h>\n#include <linux/slab.h>\n#include <linux/string.h>\n#include <linux/tcp.h>\n#include <linux/vmalloc.h>\n\n#include <net/request_sock.h>\n\n \n\nvoid reqsk_queue_alloc(struct request_sock_queue *queue)\n{\n\tspin_lock_init(&queue->rskq_lock);\n\n\tspin_lock_init(&queue->fastopenq.lock);\n\tqueue->fastopenq.rskq_rst_head = NULL;\n\tqueue->fastopenq.rskq_rst_tail = NULL;\n\tqueue->fastopenq.qlen = 0;\n\n\tqueue->rskq_accept_head = NULL;\n}\n\n \nvoid reqsk_fastopen_remove(struct sock *sk, struct request_sock *req,\n\t\t\t   bool reset)\n{\n\tstruct sock *lsk = req->rsk_listener;\n\tstruct fastopen_queue *fastopenq;\n\n\tfastopenq = &inet_csk(lsk)->icsk_accept_queue.fastopenq;\n\n\tRCU_INIT_POINTER(tcp_sk(sk)->fastopen_rsk, NULL);\n\tspin_lock_bh(&fastopenq->lock);\n\tfastopenq->qlen--;\n\ttcp_rsk(req)->tfo_listener = false;\n\tif (req->sk)\t \n\t\tgoto out;\n\n\tif (!reset || lsk->sk_state != TCP_LISTEN) {\n\t\t \n\t\tspin_unlock_bh(&fastopenq->lock);\n\t\treqsk_put(req);\n\t\treturn;\n\t}\n\t \n\treq->rsk_timer.expires = jiffies + 60*HZ;\n\tif (fastopenq->rskq_rst_head == NULL)\n\t\tfastopenq->rskq_rst_head = req;\n\telse\n\t\tfastopenq->rskq_rst_tail->dl_next = req;\n\n\treq->dl_next = NULL;\n\tfastopenq->rskq_rst_tail = req;\n\tfastopenq->qlen++;\nout:\n\tspin_unlock_bh(&fastopenq->lock);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

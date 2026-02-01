@@ -1,0 +1,9 @@
+{
+  "module_name": "nark.c",
+  "hash_id": "bfd693676555788c301390a5decf416f2baaa0e2eba9cf9884f5a7efccd103c5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/scsi/aacraid/nark.c",
+  "human_readable_source": "\n \n\n#include <linux/pci.h>\n#include <linux/blkdev.h>\n\n#include <scsi/scsi_host.h>\n\n#include \"aacraid.h\"\n\n \nstatic int aac_nark_ioremap(struct aac_dev * dev, u32 size)\n{\n\tif (!size) {\n\t\tiounmap(dev->regs.rx);\n\t\tdev->regs.rx = NULL;\n\t\tiounmap(dev->base);\n\t\tdev->base = NULL;\n\t\treturn 0;\n\t}\n\tdev->base_start = pci_resource_start(dev->pdev, 2);\n\tdev->regs.rx = ioremap((u64)pci_resource_start(dev->pdev, 0) |\n\t  ((u64)pci_resource_start(dev->pdev, 1) << 32),\n\t  sizeof(struct rx_registers) - sizeof(struct rx_inbound));\n\tdev->base = NULL;\n\tif (dev->regs.rx == NULL)\n\t\treturn -1;\n\tdev->base = ioremap(dev->base_start, size);\n\tif (dev->base == NULL) {\n\t\tiounmap(dev->regs.rx);\n\t\tdev->regs.rx = NULL;\n\t\treturn -1;\n\t}\n\tdev->IndexRegs = &((struct rx_registers __iomem *)dev->base)->IndexRegs;\n\treturn 0;\n}\n\n \n\nint aac_nark_init(struct aac_dev * dev)\n{\n\t \n\tdev->a_ops.adapter_ioremap = aac_nark_ioremap;\n\tdev->a_ops.adapter_comm = aac_rx_select_comm;\n\n\treturn _aac_rx_init(dev);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

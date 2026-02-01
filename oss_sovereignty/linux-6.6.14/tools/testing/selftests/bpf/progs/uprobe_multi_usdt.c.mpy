@@ -1,0 +1,9 @@
+{
+  "module_name": "uprobe_multi_usdt.c",
+  "hash_id": "04f5ba2b3fa38432845b79800df02c423ed5bb87c1c2acdd25636b677b055de5",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/uprobe_multi_usdt.c",
+  "human_readable_source": "\n\n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/usdt.bpf.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\nint count;\n\nSEC(\"usdt\")\nint usdt0(struct pt_regs *ctx)\n{\n\tcount++;\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "Makefile",
+  "hash_id": "3646b526014f1daa8432bc5e937e4ee340625e9ae7640115614189588a04f6f9",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/intersil/orinoco/Makefile",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0\n#\n# Makefile for the orinoco wireless device drivers.\n#\norinoco-objs := main.o fw.o hw.o mic.o scan.o wext.o hermes_dld.o hermes.o cfg.o\n\nobj-$(CONFIG_HERMES)\t\t+= orinoco.o\nobj-$(CONFIG_PCMCIA_HERMES)\t+= orinoco_cs.o\nobj-$(CONFIG_APPLE_AIRPORT)\t+= airport.o\nobj-$(CONFIG_PLX_HERMES)\t+= orinoco_plx.o\nobj-$(CONFIG_PCI_HERMES)\t+= orinoco_pci.o\nobj-$(CONFIG_TMD_HERMES)\t+= orinoco_tmd.o\nobj-$(CONFIG_NORTEL_HERMES)\t+= orinoco_nortel.o\nobj-$(CONFIG_PCMCIA_SPECTRUM)\t+= spectrum_cs.o\nobj-$(CONFIG_ORINOCO_USB)\t+= orinoco_usb.o\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

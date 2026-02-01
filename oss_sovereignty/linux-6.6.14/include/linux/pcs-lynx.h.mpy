@@ -1,0 +1,9 @@
+{
+  "module_name": "pcs-lynx.h",
+  "hash_id": "b59d3b1ad483881756869e9e278e5f09ae3c79eef6b80243f2a7df51ef93aed0",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/pcs-lynx.h",
+  "human_readable_source": " \n \n\n#ifndef __LINUX_PCS_LYNX_H\n#define __LINUX_PCS_LYNX_H\n\n#include <linux/mdio.h>\n#include <linux/phylink.h>\n\nstruct phylink_pcs *lynx_pcs_create_mdiodev(struct mii_bus *bus, int addr);\nstruct phylink_pcs *lynx_pcs_create_fwnode(struct fwnode_handle *node);\n\nvoid lynx_pcs_destroy(struct phylink_pcs *pcs);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

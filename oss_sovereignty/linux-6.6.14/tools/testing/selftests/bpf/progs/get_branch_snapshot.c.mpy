@@ -1,0 +1,9 @@
+{
+  "module_name": "get_branch_snapshot.c",
+  "hash_id": "51937b5a70dc5f260fd2ce6d109038112ea917837ea3b298d99f3b1269fc032b",
+  "original_prompt": "Ingested from linux-6.6.14/tools/testing/selftests/bpf/progs/get_branch_snapshot.c",
+  "human_readable_source": "\n \n#include \"vmlinux.h\"\n#include <bpf/bpf_helpers.h>\n#include <bpf/bpf_tracing.h>\n\nchar _license[] SEC(\"license\") = \"GPL\";\n\n__u64 test1_hits = 0;\n__u64 address_low = 0;\n__u64 address_high = 0;\nint wasted_entries = 0;\nlong total_entries = 0;\n\n#define ENTRY_CNT 32\nstruct perf_branch_entry entries[ENTRY_CNT] = {};\n\nstatic inline bool gbs_in_range(__u64 val)\n{\n\treturn (val >= address_low) && (val < address_high);\n}\n\nSEC(\"fexit/bpf_testmod_loop_test\")\nint BPF_PROG(test1, int n, int ret)\n{\n\tlong i;\n\n\ttotal_entries = bpf_get_branch_snapshot(entries, sizeof(entries), 0);\n\ttotal_entries /= sizeof(struct perf_branch_entry);\n\n\tfor (i = 0; i < ENTRY_CNT; i++) {\n\t\tif (i >= total_entries)\n\t\t\tbreak;\n\t\tif (gbs_in_range(entries[i].from) && gbs_in_range(entries[i].to))\n\t\t\ttest1_hits++;\n\t\telse if (!test1_hits)\n\t\t\twasted_entries++;\n\t}\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

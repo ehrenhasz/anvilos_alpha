@@ -1,0 +1,9 @@
+{
+  "module_name": "fs_dr.h",
+  "hash_id": "cef4dc79a99735517f527f418dcab0070ea9a16b320508ec6de44200bf9ff670",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.h",
+  "human_readable_source": " \n\n#ifndef _MLX5_FS_DR_\n#define _MLX5_FS_DR_\n\n#include \"mlx5dr.h\"\n\nstruct mlx5_flow_root_namespace;\nstruct fs_fte;\n\nstruct mlx5_fs_dr_action {\n\tstruct mlx5dr_action *dr_action;\n};\n\nstruct mlx5_fs_dr_rule {\n\tstruct mlx5dr_rule    *dr_rule;\n\t \n\tstruct mlx5dr_action  **dr_actions;\n\tint                      num_actions;\n};\n\nstruct mlx5_fs_dr_domain {\n\tstruct mlx5dr_domain\t*dr_domain;\n};\n\nstruct mlx5_fs_dr_matcher {\n\tstruct mlx5dr_matcher *dr_matcher;\n};\n\nstruct mlx5_fs_dr_table {\n\tstruct mlx5dr_table  *dr_table;\n\tstruct mlx5dr_action *miss_action;\n};\n\n#ifdef CONFIG_MLX5_SW_STEERING\n\nbool mlx5_fs_dr_is_supported(struct mlx5_core_dev *dev);\n\nint mlx5_fs_dr_action_get_pkt_reformat_id(struct mlx5_pkt_reformat *pkt_reformat);\n\nconst struct mlx5_flow_cmds *mlx5_fs_cmd_get_dr_cmds(void);\n\n#else\n\nstatic inline const struct mlx5_flow_cmds *mlx5_fs_cmd_get_dr_cmds(void)\n{\n\treturn NULL;\n}\n\nstatic inline u32 mlx5_fs_dr_action_get_pkt_reformat_id(struct mlx5_pkt_reformat *pkt_reformat)\n{\n\treturn 0;\n}\n\nstatic inline bool mlx5_fs_dr_is_supported(struct mlx5_core_dev *dev)\n{\n\treturn false;\n}\n\n#endif  \n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

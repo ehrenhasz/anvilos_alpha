@@ -1,0 +1,9 @@
+{
+  "module_name": "nomodeset.h",
+  "hash_id": "198f203a46f5dac34186b03464b6f7ee7e9ada9a3b0923c2e991565475c2b34f",
+  "original_prompt": "Ingested from linux-6.6.14/include/video/nomodeset.h",
+  "human_readable_source": " \n\n#ifndef VIDEO_NOMODESET_H\n#define VIDEO_NOMODESET_H\n\nbool video_firmware_drivers_only(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

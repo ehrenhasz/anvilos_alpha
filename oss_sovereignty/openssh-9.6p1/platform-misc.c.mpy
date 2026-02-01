@@ -1,0 +1,9 @@
+{
+  "module_name": "platform-misc.c",
+  "hash_id": "59c8786c8042ad2690a25c4e09de94737f0b06c675b1e25205248c0d8dc6463f",
+  "original_prompt": "Ingested from openssh-9.6p1/platform-misc.c",
+  "human_readable_source": " \n\n#include \"includes.h\"\n\n#include \"openbsd-compat/openbsd-compat.h\"\n\n \nint\nplatform_sys_dir_uid(uid_t uid)\n{\n\tif (uid == 0)\n\t\treturn 1;\n#ifdef PLATFORM_SYS_DIR_UID\n\tif (uid == PLATFORM_SYS_DIR_UID)\n\t\treturn 1;\n#endif\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

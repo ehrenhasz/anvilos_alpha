@@ -1,0 +1,9 @@
+{
+  "module_name": "fxas21002c_i2c.c",
+  "hash_id": "bc9bee952a22ace0ac3f838409bdddc6b9fd45ec95a6a284644a5df44e51ef74",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/iio/gyro/fxas21002c_i2c.c",
+  "human_readable_source": "\n \n\n#include <linux/err.h>\n#include <linux/i2c.h>\n#include <linux/mod_devicetable.h>\n#include <linux/module.h>\n#include <linux/regmap.h>\n\n#include \"fxas21002c.h\"\n\nstatic const struct regmap_config fxas21002c_regmap_i2c_conf = {\n\t.reg_bits = 8,\n\t.val_bits = 8,\n\t.max_register = FXAS21002C_REG_CTRL3,\n};\n\nstatic int fxas21002c_i2c_probe(struct i2c_client *i2c)\n{\n\tstruct regmap *regmap;\n\n\tregmap = devm_regmap_init_i2c(i2c, &fxas21002c_regmap_i2c_conf);\n\tif (IS_ERR(regmap)) {\n\t\tdev_err(&i2c->dev, \"Failed to register i2c regmap: %ld\\n\",\n\t\t\tPTR_ERR(regmap));\n\t\treturn PTR_ERR(regmap);\n\t}\n\n\treturn fxas21002c_core_probe(&i2c->dev, regmap, i2c->irq, i2c->name);\n}\n\nstatic void fxas21002c_i2c_remove(struct i2c_client *i2c)\n{\n\tfxas21002c_core_remove(&i2c->dev);\n}\n\nstatic const struct i2c_device_id fxas21002c_i2c_id[] = {\n\t{ \"fxas21002c\", 0 },\n\t{ }\n};\nMODULE_DEVICE_TABLE(i2c, fxas21002c_i2c_id);\n\nstatic const struct of_device_id fxas21002c_i2c_of_match[] = {\n\t{ .compatible = \"nxp,fxas21002c\", },\n\t{ }\n};\nMODULE_DEVICE_TABLE(of, fxas21002c_i2c_of_match);\n\nstatic struct i2c_driver fxas21002c_i2c_driver = {\n\t.driver = {\n\t\t.name = \"fxas21002c_i2c\",\n\t\t.pm = pm_ptr(&fxas21002c_pm_ops),\n\t\t.of_match_table = fxas21002c_i2c_of_match,\n\t},\n\t.probe\t\t= fxas21002c_i2c_probe,\n\t.remove\t\t= fxas21002c_i2c_remove,\n\t.id_table\t= fxas21002c_i2c_id,\n};\nmodule_i2c_driver(fxas21002c_i2c_driver);\n\nMODULE_AUTHOR(\"Rui Miguel Silva <rui.silva@linaro.org>\");\nMODULE_LICENSE(\"GPL v2\");\nMODULE_DESCRIPTION(\"FXAS21002C I2C Gyro driver\");\nMODULE_IMPORT_NS(IIO_FXAS21002C);\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

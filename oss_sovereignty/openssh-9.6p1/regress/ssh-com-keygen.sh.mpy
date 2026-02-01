@@ -1,0 +1,9 @@
+{
+  "module_name": "ssh-com-keygen.sh",
+  "hash_id": "2aae0610b13e33e9797ffe02d4361962e72710b20cf1e103f097bf29cdd0660f",
+  "original_prompt": "Ingested from openssh-9.6p1/regress/ssh-com-keygen.sh",
+  "human_readable_source": "#\t$OpenBSD: ssh-com-keygen.sh,v 1.4 2004/02/24 17:06:52 markus Exp $\n#\tPlaced in the Public Domain.\n\ntid=\"ssh.com key import\"\n\n#TEST_COMBASE=/path/to/ssh/com/binaries\nif [ \"X${TEST_COMBASE}\" = \"X\" ]; then\n\tfatal '$TEST_COMBASE is not set'\nfi\n\nVERSIONS=\"\n\t2.0.10\n\t2.0.12\n\t2.0.13\n\t2.1.0\n\t2.2.0\n\t2.3.0\n\t2.3.1\n\t2.4.0\n\t3.0.0\n\t3.1.0\n\t3.2.0\n\t3.2.2\n\t3.2.3\n\t3.2.5\n\t3.2.9\n\t3.2.9.1\n\t3.3.0\"\n\nCOMPRV=${OBJ}/comkey\nCOMPUB=${COMPRV}.pub\nOPENSSHPRV=${OBJ}/opensshkey\nOPENSSHPUB=${OPENSSHPRV}.pub\n\n# go for it\nfor v in ${VERSIONS}; do\n\tkeygen=${TEST_COMBASE}/${v}/ssh-keygen2\n\tif [ ! -x ${keygen} ]; then\n\t\tcontinue\n\tfi\n\ttypes=\"dss\"\n        case $v in\n        2.3.1|3.*)\n                types=\"$types rsa\"\n                ;;\n        esac\n\tfor t in $types; do\n\t\tverbose \"ssh-keygen $v/$t\"\n\t\trm -f $COMPRV $COMPUB $OPENSSHPRV $OPENSSHPUB\n\t\t${keygen} -q -P -t $t ${COMPRV} > /dev/null 2>&1\n\t\tif [ $? -ne 0 ]; then\n\t\t\tfail \"${keygen} -t $t failed\"\n\t\t\tcontinue\n\t\tfi\n\t\t${SSHKEYGEN} -if ${COMPUB} > ${OPENSSHPUB}\n\t\tif [ $? -ne 0 ]; then\n\t\t\tfail \"import public key ($v/$t) failed\"\n\t\t\tcontinue\n\t\tfi\n\t\t${SSHKEYGEN} -if ${COMPRV} > ${OPENSSHPRV}\n\t\tif [ $? -ne 0 ]; then\n\t\t\tfail \"import private key ($v/$t) failed\"\n\t\t\tcontinue\n\t\tfi\n\t\tchmod 600 ${OPENSSHPRV}\n\t\t${SSHKEYGEN} -yf ${OPENSSHPRV} |\\\n\t\t\tdiff - ${OPENSSHPUB}\n\t\tif [ $? -ne 0 ]; then\n\t\t\tfail \"public keys ($v/$t) differ\"\n\t\tfi\n\tdone\ndone\n\nrm -f $COMPRV $COMPUB $OPENSSHPRV $OPENSSHPUB\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

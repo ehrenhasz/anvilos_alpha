@@ -1,0 +1,9 @@
+{
+  "module_name": "odm_EdcaTurboCheck.h",
+  "hash_id": "359c014fc7125a6381a2616325c58f56a0c6b3b43433694af8806b46a67b74cc",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/staging/rtl8723bs/hal/odm_EdcaTurboCheck.h",
+  "human_readable_source": " \n \n\n#ifndef __ODMEDCATURBOCHECK_H__\n#define __ODMEDCATURBOCHECK_H__\n\nstruct edca_t {  \n\tbool bCurrentTurboEDCA;\n\tbool bIsCurRDLState;\n\n\tu32 prv_traffic_idx;  \n};\n\nvoid odm_EdcaTurboCheck(void *pDM_VOID);\nvoid ODM_EdcaTurboInit(void *pDM_VOID);\n\nvoid odm_EdcaTurboCheckCE(void *pDM_VOID);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "kirin_drm_drv.h",
+  "hash_id": "e90d5c2991fb27dcef81f1e7291a324c7c007ea907c6e6cf5dd7c42ea54a2e1a",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/hisilicon/kirin/kirin_drm_drv.h",
+  "human_readable_source": " \n \n\n#ifndef __KIRIN_DRM_DRV_H__\n#define __KIRIN_DRM_DRV_H__\n\n#define to_kirin_crtc(crtc) \\\n\tcontainer_of(crtc, struct kirin_crtc, base)\n\n#define to_kirin_plane(plane) \\\n\tcontainer_of(plane, struct kirin_plane, base)\n\n \nstruct kirin_format {\n\tu32 pixel_format;\n\tu32 hw_format;\n};\n\nstruct kirin_crtc {\n\tstruct drm_crtc base;\n\tvoid *hw_ctx;\n\tbool enable;\n};\n\nstruct kirin_plane {\n\tstruct drm_plane base;\n\tvoid *hw_ctx;\n\tu32 ch;\n};\n\n \nstruct kirin_drm_data {\n\tconst u32 *channel_formats;\n\tu32 channel_formats_cnt;\n\tint config_max_width;\n\tint config_max_height;\n\tu32 num_planes;\n\tu32 prim_plane;\n\n\tconst struct drm_driver *driver;\n\tconst struct drm_crtc_helper_funcs *crtc_helper_funcs;\n\tconst struct drm_crtc_funcs *crtc_funcs;\n\tconst struct drm_plane_helper_funcs *plane_helper_funcs;\n\tconst struct drm_plane_funcs  *plane_funcs;\n\tconst struct drm_mode_config_funcs *mode_config_funcs;\n\n\tvoid *(*alloc_hw_ctx)(struct platform_device *pdev,\n\t\t\t      struct drm_crtc *crtc);\n\tvoid (*cleanup_hw_ctx)(void *hw_ctx);\n};\n\nextern struct kirin_drm_data ade_driver_data;\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

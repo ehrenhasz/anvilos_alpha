@@ -1,0 +1,9 @@
+{
+  "module_name": "set",
+  "hash_id": "d390906b6a349f9cf92ec69e33e28b5c870eda951ed2d81d649338e12535e900",
+  "original_prompt": "Ingested from linux-6.6.14/scripts/atomic/kerneldoc/set",
+  "human_readable_source": "cat <<EOF\n/**\n * ${class}${atomicname}() - atomic set with ${desc_order} ordering\n * @v: pointer to ${atomic}_t\n * @i: ${int} value to assign\n *\n * Atomically sets @v to @i with ${desc_order} ordering.\n *\n * ${desc_noinstr}\n *\n * Return: Nothing.\n */\nEOF\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

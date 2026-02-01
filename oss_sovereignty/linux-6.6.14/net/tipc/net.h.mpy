@@ -1,0 +1,9 @@
+{
+  "module_name": "net.h",
+  "hash_id": "5c54db30bfa3fc6e322acffe8bbb77386619db1090297c7d0408338a0ac9cc25",
+  "original_prompt": "Ingested from linux-6.6.14/net/tipc/net.h",
+  "human_readable_source": " \n\n#ifndef _TIPC_NET_H\n#define _TIPC_NET_H\n\n#include <net/genetlink.h>\n\nextern const struct nla_policy tipc_nl_net_policy[];\n\nint tipc_net_init(struct net *net, u8 *node_id, u32 addr);\nvoid tipc_net_finalize_work(struct work_struct *work);\nvoid tipc_net_stop(struct net *net);\nint tipc_nl_net_dump(struct sk_buff *skb, struct netlink_callback *cb);\nint tipc_nl_net_set(struct sk_buff *skb, struct genl_info *info);\nint __tipc_nl_net_set(struct sk_buff *skb, struct genl_info *info);\nint tipc_nl_net_addr_legacy_get(struct sk_buff *skb, struct genl_info *info);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

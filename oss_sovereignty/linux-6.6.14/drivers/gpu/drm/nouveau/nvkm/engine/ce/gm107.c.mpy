@@ -1,0 +1,9 @@
+{
+  "module_name": "gm107.c",
+  "hash_id": "154f33971974c5d0b12059fbc2de3272ba6a0f68582a443e7f428a2bff7f518e",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/ce/gm107.c",
+  "human_readable_source": " \n#include \"priv.h\"\n\n#include <nvif/class.h>\n\nstatic const struct nvkm_engine_func\ngm107_ce = {\n\t.intr = gk104_ce_intr,\n\t.sclass = {\n\t\t{ -1, -1, KEPLER_DMA_COPY_A },\n\t\t{ -1, -1, MAXWELL_DMA_COPY_A },\n\t\t{}\n\t}\n};\n\nint\ngm107_ce_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t     struct nvkm_engine **pengine)\n{\n\treturn nvkm_engine_new_(&gm107_ce, device, type, inst, true, pengine);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

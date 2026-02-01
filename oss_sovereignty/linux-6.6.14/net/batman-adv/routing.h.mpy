@@ -1,0 +1,9 @@
+{
+  "module_name": "routing.h",
+  "hash_id": "3464b64c1b1620fec94ab972d9d404d279bd0024000e9f6821f4fb6809444cb1",
+  "original_prompt": "Ingested from linux-6.6.14/net/batman-adv/routing.h",
+  "human_readable_source": " \n \n\n#ifndef _NET_BATMAN_ADV_ROUTING_H_\n#define _NET_BATMAN_ADV_ROUTING_H_\n\n#include \"main.h\"\n\n#include <linux/skbuff.h>\n#include <linux/types.h>\n\nbool batadv_check_management_packet(struct sk_buff *skb,\n\t\t\t\t    struct batadv_hard_iface *hard_iface,\n\t\t\t\t    int header_len);\nvoid batadv_update_route(struct batadv_priv *bat_priv,\n\t\t\t struct batadv_orig_node *orig_node,\n\t\t\t struct batadv_hard_iface *recv_if,\n\t\t\t struct batadv_neigh_node *neigh_node);\nint batadv_recv_icmp_packet(struct sk_buff *skb,\n\t\t\t    struct batadv_hard_iface *recv_if);\nint batadv_recv_unicast_packet(struct sk_buff *skb,\n\t\t\t       struct batadv_hard_iface *recv_if);\nint batadv_recv_frag_packet(struct sk_buff *skb,\n\t\t\t    struct batadv_hard_iface *iface);\nint batadv_recv_bcast_packet(struct sk_buff *skb,\n\t\t\t     struct batadv_hard_iface *recv_if);\nint batadv_recv_unicast_tvlv(struct sk_buff *skb,\n\t\t\t     struct batadv_hard_iface *recv_if);\nint batadv_recv_unhandled_unicast_packet(struct sk_buff *skb,\n\t\t\t\t\t struct batadv_hard_iface *recv_if);\nstruct batadv_neigh_node *\nbatadv_find_router(struct batadv_priv *bat_priv,\n\t\t   struct batadv_orig_node *orig_node,\n\t\t   struct batadv_hard_iface *recv_if);\nbool batadv_window_protected(struct batadv_priv *bat_priv, s32 seq_num_diff,\n\t\t\t     s32 seq_old_max_diff, unsigned long *last_reset,\n\t\t\t     bool *protection_started);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

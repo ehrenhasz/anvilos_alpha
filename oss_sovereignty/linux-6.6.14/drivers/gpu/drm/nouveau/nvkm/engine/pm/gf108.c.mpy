@@ -1,0 +1,9 @@
+{
+  "module_name": "gf108.c",
+  "hash_id": "cc0dc662ecd8334c2be2d90c32272439026ac98075394e86bbfa4374229168aa",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/engine/pm/gf108.c",
+  "human_readable_source": " \n#include \"gf100.h\"\n\nstatic const struct nvkm_specdom\ngf108_pm_hub[] = {\n\t{}\n};\n\nstatic const struct nvkm_specdom\ngf108_pm_part[] = {\n\t{ 0xe0, (const struct nvkm_specsig[]) {\n\t\t\t{ 0x14, \"part00_pbfb_00\", gf100_pbfb_sources },\n\t\t\t{ 0x15, \"part00_pbfb_01\", gf100_pbfb_sources },\n\t\t\t{ 0x20, \"part00_pbfb_02\", gf100_pbfb_sources },\n\t\t\t{ 0x21, \"part00_pbfb_03\", gf100_pbfb_sources },\n\t\t\t{ 0x01, \"part00_pmfb_00\", gf100_pmfb_sources },\n\t\t\t{ 0x04, \"part00_pmfb_01\", gf100_pmfb_sources },\n\t\t\t{ 0x05, \"part00_pmfb_02\", gf100_pmfb_sources},\n\t\t\t{ 0x07, \"part00_pmfb_03\", gf100_pmfb_sources },\n\t\t\t{ 0x0d, \"part00_pmfb_04\", gf100_pmfb_sources },\n\t\t\t{ 0x12, \"part00_pmfb_05\", gf100_pmfb_sources },\n\t\t\t{ 0x13, \"part00_pmfb_06\", gf100_pmfb_sources },\n\t\t\t{ 0x2c, \"part00_pmfb_07\", gf100_pmfb_sources },\n\t\t\t{ 0x2d, \"part00_pmfb_08\", gf100_pmfb_sources },\n\t\t\t{ 0x2e, \"part00_pmfb_09\", gf100_pmfb_sources },\n\t\t\t{ 0x2f, \"part00_pmfb_0a\", gf100_pmfb_sources },\n\t\t\t{ 0x30, \"part00_pmfb_0b\", gf100_pmfb_sources },\n\t\t\t{}\n\t\t}, &gf100_perfctr_func },\n\t{}\n};\n\nstatic const struct gf100_pm_func\ngf108_pm = {\n\t.doms_gpc = gf100_pm_gpc,\n\t.doms_hub = gf108_pm_hub,\n\t.doms_part = gf108_pm_part,\n};\n\nint\ngf108_pm_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_pm **ppm)\n{\n\treturn gf100_pm_new_(&gf108_pm, device, type, inst, ppm);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

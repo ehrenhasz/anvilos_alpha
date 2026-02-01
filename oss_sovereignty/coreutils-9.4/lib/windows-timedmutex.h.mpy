@@ -1,0 +1,9 @@
+{
+  "module_name": "windows-timedmutex.h",
+  "hash_id": "fac23664b3af89e8787d0d0b9c704c4b1ac9177d9e61f62071ec55ddc202b076",
+  "original_prompt": "Ingested from coreutils-9.4/lib/windows-timedmutex.h",
+  "human_readable_source": " \n\n#ifndef _WINDOWS_TIMEDMUTEX_H\n#define _WINDOWS_TIMEDMUTEX_H\n\n#define WIN32_LEAN_AND_MEAN   \n#include <windows.h>\n\n#include <time.h>\n\n#include \"windows-initguard.h\"\n\ntypedef struct\n        {\n          glwthread_initguard_t guard;  \n          HANDLE event;\n          CRITICAL_SECTION lock;\n        }\n        glwthread_timedmutex_t;\n\n#define GLWTHREAD_TIMEDMUTEX_INIT { GLWTHREAD_INITGUARD_INIT }\n\n#ifdef __cplusplus\nextern \"C\" {\n#endif\n\nextern int glwthread_timedmutex_init (glwthread_timedmutex_t *mutex);\nextern int glwthread_timedmutex_lock (glwthread_timedmutex_t *mutex);\nextern int glwthread_timedmutex_trylock (glwthread_timedmutex_t *mutex);\nextern int glwthread_timedmutex_timedlock (glwthread_timedmutex_t *mutex,\n                                           const struct timespec *abstime);\nextern int glwthread_timedmutex_unlock (glwthread_timedmutex_t *mutex);\nextern int glwthread_timedmutex_destroy (glwthread_timedmutex_t *mutex);\n\n#ifdef __cplusplus\n}\n#endif\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

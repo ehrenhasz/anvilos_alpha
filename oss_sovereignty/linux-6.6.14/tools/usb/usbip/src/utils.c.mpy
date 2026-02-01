@@ -1,0 +1,9 @@
+{
+  "module_name": "utils.c",
+  "hash_id": "a6164c50d4603901ee81fe7b6118b00b9fa025f8e3dd6b3e1eeb2f1ed24a3d79",
+  "original_prompt": "Ingested from linux-6.6.14/tools/usb/usbip/src/utils.c",
+  "human_readable_source": "\n \n\n#include <errno.h>\n#include <stdio.h>\n#include <string.h>\n\n#include \"usbip_common.h\"\n#include \"utils.h\"\n#include \"sysfs_utils.h\"\n\nint modify_match_busid(char *busid, int add)\n{\n\tchar attr_name[] = \"match_busid\";\n\tchar command[SYSFS_BUS_ID_SIZE + 4];\n\tchar match_busid_attr_path[SYSFS_PATH_MAX];\n\tint rc;\n\tint cmd_size;\n\n\tsnprintf(match_busid_attr_path, sizeof(match_busid_attr_path),\n\t\t \"%s/%s/%s/%s/%s/%s\", SYSFS_MNT_PATH, SYSFS_BUS_NAME,\n\t\t SYSFS_BUS_TYPE, SYSFS_DRIVERS_NAME, USBIP_HOST_DRV_NAME,\n\t\t attr_name);\n\n\tif (add)\n\t\tcmd_size = snprintf(command, SYSFS_BUS_ID_SIZE + 4, \"add %s\",\n\t\t\t\t    busid);\n\telse\n\t\tcmd_size = snprintf(command, SYSFS_BUS_ID_SIZE + 4, \"del %s\",\n\t\t\t\t    busid);\n\n\trc = write_sysfs_attribute(match_busid_attr_path, command,\n\t\t\t\t   cmd_size);\n\tif (rc < 0) {\n\t\tdbg(\"failed to write match_busid: %s\", strerror(errno));\n\t\treturn -1;\n\t}\n\n\treturn 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "bdc_cmd.h",
+  "hash_id": "bb37be0ea55851525bd97c61c20a610a7980865c76a98e924bc88da2130ec5b4",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/usb/gadget/udc/bdc/bdc_cmd.h",
+  "human_readable_source": " \n \n#ifndef __LINUX_BDC_CMD_H__\n#define __LINUX_BDC_CMD_H__\n\n \nint bdc_address_device(struct bdc *bdc, u32 add);\nint bdc_config_ep(struct bdc *bdc, struct bdc_ep *ep);\nint bdc_dconfig_ep(struct bdc *bdc, struct bdc_ep *ep);\nint bdc_stop_ep(struct bdc *bdc, int epnum);\nint bdc_ep_set_stall(struct bdc *bdc, int epnum);\nint bdc_ep_clear_stall(struct bdc *bdc, int epnum);\nint bdc_ep_bla(struct bdc *bdc, struct bdc_ep *ep, dma_addr_t dma_addr);\nint bdc_function_wake(struct bdc *bdc, u8 intf);\nint bdc_function_wake_fh(struct bdc *bdc, u8 intf);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

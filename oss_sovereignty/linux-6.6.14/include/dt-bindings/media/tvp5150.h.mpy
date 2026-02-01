@@ -1,0 +1,9 @@
+{
+  "module_name": "tvp5150.h",
+  "hash_id": "f8532e987498cb7fbf860fd37f5ad8d3cb9cc5e4e4e4d33260924e5ad5c93d1f",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/media/tvp5150.h",
+  "human_readable_source": " \n \n\n#ifndef _DT_BINDINGS_MEDIA_TVP5150_H\n#define _DT_BINDINGS_MEDIA_TVP5150_H\n\n \n#define TVP5150_COMPOSITE0 0\n#define TVP5150_COMPOSITE1 1\n#define TVP5150_SVIDEO     2\n\n \n#define TVP5150_NORMAL       0\n#define TVP5150_BLACK_SCREEN 1\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

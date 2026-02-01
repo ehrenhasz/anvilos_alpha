@@ -1,0 +1,9 @@
+{
+  "module_name": "olpc_ofw.h",
+  "hash_id": "68881e1354da5ed38a16eb680c64642275d1dcc2ef9c837188233227c8b7f949",
+  "original_prompt": "Ingested from linux-6.6.14/arch/x86/include/asm/olpc_ofw.h",
+  "human_readable_source": " \n#ifndef _ASM_X86_OLPC_OFW_H\n#define _ASM_X86_OLPC_OFW_H\n\n \n#define OLPC_OFW_PDE_NR 1022\n\n#define OLPC_OFW_SIG 0x2057464F\t \n\n#ifdef CONFIG_OLPC\n\nextern bool olpc_ofw_is_installed(void);\n\n \n#define olpc_ofw(name, args, res) \\\n\t__olpc_ofw((name), ARRAY_SIZE(args), args, ARRAY_SIZE(res), res)\n\nextern int __olpc_ofw(const char *name, int nr_args, const void **args, int nr_res,\n\t\tvoid **res);\n\n \nextern void olpc_ofw_detect(void);\n\n \nextern void setup_olpc_ofw_pgd(void);\n\n \nextern bool olpc_ofw_present(void);\n\nextern void olpc_dt_build_devicetree(void);\n\n#else  \nstatic inline void olpc_ofw_detect(void) { }\nstatic inline void setup_olpc_ofw_pgd(void) { }\nstatic inline void olpc_dt_build_devicetree(void) { }\n#endif  \n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

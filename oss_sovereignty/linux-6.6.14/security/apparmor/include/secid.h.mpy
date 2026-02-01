@@ -1,0 +1,9 @@
+{
+  "module_name": "secid.h",
+  "hash_id": "3a1412df18367b9fe148183dd849d8217e3697f7e0259900ca0496f2b096e0e1",
+  "original_prompt": "Ingested from linux-6.6.14/security/apparmor/include/secid.h",
+  "human_readable_source": " \n \n\n#ifndef __AA_SECID_H\n#define __AA_SECID_H\n\n#include <linux/slab.h>\n#include <linux/types.h>\n\nstruct aa_label;\n\n \n#define AA_SECID_INVALID 0\n\n \n#define AA_SECID_WILDCARD 1\n\n \nextern int apparmor_display_secid_mode;\n\nstruct aa_label *aa_secid_to_label(u32 secid);\nint apparmor_secid_to_secctx(u32 secid, char **secdata, u32 *seclen);\nint apparmor_secctx_to_secid(const char *secdata, u32 seclen, u32 *secid);\nvoid apparmor_release_secctx(char *secdata, u32 seclen);\n\n\nint aa_alloc_secid(struct aa_label *label, gfp_t gfp);\nvoid aa_free_secid(u32 secid);\nvoid aa_secid_update(u32 secid, struct aa_label *label);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

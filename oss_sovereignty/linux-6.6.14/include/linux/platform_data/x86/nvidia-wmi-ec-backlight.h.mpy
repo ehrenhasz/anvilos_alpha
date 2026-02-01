@@ -1,0 +1,9 @@
+{
+  "module_name": "nvidia-wmi-ec-backlight.h",
+  "hash_id": "abb882a626c4853d6905b73863bf99219ea1077a3f4b173bc00429abb7547393",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/platform_data/x86/nvidia-wmi-ec-backlight.h",
+  "human_readable_source": " \n \n\n#ifndef __PLATFORM_DATA_X86_NVIDIA_WMI_EC_BACKLIGHT_H\n#define __PLATFORM_DATA_X86_NVIDIA_WMI_EC_BACKLIGHT_H\n\n#define WMI_BRIGHTNESS_GUID \"603E9613-EF25-4338-A3D0-C46177516DB7\"\n\n \nenum wmi_brightness_method {\n\tWMI_BRIGHTNESS_METHOD_LEVEL = 1,\n\tWMI_BRIGHTNESS_METHOD_SOURCE = 2,\n\tWMI_BRIGHTNESS_METHOD_MAX\n};\n\n \nenum wmi_brightness_mode {\n\tWMI_BRIGHTNESS_MODE_GET = 0,\n\tWMI_BRIGHTNESS_MODE_SET = 1,\n\tWMI_BRIGHTNESS_MODE_GET_MAX_LEVEL = 2,\n\tWMI_BRIGHTNESS_MODE_MAX\n};\n\n \nenum wmi_brightness_source {\n\tWMI_BRIGHTNESS_SOURCE_GPU = 1,\n\tWMI_BRIGHTNESS_SOURCE_EC = 2,\n\tWMI_BRIGHTNESS_SOURCE_AUX = 3,\n\tWMI_BRIGHTNESS_SOURCE_MAX\n};\n\n \nstruct wmi_brightness_args {\n\tu32 mode;\n\tu32 val;\n\tu32 ret;\n\tu32 ignored[3];\n};\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

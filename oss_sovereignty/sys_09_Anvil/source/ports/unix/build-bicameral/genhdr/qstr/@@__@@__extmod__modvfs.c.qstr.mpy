@@ -1,0 +1,9 @@
+{
+  "module_name": "@@__@@__extmod__modvfs.c.qstr",
+  "hash_id": "bd1e2f116ca6bad547e9edb96beb869dffa556c984209deebbe6298d48baa1ad",
+  "original_prompt": "Ingested from sys_09_Anvil/source/ports/unix/build-bicameral/genhdr/qstr/@@__@@__extmod__modvfs.c.qstr",
+  "human_readable_source": "Q(__name__)\nQ(vfs)\nQ(mount)\nQ(umount)\nQ(VfsFat)\nQ(VfsPosix)\nQ(vfs)\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

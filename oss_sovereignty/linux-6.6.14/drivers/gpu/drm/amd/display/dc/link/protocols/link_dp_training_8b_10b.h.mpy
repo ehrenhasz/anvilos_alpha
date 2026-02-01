@@ -1,0 +1,9 @@
+{
+  "module_name": "link_dp_training_8b_10b.h",
+  "hash_id": "2c558292c257eaa7aae38cce0463ae8bc3f13b41b827ed04f0e15f826fb2b2ed",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/amd/display/dc/link/protocols/link_dp_training_8b_10b.h",
+  "human_readable_source": " \n\n\n#ifndef __DC_LINK_DP_TRAINING_8B_10B_H__\n#define __DC_LINK_DP_TRAINING_8B_10B_H__\n#include \"link_dp_training.h\"\n\n \n#define LINK_TRAINING_MAX_CR_RETRY 100\n#define LINK_TRAINING_MAX_RETRY_COUNT 5\n\nenum link_training_result dp_perform_8b_10b_link_training(\n\t\tstruct dc_link *link,\n\t\tconst struct link_resource *link_res,\n\t\tstruct link_training_settings *lt_settings);\n\nenum link_training_result perform_8b_10b_clock_recovery_sequence(\n\tstruct dc_link *link,\n\tconst struct link_resource *link_res,\n\tstruct link_training_settings *lt_settings,\n\tuint32_t offset);\n\nenum link_training_result perform_8b_10b_channel_equalization_sequence(\n\tstruct dc_link *link,\n\tconst struct link_resource *link_res,\n\tstruct link_training_settings *lt_settings,\n\tuint32_t offset);\n\nenum lttpr_mode dp_decide_8b_10b_lttpr_mode(struct dc_link *link);\n\nvoid decide_8b_10b_training_settings(\n\t struct dc_link *link,\n\tconst struct dc_link_settings *link_setting,\n\tstruct link_training_settings *lt_settings);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

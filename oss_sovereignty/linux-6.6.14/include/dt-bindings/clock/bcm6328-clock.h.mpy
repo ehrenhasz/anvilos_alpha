@@ -1,0 +1,9 @@
+{
+  "module_name": "bcm6328-clock.h",
+  "hash_id": "32929c9f6c3909b2309fb171ebc8d1a1a4d4128ad8aa7f3e853f1455b0f978cc",
+  "original_prompt": "Ingested from linux-6.6.14/include/dt-bindings/clock/bcm6328-clock.h",
+  "human_readable_source": " \n\n#ifndef __DT_BINDINGS_CLOCK_BCM6328_H\n#define __DT_BINDINGS_CLOCK_BCM6328_H\n\n#define BCM6328_CLK_PHYMIPS\t0\n#define BCM6328_CLK_ADSL_QPROC\t1\n#define BCM6328_CLK_ADSL_AFE\t2\n#define BCM6328_CLK_ADSL\t3\n#define BCM6328_CLK_MIPS\t4\n#define BCM6328_CLK_SAR\t\t5\n#define BCM6328_CLK_PCM\t\t6\n#define BCM6328_CLK_USBD\t7\n#define BCM6328_CLK_USBH\t8\n#define BCM6328_CLK_HSSPI\t9\n#define BCM6328_CLK_PCIE\t10\n#define BCM6328_CLK_ROBOSW\t11\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

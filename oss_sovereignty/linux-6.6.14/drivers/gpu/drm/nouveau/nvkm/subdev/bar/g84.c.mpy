@@ -1,0 +1,9 @@
+{
+  "module_name": "g84.c",
+  "hash_id": "e23fa66a893be21d6a18af4af476935c1c5555374ed2c7f36c7554e2eedb7753",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/bar/g84.c",
+  "human_readable_source": " \n#include \"nv50.h\"\n\n#include <subdev/timer.h>\n\nvoid\ng84_bar_flush(struct nvkm_bar *bar)\n{\n\tstruct nvkm_device *device = bar->subdev.device;\n\tunsigned long flags;\n\tspin_lock_irqsave(&bar->lock, flags);\n\tnvkm_wr32(device, 0x070000, 0x00000001);\n\tnvkm_msec(device, 2000,\n\t\tif (!(nvkm_rd32(device, 0x070000) & 0x00000002))\n\t\t\tbreak;\n\t);\n\tspin_unlock_irqrestore(&bar->lock, flags);\n}\n\nstatic const struct nvkm_bar_func\ng84_bar_func = {\n\t.dtor = nv50_bar_dtor,\n\t.oneinit = nv50_bar_oneinit,\n\t.init = nv50_bar_init,\n\t.bar1.init = nv50_bar_bar1_init,\n\t.bar1.fini = nv50_bar_bar1_fini,\n\t.bar1.wait = nv50_bar_bar1_wait,\n\t.bar1.vmm = nv50_bar_bar1_vmm,\n\t.bar2.init = nv50_bar_bar2_init,\n\t.bar2.fini = nv50_bar_bar2_fini,\n\t.bar2.wait = nv50_bar_bar1_wait,\n\t.bar2.vmm = nv50_bar_bar2_vmm,\n\t.flush = g84_bar_flush,\n};\n\nint\ng84_bar_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst,\n\t    struct nvkm_bar **pbar)\n{\n\treturn nv50_bar_new_(&g84_bar_func, device, type, inst, 0x200, pbar);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "builtin.h",
+  "hash_id": "3c88e4d04b37613e42e1c96f53939ba2e393680d67feeadfe4ec0669e9bb4935",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/builtin.h",
+  "human_readable_source": " \n#ifndef BUILTIN_H\n#define BUILTIN_H\n\nvoid list_common_cmds_help(void);\nconst char *help_unknown_cmd(const char *cmd);\n\nint cmd_annotate(int argc, const char **argv);\nint cmd_bench(int argc, const char **argv);\nint cmd_buildid_cache(int argc, const char **argv);\nint cmd_buildid_list(int argc, const char **argv);\nint cmd_config(int argc, const char **argv);\nint cmd_c2c(int argc, const char **argv);\nint cmd_diff(int argc, const char **argv);\nint cmd_evlist(int argc, const char **argv);\nint cmd_help(int argc, const char **argv);\nint cmd_sched(int argc, const char **argv);\nint cmd_kallsyms(int argc, const char **argv);\nint cmd_list(int argc, const char **argv);\nint cmd_record(int argc, const char **argv);\nint cmd_report(int argc, const char **argv);\nint cmd_stat(int argc, const char **argv);\nint cmd_timechart(int argc, const char **argv);\nint cmd_top(int argc, const char **argv);\nint cmd_script(int argc, const char **argv);\nint cmd_version(int argc, const char **argv);\nint cmd_probe(int argc, const char **argv);\nint cmd_kmem(int argc, const char **argv);\nint cmd_lock(int argc, const char **argv);\nint cmd_kvm(int argc, const char **argv);\nint cmd_test(int argc, const char **argv);\nint cmd_trace(int argc, const char **argv);\nint cmd_inject(int argc, const char **argv);\nint cmd_mem(int argc, const char **argv);\nint cmd_data(int argc, const char **argv);\nint cmd_ftrace(int argc, const char **argv);\nint cmd_daemon(int argc, const char **argv);\nint cmd_kwork(int argc, const char **argv);\n\nint find_scripts(char **scripts_array, char **scripts_path_array, int num,\n\t\t int pathlen);\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "freopen.m4",
+  "hash_id": "e898c71857f6d176af17fd92fc11886c88b0f55f424f14a4ec425646b100fadd",
+  "original_prompt": "Ingested from coreutils-9.4/m4/freopen.m4",
+  "human_readable_source": "# freopen.m4 serial 8\ndnl Copyright (C) 2007-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_FUNC_FREOPEN],\n[\n  AC_REQUIRE([gl_STDIO_H_DEFAULTS])\n  AC_REQUIRE([AC_CANONICAL_HOST])\n  case \"$host_os\" in\n    mingw* | windows* | pw* | os2*)\n      REPLACE_FREOPEN=1\n      ;;\n    *)\n      AC_CACHE_CHECK([whether freopen works on closed fds],\n        [gl_cv_func_freopen_works_on_closed],\n        [AC_RUN_IFELSE(\n           [AC_LANG_PROGRAM(\n              [[#include <stdio.h>\n                #include <unistd.h>\n              ]GL_MDA_DEFINES],\n              [[close (0);\n                return !(freopen (\"/dev/null\", \"r\", stdin)\n                         && getchar () == EOF\n                         && !ferror (stdin) && feof (stdin));]])],\n           [gl_cv_func_freopen_works_on_closed=yes],\n           [gl_cv_func_freopen_works_on_closed=no],\n           [case $host_os in\n              *gnu*) gl_cv_func_freopen_works_on_closed=\"guessing no\" ;;\n              *)     gl_cv_func_freopen_works_on_closed=\"guessing yes\";;\n            esac])])\n      case $gl_cv_func_freopen_works_on_closed in\n        *no) REPLACE_FREOPEN=1;;\n      esac\n  esac\n])\n\n# Prerequisites of lib/freopen.c.\nAC_DEFUN([gl_PREREQ_FREOPEN], [:])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "ga100.c",
+  "hash_id": "7c91bf2be69dbfea10861954265570f6e21f889cd9d5ecedf5793f95868b1a0d",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/gpu/drm/nouveau/nvkm/subdev/fb/ga100.c",
+  "human_readable_source": " \n#include \"gf100.h\"\n#include \"ram.h\"\n\nstatic const struct nvkm_fb_func\nga100_fb = {\n\t.dtor = gf100_fb_dtor,\n\t.oneinit = gf100_fb_oneinit,\n\t.init = gm200_fb_init,\n\t.init_page = gv100_fb_init_page,\n\t.init_unkn = gp100_fb_init_unkn,\n\t.sysmem.flush_page_init = gf100_fb_sysmem_flush_page_init,\n\t.vidmem.size = gp102_fb_vidmem_size,\n\t.ram_new = gp102_ram_new,\n\t.default_bigpage = 16,\n};\n\nint\nga100_fb_new(struct nvkm_device *device, enum nvkm_subdev_type type, int inst, struct nvkm_fb **pfb)\n{\n\treturn gf100_fb_new_(&ga100_fb, device, type, inst, pfb);\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

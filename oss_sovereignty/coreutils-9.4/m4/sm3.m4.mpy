@@ -1,0 +1,9 @@
+{
+  "module_name": "sm3.m4",
+  "hash_id": "a817e27df4bfeafed403bf497f7ff09768fa4c141f51605f81e1b721f37339b6",
+  "original_prompt": "Ingested from coreutils-9.4/m4/sm3.m4",
+  "human_readable_source": "# sm3.m4 serial 2\ndnl Copyright (C) 2017-2023 Free Software Foundation, Inc.\ndnl This file is free software; the Free Software Foundation\ndnl gives unlimited permission to copy and/or distribute it,\ndnl with or without modifications, as long as this notice is preserved.\n\nAC_DEFUN([gl_SM3],\n[\n  dnl Prerequisites of lib/sm3.h.\n  AC_REQUIRE([AC_C_RESTRICT])\n\n  dnl Prerequisites of lib/sm3.c.\n  AC_REQUIRE([gl_BIGENDIAN])\n\n  dnl Currently openssl still doesn't support sm3.\n  m4_divert_once([DEFAULTS], [LIB_CRYPTO=])\n  AC_SUBST([LIB_CRYPTO])\n])\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

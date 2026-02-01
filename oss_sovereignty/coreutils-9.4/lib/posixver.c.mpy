@@ -1,0 +1,9 @@
+{
+  "module_name": "posixver.c",
+  "hash_id": "7b5456968261c9511fec16be140837a0e85fa92a1f4d4c594e3b1bd47f14fdab",
+  "original_prompt": "Ingested from coreutils-9.4/lib/posixver.c",
+  "human_readable_source": " \n\n#include <config.h>\n\n#include \"posixver.h\"\n\n#include <limits.h>\n#include <stdlib.h>\n\n#include <unistd.h>\n#ifndef _POSIX2_VERSION\n# define _POSIX2_VERSION 0\n#endif\n\n#ifndef DEFAULT_POSIX2_VERSION\n# define DEFAULT_POSIX2_VERSION _POSIX2_VERSION\n#endif\n\n \n\nint\nposix2_version (void)\n{\n  long int v = DEFAULT_POSIX2_VERSION;\n  char const *s = getenv (\"_POSIX2_VERSION\");\n\n  if (s && *s)\n    {\n      char *e;\n      long int i = strtol (s, &e, 10);\n      if (! *e)\n        v = i;\n    }\n\n  return v < INT_MIN ? INT_MIN : v < INT_MAX ? v : INT_MAX;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

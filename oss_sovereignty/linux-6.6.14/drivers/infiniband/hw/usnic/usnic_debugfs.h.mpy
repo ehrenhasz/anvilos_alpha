@@ -1,0 +1,9 @@
+{
+  "module_name": "usnic_debugfs.h",
+  "hash_id": "2bc310db846cd73911697cce570975ff907386ab528267051185caabdd51c250",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/infiniband/hw/usnic/usnic_debugfs.h",
+  "human_readable_source": " \n#ifndef USNIC_DEBUGFS_H_\n#define USNIC_DEBUGFS_H_\n\n#include \"usnic_ib_qp_grp.h\"\n\nvoid usnic_debugfs_init(void);\n\nvoid usnic_debugfs_exit(void);\nvoid usnic_debugfs_flow_add(struct usnic_ib_qp_grp_flow *qp_flow);\nvoid usnic_debugfs_flow_remove(struct usnic_ib_qp_grp_flow *qp_flow);\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

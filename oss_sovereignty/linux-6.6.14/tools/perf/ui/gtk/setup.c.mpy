@@ -1,0 +1,9 @@
+{
+  "module_name": "setup.c",
+  "hash_id": "b7e81bd5fc2ea4b06547c1b95a00e0f777873064efc3a05c5df61d80cf33d761",
+  "original_prompt": "Ingested from linux-6.6.14/tools/perf/ui/gtk/setup.c",
+  "human_readable_source": "\n#include \"gtk.h\"\n#include <linux/compiler.h>\n#include \"../util.h\"\n\nextern struct perf_error_ops perf_gtk_eops;\n\nint perf_gtk__init(void)\n{\n\tperf_error__register(&perf_gtk_eops);\n\tperf_gtk__init_helpline();\n\tgtk_ui_progress__init();\n\tperf_gtk__init_hpp();\n\n\treturn gtk_init_check(NULL, NULL) ? 0 : -1;\n}\n\nvoid perf_gtk__exit(bool wait_for_ok __maybe_unused)\n{\n\tif (!perf_gtk__is_active_context(pgctx))\n\t\treturn;\n\tperf_error__unregister(&perf_gtk_eops);\n\tgtk_main_quit();\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

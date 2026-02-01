@@ -1,0 +1,9 @@
+{
+  "module_name": "mmu_v1_1.h",
+  "hash_id": "aeaa9c5c5be208666306e2ac33d19784fd89454d784c2c1abef65724040b7bec",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/accel/habanalabs/include/hw_ip/mmu/mmu_v1_1.h",
+  "human_readable_source": " \n\n#ifndef INCLUDE_MMU_V1_1_H_\n#define INCLUDE_MMU_V1_1_H_\n\n#define MMU_V1_1_HOP0_MASK\t\t0x3000000000000ull\n#define MMU_V1_1_HOP1_MASK\t\t0x0FF8000000000ull\n#define MMU_V1_1_HOP2_MASK\t\t0x0007FC0000000ull\n#define MMU_V1_1_HOP3_MASK\t\t0x000003FE00000ull\n#define MMU_V1_1_HOP4_MASK\t\t0x00000001FF000ull\n\n#define MMU_V1_1_HOP0_SHIFT\t\t48\n#define MMU_V1_1_HOP1_SHIFT\t\t39\n#define MMU_V1_1_HOP2_SHIFT\t\t30\n#define MMU_V1_1_HOP3_SHIFT\t\t21\n#define MMU_V1_1_HOP4_SHIFT\t\t12\n\n#define MMU_ASID\t\t\t0xC12004\n#define MMU_HOP0_PA43_12\t\t0xC12008\n#define MMU_HOP0_PA49_44\t\t0xC1200C\n#define MMU_BUSY\t\t\t0xC12000\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

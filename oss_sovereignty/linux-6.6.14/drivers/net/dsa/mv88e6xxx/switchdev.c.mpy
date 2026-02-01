@@ -1,0 +1,9 @@
+{
+  "module_name": "switchdev.c",
+  "hash_id": "2b6cd16266d0ff63429dcdec7e40fe74c9ff2b30c51f97eb18704d431f9b05f5",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/dsa/mv88e6xxx/switchdev.c",
+  "human_readable_source": "\n \n\n#include <net/switchdev.h>\n#include \"chip.h\"\n#include \"global1.h\"\n#include \"switchdev.h\"\n\nstruct mv88e6xxx_fid_search_ctx {\n\tu16 fid_search;\n\tu16 vid_found;\n};\n\nstatic int __mv88e6xxx_find_vid(struct mv88e6xxx_chip *chip,\n\t\t\t\tconst struct mv88e6xxx_vtu_entry *entry,\n\t\t\t\tvoid *priv)\n{\n\tstruct mv88e6xxx_fid_search_ctx *ctx = priv;\n\n\tif (ctx->fid_search == entry->fid) {\n\t\tctx->vid_found = entry->vid;\n\t\treturn 1;\n\t}\n\n\treturn 0;\n}\n\nstatic int mv88e6xxx_find_vid(struct mv88e6xxx_chip *chip, u16 fid, u16 *vid)\n{\n\tstruct mv88e6xxx_fid_search_ctx ctx;\n\tint err;\n\n\tctx.fid_search = fid;\n\tmv88e6xxx_reg_lock(chip);\n\terr = mv88e6xxx_vtu_walk(chip, __mv88e6xxx_find_vid, &ctx);\n\tmv88e6xxx_reg_unlock(chip);\n\tif (err < 0)\n\t\treturn err;\n\tif (err == 1)\n\t\t*vid = ctx.vid_found;\n\telse\n\t\treturn -ENOENT;\n\n\treturn 0;\n}\n\nint mv88e6xxx_handle_miss_violation(struct mv88e6xxx_chip *chip, int port,\n\t\t\t\t    struct mv88e6xxx_atu_entry *entry, u16 fid)\n{\n\tstruct switchdev_notifier_fdb_info info = {\n\t\t.addr = entry->mac,\n\t\t.locked = true,\n\t};\n\tstruct net_device *brport;\n\tstruct dsa_port *dp;\n\tu16 vid;\n\tint err;\n\n\terr = mv88e6xxx_find_vid(chip, fid, &vid);\n\tif (err)\n\t\treturn err;\n\n\tinfo.vid = vid;\n\tdp = dsa_to_port(chip->ds, port);\n\n\trtnl_lock();\n\tbrport = dsa_port_to_bridge_port(dp);\n\tif (!brport) {\n\t\trtnl_unlock();\n\t\treturn -ENODEV;\n\t}\n\terr = call_switchdev_notifiers(SWITCHDEV_FDB_ADD_TO_BRIDGE,\n\t\t\t\t       brport, &info.info, NULL);\n\trtnl_unlock();\n\n\treturn err;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

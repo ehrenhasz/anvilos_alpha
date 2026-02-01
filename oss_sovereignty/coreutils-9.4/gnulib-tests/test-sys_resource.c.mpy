@@ -1,0 +1,9 @@
+{
+  "module_name": "test-sys_resource.c",
+  "hash_id": "db3b70a95eecaeaee481e97070e247d97fbdb64dc1d01d1840ec82c05b9a41c2",
+  "original_prompt": "Ingested from coreutils-9.4/gnulib-tests/test-sys_resource.c",
+  "human_readable_source": " \n#ifdef TODO  \nrlim_t t1;\nstruct rlimit t2;\n#endif\nstruct rusage t3;\n#ifdef TODO\nstruct timeval t4;\nid_t t5;\ntime_t t10;\nsuseconds_t t11;\nfd_set t12;\n#endif\n\n \n#ifdef TODO  \nint prios[] =\n  {\n    PRIO_PROCESS,\n    PRIO_PGRP,\n    PRIO_USER\n  };\nint rlims[] =\n  {\n    RLIM_INFINITY,\n    RLIM_SAVED_MAX,\n    RLIM_SAVED_CUR\n  };\n#endif\nint rusages[] =\n  {\n    RUSAGE_SELF,\n    RUSAGE_CHILDREN\n  };\n#ifdef TODO\nint rlimits[] =\n  {\n    RLIMIT_CORE,\n    RLIMIT_CPU,\n    RLIMIT_DATA,\n    RLIMIT_FSIZE,\n    RLIMIT_NOFILE,\n    RLIMIT_STACK,\n    RLIMIT_AS\n  };\n#endif\n\nint\nmain (void)\n{\n  return 0;\n}\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

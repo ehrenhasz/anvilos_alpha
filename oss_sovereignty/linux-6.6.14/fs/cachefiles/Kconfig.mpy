@@ -1,0 +1,9 @@
+{
+  "module_name": "Kconfig",
+  "hash_id": "54ab2b7c5afc2ebedbc1ea2d32782fec620b630a79dd2a29e5fb7f847ee92f9a",
+  "original_prompt": "Ingested from linux-6.6.14/fs/cachefiles/Kconfig",
+  "human_readable_source": "# SPDX-License-Identifier: GPL-2.0-only\n\nconfig CACHEFILES\n\ttristate \"Filesystem caching on files\"\n\tdepends on FSCACHE && BLOCK\n\thelp\n\t  This permits use of a mounted filesystem as a cache for other\n\t  filesystems - primarily networking filesystems - thus allowing fast\n\t  local disk to enhance the speed of slower devices.\n\n\t  See Documentation/filesystems/caching/cachefiles.rst for more\n\t  information.\n\nconfig CACHEFILES_DEBUG\n\tbool \"Debug CacheFiles\"\n\tdepends on CACHEFILES\n\thelp\n\t  This permits debugging to be dynamically enabled in the filesystem\n\t  caching on files module.  If this is set, the debugging output may be\n\t  enabled by setting bits in /sys/modules/cachefiles/parameter/debug or\n\t  by including a debugging specifier in /etc/cachefilesd.conf.\n\nconfig CACHEFILES_ERROR_INJECTION\n\tbool \"Provide error injection for cachefiles\"\n\tdepends on CACHEFILES && SYSCTL\n\thelp\n\t  This permits error injection to be enabled in cachefiles whilst a\n\t  cache is in service.\n\nconfig CACHEFILES_ONDEMAND\n\tbool \"Support for on-demand read\"\n\tdepends on CACHEFILES\n\tdefault n\n\thelp\n\t  This permits userspace to enable the cachefiles on-demand read mode.\n\t  In this mode, when a cache miss occurs, responsibility for fetching\n\t  the data lies with the cachefiles backend instead of with the netfs\n\t  and is delegated to userspace.\n\n\t  If unsure, say N.\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

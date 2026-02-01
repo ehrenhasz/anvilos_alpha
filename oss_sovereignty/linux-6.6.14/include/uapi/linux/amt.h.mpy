@@ -1,0 +1,9 @@
+{
+  "module_name": "amt.h",
+  "hash_id": "9f0bb4c8d165a9a4a52440e16a27cc2a131ad328f370d721af8dec662ec0ec55",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/amt.h",
+  "human_readable_source": " \n \n#ifndef _UAPI_AMT_H_\n#define _UAPI_AMT_H_\n\nenum ifla_amt_mode {\n\t \n\tAMT_MODE_GATEWAY = 0,\n\t \n\tAMT_MODE_RELAY,\n\t__AMT_MODE_MAX,\n};\n\n#define AMT_MODE_MAX (__AMT_MODE_MAX - 1)\n\nenum {\n\tIFLA_AMT_UNSPEC,\n\t \n\tIFLA_AMT_MODE,\n\t \n\tIFLA_AMT_RELAY_PORT,\n\t \n\tIFLA_AMT_GATEWAY_PORT,\n\t \n\tIFLA_AMT_LINK,\n\t \n\tIFLA_AMT_LOCAL_IP,\n\t \n\tIFLA_AMT_REMOTE_IP,\n\t \n\tIFLA_AMT_DISCOVERY_IP,\n\t \n\tIFLA_AMT_MAX_TUNNELS,\n\t__IFLA_AMT_MAX,\n};\n\n#define IFLA_AMT_MAX (__IFLA_AMT_MAX - 1)\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

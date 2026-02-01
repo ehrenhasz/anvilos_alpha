@@ -1,0 +1,9 @@
+{
+  "module_name": "rc.h",
+  "hash_id": "4f96c5d579ccabc4e91b451bf4574822a77d108af4dd4e574e28d63f1064e707",
+  "original_prompt": "Ingested from linux-6.6.14/drivers/net/wireless/realtek/rtlwifi/rc.h",
+  "human_readable_source": " \n \n\n#ifndef __RTL_RC_H__\n#define __RTL_RC_H__\n\n#define B_MODE_MAX_RIX 3\n#define G_MODE_MAX_RIX 11\n#define A_MODE_MAX_RIX 7\n\n \n#define N_MODE_MCS7_RIX 7\n#define N_MODE_MCS15_RIX 15\n\n#define AC_MODE_MCS7_RIX 7\n#define AC_MODE_MCS8_RIX 8\n#define AC_MODE_MCS9_RIX 9\n\nstruct rtl_rate_priv {\n\tu8 ht_cap;\n};\n\nint rtl_rate_control_register(void);\nvoid rtl_rate_control_unregister(void);\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

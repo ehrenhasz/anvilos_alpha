@@ -1,0 +1,9 @@
+{
+  "module_name": "netfilter_defs.h",
+  "hash_id": "e5fd951b61bcdf558f92153fb5939bd636f444bba3441ee78a0e83ff005adf2f",
+  "original_prompt": "Ingested from linux-6.6.14/include/linux/netfilter_defs.h",
+  "human_readable_source": " \n#ifndef __LINUX_NETFILTER_CORE_H_\n#define __LINUX_NETFILTER_CORE_H_\n\n#include <uapi/linux/netfilter.h>\n\n \n#define NF_ARP_NUMHOOKS 3\n\n#define NF_MAX_HOOKS\tNF_INET_NUMHOOKS\n\n#endif\n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}

@@ -1,0 +1,9 @@
+{
+  "module_name": "mman.h",
+  "hash_id": "cb0f1549c5d72204eb9ff8f99d79c77dd7a8d2cb1ebf102ef2e5bdf95e391829",
+  "original_prompt": "Ingested from linux-6.6.14/include/uapi/linux/mman.h",
+  "human_readable_source": " \n#ifndef _UAPI_LINUX_MMAN_H\n#define _UAPI_LINUX_MMAN_H\n\n#include <asm/mman.h>\n#include <asm-generic/hugetlb_encode.h>\n#include <linux/types.h>\n\n#define MREMAP_MAYMOVE\t\t1\n#define MREMAP_FIXED\t\t2\n#define MREMAP_DONTUNMAP\t4\n\n#define OVERCOMMIT_GUESS\t\t0\n#define OVERCOMMIT_ALWAYS\t\t1\n#define OVERCOMMIT_NEVER\t\t2\n\n#define MAP_SHARED\t0x01\t\t \n#define MAP_PRIVATE\t0x02\t\t \n#define MAP_SHARED_VALIDATE 0x03\t \n\n \n#define MAP_HUGE_SHIFT\tHUGETLB_FLAG_ENCODE_SHIFT\n#define MAP_HUGE_MASK\tHUGETLB_FLAG_ENCODE_MASK\n\n#define MAP_HUGE_16KB\tHUGETLB_FLAG_ENCODE_16KB\n#define MAP_HUGE_64KB\tHUGETLB_FLAG_ENCODE_64KB\n#define MAP_HUGE_512KB\tHUGETLB_FLAG_ENCODE_512KB\n#define MAP_HUGE_1MB\tHUGETLB_FLAG_ENCODE_1MB\n#define MAP_HUGE_2MB\tHUGETLB_FLAG_ENCODE_2MB\n#define MAP_HUGE_8MB\tHUGETLB_FLAG_ENCODE_8MB\n#define MAP_HUGE_16MB\tHUGETLB_FLAG_ENCODE_16MB\n#define MAP_HUGE_32MB\tHUGETLB_FLAG_ENCODE_32MB\n#define MAP_HUGE_256MB\tHUGETLB_FLAG_ENCODE_256MB\n#define MAP_HUGE_512MB\tHUGETLB_FLAG_ENCODE_512MB\n#define MAP_HUGE_1GB\tHUGETLB_FLAG_ENCODE_1GB\n#define MAP_HUGE_2GB\tHUGETLB_FLAG_ENCODE_2GB\n#define MAP_HUGE_16GB\tHUGETLB_FLAG_ENCODE_16GB\n\nstruct cachestat_range {\n\t__u64 off;\n\t__u64 len;\n};\n\nstruct cachestat {\n\t__u64 nr_cache;\n\t__u64 nr_dirty;\n\t__u64 nr_writeback;\n\t__u64 nr_evicted;\n\t__u64 nr_recently_evicted;\n};\n\n#endif  \n",
+  "logic_map": {},
+  "failure_modes": [],
+  "crash_correlation_map": {}
+}
